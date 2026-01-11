@@ -53,8 +53,6 @@ $$K_{\mathrm{Rec}_N}^- \wedge K_{\mathrm{TB}_\pi}^+ \wedge K_{\text{Action}}^{\m
 :::
 
 :::{prf:proof}
-:label: sketch-mt-up-shadow-retroactive
-
 Each sector transition costs at least $\delta$ units of action/energy. With bounded total energy $E_{\max}$, at most $E_{\max}/\delta$ transitions can occur. This is the Conley index argument (1978) applied to gradient-like flows: the Morse-Conley theory bounds the number of critical point transitions by the total change in index. Combined with energy dissipation, this forbids Zeno accumulation.
 :::
 
@@ -90,8 +88,6 @@ $$K_{\text{Lock}}^{\mathrm{blk}} \Rightarrow \forall i: K_{\text{Barrier}_i}^{\m
 :::
 
 :::{prf:proof}
-:label: sketch-mt-up-lockback
-
 The morphism obstruction at the Lock is a global invariant. If no bad pattern embeds globally, then any local certificate that was "Blocked" (i.e., locally ambiguous) must resolve to "Regular" since the alternative (singular) is globally forbidden. This is the "principle of the excluded middle" applied via the universal property of the bad pattern functor.
 :::
 
@@ -129,8 +125,6 @@ $$K_{\mathrm{LS}_\sigma}^{\mathrm{stag}} \wedge K_{\text{Sym}}^+ \wedge K_{\text
 :::
 
 :::{prf:proof}
-:label: sketch-mt-up-symmetry-bridge
-
 The Goldstone theorem (1961) states that spontaneous breaking of a continuous symmetry produces massless bosons. However, if the symmetry group is *compact* and the vacuum is unique (CheckSC), the would-be Goldstones acquire mass via the Higgs mechanism or explicit breaking. The resulting spectral gap $\lambda > 0$ provides stiffness. For gauge theories, this is the mass gap conjecture; for condensed matter, this is the BCS mechanism.
 :::
 
@@ -168,8 +162,6 @@ $$K_{\mathrm{Cap}_H}^{\mathrm{blk}} \wedge K_{\mathrm{TB}_O}^+ \Rightarrow K_{\m
 :::
 
 :::{prf:proof}
-:label: sketch-mt-up-tame-smoothing
-
 In an o-minimal structure, every definable set admits a Whitney stratification into smooth manifolds (Lojasiewicz, 1965; van den Dries-Miller, 1996). A set of zero capacity is contained in a stratum of positive codimension. By the Kurdyka-Lojasiewicz inequality, the solution extends uniquely across such strata. The gradient flow cannot accumulate on a positive-codimension set.
 :::
 
@@ -207,8 +199,6 @@ $$K_{\text{sat}}^{\mathrm{blk}} \wedge K_{\mathrm{TB}_\rho}^+ \Rightarrow K_{D_E
 :::
 
 :::{prf:proof}
-:label: sketch-mt-up-ergodic
-
 The Poincare recurrence theorem (1890) states that for a measure-preserving transformation, almost every point returns arbitrarily close to its initial position. Combined with mixing (strong ergodicity), the time averages converge to the space average: $\frac{1}{T}\int_0^T \Phi(x(t)) \, dt \to \int \Phi \, d\mu$. If the invariant measure has $\mu(\Phi) < \infty$ (Saturation), recurrence to low-energy states is guaranteed.
 :::
 
@@ -244,8 +234,6 @@ $$K_{\mathrm{SC}_\lambda}^- \wedge K_{\mathrm{GC}_T}^+ \Rightarrow K_{\mathrm{SC
 :::
 
 :::{prf:proof}
-:label: sketch-mt-up-variety-control
-
 Ashby's Law of Requisite Variety (1956) states that "only variety can absorb variety." If the controller has sufficient degrees of freedom ($\log|\mathcal{U}| \geq \log|\mathcal{D}|$), it can cancel any disturbance. The Conant-Ashby theorem (1970) formalizes this: every good regulator of a system must be a model of that system. Applied to scaling instabilities, a sufficiently complex controller can inject anti-scaling corrections that neutralize supercritical growth.
 :::
 
@@ -283,8 +271,6 @@ $$K_{\mathrm{Rec}_N}^{\mathrm{blk}} \wedge K_{\mathrm{Rep}_K}^+ \Rightarrow K_{\
 :::
 
 :::{prf:proof}
-:label: sketch-mt-up-algorithm-depth
-
 Kolmogorov complexity bounds the information content of an object. If $K(x) \leq C$ for some constant $C$, then $x$ is compressible/simple. A genuinely singular object (fractal, infinitely complex) has $K(x) \to \infty$. Therefore, a Zeno singularity with finite complexity must be a coordinate artifact---like the event horizon in Schwarzschild coordinates, which disappears in Eddington-Finkelstein coordinates. Algorithmic removability follows.
 :::
 
@@ -324,8 +310,6 @@ $$K_{\mathrm{Cap}_H}^{\text{ambiguous}} \wedge K_{\mathrm{Rep}_K}^+ \Rightarrow 
 :::
 
 :::{prf:proof}
-:label: sketch-mt-up-holographic
-
 The connection between algorithmic complexity and geometric dimension is mediated by *effective Hausdorff dimension* {cite}`Lutz03`. For a set $\Sigma$, define:
 
 $$
@@ -375,8 +359,6 @@ $$K_{\mathrm{GC}_\nabla}^{\text{chaotic}} \wedge K_{\text{Lock}}^{\mathrm{blk}} 
 :::
 
 :::{prf:proof}
-:label: sketch-mt-lock-spectral-quant
-
 Weyl's law (1911) relates the spectral asymptotics $N(\lambda) \sim C\lambda^{n/2}$ to the geometry. If global invariants are quantized (integers), the spectrum is discrete: $\sigma(L) \subset \{\lambda_n\}_{n \in \mathbb{N}}$. By the Paley-Wiener theorem, functions with discrete spectrum are almost periodic. Kac's "Can one hear the shape of a drum?" (1966) shows geometry determines spectrum and vice versa.
 :::
 
@@ -423,8 +405,6 @@ where $K_{\text{Backend}}^+$ is one of:
 :::
 
 :::{prf:proof}
-:label: proof-mt-lock-unique-attractor
-
 #### Backend A: Unique Ergodicity + Discrete Attractor
 
 **Additional Hypotheses:**
@@ -621,8 +601,6 @@ $$K_{\mathrm{OGP}}^+ \wedge K_{C_\mu}^+ \wedge K_{\mu \leftarrow \mathcal{R}}^+ 
 :::
 
 :::{prf:proof}
-:label: proof-mt-up-selchi-cap
-
 *Step 1 (Correlation–Support Lemma).* Define the correlation function:
 
 $$
@@ -711,8 +689,6 @@ $$K_{C_\mu}^+ \wedge K_{\mathrm{Sel}_\chi}^+ \Rightarrow K_{\mathrm{Scope}}^+$$
 :::
 
 :::{prf:proof}
-:label: proof-mt-up-ogpchi
-
 *Step 1 (Selector Discontinuity Implies Guessing).* By $K_{\mathrm{Sel}_\chi}^+$, any algorithm $\mathcal{A}$ must transition from:
 
 $$

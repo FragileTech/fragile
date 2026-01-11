@@ -95,7 +95,7 @@ Standard RL appears as a degenerate limit of the Fragile Agent when geometry is 
 - **Causal Information Bound** (area law for representational capacity) ({ref}`Section 33 <sec-causal-information-bound>`)
 - **Standard Model of Cognition** and gauge-theoretic unification ({ref}`Section 34 <sec-standard-model-cognition>`)
 - **Parameter Space Sieve** deriving fundamental constants ({ref}`Section 35 <sec-parameter-space-sieve>`)
-- **Economic applications** via Partially Observable Markov Wealth ({ref}`Part IX <sec-pomw>`)
+- **Economic applications** via Partially Observable Markov Wealth ({ref}`Part IX <sec-proof-of-useful-work-cognitive-metabolism-as-consensus>`)
 - **Proof of Useful Work** consensus replacing hash mining with gradient computation ({ref}`Part IX <sec-proof-of-useful-work-cognitive-metabolism-as-consensus>`)
 
 **Proof of Useful Work (PoUW) — Key Security Properties:**
@@ -121,7 +121,7 @@ The economic layer introduces a novel consensus mechanism where the cryptographi
 - *Want limits?* → {ref}`Section 33 <sec-causal-information-bound>`
 - *Want gauge theory?* → {ref}`Section 34 <sec-standard-model-cognition>`
 - *Want fundamental constants?* → {ref}`Section 35 <sec-parameter-space-sieve>`
-- *Want blockchain/economics?* → {ref}`Part IX <sec-pomw>`
+- *Want blockchain/economics?* → {ref}`Part IX <sec-proof-of-useful-work-cognitive-metabolism-as-consensus>`
 - *Want objections answered?* → {ref}`Appendix D <sec-appendix-d-frequently-asked-questions>`
 - *Want proofs?* → {ref}`Appendix A <sec-appendix-a-full-derivations>`
 
@@ -305,9 +305,9 @@ This framework introduces a unified nomenclature. While these terms may seem nov
 12. **Thermodynamic grounding.** Constants like the hysteresis threshold $\epsilon_{\text{hysteresis}}$ are not free parameters but are derived from Landauer thermodynamics ({prf:ref}`thm-thermodynamic-hysteresis-bound`), ensuring ontological operations respect computational metabolism.
 13. **Gauge-theoretic unification.** The three forces governing agent dynamics—value gradient transport, prediction-error correction, and feature binding—are derived as gauge fields from local invariance principles. The symmetry group $G_{\text{Fragile}} = SU(N_f)_C \times SU(2)_L \times U(1)_Y$ emerges from cybernetic first principles ({ref}`Section 34 <sec-standard-model-cognition>`).
 14. **Fundamental constants from constraint satisfaction.** The Agent Parameter Vector $\Lambda = (c_{\text{info}}, \sigma, \ell_L, T_c, g_s, \gamma)$ solves a constrained optimization problem. Sieve constraints (causal, holographic, metabolic, hierarchical, stiffness, temporal) define a feasible region; viable agents operate on its Pareto boundary ({ref}`Section 35 <sec-parameter-space-sieve>`).
-15. **Metabolic transducer architecture.** Energy-information coupling is made explicit through the metabolic transducer, which converts computational resources into information updates while respecting Landauer bounds. This provides principled "thinking fast vs slow" phase transitions ({ref}`Part VII <sec-metabolic-transducer>`).
-16. **Intersubjective metric for shared meaning.** Multi-agent communication is grounded in a shared metric space where meaning emerges from geometric alignment between agents' latent representations, enabling principled analysis of language grounding and semantic drift ({ref}`Part VII <sec-intersubjective-metric>`).
-17. **Economic unification via POMW.** Partially Observable Markov Wealth (POMW) extends the framework to economic agents, treating wealth as a conserved quantity under metabolic constraints and unifying game-theoretic equilibria with the geometric field theory ({ref}`Part IX <sec-pomw>`).
+15. **Metabolic transducer architecture.** Energy-information coupling is made explicit through the metabolic transducer, which converts computational resources into information updates while respecting Landauer bounds. This provides principled "thinking fast vs slow" phase transitions ({ref}`Part VII <sec-the-metabolic-transducer-autopoiesis-and-the-szilard-engine>`).
+16. **Intersubjective metric for shared meaning.** Multi-agent communication is grounded in a shared metric space where meaning emerges from geometric alignment between agents' latent representations, enabling principled analysis of language grounding and semantic drift ({ref}`Part VII <sec-the-inter-subjective-metric-gauge-locking-and-the-emergence-of-objective-reality>`).
+17. **Economic unification via POMW.** Partially Observable Markov Wealth (POMW) extends the framework to economic agents, treating wealth as a conserved quantity under metabolic constraints and unifying game-theoretic equilibria with the geometric field theory ({ref}`Part IX <sec-proof-of-useful-work-cognitive-metabolism-as-consensus>`).
 18. **Proof of Useful Work consensus.** The framework enables a novel blockchain consensus mechanism where hash mining is replaced by gradient computation on a shared neural network. Security is guaranteed by the Landauer bound (thermodynamic hardness), the Sieve constraints (fake gradient detection), and geometric coherence (adversaries are damped, not outvoted). Key theorems: Cognitive Equivalency ({prf:ref}`thm-cognitive-equivalency`), Holographic Verification ({prf:ref}`thm-holographic-verification`), Verifier's Nash Equilibrium ({prf:ref}`thm-verifier-nash-equilibrium`), 51% Attack Rejection ({prf:ref}`thm-51-attack-rejection`), and Adversarial Geometric Damping ({prf:ref}`thm-adversarial-geometric-damping`). The result: energy expenditure produces intelligence instead of heat, and adversaries cannot buy consensus because they cannot buy geometric alignment ({ref}`Part IX <sec-proof-of-useful-work-cognitive-metabolism-as-consensus>`).
 
 (sec-what-is-novel-here-vs-what-is-repackaging)=
@@ -349,12 +349,12 @@ This framework introduces a unified nomenclature. While these terms may seem nov
 
 *Extended Cognitive Architecture:*
 
-18. **Metabolic transducer.** Energy-information coupling is formalized through the metabolic transducer architecture, which converts computational resources into information updates while respecting Landauer bounds. Provides principled "thinking fast vs slow" phase transitions with explicit switching criteria ({ref}`Part VII <sec-metabolic-transducer>`).
-19. **Intersubjective metric.** Multi-agent semantic alignment is grounded in a shared metric space where meaning emerges from geometric alignment between agents' latent representations. Enables principled analysis of language grounding, semantic drift, and communication bandwidth ({ref}`Part VII <sec-intersubjective-metric>`).
+18. **Metabolic transducer.** Energy-information coupling is formalized through the metabolic transducer architecture, which converts computational resources into information updates while respecting Landauer bounds. Provides principled "thinking fast vs slow" phase transitions with explicit switching criteria ({ref}`Part VII <sec-the-metabolic-transducer-autopoiesis-and-the-szilard-engine>`).
+19. **Intersubjective metric.** Multi-agent semantic alignment is grounded in a shared metric space where meaning emerges from geometric alignment between agents' latent representations. Enables principled analysis of language grounding, semantic drift, and communication bandwidth ({ref}`Part VII <sec-the-inter-subjective-metric-gauge-locking-and-the-emergence-of-objective-reality>`).
 
 *Economic Extensions:*
 
-20. **Partially Observable Markov Wealth (POMW).** Economic agents are unified with the geometric field theory by treating wealth as a conserved quantity under metabolic constraints. Game-theoretic equilibria emerge as geometric fixed points; resource allocation follows from holographic interface capacity ({ref}`Part IX <sec-pomw>`).
+20. **Partially Observable Markov Wealth (POMW).** Economic agents are unified with the geometric field theory by treating wealth as a conserved quantity under metabolic constraints. Game-theoretic equilibria emerge as geometric fixed points; resource allocation follows from holographic interface capacity ({ref}`Part IX <sec-proof-of-useful-work-cognitive-metabolism-as-consensus>`).
 21. **Proof of Useful Work (PoUW) consensus.** A novel blockchain consensus mechanism where the cryptographic puzzle is replaced by gradient computation on a shared neural network. Novel contributions include: (a) Cognitive Equivalency Theorem proving gradients have the same thermodynamic hardness as hashes; (b) Holographic Verification reducing verification cost from $O(N)$ to $O(\sqrt{N})$; (c) Verifier's Nash Equilibrium proving honest computation is strictly dominant; (d) Minimum Friction BFT achieving Byzantine tolerance via geometric coherence; (e) 51% Attack Rejection via Spontaneous Fission; (f) Adversarial Geometric Damping isolating malicious actors through metric friction rather than voting ({ref}`Part IX <sec-proof-of-useful-work-cognitive-metabolism-as-consensus>`).
 
 **Repackaging (directly inherited ingredients, organized by domain):**
@@ -396,7 +396,7 @@ This framework introduces a unified nomenclature. While these terms may seem nov
 | **Ontology learning**               | implicit via representation                  | explicit fission criterion: when texture becomes predictable ($\Xi > \Xi_{\text{crit}}$), chart bifurcation expands categories; hysteresis thermodynamically calibrated ({ref}`Section 30 <sec-ontological-expansion-topological-fission-and-the-semantic-vacuum>`)                                                                                                                                                                                                                                                                                              |
 | **Gauge structure**                 | implicit or absent                           | explicit gauge group $G_{\text{Fragile}} = SU(N_f)_C \times SU(2)_L \times U(1)_Y$ with three derived gauge fields; covariant derivative ensures coordinate-invariant dynamics ({ref}`Section 34 <sec-standard-model-cognition>`)                                                                                                                                                                                                                                                                                                                                 |
 | **Hyperparameter tuning**           | grid search, Bayesian optimization           | Parameter Space Sieve derives operational constants from constraint satisfaction; feasible region defined by causal, holographic, metabolic, and stiffness bounds ({ref}`Section 35 <sec-parameter-space-sieve>`)                                                                                                                                                                                                                                                                                                                                                 |
-| **Economic agents**                 | separate game-theoretic models               | Partially Observable Markov Wealth (POMW) unifies economic dynamics with agent geometry; wealth as conserved quantity under metabolic constraints ({ref}`Part IX <sec-pomw>`)                                                                                                                                                                                                                                                                                                                                                                                     |
+| **Economic agents**                 | separate game-theoretic models               | Partially Observable Markov Wealth (POMW) unifies economic dynamics with agent geometry; wealth as conserved quantity under metabolic constraints ({ref}`Part IX <sec-proof-of-useful-work-cognitive-metabolism-as-consensus>`)                                                                                                                                                                                                                                                                                                                                                     |
 | **Blockchain consensus**            | Proof of Work (useless hash mining)          | Proof of Useful Work: gradients replace hashes; energy produces intelligence not heat; adversaries geometrically damped via metric friction; 51% attacks trigger Spontaneous Fission ({ref}`Part IX <sec-proof-of-useful-work-cognitive-metabolism-as-consensus>`)                                                                                                                                                                                                                                                                                                |
 
 **Reading guide (connections by section).**
@@ -420,9 +420,9 @@ This framework introduces a unified nomenclature. While these terms may seem nov
 - Causal information bound and representational limits: {ref}`Section 33 <sec-causal-information-bound>`
 - Gauge-theoretic unification (Standard Model of Cognition): {ref}`Section 34 <sec-standard-model-cognition>`
 - Fundamental constants from constraints (Parameter Space Sieve): {ref}`Section 35 <sec-parameter-space-sieve>`
-- Metabolic transducer and energy-information coupling: {ref}`Part VII <sec-metabolic-transducer>`
-- Intersubjective metric and shared meaning: {ref}`Part VII <sec-intersubjective-metric>`
-- Economic applications (Partially Observable Markov Wealth): {ref}`Part IX <sec-pomw>`
+- Metabolic transducer and energy-information coupling: {ref}`Part VII <sec-the-metabolic-transducer-autopoiesis-and-the-szilard-engine>`
+- Intersubjective metric and shared meaning: {ref}`Part VII <sec-the-inter-subjective-metric-gauge-locking-and-the-emergence-of-objective-reality>`
+- Economic applications (Partially Observable Markov Wealth): {ref}`Part IX <sec-proof-of-useful-work-cognitive-metabolism-as-consensus>`
 - Frequently asked questions (rigorous objections and responses): {ref}`Appendix D <sec-appendix-d-frequently-asked-questions>`
 
 (sec-for-skeptical-readers)=
@@ -504,15 +504,15 @@ The document is organized into nine parts plus appendices:
 - **{ref}`Section 31 <sec-computational-metabolism-the-landauer-bound-and-deliberation-dynamics>`**: Computational metabolism—Landauer bound, deliberation dynamics, fast/slow phase transition
 - **{ref}`Section 32 <sec-causal-discovery-interventional-geometry-and-the-singularity-of-action>`**: Causal discovery—interventional geometry, curiosity force, causal enclosure
 - **{ref}`Section 33 <sec-causal-information-bound>`**: The Causal Information Bound—area law for representational capacity; Causal Stasis
-- **{ref}`Section 33.5 <sec-metabolic-transducer>`**: Metabolic transducer—energy-information coupling, Landauer-bounded updates, fast/slow phase transitions
-- **{ref}`Section 33.6 <sec-intersubjective-metric>`**: Intersubjective metric—shared semantic space, language grounding, multi-agent meaning alignment
+- **{ref}`Section 33.5 <sec-the-metabolic-transducer-autopoiesis-and-the-szilard-engine>`**: Metabolic transducer—energy-information coupling, Landauer-bounded updates, fast/slow phase transitions
+- **{ref}`Section 33.6 <sec-the-inter-subjective-metric-gauge-locking-and-the-emergence-of-objective-reality>`**: Intersubjective metric—shared semantic space, language grounding, multi-agent meaning alignment
 
 **Part VIII: Multi-Agent Gauge Theory ({ref}`Sections 34–35 <sec-standard-model-cognition>`)**
 - **{ref}`Section 34 <sec-standard-model-cognition>`**: The Standard Model of Cognition—gauge-theoretic formulation; $G_{\text{Fragile}} = SU(N_f)_C \times SU(2)_L \times U(1)_Y$; belief spinors; ontological symmetry breaking
 - **{ref}`Section 35 <sec-parameter-space-sieve>`**: The Parameter Space Sieve—deriving fundamental constants from constraint satisfaction; causal, holographic, metabolic, coupling, stiffness, and screening bounds
 
 **Part IX: Economics**
-- **{ref}`Section 36 <sec-pomw>`**: Partially Observable Markov Wealth (POMW)—economic applications, resource allocation, game-theoretic wealth dynamics
+- **{ref}`Section 36 <sec-proof-of-useful-work-cognitive-metabolism-as-consensus>`**: Partially Observable Markov Wealth (POMW)—economic applications, resource allocation, game-theoretic wealth dynamics
 
 **Appendices**
 - **{ref}`Appendix A <sec-appendix-a-full-derivations>`**: Full derivations of the capacity-constrained curvature functional and the Area Law coefficient (A.6)
@@ -583,9 +583,9 @@ where:
 | 31 | Mean-Field Games (MFG)     | Mean-Field Metric Law + Geometric Locking                          | Finite $N$                                                              | {ref}`29.8 <sec-mean-field-metric-law>`                                                   |
 | 32 | Scalar reward shaping        | Gauge-covariant value transport                                    | Abelian limit ($SU(2), SU(N_f) \to 1$)                              | {ref}`34.1 <sec-gauge-principle-derivation>`                                              |
 | 33 | Hand-tuned hyperparameters   | Parameter Space Sieve (Constrained Optimization)                   | Remove constraints ($\mathcal{S} \to 0$)                            | {ref}`35 <sec-parameter-space-sieve>`                                                     |
-| 34 | System 1/2 heuristics          | Metabolic Transducer (Landauer-bounded switching)                  | Remove energy accounting                                            | {ref}`Part VII <sec-metabolic-transducer>`                                                |
-| 35 | Multi-agent language alignment | Intersubjective Metric (geometric semantic grounding)              | Independent representations                                         | {ref}`Part VII <sec-intersubjective-metric>`                                              |
-| 36 | Economic game theory           | POMW (wealth as conserved geometric quantity)                      | Decouple economics from geometry                                    | {ref}`Part IX <sec-pomw>`                                                                 |
+| 34 | System 1/2 heuristics          | Metabolic Transducer (Landauer-bounded switching)                  | Remove energy accounting                                            | {ref}`Part VII <sec-the-metabolic-transducer-autopoiesis-and-the-szilard-engine>`                                                |
+| 35 | Multi-agent language alignment | Intersubjective Metric (geometric semantic grounding)              | Independent representations                                         | {ref}`Part VII <sec-the-inter-subjective-metric-gauge-locking-and-the-emergence-of-objective-reality>`                                              |
+| 36 | Economic game theory           | POMW (wealth as conserved geometric quantity)                      | Decouple economics from geometry                                    | {ref}`Part IX <sec-proof-of-useful-work-cognitive-metabolism-as-consensus>`                                                                 |
 | 37 | Bitcoin/Proof of Work          | Proof of Useful Work (gradient mining + geometric consensus)       | Remove Sieve, use useless hashes, vote-based BFT                    | {ref}`Part IX <sec-proof-of-useful-work-cognitive-metabolism-as-consensus>`               |
 
 **The Five Degeneracy Classes:**

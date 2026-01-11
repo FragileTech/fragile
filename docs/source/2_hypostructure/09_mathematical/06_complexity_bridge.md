@@ -55,7 +55,6 @@ The key insight is that both are counting the same thing: *how much information 
 The definitions below make this precise. Pay attention to the **CostCert** predicate—this is the bridge hinge. It is what lets us say "this hypostructure program runs in polynomial time" in a way that a classical complexity theorist can verify in ZFC.
 :::
 
-(def-effective-programs-fragile)=
 ### D0.1 Effective Programs (Fragile)
 
 :::{prf:definition} Effective Programs
@@ -84,7 +83,6 @@ $$
 This evaluator is the operational semantics of the hypostructure computational model.
 :::
 
-(def-cost-certificate)=
 ### D0.2 Cost Certificate (The Bridge Hinge)
 
 :::{prf:definition} Cost Certificate
@@ -132,7 +130,6 @@ The bridge theorems *prove* these coincide. The definitions are independent; the
 The cost certificate is analogous to a type derivation in a type system: it is a *witness* that the program has a certain property (polynomial-time), checkable independently of running the program.
 :::
 
-(def-np-fragile)=
 ### D0.3 NP in Fragile Form (Verifier + Witness)
 
 :::{prf:definition} NP (Fragile Model)
@@ -188,7 +185,6 @@ Think of them as building a two-lane bridge. The first lane (Theorems I and III)
 Once both lanes are built, we have a true equivalence. And *that* is what lets us export the separation.
 :::
 
-(thm-bridge-p-dtm-to-fragile)=
 ### Theorem I: P-Bridge (DTM → Fragile P)
 
 :::{prf:theorem} Bridge P: DTM → Fragile
@@ -269,7 +265,6 @@ This is why the forward bridge is easy. The hard direction is the reverse bridge
 
 ---
 
-(thm-extraction-p-fragile-to-dtm)=
 ### Theorem II: P-Extraction (Fragile P → DTM P)
 
 :::{prf:theorem} Extraction P: Fragile → DTM (Adequacy)
@@ -397,7 +392,6 @@ Once **(A2)** is verified, the extraction theorem follows mechanically.
 
 ---
 
-(thm-bridge-np-dtm-to-fragile)=
 ### Theorem III: NP-Bridge (DTM NP → Fragile NP)
 
 :::{prf:theorem} Bridge NP: DTM → Fragile
@@ -476,7 +470,6 @@ The beauty of the verifier characterization of NP is that it separates the hard 
 
 ---
 
-(thm-extraction-np-fragile-to-dtm)=
 ### Theorem IV: NP-Extraction (Fragile NP → DTM NP)
 
 :::{prf:theorem} Extraction NP: Fragile → DTM

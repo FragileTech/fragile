@@ -517,8 +517,6 @@ For abstract cohesive toposes, this theorem is conditional on items (1)–(3). F
 :::
 
 :::{prf:proof}
-:label: proof-thm-expansion-adjunction
-
 *Step 1 (Ambient Setup & Canonical Embedding via Flat Modality).*
 By the axioms of cohesion {cite}`Lurie09`; {cite}`Schreiber13`, $\mathcal{E}$ admits the adjoint quadruple. Given the analytic space $\underline{X}$ from the Thin Kernel, we invoke the flat modality embedding. Let $\text{Disc}: \mathbf{Set} \to \mathcal{E}$ be the discrete functor. Since $\underline{X}$ carries a metric topology (locally Hessian or Polish with synthetic differential structure), we define the base stack $X_0 \in \mathcal{E}$ as the unique object satisfying:
 

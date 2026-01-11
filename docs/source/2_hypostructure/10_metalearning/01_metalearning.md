@@ -536,7 +536,6 @@ $$
 $$
 
 :::{prf:proof}
-:label: proof-no-melt-sketch
 
 By the EVI (Evolution Variational Inequality, Theorem {prf:ref}`thm-rcd-dissipation-link`):
 
@@ -3628,7 +3627,6 @@ $$[T^*] = [\mathbb{H}]$$
 #### Full Proof
 
 :::{prf:proof}
-:label: proof-epistemic-fixed-point
 
 **Step 1 (Bayesian Update).** By Bayes' theorem, the posterior after observing $\mathcal{D}_t$ is:
 $$\rho_t(T) = \frac{P(\mathcal{D}_t \mid T) \cdot \pi_0(T)}{\sum_{T' \in \mathfrak{T}} P(\mathcal{D}_t \mid T') \cdot \pi_0(T')}$$

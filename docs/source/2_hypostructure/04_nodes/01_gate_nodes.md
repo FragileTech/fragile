@@ -437,7 +437,6 @@ Exponential volume growth with finite-dimensional asymptotic cone does NOT viola
 :::
 
 :::{prf:proof}
-:label: proof-lsi-finite-cone
 
 For metric space $(X,d)$ with $|B_r| \sim e^{\alpha r}$ and $\dim(\text{Cone}_\omega(X)) = n < \infty$:
 

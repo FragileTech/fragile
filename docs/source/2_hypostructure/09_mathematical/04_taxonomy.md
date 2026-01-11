@@ -2,6 +2,8 @@
 title: "Taxonomy of Dynamical Complexity"
 ---
 
+# Taxonomy of Dynamical Complexity
+
 (sec-taxonomy-dynamical-complexity)=
 ## The Taxonomy of Dynamical Complexity
 
@@ -550,8 +552,6 @@ where $\sim$ denotes equivalence of certificate types at each node.
 :::
 
 :::{prf:proof}
-:label: proof-thm-meta-identifiability
-:nonumber:
 
 **Outline:**
 
@@ -658,8 +658,6 @@ The proof strategy for any dynamical system is determined by its location in the
 :::
 
 :::{prf:proof}
-:label: proof-mt-lock-periodic
-:nonumber:
 
 **Outline:**
 
@@ -836,7 +834,6 @@ $$
 :::
 
 :::{prf:proof}
-:label: proof-thm-sieve-thermo-correspondence
 
 We establish the correspondence in four steps.
 
