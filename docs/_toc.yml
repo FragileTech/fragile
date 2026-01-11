@@ -133,6 +133,7 @@ parts:
     - file: source/2_hypostructure/09_mathematical/03_cross_reference
     - file: source/2_hypostructure/09_mathematical/04_taxonomy
     - file: source/2_hypostructure/09_mathematical/05_algorithmic
+    - file: source/2_hypostructure/09_mathematical/06_complexity_bridge
 
   - caption: "Part X - Meta-Learning"
     chapters:
