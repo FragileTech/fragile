@@ -1,6 +1,16 @@
 (sec-weakest-precondition)=
 ## The Weakest Precondition Principle
 
+:::{div} feynman-prose
+Here is the key idea that makes the whole Sieve machinery work, and I want you to understand it viscerally because it changes how you think about proving regularity.
+
+Traditionally, when mathematicians attack a PDE problem, they assume smoothness up front and then try to prove it doesn't break. This is backwards. It is like asking "will this bridge hold?" while assuming the bridge is infinitely strong. What you really want is a machine where you pour in the minimal ingredients---the local checks, the interface predicates---and the machine tells you whether regularity holds or fails.
+
+That is exactly what we have here. You do not prove that solutions are smooth. You do not classify singularities in advance. You implement a few computable checks---scaling exponents, dimension estimates, Lojasiewicz constants---and then you run the Sieve. The verdict emerges from the computation itself. If it says YES, you have regularity. If it says NO, you get a certificate explaining exactly what went wrong and where.
+
+This is Dijkstra's insight applied to analysis: the weakest precondition that guarantees a postcondition is precisely what you compute, not what you assume.
+:::
+
 The interface formalism of {prf:ref}`def-interface-permit` embodies a fundamental design principle: **regularity is an output, not an input**.
 
 :::{prf:theorem} [RESOLVE-WeakestPre] Weakest Precondition Principle
@@ -56,10 +66,26 @@ The interface formalism separates:
 A researcher can contribute a new interface implementation without understanding the full Sieve machinery, and the framework can be extended with new metatheorems without modifying existing implementations.
 :::
 
+:::{div} feynman-prose
+Let me put this differently. Think of a type checker in programming. You write type annotations on your functions. You do not prove that your program is type-safe---the type checker does that for you, automatically. And when it fails, it tells you exactly where the types do not match.
+
+The Sieve works the same way. Domain expertise goes into implementing the local predicates---you know your PDE, you know what scaling exponent to compute, you know what dimension estimate is relevant. Framework logic is the Sieve algorithm itself, which chains these local checks into global conclusions. Certificate verification is automatic: you can replay the proof and check that every step follows.
+
+This separation is not just elegant. It is practical. A geometer working on Ricci flow does not need to understand how the Sieve handles dispersive equations. She implements her interface predicates, runs the Sieve, gets her certificate. The framework holds it all together.
+:::
+
 ---
 
 (sec-rigidity-recovery)=
 ## Rigidity & Recovery Metatheorems
+
+:::{div} feynman-prose
+Now we come to what I think is one of the most satisfying parts of this whole framework. We have seen that the Sieve can tell you whether regularity holds. But what if you want more? What if you want to know not just that things do not blow up, but exactly how they converge? What if you want canonical structures, uniqueness, explicit formulas?
+
+That is where these strengthening metatheorems come in. Think of them as upgrades you can unlock. The base Sieve gives you a verdict. But if your problem has additional structure---if singularities are "tame" enough to classify, if you have enough rigidity for canonical Lyapunov functions, if everything is computable---then you get stronger conclusions automatically.
+
+It is like a video game. Beat the first level and you can play the game. Beat it with enough style points and you unlock bonus content. Here, the "style points" are structural certificates---tameness, rigidity, effectivity---and the bonus content is uniqueness theorems, convergence rates, algorithmic decidability.
+:::
 
 This section defines **strengthening metatheorems** that upgrade soft interface permits to stronger analytical guarantees. These metatheorems provide:
 - **Tame recovery** ($K_{\text{Tame}}$): Singularity classification and surgery admissibility
@@ -91,7 +117,7 @@ The Tame Certificate ($K_{\text{Tame}}$) requires a verified metatheorem that, g
 
 The Tame Certificate requires a verified metatheorem that, given Surgery Data $(\Sigma, V, \lambda(t), \mathrm{Cap}(\Sigma))$, outputs exactly one of:
 
-1. **Admissible**: $K_{\mathrm{adm}}$: canonical + codim bound + cap bound (as in MT {prf:ref}`mt-resolve-admissibility`)
+1. **Admissible**: $K_{\mathrm{adm}}$: canonical + codim bound + cap bound (as in {prf:ref}`mt-resolve-admissibility`)
 
 2. **Admissible up to equivalence**: $K_{\mathrm{adm}^\sim}$: after an admissible equivalence move (YES$^\sim$), the singularity becomes admissible
 
@@ -156,9 +182,18 @@ With the Rigidity Certificate, with validated interface permits $D_E$, $C_\mu$, 
 
 **Level-up certificate:** `Lyapunov-Existence`.
 
+:::{div} feynman-prose
+Now, here is something beautiful. When you have the right certificates in place, not only does a Lyapunov functional exist---it is essentially unique, and we can write it down explicitly.
+
+The construction is wonderfully natural. Ask yourself: how far is my current state from equilibrium? Not in terms of Euclidean distance, but in terms of what it costs to get there. The Lyapunov functional measures exactly this---the minimal accumulated dissipation needed to reach the safe manifold, plus the height once you arrive.
+
+Think of it like measuring distance on a mountain by the energy you expend hiking, not by the straight-line path a bird would fly. The "effort distance" to the valley bottom is what matters for the dynamics, and that is precisely what the Lyapunov functional captures.
+
+The uniqueness part is remarkable: any other functional with these properties is just a monotone relabeling of this one. There is only one natural notion of "how far from equilibrium" given the dissipation structure.
+:::
+
 :::{prf:theorem} [KRNL-Lyapunov] Canonical Lyapunov Functional
 :label: mt-krnl-lyapunov
-:class: metatheorem
 
 **[Sieve Signature]**
 - **Requires:** $K_{D_E}^+$ AND $K_{C_\mu}^+$ AND $K_{\mathrm{LS}_\sigma}^+$
@@ -207,9 +242,18 @@ When gradient consistency ($\mathrm{GC}_\nabla$) is additionally validated, the 
 
 **Level-up certificate:** `Lyapunov-Jacobi`.
 
+:::{div} feynman-prose
+And here is the geometric punchline. If you have gradient consistency---meaning dissipation equals squared velocity along the flow---then the Lyapunov functional is nothing but geodesic distance in a warped geometry.
+
+Picture your state space with the original metric. Now imagine stretching the geometry: where dissipation is high, distances become longer; where dissipation is low, they stay about the same. This is the Jacobi metric---a conformal rescaling by the dissipation itself.
+
+In this warped geometry, the Lyapunov value of any state is simply its distance to the safe manifold. The gradient flow follows geodesics in the Jacobi metric. This is not a metaphor; it is an exact identification. The abstract "cost to reach equilibrium" becomes a concrete "length of shortest path."
+
+This connection to Riemannian geometry is powerful because it imports the entire machinery of differential geometry---geodesics, curvature, cut loci---into the analysis of dynamical systems.
+:::
+
 :::{prf:theorem} [KRNL-Jacobi] Action Reconstruction
 :label: mt-krnl-jacobi
-:class: metatheorem
 
 **[Sieve Signature]**
 - **Requires:** $K_{D_E}^+$ AND $K_{\mathrm{LS}_\sigma}^+$ AND $K_{\mathrm{GC}_\nabla}^+$
@@ -241,9 +285,9 @@ $$\mathrm{Length}_{g_{\mathfrak{D}}}(\gamma) = \int_0^T \|\dot{\gamma}(t)\|_{g_{
 
 *Step 3 (Flow Paths Have Optimal Length).* Along gradient flow $u(t) = S_t x$, by Step 1: $\sqrt{\mathfrak{D}(u(t))} \|\dot{u}(t)\|_g = \sqrt{\mathfrak{D}} \cdot \sqrt{\mathfrak{D}} = \mathfrak{D}(u(t))$. Integrating:
 $$\mathrm{Length}_{g_{\mathfrak{D}}}(u|_{[0,T]}) = \int_0^T \mathfrak{D}(u(t))\, dt = \mathcal{C}(x \to u(T))$$
-Thus Jacobi length equals accumulated cost, and by MT-Lyap-1, gradient flow achieves the infimal cost to $M$.
+Thus Jacobi length equals accumulated cost, and by {prf:ref}`mt-krnl-lyapunov`, gradient flow achieves the infimal cost to $M$.
 
-*Step 4 (Distance Identification).* The infimal Jacobi length from $x$ to $M$ equals $\mathrm{dist}_{g_{\mathfrak{D}}}(x, M)$. By Step 3 and MT-Lyap-1:
+*Step 4 (Distance Identification).* The infimal Jacobi length from $x$ to $M$ equals $\mathrm{dist}_{g_{\mathfrak{D}}}(x, M)$. By Step 3 and {prf:ref}`mt-krnl-lyapunov`:
 $$\mathrm{dist}_{g_{\mathfrak{D}}}(x, M) = \inf_{\gamma: x \to M} \mathrm{Length}_{g_{\mathfrak{D}}}(\gamma) = \mathcal{C}(x \to M) = \mathcal{L}(x) - \Phi_{\min}$$
 
 *Step 5 (Lyapunov Verification).* Along flow: $\frac{d}{dt}\mathcal{L}(u(t)) = \frac{d}{dt}\mathrm{dist}_{g_{\mathfrak{D}}}(u(t), M) + 0 = -\|\dot{u}(t)\|_{g_{\mathfrak{D}}} = -\mathfrak{D}(u(t)) \leq 0$, confirming monotone decay.
@@ -257,7 +301,6 @@ The Lyapunov functional satisfies a static Hamilton-Jacobi equation, providing a
 
 :::{prf:theorem} [KRNL-HamiltonJacobi] Hamilton-Jacobi Characterization
 :label: mt-krnl-hamilton-jacobi
-:class: metatheorem
 
 **[Sieve Signature]**
 - **Requires:** $K_{D_E}^+$ AND $K_{\mathrm{LS}_\sigma}^+$ AND $K_{\mathrm{GC}_\nabla}^+$
@@ -295,7 +338,7 @@ where $d_M^{g_{\mathfrak{D}}} = \mathrm{dist}_{g_{\mathfrak{D}}}(\cdot, M)$.
 $$1 = \|\nabla_{g_{\mathfrak{D}}} d_M^{g_{\mathfrak{D}}}\|_{g_{\mathfrak{D}}}^2 = \mathfrak{D}^{-1} \|\nabla_g d_M^{g_{\mathfrak{D}}}\|_g^2$$
 Hence $\|\nabla_g d_M^{g_{\mathfrak{D}}}\|_g^2 = \mathfrak{D}$.
 
-*Step 3 (Identification with $\mathcal{L}$).* By MT-Lyap-2: $\mathcal{L}(x) = \Phi_{\min} + d_M^{g_{\mathfrak{D}}}(x)$. Since $\nabla_g \Phi_{\min} = 0$:
+*Step 3 (Identification with $\mathcal{L}$).* By {prf:ref}`mt-krnl-jacobi`: $\mathcal{L}(x) = \Phi_{\min} + d_M^{g_{\mathfrak{D}}}(x)$. Since $\nabla_g \Phi_{\min} = 0$:
 $$\|\nabla_g \mathcal{L}\|_g^2 = \|\nabla_g d_M^{g_{\mathfrak{D}}}\|_g^2 = \mathfrak{D}$$
 with boundary condition $\mathcal{L}|_M = \Phi_{\min}$.
 
@@ -326,7 +369,6 @@ This extends $\mathrm{GC}_\nabla$ from Riemannian to general metric spaces.
 
 :::{prf:theorem} [KRNL-MetricAction] Extended Action Reconstruction
 :label: mt-krnl-metric-action
-:class: metatheorem
 
 **[Sieve Signature]**
 - **Requires:** $K_{D_E}^+$ AND $K_{\mathrm{LS}_\sigma}^+$ AND $K_{\mathrm{GC}'_\nabla}^+$
@@ -362,12 +404,22 @@ By the Energy-Dissipation-Identity (EDI) in metric gradient flow theory {cite}`A
 
 *Step 3 (Infimum Attained).* The infimum over curves from $M$ to $x$ is attained by the (time-reversed) gradient flow, giving:
 $$\mathcal{L}(x) - \Phi_{\min} = \inf_{\gamma: M \to x} \int_0^1 |\partial\Phi|(\gamma) \cdot |\dot{\gamma}|\, ds$$
-This extends MT-Lyap-2 to non-smooth settings where $|\partial\Phi|$ replaces $\|\nabla\Phi\|_g$.
+This extends {prf:ref}`mt-krnl-jacobi` to non-smooth settings where $|\partial\Phi|$ replaces $\|\nabla\Phi\|_g$.
 :::
 
 ---
 
 #### Soft Local Tower Globalization
+
+:::{div} feynman-prose
+Now we tackle something that sounds impossible at first: how do you prove global statements about a system by looking only at local data? The answer is tower structures, and the key insight is that "local in scale" can imply "global in behavior."
+
+Imagine a tower of increasingly fine resolutions---like looking at a fluid first at the scale of meters, then centimeters, then millimeters. At each scale you have local data: how much energy dissipates, how states relate across scales, what invariants characterize the configuration. The question is: if your local data is well-behaved at every scale, does the tower converge to something sensible at infinite resolution?
+
+The metatheorem says yes, under checkable conditions. If dissipation is summable with exponential weights, if scale coherence holds so that energy jumps are controlled by local contributions, if local invariants determine local energy---then the global asymptotic structure is completely fixed. No runaway modes, no supercritical growth, no surprises at infinity.
+
+This is the engine behind many deep results: Iwasawa theory in arithmetic, renormalization in physics, multiscale analysis in PDEs. Local-to-global, powered by structural certificates.
+:::
 
 For **tower hypostructures** (multiscale systems), local data at each scale determines global asymptotic behavior.
 
@@ -409,7 +461,6 @@ $$\Phi(t) = F(\{I_\alpha(t)\}_\alpha) + O(1)$$
 
 ::::{prf:theorem} [RESOLVE-Tower] Soft Local Tower Globalization
 :label: mt-resolve-tower
-:class: metatheorem
 
 **Sieve Signature:**
 - *Weakest Precondition:* $K_{C_\mu^{\mathrm{tower}}}^+$, $K_{D_E^{\mathrm{tower}}}^+$, $K_{\mathrm{SC}_\lambda^{\mathrm{tower}}}^+$, $K_{\mathrm{Rep}_K^{\mathrm{tower}}}^+$
@@ -469,7 +520,19 @@ for any $\gamma > 0$, contradicting $K_{D_E^{\mathrm{tower}}}^+$.
 
 #### Obstruction Capacity Collapse
 
-The "Sha Killer" — proves obstruction sectors (like Tate-Shafarevich groups) are finite. Analogous to Cartan's Theorems A/B for coherent sheaf cohomology.
+:::{div} feynman-prose
+Here is a pattern that shows up everywhere, and once you see it, you cannot unsee it.
+
+In many problems, there is a sector of "obstructions"---things that prevent solutions from existing or being unique. The Tate-Shafarevich group in arithmetic. Cohomological obstructions in topology. Singular sets in PDEs. The question is always: how big can this obstruction sector be?
+
+What this metatheorem says is remarkable: under structural conditions on the hypostructure, the obstruction sector must be finite. Not bounded, not controlled---finite. The obstructions cannot accumulate indefinitely because accumulation would violate the subcritical dissipation bound.
+
+This is the "Sha Killer" strategy. You do not attack obstructions one by one. You prove they must be finite by showing that an infinite obstruction sector would violate structural invariants that you have already certified. The counting is automatic once you have the right certificates.
+
+Think of it as a conservation law for obstructions: the total "obstruction weight" is finite because each obstruction costs dissipation, and total dissipation is bounded.
+:::
+
+The "Sha Killer" --- proves obstruction sectors (like Tate-Shafarevich groups) are finite. Analogous to Cartan's Theorems A/B for coherent sheaf cohomology.
 
 :::{prf:definition} Obstruction Interface Permits
 :label: def-obstruction-permits
@@ -497,7 +560,6 @@ $$\sum_t w(t) \sum_{x \in \mathcal{O}_t} H_{\mathcal{O}}(x) < \infty$$
 
 ::::{prf:theorem} [RESOLVE-Obstruction] Obstruction Capacity Collapse
 :label: mt-resolve-obstruction
-:class: metatheorem
 
 **Sieve Signature:**
 - *Weakest Precondition:* $K_{\mathrm{TB}+\mathrm{LS}}^{\mathcal{O}+}$, $K_{C+\mathrm{Cap}}^{\mathcal{O}+}$, $K_{\mathrm{SC}_\lambda}^{\mathcal{O}+}$, $K_{D_E}^{\mathcal{O}+}$
@@ -545,11 +607,20 @@ for some $\delta > 0$. But accumulating such obstructions requires $\sum_n H_{\m
 
 #### Stiff Pairing / No Null Directions
 
+:::{div} feynman-prose
+Now here is a worry you might have: what if there are hidden degrees of freedom where problems can lurk? What if your decomposition into "free sector" and "obstruction sector" misses something?
+
+This metatheorem says: if you have the right structural certificates, there is no place to hide. Every direction in your state space is either free (where the pairing lets you move) or obstruction (where the pairing pins you down). There is no mysterious "null sector" where singularities could accumulate undetected.
+
+The proof is beautifully algebraic. The pairing gives you a map from states to dual states. Non-degeneracy means this map is injective on the parts you care about. Gradient consistency ensures that flat directions of energy match flat directions of the pairing. Put these together and the null sector must be trivial---any direction orthogonal to the free sector must lie in the obstruction sector, and within the obstruction sector the pairing is non-degenerate.
+
+This is the "no ghost sectors" guarantee. Once you have stiffness, you can be sure your accounting is complete.
+:::
+
 Guarantees no hidden "ghost sectors" where singularities can hide. All degrees of freedom are accounted for by free components + obstructions.
 
 ::::{prf:theorem} [KRNL-StiffPairing] Stiff Pairing / No Null Directions
 :label: mt-krnl-stiff-pairing
-:class: metatheorem
 
 **Sieve Signature:**
 - *Weakest Precondition:* $K_{\mathrm{LS}_\sigma}^+$, $K_{\mathrm{TB}_\pi}^+$, $K_{\mathrm{GC}_\nabla}^+$
@@ -601,6 +672,18 @@ Let $\mathcal{X} = X_{\mathrm{free}} \oplus X_{\mathrm{obs}} \oplus X_{\mathrm{r
 ---
 
 ### Effective (Algorithmic) Proof
+
+:::{div} feynman-prose
+Now we come to the final upgrade, and it is the one that computer scientists will love most.
+
+Everything we have done so far is mathematically rigorous, but in principle it could involve steps that are not computable. Non-constructive existence proofs. Undecidable membership tests. Infinite searches. If you want to actually run this machinery on a computer, you need more.
+
+The Effective Certificate says: for this problem type, everything terminates. Certificates live in a finite language. Closure operations complete in finite time. Lock tactics reduce to decidable fragments like SMT or linear arithmetic. The proof backend becomes not just sound but executable.
+
+This is where the Sieve stops being pure mathematics and becomes a theorem prover. You feed in the problem description. The machine runs the Sieve. If it certifies regularity, you have a machine-checkable proof. If it finds an obstruction, you have a machine-verifiable counterexample. The human's job becomes implementing the interface predicates correctly and interpreting the output---the heavy lifting happens automatically.
+
+This is not science fiction. For the right problem types, this is achievable. The challenge is identifying which fragments of which theories admit effective certificate languages.
+:::
 
 **Purpose**: Turn the sieve into an **effective conjecture prover**:
 - certificates are finite,
@@ -677,6 +760,16 @@ Every strong metatheorem should be written as:
 (sec-type-system)=
 ## The Type System
 
+:::{div} feynman-prose
+Now, here is something practical. We have all this machinery---Sieve, permits, certificates, metatheorems. But how do you actually use it on a specific problem?
+
+The answer is types. A type is a recipe that tells you: for this class of problems, here is the structure you can assume, here are the moves you are allowed to make, here are the tools available, and here is what happens when you hit the edge of what is provable.
+
+Think of types as "problem templates." Parabolic PDEs are one type. Dispersive equations are another. Gradient flows on metric spaces. Markov processes. Each type comes with its own toolkit, its own natural barriers, its own library of known profiles.
+
+When you face a new problem, you first classify it by type. Then you know immediately what interface predicates to implement, what barriers to expect, what profile library to consult. The type system is what makes the framework usable in practice---it packages all the structural knowledge about a class of problems into a reusable template.
+:::
+
 :::{prf:definition} Problem type
 :label: def-problem-type
 
@@ -691,6 +784,14 @@ A **type** $T$ is a class of dynamical systems sharing:
 ---
 
 ### Type Catalog
+
+:::{div} feynman-prose
+Let me show you the zoo. Each type below is a complete "problem template" that packages everything you need: the structure of the evolution, the form of energy and dissipation, what moves are allowed, what barriers typically arise, and what profiles are known.
+
+You will notice a pattern: each type has evolved its own toolkit because each type has its own characteristic difficulties. Parabolic equations develop singularities where curvature concentrates---so the toolkit includes surgery. Dispersive equations scatter to infinity unless concentration occurs---so the toolkit includes concentration-compactness. Gradient flows on metric spaces may lack smoothness---so the toolkit uses metric slopes instead of gradients.
+
+This is not mere catalog-keeping. Each type represents decades of hard-won insight about a class of problems, distilled into a format the Sieve can use. When you instantiate the Sieve for a specific equation, you are leveraging this accumulated knowledge.
+:::
 
 :::{prf:definition} Type $T_{\text{parabolic}}$
 :label: def-type-parabolic

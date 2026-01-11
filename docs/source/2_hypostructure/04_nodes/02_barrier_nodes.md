@@ -1,6 +1,16 @@
 (sec-barrier-node-specs)=
 ## Barrier Node Specifications (Orange Nodes)
 
+:::{div} feynman-prose
+Now we come to the heart of what makes the Sieve actually *work*. You see, the gates we discussed earlier—they're like bouncers at a nightclub, checking if you've got the right credentials. But barriers? Barriers are different. They're more like... well, imagine you're trying to push a ball up a hill. The barrier is the hill itself. Either you don't have enough energy to get over it (blocked), or you do and something interesting happens (breached).
+
+Here's the key insight: every barrier is a *physical* principle dressed up in mathematical clothing. The saturation barrier asks "is your energy drift bounded?" The causal barrier asks "would reaching this singularity require infinite computational depth?" These aren't arbitrary checks—they're fundamental laws of nature manifesting as routing decisions.
+
+What makes the barrier specifications below so powerful is their *interface dependencies*. Each barrier draws from specific mathematical structures—energy functionals, recursion depths, concentration measures—and transforms them into binary (or sometimes ternary) decisions. The blocked outcome always implies something useful: either you proceed to the next check, or you've proven something impossible can't happen. The breached outcome activates a *surgery mode*—a systematic repair procedure that lets you continue after fixing the violation.
+
+Think of it this way: if gates are customs officers checking your passport, barriers are the laws of physics checking whether your journey is even possible.
+:::
+
 Each barrier is specified by:
 - **Trigger**: Which gate's NO invokes it
 - **Pre-certificates**: Required context (non-circular)
@@ -11,6 +21,7 @@ Each barrier is specified by:
 
 ---
 
+(sec-barrier-sat)=
 ### BarrierSat (Saturation Barrier)
 
 :::{prf:definition} Barrier Specification: Saturation
@@ -43,8 +54,17 @@ Each barrier is specified by:
 
 :::
 
+:::{div} feynman-prose
+Let me tell you what this barrier is *really* about. Imagine you're watching a pot of water on the stove. The energy keeps going in—heat from the burner—but does the temperature blow up to infinity? Of course not! There's a *saturation ceiling*: the water boils, and all that extra energy goes into phase change rather than temperature increase.
+
+The BarrierSat does exactly this check for dynamical systems. It asks: "Even if energy is flowing in, is there some mechanism that prevents blow-up?" The answer could be physical dissipation (friction eating up energy), a saturation nonlinearity (like our boiling water), or a Foster-Lyapunov drift condition (a mathematical guarantee that things don't escape to infinity).
+
+The beautiful thing is that this is the *first* barrier you hit—the entry point. No prior certificates required. Either energy is under control and you proceed to check for Zeno behavior, or energy is blowing up and you need surgery to fix it before continuing.
+:::
+
 ---
 
+(sec-barrier-causal)=
 ### BarrierCausal (Causal Censor)
 
 :::{prf:definition} Barrier Specification: Causal Censor
@@ -77,8 +97,19 @@ Each barrier is specified by:
 
 :::
 
+:::{div} feynman-prose
+Here's something that should make you sit up. This barrier is essentially asking: "Would it take *infinite* computation to describe this singularity?"
+
+Think about what that means. Penrose's cosmic censorship conjecture says that naked singularities—singularities visible to distant observers—shouldn't form in nature. But why? One answer: because describing them would require infinite information. The integral $\int_0^{T_*} c/\lambda(t)\,dt$ measures computational depth—how many "layers" of calculation you'd need to specify what happens at time $T_*$.
+
+If this integral diverges, the singularity is *causally censored*. Not by some arbitrary rule, but by the fundamental limits of computation. You literally cannot describe what happens there with any finite program. That's not a bug—that's the universe protecting itself from inconsistency.
+
+When the integral is finite, though, watch out. The singularity is computationally accessible, which means events are accumulating faster than you can process them. Time for surgery.
+:::
+
 ---
 
+(sec-barrier-scat)=
 ### BarrierScat (Scattering Barrier) --- Special Alphabet
 
 :::{prf:definition} Barrier Specification: Scattering
@@ -113,8 +144,19 @@ Each barrier is specified by:
 
 :::
 
+:::{div} feynman-prose
+Now this is where things get physically interesting. The scattering barrier has a *special alphabet*—not just Blocked/Breached, but Benign/Pathological. Why?
+
+Here's the picture: imagine dropping a pebble in a pond. The ripples spread out, getting weaker and weaker as they disperse. That's scattering—the energy disperses to infinity rather than concentrating at a point. The Morawetz interaction functional $\mathcal{M}[\Phi]$ measures exactly this: if it's finite, your solution scatters like those pond ripples.
+
+But what if the energy *doesn't* disperse? What if it concentrates, forming something like a soliton—a self-reinforcing wave packet that holds its shape? That's the pathological case. Not necessarily catastrophic (solitons can be perfectly well-behaved), but definitely requiring special attention.
+
+This barrier is one of the *success exits* from the Sieve. If you get Benign, congratulations—you've proven global existence via dispersion. Your system won't blow up because the energy spreads out to infinity. That's a real theorem, not just a diagnostic.
+:::
+
 ---
 
+(sec-barrier-type2)=
 ### BarrierTypeII (Type II Barrier)
 
 :::{prf:definition} Barrier Specification: Type II Exclusion
@@ -149,8 +191,19 @@ Each barrier is specified by:
 
 :::
 
+:::{div} feynman-prose
+Type II blow-up is one of the most subtle phenomena in nonlinear dynamics, and understanding why this barrier exists requires a bit of history.
+
+When a solution blows up—goes to infinity in finite time—there are basically two ways it can happen. Type I blow-up is "self-similar": the solution looks the same at every scale, just faster and smaller. Think of a whirlpool tightening uniformly. Type II blow-up is stranger—the blow-up rate doesn't match the scaling symmetry of the equation. It's like a whirlpool that speeds up faster than geometry alone would predict.
+
+What this barrier checks is the *renormalization cost*. If you try to zoom in on a Type II blow-up profile and rescale it, you accumulate some "defect" at each scale. The integral $\int \tilde{\mathfrak{D}}(S_t V)\,dt$ measures the total cost of this rescaling process. If it diverges, Type II blow-up is energetically impossible—you simply cannot pay the infinite renormalization bill.
+
+The non-circularity note is important: we don't *assume* subcriticality to run this check. Subcriticality is a *bonus*—if you already know the scaling exponent is favorable, Type I is excluded for free. But this barrier works even without that assumption.
+:::
+
 ---
 
+(sec-barrier-vac)=
 ### BarrierVac (Vacuum Barrier)
 
 :::{prf:definition} Barrier Specification: Vacuum Stability
@@ -183,8 +236,19 @@ Each barrier is specified by:
 
 :::
 
+:::{div} feynman-prose
+And here's where particle physics shows up in our dynamical systems framework!
+
+The vacuum barrier is asking the same question that keeps particle physicists up at night: "Is our vacuum stable?" In quantum field theory, the vacuum isn't nothing—it's the lowest energy state of all the fields. But what if there's an even lower state somewhere else in configuration space, separated by an energy barrier?
+
+The condition $\Delta V > k_B T$ is the mass gap principle. If the potential barrier between your current vacuum and any other state exceeds the thermal energy scale, you're safe—random fluctuations can't kick you over the hill. This is exactly like asking whether a ball in a valley can spontaneously jump into the next valley due to thermal jiggling.
+
+What's beautiful is that this connects field theory to mundane thermodynamics. Whether you're worried about the Higgs vacuum decaying or a bistable chemical reaction switching states, the mathematics is the same: compare barrier height to temperature. If the barrier wins, your phase is stable.
+:::
+
 ---
 
+(sec-barrier-cap)=
 ### BarrierCap (Capacity Barrier)
 
 :::{prf:definition} Barrier Specification: Capacity
@@ -217,8 +281,19 @@ Each barrier is specified by:
 
 :::
 
+:::{div} feynman-prose
+This barrier is pure geometric measure theory, and it's one of my favorites because the intuition is so clean.
+
+Ask yourself: how "big" is the set where things go wrong? If singularities form, how much space do they occupy? The Hausdorff capacity $\mathrm{Cap}_H(S)$ gives a precise answer, and zero capacity means the singular set is negligible—it's so small that it can't carry any "weight" in the dynamics.
+
+Here's a good mental picture: think of capacity as "how much current can flow through this set?" Zero capacity means zero conductivity—the singular set is electrically invisible. Or think of it probabilistically: a Brownian motion has zero probability of ever hitting a zero-capacity set. The singularities might technically exist, but they're so thin that any reasonable trajectory never encounters them.
+
+This is the mathematical machinery behind "removable singularities"—singularities that look scary but don't actually affect the solution. If $\mathrm{Cap}_H(S) = 0$, you can ignore the singular set and extend your solution smoothly across it.
+:::
+
 ---
 
+(sec-barrier-gap)=
 ### BarrierGap (Spectral Barrier) --- Special Alphabet
 
 :::{prf:definition} Barrier Specification: Spectral Gap
@@ -253,17 +328,34 @@ Each barrier is specified by:
 
 :::
 
-:::{prf:lemma} Gap implies Łojasiewicz-Simon
+:::{div} feynman-prose
+The spectral gap barrier is asking one of the most fundamental questions in dynamics: "Is there a definite 'downhill' direction from this critical point?"
+
+Think of a ball on a landscape. At a local minimum, every direction curves upward—there's positive curvature in all directions. The smallest eigenvalue of the Hessian (the matrix of second derivatives) tells you the curvature of the gentlest direction. If this smallest eigenvalue is positive, you're at a genuine minimum. If it's zero or negative, you're at a saddle point or worse.
+
+The spectral gap $\inf \sigma(L) > 0$ is exactly this: the linearized operator $L$ has all positive eigenvalues. What does this buy you? *Exponential convergence*. The system doesn't just drift toward equilibrium—it rushes there, with deviations decaying like $e^{-\lambda_1 t}$.
+
+This barrier has a special "Stagnation" outcome instead of "Breached." If there's no spectral gap, you don't get surgery—you get rerouted to a bifurcation check. Why? Because zero eigenvalues often signal that the critical point is about to split into multiple equilibria. That's not pathological; it's just delicate and requires different analysis.
+:::
+
+:::{prf:lemma} Gap implies Lojasiewicz-Simon
 :label: lem-gap-to-ls
 
 Under the Gradient Condition ($\mathrm{GC}_\nabla$) plus analyticity of $\Phi$ near critical points:
 $$\text{Spectral gap } \lambda_1 > 0 \Rightarrow \text{LS}(\theta = \tfrac{1}{2}, C_{\text{LS}} = \sqrt{\lambda_1})$$
-This is the **canonical promotion** from gap certificate to stiffness certificate, bridging the diagram's ``Hessian positive?'' intuition with the formal LS inequality predicate.
+This is the **canonical promotion** from gap certificate to stiffness certificate, bridging the diagram's "Hessian positive?" intuition with the formal LS inequality predicate.
 
+:::
+
+:::{div} feynman-prose
+This lemma is the mathematical bridge between linear and nonlinear analysis. The Lojasiewicz-Simon inequality says that near a critical point, the gradient of the energy functional is controlled by a power of the energy itself. With a spectral gap, you get the optimal power $\theta = 1/2$, and the constant is explicitly $\sqrt{\lambda_1}$.
+
+Why does this matter? Because the LS inequality is what lets you prove *finite-time convergence* and *uniqueness of limits* for gradient flows. Without it, solutions could spiral around forever, never quite reaching equilibrium. With it, they must converge—and the rate is completely determined by that spectral gap.
 :::
 
 ---
 
+(sec-barrier-action)=
 ### BarrierAction (Action Barrier)
 
 :::{prf:definition} Barrier Specification: Action Gap
@@ -296,8 +388,19 @@ This is the **canonical promotion** from gap certificate to stiffness certificat
 
 :::
 
+:::{div} feynman-prose
+Now we come to topology—the mathematics of what can and cannot be continuously deformed into something else.
+
+The action barrier asks: "Does this system have enough energy to change its topological type?" Think of a rubber band: stretching and squeezing it is easy, but tearing it or fusing two loops together costs real energy. In field theory, this shows up as *action gaps*—minimum energies required to create kinks, monopoles, instantons, or other topological defects.
+
+The beautiful thing about $E[\Phi] < S_{\min} + \Delta$ is that it's an *energetic lock* on topology. If your current state doesn't have enough energy to climb over the topological barrier, you're stuck in your current topological sector. No tunneling, no kink formation, no surprises.
+
+This connects to some deep physics: the reason certain quantum numbers are conserved (like baryon number) is that changing them would require going over an action barrier that's energetically forbidden. The topology is *protected* by energy.
+:::
+
 ---
 
+(sec-barrier-omin)=
 ### BarrierOmin (O-Minimal Barrier)
 
 :::{prf:definition} Barrier Specification: O-Minimal Taming
@@ -330,8 +433,19 @@ This is the **canonical promotion** from gap certificate to stiffness certificat
 
 :::
 
+:::{div} feynman-prose
+O-minimal structures are one of the great gifts that model theory has given to analysis, and this barrier is where that gift pays off.
+
+Here's the problem: not all sets are "tame." Some are genuinely pathological—fractals, Cantor sets, space-filling curves. These sets can have arbitrarily complicated boundary behavior, infinitely many connected components, and all sorts of nastiness that makes analysis impossible.
+
+O-minimal structures are a precise definition of "tameness." A set is o-minimally definable if it belongs to a special collection of sets that are guaranteed to be well-behaved: finite stratification, no wild oscillations, controlled asymptotic behavior. If your singular set $S$ is o-minimally definable, you can trust that it won't surprise you with pathological fractal structure.
+
+The condition $S \in \mathcal{O}\text{-min}$ is asking: "Is your topology *boring* in a good way?" Boring topology is predictable topology. Wild topology requires surgery.
+:::
+
 ---
 
+(sec-barrier-mix)=
 ### BarrierMix (Mixing Barrier)
 
 :::{prf:definition} Barrier Specification: Ergodic Mixing
@@ -364,8 +478,19 @@ This is the **canonical promotion** from gap certificate to stiffness certificat
 
 :::
 
+:::{div} feynman-prose
+Ergodic theory asks one of the most important questions in statistical physics: "If I wait long enough, will my system explore all the states it's allowed to visit?"
+
+The mixing time $\tau_{\text{mix}}$ quantifies this. It's the time it takes for your system to "forget" where it started and settle into its equilibrium distribution. Finite mixing time means the system is *ergodic*—time averages equal ensemble averages, and you can trust statistical mechanics.
+
+But what if the mixing time is *infinite*? Then you have trapping. The system can get stuck in a local region of phase space and never escape. This violates the fundamental assumption of statistical mechanics—that all accessible states are eventually visited.
+
+Here's the physical picture: imagine a ball rolling in a landscape with deep wells. If the wells are too deep relative to the thermal energy, the ball can get trapped forever in one well, never making it over the hills to explore the rest of the landscape. The mixing barrier checks whether this pathological trapping is happening.
+:::
+
 ---
 
+(sec-barrier-epi)=
 ### BarrierEpi (Epistemic Barrier)
 
 :::{prf:definition} Barrier Specification: Epistemic Horizon
@@ -404,8 +529,19 @@ This barrier is triggered when Node 11 determines that exact complexity is uncom
 
 :::
 
+:::{div} feynman-prose
+And now we arrive at something genuinely mind-bending: the epistemic horizon, where information theory meets the physics of spacetime.
+
+Here's the question: how much information can you encode in a given region of space? The holographic bound says the answer is *finite*—proportional to the surface area, not the volume. This is the Bekenstein-Hawking entropy, and it puts a hard limit on how complex any physical state can be.
+
+The barrier predicate $\sup_{\epsilon > 0} K_\epsilon(x) \leq S_{\text{BH}}$ is asking: "Even though we can't compute the exact Kolmogorov complexity, do all *approximations* to the complexity stay within the holographic bound?"
+
+This is subtle. Exact Kolmogorov complexity is famously uncomputable—you can never know for certain the length of the shortest program that generates a given string. But we can compute *approximations* that converge from above. If these approximations stay bounded, we're safe. If they blow up, we've hit an epistemic horizon—the state contains more information than spacetime can hold, which is physically impossible.
+:::
+
 ---
 
+(sec-barrier-freq)=
 ### BarrierFreq (Frequency Barrier)
 
 :::{prf:definition} Barrier Specification: Frequency
@@ -438,9 +574,26 @@ This barrier is triggered when Node 11 determines that exact complexity is uncom
 
 :::
 
+:::{div} feynman-prose
+The frequency barrier is about a very specific kind of pathology: oscillation blow-up.
+
+Think about a guitar string. The fundamental frequency carries most of the energy, but there are harmonics—higher frequencies that add richness to the sound. The integral $\int \omega^2 S(\omega)\,d\omega$ is the total oscillation energy, weighted by frequency squared. If this diverges, energy is cascading to higher and higher frequencies without bound.
+
+Why is this bad? Because high frequencies mean small scales, and small scales mean you need finer and finer resolution to track what's happening. Infinite oscillation energy means the solution is developing structure at arbitrarily small scales—a frequency cascade that no finite computer can track.
+
+The De Giorgi-Nash-Moser theory tells us that elliptic and parabolic PDEs have built-in frequency barriers. Solutions can't oscillate too wildly—they inherit regularity from the equation itself. This barrier checks whether your system has similar protection.
+:::
+
 ---
 
+(sec-barrier-boundary)=
 ### Boundary Barriers (BarrierBode, BarrierInput, BarrierVariety)
+
+:::{div} feynman-prose
+We now turn to the boundary barriers—checks that handle systems with inputs and outputs, where information and resources flow across the system boundary. These are the barriers that matter for control theory, cybernetics, and any system that isn't closed.
+
+The three barriers here form a logical sequence: first check sensitivity (Bode), then resources (Input), then control capacity (Variety). Each one captures a different way an open system can fail.
+:::
 
 :::{prf:definition} Barrier Specification: Bode Sensitivity
 :label: def-barrier-bode
@@ -470,6 +623,16 @@ This barrier is triggered when Node 11 determines that exact complexity is uncom
 
 **Literature:** Bode integral constraints and robust control {cite}`DoyleFrancisTannenbaum92`; {cite}`Sontag98`.
 
+:::
+
+:::{div} feynman-prose
+The Bode barrier encodes one of the deepest truths of feedback control: you cannot win everywhere.
+
+Here's the waterbed effect: imagine a waterbed. If you push down in one place, water has to go somewhere—it bulges up elsewhere. The Bode integral constraint says the same thing about sensitivity: the integral of log-sensitivity over all frequencies is *conserved*. If you reduce sensitivity at one frequency, you must increase it somewhere else.
+
+This is not a design limitation you can engineer around—it's a *theorem*. Any linear feedback system must obey it. The barrier checks whether your system respects this fundamental tradeoff or is trying to violate it (which means your model is wrong or your controller is about to do something unstable).
+
+The condition $\int_0^\infty \ln \|S(i\omega)\|\,d\omega > -\infty$ ensures the waterbed is bounded—you haven't tried to push sensitivity to zero everywhere, which is impossible.
 :::
 
 :::{prf:definition} Barrier Specification: Input Stability
@@ -502,6 +665,16 @@ This barrier is triggered when Node 11 determines that exact complexity is uncom
 
 :::
 
+:::{div} feynman-prose
+The input barrier is about resources—the fuel that keeps an open system running.
+
+Every living system, every robot, every economy needs inputs: energy, materials, information. The reserve $r_{\text{reserve}}$ is the buffer—how much can you withstand a temporary shortage before things start to fail?
+
+Positive reserve means resilience. You can absorb a supply chain disruption, a temporary power outage, a delay in information. Zero or negative reserve means you're living hand-to-mouth, and any fluctuation in input can cascade into system failure.
+
+This is Input-to-State Stability (ISS) from control theory: the idea that bounded inputs should lead to bounded states. If your reserve is positive, you have a buffer against input disturbances. If not, you need surgery to either increase reserves or reduce consumption.
+:::
+
 :::{prf:definition} Barrier Specification: Requisite Variety
 :label: def-barrier-variety
 
@@ -530,6 +703,16 @@ This barrier is triggered when Node 11 determines that exact complexity is uncom
 
 **Literature:** Requisite variety and cybernetics {cite}`Ashby56`; {cite}`ConantAshby70`.
 
+:::
+
+:::{div} feynman-prose
+And here is Ashby's Law—one of the most profound insights of cybernetics, and a fitting end to our tour of barriers.
+
+The Law of Requisite Variety says: "Only variety can destroy variety." A thermostat can only regulate temperature because it has (at least) two states: heat on, heat off. A chess player can only counter their opponent's moves because they have at least as many strategic options available.
+
+The condition $H(u) \geq H(d)$ is entropy comparison: the control entropy must match or exceed the disturbance entropy. If you face a disturbance with 10 bits of uncertainty, you need at least 10 bits of control authority to counter it. Anything less, and some disturbances will get through uncontrolled.
+
+This barrier is checking whether your controller is *fundamentally adequate* for the task. Not whether it's optimal, not whether it's well-tuned, but whether it has enough variety to even play the game. If not, no amount of clever algorithm design can save you—you need more control authority.
 :::
 
 ---

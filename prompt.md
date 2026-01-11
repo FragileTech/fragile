@@ -30806,7 +30806,7 @@ plt.show()
 ======================================================================
 Mass Scale Hierarchy
 ======================================================================
-Scale                Mass (GeV)      log₁₀(m)     Ratio to next  
+Scale                Mass (GeV)      log₁₀(m)     Ratio to next
 ----------------------------------------------------------------------
 Neutrino m_ν         1e-10           -10.0        5.11e+06        (10^7)
 Electron m_e         0.000511        -3.3         1.84e+03        (10^3)
@@ -30931,17 +30931,17 @@ plt.show()
 ======================================================================
 Yukawa Coupling Hierarchy
 ======================================================================
-Fermion      Mass (GeV)      Yukawa Y_f      log₁₀(Y_f)  
+Fermion      Mass (GeV)      Yukawa Y_f      log₁₀(Y_f)
 ------------------------------------------------------------
-electron     0.000510999     2.07538e-06     -5.68       
-muon         0.105658        0.000429122     -3.37       
-tau          1.77686         0.00721655      -2.14       
-up           0.00216         8.77264e-06     -5.06       
-down         0.00467         1.89668e-05     -4.72       
-strange      0.0934          0.000379336     -3.42       
-charm        1.27            0.00515799      -2.29       
-bottom       4.18            0.0169767       -1.77       
-top          172.69          0.701365        -0.15       
+electron     0.000510999     2.07538e-06     -5.68
+muon         0.105658        0.000429122     -3.37
+tau          1.77686         0.00721655      -2.14
+up           0.00216         8.77264e-06     -5.06
+down         0.00467         1.89668e-05     -4.72
+strange      0.0934          0.000379336     -3.42
+charm        1.27            0.00515799      -2.29
+bottom       4.18            0.0169767       -1.77
+top          172.69          0.701365        -0.15
 ------------------------------------------------------------
 Hierarchy span: 5.5 orders of magnitude
 Y_top / Y_electron = 3.38e+05
@@ -31028,18 +31028,18 @@ plt.show()
 ================================================================================
 PARAMETER SPACE SIEVE: COMPLETE VERIFICATION SUMMARY
 ================================================================================
-Constraint                Status       Margin          Bound               
+Constraint                Status       Margin          Bound
 --------------------------------------------------------------------------------
-Speed Window (Lower)      ✓ SATISFIED  10^0.0           c ≥ ℓ_P/t_P         
-Speed Window (Upper)      ✓ SATISFIED  10^60.9          c ≤ R_H/t_P         
-Holographic Bound         ✓ SATISFIED  10^34.8          ℓ_P² ≤ ν·A/I        
-Landauer Constraint       ✓ SATISFIED  10^6.2           T_c ≤ Ė/İ·ln2       
-IR Binding                ✓ SATISFIED  10^0.2           α_s(IR) ≥ 0.3       
-UV Decoupling             ✓ SATISFIED  10^0.2           α_s(UV) < 0.2       
-Stiffness (Lower)         ✓ SATISFIED  10^2.7           χ > 1               
-Stiffness (Upper)         ✓ SATISFIED  10^3.3           χ < 10⁶             
-Discount (Lower)          ✓ SATISFIED  10^60.9          γ > 0               
-Discount (Upper)          ✓ SATISFIED  10^60.9          γ < 1               
+Speed Window (Lower)      ✓ SATISFIED  10^0.0           c ≥ ℓ_P/t_P
+Speed Window (Upper)      ✓ SATISFIED  10^60.9          c ≤ R_H/t_P
+Holographic Bound         ✓ SATISFIED  10^34.8          ℓ_P² ≤ ν·A/I
+Landauer Constraint       ✓ SATISFIED  10^6.2           T_c ≤ Ė/İ·ln2
+IR Binding                ✓ SATISFIED  10^0.2           α_s(IR) ≥ 0.3
+UV Decoupling             ✓ SATISFIED  10^0.2           α_s(UV) < 0.2
+Stiffness (Lower)         ✓ SATISFIED  10^2.7           χ > 1
+Stiffness (Upper)         ✓ SATISFIED  10^3.3           χ < 10⁶
+Discount (Lower)          ✓ SATISFIED  10^60.9          γ > 0
+Discount (Upper)          ✓ SATISFIED  10^60.9          γ < 1
 ================================================================================
 
 Total: 10/10 constraints satisfied
@@ -31080,14 +31080,14 @@ print("-" * 90)
 print(f"{'c':<18} {'3.00×10⁸ m/s':<18} {'2.998×10⁸ m/s':<18} {'2.55×10⁶⁹ m/s':<18} {'SATURATED':<12}")
 print(f"{'':<18} {'(= ℓ_P/t_P)':<18} {'':<18} {'(= R_H/t_P)':<18} {'':<12}")
 
-# Fine structure constant  
+# Fine structure constant
 print(f"{'α':<18} {f'1/{1/alpha_min:.0f}':<18} {'1/137':<18} {f'1/{1/alpha_max:.0f}':<18} {'YES (~50x)':<12}")
 print(f"{'':<18} {'(χ > 1)':<18} {'':<18} {'(χ < 10⁶)':<18} {'':<12}")
 
 # α_s at M_Z
 print(f"{'α_s(M_Z)':<18} {'—':<18} {'0.118':<18} {'< 0.2':<18} {'YES (1.7x)':<12}")
 
-# α_s at 1 GeV  
+# α_s at 1 GeV
 print(f"{'α_s(1 GeV)':<18} {'≥ 0.3':<18} {'0.47':<18} {'—':<18} {'YES (1.6x)':<12}")
 
 # Stiffness
@@ -31103,7 +31103,7 @@ print("-" * 90)
 print()
 print("INTERPRETATION:")
 print("  SATURATED  = Value exactly at the bound (by construction)")
-print("  YES        = Tight constraint, meaningful selection")  
+print("  YES        = Tight constraint, meaningful selection")
 print("  NO         = Loose constraint, almost anything passes")
 print()
 
@@ -31119,15 +31119,15 @@ Derivation:
   • Too low (χ < 1): thermal noise destroys memory
   • Too high (χ → ∞): system frozen, no adaptation
   • Chemistry works at χ ~ 100-1000 (empirically)
-  
+
   • For hydrogen: ΔE = Rydberg = m_e c² α² / 2
   • At T = 300 K: χ = m_e c² α² / (2 k_B T)
-  
+
   • Setting χ = 500 (middle of viable range):
     α = √(2 × 500 × k_B × 300 K / (m_e c²))
     α = {np.sqrt(2 * 500 * k_B * 300 / (m_e * c**2)):.6f}
     α = 1/{1/np.sqrt(2 * 500 * k_B * 300 / (m_e * c**2)):.1f}
-    
+
   • Measured: α = 1/137.04
   • Deviation: 2.5%
 
@@ -31139,17 +31139,17 @@ This is NOT numerology—it's a genuine constraint from biological viability.
 ==========================================================================================
 PARAMETER SPACE SIEVE: EXPLICIT BOUNDS
 ==========================================================================================
-Constant           Min (Sieve)        MEASURED           Max (Sieve)        Tight?      
+Constant           Min (Sieve)        MEASURED           Max (Sieve)        Tight?
 ------------------------------------------------------------------------------------------
-c                  3.00×10⁸ m/s       2.998×10⁸ m/s      2.55×10⁶⁹ m/s      SATURATED   
-                   (= ℓ_P/t_P)                           (= R_H/t_P)                    
-α                  1/3                1/137              1/3144             YES (~50x)  
-                   (χ < 10⁶)                             (χ > 1)                        
-α_s(M_Z)           —                  0.118              < 0.2              YES (1.7x)  
-α_s(1 GeV)         ≥ 0.3              0.47               —                  YES (1.6x)  
-χ                  > 1                509                < 10⁶              YES         
-γ                  > 0                1 - 10⁻⁶¹          < 1                NO (huge)   
-ℓ_P                —                  1.6×10⁻³⁵ m        ~√(A/I)            SATURATED   
+c                  3.00×10⁸ m/s       2.998×10⁸ m/s      2.55×10⁶⁹ m/s      SATURATED
+                   (= ℓ_P/t_P)                           (= R_H/t_P)
+α                  1/3                1/137              1/3144             YES (~50x)
+                   (χ < 10⁶)                             (χ > 1)
+α_s(M_Z)           —                  0.118              < 0.2              YES (1.7x)
+α_s(1 GeV)         ≥ 0.3              0.47               —                  YES (1.6x)
+χ                  > 1                509                < 10⁶              YES
+γ                  > 0                1 - 10⁻⁶¹          < 1                NO (huge)
+ℓ_P                —                  1.6×10⁻³⁵ m        ~√(A/I)            SATURATED
 ------------------------------------------------------------------------------------------
 
 INTERPRETATION:
@@ -31168,15 +31168,15 @@ Derivation:
   • Too low (χ < 1): thermal noise destroys memory
   • Too high (χ → ∞): system frozen, no adaptation
   • Chemistry works at χ ~ 100-1000 (empirically)
-  
+
   • For hydrogen: ΔE = Rydberg = m_e c² α² / 2
   • At T = 300 K: χ = m_e c² α² / (2 k_B T)
-  
+
   • Setting χ = 500 (middle of viable range):
     α = √(2 × 500 × k_B × 300 K / (m_e c²))
     α = 0.007113
     α = 1/140.6
-    
+
   • Measured: α = 1/137.04
   • Deviation: 2.5%
 
@@ -31192,7 +31192,7 @@ We'll vary the dimensionless ratios that the Sieve constrains:
 - $\alpha$ (fine structure) — from stiffness constraint
 - $\alpha_s$ (strong coupling) — from confinement/asymptotic freedom
 
-If "almost all" random values pass → the Sieve isn't constraining  
+If "almost all" random values pass → the Sieve isn't constraining
 If "almost none" pass → the Sieve is a genuine selection principle
 
 ```python
@@ -31204,7 +31204,7 @@ np.random.seed(42)
 N_samples = 100_000
 
 # We'll sample the TIGHT constraints only (the loose ones are ~100% pass rate)
-# 
+#
 # CONSTRAINT 1: Stiffness → α
 #   If we sample α uniformly in log space from 10^-4 to 1,
 #   what fraction gives χ ∈ (1, 10^6)?
@@ -31255,7 +31255,7 @@ print("-" * 70)
 print(f"  α ∈ [10⁻⁴, 1] sampled log-uniform")
 print(f"  Stiffness (1 < χ < 10⁶):  {stiffness_rate*100:.1f}% pass")
 print()
-print(f"  α_s ∈ [0, 1] sampled uniform")  
+print(f"  α_s ∈ [0, 1] sampled uniform")
 print(f"  UV decoupling (α_s < 0.2): {uv_rate*100:.1f}% pass")
 print(f"  IR binding (α_s > 0.3):    {ir_rate*100:.1f}% pass")
 print("-" * 70)
@@ -31550,7 +31550,7 @@ The chain *water → T~300K → χ~500 → α~1/137* produces a 2.5% match. This
 
 ### What's missing for "physics"
 1. **Derive Λ_QCD ~ 200 MeV** → would give α_s(M_Z) = 0.118
-2. **Derive m_p/m_e ~ 1836** → needs QCD + quark mass explanation  
+2. **Derive m_p/m_e ~ 1836** → needs QCD + quark mass explanation
 3. **Derive N_f = 6** → needs generation structure explanation
 4. **Novel prediction** → something NOT already measured
 
@@ -32101,7 +32101,7 @@ ax.scatter(ranks, [10**y for y in log_yukawas], s=100, c='purple', zorder=5)
 ax.plot(ranks, Y_predicted, 'b--', linewidth=2, label=f'Zipf fit: α = {-slope:.2f}')
 
 for i, (name, _) in enumerate(sorted_fermions):
-    ax.annotate(name, (ranks[i], 10**log_yukawas[i]), 
+    ax.annotate(name, (ranks[i], 10**log_yukawas[i]),
                 textcoords="offset points", xytext=(5, 5), fontsize=8)
 
 ax.set_xscale('log')
@@ -32114,7 +32114,7 @@ ax.grid(True, alpha=0.3)
 
 # Right: residuals from Zipf
 ax = axes[1]
-colors = ['red' if 'quark' in name or name in ['up','down','strange','charm','bottom','top'] else 'blue' 
+colors = ['red' if 'quark' in name or name in ['up','down','strange','charm','bottom','top'] else 'blue'
           for name, _ in sorted_fermions]
 # Fix colors
 quark_names = ['top', 'bottom', 'charm', 'strange', 'down', 'up']
@@ -32171,17 +32171,17 @@ ANALYZING THE YUKAWA HIERARCHY
 
 ### Fermion Mass Hierarchy ###
 ----------------------------------------------------------------------
-Rank   Fermion      Mass (GeV)      Yukawa Y        log₁₀(Y)  
+Rank   Fermion      Mass (GeV)      Yukawa Y        log₁₀(Y)
 ----------------------------------------------------------------------
-1      top          172.69          0.701365        -0.15     
-2      bottom       4.18            0.0169767       -1.77     
-3      tau          1.777           0.00721712      -2.14     
-4      charm        1.27            0.00515799      -2.29     
-5      muon         0.1057          0.000429291     -3.37     
-6      strange      0.093           0.000377711     -3.42     
-7      down         0.00467         1.89668e-05     -4.72     
-8      up           0.00216         8.77264e-06     -5.06     
-9      electron     0.000511        2.07538e-06     -5.68     
+1      top          172.69          0.701365        -0.15
+2      bottom       4.18            0.0169767       -1.77
+3      tau          1.777           0.00721712      -2.14
+4      charm        1.27            0.00515799      -2.29
+5      muon         0.1057          0.000429291     -3.37
+6      strange      0.093           0.000377711     -3.42
+7      down         0.00467         1.89668e-05     -4.72
+8      up           0.00216         8.77264e-06     -5.06
+9      electron     0.000511        2.07538e-06     -5.68
 ----------------------------------------------------------------------
 Hierarchy span: 5.5 orders of magnitude
 
@@ -32822,7 +32822,7 @@ CONSTRAINT_CATALOG = {
             }
         }
     },
-    
+
     # -------------------------------------------------------------------------
     # CATEGORY B: HOLOGRAPHIC/INFORMATION (8 nodes)
     # -------------------------------------------------------------------------
@@ -32879,7 +32879,7 @@ CONSTRAINT_CATALOG = {
             }
         }
     },
-    
+
     # -------------------------------------------------------------------------
     # CATEGORY C: THERMODYNAMIC/LANDAUER (6 nodes)
     # -------------------------------------------------------------------------
@@ -32924,7 +32924,7 @@ CONSTRAINT_CATALOG = {
             }
         }
     },
-    
+
     # -------------------------------------------------------------------------
     # CATEGORY D: STIFFNESS & FINE STRUCTURE (4 nodes)
     # -------------------------------------------------------------------------
@@ -32957,7 +32957,7 @@ CONSTRAINT_CATALOG = {
             }
         }
     },
-    
+
     # -------------------------------------------------------------------------
     # CATEGORY E: COUPLING RUNNING & QCD (8 nodes)
     # -------------------------------------------------------------------------
@@ -33014,7 +33014,7 @@ CONSTRAINT_CATALOG = {
             }
         }
     },
-    
+
     # -------------------------------------------------------------------------
     # CATEGORY F: DISCOUNT & PLANNING (5 nodes)
     # -------------------------------------------------------------------------
@@ -33053,7 +33053,7 @@ CONSTRAINT_CATALOG = {
             }
         }
     },
-    
+
     # -------------------------------------------------------------------------
     # CATEGORY G: GAUGE STRUCTURE (12 nodes)
     # -------------------------------------------------------------------------
@@ -33134,7 +33134,7 @@ CONSTRAINT_CATALOG = {
             }
         }
     },
-    
+
     # -------------------------------------------------------------------------
     # CATEGORY H: HIGGS & MASS GENERATION (8 nodes)
     # -------------------------------------------------------------------------
@@ -33191,7 +33191,7 @@ CONSTRAINT_CATALOG = {
             }
         }
     },
-    
+
     # -------------------------------------------------------------------------
     # CATEGORY I: MEMORY & RETRIEVAL (4 nodes)
     # -------------------------------------------------------------------------
@@ -33250,17 +33250,17 @@ Total constraint nodes cataloged: 60
 ======================================================================
 CONSTRAINT CATALOG SUMMARY
 ======================================================================
-Category                       Name                      Count     
+Category                       Name                      Count
 ----------------------------------------------------------------------
-A                              Speed & Causality         5         
-B                              Holographic/Information   8         
-C                              Thermodynamic/Landauer    6         
-D                              Stiffness & Fine Structure 4         
-E                              Coupling Running & QCD    8         
-F                              Discount & Planning       5         
-G                              Gauge Structure           12        
-H                              Higgs & Mass Generation   8         
-I                              Memory & Retrieval        4         
+A                              Speed & Causality         5
+B                              Holographic/Information   8
+C                              Thermodynamic/Landauer    6
+D                              Stiffness & Fine Structure 4
+E                              Coupling Running & QCD    8
+F                              Discount & Planning       5
+G                              Gauge Structure           12
+H                              Higgs & Mass Generation   8
+I                              Memory & Retrieval        4
 ----------------------------------------------------------------------
 TOTAL                                                   60
 ```
@@ -33280,25 +33280,25 @@ SM_PARAMETERS = {
     'α': {'name': 'Fine structure constant', 'value': 1/137.036, 'category': 'gauge'},
     'α_s': {'name': 'Strong coupling', 'value': 0.1179, 'category': 'gauge'},
     'sin²θ_W': {'name': 'Weinberg angle', 'value': 0.231, 'category': 'gauge'},
-    
+
     # Masses
     'v': {'name': 'Higgs VEV', 'value': 246.22, 'units': 'GeV', 'category': 'mass'},
     'M_H': {'name': 'Higgs mass', 'value': 125.25, 'units': 'GeV', 'category': 'mass'},
     'm_t': {'name': 'Top quark mass', 'value': 172.76, 'units': 'GeV', 'category': 'mass'},
     'm_e': {'name': 'Electron mass', 'value': 0.511e-3, 'units': 'GeV', 'category': 'mass'},
     'Λ_QCD': {'name': 'QCD scale', 'value': 0.217, 'units': 'GeV', 'category': 'mass'},
-    
+
     # Yukawa couplings
     'Y_t': {'name': 'Top Yukawa', 'value': 0.99, 'category': 'yukawa'},
     'Y_b': {'name': 'Bottom Yukawa', 'value': 0.024, 'category': 'yukawa'},
     'Y_e': {'name': 'Electron Yukawa', 'value': 2.9e-6, 'category': 'yukawa'},
-    
+
     # Fundamental scales
     'c': {'name': 'Speed of light', 'value': 2.998e8, 'units': 'm/s', 'category': 'scale'},
     'ℓ_P': {'name': 'Planck length', 'value': 1.616e-35, 'units': 'm', 'category': 'scale'},
     'ℏ': {'name': 'Reduced Planck', 'value': 1.055e-34, 'units': 'J⋅s', 'category': 'scale'},
     'G': {'name': 'Newton constant', 'value': 6.674e-11, 'units': 'm³/kg/s²', 'category': 'scale'},
-    
+
     # Cosmological
     'γ': {'name': 'Discount factor', 'value': 1 - 1e-61, 'category': 'cosmological'},
 }
@@ -33319,7 +33319,7 @@ for cat_id, cat_data in CONSTRAINT_CATALOG.items():
                 'g_s_structure': 'α_s', 'confinement': 'α_s', 'N_f': 'α_s',
                 'N_f_bound': 'α_s', 'Λ_QCD': 'Λ_QCD',
                 'ℓ_P': 'ℓ_P', 'ℏ': 'ℏ', 'G': 'G',
-                'k_B': 'T', 'T': 'T', 'T_c': 'T', 'T_c_upper': 'T', 
+                'k_B': 'T', 'T': 'T', 'T_c': 'T', 'T_c_upper': 'T',
                 'T_c_stability': 'T', 'T_c_upper_dynamics': 'T',
                 'm_e': 'm_e',
                 'sin²θ_W': 'sin²θ_W',
@@ -33329,13 +33329,13 @@ for cat_id, cat_data in CONSTRAINT_CATALOG.items():
                 'fermion_masses': 'm_e', 'mass_ratios': 'Y_t',
                 'Yukawa_couplings': 'Y_t', 'Y_t': 'Y_t',
                 'g_1': 'α', 'g_2': 'α',
-                'γ': 'γ', 'planning_horizon': 'γ', 'memory': 'γ', 
+                'γ': 'γ', 'planning_horizon': 'γ', 'memory': 'γ',
                 'value_propagation': 'γ',
                 'τ_proc': 'c',
                 'gauge_group': 'α',
                 'gauge_couplings': 'α_s',
             }
-            
+
             if target in target_mappings:
                 sm_param = target_mappings[target]
                 if sm_param in PARAM_TO_CONSTRAINTS:
@@ -33373,7 +33373,7 @@ print(f"Total constraint-parameter links: {total_constraints}")
 ================================================================================
 CONSTRAINT → SM PARAMETER MAPPING
 ================================================================================
-Parameter    #Constraints Constraints                                             
+Parameter    #Constraints Constraints
 --------------------------------------------------------------------------------
 α            8            thm-stiffness-bounds, cor-goldilocks-coupling, def-rydberg-scale, cor-chemistry-viability, ... (+4)
 α_s          8            thm-ir-binding-constraint, thm-uv-decoupling-constraint, cor-coupling-window, thm-emergence-binding-field, ... (+4)
@@ -33381,16 +33381,16 @@ c            6            thm-speed-window, cor-speed-ratio-bound, ax-informatio
 γ            5            thm-discount-window, cor-discount-as-screening-length, cor-screening-buffer-consistency, thm-hjb-helmholtz, ... (+1)
 Y_t          3            def-affordance-matrix, thm-mass-hierarchy, def-top-naturalness
 ℓ_P          3            thm-holographic-bound, thm-capacity-horizon, def-planck-levin-correspondence
-v            2            thm-gauge-boson-masses, cor-ontological-ssb             
-m_e          2            def-rydberg-scale, thm-cognitive-mass                   
-ℏ            2            thm-holographic-bound, def-planck-levin-correspondence  
-G            2            thm-holographic-bound, def-planck-levin-correspondence  
-sin²θ_W      1            def-weinberg-mixing                                     
-M_H          1            cor-higgs-mass                                          
-Λ_QCD        1            def-confinement-scale                                   
-m_t          0                                                                    
-Y_b          0                                                                    
-Y_e          0                                                                    
+v            2            thm-gauge-boson-masses, cor-ontological-ssb
+m_e          2            def-rydberg-scale, thm-cognitive-mass
+ℏ            2            thm-holographic-bound, def-planck-levin-correspondence
+G            2            thm-holographic-bound, def-planck-levin-correspondence
+sin²θ_W      1            def-weinberg-mixing
+M_H          1            cor-higgs-mass
+Λ_QCD        1            def-confinement-scale
+m_t          0
+Y_b          0
+Y_e          0
 --------------------------------------------------------------------------------
 
 Summary: 13/16 parameters have at least 1 constraint
@@ -34003,17 +34003,17 @@ param_positions = {
     'α': (2, 8),
     'α_s': (5, 8),
     'sin²θ_W': (8, 8),
-    
+
     # Masses (middle row)
     'v': (3.5, 5),
     'M_H': (6.5, 5),
     'm_e': (1, 5),
     'Λ_QCD': (9, 5),
-    
+
     # Yukawa (lower middle)
     'Y_t': (5, 3),
     'm_t': (7.5, 3),
-    
+
     # Fundamental scales (bottom)
     'c': (2, 1),
     'ℓ_P': (5, 1),
@@ -34027,19 +34027,19 @@ connections = [
     ('α', 'm_e'),      # via stiffness, Rydberg
     ('α', 'sin²θ_W'),  # via electroweak
     ('α', 'c'),        # via Planck units
-    
-    # α_s connections  
+
+    # α_s connections
     ('α_s', 'Λ_QCD'),  # via RG running
-    
+
     # v connections
     ('v', 'Y_t'),      # via Yukawa
     ('v', 'm_t'),      # via mass relation
     ('v', 'M_H'),      # via Higgs potential
     ('v', 'sin²θ_W'),  # via gauge boson masses
-    
+
     # Y_t connections
     ('Y_t', 'm_t'),    # via m = Y·v
-    
+
     # Planck connections
     ('ℓ_P', 'c'),      # via c = ℓ_P/t_P
     ('ℓ_P', 'γ'),      # via cosmological horizon
@@ -34061,7 +34061,7 @@ unconstrained_params = {'sin²θ_W', 'M_H', 'm_e', 'γ'}  # Not derived
 # Draw nodes
 for param, (x, y) in param_positions.items():
     n_constraints = len(PARAM_TO_CONSTRAINTS.get(param, []))
-    
+
     # Color based on derivability
     if param in derivable_params:
         color = '#2ecc71'  # green
@@ -34075,10 +34075,10 @@ for param, (x, y) in param_positions.items():
     else:
         color = '#e74c3c'  # red
         status = 'NOT DERIVED'
-    
+
     # Size based on number of constraints
     size = 800 + 200 * n_constraints
-    
+
     ax.scatter(x, y, s=size, c=color, zorder=3, edgecolor='black', linewidth=2)
     ax.annotate(param, (x, y), fontsize=12, ha='center', va='center', fontweight='bold', zorder=4)
     ax.annotate(f'{n_constraints}', (x, y-0.4), fontsize=9, ha='center', va='center', color='white', zorder=4)
@@ -34096,7 +34096,7 @@ ax.set_xlim(0, 10)
 ax.set_ylim(0, 9.5)
 ax.set_aspect('equal')
 ax.axis('off')
-ax.set_title('Constraint Network: SM Parameters and Their Connections\n(Node size ∝ number of constraints, number shown below)', 
+ax.set_title('Constraint Network: SM Parameters and Their Connections\n(Node size ∝ number of constraints, number shown below)',
              fontsize=14, fontweight='bold')
 
 plt.tight_layout()
@@ -34252,7 +34252,7 @@ print("""
 • SPECULATIVE constraints: Bounds that involve theoretical assumptions not yet
   validated. Example: γ ~ 1 - 10⁻⁶¹ assumes cosmological interpretation.
 
-KEY FINDING: Only α is tightly constrained in a predictive way (2.5% from 
+KEY FINDING: Only α is tightly constrained in a predictive way (2.5% from
 optimal stiffness). Most other parameters have wide margins within their bounds.
 """)
 ```
@@ -34261,13 +34261,13 @@ optimal stiffness). Most other parameters have wide margins within their bounds.
 ====================================================================================================
 TIGHTNESS ANALYSIS: How Close to Constraint Saturation?
 ====================================================================================================
-Parameter       Constraint                Measured        Lower           Upper           Tight?      
+Parameter       Constraint                Measured        Lower           Upper           Tight?
 ----------------------------------------------------------------------------------------------------
-α               thm-stiffness-bounds      0.007297        0.000318        0.3181          Near lower  
-c               def-planck-levin          2.998e8 m/s     ℓ_P/t_P         N/A             SATURATED   
-α_s (via N_f)   def-asymptotic-freedom    N_f = 6         N_f > 0         N_f < 16.5      Has margin  
-γ               thm-discount-window       1 - 10⁻⁶¹       γ_min (undetermined) < 1             Near upper  
-v               def-top-naturalness       246 GeV         ~m_t (Y_t=1)    N/A             ~30% margin 
+α               thm-stiffness-bounds      0.007297        0.000318        0.3181          Near lower
+c               def-planck-levin          2.998e8 m/s     ℓ_P/t_P         N/A             SATURATED
+α_s (via N_f)   def-asymptotic-freedom    N_f = 6         N_f > 0         N_f < 16.5      Has margin
+γ               thm-discount-window       1 - 10⁻⁶¹       γ_min (undetermined) < 1             Near upper
+v               def-top-naturalness       246 GeV         ~m_t (Y_t=1)    N/A             ~30% margin
 
 ====================================================================================================
 INTERPRETATION
@@ -34285,7 +34285,7 @@ INTERPRETATION
 • SPECULATIVE constraints: Bounds that involve theoretical assumptions not yet
   validated. Example: γ ~ 1 - 10⁻⁶¹ assumes cosmological interpretation.
 
-KEY FINDING: Only α is tightly constrained in a predictive way (2.5% from 
+KEY FINDING: Only α is tightly constrained in a predictive way (2.5% from
 optimal stiffness). Most other parameters have wide margins within their bounds.
 ```
 
@@ -34369,7 +34369,7 @@ print("\n" + "=" * 110)
 print("DERIVATION STATUS LEGEND")
 print("=" * 110)
 print("""
-• RIGOROUS:     Derived from first principles with explicit constraints. 
+• RIGOROUS:     Derived from first principles with explicit constraints.
                 Error quantified and small.
 
 • TAUTOLOGICAL: True by definition (e.g., Planck unit definitions).
@@ -34393,21 +34393,21 @@ print("""
 ==============================================================================================================
 INTER-CONSTANT RELATIONS: Derivation Summary
 ==============================================================================================================
-Output       From            Equation                            Accuracy     Status              
+Output       From            Equation                            Accuracy     Status
 --------------------------------------------------------------------------------------------------------------
-α            T, m_e, k_B     α = √(2χk_BT/m_ec²) with χ~500      2.5%         RIGOROUS            
-c            ℓ_P, t_P        c = ℓ_P/t_P                         EXACT        TAUTOLOGICAL        
-v            m_t, Y_t        v = m_t/Y_t with Y_t~1              ~30%         APPROXIMATE         
+α            T, m_e, k_B     α = √(2χk_BT/m_ec²) with χ~500      2.5%         RIGOROUS
+c            ℓ_P, t_P        c = ℓ_P/t_P                         EXACT        TAUTOLOGICAL
+v            m_t, Y_t        v = m_t/Y_t with Y_t~1              ~30%         APPROXIMATE
 α_s(μ)       Λ_QCD, N_f      α_s(μ) = 2π/(b₀ ln(μ/Λ_QCD))        ~15% (LO)    QUALITATIVE (Λ input)
-M_H          v, λ            M_H = √(2λ)·v                       N/A          λ NOT DERIVED       
+M_H          v, λ            M_H = √(2λ)·v                       N/A          λ NOT DERIVED
 sin²θ_W      g₁, g₂          sin²θ_W = g₁²/(g₁²+g₂²)             N/A          g₁/g₂ ratio NOT DERIVED
-γ            ℓ_P, R_H        γ ~ 1 - ℓ_P/R_Hubble                N/A          SPECULATIVE         
+γ            ℓ_P, R_H        γ ~ 1 - ℓ_P/R_Hubble                N/A          SPECULATIVE
 
 ==============================================================================================================
 DERIVATION STATUS LEGEND
 ==============================================================================================================
 
-• RIGOROUS:     Derived from first principles with explicit constraints. 
+• RIGOROUS:     Derived from first principles with explicit constraints.
                 Error quantified and small.
 
 • TAUTOLOGICAL: True by definition (e.g., Planck unit definitions).
@@ -34441,12 +34441,12 @@ full_assessment = [
     {'Parameter': 'α', '#Constr': 5, 'Tightest': 'thm-stiffness-bounds', 'Derivable?': 'YES', 'Accuracy': '2.5%', 'Notes': 'From T=300K, χ~500'},
     {'Parameter': 'α_s(M_Z)', '#Constr': 8, 'Tightest': 'def-asymptotic-freedom', 'Derivable?': 'QUALITATIVE', 'Accuracy': 'N/A', 'Notes': 'Λ_QCD is input'},
     {'Parameter': 'sin²θ_W', '#Constr': 2, 'Tightest': 'def-weinberg-mixing', 'Derivable?': 'NO', 'Accuracy': 'N/A', 'Notes': 'g₁/g₂ ratio not derived'},
-    
+
     # Higgs sector
     {'Parameter': 'v (Higgs VEV)', '#Constr': 4, 'Tightest': 'def-top-naturalness', 'Derivable?': 'PARTIAL', 'Accuracy': '~30%', 'Notes': 'From Y_t ~ 1'},
     {'Parameter': 'M_H', '#Constr': 1, 'Tightest': 'cor-higgs-mass', 'Derivable?': 'NO', 'Accuracy': 'N/A', 'Notes': 'λ not derived'},
     {'Parameter': 'λ (quartic)', '#Constr': 1, 'Tightest': 'def-mexico-hat', 'Derivable?': 'NO', 'Accuracy': 'N/A', 'Notes': 'Free parameter'},
-    
+
     # Fermion masses (3 generations × 3 types = 9)
     {'Parameter': 'm_t', '#Constr': 2, 'Tightest': 'thm-cognitive-mass', 'Derivable?': 'NO', 'Accuracy': 'N/A', 'Notes': 'Y_t ~ 1 is input'},
     {'Parameter': 'm_b', '#Constr': 1, 'Tightest': 'thm-mass-hierarchy', 'Derivable?': 'NO', 'Accuracy': 'N/A', 'Notes': 'Y_b not derived'},
@@ -34457,23 +34457,23 @@ full_assessment = [
     {'Parameter': 'm_τ', '#Constr': 1, 'Tightest': 'thm-mass-hierarchy', 'Derivable?': 'NO', 'Accuracy': 'N/A', 'Notes': 'Y_τ not derived'},
     {'Parameter': 'm_μ', '#Constr': 1, 'Tightest': 'thm-mass-hierarchy', 'Derivable?': 'NO', 'Accuracy': 'N/A', 'Notes': 'Y_μ not derived'},
     {'Parameter': 'm_e', '#Constr': 2, 'Tightest': 'def-rydberg-scale', 'Derivable?': 'NO', 'Accuracy': 'N/A', 'Notes': 'Y_e not derived'},
-    
+
     # CKM matrix (4 parameters)
     {'Parameter': 'V_us', '#Constr': 0, 'Tightest': 'N/A', 'Derivable?': 'NO', 'Accuracy': 'N/A', 'Notes': 'No constraint'},
     {'Parameter': 'V_cb', '#Constr': 0, 'Tightest': 'N/A', 'Derivable?': 'NO', 'Accuracy': 'N/A', 'Notes': 'No constraint'},
     {'Parameter': 'V_ub', '#Constr': 0, 'Tightest': 'N/A', 'Derivable?': 'NO', 'Accuracy': 'N/A', 'Notes': 'No constraint'},
     {'Parameter': 'δ_CKM', '#Constr': 0, 'Tightest': 'N/A', 'Derivable?': 'NO', 'Accuracy': 'N/A', 'Notes': 'No constraint'},
-    
+
     # QCD
     {'Parameter': 'Λ_QCD', '#Constr': 2, 'Tightest': 'def-confinement-scale', 'Derivable?': 'NO', 'Accuracy': 'N/A', 'Notes': 'Dimensional transmutation - input'},
     {'Parameter': 'θ_QCD', '#Constr': 0, 'Tightest': 'N/A', 'Derivable?': 'NO', 'Accuracy': 'N/A', 'Notes': 'Strong CP problem'},
-    
+
     # Fundamental scales
     {'Parameter': 'c', '#Constr': 5, 'Tightest': 'def-causal-horizon-length', 'Derivable?': 'TAUTOLOGICAL', 'Accuracy': 'EXACT', 'Notes': 'By Planck definition'},
     {'Parameter': 'ℏ', '#Constr': 2, 'Tightest': 'thm-holographic-bound', 'Derivable?': 'NO', 'Accuracy': 'N/A', 'Notes': 'Fundamental input'},
     {'Parameter': 'G', '#Constr': 2, 'Tightest': 'thm-holographic-bound', 'Derivable?': 'NO', 'Accuracy': 'N/A', 'Notes': 'Fundamental input'},
     {'Parameter': 'ℓ_P', '#Constr': 3, 'Tightest': 'def-planck-levin', 'Derivable?': 'FROM ℏ,G,c', 'Accuracy': 'EXACT', 'Notes': 'Derived from fundamentals'},
-    
+
     # Cosmological (if included)
     {'Parameter': 'γ', '#Constr': 5, 'Tightest': 'def-cosmological-horizon', 'Derivable?': 'SPECULATIVE', 'Accuracy': 'N/A', 'Notes': 'Requires cosmological interpretation'},
 ]
@@ -34512,33 +34512,33 @@ Total SM parameters examined: {n_total}
 ========================================================================================================================
 COMPLETE STANDARD MODEL PARAMETER ASSESSMENT
 ========================================================================================================================
-Parameter       #Constr  Tightest Constraint          Derivable?     Accuracy   Notes                         
+Parameter       #Constr  Tightest Constraint          Derivable?     Accuracy   Notes
 ------------------------------------------------------------------------------------------------------------------------
-α               5        thm-stiffness-bounds         YES            2.5%       From T=300K, χ~500            
-α_s(M_Z)        8        def-asymptotic-freedom       QUALITATIVE    N/A        Λ_QCD is input                
-sin²θ_W         2        def-weinberg-mixing          NO             N/A        g₁/g₂ ratio not derived       
-v (Higgs VEV)   4        def-top-naturalness          PARTIAL        ~30%       From Y_t ~ 1                  
-M_H             1        cor-higgs-mass               NO             N/A        λ not derived                 
-λ (quartic)     1        def-mexico-hat               NO             N/A        Free parameter                
-m_t             2        thm-cognitive-mass           NO             N/A        Y_t ~ 1 is input              
-m_b             1        thm-mass-hierarchy           NO             N/A        Y_b not derived               
-m_c             1        thm-mass-hierarchy           NO             N/A        Y_c not derived               
-m_s             1        thm-mass-hierarchy           NO             N/A        Y_s not derived               
-m_u             1        thm-mass-hierarchy           NO             N/A        Y_u not derived               
-m_d             1        thm-mass-hierarchy           NO             N/A        Y_d not derived               
-m_τ             1        thm-mass-hierarchy           NO             N/A        Y_τ not derived               
-m_μ             1        thm-mass-hierarchy           NO             N/A        Y_μ not derived               
-m_e             2        def-rydberg-scale            NO             N/A        Y_e not derived               
-V_us            0        N/A                          NO             N/A        No constraint                 
-V_cb            0        N/A                          NO             N/A        No constraint                 
-V_ub            0        N/A                          NO             N/A        No constraint                 
-δ_CKM           0        N/A                          NO             N/A        No constraint                 
+α               5        thm-stiffness-bounds         YES            2.5%       From T=300K, χ~500
+α_s(M_Z)        8        def-asymptotic-freedom       QUALITATIVE    N/A        Λ_QCD is input
+sin²θ_W         2        def-weinberg-mixing          NO             N/A        g₁/g₂ ratio not derived
+v (Higgs VEV)   4        def-top-naturalness          PARTIAL        ~30%       From Y_t ~ 1
+M_H             1        cor-higgs-mass               NO             N/A        λ not derived
+λ (quartic)     1        def-mexico-hat               NO             N/A        Free parameter
+m_t             2        thm-cognitive-mass           NO             N/A        Y_t ~ 1 is input
+m_b             1        thm-mass-hierarchy           NO             N/A        Y_b not derived
+m_c             1        thm-mass-hierarchy           NO             N/A        Y_c not derived
+m_s             1        thm-mass-hierarchy           NO             N/A        Y_s not derived
+m_u             1        thm-mass-hierarchy           NO             N/A        Y_u not derived
+m_d             1        thm-mass-hierarchy           NO             N/A        Y_d not derived
+m_τ             1        thm-mass-hierarchy           NO             N/A        Y_τ not derived
+m_μ             1        thm-mass-hierarchy           NO             N/A        Y_μ not derived
+m_e             2        def-rydberg-scale            NO             N/A        Y_e not derived
+V_us            0        N/A                          NO             N/A        No constraint
+V_cb            0        N/A                          NO             N/A        No constraint
+V_ub            0        N/A                          NO             N/A        No constraint
+δ_CKM           0        N/A                          NO             N/A        No constraint
 Λ_QCD           2        def-confinement-scale        NO             N/A        Dimensional transmutation - input
-θ_QCD           0        N/A                          NO             N/A        Strong CP problem             
-c               5        def-causal-horizon-length    TAUTOLOGICAL   EXACT      By Planck definition          
-ℏ               2        thm-holographic-bound        NO             N/A        Fundamental input             
-G               2        thm-holographic-bound        NO             N/A        Fundamental input             
-ℓ_P             3        def-planck-levin             FROM ℏ,G,c     EXACT      Derived from fundamentals     
+θ_QCD           0        N/A                          NO             N/A        Strong CP problem
+c               5        def-causal-horizon-length    TAUTOLOGICAL   EXACT      By Planck definition
+ℏ               2        thm-holographic-bound        NO             N/A        Fundamental input
+G               2        thm-holographic-bound        NO             N/A        Fundamental input
+ℓ_P             3        def-planck-levin             FROM ℏ,G,c     EXACT      Derived from fundamentals
 γ               5        def-cosmological-horizon     SPECULATIVE    N/A        Requires cosmological interpretation
 
 ========================================================================================================================

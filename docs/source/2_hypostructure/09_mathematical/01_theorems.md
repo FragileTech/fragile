@@ -7,13 +7,28 @@ title: "Gate, Barrier, and Surgery Theorems"
 
 *These theorems define exact mathematical predicates for YES/NO checks at blue nodes.*
 
+:::{div} feynman-prose
+Now, what are these gate evaluator theorems really about? Think of the Sieve as a security checkpoint at an airport. Each blue node is a guard asking one very specific question: "Does this trajectory have property X?" The answer is YES or NO, nothing in between. These theorems tell you exactly what question each guard asks and why that question matters.
+
+The beautiful thing is that these are not arbitrary checks. Each one corresponds to a known mathematical mechanism by which systems can fail catastrophically. If you can prove the predicate is satisfied, you have mathematically certified that this particular failure mode cannot occur. That is the whole game: turning vague safety concerns into precise mathematical certificates.
+:::
+
 ---
 
 ### Type II Exclusion (ScaleCheck Predicate)
 
+:::{div} feynman-prose
+Here is the first guard at our checkpoint. This one asks: "Are your scaling exponents in the right regime?" Let me tell you what this means physically.
+
+When a system develops a singularity, it often does so through self-similar blow-up. The solution starts concentrating energy at smaller and smaller scales, like water going down a drain that gets infinitely narrow. Now, there are two numbers that control whether this can actually happen: the exponent $\alpha$ that tells you how dissipation scales, and the exponent $\beta$ that tells you how time scales when you zoom in.
+
+Here is the key insight: if $\alpha > \beta$, dissipation wins. As you zoom into smaller scales, the system loses energy faster than it can concentrate it. The singularity literally cannot afford the energy bill. That is what "subcritical" means, it means the accounting does not work out for the singularity.
+
+The theorem proves this rigorously: any self-similar blow-up sequence that tried to form would require infinite dissipation, which contradicts our finite energy budget. So the singularity is excluded not by fiat, but by thermodynamics.
+:::
+
 :::{prf:theorem} [LOCK-Tactic-Scale] Type II Exclusion
 :label: mt-lock-tactic-scale
-:class: metatheorem
 
 **Sieve Target:** Node 4 (ScaleCheck) — predicate $\alpha > \beta$ excludes supercritical blow-up
 
@@ -49,9 +64,16 @@ $$\int_0^{S_n} \mathfrak{D}(v_n(s)) \, ds \gtrsim C_0 \lambda_n^\beta(T_*(x) - t
 
 ### Spectral Generator (StiffnessCheck Predicate)
 
+:::{div} feynman-prose
+This guard asks about the shape of the energy landscape near your destination. Imagine you are rolling a marble into a bowl. If the bowl has a nice curved bottom, the marble settles smoothly into the center. But if the bottom is flat, or worse, has ridges and valleys, the marble can wander around forever without really settling.
+
+The spectral generator theorem says that if your energy function has positive curvature at the minimum, meaning the Hessian has all positive eigenvalues, then you get a very powerful inequality. The gradient cannot be small unless you are actually close to the minimum. This is the Lojasiewicz-Simon inequality, and it is what guarantees finite-time convergence rather than asymptotic approach.
+
+The key number is the exponent $\theta$. For analytic functions, $\theta = 1/2$, which gives you exponential convergence. For merely smooth functions, $\theta$ might be closer to 1, which gives slower but still guaranteed convergence. The theorem tells you that having a spectral gap in the Hessian is the mathematical certificate you need to ensure the system actually reaches equilibrium.
+:::
+
 :::{prf:theorem} [LOCK-SpectralGen] Spectral Generator
 :label: mt-lock-spectral-gen
-:class: metatheorem
 
 **Sieve Target:** Node 7 (StiffnessCheck) — spectral gap $\Rightarrow$ Łojasiewicz-Simon inequality
 
@@ -91,9 +113,18 @@ This gives the Łojasiewicz exponent $\theta = 1/2$ (optimal for analytic functi
 
 ### Ergodic Mixing Barrier (ErgoCheck Predicate)
 
+:::{div} feynman-prose
+This is one of my favorites because it connects dynamics to probability in a deep way. The guard here is asking: "Is your system mixing?"
+
+What does mixing mean? Think of stirring cream into coffee. At first, the cream is localized in one spot. As you stir, it spreads out. A mixing system is one where everything eventually spreads out, where no region of phase space can remain isolated forever. Correlations decay. The system forgets where it started.
+
+Why does this prevent singularities? Because a singularity is localization. It is energy concentrating at a point. But a mixing system fights localization. Any concentration gets dispersed by the dynamics. Birkhoff's ergodic theorem tells you that time averages equal space averages, the system visits everywhere proportionally to the measure.
+
+The theorem makes this precise: if your system is mixing and you have finite energy, then localized singular structures cannot persist. They would require a permanent concentration of measure, but mixing dilutes any such concentration exponentially fast. The mixing time $\tau_{\text{mix}}$ tells you how fast this happens.
+:::
+
 :::{prf:theorem} [LOCK-ErgodicMixing] Ergodic Mixing Barrier
 :label: mt-lock-ergodic-mixing
-:class: metatheorem
 
 **Sieve Target:** Node 10 (ErgoCheck) — mixing prevents localization
 
@@ -132,9 +163,18 @@ For small $\varepsilon$, the measure of return diminishes, preventing persistent
 
 ### Spectral Distance Isomorphism (OscillateCheck Predicate)
 
+:::{div} feynman-prose
+Now we get into some genuinely beautiful mathematics from Alain Connes. This guard is checking for oscillatory breakdown, and the tool is the Connes distance formula from noncommutative geometry.
+
+Here is the intuition. In ordinary geometry, the distance between two points is the length of the shortest path. But Connes realized you can turn this around: instead of measuring distances with rulers, measure them with functions. How different can a Lipschitz function be at two points? The answer turns out to be exactly the geodesic distance.
+
+The formula $d_D(x,y) = \sup\{|f(x) - f(y)| : \|[D,f]\| \leq 1\}$ looks abstract, but here is what it says: the distance between $x$ and $y$ is the maximum amount any "well-behaved" function can change between them. The condition $\|[D,f]\| \leq 1$ is the Lipschitz condition in disguise, the commutator $[D,f]$ is the noncommutative gradient.
+
+Why does this detect oscillatory breakdown? Because when derivatives blow up, the commutator norm explodes. Oscillations at higher and higher frequencies have larger and larger gradients. This is the mathematical signature of oscillatory singularities, and the theorem shows that the Connes distance formula catches them.
+:::
+
 :::{prf:theorem} [LOCK-SpectralDist] Spectral Distance Isomorphism
 :label: mt-lock-spectral-dist
-:class: metatheorem
 
 **Sieve Target:** Node 12 (OscillateCheck) — commutator $\|[D,a]\|$ detects oscillatory breakdown
 
@@ -172,9 +212,20 @@ The interface permit $\mathrm{GC}_\nabla$ (Gradient Consistency) is equivalent t
 
 ### Antichain-Surface Correspondence (BoundaryCheck Predicate)
 
+:::{div} feynman-prose
+This theorem connects two seemingly unrelated ideas: antichains in causal sets and minimal surfaces in geometry. Let me explain why this matters for boundary checks in the Sieve.
+
+First, what is an antichain? In a partially ordered set, an antichain is a collection of elements where none is "before" or "after" any other. In a causal set representing spacetime, an antichain is a spacelike surface, a moment of "now" where all points are simultaneous.
+
+Menger's theorem from graph theory tells us that the max-flow through a network equals the min-cut. This is the famous max-flow min-cut duality. In the causal set context, the "flow" is information traveling through time, and the "cut" is a spacelike surface that information must cross.
+
+Here is the beautiful part: as you take finer and finer causal sets approximating a smooth spacetime, the minimal antichains converge to minimal surfaces. The discrete combinatorial notion becomes the continuous geometric notion. This is Gamma-convergence at work.
+
+For the Sieve, this means boundary interactions can be measured by cut sizes. The boundary check asks: how much information flow crosses this interface? The antichain-surface correspondence gives us a rigorous way to compute this from discrete data.
+:::
+
 :::{prf:theorem} [LOCK-Antichain] Antichain-Surface Correspondence
 :label: mt-lock-antichain
-:class: metatheorem
 
 **Sieve Target:** Node 13 (BoundaryCheck) — boundary interaction measure via min-cut/max-flow
 
@@ -218,13 +269,30 @@ for hypersurfaces $Σ$ in the continuum limit.
 
 *These theorems prove that barriers actually stop singularities.*
 
+:::{div} feynman-prose
+We have just seen how the gates work, how each predicate asks a yes/no question about the trajectory. But what happens when the system fails a check? This is where barriers come in.
+
+A barrier is not just a wall, it is a mathematical proof that certain trajectories cannot exist. The theorems in this section prove that if a singularity tried to form, it would violate a conservation law, an energy bound, or an information-theoretic limit. The singularity is not blocked by force but by logic. It simply cannot satisfy all the constraints simultaneously.
+
+Think of it like a bank vault. You do not stop robbers by posting more guards. You design the vault so that opening it requires solving an impossible equation. The robber can try all day, but the math does not work out. That is what these barrier theorems do: they show that the math does not work out for singularities.
+:::
+
 ---
 
 ### Saturation Principle (BarrierSat)
 
+:::{div} feynman-prose
+The saturation principle is about energy budgets. Here is the key insight: pathological behavior requires energy, and if you can bound the energy budget, you bound the pathology.
+
+The Foster-Lyapunov condition is the workhorse of stochastic stability. It says: find a function $\mathcal{V}$ that acts like "potential energy" and show that the dynamics push it downward on average, except possibly in some compact region $C$ where it can grow by at most $b$. Then the system must eventually settle into a regime where the average energy is at most $E^* = b/\lambda$.
+
+What makes this a barrier? The singularity is energy-hungry. It wants to concentrate infinite energy at a point. But the drift condition puts a ceiling on the available energy. The system can try to concentrate, but it keeps getting pushed back. Asymptotically, it saturates at $E^*$ and cannot blow up.
+
+This is why Lyapunov functions are so powerful: they convert dynamical questions (will this system blow up?) into static questions (is this function bounded?).
+:::
+
 :::{prf:theorem} [UP-Saturation] Saturation Principle
 :label: mt-up-saturation-principle
-:class: metatheorem
 
 **Sieve Target:** BarrierSat — drift control prevents blow-up
 
@@ -266,9 +334,18 @@ $$\limsup_{t \to \infty} \mathbb{E}[\mathcal{V}(X_t)] \leq \frac{b}{\lambda} = E
 
 ### Physical Computational Depth Limit (BarrierCausal)
 
+:::{div} feynman-prose
+This is one of the most surprising barriers because it comes from quantum mechanics and computation theory. The guard here is asking: "Can you actually compute this singularity?"
+
+Margolus and Levitin proved something remarkable in 1998: there is a fundamental speed limit on computation. The maximum rate at which a quantum system can transition between orthogonal states is $4E/\pi\hbar$, where $E$ is the energy above the ground state. This is not an engineering limit, it is physics.
+
+Now think about what a Zeno singularity requires. It needs infinitely many distinguishable events to happen in finite time. But each distinguishable event is a state transition, and each transition takes at least $\pi\hbar/4E$ of time. With finite energy, you can only have finitely many transitions.
+
+This is a profound result. It says that certain mathematical singularities are not just unlikely, they are physically impossible. They would require infinite computational depth in finite time, which violates a fundamental bound from quantum mechanics. The universe simply cannot process that much information.
+:::
+
 :::{prf:theorem} [UP-CausalBarrier] Physical Computational Depth Limit
 :label: mt-up-causal-barrier
-:class: metatheorem
 
 **Source:** Margolus-Levitin Theorem (1998)
 
@@ -316,9 +393,18 @@ $$N \leq \frac{4}{\pi\hbar} \int_0^T E(t) \, dt$$
 
 ### Capacity Barrier (BarrierCap)
 
+:::{div} feynman-prose
+The capacity barrier uses geometric measure theory to show that singularities cannot hide in thin sets. Let me explain what "capacity" means here.
+
+Ordinary measure tells you how much volume a set has. Capacity is different: it tells you how much energy a set can "hold" or "support." A set can have zero volume but positive capacity (like a curve in the plane), or zero capacity and zero volume (like a point).
+
+The key insight is that certain sets are too thin to carry any energy. If a blow-up tried to concentrate on such a set, the energy would leak out. The capacity barrier makes this precise: if the total capacity of your thin sets is finite, then the trajectory cannot spend infinite time in them.
+
+Why does this matter? Some singularities try to form on lower-dimensional sets, concentrating energy along curves or surfaces rather than at points. The capacity barrier catches these: if the dimension is below a critical threshold, the set cannot support the energy needed for blow-up. A zero-energy profile cannot mediate a singularity.
+:::
+
 :::{prf:theorem} [LOCK-Tactic-Capacity] Capacity Barrier
 :label: mt-lock-tactic-capacity
-:class: metatheorem
 
 **Sieve Target:** BarrierCap — zero-capacity sets cannot sustain energy
 
@@ -360,9 +446,18 @@ A zero-energy profile cannot mediate blow-up.
 
 ### Topological Sector Suppression (BarrierAction)
 
+:::{div} feynman-prose
+This barrier uses concentration of measure, one of the most powerful tools in modern probability theory. The idea is simple: in high-dimensional spaces, almost everything is typical.
+
+Think of a sphere in high dimensions. Almost all the volume is concentrated near the equator. A random point is almost certainly close to the average. This is concentration of measure: deviations from the typical are exponentially suppressed.
+
+The topological sector suppression theorem applies this to action gaps. If you want to reach a nontrivial topological sector (like a configuration with nonzero winding number), you need to climb over an energy barrier of height $\Delta$. The log-Sobolev inequality tells you that the probability of being that far from typical decays like $\exp(-c\Delta^2)$.
+
+This is a probabilistic barrier. The singularity might be mathematically possible, but it requires reaching a state that is exponentially rare. As the action gap increases, or as the concentration constant improves, the probability of encountering such states becomes negligible. The dangerous topological sectors are effectively invisible.
+:::
+
 :::{prf:theorem} [UP-Shadow] Topological Sector Suppression
 :label: mt-up-shadow
-:class: metatheorem
 
 **Sieve Target:** BarrierAction — exponential suppression by action gap
 
@@ -399,9 +494,18 @@ $$\mu(\{x : \tau(x) \neq 0\}) \leq \exp\left(-\frac{\lambda_{\text{LS}} (\Delta/
 
 ### Bode Sensitivity Integral (BarrierBode)
 
+:::{div} feynman-prose
+The Bode integral is a conservation law from control theory, and it tells you that you cannot have your cake and eat it too when it comes to disturbance rejection.
+
+Imagine you are designing a feedback controller. You want to reject disturbances, which means making the sensitivity $|S(j\omega)|$ small. But Bode showed that the integral of $\log|S|$ over all frequencies is fixed by the unstable poles of your system. If you push sensitivity down at some frequencies, it must pop up somewhere else. This is the waterbed effect: push down one end, the other end rises.
+
+Why is this a barrier? Because it prevents infinite stiffness. A system that could perfectly reject all disturbances at all frequencies would need $|S| < 1$ everywhere. But the Bode integral says the area under $\log|S|$ is constant (and positive if you have unstable poles). You cannot make $|S|$ arbitrarily small everywhere.
+
+This connects to the Sieve because certain failure modes involve controllers that are too aggressive, that try to reject disturbances with infinite gain. The Bode integral says no: there is a fundamental limit on how much disturbance rejection you can achieve, and exceeding it creates instability elsewhere.
+:::
+
 :::{prf:theorem} Bode Sensitivity Integral
 :label: thm-bode
-:class: theorem
 
 **Sieve Target:** BarrierBode — waterbed effect conservation law
 
@@ -445,9 +549,18 @@ where the sum is over unstable poles of $L(s)$.
 
 ### Epistemic Horizon Principle (BarrierEpi)
 
+:::{div} feynman-prose
+The epistemic horizon is perhaps the most subtle barrier because it operates at the level of information itself. The question is not whether the singularity has enough energy, but whether it has enough information.
+
+Consider what happens as a system evolves chaotically. Information about the initial condition gets smeared out. Lyapunov exponents measure how fast this happens: positive exponents mean nearby trajectories diverge exponentially. Pesin's formula connects this to entropy production. The system is literally forgetting its past.
+
+Now, a singularity requires very specific information to coordinate at the blow-up point. But the data processing inequality says information can only decrease through processing, never increase. If entropy production exceeds the channel capacity between initial conditions and the would-be singularity, the necessary information simply cannot be transmitted.
+
+This is Landauer's principle applied to dynamics: computation requires energy, and losing information requires dissipation. The epistemic horizon says there is a fundamental limit on how much information about the past can survive to coordinate a future singularity. The horizon is not spatial but informational.
+:::
+
 :::{prf:theorem} [ACT-Horizon] Epistemic Horizon Principle
 :label: mt-act-horizon
-:class: metatheorem
 
 **Sieve Target:** BarrierEpi — one-way barrier via data processing inequality
 
@@ -494,13 +607,30 @@ If entropy production exceeds channel capacity, the singularity cannot form.
 
 *These theorems provide constructive methods for purple surgery nodes.*
 
+:::{div} feynman-prose
+Now we come to the most constructive part of the Sieve: the surgery nodes. Gates say yes or no. Barriers prove impossibility. But surgery nodes actually fix problems. They are the mechanics who repair the system when something goes wrong.
+
+The philosophy here is different from blocking. Instead of proving a singularity cannot happen, we provide a recipe for modifying the system so that it can continue past where it would have failed. These are not hacks or patches. They are principled mathematical techniques that preserve the essential structure while eliminating the pathology.
+
+Each surgery theorem tells you: when you encounter this type of failure, here is how to lift, cut, extend, or transform the system to get past it. Hairer's regularity structures, Perelman's Ricci flow surgery, BRST ghost fields, these are all surgery techniques that mathematicians developed to handle specific pathologies. The Sieve organizes them systematically.
+:::
+
 ---
 
 ### Regularity Lift Principle (SurgSE)
 
+:::{div} feynman-prose
+Martin Hairer won the Fields Medal for this, and rightly so. The regularity lift principle solves a problem that seemed impossible: how do you make sense of equations that involve multiplying distributions?
+
+Here is the issue. Distributions, like the Dirac delta function, are not ordinary functions. You cannot square them. If your equation involves noise that is too rough, like space-time white noise, the nonlinear terms become meaningless. $\xi^2$ does not exist as a distribution.
+
+Hairer's insight was to lift the equation to a richer space where these products do make sense. You build an algebraic structure that includes all the singular terms you need, with explicit rules for how they multiply. Then you solve the equation in this lifted space and project back down to get your actual solution.
+
+This is surgery for singular SPDEs. When the original equation is ill-posed, you do not give up. You embed it in a larger structure where it becomes well-posed, solve it there, and then reconstruct the solution in the original space. The regularity structure is the scaffolding that makes this possible.
+:::
+
 :::{prf:theorem} [ACT-Lift] Regularity Lift Principle
 :label: mt-act-lift
-:class: metatheorem rigor-class-l
 
 **Rigor Class:** L (Literature-Anchored) — see {prf:ref}`def-rigor-classification`
 
@@ -553,9 +683,18 @@ in the space of modelled distributions. The fixed point exists by Banach contrac
 
 ### Structural Surgery Principle (SurgTE)
 
+:::{div} feynman-prose
+Perelman's surgery for Ricci flow is perhaps the most famous example of mathematical surgery. It is how he proved the Poincare conjecture, and it is exactly the kind of technique we need in the Sieve.
+
+The Ricci flow evolves a metric on a manifold, trying to smooth it out. But sometimes it develops singularities: necks that pinch off, regions that collapse. Hamilton studied this for years but could not get past the singularities. Perelman showed how to cut them out and keep going.
+
+Here is the picture. When a neck starts to pinch, you detect it early, before the curvature actually blows up. You cut the manifold along the neck, throw away the pinching piece, and glue in a smooth cap. The surgery removes the singularity while preserving the topology that matters.
+
+The key insight is that you can do this finitely many times. Each surgery costs entropy, and entropy is bounded. So the singularities cannot recur forever. Eventually the flow becomes smooth and you can analyze it completely. This is surgery as a systematic procedure, not a one-time fix.
+:::
+
 :::{prf:theorem} [ACT-Surgery] Structural Surgery Principle
 :label: mt-act-surgery-2
-:class: metatheorem
 
 **Sieve Target:** SurgTE (Topological Extension) — Perelman cut-and-paste surgery
 
@@ -606,9 +745,18 @@ Surgeries only decrease entropy by controlled amounts.
 
 ### Projective Extension (SurgCD)
 
+:::{div} feynman-prose
+Sometimes the problem is not a singularity in the dynamics but a singularity in the constraint set. The feasible region collapses to measure zero, and there is nowhere left to go. Projective extension is surgery for this.
+
+The technique comes from optimization theory. When constraints are too tight, you relax them. You introduce slack variables that let you violate the constraints by a small amount $\varepsilon$. The relaxed problem has positive capacity, meaning there is actually room to move around.
+
+As you reduce $\varepsilon$ toward zero, the relaxed solutions converge to the original constrained solution, if one exists. The slack variables are scaffolding: they give you room to work while you approach the tight constraints from the interior.
+
+Interior point methods use exactly this idea. The logarithmic barrier keeps you away from constraint boundaries while the central path guides you toward the optimum. You never actually reach the boundary, but you get arbitrarily close. This is surgery by regularization: soften the hard constraint, solve the soft problem, take the limit.
+:::
+
 :::{prf:theorem} [ACT-Projective] Projective Extension
 :label: mt-act-projective
-:class: metatheorem
 
 **Sieve Target:** SurgCD (Constraint Relaxation) — slack variable method for geometric collapse
 
@@ -648,9 +796,18 @@ The central path follows $\nabla f_\mu = 0$ as $\mu \to 0$.
 
 ### Derived Extension / BRST (SurgSD)
 
+:::{div} feynman-prose
+The BRST construction is surgery for gauge theories, and it is genuinely clever. The problem is that gauge symmetry creates infinities: the path integral wants to sum over all configurations, but configurations related by gauge transformations are physically identical. You are counting the same thing infinitely many times.
+
+The naive fix is gauge fixing: pick one representative from each gauge orbit. But this introduces determinants that depend on your gauge choice, and they often diverge. Faddeev and Popov showed that these determinants can be written as integrals over new fields, the ghost fields.
+
+Here is the magic: ghost fields are Grassmann-valued, meaning they anticommute. When you integrate over them, determinants appear in the numerator instead of the denominator. Fermions give $\det(M)$ while bosons give $1/\det(M)$. The ghosts exactly cancel the divergent gauge orbit volume.
+
+The BRST symmetry packages all of this elegantly. There is a nilpotent operator $s$ with $s^2 = 0$, and physical states are those in the kernel of $s$ modulo the image, the BRST cohomology. This is surgery at its most algebraic: extend the space with auxiliary fields, introduce a symmetry, and quotient by its cohomology to get the physical Hilbert space.
+:::
+
 :::{prf:theorem} [ACT-Ghost] Derived Extension / BRST
 :label: mt-act-ghost
-:class: metatheorem
 
 **Sieve Target:** SurgSD (Symmetry Deformation) — ghost fields cancel divergent determinants
 
@@ -696,9 +853,18 @@ This exactly cancels the divergent gauge orbit volume, yielding finite $Z$.
 
 ### Adjoint Surgery (SurgBC)
 
+:::{div} feynman-prose
+Adjoint surgery handles boundary misalignment, when what happens at the boundary does not match what the bulk dynamics want to do. The tool is the Lagrange multiplier, and the insight is that constraints are just forces in disguise.
+
+Here is the picture. You want to minimize $f(x)$ subject to $g(x) = 0$. The constraint defines a surface, and you need to stay on it. The Lagrangian $\mathcal{L}(x, \lambda) = f(x) + \lambda^T g(x)$ turns the constrained problem into a saddle point problem. The primal variable $x$ wants to minimize, the dual variable $\lambda$ wants to maximize.
+
+At the saddle point, the gradients align: $\nabla f = -\lambda^T \nabla g$. The cost gradient is perpendicular to the constraint surface, which is exactly the condition for constrained optimality. The multiplier $\lambda$ tells you how much the constraint is "costing" you, the shadow price.
+
+In reinforcement learning, this becomes the actor-critic framework. The actor (policy) is the primal variable trying to minimize cost. The critic (value function) is the dual variable enforcing the Bellman constraint. Convergence requires them to stay aligned. When they drift apart, you get instability, the boundary condition (what the critic says) does not match the bulk dynamics (what the actor does). Adjoint surgery fixes this by explicitly coupling the two through the Lagrangian.
+:::
+
 :::{prf:theorem} [ACT-Align] Adjoint Surgery
 :label: mt-act-align
-:class: metatheorem
 
 **Sieve Target:** SurgBC (Boundary Correction) — Lagrange multiplier / Actor-Critic mechanism
 
@@ -746,9 +912,18 @@ The Hamiltonian $H = f + \lambda^T \dot{x}$ couples state and costate dynamics.
 
 ### Lyapunov Compactification (SurgCE)
 
+:::{div} feynman-prose
+The final surgery handles escape to infinity. Some systems do not blow up, they simply run away. The state goes to infinity in finite time, or asymptotically forever. Conformal compactification brings infinity into the picture by shrinking it to a finite boundary.
+
+The idea goes back to Penrose's conformal diagrams for spacetime. Multiply the metric by a conformal factor $\Omega$ that goes to zero at infinity. Distances get squished: what was infinitely far away becomes finitely distant in the new metric. Infinity becomes a boundary $\partial_\Omega M$ that you can actually draw on paper.
+
+Why is this surgery? Because it tames escape trajectories. A trajectory that would run off to infinity in the original metric reaches the conformal boundary in finite conformal time. You can now analyze what happens "at infinity" by studying the boundary behavior.
+
+This is especially powerful in general relativity, where Penrose diagrams let you see the causal structure of entire spacetimes at a glance. Null infinity, spatial infinity, timelike infinity, they all become concrete locations on the boundary. For the Sieve, it means escape modes can be handled: compactify the space, bring infinity into view, and analyze the boundary conditions there.
+:::
+
 :::{prf:theorem} [ACT-Compactify] Lyapunov Compactification
 :label: mt-act-compactify
-:class: metatheorem
 
 **Sieve Target:** SurgCE (Conformal Extension) — conformal rescaling bounds infinite domains
 

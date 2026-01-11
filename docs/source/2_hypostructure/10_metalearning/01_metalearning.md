@@ -2,6 +2,16 @@
 
 *The Agent, The Loss, and The Solver.*
 
+:::{div} feynman-prose
+Now we come to what I think is one of the most beautiful parts of this whole story. Up until now, we have been treating the axioms of hypostructure as fixed things---given to us by the structure of the problem. But here is the question that any honest person must eventually ask: how do we *find* these axioms in the first place?
+
+Think about what happens when you encounter a new physical system. You observe trajectories, you measure energy flows, you see patterns. Somewhere in all that data, there is structure waiting to be discovered. The question is: can we build a machine that discovers it automatically?
+
+The answer is yes, and the method is surprisingly simple. We turn the axioms themselves into learnable parameters, and we train them by minimizing how badly they fail to hold. If a candidate energy functional does not decrease along trajectories, that is a measurable error. If the dissipation does not match the entropy production, that is another error. Stack up all these errors, and you have a loss function. Minimize it, and the axioms emerge.
+
+This is not just a clever trick. It is a fundamental statement about what scientific theories *are*. A theory is whatever minimizes the gap between prediction and observation, subject to structural constraints. The hypostructure axioms are those constraints. Meta-learning is the process of discovering them.
+:::
+
 (ch-meta-learning)=
 
 ## Meta-Learning Axioms (The L-Layer)
@@ -154,12 +164,16 @@ where:
 
 :::
 
-**Principle 12.8.2 (Least Structural Defect).** The optimal axiom parameters $\theta^*$ minimize the Meta-Objective:
+:::{prf:observation} Principle of Least Structural Defect
+:label: obs-least-structural-defect
+
+The optimal axiom parameters $\theta^*$ minimize the Meta-Objective:
 $$
 \theta^* = \arg\min_{\theta \in \Theta} \mathcal{S}_{\text{meta}}(\theta).
 $$
+:::
 
-*Interpretation:* The learning process converges to a **stable configuration in theory space**—a parameter setting where structural constraints are satisfied while fitting the observed data.
+*Interpretation:* The learning process converges to a **stable configuration in theory space**---a parameter setting where structural constraints are satisfied while fitting the observed data.
 
 :::{prf:proposition} Variational Characterization
 :label: prop-variational-characterization
@@ -1288,10 +1302,14 @@ $$\sup_{\pi \in \mathfrak{P}} D(\Theta, \Theta^*; S, \pi) \geq \Delta.$$
 
 Equivalently: no parameter at distance at least $r$ from $\Theta^*$ can mimic the defect fingerprints of $\Theta^*$ under *all* probes; there is always some probe that amplifies the discrepancy to at least $\Delta$ in defect space.
 
-**Assumption 13.43 (Sub-Gaussian defect noise).** The noise variables $\xi_t$ are independent, mean-zero, and $\sigma$-sub-Gaussian in each coordinate:
+:::{prf:assumption} Sub-Gaussian defect noise
+:label: assum-sub-gaussian-defect-noise
+
+The noise variables $\xi_t$ are independent, mean-zero, and $\sigma$-sub-Gaussian in each coordinate:
 $$\mathbb{E}[\xi_t] = 0, \quad \mathbb{E}\big[ \exp(\lambda \xi_{t,j}) \big] \leq \exp\Big( \tfrac{1}{2} \sigma^2 \lambda^2 \Big) \quad \forall \lambda \in \mathbb{R}, \forall t, \forall j.$$
 
 Moreover, $\xi_t$ is independent of the probe choices $\pi_s$ and the past noise $\xi_s$ for $s < t$.
+:::
 
 > **[Deps] Structural Dependencies**
 >
@@ -1319,7 +1337,7 @@ for all $\Theta$ with $|\Theta - \Theta^*| \leq \rho$.
 
 2. **(Probe-wise identifiability gap.)** The probe class $\mathfrak{P}$ has a uniform identifiability gap $\Delta > 0$ in the sense of {prf:ref}`def-probe-wise-identifiability-gap`, with some radius $r > 0$.
 
-3. **(Sub-Gaussian defect noise.)** The noise model of Assumption 13.43 holds with parameter $\sigma > 0$.
+3. **(Sub-Gaussian defect noise.)** The noise model of {prf:ref}`assum-sub-gaussian-defect-noise` holds with parameter $\sigma > 0$.
 
 4. **(Local regularity.)** The map $\Theta \mapsto K^{(\Theta)}(S, \pi)$ is Lipschitz in $\Theta$ uniformly over $\pi \in \mathfrak{P}$ in a neighborhood of $\Theta^*$:
 $$\big| K^{(\Theta)}(S, \pi) - K^{(\Theta')}(S, \pi) \big| \leq L |\Theta - \Theta'| \quad \text{for } |\Theta - \Theta^*|, |\Theta' - \Theta^*| \leq \rho.$$
@@ -1381,11 +1399,11 @@ This metatheorem pairs naturally with the **meta-error localization** theorem ({
 
 A central purpose of a hypostructure is not only to fit trajectories, but to make **sharp structural predictions**: which singularity or breakdown scenarios ("failure modes") are *permitted* or *ruled out* by the axioms, barrier constants, and capacities.
 
-In Parts VI–X we developed a "taxonomy" of failure modes and associated **barrier inequalities**: each mode $f$ is excluded when certain barrier constants, exponents, or capacities lie beyond a critical threshold. We now show that, once a trainable hypostructure has sufficiently small axiom-defect risk, its **forbidden failure-mode set** is *exactly the same* as that of the true hypostructure. In other words, the discrete "permit denial" predictions are robust to small learning error.
+The preceding chapters developed a taxonomy of failure modes and associated **barrier inequalities**: each mode $f$ is excluded when certain barrier constants, exponents, or capacities lie beyond a critical threshold. We now show that, once a trainable hypostructure has sufficiently small axiom-defect risk, its **forbidden failure-mode set** is *exactly the same* as that of the true hypostructure. In other words, the discrete "permit denial" predictions are robust to small learning error.
 
 #### Failure modes and barrier thresholds
 
-Let $\mathcal{F}$ denote the (finite or countable) set of failure modes in the taxonomy (e.g. blow-up, loss of uniqueness, loss of conservation, barrier penetration, glassy obstruction, etc.). For each failure mode $f \in \mathcal{F}$, the structural metatheorems of Parts VI–X associate:
+Let $\mathcal{F}$ denote the (finite or countable) set of failure modes in the taxonomy (e.g. blow-up, loss of uniqueness, loss of conservation, barrier penetration, glassy obstruction, etc.). For each failure mode $f \in \mathcal{F}$, the structural metatheorems associate:
 
 - a structural functional $B_f(\mathcal{H})$ (a barrier constant, capacity threshold, exponent, or combination thereof);
 - a critical value or region $B_f^{\mathrm{crit}}$ such that:
@@ -1408,11 +1426,19 @@ We define the **global margin**:
 $$\gamma^* := \inf_{f \in \mathrm{Forbidden}(\mathcal{H}^*)} \gamma_f,$$
 with the convention $\gamma^* > 0$ if the infimum is over a finite set with strictly positive margins.
 
-**Assumption 13.48 (Barrier continuity).** For each failure mode $f \in \mathcal{F}$, the barrier functional $B_f(\mathcal{H})$ is Lipschitz in the structural metric: there exists $L_f > 0$ such that:
-$$\big| B_f(\mathcal{H}) - B_f(\mathcal{H}') \big| \leq L_f \, d_{\mathrm{struct}}(\mathcal{H}, \mathcal{H}') \quad \forall \mathcal{H}, \mathcal{H}' \in \mathfrak{H}(S).$$
+:::{prf:assumption} Barrier continuity
+:label: assum-barrier-continuity
 
-**Assumption 13.49 (Local structural control by risk).** Let $\mathcal{H}_\Theta$ be a parametric hypostructure family and $\mathcal{H}^*$ the true hypostructure. There exist constants $C_{\mathrm{struct}}, \varepsilon_0 > 0$ such that:
+For each failure mode $f \in \mathcal{F}$, the barrier functional $B_f(\mathcal{H})$ is Lipschitz in the structural metric: there exists $L_f > 0$ such that:
+$$\big| B_f(\mathcal{H}) - B_f(\mathcal{H}') \big| \leq L_f \, d_{\mathrm{struct}}(\mathcal{H}, \mathcal{H}') \quad \forall \mathcal{H}, \mathcal{H}' \in \mathfrak{H}(S).$$
+:::
+
+:::{prf:assumption} Local structural control by risk
+:label: assum-local-structural-control
+
+Let $\mathcal{H}_\Theta$ be a parametric hypostructure family and $\mathcal{H}^*$ the true hypostructure. There exist constants $C_{\mathrm{struct}}, \varepsilon_0 > 0$ such that:
 $$\mathcal{R}_S(\Theta) \leq \varepsilon < \varepsilon_0 \implies d_{\mathrm{struct}}(\mathcal{H}_\Theta, \mathcal{H}^*) \leq C_{\mathrm{struct}} \sqrt{\varepsilon}.$$
+:::
 
 This is precisely the local quantitative identifiability from {prf:ref}`mt-trainable-hypostructure-consistency`, translated into structural space by the Defect Reconstruction Theorem.
 
@@ -1438,10 +1464,10 @@ Let $S$ be a system with true hypostructure $\mathcal{H}^* \in \mathfrak{H}(S)$,
 1. **(True hypostructure with strict exclusion margin.)** The true hypostructure $\mathcal{H}^*$ exactly satisfies the axioms (C, D, SC, Cap, LS, TB, Bound, Reg, GC) and excludes a set of failure modes $\mathcal{F}_{\mathrm{forbidden}}^* \subseteq \mathcal{F}$ with positive margin:
 $$\gamma^* := \inf_{f \in \mathcal{F}_{\mathrm{forbidden}}^*} \mathrm{dist}\big( B_f(\mathcal{H}^*), \partial \mathcal{B}_f^{\mathrm{safe}} \big) > 0.$$
 
-2. **(Barrier continuity.)** Each barrier functional $B_f(\mathcal{H})$ is Lipschitz with constant $L_f$ with respect to $d_{\mathrm{struct}}$, as in Assumption 13.48, and:
+2. **(Barrier continuity.)** Each barrier functional $B_f(\mathcal{H})$ is Lipschitz with constant $L_f$ with respect to $d_{\mathrm{struct}}$, as in {prf:ref}`assum-barrier-continuity`, and:
 $$L_{\max} := \max_{f \in \mathcal{F}_{\mathrm{forbidden}}^*} L_f < \infty.$$
 
-3. **(Structural control by defect risk.)** The parametric family $\mathcal{H}_\Theta$ satisfies Assumption 13.49: there exist $C_{\mathrm{struct}}, \varepsilon_0 > 0$ such that:
+3. **(Structural control by defect risk.)** The parametric family $\mathcal{H}_\Theta$ satisfies {prf:ref}`assum-local-structural-control`: there exist $C_{\mathrm{struct}}, \varepsilon_0 > 0$ such that:
 $$\mathcal{R}_S(\Theta) \leq \varepsilon < \varepsilon_0 \implies d_{\mathrm{struct}}(\mathcal{H}_\Theta, \mathcal{H}^*) \leq C_{\mathrm{struct}} \sqrt{\varepsilon}.$$
 
 Then there exists $\varepsilon_1 > 0$ such that for all $\Theta$ with $\mathcal{R}_S(\Theta) \leq \varepsilon_1$:
@@ -1455,13 +1481,13 @@ Thus, once the defect risk is small enough, the **discrete pattern** of forbidde
 :::
 
 :::{prf:proof}
-Fix $\varepsilon > 0$ small, and let $\Theta$ be such that $\mathcal{R}_S(\Theta) \leq \varepsilon$. By structural control (Assumption 13.49):
+Fix $\varepsilon > 0$ small, and let $\Theta$ be such that $\mathcal{R}_S(\Theta) \leq \varepsilon$. By structural control ({prf:ref}`assum-local-structural-control`):
 $$d_{\mathrm{struct}}(\mathcal{H}_\Theta, \mathcal{H}^*) \leq C_{\mathrm{struct}} \sqrt{\varepsilon}.$$
 
 Let $f \in \mathcal{F}_{\mathrm{forbidden}}^*$. By definition of the margin $\gamma^*$:
 $$\mathrm{dist}\big( B_f(\mathcal{H}^*), \partial \mathcal{B}_f^{\mathrm{safe}} \big) \geq \gamma^*.$$
 
-By barrier continuity (Assumption 13.48):
+By barrier continuity ({prf:ref}`assum-barrier-continuity`):
 $$\big| B_f(\mathcal{H}_\Theta) - B_f(\mathcal{H}^*) \big| \leq L_f \, d_{\mathrm{struct}}(\mathcal{H}_\Theta, \mathcal{H}^*) \leq L_f C_{\mathrm{struct}} \sqrt{\varepsilon} \leq L_{\max} C_{\mathrm{struct}} \sqrt{\varepsilon}.$$
 
 Choose $\varepsilon_1 > 0$ small enough that:
@@ -1489,7 +1515,7 @@ $$
 
 :::{prf:remark} Margin is essential
 
-The key ingredient is the **margin** $\gamma^* > 0$: if the true hypostructure barely satisfies a barrier inequality, then arbitrarily small perturbations can change whether a mode is forbidden. The metatheorems in Parts VI--X typically provide such a margin (e.g.\ strict inequalities in energy/capacity thresholds) except in degenerate ``critical'' cases.
+The key ingredient is the **margin** $\gamma^* > 0$: if the true hypostructure barely satisfies a barrier inequality, then arbitrarily small perturbations can change whether a mode is forbidden. The preceding metatheorems typically provide such a margin (e.g., strict inequalities in energy/capacity thresholds) except in degenerate "critical" cases.
 :::
 
 > **Key Insight:** Learning does not just approximate numbers; it stabilizes the *discrete* "permit denial" judgments. Once the defect risk is small enough, trainable hypostructures recover the **exact discrete permit-denial structure** of the underlying PDE/dynamical system.
@@ -1733,13 +1759,21 @@ We assume that at each stage $k$, there exists a **true** parameter $\Theta^*_k 
 
 We write $\Theta^*_{\mathrm{full}} := \Theta^*_K$ for the final-stage parameter.
 
-**Assumption 13.52 (Smooth structural path).** There exists a $C^1$ curve $\gamma : [0,1] \to \Theta_{\mathrm{adm}}$ such that:
+:::{prf:assumption} Smooth structural path
+:label: assum-smooth-structural-path
+
+There exists a $C^1$ curve $\gamma : [0,1] \to \Theta_{\mathrm{adm}}$ such that:
 $$\gamma(t_k) = \Theta^*_k, \quad 0 = t_1 < t_2 < \cdots < t_K = 1,$$
 and $|\dot{\gamma}(t)|$ is bounded on $[0,1]$. We call $\gamma$ the **structural curriculum path**.
+:::
 
-**Assumption 13.53 (Stagewise strong convexity).** For each $k = 1, \ldots, K$, there exist constants $c_k, C_k, \rho_k > 0$ such that:
+:::{prf:assumption} Stagewise strong convexity
+:label: assum-stagewise-strong-convexity
+
+For each $k = 1, \ldots, K$, there exist constants $c_k, C_k, \rho_k > 0$ such that:
 $$c_k |\Theta - \Theta^*_k|^2 \leq \mathcal{R}_k(\Theta) - \mathcal{R}_k(\Theta^*_k) \leq C_k |\Theta - \Theta^*_k|^2$$
 for all $\Theta$ with $|\Theta - \Theta^*_k| \leq \rho_k$.
+:::
 
 We also assume that the gradients $\nabla \mathcal{R}_k$ are Lipschitz in $\Theta$ on these neighborhoods. Let:
 $$c_{\min} := \min_k c_k, \quad C_{\max} := \max_k C_k, \quad \rho := \min_k \rho_k.$$
@@ -1777,9 +1811,9 @@ We consider the following **curriculum training** procedure:
 
 Under the above setting, suppose:
 
-1. **(Smooth curriculum path.)** Assumption 13.52 holds, and $|\dot{\gamma}(t)| \leq M$ for all $t \in [0,1]$.
+1. **(Smooth curriculum path.)** {prf:ref}`assum-smooth-structural-path` holds, and $|\dot{\gamma}(t)| \leq M$ for all $t \in [0,1]$.
 
-2. **(Stagewise strong convexity.)** Assumption 13.53 holds uniformly: $c_{\min} > 0$, $C_{\max} < \infty$, $\rho > 0$.
+2. **(Stagewise strong convexity.)** {prf:ref}`assum-stagewise-strong-convexity` holds uniformly: $c_{\min} > 0$, $C_{\max} < \infty$, $\rho > 0$.
 
 3. **(Small curriculum steps.)** The time steps $t_k$ are chosen such that:
 $$|\Theta^*_{k+1} - \Theta^*_k| = |\gamma(t_{k+1}) - \gamma(t_k)| \leq \frac{\rho}{4} \quad \text{for all } k.$$
@@ -1808,7 +1842,7 @@ If, moreover, we let the number of stages $K \to \infty$ so that $\max_k(t_{k+1}
 :::{prf:proof}
 We argue by induction on the curriculum stages.
 
-**Base case ($k = 1$).** By assumption, we choose $\Theta^{(1)}_0$ close to $\Theta^*_1$, in particular $|\Theta^{(1)}_0 - \Theta^*_1| \leq \rho/2$. By stagewise strong convexity (Assumption 13.53) and standard convergence results for gradient descent on strongly convex, smooth functions, the iterates $\Theta^{(1)}_t$ remain in the ball $B(\Theta^*_1, \rho)$ and converge to the unique minimizer $\Theta^*_1$. For sufficiently long training and small enough step sizes:
+**Base case ($k = 1$).** By assumption, we choose $\Theta^{(1)}_0$ close to $\Theta^*_1$, in particular $|\Theta^{(1)}_0 - \Theta^*_1| \leq \rho/2$. By stagewise strong convexity ({prf:ref}`assum-stagewise-strong-convexity`) and standard convergence results for gradient descent on strongly convex, smooth functions, the iterates $\Theta^{(1)}_t$ remain in the ball $B(\Theta^*_1, \rho)$ and converge to the unique minimizer $\Theta^*_1$. For sufficiently long training and small enough step sizes:
 $$|\widehat{\Theta}_1 - \Theta^*_1| \leq \rho/4.$$
 
 **Induction step.** Suppose that at stage $k$ we have $|\widehat{\Theta}_k - \Theta^*_k| \leq \rho/4$.
@@ -2365,18 +2399,26 @@ In this section we formalize this as an **equivariance metatheorem**: under natu
 
 Let $G$ be a (locally compact) group acting on the state space $X$ and on the class of systems $S$. For each $g \in G$, we denote by $g \cdot S$ the transformed system obtained by pushing forward the dynamics under $g$ (e.g. conjugating the semiflow by $g$).
 
-**Assumption 13.57 (Group-covariant system distribution).** Let $\mathcal{S}$ be a distribution on systems $S$. We assume $\mathcal{S}$ is $G$-invariant:
+:::{prf:assumption} Group-covariant system distribution
+:label: assum-group-covariant-distribution
+
+Let $\mathcal{S}$ be a distribution on systems $S$. We assume $\mathcal{S}$ is $G$-invariant:
 $$S \sim \mathcal{S} \implies g \cdot S \sim \mathcal{S} \quad \forall g \in G.$$
 
 Equivalently, for any measurable set of systems $\mathcal{A}$, $\mathcal{S}(\mathcal{A}) = \mathcal{S}(g \cdot \mathcal{A})$.
+:::
 
 Let $\Theta_{\mathrm{adm}}$ be the parameter space of a hypostructure family $\{\mathcal{H}_\Theta\}_{\Theta \in \Theta_{\mathrm{adm}}}$, with:
 $$\mathcal{H}_\Theta(S) = (X_S, S_t, \Phi_{\Theta,S}, \mathfrak{D}_{\Theta,S}, G_{\Theta,S})$$
 the hypostructure associated to system $S$ and parameter $\Theta$.
 
-**Assumption 13.58 (Equivariant parametrization).** There is a group action of $G$ on $\Theta_{\mathrm{adm}}$, denoted $(g, \Theta) \mapsto g \cdot \Theta$, such that for all $g \in G$, systems $S$, and parameters $\Theta$:
+:::{prf:assumption} Equivariant parametrization
+:label: assum-equivariant-parametrization
+
+There is a group action of $G$ on $\Theta_{\mathrm{adm}}$, denoted $(g, \Theta) \mapsto g \cdot \Theta$, such that for all $g \in G$, systems $S$, and parameters $\Theta$:
 $$g \cdot \mathcal{H}_\Theta(S) \simeq \mathcal{H}_{g \cdot \Theta}(g \cdot S)$$
 in the Hypo category, i.e. the hypostructure induced by first transforming $\Theta$ and $S$ by $G$ coincides (up to Hypo-isomorphism) with the pushforward of $\mathcal{H}_\Theta(S)$ by $g$.
+:::
 
 Intuitively, this means the family $\{\mathcal{H}_\Theta\}$ is expressive enough and parametrized in such a way that group transformations commute with hypostructure construction, up to the usual notion of "same" hypostructure (gauge).
 
@@ -2387,7 +2429,10 @@ $$\mathcal{R}_S(\Theta) := \sum_{A \in \mathcal{A}} w_A \mathcal{R}_{A,S}(\Theta
 constructed from the defect functionals $K_{A,S}^{(\Theta)}$. The **average risk** over $\mathcal{S}$ is:
 $$\mathcal{R}_{\mathcal{S}}(\Theta) := \mathbb{E}_{S \sim \mathcal{S}}[\mathcal{R}_S(\Theta)].$$
 
-**Assumption 13.59 (Group-invariance of defects and trajectories).** For each $g \in G$, the following hold:
+:::{prf:assumption} Group-invariance of defects and trajectories
+:label: assum-group-invariance-defects
+
+For each $g \in G$, the following hold:
 
 1. The transformation $u \mapsto g \cdot u$ maps trajectories of $S$ to trajectories of $g \cdot S$, and preserves the trajectory measure (or transforms it in a controlled way that cancels in expectation):
 $$\mu_{g \cdot S} = (g \cdot)_\# \mu_S.$$
@@ -2396,6 +2441,7 @@ $$\mu_{g \cdot S} = (g \cdot)_\# \mu_S.$$
 $$K_{A, g \cdot S}^{(g \cdot \Theta)}(g \cdot u) = K_{A,S}^{(\Theta)}(u) \quad \text{for all } A \in \mathcal{A}, u \in \mathcal{U}_S.$$
 
 In particular, $\mathcal{R}_{g \cdot S}(g \cdot \Theta) = \mathcal{R}_S(\Theta)$.
+:::
 
 :::{prf:lemma} Risk equivariance
 :label: lem-risk-equivariance
@@ -2480,8 +2526,8 @@ where the last equality uses the relation between gradients and the group action
 
 The key hypotheses are:
 
-- **Equivariant parametrization** of the hypostructure family (Assumption 13.58), and
-- **Defect-level equivariance** (Assumption 13.59).
+- **Equivariant parametrization** of the hypostructure family ({prf:ref}`assum-equivariant-parametrization`), and
+- **Defect-level equivariance** ({prf:ref}`assum-group-invariance-defects`).
 
 Together, they ensure that ``write down the axioms, compute defects, average risk, and optimize'' defines a $G$-equivariant learning problem.
 :::
@@ -2508,7 +2554,15 @@ This is a structural analogue of standard results for equivariant neural network
 
 ## The General Loss Functional
 
-This chapter defines a training objective for systems that instantiate, verify, and optimize over hypostructures. The goal is to train a parametrized system to identify hypostructures, fit soft axioms, and solve the associated variational problems.
+:::{div} feynman-prose
+Here is the practical question that faces anyone who wants to build a system that *discovers* physics rather than having it programmed in: what should the loss function be?
+
+The answer has four pieces, and each one corresponds to a different aspect of what it means to "understand" a physical system. First, you need to get the *structure* right---the energy functional, the dissipation, the symmetries. Second, the axioms should actually hold---dissipation should be non-negative, energy should decrease along trajectories, barriers should block forbidden transitions. Third, when the axioms define variational problems (like "find the minimum energy path"), you want to solve those problems well. Fourth, and this is the clever part, you want the system to *adapt quickly* to new physics---to have learned generalizable patterns rather than memorizing specifics.
+
+Put these together and you get a loss function that looks like physics regularized by meta-learning. The system is rewarded not just for fitting data, but for discovering *structure* that transfers across problems. This is why it works: the inductive bias of hypostructure is exactly the bias toward learnable, generalizable physics.
+:::
+
+This section defines a training objective for systems that instantiate, verify, and optimize over hypostructures. The goal is to train a parametrized system to identify hypostructures, fit soft axioms, and solve the associated variational problems.
 
 ### Overview and problem formulation
 
@@ -2743,6 +2797,16 @@ The combination of these four loss components produces a system that instantiate
 ---
 
 ### The Learnability Threshold
+
+:::{div} feynman-prose
+Here is something that should make you sit up. There is a fundamental limit to what any learning agent can learn, and it has nothing to do with the architecture of your neural network or the cleverness of your optimization algorithm. It is a *thermodynamic* limit.
+
+The key insight is this: every dynamical system generates information at some rate---this is the Kolmogorov-Sinai entropy, which measures how many new bits of unpredictable behavior appear per unit time. And every learning agent can *absorb* information at some rate---this is the channel capacity of the learning process itself.
+
+When the system generates information faster than the agent can absorb it, something fundamental must give. The agent cannot learn the microscopic dynamics, period. No amount of training will help. The gap between what the system produces and what the agent can capture becomes *noise*---not because it is random in any ontological sense, but because the agent lacks the capacity to track it.
+
+But here is the beautiful thing: the agent does not just give up. It automatically discovers a *coarse-grained* description---a set of slow, predictable variables that *can* be tracked. The agent becomes a physicist, discovering effective theories. This is not programmed in. It *emerges* from the capacity constraint.
+:::
 
 This section establishes the fundamental dichotomy in learning: the transition between **perfect reconstruction** and **statistical modeling** is not a choice of algorithm, but a threshold controlled by the ratio of system entropy to agent capacity. This formalizes the $\Omega$-Layer interface between the System (Reality) and the Agent (The Learner).
 
@@ -3145,9 +3209,9 @@ There exists a reconstruction operator $\mathcal{R}: \mathsf{Sig}(\Theta) \mapst
 :::
 
 :::{prf:proof}
-**Step 1 (Recover $S_t$ from $K_C$).** By Definition 13.1, $K_C^{(\Theta)}(u) := \|S_t(u(s)) - u(s+t)\|$ for appropriate $s, t$. Axiom (C) and (Reg) ensure that true trajectories are exactly those with $K_C = 0$ (Lemma 13.4). Since $\mathcal{U}$ is closed under time shifts (A1), the unique semiflow $S_t$ is determined as the one whose orbits saturate the zero-defect locus of $K_C$.
+**Step 1 (Recover $S_t$ from $K_C$).** By {prf:ref}`def-parametric-defect-functional`, $K_C^{(\Theta)}(u) := \|S_t(u(s)) - u(s+t)\|$ for appropriate $s, t$. Axiom (C) and (Reg) ensure that true trajectories are exactly those with $K_C = 0$ ({prf:ref}`lem-defect-characterization`). Since $\mathcal{U}$ is closed under time shifts (A1), the unique semiflow $S_t$ is determined as the one whose orbits saturate the zero-defect locus of $K_C$.
 
-**Step 2 (Recover $\partial_t \Phi_\Theta + \mathfrak{D}_\Theta$ from $K_D$).** By Definition 13.1:
+**Step 2 (Recover $\partial_t \Phi_\Theta + \mathfrak{D}_\Theta$ from $K_D$).** By {prf:ref}`def-parametric-defect-functional`:
 $$K_D^{(\Theta)}(u) = \int_T \max\big(0, \partial_t \Phi_\Theta(u(t)) + \mathfrak{D}_\Theta(u(t))\big) \, dt.$$
 Axiom (D) requires $\partial_t \Phi_\Theta + \mathfrak{D}_\Theta \leq 0$ along trajectories. Thus $K_D^{(\Theta)}(u) = 0$ if and only if the energy-dissipation balance holds exactly. The zero-defect condition identifies the canonical dissipation-saturated representative.
 
@@ -3234,7 +3298,7 @@ The hypotheses (C1)--(C3) cannot be absorbed into the hypostructure axioms:
 1. **Nondegenerate parametrization (C2)** concerns the human choice of coordinates on the space of hypostructures. The axioms constrain $(\Phi, \mathfrak{D}, \ldots)$ once chosen, but do not force any particular parametrization to be injective or Lipschitz. This is about representation, not physics.
 2. **Data richness (C1)** concerns the observer's sampling procedure. The axioms determine what trajectories can exist; they do not guarantee that a given dataset $\mathcal{U}$ actually samples them representatively. This is about epistemics, not dynamics.
 
-Everything else---structure reconstruction, canonical Lyapunov, barrier constants, scaling exponents, failure mode classification---follows from the axioms and the metatheorems derived in Parts IV--VI.
+Everything else---structure reconstruction, canonical Lyapunov, barrier constants, scaling exponents, failure mode classification---follows from the axioms and the preceding metatheorems.
 :::
 
 :::{prf:corollary} Foundation for trainable hypostructures
@@ -3246,7 +3310,19 @@ The Meta-Identifiability Theorem provides the theoretical foundation for the gen
 
 (ch-agi-limit)=
 
-## The AGI Limit (The Ω-Layer)
+## The AGI Limit (The Omega-Layer)
+
+:::{div} feynman-prose
+Now we come to the question that has been lurking in the background all along: what is the *status* of this framework itself?
+
+Look, we have spent all these pages developing a theory of how to learn physics from data. But the framework itself is a theory. And the learner that uses the framework is a physical system. So there is a loop here. The framework describes systems that learn frameworks. Can it describe itself?
+
+This is not philosophy. It is a concrete mathematical question, and it has a concrete answer. The answer comes from a beautiful connection between algorithmic information theory and categorical logic. Think of all possible scientific theories as points in a space, where distance measures how different two theories are. Then ask: what happens when an ideal learner explores this space, guided by the principle of finding the simplest theory that fits the data?
+
+The answer is that it converges to a fixed point. And that fixed point has a special property: it is the theory that correctly describes *the process of scientific discovery itself*. The hypostructure framework is not arbitrary. It is the unique self-consistent description of how bounded agents can learn structure from observation.
+
+This is what I call the Omega-Layer: the place where the framework bites its own tail and finds that it fits.
+:::
 
 *The self-referential consistency of the Hypostructure framework via Algorithmic Information Theory and Categorical Logic.*
 
@@ -3254,9 +3330,9 @@ The Meta-Identifiability Theorem provides the theoretical foundation for the gen
 
 #### Motivation
 
-The preceding chapters established the Hypostructure as a framework for describing physical systems. A natural question arises: what is the status of the framework itself? Is it merely one theory among many, or does it occupy a distinguished position in the space of possible theories?
+The preceding sections established the Hypostructure as a framework for describing physical systems. A natural question arises: what is the status of the framework itself? Is it merely one theory among many, or does it occupy a distinguished position in the space of possible theories?
 
-This chapter addresses this question using **Algorithmic Information Theory** [@Kolmogorov65; @Chaitin66; @Solomonoff64] and **Categorical Logic** [@Lawvere69; @MacLane71]. We prove that the Hypostructure is the **fixed point** of optimal scientific inquiry—the theory that an ideal learning agent must converge to.
+This section addresses this question using **Algorithmic Information Theory** [@Kolmogorov65; @Chaitin66; @Solomonoff64] and **Categorical Logic** [@Lawvere69; @MacLane71]. We prove that the Hypostructure is the **fixed point** of optimal scientific inquiry---the theory that an ideal learning agent must converge to.
 
 #### Formal Definitions
 

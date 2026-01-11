@@ -1,5 +1,13 @@
 # Part V: The Kernel
 
+:::{div} feynman-prose
+Now we come to the heart of the matter. In Part IV we saw the sieve diagram---all those nodes and edges and colored boxes. But a diagram is just a picture. What makes it a *proof* rather than a pretty flowchart?
+
+Here is the key insight: every time the sieve moves from one node to another, it produces a *certificate*---a formal witness that says "I checked this property, and here is the evidence." These certificates accumulate. By the time we reach VICTORY, we do not just *claim* global regularity; we have built up an auditable trail of evidence that can be machine-verified.
+
+This is what computer scientists call a "proof-carrying program." The execution *is* the proof. You cannot separate the two. If the sieve says a system is regular, you can ask to see the receipts---and they will be there.
+:::
+
 (sec-sieve-proof-carrying)=
 ## The Sieve as a Proof-Carrying Program
 
@@ -26,10 +34,25 @@ The sieve contains the following node classes:
 
 :::
 
+:::{div} feynman-prose
+Think of an epoch like a single pass through airport security. You start at the entrance, you go through various checkpoints---metal detector, bag scanner, maybe a secondary inspection---and you end up either at your gate (VICTORY), turned away (failure mode), or sent back to try again with modified equipment (surgery re-entry).
+
+The crucial property is that each pass is *finite*. You cannot get stuck in an infinite loop within a single epoch. The DAG structure guarantees this.
+:::
+
 ---
 
 (sec-operational-semantics)=
 ## Operational Semantics
+
+:::{div} feynman-prose
+Now let us be precise about what happens at each node. This is the operational semantics---the rules of the game. We need to specify:
+- What is a "state" of the system?
+- What does it mean to "evaluate" a node?
+- How do certificates flow from node to node?
+
+The beauty of this formalism is that once we fix these definitions, the sieve becomes a deterministic machine. Given the same input, it will always produce the same output. There is no ambiguity, no room for hand-waving.
+:::
 
 :::{prf:definition} State space
 :label: def-state-space
@@ -90,10 +113,32 @@ This ensures the sieve is deterministic: UNKNOWN is conservatively treated as NO
 
 :::
 
+:::{div} feynman-prose
+Here is a point that trips people up: Why do we treat UNKNOWN as NO? Is that not overly conservative?
+
+Think about it this way. The sieve is trying to *prove* regularity. If we cannot prove a property holds, we cannot claim victory on that basis. So we route to the barrier layer, which gives us a second chance to establish a weaker condition. If the barrier also fails, we try surgery.
+
+The key insight is that the NO-inconclusive certificate ($K^{\mathrm{inc}}$) is *different* from a NO-with-witness certificate ($K^{\mathrm{wit}}$). The former says "I could not prove it"; the latter says "I found a counterexample." Only the latter is fatal. The former triggers reconstruction---maybe we need a better proof technique, or more refined templates, or additional assumptions.
+
+This is honest bookkeeping. We do not pretend to know things we do not know.
+:::
+
 ---
 
 (sec-permit-vocabulary)=
 ## Permit Vocabulary and Certificate Types
+
+:::{div} feynman-prose
+Now we catalog the different kinds of certificates the sieve can produce. Think of this as the vocabulary of the proof language.
+
+There are several categories:
+- **Gate permits**: The basic YES/NO certificates from the blue diagnostic nodes
+- **Barrier permits**: Blocked/Breached certificates from the orange fallback checks
+- **Surgery permits**: Re-entry certificates that authorize resuming the sieve after a repair
+- **Promotion permits**: Certificates that upgrade weaker guarantees to stronger ones
+
+The beautiful thing is that all these certificates fit together like puzzle pieces. The precondition of one node is satisfied by the postcondition of another. The whole system is type-safe in a precise sense.
+:::
 
 :::{prf:definition} Gate permits
 :label: def-gate-permits
@@ -160,6 +205,14 @@ YES$^\sim$ permits are accepted by metatheorems that tolerate equivalence.
 
 :::
 
+:::{div} feynman-prose
+The YES-tilde permit captures a subtle but important idea. Sometimes we cannot prove a property holds for an object $x$ directly, but we *can* prove it holds for an equivalent object $\tilde{x}$.
+
+For example, suppose we have a function that is messy in one coordinate system but simple in another. We prove the property in the simple coordinates, then transport the result back. The YES$^\sim$ certificate is the formal record of this maneuver.
+
+This is not cheating---the equivalence itself must be certified. We record exactly what equivalence move was made and prove it was legitimate. The whole chain is auditable.
+:::
+
 :::{prf:definition} Promotion permits
 :label: def-promotion-permits
 
@@ -201,10 +254,35 @@ This makes inc-upgrades structurally symmetric with blocked-certificate promotio
 
 :::
 
+:::{div} feynman-prose
+Let me make sure you understand what promotion and inc-upgrades are really doing. They are the mechanism by which the sieve learns from its own execution.
+
+Consider this scenario: You fail a check early in the sieve, but later checks provide additional information. With that new information, your original "failure" might now be dischargeable. The promotion rules let us retroactively upgrade a blocked certificate to a full YES.
+
+This is not changing history---it is recognizing that the context has changed. The certificate system tracks dependencies precisely, so we know exactly when such upgrades are valid.
+
+The inc-upgrade rules work similarly for inconclusive certificates. If you could not prove something because you were missing prerequisite facts, and those facts are established later, your inconclusive verdict can be upgraded to a definite YES.
+
+This is how the sieve achieves robustness: it does not give up just because facts arrive out of order.
+:::
+
 ---
 
 (sec-kernel-theorems)=
 ## Kernel Theorems
+
+:::{div} feynman-prose
+Now we prove the fundamental guarantees of the sieve. These are the theorems that make everything work:
+
+1. **DAG structure**: The sieve has no cycles, so execution cannot loop forever
+2. **Epoch termination**: Each pass through the sieve finishes in finite time
+3. **Finite runs**: The entire execution (including surgeries) terminates
+4. **Soundness**: Every transition is certificate-justified---no cheating allowed
+
+These are not merely desirable properties; they are *necessary* for the sieve to function as a proof system. Without termination, we could not claim to have a decision procedure. Without soundness, our certificates would be meaningless.
+
+Let us prove each one.
+:::
 
 :::{prf:theorem} DAG structure
 :label: thm-dag
@@ -223,6 +301,14 @@ The sieve diagram is a directed acyclic graph (DAG). All edges, including dotted
 
 By inspection of the diagram: all solid edges flow downward (increasing node number or to barriers/modes), and all dotted surgery edges target nodes strictly later in the flow than their source mode. The restoration subtree (7a--7d) only exits forward to TopoCheck or TameCheck.
 
+:::
+
+:::{div} feynman-prose
+You might worry: what about the surgery re-entry arrows? Those dotted lines go back up the diagram---are they not backward edges that could create cycles?
+
+The key is in the word "strictly later." When surgery S7 (say) re-enters at TopoCheck, it enters at a node that is *topologically later* than the failure mode that triggered it. The node numbering respects the DAG structure. So even though the dotted arrow points upward visually, it points forward in the partial order.
+
+This is a crucial design constraint on the sieve diagram. It is not an accident.
 :::
 
 :::{prf:theorem} Epoch termination
@@ -268,6 +354,14 @@ The total number of distinct surgery types is finite (at most 17, one per failur
 
 :::
 
+:::{div} feynman-prose
+This is the deep theorem. A single epoch terminates by the DAG property---but what about the surgeries? Each surgery re-enters the sieve, potentially triggering more surgeries. Could this go on forever?
+
+The answer is no, and the reason is physics (or its mathematical abstraction). Each surgery must make *progress*---either by bounded count (there can only be so many surgeries of type X) or by decreasing some well-founded measure (like energy). You cannot keep cutting away at something forever without eventually finishing.
+
+This is why the progress measures ({prf:ref}`def-progress-measures`) are so important. They are not just bookkeeping; they are the formal guarantees that the surgical repair process terminates.
+:::
+
 :::{prf:theorem} Soundness
 :label: thm-soundness
 
@@ -285,6 +379,14 @@ Every transition in a sieve run is certificate-justified. Formally, if the sieve
 
 By construction: {prf:ref}`def-node-evaluation` requires each node evaluation to produce a certificate, and {prf:ref}`def-edge-validity` requires edge validity.
 
+:::
+
+:::{div} feynman-prose
+Soundness is a "by construction" property. We designed the sieve so that you *cannot* take a transition without producing a certificate that justifies it. The definitions force this.
+
+This might seem trivial---of course if you define everything to produce certificates, it will produce certificates. But the non-trivial content is in the *coherence* of the certificates. The certificate from node A must actually imply the precondition of node B for the edge A-to-B to be valid. This is checked at design time (when we build the sieve diagram) and at runtime (when we verify the certificates).
+
+The result is a complete audit trail. Every claim can be traced back to its justification.
 :::
 
 :::{prf:definition} Fingerprint
@@ -322,11 +424,21 @@ where $\Gamma_0 = \Gamma$ and $\Gamma_{n+1}$ applies all applicable immediate an
 :label: thm-closure-termination
 :class: rigor-class-f
 
-**Rigor Class:** F (Framework-Original) — see {prf:ref}`def-rigor-classification`
+**Rigor Class:** F (Framework-Original) --- see {prf:ref}`def-rigor-classification`
 
 Under the certificate finiteness condition ({prf:ref}`def-cert-finite`), the promotion closure $\mathrm{Cl}(\Gamma)$ is computable in finite time. Moreover, the closure is independent of the order in which upgrade rules are applied.
 
 **Literature:** Knaster-Tarski fixed-point theorem {cite}`Tarski55`; Kleene iteration {cite}`Kleene52`; lattice theory {cite}`DaveyPriestley02`
+:::
+
+:::{div} feynman-prose
+Here is a theorem that sounds technical but has a beautiful meaning. When you have a bag of certificates and you want to compute all the consequences---all the promotions and upgrades that follow---you keep applying rules until nothing new happens. This process is called taking the "closure."
+
+The question is: does this terminate? And does it matter what order you apply the rules?
+
+The answers are: yes (under finiteness conditions), and no (the order does not matter). This is the Knaster-Tarski fixed point theorem at work. The closure is unique---there is exactly one "complete" context that contains all consequences of your initial certificates.
+
+This is crucial for reproducibility. Two implementations of the sieve that start with the same certificates will compute the same closure, even if they apply rules in different orders.
 :::
 
 :::{prf:proof}
@@ -404,6 +516,18 @@ The certificate structure ({prf:ref}`def-typed-no-certificates`) ensures these a
 
 :::
 
+:::{div} feynman-prose
+The NO-inconclusive certificate is one of the most important innovations in this framework. It represents epistemic humility formalized.
+
+When you cannot prove something, there are two very different situations:
+1. You found a counterexample (you *know* it is false)
+2. You ran out of techniques (you *do not know* either way)
+
+Traditional systems often conflate these. The sieve keeps them separate. Case 1 is a genuine failure---the system has a defect that cannot be repaired. Case 2 is an opportunity for improvement---maybe we need better templates, or a different proof strategy, or additional assumptions.
+
+This distinction is not academic. It determines whether the sieve terminates at FATAL ERROR (structural inconsistency confirmed, no hope) or routes to reconstruction (try harder, expand capabilities, ask for help).
+:::
+
 :::{prf:definition} Obligation ledger
 :label: def-obligation-ledger
 
@@ -442,4 +566,12 @@ Equivalently, all NO-inconclusive obligations relevant to the goal have been dis
 
 **Consequence:** An `inc` certificate whose type lies outside $\Downarrow(K_{\mathrm{Goal}})$ does not affect proof completion for that goal.
 
+:::
+
+:::{div} feynman-prose
+The proof completion criterion is subtle but crucial. It is not enough to reach a "VICTORY" node---we need to make sure there are no lingering obligations that could undermine the proof.
+
+The goal dependency cone tells us which obligations matter. If you are trying to prove global regularity, you do not care about an inconclusive certificate for some auxiliary calculation that is not in the dependency chain. But if a certificate in the cone is inconclusive, your proof is incomplete.
+
+Think of it like a legal chain of custody. Every link in the chain must be solid. A broken link outside the chain does not matter; a broken link inside the chain invalidates everything downstream.
 :::

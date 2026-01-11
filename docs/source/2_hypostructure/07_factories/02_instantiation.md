@@ -4,8 +4,24 @@ title: "Instantiation Protocol"
 
 # Part XIII: Instantiation
 
+:::{div} feynman-prose
+Now we come to the part where theory meets practice. You have all these beautiful metatheorems from Part XII saying "there exist factories that build verifiers" and "there exist barriers with correct properties." Wonderful. But the working mathematician or engineer asks: "Fine, but how do I actually use this thing?"
+
+That is what instantiation is about. We are going to show you the complete recipe for taking a specific PDE, or a Markov chain, or an optimization algorithm, and plugging it into the Sieve framework so that all those theoretical guarantees actually apply to your problem.
+
+The key insight is this: the user supplies the physics (the energy functional, the symmetries, the natural scales), and the framework supplies the logic (the verification machinery, the barrier implementations, the surgery recipes). The separation is clean. You do not need to reinvent the regularity theory; you just need to tell the system what your problem looks like.
+:::
+
 (sec-certificate-generator-library)=
 ## Certificate Generator Library
+
+:::{div} feynman-prose
+Here is where the rubber meets the road. Every gate in the Sieve produces a certificate when it passes or fails. But where do these certificates come from? Not from thin air. They come from actual mathematical theorems that have been proven over decades of work by analysts, geometers, and probabilists.
+
+This table is the Rosetta Stone. On the left: the Sieve nodes with their abstract names. On the right: the concrete mathematical tools that power them. When EnergyCheck says "YES," it is because someone (maybe Gronwall, maybe the user) proved an energy inequality. When BarrierSat blocks, it is Foster-Lyapunov theory doing the work under the hood.
+
+The beauty is that you do not have to know all this literature to use the framework. But if you want to understand why the certificates are trustworthy, here is exactly where to look.
+:::
 
 The **Certificate Generator Library** maps standard literature lemmas to permits:
 
@@ -35,9 +51,18 @@ The **Certificate Generator Library** maps standard literature lemmas to permits
 (sec-minimal-instantiation-checklist)=
 ## Minimal Instantiation Checklist
 
+:::{div} feynman-prose
+Here is the question that matters: what is the absolute minimum you need to provide to get the Sieve running on your problem?
+
+The answer is surprisingly short. Eight pieces of information. That is it. You tell the system what your state space is, what energy means, what dissipation looks like, and a few optional extras depending on your problem type. Everything else—the gate evaluators, the barriers, the surgery protocols, the Lock tactics—gets compiled automatically from the factory metatheorems.
+
+This is the power of abstraction done right. We have factored out the common structure of regularity theory across dozens of problem classes, and what remains for the user is just the irreducible physics of their specific problem.
+
+Let me walk you through what happens when you provide these eight items. The framework takes your definitions and runs them through five factories in sequence. Each factory produces implementations that depend only on your input and on previous factory outputs—never on future outputs. This acyclic structure is what guarantees the whole thing terminates and makes sense.
+:::
+
 :::{prf:theorem} [FACT-Instantiation] Instantiation Metatheorem
 :label: mt-fact-instantiation
-:class: metatheorem
 
 For any system of type $T$ with user-supplied functionals, there exists a canonical sieve implementation satisfying all contracts:
 
@@ -109,10 +134,34 @@ The trichotomy is exhaustive: at each node, the verifier returns YES, NO-with-wi
 $\square$
 :::
 
+:::{div} feynman-prose
+Let me make sure you understand what just happened in that proof. The six steps tell a complete story:
+
+**Factory composition** (Step 1): Your definitions flow through the five factories like an assembly line. Each factory adds more structure. By the end, you have a complete, working Sieve implementation.
+
+**Non-circularity** (Step 2): This is crucial. Nothing depends on itself. The factories are numbered in dependency order. This is not an accident; it is the whole architecture.
+
+**Soundness inheritance** (Step 3): If each factory does its job correctly, the composition does its job correctly. This is transitivity of correctness, and it is why we can trust the output.
+
+**Contract satisfaction** (Step 4): Every gate knows what it needs (preconditions) and what it produces (postconditions). The factory composition ensures these match up at every edge in the Sieve graph.
+
+**Termination** (Step 5): The Sieve always finishes. This is not obvious! With surgery loops and barrier re-evaluations, you might worry about infinite cycling. But the well-founded progress measure kills that worry dead.
+
+**Output trichotomy** (Step 6): At the end, you get exactly one of three things: global regularity (VICTORY), a surgery path to try again, or an honest admission of incompleteness. No fourth option. No silent failures.
+:::
+
 ---
 
 (sec-metatheorem-unlock-table)=
 ## Metatheorem Unlock Table
+
+:::{div} feynman-prose
+Now here is something beautiful. The metatheorems from earlier in this document are not just abstract guarantees—they are unlockable achievements. When the Sieve runs and produces certain certificates, those certificates unlock the ability to apply specific metatheorems.
+
+Think of it like a video game. You cannot use the "Type II Exclusion" power until you have collected both the subcriticality badge (from ScaleCheck) and the energy badge (from EnergyCheck). The table below tells you exactly which badges unlock which powers.
+
+This is the semantic content of the certificates. They are not just "passed" or "failed" labels; they are mathematical claims that enable downstream reasoning.
+:::
 
 The following table specifies which metatheorems are unlocked by which certificates:
 
@@ -133,28 +182,36 @@ The following table specifies which metatheorems are unlocked by which certifica
 (sec-diagram-specification-cross-reference)=
 ## Diagram ↔ Specification Cross-Reference
 
+:::{div} feynman-prose
+Finally, we come to the bookkeeping. If you have been reading the Sieve diagrams elsewhere in this book and wondering "Where is the formal definition of this node?"—here is your answer.
+
+This cross-reference table is not exciting, but it is essential. When debugging a Sieve run, or when trying to understand why a particular gate behaved the way it did, you need to find the formal specification quickly. Each row gives you the node number, its name in diagrams, and the exact label of its formal definition.
+
+Notice that some nodes have associated barriers and some do not. The nodes without barriers are purely diagnostic—they route information but do not block execution. The nodes with barriers are the workhorses that actually enforce constraints on the system's behavior.
+:::
+
 The following table provides a complete cross-reference between diagram node names and their formal definitions:
 
 | **Node** | **Diagram Label** | **Predicate Def.** | **Barrier/Surgery** |
 |---|---|---|---|
-| 1 | EnergyCheck | {ref}`def-node-energy` | BarrierSat ({ref}`def-barrier-sat`) |
-| 2 | ZenoCheck | {ref}`def-node-zeno` | BarrierCausal ({ref}`def-barrier-causal`) |
-| 3 | CompactCheck | {ref}`def-node-compact` | BarrierScat ({ref}`def-barrier-scat`) |
-| 4 | ScaleCheck | {ref}`def-node-scale` | BarrierTypeII ({ref}`def-barrier-type2`) |
-| 5 | ParamCheck | {ref}`def-node-param` | BarrierVac ({ref}`def-barrier-vac`) |
-| 6 | GeomCheck | {ref}`def-node-geom` | BarrierCap ({ref}`def-barrier-cap`) |
-| 7 | StiffnessCheck | {ref}`def-node-stiffness` | BarrierGap ({ref}`def-barrier-gap`) |
-| 7a | BifurcateCheck | {ref}`def-node-bifurcate` | Mode S.D |
-| 7b | SymCheck | {ref}`def-node-sym` | --- |
-| 7c | CheckSC | {ref}`def-node-checksc` | ActionSSB ({ref}`def-action-ssb`) |
-| 7d | CheckTB | {ref}`def-node-checktb` | ActionTunnel ({ref}`def-action-tunnel`) |
-| 8 | TopoCheck | {ref}`def-node-topo` | BarrierAction ({ref}`def-barrier-action`) |
-| 9 | TameCheck | {ref}`def-node-tame` | BarrierOmin ({ref}`def-barrier-omin`) |
-| 10 | ErgoCheck | {ref}`def-node-ergo` | BarrierMix ({ref}`def-barrier-mix`) |
-| 11 | ComplexCheck | {ref}`def-node-complex` | BarrierEpi ({ref}`def-barrier-epi`) |
-| 12 | OscillateCheck | {ref}`def-node-oscillate` | BarrierFreq ({ref}`def-barrier-freq`) |
-| 13 | BoundaryCheck | {ref}`def-node-boundary` | --- |
-| 14 | OverloadCheck | {ref}`def-node-overload` | BarrierBode ({ref}`def-barrier-bode`) |
-| 15 | StarveCheck | {ref}`def-node-starve` | BarrierInput ({ref}`def-barrier-input`) |
-| 16 | AlignCheck | {ref}`def-node-align` | BarrierVariety ({ref}`def-barrier-variety`) |
-| 17 | BarrierExclusion | {ref}`def-node-lock` | Lock ({ref}`sec-lock`) |
+| 1 | EnergyCheck | {prf:ref}`def-node-energy` | BarrierSat ({prf:ref}`def-barrier-sat`) |
+| 2 | ZenoCheck | {prf:ref}`def-node-zeno` | BarrierCausal ({prf:ref}`def-barrier-causal`) |
+| 3 | CompactCheck | {prf:ref}`def-node-compact` | BarrierScat ({prf:ref}`def-barrier-scat`) |
+| 4 | ScaleCheck | {prf:ref}`def-node-scale` | BarrierTypeII ({prf:ref}`def-barrier-type2`) |
+| 5 | ParamCheck | {prf:ref}`def-node-param` | BarrierVac ({prf:ref}`def-barrier-vac`) |
+| 6 | GeomCheck | {prf:ref}`def-node-geom` | BarrierCap ({prf:ref}`def-barrier-cap`) |
+| 7 | StiffnessCheck | {prf:ref}`def-node-stiffness` | BarrierGap ({prf:ref}`def-barrier-gap`) |
+| 7a | BifurcateCheck | {prf:ref}`def-node-bifurcate` | Mode S.D |
+| 7b | SymCheck | {prf:ref}`def-node-sym` | --- |
+| 7c | CheckSC | {prf:ref}`def-node-checksc` | ActionSSB ({prf:ref}`def-action-ssb`) |
+| 7d | CheckTB | {prf:ref}`def-node-checktb` | ActionTunnel ({prf:ref}`def-action-tunnel`) |
+| 8 | TopoCheck | {prf:ref}`def-node-topo` | BarrierAction ({prf:ref}`def-barrier-action`) |
+| 9 | TameCheck | {prf:ref}`def-node-tame` | BarrierOmin ({prf:ref}`def-barrier-omin`) |
+| 10 | ErgoCheck | {prf:ref}`def-node-ergo` | BarrierMix ({prf:ref}`def-barrier-mix`) |
+| 11 | ComplexCheck | {prf:ref}`def-node-complex` | BarrierEpi ({prf:ref}`def-barrier-epi`) |
+| 12 | OscillateCheck | {prf:ref}`def-node-oscillate` | BarrierFreq ({prf:ref}`def-barrier-freq`) |
+| 13 | BoundaryCheck | {prf:ref}`def-node-boundary` | --- |
+| 14 | OverloadCheck | {prf:ref}`def-node-overload` | BarrierBode ({prf:ref}`def-barrier-bode`) |
+| 15 | StarveCheck | {prf:ref}`def-node-starve` | BarrierInput ({prf:ref}`def-barrier-input`) |
+| 16 | AlignCheck | {prf:ref}`def-node-align` | BarrierVariety ({prf:ref}`def-barrier-variety`) |
+| 17 | BarrierExclusion | {prf:ref}`def-node-lock` | Lock ({ref}`sec-lock`) |

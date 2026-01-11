@@ -119,9 +119,9 @@ Draw a companion map $c:\mathcal{A}\to\mathcal{A}$ using the **Spatially-Aware P
    $$
 4. For each edge $(i,j)\in M$, set $c(i)=j$ and $c(j)=i$.
 
-If $k$ is odd, allow a single self-pair $c(i)=i$ and sample a perfect matching on the remaining $k-1$ walkers (maximal matching convention).
+If $k$ is odd, select one index $i_\star$ uniformly from $\mathcal{A}$, set $c(i_\star)=i_\star$, and sample a perfect matching on the remaining $k-1$ walkers (maximal matching convention). This keeps the pairing law explicit and preserves symmetry on the non-self-paired subset.
 
-Dead walkers select companions uniformly from $\mathcal{A}$. If $|\mathcal{A}|=0$, the step transitions to the cemetery state $\dagger$. This uses the Gaussian pairing kernel in `src/fragile/fractalai/core/companion_selection.py` (pairing matching mode; other companion selectors ignored).
+Dead walkers select companions uniformly from $\mathcal{A}$. If $|\mathcal{A}|=0$, the step transitions to the cemetery state $\dagger$. This instantiation assumes the spatially-aware matching distribution from {prf:ref}`def-spatial-pairing-operator-diversity`; any approximation algorithm must be justified separately and is not used in this proof object.
 
 ### Fitness Potential
 
@@ -243,7 +243,7 @@ This section records *derived constants* that are computed deterministically fro
 | Core velocity radius | $V_{\mathrm{core}}$ | analysis core for $\|v\|$ | chosen |
 | Alg. diameter | $D_{\mathrm{alg}}^2 \le D_z^2 + \lambda_{\mathrm{alg}}D_v^2$ | on core | depends |
 | Pairing floor | $m_\epsilon=\exp(-D_{\mathrm{alg}}^2/(2\epsilon^2))$ | pairing weights lower bound | depends |
-| Companion minorization | $p_{\min}\ge m_\epsilon^{\lfloor n_{\mathrm{alive}}/2\rfloor}/(n_{\mathrm{alive}}-1)$ | spatial matching; $n_{\mathrm{alive}}\ge 2$ | depends |
+| Companion minorization | $p_{\min}\ge m_\epsilon^{\lfloor n_{\mathrm{alive}}/2\rfloor}/(n_{\mathrm{alive}}-1)$ | spatial matching; applies to non-self-paired walkers (odd $k$: one self-pair excluded) | depends |
 | Fitness bounds | $V_{\min}=\eta^{\alpha+\beta}$, $V_{\max}=(A+\eta)^{\alpha+\beta}$ | alive walkers; dead have $V=0$ | $V_{\min}=0.01$, $V_{\max}=4.41$ |
 | Score bound | $S_{\max}=(V_{\max}-V_{\min})/(V_{\min}+\epsilon_{\mathrm{clone}})$ | alive walkers only | $S_{\max}=220$ |
 | Cloning noise | $\delta_x^2=\sigma_x^2$ | position jitter variance | $\delta_x^2=0.01$ |
@@ -285,7 +285,7 @@ For even $k$, the marginal companion distribution $P_i(\cdot)$ for any alive wal
 $$
 P_i(\cdot)\ \ge\ m_\epsilon^{k/2}\,U_i(\cdot),
 $$
-where $U_i$ is uniform on $\mathcal{A}\setminus\{i\}$. For odd $k$, fix a single self-pair and apply the same bound with $k-1$ on the remaining walkers.
+where $U_i$ is uniform on $\mathcal{A}\setminus\{i\}$. For odd $k$, condition on $i\neq i_\star$ (the self-paired index), and apply the same bound with $k-1$ on the remaining walkers; for $i=i_\star$, $P_i(c_i=i)=1$ and no Doeblin bound is asserted.
 :::
 
 :::{prf:proof}
@@ -304,7 +304,7 @@ P(c_i=j)=\frac{\sum_{M\ni(i,j)} W(M)}{Z}
 = \frac{m_\epsilon^{k/2}}{k-1}
 = m_\epsilon^{k/2}\,U_i(\{j\}).
 $$
-This gives $P_i(\cdot)\ge m_\epsilon^{k/2}U_i(\cdot)$. For odd $k$, remove one walker to self-pair and apply the even-$k$ bound to the remaining set.
+This gives $P_i(\cdot)\ge m_\epsilon^{k/2}U_i(\cdot)$ for even $k$. For odd $k$, condition on $i\neq i_\star$ and apply the even-$k$ bound to the remaining $k-1$ walkers; the self-paired walker is excluded from the minorization.
 :::
 
 For dead walkers, the implementation assigns companions uniformly from $\mathcal{A}$.
@@ -749,7 +749,7 @@ $$K_{\mathrm{TB}_O}^+ = (\mathbb{R}_{\mathrm{an},\exp},\ \Sigma\ \text{definable
    \mathbb{P}(c_i\in\cdot)\ \ge\ m_\epsilon^{\lfloor k/2\rfloor}\,U_i(\cdot),
    \qquad m_\epsilon=\exp\!\left(-\frac{D_{\mathrm{alg}}^2}{2\epsilon^2}\right),
    $$
-   where $U_i$ is uniform on $\mathcal{A}\setminus\{i\}$. For odd $k$, one self-pair is fixed and the same bound holds on the remaining $k-1$ walkers. When $n_{\mathrm{alive}}=1$, pairing maps the lone walker to itself; the sieve uses $n_{\mathrm{alive}}\ge 2$ for mixing/QSD proxies.
+   where $U_i$ is uniform on $\mathcal{A}\setminus\{i\}$. For odd $k$, the bound applies conditionally on $i\neq i_\star$ (the self-paired index); for $i=i_\star$ the companion is deterministic. When $n_{\mathrm{alive}}=1$, pairing maps the lone walker to itself; the sieve uses $n_{\mathrm{alive}}\ge 2$ for mixing/QSD proxies.
 
 2. **Mutation smoothing (hypoelliptic):** The OU thermostat injects full-rank Gaussian noise in momentum (Derived Constants). While a *single* BAOAB step is rank-deficient in $(z,p)$ (noise enters only through $p$), the *two-step* kernel $P^2$ is non-degenerate (standard hypoelliptic Langevin smoothing) and admits a jointly continuous, strictly positive density on any compact core $C\Subset \mathrm{int}(B)\times B_{V_{\mathrm{core}}}$. Hence there exists $\varepsilon_C>0$ such that
    $$
@@ -967,7 +967,7 @@ $$
 ### How Fitness/Cloning Enter
 
 Fitness and cloning affect the mean-field limit through:
-1. **Minorization / locality:** $\epsilon$ and $D_{\mathrm{alg}}$ determine $m_\epsilon$, hence the strength of the companion-selection Doeblin constant.
+1. **Minorization / locality:** $\epsilon$ and $D_{\mathrm{alg}}$ determine $m_\epsilon$, hence the strength of the companion-selection Doeblin constant $m_\epsilon^{\lfloor k/2\rfloor}$.
 2. **Selection pressure:** $(\alpha_{\mathrm{fit}},\beta_{\mathrm{fit}},A,\eta,\epsilon_{\mathrm{clone}},p_{\max})$ determine $V_{\min},V_{\max},S_{\max}$ and therefore the range of clone probabilities; this controls $\lambda_{\mathrm{alg}}^{\mathrm{eff}}$ and ultimately $\kappa_x$.
 3. **Noise regularization:** $\sigma_x$ injects positional noise at cloning; this prevents genealogical collapse and enters the KL/LSI constants as $\delta_x^2=\sigma_x^2$.
 
@@ -1110,11 +1110,98 @@ $\therefore$ the theorem holds. $\square$
 
 ---
 
+## Metatheorem Instantiations (from 02_fractal_gas)
+
+Every theorem/metatheorem in `docs/source/3_fractal_gas/02_fractal_gas.md` is listed below with the required permits/assumptions and the status in this latent instantiation.
+
+Status codes:
+- blocked: required permit is not certified in this proof object
+- conditional: permits are present but extra hypotheses are not verified here
+- heuristic: interpretive statement, not used for certificates
+
+| Theorem | Required assumptions/permits (from 02) | Latent instantiation check |
+| --- | --- | --- |
+| Lock Closure for Fractal Gas ({prf:ref}`mt:fractal-gas-lock-closure`) | Permits: $\mathrm{Cat}_{\mathrm{Hom}}$ (N17) together with the accumulated context $\Gamma$ from prior nodes. | blocked: $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}$ (Node 17). |
+| Geometric Adaptation (Metric Distortion Under Representation) ({prf:ref}`thm:geometric-adaptation`) | Permits: $\mathrm{Rep}_K$ (N11), $\mathrm{SC}_\lambda$ (N4). Assumptions: $d_{\text{alg}}(x,y)=\|\pi(x)-\pi(y)\|_2$ for an embedding $\pi: X\to\mathbb{R}^n$; embeddings related by a linear map $T$ with $\pi_2=T\circ\pi_1$ | blocked: $K_{\mathrm{SC}_\lambda}^-$ (BarrierTypeII); $d_{\text{alg}}$ uses the latent chart but embedding-change assumption not exercised. |
+| The Darwinian Ratchet (WFR Transport + Reaction) ({prf:ref}`mt:darwinian-ratchet`) | Permits: $C_\mu$ (N3), $D_E$ (N1), $\mathrm{SC}_\lambda$ (N4). | blocked: $K_{\mathrm{SC}_\lambda}^-$ (BarrierTypeII). |
+| Topological Regularization (Cheeger Bound, Conditional) ({prf:ref}`thm:cheeger-bound`) | Permits: $C_\mu$ (N3), $D_E$ (N1), $\mathrm{LS}_\sigma$ (N7), $\mathrm{Cap}_H$ (N6), $\mathrm{TB}_\pi$ (N8). | conditional: permits satisfied; additional hypotheses not verified in this instantiation. |
+| Causal Horizon Lock (Causal Information Bound + Stasis) ({prf:ref}`thm:causal-horizon-lock`) | Permits: $C_\mu$ (N3), $D_E$ (N1), $\mathrm{SC}_\lambda$ (N4), $\mathrm{Cap}_H$ (N6), $\mathrm{TB}_\pi$ (N8). | blocked: $K_{\mathrm{SC}_\lambda}^-$ (BarrierTypeII). |
+| Archive Invariance (Gromov–Hausdorff Stability, Conditional) ({prf:ref}`thm:archive-invariance`) | Permits: $C_\mu$ (N3), $\mathrm{LS}_\sigma$ (N7), $\mathrm{Cap}_H$ (N6). | conditional: permits satisfied; additional hypotheses not verified in this instantiation. |
+| Fractal Representation ({prf:ref}`mt:fractal-representation`) | Permits: $C_\mu$, $D_E$, $\mathrm{SC}_\lambda$, $\mathrm{Cap}_H$, $\mathrm{Rep}_K$, $\mathrm{TB}_\pi$. | blocked: $K_{\mathrm{SC}_\lambda}^-$ (BarrierTypeII). |
+| Fitness Convergence via Gamma-Convergence ({prf:ref}`thm:fitness-convergence`) | Permits: $C_\mu$ (N3), $D_E$ (N1). | conditional: permits satisfied; additional hypotheses not verified in this instantiation. |
+| Gromov-Hausdorff Convergence ({prf:ref}`thm:gromov-hausdorff-convergence`) | Permits: $C_\mu$ (N3), $\mathrm{Rep}_K$ (N11). | conditional: permits satisfied; additional hypotheses not verified in this instantiation. |
+| Convergence of Minimizing Movements ({prf:ref}`mt:convergence-minimizing-movements`) | Permits: $D_E$ (N1), $\mathrm{LS}_\sigma$ (N7). | conditional: dynamics is not a pure minimizing-movement (cloning + OU noise). |
+| Symplectic Shadowing ({prf:ref}`mt:symplectic-shadowing`) | Permits: $\mathrm{GC}_\nabla$ (N12), $\mathrm{Rep}_K$ (N11). | conditional: BAOAB includes friction/noise; symplectic shadowing applies only to the Hamiltonian substep. |
+| Homological Reconstruction ({prf:ref}`mt:homological-reconstruction`) | Permits: $\mathrm{TB}_\pi$ (N8), $\mathrm{Rep}_K$ (N11). | conditional: permits satisfied; additional hypotheses not verified in this instantiation. |
+| Symmetry Completion ({prf:ref}`mt:symmetry-completion`) | Permits: $\mathrm{GC}_\nabla$ (N12), $\mathrm{Rep}_K$ (N11). | heuristic: interpretive; not used for certificates. |
+| Gauge-Geometry Correspondence ({prf:ref}`mt:gauge-geometry-correspondence`) | Permits: $\mathrm{GC}_\nabla$ (N12), $\mathrm{Rep}_K$ (N11). | heuristic: interpretive; not used for certificates. |
+| Emergent Continuum ({prf:ref}`mt:emergent-continuum`) | Permits: $C_\mu$ (N3), $\mathrm{Cap}_H$ (N6), $\mathrm{LS}_\sigma$ (N7), $\mathrm{Rep}_K$ (N11). | conditional: permits satisfied; additional hypotheses not verified in this instantiation. |
+| Dimension Selection ({prf:ref}`mt:dimension-selection`) | Permits: $\mathrm{SC}_\lambda$ (N4), $\mathrm{Cap}_H$ (N6). | blocked: $K_{\mathrm{SC}_\lambda}^-$ (BarrierTypeII). |
+| Discrete Curvature-Stiffness Transfer ({prf:ref}`mt:curvature-stiffness-transfer`) | Permits: $\mathrm{LS}_\sigma$ (N7), $\mathrm{Cap}_H$ (N6). | heuristic: interpretive; not used for certificates. |
+| Dobrushin-Shlosman Interference Barrier ({prf:ref}`mt:dobrushin-shlosman`) | Permits: $\mathrm{LS}_\sigma$ (N7), $\mathrm{TB}_\rho$ (N10). | conditional: permits satisfied; additional hypotheses not verified in this instantiation. |
+| Parametric Stiffness Map ({prf:ref}`mt:parametric-stiffness-map`) | Permits: $\mathrm{LS}_\sigma$ (N7), $D_E$ (N1). | heuristic: interpretive; not used for certificates. |
+| Micro-Macro Consistency ({prf:ref}`mt:micro-macro-consistency`) | Permits: $\mathrm{SC}_\lambda$ (N4), $\mathrm{Rep}_K$ (N11). | blocked: $K_{\mathrm{SC}_\lambda}^-$ (BarrierTypeII). |
+| Observer Universality ({prf:ref}`mt:observer-universality`) | Permits: $\mathrm{TB}_O$ (N9), $\mathrm{Rep}_K$ (N11). | heuristic: interpretive; not used for certificates. |
+| Law Universality ({prf:ref}`mt:universality-of-laws`) | Permits: $\mathrm{SC}_\lambda$ (N4), $\mathrm{TB}_O$ (N9). | blocked: $K_{\mathrm{SC}_\lambda}^-$ (BarrierTypeII). |
+| Closure-Curvature Duality ({prf:ref}`mt:closure-curvature-duality`) | Permits: $C_\mu$ (N3), $\mathrm{Cap}_H$ (N6). | heuristic: interpretive; not used for certificates. |
+| Well-Foundedness Barrier ({prf:ref}`mt:well-foundedness-barrier`) | Permits: $\mathrm{TB}_\rho$ (N10). | conditional: permits satisfied; additional hypotheses not verified in this instantiation. |
+| Continuum Injection ({prf:ref}`mt:continuum-injection`) | Permits: $\mathrm{Rep}_K$ (N11). | heuristic: interpretive; not used for certificates. |
+| Bombelli-Sorkin Theorem ({prf:ref}`mt:bombelli-sorkin`) | Permits: $C_\mu$ (N3), $D_E$ (N1), $\mathrm{TB}_\pi$ (N8). | conditional: permits satisfied; additional hypotheses not verified in this instantiation. |
+| Discrete Stokes' Theorem ({prf:ref}`mt:discrete-stokes`) | Permits: $\mathrm{TB}_\pi$ (N8), $\mathrm{Rep}_K$ (N11). | conditional: permits satisfied; additional hypotheses not verified in this instantiation. |
+| Frostman Sampling Principle ({prf:ref}`mt:frostman-sampling`) | Permits: $\mathrm{SC}_\lambda$ (N4), $C_\mu$ (N3). | blocked: $K_{\mathrm{SC}_\lambda}^-$ (BarrierTypeII). |
+| Genealogical Feynman-Kac ({prf:ref}`mt:genealogical-feynman-kac`) | Permits: $D_E$ (N1), $\mathrm{Rep}_K$ (N11). | conditional: branching is pairwise cloning, not classical Feynman-Kac; treated as approximation. |
+| Cheeger Gradient Isomorphism ({prf:ref}`mt:cheeger-gradient`) | Permits: $C_\mu$ (N3), $\mathrm{Rep}_K$ (N11). | conditional: permits satisfied; additional hypotheses not verified in this instantiation. |
+| Anomalous Diffusion Principle ({prf:ref}`mt:anomalous-diffusion`) | Permits: $\mathrm{SC}_\lambda$ (N4), $D_E$ (N1). | blocked: $K_{\mathrm{SC}_\lambda}^-$ (BarrierTypeII). |
+| Spectral Decimation Principle ({prf:ref}`mt:spectral-decimation`) | Permits: $\mathrm{SC}_\lambda$ (N4), $\mathrm{Rep}_K$ (N11). | blocked: $K_{\mathrm{SC}_\lambda}^-$ (BarrierTypeII). |
+| Discrete Uniformization Principle ({prf:ref}`mt:discrete-uniformization`) | Permits: $\mathrm{TB}_\pi$ (N8), $C_\mu$ (N3). | conditional: permits satisfied; additional hypotheses not verified in this instantiation. |
+| Persistence Isomorphism ({prf:ref}`mt:persistence-isomorphism`) | Permits: $\mathrm{TB}_\pi$ (N8), $\mathrm{SC}_\lambda$ (N4). | blocked: $K_{\mathrm{SC}_\lambda}^-$ (BarrierTypeII). |
+| Swarm Monodromy Principle ({prf:ref}`mt:swarm-monodromy`) | Permits: $\mathrm{TB}_\pi$ (N8), $\mathrm{Rep}_K$ (N11). | heuristic: interpretive; not used for certificates. |
+| Particle-Field Duality ({prf:ref}`mt:particle-field-duality`) | Permits: $C_\mu$ (N3), $D_E$ (N1). | heuristic: interpretive; not used for certificates. |
+| Cloning Transport Principle ({prf:ref}`mt:cloning-transport`) | Permits: $\mathrm{Rep}_K$ (N11), $D_E$ (N1). | heuristic: interpretive; not used for certificates. |
+| Projective Feynman-Kac Isomorphism ({prf:ref}`mt:projective-feynman-kac`) | Permits: $\mathrm{TB}_\rho$ (N10), $\mathrm{LS}_\sigma$ (N7). | conditional: pairwise selection is not exact Feynman-Kac; treated as approximation. |
+| Landauer Optimality ({prf:ref}`mt:landauer-optimality`) | Permits: $D_E$ (N1), $\mathrm{Cap}_H$ (N6), $\mathrm{Rep}_K$ (N11). | heuristic: interpretive; not used for certificates. |
+| Levin Search Isomorphism ({prf:ref}`mt:levin-search`) | Permits: $C_\mu$ (N3), $D_E$ (N1). | heuristic: interpretive; not used for certificates. |
+| Cloning-Lindblad Equivalence ({prf:ref}`mt:cloning-lindblad`) | Permits: $C_\mu$ (N3), $D_E$ (N1). | heuristic: interpretive; not used for certificates. |
+| Epistemic Flow ({prf:ref}`mt:epistemic-flow`) | Permits: $D_E$ (N1), $\mathrm{Cap}_H$ (N6). | heuristic: interpretive; not used for certificates. |
+| Manifold Sampling Isomorphism ({prf:ref}`mt:manifold-sampling`) | Permits: $\mathrm{Rep}_K$ (N11), $\mathrm{SC}_\lambda$ (N4). | blocked: $K_{\mathrm{SC}_\lambda}^-$ (BarrierTypeII). |
+| Hessian-Metric Isomorphism ({prf:ref}`mt:hessian-metric`) | Permits: $\mathrm{LS}_\sigma$ (N7), $\mathrm{Rep}_K$ (N11). | heuristic: interpretive; not used for certificates. |
+| Symmetry-Gauge Correspondence ({prf:ref}`mt:symmetry-gauge`) | Permits: $\mathrm{GC}_\nabla$ (N12), $\mathrm{Rep}_K$ (N11). | conditional: imported/framework statement; not re-proved here. |
+| Three-Tier Gauge Hierarchy ({prf:ref}`mt:three-tier-gauge`) | Permits: $\mathrm{GC}_\nabla$ (N12), $\mathrm{Rep}_K$ (N11). | heuristic: interpretive; not used for certificates. |
+| Antisymmetry-Fermion Theorem ({prf:ref}`mt:antisymmetry-fermion`) | Permits: $\mathrm{Rep}_K$ (N11), $\mathrm{TB}_\pi$ (N8). | heuristic: interpretive; not used for certificates. |
+| Scalar-Reward Duality (Higgs Mechanism) ({prf:ref}`mt:scalar-reward-duality`) | Permits: $\mathrm{LS}_\sigma$ (N7), $\mathrm{SC}_{\partial c}$ (N5). | heuristic: interpretive; not used for certificates. |
+| IG-Quantum Isomorphism ({prf:ref}`mt:ig-quantum-isomorphism`) | Permits: $C_\mu$ (N3), $\mathrm{LS}_\sigma$ (N7), $\mathrm{Rep}_K$ (N11). | heuristic: interpretive; not used for certificates. |
+| Spectral Action Principle ({prf:ref}`mt:spectral-action-principle`) | Permits: $\mathrm{SC}_\lambda$ (N4), $\mathrm{Rep}_K$ (N11). | blocked: $K_{\mathrm{SC}_\lambda}^-$ (BarrierTypeII). |
+| Geometric Diffusion Isomorphism ({prf:ref}`mt:geometric-diffusion-isomorphism`) | Permits: $C_\mu$ (N3), $\mathrm{Cap}_H$ (N6), $\mathrm{LS}_\sigma$ (N7), $\mathrm{Rep}_K$ (N11). | conditional: expansion adjunction permitted; asymptotic diffusion limit not verified. |
+| Spectral Distance Isomorphism ({prf:ref}`mt:spectral-distance-isomorphism`) | Permits: $\mathrm{Rep}_K$ (N11). | heuristic: interpretive; not used for certificates. |
+| Dimension Spectrum ({prf:ref}`mt:dimension-spectrum`) | Permits: $\mathrm{SC}_\lambda$ (N4), $\mathrm{Cap}_H$ (N6). | blocked: $K_{\mathrm{SC}_\lambda}^-$ (BarrierTypeII). |
+| Scutoidal Interpolation ({prf:ref}`mt:scutoidal-interpolation`) | Permits: $\mathrm{TB}_\pi$ (N8), $\mathrm{Rep}_K$ (N11). | heuristic: interpretive; not used for certificates. |
+| Regge-Scutoid Dynamics ({prf:ref}`mt:regge-scutoid`) | Permits: $D_E$ (N1), $\mathrm{TB}_\pi$ (N8). | heuristic: interpretive; not used for certificates. |
+| Bio-Geometric Isomorphism ({prf:ref}`mt:bio-geometric-isomorphism`) | Permits: $\mathrm{Rep}_K$ (N11), $\mathrm{Cap}_H$ (N6). | heuristic: interpretive; not used for certificates. |
+| Antichain-Surface Correspondence ({prf:ref}`mt:antichain-surface`) | Permits: $\mathrm{TB}_\pi$ (N8), $\mathrm{Cap}_H$ (N6). | heuristic: interpretive; not used for certificates. |
+| Quasi-Stationary Distribution Sampling (Killed Kernels and Fleming–Viot) ({prf:ref}`mt:quasi-stationary-distribution-sampling`) | Permits: $C_\mu$ (N3), $D_E$ (N1). | conditional: bounded domain + minorization in Node 10; full QSD existence/uniqueness not proved here. |
+| Modular-Thermal Isomorphism ({prf:ref}`mt:modular-thermal`) | Permits: $D_E$ (N1), $\mathrm{Rep}_K$ (N11). | heuristic: interpretive; not used for certificates. |
+| Thermodynamic Gravity Principle ({prf:ref}`mt:thermodynamic-gravity`) | Permits: $D_E$ (N1), $\mathrm{Cap}_H$ (N6), $\mathrm{Rep}_K$ (N11). | conditional: imported/framework statement; not re-proved here. |
+| Inevitability of General Relativity ({prf:ref}`mt:inevitability-gr`) | Permits: $D_E$ (N1), $\mathrm{LS}_\sigma$ (N7), $\mathrm{Rep}_K$ (N11). | conditional: imported/framework statement; not re-proved here. |
+| Virial-Cosmological Transition ({prf:ref}`mt:virial-cosmological`) | Permits: $D_E$ (N1), $\mathrm{LS}_\sigma$ (N7), $\mathrm{Cap}_H$ (N6). | heuristic: interpretive; not used for certificates. |
+| Flow with Surgery ({prf:ref}`mt:flow-with-surgery`) | Permits: $D_E$ (N1), $\mathrm{Cap}_H$ (N6), $\mathrm{TB}_\pi$ (N8). | heuristic: interpretive; not used for certificates. |
+| Agency-Geometry Unification ({prf:ref}`mt:agency-geometry`) | Permits: $\mathrm{GC}_T$ (N16), $\mathrm{Rep}_K$ (N11). | heuristic: interpretive; not used for certificates. |
+| The Spectral Generator ({prf:ref}`mt:spectral-generator`) | Permits: $\mathrm{LS}_\sigma$ (N7), $\mathrm{Cap}_H$ (N6). Assumptions: The dissipation potential $\mathfrak{D}$ is $C^2$ on the region of interest.; There exists $\kappa > 0$ such that $\nabla^2 \mathfrak{D} \succeq \kappa I$ uniformly. | conditional: $\mathfrak{D}$ is quadratic in $v$; $C^2$ and uniform convexity need $G$ in $C^2$ and $\lambda_{\min}(G)>0$ on $B$ (not certified). |
+| LSI for Particle Systems ({prf:ref}`mt:lsi-particle-systems`) | Permits: $\mathrm{LS}_\sigma$ (N7), $C_\mu$ (N3). Assumptions: The confining potential $\Phi_{\text{conf}}(x_i)$ is strictly convex: $\nabla^2 \Phi_{\text{conf}} \succeq c_0 I$ for some $c_0 > 0$.; OR: The pairwise interactions are repulsive: $\nabla^2 \Phi_{\text{pair}}(|x_i - x_j|) \succeq 0$. | conditional: no explicit strictly convex confining potential or repulsive pairwise interactions specified. |
+| Fisher-Hessian Isomorphism (Thermodynamics) ({prf:ref}`mt:fisher-hessian-thermo`) | Permits: $D_E$ (N1), $\mathrm{LS}_\sigma$ (N7). | heuristic: interpretive; not used for certificates. |
+| Scalar Curvature Barrier ({prf:ref}`mt:scalar-curvature-barrier`) | Permits: $\mathrm{LS}_\sigma$ (N7), $\mathrm{Cap}_H$ (N6). | heuristic: interpretive; not used for certificates. |
+| GTD Equivalence Principle ({prf:ref}`mt:gtd-equivalence`) | Permits: $D_E$ (N1), $\mathrm{Rep}_K$ (N11). | heuristic: interpretive; not used for certificates. |
+| Tikhonov Regularization ({prf:ref}`mt:tikhonov-regularization`) | Permits: $\mathrm{SC}_{\partial c}$ (N5), $\mathrm{Cap}_H$ (N6). | heuristic: interpretive; not used for certificates. |
+| Convex Hull Resolution ({prf:ref}`mt:convex-hull-resolution`) | Permits: $\mathrm{Cap}_H$ (N6), $\mathrm{TB}_O$ (N9). | conditional: permits satisfied; additional hypotheses not verified in this instantiation. |
+| Holographic Power Bound ({prf:ref}`mt:holographic-power-bound`) | Permits: $\mathrm{Cap}_H$ (N6), $\mathrm{LS}_\sigma$ (N7). | heuristic: interpretive; not used for certificates. |
+| Trotter-Suzuki Product Formula ({prf:ref}`thm:trotter-suzuki`) | Permits: $\mathrm{Rep}_K$ (N11), $\mathrm{SC}_\lambda$ (N4). | blocked: $K_{\mathrm{SC}_\lambda}^-$ (BarrierTypeII). |
+| Global Convergence (Darwinian Ratchet) ({prf:ref}`thm:global-convergence`) | Permits: $C_\mu$ (N3), $D_E$ (N1). | conditional: requires annealing/ergodicity hypotheses not specified here. |
+| Spontaneous Symmetry Breaking ({prf:ref}`thm:ssb`) | Permits: $\mathrm{LS}_\sigma$ (N7), $\mathrm{SC}_{\partial c}$ (N5). | heuristic: finite-N system; strict SSB not applicable. |
+
 ## References
 
 1. Hypostructure Framework v1.0 (`docs/source/2_hypostructure/hypopermits_jb.md`)
 2. Fragile-Agent dynamics (`docs/source/1_agent/reference.md`)
-3. Companion selection (`src/fragile/fractalai/core/companion_selection.py`)
+3. Companion selection (spatial pairing definition in `docs/source/2_hypostructure/10_metalearning/03_cloning.md`; implementation-level approximations, if any, are out of scope)
 4. Fitness operator (`src/fragile/fractalai/core/fitness.py`)
 5. Cloning operator (`src/fragile/fractalai/core/cloning.py`)
 6. Latent Fractal Gas step operator (this document)

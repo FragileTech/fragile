@@ -7,6 +7,16 @@
 
 The following diagram is the **authoritative specification** of the obstruction-theoretic resolution. All subsequent definitions and theorems must align with this categorical atlas.
 
+:::{div} feynman-prose
+
+Now, here is the thing you have to understand about singularities. When a dynamical system fails---when your robot arm crashes, when your neural network diverges, when your market simulation blows up---it is not just "failing." It is failing in one of a finite number of *specific ways*, each with its own signature, its own mathematics, its own potential repair.
+
+The Structural Sieve is our systematic method for asking: "What went wrong, and can we fix it?" Think of it like a diagnostic flowchart for a car mechanic, except instead of checking the battery and the spark plugs, we are checking whether energy stayed bounded, whether topology remained tame, whether the flow mixed properly.
+
+The beautiful thing---and I want you to really appreciate this---is that these failure modes are not arbitrary. They arise from the fundamental structure of dynamics itself: conservation laws, topological constraints, symmetry principles, boundary conditions. The Sieve simply asks, in order: "Did we violate conservation? Did we violate topology? Did we violate symmetry?" And so on.
+
+:::
+
 ### The Taxonomy of Failure Modes
 
 The singularity spectrum admits a natural classification by two orthogonal axes: the **constraint class** that is violated (Conservation, Topology, Duality, Symmetry, Boundary) and the **mechanism** of violation (Excess, Deficiency, Complexity). This yields the following periodic table of obstructions.
@@ -22,6 +32,20 @@ The singularity spectrum admits a natural classification by two orthogonal axes:
 | **Symmetry**     | **Mode S.E**: Supercritical  | **Mode S.D**: Stiffness Breakdown | **Mode S.C**: Parametric Instability |
 | **Boundary**     | **Mode B.E**: Injection      | **Mode B.D**: Starvation          | **Mode B.C**: Misalignment           |
 
+:::{div} feynman-prose
+
+Let me walk you through this table, because it encodes a lot of physics in a small space.
+
+The rows tell you *what kind of law* is being violated. Conservation means something that should stay constant---energy, probability mass, particle number---is leaking or exploding. Topology means the shape of your state space is doing something pathological. Duality relates to the relationship between forward and backward dynamics. Symmetry means your system had an invariance that is breaking in a bad way. Boundary means your system is not handling its inputs and outputs properly.
+
+The columns tell you *how* the violation happens. Excess means something is growing without bound. Deficiency means something is collapsing or disappearing. Complexity means things are getting tangled in ways that prevent analysis.
+
+Here is an example to make it concrete. Mode C.E (Conservation-Excess) is "Energy Blow-up"---your Hamiltonian is not conserving energy, and it is going to infinity. Mode T.D (Topology-Deficiency) is "Glassy Freeze"---your system got stuck in a region of configuration space from which it cannot escape, like a ball trapped in a local minimum with infinite barriers.
+
+Each mode has its own surgery---its own repair mechanism---if such a repair is possible.
+
+:::
+
 ### Computational Boundaries and Undecidability
 
 :::{prf:remark} Acknowledgment of Fundamental Limits
@@ -35,7 +59,22 @@ The Structural Sieve operates within the computational limits imposed by fundame
 
 **Implication for the Sieve:** For sufficiently complex systems (e.g., those encoding universal computation), certain interface predicates $\mathcal{P}_i$ may be **undecidable**—no algorithm can determine their truth value in finite time for all inputs.
 
-The framework addresses this through **Binary Certificate Logic** with typed NO certificates. Every predicate evaluation returns exactly YES or NO—never a third truth value. The NO certificate carries type information distinguishing *refutation* from *inconclusiveness*.
+The framework addresses this through **Binary Certificate Logic** with typed NO certificates. Every predicate evaluation returns exactly YES or NO---never a third truth value. The NO certificate carries type information distinguishing *refutation* from *inconclusiveness*.
+:::
+
+:::{div} feynman-prose
+
+Now here is a subtle point that trips people up, so let me explain it carefully.
+
+When the Sieve asks a question like "Is energy finite?", it has to give an answer: YES or NO. But wait---what if we genuinely do not know? What if the problem is undecidable, or we ran out of time, or we lacked the right theorem to prove it either way?
+
+The answer is: we still say NO. But---and this is crucial---we attach *metadata* to that NO explaining *why* we said it. A NO-with-witness means "I found a counterexample; this property definitely fails." A NO-inconclusive means "I could not prove it either way, so I am being conservative."
+
+Why does this matter? Because the Sieve routes these two kinds of NO differently. A genuine refutation (NO-with-witness) routes to a failure mode---the system really is broken. An inconclusive answer routes to the reconstruction loop, where we try to acquire the missing information or extend our proof library.
+
+This is how we remain honest about what we know while still making definite progress. The Sieve never hangs in an "I don't know" state. It always moves forward, but it remembers what kind of evidence led to its decisions.
+
+:::
 
 :::{prf:definition} Typed NO Certificates (Binary Certificate Logic)
 :label: def-typed-no-certificates
@@ -108,6 +147,20 @@ The Structural Sieve admits a natural interpretation as a **spectral sequence** 
 - **Global Regularity**: Collapse at $E_\infty$ with $E_\infty^{p,q} = 0$ for all $(p,q)$ corresponding to singular behavior
 
 This interpretation connects the Sieve to classical obstruction theory in algebraic topology {cite}`McCleary01`.
+:::
+
+:::{div} feynman-prose
+
+Before you look at this diagram, let me tell you what you are going to see.
+
+The diagram is the complete Structural Sieve---every check, every branch, every surgery, every failure mode. It is big, and that is okay. Real systems have many ways to fail, and each one needs to be addressed.
+
+The blue diamonds are the main gates---questions like "Is energy finite?" or "Does the flow mix?" Each gate produces a certificate: YES if the property holds, NO if it does not. The orange diamonds are barriers---secondary defenses that activate when a primary gate fails. The purple boxes are surgeries---repair mechanisms that try to fix the problem and re-enter the Sieve at an earlier point. The red boxes are failure modes---terminal classifications of what went wrong.
+
+Follow the flow from START at the top. If everything passes (YES at every gate), you reach GLOBAL REGULARITY at the bottom---victory. If something fails (NO at a gate), you branch to a barrier. If the barrier holds, you continue. If the barrier is breached, you check whether surgery is possible. If surgery works, you re-enter (dotted lines). If nothing works, you hit a failure mode.
+
+The key insight: this is not just a flowchart. It is a *proof*. Every path through the diagram that reaches VICTORY is a formal argument that no singularity can form. The certificates accumulated along the way *are* the proof.
+
 :::
 
 :::{tip} Interactive Viewing Options
@@ -444,7 +497,17 @@ The flow proceeds by **Iterative Obstruction Theory**:
 
 ### Interface Registry: The Obstruction Atlas
 
-The following table defines the **Obstruction Atlas**—the collection of classifying stacks and their associated projection functors. Each interface evaluates whether a specific cohomology class vanishes.
+:::{div} feynman-prose
+
+Now we need to define precisely what each node in that big diagram *does*. This is where the engineering meets the mathematics.
+
+Each node asks a specific question about the system. "Is energy finite?" is a question you can answer by computing an integral. "Is the spectral gap positive?" is a question you can answer by analyzing an operator. The table below lists every interface---every question the Sieve asks---along with the mathematical predicate that defines it.
+
+Think of this as the specification sheet for building an actual Sieve implementation. If you wanted to build this for your favorite dynamical system, you would go through this table and implement each predicate for your particular setup.
+
+:::
+
+The following table defines the **Obstruction Atlas**---the collection of classifying stacks and their associated projection functors. Each interface evaluates whether a specific cohomology class vanishes.
 
 | Interpretation | Engineering Term | Categorical Term |
 |----------------|------------------|------------------|
@@ -487,7 +550,19 @@ Barrier checks compose multiple interfaces. For example, the **Saturation Barrie
 
 ### Barrier Registry: Secondary Obstruction Classes
 
-The following table defines the **Secondary Obstruction Classes**—cohomological barriers that activate when the primary obstruction is non-trivial. Each barrier represents a weaker cohomology condition that may still force triviality of the singularity class.
+:::{div} feynman-prose
+
+Here is where the defense-in-depth strategy becomes concrete.
+
+When a primary gate fails---say, energy is not finite---that does not immediately mean game over. There may be a *weaker* condition that still excludes pathology. Maybe the energy is infinite but the *drift* is bounded, so it cannot blow up too fast. Maybe the topology is not tame in general but it is still *definable* in a simple logical system.
+
+Barriers are these weaker conditions. They give the system a second chance. If the barrier holds ("Blocked"), we can continue to the next gate---we have found a workaround. If the barrier is breached, then we must consider surgery or accept a failure mode.
+
+Think of barriers as fallback defenses. The primary gate is the first line of defense; the barrier is the second. Many systems fail the primary check but pass the barrier, and that is fine. The Sieve only terminates in failure when both lines of defense fall.
+
+:::
+
+The following table defines the **Secondary Obstruction Classes**---cohomological barriers that activate when the primary obstruction is non-trivial. Each barrier represents a weaker cohomology condition that may still force triviality of the singularity class.
 
 | Node | Barrier ID       | Interfaces                                       | Permits ($\Gamma$)                         | Certificates (Output)                                                                                 | Blocked Predicate                                              | Question                                                     | Metatheorem                |
 |------|------------------|--------------------------------------------------|--------------------------------------------|-------------------------------------------------------------------------------------------------------|----------------------------------------------------------------|--------------------------------------------------------------|----------------------------|
@@ -510,7 +585,21 @@ The following table defines the **Secondary Obstruction Classes**—cohomologica
 
 ### Surgery Registry: Cobordism Morphisms
 
-The following table defines the **Cobordism Morphisms**—categorical pushouts that modify the topology of the state space to cancel non-trivial obstruction classes. Each surgery constructs a new manifold where the obstruction vanishes, enabling re-entry into the resolution tower.
+:::{div} feynman-prose
+
+Now we arrive at the active repair mechanisms---the surgeries.
+
+When both the primary gate and the barrier fail, we have a genuine obstruction. But sometimes we can *fix* the obstruction by modifying the system itself. This is surgery: a controlled modification that removes the pathological feature and allows us to re-enter the Sieve at an earlier point.
+
+The mathematics behind this is *cobordism theory*. Think of it this way: if your state space has a problematic region, surgery cuts it out and glues in something better. If your singularity is approaching a point, surgery might "cap" that point with a smooth patch. If your flow is accumulating too many discrete events, surgery might coarsen the event structure to a manageable level.
+
+Each surgery has an *admissibility condition*---you cannot just arbitrarily modify the system. The modification must be compatible with the structure we are trying to preserve. For instance, the "Ghost/Cap Extension" surgery (S1) requires that the blow-up be *conformal* and that the boundary at infinity be *definable*. Without these conditions, the surgery would not be mathematically valid.
+
+The re-entry arrows (dotted lines in the diagram) show where the system resumes after surgery. This is crucial: a successful surgery does not just fix the immediate problem, it puts the system back into a state where the rest of the Sieve can run.
+
+:::
+
+The following table defines the **Cobordism Morphisms**---categorical pushouts that modify the topology of the state space to cancel non-trivial obstruction classes. Each surgery constructs a new manifold where the obstruction vanishes, enabling re-entry into the resolution tower.
 
 | #   | Surgery ID   | Interfaces                                       | Input Certificate                            | Output Certificate                        | Admissibility Predicate                                                                      | Action                    | Metatheorem             |
 |-----|--------------|--------------------------------------------------|----------------------------------------------|-------------------------------------------|----------------------------------------------------------------------------------------------|---------------------------|-------------------------|
@@ -539,7 +628,21 @@ Surgeries S7–S9 (SurgSD, SurgSC\_Rest, SurgTE\_Rest) are **restoration surgeri
 (sec-surgery-admissibility-registry)=
 ## Surgery Admissibility Registry
 
-The following table defines all **admissibility checks** in the Structural Sieve. Each admissibility check node (A1–A17) evaluates whether a breached barrier admits surgical repair or requires termination at a failure mode.
+:::{div} feynman-prose
+
+Now here is the final piece of the puzzle: how do we know when surgery is *possible*?
+
+Not every broken system can be fixed. Some singularities are too wild, some topologies too tangled, some complexities too high. Before we attempt surgery, we need to check whether the repair is even mathematically admissible.
+
+The admissibility checks (the light purple diamonds in the diagram, labeled A1 through A17) are the gatekeepers for surgery. They examine the specific nature of the obstruction and determine whether it falls into a class we know how to handle.
+
+For example, consider the "Neck?" check (A6). This asks whether the singularity has the shape of a cylinder $S^{n-1} \times \mathbb{R}$---a "neck" pinching off. If yes, we can perform neck-pinch surgery, cutting through the neck and capping both ends. If no, the singularity is "fat" and we cannot perform this surgery; we terminate at Mode C.D (Geometric Collapse).
+
+Each admissibility check produces a certificate that either authorizes surgery (YES) or forbids it (NO). The NO certificate must carry a *witness*---concrete data proving that the singularity is too pathological for repair. This ensures we never claim repair is impossible without evidence.
+
+:::
+
+The following table defines all **admissibility checks** in the Structural Sieve. Each admissibility check node (A1--A17) evaluates whether a breached barrier admits surgical repair or requires termination at a failure mode.
 
 ### Admissibility Node Logic
 

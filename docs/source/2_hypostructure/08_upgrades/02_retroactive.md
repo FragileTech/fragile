@@ -13,6 +13,16 @@ The **Retroactive Promotion Theorems** (or "A-Posteriori Upgrade Rules") formali
 
 The key insight is that global constraints can retrospectively determine local behavior.
 
+:::{div} feynman-prose
+Now, here is something that seems almost paradoxical at first, but once you see it, you will never forget it. When the Sieve runs through its verification graph, it encounters ambiguities---places where the local information just is not enough to decide whether a trajectory is safe or not. The natural instinct is to throw up your hands and say "I cannot tell."
+
+But wait. Later in the Sieve, you might prove something very strong about the *global* behavior of the system. And here is the key: that global knowledge can reach back in time, so to speak, and resolve those earlier ambiguities. It is not that the future changes the past---nothing so mystical. Rather, the global constraint was *always* true; you just did not know it yet.
+
+Think of it like detective work. You find a mysterious footprint at a crime scene---could be the culprit, could be innocent. But later you prove the culprit never entered through that door at all. Now that footprint is *retroactively* cleared as irrelevant. The footprint did not change; your knowledge did.
+
+This is precisely what these theorems formalize: the logical machinery for propagating global certainty backwards to resolve local doubt.
+:::
+
 ---
 
 (sec-shadow-sector-retroactive-promotion)=
@@ -20,7 +30,6 @@ The key insight is that global constraints can retrospectively determine local b
 
 :::{prf:theorem} [UP-ShadowRetro] Shadow-Sector Retroactive Promotion (TopoCheck $\to$ ZenoCheck)
 :label: mt-up-shadow-retroactive
-:class: metatheorem
 
 **Context:** Node 2 (Zeno) fails in an early epoch, but a later epoch confirms via Node 8 (TopoCheck) that the trajectory is confined to a **Finite Sector Graph**. This is a **retroactive** promotion requiring information from a completed run.
 
@@ -48,6 +57,12 @@ $$K_{\mathrm{Rec}_N}^- \wedge K_{\mathrm{TB}_\pi}^+ \wedge K_{\text{Action}}^{\m
 Each sector transition costs at least $\delta$ units of action/energy. With bounded total energy $E_{\max}$, at most $E_{\max}/\delta$ transitions can occur. This is the Conley index argument (1978) applied to gradient-like flows: the Morse-Conley theory bounds the number of critical point transitions by the total change in index. Combined with energy dissipation, this forbids Zeno accumulation.
 :::
 
+:::{div} feynman-prose
+Let me make sure you understand the picture here. Zeno behavior is when infinitely many things happen in finite time---like Achilles taking infinitely many steps to catch the tortoise. Early in the Sieve, you might see what *looks* like Zeno behavior: events piling up, getting faster and faster.
+
+But here is the trick. If you can prove that each event costs *something*---each transition between sectors has a minimum energy toll---and the total energy is finite, then arithmetic does the rest. You cannot pay the toll infinitely many times with a finite wallet. The worry about Zeno behavior evaporates, retroactively, once the topological check confirms the sector structure.
+:::
+
 ---
 
 (sec-lock-back-theorem)=
@@ -55,7 +70,6 @@ Each sector transition costs at least $\delta$ units of action/energy. With boun
 
 :::{prf:theorem} [UP-LockBack] Lock-Back Theorem
 :label: mt-up-lockback
-:class: metatheorem
 
 **Theorem:** Global Regularity Retro-Validation
 
@@ -79,6 +93,14 @@ $$K_{\text{Lock}}^{\mathrm{blk}} \Rightarrow \forall i: K_{\text{Barrier}_i}^{\m
 The morphism obstruction at the Lock is a global invariant. If no bad pattern embeds globally, then any local certificate that was "Blocked" (i.e., locally ambiguous) must resolve to "Regular" since the alternative (singular) is globally forbidden. This is the "principle of the excluded middle" applied via the universal property of the bad pattern functor.
 :::
 
+:::{div} feynman-prose
+This theorem has a beautiful logical structure. The Lock is the final checkpoint in the Sieve, and it asks: "Can the universal bad pattern embed into this system?" If the answer is NO---if the system simply does not have room for the kind of structure that leads to singularities---then every earlier ambiguity must resolve in favor of regularity.
+
+Why? Because you only have two options: regular or singular. If singular is globally impossible, regular wins by default. The excluded middle does the work for you.
+
+This is enormously powerful. You do not need to analyze each local ambiguity separately. Prove one global impossibility, and all the local uncertainties clear up at once.
+:::
+
 ---
 
 (sec-symmetry-gap-theorem)=
@@ -86,7 +108,6 @@ The morphism obstruction at the Lock is a global invariant. If no bad pattern em
 
 :::{prf:theorem} [UP-SymmetryBridge] Symmetry-Gap Theorem
 :label: mt-up-symmetry-bridge
-:class: metatheorem
 
 **Theorem:** Mass Gap Retro-Validation
 
@@ -110,6 +131,14 @@ $$K_{\mathrm{LS}_\sigma}^{\mathrm{stag}} \wedge K_{\text{Sym}}^+ \wedge K_{\text
 The Goldstone theorem (1961) states that spontaneous breaking of a continuous symmetry produces massless bosons. However, if the symmetry group is *compact* and the vacuum is unique (CheckSC), the would-be Goldstones acquire mass via the Higgs mechanism or explicit breaking. The resulting spectral gap $\lambda > 0$ provides stiffness. For gauge theories, this is the mass gap conjecture; for condensed matter, this is the BCS mechanism.
 :::
 
+:::{div} feynman-prose
+Here is something subtle that catches many people. The Sieve might detect a "flat" potential---no curvature, no restoring force, no stiffness. That looks bad; it suggests the system could wander off in any direction with no resistance.
+
+But wait. What if the flatness is not a bug but a feature? What if the system has a symmetry, and the flatness is in the *direction of the symmetry*? When symmetry breaks spontaneously, that flatness transforms into something else entirely: a mass gap appears in the physical spectrum.
+
+This is the Higgs mechanism in disguise. The would-be massless mode gets "eaten" by the gauge field and becomes massive. So the retroactive upgrade here says: if symmetry is rigid and the vacuum is unique, what looked like dangerous flatness is actually the signature of spontaneous symmetry breaking with a healthy mass gap.
+:::
+
 ---
 
 (sec-tame-topology-theorem)=
@@ -117,7 +146,6 @@ The Goldstone theorem (1961) states that spontaneous breaking of a continuous sy
 
 :::{prf:theorem} [UP-TameSmoothing] Tame-Topology Theorem
 :label: mt-up-tame-smoothing
-:class: metatheorem
 
 **Theorem:** Stratification Retro-Validation
 
@@ -141,6 +169,14 @@ $$K_{\mathrm{Cap}_H}^{\mathrm{blk}} \wedge K_{\mathrm{TB}_O}^+ \Rightarrow K_{\m
 In an o-minimal structure, every definable set admits a Whitney stratification into smooth manifolds (Lojasiewicz, 1965; van den Dries-Miller, 1996). A set of zero capacity is contained in a stratum of positive codimension. By the Kurdyka-Lojasiewicz inequality, the solution extends uniquely across such strata. The gradient flow cannot accumulate on a positive-codimension set.
 :::
 
+:::{div} feynman-prose
+O-minimality is one of those beautiful ideas from model theory that has practical consequences you would never guess. Here is the intuition: an o-minimal structure is a setting where you cannot define pathological sets---no fractals, no Cantor dust, nothing wild. Everything is "tame" in a very precise sense.
+
+So if your system lives in an o-minimal world (polynomials, exponentials, and their friends), any singularity you find must be tame too. It must be a nice stratified set---smooth pieces of various dimensions glued together in an orderly way. And critically, the solution can extend across such singularities uniquely. They are removable, not genuine obstructions.
+
+This is the power of tameness: it rules out the pathological cases without you having to check them one by one.
+:::
+
 ---
 
 (sec-ergodic-sat-theorem)=
@@ -148,7 +184,6 @@ In an o-minimal structure, every definable set admits a Whitney stratification i
 
 :::{prf:theorem} [UP-Ergodic] Ergodic-Sat Theorem
 :label: mt-up-ergodic
-:class: metatheorem
 
 **Theorem:** Recurrence Retro-Validation
 
@@ -172,6 +207,12 @@ $$K_{\text{sat}}^{\mathrm{blk}} \wedge K_{\mathrm{TB}_\rho}^+ \Rightarrow K_{D_E
 The Poincare recurrence theorem (1890) states that for a measure-preserving transformation, almost every point returns arbitrarily close to its initial position. Combined with mixing (strong ergodicity), the time averages converge to the space average: $\frac{1}{T}\int_0^T \Phi(x(t)) \, dt \to \int \Phi \, d\mu$. If the invariant measure has $\mu(\Phi) < \infty$ (Saturation), recurrence to low-energy states is guaranteed.
 :::
 
+:::{div} feynman-prose
+Poincare recurrence is one of those facts that seems almost magical until you see the logic. If you have a bounded system that preserves measure, it must return close to where it started---infinitely often. The phase space is finite, the dynamics shuffle things around without losing volume, so eventually you come back.
+
+Now, the Sieve might flag "saturation"---the system is bounded, but it seems stuck at high energy, drifting without returning to low-energy states. Ergodicity resolves this. If the system mixes properly, it does not just wander---it samples the entire phase space fairly. Time averages equal space averages. So that saturation bound is not just a ceiling; it is a guarantee of thermodynamic equilibrium. The system *will* return to low energy states, over and over, forever.
+:::
+
 ---
 
 (sec-variety-control-theorem)=
@@ -179,7 +220,6 @@ The Poincare recurrence theorem (1890) states that for a measure-preserving tran
 
 :::{prf:theorem} [UP-VarietyControl] Variety-Control Theorem
 :label: mt-up-variety-control
-:class: metatheorem
 
 **Theorem:** Cybernetic Retro-Validation
 
@@ -203,6 +243,14 @@ $$K_{\mathrm{SC}_\lambda}^- \wedge K_{\mathrm{GC}_T}^+ \Rightarrow K_{\mathrm{SC
 Ashby's Law of Requisite Variety (1956) states that "only variety can absorb variety." If the controller has sufficient degrees of freedom ($\log|\mathcal{U}| \geq \log|\mathcal{D}|$), it can cancel any disturbance. The Conant-Ashby theorem (1970) formalizes this: every good regulator of a system must be a model of that system. Applied to scaling instabilities, a sufficiently complex controller can inject anti-scaling corrections that neutralize supercritical growth.
 :::
 
+:::{div} feynman-prose
+Ashby's Law is one of those foundational cybernetic principles that keeps showing up everywhere. The idea is almost tautological once you see it: if the world can throw $N$ different disturbances at you, you need at least $N$ different responses to handle them all. "Only variety can absorb variety."
+
+Now, the Sieve might flag a supercritical scaling instability---the system wants to blow up. But if you have a controller with enough variety, enough degrees of freedom, it can inject precisely the right anti-growth corrections. The instability is still there in the open-loop dynamics, but the closed loop is stable.
+
+This is how you reconcile an unstable plant with a stable system: the controller provides the missing variety. The retroactive upgrade recognizes that supercritical scaling is not fatal if the controller has what it takes.
+:::
+
 ---
 
 (sec-algorithm-depth-theorem)=
@@ -210,7 +258,6 @@ Ashby's Law of Requisite Variety (1956) states that "only variety can absorb var
 
 :::{prf:theorem} [UP-AlgorithmDepth] Algorithm-Depth Theorem
 :label: mt-up-algorithm-depth
-:class: metatheorem
 
 **Theorem:** Computational Censorship Retro-Validation
 
@@ -231,7 +278,15 @@ $$K_{\mathrm{Rec}_N}^{\mathrm{blk}} \wedge K_{\mathrm{Rep}_K}^+ \Rightarrow K_{\
 :::{prf:proof}
 :label: sketch-mt-up-algorithm-depth
 
-Kolmogorov complexity bounds the information content of an object. If $K(x) \leq C$ for some constant $C$, then $x$ is compressible/simple. A genuinely singular object (fractal, infinitely complex) has $K(x) \to \infty$. Therefore, a Zeno singularity with finite complexity must be a coordinate artifact—like the event horizon in Schwarzschild coordinates, which disappears in Eddington-Finkelstein coordinates. Algorithmic removability follows.
+Kolmogorov complexity bounds the information content of an object. If $K(x) \leq C$ for some constant $C$, then $x$ is compressible/simple. A genuinely singular object (fractal, infinitely complex) has $K(x) \to \infty$. Therefore, a Zeno singularity with finite complexity must be a coordinate artifact---like the event horizon in Schwarzschild coordinates, which disappears in Eddington-Finkelstein coordinates. Algorithmic removability follows.
+:::
+
+:::{div} feynman-prose
+This is a lovely connection between information theory and geometry. The key insight is: genuinely complicated objects require complicated descriptions. A fractal with infinite self-similar detail has infinite Kolmogorov complexity---you cannot compress it into a short program.
+
+But if the solution has finite description length, it is *simple*. And simple objects cannot have genuinely singular structure. Any apparent singularity must be a coordinate artifact.
+
+Think of the event horizon in Schwarzschild coordinates. The metric components blow up at $r = 2M$. Looks singular! But switch to Eddington-Finkelstein coordinates, and the singularity vanishes. The horizon is smooth; it was just the coordinates that were badly behaved. Finite complexity is the proof that you are looking at a coordinate singularity, not a real one.
 :::
 
 ---
@@ -241,7 +296,6 @@ Kolmogorov complexity bounds the information content of an object. If $K(x) \leq
 
 :::{prf:theorem} [UP-Holographic] Holographic-Regularity Theorem
 :label: mt-up-holographic
-:class: metatheorem
 
 **Theorem:** Information-Theoretic Smoothing
 
@@ -275,6 +329,14 @@ where $K(\Sigma|_\varepsilon)$ is the Kolmogorov complexity of the $\varepsilon$
 Thus, bounded K-complexity (certificate $K_{\mathrm{Rep}_K}^+$) implies $\dim_{\mathrm{eff}}(\Sigma) = 0$, which is incompatible with genuine fractal structure at generic points. The singular set must be a discrete union of smooth submanifolds with integer dimension.
 :::
 
+:::{div} feynman-prose
+The remark in the theorem is important---do not skip it. People often think "fractal means infinitely complex" and therefore "Mandelbrot set is infinitely complex." Wrong! The Mandelbrot set has a very short description: a few lines of code. Its *boundary* has non-integer Hausdorff dimension, but its Kolmogorov complexity is tiny.
+
+The resolution is *effective dimension*. This refined notion asks: how much information do you need to describe the set at each scale? For the Mandelbrot set, the answer is $O(\log(1/\varepsilon))$ at scale $\varepsilon$---very cheap. For a genuinely random fractal, you need $O(\varepsilon^{-d})$ bits---exponentially expensive.
+
+Bounded K-complexity means your singular set is like the Mandelbrot set, not like a random fractal. And that implies it cannot have positive effective dimension. The fractal appearance is an illusion of scale, not a fundamental obstacle.
+:::
+
 ---
 
 (sec-spectral-quantization-theorem)=
@@ -282,7 +344,6 @@ Thus, bounded K-complexity (certificate $K_{\mathrm{Rep}_K}^+$) implies $\dim_{\
 
 :::{prf:theorem} [LOCK-SpectralQuant] Spectral-Quantization Theorem
 :label: mt-lock-spectral-quant
-:class: metatheorem
 
 **Theorem:** Discrete Spectrum Enforcement
 
@@ -306,14 +367,27 @@ $$K_{\mathrm{GC}_\nabla}^{\text{chaotic}} \wedge K_{\text{Lock}}^{\mathrm{blk}} 
 Weyl's law (1911) relates the spectral asymptotics $N(\lambda) \sim C\lambda^{n/2}$ to the geometry. If global invariants are quantized (integers), the spectrum is discrete: $\sigma(L) \subset \{\lambda_n\}_{n \in \mathbb{N}}$. By the Paley-Wiener theorem, functions with discrete spectrum are almost periodic. Kac's "Can one hear the shape of a drum?" (1966) shows geometry determines spectrum and vice versa.
 :::
 
+:::{div} feynman-prose
+The spectrum is the fingerprint of a system. And here is the key: if the fingerprint is *discrete*---a countable set of eigenvalues rather than a continuous band---then the dynamics cannot be truly chaotic. Chaos requires continuous spectrum; chaos is mixing, blending, losing information continuously. But discrete spectrum means periodicity or quasi-periodicity: the system cycles through its frequencies like a chord that never blurs.
+
+So if the Lock proves integrality constraints---global invariants that must be integers---the spectrum is forced to be discrete. And discrete spectrum kills chaos. What looked like chaotic oscillation at Node 12 is retroactively downgraded to quasi-periodic behavior. Still complicated, perhaps, but fundamentally predictable.
+:::
+
 ---
 
 (sec-unique-attractor-theorem)=
 ### The Unique-Attractor Theorem
 
+:::{div} feynman-prose
+The Unique-Attractor Theorem is one of the most subtle results in this collection, and the warning in the theorem statement is crucial. Let me make sure you do not fall into a common trap.
+
+Unique ergodicity says: there is only one invariant measure. Many people jump to: "therefore trajectories converge to one point." Wrong! The irrational rotation on the circle is uniquely ergodic---Lebesgue measure is the unique invariant measure---but orbits are *dense*, never converging.
+
+The theorem carefully spells out what additional hypotheses you need. Backend A requires discrete attractors. Backend B requires gradient structure with the Lojasiewicz-Simon inequality. Backend C requires contraction. Each backend turns the uniqueness of measure into uniqueness of profile in a different way, appropriate to different physical settings.
+:::
+
 :::{prf:theorem} [LOCK-UniqueAttractor] Unique-Attractor Theorem
 :label: mt-lock-unique-attractor
-:class: metatheorem
 
 **Theorem:** Global Selection Principle
 
@@ -444,6 +518,18 @@ for **all** initial conditions $x \in \mathcal{X}$. The basin of attraction of $
 
 :::
 
+:::{div} feynman-prose
+Let me summarize the three backends, because choosing the right one matters.
+
+**Backend A** is for systems where you already know the attractor is discrete---a finite set of equilibria or profiles. Unique ergodicity then forces the measure to concentrate on a single point. Simple and clean.
+
+**Backend B** is for gradient flows, where energy decreases monotonically. The Lojasiewicz-Simon inequality is the hero here: it prevents trajectories from spiraling forever near critical points. Finite arc length means convergence to a single equilibrium.
+
+**Backend C** is for contractive systems, where distances shrink exponentially. This is the strongest case: not only unique measure, but global pointwise convergence from *all* initial conditions. The mixing rate is controlled by the spectral gap.
+
+Each backend has its domain of applicability. Use the table to match your system to the right tool.
+:::
+
 ---
 
 (sec-selector-certificate-theorem)=
@@ -451,7 +537,6 @@ for **all** initial conditions $x \in \mathcal{X}$. The basin of attraction of $
 
 :::{prf:theorem} [UP-SelChiCap] Selector Certificate from OGP + Capacity
 :label: mt-up-selchi-cap
-:class: metatheorem rigor-class-f
 
 **Rigor Class:** F (Framework-Original) — see {prf:ref}`def-rigor-classification`
 
@@ -461,7 +546,7 @@ for **all** initial conditions $x \in \mathcal{X}$. The basin of attraction of $
 1. $K_{\mathrm{OGP}}^+$: Solution-level OGP for $\mathrm{SOL}(\Phi)$—clusters are $\varepsilon$-separated:
    $$\forall x, y \in \mathrm{SOL}(\Phi): \mathrm{overlap}(x, y) \in [0, \varepsilon] \cup [1-\varepsilon, 1]$$
 2. $K_{C_\mu}^+$: Exponential cluster decomposition $\mathrm{SOL} = \bigsqcup_{i=1}^{N} C_i$ with $N = e^{\Theta(n)}$
-3. $K_{\mu \leftarrow \mathcal{R}}^+$: Representable-law semantics (Definition {prf:ref}`def-representable-law`)
+3. $K_{\mu \leftarrow \mathcal{R}}^+$: Representable-law semantics ({prf:ref}`def-representable-law`)
 4. $K_{\mathrm{Cap}}^{\mathrm{poly}}$: Polynomial capacity bound $\mathrm{Cap}(q) \leq \mathrm{poly}(n)$
 
 **Statement:** The **selector certificate** holds:
@@ -489,11 +574,11 @@ $$\mathrm{corr}(\mu_q, x^*) := \mathbb{E}_{z \sim \mu_q}\left[\frac{1}{n}\sum_{i
 $$\mathrm{corr}(\mu_q, x^*) = \mathbb{E}_{z \sim \mu_q}[\mathrm{overlap}(z, x^*)] \leq \varepsilon$$
 contradicting $\mathrm{corr}(\mu_q, x^*) > \varepsilon$. $\square$
 
-*Step 2 (Support Containment).* By $K_{\mu \leftarrow \mathcal{R}}^+$ (Definition {prf:ref}`def-representable-law`):
+*Step 2 (Support Containment).* By $K_{\mu \leftarrow \mathcal{R}}^+$ ({prf:ref}`def-representable-law`):
 $$\mathrm{supp}(\mu_q) \subseteq \mathcal{R}(q)$$
 Therefore the witness $z$ from Step 1 satisfies $z \in \mathcal{R}(q)$.
 
-*Step 3 (Representability Semantics).* By definition of $\mathcal{R}(q)$ (Definition {prf:ref}`def-representable-set-algorithmic`), any $z \in \mathcal{R}(q)$ is explicitly computable from $q$ in $O(1)$ time. If $\mathrm{overlap}(z, x^*) \geq 1-\varepsilon$, then:
+*Step 3 (Representability Semantics).* By definition of $\mathcal{R}(q)$ ({prf:ref}`def-representable-set-algorithmic`), any $z \in \mathcal{R}(q)$ is explicitly computable from $q$ in $O(1)$ time. If $\mathrm{overlap}(z, x^*) \geq 1-\varepsilon$, then:
 - Either $z = x^*$ (solved), or
 - $z$ is within Hamming distance $\varepsilon n$ of a solution (near-solved)
 
@@ -508,6 +593,14 @@ $$\mathrm{corr}(\mu_q, x^*) \geq 1-\varepsilon$$
 This is exactly $K_{\mathrm{Sel}_\chi}^+$. $\square$
 :::
 
+:::{div} feynman-prose
+The Overlap Gap Property is the key to understanding computational hardness in random optimization. Here is the picture: imagine the solution space as a landscape with many peaks. OGP says the peaks are *isolated*---no smooth paths connecting them. You are either very close to a solution or very far; no gradual approach is possible.
+
+The selector certificate captures this discontinuity formally. An algorithm's internal state induces a probability distribution over candidate solutions. OGP forces this distribution to be bimodal: either the algorithm knows almost nothing about the solution (low correlation), or it has essentially found it (high correlation). No middle ground.
+
+This is devastating for gradient-based or local search methods. They need the gradual approach that OGP forbids. The only option is to *guess* which cluster contains the solution, and with exponentially many clusters, that means exponential time.
+:::
+
 ---
 
 (sec-universal-algorithmic-obstruction-theorem)=
@@ -515,7 +608,6 @@ This is exactly $K_{\mathrm{Sel}_\chi}^+$. $\square$
 
 :::{prf:theorem} [UP-OGPChi] Universal Algorithmic Obstruction via Selector
 :label: mt-up-ogpchi
-:class: metatheorem rigor-class-f
 
 **Rigor Class:** F (Framework-Original) — see {prf:ref}`def-rigor-classification`
 
@@ -524,7 +616,7 @@ This is exactly $K_{\mathrm{Sel}_\chi}^+$. $\square$
 **Hypotheses.** Let $\mathcal{H}$ be an algorithmic hypostructure with:
 1. $K_{C_\mu}^+$: Exponential cluster decomposition with $N = e^{\Theta(n)}$ clusters
 2. $K_{\mathrm{Sel}_\chi}^+$: Selector certificate (no intermediate correlation states)
-3. System type $T_{\text{algorithmic}}$ (Definition {prf:ref}`def-type-algorithmic`)
+3. System type $T_{\text{algorithmic}}$ ({prf:ref}`def-type-algorithmic`)
 
 **Statement:** All polynomial-time algorithms require exponential time on some instances:
 $$K_{\mathrm{Scope}}^+: \forall \mathcal{A} \in P, \exists \Phi_n: \mathrm{Time}_{\mathcal{A}}(\Phi_n) \geq e^{\Theta(n)}$$
@@ -570,6 +662,14 @@ $$K_{\mathrm{Scope}}^+ = (\text{universal}, \exp(n), \text{via MT-UP-OGP}_{\chi}
 $\square$
 :::
 
+:::{div} feynman-prose
+Here is something remarkable about this argument: it is *algorithm-agnostic*. We did not assume anything about how the algorithm works internally---no assumptions about whether it is greedy, or uses dynamic programming, or runs gradient descent, or does something completely novel.
+
+The only things we used were: (1) the representable set has polynomial size (this is what makes it a polynomial-time algorithm), and (2) the solution space has OGP structure. Everything else follows. The selector discontinuity forces guessing, the exponential number of clusters forces exponential time.
+
+This is why the theorem says "universal obstruction." It is not that we found a specific algorithm that fails. It is that *any* algorithm, no matter how clever, must fail on these instances. The structure of the problem itself forbids efficient solution.
+:::
+
 ---
 
 (sec-bridge-verification-algorithmic)=
@@ -602,13 +702,12 @@ define $\iota(\mathbb{H})$ as DTM $M_{\mathbb{H}}$:
 
 :::{prf:theorem} [BRIDGE-Alg] Bridge Import for Algorithmic Scope
 :label: mt-bridge-algorithmic
-:class: metatheorem rigor-class-l
 
 **Rigor Class:** L (Literature-Anchored) — bridge to computational complexity theory.
 
 **Context:** Connects hypostructure $K_{\mathrm{Scope}}^+$ to standard complexity claim $\mathrm{P} \neq \mathrm{NP}$.
 
-**Bridge Verification Protocol** (Definition {prf:ref}`def-bridge-verification`):
+**Bridge Verification Protocol** ({prf:ref}`def-bridge-verification`):
 
 1. **Hypothesis Translation ($\mathcal{H}_{\mathrm{tr}}$):**
    - **Input:** $K_{\mathrm{Scope}}^+ \in \mathrm{Cl}(\Gamma_{\mathrm{final}})$
@@ -627,6 +726,14 @@ define $\iota(\mathbb{H})$ as DTM $M_{\mathbb{H}}$:
 $$K_{\mathrm{Bridge}}^{\mathrm{Comp}} := (\mathcal{H}_{\mathrm{tr}}, \iota, \mathcal{C}_{\mathrm{imp}})$$
 
 **Literature:** Cook-Levin Theorem {cite}`Cook71`; NP-completeness {cite}`Karp72`; TM foundations {cite}`Sipser12`.
+:::
+
+:::{div} feynman-prose
+The Bridge Theorem is the final step that connects our abstract hypostructure framework to the concrete world of complexity theory. Let me be explicit about what is happening here.
+
+We have been working in the language of hypostructures, certificates, and upgrades. But the P vs NP question is stated in terms of Turing machines and polynomial-time computation. The bridge shows these are the same thing: our algorithmic hypostructure is exactly a Turing machine in disguise, and our universal obstruction is exactly the statement that SAT is not in P.
+
+This is not a new proof of P vs NP---that remains open, of course. What we have done is translate the problem into hypostructure language, where the Sieve machinery can be applied. If the OGP hypotheses hold for random SAT instances (which is conjectured but not proven), then the universal obstruction theorem gives P vs NP. The bridge makes the implication rigorous.
 :::
 
 ---
@@ -648,3 +755,11 @@ $$K_{\mathrm{Bridge}}^{\mathrm{Comp}} := (\mathcal{H}_{\mathrm{tr}}, \iota, \mat
 | Node 10.5 (Scope) | Specific Dynamics | {prf:ref}`mt-up-selchi-cap` | OGP + capacity => selector discontinuity |
 | Node 10.5 (Scope) | Selector Cert | {prf:ref}`mt-up-ogpchi` | Selector => universal algorithmic obstruction |
 | Bridge (Comp) | Hypostructure->TM | {prf:ref}`mt-bridge-algorithmic` | Scope => SAT not in P |
+
+:::{div} feynman-prose
+And there it is. Twelve theorems, each showing how global knowledge propagates backwards to resolve local uncertainty. The pattern is always the same: something proved late in the Sieve reaches back to clear up ambiguities that were flagged early.
+
+The key insight---and I want you to remember this---is that these are not heuristics or approximations. They are rigorous logical implications. If the global constraint holds, the local upgrade follows necessarily. The Sieve does not guess; it deduces.
+
+What makes this powerful is the separation of concerns. You do not need to prove everything at once. You can flag local ambiguities, continue the verification, and let the global structure resolve them retroactively. The architecture of the Sieve makes this possible: the DAG structure, the certificate algebra, the upgrade rules. It is all designed to let information flow in both directions through the verification graph.
+:::
