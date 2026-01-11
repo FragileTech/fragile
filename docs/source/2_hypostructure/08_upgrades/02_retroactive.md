@@ -42,6 +42,7 @@ This is precisely what these theorems formalize: the logical machinery for propa
 **Statement:** If the topological sector graph is finite and the energy is insufficient to make infinitely many transitions, the system cannot undergo infinite distinct events (Zeno behavior). The number of sector transitions is bounded by $N_{\max} \leq E_{\max}/\delta$.
 
 **Certificate Logic:**
+
 $$K_{\mathrm{Rec}_N}^- \wedge K_{\mathrm{TB}_\pi}^+ \wedge K_{\text{Action}}^{\mathrm{blk}} \Rightarrow K_{\mathrm{Rec}_N}^{\sim}$$
 
 **Why Retroactive:** The certificate $K_{\text{Action}}^{\mathrm{blk}}$ is produced by BarrierAction (downstream of Node 8), which is on a different DAG branch than Node 2 failure. In a single epoch, Node 2 failure routes through BarrierCausal, never reaching Node 8. This promotion requires information from a *completed* run that established $K_{\mathrm{TB}_\pi}^+$, then retroactively upgrades the earlier Node 2 ambiguity.
@@ -80,6 +81,7 @@ But here is the trick. If you can prove that each event costs *something*---each
 **Statement:** If the Lock proves that *no* singularity pattern can exist globally ($\mathrm{Hom}(\mathcal{B}_{\text{univ}}, \mathcal{H}) = \emptyset$), then all local "Blocked" states are retroactively validated as Regular points.
 
 **Certificate Logic:**
+
 $$K_{\text{Lock}}^{\mathrm{blk}} \Rightarrow \forall i: K_{\text{Barrier}_i}^{\mathrm{blk}} \to K_{\text{Gate}_i}^+$$
 
 **Physical Interpretation:** If the laws of physics forbid black holes (Lock), then any localized dense matter detected earlier (BarrierCap) must eventually disperse, regardless of local uncertainty.
@@ -118,6 +120,7 @@ This is enormously powerful. You do not need to analyze each local ambiguity sep
 **Statement:** If the vacuum symmetry is rigid (SymCheck) and constants are stable (CheckSC), then the "Flatness" (Stagnation) detected at Node 7 is actually a **Spontaneous Symmetry Breaking** event. This mechanism generates a dynamic Mass Gap, satisfying the Stiffness requirement retroactively.
 
 **Certificate Logic:**
+
 $$K_{\mathrm{LS}_\sigma}^{\mathrm{stag}} \wedge K_{\text{Sym}}^+ \wedge K_{\text{CheckSC}}^+ \Rightarrow K_{\mathrm{LS}_\sigma}^+ \text{ (with gap } \lambda > 0\text{)}$$
 
 **Application:** Used in Yang-Mills and Riemann Hypothesis to upgrade a "Flat Potential" diagnosis to a "Massive/Stiff Potential" proof.
@@ -156,6 +159,7 @@ This is the Higgs mechanism in disguise. The would-be massless mode gets "eaten"
 **Statement:** If the system is definable in an o-minimal structure (TameCheck), then any singular set $\Sigma$ with zero capacity detected at Node 6 is rigorously a **Removable Singularity** (a lower-dimensional stratum in the Whitney stratification).
 
 **Certificate Logic:**
+
 $$K_{\mathrm{Cap}_H}^{\mathrm{blk}} \wedge K_{\mathrm{TB}_O}^+ \Rightarrow K_{\mathrm{Cap}_H}^+$$
 
 **Application:** Ensures that "Blocked" singularities in geometric flows are not just "small," but geometrically harmless.
@@ -194,6 +198,7 @@ This is the power of tameness: it rules out the pathological cases without you h
 **Statement:** If the system is proven to be Ergodic (mixing), then the "Saturation" bound at Node 1 is not just a ceiling, but a **Recurrence Guarantee**. The system will infinitely often visit low-energy states. In particular, $\liminf_{t \to \infty} \Phi(x(t)) \leq \bar{\Phi}$ for $\mu$-a.e. initial condition.
 
 **Certificate Logic:**
+
 $$K_{\text{sat}}^{\mathrm{blk}} \wedge K_{\mathrm{TB}_\rho}^+ \Rightarrow K_{D_E}^+ \text{ (Poincare Recurrence)}$$
 
 **Application:** Upgrades "Bounded Drift" to "Thermodynamic Stability" in statistical mechanics systems.
@@ -230,6 +235,7 @@ Now, the Sieve might flag "saturation"---the system is bounded, but it seems stu
 **Statement:** If the controller possesses sufficient Requisite Variety to match the disturbance (Node 16), it can suppress the Supercritical Scaling instability (Node 4) via active feedback, rendering the effective system Subcritical.
 
 **Certificate Logic:**
+
 $$K_{\mathrm{SC}_\lambda}^- \wedge K_{\mathrm{GC}_T}^+ \Rightarrow K_{\mathrm{SC}_\lambda}^{\sim} \text{ (Controlled)}$$
 
 **Application:** Used in Control Theory to prove that an inherently unstable (supercritical) plant can be stabilized by a complex controller.
@@ -268,6 +274,7 @@ This is how you reconcile an unstable plant with a stable system: the controller
 **Statement:** If the solution has a finite description length (ComplexCheck), then any "Infinite Event Depth" (Zeno behavior) detected at Node 2 must be an artifact of the coordinate system, not physical reality. The singularity is removable by coordinate transformation.
 
 **Certificate Logic:**
+
 $$K_{\mathrm{Rec}_N}^{\mathrm{blk}} \wedge K_{\mathrm{Rep}_K}^+ \Rightarrow K_{\mathrm{Rec}_N}^+$$
 
 **Application:** Resolves coordinate singularities (like event horizons in bad coordinates) by proving the underlying object is algorithmically simple.
@@ -306,6 +313,7 @@ Think of the event horizon in Schwarzschild coordinates. The metric components b
 **Statement:** A singular set with non-integer *effective* Hausdorff dimension (in the sense of Lutz, 2003) requires unbounded description complexity at fine scales. If ComplexCheck proves bounded effective complexity, the singular set must have integer effective dimension, collapsing the "Fractal" possibility into "Tame" geometry.
 
 **Certificate Logic:**
+
 $$K_{\mathrm{Cap}_H}^{\text{ambiguous}} \wedge K_{\mathrm{Rep}_K}^+ \Rightarrow K_{\mathrm{Cap}_H}^+ \text{ (Integer Dim)}$$
 
 **Remark:** This corrects a common misconception. The covering number $N(\varepsilon) \sim \varepsilon^{-d}$ for Hausdorff dimension $d$, but Kolmogorov complexity $K(\Sigma|_\varepsilon) \sim \log N(\varepsilon) = O(d \log(1/\varepsilon))$ is *not* infinite. The Mandelbrot set has fractal boundary but finite K-complexity (a few lines of code). The effective dimension framework resolves this subtlety.
@@ -319,7 +327,11 @@ $$K_{\mathrm{Cap}_H}^{\text{ambiguous}} \wedge K_{\mathrm{Rep}_K}^+ \Rightarrow 
 :label: sketch-mt-up-holographic
 
 The connection between algorithmic complexity and geometric dimension is mediated by *effective Hausdorff dimension* {cite}`Lutz03`. For a set $\Sigma$, define:
-$$\dim_{\mathrm{eff}}(\Sigma) := \liminf_{\varepsilon \to 0} \frac{K(\Sigma|_\varepsilon)}{\log(1/\varepsilon)}$$
+
+$$
+\dim_{\mathrm{eff}}(\Sigma) := \liminf_{\varepsilon \to 0} \frac{K(\Sigma|_\varepsilon)}{\log(1/\varepsilon)}
+$$
+
 where $K(\Sigma|_\varepsilon)$ is the Kolmogorov complexity of the $\varepsilon$-covering. By Mayordomo's theorem {cite}`Mayordomo02`:
 
 1. If $K(\Sigma|_\varepsilon) = O(d \cdot \log(1/\varepsilon))$, then $\dim_{\mathrm{eff}}(\Sigma) \leq d$
@@ -354,6 +366,7 @@ Bounded K-complexity means your singular set is like the Mandelbrot set, not lik
 **Statement:** If the Lock proves that global invariants must be Integers (E4: Integrality), the spectrum of the evolution operator is forced to be discrete (Quantized). Continuous chaotic drift is impossible; the system must be Quasi-Periodic or Periodic.
 
 **Certificate Logic:**
+
 $$K_{\mathrm{GC}_\nabla}^{\text{chaotic}} \wedge K_{\text{Lock}}^{\mathrm{blk}} \Rightarrow K_{\mathrm{GC}_\nabla}^{\sim} \text{ (Quasi-Periodic)}$$
 
 **Application:** Proves that chaotic oscillations are forbidden when integrality constraints exist.
@@ -400,6 +413,7 @@ The theorem carefully spells out what additional hypotheses you need. Backend A 
 **Statement:** Under appropriate additional hypotheses (specified per backend), if the system possesses a unique invariant measure (Node 10), there can be only **one** stable profile in the library. All other profiles are transient/unstable.
 
 **Certificate Logic:**
+
 $$K_{\text{Profile}}^{\text{multimodal}} \wedge K_{\mathrm{TB}_\rho}^+ \wedge K_{\text{Backend}}^+ \Rightarrow K_{\text{Profile}}^{\text{unique}}$$
 
 where $K_{\text{Backend}}^+$ is one of:
@@ -426,13 +440,21 @@ where $K_{\text{Backend}}^+$ is one of:
 *Step 1 (Ergodic Support Characterization).* Let $\mu$ be the unique invariant measure. By the ergodic decomposition theorem {cite}`Furstenberg81`, every ergodic invariant measure is extremal in $\mathcal{M}_{\text{inv}}(\mathcal{X})$. Since $\mu$ is unique, it is extremal, hence ergodic. The support $\text{supp}(\mu)$ is closed and invariant; for $x \in \text{supp}(\mu)$, the orbit stays in $\text{supp}(\mu)$, hence $\omega(x) \subseteq \text{supp}(\mu)$.
 
 *Step 2 (Support Containment via Invariance).* The support $\text{supp}(\mu)$ is closed and forward-invariant: $S_t(\text{supp}(\mu)) \subseteq \text{supp}(\mu)$. By Step 1, if $x \in \text{supp}(\mu)$, then $\omega(x) \subseteq \text{supp}(\mu)$. The discrete attractor hypothesis gives $\omega(x) \subseteq \{V_1, \ldots, V_N\}$ for all $x$. Therefore:
-$$\text{supp}(\mu) \cap \{V_1, \ldots, V_N\} \neq \emptyset \implies \text{supp}(\mu) \subseteq \{V_1, \ldots, V_N\}$$
+
+$$
+\text{supp}(\mu) \cap \{V_1, \ldots, V_N\} \neq \emptyset \implies \text{supp}(\mu) \subseteq \{V_1, \ldots, V_N\}
+$$
+
 since $\omega$-limits of points in $\text{supp}(\mu)$ must lie in the finite discrete set.
 
 *Step 3 (Measure Concentration on Singleton).* Since $\mu$ is ergodic and $\text{supp}(\mu) \subseteq \{V_1, \ldots, V_N\}$ with $N < \infty$, the measure must concentrate on an ergodic component. For a finite discrete set, each point is its own ergodic component. Therefore $\mu = \delta_{V^*}$ for some unique profile $V^* \in \mathcal{L}_T$.
 
 *Step 4 (Transience of Other Profiles).* For any $V_i \neq V^*$, we have $\mu(\{V_i\}) = 0$. By Birkhoff's ergodic theorem:
-$$\lim_{T \to \infty} \frac{1}{T} \int_0^T \mathbf{1}_{\{V_i\}}(S_t x) \, dt = \mu(\{V_i\}) = 0 \quad \mu\text{-a.s.}$$
+
+$$
+\lim_{T \to \infty} \frac{1}{T} \int_0^T \mathbf{1}_{\{V_i\}}(S_t x) \, dt = \mu(\{V_i\}) = 0 \quad \mu\text{-a.s.}
+$$
+
 Hence orbits spend asymptotically zero fraction of time near $V_i$.
 
 *Step 5 (Convergence Conclusion).* The discrete topology on $\{V_1, \ldots, V_N\}$ combined with $\mu = \delta_{V^*}$ implies that for $\mu$-a.e. initial condition, $\omega(x) = \{V^*\}$. All other profiles are transient saddle points with measure-zero basins.
@@ -454,17 +476,29 @@ Hence orbits spend asymptotically zero fraction of time near $V_i$.
 **Proof (5 Steps):**
 
 *Step 1 (Gradient-Like Dynamics with Strict Lyapunov Function).* By $K_{\mathrm{GC}_\nabla}^-$, the flow $S_t$ is gradient-like: $\dot{x} = -\nabla_g \Phi(x) + R(x)$ where $R$ satisfies $\langle R, \nabla\Phi \rangle \leq 0$. The strict Lyapunov condition ensures:
-$$\frac{d}{dt}\Phi(S_t x) = -\|\nabla\Phi(S_t x)\|^2 + \langle R, \nabla\Phi \rangle \leq -\|\nabla\Phi(S_t x)\|^2$$
+
+$$
+\frac{d}{dt}\Phi(S_t x) = -\|\nabla\Phi(S_t x)\|^2 + \langle R, \nabla\Phi \rangle \leq -\|\nabla\Phi(S_t x)\|^2
+$$
+
 Hence $\Phi$ is strictly decreasing away from critical points. The global attractor $\mathcal{A}$ consists of equilibria and connecting orbits.
 
 *Step 2 (Bounded Trajectories are Precompact).* By $K_{C_\mu}^+$ (compactness), sublevel sets $\{\Phi \leq c\}$ are precompact modulo symmetry. For any bounded trajectory, the orbit closure is compact. This is the "asymptotic compactness" condition {cite}`Temam97`.
 
 *Step 3 (Lojasiewicz-Simon Inequality Near Critical Points).* By the Lojasiewicz-Simon gradient inequality {cite}`Simon83`:
-$$\|\nabla\Phi(x)\| \geq C_{\text{LS}} |\Phi(x) - \Phi(V)|^{1-\theta}$$
+
+$$
+\|\nabla\Phi(x)\| \geq C_{\text{LS}} |\Phi(x) - \Phi(V)|^{1-\theta}
+$$
+
 for $x$ in a neighborhood of any critical point $V$, with exponent $\theta \in (0, 1/2]$. This prevents oscillation near equilibria and ensures finite-length gradient flow curves.
 
 *Step 4 (Convergence of Trajectories to Single Equilibrium).* The Lojasiewicz-Simon inequality implies:
-$$\int_0^\infty \|\dot{S}_t x\| \, dt = \int_0^\infty \|\nabla\Phi(S_t x)\| \, dt < \infty$$
+
+$$
+\int_0^\infty \|\dot{S}_t x\| \, dt = \int_0^\infty \|\nabla\Phi(S_t x)\| \, dt < \infty
+$$
+
 Hence the trajectory has **finite arc length** and converges to a single limit $V^* = \lim_{t \to \infty} S_t x$. By continuity, $\nabla\Phi(V^*) = 0$.
 
 *Step 5 (Unique Invariant Measure Implies Unique Equilibrium).* For gradient flows, every equilibrium $V$ generates an invariant measure $\delta_V$ (since $S_t V = V$). If there existed distinct equilibria $V_1 \neq V_2$ in $\mathcal{A}$, then $\delta_{V_1}$ and $\delta_{V_2}$ would both be invariant measures, contradicting the uniqueness hypothesis $K_{\mathrm{TB}_\rho}^+$. Hence the attractor contains exactly one equilibrium: $\mathcal{A} \cap \{\text{equilibria}\} = \{V^*\}$. Combined with Step 4 (every trajectory converges to some equilibrium), we conclude $\mu = \delta_{V^*}$.
@@ -485,19 +519,35 @@ Hence the trajectory has **finite arc length** and converges to a single limit $
 **Proof (5 Steps):**
 
 *Step 1 (Strictly Contractive Semigroup in Metric).* Assume $d(S_t x, S_t y) \leq e^{-\lambda t} d(x, y)$ for all $x, y \in \mathcal{X}$ with contraction rate $\lambda > 0$. This is the "uniformly dissipative" condition {cite}`Temam97`. For Markov chains, the analogous condition is the Harris chain criterion with geometric drift {cite}`MeynTweedie93`:
-$$\mathcal{L}V \leq -\lambda V + b\mathbf{1}_C$$
+
+$$
+\mathcal{L}V \leq -\lambda V + b\mathbf{1}_C
+$$
+
 for a Lyapunov function $V$ and small set $C$.
 
 *Step 2 (Unique Invariant Measure / Stationary State).* Contraction implies the existence of a unique fixed point $V^* = \lim_{t \to \infty} S_t x$ for any initial condition. For measures, the pushforward satisfies:
-$$W_1(S_t^* \mu, S_t^* \nu) \leq e^{-\lambda t} W_1(\mu, \nu)$$
+
+$$
+W_1(S_t^* \mu, S_t^* \nu) \leq e^{-\lambda t} W_1(\mu, \nu)
+$$
+
 in Wasserstein-1 distance. Hence there is a unique invariant measure $\mu^* = \delta_{V^*}$.
 
 *Step 3 (Spectral Gap and Mixing Rate).* If a spectral gap $\text{gap}(\mathcal{L}) \geq \lambda_{\text{sg}} > 0$ is declared (certificate $K_{\text{spec-gap}}$), then mixing-time bounds follow. For Markov semigroups, the spectral gap equals the gap between the leading eigenvalue (1 for probability-preserving) and the second eigenvalue. The mixing time satisfies:
-$$\tau_{\text{mix}}(\varepsilon) \leq \frac{1}{\lambda_{\text{sg}}} \log\left(\frac{1}{\varepsilon}\right)$$
+
+$$
+\tau_{\text{mix}}(\varepsilon) \leq \frac{1}{\lambda_{\text{sg}}} \log\left(\frac{1}{\varepsilon}\right)
+$$
+
 **Note:** The contraction rate $\lambda$ (hypothesis 1) and spectral gap $\lambda_{\text{sg}}$ are related but not generally equal; in many settings $\lambda_{\text{sg}} \leq 2\lambda$. This step is optional—uniqueness of profile follows from Steps 1-2 alone.
 
 *Step 4 (Contraction Upgrades Uniqueness to Global Attraction).* Unlike mere unique ergodicity (which only guarantees time-average convergence), contraction provides **pointwise** convergence:
-$$d(S_t x, V^*) \leq e^{-\lambda t} d(x, V^*) \to 0 \quad \text{as } t \to \infty$$
+
+$$
+d(S_t x, V^*) \leq e^{-\lambda t} d(x, V^*) \to 0 \quad \text{as } t \to \infty
+$$
+
 for **all** initial conditions $x \in \mathcal{X}$. The basin of attraction of $V^*$ is the entire space.
 
 *Step 5 (Conclusion: Unique Profile with Global Attraction).* The combination of unique invariant measure $\mu^* = \delta_{V^*}$, global pointwise convergence to $V^*$, and exponential mixing implies the Profile Library reduces to a singleton: $\mathcal{L}_T = \{V^*\}$. All other profiles are transient or absent.
@@ -544,17 +594,25 @@ Each backend has its domain of applicability. Use the table to match your system
 
 **Hypotheses.** Let $\mathcal{H}$ be an algorithmic hypostructure with:
 1. $K_{\mathrm{OGP}}^+$: Solution-level OGP for $\mathrm{SOL}(\Phi)$—clusters are $\varepsilon$-separated:
-   $$\forall x, y \in \mathrm{SOL}(\Phi): \mathrm{overlap}(x, y) \in [0, \varepsilon] \cup [1-\varepsilon, 1]$$
+
+   $$
+   \forall x, y \in \mathrm{SOL}(\Phi): \mathrm{overlap}(x, y) \in [0, \varepsilon] \cup [1-\varepsilon, 1]
+   $$
+
 2. $K_{C_\mu}^+$: Exponential cluster decomposition $\mathrm{SOL} = \bigsqcup_{i=1}^{N} C_i$ with $N = e^{\Theta(n)}$
 3. $K_{\mu \leftarrow \mathcal{R}}^+$: Representable-law semantics ({prf:ref}`def-representable-law`)
 4. $K_{\mathrm{Cap}}^{\mathrm{poly}}$: Polynomial capacity bound $\mathrm{Cap}(q) \leq \mathrm{poly}(n)$
 
 **Statement:** The **selector certificate** holds:
-$$K_{\mathrm{Sel}_\chi}^+: \forall q \text{ (non-solved)}, \forall x^* \in \mathrm{SOL}(\Phi): \mathrm{corr}(\mu_q, x^*) \in [0,\varepsilon] \cup [1-\varepsilon, 1]$$
+
+$$
+K_{\mathrm{Sel}_\chi}^+: \forall q \text{ (non-solved)}, \forall x^* \in \mathrm{SOL}(\Phi): \mathrm{corr}(\mu_q, x^*) \in [0,\varepsilon] \cup [1-\varepsilon, 1]
+$$
 
 Equivalently: **Intermediate correlation requires a near-solution in $\mathcal{R}(q)$.**
 
 **Certificate Logic:**
+
 $$K_{\mathrm{OGP}}^+ \wedge K_{C_\mu}^+ \wedge K_{\mu \leftarrow \mathcal{R}}^+ \wedge K_{\mathrm{Cap}}^{\mathrm{poly}} \Rightarrow K_{\mathrm{Sel}_\chi}^+$$
 
 **Interface Permit Validated:** Selector discontinuity (no gradual learning path).
@@ -566,16 +624,27 @@ $$K_{\mathrm{OGP}}^+ \wedge K_{C_\mu}^+ \wedge K_{\mu \leftarrow \mathcal{R}}^+ 
 :label: proof-mt-up-selchi-cap
 
 *Step 1 (Correlation–Support Lemma).* Define the correlation function:
-$$\mathrm{corr}(\mu_q, x^*) := \mathbb{E}_{z \sim \mu_q}\left[\frac{1}{n}\sum_{i=1}^n \mathbf{1}[z_i = x^*_i]\right]$$
+
+$$
+\mathrm{corr}(\mu_q, x^*) := \mathbb{E}_{z \sim \mu_q}\left[\frac{1}{n}\sum_{i=1}^n \mathbf{1}[z_i = x^*_i]\right]
+$$
 
 **Lemma (Contrapositive of OGP):** If $\mathrm{corr}(\mu_q, x^*) > \varepsilon$, then there exists $z \in \mathrm{supp}(\mu_q)$ with $\mathrm{overlap}(z, x^*) \geq 1-\varepsilon$.
 
 *Proof of Lemma:* Suppose all $z \in \mathrm{supp}(\mu_q)$ have $\mathrm{overlap}(z, x^*) < 1-\varepsilon$. By OGP applied to $(z, x^*)$ where $x^* \in \mathrm{SOL}$, we must have $\mathrm{overlap}(z, x^*) \leq \varepsilon$. Then:
-$$\mathrm{corr}(\mu_q, x^*) = \mathbb{E}_{z \sim \mu_q}[\mathrm{overlap}(z, x^*)] \leq \varepsilon$$
+
+$$
+\mathrm{corr}(\mu_q, x^*) = \mathbb{E}_{z \sim \mu_q}[\mathrm{overlap}(z, x^*)] \leq \varepsilon
+$$
+
 contradicting $\mathrm{corr}(\mu_q, x^*) > \varepsilon$. $\square$
 
 *Step 2 (Support Containment).* By $K_{\mu \leftarrow \mathcal{R}}^+$ ({prf:ref}`def-representable-law`):
-$$\mathrm{supp}(\mu_q) \subseteq \mathcal{R}(q)$$
+
+$$
+\mathrm{supp}(\mu_q) \subseteq \mathcal{R}(q)
+$$
+
 Therefore the witness $z$ from Step 1 satisfies $z \in \mathcal{R}(q)$.
 
 *Step 3 (Representability Semantics).* By definition of $\mathcal{R}(q)$ ({prf:ref}`def-representable-set-algorithmic`), any $z \in \mathcal{R}(q)$ is explicitly computable from $q$ in $O(1)$ time. If $\mathrm{overlap}(z, x^*) \geq 1-\varepsilon$, then:
@@ -585,10 +654,16 @@ Therefore the witness $z$ from Step 1 satisfies $z \in \mathcal{R}(q)$.
 In either case, the algorithm can verify and output a solution in $O(n)$ additional steps.
 
 *Step 4 (Selector Discontinuity).* Combining Steps 1-3: For any **non-solved** state $q$ (meaning no near-solution is in $\mathcal{R}(q)$), we must have:
-$$\mathrm{corr}(\mu_q, x^*) \leq \varepsilon$$
+
+$$
+\mathrm{corr}(\mu_q, x^*) \leq \varepsilon
+$$
 
 For solved states (near-solution in $\mathcal{R}(q)$):
-$$\mathrm{corr}(\mu_q, x^*) \geq 1-\varepsilon$$
+
+$$
+\mathrm{corr}(\mu_q, x^*) \geq 1-\varepsilon
+$$
 
 This is exactly $K_{\mathrm{Sel}_\chi}^+$. $\square$
 :::
@@ -619,9 +694,13 @@ This is devastating for gradient-based or local search methods. They need the gr
 3. System type $T_{\text{algorithmic}}$ ({prf:ref}`def-type-algorithmic`)
 
 **Statement:** All polynomial-time algorithms require exponential time on some instances:
-$$K_{\mathrm{Scope}}^+: \forall \mathcal{A} \in P, \exists \Phi_n: \mathrm{Time}_{\mathcal{A}}(\Phi_n) \geq e^{\Theta(n)}$$
+
+$$
+K_{\mathrm{Scope}}^+: \forall \mathcal{A} \in P, \exists \Phi_n: \mathrm{Time}_{\mathcal{A}}(\Phi_n) \geq e^{\Theta(n)}
+$$
 
 **Certificate Logic:**
+
 $$K_{C_\mu}^+ \wedge K_{\mathrm{Sel}_\chi}^+ \Rightarrow K_{\mathrm{Scope}}^+$$
 
 **Mechanism:** Sector explosion + selector discontinuity => exponential search.
@@ -635,9 +714,16 @@ $$K_{C_\mu}^+ \wedge K_{\mathrm{Sel}_\chi}^+ \Rightarrow K_{\mathrm{Scope}}^+$$
 :label: proof-mt-up-ogpchi
 
 *Step 1 (Selector Discontinuity Implies Guessing).* By $K_{\mathrm{Sel}_\chi}^+$, any algorithm $\mathcal{A}$ must transition from:
-$$\mathrm{corr}(\mu_{q_0}, x^*) \leq \varepsilon \quad \text{(initial state)}$$
+
+$$
+\mathrm{corr}(\mu_{q_0}, x^*) \leq \varepsilon \quad \text{(initial state)}
+$$
+
 to:
-$$\mathrm{corr}(\mu_{q_T}, x^*) \geq 1-\varepsilon \quad \text{(solved state)}$$
+
+$$
+\mathrm{corr}(\mu_{q_T}, x^*) \geq 1-\varepsilon \quad \text{(solved state)}
+$$
 
 with no intermediate values. This is a **discontinuous jump** in correlation.
 
@@ -648,7 +734,10 @@ with no intermediate values. This is a **discontinuous jump** in correlation.
 Between these states, the algorithm has **no local information** about which cluster contains $x^*$. All clusters are equally plausible from the algorithm's perspective.
 
 *Step 3 (Counting Argument).* By $K_{C_\mu}^+$, there are $N = e^{\Theta(n)}$ clusters. The algorithm must "guess" which cluster contains the solution. With no gradient information:
-$$\mathbb{E}[\text{Guesses until correct cluster}] = \Theta(N) = e^{\Theta(n)}$$
+
+$$
+\mathbb{E}[\text{Guesses until correct cluster}] = \Theta(N) = e^{\Theta(n)}
+$$
 
 *Step 4 (Algorithm Independence).* This argument is independent of algorithm structure because:
 - It uses only the **representable set** of the algorithm's state (definition of what $\mathcal{A}$ can compute)
@@ -679,10 +768,16 @@ This is why the theorem says "universal obstruction." It is not that we found a 
 :label: def-domain-embedding-algorithmic
 
 The **domain embedding** functor for $T_{\text{algorithmic}}$:
-$$\iota: \mathbf{Hypo}_{T_{\text{alg}}} \to \mathbf{DTM}$$
+
+$$
+\iota: \mathbf{Hypo}_{T_{\text{alg}}} \to \mathbf{DTM}
+$$
 
 is defined as follows. Given hypostructure algorithm object:
-$$\mathbb{H} = (Q, q_0, \delta, \mathrm{out}; \Phi; V)$$
+
+$$
+\mathbb{H} = (Q, q_0, \delta, \mathrm{out}; \Phi; V)
+$$
 
 define $\iota(\mathbb{H})$ as DTM $M_{\mathbb{H}}$:
 
@@ -723,6 +818,7 @@ define $\iota(\mathbb{H})$ as DTM $M_{\mathbb{H}}$:
    - Since SAT is NP-complete: $(\mathrm{SAT} \notin \mathrm{P}) \Rightarrow (\mathrm{P} \neq \mathrm{NP})$
 
 **Certificate Produced:**
+
 $$K_{\mathrm{Bridge}}^{\mathrm{Comp}} := (\mathcal{H}_{\mathrm{tr}}, \iota, \mathcal{C}_{\mathrm{imp}})$$
 
 **Literature:** Cook-Levin Theorem {cite}`Cook71`; NP-completeness {cite}`Karp72`; TM foundations {cite}`Sipser12`.

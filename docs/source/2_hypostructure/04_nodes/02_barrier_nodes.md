@@ -36,7 +36,10 @@ Each barrier is specified by:
 **Sieve Signature:**
 - **Weakest Precondition:** $\emptyset$ (entry barrier, no prior certificates required)
 - **Barrier Predicate (Blocked Condition):**
-  $$E[\Phi] \leq E_{\text{sat}} \lor \text{Drift} \leq C$$
+
+$$
+E[\Phi] \leq E_{\text{sat}} \lor \operatorname{Drift} \leq C
+$$
 
 **Natural Language Logic:**
 "Is the energy drift bounded by a saturation ceiling?"
@@ -79,7 +82,10 @@ The beautiful thing is that this is the *first* barrier you hit—the entry poin
 **Sieve Signature:**
 - **Weakest Precondition:** $\{K_{D_E}^{\pm}\}$
 - **Barrier Predicate (Blocked Condition):**
-  $$D(T_*) = \int_0^{T_*} \frac{c}{\lambda(t)} dt = \infty$$
+
+$$
+D(T_*) = \int_0^{T_*} \frac{c}{\lambda(t)} \,dt = \infty
+$$
 
 **Natural Language Logic:**
 "Does the singularity require infinite computational depth?"
@@ -124,7 +130,10 @@ When the integral is finite, though, watch out. The singularity is computational
 **Sieve Signature:**
 - **Weakest Precondition:** $\{K_{D_E}^{\pm}, K_{\mathrm{Rec}_N}^{\pm}\}$
 - **Barrier Predicate (Benign Condition):**
-  $$\mathcal{M}[\Phi] < \infty$$
+
+$$
+\mathcal{M}[\Phi] < \infty
+$$
 
 **Natural Language Logic:**
 "Is the interaction functional finite (implying dispersion)?"
@@ -171,7 +180,10 @@ This barrier is one of the *success exits* from the Sieve. If you get Benign, co
 **Sieve Signature:**
 - **Weakest Precondition:** $\{K_{C_\mu}^+\}$ (concentration confirmed, profile exists)
 - **Barrier Predicate (Blocked Condition):**
-  $$\int \tilde{\mathfrak{D}}(S_t V) dt = \infty$$
+
+$$
+\int \tilde{\mathfrak{D}}(S_t V) \,dt = \infty
+$$
 
 **Natural Language Logic:**
 "Is the renormalization cost of the profile infinite?"
@@ -218,7 +230,10 @@ The non-circularity note is important: we don't *assume* subcriticality to run t
 **Sieve Signature:**
 - **Weakest Precondition:** $\{K_{C_\mu}^+, K_{\mathrm{SC}_\lambda}^{\pm}\}$
 - **Barrier Predicate (Blocked Condition):**
-  $$\Delta V > k_B T$$
+
+$$
+\Delta V > k_B T
+$$
 
 **Natural Language Logic:**
 "Is the phase stable against thermal/parameter drift?"
@@ -263,7 +278,10 @@ What's beautiful is that this connects field theory to mundane thermodynamics. W
 **Sieve Signature:**
 - **Weakest Precondition:** $\{K_{\mathrm{SC}_{\partial c}}^{\pm}\}$
 - **Barrier Predicate (Blocked Condition):**
-  $$\mathrm{Cap}_H(S) = 0$$
+
+$$
+\mathrm{Cap}_H(S) = 0
+$$
 
 **Natural Language Logic:**
 "Is the singular set of measure zero?"
@@ -308,7 +326,10 @@ This is the mathematical machinery behind "removable singularities"—singularit
 **Sieve Signature:**
 - **Weakest Precondition:** $\{K_{\mathrm{Cap}_H}^{\pm}\}$
 - **Barrier Predicate (Blocked Condition):**
-  $$\inf \sigma(L) > 0$$
+
+$$
+\inf \sigma(L) > 0
+$$
 
 **Natural Language Logic:**
 "Is there a spectral gap (positive curvature) at the minimum?"
@@ -342,8 +363,12 @@ This barrier has a special "Stagnation" outcome instead of "Breached." If there'
 :label: lem-gap-to-ls
 
 Under the Gradient Condition ($\mathrm{GC}_\nabla$) plus analyticity of $\Phi$ near critical points:
-$$\text{Spectral gap } \lambda_1 > 0 \Rightarrow \text{LS}(\theta = \tfrac{1}{2}, C_{\text{LS}} = \sqrt{\lambda_1})$$
-This is the **canonical promotion** from gap certificate to stiffness certificate, bridging the diagram's "Hessian positive?" intuition with the formal LS inequality predicate.
+
+$$
+\lambda_1 > 0 \Rightarrow \operatorname{LS}(\theta = \tfrac{1}{2}, C_{\text{LS}} = \sqrt{\lambda_1})
+$$
+
+where $\lambda_1$ is the spectral gap. This is the **canonical promotion** from gap certificate to stiffness certificate, bridging the diagram's "Hessian positive?" intuition with the formal LS inequality predicate.
 
 :::
 
@@ -370,7 +395,10 @@ Why does this matter? Because the LS inequality is what lets you prove *finite-t
 **Sieve Signature:**
 - **Weakest Precondition:** $\{K_{\mathrm{LS}_\sigma}^{\pm}\}$
 - **Barrier Predicate (Blocked Condition):**
-  $$E[\Phi] < S_{\min} + \Delta$$
+
+$$
+E[\Phi] < S_{\min} + \Delta
+$$
 
 **Natural Language Logic:**
 "Is the energy insufficient to cross the topological gap?"
@@ -415,7 +443,10 @@ This connects to some deep physics: the reason certain quantum numbers are conse
 **Sieve Signature:**
 - **Weakest Precondition:** $\{K_{\mathrm{TB}_\pi}^{\pm}\}$
 - **Barrier Predicate (Blocked Condition):**
-  $$S \in \mathcal{O}\text{-min}$$
+
+$$
+S \in \mathcal{O}\text{-min}
+$$
 
 **Natural Language Logic:**
 "Is the topology definable in an o-minimal structure?"
@@ -460,7 +491,10 @@ The condition $S \in \mathcal{O}\text{-min}$ is asking: "Is your topology *borin
 **Sieve Signature:**
 - **Weakest Precondition:** $\{K_{\mathrm{TB}_O}^{\pm}\}$
 - **Barrier Predicate (Blocked Condition):**
-  $$\tau_{\text{mix}} < \infty$$
+
+$$
+\tau_{\text{mix}} < \infty
+$$
 
 **Natural Language Logic:**
 "Does the system mix fast enough to escape traps?"
@@ -505,8 +539,12 @@ Here's the physical picture: imagine a ball rolling in a landscape with deep wel
 **Sieve Signature:**
 - **Weakest Precondition:** $\{K_{\mathrm{TB}_\rho}^{\pm}\}$
 - **Barrier Predicate (Blocked Condition):**
-  $$\sup_{\epsilon > 0} K_\epsilon(x) \leq S_{\text{BH}}$$
-  where $K_\epsilon(x) := \min\{|p| : d(U(p), x) < \epsilon\}$ is the $\epsilon$-approximable complexity.
+
+$$
+\sup_{\epsilon > 0} K_\epsilon(x) \leq S_{\text{BH}}
+$$
+
+where $K_\epsilon(x) := \min\{|p| : d(U(p), x) < \epsilon\}$ is the $\epsilon$-approximable complexity.
 
 **Semantic Clarification:**
 This barrier is triggered when Node 11 determines that exact complexity is uncomputable. The predicate now asks: "Even though we cannot compute $K(x)$ exactly, can we bound all computable approximations within the holographic limit?" This makes the "Blocked" outcome logically reachable:
@@ -556,7 +594,10 @@ This is subtle. Exact Kolmogorov complexity is famously uncomputable—you can n
 **Sieve Signature:**
 - **Weakest Precondition:** $\{K_{\mathrm{Rep}_K}^{\pm}\}$
 - **Barrier Predicate (Blocked Condition):**
-  $$\int \omega^2 S(\omega) d\omega < \infty$$
+
+$$
+\int \omega^2 S(\omega) \,d\omega < \infty
+$$
 
 **Natural Language Logic:**
 "Is the total oscillation energy finite?"
@@ -607,7 +648,10 @@ The three barriers here form a logical sequence: first check sensitivity (Bode),
 **Sieve Signature:**
 - **Weakest Precondition:** $\{K_{\mathrm{Bound}_\partial}^+\}$ (open system confirmed)
 - **Barrier Predicate (Blocked Condition):**
-  $$\int_0^\infty \ln \lVert S(i\omega) \rVert d\omega > -\infty$$
+
+$$
+\int_0^\infty \ln \lVert S(i\omega) \rVert \,d\omega > -\infty
+$$
 
 **Natural Language Logic:**
 "Is the sensitivity integral conserved (waterbed effect)?"
@@ -632,7 +676,7 @@ Here's the waterbed effect: imagine a waterbed. If you push down in one place, w
 
 This is not a design limitation you can engineer around—it's a *theorem*. Any linear feedback system must obey it. The barrier checks whether your system respects this fundamental tradeoff or is trying to violate it (which means your model is wrong or your controller is about to do something unstable).
 
-The condition $\int_0^\infty \ln \|S(i\omega)\|\,d\omega > -\infty$ ensures the waterbed is bounded—you haven't tried to push sensitivity to zero everywhere, which is impossible.
+The condition $\int_0^\infty \ln \lVert S(i\omega) \rVert\,d\omega > -\infty$ ensures the waterbed is bounded—you haven't tried to push sensitivity to zero everywhere, which is impossible.
 :::
 
 :::{prf:definition} Barrier Specification: Input Stability
@@ -647,7 +691,10 @@ The condition $\int_0^\infty \ln \|S(i\omega)\|\,d\omega > -\infty$ ensures the 
 **Sieve Signature:**
 - **Weakest Precondition:** $\{K_{\mathrm{Bound}_B}^{\pm}\}$
 - **Barrier Predicate (Blocked Condition):**
-  $$r_{\text{reserve}} > 0$$
+
+$$
+r_{\text{reserve}} > 0
+$$
 
 **Natural Language Logic:**
 "Is there a reservoir to prevent starvation?"
@@ -687,7 +734,10 @@ This is Input-to-State Stability (ISS) from control theory: the idea that bounde
 **Sieve Signature:**
 - **Weakest Precondition:** $\{K_{\mathrm{Bound}_{\Sigma}}^{\pm}\}$
 - **Barrier Predicate (Blocked Condition):**
-  $$H(u) \geq H(d)$$
+
+$$
+H(u) \geq H(d)
+$$
 
 **Natural Language Logic:**
 "Does control entropy match disturbance entropy?"

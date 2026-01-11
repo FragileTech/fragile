@@ -50,7 +50,10 @@ Think of it like a mountain pass. If you are at the very top of the saddle point
 **Statement:** The set of Globally Regular Hypostructures is **open** in the parameter topology. There exists a neighborhood $U \ni \theta_0$ such that $\forall \theta \in U$, $\mathcal{H}(\theta)$ is also Globally Regular.
 
 **Certificate Logic:**
-$$K_{\text{Lock}}^{\mathrm{blk}}(\theta_0) \wedge (\mathrm{Gap} > \epsilon) \wedge (\mathrm{Cap} < \delta) \Rightarrow \exists U: \forall \theta \in U, K_{\text{Lock}}^{\mathrm{blk}}(\theta)$$
+
+$$
+K_{\text{Lock}}^{\mathrm{blk}}(\theta_0) \wedge (\mathrm{Gap} > \epsilon) \wedge (\mathrm{Cap} < \delta) \Rightarrow \exists U: \forall \theta \in U, K_{\text{Lock}}^{\mathrm{blk}}(\theta)
+$$
 
 **Use:** Validates that the proof is robust to small modeling errors or physical noise.
 
@@ -93,7 +96,10 @@ This is how numerical analysis gets upgraded to rigorous existence proofs. You c
 **Statement:** For every $\varepsilon$-pseudo-orbit (numerical simulation), there exists a true orbit $\{x_n\}$ that $\delta(\varepsilon)$-shadows it: $d(x_n, y_n) < \delta(\varepsilon)$ for all $n$. The shadowing distance satisfies $\delta(\varepsilon) = O(\varepsilon/\lambda)$.
 
 **Certificate Logic:**
-$$K_{\mathrm{LS}_\sigma}^+ \wedge K_{\text{pseudo}}^{\varepsilon} \Rightarrow K_{\text{true}}^{\delta(\varepsilon)}$$
+
+$$
+K_{\mathrm{LS}_\sigma}^+ \wedge K_{\text{pseudo}}^{\varepsilon} \Rightarrow K_{\text{true}}^{\delta(\varepsilon)}
+$$
 
 **Use:** Upgrades a high-precision **Numerical Simulation** into a rigorous **Existence Proof** for a nearby solution (essential for $T_{\text{algorithmic}}$).
 
@@ -138,7 +144,10 @@ This is profoundly reassuring. Your compactness construction did not introduce s
 **Statement:** If a "Strong" solution exists on $[0, T]$, it is unique. Any "Weak" solution constructed via Compactness/Surgery must coincide with the Strong solution almost everywhere: $u_w = u_s$ a.e. on $[0, T] \times \Omega$.
 
 **Certificate Logic:**
-$$K_{C_\mu}^{\text{weak}} \wedge K_{\mathrm{LS}_\sigma}^{\text{strong}} \Rightarrow K_{\text{unique}}$$
+
+$$
+K_{C_\mu}^{\text{weak}} \wedge K_{\mathrm{LS}_\sigma}^{\text{strong}} \Rightarrow K_{\text{unique}}
+$$
 
 **Use:** Resolves the "Non-Uniqueness" anxiety in weak solutions. If you can prove stiffness locally, the weak solution cannot branch off.
 
@@ -192,7 +201,11 @@ Each backend accommodates different proof styles. Use whichever matches your pro
 **Context:** Product systems arise when composing verified components (e.g., Neural Net + Physics Engine, multi-scale PDE systems, coupled oscillators). The principle of **modular verification** requires that certified components remain certified under weak coupling.
 
 **Certificate Logic:**
-$$K_{\text{Lock}}^A \wedge K_{\text{Lock}}^B \wedge \left((K_{\mathrm{SC}_\lambda}^{\text{sub}} \wedge K_{\mathrm{CouplingSmall}}^+) \vee (K_{D_E}^{\text{pert}} \wedge K_{\mathrm{ACP}}^+) \vee K_{\mathrm{LS}_\sigma}^{\text{abs}}\right) \Rightarrow K_{\text{Lock}}^{A \times B}$$
+
+$$
+K_{\text{Lock}}^A \wedge K_{\text{Lock}}^B \wedge \left((K_{\mathrm{SC}_\lambda}^{\text{sub}} \wedge K_{\mathrm{CouplingSmall}}^+) \vee (K_{D_E}^{\text{pert}} \wedge K_{\mathrm{ACP}}^+) \vee K_{\mathrm{LS}_\sigma}^{\text{abs}}\right) \Rightarrow K_{\text{Lock}}^{A \times B}
+$$
+
 :::
 
 :::{prf:proof}
@@ -213,18 +226,33 @@ $$K_{\text{Lock}}^A \wedge K_{\text{Lock}}^B \wedge \left((K_{\mathrm{SC}_\lambd
 **Proof (5 Steps):**
 
 *Step 1 (Scaling Structure).* Define the scaling action $\lambda \cdot (x_A, x_B) = (\lambda^{a_A} x_A, \lambda^{a_B} x_B)$ where $a_A, a_B$ are the homogeneity weights. The total height functional transforms as:
-$$\Phi_{\text{tot}}(\lambda \cdot x) = \lambda^{\alpha_A} \Phi_A(x_A) + \lambda^{\alpha_B} \Phi_B(x_B) + \lambda^{\alpha_{\text{int}}} \Phi_{\text{int}}(x_A, x_B)$$
+
+$$
+\Phi_{\text{tot}}(\lambda \cdot x) = \lambda^{\alpha_A} \Phi_A(x_A) + \lambda^{\alpha_B} \Phi_B(x_B) + \lambda^{\alpha_{\text{int}}} \Phi_{\text{int}}(x_A, x_B)
+$$
 
 *Step 2 (Subcritical Dominance).* Since $\alpha_{\text{int}} < \min(\alpha_c^A, \alpha_c^B)$, the interaction term is asymptotically subdominant. For large $\lambda$:
-$$|\Phi_{\text{int}}(\lambda \cdot x)| \leq C \lambda^{\alpha_{\text{int}}} = o(\lambda^{\alpha_c})$$
+
+$$
+|\Phi_{\text{int}}(\lambda \cdot x)| \leq C \lambda^{\alpha_{\text{int}}} = o(\lambda^{\alpha_c})
+$$
+
 The interaction cannot drive blow-up faster than the natural scaling.
 
 *Step 3 (Decoupled Barrier Transfer).* The Lock certificates $K_{\text{Lock}}^A, K_{\text{Lock}}^B$ provide a priori bounds:
-$$\|u_A(t)\|_{\mathcal{X}_A} \leq M_A, \quad \|u_B(t)\|_{\mathcal{X}_B} \leq M_B \quad \forall t \geq 0$$
+
+$$
+\|u_A(t)\|_{\mathcal{X}_A} \leq M_A, \quad \|u_B(t)\|_{\mathcal{X}_B} \leq M_B \quad \forall t \geq 0
+$$
+
 Under subcritical coupling, these bounds persist with at most polynomial growth correction.
 
 *Step 4 (Energy Control).* The total energy $E_{\text{tot}} = E_A + E_B + E_{\text{int}}$ satisfies:
-$$\frac{d}{dt} E_{\text{tot}} \leq -\mathfrak{D}_A - \mathfrak{D}_B + |\dot{E}_{\text{int}}|$$
+
+$$
+\frac{d}{dt} E_{\text{tot}} \leq -\mathfrak{D}_A - \mathfrak{D}_B + |\dot{E}_{\text{int}}|
+$$
+
 where $\mathfrak{D}_A, \mathfrak{D}_B \geq 0$ are the dissipation rates (energy loss per unit time). Subcriticality implies $|\dot{E}_{\text{int}}| \leq \varepsilon (E_A + E_B) + C_\varepsilon$ for any $\varepsilon > 0$. Choosing $\varepsilon$ small enough that $\varepsilon < \min(\lambda_A, \lambda_B)$ (where $\mathfrak{D}_i \geq \lambda_i E_i$), the dissipation dominates the interaction.
 
 *Step 5 (Grönwall Closure + Global Existence).* Standard Grönwall inequality closes the estimate. **Product local well-posedness** follows from standard semilinear theory: component LWP (guaranteed by the Lock certificates $K_{\text{Lock}}^A, K_{\text{Lock}}^B$) extends to the product system under Lipschitz coupling with subcritical growth (Hypotheses 3-4). Combined with the uniform energy bound from Step 4, global existence follows: no singularity can form in the product space.
@@ -250,7 +278,10 @@ where $\mathfrak{D}_A, \mathfrak{D}_B \geq 0$ are the dissipation rates (energy 
 **Proof (5 Steps):**
 
 *Step 1 (Product Semigroup).* On $\mathcal{X} = \mathcal{X}_A \times \mathcal{X}_B$, the uncoupled generator $A_0 = A_A \oplus A_B$ generates $T_0(t) = T_A(t) \times T_B(t)$ with:
-$$\|T_0(t)\| \leq M_A M_B e^{\max(\omega_A, \omega_B) t}$$
+
+$$
+\|T_0(t)\| \leq M_A M_B e^{\max(\omega_A, \omega_B) t}
+$$
 
 *Step 2 (Perturbation Classification).* The total generator is $A = A_0 + B$ where $B$ represents coupling. By hypothesis, $B$ is either bounded or relatively bounded with bound $< 1$.
 
@@ -259,7 +290,11 @@ $$\|T_0(t)\| \leq M_A M_B e^{\max(\omega_A, \omega_B) t}$$
 - If $B$ relatively bounded with $a < 1$: **Relatively Bounded Perturbation** (Engel-Nagel, III.2.10) yields same.
 
 *Step 4 (A Priori Bounds from Lock).* The Lock certificates provide:
-$$\sup_{t \in [0,T]} \|(u_A(t), u_B(t))\|_{D(A_0)} < \infty$$
+
+$$
+\sup_{t \in [0,T]} \|(u_A(t), u_B(t))\|_{D(A_0)} < \infty
+$$
+
 Standard semigroup theory: if $u(t) \in D(A)$ initially and $A$ generates $C_0$-semigroup, solution exists globally.
 
 *Step 5 (Conclusion).* The perturbed semigroup $e^{tA}$ is globally defined on $\mathcal{X}_A \times \mathcal{X}_B$. No finite-time blow-up.
@@ -272,11 +307,23 @@ Standard semigroup theory: if $u(t) \in D(A)$ initially and $A$ generates $C_0$-
 
 **Hypotheses:**
 1. Coercive Lyapunov/energy functionals $E_A: \mathcal{X}_A \to \mathbb{R}$, $E_B: \mathcal{X}_B \to \mathbb{R}$:
-   $$E_A(u) \geq c_A \|u\|_{\mathcal{X}_A}^p - C_A, \quad E_B(v) \geq c_B \|v\|_{\mathcal{X}_B}^q - C_B$$
+
+   $$
+   E_A(u) \geq c_A \|u\|_{\mathcal{X}_A}^p - C_A, \quad E_B(v) \geq c_B \|v\|_{\mathcal{X}_B}^q - C_B
+   $$
+
 2. Dissipation structure from Lock certificates:
-   $$\frac{d}{dt} E_A \leq -\lambda_A E_A + d_A, \quad \frac{d}{dt} E_B \leq -\lambda_B E_B + d_B$$
+
+   $$
+   \frac{d}{dt} E_A \leq -\lambda_A E_A + d_A, \quad \frac{d}{dt} E_B \leq -\lambda_B E_B + d_B
+   $$
+
 3. **Absorbability condition:** The coupling contribution to energy evolution satisfies:
-   $$\left|\frac{d}{dt}\Phi_{\text{int}}(u(t), v(t))\right| \leq \varepsilon (E_A(u) + E_B(v)) + C_\varepsilon$$
+
+   $$
+   \left|\frac{d}{dt}\Phi_{\text{int}}(u(t), v(t))\right| \leq \varepsilon (E_A(u) + E_B(v)) + C_\varepsilon
+   $$
+
    for some $\varepsilon < \min(\lambda_A, \lambda_B)$. (This bounds the *rate* of energy exchange, not the potential itself.)
 
 **Certificate:** $K_{\mathrm{LS}_\sigma}^{\text{abs}} = (E_A, E_B, \lambda_A, \lambda_B, \varepsilon, \text{absorbability witness})$
@@ -285,18 +332,33 @@ Standard semigroup theory: if $u(t) \in D(A)$ initially and $A$ generates $C_0$-
 **Proof (5 Steps):**
 
 *Step 1 (Total Energy Construction).* Define $E_{\text{tot}} = E_A + E_B$. By coercivity:
-$$E_{\text{tot}}(u, v) \geq c_{\min}(\|u\|^p + \|v\|^q) - C_{\max}$$
+
+$$
+E_{\text{tot}}(u, v) \geq c_{\min}(\|u\|^p + \|v\|^q) - C_{\max}
+$$
+
 This controls the product norm.
 
 *Step 2 (Energy Evolution).* The time derivative:
-$$\frac{d}{dt} E_{\text{tot}} = \frac{d}{dt} E_A + \frac{d}{dt} E_B + \underbrace{\text{coupling contribution}}_{\leq \varepsilon E_{\text{tot}} + C_\varepsilon}$$
+
+$$
+\frac{d}{dt} E_{\text{tot}} = \frac{d}{dt} E_A + \frac{d}{dt} E_B + \underbrace{\text{coupling contribution}}_{\leq \varepsilon E_{\text{tot}} + C_\varepsilon}
+$$
 
 *Step 3 (Grönwall Closure).* Combining dissipation and absorbability:
-$$\frac{d}{dt} E_{\text{tot}} \leq -(\lambda_{\min} - \varepsilon) E_{\text{tot}} + C$$
+
+$$
+\frac{d}{dt} E_{\text{tot}} \leq -(\lambda_{\min} - \varepsilon) E_{\text{tot}} + C
+$$
+
 where $\lambda_{\min} = \min(\lambda_A, \lambda_B)$. Since $\varepsilon < \lambda_{\min}$, the coefficient is negative.
 
 *Step 4 (Global Bound).* Standard Grönwall inequality:
-$$E_{\text{tot}}(t) \leq E_{\text{tot}}(0) e^{-(\lambda_{\min} - \varepsilon)t} + \frac{C}{\lambda_{\min} - \varepsilon}$$
+
+$$
+E_{\text{tot}}(t) \leq E_{\text{tot}}(0) e^{-(\lambda_{\min} - \varepsilon)t} + \frac{C}{\lambda_{\min} - \varepsilon}
+$$
+
 Bounded uniformly in time.
 
 *Step 5 (Conclusion + Global Existence).* Coercivity translates energy bound to norm bound. **Product local well-posedness** follows from standard energy-space theory: the coercive energy bounds (Hypothesis 1) provide control of the state space norms, and the Lipschitz coupling control implicit in the absorbability condition (Hypothesis 3) ensures local existence extends from components to the product. Combined with the uniform bound from Step 4, global existence follows.
@@ -347,7 +409,10 @@ This is useful in practice. Sometimes the full system is easier to analyze than 
 **Statement:** Regularity is hereditary. If the parent system $\mathcal{H}$ admits no singularities (Lock Blocked), then no invariant subsystem $\mathcal{S} \subset \mathcal{H}$ can develop a singularity.
 
 **Certificate Logic:**
-$$K_{\text{Lock}}^{\mathrm{blk}}(\mathcal{H}) \wedge (\mathcal{S} \subset \mathcal{H} \text{ invariant}) \Rightarrow K_{\text{Lock}}^{\mathrm{blk}}(\mathcal{S})$$
+
+$$
+K_{\text{Lock}}^{\mathrm{blk}}(\mathcal{H}) \wedge (\mathcal{S} \subset \mathcal{H} \text{ invariant}) \Rightarrow K_{\text{Lock}}^{\mathrm{blk}}(\mathcal{S})
+$$
 
 **Use:** Proves safety for restricted dynamics (e.g., "If the general 3D fluid is safe, the axisymmetric flow is also safe").
 

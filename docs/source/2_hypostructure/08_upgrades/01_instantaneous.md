@@ -55,13 +55,16 @@ This is the first example of the upgrade pattern: what looks like a failure is a
 **Hypotheses.** Let $\mathcal{H} = (\mathcal{X}, \Phi, \mathfrak{D}, G)$ be a Hypostructure with:
 1. A height functional $\Phi: \mathcal{X} \to [0, \infty]$ that is unbounded ($\sup_x \Phi(x) = \infty$)
 2. A dissipation functional $\mathfrak{D}$ satisfying the drift condition: there exist $\lambda > 0$ and $b < \infty$ such that
+
    $$\mathcal{L}\Phi(x) \leq -\lambda \Phi(x) + b \quad \text{for all } x \in \mathcal{X}$$
+
    where $\mathcal{L}$ is the infinitesimal generator of the dynamics.
 3. A compact sublevel set $\{x : \Phi(x) \leq c\}$ for some $c > b/\lambda$.
 
 **Statement:** Under the drift condition, the process admits a unique invariant probability measure $\pi$ with $\int \Phi \, d\pi < \infty$. The system is equivalent to one with bounded energy under the renormalized measure $\pi$.
 
 **Certificate Logic:**
+
 $$K_{D_E}^- \wedge K_{\text{sat}}^{\mathrm{blk}} \Rightarrow K_{D_E}^{\sim}$$
 
 **Interface Permit Validated:** Finite Energy (renormalized measure).
@@ -93,6 +96,7 @@ The drift condition implies geometric ergodicity by the Foster-Lyapunov criterio
 **Statement:** If the singularity is hidden behind an event horizon or lies at future null/timelike infinity, it is causally inaccessible to any physical observer. The event count is finite relative to any observer worldline $\gamma$ with finite proper time.
 
 **Certificate Logic:**
+
 $$K_{\mathrm{Rec}_N}^- \wedge K_{\mathrm{Rec}_N}^{\mathrm{blk}} \Rightarrow K_{\mathrm{Rec}_N}^{\sim}$$
 
 **Interface Permit Validated:** Finite Event Count (physically observable).
@@ -143,6 +147,7 @@ What I want you to appreciate is how the "failure" of concentration---the NO fro
 **Statement:** If energy disperses (no concentration) and the interaction functional is finite (Morawetz bound), the solution scatters to a free linear state: there exists $u_\pm \in H^1$ such that $\|u(t) - e^{it\Delta}u_\pm\|_{H^1} \to 0$ as $t \to \pm\infty$. This is a "Victory" condition equivalent to global existence and regularity.
 
 **Certificate Logic:**
+
 $$K_{C_\mu}^- \wedge K_{C_\mu}^{\mathrm{ben}} \Rightarrow \text{Global Regularity}$$
 
 **Interface Permit Validated:** Global Existence (via dispersion).
@@ -154,11 +159,15 @@ $$K_{C_\mu}^- \wedge K_{C_\mu}^{\mathrm{ben}} \Rightarrow \text{Global Regularit
 :label: sketch-mt-up-scattering
 
 *Step 1 (Morawetz Spacetime Bound).* The **Morawetz estimate** ({cite}`Morawetz68`) provides spacetime integrability:
+
 $$\int_0^\infty \int_{\mathbb{R}^n} \frac{|u(t,x)|^{p+1}}{|x|} \, dx \, dt \leq C \cdot E[u_0]$$
+
 This "spacetime Lebesgue norm" is finite for solutions with bounded energy, ruling out mass concentration at the origin over long times.
 
 *Step 2 (Strichartz Estimates).* The **Strichartz estimates** ({cite}`Strichartz77`; {cite}`KeelTao98` Theorem 1.2) provide:
+
 $$\|e^{it\Delta} u_0\|_{L^q_t L^r_x} \leq C \|u_0\|_{L^2}$$
+
 for admissible pairs $(q, r)$ satisfying $\frac{2}{q} + \frac{n}{r} = \frac{n}{2}$. These estimates control the spacetime norm of solutions in terms of initial data, enabling the perturbative argument below.
 
 *Step 3 (Concentration-Compactness Rigidity).* By the **Kenig-Merle methodology** ({cite}`KenigMerle06` Theorem 1.1), if $K_{C_\mu}^- = \text{NO}$ (no concentration), then either:
@@ -186,6 +195,7 @@ for admissible pairs $(q, r)$ satisfying $\frac{2}{q} + \frac{n}{r} = \frac{n}{2
 **Statement:** If the renormalization cost $\int_0^{T^*} \lambda(t)^{-\gamma} \, dt = \infty$ diverges logarithmically, the supercritical singularity is suppressed and cannot form in finite time. The blow-up rate satisfies $\lambda(t) \geq c(T^* - t)^{1/\gamma}$ for some $\gamma > 0$.
 
 **Certificate Logic:**
+
 $$K_{\mathrm{SC}_\lambda}^- \wedge K_{\mathrm{SC}_\lambda}^{\mathrm{blk}} \Rightarrow K_{\mathrm{SC}_\lambda}^{\sim}$$
 
 **Interface Permit Validated:** Subcritical Scaling (effective).
@@ -217,6 +227,7 @@ The monotonicity formula (Merle and Zaag, 1998) bounds the blow-up rate from bel
 **Statement:** If the singular set has zero capacity (even if its Hausdorff dimension is large), it is removable for the $H^1$ energy class. There exists a unique extension $\tilde{u} \in H^1(\mathcal{X})$ with $\tilde{u}|_{\mathcal{X} \setminus \Sigma} = u$.
 
 **Certificate Logic:**
+
 $$K_{\mathrm{Cap}_H}^- \wedge K_{\mathrm{Cap}_H}^{\mathrm{blk}} \Rightarrow K_{\mathrm{Cap}_H}^{\sim}$$
 
 **Interface Permit Validated:** Removable Singularity.
@@ -248,6 +259,7 @@ By Federer's theorem on removable singularities (1969, Section 4.7), sets of zer
 **Statement:** If a spectral gap $\lambda_1 > 0$ exists, the Łojasiewicz-Simon inequality automatically holds with optimal exponent $\theta = 1/2$. The convergence rate is exponential: $\|x(t) - x^*\| \leq Ce^{-\lambda_1 t/2}$.
 
 **Certificate Logic:**
+
 $$K_{\mathrm{LS}_\sigma}^- \wedge K_{\text{gap}}^{\mathrm{blk}} \Rightarrow K_{\mathrm{LS}_\sigma}^+ \quad (\text{with } \theta=1/2)$$
 
 **Interface Permit Validated:** Gradient Domination / Stiffness.
@@ -291,6 +303,7 @@ So when the TameCheck says "WILD" but we know the set is o-minimal, we have an i
 **Statement:** If the wild set is definable in an o-minimal structure, it admits a finite Whitney stratification into smooth manifolds. The set is topologically tame: it has finite Betti numbers, satisfies the curve selection lemma, and admits no pathological embeddings.
 
 **Certificate Logic:**
+
 $$K_{\mathrm{TB}_O}^- \wedge K_{\mathrm{TB}_O}^{\mathrm{blk}} \Rightarrow K_{\mathrm{TB}_O}^{\sim}$$
 
 **Interface Permit Validated:** Tame Topology.
@@ -302,11 +315,15 @@ $$K_{\mathrm{TB}_O}^- \wedge K_{\mathrm{TB}_O}^{\mathrm{blk}} \Rightarrow K_{\ma
 :label: sketch-mt-up-o-minimal
 
 *Step 1 (Cell Decomposition).* By the **cell decomposition theorem** ({cite}`vandenDries98` Theorem 3.2.11), every definable set $W \subset \mathbb{R}^n$ in an o-minimal structure admits a finite partition:
+
 $$W = \bigsqcup_{i=1}^N C_i$$
+
 where each $C_i$ is a **definable cell**—a set homeomorphic to $(0,1)^{d_i}$ for some $d_i \leq n$. The cells are smooth manifolds with boundary, and the partition is canonical.
 
 *Step 2 (Kurdyka-Łojasiewicz Gradient Inequality).* For any definable function $\Phi: \mathbb{R}^n \to \mathbb{R}$ in an o-minimal structure, the **Kurdyka-Łojasiewicz inequality** ({cite}`Kurdyka98` Theorem 1) holds near critical points:
+
 $$\|\nabla(\psi \circ \Phi)(x)\| \geq 1 \quad \text{for some desingularizing function } \psi$$
+
 This guarantees gradient descent converges in finite arc-length, preventing infinite oscillation. Combined with Step 1, trajectories cross finitely many cell boundaries.
 
 *Step 3 (Uniform Finiteness + Tame Topology).* The **uniform finiteness theorem** ({cite}`vandenDries98` Theorem 3.4.4) bounds topological complexity: $\dim(W) \leq n$, $b_k(W) < \infty$ for all Betti numbers, and $W$ contains no pathological embeddings (wild arcs, horned spheres). This establishes the tame topology permit.
@@ -346,6 +363,7 @@ What I find philosophically interesting is that surgery is an admission that smo
 **Statement:** If a valid surgery is performed, the flow continues on the modified Hypostructure $\mathcal{H}'$. The combined flow (pre-surgery on $\mathcal{X}$, post-surgery on $\mathcal{X}'$) constitutes a generalized (surgery/weak) solution.
 
 **Certificate Logic:**
+
 $$K_{\text{Node}}^- \wedge K_{\text{Surg}}^{\mathrm{re}} \Rightarrow K_{\text{Node}}^{\sim} \quad (\text{on } \mathcal{X}')$$
 
 **Canonical Neighborhoods (Uniqueness):** The **Canonical Neighborhood Theorem** (Perelman 2003) ensures surgery is essentially unique: near any high-curvature point $p$ with $|Rm|(p) \geq r^{-2}$, the pointed manifold $(M, g, p)$ is $\varepsilon$-close (in the pointed Cheeger-Gromov sense) to one of:
@@ -396,6 +414,7 @@ When the Lock returns BLOCKED, it validates not just one permit but all permits 
 **Statement:** If the universal bad pattern cannot map into the system (Hom-set empty), no singularities of any type can exist. The Lock validates global regularity and retroactively confirms all earlier ambiguous certificates.
 
 **Certificate Logic:**
+
 $$K_{\text{Lock}}^{\mathrm{blk}} \Rightarrow \text{Global Regularity}$$
 
 **Interface Permit Validated:** All Permits (Retroactively).
@@ -428,6 +447,7 @@ The proof uses the contrapositive: if a singularity existed, it would generate a
 **Statement:** If the flux across the boundary is strictly outgoing (dissipative) and inputs are bounded, the internal energy cannot blow up. The boundary acts as a "heat sink" absorbing energy.
 
 **Certificate Logic:**
+
 $$K_{D_E}^- \wedge K_{\mathrm{Bound}_\partial}^+ \wedge (\text{Flux} < 0) \Rightarrow K_{D_E}^{\sim}$$
 
 **Interface Permit Validated:** Finite Energy (via Boundary Dissipation).
@@ -439,9 +459,11 @@ $$K_{D_E}^- \wedge K_{\mathrm{Bound}_\partial}^+ \wedge (\text{Flux} < 0) \Right
 :label: sketch-mt-up-absorbing
 
 The energy identity is $\frac{dE}{dt} = -\mathfrak{D}(t) + \int_{\partial\Omega} \mathbf{n} \cdot \mathbf{F} \, dS + \int_\Omega \text{source}(x,t) \, dx$. By hypothesis 3, the flux term satisfies $\int_{\partial\Omega} \mathbf{n} \cdot \mathbf{F} \, dS < 0$ (strictly outgoing). Since dissipation satisfies $\mathfrak{D}(t) \geq 0$, we have:
+
 $$\frac{dE}{dt} \leq \int_\Omega \text{source}(x,t) \, dx \leq \|\text{source}(\cdot, t)\|_{L^1(\Omega)}$$
 
 Integrating from $0$ to $t$ and using hypothesis 4:
+
 $$E(t) \leq E(0) + \int_0^t \|\text{source}(\cdot, s)\|_{L^1(\Omega)} \, ds < \infty$$
 
 This is the energy method of Dafermos (2016, Chapter 5) applied to hyperbolic conservation laws with dissipative boundary conditions.
@@ -465,6 +487,7 @@ This is the energy method of Dafermos (2016, Chapter 5) applied to hyperbolic co
 **Statement:** While the linear stiffness is zero ($\lambda_1 = 0$), the nonlinear stiffness is positive and bounded. The system is "Stiff" in a higher-order sense, ensuring polynomial convergence $t^{-1/(k-1)}$ instead of exponential.
 
 **Certificate Logic:**
+
 $$K_{\mathrm{LS}_\sigma}^- \wedge K_{\mathrm{LS}_{\partial^k V}}^+ \Rightarrow K_{\mathrm{LS}_\sigma}^{\sim} \quad (\text{Polynomial Rate})$$
 
 **Interface Permit Validated:** Gradient Domination (Higher Order).
@@ -503,12 +526,15 @@ The following metatheorems formalize inc-upgrade rules. Blocked certificates ind
 **Context:** A node returns $K_P^{\mathrm{inc}} = (\mathsf{obligation}, \mathsf{missing}, \mathsf{code}, \mathsf{trace})$ where $\mathsf{missing}$ specifies the certificate types that would enable decision.
 
 **Hypotheses:** For each $m \in \mathsf{missing}$, the context $\Gamma$ contains a certificate $K_m^+$ such that:
+
 $$\bigwedge_{m \in \mathsf{missing}} K_m^+ \Rightarrow \mathsf{obligation}$$
 
 **Statement:** The inconclusive permit upgrades immediately to YES:
+
 $$K_P^{\mathrm{inc}} \wedge \bigwedge_{m \in \mathsf{missing}} K_m^+ \Rightarrow K_P^+$$
 
 **Certificate Logic:**
+
 $$\mathsf{Obl}(\Gamma) \setminus \{(\mathsf{id}_P, \ldots)\} \cup \{K_P^+\}$$
 
 **Interface Permit Validated:** Original predicate $P$ (via prerequisite completion).
@@ -528,12 +554,15 @@ The NO-inconclusive certificate records an epistemic gap, not a semantic refutat
 **Context:** $K_P^{\mathrm{inc}}$ is produced at node $i$, and later nodes add certificates that satisfy its $\mathsf{missing}$ set.
 
 **Hypotheses:** Let $\Gamma_i$ be the context at node $i$ with $K_P^{\mathrm{inc}} \in \Gamma_i$. Later nodes produce $\{K_{j_1}^+, \ldots, K_{j_k}^+\}$ such that the certificate types satisfy:
+
 $$\{\mathrm{type}(K_{j_1}^+), \ldots, \mathrm{type}(K_{j_k}^+)\} \supseteq \mathsf{missing}(K_P^{\mathrm{inc}})$$
 
 **Statement:** During promotion closure (Definition {prf:ref}`def-closure`), the inconclusive certificate upgrades:
+
 $$K_P^{\mathrm{inc}} \wedge \bigwedge_{m \in \mathsf{missing}(K_P^{\mathrm{inc}})} K_m^+ \Rightarrow K_P^+$$
 
 **Certificate Logic:**
+
 $$\mathrm{Cl}(\Gamma_{\mathrm{final}}) \ni K_P^+ \quad \text{(discharged from } K_P^{\mathrm{inc}} \text{)}$$
 
 **Consequence:** The obligation ledger $\mathsf{Obl}(\mathrm{Cl}(\Gamma_{\mathrm{final}}))$ contains strictly fewer entries than $\mathsf{Obl}(\Gamma_{\mathrm{final}})$ if any inc-upgrades fired during closure.
