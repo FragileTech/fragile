@@ -195,7 +195,7 @@ The uniqueness part is remarkable: any other functional with these properties is
 :::{prf:theorem} [KRNL-Lyapunov] Canonical Lyapunov Functional
 :label: mt-krnl-lyapunov
 
-**[Sieve Signature]**
+**[Sieve Signature: Canonical Lyapunov]**
 - **Requires:** $K_{D_E}^+$ AND $K_{C_\mu}^+$ AND $K_{\mathrm{LS}_\sigma}^+$
 - **Produces:** $K_{\mathcal{L}}^+$ (Lyapunov functional exists)
 - **Output:** Canonical loss $\mathcal{L}$ = optimal-transport cost to equilibrium
@@ -228,7 +228,6 @@ $$
 :::
 
 :::{prf:proof}
-:label: proof-mt-krnl-lyapunov
 
 *Step 1 (Well-definedness).* Define $\mathcal{L}$ via inf-convolution as above. The functional is well-defined since $\mathfrak{D} \geq 0$ implies $\mathcal{C} \geq 0$. By the **direct method of calculus of variations** ({cite}`Dacorogna08` Chapter 3): $C_\mu$ provides compactness of sublevel sets, and $\Phi + \mathcal{C}$ is lower semicontinuous (as sum of l.s.c. functions). Therefore the infimum is attained at some $y^* \in M$.
 
@@ -266,7 +265,7 @@ This connection to Riemannian geometry is powerful because it imports the entire
 :::{prf:theorem} [KRNL-Jacobi] Action Reconstruction
 :label: mt-krnl-jacobi
 
-**[Sieve Signature]**
+**[Sieve Signature: Jacobi Metric]**
 - **Requires:** $K_{D_E}^+$ AND $K_{\mathrm{LS}_\sigma}^+$ AND $K_{\mathrm{GC}_\nabla}^+$
 - **Produces:** $K_{\text{Jacobi}}^+$ (Jacobi metric reconstruction)
 - **Output:** $\mathcal{L}(x) = \mathrm{dist}_{g_{\mathfrak{D}}}(x, M)$
@@ -295,7 +294,6 @@ $$
 :::
 
 :::{prf:proof}
-:label: proof-mt-krnl-jacobi
 
 *Step 1 (Gradient Consistency).* Interface permit $\mathrm{GC}_\nabla$ asserts: along gradient flow $\dot{u} = -\nabla_g \Phi$, we have $\|\dot{u}(t)\|_g^2 = \mathfrak{D}(u(t))$. This identifies dissipation with squared velocity.
 
@@ -331,7 +329,7 @@ The Lyapunov functional satisfies a static Hamilton-Jacobi equation, providing a
 :::{prf:theorem} [KRNL-HamiltonJacobi] Hamilton-Jacobi Characterization
 :label: mt-krnl-hamilton-jacobi
 
-**[Sieve Signature]**
+**[Sieve Signature: Hamilton-Jacobi PDE]**
 - **Requires:** $K_{D_E}^+$ AND $K_{\mathrm{LS}_\sigma}^+$ AND $K_{\mathrm{GC}_\nabla}^+$
 - **Produces:** $K_{\text{HJ}}^+$ (Hamilton-Jacobi PDE characterization)
 - **Output:** $\|\nabla_g \mathcal{L}\|_g^2 = \mathfrak{D}$ with $\mathcal{L}|_M = \Phi_{\min}$
@@ -362,7 +360,6 @@ $$
 :::
 
 :::{prf:proof}
-:label: proof-mt-krnl-hamilton-jacobi
 
 *Step 1 (Eikonal for Distance).* In any Riemannian manifold, the distance function $d_M(x) = \mathrm{dist}(x, M)$ satisfies the eikonal equation $\|\nabla d_M\| = 1$ almost everywhere (away from cut locus). For $g_{\mathfrak{D}}$:
 
@@ -424,7 +421,7 @@ This extends $\mathrm{GC}_\nabla$ from Riemannian to general metric spaces.
 :::{prf:theorem} [KRNL-MetricAction] Extended Action Reconstruction
 :label: mt-krnl-metric-action
 
-**[Sieve Signature]**
+**[Sieve Signature: Metric Action]**
 - **Requires:** $K_{D_E}^+$ AND $K_{\mathrm{LS}_\sigma}^+$ AND $K_{\mathrm{GC}'_\nabla}^+$
 - **Produces:** $K_{\mathcal{L}}^{\text{metric}}$ (Lyapunov on metric spaces)
 - **Extends:** Riemannian → Wasserstein → Discrete
@@ -450,7 +447,6 @@ where $|\dot{\gamma}|$ denotes the metric derivative and the infimum ranges over
 :::
 
 :::{prf:proof}
-:label: proof-mt-krnl-metric-action
 
 *Step 1 (Metric Derivative Identity).* For absolutely continuous curves $\gamma: [0,1] \to \mathcal{X}$, the metric derivative is $|\dot{\gamma}|(s) := \lim_{h \to 0} d(\gamma(s+h), \gamma(s))/|h|$. By $\mathrm{GC}'_\nabla$, along gradient flow curves: $|\dot{u}|(t)^2 = \mathfrak{D}(u(t)) = |\partial\Phi|^2(u(t))$, hence $|\dot{u}|(t) = |\partial\Phi|(u(t))$.
 
@@ -536,7 +532,7 @@ $$
 ::::{prf:theorem} [RESOLVE-Tower] Soft Local Tower Globalization
 :label: mt-resolve-tower
 
-**Sieve Signature:**
+**Sieve Signature: Tower Globalization**
 - *Weakest Precondition:* $K_{C_\mu^{\mathrm{tower}}}^+$, $K_{D_E^{\mathrm{tower}}}^+$, $K_{\mathrm{SC}_\lambda^{\mathrm{tower}}}^+$, $K_{\mathrm{Rep}_K^{\mathrm{tower}}}^+$
 - *Produces:* $K_{\mathrm{Global}}^+$ (global asymptotic structure)
 - *Invalidated By:* Local-global obstruction
@@ -565,7 +561,6 @@ $$
 ::::
 
 :::{prf:proof}
-:label: proof-mt-resolve-tower
 
 *Step 1 (Existence of limit).* By $K_{C_\mu^{\mathrm{tower}}}^+$, the spaces $\{X_t\}$ at each level are precompact modulo symmetries. The transition maps $S_{t \to s}$ are compatible by the semiflow property. By $K_{D_E^{\mathrm{tower}}}^+$, the total dissipation is finite:
 
@@ -665,7 +660,7 @@ $$
 ::::{prf:theorem} [RESOLVE-Obstruction] Obstruction Capacity Collapse
 :label: mt-resolve-obstruction
 
-**Sieve Signature:**
+**Sieve Signature: Obstruction Collapse**
 - *Weakest Precondition:* $K_{\mathrm{TB}+\mathrm{LS}}^{\mathcal{O}+}$, $K_{C+\mathrm{Cap}}^{\mathcal{O}+}$, $K_{\mathrm{SC}_\lambda}^{\mathcal{O}+}$, $K_{D_E}^{\mathcal{O}+}$
 - *Produces:* $K_{\mathrm{Obs}}^{\mathrm{finite}}$ (obstruction sector is finite)
 - *Invalidated By:* Infinite obstruction accumulation
@@ -688,7 +683,6 @@ $$
 ::::
 
 :::{prf:proof}
-:label: proof-mt-resolve-obstruction
 
 *Step 1 (Finiteness at each scale).* Fix a scale $t$. By $K_{C+\mathrm{Cap}}^{\mathcal{O}+}$, the sublevel set $\mathcal{O}_t^{\leq B} := \{x \in \mathcal{O}_t : H_{\mathcal{O}}(x) \leq B\}$ is finite or compact for each $B > 0$.
 
@@ -738,7 +732,7 @@ Guarantees no hidden "ghost sectors" where singularities can hide. All degrees o
 ::::{prf:theorem} [KRNL-StiffPairing] Stiff Pairing / No Null Directions
 :label: mt-krnl-stiff-pairing
 
-**Sieve Signature:**
+**Sieve Signature: Stiff Pairing**
 - *Weakest Precondition:* $K_{\mathrm{LS}_\sigma}^+$, $K_{\mathrm{TB}_\pi}^+$, $K_{\mathrm{GC}_\nabla}^+$
 - *Produces:* $K_{\mathrm{Stiff}}^+$ (no null directions)
 - *Invalidated By:* Hidden degeneracy
@@ -770,7 +764,6 @@ Let $\mathcal{X} = X_{\mathrm{free}} \oplus X_{\mathrm{obs}} \oplus X_{\mathrm{r
 ::::
 
 :::{prf:proof}
-:label: proof-mt-krnl-stiff-pairing
 
 *Step 1 (Pairing structure).* The pairing induces $\Psi: \mathcal{X} \to \mathcal{X}^*$, $\Psi(x)(y) := \langle x, y \rangle$. By $K_{\mathrm{LS}_\sigma}^+ + K_{\mathrm{TB}_\pi}^+$, this map is injective on $X_{\mathrm{free}} \oplus X_{\mathrm{obs}}$.
 

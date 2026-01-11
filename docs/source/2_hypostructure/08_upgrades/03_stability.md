@@ -61,7 +61,6 @@ $$
 :::
 
 :::{prf:proof}
-:label: sketch-mt-krnl-openness
 
 Strict inequalities define open sets. The Morse-Smale stability theorem (Palis and de Melo, 1982) states that structurally stable systems form an open set. The key is non-degeneracy: if all eigenvalues are strictly away from zero and all capacities are strictly bounded, small perturbations preserve these properties. This is the implicit function theorem applied to the certificate functionals.
 :::
@@ -107,7 +106,6 @@ $$
 :::
 
 :::{prf:proof}
-:label: sketch-mt-krnl-shadowing
 
 The Anosov shadowing lemma (1967) states that uniformly hyperbolic systems have the shadowing property. The spectral gap $\lambda$ controls the contraction rate, and the shadowing distance is $\delta \sim \varepsilon/\lambda$. Bowen (1975) extended this to Axiom A systems. Palmer (1988) gave a proof via the contraction mapping theorem on sequence spaces.
 :::
@@ -155,7 +153,6 @@ $$
 :::
 
 :::{prf:proof}
-:label: sketch-mt-krnl-weak-strong
 
 The weak-strong uniqueness principle uses energy estimates. If $v = u_w - u_s$, then $\frac{d}{dt}\|v\|^2 \leq C\|v\|^2 \cdot \|u_s\|_{X}$ for an appropriate norm $X$. If $u_s \in L^p([0,T]; X)$ (Serrin class), Gronwall's inequality gives $\|v(t)\| = 0$. For Navier-Stokes, $X = L^r$ with $\frac{2}{p} + \frac{3}{r} = 1$, $r > 3$ (Serrin, 1963; Lions, 1996).
 :::
@@ -209,7 +206,6 @@ $$
 :::
 
 :::{prf:proof}
-:label: proof-mt-lock-product
 
 #### Backend A: Subcritical Scaling
 
@@ -420,7 +416,6 @@ $$
 :::
 
 :::{prf:proof}
-:label: sketch-mt-krnl-subsystem
 
 If $\mathcal{S}$ developed a singularity, it would correspond to a morphism $\phi: \mathcal{B}_{\text{univ}} \to \mathcal{S} \hookrightarrow \mathcal{H}$. But this contradicts $\mathrm{Hom}(\mathcal{B}_{\text{univ}}, \mathcal{H}) = \emptyset$. The Fenichel invariant manifold theorem (1971) shows that normally hyperbolic invariant manifolds persist under perturbation; combined with Hirsch-Pugh-Shub (1977), the restriction maintains all regularity properties.
 :::

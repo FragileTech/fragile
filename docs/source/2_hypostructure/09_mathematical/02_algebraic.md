@@ -2,6 +2,8 @@
 title: "Algebraic-Geometric Unification"
 ---
 
+# Algebraic-Geometric Unification
+
 (sec-algebraic-geometric-metatheorems)=
 ## Algebraic-Geometric Metatheorems
 
@@ -42,7 +44,7 @@ Think of it this way. You have a flow on some space, and you want to understand 
 :::{prf:theorem} [LOCK-Motivic] Motivic Flow Principle
 :label: mt-lock-motivic
 
-**Sieve Signature**
+**Sieve Signature (Motivic Flow)**
 - **Requires:** $K_{D_E}^+$ (finite energy), $K_{C_\mu}^+$ (concentration), $K_{\mathrm{SC}_\lambda}^+$ (subcritical scaling)
 - **Produces:** $K_{\text{motive}}^+$ (motivic assignment with weight filtration)
 
@@ -84,7 +86,6 @@ satisfying:
 :::
 
 :::{prf:proof}
-:label: proof-mt-lock-motivic
 
 *Step 1 (Profile space construction).* The certificate $K_{C_\mu}^+$ guarantees concentration: there exists a finite-dimensional algebraic variety $\mathcal{P} \subset \text{Hilb}(X)$ such that all limit profiles lie in $\mathcal{P}/G$ where $G$ is the symmetry group. By Grothendieck's representability, $\mathcal{P}$ is a quasi-projective scheme.
 
@@ -150,7 +151,7 @@ What makes this computationally wonderful is that finding such certificates is a
 
 **Source:** Stengle's Positivstellensatz (1974)
 
-**Sieve Signature**
+**Sieve Signature (Schematic)**
 - **Requires:** $K_{\mathrm{Cap}_H}^+$ (capacity bound), $K_{\mathrm{LS}_\sigma}^+$ (Łojasiewicz gradient), $K_{\mathrm{SC}_\lambda}^+$ (subcritical scaling), $K_{\mathrm{TB}_\pi}^+$ (topological bound)
 - **Produces:** $K_{\text{SOS}}^+$ (sum-of-squares certificate witnessing Bad Pattern exclusion)
 
@@ -200,7 +201,6 @@ The original Nullstellensatz formulation applies to equalities over $\mathbb{C}$
 :::
 
 :::{prf:proof}
-:label: proof-mt-lock-schematic
 
 *Step 1 (Real algebraic geometry).* The permit certificates define polynomial inequalities over $\mathbb{R}$, not equalities over $\mathbb{C}$. Hilbert's Nullstellensatz does not apply directly to inequalities; we use the Positivstellensatz instead.
 
@@ -244,7 +244,7 @@ What we do here is connect this classical story to the sieve framework. The stif
 :::{prf:theorem} [LOCK-Kodaira] Kodaira-Spencer Stiffness Link
 :label: mt-lock-kodaira
 
-**Sieve Signature**
+**Sieve Signature (Kodaira-Spencer)**
 - **Requires:** $K_{\mathrm{LS}_\sigma}^+$ (stiffness gradient), $K_{C_\mu}^+$ (concentration on finite-dimensional moduli)
 - **Produces:** $K_{\text{KS}}^+$ (deformation cohomology, rigidity classification)
 
@@ -275,7 +275,6 @@ Consider the tangent sheaf cohomology groups $H^i(V, T_V)$ for $i = 0, 1, 2$. Th
 :::
 
 :::{prf:proof}
-:label: proof-mt-lock-kodaira
 
 *Step 1 (Deformation functor).* Define the deformation functor $\text{Def}_V: \mathbf{Art}_k \to \mathbf{Sets}$ by:
 
@@ -351,7 +350,7 @@ This is how the sieve connects to Gromov-Witten theory and Donaldson-Thomas theo
 :::{prf:theorem} [LOCK-Virtual] Virtual Cycle Correspondence
 :label: mt-lock-virtual
 
-**Sieve Signature**
+**Sieve Signature (Virtual Cycle)**
 - **Requires:** $K_{\mathrm{Cap}_H}^+$ (capacity bound on moduli), $K_{D_E}^+$ (finite energy), $K_{\mathrm{Rep}}^+$ (representation completeness)
 - **Produces:** $K_{\text{virtual}}^+$ (virtual fundamental class, enumerative invariants)
 
@@ -407,7 +406,6 @@ Then:
 :::
 
 :::{prf:proof}
-:label: proof-mt-lock-virtual
 
 *Step 1 (Obstruction theory).* A perfect obstruction theory is a morphism $\phi: \mathbb{E}^\bullet \to \mathbb{L}_{\mathcal{M}}$ in $D^{[-1,0]}(\mathcal{M})$ satisfying:
 - $h^0(\phi): h^0(\mathbb{E}^\bullet) \xrightarrow{\cong} h^0(\mathbb{L}_{\mathcal{M}}) = \Omega_{\mathcal{M}}$ is an isomorphism
@@ -463,14 +461,14 @@ What does this have to do with the sieve? The scaling exponents from $K_{\mathrm
 :::{prf:theorem} [LOCK-Hodge] Monodromy-Weight Lock
 :label: mt-lock-hodge
 
-**Rigor Class:** L (Literature-Anchored) — see {prf:ref}`def-rigor-classification`
+**Rigor Class (Monodromy-Weight):** L (Literature-Anchored) — see {prf:ref}`def-rigor-classification`
 
 **Bridge Verification:**
 1. *Hypothesis Translation:* Certificates $K_{\mathrm{TB}_\pi}^+ \wedge K_{\mathrm{SC}_\lambda}^+ \wedge K_{D_E}^+$ imply: proper flat morphism $\pi: \mathcal{X} \to \Delta$ with semistable reduction, bounded period map $\|\nabla\Pi\| \leq c$
 2. *Domain Embedding:* $\iota: \mathbf{Hypo}_T \to \mathbf{MHS}$ mapping to category of mixed Hodge structures via Deligne's construction
 3. *Conclusion Import:* Schmid's Nilpotent Orbit Theorem {cite}`Schmid73` + GAGA {cite}`Serre56` + Griffiths' Hodge Theory {cite}`Griffiths68` $\Rightarrow K_{\text{MHS}}^+$ (weight-monodromy correspondence)
 
-**Sieve Signature**
+**Sieve Signature (Monodromy-Weight)**
 - **Requires:** $K_{\mathrm{TB}_\pi}^+$ (topological bound on monodromy), $K_{\mathrm{SC}_\lambda}^+$ (subcritical scaling), $K_{D_E}^+$ (finite energy)
 - **Produces:** $K_{\text{MHS}}^+$ (limiting mixed Hodge structure, weight-monodromy correspondence)
 
@@ -510,7 +508,6 @@ Then the limiting mixed Hodge structure (MHS) satisfies:
 :::
 
 :::{prf:proof}
-:label: proof-mt-lock-hodge
 
 *Step 1 (Monodromy).* Let $T: H^k(X_t, \mathbb{Z}) \to H^k(X_t, \mathbb{Z})$ be the monodromy operator for a loop $\gamma$ around $0$. The certificate $K_{\mathrm{TB}_\pi}^+$ ensures $\|\nabla\Pi\|$ is bounded, which by Borel's theorem implies $T$ is quasi-unipotent:
 $$(T^m - I)^{k+1} = 0 \quad \text{for some } m \geq 1$$
@@ -568,14 +565,14 @@ The motivic Galois group, which conjecturally controls all the algebraic relatio
 :::{prf:theorem} [LOCK-Tannakian] Tannakian Recognition Principle
 :label: mt-lock-tannakian
 
-**Rigor Class:** L (Literature-Anchored) — see {prf:ref}`def-rigor-classification`
+**Rigor Class (Tannakian):** L (Literature-Anchored) — see {prf:ref}`def-rigor-classification`
 
 **Bridge Verification:**
 1. *Hypothesis Translation:* Certificates $K_{\mathrm{Cat}_{\mathrm{Hom}}}^+ \wedge K_{\Gamma}^+$ imply: neutral Tannakian category $\mathcal{C}$ over $k$ with exact faithful tensor-preserving fiber functor $\omega$
 2. *Domain Embedding:* $\iota: \mathbf{Hypo}_T \to \mathbf{TannCat}_k$ mapping to category of Tannakian categories via forgetful functor
 3. *Conclusion Import:* Deligne's Tannakian Duality {cite}`Deligne90` $\Rightarrow K_{\text{Tann}}^+$ (group scheme $G = \underline{\text{Aut}}^\otimes(\omega)$ recoverable, $\mathcal{C} \simeq \text{Rep}_k(G)$)
 
-**Sieve Signature**
+**Sieve Signature (Tannakian)**
 - **Requires:** $K_{\mathrm{Cat}_{\mathrm{Hom}}}^+$ (Hom-functor structure), $K_{\Gamma}^+$ (full context certificate)
 - **Produces:** $K_{\text{Tann}}^+$ (Galois group reconstruction, algebraicity criterion, lock exclusion)
 
@@ -617,7 +614,6 @@ Then:
 :::
 
 :::{prf:proof}
-:label: proof-mt-lock-tannakian
 
 *Step 1 (Tannakian axioms).* The certificate $K_{\mathrm{Cat}_{\mathrm{Hom}}}^+$ ensures $\mathcal{C}$ satisfies the Tannakian axioms:
 - **Abelian:** $\mathcal{C}$ is a $k$-linear abelian category
@@ -676,14 +672,14 @@ This is the holographic principle from physics, translated into the sieve langua
 :::{prf:theorem} [LOCK-Capacity] Holographic Capacity Lock
 :label: mt-lock-entropy
 
-**Rigor Class:** L (Literature-Anchored) — see {prf:ref}`def-rigor-classification`
+**Rigor Class (Holographic):** L (Literature-Anchored) — see {prf:ref}`def-rigor-classification`
 
 **Bridge Verification:**
 1. *Hypothesis Translation:* Certificates $K_{\mathrm{Cap}_H}^+ \wedge K_{\mathrm{TB}_\pi}^+$ imply: bounded boundary channel capacity $C(\partial\mathcal{X})$
 2. *Domain Embedding:* $\iota: \mathbf{Hypo}_T \to \mathbf{InfoGeom}$ mapping to information-theoretic channel model $X \to Y \to Z$
 3. *Conclusion Import:* Shannon's Channel Coding Theorem {cite}`Shannon48` + Data Processing Inequality {cite}`CoverThomas06` $\Rightarrow K_{\text{Holo}}^+$ (bulk information retrieval bounded by boundary capacity)
 
-**Sieve Signature**
+**Sieve Signature (Holographic)**
 - **Requires:** $K_{\mathrm{Cap}_H}^+$ (capacity certificate), $K_{\mathrm{TB}_\pi}^+$ (topological bound)
 - **Produces:** $K_{\text{Holo}}^+$ (holographic capacity certificate, information-theoretic lock)
 
@@ -709,8 +705,7 @@ Then the **Data Processing Inequality** provides an information-theoretic lock:
 **Literature:** {cite}`Shannon48`; {cite}`CoverThomas06`; {cite}`Levin73`
 :::
 
-:::{prf:proof} Proof Sketch
-:label: sketch-mt-lock-entropy
+:::{prf:proof}
 
 *Step 1 (Data Processing Inequality).* Consider the Markov chain $X \to Y \to Z$, where $X$ is the bulk state, $Y$ is the boundary state, and $Z$ is the observer's measurement. The Data Processing Inequality states that $I(X; Z) \leq I(X; Y)$.
 
@@ -758,11 +753,11 @@ This is why the sieve works. Not because it tries all possibilities, which would
 :::{prf:theorem} [LOCK-Reconstruction] Structural Reconstruction Principle
 :label: mt-lock-reconstruction
 
-**Rigor Class:** F (Framework-Original) — see {prf:ref}`def-rigor-classification`
+**Rigor Class (Reconstruction):** F (Framework-Original) — see {prf:ref}`def-rigor-classification`
 
 This metatheorem is the "Main Result" of the framework: it proves that **Stiff** (Analytic) + **Tame** (O-minimal) systems *must* admit a representation in the structural category $\mathcal{S}$. The Łojasiewicz-Simon inequality restricts the "Moduli of Failure" so severely that only structural objects (algebraic cycles/solitons) remain.
 
-**Sieve Signature**
+**Sieve Signature (Reconstruction)**
 - **Requires:**
   - $K_{D_E}^+$ (finite energy bound on state space)
   - $K_{C_\mu}^+$ (concentration on finite-dimensional profile space)
@@ -924,7 +919,6 @@ Given the tactic trace from $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{br\text{-}
 :::
 
 :::{prf:proof}
-:label: proof-mt-lock-reconstruction
 
 *Step 1 (Breached-inconclusive certificate analysis).* The certificate $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{br\text{-}inc}}$ records that tactics E1-E12 have been exhausted at Node 17 without determining whether $\text{Hom}_{\mathcal{A}}(\mathcal{H}_{\text{bad}}, \mathcal{X}) = \emptyset$. The upstream certificates $K_{D_E}^+$, $K_{C_\mu}^+$, $K_{\mathrm{SC}_\lambda}^+$, $K_{\mathrm{LS}_\sigma}^+$ provide **partial progress data**:
 
@@ -1201,7 +1195,7 @@ The beautiful thing is that each step uses a different piece of the certificate 
 :::{prf:lemma} Analytic-Algebraic Rigidity
 :label: lem-analytic-algebraic-rigidity
 
-**Sieve Signature**
+**Sieve Signature (Analytic-Algebraic)**
 - **Requires:**
   - $K_{D_E}^+$ (finite energy: $\|\eta\|_{L^2}^2 < \infty$)
   - $K_{\mathrm{LS}_\sigma}^+$ (stiffness: spectral gap $\lambda > 0$ on Hodge-Riemann pairing)

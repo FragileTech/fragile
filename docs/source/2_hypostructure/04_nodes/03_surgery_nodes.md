@@ -1,3 +1,5 @@
+# Surgery Nodes
+
 (sec-surgery-node-specs)=
 ## Surgery Node Specifications (Purple Nodes)
 

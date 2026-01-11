@@ -2,6 +2,8 @@
 title: "Taxonomy of Dynamical Complexity"
 ---
 
+# Taxonomy of Dynamical Complexity
+
 (sec-taxonomy-dynamical-complexity)=
 ## The Taxonomy of Dynamical Complexity
 
@@ -550,8 +552,6 @@ where $\sim$ denotes equivalence of certificate types at each node.
 :::
 
 :::{prf:proof}
-:label: proof-thm-meta-identifiability
-:nonumber:
 
 **Outline:**
 
@@ -658,8 +658,6 @@ The proof strategy for any dynamical system is determined by its location in the
 :::
 
 :::{prf:proof}
-:label: proof-mt-lock-periodic
-:nonumber:
 
 **Outline:**
 
@@ -804,7 +802,7 @@ For fixed $s$, this measures the intrinsic computational "work" required to prod
 | Intermediate | $d_s = \text{superpolynomial}$ | $K = \Theta(n^\alpha)$ | Complex but structured | May be c.e. |
 | Deep | $d_s = \Omega(2^{K})$ | $K \geq n - O(1)$ | Random, incompressible | Undecidable |
 
-**Thermodynamic Analogy:** Depth plays the role of "thermodynamic depth" (entropy production). Shallow strings are "thermodynamically cheap" to produce; deep strings require extensive irreversible computation {cite}`Bennett88; LloydPagels88`.
+**Thermodynamic Analogy:** Depth plays the role of "thermodynamic depth" (entropy production). Shallow strings are "thermodynamically cheap" to produce; deep strings require extensive irreversible computation {cite}`Bennett88,LloydPagels88`.
 
 **Note:** Unlike physical temperature, there is no canonical "algorithmic temperature" in AIT. The depth serves as the thermodynamic analog.
 :::
@@ -836,11 +834,10 @@ $$
 :::
 
 :::{prf:proof}
-:label: proof-thm-sieve-thermo-correspondence
 
 We establish the correspondence in four steps.
 
-**Step 1 (Coding Theorem):** By the Levin-Schnorr Theorem {cite}`Levin73b; Schnorr73`, the algorithmic probability $m(x) := \sum_{p: U(p)=x} 2^{-|p|}$ satisfies:
+**Step 1 (Coding Theorem):** By the Levin-Schnorr Theorem {cite}`Levin73b,Schnorr73`, the algorithmic probability $m(x) := \sum_{p: U(p)=x} 2^{-|p|}$ satisfies:
 
 $$
 -\log m(x) = K(x) + O(1)

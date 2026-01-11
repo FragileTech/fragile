@@ -349,7 +349,6 @@ The sieve diagram is a directed acyclic graph (DAG). All edges, including dotted
 :::
 
 :::{prf:proof}
-:label: proof-thm-dag
 
 By inspection of the diagram: all solid edges flow downward (increasing node number or to barriers/modes), and all dotted surgery edges target nodes strictly later in the flow than their source mode. The restoration subtree (7a--7d) only exits forward to TopoCheck or TameCheck.
 
@@ -373,7 +372,6 @@ Each epoch terminates in finite time, visiting finitely many nodes.
 :::
 
 :::{prf:proof}
-:label: proof-thm-epoch-termination
 
 Immediate from {prf:ref}`thm-dag`: the DAG structure ensures no cycles, hence any path through the sieve has bounded length.
 
@@ -389,7 +387,6 @@ A complete sieve run consists of finitely many epochs.
 :::
 
 :::{prf:proof}
-:label: proof-thm-finite-runs
 
 Each surgery has an associated progress measure ({prf:ref}`def-progress-measures`):
 
@@ -434,7 +431,6 @@ Every transition in a sieve run is certificate-justified. Formally, if the sieve
 :::
 
 :::{prf:proof}
-:label: proof-thm-soundness
 
 By construction: {prf:ref}`def-node-evaluation` requires each node evaluation to produce a certificate, and {prf:ref}`def-edge-validity` requires edge validity.
 
@@ -509,7 +505,6 @@ This is crucial for reproducibility. Two implementations of the sieve that start
 :::
 
 :::{prf:proof}
-:label: proof-thm-closure-termination
 
 *Step 1 (Ambient Setup: Certificate Lattice).* Define the **certificate lattice** $(\mathcal{L}, \sqsubseteq)$ where:
 - $\mathcal{L} := \mathcal{P}(\mathcal{K}(T))$ is the power set of all certificates of type $T$
