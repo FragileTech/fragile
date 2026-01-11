@@ -764,5 +764,3 @@ The condition $H(u) \geq H(d)$ is entropy comparison: the control entropy must m
 
 This barrier is checking whether your controller is *fundamentally adequate* for the task. Not whether it's optimal, not whether it's well-tuned, but whether it has enough variety to even play the game. If not, no amount of clever algorithm design can save you—you need more control authority.
 :::
-
----

@@ -48,7 +48,7 @@ This recovers **Constrained MDPs** (CMDPs) with penalty-based constraint satisfa
 - Auditable: each check has known compute cost and clear interpretation (Sections 3–6)
 :::
 
-:::{figure} ../svg_images/sieve_diagnostic_system.svg
+:::{figure} ../../../svg_images/sieve_diagnostic_system.svg
 :name: fig-sieve-diagnostics
 :width: 100%
 
