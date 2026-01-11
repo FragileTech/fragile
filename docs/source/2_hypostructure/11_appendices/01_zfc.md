@@ -5,9 +5,6 @@ title: "Set-Theoretic Foundation"
 (sec-zfc-translation)=
 # The Set-Theoretic Foundation
 
-(sec-zfc-translation-layer)=
-## The ZFC Translation Layer
-
 :::{div} feynman-prose
 Now, here is a question you might reasonably ask: why bother with all this fancy topos theory if we are just going to translate everything back to ordinary set theory anyway?
 
@@ -31,7 +28,7 @@ The bridge is intentionally **semantic** rather than a term-by-term proof compil
 4. **Emit a Bridge Certificate** $\mathcal{B}_{\text{ZFC}}$ ({ref}`Cross-Foundation Audit <sec-zfc-cross-foundation-audit>`).
 
 (sec-zfc-universe-anchoring)=
-### Grothendieck Universes and Size Consistency
+## Grothendieck Universes and Size Consistency
 
 :::{div} feynman-prose
 Before we get into the technical details, let me tell you what problem we are solving. In set theory, there is a fundamental issue with "size." You cannot have a set of all sets---that leads to Russell's paradox. But in category theory, we constantly want to talk about "the category of all groups" or "the category of all topological spaces." These are proper classes, not sets.
@@ -84,7 +81,7 @@ By the accessibility of $\mathcal{E}$, all small colimits exist and are computed
 :::
 
 (sec-zfc-truncation)=
-### The Truncation Functor: $\tau_0$
+## The Truncation Functor: $\tau_0$
 
 :::{div} feynman-prose
 Here is the central operation of the whole translation layer. We have these beautiful, complicated $\infty$-groupoids with paths, paths between paths, symmetries, and coherence data stacked infinitely high. And we need to extract a plain old set that a classical mathematician can work with.
@@ -162,7 +159,7 @@ The 0-truncation functor preserves the essential structure of certificates:
 :::
 
 (sec-zfc-discrete-reflection)=
-### The Discrete Reflection Adjunction
+## The Discrete Reflection Adjunction
 
 :::{div} feynman-prose
 Let me make sure you understand what the flat modality $\flat$ is doing. It is embedding ordinary sets---the kind you learn about in a first course on set theory---into our fancy topos, as "discrete" objects with no interesting topology or homotopy.
@@ -223,7 +220,7 @@ Certificates are 0-truncated by construction (they encode Boolean decisions, fin
 :::
 
 (sec-zfc-sieve-axiom-mapping)=
-### Sieve-to-Set Axiom Mapping
+## Sieve-to-Set Axiom Mapping
 
 :::{div} feynman-prose
 Now we come to the dictionary. Each of the 17 nodes in the Sieve does something specific---it checks an energy bound, or verifies a compactness property, or confirms a scaling law. And each of these operations, when you strip away the categorical language, corresponds to using certain ZFC axioms.
@@ -287,7 +284,7 @@ Each node's interface permit specifies finite-complexity predicates on the input
 :::
 
 (sec-zfc-ac-dependency)=
-### Axiom of Choice Dependency Analysis
+## Axiom of Choice Dependency Analysis
 
 :::{div} feynman-prose
 The Axiom of Choice is special. It is the one ZFC axiom that lets you make infinitely many arbitrary selections at once, without any rule or algorithm to guide the choices. And this matters---if your proof uses Choice, then you cannot extract a computer program from it. The witness exists, but you cannot compute it.
@@ -340,7 +337,7 @@ Sieve nodes are classified by their dependence on the Axiom of Choice:
 :::
 
 (sec-zfc-cross-foundation-audit)=
-### Metatheorem: The Cross-Foundation Audit
+## Metatheorem: The Cross-Foundation Audit
 
 :::{div} feynman-prose
 This is the main theorem of the chapter. It says: if the Sieve produces a blocked certificate at the Lock (Node 17), then there exists a first-order ZFC formula that is true in our universe and that implies regularity.
@@ -352,7 +349,7 @@ The Bridge Certificate $\mathcal{B}_{\text{ZFC}}$ is the audit packet. It contai
 Note what this theorem does *not* claim: it does not say that a classical mathematician can *reproduce* the proof in ZFC. The proof uses categorical methods essentially. What it says is that the *conclusion* is ZFC-verifiable. The difference is crucial: we are not claiming ZFC is sufficient for the proofs, only that it is sufficient for the auditing.
 :::
 
-::::{prf:theorem} [KRNL-ZFC-Bridge] The Cross-Foundation Audit
+:::{prf:theorem} [KRNL-ZFC-Bridge] The Cross-Foundation Audit
 :label: mt-krnl-zfc-bridge
 
 **Statement:** Let $\mathcal{E}$ be a universe-anchored cohesive $(\infty,1)$-topos with universe $\mathcal{U}$. For any problem type $T \in \mathbf{ProbTypes}$ and concrete hypostructure $\mathbb{H}(Z)$ representing input $Z$:
@@ -433,10 +430,10 @@ $$
 By construction, $V_\mathcal{U} \vDash \varphi$ (the truncated Hom-set is empty in the universe), and $\varphi \Rightarrow \text{Reg}(Z)$ by Step 4.
 
 **Literature:** {cite}`Lurie09` (Higher Topos Theory); {cite}`Johnstone02` (internal logic of topoi); {cite}`Jech03` (ZFC set theory); {cite}`MacLaneMoerdijk92` (topos-set correspondence).
-::::
+:::
 
 (sec-zfc-epistemic-summary)=
-### Epistemic Summary
+## Epistemic Summary
 
 The ZFC Translation Layer establishes a formal bridge between the categorical machinery of the Hypostructure Formalism and classical set-theoretic foundations.
 
@@ -480,7 +477,7 @@ Working in $\mathcal{E}$ provides natural handling of homotopical structure, gau
 :::
 
 (sec-zfc-axiomatic-dictionary)=
-### Axiomatic Dictionary: ZFC to Hypostructure Mapping
+## Axiomatic Dictionary: ZFC to Hypostructure Mapping
 
 :::{div} feynman-prose
 Here is where we lay out the complete dictionary between ZFC and topos theory. Every axiom of ZFC has a categorical counterpart, and understanding these correspondences is essential for trusting the translation.
@@ -572,7 +569,7 @@ The mapping $\mathcal{M}: \text{ZFC} \to \mathcal{E}$ is defined by the followin
 :::
 
 (sec-zfc-classicality)=
-### The Classicality Operator: Heyting vs Boolean Logic
+## The Classicality Operator: Heyting vs Boolean Logic
 
 :::{div} feynman-prose
 Here is a subtlety that trips up many people. The internal logic of a topos is *intuitionistic*: you cannot assume that every proposition is either true or false. The Law of Excluded Middle ($P \vee \neg P$) is not a theorem.
@@ -644,7 +641,7 @@ For the Sieve, a certificate $K$ is **classically valid** if $\delta(\tau_0(K)) 
 :::
 
 (sec-zfc-internal-external-choice)=
-### Internal vs External Choice
+## Internal vs External Choice
 
 :::{div} feynman-prose
 There are two versions of the Axiom of Choice, and confusing them is a common error.
@@ -713,7 +710,7 @@ Sieve nodes are classified by their choice requirements:
 :::
 
 (sec-zfc-universe-level-tracking)=
-### Universe Level Tracking
+## Universe Level Tracking
 
 To prevent "size-shifting" errors where proper classes are treated as sets, explicit universe stratification is required.
 
@@ -757,7 +754,7 @@ Each Sieve node performs operations (pullback, pushout, hom-evaluation) that are
 :::
 
 (sec-zfc-translation-residual)=
-### The Translation Residual
+## The Translation Residual
 
 :::{div} feynman-prose
 When we apply $\tau_0$, we throw away the higher homotopy groups: $\pi_1$ (gauge symmetries), $\pi_2$ (coherence conditions), and everything beyond. This is the "residual"---the information that does not survive the translation.
@@ -811,7 +808,7 @@ While certificates have zero residual, **intermediate constructions** in proofs 
 :::
 
 (sec-zfc-stack-set-divergence)=
-### Stack-Set Divergence
+## Stack-Set Divergence
 
 :::{div} feynman-prose
 Here is a trap that catches even experienced mathematicians. A stack (or groupoid, or higher groupoid) is *not* a set with extra structure. It is a fundamentally different kind of object, and reasoning about it as if it were a set leads to errors.
@@ -858,7 +855,7 @@ The translation layer detects this when the set-level projection silently assume
 :::
 
 (sec-zfc-descent-logic)=
-### Descent Logic and Size Constraints
+## Descent Logic and Size Constraints
 
 Grothendieck descent provides the mechanism for "gluing" local set-theoretic constructions into global categorical objects.
 
@@ -900,7 +897,7 @@ This follows from the closure properties of Grothendieck universes under the ope
 :::
 
 (sec-zfc-consistency-invariant)=
-### The Consistency Invariant
+## The Consistency Invariant
 
 The ZFC Translation Layer satisfies a fundamental consistency property: valid categorical proofs yield consistent set-theoretic projections.
 
@@ -950,7 +947,7 @@ An infinite $\prec$-descending sequence in $S$ would define an infinite descendi
 :::
 
 (sec-zfc-fundamental-theorem)=
-### The Fundamental Theorem of Set-Theoretic Reflection
+## The Fundamental Theorem of Set-Theoretic Reflection
 
 :::{div} feynman-prose
 This is the culmination of everything. We have built all the machinery---the truncation functor, the discrete reflection, the axiom dictionary, the classicality analysis. Now we put it together into one theorem that says: the internal truth of "$\operatorname{Hom}(\mathbb{H}_{\text{bad}}, \mathbb{H}) \simeq \emptyset$" in the topos implies the external truth of "every point in $\tau_0(\mathcal{X})$ is regular" in ZFC.

@@ -467,9 +467,7 @@ $((\sharp\text{-status}, \int\text{-status}, \flat\text{-status}, \ast\text{-sta
 **Literature:** Cohesive $(\infty,1)$-topoi {cite}`SchreiberCohesive`; Synthetic Differential Geometry {cite}`Kock06`; Axiomatic Cobordism {cite}`Lurie09TFT`; Computational Complexity {cite}`AroraBorak09`.
 ::::
 
-:::{prf:proof}
-:label: proof-mt-alg-complete
-:nonumber:
+:::{prf:proof} Proof of {prf:ref}`mt-alg-complete`
 
 **Proof (Following Categorical Proof Template — Topos Internal Logic):**
 
@@ -477,7 +475,7 @@ $((\sharp\text{-status}, \int\text{-status}, \flat\text{-status}, \ast\text{-sta
 
 By the Sieve-Thermodynamic Correspondence ({prf:ref}`thm-sieve-thermo-correspondence`), polynomial-time convergence requires **Kolmogorov complexity reduction**: the algorithm must decrease $K(x_t)$ ({prf:ref}`def-kolmogorov-complexity`) from the initial instance complexity $K(\mathcal{X}) \sim N$ to $O(\log N)$ (solution encoding) in $\text{poly}(N)$ steps.
 
-By the **Levin-Schnorr Theorem** {cite}`Levin73b; Schnorr73`, uniform random search on an amorphous (structureless) space achieves expected complexity reduction:
+By the **Levin-Schnorr Theorem** {cite}`Levin73b,Schnorr73`, uniform random search on an amorphous (structureless) space achieves expected complexity reduction:
 
 $$\mathbb{E}[\Delta K] = O(1/|\mathcal{X}|) = O(2^{-N})$$
 
@@ -686,8 +684,7 @@ The domain embedding $\iota: \mathbf{Hypo}_{T_{\text{alg}}} \to \mathbf{DTM}$ is
 $$\forall M \in P.\, \exists \mathbb{H} \in \mathbf{Hypo}_{T_{\text{alg}}}.\, \iota(\mathbb{H}) \cong M$$
 :::
 
-:::{prf:proof}
-:label: proof-cor-alg-embedding-surj
+:::{prf:proof} Proof of {prf:ref}`cor-alg-embedding-surj`
 
 By MT-AlgComplete, every polynomial algorithm factors through a modality. Each modality corresponds to a structural resource representable in $\mathbf{Hypo}_{T_{\text{alg}}}$. The embedding $\iota$ is constructed to preserve these resources.
 :::
@@ -734,8 +731,8 @@ The algorithmic completeness framework is **verifiable** through the following c
 | Component | Status | Reference |
 |-----------|--------|-----------|
 | Cohesive modalities exhaust structure | **THEOREM** (Schreiber) | {prf:ref}`thm-schreiber-structure` |
-| Polynomial-time requires structure | **THEOREM** (information-theoretic) | Proof Step 1 in {prf:ref}`proof-mt-alg-complete` |
-| Structure = modal factorization | **THEOREM** (topos-theoretic) | Proof Step 2 in {prf:ref}`proof-mt-alg-complete` |
+| Polynomial-time requires structure | **THEOREM** (information-theoretic) | Proof of {prf:ref}`mt-alg-complete`, Step 1 |
+| Structure = modal factorization | **THEOREM** (topos-theoretic) | Proof of {prf:ref}`mt-alg-complete`, Step 2 |
 | MT-AlgComplete | **THEOREM** (conditional) | {prf:ref}`mt-alg-complete` |
 | Obstruction certificates | **COMPUTABLE** | {prf:ref}`def-obstruction-certificates` |
 | Bridge to DTM complexity | **THEOREM** | Part XX (Complexity Bridge) |

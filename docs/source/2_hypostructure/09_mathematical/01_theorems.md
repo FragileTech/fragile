@@ -2,6 +2,8 @@
 title: "Gate, Barrier, and Surgery Theorems"
 ---
 
+# Gate, Barrier, and Surgery Theorems
+
 (sec-gate-evaluator-theorems)=
 ## Gate Evaluator Theorems
 
@@ -44,7 +46,6 @@ $$\int_{-\infty}^0 \mathfrak{D}(v_\infty(s)) \, ds = \infty$$
 :::
 
 :::{prf:proof}
-:label: proof-mt-lock-tactic-scale
 
 *Step 1 (Change of Variables).* For rescaled time $s = \lambda_n^\beta(t - t_n)$ and rescaled state $v_n(s) = \mathcal{S}_{\lambda_n} \cdot u(t)$:
 
@@ -98,7 +99,6 @@ for some $\theta \in [1/2, 1)$ and $c > 0$.
 :::
 
 :::{prf:proof}
-:label: proof-mt-lock-spectral-gen
 
 *Step 1 (Hessian structure).* Near a critical point $x_* \in M$, the height functional $\Phi$ admits Taylor expansion:
 
@@ -152,7 +152,6 @@ The theorem makes this precise: if your system is mixing and you have finite ene
 :::
 
 :::{prf:proof}
-:label: proof-mt-lock-ergodic-mixing
 
 *Step 1 (Mixing definition).* The system is mixing if for all $f, g \in L^2(\mu)$:
 
@@ -208,7 +207,6 @@ The interface permit $\mathrm{GC}_\nabla$ (Gradient Consistency) is equivalent t
 :::
 
 :::{prf:proof}
-:label: proof-mt-lock-spectral-dist
 
 *Step 1 (Spectral triple).* A spectral triple $(\mathcal{A}, \mathcal{H}, D)$ consists of: algebra $\mathcal{A}$ acting on Hilbert space $\mathcal{H}$, self-adjoint Dirac operator $D$ with compact resolvent.
 
@@ -258,7 +256,6 @@ For the Sieve, this means boundary interactions can be measured by cut sizes. Th
 :::
 
 :::{prf:proof}
-:label: proof-mt-lock-antichain
 
 *Step 1 (Menger's theorem).* In a finite graph, the maximum flow from source to sink equals the minimum cut capacity. For causal graphs, this relates the "information flow" through time to the minimal separating surface.
 
@@ -331,7 +328,6 @@ for generator $\mathcal{L}$, constant $\lambda > 0$, bound $b < \infty$, and com
 :::
 
 :::{prf:proof}
-:label: proof-mt-up-saturation-principle
 
 *Step 1 (Generator bound).* Apply Itô's lemma to $\mathcal{V}(X_t)$:
 
@@ -397,7 +393,6 @@ $$K_{D_E}^+ \wedge (N_{\text{req}} = \infty) \Rightarrow K_{\mathrm{Rec}_N}^{\ma
 :::
 
 :::{prf:proof}
-:label: proof-mt-up-causal-barrier
 
 *Step 1 (Energy bound).* By interface permit $D_E$, the system has finite average energy $E = \int_0^T (E(t) - E_0) dt < \infty$.
 
@@ -445,7 +440,6 @@ Then **occupation time bounds** hold: the trajectory cannot spend infinite time 
 :::
 
 :::{prf:proof}
-:label: proof-mt-lock-tactic-capacity
 
 *Step 1 (Capacity-codimension bound).* By the background geometry interface permit (BG4):
 
@@ -500,7 +494,6 @@ for universal constants $C = 1$, $c = 1/8$.
 :::
 
 :::{prf:proof}
-:label: proof-mt-up-shadow
 
 *Step 1 (Herbst argument).* The log-Sobolev inequality (LSI) with constant $\lambda_{\text{LS}}$ implies concentration of measure. For any 1-Lipschitz function $f$:
 
@@ -558,7 +551,6 @@ $$\int_0^\infty \log |S(j\omega)| \, d\omega = \pi \sum_{i=1}^{n_p} p_i$$
 :::
 
 :::{prf:proof}
-:label: proof-thm-bode
 
 *Step 1 (Cauchy integral setup).* Consider the contour integral of $\log S(s)$ around the right half-plane: a semicircle from $-jR$ to $jR$ closed by the imaginary axis.
 
@@ -619,7 +611,6 @@ Information cannot increase through processing.
 :::
 
 :::{prf:proof}
-:label: proof-mt-act-horizon
 
 *Step 1 (Entropy production).* For a system with positive Lyapunov exponents $\lambda_i > 0$, Pesin's formula gives the KS entropy:
 
@@ -703,7 +694,6 @@ where $\xi$ is distributional noise (e.g., space-time white noise) and $F$ invol
 :::
 
 :::{prf:proof}
-:label: proof-mt-act-lift
 
 *Step 1 (Regularity structure).* Build an abstract polynomial-like structure that encodes:
 - Basis elements representing canonical noise terms
@@ -768,7 +758,6 @@ The procedure maintains:
 :::
 
 :::{prf:proof}
-:label: proof-mt-act-surgery-2
 
 *Step 1 (Canonical neighborhood theorem).* Near high-curvature points, the geometry is modeled by one of:
 - Shrinking round spheres $S^n$
@@ -832,7 +821,6 @@ The relaxation satisfies:
 :::
 
 :::{prf:proof}
-:label: proof-mt-act-projective
 
 *Step 1 (Slack introduction).* Replace hard constraint $g_i(x) \leq 0$ with soft constraint $g_i(x) - s_i \leq 0$ and $s_i \geq 0$. The feasible region expands.
 
@@ -889,7 +877,6 @@ The BRST construction provides:
 :::
 
 :::{prf:proof}
-:label: proof-mt-act-ghost
 
 *Step 1 (Gauge fixing).* Choose gauge-fixing function $F(A) = 0$. Insert:
 
@@ -954,7 +941,6 @@ ensures:
 :::
 
 :::{prf:proof}
-:label: proof-mt-act-align
 
 *Step 1 (KKT conditions).* At the saddle point $(x^*, \lambda^*)$:
 
@@ -1013,7 +999,6 @@ This is especially powerful in general relativity, where Penrose diagrams let yo
 :::
 
 :::{prf:proof}
-:label: proof-mt-act-compactify
 
 *Step 1 (Conformal factor construction).* Choose $\Omega$ vanishing at infinity:
 

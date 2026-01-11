@@ -60,7 +60,7 @@ The Lock attempts thirteen proof-producing tactics to establish Hom-emptiness:
 :::{prf:definition} E1: Dimension obstruction
 :label: def-e1
 
-**Sieve Signature:**
+**Sieve Signature (E1):**
 - **Required Permits:** $\mathrm{Rep}_K$ (representability), $\mathrm{Cat}_{\mathrm{Hom}}$
 - **Weakest Precondition:** $\{K_{\mathrm{Rep}_K}^+\}$ (finite representability confirmed)
 - **Produces:** $K_{\mathrm{E1}}^+ \Rightarrow K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}$ (Hom-emptiness via dimension)
@@ -92,7 +92,7 @@ E1 is the simplest obstruction: dimension counting. You cannot fit a three-dimen
 :::{prf:definition} E2: Invariant mismatch
 :label: def-e2
 
-**Sieve Signature:**
+**Sieve Signature (E2):**
 - **Required Permits:** $\mathrm{Rep}_K$, $\mathrm{TB}_\pi$ (topological background), $\mathrm{Cat}_{\mathrm{Hom}}$
 - **Weakest Precondition:** $\{K_{\mathrm{Rep}_K}^+, K_{\mathrm{TB}_\pi}^+\}$
 - **Produces:** $K_{\mathrm{E2}}^+ \Rightarrow K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}$
@@ -124,7 +124,7 @@ E2 uses topological invariants. Even if two spaces have the same dimension, they
 :::{prf:definition} E3: Positivity obstruction
 :label: def-e3
 
-**Sieve Signature:**
+**Sieve Signature (E3):**
 - **Required Permits:** $D_E$ (energy), $\mathrm{LS}_\sigma$ (local stiffness), $\mathrm{Cat}_{\mathrm{Hom}}$
 - **Weakest Precondition:** $\{K_{D_E}^+, K_{\mathrm{LS}_\sigma}^+\}$
 - **Produces:** $K_{\mathrm{E3}}^+ \Rightarrow K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}$
@@ -156,7 +156,7 @@ E3 is about positivity constraints. Physical systems often require energy to be 
 :::{prf:definition} E4: Integrality obstruction
 :label: def-e4
 
-**Sieve Signature:**
+**Sieve Signature (E4):**
 - **Required Permits:** $\mathrm{Rep}_K$, $\mathrm{Cat}_{\mathrm{Hom}}$
 - **Weakest Precondition:** $\{K_{\mathrm{Rep}_K}^+\}$ (arithmetic structure available)
 - **Produces:** $K_{\mathrm{E4}}^+ \Rightarrow K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}$
@@ -184,7 +184,7 @@ $$
 :::{prf:definition} E5: Functional equation obstruction
 :label: def-e5
 
-**Sieve Signature:**
+**Sieve Signature (E5):**
 - **Required Permits:** $\mathrm{Rep}_K$, $\mathrm{GC}_\nabla$ (gauge covariance), $\mathrm{Cat}_{\mathrm{Hom}}$
 - **Weakest Precondition:** $\{K_{\mathrm{Rep}_K}^+\}$
 - **Produces:** $K_{\mathrm{E5}}^+ \Rightarrow K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}$
@@ -216,7 +216,7 @@ E4 and E5 deal with discrete arithmetic and functional constraints. Sometimes th
 :::{prf:definition} E6: Causal obstruction (Well-Foundedness)
 :label: def-e6
 
-**Sieve Signature:**
+**Sieve Signature (E6):**
 - **Required Permits:** $\mathrm{TB}_\pi$ (topological/causal structure), $D_E$ (dissipation), $\mathrm{Cat}_{\mathrm{Hom}}$
 - **Weakest Precondition:** $\{K_{\mathrm{TB}_\pi}^+, K_{D_E}^+\}$ (causal structure and energy bound available)
 - **Produces:** $K_{\mathrm{E6}}^+ \Rightarrow K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}$
@@ -248,7 +248,7 @@ E6 is deep. It says: if the bad pattern contains closed timelike curves, infinit
 :::{prf:definition} E7: Thermodynamic obstruction (Entropy)
 :label: def-e7
 
-**Sieve Signature:**
+**Sieve Signature (E7):**
 - **Required Permits:** $D_E$ (dissipation/energy), $\mathrm{SC}_\lambda$ (scaling/entropy), $\mathrm{Cat}_{\mathrm{Hom}}$
 - **Weakest Precondition:** $\{K_{D_E}^+, K_{\mathrm{SC}_\lambda}^+\}$ (energy dissipation and scaling available)
 - **Produces:** $K_{\mathrm{E7}}^+ \Rightarrow K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}$
@@ -280,7 +280,7 @@ E7 is the Second Law as a morphism obstruction. If the bad pattern requires entr
 :::{prf:definition} E8: Data Processing Interaction (DPI)
 :label: def-e8
 
-**Sieve Signature:**
+**Sieve Signature (E8):**
 - **Required Permits:** $\mathrm{Cap}_H$ (capacity), $\mathrm{TB}_\pi$ (topological boundary), $\mathrm{Cat}_{\mathrm{Hom}}$
 - **Weakest Precondition:** $\{K_{\mathrm{Cap}_H}^+, K_{\mathrm{TB}_\pi}^+\}$ (capacity bound and topology available)
 - **Produces:** $K_{\mathrm{E8}}^+ \Rightarrow K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}$
@@ -312,7 +312,7 @@ E8 uses information theory. The boundary of your system acts like a communicatio
 :::{prf:definition} E9: Ergodic obstruction (Mixing)
 :label: def-e9
 
-**Sieve Signature:**
+**Sieve Signature (E9):**
 - **Required Permits:** $\mathrm{TB}_\rho$ (mixing/ergodic structure), $C_\mu$ (compactness), $\mathrm{Cat}_{\mathrm{Hom}}$
 - **Weakest Precondition:** $\{K_{\mathrm{TB}_\rho}^+, K_{C_\mu}^+\}$ (mixing rate and concentration available)
 - **Produces:** $K_{\mathrm{E9}}^+ \Rightarrow K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}$
@@ -344,7 +344,7 @@ E9 is about dynamics. A rapidly mixing system forgets its initial conditions exp
 :::{prf:definition} E10: Definability obstruction (Tameness)
 :label: def-e10
 
-**Sieve Signature:**
+**Sieve Signature (E10):**
 - **Required Permits:** $\mathrm{TB}_O$ (o-minimal/tame structure), $\mathrm{Rep}_K$ (representability), $\mathrm{Cat}_{\mathrm{Hom}}$
 - **Weakest Precondition:** $\{K_{\mathrm{TB}_O}^+, K_{\mathrm{Rep}_K}^+\}$ (tameness and finite representation available)
 - **Produces:** $K_{\mathrm{E10}}^+ \Rightarrow K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}$
@@ -373,16 +373,6 @@ $$
 E10 asks: is the bad pattern "tame" or "wild"? Tame topology, in the sense of o-minimal structures, has finite complexity. Wild topology, like an Alexander horned sphere, has infinite complexity. Tame structures cannot contain wild ones. This is not just a technicality; it is a fundamental barrier from model theory.
 :::
 
-:::{prf:definition} E11: Galois-Monodromy Lock
-:label: def-e11
-
-**Sieve Signature:**
-- **Required Permits:** $\mathrm{Rep}_K$ (representation/algebraic structure), $\mathrm{TB}_\pi$ (topology/monodromy), $\mathrm{Cat}_{\mathrm{Hom}}$
-- **Weakest Precondition:** $\{K_{\mathrm{Rep}_K}^+, K_{\mathrm{TB}_\pi}^+\}$ (Galois group and monodromy available)
-- **Produces:** $K_{\mathrm{E11}}^+ \Rightarrow K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}$
-- **Blocks:** S.E (Supercritical Cascade); S.C (Computational Overflow)
-- **Breached By:** Galois group solvable or monodromy finite
-
 :::{prf:definition} Galois Group
 :label: def-galois-group-permit
 
@@ -394,6 +384,16 @@ For a polynomial $f(x) \in \mathbb{Q}[x]$, the **Galois group** $\mathrm{Gal}(f)
 
 For a differential equation with singularities, the **monodromy group** $\mathrm{Mon}(f)$ describes how solutions transform when analytically continued around singularities.
 :::
+
+:::{prf:definition} E11: Galois-Monodromy Lock
+:label: def-e11
+
+**Sieve Signature (E11):**
+- **Required Permits:** $\mathrm{Rep}_K$ (representation/algebraic structure), $\mathrm{TB}_\pi$ (topology/monodromy), $\mathrm{Cat}_{\mathrm{Hom}}$
+- **Weakest Precondition:** $\{K_{\mathrm{Rep}_K}^+, K_{\mathrm{TB}_\pi}^+\}$ (Galois group and monodromy available)
+- **Produces:** $K_{\mathrm{E11}}^+ \Rightarrow K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}$
+- **Blocks:** S.E (Supercritical Cascade); S.C (Computational Overflow)
+- **Breached By:** Galois group solvable or monodromy finite
 
 **Method**: Galois theory / Monodromy representation analysis
 
@@ -426,7 +426,6 @@ $$
 :::
 
 :::{prf:proof} Proof Sketch (Abel-Ruffini)
-:label: proof-e11-abel-ruffini
 
 *Step 1 (Galois correspondence).* For $f(x) \in \mathbb{Q}[x]$ with splitting field $K$, the Galois group $\mathrm{Gal}(K/\mathbb{Q})$ embeds into $S_n$ via root permutations. The Fundamental Theorem establishes bijection: subgroups $H \subseteq \mathrm{Gal}(K/\mathbb{Q}) \leftrightarrow$ intermediate fields $\mathbb{Q} \subseteq F \subseteq K$.
 
@@ -445,23 +444,6 @@ E11 reaches deep into algebra. Remember Abel's proof that the general quintic ha
 
 The monodromy obstruction is the same idea for differential equations. When you analytically continue solutions around singularities, they transform. If the transformations form an infinite group, the solutions have infinitely many branches. This infinite complexity cannot embed into finite structures.
 :::
-
-:::{prf:definition} E12: Algebraic Compressibility (Permit Schema with Alternative Backends)
-:label: def-e12
-
-**Sieve Signature:**
-- **Required Permits (Alternative Backends):**
-  - **Backend A:** $K_{\mathrm{Rep}_K}^+$ (hypersurface) + $K_{\mathrm{SC}_\lambda}^{\text{deg}}$ → $K_{\mathrm{E12}}^{\text{hypersurf}}$
-  - **Backend B:** $K_{\mathrm{Rep}_K}^+$ (complete intersection) + $K_{\mathrm{SC}_\lambda}^{\text{Bez}}$ → $K_{\mathrm{E12}}^{\text{c.i.}}$
-  - **Backend C:** $K_{\mathrm{Rep}_K}^+$ (morphism) + $K_{\mathrm{DegImage}_m}^+$ + $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\text{deg}}$ → $K_{\mathrm{E12}}^{\text{morph}}$
-- **Weakest Precondition:** $\{K_{\mathrm{Rep}_K}^+\}$ (algebraic variety structure available)
-- **Produces:** $K_{\mathrm{E12}}^+ \Rightarrow K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}$
-- **Blocks:** S.E (Supercritical Cascade); S.C (Computational Overflow)
-- **Breached By:** Degree compatibility, linear structure, or compatible morphism exists
-
-**Context:** Algebraic compressibility obstructions arise when attempting to approximate or represent a high-degree variety using lower-degree data. The degree of an algebraic variety is an intrinsic geometric invariant that resists compression.
-
-**Critical Remark:** The naive claim "degree $\delta$ cannot be represented by polynomials of degree $< \delta$" is **imprecise** for general varieties (e.g., a parametric representation can use lower-degree maps). The following backends make the obstruction precise by specifying what "representation" means.
 
 :::{prf:definition} Algebraic Variety
 :label: def-algebraic-variety-permit
@@ -486,6 +468,23 @@ $$
 counted with multiplicity. Equivalently, $\deg(V) = \int_V c_1(\mathcal{O}(1))^d$.
 :::
 
+:::{prf:definition} E12: Algebraic Compressibility (Permit Schema with Alternative Backends)
+:label: def-e12
+
+**Sieve Signature (E12):**
+- **Required Permits (Alternative Backends):**
+  - **Backend A:** $K_{\mathrm{Rep}_K}^+$ (hypersurface) + $K_{\mathrm{SC}_\lambda}^{\text{deg}}$ → $K_{\mathrm{E12}}^{\text{hypersurf}}$
+  - **Backend B:** $K_{\mathrm{Rep}_K}^+$ (complete intersection) + $K_{\mathrm{SC}_\lambda}^{\text{Bez}}$ → $K_{\mathrm{E12}}^{\text{c.i.}}$
+  - **Backend C:** $K_{\mathrm{Rep}_K}^+$ (morphism) + $K_{\mathrm{DegImage}_m}^+$ + $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\text{deg}}$ → $K_{\mathrm{E12}}^{\text{morph}}$
+- **Weakest Precondition:** $\{K_{\mathrm{Rep}_K}^+\}$ (algebraic variety structure available)
+- **Produces:** $K_{\mathrm{E12}}^+ \Rightarrow K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}$
+- **Blocks:** S.E (Supercritical Cascade); S.C (Computational Overflow)
+- **Breached By:** Degree compatibility, linear structure, or compatible morphism exists
+
+**Context:** Algebraic compressibility obstructions arise when attempting to approximate or represent a high-degree variety using lower-degree data. The degree of an algebraic variety is an intrinsic geometric invariant that resists compression.
+
+**Critical Remark:** The naive claim "degree $\delta$ cannot be represented by polynomials of degree $< \delta$" is **imprecise** for general varieties (e.g., a parametric representation can use lower-degree maps). The following backends make the obstruction precise by specifying what "representation" means.
+
 **Certificate Logic:**
 
 $$
@@ -494,7 +493,7 @@ $$
 
 ---
 
-#### Backend A: Hypersurface Form
+### Backend A: Hypersurface Form
 
 **Hypotheses:**
 1. $V = Z(f) \subset \mathbb{P}^n$ is an **irreducible hypersurface**
@@ -507,7 +506,7 @@ $$
 
 ---
 
-#### Backend B: Complete Intersection Form
+### Backend B: Complete Intersection Form
 
 **Hypotheses:**
 1. $V \subset \mathbb{P}^n$ is a **complete intersection** of codimension $k$
@@ -520,7 +519,7 @@ $$
 
 ---
 
-#### Backend C: Morphism / Compression Form
+### Backend C: Morphism / Compression Form
 
 **Hypotheses:**
 1. $V \subset \mathbb{P}^n$ is an irreducible variety of dimension $d$ and degree $\delta$
@@ -550,7 +549,6 @@ $$
 :::
 
 :::{prf:proof} E12 Backend A (Hypersurface Form)
-:label: proof-e12-backend-a
 
 *Step 1 (Hypersurface Setup).* Let $V = Z(f)$ where $f$ is an irreducible homogeneous polynomial of degree $\delta$. The degree of $V$ as a variety equals $\delta$ (a generic line intersects $V$ in $\delta$ points by Bézout).
 
@@ -569,7 +567,6 @@ $$
 :::
 
 :::{prf:proof} E12 Backend B (Complete Intersection Form)
-:label: proof-e12-backend-b
 
 *Step 1 (Complete Intersection Definition).* $V$ is a complete intersection if it is cut out by exactly $\text{codim}(V)$ equations and has the expected dimension. The ideal $I_V = (f_1, \ldots, f_k)$ is generated by a regular sequence.
 
@@ -602,7 +599,6 @@ by AM-GM. If $d_1 \geq d_2 \geq \cdots \geq d_k$, then $d_1 \geq \deg(V)^{1/k}$.
 :::
 
 :::{prf:proof} E12 Backend C (Morphism / Compression Form)
-:label: proof-e12-backend-c
 
 *Step 1 (Morphism Degree Definition).* For a generically finite morphism $\phi: W \to V$, the **degree** $d_\phi$ is the generic fiber cardinality: $d_\phi = |\phi^{-1}(p)|$ for generic $p \in V$.
 

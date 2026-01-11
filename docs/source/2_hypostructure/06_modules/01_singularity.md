@@ -129,8 +129,8 @@ Routes to T.C/D.C-family modes for reconstruction or explicit wildness acknowled
 
 :::
 
-:::{prf:proof} Proof Sketch
-:label: sketch-mt-resolve-profile
+:::{prf:proof}
+Proof Sketch
 
 *Step 1 (Limit Extraction).* Given singularity sequence $(t_n, x_n) \to (T_*, x_*)$ with $t_n \nearrow T_*$, apply compactness modulo symmetry (from $C_\mu$): there exist $g_n \in G$ such that $g_n \cdot u(t_n)$ has a convergent subsequence $\to V$.
 
@@ -297,7 +297,6 @@ The Automation Guarantee ensures at least one of these conditions holds for "goo
 :::
 
 :::{prf:proof}
-:label: proof-mt-resolve-auto-profile
 
 ### Dispatcher Logic
 
@@ -548,8 +547,8 @@ Explicit reason certificate:
 
 :::
 
-:::{prf:proof} Proof Sketch
-:label: sketch-mt-resolve-admissibility
+:::{prf:proof}
+Proof Sketch
 
 *Step 1 (Canonicity Verification).* Given surgery data $(\Sigma, V)$, query profile library: is $V \in \mathcal{L}_T$? If yes, proceed. If $V \in \mathcal{F}_T \setminus \mathcal{L}_T$, check for equivalence move (YES$^\sim$). If $V \notin \mathcal{F}_T$, return Case 3 (Horizon).
 
@@ -645,8 +644,8 @@ using the measure $\mu$ from $\mathcal{X}^{\text{thin}}$ and the metric $d$.
 **Literature:** Sobolev capacity {cite}`AdamsHedberg96`; Hausdorff dimension bounds {cite}`Federer69`.
 :::
 
-:::{prf:proof} Proof Sketch
-:label: sketch-mt-resolve-auto-admit
+:::{prf:proof}
+Proof Sketch
 
 *Step 1 (Thin Object Extraction).* From $\mathcal{X}^{\text{thin}} = (\mathcal{X}, d, \mu)$, extract the metric structure for capacity computation. From $\mathfrak{D}^{\text{thin}} = (R, \beta)$, identify the singular locus $\Sigma = \{x : R(x) \to \infty\}$.
 
@@ -707,8 +706,8 @@ Let $M$ be a failure mode with breach certificate $K^{\mathrm{br}}$, and let $S$
 
 :::
 
-:::{prf:proof} Proof Sketch
-:label: sketch-mt-act-surgery
+:::{prf:proof}
+Proof Sketch
 
 *Step 1 (Excision).* Given admissible singularity $(\Sigma, V)$ with $\text{Cap}(\Sigma) \leq \varepsilon_{\text{adm}}$, remove neighborhood $\mathcal{X}_\Sigma = B_\epsilon(\Sigma)$. The removed region has controlled measure: $\mu(\mathcal{X}_\Sigma) \lesssim \epsilon^2 \cdot \text{Cap}(\Sigma)$.
 
@@ -798,8 +797,8 @@ For any admissible surgery $\mathcal{O}_S: \mathcal{X} \dashrightarrow \mathcal{
    Since each surgery drops energy by at least $\epsilon_T > 0$, the surgery count is explicitly bounded. This is a finite natural number, not merely an abstract well-foundedness argument.
 :::
 
-:::{prf:proof} Proof Sketch
-:label: sketch-mt-resolve-conservation
+:::{prf:proof}
+Proof Sketch
 
 *Step 1 (Energy Drop).* The excised region $\mathcal{X}_\Sigma$ contains concentrated curvature/energy. By the isoperimetric inequality and capacity bounds:
 
@@ -861,8 +860,8 @@ For any Hypostructure satisfying the Automation Guarantee, the Structural Surger
 **Literature:** Pushouts in category theory {cite}`MacLane71`; surgery caps in geometric flows {cite}`Hamilton97`; {cite}`KleinerLott08`.
 :::
 
-:::{prf:proof} Proof Sketch
-:label: sketch-mt-resolve-auto-surgery
+:::{prf:proof}
+Proof Sketch
 
 *Step 1 (Cap Existence).* Given profile $V \in \mathcal{L}_T$ with finite automorphism group, asymptotic analysis determines a unique cap geometry matching $V$'s asymptotic expansion. For Ricci flow, this is the Bryant soliton; for MCF, this is the standard cylinder cap.
 

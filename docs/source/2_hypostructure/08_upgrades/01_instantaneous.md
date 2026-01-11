@@ -72,8 +72,7 @@ $$K_{D_E}^- \wedge K_{\text{sat}}^{\mathrm{blk}} \Rightarrow K_{D_E}^{\sim}$$
 **Literature:** {cite}`MeynTweedie93`; {cite}`HairerMattingly11`
 :::
 
-:::{prf:proof} Proof Sketch
-:label: sketch-mt-up-saturation
+:::{prf:proof}
 
 The drift condition implies geometric ergodicity by the Foster-Lyapunov criterion (Meyn and Tweedie, 1993, Theorem 15.0.1). The invariant measure $\pi$ satisfies $\pi(\Phi) < \infty$ by Theorem 14.0.1 of the same reference. The renormalized height $\hat{\Phi} = \Phi - \pi(\Phi)$ is centered and the dynamics converge exponentially to equilibrium.
 :::
@@ -104,8 +103,7 @@ $$K_{\mathrm{Rec}_N}^- \wedge K_{\mathrm{Rec}_N}^{\mathrm{blk}} \Rightarrow K_{\
 **Literature:** {cite}`Penrose69`; {cite}`ChristodoulouKlainerman93`; {cite}`HawkingPenrose70`
 :::
 
-:::{prf:proof} Proof Sketch
-:label: sketch-mt-up-censorship
+:::{prf:proof}
 
 By the weak cosmic censorship conjecture (Penrose, 1969), generic gravitational collapse produces singularities cloaked by event horizons. The Hawking-Penrose theorems (1970) establish geodesic incompleteness, but the Christodoulou-Klainerman stability theorem (1993) ensures the exterior remains regular. Any observer worldline $\gamma \subset J^-(\mathcal{I}^+)$ experiences finite proper time and finite events before the singularity becomes causally relevant.
 :::
@@ -156,7 +154,6 @@ $$K_{C_\mu}^- \wedge K_{C_\mu}^{\mathrm{ben}} \Rightarrow \text{Global Regularit
 :::
 
 :::{prf:proof}
-:label: sketch-mt-up-scattering
 
 *Step 1 (Morawetz Spacetime Bound).* The **Morawetz estimate** ({cite}`Morawetz68`) provides spacetime integrability:
 
@@ -204,7 +201,6 @@ $$K_{\mathrm{SC}_\lambda}^- \wedge K_{\mathrm{SC}_\lambda}^{\mathrm{blk}} \Right
 :::
 
 :::{prf:proof}
-:label: sketch-mt-up-type-ii
 
 The monotonicity formula (Merle and Zaag, 1998) bounds the blow-up rate from below. For Type II blow-up, the energy remains bounded while the scale $\lambda(t) \to 0$. The logarithmic divergence of the renormalization integral creates an energy barrier that prevents finite-time singularity formation. This mechanism underlies the Raphaël-Szeftel soliton resolution (2011).
 :::
@@ -236,7 +232,6 @@ $$K_{\mathrm{Cap}_H}^- \wedge K_{\mathrm{Cap}_H}^{\mathrm{blk}} \Rightarrow K_{\
 :::
 
 :::{prf:proof}
-:label: sketch-mt-up-capacity
 
 By Federer's theorem on removable singularities (1969, Section 4.7), sets of zero $(1,p)$-capacity are removable for $W^{1,p}$ functions. For $p=2$, the extension follows from the Lax-Milgram theorem applied to the weak formulation. The uniqueness follows from the maximum principle. See also Evans and Gariepy (2015, Theorem 4.7.2).
 :::
@@ -268,7 +263,6 @@ $$K_{\mathrm{LS}_\sigma}^- \wedge K_{\text{gap}}^{\mathrm{blk}} \Rightarrow K_{\
 :::
 
 :::{prf:proof}
-:label: sketch-mt-up-spectral
 
 The Łojasiewicz-Simon inequality states $|\Phi(x) - \Phi(x^*)|^{1-\theta} \leq C\|\nabla\Phi(x)\|$ for some $\theta \in (0,1/2]$. When the Hessian is non-degenerate ($\lambda_1 > 0$), Taylor expansion gives $\theta = 1/2$. The exponential convergence then follows from the Gronwall inequality applied to the energy functional. See Simon (1983, Theorem 3) and Feehan and Maridakis (2019).
 :::
@@ -312,7 +306,6 @@ $$K_{\mathrm{TB}_O}^- \wedge K_{\mathrm{TB}_O}^{\mathrm{blk}} \Rightarrow K_{\ma
 :::
 
 :::{prf:proof}
-:label: sketch-mt-up-o-minimal
 
 *Step 1 (Cell Decomposition).* By the **cell decomposition theorem** ({cite}`vandenDries98` Theorem 3.2.11), every definable set $W \subset \mathbb{R}^n$ in an o-minimal structure admits a finite partition:
 
@@ -379,7 +372,6 @@ This **classification of local models** eliminates surgery ambiguity: the excisi
 :::
 
 :::{prf:proof}
-:label: sketch-mt-up-surgery
 
 The surgery construction follows Hamilton (1997) for Ricci flow and Perelman (2002-2003) for the rigorous completion. The key ingredients are: (1) canonical neighborhood theorem ensuring surgery regions are standard, (2) non-collapsing estimates controlling geometry, (3) finite surgery time theorem bounding the number of surgeries. The post-surgery manifold inherits all regularity properties.
 :::
@@ -423,7 +415,6 @@ $$K_{\text{Lock}}^{\mathrm{blk}} \Rightarrow \text{Global Regularity}$$
 :::
 
 :::{prf:proof}
-:label: sketch-mt-up-lock
 
 The proof uses the contrapositive: if a singularity existed, it would generate a non-trivial morphism $\phi: \mathcal{B}_{\text{univ}} \to \mathcal{H}$ by the universal property. The emptiness of the Hom-set is established via cohomological/spectral obstructions (E1-E10 tactics). This is the "Grothendieck yoga" of reducing existence questions to non-existence of maps. See SGA 4 for the categorical framework.
 :::
@@ -456,7 +447,6 @@ $$K_{D_E}^- \wedge K_{\mathrm{Bound}_\partial}^+ \wedge (\text{Flux} < 0) \Right
 ::::
 
 :::{prf:proof}
-:label: sketch-mt-up-absorbing
 
 The energy identity is $\frac{dE}{dt} = -\mathfrak{D}(t) + \int_{\partial\Omega} \mathbf{n} \cdot \mathbf{F} \, dS + \int_\Omega \text{source}(x,t) \, dx$. By hypothesis 3, the flux term satisfies $\int_{\partial\Omega} \mathbf{n} \cdot \mathbf{F} \, dS < 0$ (strictly outgoing). Since dissipation satisfies $\mathfrak{D}(t) \geq 0$, we have:
 
@@ -496,7 +486,6 @@ $$K_{\mathrm{LS}_\sigma}^- \wedge K_{\mathrm{LS}_{\partial^k V}}^+ \Rightarrow K
 :::
 
 :::{prf:proof}
-:label: sketch-mt-up-catastrophe
 
 The Łojasiewicz exponent at a degenerate critical point is $\theta = 1/k$ for the $A_{k-1}$ catastrophe (Thom, 1975). For the normal form $V(x) = x^{k+1}/(k+1)$ with critical point at $x^* = 0$, we have $\nabla V(x) = x^k$ and $V(x) - V(x^*) = x^{k+1}/(k+1)$. The Łojasiewicz gradient inequality $\|\nabla V(x)\| \geq C|V(x) - V(x^*)|^{1-\theta}$ with $\theta = 1/k$ becomes $|x^k| \geq C|x^{k+1}|^{(k-1)/k}$. Since $(k+1)(k-1)/k = k - 1/k < k$ for $k \geq 2$, this holds near $x=0$. Integrating the gradient flow $\dot{x} = -x^k$ yields polynomial convergence $|x(t)| \sim t^{-1/(k-1)}$. Arnold's classification (1972) ensures these are the only structurally stable degeneracies.
 :::
@@ -543,7 +532,6 @@ $$\mathsf{Obl}(\Gamma) \setminus \{(\mathsf{id}_P, \ldots)\} \cup \{K_P^+\}$$
 :::
 
 :::{prf:proof}
-:label: sketch-mt-up-inc-complete
 
 The NO-inconclusive certificate records an epistemic gap, not a semantic refutation (Definition {prf:ref}`def-typed-no-certificates`). When all prerequisites in $\mathsf{missing}$ are satisfied, the original predicate $P$ becomes decidable. The discharge condition (Definition {prf:ref}`def-inc-upgrades`) ensures the premises genuinely imply the obligation. The upgrade is sound because $K^{\mathrm{inc}}$ records the exact obligation and its missing prerequisites; when those prerequisites are satisfied, the original predicate $P$ holds by the discharge condition.
 :::
@@ -573,7 +561,6 @@ $$\mathrm{Cl}(\Gamma_{\mathrm{final}}) \ni K_P^+ \quad \text{(discharged from } 
 :::
 
 :::{prf:proof}
-:label: sketch-mt-up-inc-aposteriori
 
 The promotion closure iterates until fixed point. On each iteration, inc-upgrade rules (Definition {prf:ref}`def-inc-upgrades`) are applied alongside blk-promotion rules. The a-posteriori discharge is triggered when certificates from later nodes enter the closure and match the $\mathsf{missing}$ set. Termination follows from the certificate finiteness condition (Definition {prf:ref}`def-cert-finite`).
 :::
