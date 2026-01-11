@@ -118,12 +118,12 @@ This formalism is designed to be **modular**. Each part is written to be as self
 
 | If you want...                    | Read...                                  | Dependencies                          |
 |-----------------------------------|------------------------------------------|---------------------------------------|
-| Categorical foundations only      | Part I (01_foundations)                  | Basic category theory                 |
-| The axiom system                  | Part III (02_axioms)                     | Part I helpful but not required       |
-| Gate/barrier/surgery specs        | Parts VI-VII (04_nodes, 05_interfaces)   | Part V for certificate semantics      |
-| Factory metatheorems              | Part IX (07_factories)                   | Parts V-VII for context               |
-| Meta-learning axioms              | Part XII (10_metalearning)               | Can standalone with Part III summary  |
-| ZFC translation                   | Appendix (11_appendices)                 | Can standalone                        |
+| Categorical foundations only      | {doc}`Part I <source/2_hypostructure/01_foundations/01_categorical>` | Basic category theory                 |
+| The axiom system                  | {doc}`Part II <source/2_hypostructure/02_axioms/01_axiom_system>` | Part I helpful but not required       |
+| Gate/barrier/surgery specs        | {doc}`Part IV <source/2_hypostructure/04_nodes/01_gate_nodes>`, {doc}`Part V <source/2_hypostructure/05_interfaces/01_gate_evaluator>` | Part III for certificate semantics    |
+| Factory metatheorems              | {doc}`Part VII <source/2_hypostructure/07_factories/01_metatheorems>` | Parts III-V for context               |
+| Meta-learning axioms              | {doc}`Part X <source/2_hypostructure/10_metalearning/01_metalearning>` | Can standalone with Part II summary   |
+| ZFC translation                   | {doc}`Part XI <source/2_hypostructure/11_appendices/01_zfc>` | Can standalone                        |
 
 ### LLM-Assisted Exploration
 
