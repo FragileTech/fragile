@@ -246,59 +246,127 @@ Why "Left-Handed"? In physics, the weak force only affects left-handed particles
 We define the **Left-Handed Field** $\Psi_L$ as an isospin doublet residing in the fundamental representation of $SU(2)$:
 
 $$
-\Psi_L(x) = \begin{pmatrix} \psi_{\text{pred}}(x) \\ \psi_{\text{obs}}(x) \end{pmatrix}
+\Psi_L(x) = \begin{pmatrix} \psi_{\text{obs}}(x) \\ \psi_{\text{act}}^{\text{pre}}(x) \end{pmatrix}
 $$
 
 where:
-- $\psi_{\text{pred}}$ is the **Prior** (the top-down prediction of the World Model)
-- $\psi_{\text{obs}}$ is the **Likelihood** (the bottom-up sensory evidence)
+- $\psi_{\text{obs}}$ is the **Observation** channel (the incoming sensory update from the Dirichlet boundary, Definition {prf:ref}`def-dirichlet-boundary-condition-sensors`)
+- $\psi_{\text{act}}^{\text{pre}}$ is the **Pre-commitment Action** channel (the outgoing motor intent from the Neumann boundary, Definition {prf:ref}`def-neumann-boundary-condition-motors`)
 
 We define the **Right-Handed Field** $\Psi_R$ as an isospin singlet (invariant under $SU(2)$):
 
 $$
-\Psi_R(x) = \psi_{\text{act}}(x)
+\Psi_R(x) = \psi_{\text{act}}^{\text{commit}}(x)
 $$
 
-representing the settled **Posterior/Action** plan ready for execution.
+representing the **Committed Action** plan after mixing and projection.
 
-*Cross-reference:* This decomposition mirrors {ref}`Section 12 <sec-belief-dynamics-prediction-update-projection>`'s Belief Dynamics (Prediction-Update-Projection) and the Kalman filtering structure.
+The **Prediction** is derived (not fundamental) via the forward model:
+
+$$
+\psi_{\text{pred}}(x) := \mathcal{P}_a(\psi_{\text{act}}^{\text{commit}}(x))
+$$
+
+where $\mathcal{P}_a$ is the agent's forward model mapping intended actions to predicted observations.
+
+*Cross-reference:* This doublet structure captures the boundary interface chirality from {ref}`Section 23 <sec-the-boundary-interface-symplectic-structure>`: Dirichlet (input) vs. Neumann (output). The prediction-update-projection dynamics from {ref}`Section 12 <sec-belief-dynamics-prediction-update-projection>` act on this doublet via the gauge field $W_\mu$.
 
 :::
 
 :::{div} feynman-prose
-This is a beautiful definition. What it's saying is that the agent's belief state naturally splits into two parts:
+This is a beautiful definition. What it's saying is that the agent's state naturally splits into two parts based on *boundary chirality*:
 
-1. **The doublet** $\Psi_L$: This contains both your prediction (what you think should happen) and your observation (what actually came in). These two things need to be compared and mixed to form an updated belief. That mixing process is exactly what Bayesian inference does.
+1. **The doublet** $\Psi_L$: This contains both your sensory input (observation) and your motor intent (pre-commitment action). These are the two "active" channels at the boundary---incoming information and outgoing control. They need to be coordinated and mixed to maintain consistency between perception and action.
 
-2. **The singlet** $\Psi_R$: This is your action plan. Once you've finished mixing prediction and observation, you commit to an action. The action plan doesn't participate in the prediction-observation dance---it's the *output* of that process.
+2. **The singlet** $\Psi_R$: This is your committed action plan. Once you've finished coordinating observation and intention, you commit to a definite action. The committed plan doesn't participate in the ongoing observation-intention mixing---it's the *settled output* of that process.
 
-The $SU(2)$ symmetry acts on the doublet, rotating between prediction and observation. It's the mathematical structure of belief updating itself.
+The $SU(2)$ symmetry acts on the doublet, mixing observation and action intent. It's the mathematical structure of the boundary interface itself, capturing the fundamental asymmetry between input (Dirichlet) and output (Neumann) channels.
+
+Note that prediction is *derived* from your committed action via your forward model: "if I do this, I expect to see that." This makes prediction secondary to the action-observation coordination, which better reflects the cybernetic reality.
+:::
+
+:::{prf:definition} Gauge-Covariant Action Commitment
+:label: def-gauge-covariant-action-commitment
+
+The selection of "which component is action" in the $\Psi_L$ doublet is a gauge choice (selecting a basis in the $\mathbb{C}^2_{\text{mode}}$ fiber). To make action commitment gauge-covariant, we introduce a unit vector **order parameter** $\vec{n}(x) \in \mathfrak{su}(2)$ derived from the value field:
+
+$$
+\vec{n}(x) = \frac{\nabla V(x)}{\|\nabla V(x)\|} \cdot \vec{\tau}
+$$
+
+where $\vec{\tau} = (\tau_1, \tau_2, \tau_3)$ are the Pauli matrices (generators of $\mathfrak{su}(2)$), and $V(x)$ is the Value function (Theorem {prf:ref}`thm-the-hjb-helmholtz-correspondence`).
+
+The **Committed Action** amplitude is then the gauge-covariant projection:
+
+$$
+\psi_{\text{act}}^{\text{commit}}(x) = \Psi_R(x) = \Pi_{\vec{n}(x)} \Psi_L(x)
+$$
+
+where the projection operator is:
+
+$$
+\Pi_{\vec{n}} = \frac{1}{2}\left(I + \vec{n} \cdot \vec{\tau}\right)
+$$
+
+*Justification:* The value gradient $\nabla V$ points in the "favorable direction" in state space. By using it to define $\vec{n}(x)$, we make the action commitment intrinsic to the local value landscape, not an arbitrary choice of basis. This projection is gauge-covariant: under local $SU(2)$ transformations $\Psi_L \to U(x)\Psi_L$, the order parameter transforms as $\vec{n} \to U \vec{n} U^\dagger$, ensuring the committed action remains well-defined.
+
+*Remark:* In regions where $\nabla V \approx 0$ (flat value landscape), the order parameter becomes undefined, corresponding to decision ambiguity. The agent requires sufficient value gradient to commit to a definite action direction.
+
+:::
+
+:::{div} feynman-prose
+This definition solves a subtle problem: if we just say "action is the second component of $\Psi_L$," we've made an arbitrary choice of basis in the mode fiber. Different parts of the agent's computational manifold might use different bases (that's what gauge freedom *means*).
+
+To make action commitment physically meaningful, we need an intrinsic criterion. The value gradient provides exactly that: it points toward "where things get better." By projecting the doublet onto the direction defined by $\nabla V$, we extract the committed action in a way that's independent of arbitrary basis choices.
+
+When the value landscape is steep (large $\|\nabla V\|$), the order parameter $\vec{n}$ is well-defined, and the agent commits decisively. When the landscape is flat (small $\|\nabla V\|$), $\vec{n}$ becomes ambiguous, reflecting genuine decision uncertainty.
+
+This is the gauge-theoretic formalization of "value induces action" while keeping reward/value as a scalar field (not promoted to the doublet structure).
 :::
 
 :::{prf:theorem} Emergence of the Error Field ($W_\mu^a$)
 :label: thm-emergence-error-field
 
-The process of **Belief Update** (e.g., Kalman Filtering or Predictive Coding) corresponds to a rotation in Isospin space. Gauging this symmetry requires the introduction of non-Abelian gauge fields.
+The belief-control update is a (generally non-unitary) channel $\mathcal{E}_{a,y}$ on the agent's state. By Stinespring dilation, it can be represented as a unitary acting on an extended space with a 2D mode fiber $\mathbb{C}^2_{\text{mode}}$ carrying the Observation/Action degree of freedom; gauging this structure requires the introduction of non-Abelian gauge fields.
 
 *Proof.*
 
-**Step 1.** A Bayesian update mixes the Prior and the Likelihood:
+**Step 1.** The belief-control update is a completely positive, trace-preserving (CPTP) map on the density matrix:
 
 $$
-\Psi_L' = U(x) \Psi_L, \quad U(x) = \exp\left( i \frac{\vec{\tau} \cdot \vec{\theta}(x)}{2} \right) \in SU(2)
+\rho \mapsto \mathcal{E}_{a,y}(\rho)
 $$
 
-where $\vec{\tau} = (\tau_1, \tau_2, \tau_3)$ are the Pauli matrices and $\vec{\theta}(x)$ determines the mixing angle (the Kalman Gain in standard filtering).
+where $a$ is the action and $y$ is the observation. This map includes:
+- Likelihood weighting by observation $y$
+- Policy mixing based on action intent $a$
+- Normalization (non-unitary)
 
-**Step 2.** For **Local Covariance** (the ability to perform updates locally without global synchronization), we introduce the non-Abelian gauge field $\vec{W}_\mu = (W^1_\mu, W^2_\mu, W^3_\mu)$.
+**Step 2.** By the Stinespring dilation theorem, any CPTP map can be represented as a unitary on an extended Hilbert space:
 
-**Step 3.** The covariant derivative for the Left-Handed sector is:
+$$
+\mathcal{E}_{a,y}(\rho) = \mathrm{Tr}_{\text{anc}}\!\left[\,U_{a,y}\,(\rho\otimes |0\rangle\langle 0|_{\text{anc}})\,U_{a,y}^\dagger\right]
+$$
+
+where $|0\rangle_{\text{anc}}$ is an ancilla (mode) system and $U_{a,y}$ is unitary.
+
+**Step 3.** The local $SU(2)$ structure acts on a 2D ancilla mode space $\mathbb{C}^2_{\text{mode}}$ spanned by $\{|\text{obs}\rangle, |\text{act}\rangle\}$:
+
+$$
+U_{a,y}(x) = \exp\left( i \frac{\vec{\tau} \cdot \vec{\theta}(x)}{2} \right) \in SU(2)
+$$
+
+where $\vec{\tau} = (\tau_1, \tau_2, \tau_3)$ are the Pauli matrices acting on the mode fiber, and $\vec{\theta}(x)$ determines the mixing angle between observation and action channels (analogous to Kalman Gain in standard filtering).
+
+**Step 4.** For **Local Covariance** (the ability to perform updates locally without global synchronization), we introduce the non-Abelian gauge field $\vec{W}_\mu = (W^1_\mu, W^2_\mu, W^3_\mu)$ acting on the mode fiber.
+
+**Step 5.** The covariant derivative for the Left-Handed sector is:
 
 $$
 D_\mu \Psi_L = \left( \partial_\mu - i g_2 \frac{\vec{\tau}}{2} \cdot \vec{W}_\mu - i g_1 \frac{Y_L}{2} B_\mu \right) \Psi_L
 $$
 
-**Step 4.** The gauge field transforms as:
+**Step 6.** The gauge field transforms as:
 
 $$
 W_\mu^a \to W_\mu^a + \frac{1}{g_2}\partial_\mu \theta^a + \epsilon^{abc}\theta^b W_\mu^c
@@ -307,24 +375,26 @@ $$
 to maintain covariance.
 
 **Identification:**
-- The $W^\pm_\mu = (W^1_\mu \mp iW^2_\mu)/\sqrt{2}$ bosons mediate transitions between $\psi_{\text{pred}}$ and $\psi_{\text{obs}}$. These correspond to belief updates where prediction and observation exchange weight.
+- The $W^\pm_\mu = (W^1_\mu \mp iW^2_\mu)/\sqrt{2}$ bosons mediate transitions between $\psi_{\text{obs}}$ and $\psi_{\text{act}}^{\text{pre}}$. These correspond to the coordination between sensory input and motor intent---the observation-action mixing that maintains boundary consistency.
 - The $W^3_\mu$ component mixes with $B_\mu$ after symmetry breaking ({ref}`Section 34.3 <sec-scalar-sector-symmetry-breaking>`).
-- The $SU(2)_L$ gauge symmetry acts only on the input channel ($\Psi_L$), leaving the output singlet ($\Psi_R$) invariant. This reflects the architectural asymmetry between perception and action.
+- The $SU(2)_L$ gauge symmetry acts only on the active doublet ($\Psi_L$) carrying the Observation/Action mode, leaving the committed singlet ($\Psi_R$) invariant. This reflects the boundary interface asymmetry (Dirichlet vs. Neumann).
 
 $\square$
 
 :::
 
 :::{div} feynman-prose
-Let me make sure you understand what the "Error Field" $W_\mu$ is doing.
+Let me make sure you understand what the "Error Field" $W_\mu$ is doing in this reformulated picture.
 
-When you do a Bayesian update, you're mixing your prior belief with new evidence. The amount of mixing depends on how reliable each source is---this is the Kalman gain. But here's the thing: in a distributed system, different parts might want to do different amounts of mixing at the same time.
+The key insight is that belief updates are *not* unitary transformations---they involve normalization, likelihood multiplication, and other non-reversible operations. But we can represent them via Stinespring dilation as unitary operations on an extended space that includes a "mode" degree of freedom.
 
-The $W_\mu$ field is what mediates this. It's the "prediction error signal" that propagates through the system, telling each location how to adjust its prior-likelihood mix. The $W^+$ and $W^-$ components specifically transfer weight from prediction to observation and vice versa.
+This mode lives in the 2D space spanned by observation and action intent. The $W_\mu$ field mediates the mixing between these two channels. In a distributed system, different parts of the agent's boundary need to coordinate their observation-action balance, and they do so locally based on the gauge field $W_\mu$.
 
-And notice something crucial: this field only affects the left-handed component $\Psi_L$. The action plan $\Psi_R$ doesn't participate in this dance. Once you've committed to an action, you don't keep updating it based on new prediction errors---you execute it.
+The $W^+$ and $W^-$ components transfer weight between the observation channel (incoming sensory) and the action-intent channel (outgoing motor). This is the coordination signal that propagates through the system.
 
-This is exactly the structure of the weak force in particle physics. The weak force only affects left-handed particles. Here, the "weak force" of cognition only affects the prediction-observation doublet, not the action singlet.
+And notice something crucial: this field only affects the active doublet $\Psi_L$. The committed action $\Psi_R$ doesn't participate in this ongoing coordination---once you've committed, you execute. This reflects the boundary chirality: the update process affects the active interface channels, not the settled output.
+
+This is exactly the structure of the weak force in particle physics. The weak force only affects left-handed particles. Here, the "weak force" of cognition only affects the observation-action doublet, not the committed singlet.
 :::
 
 :::{admonition} Non-Abelian Structure: Order Matters
@@ -332,11 +402,11 @@ This is exactly the structure of the weak force in particle physics. The weak fo
 
 Notice that the $W_\mu$ field is *non-Abelian*---it lives in $SU(2)$, which is a non-commutative group. This means the order of operations matters.
 
-In practical terms: if you update your beliefs based on evidence A and then evidence B, you might get a different result than if you update based on B first and then A. The final belief depends on the *path* through evidence space, not just the endpoints.
+However, be precise about *what* is non-Abelian: it's the mode mixing field $U(x)$ acting on the internal $\mathbb{C}^2_{\text{mode}}$ fiber (the observation-action coordination structure), not the Bayesian conditioning itself under fixed likelihoods.
 
-This is actually obvious from everyday experience. If someone tells you "the defendant is guilty" and then "just kidding," you end up in a different state than if they say "just kidding" first and then "the defendant is guilty." The sequence of belief updates matters.
+In practical terms: the path through the agent's internal manifold (context, gain, coordination state) affects how observation and action are balanced at each point. Different coordination paths lead to different committed actions, even given the same raw observations.
 
-The non-Abelian structure of $SU(2)$ captures this path-dependence mathematically.
+This is analogous to how geometric phase (Berry phase) in quantum mechanics depends on the path taken through parameter space, even though the Hamiltonian evolution at each point is well-defined. The non-Abelian structure of $SU(2)$ captures this path-dependence in the coordination dynamics.
 :::
 
 
@@ -1047,7 +1117,7 @@ The Gauge and Scalar sectors define the geometry and topology of the latent spac
 :::{prf:definition} The Decision Coupling
 :label: def-decision-coupling
 
-Let $\Psi_L = (\psi_{\text{pred}}, \psi_{\text{obs}})^T$ be the belief doublet and $\Psi_R = \psi_{\text{act}}$ be the action singlet. The transfer of information from Belief to Action is mediated by the **Ontological Order Parameter** $\phi$.
+Let $\Psi_L = (\psi_{\text{obs}}, \psi_{\text{act}}^{\text{pre}})^T$ be the observation-action doublet and $\Psi_R = \psi_{\text{act}}^{\text{commit}}$ be the committed action singlet. The transfer of information from the active doublet to committed output is mediated by the **Ontological Order Parameter** $\phi$.
 
 The simplest $G_{\text{Fragile}}$-invariant coupling is:
 
@@ -1062,17 +1132,17 @@ where $Y_{ij}$ is the **Affordance Matrix** (a learned weight matrix determining
 :::
 
 :::{div} feynman-prose
-The Yukawa coupling is the bridge between thought and action.
+The Yukawa coupling is the bridge between active coordination and committed output.
 
-The left-handed doublet $\Psi_L$ contains the prediction and observation---the internal deliberation. The right-handed singlet $\Psi_R$ is the action plan. How does deliberation become action?
+The left-handed doublet $\Psi_L$ contains the observation and pre-commitment action intent---the active channels at the boundary interface. The right-handed singlet $\Psi_R$ is the committed action plan. How does the ongoing coordination settle into definite output?
 
-Through the ontological field $\phi$. The coupling $\bar{\Psi}_L \phi \Psi_R$ says: "the strength of the belief-to-action connection depends on the local ontological structure."
+Through the ontological field $\phi$. The coupling $\bar{\Psi}_L \phi \Psi_R$ says: "the strength of the coordination-to-commitment connection depends on the local ontological structure."
 
-When the ontology is undifferentiated ($\phi \approx 0$), there's no coupling. Beliefs don't lead to actions. The agent is in a state of pure contemplation, unable to commit.
+When the ontology is undifferentiated ($\phi \approx 0$), there's no coupling. The observation-action coordination doesn't resolve into definite commitment. The agent is in a state of ambiguous deliberation, unable to commit.
 
-When the ontology is differentiated ($\phi = v \neq 0$), there's coupling. Beliefs lead to actions. The agent can make decisions.
+When the ontology is differentiated ($\phi = v \neq 0$), there's coupling. The coordination resolves, and the agent commits to actions. The agent can make definite decisions.
 
-The affordance matrix $Y_{ij}$ specifies which concepts trigger which actions. "Seeing a predator" ($i$) triggers "fleeing" ($j$) with strength $Y_{ij}$. This matrix is learned, encoding the agent's behavioral repertoire.
+The affordance matrix $Y_{ij}$ specifies which coordinated states trigger which committed actions. A particular balance of sensory input and motor intent ($i$) triggers a specific committed output ($j$) with strength $Y_{ij}$. This matrix is learned, encoding the agent's behavioral repertoire.
 :::
 
 :::{prf:theorem} Generation of Cognitive Mass (Decision Stability)
@@ -1299,13 +1369,13 @@ This table provides the mapping between Standard Model entities and Cognitive en
 | Speed of Light | $c$ | Information Speed $c_{\text{info}}$ | Axiom {prf:ref}`ax-information-speed-limit` |
 | Planck Constant | $\hbar$ | Cognitive Action Scale $\sigma$ | Definition {prf:ref}`def-cognitive-action-scale` |
 | Electric Charge | $e$ | Reward Sensitivity $g_1$ | Theorem {prf:ref}`thm-emergence-opportunity-field` |
-| Weak Coupling | $g$ | Prediction Error Rate $g_2$ | Theorem {prf:ref}`thm-emergence-error-field` |
+| Weak Coupling | $g$ | Observation-Action Coordination Strength $g_2$ | Theorem {prf:ref}`thm-emergence-error-field` |
 | Strong Coupling | $g_s$ | Binding Strength | Theorem {prf:ref}`thm-emergence-binding-field` |
 | Higgs VEV | $v$ | Concept Separation $r^*$ | Theorem {prf:ref}`thm-supercritical-pitchfork-bifurcation-for-charts` |
 | Electron Mass | $m_e$ | Decision Inertia $Yv$ | Theorem {prf:ref}`thm-cognitive-mass` |
 | Higgs Mass | $m_H$ | Ontological Rigidity | Theorem {prf:ref}`thm-semantic-inertia` |
 | Photon | $\gamma$ | Value Gradient Signal | Definition {prf:ref}`def-effective-potential` |
-| W/Z Bosons | $W^\pm, Z$ | Prediction Error Mediators | Definition {prf:ref}`def-cognitive-isospin-doublet` |
+| W/Z Bosons | $W^\pm, Z$ | Observation-Action Coordination Mediators | Definition {prf:ref}`def-cognitive-isospin-doublet` |
 | Color Dimension | $N_c = 3$ | Feature Dimension $N_f$ | Definition {prf:ref}`def-feature-dimension-parameter` |
 | Gluons | $g$ (8 for $N_c=3$) | Feature Binding Force ($N_f^2-1$ generators) | Definition {prf:ref}`def-feature-color-space` |
 | Quarks | $q$ | Sub-symbolic Features | Definition {prf:ref}`def-the-peeling-step` |
