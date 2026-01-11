@@ -477,7 +477,7 @@ $((\sharp\text{-status}, \int\text{-status}, \flat\text{-status}, \ast\text{-sta
 
 By the Sieve-Thermodynamic Correspondence ({prf:ref}`thm-sieve-thermo-correspondence`), polynomial-time convergence requires **Kolmogorov complexity reduction**: the algorithm must decrease $K(x_t)$ ({prf:ref}`def-kolmogorov-complexity`) from the initial instance complexity $K(\mathcal{X}) \sim N$ to $O(\log N)$ (solution encoding) in $\text{poly}(N)$ steps.
 
-By the **Levin-Schnorr Theorem** {cite}`Levin73b; Schnorr73`, uniform random search on an amorphous (structureless) space achieves expected complexity reduction:
+By the **Levin-Schnorr Theorem** {cite}`Levin73b,Schnorr73`, uniform random search on an amorphous (structureless) space achieves expected complexity reduction:
 
 $$\mathbb{E}[\Delta K] = O(1/|\mathcal{X}|) = O(2^{-N})$$
 
