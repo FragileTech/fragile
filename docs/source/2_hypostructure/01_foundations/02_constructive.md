@@ -30,7 +30,9 @@ To instantiate a system, the user provides only:
 3. **The Cost** $(\mathfrak{D}^{\text{thin}})$: The dissipation rate and its scaling dimension $\beta$.
 
    **Cheeger Energy Formulation:** For gradient flow systems on $(X, d, \mathfrak{m})$, the dissipation functional should be identified with the **Cheeger Energy**:
+
    $$\mathfrak{D}[u] = \text{Ch}(u | \mathfrak{m}) := \frac{1}{2}\inf\left\{\liminf_{n \to \infty} \int_X |\nabla u_n|^2 d\mathfrak{m} : u_n \in \text{Lip}(X), u_n \to u \text{ in } L^2(\mathfrak{m})\right\}$$
+
    This defines the "minimal slope" of $u$ relative to the measure $\mathfrak{m}$, providing the rigorous link between geometry (metric $d$) and thermodynamics (measure $\mathfrak{m}$) ({prf:ref}`thm-cheeger-dissipation`).
 
 4. **The Invariance** $(G^{\text{thin}})$: The symmetry group and its action on $\mathcal{X}$.
@@ -42,7 +44,9 @@ To instantiate a system, the user provides only:
    - **Trace Morphism** $\text{Tr}: \mathcal{X} \to \mathcal{B}$: A morphism in $\mathcal{E}$ implementing restriction to the boundary. In the classical setting, this is the Sobolev trace $u \mapsto u|_{\partial\Omega}$. Categorically, $\text{Tr}$ is the counit of the adjunction $\iota_! \dashv \iota^*$ where $\iota: \partial\mathcal{X} \hookrightarrow \mathcal{X}$.
 
    - **Flux Morphism** $\mathcal{J}: \mathcal{B} \to \underline{\mathbb{R}}$: A morphism to the constant sheaf $\underline{\mathbb{R}}$, measuring energy/mass flow across the boundary. Conservation is expressed as:
+
      $$\frac{d}{dt}\Phi \simeq -\mathcal{J} \circ \text{Tr} \quad \text{in } \text{Hom}_{\mathcal{E}}(\mathcal{X}, \underline{\mathbb{R}})$$
+
 
    - **Reinjection Kernel** $\mathcal{R}: \mathcal{B} \to \mathcal{P}(\mathcal{X})$: A **Markov kernel** in the Kleisli category of the probability monad $\mathcal{P}$, implementing non-local boundary conditions (Fleming-Viot, McKean-Vlasov). This is a morphism $\mathcal{R}: \mathcal{B} \to \mathcal{P}(\mathcal{X})$ satisfying the **Feller property**: for each bounded continuous $f: \mathcal{X} \to \mathbb{R}$, the map $b \mapsto \int_\mathcal{X} f \, d\mathcal{R}(b)$ is continuous. Special cases:
      - $\mathcal{R} \simeq 0$ (zero measure): absorbing boundary (Dirichlet)
@@ -83,7 +87,9 @@ The following theorems establish the rigorous connection between geometric curva
 **Statement:** Let $(X, d, \mathfrak{m})$ be a metric-measure space equipped with a gradient flow $\rho_t$ evolving under potential $\Phi$. If $(X, d, \mathfrak{m})$ satisfies the **Curvature-Dimension condition** $\mathrm{CD}(K, N)$ (equivalently $\mathrm{RCD}(K, N)$ when $X$ is infinitesimally Hilbertian), then the following hold:
 
 1. **Entropy-Dissipation Relation (EVI):** The relative entropy $\text{Ent}(\rho_t | \mathfrak{m}) := \int \rho_t \log(\rho_t/\mathfrak{m}) d\mathfrak{m}$ satisfies the Evolution Variational Inequality:
+
    $$\frac{d}{dt}\text{Ent}(\rho_t | \mathfrak{m}) + \frac{K}{2}W_2^2(\rho_t, \mathfrak{m}) + \text{Fisher}(\rho_t | \mathfrak{m}) \leq 0$$
+
    where $W_2$ is the Wasserstein-2 distance and $\text{Fisher}(\rho | \mathfrak{m}) := \int |\nabla \log(\rho/\mathfrak{m})|^2 d\rho$ is the Fisher Information.
 
 2. **Exponential Convergence:** If $K > 0$, then $\text{Ent}(\rho_t | \mathfrak{m}) \leq e^{-Kt}\text{Ent}(\rho_0 | \mathfrak{m})$, ensuring the system cannot "drift" indefinitely (No-Melt Theorem).
@@ -108,7 +114,9 @@ This closes the "determinant is volume" gap: the measure $\mathfrak{m}$ (not jus
 :label: thm-log-sobolev-concentration
 
 **Statement:** Let $(X, d, \mathfrak{m})$ satisfy $\mathrm{RCD}(K, \infty)$ with $K > 0$. Then $(X, d, \mathfrak{m})$ satisfies the **Logarithmic Sobolev Inequality** (LSI):
+
 $$\text{Ent}(f^2 | \mathfrak{m}) \leq \frac{2}{K}\int_X |\nabla f|^2 d\mathfrak{m}$$
+
 for all $f \in W^{1,2}(X, \mathfrak{m})$ with $\int f^2 d\mathfrak{m} = 1$.
 
 **Consequences:**
@@ -123,11 +131,15 @@ for all $f \in W^{1,2}(X, \mathfrak{m})$ with $\int f^2 d\mathfrak{m} = 1$.
 :label: thm-cheeger-dissipation
 
 **Statement:** For a gradient flow $\partial_t \rho = \text{div}(\rho \nabla \Phi)$ on $(X, d, \mathfrak{m})$, the dissipation functional satisfies:
+
 $$\mathfrak{D}[\rho] = \text{Ch}(\Phi | \rho \mathfrak{m}) = \int_X |\nabla \Phi|^2 d(\rho\mathfrak{m})$$
+
 where the gradient is defined via the Cheeger Energy.
 
 Moreover, if $(X, d, \mathfrak{m})$ satisfies $\mathrm{RCD}(K, N)$, then the **Bakry-Emery $\Gamma_2$ calculus** holds:
+
 $$\Gamma_2(\Phi, \Phi) := \frac{1}{2}\Delta|\nabla \Phi|^2 - \langle\nabla \Phi, \nabla \Delta \Phi\rangle \geq K|\nabla \Phi|^2 + \frac{(\Delta \Phi)^2}{N}$$
+
 
 This provides the computational tool for verifying curvature bounds from potential $\Phi$ alone.
 
@@ -140,7 +152,9 @@ This provides the computational tool for verifying curvature bounds from potenti
 The Boundary Operator is not merely a geometric edge—it is a **Functor** between Bulk and Boundary categories that powers three critical subsystems:
 
 1. **Conservation Laws (Nodes 1-2):** Via the **Stokes morphism** in differential cohomology, $\partial_\bullet$ relates internal rate of change ($\mathfrak{D}$) to external flux ($\mathcal{J}$). In the $\infty$-categorical setting:
+
    $$\mathfrak{D} \simeq \partial_\bullet^* \mathcal{J} \quad \text{in } \text{Hom}_{\mathcal{E}}(\mathcal{X}, \underline{\mathbb{R}})$$
+
    Energy blow-up requires the flux morphism to be unbounded.
 
 2. **Control Layer (Nodes 13-16):** The Boundary Functor distinguishes:
@@ -166,8 +180,11 @@ $$Kt(\tau) := K(\tau) + \log(\text{steps}(\tau))$$
 where $K(\tau)$ is the Kolmogorov complexity ({prf:ref}`def-kolmogorov-complexity`) of the certificate chain and $\text{steps}(\tau)$ is the number of Sieve operations performed.
 
 **The Horizon Axiom:**
+
 A verification process is forcibly terminated with verdict **HORIZON** if:
+
 $$Kt(\tau) > M_{\text{sieve}}$$
+
 where $M_{\text{sieve}}$ is the Sieve's finite memory capacity (in bits).
 
 **AIT Interpretation:**
@@ -188,9 +205,12 @@ Per {prf:ref}`def-algorithmic-phases`, the Horizon verdict classifies problems i
 
 The **Data Processing Inequality** provides the operational bound: information cannot be created through computation, only preserved or lost. Consequently, $M_{\text{sieve}} < \infty$ imposes fundamental limits on verification capacity.
 
-**Certificate**:
+**Certificate:**
+
 When $Kt(\tau) > M_{\text{sieve}}$, emit:
+
 $$K_{\text{Horizon}}^{\text{blk}} = (\text{"Levin Limit exceeded"}, Kt(\tau), M_{\text{sieve}}, \text{Phase Classification})$$
+
 
 **Literature:** {cite}`Levin73` (Levin complexity); {cite}`LiVitanyi19` (AIT); {cite}`CoverThomas06` (DPI)
 :::
@@ -329,15 +349,21 @@ Bridge rigor is distinguished from Framework-Original (Class F) because it estab
 For each **Rigor Class L** metatheorem citing literature source $\mathcal{L}$, the **Bridge Verification** establishes rigor via three components:
 
 1. **Hypothesis Translation** $\mathcal{H}_{\text{tr}}$: A formal proof that framework certificates entail the hypotheses of theorem $\mathcal{L}$:
+
    $$\Gamma_{\text{Sieve}} \vdash \mathcal{H}_{\mathcal{L}}$$
+
    where $\Gamma_{\text{Sieve}}$ is the certificate context accumulated by the Sieve traversal.
 
 2. **Domain Embedding** $\iota$: A functor from the category of hypostructures to the mathematical setting of $\mathcal{L}$:
+
    $$\iota: \mathbf{Hypo}_T \to \mathbf{Dom}_{\mathcal{L}}$$
+
    This embedding must preserve the relevant structure (topology, measure, group action).
 
 3. **Conclusion Import** $\mathcal{C}_{\text{imp}}$: A proof that the conclusion of $\mathcal{L}$ implies the target framework guarantee:
+
    $$\mathcal{C}_{\mathcal{L}}(\iota(\mathbb{H})) \Rightarrow K_{\text{target}}^+$$
+
 
 **Example (RESOLVE-Profile ↔ Lions 1984):**
 - $\mathcal{H}_{\text{tr}}$: Certificates $K_{D_E}^+ \wedge K_{C_\mu}^+$ imply "bounded sequence in $\dot{H}^{s_c}(\mathbb{R}^n)$ with concentration"
@@ -351,7 +377,9 @@ For each **Rigor Class L** metatheorem citing literature source $\mathcal{L}$, t
 For each **Rigor Class F** metatheorem in the cohesive $(\infty,1)$-topos $\mathcal{E}$, the proof must establish:
 
 1. **Ambient Setup**: Verify $\mathcal{E}$ satisfies the cohesion axioms with the adjoint quadruple:
+
    $$\Pi \dashv \flat \dashv \sharp \dashv \oint$$
+
    where $\flat$ is the flat (discrete) modality and $\sharp$ is the sharp (codiscrete) modality.
 
 2. **Construction**: Define the object or morphism explicitly using the modalities, providing:
@@ -359,7 +387,9 @@ For each **Rigor Class F** metatheorem in the cohesive $(\infty,1)$-topos $\math
    - For morphisms: the natural transformation between functors
 
 3. **Well-definedness**: Prove independence of auxiliary choices using the Yoneda embedding:
+
    $$y: \mathcal{E} \hookrightarrow \text{PSh}(\mathcal{E})$$
+
 
 4. **Universal Property**: State and verify the categorical universal property characterizing the construction up to unique isomorphism.
 
@@ -382,7 +412,9 @@ All Rigor Class F theorems operate in the $(\infty,1)$-categorical setting, wher
 The unit $\eta: \text{Id} \Rightarrow U \circ \mathcal{F}$ and counit $\varepsilon: \mathcal{F} \circ U \Rightarrow \text{Id}$ satisfy:
 
 - **Triangle Identities** (up to coherent 2-isomorphism):
+
   $$(\varepsilon_{\mathcal{F}(X)}) \circ (\mathcal{F}(\eta_X)) \simeq \text{id}_{\mathcal{F}(X)}$$
+
   $$U(\varepsilon_Y) \circ \eta_{U(Y)} \simeq \text{id}_{U(Y)}$$
 
 - **Coherent Naturality**: For any $f: X \to X'$, the naturality squares for $\eta$ and $\varepsilon$ commute up to specified 2-cells.
@@ -392,9 +424,11 @@ The unit $\eta: \text{Id} \Rightarrow U \circ \mathcal{F}$ and counit $\varepsil
 When $\mathcal{E}$ carries a symmetric monoidal structure (as in Tannakian settings):
 
 - **Pentagon Identity**: The associator $\alpha_{X,Y,Z}: (X \otimes Y) \otimes Z \xrightarrow{\sim} X \otimes (Y \otimes Z)$ satisfies:
+
   $$\alpha_{W,X,Y \otimes Z} \circ \alpha_{W \otimes X, Y, Z} = (\text{id}_W \otimes \alpha_{X,Y,Z}) \circ \alpha_{W, X \otimes Y, Z} \circ (\alpha_{W,X,Y} \otimes \text{id}_Z)$$
 
 - **Triangle Identity**: The unitor $\lambda_X: \mathbb{1} \otimes X \xrightarrow{\sim} X$ and $\rho_X: X \otimes \mathbb{1} \xrightarrow{\sim} X$ satisfy:
+
   $$(\text{id}_X \otimes \lambda_Y) \circ \alpha_{X, \mathbb{1}, Y} = \rho_X \otimes \text{id}_Y$$
 
 - **Hexagon Identity** (symmetry): The braiding $\beta_{X,Y}: X \otimes Y \xrightarrow{\sim} Y \otimes X$ satisfies the hexagon axiom.
@@ -415,10 +449,13 @@ For the cohesive $(\infty,1)$-topos $\mathcal{E}$:
 For certificates moving between categorical levels:
 
 - **Vertical Composition**: If $K_1^+: P_1 \Rightarrow P_2$ and $K_2^+: P_2 \Rightarrow P_3$, then:
+
   $$K_2^+ \circ K_1^+: P_1 \Rightarrow P_3$$
+
   is a valid certificate (transitivity).
 
 - **Horizontal Composition**: If $K^+: P \Rightarrow Q$ in context $\Gamma$, and $\Gamma \to \Gamma'$ is a context morphism, then the transported certificate $K'^+$ satisfies:
+
   $$\text{transport}_{\Gamma \to \Gamma'}(K^+) \simeq K'^+$$
 
 - **Whiskering**: For $F: \mathcal{A} \to \mathcal{B}$ and $\alpha: G \Rightarrow H$ in $\mathcal{B}$, the whiskered transformation $F \cdot \alpha$ is coherent with certificate transport.
@@ -500,10 +537,13 @@ The Thin Kernel $\mathcal{T}$ provides dissipation $\mathfrak{D}^{\text{thin}}$ 
 
 $$\Pi(\nabla) = v$$
 
+
 *Flatness Verification:* The connection $\nabla$ is flat (i.e., $R_\nabla = 0$) by a symmetry-commutativity argument. Let $\Phi_t: X_0 \to X_0$ denote the lifted flow. The semi-group property $S_{t+s} = S_t \circ S_s$ in $\underline{X}$ lifts to $\Phi_{t+s} = \Phi_t \circ \Phi_s$ in $\mathcal{E}$ by the universal property of the shape-flat adjunction $\Pi \dashv \flat$: the flat modality $\flat$ embeds discrete $\infty$-groupoids into $\mathcal{E}$, and since the semigroup structure is preserved by $\Pi$, the unique lift through $\flat$ preserves it as well.
 
 *Tangent Bundle Decomposition:* Since $\mathcal{X}$ is a State Stack encoding gauge symmetries via $\pi_1(\mathcal{X})$ ({prf:ref}`def-categorical-hypostructure`), the tangent $\infty$-bundle admits a natural decomposition:
+
 $$T\mathcal{X} \cong \mathcal{V} \oplus \mathcal{H}$$
+
 where $\mathcal{V}$ (vertical) consists of infinitesimal gauge transformations and $\mathcal{H}$ (horizontal) consists of flow directions. The vector field $v = \nabla$ generating the semi-flow lies in $\mathcal{H}$.
 
 *Equivariant Flatness:* The curvature tensor $R_\nabla \in \Omega^2(X_0; \text{End}(TX_0))$ measures failure of parallel transport to be path-independent. We must verify $R_\nabla(v, w) = 0$ for all pairs $(v, w)$ in $T\mathcal{X}$. There are three cases:
@@ -513,11 +553,15 @@ where $\mathcal{V}$ (vertical) consists of infinitesimal gauge transformations a
 2. **Gauge-Gauge** ($w, w' \in \mathcal{V}$): The gauge transformations form a group $G$ with Lie algebra $\mathfrak{g} = \Gamma(\mathcal{V})$. The vertical distribution is integrable (Frobenius), so $[w, w'] \in \mathcal{V}$ and the restricted connection is flat along fibers.
 
 3. **Flow-Gauge** ($v \in \mathcal{H}$, $w \in \mathcal{V}$): By the Equivariance Principle ({prf:ref}`mt-krnl-equivariance`), the semi-flow $\Phi_t$ commutes with the gauge action: $\Phi_t \circ g = g \circ \Phi_t$ for all $g \in G$. At the infinitesimal level, this yields the Lie derivative condition:
+
 $$\mathcal{L}_v w = [v, w] = 0 \quad \text{for all } w \in \mathfrak{g}$$
+
 Hence $R_\nabla(v, w) = [\nabla_v, \nabla_w] - \nabla_{[v,w]} = 0$.
 
 Combining all three cases:
+
 $$R_\nabla = 0$$
+
 
 This establishes flatness via gauge-flow compatibility, ensuring parallel transport is well-defined on the stack quotient $\mathcal{X}/G$.
 
@@ -530,10 +574,13 @@ Since the Thin Kernel provides the curvature (dissipation $\mathfrak{D}^{\text{t
 
 $$d\hat{\Phi} = \mathfrak{D}^{\text{thin}}$$
 
+
 This links internal dissipation to the cohomological height rigorously.
 
 **Metric-Measure Upgrade:** When the Thin Kernel specifies a metric-measure space $(X, d, \mathfrak{m})$, the dissipation $\mathfrak{D}^{\text{thin}}$ should be identified with the **Cheeger Energy** ({prf:ref}`thm-cheeger-dissipation`):
+
 $$\mathfrak{D}^{\text{thin}}[\Phi] = \text{Ch}(\Phi | \mathfrak{m}) = \int_X |\nabla \Phi|^2 d\mathfrak{m}$$
+
 
 This ensures that the categorical expansion $\mathcal{F}$ preserves not just the metric geometry but also the **thermodynamic measure structure**. The reference measure $\mathfrak{m}$ determines both:
 - The volume form $\text{dvol}_\mathfrak{m} = \mathfrak{m}$ (geometric)
@@ -575,6 +622,7 @@ commutes by functoriality of $\mathcal{F}$.
 - *Naturality in $\mathbb{H}$*: Given $h: \mathbb{H} \to \mathbb{H}'$, the analogous diagram commutes by functoriality of $U$.
 
 *Step 7 (Coherence in the $(\infty,1)$-Setting).*
+
 In the $(\infty,1)$-categorical setting, the adjunction $\mathcal{F} \dashv U$ must satisfy higher coherences. By {cite}`Lurie09` Proposition 5.2.2.8, an adjunction in $\infty$-categories is determined by the unit transformation $\eta$ together with the property that for each $\mathcal{T}$, the induced map:
 
 $$\text{Map}_{\mathbf{Hypo}_T}(\mathcal{F}(\mathcal{T}), \mathbb{H}) \to \text{Map}_{\mathbf{Thin}_T}(\mathcal{T}, U(\mathbb{H}))$$

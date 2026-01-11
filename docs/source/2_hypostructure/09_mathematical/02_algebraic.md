@@ -52,13 +52,20 @@ Think of it this way. You have a flow on some space, and you want to understand 
 - $K_{\mathrm{SC}_\lambda}^+$: Scaling exponents $(\alpha, \beta)$ satisfy $\alpha < \beta + \lambda_c$
 
 Then there exists a contravariant functor to Chow motives:
-$$\mathcal{M}: \mathbf{SmProj}_k^{\text{op}} \to \mathbf{Mot}_k^{\text{eff}}, \quad X \mapsto h(X) = (X, \Delta_X, 0)$$
+
+$$
+\mathcal{M}: \mathbf{SmProj}_k^{\text{op}} \to \mathbf{Mot}_k^{\text{eff}}, \quad X \mapsto h(X) = (X, \Delta_X, 0)
+$$
 
 satisfying:
 
 1. **Künneth Decomposition:** $h(X) = \bigoplus_{i=0}^{2\dim X} h^i(X)$ with $H^*(h^i(X)) = H^i(X, \mathbb{Q})$
 2. **Weight Filtration:** The motivic weight filtration $W_\bullet h(X)$ satisfies:
-   $$\text{Gr}_k^W h(X) \cong \bigoplus_{\alpha - \beta = k} h(X)_{\alpha,\beta}$$
+
+   $$
+   \text{Gr}_k^W h(X) \cong \bigoplus_{\alpha - \beta = k} h(X)_{\alpha,\beta}
+   $$
+
    where $(\alpha, \beta)$ are the scaling exponents from $K_{\mathrm{SC}_\lambda}^+$
 3. **Frobenius Eigenvalues:** For $k = \mathbb{F}_q$, the Frobenius $F: h(X) \to h(X)$ has eigenvalues $\{\omega_i\}$ with $|\omega_i| = q^{w_i/2}$ where $w_i \in W_{w_i}$
 4. **Entropy-Trace Formula:** $\exp(h_{\text{top}}(S_t)) = \rho(F^* \mid H^*(X))$ where $\rho$ is spectral radius
@@ -84,22 +91,41 @@ satisfying:
 *Step 2 (Motive assignment).* Define the Chow motive $h(X) := (X, \Delta_X, 0) \in \mathbf{Mot}_k$ where $\Delta_X \subset X \times X$ is the diagonal correspondence. For the profile space: $h(\mathcal{P}) := (\mathcal{P}, \Delta_{\mathcal{P}}, 0)$. If $\mathcal{P}$ is singular, apply resolution of singularities $\pi: \tilde{\mathcal{P}} \to \mathcal{P}$ and set $h(\mathcal{P}) := h(\tilde{\mathcal{P}})$.
 
 *Step 3 (Künneth projectors).* By the Künneth formula in $\mathbf{Mot}_k$ (assuming standard conjectures or working with abelian varieties where proven), there exist orthogonal idempotents $\pi^i \in \text{Corr}^0(X, X)$ with:
-$$\sum_{i=0}^{2n} \pi^i = \Delta_X, \quad \pi^i \circ \pi^j = \delta_{ij}\pi^i, \quad H^*(\pi^i) = H^i(X)$$
+
+$$
+\sum_{i=0}^{2n} \pi^i = \Delta_X, \quad \pi^i \circ \pi^j = \delta_{ij}\pi^i, \quad H^*(\pi^i) = H^i(X)
+$$
 
 *Step 4 (Frobenius action).* The flow $S_t$ induces a correspondence $\Gamma_{S_t} \subset X \times X$. For self-similar profiles with scaling data from $K_{\mathrm{SC}_\lambda}^+$:
-$$F_t^* = [\Gamma_{S_t}]^*: H^*(X) \to H^*(X), \quad F_t^*[\alpha] = t^{\alpha - \beta}[\alpha] \text{ for } \alpha \in H^{p,q}$$
+
+$$
+F_t^* = [\Gamma_{S_t}]^*: H^*(X) \to H^*(X), \quad F_t^*[\alpha] = t^{\alpha - \beta}[\alpha] \text{ for } \alpha \in H^{p,q}
+$$
+
 The exponent $\alpha - \beta = p - q$ is the Hodge weight difference.
 
 *Step 5 (Weight filtration).* Define the weight filtration on $h(X)$ by:
-$$W_k h(X) := \bigoplus_{\substack{i \leq k \\ \text{Frob. wt.} \leq k}} h^i(X)$$
+
+$$
+W_k h(X) := \bigoplus_{\substack{i \leq k \\ \text{Frob. wt.} \leq k}} h^i(X)
+$$
+
 The scaling certificate $K_{\mathrm{SC}_\lambda}^+$ with exponents $(\alpha, \beta)$ gives: $\text{Gr}_k^W \cong h(X)_{\alpha - \beta = k}$. This identifies weight graded pieces with mode sectors.
 
 *Step 6 (Trace formula).* By the Lefschetz trace formula for correspondences:
-$$\#\text{Fix}(F) = \sum_{i=0}^{2n} (-1)^i \text{Tr}(F^* \mid H^i(X))$$
+
+$$
+\#\text{Fix}(F) = \sum_{i=0}^{2n} (-1)^i \text{Tr}(F^* \mid H^i(X))
+$$
+
 The topological entropy satisfies $\exp(h_{\text{top}}) = \lim_{n \to \infty} |\text{Tr}((F^*)^n)|^{1/n} = \rho(F^*)$, the spectral radius.
 
 *Step 7 (Certificate assembly).* Construct the output certificate:
-$$K_{\text{motive}}^+ = \left(h(X), \{\pi^i\}_{i=0}^{2n}, W_\bullet, \{(\alpha_j, \beta_j)\}_j, \rho(F^*)\right)$$
+
+$$
+K_{\text{motive}}^+ = \left(h(X), \{\pi^i\}_{i=0}^{2n}, W_\bullet, \{(\alpha_j, \beta_j)\}_j, \rho(F^*)\right)
+$$
+
 containing the motive, Künneth projectors, weight filtration, scaling exponents, and spectral radius.
 :::
 
@@ -134,7 +160,11 @@ Let $\mathcal{R} = \mathbb{R}[x_1, \ldots, x_n]$ be the polynomial ring over the
 
 **Safe Set (from certificates):**
 The permit certificates define polynomial inequalities. The *safe region* is:
-$$S = \{x \in \mathbb{R}^n \mid g_1(x) \geq 0, \ldots, g_k(x) \geq 0\}$$
+
+$$
+S = \{x \in \mathbb{R}^n \mid g_1(x) \geq 0, \ldots, g_k(x) \geq 0\}
+$$
+
 where:
 - $g_{\text{SC}}(x) := \beta - \alpha - \varepsilon$ (from $K_{\mathrm{SC}_\lambda}^+$)
 - $g_{\text{Cap}}(x) := C\mathfrak{D} - \text{Cap}_H(\text{Supp})$ (from $K_{\mathrm{Cap}_H}^+$)
@@ -143,9 +173,16 @@ where:
 
 **Statement (Stengle's Positivstellensatz):**
 Let $B \subset \mathbb{R}^n$ be the *bad pattern region* (states violating safety). Then:
-$$S \cap B = \emptyset$$
+
+$$
+S \cap B = \emptyset
+$$
+
 if and only if there exist sum-of-squares polynomials $\{p_\alpha\}_{\alpha \in \{0,1\}^k} \subset \sum \mathbb{R}[x]^2$ such that:
-$$-1 = p_0 + \sum_{i} p_i g_i + \sum_{i<j} p_{ij} g_i g_j + \cdots + p_{1\ldots k} g_1 \cdots g_k$$
+
+$$
+-1 = p_0 + \sum_{i} p_i g_i + \sum_{i<j} p_{ij} g_i g_j + \cdots + p_{1\ldots k} g_1 \cdots g_k
+$$
 
 **Required Interface Permits:** $\mathrm{Cap}_H$ (Capacity), $\mathrm{LS}_\sigma$ (Stiffness), $\mathrm{SC}_\lambda$ (Scaling), $\mathrm{TB}_\pi$ (Topology)
 
@@ -168,7 +205,11 @@ The original Nullstellensatz formulation applies to equalities over $\mathbb{C}$
 *Step 1 (Real algebraic geometry).* The permit certificates define polynomial inequalities over $\mathbb{R}$, not equalities over $\mathbb{C}$. Hilbert's Nullstellensatz does not apply directly to inequalities; we use the Positivstellensatz instead.
 
 *Step 2 (Bad pattern encoding).* A bad pattern $B_i$ is encoded as a semialgebraic set:
-$$B_i = \{x \in \mathbb{R}^n \mid h_1(x) \geq 0, \ldots, h_m(x) \geq 0, f(x) = 0\}$$
+
+$$
+B_i = \{x \in \mathbb{R}^n \mid h_1(x) \geq 0, \ldots, h_m(x) \geq 0, f(x) = 0\}
+$$
+
 representing states that lead to singularity type $i$.
 
 *Step 3 (Infeasibility certificate).* By Stengle's Positivstellensatz, $S \cap B_i = \emptyset$ admits a constructive certificate: an identity expressing $-1$ as a combination of the constraint polynomials weighted by SOS polynomials.
@@ -176,7 +217,10 @@ representing states that lead to singularity type $i$.
 *Step 4 (SOS computation).* The SOS certificate can be computed via semidefinite programming (SDP). Given a degree bound $d$, search for SOS polynomials $p_\alpha$ of degree $\leq d$ satisfying the identity. If such an identity exists, the intersection is algebraically certified empty.
 
 *Step 5 (Certificate assembly).* The output certificate consists of:
-$$K_{\text{SOS}}^+ = \left(\{p_\alpha\}_\alpha, \{g_i\}_i, \text{SDP feasibility witness}\right)$$
+
+$$
+K_{\text{SOS}}^+ = \left(\{p_\alpha\}_\alpha, \{g_i\}_i, \text{SDP feasibility witness}\right)
+$$
 :::
 
 ---
@@ -234,11 +278,19 @@ Consider the tangent sheaf cohomology groups $H^i(V, T_V)$ for $i = 0, 1, 2$. Th
 :label: proof-mt-lock-kodaira
 
 *Step 1 (Deformation functor).* Define the deformation functor $\text{Def}_V: \mathbf{Art}_k \to \mathbf{Sets}$ by:
-$$\text{Def}_V(A) := \left\{\text{flat } \mathcal{V} \to \text{Spec}(A) \mid \mathcal{V} \times_A k \cong V\right\} / \sim$$
+
+$$
+\text{Def}_V(A) := \left\{\text{flat } \mathcal{V} \to \text{Spec}(A) \mid \mathcal{V} \times_A k \cong V\right\} / \sim
+$$
+
 This is the moduli problem for flat families with special fiber $V$.
 
 *Step 2 (Kodaira-Spencer map).* For an infinitesimal deformation $\mathcal{V} \to \text{Spec}(k[\epsilon])$, the Kodaira-Spencer map:
-$$\text{KS}: T_0\text{Def}_V \xrightarrow{\cong} H^1(V, T_V)$$
+
+$$
+\text{KS}: T_0\text{Def}_V \xrightarrow{\cong} H^1(V, T_V)
+$$
+
 identifies first-order deformations with cohomology classes. This is an isomorphism by the exponential sequence.
 
 *Step 3 (Kuranishi space).* By Kuranishi's theorem, there exists a versal deformation $\mathcal{V} \to (\mathcal{K}, 0)$ with:
@@ -247,7 +299,11 @@ identifies first-order deformations with cohomology classes. This is an isomorph
 - The obstruction space $\text{Ob} \subseteq H^2(V, T_V)$
 
 *Step 4 (Obstruction theory).* The obstruction to extending a first-order deformation $\xi \in H^1$ to second order lies in $H^2$. The obstruction map:
-$$\text{ob}: \text{Sym}^2 H^1(V, T_V) \to H^2(V, T_V)$$
+
+$$
+\text{ob}: \text{Sym}^2 H^1(V, T_V) \to H^2(V, T_V)
+$$
+
 arises from the bracket $[-, -]: T_V \otimes T_V \to T_V$. If $H^2 = 0$, the Kuranishi space is smooth of dimension $h^1(T_V)$.
 
 *Step 5 (Stiffness ↔ Łojasiewicz).* The certificate $K_{\mathrm{LS}_\sigma}^+$ with gradient inequality $\|\nabla\Phi\| \geq C|\Phi - \Phi_{\min}|^\theta$ corresponds to deformation rigidity:
@@ -256,11 +312,19 @@ arises from the bracket $[-, -]: T_V \otimes T_V \to T_V$. If $H^2 = 0$, the Kur
 - **Case $H^1 \neq 0$, $\text{ob}$ not surjective:** Positive-dimensional moduli; stiffness certificate $K_{\mathrm{LS}_\sigma}^-$ issues (stiffness fails).
 
 *Step 6 (Concentration link).* The certificate $K_{C_\mu}^+$ ensures the moduli space $\mathcal{M}$ is finite-dimensional. By Grothendieck's representability:
-$$\dim \mathcal{M} = h^1(V, T_V) - \dim(\text{Im ob}) < \infty$$
+
+$$
+\dim \mathcal{M} = h^1(V, T_V) - \dim(\text{Im ob}) < \infty
+$$
+
 Concentration forces $h^1 < \infty$, which holds for all coherent sheaf cohomology on proper varieties.
 
 *Step 7 (Certificate assembly).* Construct the output certificate:
-$$K_{\text{KS}}^+ = \left((h^0, h^1, h^2), \text{ob}, \text{classification}\right)$$
+
+$$
+K_{\text{KS}}^+ = \left((h^0, h^1, h^2), \text{ob}, \text{classification}\right)
+$$
+
 where classification $\in \{\text{rigid}, \text{obstructed}, \text{unobstructed-positive}\}$.
 :::
 
@@ -298,19 +362,35 @@ This is how the sieve connects to Gromov-Witten theory and Donaldson-Thomas theo
 Then:
 
 1. **Virtual Fundamental Class:** There exists a unique class:
-   $$[\mathcal{M}]^{\text{vir}} = 0_E^![\mathfrak{C}_{\mathcal{M}}] \in A_{\text{vdim}}(\mathcal{M}, \mathbb{Q})$$
+
+   $$
+   [\mathcal{M}]^{\text{vir}} = 0_E^![\mathfrak{C}_{\mathcal{M}}] \in A_{\text{vdim}}(\mathcal{M}, \mathbb{Q})
+   $$
+
    where $\mathfrak{C}_{\mathcal{M}} \subset E^{-1}|_{\mathcal{M}}$ is the intrinsic normal cone and $0_E^!$ is the refined Gysin map.
 
 2. **Certificate Integration:** For any certificate test function $\chi_A: \mathcal{M} \to \mathbb{Q}$:
-   $$\int_{[\mathcal{M}]^{\text{vir}}} \chi_A = \#^{\text{vir}}\{p \in \mathcal{M} : K_A^-(p)\}$$
+
+   $$
+   \int_{[\mathcal{M}]^{\text{vir}}} \chi_A = \#^{\text{vir}}\{p \in \mathcal{M} : K_A^-(p)\}
+   $$
+
    counts (with virtual multiplicity) points where certificate $K_A$ fails.
 
 3. **GW Invariants:** For $X$ a smooth projective variety, $\beta \in H_2(X, \mathbb{Z})$:
-   $$\text{GW}_{g,n,\beta}(X; \gamma_1, \ldots, \gamma_n) = \int_{[\overline{M}_{g,n}(X,\beta)]^{\text{vir}}} \prod_{i=1}^n \text{ev}_i^*(\gamma_i)$$
+
+   $$
+   \text{GW}_{g,n,\beta}(X; \gamma_1, \ldots, \gamma_n) = \int_{[\overline{M}_{g,n}(X,\beta)]^{\text{vir}}} \prod_{i=1}^n \text{ev}_i^*(\gamma_i)
+   $$
+
    counts stable maps with $K_{\mathrm{Rep}}^+$ ensuring curve representability.
 
 4. **DT Invariants:** For $X$ a Calabi-Yau threefold, $\text{ch} \in H^*(X)$:
-   $$\text{DT}_{\text{ch}}(X) = \int_{[\mathcal{M}_{\text{ch}}^{\text{st}}(X)]^{\text{vir}}} 1$$
+
+   $$
+   \text{DT}_{\text{ch}}(X) = \int_{[\mathcal{M}_{\text{ch}}^{\text{st}}(X)]^{\text{vir}}} 1
+   $$
+
    counts stable sheaves with $K_{\mathrm{Cap}_H}^+$ ensuring proper moduli.
 
 **Required Interface Permits:** $\mathrm{Cap}_H$ (Capacity), $D_E$ (Energy), $\mathrm{Rep}$ (Representation)
@@ -1001,7 +1081,10 @@ The reconstruction procedure must produce one of the following outcomes:
 2. **Refined missing set:** If full discharge is not possible, {prf:ref}`mt-lock-reconstruction` may refine the $\mathsf{missing}$ component of existing $K^{\mathrm{inc}}$ certificates into a strictly more explicit set of prerequisites—smaller template requirements, stronger preconditions, or more specific structural data. This refinement produces a new $K^{\mathrm{inc}}$ with updated payload.
 
 **Formalization:**
-$$\text{Structural Reconstruction}: \mathsf{Obl}(\Gamma) \to \left(\{K^+_{\text{new}}\} \text{ enabling discharge}\right) \cup \left(\mathsf{Obl}'(\Gamma) \text{ with refined } \mathsf{missing}\right)$$
+
+$$
+\text{Structural Reconstruction}: \mathsf{Obl}(\Gamma) \to \left(\{K^+_{\text{new}}\} \text{ enabling discharge}\right) \cup \left(\mathsf{Obl}'(\Gamma) \text{ with refined } \mathsf{missing}\right)
+$$
 
 This ensures reconstruction makes definite progress: either discharging obligations or producing a strictly refined $\mathsf{missing}$ specification.
 
@@ -1062,7 +1145,10 @@ In either case, the epistemic deadlock at Node 17 is resolved.
 :label: cor-analytic-structural
 
 Under the hypotheses of {prf:ref}`mt-lock-reconstruction` (with all interface permits $D_E$, $C_\mu$, $\mathrm{SC}_\lambda$, $\mathrm{LS}_\sigma$, $\mathrm{Cat}_{\mathrm{Hom}}$ satisfied), the categories $\mathcal{A}$ and $\mathcal{S}$ are **Hom-equivalent** on the subcategory generated by $\mathcal{H}_{\text{bad}}$:
-$$\mathcal{A}|_{\langle\mathcal{H}_{\text{bad}}\rangle} \simeq_{\text{Hom}} \mathcal{S}|_{\langle F_{\text{Rec}}(\mathcal{H}_{\text{bad}})\rangle}$$
+
+$$
+\mathcal{A}|_{\langle\mathcal{H}_{\text{bad}}\rangle} \simeq_{\text{Hom}} \mathcal{S}|_{\langle F_{\text{Rec}}(\mathcal{H}_{\text{bad}})\rangle}
+$$
 
 This equivalence is the rigorous formulation of "soft implies hard" for morphisms. In particular:
 - Analytic obstructions (from $K_{\mathrm{LS}_\sigma}^+$) are equivalent to structural obstructions
@@ -1128,17 +1214,28 @@ The beautiful thing is that each step uses a different piece of the certificate 
 - $K_{D_E}^+$ **(Energy Bound):** The energy functional satisfies $\Phi(\eta) = \|\eta\|_{L^2}^2 < \infty$.
 
 - $K_{\mathrm{LS}_\sigma}^+$ **(Stiffness/Spectral Gap):** The form $\eta$ lies in a subspace $V \subset H^{2k}(X)$ on which the Hodge-Riemann pairing $Q(\cdot, \cdot)$ is non-degenerate with definite signature. For any perturbation $\delta\eta \in V$, the second variation of the energy satisfies:
-  $$\|\nabla^2 \Phi(\eta)\| \geq \lambda > 0$$
+
+  $$
+  \|\nabla^2 \Phi(\eta)\| \geq \lambda > 0
+  $$
+
   This is the **stiffness condition**: the energy landscape admits no flat directions.
 
 - $K_{\mathrm{Tame}}^+$ **(O-minimal Tameness):** The singular support
-  $$\Sigma(\eta) = \{x \in X : \eta(x) \text{ is not real-analytic}\}$$
+
+  $$
+  \Sigma(\eta) = \{x \in X : \eta(x) \text{ is not real-analytic}\}
+  $$
+
   is definable in an o-minimal structure $\mathcal{O}$ expanding $\mathbb{R}$ (e.g., $\mathbb{R}_{\text{an}}$, $\mathbb{R}_{\exp}$).
 
 - $K_{\mathrm{Hodge}}^{(k,k)}$ **(Type Constraint):** The form $\eta$ is harmonic ($\Delta\eta = 0$) and of Hodge type $(k,k)$.
 
 Then $\eta$ is the fundamental class of an algebraic cycle with rational coefficients:
-$$[\eta] \in \mathcal{Z}^k(X)_{\mathbb{Q}}$$
+
+$$
+[\eta] \in \mathcal{Z}^k(X)_{\mathbb{Q}}
+$$
 
 The sieve issues certificate $K_{\mathrm{Alg}}^+$ with payload $(Z^{\text{alg}}, [Z^{\text{alg}}] = [\eta], \mathbb{Q})$.
 
@@ -1153,7 +1250,10 @@ $$\eta_\epsilon = \eta + \epsilon \psi$$
 where $\psi$ is a smooth form with $\text{supp}(\psi) \subset U$ for an arbitrarily small neighborhood $U$ of $p$.
 
 Because $\psi$ is localized, its interactions with the global Hodge-Riemann pairing $Q$ can be made arbitrarily small or sign-indefinite. This creates **flat directions** in the energy landscape:
-$$\langle \nabla^2\Phi(\eta) \cdot \psi, \psi \rangle \to 0 \quad \text{as } U \to \{p\}$$
+
+$$
+\langle \nabla^2\Phi(\eta) \cdot \psi, \psi \rangle \to 0 \quad \text{as } U \to \{p\}
+$$
 
 This violates the uniform spectral gap condition $\|\nabla^2\Phi\| \geq \lambda > 0$ from $K_{\mathrm{LS}_\sigma}^+$. The Łojasiewicz-Simon inequality ({cite}`Simon83`; {cite}`Lojasiewicz65`) implies the energy landscape admits no flat directions at critical points.
 
@@ -1162,11 +1262,18 @@ This violates the uniform spectral gap condition $\|\nabla^2\Phi\| \geq \lambda 
 *Step 2 (Rectifiability via $K_{\mathrm{Tame}}^+$ and $K_{D_E}^+$).* The tameness certificate $K_{\mathrm{Tame}}^+$ combined with finite energy $K_{D_E}^+$ ensures that $\eta$ extends to a rectifiable current.
 
 By the **Cell Decomposition Theorem** for o-minimal structures ({cite}`vandenDries98`, Theorem 1.8.1), the singular support $\Sigma$ admits a finite stratification:
-$$\Sigma = \bigsqcup_{i=1}^N S_i$$
+
+$$
+\Sigma = \bigsqcup_{i=1}^N S_i
+$$
+
 where each $S_i$ is a $C^m$-submanifold definable in $\mathcal{O}$. The finiteness $N < \infty$ is guaranteed by o-minimality.
 
 The finite energy certificate $K_{D_E}^+$ implies $\|\eta\|_{L^2}^2 < \infty$, hence $\eta$ has **finite mass** as a current:
-$$\mathbb{M}(\eta) = \int_X |\eta| \, dV < \infty$$
+
+$$
+\mathbb{M}(\eta) = \int_X |\eta| \,dV < \infty
+$$
 
 By the **Federer-Fleming Closure Theorem** adapted to tame geometry ({cite}`Federer69`, §4.2; {cite}`vandenDries98`, Ch. 6), a current with:
 - Finite mass
@@ -1179,11 +1286,19 @@ is a **rectifiable current**. The tameness of $\mathcal{O}$ excludes pathologica
 *Step 3 (Holomorphic structure via $K_{\mathrm{Hodge}}^{(k,k)}$ and $K_{\mathrm{LS}_\sigma}^+$).* The type constraint $K_{\mathrm{Hodge}}^{(k,k)}$ combined with stiffness establishes holomorphicity.
 
 On a Kähler manifold $X$, a real-analytic harmonic $(k,k)$-form with integral periods defines a holomorphic geometric object. The **Poincaré-Lelong equation** ({cite}`GriffithsHarris78`, Ch. 3):
-$$\frac{i}{2\pi} \partial\bar{\partial} \log |s|^2 = [Z]$$
+
+$$
+\frac{i}{2\pi} \partial\bar{\partial} \log |s|^2 = [Z]
+$$
+
 relates $(k,k)$-currents to zero sets of holomorphic sections. This provides the bridge from analytic to holomorphic.
 
 The stiffness certificate $K_{\mathrm{LS}_\sigma}^+$ implies **deformation rigidity**: the tangent space to the moduli of such objects vanishes:
-$$H^1(Z, \mathcal{N}_{Z/X}) = 0$$
+
+$$
+H^1(Z, \mathcal{N}_{Z/X}) = 0
+$$
+
 where $\mathcal{N}_{Z/X}$ is the normal bundle ({cite}`Demailly12`, §VII). The moduli space is discrete (zero-dimensional). A "stiff" form cannot deform continuously into a non-holomorphic form without breaking harmonicity or Hodge type.
 
 **Conclusion:** The analytic chain underlying $\eta$ is a complex analytic subvariety $Z \subset X$. The failure mode **N.H (Non-Holomorphic)** is excluded.
@@ -1199,11 +1314,18 @@ In particular:
 - The ideal sheaf $\mathcal{I}_Z$ is the analytification of an algebraic ideal sheaf $\mathcal{I}_{Z^{\text{alg}}}$
 
 Therefore:
-$$Z = (Z^{\text{alg}})^{\text{an}}$$
+
+$$
+Z = (Z^{\text{alg}})^{\text{an}}
+$$
+
 for a unique algebraic subvariety $Z^{\text{alg}} \subset X$.
 
 **Conclusion:** The cohomology class $[\eta]$ is the image of the algebraic cycle class:
-$$[\eta] = [Z^{\text{alg}}] \in H^{2k}(X, \mathbb{Q})$$
+
+$$
+[\eta] = [Z^{\text{alg}}] \in H^{2k}(X, \mathbb{Q})
+$$
 
 The failure mode **N.A (Non-Algebraic)** is excluded.
 

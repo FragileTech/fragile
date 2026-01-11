@@ -35,10 +35,14 @@ Second, you need structural preservation: the interfaces, the permits, the whole
 
 An **admissible equivalence move** for type $T$ is a transformation $(x, \Phi, \mathfrak{D}) \mapsto (\tilde{x}, \tilde{\Phi}, \tilde{\mathfrak{D}})$ with:
 1. **Comparability bounds**: Constants $C_1, C_2 > 0$ with
-   $$\begin{aligned}
+
+   $$
+   \begin{aligned}
    C_1 \Phi(x) &\leq \tilde{\Phi}(\tilde{x}) \leq C_2 \Phi(x) \\
    C_1 \mathfrak{D}(x) &\leq \tilde{\mathfrak{D}}(\tilde{x}) \leq C_2 \mathfrak{D}(x)
-   \end{aligned}$$
+   \end{aligned}
+   $$
+
 2. **Structural preservation**: Interface permits preserved
 3. **Certificate production**: Equivalence certificate $K_{\text{equiv}}$
 
@@ -68,7 +72,11 @@ Now let me show you the standard repertoire of equivalence moves. These are the 
 :label: def-equiv-symmetry
 
 For symmetry group $G$ acting on $X$:
-$$\tilde{x} = [x]_G \in X/G$$
+
+$$
+\tilde{x} = [x]_G \in X/G
+$$
+
 Comparability: $\Phi([x]_G) = \inf_{g \in G} \Phi(g \cdot x)$ (coercivity modulo $G$)
 
 :::
@@ -77,7 +85,11 @@ Comparability: $\Phi([x]_G) = \inf_{g \in G} \Phi(g \cdot x)$ (coercivity modulo
 :label: def-equiv-metric
 
 Replace metric $d$ with equivalent metric $\tilde{d}$:
-$$C_1 d(x, y) \leq \tilde{d}(x, y) \leq C_2 d(x, y)$$
+
+$$
+C_1 d(x,\, y) \leq \tilde{d}(x,\, y) \leq C_2 d(x,\, y)
+$$
+
 Used when direct LS fails but deformed LS holds.
 
 :::
@@ -86,7 +98,11 @@ Used when direct LS fails but deformed LS holds.
 :label: def-equiv-conjugacy
 
 For invertible $h: X \to Y$:
-$$\tilde{S}_t = h \circ S_t \circ h^{-1}$$
+
+$$
+\tilde{S}_t = h \circ S_t \circ h^{-1}
+$$
+
 Comparability: $\Phi_Y(h(x)) \sim \Phi_X(x)$
 
 :::
@@ -95,7 +111,11 @@ Comparability: $\Phi_Y(h(x)) \sim \Phi_X(x)$
 :label: def-equiv-surgery-id
 
 Outside excision region $E$:
-$$x|_{X \setminus E} = x'|_{X \setminus E}$$
+
+$$
+x|_{X \setminus E} = x'|_{X \setminus E}
+$$
+
 Transport across surgery boundary.
 
 :::
@@ -104,7 +124,11 @@ Transport across surgery boundary.
 :label: def-equiv-bridge
 
 Between classical solution $u$ and hypostructure state $x$:
-$$x = \mathcal{H}(u), \quad u = \mathcal{A}(x)$$
+
+$$
+x = \mathcal{H}(u), \quad u = \mathcal{A}(x)
+$$
+
 with inverse bounds.
 
 :::
@@ -134,7 +158,11 @@ This is not cheating. The equivalence moves preserve all the structure that matt
 :label: def-yes-tilde-cert
 
 A **YES$^\sim$ certificate** for predicate $P_i$ is a triple:
-$$K_i^{\sim} = (K_{\text{equiv}}, K_{\text{transport}}, K_i^+[\tilde{x}])$$
+
+$$
+K_i^{\sim} = (K_{\text{equiv}}, K_{\text{transport}}, K_i^+[\tilde{x}])
+$$
+
 where:
 - $K_{\text{equiv}}$: Certifies $x \sim_{\mathrm{Eq}} \tilde{x}$ for some equivalence move {prf:ref}`def-equiv-symmetry`--{prf:ref}`def-equiv-bridge`
 - $K_{\text{transport}}$: Transport lemma certificate (from {prf:ref}`def-transport-t1`--{prf:ref}`def-transport-t6`)
@@ -146,7 +174,11 @@ where:
 :label: def-yes-tilde-accept
 
 A metatheorem $\mathcal{M}$ **accepts YES$^\sim$** if:
-$$\mathcal{M}(K_{I_1}, \ldots, K_{I_i}^{\sim}, \ldots, K_{I_n}) = \mathcal{M}(K_{I_1}, \ldots, K_{I_i}^+, \ldots, K_{I_n})$$
+
+$$
+\mathcal{M}(K_{I_1}, \ldots, K_{I_i}^{\sim}, \ldots, K_{I_n}) = \mathcal{M}(K_{I_1}, \ldots, K_{I_i}^+, \ldots, K_{I_n})
+$$
+
 That is, YES$^\sim$ certificates may substitute for YES certificates in the metatheorem's preconditions.
 
 :::
@@ -178,7 +210,10 @@ Now we need to be precise about how results actually transport between equivalen
 :label: def-transport-t1
 
 Under comparability $C_1 \Phi \leq \tilde{\Phi} \leq C_2 \Phi$:
-$$\tilde{\Phi}(\tilde{x}) \leq E \Rightarrow \Phi(x) \leq E/C_1$$
+
+$$
+\tilde{\Phi}(\tilde{x}) \leq E \Rightarrow \Phi(x) \leq E/C_1
+$$
 
 :::
 
@@ -186,7 +221,10 @@ $$\tilde{\Phi}(\tilde{x}) \leq E \Rightarrow \Phi(x) \leq E/C_1$$
 :label: def-transport-t2
 
 Under dissipation comparability:
-$$\int \tilde{\mathfrak{D}} \leq C_2 \int \mathfrak{D}$$
+
+$$
+\int \tilde{\mathfrak{D}} \leq C_2 \int \mathfrak{D}
+$$
 
 :::
 
@@ -194,7 +232,10 @@ $$\int \tilde{\mathfrak{D}} \leq C_2 \int \mathfrak{D}$$
 :label: def-transport-t3
 
 For $G$-quotient with coercivity:
-$$P_i(x) \Leftarrow P_i([x]_G) \wedge \text{(orbit bound)}$$
+
+$$
+P_i(x) \Leftarrow P_i([x]_G) \wedge \text{(orbit bound)}
+$$
 
 :::
 
@@ -202,7 +243,10 @@ $$P_i(x) \Leftarrow P_i([x]_G) \wedge \text{(orbit bound)}$$
 :label: def-transport-t4
 
 LS inequality transports under equivalent metrics:
-$$\text{LS}_{\tilde{d}}(\theta, C) \Rightarrow \text{LS}_d(\theta, C/C_2)$$
+
+$$
+\operatorname{LS}_{\tilde{d}}(\theta,\, C) \Rightarrow \operatorname{LS}_d(\theta,\, C/C_2)
+$$
 
 :::
 
@@ -210,7 +254,10 @@ $$\text{LS}_{\tilde{d}}(\theta, C) \Rightarrow \text{LS}_d(\theta, C/C_2)$$
 :label: def-transport-t5
 
 Invariants transport under conjugacy:
-$$\tau(x) = \tilde{\tau}(h(x))$$
+
+$$
+\tau(x) = \tilde{\tau}(h(x))
+$$
 
 :::
 
@@ -218,7 +265,10 @@ $$\tau(x) = \tilde{\tau}(h(x))$$
 :label: def-transport-t6
 
 Outside excision, all certificates transfer:
-$$K[x|_{X \setminus E}] = K[x'|_{X \setminus E}]$$
+
+$$
+K[x|_{X \setminus E}] = K[x'|_{X \setminus E}]
+$$
 
 :::
 
@@ -249,7 +299,10 @@ The **promotion closure** is the mathematical formalization: take your initial c
 Rules using only past/current certificates:
 
 **Barrier-to-YES**: If blocked certificate plus earlier certificates imply the predicate:
-$$K_i^{\mathrm{blk}} \wedge \bigwedge_{j < i} K_j^+ \Rightarrow K_i^+$$
+
+$$
+K_i^{\mathrm{blk}} \wedge \bigwedge_{j < i} K_j^+ \Rightarrow K_i^+
+$$
 
 Example: $K_{\text{Cap}}^{\mathrm{blk}}$ (singular set measure zero) plus $K_{\text{SC}}^+$ (subcritical) may together imply $K_{\text{Geom}}^+$.
 
@@ -260,7 +313,9 @@ Example: $K_{\text{Cap}}^{\mathrm{blk}}$ (singular set measure zero) plus $K_{\t
 
 Rules using later certificates:
 
-$$K_i^{\mathrm{blk}} \wedge \bigwedge_{j > i} K_j^+ \Rightarrow K_i^+$$
+$$
+K_i^{\mathrm{blk}} \wedge \bigwedge_{j > i} K_j^+ \Rightarrow K_i^+
+$$
 
 Example: Full Lock passage ($K_{\mathrm{Cat}_{\mathrm{Hom}}}^+$) may retroactively promote earlier blocked certificates to full YES.
 
@@ -270,8 +325,14 @@ Example: Full Lock passage ($K_{\mathrm{Cat}_{\mathrm{Hom}}}^+$) may retroactive
 :label: def-promotion-closure
 
 The **promotion closure** $\mathrm{Cl}(\Gamma)$ is the least fixed point:
-$$\Gamma_0 = \Gamma, \quad \Gamma_{n+1} = \Gamma_n \cup \{K : \text{promoted or inc-upgraded from } \Gamma_n\}$$
-$$\mathrm{Cl}(\Gamma) = \bigcup_n \Gamma_n$$
+
+$$
+\Gamma_0 = \Gamma, \quad \Gamma_{n+1} = \Gamma_n \cup \{K : \text{promoted or inc-upgraded from } \Gamma_n\}
+$$
+
+$$
+\mathrm{Cl}(\Gamma) = \bigcup_n \Gamma_n
+$$
 
 This includes both blocked-certificate promotions ({prf:ref}`def-promotion-permits`) and inconclusive-certificate upgrades ({prf:ref}`def-inc-upgrades`).
 
