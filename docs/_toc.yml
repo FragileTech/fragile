@@ -1,6 +1,13 @@
 format: jb-book
 root: intro
 parts:
+  # ══════════════════════════════════════════════════════════════════════════════
+  # VOLUME 1: FRAGILE MECHANICS
+  # ══════════════════════════════════════════════════════════════════════════════
+
+  - caption: "━━ Vol. 1: Fragile Mechanics ━━"
+    chapters: []
+
   - caption: Part I - Foundations
     chapters:
     - file: source/1_agent/01_foundations/01_definitions
@@ -71,58 +78,61 @@ parts:
     - file: source/1_agent/10_appendices/04_faq
     - file: source/1_agent/10_appendices/05_proofs
 
-  # ============================================
-  # BOOK 2: THE HYPOSTRUCTURE FORMALISM
-  # ============================================
+  # ══════════════════════════════════════════════════════════════════════════════
+  # VOLUME 2: THE HYPOSTRUCTURE FORMALISM
+  # ══════════════════════════════════════════════════════════════════════════════
 
-  - caption: "Hypostructure - Introduction"
+  - caption: "━━ Vol. 2: Hypostructure ━━"
+    chapters: []
+
+  - caption: "Introduction"
     chapters:
     - file: source/2_hypostructure/intro_hypostructure
 
-  - caption: "Hypostructure I - Categorical Foundations"
+  - caption: "Part I - Categorical Foundations"
     chapters:
     - file: source/2_hypostructure/01_foundations/01_categorical
     - file: source/2_hypostructure/01_foundations/02_constructive
 
-  - caption: "Hypostructure II - Axiom System"
+  - caption: "Part II - Axiom System"
     chapters:
     - file: source/2_hypostructure/02_axioms/01_axiom_system
 
-  - caption: "Hypostructure III - The Sieve"
+  - caption: "Part III - The Sieve"
     chapters:
     - file: source/2_hypostructure/03_sieve/01_structural
     - file: source/2_hypostructure/03_sieve/02_kernel
 
-  - caption: "Hypostructure IV - Node Specifications"
+  - caption: "Part IV - Node Specifications"
     chapters:
     - file: source/2_hypostructure/04_nodes/01_gate_nodes
     - file: source/2_hypostructure/04_nodes/02_barrier_nodes
     - file: source/2_hypostructure/04_nodes/03_surgery_nodes
 
-  - caption: "Hypostructure V - Soft Interfaces"
+  - caption: "Part V - Soft Interfaces"
     chapters:
     - file: source/2_hypostructure/05_interfaces/01_gate_evaluator
     - file: source/2_hypostructure/05_interfaces/02_permits
     - file: source/2_hypostructure/05_interfaces/03_contracts
 
-  - caption: "Hypostructure VI - Singularity Modules"
+  - caption: "Part VI - Singularity Modules"
     chapters:
     - file: source/2_hypostructure/06_modules/01_singularity
     - file: source/2_hypostructure/06_modules/02_equivalence
     - file: source/2_hypostructure/06_modules/03_lock
 
-  - caption: "Hypostructure VII - Factory Metatheorems"
+  - caption: "Part VII - Factory Metatheorems"
     chapters:
     - file: source/2_hypostructure/07_factories/01_metatheorems
     - file: source/2_hypostructure/07_factories/02_instantiation
 
-  - caption: "Hypostructure VIII - Upgrade Theorems"
+  - caption: "Part VIII - Upgrade Theorems"
     chapters:
     - file: source/2_hypostructure/08_upgrades/01_instantaneous
     - file: source/2_hypostructure/08_upgrades/02_retroactive
     - file: source/2_hypostructure/08_upgrades/03_stability
 
-  - caption: "Hypostructure IX - Mathematical Foundations"
+  - caption: "Part IX - Mathematical Foundations"
     chapters:
     - file: source/2_hypostructure/09_mathematical/01_theorems
     - file: source/2_hypostructure/09_mathematical/02_algebraic
@@ -130,18 +140,21 @@ parts:
     - file: source/2_hypostructure/09_mathematical/04_taxonomy
     - file: source/2_hypostructure/09_mathematical/05_algorithmic
 
-  - caption: "Hypostructure X - Meta-Learning"
+  - caption: "Part X - Meta-Learning"
     chapters:
     - file: source/2_hypostructure/10_metalearning/01_metalearning
 
-  - caption: "Hypostructure XI - Appendices"
+  - caption: "Part XI - Appendices"
     chapters:
     - file: source/2_hypostructure/11_appendices/01_zfc
     - file: source/2_hypostructure/11_appendices/02_notation
 
-  # ============================================
-  # BOOK 3: FRACTAL GAS (SELECTED)
-  # ============================================
+  # ══════════════════════════════════════════════════════════════════════════════
+  # SUPPLEMENTARY
+  # ══════════════════════════════════════════════════════════════════════════════
+
+  - caption: "━━ Supplementary ━━"
+    chapters: []
 
   - caption: "Fractal Gas"
     chapters:

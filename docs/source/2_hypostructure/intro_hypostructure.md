@@ -423,10 +423,10 @@ The Hypostructure Formalism provides the **mathematical semantics** for the Siev
 
 ### Cross-References to Book 1
 
-- {ref}`The Sieve (Part II) <sec-diagnostics-stability-checks>`: Operational description of diagnostic nodes
-- {ref}`Bounded Rationality Controller <sec-introduction-the-agent-as-a-bounded-rationality-controller>`: Agent as hypostructure carrier
+- {ref}`The Stability Checks <sec-the-stability-checks>`: Operational description of diagnostic nodes
+- {prf:ref}`def-bounded-rationality-controller`: Agent as hypostructure carrier
 - {ref}`Holographic Interface <sec-the-boundary-interface-symplectic-structure>`: Boundary morphism interpretation
-- {ref}`Universal Governor <sec-theory-of-meta-stability-the-universal-governor-as-homeostatic-controller>`: Meta-control over sieve execution
+- {ref}`Universal Governor <sec-the-universal-governor>`: Meta-control over sieve execution
 
 (sec-hypo-for-skeptical-readers)=
 ## For Skeptical Readers
