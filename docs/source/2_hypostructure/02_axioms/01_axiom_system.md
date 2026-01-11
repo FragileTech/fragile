@@ -27,7 +27,10 @@ Why should we care? Because the two most common ways for PDEs to blow up are: (1
 :label: ax-dissipation
 
 The energy-dissipation inequality holds:
-$$\Phi(S_t x) + \int_0^t \mathfrak{D}(S_s x) \, ds \leq \Phi(x)$$
+
+$$
+\Phi(S_t x) + \int_0^t \mathfrak{D}(S_s x) \, ds \leq \Phi(x)
+$$
 
 **Enforced by:** {prf:ref}`def-node-energy` --- Certificate $K_{D_E}^+$
 :::
@@ -71,7 +74,10 @@ These questions connect to some of the deepest ideas in modern physics: renormal
 :label: ax-compactness
 
 Bounded energy sequences admit convergent subsequences modulo the symmetry group $G$:
-$$\sup_n \Phi(u_n) < \infty \implies \exists (n_k), g_k \in G: g_k \cdot u_{n_k} \to u_\infty$$
+
+$$
+\sup_n \Phi(u_n) < \infty \implies \exists (n_k), \, g_k \in G: \, g_k \cdot u_{n_k} \to u_\infty
+$$
 
 **Enforced by:** {prf:ref}`def-node-compact` --- Certificate $K_{C_\mu}^+$ (or dispersion via $K_{C_\mu}^-$)
 :::
@@ -119,7 +125,11 @@ In infinite dimensions, this problem becomes critical. If your energy landscape 
 :label: ax-stiffness
 
 The Łojasiewicz-Simon inequality holds near equilibria, ensuring a mass gap:
-$$\inf \sigma(L) > 0$$
+
+$$
+\inf \sigma(L) > 0
+$$
+
 where $L$ is the linearized operator at equilibrium.
 
 **Enforced by:** {prf:ref}`def-node-stiffness` --- Certificate $K_{LS_\sigma}^+$
@@ -164,7 +174,10 @@ This has profound implications. It means some singularities are topologically in
 :label: ax-topology
 
 Topological sectors are separated by an action gap:
-$$[\pi] \in \pi_0(\mathcal{C})_{\text{acc}} \implies E < S_{\min} + \Delta$$
+
+$$
+[\pi] \in \pi_0(\mathcal{C})_{\mathrm{acc}} \implies E < S_{\min} + \Delta
+$$
 
 **Enforced by:** {prf:ref}`def-node-topo` --- Certificate $K_{TB_\pi}^+$
 :::
@@ -174,7 +187,7 @@ Here is the picture: configuration space is divided into disconnected regions (t
 
 Axiom TB says: you can only access sectors where your energy exceeds the swimming cost. If $E < S_{\min} + \Delta$, you are stuck on your island. The $\Delta$ is a safety margin; it accounts for quantum tunneling and thermal fluctuations that let you cross small barriers.
 
-This is how instantons work in quantum field theory. An instanton is a path through configuration space that changes topology---like swimming between islands. The action of the instanton measures the swimming cost. In the semiclassical approximation, the transition rate goes like $e^{-S_{\text{instanton}}/\hbar}$---exponentially suppressed when the action is large.
+This is how instantons work in quantum field theory. An instanton is a path through configuration space that changes topology---like swimming between islands. The action of the instanton measures the swimming cost. In the semiclassical approximation, the transition rate goes like $e^{-S_{\mathrm{instanton}}/\hbar}$---exponentially suppressed when the action is large.
 
 For regularity, we want the system to stay on its island. If it can access dangerous sectors with wild topology, bad things happen. Axiom TB bounds the accessible sectors.
 :::
@@ -183,7 +196,10 @@ For regularity, we want the system to stay on its island. If it can access dange
 :label: ax-capacity
 
 Capacity density bounds prevent concentration on thin sets:
-$$\text{codim}(S) \geq 2 \implies \text{Cap}_H(S) = 0$$
+
+$$
+\operatorname{codim}(S) \geq 2 \implies \operatorname{Cap}_H(S) = 0
+$$
 
 **Enforced by:** {prf:ref}`def-node-geom` --- Certificate $K_{\text{Cap}_H}^+$
 :::
@@ -193,7 +209,7 @@ Axiom Cap is about the *size* of singularities. Even if singularities exist, the
 
 Why codimension 2? Think about it in three dimensions. A point has codimension 3: it is zero-dimensional in 3D space. A line has codimension 2. A surface has codimension 1. Now, if you have a random path in 3D, the probability of hitting a point is zero. The probability of hitting a line is also zero (you have to aim exactly). But a surface will generically be crossed.
 
-For PDEs, the same logic applies. If singularities live on a set of codimension 2 or more, generic trajectories avoid them. The capacity $\text{Cap}_H$ makes this precise: it measures how hard it is to "see" a set from a potential-theoretic viewpoint. Sets of codimension $\geq 2$ have zero capacity---you cannot charge them up in a meaningful way.
+For PDEs, the same logic applies. If singularities live on a set of codimension 2 or more, generic trajectories avoid them. The capacity $\operatorname{Cap}_H$ makes this precise: it measures how hard it is to "see" a set from a potential-theoretic viewpoint. Sets of codimension $\geq 2$ have zero capacity---you cannot charge them up in a meaningful way.
 
 This is why isolated singularities are often removable: they are points, hence codimension $n$ where $n \geq 3$ typically. But singularities along curves or surfaces are more dangerous.
 :::
@@ -214,15 +230,18 @@ The Tits Alternative says: *every discrete group is either virtually nilpotent (
 The Thin Kernel's simplicial complex $K$ must satisfy the **Discrete Tits Alternative**: it admits either polynomial growth (Euclidean/Nilpotent), hyperbolic structure (Logic/Free Groups), or is a CAT(0) space (Higher-Rank Lattices).
 
 **Predicate**:
-$$P_{\text{Geom}}(K) := (\text{Growth}(K) \leq \text{Poly}(d)) \lor (\delta_{\text{hyp}}(K) < \infty) \lor (\text{Cone}(K) \in \text{Buildings})$$
+
+$$
+P_{\mathrm{Geom}}(K) := (\operatorname{Growth}(K) \leq \operatorname{Poly}(d)) \lor (\delta_{\mathrm{hyp}}(K) < \infty) \lor (\operatorname{Cone}(K) \in \operatorname{Buildings})
+$$
 
 **Operational Check** (Node 7c):
-1. **Polynomial Growth Test**: If ball growth satisfies $|B_r(x)| \sim r^d$ for some $d < \infty$, emit $K_{\text{Geom}}^{+}(\text{Poly})$. *(Euclidean/Nilpotent structures)*
-2. **Hyperbolic Test**: Compute Gromov $\delta$-hyperbolicity constant. If $\delta < \epsilon \cdot \text{diam}(K)$ for small $\epsilon$, emit $K_{\text{Geom}}^{+}(\text{Hyp})$. *(Logic trees/Free groups)*
-3. **CAT(0) Test**: Check triangle comparison inequality $d^2(m,x) \leq \frac{1}{2}d^2(y,x) + \frac{1}{2}d^2(z,x) - \frac{1}{4}d^2(y,z)$ for all triangles. If satisfied, emit $K_{\text{Geom}}^{+}(\text{CAT0})$. *(Higher-rank lattices/Yang-Mills)*
+1. **Polynomial Growth Test**: If ball growth satisfies $|B_r(x)| \sim r^d$ for some $d < \infty$, emit $K_{\mathrm{Geom}}^{+}(\text{Poly})$. *(Euclidean/Nilpotent structures)*
+2. **Hyperbolic Test**: Compute Gromov $\delta$-hyperbolicity constant. If $\delta < \epsilon \cdot \operatorname{diam}(K)$ for small $\epsilon$, emit $K_{\mathrm{Geom}}^{+}(\text{Hyp})$. *(Logic trees/Free groups)*
+3. **CAT(0) Test**: Check triangle comparison inequality $d^2(m,x) \leq \frac{1}{2}d^2(y,x) + \frac{1}{2}d^2(z,x) - \frac{1}{4}d^2(y,z)$ for all triangles. If satisfied, emit $K_{\mathrm{Geom}}^{+}(\text{CAT0})$. *(Higher-rank lattices/Yang-Mills)*
 
 **Rejection Mode**:
-If all three tests fail (exponential growth AND fat triangles AND no building structure), the object is an **Expander Graph** (thermalized, no coherent structure). Emit $K_{\text{Geom}}^{-}$ and route to **Mode D.D (Dispersion)** unless rescued by Spectral Resonance ({prf:ref}`ax-spectral-resonance`).
+If all three tests fail (exponential growth AND fat triangles AND no building structure), the object is an **Expander Graph** (thermalized, no coherent structure). Emit $K_{\mathrm{Geom}}^{-}$ and route to **Mode D.D (Dispersion)** unless rescued by Spectral Resonance ({prf:ref}`ax-spectral-resonance`).
 
 **Physical Interpretation**:
 The Tits Alternative is the **universal dichotomy** for discrete geometric structures:
@@ -231,11 +250,14 @@ The Tits Alternative is the **universal dichotomy** for discrete geometric struc
 - **Expander**: Thermal (Gas phase) → No compressible structure (unless arithmetically constrained)
 
 **Certificate**:
-$$K_{\text{Geom}}^{+} = (\text{GrowthType} \in \{\text{Poly}, \text{Hyp}, \text{CAT0}\}, \text{evidence}, \text{parameters})$$
+
+$$
+K_{\mathrm{Geom}}^{+} = (\operatorname{GrowthType} \in \{\text{Poly}, \text{Hyp}, \text{CAT0}\}, \, \text{evidence}, \, \text{parameters})
+$$
 
 **Literature:** {cite}`Tits72` (Tits Alternative); {cite}`Gromov87` (Hyperbolic groups); {cite}`BridsonHaefliger99` (CAT(0) geometry); {cite}`Lubotzky94` (Expander graphs)
 
-**Enforced by:** Node 7c (Geometric Structure Check) --- Certificate $K_{\text{Geom}}^{\pm}$
+**Enforced by:** Node 7c (Geometric Structure Check) --- Certificate $K_{\mathrm{Geom}}^{\pm}$
 :::
 
 :::{div} feynman-prose
@@ -249,21 +271,31 @@ An object **rejected** by {prf:ref}`ax-geom-tits` as an Expander (thermal chaos)
 
 **Predicate**:
 Let $\rho(\lambda)$ be the spectral density of states for the combinatorial Laplacian $\Delta_K$. Define the **Structure Factor**:
-$$S(t) := \left|\int e^{i\lambda t} \rho(\lambda)\, d\lambda\right|^2$$
+
+$$
+S(t) := \left|\int e^{i\lambda t} \rho(\lambda) \, d\lambda\right|^2
+$$
 
 The object passes the **Spectral Resonance Test** if:
-$$\exists \{p_i\}_{i=1}^N : \lim_{T \to \infty} \frac{1}{T} \int_0^T S(t)\, dt > \eta_{\text{noise}}$$
 
-where $\{p_i\}$ are **quasi-periods** (resonances) and $\eta_{\text{noise}}$ is the random matrix theory baseline.
+$$
+\exists \{p_i\}_{i=1}^N : \, \lim_{T \to \infty} \frac{1}{T} \int_0^T S(t) \, dt > \eta_{\mathrm{noise}}
+$$
+
+where $\{p_i\}$ are **quasi-periods** (resonances) and $\eta_{\mathrm{noise}}$ is the random matrix theory baseline.
 
 **Operational Check** (Node 7d):
-1. **Eigenvalue Computation**: Compute spectrum $\text{spec}(\Delta_K) = \{\lambda_i\}$
+1. **Eigenvalue Computation**: Compute spectrum $\operatorname{spec}(\Delta_K) = \{\lambda_i\}$
 2. **Level Spacing Statistics**: Compute nearest-neighbor spacing distribution $P(s)$
    - **Poisson** $P(s) \sim e^{-s}$: Random (Gas phase) → Fail
    - **GUE/GOE** $P(s) \sim s^\beta e^{-cs^2}$: Quantum chaos (Critical) → Pass if Trace Formula detected
 3. **Trace Formula Detection**: Check for periodic orbit formula:
-   $$\rho(\lambda) = \rho_{\text{Weyl}}(\lambda) + \sum_{\gamma \text{ periodic}} A_\gamma \cos(\lambda \ell_\gamma)$$
-   If present, emit $K_{\text{Spec}}^{+}(\text{ArithmeticChaos})$
+
+$$
+\rho(\lambda) = \rho_{\mathrm{Weyl}}(\lambda) + \sum_{\gamma \text{ periodic}} A_\gamma \cos(\lambda \ell_\gamma)
+$$
+
+   If present, emit $K_{\mathrm{Spec}}^{+}(\text{ArithmeticChaos})$
 
 **Physical Interpretation**:
 This distinguishes:
@@ -272,15 +304,22 @@ This distinguishes:
 
 **Connection to Number Theory**:
 The **Selberg Trace Formula** and **Explicit Formula** for the Riemann zeta function are instances of spectral resonance:
-$$\psi(x) = x - \sum_\rho \frac{x^\rho}{\rho} - \log(2\pi)$$
+
+$$
+\psi(x) = x - \sum_\rho \frac{x^\rho}{\rho} - \log(2\pi)
+$$
+
 where $\rho$ are the non-trivial zeros. The zeros exhibit GUE statistics (quantum chaos) but are **arithmetically structured**.
 
 **Certificate**:
-$$K_{\text{Spec}}^{+} = (\text{LevelStatistics} = \text{GUE/GOE}, \text{TraceFormula}, \{p_i\}, \eta_{\text{signal}}/\eta_{\text{noise}})$$
+
+$$
+K_{\mathrm{Spec}}^{+} = (\operatorname{LevelStatistics} = \text{GUE/GOE}, \, \operatorname{TraceFormula}, \, \{p_i\}, \, \eta_{\mathrm{signal}}/\eta_{\mathrm{noise}})
+$$
 
 **Literature:** {cite}`Selberg56` (Trace formula); {cite}`MontgomeryOdlyzko73` (Pair correlation conjecture); {cite}`Sarnak95` (Quantum chaos); {cite}`KatzSarnak99` (Random matrix theory)
 
-**Enforced by:** Node 7d (Spectral Resonance Check) --- Certificate $K_{\text{Spec}}^{\pm}$
+**Enforced by:** Node 7d (Spectral Resonance Check) --- Certificate $K_{\mathrm{Spec}}^{\pm}$
 :::
 
 :::{div} feynman-prose
@@ -320,17 +359,20 @@ Think about it: almost every interesting system is open. Your body exchanges hea
 The boundary axioms encode three fundamental requirements: (1) the boundary is not trivial---the system is genuinely open, not just a closed system with a pretend boundary; (2) the flux through the boundary is bounded---you cannot pump in infinite energy; and (3) the input is sufficient---the system has enough resources to keep operating. Violate any of these, and you get pathological behavior: overload, starvation, or misalignment between what you are trying to control and what you are actually controlling.
 :::
 
-The Boundary Constraints enforce coupling between bulk dynamics and environmental interface via the Thin Interface $\partial^{\text{thin}} = (\mathcal{B}, \text{Tr}, \mathcal{J}, \mathcal{R})$.
+The Boundary Constraints enforce coupling between bulk dynamics and environmental interface via the Thin Interface $\partial^{\mathrm{thin}} = (\mathcal{B}, \operatorname{Tr}, \mathcal{J}, \mathcal{R})$.
 
 :::{prf:axiom} Axiom Bound (Input/Output Coupling)
 :label: ax-boundary
 
 The system's boundary morphisms satisfy:
-- $\mathbf{Bound}_\partial$: $\text{Tr}: \mathcal{X} \to \mathcal{B}$ is not an equivalence (open system) --- {prf:ref}`def-node-boundary`
+- $\mathbf{Bound}_\partial$: $\operatorname{Tr}: \mathcal{X} \to \mathcal{B}$ is not an equivalence (open system) --- {prf:ref}`def-node-boundary`
 - $\mathbf{Bound}_B$: $\mathcal{J}$ factors through a bounded subobject $\mathcal{J}: \mathcal{B} \to \underline{[-M, M]}$ --- {prf:ref}`def-node-overload`
-- $\mathbf{Bound}_{\Sigma}$: The integral $\int_0^T \mathcal{J}_{\text{in}}$ exists as a morphism in $\text{Hom}(\mathbf{1}, \underline{\mathbb{R}}_{\geq r_{\min}})$ --- {prf:ref}`def-node-starve`
+- $\mathbf{Bound}_{\Sigma}$: The integral $\int_0^T \mathcal{J}_{\mathrm{in}}$ exists as a morphism in $\operatorname{Hom}(\mathbf{1}, \underline{\mathbb{R}}_{\geq r_{\min}})$ --- {prf:ref}`def-node-starve`
 - $\mathbf{Bound}_{\mathcal{R}}$: The **reinjection diagram** commutes:
-  $$\mathcal{J}_{\text{out}} \simeq \mathcal{J}_{\text{in}} \circ \mathcal{R} \quad \text{in } \text{Hom}_{\mathcal{E}}(\mathcal{B}, \underline{\mathbb{R}})$$
+
+$$
+\mathcal{J}_{\mathrm{out}} \simeq \mathcal{J}_{\mathrm{in}} \circ \mathcal{R} \quad \text{in } \operatorname{Hom}_{\mathcal{E}}(\mathcal{B}, \underline{\mathbb{R}})
+$$
 
 **Enforced by:** {prf:ref}`def-node-boundary`, {prf:ref}`def-node-overload`, {prf:ref}`def-node-starve`, {prf:ref}`def-node-align`
 :::
@@ -338,7 +380,7 @@ The system's boundary morphisms satisfy:
 :::{div} feynman-prose
 Let me unpack these four boundary conditions. They are really about different failure modes:
 
-**$\mathbf{Bound}_\partial$ (Non-trivial boundary):** The trace map is not an isomorphism. This sounds technical, but it just means the boundary actually matters. If $\text{Tr}$ were an equivalence, the boundary would contain the same information as the bulk, and you would have a closed system pretending to be open.
+**$\mathbf{Bound}_\partial$ (Non-trivial boundary):** The trace map is not an isomorphism. This sounds technical, but it just means the boundary actually matters. If $\operatorname{Tr}$ were an equivalence, the boundary would contain the same information as the bulk, and you would have a closed system pretending to be open.
 
 **$\mathbf{Bound}_B$ (Bounded flux):** The flux through the boundary is bounded by some $M$. You cannot inject infinite energy per unit time. Without this, you could blow up any system just by overloading it from outside---hardly a failure of the internal dynamics.
 
@@ -357,10 +399,14 @@ When $\mathcal{R} \not\simeq 0$, the boundary acts as a **non-local transport mo
 
 The Sieve verifies regularity by checking **Axiom Rec** at the boundary:
 1. **{prf:ref}`def-node-boundary`:** Detects that $\mathcal{J} \neq 0$ (non-trivial exit flux)
-2. **{prf:ref}`def-node-starve`:** Verifies $\mathcal{R}$ preserves the **total mass section** ($K_{\text{Mass}}^+$)
+2. **{prf:ref}`def-node-starve`:** Verifies $\mathcal{R}$ preserves the **total mass section** ($K_{\mathrm{Mass}}^+$)
 
 Categorically, this defines a **non-local boundary condition** as a span:
-$$\mathcal{X} \xleftarrow{\text{Tr}} \mathcal{B} \xrightarrow{\mathcal{R}} \mathcal{P}(\mathcal{X})$$
+
+$$
+\mathcal{X} \xleftarrow{\operatorname{Tr}} \mathcal{B} \xrightarrow{\mathcal{R}} \mathcal{P}(\mathcal{X})
+$$
+
 The resulting integro-differential structure is tamed by **Axiom C** applied to the Wasserstein $\infty$-stack $\mathcal{P}_2(\mathcal{X})$.
 :::
 

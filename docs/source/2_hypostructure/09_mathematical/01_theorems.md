@@ -35,6 +35,7 @@ The theorem proves this rigorously: any self-similar blow-up sequence that tried
 **Statement:** Let $\mathcal{S}$ be a hypostructure satisfying interface permits $D_E$ and $\mathrm{SC}_\lambda$ with scaling exponents $(\alpha, \beta)$ satisfying $\alpha > \beta$ (strict subcriticality). Let $x \in X$ with $\Phi(x) < \infty$ and $\mathcal{C}_*(x) < \infty$ (finite total cost). Then **no supercritical self-similar blow-up** can occur at $T_*(x)$.
 
 More precisely: if a supercritical sequence produces a nontrivial ancient trajectory $v_\infty$, then:
+
 $$\int_{-\infty}^0 \mathfrak{D}(v_\infty(s)) \, ds = \infty$$
 
 **Certificate Produced:** $K_4^+$ with payload $(\alpha, \beta, \alpha > \beta)$ or $K_{\text{TypeII}}^{\text{blk}}$
@@ -46,15 +47,19 @@ $$\int_{-\infty}^0 \mathfrak{D}(v_\infty(s)) \, ds = \infty$$
 :label: proof-mt-lock-tactic-scale
 
 *Step 1 (Change of Variables).* For rescaled time $s = \lambda_n^\beta(t - t_n)$ and rescaled state $v_n(s) = \mathcal{S}_{\lambda_n} \cdot u(t)$:
+
 $$\int_{t_n}^{T_*(x)} \mathfrak{D}(u(t)) \, dt$$
 
 *Step 2 (Dissipation Scaling).* By interface permit $\mathrm{SC}_\lambda$ with exponent $\alpha$:
+
 $$\mathfrak{D}(u(t)) = \mathfrak{D}(\mathcal{S}_{\lambda_n}^{-1} \cdot v_n(s)) \sim \lambda_n^{-\alpha} \mathfrak{D}(v_n(s))$$
 
 *Step 3 (Cost Transformation).* Substituting:
+
 $$\int_{t_n}^{T_*(x)} \mathfrak{D}(u(t)) \, dt = \lambda_n^{-(\alpha + \beta)} \int_0^{S_n} \mathfrak{D}(v_n(s)) \, ds$$
 
 *Step 4 (Supercritical Regime).* For nontrivial $v_\infty$ with $S_n \to \infty$:
+
 $$\int_0^{S_n} \mathfrak{D}(v_n(s)) \, ds \gtrsim C_0 \lambda_n^\beta(T_*(x) - t_n)$$
 
 *Step 5 (Contradiction).* If $\alpha > \beta$, summing over dyadic scales requires $\int_{-\infty}^0 \mathfrak{D}(v_\infty) ds = \infty$ for consistency with $\mathcal{C}_*(x) < \infty$.
@@ -96,12 +101,15 @@ for some $\theta \in [1/2, 1)$ and $c > 0$.
 :label: proof-mt-lock-spectral-gen
 
 *Step 1 (Hessian structure).* Near a critical point $x_* \in M$, the height functional $\Phi$ admits Taylor expansion:
+
 $$\Phi(x) = \Phi(x_*) + \frac{1}{2}\langle \nabla^2 \Phi|_{x_*} (x - x_*), (x - x_*) \rangle + O(|x - x_*|^3)$$
 
 *Step 2 (Spectral gap from positivity).* If $\nabla^2 \Phi|_{x_*} \succ 0$ with smallest eigenvalue $\sigma_{\min} > 0$, then:
+
 $$\Phi(x) - \Phi(x_*) \geq \frac{\sigma_{\min}}{2}|x - x_*|^2$$
 
 *Step 3 (Gradient bound).* The gradient satisfies $\|\nabla \Phi(x)\| \geq \sigma_{\min}|x - x_*|$. Combined with Step 2:
+
 $$\|\nabla \Phi(x)\| \geq \sigma_{\min} \sqrt{\frac{2}{\sigma_{\min}}(\Phi(x) - \Phi_{\min})} = \sqrt{2\sigma_{\min}} |\Phi(x) - \Phi_{\min}|^{1/2}$$
 
 This gives the Łojasiewicz exponent $\theta = 1/2$ (optimal for analytic functions).
@@ -147,12 +155,15 @@ The theorem makes this precise: if your system is mixing and you have finite ene
 :label: proof-mt-lock-ergodic-mixing
 
 *Step 1 (Mixing definition).* The system is mixing if for all $f, g \in L^2(\mu)$:
+
 $$\lim_{t \to \infty} \int f(S_t x) g(x) d\mu = \int f d\mu \int g d\mu$$
 
 *Step 2 (Birkhoff ergodic theorem).* By Birkhoff (1931), for ergodic systems:
+
 $$\frac{1}{T} \int_0^T f(S_t x) dt \to \int f d\mu \quad \text{a.e.}$$
 
 *Step 3 (Localization obstruction).* A localized singular structure would require $\mu(B_\varepsilon(x_*)) > 0$ to persist under the flow for all time. But mixing implies:
+
 $$\mu(S_t^{-1}(B_\varepsilon(x_*)) \cap B_\varepsilon(x_*)) \to \mu(B_\varepsilon(x_*))^2$$
 For small $\varepsilon$, the measure of return diminishes, preventing persistent localization.
 
@@ -254,9 +265,13 @@ For the Sieve, this means boundary interactions can be measured by cut sizes. Th
 *Step 2 (Discrete approximation).* Let $C_n$ be a sequence of causal sets approximating a Lorentzian manifold $(M, g)$. The number of elements in a causal diamond scales as the spacetime volume: $|J^+(p) \cap J^-(q)| \sim V_g(D(p,q))$.
 
 *Step 3 (Γ-convergence).* The discrete cut functional:
+
 $$F_n(A) = \frac{|A|}{n^{(d-1)/d}}$$
+
 Γ-converges to the area functional:
-$$F(Σ) = \text{Area}_g(Σ)$$
+
+$$F(Σ) = \operatorname{Area}_g(Σ)$$
+
 for hypersurfaces $Σ$ in the continuum limit.
 
 *Step 4 (Minimal surface emergence).* Minimizers of $F_n$ (minimal antichains) converge to minimizers of $F$ (minimal surfaces). This is the boundary measure in the Sieve.
@@ -319,12 +334,15 @@ for generator $\mathcal{L}$, constant $\lambda > 0$, bound $b < \infty$, and com
 :label: proof-mt-up-saturation-principle
 
 *Step 1 (Generator bound).* Apply Itô's lemma to $\mathcal{V}(X_t)$:
+
 $$d\mathcal{V}(X_t) = \mathcal{L}\mathcal{V}(X_t) dt + \text{martingale}$$
 
 *Step 2 (Drift control).* The drift condition ensures:
+
 $$\mathbb{E}[\mathcal{V}(X_t)] \leq e^{-\lambda t} \mathcal{V}(x_0) + \frac{b}{\lambda}(1 - e^{-\lambda t})$$
 
 *Step 3 (Asymptotic bound).* As $t \to \infty$:
+
 $$\limsup_{t \to \infty} \mathbb{E}[\mathcal{V}(X_t)] \leq \frac{b}{\lambda} = E^*$$
 
 *Step 4 (Pathological saturation).* Pathologies saturate the inequality: the threshold energy $E^*$ is determined by the ground state of the singular profile. Energy cannot exceed $E^*$ asymptotically.
@@ -357,9 +375,11 @@ This is a profound result. It says that certain mathematical singularities are n
 
 **Statement (Margolus-Levitin Theorem):**
 The maximum rate of orthogonal state evolution is bounded by energy:
+
 $$\nu_{\max} \leq \frac{4E}{\pi\hbar}$$
 
 Therefore, the maximum number of distinguishable events in time interval $[0,T]$ is:
+
 $$N(T) \leq \frac{4}{\pi\hbar} \int_0^T (E(t) - E_0) \, dt$$
 
 **Required Interface Permits:** $D_E$ (Finite Energy), $C_\mu$ (Confinement)
@@ -384,6 +404,7 @@ $$K_{D_E}^+ \wedge (N_{\text{req}} = \infty) \Rightarrow K_{\mathrm{Rec}_N}^{\ma
 *Step 2 (Margolus-Levitin).* By quantum mechanics, the minimum time to transition between orthogonal states is $\Delta t \geq \pi\hbar / 4E$. This is a fundamental limit independent of the physical implementation.
 
 *Step 3 (Event counting).* If $N$ distinguishable events (state changes) occur in time $T$, then:
+
 $$N \leq \frac{4}{\pi\hbar} \int_0^T E(t) \, dt$$
 
 *Step 4 (Zeno exclusion).* A Zeno sequence (infinitely many events in finite time) would require $N = \infty$ with $T < \infty$. By the bound above, this requires $\int_0^T E(t) dt = \infty$, contradicting the energy certificate $K_{D_E}^+$.
@@ -410,7 +431,7 @@ Why does this matter? Some singularities try to form on lower-dimensional sets, 
 
 **Statement:** Let $\mathcal{S}$ be a hypostructure with geometric background (BG) satisfying interface permit $\mathrm{Cap}_H$. Let $(B_k)$ be a sequence of subsets with increasing "thinness" (e.g., tubular neighborhoods of codimension-$\kappa$ sets with radius $r_k \to 0$) such that:
 
-$$\sum_k \text{Cap}(B_k) < \infty$$
+$$\sum_k \operatorname{Cap}(B_k) < \infty$$
 
 Then **occupation time bounds** hold: the trajectory cannot spend infinite time in thin sets.
 
@@ -427,17 +448,23 @@ Then **occupation time bounds** hold: the trajectory cannot spend infinite time 
 :label: proof-mt-lock-tactic-capacity
 
 *Step 1 (Capacity-codimension bound).* By the background geometry interface permit (BG4):
-$$\text{Cap}(B) \leq C \cdot r^{d-\kappa}$$
+
+$$\operatorname{Cap}(B) \leq C \cdot r^{d-\kappa}$$
+
 for sets of codimension $\kappa$ and radius $r$.
 
 *Step 2 (Occupation measure).* The occupation measure $\mu_T(B) = \frac{1}{T}\int_0^T \mathbf{1}_B(u(t)) dt$ satisfies:
-$$\mu_T(B_k) \leq \frac{C_{\text{cap}}(\Phi(x) + T)}{\text{Cap}(B_k)}$$
 
-*Step 3 (Summability).* For $\sum_k \text{Cap}(B_k) < \infty$:
+$$\mu_T(B_k) \leq \frac{C_{\text{cap}}(\Phi(x) + T)}{\operatorname{Cap}(B_k)}$$
+
+*Step 3 (Summability).* For $\sum_k \operatorname{Cap}(B_k) < \infty$:
+
 $$\sum_k \mu_T(B_k) < \infty$$
+
 The trajectory can spend at most finite total time in all thin sets combined.
 
 *Step 4 (Blocking mechanism).* If a blow-up required concentrating on sets with $\dim(\Sigma) < d_c$ (critical codimension), the capacity is too small to support the energy:
+
 $$\int_\Sigma |V|^2 d\mathcal{H}^{\dim(\Sigma)} < \infty \implies E(V) = 0$$
 A zero-energy profile cannot mediate blow-up.
 :::
@@ -476,15 +503,19 @@ for universal constants $C = 1$, $c = 1/8$.
 :label: proof-mt-up-shadow
 
 *Step 1 (Herbst argument).* The log-Sobolev inequality (LSI) with constant $\lambda_{\text{LS}}$ implies concentration of measure. For any 1-Lipschitz function $f$:
+
 $$\mu(\{f \geq \mathbb{E}_\mu[f] + t\}) \leq \exp\left(-\frac{\lambda_{\text{LS}} t^2}{2}\right)$$
 
 *Step 2 (Action gap setup).* By interface permit $\mathrm{TB}_\pi$ (action gap), states in nontrivial topological sectors have:
+
 $$\tau(x) \neq 0 \implies \mathcal{A}(x) \geq \mathcal{A}_{\min} + \Delta$$
 
 *Step 3 (Lipschitz rescaling).* The action $\mathcal{A}$ has Lipschitz constant $L$. Define $f = \mathcal{A}/L$ (1-Lipschitz). Then:
+
 $$\{x : \tau(x) \neq 0\} \subseteq \{f \geq f_{\min} + \Delta/L\}$$
 
 *Step 4 (Measure bound).* By the Herbst estimate:
+
 $$\mu(\{x : \tau(x) \neq 0\}) \leq \exp\left(-\frac{\lambda_{\text{LS}} (\Delta/L)^2}{2}\right) = \exp\left(-\frac{\lambda_{\text{LS}} \Delta^2}{2L^2}\right)$$
 
 *Step 5 (Exponential suppression).* The probability of residing in a nontrivial topological sector decays exponentially with the action gap squared. Large $\Delta$ or strong LSI exponentially suppresses topological obstructions.
@@ -512,6 +543,7 @@ This connects to the Sieve because certain failure modes involve controllers tha
 **Statement:** Let $\mathcal{S}$ be a feedback control system with loop transfer function $L(s)$, sensitivity $S(s) = (1 + L(s))^{-1}$, and $n_p$ unstable poles $\{p_i\}$ in the right half-plane. Then:
 
 **Waterbed Effect:**
+
 $$\int_0^\infty \log |S(j\omega)| \, d\omega = \pi \sum_{i=1}^{n_p} p_i$$
 
 **Consequence:** If $|S(j\omega)| < 1$ (good rejection) on some frequency band $[\omega_1, \omega_2]$, then there must exist frequencies where $|S(j\omega)| > 1$ (amplification). Sensitivity cannot be uniformly suppressed.
@@ -535,11 +567,15 @@ $$\int_0^\infty \log |S(j\omega)| \, d\omega = \pi \sum_{i=1}^{n_p} p_i$$
 *Step 3 (Arc contribution).* As $R \to \infty$, the semicircular arc contributes zero if $L(s) \to 0$ as $|s| \to \infty$ (strictly proper $L$).
 
 *Step 4 (Imaginary axis integral).* The integral along the imaginary axis is:
+
 $$\int_{-j\infty}^{j\infty} \log S(s) \, ds = 2j \int_0^\infty \log|S(j\omega)| d\omega$$
+
 (using $\log S(-j\omega) = \overline{\log S(j\omega)}$ for real systems).
 
 *Step 5 (Poisson-Jensen formula).* By the Poisson-Jensen formula for functions analytic in the right half-plane:
-$$\int_0^\infty \log|S(j\omega)| d\omega = \pi \sum_{p_i \in \text{RHP}} \text{Re}(p_i)$$
+
+$$\int_0^\infty \log|S(j\omega)| d\omega = \pi \sum_{p_i \in \operatorname{RHP}} \operatorname{Re}(p_i)$$
+
 where the sum is over unstable poles of $L(s)$.
 
 *Step 6 (Waterbed interpretation).* The integral is fixed by unstable poles. Pushing down $|S|$ at some frequencies forces it up elsewhere—this is the "waterbed effect."
@@ -568,8 +604,10 @@ This is Landauer's principle applied to dynamics: computation requires energy, a
 
 1. **Landauer's principle:** Erasing one bit of information requires at least $k_B T \ln 2$ of energy dissipation
 2. **Data processing inequality:** For any Markov chain $X \to Y \to Z$:
-   $$I(X; Z) \leq I(X; Y)$$
-   Information cannot increase through processing.
+
+$$I(X; Z) \leq I(X; Y)$$
+
+Information cannot increase through processing.
 
 **Required Interface Permits:** $\mathrm{Cap}_H$ (Capacity), $D_E$ (Dissipation)
 
@@ -584,19 +622,25 @@ This is Landauer's principle applied to dynamics: computation requires energy, a
 :label: proof-mt-act-horizon
 
 *Step 1 (Entropy production).* For a system with positive Lyapunov exponents $\lambda_i > 0$, Pesin's formula gives the KS entropy:
+
 $$h_\mu = \sum_{\lambda_i > 0} \lambda_i > 0$$
 
 *Step 2 (Total entropy).* The total entropy production up to time $T_*$ is:
+
 $$\Sigma(T_*) = \int_0^{T_*} h_\mu(S_\tau) d\tau > 0$$
 
 *Step 3 (Data processing).* By the data processing inequality, for $u_0 \to u(t) \to V_\lambda$:
+
 $$I(u_0; V_\lambda) \leq I(u(t); V_\lambda) \leq I(u_0; u(t))$$
 
 *Step 4 (Mutual information decay).* Entropy production causes information loss:
+
 $$I(u_0; u(T_*)) \leq H(u_0) - \Sigma(T_*)$$
 
 *Step 5 (Channel capacity bound).* The singularity requires information about the initial condition to be preserved to the blow-up time. The channel capacity is bounded:
+
 $$I(u_0; V_\lambda) \leq \min\{C_\Phi(\lambda), H(u_0) - \Sigma(T_*)\}$$
+
 If entropy production exceeds channel capacity, the singularity cannot form.
 :::
 
@@ -644,7 +688,9 @@ This is surgery for singular SPDEs. When the original equation is ill-posed, you
 **Repair Class:** Symmetry (Algebraic Lifting)
 
 **Statement:** Consider a singular SPDE:
+
 $$\partial_t u = \mathcal{L}u + F(u, \xi)$$
+
 where $\xi$ is distributional noise (e.g., space-time white noise) and $F$ involves products ill-defined in classical distribution theory. There exists:
 
 1. A **regularity structure** $\mathscr{T} = (T, A, G)$ with model space $T$, grading $A$, and structure group $G$
@@ -669,11 +715,15 @@ where $\xi$ is distributional noise (e.g., space-time white noise) and $F$ invol
 - Satisfies coherence: $\Pi_y = \Pi_x \circ \Gamma_{xy}$ for structure group elements
 
 *Step 3 (Modelled distributions).* Define $\hat{u} \in \mathcal{D}^\gamma$ by local Taylor-like expansion:
+
 $$\hat{u}(x) = \sum_{\tau \in T, |\tau| < \gamma} u_\tau(x) \cdot \tau$$
+
 with regularity controlled by $|\hat{u}(y) - \Gamma_{xy}\hat{u}(x)| \lesssim |x-y|^\gamma$
 
 *Step 4 (Abstract fixed point).* Solve the lifted equation:
+
 $$\hat{u} = P * \hat{F}(\hat{u}, \hat{\xi})$$
+
 in the space of modelled distributions. The fixed point exists by Banach contraction.
 
 *Step 5 (Reconstruction).* Apply $\mathcal{R}$ to obtain $u = \mathcal{R}\hat{u} \in \mathcal{D}'$, the actual solution.
@@ -727,14 +777,19 @@ The procedure maintains:
 This provides surgery location candidates.
 
 *Step 2 (Neck detection).* A neck is a region diffeomorphic to $S^{n-1} \times [-L, L]$ with:
+
 $$\left|g - g_{cyl}\right| < \varepsilon$$
+
 for the standard cylinder metric $g_{cyl}$.
 
 *Step 3 (Surgery procedure).* Cut along $S^{n-1} \times \{0\}$, discard the high-curvature component, glue a standard cap:
-$$M_{\text{new}} = M_{\text{low}} \cup_\partial \text{Cap}$$
+
+$$M_{\text{new}} = M_{\text{low}} \cup_\partial \operatorname{Cap}$$
+
 where Cap has uniformly bounded geometry.
 
 *Step 4 (Entropy control).* Perelman's $\mathcal{W}$-entropy satisfies:
+
 $$\mathcal{W}(g_{\text{new}}) \geq \mathcal{W}(g_{\text{old}}) - C\varepsilon$$
 Surgeries only decrease entropy by controlled amounts.
 
@@ -762,12 +817,12 @@ Interior point methods use exactly this idea. The logarithmic barrier keeps you 
 
 **Repair Class:** Geometry (Constraint Relaxation)
 
-**Statement:** Let $K = \{x : g_i(x) \leq 0, h_j(x) = 0\}$ be a constraint set that has collapsed to measure zero ($\text{Cap}(K) = 0$). Introduce **slack variables** $s_i \geq 0$ to obtain the relaxed problem:
+**Statement:** Let $K = \{x : g_i(x) \leq 0, h_j(x) = 0\}$ be a constraint set that has collapsed to measure zero ($\operatorname{Cap}(K) = 0$). Introduce **slack variables** $s_i \geq 0$ to obtain the relaxed problem:
 
 $$K_\varepsilon = \{(x, s) : g_i(x) \leq s_i, h_j(x) = 0, \|s\| \leq \varepsilon\}$$
 
 The relaxation satisfies:
-1. $\text{Cap}(K_\varepsilon) > 0$ for $\varepsilon > 0$
+1. $\operatorname{Cap}(K_\varepsilon) > 0$ for $\varepsilon > 0$
 2. $K_\varepsilon \to K$ as $\varepsilon \to 0$ in Hausdorff distance
 3. Solutions of the relaxed problem converge to solutions of the original (if they exist)
 
@@ -782,11 +837,15 @@ The relaxation satisfies:
 *Step 1 (Slack introduction).* Replace hard constraint $g_i(x) \leq 0$ with soft constraint $g_i(x) - s_i \leq 0$ and $s_i \geq 0$. The feasible region expands.
 
 *Step 2 (Capacity restoration).* For $\varepsilon > 0$:
-$$\text{Vol}(K_\varepsilon) \geq c_n \varepsilon^{n_s} \cdot \text{Vol}(U)$$
+
+$$\operatorname{Vol}(K_\varepsilon) \geq c_n \varepsilon^{n_s} \cdot \operatorname{Vol}(U)$$
+
 where $n_s$ is the number of slack variables and $U$ is a neighborhood. Positive volume implies positive capacity.
 
 *Step 3 (Barrier function).* Use logarithmic barrier:
+
 $$f_\mu(x, s) = f(x) - \mu \sum_i \log s_i$$
+
 The central path follows $\nabla f_\mu = 0$ as $\mu \to 0$.
 
 *Step 4 (Convergence).* As $\varepsilon \to 0$ (equivalently $\mu \to 0$), the relaxed solutions converge to the original constrained optimum by standard interior point convergence theory.
@@ -833,19 +892,25 @@ The BRST construction provides:
 :label: proof-mt-act-ghost
 
 *Step 1 (Gauge fixing).* Choose gauge-fixing function $F(A) = 0$. Insert:
+
 $$1 = \int_\mathcal{G} \mathcal{D}g \, \delta(F(A^g)) \det\left(\frac{\delta F(A^g)}{\delta g}\right)$$
 
 *Step 2 (Faddeev-Popov determinant).* The determinant $\det(\delta F/\delta g) = \det(M_{FP})$ is the Faddeev-Popov determinant. Represent it using Grassmann (ghost) fields:
+
 $$\det(M_{FP}) = \int \mathcal{D}c \mathcal{D}\bar{c} \, e^{-\bar{c} M_{FP} c}$$
 
 *Step 3 (BRST symmetry).* The total action $S_{\text{tot}}$ is invariant under the nilpotent BRST transformation:
+
 $$s: A \mapsto Dc, \quad c \mapsto -\frac{1}{2}[c, c], \quad \bar{c} \mapsto B, \quad s^2 = 0$$
 
 *Step 4 (Cohomological quotient).* Physical observables are BRST-closed: $sO = 0$. Physical states form the cohomology:
-$$\mathcal{H}_{\text{phys}} = \frac{\ker(s)}{\text{Im}(s)} = H^0_s(X_{\text{BRST}})$$
 
-*Step 5 (Capacity cancellation).* Fermionic integration contributes $(\text{det } M)^{-1}$ for bosons vs. $\text{det } M$ for fermions. Ghost fields (Grassmann) contribute:
+$$\mathcal{H}_{\text{phys}} = \frac{\ker(s)}{\operatorname{Im}(s)} = H^0_s(X_{\text{BRST}})$$
+
+*Step 5 (Capacity cancellation).* Fermionic integration contributes $(\det M)^{-1}$ for bosons vs. $\det M$ for fermions. Ghost fields (Grassmann) contribute:
+
 $$\int \mathcal{D}c\mathcal{D}\bar{c} \, e^{-\bar{c}Mc} = \det(M)$$
+
 This exactly cancels the divergent gauge orbit volume, yielding finite $Z$.
 :::
 
@@ -875,6 +940,7 @@ In reinforcement learning, this becomes the actor-critic framework. The actor (p
 $$\mathcal{L}(x, \lambda) = f(x) + \lambda^T g(x)$$
 
 The saddle-point problem:
+
 $$\min_x \max_\lambda \mathcal{L}(x, \lambda)$$
 
 ensures:
@@ -891,15 +957,21 @@ ensures:
 :label: proof-mt-act-align
 
 *Step 1 (KKT conditions).* At the saddle point $(x^*, \lambda^*)$:
+
 $$\nabla_x f(x^*) + \lambda^{*T} \nabla_x g(x^*) = 0$$
+
 $$g(x^*) = 0$$
 
 *Step 2 (Gradient alignment).* The first condition states:
+
 $$\nabla_x f = -\lambda^T \nabla_x g$$
+
 The cost gradient lies in the span of constraint gradients—they are aligned.
 
 *Step 3 (Pontryagin interpretation).* In optimal control, $\lambda(t)$ is the costate satisfying:
+
 $$\dot{\lambda} = -\nabla_x H(x, u, \lambda)$$
+
 The Hamiltonian $H = f + \lambda^T \dot{x}$ couples state and costate dynamics.
 
 *Step 4 (Actor-Critic mechanism).* In reinforcement learning:
@@ -944,11 +1016,15 @@ This is especially powerful in general relativity, where Penrose diagrams let yo
 :label: proof-mt-act-compactify
 
 *Step 1 (Conformal factor construction).* Choose $\Omega$ vanishing at infinity:
+
 $$\Omega(x) = \frac{1}{1 + d_g(x, x_0)^2}$$
+
 or for asymptotically flat/hyperbolic spaces, use geometric constructions.
 
 *Step 2 (Diameter bound).* The conformal metric $\tilde{g} = \Omega^2 g$ has geodesics satisfying:
+
 $$\tilde{d}(x, y) = \int_\gamma \Omega \, ds_g$$
+
 Since $\int_0^\infty \Omega(r) dr < \infty$ for suitable $\Omega$, the diameter is finite.
 
 *Step 3 (Boundary addition).* The conformal boundary $\partial_\Omega M$ represents "points at infinity." In the compactified manifold $\bar{M} = M \cup \partial_\Omega M$:
@@ -957,6 +1033,8 @@ Since $\int_0^\infty \Omega(r) dr < \infty$ for suitable $\Omega$, the diameter 
 - Point at infinity for Euclidean space
 
 *Step 4 (Trajectory control).* A trajectory $\gamma(t) \to \infty$ in $(M, g)$ satisfies:
+
 $$\tilde{d}(\gamma(0), \gamma(t)) \leq \int_0^t \Omega(\gamma(s)) |\dot{\gamma}(s)|_g \, ds < \infty$$
+
 The trajectory reaches $\partial_\Omega M$ in finite $\tilde{g}$-time, preventing "escape to infinity."
 :::

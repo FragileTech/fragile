@@ -31,10 +31,16 @@ This chapter establishes the **bidirectional bridge** between the Hypostructure 
 - **NP-Extraction Bridge:** Every Fragile NP-verifier extracts back to classical NP
 
 **The Payoff:**
-$$P_{\text{Fragile}} = P_{\text{DTM}} \quad\text{and}\quad NP_{\text{Fragile}} = NP_{\text{DTM}}$$
+
+$$
+P_{\text{Fragile}} = P_{\text{DTM}} \quad\text{and}\quad NP_{\text{Fragile}} = NP_{\text{DTM}}
+$$
 
 Therefore:
-$$P_{\text{Fragile}} \neq NP_{\text{Fragile}} \quad\Rightarrow\quad P_{\text{DTM}} \neq NP_{\text{DTM}}$$
+
+$$
+P_{\text{Fragile}} \neq NP_{\text{Fragile}} \quad\Rightarrow\quad P_{\text{DTM}} \neq NP_{\text{DTM}}
+$$
 
 ---
 
@@ -64,10 +70,16 @@ An **effective Fragile program** is a morphism $\mathcal{A}: \mathcal{X} \to \ma
 3. **Permit-Carrying:** $\mathcal{A}$ satisfies the interface contracts ({prf:ref}`def-interface-permit`) for its type
 
 Let $\mathsf{Prog}_{\text{FM}}$ denote the set of all effective Fragile programs. Each program $\mathcal{A} \in \mathsf{Prog}_{\text{FM}}$ denotes a total function when evaluated by the runtime:
-$$\llbracket \mathcal{A} \rrbracket : \mathcal{X} \to \mathcal{X}'$$
+
+$$
+\llbracket \mathcal{A} \rrbracket : \mathcal{X} \to \mathcal{X}'
+$$
 
 **Evaluation Semantics:** The Fragile runtime evaluator $\mathsf{Eval}$ is a ZFC-definable function that takes a program representation and an input, and produces an output:
-$$\mathsf{Eval}: \mathsf{Prog}_{\text{FM}} \times \mathcal{X} \to \mathcal{X}'$$
+
+$$
+\mathsf{Eval}: \mathsf{Prog}_{\text{FM}} \times \mathcal{X} \to \mathcal{X}'
+$$
 
 This evaluator is the operational semantics of the hypostructure computational model.
 :::
@@ -79,7 +91,11 @@ This evaluator is the operational semantics of the hypostructure computational m
 :label: def-cost-certificate
 
 A **cost certificate** is a ZFC-checkable predicate
-$$\mathsf{CostCert}(\mathcal{A}, p)$$
+
+$$
+\mathsf{CostCert}(\mathcal{A}, p)
+$$
+
 where $\mathcal{A} \in \mathsf{Prog}_{\text{FM}}$ is an effective program and $p: \mathbb{N} \to \mathbb{N}$ is a polynomial, asserting:
 
 **For all inputs $x \in \mathcal{X}$ with $|x| = n$:**
@@ -91,7 +107,10 @@ where $\mathcal{A} \in \mathsf{Prog}_{\text{FM}}$ is an effective program and $p
 3. **Witness Extractable:** The bound $p(n)$ can be verified from the program structure (e.g., via abstract interpretation, symbolic execution, or type-based analysis)
 
 **Polynomial-Time Class (Fragile Model):**
-$$P_{\text{FM}} := \{\,\mathcal{A} \in \mathsf{Prog}_{\text{FM}} \;:\; \exists \text{ polynomial } p,\ \mathsf{CostCert}(\mathcal{A}, p)\,\}$$
+
+$$
+P_{\text{FM}} := \{\,\mathcal{A} \in \mathsf{Prog}_{\text{FM}} \;:\; \exists \text{ polynomial } p,\, \mathsf{CostCert}(\mathcal{A}, p)\,\}
+$$
 
 **Rigorous Verification:** $\mathsf{CostCert}$ is *not* a heuristic or estimate. It is a formally verifiable property that can be checked in ZFC. The certificate must be:
 - **Sound:** If $\mathsf{CostCert}(\mathcal{A}, p)$ holds, then $\mathcal{A}$ truly runs in time $O(p(n))$
@@ -124,15 +143,26 @@ A language $L \subseteq \{0,1\}^*$ is in $NP_{\text{FM}}$ (Fragile NP) if there 
 1. **Witness-Length Polynomial:** $q: \mathbb{N} \to \mathbb{N}$ polynomial
 
 2. **Verifier Program:** $\mathcal{V} \in \mathsf{Prog}_{\text{FM}}$ with signature
-   $$\mathcal{V}: \{0,1\}^* \times \{0,1\}^* \to \{0,1\}$$
+
+   $$
+   \mathcal{V}: \{0,1\}^* \times \{0,1\}^* \to \{0,1\}
+   $$
+
    (takes instance $x$ and witness $w$, outputs accept/reject)
 
 3. **Polynomial-Time Verifier:** There exists polynomial $p$ such that
-   $$\mathsf{CostCert}(\mathcal{V}, p)$$
+
+   $$
+   \mathsf{CostCert}(\mathcal{V}, p)
+   $$
+
    where $p$ bounds the runtime on inputs $(x, w)$ with $|x| + |w| = n$
 
 4. **Witness Correctness:**
-   $$x \in L \iff \exists w \in \{0,1\}^{q(|x|)}\ \ \mathcal{V}(x, w) = 1$$
+
+   $$
+   x \in L \iff \exists w \in \{0,1\}^{q(|x|)}\, \mathcal{V}(x, w) = 1
+   $$
 
 **Intuition:** This is the standard verifier definition of NP, transplanted into the Fragile computational model. A language is in NP if membership can be *verified* quickly given a witness, even if finding the witness is hard.
 
@@ -167,7 +197,10 @@ Once both lanes are built, we have a true equivalence. And *that* is what lets u
 **Rigor Class:** L (Literature-Anchored) — builds on Part II (Algorithmic Completeness)
 
 **Statement:** Let $L$ be a language decidable by a polynomial-time DTM $M$ in time $O(n^k)$. Then there exists a Fragile program $\mathcal{A} \in P_{\text{FM}}$ such that:
-$$\mathcal{A}(x) = M(x) \quad\text{for all }x \in \{0,1\}^*$$
+
+$$
+\mathcal{A}(x) = M(x) \quad\text{for all }x \in \{0,1\}^*
+$$
 
 **Proof (Construction via Causal Chain Factorization):**
 
@@ -176,21 +209,31 @@ This is essentially {prf:ref}`cor-alg-embedding-surj` (Algorithmic Embedding Sur
 *Step 1 (DTM as State Evolution):*
 
 A DTM $M$ with state set $Q$, tape alphabet $\Gamma$, and transition function $\delta$ can be viewed as a discrete dynamical system:
-$$\text{Config}_M = Q \times \Gamma^* \times \mathbb{N}$$
+
+$$
+\mathrm{Config}_M = Q \times \Gamma^* \times \mathbb{N}
+$$
+
 (state, tape contents, head position)
 
 The transition $\delta$ induces a deterministic update:
-$$\mathrm{step}_M: \text{Config}_M \to \text{Config}_M$$
+
+$$
+\mathrm{step}_M: \mathrm{Config}_M \to \mathrm{Config}_M
+$$
 
 *Step 2 (Causal Factorization — Class II):*
 
 The key observation: polynomial-time computation means the DTM reaches a halting state in $O(n^k)$ steps, which can be expressed as a *causal chain*:
-$$\mathcal{A} := \mathrm{acc}_M \circ \mathrm{step}_M^{O(n^k)} \circ \mathrm{init}_M$$
+
+$$
+\mathcal{A} := \mathrm{acc}_M \circ \mathrm{step}_M^{O(n^k)} \circ \mathrm{init}_M
+$$
 
 where:
-- $\mathrm{init}_M: \{0,1\}^* \to \text{Config}_M$ encodes input to initial configuration
-- $\mathrm{step}_M^{t}: \text{Config}_M \to \text{Config}_M$ iterates the transition $t$ times
-- $\mathrm{acc}_M: \text{Config}_M \to \{0,1\}$ extracts the accept/reject bit
+- $\mathrm{init}_M: \{0,1\}^* \to \mathrm{Config}_M$ encodes input to initial configuration
+- $\mathrm{step}_M^{t}: \mathrm{Config}_M \to \mathrm{Config}_M$ iterates the transition $t$ times
+- $\mathrm{acc}_M: \mathrm{Config}_M \to \{0,1\}$ extracts the accept/reject bit
 
 *Step 3 (Class II Characterization):*
 
@@ -206,7 +249,11 @@ The cost certificate $\mathsf{CostCert}(\mathcal{A}, p)$ holds with $p(n) = c \c
 *Step 5 (Correctness):*
 
 By construction:
-$$\mathcal{A}(x) = \mathrm{acc}_M(\mathrm{step}_M^{t(x)}(\mathrm{init}_M(x))) = M(x)$$
+
+$$
+\mathcal{A}(x) = \mathrm{acc}_M(\mathrm{step}_M^{t(x)}(\mathrm{init}_M(x))) = M(x)
+$$
+
 where $t(x) \leq p(|x|)$ is the number of steps $M$ takes on input $x$.
 
 **Q.E.D.**
@@ -244,10 +291,16 @@ This is why the forward bridge is easy. The hard direction is the reverse bridge
 2. $M_{\mathcal{A}}$ runs in time $O(r(|x|))$
 
 **Therefore:**
-$$P_{\text{FM}} \subseteq P_{\text{DTM}}$$
+
+$$
+P_{\text{FM}} \subseteq P_{\text{DTM}}
+$$
 
 Combined with Theorem I:
-$$P_{\text{FM}} = P_{\text{DTM}}$$
+
+$$
+P_{\text{FM}} = P_{\text{DTM}}
+$$
 :::
 
 :::{prf:proof}
@@ -256,7 +309,10 @@ $$P_{\text{FM}} = P_{\text{DTM}}$$
 *Step 1 (Given):*
 
 Let $\mathcal{A} \in P_{\text{FM}}$. By definition, there exists a polynomial $p$ such that $\mathsf{CostCert}(\mathcal{A}, p)$ holds. This means:
-$$\forall x \in \{0,1\}^n,\ \mathsf{Eval}(\mathcal{A}, x) \text{ terminates in } \leq p(n) \text{ steps}$$
+
+$$
+\forall x \in \{0,1\}^n,\, \mathsf{Eval}(\mathcal{A}, x) \text{ terminates in } \leq p(n) \text{ steps}
+$$
 
 *Step 2 (DTM Construction):*
 
@@ -277,23 +333,36 @@ By the cost certificate, $\mathsf{Eval}(\mathcal{A}, x)$ takes $t \leq p(n)$ int
 By **(A2)** (Adequacy Hypothesis), the DTM $U$ simulates each internal step with overhead at most $q(|\mathcal{A}| + n)$ for some polynomial $q$.
 
 Therefore, the total DTM time is:
-$$T(n) \leq q(|\mathcal{A}| + n) \cdot p(n) = O(n^{k})$$
+
+$$
+T(n) \leq q(|\mathcal{A}| + n) \cdot p(n) = O(n^{k})
+$$
+
 for some constant $k$ (since $|\mathcal{A}|$ is fixed and both $p$ and $q$ are polynomials).
 
 *Step 4 (Correctness):*
 
 By construction, $M_{\mathcal{A}}$ simulates $\mathsf{Eval}(\mathcal{A}, x)$ step-by-step, so:
-$$M_{\mathcal{A}}(x) = \mathcal{A}(x)$$
+
+$$
+M_{\mathcal{A}}(x) = \mathcal{A}(x)
+$$
 
 *Step 5 (Conclusion):*
 
 We have constructed a DTM $M_{\mathcal{A}}$ that computes the same function as $\mathcal{A}$ in polynomial time. Therefore $\mathcal{A} \in P_{\text{DTM}}$.
 
 Since this holds for arbitrary $\mathcal{A} \in P_{\text{FM}}$:
-$$P_{\text{FM}} \subseteq P_{\text{DTM}}$$
+
+$$
+P_{\text{FM}} \subseteq P_{\text{DTM}}
+$$
 
 Combined with Theorem I ($P_{\text{DTM}} \subseteq P_{\text{FM}}$):
-$$P_{\text{FM}} = P_{\text{DTM}}$$
+
+$$
+P_{\text{FM}} = P_{\text{DTM}}
+$$
 
 **Q.E.D.**
 :::
@@ -339,11 +408,18 @@ Once **(A2)** is verified, the extraction theorem follows mechanically.
 **Statement:** Let $L \in NP_{\text{DTM}}$ (classical NP). Then $L \in NP_{\text{FM}}$ (Fragile NP).
 
 Precisely: if there exist polynomials $q, p$ and a polynomial-time DTM verifier $M_V$ such that:
-$$x \in L \iff \exists w \in \{0,1\}^{q(|x|)}\ M_V(x, w) = 1$$
+
+$$
+x \in L \iff \exists w \in \{0,1\}^{q(|x|)}\, M_V(x, w) = 1
+$$
+
 and $M_V$ runs in time $O(p(|x| + |w|))$,
 
 then there exists a Fragile verifier $\mathcal{V} \in P_{\text{FM}}$ such that:
-$$x \in L \iff \exists w \in \{0,1\}^{q(|x|)}\ \mathcal{V}(x, w) = 1$$
+
+$$
+x \in L \iff \exists w \in \{0,1\}^{q(|x|)}\, \mathcal{V}(x, w) = 1
+$$
 :::
 
 :::{prf:proof}
@@ -356,21 +432,34 @@ Let $M_V$ be a polynomial-time DTM verifier for $L$, with witness-length polynom
 *Step 2 (Compile Verifier via Theorem I):*
 
 By Theorem I (P-Bridge), since $M_V$ is a polynomial-time DTM, there exists a Fragile program $\mathcal{V} \in P_{\text{FM}}$ such that:
-$$\mathcal{V}(x, w) = M_V(x, w) \quad\text{for all }x, w$$
+
+$$
+\mathcal{V}(x, w) = M_V(x, w) \quad\text{for all }x, w
+$$
 
 Specifically, we apply the Class II (causal chain) factorization:
-$$\mathcal{V}(x, w) := \mathrm{acc}_{M_V}\Big(\mathrm{step}_{M_V}^{p(|x| + |w|)}(\mathrm{init}_{M_V}(x, w))\Big)$$
+
+$$
+\mathcal{V}(x, w) := \mathrm{acc}_{M_V}\Big(\mathrm{step}_{M_V}^{p(|x| + |w|)}(\mathrm{init}_{M_V}(x, w))\Big)
+$$
 
 *Step 3 (Verify Cost Certificate):*
 
 Since $M_V$ runs in time $O(p(|x| + |w|))$, and each DTM step is simulated by $O(1)$ Fragile operations, we have:
-$$\mathsf{CostCert}(\mathcal{V}, p')$$
+
+$$
+\mathsf{CostCert}(\mathcal{V}, p')
+$$
+
 for some polynomial $p'(n) = O(p(n))$. Therefore $\mathcal{V} \in P_{\text{FM}}$.
 
 *Step 4 (Witness Correctness):*
 
 By construction:
-$$x \in L \iff \exists w \in \{0,1\}^{q(|x|)}\ M_V(x, w) = 1 \iff \exists w \in \{0,1\}^{q(|x|)}\ \mathcal{V}(x, w) = 1$$
+
+$$
+x \in L \iff \exists w \in \{0,1\}^{q(|x|)}\, M_V(x, w) = 1 \iff \exists w \in \{0,1\}^{q(|x|)}\, \mathcal{V}(x, w) = 1
+$$
 
 *Step 5 (Conclusion):*
 
@@ -408,7 +497,10 @@ Since $L \in NP_{\text{FM}}$, there exist:
 - Verifier $\mathcal{V} \in P_{\text{FM}}$ with $\mathsf{CostCert}(\mathcal{V}, p)$
 
 such that:
-$$x \in L \iff \exists w \in \{0,1\}^{q(|x|)}\ \mathcal{V}(x, w) = 1$$
+
+$$
+x \in L \iff \exists w \in \{0,1\}^{q(|x|)}\, \mathcal{V}(x, w) = 1
+$$
 
 *Step 2 (Extract DTM Verifier via Theorem II):*
 
@@ -419,7 +511,10 @@ By Theorem II (P-Extraction), since $\mathcal{V} \in P_{\text{FM}}$, there exist
 *Step 3 (Classical NP Membership):*
 
 We have:
-$$x \in L \iff \exists w \in \{0,1\}^{q(|x|)}\ M_{\mathcal{V}}(x, w) = 1$$
+
+$$
+x \in L \iff \exists w \in \{0,1\}^{q(|x|)}\, M_{\mathcal{V}}(x, w) = 1
+$$
 
 with $M_{\mathcal{V}}$ a polynomial-time DTM. This is exactly the definition of $NP_{\text{DTM}}$.
 
@@ -434,7 +529,11 @@ Therefore $L \in NP_{\text{DTM}}$.
 :label: cor-np-class-equivalence
 
 Assuming hypotheses **(A1)** and **(A2)**:
-$$NP_{\text{FM}} = NP_{\text{DTM}}$$
+
+$$
+NP_{\text{FM}} = NP_{\text{DTM}}
+$$
+
 :::
 
 :::{div} feynman-prose
@@ -455,7 +554,9 @@ The internal separation exports to the classical one. That is what these bridges
 
 Assuming adequacy hypotheses **(A1)** (Definable Semantics) and **(A2)** (Polynomial Interpreter):
 
-$$P_{\text{FM}} = P_{\text{DTM}} \quad\text{and}\quad NP_{\text{FM}} = NP_{\text{DTM}}$$
+$$
+P_{\text{FM}} = P_{\text{DTM}} \quad\text{and}\quad NP_{\text{FM}} = NP_{\text{DTM}}
+$$
 
 **Proof:** Immediate from Theorems I–IV. $\square$
 :::
@@ -473,14 +574,20 @@ Assume:
    - Universal obstruction certificate $K_{\mathrm{Scope}}^+$ is produced
 
 **Then:**
-$$P_{\text{DTM}} \neq NP_{\text{DTM}}$$
+
+$$
+P_{\text{DTM}} \neq NP_{\text{DTM}}
+$$
 
 **Proof:**
 
 Suppose for contradiction that $P_{\text{DTM}} = NP_{\text{DTM}}$.
 
 By Corollary {prf:ref}`cor-class-equivalence-full`:
-$$P_{\text{FM}} = P_{\text{DTM}} = NP_{\text{DTM}} = NP_{\text{FM}}$$
+
+$$
+P_{\text{FM}} = P_{\text{DTM}} = NP_{\text{DTM}} = NP_{\text{FM}}
+$$
 
 Therefore $P_{\text{FM}} = NP_{\text{FM}}$, contradicting hypothesis (2).
 
@@ -522,7 +629,10 @@ I will outline the structure of the argument. The full proof would be tedious—
 **Statement:** There exists a universal DTM $U$ and a polynomial $q(n, m)$ such that for any Fragile program $\mathcal{A}$ with $|\text{code}(\mathcal{A})| = m$ and any input $x$ with $|x| = n$:
 
 If $\mathsf{Eval}(\mathcal{A}, x)$ takes $t$ internal steps, then $U(\text{code}(\mathcal{A}), x)$ computes the same result in time:
-$$T_U(m, n) \leq q(m, n) \cdot t$$
+
+$$
+T_U(m, n) \leq q(m, n) \cdot t
+$$
 
 **Proof Strategy:**
 
@@ -581,21 +691,34 @@ Each internal step requires:
 - Update state: $O(\log(m + n))$ DTM steps
 
 **Total per internal step:**
-$$O(\log^2(m + n + t)) \leq O(\log^2(m + n \cdot p(n))) = O(\log^2(n \cdot p(n))) = O(\text{poly}(n))$$
+
+$$
+O(\log^2(m + n + t)) \leq O(\log^2(m + n \cdot p(n))) = O(\log^2(n \cdot p(n))) = O(\operatorname{poly}(n))
+$$
 
 for polynomial-time programs (where $t = O(p(n))$ for some polynomial $p$).
 
 **6. Polynomial Bound**
 
 Define:
-$$q(m, n) = c \cdot (m + n)^2$$
+
+$$
+q(m, n) = c \cdot (m + n)^2
+$$
+
 for a sufficiently large constant $c$ that bounds all the operations above.
 
 Then:
-$$T_U(m, n) = \sum_{i=1}^{t} O(q(m + \text{stack}_i, n)) \leq t \cdot O(q(m + t, n))$$
+
+$$
+T_U(m, n) = \sum_{i=1}^{t} O(q(m + \text{stack}_i, n)) \leq t \cdot O(q(m + t, n))
+$$
 
 For polynomial-time programs with $t = O(p(n))$:
-$$T_U(m, n) = O(p(n)) \cdot O((m + p(n))^2) = O(\text{poly}(n))$$
+
+$$
+T_U(m, n) = O(p(n)) \cdot O((m + p(n))^2) = O(\operatorname{poly}(n))
+$$
 
 (since $m$ is fixed for a given program $\mathcal{A}$).
 

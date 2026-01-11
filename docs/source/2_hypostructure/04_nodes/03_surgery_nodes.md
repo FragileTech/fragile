@@ -19,7 +19,10 @@ Each surgery is specified by:
 :label: thm-non-circularity
 
 A barrier invoked because predicate $P_i$ failed **cannot** assume $P_i$ as a prerequisite. Formally:
-$$\text{Trigger}(B) = \text{Gate}_i \text{ NO} \Rightarrow P_i \notin \mathrm{Pre}(B)$$
+
+$$
+\operatorname{Trigger}(B) = \operatorname{Gate}_i\,\text{NO} \Rightarrow P_i \notin \mathrm{Pre}(B)
+$$
 
 **Scope of Non-Circularity:** This syntactic check ($K_i^- \notin \Gamma$) prevents direct circular dependencies. Semantic circularity (proof implicitly using an equivalent of the target conclusion) is addressed by the derivation-dependency constraint: certificate proofs must cite only lemmas of lower rank in the proof DAG. The ranking is induced by the topological sort of the Sieve, ensuring well-foundedness ({cite}`VanGelder91`).
 
@@ -88,7 +91,7 @@ A **Surgery Specification** is a transformation of the Hypostructure $\mathcal{H
 **Admissibility Signature:**
 - **Input Certificate:** $K_{[\text{ModeID}]}^{\mathrm{br}}$ (The breach witnessing the singularity)
 - **Admissibility Predicate (The Diamond):**
-  $V \in \mathcal{L}_T \land \text{Cap}(\Sigma) \le \varepsilon_{\text{adm}}$
+  $V \in \mathcal{L}_T \land \operatorname{Cap}(\Sigma) \le \varepsilon_{\text{adm}}$
   *(Conditions required to perform surgery safely, corresponding to Case 1 of the Trichotomy.)*
 
 **Transformation Law ($\mathcal{O}_S$):**
@@ -134,7 +137,7 @@ Now let us walk through the individual surgeries. I will not bore you with every
 **Admissibility Signature:**
 - **Input Certificate:** $K_{D_E}^{\mathrm{br}}$ (Energy unbounded)
 - **Admissibility Predicate:**
-  $\text{Growth}(\Phi) \text{ is conformal} \land \partial_\infty X \text{ is definable}$
+  $\operatorname{Growth}(\Phi) \text{ is conformal} \land \partial_\infty X \text{ is definable}$
   *(The blow-up must allow conformal compactification.)*
 
 **Transformation Law ($\mathcal{O}_S$):**
@@ -304,13 +307,13 @@ Convex Integration (SurgSC) handles the subtle problem of drifting parameters. I
 **Admissibility Signature:**
 - **Input Certificate:** $K_{\mathrm{Cap}_H}^{\mathrm{br}}$ (Positive capacity singularity)
 - **Admissibility Predicate:**
-  $\text{Cap}_H(\Sigma) \leq \varepsilon_{\text{adm}} \land V \in \mathcal{L}_{\text{neck}}$
+  $\operatorname{Cap}_H(\Sigma) \leq \varepsilon_{\text{adm}} \land V \in \mathcal{L}_{\text{neck}}$
   *(Small singular set with recognizable neck structure.)*
 
 **Transformation Law ($\mathcal{O}_S$):**
 - **Excision:** $X' = X \setminus B_\epsilon(\Sigma)$
 - **Capping:** Glue auxiliary space $X_{\text{aux}}$ matching boundary
-- **Height Drop:** $\Phi(x') \leq \Phi(x) - c \cdot \text{Vol}(\Sigma)^{2/n}$
+- **Height Drop:** $\Phi(x') \leq \Phi(x) - c \cdot \operatorname{Vol}(\Sigma)^{2/n}$
 
 **Postcondition:**
 - **Re-entry Certificate:** $K_{\mathrm{SurgCD}}^{\mathrm{re}}$ (Witnesses smooth excision)
@@ -521,7 +524,7 @@ O-Minimal Regularization (SurgTC) tames wild topology. Some sets are so patholog
 - **Re-entry Target:** `ComplexCheck` ({prf:ref}`def-node-complex`)
 - **Progress Guarantee:** **Type A**. Bounded mixing enhancement per unit time.
 
-**Complexity Type on Re-entry:** The re-entry evaluates $K(\mu_t)$ where $\mu_t = \text{Law}(x_t)$ is the probability measure on trajectories, not $K(x_t(\omega))$ for individual sample paths. The SDE has finite description length (drift $b$, diffusion $\sigma$, initial law $\mu_0$) even though individual realizations are algorithmically incompressible (white noise is random). This ensures S12 does not cause immediate failure at Node 11.
+**Complexity Type on Re-entry:** The re-entry evaluates $K(\mu_t)$ where $\mu_t = \operatorname{Law}(x_t)$ is the probability measure on trajectories, not $K(x_t(\omega))$ for individual sample paths. The SDE has finite description length (drift $b$, diffusion $\sigma$, initial law $\mu_0$) even though individual realizations are algorithmically incompressible (white noise is random). This ensures S12 does not cause immediate failure at Node 11.
 
 **Literature:** Stochastic perturbation and mixing {cite}`MeynTweedie93`; {cite}`HairerMattingly11`.
 
@@ -579,13 +582,17 @@ Viscosity Solution (SurgDC) handles complexity explosions---when the description
 - **Input Certificate:** $K_{\mathrm{GC}_\nabla}^{\mathrm{br}}$ (Infinite oscillation energy)
 - **Admissibility Predicate:**
   There exists a cutoff scale $\Lambda$ such that the truncated second moment is finite:
-  $$\exists \Lambda < \infty: \sup_{\Lambda' \leq \Lambda} \int_{|\omega| \leq \Lambda'} \omega^2 S(\omega) d\omega < \infty \quad \land \quad \text{uniform ellipticity}$$
+
+$$
+\exists \Lambda < \infty:\, \sup_{\Lambda' \leq \Lambda} \int_{|\omega| \leq \Lambda'} \omega^2\, S(\omega)\, d\omega < \infty \quad \land \quad \text{uniform ellipticity}
+$$
+
   *(Divergence is "elliptic-regularizable" — De Giorgi-Nash-Moser applies to truncated spectrum.)*
 
 **Transformation Law ($\mathcal{O}_S$):**
 - **State Space:** $X' = X$ (same space, improved regularity)
 - **Hölder Regularization:** Apply De Giorgi-Nash-Moser iteration
-- **Oscillation Damping:** $\text{osc}_{B_r}(x') \leq C r^\alpha \text{osc}_{B_1}(x)$
+- **Oscillation Damping:** $\operatorname{osc}_{B_r}(x') \leq C r^\alpha \operatorname{osc}_{B_1}(x)$
 
 **Postcondition:**
 - **Re-entry Certificate:** $K_{\mathrm{SurgDE}}^{\mathrm{re}}$ (Witnesses Hölder continuity)
@@ -617,7 +624,7 @@ De Giorgi-Nash-Moser (SurgDE) is one of the crown jewels of 20th century analysi
   *(Bounded gain with positive phase margin.)*
 
 **Transformation Law ($\mathcal{O}_S$):**
-- **Controller Modification:** Add saturation element $\text{sat}(u) = \text{sign}(u) \min(|u|, u_{\max})$
+- **Controller Modification:** Add saturation element $\operatorname{sat}(u) = \operatorname{sign}(u) \min(|u|, u_{\max})$
 - **Gain Limiting:** $\|S'\|_\infty \leq \|S\|_\infty / (1 + \epsilon)$
 - **Waterbed Conservation:** Redistribute sensitivity to safe frequencies
 

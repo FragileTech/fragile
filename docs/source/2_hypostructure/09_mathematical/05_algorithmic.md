@@ -56,6 +56,7 @@ From the adjoint quadruple, we derive the **cohesive modalities** as (co)monads.
 | $\sharp$ (sharp) | $\mathrm{coDisc} \circ \Gamma$ | Monad | Codiscrete points (metric structure) |
 
 These satisfy the **modal adjunction triple**:
+
 $$\flat \dashv \int \dashv \sharp$$
 
 with reduction properties:
@@ -65,11 +66,15 @@ with reduction properties:
 **Extended Modalities (for computational completeness):**
 
 **Scaling Modality** $\ast$:
+
 $$\ast := \mathrm{colim}_{n \to \infty} \int^{(n)}$$
+
 where $\int^{(n)}$ is the $n$-fold iteration of shape. This captures self-similar/recursive structure via iterated coarse-graining.
 
 **Boundary/Holographic Modality** $\partial$:
+
 $$\partial := \mathrm{fib}(\eta_\sharp : \mathrm{id} \to \sharp)$$
+
 the homotopy fiber of the sharp unit. This captures boundary/interface structure—the difference between a type and its codiscretification.
 
 **Computational Completeness:** The five modalities $\{\int, \flat, \sharp, \ast, \partial\}$ exhaust all structural resources that polynomial-time algorithms can exploit. This is not an empirical observation but a **theorem** of cohesive topos theory ({prf:ref}`thm-schreiber-structure`).
@@ -132,11 +137,11 @@ Any morphism decomposes accordingly. The extended modalities $\ast$ and $\partia
 :::{prf:definition} Algorithmic Morphism
 :label: def-algorithmic-morphism
 
-An **algorithm** is a morphism $\mathcal{A}: \mathcal{X} \to \mathcal{X}$ representing a discrete dynamical update rule on a problem configuration stack $\mathcal{X} \in \text{Obj}(\mathbf{H})$.
+An **algorithm** is a morphism $\mathcal{A}: \mathcal{X} \to \mathcal{X}$ representing a discrete dynamical update rule on a problem configuration stack $\mathcal{X} \in \operatorname{Obj}(\mathbf{H})$.
 
 **Validity:** $\mathcal{A}$ is valid if it converges to the solution subobject $\mathcal{S} = \Phi^{-1}(0)$; that is, $\lim_{n \to \infty} \mathcal{A}^n$ factors through $\mathcal{S} \hookrightarrow \mathcal{X}$.
 
-**Polynomial Efficiency:** $\mathcal{A}$ is polynomial-time if it reduces the entropy $H(\mathcal{X}) = \log \text{Vol}(\mathcal{X})$ from $N$ bits to 0 bits in $\text{poly}(N)$ steps.
+**Polynomial Efficiency:** $\mathcal{A}$ is polynomial-time if it reduces the entropy $H(\mathcal{X}) = \log \operatorname{Vol}(\mathcal{X})$ from $N$ bits to 0 bits in $\text{poly}(N)$ steps.
 :::
 
 :::{prf:definition} Modal Factorization
@@ -184,6 +189,7 @@ For each modality $\lozenge$, we define an **obstruction certificate** $K_\lozen
 | $\partial$ (Holographic) | $K_\partial^-$ | Non-planar; no Pfaffian orientation; #P-hard contraction |
 
 **Certificate Logic:** If all five obstruction certificates are present:
+
 $$K_\sharp^- \wedge K_\int^- \wedge K_\flat^- \wedge K_\ast^- \wedge K_\partial^- \implies \mathcal{A} \notin P$$
 
 This is the contrapositive of {prf:ref}`mt-alg-complete`: blocking all modalities blocks polynomial-time algorithms.
@@ -239,6 +245,7 @@ Each algorithm class achieves polynomial-time performance by exploiting structur
 - **Interference** exploits holography: boundary-to-bulk $K$ reduction
 
 **Hardness Criterion (AIT Form):** A problem is hard for all five classes iff no modality achieves sub-exponential complexity reduction:
+
 $$\forall \lozenge \in \{\sharp, \int, \flat, \ast, \partial\}: \quad K_\lozenge(\text{solution}) \geq K(\text{instance}) - o(n)$$
 
 This is the AIT content of {prf:ref}`mt-alg-complete`.
@@ -257,7 +264,9 @@ An algorithmic process $\mathcal{A}: \mathcal{X} \to \mathcal{X}$ is **Class I (
 2. **Height Functional:** There exists $\Phi: \mathcal{X} \to \mathbb{R}$ such that:
    - $\Phi(\mathcal{A}(x)) < \Phi(x)$ for non-equilibrium states (strict descent)
    - $\Phi$ satisfies the **Łojasiewicz-Simon inequality**:
+
      $$\|\nabla \Phi(x)\| \geq c|\Phi(x) - \Phi^*|^{1-\theta}$$
+
      for some $c > 0$, $\theta \in (0,1)$, where $\Phi^*$ is the minimum value
 3. **Spectral Gap:** The Hessian $\nabla^2\Phi$ at equilibria has spectral gap $\lambda > 0$
 
@@ -330,6 +339,7 @@ An algorithmic process $\mathcal{A}: \mathcal{X} \to \mathcal{X}$ is **Class III
 :label: lem-flat-obstruction
 
 If the automorphism group is trivial:
+
 $$G_{\Phi} := \mathrm{Aut}(\mathcal{X}, \Phi) = \{e\}$$
 
 then $\mathcal{A} \not\triangleright \flat$ and the quotient equals the full space: $\mathcal{X}/G = \mathcal{X}$. No compression occurs.
@@ -361,7 +371,8 @@ An algorithmic process $\mathcal{A}$ is **Class IV (Divider)** if:
 If the problem is **supercritical**—decomposition creates more work than it saves—then $\mathcal{A} \not\triangleright \ast$.
 
 Formally: If for any balanced partition $\mathcal{X} = \mathcal{X}_1 \sqcup \mathcal{X}_2$:
-$$|\text{boundary}(\mathcal{X}_1, \mathcal{X}_2)| = \Omega(|\mathcal{X}|)$$
+
+$$|\operatorname{boundary}(\mathcal{X}_1, \mathcal{X}_2)| = \Omega(|\mathcal{X}|)$$
 
 then recombination cost dominates: $f(n) = \Omega(T(n))$, making recursion futile.
 
@@ -377,7 +388,9 @@ An algorithmic process $\mathcal{A}$ is **Class V (Interference Engine)** if:
 
 1. **Modal Factorization:** $\mathcal{A} \triangleright \partial$ (factors through boundary modality)
 2. **Tensor Network:** The problem admits representation:
+
    $$Z = \sum_{\{x\}} \prod_{c \in C} T_c(x_{\partial c})$$
+
    where $T_c$ are local tensors, $x_{\partial c}$ are boundary variables
 3. **Holographic Simplification:** One of:
    - Planar graph structure with Pfaffian orientation (FKT)
@@ -435,15 +448,17 @@ $$\mathcal{A} = \mathcal{R} \circ \lozenge(f) \circ \mathcal{E}$$
 where $\lozenge \in \{\sharp, \int, \flat, \ast, \partial\}$, $\mathcal{E}$ is an encoding map, $\mathcal{R}$ is a reconstruction map, and $\lozenge(f)$ is a contraction in the $\lozenge$-transformed space.
 
 **Contrapositive (Hardness Criterion):** If a problem instance $(\mathcal{X}, \Phi)$ is **amorphous** (admits no non-trivial morphism to any modal object), then:
-$$\mathbb{E}[\text{Time}(\mathcal{A})] \geq \exp(C \cdot N)$$
+
+$$\mathbb{E}[\operatorname{Time}(\mathcal{A})] \geq \exp(C \cdot N)$$
 
 **Hypotheses:**
 1. **(H1) Cohesive Structure:** $\mathbf{H}$ is equipped with the canonical adjoint string $\Pi \dashv \flat \dashv \sharp$ plus scaling filtration $\mathbb{R}_{>0}$ and boundary operator $\partial$
 2. **(H2) Computational Problem:** $(\mathcal{X}, \Phi, \mathcal{S})$ is a computational problem with configuration stack $\mathcal{X}$, energy $\Phi$, and solution subobject $\mathcal{S}$
 3. **(H3) Algorithm Representability:** $\mathcal{A}$ admits a representable-law interpretation ({prf:ref}`def-representable-law`)
-4. **(H4) Information-Theoretic Setting:** Shannon entropy $H(\mathcal{X}) = \log \text{Vol}(\mathcal{X})$ is well-defined
+4. **(H4) Information-Theoretic Setting:** Shannon entropy $H(\mathcal{X}) = \log \operatorname{Vol}(\mathcal{X})$ is well-defined
 
 **Certificate Logic:**
+
 $$\bigwedge_{i \in \{I,\ldots,V\}} K_{\text{Class}_i}^- \Rightarrow K_{\mathrm{E13}}^+ \Rightarrow K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}$$
 
 **Certificate Payload:**
@@ -463,6 +478,7 @@ $((\sharp\text{-status}, \int\text{-status}, \flat\text{-status}, \ast\text{-sta
 By the Sieve-Thermodynamic Correspondence ({prf:ref}`thm-sieve-thermo-correspondence`), polynomial-time convergence requires **Kolmogorov complexity reduction**: the algorithm must decrease $K(x_t)$ ({prf:ref}`def-kolmogorov-complexity`) from the initial instance complexity $K(\mathcal{X}) \sim N$ to $O(\log N)$ (solution encoding) in $\text{poly}(N)$ steps.
 
 By the **Levin-Schnorr Theorem** {cite}`Levin73b; Schnorr73`, uniform random search on an amorphous (structureless) space achieves expected complexity reduction:
+
 $$\mathbb{E}[\Delta K] = O(1/|\mathcal{X}|) = O(2^{-N})$$
 
 Therefore, absent structural exploitation, hitting time scales as $\Omega(2^N)$. This establishes the drift requirement: any $\mathcal{A} \in P$ must achieve $K_{t+1} \leq K_t - \Omega(1)$ per step via a modal contraction.
@@ -535,6 +551,7 @@ This is the **Brute Force Lower Bound**.
 A polynomial-time algorithm exists *if and only if* the problem structure factors through one of the cohesive modalities that compresses the effective search space.
 
 If the Sieve certifies all such factorizations are blocked (Morphism Exclusion):
+
 $$\text{Blocked}(\sharp) \wedge \text{Blocked}(\int) \wedge \text{Blocked}(\flat) \wedge \text{Blocked}(\ast) \wedge \text{Blocked}(\partial) \Rightarrow \mathcal{A} \notin P$$
 
 **Q.E.D.**
@@ -572,6 +589,7 @@ The five modal checks correspond to existing tactics and nodes:
 - **$\partial$ (Holographic):** Uses **Tactic E8** (DPI) + Node 6 ($\mathrm{Cap}_H$)
 
 **Certificate Logic:**
+
 $$K_{\mathrm{LS}_\sigma}^- \wedge K_{\mathrm{E6}}^- \wedge K_{\mathrm{E4}}^- \wedge K_{\mathrm{E11}}^- \wedge K_{\mathrm{SC}_\lambda}^{\text{super}} \wedge K_{\mathrm{E8}}^- \Rightarrow K_{\mathrm{E13}}^+ \Rightarrow K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}$$
 
 **Certificate Payload:** $(\text{modal\_status}[5], \text{class\_exclusions}[5], \text{exhaustion\_witness})$
@@ -642,6 +660,7 @@ The following examples demonstrate how MT-AlgComplete correctly classifies probl
 **Tactic E13 Activation:** All five modal checks return BLOCKED.
 
 **Certificate:**
+
 $$K_{\mathrm{E13}}^+ = (\sharp\text{-FAIL}, \int\text{-FAIL}, \flat\text{-FAIL}, \ast\text{-FAIL}, \partial\text{-FAIL}) \Rightarrow K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}$$
 
 **Conclusion:** Random 3-SAT is **Singular (Hard)** with information-theoretic hardness certificate.
@@ -679,6 +698,7 @@ By MT-AlgComplete, every polynomial algorithm factors through a modality. Each m
 :label: axiom-structure-thesis
 
 **Statement:** All polynomial-time algorithms factor through the five cohesive modalities:
+
 $$P \subseteq \text{Class I} \cup \text{Class II} \cup \text{Class III} \cup \text{Class IV} \cup \text{Class V}$$
 
 **Status:** This is the **foundational meta-axiom** underlying complexity-theoretic proofs in the Hypostructure framework. It is proven within Cohesive Homotopy Type Theory via {prf:ref}`mt-alg-complete`.
@@ -734,6 +754,7 @@ The algorithmic completeness framework makes **falsifiable predictions**:
 - The bridge theorems (Part XX) fail
 
 **Prediction 2 (Obstruction Correctness):** For any problem $\Pi$:
+
 $$\mathcal{A} \in P \implies \exists \lozenge: \mathcal{A} \triangleright \lozenge$$
 
 If this fails, the Schreiber structure theorem ({prf:ref}`thm-schreiber-structure`) would need revision.
@@ -745,6 +766,7 @@ If this fails, the Schreiber structure theorem ({prf:ref}`thm-schreiber-structur
 If soundness fails, the modal obstruction lemmas ({prf:ref}`lem-sharp-obstruction`, {prf:ref}`lem-shape-obstruction`, etc.) contain errors.
 
 **Prediction 4 (3-SAT Hardness):** Random 3-SAT at threshold satisfies all five obstruction certificates:
+
 $$K_\sharp^- \wedge K_\int^- \wedge K_\flat^- \wedge K_\ast^- \wedge K_\partial^-$$
 
 If any certificate is shown to be incorrect for random 3-SAT, the application to P ≠ NP fails.
@@ -772,6 +794,7 @@ The algorithmic completeness framework is **conditional** on:
 **Foundation (C1):** We work within Cohesive Homotopy Type Theory / cohesive $(\infty,1)$-topos theory as the ambient foundation.
 
 **Bridge (C2):** The Fragile/DTM equivalence theorems (Part XX) establish that:
+
 $$P_{\mathbf{H}} = P_{\text{DTM}}$$
 
 where $P_{\mathbf{H}}$ is polynomial-time in the topos and $P_{\text{DTM}}$ is classical polynomial-time.
@@ -779,6 +802,7 @@ where $P_{\mathbf{H}}$ is polynomial-time in the topos and $P_{\text{DTM}}$ is c
 **Certificates (C3):** The obstruction certificates $\{K_\lozenge^-\}$ correctly capture modal blockage for specific problems (e.g., random 3-SAT).
 
 **Logical Structure:**
+
 $$(\text{C1} \wedge \text{C2} \wedge \text{C3}) \Rightarrow (\text{P} \neq \text{NP})$$
 
 **Within** Cohesive HoTT, assuming (C1), the proof is **unconditional**: it is a theorem that blocking all modalities implies hardness. The question "Is (C1) the right foundation?" is a **foundational choice**, analogous to accepting ZFC for mathematics.

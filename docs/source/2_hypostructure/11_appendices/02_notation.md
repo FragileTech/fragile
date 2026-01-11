@@ -61,7 +61,7 @@ The scaling operator $\mathcal{S}_\lambda$ is like a magnifying glass. Apply it 
 :::{div} feynman-prose
 When a system hits its boundary, something has to happen. These symbols describe the machinery for handling that transition.
 
-The trace morphism $\text{Tr}$ extracts the boundary data from a state: "What does this state look like at the edge?" The flux morphism $\mathcal{J}$ measures energy flow across the boundary: "How much is going in or out?" And the reinjection kernel $\mathcal{R}$ is the stochastic rule for putting the system back into play after it exits: "Given boundary data, what distribution of interior states do we restart from?"
+The trace morphism $\operatorname{Tr}$ extracts the boundary data from a state: "What does this state look like at the edge?" The flux morphism $\mathcal{J}$ measures energy flow across the boundary: "How much is going in or out?" And the reinjection kernel $\mathcal{R}$ is the stochastic rule for putting the system back into play after it exits: "Given boundary data, what distribution of interior states do we restart from?"
 
 This is the mathematical machinery for handling what physicists call "boundary conditions" and what computer scientists might call "exception handling."
 :::
@@ -69,7 +69,7 @@ This is the mathematical machinery for handling what physicists call "boundary c
 | Symbol | Name | Definition |
 |--------|------|------------|
 | $\partial_\bullet$ | Boundary Morphism | Restriction functor $\iota^*: \mathbf{Sh}_\infty(\mathcal{X}) \to \mathbf{Sh}_\infty(\partial\mathcal{X})$ |
-| $\text{Tr}$ | Trace Morphism | $\text{Tr}: \mathcal{X} \to \mathcal{B}$ (restriction to boundary) |
+| $\operatorname{Tr}$ | Trace Morphism | $\operatorname{Tr}: \mathcal{X} \to \mathcal{B}$ (restriction to boundary) |
 | $\mathcal{J}$ | Flux Morphism | $\mathcal{J}: \mathcal{B} \to \underline{\mathbb{R}}$ (energy flow across boundary) |
 | $\mathcal{R}$ | Reinjection Kernel | $\mathcal{R}: \mathcal{B} \to \mathcal{P}(\mathcal{X})$ (Markov kernel with Feller property) |
 
@@ -103,7 +103,7 @@ Now we enter the realm of category theory. Do not be intimidated. Categories are
 
 The ambient topos $\mathcal{E}$ is the mathematical universe where everything lives. Think of it as "the space of all spaces." The categories $\mathbf{Hypo}_T$ and $\mathbf{Thin}_T$ are subcollections: all hypostructures of a given type $T$, and all thin kernels of that type.
 
-The "bad pattern" $\mathbb{H}_{\text{bad}}$ is central to the whole theory. It represents what you do not want: a singularity, a blowup, a failure. The Sieve's job is to prove that your hypostructure has no morphism from the bad pattern to itself. That is what $\text{Hom}(\mathbb{H}_{\text{bad}}, \mathbb{H}) = \emptyset$ means: no way for badness to embed into your system.
+The "bad pattern" $\mathbb{H}_{\text{bad}}$ is central to the whole theory. It represents what you do not want: a singularity, a blowup, a failure. The Sieve's job is to prove that your hypostructure has no morphism from the bad pattern to itself. That is what $\operatorname{Hom}(\mathbb{H}_{\text{bad}}, \mathbb{H}) = \emptyset$ means: no way for badness to embed into your system.
 :::
 
 | Symbol | Name | Definition |
@@ -112,7 +112,7 @@ The "bad pattern" $\mathbb{H}_{\text{bad}}$ is central to the whole theory. It r
 | $\mathbf{Hypo}_T$ | Hypostructure Category | Category of type-$T$ hypostructures |
 | $\mathbf{Thin}_T$ | Thin Category | Category of thin kernel objects |
 | $\mathbb{H}_{\text{bad}}$ | Bad Pattern | Universal singularity object |
-| $\text{Hom}(\cdot, \cdot)$ | Hom Functor | Morphism space (Node 17 Lock) |
+| $\operatorname{Hom}(\cdot, \cdot)$ | Hom Functor | Morphism space (Node 17 Lock) |
 | $F_{\text{Sieve}}$ | Sieve Functor | Left adjoint $F_{\text{Sieve}} \dashv U$ |
 
 (sec-notation-interface-identifiers)=
@@ -224,7 +224,7 @@ The Singular Point Contradiction corollary makes this even sharper: the existenc
 
 | Label | Name | Statement Summary | Reference |
 |-------|------|-------------------|-----------|
-| {prf:ref}`thm-bridge-zfc-fundamental` | Fundamental Theorem of Set-Theoretic Reflection | $\mathcal{E} \models (\mathrm{Hom}(\mathbb{H}_{\mathrm{bad}}, \mathbb{H}) \simeq \emptyset) \implies V_\mathcal{U} \vDash \forall u \in \tau_0(\mathcal{X}), \Psi(u)$ | {ref}`Fundamental Theorem <sec-zfc-fundamental-theorem>` |
+| {prf:ref}`thm-bridge-zfc-fundamental` | Fundamental Theorem of Set-Theoretic Reflection | $\mathcal{E} \models (\operatorname{Hom}(\mathbb{H}_{\mathrm{bad}}, \mathbb{H}) \simeq \emptyset) \implies V_\mathcal{U} \vDash \forall u \in \tau_0(\mathcal{X}), \Psi(u)$ | {ref}`Fundamental Theorem <sec-zfc-fundamental-theorem>` |
 | {prf:ref}`cor-singular-contradiction` | Singular Point Contradiction | Set-theoretic non-existence of singular points satisfying $\mathbb{H}_{\mathrm{bad}}$ in $V_\mathcal{U}$ | {ref}`Fundamental Theorem <sec-zfc-fundamental-theorem>` |
 
 (sec-notation-zfc-axiom-abbreviations)=
@@ -259,8 +259,8 @@ Computational depth $d_s(x)$ measures how much computation is "locked up" in a s
 
 | Symbol | Name | Definition | Reference |
 |--------|------|------------|-----------|
-| $K(x)$ | Kolmogorov Complexity | $\min\{|p| : U(p) = x\}$; shortest program length | {prf:ref}`def-kolmogorov-complexity` |
-| $\Omega_U$ | Chaitin's Halting Probability | $\sum_{p : U(p)\downarrow} 2^{-|p|}$; partition function | {prf:ref}`def-chaitin-omega` |
+| $K(x)$ | Kolmogorov Complexity | $\min\{|p| \,:\, U(p) = x\}$; shortest program length | {prf:ref}`def-kolmogorov-complexity` |
+| $\Omega_U$ | Chaitin's Halting Probability | $\sum_{p \,:\, U(p)\downarrow} 2^{-|p|}$; partition function | {prf:ref}`def-chaitin-omega` |
 | $d_s(x)$ | Computational Depth | Time of fastest program within $s$ bits of optimal | {prf:ref}`def-computational-depth` |
 | $Kt(x)$ | Levin Complexity | $K(x) + \log t(x)$; resource-bounded measure | {prf:ref}`def-thermodynamic-horizon` |
 | $m(x)$ | Algorithmic Probability | $\asymp 2^{-K(x)}$; Boltzmann weight analog | {prf:ref}`thm-sieve-thermo-correspondence` |

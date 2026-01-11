@@ -47,7 +47,7 @@ This metatheorem specifies the **interface contract** for verifiers, not an exis
 
 Soundness follows from the contract; the user's responsibility is to supply correct verifiers for their specific domain. The factory metatheorem guarantees that *if* verifiers satisfy the interface, *then* the Sieve produces sound certificates. This is analogous to type class constraints in programming: we specify what operations must exist, not how to implement them for all cases.
 
-For undecidable predicates (e.g., Gate 17), the framework uses the tactic library E1-E12 with $K^{\text{inc}}$ (inconclusive) fallback—the verifier always terminates, but may return "inconclusive" rather than a definite YES/NO.
+For undecidable predicates (e.g., Gate 17), the framework uses the tactic library E1-E12 with $K^{\mathrm{inc}}$ (inconclusive) fallback—the verifier always terminates, but may return "inconclusive" rather than a definite YES/NO.
 :::
 
 :::{prf:proof}
@@ -69,15 +69,15 @@ Each gate predicate $P_i^T$ belongs to one of three decidability classes:
 | Gate | Predicate | Decidability Class | Witness Type | Undecidability Source |
 |------|-----------|-------------------|--------------|----------------------|
 | 1 (Energy) | $\Phi(x) < M$ | $\Sigma_1^0$ (semi-decidable) | $(x, \Phi(x), M)$ | Infinite sup over time |
-| 3 (Compact) | $\exists V: \mu(B_\varepsilon(V)) > 0$ | $\Sigma_1^0$ | $(V, \varepsilon, \mu_{\text{witness}})$ | Profile enumeration |
+| 3 (Compact) | $\exists V: \mu(B_\varepsilon(V)) > 0$ | $\Sigma_1^0$ | $(V, \varepsilon, \mu_{\mathrm{witness}})$ | Profile enumeration |
 | 4 (Scale) | $\alpha < \beta + \lambda_c$ | Decidable | $(\alpha, \beta, \lambda_c)$ | None (arithmetic) |
-| 7 (Stiff) | $\|\nabla\Phi\| \geq C|\Delta\Phi|^\theta$ | $\Pi_2^0$ | $(C, \theta, \text{gradient\_bound})$ | Infimum over manifold |
-| 17 (Lock) | $\text{Hom}(\mathbb{H}_{\text{bad}}, -) = \emptyset$ | Undecidable in general | Obstruction cocycle | Rice's Theorem |
+| 7 (Stiff) | $\|\nabla\Phi\| \geq C|\Delta\Phi|^\theta$ | $\Pi_2^0$ | $(C, \theta, \mathrm{gradient\_bound})$ | Infimum over manifold |
+| 17 (Lock) | $\operatorname{Hom}(\mathbb{H}_{\mathrm{bad}}, -) = \emptyset$ | Undecidable in general | Obstruction cocycle | Rice's Theorem |
 
 *Decidability Mechanisms:*
-- **Semi-decidable ($\Sigma_1^0$):** Predicate can be verified by finite search if true, but may loop if false. Resolution: introduce timeout with $K^{\text{inc}}$ fallback.
+- **Semi-decidable ($\Sigma_1^0$):** Predicate can be verified by finite search if true, but may loop if false. Resolution: introduce timeout with $K^{\mathrm{inc}}$ fallback.
 - **Decidable:** Both truth and falsity can be determined in finite time. Resolution: direct evaluation.
-- **Undecidable ($\Pi_2^0$ or higher):** No general algorithm exists. Resolution: tactic library (E1-E12) with $K^{\text{inc}}$ exhaustion.
+- **Undecidable ($\Pi_2^0$ or higher):** No general algorithm exists. Resolution: tactic library (E1-E12) with $K^{\mathrm{inc}}$ exhaustion.
 
 **Decidability Contingencies:** The complexity classifications above assume:
 - **Rep-Constructive:** Computable representation of system states (e.g., constructive reals with effective moduli of continuity)
@@ -88,7 +88,7 @@ Without these assumptions, semi-decidable gates may return $K^{\mathrm{inc}}$ on
 
 *Decidability-Preserving Approximation:* For predicates in $\Pi_2^0$ or higher:
 1. Replace universal quantifier with finite approximation: $\forall x \in X$ becomes $\forall x \in X_N$ for truncation $X_N$
-2. Add precision certificate: $K^{\text{approx}} := (N, \epsilon, \|P - P_N\|)$
+2. Add precision certificate: $K^{\mathrm{approx}} := (N, \epsilon, \|P - P_N\|)$
 3. Propagate approximation error through the Sieve via error composition rules
 
 **Formal Witness Structure:**
@@ -134,7 +134,10 @@ Witness[LockCheck] := {
 ```
 
 *Witness Validity Invariant:* For all certificates $K_i^+$:
-$$\text{Valid}(K_i^+) \Leftrightarrow \exists w \in W_i^T.\, \text{Verify}(w) = \text{true} \wedge \text{Extract}(K_i^+) = w$$
+
+$$
+\operatorname{Valid}(K_i^+) \Leftrightarrow \exists w \in W_i^T.\, \operatorname{Verify}(w) = \mathrm{true} \wedge \operatorname{Extract}(K_i^+) = w
+$$
 
 *Proof (5 Steps).*
 
@@ -146,19 +149,19 @@ $$\text{Valid}(K_i^+) \Leftrightarrow \exists w \in W_i^T.\, \text{Verify}(w) = 
 
 The predicates are derived from the user-supplied $(\Phi, \mathfrak{D}, G)$ using type-specific templates from the {ref}`Gate Catalog <sec-node-specs>`.
 
-*Step 2 (Verifier Construction).* For each gate $i$, construct verifier $V_i^T: X \times \Gamma \to \{\text{YES}, \text{NO}\} \times \mathcal{K}_i$:
+*Step 2 (Verifier Construction).* For each gate $i$, construct verifier $V_i^T: X \times \Gamma \to \{\mathrm{YES}, \mathrm{NO}\} \times \mathcal{K}_i$:
 1. **Input parsing:** Extract relevant state $x$ and context certificates $\Gamma$
 2. **Predicate evaluation:** Compute $P_i^T(x)$ using functional evaluation of $\Phi, \mathfrak{D}$
 3. **Certificate generation:** If $P_i^T(x)$ holds, produce $K_i^+ = (x, \text{witness})$; otherwise produce $K_i^- = (x, \text{failure\_data})$
 
-*Step 3 (Soundness).* The verifier is sound: $V_i^T(x, \Gamma) = (\text{YES}, K_i^+) \Rightarrow P_i^T(x)$.
+*Step 3 (Soundness).* The verifier is sound: $V_i^T(x, \Gamma) = (\mathrm{YES}, K_i^+) \Rightarrow P_i^T(x)$.
 
-*Proof.* By construction, $K_i^+$ is only produced when the verifier confirms $P_i^T(x)$. The certificate carries a witness: for EnergyCheck, this is $(\Phi(x), \text{bound})$; for CompactCheck, this is $(V, \varepsilon, \mu(B_\varepsilon(V)))$. The witness data certifies the predicate by inspection. This is the Curry-Howard correspondence {cite}`HoTTBook`: the certificate $K_i^+$ is a proof term for proposition $P_i^T(x)$.
+*Proof.* By construction, $K_i^+$ is only produced when the verifier confirms $P_i^T(x)$. The certificate carries a witness: for EnergyCheck, this is $(\Phi(x), \mathrm{bound})$; for CompactCheck, this is $(V, \varepsilon, \mu(B_\varepsilon(V)))$. The witness data certifies the predicate by inspection. This is the Curry-Howard correspondence {cite}`HoTTBook`: the certificate $K_i^+$ is a proof term for proposition $P_i^T(x)$.
 
 *Step 4 (Completeness).* For each gate, the verifier covers all cases:
-- If $P_i^T(x)$ holds: returns $(\text{YES}, K_i^+)$ with witness
-- If $\neg P_i^T(x)$ is finitely refutable: returns $(\text{NO}, K_i^{\mathrm{wit}})$ with counterexample
-- If undecidable or negation not finitely witnessable: returns $(\text{INC}, K_i^{\mathrm{inc}})$ with obligation ledger
+- If $P_i^T(x)$ holds: returns $(\mathrm{YES}, K_i^+)$ with witness
+- If $\neg P_i^T(x)$ is finitely refutable: returns $(\mathrm{NO}, K_i^{\mathrm{wit}})$ with counterexample
+- If undecidable or negation not finitely witnessable: returns $(\mathrm{INC}, K_i^{\mathrm{inc}})$ with obligation ledger
 
 The three outcomes partition all inputs. No verifier returns $\bot$ (undefined).
 
@@ -223,16 +226,20 @@ For any system of type $T$, there exist default barrier implementations with cor
 Each barrier is instantiated from the corresponding literature theorem by substituting the type-specific functionals $(\Phi, \mathfrak{D})$.
 
 *Step 2 (Non-Circularity Verification).* For each barrier $\mathcal{B}_j$, verify the dependency constraint:
-$$\mathrm{Trig}(\mathcal{B}_j) \cap \mathrm{Pre}(V_i) = \emptyset$$
+
+$$
+\mathrm{Trig}(\mathcal{B}_j) \cap \mathrm{Pre}(V_i) = \emptyset
+$$
+
 where $V_i$ is the gate that triggers $\mathcal{B}_j$. This is checked syntactically: the trigger predicate $\mathrm{Trig}(\mathcal{B}_j)$ uses quantities from $K_i^-$ (the gate's NO output), while $\mathrm{Pre}(V_i)$ uses quantities from $\Gamma$ (prior context). Since $K_i^- \not\in \Gamma$ at evaluation time, circularity is impossible.
 
 *Step 3 (Barrier Soundness).* Each barrier implementation is sound in two directions:
 - **Blocked soundness:** If $\mathcal{B}_j$ returns $K_j^{\mathrm{blk}}$, then the obstruction genuinely cannot persist. For Foster-Lyapunov barriers, this follows from {cite}`MeynTweedie93` Theorem 15.0.1: the drift condition implies geometric ergodicity, so unbounded energy is transient.
-- **Breached soundness:** If $\mathcal{B}_j$ returns $K_j^{\mathrm{br}}$, the barrier method is insufficient to exclude the obstruction. For capacity barriers: $\mathrm{Cap}(\Sigma) > \varepsilon_{\text{reg}}$ means epsilon-regularity ({cite}`CaffarelliKohnNirenberg82`) cannot be applied; singularity is *not excluded* but also *not proven*. Breached is a routing signal for surgery/fallback pathways, not a semantic guarantee that singularity exists.
+- **Breached soundness:** If $\mathcal{B}_j$ returns $K_j^{\mathrm{br}}$, the barrier method is insufficient to exclude the obstruction. For capacity barriers: $\mathrm{Cap}(\Sigma) > \varepsilon_{\mathrm{reg}}$ means epsilon-regularity ({cite}`CaffarelliKohnNirenberg82`) cannot be applied; singularity is *not excluded* but also *not proven*. Breached is a routing signal for surgery/fallback pathways, not a semantic guarantee that singularity exists.
 
 *Step 4 (Certificate Production).* Given trigger activation, the barrier implementation produces certificates with full payload:
-- **Blocked:** $K_B^{\mathrm{blk}} = (\text{barrier\_type}, \text{obstruction}, \text{bound}, \text{literature\_ref})$
-- **Breached:** $K_B^{\mathrm{br}} = (\text{mode}, \text{profile}, \text{surgery\_data}, \text{capacity})$
+- **Blocked:** $K_B^{\mathrm{blk}} = (\mathrm{barrier\_type}, \mathrm{obstruction}, \mathrm{bound}, \mathrm{literature\_ref})$
+- **Breached:** $K_B^{\mathrm{br}} = (\mathrm{mode}, \mathrm{profile}, \mathrm{surgery\_data}, \mathrm{capacity})$
 
 The payload structure ensures downstream consumers (surgery, Lock) have all necessary information without re-querying.
 
@@ -291,27 +298,35 @@ The correspondence is type-specific and encoded in the profile library: each $\m
 
 *Step 2 (Surgery Well-Definedness).* For each surgery operator $\mathcal{O}_S^T$, verify well-definedness:
 - **Domain:** The surgery is defined on the set $\{x : \exists (\Sigma, V) \text{ admissible at } x\}$ where $V \in \mathcal{L}_T$
-- **Pushout existence:** The categorical pushout $\mathcal{X}' = (\mathcal{X} \setminus B_\varepsilon(\Sigma)) \sqcup_\partial \mathcal{X}_{\text{cap}}$ exists by completeness of the ambient category
-- **Gluing smoothness:** The capping region $\mathcal{X}_{\text{cap}}$ matches the excised boundary $\partial B_\varepsilon(\Sigma)$ by asymptotic analysis of the profile $V$
+- **Pushout existence:** The categorical pushout $\mathcal{X}' = (\mathcal{X} \setminus B_\varepsilon(\Sigma)) \sqcup_\partial \mathcal{X}_{\mathrm{cap}}$ exists by completeness of the ambient category
+- **Gluing smoothness:** The capping region $\mathcal{X}_{\mathrm{cap}}$ matches the excised boundary $\partial B_\varepsilon(\Sigma)$ by asymptotic analysis of the profile $V$
 
 *Step 3 (Admissibility Verification).* The admissibility checker tests the surgery preconditions:
 - **Scale separation:** $\lambda_{\mathrm{sing}} \ll \lambda_{\mathrm{bulk}}$ ensures the singularity is localized
 - **Isolation:** Singularity regions $\Sigma_1, \ldots, \Sigma_k$ are pairwise disjoint
-- **Energy bound:** $\Phi(\text{extracted}) \leq \delta \cdot \Phi(\text{total})$ for small $\delta$ ensures bounded energy loss
-- **Capacity bound:** $\mathrm{Cap}(\Sigma) \leq \varepsilon_{\text{adm}}$ by {cite}`Federer69` Theorem 2.10.19
+- **Energy bound:** $\Phi(\mathrm{extracted}) \leq \delta \cdot \Phi(\mathrm{total})$ for small $\delta$ ensures bounded energy loss
+- **Capacity bound:** $\mathrm{Cap}(\Sigma) \leq \varepsilon_{\mathrm{adm}}$ by {cite}`Federer69` Theorem 2.10.19
 
-If any condition fails, return $K_{\text{inadm}}$ routing to reconstruction ({prf:ref}`mt-lock-reconstruction`).
+If any condition fails, return $K_{\mathrm{inadm}}$ routing to reconstruction ({prf:ref}`mt-lock-reconstruction`).
 
 *Step 4 (Progress Measure).* Define the well-founded progress measure:
-$$\mathcal{P}(x, N_S) = (N_{\max} - N_S, \Phi_{\mathrm{residual}}(x)) \in \omega \times [0, \infty)$$
+
+$$
+\mathcal{P}(x, N_S) = (N_{\max} - N_S, \Phi_{\mathrm{residual}}(x)) \in \omega \times [0, \infty)
+$$
+
 ordered lexicographically. Each surgery strictly decreases $\mathcal{P}$:
 - $N_S \mapsto N_S + 1$ strictly decreases the first component
-- $\Phi_{\mathrm{residual}}$ decreases by at least $\delta_{\text{surgery}} > 0$ per surgery by {cite}`Perelman03` Lemma 4.3
+- $\Phi_{\mathrm{residual}}$ decreases by at least $\delta_{\mathrm{surgery}} > 0$ per surgery by {cite}`Perelman03` Lemma 4.3
 
 Since $\mathcal{P}$ takes values in a well-founded order, termination follows.
 
 *Step 5 (Re-entry Certificate).* Upon successful surgery, generate re-entry certificate:
-$$K^{\mathrm{re}} = (\mathcal{O}_S, (\Sigma, V), x', \Phi(x') < \Phi(x^-), N_S + 1)$$
+
+$$
+K^{\mathrm{re}} = (\mathcal{O}_S, (\Sigma, V), x', \Phi(x') < \Phi(x^-), N_S + 1)
+$$
+
 The certificate attests:
 - The surgery $\mathcal{O}_S$ was applied to singularity $(\Sigma, V)$
 - The surgered state $x' = \mathcal{O}_S(x^-)$ satisfies gate preconditions for re-entry
@@ -375,18 +390,25 @@ The comparability bounds follow from the type's energy functional: $|\Phi(u) - \
 This follows the univalence principle {cite}`HoTTBook`: equivalent types have equivalent properties.
 
 *Step 3 (YES$^\sim$ Production).* The production rules for YES$^\sim$ (equivalent-YES) are:
-$$\frac{V_i^T(u, \Gamma) = (\text{YES}, K_i^+) \quad u \sim u' \quad K_{\mathrm{Eq}}(u, u')}{V_i^T(u', \Gamma') = (\text{YES}^\sim, T_i(K_i^+, K_{\mathrm{Eq}}))}$$
+
+$$
+\frac{V_i^T(u, \Gamma) = (\mathrm{YES}, K_i^+) \quad u \sim u' \quad K_{\mathrm{Eq}}(u, u')}{V_i^T(u', \Gamma') = (\mathrm{YES}^\sim, T_i(K_i^+, K_{\mathrm{Eq}}))}
+$$
 
 The rule is applied automatically by the Sieve when an equivalence certificate is in context.
 
 *Step 4 (Promotion Rules).* YES$^\sim$ promotes to YES$^+$ under bounded equivalence parameters:
-- **Immediate promotion:** If $|\lambda - 1| < \epsilon_{\text{prom}}$ or $d(g, e) < \delta_{\text{prom}}$, the equivalence is "small" and YES$^\sim$ becomes YES$^+$
+- **Immediate promotion:** If $|\lambda - 1| < \epsilon_{\mathrm{prom}}$ or $d(g, e) < \delta_{\mathrm{prom}}$, the equivalence is "small" and YES$^\sim$ becomes YES$^+$
 - **A-posteriori promotion:** If later gates provide stronger bounds that retroactively satisfy the promotion condition, apply promotion during closure ({prf:ref}`mt-up-inc-aposteriori`)
 
-Promotion thresholds $\epsilon_{\text{prom}}, \delta_{\text{prom}}$ are type-specific and derived from the comparability bounds.
+Promotion thresholds $\epsilon_{\mathrm{prom}}, \delta_{\mathrm{prom}}$ are type-specific and derived from the comparability bounds.
 
 *Step 5 (Completeness of Equivalence Library).* The equivalence library is complete for type $T$ if:
-$$\forall u, u' \in X: u \sim_T u' \Rightarrow \exists i: u \sim_{\mathrm{Eq}_i} u'$$
+
+$$
+\forall u, u' \in X: u \sim_T u' \Rightarrow \exists i: u \sim_{\mathrm{Eq}_i} u'
+$$
+
 where $\sim_T$ is the type's intrinsic equivalence relation. For well-studied types (NLS, Navier-Stokes, Ricci flow), this follows from the classification of symmetries in {cite}`Olver93`.
 
 $\square$
@@ -437,21 +459,25 @@ For any type $T$ with $\mathrm{Rep}_K$ available, there exist E1--E10 tactics fo
 
 Each tactic $E_i$ has a **decidability class**: E1--E3 are decidable **under the effective layer** (Rep-Constructive + Cert-Finite($T$) + explicit invariant computation backends); E4--E5 require $\mathrm{Rep}_K$ and may be semi-decidable. Without the effective layer, E3 (mountain pass) involves global optimization and may return $K^{\mathrm{inc}}$.
 
-*Step 2 (Tactic Soundness).* For each tactic $E_i^T$, prove soundness: if $E_i^T$ returns BLOCKED, then genuinely $\mathrm{Hom}(\mathbb{H}_{\mathrm{bad}}, \mathcal{H}) = \emptyset$.
+*Step 2 (Tactic Soundness).* For each tactic $E_i^T$, prove soundness: if $E_i^T$ returns BLOCKED, then genuinely $\operatorname{Hom}(\mathbb{H}_{\mathrm{bad}}, \mathcal{H}) = \emptyset$.
 
 **Per-tactic soundness:**
 - **E1 (Geometric):** If $\dim(\Sigma) < n - 2$, then singularity set has zero capacity and cannot support a genuine obstruction by {cite}`Federer69`
 - **E2 (Topological):** If $\pi_k(\mathcal{X} \setminus \Sigma) \neq \pi_k(\mathcal{X})$ for some $k$, the topological type changed, blocking any pattern-preserving morphism
 - **E3 (Variational):** If $\Phi$ has no critical points in the bad region by mountain pass {cite}`AmbrosettiRabinowitz73`, no stationary singularity exists
 - **E4 (Cohomological):** If the Čech cohomology obstruction class $[\omega] \in \check{H}^k$ is non-trivial, the pattern cannot extend by {cite}`Grothendieck67`
-- **E5 (Representation):** If $\mathrm{Hom}_G(\rho_{\mathrm{bad}}, \rho_{\mathcal{H}}) = 0$ by Schur orthogonality, no equivariant morphism exists
+- **E5 (Representation):** If $\operatorname{Hom}_G(\rho_{\mathrm{bad}}, \rho_{\mathcal{H}}) = 0$ by Schur orthogonality, no equivariant morphism exists
 
 *Step 3 (Tactic Exhaustiveness).* The tactics are ordered by strength and applied sequentially:
-$$E_1^T \to E_2^T \to E_3^T \to E_4^T \to E_5^T \to \text{Horizon}$$
+
+$$
+E_1^T \to E_2^T \to E_3^T \to E_4^T \to E_5^T \to \mathrm{Horizon}
+$$
+
 Each tactic is **complete for its class**: E1 catches all geometric obstructions, E2 catches all topological obstructions, etc. The union covers all known obstruction mechanisms for type $T$.
 
 *Step 4 (Horizon Fallback).* If all tactics fail, the Lock enters horizon mode:
-- Emit $K_{\mathrm{Lock}}^{\mathrm{inc}} = (\text{tactics\_exhausted}, \{E_1, \ldots, E_5\}, \text{partial\_progress})$
+- Emit $K_{\mathrm{Lock}}^{\mathrm{inc}} = (\mathrm{tactics\_exhausted}, \{E_1, \ldots, E_5\}, \mathrm{partial\_progress})$
 - The certificate records which tactics were tried and any partial progress (near-obstructions, dimension bounds)
 - Route to {prf:ref}`mt-lock-reconstruction` for explicit construction attempt
 
@@ -460,7 +486,7 @@ This ensures **honest incompleteness**: the system admits when the problem excee
 *Step 5 (Termination).* Lock evaluation terminates:
 - Each tactic $E_i^T$ terminates in finite time (decidable or semi-decidable with timeout)
 - The tactic sequence has fixed length (5 tactics)
-- Total Lock evaluation time is bounded: $T_{\mathrm{Lock}} \leq \sum_{i=1}^5 T_{E_i} + T_{\text{horizon}} < \infty$
+- Total Lock evaluation time is bounded: $T_{\mathrm{Lock}} \leq \sum_{i=1}^5 T_{E_i} + T_{\mathrm{horizon}} < \infty$
 
 For semi-decidable tactics (E4, E5), a timeout mechanism ensures termination: if $E_i$ exceeds $T_{\max}$, it returns "inconclusive for this tactic" and passes to $E_{i+1}$.
 

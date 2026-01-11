@@ -27,6 +27,7 @@ To ensure robustness against deformation and gauge redundancies, we work within 
 :label: def-ambient-topos
 
 Let $\mathcal{E}$ be a **cohesive $(\infty, 1)$-topos** equipped with the shape/flat/sharp modality adjunction:
+
 $$\Pi \dashv \flat \dashv \sharp : \mathcal{E} \to \infty\text{-Grpd}$$
 
 The cohesion structure provides:
@@ -67,7 +68,9 @@ A **Hypostructure** is a tuple $\mathbb{H} = (\mathcal{X}, \nabla, \Phi_\bullet,
    - $\pi_n$ ($n \geq 2$): Higher coherences and anomalies
 
 2. **Flat Connection** $\nabla: \mathcal{X} \to T\mathcal{X}$: A section of the tangent $\infty$-bundle, encoding the dynamics as **parallel transport**. The semiflow $S_t$ is recovered as the exponential map:
+
    $$S_t = \exp(t \cdot \nabla): \mathcal{X} \to \mathcal{X}$$
+
    The flatness condition $[\nabla, \nabla] = 0$ ensures consistency of time evolution.
 
 3. **Cohomological Height** $\Phi_\bullet: \mathcal{X} \to \mathbb{R}_\infty$: A **cohomological field theory** assigning to each state its energy/complexity. The notation $\Phi_\bullet$ indicates this is a **derived functor**—it comes equipped with higher coherences $\Phi_n$ for all $n$.
@@ -79,22 +82,29 @@ A **Hypostructure** is a tuple $\mathbb{H} = (\mathcal{X}, \nabla, \Phi_\bullet,
    - **Axiom LS**: $\tau_{LS}$ truncates unstable modes
 
 5. **Boundary Morphism** $\partial_\bullet: \mathcal{X} \to \mathcal{X}_\partial$: A **restriction functor** to the boundary $\infty$-stack, representing the **Holographic Screen**—the interface between bulk dynamics and the external environment. Formally, $\partial_\bullet$ is the pullback along the inclusion $\iota: \partial\mathcal{X} \hookrightarrow \mathcal{X}$:
+
    $$\partial_\bullet := \iota^*: \mathbf{Sh}_\infty(\mathcal{X}) \to \mathbf{Sh}_\infty(\partial\mathcal{X})$$
 
    This structure satisfies:
 
    - **Stokes' Constraint (Differential Cohomology):** Let $\hat{\Phi} \in \hat{H}^n(\mathcal{X}; \mathbb{R})$ be the differential refinement of the energy class. The **integration pairing** satisfies:
+
      $$\langle d\hat{\Phi}, [\mathcal{X}] \rangle = \langle \hat{\Phi}, [\partial\mathcal{X}] \rangle$$
+
      where $d: \hat{H}^n \to \Omega^{n+1}_{\text{cl}}$ is the curvature map. This rigidly links internal dissipation to boundary flux via the **de Rham-Cheeger-Simons sequence**.
 
    - **Cobordism Interface:** For Surgery operations, $\partial_\bullet$ defines the gluing interface in the symmetric monoidal $(\infty,1)$-category $\mathbf{Bord}_n^{\text{or}}$. Given a cobordism $W: M_0 \rightsquigarrow M_1$, the boundary functor satisfies:
+
      $$\partial W \simeq M_0 \sqcup \overline{M_1} \quad \text{in } \mathbf{Bord}_n$$
+
      Surgery is a morphism in this category; gluing is composition.
 
    - **Holographic Bound (Two-Level Structure):** The framework employs two complementary information bounds:
 
      1. **Cohomological Bound:** The **singularity complexity** $S_{\text{coh}}(\mathcal{X}) := \log|\pi_0(\mathcal{X}_{\text{sing}})|$ (counting connected components of the singular locus) is bounded by:
+
         $$S_{\text{coh}}(\mathcal{X}) \leq C \cdot \chi(\partial\mathcal{X})$$
+
         where $\chi$ denotes the Euler characteristic. This topological bound constrains how singularities can distribute across the boundary topology.
 
      2. **Information Bound (Data Processing Inequality):** The mutual information between bulk and observer is bounded by the capacity of the boundary channel: $I(X; Z) \leq I(X; Y)$. This information-theoretic constraint is enforced by Tactic E8 ({prf:ref}`def-e8`) using the Capacity interface $\mathrm{Cap}_H$.
@@ -248,15 +258,21 @@ Define the **small index category** $\mathbf{I}_{\text{small}}$:
 - Morphisms: Profile embeddings respecting blow-up structure
 
 *Existence of Colimit:* The category $\mathbf{Hypo}_T$ is locally presentable ({cite}`Lurie09` §5.5). Since $\mathbf{I}_{\text{small}}$ is a **small category**, the colimit exists by standard results. Define:
+
 $$\mathbb{H}_{\mathrm{bad}}^{(T)} := \mathrm{colim}_{\mathbf{I}_{\text{small}}} \mathcal{D}$$
 
 *Cofinality:* For any singularity pattern $\mathbb{H}_P$ with $(P, \pi)$ in the "large" category of all patterns, there exists a representative germ $[P', \pi'] \in \mathcal{G}_T$ such that $\mathbb{H}_P \to \mathbb{H}_{[P',\pi']}$ factors through the germ. Thus $\mathbf{I}_{\text{small}}$ is **cofinal** in the hypothetical large category, and:
+
 $$\mathrm{colim}_{\mathbf{I}_{\text{small}}} \mathcal{D} \cong \mathrm{colim}_{\mathbf{I}} \mathcal{D}$$
+
 by cofinality ({cite}`MacLane71` §IX.3).
 
 *Initiality Verification:* By the universal property of colimits, for any germ $[P, \pi] \in \mathcal{G}_T$:
+
 $$\exists! \; \iota_{[P,\pi]}: \mathbb{H}_{[P,\pi]} \to \mathbb{H}_{\mathrm{bad}}^{(T)}$$
+
 (the coprojection). Conversely, for any $\mathbb{H} \in \mathbf{Hypo}_T$ receiving all germ patterns:
+
 $$(\forall [P,\pi] \in \mathcal{G}_T.\, \mathbb{H}_{[P,\pi]} \to \mathbb{H}) \Rightarrow (\mathbb{H}_{\mathrm{bad}}^{(T)} \to \mathbb{H})$$
 
 *Explicit Construction by Type:*
@@ -275,16 +291,23 @@ $$(\forall [P,\pi] \in \mathcal{G}_T.\, \mathbb{H}_{[P,\pi]} \to \mathbb{H}) \Ri
 *Step 1 (Ambient Setup).* Let $\mathcal{E}$ be the cohesive $(\infty,1)$-topos containing $\mathbf{Hypo}_T$ as a full subcategory. By {cite}`Lurie09` §6.1, $\mathcal{E}$ admits an **internal logic** given by its subobject classifier $\Omega$. Propositions in $\mathcal{E}$ correspond to morphisms $p: 1 \to \Omega$ where $1$ is the terminal object.
 
 *Step 2 (Construction: Singularity Sheaf).* Define the **Singularity Sheaf** $\mathcal{S}_{\mathrm{bad}}: \mathbf{Hypo}_T^{\mathrm{op}} \to \mathbf{Set}$ by:
+
 $$\mathcal{S}_{\mathrm{bad}}(\mathbb{H}) := \mathrm{Hom}_{\mathbf{Hypo}_T}(\mathbb{H}_{\mathrm{bad}}^{(T)}, \mathbb{H})$$
+
 This is a presheaf assigning to each hypostructure its set of "singular embeddings."
 
 *Step 3 (Internal Logic Translation).* In the internal logic of $\mathcal{E}$, the statement "$\mathbb{H}$ has no singularities" translates to:
+
 $$\llbracket \mathcal{S}_{\mathrm{bad}}(\mathbb{H}) = \emptyset \rrbracket = \top$$
+
 where $\llbracket - \rrbracket$ denotes the truth value in the Heyting algebra $\Omega(\mathcal{E})$. The internal negation is:
+
 $$\neg\exists \phi.\, \phi: \mathbb{H}_{\mathrm{bad}} \to \mathbb{H}$$
 
 *Step 4 (Well-definedness via Yoneda).* The Singularity Sheaf is representable by $\mathbb{H}_{\mathrm{bad}}^{(T)}$ via Yoneda:
+
 $$\mathcal{S}_{\mathrm{bad}} \cong y(\mathbb{H}_{\mathrm{bad}}^{(T)}) = \mathrm{Hom}(\mathbb{H}_{\mathrm{bad}}^{(T)}, -)$$
+
 The initiality property (N9) ensures $\mathbb{H}_{\mathrm{bad}}^{(T)}$ is the **colimit** of all singularity patterns, making it the universal testing object.
 
 *Step 5 (Universal Property Verification).* For any $\mathbb{H}(Z) \in \mathbf{Hypo}_T$:
@@ -292,9 +315,13 @@ The initiality property (N9) ensures $\mathbb{H}_{\mathrm{bad}}^{(T)}$ is the **
 - If $\mathcal{S}_{\mathrm{bad}}(\mathbb{H}(Z)) = \emptyset$: no morphism exists, so by the **internal logic of $\mathcal{E}$**, the proposition "$Z$ is singular" is **internally false**
 
 *Step 6 (Contrapositive in Internal Logic).* The logical structure is:
+
 $$(\exists \phi.\, \phi: \mathbb{H}_{\mathrm{bad}} \to \mathbb{H}(Z)) \Leftrightarrow \neg\mathrm{Rep}_K(T,Z)$$
+
 Taking the contrapositive in the Heyting algebra:
+
 $$\neg(\exists \phi.\, \phi: \mathbb{H}_{\mathrm{bad}} \to \mathbb{H}(Z)) \Rightarrow \mathrm{Rep}_K(T,Z)$$
+
 The empty Hom-set (N11) verifies the antecedent, yielding the consequent.
 
 *Step 7 (Certificate Production).* The proof is constructive in the sense that:
@@ -423,11 +450,15 @@ This theorem formalizes the phase transition detected by {prf:ref}`mt-krnl-horiz
 We establish the sharp phase boundary in four steps.
 
 **Step 1 (Crystal Regime).** Let $L \subseteq \mathbb{N}$ be decidable. Then there exists a Turing machine $M$ with finite description computing $\chi_L$. For the initial segment $L_n := L \cap [0,n]$:
+
 $$K(L_n) \leq |M| + O(\log n) = O(\log n)$$
+
 The $O(\log n)$ term encodes $n$. Since $L$ is decidable, Axiom R holds (the decider serves as recovery operator). Sieve verdict: **REGULAR** with $K_{\text{Crystal}}^+$.
 
 **Step 2 (Gas Regime).** Let $L \subseteq \mathbb{N}$ be Martin-Löf random. By the Levin-Schnorr Theorem {cite}`Levin73b`; {cite}`Schnorr73`:
+
 $$K(L_n) \geq n - O(1)$$
+
 No computable predictor can anticipate the membership of $L$. Axiom R fails absolutely—no recovery operator exists. Sieve verdict: **HORIZON** with $K_{\text{Gas}}^{\text{blk}}$.
 
 **Step 3 (Phase Transition).** The Halting Set $\mathcal{K}$ exhibits **liquid** behavior:
@@ -438,7 +469,9 @@ No computable predictor can anticipate the membership of $L$. Axiom R fails abso
 This is the critical phase transition: low complexity does not imply decidability when Axiom R fails.
 
 **Step 4 (Sharp Boundary).** The boundary is sharp in the following sense: for any $\epsilon > 0$, there exist sets $L^+, L^-$ with:
+
 $$K(L^+_n) = (1-\epsilon)n, \quad K(L^-_n) = O(\log n)$$
+
 such that $L^+$ is undecidable (gas) and $L^-$ is decidable (crystal). The Halting Set $\mathcal{K}$ lies exactly at the boundary, demonstrating that the phase transition occurs at the computability threshold, not the complexity threshold.
 
 **Thermodynamic Interpretation:** Under the correspondence of {prf:ref}`thm-sieve-thermo-correspondence`, this is a first-order phase transition in the decidability order parameter $\rho_R$ (Axiom R satisfaction).
@@ -486,6 +519,7 @@ where $K(\mathcal{I}) := \min\{|p| : U(p) = \text{characteristic function of } \
 
 **Honest Verdict Protocol**:
 When $K(\mathcal{I}) > M_{\text{sieve}}$, emit:
+
 $$K_{\text{Horizon}}^{\text{blk}} = (\text{"Thermodynamically irreducible"}, K(\mathcal{I}) > M_{\text{sieve}}, \text{Axiom R failure proof})$$
 
 **Connection to Algorithmic Information Theory**:
@@ -521,6 +555,7 @@ If $K(\mathcal{I}) > M_{\text{sieve}}$, no representation of $\mathcal{I}$ fits 
 
 **Step 3 (Horizon Verdict)**:
 Unable to store $\mathcal{I}$, the sieve **cannot** execute the decision procedure. By the Honest Epistemics Protocol, it outputs **HORIZON** with certificate:
+
 $$K_{\text{Horizon}}^{\text{blk}} = (\text{Complexity } K(\mathcal{I}) = [value] > M_{\text{sieve}}, \text{proof of memory insufficiency})$$
 
 **Step 4 (No False Negatives)**:

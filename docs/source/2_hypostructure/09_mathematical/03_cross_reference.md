@@ -67,9 +67,9 @@ These are not soft constraints. They are mathematical walls.
 |--------------------|------------------------|------------------------|------------------------|
 | {prf:ref}`def-barrier-sat` | {prf:ref}`mt-up-saturation-principle` | $\mathcal{L}\mathcal{V} \leq -\lambda\mathcal{V} + b$ | Meyn-Tweedie, Hairer |
 | {prf:ref}`def-barrier-causal` | {prf:ref}`mt-up-causal-barrier` | $d(u) < \infty \Rightarrow t < \infty$ | Bennett, Penrose |
-| {prf:ref}`def-barrier-cap` | {prf:ref}`mt-lock-tactic-capacity` | $\text{Cap}(B) < \infty \Rightarrow \mu_T(B) < \infty$ | Federer, Maz'ya |
+| {prf:ref}`def-barrier-cap` | {prf:ref}`mt-lock-tactic-capacity` | $\operatorname{Cap}(B) < \infty \Rightarrow \mu_T(B) < \infty$ | Federer, Maz'ya |
 | {prf:ref}`def-barrier-action` | {prf:ref}`mt-up-shadow` | $\mu(\tau \neq 0) \leq e^{-c\Delta^2}$ | Herbst, Łojasiewicz |
-| {prf:ref}`def-barrier-bode` | {prf:ref}`thm-bode` | $\int \log|S| d\omega = \pi \sum p_i$ | Bode, Doyle |
+| {prf:ref}`def-barrier-bode` | {prf:ref}`thm-bode` | $\int \log\lvert S\rvert \,d\omega = \pi \sum p_i$ | Bode, Doyle |
 | {prf:ref}`def-barrier-epi` | {prf:ref}`mt-act-horizon` | $I(X;Z) \leq I(X;Y)$ | Cover-Thomas, Landauer |
 
 (sec-surgery-construction-cross-reference)=

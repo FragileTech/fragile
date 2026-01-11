@@ -72,7 +72,11 @@ A **certificate** $K$ is a formal witness object that records the outcome of a v
 :label: def-context
 
 The **context** $\Gamma$ is a finite multiset of certificates accumulated during a sieve run:
-$$\Gamma = \{K_{D_E}, K_{\mathrm{Rec}_N}, K_{C_\mu}, \ldots, K_{\mathrm{Cat}_{\mathrm{Hom}}}\}$$
+
+$$
+\Gamma = \{K_{D_E}, K_{\mathrm{Rec}_N}, K_{C_\mu}, \ldots, K_{\mathrm{Cat}_{\mathrm{Hom}}}\}
+$$
+
 The context grows monotonically during an epoch: certificates are added but never removed (except at surgery re-entry, where context may be partially reset).
 
 :::
@@ -81,7 +85,11 @@ The context grows monotonically during an epoch: certificates are added but neve
 :label: def-node-evaluation
 
 Each node $N$ in the sieve defines an **evaluation function**:
-$$\mathrm{eval}_N : X \times \Gamma \to \mathcal{O}_N \times \mathcal{K}_N \times X \times \Gamma$$
+
+$$
+\mathrm{eval}_N : X \times \Gamma \to \mathcal{O}_N \times \mathcal{K}_N \times X \times \Gamma
+$$
+
 where:
 - $\mathcal{O}_N$ is the **outcome alphabet** for node $N$
 - $\mathcal{K}_N$ is the **certificate type** produced by node $N$
@@ -97,7 +105,11 @@ where:
 :label: def-edge-validity
 
 An edge $N_1 \xrightarrow{o} N_2$ in the sieve diagram is **valid** if and only if:
-$$K_o \Rightarrow \mathrm{Pre}(N_2)$$
+
+$$
+K_o \Rightarrow \mathrm{Pre}(N_2)
+$$
+
 That is, the certificate produced by node $N_1$ with outcome $o$ logically implies the precondition required for node $N_2$ to be evaluable.
 
 :::
@@ -144,7 +156,11 @@ The beautiful thing is that all these certificates fit together like puzzle piec
 :label: def-gate-permits
 
 For each gate (blue node) $i$, the outcome alphabet is:
-$$\mathcal{O}_i = \{`YES`, `NO`\}$$
+
+$$
+\mathcal{O}_i = \{`YES`, `NO`\}
+$$
+
 with certificate types:
 - $K_i^+$ (`YES` certificate): Witnesses that predicate $P_i$ holds on the current state/window
 - $K_i^-$ (`NO` certificate): Witnesses either that $P_i$ fails, or that $P_i$ cannot be certified from current $\Gamma$
@@ -167,7 +183,10 @@ For these gates, $K^-$ represents a classification outcome, not a failure certif
 For each barrier (orange node), the outcome alphabet is one of:
 
 **Standard barriers** (most barriers):
-$$\mathcal{O}_{\text{barrier}} = \{`Blocked`, `Breached`\}$$
+
+$$
+\mathcal{O}_{\text{barrier}} = \{`Blocked`, `Breached`\}
+$$
 
 **Special barriers with extended alphabets:**
 - **BarrierScat** (Scattering): $\mathcal{O} = \{`Benign`, `Pathological`\}$
@@ -184,11 +203,18 @@ Certificate semantics:
 :label: def-surgery-permits
 
 For each surgery (purple node), the output is a **re-entry certificate**:
-$$K^{\mathrm{re}} = (D_S, x', \pi)$$
+
+$$
+K^{\mathrm{re}} = (D_S, x', \pi)
+$$
+
 where $D_S$ is the surgery data, $x'$ is the post-surgery state, and $\pi$ is a proof that $\mathrm{Pre}(\text{TargetNode})$ holds for $x'$.
 
 The re-entry certificate witnesses that after surgery with data $D_S$, the precondition of the dotted-arrow target node is satisfied:
-$$K^{\mathrm{re}} \Rightarrow \mathrm{Pre}(\text{TargetNode})(x')$$
+
+$$
+K^{\mathrm{re}} \Rightarrow \mathrm{Pre}(\text{TargetNode})(x')
+$$
 
 :::
 
@@ -196,11 +222,16 @@ $$K^{\mathrm{re}} \Rightarrow \mathrm{Pre}(\text{TargetNode})(x')$$
 :label: def-yes-tilde
 
 A **YES$^\sim$ permit** (YES up to equivalence) is a certificate of the form:
-$$K_i^{\sim} = (K_{\mathrm{equiv}}, K_{\mathrm{transport}}, K_i^+[\tilde{x}])$$
+
+$$
+K_i^{\sim} = (K_{\mathrm{equiv}}, K_{\mathrm{transport}}, K_i^+[\tilde{x}])
+$$
+
 where:
 - $K_{\mathrm{equiv}}$ certifies that $\tilde{x}$ is equivalent to $x$ under an admissible equivalence move
 - $K_{\mathrm{transport}}$ is a transport lemma certificate
 - $K_i^+[\tilde{x}]$ is a YES certificate for predicate $P_i$ on the equivalent object $\tilde{x}$
+
 YES$^\sim$ permits are accepted by metatheorems that tolerate equivalence.
 
 :::
@@ -219,11 +250,18 @@ This is not cheating---the equivalence itself must be certified. We record exact
 **Promotion permits** upgrade blocked certificates to full YES certificates:
 
 **Immediate promotion** (past-only): A blocked certificate at node $i$ may be promoted if all prior nodes passed:
-$$K_i^{\mathrm{blk}} \wedge \bigwedge_{j < i} K_j^+ \Rightarrow K_i^+$$
+
+$$
+K_i^{\mathrm{blk}} \wedge \bigwedge_{j < i} K_j^+ \Rightarrow K_i^+
+$$
+
 (Here $K_j^+$ denotes a YES certificate at node $j$.)
 
 **A-posteriori promotion** (future-enabled): A blocked certificate may be promoted after later nodes pass:
-$$K_i^{\mathrm{blk}} \wedge \bigwedge_{j > i} K_j^+ \Rightarrow K_i^+$$
+
+$$
+K_i^{\mathrm{blk}} \wedge \bigwedge_{j > i} K_j^+ \Rightarrow K_i^+
+$$
 
 **Combined promotion**: Blocked certificates may also promote if the barrier's ``Blocked'' outcome combined with other certificates logically implies the original predicate $P_i$ holds.
 
@@ -237,18 +275,32 @@ Promotion rules are applied during context closure ({prf:ref}`def-closure`).
 **Inconclusive upgrade permits** discharge NO-inconclusive certificates by supplying certificates that satisfy their $\mathsf{missing}$ prerequisites ({prf:ref}`def-typed-no-certificates`).
 
 **Immediate inc-upgrade** (past/current): An inconclusive certificate may be upgraded if certificates satisfying its missing prerequisites are present:
-$$K_P^{\mathrm{inc}} \wedge \bigwedge_{j \in J} K_j^+ \Rightarrow K_P^+$$
+
+$$
+K_P^{\mathrm{inc}} \wedge \bigwedge_{j \in J} K_j^+ \Rightarrow K_P^+
+$$
+
 where $J$ indexes the certificate types listed in $\mathsf{missing}(K_P^{\mathrm{inc}})$.
 
 **A-posteriori inc-upgrade** (future-enabled): An inconclusive certificate may be upgraded after later nodes provide the missing prerequisites:
-$$K_P^{\mathrm{inc}} \wedge \bigwedge_{j \in J'} K_j^+ \Rightarrow K_P^+$$
+
+$$
+K_P^{\mathrm{inc}} \wedge \bigwedge_{j \in J'} K_j^+ \Rightarrow K_P^+
+$$
+
 where $J'$ indexes certificates produced by nodes evaluated after the node that produced $K_P^{\mathrm{inc}}$.
 
 **To YES$^\sim$** (equivalence-tolerant): An inconclusive certificate may upgrade to YES$^\sim$ when the discharge is valid only up to an admissible equivalence move ({prf:ref}`def-yes-tilde`):
-$$K_P^{\mathrm{inc}} \wedge \bigwedge_{j \in J} K_j^+ \Rightarrow K_P^{\sim}$$
+
+$$
+K_P^{\mathrm{inc}} \wedge \bigwedge_{j \in J} K_j^+ \Rightarrow K_P^{\sim}
+$$
 
 **Discharge condition (obligation matching):** An inc-upgrade rule is admissible only if its premises imply the concrete obligation instance recorded in the payload:
-$$\bigwedge_{j \in J} K_j^+ \Rightarrow \mathsf{obligation}(K_P^{\mathrm{inc}})$$
+
+$$
+\bigwedge_{j \in J} K_j^+ \Rightarrow \mathsf{obligation}(K_P^{\mathrm{inc}})
+$$
 
 This makes inc-upgrades structurally symmetric with blocked-certificate promotions ({prf:ref}`def-promotion-permits`).
 
@@ -344,11 +396,18 @@ Each surgery has an associated progress measure ({prf:ref}`def-progress-measures
 **Type A (Bounded count)**: The surgery count is bounded by $N(T, \Phi(x_0))$, a function of the time horizon $T$ and initial energy $\Phi(x_0)$. For parabolic PDE, this bound is typically imported from classical surgery theory (e.g., Perelman's surgery bound for Ricci flow: $N \leq C(\Phi_0) T^{d/2}$). For algorithmic/iterative systems, it may be a budget constraint.
 
 **Type B (Well-founded)**:  The complexity measure $\mathcal{C}: X \to \mathbb{N}$ (or ordinal $\alpha$) strictly decreases at each surgery:
-$$\mathcal{O}_S(x) = x' \Rightarrow \mathcal{C}(x') < \mathcal{C}(x)$$
+
+$$
+\mathcal{O}_S(x) = x' \Rightarrow \mathcal{C}(x') < \mathcal{C}(x)
+$$
+
 Since well-founded orders have no infinite descending chains, the surgery sequence terminates.
 
 **Discrete Energy Progress (Type A Strengthening):** When using continuous energy $\Phi: X \to \mathbb{R}_{\geq 0}$, termination requires the **Discrete Progress Constraint** ({prf:ref}`def-progress-measures`): each surgery must drop energy by at least $\epsilon_T > 0$. The Surgery Admissibility Trichotomy ({prf:ref}`mt-resolve-admissibility`) enforces this via the Progress Density condition. Hence:
-$$N_{\text{surgeries}} \leq \frac{\Phi(x_0)}{\epsilon_T} < \infty$$
+
+$$
+N_{\text{surgeries}} \leq \frac{\Phi(x_0)}{\epsilon_T} < \infty
+$$
 
 The total number of distinct surgery types is finite (at most 17, one per failure mode). Hence the total number of surgeries---and thus epochs---is finite.
 
@@ -393,7 +452,11 @@ The result is a complete audit trail. Every claim can be traced back to its just
 :label: def-fingerprint
 
 The **fingerprint** of a sieve run is the tuple:
-$$\mathcal{F} = (\mathrm{tr}, \vec{v}, \Gamma_{\mathrm{final}})$$
+
+$$
+\mathcal{F} = (\mathrm{tr}, \vec{v}, \Gamma_{\mathrm{final}})
+$$
+
 where:
 - $\mathrm{tr}$ is the **trace**: ordered sequence of (node, outcome) pairs visited
 - $\vec{v}$ is the **node vector**: for each gate $i$, the outcome $v_i \in \{`YES`, `NO`, `---`\}$ (--- if not visited)
@@ -415,7 +478,11 @@ Non-termination under infinite certificate language is treated as a NO-inconclus
 :label: def-closure
 
 The **promotion closure** $\mathrm{Cl}(\Gamma)$ is the least fixed point of the context under all promotion and upgrade rules:
-$$\mathrm{Cl}(\Gamma) = \bigcup_{n=0}^{\infty} \Gamma_n$$
+
+$$
+\mathrm{Cl}(\Gamma) = \bigcup_{n=0}^{\infty} \Gamma_n
+$$
+
 where $\Gamma_0 = \Gamma$ and $\Gamma_{n+1}$ applies all applicable immediate and a-posteriori promotions ({prf:ref}`def-promotion-permits`) **and all applicable inc-upgrades** ({prf:ref}`def-inc-upgrades`) to $\Gamma_n$.
 
 :::
@@ -455,7 +522,11 @@ This is crucial for reproducibility. Two implementations of the sieve that start
 The lattice $(\mathcal{L}, \sqsubseteq)$ is **complete** since every subset of $\mathcal{L}$ has a supremum (union) and infimum (intersection).
 
 *Step 2 (Construction: Promotion Operator).* Define the **promotion operator** $F: \mathcal{L} \to \mathcal{L}$ by:
-$$F(\Gamma) := \Gamma \cup \{K' : \exists \text{ rule } R,\, R(\Gamma) \vdash K'\}$$
+
+$$
+F(\Gamma) := \Gamma \cup \{K' : \exists \text{ rule } R,\, R(\Gamma) \vdash K'\}
+$$
+
 where rules $R$ include:
 - Immediate and a-posteriori promotions ({prf:ref}`def-promotion-permits`)
 - Inc-upgrades ({prf:ref}`def-inc-upgrades`)
@@ -472,10 +543,16 @@ where rules $R$ include:
 *Step 4 (Knaster-Tarski Application).* By the **Knaster-Tarski Fixed Point Theorem** {cite}`Tarski55`:
 
 > In a complete lattice $(L, \leq)$, every monotonic function $f: L \to L$ has a **least fixed point** given by:
-> $$\mathrm{lfp}(f) = \bigwedge \{x \in L : f(x) \leq x\}$$
+>
+> $$
+> \mathrm{lfp}(f) = \bigwedge \{x \in L : f(x) \leq x\}
+> $$
 
 Applying this to $(F, \mathcal{L})$:
-$$\mathrm{Cl}(\Gamma) = \mathrm{lfp}_{\Gamma}(F) = \bigcap \{\Gamma' : F(\Gamma') \subseteq \Gamma' \text{ and } \Gamma \subseteq \Gamma'\}$$
+
+$$
+\mathrm{Cl}(\Gamma) = \mathrm{lfp}_{\Gamma}(F) = \bigcap \{\Gamma' : F(\Gamma') \subseteq \Gamma' \text{ and } \Gamma \subseteq \Gamma'\}
+$$
 
 *Step 5 (Finiteness and Termination).* Under certificate finiteness ({prf:ref}`def-cert-finite`):
 - $|\mathcal{K}(T)| < \infty$, so $|\mathcal{L}| = 2^{|\mathcal{K}(T)|} < \infty$
@@ -532,7 +609,10 @@ This distinction is not academic. It determines whether the sieve terminates at 
 :label: def-obligation-ledger
 
 Given a certificate context $\Gamma$, define the **obligation ledger**:
-$$\mathsf{Obl}(\Gamma) := \{ (\mathsf{id}, \mathsf{obligation}, \mathsf{missing}, \mathsf{code}) : K_P^{\mathrm{inc}} \in \Gamma \}$$
+
+$$
+\mathsf{Obl}(\Gamma) := \{ (\mathsf{id}, \mathsf{obligation}, \mathsf{missing}, \mathsf{code}) : K_P^{\mathrm{inc}} \in \Gamma \}
+$$
 
 Each entry corresponds to a NO-inconclusive certificate ({prf:ref}`def-typed-no-certificates`) with payload $K_P^{\mathrm{inc}} = (\mathsf{obligation}, \mathsf{missing}, \mathsf{code}, \mathsf{trace})$.
 

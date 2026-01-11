@@ -53,7 +53,10 @@ The ambient cohesive $(\infty, 1)$-topos $\mathcal{E}$ (Definition {prf:ref}`def
 1. **Closure:** All small diagrams in $\mathcal{E}$ have colimits, and the subcategory $\mathcal{E}_\mathcal{U}$ of $\mathcal{U}$-small objects is closed under the adjunction $\Pi \dashv \flat \dashv \sharp$.
 
 2. **Factorization:** The global sections functor $\Gamma: \mathcal{E}_\mathcal{U} \to \mathbf{Set}$ factors through $\mathcal{U}$:
-   $$\Gamma: \mathcal{E}_\mathcal{U} \to \mathbf{Set}_\mathcal{U} \hookrightarrow \mathbf{Set}$$
+
+   $$
+   \Gamma: \mathcal{E}_\mathcal{U} \to \mathbf{Set}_\mathcal{U} \hookrightarrow \mathbf{Set}
+   $$
 
 3. **Stability:** For any hypostructure $\mathbb{H} \in \mathbf{Hypo}_T$, the certificate chain $(K_1, \ldots, K_{17})$ produced by the Sieve is $\mathcal{U}$-small.
 
@@ -99,17 +102,34 @@ The primary bridge between the higher groupoids of the Hypostructure and the set
 :label: def-truncation-functor-tau0
 
 Let $\mathrm{Disc}: \mathbf{Set} \hookrightarrow \infty\text{-}\mathrm{Grpd}$ denote the inclusion of sets as discrete $\infty$-groupoids. In the cohesion adjunction $\Pi \dashv \flat$ (Definition {prf:ref}`def-ambient-topos`), define the discrete embedding:
-$$\Delta := \flat \circ \mathrm{Disc}: \mathbf{Set} \hookrightarrow \mathcal{E}$$
+
+$$
+\Delta := \flat \circ \mathrm{Disc}: \mathbf{Set} \hookrightarrow \mathcal{E}
+$$
 
 Define the **0-truncated shape** (connected components) functor:
-$$\tau_0 := \pi_0 \circ \Pi: \mathcal{E} \to \mathbf{Set}$$
+
+$$
+\tau_0 := \pi_0 \circ \Pi: \mathcal{E} \to \mathbf{Set}
+$$
+
 where $\pi_0: \infty\text{-}\mathrm{Grpd} \to \mathbf{Set}$ sends an $\infty$-groupoid to its set of connected components. Then:
-$$\tau_0 \dashv \Delta$$
+
+$$
+\tau_0 \dashv \Delta
+$$
 
 For any $X \in \mathcal{E}$, the **set-theoretic reflection** is:
-$$\tau_0(X) := \pi_0(\Pi(X)) \in \mathbf{Set}$$
+
+$$
+\tau_0(X) := \pi_0(\Pi(X)) \in \mathbf{Set}
+$$
+
 which may be read as the set of connected components of the "shape" of $X$. In particular, for any set $S$:
-$$\tau_0(\Delta(S)) \cong S$$
+
+$$
+\tau_0(\Delta(S)) \cong S
+$$
 
 **Distinction from Axiom Truncations:** The 0-truncation $\tau_0$ is distinct from the truncation structure $\tau = (\tau_C, \tau_D, \tau_{SC}, \tau_{LS})$ defined in {prf:ref}`def-categorical-hypostructure`. The axiom truncations $\tau_\bullet$ are functorial constraints enforcing physical bounds, while $\tau_0$ is the homotopy-theoretic extraction of $\pi_0$.
 
@@ -127,7 +147,10 @@ The 0-truncation functor preserves the essential structure of certificates:
 
 2. **Certificate Preservation:** For certificates $K^+$, $K^-$, $K^{\mathrm{blk}}$, $K^{\mathrm{br}}$:
    the **polarity field** (an element of a fixed 2-element set) is preserved under truncation:
-   $$\tau_0(K^+) = \text{YES}, \qquad \tau_0(K^-) = \text{NO}$$
+
+   $$
+   \tau_0(K^+) = \text{YES}, \qquad \tau_0(K^-) = \text{NO}
+   $$
 
 3. **Structural Preservation (what the bridge uses):** $\tau_0$ preserves all colimits (as a left adjoint) and finite products (because $\Pi$ and $\pi_0$ preserve finite products). In particular, it preserves the finite sums/products used to assemble certificate tuples, witness packages, and the 17-node certificate chain.
 :::
@@ -163,7 +186,10 @@ Then:
 1. **Full faithfulness:** $\Delta: \mathbf{Set}_\mathcal{U} \hookrightarrow \mathcal{E}_\mathcal{U}$ is full and faithful. Hence $\Delta(\mathbf{Set}_\mathcal{U}) \subseteq \mathcal{E}_\mathcal{U}$ is (equivalent to) an ordinary category of sets.
 
 2. **Set recovery:** For every $S \in \mathbf{Set}_\mathcal{U}$,
-   $$\tau_0(\Delta(S)) \cong S \cong \Gamma(\Delta(S)) \in V_\mathcal{U}.$$
+
+   $$
+   \tau_0(\Delta(S)) \cong S \cong \Gamma(\Delta(S)) \in V_\mathcal{U}.
+   $$
 
 3. **Classical fragment:** Reasoning about objects in $\Delta(\mathbf{Set}_\mathcal{U})$ is just ordinary classical reasoning about sets in $V_\mathcal{U}$. In particular, any ZFC predicate $P$ on $S$ corresponds to an internal predicate on $\Delta(S)$.
 
@@ -331,12 +357,17 @@ Note what this theorem does *not* claim: it does not say that a classical mathem
 
 **Statement:** Let $\mathcal{E}$ be a universe-anchored cohesive $(\infty,1)$-topos with universe $\mathcal{U}$. For any problem type $T \in \mathbf{ProbTypes}$ and concrete hypostructure $\mathbb{H}(Z)$ representing input $Z$:
 
-$$K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}(\mathbb{H}(Z)) \Rightarrow \exists \varphi \in \mathcal{L}_{\text{ZFC}}: \, V_\mathcal{U} \vDash \varphi \wedge (\varphi \Rightarrow \text{Reg}(Z))$$
+$$
+K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}(\mathbb{H}(Z)) \Rightarrow \exists \varphi \in \mathcal{L}_{\text{ZFC}}: \,\, V_\mathcal{U} \vDash \varphi \wedge (\varphi \Rightarrow \text{Reg}(Z))
+$$
 
 where $\text{Reg}(Z)$ is the regularity statement for $Z$ expressed in the first-order language of set theory.
 
 **Certificate Payload:** The Bridge Certificate consists of:
-$$\mathcal{B}_{\text{ZFC}} := (\mathcal{U}, \varphi, \text{axioms\_used}, \text{AC\_status}, \text{translation\_trace})$$
+
+$$
+\mathcal{B}_{\text{ZFC}} := (\mathcal{U}, \varphi, \text{axioms\_used}, \text{AC\_status}, \text{translation\_trace})
+$$
 
 where:
 - $\mathcal{U}$: The anchoring universe
@@ -361,27 +392,43 @@ Each certificate $K_i$ in the chain $\mathbf{K} = (K_1, \ldots, K_{17})$ has a Z
 
 *Step 2 (Axiom Invocation).*
 Each node invokes specific ZFC axioms per the Sieve-to-ZFC Correspondence (Definition {prf:ref}`def-sieve-zfc-correspondence`). Define:
-$$\text{axioms\_used} := \bigcup_{i=1}^{17} \text{Axioms}(\text{Node}_i)$$
+
+$$
+\text{axioms\_used} := \bigcup_{i=1}^{17} \text{Axioms}(\text{Node}_i)
+$$
+
 The conjunction of invoked axioms forms the hypothesis of $\varphi$.
 
 *Step 3 (Lock Translation).*
 The blocked certificate $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}$ states:
-$$\mathrm{Hom}_{\mathbf{Hypo}_T}(\mathbb{H}_{\mathrm{bad}}, \mathbb{H}(Z)) \simeq \emptyset$$
+
+$$
+\mathrm{Hom}_{\mathbf{Hypo}_T}(\mathbb{H}_{\mathrm{bad}}, \mathbb{H}(Z)) \simeq \emptyset
+$$
 
 The 0-truncation functor preserves initial objects: $\tau_0(\emptyset) = \emptyset$. Since $\mathrm{Hom}(\mathbb{H}_{\mathrm{bad}}, \mathbb{H}(Z)) \simeq \emptyset$, we have:
-$$\tau_0\bigl(\mathrm{Hom}(\mathbb{H}_{\mathrm{bad}}, \mathbb{H}(Z))\bigr) = \emptyset \in \mathbf{Set}_\mathcal{U}$$
+
+$$
+\tau_0\bigl(\mathrm{Hom}(\mathbb{H}_{\mathrm{bad}}, \mathbb{H}(Z))\bigr) = \emptyset \in \mathbf{Set}_\mathcal{U}
+$$
 
 This Hom-emptiness translates to a first-order ZFC statement: there exists no morphism from the bad pattern to the hypostructure.
 
 *Step 4 (Regularity Extraction).*
 By the Principle of Structural Exclusion ({prf:ref}`mt-krnl-exclusion`), Hom-emptiness implies:
-$$\text{Rep}_K(T, Z) \text{ holds} \Leftrightarrow Z \text{ admits no bad pattern embedding}$$
+
+$$
+\text{Rep}_K(T, Z) \text{ holds} \Leftrightarrow Z \text{ admits no bad pattern embedding}
+$$
 
 This is equivalent to $\text{Reg}(Z)$ in the set-theoretic formulation.
 
 *Step 5 (Conclusion).*
 Define $\varphi$ as the first-order sentence:
-$$\varphi := \text{``}\mathrm{Hom}_{\mathbf{Set}}(\tau_0(\mathbb{H}_{\mathrm{bad}}), \tau_0(\mathbb{H}(Z))) = \emptyset\text{''}$$
+
+$$
+\varphi := \text{``}\mathrm{Hom}_{\mathbf{Set}}(\tau_0(\mathbb{H}_{\mathrm{bad}}), \tau_0(\mathbb{H}(Z))) = \emptyset\text{''}
+$$
 
 By construction, $V_\mathcal{U} \vDash \varphi$ (the truncated Hom-set is empty in the universe), and $\varphi \Rightarrow \text{Reg}(Z)$ by Step 4.
 
@@ -460,32 +507,53 @@ The mapping $\mathcal{M}: \text{ZFC} \to \mathcal{E}$ is defined by the followin
 
 1. **Axiom of Extensionality $\longleftrightarrow$ Yoneda Lemma:**
    In ZFC, sets are determined by their members. In $\mathcal{E}$, objects are determined by their **functor of points**:
-   $$\mathcal{X} \cong \mathcal{Y} \iff \forall S \in \mathcal{E}, \, \text{Map}_{\mathcal{E}}(S, \mathcal{X}) \simeq \text{Map}_{\mathcal{E}}(S, \mathcal{Y})$$
+
+   $$
+   \mathcal{X} \cong \mathcal{Y} \iff \forall S \in \mathcal{E}, \,\, \text{Map}_{\mathcal{E}}(S, \mathcal{X}) \simeq \text{Map}_{\mathcal{E}}(S, \mathcal{Y})
+   $$
+
    This ensures that objects with identical mapping properties are set-theoretically identical under $\tau_0$.
 
 2. **Axiom of Regularity (Foundation) $\longleftrightarrow$ Well-Foundedness of $\Phi$:**
    ZFC forbids infinite descending membership chains ($\neg \exists \{x_n\}_{n \in \mathbb{N}}: x_{n+1} \in x_n$). The Hypostructure realizes this through Nodes 1 ($D_E$) and 2 ($\mathrm{Rec}_N$), which require the energy functional $\Phi$ and event counter $N$ to be well-founded on $\tau_0(\mathcal{X})$:
-   $$\forall \text{ orbit } \gamma, \, \exists t_0 \text{ s.t. } \Phi(\gamma(t)) \text{ is minimized for } t > t_0$$
+
+   $$
+   \forall \text{ orbit } \gamma, \,\, \exists t_0 \text{ s.t. } \Phi(\gamma(t)) \text{ is minimized for } t > t_0
+   $$
 
 3. **Axiom Schema of Specification $\longleftrightarrow$ Subobject Classifier $\Omega$:**
    Subset construction in ZFC, $\{x \in A \mid \phi(x)\}$, corresponds to the pullback of the **subobject classifier** $\Omega$ in $\mathcal{E}$:
-   $$\mathcal{X}_{\text{reg}} \hookrightarrow \mathcal{X} \text{ is the pullback of } \top: 1 \to \Omega \text{ along the Sieve predicate } P_{\text{Sieve}}$$
+
+   $$
+   \mathcal{X}_{\text{reg}} \hookrightarrow \mathcal{X} \text{ is the pullback of } \top: 1 \to \Omega \text{ along the Sieve predicate } P_{\text{Sieve}}
+   $$
 
 4. **Axiom of Pairing $\longleftrightarrow$ Finite Products (Tuples):**
    Set-theoretic pairing supports the formation of finite tuples and structured records. Categorically, this is realized by **finite products** (and dependent sums) in $\mathcal{E}$, used throughout to package certificate payloads as tuples:
-   $$K \;\simeq\; K^{(1)} \times \cdots \times K^{(m)}$$
+
+   $$
+   K \;\simeq\; K^{(1)} \times \cdots \times K^{(m)}
+   $$
 
 5. **Axiom of Union $\longleftrightarrow$ Colimits:**
    The set-theoretic union $\bigcup \mathcal{F}$ corresponds to the colimit of a diagram in $\mathcal{E}$. This underlies the **Surgery Operator** ({prf:ref}`mt-act-surgery`), which "glues" the regular bulk with the recovery cap via pushout.
 
 6. **Axiom Schema of Replacement $\longleftrightarrow$ Internal Image Factorization:**
    The image of a set under a function is a set. In $\mathcal{E}$, every morphism $f: \mathcal{X} \to \mathcal{Y}$ admits a factorization through its **image stack** $\mathrm{im}(f)$:
-   $$\mathcal{X} \twoheadrightarrow \mathrm{im}(f) \hookrightarrow \mathcal{Y}$$
+
+   $$
+   \mathcal{X} \twoheadrightarrow \mathrm{im}(f) \hookrightarrow \mathcal{Y}
+   $$
+
    which is a valid object in $\mathcal{E}$.
 
 7. **Axiom of Infinity $\longleftrightarrow$ Natural Number Object $\mathbb{N}_\mathcal{E}$:**
    The existence of an infinite set is realized by the **Natural Number Object** $\mathbb{N}_\mathcal{E}$ in $\mathcal{E}$, characterized by the universal property:
-   $$\text{For any } X \in \mathcal{E} \text{ with } x_0: 1 \to X \text{ and } s: X \to X, \, \exists! f: \mathbb{N}_\mathcal{E} \to X \text{ s.t. } f(0) = x_0, f \circ \text{succ} = s \circ f$$
+
+   $$
+   \text{For any } X \in \mathcal{E} \text{ with } x_0: 1 \to X \text{ and } s: X \to X, \,\, \exists! \,\, f: \mathbb{N}_\mathcal{E} \to X \text{ s.t. } f(0) = x_0, \,\, f \circ \operatorname{succ} = s \circ f
+   $$
+
    This ensures that event counting (Node 2) is a valid recursion.
 
 8. **Axiom of Power Set $\longleftrightarrow$ Internal Hom (Exponentiation):**
@@ -493,7 +561,11 @@ The mapping $\mathcal{M}: \text{ZFC} \to \mathcal{E}$ is defined by the followin
 
 9. **Axiom of Choice $\longleftrightarrow$ Epimorphism Splitting:**
    In ZFC, every surjective function has a section. In a general topos, this is not guaranteed (leading to intuitionistic logic). The ZFC Translation Layer assumes **External Choice** at the meta-level:
-   $$\forall \text{ epi } p: \mathcal{X} \twoheadrightarrow \mathcal{Y}, \, \exists s: \tau_0(\mathcal{Y}) \to \tau_0(\mathcal{X}) \text{ s.t. } \tau_0(p) \circ s = \text{id}$$
+
+   $$
+   \forall \text{ epi } p: \mathcal{X} \twoheadrightarrow \mathcal{Y}, \,\, \exists s: \tau_0(\mathcal{Y}) \to \tau_0(\mathcal{X}) \text{ s.t. } \tau_0(p) \circ s = \operatorname{id}
+   $$
+
    This enables witness selection for $K^{\mathrm{wit}}$ certificates.
 
 **Literature:** {cite}`MacLaneMoerdijk92` Ch. IV (topos axiomatics); {cite}`Johnstone02` D1-D4 (internal logic).
@@ -521,14 +593,17 @@ The internal logic of a cohesive $(\infty, 1)$-topos $\mathcal{E}$ is inherently
 
 Let $\mathcal{E}$ be a cohesive $(\infty, 1)$-topos with subobject classifier $\Omega$.
 
-1. **Heyting Algebra of Propositions:** The poset $\text{Sub}(1) \cong \text{Hom}(1, \Omega)$ of global sections of $\Omega$ forms a **Heyting algebra** $\mathcal{H}$, where:
+1. **Heyting Algebra of Propositions:** The poset $\operatorname{Sub}(1) \cong \operatorname{Hom}(1, \Omega)$ of global sections of $\Omega$ forms a **Heyting algebra** $\mathcal{H}$, where:
    - Meet $\wedge$ is given by pullback
    - Join $\vee$ is given by pushout
    - Implication $\Rightarrow$ is the exponential in the slice category
    - Negation $\neg P := P \Rightarrow \bot$
 
 2. **Boolean Subalgebra:** The **decidable propositions** form a Boolean subalgebra $\mathcal{B} \subseteq \mathcal{H}$:
-   $$\mathcal{B} := \{P \in \mathcal{H} \mid P \vee \neg P = \top\}$$
+
+   $$
+   \mathcal{B} := \{P \in \mathcal{H} \mid P \vee \neg P = \top\}
+   $$
 
 3. **Flat Objects are Decidable:** For any object in the image of $\flat: \mathbf{Set} \to \mathcal{E}$, all internal propositions are decidable.
 :::
@@ -538,7 +613,9 @@ Let $\mathcal{E}$ be a cohesive $(\infty, 1)$-topos with subobject classifier $\
 
 The image of the discrete modality $\flat: \mathbf{Set}_\mathcal{U} \to \mathcal{E}$ forms a **Boolean sub-topos**. Within this sub-topos, the internal logic is exactly classical first-order logic (the logic of ZFC):
 
-$$\forall P \in \flat(\mathbf{Set}_\mathcal{U}), \, P \vee \neg P \simeq \top$$
+$$
+\forall P \in \flat(\mathbf{Set}_\mathcal{U}), \,\, P \vee \neg P \simeq \top
+$$
 
 **Consequence:** Any certificate that can be fully "flattened" (computed entirely within the image of $\flat$) yields a classical ZFC proof.
 
@@ -557,8 +634,11 @@ $$\forall P \in \flat(\mathbf{Set}_\mathcal{U}), \, P \vee \neg P \simeq \top$$
 :::{prf:definition} Decidability Operator
 :label: def-decidability-operator
 
-The **decidability operator** $\delta: \text{Sub}(X) \to \Omega$ classifies which subobjects are decidable:
-$$\delta(U) := \begin{cases} \top & \text{if } U \vee \neg U = X \\ \bot & \text{otherwise} \end{cases}$$
+The **decidability operator** $\delta: \operatorname{Sub}(X) \to \Omega$ classifies which subobjects are decidable:
+
+$$
+\delta(U) := \begin{cases} \top & \text{if } U \vee \neg U = X \\ \bot & \text{otherwise} \end{cases}
+$$
 
 For the Sieve, a certificate $K$ is **classically valid** if $\delta(\tau_0(K)) = \top$, meaning its truth value is decidable in ZFC.
 :::
@@ -586,15 +666,27 @@ The Axiom of Choice requires careful treatment in the translation layer, as its 
 Let $\mathcal{E}$ be a topos with Natural Number Object.
 
 1. **Internal Axiom of Choice (IAC):** The statement that every epimorphism in $\mathcal{E}$ splits:
-   $$\text{IAC}: \forall p: X \twoheadrightarrow Y, \, \exists s: Y \to X, \, p \circ s = \text{id}_Y$$
+
+   $$
+   \text{IAC}: \forall p: X \twoheadrightarrow Y, \,\, \exists s: Y \to X, \,\, p \circ s = \operatorname{id}_Y
+   $$
+
    This **fails** in most non-trivial topoi, including sheaf topoi over non-discrete sites.
 
 2. **External Axiom of Choice (EAC):** The meta-theoretic assumption that the ambient set theory (in which we construct $\mathcal{E}$) satisfies AC. This ensures:
-   $$\forall \text{ epi } p: X \twoheadrightarrow Y, \, \exists s: \Gamma(Y) \to \Gamma(X), \, \Gamma(p) \circ s = \text{id}$$
+
+   $$
+   \forall \text{ epi } p: X \twoheadrightarrow Y, \,\, \exists s: \Gamma(Y) \to \Gamma(X), \,\, \Gamma(p) \circ s = \operatorname{id}
+   $$
+
    where $\Gamma$ is the global sections functor.
 
 3. **Truncated Choice:** For the ZFC translation, we require choice only at the 0-truncated level:
-   $$\forall \text{ epi } p: X \twoheadrightarrow Y, \, \exists s: \tau_0(Y) \to \tau_0(X), \, \tau_0(p) \circ s = \text{id}$$
+
+   $$
+   \forall \text{ epi } p: X \twoheadrightarrow Y, \,\, \exists s: \tau_0(Y) \to \tau_0(X), \,\, \tau_0(p) \circ s = \operatorname{id}
+   $$
+
 :::
 
 :::{prf:definition} Choice-Sensitive Strata
@@ -630,14 +722,18 @@ To prevent "size-shifting" errors where proper classes are treated as sets, expl
 
 Let $\mathcal{U}_0 \in \mathcal{U}_1 \in \mathcal{U}_2 \in \cdots$ be a tower of Grothendieck universes. Each object and morphism in the Hypostructure carries a **universe index**:
 
-1. **Level Assignment:** For $X \in \mathcal{E}$, define $\text{level}(X) := \min\{i : X \in \mathcal{E}_{\mathcal{U}_i}\}$
+1. **Level Assignment:** For $X \in \mathcal{E}$, define $\operatorname{level}(X) := \min\{i : X \in \mathcal{E}_{\mathcal{U}_i}\}$
 
-2. **Power Set Lift:** $\text{level}(\mathcal{P}(X)) = \text{level}(X) + 1$
+2. **Power Set Lift:** $\operatorname{level}(\mathcal{P}(X)) = \operatorname{level}(X) + 1$
 
-3. **Hom-Set Bound:** $\text{level}(\text{Hom}(X, Y)) \leq \max(\text{level}(X), \text{level}(Y))$
+3. **Hom-Set Bound:** $\operatorname{level}(\operatorname{Hom}(X, Y)) \leq \max(\operatorname{level}(X), \operatorname{level}(Y))$
 
-4. **Colimit Preservation:** For a diagram $D: I \to \mathcal{E}$ with $\text{level}(D_i) \leq n$ for all $i \in I$ and $|I| \in \mathcal{U}_n$:
-   $$\text{level}(\text{colim } D) \leq n$$
+4. **Colimit Preservation:** For a diagram $D: I \to \mathcal{E}$ with $\operatorname{level}(D_i) \leq n$ for all $i \in I$ and $|I| \in \mathcal{U}_n$:
+
+   $$
+   \operatorname{level}(\operatorname{colim} \,\, D) \leq n
+   $$
+
 :::
 
 :::{prf:lemma} Universe Stability
@@ -645,11 +741,11 @@ Let $\mathcal{U}_0 \in \mathcal{U}_1 \in \mathcal{U}_2 \in \cdots$ be a tower of
 
 All Sieve operations preserve universe levels:
 
-1. **Certificate Computation:** If the input $\mathbb{H}$ has $\text{level}(\mathbb{H}) = n$, then all certificates $K_i$ satisfy $\text{level}(K_i) \leq n$.
+1. **Certificate Computation:** If the input $\mathbb{H}$ has $\operatorname{level}(\mathbb{H}) = n$, then all certificates $K_i$ satisfy $\operatorname{level}(K_i) \leq n$.
 
-2. **Lock Evaluation:** The Hom-set $\text{Hom}(\mathbb{H}_{\text{bad}}, \mathbb{H})$ satisfies $\text{level} \leq n$ when $\text{level}(\mathbb{H}) = n$.
+2. **Lock Evaluation:** The Hom-set $\operatorname{Hom}(\mathbb{H}_{\text{bad}}, \mathbb{H})$ satisfies $\operatorname{level} \leq n$ when $\operatorname{level}(\mathbb{H}) = n$.
 
-3. **Surgery Stability:** Surgery operations $\mathcal{S}: \mathbb{H} \to \mathbb{H}'$ satisfy $\text{level}(\mathbb{H}') = \text{level}(\mathbb{H})$.
+3. **Surgery Stability:** Surgery operations $\mathcal{S}: \mathbb{H} \to \mathbb{H}'$ satisfy $\operatorname{level}(\mathbb{H}') = \operatorname{level}(\mathbb{H})$.
 :::
 
 :::{prf:proof}
@@ -683,10 +779,16 @@ The 0-truncation functor $\tau_0$ necessarily discards higher homotopical inform
 :label: def-translation-residual
 
 For an object $\mathcal{X} \in \mathcal{E}$, the **translation residual** is the higher homotopy groups discarded by 0-truncation:
-$$\mathcal{R}(\mathcal{X}) := \bigoplus_{n \geq 1} \pi_n(\mathcal{X})$$
+
+$$
+\mathcal{R}(\mathcal{X}) := \bigoplus_{n \geq 1} \pi_n(\mathcal{X})
+$$
 
 More precisely, $\mathcal{R}$ is the homotopy fiber of the truncation map $\mathcal{X} \to \tau_0(\mathcal{X})$:
-$$\mathcal{R}(\mathcal{X}) := \text{hofib}(\mathcal{X} \to \tau_0(\mathcal{X}))$$
+
+$$
+\mathcal{R}(\mathcal{X}) := \operatorname{hofib}(\mathcal{X} \to \tau_0(\mathcal{X}))
+$$
 
 **Properties:**
 1. $\mathcal{R}(\mathcal{X}) = 0$ iff $\mathcal{X}$ is 0-truncated (already a set)
@@ -770,7 +872,11 @@ Grothendieck descent provides the mechanism for "gluing" local set-theoretic con
 2. **Set-Theoretic Translation:** Given a family of sets $\{S_i\}_{i \in I}$ indexed by $I \in \mathcal{U}$ with compatible "overlap data," the glued object exists in $\mathcal{U}$.
 
 The correspondence is:
-$$\text{Descent data on } \{U_i\} \xrightarrow{\tau_0} \text{Replacement image } \{F(i)\}_{i \in I}$$
+
+$$
+\text{Descent data on } \{U_i\} \xrightarrow{\tau_0} \text{Replacement image } \{F(i)\}_{i \in I}
+$$
+
 :::
 
 :::{prf:lemma} Descent Size Constraints
@@ -804,7 +910,10 @@ The ZFC Translation Layer satisfies a fundamental consistency property: valid ca
 Let $\mathcal{E}$ be a universe-anchored cohesive $(\infty,1)$-topos with universe $\mathcal{U}$. Let $\phi$ be an internal proposition whose free variables range over discrete objects $\Delta(S_i)$ with $S_i \in \mathbf{Set}_\mathcal{U}$, and let $\phi^{\mathrm{set}}$ denote the corresponding first-order statement about the sets $S_i$ obtained by identifying $\Delta(\mathbf{Set}_\mathcal{U}) \simeq \mathbf{Set}_\mathcal{U}$ (Theorem {prf:ref}`thm-zfc-grounding`).
 
 If $\mathcal{E} \models \phi$, then:
-$$V_\mathcal{U} \vDash \phi^{\mathrm{set}}$$
+
+$$
+V_\mathcal{U} \vDash \phi^{\mathrm{set}}
+$$
 
 In particular, if the Sieve derives a certificate $K$ whose payload lives in the discrete fragment (as in Corollary {prf:ref}`cor-certificate-zfc-rep`), then its extracted set-level payload $\tau_0(K)$ is true in $V_\mathcal{U}$ and hence consistent with ZFC reasoning in that universe.
 
@@ -844,7 +953,7 @@ An infinite $\prec$-descending sequence in $S$ would define an infinite descendi
 ### The Fundamental Theorem of Set-Theoretic Reflection
 
 :::{div} feynman-prose
-This is the culmination of everything. We have built all the machinery---the truncation functor, the discrete reflection, the axiom dictionary, the classicality analysis. Now we put it together into one theorem that says: the internal truth of "$\text{Hom}(\mathbb{H}_{\text{bad}}, \mathbb{H}) \simeq \emptyset$" in the topos implies the external truth of "every point in $\tau_0(\mathcal{X})$ is regular" in ZFC.
+This is the culmination of everything. We have built all the machinery---the truncation functor, the discrete reflection, the axiom dictionary, the classicality analysis. Now we put it together into one theorem that says: the internal truth of "$\operatorname{Hom}(\mathbb{H}_{\text{bad}}, \mathbb{H}) \simeq \emptyset$" in the topos implies the external truth of "every point in $\tau_0(\mathcal{X})$ is regular" in ZFC.
 
 Let me say that again, because it is important. Inside the topos, we prove that no morphism exists from the bad pattern to the hypostructure. This is a statement about higher groupoids, using all the fancy machinery of $(\infty,1)$-categories. But when we apply the translation---when we take connected components, when we land in the discrete fragment, when we read off the ZFC content---we get a plain statement about sets: there is no bad point.
 
@@ -860,7 +969,9 @@ This section establishes the central semantic interpretation theorem that anchor
 
 Let $\mathcal{E}$ be a universe-anchored cohesive $(\infty,1)$-topos (Definition {prf:ref}`def-universe-anchored-topos`) with global sections functor $\Gamma: \mathcal{E} \to \mathbf{Set}_\mathcal{U}$. If the Sieve produces a blocked certificate $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}$ at Node 17, then:
 
-$$\mathcal{E} \models \left( \mathrm{Hom}(\mathbb{H}_{\mathrm{bad}}, \mathbb{H}) \simeq \emptyset \right) \implies V_\mathcal{U} \vDash \forall u \in \tau_0(\mathcal{X}),\, \Psi(u)$$
+$$
+\mathcal{E} \models \left( \operatorname{Hom}(\mathbb{H}_{\mathrm{bad}}, \mathbb{H}) \simeq \emptyset \right) \implies V_\mathcal{U} \vDash \forall u \in \tau_0(\mathcal{X}), \,\, \Psi(u)
+$$
 
 where $\Psi(u)$ is the set-theoretic translation of "no morphism from the bad pattern $\mathbb{H}_{\mathrm{bad}}$ lands on the orbit represented by $u$."
 
@@ -875,19 +986,28 @@ where $\Psi(u)$ is the set-theoretic translation of "no morphism from the bad pa
 **Step 1: Discrete Embedding via $\flat$ Full Faithfulness.**
 
 The flat modality $\flat: \mathbf{Set}_\mathcal{U} \hookrightarrow \mathcal{E}$ is fully faithful (a fundamental property of cohesive topoi). This means:
-$$\mathrm{Hom}_{\mathbf{Set}_\mathcal{U}}(S, T) \cong \mathrm{Hom}_\mathcal{E}(\flat S, \flat T)$$
+
+$$
+\operatorname{Hom}_{\mathbf{Set}_\mathcal{U}}(S, T) \cong \operatorname{Hom}_\mathcal{E}(\flat S, \flat T)
+$$
 
 for all sets $S, T \in \mathbf{Set}_\mathcal{U}$. The Boolean sub-topos $\flat(\mathbf{Set}_\mathcal{U}) \subseteq \mathcal{E}$ therefore provides an exact copy of classical set theory within the intuitionistic environment. Any statement $\phi$ about discrete objects in $\mathcal{E}$ is equivalent to its set-theoretic counterpart $\tau_0(\phi)$ in $\mathbf{Set}_\mathcal{U}$.
 
 **Step 2: Mapping of Existential Obstruction.**
 
 The Lock at Node 17 certifies:
-$$\mathrm{Hom}_{\mathbf{Hypo}_T}(\mathbb{H}_{\mathrm{bad}}, \mathbb{H}) \simeq \emptyset$$
+
+$$
+\operatorname{Hom}_{\mathbf{Hypo}_T}(\mathbb{H}_{\mathrm{bad}}, \mathbb{H}) \simeq \emptyset
+$$
 
 In the internal logic of $\mathcal{E}$, this is a negative existential statement: "there does not exist a morphism $f: \mathbb{H}_{\mathrm{bad}} \to \mathbb{H}$." By Diaconescu's methodology, we translate this to the language of subobjects.
 
-The empty hom-object corresponds to the initial subobject $\emptyset \hookrightarrow \mathrm{Hom}(\mathbb{H}_{\mathrm{bad}}, \mathbb{H})$. Under $\tau_0$, this becomes:
-$$\tau_0\bigl(\mathrm{Hom}(\mathbb{H}_{\mathrm{bad}}, \mathbb{H})\bigr) = \emptyset \in \mathbf{Set}_\mathcal{U}$$
+The empty hom-object corresponds to the initial subobject $\emptyset \hookrightarrow \operatorname{Hom}(\mathbb{H}_{\mathrm{bad}}, \mathbb{H})$. Under $\tau_0$, this becomes:
+
+$$
+\tau_0\bigl(\operatorname{Hom}(\mathbb{H}_{\mathrm{bad}}, \mathbb{H})\bigr) = \emptyset \in \mathbf{Set}_\mathcal{U}
+$$
 
 The empty set is the unique initial object in $\mathbf{Set}$, and its emptiness is decidable (Boolean).
 
@@ -904,7 +1024,11 @@ Each node's certificate translates to a valid ZFC statement by invoking the appr
 | 17 | Hom-set truncation | Replacement (+Foundation) | $\tau_0(\mathrm{Hom}(\mathbb{H}_{\mathrm{bad}}, \mathbb{H}))$ is a set; emptiness is classical |
 
 For each node $n$ with certificate $K_n^{\mathrm{blk}}$, the truncation $\tau_0(K_n^{\mathrm{blk}})$ produces a set-theoretic statement $\psi_n$ that holds in $V_\mathcal{U}$. The conjunction:
-$$\bigwedge_{n \in \text{Sieve}} \psi_n$$
+
+$$
+\bigwedge_{n \in \text{Sieve}} \psi_n
+$$
+
 therefore holds in $V_\mathcal{U}$.
 
 **Step 4: Resolution of Translation Residual.**
@@ -913,10 +1037,13 @@ The translation residual $\mathcal{R}(\mathcal{X}) = \bigoplus_{n \geq 1} \pi_n(
 
 *Claim:* If $\mathcal{R}(\mathcal{X})$ were to introduce a counterexample to $\Psi$, then $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}$ would be invalidated.
 
-*Proof of claim:* Suppose $\exists u \in \tau_0(\mathcal{X})$ such that $\neg\Psi(u)$, i.e., there exists a bad morphism landing on the orbit represented by $u$. This morphism $f: \mathbb{H}_{\mathrm{bad}} \to \mathbb{H}$ exists in $\mathcal{E}$ and survives 0-truncation (a morphism witnessing $\neg\Psi(u)$ is visible on connected components). This contradicts $\mathrm{Hom}(\mathbb{H}_{\mathrm{bad}}, \mathbb{H}) \simeq \emptyset$.
+*Proof of claim:* Suppose $\exists u \in \tau_0(\mathcal{X})$ such that $\neg\Psi(u)$, i.e., there exists a bad morphism landing on the orbit represented by $u$. This morphism $f: \mathbb{H}_{\mathrm{bad}} \to \mathbb{H}$ exists in $\mathcal{E}$ and survives 0-truncation (a morphism witnessing $\neg\Psi(u)$ is visible on connected components). This contradicts $\operatorname{Hom}(\mathbb{H}_{\mathrm{bad}}, \mathbb{H}) \simeq \emptyset$.
 
 Therefore, no counterexample exists, and:
-$$V_\mathcal{U} \vDash \forall u \in \tau_0(\mathcal{X}),\, \Psi(u)$$
+
+$$
+V_\mathcal{U} \vDash \forall u \in \tau_0(\mathcal{X}), \,\, \Psi(u)
+$$
 
 **Rigor Class:** B (Bridge metatheorem translating between foundations). $\blacksquare$
 :::
@@ -926,13 +1053,16 @@ $$V_\mathcal{U} \vDash \forall u \in \tau_0(\mathcal{X}),\, \Psi(u)$$
 
 Under the hypotheses of Theorem {prf:ref}`thm-bridge-zfc-fundamental`, if $x_* \in \mathcal{X}$ is a point satisfying the bad pattern $\mathbb{H}_{\mathrm{bad}}$, then:
 
-$$V_\mathcal{U} \vDash \neg\bigl(\exists x_* \in \tau_0(\mathcal{X}) : x_* \models \mathbb{H}_{\mathrm{bad}}\bigr)$$
+$$
+V_\mathcal{U} \vDash \neg\bigl(\exists x_* \in \tau_0(\mathcal{X}) : x_* \models \mathbb{H}_{\mathrm{bad}}\bigr)
+$$
+
 :::
 
 :::{prf:proof}
 :label: proof-singular-contradiction
 
-Suppose $x_* \in \mathcal{X}$ satisfies the bad pattern, i.e., the germ of $\mathbb{H}$ at $x_*$ admits a structure morphism from $\mathbb{H}_{\mathrm{bad}}$. Then there exists a non-trivial morphism $f: \mathbb{H}_{\mathrm{bad}} \to \mathbb{H}$ in $\mathbf{Hypo}_T$, contradicting $\mathrm{Hom}(\mathbb{H}_{\mathrm{bad}}, \mathbb{H}) \simeq \emptyset$. By Theorem {prf:ref}`thm-bridge-zfc-fundamental`, the corresponding set-level non-existence holds in $V_\mathcal{U}$.
+Suppose $x_* \in \mathcal{X}$ satisfies the bad pattern, i.e., the germ of $\mathbb{H}$ at $x_*$ admits a structure morphism from $\mathbb{H}_{\mathrm{bad}}$. Then there exists a non-trivial morphism $f: \mathbb{H}_{\mathrm{bad}} \to \mathbb{H}$ in $\mathbf{Hypo}_T$, contradicting $\operatorname{Hom}(\mathbb{H}_{\mathrm{bad}}, \mathbb{H}) \simeq \emptyset$. By Theorem {prf:ref}`thm-bridge-zfc-fundamental`, the corresponding set-level non-existence holds in $V_\mathcal{U}$.
 :::
 
 :::{prf:remark} Semantic Ground Truth
@@ -952,7 +1082,7 @@ The translation table in Step 3 provides explicit **semantic grounding** for eac
 
 - **Node 11 (Complexity):** Internal hom $[A, B]$ embeds in $\mathcal{P}(A \times B)$. Power Set ensures the function space exists.
 
-- **Node 17 (Categorical):** The Lock computes $\mathrm{Hom}(\mathbb{H}_{\mathrm{bad}}, \mathbb{H})$ as a well-founded set via Foundation and Replacement. Emptiness of this Hom-set is a decidable (Boolean) property in ZFC.
+- **Node 17 (Categorical):** The Lock computes $\operatorname{Hom}(\mathbb{H}_{\mathrm{bad}}, \mathbb{H})$ as a well-founded set via Foundation and Replacement. Emptiness of this Hom-set is a decidable (Boolean) property in ZFC.
 
 This grounding ensures that every step of the Sieve has classical set-theoretic content, eliminating any purely intuitionistic residue from the final certificate.
 :::
