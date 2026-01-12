@@ -1146,7 +1146,7 @@ The following classical assumptions are **not required** because the Algorithmic
 | Requirement | Status |
 |-------------|--------|
 | **Original Assumptions** | (1) Strict convexity of confining potential: $\nabla^2 \Phi \succeq c_0 I$; OR (2) Repulsive pairwise interactions |
-| **Latent Gas Status** | **Superseded by Factory Certificate `kappa_total`** |
+| **Latent Gas Status** | **Superseded by Factory Certificate $\kappa_{\text{total}}$** |
 
 **Justification:** The Factory computes a total contraction rate $\kappa_{\text{total}}$ combining:
 - Velocity contraction $\kappa_v$ (from OU friction $\gamma$)
@@ -1169,7 +1169,7 @@ If $\kappa_{\text{total}} > 0$, the framework certifies exponential ergodicity (
 | Requirement | Status |
 |-------------|--------|
 | **Original Assumptions** | (1) Pure variational scheme (minimizing movement); (2) $\lambda$-convex potential for gradient flow convergence |
-| **Latent Gas Status** | **Superseded by Stochastic Rate `kappa_QSD`** |
+| **Latent Gas Status** | **Superseded by Stochastic Rate $\kappa_{\text{QSD}}$** |
 
 **Justification:** The Latent Gas is not a zero-noise minimizing movement; it is a stochastic process. The Factory computes the QSD convergence rate $\kappa_{\text{QSD}} \approx \kappa_{\text{total}} \tau$ directly for the stochastic dynamics. We do not need to assume the deterministic gradient-flow structure because we certify the rate for the actual Langevin + Cloning process.
 
@@ -1180,7 +1180,7 @@ If $\kappa_{\text{total}} > 0$, the framework certifies exponential ergodicity (
 | **Original Assumptions** | (1) Mosco convergence of Dirichlet forms; (2) Specific scaling limits ($N \to \infty, \epsilon \to 0$) |
 | **Latent Gas Status** | **Trivialized by Higher Topos + Uniform LSI** |
 
-**Justification:** The framework's Higher Topos construction (Expansion Adjunction), combined with the system's **Permutation Symmetry** ($S_N$, certified in Node 3) and **Uniform-in-N Log-Sobolev Inequality** (certified by the Factory via `kappa_total`), renders the specific "Mosco convergence" requirements trivial. The uniform LSI guarantees that the finite-dimensional operator spectrum behaves consistently across scales, avoiding spectral collapse without needing manual scaling-limit proofs. The continuum object is canonically induced, not "constructed" by a fragile limit.
+**Justification:** The framework's Higher Topos construction (Expansion Adjunction), combined with the system's **Permutation Symmetry** ($S_N$, certified in Node 3) and **Uniform-in-N Log-Sobolev Inequality** (certified by the Factory via $\kappa_{\text{total}}$), renders the specific "Mosco convergence" requirements trivial. The uniform LSI guarantees that the finite-dimensional operator spectrum behaves consistently across scales, avoiding spectral collapse without needing manual scaling-limit proofs. The continuum object is canonically induced, not "constructed" by a fragile limit.
 
 #### Fitness Convergence (`thm:fitness-convergence`)
 
@@ -1189,7 +1189,7 @@ If $\kappa_{\text{total}} > 0$, the framework certifies exponential ergodicity (
 | **Original Assumptions** | Equicoercivity and $\Gamma$-convergence of $\Phi_\varepsilon$ |
 | **Latent Gas Status** | **Trivialized by Uniform LSI + Mean Field Limit** |
 
-**Justification:** The Hypostructure framework provides a valid **Mean Field Limit** and certifies a **Uniform-in-N Log-Sobolev Inequality** (via `kappa_total`). Uniform LSI implies strong concentration of measure. The validity of the mean field limit ensures the particle distribution converges to the target. Thus, the "variational" convergence of the landscape ($\Gamma$-convergence) is a direct, automatic consequence of the probabilistic convergence of the ground states. The "assumption" is redundant because the definitions of the Fractal Gas (via the factory) *construct* the convergence by design.
+**Justification:** The Hypostructure framework provides a valid **Mean Field Limit** and certifies a **Uniform-in-N Log-Sobolev Inequality** (via $\kappa_{\text{total}}$). Uniform LSI implies strong concentration of measure. The validity of the mean field limit ensures the particle distribution converges to the target. Thus, the "variational" convergence of the landscape ($\Gamma$-convergence) is a direct, automatic consequence of the probabilistic convergence of the ground states. The "assumption" is redundant because the definitions of the Fractal Gas (via the factory) *construct* the convergence by design.
 
 ### E.2 Satisfied Assumptions (Explicit Witnesses)
 
@@ -1262,14 +1262,14 @@ The factory certification enables the following **quantitative planning guarante
 | **Sampling Density** | $N_{\min}$ for $\varepsilon$-covering | Invertible from mean-field error formula |
 
 **Summary of Factory Impact:** By instantiating the sieve and using the Algorithmic Factories, we specifically remove the need for:
-1. **Global Convexity** (via `kappa_total`)
-2. **Deterministic Gradient Flows** (via `kappa_QSD`)
+1. **Global Convexity** (via $\kappa_{\text{total}}$)
+2. **Deterministic Gradient Flows** (via $\kappa_{\text{QSD}}$)
 3. **Abstract Dissipation Assumptions** (via concrete thermostat parameters)
 
 :::{admonition} Key Insight for Planning
 :class: tip
 
-The proof object shifts the burden of proof from **"Assumption of Geometric Regularity"** (Is $\Phi$ convex?) to **"Certification of Algorithmic Contraction"** (Is `kappa_total` positive?).
+The proof object shifts the burden of proof from **"Assumption of Geometric Regularity"** (Is $\Phi$ convex?) to **"Certification of Algorithmic Contraction"** (Is $\kappa_{\text{total}}$ positive?).
 
 This is a fundamental shift: convergence guarantees become **computable at runtime** rather than requiring manual mathematical proof. For planning applications, this means the algorithm's effectiveness can be verified empirically by checking that $\kappa_{\text{total}} > 0$ holds for the specific problem instance.
 :::
@@ -1644,9 +1644,9 @@ The Hypostructure framework transforms classical mathematical requirements into 
 
 | Classical Requirement | Factory Certificate | Planning Impact |
 | :--- | :--- | :--- |
-| Global convexity $\nabla^2\Phi \succeq c_0 I$ | `kappa_total > 0` | Works on non-convex fitness landscapes |
+| Global convexity $\nabla^2\Phi \succeq c_0 I$ | $\kappa_{\text{total}} > 0$ | Works on non-convex fitness landscapes |
 | Convex dissipation | Thermostat $(\gamma, h, c_1)$ | Direct from algorithm parameters |
-| $\lambda$-convex gradient flow | `kappa_QSD` rate | Stochastic dynamics certified |
+| $\lambda$-convex gradient flow | $\kappa_{\text{QSD}}$ rate | Stochastic dynamics certified |
 | Mosco convergence | Uniform LSI | Mean-field limit automatic |
 | $\Gamma$-convergence | LSI + Mean Field | Fitness convergence by construction |
 
