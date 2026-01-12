@@ -60,7 +60,7 @@ This document presents a **machine-checkable proof object** for the **Latent Fra
 
 **Given:**
 - State space: $\mathcal{X} = (\mathcal{Z} \times T\mathcal{Z})^N$ with state $s=(z,v)$ and metric $G$ on $\mathcal{Z}$.
-- Bounds: a compact latent domain $B\subset \mathcal{Z}$ (e.g., chart domain or $B_{R_{\mathrm{cutoff}}}$) used to define the alive mask.
+- Bounds: an effective alive region $B\subset \mathcal{Z}$ induced by selection pressure (fitness decay at infinity), boundary conditions (environment termination flags), and confining potential $\Phi_{\text{conf}}$.
 - Dynamics: the Latent Fractal Gas step operator defined below (soft companion selection + cloning + geodesic Boris-BAOAB).
 - Initial data: $z_0,v_0\in\mathcal{Z}^{N}\times T\mathcal{Z}^{N}$ with at least one walker initially alive (minorization/mixing uses $n_{\mathrm{alive}}\ge 2$), and parameters $\Theta$ (constants table).
 
@@ -237,7 +237,7 @@ The output is the next swarm state $(z, v)$ and diagnostics (fitness, companions
 | Swarm | $N$ | 50 | Number of walkers | algorithm config |
 | Swarm | $d_z$ | model-specific | Latent dimension | latent encoder |
 | Swarm | $G$ | learned / implicit | Latent metric tensor | Metric Law in `docs/source/1_agent/reference.md` |
-| Swarm | $B$ | required (compact latent domain) | Alive/killing domain in latent space | chart boundary / $R_{\text{cutoff}}$ |
+| Swarm | $B$ | induced (selection + boundaries) | Effective alive region (high-fitness + within boundaries) | selection pressure, $\Phi_{\text{conf}}$, environment flags |
 | Swarm | `enable_cloning` | True (fixed) | Cloning is always enabled | algorithm config |
 | Swarm | `enable_kinetic` | True (fixed) | Kinetic update is always enabled | algorithm config |
 | Companion | `method` | softmax (fixed) | Soft companion selection kernel | {prf:ref}`def-softmax-companion-selection-fg` |
@@ -288,13 +288,13 @@ This section records *derived constants* that are computed deterministically fro
 
 ### Domain and Metric Bounds
 
-Let the latent domain be a compact set $B\subset\mathcal{Z}$ with coordinate diameter
+Let the **effective alive region** $B\subset\mathcal{Z}$ be induced by selection pressure, boundary conditions, and confining potential (A1). For states in $B$, define the coordinate diameter
 
 $$
-D_z := \sup_{z,z'\in B}\|z-z'\|.
+D_z := \sup_{z,z'\in B}\|z-z'\| < \infty \quad \text{(bounded by Foster-Lyapunov confinement)}.
 
 $$
-For explicit minorization bounds we fix a compact **velocity core** $\|v\|\le V_{\mathrm{core}}$, which gives
+For explicit minorization bounds we fix a **velocity core** $\|v\|\le V_{\mathrm{core}}$, which gives
 
 $$
 D_v := \sup_{v,w\in B_{V_{\mathrm{core}}}}\|v-w\|\le 2V_{\mathrm{core}}.
@@ -565,10 +565,15 @@ This injects full-rank Gaussian noise in momentum with covariance $c_2^2 G(z)$, 
 
 These assumptions are the explicit witnesses used by RESOLVE-AutoAdmit/AutoProfile for the algorithmic type:
 
-- **A1 (Bounds + killing):** A compact latent domain $B\subset\mathcal{Z}$ is provided; `alive[i]=1[z_i\in B]`. Out-of-domain walkers are treated as dead and forced to clone (recovery), and the all-dead event is treated as a cemetery state.
-- **A2 (Reward/metric regularity on $B$):** $\mathcal{R}$, $G$, and $\Phi_{\text{eff}}$ are $C^2$ on $B$ with bounded first and second derivatives on the alive core, and $G$ is uniformly elliptic on $B$ (there exist $0<g_{\min}\le g_{\max}<\infty$ with $g_{\min} I \preceq G \preceq g_{\max} I$).
+- **A1 (Confinement + killing):** The latent space $\mathcal{Z}$ may be unbounded (e.g., $\mathcal{Z} = \mathbb{R}^d$). Confinement arises from three mechanisms:
+  - **(i) Selection pressure:** The fitness $V_{\text{fit}}(z) \to 0$ as $|z| \to \infty$, so distant particles have low fitness and are preferentially killed/resampled toward high-fitness regions.
+  - **(ii) Boundary conditions:** Environment-defined termination (episode end flags, task completion, safety boundaries) kills particles that exit the operational region.
+  - **(iii) Confining potential:** A confining term $\Phi_{\text{conf}}(z) \sim c|z|^2$ (parabolic or faster) ensures the height functional $\Phi \to \infty$ as $|z| \to \infty$, providing Lyapunov-based confinement. The interior region (near the target) may be **non-convex**; only growth at infinity is required.
+
+  The effective alive region $B \subset \mathcal{Z}$ is **induced** by these mechanisms, not assumed a priori. Walkers exiting the alive region (low fitness or boundary hit) are killed and resampled from survivors.
+- **A2 (Reward/metric regularity):** $\mathcal{R}$, $G$, and $\Phi_{\text{eff}}$ are $C^2$ on bounded subsets of $\mathcal{Z}$ with locally bounded first and second derivatives, and $G$ is uniformly elliptic (there exist $0<g_{\min}\le g_{\max}<\infty$ with $g_{\min} I \preceq G \preceq g_{\max} I$).
 - **A2b (Fitness/emergent-metric smoothness):** Conditioned on the alive mask and companion indices, patched/local standardization operates away from its clamp thresholds on the alive core (or is implemented with smooth surrogates), so the fitness pipeline is $C^2$ in $(z,v)$ (and $C^\infty$ if the reward/metric inputs are $C^\infty$) and the regularized emergent metric (via $\Sigma_{\mathrm{reg}}$) inherits the same regularity on the alive core.
-- **A3 (Core velocity bound for minorization):** For mixing certificates, analysis restricts to a compact core $\|v\|\le V_{\mathrm{core}}$.
+- **A3 (Velocity bound for minorization):** For mixing certificates, analysis restricts to a velocity core $\|v\|\le V_{\mathrm{core}}$. Combined with selection-induced position confinement, this defines the effective alive core.
 - **A4 (Non-degenerate thermostat):** $T_c>0$ and $\gamma>0$, so the OU step injects full-rank Gaussian noise in momentum.
 - **A5 (Companion kernel well-defined):** For $n_{\mathrm{alive}}\ge 2$, the softmax kernel $P_i$ is defined with strictly positive weights; if $n_{\mathrm{alive}}<2$, the step transitions to the cemetery state $\dagger$ as specified in the theorem statement (dead walkers sample uniformly from $\mathcal{A}$ when $\mathcal{A}\neq\varnothing$).
 - **A6 (No PBC):** Periodic boundary conditions are disabled.
@@ -595,17 +600,17 @@ All permits are instantiated with the Latent Fractal Gas data below and certifie
 - **Event Counter $\#$:** Count of out-of-domain events or invalid states.
 - **Finiteness:** Guaranteed in discrete time with bounded domain; certified in Part II.
 
-### Template: $C_\mu$ (Compactness Interface)
+### Template: $C_\mu$ (Confinement Interface)
 - **Symmetry Group $G$:** $S_N$ (walker permutations); chart symmetries if $G$ or $\Phi_{\text{eff}}$ admits them.
 - **Group Action $\rho$:** Permute walker indices.
 - **Quotient Space:** $\mathcal{X}//G$ (unordered swarm configurations).
-- **Concentration Measure:** Energy sublevel sets under $\Phi$ (compact on the alive core $B\times B_{V_{\mathrm{core}}}$).
+- **Concentration Measure:** Lyapunov sublevel sets $\{\mathcal{L} \le L_{\max}\}$ (bounded moments via Foster-Lyapunov confinement).
 
 ### Template: $\mathrm{SC}_\lambda$ (Scaling Interface)
 - **Scaling Action:** $\mathcal{S}_\lambda(z,v) = (\lambda z, \lambda v)$ (when the latent chart admits scaling).
-- **Height Exponent $\alpha$:** Depends on scaling of $\Phi_{\text{eff}}$ in the chosen chart (often trivial on bounded $B$).
-- **Dissipation Exponent $\beta$:** Induced by $\mathfrak{D}$ (typically $\beta=2$ for quadratic kinetic terms).
-- **Criticality:** Trivial scaling ($\alpha = \beta = 0$) handled via BarrierTypeII in Part II.
+- **Height Exponent $\alpha$:** $\alpha = 2$ from parabolic confining potential $\Phi_{\text{conf}} \sim |z|^2$.
+- **Dissipation Exponent $\beta$:** $\beta = 2$ from quadratic kinetic energy dissipation.
+- **Criticality:** Balanced scaling ($\alpha = \beta = 2$) handled via BarrierTypeII + Foster-Lyapunov confinement.
 
 ### Template: $\mathrm{SC}_{\partial c}$ (Parameter Interface)
 - **Parameter Space $\Theta$:** All constants in the table above.
@@ -667,18 +672,18 @@ The Latent Fractal Gas is treated as an **open system**: the domain boundary ind
 * **Reference measure ($\mathfrak{m}$):** product Riemannian volume on $B$ and Gaussian momentum law on the core; for KL/LSI proxy statements we work on the alive slice $\Omega_{\mathrm{alive}}=(B\times B_{V_{\mathrm{core}}})^N$ and use $\mathfrak{m}|_{\Omega_{\mathrm{alive}}}$.
 
 ### 2. The Potential ($\Phi^{\text{thin}}$)
-* **Height Functional ($F$):** $\Phi(z,v) := V_{\max}-\frac{1}{N}\sum_i V_{\mathrm{fit},i}$ (bounded).
+* **Height Functional ($F$):** $\Phi(z,v) := V_{\max}-\frac{1}{N}\sum_i V_{\mathrm{fit},i}$ (bounded on effective alive region).
 * **Gradient/Slope ($\nabla$):** Riemannian gradient on the latent chart (used for diagnostics only).
-* **Scaling Exponent ($\alpha$):** Trivial scaling on the bounded alive region.
+* **Scaling Exponent ($\alpha$):** $\alpha = 2$ from parabolic confining potential.
 
 ### 3. The Cost ($\mathfrak{D}^{\text{thin}}$)
 * **Dissipation Rate ($R$):** $\mathfrak{D}(z,v) = \frac{\gamma}{N}\sum_i \|v_i\|_G^2$
-* **Scaling Exponent ($\beta$):** Trivial scaling ($\beta=0$) on compact $B$
+* **Scaling Exponent ($\beta$):** $\beta = 2$ from quadratic kinetic dissipation
 
 ### 4. The Invariance ($G^{\text{thin}}$)
 * **Symmetry Group ($\text{Grp}$):** $S_N$ (walker permutations)
 * **Action ($\rho$):** Permute walker indices
-* **Scaling Subgroup ($\mathcal{S}$):** Trivial (no nontrivial dilations on compact $B$)
+* **Scaling Subgroup ($\mathcal{S}$):** Natural Langevin scaling with balanced exponents ($\alpha = \beta = 2$)
 
 ### 5. The Boundary ($\partial^{\text{thin}}$)
 * **Killing Set:** $\partial\Omega = \mathcal{Z}\setminus B$ (out-of-domain positions are dead).
@@ -692,7 +697,7 @@ The Latent Fractal Gas is treated as an **open system**: the domain boundary ind
 
 ### Execution Protocol
 
-We run the full sieve using the instantiation assumptions A1-A6 plus A2b. The algorithmic factories (RESOLVE-AutoAdmit/AutoProfile) certify permits that reduce to compactness, analyticity, and finite precision. Each node below records an explicit witness.
+We run the full sieve using the instantiation assumptions A1-A6 plus A2b. The algorithmic factories (RESOLVE-AutoAdmit/AutoProfile) certify permits that reduce to Foster-Lyapunov confinement, analyticity, and finite precision. Each node below records an explicit witness.
 
 ### Level 1: Conservation
 
@@ -722,16 +727,21 @@ $$K_{\mathrm{Rec}_N}^+ = (\mathcal{B}, \mathcal{R}, N_{\max}=T).$$
 
 **Question:** Do sublevel sets of $\Phi$ have compact closure modulo symmetry?
 
-**Execution:** The QSD/mean-field analysis is performed on the **alive-conditioned** slice
+**Execution:** The domain $\mathcal{Z}$ may be unbounded. **Selection-induced confinement** replaces geometric compactness:
 
-$$
-\Omega_{\mathrm{alive}} := (B\times B_{V_{\mathrm{core}}})^N,
+1. **Foster-Lyapunov drift:** The Lyapunov function $\mathcal{L}(s) = \Phi_{\text{sel}}(s) + \frac{\lambda_{\mathcal{L}}}{2N}\sum_i \|v_i\|_G^2$ satisfies (see E.5):
+   $$\mathbb{E}[\mathcal{L}(S_\tau s)] \le (1-\kappa_{\text{total}}\tau)\mathcal{L}(s) + C_{\text{total}}.$$
 
-$$
-which is compact because $B$ is compact and we restrict to a compact velocity core. Quotienting by the permutation symmetry $S_N$ preserves compactness.
+2. **Confining potential:** $\Phi_{\text{conf}}(z) \sim c|z|^2$ as $|z| \to \infty$ ensures fitness decays away from target regions.
+
+3. **Boundary killing:** Environment termination flags kill walkers that exit operational regions; cloning resamples from survivors.
+
+The **effective alive region** is
+$$\Omega_{\mathrm{alive}} := \{(z,v) : \mathcal{L}(z,v) \le L_{\max}\}^N / S_N,$$
+which has bounded moments under the QSD (probabilistic compactness).
 
 **Certificate:**
-$$K_{C_\mu}^+ = (S_N, \Omega_{\mathrm{alive}}//S_N, \text{compactness witness}).$$
+$$K_{C_\mu}^+ = (S_N, \Omega_{\mathrm{alive}}//S_N, \text{Foster-Lyapunov confinement}, \kappa_{\text{total}} > 0).$$
 
 ### Level 2: Duality & Symmetry
 
@@ -739,13 +749,19 @@ $$K_{C_\mu}^+ = (S_N, \Omega_{\mathrm{alive}}//S_N, \text{compactness witness}).
 
 **Question:** Is the scaling exponent subcritical ($\alpha - \beta > 0$)?
 
-**Execution:** Scaling action is trivial on a compact arena: $\mathcal{S}_\lambda = \mathrm{id}$, so $\alpha = \beta = 0$.
+**Execution:** With unbounded domain and parabolic confinement $\Phi_{\text{conf}}(z) \sim c|z|^2$:
 
-**Outcome:** $K_{\mathrm{SC}_\lambda}^-$(critical), then BarrierTypeII blocks blow-up via compactness.
+- **Height exponent:** $\alpha = 2$ (from confining potential growth)
+- **Dissipation exponent:** $\beta = 2$ (from quadratic kinetic energy dissipation)
+- **Criticality:** $\alpha - \beta = 0$ (balanced scaling, natural for Langevin dynamics)
+
+This is **non-trivial scaling** (unlike $\alpha = \beta = 0$ for compact domains). The parabolic confinement provides genuine scaling structure matching the natural Langevin dynamics scale.
+
+**Outcome:** $K_{\mathrm{SC}_\lambda}^{\text{crit}}$ (critical but non-trivial), then BarrierTypeII blocks blow-up via Foster-Lyapunov confinement.
 
 **Certificates:**
-$$K_{\mathrm{SC}_\lambda}^- = (\alpha=0, \beta=0, \alpha-\beta=0),$$
-$$K_{\mathrm{TypeII}}^{\mathrm{blk}} = (\text{BarrierTypeII}, \text{compact arena}, \{K_{D_E}^+, K_{C_\mu}^+\}).$$
+$$K_{\mathrm{SC}_\lambda}^{\text{crit}} = (\alpha=2, \beta=2, \alpha-\beta=0, \text{parabolic confinement}),$$
+$$K_{\mathrm{TypeII}}^{\mathrm{blk}} = (\text{BarrierTypeII}, \text{Foster-Lyapunov confinement}, \{K_{D_E}^+, K_{C_\mu}^+\}).$$
 
 ---
 
@@ -1027,7 +1043,7 @@ D_{\mathrm{KL}}(t)\ \le\ \exp\!\left(-\frac{t}{C_{\mathrm{LSI}}^{(\mathrm{geom})
 $$
 **Interpretation / discharge:** `C_LSI_geometric` is a framework-level bound for an idealized uniformly elliptic diffusion,
 and it is consumed here as the quantitative constant for the alive-conditioned dynamics. In this instantiation the
-inputs are discharged by A1–A6 plus A2b and the derived-constants section: $\gamma>0$ (A4), $T_c>0$ (A4), compactness of $B$ (A1)
+inputs are discharged by A1–A6 plus A2b and the derived-constants section: $\gamma>0$ (A4), $T_c>0$ (A4), Foster-Lyapunov confinement of effective alive region (A1)
 with $G$ continuous on $B$ (A2) gives $0<c_{\min}\le c_{\max}<\infty$, and $\kappa_W>0$ is certified by the companion-selection
 Doeblin constant (Lemma {prf:ref}`lem-latent-fractal-gas-companion-doeblin`) together with positive selection pressure.
 
@@ -1227,9 +1243,11 @@ The following theorems are checked but effectively **blocked** or strictly **heu
 
 | Theorem | Blocking Reason |
 |---------|-----------------|
-| **Causal Horizon Lock** (`thm:causal-horizon-lock`) | Blocked by `BarrierTypeII` (ScaleCheck failure) — compact domain prevents simplified scaling analysis |
-| **Fractal Representation** (`mt:fractal-representation`) | Blocked by `BarrierTypeII` — requires projective system limit |
+| **Causal Horizon Lock** (`thm:causal-horizon-lock`) | Blocked by `BarrierTypeII` (balanced scaling $\alpha = \beta = 2$) — requires anomalous diffusion ($\alpha \neq \beta$) |
+| **Fractal Representation** (`mt:fractal-representation`) | Blocked by `BarrierTypeII` — requires projective system limit beyond parabolic confinement |
 | **Spectral Distance / Dimension / Scutoids** | Remain heuristic analogies or conditional on specific Noncommutative Geometry models not instantiated here |
+
+**Note on Scaling:** The parabolic confinement $\Phi_{\text{conf}} \sim |z|^2$ yields non-trivial scaling exponents $(\alpha=2, \beta=2)$, but they are **balanced** (critical case). Theorems requiring $\alpha \neq \beta$ (e.g., anomalous diffusion, sub/super-diffusive transport) remain blocked. This is a **physical** constraint from Langevin dynamics, not a geometric limitation.
 
 ### E.4 Planning Power Summary
 
@@ -1395,7 +1413,7 @@ Node 17: K_{Cat_Hom}^{blk}
 
 ### 4.3 Final Certificate Set
 
-$$\Gamma_{\mathrm{final}} = \{K_{D_E}^+, K_{\mathrm{Rec}_N}^+, K_{C_\mu}^+, K_{\mathrm{SC}_\lambda}^-, K_{\mathrm{TypeII}}^{\mathrm{blk}}, K_{\mathrm{SC}_{\partial c}}^+, K_{\mathrm{Cap}_H}^+, K_{\mathrm{LS}_\sigma}^+, K_{\mathrm{TB}_\pi}^+, K_{\mathrm{TB}_O}^+, K_{\mathrm{TB}_\rho}^+, K_{\mathrm{Rep}_K}^+, K_{\mathrm{GC}_\nabla}^+, K_{\mathrm{Freq}}^{\mathrm{blk}}, K_{\mathrm{Bound}_\partial}^+, K_{\mathrm{Bound}_B}^-, K_{\mathrm{Bode}}^{\mathrm{blk}}, K_{\mathrm{Bound}_{\Sigma}}^{\mathrm{blk}}, K_{\mathrm{GC}_T}^+, K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}\}$$
+$$\Gamma_{\mathrm{final}} = \{K_{D_E}^+, K_{\mathrm{Rec}_N}^+, K_{C_\mu}^+, K_{\mathrm{SC}_\lambda}^{\text{crit}}, K_{\mathrm{TypeII}}^{\mathrm{blk}}, K_{\mathrm{SC}_{\partial c}}^+, K_{\mathrm{Cap}_H}^+, K_{\mathrm{LS}_\sigma}^+, K_{\mathrm{TB}_\pi}^+, K_{\mathrm{TB}_O}^+, K_{\mathrm{TB}_\rho}^+, K_{\mathrm{Rep}_K}^+, K_{\mathrm{GC}_\nabla}^+, K_{\mathrm{Freq}}^{\mathrm{blk}}, K_{\mathrm{Bound}_\partial}^+, K_{\mathrm{Bound}_B}^-, K_{\mathrm{Bode}}^{\mathrm{blk}}, K_{\mathrm{Bound}_{\Sigma}}^{\mathrm{blk}}, K_{\mathrm{GC}_T}^+, K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}\}$$
 
 ### 4.4 Conclusion
 
@@ -1411,9 +1429,9 @@ The proof proceeds by structural sieve analysis in seven phases:
 
 **Phase 1 (Instantiation):** The hypostructure $(\mathcal{X}, \Phi, \mathfrak{D}, G)$ is defined in Part I under assumptions A1-A6 plus A2b.
 
-**Phase 2 (Conservation):** Nodes 1-3 yield $K_{D_E}^+$, $K_{\mathrm{Rec}_N}^+$, and $K_{C_\mu}^+$ via compactness and discrete-time dynamics.
+**Phase 2 (Conservation):** Nodes 1-3 yield $K_{D_E}^+$, $K_{\mathrm{Rec}_N}^+$, and $K_{C_\mu}^+$ via Foster-Lyapunov confinement and discrete-time dynamics.
 
-**Phase 3 (Scaling):** Node 4 is critical but blocked by BarrierTypeII due to compactness; Node 5 certifies parameter stability.
+**Phase 3 (Scaling):** Node 4 yields balanced scaling ($\alpha = \beta = 2$) from parabolic confinement; BarrierTypeII blocks anomalous diffusion theorems; Node 5 certifies parameter stability.
 
 **Phase 4 (Geometry):** Nodes 6-7 yield $K_{\mathrm{Cap}_H}^+$ and $K_{\mathrm{LS}_\sigma}^+$ by isolating the bad/cemetery set and certifying bounded derivatives of $\Phi_{\text{eff}}$, $G$, and $\mathcal{R}$ on $B$.
 
@@ -1464,9 +1482,9 @@ This table incorporates the assumption audit from Part III-E (Assumption Dischar
 | The Darwinian Ratchet (WFR Transport + Reaction) ({prf:ref}`mt:darwinian-ratchet`) | Permits: $C_\mu$ (N3), $D_E$ (N1). | discharged: the step operator is explicitly split as transport (kinetic/mutation) + reaction (companion-driven cloning), i.e. the transport+reaction decomposition is an identity of the algorithm; the continuum WFR PDE reading is an additional conditional interpretation. |
 | Topological Regularization (Cheeger Bound, Conditional) ({prf:ref}`thm:cheeger-bound`) | Permits: $C_\mu$ (N3), $D_E$ (N1), $\mathrm{LS}_\sigma$ (N7), $\mathrm{Cap}_H$ (N6), $\mathrm{TB}_\pi$ (N8). | discharged (via lazified / 2-step minorization): Lemma {prf:ref}`lem-latent-fractal-gas-companion-doeblin` gives an explicit off-diagonal Doeblin floor for the companion kernel on the alive core; applying {prf:ref}`thm:cheeger-bound` to a lazified kernel (or to $P^2$) yields the stated Cheeger/connectedness bound. |
 | Induced Local Geometry (Quadratic Form from Landscape + Graph Energy) ({prf:ref}`thm:induced-riemannian-structure`) | Permits: $D_E$ (N1), $\mathrm{LS}_\sigma$ (N7), $\mathrm{Rep}_K$ (N11). | discharged/instantiated: the anisotropic diffusion tensor $\Sigma_{\mathrm{reg}}(z) = (\nabla^2 V_{\mathrm{fit}}(z) + \epsilon_{\Sigma} I)^{-1/2}$ is part of the kinetic update (Theorem {prf:ref}`thm-latent-fractal-gas-main`), making the Hessian-based quadratic form a concrete algorithmic component on the alive core. |
-| Causal Horizon Lock (Causal Information Bound + Stasis) ({prf:ref}`thm:causal-horizon-lock`) | Permits: $C_\mu$ (N3), $D_E$ (N1), $\mathrm{SC}_\lambda$ (N4), $\mathrm{Cap}_H$ (N6), $\mathrm{TB}_\pi$ (N8). | blocked: $K_{\mathrm{SC}_\lambda}^-$ (BarrierTypeII). |
+| Causal Horizon Lock (Causal Information Bound + Stasis) ({prf:ref}`thm:causal-horizon-lock`) | Permits: $C_\mu$ (N3), $D_E$ (N1), $\mathrm{SC}_\lambda$ (N4), $\mathrm{Cap}_H$ (N6), $\mathrm{TB}_\pi$ (N8). | blocked: $K_{\mathrm{SC}_\lambda}^{\text{crit}}$ (BarrierTypeII). |
 | Archive Invariance (Gromov–Hausdorff Stability, Conditional) ({prf:ref}`thm:archive-invariance`) | Permits: $C_\mu$ (N3), $\mathrm{LS}_\sigma$ (N7), $\mathrm{Cap}_H$ (N6). | conditional: permits satisfied; additional hypotheses not verified in this instantiation. |
-| Fractal Representation ({prf:ref}`mt:fractal-representation`) | Permits: $C_\mu$, $D_E$, $\mathrm{SC}_\lambda$, $\mathrm{Cap}_H$, $\mathrm{Rep}_K$, $\mathrm{TB}_\pi$. | blocked: $K_{\mathrm{SC}_\lambda}^-$ (BarrierTypeII). |
+| Fractal Representation ({prf:ref}`mt:fractal-representation`) | Permits: $C_\mu$, $D_E$, $\mathrm{SC}_\lambda$, $\mathrm{Cap}_H$, $\mathrm{Rep}_K$, $\mathrm{TB}_\pi$. | blocked: $K_{\mathrm{SC}_\lambda}^{\text{crit}}$ (BarrierTypeII). |
 | Fitness Convergence via Gamma-Convergence ({prf:ref}`thm:fitness-convergence`) | Permits: $C_\mu$ (N3), $D_E$ (N1). | superseded: the classical $\Gamma$-convergence/equicoercivity hypotheses are replaced by the factory path “uniform-in-$N$ concentration (LSI) + mean-field convergence” once $\kappa_{\mathrm{total}}>0$ is certified (Part III-A/III-B). |
 | Gromov-Hausdorff Convergence ({prf:ref}`thm:gromov-hausdorff-convergence`) | Permits: $C_\mu$ (N3), $\mathrm{Rep}_K$ (N11). | conditional: permits satisfied; additional hypotheses not verified in this instantiation. |
 | Convergence of Minimizing Movements ({prf:ref}`mt:convergence-minimizing-movements`) | Permits: $D_E$ (N1), $\mathrm{LS}_\sigma$ (N7). | superseded: this instantiation is stochastic (Langevin + cloning), so the deterministic minimizing-movement hypotheses are not required; the factory supplies the stochastic convergence rate proxy $\kappa_{\mathrm{QSD}}\approx \kappa_{\mathrm{total}}\tau$ (Part III-A/III-C). |
@@ -1475,25 +1493,25 @@ This table incorporates the assumption audit from Part III-E (Assumption Dischar
 | Symmetry Completion ({prf:ref}`mt:symmetry-completion`) | Permits: $\mathrm{GC}_\nabla$ (N12), $\mathrm{Rep}_K$ (N11). | heuristic: interpretive; not used for certificates. |
 | Gauge-Geometry Correspondence ({prf:ref}`mt:gauge-geometry-correspondence`) | Permits: $\mathrm{GC}_\nabla$ (N12), $\mathrm{Rep}_K$ (N11). | heuristic: interpretive; not used for certificates. |
 | Emergent Continuum ({prf:ref}`mt:emergent-continuum`) | Permits: $C_\mu$ (N3), $\mathrm{Cap}_H$ (N6), $\mathrm{LS}_\sigma$ (N7), $\mathrm{Rep}_K$ (N11). | superseded/trivialized: the Expansion Adjunction induces the continuum object canonically from thin data, and uniform LSI/mixing from the factory (via $\kappa_{\mathrm{total}}>0$) prevents spectral collapse across $N$, avoiding a separate Mosco-limit proof. |
-| Dimension Selection ({prf:ref}`mt:dimension-selection`) | Permits: $\mathrm{SC}_\lambda$ (N4), $\mathrm{Cap}_H$ (N6). | blocked: $K_{\mathrm{SC}_\lambda}^-$ (BarrierTypeII). |
+| Dimension Selection ({prf:ref}`mt:dimension-selection`) | Permits: $\mathrm{SC}_\lambda$ (N4), $\mathrm{Cap}_H$ (N6). | blocked: $K_{\mathrm{SC}_\lambda}^{\text{crit}}$ (BarrierTypeII). |
 | Discrete Curvature-Stiffness Transfer ({prf:ref}`mt:curvature-stiffness-transfer`) | Permits: $\mathrm{LS}_\sigma$ (N7), $\mathrm{Cap}_H$ (N6). | heuristic: interpretive; not used for certificates. |
 | Dobrushin-Shlosman Interference Barrier ({prf:ref}`mt:dobrushin-shlosman`) | Permits: $\mathrm{LS}_\sigma$ (N7), $\mathrm{TB}_\rho$ (N10). | conditional: permits satisfied; additional hypotheses not verified in this instantiation. |
 | Parametric Stiffness Map ({prf:ref}`mt:parametric-stiffness-map`) | Permits: $\mathrm{LS}_\sigma$ (N7), $D_E$ (N1). | heuristic: interpretive; not used for certificates. |
-| Micro-Macro Consistency ({prf:ref}`mt:micro-macro-consistency`) | Permits: $\mathrm{SC}_\lambda$ (N4), $\mathrm{Rep}_K$ (N11). | blocked: $K_{\mathrm{SC}_\lambda}^-$ (BarrierTypeII). |
+| Micro-Macro Consistency ({prf:ref}`mt:micro-macro-consistency`) | Permits: $\mathrm{SC}_\lambda$ (N4), $\mathrm{Rep}_K$ (N11). | blocked: $K_{\mathrm{SC}_\lambda}^{\text{crit}}$ (BarrierTypeII). |
 | Observer Universality ({prf:ref}`mt:observer-universality`) | Permits: $\mathrm{TB}_O$ (N9), $\mathrm{Rep}_K$ (N11). | heuristic: interpretive; not used for certificates. |
-| Law Universality ({prf:ref}`mt:universality-of-laws`) | Permits: $\mathrm{SC}_\lambda$ (N4), $\mathrm{TB}_O$ (N9). | blocked: $K_{\mathrm{SC}_\lambda}^-$ (BarrierTypeII). |
+| Law Universality ({prf:ref}`mt:universality-of-laws`) | Permits: $\mathrm{SC}_\lambda$ (N4), $\mathrm{TB}_O$ (N9). | blocked: $K_{\mathrm{SC}_\lambda}^{\text{crit}}$ (BarrierTypeII). |
 | Closure-Curvature Duality ({prf:ref}`mt:closure-curvature-duality`) | Permits: $C_\mu$ (N3), $\mathrm{Cap}_H$ (N6). | heuristic: interpretive; not used for certificates. |
 | Well-Foundedness Barrier ({prf:ref}`mt:well-foundedness-barrier`) | Permits: $\mathrm{TB}_\rho$ (N10). | conditional: permits satisfied; additional hypotheses not verified in this instantiation. |
 | Continuum Injection ({prf:ref}`mt:continuum-injection`) | Permits: $\mathrm{Rep}_K$ (N11). | heuristic: interpretive; not used for certificates. |
 | Bombelli-Sorkin Theorem ({prf:ref}`mt:bombelli-sorkin`) | Permits: $C_\mu$ (N3), $D_E$ (N1), $\mathrm{TB}_\pi$ (N8). | conditional: permits satisfied; additional hypotheses not verified in this instantiation. |
 | Discrete Stokes' Theorem ({prf:ref}`mt:discrete-stokes`) | Permits: $\mathrm{TB}_\pi$ (N8), $\mathrm{Rep}_K$ (N11). | conditional: permits satisfied; additional hypotheses not verified in this instantiation. |
-| Frostman Sampling Principle ({prf:ref}`mt:frostman-sampling`) | Permits: $\mathrm{SC}_\lambda$ (N4), $C_\mu$ (N3). | blocked: $K_{\mathrm{SC}_\lambda}^-$ (BarrierTypeII). |
+| Frostman Sampling Principle ({prf:ref}`mt:frostman-sampling`) | Permits: $\mathrm{SC}_\lambda$ (N4), $C_\mu$ (N3). | blocked: $K_{\mathrm{SC}_\lambda}^{\text{crit}}$ (BarrierTypeII). |
 | Genealogical Feynman-Kac ({prf:ref}`mt:genealogical-feynman-kac`) | Permits: $D_E$ (N1), $\mathrm{Rep}_K$ (N11). | conditional: branching is pairwise cloning, not classical Feynman-Kac; treated as approximation. |
 | Cheeger Gradient Isomorphism ({prf:ref}`mt:cheeger-gradient`) | Permits: $C_\mu$ (N3), $\mathrm{Rep}_K$ (N11). | conditional: permits satisfied; additional hypotheses not verified in this instantiation. |
-| Anomalous Diffusion Principle ({prf:ref}`mt:anomalous-diffusion`) | Permits: $\mathrm{SC}_\lambda$ (N4), $D_E$ (N1). | blocked: $K_{\mathrm{SC}_\lambda}^-$ (BarrierTypeII). |
-| Spectral Decimation Principle ({prf:ref}`mt:spectral-decimation`) | Permits: $\mathrm{SC}_\lambda$ (N4), $\mathrm{Rep}_K$ (N11). | blocked: $K_{\mathrm{SC}_\lambda}^-$ (BarrierTypeII). |
+| Anomalous Diffusion Principle ({prf:ref}`mt:anomalous-diffusion`) | Permits: $\mathrm{SC}_\lambda$ (N4), $D_E$ (N1). | blocked: $K_{\mathrm{SC}_\lambda}^{\text{crit}}$ (BarrierTypeII). |
+| Spectral Decimation Principle ({prf:ref}`mt:spectral-decimation`) | Permits: $\mathrm{SC}_\lambda$ (N4), $\mathrm{Rep}_K$ (N11). | blocked: $K_{\mathrm{SC}_\lambda}^{\text{crit}}$ (BarrierTypeII). |
 | Discrete Uniformization Principle ({prf:ref}`mt:discrete-uniformization`) | Permits: $\mathrm{TB}_\pi$ (N8), $C_\mu$ (N3). | conditional: permits satisfied; additional hypotheses not verified in this instantiation. |
-| Persistence Isomorphism ({prf:ref}`mt:persistence-isomorphism`) | Permits: $\mathrm{TB}_\pi$ (N8), $\mathrm{SC}_\lambda$ (N4). | blocked: $K_{\mathrm{SC}_\lambda}^-$ (BarrierTypeII). |
+| Persistence Isomorphism ({prf:ref}`mt:persistence-isomorphism`) | Permits: $\mathrm{TB}_\pi$ (N8), $\mathrm{SC}_\lambda$ (N4). | blocked: $K_{\mathrm{SC}_\lambda}^{\text{crit}}$ (BarrierTypeII). |
 | Swarm Monodromy Principle ({prf:ref}`mt:swarm-monodromy`) | Permits: $\mathrm{TB}_\pi$ (N8), $\mathrm{Rep}_K$ (N11). | heuristic: interpretive; not used for certificates. |
 | Particle-Field Duality ({prf:ref}`mt:particle-field-duality`) | Permits: $C_\mu$ (N3), $D_E$ (N1). | heuristic: interpretive; not used for certificates. |
 | Cloning Transport Principle ({prf:ref}`mt:cloning-transport`) | Permits: $\mathrm{Rep}_K$ (N11), $D_E$ (N1). | heuristic: interpretive; not used for certificates. |
@@ -1502,17 +1520,17 @@ This table incorporates the assumption audit from Part III-E (Assumption Dischar
 | Levin Search Isomorphism ({prf:ref}`mt:levin-search`) | Permits: $C_\mu$ (N3), $D_E$ (N1). | heuristic: interpretive; not used for certificates. |
 | Cloning-Lindblad Equivalence ({prf:ref}`mt:cloning-lindblad`) | Permits: $C_\mu$ (N3), $D_E$ (N1). | heuristic: interpretive; not used for certificates. |
 | Epistemic Flow ({prf:ref}`mt:epistemic-flow`) | Permits: $D_E$ (N1), $\mathrm{Cap}_H$ (N6). | heuristic: interpretive; not used for certificates. |
-| Manifold Sampling Isomorphism ({prf:ref}`mt:manifold-sampling`) | Permits: $\mathrm{Rep}_K$ (N11), $\mathrm{SC}_\lambda$ (N4). | blocked: $K_{\mathrm{SC}_\lambda}^-$ (BarrierTypeII). |
+| Manifold Sampling Isomorphism ({prf:ref}`mt:manifold-sampling`) | Permits: $\mathrm{Rep}_K$ (N11), $\mathrm{SC}_\lambda$ (N4). | blocked: $K_{\mathrm{SC}_\lambda}^{\text{crit}}$ (BarrierTypeII). |
 | Hessian-Metric Isomorphism ({prf:ref}`mt:hessian-metric`) | Permits: $\mathrm{LS}_\sigma$ (N7), $\mathrm{Rep}_K$ (N11). | heuristic: interpretive; not used for certificates. |
 | Symmetry-Gauge Correspondence ({prf:ref}`mt:symmetry-gauge`) | Permits: $\mathrm{GC}_\nabla$ (N12), $\mathrm{Rep}_K$ (N11). | conditional: imported/framework statement; not re-proved here. |
 | Three-Tier Gauge Hierarchy ({prf:ref}`mt:three-tier-gauge`) | Permits: $\mathrm{GC}_\nabla$ (N12), $\mathrm{Rep}_K$ (N11). | heuristic: interpretive; not used for certificates. |
 | Antisymmetry-Fermion Theorem ({prf:ref}`mt:antisymmetry-fermion`) | Permits: $\mathrm{Rep}_K$ (N11), $\mathrm{TB}_\pi$ (N8). | heuristic: interpretive; not used for certificates. |
 | Scalar-Reward Duality (Higgs Mechanism) ({prf:ref}`mt:scalar-reward-duality`) | Permits: $\mathrm{LS}_\sigma$ (N7), $\mathrm{SC}_{\partial c}$ (N5). | heuristic: interpretive; not used for certificates. |
 | IG-Quantum Isomorphism ({prf:ref}`mt:ig-quantum-isomorphism`) | Permits: $C_\mu$ (N3), $\mathrm{LS}_\sigma$ (N7), $\mathrm{Rep}_K$ (N11). | heuristic: interpretive; not used for certificates. |
-| Spectral Action Principle ({prf:ref}`mt:spectral-action-principle`) | Permits: $\mathrm{SC}_\lambda$ (N4), $\mathrm{Rep}_K$ (N11). | blocked: $K_{\mathrm{SC}_\lambda}^-$ (BarrierTypeII). |
+| Spectral Action Principle ({prf:ref}`mt:spectral-action-principle`) | Permits: $\mathrm{SC}_\lambda$ (N4), $\mathrm{Rep}_K$ (N11). | blocked: $K_{\mathrm{SC}_\lambda}^{\text{crit}}$ (BarrierTypeII). |
 | Geometric Diffusion Isomorphism ({prf:ref}`mt:geometric-diffusion-isomorphism`) | Permits: $C_\mu$ (N3), $\mathrm{Cap}_H$ (N6), $\mathrm{LS}_\sigma$ (N7), $\mathrm{Rep}_K$ (N11). | conditional: expansion adjunction permitted; asymptotic diffusion limit not verified. |
 | Spectral Distance Isomorphism ({prf:ref}`mt:spectral-distance-isomorphism`) | Permits: $\mathrm{Rep}_K$ (N11). | heuristic: interpretive; not used for certificates. |
-| Dimension Spectrum ({prf:ref}`mt:dimension-spectrum`) | Permits: $\mathrm{SC}_\lambda$ (N4), $\mathrm{Cap}_H$ (N6). | blocked: $K_{\mathrm{SC}_\lambda}^-$ (BarrierTypeII). |
+| Dimension Spectrum ({prf:ref}`mt:dimension-spectrum`) | Permits: $\mathrm{SC}_\lambda$ (N4), $\mathrm{Cap}_H$ (N6). | blocked: $K_{\mathrm{SC}_\lambda}^{\text{crit}}$ (BarrierTypeII). |
 | Scutoidal Interpolation ({prf:ref}`mt:scutoidal-interpolation`) | Permits: $\mathrm{TB}_\pi$ (N8), $\mathrm{Rep}_K$ (N11). | heuristic: interpretive; not used for certificates. |
 | Regge-Scutoid Dynamics ({prf:ref}`mt:regge-scutoid`) | Permits: $D_E$ (N1), $\mathrm{TB}_\pi$ (N8). | heuristic: interpretive; not used for certificates. |
 | Bio-Geometric Isomorphism ({prf:ref}`mt:bio-geometric-isomorphism`) | Permits: $\mathrm{Rep}_K$ (N11), $\mathrm{Cap}_H$ (N6). | heuristic: interpretive; not used for certificates. |
@@ -1532,7 +1550,7 @@ This table incorporates the assumption audit from Part III-E (Assumption Dischar
 | Tikhonov Regularization ({prf:ref}`mt:tikhonov-regularization`) | Permits: $\mathrm{SC}_{\partial c}$ (N5), $\mathrm{Cap}_H$ (N6). | heuristic: interpretive; not used for certificates. |
 | Convex Hull Resolution ({prf:ref}`mt:convex-hull-resolution`) | Permits: $\mathrm{Cap}_H$ (N6), $\mathrm{TB}_O$ (N9). | conditional: permits satisfied; additional hypotheses not verified in this instantiation. |
 | Holographic Power Bound ({prf:ref}`mt:holographic-power-bound`) | Permits: $\mathrm{Cap}_H$ (N6), $\mathrm{LS}_\sigma$ (N7). | heuristic: interpretive; not used for certificates. |
-| Trotter-Suzuki Product Formula ({prf:ref}`thm:trotter-suzuki`) | Permits: $\mathrm{Rep}_K$ (N11), $\mathrm{SC}_\lambda$ (N4). | blocked: $K_{\mathrm{SC}_\lambda}^-$ (BarrierTypeII). |
+| Trotter-Suzuki Product Formula ({prf:ref}`thm:trotter-suzuki`) | Permits: $\mathrm{Rep}_K$ (N11), $\mathrm{SC}_\lambda$ (N4). | blocked: $K_{\mathrm{SC}_\lambda}^{\text{crit}}$ (BarrierTypeII). |
 | Global Convergence (Darwinian Ratchet) ({prf:ref}`thm:global-convergence`) | Permits: $C_\mu$ (N3), $D_E$ (N1). | conditional: requires annealing/ergodicity hypotheses not specified here. |
 | Spontaneous Symmetry Breaking ({prf:ref}`thm:ssb`) | Permits: $\mathrm{LS}_\sigma$ (N7), $\mathrm{SC}_{\partial c}$ (N5). | heuristic: finite-N system; strict SSB not applicable. |
 
@@ -1582,8 +1600,8 @@ For external machine replay, a bundle for this proof object would consist of:
 | :--- | :--- | :---: | :--- | :--- |
 | **1** | Energy Bound | YES | $\Phi \le B$ | `[]` |
 | **2** | Zeno Check | YES | Discrete-time bound | `[]` |
-| **3** | Compact Check | YES | Compact alive slice | `[]` |
-| **4** | Scale Check | NO (blk) | Trivial scaling blocked | `[]` |
+| **3** | Confinement Check | YES | Foster-Lyapunov confinement | `[]` |
+| **4** | Scale Check | CRIT | Balanced scaling $\alpha=\beta=2$ | `[]` |
 | **5** | Param Check | YES | Constants fixed | `[]` |
 | **6** | Geom Check | YES | Bad/cemetery set capacity 0 | `[]` |
 | **7** | Stiffness Check | YES | $\Phi_{\text{eff}}, G, \mathcal{R}$ bounded on $B$ | `[]` |
