@@ -982,66 +982,66 @@ objects used by the rate calculators:
 
 Let $\tau:=\Delta t$ be the time step, and let $\lambda_{\mathrm{alg}}^{\mathrm{eff}}$ be the effective selection pressure defined above (expected fraction cloned per step).
 
-The framework uses the component-rate abstractions
+The framework uses the component-rate abstractions:
 
-$$
-\kappa_v \approx \texttt{kappa\_v}(\gamma,\tau),\qquad
-\kappa_x \approx \texttt{kappa\_x}(\lambda_{\mathrm{alg}}^{\mathrm{eff}},\tau).
+| Rate | Formula | Code Function |
+|------|---------|---------------|
+| Velocity contraction | $\kappa_v = \kappa_v(\gamma,\tau)$ | `kappa_v` |
+| Selection pressure | $\kappa_x = \kappa_x(\lambda_{\mathrm{alg}}^{\mathrm{eff}},\tau)$ | `kappa_x` |
 
-$$
 In this Latent Fractal Gas variant (Fragile-Agent kinetics), Wasserstein contraction is taken from the **cloning-driven** contraction theorem:
 
 $$
-\kappa_W \approx \texttt{kappa\_W\_cluster}(f_{UH},p_u,c_{\mathrm{align}}),
-
+\kappa_W = \kappa_W(f_{UH},p_u,c_{\mathrm{align}})
 $$
-where $f_{UH}$, $p_u$, $c_{\mathrm{align}}$ can be instantiated either from a proof-level lower bound (worst case) or from a profiled run (tight).
+
+(Code: `kappa_W_cluster`), where $f_{UH}$, $p_u$, $c_{\mathrm{align}}$ can be instantiated either from a proof-level lower bound (worst case) or from a profiled run (tight).
 
 The total discrete-time contraction rate is
 
 $$
-\kappa_{\mathrm{total}} = \texttt{kappa\_total}(\kappa_x,\kappa_v,\kappa_W,\kappa_b;\epsilon_{\mathrm{coupling}}),
+\kappa_{\mathrm{total}} = \kappa_{\mathrm{total}}(\kappa_x,\kappa_v,\kappa_W,\kappa_b;\epsilon_{\mathrm{coupling}})
+$$
+
+(Code: `kappa_total`), and mixing time estimates use
 
 $$
-and mixing time estimates use
-
+T_{\mathrm{mix}}(\varepsilon) = T_{\mathrm{mix}}(\varepsilon,\kappa_{\mathrm{total}},V_{\mathrm{init}},C_{\mathrm{total}})
 $$
-T_{\mathrm{mix}}(\varepsilon)=\texttt{T\_mix}(\varepsilon,\kappa_{\mathrm{total}},V_{\mathrm{init}},C_{\mathrm{total}}).
 
-$$
+(Code: `T_mix`).
 ### QSD and KL Rates (LSI-Based)
 
 The continuous-time QSD convergence rate proxy used by the framework is
 
 $$
-\kappa_{\mathrm{QSD}} = \texttt{kappa\_QSD}(\kappa_{\mathrm{total}},\tau) \approx \kappa_{\mathrm{total}}\tau.
-
+\kappa_{\mathrm{QSD}} \approx \kappa_{\mathrm{total}}\tau
 $$
-Let $\rho$ denote the localization scale parameter used by the latent LSI proxy. In this instantiation the alive arena is globally bounded, so we may take $\rho:=D_{\mathrm{alg}}$ (full alive diameter) without loss.
+
+(Code: `kappa_QSD`). Let $\rho$ denote the localization scale parameter used by the latent LSI proxy. In this instantiation the alive arena is globally bounded, so we may take $\rho:=D_{\mathrm{alg}}$ (full alive diameter) without loss.
 
 For relative-entropy convergence, the framework encodes geometric LSI constants via an ellipticity window $(c_{\min},c_{\max})$ and an effective confinement constant. On the alive core, the OU thermostat yields a momentum covariance $c_2^2 G(z)$, so we may record
 
 $$
 c_{\min}=c_2^2\,\lambda_{\min}(G|_B),\qquad c_{\max}=c_2^2\,\lambda_{\max}(G|_B),\qquad
 \kappa_{\mathrm{conf}}=\kappa_{\mathrm{conf}}^{(B)},
-
 $$
+
 and the geometric LSI constant proxy is
 
 $$
-C_{\mathrm{LSI}}^{(\mathrm{geom})}
-\approx
-\texttt{C\_LSI\_geometric}\!\left(\rho,\ c_{\min},c_{\max},\ \gamma,\ \kappa_{\mathrm{conf}},\ \kappa_W\right).
-
+C_{\mathrm{LSI}}^{(\mathrm{geom})} = C_{\mathrm{LSI}}^{(\mathrm{geom})}\!\left(\rho,\ c_{\min},c_{\max},\ \gamma,\ \kappa_{\mathrm{conf}},\ \kappa_W\right)
 $$
-Then KL decay is tracked via
+
+(Code: `C_LSI_geometric`). Then KL decay is tracked via
 
 $$
 D_{\mathrm{KL}}(t)\ \le\ \exp\!\left(-\frac{t}{C_{\mathrm{LSI}}^{(\mathrm{geom})}}\right) D_{\mathrm{KL}}(0)
-\qquad (\texttt{KL\_convergence\_rate}).
-
 $$
-**Interpretation / discharge:** `C_LSI_geometric` is a framework-level bound for an idealized uniformly elliptic diffusion,
+
+(Code: `KL_convergence_rate`).
+
+**Interpretation / discharge:** The geometric LSI constant `C_LSI_geometric` is a framework-level bound for an idealized uniformly elliptic diffusion,
 and it is consumed here as the quantitative constant for the alive-conditioned dynamics. In this instantiation the
 inputs are discharged by A1–A6 plus A2b and the derived-constants section: $\gamma>0$ (A4), $T_c>0$ (A4), Foster-Lyapunov confinement of effective alive region (A1)
 with $G$ continuous on $B$ (A2) gives $0<c_{\min}\le c_{\max}<\infty$, and $\kappa_W>0$ is certified by the companion-selection
@@ -1075,9 +1075,9 @@ When the Wasserstein contraction rate $\kappa_W>0$ is certified (typically from 
 
 $$
 \mathrm{Err}_{\mathrm{MF}}(N,T)\ \lesssim\ \frac{e^{-\kappa_W T}}{\sqrt{N}}
-\qquad (\texttt{mean\_field\_error\_bound}(N,\kappa_W,T)).
-
 $$
+
+(Code: `mean_field_error_bound`).
 ### How Fitness/Cloning Enter
 
 Fitness and cloning affect the mean-field limit through:
@@ -1257,7 +1257,7 @@ The factory certification enables the following **quantitative planning guarante
 |-----------|---------|-------------------|
 | **QSD Convergence Rate** | $\kappa_{\text{QSD}} \approx \kappa_{\text{total}} \cdot \tau$ | Exponential convergence to quasi-stationary distribution |
 | **Mean-Field Error** | $\text{Err}_N \lesssim e^{-\kappa_W T}/\sqrt{N}$ | Propagation of chaos bound (sample complexity) |
-| **Mixing Time** | $T_{\text{mix}}(\varepsilon) = \texttt{T\_mix}(\varepsilon, \kappa_{\text{total}}, V_{\text{init}}, C_{\text{total}})$ | Foster-Lyapunov certificate for exploration |
+| **Mixing Time** | $T_{\text{mix}}(\varepsilon)$ via `T_mix` | Foster-Lyapunov certificate for exploration |
 | **KL Decay** | $D_{\text{KL}}(t) \le e^{-t/C_{\text{LSI}}} D_{\text{KL}}(0)$ | Geometric LSI constant for entropy convergence |
 | **Sampling Density** | $N_{\min}$ for $\varepsilon$-covering | Invertible from mean-field error formula |
 
@@ -1322,7 +1322,7 @@ $$
 where:
 - $S_t$ is the one-step operator (cloning + Boris-BAOAB)
 - $\tau = \Delta t$ is the time step
-- $\kappa_{\text{total}} = \texttt{kappa\_total}(\kappa_x, \kappa_v, \kappa_W, \kappa_b; \epsilon_{\text{coupling}})$ is the total contraction rate (see Part III-A)
+- $\kappa_{\text{total}} = \kappa_{\text{total}}(\kappa_x, \kappa_v, \kappa_W, \kappa_b; \epsilon_{\text{coupling}})$ is the total contraction rate (Code: `kappa_total`, see Part III-A)
 - $C_{\text{total}}$ is a drift constant (bounded by the noise injection scales $\sigma_x^2$, $c_2^2$)
 
 **Component Contributions:**
