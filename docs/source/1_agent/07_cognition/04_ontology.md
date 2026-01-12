@@ -54,6 +54,7 @@ Let $(\mathbb{D}, G)$ be the Poincare disk with metric $G_{ij}(z) = 4\delta_{ij}
 
 $$
 \emptyset := \{z \in \mathcal{Z} : |z| = 0\} = \{0\} \times \mathcal{Z}_{\text{tex}},
+
 $$
 equipped with the following properties:
 
@@ -65,6 +66,7 @@ equipped with the following properties:
 
    $$
    \mu_{\emptyset} := \delta_0 \otimes \mathcal{N}(0, \sigma_{\text{tex}}^2 I),
+
    $$
    where the texture component is drawn from the isotropic prior (Definition {prf:ref}`def-boundary-texture-distribution` with $G^{-1}(0) = I/4$).
 
@@ -91,11 +93,13 @@ Let $\{q_i\}_{i=1}^{N_c}$ be the chart query bank (Definition {prf:ref}`def-atte
 
 $$
 w_i(x) = \frac{1}{N_c} \quad \forall i \in \{1, \ldots, N_c\}.
+
 $$
 The resulting soft codebook embedding is the **barycenter**:
 
 $$
 z_q(x) = \sum_{i=1}^{N_c} w_i(x) e_{i, K_{\text{code},i}(x)} = \frac{1}{N_c} \sum_{i=1}^{N_c} e_{i,*},
+
 $$
 which equals $0$ if the per-chart codebooks are also centered ($\sum_c e_{i,c} = 0$ for each chart $i$).
 
@@ -107,6 +111,7 @@ which equals $0$ if the per-chart codebooks are also centered ($\sum_c e_{i,c} =
 
 $$
 \mathcal{L}_{\text{center}} := \left\|\sum_{i=1}^{N_c} q_i\right\|^2 + \sum_{i=1}^{N_c} \left\|\sum_{c=1}^{N_v} e_{i,c}\right\|^2.
+
 $$
 :::
 
@@ -138,6 +143,7 @@ Let $(K_t, z_{n,t}, z_{\text{tex},t})$ be the agent's state at time $t$ (Definit
 
 $$
 \Xi := I(z_{\text{tex},t}; z_{\text{tex},t+1} \mid K_t, z_{n,t}, A_t),
+
 $$
 where $I(\cdot;\cdot|\cdot)$ denotes conditional mutual information in nats.
 
@@ -168,11 +174,13 @@ Let $\mathcal{F}[p, \pi]$ be the entropy-regularized objective (Definition {prf:
 
 $$
 \mathcal{F}[p, \pi] = \int_{\mathcal{Z}} p(z) \Big( V(z) - \tau H(\pi(\cdot|z)) \Big) d\mu_G.
+
 $$
 If the value function $V$ is **uninformative** in a region $\Omega \subset \mathcal{Z}$ -- i.e., $\nabla V|_\Omega \approx 0$ and $\nabla^2 V|_\Omega \approx 0$ -- then the entropy term dominates and the optimal belief concentrates toward maximum-entropy configurations:
 
 $$
 p^*(z) \propto \exp\left(-\frac{V(z)}{\tau}\right) \xrightarrow{\nabla V \to 0} \text{uniform on } \Omega.
+
 $$
 In the Poincare disk geometry, the maximum-entropy state is the vacuum $z = 0$.
 
@@ -200,6 +208,7 @@ What gives is the topology itself. When enough stress accumulates, the vacuum be
 
 $$
 \Xi := I(z_{\text{tex},t}; z_{\text{tex},t+1} \mid K_t, z_{n,t}, A_t)
+
 $$
 When $\Xi > \Xi_{\text{crit}}$, the system triggers **topological fission**: a pitchfork bifurcation that expands the chart structure ({ref}`Section 30.4 <sec-symmetry-breaking-and-chart-birth>`).
 
@@ -210,6 +219,7 @@ Set $\Xi_{\text{crit}} \to \infty$ (never fission). Instead, feed $\Xi$ directly
 
 $$
 r_{\text{RND}} = r + \beta \cdot \|f(s) - \hat{f}(s)\|^2
+
 $$
 This recovers **Random Network Distillation (RND)**---prediction error as "curiosity" reward.
 
@@ -247,6 +257,7 @@ The agent should expand its chart structure (increase $N_c$) if and only if the 
 
 $$
 \mathbb{E}\left[\Delta V \mid \text{fission}\right] > \mathcal{C}_{\text{complexity}}(N_c \to N_c + 1),
+
 $$
 where $\Delta V$ is the value gain from finer discrimination and $\mathcal{C}_{\text{complexity}}$ is measured in nats (to match units with value).
 
@@ -260,6 +271,7 @@ Let $\Xi$ be the Ontological Stress (Definition {prf:ref}`def-ontological-stress
 
 $$
 \text{Fission} \iff \Xi > \Xi_{\text{crit}} \quad \text{AND} \quad \Delta V_{\text{proj}} > \mathcal{C}_{\text{complexity}}.
+
 $$
 *Units:* All quantities are in nats. The complexity cost $\mathcal{C}_{\text{complexity}}(N_c \to N_c + 1)$ includes the entropy increase $\log((N_c+1)/N_c)$ from the expanded codebook plus any regularization penalty on parameter count.
 
@@ -277,6 +289,7 @@ When Ontological Stress $\Xi > \Xi_{\text{crit}}$, the system triggers a **pitch
 
 $$
 \frac{dr}{ds} = (\Xi - \Xi_{\text{crit}}) r - \alpha r^3 + \sigma\xi
+
 $$
 The network topology **expands** to accommodate new conceptual distinctions.
 
@@ -287,6 +300,7 @@ Set $\Xi_{\text{crit}} \to \infty$ (infinite fission threshold). The network nev
 
 $$
 |\theta| = \text{const} \quad \text{(parameter count fixed at initialization)}
+
 $$
 This recovers **standard deep learning**---the agent can never learn a concept that doesn't fit in its initial tensor shapes.
 
@@ -326,6 +340,7 @@ Let $q_i \in \mathbb{R}^d$ be a chart query vector ({ref}`Section 7.8 <sec-tier-
 
 $$
 q_i \mapsto \{q_i^+, q_i^-\} := \{q_i + \epsilon u, q_i - \epsilon u\},
+
 $$
 where $u \in \mathbb{R}^d$ is the **fission direction** (unit vector) and $\epsilon > 0$ is the **fission amplitude**.
 
@@ -333,11 +348,13 @@ The daughter codebooks are initialized as copies:
 
 $$
 e_{i^\pm, c} := e_{i, c} \quad \forall c \in \{1, \ldots, N_v\}.
+
 $$
 *Selection of fission direction.* The optimal $u$ maximizes the variance of router assignments under the new queries:
 
 $$
 u^* = \arg\max_{\|u\|=1} \text{Var}_{x \sim \mathcal{D}}\left[\langle k(x), u \rangle \mid w_i(x) > 1/N_c\right],
+
 $$
 i.e., the principal component of keys within the chart's Voronoi cell.
 
@@ -356,6 +373,7 @@ The query fission dynamics exhibit the **supercritical pitchfork bifurcation** s
 
 $$
 \frac{dr}{ds} = (\Xi - \Xi_{\text{crit}}) r - \alpha r^3 + \sigma\xi,
+
 $$
 where:
 - $\Xi - \Xi_{\text{crit}}$ plays the role of the bifurcation parameter $\mu$ in Theorem {prf:ref}`thm-pitchfork-bifurcation-structure`
@@ -369,11 +387,13 @@ where:
 
    $$
    r^* = \sqrt{\frac{\Xi - \Xi_{\text{crit}}}{\alpha}}.
+
    $$
 *Proof.* The dynamics derive from the effective potential:
 
 $$
 \Phi_{\text{fission}}(r) = -\frac{(\Xi - \Xi_{\text{crit}})}{2} r^2 + \frac{\alpha}{4} r^4,
+
 $$
 which has the standard pitchfork form. For $\Xi > \Xi_{\text{crit}}$, the origin has $\Phi_{\text{fission}}''(0) = -(\Xi - \Xi_{\text{crit}}) < 0$, becoming unstable. Stable minima appear at $r = \pm r^*$. The cubic term arises from router saturation: as daughters separate, they compete for data, and the loss landscape penalizes excessive separation. This matches the normal form of Theorem {prf:ref}`thm-pitchfork-bifurcation-structure` with $\mu = \Xi - \Xi_{\text{crit}}$. $\square$
 
@@ -381,6 +401,7 @@ which has the standard pitchfork form. For $\Xi > \Xi_{\text{crit}}$, the origin
 
 $$
 T_c < \frac{(\Xi - \Xi_{\text{crit}})^2}{4\alpha}.
+
 $$
 :::
 
@@ -422,6 +443,7 @@ Let $G_{ij}(z, s)$ be the capacity-constrained metric (Theorem {prf:ref}`thm-cap
 
 $$
 \frac{\partial G_{ij}}{\partial s} = -2\left(R_{ij} - \frac{1}{2}R\, G_{ij} + \Lambda G_{ij} - \kappa T_{ij}\right) + \nu \nabla_i \nabla_j \Xi(z),
+
 $$
 where:
 - $R_{ij}$ is the Ricci curvature tensor, $R = G^{ij}R_{ij}$ the scalar curvature
@@ -445,6 +467,7 @@ where:
 
 $$
 \frac{\partial G_{ij}}{\partial s} = -2\left(R_{ij} - \frac{1}{2}R\,G_{ij} + \Lambda G_{ij} - \kappa T_{ij}\right) + \nu\nabla_i\nabla_j\Xi
+
 $$
 **Correspondence Table:**
 
@@ -471,6 +494,7 @@ Condition (2) is satisfied when either $\Xi$ is constant (uniform stress) or $\X
 
 $$
 \mathcal{L}_{\text{Ricci}} := \left\|R_{ij} - \frac{1}{2}R\,G_{ij} + \Lambda G_{ij} - \kappa T_{ij}\right\|_F^2 + \nu^2 \|\nabla_i \nabla_j \Xi\|_F^2,
+
 $$
 encouraging the learned metric to satisfy the capacity constraint while penalizing stress gradients.
 
@@ -510,6 +534,7 @@ Following the diagnostic node convention ({ref}`Section 3.1 <sec-theory-thin-int
 
 $$
 \hat{\Xi} = \mathbb{E}\left[\log p_\phi(z_{\text{tex},t+1} \mid z_{\text{tex},t}, K_t, z_{n,t}, A_t) - \log p_\phi(z_{\text{tex},t+1} \mid K_t, z_{n,t}, A_t)\right],
+
 $$
 where $p_\phi$ is a small MLP. If $\hat{\Xi} \approx 0$, texture is unpredictable and the firewall holds.
 
@@ -595,6 +620,7 @@ Force the agent to use a **single chart** (one neural network). Add a quadratic 
 
 $$
 \mathcal{L}_{\text{EWC}} = \mathcal{L}_{\text{task}} + \frac{\lambda}{2} \sum_i F_i (\theta_i - \theta_i^*)^2
+
 $$
 This recovers **Elastic Weight Consolidation (EWC)** -- the Fisher information $F_i$ acts as an "importance weight" preventing catastrophic forgetting.
 
@@ -657,6 +683,7 @@ Let $K_i$ and $K_j$ be two charts with associated belief distributions $\mu_i, \
 
 $$
 \Upsilon_{ij} := \exp\left(-\left[ d_{\text{WFR}}(\mu_i, \mu_j) + D_{\mathrm{KL}}(\bar{P}_i \| \bar{P}_j) + \|V_i - V_j\|_G^2 \right]\right)
+
 $$
 where:
 - $d_{\text{WFR}}(\mu_i, \mu_j)$ is the Wasserstein-Fisher-Rao distance ({prf:ref}`def-the-wfr-action`) between belief distributions,
@@ -690,6 +717,7 @@ The **Discrimination Gain** $G_\Delta(i, j)$ is the mutual information the agent
 
 $$
 G_\Delta(i, j) := I(X; \{K_i, K_j\}) - I(X; K_{i \cup j})
+
 $$
 where $K_{i \cup j}$ is the merged chart that routes observations previously assigned to $K_i$ or $K_j$ to a single index.
 
@@ -705,6 +733,7 @@ Under the assumption that charts partition the observation space and the encoder
 
 $$
 G_\Delta(i, j) \leq H(K_i, K_j) - H(K_{i \cup j}) = \log 2 - H(K_i | K_j) \cdot \mathbb{I}[\Upsilon_{ij} < 1]
+
 $$
 When $\Upsilon_{ij} \to 1$, the bound tightens: $G_\Delta \to 0$.
 
@@ -733,6 +762,7 @@ The agent shall reduce ontological complexity when the expected value of maintai
 
 $$
 \mathcal{C}_{\text{saved}}(N_c \to N_c - 1) > G_\Delta(i, j) + \mathbb{E}[\Delta V \mid \text{no fusion}]
+
 $$
 where $\mathcal{C}_{\text{saved}}$ is the metabolic savings from eliminating a chart.
 
@@ -746,6 +776,7 @@ Charts $i$ and $j$ shall be merged if and only if:
 
 $$
 G_\Delta(i, j) < \mathcal{C}_{\text{complexity}}(N_c) - \mathcal{C}_{\text{complexity}}(N_c - 1) + \epsilon_{\text{hysteresis}}
+
 $$
 where:
 - $\mathcal{C}_{\text{complexity}}(N_c) = \log N_c + \lambda_{\text{param}} |\theta_{\text{chart}}|$ is the metabolic cost of maintaining $N_c$ charts ({ref}`Section 30.3 <sec-the-fission-criterion>`),
@@ -755,6 +786,7 @@ where:
 
 $$
 \mathcal{C}_{\text{complexity}}(N_c) - \mathcal{C}_{\text{complexity}}(N_c - 1) = \log\frac{N_c}{N_c - 1} + \lambda_{\text{param}} |\theta_{\text{chart}}|
+
 $$
 The hysteresis term $\epsilon_{\text{hysteresis}}$ breaks the symmetry with Fission, ensuring that a chart is not immediately re-created after being destroyed. $\square$
 
@@ -792,6 +824,7 @@ Given charts $i, j$ satisfying the Fusion Criterion ({prf:ref}`thm-fusion-criter
 
 $$
 q_{\text{merged}} := \frac{\bar{w}_i q_i + \bar{w}_j q_j}{\bar{w}_i + \bar{w}_j}
+
 $$
 where $\bar{w}_k := \mathbb{E}[w_k(x)]$ is the historical routing weight from the Attentive Atlas ({prf:ref}`def-attentive-routing-law`).
 
@@ -820,6 +853,7 @@ Let $L_{j \to i}: \mathcal{F}_j \to \mathcal{F}_i$ be the factorized jump operat
 
 $$
 z_n^{(i, \text{reconciled})} := L_{j \to i}(z_n^{(j)}) = A_i(B_j z_n^{(j)} + c_j) + d_i
+
 $$
 where $B_j$ is the chart-to-global encoder and $A_i$ is the global-to-chart decoder.
 
@@ -838,6 +872,7 @@ Let $r(s) := \|q_i(s) - q_j(s)\|$ be the query separation at computation time $s
 
 $$
 \frac{dr}{ds} = -(\Upsilon_{ij} - \Upsilon_{\text{crit}}) r - \alpha r^3 + \sigma\xi(s)
+
 $$
 where:
 - $\Upsilon_{\text{crit}} \in (0, 1)$ is the critical redundancy threshold,
@@ -897,6 +932,7 @@ We introduce two new diagnostic nodes for the Sieve ({ref}`Section 3 <sec-diagno
 
 $$
 \text{FusionReady} := \mathbb{I}\left[ \max_{i \neq j} \Upsilon_{ij} > \Upsilon_{\text{crit}} \right]
+
 $$
 **Computational cost:** $O(N_c^2)$ pairwise comparisons.
 
@@ -925,6 +961,7 @@ $$
 
 $$
 \text{DeadCodeDetected} := \mathbb{I}\left[ \min_k P(K = k) < \epsilon_{\text{dead}} \right]
+
 $$
 where $P(K = k)$ is the empirical usage frequency of code $k$ over a trailing window.
 
@@ -975,6 +1012,7 @@ For code $e_k$ in chart $i$, the **geometric tension** is:
 
 $$
 \sigma_k^2 := \mathbb{E}\left[ \|z_e - e_k\|^2 \;\Big|\; \text{VQ}(z_e) = k \right]
+
 $$
 where $z_e$ is the pre-quantized encoder output.
 
@@ -996,11 +1034,13 @@ The procedure is simple: find the direction of maximum spread (principal eigenve
 
    $$
    \Sigma_k := \mathbb{E}\left[ (z_e - e_k)(z_e - e_k)^\top \;\Big|\; \text{VQ}(z_e) = k \right]
+
    $$
 3. **Instantiate daughter codes:**
 
    $$
    e_{k,+} := e_k + \epsilon v_1, \qquad e_{k,-} := e_k - \epsilon v_1
+
    $$
    where $\epsilon = \sqrt{\lambda_1 / 2}$ and $\lambda_1$ is the principal eigenvalue.
 4. **Capacity check:** If the codebook is full, trigger Symbol Fusion elsewhere to free a slot.
@@ -1019,6 +1059,7 @@ Two symbols $k_1, k_2$ within the same chart are fusion candidates if the **poli
 
 $$
 \mathcal{D}_f(k_1, k_2) := D_{\mathrm{KL}}\left( \pi(\cdot | k_1) \| \pi(\cdot | k_2) \right) + |V(k_1) - V(k_2)|
+
 $$
 If $\mathcal{D}_f(k_1, k_2) < \epsilon_{\text{indist}}$, the distinction provides no **control authority**.
 
@@ -1039,6 +1080,7 @@ This is the "functional" perspective. We don't care about geometric similarity i
 
    $$
    e_{\text{merged}} := \frac{1}{2}(e_{k_1} + e_{k_2})
+
    $$
 2. **Remap transitions:** Update all entries in the world model $\bar{P}$ that reference $k_1$ or $k_2$ to point to the merged index.
 3. **Free slot:** Return one index to the available pool for future Symbol Fission.
@@ -1068,6 +1110,7 @@ In standard VQ-VAEs, **codebook collapse** is a major failure mode where most co
 
    $$
    k_{\text{stressed}} := \arg\max_k \sigma_k^2
+
    $$
 2. Perform Symbol Fission on $k_{\text{stressed}}$, reusing index $k_{\text{dead}}$:
    - Compute split direction $v_1$ from $\Sigma_{k_{\text{stressed}}}$.
@@ -1094,11 +1137,13 @@ Let $\mathcal{Z}_i$ be the continuous fiber associated with chart $i$. The codeb
 
 $$
 \mathcal{V}_k := \left\{ z \in \mathcal{Z}_i : d_G(z, e_k) \leq d_G(z, e_j) \;\forall j \neq k \right\}
+
 $$
 The probability mass of symbol $k$ is the measure of its Voronoi cell:
 
 $$
 P(k) := \int_{\mathcal{V}_k} p(z)\, d\mu_G(z)
+
 $$
 where $d\mu_G = \sqrt{\det G}\, dz$ is the Riemannian volume form.
 :::
@@ -1110,6 +1155,7 @@ The **local distortion** of symbol $k$ quantifies the representational error wit
 
 $$
 \mathcal{D}_k := \int_{\mathcal{V}_k} d_G(z, e_k)^2\, p(z)\, d\mu_G(z)
+
 $$
 *Units:* $[z]^2$ (weighted squared geodesic distance).
 
@@ -1123,6 +1169,7 @@ The **utility** $U_k$ of symbol $k$ measures its contribution to control authori
 
 $$
 U_k := P(k) \cdot I(K=k; A) + P(k) \cdot I(K=k; K_{t+1})
+
 $$
 where:
 - $I(K=k; A)$ is the mutual information between symbol activation and action selection,
@@ -1140,6 +1187,7 @@ Let $k_{\text{dead}}$ satisfy $U_{k_{\text{dead}}} < \epsilon_U$ and let $k_{\te
 
 $$
 \frac{\delta \mathcal{D}}{\delta N_{\text{codes}}} \approx \frac{\mathcal{D}_{k_{\text{stressed}}}}{H(K = k_{\text{stressed}})}
+
 $$
 *Proof sketch.* In the high-resolution limit of vector quantization (Zador's theorem {cite}`zador1982asymptotic`), distortion scales as $\mathcal{D} \propto N_v^{-2/d}$ where $d$ is the latent dimension. Reallocating a code from a zero-utility region to a high-distortion region maximizes the gradient of the distortion functional. The denominator $H(K = k_{\text{stressed}})$ normalizes by the information content of the target symbol. $\square$
 :::
@@ -1152,6 +1200,7 @@ If the policy $\pi(\cdot|K)$ is a mixture of two disjoint, equally weighted stra
 
 $$
 V_H(K) = \frac{1}{4}\left(\frac{\Delta Q}{T_c}\right)^2,
+
 $$
 where $\Delta Q = |Q_1 - Q_2|$ is the value gap between the modes. In the limit of distinct modes ($\Delta Q \gg T_c$), $V_H$ is maximized, whereas for a uniform (maximum entropy) distribution, $V_H = 0$.
 
@@ -1162,6 +1211,7 @@ The **Geometric Tension** $\sigma_k^2$ (Definition {prf:ref}`def-intra-symbol-va
 
 $$
 \text{Fission}(K) \iff V_H(K) > \mathcal{V}_{\text{crit}} \quad \text{AND} \quad H(K) > H_{\text{noise}}.
+
 $$
 **Interpretation:**
 - **High $H$, Low $V_H$:** Aleatoric Uncertainty (Noise/Fog). The distribution is flat. *Action:* Smoothing/Integration.
@@ -1207,6 +1257,7 @@ The fission/fusion dynamics operate at two hierarchical levels with analogous bu
 
    $$
    H(K_{\text{chart}}) + \mathbb{E}_{i}[H(K_{\text{code}} | K_{\text{chart}} = i)] \leq B_{\text{metabolic}}
+
    $$
 
 
@@ -1251,6 +1302,7 @@ At metabolic equilibrium, the marginal utility per bit is uniform across the ont
 
 $$
 \frac{\partial U}{\partial H(K_{\text{chart}})} \approx \frac{\partial U}{\partial H(K_{\text{code}})} \approx \text{const.}
+
 $$
 where $U$ is the total utility functional (value minus complexity cost).
 
@@ -1283,6 +1335,7 @@ Let $\mathcal{C}$ be a cycle of ontological operations consisting of a fission e
 
 $$
 \epsilon_{\text{hysteresis}} \geq \frac{1}{\beta_{\text{eff}}} \left( \Delta H_{\text{Shannon}} + \frac{1}{T_c}\mathcal{W}_{\text{comp}} \right)
+
 $$
 where $\beta_{\text{eff}} = 1/T_c$ is the inverse cognitive temperature and $\Delta H_{\text{Shannon}}$ is the entropy reduction associated with the discarded distinction.
 
@@ -1299,6 +1352,7 @@ Consider the free energy functional $\mathcal{F} = E - T_c S$.
 
 $$
 \epsilon_{\text{hysteresis}} \geq \inf_{\mathcal{C}} \oint \dot{\mathcal{M}}(s) ds
+
 $$
 Substituting the Landauer bound yields the stated inequality. $\square$
 :::
@@ -1331,6 +1385,7 @@ Let $\{q_i\}_{i=1}^k \subset \mathbb{D}$ be a set of chart query vectors with as
 
 $$
 q_{\text{merged}} := \operatorname*{arg\,min}_{q \in \mathbb{D}} \sum_{i=1}^k \bar{w}_i \cdot d^2_{\mathbb{D}}(q, q_i),
+
 $$
 where $d_{\mathbb{D}}(x, y) = \operatorname{arccosh}\left(1 + \frac{2\|x-y\|^2}{(1-\|x\|^2)(1-\|y\|^2)}\right)$ is the hyperbolic distance.
 
@@ -1354,6 +1409,7 @@ The minimizer can be computed via Riemannian gradient descent:
 
 $$
 q_{t+1} = \operatorname{Exp}_{q_t}\left( -\eta \sum_i \bar{w}_i \operatorname{Log}_{q_t}(q_i) \right)
+
 $$
 where:
 - $\operatorname{Exp}_p: T_p\mathbb{D} \to \mathbb{D}$ is the exponential map at $p$

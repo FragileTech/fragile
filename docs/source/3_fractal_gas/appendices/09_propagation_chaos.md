@@ -130,8 +130,10 @@ The analysis in `06_convergence.md` established, via a Foster-Lyapunov drift con
 1.  **The N-Particle Quasi-Stationary Distribution.** For each integer $N \ge 2$, let $\nu_N^{QSD} \in \mathcal{P}(\Sigma_N)$ be the **unique Quasi-Stationary Distribution** for the N-particle Euclidean Gas, whose existence and uniqueness were established in `06_convergence.md`. This is a probability measure on the full N-particle state space $\Sigma_N = (\mathbb{R}^d \times \mathbb{R}^d \times \{0,1\})^N$, describing the long-term statistical behavior of surviving swarm trajectories.
 
 2.  **The First Marginal Measure.** Let $\mu_N \in \mathcal{P}(\Omega)$ be the **first marginal** of the N-particle measure $\nu_N^{QSD}$. This measure represents the probability distribution of a single, typical particle (e.g., walker $i=1$) when the entire N-particle swarm is in its quasi-stationary equilibrium state. Formally, for any measurable set $A \subseteq \Omega$:
+
     $$
     \mu_N(A) := \nu_N^{QSD}(\{ S \in \Sigma_N \mid (x_1, v_1) \in A \})
+
     $$
 :::
 
@@ -157,32 +159,39 @@ The core of our strategy is to satisfy this condition by leveraging the powerful
 The sequence of single-particle marginal measures $\{\mu_N\}_{N=2}^\infty$ is tight in the space of probability measures on $\Omega$, $\mathcal{P}(\Omega)$.
 :::
 :::{prf:proof}
-:label: proof-thm-qsd-marginals-are-tight
 **Proof.**
 
 The proof proceeds by verifying the conditions of Prokhorov's theorem. On the Polish space $\Omega$, this is equivalent to showing that for any $\epsilon > 0$, there exists a compact set $K_\epsilon \subset \Omega$ such that the containment condition $\mu_N(K_\epsilon) \ge 1 - \epsilon$ holds uniformly for all $N \ge 2$. We establish this uniform containment by leveraging the moment bounds provided by the Lyapunov function analysis from `06_convergence.md`.
 
 1.  **Uniform Moment Bound from the N-Particle System:**
     The geometric ergodicity of the N-particle system, established in `06_convergence.md`, relies on a Foster-Lyapunov drift condition for a Lyapunov function $V_{\text{total}}(S)$. A standard result from the theory of Markov chains (see Meyn & Tweedie) is that such a geometric drift condition implies the existence of uniform moment bounds for the corresponding stationary measure. Specifically, there exists a constant $C < \infty$, which is independent of the number of walkers $N$, such that the expectation of the Lyapunov function with respect to the N-particle QSD is uniformly bounded:
+
     $$
     \mathbb{E}_{\nu_N^{QSD}}[V_{\text{total}}] = \int_{\Sigma_N} V_{\text{total}}(S) \, d\nu_N^{QSD}(S) \le C
+
     $$
 
 2.  **Translation to a Single-Particle Moment Bound:**
     The Lyapunov function $V_{\text{total}}$ is constructed as a sum of terms, including the average squared norms of the walkers' kinematic states, of the form $\frac{1}{N}\sum_i (\|x_i\|^2 + \|v_i\|^2)$. By the linearity of expectation and the exchangeability of the walkers under the symmetric measure $\nu_N^{QSD}$, the uniform bound on the total expectation implies a uniform bound on the expected squared norm of any single walker:
+
     $$
     \mathbb{E}_{\mu_N}[\|x\|^2 + \|v\|^2] = \int_\Omega (\|x\|^2 + \|v\|^2) \, d\mu_N(x,v) \le C'
+
     $$
     for some other constant $C'$ that is also independent of $N$. This demonstrates that the second moments of the measures in the sequence $\{\mu_N\}$ are uniformly bounded.
 
 3.  **Application of Markov's Inequality to Show Tightness:**
     With this uniform moment control established, we can now apply Markov's inequality to demonstrate uniform containment. For any $R > 0$, let $K_R = \{ (x,v) \in \Omega \mid \|x\|^2 + \|v\|^2 \le R^2 \}$ be a compact ball in the phase space. The probability of a particle being outside this set is bounded as follows:
+
     $$
     \mu_N(\Omega \setminus K_R) = \mathbb{P}(\|x\|^2 + \|v\|^2 > R^2) \le \frac{\mathbb{E}_{\mu_N}[\|x\|^2 + \|v\|^2]}{R^2} \le \frac{C'}{R^2}
+
     $$
     For any desired tolerance $\epsilon > 0$, we can choose a radius $R$ large enough such that $C'/R^2 \le \epsilon$. Specifically, we choose $R_\epsilon = \sqrt{C'/\epsilon}$. This choice defines a compact set $K_\epsilon := K_{R_\epsilon}$ for which the following holds:
+
     $$
     \mu_N(K_\epsilon) = 1 - \mu_N(\Omega \setminus K_\epsilon) \ge 1 - \frac{C'}{R_\epsilon^2} = 1 - \epsilon.
+
     $$
     Critically, because the constant $C'$ is independent of $N$, our choice of the compact set $K_\epsilon$ depends only on the tolerance $\epsilon$ and not on $N$. This satisfies the uniformity condition required by Prokhorov's theorem.
 
@@ -225,7 +234,6 @@ $$
 :::
 
 :::{prf:proof}
-:label: proof-lem-exchangeability
 The Euclidean Gas dynamics are completely symmetric under permutation of walker indices. The kinetic perturbation operator applies the same Ornstein-Uhlenbeck process to each walker independently. The cloning operator selects companions uniformly at random and applies the same fitness comparison rule regardless of walker labels. The boundary revival operator treats all walkers identically.
 
 Since the generator $\mathcal{L}_N$ of the N-particle process is invariant under any permutation of walker indices, and since the QSD $\nu_N^{QSD}$ is the unique stationary measure of this generator, it must inherit this symmetry. By the uniqueness of the QSD, the permuted measure must equal the original measure, establishing exchangeability.
@@ -254,7 +262,6 @@ $$
 :::
 
 :::{prf:proof}
-:label: proof-lem-empirical-convergence
 By Lemma [](#lem-exchangeability), the sequence of N-particle QSDs consists of exchangeable measures. The **Hewitt-Savage theorem** (see Kallenberg, *Foundations of Modern Probability*, Theorem 11.10) states that any exchangeable sequence of random variables can be represented as a mixture of independent and identically distributed (IID) sequences.
 
 For large $N_k$, this implies that the companions $\{z_2, \ldots, z_{N_k}\}$ behave asymptotically as if they were independent samples from the marginal distribution $\mu_{N_k}$. The **Glivenko-Cantelli theorem** (or its extension to Polish spaces, Varadarajan's theorem) guarantees that for such sequences, the empirical measure
@@ -289,7 +296,6 @@ $$
 :::
 
 :::{prf:proof}
-:label: proof-lem-reward-continuity
 Recall that
 
 $$
@@ -318,7 +324,6 @@ $$
 :::
 
 :::{prf:proof}
-:label: proof-lem-distance-continuity
 Recall that
 
 $$
@@ -382,7 +387,6 @@ where $\mathbb{E}^{(N_k)}_{\text{comp}}[\cdot \mid z_1]$ denotes the conditional
 :::
 
 :::{prf:proof}
-:label: proof-lem-uniform-integrability
 We must show that all terms in the generator applied to $\phi$ are uniformly bounded in $N_k$.
 
 1. **Kinetic term**: The test function $\phi$ is smooth and compactly supported, so $\phi$ and all its derivatives are bounded. The kinetic generator $\mathcal{L}_{\text{kin}}$ is a second-order differential operator with smooth, bounded coefficients (from the axioms). Therefore, $|\mathcal{L}_{\text{kin}} \phi(z)| \le C_{\text{kin}}$ for some constant $C_{\text{kin}}$ independent of $N$.
@@ -425,7 +429,6 @@ where $c(z)$ is the interior killing rate and $B[\rho_0, m_{d,\infty}]$ is the r
 :::
 
 :::{prf:proof}
-:label: proof-lem-boundary-convergence
 This convergence is established in two steps, corresponding to the two physical processes: death at the boundary and revival from the dead reservoir.
 
 **Step 1: Discrete Death Converges to Interior Killing**
@@ -557,7 +560,6 @@ Consequently, in the limit $N \to \infty$, the QSD stationarity condition conver
 :::
 
 :::{prf:proof}
-:label: proof-thm-extinction-rate-vanishes
 The proof uses the N-uniform Foster-Lyapunov condition established in `06_convergence.md` to bound the extinction rate.
 
 **Step 1: Relation Between Extinction Rate and Expected Hitting Time**
@@ -703,7 +705,6 @@ where $\rho_0$ is the density of $\mu_\infty$, $c(z)$ is the interior killing ra
 :::
 
 :::{prf:proof}
-:label: proof-thm-limit-is-weak-solution
 **Proof.**
 
 A measure $\mu_\infty$ with density $\rho_0$ is a weak solution to the stationary mean-field equation if, for any smooth, compactly supported test function $\phi \in C_c^\infty(\Omega)$, it satisfies:
@@ -878,7 +879,6 @@ The weighted Sobolev space $H^1_w(\Omega)$ with the norm $\|\cdot\|_{H^1_w}$ is 
 :::
 
 :::{prf:proof}
-:label: proof-thm-uniqueness-completeness-h1w-omega
 This is a standard result from the theory of weighted Sobolev spaces. Completeness follows from:
 1. The completeness of $L^2$ spaces
 2. The fact that weak derivatives of Cauchy sequences converge to weak derivatives of the limit
@@ -941,7 +941,6 @@ The solution operator $\mathcal{T}: \mathcal{P} \to \mathcal{P}$ maps probabilit
 :::
 
 :::{prf:proof}
-:label: proof-lem-uniqueness-self-mapping
 We must prove two properties: non-negativity and mass conservation.
 
 **Part (a): Non-negativity**
@@ -1075,7 +1074,6 @@ and similarly for the other moments.
 :::
 
 :::{prf:proof}
-:label: proof-lem-uniqueness-lipschitz-moments
 The reward moments are defined by:
 
 $$
@@ -1118,7 +1116,6 @@ $$
 :::
 
 :::{prf:proof}
-:label: proof-lem-uniqueness-fixed-point-bounded
 Let $\rho^* = \mathcal{T}[\rho^*]$ be any fixed point. By the definition of $\mathcal{T}$:
 
 $$
@@ -1149,12 +1146,14 @@ We must show $\|f\|_{L^2_w}$ can be bounded in terms of $\|\rho^*\|_{H^1_w}$ in 
 
    $$
    \|S_{\text{src}}[\rho^*]\|_{L^\infty} \leq \frac{K_1}{\tau}
+
    $$
 
    where $K_1$ depends only on the kernel bounds. On a compact domain, $L^\infty$ bounds imply $L^2_w$ bounds:
 
    $$
    \|S_{\text{src}}[\rho^*]\|_{L^2_w} \leq C_\Omega \|S_{\text{src}}[\rho^*]\|_{L^\infty} \leq \frac{C_\Omega K_1}{\tau} =: K_S
+
    $$
 
 2. **Revival term**: $B[\rho^*, m_d] = \lambda_{\text{rev}} m_d \int Q_\delta(z|z') \rho^*(z') dz'$
@@ -1163,6 +1162,7 @@ We must show $\|f\|_{L^2_w}$ can be bounded in terms of $\|\rho^*\|_{H^1_w}$ in 
 
    $$
    \|B[\rho^*, m_d]\|_{L^2_w} \leq K_B
+
    $$
 
 3. **Linear terms**: $(-c(\cdot) + C)\rho^*$
@@ -1171,12 +1171,14 @@ We must show $\|f\|_{L^2_w}$ can be bounded in terms of $\|\rho^*\|_{H^1_w}$ in 
 
    $$
    (C \cdot I - L^\dagger)\rho^* = S[\rho^*] + B[\rho^*, m_d] - c(\cdot)\rho^* + C\rho^*
+
    $$
 
    Rearranging:
 
    $$
    -L^\dagger \rho^* = S[\rho^*] + B[\rho^*, m_d] - c(\cdot)\rho^*
+
    $$
 
 **Step 3: Key estimate**
@@ -1252,7 +1254,6 @@ $$
 :::
 
 :::{prf:proof}
-:label: proof-lem-uniqueness-lipschitz-fitness-potential
 The fitness potential has the form:
 
 $$
@@ -1292,7 +1293,6 @@ where $L_S(R) = O(R)$ (grows at most linearly with $R$).
 :::
 
 :::{prf:proof}
-:label: proof-lem-uniqueness-lipschitz-cloning-operator
 The cloning operator $S[\rho]$ has the structure:
 
 $$
@@ -1461,7 +1461,6 @@ where $X_0, X_1, \ldots, X_m$ are smooth vector fields on a manifold $M$. If the
 :::
 
 :::{prf:proof}
-:label: proof-thm-uniqueness-hormander
 This is Hörmander's celebrated theorem (1967). See Hörmander, "Hypoelliptic second order differential equations," *Acta Math.* 119 (1967), 147-171.
 
 **Q.E.D.**
@@ -1474,7 +1473,6 @@ The kinetic Fokker-Planck operator $L$ satisfies Hörmander's condition on $\Ome
 :::
 
 :::{prf:proof}
-:label: proof-lem-uniqueness-hormander-verification
 Write $L$ in the form required by Hörmander's theorem:
 
 $$
@@ -1562,7 +1560,6 @@ $$
 :::
 
 :::{prf:proof}
-:label: proof-thm-uniqueness-hypoelliptic-regularity
 This proof uses the theory of hypoelliptic operators on weighted spaces. The key references are:
 - Hérau & Nier, "Isotropic hypoellipticity and trend to equilibrium for the Fokker-Planck equation with a high-degree potential" *Arch. Ration. Mech. Anal.* 171 (2004), 151-218.
 - Villani, "Hypocoercivity," *Mem. Amer. Math. Soc.* 202 (2009), no. 950.
@@ -1660,7 +1657,6 @@ $$
 :::
 
 :::{prf:proof}
-:label: proof-lem-uniqueness-scaling-hypoelliptic-constant
 The coercivity constant $c_1$ from the hypocoercivity argument in Theorem [](#thm-uniqueness-hypoelliptic-regularity) depends on the parameters as follows:
 
 **From the diffusion term**:
@@ -1730,7 +1726,6 @@ for all $\rho_1, \rho_2 \in \mathcal{P}_R$.
 :::
 
 :::{prf:proof}
-:label: proof-thm-uniqueness-contraction-solution-operator
 Recall $\mathcal{T}[\rho] = (-\mathcal{L}_{\text{lin}})^{-1} (S[\rho] + B[\rho, m_d[\rho]] - c(\cdot)\rho + C\rho)$.
 
 **Step 1: Difference equation**
@@ -1865,7 +1860,6 @@ with equilibrium condition $k_{\text{killed}}[\rho_0] = \lambda_{\text{rev}} m_{
 :::
 
 :::{prf:proof}
-:label: proof-thm-uniqueness-uniqueness-stationary-solution
 We apply the Banach Fixed-Point Theorem to the operator $\mathcal{T}: \mathcal{P}_R \to \mathcal{P}_R$ on the invariant ball $\mathcal{P}_R := \mathcal{P} \cap \{\rho : \|\rho\|_{H^1_w} \le R^*\}$.
 
 **Step 1: Verification of Banach Fixed-Point hypotheses**
@@ -1954,8 +1948,10 @@ The foundation of our constructive proof is the sequence of well-behaved equilib
 1.  **The N-Particle Quasi-Stationary Distribution.** For each integer $N \ge 2$, let $\nu_N^{QSD} \in \mathcal{P}(\Sigma_N)$ be the **unique Quasi-Stationary Distribution** for the N-particle Euclidean Gas, whose existence and uniqueness were established in `06_convergence.md`. This is a probability measure on the full N-particle state space $\Sigma_N = (\Omega \times \{0,1\})^N$, describing the long-term statistical behavior of surviving swarm trajectories.
 
 2.  **The First Marginal Measure.** Let $\mu_N \in \mathcal{P}(\Omega)$ be the **first marginal** of the N-particle measure $\nu_N^{QSD}$. This measure represents the probability distribution of a single, typical particle (e.g., walker $i=1$) when the entire N-particle swarm is in its quasi-stationary equilibrium state. Formally, for any measurable set $A \subseteq \Omega$:
+
     $$
     \mu_N(A) := \nu_N^{QSD}(\{ S \in \Sigma_N \mid (x_1, v_1) \in A \})
+
     $$
 :::
 
@@ -1971,32 +1967,39 @@ The first step in proving convergence is to show that the sequence of measures $
 The sequence of single-particle marginal measures $\{\mu_N\}_{N=2}^\infty$ is tight in the space of probability measures on $\Omega$, $\mathcal{P}(\Omega)$.
 :::
 :::{prf:proof}
-:label: proof-thm-qsd-marginals-are-tight-summary
 **Proof.**
 
 The proof proceeds by verifying the conditions of **Prokhorov's theorem**. On the Polish space $\Omega$, a sequence of measures is tight if and only if for every $\epsilon > 0$, there exists a single compact set $K_\epsilon \subset \Omega$ such that $\mu_N(K_\epsilon) \ge 1 - \epsilon$ uniformly for all $N \ge 2$. We establish this uniform containment by leveraging the moment bounds from the N-particle Lyapunov analysis.
 
 1.  **Uniform Moment Bound from the N-Particle System:**
     The geometric ergodicity of the N-particle system, established in `06_convergence.md`, is a consequence of a Foster-Lyapunov drift condition for a Lyapunov function $V_{\text{total}}(S)$. A standard result from the theory of Markov chains (e.g., Meyn & Tweedie, *Markov Chains and Stochastic Stability*) is that such a geometric drift condition implies the existence of uniform moment bounds for the corresponding stationary measure. Critically, because all constants in the drift inequality (`κ_total`, `C_total`) were proven to be **N-uniform**, the resulting moment bound is also independent of $N$. Specifically, there exists a finite constant $C < \infty$ such that:
+
     $$
     \mathbb{E}_{\nu_N^{QSD}}[V_{\text{total}}] = \int_{\Sigma_N} V_{\text{total}}(S) \, d\nu_N^{QSD}(S) \le C \quad \text{for all } N \ge 2.
+
     $$
 
 2.  **Translation to a Single-Particle Moment Bound:**
     The Lyapunov function $V_{\text{total}}$ is constructed as a sum of N-normalized terms. A suitable choice of $V_{\text{total}}$ includes a term proportional to the average squared norm of the walkers' kinematic states, e.g., $V(S) \propto \frac{1}{N}\sum_{i=1}^N (\|x_i\|^2 + \|v_i\|^2)$. By the linearity of expectation and the **exchangeability** of the walkers under the symmetric measure $\nu_N^{QSD}$, the uniform bound on the total expectation implies a uniform bound on the expected squared norm of any single walker:
+
     $$
     \mathbb{E}_{\mu_N}[\|x\|^2 + \|v\|^2] = \int_\Omega (\|x\|^2 + \|v\|^2) \, d\mu_N(x,v) \le C'
+
     $$
     for some other constant $C'$ that is also independent of $N$. This demonstrates that the second moments of the measures in the sequence $\{\mu_N\}$ are uniformly bounded.
 
 3.  **Application of Markov's Inequality to Show Tightness:**
     With this uniform moment control, we apply **Markov's inequality**. For any $R > 0$, let $K_R = \{ (x,v) \in \Omega \mid \|x\|^2 + \|v\|^2 \le R^2 \}$ be a compact ball in the phase space. The probability of a particle being outside this set is:
+
     $$
     \mu_N(\Omega \setminus K_R) = \mathbb{P}_{z \sim \mu_N}(\|x\|^2 + \|v\|^2 > R^2) \le \frac{\mathbb{E}_{\mu_N}[\|x\|^2 + \|v\|^2]}{R^2} \le \frac{C'}{R^2}
+
     $$
     For any desired tolerance $\epsilon > 0$, we can choose a radius $R_\epsilon = \sqrt{C'/\epsilon}$. This choice defines a compact set $K_\epsilon := K_{R_\epsilon}$ for which:
+
     $$
     \mu_N(K_\epsilon) = 1 - \mu_N(\Omega \setminus K_\epsilon) \ge 1 - \frac{C'}{R_\epsilon^2} = 1 - \epsilon.
+
     $$
     Because the constant $C'$ is independent of $N$, our choice of the compact set $K_\epsilon$ depends only on the tolerance $\epsilon$ and not on $N$. This satisfies the uniform containment condition required by Prokhorov's theorem.
 
@@ -2016,7 +2019,6 @@ Tightness guarantees that at least one convergent subsequence exists. This secti
 Let $\{\mu_{N_k}\}$ be any subsequence of the marginal measures that converges weakly to a limit point $\mu_\infty$. Then $\mu_\infty$ is a weak solution to the stationary mean-field equation $L^\dagger \rho_0 + S[\rho_0] + B[\rho_0] = 0$, where $\rho_0$ is the density of $\mu_\infty$.
 :::
 :::{prf:proof}
-:label: proof-thm-limit-is-weak-solution-summary
 **Proof.**
 
 A measure $\mu_\infty$ with density $\rho_0$ is a weak solution to the stationary mean-field equation if, for any smooth, compactly supported test function $\phi \in C_c^\infty(\Omega)$, it satisfies $\int_\Omega (\mathcal{L}_{\text{FG}} \phi)(z) d\mu_\infty(z) = 0$, where $\mathcal{L}_{\text{FG}}$ is the generator of the mean-field process. This is equivalent to:
@@ -2029,15 +2031,19 @@ Our proof establishes this by starting with the stationarity condition for the f
 
 1.  **The N-Particle Stationarity Condition:**
     For each $N_k$, the QSD $\nu_{N_k}^{QSD}$ is stationary with respect to the N-particle generator $\mathcal{L}_{N_k}$. For a test function $\Phi(S) = \phi(z_1)$ that depends only on the state of the first particle, this implies:
+
     $$
     \mathbb{E}_{\nu_{N_k}^{QSD}}[\mathcal{L}_{N_k} \phi(z_1)] = 0
+
     $$
     Decomposing the generator, we have $\mathbb{E}_{\nu_{N_k}}[\mathcal{L}_{\text{kin}, N_k} \phi(z_1)] + \mathbb{E}_{\nu_{N_k}}[\mathcal{L}_{\text{clone}, N_k} \phi(z_1)] = 0$ for all $k$.
 
 2.  **Limit of the Kinetic Term:**
     The kinetic generator $\mathcal{L}_{\text{kin}, N_k}$ acts only on the state of particle 1. The expectation is therefore an integral against the first marginal: $\mathbb{E}_{\nu_{N_k}}[\mathcal{L}_{\text{kin}} \phi(z_1)] = \int_{\Omega} (L\phi)(z) d\mu_{N_k}(z)$. Since $\mu_{N_k} \rightharpoonup \mu_\infty$ and $L\phi$ is a bounded, continuous function (as $\phi \in C_c^\infty$), the integral converges:
+
     $$
     \lim_{k \to \infty} \int_{\Omega} (L\phi)(z) d\mu_{N_k}(z) = \int_{\Omega} (L\phi)(z) d\mu_{\infty}(z) = \int_{\Omega} (L^\dagger\rho_0)(z)\phi(z) \, dz
+
     $$
 
 3.  **Limit of the Cloning Term (Propagation of Chaos):**
@@ -2048,17 +2054,22 @@ Our proof establishes this by starting with the stationarity condition for the f
     *   The functionals for moments and fitness potentials are continuous with respect to weak convergence.
 
     Therefore, the N-particle cloning and boundary operators, which are continuous functions of these empirical measures, converge point-wise to the mean-field operators. By the bounded convergence theorem (justified by the uniform boundedness of the generator's action on $\phi$), the expectation also converges:
+
     $$
     \lim_{k \to \infty} \mathbb{E}_{\nu_{N_k}}[\mathcal{L}_{\text{clone}, N_k} \phi(z_1)] = \int_{\Omega} S[\rho_0]\phi(z) dz
+
     $$
     $$
     \lim_{k \to \infty} \mathbb{E}_{\nu_{N_k}}[\mathcal{L}_{\text{boundary}, N_k} \phi(z_1)] = \int_{\Omega} (-c(z)\rho_0 + B[\rho_0, m_{d,\infty}])\phi(z) dz
+
     $$
 
 4.  **Conclusion:**
     Taking the limit of the entire N-particle stationarity condition, we have shown that each term converges to its mean-field counterpart. The limit measure $\mu_\infty$ must therefore satisfy:
+
     $$
     \int_\Omega \left(L^\dagger \rho_0(z) - c(z)\rho_0(z) + S[\rho_0](z) + B[\rho_0, m_{d,\infty}](z)\right) \phi(z) \, dz = 0
+
     $$
     This holds for any $\phi \in C_c^\infty(\Omega)$, which is the definition of a weak solution.
 
@@ -2075,15 +2086,16 @@ The final step is to prove that the stationary solution identified above is uniq
 There is at most one probability density $\rho \in \mathcal{P}(\Omega)$ that is a weak solution to the stationary mean-field equation.
 :::
 :::{prf:proof}
-:label: proof-thm-uniqueness-of-qsd
 **Proof (via Contraction Mapping).**
 
 The proof strategy is to reformulate the stationary PDE as a fixed-point problem, $\rho = \mathcal{T}[\rho]$, and then to prove that the solution operator $\mathcal{T}$ is a strict contraction on a suitable complete metric space. The Banach Fixed-Point Theorem then guarantees the uniqueness of the solution.
 
 1.  **The Fixed-Point Formulation:**
     The stationary equation is $0 = L^\dagger \rho + S[\rho] + B[\rho]$. We rewrite this by isolating the linear, diffusive part. Let $\mathcal{L}_{\text{lin}} = L^\dagger - C \cdot I$ for a sufficiently large constant $C > 0$ such that $-\mathcal{L}_{\text{lin}}$ is an invertible, coercive operator. The equation becomes $\rho = (-\mathcal{L}_{\text{lin}})^{-1}(S[\rho] + B[\rho] + C\rho)$. We define the solution operator as:
+
     $$
     \mathcal{T}[\rho] := (-\mathcal{L}_{\text{lin}})^{-1} (S[\rho] + B[\rho] + C\rho)
+
     $$
     A stationary solution is a fixed point of $\mathcal{T}$.
 
@@ -2092,25 +2104,33 @@ The proof strategy is to reformulate the stationary PDE as a fixed-point problem
 
 3.  **Lipschitz Continuity of the Non-Linear Operators:**
     The core of the proof is to show that the non-linear operators, $S[\rho]$ and $B[\rho]$, are Lipschitz continuous on $\mathcal{P}$. That is, there exist constants $L_S$ and $L_B$ such that:
+
     $$
     \|S[\rho_1] - S[\rho_2]\|_{H^1_w} \le L_S \|\rho_1 - \rho_2\|_{H^1_w}
+
     $$
     and similarly for $B[\rho]$. This proof follows from the composition of the Lipschitz properties of the underlying functionals: the moment functionals and the fitness potential are Lipschitz with respect to their input densities (as proven via Sobolev embedding), and the cloning operator itself is a smooth integral operator.
 
 4.  **Hypoelliptic Regularity and Boundedness of the Inverse Kinetic Operator:**
     The inverse linear operator, $(-\mathcal{L}_{\text{lin}})^{-1}$, is the solution operator for a kinetic Fokker-Planck equation. This operator is not elliptic but **hypoelliptic**. A key result from the theory of hypoelliptic operators (leveraging Hörmander's theorem) is that this inverse operator is a bounded map from $L^2_w(\Omega)$ to $H^1_w(\Omega)$. Crucially, its operator norm, $C_{\text{hypo}} = \|(-\mathcal{L}_{\text{lin}})^{-1}\|_{L^2_w \to H^1_w}$, scales inversely with the strength of the velocity diffusion:
+
     $$
     C_{\text{hypo}} \sim \frac{1}{\sigma_v^2 \gamma}
+
     $$
 
 5.  **The Contraction Property:**
     We now bound the distance between the images of two densities, $\rho_1$ and $\rho_2$, under the full solution operator:
+
     $$
     \|\mathcal{T}[\rho_1] - \mathcal{T}[\rho_2]\|_{H^1_w} \le C_{\text{hypo}} \|(S[\rho_1]-S[\rho_2]) + (B[\rho_1]-B[\rho_2]) + C(\rho_1-\rho_2)\|_{L^2_w}
+
     $$
     Applying the triangle inequality and the Lipschitz bounds for $S$ and $B$:
+
     $$
     \le C_{\text{hypo}} (L_S + L_B + C) \|\rho_1 - \rho_2\|_{H^1_w}
+
     $$
     The contraction constant is $\kappa := C_{\text{hypo}} (L_S + L_B + C) \sim \frac{L_S + L_B + C}{\sigma_v^2 \gamma}$. Since the Lipschitz constants $L_S$ and $L_B$ depend on the cloning parameters but not the kinetic diffusion $\sigma_v^2$, we can always choose the kinetic noise `σ_v` large enough to ensure that `κ < 1`.
 
@@ -2137,29 +2157,36 @@ $$
 $$
 :::
 :::{prf:proof}
-:label: proof-thm-thermodynamic-limit
 **Proof.**
 
 The proof demonstrates that the left-hand side is equivalent to the definition of weak convergence for the sequence of first marginals.
 
 1.  **Exploit Exchangeability:** As established previously, the N-particle QSD, $\nu_N^{QSD}$, is an exchangeable measure. By the linearity of expectation and exchangeability, the expected average of the observable is equal to the expectation of the observable for any single particle:
+
     $$
     \mathbb{E}_{\nu_N^{QSD}}\left[ \frac{1}{N} \sum_{i=1}^N \phi(z_i) \right] = \mathbb{E}_{\nu_N^{QSD}}[\phi(z_1)]
+
     $$
 
 2.  **Relate to the First Marginal:** By definition, the expectation of a function of only the first particle is given by the integral of that function against the first marginal measure, $\mu_N$:
+
     $$
     \mathbb{E}_{\nu_N^{QSD}}[\phi(z_1)] = \int_\Omega \phi(z) d\mu_N(z)
+
     $$
 
 3.  **Invoke the Main Convergence Result:** The combination of Tightness (Theorem 5.2), Identification (Theorem 5.4), and Uniqueness (Theorem 5.5) proves that the entire sequence of first marginals converges weakly to the unique mean-field QSD, $\mu_\infty$, whose density is $\rho_0$:
+
     $$
     \mu_N \rightharpoonup \mu_\infty \quad (\text{as } N \to \infty)
+
     $$
 
 4.  **Apply the Definition of Weak Convergence:** The definition of weak convergence states that for any bounded, continuous function $\phi$, the integrals converge:
+
     $$
     \lim_{N \to \infty} \int_\Omega \phi(z) d\mu_N(z) = \int_\Omega \phi(z) d\mu_\infty(z) = \int_\Omega \phi(z) \rho_0(z) dz
+
     $$
 
 5.  **Conclusion:** By combining the steps, we have shown that the limit of the N-particle average is equal to the mean-field expectation. This completes the proof.
@@ -2181,7 +2208,6 @@ where $W_2$ is the Wasserstein-2 (optimal transport) distance between probabilit
 :::
 
 :::{prf:proof}
-:label: proof-cor-w2-convergence-thermodynamic-limit
 **Proof.**
 
 The upgrade from weak convergence to W2 convergence follows from a standard metrization theorem in optimal transport theory, given that we have uniform control of second moments.

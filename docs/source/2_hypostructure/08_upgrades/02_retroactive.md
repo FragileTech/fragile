@@ -2,7 +2,7 @@
 title: "Retroactive Promotion Theorems"
 ---
 
-# Part XV: Retroactive Promotion Theorems
+# Retroactive Promotion Theorems
 
 (sec-aposteriori-upgrade-rules)=
 ## A-Posteriori Upgrade Rules
@@ -314,6 +314,7 @@ The connection between algorithmic complexity and geometric dimension is mediate
 
 $$
 \dim_{\mathrm{eff}}(\Sigma) := \liminf_{\varepsilon \to 0} \frac{K(\Sigma|_\varepsilon)}{\log(1/\varepsilon)}
+
 $$
 
 where $K(\Sigma|_\varepsilon)$ is the Kolmogorov complexity of the $\varepsilon$-covering. By Mayordomo's theorem {cite}`Mayordomo02`:
@@ -423,6 +424,7 @@ where $K_{\text{Backend}}^+$ is one of:
 
 $$
 \text{supp}(\mu) \cap \{V_1, \ldots, V_N\} \neq \emptyset \implies \text{supp}(\mu) \subseteq \{V_1, \ldots, V_N\}
+
 $$
 
 since $\omega$-limits of points in $\text{supp}(\mu)$ must lie in the finite discrete set.
@@ -433,6 +435,7 @@ since $\omega$-limits of points in $\text{supp}(\mu)$ must lie in the finite dis
 
 $$
 \lim_{T \to \infty} \frac{1}{T} \int_0^T \mathbf{1}_{\{V_i\}}(S_t x) \, dt = \mu(\{V_i\}) = 0 \quad \mu\text{-a.s.}
+
 $$
 
 Hence orbits spend asymptotically zero fraction of time near $V_i$.
@@ -459,6 +462,7 @@ Hence orbits spend asymptotically zero fraction of time near $V_i$.
 
 $$
 \frac{d}{dt}\Phi(S_t x) = -\|\nabla\Phi(S_t x)\|^2 + \langle R, \nabla\Phi \rangle \leq -\|\nabla\Phi(S_t x)\|^2
+
 $$
 
 Hence $\Phi$ is strictly decreasing away from critical points. The global attractor $\mathcal{A}$ consists of equilibria and connecting orbits.
@@ -469,6 +473,7 @@ Hence $\Phi$ is strictly decreasing away from critical points. The global attrac
 
 $$
 \|\nabla\Phi(x)\| \geq C_{\text{LS}} |\Phi(x) - \Phi(V)|^{1-\theta}
+
 $$
 
 for $x$ in a neighborhood of any critical point $V$, with exponent $\theta \in (0, 1/2]$. This prevents oscillation near equilibria and ensures finite-length gradient flow curves.
@@ -477,6 +482,7 @@ for $x$ in a neighborhood of any critical point $V$, with exponent $\theta \in (
 
 $$
 \int_0^\infty \|\dot{S}_t x\| \, dt = \int_0^\infty \|\nabla\Phi(S_t x)\| \, dt < \infty
+
 $$
 
 Hence the trajectory has **finite arc length** and converges to a single limit $V^* = \lim_{t \to \infty} S_t x$. By continuity, $\nabla\Phi(V^*) = 0$.
@@ -502,6 +508,7 @@ Hence the trajectory has **finite arc length** and converges to a single limit $
 
 $$
 \mathcal{L}V \leq -\lambda V + b\mathbf{1}_C
+
 $$
 
 for a Lyapunov function $V$ and small set $C$.
@@ -510,6 +517,7 @@ for a Lyapunov function $V$ and small set $C$.
 
 $$
 W_1(S_t^* \mu, S_t^* \nu) \leq e^{-\lambda t} W_1(\mu, \nu)
+
 $$
 
 in Wasserstein-1 distance. Hence there is a unique invariant measure $\mu^* = \delta_{V^*}$.
@@ -518,6 +526,7 @@ in Wasserstein-1 distance. Hence there is a unique invariant measure $\mu^* = \d
 
 $$
 \tau_{\text{mix}}(\varepsilon) \leq \frac{1}{\lambda_{\text{sg}}} \log\left(\frac{1}{\varepsilon}\right)
+
 $$
 
 **Note:** The contraction rate $\lambda$ (hypothesis 1) and spectral gap $\lambda_{\text{sg}}$ are related but not generally equal; in many settings $\lambda_{\text{sg}} \leq 2\lambda$. This step is optional—uniqueness of profile follows from Steps 1-2 alone.
@@ -526,6 +535,7 @@ $$
 
 $$
 d(S_t x, V^*) \leq e^{-\lambda t} d(x, V^*) \to 0 \quad \text{as } t \to \infty
+
 $$
 
 for **all** initial conditions $x \in \mathcal{X}$. The basin of attraction of $V^*$ is the entire space.
@@ -577,6 +587,7 @@ Each backend has its domain of applicability. Use the table to match your system
 
    $$
    \forall x, y \in \mathrm{SOL}(\Phi): \mathrm{overlap}(x, y) \in [0, \varepsilon] \cup [1-\varepsilon, 1]
+
    $$
 
 2. $K_{C_\mu}^+$: Exponential cluster decomposition $\mathrm{SOL} = \bigsqcup_{i=1}^{N} C_i$ with $N = e^{\Theta(n)}$
@@ -587,6 +598,7 @@ Each backend has its domain of applicability. Use the table to match your system
 
 $$
 K_{\mathrm{Sel}_\chi}^+: \forall q \text{ (non-solved)}, \forall x^* \in \mathrm{SOL}(\Phi): \mathrm{corr}(\mu_q, x^*) \in [0,\varepsilon] \cup [1-\varepsilon, 1]
+
 $$
 
 Equivalently: **Intermediate correlation requires a near-solution in $\mathcal{R}(q)$.**
@@ -605,6 +617,7 @@ $$K_{\mathrm{OGP}}^+ \wedge K_{C_\mu}^+ \wedge K_{\mu \leftarrow \mathcal{R}}^+ 
 
 $$
 \mathrm{corr}(\mu_q, x^*) := \mathbb{E}_{z \sim \mu_q}\left[\frac{1}{n}\sum_{i=1}^n \mathbf{1}[z_i = x^*_i]\right]
+
 $$
 
 **Lemma (Contrapositive of OGP):** If $\mathrm{corr}(\mu_q, x^*) > \varepsilon$, then there exists $z \in \mathrm{supp}(\mu_q)$ with $\mathrm{overlap}(z, x^*) \geq 1-\varepsilon$.
@@ -613,6 +626,7 @@ $$
 
 $$
 \mathrm{corr}(\mu_q, x^*) = \mathbb{E}_{z \sim \mu_q}[\mathrm{overlap}(z, x^*)] \leq \varepsilon
+
 $$
 
 contradicting $\mathrm{corr}(\mu_q, x^*) > \varepsilon$. $\square$
@@ -621,6 +635,7 @@ contradicting $\mathrm{corr}(\mu_q, x^*) > \varepsilon$. $\square$
 
 $$
 \mathrm{supp}(\mu_q) \subseteq \mathcal{R}(q)
+
 $$
 
 Therefore the witness $z$ from Step 1 satisfies $z \in \mathcal{R}(q)$.
@@ -635,12 +650,14 @@ In either case, the algorithm can verify and output a solution in $O(n)$ additio
 
 $$
 \mathrm{corr}(\mu_q, x^*) \leq \varepsilon
+
 $$
 
 For solved states (near-solution in $\mathcal{R}(q)$):
 
 $$
 \mathrm{corr}(\mu_q, x^*) \geq 1-\varepsilon
+
 $$
 
 This is exactly $K_{\mathrm{Sel}_\chi}^+$. $\square$
@@ -675,6 +692,7 @@ This is devastating for gradient-based or local search methods. They need the gr
 
 $$
 K_{\mathrm{Scope}}^+: \forall \mathcal{A} \in P, \exists \Phi_n: \mathrm{Time}_{\mathcal{A}}(\Phi_n) \geq e^{\Theta(n)}
+
 $$
 
 **Certificate Logic:**
@@ -693,12 +711,14 @@ $$K_{C_\mu}^+ \wedge K_{\mathrm{Sel}_\chi}^+ \Rightarrow K_{\mathrm{Scope}}^+$$
 
 $$
 \mathrm{corr}(\mu_{q_0}, x^*) \leq \varepsilon \quad \text{(initial state)}
+
 $$
 
 to:
 
 $$
 \mathrm{corr}(\mu_{q_T}, x^*) \geq 1-\varepsilon \quad \text{(solved state)}
+
 $$
 
 with no intermediate values. This is a **discontinuous jump** in correlation.
@@ -713,6 +733,7 @@ Between these states, the algorithm has **no local information** about which clu
 
 $$
 \mathbb{E}[\text{Guesses until correct cluster}] = \Theta(N) = e^{\Theta(n)}
+
 $$
 
 *Step 4 (Algorithm Independence).* This argument is independent of algorithm structure because:
@@ -747,12 +768,14 @@ The **domain embedding** functor for $T_{\text{algorithmic}}$:
 
 $$
 \iota: \mathbf{Hypo}_{T_{\text{alg}}} \to \mathbf{DTM}
+
 $$
 
 is defined as follows. Given hypostructure algorithm object:
 
 $$
 \mathbb{H} = (Q, q_0, \delta, \mathrm{out}; \Phi; V)
+
 $$
 
 define $\iota(\mathbb{H})$ as DTM $M_{\mathbb{H}}$:

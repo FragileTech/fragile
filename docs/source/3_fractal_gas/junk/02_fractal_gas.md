@@ -88,8 +88,10 @@ those inputs are recorded as explicit assumptions rather than being silently imp
 
 **Statement:** Let $\mathcal{H}$ be the candidate promoted hypostructure produced from thin Fractal Gas data (e.g. via the
 Expansion Adjunction {prf:ref}`thm-expansion-adjunction`). If the Lock predicate holds (Definition {prf:ref}`def-node-lock`):
+
 $$
 \mathrm{Hom}_{\mathbf{Hypo}}(\mathbb{H}_{\mathrm{bad}}, \mathcal{H})=\varnothing,
+
 $$
 then no singularity-forming “bad pattern” can embed in $\mathcal{H}$ and the framework emits a global regularity
 certificate.
@@ -146,16 +148,22 @@ The **Algorithmic Space** is a normed vector space $(Y, \|\cdot\|_Y)$ equipped w
 $\pi: X \to Y$ (the “map”).
 
 For the Fractal Gas algorithmic kernel used throughout this part, we specialize to the product form
+
 $$
 \pi(w) = (z(w), v(w)) \in \mathbb{R}^{d_z}\times \mathbb{R}^{d_v} =: Y,
+
 $$
 with a weighted norm
+
 $$
 \|(z,v)\|_Y^2 := \|z\|_2^2 + \lambda_{\mathrm{alg}}\|v\|_2^2,\qquad \lambda_{\mathrm{alg}}\ge 0.
+
 $$
 The induced **algorithmic distance** is
+
 $$
 d_{\mathrm{alg}}(w_i,w_j) := \|\pi(w_i)-\pi(w_j)\|_Y.
+
 $$
 
 **Role:** $d_{\mathrm{alg}}$ is the only distance used for **companion selection** and for the **distance term** inside
@@ -175,15 +183,19 @@ fitness (Definition {prf:ref}`def:fractal-gas-fitness-cloning-kernel`).
 
 Let $\mathcal{A}$ be the alive index set on a time slice (Definition depends on the open-system boundary interface
 $\partial^{\text{thin}}$). Fix a bandwidth $\epsilon>0$ and define symmetric weights on $\mathcal{A}$:
+
 $$
 w_{ij} := \exp\!\left(-\frac{d_{\mathrm{alg}}(w_i,w_j)^2}{2\epsilon^2}\right)\quad (i\neq j),\qquad
 w_{ii}:=0.
+
 $$
 
 **Even alive count ($|\mathcal{A}|$ even).**
 Sample a perfect matching $M$ of the complete graph on $\mathcal{A}$ with probability proportional to the matching weight
+
 $$
 W(M) := \prod_{(i,j)\in M} w_{ij}.
+
 $$
 The matching induces a companion map $c:\mathcal{A}\to\mathcal{A}$ by setting $c_i=j$ and $c_j=i$ for each matched pair
 $(i,j)\in M$.
@@ -216,12 +228,14 @@ $\partial^{\text{thin}}$). Fix a bandwidth $\epsilon>0$ and define weights on $\
 $$
 w_{ij} := \exp\!\left(-\frac{d_{\mathrm{alg}}(w_i,w_j)^2}{2\epsilon^2}\right)\quad (i\neq j),\qquad
 w_{ii}:=0.
+
 $$
 
 For each alive walker $i\in\mathcal{A}$ define a companion distribution on $\mathcal{A}\setminus\{i\}$ by
 
 $$
 P_i(j)\ :=\ \frac{w_{ij}}{\sum_{l\in\mathcal{A}\setminus\{i\}} w_{il}}\qquad (j\in\mathcal{A}\setminus\{i\}).
+
 $$
 
 Alive walkers sample $c_i\sim P_i(\cdot)$. Dead walkers sample companions uniformly from $\mathcal{A}$ (recovery). When
@@ -269,8 +283,10 @@ $\mathrm{LS}_\sigma$, $\mathrm{GC}_\nabla$, boundary permits, etc.) and are disc
 On each time slice, define the alive index set $\mathcal{A}$ (from an open-system boundary $\partial^{\text{thin}}$ or any
 other “alive mask” rule). On $\mathcal{A}$, companion indices are sampled from the soft companion kernel
 ({prf:ref}`def-softmax-companion-selection-fg`) with weights
+
 $$
 w_{ij} := \exp\!\left(-\frac{d_{\mathrm{alg}}(w_i,w_j)^2}{2\epsilon^2}\right),\qquad \epsilon>0.
+
 $$
 
 In a full step, this companion-selection rule is typically sampled twice: once to obtain companions for the **distance
@@ -282,31 +298,41 @@ open-system boundary interface $\partial^{\text{thin}}$.
 **Fitness construction.**
 Fix hyperparameters $\alpha_{\mathrm{fit}},\beta_{\mathrm{fit}}\ge 0$ and regularizers $\epsilon_{\mathrm{dist}}>0$,
 $A>0$, $\eta>0$. Given a “distance companion” $c_i$, define the regularized companion distance
+
 $$
 d_i := \sqrt{d_{\mathrm{alg}}(w_i,w_{c_i})^2 + \epsilon_{\mathrm{dist}}^2}.
+
 $$
 Let $r_i$ be a user-specified scalar **reward observable** (left abstract). Standardize rewards and distances using
 patched (alive-only) statistics (optionally localized at scale $\rho$, with $\rho=\texttt{None}$ meaning global alive
 statistics):
+
 $$
 z_r(i) = \frac{r_i - \mu_r}{\sigma_r},\qquad
 z_d(i) = \frac{d_i - \mu_d}{\sigma_d}.
+
 $$
 Assumption (schema-level): the patching procedure supplies finite $\mu_r,\mu_d$ and strictly positive
 $\sigma_r,\sigma_d$ on the alive slice; if not, add an explicit variance floor in the instantiation.
 Apply the logistic rescale $g_A(z) = A / (1 + \exp(-z))$ and positivity floor $\eta$:
+
 $$
 r_i' = g_A(z_r(i)) + \eta,\qquad d_i' = g_A(z_d(i)) + \eta.
+
 $$
 Define per-walker fitness
+
 $$
 V_{\mathrm{fit},i} := (d_i')^{\beta_{\mathrm{fit}}}(r_i')^{\alpha_{\mathrm{fit}}}.
+
 $$
 
 **Canonical height functional (thin potential).**
 Define the global height as a bounded negative mean fitness (up to an additive constant):
+
 $$
 \Phi(w_1,\dots,w_N) := V_{\max} - \frac{1}{N}\sum_{i=1}^N V_{\mathrm{fit},i},
+
 $$
 where $V_{\max}:=(A+\eta)^{\alpha_{\mathrm{fit}}+\beta_{\mathrm{fit}}}$ is the deterministic per-walker upper bound.
 This is the default $\Phi^{\text{thin}}$ used by Fractal Gas proof objects because it makes EnergyCheck discharge
@@ -315,23 +341,31 @@ explicit and purely algebraic.
 **Cloning (jitter + inelastic collision update).**
 Fix cloning hyperparameters $p_{\max}>0$, $\epsilon_{\mathrm{clone}}>0$, $\sigma_x\ge 0$,
 $\alpha_{\mathrm{rest}}\in[0,1]$. Given a “clone companion” $c_i$, define the score and probability
+
 $$
 S_i := \frac{V_{\mathrm{fit},c_i} - V_{\mathrm{fit},i}}{V_{\mathrm{fit},i} + \epsilon_{\mathrm{clone}}},\qquad
 p_i := \min(1,\max(0,S_i/p_{\max})).
+
 $$
 Cloning decisions are Bernoulli draws with parameter $p_i$ (dead walkers clone deterministically). If $i$ clones, update
 positions via Gaussian jitter
+
 $$
 z_i' = z_{c_i} + \sigma_x\zeta_i,\qquad \zeta_i\sim\mathcal{N}(0,I),
+
 $$
 and update the auxiliary “velocity-like” coordinates via a momentum-preserving inelastic collision map. For each
 collision group $G$ (a companion together with all cloners to it), let
+
 $$
 V_{\mathrm{COM}} = |G|^{-1}\sum_{k\in G} v_k,\qquad u_k = v_k - V_{\mathrm{COM}},
+
 $$
 and set
+
 $$
 v_k' = V_{\mathrm{COM}} + \alpha_{\mathrm{rest}}u_k,\qquad k\in G.
+
 $$
 This conserves $\sum_{k\in G} v_k$ for each group update.
 
@@ -357,9 +391,11 @@ the **Expansion Adjunction** (Theorem {prf:ref}`thm-expansion-adjunction`).
 
 Concretely, apply the expansion functor $\mathcal{F}:\mathbf{Thin}_T\to\mathbf{Hypo}_T$ to the thin kernel inputs and
 read off the resulting metric-measure substrate:
+
 $$
 \mathcal{F}(\mathcal{X}^{\text{thin}},\Phi^{\text{thin}},\mathfrak{D}^{\text{thin}})
 \leadsto (M, g_{\text{eff}}, \mathfrak{m}_{\text{eff}}).
+
 $$
 When the expanded object admits a smooth atlas and $g_{\text{eff}}$ is nondegenerate, we may regard $(M,g_{\text{eff}})$
 as an ordinary Riemannian manifold; otherwise it should be read as a metric-measure space in the sense of the
@@ -391,8 +427,10 @@ the local identification $g_{\text{eff}}\approx D^{-1}$. This is a model-specifi
 When the kinetic operator injects Gaussian noise, a canonical **stiffness-adapted** choice is to precondition that noise
 by the local curvature of the fitness landscape. Concretely, define the diffusion preconditioner from the Hessian of the
 fitness potential $V_{\mathrm{fit}}$ (Definition {prf:ref}`def:fractal-gas-fitness-cloning-kernel`):
+
 $$
 \Sigma_{\mathrm{reg}}(x) = \bigl(\nabla_x^2 V_{\mathrm{fit}}(x)+\epsilon_{\Sigma} I\bigr)^{-1/2},
+
 $$
 where $\epsilon_{\Sigma} > 0$ is a regularization constant. This tensor scales the driving noise
 $\xi \sim \mathcal{N}(0, I)$ in any kinetic/mutation update that injects Gaussian noise (see Definition
@@ -420,8 +458,10 @@ the permits listed in theorems.
 **Example (Langevin/BAOAB instantiation).**
 One common choice is an underdamped Langevin diffusion on a smooth representation manifold, which (in flat coordinates)
 takes the schematic form
+
 $$
 dx = v \, dt, \quad dv = -\gamma v \, dt - \nabla \Phi \, dt + \Sigma_{\mathrm{reg}}(x) \, dW_t
+
 $$
 where $\gamma$ is friction, $\Phi$ is the fitness potential (often disabled in viscous-only variants), and $\Sigma_{\mathrm{reg}}(x)$ is the **anisotropic diffusion tensor** (Definition {prf:ref}`def:anisotropic-diffusion-fg`) which preconditions the Wiener process $dW_t$ to align noise with the local stiffness of the landscape.
 :::
@@ -438,15 +478,19 @@ where $\gamma$ is friction, $\Phi$ is the fitness potential (often disabled in v
 
 **Assumptions:**
 1. The algorithmic distance is computed from an embedding $\pi: X\to \mathbb{R}^n$ by
+
    $$
    d_{\mathrm{alg}}(x,y)=\|\pi(x)-\pi(y)\|_2
+
    $$
    (or any fixed Euclidean norm on the representation space).
 2. Two embeddings are related by a linear map $T:\mathbb{R}^n\to\mathbb{R}^n$ via $\pi_2=T\circ \pi_1$.
 
 **Statement:** For all $x,y\in X$,
+
 $$
 \sigma_{\min}(T)\, d_{\mathrm{alg}}^{(1)}(x,y)\ \le\ d_{\mathrm{alg}}^{(2)}(x,y)\ \le\ \|T\|\, d_{\mathrm{alg}}^{(1)}(x,y),
+
 $$
 where $\|T\|$ is the operator norm and $\sigma_{\min}(T)$ is the smallest singular value. In particular, if $T$ is invertible then $\pi_1$ and $\pi_2$ are bi-Lipschitz equivalent, and any Information Graph built from a monotone kernel of $d_{\mathrm{alg}}$ (e.g. Gaussian weights) changes only by a controlled rescaling/anisotropy of its effective neighborhood geometry.
 
@@ -456,8 +500,10 @@ where $\|T\|$ is the operator norm and $\sigma_{\min}(T)$ is the smallest singul
 :::{prf:proof}
 Let $\Delta:=\pi_1(x)-\pi_1(y)\in\mathbb{R}^n$. Then $\pi_2(x)-\pi_2(y)=T\Delta$.
 By definition of the operator norm and smallest singular value,
+
 $$
 \sigma_{\min}(T)\,\|\Delta\|_2\ \le\ \|T\Delta\|_2\ \le\ \|T\|\,\|\Delta\|_2.
+
 $$
 Substituting $\|\Delta\|_2=d_{\mathrm{alg}}^{(1)}(x,y)$ and $\|T\Delta\|_2=d_{\mathrm{alg}}^{(2)}(x,y)$ yields the claim.
 :::
@@ -481,8 +527,10 @@ choice of kinetic operator.
 **Statement (WFR dynamics).**
 In the WFR instantiation of Fractal Gas, the (unnormalized) particle/belief density $\rho(s,z)$ evolves in computation
 time $s$ by the unbalanced continuity equation (Definition {prf:ref}`def-the-wfr-action`):
+
 $$
 \partial_s \rho + \nabla\cdot(\rho v) = \rho r,
+
 $$
 where:
 - **Transport** ($v$) captures mutation/diffusion/exploration as a Wasserstein flow on the continuous coordinates, and
@@ -490,8 +538,10 @@ where:
 
 **Statement (Value creates mass; the “ratchet”).**
 The optimal reaction rate is value-driven (Theorem {prf:ref}`thm-wfr-consistency-value-creates-mass`):
+
 $$
 r(z)=\frac{1}{s_r}\bigl(V(z)-\bar V\bigr),
+
 $$
 so mass increases in regions with $V(z)>\bar V$ and decreases where $V(z)<\bar V$. This is the rigorous content of the
 Darwinian “ratchet”: probability mass is forced to accumulate in high-value regions under reaction.
@@ -528,9 +578,11 @@ instantiation admits the corresponding continuum/scaling interpretation.
 3. The coherence observable below is self-averaging as $N\to\infty$ (law of large numbers regime).
 
 **Statement:** The internal coherence of the swarm is controlled by the ratio of the viscous mixing scale to the cloning correlation scale. A convenient (dimensionless) coherence observable is
+
 $$
 \bar v := \frac{1}{N}\sum_{i=1}^N v_i,\qquad
 \Psi_{\mathrm{coh}} := \frac{\|\bar v\|^2}{\frac{1}{N}\sum_{i=1}^N \|v_i\|^2}\ \in[0,1],
+
 $$
 where $v_i$ are the particle velocities (or generalized “update directions” if no explicit velocities exist). Heuristically:
 - **Gas:** $l_\nu \ll l_{\mathrm{clone}}$ (weak viscous synchronization) $\Rightarrow$ $\Psi_{\mathrm{coh}}\approx 0$.
@@ -569,25 +621,33 @@ A crossover is expected when $l_\nu/l_{\mathrm{clone}}$ is $O(1)$; extracting a 
 **Assumption (uniform minorization / Doeblin condition):** The Information Graph induces a reversible Markov kernel $P_t$
 on vertices with stationary law $\pi_t$, and there exist $\delta\in(0,1]$ and a probability measure $\nu_t$ such that for
 all times $t$ and all vertices $i$,
+
 $$
 P_t(i,\cdot)\ \ge\ \delta\,\nu_t(\cdot).
+
 $$
 
 **Statement:** Under this assumption, the chain has a uniform spectral gap $\lambda_1(P_t)\ge \delta$ and the Cheeger (conductance) constant is uniformly bounded below:
+
 $$
 h(G_t)\ \ge\ \frac{\lambda_1(P_t)}{2}\ \ge\ \frac{\delta}{2}\ >\ 0.
+
 $$
 In particular the graph stays connected and does not “pinch off”.
 
 **FG-kernel discharge (default companion selection).**
 For the soft companion selection kernel used by the Fractal Gas kernel (Definition {prf:ref}`def:fractal-gas-fitness-cloning-kernel`),
 a Doeblin floor is explicit on any alive core with bounded algorithmic diameter $D_{\mathrm{alg}}$: with
+
 $$
 m_\epsilon := \exp\!\left(-\frac{D_{\mathrm{alg}}^2}{2\epsilon^2}\right),
+
 $$
 the induced one-step companion kernel has an explicit **off-diagonal** floor on the $|\mathcal{A}|\ge 2$ slice:
+
 $$
 P(c_i=j)\ \ge\ \frac{m_\epsilon}{|\mathcal{A}|-1}\qquad (j\neq i).
+
 $$
 Because the softmax kernel excludes self-pairs for alive walkers, the strict one-step Doeblin form
 $P(i,\cdot)\ge \delta\,\nu(\cdot)$ may fail as stated (it would force $P(i,i)>0$ whenever $\nu(i)>0$). In such cases one
@@ -641,8 +701,10 @@ This block is a design principle: a Taylor expansion of a smooth energy landscap
 Given a thin Fractal/IG presentation at a fixed scale (a weighted graph inside $\mathcal{X}^{\text{thin}}$ with its
 fitness/dissipation data), the **Expansion Adjunction** (Theorem {prf:ref}`thm-expansion-adjunction`) provides a
 canonical promoted continuum object
+
 $$
 \mathcal{F}(\text{thin data}) \leadsto (M, g_{\text{eff}}, \mathfrak{m}_{\text{eff}})
+
 $$
 together with its intrinsic Dirichlet-form / heat-flow structure (Cheeger energy on the promoted metric-measure space).
 In this reading, “the continuum limit” is not a separate convergence hypothesis: it is the universal continuum object
@@ -690,9 +752,11 @@ the specific bridge/limit notion chosen (GH/RCD/Mosco) and on the sampling regim
 For the promoted latent geometry $(M,g_{\mathrm{eff}})$, the maximum grounded bulk information is bounded by boundary
 area in Levin-length units (Theorem {prf:ref}`thm-causal-information-bound`), with the Poincaré-disk normalization
 recovering the familiar $1/4$ coefficient (Theorem {prf:ref}`thm-a-complete-derivation-area-law`):
+
 $$
 I_{\max}\;=\;\nu_D\cdot\frac{\mathrm{Area}(\partial M)}{\ell_L^{D-1}}
 \qquad\text{(and for $D=2$: }I_{\max}=\mathrm{Area}(\partial M)/(4\ell_L^2)\text{).}
+
 $$
 
 **Statement (horizon lock / stasis).**
@@ -736,13 +800,17 @@ This block is intentionally non-rigorous: it records a geometric interpretation 
 **Status:** Conditional (metric-space convergence; “quasi-isometry” is not the right notion on compact spaces).
 
 **Assumption (common compact limit):** There exists a compact metric space $(M,d)$ and scales $\varepsilon_k\downarrow 0$ such that
+
 $$
 d_{\mathrm{GH}}(\mathcal{F}_1,M)\le \varepsilon_1,\qquad d_{\mathrm{GH}}(\mathcal{F}_2,M)\le \varepsilon_2.
+
 $$
 
 **Statement:** Then
+
 $$
 d_{\mathrm{GH}}(\mathcal{F}_1,\mathcal{F}_2)\ \le\ \varepsilon_1+\varepsilon_2,
+
 $$
 and there exists an $(\varepsilon_1+\varepsilon_2)$-approximation map between the two archives (an $\varepsilon$-isometry in the standard GH sense). Consequently, any **stable** geometric invariant (e.g. persistent homology at scales $\gg \varepsilon_1+\varepsilon_2$) agrees between the two runs.
 :::
@@ -804,19 +872,25 @@ This provides a variational interpretation of the discrete time-stepping.
    $\phi_{nn}=\mathrm{id}$ and $\phi_{n\ell}=\phi_{nm}\circ\phi_{m\ell}$ for $n\le m\le \ell$.
 2. (**Embedding control**) $(X,d)$ is complete and there exist maps $\iota_n:V_n\to X$ and a scale error sequence
    $\varepsilon_n\downarrow 0$ such that for all $m\ge n$ and all $x_m\in V_m$,
+
    $$
    d\bigl(\iota_n(\phi_{nm}(x_m)),\ \iota_m(x_m)\bigr)\ \le\ \varepsilon_n.
+
    $$
 
 **Statement:** Define the Fractal Set as the inverse limit
+
 $$
 \mathcal{F}\ :=\ \varprojlim (V_n,\phi_{nm})
 \;=\;
 \left\{(x_n)_{n\ge 1}\in \prod_{n\ge 1} V_n:\ \phi_{nm}(x_m)=x_n\ \forall m\ge n\right\}.
+
 $$
 Then $\mathcal{F}$ is compact (and totally disconnected when each $V_n$ is discrete), and the representation map
+
 $$
 \Pi:\mathcal{F}\to X,\qquad \Pi((x_n)):=\lim_{n\to\infty}\iota_n(x_n)
+
 $$
 is well-defined. Any further claims about mapping discrete time dynamics (CST shift operators, solver updates) into
 trajectories in $X$ require an additional hypothesis: a compatible family of evolution maps on the projective system.
@@ -829,12 +903,14 @@ compact. If each $V_n$ is discrete, $\mathcal{F}$ is totally disconnected.
 
 *Step 2 (Cauchy-thread limit).* Let $(x_n)\in\mathcal{F}$ and fix $m\ge n$. Since $\phi_{nm}(x_m)=x_n$, the embedding
 control assumption gives
+
 $$
 d\bigl(\iota_n(x_n),\iota_m(x_m)\bigr)
 \;=\;
 d\bigl(\iota_n(\phi_{nm}(x_m)),\iota_m(x_m)\bigr)
 \;\le\;
 \varepsilon_n.
+
 $$
 As $\varepsilon_n\downarrow 0$, $(\iota_n(x_n))$ is Cauchy and converges in the complete space $X$, defining
 $\Pi((x_n))$.
@@ -882,8 +958,10 @@ The nontrivial content in applications is to verify (i) the approximation map $\
 3. The graph edges/weights are constructed from a kernel or neighborhood radius $r_\varepsilon\to 0$ in a regime that makes shortest-path distances approximate $d_g$ (e.g. dense enough to avoid “short-circuiting” and connected enough to avoid fragmentation).
 
 **Statement:** Under such hypotheses, the metric spaces $(V_\varepsilon,d_{\mathrm{IG}}^\varepsilon)$ converge to $(M,d_g)$ in the Gromov–Hausdorff sense:
+
 $$
 (V_\varepsilon, d_{\mathrm{IG}}^\varepsilon)\xrightarrow{\mathrm{GH}} (M, d_g).
+
 $$
 :::
 
@@ -926,8 +1004,10 @@ This is a classical result of Ambrosio–Gigli–Savaré: under the stated hypot
 **Status:** Conditional (backward error analysis for symplectic integrators).
 
 **Statement:** For sufficiently smooth (often analytic) Hamiltonians and sufficiently small step size $h$, a symplectic splitting scheme is the exact time-$h$ map of a **modified Hamiltonian**
+
 $$
 \tilde H = H + h H_1 + h^2 H_2 + \cdots
+
 $$
 up to a truncation error. As a consequence, the numerical energy error typically remains bounded and oscillatory over long times; in analytic settings one can obtain exponentially long stability times in $1/h$.
 :::
@@ -1405,15 +1485,19 @@ Assume $\mu$ is supported on $A$ and satisfies the $s$-Frostman bound $\mu(B_r(x
 
 **Step 1 (Hausdorff dimension lower bound).**
 Let $\{B_{r_i}(x_i)\}$ be any countable cover of $A$ by balls. Then
+
 $$
 1=\mu(A)\ \le\ \sum_i \mu(B_{r_i}(x_i))\ \le\ C\sum_i r_i^s.
+
 $$
 Taking the infimum over covers shows $\mathcal{H}^s(A)\ge 1/C>0$, hence $\dim_H(A)\ge s$.
 
 **Step 2 (Finite energy below $s$).**
 For any $t<s$, one can write (layer-cake)
+
 $$
 \int |x-y|^{-t}\,d\mu(y)\ =\ t\int_0^\infty r^{-t-1}\,\mu(B_r(x))\,dr.
+
 $$
 Splitting the integral at $r=1$ and using $\mu(B_r(x))\le Cr^s$ on $(0,1)$ gives finiteness since
 $\int_0^1 r^{s-t-1}\,dr<\infty$ when $t<s$. Integrating in $x$ yields $I_t(\mu)<\infty$.
@@ -1436,12 +1520,16 @@ The nontrivial step for an algorithmic instantiation is to verify existence of a
 3. A branching Markov process is defined where each particle moves as $X_t$, branches at rate $r^+$ and is killed at rate $r^-$.
 
 **Statement:** The Feynman–Kac semigroup with rate $r$,
+
 $$
 u(t,x)\ :=\ \mathbb{E}_x\!\left[f(X_t)\exp\Bigl(\int_0^t r(X_s)\,ds\Bigr)\right],
+
 $$
 admits a branching representation:
+
 $$
 u(t,x)\ =\ \mathbb{E}_{\text{genealogy},x}\!\left[\sum_{i=1}^{N_t} f(x_i^t)\right].
+
 $$
 (Setting $r=-\Phi$ recovers the pure killing potential case $\partial_t u=Ku-\Phi u$.)
 :::
@@ -1777,8 +1865,10 @@ If the definition of fitness changes slowly (quasi-static), the cloning/killing 
 **Status:** Heuristic-to-conditional (the Gibbs-form identity is conditional once a program prior and time functional are specified; the “Levin optimality” interpretation is heuristic).
 
 **Statement:** On a countable program space, if one defines a potential
+
 $$
 \Phi(p)=\ln 2\cdot \mathrm{Length}(p)+\ln \mathrm{Time}(p),
+
 $$
 then the formal Gibbs weight is
 $$N(p) \propto 2^{-\mathrm{Length}(p)} \cdot \text{Time}(p)^{-1}$$
@@ -1986,10 +2076,12 @@ This section is **agent-centric**: it records rigorous field-equation constraint
 **Status:** Heuristic-to-conditional (Fisher-information identities are standard; interpreting them as “gravitational metrics” is heuristic).
 
 **Statement:** For a Gibbs family $\rho_\theta(x)=Z(\theta)^{-1}e^{-\Phi(x;\theta)}$ satisfying standard regularity conditions (differentiate under the integral sign; finite moments), the Fisher information metric on parameter space satisfies
+
 $$
 g_{\mu\nu}(\theta)=\mathbb{E}_{\rho_\theta}\!\left[\partial_\mu \log\rho_\theta\,\partial_\nu \log\rho_\theta\right]
 =\mathrm{Cov}_{\rho_\theta}\!\left(\partial_\mu \Phi,\partial_\nu \Phi\right)
 =\partial_\mu\partial_\nu\log Z(\theta).
+
 $$
 In Laplace/quadratic regimes (sharp concentration), this metric is controlled by second-order curvature data of $\Phi$ near dominant modes. Any identification of $g_{\mu\nu}$ with a spacetime/gravity metric is an analogy, not a generic theorem of the framework.
 :::
@@ -2000,13 +2092,17 @@ $\rho_\theta(x) = \frac{1}{Z} e^{-\Phi(x; \theta)}$.
 
 **Step 2 (Fisher Metric).**
 $\log\rho_\theta(x)=-\Phi(x;\theta)-\log Z(\theta)$, so
+
 $$
 \partial_\mu \log\rho_\theta(x)= -\partial_\mu \Phi(x;\theta)+\mathbb{E}_{\rho_\theta}[\partial_\mu \Phi(\cdot;\theta)].
+
 $$
 Hence
+
 $$
 g_{\mu\nu}=\mathbb{E}_{\rho_\theta}\!\left[(\partial_\mu \log\rho_\theta)(\partial_\nu \log\rho_\theta)\right]
 =\mathrm{Cov}_{\rho_\theta}\!\left(\partial_\mu \Phi,\partial_\nu \Phi\right).
+
 $$
 
 **Step 3 (Equivalence).**
@@ -2172,11 +2268,13 @@ geometric heat semigroup.
 If the promoted object lies in a smooth compact Riemannian-manifold regime and the IG is built in a standard
 manifold-learning scaling, then the rescaled graph Laplacian $\Delta_G$ converges (in Dirichlet-form/Mosco sense) to
 the Laplace–Beltrami operator $\Delta_M$, and the short-time heat-trace expansion recovers geometric invariants:
+
 $$
 \mathrm{Tr}(e^{-t\Delta})
 \sim
 \frac{\mathrm{Vol}(M)}{(4\pi t)^{d/2}}
 \left(1 + \frac{t}{6} S_R + O(t^2)\right).
+
 $$
 :::
 
@@ -2360,17 +2458,23 @@ Immediate from Theorem {prf:ref}`thm-causal-information-bound` (and the discussi
 **Status:** Conditional (standard QSD / Fleming–Viot theory).
 
 **Setup (killing):** Let $(X_k)_{k\ge 0}$ be a Markov chain on a state space $E$ with a cemetery state $\partial$ and killing time $\tau_\partial=\inf\{k\ge 0: X_k=\partial\}$. Let $Q$ be the corresponding **sub-Markov kernel** on $E$:
+
 $$
 Q(x,A):=\mathbb{P}_x(X_1\in A,\ X_1\neq \partial),\qquad A\subseteq E.
+
 $$
 
 **Definition (QSD):** A probability measure $\nu$ on $E$ is a quasi-stationary distribution if there exists $\alpha\in(0,1)$ such that
+
 $$
 \nu Q=\alpha\,\nu.
+
 $$
 Equivalently, if $X_0\sim \nu$ then for all $k\ge 0$,
+
 $$
 \mathcal{L}(X_k\mid k<\tau_\partial)=\nu,\qquad \mathbb{P}(k<\tau_\partial)=\alpha^k.
+
 $$
 
 **Statement (existence/uniqueness and convergence):** Under standard hypotheses ensuring tightness and mixing—e.g. a Foster–Lyapunov drift condition and a small-set/Doeblin minorization on a compact set (precisely the kind of inputs tracked by $D_E$ and $C_\mu$)—a QSD exists, is unique, and the conditioned law converges to it at an exponential rate (in total variation / Wasserstein, depending on the model).
@@ -2418,8 +2522,10 @@ In curved spacetime (Rindler wedge), the modular flow corresponds to the boost g
 **Statement:** For the agent’s internal latent geometry, stationarity of a capacity-constrained curvature functional under
 boundary grounding implies an Einstein-like field equation for the internal metric (Theorem
 {prf:ref}`thm-capacity-constrained-metric-law`):
+
 $$
 R_{ij} - \frac{1}{2}R\,G_{ij} + \Lambda G_{ij} = \kappa\,T_{ij},
+
 $$
 where $T_{ij}$ is the (internal) risk tensor induced by the reward/value field. This is a statement about the agent’s
 optimal internal map under interface capacity constraints, not a claim about the external territory obeying general
@@ -2628,8 +2734,10 @@ This bounds the Wasserstein distance to equilibrium by the relative entropy, giv
 **Status:** Heuristic-to-conditional (Ruppeiner metric is standard in equilibrium thermodynamics; relating it directly to $\nabla^2\Phi$ depends on the ensemble/coordinates and Gaussian approximations).
 
 **Statement:** In equilibrium thermodynamics, the Ruppeiner metric is defined (in entropy representation) by the Hessian
+
 $$
 g_{ij}=-\frac{\partial^2 S}{\partial E_i\,\partial E_j}.
+
 $$
 In Gaussian/Laplace regimes for Gibbs families, this metric is related to fluctuation covariances and to Hessians of appropriate thermodynamic potentials (free energies) in the chosen coordinates. The schematic identification $g_{ij}\propto \nabla^2\Phi$ should be read as an approximation valid when $\Phi$ plays the role of a quadratic effective potential in the coordinates used.
 :::

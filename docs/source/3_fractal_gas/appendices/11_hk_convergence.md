@@ -225,7 +225,6 @@ where:
 ### Proof of Lemma A
 
 :::{prf:proof}
-:label: proof-lem-mass-contraction-revival-death
 
 **Constants and Assumptions**
 
@@ -254,6 +253,7 @@ The Fragile Gas update from time $t$ to $t+1$ consists of two sequential stages:
 
    $$
    k'_t := N + C_t
+
    $$
 
 2. **Stage 2 - Deaths (Kinetic + Boundary)**: Apply the kinetic operator $\Psi_{\text{kin}}$ to the intermediate population of size $k'_t$:
@@ -264,6 +264,7 @@ The Fragile Gas update from time $t$ to $t+1$ consists of two sequential stages:
 
    $$
    k_{t+1} = k'_t - D_t = N + C_t - D_t
+
    $$
 
 **Key Insight:** Deaths $D_t$ are drawn from the intermediate population $k'_t = N + C_t$, NOT from the initial population $k_t$. This temporal ordering is critical for the correct drift calculation.
@@ -1028,7 +1029,6 @@ where:
 ### Proof of Lemma B
 
 :::{prf:proof}
-:label: proof-lem-structural-variance-contraction
 
 The proof uses direct application of the Wasserstein contraction results from the framework, establishing convergence in expectation.
 
@@ -1198,8 +1198,10 @@ where $\tau$ is the time step size.
 1. **Bounded initial density:** If the empirical measure at $t=0$ has a bounded density ratio $d\mu_0/d\pi_{\text{QSD}} \leq M_0 < \infty$, which holds for any finite particle system initialized within the valid domain.
 
 2. **Gaussian regularization from cloning:** The cloning operator applies Gaussian perturbations with variance $\delta^2 > 0$ to all walkers (Axiom {prf:ref}`def-axiom-local-perturbation` from [01_fragile_gas_framework](01_fragile_gas_framework)). This acts as a convolution with a Gaussian kernel:
+
    $$
    \tilde{\mu}_{t+} = \tilde{\mu}_t * G_{\delta}
+
    $$
    Gaussian convolution immediately regularizes any measure to have $C^\infty$ density. Since $\pi_{\text{QSD}}$ also has smooth density (from the Gibbs structure with smooth potential), the ratio $d\tilde{\mu}_{t+}/d\tilde{\pi}_{\text{QSD}}$ remains bounded.
 
@@ -1218,7 +1220,6 @@ where $\tau$ is the time step size.
 ### Proof of Lemma C
 
 :::{prf:proof}
-:label: proof-lem-kinetic-hellinger-contraction
 
 The proof proceeds in four steps: (1) decompose Hellinger distance into mass and shape components, (2) prove mass contraction via boundary killing, (3) prove shape contraction via diffusive smoothing using hypocoercivity, and (4) combine with BAOAB discretization error bounds.
 
@@ -2186,18 +2187,21 @@ The revival operator re-injects mass into the safe region. From `07_mean_field.m
 
 $$
 r_{\text{revival}}(z) = \lambda_{\text{rev}} \frac{m_d(t)}{m_a(t)} f_{\text{safe}}(z),
+
 $$
 
 where $m_a(t) = \int f(t, z) dz$ is the alive mass and $m_d(t)$ is the dead-mass flux. The kernel $f_{\text{safe}}$ is deterministic, compactly supported, and normalized ($\int f_{\text{safe}} = 1$). On the event that Section 4 proves $m_a(t) \geq c_{\text{mass}}$, we have
 
 $$
 \frac{m_d(t)}{m_a(t)} = \frac{\int c(z) f(t,z) dz}{m_a(t)} \leq \|c\|_\infty.
+
 $$
 
 Therefore
 
 $$
 \|r_{\text{revival}}\|_\infty \leq \lambda_{\text{rev}} \|c\|_\infty \|f_{\text{safe}}\|_\infty =: C_{\text{safe}},
+
 $$
 
 which is a state-independent constant (no additional factor of $\|f\|_\infty$ appears).
@@ -2231,12 +2235,14 @@ This gives the integral inequality:
 
 $$
 \|f(T, \cdot)\|_\infty \leq C_{\text{kin}}(T) M_0 + \int_0^T C_{\text{kin}}(T - s) \Big[(2V_{\max} + \|c\|_\infty) \|f(s, \cdot)\|_\infty + C_{\text{safe}}\Big] ds.
+
 $$
 
 Define $u(t) = \|f(t, \cdot)\|_\infty$, $B_* := 2V_{\max} + \|c\|_\infty$, and $\kappa_{\text{kin}}(T) := \int_0^T C_{\text{kin}}(s) ds < \infty$ (the kinetic estimate from Step 1 implies integrability). Then
 
 $$
 u(T) \leq C_{\text{kin}}(T) M_0 + C_{\text{safe}} \kappa_{\text{kin}}(T) + B_* \int_0^T C_{\text{kin}}(T - s) u(s) ds.
+
 $$
 
 **Step 6: Resolvent Grönwall Argument**
@@ -2245,6 +2251,7 @@ Let $C_{\text{kin}}^{\max}(T) = \sup_{0 \leq s \leq T} C_{\text{kin}}(s)$ and $\
 
 $$
 \int_0^T C_{\text{kin}}(T - s) u(s) ds \leq C_{\text{kin}}^{\max}(T) \Psi(T).
+
 $$
 
 Hence
@@ -2253,24 +2260,28 @@ $$
 u(T) \leq A_T + B_* C_{\text{kin}}^{\max}(T) \Psi(T),
 \qquad
 A_T := C_{\text{kin}}(T) M_0 + C_{\text{safe}} \kappa_{\text{kin}}(T).
+
 $$
 
 Differentiating $\Psi$ yields the Volterra inequality
 
 $$
 \Psi'(T) \leq A_T + B_* C_{\text{kin}}^{\max}(T) \Psi(T).
+
 $$
 
 Gronwall’s lemma for first-order linear ODEs gives
 
 $$
 \Psi(T) \leq \int_0^T A_s \exp\!\left(B_* C_{\text{kin}}^{\max}(T) (T-s)\right) ds.
+
 $$
 
 Since $A_s \leq C_{\text{kin}}^{\max}(T) M_0 + C_{\text{safe}} \kappa_{\text{kin}}(T) =: A_*$ for $s \in [0, T]$, we obtain
 
 $$
 u(T) \leq A_* \exp\!\left(B_* C_{\text{kin}}^{\max}(T) T\right).
+
 $$
 
 Therefore the hypoelliptic $L^\infty$ bound holds with the explicit constant
@@ -2279,6 +2290,7 @@ $$
 C_{\text{hypo}}(M_0, T, \gamma, \sigma_v, \sigma_x, U, R)
 := \Big[C_{\text{kin}}^{\max}(T) M_0 + C_{\text{safe}} \kappa_{\text{kin}}(T)\Big]
 \exp\!\left(B_* C_{\text{kin}}^{\max}(T) T\right).
+
 $$
 
 This constant is finite for every finite $T$, depends on all physical parameters, and controls $\sup_{t \in [0, T]} \|f(t, \cdot)\|_\infty$. $\square$
@@ -2401,6 +2413,7 @@ The quasi-stationary distribution $\pi_{\text{QSD}}$ has a smooth density with r
 
 $$
 \inf_{(x,v) \in \Omega} \pi_{\text{QSD}}(x, v) \geq c_\pi > 0,
+
 $$
 
 where $\Omega = \mathcal{X}_{\text{valid}} \times V_{\text{alg}}$ and
@@ -2409,6 +2422,7 @@ $$
 c_\pi = \big(\eta \, c_{\text{vel}} \, c_{\sigma_x, R}\big) \, m_{\text{eq}},
 \qquad
 c_{\text{vel}} := (2\pi\sigma_v^2 \beta_\star)^{-d/2} \exp\!\left(-\frac{4 V_{\max}^2}{2 \sigma_v^2 \beta_\star}\right).
+
 $$
 
 Here $m_{\text{eq}} = \|\pi_{\text{QSD}}\|_{L^1}$ and $\beta_\star = (1 - e^{-2\gamma \tau_v})/(2\gamma)$ for a fixed velocity-refresh time $\tau_v > 0$.
@@ -2422,6 +2436,7 @@ $$
 p_v^{\text{OU}}(\tau_v; v_0, v)
 = (2\pi\sigma_v^2 \beta(\tau_v))^{-d/2}
 \exp\!\left(-\frac{|v - e^{-\gamma \tau_v} v_0|^2}{2 \sigma_v^2 \beta(\tau_v)}\right),
+
 $$
 
 with $\beta(\tau_v) = (1 - e^{-2\gamma \tau_v})/(2\gamma)$. Because $V_{\text{alg}}$ is compact ($|v| \leq V_{\max}$), choosing $\tau_v$ so that $\beta(\tau_v) \geq \beta_\star>0$ gives
@@ -2429,6 +2444,7 @@ with $\beta(\tau_v) = (1 - e^{-2\gamma \tau_v})/(2\gamma)$. Because $V_{\text{al
 $$
 p_v^{\text{OU}}(\tau_v; v_0, v) \geq c_{\text{vel}}
 \quad \text{for all } v_0, v \in V_{\text{alg}}.
+
 $$
 
 Hence a single kinetic block already spreads mass over **all** velocity directions with a state-independent density floor.
@@ -2439,6 +2455,7 @@ Conditioned on any $(x_1, v_1)$ produced by Step 1, the cloning kernel
 $$
 K_{\text{clone}}\big((x_1, v_1), (x, v)\big)
 = \eta \, G_{\sigma_x}(x - x_1) \, \delta(v - v_1)
+
 $$
 
 acts on the position coordinate. Lemma {prf:ref}`lem-gaussian-kernel-lower-bound` implies
@@ -2446,6 +2463,7 @@ acts on the position coordinate. Lemma {prf:ref}`lem-gaussian-kernel-lower-bound
 $$
 G_{\sigma_x}(x - x_1) \geq c_{\sigma_x, R}
 \qquad \forall x, x_1 \in \mathcal{X}_{\text{valid}},
+
 $$
 
 so positions are minorized by Lebesgue measure independently of the pre-cloning state.
@@ -2457,6 +2475,7 @@ $$
 P^{(2)}((x_0, v_0), A)
 = \int_\Omega p_v^{\text{OU}}(\tau_v; v_0, v_1) K_{\text{clone}}\big((x_1, v_1), A\big) \, dx_1 \, dv_1
 \geq \eta \, c_{\text{vel}} \, c_{\sigma_x, R} \, |A|,
+
 $$
 
 where $|A|$ is the Lebesgue measure of $A$ in $\Omega$. Thus $P^{(2)}$ satisfies a genuine Doeblin condition
@@ -2465,6 +2484,7 @@ $$
 P^{(2)}(z, A) \geq \delta_2 \, \nu(A),
 \qquad
 \delta_2 := \eta \, c_{\text{vel}} \, c_{\sigma_x, R},
+
 $$
 
 with state-independent minorization measure $\nu(A) = |A|/|\Omega|$.
@@ -2476,6 +2496,7 @@ $$
 \pi_{\text{QSD}}(A)
 = \int_\Omega P^{(2)}(z, A) \, \pi_{\text{QSD}}(dz)
 \geq \delta_2 \, m_{\text{eq}} \, \nu(A),
+
 $$
 
 so $\pi_{\text{QSD}}$ possesses a density bounded below by $c_\pi = \delta_2 m_{\text{eq}} / |\Omega|$ at every point of $\Omega$.
@@ -2491,6 +2512,7 @@ Lemma {prf:ref}`lem-linfty-full-operator` provides hypoelliptic smoothing, givin
 $$
 c_\pi \leq \pi_{\text{QSD}}(x, v) \leq C_\pi
 \qquad \forall (x,v) \in \Omega,
+
 $$
 
 with $C_\pi = \|\pi_{\text{QSD}}\|_\infty < \infty$.
@@ -2576,6 +2598,7 @@ For the Euclidean Gas with $N$ walkers there exist constants $c_{\text{mass}}, C
 
 $$
 \mathbb{P}\!\left( \|\rho_t\|_{L^1} \geq c_{\text{mass}} \right) \geq 1 - C (1+t) e^{-\delta N}.
+
 $$
 
 **Proof (full-process spectral gap + logistic ODE)**:
@@ -2587,12 +2610,14 @@ The mass equation derived in `07_mean_field.md` reads
 
 $$
 \frac{d}{dt} m_a(t) = -\int_\Omega c(z) \rho_t(z) dz + \lambda_{\text{rev}} \big( 1 - m_a(t) \big).
+
 $$
 
 Using $\int c(z) \rho_t(z) dz \leq c_{\max} m_a(t)$, we obtain the comparison inequality
 
 $$
 \frac{d}{dt} m_a(t) \geq - (c_{\max} + \lambda_{\text{rev}}) m_a(t) + \lambda_{\text{rev}}.
+
 $$
 
 Solving gives the explicit lower envelope
@@ -2602,24 +2627,28 @@ m_{\text{floor}}(t)
 = m_\infty - \big(m_\infty - m_0\big) e^{-(c_{\max} + \lambda_{\text{rev}}) t},
 \qquad
 m_\infty = \frac{\lambda_{\text{rev}}}{c_{\max} + \lambda_{\text{rev}}} > 0.
+
 $$
 
 Hence $m_a(t) \geq m_{\text{floor}}(t)$ for all $t \geq 0$. Choosing the equilibration time $t_{\text{eq}} = O(\kappa_{\text{QSD}}^{-1} \log N)$, we set
 
 $$
 c_{\text{early}} := \frac{1}{2} \min_{0 \leq s \leq t_{\text{eq}}} m_{\text{floor}}(s) > 0.
+
 $$
 
 The propagation-of-chaos estimate proved in Section 4.5 (Proposition {prf:ref}`prop-poc-mass`) states that, for any $\epsilon > 0$,
 
 $$
 \mathbb{P}\left( \sup_{0 \leq s \leq t_{\text{eq}}} \left| \frac{k_s}{N} - m_a(s) \right| > \epsilon \right) \leq C_{\text{pc}} e^{-\beta_{\text{pc}} N \epsilon^2}.
+
 $$
 
 Taking $\epsilon = c_{\text{early}}$ yields the early-time event
 
 $$
 \mathbb{P}\left( \inf_{0 \leq s \leq t_{\text{eq}}} \frac{k_s}{N} \geq c_{\text{early}} \right) \geq 1 - C_{\text{pc}} e^{-\beta_{\text{pc}} N c_{\text{early}}^2}.
+
 $$
 
 This establishes the desired floor on $[0, t_{\text{eq}}]$.
@@ -2629,6 +2658,7 @@ The $N$-particle process $Z_t = (z_t^{(1)}, \ldots, z_t^{(N)})$ is geometrically
 
 $$
 \text{Var}_{\Pi_{\text{QSD}}^{(N)}}(F) \leq \frac{1}{\kappa_{\text{full}}} \langle -\mathcal{L}^{(N)} F, F \rangle.
+
 $$
 
 We apply this to $F(Z) = k(Z)/N = N^{-1} \sum_{i=1}^N \mathbf{1}_{\{\text{walker } i \text{ alive}\}}$. Changing a single coordinate alters $F$ by at most $1/N$, so $F$ is $1/N$-Lipschitz with respect to the Hamming metric. By the Herbst argument for Markov semigroups with spectral gap (see, e.g., Joulin & Ollivier 2010, Theorem 5.1), $F$ satisfies
@@ -2637,6 +2667,7 @@ $$
 \Pi_{\text{QSD}}^{(N)}\!\left( \left| \frac{k}{N} - m_{\text{eq}} \right| \geq r \right)
 \leq 2 \exp\!\left( - \frac{\kappa_{\text{full}} N^2 r^2}{2} \right)
 \leq 2 \exp\!\left( - \beta_{\text{gap}} N r^2 \right),
+
 $$
 
 where we set $\beta_{\text{gap}} := \kappa_{\text{full}} / 2$ (the second inequality uses $N^2 \geq N$ so the exponent now scales linearly in $N$).
@@ -2649,6 +2680,7 @@ Let $\mathcal{L}_t$ be the law of $Z_t$ starting from any initial configuration 
 $$
 \|\mathcal{L}_t - \Pi_{\text{QSD}}^{(N)}\|_{\text{TV}}
 \leq C_{\text{mix}} e^{-\kappa_{\text{full}} (t - t_{\text{eq}})} \quad \text{for } t \geq t_{\text{eq}}.
+
 $$
 
 Therefore, for $t \geq t_{\text{eq}}$ and any $r > 0$,
@@ -2656,6 +2688,7 @@ Therefore, for $t \geq t_{\text{eq}}$ and any $r > 0$,
 $$
 \mathbb{P}\left( \left| \frac{k_t}{N} - m_{\text{eq}} \right| \geq r \right)
 \leq 2 e^{-\beta_{\text{gap}} N r^2} + C_{\text{mix}} e^{-\kappa_{\text{full}} (t - t_{\text{eq}})}.
+
 $$
 
 Selecting $r = m_{\text{eq}}/2$ yields
@@ -2663,6 +2696,7 @@ Selecting $r = m_{\text{eq}}/2$ yields
 $$
 \mathbb{P}\left( \frac{k_t}{N} \leq \frac{m_{\text{eq}}}{2} \right)
 \leq 2 e^{-\beta_{\text{gap}} N m_{\text{eq}}^2 / 4} + C_{\text{mix}} e^{-\kappa_{\text{full}} (t - t_{\text{eq}})}.
+
 $$
 
 **Step 3: Survival conditioning**  
@@ -2670,6 +2704,7 @@ The survival estimate of Theorem {prf:ref}`thm-exponential-survival` gives
 
 $$
 \mathbb{P}(\tau_\dagger \leq t) \leq t e^{-C_{\text{surv}} N}.
+
 $$
 
 Intersecting the complementary survival event with the concentration events from Steps 0-2 shows that, for all $t \geq 0$,
@@ -2677,6 +2712,7 @@ Intersecting the complementary survival event with the concentration events from
 $$
 \mathbb{P}\left( \frac{k_t}{N} \geq \min\left( c_{\text{early}}, \frac{m_{\text{eq}}}{2} \right) \right)
 \geq 1 - C (1+t) e^{-\delta N},
+
 $$
 
 with $\delta = \min(\beta_{\text{pc}} c_{\text{early}}^2, \beta_{\text{gap}} m_{\text{eq}}^2/4, C_{\text{surv}})$.
@@ -2685,6 +2721,7 @@ Setting
 
 $$
 c_{\text{mass}} := \min\left( c_{\text{early}}, \frac{m_{\text{eq}}}{2} \right)
+
 $$
 
 completes the proof. $\square$
@@ -2747,6 +2784,7 @@ Let $\mu_t^N$ be the empirical measure of the $N$-walker Euclidean Gas and $\rho
 $$
 \mathbb{P}\left( \sup_{0 \leq s \leq t} \left| \|\mu_s^N\|_{L^1} - \|\rho_s\|_{L^1} \right| > \epsilon \right)
 \leq C_{\text{pc}} \exp\!\left( - \beta_{\text{pc}} N \epsilon^2 \right).
+
 $$
 
 **Proof**:
@@ -2759,6 +2797,7 @@ Section 3 of `07_mean_field.md` (see Theorem {prf:ref}`thm-mean-field-limit-info
 $$
 \left| \mathbb{E}\left[\frac{k_s}{N}\right] - \|\rho_s\|_{L^1} \right| \leq \frac{C_{\text{bias}}(t)}{N}
 \qquad \forall s \in [0, t],
+
 $$
 
 where $C_{\text{bias}}(t)$ depends continuously on $t$ and the model parameters. This follows from the classical propagation-of-chaos estimates (Fournier & Méléard 2004, Theorem 1.1), because the birth/death rates are globally Lipschitz on the compact phase space.
@@ -2768,12 +2807,14 @@ The Doob decomposition of $k_s$ reads
 
 $$
 \frac{k_s}{N} = \frac{k_0}{N} + M_s + \int_0^s \left( \lambda_{\text{rev}} \frac{N - k_r}{N} - \frac{1}{N} \sum_{i=1}^N c(z_r^{(i)}) \right) dr,
+
 $$
 
 where $M_s$ is a càdlàg martingale with jumps bounded by $1/N$. The predictable quadratic variation satisfies
 
 $$
 \langle M \rangle_s \leq \frac{(\lambda_{\text{rev}} + c_{\max}) s}{N} =: \frac{\Lambda s}{N}.
+
 $$
 
 Freedman’s inequality for martingales with bounded jumps (Freedman 1975) therefore gives, for any $\eta > 0$,
@@ -2783,6 +2824,7 @@ $$
 \leq 2 \exp\!\left( - \frac{N \eta^2}{2(\Lambda s + \eta)} \right)
 \leq 2 \exp\!\left( - \frac{N \eta^2}{4 \Lambda t + 2} \right)
 = 2 \exp\!\left( - \beta_{\text{mart}} N \eta^2 \right),
+
 $$
 
 for all $s \leq t$, where $\beta_{\text{mart}} := \big(4 \Lambda t + 2\big)^{-1}$.
@@ -2794,6 +2836,7 @@ $$
 \left\{ \sup_{0 \leq s \leq t} \left| \frac{k_s}{N} - \|\rho_s\|_{L^1} \right| > \epsilon \right\}
 \subseteq \left\{ \sup_{0 \leq s \leq t} |M_s| > \frac{\epsilon}{2} \right\}
 \cup \left\{ \sup_{0 \leq s \leq t} \left| \mathbb{E}\left[\frac{k_s}{N}\right] - \|\rho_s\|_{L^1} \right| > \frac{\epsilon}{2} \right\}.
+
 $$
 
 The bias term is zero whenever $\epsilon \geq 2 C_{\text{bias}}(t)/N$, and otherwise it contributes at most the trivial probability $1 \leq e^{\beta_{\text{mart}} N \epsilon^2}$, which we absorb into the constant $C_{\text{pc}}$. Combining the two contributions and setting
@@ -2801,6 +2844,7 @@ The bias term is zero whenever $\epsilon \geq 2 C_{\text{bias}}(t)/N$, and other
 $$
 \beta_{\text{pc}} := \frac{1}{4 \Lambda t + 2}, \qquad
 C_{\text{pc}} := 2 e^{\beta_{\text{pc}} (2 C_{\text{bias}}(t))^2},
+
 $$
 
 gives the claimed inequality. $\square$
@@ -2859,7 +2903,6 @@ This is the standard formulation in QSD theory, where all asymptotic results are
 :::
 
 :::{prf:proof}
-:label: proof-thm-bounded-density-ratio-main
 **Proof of Theorem {prf:ref}`thm-bounded-density-ratio-main`**
 
 We split the proof into two time regimes.
@@ -3175,10 +3218,12 @@ The linearized nonlocal operators $\mathbb{L}_{\text{clone}}^*$ and $\mathbb{L}_
 
 $$
 \|\mathbb{L}_{\text{clone}}^* g\|_{L^2} \leq C_1 \|g\|_{L^2}
+
 $$
 
 $$
 \|\mathbb{L}_{\text{revival}}^* g\|_{L^2} \leq C_2 \|g\|_{L^2}
+
 $$
 
 with constants $C_1, C_2 < \kappa_{\text{kin}} / 2$ where $\kappa_{\text{kin}} > 0$ is the kinetic spectral gap.
@@ -3187,6 +3232,7 @@ with constants $C_1, C_2 < \kappa_{\text{kin}} / 2$ where $\kappa_{\text{kin}} >
 
 $$
 \kappa_{\text{lin}} \geq \kappa_{\text{kin}} - (C_1 + C_2 + \|c\|_\infty) > 0
+
 $$
 
 and the associated Dirichlet form $\mathcal{E}(g) = \langle g, -\mathbb{L}^* g \rangle_{\pi_{\text{QSD}}^{-1}}$ is coercive:
@@ -3204,6 +3250,7 @@ From Lemma {prf:ref}`lem-linearization-qsd`, the linearized cloning operator has
 
 $$
 \mathbb{L}_{\text{clone}}^* g(z) = \int_\Omega K_{\text{clone}}(z, z') W(z, z') [g(z') - g(z)] dz'
+
 $$
 
 where $K_{\text{clone}}(z, z') = G_{\sigma_x}(x-x') \delta(v-v')$ is the Gaussian position kernel and $W(z, z')$ is a bounded fitness-dependent weight with $\|W\|_\infty \leq V_{\max}$.
@@ -3212,12 +3259,14 @@ By the **Schur test** for integral operators:
 
 $$
 \|\mathbb{L}_{\text{clone}}^* g\|_{L^2}^2 = \int_\Omega \left| \int_\Omega K(z,z') W(z,z') [g(z') - g(z)] dz' \right|^2 dz
+
 $$
 
 Using Cauchy-Schwarz and the fact that $K$ is a probability kernel ($\int K(z, z') dz' = 1$):
 
 $$
 \leq 2 V_{\max}^2 \left[ \int_\Omega |g(z')|^2 dz' + \int_\Omega |g(z)|^2 dz \right] = 4 V_{\max}^2 \|g\|_{L^2}^2
+
 $$
 
 Therefore, $C_1 = 2 V_{\max}$.
@@ -3228,6 +3277,7 @@ The linearized revival operator (from Lemma {prf:ref}`lem-linearization-qsd`) ha
 
 $$
 \mathbb{L}_{\text{revival}}^* g = \lambda_{\text{rev}} \left[ \frac{m_d}{m_{\text{eq}}} - \frac{\langle g, 1 \rangle}{m_{\text{eq}}} \right] f_{\text{safe}}
+
 $$
 
 where $f_{\text{safe}}$ is the safe-region density with $\|f_{\text{safe}}\|_{L^\infty} \leq C_{\text{safe}}$ and $m_d, m_{\text{eq}}$ are the dead and equilibrium masses.
@@ -3236,12 +3286,14 @@ The $L^2$ norm is:
 
 $$
 \|\mathbb{L}_{\text{revival}}^* g\|_{L^2} \leq \lambda_{\text{rev}} \left( \frac{\|c\|_\infty m_{\text{eq}}}{m_{\text{eq}}} + \frac{|\langle g, 1 \rangle|}{m_{\text{eq}}} \right) \|f_{\text{safe}}\|_{L^2}
+
 $$
 
 Using Cauchy-Schwarz for the inner product: $|\langle g, 1 \rangle| \leq \|g\|_{L^2} \cdot \|1\|_{L^2}$:
 
 $$
 \leq \lambda_{\text{rev}} C_{\text{safe}} \left( \|c\|_\infty + \frac{1}{m_{\text{eq}}} \|1\|_{L^2} \right) \|g\|_{L^2}
+
 $$
 
 Therefore, $C_2 = \lambda_{\text{rev}} C_{\text{safe}} (\|c\|_\infty + \|1\|_{L^2} / m_{\text{eq}})$.
@@ -3254,6 +3306,7 @@ If the perturbation operators $\mathbb{L}_{\text{clone}}^*$, $\mathbb{L}_{\text{
 
 $$
 \kappa_{\text{lin}} \geq \kappa_{\text{kin}} - (C_1 + C_2 + \|c\|_\infty) > 0
+
 $$
 
 **Part 4: Dirichlet Form Coercivity**
@@ -3262,6 +3315,7 @@ The Dirichlet form is:
 
 $$
 \mathcal{E}(g) = \langle g, -\mathbb{L}^* g \rangle = \langle g, -\mathcal{L}_{\text{kin}}^* g \rangle + \text{perturbation terms}
+
 $$
 
 The kinetic part satisfies $\langle g, -\mathcal{L}_{\text{kin}}^* g \rangle \geq \kappa_{\text{kin}} \|g\|_{L^2}^2$ (by spectral gap). The perturbation terms contribute at most $(C_1 + C_2 + \|c\|_\infty) \|g\|_{L^2}^2$ in magnitude.
@@ -3270,6 +3324,7 @@ Therefore:
 
 $$
 \mathcal{E}(g) \geq \kappa_{\text{lin}} \|g\|_{L^2}^2 > 0
+
 $$
 
 This coercivity is precisely what is needed for the Nash inequality to hold for the full operator $\mathbb{L}^*$. $\square$
@@ -3653,6 +3708,7 @@ $$
 c_{\text{mass}} = \min\!\left( c_{\text{early}}, \frac{m_{\text{eq}}}{2} \right),
 \qquad
 c_{\text{early}} = \frac{1}{2} \min_{0 \leq s \leq t_{\text{eq}}} \left[ m_\infty - \big(m_\infty - m_0\big) e^{-(c_{\max} + \lambda_{\text{rev}}) s} \right],
+
 $$
 
 where $m_\infty = \frac{\lambda_{\text{rev}}}{c_{\max} + \lambda_{\text{rev}}}$. Thus both the logistic ODE parameters and the revived equilibrium mass influence $c_{\text{mass}}$.
@@ -3850,7 +3906,6 @@ The swarm converges exponentially fast to an $O(\sqrt{C_{HK}/\kappa_{HK}})$ neig
 ### 6.2. Proof Strategy and HK Metric Decomposition
 
 :::{prf:proof}
-:label: proof-thm-hk-convergence-main-assembly
 
 The proof assembles the three lemmas by carefully tracking how each component of the HK metric evolves under one iteration of $\Psi_{\text{total}}$.
 

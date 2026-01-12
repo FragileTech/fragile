@@ -72,7 +72,7 @@ The **Algorithmic Representation Theorem (MT-AlgComplete)** proves these five cl
 Bidirectional bridge theorems establish $P_{\text{Fragile}} = P_{\text{DTM}}$ and $NP_{\text{Fragile}} = NP_{\text{DTM}}$, allowing internal complexity separations to export to classical ZFC statements about P and NP. The framework reduces the P vs NP question to concrete geometric/topological properties of energy landscapes.
 
 **Meta-Learning Extension:**
-The axioms themselves can be *learned* as the solution to a constrained optimization problem over defect functionals. See [Meta-Learning](10_metalearning/01_metalearning.md).
+The axioms themselves can be *learned* as the solution to a constrained optimization problem over defect functionals. See [Meta-Learning](10_information_processing/01_metalearning.md).
 
 **Output Factories:**
 The Factory Metatheorems generate not only verifiers but also critical mathematical objects:
@@ -122,7 +122,7 @@ A hypostructure is an object carrying *surgery-resolution data*—the informatio
 - *Want mathematical foundations?* → [Mathematical Foundations](09_mathematical/01_theorems.md)
 - *Want algorithmic completeness theory?* → [Algorithmic Completeness](09_mathematical/05_algorithmic.md)
 - *Want P/NP complexity bridge?* → [P/NP Bridge](09_mathematical/06_complexity_bridge.md)
-- *Want meta-learning?* → [Meta-Learning](10_metalearning/01_metalearning.md)
+- *Want meta-learning?* → [Meta-Learning](10_information_processing/01_metalearning.md)
 - *Want ZFC translation?* → [ZFC Translation](11_appendices/01_zfc.md)
 - *Want frequently asked questions?* → [FAQ](11_appendices/03_faq.md)
 :::
@@ -158,7 +158,7 @@ This formalism is designed to be **modular**. Each part is written to be as self
 | Upgrade theorems (Thin → Full)    | [Part VIII: Upgrade Theorems](08_upgrades/01_instantaneous.md) | Parts III-IV for certificate types    |
 | Algorithmic completeness          | [Part XIX: Algorithmic Completeness](09_mathematical/05_algorithmic.md) | Part I for modalities                 |
 | P/NP complexity bridge            | [Part XX: P/NP Bridge](09_mathematical/06_complexity_bridge.md) | Part XIX for algorithm classes        |
-| Meta-learning axioms              | [Part X: Meta-Learning](10_metalearning/01_metalearning.md) | Can standalone with Part II summary   |
+| Meta-learning axioms              | [Part X: Meta-Learning](10_information_processing/01_metalearning.md) | Can standalone with Part II summary   |
 | ZFC translation                   | [Part XI: ZFC Translation](11_appendices/01_zfc.md) | Can standalone                        |
 
 ### LLM-Assisted Exploration
@@ -228,7 +228,7 @@ A recommended approach for understanding this framework:
 - [P/NP Complexity Bridge](09_mathematical/06_complexity_bridge.md)
 
 **Part X: Meta-Learning**
-- [Meta-Learning Framework](10_metalearning/01_metalearning.md)
+- [Meta-Learning Framework](10_information_processing/01_metalearning.md)
 
 **Fractal Gas (Supplementary)**
 - [Fractal Gas Model](../3_fractal_gas/03_fractal_gas_latent.md)
@@ -264,7 +264,7 @@ This formalism is a **categorical foundation for runtime safety verification**. 
 
 9. **P/NP bridge to classical complexity.** Bidirectional bridge theorems establish $P_{\text{Fragile}} = P_{\text{DTM}}$ and $NP_{\text{Fragile}} = NP_{\text{DTM}}$, allowing internal separations to export to classical complexity theory ([P/NP Bridge](09_mathematical/06_complexity_bridge.md)).
 
-10. **Meta-learning extension.** The axioms themselves can be learned as solutions to constrained optimization over defect functionals, enabling automatic discovery of regularity conditions ([Meta-Learning](10_metalearning/01_metalearning.md)).
+10. **Meta-learning extension.** The axioms themselves can be learned as solutions to constrained optimization over defect functionals, enabling automatic discovery of regularity conditions ([Meta-Learning](10_information_processing/01_metalearning.md)).
 
 11. **ZFC grounding.** Complete translation to set-theoretic foundations is provided for readers who prefer classical mathematics ([ZFC Translation](11_appendices/01_zfc.md)).
 
@@ -296,7 +296,7 @@ This formalism is a **categorical foundation for runtime safety verification**. 
 
 11. **Algorithmic Completeness Theory.** The five algorithm classes (Climbers, Propagators, Alchemists, Dividers, Interference Engines) are proven exhaustive via Schreiber's structure theorem—polynomial-time algorithms must factor through cohesive modalities $\{\sharp, \int, \flat, \ast, \partial\}$. Tactic E13 (Algorithmic Completeness Lock) establishes hardness by blocking all five modalities ([Algorithmic Completeness](09_mathematical/05_algorithmic.md)).
 12. **P/NP Bridge to Classical Complexity.** Bidirectional bridge theorems establish $P_{\text{Fragile}} = P_{\text{DTM}}$ and $NP_{\text{Fragile}} = NP_{\text{DTM}}$ via adequacy of the Fragile runtime. Internal complexity separations export to classical ZFC statements about P and NP ([P/NP Bridge](09_mathematical/06_complexity_bridge.md)).
-13. **Meta-Learning Axioms.** Learning hypostructure constraints as optimization over defect functionals ([Meta-Learning](10_metalearning/01_metalearning.md)).
+13. **Meta-Learning Axioms.** Learning hypostructure constraints as optimization over defect functionals ([Meta-Learning](10_information_processing/01_metalearning.md)).
 14. **Fractal Gas Model.** Scale-free dynamics for axiom discovery ([Fractal Gas](../3_fractal_gas/03_fractal_gas_latent.md)).
 
 **Repackaging (directly inherited ingredients):**
@@ -336,7 +336,7 @@ This formalism is a **categorical foundation for runtime safety verification**. 
 | **Regularity proofs**          | Case-by-case PDE analysis                     | Systematic sieve traversal with certificate accumulation ({prf:ref}`def-sieve-epoch`)                                                                        |
 | **Undecidable predicates**     | Conservative approximation or timeout         | Tactic library E1-E12 with $K^{\text{inc}}$ fallback ([Lock Mechanism](06_modules/03_lock.md))                                                        |
 | **Surgery/repair**             | Ad hoc modifications                          | Certified surgery nodes with re-entry protocols ([Surgery Nodes](04_nodes/03_surgery_nodes.md))                                                      |
-| **Axiom discovery**            | Human insight, conjecture-and-test            | Meta-learning optimization over defect functionals ([Meta-Learning](10_metalearning/01_metalearning.md))                                             |
+| **Axiom discovery**            | Human insight, conjecture-and-test            | Meta-learning optimization over defect functionals ([Meta-Learning](10_information_processing/01_metalearning.md))                                             |
 | **Classical grounding**        | Implicit set-theoretic interpretation         | Explicit ZFC translation with full correspondence ([ZFC Translation](11_appendices/01_zfc.md))                                                         |
 
 (sec-hypo-axioms-overview)=
@@ -497,6 +497,6 @@ This framework makes strong claims about categorical structure and proof-carryin
 
 4. **How does this relate to proof assistants?** The certificate system is analogous to proof terms in Coq/Lean. The difference is operational focus—we verify dynamical properties, not static types. See [Sieve Kernel](03_sieve/02_kernel.md).
 
-5. **What if the axioms are incomplete?** The Meta-Learning extension addresses this—axioms can be learned as optimization over defect functionals. See [Meta-Learning](10_metalearning/01_metalearning.md).
+5. **What if the axioms are incomplete?** The Meta-Learning extension addresses this—axioms can be learned as optimization over defect functionals. See [Meta-Learning](10_information_processing/01_metalearning.md).
 
 **For additional questions and rigorous objections,** see the comprehensive [FAQ](11_appendices/03_faq.md) covering 40+ foundational questions about category theory, constructive mathematics, the hypostructure framework, and connections to classical PDE analysis.

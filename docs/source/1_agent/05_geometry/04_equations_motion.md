@@ -50,6 +50,7 @@ We define the **inertial mass tensor** $\mathbf{M}(z)$ as the capacity-constrain
 
 $$
 \mathbf{M}(z) := G(z).
+
 $$
 This definition has the following operational consequences:
 - **High curvature regions** (large $G$) have larger effective mass, yielding smaller velocity updates per unit force
@@ -61,6 +62,7 @@ Units: $[\mathbf{M}_{ij}] = [z]^{-2}$ (same as metric).
 
 $$
 \text{High risk } T_{ij} \;\Rightarrow\; \text{Large } G_{ij} \;\Rightarrow\; \text{Large } \mathbf{M}_{ij} \;\Rightarrow\; \text{Reduced step size}
+
 $$
 The metric-weighted step size decreases in high-curvature (high-risk) regions without explicit penalty terms.
 
@@ -85,6 +87,7 @@ Let $(\mathcal{Z}, G)$ be the latent Riemannian manifold with the capacity-const
 
 $$
 S_{\mathrm{OM}}[z] = \int_0^T \left( \frac{1}{2}\mathbf{M}(z)\|\dot{z}\|^2 + \Phi_{\text{eff}}(z) + \frac{T_c}{12}\,R(z) + T_c \cdot H_{\pi}(z) \right) ds,
+
 $$
 where:
 - $\mathbf{M}(z)\|\dot{z}\|^2 = G_{ij}(z)\,\dot{z}^i\,\dot{z}^j$ is the kinetic energy (mass = metric)
@@ -123,6 +126,7 @@ Now, why does the most probable path minimize this action? Think of it this way:
 
 $$
 S_{\text{OM}}[z] = \int_0^T \left(\frac{1}{2}G_{ij}\dot{z}^i\dot{z}^j + \Phi_{\text{eff}} + \frac{T_c}{12}R + T_c H_\pi\right)ds
+
 $$
 **Correspondence Table:**
 
@@ -146,6 +150,7 @@ For the Poincare disk, the mass tensor scales as:
 
 $$
 \mathbf{M}(z) = \frac{4}{(1-|z|^2)^2} I_d \quad \xrightarrow{|z| \to 1} \quad +\infty.
+
 $$
 The metric diverges as $|z| \to 1$, which bounds all finite-action trajectories to the interior of the disk.
 
@@ -166,6 +171,7 @@ For the controlled diffusion
 
 $$
 dz^k = b^k(z)\,ds + \sqrt{2T_c}\,\sigma^{kj}(z)\,dW^j_s,
+
 $$
 where $\sigma \sigma^T = G^{-1}$, the most probable path connecting $z(0) = z_0$ and $z(T) = z_1$ minimizes the Onsager-Machlup action $S_{\mathrm{OM}}[z]$ subject to the boundary conditions.
 
@@ -201,6 +207,7 @@ The position coordinates $z^k$ evolve according to the **Lorentz-Langevin SDE**:
 
 $$
 dz^k = \underbrace{\left( -G^{kj}\partial_j \Phi + u_\pi^k \right)}_{\text{gradient + control}} ds \;+\; \underbrace{\beta_{\text{curl}}\, G^{km} \mathcal{F}_{mj} \dot{z}^j\,ds}_{\text{Lorentz force}} \;-\; \underbrace{\Gamma^k_{ij}\dot{z}^i \dot{z}^j\,ds}_{\text{geodesic correction}} \;+\; \underbrace{\sqrt{2T_c}\,(G^{-1/2})^{kj}\,dW^j_s}_{\text{thermal noise}},
+
 $$
 where:
 - $\Phi$ is the **scalar potential** from the Hodge decomposition (Theorem {prf:ref}`thm-hodge-decomposition`)
@@ -263,11 +270,13 @@ For the Poincare disk model with metric $G_{ij} = \frac{4\delta_{ij}}{(1-|z|^2)^
 
 $$
 \Gamma^k_{ij}(z) = \frac{2}{1-|z|^2}\left(\delta^k_i z_j + \delta^k_j z_i - \delta_{ij} z^k\right).
+
 $$
 The geodesic correction term $\Gamma^k_{ij}\dot{z}^i\dot{z}^j$ contracts to:
 
 $$
 \Gamma^k_{ij}\dot{z}^i\dot{z}^j = \frac{4(z \cdot \dot{z})}{1-|z|^2}\dot{z}^k - \frac{2|\dot{z}|^2}{1-|z|^2}z^k.
+
 $$
 *Proof.* Direct computation from $\Gamma^k_{ij} = \frac{1}{2}G^{k\ell}(\partial_i G_{j\ell} + \partial_j G_{i\ell} - \partial_\ell G_{ij})$ using $\partial_m[(1-|z|^2)^{-2}] = 4z_m(1-|z|^2)^{-3}$. $\square$
 
@@ -290,6 +299,7 @@ The importance weight $m(s)$ evolves according to a coupled jump-diffusion:
 
 $$
 dm = m \cdot r(z, a)\,ds + m \cdot (\eta - 1)\,dN_s,
+
 $$
 where:
 - $r(z, a)$ is the **reaction rate** from the WFR dynamics ({ref}`Section 20.2 <sec-the-wfr-metric>`)
@@ -317,6 +327,7 @@ The jump intensity $\lambda_{\text{jump}}(z)$ is determined by the value differe
 
 $$
 \lambda_{\text{jump}}(z) = \lambda_0 \cdot \exp\left(\beta \cdot \left( V_{\text{target}}(L(z)) - V_{\text{source}}(z) - c_{\text{transport}} \right) \right),
+
 $$
 where:
 - $\lambda_0 > 0$ is a base jump rate
@@ -369,6 +380,7 @@ The unified effective potential is:
 
 $$
 \Phi_{\text{eff}}(z, K) = \alpha\, U(z) + (1 - \alpha)\, V_{\text{critic}}(z, K) + \gamma_{risk}\, \Psi_{\text{risk}}(z),
+
 $$
 where:
 - $U(z) = -d_{\mathbb{D}}(0, z) = -2\operatorname{artanh}(|z|)$ is the **hyperbolic information potential** (Definition {prf:ref}`def-hyperbolic-volume-growth`)
@@ -416,11 +428,13 @@ The gradient of the effective potential decomposes as:
 
 $$
 \nabla_G \Phi_{\text{eff}} = \alpha\, \nabla_G U + (1 - \alpha)\, \nabla_G V_{\text{critic}} + \gamma_{risk}\, \nabla_G \Psi_{\text{risk}}.
+
 $$
 For the Poincare disk model, the first term simplifies to:
 
 $$
 \nabla_G U = -\frac{(1-|z|^2)}{2}\, \hat{z}, \qquad \hat{z} = \frac{z}{|z|}.
+
 $$
 **Cross-references:** Definition {prf:ref}`def-hyperbolic-volume-growth`, {ref}`Section 2.7 <sec-the-hjb-correspondence>` (Critic $V$), Section 14.2 (MaxEnt control), Theorem {prf:ref}`thm-capacity-constrained-metric-law`.
 
@@ -433,6 +447,7 @@ Let me say something about the hyperbolic gradient $\nabla_G U$ on the Poincare 
 
 $$
 \nabla_G U = -\frac{(1-|z|^2)}{2}\, \hat{z}
+
 $$
 
 What does this mean? It means the force points *outward*, toward the boundary, in the radial direction $\hat{z} = z/|z|$. And the magnitude scales like $(1-|z|^2)/2$, which is big near the center and goes to zero at the boundary.
@@ -802,6 +817,7 @@ The price you pay is five sub-steps instead of one. But that is a small price fo
 
 $$
 \rho_*(z) \cdot J(z \to z') = \rho_*(z') \cdot J(z' \to z)
+
 $$
 where $\rho_* \propto \exp(-\Phi_{\text{eff}}/T_c)\sqrt{|G|}$ is the Boltzmann distribution.
 
@@ -844,11 +860,13 @@ Consider the second-order SDE from Definition {prf:ref}`def-bulk-drift-continuou
 
 $$
 m\,\ddot{z}^k + \gamma\,\dot{z}^k + G^{kj}\partial_j\Phi + \Gamma^k_{ij}\dot{z}^i\dot{z}^j = \sqrt{2T_c}\,\left(G^{-1/2}\right)^{kj}\,\xi^j,
+
 $$
 where $m$ is the "inertial mass" and $\xi$ is white noise. In the limit $\gamma \to \infty$ with $m$ fixed (or equivalently, $m \to 0$ with $\gamma$ fixed), the dynamics reduce to the first-order Langevin equation:
 
 $$
 dz^k = -G^{kj}(z)\,\partial_j\Phi_{\text{gen}}(z)\,ds + \sqrt{2T_c}\,\left(G^{-1/2}(z)\right)^{kj}\,dW^j_s.
+
 $$
 *Proof sketch.* In the high-friction limit, velocity equilibrates instantaneously to the force: $\gamma\,\dot{z} \approx -G^{-1}\nabla\Phi$. The geodesic term $\Gamma(\dot{z},\dot{z}) \sim O(|\dot{z}|^2) = O(\gamma^{-2})$ is negligible. What remains is the gradient flow with diffusion. See {ref}`Appendix A.4 <sec-appendix-a-full-derivations>` for the full singular perturbation analysis. $\square$
 
@@ -867,6 +885,7 @@ Setting $\alpha = 1$ (pure generation) and $T_c \to 0$ (deterministic limit) in 
 
 $$
 \dot{z} = -G^{-1}(z)\,\nabla U(z).
+
 $$
 For the Poincare disk, this gives $\dot{z} = \frac{(1-|z|^2)}{2}\,z$, which integrates to $|z(\tau)| = \tanh(\tau/2)$.
 
@@ -891,6 +910,7 @@ The stationary distribution of the overdamped SDE is:
 
 $$
 p_*(z) \propto \exp\left(-\frac{\Phi_{\text{gen}}(z)}{T_c}\right)\,\sqrt{|G(z)|},
+
 $$
 where $|G| = \det(G)$ is the metric determinant. This is the Boltzmann distribution on the curved manifold.
 
@@ -898,6 +918,7 @@ where $|G| = \det(G)$ is the metric determinant. This is the Boltzmann distribut
 
 $$
 \partial_s p = \nabla_i\left( G^{ij}\left( p\,\partial_j\Phi + T_c\,\partial_j p \right) \right).
+
 $$
 Setting $\partial_s p = 0$ and using detailed balance gives $p \propto e^{-\Phi/T_c} \sqrt{|G|}$. The $\sqrt{|G|}$ factor accounts for the Riemannian volume form. $\square$
 
@@ -910,6 +931,7 @@ The Fokker-Planck equation tells you how probability density evolves under the S
 
 $$
 p_*(z) \propto \exp\left(-\frac{\Phi}{T_c}\right)\,\sqrt{|G|}
+
 $$
 
 This is the Boltzmann distribution on a curved manifold. The $\exp(-\Phi/T_c)$ part is familiar from statistical mechanics: probability is exponentially suppressed in high-potential regions. The $\sqrt{|G|}$ part is the volume correction from the geometry: probability is enhanced in regions where the metric is large, because there is "more space" there in the intrinsic sense.
@@ -927,6 +949,7 @@ Together, these give you the correct equilibrium. The agent, running the SDE for
 
 $$
 \partial_s p = \nabla_i\left( G^{ij}\left( p\,\partial_j\Phi_{\text{eff}} + T_c\,\partial_j p \right) \right)
+
 $$
 with stationary distribution $p_*(z) \propto \exp(-\Phi_{\text{eff}}(z)/T_c)\sqrt{|G(z)|}$.
 
@@ -1090,6 +1113,7 @@ The fluctuation-dissipation relation requires:
 
 $$
 \sigma^2(z) = \frac{2\gamma(z)\, T_c}{G(z)},
+
 $$
 where $\sigma^2$ is the noise variance. This ensures the correct equilibrium distribution.
 
@@ -1123,6 +1147,7 @@ The inverse relationship between uncertainty and metric:
 
 $$
 G(z) \approx \Sigma^{-1}(z),
+
 $$
 where $\Sigma(z)$ is the posterior covariance of the belief at $z$. This duality underlies the Mass=Metric principle (Definition {prf:ref}`def-mass-tensor`).
 
@@ -1167,6 +1192,7 @@ As $|z| \to 1$:
 
 $$
 T_c(z) \to 0, \qquad \text{noise} \to 0.
+
 $$
 The agent becomes deterministic at the boundary, ensuring reproducible outputs.
 
@@ -1212,6 +1238,7 @@ These are the kinds of things you want to monitor in a running system. Not just 
 
 $$
 \Phi_{\text{eff}}(z, K) = \alpha\,U(z) + (1-\alpha)\,V_{\text{critic}}(z, K) + \gamma_{\text{risk}}\,\Psi_{\text{risk}}(z)
+
 $$
 where $\alpha \in [0,1]$ interpolates generation/control and $\gamma_{\text{risk}} \ge 0$ is risk aversion.
 
@@ -1219,6 +1246,7 @@ where $\alpha \in [0,1]$ interpolates generation/control and $\gamma_{\text{risk
 
 $$
 c_1 = e^{-\gamma h}, \qquad c_2 = \sqrt{(1 - c_1^2)\,T_c}
+
 $$
 *Cross-reference:* The boundary-reached condition is monitored by **[Node 25 (HoloGenCheck)](#node-25)** defined in {ref}`Section 21.4 <sec-summary-and-diagnostic-node>`.
 

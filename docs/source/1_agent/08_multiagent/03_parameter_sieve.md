@@ -46,6 +46,7 @@ Let the **Agent Parameter Vector** $\Lambda$ be the tuple of fundamental operati
 
 $$
 \Lambda = (c_{\text{info}}, \sigma, \ell_L, T_c, g_s, \gamma)
+
 $$
 
 where:
@@ -73,6 +74,7 @@ Define the **Causal Horizon Length** $\ell_0 = c_{\text{info}} \cdot \tau_{\text
 
 $$
 \kappa = \frac{-\ln\gamma}{\ell_0}
+
 $$
 
 with dimension $[L^{-1}]$ (Corollary {prf:ref}`cor-discount-as-screening-length`).
@@ -106,6 +108,7 @@ Let $\mathcal{S}(\Lambda)$ denote the vector of constraint functions. The agent 
 
 $$
 \mathcal{S}(\Lambda) \le \mathbf{0}
+
 $$
 
 where the inequality holds component-wise. Each component corresponds to a Sieve node that enforces a specific consistency condition. A constraint violation ($\mathcal{S}_i > 0$) triggers a diagnostic halt at the corresponding node.
@@ -166,6 +169,7 @@ The information speed $c_{\text{info}}$ must satisfy the **Speed Window Inequali
 
 $$
 \frac{d_{\text{sync}}}{\tau_{\text{proc}}} \le c_{\text{info}} \le \frac{L_{\text{buf}}}{\tau_{\text{proc}}}
+
 $$
 
 *Proof.*
@@ -208,6 +212,7 @@ The ratio of buffer depth to synchronization distance is bounded:
 
 $$
 \frac{L_{\text{buf}}}{d_{\text{sync}}} \ge 1
+
 $$
 
 with equality only in the degenerate case of a single-module agent. For distributed agents, this ratio determines the dynamic range of viable information speeds.
@@ -244,6 +249,7 @@ Let $\text{Area}_\partial$ denote the boundary area of the agent's latent manifo
 
 $$
 \ell_L^{D-1} \le \frac{\nu_D \cdot \text{Area}_\partial}{I_{\text{req}}}
+
 $$
 
 where $\nu_D$ is a **dimensionless** holographic coefficient (Corollary {prf:ref}`cor-a-dimension-dependent-coefficient`). Both sides have dimension $[L^{D-1}]$.
@@ -254,12 +260,14 @@ where $\nu_D$ is a **dimensionless** holographic coefficient (Corollary {prf:ref
 
 $$
 I_{\text{bulk}} \le \frac{\nu_D \cdot \text{Area}_\partial}{\ell_L^{D-1}}
+
 $$
 
 **Step 2.** The agent requires $I_{\text{bulk}} \ge I_{\text{req}}$ to represent its world model. Substituting:
 
 $$
 I_{\text{req}} \le \frac{\nu_D \cdot \text{Area}_\partial}{\ell_L^{D-1}}
+
 $$
 
 **Step 3.** Rearranging yields the constraint on $\ell_L$.
@@ -297,12 +305,14 @@ Under the physics isomorphism ({ref}`Section 34.6 <sec-isomorphism-dictionary>`)
 
 $$
 \ell_L \leftrightarrow \ell_P = \sqrt{\frac{\hbar G}{c^3}}
+
 $$
 
 The holographic bound becomes the Bekenstein-Hawking entropy bound:
 
 $$
 S_{\text{BH}} = \frac{A}{4\ell_P^2}
+
 $$
 
 *Remark:* The coefficient $\nu_2 = 1/4$ is derived in Theorem {prf:ref}`thm-a-complete-derivation-area-law` from first principles, recovering the Bekenstein-Hawking result without invoking black hole physics.
@@ -324,12 +334,14 @@ As $I_{\text{bulk}} \to I_{\max} = \nu_D \cdot \text{Area}_\partial / \ell_L^{D-
 
 $$
 \|v\|_G \to 0 \quad \text{as} \quad I_{\text{bulk}} \to I_{\max}
+
 $$
 
 *Proof.* This is Theorem {prf:ref}`thm-causal-stasis`. The Fisher-Rao metric component satisfies:
 
 $$
 g_{\text{FR}} = \frac{1}{\rho(1-\rho)} \to \infty \quad \text{as} \quad \rho \to 1
+
 $$
 
 (Lemma {prf:ref}`lem-metric-divergence-at-saturation`). The geodesic velocity vanishes, creating **causal stasis**: no information can cross the saturation boundary.
@@ -392,6 +404,7 @@ The Cognitive Temperature must satisfy:
 
 $$
 T_c \le \frac{\dot{E}_{\text{met}}}{\dot{I}_{\text{erase}} \cdot \ln 2}
+
 $$
 
 where we use natural units with $k_B = 1$.
@@ -402,6 +415,7 @@ where we use natural units with $k_B = 1$.
 
 $$
 \dot{\mathcal{M}}(s) \ge T_c \left| \frac{dH}{ds} \right|
+
 $$
 
 where $\dot{\mathcal{M}}$ is the metabolic flux and $dH/ds$ is the entropy change rate.
@@ -410,12 +424,14 @@ where $\dot{\mathcal{M}}$ is the metabolic flux and $dH/ds$ is the entropy chang
 
 $$
 \left| \frac{dH}{ds} \right| = \dot{I}_{\text{erase}} \cdot \ln 2
+
 $$
 
 **Step 3.** The metabolic constraint $\dot{\mathcal{M}} \le \dot{E}_{\text{met}}$ bounds the erasure capacity:
 
 $$
 \dot{E}_{\text{met}} \ge T_c \cdot \dot{I}_{\text{erase}} \cdot \ln 2
+
 $$
 
 **Step 4.** Rearranging yields the temperature bound.
@@ -431,6 +447,7 @@ Let me put this in everyday terms. Suppose your brain has a metabolic budget of 
 
 $$
 T_c \le \frac{20 \text{ J/s}}{10^{10} \text{ bits/s} \times 0.693} \approx 3 \times 10^{-9} \text{ J}
+
 $$
 
 This corresponds to about $7 \times 10^{14}$ kelvin in temperature units---room temperature is about $4 \times 10^{-21}$ joules, so the brain is operating *way* below the thermodynamic limit.
@@ -450,12 +467,14 @@ Combining the Landauer constraint with the bifurcation dynamics, the Cognitive T
 
 $$
 0 < T_c \le \min\left( T_c^*, \frac{\dot{E}_{\text{met}}}{\dot{I}_{\text{erase}} \cdot \ln 2} \right)
+
 $$
 
 where the **Critical Temperature** is derived from the barrier height of the pitchfork bifurcation (Theorem {prf:ref}`thm-pitchfork-bifurcation-structure`):
 
 $$
 T_c^* = \frac{\mu^2}{4} = \frac{(1 + 2u_\pi^r)^2}{16}
+
 $$
 
 with $\mu = 1/2 + u_\pi^r$ the bifurcation parameter and $u_\pi^r$ the radial policy control. For small control ($u_\pi^r \ll 1$), this reduces to $T_c^* \approx 1/16$.
@@ -504,6 +523,7 @@ The coupling evolves according to the **Beta Function**:
 
 $$
 \mu \frac{dg_s}{d\mu} = \beta(g_s)
+
 $$
 
 where both sides are dimensionless (since $g_s$ is dimensionless and $\mu \, dg_s/d\mu$ has $[\mu] \cdot [\mu^{-1}] = [1]$).
@@ -529,6 +549,7 @@ At the macro-scale ($\mu \to 0$), the coupling must exceed a critical threshold:
 
 $$
 g_s(\mu_{\text{IR}}) \ge g_s^{\text{crit}}
+
 $$
 
 *Proof.*
@@ -539,6 +560,7 @@ $$
 
 $$
 \lim_{r \to \infty} V_{\text{eff}}(r) = \infty
+
 $$
 
 where $r$ is the separation between features.
@@ -570,6 +592,7 @@ At the texture scale ($\mu \to \infty$), the coupling must vanish:
 
 $$
 \lim_{\mu \to \infty} g_s(\mu) = 0
+
 $$
 
 *Proof.*
@@ -578,6 +601,7 @@ $$
 
 $$
 \partial_{z_{\text{tex}}} \dot{z} = 0
+
 $$
 
 Texture coordinates are invisible to the dynamics.
@@ -626,6 +650,7 @@ $$
 g_s(\mu) \ge g_s^{\text{crit}} & \text{for } \mu \le \mu_{\text{conf}} \\
 g_s(\mu) \to 0 & \text{for } \mu \to \infty
 \end{cases}
+
 $$
 
 where $\mu_{\text{conf}}$ is the confinement scale separating bound states from free texture.
@@ -658,6 +683,7 @@ Let $\Delta E$ denote the characteristic energy gap between metastable states in
 
 $$
 \chi = \frac{\Delta E}{T_c}
+
 $$
 
 This ratio determines the tradeoff between memory persistence and adaptability.
@@ -683,6 +709,7 @@ The Stiffness Ratio must satisfy:
 
 $$
 1 < \chi < \chi_{\text{max}}
+
 $$
 
 *Proof.*
@@ -693,6 +720,7 @@ $$
 
 $$
 P_{\text{flip}} \propto e^{-\Delta E / T_c} = e^{-\chi}
+
 $$
 
 **Step 2.** For $\chi < 1$, we have $P_{\text{flip}} > e^{-1} \approx 0.37$. States flip with high probability—the agent cannot maintain stable beliefs.
@@ -705,6 +733,7 @@ $$
 
 $$
 \Gamma_{\text{update}} \propto e^{-\chi}
+
 $$
 
 **Step 5.** For $\chi \to \infty$, transitions become exponentially suppressed—the agent freezes in its initial configuration, unable to learn.
@@ -736,6 +765,7 @@ Under the physics isomorphism, the Stiffness Ratio for atomic systems is:
 
 $$
 \chi = \frac{\Delta E_{\text{bond}}}{k_B T} \propto \frac{m_e c^2 \alpha^2}{k_B T}
+
 $$
 
 where $\Delta E_{\text{bond}} \sim \text{Ry} = m_e c^2 \alpha^2 / 2 \approx 13.6$ eV is the atomic binding scale.
@@ -788,6 +818,7 @@ The temporal discount factor $\gamma$ must satisfy:
 
 $$
 \gamma_{\text{min}} < \gamma < 1
+
 $$
 
 with $\gamma_{\text{min}} > 0$.
@@ -800,6 +831,7 @@ with $\gamma_{\text{min}} > 0$.
 
 $$
 (\kappa^2 - \nabla^2) V = r
+
 $$
 
 where the screening mass $\kappa = (-\ln\gamma)/\ell_0$ has dimension $[L^{-1}]$, and $\ell_0 = c_{\text{info}} \cdot \tau_{\text{proc}}$ is the causal horizon length (Definition {prf:ref}`def-agent-parameter-vector`). This ensures dimensional consistency: $[\kappa^2] = [L^{-2}] = [\nabla^2]$.
@@ -808,6 +840,7 @@ where the screening mass $\kappa = (-\ln\gamma)/\ell_0$ has dimension $[L^{-1}]$
 
 $$
 -\nabla^2 V = r
+
 $$
 
 The Green's function decays as $1/r^{D-2}$ (long-range).
@@ -822,6 +855,7 @@ The Green's function decays as $1/r^{D-2}$ (long-range).
 
 $$
 \ell_\gamma = \frac{1}{\kappa} = \frac{\ell_0}{-\ln\gamma} = \frac{c_{\text{info}} \tau_{\text{proc}}}{-\ln\gamma} \to 0
+
 $$
 
 **Step 6.** Zero screening length means the agent responds only to immediate rewards—it has no planning horizon.
@@ -863,6 +897,7 @@ The screening length and buffer depth must satisfy:
 
 $$
 \ell_\gamma = \frac{c_{\text{info}} \tau_{\text{proc}}}{-\ln\gamma} \lesssim L_{\text{buf}}
+
 $$
 
 Both sides have dimension $[L]$. For $\gamma \to 1$, the screening length $\ell_\gamma \to \infty$ (unlimited planning horizon). For $\gamma \to 0$, the screening length $\ell_\gamma \to 0$ (myopic behavior).
@@ -903,6 +938,7 @@ Let $\Lambda = (c_{\text{info}}, \sigma, \ell_L, T_c, g_s, \gamma)$ be the param
 
 $$
 \mathbf{A} \cdot \Lambda \le \mathbf{b}
+
 $$
 
 where:
@@ -945,6 +981,7 @@ The **Feasible Region** $\mathcal{F} \subset \mathbb{R}^n_+$ is the intersection
 
 $$
 \mathcal{F} = \{ \Lambda : \mathcal{S}_i(\Lambda) \le 0 \; \forall i \}
+
 $$
 
 A viable agent exists if and only if $\mathcal{F} \neq \emptyset$.
@@ -1000,6 +1037,7 @@ The agent's objective trades representational power against computational cost:
 
 $$
 \mathcal{J}(\Lambda) = \underbrace{I_{\text{bulk}}(\Lambda)}_{\text{World Model Capacity}} - \beta \cdot \underbrace{\mathcal{V}_{\text{metabolic}}(\Lambda)}_{\text{Thermodynamic Cost}}
+
 $$
 
 where:
@@ -1024,6 +1062,7 @@ The optimal parameter vector $\Lambda^*$ satisfies:
 
 $$
 \Lambda^* = \arg\max_{\Lambda \in \mathcal{F}} \mathcal{J}(\Lambda)
+
 $$
 
 subject to the Sieve constraints (Definition {prf:ref}`def-constraint-matrix`).
@@ -1059,6 +1098,7 @@ The observed fundamental constants lie on the **Pareto-optimal surface** of the 
 
 $$
 \max_{\Lambda \in \mathcal{F}} \left( I_{\text{bulk}}(\Lambda), -\mathcal{V}_{\text{metabolic}}(\Lambda) \right)
+
 $$
 
 Moving off this surface triggers constraint violation:

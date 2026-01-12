@@ -1,3 +1,4 @@
+(sec-surgery-nodes)=
 # Surgery Nodes
 
 (sec-surgery-node-specs)=
@@ -24,6 +25,7 @@ A barrier invoked because predicate $P_i$ failed **cannot** assume $P_i$ as a pr
 
 $$
 \operatorname{Trigger}(B) = \operatorname{Gate}_i\,\text{NO} \Rightarrow P_i \notin \mathrm{Pre}(B)
+
 $$
 
 **Scope of Non-Circularity:** This syntactic check ($K_i^- \notin \Gamma$) prevents direct circular dependencies. Semantic circularity (proof implicitly using an equivalent of the target conclusion) is addressed by the derivation-dependency constraint: certificate proofs must cite only lemmas of lower rank in the proof DAG. The ranking is induced by the topological sort of the Sieve, ensuring well-foundedness ({cite}`VanGelder91`).
@@ -587,6 +589,7 @@ Viscosity Solution (SurgDC) handles complexity explosions---when the description
 
 $$
 \exists \Lambda < \infty:\, \sup_{\Lambda' \leq \Lambda} \int_{|\omega| \leq \Lambda'} \omega^2\, S(\omega)\, d\omega < \infty \quad \land \quad \text{uniform ellipticity}
+
 $$
 
   *(Divergence is "elliptic-regularizable" — De Giorgi-Nash-Moser applies to truncated spectrum.)*

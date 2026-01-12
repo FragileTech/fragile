@@ -12,8 +12,10 @@
 
 **The Explicit Rate:**
 The system converges to the QSD with a rate:
+
 $$
 \Lambda \approx \frac{\gamma \rho_{LSI}}{M^2} - C \nu_{clone}
+
 $$
 This result places the "Euclidean Gas" algorithm on a solid mathematical footing as a robust global optimizer.
 
@@ -33,12 +35,14 @@ From the rigorous Mean-Field analysis (see {prf:ref}`07_discrete_qsd.md`, partic
 
 $$
 \rho_{\infty}(x, v) = \frac{1}{Z} e^{-E(x, v)}
+
 $$
 
 where $Z$ is the normalization constant and the **Total Effective Energy** $E(x, v)$ is:
 
 $$
 E(x, v) = V_{\text{eff}}(x) + \frac{\|v\|^2}{2T_{kin}}
+
 $$
 
 Here:
@@ -52,6 +56,7 @@ We analyze the evolution of the transient swarm density $f_t(x, v)$ by studying 
 
 $$
 h(t, x, v) := \frac{f(t, x, v)}{\rho_{\infty}(x, v)}
+
 $$
 
 Convergence to equilibrium corresponds to $h(t, x, v) \to 1$ everywhere.
@@ -65,6 +70,7 @@ This is the primary quantity of interest. It measures the information loss betwe
 
 $$
 \mathcal{A}[h] := \int_{\Omega} h \ln h \, d\rho_{\infty} = \int_{\Omega} f \ln \left( \frac{f}{\rho_{\infty}} \right) dx dv
+
 $$
 
 *   **Properties:** $\mathcal{A}[h] \ge 0$, with equality iff $h \equiv 1$ ($f = \rho_{\infty}$).
@@ -75,6 +81,7 @@ This term measures the "roughness" of the relative density with respect to veloc
 
 $$
 \mathcal{B}[h] := \int_{\Omega} \left| \nabla_v \ln h \right|^2 h \, d\rho_{\infty} = \int_{\Omega} \frac{|\nabla_v h|^2}{h} \, d\rho_{\infty} = 4 \int_{\Omega} |\nabla_v \sqrt{h}|^2 \, d\rho_{\infty}
+
 $$
 
 *   **Role:** Controls velocity thermalization. Under Langevin dynamics, this term dissipates exponentially fast ($\sim e^{-2\gamma t}$).
@@ -84,6 +91,7 @@ This is the crucial mixing term that couples position and velocity errors.
 
 $$
 \mathcal{C}[h] := \int_{\Omega} \left\langle \nabla_v \ln h, \nabla_x \ln h \right\rangle h \, d\rho_{\infty} = \int_{\Omega} \left\langle \frac{\nabla_v h}{h}, \frac{\nabla_x h}{h} \right\rangle h \, d\rho_{\infty}
+
 $$
 
 *   **Role:** It detects correlations between position and velocity gradients. Physically, it captures the "shear" in phase space.
@@ -94,6 +102,7 @@ This term measures the "roughness" of the relative density with respect to posit
 
 $$
 \mathcal{D}[h] := \int_{\Omega} \left| \nabla_x \ln h \right|^2 h \, d\rho_{\infty} = \int_{\Omega} \frac{|\nabla_x h|^2}{h} \, d\rho_{\infty}
+
 $$
 
 *   **Role:** Explicitly controls spatial gradients.
@@ -105,6 +114,7 @@ To compute the time evolution of the Lyapunov functional, we must precisely defi
 
 $$
 \partial_t f = \mathcal{L}_{kin} f + \mathcal{L}_{clone} f
+
 $$
 
 where:
@@ -115,6 +125,7 @@ The stationary measure $\rho_{\infty}(x,v)$, as defined in Section 1.1.1, is the
 
 $$
 \mathcal{L}_{kin} \rho_{\infty} + \mathcal{L}_{clone} \rho_{\infty} = 0
+
 $$
 
 ### 1.3.1. The Generator on Relative Density
@@ -123,6 +134,7 @@ We analyze the evolution of the relative density $h(t,x,v) := f(t,x,v)/\rho_{\in
 
 $$
 \partial_t h = L h = L_{kin} h + L_{clone} h
+
 $$
 
 where $L_{kin}$ and $L_{clone}$ are the operators associated with $\mathcal{L}_{kin}$ and $\mathcal{L}_{clone}$ acting on the relative density $h$, defined as:
@@ -133,6 +145,7 @@ In the context of the hypocoercivity analysis for the kinetic part, $L_{kin}$ is
 
 $$
 L_{kin} = L_{sym} + L_{anti}
+
 $$
 
 This decomposition is crucial for understanding how dissipation and transport affect the relative density. We will analyze the kinetic components ($L_{sym}$, $L_{anti}$) in this chapter and the cloning component ($L_{clone}$) in Chapter 3.
@@ -145,31 +158,43 @@ To find $L_{sym} h$, we apply the transformation $L h = \frac{1}{\rho_{\infty}} 
 
 $$
 L_{sym} h = \frac{1}{\rho_{\infty}} \gamma \nabla_v \cdot (v h \rho_{\infty} + T_{kin} \nabla_v (h \rho_{\infty}))
+
 $$
 Using the product rule for derivatives, $\nabla_v (h\rho_{\infty}) = \rho_{\infty} \nabla_v h + h \nabla_v \rho_{\infty}$, and recalling that $\nabla_v \ln \rho_{\infty} = -v/T_{kin}$ (since $\rho_{\infty} \propto e^{-\|v\|^2/(2T_{kin})}$ in velocity):
+
 $$
 \nabla_v (h\rho_{\infty}) = \rho_{\infty} \nabla_v h - h \rho_{\infty} \frac{v}{T_{kin}}
+
 $$
 Substituting this back into the expression for $L_{sym} h$:
+
 $$
 L_{sym} h = \frac{1}{\rho_{\infty}} \gamma \nabla_v \cdot \left( v h \rho_{\infty} + T_{kin} \left( \rho_{\infty} \nabla_v h - h \rho_{\infty} \frac{v}{T_{kin}} \right) \right)
+
 $$
 $$
 L_{sym} h = \frac{1}{\rho_{\infty}} \gamma \nabla_v \cdot \left( v h \rho_{\infty} + T_{kin} \rho_{\infty} \nabla_v h - v h \rho_{\infty} \right)
+
 $$
 $$
 L_{sym} h = \frac{1}{\rho_{\infty}} \gamma \nabla_v \cdot \left( T_{kin} \rho_{\infty} \nabla_v h \right)
+
 $$
 Expanding the divergence:
+
 $$
 L_{sym} h = \frac{\gamma T_{kin}}{\rho_{\infty}} \left( \nabla_v \rho_{\infty} \cdot \nabla_v h + \rho_{\infty} \Delta_v h \right)
+
 $$
 $$
 L_{sym} h = \gamma T_{kin} \left( \frac{\nabla_v \rho_{\infty}}{\rho_{\infty}} \cdot \nabla_v h + \Delta_v h \right) = \gamma T_{kin} \left( \nabla_v \ln \rho_{\infty} \cdot \nabla_v h + \Delta_v h \right)
+
 $$
 Finally, substituting $\nabla_v \ln \rho_{\infty} = -v/T_{kin}$:
+
 $$
 L_{sym} h = \gamma T_{kin} \left( -\frac{v}{T_{kin}} \cdot \nabla_v h + \Delta_v h \right) = \gamma (\Delta_v h - v \cdot \nabla_v h)
+
 $$
 
 This is precisely the generator of the Ornstein-Uhlenbeck process in velocity space. In the $L^2(\rho_{\infty})$ inner product, this operator is self-adjoint (symmetric). The compact notation used previously, $L_{sym} h = -\gamma \nabla_v^* \nabla_v h$, is an operator-theoretic shorthand for this explicit form, where $\nabla_v^*$ denotes the adjoint of $\nabla_v$ with respect to the $L^2(\rho_{\infty})$ weighted inner product.
@@ -183,8 +208,10 @@ The anti-symmetric part of $L_{kin}$ corresponds to the Hamiltonian flow (transp
 
 The equations of motion are $\dot{x} = v$ and $\dot{v} = -\nabla_x V_{\text{eff}}$.
 The corresponding Liouville term in the Fokker-Planck equation is:
+
 $$
 \mathcal{L}_{T} f = -\nabla_x \cdot (v f) - \nabla_v \cdot (-\nabla_x V_{\text{eff}} f) = -v \cdot \nabla_x f + \nabla_x V_{\text{eff}} \cdot \nabla_v f
+
 $$
 *(Note: The sign of the force term is positive here because it appears on the RHS of the equation $\partial_t f = \dots$, effectively moving the divergence of the flux $-\dot{v}f$ to the other side).*
 
@@ -192,44 +219,57 @@ To find the corresponding operator $L_T h$ acting on the relative density $h$, w
 
 $$
 L_T h = \frac{1}{\rho_{\infty}} \left( -v \cdot \nabla_x (h\rho_{\infty}) + \nabla_x V_{\text{eff}} \cdot \nabla_v (h\rho_{\infty}) \right)
+
 $$
 
 We expand the derivatives using the product rule. Recall that $\nabla_x \ln \rho_{\infty} = -\frac{1}{T_{kin}} \nabla_x V_{\text{eff}}$ and $\nabla_v \ln \rho_{\infty} = -\frac{1}{T_{kin}} v$.
 
 **Term 1 (Spatial Transport):**
+
 $$
 \frac{1}{\rho_{\infty}} \left( -v \cdot (\rho_{\infty} \nabla_x h + h \nabla_x \rho_{\infty}) \right) = -v \cdot \nabla_x h - v \cdot h (\nabla_x \ln \rho_{\infty}) = -v \cdot \nabla_x h + \frac{1}{T_{kin}} h (v \cdot \nabla_x V_{\text{eff}})
+
 $$
 
 **Term 2 (Force Transport):**
+
 $$
 \frac{1}{\rho_{\infty}} \left( \nabla_x V_{\text{eff}} \cdot (\rho_{\infty} \nabla_v h + h \nabla_v \rho_{\infty}) \right) = \nabla_x V_{\text{eff}} \cdot \nabla_v h + \nabla_x V_{\text{eff}} \cdot h (\nabla_v \ln \rho_{\infty}) = \nabla_x V_{\text{eff}} \cdot \nabla_v h - \frac{1}{T_{kin}} h (\nabla_x V_{\text{eff}} \cdot v)
+
 $$
 
 **Cancellation:**
 Summing these two terms, we observe that the multiplicative parts involving $h$ exactly cancel:
+
 $$
 \frac{1}{T_{kin}} h (v \cdot \nabla_x V_{\text{eff}}) - \frac{1}{T_{kin}} h (\nabla_x V_{\text{eff}} \cdot v) = 0
+
 $$
 
 **Result:**
 The transport operator for the relative density is thus:
+
 $$
 L_{anti} h = -v \cdot \nabla_x h + \nabla_x V_{\text{eff}} \cdot \nabla_v h
+
 $$
 
 *   **Role:** This operator describes the conservative flow of probability in phase space along the constant-energy surfaces of the effective Hamiltonian.
 *   **Property:** In the $L^2(\rho_{\infty})$ inner product, this operator is **anti-self-adjoint (anti-symmetric)**.
+
     $$
     \int g (L_{anti} h) d\rho_{\infty} = - \int h (L_{anti} g) d\rho_{\infty} \implies \int h L_{anti} h \, d\rho_{\infty} = 0
+
     $$
     This crucial property ensures that the transport term does not create or destroy norm/entropy on its own, but mixes the spatial and velocity coordinates.
 
 ### 1.4. Summary of the Strategy
 
 We define the total functional as:
+
 $$
 \Phi[h] = \mathcal{A}[h] + \lambda_1 \mathcal{B}[h] + \lambda_2 \mathcal{C}[h] + \lambda_3 \mathcal{D}[h]
+
 $$
 
 Our primary goal in the subsequent chapters is to compute the time derivative $\frac{d}{dt} \Phi[h_t]$ using the rigorously derived operators. Thanks to the confirmation in Section 1.3.3 that $L_{kin}$ decomposes cleanly into $L_{sym}$ and $L_{anti}$, we can proceed with the standard hypocoercivity method:
@@ -247,13 +287,17 @@ This approach allows us to rigorously quantify how the kinetic noise suppresses 
 To move beyond qualitative statements, we must quantify the "roughness" of the optimization landscape. The hypocoercive mechanism relies on the kinetic operator smoothing out irregularities in the potential.
 
 Recall the effective potential $V_{\text{eff}}(x)$ derived in the Mean-Field analysis:
+
 $$
 V_{\text{eff}}(x) = U_{kin}(x) + T_{kin} \frac{\alpha D}{\beta} \ln R(x)
+
 $$
 
 Instead of assuming a global uniform bound, we introduce the **Locally Bounded Hessian Condition**. We assume that the Hessian of the effective potential, $\nabla_x^2 V_{\text{eff}}(x)$, is bounded within a compact set $\mathcal{K} \subset \Omega_x$:
+
 $$
 M_{\mathcal{K}} := \sup_{x \in \mathcal{K}} \| \nabla_x^2 V_{\text{eff}}(x) \|_{\text{op}} < \infty
+
 $$
 This constant $M_{\mathcal{K}}$ represents the maximum curvature within $\mathcal{K}$. The existence of such a compact set $\mathcal{K}$ which contains the swarm with high probability must be established by a separate Lyapunov argument (e.g., demonstrating that the probability mass of the swarm does not escape $\mathcal{K}$), which is beyond the scope of this chapter but critical for the global applicability of $M_{\mathcal{K}}$. For the remainder of this chapter, we assume such a $\mathcal{K}$ exists and we operate within it, thus denoting $M_{\mathcal{K}}$ simply as $M$.
 
@@ -268,8 +312,10 @@ The goal of this chapter is to determine the condition on friction $\gamma$ and 
 With the rigorous decomposition $L_{kin} = L_{sym} + L_{anti}$ established in Chapter 1, we can now compute the exact time evolution of the functional components using commutator algebra.
 
 We define the hypocoercive functional weights $a, b, c$:
+
 $$
 \Phi[h] = \mathcal{A}[h] + a \mathcal{B}[h] + 2b \mathcal{C}[h] + c \mathcal{D}[h]
+
 $$
 
 The time derivative of a functional of the form $\mathcal{F} = \int g(h, \nabla h) d\rho_{\infty}$ along the flow $\partial_t h = L h$ is computed using integration by parts and the properties of $L_{sym}$ (dissipative) and $L_{anti}$ (conservative).
@@ -281,35 +327,48 @@ The time derivative of a functional of the form $\mathcal{F} = \int g(h, \nabla 
 Using these, we derive the evolution equations for each term:
 
 **1. Entropy ($\mathcal{A}$):**
+
 $$
 \frac{d}{dt} \mathcal{A} = \int (1+\ln h) L_{sym} h \, d\rho_{\infty} = -\gamma \int h |\nabla_v \ln h|^2 \, d\rho_{\infty} = -\gamma \mathcal{B}
+
 $$
 *(Note: The transport term vanishes due to anti-symmetry).*
 
 **2. Kinetic Fisher Information ($\mathcal{B}$):**
+
 $$
 \frac{d}{dt} \mathcal{B} = -2\gamma \mathcal{B} - 2 \int h \langle \nabla_v \ln h, \nabla_x \ln h \rangle \, d\rho_{\infty} + (\text{dissipation})
+
 $$
 Ignoring the negative semi-definite dissipation term from $L_{sym}$ on higher derivatives (which only helps), we have:
+
 $$
 \frac{d}{dt} \mathcal{B} \le -2\gamma \mathcal{B} - 2 \mathcal{C}
+
 $$
 
 **3. Cross Term ($\mathcal{C}$):**
+
 $$
 \frac{d}{dt} \mathcal{C} = -\mathcal{D} - \gamma \mathcal{C} + \int h \langle \nabla_x \ln h, \nabla^2 V_{\text{eff}} \nabla_v \ln h \rangle \, d\rho_{\infty}
+
 $$
 Using the Hessian bound $M = \sup \|\nabla^2 V_{\text{eff}}\|$, we bound the interaction term:
+
 $$
 \left| \int \dots \right| \le M \int h |\nabla_x \ln h| |\nabla_v \ln h| \le M \sqrt{\mathcal{B}\mathcal{D}}
+
 $$
 
 **4. Spatial Fisher Information ($\mathcal{D}$):**
+
 $$
 \frac{d}{dt} \mathcal{D} = 2 \int h \langle \nabla_x \ln h, \nabla^2 V_{\text{eff}} \nabla_v \ln h \rangle \, d\rho_{\infty} + (\text{dissipation})
+
 $$
 $$
 \frac{d}{dt} \mathcal{D} \le 2M \sqrt{\mathcal{B}\mathcal{D}}
+
 $$
 
 These equations provide the rigorous foundation for the matrix analysis in the next section. The "extra terms" feared in the previous critique are demonstrably zero.
@@ -317,8 +376,10 @@ These equations provide the rigorous foundation for the matrix analysis in the n
 ## 2.3. The Dissipation Matrix Inequality
 
 Combining these terms, we write the upper bound for the total derivative:
+
 $$
 \frac{d}{dt} \Phi \le -\gamma \mathcal{B} + a(-2\gamma \mathcal{B} - 2\mathcal{C}) + 2b(-\mathcal{D} - \gamma \mathcal{C} + M\sqrt{\mathcal{B}\mathcal{D}}) + c(2M\sqrt{\mathcal{B}\mathcal{D}})
+
 $$
 
 We rearrange this into a quadratic form. To ensure robust contraction, we bound the "bad" contributions of $\mathcal{C}$ (where it might be negative) conservatively using Cauchy-Schwarz, but we keep the "good" contributions of $\mathcal{C}$ that help cancel the cross terms in the matrix.
@@ -334,6 +395,7 @@ We define a **Dissipation Matrix** $\mathbf{K}$ such that $\frac{d}{dt}\Phi \le 
 
 $$
 \frac{d}{dt} \Phi \le - \underbrace{\left( \gamma + 2a\gamma \right)}_{\approx \gamma} \mathcal{B} - \underbrace{2b}_{\text{Spatial Decay}} \mathcal{D} + \underbrace{(2a + 2b\gamma)}_{\text{Coupling}} \sqrt{\mathcal{B}\mathcal{D}} + \underbrace{(2bM + 2cM)}_{\text{Roughness}} \sqrt{\mathcal{B}\mathcal{D}}
+
 $$
 
 We need the diagonal terms (dissipation) to dominate the off-diagonal terms (mixing and roughness). The dissipation matrix $\mathbf{K}$ is:
@@ -343,6 +405,7 @@ $$
 \gamma(1+2a) & -\frac{1}{2}(2a + 2b\gamma + 2bM + 2cM) \\
 -\frac{1}{2}(2a + 2b\gamma + 2bM + 2cM) & 2b
 \end{pmatrix}
+
 $$
 
 ## 2.4. Determining the Constants
@@ -358,16 +421,21 @@ Let $\epsilon \in (0, 1)$ be a small parameter to be determined.
 3.  Set $c := \epsilon^2$. This makes the spatial Fisher term sub-dominant (necessary to close the bounds).
 
 Substituting these into the off-diagonal term $X_{cross} = \frac{1}{2}(2a + 2b\gamma + 2bM + 2cM)$:
+
 $$
 X_{cross} \approx \frac{1}{2} ( \frac{1}{2}\gamma\epsilon + 2\gamma\epsilon + 2M\epsilon ) \approx M\epsilon \quad (\text{assuming } M \gg \gamma)
+
 $$
 
 The determinant condition $\det(\mathbf{K}) > 0$ becomes:
+
 $$
 (\gamma) \cdot (2\epsilon) - (M\epsilon)^2 > 0
+
 $$
 $$
 2\gamma \epsilon - M^2 \epsilon^2 > 0 \implies \epsilon < \frac{2\gamma}{M^2}
+
 $$
 
 ### 2.4.1. The Explicit Coefficients
@@ -382,25 +450,33 @@ This hierarchy $a, b \gg c$ is crucial: it ensures the Lyapunov function is domi
 ## 2.5. The Hypocoercive Convergence Rate
 
 With $\epsilon = \gamma/M^2$, the smallest eigenvalue of the dissipation matrix $\mathbf{K}$ scales as:
+
 $$
 \lambda_{min}(\mathbf{K}) \approx \frac{\det(\mathbf{K})}{\text{Trace}(\mathbf{K})} \approx \frac{\gamma^2/M^2}{\gamma} = \frac{\gamma}{M^2}
+
 $$
 
 Thus, we have established the differential inequality:
+
 $$
 \frac{d}{dt} \Phi[h_t] \leq - \frac{\gamma}{M^2} \left( \mathcal{B}[h_t] + \mathcal{D}[h_t] \right)
+
 $$
 
 ### 2.5.1. Closing the Loop via LSI
 Finally, we must relate $\mathcal{B} + \mathcal{D}$ back to $\Phi$.
 Assuming the stationary measure $\rho_{\infty}$ satisfies a Log-Sobolev Inequality with constant $\rho_{LSI}$:
+
 $$
 \rho_{LSI} \mathcal{A}[h] \le \mathcal{B}[h] + \mathcal{D}[h]
+
 $$
 
 Since $a, b, c$ are small, $\Phi \approx \mathcal{A}$. Therefore:
+
 $$
 \frac{d}{dt} \Phi \le - \frac{\gamma \rho_{LSI}}{M^2} \Phi
+
 $$
 
 ## 2.6. Theorem: Explicit Kinetic Contraction
@@ -414,6 +490,7 @@ Let $M = \sup \|\nabla^2 V_{\text{eff}}\|$ be the bound on the Hessian of the ef
 
 $$
 \Lambda_{kin} \approx \frac{\gamma \cdot \rho_{LSI}}{M^2}
+
 $$
 
 **Implication:** The kinetic noise successfully "smooths out" the curvature $M$, enabling convergence even in non-convex landscapes, provided the swarm remains within the region where the Hessian is bounded.
@@ -442,34 +519,44 @@ It is crucial to note that the stability conditions and overall convergence rate
 The mean-field cloning operator $\mathcal{L}_{\text{clone}}$ acts on the density $f(z)$ as a growth-death process that selectively amplifies regions of high fitness. Let $V(z)$ denote the fitness landscape (which can be interpreted as the inverse of the effective potential $V_{\text{eff}}$ after some transformations, or as the reward function $R(x)$). The mean fitness of the current swarm is given by $\bar{V}_f = \int V(z') f(z') dz'$.
 
 The operator acting on $f(z)$ is:
+
 $$
 \mathcal{L}_{\text{clone}} f(z) = \nu_{clone} \left( \frac{V(z)}{\bar{V}_f} - 1 \right) f(z)
+
 $$
 where $\nu_{clone}$ is the cloning rate parameter.
 
 To obtain the corresponding operator $L_{clone}$ for the relative density $h = f/\rho_{\infty}$, we use the transformation $L_{clone} h = \frac{1}{\rho_{\infty}} \mathcal{L}_{\text{clone}} (h\rho_{\infty})$. Note that $f = h\rho_{\infty}$, so the mean fitness $\bar{V}_f$ becomes $\bar{V}_{h\rho_{\infty}} = \int V(z') h(z')\rho_{\infty}(z') dz'$.
 
 Thus, the exact cloning operator acting on the relative density $h$ is:
+
 $$
 L_{clone} h(z) = \nu_{clone} \left( \frac{V(z)}{\int V(z') h(z')\rho_{\infty}(z') dz'} - 1 \right) h(z)
+
 $$
 This operator is **non-local** due to the integral in the denominator, which depends on the global state of the relative density $h$. This non-locality is a defining feature of mean-field cloning.
 
 ### 3.2.1. Evolution of Relative Entropy ($\mathcal{A}$)
 
 We compute the exact time derivative of the relative entropy $\mathcal{A}[h] = \int h \ln h \, d\rho_{\infty}$ under the action of the cloning operator $L_{clone}$.
+
 $$
 \frac{d}{dt} \mathcal{A} \bigg|_{clone} = \int (1+\ln h) L_{clone} h \, d\rho_{\infty}
+
 $$
 Substituting the exact form $L_{clone} h = \nu_{clone} \left( \frac{V}{\bar{V}_{h\rho}} - 1 \right) h$:
+
 $$
 \frac{d}{dt} \mathcal{A} \bigg|_{clone} = \nu_{clone} \int (1+\ln h) \left( \frac{V(z)}{\bar{V}_{h\rho}} - 1 \right) h(z) \, d\rho_{\infty}
+
 $$
 This integral represents the covariance between the fitness $V(z)$ and the quantity $h(1+\ln h)$ weighted by the equilibrium measure. Since cloning selects for regions where $V$ is small (high fitness) and pushes the density $f=h\rho$ towards $\rho$ (where $V$ is small), this term is generally negative.
 
 For the purpose of the stability analysis, we define the **Cloning Dissipation Rate** $\Lambda_{clone}[h]$ as the functional satisfying:
+
 $$
 \frac{d}{dt} \mathcal{A} \bigg|_{clone} = - \Lambda_{clone}[h] \mathcal{A}
+
 $$
 In the linear regime (near equilibrium $h \approx 1$), this rate is proportional to the variance of $V$ with respect to the measure $\rho_{\infty}$. For the global proof, we assume $\Lambda_{clone} \ge 0$.
 
@@ -477,32 +564,43 @@ In the linear regime (near equilibrium $h \approx 1$), this rate is proportional
 
 We rigorously compute the time evolution of $\mathcal{D}[h] = \int h |\nabla_x \ln h|^2 \, d\rho_{\infty}$ under cloning.
 Using the identity $\frac{d}{dt} \mathcal{D} = \int -2 \nabla_x \cdot ( \frac{\nabla_x h}{h} ) \partial_t h \, d\rho_{\infty}$ and integrating by parts:
+
 $$
 \frac{d}{dt} \mathcal{D} \bigg|_{clone} = \int 2 \frac{\nabla_x h}{h} \cdot \nabla_x (L_{clone} h) \, d\rho_{\infty}
+
 $$
 Recalling $\nabla_x (L_{clone} h) = \nu_{clone} [ \frac{\nabla_x V}{\bar{V}} h + (\frac{V}{\bar{V}} - 1) \nabla_x h ]$:
+
 $$
 \frac{d}{dt} \mathcal{D} \bigg|_{clone} = 2\nu_{clone} \int \frac{\nabla_x h}{h} \cdot \left( \frac{\nabla_x V}{\bar{V}} h + \left(\frac{V}{\bar{V}} - 1\right) \nabla_x h \right) d\rho_{\infty}
+
 $$
 $$
 = 2\nu_{clone} \underbrace{\int \nabla_x h \cdot \frac{\nabla_x V}{\bar{V}} \, d\rho_{\infty}}_{\text{Term I}} + 2\nu_{clone} \underbrace{\int \left(\frac{V}{\bar{V}} - 1\right) \frac{|\nabla_x h|^2}{h} \, d\rho_{\infty}}_{\text{Term II}}
+
 $$
 
 **Bounding Term I:**
 Using Cauchy-Schwarz:
+
 $$
 \text{Term I} = \frac{1}{\bar{V}} \int (\nabla_x \ln h) \cdot \nabla_x V \, h d\rho_{\infty} \le \frac{S_{max}}{\bar{V}} \sqrt{\mathcal{D}}
+
 $$
 where $S_{max} = \sup \|\nabla V\|$.
 
 **Bounding Term II:**
+
 $$
 \text{Term II} \le \sup \left| \frac{V}{\bar{V}} - 1 \right| \int h |\nabla_x \ln h|^2 d\rho_{\infty} = K_{mult} \mathcal{D}
+
 $$
 
 Thus, the growth of gradients due to cloning is bounded by:
+
 $$
 \frac{d}{dt} \mathcal{D} \bigg|_{clone} \le 2 \nu_{clone} \frac{S_{max}}{\bar{V}} \sqrt{\mathcal{D}} + 2 \nu_{clone} K_{mult} \mathcal{D}
+
 $$
 This rigorous bound confirms that cloning introduces both a linear growth mode ($K_{mult} \mathcal{D}$) and a square-root perturbation ($\sqrt{\mathcal{D}}$). For stability, the kinetic dissipation must overcome both.
 
@@ -510,21 +608,27 @@ This rigorous bound confirms that cloning introduces both a linear growth mode (
 
 We now combine the Kinetic dissipation (Chapter 2) with the Cloning perturbation (Chapter 3).
 The total evolution of the Spatial Fisher Information is:
+
 $$
 \frac{d}{dt} \mathcal{D}_{total} \le -2b \mathcal{D} + 2 \nu_{clone} K_{mult} \mathcal{D} + 2 \nu_{clone} \frac{S_{max}}{\bar{V}} \sqrt{\mathcal{D}}
+
 $$
 For the system to be stable (i.e., for the gradients to not blow up exponentially), the kinetic decay rate $2b$ must dominate the cloning growth rate $2 \nu_{clone} K_{mult}$.
 
 Recall from Chapter 2 that the optimal decay coefficient is $b = \gamma / M^2$.
 The condition for linear stability is:
+
 $$
 \frac{\gamma}{M^2} > \nu_{clone} K_{mult}
+
 $$
 where $K_{mult} \approx \sup |V/\bar{V} - 1|$. Assuming the fitness fluctuations are bounded (e.g., $V \ge 0$ and bounded above in the relevant domain), $K_{mult}$ is order 1.
 
 This yields the **Rigorous Acoustic Limit**:
+
 $$
 \gamma > \nu_{clone} M^2 \cdot C_{landscape}
+
 $$
 where $C_{landscape}$ depends on the variation of the potential.
 
@@ -538,8 +642,10 @@ We have now rigorously bounded all terms in the evolution of $\Phi[h]$.
 2.  **Cloning:** Adds a perturbation that is linearly bounded by $\nu_{clone} \Phi$ (plus higher order terms).
 
 If the Acoustic Limit is satisfied, the total derivative is negative definite:
+
 $$
 \frac{d}{dt} \Phi \le - (\Lambda_{kin} - \Lambda_{clone}^{pert}) \Phi
+
 $$
 
 :::{prf:theorem} Unconditional LSI with Explicit Constants
@@ -549,6 +655,7 @@ For the Euclidean Gas with friction $\gamma$, noise $\sigma_v$, and cloning rate
 
 $$
 C_{LSI} \approx \frac{M^2}{\gamma} - C \nu_{clone}
+
 $$
 
 Convergence to the QSD is exponential with rate $\tau \sim C_{LSI}^{-1}$, independent of the initialization.
@@ -568,6 +675,7 @@ In Chapters 1-3, we established that the continuous mean-field flow of the Eucli
 
 $$
 \Lambda \approx \frac{\gamma}{M^2} - C \nu_{clone}
+
 $$
 
 However, the actual algorithm runs in **discrete time** (step size $\tau$) and with a **finite number of walkers** ($N$). This chapter bridges the gap between our rigorous theoretical PDE result and the practical implementation. We prove two essential properties that validate the algorithm's design:
@@ -594,6 +702,7 @@ If the timestep satisfies the stability condition $\tau \ll \Lambda^{-1}$, then:
 
 $$
 \Phi[h_{n+1}] \leq e^{-\Lambda \tau} \Phi[h_n] + C \tau^3
+
 $$
 
 **Proof Strategy:**
@@ -610,6 +719,7 @@ This result establishes a **Discrete Logarithmic Sobolev Inequality**. It implie
 
 $$
 \limsup_{n \to \infty} D_{KL}(f_n \| \rho_{\infty}) \le O(\tau^2)
+
 $$
 
 This rigorously justifies using the continuous QSD $\rho_{\infty}$ as the proxy for the algorithm's target distribution.
@@ -623,8 +733,10 @@ A critical requirement for swarm algorithms is **scalability**. If the convergen
 The Lyapunov functional $\Phi[h]$ constructed in Chapter 1 is composed of Relative Entropy and Fisher Information terms. A fundamental property of these functionals is **tensorization** (additivity) over independent variables.
 
 Consider the $N$-particle density $f^{(N)}(z_1, \dots, z_N)$. If we assume the Propagation of Chaos (validated in `08_propagation_chaos.md`), the system factorizes $f^{(N)} \approx \prod f(z_i)$. Then:
+
 $$
 D_{KL}(f^{(N)} \| \rho_{\infty}^{\otimes N}) = \sum_{i=1}^N D_{KL}(f(z_i) \| \rho_{\infty}) = N \cdot D_{KL}(f \| \rho_{\infty})
+
 $$
 The same additivity holds for the Fisher Information terms $\mathcal{I}_v$ and $\mathcal{I}_x$.
 
@@ -634,6 +746,7 @@ In the Euclidean Gas, walkers are coupled via the mean-field fitness potential $
 
 $$
 \frac{d}{dt} f^{(N)} = \sum_{i=1}^N \mathcal{L}_i[f] f^{(N)} + O\left(\frac{1}{\sqrt{N}}\right)
+
 $$
 
 where $\mathcal{L}_i$ is the single-particle generator derived in Chapters 2 and 3, acting on particle $i$.
@@ -647,6 +760,7 @@ Let $\Lambda_{MF}$ be the convergence rate derived in Theorem {prf:ref}`thm-unco
 
 $$
 \Lambda_N \ge \Lambda_{MF} - \frac{C}{\sqrt{N}}
+
 $$
 
 Consequently, for large $N$, the swarm converges at a rate determined solely by the landscape geometry ($M$) and algorithm parameters ($\gamma, \sigma_v$), **independent of the population size**.

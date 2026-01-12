@@ -49,11 +49,13 @@ Let $\mathcal{Z}$ be the latent manifold with Poincare disk model. The **boundar
 
 $$
 \partial\mathcal{Z} := \{z \in \mathbb{C}^n : |z| = 1\}.
+
 $$
 The **interior** (or bulk) is the open disk:
 
 $$
 \text{int}(\mathcal{Z}) := \{z \in \mathbb{C}^n : |z| < 1\}.
+
 $$
 These are standard differential geometry terms; the boundary is the ideal boundary at infinity in the hyperbolic metric.
 
@@ -72,6 +74,7 @@ With metric $G_{ij} = \frac{4\delta_{ij}}{(1-|z|^2)^2}$, the volume of a hyperbo
 
 $$
 \mathrm{Vol}(B_r(0)) = 4\pi \sinh^2\!\left(\frac{r}{2}\right) \;\approx\; \pi e^r \quad \text{as } r \to \infty.
+
 $$
 Units: $[\mathrm{Vol}] = [z]^2$.
 
@@ -100,6 +103,7 @@ The "Free Energy" of a state at radius $r$ is dominated by the entropic volume t
 
 $$
 F_{\text{entropy}}(z) = \nabla_G S(z) = \frac{z}{\|z\|}
+
 $$
 In normalized hyperbolic coordinates, this yields a **constant radial drift**.
 
@@ -120,6 +124,7 @@ If acting alone (no policy steering), the entropic drift produces the isotropic 
 
 $$
 r(\tau) = \tanh(\tau/2)
+
 $$
 This represents isotropic diffusion---expanding uniformly in all directions.
 
@@ -150,6 +155,7 @@ The **information potential** $U: \mathbb{D} \to \mathbb{R}$ is the negative hyp
 
 $$
 U(z) := -d_{\mathbb{D}}(0, z) = -2 \operatorname{artanh}(|z|) = -\log\!\left(\frac{1+|z|}{1-|z|}\right).
+
 $$
 Units: $[U] = \mathrm{nat}$.
 
@@ -174,11 +180,13 @@ The gradient in the Poincare metric is:
 
 $$
 \nabla_G U(z) = G^{-1} \nabla U = -\frac{(1-|z|^2)}{2} z.
+
 $$
 The **entropic drift** (negative gradient) pushes radially outward:
 
 $$
 -\nabla_G U(z) = \frac{(1-|z|^2)}{2} z.
+
 $$
 *Remark (Connection to {ref}`Section 7.11 <sec-the-geometry-of-the-latent-space-a-hyperbolic-hierarchy>`).* The Poincare coordinate $z$ relates to depth via $\rho = d_{\mathbb{D}}(0, z) = 2\operatorname{artanh}(|z|)$. Chart transitions are handled by the WFR jump process ({ref}`Section 22.2 <sec-the-coupled-jump-diffusion-sde>`), governed by the {prf:ref}`def-the-wfr-action`.
 
@@ -236,6 +244,7 @@ The Policy $\pi_\theta(a|z)$ outputs a **control field** $u_\pi(z)$ on the tange
 
 $$
 u_\pi(z) = G^{-1}(z) \cdot \mathbb{E}_{a \sim \pi_\theta}[a]
+
 $$
 This vector field represents the **Information Preference** of the agent (or the User).
 
@@ -258,6 +267,7 @@ At $\tau=0$, the total drift is:
 
 $$
 F_{\text{total}} = F_{\text{entropy}} + u_\pi(0)
+
 $$
 Since $F_{\text{entropy}}(0) = 0$ (isotropic), the initial trajectory is determined **entirely** by $u_\pi(0)$.
 
@@ -303,6 +313,7 @@ Near the origin, the combined dynamics exhibit a **supercritical pitchfork bifur
 
 $$
 \dot{r} = \mu r - r^3 + \sigma \xi
+
 $$
 where $r = |z|$, $\mu = 1$ (unstable fixed point), and $\sigma = \sqrt{2T_c}$ is the noise amplitude (see {prf:ref}`def-cognitive-temperature`).
 
@@ -314,11 +325,13 @@ where $r = |z|$, $\mu = 1$ (unstable fixed point), and $\sigma = \sqrt{2T_c}$ is
 
 $$
 dr = \left(\frac{1-r^2}{2} + u_\pi^r\right) d\tau + \sqrt{T_c(1-r^2)} dW_\tau
+
 $$
 where $u_\pi^r = u_\pi \cdot \hat{r}$ is the radial component of the control field. Taylor expanding near $r = 0$:
 
 $$
 dr \approx \left(\frac{1}{2} + u_\pi^r - \frac{r^2}{2}\right) d\tau + \sqrt{T_c}\, dW_\tau.
+
 $$
 For small control $u_\pi^r \ll 1$ and setting $\mu = 1/2 + u_\pi^r$, this matches the normal form $\dot{r} = \mu r - r^3/2 + \sigma\xi$.
 
@@ -326,6 +339,7 @@ For small control $u_\pi^r \ll 1$ and setting $\mu = 1/2 + u_\pi^r$, this matche
 
 $$
 T_c^* = \frac{\mu^2}{4} = \frac{1}{16}(1 + 2u_\pi^r)^2 \approx \frac{1}{16}.
+
 $$
 For $T_c > T_c^*$: symmetric phase; for $T_c < T_c^*$: broken phase with directional flow. $\square$
 
@@ -363,6 +377,7 @@ The pitchfork bifurcation makes this precise: there's a critical temperature bel
 
 $$
 \dot{r} = \mu r - r^3 + \sigma\xi
+
 $$
 where $\mu = 1/2$ and the $SO(D)$ symmetry at the origin is broken when the policy selects a direction.
 
@@ -456,6 +471,7 @@ Data generation is **radial expansion** from the vacuum (origin) to the boundary
 
 $$
 F_{\text{total}} = \underbrace{F_{\text{entropy}}}_{\text{Hyperbolic drift}} + \underbrace{u_\pi}_{\text{Policy kick}}
+
 $$
 where $F_{\text{entropy}} = \nabla_G S(z)$ is entropic drift from hyperbolic volume growth and $u_\pi = G^{-1} \nabla_z V$ is the policy control field that breaks $SO(D)$ symmetry.
 
@@ -466,6 +482,7 @@ Replace hyperbolic geometry with Euclidean ($G \to I$). Reverse the direction (b
 
 $$
 dz_t = s_\theta(z_t, t)\, dt + \sigma(t)\, dW_t, \quad z_T \sim \mathcal{N}(0, I)
+
 $$
 This recovers **Diffusion Models** {cite}`ho2020ddpm` and **Diffusion Policies** for robotic control.
 
@@ -502,16 +519,19 @@ The state decomposition $Z = (K, z_n, z_{\text{tex}})$ satisfies a **partition c
 
 $$
 \dot{z} = f(z, u_\pi) \quad (\text{No } z_{\text{tex}} \text{ dependence})
+
 $$
 2. **Boundary Interface:** Texture $z_{\text{tex}}$ is a stochastic component that exists **only** at the interface where the internal state meets the external observation:
 
 $$
 z_{\text{tex}} \sim \mathcal{N}(0, \Sigma(z_{\text{final}}))
+
 $$
 Formally, the partition condition is:
 
 $$
 \frac{\partial}{\partial z_{\text{tex}}} \left[ \dot{z}^k, \lambda_{\text{jump}}, u_\pi \right] = 0 \quad \forall \tau \in [0, \tau_{\text{stop}})
+
 $$
 :::
 
@@ -542,11 +562,13 @@ At the terminal position $z_{\text{final}}$, texture is sampled from a **geometr
 
 $$
 z_{\text{tex}} \sim \mathcal{N}\big(0,\, \Sigma(z_{\text{final}})\big),
+
 $$
 where the covariance matrix is:
 
 $$
 \Sigma(z) = \sigma_{\text{tex}}^2 \cdot G^{-1}(z) = \sigma_{\text{tex}}^2 \cdot \frac{(1-|z|^2)^2}{4} I.
+
 $$
 Units: $[\Sigma] = [z_{\text{tex}}]^2$.
 
@@ -598,6 +620,7 @@ The Decoder $\mathcal{D}$ is the **only** component that sees texture. It perfor
 
 $$
 x = \mathcal{D}(z_{\text{final}}, z_{\text{tex}})
+
 $$
 where:
 - $z_{\text{final}} = (e_K, z_n)$: Determines the shape, physics, and causal structure
@@ -643,6 +666,7 @@ The flow terminates when the radial coordinate exceeds a cutoff:
 
 $$
 \tau_{\text{stop}} := \inf\{\tau \ge 0 : |z(\tau)| \ge R_{\text{cutoff}}\}
+
 $$
 This is equivalent to the information stopping criterion $I_{\text{bulk}}(z) \ge C_\partial$ (Theorem {prf:ref}`thm-capacity-constrained-metric-law`).
 

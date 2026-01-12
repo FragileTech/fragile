@@ -1,4 +1,4 @@
-# Part II: The Constructive Approach
+# The Constructive Approach
 
 (sec-thin-kernel)=
 ## The Thin Kernel (Minimal Inputs)

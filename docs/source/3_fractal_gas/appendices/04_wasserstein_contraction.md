@@ -451,6 +451,7 @@ For two swarms $S_1, S_2$ with partitions $(I_1, J_1)$ and $(I_2, J_2)$ satisfyi
 
 $$
 c_{\text{link}}^{-} W_2^2(\mu_1, \mu_2) \leq V_{\text{struct}} \leq c_{\text{link}}^{+} W_2^2(\mu_1, \mu_2)
+
 $$
 
 where $c_{\text{link}}^{\pm}$ are positive constants depending on $\varepsilon$ but not on $N$.
@@ -461,18 +462,21 @@ where $c_{\text{link}}^{\pm}$ are positive constants depending on $\varepsilon$ 
 
 $$
 V_{\text{struct}} = \text{Var}_x(S_k) = \frac{1}{k} \sum_{i=1}^k \|x_i - \bar{x}_k\|^2
+
 $$
 
 For the cluster-preserving coupling, the Wasserstein-2 distance satisfies:
 
 $$
 W_2^2(\mu_1, \mu_2) \geq \frac{1}{N} \sum_{(i,j) \text{ matched}} \|x_{1,i} - x_{2,j}\|^2
+
 $$
 
 For any matching, the average squared distance between matched pairs can be decomposed using the law of cosines. For separated swarms with $L \gg R_{\text{spread}}$:
 
 $$
 \frac{1}{N} \sum_{i=1}^N \|x_{1,i} - x_{2,\pi(i)}\|^2 \approx L^2 + \text{Var}_x(S_1) + \text{Var}_x(S_2)
+
 $$
 
 Since both swarms have similar structural variance (by construction of the separation condition), we have $V_{\text{struct}} \leq 2 W_2^2(\mu_1, \mu_2)$ for $L$ sufficiently large.
@@ -481,12 +485,14 @@ Since both swarms have similar structural variance (by construction of the separ
 
 $$
 V_{\text{struct}} \geq f_I f_J \|\mu_x(I_1) - \mu_x(J_1)\|^2 \geq c_{\text{sep}}(\varepsilon) \|\mu_x(I_1) - \mu_x(J_1)\|^2
+
 $$
 
 For separated swarms, the Wasserstein distance is bounded below by the distance between cluster barycenters. Using the optimal transport formulation:
 
 $$
 W_2^2(\mu_1, \mu_2) = \inf_{\gamma \in \Gamma(\mu_1, \mu_2)} \int \|x - y\|^2 d\gamma(x, y)
+
 $$
 
 Since $f_I > f_{UH}(\varepsilon) > 0$ (Theorem 7.6.1 in [03_cloning](03_cloning)), a positive fraction of both swarms' mass is in the target sets. Any coupling $\gamma$ must transport mass from $I_1$ to $I_2$ with average squared distance at least $\|\mu_x(I_1) - \mu_x(I_2)\|^2$.
@@ -495,12 +501,14 @@ By the triangle inequality and cluster separation:
 
 $$
 \|\mu_x(I_1) - \mu_x(I_2)\|^2 \geq \frac{1}{2}(\|\mu_x(I_1) - \mu_x(J_1)\|^2 + \|\mu_x(I_2) - \mu_x(J_2)\|^2) - O(L \cdot R_{\text{spread}})
+
 $$
 
 For $L \gg R_{\text{spread}}$, combining these inequalities gives:
 
 $$
 W_2^2(\mu_1, \mu_2) \geq f_{UH}^2 \|\mu_x(I_1) - \mu_x(J_1)\|^2 \geq \frac{f_{UH}^2}{c_{\text{sep}}(\varepsilon)} V_{\text{struct}}
+
 $$
 
 Defining $c_{\text{link}}^{-} := f_{UH}^2 / c_{\text{sep}}(\varepsilon)$ and $c_{\text{link}}^{+} := 2$ completes the proof.
@@ -548,7 +556,6 @@ for some N-uniform constant $c_{\text{align}}(\varepsilon) > 0$.
 :::
 
 :::{prf:proof}
-:label: proof-lem-cluster-alignment
 
 This is a **static proof** using only framework axioms and proven results from [03_cloning](03_cloning).
 
@@ -639,6 +646,7 @@ This follows from the clustering algorithm's identification of outliers as spati
 
 $$
 \text{Contrib}(G_m) := |G_m| \left(\|\mu_{x,m} - \mu_x\|^2 + \lambda_v \|\mu_{v,m} - \mu_v\|^2\right)
+
 $$
 
 where $\mu_x$ is the global center of mass. For two swarms of comparable mass separated by $L \gg R_{\text{spread}}$, the global center lies approximately at the midpoint: $\mu_x \approx (\bar{x}_1 + \bar{x}_2)/2$. Therefore:
@@ -650,6 +658,7 @@ For $L \geq c_{\text{geom}} \cdot R_{\text{spread}}$ with $c_{\text{geom}} \gg 1
 
 $$
 \|\mu_{x,m}^{\text{far}} - \mu_x\|^2 \approx (L/2 + R_{\text{spread}})^2 \geq (L/2)^2 (1 + 2/c_{\text{geom}})^2 \gg (L/2)^2 \gg \|\mu_{x,m}^{\text{inter}} - \mu_x\|^2
+
 $$
 
 Therefore, the variance contribution ordering (Step 3 of Definition 6.3) necessarily selects far-side clusters as outliers before any inter-swarm clusters. This establishes that for the hypothesis $L > D_{\min}(\varepsilon)$, the target set $I_k$ consists of walkers on the far side (away from the other swarm's barycenter), as claimed.
@@ -924,7 +933,6 @@ $$
 :::
 
 :::{prf:proof}
-:label: proof-thm-main-contraction-full
 
 **Step 1: Expected Change in Population Cross-Distances**
 

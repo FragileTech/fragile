@@ -1,4 +1,4 @@
-# Part XII: Factory Metatheorems
+# Factory Metatheorems
 
 :::{div} feynman-prose
 Now we come to what I consider the most elegant part of the whole framework. You have seen all these gates, barriers, and surgery operations. But where do they actually come from? How do you know they are correct?
@@ -136,6 +136,7 @@ Witness[LockCheck] := {
 
 $$
 \operatorname{Valid}(K_i^+) \Leftrightarrow \exists w \in W_i^T.\, \operatorname{Verify}(w) = \mathrm{true} \wedge \operatorname{Extract}(K_i^+) = w
+
 $$
 
 *Proof (5 Steps).*
@@ -146,7 +147,7 @@ $$
 - ScaleCheck: $P_4^T(x) \equiv \alpha(x) < \beta(x) + \lambda_c$ (subcriticality) — **Decidability:** Decidable (arithmetic)
 - StiffnessCheck: $P_7^T(x) \equiv \|\nabla\Phi(x)\| \geq C|\Phi(x) - \Phi_{\min}|^\theta$ (Łojasiewicz) — **Decidability:** $\Pi_2^0$ via variational methods
 
-The predicates are derived from the user-supplied $(\Phi, \mathfrak{D}, G)$ using type-specific templates from the {ref}`Gate Catalog <sec-node-specs>`.
+The predicates are derived from the user-supplied $(\Phi, \mathfrak{D}, G)$ using type-specific templates from the {ref}`Gate Catalog <sec-gate-node-specs>`.
 
 *Step 2 (Verifier Construction).* For each gate $i$, construct verifier $V_i^T: X \times \Gamma \to \{\mathrm{YES}, \mathrm{NO}\} \times \mathcal{K}_i$:
 1. **Input parsing:** Extract relevant state $x$ and context certificates $\Gamma$
@@ -227,6 +228,7 @@ Each barrier is instantiated from the corresponding literature theorem by substi
 
 $$
 \mathrm{Trig}(\mathcal{B}_j) \cap \mathrm{Pre}(V_i) = \emptyset
+
 $$
 
 where $V_i$ is the gate that triggers $\mathcal{B}_j$. This is checked syntactically: the trigger predicate $\mathrm{Trig}(\mathcal{B}_j)$ uses quantities from $K_i^-$ (the gate's NO output), while $\mathrm{Pre}(V_i)$ uses quantities from $\Gamma$ (prior context). Since $K_i^- \not\in \Gamma$ at evaluation time, circularity is impossible.
@@ -310,6 +312,7 @@ If any condition fails, return $K_{\mathrm{inadm}}$ routing to reconstruction ({
 
 $$
 \mathcal{P}(x, N_S) = (N_{\max} - N_S, \Phi_{\mathrm{residual}}(x)) \in \omega \times [0, \infty)
+
 $$
 
 ordered lexicographically. Each surgery strictly decreases $\mathcal{P}$:
@@ -322,6 +325,7 @@ Since $\mathcal{P}$ takes values in a well-founded order, termination follows.
 
 $$
 K^{\mathrm{re}} = (\mathcal{O}_S, (\Sigma, V), x', \Phi(x') < \Phi(x^-), N_S + 1)
+
 $$
 
 The certificate attests:
@@ -389,6 +393,7 @@ This follows the univalence principle {cite}`HoTTBook`: equivalent types have eq
 
 $$
 \frac{V_i^T(u, \Gamma) = (\mathrm{YES}, K_i^+) \quad u \sim u' \quad K_{\mathrm{Eq}}(u, u')}{V_i^T(u', \Gamma') = (\mathrm{YES}^\sim, T_i(K_i^+, K_{\mathrm{Eq}}))}
+
 $$
 
 The rule is applied automatically by the Sieve when an equivalence certificate is in context.
@@ -403,6 +408,7 @@ Promotion thresholds $\epsilon_{\mathrm{prom}}, \delta_{\mathrm{prom}}$ are type
 
 $$
 \forall u, u' \in X: u \sim_T u' \Rightarrow \exists i: u \sim_{\mathrm{Eq}_i} u'
+
 $$
 
 where $\sim_T$ is the type's intrinsic equivalence relation. For well-studied types (NLS, Navier-Stokes, Ricci flow), this follows from the classification of symmetries in {cite}`Olver93`.
@@ -467,6 +473,7 @@ Each tactic $E_i$ has a **decidability class**: E1--E3 are decidable **under the
 
 $$
 E_1^T \to E_2^T \to E_3^T \to E_4^T \to E_5^T \to \mathrm{Horizon}
+
 $$
 
 Each tactic is **complete for its class**: E1 catches all geometric obstructions, E2 catches all topological obstructions, etc. The union covers all known obstruction mechanisms for type $T$.

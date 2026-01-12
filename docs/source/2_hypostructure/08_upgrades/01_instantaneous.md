@@ -2,7 +2,8 @@
 title: "Instantaneous Upgrade Metatheorems"
 ---
 
-# Part XIV: Instantaneous Upgrade Metatheorems
+(sec-instantaneous-upgrades)=
+# Instantaneous Upgrade Metatheorems
 
 (sec-instantaneous-certificate-upgrades)=
 ## Instantaneous Certificate Upgrades

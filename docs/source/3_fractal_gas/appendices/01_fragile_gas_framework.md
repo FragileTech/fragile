@@ -483,7 +483,6 @@ is Borel (indeed, contained in $(\varphi(\mathcal X)\times\{0,1\})^N$ with $\var
 :::
 
 :::{prf:proof}
-:label: proof-lem-borel-image-of-the-projected-swarm-space
 Write $\mathcal X=\bigcup_m K_m$ with $K_m$ compact. Then $\varphi(\mathcal X)=\bigcup_m \varphi(K_m)$ is $F_\sigma$, hence Borel. Products and intersections with Borel sets are Borel; the status constraints are Borel in $\{0,1\}^N$. Hence the claim.
 
 **Q.E.D.**
@@ -648,7 +647,6 @@ This revival guarantee is applied in {prf:ref}`02_euclidean_gas` to verify the E
 This mean‑square continuity result is for the $k\ge 2$ regime. The $k=1$ discontinuity is handled by the single‑survivor revival mechanism in §16, after which analysis resumes with $k\ge 2$.
 ```
 :::{prf:proof}
-:label: proof-thm-revival-guarantee
 Let $j\in\mathcal A(\mathcal S)$ be any alive companion. By construction of the fitness potential with rescale floor $\eta$ and weights $(\alpha,\beta)$, we have $V_{\text{fit},j} \ge \eta^{\alpha+\beta}$. The cloning score of a dead walker ({prf:ref}`def-walker`) $i$ satisfies the lower bound
 
 $$
@@ -1158,7 +1156,6 @@ The axiomatic framework requires that any chosen noise measure satisfies two key
 :label: lem-validation-of-the-heat-kernel
 If the state space $(\mathcal{X}, d_{\mathcal{X}}, \mu)$ is a Polish metric measure space with a canonical heat kernel $p_t(x, \cdot)$ that has a uniformly bounded second moment, then defining the perturbation noise measure ({prf:ref}`def-valid-noise-measure`) as $\mathcal{P}_\sigma(x, \cdot) := p_{\sigma^2}(x, \cdot)$ satisfies the required axioms, provided the boundary ({prf:ref}`axiom-boundary-smoothness`)valid set $\mathcal{X}_{\mathrm{valid}}$ is sufficiently regular.
 :::{prf:proof}
-:label: proof-lem-validation-of-the-heat-kernel
 **Proof.**
 1.  **Axiom of Bounded Second Moment of Perturbation** ({prf:ref}`axiom-non-degenerate-noise`): The definition of the state space requires that the heat kernel has a uniformly bounded second moment, i.e., $\sup_{x \in \mathcal{X}} \mathbb{E}_{x' \sim p_t(x, \cdot)} [ d_{\mathcal{Y}}(\varphi(x'), \varphi(x))^2 ] \le M_{\text{pert}}^2$. This directly satisfies the axiom.
 2.  **Axiom of Boundary Regularity** ({prf:ref}`axiom-boundary-regularity`): The death probability is given by the function $P(s_{\text{out}}=0 | x) = \int_{\mathcal{X} \setminus \mathcal{X}_{\mathrm{valid}}} p_{\sigma^2}(x, dx')$. This is the convolution of the indicator function of the invalid set with the heat kernel. For non-pathological boundaries (e.g., boundaries that are not space-filling curves), the heat kernel is a well-known smoothing operator. Standard results in analysis show that the convolution of a smooth kernel with an indicator function results in a continuous function. For heat kernels specifically, the resulting function $P$ is smooth and therefore locally Hölder continuous. Global Hölder continuity follows on compact subsets of $\mathcal X$ by a finite subcover argument.
@@ -1187,7 +1184,6 @@ where $C_{\text{perim}}$ depends on the perimeter (surface measure) of $\partial
 :::
 
 :::{prf:proof}
-:label: proof-lem-validation-of-the-uniform-ball-measure
 **Proof.**
 1.  **Axiom of Bounded Second Moment of Perturbation** ({prf:ref}`axiom-non-degenerate-noise`): A sample $x'$ is drawn from the ball $B(x, \sigma)$. The displacement is, by definition, $d_{\mathcal{X}}(x', x) \le \sigma$. The expected squared projected displacement is therefore bounded:
 
@@ -1225,7 +1221,6 @@ $$
 If $\varphi$ is $L_\varphi$‑Lipschitz and distances are measured in the algorithmic space ({prf:ref}`def-algorithmic-space-generic`), the bound becomes $L_{\text{death}}\le C_d (\mathrm{Per}(\varphi(E))/\sigma)\,L_\varphi$.
 :::
 :::{prf:proof}
-:label: proof-lem-boundary-uniform-ball
 Write $P_\sigma= (\chi_E * K_\sigma)$ with $K_\sigma= \mathbb 1_{B_\sigma}/\mathrm{Vol}(B_\sigma)$. Approximate $K_\sigma$ in $W^{1,1}$ by smooth mollifiers $\{K_\sigma^{(\varepsilon)}\}$ with $\|\nabla K_\sigma^{(\varepsilon)}\|_1\le C_d/\sigma$. For $f\in BV$, $\nabla(f*K)=(Df)*K$ and $\|\nabla(f*K)\|_\infty\le \|Df\|(\mathbb R^d)\,\|\nabla K\|_1$. Taking $f=\chi_E$ gives a Lipschitz bound $\le C_d\,\mathrm{Per}(E)/\sigma$ for $\chi_E*K_\sigma^{(\varepsilon)}$. Passing to the $\varepsilon\to 0$ limit yields the stated bound. The projection to algorithmic space ({prf:ref}`def-algorithmic-space-generic`) introduces the $L_\varphi$ factor.
 :::{prf:remark} Projection choice
 :label: rem-projection-choice
@@ -1247,7 +1242,6 @@ $$
 with a constant $C_d'$ depending on dimension. Consequently $L_{\text{death}}\lesssim (\mathrm{Per}(\varphi(E))/\sigma)\,L_\varphi$ in the algorithmic metric.
 :::
 :::{prf:proof}
-:label: proof-lem-boundary-heat-kernel
 As above, $P_\sigma=\chi_E * p_{\sigma^2}$ and $\nabla(\chi_E * p_{\sigma^2})=(D\chi_E)*p_{\sigma^2}$. Since $\|\nabla p_{\sigma^2}\|_1\asymp 1/\sigma$, convolution with the BV measure $D\chi_E$ yields a Lipschitz bound $\lesssim (\mathrm{Per}(E)/\sigma)$. The projection factor $L_\varphi$ carries distances to the algorithmic space ({prf:ref}`def-algorithmic-space-generic`).
 **Q.E.D.**
 :::
@@ -1379,7 +1373,6 @@ $$
 In particular, for the empirical aggregator we may take $L_{\mu,M}=1/\sqrt{k}$ and $L_{m_2,M}=2V_{\max}/\sqrt{k}$.
 :::
 :::{prf:proof}
-:label: proof-lem-empirical-moments-lipschitz
 
 Gradients are $\nabla\mu = (1/k)\,\mathbf 1$ and $\nabla m_2 = (2/k)\,(v_1,\dots,v_k)$. Thus
 
@@ -1429,7 +1422,6 @@ This operator is a valid **Swarm ({prf:ref}`def-swarm-and-state-space`) Aggregat
     *   Structural Growth Exponents: $p_{\mu,S} = -1$, $p_{m_2,S} = -1$, $p_{\text{worst-case}} = -1$
 :::
 :::{prf:proof}
-:label: proof-lem-empirical-aggregator-properties
 
 **Proof.**
 Let $k = |\mathcal{A}(\mathcal{S})|$, $k_1 = |\mathcal{A}(\mathcal{S}_1)|$, and $k_2 = |\mathcal{A}(\mathcal{S}_2)|$ ({prf:ref}`def-alive-dead-sets`). Let the raw values be bounded by $|v_i| \le V_{\max}$.
@@ -1593,7 +1585,6 @@ $$
 Used in {prf:ref}`proof-thm-total-error-status-bound`.
 :::
 :::{prf:proof}
-:label: proof-lem-set-difference-bound
 **Proof.**
 1.  **Isolate the Difference in Sums:** Factoring out the common normalization constant $1/|S_1|$, we need to bound $\frac{1}{|S_1|} \left| \sum_{j \in S_1} f_j - \sum_{j \in S_2} f_j \right|$.
 2.  **Decompose the Sums:** We partition the sums over disjoint regions: $S_1 = (S_1 \setminus S_2) \cup (S_1 \cap S_2)$ and $S_2 = (S_2 \setminus S_1) \cup (S_1 \cap S_2)$. The difference of sums becomes:
@@ -1632,7 +1623,6 @@ $$
 Used in {prf:ref}`proof-thm-total-error-status-bound`.
 :::
 :::{prf:proof}
-:label: proof-lem-normalization-difference-bound
 **Proof.**
 1.  **Factor out the Common Sum:** The expression is $\left| \frac{1}{|S_1|} - \frac{1}{|S_2|} \right| \left| \sum_{j \in S_2} f_j \right|$.
 2.  **Bound the Sum:** Using the triangle inequality, $\left| \sum_{j \in S_2} f_j \right| \le \sum_{j \in S_2} |f_j| \le |S_2| \cdot M_f$.
@@ -1660,7 +1650,6 @@ $$
 This general error bound is applied in {prf:ref}`02_euclidean_gas` for distance operator analysis and in {prf:ref}`09_kl_convergence` for KL-divergence convergence proofs.
 :::
 :::{prf:proof}
-:label: proof-thm-total-error-status-bound
 **Proof.**
 1.  **Decompose the Total Error:** We introduce an intermediate term and apply the triangle inequality:
 
@@ -1833,7 +1822,6 @@ The four coefficients, $A, B, C, D$, are uniquely determined by the boundary con
 *   $D = \log(z_{\max}) + 1$
 :::
 :::{prf:proof}
-:label: proof-lem-cubic-patch-coefficients
 **Proof.**
 Let the interval be $[z_0, z_1]$, where $z_0 = z_{\max}-1$ and $z_1 = z_{\max}$. The four boundary conditions from the asymmetric rescale function ({prf:ref}`def-axiom-rescale-function`) are:
 *   $y_0 = P(z_0) = \log(z_{\max}) + 1$
@@ -1884,7 +1872,6 @@ P'(z(s)) = 3\left(\frac{1}{z_{\max}} - 2\log\left(1 + \frac{1}{z_{\max}}\right)\
 $$
 :::
 :::{prf:proof}
-:label: proof-lem-cubic-patch-derivative
 **Proof.**
 The proof is a direct substitution of the coefficients found in {prf:ref}`lem-cubic-patch-coefficients` into the general form for the derivative of a cubic polynomial expressed in the normalized coordinate system.
 1.  **Recall the Polynomial and its Derivative:**
@@ -1917,7 +1904,6 @@ This provides the exact analytical form of the derivative on the interval of int
 Let $z_0=z_{\max}-1$, $z_1=z_{\max}$, $y_0=\log(z_{\max})+1$, $y_1=\log(1+z_{\max})+1$, and endpoint slopes $m_0=P'(z_0)=1/z_{\max}$, $m_1=P'(z_1)=0$. Set the secant $\Delta:=(y_1-y_0)/(z_1-z_0)=\log(1+1/z_{\max})>0$. Then the Hermite cubic $P$ on $[z_0,z_1]$ with $(y_0,m_0),(y_1,m_1)$ is monotonically non‑decreasing.
 :::
 :::{prf:proof}
-:label: proof-lem-polynomial-patch-monotonicity
 By Fritsch–Carlson/Hyman sufficient conditions for monotone cubic Hermite interpolation, it suffices that $m_0,m_1\ge 0$ and $m_0, m_1 \le 3\Delta$ on the interval. Here $m_1=0$ and $m_0=1/z_{\max}>0$. Moreover, for all $z_{\max}>1$, $1/z_{\max} \le 1 < 3\log(1+1/z_{\max})=3\Delta$. Thus $0\le m_0,m_1\le 3\Delta$, and the interpolant is monotone on $[z_0,z_1]$ by the cited criterion.
 **Q.E.D.**
 :::
@@ -1944,7 +1930,6 @@ L_P = 1 + \frac{(3\log(2)-2)^2}{3(2\log(2)-1)} \approx 1.0054
 $$
 :::
 :::{prf:proof}
-:label: proof-lem-cubic-patch-derivative-bounds
 **Proof.**
 The proof proceeds by analyzing the function $q(s, x) = P'(z(s))$ for $s \in [0, 1]$ and $x = 1/z_{\max} \in (0, 1)$.
 1.  **Non-Negativity (Monotonicity):**
@@ -2012,7 +1997,6 @@ A critical property of the rescale function ({prf:ref}`def-axiom-rescale-functio
 The $Smooth Piecewise Rescale Function ({prf:ref}`def-axiom-rescale-function`)$ $g_A(z)$ is monotonically non-decreasing on $ℝ$.
 :::
 :::{prf:proof}
-:label: proof-lem-rescale-monotonicity
 **Proof.**
 To prove that $g_A(z)$ is monotonically non-decreasing, we must show that its first derivative, $g'_A(z)$, is non-negative for all $z ∈ ℝ$. We have already established that $g_A(z)$ is $C¹$, so its derivative is well-defined and continuous everywhere. We now analyze the sign of $g'_A(z)$ on each of the four segments of its piecewise definition.
 1.  **For $z ≤ 0$:**
@@ -2065,7 +2049,6 @@ where $L_P$ is the uniform upper bound on the derivative of the polynomial patch
 This Lipschitz continuity result enables the standardization and rescale continuity analysis in {prf:ref}`02_euclidean_gas`.
 :::
 :::{prf:proof}
-:label: proof-thm-rescale-function-lipschitz
 **Proof.**
 A function that is continuously differentiable on $\mathbb{R}$ is globally Lipschitz if the absolute value of its first derivative is uniformly bounded. We analyze each segment of $g_A$:
 1.  **$z \le 0$:** $g'_A(z) = \exp(z)$, whose supremum on $(-\infty, 0]$ is $1$.
@@ -2112,7 +2095,6 @@ $$
 In particular, the variance functional is $L_{\mathrm{var}}$‑Lipschitz with $L_{\mathrm{var}}:=L_{m_2,M}+2 V_{\max} L_{\mu,M}$.
 :::
 :::{prf:proof}
-:label: proof-lem-lipschitz-bound-for-the-variance-functional
 By the triangle inequality,
 
 $$
@@ -2161,7 +2143,6 @@ $$
 where $L_P=\|P'\|_\infty$ is the uniform derivative bound of the cubic patch from §8.2.2.5.
 :::
 :::{prf:proof}
-:label: proof-cor-closed-form-lipschitz-composite
 Combine the bound on $L_{\sigma\'_{\text{reg}}\circ\mathrm{Var}}$ with the Lipschitz constant for $g_A$ from {prf:ref}`thm-rescale-function-lipschitz` and apply the chain rule.
 **Q.E.D.**
 :::
@@ -2185,7 +2166,6 @@ This canonical rescale function ({prf:ref}`def-axiom-rescale-function`) is used 
 The **Canonical Logistic Rescale Function ({prf:ref}`def-axiom-rescale-function`)** defined in {prf:ref}`def-canonical-logistic-rescale-function-example` satisfies all four conditions of the **Axiom of a Well-Behaveboundary ({prf:ref}`axiom-boundary-smoothness`)on**.
 :::
 :::{prf:proof}
-:label: proof-thm-canonical-logistic-validity
 **Proof.**
 The proof consists of verifying each of the four axiomatic condiSmooth ({prf:ref}`axiom-boundary-smoothness`) was previously done in $02_relativistic_gas.md$ and is consolidated here.
 1.  **$C^1$ Smoothness:** The function is a composition of the exponential function, addition, and division. As the denominator is always non-zero, the function is infinitely differentiable ($C^\infty$) and therefore $C^1$.
@@ -2280,7 +2260,6 @@ $$
 $$
 :::
 :::{prf:proof}
-:label: proof-lem-single-walker-positional-error
 **Proof.**
 Let $\Delta_{\text{pos},i}$ denote the absolute error term we wish to bound for walker ({prf:ref}`def-walker`) $i$ in swarm ({prf:ref}`def-swarm-and-state-space`) states $\mathcal{S}_1$ and $\mathcal{S}_2$.
 1.  **Apply Linearity of Expectation:**
@@ -2325,7 +2304,6 @@ $$
 where $D_{\mathcal{Y}}$ is the diameter of the algorithmic space ({prf:ref}`def-algorithmic-space-generic`).
 :::
 :::{prf:proof}
-:label: proof-lem-single-walker-structural-error
 **Proof.**
 This result is a direct application of the [](#thm-total-error-status-bound).
 1.  **Identify the Function and Bound:**
@@ -2356,7 +2334,6 @@ $$
 $$
 :::
 :::{prf:proof}
-:label: proof-lem-single-walker-own-status-error
 **Proof.**
 The proof considers the two possible cases for a status change.
 1.  **Case 1: Walker ({prf:ref}`def-walker`) Dies ($s_{1,i}=1 \to s_{2,i}=0$)**: The expected distance in state $\mathcal{S}_1$ is $\mathbb{E}[d_i(\mathcal{S}_1)]$, which must lie in the interval $[0, D_{\mathcal{Y}}]$. The expected distance in state $\mathcal{S}_2$ is defined to be $\mathbb{E}[d_i(\mathcal{S}_2)] = 0$. The absolute difference is therefore $|\mathbb{E}[d_i(\mathcal{S}_1)] - 0| \le D_{\mathcal{Y}}$.
@@ -2378,7 +2355,6 @@ $$
 :::
 
 :::{prf:proof}
-:label: proof-thm-total-expected-distance-error-decomposition
 **Proof.**
 This decomposition is an identity that follows directly from partitioning the set of all walker ({prf:ref}`def-walker`) indices $\{1, ..., N\}$ into two disjoint subsets: those whose survival status is the same in both swarm ({prf:ref}`def-swarm-and-state-space`)s, and those whose status changes. The total sum of squared errors over all walkers is simply the sum of the errors over these two partitions.
 The set of walker ({prf:ref}`def-walker`)s whose error contribution could be non-zero is the union of the alive set ({prf:ref}`def-alive-dead-sets`)s, $\mathcal{A}(\mathcal{S}_1) \cup \mathcal{A}(\mathcal{S}_2)$. We partition this set into stable walkers, $\mathcal{A}_{\text{stable}} = \mathcal{A}(\mathcal{S}_1) \cap \mathcal{A}(\mathcal{S}_2)$, and unstable walkers, whose indices lie in the symmetric difference of the alive sets, $\mathcal{A}_{\text{unstable}} = \mathcal{A}(\mathcal{S}_1) \Delta \mathcal{A}(\mathcal{S}_2)$. For any walker **i** that is dead in both states, its expected distance is 0 in both states, so its error contribution is 0.
@@ -2397,7 +2373,6 @@ $$
 where $D_{\mathcal{Y}}$ ({prf:ref}`axiom-bounded-algorithmic-diameter`) is the diameter of the algorithmic space ({prf:ref}`def-algorithmic-space-generic`).
 :::
 :::{prf:proof}
-:label: proof-lem-total-squared-error-unstable
 **Proof.** For any unstable walker ({prf:ref}`def-walker`) $i$ (i.e., $s_{1,i}\neq s_{2,i}$), [](#lem-single-walker-own-status-error) gives
 $|\mathbb{E}[d_i(\mathcal{S}_1)] - \mathbb{E}[d_i(\mathcal{S}_2)]| \le D_{\mathcal{Y}}$.
 Squaring and summing over all unstable walker ({prf:ref}`def-walker`)s yields the stated bound, since the count
@@ -2416,7 +2391,6 @@ $$
 $$
 :::
 :::{prf:proof}
-:label: proof-lem-total-squared-error-stable
 **Proof.**
 The total error for a single stable walker ({prf:ref}`def-walker`) is first decomposed into a positional component and a structural component. The squared L2-norm of the total error over all stable walkers is then bounded by combining the established bounds for the sum of the squares of these individual components.
 1.  **Decomposition of Total Stable Error:** From [](#sub-lem-stable-walker ({prf:ref}`def-walker`)-error-decomposition), the total squared error for stable walkers is bounded by twice the sum of the squared positional and structural error components:
@@ -2463,7 +2437,6 @@ $$
 :::
 
 :::{prf:proof}
-:label: proof-lem-sub-stable-walker-error-decomposition
 **Proof.**
 1.  **Decompose Single-Walker ({prf:ref}`def-walker`) Error:** For each stable walker $i \in \mathcal{A}_{\text{stable}}$, we introduce the intermediate term $\mathbb{E}_{c \sim \mathbb{C}_i(\mathcal{S}_1)} [d_{\text{alg}}(x_{2,i}, x_{2,c})]$ and apply the triangle inequality:
 
@@ -2491,7 +2464,6 @@ $$
 :::
 
 :::{prf:proof}
-:label: proof-lem-sub-stable-positional-error-bound
 **Proof.**
 1.  **Bound the Single-Walker ({prf:ref}`def-walker`) Squared Error:** We start with the bound on $\Delta_{\text{pos},i}$ from [](#lem-single-walker-positional-error) and apply the inequality $(a+b)^2 \le 2a^2 + 2b^2$:
 
@@ -2561,7 +2533,6 @@ $$
 :::
 
 :::{prf:proof}
-:label: proof-lem-sub-stable-structural-error-bound
 **Proof.**
 The proof proceeds by taking the established bound for the structural error of a single stable walker ({prf:ref}`def-walker`) and summing its square over all stable walkers.
 1.  **Bound the Single-Walker ({prf:ref}`def-walker`) Squared Error:** We start with the bound on the structural error component for a single walker $i$, $\Delta_{\text{struct},i}$, as established in [](#lem-single-walker-structural-error). The bound is:
@@ -2590,7 +2561,6 @@ $$
 :::
 #### 10.2.5 Lemma: Bound on the Total Squared Error for Unstable Walker ({prf:ref}`def-walker`)s
 :::{prf:proof}
-:label: proof-line-2408
 **Proof.**
 1.  **Analyze a Single Unstable Walker ({prf:ref}`def-walker`):** Let $i$ be an unstable walker, meaning its status $s_i$ changes. From [](#lem-single-walker-own-status-error), the absolute error in its expected distance is bounded by $D_{\mathcal{Y}}$ ({prf:ref}`axiom-bounded-algorithmic ({prf:ref}`def-algorithmic-space-generic`)-diameter`). Therefore, the squared error for any single unstable walker is bounded by $D_{\mathcal{Y}}^2$.
 2.  **Sum Over All Unstable Walker ({prf:ref}`def-walker`)s:** The set of unstable walkers, $\mathcal{A}_{\text{unstable}}$, is precisely the set of indices where $s_{1,i} \neq s_{2,i}$. The number of walkers in this set is $|\mathcal{A}_{\text{unstable}}| = \sum_{j=1}^N (s_{1,j} - s_{2,j})^2$, since $(s_{1,j} - s_{2,j})^2$ is 1 if the status changes and 0 otherwise.
@@ -2605,7 +2575,6 @@ $$
 :::
 #### 10.2.6 Lemma: Bound on the Total Squared Error for Stable Walkers
 :::{prf:proof}
-:label: proof-line-2422
 **Proof.**
 The total error for a single stable walker ({prf:ref}`def-walker`) is first decomposed into a positional component and a structural component. The squared L2-norm of the total error over all stable walkers is then bounded by combining the established bounds for the sum of the squares of these individual components.
 1.  **Decomposition of Total Stable Error:** From [](#sub-lem-stable-walker-error-decomposition), the total squared error for stable walkers is bounded by twice the sum of the squared positional and structural error components:
@@ -2634,7 +2603,6 @@ $$
 :::
 ##### 10.2.6.1 Sub-Lemma: Decomposition of Stable Walker Error
 :::{prf:proof}
-:label: proof-line-2450
 **Proof.**
 1.  **Decompose Single-Walker Error:** For each stable walker ({prf:ref}`def-walker`) $i \in \mathcal{A}_{\text{stable}}$, we introduce the intermediate term $\mathbb{E}_{c \sim \mathbb{C}_i(\mathcal{S}_1)} [d_{\text{alg}}(x_{2,i}, x_{2,c})]$ and apply the triangle inequality:
 
@@ -2649,7 +2617,6 @@ The term $\Delta_{\text{pos},i}$ is the error from positional change over a fixe
 :::
 ##### 10.2.6.2 Sub-Lemma: Bounding the Positional Error Component
 :::{prf:proof}
-:label: proof-line-2464
 **Proof.**
 1.  **Bound the Single-Walker Squared Error:** We start with the bound on $\Delta_{\text{pos},i}$ from [](#lem-single-walker ({prf:ref}`def-walker`)-positional-error) and apply the inequality $(a+b)^2 \le 2a^2 + 2b^2$:
 
@@ -2712,7 +2679,6 @@ $$
 :::
 ##### 10.2.6.3 Sub-Lemma: Bounding the Structural Error Component for Stable Walkers
 :::{prf:proof}
-:label: proof-line-2526
 **Proof.**
 The proof proceeds by taking the established bound for the structural error of a single stable walker ({prf:ref}`def-walker`) and summing its square over all stable walkers in the set $\mathcal{A}_{\text{stable}}$.
 1.  **Bound the Single-Walker Squared Error:** We start with the bound on the structural error component for a single walker $i$, $\Delta_{\text{struct},i}$, as established in [](#lem-single-walker-structural-error). Let $n_c = \sum_{j=1}^N (s_{1,j} - s_{2,j})^2$ be the total number of status changes. The bound from [](#lem-single-walker-structural-error) is:
@@ -2759,7 +2725,6 @@ where the **Expected Distance Error Coefficients** are defined as:
 *   $C_{\text{status},d}^{(2)}(k_1) := \frac{8 k_1 D_{\mathcal{Y}}^2}{(k_1 - 1)^2}$
 :::
 :::{prf:proof}
-:label: proof-thm-expected-raw-distance-bound
 **Proof.**
 The proof is a direct consequence of decomposing the total error and applying the bounds established in the preceding lemmas.
 1.  **Decomposition of Total Error:** Following [](#thm-total-expected-distance-error-decomposition), the total squared error is the sum of the error from the set of stable walker ({prf:ref}`def-walker`)s ($E^2_{\text{stable}}$) and the set of unstable walkers ($E^2_{\text{unstable}}$).
@@ -2790,7 +2755,6 @@ $$
 $$
 :::
 :::{prf:proof}
-:label: proof-thm-expected-raw-distance-k1
 **Proof.**
 The proof follows directly from the definitions of the Raw Value Operator ({prf:ref}`def-raw-value-operator`) for distance and the Companion Selection Measure for the $k=1$ case. Let $\mathcal{S}$ be a swarm ({prf:ref}`def-swarm-and-state-space`) with $|\mathcal{A}(\mathcal{S})| = 1$, and let the single survivor be walker ({prf:ref}`def-walker`) $j$.
 1.  **Expected Distance for the Survivor (Walker ({prf:ref}`def-walker`) **j**):**
@@ -2829,7 +2793,6 @@ $$
 where $N$ is the total number of walker ({prf:ref}`def-walker`)s and $D_{\mathcal{Y}}$ ({prf:ref}`axiom-bounded-algorithmic-diameter`) is the diameter of the algorithmic space ({prf:ref}`def-algorithmic-space-generic`).
 :::
 :::{prf:proof}
-:label: proof-thm-distance-operator-satisfies-bounded-variance-axiom
 **Proof.**
 The proof proceeds by bounding the variance of each component of the N-dimensional raw distance vector.
 1.  **Decomposition of Total Variance:**
@@ -2879,7 +2842,6 @@ and the coefficients $C_{\dots,d}$ are the deterministic **Expected Distance Err
 With the explicit derivation of this function, we have formally proven that the Distance-to-Companion operator is a valid raw value ({prf:ref}`def-raw-value-operator`) operator that satisfies the **Axiom of Mean-Square Continuity for Raw Values**. This function will now be used as a direct input to the continuity analysis of the standardization operator ({prf:ref}`def-standardization-operator-n-dimensional`).
 :::
 :::{prf:proof}
-:label: proof-thm-distance-operator-mean-square-continuity
 **Proof.**
 The proof bounds the total expected squared error by decomposing it into a stochastic variance component and a deterministic mean component. Let $\mathbf{d}_1 = \mathbf{d}(\mathcal{S}_1)$ and $\mathbf{d}_2 = \mathbf{d}(\mathcal{S}_2)$.
 1.  **Decomposition of Total Error:**
@@ -3017,7 +2979,6 @@ where $(2n-1)!! = 1 \cdot 3 \cdot 5 \cdots (2n-1)$ is the double factorial.
 Referenced by {prf:ref}`def-fragile-gas-algorithm`.
 :::
 :::{prf:proof}
-:label: proof-lem-sigma-reg-derivative-bounds
 Direct computation of derivatives of $\sigma'_{	ext{reg}}(V) = (V + \sigma'^2_{\min})^{1/2}$:
 
 $$
@@ -3068,7 +3029,6 @@ and $L_{\sigma\'_{\text{reg}}} = \frac{1}{2\sigma'_{\min}}$ is the finite, globa
 This value continuity lemma is applied in {prf:ref}`02_euclidean_gas` for bounding standardization error with respect to reward and distance value changes.
 :::
 :::{prf:proof}
-:label: proof-lem-stats-value-continuity
 **Proof.**
 The bound for the mean $\mu$ is a direct application of the axiom in [](#def-swarm ({prf:ref}`def-swarm-and-state-space`)-aggregation-operator-axiomatic). The bound for $\sigma'$ is derived by composition. $\sigma'(\mathcal{S}, \mathbf{v})$ is the composition of the variance function $\text{Var}(\mathbf{v}) = m_2(\mathcal{S}, \mathbf{v}) - \mu(\mathcal{S}, \mathbf{v})^2$ and the smoothed function $\sigma\'_{\text{reg}}(V)$.
 1.  **Lipschitz Constant of $\sigma\'_{\text{reg}}(V)$:** The function $\sigma\'_{\text{reg}}(V) = \sqrt{V + \sigma'^2_{\min}}$ is infinitely differentiable. Its first derivative is $(\sigma\'_{\text{reg}})'(V) = \frac{1}{2\sqrt{V + \sigma'^2_{\min}}}$, which is maximized at $V = 0$. Therefore, its global Lipschitz constant is $L_{\sigma\'_{\text{reg}}} = \frac{1}{2\sigma'_{\min}}$, a finite, positive constant.
@@ -3105,7 +3065,6 @@ $$
 This structural continuity lemma is applied in {prf:ref}`02_euclidean_gas` for analyzing standardization error with respect to walker ({prf:ref}`def-walker`) status changes.
 :::
 :::{prf:proof}
-:label: proof-lem-stats-structural-continuity
 **Proof.**
 The proof is identical in structure to that of [](#lem-stats-value-continuity), but it uses the structural continuity functions ($L_{\mu,S}$, $L_{m_2,S}$) from the aggregator axiom instead of the value-based Lipschitz constants. The change in variance due to structure is first shown to be bounded by $(L_{m_2,S}(\mathcal{S}_1, \mathcal{S}_2) + 2V_{\max} L_{\mu,S}(\mathcal{S}_1, \mathcal{S}_2)) \|\mathbf{s}_1-\mathbf{s}_2\|_2^2$. This is then composed with the globally Lipschitz function $\sigma\'_{\text{reg}}(\cdot)$ (with Lipschitz constant $L_{\sigma\'_{\text{reg}}}$), yielding the final result for $L_{\sigma',S}$.
 **Q.E.D.**
@@ -3126,7 +3085,6 @@ $$
 This universal bound on standardized vector norms is applied in {prf:ref}`02_euclidean_gas` for bounding the magnitude of standardized reward and distance scores in error analysis.
 :::
 :::{prf:proof}
-:label: proof-thm-z-score-norm-bound
 **Proof.**
 The proof proceeds by first establishing a uniform bound on the magnitude of any single component of the standardized vector and then summing the squares of these bounds.
 1.  **Bound a Single Standardized Component:**
@@ -3199,7 +3157,6 @@ $$
 
 :::
 :::{prf:proof}
-:label: proof-thm-asymptotic-std-dev-structural-continuity
 **Proof.**
 The proof proceeds by analyzing the asymptotic form of the bound for the structural Lipschitz constant of the regularized standard deviation, $L_{\sigma',S}$, which was established in [](#lem-stats-structural-continuity).
 1.  **Recall the Bound for $L_{\sigma',S}$:**
@@ -3264,7 +3221,6 @@ where the error components are formally defined in the following sections.
 :::
 
 :::{prf:proof}
-:label: proof-thm-standardization-operator-unified-mean-square-continuity
 **Proof.**
 The proof follows from decomposing the total error using an intermediate vector and then taking the expectation. The intermediate vector is $z_{\text{inter}} := z(\mathcal{S}_1, \mathbf{v}_2, M)$, which uses the second swarm ({prf:ref}`def-swarm-and-state-space`)'s raw values with the first swarm's structure.
 The total squared error is bounded using the inequality $\|a+b\|_2^2 \leq 2(\|a\|_2^2 + \|b\|_2^2)$:
@@ -3373,7 +3329,6 @@ $$
 :::
 
 :::{prf:proof}
-:label: proof-line-3101
 **Proof.**
 The proof of the decomposition is a direct algebraic manipulation.
 1.  **Start with the Definition of the Error.**
@@ -3419,7 +3374,6 @@ where $\sigma'_{\min,\text{bound}} := \sqrt{\kappa_{\text{var,min}}+\varepsilon_
 :::
 
 :::{prf:proof}
-:label: proof-lem-sub-direct-value-shift-bound
 **Proof.**
 The proof is a direct application of the definition of $\Delta_{\text{direct}}$ and the lower bound on $\sigma'_1$. The squared norm is $(1/(\sigma'_1)^2)\|\mathbf v_1 - \mathbf v_2\|_2^2$. From [](#def-statistical-properties-measurement), the regularized standard deviation obeys $\sigma'_1\ge \sigma'_{\min,\text{bound}}$, hence $1/(\sigma'_1)^2 \le 1/(\sigma'_{\min,\text{bound}})^2$.
 **Q.E.D.**
@@ -3440,7 +3394,6 @@ where $L_{\mu,M}(S)$ is the axiomatic **Value Lipschitz Function** for the aggre
 :::
 
 :::{prf:proof}
-:label: proof-lem-sub-mean-shift-bound
 **Proof.**
 The squared norm is $k \cdot (\mu_2 - \mu_1)^2 / (\sigma'_1)^2$. From the aggregator axiom ([](#def-swarm ({prf:ref}`def-swarm-and-state-space`)-aggregation-operator-axiomatic)), $(\mu_2 - \mu_1)^2 \leq (L_{\mu,M}(S))^2 \|v_1 - v_2\|_2^2$. Combining this with the lower bound on $\sigma'_1$ gives the final result.
 **Q.E.D.**
@@ -3461,7 +3414,6 @@ where $L_{\sigma',M}(S)$ is the derived Lipschitz constant for the regularized s
 :::
 
 :::{prf:proof}
-:label: proof-lem-sub-statistical-fluctuation-bound
 **Proof.**
 The squared norm is $\|z_2\|_2^2 \cdot (\sigma'_2 - \sigma'_1)^2 / (\sigma'_1)^2$. We bound each term:
 - From [](#thm-z-score-norm-bound), $\|z_2\|_2^2 \leq k\,(2V_{\max}/\sigma'_{\min,\text{bound}})^2$.
@@ -3509,7 +3461,6 @@ where $L_{\mu,M}(S)$ and $L_{\sigma',M}(S)$ are the value Lipschitz functions fo
 ##### 11.2.2.6. Proof of Theorem 11.2.2
 :label: proof-thm-standardization-value-error-mean-square
 :::{prf:proof} of {prf:ref}`thm-standardization-value-error-mean-square`
-:label: proof-proof-thm-standardization-value-error-mean-square
 Let $S_1$ be a fixed swarm ({prf:ref}`def-swarm-and-state-space`) state. Let $V$ be a raw value ({prf:ref}`def-raw-value-operator`) operator that is mean-square continuous, such that $\mathbb{E}[\|\mathbf{v}_1 - \mathbf{v}_2\|_2^2] \le F_{V,ms}(\mathcal{S}_1, \mathcal{S}_2)$ for some deterministic bounding function $F_{V,ms}$.
 The expected squared value error is bounded as follows:
 
@@ -3521,7 +3472,6 @@ $$
 where $C_{V,\text{total}}(\mathcal{S}_1)$ is the **Total Value Error Coefficient** from [](#def-lipschitz-value-error-coefficients).
 :::
 :::{prf:proof}
-:label: proof-proof-thm-standardization-value-error-mean-square-2
 **Proof.**
 1.  **Start with the Decomposed Error Bound.**
     From [](#sub-lem-value-error-decomposition), we have a deterministic bound on the squared error for any specific realization of $v_1$ and $v_2$:
@@ -3586,7 +3536,6 @@ where:
 :::
 
 :::{prf:proof}
-:label: proof-lem-sub-structural-error-decomposition
 **Proof.**
 The proof follows from partitioning the sum of squared errors over the N walker ({prf:ref}`def-walker`) indices into a sum over walkers whose status changes and a sum over walkers whose status is stable. These two sets of indices are disjoint. The two corresponding error vectors therefore have disjoint support, are orthogonal, and the squared norm of their sum is the sum of their squared norms.
 **Q.E.D.**
@@ -3608,7 +3557,6 @@ $$
 :::
 
 :::{prf:proof}
-:label: proof-lem-sub-direct-structural-error
 **Proof.**
 The direct error vector has $n_c$ non-zero components. For each such component **i**, one of $z_{1,i}$ or $z_{2,i}$ is zero, and the other is a valid Z-score. From [](#thm-z-score-norm-bound), any single Z-score is bounded by $|z_j| \leq 2V_{\max}/\sigma'_{\min,\text{bound}}$. The squared error for component **i** is thus bounded by $(2V_{\max}/\sigma'_{\min,\text{bound}})^2$. Summing this bound over the $n_c$ unstable walker ({prf:ref}`def-walker`)s gives the final result.
 **Q.E.D.**
@@ -3629,7 +3577,6 @@ where $C_{S,indirect}$ is the **Total Indirect Structural Error Coefficient**.
 :::
 
 :::{prf:proof}
-:label: proof-lem-sub-indirect-structural-error
 **Proof.**
 The proof combines the algebraic error decomposition with the deterministic bounds for each component. From [](#sub-lem-structural-error-decomposition), $\|\Deltaz\|^2 = \|\Delta_{\text{direct}}\|^2 + \|\Delta_{\text{indirect}}\|^2$. We substitute the deterministic bounds from [](#sub-lem-direct-structural-error) and [](#sub-lem-indirect-structural-error). This gives a deterministic upper bound on the squared error for any realization of $v_2$:
 
@@ -3741,7 +3688,6 @@ $$
 $$
 :::
 :::{prf:proof}
-:label: proof-thm-deterministic-error-decomposition
 **Proof.**
 The proof follows from decomposing the total error using an intermediate vector and then applying the triangle inequality. Let the intermediate vector be $z_{\text{in}}ter := z(S_1, v_2, M)$, which uses the second raw value ({prf:ref}`def-raw-value-operator`) vector with the first swarm ({prf:ref}`def-swarm-and-state-space`)'s structure.
 The total error vector is $z_1 - z_2 = (z_1 - z_{\text{in}}ter) + (z_{\text{in}}ter - z_2)$.
@@ -3799,7 +3745,6 @@ $$
 $$
 :::
 :::{prf:proof}
-:label: proof-line-3447
 **Proof.**
 The proof of the decomposition is a direct algebraic manipulation.
 1.  **Start with the Definition of the Error.**
@@ -3843,7 +3788,6 @@ $$
 where $C_{V,total}(S)$ is the **Total Value Error Coefficient**, a deterministic, finite constant that depends on the state **S** but not on the raw value vectors, as formally defined in the subsequent section.
 :::
 :::{prf:proof}
-:label: proof-thm-lipschitz-value-error-bound
 **Proof.**
 The proof proceeds by bounding the squared L2-norm of each of the three components from the algebraic decomposition in [](#sub-lem-lipschitz-value-error-decomposition) and then summing them.
 1.  **Bound the Direct Shift Component ($\Delta_{\text{direct}}$):**
@@ -3928,7 +3872,6 @@ $$
 where $C_{S,direct}$ and $C_{S,indirect}(S_1, S_2)$ are the **Structural Error Coefficients**, which are deterministic, finite coefficients formally defined in the subsequent section. The presence of the $n_c^2$ term confirms that the error is not linearly proportional to the number of status changes.
 :::
 :::{prf:proof}
-:label: proof-thm-lipschitz-structural-error-bound
 **Proof.**
 The proof proceeds by decomposing the total structural error vector $\Deltaz = z(S_1, v) - z(S_2, v)$ into two orthogonal components: a "direct" error from walker ({prf:ref}`def-walker`)s whose status changes, and an "indirect" error affecting walkers whose status is stable.
 1.  **Decomposition of Structural Error:** The N-dimensional error vector $\Deltaz$ is partitioned based on walker ({prf:ref}`def-walker`) indices. The squared norm is the sum of the squared norms over these disjoint sets:
@@ -4000,7 +3943,6 @@ $$
 where $C_{V,\text{total}}$, $C_{S,\text{direct}}$, and $C_{S,\text{indirect}}$ are the finite, deterministic coefficients defined in [](#def-lipschitz-value-error-coefficients) and [](#def-lipschitz-structural-error-coefficients).
 :::
 :::{prf:proof}
-:label: proof-thm-global-continuity-patched-standardization
 **Proof.**
 The proof is a direct assembly of the bounds derived in the preceding theorems of this section.
 1.  **Decomposition of Total Error:** From [](#thm-deterministic-error-decomposition), the total squared error is bounded by the sum of the squared value error and the squared structural error:
@@ -4094,7 +4036,6 @@ where the bounds are defined in terms of the global algorithmic parameters:
 :::
 
 :::{prf:proof}
-:label: proof-lem-potential-boundedness
 **Proof.**
 The proof follows from the definition of the potential function and the properties of the rescale function ({prf:ref}`def-axiom-rescale-function`).
 1.  **Bound the Rescaled Components.**
@@ -4126,7 +4067,6 @@ where the Lipschitz constants $L_{F,r}$ and $L_{F,d}$ are finite, state-independ
 :::
 
 :::{prf:proof}
-:label: proof-lem-component-potential-lipschitz
 **Proof.**
 The proof proceeds by bounding the partial derivatives of $F$ with respect to its inputs, $z_r$ and $z_d$.
 1.  **Partial Derivative with respect to $z_r$:**
@@ -4163,7 +4103,6 @@ $$
 
 :::
 :::{prf:proof}
-:label: proof-lem-sub-potential-unstable-error-mean-square
 **Proof.**
 For ({prf:ref}`def-alive-dead-sets`) ({prf:ref}`def-swarm-and-state-space`) any walker ({prf:ref}`def-walker`) $i$ in the unstable set $\mathcal{A}_{\text{unstable}}$, its survival status changes. This means one of $V_{1,i}$ or $V_{2,i}$ is zero, while the other is a non-zero potential. From [](#lem-potential-boundedness), any non-zero potential is bounded by $V_{\text{pot,max}}$. Thus, the squared difference $|V_{1,i} - V_{2,i}|^2$ is deterministically bounded by $V_{\text{pot,max}}^2$.
 The total squared error from this set is therefore bounded by the number of unstable walker ({prf:ref}`def-walker`)s ($n_c$) multiplied by this bound: $V_{\text{pot,max}}^2 \cdot n_c(\mathcal{S}_1, \mathcal{S}_2)$. Since this bound is a deterministic constant, its expectation is the constant itself.
@@ -4189,7 +4128,6 @@ where:
 :::
 
 :::{prf:proof}
-:label: proof-lem-sub-potential-stable-error-mean-square
 **Proof.**
 The proof proceeds by applying the Lipschitz continuity of the fitness potential function and then taking the expectation.
 1.  **Bound the Single-Walker ({prf:ref}`def-walker`) Error:**
@@ -4242,7 +4180,6 @@ where $F_{\text{pot,det}}$ is a deterministic bounding function that is jointly 
 #### 12.3.2 Proof of Deterministic Continuity for the Fitness Potential Operator
 :label: proof-deterministic-potential-continuity
 :::{prf:proof}
-:label: proof-proof-deterministic-potential-continuity
 **Proof.**
 The proof proceeds by deterministically decomposing the total error and applying the established continuity properties of the constituent operators.
 1.  **Decomposition of Total Error:** The total squared error is decomposed into contributions from unstable walker ({prf:ref}`def-walker`)s (whose status changes) and stable walkers.
@@ -4358,7 +4295,6 @@ $$
 where $\Delta_{\text{pert}}^2(\mathcal{S})$ is the **Total Perturbation-Induced Displacement** from [](#def-perturbation-fluctuation-bounds-reproof).
 :::
 :::{prf:proof}
-:label: proof-lem-sub-perturbation-positional-bound-reproof
 
 **Proof.**
 For ({prf:ref}`def-algorithmic-space-generic`) ({prf:ref}`def-swarm-and-state-space`) any walker ({prf:ref}`def-walker`) $i$, by applying the triangle inequality to the distance $d_{\mathcal{Y}}(\varphi(x'_{1,i}), \varphi(x'_{2,i}))$ using the input positions as intermediate points, and then using the inequality $(a+b+c)^2 \le 3(a^2 + b^2 + c^2)$, we get the following bound on the squared distance for the $i$-th walker:
@@ -4423,7 +4359,6 @@ $$
 where $B_M(N)$ is the **Mean Displacement Bound** and $B_S(N, \delta')$ is the **Stochastic Fluctuation Bound**, as defined in the subsequent section.
 :::
 :::{prf:proof}
-:label: proof-lem-sub-probabilistic-bound-perturbation-displacement-reproof
 
 **Proof.**
 The proof proceeds by applying McDiarmid's Inequality ({prf:ref}`thm-mcdiarmids-inequality`) to the function that computes the total perturbation-induced displacement.
@@ -4482,7 +4417,6 @@ d_{\text{Disp},\mathcal{Y}}(\mathcal{S}'_1, \mathcal{S}'_2)^2 \le 3 \frac{\Delta
 $$
 :::
 :::{prf:proof}
-:label: proof-thm-perturbation-operator-continuity-reproof
 
 **Proof.**
 The proof constructs a high-probability bound for the output displacement metric ({prf:ref}`def-n-particle-displacement-metric`) by composing the algebraic and probabilistic bounds from the preceding lemmas.
@@ -4545,7 +4479,6 @@ $$
 where the term involving the **Boundary Instability Factor ($L_{\text{death}}$)** and **Boundary Smoothing Exponent ($\alpha_B$)** is a direct consequence of the axiom.
 :::
 :::{prf:proof}
-:label: proof-thm-post-perturbation-status-update-continuity
 **Proof.**
 The proof proceeds by analyzing the expected squared difference between the final status variables for each walker ({prf:ref}`def-walker`) and then summing the results.
 1.  **Decomposition of Expected Status Change:**
@@ -4728,7 +4661,6 @@ L_{\pi,i} := \frac{V_{\text{pot,max}} + \varepsilon_{\text{clone}}}{p_{\max} \cd
 $$
 :::
 :::{prf:proof}
-:label: proof-lem-cloning-probability-lipschitz
 
 **Proof.**
 The proof proceeds by finding the Lipschitz constant of the composition of the **clip** function and the normalized score function, $S(v_c, v_i)/p_{\max}$. The **clip** function (min(1, max(0, x))) has a Lipschitz constant of 1. Therefore, the Lipschitz constant of $\pi$ is bounded by the Lipschitz constant of the normalized score. We find this by bounding the partial derivatives of the score function $S(v_c, v_i)$.
@@ -4762,7 +4694,6 @@ where the coefficients are:
 *   $C_{\text{val}}^{(\pi)} := \max(L_{\pi,c}, L_{\pi,i})$ (from potential vector change)
 :::
 :::{prf:proof}
-:label: proof-thm-expected-cloning-action-continuity
 
 **Proof.**
 The proof decomposes the total error into a structural component and a value component using the triangle inequality:
@@ -4786,7 +4717,6 @@ $$
 where the two error components are bounded in the subsequent lemmas.
 :::
 :::{prf:proof}
-:label: proof-thm-total-expected-cloning-action-continuity
 
 **Proof.**
 Let $\overline{P}_{k,i} = \overline{P}_{\text{clone}}(\mathcal{S}_k)_i$ ({prf:ref}`def-swarm-and-state-space`). We introduce an intermediate term and apply the triangle inequality to decompose the total error. Let $P_{k,i}(\mathbf{V}) := P_{\text{clone}}(\mathcal{S}_k, \mathbf{V})_i$ be the conditional expected action. The total error is $|\mathbb{E}_{\mathbf{V}_1}[P_{1,i}(\mathbf{V}_1)] - \mathbb{E}_{\mathbf{V}_2}[P_{2,i}(\mathbf{V}_2)]|$.
@@ -4810,7 +4740,6 @@ E_{\text{struct}}^{(\overline{P})}(\mathcal{S}_1, \mathcal{S}_2) \le C_{\text{st
 
 $$
 :::{prf:proof}
-:label: proof-lem-total-clone-prob-structural-error
 
 **Proof.**
 The structural error is $|E_V_1[P_1,i(V_1) - P_2,i(V_1)]|$. By Jensen's inequality, this is $\leq E_V_1[|P_1,i(V_1) - P_2,i(V_1)|]$. From [](#thm-expected-cloning-action-continuity), the term inside the expectation is bounded by $C_{\text{struct}}^{(π)}(k_1) \cdot n_c$. Since this bound is a deterministic constant, its expectation is the bound itself.
@@ -4833,7 +4762,6 @@ $$
 :::
 
 :::{prf:proof}
-:label: proof-thm-potential-operator-is-mean-square-continuous
 
 **Proof.**
 This property is established by the detailed analysis in Section 12.2, culminating in **[](#thm-fitness-potential-mean-square-continuity)**. The explicit form of $F_{\text{pot}}$ is constructed from the composition of the mean-square continuity bounds of all preceding operators.
@@ -4850,7 +4778,6 @@ E_{\text{val}}^{(\overline{P})}(\mathcal{S}_1, \mathcal{S}_2) \le C_{\text{val}}
 $$
 where $F_{\text{pot}}$ is the **Expected Squared Potential Error Bound**.
 :::{prf:proof}
-:label: proof-lem-total-clone-prob-value-error
 
 **Proof.**
 The error is $|E_V_1[f(V_1)] - E_V_2[f(V_2)]|$ where $f(V) = P_{\text{clone}}(S_2, V)_i$.
@@ -4885,7 +4812,6 @@ The state-dependent functions in the continuity bound for the Cloning Transition
 ##### 15.2.8.2. Proof of Mean-Square Continuity for the Cloning Operator
 :label: proof-cloning-transition-operator-continuity-recorrected
 :::{prf:proof}
-:label: proof-proof-cloning-transition-operator-continuity-recorrected
 **Proof.**
 The proof establishes the bound by relating the expected output displacement to the expected intermediate positional displacement, and then bounding the latter by composing the continuity bounds of the underlying measurement and potential-calculation pipeline.
 Let $V_{\text{in}} := d_{\text{Disp},\mathcal{Y}}(\mathcal{S}_1, \mathcal{S}_2)^2$ be the initial squared displacement. Let $\mathcal{S}'_1$ and $\mathcal{S}'_2$ be the intermediate swarms after the cloning transition.
@@ -4949,7 +4875,6 @@ $$
 where $C_P$, $H_P$, and $K_P$ are finite, state-dependent, non-negative coefficients.
 :::
 :::{prf:proof}
-:label: proof-lem-sub-bound-sum-total-cloning-probs
 
 **Proof.**
 The proof proceeds by bounding the change in the cloning probability and then relating that change to the input displacement.
@@ -5028,7 +4953,6 @@ Then, the one-step transition $\mathcal{S}_t \to \mathcal{S}_{t+1}$ is character
 :::
 :::
 :::{prf:proof}
-:label: proof-thm-k1-revival-state
 
 **Proof.**
 The proof proceeds by analyzing the cloning decision for the single survivor and for an arbitrary dead walker ({prf:ref}`def-walker`), demonstrating that their actions are deterministic under the given conditions.
@@ -5154,7 +5078,6 @@ $$
 $$
 where $B_M(N)$ is the deterministic Mean Displacement Bound from the Perturbation Operator ({prf:ref}`def-perturbation-operator`) analysis ([](#def-perturbation-fluctuation-bounds-reproof)).
 :::{prf:proof}
-:label: proof-lem-final-positional-displacement-bound
 **Proof.**
 This follows from the probabilistic continuity of the Perturbation Operator ({prf:ref}`def-perturbation-operator`) via a standard $\delta$–split argument. From [](#thm-perturbation-operator-continuity-reproof), with probability at least $1-\delta$,
 
@@ -5217,7 +5140,6 @@ where $\mathbb{E}[\Delta_{\text{pos,clone}}^2]$ is the expected squared position
 :::
 
 :::{prf:proof}
-:label: proof-lem-final-status-change-bound
 **Proof.**
 The proof establishes the bound by applying the law of total expectation to the result from the **Probabilistic Continuity of the Post-Perturbation Status Update ([](#thm-post-perturbation-status-update-continuity))**.
 1.  **Apply Law of Total Expectation:**
@@ -5265,16 +5187,19 @@ For non-negative reals $a,b$ and any random variable $X$ with finite second mome
 
 $$
     \left(\sum_i p_i x_i\right)^{\alpha} \ge \sum_i p_i x_i^{\alpha}.
+
 $$
 2.  (Cauchy-Schwarz) The second moment controls the squared mean:
 
 $$
     (\mathbb{E}[X])^2 \le \mathbb{E}[X^2].
+
 $$
 3.  (Square-root subadditivity)
 
 $$
     \sqrt{a + b} \le \sqrt{a} + \sqrt{b}.
+
 $$
 :::
 ::{prf:proof}
@@ -5308,16 +5233,19 @@ The state-dependent functions in the final continuity bound for the full Swarm U
 
 $$
     C_{\Psi,L}(\mathcal{S}_1, \mathcal{S}_2) := 3\, C_{\text{clone},L}(\mathcal{S}_1, \mathcal{S}_2).
+
 $$
 2.  **The Composite Hölder Amplification Factor ($C_{\Psi,H}(\mathcal{S}_1, \mathcal{S}_2)$):** The coefficient of the non-linear, Hölder-continuous term. Before unifying powers, two sub‑linear contributions appear:
 
 $$
     3\, C_{\text{clone},H}(\mathcal{S}_1, \mathcal{S}_2)\, V_{\text{in}}^{1/2}\quad\text{and}\quad \lambda_{\mathrm{status}}\, C_{\text{status},H}\, (C_{\text{clone},L}(\mathcal{S}_1, \mathcal{S}_2))^{\alpha_B}\, V_{\text{in}}^{\alpha_B}.
+
 $$
 After unification (Sub‑Lemma 17.2.4.3), these are aggregated under $\alpha_H^{\mathrm{global}} = \max(\alpha_B, \tfrac12)$. A convenient explicit choice is
 
 $$
     C_{\Psi,H}(\mathcal{S}_1, \mathcal{S}_2) := 3\, C_{\text{clone},H}(\mathcal{S}_1, \mathcal{S}_2) + \lambda_{\mathrm{status}}\, C_{\text{status},H}\, (C_{\text{clone},L}(\mathcal{S}_1, \mathcal{S}_2))^{\alpha_B}.
+
 $$
 3.  **The Composite Offset ($K_{\Psi}(\mathcal{S}_1, \mathcal{S}_2)$):** Collect the constants from the positional and status parts and from the cloning bound. With $K_{\text{pert}}(\delta)$ from [](#lem-final-positional-displacement-bound), an explicit admissible choice is
 
@@ -5329,7 +5257,6 @@ $$
 ##### 17.2.4.2. Proof of the Composite Continuity Bound
 :label: proof-composite-continuity-bound-recorrected
 :::{prf:proof}
-:label: proof-proof-composite-continuity-bound-recorrected
 **Proof.**
 The proof establishes the final continuity bound by sequentially composing the bounds for the underlying operators. The strategy is to first state the bounds on the final expected displacement in terms of the intermediate (cloning) displacement, and then substitute the bound for the intermediate displacement in terms of the initial displacement.
 Let $V_{\text{in}} := d_{\text{Disp},\mathcal{Y}}(\mathcal{S}_1, \mathcal{S}_2)^2$ be the initial squared displacement. Let $\mathcal{S}_{1,\text{clone}}$ and $\mathcal{S}_{2,\text{clone}}$ be the intermediate swarms after the cloning stage, and let $\mathcal{S}'_1$ and $\mathcal{S}'_2$ be the final output swarms.
@@ -5407,7 +5334,6 @@ $$
 $$
 :::
 :::{prf:proof}
-:label: proof-lem-subadditivity-power
 Concavity of $x^{\alpha}$ on $[0,\infty)$ for $\alpha\in(0,1]$ is classical. For $m=2$, subadditivity follows from concavity and $f(0)=0$ via $f(a+b) \le f(a)+f(b)$. The $m$-term inequality follows by induction.
 **Q.E.D.**
 :::
@@ -5423,7 +5349,6 @@ $$
 $$
 :::
 :::{prf:proof}
-:label: proof-lem-sub-unify-holder-terms
 **Proof (case split).**
 1. If $V\in[0,1]$, then $V^{p_k}\le 1$ for every $k$, hence
 
@@ -5479,7 +5404,6 @@ $$
 In particular, $W_2\big(\Psi(\mathcal{S},\cdot),\Psi(\mathcal{S},\cdot)\big)=0$ and the bound is compatible with continuity at zero displacement without an additive constant.
 :::
 :::{prf:proof}
-:label: proof-prop-w2-bound-no-offset
 Fix a probability space $(\Omega,\mathcal{F},\mathbb{P})$ supporting all algorithmic randomness and a measurable update map $F: \overline{\Sigma}_N\times\Omega\to\overline{\Sigma}_N$ such that $\Psi(\mathcal{S},\cdot)$ is the law of $F(\mathcal{S},\Xi)$ for $\Xi\sim\mathbb{P}$. Consider the synchronous coupling
 
 $$
@@ -5511,7 +5435,6 @@ This proposition establishes that {prf:ref}`def-swarm-update-procedure` defines 
 Let $(\Sigma_N,\mathcal{B}(\Sigma_N))$ be the measurable state space. Assume each stage of the update—cloning, perturbation, and status update ({prf:ref}`def-status-update-operator`)—is defined by a measurable map with respect to its inputs and driven by a measurable noise kernel on a Polish probability space. Then the full Swarm Update Operator $\Psi$ is a Markov kernel on $\Sigma_N$; i.e., for each $\mathcal{S}\in\Sigma_N$, $\Psi(\mathcal{S},\cdot)$ is a probability measure on $\Sigma_N$, and for each measurable $A\in\mathcal{B}(\Sigma_N)$, the map $\mathcal{S}\mapsto \Psi(\mathcal{S},A)$ is measurable.
 :::
 :::{prf:proof}
-:label: proof-prop-psi-markov-kernel
 Let $F_{\text{clone}},F_{\text{pert}},F_{\text{status}}$ denote the measurable stage maps and let $\mathcal{K}_{\text{clone}},\mathcal{K}_{\text{pert}},\mathcal{K}_{\text{status}}$ be their noise kernels. For each fixed input, pushforward of a measurable kernel under a measurable map yields a measurable kernel. By composition, the concatenation of these stagewise kernels is a measurable kernel (standard closure of Markov kernels under composition on measurable spaces). Thus $\Psi$ is a Markov kernel on $(\Sigma_N,\mathcal{B}(\Sigma_N))$.
 Moreover, the synchronous coupling used in [](#subsec-w2-coupling-offset-removal) is realized by taking the product probability space for the stagewise noises and identifying the same noise coordinate for the paired inputs. Hence the $W_2$ bound in [](#prop-w2-bound-no-offset) is a continuity statement for the Markov kernel $\Psi$ viewed as a map $\mathcal{S}\mapsto \Psi(\mathcal{S},\cdot)$.
 **Q.E.D.**
@@ -5536,7 +5459,6 @@ $$
 are bounded on $\mathcal{K}_R$ and jointly continuous in $(\mathcal{S}_1,\mathcal{S}_2)$.
 :::
 :::{prf:proof}
-:label: proof-prop-coefficient-regularity
 By definitions in Sections 11.3 and 17.2.4.1, each coefficient is obtained from the stagewise Lipschitz/Hölder functions and bounded parameters via finite sums, products, maxima, and composition with continuous operations (including the map $x\mapsto x^{\alpha}$ for $\alpha\in(0,1]$). Under assumptions (i)–(iii), the inputs to these algebraic operations are bounded and continuous on $\mathcal{K}_R$ by the aggregator axioms and the properties of the patched $\sigma'$ (see [](#lem-sigma-reg-derivative-bounds)). Continuity is preserved under sums, products, and composition; boundedness follows from continuity on compact (or closed, bounded) sets. Hence all listed coefficients are bounded on $\mathcal{K}_R$ and jointly continuous in $(\mathcal{S}_1,\mathcal{S}_2)$.
 **Q.E.D.**
 :::
@@ -5547,21 +5469,18 @@ In particular, on such sublevel sets the $W_2$ continuity bound and the determin
 ::{prf:lemma} Deterministic continuous maps induce Feller kernels (Meyn–Tweedie)
 If $T: \Sigma_N\to\Sigma_N$ is continuous, then the kernel $\mathcal{K}_T(\mathcal{S},\cdot):=\delta_{T(\mathcal{S})}$ is Feller; for every $f\in C_b(\Sigma_N)$ the map $\mathcal{S}\mapsto \int f\,\mathrm{d}\mathcal{K}_T(\mathcal{S},\cdot)=f\big(T(\mathcal{S})\big)$ is continuous.
 :::{prf:proof}
-:label: proof-prop-coefficient-regularity-2
 Continuity of $T$ and $f$ implies continuity of $f\circ T$, so evaluating the kernel against $f$ preserves continuity.
 **Q.E.D.**
 :::
 ::{prf:lemma} Perturbation is Feller (Meyn–Tweedie)
 Assume [](#def-axiom-bounded-second-moment-perturbation) and that $x\mapsto \mathcal{P}_\sigma(x,\cdot)$ has a continuous density on the algorithmic space ({prf:ref}`def-algorithmic-space-generic`). Then the perturbation kernel $\mathcal{K}_{\text{pert}}$ is Feller.
 :::{prf:proof}
-:label: proof-prop-coefficient-regularity-3
 Let $f\in C_b(\Sigma_N)$. The perturbed state is obtained by sampling positions independently according to the product density $\prod_i p_\sigma(x_i,\cdot)$ while statuses remain fixed. The integrand $f$ is bounded and continuous, and the density is jointly continuous in $(x_i)_{i=1}^N$. Dominated convergence (dominator $\|f\|_\infty$) therefore gives continuity of $\mathcal{S}\mapsto \int f\,\mathrm d\mathcal{K}_{\text{pert}}(\mathcal{S},\cdot)$.
 **Q.E.D.**
 :::
 ::{prf:lemma} Status after perturbation and cloning are Feller
 The deterministic status map $T_{\text{status}}$ is generally discontinuous, so the kernel $\mathcal{K}_{\text{status}}(\mathcal{S},\cdot)=\delta_{T_{\text{status}}(\mathcal{S})}$ need not be Feller. However, if the perturbation kernel has a continuous density and the boundary-regularity axiom holds, then $\mathcal{K}_{\text{status}}\circ\mathcal{K}_{\text{pert}}$ is Feller. Moreover, the cloning kernel is Feller under the stated Lipschitz/Hölder continuity of the selection and replication maps together with the measurability convention below.
 :::{prf:proof}
-:label: proof-line-5092
 Let $f\in C_b(\Sigma_N)$. The composition kernel integrates $f\circ T_{\text{status}}$ against the perturbation density. By [](#axiom-boundary-regularity), the boundary separating alive and dead configurations has zero measure under the perturbation density; away from that null set $f\circ T_{\text{status}}$ is continuous. Dominated convergence thus yields continuity of $\mathcal{S}\mapsto \int f\circ T_{\text{status}}(\mathcal{S}')\,\mathcal{K}_{\text{pert}}(\mathcal{S},\mathrm d\mathcal{S}')$. For cloning, the selection probabilities and displacement kernels are continuous in the input state by the axioms in Section 2; applying the deterministic lemma above shows that evaluating $f$ against the cloning kernel is continuous. (Assumption A ensures the within-step independence required by the concentration bounds earlier, and those same independent draws define the cloning kernel here.)
 **Q.E.D.**
 :::

@@ -1,3 +1,4 @@
+(sec-barrier-nodes)=
 # Barrier Nodes
 
 (sec-barrier-node-specs)=
@@ -41,6 +42,7 @@ Each barrier is specified by:
 
 $$
 E[\Phi] \leq E_{\text{sat}} \lor \operatorname{Drift} \leq C
+
 $$
 
 **Natural Language Logic:**
@@ -87,6 +89,7 @@ The beautiful thing is that this is the *first* barrier you hit—the entry poin
 
 $$
 D(T_*) = \int_0^{T_*} \frac{c}{\lambda(t)} \,dt = \infty
+
 $$
 
 **Natural Language Logic:**
@@ -135,6 +138,7 @@ When the integral is finite, though, watch out. The singularity is computational
 
 $$
 \mathcal{M}[\Phi] < \infty
+
 $$
 
 **Natural Language Logic:**
@@ -185,6 +189,7 @@ This barrier is one of the *success exits* from the Sieve. If you get Benign, co
 
 $$
 \int \tilde{\mathfrak{D}}(S_t V) \,dt = \infty
+
 $$
 
 **Natural Language Logic:**
@@ -235,6 +240,7 @@ The non-circularity note is important: we don't *assume* subcriticality to run t
 
 $$
 \Delta V > k_B T
+
 $$
 
 **Natural Language Logic:**
@@ -283,6 +289,7 @@ What's beautiful is that this connects field theory to mundane thermodynamics. W
 
 $$
 \mathrm{Cap}_H(S) = 0
+
 $$
 
 **Natural Language Logic:**
@@ -331,6 +338,7 @@ This is the mathematical machinery behind "removable singularities"—singularit
 
 $$
 \inf \sigma(L) > 0
+
 $$
 
 **Natural Language Logic:**
@@ -368,6 +376,7 @@ Under the Gradient Condition ($\mathrm{GC}_\nabla$) plus analyticity of $\Phi$ n
 
 $$
 \lambda_1 > 0 \Rightarrow \operatorname{LS}(\theta = \tfrac{1}{2}, C_{\text{LS}} = \sqrt{\lambda_1})
+
 $$
 
 where $\lambda_1$ is the spectral gap. This is the **canonical promotion** from gap certificate to stiffness certificate, bridging the diagram's "Hessian positive?" intuition with the formal LS inequality predicate.
@@ -400,6 +409,7 @@ Why does this matter? Because the LS inequality is what lets you prove *finite-t
 
 $$
 E[\Phi] < S_{\min} + \Delta
+
 $$
 
 **Natural Language Logic:**
@@ -448,6 +458,7 @@ This connects to some deep physics: the reason certain quantum numbers are conse
 
 $$
 S \in \mathcal{O}\text{-min}
+
 $$
 
 **Natural Language Logic:**
@@ -496,6 +507,7 @@ The condition $S \in \mathcal{O}\text{-min}$ is asking: "Is your topology *borin
 
 $$
 \tau_{\text{mix}} < \infty
+
 $$
 
 **Natural Language Logic:**
@@ -544,6 +556,7 @@ Here's the physical picture: imagine a ball rolling in a landscape with deep wel
 
 $$
 \sup_{\epsilon > 0} K_\epsilon(x) \leq S_{\text{BH}}
+
 $$
 
 where $K_\epsilon(x) := \min\{|p| : d(U(p), x) < \epsilon\}$ is the $\epsilon$-approximable complexity.
@@ -599,6 +612,7 @@ This is subtle. Exact Kolmogorov complexity is famously uncomputable—you can n
 
 $$
 \int \omega^2 S(\omega) \,d\omega < \infty
+
 $$
 
 **Natural Language Logic:**
@@ -653,6 +667,7 @@ The three barriers here form a logical sequence: first check sensitivity (Bode),
 
 $$
 \int_0^\infty \ln \lVert S(i\omega) \rVert \,d\omega > -\infty
+
 $$
 
 **Natural Language Logic:**
@@ -696,6 +711,7 @@ The condition $\int_0^\infty \ln \lVert S(i\omega) \rVert\,d\omega > -\infty$ en
 
 $$
 r_{\text{reserve}} > 0
+
 $$
 
 **Natural Language Logic:**
@@ -739,6 +755,7 @@ This is Input-to-State Stability (ISS) from control theory: the idea that bounde
 
 $$
 H(u) \geq H(d)
+
 $$
 
 **Natural Language Logic:**

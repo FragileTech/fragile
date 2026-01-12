@@ -1,4 +1,4 @@
-# Part V: The Kernel
+# The Kernel
 
 :::{div} feynman-prose
 Now we come to the heart of the matter. In Part IV we saw the sieve diagram---all those nodes and edges and colored boxes. But a diagram is just a picture. What makes it a *proof* rather than a pretty flowchart?
@@ -75,6 +75,7 @@ The **context** $\Gamma$ is a finite multiset of certificates accumulated during
 
 $$
 \Gamma = \{K_{D_E}, K_{\mathrm{Rec}_N}, K_{C_\mu}, \ldots, K_{\mathrm{Cat}_{\mathrm{Hom}}}\}
+
 $$
 
 The context grows monotonically during an epoch: certificates are added but never removed (except at surgery re-entry, where context may be partially reset).
@@ -88,6 +89,7 @@ Each node $N$ in the sieve defines an **evaluation function**:
 
 $$
 \mathrm{eval}_N : X \times \Gamma \to \mathcal{O}_N \times \mathcal{K}_N \times X \times \Gamma
+
 $$
 
 where:
@@ -108,6 +110,7 @@ An edge $N_1 \xrightarrow{o} N_2$ in the sieve diagram is **valid** if and only 
 
 $$
 K_o \Rightarrow \mathrm{Pre}(N_2)
+
 $$
 
 That is, the certificate produced by node $N_1$ with outcome $o$ logically implies the precondition required for node $N_2$ to be evaluable.
@@ -159,6 +162,7 @@ For each gate (blue node) $i$, the outcome alphabet is:
 
 $$
 \mathcal{O}_i = \{`YES`, `NO`\}
+
 $$
 
 with certificate types:
@@ -186,6 +190,7 @@ For each barrier (orange node), the outcome alphabet is one of:
 
 $$
 \mathcal{O}_{\text{barrier}} = \{`Blocked`, `Breached`\}
+
 $$
 
 **Special barriers with extended alphabets:**
@@ -206,6 +211,7 @@ For each surgery (purple node), the output is a **re-entry certificate**:
 
 $$
 K^{\mathrm{re}} = (D_S, x', \pi)
+
 $$
 
 where $D_S$ is the surgery data, $x'$ is the post-surgery state, and $\pi$ is a proof that $\mathrm{Pre}(\text{TargetNode})$ holds for $x'$.
@@ -214,6 +220,7 @@ The re-entry certificate witnesses that after surgery with data $D_S$, the preco
 
 $$
 K^{\mathrm{re}} \Rightarrow \mathrm{Pre}(\text{TargetNode})(x')
+
 $$
 
 :::
@@ -225,6 +232,7 @@ A **YES$^\sim$ permit** (YES up to equivalence) is a certificate of the form:
 
 $$
 K_i^{\sim} = (K_{\mathrm{equiv}}, K_{\mathrm{transport}}, K_i^+[\tilde{x}])
+
 $$
 
 where:
@@ -253,6 +261,7 @@ This is not cheating---the equivalence itself must be certified. We record exact
 
 $$
 K_i^{\mathrm{blk}} \wedge \bigwedge_{j < i} K_j^+ \Rightarrow K_i^+
+
 $$
 
 (Here $K_j^+$ denotes a YES certificate at node $j$.)
@@ -261,6 +270,7 @@ $$
 
 $$
 K_i^{\mathrm{blk}} \wedge \bigwedge_{j > i} K_j^+ \Rightarrow K_i^+
+
 $$
 
 **Combined promotion**: Blocked certificates may also promote if the barrier's ``Blocked'' outcome combined with other certificates logically implies the original predicate $P_i$ holds.
@@ -278,6 +288,7 @@ Promotion rules are applied during context closure ({prf:ref}`def-closure`).
 
 $$
 K_P^{\mathrm{inc}} \wedge \bigwedge_{j \in J} K_j^+ \Rightarrow K_P^+
+
 $$
 
 where $J$ indexes the certificate types listed in $\mathsf{missing}(K_P^{\mathrm{inc}})$.
@@ -286,6 +297,7 @@ where $J$ indexes the certificate types listed in $\mathsf{missing}(K_P^{\mathrm
 
 $$
 K_P^{\mathrm{inc}} \wedge \bigwedge_{j \in J'} K_j^+ \Rightarrow K_P^+
+
 $$
 
 where $J'$ indexes certificates produced by nodes evaluated after the node that produced $K_P^{\mathrm{inc}}$.
@@ -294,12 +306,14 @@ where $J'$ indexes certificates produced by nodes evaluated after the node that 
 
 $$
 K_P^{\mathrm{inc}} \wedge \bigwedge_{j \in J} K_j^+ \Rightarrow K_P^{\sim}
+
 $$
 
 **Discharge condition (obligation matching):** An inc-upgrade rule is admissible only if its premises imply the concrete obligation instance recorded in the payload:
 
 $$
 \bigwedge_{j \in J} K_j^+ \Rightarrow \mathsf{obligation}(K_P^{\mathrm{inc}})
+
 $$
 
 This makes inc-upgrades structurally symmetric with blocked-certificate promotions ({prf:ref}`def-promotion-permits`).
@@ -396,6 +410,7 @@ Each surgery has an associated progress measure ({prf:ref}`def-progress-measures
 
 $$
 \mathcal{O}_S(x) = x' \Rightarrow \mathcal{C}(x') < \mathcal{C}(x)
+
 $$
 
 Since well-founded orders have no infinite descending chains, the surgery sequence terminates.
@@ -404,6 +419,7 @@ Since well-founded orders have no infinite descending chains, the surgery sequen
 
 $$
 N_{\text{surgeries}} \leq \frac{\Phi(x_0)}{\epsilon_T} < \infty
+
 $$
 
 The total number of distinct surgery types is finite (at most 17, one per failure mode). Hence the total number of surgeries---and thus epochs---is finite.
@@ -451,6 +467,7 @@ The **fingerprint** of a sieve run is the tuple:
 
 $$
 \mathcal{F} = (\mathrm{tr}, \vec{v}, \Gamma_{\mathrm{final}})
+
 $$
 
 where:
@@ -477,6 +494,7 @@ The **promotion closure** $\mathrm{Cl}(\Gamma)$ is the least fixed point of the 
 
 $$
 \mathrm{Cl}(\Gamma) = \bigcup_{n=0}^{\infty} \Gamma_n
+
 $$
 
 where $\Gamma_0 = \Gamma$ and $\Gamma_{n+1}$ applies all applicable immediate and a-posteriori promotions ({prf:ref}`def-promotion-permits`) **and all applicable inc-upgrades** ({prf:ref}`def-inc-upgrades`) to $\Gamma_n$.
@@ -520,6 +538,7 @@ The lattice $(\mathcal{L}, \sqsubseteq)$ is **complete** since every subset of $
 
 $$
 F(\Gamma) := \Gamma \cup \{K' : \exists \text{ rule } R,\, R(\Gamma) \vdash K'\}
+
 $$
 
 where rules $R$ include:
@@ -547,6 +566,7 @@ Applying this to $(F, \mathcal{L})$:
 
 $$
 \mathrm{Cl}(\Gamma) = \mathrm{lfp}_{\Gamma}(F) = \bigcap \{\Gamma' : F(\Gamma') \subseteq \Gamma' \text{ and } \Gamma \subseteq \Gamma'\}
+
 $$
 
 *Step 5 (Finiteness and Termination).* Under certificate finiteness ({prf:ref}`def-cert-finite`):
@@ -607,6 +627,7 @@ Given a certificate context $\Gamma$, define the **obligation ledger**:
 
 $$
 \mathsf{Obl}(\Gamma) := \{ (\mathsf{id}, \mathsf{obligation}, \mathsf{missing}, \mathsf{code}) : K_P^{\mathrm{inc}} \in \Gamma \}
+
 $$
 
 Each entry corresponds to a NO-inconclusive certificate ({prf:ref}`def-typed-no-certificates`) with payload $K_P^{\mathrm{inc}} = (\mathsf{obligation}, \mathsf{missing}, \mathsf{code}, \mathsf{trace})$.

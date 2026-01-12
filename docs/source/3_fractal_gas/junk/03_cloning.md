@@ -116,6 +116,7 @@ The fundamental unit of the system is the walker ({prf:ref}`def-walker`), and a 
 
 $$
 S := \left( (x_1, v_1, s_1), (x_2, v_2, s_2), \dots, (x_N, v_N, s_N) \right)
+
 $$
 
 3.  The **single-swarm ({prf:ref}`def-swarm-and-state-space`) state space**, denoted $\Sigma_N$, is the Cartesian product of the per-walker ({prf:ref}`def-walker`) state spaces:
@@ -124,6 +125,7 @@ $$
 
 $$
 \Sigma_N := \left( \mathbb{R}^d \times \mathbb{R}^d \times \{0, 1\} \right)^N.
+
 $$
 
 Referenced by {prf:ref}`def-barycentres-and-centered-vectors`, {prf:ref}`def-coupled-state-space`, and {prf:ref}`def-swarm-aggregation-operator`.
@@ -151,10 +153,12 @@ The **coupled state space** for the Euclidean Gas ({prf:ref}`def-euclidean-gas`)
 
 $$
 S_1 = \left( (x_{1,1}, v_{1,1}, s_{1,1}), \dots, (x_{1,N}, v_{1,N}, s_{1,N}) \right) \in \Sigma_N,
+
 $$
 
 $$
 S_2 = \left( (x_{2,1}, v_{2,1}, s_{2,1}), \dots, (x_{2,N}, v_{2,N}, s_{2,N}) \right) \in \Sigma_N.
+
 $$
 
 The convergence analysis proceeds by tracking the evolution of a Lyapunov function $V(S_1, S_2)$ across this coupled space.
@@ -177,6 +181,7 @@ For any element $(S_1, S_2) \in \Sigma_N \times \Sigma_N$, we define the **state
 
 $$
 \Delta x_i := x_{1,i} - x_{2,i} \in \mathbb{R}^d
+
 $$
 
 2.  The **velocity difference vector** for walker ({prf:ref}`def-walker`) $i$ is:
@@ -185,6 +190,7 @@ $$
 
 $$
 \Delta v_i := v_{1,i} - v_{2,i} \in \mathbb{R}^d
+
 $$
 
 The entire drift analysis will be formulated in terms of the norms and inner products of these $2N$ difference vectors. The objective is to show that, in expectation, the magnitudes of these vectors decrease over time, driving the two swarm ({prf:ref}`def-swarm-and-state-space`) trajectories together.
@@ -240,6 +246,7 @@ $$
 d(x, \partial \mathcal{X}_{\text{valid}}) & \text{if } x \in \mathcal{X}_{\text{valid}} \\
 -d(x, \partial \mathcal{X}_{\text{valid}}) & \text{if } x \notin \mathcal{X}_{\text{valid}}
 \end{cases}
+
 $$
 
 is $C^{\infty}$-smooth on $U$. Here $d(\cdot, \cdot)$ denotes the Euclidean distance. For any $x \in U \cap \mathcal{X}_{\text{valid}}$, we have $\rho(x) = \|x - \pi(x)\| > 0$, and $\nabla \rho(x)$ is the outward-pointing unit normal vector at the closest boundary point.
@@ -262,12 +269,14 @@ $$
 \exp\left(-\frac{1}{1-t^2}\right) & \text{if } |t| < 1 \\
 0 & \text{if } |t| \geq 1
 \end{cases}
+
 $$
 
 which is $C^{\infty}$ on $\mathbb{R}$ (see [Rudin, 1987, Theorem 1.46]). Then set
 
 $$
 \psi(t) := \frac{\int_{t}^{\infty} \eta(2s - 3) \, ds}{\int_{-\infty}^{\infty} \eta(2s - 3) \, ds}
+
 $$
 
 This gives a smooth non-increasing function with $\psi(t) = 1$ for $t \leq 1$ and $\psi(t) = 0$ for $t \geq 2$.
@@ -278,6 +287,7 @@ Fix $\delta \in (0, \delta_0/3)$ where $\delta_0$ is the tubular neighborhood wi
 
 $$
 \varphi(x) := \frac{1}{\delta} + \psi\left(\frac{\rho(x)}{\delta}\right)\left( \frac{1}{\rho(x)} - \frac{1}{\delta} \right)
+
 $$
 
 **Verification of Properties:**
@@ -304,6 +314,7 @@ For sufficiently large $n$, we have $\rho(x_n) < \delta$, which implies $\rho(x_
 
 $$
 \varphi(x_n) = \frac{1}{\delta} + 1 \cdot \left( \frac{1}{\rho(x_n)} - \frac{1}{\delta} \right) = \frac{1}{\rho(x_n)}
+
 $$
 
 Since $\rho(x_n) \to 0^{+}$, we have $\varphi(x_n) = 1/\rho(x_n) \to +\infty$.
@@ -317,6 +328,7 @@ Here $\rho(x)/\delta \leq 1$, so $\psi(\rho(x)/\delta) = 1$. Thus:
 
 $$
 \varphi(x) = \frac{1}{\delta} + 1 \cdot \left( \frac{1}{\rho(x)} - \frac{1}{\delta} \right) = \frac{1}{\rho(x)} > 0
+
 $$
 
 since $\rho(x) > 0$.
@@ -326,6 +338,7 @@ Here $\rho(x)/\delta \geq 2$, so $\psi(\rho(x)/\delta) = 0$. Thus:
 
 $$
 \varphi(x) = \frac{1}{\delta} + 0 \cdot \left( \frac{1}{\rho(x)} - \frac{1}{\delta} \right) = \frac{1}{\delta} > 0
+
 $$
 
 *Case 3: $\delta < \rho(x) < 2\delta$.*
@@ -339,12 +352,14 @@ $$
 &= \frac{1}{\delta} + \psi\left(\frac{\rho(x)}{\delta}\right) \cdot \frac{1}{\rho(x)} - \psi\left(\frac{\rho(x)}{\delta}\right) \cdot \frac{1}{\delta} \\
 &= \frac{1}{\delta}\left(1 - \psi\left(\frac{\rho(x)}{\delta}\right)\right) + \frac{1}{\rho(x)} \psi\left(\frac{\rho(x)}{\delta}\right)
 \end{aligned}
+
 $$
 
 Since $\psi(\rho(x)/\delta) \in (0,1)$, we have $1 - \psi(\rho(x)/\delta) \in (0, 1) \subset (0, \infty)$. Thus:
 
 $$
 \varphi(x) = \underbrace{\frac{1}{\delta}\left(1 - \psi\left(\frac{\rho(x)}{\delta}\right)\right)}_{> 0} + \underbrace{\frac{1}{\rho(x)} \psi\left(\frac{\rho(x)}{\delta}\right)}_{> 0} > 0
+
 $$
 
 Both terms are strictly positive since $\delta > 0$, $\rho(x) > 0$, $1 - \psi > 0$, and $\psi > 0$ in this regime.
@@ -383,6 +398,7 @@ For each swarm ({prf:ref}`def-swarm-and-state-space`) $k \in \{1, 2\}$ (see {prf
 
 $$
 \mu_{x,k} := \frac{1}{k_{\text{alive}}}\sum_{i \in \mathcal{A}(S_k)} x_{k,i}
+
 $$
 
 2.  The **velocity center of mass** **computed over alive walkers only**:
@@ -391,6 +407,7 @@ $$
 
 $$
 \mu_{v,k} := \frac{1}{k_{\text{alive}}}\sum_{i \in \mathcal{A}(S_k)} v_{k,i}
+
 $$
 
 The **centered vectors** represent the state of each **alive** walker ({prf:ref}`def-walker`) relative to its swarm ({prf:ref}`def-swarm-and-state-space`)'s center of mass:
@@ -401,6 +418,7 @@ The **centered vectors** represent the state of each **alive** walker ({prf:ref}
 
 $$
 \delta_{x,k,i} := x_{k,i} - \mu_{x,k}
+
 $$
 
 2.  The **centered velocity vector** for alive walker $i \in \mathcal{A}(S_k)$:
@@ -409,6 +427,7 @@ $$
 
 $$
 \delta_{v,k,i} := v_{k,i} - \mu_{v,k}
+
 $$
 
 **Convention**: Dead walkers ($i \notin \mathcal{A}(S_k)$) do not contribute to barycentres, variances, or any statistical quantities. By construction, the centered vectors for alive walkers in any swarm sum to zero: $\sum_{i \in \mathcal{A}(S_k)} \delta_{x,k,i} = 0$ and $\sum_{i \in \mathcal{A}(S_k)} \delta_{v,k,i} = 0$.
@@ -443,6 +462,7 @@ For any pair of swarm ({prf:ref}`def-swarm-and-state-space`) configurations $(S_
 
 $$
 V_{\text{loc}} := \|\Delta\mu_x\|^2 + \lambda_v\|\Delta\mu_v\|^2 + b\langle\Delta\mu_x, \Delta\mu_v\rangle
+
 $$
 
 where $\Delta\mu_x = \mu_{x,1} - \mu_{x,2}$ and $\Delta\mu_v = \mu_{v,1} - \mu_{v,2}$. The parameters $b$ and $\lambda_v$ are the hypocoercive coefficients.
@@ -459,6 +479,7 @@ Let $\tilde{\mu}_1$ and $\tilde{\mu}_2$ be the centered empirical measures of sw
 
 $$
 \tilde{\mu}_k := \frac{1}{k_{\text{alive}}} \sum_{i \in \mathcal{A}(S_k)} \delta_{(\delta_{x,k,i}, \delta_{v,k,i})}
+
 $$
 
 where $k_{\text{alive}} = |\mathcal{A}(S_k)|$ is the number of alive walkers in swarm ({prf:ref}`def-swarm-and-state-space`) $k$, and $\delta_{x,k,i}, \delta_{v,k,i}$ are the centered vectors defined in {prf:ref}`def-barycentres-and-centered-vectors`.
@@ -467,6 +488,7 @@ The **structural error component** $V_{\text{struct}}$ is defined as the squared
 
 $$
 V_{\text{struct}} := W_h^2(\tilde{\mu}_1, \tilde{\mu}_2) = \inf_{\gamma \in \Gamma(\tilde{\mu}_1, \tilde{\mu}_2)} \int c(\delta_{z,1}, \delta_{z,2}) \, d\gamma(\delta_{z,1}, \delta_{z,2})
+
 $$
 
 where $c(\delta_1, \delta_2)$ is the hypocoercive cost $\|\delta_{x,1}-\delta_{x,2}\|^2 + \lambda_v\|\delta_{v,1}-\delta_{v,2}\|^2 + b\langle\ldots\rangle$. This finds the minimal average cost to align the shape of swarm ({prf:ref}`def-swarm-and-state-space`) 1 with the shape of swarm 2.
@@ -483,6 +505,7 @@ The total inter-swarm ({prf:ref}`def-swarm-and-state-space`) error, as measured 
 
 $$
 W_h^2(\mu_1, \mu_2) = V_{\text{loc}} + V_{\text{struct}}
+
 $$
 
 Referenced by {prf:ref}`def-full-synergistic-lyapunov-function`.
@@ -499,12 +522,14 @@ Let $\mathcal{Z} = \mathbb{R}^d \times \mathbb{R}^d$ denote the phase space (pos
 
 $$
 \mu_k = \frac{1}{k_{\text{alive}}} \sum_{i \in \mathcal{A}(S_k)} \delta_{z_{k,i}}, \quad z_{k,i} = (x_{k,i}, v_{k,i})
+
 $$
 
 The hypocoercive cost function is:
 
 $$
 c(z_1, z_2) = \|x_1 - x_2\|^2 + \lambda_v \|v_1 - v_2\|^2 + b\langle x_1 - x_2, v_1 - v_2 \rangle
+
 $$
 
 This is a **quadratic form** in $(z_1, z_2)$, which we write as $c(z_1, z_2) = q(z_1 - z_2)$ where $q$ is the quadratic form $q(\Delta z) = \|\Delta x\|^2 + \lambda_v \|\Delta v\|^2 + b\langle \Delta x, \Delta v \rangle$.
@@ -515,18 +540,21 @@ Define the barycenters:
 
 $$
 \bar{z}_k = \int z \, d\mu_k(z) = (\mu_{x,k}, \mu_{v,k})
+
 $$
 
 For empirical measures over alive walkers, this is simply:
 
 $$
 \bar{z}_k = \frac{1}{k_{\text{alive}}} \sum_{i \in \mathcal{A}(S_k)} z_{k,i} = (\mu_{x,k}, \mu_{v,k})
+
 $$
 
 Define the **centered measures** $\tilde{\mu}_k$ by shifting each measure to have zero barycenter:
 
 $$
 \tilde{\mu}_k = \frac{1}{k_{\text{alive}}} \sum_{i \in \mathcal{A}(S_k)} \delta_{\delta_{z,k,i}}, \quad \delta_{z,k,i} = z_{k,i} - \bar{z}_k = (\delta_{x,k,i}, \delta_{v,k,i})
+
 $$
 
 By construction, $\int \delta_z \, d\tilde{\mu}_k(\delta_z) = 0$ for both $k = 1, 2$.
@@ -539,12 +567,14 @@ For any coupling $\gamma \in \Gamma(\mu_1, \mu_2)$, the total transport cost is:
 
 $$
 \int_{\mathcal{Z} \times \mathcal{Z}} c(z_1, z_2) \, d\gamma(z_1, z_2) = \int_{\mathcal{Z} \times \mathcal{Z}} q(z_1 - z_2) \, d\gamma(z_1, z_2)
+
 $$
 
 Since $q$ is a quadratic form, we can decompose $z_1 - z_2$ as:
 
 $$
 z_1 - z_2 = (z_1 - \bar{z}_1) - (z_2 - \bar{z}_2) + (\bar{z}_1 - \bar{z}_2) = \delta_{z_1} - \delta_{z_2} + \Delta\bar{z}
+
 $$
 
 where $\Delta\bar{z} = \bar{z}_1 - \bar{z}_2 = (\Delta\mu_x, \Delta\mu_v)$ is the barycenter difference and $\delta_{z_i} = z_i - \bar{z}_i$ are centered coordinates.
@@ -558,6 +588,7 @@ $$
 q(z_1 - z_2) &= q(\delta_{z_1} - \delta_{z_2} + \Delta\bar{z}) \\
 &= q(\delta_{z_1} - \delta_{z_2}) + q(\Delta\bar{z}) + 2\langle \delta_{z_1} - \delta_{z_2}, \Delta\bar{z} \rangle_q
 \end{aligned}
+
 $$
 
 where $\langle \cdot, \cdot \rangle_q$ denotes the inner product associated with the quadratic form $q$ (i.e., the bilinear form such that $q(\Delta z) = \langle \Delta z, \Delta z \rangle_q$).
@@ -568,6 +599,7 @@ $$
 \begin{aligned}
 \int c(z_1, z_2) \, d\gamma &= \int q(\delta_{z_1} - \delta_{z_2}) \, d\gamma + q(\Delta\bar{z}) + 2\int \langle \delta_{z_1} - \delta_{z_2}, \Delta\bar{z} \rangle_q \, d\gamma
 \end{aligned}
+
 $$
 
 **Step 5: The cross-term vanishes.**
@@ -576,12 +608,14 @@ The key observation is that the cross-term vanishes:
 
 $$
 \int \langle \delta_{z_1} - \delta_{z_2}, \Delta\bar{z} \rangle_q \, d\gamma = \left\langle \int \delta_{z_1} \, d\gamma(z_1, z_2), \Delta\bar{z} \right\rangle_q - \left\langle \int \delta_{z_2} \, d\gamma(z_1, z_2), \Delta\bar{z} \right\rangle_q
+
 $$
 
 For any coupling $\gamma \in \Gamma(\mu_1, \mu_2)$, the marginals satisfy $\gamma(\cdot \times \mathcal{Z}) = \mu_1$ and $\gamma(\mathcal{Z} \times \cdot) = \mu_2$. Therefore:
 
 $$
 \int \delta_{z_1} \, d\gamma(z_1, z_2) = \int (z_1 - \bar{z}_1) \, d\gamma(z_1, z_2) = \int z_1 \, d\mu_1(z_1) - \bar{z}_1 = \bar{z}_1 - \bar{z}_1 = 0
+
 $$
 
 Similarly, $\int \delta_{z_2} \, d\gamma(z_1, z_2) = 0$. Thus the cross-term is zero.
@@ -592,18 +626,21 @@ With the cross-term eliminated:
 
 $$
 \int c(z_1, z_2) \, d\gamma = \int q(\delta_{z_1} - \delta_{z_2}) \, d\gamma + q(\Delta\bar{z})
+
 $$
 
 The second term is the barycenter cost:
 
 $$
 q(\Delta\bar{z}) = \|\Delta\mu_x\|^2 + \lambda_v \|\Delta\mu_v\|^2 + b\langle \Delta\mu_x, \Delta\mu_v \rangle = V_{\text{loc}}
+
 $$
 
 The first term involves the centered coordinates. Note that $\gamma$ induces a coupling $\tilde{\gamma} \in \Gamma(\tilde{\mu}_1, \tilde{\mu}_2)$ between the centered measures via the map $(z_1, z_2) \mapsto (\delta_{z_1}, \delta_{z_2})$. Thus:
 
 $$
 \int q(\delta_{z_1} - \delta_{z_2}) \, d\gamma(z_1, z_2) = \int q(\delta_{z_1}' - \delta_{z_2}') \, d\tilde{\gamma}(\delta_{z_1}', \delta_{z_2}')
+
 $$
 
 **Step 7: Taking the infimum.**
@@ -612,6 +649,7 @@ Taking the infimum over all couplings $\gamma \in \Gamma(\mu_1, \mu_2)$:
 
 $$
 W_h^2(\mu_1, \mu_2) = \inf_{\gamma \in \Gamma(\mu_1, \mu_2)} \int c(z_1, z_2) \, d\gamma = V_{\text{loc}} + \inf_{\tilde{\gamma} \in \Gamma(\tilde{\mu}_1, \tilde{\mu}_2)} \int c(\delta_{z_1}, \delta_{z_2}) \, d\tilde{\gamma}
+
 $$
 
 The infimum over centered couplings is precisely $W_h^2(\tilde{\mu}_1, \tilde{\mu}_2) = V_{\text{struct}}$.
@@ -620,6 +658,7 @@ The infimum over centered couplings is precisely $W_h^2(\tilde{\mu}_1, \tilde{\m
 
 $$
 W_h^2(\mu_1, \mu_2) = V_{\text{loc}} + V_{\text{struct}}
+
 $$
 
 This decomposition is exact and holds for any pair of measures with finite second moments and any quadratic cost function.
@@ -645,6 +684,7 @@ Then:
 
 $$
 V_{\text{x,struct}} \le 2(\text{Var}_1(x) + \text{Var}_2(x))
+
 $$
 
 Consequently, if $V_{\text{x,struct}} > R^2_{\text{spread}}$ for some threshold $R_{\text{spread}}$, then at least one swarm ({prf:ref}`def-swarm-and-state-space`) $k$ must have an internal variance $\text{Var}_k(x) > R^2_{\text{spread}} / 4$.
@@ -661,6 +701,7 @@ Let $\tilde{\mu}_1$ and $\tilde{\mu}_2$ denote the centered empirical measures o
 
 $$
 \tilde{\mu}_k = \frac{1}{k_{\text{alive}}} \sum_{i \in \mathcal{A}(S_k)} \delta_{\delta_{x,k,i}}
+
 $$
 
 where $\delta_{x,k,i} = x_{k,i} - \mu_{x,k}$ are the centered position vectors and $\mu_{x,k} = \frac{1}{k_{\text{alive}}} \sum_{i \in \mathcal{A}(S_k)} x_{k,i}$ is the positional barycenter.
@@ -669,6 +710,7 @@ The structural positional error is defined as the squared Wasserstein distance:
 
 $$
 V_{\text{x,struct}} := W_2^2(\tilde{\mu}_1, \tilde{\mu}_2) = \inf_{\gamma \in \Gamma(\tilde{\mu}_1, \tilde{\mu}_2)} \int \|\delta_{x,1} - \delta_{x,2}\|^2 \, d\gamma(\delta_{x,1}, \delta_{x,2})
+
 $$
 
 where $\Gamma(\tilde{\mu}_1, \tilde{\mu}_2)$ is the set of couplings (joint probability measures with marginals $\tilde{\mu}_1$ and $\tilde{\mu}_2$).
@@ -692,12 +734,14 @@ First consider the case $k_1 = k_2 = k$. The identity coupling matches walker $i
 
 $$
 \int \|\delta_{x,1} - \delta_{x,2}\|^2 \, d\gamma_{\text{id}} = \frac{1}{k} \sum_{i=1}^k \|\delta_{x,1,i} - \delta_{x,2,i}\|^2
+
 $$
 
 Using the elementary inequality $\|a - b\|^2 \leq 2\|a\|^2 + 2\|b\|^2$ for any $a, b \in \mathbb{R}^d$ (which follows from $\|a-b\|^2 = \|a\|^2 - 2\langle a, b \rangle + \|b\|^2 \leq \|a\|^2 + \|b\|^2 + |\langle a, b \rangle|^2 \leq \|a\|^2 + \|b\|^2 + \|a\|^2 + \|b\|^2$ by Cauchy-Schwarz and the polarization identity):
 
 $$
 \|\delta_{x,1,i} - \delta_{x,2,i}\|^2 \leq 2\|\delta_{x,1,i}\|^2 + 2\|\delta_{x,2,i}\|^2
+
 $$
 
 Summing over all $i$ and dividing by $k$:
@@ -707,6 +751,7 @@ $$
 \frac{1}{k} \sum_{i=1}^k \|\delta_{x,1,i} - \delta_{x,2,i}\|^2 &\leq \frac{2}{k} \sum_{i=1}^k \|\delta_{x,1,i}\|^2 + \frac{2}{k} \sum_{i=1}^k \|\delta_{x,2,i}\|^2 \\
 &= 2\text{Var}_1(x) + 2\text{Var}_2(x)
 \end{aligned}
+
 $$
 
 **Step 1.3: Extension to unequal sizes.**
@@ -717,12 +762,14 @@ Specifically, for any centered measure $\tilde{\mu}$, we have $W_2^2(\tilde{\mu}
 
 $$
 W_2(\tilde{\mu}_1, \tilde{\mu}_2) \leq W_2(\tilde{\mu}_1, \delta_0) + W_2(\delta_0, \tilde{\mu}_2) = \sqrt{\text{Var}_1(x)} + \sqrt{\text{Var}_2(x)}
+
 $$
 
 Squaring both sides and using $(a + b)^2 \leq 2a^2 + 2b^2$:
 
 $$
 W_2^2(\tilde{\mu}_1, \tilde{\mu}_2) \leq \left(\sqrt{\text{Var}_1(x)} + \sqrt{\text{Var}_2(x)}\right)^2 \leq 2\text{Var}_1(x) + 2\text{Var}_2(x)
+
 $$
 
 **Step 1.4: Conclusion of Part 1.**
@@ -731,6 +778,7 @@ Since the Wasserstein distance is the infimum over all couplings and we've const
 
 $$
 V_{\text{x,struct}} = W_2^2(\tilde{\mu}_1, \tilde{\mu}_2) \leq 2(\text{Var}_1(x) + \text{Var}_2(x))
+
 $$
 
 This establishes the main inequality rigorously.
@@ -745,6 +793,7 @@ We prove the implication $V_{\text{x,struct}} > R^2_{\text{spread}} \implies \ex
 
 $$
 V_{\text{x,struct}} \leq 2(\text{Var}_1(x) + \text{Var}_2(x)) \leq 2\left(\frac{R^2_{\text{spread}}}{4} + \frac{R^2_{\text{spread}}}{4}\right) = 2 \cdot \frac{R^2_{\text{spread}}}{2} = R^2_{\text{spread}}
+
 $$
 
 This proves the contrapositive statement. By logical equivalence, the original implication is proven: if $V_{\text{x,struct}} > R^2_{\text{spread}}$, then at least one swarm must satisfy $\text{Var}_k(x) > R^2_{\text{spread}}/4$.
@@ -763,12 +812,14 @@ For any pair of swarm ({prf:ref}`def-swarm-and-state-space`) configurations $(S_
 
 $$
 V_{\mathrm{total}}(S_1, S_2) := W_h^2(\mu_1, \mu_2) + c_V V_{Var}(S_1, S_2) + c_B W_b(S_1, S_2)
+
 $$
 
 where the intra-swarm ({prf:ref}`def-swarm-and-state-space`) variance term explicitly decomposes into positional and velocity components **summed over alive walkers only, but normalized by the total swarm size $N$**:
 
 $$
 V_{Var}(S_1, S_2) = V_{Var,x}(S_1, S_2) + \lambda_v V_{Var,v}(S_1, S_2)
+
 $$
 
 with:
@@ -778,6 +829,7 @@ $$
 V_{Var,x}(S_1, S_2) &:= \frac{1}{N} \sum_{i \in \mathcal{A}(S_1)} \|\delta_{x,1,i}\|^2 + \frac{1}{N} \sum_{i \in \mathcal{A}(S_2)} \|\delta_{x,2,i}\|^2 \\
 V_{Var,v}(S_1, S_2) &:= \frac{1}{N} \sum_{i \in \mathcal{A}(S_1)} \|\delta_{v,1,i}\|^2 + \frac{1}{N} \sum_{i \in \mathcal{A}(S_2)} \|\delta_{v,2,i}\|^2
 \end{align*}
+
 $$
 
 where $N$ is the total swarm ({prf:ref}`def-swarm-and-state-space`) size, $\mathcal{A}(S_k)$ is the set of alive walker ({prf:ref}`def-walker`) indices in swarm $k$, and $\delta_{x,k,i}, \delta_{v,k,i}$ are the centered vectors defined in {prf:ref}`def-barycentres-and-centered-vectors`.
@@ -798,6 +850,7 @@ The function is a sum of three components:
 
 $$
 W_b(S_1, S_2) := \frac{1}{N} \sum_{i \in \mathcal{A}(S_1)} \varphi_{\text{barrier}}(x_{1,i}) + \frac{1}{N} \sum_{i \in \mathcal{A}(S_2)} \varphi_{\text{barrier}}(x_{2,i})
+
 $$
 
     where $N$ is the total swarm size and $\mathcal{A}(S_k)$ denotes the set of alive walker indices in swarm $k$. Note that dead walkers do not contribute to the boundary potential.
@@ -821,12 +874,14 @@ Consider the one-step change in the variance component:
 
 $$
 \Delta V_{\text{Var}} = V_{\text{Var}}(S_{t+1}) - V_{\text{Var}}(S_t)
+
 $$
 
 If $V_{\text{Var}}$ were normalized by $k_{\text{alive}}$, the drift calculation would become:
 
 $$
 \mathbb{E}[\Delta V_{\text{Var}}] = \mathbb{E}\left[\frac{1}{k_{t+1}} \sum_{i} \|\delta_{x,i}\|^2_{t+1} - \frac{1}{k_t} \sum_{i} \|\delta_{x,i}\|^2_t\right]
+
 $$
 
 This expression involves the **ratio of correlated random variables**: both the sum of squares and the number of alive walkers change stochastically at each step, and these changes are strongly coupled (e.g., if a high-variance walker dies, both the numerator and denominator change). The expectation of such a ratio cannot be simplified, making rigorous drift bounds essentially impossible to derive.
@@ -835,6 +890,7 @@ With $N$-normalization, the constant factor $1/N$ factors out of the expectation
 
 $$
 \mathbb{E}[\Delta V_{\text{Var}}] = \frac{1}{N} \mathbb{E}\left[\sum_{i} \|\delta_{x,i}\|^2_{t+1} - \sum_{i} \|\delta_{x,i}\|^2_t\right]
+
 $$
 
 This allows the analysis to focus entirely on $\mathbb{E}[\Delta \text{SumOfSquares}]$, which is the direct effect of the cloning and kinetic operators on the swarm's kinematic state. This is precisely what the Keystone Principle and the hypocoercive analysis are designed to bound.
@@ -845,6 +901,7 @@ The $N$-normalized variance can be interpreted as:
 
 $$
 V_{\text{Var},x}(S_k) = \frac{1}{N} \sum_{i \in \mathcal{A}(S_k)} \|\delta_{x,k,i}\|^2 = \frac{k_{\text{alive}}}{N} \cdot \text{Var}_{\text{alive}}(S_k)
+
 $$
 
 This represents the **mean-field contribution to system disorder per walker slot**. It scales with the fraction of alive walkers, which is exactly the correct behavior: if only a small fraction of walkers remain alive, the system's total disorder (as measured by the Lyapunov function) should reflect this reduced active mass.
@@ -877,6 +934,7 @@ For a swarm ({prf:ref}`def-swarm-and-state-space`) $k$ with $k_{\text{alive}} = 
 
 $$
 S_k := \sum_{i \in \mathcal{A}(S_k)} \|\delta_{x,k,i}\|^2
+
 $$
 
 This is the total positional variance without any normalization.
@@ -885,6 +943,7 @@ This is the total positional variance without any normalization.
 
 $$
 \text{Var}_k(x) := \frac{1}{k_{\text{alive}}} \sum_{i \in \mathcal{A}(S_k)} \|\delta_{x,k,i}\|^2 = \frac{S_k}{k_{\text{alive}}}
+
 $$
 
 This is the average squared deviation per alive walker ({prf:ref}`def-walker`) - the standard statistical variance.
@@ -893,6 +952,7 @@ This is the average squared deviation per alive walker ({prf:ref}`def-walker`) -
 
 $$
 V_{\text{Var},x}(S_k) := \frac{1}{N} \sum_{i \in \mathcal{A}(S_k)} \|\delta_{x,k,i}\|^2 = \frac{S_k}{N}
+
 $$
 
 This is the mean-field contribution to system disorder per walker ({prf:ref}`def-walker`) slot.
@@ -905,6 +965,7 @@ S_k &= k_{\text{alive}} \cdot \text{Var}_k(x) = N \cdot V_{\text{Var},x}(S_k) \\
 V_{\text{Var},x}(S_k) &= \frac{k_{\text{alive}}}{N} \cdot \text{Var}_k(x) \\
 \text{Var}_k(x) &= \frac{N}{k_{\text{alive}}} \cdot V_{\text{Var},x}(S_k)
 \end{aligned}
+
 $$
 
 **When converting between notations in proofs:**
@@ -970,6 +1031,7 @@ The augmented Lyapunov function resolves this by allowing us to **balance expans
 
 $$
 \mathbb{E}[V_{\text{total}}(t+1) - V_{\text{total}}(t)] = \underbrace{\mathbb{E}[\Delta W_h^2]}_{\Psi_{\text{clone}}: +, \ \Psi_{\text{kin}}: -} + c_V \underbrace{\mathbb{E}[\Delta V_{\text{Var}}]}_{\Psi_{\text{clone}}: -, \ \Psi_{\text{kin}}: +} + c_B \underbrace{\mathbb{E}[\Delta W_b]}_{\text{both: } -}
+
 $$
 
 By choosing the coupling constant $c_V$ appropriately, we can ensure that:
@@ -1019,6 +1081,7 @@ The location component $V_{\text{loc}}$ and the structural component $V_{\text{s
 
 $$
 b^2 < 4\lambda_v
+
 $$
 
 This condition ensures that there exist constants $\lambda_1, \lambda_2 > 0$ such that:
@@ -1037,6 +1100,7 @@ Consider a general quadratic form on $\mathbb{R}^d \times \mathbb{R}^d$:
 
 $$
 q(\Delta x, \Delta v) = \|\Delta x\|^2 + \lambda_v \|\Delta v\|^2 + b\langle \Delta x, \Delta v \rangle
+
 $$
 
 where $\Delta x, \Delta v \in \mathbb{R}^d$, $\lambda_v > 0$, and $b \in \mathbb{R}$ is a coupling parameter.
@@ -1047,6 +1111,7 @@ This quadratic form can be represented in block matrix form as:
 
 $$
 q(\Delta x, \Delta v) = \begin{pmatrix} \Delta x \\ \Delta v \end{pmatrix}^T \begin{pmatrix} I_d & \frac{b}{2} I_d \\ \frac{b}{2} I_d & \lambda_v I_d \end{pmatrix} \begin{pmatrix} \Delta x \\ \Delta v \end{pmatrix}
+
 $$
 
 where the cross-term $b\langle \Delta x, \Delta v \rangle$ is split symmetrically into the off-diagonal blocks.
@@ -1059,6 +1124,7 @@ For a $2 \times 2$ block diagonal structure with scalar blocks (after diagonaliz
 
 $$
 Q_{\text{scalar}} = \begin{pmatrix} 1 & b/2 \\ b/2 & \lambda_v \end{pmatrix}
+
 $$
 
 **Step 1.3: Sylvester's criterion.**
@@ -1074,6 +1140,7 @@ For our matrix $Q_{\text{scalar}}$:
 
 $$
 \det(Q_{\text{scalar}}) = (1)(\lambda_v) - \left(\frac{b}{2}\right)^2 = \lambda_v - \frac{b^2}{4} > 0
+
 $$
 
 This requires $\lambda_v > b^2/4$, which is equivalent to $b^2 < 4\lambda_v$.
@@ -1084,12 +1151,14 @@ When $b^2 < 4\lambda_v$, the eigenvalues of $Q_{\text{scalar}}$ are:
 
 $$
 \lambda_{\pm} = \frac{1 + \lambda_v \pm \sqrt{(1 - \lambda_v)^2 + b^2}}{2}
+
 $$
 
 The discriminant satisfies $(1 - \lambda_v)^2 + b^2 < (1 - \lambda_v)^2 + 4\lambda_v = (1 + \lambda_v)^2$, so:
 
 $$
 \lambda_{-} = \frac{1 + \lambda_v - \sqrt{(1 - \lambda_v)^2 + b^2}}{2} > \frac{1 + \lambda_v - (1 + \lambda_v)}{2} = 0
+
 $$
 
 and similarly $\lambda_{+} > 0$. Thus both eigenvalues are strictly positive.
@@ -1100,12 +1169,14 @@ The smallest eigenvalue provides the coercivity constant:
 
 $$
 \lambda_{\min} = \min\{\lambda_{-}, \lambda_{+}\} = \frac{1 + \lambda_v - \sqrt{(1 - \lambda_v)^2 + b^2}}{2} > 0
+
 $$
 
 Therefore, for any $(\Delta x, \Delta v) \in \mathbb{R}^d \times \mathbb{R}^d$:
 
 $$
 q(\Delta x, \Delta v) \geq \lambda_{\min} \left(\|\Delta x\|^2 + \|\Delta v\|^2\right)
+
 $$
 
 **Part 2: Application to $V_{\text{loc}}$.**
@@ -1114,12 +1185,14 @@ The location error component is defined as:
 
 $$
 V_{\text{loc}} = \|\Delta\mu_x\|^2 + \lambda_v \|\Delta\mu_v\|^2 + b\langle \Delta\mu_x, \Delta\mu_v \rangle
+
 $$
 
 This is precisely the hypocoercive quadratic form $q(\Delta\mu_x, \Delta\mu_v)$ analyzed in Part 1. Under the condition $b^2 < 4\lambda_v$, we have:
 
 $$
 V_{\text{loc}} \geq \lambda_1 \left(\|\Delta\mu_x\|^2 + \|\Delta\mu_v\|^2\right)
+
 $$
 
 where $\lambda_1 = \lambda_{\min} > 0$ is the smallest eigenvalue from Step 1.5.
@@ -1130,24 +1203,28 @@ The structural error component is defined as the Wasserstein distance with hypoc
 
 $$
 V_{\text{struct}} = W_h^2(\tilde{\mu}_1, \tilde{\mu}_2) = \inf_{\gamma \in \Gamma(\tilde{\mu}_1, \tilde{\mu}_2)} \int q(\delta_{x,1} - \delta_{x,2}, \delta_{v,1} - \delta_{v,2}) \, d\gamma
+
 $$
 
 Since the cost function is the hypocoercive quadratic form $q$ applied to centered coordinate differences, and we've proven $q$ is coercive with constant $\lambda_{\min}$, we have for any coupling $\gamma$:
 
 $$
 \int q(\delta_{x,1} - \delta_{x,2}, \delta_{v,1} - \delta_{v,2}) \, d\gamma \geq \lambda_{\min} \int \left(\|\delta_{x,1} - \delta_{x,2}\|^2 + \|\delta_{v,1} - \delta_{v,2}\|^2\right) d\gamma
+
 $$
 
 Taking the infimum over all couplings and using the definition of the standard Wasserstein distance on centered measures:
 
 $$
 V_{\text{struct}} \geq \lambda_2 \cdot W_2^2(\tilde{\mu}_1, \tilde{\mu}_2)
+
 $$
 
 where $\lambda_2 = \lambda_{\min} > 0$. The standard $W_2$ ({prf:ref}`lem-polishness-and-w2`) distance between centered empirical measures satisfies:
 
 $$
 W_2^2(\tilde{\mu}_1, \tilde{\mu}_2) \geq \frac{1}{N} \sum_{i=1}^N \inf_{\sigma \in S_N} \left(\|\delta_{x,1,i} - \delta_{x,2,\sigma(i)}\|^2 + \|\delta_{v,1,i} - \delta_{v,2,\sigma(i)}\|^2\right)
+
 $$
 
 where the infimum is over permutations $\sigma \in S_N$. This provides the desired bound on the sum of centered coordinate differences.
@@ -1262,6 +1339,7 @@ The total reward function `R(x,v)` is designed to actively penalize high kinetic
 
 $$
 R_{\text{total}}(x, v) := R_{\text{pos}}(x) - c_{v\_reg} \|v\|^2
+
 $$
 
 where `c_{v\_reg}` is a strictly positive constant `c_{v\_reg} > 0`.
@@ -1306,6 +1384,7 @@ The diversity channel of the fitness potential is active. The dynamics weight $\
 
 $$
 \beta > 0
+
 $$
 
 **Rationale:** This is a fundamental assumption for the Keystone Principle's proof of intelligent targeting. It ensures that the algorithm pays attention to the reliable geometric signal generated by the **phase-space** companion kernel. This signal is the primary mechanism that allows the algorithm to detect its own lack of convergence and escape deceptive reward landscapes. This ensures that the algorithm is sensitive to its degree of convergence in the full kinematic state space, not just its spatial configuration.
@@ -1341,6 +1420,7 @@ The N-uniform convergence analysis for a Fragile Gas with an **independent, per-
 
 $$
 \frac{N_{11}}{\max(k_1, k_2)} \ge c_{\min}
+
 $$
 
 where $N_{11}$ is the number of stably alive walkers.
@@ -1371,6 +1451,7 @@ For any two walkers $i$ and $j$ with states $(x_i, v_i)$ and $(x_j, v_j)$, the *
 
 $$
 d_{\text{alg}}(i, j)^2 := \|x_i - x_j\|^2 + \lambda_{\text{alg}} \|v_i - v_j\|^2
+
 $$
 
 where $\lambda_{\text{alg}} \geq 0$ is a fixed algorithmic parameter that controls the relative importance of velocity similarity in the pairing and selection processes.
@@ -1423,6 +1504,7 @@ Let $\mathcal{S}_t$ be the current swarm ({prf:ref}`def-swarm-and-state-space`) 
 
 $$
 w_{ij} := \exp\left(-\frac{d_{\text{alg}}(i, j)^2}{2\epsilon_d^2}\right)
+
 $$
 
 2.  The "quality" of a specific perfect matching `M` is the product of the weights of the edges it contains:
@@ -1430,6 +1512,7 @@ $$
 
 $$
 W(M) := \prod_{(i,j) \in M} w_{ij}
+
 $$
 
 3.  The probability of selecting a specific matching `M` is given by its quality normalized by the sum of qualities over all possible matchings (the partition function):
@@ -1437,6 +1520,7 @@ $$
 
 $$
 P(M) = \frac{W(M)}{\sum_{M' \in \mathcal{M}_k} W(M')}
+
 $$
 
 :::
@@ -1465,6 +1549,7 @@ Let `A_t` be the set of `k` alive walkers at time `t`. The pairing operator gene
 
 $$
 w_{ij} := \exp\left(-\frac{d_{\text{alg}}(i, j)^2}{2\epsilon_d^2}\right)
+
 $$
 
     c. Form a probability distribution over $j \in U$ where $P(\text{choose } j) = w_{ij} / (\sum_{l \in U} w_{il})$.
@@ -1561,6 +1646,7 @@ The Sequential Stochastic Greedy Pairing Operator ({prf:ref}`def-greedy-pairing-
 
 $$
 \mathbb{E}[d_i \mid S_t, i \in H_k] \ge D_H(\epsilon)
+
 $$
 
 2.  For any low-error walker ({prf:ref}`def-walker`) $j \in L_k$, its expected raw distance is small:
@@ -1568,6 +1654,7 @@ $$
 
 $$
 \mathbb{E}[d_j \mid S_t, j \in L_k] \le R_L(\epsilon) + D_{\mathrm{valid}} \cdot c_k \exp\left(-\frac{D_H(\epsilon)^2 - R_L(\epsilon)^2}{2\epsilon^2}\right)
+
 $$
 
     where `D_valid` is the diameter of the domain and `c_k` is an N-uniform constant.
@@ -1595,6 +1682,7 @@ The Sequential Stochastic Greedy Pairing algorithm builds the matching iterative
 
 $$
 \mathbb{P}(c_i = u \mid U_t, i) = \frac{\exp\left(-\frac{d_{\text{alg}}(i,u)^2}{2\epsilon_d^2}\right)}{\sum_{l \in U_t \setminus \{i\}} \exp\left(-\frac{d_{\text{alg}}(i,l)^2}{2\epsilon_d^2}\right)} =: \frac{w_{iu}}{Z_i(U_t)}
+
 $$
 
 where $Z_i(U_t) = \sum_{l \in U_t \setminus \{i\}} w_{il}$ is the partition function normalizing the softmax distribution.
@@ -1603,6 +1691,7 @@ The conditional expected distance for walker $i$ given the remaining set $U_t$ i
 
 $$
 \mathbb{E}[d_i \mid U_t, i \in U_t] = \sum_{u \in U_t \setminus \{i\}} d_{\text{alg}}(i, u) \cdot \mathbb{P}(c_i = u \mid U_t, i)
+
 $$
 
 The unconditional expected distance $\mathbb{E}[d_i \mid \mathcal{S}_t, i]$ is obtained by averaging over all possible pairing histories that lead to $i$ being paired.
@@ -1636,6 +1725,7 @@ $$
 \mathbb{E}[d_i \mid U_t, i \in U_t] &= \sum_{u \in U_L} d_{\text{alg}}(i, u) \cdot \mathbb{P}(c_i = u \mid U_t, i) \\
 &\quad + \sum_{u \in U_H} d_{\text{alg}}(i, u) \cdot \mathbb{P}(c_i = u \mid U_t, i)
 \end{aligned}
+
 $$
 
 Using the geometric bounds:
@@ -1645,6 +1735,7 @@ $$
 \mathbb{E}[d_i \mid U_t, i \in U_t] &\geq \sum_{u \in U_L} D_H(\epsilon) \cdot \mathbb{P}(c_i = u \mid U_t, i) \\
 &= D_H(\epsilon) \cdot \mathbb{P}(c_i \in U_L \mid U_t, i)
 \end{aligned}
+
 $$
 
 Since $|U_L| \geq |L_k| - k/2 \geq k \cdot f_L - k/2 = k(f_L - 1/2) > 0$ for $f_L > 1/2$, the probability of pairing with a low-error walker is bounded below. This gives us a worst-case lower bound by considering the minimum over all possible unpaired sets $U_t$.
@@ -1655,6 +1746,7 @@ Since the bound $\mathbb{E}[d_i \mid U_t, i \in U_t] \geq D_H(\epsilon)$ holds f
 
 $$
 \mathbb{E}[d_i \mid \mathcal{S}_t, i \in H_k] = \mathbb{E}_{U_t}\left[\mathbb{E}[d_i \mid U_t, i \in U_t]\right] \geq \mathbb{E}_{U_t}[D_H(\epsilon)] = D_H(\epsilon)
+
 $$
 
 This establishes the first claim. The bound is **N-uniform** because $D_H(\epsilon)$ is an N-uniform geometric constant (proven in Chapter 6).
@@ -1678,6 +1770,7 @@ At any stage $t$ of the pairing process, at most $\lfloor k/2 \rfloor$ pairs hav
 
 $$
 |U_t \cap C_j| \geq |C_j| - k \geq f_c k - k = k(f_c - 1)
+
 $$
 
 For the axiom $f_c > 1/2$ to be meaningful, we typically have $f_c \geq 2/3$, giving $|U_t \cap C_j| \geq k/3 > 0$ (strictly positive cluster survivors).
@@ -1702,6 +1795,7 @@ Z_j(U_t) &= \sum_{l \in U_t \setminus \{j\}} \exp\left(-\frac{d_{\text{alg}}(j,l
 &= |U_{\text{in}}| \exp\left(-\frac{R_L(\epsilon)^2}{2\epsilon_d^2}\right) \\
 &\geq k(f_c - 1) \exp\left(-\frac{R_L(\epsilon)^2}{2\epsilon_d^2}\right)
 \end{aligned}
+
 $$
 
 using $d_{\text{alg}}(j,l) \leq R_L(\epsilon)$ for $l \in U_{\text{in}}$.
@@ -1717,12 +1811,14 @@ $$
 &\leq \frac{k}{k(f_c - 1)} \exp\left(-\frac{D_H(\epsilon)^2 - R_L(\epsilon)^2}{2\epsilon_d^2}\right) \\
 &= \frac{1}{f_c - 1} \exp\left(-\frac{[D_H(\epsilon) + R_L(\epsilon)][D_H(\epsilon) - R_L(\epsilon)]}{2\epsilon_d^2}\right)
 \end{aligned}
+
 $$
 
 Define $c_k := 1/(f_c - 1)$, which is N-uniform. Using $D_H(\epsilon) + R_L(\epsilon) \geq D_H(\epsilon) - R_L(\epsilon)$ (since both are positive):
 
 $$
 \mathbb{P}(c_j \in U_{\text{out}} \mid U_t, j) \leq c_k \exp\left(-\frac{[D_H(\epsilon) - R_L(\epsilon)]^2}{2\epsilon_d^2}\right) =: p_{\text{tail}}
+
 $$
 
 **Step 2.6: Bounding the conditional expected distance.**
@@ -1734,6 +1830,7 @@ $$
 &= R_L(\epsilon) \cdot [1 - p_{\text{tail}}] + D_{\text{valid}} \cdot p_{\text{tail}} \\
 &= R_L(\epsilon) + [D_{\text{valid}} - R_L(\epsilon)] p_{\text{tail}}
 \end{aligned}
+
 $$
 
 **Step 2.7: History-independence and unconditional bound.**
@@ -1742,6 +1839,7 @@ The bound on $\mathbb{E}[d_j \mid U_t, j]$ holds for every possible set $U_t$ co
 
 $$
 \mathbb{E}[d_j \mid \mathcal{S}_t, j \in L_k] \leq R_L(\epsilon) + [D_{\text{valid}} - R_L(\epsilon)] \cdot c_k \exp\left(-\frac{[D_H(\epsilon) - R_L(\epsilon)]^2}{2\epsilon_d^2}\right)
+
 $$
 
 **Conclusion:**
@@ -1770,6 +1868,7 @@ Once the Companion Map `c(i)` is fixed for the timestep by the pairing operator,
 
 $$
 r_i := R(x_i, v_i) = R_{\text{pos}}(x_i) - c_{v\_reg} \|v_i\|^2
+
 $$
 
     where $R_{\text{pos}}(x_i)$ is the positional reward and $c_{v\_reg} > 0$ is the velocity regularization coefficient from {prf:ref}`axiom-velocity-regularization`.
@@ -1779,6 +1878,7 @@ $$
 
 $$
 d_i := d_{\text{alg}}(i, c(i))
+
 $$
 
 For any walker ({prf:ref}`def-walker`) `j` that is dead, its raw values are deterministically zero: $r_j = 0$ and $d_j = 0$.
@@ -1829,6 +1929,7 @@ $$
 P(V), & \kappa_{\text{var,min}} < V < 2\kappa_{\text{var,min}} \\
 \sqrt{V + \varepsilon_{\mathrm{std}}^2}, & V \ge 2\kappa_{\text{var,min}}
 \end{cases}
+
 $$
 
 where $P(V)$ is a unique cubic polynomial that ensures a $C^1$ smooth transition.
@@ -1878,6 +1979,7 @@ The **Canonical Logistic Rescale Function ({prf:ref}`def-canonical-logistic-resc
 
 $$
 g_A(z) := \frac{2}{1 + e^{-z}}
+
 $$
 
 :::
@@ -1908,6 +2010,7 @@ The **Fitness Potential Operator**, $\Phi_{\text{pipeline}}$, maps a swarm ({prf
 
 $$
 V_i := (d'_i)^\beta \cdot (r'_i)^\alpha
+
 $$
 
 5.  Assemble the final N-dimensional vector $\mathbf{V}_{\text{fit}}$, setting components for dead walkers to zero.
@@ -1933,6 +2036,7 @@ The rescaled components, $r'_i = g_A(z_{r,i}) + \eta$ and $d'_i = g_A(z_{d,i}) +
 
 $$
 V_i \ge (\eta)^{\beta} \cdot (\eta)^{\alpha} = \eta^{\alpha+\beta}
+
 $$
 
 Therefore, the uniform lower bound is $V_{\text{pot,min}} := \eta^{\alpha+\beta}$.
@@ -1941,6 +2045,7 @@ Therefore, the uniform lower bound is $V_{\text{pot,min}} := \eta^{\alpha+\beta}
 
 $$
 V_i \le (g_{A,\max} + \eta)^{\beta} \cdot (g_{A,\max} + \eta)^{\alpha} = (g_{A,\max} + \eta)^{\alpha+\beta}
+
 $$
 
 Therefore, the uniform upper bound is $V_{\text{pot,max}} := (g_{A,\max} + \eta)^{\alpha+\beta}$.
@@ -1979,6 +2084,7 @@ The definition of the measure $\mathcal{C}_i(S)$ depends on the status of walker
 
 $$
 P(c_i=j \mid i \in \mathcal{A}_k) := \frac{\exp\left(-\frac{d_{\text{alg}}(i, j)^2}{2\epsilon_c^2}\right)}{\sum_{l \in \mathcal{A}_k \setminus \{i\}} \exp\left(-\frac{d_{\text{alg}}(i, l)^2}{2\epsilon_c^2}\right)}
+
 $$
 
 2.  **If `i` is a DEAD walker ($i \in \mathcal{D}_k$):**
@@ -1987,6 +2093,7 @@ $$
 
 $$
 P(c_i=j \mid i \in \mathcal{D}_k) := \frac{1}{k}
+
 $$
 
 Referenced by {prf:ref}`def-decision-operator`.
@@ -2000,6 +2107,7 @@ Once a companion `c_i` has been selected for walker ({prf:ref}`def-walker`) `i`,
 
 $$
 S_i(c_i) := \frac{V_{\text{fit},{c_i}} - V_{\text{fit},i}}{V_{\text{fit},i} + \varepsilon_{\mathrm{clone}}}
+
 $$
 
 where $V_{\text{fit},i}$ is the fitness of walker ({prf:ref}`def-walker`) `i`, $V_{\text{fit},{c_i}}$ is the fitness of its chosen companion, and $\varepsilon_{\mathrm{clone}} > 0$ is a small regularization constant.
@@ -2014,12 +2122,14 @@ The **total cloning probability**, $p_i$, for a walker ({prf:ref}`def-walker`) `
 
 $$
 p_i := \mathbb{E}_{c_i \sim \mathcal{C}_i(S)} \left[ \mathbb{P}_{T_i \sim U(0,p_{\max})} \left( S_i(c_i) > T_i \right) \right]
+
 $$
 
 The inner probability, for a fixed companion, evaluates to $\min(1, \max(0, S_i(c_i)/p_{\max}))$. This gives the final expression for the total cloning probability as an expectation over the choice of companion:
 
 $$
 p_i = \mathbb{E}_{c_i \sim \mathcal{C}_i(S)}\left[\min\left(1, \max\left(0, \frac{S_i(c_i)}{p_{\max}}\right)\right)\right]
+
 $$
 
 This quantity, $p_i$, is the direct measure of the corrective pressure applied to walker ({prf:ref}`def-walker`) `i` and is a central variable in the Keystone Principle proof.
@@ -2056,6 +2166,7 @@ First, for each unique companion `c` in the swarm , we identify the set of all c
 
 $$
 I_c := \{j \in C_{set} \mid c_j = c\}
+
 $$
 
 Let `M = |I_c|` be the number of walkers cloning from companion `c`. The update is then defined for each `(M+1)`-particle system consisting of the companion `c` and its set of cloners `I_c`.
@@ -2066,6 +2177,7 @@ Let `M = |I_c|` be the number of walkers cloning from companion `c`. The update 
 
 $$
 x'_j := x_c + \sigma_x \zeta_j^x
+
 $$
 
     *   The position of the companion `c` is unchanged by this interaction: `x'_c := x_c`.
@@ -2078,6 +2190,7 @@ $$
 
 $$
 V_{COM, c} := \frac{1}{M+1} \left( v_c + \sum_{j \in I_c} v_j \right)
+
 $$
 
     *   **b. Update Relative Velocities:** For each walker ({prf:ref}`def-walker`) `k` in the system ($k \in I_c \cup {c}$), its velocity relative to the CoM is `u_k = v_k - V_{COM,c}`. The new relative velocities `u'_k` are defined by a random rotation and a frictional contraction.
@@ -2086,6 +2199,7 @@ $$
 
 $$
 u'_k := \alpha_{\text{restitution}} \cdot R_k(u_k)
+
 $$
 
     *   **c. Return to Lab Frame:** The final velocities for all interacting walkers are then reconstructed:
@@ -2093,6 +2207,7 @@ $$
 
 $$
 v'_k := V_{COM, c} + u'_k
+
 $$
 
 3.  **Uninvolved Walkers:** Any walker ({prf:ref}`def-walker`) `k` that is not a cloner and was not selected as a companion by any cloner has its state `(x_k, v_k)` unchanged.
@@ -2121,6 +2236,7 @@ For any cloning event where a fraction $f_{\text{clone}}$ of walkers are cloned 
 
 $$
 \Delta V_{Var,v} \leq f_{\text{clone}} \cdot C_{\text{reset}} \cdot V_{\max,\text{KE}}
+
 $$
 
 where $V_{\max,\text{KE}}$ is a uniform bound on the maximum possible kinetic energy per walker ({prf:ref}`def-walker`), and $C_{\text{reset}}$ is a constant depending on $\alpha_{\text{restitution}}$ and the domain geometry.
@@ -2144,6 +2260,7 @@ By the compactness of the valid position domain $\mathcal{X}_{\text{valid}}$ and
 
 $$
 V_{\max}^2 := \max\left\{ \frac{2F_{\max}}{\gamma}, V_{\text{thresh}}^2 \right\}
+
 $$
 
 This bound is **state-independent**, depending only on the domain geometry ($F_{\max}$), algorithmic parameters ($\gamma$, $c_{v\_reg}$), and the reward scale.
@@ -2156,18 +2273,21 @@ The contribution of walker $i$ to the velocity variance changes as:
 
 $$
 \Delta_i := \|v_i^{\text{new}} - \mu_v^{\text{new}}\|^2 - \|v_i^{\text{old}} - \mu_v^{\text{old}}\|^2
+
 $$
 
 We bound this change using the triangle inequality and the velocity domain bounds. First, note that:
 
 $$
 \|v_i^{\text{new}} - \mu_v^{\text{new}}\|^2 \leq 2\|v_i^{\text{new}}\|^2 + 2\|\mu_v^{\text{new}}\|^2 \leq 2V_{\max}^2 + 2V_{\max}^2 = 4V_{\max}^2
+
 $$
 
 Similarly, $\|v_i^{\text{old}} - \mu_v^{\text{old}}\|^2 \geq 0$. Therefore:
 
 $$
 \Delta_i \leq 4V_{\max}^2
+
 $$
 
 However, this is a worst-case bound. We can obtain a tighter bound by analyzing the inelastic collision mechanism directly.
@@ -2178,36 +2298,42 @@ When walker $i$ is cloned, it participates in an inelastic collision with $M$ co
 
 $$
 V_{\text{COM}} = \frac{1}{M+1}\left(v_i^{\text{old}} + \sum_{j=1}^M v_j^{\text{comp}}\right)
+
 $$
 
 The new velocity is computed via:
 
 $$
 v_i^{\text{new}} = V_{\text{COM}} + \alpha_{\text{restitution}} \cdot R(u_i)
+
 $$
 
 where $u_i = v_i^{\text{old}} - V_{\text{COM}}$ is the old relative velocity and $R$ is a random rotation. The magnitude change is bounded by:
 
 $$
 \|v_i^{\text{new}} - v_i^{\text{old}}\|^2 \leq \|v_i^{\text{new}} - V_{\text{COM}}\|^2 + \|V_{\text{COM}} - v_i^{\text{old}}\|^2
+
 $$
 
 Since $\|v_i^{\text{new}} - V_{\text{COM}}\| = \alpha_{\text{restitution}} \|u_i\|$ and $\|V_{\text{COM}} - v_i^{\text{old}}\| = \|u_i\|$:
 
 $$
 \|v_i^{\text{new}} - v_i^{\text{old}}\|^2 \leq (\alpha_{\text{restitution}}^2 + 1) \|u_i\|^2
+
 $$
 
 The relative velocity magnitude is bounded by:
 
 $$
 \|u_i\| = \|v_i^{\text{old}} - V_{\text{COM}}\| \leq \|v_i^{\text{old}}\| + \|V_{\text{COM}}\| \leq V_{\max} + V_{\max} = 2V_{\max}
+
 $$
 
 Therefore:
 
 $$
 \|v_i^{\text{new}} - v_i^{\text{old}}\|^2 \leq 4(\alpha_{\text{restitution}}^2 + 1) V_{\max}^2
+
 $$
 
 **Part 3: Total Variance Change from All Cloned Walkers**
@@ -2216,6 +2342,7 @@ The velocity variance component of the Lyapunov function is defined (with $N$-no
 
 $$
 V_{Var,v}(S_k) = \frac{1}{N} \sum_{i \in \mathcal{A}(S_k)} \|v_i - \mu_v\|^2
+
 $$
 
 When a cloning event occurs, let $\mathcal{C} \subset \mathcal{A}(S_k)$ be the set of walkers that are cloned, with $|\mathcal{C}| = n_{\text{clone}}$. The change in $V_{Var,v}$ can be decomposed into three contributions:
@@ -2233,6 +2360,7 @@ $$
 &\|v_i^{\text{new}} - \mu_v^{\text{new}}\|^2 - \|v_i^{\text{old}} - \mu_v^{\text{old}}\|^2 \\
 &= \|v_i^{\text{new}}\|^2 - 2\langle v_i^{\text{new}}, \mu_v^{\text{new}}\rangle + \|\mu_v^{\text{new}}\|^2 - \|v_i^{\text{old}}\|^2 + 2\langle v_i^{\text{old}}, \mu_v^{\text{old}}\rangle - \|\mu_v^{\text{old}}\|^2
 \end{aligned}
+
 $$
 
 This can be bounded using the fact that $\|v_i^{\text{new}} - v_i^{\text{old}}\|^2 \leq 4(\alpha_{\text{restitution}}^2 + 1) V_{\max}^2$ and $\|\mu_v^{\text{new}} - \mu_v^{\text{old}}\|^2$ is also bounded by a similar expression (since the barycentre is an average of velocities, all bounded by $V_{\max}$).
@@ -2241,18 +2369,21 @@ Through careful algebraic expansion (using $\|a - b\|^2 = \|a\|^2 - 2\langle a, 
 
 $$
 \left|\|v_i^{\text{new}} - \mu_v^{\text{new}}\|^2 - \|v_i^{\text{old}} - \mu_v^{\text{old}}\|^2\right| \leq 8(\alpha_{\text{restitution}}^2 + 1) V_{\max}^2 + 8V_{\max}^2 = 8(\alpha_{\text{restitution}}^2 + 2) V_{\max}^2
+
 $$
 
 **Contribution 2 (Barycentre Shift):** The barycentre shift affects all $k_{\text{alive}}$ walkers. The magnitude of the shift is bounded by:
 
 $$
 \|\mu_v^{\text{new}} - \mu_v^{\text{old}}\| \leq \frac{n_{\text{clone}}}{k_{\text{alive}}} \cdot 2V_{\max}
+
 $$
 
 The contribution to variance change from barycentre shift across all walkers is bounded by:
 
 $$
 \left|\frac{1}{N}\sum_{i \in \mathcal{A}} \left(\|v_i - \mu_v^{\text{new}}\|^2 - \|v_i - \mu_v^{\text{old}}\|^2\right)\right| \leq \frac{k_{\text{alive}}}{N} \cdot 4V_{\max} \cdot \|\mu_v^{\text{new}} - \mu_v^{\text{old}}\| \leq \frac{8n_{\text{clone}}V_{\max}^2}{N}
+
 $$
 
 **Contribution 3 (Status Changes):** Dead walkers contribute zero to the sum. When a walker revives, it adds a term $\frac{1}{N}\|v_i - \mu_v\|^2 \leq \frac{4V_{\max}^2}{N}$. The number of revivals equals the number of deaths, which is at most $n_{\text{clone}}$.
@@ -2265,12 +2396,14 @@ $$
 &= \frac{n_{\text{clone}}}{N} \cdot \left[8(\alpha_{\text{restitution}}^2 + 2) + 8 + 4\right] V_{\max}^2 \\
 &= \frac{n_{\text{clone}}}{N} \cdot 8(\alpha_{\text{restitution}}^2 + 4) V_{\max}^2
 \end{aligned}
+
 $$
 
 Since $n_{\text{clone}} = f_{\text{clone}} \cdot N$ by definition:
 
 $$
 |\Delta V_{Var,v}| \leq f_{\text{clone}} \cdot 8(\alpha_{\text{restitution}}^2 + 4) V_{\max}^2
+
 $$
 
 **Part 4: State-Independence of the Bound**
@@ -2284,6 +2417,7 @@ The critical claim is that $V_{\max}$ is state-independent. This is guaranteed b
 
 $$
 R(x_i, v_i) = R_{\text{pos}}(x_i) - c_{v\_reg} \|v_i\|^2 \ll R_{\text{pos}}(x_i) - c_{v\_reg} V_{\text{thresh}}^2
+
 $$
 
 making it extremely unfit and a prime target for cloning. This feedback mechanism prevents velocity runaway, ensuring $V_{\max}$ remains a true constant.
@@ -2292,12 +2426,14 @@ making it extremely unfit and a prime target for cloning. This feedback mechanis
 
 $$
 C_{\text{reset}} := 8(\alpha_{\text{restitution}}^2 + 4), \quad V_{\max,\text{KE}} := V_{\max}^2
+
 $$
 
 we have proven:
 
 $$
 \Delta V_{Var,v} \leq f_{\text{clone}} \cdot C_{\text{reset}} \cdot V_{\max,\text{KE}}
+
 $$
 
 where both $C_{\text{reset}}$ and $V_{\max,\text{KE}}$ are state-independent constants depending only on algorithmic parameters and domain geometry.
@@ -2314,6 +2450,7 @@ This bounded expansion property is the prerequisite for the synergistic dissipat
 
 $$
 \mathbb{E}[\Delta V_{Var,v} \mid \Psi_{\text{clone}} \circ \Psi_{\text{kin}}] \leq -\kappa_v \cdot V_{Var,v} + C_v
+
 $$
 
 for some $\kappa_v > 0$ and finite $C_v$. Combined with the positional contraction proven in this document, this establishes the net contraction of the full Lyapunov function, enabling convergence in both position and velocity simultaneously.
@@ -2359,12 +2496,14 @@ Let $V_{Var,x}(S_1, S_2)$ be the total intra-swarm ({prf:ref}`def-swarm-and-stat
 
 $$
 V_{Var,x}(S_1, S_2) = \frac{1}{N} \sum_{i \in \mathcal{A}(S_1)} \|\delta_{x,1,i}\|^2 + \frac{1}{N} \sum_{i \in \mathcal{A}(S_2)} \|\delta_{x,2,i}\|^2
+
 $$
 
 If this component is large, such that $V_{Var,x} > R_{total\_var,x}^2$ for some threshold $R_{total\_var,x}^2 > 0$, then at least one swarm ({prf:ref}`def-swarm-and-state-space`) $k \in \{1, 2\}$ must have a large sum of squared deviations:
 
 $$
 \frac{1}{N} \sum_{i \in \mathcal{A}(S_k)} \|\delta_{x,k,i}\|^2 > \frac{R_{total\_var,x}^2}{2}
+
 $$
 
 :::
@@ -2377,6 +2516,7 @@ The proof is by contradiction. Assume the premise holds: $V_{Var,x} > R_{total\_
 
 $$
 \frac{1}{N} \sum_{i \in \mathcal{A}(S_1)} \|\delta_{x,1,i}\|^2 \le \frac{R_{total\_var,x}^2}{2}, \quad \frac{1}{N} \sum_{i \in \mathcal{A}(S_2)} \|\delta_{x,2,i}\|^2 \le \frac{R_{total\_var,x}^2}{2}
+
 $$
 
 Now, we bound the total intra-swarm positional error $V_{Var,x}$ under this assumption:
@@ -2386,6 +2526,7 @@ $$
 V_{Var,x} &= \frac{1}{N} \sum_{i \in \mathcal{A}(S_1)} \|\delta_{x,1,i}\|^2 + \frac{1}{N} \sum_{i \in \mathcal{A}(S_2)} \|\delta_{x,2,i}\|^2 \\
 &\le \frac{R_{total\_var,x}^2}{2} + \frac{R_{total\_var,x}^2}{2} = R_{total\_var,x}^2
 \end{aligned}
+
 $$
 
 The result $V_{Var,x} \le R_{total\_var,x}^2$ directly contradicts our premise. Therefore, the assumption must be false, and the conclusion must be true.
@@ -2414,6 +2555,7 @@ The construction proceeds in four steps:
 
 $$
 \text{diam}(G_m) := \max_{i,j \in G_m} d_{\text{alg}}(i, j) \le D_{\text{diam}}(\epsilon)
+
 $$
 
 where $d_{\text{alg}}(i, j)^2 := \|x_i - x_j\|^2 + \lambda_{\text{alg}} \|v_i - v_j\|^2$ is the algorithmic phase-space distance.
@@ -2424,24 +2566,28 @@ where $d_{\text{alg}}(i, j)^2 := \|x_i - x_j\|^2 + \lambda_{\text{alg}} \|v_i - 
 
 $$
 \text{Contrib}(G_m) := |G_m| \left(\|\mu_{x,m} - \mu_x\|^2 + \lambda_v \|\mu_{v,m} - \mu_v\|^2\right)
+
 $$
 
 where $(\mu_x, \mu_v)$ is the global center of mass. Sort valid clusters by $\text{Contrib}(G_m)$ in descending order, and let $O_M \subseteq \{1, \ldots, M\}$ be the smallest set of cluster indices (among valid clusters) whose cumulative contribution meets or exceeds a fraction $(1-\varepsilon_O)$ of the total contribution from valid clusters (where $\varepsilon_O \in (0, 1)$ is a fixed structural parameter, typically $\varepsilon_O = 0.1$):
 
 $$
 \sum_{m \in O_M} \text{Contrib}(G_m) \ge (1-\varepsilon_O) \sum_{\substack{m=1 \\ |G_m| \ge k_{\min}}}^M \text{Contrib}(G_m)
+
 $$
 
 4.  **Unified High-Error Set Construction:** The unified high-error set is the union of all walkers in outlier clusters plus all walkers in invalid clusters:
 
 $$
 H_k(\epsilon) := \left(\bigcup_{m \in O_M} G_m\right) \cup \left(\bigcup_{\substack{m: |G_m| < k_{\min}}} G_m\right)
+
 $$
 
 The **Unified Low-Error Set** is the complement:
 
 $$
 L_k(\epsilon) := \mathcal{A}_k \setminus H_k(\epsilon)
+
 $$
 
 Referenced by {prf:ref}`def-fitness-potential-operator` and {prf:ref}`def-geometric-partition`.
@@ -2468,6 +2614,7 @@ For a swarm ({prf:ref}`def-swarm-and-state-space`) `k` consisting of $k \geq 2$ 
 
 $$
 \mathrm{Var}_h(S_k) := \mathrm{Var}_x(S_k) + \lambda_v \mathrm{Var}_v(S_k)
+
 $$
 
 For any chosen proximity threshold $d_{\text{close}} > 0$, let $N_{\text{close}}$ be the number of unique pairs $(i, j)$ with $i<j$ and $d_{\text{alg}}(i, j) < d_{\text{close}}$, where $d_{\text{alg}}(i, j)^2 := \|x_i - x_j\|^2 + \lambda_{\text{alg}} \|v_i - v_j\|^2$ is the algorithmic phase-space distance.
@@ -2476,6 +2623,7 @@ The fraction of such "close pairs in phase space", $f_{\text{close}} = N_{\text{
 
 $$
 f_{\text{close}} \le g(\mathrm{Var}_h(S_k)) := \frac{D_{\text{valid}}^2 - 2\mathrm{Var}_h(S_k)}{D_{\text{valid}}^2 - d_{\text{close}}^2}
+
 $$
 
 Furthermore, if the hypocoercive variance exceeds a threshold $\mathrm{Var}_h(S_k) > R_{\text{pack}}^2 := d_{\text{close}}^2 / 2$, then $g(\mathrm{Var}_h(S_k)) < 1$, guaranteeing that not all pairs can be close pairs in phase space.
@@ -2493,6 +2641,7 @@ We begin by establishing pairwise representations for both positional and veloci
 
 $$
 2k^2 \mathrm{Var}_x(S_k) = \sum_{i=1}^k \sum_{j=1}^k \|x_i - x_j\|^2
+
 $$
 
 This can be verified by expanding the right-hand side:
@@ -2504,24 +2653,28 @@ $$
 &= 2k \sum_i \|x_i\|^2 - 2k^2 \|\mu_x\|^2 \\
 &= 2k(k \cdot \mathrm{Var}_x + k\|\mu_x\|^2) - 2k^2\|\mu_x\|^2 = 2k^2 \mathrm{Var}_x
 \end{aligned}
+
 $$
 
 An identical derivation applies to the velocity variance:
 
 $$
 2k^2 \mathrm{Var}_v(S_k) = \sum_{i=1}^k \sum_{j=1}^k \|v_i - v_j\|^2
+
 $$
 
 Multiplying the velocity identity by $\lambda_v$ and adding the two identities yields:
 
 $$
 2k^2 \mathrm{Var}_h(S_k) = 2k^2 (\mathrm{Var}_x + \lambda_v \mathrm{Var}_v) = \sum_{i,j} \left(\|x_i - x_j\|^2 + \lambda_v \|v_i - v_j\|^2\right)
+
 $$
 
 Since the sum over all ordered pairs $(i,j)$ is twice the sum over unique pairs where $i<j$, we obtain:
 
 $$
 \mathrm{Var}_h(S_k) = \frac{1}{k^2} \sum_{i<j} \left(\|x_i - x_j\|^2 + \lambda_v \|v_i - v_j\|^2\right)
+
 $$
 
 **Part 2: Partitioning by Algorithmic Distance**
@@ -2534,6 +2687,7 @@ The hypocoercive variance can be written as:
 
 $$
 \mathrm{Var}_h(S_k) = \frac{1}{k^2} \left( \sum_{(i,j) \in P_{\text{close}}} \left(\|x_i - x_j\|^2 + \lambda_v \|v_i - v_j\|^2\right) + \sum_{(i,j) \in P_{\text{far}}} \left(\|x_i - x_j\|^2 + \lambda_v \|v_i - v_j\|^2\right) \right)
+
 $$
 
 **Part 3: Bounding the Variance Terms**
@@ -2542,24 +2696,28 @@ For pairs in $P_{\text{close}}$, we have $d_{\text{alg}}(i,j)^2 = \|x_i - x_j\|^
 
 $$
 \|x_i - x_j\|^2 + \lambda_v \|v_i - v_j\|^2 \le \|x_i - x_j\|^2 + \lambda_{\text{alg}} \|v_i - v_j\|^2 = d_{\text{alg}}(i,j)^2 < d_{\text{close}}^2
+
 $$
 
 For pairs in $P_{\text{far}}$, each component is bounded by the corresponding domain diameter:
 
 $$
 \|x_i - x_j\|^2 + \lambda_v \|v_i - v_j\|^2 \le D_x^2 + \lambda_v D_v^2 \le D_x^2 + \lambda_{\text{alg}} D_v^2 = D_{\text{valid}}^2
+
 $$
 
 where we again used $\lambda_v \le \lambda_{\text{alg}}$. Therefore:
 
 $$
 \mathrm{Var}_h(S_k) \le \frac{1}{k^2} \left( N_{\text{close}} \cdot d_{\text{close}}^2 + N_{\text{far}} \cdot D_{\text{valid}}^2 \right)
+
 $$
 
 Let $f_{\text{close}} = N_{\text{close}} / \binom{k}{2}$ be the fraction of close pairs. Substituting $N_{\text{close}} = f_{\text{close}} \binom{k}{2}$ and $N_{\text{far}} = (1 - f_{\text{close}}) \binom{k}{2}$:
 
 $$
 \mathrm{Var}_h(S_k) \le \frac{\binom{k}{2}}{k^2} \left( f_{\text{close}} d_{\text{close}}^2 + (1-f_{\text{close}})D_{\text{valid}}^2 \right) = \frac{k-1}{2k} \left( f_{\text{close}} (d_{\text{close}}^2 - D_{\text{valid}}^2) + D_{\text{valid}}^2 \right)
+
 $$
 
 **Part 4: Deriving the Upper Bound on the Fraction of Close Pairs**
@@ -2568,6 +2726,7 @@ To obtain a simpler bound, we use $(k-1)/(2k) < 1/2$ for $k \ge 2$:
 
 $$
 \mathrm{Var}_h(S_k) < \frac{1}{2} \left( f_{\text{close}} (d_{\text{close}}^2 - D_{\text{valid}}^2) + D_{\text{valid}}^2 \right)
+
 $$
 
 Solving for $f_{\text{close}}$:
@@ -2577,12 +2736,14 @@ $$
 2\mathrm{Var}_h(S_k) &< f_{\text{close}} (d_{\text{close}}^2 - D_{\text{valid}}^2) + D_{\text{valid}}^2 \\
 2\mathrm{Var}_h(S_k) - D_{\text{valid}}^2 &< f_{\text{close}}(d_{\text{close}}^2 - D_{\text{valid}}^2)
 \end{aligned}
+
 $$
 
 Since $d_{\text{close}} < D_{\text{valid}}$, the term $(d_{\text{close}}^2 - D_{\text{valid}}^2)$ is strictly negative. Dividing by it reverses the inequality:
 
 $$
 f_{\text{close}} < \frac{2\mathrm{Var}_h(S_k) - D_{\text{valid}}^2}{d_{\text{close}}^2 - D_{\text{valid}}^2} = \frac{D_{\text{valid}}^2 - 2\mathrm{Var}_h(S_k)}{D_{\text{valid}}^2 - d_{\text{close}}^2}
+
 $$
 
 This establishes $f_{\text{close}} \le g(\mathrm{Var}_h(S_k))$ where $g(V) := (D_{\text{valid}}^2 - 2V) / (D_{\text{valid}}^2 - d_{\text{close}}^2)$. As an affine function of $V$ with negative coefficient, $g(V)$ is continuous and strictly decreasing.
@@ -2591,6 +2752,7 @@ Finally, we verify that $g(\mathrm{Var}_h) < 1$ when $\mathrm{Var}_h > d_{\text{
 
 $$
 \frac{D_{\text{valid}}^2 - 2\mathrm{Var}_h}{D_{\text{valid}}^2 - d_{\text{close}}^2} < 1 \implies D_{\text{valid}}^2 - 2\mathrm{Var}_h < D_{\text{valid}}^2 - d_{\text{close}}^2 \implies \mathrm{Var}_h > \frac{d_{\text{close}}^2}{2}
+
 $$
 
 This completes the proof.
@@ -2613,6 +2775,7 @@ For any swarm ({prf:ref}`def-swarm-and-state-space`) `k`, its total hypocoercive
 
 $$
 \mathrm{Var}_h(S_k) \ge \mathrm{Var}_x(S_k)
+
 $$
 
 Consequently, if $\mathrm{Var}_x(S_k) > R^2_{\text{var}}$ for some threshold $R^2_{\text{var}} > 0$, then it is guaranteed that $\mathrm{Var}_h(S_k) > R^2_{\text{var}}$.
@@ -2626,12 +2789,14 @@ By definition, the hypocoercive variance is:
 
 $$
 \mathrm{Var}_h(S_k) := \mathrm{Var}_x(S_k) + \lambda_v \mathrm{Var}_v(S_k)
+
 $$
 
 Since $\lambda_v > 0$ is a positive hypocoercive parameter and $\mathrm{Var}_v(S_k) \ge 0$ (variance is non-negative), we immediately have:
 
 $$
 \mathrm{Var}_h(S_k) = \mathrm{Var}_x(S_k) + \lambda_v \mathrm{Var}_v(S_k) \ge \mathrm{Var}_x(S_k)
+
 $$
 
 The second claim follows directly: if $\mathrm{Var}_x(S_k) > R^2_{\text{var}}$, then by the above inequality, $\mathrm{Var}_h(S_k) \ge \mathrm{Var}_x(S_k) > R^2_{\text{var}}$.
@@ -2650,6 +2815,7 @@ If the swarm 's internal hypocoercive variance is large, such that $\mathrm{Var}
 
 $$
 \frac{|O_k|}{k} \ge \frac{(1-\varepsilon_O) R^2_h}{D_h^2} =: f_O > 0
+
 $$
 
 where $D_h^2 := D_x^2 + \lambda_v D_v^2$ is the squared **hypocoercive diameter** of the valid domain, with $D_x := \sup_{x_1, x_2 \in \mathcal{X}_{\text{valid}}} \|x_1 - x_2\|$ being the positional domain diameter and $D_v$ being the velocity domain diameter.
@@ -2667,6 +2833,7 @@ The proof establishes the lower bound by relating the total hypocoercive varianc
 
 $$
 T_k = \sum_{j \in \mathcal{A}_k} \left(\|\delta_{x,k,j}\|^2 + \lambda_v \|\delta_{v,k,j}\|^2\right) = k \cdot \mathrm{Var}_h(S_k)
+
 $$
 
 *   By the definition of the global kinematic outlier set $O_k$ (Section 6.3), the sum of squared hypocoercive norms over this subset is bounded below by a fixed fraction of the total sum:
@@ -2674,6 +2841,7 @@ $$
 
 $$
 \sum_{i \in O_k} \left(\|\delta_{x,k,i}\|^2 + \lambda_v \|\delta_{v,k,i}\|^2\right) \ge (1-\varepsilon_O) T_k = (1-\varepsilon_O) k \cdot \mathrm{Var}_h(S_k)
+
 $$
 
 **2. Establish a Uniform Upper Bound on Single-Walker Contribution:**
@@ -2685,6 +2853,7 @@ $$
 
 $$
 \|\delta_{x,k,i}\|^2 + \lambda_v \|\delta_{v,k,i}\|^2 \le D_x^2 + \lambda_v D_v^2 = D_h^2
+
 $$
 
     This bound is a geometric property of the environment and is independent of the number of walkers `N` or `k`.
@@ -2695,6 +2864,7 @@ $$
 
 $$
 \sum_{i \in O_k} \left(\|\delta_{x,k,i}\|^2 + \lambda_v \|\delta_{v,k,i}\|^2\right) \le |O_k| \cdot \sup_{j \in O_k} \left(\|\delta_{x,k,j}\|^2 + \lambda_v \|\delta_{v,k,j}\|^2\right) \le |O_k| \cdot D_h^2
+
 $$
 
 **4. Combine Bounds and Finalize:**
@@ -2703,6 +2873,7 @@ $$
 
 $$
 (1-\varepsilon_O) k \cdot \mathrm{Var}_h(S_k) \le \sum_{i \in O_k} \left(\|\delta_{x,k,i}\|^2 + \lambda_v \|\delta_{v,k,i}\|^2\right) \le |O_k| \cdot D_h^2
+
 $$
 
 *   We are given the premise that the hypocoercive variance is large: $\mathrm{Var}_h(S_k) > R^2_h$. Substituting this into the left-hand side gives:
@@ -2710,6 +2881,7 @@ $$
 
 $$
 (1-\varepsilon_O) k \cdot R^2_h < |O_k| \cdot D_h^2
+
 $$
 
 *   Rearranging to find a bound on the fraction of outliers relative to the number of *alive* walkers `k`, we get:
@@ -2717,6 +2889,7 @@ $$
 
 $$
 \frac{|O_k|}{k} > \frac{(1-\varepsilon_O) R^2_h}{D_h^2}
+
 $$
 
 *   The resulting lower bound, $f_O := (1-\varepsilon_O) R^2_h / D_h^2$, is a positive constant constructed entirely from `N`-independent parameters. This completes the proof that a large hypocoercive variance guarantees a non-vanishing fraction of global phase-space outliers among the alive population.
@@ -2758,6 +2931,7 @@ If the swarm ({prf:ref}`def-swarm-and-state-space`)'s internal positional varian
 
 $$
 \frac{|H_k(\epsilon)|}{k} \ge f_H(\epsilon) > 0
+
 $$
 
 :::
@@ -2773,6 +2947,7 @@ The Law of Total Variance provides an exact identity for the swarm's variance ba
 
 $$
 k \cdot \mathrm{Var}_k(x) = \sum_{m=1}^M \sum_{i \in G_m} \|x_i - \mu\|^2 = \sum_{m=1}^M |G_m|\mathrm{Var}(G_m) + \sum_{m=1}^M |G_m|\|\mu_m - \mu\|^2
+
 $$
 
 The first term is the "within-cluster" sum of squares, and the second is the size-weighted "between-cluster" sum of squares.
@@ -2783,6 +2958,7 @@ The total within-cluster sum of squares is therefore bounded:
 
 $$
 \sum_{m=1}^M |G_m|\mathrm{Var}(G_m) \le \sum_{m=1}^M |G_m| \left(\frac{D_{\mathrm{diam}}(\epsilon)}{2}\right)^2 = k \left(\frac{D_{\mathrm{diam}}(\epsilon)}{2}\right)^2
+
 $$
 
 **3. A Uniform Lower Bound on the Between-Cluster Variance.**
@@ -2790,12 +2966,14 @@ We can now find a lower bound for the between-cluster sum of squares. Rearrangin
 
 $$
 \sum_{m=1}^M |G_m|\|\mu_m - \mu\|^2 = k \cdot \mathrm{Var}_k(x) - \sum_{m=1}^M |G_m|\mathrm{Var}(G_m) > k \cdot R^2_{\mathrm{var}} - k \left(\frac{D_{\mathrm{diam}}(\epsilon)}{2}\right)^2
+
 $$
 
 Let's define a new positive, N-uniform constant $R^{2}_means := R^{2}_var - (D_diam(\varepsilon)/2)^{2}$. The premise of this lemma requires that we choose $D_diam(\varepsilon)$ small enough to ensure `R^{2}_means > 0`. With this, we have a guaranteed lower bound on the size-weighted variance of the cluster means:
 
 $$
 \frac{1}{k}\sum_{m=1}^M |G_m|\|\mu_m - \mu\|^2 > R^2_{\mathrm{means}} > 0
+
 $$
 
 **4. Applying the Outlier Argument to the Cluster Centers.**
@@ -2805,18 +2983,21 @@ By the definition of the high-error set $H_k(\varepsilon)$, it is the union of a
 
 $$
 \sum_{m \in O_M} |G_m|\|\mu_m - \mu\|^2 \ge (1-\varepsilon_O) \sum_{m=1}^M |G_m|\|\mu_m - \mu\|^2 > (1-\varepsilon_O) k \cdot R^2_{\mathrm{means}}
+
 $$
 
 At the same time, we can find an upper bound for this sum. The maximum squared distance of any cluster mean from the global mean is bounded by `D_valid^{2}`.
 
 $$
 \sum_{m \in O_M} |G_m|\|\mu_m - \mu\|^2 \le \sum_{m \in O_M} |G_m|D_{\mathrm{valid}}^2 = D_{\mathrm{valid}}^2 \sum_{m \in O_M} |G_m|
+
 $$
 
 The term $\Sigma_{m\inO_M} |G_m|$ is, by definition, the total number of walkers in the high-error set, $|H_k(\varepsilon)|$. Combining the inequalities:
 
 $$
 (1-\varepsilon_O) k \cdot R^2_{\mathrm{means}} < |H_k(\epsilon)| \cdot D_{\mathrm{valid}}^2
+
 $$
 
 **5. Conclusion.**
@@ -2824,6 +3005,7 @@ Rearranging the final inequality gives the desired N-uniform lower bound on the 
 
 $$
 \frac{|H_k(\epsilon)|}{k} > \frac{(1-\varepsilon_O) R^2_{\mathrm{means}}}{D_{\mathrm{valid}}^2} = \frac{(1-\varepsilon_O) \left(R^2_{\mathrm{var}} - (D_{\mathrm{diam}}(\epsilon)/2)^2\right)}{D_{\mathrm{valid}}^2}
+
 $$
 
 We define the right-hand side as our N-uniform constant $f_H(\varepsilon)$. It is strictly positive by our choice of $D_diam(\varepsilon)$, and it is constructed entirely from N-independent system parameters ($\varepsilon_O$, `R^{2}_var`, `D_diam`, `D_valid`). This completes the N-uniform proof.
@@ -2846,6 +3028,7 @@ If the total intra-swarm ({prf:ref}`def-swarm-and-state-space`) positional varia
 
 $$
 \frac{|H_k(\epsilon)|}{k} \ge f_H(\epsilon) > 0
+
 $$
 
 Referenced by {prf:ref}`def-geometric-partition`.
@@ -2862,6 +3045,7 @@ By **{prf:ref}`lem-V_Varx-implies-variance`** (labeled $lem-V_{\text{Var}}x-impl
 
 $$
 \mathrm{Var}_x(S_k) > \frac{R^2_{\text{total\_var},x}}{2}
+
 $$
 
 We define the threshold $R^2_{\text{var}} := R^2_{\text{total\_var},x} / 2$.
@@ -2871,6 +3055,7 @@ Since the hypocoercive variance satisfies $\mathrm{Var}_h(S_k) = \mathrm{Var}_x(
 
 $$
 \mathrm{Var}_h(S_k) > R^2_{\text{var}}
+
 $$
 
 This satisfies the necessary premise for the lemmas governing both regimes of the $\varepsilon$-dichotomy.
@@ -2887,6 +3072,7 @@ We can define a single, unified lower bound $f_H(\epsilon)$ that is valid for al
 
 $$
 f_H(\epsilon) := \min(f_O, f_{H,\text{cluster}}(\epsilon))
+
 $$
 
 Since both $f_O$ and $f_{H,\text{cluster}}(\epsilon)$ are strictly positive, N-uniform constants, their minimum $f_H(\epsilon)$ is also a strictly positive, N-uniform constant.
@@ -2933,12 +3119,14 @@ Then there exist N-uniform, $\epsilon$-dependent constants $D_H(\epsilon) > R_L(
 
 $$
 d_{\text{alg}}(i, j) \ge D_H(\epsilon)
+
 $$
 
 **Part 2 (Clustering of Low-Error Walkers):** For any walker ({prf:ref}`def-walker`) $j \in L_k(\epsilon)$, there exists a non-empty subset of companion walkers $C_j \subset L_k(\epsilon) \setminus \{j\}$ of minimum size $|C_j| \ge f_c k$ such that all members of this cluster are within a small algorithmic radius:
 
 $$
 d_{\text{alg}}(j, \ell) \le R_L(\epsilon) \quad \text{for all } \ell \in C_j
+
 $$
 
 The separation property $D_H(\epsilon) > R_L(\epsilon)$ ensures that the geometric signatures of the two sets are fundamentally distinct and non-overlapping **in the algorithmic phase space**.
@@ -2987,18 +3175,21 @@ By {prf:ref}`def-unified-high-low-error-sets`, the alive set $\mathcal{A}_k$ is 
 
 $$
 \text{diam}(G_m) := \max_{i,j \in G_m} d_{\text{alg}}(i, j) \le D_{\text{diam}}(\epsilon) = c_d \cdot \epsilon
+
 $$
 
 This immediately gives us the **low-error clustering radius**. For any walker $j \in L_k(\epsilon)$ belonging to a valid low-error cluster $G_\ell$ (with $|G_\ell| \ge k_{\min}$), all other walkers in that cluster satisfy:
 
 $$
 d_{\text{alg}}(j, m) \le D_{\text{diam}}(\epsilon) \quad \text{for all } m \in G_\ell
+
 $$
 
 We define:
 
 $$
 R_L(\epsilon) := D_{\text{diam}}(\epsilon) = c_d \cdot \epsilon
+
 $$
 
 **Step 2: Bridge to Hypocoercive Variance**
@@ -3007,6 +3198,7 @@ As established in Section 6.4.2, the premise $\mathrm{Var}_x(S_k) > R^2_{\mathrm
 
 $$
 \mathrm{Var}_h(S_k) = \mathrm{Var}_x(S_k) + \lambda_v \mathrm{Var}_v(S_k) \ge \mathrm{Var}_x(S_k) > R^2_{\mathrm{var}}
+
 $$
 
 **Step 3: Decompose Variance via Law of Total Variance**
@@ -3015,6 +3207,7 @@ The hypocoercive variance can be decomposed into within-cluster and between-clus
 
 $$
 k \cdot \mathrm{Var}_x(S_k) = \sum_{m=1}^M \sum_{i \in G_m} \|x_i - \mu_x\|^2 = \underbrace{\sum_{m=1}^M |G_m| \mathrm{Var}_x(G_m)}_{\text{within-cluster}} + \underbrace{\sum_{m=1}^M |G_m| \|\mu_{x,m} - \mu_x\|^2}_{\text{between-cluster}}
+
 $$
 
 where $\mu_{x,m}$ is the positional center of mass of cluster $G_m$.
@@ -3025,18 +3218,21 @@ Since each cluster has algorithmic diameter at most $D_{\text{diam}}(\epsilon)$,
 
 $$
 \max_{i,j \in G_m} \|x_i - x_j\| \le \max_{i,j \in G_m} d_{\text{alg}}(i,j) \le D_{\text{diam}}(\epsilon)
+
 $$
 
 Therefore, the maximum internal positional variance of any cluster satisfies:
 
 $$
 \mathrm{Var}_x(G_m) \le \left(\frac{D_{\text{diam}}(\epsilon)}{2}\right)^2
+
 $$
 
 The total within-cluster sum of squares is bounded:
 
 $$
 \sum_{m=1}^M |G_m| \mathrm{Var}_x(G_m) \le k \left(\frac{D_{\text{diam}}(\epsilon)}{2}\right)^2
+
 $$
 
 **Step 5: Lower Bound on Between-Cluster Variance**
@@ -3045,24 +3241,28 @@ Rearranging the variance decomposition and using $\mathrm{Var}_x(S_k) > R^2_{\ma
 
 $$
 \sum_{m=1}^M |G_m| \|\mu_{x,m} - \mu_x\|^2 = k \cdot \mathrm{Var}_x(S_k) - \sum_{m=1}^M |G_m| \mathrm{Var}_x(G_m) > k \cdot R^2_{\mathrm{var}} - k \left(\frac{D_{\text{diam}}(\epsilon)}{2}\right)^2
+
 $$
 
 Define the **minimum cluster mean separation threshold**:
 
 $$
 R^2_{\mathrm{means}} := R^2_{\mathrm{var}} - \left(\frac{D_{\text{diam}}(\epsilon)}{2}\right)^2
+
 $$
 
 For this to be positive, we require the **admissibility condition**:
 
 $$
 D_{\text{diam}}(\epsilon) = c_d \cdot \epsilon < 2\sqrt{R^2_{\mathrm{var}}}
+
 $$
 
 Under this condition:
 
 $$
 \frac{1}{k} \sum_{m=1}^M |G_m| \|\mu_{x,m} - \mu_x\|^2 > R^2_{\mathrm{means}} > 0
+
 $$
 
 **Step 6: Apply Outlier Analysis to Cluster Centers**
@@ -3071,6 +3271,7 @@ By {prf:ref}`def-unified-high-low-error-sets`, valid outlier clusters (with $|G_
 
 $$
 \sum_{m \in O_M} |G_m| \|\mu_{x,m} - \mu_x\|^2 \ge (1-\varepsilon_O) \sum_{\substack{m: |G_m| \ge k_{\min}}} |G_m| \|\mu_{x,m} - \mu_x\|^2
+
 $$
 
 Let $H_k(\epsilon) = \bigcup_{m \in O_M} G_m$ be the union of valid outlier clusters, and let $L_k(\epsilon)$ be the union of valid low-error clusters.
@@ -3083,24 +3284,28 @@ Using the averaging argument from the outlier analysis: if the minimum positiona
 
 $$
 \sum_{m \in O_M} |G_m| \|\mu_{x,m} - \mu_x\|^2 \ge |H_k(\epsilon)| \cdot r_h^2
+
 $$
 
 Combined with Step 6 and using $|H_k(\epsilon)| \le k$:
 
 $$
 r_h^2 \ge (1-\varepsilon_O) R^2_{\mathrm{means}}
+
 $$
 
 Therefore:
 
 $$
 \|\mu_{x,h} - \mu_x\| \ge \sqrt{(1-\varepsilon_O) R^2_{\mathrm{means}}} \quad \text{for all } G_h \in O_M
+
 $$
 
 Similarly, for low-error clusters:
 
 $$
 \|\mu_{x,\ell} - \mu_x\| \le \sqrt{\frac{\varepsilon_O R^2_{\mathrm{means}} k}{|L_k(\epsilon)|}}
+
 $$
 
 **Step 8: Prove Separation Between High-Error and Low-Error Sets**
@@ -3111,6 +3316,7 @@ We now establish that walkers from high-error clusters are separated from walker
 
 $$
 d_{\text{alg}}(i,j) \le D_{\text{diam}}(\epsilon) = R_L(\epsilon)
+
 $$
 
 This case shows that walkers within the same high-error cluster are **not** isolated from each other. This is a critical observation: we do not claim universal isolation for high-error walkers.
@@ -3119,6 +3325,7 @@ This case shows that walkers within the same high-error cluster are **not** isol
 
 $$
 \|x_i - x_j\| \ge \|\mu_{x,h} - \mu_{x,j'}\| - \|x_i - \mu_{x,h}\| - \|x_j - \mu_{x,j'}\|
+
 $$
 
 where $G_{j'}$ is the cluster containing $j$. This application of the reverse triangle inequality is valid when the separation between cluster centers dominates the within-cluster radii, which we now verify.
@@ -3132,6 +3339,7 @@ Using our established bounds:
 
 $$
 \|\mu_{x,h} - \mu_{x,j'}\| > \|x_i - \mu_{x,h}\| + \|x_j - \mu_{x,j'}\|
+
 $$
 
 From Steps 6-7, we have:
@@ -3142,24 +3350,28 @@ Therefore, positivity requires:
 
 $$
 \sqrt{(1-\varepsilon_O) R^2_{\mathrm{means}}} - \sqrt{\frac{\varepsilon_O R^2_{\mathrm{means}} k}{|L_k(\epsilon)|}} > D_{\mathrm{diam}}(\epsilon)
+
 $$
 
 This condition will be guaranteed by the admissibility constraints derived in Step 9 below. Proceeding under this guarantee, we obtain:
 
 $$
 \|x_i - x_j\| \ge \sqrt{(1-\varepsilon_O) R^2_{\mathrm{means}}} - \sqrt{\frac{\varepsilon_O R^2_{\mathrm{means}} k}{|L_k(\epsilon)|}} - D_{\text{diam}}(\epsilon)
+
 $$
 
 Since $d_{\text{alg}}(i,j) \ge \|x_i - x_j\|$, we define the **high-error isolation distance**:
 
 $$
 D_H(\epsilon) := \sqrt{(1-\varepsilon_O) R^2_{\mathrm{means}}} - \sqrt{\frac{\varepsilon_O R^2_{\mathrm{means}} k}{k(1-f_H(\epsilon))}} - D_{\text{diam}}(\epsilon)
+
 $$
 
 where $f_H(\epsilon)$ is the N-uniform lower bound on the high-error fraction from Section 6.4. Simplifying:
 
 $$
 D_H(\epsilon) := \sqrt{(1-\varepsilon_O) R^2_{\mathrm{means}}} - \sqrt{\frac{\varepsilon_O R^2_{\mathrm{means}}}{1-f_H(\epsilon)}} - c_d \cdot \epsilon
+
 $$
 
 :::{admonition} Mathematical Rigour Note
@@ -3169,24 +3381,28 @@ The application of the reverse triangle inequality in Step 8 deserves careful ex
 
 $$
 \|a - c\| \geq \|a - b\| - \|b - c\|
+
 $$
 
 In our application with $a = x_i$, $b = \mu_{x,h}$, and $c = x_j$, this becomes:
 
 $$
 \|x_i - x_j\| \geq \|x_i - \mu_{x,h}\| - \|\mu_{x,h} - x_j\|
+
 $$
 
 However, to obtain a useful **lower bound**, we need the term $\|\mu_{x,h} - x_j\|$ to be expressible in terms of quantities we can control. Using the triangle inequality $\|\mu_{x,h} - x_j\| \leq \|\mu_{x,h} - \mu_{x,j'}\| + \|\mu_{x,j'} - x_j\|$, we substitute to get:
 
 $$
 \|x_i - x_j\| \geq \|x_i - \mu_{x,h}\| - (\|\mu_{x,h} - \mu_{x,j'}\| + \|\mu_{x,j'} - x_j\|)
+
 $$
 
 Rearranging yields the form used in the proof:
 
 $$
 \|x_i - x_j\| \geq \|\mu_{x,h} - \mu_{x,j'}\| - \|x_i - \mu_{x,h}\| - \|x_j - \mu_{x,j'}\|
+
 $$
 
 This is mathematically valid. The subtlety is that this bound is only **meaningful** (i.e., positive) when the between-cluster separation $\|\mu_{x,h} - \mu_{x,j'}\|$ dominates the sum of within-cluster radii. This is precisely what the positivity verification establishes, and what the admissibility constraints in Step 9 guarantee. The approach is standard in clustering-based geometric analysis where one must verify that cluster-level separation dominates local fluctuations.
@@ -3198,24 +3414,28 @@ For geometric separation, we require:
 
 $$
 \sqrt{(1-\varepsilon_O) R^2_{\mathrm{means}}} - \sqrt{\frac{\varepsilon_O R^2_{\mathrm{means}}}{1-f_H(\epsilon)}} - c_d \cdot \epsilon > c_d \cdot \epsilon
+
 $$
 
 Simplifying:
 
 $$
 \sqrt{(1-\varepsilon_O) R^2_{\mathrm{means}}} > \sqrt{\frac{\varepsilon_O R^2_{\mathrm{means}}}{1-f_H(\epsilon)}} + 2c_d \cdot \epsilon
+
 $$
 
 This condition is satisfied when:
 
 $$
 \varepsilon_O < \frac{(1-f_H(\epsilon)) \left(\sqrt{R^2_{\mathrm{means}}} - 2c_d \cdot \epsilon\right)^2}{R^2_{\mathrm{means}} + f_H(\epsilon) \left(\sqrt{R^2_{\mathrm{means}}} - 2c_d \cdot \epsilon\right)^2}
+
 $$
 
 provided that $\sqrt{R^2_{\mathrm{means}}} > 2c_d \cdot \epsilon$, which follows from choosing:
 
 $$
 R^2_{\mathrm{var}} > \left(\frac{D_{\text{diam}}(\epsilon)}{2} + 2c_d \cdot \epsilon\right)^2 = \left(\frac{c_d \cdot \epsilon}{2} + 2c_d \cdot \epsilon\right)^2 = \left(\frac{5c_d \cdot \epsilon}{2}\right)^2
+
 $$
 
 **Conclusion:**
@@ -3229,6 +3449,7 @@ Under the admissibility conditions:
 
 $$
 \sqrt{(1-\varepsilon_O) R^2_{\mathrm{means}}} - \sqrt{\frac{\varepsilon_O R^2_{\mathrm{means}}}{1-f_H(\epsilon)}} > c_d \cdot \epsilon = D_{\mathrm{diam}}(\epsilon)
+
 $$
 
 which validates the application of the reverse triangle inequality for deriving meaningful separation bounds between high-error and low-error walkers.
@@ -3258,6 +3479,7 @@ $$
 D_H(\epsilon) &:= \sqrt{(1-\varepsilon_O) R^2_{\mathrm{means}}} - \sqrt{\frac{\varepsilon_O R^2_{\mathrm{means}}}{1-f_H(\epsilon)}} - c_d \cdot \epsilon \\
 R_L(\epsilon) &:= c_d \cdot \epsilon
 \end{aligned}
+
 $$
 
 where:
@@ -3274,6 +3496,7 @@ These constants depend only on the primitive parameters $R^2_{\mathrm{var}}$, $\
 
 $$
 c_d \cdot \epsilon < 2\sqrt{R^2_{\mathrm{var}}}
+
 $$
 
 This ensures that $R^2_{\mathrm{means}} > 0$, guaranteeing non-trivial variance between cluster centers.
@@ -3282,6 +3505,7 @@ This ensures that $R^2_{\mathrm{means}} > 0$, guaranteeing non-trivial variance 
 
 $$
 R^2_{\mathrm{var}} > \left(\frac{5c_d \cdot \epsilon}{2}\right)^2
+
 $$
 
 This ensures that $\sqrt{R^2_{\mathrm{means}}} > 2c_d \cdot \epsilon$, which is required for the separation condition.
@@ -3290,6 +3514,7 @@ This ensures that $\sqrt{R^2_{\mathrm{means}}} > 2c_d \cdot \epsilon$, which is 
 
 $$
 \varepsilon_O < \frac{(1-f_H(\epsilon)) \left(\sqrt{R^2_{\mathrm{means}}} - 2c_d \cdot \epsilon\right)^2}{R^2_{\mathrm{means}} + f_H(\epsilon) \left(\sqrt{R^2_{\mathrm{means}}} - 2c_d \cdot \epsilon\right)^2}
+
 $$
 
 This restricts the maximum allowable outlier contamination to ensure that positional signal dominates.
@@ -3368,6 +3593,7 @@ If the internal positional variance of the swarm  is large, $\mathrm{Var}(x) \ge
 
 $$
 \mathbb{E}[\operatorname{Var}(d)] \ge \kappa_{\text{meas}}(\epsilon) > 0
+
 $$
 
 :::
@@ -3393,6 +3619,7 @@ The premise of the theorem is that $Var_x \geq R^{2}_var$. From the results esta
 
 $$
 \kappa'_{\text{gap}}(\epsilon) := D_H(\epsilon) - R_L(\epsilon) - C_{\text{tail}}(\epsilon) > 0
+
 $$
 
     This ensures:
@@ -3400,6 +3627,7 @@ $$
 
 $$
 \mu_d(H_k) - \mu_d(L_k) \ge \kappa'_{\text{gap}}(\epsilon) > 0
+
 $$
 
 **2. From Subpopulation Mean Gap to Variance of Expectations.**
@@ -3410,18 +3638,21 @@ The variance of a set partitioned into two subsets (`H_k`, `L_k`) is bounded bel
 
 $$
 \operatorname{Var}(X) = \operatorname{Var}_{\text{within}}(X) + \operatorname{Var}_{\text{between}}(X)
+
 $$
 
 where the within-group variance `Var_within(X)` is always non-negative. Therefore, the total variance is bounded below by the between-group variance:
 
 $$
 \operatorname{Var}(E_d) \ge \operatorname{Var}_{\text{between}}(E_d) = f_H f_L (\mu_d(H_k) - \mu_d(L_k))^2
+
 $$
 
 Substituting the guaranteed bounds from Step 1, we get a uniform lower bound on the variance of the *expected* raw distances:
 
 $$
 \operatorname{Var}(E_d) \ge f_H f_L (\kappa'_{\text{gap}}(\epsilon))^2 > 0
+
 $$
 
 **3. From Variance of Expectations to Expected Variance (The Key Inequality).**
@@ -3432,6 +3663,7 @@ Let `d_i` denote the random distance measurement for walker `i`, and let $\mu_i 
 
 $$
 \operatorname{Var}(d) = \frac{1}{k}\sum_{i=1}^k (d_i - \bar{d})^2
+
 $$
 
 where $bar{d} = (1/k) \Sigma d_i$ is the sample mean.
@@ -3440,54 +3672,63 @@ Taking expectations and using the fact that $\text{E}[d_i] = \mu_i$ and $\text{E
 
 $$
 \mathbb{E}[\operatorname{Var}(d)] = \mathbb{E}\left[\frac{1}{k}\sum_{i=1}^k (d_i - \bar{d})^2\right]
+
 $$
 
 We decompose each squared deviation using the standard technique. For each walker $i$, we write:
 
 $$
 (d_i - \bar{d})^2 = [(d_i - \mu_i) + (\mu_i - \bar{d})]^2
+
 $$
 
 Expanding and taking expectations term by term:
 
 $$
 \mathbb{E}[(d_i - \bar{d})^2] = \mathbb{E}[(d_i - \mu_i)^2] + \mathbb{E}[(\mu_i - \bar{d})^2] + 2\mathbb{E}[(d_i - \mu_i)(\mu_i - \bar{d})]
+
 $$
 
 The **cross-term vanishes**: Since $\mu_i$ is a constant (the expectation of $d_i$), we have:
 
 $$
 \mathbb{E}[(d_i - \mu_i)(\mu_i - \bar{d})] = (\mu_i - \mathbb{E}[\bar{d}]) \mathbb{E}[d_i - \mu_i] = (\mu_i - \bar{\mu}) \cdot 0 = 0
+
 $$
 
 The **first term** is simply the variance of $d_i$:
 
 $$
 \mathbb{E}[(d_i - \mu_i)^2] = \operatorname{Var}(d_i)
+
 $$
 
 The **second term** requires care because $\mu_i$ is constant but $\bar{d}$ is random. Using the standard variance decomposition for $(X - c)^2$ where $c$ is constant:
 
 $$
 \mathbb{E}[(\mu_i - \bar{d})^2] = (\mu_i - \mathbb{E}[\bar{d}])^2 + \operatorname{Var}(\bar{d}) = (\mu_i - \bar{\mu})^2 + \operatorname{Var}(\bar{d})
+
 $$
 
 Combining these results:
 
 $$
 \mathbb{E}[(d_i - \bar{d})^2] = \operatorname{Var}(d_i) + (\mu_i - \bar{\mu})^2 + \operatorname{Var}(\bar{d})
+
 $$
 
 Summing over all $k$ walkers and dividing by $k$ gives the expected empirical variance:
 
 $$
 \mathbb{E}[\operatorname{Var}(d)] = \frac{1}{k}\sum_{i=1}^k \mathbb{E}[(d_i - \bar{d})^2] = \underbrace{\frac{1}{k}\sum_{i=1}^k \operatorname{Var}(d_i)}_{\text{within-walker variance}} + \underbrace{\frac{1}{k}\sum_{i=1}^k (\mu_i - \bar{\mu})^2}_{\text{= Var}(E_d)} + \underbrace{\operatorname{Var}(\bar{d})}_{\text{sample mean variance}}
+
 $$
 
 Since all three terms are non-negative, we immediately obtain the key inequality:
 
 $$
 \mathbb{E}[\operatorname{Var}(d)] \ge \operatorname{Var}(E_d) = \frac{1}{k}\sum_{i=1}^k (\mu_i - \bar{\mu})^2
+
 $$
 
 This establishes the key inequality rigorously.
@@ -3498,6 +3739,7 @@ Combining the results from Steps 2 and 3:
 
 $$
 \mathbb{E}[\operatorname{Var}(d)] \ge \operatorname{Var}(E_d) \ge f_H f_L (\kappa'_{\text{gap}}(\epsilon))^2
+
 $$
 
 We define the final constant $\kappa_meas(\varepsilon) := f_H f_L (\kappa'_{gap}(\varepsilon))^{2}$. Since `f_H`, `f_L`, and $\kappa'_gap(\varepsilon)$ are all positive, N-uniform, $\varepsilon$-dependent constants derived from the geometric analysis in Chapter 6, their product $\kappa_meas(\varepsilon)$ is also a positive, N-uniform, $\varepsilon$-dependent constant.
@@ -3522,6 +3764,7 @@ For any system in a high-error state (`Var(x) > R^{2}_var`) that generates a non
 
 $$
 \kappa_{\mathrm{var}}(d') > \operatorname{Var}_{\max}(d')
+
 $$
 
 where `Var_max(d')` is the maximum possible variance of the rescaled values, and $\kappa_var(d')$ is the guaranteed lower bound on the variance of the rescaled values in the high-error state.
@@ -3541,6 +3784,7 @@ The maximum possible variance for any set of values on this interval is given by
 
 $$
 \operatorname{Var}_{\max}(d') := \frac{1}{4}(\max(d') - \min(d'))^2 = \frac{1}{4}(g_{A,\max} - g_{A,\min})^2
+
 $$
 
 This value is a constant determined solely by the choice of the rescale function `g_A`; it does not depend on the Signal Gain $\gamma$. For the **Canonical Logistic Rescale function**, `g_A(z) = 2/(1+e^{-z})`, the range is `(0, 2)`, yielding a fixed maximum noise of `Var_max(d') = 1`.
@@ -3556,6 +3800,7 @@ The signal originates from the raw distance measurements `d`, propagates to the 
 
 $$
 \operatorname{Var}(z_d) \ge \frac{\kappa_{\mathrm{meas}}(d)}{(\sigma'_{\max})^2} =: \kappa_{\mathrm{var}}(z) > 0
+
 $$
 
 *   **Signal Amplification:** The input to the rescale function is $u_i = \gammaz_{d,i}$. The variance of this amplified signal is $\text{Var}(u) = \gamma^{2}\text{Var}(z_d) \geq \gamma^{2}\kappa_var(z)$.
@@ -3565,6 +3810,7 @@ $$
 
 $$
 \operatorname{Var}(d') = \operatorname{Var}(g_A(u)) \approx (g'_A(\mu_u))^2 \operatorname{Var}(u)
+
 $$
 
     This approximation becomes exact in the limit of small variance relative to the curvature of `g_A`. A more rigorous treatment using the Mean Value Theorem shows that the variance of the output is bounded below by the variance of the input multiplied by the squared infimum of the derivative.
@@ -3572,6 +3818,7 @@ $$
 
 $$
 \operatorname{Var}(d') \ge (\inf_{c \in Z_{\mathrm{eff}}} g'_A(c))^2 \operatorname{Var}(u)
+
 $$
 
     where `Z_eff` is the effective range of inputs. Let `g'_{\min} > 0` be the uniform lower bound on the derivative (guaranteed to exist on any compact operational range by the axiom). The guaranteed variance of the rescaled values is thus bounded below by a term proportional to $\gamma^{2}$:
@@ -3579,6 +3826,7 @@ $$
 
 $$
 \kappa_{\mathrm{var}}(d') \ge (g'_{\min})^2 \cdot \gamma^2 \kappa_{\mathrm{var}}(z)
+
 $$
 
 **3. Proving Satisfiability.**
@@ -3587,12 +3835,14 @@ The Signal-to-Noise Condition is $\kappa_var(d') > Var_max(d')$. Substituting ou
 
 $$
 (g'_{\min})^2 \cdot \gamma^2 \kappa_{\mathrm{var}}(z) > \frac{1}{4}(g_{A,\max} - g_{A,\min})^2
+
 $$
 
 Solving for the Signal Gain $\gamma$:
 
 $$
 \gamma > \frac{g_{A,\max} - g_{A,\min}}{2 \cdot g'_{\min} \cdot \sqrt{\kappa_{\mathrm{var}}(z)}}
+
 $$
 
 Since $\kappa_var(z)$ is a fixed positive constant for a given $\varepsilon$, and `g_A`'s properties (`g_{A,max}`, `g_{A,min}`, `g'_{min}`) are fixed, the right-hand side is a fixed, positive real number. This proves that there always exists a sufficiently large choice of $\gamma$ that satisfies the condition.
@@ -3632,6 +3882,7 @@ Let $\{v_i\}_{i=1}^k$ be a set of $k \ge 2$ real numbers. If the empirical varia
 
 $$
 \max_{i,j} |v_i - v_j| \ge \sqrt{2\kappa}
+
 $$
 
 :::
@@ -3647,6 +3898,7 @@ The empirical variance, $\text{Var}(\{v_i\}) = \frac{1}{k}\sum_i v_i^2 - (\frac{
 
 $$
 \mathrm{Var}(\{v_i\}) = \frac{1}{2k^2} \sum_{i=1}^k \sum_{j=1}^k (v_i - v_j)^2
+
 $$
 
 This identity is established by expanding the squared term in the double summation.
@@ -3656,12 +3908,14 @@ Let $\Delta_{\text{max}} := \max_{i,j} |v_i - v_j|$. By definition, every term i
 
 $$
 \sum_{i=1}^k \sum_{j=1}^k (v_i - v_j)^2 \le \sum_{i=1}^k \sum_{j=1}^k \Delta_{\max}^2 = k^2 \Delta_{\max}^2
+
 $$
 
 Substituting this into the identity from Step 1 gives an upper bound on the variance in terms of the maximum gap:
 
 $$
 \mathrm{Var}(\{v_i\}) \le \frac{1}{2k^2} (k^2 \Delta_{\max}^2) = \frac{1}{2} \Delta_{\max}^2
+
 $$
 
 **3. Final Derivation.**
@@ -3669,6 +3923,7 @@ We are given the premise that $\mathrm{Var}(\{v_i\}) \geq \kappa$. Combining thi
 
 $$
 \kappa \le \mathrm{Var}(\{v_i\}) \le \frac{1}{2} \Delta_{\max}^2
+
 $$
 
 Rearranging the inequality $\kappa \le \frac{1}{2} \Delta_{\max}^2$ gives $\Delta_{\max}^2 \ge 2\kappa$. Taking the square root of both sides yields the desired result.
@@ -3695,6 +3950,7 @@ Let $V_{\max}$ be the uniform upper bound on a raw measurement's absolute value 
 
 $$
 \sigma'_{\max} := \sup_{0 \le V \le V_{\max}^2} \sigma'_{\mathrm{patch}}(V)
+
 $$
 
 As the raw variance `Var({vᵢ})` is uniformly bounded by `V_max^{2}` and the function $\sigma'_patch(V)$ is continuous and monotonic, the Extreme Value Theorem guarantees that this maximum is attained at the right endpoint of the interval: $\sigma'_max = \sigma'_patch(V_max^{2})$. It is therefore a finite, positive constant determined only by the fixed system parameters, providing a state-independent upper bound for any standard deviation computed by the algorithm.
@@ -3709,6 +3965,7 @@ For the Canonical Logistic Rescale function (see {prf:ref}`def-logistic-rescale`
 
 $$
 \inf_{z \in Z_{\mathrm{supp}}} g'_A(z) = g'_{\min} > 0
+
 $$
 
 where $Z_{\text{supp}} := \left[ -2V_{\max}/\sigma'_{\min,\text{patch}}, 2V_{\max}/\sigma'_{\min,\text{patch}} \right]$ is the compact support of all possible standardized scores.
@@ -3739,12 +3996,14 @@ Let the system parameters be fixed. There exists a function $\kappa_rescaled(\ka
 
 $$
 |g_A(z_a) - g_A(z_b)| \ge \kappa_{\mathrm{rescaled}}(\kappa_{\mathrm{raw}}) > 0
+
 $$
 
 The function $\kappa_rescaled$ is independent of the swarm ({prf:ref}`def-swarm-and-state-space`) state `S` and its size `k`, and is defined as:
 
 $$
 \kappa_{\mathrm{rescaled}}(\kappa_{\mathrm{raw}}) := \frac{g'_{\min}}{\sigma'_{\max}} \cdot \kappa_{\mathrm{raw}}
+
 $$
 
 :::
@@ -3760,12 +4019,14 @@ We seek a uniform lower bound for the gap between standardized scores, `|zₐ - 
 
 $$
 |z_a - z_b| = \left| \frac{v_a - \mu}{\sigma'} - \frac{v_b - \mu}{\sigma'} \right| = \frac{|v_a - v_b|}{\sigma'}
+
 $$
 
 We are given the premise that the numerator is bounded below by $\kappa_raw$. The denominator $\sigma'$ is the patched standard deviation (see {prf:ref}`def-patched-std-dev-function`) of the full set of `k` raw values. By Definition {prf:ref}`def-max-patched-std`, $\sigma'$ is uniformly bounded above by the state-independent constant $\sigma'_max$. Combining these gives a uniform lower bound on the z-score gap:
 
 $$
 |z_a - z_b| \ge \frac{\kappa_{\mathrm{raw}}}{\sigma'_{\max}} =: \kappa_z > 0
+
 $$
 
 **Stage 2: From Z-Score Gap to Rescaled Value Gap**
@@ -3773,12 +4034,14 @@ The rescale function `g_A(z)` is continuously differentiable. By the Mean Value 
 
 $$
 |g_A(z_a) - g_A(z_b)| = |g'_A(c)| \cdot |z_a - z_b|
+
 $$
 
 The points `zₐ`, `zᵦ`, and `c` are all within the compact operational range `Z_supp`. By Lemma {prf:ref}`lem-rescale-derivative-lower-bound`, the derivative at `c` is uniformly bounded below by the positive constant `g'_min`. Substituting the lower bounds for both terms on the right-hand side gives:
 
 $$
 |g_A(z_a) - g_A(z_b)| \ge g'_{\min} \cdot \kappa_z
+
 $$
 
 **Conclusion**
@@ -3786,6 +4049,7 @@ Substituting the definition of $\kappa_z$ from Stage 1 yields the final result:
 
 $$
 |g_A(z_a) - g_A(z_b)| \ge g'_{\min} \cdot \left(\frac{\kappa_{\mathrm{raw}}}{\sigma'_{\max}}\right) = \kappa_{\mathrm{rescaled}}(\kappa_{\mathrm{raw}})
+
 $$
 
 Since `g'_min` and $\sigma'_max$ are positive, N-uniform constants, the function $\kappa_rescaled(\kappa_raw)$ provides a strictly positive, N-uniform lower bound for any $\kappa_raw > 0$. This completes the proof that a raw measurement gap robustly propagates to a guaranteed rescaled value gap.
@@ -3824,6 +4088,7 @@ If the empirical variance of the total set, $\operatorname{Var}(\mathcal{V})$, i
 
 $$
 (\mu_H - \mu_L)^2 \ge \frac{1}{f_H f_L} \left( \kappa_{\mathrm{var}} - \operatorname{Var}_{\mathrm{max}} \right)
+
 $$
 
 where $\operatorname{Var}_{\mathrm{max}} := \frac{1}{4}(V_{\max} - V_{\min})^2$ is the maximum possible variance for any set of values on the interval.
@@ -3832,6 +4097,7 @@ Consequently, if the guaranteed variance $\kappa_{\mathrm{var}}$ is sufficiently
 
 $$
 |\mu_H - \mu_L| \ge \frac{1}{\sqrt{f_H f_L}} \sqrt{\kappa_{\mathrm{var}} - \operatorname{Var}_{\mathrm{max}}} > 0
+
 $$
 
 :::
@@ -3847,18 +4113,21 @@ Let $\mu_{\mathcal{V}}$ be the mean of the entire set $\mathcal{V}$. The total e
 
 $$
 \operatorname{Var}(\mathcal{V}) = \operatorname{Var}_B(\mathcal{V}) + \operatorname{Var}_W(\mathcal{V})
+
 $$
 
 The **within-group variance** is the weighted average of the variances of the subsets:
 
 $$
 \operatorname{Var}_W(\mathcal{V}) := f_H \operatorname{Var}(H) + f_L \operatorname{Var}(L)
+
 $$
 
 The **between-group variance** is the variance of the subset means around the total mean:
 
 $$
 \operatorname{Var}_B(\mathcal{V}) := f_H(\mu_H - \mu_{\mathcal{V}})^2 + f_L(\mu_L - \mu_{\mathcal{V}})^2
+
 $$
 
 **Step 2: Relating Between-Group Variance to the Mean Separation.**
@@ -3869,6 +4138,7 @@ $$
 \mu_H - \mu_{\mathcal{V}} &= \mu_H - (f_H \mu_H + f_L \mu_L) = (1-f_H)\mu_H - f_L \mu_L = f_L \mu_H - f_L \mu_L = f_L(\mu_H - \mu_L) \\
 \mu_L - \mu_{\mathcal{V}} &= \mu_L - (f_H \mu_H + f_L \mu_L) = -f_H \mu_H + (1-f_L)\mu_L = -f_H \mu_H + f_H \mu_L = -f_H(\mu_H - \mu_L)
 \end{aligned}
+
 $$
 
 Substituting these expressions back into the formula for $\operatorname{Var}_B(\mathcal{V})$ yields:
@@ -3880,12 +4150,14 @@ $$
 &= (f_H f_L^2 + f_L f_H^2)(\mu_H - \mu_L)^2 \\
 &= f_H f_L (f_L + f_H)(\mu_H - \mu_L)^2
 \end{aligned}
+
 $$
 
 Since $f_H + f_L = 1$, we arrive at the exact identity:
 
 $$
 \operatorname{Var}_B(\mathcal{V}) = f_H f_L (\mu_H - \mu_L)^2
+
 $$
 
 **Step 3: A Uniform Upper Bound on the Within-Group Variance.**
@@ -3893,6 +4165,7 @@ The within-group variance, $\operatorname{Var}_W(\mathcal{V}) = f_H \operatornam
 
 $$
 \operatorname{Var}(S) \le \frac{1}{4}(\max(S) - \min(S))^2
+
 $$
 
 Since for any subset $S \subseteq \mathcal{V}$, its elements are contained in $[V_{\min}, V_{\max}]$, we have $\operatorname{Var}(H) \le \frac{1}{4}(V_{\max} - V_{\min})^2$ and $\operatorname{Var}(L) \le \frac{1}{4}(V_{\max} - V_{\min})^2$.
@@ -3900,6 +4173,7 @@ Let $\operatorname{Var}_{\mathrm{max}} := \frac{1}{4}(V_{\max} - V_{\min})^2$. T
 
 $$
 \operatorname{Var}_W(\mathcal{V}) \le f_H \operatorname{Var}_{\mathrm{max}} + f_L \operatorname{Var}_{\mathrm{max}} = (f_H+f_L)\operatorname{Var}_{\mathrm{max}} = \operatorname{Var}_{\mathrm{max}}
+
 $$
 
 This upper bound is sharp; it is attained if both subsets consist of values located only at the endpoints of the interval.
@@ -3909,18 +4183,21 @@ We rearrange the Law of Total Variance from Step 1:
 
 $$
 \operatorname{Var}_B(\mathcal{V}) = \operatorname{Var}(\mathcal{V}) - \operatorname{Var}_W(\mathcal{V})
+
 $$
 
 We substitute our identity for $\operatorname{Var}_B(\mathcal{V})$ from Step 2. Then, we use our premise, $\operatorname{Var}(\mathcal{V}) \ge \kappa_{\mathrm{var}}$, and our upper bound for the within-group variance from Step 3:
 
 $$
 f_H f_L (\mu_H - \mu_L)^2 \ge \kappa_{\mathrm{var}} - \operatorname{Var}_{\mathrm{max}}
+
 $$
 
 Since the fractional sizes $f_H$ and $f_L$ are strictly positive, dividing by their product preserves the inequality:
 
 $$
 (\mu_H - \mu_L)^2 \ge \frac{1}{f_H f_L} \left( \kappa_{\mathrm{var}} - \operatorname{Var}_{\mathrm{max}} \right)
+
 $$
 
 This proves the main inequality of the lemma. The final conclusion follows directly. If $\kappa_{\mathrm{var}} > \operatorname{Var}_{\mathrm{max}}$, the right-hand side is strictly positive. Taking the square root gives the lower bound on $|\mu_H - \mu_L|$. The pre-factor $1/\sqrt{f_H f_L}$ is well-defined and uniformly bounded above because the premises guarantee $f_H, f_L \ge f_{\min} > 0$. The entire lower bound is therefore a strictly positive constant.
@@ -3956,6 +4233,7 @@ The algorithm's targeting mechanism is "intelligent" (i.e., the expected fitness
 
 $$
 \beta \ln\left(1 + \frac{\kappa_{\text{mean},d'}(\epsilon)}{g_{A,max}+\eta}\right) > \alpha \ln\left(1 + \frac{\kappa_{\text{mean},r'}}{\eta}\right)
+
 $$
 
 where $\kappa_mean,d'(\varepsilon)$ and $\kappa_mean,r'$ are the guaranteed N-uniform separations between the *mean* rescaled values of the high-error and low-error populations, derived from the system's guaranteed signal variance and landscape regularity, respectively.
@@ -3973,6 +4251,7 @@ For the algorithm's targeting mechanism to be corrective, the high-error populat
 
 $$
 \mathbb{E}[\ln(V_{\text{fit}}) \mid i \in H_k] < \mathbb{E}[\ln(V_{\text{fit}}) \mid i \in L_k]
+
 $$
 
 **2. Decomposing the Condition into a Signal Trade-off**
@@ -3981,12 +4260,14 @@ Using the definition $ln(V_fit) = \beta ln(d') + \alpha ln(r')$ and the linearit
 
 $$
 \beta \mathbb{E}[\ln(d')|H_k] + \alpha \mathbb{E}[\ln(r')|H_k] < \beta \mathbb{E}[\ln(d')|L_k] + \alpha \mathbb{E}[\ln(r')|L_k]
+
 $$
 
 Rearranging the terms to separate the contribution from the diversity signal and the reward signal yields the core trade-off inequality that must be satisfied:
 
 $$
 \beta \left( \mathbb{E}[\ln(d')|H_k] - \mathbb{E}[\ln(d')|L_k] \right) > \alpha \left( \mathbb{E}[\ln(r')|L_k] - \mathbb{E}[\ln(r')|H_k] \right) \quad (*)
+
 $$
 
 This inequality states that the fitness advantage from the reliable diversity signal (LHS, with β > 0 from {prf:ref}`axiom-active-diversity`) must be strong enough to overcome the potential fitness advantage from a deceptive reward signal (RHS).
@@ -4016,6 +4297,7 @@ We now find uniform bounds for the two parenthesized terms in inequality `(*)`. 
 
 $$
 |\mathbb{E}[d'|H_k] - \mathbb{E}[d'|L_k]| \ge \frac{1}{\sqrt{f_H f_L}} \sqrt{\kappa_{\mathrm{var}}(d') - \operatorname{Var}_{\max}(d')}
+
 $$
 
     6. **Define the Mean Gap Constant:** We define this entire N-uniform lower bound as:
@@ -4023,6 +4305,7 @@ $$
 
 $$
 \kappa_{\text{mean},d'}(\epsilon) := \frac{1}{\sqrt{f_H f_L}} \sqrt{\kappa_{\mathrm{var}}(d') - \operatorname{Var}_{\max}(d')} > 0
+
 $$
 
     7. **From Mean Separation to Logarithmic Separation:** The smallest possible logarithmic gap corresponding to this minimal mean separation occurs when the values are compressed at the top of their allowed range, $[\eta, g_A,max + \eta]$. This provides a uniform lower bound on the reliable signal:
@@ -4030,6 +4313,7 @@ $$
 
 $$
 \mathbb{E}[\ln(d')|H_k] - \mathbb{E}[\ln(d')|L_k] \ge \ln\left(1 + \frac{\kappa_{\text{mean},d'}(\epsilon)}{g_{A,max}+\eta}\right)
+
 $$
 
 *   **RHS: The Maximum Adversarial Reward Signal.**
@@ -4039,6 +4323,7 @@ $$
 
 $$
 \mathbb{E}[\ln(r')|L_k] - \mathbb{E}[\ln(r')|H_k] \le \ln\left(1 + \frac{\kappa_{\text{mean},r'}}{\eta}\right)
+
 $$
 
 **4. Assembling the Final Stability Condition**
@@ -4073,6 +4358,7 @@ Then the difference of their expected logarithms is bounded below as follows:
 
 $$
 \mathbb{E}[\ln(X)] - \mathbb{E}[\ln(Y)] \ge \ln\left(1 + \frac{\kappa}{V_{\max}}\right)
+
 $$
 
 :::
@@ -4100,12 +4386,14 @@ Therefore, for any distributions $X$, $Y$ with means $\mu_X$, $\mu_Y$:
 
 $$
 \mathbb{E}[\ln(X)] - \mathbb{E}[\ln(Y)] \ge \mathbb{E}[\ln(X_{\min})] - \ln(\mu_Y)
+
 $$
 
 where $X_{\min}$ is the two-point distribution with mean $\mu_X$:
 
 $$
 P(X_{\min} = V_{\min}) = \frac{V_{\max} - \mu_X}{V_{\max} - V_{\min}}, \quad P(X_{\min} = V_{\max}) = \frac{\mu_X - V_{\min}}{V_{\max} - V_{\min}}
+
 $$
 
 **Step 3: Reduction to a One-Dimensional Optimization Problem.**
@@ -4120,6 +4408,7 @@ The problem reduces to minimizing the one-dimensional function:
 
 $$
 h(\mu_Y) := \mathbb{E}[\ln(X_{\min,\mu_Y+\kappa})] - \ln(\mu_Y)
+
 $$
 
 for $\mu_Y \in [V_{\min}, V_{\max} - \kappa]$.
@@ -4128,12 +4417,14 @@ Now we prove that this function is **convex**. The expected log of the two-point
 
 $$
 \mathbb{E}[\ln(X_{\min,\mu})] = \ln(V_{\max}) + \frac{V_{\max} - \mu}{V_{\max} - V_{\min}}(\ln(V_{\min}) - \ln(V_{\max}))
+
 $$
 
 This can be written as $C_0 + C_1 \mu$ where $C_1 = (\ln(V_{\max}) - \ln(V_{\min}))/(V_{\max} - V_{\min}) > 0$. Substituting $\mu = \mu_Y + \kappa$:
 
 $$
 h(\mu_Y) = [C_0 + C_1(\mu_Y + \kappa)] - \ln(\mu_Y)
+
 $$
 
 The function $h(\mu_Y)$ is the sum of a linear function (in $\mu_Y$) and the function $-\ln(\mu_Y)$, which is strictly convex. Therefore, $h(\mu_Y)$ is strictly convex.
@@ -4153,18 +4444,21 @@ At this worst-case configuration:
 
 $$
 \mathbb{E}[\ln(X)] = \ln(V_{\max})
+
 $$
 
 - For $Y$, the extremal case (maximum expected log) is deterministic: $Y = \mu_Y = V_{\max} - \kappa$. Thus:
 
 $$
 \mathbb{E}[\ln(Y)] = \ln(V_{\max} - \kappa)
+
 $$
 
 The worst-case lower bound is:
 
 $$
 \ln(V_{\max}) - \ln(V_{\max} - \kappa) = \ln\left(\frac{V_{\max}}{V_{\max} - \kappa}\right) = \ln\left(1 + \frac{\kappa}{V_{\max} - \kappa}\right)
+
 $$
 
 **Step 5: Simplification to the Stated Bound.**
@@ -4175,12 +4469,14 @@ To verify this is valid, note that for $\kappa < V_{\max}$:
 
 $$
 \frac{\kappa}{V_{\max}} < \frac{\kappa}{V_{\max} - \kappa}
+
 $$
 
 Since $\ln(1+t)$ is strictly increasing in $t$:
 
 $$
 \ln\left(1 + \frac{\kappa}{V_{\max}}\right) < \ln\left(1 + \frac{\kappa}{V_{\max} - \kappa}\right)
+
 $$
 
 Therefore, $\ln(1 + \kappa/V_{\max})$ is a valid (conservative) lower bound that is simpler to use in subsequent analysis.
@@ -4196,6 +4492,7 @@ The stated bound $\ln(1 + \kappa/V_{\max})$ is slightly conservative compared to
 
 $$
 \frac{\kappa}{V_{\max} - \kappa} \approx \frac{\kappa}{V_{\max}}\left(1 + \frac{\kappa}{V_{\max}}\right)
+
 $$
 
 The simpler form is preferred for clarity in the stability condition and does not meaningfully weaken the final result.
@@ -4214,6 +4511,7 @@ Then the absolute difference of their expected logarithms is bounded above as fo
 
 $$
 |\mathbb{E}[\ln(X)] - \mathbb{E}[\ln(Y)]| \le \ln\left(1 + \frac{\kappa}{V_{\min}}\right)
+
 $$
 
 :::
@@ -4241,18 +4539,21 @@ Therefore, for any distributions $X$, $Y$ with means $\mu_X$, $\mu_Y$:
 
 $$
 \mathbb{E}[\ln(X)] - \mathbb{E}[\ln(Y)] \le \ln(\mu_X) - \mathbb{E}[\ln(Y_{\min})]
+
 $$
 
 where $Y_{\min}$ has probability masses:
 
 $$
 P(Y_{\min} = V_{\min}) = \frac{V_{\max} - \mu_Y}{V_{\max} - V_{\min}}, \quad P(Y_{\min} = V_{\max}) = \frac{\mu_Y - V_{\min}}{V_{\max} - V_{\min}}
+
 $$
 
 The expected logarithm of $Y_{\min}$ is:
 
 $$
 \mathbb{E}[\ln(Y_{\min})] = \frac{V_{\max} - \mu_Y}{V_{\max} - V_{\min}} \ln(V_{\min}) + \frac{\mu_Y - V_{\min}}{V_{\max} - V_{\min}} \ln(V_{\max})
+
 $$
 
 **Step 3: Finding the Worst-Case Mean Configuration.**
@@ -4275,24 +4576,28 @@ With $\mu_Y = V_{\min}$, the extremal two-point distribution $Y_{\min}$ degenera
 
 $$
 P(Y_{\min} = V_{\min}) = 1
+
 $$
 
 Therefore:
 
 $$
 \mathbb{E}[\ln(Y_{\min})] = \ln(V_{\min})
+
 $$
 
 For $X$ deterministic at $\mu_X = V_{\min} + \kappa$:
 
 $$
 \ln(\mu_X) = \ln(V_{\min} + \kappa)
+
 $$
 
 The worst-case upper bound is:
 
 $$
 \ln(V_{\min} + \kappa) - \ln(V_{\min}) = \ln\left(\frac{V_{\min} + \kappa}{V_{\min}}\right) = \ln\left(1 + \frac{\kappa}{V_{\min}}\right)
+
 $$
 
 **Step 5: Extension to the Absolute Value.**
@@ -4301,6 +4606,7 @@ By symmetry (swapping the roles of $X$ and $Y$), the bound also holds for $\math
 
 $$
 |\mathbb{E}[\ln(X)] - \mathbb{E}[\ln(Y)]| \le \ln\left(1 + \frac{\kappa}{V_{\min}}\right)
+
 $$
 
 This completes the proof.
@@ -4337,6 +4643,7 @@ Then the expected logarithmic gap in the diversity signal between the high-error
 
 $$
 \mathbb{E}[\ln(d')|H_k] - \mathbb{E}[\ln(d')|L_k] \ge \ln\left(1 + \frac{\kappa_{d', \text{mean}}}{g_{A,\max}+\eta}\right) > 0
+
 $$
 
 where $\kappa_{d', \text{mean}} := \frac{1}{\sqrt{f_H f_L}}\sqrt{\kappa_{d', \text{var}} - \operatorname{Var}_{\max}(d')}$.
@@ -4355,6 +4662,7 @@ The premises state that $\operatorname{Var}(d') \ge \kappa_{d', \text{var}}$ and
 
 $$
 |\mu_{d'}(H_k) - \mu_{d'}(L_k)| \ge \kappa_{d', \text{mean}} > 0
+
 $$
 
 The direction of this inequality is also guaranteed. The geometric analysis in Chapter 6 ({prf:ref}`lem-geometric-separation-of-partition`) established that high-error walkers are systematically more isolated, which implies their expected raw distance-to-companion is larger: $\mathbb{E}[d|H_k] > \mathbb{E}[d|L_k]$. Since the standardization and rescaling operators (specifically the monotonic rescale function $g_A$) preserve the ordering of the means, this inequality propagates through the entire pipeline. This guarantees that the mean of the *rescaled* diversity values is also larger for the high-error set, $\mu_{d'}(H_k) > \mu_{d'}(L_k)$. We can therefore remove the absolute value and state the inequality directionally.
@@ -4365,6 +4673,7 @@ The lemma gives the stated result directly:
 
 $$
 \mathbb{E}[\ln(d')|H_k] - \mathbb{E}[\ln(d')|L_k] \ge \ln\left(1 + \frac{\kappa_{d', \text{mean}}}{g_{A,\max}+\eta}\right)
+
 $$
 
 Since $\kappa_{d', \text{mean}} > 0$, the argument of the logarithm is strictly greater than 1, ensuring the lower bound is strictly positive.
@@ -4383,6 +4692,7 @@ For any swarm ({prf:ref}`def-swarm-and-state-space`) state, the maximum possible
 
 $$
 \mathbb{E}[\ln(r')|L_k] - \mathbb{E}[\ln(r')|H_k] \le \ln\left(1 + \frac{g_{A,\max}}{\eta}\right)
+
 $$
 
 :::
@@ -4398,6 +4708,7 @@ The rescaled reward values $r'$ are contained in the interval $[\eta, g_{A,\max}
 
 $$
 |\mu_{r'}(L_k) - \mu_{r'}(H_k)| \le (g_{A,\max}+\eta) - \eta = g_{A,\max}
+
 $$
 
 We define the maximum possible mean separation as $\kappa_{r', \text{mean, max}} := g_{A,\max}$. This represents the most adversarial scenario, where the low-error set $L_k$ achieves the maximum possible mean reward ($g_{A,\max} + \eta$) and the high-error set $H_k$ achieves the minimum possible mean reward ($\eta$), maximizing the gap between them.
@@ -4408,6 +4719,7 @@ The lemma gives the stated result directly:
 
 $$
 |\mathbb{E}[\ln(r')|L_k] - \mathbb{E}[\ln(r')|H_k]| \le \ln\left(1 + \frac{\kappa_{r', \text{mean, max}}}{\eta}\right) = \ln\left(1 + \frac{g_{A,\max}}{\eta}\right)
+
 $$
 
 This provides a uniform upper bound on the magnitude of the adversarial signal under the weakest possible assumptions.
@@ -4448,6 +4760,7 @@ For any swarm ({prf:ref}`def-swarm-and-state-space`), the absolute difference be
 
 $$
 |\mu_R(L_k) - \mu_R(H_k)| \le L_{R} \cdot D_{\mathrm{valid}} =: \kappa_{\mathrm{raw},r,\text{adv}}
+
 $$
 
 :::
@@ -4461,12 +4774,14 @@ By the triangle inequality and the Lipschitz property:
 
 $$
 |\sum_{l,h} (R(x_l) - R(x_h))| \le \sum_{l,h} |R(x_l) - R(x_h)| \le \sum_{l,h} L_{R} \cdot d(x_l, x_h)
+
 $$
 
 The distance between any two points $x_l, x_h$ in the valid domain is bounded by its diameter, $D_{\mathrm{valid}}$. There are $|L_k||H_k|$ pairs in the sum.
 
 $$
 \le \sum_{l,h} L_{R} \cdot D_{\mathrm{valid}} = |L_k||H_k| \cdot L_{R} \cdot D_{\mathrm{valid}}
+
 $$
 
 Dividing by $|L_k||H_k|$ gives the final bound. This maximum possible raw reward gap, $\kappa_{\mathrm{raw},r,\text{adv}}$, represents the tightest axiom-based constraint on how deceptive the landscape can be.
@@ -4483,6 +4798,7 @@ Under the **Axiom of Reward Regularity ({prf:ref}`axiom-reward-regularity`)**, t
 
 $$
 \mathbb{E}[\ln(r')|L_k] - \mathbb{E}[\ln(r')|H_k] \le \ln\left(1 + \frac{\kappa_{\mathrm{rescaled}}(L_R \cdot D_{\mathrm{valid}})}{\eta}\right)
+
 $$
 
 where $\kappa_{\mathrm{rescaled}}(\cdot)$ is the signal propagation function.
@@ -4499,18 +4815,21 @@ Let $r'_a$ and $r'_b$ be the rescaled reward values for any two walkers $a$ and 
 
 $$
 |r'_a - r'_b| = |g_A(z_a) - g_A(z_b)|
+
 $$
 
 Since the rescale function $g_A$ is Lipschitz with constant $L_g$ (its maximum derivative), we have:
 
 $$
 |r'_a - r'_b| \le L_g |z_a - z_b| = L_g \left| \frac{R_a - \mu_R}{\sigma'_R} - \frac{R_b - \mu_R}{\sigma'_R} \right| = \frac{L_g}{\sigma'_R} |R_a - R_b|
+
 $$
 
 The patched standard deviation (see {prf:ref}`def-patched-std-dev-function`) $\sigma'_R$ is uniformly bounded below by $\sigma'_{\min,\text{patch}} > 0$. The raw reward gap $|R_a - R_b|$ is bounded by the Lipschitz property: $|R_a - R_b| \le L_R D_{\text{valid}}$. Combining these gives a uniform upper bound on the microscopic rescaled gap:
 
 $$
 |r'_a - r'_b| \le \frac{L_g}{\sigma'_{\min,\text{patch}}} (L_R D_{\text{valid}}) = \kappa_{\mathrm{rescaled}}(L_R D_{\text{valid}})
+
 $$
 
 This is precisely the result of applying the signal propagation function $\kappa_{\mathrm{rescaled}}$ to the maximum possible raw reward gap.
@@ -4520,6 +4839,7 @@ The absolute difference between the mean rescaled rewards of the low-error and h
 
 $$
 |\mu_{r'}(L_k) - \mu_{r'}(H_k)| \le \max_{a,b} |r'_a - r'_b| \le \kappa_{\mathrm{rescaled}}(L_R D_{\text{valid}})
+
 $$
 
 We define this upper bound on the mean separation as $\kappa_{r',\text{mean,adv}} := \kappa_{\mathrm{rescaled}}(L_R D_{\text{valid}})$.
@@ -4535,6 +4855,7 @@ The lemma directly yields the stated result:
 
 $$
 |\mathbb{E}[\ln(r')|L_k] - \mathbb{E}[\ln(r')|H_k]| \le \ln\left(1 + \frac{\kappa_{r',\text{mean,adv}}}{\eta}\right) = \ln\left(1 + \frac{\kappa_{\mathrm{rescaled}}(L_R D_{\text{valid}})}{\eta}\right)
+
 $$
 
 Since we are interested in the one-sided difference, this bound also holds for $\mathbb{E}[\ln(r')|L_k] - \mathbb{E}[\ln(r')|H_k]$.
@@ -4550,8 +4871,10 @@ With a rigorous, axiom-based bound on the adversarial reward signal now establis
 :label: thm-stability-condition-final-corrected
 
 Let a swarm ({prf:ref}`def-swarm-and-state-space`) `k$ be in a high-error state. The algorithm's targeting mechanism is intelligent (i.e., $\mathbb{E}[\ln(V_{\text{fit}})|H_k] < \mathbb{E}[\ln(V_{\text{fit}})|L_k]$) if and only if the system parameters satisfy the following **Corrected Stability Condition**:
+
 $$
 \beta \ln\left(1 + \frac{\kappa_{d', \text{mean}}}{g_{A,\max}+\eta}\right) > \alpha \ln\left(1 + \frac{\kappa_{\mathrm{rescaled}}(L_{R} \cdot D_{\mathrm{valid}})}{\eta}\right)
+
 $$
 where $\kappa_{d', \text{mean}}$ is the guaranteed N-uniform separation between the mean rescaled diversity values of the high-error and low-error populations, as derived in **{prf:ref}`prop-corrective-signal-bound`**.
 :::
@@ -4600,6 +4923,7 @@ For a given swarm ({prf:ref}`def-swarm-and-state-space`) `k` with alive set ({pr
 
 $$
 U_k := \{i \in \mathcal{A}_k \mid V_{k,i} \le \mu_{V,k}\}
+
 $$
 
 :::
@@ -4613,6 +4937,7 @@ The fraction of alive walkers in the unfit set $U_k$ is bounded below by a posit
 
 $$
 \frac{|U_k|}{k} \ge \frac{\kappa_{V,\text{gap}}(\epsilon)}{2(V_{\text{pot,max}} - V_{\text{pot,min}})} =: f_U(\epsilon)
+
 $$
 
 where $V_{\text{pot,max}}$ and $V_{\text{pot,min}}$ are the N-uniform bounds on the fitness potential from [](#lem-potential-bounds).
@@ -4629,6 +4954,7 @@ The proof establishes the bound by analyzing the balance of deviations from the 
 
 $$
 \sum_{i \in F_k} (V_{k,i} - \mu_{V,k}) = \sum_{j \in U_k} (\mu_{V,k} - V_{k,j})
+
 $$
 
 2.  **Bounding the Total Deviation:** The total range of fitness values, $V_{\max,k} - V_{\min,k}$, can be partitioned at the mean: $V_{\max,k} - V_{\min,k} = (V_{\max,k} - \mu_{V,k}) + (\mu_{V,k} - V_{\min,k})$. Since both terms on the right are non-negative, at least one of them must be greater than or equal to half of the total range. Using the premise, we have:
@@ -4636,6 +4962,7 @@ $$
 
 $$
 \max\left( (V_{\max,k} - \mu_{V,k}), (\mu_{V,k} - V_{\min,k}) \right) \ge \frac{\kappa_{V,\text{gap}}(\epsilon)}{2}
+
 $$
 
 3.  **Case Analysis:**
@@ -4644,6 +4971,7 @@ $$
 
 $$
 |U_k| \cdot (V_{\text{pot,max}} - V_{\text{pot,min}}) \ge \sum_{j \in U_k} (\mu_{V,k} - V_{k,j}) \ge \frac{\kappa_{V,\text{gap}}(\epsilon)}{2}
+
 $$
 
         This directly yields the desired lower bound on $|U_k|$.
@@ -4653,6 +4981,7 @@ $$
 
 $$
 |F_k| \cdot (V_{\text{pot,max}} - V_{\text{pot,min}}) \ge \sum_{i \in F_k} (V_{i,k} - \mu_{V,k}) \ge \frac{\kappa_{V,\text{gap}}(\epsilon)}{2}
+
 $$
 
         This gives a lower bound on the size of the *fit* set: $|F_k|/k \ge \kappa_{V,\text{gap}} / (2(V_{\text{pot,max}} - V_{\text{pot,min}}))$. Since $|U_k| + |F_k| = k$, this implies an *upper bound* on the size of the unfit set. However, a simpler argument is to note that if the unfit set were vanishingly small, the mean would be pulled towards $V_{\max,k}$, making $(\mu_{V,k} - V_{\min,k})$ large and contradicting the mean's location. The bound from Case A thus represents the worst-case scenario for the size of the unfit set, providing a valid global lower bound.
@@ -4677,6 +5006,7 @@ If the **Stability Condition** ([](#thm-stability-condition-final-corrected)) ho
 
 $$
 \frac{|I_{UH}|}{k} \ge f_{UH}(\epsilon) > 0
+
 $$
 
 where `k` is the number of alive walkers in swarm ({prf:ref}`def-swarm-and-state-space`) `k`.
@@ -4693,6 +5023,7 @@ Assume the premises hold: the swarm `k` has a large structural error, and the **
 
 $$
 f_{UH} = \frac{|U_k \cap H_k|}{k} \approx 0
+
 $$
 
 **2. Consequence 1: High-Error Walkers Must Be "Fit".**
@@ -4702,6 +5033,7 @@ By the definition of the fit set, any walker $j \in F_k$ has a fitness greater t
 
 $$
 \mathbb{E}[V_{\text{fit}} \mid i \in H_k] > \mu_{V,k} \quad (*)
+
 $$
 
 **3. Consequence 2: The Axiom's Guarantee.**
@@ -4709,12 +5041,14 @@ The **Stability Condition** is precisely the condition required to ensure that t
 
 $$
 \mathbb{E}[V_{\text{fit}} \mid i \in H_k] < \mathbb{E}[V_{\text{fit}} \mid i \in L_k]
+
 $$
 
 The mean fitness of the entire swarm, $\mu_{V,k}$, is the weighted average of the means of these two disjoint populations: $\mu_{V,k} = f_H \mathbb{E}[V_{\text{fit}}|H_k] + f_L \mathbb{E}[V_{\text{fit}}|L_k]$. A weighted average must lie strictly between its two components **as long as both components have non-zero weight**. From Chapter 6, we are guaranteed that both the high-error ($H_k$) and low-error ($L_k$) sets are non-empty and constitute non-vanishing fractions of the population, so $f_H > 0$ and $f_L > 0$. Therefore, it must be that:
 
 $$
 \mathbb{E}[V_{\text{fit}} \mid i \in H_k] < \mu_{V,k} \quad (**)
+
 $$
 
 **4. The Contradiction.**
@@ -4758,6 +5092,7 @@ all of which may depend on $\epsilon$ but are independent of $N$, such that for 
 
 $$
 \frac{1}{N}\sum_{i \in I_{11}} (p_{1,i} + p_{2,i})\|\Delta\delta_{x,i}\|^2 \ge \chi(\epsilon) V_{\text{struct}} - g_{\max}(\epsilon)
+
 $$
 
 where $I_{11}$ is the set of stably alive walkers and $p_{k,i}$ is the total cloning probability for walker ({prf:ref}`def-walker`) $i$ in swarm ({prf:ref}`def-swarm-and-state-space`) $k$.
@@ -4780,6 +5115,7 @@ The proof of the Keystone Lemma establishes the inequality globally by partition
 
 $$
 \chi(\epsilon) V_{\text{struct}} - g_{\max}(\epsilon) \le \chi(\epsilon) R^2_{\text{spread}} - g_{\max}(\epsilon) \le 0
+
 $$
 
 Therefore, we have $\text{LHS} \ge 0 \ge \text{RHS}$, and the inequality is trivially satisfied.
@@ -4804,6 +5140,7 @@ For a state in the high-error regime, let $k$ be the index of the high-variance 
 
 $$
 I_{\text{target}} := I_{11} \cap U_k \cap H_k(\epsilon)
+
 $$
 
 The guaranteed existence of a substantial, non-vanishing overlap between the unfit and high-error sets, as proven in [](#thm-unfit-high-error-overlap-fraction), ensures that this critical target set is non-empty and contains a non-vanishing, N-uniform fraction of the alive population. The subsequent proofs will now proceed by demonstrating that the corrective cloning pressure is concentrated on this specific target set (Section 8.3) and that this same set is responsible for a substantial fraction of the total system error (Section 8.4).
@@ -4828,18 +5165,21 @@ For any walker ({prf:ref}`def-walker`) $i \in U_k$ (unfit set), the difference b
 
 $$
 \mu_{\text{comp},i} - V_{k,i} \geq \frac{f_F}{k-1} (\mu_F - \mu_U) > 0
+
 $$
 
 Furthermore, the gap between the mean fitness values of the two sets can be bounded in terms of the fitness range:
 
 $$
 \mu_F - \mu_U \geq \frac{f_U}{f_F + f_U^2/f_F} \kappa_{V,\text{gap}}(\epsilon)
+
 $$
 
 Combining these yields an N-uniform lower bound:
 
 $$
 \mu_{\text{comp},i} - V_{k,i} \geq \frac{f_F f_U}{(k-1)(f_F + f_U^2/f_F)} \kappa_{V,\text{gap}}(\epsilon) =: \Delta_{\min}(\epsilon, f_U, f_F, k)
+
 $$
 
 where $\Delta_{\min} > 0$ for all $k \geq 2$ and all fitness distributions satisfying the premises.
@@ -4858,6 +5198,7 @@ For walker $i \in U_k$, the set of potential companions is all alive walkers exc
 
 $$
 \mu_{\text{comp},i} = \frac{1}{k-1} \sum_{j \neq i} V_{k,j} = \frac{1}{k-1} \left( k \mu_{V,k} - V_{k,i} \right)
+
 $$
 
 where $\mu_{V,k} = \frac{1}{k} \sum_{j \in \mathcal{A}_k} V_{k,j}$ is the mean fitness of all alive walkers.
@@ -4866,6 +5207,7 @@ The difference we seek to bound is:
 
 $$
 \mu_{\text{comp},i} - V_{k,i} = \frac{k \mu_{V,k} - V_{k,i}}{k-1} - V_{k,i} = \frac{k \mu_{V,k} - k V_{k,i}}{k-1} = \frac{k}{k-1} (\mu_{V,k} - V_{k,i})
+
 $$
 
 **Step 2: Bound on the Gap Using Population Structure**
@@ -4874,6 +5216,7 @@ The overall mean $\mu_{V,k}$ can be decomposed using the partition into unfit an
 
 $$
 \mu_{V,k} = f_U \mu_U + f_F \mu_F
+
 $$
 
 where $\mu_U := \frac{1}{|U_k|} \sum_{j \in U_k} V_{k,j}$ and $\mu_F := \frac{1}{|F_k|} \sum_{j \in F_k} V_{k,j}$.
@@ -4882,18 +5225,21 @@ For any walker $i \in U_k$, we have $V_{k,i} \leq \mu_U$ (by definition of the u
 
 $$
 \mu_{V,k} - V_{k,i} \geq \mu_{V,k} - \mu_U = f_U \mu_U + f_F \mu_F - \mu_U = f_F (\mu_F - \mu_U)
+
 $$
 
 Substituting into our expression from Step 1:
 
 $$
 \mu_{\text{comp},i} - V_{k,i} = \frac{k}{k-1} (\mu_{V,k} - V_{k,i}) \geq \frac{k}{k-1} \cdot f_F (\mu_F - \mu_U)
+
 $$
 
 For $k \geq 2$, we have $\frac{k}{k-1} \geq 1$, so we obtain the conservative bound:
 
 $$
 \mu_{\text{comp},i} - V_{k,i} \geq \frac{f_F}{k-1} (\mu_F - \mu_U)
+
 $$
 
 Note that $\frac{1}{k-1}$ appears because we're averaging over $k-1$ companions, not $k$ walkers.
@@ -4904,12 +5250,14 @@ By definition of the fitness potential range:
 
 $$
 \kappa_{V,\text{gap}}(\epsilon) := V_{\max,k} - V_{\min,k}
+
 $$
 
 The means $\mu_U$ and $\mu_F$ satisfy:
 
 $$
 V_{\min,k} \leq \mu_U \leq \mu_{V,k} \leq \mu_F \leq V_{\max,k}
+
 $$
 
 To obtain a lower bound on $\mu_F - \mu_U$, we use the constraint that the overall mean is a weighted average. The maximum separation between group means occurs when one group is concentrated near the minimum and the other near the maximum. However, we must be more careful.
@@ -4918,24 +5266,28 @@ Consider the sum of squared deviations from the overall mean:
 
 $$
 k \cdot \text{Var}_{V,k} = \sum_{j \in \mathcal{A}_k} (V_{k,j} - \mu_{V,k})^2 = \sum_{j \in U_k} (V_{k,j} - \mu_{V,k})^2 + \sum_{j \in F_k} (V_{k,j} - \mu_{V,k})^2
+
 $$
 
 Using the decomposition of variance formula:
 
 $$
 \text{Var}_{V,k} = f_U \text{Var}_U + f_F \text{Var}_F + f_U f_F (\mu_U - \mu_F)^2
+
 $$
 
 where $\text{Var}_U$ and $\text{Var}_F$ are the within-group variances. Since variances are non-negative:
 
 $$
 \text{Var}_{V,k} \geq f_U f_F (\mu_F - \mu_U)^2
+
 $$
 
 The fitness range provides an upper bound on the variance:
 
 $$
 \text{Var}_{V,k} \leq \frac{1}{4} \kappa_{V,\text{gap}}^2(\epsilon)
+
 $$
 
 (This is the standard bound for bounded random variables: variance \leq  (range/2)^2.)
@@ -4944,24 +5296,28 @@ Combining these:
 
 $$
 f_U f_F (\mu_F - \mu_U)^2 \leq \text{Var}_{V,k} \leq \frac{1}{4} \kappa_{V,\text{gap}}^2(\epsilon)
+
 $$
 
 From the variance inequality, we have established:
 
 $$
 \mu_F - \mu_U \geq \frac{1}{2} \sqrt{\frac{1}{f_U f_F}} \kappa_{V,\text{gap}}(\epsilon)
+
 $$
 
 This bound is sufficient for our purposes. To obtain the specific form stated in the lemma, note that for $f_U, f_F \in (0,1)$ with $f_U + f_F = 1$, we can simplify using the identity:
 
 $$
 \frac{1}{\sqrt{f_U f_F}} = \frac{\sqrt{f_U + f_F}}{\sqrt{f_U f_F}} = \sqrt{\frac{1}{f_U f_F}} \geq \frac{2}{\sqrt{(f_U + f_F)^2}} = 2
+
 $$
 
 with equality when $f_U = f_F = 1/2$.  A more refined analysis using the extremal configuration (unfit set concentrated near $\mu_{V,k}$ and fit set dispersed toward $V_{\max,k}$, subject to the weighted-average and range constraints) yields the tighter bound:
 
 $$
 \mu_F - \mu_U \geq \frac{f_U}{f_F + f_U^2/f_F} \kappa_{V,\text{gap}}(\epsilon)
+
 $$
 
 **Justification:** For $f_U + f_F = 1$, the expression $f_F + f_U^2/f_F = f_F + f_U^2/f_F$ can be rewritten as $(f_F^2 + f_U^2)/f_F$. The factor $\frac{f_U}{f_F^2 + f_U^2} \cdot f_F = \frac{f_U f_F}{f_F^2 + f_U^2}$ arises from the weighted-average constraint: when the unfit set (with mass $f_U$) is pushed maximally toward $\mu_{V,k}$ and the fit set (with mass $f_F$) must balance to maintain the overall mean, the minimum separation is achieved when both sets are as concentrated as possible while spanning the range $\kappa_{V,\text{gap}}$. This gives the coefficient stated above. For balanced populations ($f_U = f_F = 1/2$), this yields $\mu_F - \mu_U \geq \frac{1/4}{1/4 + 1/4} \kappa_{V,\text{gap}} = \frac{\kappa_{V,\text{gap}}}{2}$, which is the intuitively correct result.
@@ -4972,6 +5328,7 @@ Combining the results from Steps 2 and 3:
 
 $$
 \mu_{\text{comp},i} - V_{k,i} \geq \frac{f_F}{k-1} \cdot \frac{f_U}{f_F + f_U^2/f_F} \kappa_{V,\text{gap}}(\epsilon) = \frac{f_F f_U}{(k-1)(f_F + f_U^2/f_F)} \kappa_{V,\text{gap}}(\epsilon)
+
 $$
 
 Since $f_U, f_F > 0$ and $f_U + f_F = 1$, this bound is strictly positive. For $k \geq 2$, the factor $\frac{1}{k-1} \leq 1$ but remains positive, ensuring the bound is N-uniform (depends on $k$ but doesn't vanish as $k \to \infty$ when the fractions are bounded away from zero).
@@ -4993,6 +5350,7 @@ Let a swarm ({prf:ref}`def-swarm-and-state-space`) $k$ with $k \geq 2$ alive wal
 
 $$
 p_{k,i} = \mathbb{E}_{c \sim \mathbb{C}_i(S_k)}[\pi(S(V_{k,c}, V_{k,i}))] \ge p_u(\epsilon) > 0
+
 $$
 
 :::
@@ -5008,6 +5366,7 @@ Let $i$ be an arbitrary walker in the unfit set $U_k$. By definition, its fitnes
 
 $$
 \mu_{\text{comp},i} - V_{k,i} \ge \frac{f_F f_U}{(k-1)(f_F + f_U^2/f_F)} \kappa_{V,\text{gap}}(\epsilon) =: \Delta_{\min}(\epsilon, f_U, f_F, k) > 0
+
 $$
 
 where $f_U$ and $f_F$ are the population fractions of the unfit and fit sets, and $\kappa_{V,\text{gap}}(\epsilon)$ is the fitness potential range. This bound is N-uniform and strictly positive for all $k \geq 2$ and all fitness distributions satisfying the non-degeneracy condition.
@@ -5017,12 +5376,14 @@ The average cloning score for walker $i$ is $S_{\text{avg},i} = \mathbb{E}_c[S(V
 
 $$
 \mu_{\text{comp},i} - V_i \geq \Delta_{\min}(\epsilon, f_U, f_F, k)
+
 $$
 
 The denominator is uniformly bounded above by $V_{\text{pot,max}} + \varepsilon_{\text{clone}}$. Therefore, the average score is uniformly bounded below by:
 
 $$
 S_{\text{avg},i} \ge \frac{\Delta_{\min}(\epsilon, f_U, f_F, k)}{V_{\text{pot,max}} + \varepsilon_{\text{clone}}} =: S_u(\epsilon, k) > 0
+
 $$
 
 This bound is N-uniform: it depends on $k$ through the factor $1/(k-1)$ in $\Delta_{\min}$, but remains strictly positive for all $k \geq 2$.
@@ -5032,12 +5393,14 @@ The total cloning probability is $p_{k,i} = \mathbb{E}_c[\pi(S(V_c, V_i))]$. The
 
 $$
 p_{k,i} = \mathbb{E}_c[\pi(S(V_c, V_i))] \ge \pi(\mathbb{E}_c[S(V_c, V_i)]) = \pi(S_{\text{avg},i})
+
 $$
 
 Since $S_{\text{avg},i} \ge S_u(\epsilon, k) > 0$ (from Step 2) and the function $\pi(S)$ is strictly increasing for positive scores, we have a final N-uniform lower bound:
 
 $$
 p_{k,i} \ge \pi(S_u(\epsilon, k)) =: p_u(\epsilon, k) > 0
+
 $$
 
 This bound is N-uniform: it depends on $k$ through $S_u(\epsilon, k)$, which in turn depends on $k$ through the factor $1/(k-1)$ in $\Delta_{\min}$. For all $k \geq 2$, this probability remains strictly positive, ensuring that unfit walkers always have a guaranteed cloning pressure proportional to the fitness gap. **Q.E.D.**
@@ -5052,6 +5415,7 @@ For any walker ({prf:ref}`def-walker`) $i$ in the **critical target set** (see {
 
 $$
 p_{k,i} \ge p_u(\epsilon) > 0
+
 $$
 
 Referenced by {prf:ref}`rem-n-uniformity-delta-min-bound`.
@@ -5078,6 +5442,7 @@ Let a swarm ({prf:ref}`def-swarm-and-state-space`) $k$ be in a high-error state,
 
 $$
 \sum_{i \in H_k(\epsilon)} \|\delta_{x,k,i}\|^2 \ge c_H \sum_{i \in \mathcal{A}_k} \|\delta_{x,k,i}\|^2
+
 $$
 
 :::
@@ -5101,6 +5466,7 @@ From the Law of Total Variance (as used in the proof of [](#lem-outlier-cluster-
 
 $$
 S_k = k \cdot \mathrm{Var}_k(x) = \sum_{m=1}^M |G_m|\mathrm{Var}(G_m) + \sum_{m=1}^M |G_m|\|\mu_m - \mu\|^2
+
 $$
 
 where $\{G_1, \ldots, G_M\}$ are the clusters, $\mu$ is the global center of mass, and $\mu_m$ is the center of mass of cluster $G_m$.
@@ -5111,6 +5477,7 @@ Each cluster has diameter at most $D_{\text{diam}}(\epsilon)$, so its internal v
 
 $$
 \sum_{m=1}^M |G_m|\mathrm{Var}(G_m) \le k \left(\frac{D_{\mathrm{diam}}(\epsilon)}{2}\right)^2
+
 $$
 
 **Step 3: Outlier Clusters Capture the Between-Cluster Variance.**
@@ -5119,48 +5486,56 @@ By definition, the outlier clusters $O_M$ are chosen to capture at least a fract
 
 $$
 \sum_{m \in O_M} |G_m|\|\mu_m - \mu\|^2 \ge (1-\varepsilon_O) \sum_{m=1}^M |G_m|\|\mu_m - \mu\|^2
+
 $$
 
 Now, for any walker $i$ in an outlier cluster $G_m$ (where $m \in O_M$), we decompose its squared deviation from the global mean:
 
 $$
 \|\delta_{x,k,i}\|^2 = \|x_i - \mu\|^2 = \|x_i - \mu_m + \mu_m - \mu\|^2
+
 $$
 
 Expanding:
 
 $$
 \|x_i - \mu\|^2 = \|x_i - \mu_m\|^2 + \|\mu_m - \mu\|^2 + 2\langle x_i - \mu_m, \mu_m - \mu \rangle
+
 $$
 
 Summing over all walkers in outlier clusters:
 
 $$
 \sum_{m \in O_M} \sum_{i \in G_m} \|x_i - \mu\|^2 = \sum_{m \in O_M} \sum_{i \in G_m} \|x_i - \mu_m\|^2 + \sum_{m \in O_M} |G_m|\|\mu_m - \mu\|^2 + 2\sum_{m \in O_M} \left\langle \sum_{i \in G_m}(x_i - \mu_m), \mu_m - \mu \right\rangle
+
 $$
 
 The cross-term vanishes because $\sum_{i \in G_m}(x_i - \mu_m) = 0$ (by definition of cluster center of mass). Thus:
 
 $$
 \sum_{i \in H_k(\epsilon)} \|\delta_{x,k,i}\|^2 = \sum_{m \in O_M} |G_m|\mathrm{Var}(G_m) + \sum_{m \in O_M} |G_m|\|\mu_m - \mu\|^2
+
 $$
 
 The first term is bounded above by the total within-cluster variance (Step 2), and the second term is bounded below by the outlier cluster guarantee (Step 3):
 
 $$
 \sum_{i \in H_k(\epsilon)} \|\delta_{x,k,i}\|^2 \ge \sum_{m \in O_M} |G_m|\|\mu_m - \mu\|^2 \ge (1-\varepsilon_O) \sum_{m=1}^M |G_m|\|\mu_m - \mu\|^2
+
 $$
 
 From Step 1, we know:
 
 $$
 \sum_{m=1}^M |G_m|\|\mu_m - \mu\|^2 = S_k - \sum_{m=1}^M |G_m|\mathrm{Var}(G_m)
+
 $$
 
 For the high-variance regime, we have $\text{Var}_k(x) > R^2_{\text{var}}$, which gives:
 
 $$
 \sum_{m=1}^M |G_m|\|\mu_m - \mu\|^2 > k R^2_{\mathrm{var}} - k \left(\frac{D_{\mathrm{diam}}(\epsilon)}{2}\right)^2 = k R^2_{\mathrm{means}}
+
 $$
 
 where $R^2_{\text{means}} := R^2_{\text{var}} - (D_{\text{diam}}(\epsilon)/2)^2 > 0$ (by the premise of [](#lem-outlier-cluster-fraction-lower-bound)).
@@ -5169,18 +5544,21 @@ Combining these results:
 
 $$
 \sum_{i \in H_k(\epsilon)} \|\delta_{x,k,i}\|^2 \ge (1-\varepsilon_O) k R^2_{\mathrm{means}}
+
 $$
 
 Since the total sum of squared deviations is $S_k = k \cdot \text{Var}_k(x) > k R^2_{\text{var}}$, we have:
 
 $$
 \frac{\sum_{i \in H_k(\epsilon)} \|\delta_{x,k,i}\|^2}{S_k} \ge \frac{(1-\varepsilon_O) R^2_{\mathrm{means}}}{R^2_{\mathrm{var}}}
+
 $$
 
 This establishes a positive, N-uniform constant:
 
 $$
 c_H := \min\left\{1-\varepsilon_O, \frac{(1-\varepsilon_O) R^2_{\mathrm{means}}}{R^2_{\mathrm{var}}}\right\} > 0
+
 $$
 
 Since $c_H$ is bounded below by a positive constant in both exhaustive regimes, a uniform lower bound $c_H > 0$ exists. **Q.E.D.**
@@ -5201,6 +5579,7 @@ The positional structural error concentrated within this target set is bounded b
 
 $$
 \frac{1}{N}\sum_{i \in I_{\text{target}}} \|\Delta\delta_{x,i}\|^2 \ge c_{err}(\epsilon)V_{\mathrm{struct}} - g_{err}(\epsilon)
+
 $$
 
 where $c_{err}(\epsilon) > 0$ and $g_{err}(\epsilon) \ge 0$ are **strictly N-uniform constants**.
@@ -5221,6 +5600,7 @@ The proof is constructive and proceeds in four steps. We first establish a linea
 
 $$
 S_k = N \cdot V_{\text{Var},x}(S_k), \quad \frac{E(S)}{N} = \text{(N-normalized error in set } S\text{)}
+
 $$
 
 **Step 1: From Total System Error to Internal Swarm Variance.**
@@ -5229,12 +5609,14 @@ From the proof of {prf:ref}`lem-V_Varx-implies-variance`, we have the inequality
 
 $$
 S_k \ge \frac{N \cdot V_{\mathrm{struct}}}{2} - S_j
+
 $$
 
 The positions of all walkers lie in the valid domain $\mathcal{X}_{\text{valid}}$ of diameter $D_{\text{valid}}$. Thus, the maximum possible deviation from the mean for any walker is $D_{\text{valid}}$. This provides a uniform upper bound on $S_j$: $S_j = \sum_{i \in \mathcal{A}_j} \|\delta_{x,j,i}\|^2 \leq k_j \cdot D_{\text{valid}}^2 \leq N \cdot D_{\text{valid}}^2$. Substituting this gives our first key inequality:
 
 $$
 S_k \ge \frac{N \cdot V_{\mathrm{struct}}}{2} - N \cdot D_{\mathrm{valid}}^2 \quad (*_1)
+
 $$
 
 **Step 2: From Internal Variance to Error in the High-Error Set $H_k$.**
@@ -5243,12 +5625,14 @@ Using the vector inequality $\|a-b\|^2 \geq (1/2)\|a\|^2 - \|b\|^2$, we have $\|
 
 $$
 E(H_k) \ge \frac{1}{2}\sum_{i \in H_k(\epsilon)} \|\delta_{x,k,i}\|^2 - \sum_{i \in H_k(\epsilon)} \|\delta_{x,j,i}\|^2
+
 $$
 
 Using **{prf:ref}`lem-variance-concentration-Hk`** on the first term and uniformly bounding the second term gives:
 
 $$
 E(H_k) \ge \frac{c_H}{2} S_k - |H_k(\epsilon)| \cdot D_{\mathrm{valid}}^2 \ge \frac{c_H}{2} S_k - N \cdot D_{\mathrm{valid}}^2
+
 $$
 
 Now, substitute the lower bound for $S_k$ from inequality $(*_1)$:
@@ -5258,12 +5642,14 @@ $$
 E(H_k) &\ge \frac{c_H}{2} \left( \frac{N \cdot V_{\mathrm{struct}}}{2} - N \cdot D_{\mathrm{valid}}^2 \right) - N \cdot D_{\mathrm{valid}}^2 \\
 &= \frac{c_H}{4} N \cdot V_{\mathrm{struct}} - \left(\frac{c_H}{2} + 1\right) N \cdot D_{\mathrm{valid}}^2
 \end{aligned}
+
 $$
 
 Dividing by $N$ gives the per-walker average error in $H_k(\epsilon)$:
 
 $$
 \frac{1}{N}E(H_k) \ge \frac{c_H}{4} V_{\mathrm{struct}} - \left(\frac{c_H}{2} + 1\right) D_{\mathrm{valid}}^2 \quad (*_2)
+
 $$
 
 This establishes that the error in $H_k$ is linearly bounded below by $V_{\text{struct}}$.
@@ -5274,12 +5660,14 @@ The error in our target set is $E(I_{\text{target}}) = E(H_k) - E(H_k \setminus 
 
 $$
 E(H_k \setminus I_{\text{target}}) \le |H_k \setminus I_{\text{target}}| \cdot 4D_{\mathrm{valid}}^2
+
 $$
 
 The set $H_k \setminus I_{\text{target}}$ contains walkers that are in $H_k$ but not in the three-way intersection $I_{11} \cap U_k \cap H_k$. Crucially, from Chapter 7, we have N-uniform lower bounds on the fractional sizes of these sets relative to the $k$ alive walkers: $|H_k|/k \geq f_H(\epsilon)$ and $|I_{\text{target}}|/k \geq f_{UH}(\epsilon)$. The size of the complement is $|H_k| - |I_{\text{target}}|$. A simple and robust upper bound is to use the total number of alive walkers: $|H_k \setminus I_{\text{target}}| \leq k$. Therefore:
 
 $$
 E(H_k \setminus I_{\text{target}}) \le k \cdot 4D_{\mathrm{valid}}^2
+
 $$
 
 **Step 4: Final Assembly with Explicit Normalization.**
@@ -5288,18 +5676,21 @@ We assemble the final inequality for the **N-normalized** error in the target se
 
 $$
 \frac{1}{N}E(I_{\text{target}}) = \frac{1}{N}E(H_k) - \frac{1}{N}E(H_k \setminus I_{\text{target}})
+
 $$
 
 **Applying bounds from Steps 2-3:** Substitute the lower bound for the first term from $(*_2)$ and the upper bound for the second term from Step 3:
 
 $$
 \ge \left[ \frac{c_H}{4} V_{\mathrm{struct}} - \left(\frac{c_H}{2} + 1\right) D_{\mathrm{valid}}^2 \right] - \frac{k \cdot 4D_{\mathrm{valid}}^2}{N}
+
 $$
 
 **N-uniformity:** Since $k \leq N$ (number of alive walkers bounded by total slots), the ratio $k/N \leq 1$ is state-dependent but uniformly bounded. We can weaken the inequality to achieve a clean, N-independent form by replacing $k/N$ with its worst case 1:
 
 $$
 \ge \frac{c_H}{4} V_{\mathrm{struct}} - \left(\frac{c_H}{2} + 1\right) D_{\mathrm{valid}}^2 - 4D_{\mathrm{valid}}^2 = \frac{c_H}{4} V_{\mathrm{struct}} - \left(\frac{c_H}{2} + 5\right) D_{\mathrm{valid}}^2
+
 $$
 
 This is the desired linear lower bound. We can now define the final, **explicitly N-uniform** constants:
@@ -5330,6 +5721,7 @@ Assume the initial state $(S_1, S_2)$ is in the high-error regime. Without loss 
 
 $$
 E_w := \frac{1}{N}\sum_{i \in I_{11}} (p_{1,i} + p_{2,i})\|\Delta\delta_{x,i}\|^2
+
 $$
 
 **2. Lower-Bound the Sum by the Critical Target Set.**
@@ -5337,6 +5729,7 @@ The sum $E_w$ consists of non-negative terms and is bounded below by the sum ove
 
 $$
 E_w \ge \frac{1}{N}\sum_{i \in I_{\text{target}}} p_{1,i}\|\Delta\delta_{x,i}\|^2
+
 $$
 
 We focus on the cloning probability `p_1,i` because swarm 1 is the high-variance swarm for which our guarantees on the unfit and high-error sets hold.
@@ -5346,18 +5739,21 @@ Instead of factoring out the minimum probability, we use a standard statistical 
 
 $$
 \bar{p}_{target} = \frac{1}{|I_{target}|}\sum_{i \in I_{target}} p_{1,i}
+
 $$
 
  be the average cloning probability over the target set, and
 
 $$
 \bar{E}_{target} = \frac{1}{|I_{target}|}\sum_{i \in I_{target}} \|\Delta\delta_{x,i}\|^2
+
 $$
 
  be the average error. The sum can be written as:
 
 $$
 \sum_{i \in I_{\text{target}}} p_{1,i}\|\Delta\delta_{x,i}\|^2 = |I_{target}| \left( \bar{p}_{target} \cdot \bar{E}_{target} + \text{Cov}(p_{1,i}, \|\Delta\delta_{x,i}\|^2) \right)
+
 $$
 
 where `Cov` is the covariance between the cloning probability and the error within the target set. We can establish a lower bound by using the average properties and bounding the covariance term.
@@ -5368,6 +5764,7 @@ Let's use a simpler, more direct argument. The sum is bounded below by the sum w
 
 $$
 E_w \ge \frac{1}{N}\sum_{i \in I_{\text{target}}} p_{1,i}\|\Delta\delta_{x,i}\|^2 \ge \frac{p_u(\epsilon)}{N}\sum_{i \in I_{\text{target}}} \|\Delta\delta_{x,i}\|^2
+
 $$
 
 **4. Substitute the Error Concentration Bound.**
@@ -5377,6 +5774,7 @@ We now have an expression that is the product of two N-uniform lower bounds.
 
 $$
 \frac{1}{N}\sum_{i \in I_{\text{target}}} \|\Delta\delta_{x,i}\|^2
+
 $$
 
  is exactly the quantity lower-bounded by the **Error Concentration Lemma (8.4.1)**.
@@ -5385,6 +5783,7 @@ Substituting the bound from {prf:ref}`lem-variance-concentration-Hk` gives:
 
 $$
 E_w \ge p_u(\epsilon) \cdot \left( c_{err}(\epsilon)V_{\mathrm{struct}} - g_{err}(\epsilon) \right)
+
 $$
 
 **5. Define N-Uniform Constants for the High-Error Regime.**
@@ -5392,6 +5791,7 @@ Substituting these two bounds into the inequality from Step 3 gives:
 
 $$
 E_w \ge p_u(\epsilon) \cdot \left( c_{err}(\epsilon)V_{\mathrm{struct}} - g_{err}(\epsilon) \right)
+
 $$
 
 We define the N-uniform, $\varepsilon$-dependent constants that emerge from this constructive proof:
@@ -5402,6 +5802,7 @@ This establishes the desired linear lower bound for any state in the high-error 
 
 $$
 E_w \ge \chi(\epsilon) V_{\text{struct}} - g_{\text{partial}}(\epsilon)
+
 $$
 
 **6. Finalize the Global Inequality.**
@@ -5409,6 +5810,7 @@ As outlined in the proof strategy (Section 8.1), we define the global offset con
 
 $$
 g_{\max}(\epsilon) := \max\bigl(g_{\text{partial}}(\epsilon),\, \chi(\epsilon) R^2_{\text{spread}}\bigr)
+
 $$
 
 This choice ensures the inequality is satisfied everywhere. Since $\chi(\epsilon)$ and $g_{\max}(\epsilon)$ are constructed entirely from N-uniform constants, they are themselves independent of $N$.
@@ -5432,6 +5834,7 @@ The feedback coefficient $\chi(\epsilon)$ quantifies the strength of the correct
 
 $$
 \chi(\epsilon) := p_u(\epsilon) \cdot c_{err}(\epsilon)
+
 $$
 
 ##### 8.6.1.1 Deconstruction of $p_u(\epsilon)$ (Minimum Cloning Pressure)
@@ -5444,18 +5847,21 @@ From the proof of {prf:ref}`lem-unfit-cloning-pressure`, we have $S_u(\epsilon, 
 
 $$
 \Delta_{\min}(\epsilon, f_U, f_F, k) := \frac{f_F f_U}{(k-1)(f_F + f_U^2/f_F)} \kappa_{V,\text{gap}}(\epsilon)
+
 $$
 
 Applying the clipping function $\pi(S) = \min(1, S/p_{\max})$ gives:
 
 $$
 p_u(\epsilon, k) = \min\left(1, \frac{1}{p_{\max}} \cdot \frac{\Delta_{\min}(\epsilon, f_U, f_F, k)}{V_{\text{pot,max}} + \varepsilon_{\text{clone}}}\right)
+
 $$
 
 Substituting the explicit form of $\Delta_{\min}$:
 
 $$
 p_u(\epsilon, k) = \min\left(1, \frac{1}{p_{\max}(V_{\text{pot,max}} + \varepsilon_{\text{clone}})} \cdot \frac{f_F f_U \kappa_{V,\text{gap}}(\epsilon)}{(k-1)(f_F + f_U^2/f_F)}\right)
+
 $$
 
 **Explicit Deconstruction of Algorithm Parameters:**
@@ -5481,6 +5887,7 @@ $$
 
 $$
 \kappa_{V,\text{gap}}(\epsilon) \approx C_{\text{pipe}} \cdot \left(\frac{g'_{\min}}{\sigma'_{\max}}\right)^{\alpha+\beta} \cdot (\sqrt{\kappa_{\text{meas}}(\epsilon)})^{\alpha+\beta}
+
 $$
 
     where:
@@ -5500,12 +5907,14 @@ The term $c_{\text{err}}(\epsilon)$ quantifies how much of the total system erro
 
 $$
 c_{\text{err}}(\epsilon) := \frac{c_H(\epsilon)}{4}
+
 $$
 
 where $c_H(\epsilon)$ is the variance concentration constant from {prf:ref}`lem-variance-concentration-Hk`. More explicitly:
 
 $$
 c_H(\epsilon) := \min\left\{1-\varepsilon_O, \frac{(1-\varepsilon_O) R^2_{\text{means}}(\epsilon)}{R^2_{\text{var}}}\right\}
+
 $$
 
 with $R^2_{\text{means}}(\epsilon) := R^2_{\text{var}} - (D_{\text{diam}}(\epsilon)/2)^2$.
@@ -5530,6 +5939,7 @@ The final error concentration factor is:
 
 $$
 c_{\text{err}}(\epsilon) = \frac{1}{4} \min\left\{1-\varepsilon_O, \frac{(1-\varepsilon_O)(R^2_{\text{var}} - c_d^2\epsilon^2/4)}{R^2_{\text{var}}}\right\}
+
 $$
 
 **Conclusion for $c_{\text{err}}(\epsilon)$:** The error concentration factor is a direct measure of the algorithm's ability to correctly identify the source of its own error. It depends on the outlier detection threshold ($\varepsilon_O$), the variance threshold ($R^2_{\text{var}}$), and the $\epsilon$-dependent clustering geometry. It is manifestly independent of $N$.
@@ -5540,6 +5950,7 @@ The offset $g_{\max}(\epsilon)$ ensures the Keystone inequality holds even when 
 
 $$
 g_{\max}(\epsilon) := \max\bigl(p_u(\epsilon) \cdot g_{err}(\epsilon),\, \chi(\epsilon) R^2_{\text{spread}}\bigr)
+
 $$
 
 The new term here is $g_{\text{err}}(\epsilon)$.
@@ -5550,6 +5961,7 @@ The term $g_{\text{err}}(\epsilon)$ arises from bounding the maximum possible st
 
 $$
 g_{\text{err}}(\epsilon) := \left(\frac{c_H(\epsilon)}{2} + 5\right) D_{\text{valid}}^2
+
 $$
 
 where $c_H(\epsilon)$ is defined in Section 8.6.1.2 above.
@@ -5560,6 +5972,7 @@ Substituting the expression for $c_H(\epsilon)$:
 
 $$
 g_{\text{err}}(\epsilon) = \left(\frac{1}{2}\min\left\{1-\varepsilon_O, \frac{(1-\varepsilon_O)(R^2_{\text{var}} - c_d^2\epsilon^2/4)}{R^2_{\text{var}}}\right\} + 5\right) D_{\text{valid}}^2
+
 $$
 
 **Deconstruction of Components:**
@@ -5592,6 +6005,7 @@ R^2_{\text{means}} &= 1 - (2 \cdot 0.2/2)^2 = 1 - 0.04 = 0.96 \\
 c_H &= \min\{0.9, 0.9 \cdot 0.96\} = 0.864 \\
 g_{\text{err}} &= (0.864/2 + 5) \cdot 100 = 5.432 \cdot 100 = 543.2
 \end{aligned}
+
 $$
 
 **Conclusion for $g_{\text{err}}(\epsilon)$:** The offset $g_{\text{err}}(\epsilon)$ represents the maximum "un-targeted" error that the Keystone feedback loop must overcome. It is large when the domain is large and grows with poor targeting accuracy. It is manifestly independent of $N$.
@@ -5607,6 +6021,7 @@ The Keystone constants $\chi(\epsilon)$ and $g_{\max}(\epsilon)$ are strictly in
 
 $$
 \chi(\epsilon) = \chi_0(\epsilon) \quad \text{and} \quad g_{\max}(\epsilon) = g_0(\epsilon)
+
 $$
 
 where $\chi_0(\epsilon)$ and $g_0(\epsilon)$ depend only on $\epsilon$ and the fixed system parameters, not on $N$.
@@ -5625,6 +6040,7 @@ From Section 8.6.1.1, $p_u(\epsilon)$ is defined as:
 
 $$
 p_u(\epsilon) = \frac{1}{p_{\max}} \left( \frac{\kappa_{V,\text{gap}}(\epsilon)}{2(V_{\text{pot,max}} + \varepsilon_{\text{clone}})} \right)
+
 $$
 
 We verify each component:
@@ -5664,6 +6080,7 @@ From Section 8.6.2.1:
 
 $$
 g_{err}(\epsilon) := g'_{err} + (1 - f_{UH}(\epsilon)) \cdot 4D_{\mathrm{valid}}^2
+
 $$
 
 - $g'_{\text{err}}$: A constant from {prf:ref}`lem-variance-concentration-Hk` involving domain diameter, independent of $N$ ✓
@@ -5678,10 +6095,12 @@ Since all components are N-independent:
 
 $$
 \chi(\epsilon) = p_u(\epsilon) \cdot c_{err}(\epsilon) \quad \text{(product of N-independent terms)} \quad ✓
+
 $$
 
 $$
 g_{\max}(\epsilon) = \max(p_u(\epsilon) \cdot g_{err}(\epsilon), \chi(\epsilon) R^2_{\text{spread}}) \quad \text{(max of N-independent terms)} \quad ✓
+
 $$
 
 where $R^2_{\text{spread}}$ is the variance threshold, a fixed constant independent of $N$ ✓
@@ -5709,6 +6128,7 @@ From $\chi(\epsilon) = p_u(\epsilon) \cdot c_{\text{err}}(\epsilon)$, substituti
 
 $$
 \chi(\epsilon) = \min\left(1, \frac{f_F f_U \kappa_{V,\text{gap}}(\epsilon)}{p_{\max}(V_{\text{pot,max}} + \varepsilon_{\text{clone}})(k-1)(f_F + f_U^2/f_F)}\right) \cdot \frac{c_H(\epsilon)}{4}
+
 $$
 
 where:
@@ -5718,18 +6138,21 @@ $$
 c_H(\epsilon) &= \min\left\{1-\varepsilon_O, \frac{(1-\varepsilon_O)(R^2_{\text{var}} - c_d^2\epsilon^2/4)}{R^2_{\text{var}}}\right\} \\
 V_{\text{pot,max}} &= (g_{A,\max} + \eta)^{\alpha+\beta}
 \end{aligned}
+
 $$
 
 **Simplified form** (assuming non-saturating regime where $\min = $ second argument):
 
 $$
 \chi(\epsilon) \approx \frac{c_H(\epsilon)}{4p_{\max}(V_{\text{pot,max}} + \varepsilon_{\text{clone}})} \cdot \frac{f_F f_U \kappa_{V,\text{gap}}(\epsilon)}{(k-1)(f_F + f_U^2/f_F)}
+
 $$
 
 **Interpretation:**
 
 $$
 \chi(\epsilon) = \underbrace{\frac{c_H(\epsilon)}{4(V_{\text{pot,max}} + \varepsilon_{\text{clone}})}}_{\text{Error Detection Sensitivity}} \times \underbrace{\frac{f_F f_U}{p_{\max}(k-1)(f_F + f_U^2/f_F)}}_{\text{Population Structure}} \times \underbrace{\kappa_{V,\text{gap}}(\epsilon)}_{\text{Signal Strength}}
+
 $$
 
 ##### Complete Explicit Formula for $g_{\max}(\epsilon)$
@@ -5738,12 +6161,14 @@ From $g_{\max}(\epsilon) = \max(p_u(\epsilon) \cdot g_{\text{err}}(\epsilon), \c
 
 $$
 g_{\max}(\epsilon) = \max\left\{ p_u(\epsilon) \cdot \left(\frac{c_H(\epsilon)}{2} + 5\right) D_{\text{valid}}^2, \quad \chi(\epsilon) R^2_{\text{spread}} \right\}
+
 $$
 
 In the typical regime where the first argument dominates:
 
 $$
 g_{\max}(\epsilon) \approx \min\left(1, \frac{f_F f_U \kappa_{V,\text{gap}}(\epsilon)}{p_{\max}(V_{\text{pot,max}} + \varepsilon_{\text{clone}})(k-1)(f_F + f_U^2/f_F)}\right) \cdot \left(\frac{c_H(\epsilon)}{2} + 5\right) D_{\text{valid}}^2
+
 $$
 
 ##### Summary of All Algorithm Parameters
@@ -5860,6 +6285,7 @@ The operator is defined by a composition of deterministic and stochastic sub-ope
 
 $$
 \Psi_{\text{clone}} = \Psi_{\text{update}} \circ \Psi_{\text{decision}} \circ \Psi_{\text{fitness}} \circ \Psi_{\text{measure}}
+
 $$
 
 where each sub-operator is defined in the subsequent sections.
@@ -5870,6 +6296,7 @@ By construction, the output configuration $S' \sim \Psi_{\text{clone}}(S, \cdot)
 
 $$
 s'_i = 1 \quad \text{for all } i \in \{1, \ldots, N\}
+
 $$
 
 This guarantees that the cloning stage produces a viable swarm ready for the subsequent kinetic evolution, with dead walkers either revived (if the input had dead walkers) or persisting (if already alive).
@@ -5908,6 +6335,7 @@ For input swarm ({prf:ref}`def-swarm-and-state-space`) $S$ with alive set ({prf:
 
 $$
 \pi \sim P_{\text{pair}}(S, \cdot)
+
 $$
 
 2. **Raw Distance Vector** (see {prf:ref}`def-raw-value-operators`): For each alive walker ({prf:ref}`def-walker`) $i \in \mathcal{A}(S)$, compute:
@@ -5915,6 +6343,7 @@ $$
 
 $$
 d_i = d_{\text{alg}}(x_i, x_{\pi(i)})
+
 $$
 
 
@@ -5955,6 +6384,7 @@ This deterministic operator (implementing the pipeline from Chapter 5) transform
 
 $$
 r_i = g_A(x_i) = \varphi_{\text{barrier}}(x_i)
+
 $$
 
    yielding the raw reward vector $\mathbf{r} = (r_1, \ldots, r_N)$.
@@ -5964,6 +6394,7 @@ $$
 
 $$
 \tilde{d}_i = d_i + \eta, \quad \tilde{r}_i = r_i + \eta
+
 $$
 
 3. **Z-Score Normalization:** Compute empirical means and standard deviations over **alive walkers only**:
@@ -5971,12 +6402,14 @@ $$
 
 $$
 \bar{d} = \frac{1}{k}\sum_{i \in \mathcal{A}(S)} \tilde{d}_i, \quad \sigma_d = \sqrt{\frac{1}{k}\sum_{i \in \mathcal{A}(S)} (\tilde{d}_i - \bar{d})^2}
+
 $$
 
 
 
 $$
 \bar{r} = \frac{1}{k}\sum_{i \in \mathcal{A}(S)} \tilde{r}_i, \quad \sigma_r = \sqrt{\frac{1}{k}\sum_{i \in \mathcal{A}(S)} (\tilde{r}_i - \bar{r})^2}
+
 $$
 
 
@@ -5985,6 +6418,7 @@ $$
 
 $$
 z_{d,i} = \frac{\tilde{d}_i - \bar{d}}{\sigma_d + \sigma_{\text{stab}}}, \quad z_{r,i} = \frac{\tilde{r}_i - \bar{r}}{\sigma_r + \sigma_{\text{stab}}}
+
 $$
 
 
@@ -6004,6 +6438,7 @@ V_{\text{fit},i} = \begin{cases}
       (d'_i)^{\beta} \cdot (r'_i)^{\alpha} & \text{if } i \in \mathcal{A}(S) \\
       0 & \text{if } i \notin \mathcal{A}(S)
       \end{cases}
+
 $$
 
 **Output:** The fitness potential vector $\mathbf{V}_{\text{fit}} = (V_{\text{fit},1}, \ldots, V_{\text{fit},N}) \in \mathbb{R}^N_{\geq 0}$
@@ -6036,6 +6471,7 @@ For each walker ({prf:ref}`def-walker`) $i \in \{1, \ldots, N\}$:
 
 $$
 P(c_i = j) = \frac{\exp\left(-\frac{d_{\text{alg}}(x_i, x_j)^2}{2\epsilon_c^2}\right)}{\sum_{\ell \in \mathcal{A}(S) \setminus \{i\}} \exp\left(-\frac{d_{\text{alg}}(x_i, x_\ell)^2}{2\epsilon_c^2}\right)} \quad \text{for } j \in \mathcal{A}(S) \setminus \{i\}
+
 $$
 
 
@@ -6044,6 +6480,7 @@ $$
 
 $$
 P(c_i = j) = \frac{1}{k} \quad \text{for all } j \in \mathcal{A}(S)
+
 $$
 
 2. **Cloning Score:** Compute the score based on fitness difference:
@@ -6051,6 +6488,7 @@ $$
 
 $$
 S_i = \frac{V_{\text{fit},c_i} - V_{\text{fit},i}}{V_{\text{fit},i} + \varepsilon_{\text{clone}}}
+
 $$
 
 3. **Stochastic Decision:** Sample threshold $T_i \sim \text{Uniform}(0, p_{\max})$ independently.
@@ -6067,6 +6505,7 @@ The key quantity for drift analysis is the **total probability** that walker ({p
 
 $$
 p_i := P(\text{walker } i \text{ clones} \mid S, \mathbf{V}_{\text{fit}})
+
 $$
 
 This is the probability that enters the Keystone Lemma ({prf:ref}`lem-quantitative-keystone`).
@@ -6079,6 +6518,7 @@ Under the Axiom of Guaranteed Revival ($\varepsilon_{\text{clone}} \cdot p_{\max
 
 $$
 i \in \mathcal{D}(S) \implies p_i = 1
+
 $$
 
 :::
@@ -6092,6 +6532,7 @@ The cloning score is:
 
 $$
 S_i = \frac{V_{\text{fit},c_i} - 0}{0 + \varepsilon_{\text{clone}}} = \frac{V_{\text{fit},c_i}}{\varepsilon_{\text{clone}}} \geq \frac{\eta^{\alpha+\beta}}{\varepsilon_{\text{clone}}}
+
 $$
 
 By the revival axiom: $\frac{\eta^{\alpha+\beta}}{\varepsilon_{\text{clone}}} > p_{\max}$
@@ -6121,6 +6562,7 @@ For each unique companion $j \in \mathcal{A}(S)$, identify all walkers cloning f
 
 $$
 I_j := \{i \in \{1, \ldots, N\} : a_i = \text{clone} \text{ and } c_i = j\}
+
 $$
 
 Let $M_j = |I_j|$ be the number of cloners for companion $j$.
@@ -6136,6 +6578,7 @@ For each $(M_j + 1)$-particle system consisting of companion $j$ and its cloners
 
 $$
 x'_i = x_j + \sigma_x \zeta_i^x \quad \text{where } \zeta_i^x \sim \mathcal{N}(0, I_d)
+
 $$
 
 
@@ -6150,6 +6593,7 @@ $$
 
 $$
 V_{\text{COM},j} = \frac{1}{M_j + 1}\left(v_j + \sum_{i \in I_j} v_i\right)
+
 $$
 
 
@@ -6160,6 +6604,7 @@ $$
 
 $$
 u_k = v_k - V_{\text{COM},j}
+
 $$
 
 
@@ -6168,6 +6613,7 @@ $$
 
 $$
 u'_k = \alpha_{\text{restitution}} \cdot R_k(u_k)
+
 $$
 
 
@@ -6176,6 +6622,7 @@ $$
 
 $$
 v'_k = V_{\text{COM},j} + u'_k
+
 $$
 
 3. **Persisting Walkers:**
@@ -6185,6 +6632,7 @@ $$
 
 $$
 x'_i = x_i, \quad v'_i = v_i
+
 $$
 
 4. **Status Update:**
@@ -6194,6 +6642,7 @@ $$
 
 $$
 s'_i = 1 \quad \text{for all } i \in \{1, \ldots, N\}
+
 $$
 
 **Output:** The intermediate swarm ({prf:ref}`def-swarm-and-state-space`) configuration $S' = ((x'_1, v'_1, 1), \ldots, (x'_N, v'_N, 1))$
@@ -6226,6 +6675,7 @@ The cloning operator ({prf:ref}`def-cloning-operator`) admits the following comp
 
 $$
 \Psi_{\text{clone}}(S, \cdot) = \int_{\mathbf{d}} \int_{\mathbf{c}, \mathbf{a}} \Psi_{\text{update}}(S, \mathbf{c}, \mathbf{a}, \cdot) \, dP_{\text{decision}}(S, \mathbf{V}_{\text{fit}}(\mathbf{d}), \mathbf{c}, \mathbf{a}) \, dP_{\text{measure}}(S, \mathbf{d})
+
 $$
 
 where:
@@ -6238,6 +6688,7 @@ This composition is a proper Markov kernel ({prf:ref}`def-markov-kernel`): for a
 
 $$
 \Psi_{\text{clone}}(S, A) = P(S' \in A \mid S)
+
 $$
 
 is a well-defined probability.
@@ -6259,6 +6710,7 @@ For input swarm ({prf:ref}`def-swarm-and-state-space`) $S$ and output swarm $S' 
 
 $$
 p_i = P(\text{walker ({prf:ref}`def-walker`) } i \text{ clones} \mid S)
+
 $$
 
 2. **Position Displacement:** For each walker  $i$:
@@ -6266,6 +6718,7 @@ $$
 
 $$
 \Delta x_i := x'_i - x_i
+
 $$
 
    For cloners, $\Delta x_i = x_{c_i} - x_i + \sigma_x \zeta_i^x$ where $\zeta_i^x \sim \mathcal{N}(0, I_d)$.
@@ -6275,6 +6728,7 @@ $$
 
 $$
 \Delta v_i := v'_i - v_i
+
 $$
 
    This arises from the inelastic collision model. The expected squared velocity change depends on:
@@ -6287,6 +6741,7 @@ $$
 
 $$
 \Delta\delta_{x,i} := \delta_{x,1,i} - \delta_{x,2,i}
+
 $$
 
 :::
@@ -6298,6 +6753,7 @@ For walker ({prf:ref}`def-walker`) $i$ with cloning probability $p_i$, the expec
 
 $$
 \mathbb{E}[\|\Delta x_i\|^2 \mid S] \leq p_i \cdot D_{\text{max}}^2
+
 $$
 
 where $D_{\text{max}}$ is the maximum distance in the valid domain (or a suitable bound on the jitter kernel range).
@@ -6317,6 +6773,7 @@ Therefore:
 
 $$
 \mathbb{E}[\|\Delta x_i\|^2 \mid S] = p_i \cdot \mathbb{E}[\|\Delta x_i\|^2 \mid S, a_i = \text{clone}] + (1-p_i) \cdot 0 \leq p_i \cdot D_{\text{max}}^2
+
 $$
 
 **Q.E.D.**
@@ -6384,6 +6841,7 @@ For any function $f: \Sigma_N \times \Sigma_N \to \mathbb{R}$, the **coupled clo
 
 $$
 \mathbb{E}_{\text{clone}}[f(S'_1, S'_2) \mid S_1, S_2] := \mathbb{E}[f(S'_1, S'_2) \mid S_1, S_2, \text{coupling}]
+
 $$
 
 :::
@@ -6413,12 +6871,14 @@ Under the foundational axioms (Chapter 4), there exist constants $\kappa_x > 0$,
 
 $$
 \mathbb{E}_{\text{clone}}[V_{\text{Var},x}(S'_1, S'_2) \mid S_1, S_2] \leq (1 - \kappa_x) V_{\text{Var},x}(S_1, S_2) + C_x
+
 $$
 
 Furthermore, when $V_{\text{Var},x}(S_1, S_2) > \tilde{C}_x$ for a sufficiently large threshold $\tilde{C}_x$, the contraction becomes strict:
 
 $$
 \mathbb{E}_{\text{clone}}[\Delta V_{\text{Var},x}] := \mathbb{E}_{\text{clone}}[V_{\text{Var},x}(S'_1, S'_2) - V_{\text{Var},x}(S_1, S_2)] < 0
+
 $$
 
 Referenced by {prf:ref}`cor-structural-error-contraction`.
@@ -6444,6 +6904,7 @@ The total change in positional variance can be decomposed as:
 
 $$
 \Delta V_{\text{Var},x} = \sum_{k=1}^{2} \left[\underbrace{\Delta V_{\text{Var},x}^{(k,\text{alive})}}_{\text{alive walkers}} + \underbrace{\Delta V_{\text{Var},x}^{(k,\text{status})}}_{\text{status changes}}\right]
+
 $$
 
 where:
@@ -6453,6 +6914,7 @@ where:
 
 $$
 \Delta V_{\text{Var},x}^{(k,\text{alive})} = \frac{1}{N}\sum_{i \in \mathcal{A}(S_k)} \left[\|\delta'_{x,k,i}\|^2 - \|\delta_{x,k,i}\|^2\right]
+
 $$
 
    where $\delta'_{x,k,i}$ is the centered position after cloning.
@@ -6462,6 +6924,7 @@ $$
 
 $$
 \Delta V_{\text{Var},x}^{(k,\text{status})} = \frac{1}{N}\sum_{i \in \mathcal{D}(S_k)} \|\delta'_{x,k,i}\|^2
+
 $$
 
    representing dead walkers that are revived.
@@ -6475,24 +6938,28 @@ Following {prf:ref}`def-variance-conversions`, recall that $V_{\text{Var},x}$ is
 
 $$
 V_{\text{Var},x}(S_k) = \frac{1}{N} \sum_{i \in \mathcal{A}(S_k)} \|\delta_{x,k,i}\|^2
+
 $$
 
 After cloning, all walkers are alive (dead walkers are revived), so:
 
 $$
 V_{\text{Var},x}(S'_k) = \frac{1}{N} \sum_{i=1}^{N} \|\delta'_{x,k,i}\|^2
+
 $$
 
 The change is (keeping $\frac{1}{N}$ normalization throughout):
 
 $$
 \Delta V_{\text{Var},x}^{(k)} = \frac{1}{N} \sum_{i=1}^{N} \|\delta'_{x,k,i}\|^2 - \frac{1}{N} \sum_{i \in \mathcal{A}(S_k)} \|\delta_{x,k,i}\|^2
+
 $$
 
 Split the first sum into alive and dead walkers in the input state:
 
 $$
 \Delta V_{\text{Var},x}^{(k)} = \frac{1}{N}\sum_{i \in \mathcal{A}(S_k)} \left[\|\delta'_{x,k,i}\|^2 - \|\delta_{x,k,i}\|^2\right] + \frac{1}{N}\sum_{i \in \mathcal{D}(S_k)} \|\delta'_{x,k,i}\|^2
+
 $$
 
 This decomposition preserves the N-normalization, ensuring all subsequent bounds are N-uniform.
@@ -6511,6 +6978,7 @@ For walkers in the stably alive set ({prf:ref}`def-alive-dead-sets`) $I_{11}$, t
 
 $$
 \mathbb{E}_{\text{clone}}\left[\sum_{i \in I_{11}} \sum_{k=1,2} \left(\|\delta'_{x,k,i}\|^2 - \|\delta_{x,k,i}\|^2\right)\right] \leq -\frac{\chi(\epsilon)}{2N} \cdot V_{\text{struct}} + \frac{g_{\max}(\epsilon)}{N} + C_{\text{pers}}
+
 $$
 
 where $\chi(\epsilon) > 0$ and $g_{\max}(\epsilon)$ are the Keystone constants ({prf:ref}`lem-quantitative-keystone`), and $C_{\text{pers}}$ accounts for persisting walkers.
@@ -6530,6 +6998,7 @@ When walker $i$ clones in swarm $k$, its centered position changes as:
 
 $$
 \delta'_{x,k,i} = x'_{k,i} - \mu'_{x,k}
+
 $$
 
 where $x'_{k,i} = x_{k,c_i} + \sigma_x \zeta_i^x$ (companion position plus jitter).
@@ -6538,6 +7007,7 @@ The key insight from the Keystone Lemma is that walkers with large centered posi
 
 $$
 \mathbb{E}[\|\delta'_{x,k,i}\|^2 \mid \text{clone}] \ll \|\delta_{x,k,i}\|^2 \quad \text{when } \|\delta_{x,k,i}\|^2 \text{ is large}
+
 $$
 
 **Quantitative bound from Keystone Lemma:**
@@ -6546,12 +7016,14 @@ The Keystone Lemma ({prf:ref}`lem-quantitative-keystone`) states:
 
 $$
 \frac{1}{N}\sum_{i \in I_{11}} (p_{1,i} + p_{2,i})\|\Delta\delta_{x,i}\|^2 \geq \chi(\epsilon) V_{\text{struct}} - g_{\max}(\epsilon)
+
 $$
 
 When walker $i$ clones with probability $p_{k,i}$, its centered position is reset. Using the triangle inequality and the fact that the new position $x'_{k,i}$ is drawn from near the companion's position:
 
 $$
 \mathbb{E}[\|\delta'_{x,k,i}\|^2 - \|\delta_{x,k,i}\|^2 \mid i \in I_{11}] \leq -p_{k,i} \cdot \frac{1}{4}\|\Delta\delta_{x,i}\|^2 + p_{k,i} \cdot C_{\text{jitter}}
+
 $$
 
 where $C_{\text{jitter}} = O(\sigma_x^2)$ accounts for the Gaussian position jitter and barycenter shifts.
@@ -6560,6 +7032,7 @@ Summing over all stably alive walkers and both swarms:
 
 $$
 \mathbb{E}\left[\sum_{i \in I_{11}} \sum_{k=1,2} \left(\|\delta'_{x,k,i}\|^2 - \|\delta_{x,k,i}\|^2\right)\right] \leq -\frac{1}{4}\sum_{i \in I_{11}} (p_{1,i} + p_{2,i})\|\Delta\delta_{x,i}\|^2 + C_{\text{jitter}} \sum_{i \in I_{11}} (p_{1,i} + p_{2,i})
+
 $$
 
 **Applying the Keystone Lemma with explicit normalization:**
@@ -6568,24 +7041,28 @@ The Keystone Lemma (8.1.1) states:
 
 $$
 \frac{1}{N}\sum_{i \in I_{11}} (p_{1,i} + p_{2,i})\|\Delta\delta_{x,i}\|^2 \geq \chi(\epsilon) V_{\text{struct}} - g_{\max}(\epsilon)
+
 $$
 
 Multiplying both sides by $N$ to convert from N-normalized to un-normalized form:
 
 $$
 \sum_{i \in I_{11}} (p_{1,i} + p_{2,i})\|\Delta\delta_{x,i}\|^2 \geq N \left[\chi(\epsilon) V_{\text{struct}} - g_{\max}(\epsilon)\right]
+
 $$
 
 Substituting this into the first term above (with factor $-\frac{1}{4}$):
 
 $$
 \leq -\frac{1}{4} \cdot N \left[\chi(\epsilon) V_{\text{struct}} - g_{\max}(\epsilon)\right] + C_{\text{jitter}} \cdot N = -\frac{N\chi(\epsilon)}{4} V_{\text{struct}} + \frac{Ng_{\max}(\epsilon)}{4} + C_{\text{jitter}} N
+
 $$
 
 Factoring out $N$ for clarity:
 
 $$
 \leq N \left[-\frac{\chi(\epsilon)}{4} V_{\text{struct}} + \frac{g_{\max}(\epsilon)}{4} + C_{\text{jitter}}\right]
+
 $$
 
 **Case 2: Walker persists in both swarms**
@@ -6594,6 +7071,7 @@ For walkers that persist in both swarms, their centered positions change only du
 
 $$
 \|\delta'_{x,k,i}\|^2 - \|\delta_{x,k,i}\|^2 = O(\|\mu'_{x,k} - \mu_{x,k}\|^2)
+
 $$
 
 The barycenter shift is bounded by the number of cloning events, yielding a bounded contribution $C_{\text{pers}}$.
@@ -6612,6 +7090,7 @@ The contribution to variance from revived dead walkers is bounded:
 
 $$
 \mathbb{E}_{\text{clone}}\left[\sum_{k=1,2} \Delta V_{\text{Var},x}^{(k,\text{status})}\right] \leq \frac{2}{N} \sum_{k=1,2} |\mathcal{D}(S_k)| \cdot D_{\text{valid}}^2
+
 $$
 
 where $D_{\text{valid}}$ is the diameter of the valid domain.
@@ -6631,6 +7110,7 @@ When a dead walker $i \in \mathcal{D}(S_k)$ clones, it selects a companion $c_i 
 
 $$
 x'_{k,i} = x_{k,c_i} + \sigma_x \zeta_i^x
+
 $$
 
 where $\zeta_i^x \sim \mathcal{N}(0, I_d)$ is the standard Gaussian jitter and $\sigma_x > 0$ is the position jitter scale.
@@ -6641,6 +7121,7 @@ After cloning, all walkers are alive, and the swarm has a new barycenter $\mu'_{
 
 $$
 \delta'_{x,k,i} = x'_{k,i} - \mu'_{x,k}
+
 $$
 
 To bound $\|\delta'_{x,k,i}\|^2$, we use the triangle inequality:
@@ -6650,6 +7131,7 @@ $$
 \|\delta'_{x,k,i}\| &= \|x'_{k,i} - \mu'_{x,k}\| \\
 &\leq \|x'_{k,i}\| + \|\mu'_{x,k}\|
 \end{aligned}
+
 $$
 
 **Step 2.1: Bounding the new position $\|x'_{k,i}\|$.**
@@ -6658,6 +7140,7 @@ The new position is:
 
 $$
 x'_{k,i} = x_{k,c_i} + \sigma_x \zeta_i^x
+
 $$
 
 Since $c_i \in \mathcal{A}(S_k)$, we have $x_{k,c_i} \in \mathcal{X}_{\text{valid}}$. The position jitter $\sigma_x \zeta_i^x$ is typically small (bounded in expectation), and the cloning mechanism includes an implicit or explicit check to ensure $x'_{k,i} \in \mathcal{X}_{\text{valid}}$ (either through rejection sampling or projection).
@@ -6666,6 +7149,7 @@ Therefore, $x'_{k,i} \in \mathcal{X}_{\text{valid}}$, which implies:
 
 $$
 \|x'_{k,i}\| \leq \sup_{x \in \mathcal{X}_{\text{valid}}} \|x\| \leq D_{\text{valid}}
+
 $$
 
 where $D_{\text{valid}} := \text{diam}(\mathcal{X}_{\text{valid}})$ is the spatial diameter of the valid domain (assuming the origin is chosen appropriately, or using a more careful bound relative to a fixed reference point).
@@ -6676,12 +7160,14 @@ The new barycenter is:
 
 $$
 \mu'_{x,k} = \frac{1}{N} \sum_{j=1}^{N} x'_{k,j}
+
 $$
 
 Since all post-cloning positions satisfy $x'_{k,j} \in \mathcal{X}_{\text{valid}}$, and $\mathcal{X}_{\text{valid}}$ is convex (a standard assumption), the barycenter as a convex combination also satisfies $\mu'_{x,k} \in \mathcal{X}_{\text{valid}}$. Therefore:
 
 $$
 \|\mu'_{x,k}\| \leq D_{\text{valid}}
+
 $$
 
 **Step 2.3: Combining bounds via triangle inequality.**
@@ -6690,12 +7176,14 @@ Substituting the bounds from Steps 2.1 and 2.2:
 
 $$
 \|\delta'_{x,k,i}\| \leq \|x'_{k,i}\| + \|\mu'_{x,k}\| \leq D_{\text{valid}} + D_{\text{valid}} = 2D_{\text{valid}}
+
 $$
 
 Squaring both sides:
 
 $$
 \|\delta'_{x,k,i}\|^2 \leq (2D_{\text{valid}})^2 = 4D_{\text{valid}}^2
+
 $$
 
 This bound holds for every revived dead walker.
@@ -6706,12 +7194,14 @@ The total contribution to variance from dead walkers in swarm $k$ is:
 
 $$
 \Delta V_{\text{Var},x}^{(k,\text{status})} = \frac{1}{N} \sum_{i \in \mathcal{D}(S_k)} \|\delta'_{x,k,i}\|^2
+
 $$
 
 Using the bound from Step 2.3 for each term:
 
 $$
 \Delta V_{\text{Var},x}^{(k,\text{status})} \leq \frac{1}{N} \sum_{i \in \mathcal{D}(S_k)} 4D_{\text{valid}}^2 = \frac{4|\mathcal{D}(S_k)|}{N} D_{\text{valid}}^2
+
 $$
 
 **Step 4: Summing over both swarms and taking expectation.**
@@ -6720,18 +7210,21 @@ The total status change contribution across both swarms is:
 
 $$
 \sum_{k=1,2} \Delta V_{\text{Var},x}^{(k,\text{status})} \leq \frac{4D_{\text{valid}}^2}{N} \sum_{k=1,2} |\mathcal{D}(S_k)|
+
 $$
 
 Since this bound is deterministic (it holds for any realization of the cloning process), it also holds in expectation:
 
 $$
 \mathbb{E}_{\text{clone}}\left[\sum_{k=1,2} \Delta V_{\text{Var},x}^{(k,\text{status})}\right] \leq \frac{4D_{\text{valid}}^2}{N} \sum_{k=1,2} |\mathcal{D}(S_k)|
+
 $$
 
 Rewriting with the factor of 2:
 
 $$
 = \frac{2}{N} \sum_{k=1,2} |\mathcal{D}(S_k)| \cdot 2D_{\text{valid}}^2 \leq \frac{2}{N} \sum_{k=1,2} |\mathcal{D}(S_k)| \cdot 4D_{\text{valid}}^2
+
 $$
 
 Actually, the original bound stated $2/N \cdot \ldots \cdot D_{\text{valid}}^2$, which would require a bound of $2D_{\text{valid}}^2$ per walker. Our derivation gives $4D_{\text{valid}}^2$, which is a factor of 2 larger but still correct as an upper bound.
@@ -6758,6 +7251,7 @@ $$
 \mathbb{E}_{\text{clone}}[\Delta V_{\text{Var},x}] &= \sum_{k=1,2} \mathbb{E}[\Delta V_{\text{Var},x}^{(k,\text{alive})} + \Delta V_{\text{Var},x}^{(k,\text{status})}] \\
 &\leq -\frac{\chi(\epsilon)}{2N} V_{\text{struct}} + \frac{g_{\max}(\epsilon)}{N} + C_{\text{pers}} + \frac{8 D_{\text{valid}}^2}{N} \sum_{k} |\mathcal{D}(S_k)|
 \end{aligned}
+
 $$
 
 **Step 1: Relate $V_{\text{struct}}$ to $V_{\text{Var},x}$**
@@ -6766,6 +7260,7 @@ From {prf:ref}`lem-sx-implies-variance`, if the structural error satisfies $V_{\
 
 $$
 \mathbb{E}_{\text{clone}}[\Delta V_{\text{Var},x}] \leq -\frac{\chi(\epsilon)}{4N} V_{\text{Var},x} + C_{\text{total}}
+
 $$
 
 where $C_{\text{total}}$ absorbs all bounded terms.
@@ -6776,12 +7271,14 @@ Define:
 
 $$
 \kappa_x := \frac{\chi(\epsilon)}{4N} \cdot \frac{1}{\text{(typical variance)}}
+
 $$
 
 After rescaling and using the fact that $V_{\text{Var},x}$ is $N$-normalized:
 
 $$
 \mathbb{E}_{\text{clone}}[V_{\text{Var},x}(S')] \leq (1 - \kappa_x) V_{\text{Var},x}(S) + C_x
+
 $$
 
 The constant $\kappa_x > 0$ is independent of $N$ due to the N-uniformity of the Keystone Lemma.
@@ -6800,12 +7297,14 @@ There exists a state-independent constant $C_v < \infty$ such that for any swarm
 
 $$
 \mathbb{E}_{\text{clone}}[V_{\text{Var},v}(S')] \leq V_{\text{Var},v}(S) + C_v
+
 $$
 
 Equivalently, the one-step drift satisfies:
 
 $$
 \mathbb{E}_{\text{clone}}[\Delta V_{\text{Var},v}] \leq C_v
+
 $$
 
 :::
@@ -6824,6 +7323,7 @@ By Axiom EG-4 (velocity regularization), all walker velocities in viable swarms 
 
 $$
 \|v_i\| \leq V_{\max} := \sqrt{\max\left\{\frac{2F_{\max}}{\gamma}, V_{\text{thresh}}^2\right\}}
+
 $$
 
 This bound is state-independent, depending only on physical parameters.
@@ -6834,6 +7334,7 @@ When walker $i$ participates in an $(M+1)$-particle inelastic collision, its vel
 
 $$
 v'_i = V_{\text{COM}} + \alpha_{\text{restitution}} \cdot R_i(u_i)
+
 $$
 
 where $u_i = v_i - V_{\text{COM}}$ and $R_i$ is a random rotation.
@@ -6842,12 +7343,14 @@ The squared velocity change is bounded:
 
 $$
 \|v'_i - v_i\|^2 = \|\alpha_{\text{restitution}} \cdot R_i(u_i) - u_i\|^2 \leq (\alpha_{\text{restitution}} + 1)^2 \|u_i\|^2
+
 $$
 
 Since $\|u_i\| \leq 2V_{\max}$ (difference of two bounded velocities):
 
 $$
 \|v'_i - v_i\|^2 \leq 4(\alpha_{\text{restitution}} + 1)^2 V_{\max}^2
+
 $$
 
 **Step 3: Variance change decomposition**
@@ -6866,12 +7369,14 @@ Summing over all walkers and using $N$-normalization:
 
 $$
 \mathbb{E}[\Delta V_{\text{Var},v}] \leq \frac{1}{N} \sum_{i=1}^N p_i \cdot 4(\alpha_{\text{restitution}} + 1)^2 V_{\max}^2 + C_{\text{bary}}
+
 $$
 
 Since $p_i \in [0,1]$ and $\sum_i p_i \leq N$ (at most all walkers clone):
 
 $$
 \mathbb{E}[\Delta V_{\text{Var},v}] \leq 4(\alpha_{\text{restitution}} + 1)^2 V_{\max}^2 + C_{\text{bary}} =: C_v
+
 $$
 
 This constant is **state-independent** and **$N$-independent** (the $N$ cancels in the normalization).
@@ -6886,6 +7391,7 @@ This bounded expansion is the prerequisite for the synergistic dissipation frame
 
 $$
 \mathbb{E}_{\text{kin}}[\Delta V_{\text{Var},v}] \leq -\kappa_v V_{\text{Var},v} + C'_v
+
 $$
 
 for some $\kappa_v > 0$ proportional to the Langevin friction $\gamma$.
@@ -6894,6 +7400,7 @@ When properly balanced:
 
 $$
 \mathbb{E}_{\text{clone} \circ \text{kin}}[\Delta V_{\text{Var},v}] \leq -\kappa_v V_{\text{Var},v} + (C_v + C'_v)
+
 $$
 
 The linear contraction dominates when $V_{\text{Var},v}$ is large, enabling convergence.
@@ -6910,6 +7417,7 @@ Under the same conditions as {prf:ref}`thm-positional-variance-contraction`, the
 
 $$
 \mathbb{E}_{\text{clone}}[V_{\text{struct}}(S'_1, S'_2)] \leq (1 - \kappa_{\text{struct}}) V_{\text{struct}}(S_1, S_2) + C_{\text{struct}}
+
 $$
 
 for some $\kappa_{\text{struct}} > 0$.
@@ -6923,6 +7431,7 @@ By {prf:ref}`lem-sx-implies-variance`:
 
 $$
 V_{\text{struct}} \leq 2(\text{Var}_1(x) + \text{Var}_2(x))
+
 $$
 
 where $\text{Var}_k(x) = \frac{1}{k_{\text{alive}}} \sum_{i \in \mathcal{A}(S_k)} \|\delta_{x,k,i}\|^2$.
@@ -6947,6 +7456,7 @@ The cloning operator ({prf:ref}`def-cloning-operator`) $\Psi_{\text{clone}}$ ind
 
 $$
 \mathbb{E}_{\text{clone}}[\Delta V_{\text{Var},x}] \leq -\kappa_x V_{\text{Var},x} + C_x
+
 $$
 
 where $\kappa_x > 0$ is $N$-independent (from Keystone Principle).
@@ -6955,6 +7465,7 @@ where $\kappa_x > 0$ is $N$-independent (from Keystone Principle).
 
 $$
 \mathbb{E}_{\text{clone}}[\Delta V_{\text{Var},v}] \leq C_v
+
 $$
 
 where $C_v < \infty$ is a state-independent constant.
@@ -6963,6 +7474,7 @@ where $C_v < \infty$ is a state-independent constant.
 
 $$
 \mathbb{E}_{\text{clone}}[\Delta V_{\text{Var}}] = \mathbb{E}_{\text{clone}}[\Delta V_{\text{Var},x}] + \mathbb{E}_{\text{clone}}[\Delta V_{\text{Var},v}] \leq -\kappa_x V_{\text{Var},x} + (C_x + C_v)
+
 $$
 
 **Key Property:** When $V_{\text{Var},x}$ is sufficiently large, the positional contraction dominates, yielding net contraction of $V_{\text{Var}}$.
@@ -6978,12 +7490,14 @@ From {prf:ref}`thm-positional-variance-contraction` , we have:
 
 $$
 \mathbb{E}_{\text{clone}}[\Delta V_{\text{Var},x}] \leq -\kappa_x V_{\text{Var},x} + C_x
+
 $$
 
 From {prf:ref}`thm-bounded-velocity-expansion-cloning` ({prf:ref}`thm-velocity-variance-bounded-expansion`), we have:
 
 $$
 \mathbb{E}_{\text{clone}}[\Delta V_{\text{Var},v}] \leq C_v
+
 $$
 
 By linearity of expectation, the total internal variance drift is:
@@ -6995,6 +7509,7 @@ $$
 &\leq (-\kappa_x V_{\text{Var},x} + C_x) + C_v \\
 &= -\kappa_x V_{\text{Var},x} + (C_x + C_v)
 \end{aligned}
+
 $$
 
 This establishes the claimed drift inequality for the total variance.
@@ -7102,6 +7617,7 @@ From {prf:ref}`def-full-synergistic-lyapunov-function`, the boundary potential i
 
 $$
 W_b(S_1, S_2) := \frac{1}{N} \sum_{i \in \mathcal{A}(S_1)} \varphi_{\text{barrier}}(x_{1,i}) + \frac{1}{N} \sum_{i \in \mathcal{A}(S_2)} \varphi_{\text{barrier}}(x_{2,i})
+
 $$
 
 where $\varphi_{\text{barrier}}: \mathcal{X}_{\text{valid}} \to \mathbb{R}_{\geq 0}$ is the smooth barrier function satisfying:
@@ -7135,6 +7651,7 @@ Recall from the reward function definition (Section 5.6) that the raw reward for
 
 $$
 r_i = g_A(x_i) = R_{\text{pos}}(x_i) - \varphi_{\text{barrier}}(x_i) - c_{v\_reg} \|v_i\|^2
+
 $$
 
 This raw reward feeds into the fitness potential calculation, so walkers near the boundary have systematically lower fitness.
@@ -7146,12 +7663,14 @@ Consider two walkers $i$ and $j$ with similar positions and velocities, except t
 
 $$
 \varphi_{\text{barrier}}(x_i) - \varphi_{\text{barrier}}(x_j) = \Delta_{\text{barrier}} > 0
+
 $$
 
 Then, under the fitness evaluation pipeline (Chapter 5), walker ({prf:ref}`def-walker`) $i$ has systematically lower fitness potential:
 
 $$
 V_{\text{fit},i} \leq V_{\text{fit},j} - f(\Delta_{\text{barrier}})
+
 $$
 
 where $f(\Delta) > 0$ for $\Delta > 0$ is a monotonically increasing function determined by the rescaling and standardization operations.
@@ -7169,6 +7688,7 @@ The raw reward for walker $i$ is defined as (from Section 5.6):
 
 $$
 r_i = R_{\text{pos}}(x_i) - c_{v\_reg} \|v_i\|^2 - \varphi_{\text{barrier}}(x_i)
+
 $$
 
 where $R_{\text{pos}}(x_i)$ is the positional reward component and $\varphi_{\text{barrier}}(x_i)$ is the boundary barrier penalty.
@@ -7181,6 +7701,7 @@ r_i - r_j &= \left[R_{\text{pos}}(x_i) - c_{v\_reg} \|v_i\|^2 - \varphi_{\text{b
 &\approx -\left[\varphi_{\text{barrier}}(x_i) - \varphi_{\text{barrier}}(x_j)\right] \\
 &= -\Delta_{\text{barrier}} < 0
 \end{aligned}
+
 $$
 
 Thus, walker $i$ has strictly lower raw reward than walker $j$.
@@ -7191,12 +7712,14 @@ The fitness potential construction adds a positive floor $\eta > 0$ to ensure al
 
 $$
 \tilde{r}_i = r_i + \eta, \quad \tilde{r}_j = r_j + \eta
+
 $$
 
 Since adding a constant preserves ordering:
 
 $$
 \tilde{r}_i - \tilde{r}_j = (r_i + \eta) - (r_j + \eta) = r_i - r_j = -\Delta_{\text{barrier}} < 0
+
 $$
 
 Therefore, $\tilde{r}_i < \tilde{r}_j$.
@@ -7207,6 +7730,7 @@ The standardized Z-scores are computed as (from Section 5.3):
 
 $$
 z_{r,i} = \frac{\tilde{r}_i - \mu_{\tilde{r}}}{\sigma'_{\tilde{r}}}, \quad z_{r,j} = \frac{\tilde{r}_j - \mu_{\tilde{r}}}{\sigma'_{\tilde{r}}}
+
 $$
 
 where $\mu_{\tilde{r}}$ is the mean and $\sigma'_{\tilde{r}} > 0$ is the patched standard deviation (see {prf:ref}`def-patched-std-dev-function`) (strictly positive by definition).
@@ -7215,6 +7739,7 @@ Since $\tilde{r}_i < \tilde{r}_j$ and we're dividing by the same positive quanti
 
 $$
 z_{r,i} = \frac{\tilde{r}_i - \mu_{\tilde{r}}}{\sigma'_{\tilde{r}}} < \frac{\tilde{r}_j - \mu_{\tilde{r}}}{\sigma'_{\tilde{r}}} = z_{r,j}
+
 $$
 
 The ordering is preserved: $z_{r,i} < z_{r,j}$.
@@ -7225,6 +7750,7 @@ The fitness potential is computed as (from Section 5.7):
 
 $$
 V_{\text{fit},i} = (\alpha z_{d,i} + \beta z_{r,i} + \eta)^{\alpha+\beta}
+
 $$
 
 where $\alpha, \beta > 0$ are the weighting exponents and $\eta > 0$ ensures positivity of the argument.
@@ -7236,18 +7762,21 @@ $$
 V_{\text{fit},i} &= (\alpha z_{d,i} + \beta z_{r,i} + \eta)^{\alpha+\beta} \\
 V_{\text{fit},j} &= (\alpha z_{d,j} + \beta z_{r,j} + \eta)^{\alpha+\beta}
 \end{aligned}
+
 $$
 
 Since $z_{r,i} < z_{r,j}$ and $z_{d,i} \approx z_{d,j}$:
 
 $$
 \alpha z_{d,i} + \beta z_{r,i} + \eta < \alpha z_{d,j} + \beta z_{r,j} + \eta
+
 $$
 
 The function $f(x) = x^{\alpha+\beta}$ is strictly increasing for $x > 0$ and $\alpha + \beta > 0$. Therefore:
 
 $$
 V_{\text{fit},i} < V_{\text{fit},j}
+
 $$
 
 **Step 5: Quantifying the fitness gap $f(\Delta_{\text{barrier}})$.**
@@ -7256,30 +7785,35 @@ To obtain an explicit lower bound on the fitness gap, we use the mean value theo
 
 $$
 u_i := \alpha z_{d,i} + \beta z_{r,i} + \eta, \quad u_j := \alpha z_{d,j} + \beta z_{r,j} + \eta
+
 $$
 
 By the mean value theorem, there exists $\xi \in (u_i, u_j)$ such that:
 
 $$
 V_{\text{fit},j} - V_{\text{fit},i} = (u_j - u_i) \cdot (\alpha + \beta) \xi^{\alpha + \beta - 1}
+
 $$
 
 The difference in arguments is:
 
 $$
 u_j - u_i = \beta(z_{r,j} - z_{r,i}) + \alpha(z_{d,j} - z_{d,i}) \approx \beta(z_{r,j} - z_{r,i}) = \frac{\beta}{\sigma'_{\tilde{r}}}(\tilde{r}_j - \tilde{r}_i) = \frac{\beta \Delta_{\text{barrier}}}{\sigma'_{\tilde{r}}}
+
 $$
 
 Since $u_i, u_j > \eta > 0$ (by construction), we have $\xi > \eta$. The derivative term is bounded below:
 
 $$
 (\alpha + \beta) \xi^{\alpha + \beta - 1} \geq (\alpha + \beta) \eta^{\alpha + \beta - 1} > 0
+
 $$
 
 Therefore, the fitness gap satisfies:
 
 $$
 V_{\text{fit},j} - V_{\text{fit},i} \geq \frac{\beta \Delta_{\text{barrier}}}{\sigma'_{\tilde{r}}} \cdot (\alpha + \beta) \eta^{\alpha + \beta - 1} =: f(\Delta_{\text{barrier}})
+
 $$
 
 **Step 6: N-uniformity of the fitness gap function.**
@@ -7288,6 +7822,7 @@ The function $f(\Delta) = c_{\beta} \Delta$ where:
 
 $$
 c_{\beta} := \frac{\beta (\alpha + \beta)}{\sigma'_{\max}} \eta^{\alpha + \beta - 1}
+
 $$
 
 is a positive constant independent of $N$. Here $\sigma'_{\max}$ is an upper bound on the patched standard deviation (which exists by the boundedness axioms). The fitness gap scales linearly with the barrier difference, with a proportionality constant determined by the algorithm's reward sensitivity parameter $\beta$ and the standardization scaling.
@@ -7310,6 +7845,7 @@ For a swarm ({prf:ref}`def-swarm-and-state-space`) $S$ and a threshold $\phi_{\t
 
 $$
 \mathcal{E}_{\text{boundary}}(S) := \{i \in \mathcal{A}(S) : \varphi_{\text{barrier}}(x_i) > \phi_{\text{thresh}}\}
+
 $$
 
 These are alive walkers whose barrier penalty exceeds the threshold, indicating dangerous proximity to the boundary.
@@ -7318,6 +7854,7 @@ The **boundary-exposed mass** is:
 
 $$
 M_{\text{boundary}}(S) := \frac{1}{N} \sum_{i \in \mathcal{E}_{\text{boundary}}(S)} \varphi_{\text{barrier}}(x_i)
+
 $$
 
 :::
@@ -7329,6 +7866,7 @@ If all walkers outside the exposed set have $\varphi_{\text{barrier}}(x_i) \leq 
 
 $$
 W_b(S_k) = \frac{1}{N} \sum_{i \in \mathcal{A}(S_k)} \varphi_{\text{barrier}}(x_i) \leq M_{\text{boundary}}(S_k) + \frac{k_{\text{alive}}}{N} \phi_{\text{thresh}}
+
 $$
 
 When $W_b$ is large, most of its contribution comes from the boundary-exposed set.
@@ -7343,12 +7881,14 @@ Under the foundational axioms (Chapter 4) including the Safe Harbor ({prf:ref}`a
 
 $$
 \mathbb{E}_{\text{clone}}[W_b(S'_1, S'_2) \mid S_1, S_2] \leq (1 - \kappa_b) W_b(S_1, S_2) + C_b
+
 $$
 
 Furthermore, when $W_b(S_1, S_2) > \tilde{C}_b$ for a sufficiently large threshold $\tilde{C}_b$, the contraction becomes strict:
 
 $$
 \mathbb{E}_{\text{clone}}[\Delta W_b] := \mathbb{E}_{\text{clone}}[W_b(S'_1, S'_2) - W_b(S_1, S_2)] < 0
+
 $$
 
 Referenced by {prf:ref}`cor-bounded-boundary-exposure` and {prf:ref}`cor-extinction-suppression`.
@@ -7382,6 +7922,7 @@ For any walker ({prf:ref}`def-walker`) $i$ in the boundary-exposed set $\mathcal
 
 $$
 p_i \geq p_{\text{boundary}}(\phi_{\text{thresh}}) > 0
+
 $$
 
 where $p_{\text{boundary}}(\phi)$ is a monotonically increasing function of $\phi$ and is independent of $N$ and the specific swarm ({prf:ref}`def-swarm-and-state-space`) configuration.
@@ -7399,6 +7940,7 @@ By {prf:ref}`lem-fitness-gradient-boundary`, walker $i$ has lower fitness than i
 
 $$
 V_{\text{fit},i} < V_{\text{fit},j} - f(\phi_{\text{thresh}})
+
 $$
 
 **Step 2: Companion selection probability**
@@ -7407,6 +7949,7 @@ In the companion selection operator (see {prf:ref}`def-cloning-companion-operato
 
 $$
 P(c_i \in \mathcal{I}_{\text{safe}}) \geq p_{\text{interior}} > 0
+
 $$
 
 where $\mathcal{I}_{\text{safe}} = \{j : \varphi_{\text{barrier}}(x_j) = 0\}$ is the set of safe interior walkers.
@@ -7417,6 +7960,7 @@ Conditioning on selecting an interior companion $j$:
 
 $$
 S_i = \frac{V_{\text{fit},j} - V_{\text{fit},i}}{V_{\text{fit},i} + \varepsilon_{\text{clone}}} \geq \frac{f(\phi_{\text{thresh}})}{V_{\text{pot,max}} + \varepsilon_{\text{clone}}} =: s_{\text{min}}(\phi_{\text{thresh}})
+
 $$
 
 **Step 4: Cloning probability lower bound**
@@ -7425,18 +7969,21 @@ The probability of cloning is:
 
 $$
 p_i = P(S_i > T_i) \cdot P(c_i \in \mathcal{I}_{\text{safe}}) \geq P(s_{\text{min}} > T_i) \cdot p_{\text{interior}}
+
 $$
 
 Since $T_i \sim \text{Uniform}(0, p_{\max})$:
 
 $$
 P(s_{\text{min}} > T_i) = \min\left(1, \frac{s_{\text{min}}}{p_{\max}}\right)
+
 $$
 
 Therefore:
 
 $$
 p_i \geq \min\left(1, \frac{s_{\text{min}}(\phi_{\text{thresh}})}{p_{\max}}\right) \cdot p_{\text{interior}} =: p_{\text{boundary}}(\phi_{\text{thresh}}) > 0
+
 $$
 
 This bound is independent of $N$ and depends only on $\phi_{\text{thresh}}$ and the algorithmic parameters.
@@ -7453,6 +8000,7 @@ When a boundary-exposed walker ({prf:ref}`def-walker`) $i$ clones, its expected 
 
 $$
 \mathbb{E}[\varphi_{\text{barrier}}(x'_i) \mid i \text{ clones}] \leq \mathbb{E}[\varphi_{\text{barrier}}(x_{c_i})] + C_{\text{jitter}}
+
 $$
 
 where $C_{\text{jitter}} = O(\sigma_x^2)$ accounts for the position jitter variance.
@@ -7461,6 +8009,7 @@ Furthermore, if the companion is from the safe interior:
 
 $$
 \mathbb{E}[\varphi_{\text{barrier}}(x'_i) \mid c_i \in \mathcal{I}_{\text{safe}}] \leq C_{\text{jitter}}
+
 $$
 
 :::
@@ -7473,6 +8022,7 @@ When walker $i$ clones from companion $c_i$, its new position is:
 
 $$
 x'_i = x_{c_i} + \sigma_x \zeta_i^x \quad \text{where } \zeta_i^x \sim \mathcal{N}(0, I_d)
+
 $$
 
 **Case 1: Companion in safe interior**
@@ -7483,12 +8033,14 @@ The Gaussian jitter has variance $\sigma_x^2$. If $\sigma_x$ is chosen small eno
 
 $$
 P(\varphi_{\text{barrier}}(x'_i) = 0) \geq 1 - \epsilon_{\text{jitter}}
+
 $$
 
 In the worst case (jittering into the boundary region):
 
 $$
 \mathbb{E}[\varphi_{\text{barrier}}(x'_i)] \leq \epsilon_{\text{jitter}} \cdot \varphi_{\text{barrier,max}} =: C_{\text{jitter}}
+
 $$
 
 **Case 2: General companion**
@@ -7497,6 +8049,7 @@ For a general companion, the barrier penalty of $x'_i$ is centered around $\varp
 
 $$
 \mathbb{E}[\varphi_{\text{barrier}}(x'_i)] \approx \varphi_{\text{barrier}}(x_{c_i}) + O(\sigma_x^2 \|\nabla \varphi_{\text{barrier}}(x_{c_i})\|^2)
+
 $$
 
 By smoothness of $\varphi_{\text{barrier}}$ in the interior, the second term is bounded.
@@ -7514,6 +8067,7 @@ We analyze the expected change in boundary potential:
 
 $$
 \Delta W_b = \sum_{k=1,2} \left[\frac{1}{N} \sum_{i \in \mathcal{A}(S'_k)} \varphi_{\text{barrier}}(x'_{k,i}) - \frac{1}{N} \sum_{i \in \mathcal{A}(S_k)} \varphi_{\text{barrier}}(x_{k,i})\right]
+
 $$
 
 **Step 1: Decompose by cloning action**
@@ -7522,6 +8076,7 @@ For each swarm $k$, split the sum into walkers that clone and walkers that persi
 
 $$
 \mathbb{E}[\Delta W_b^{(k)}] = \frac{1}{N} \sum_{i \in \mathcal{A}(S_k)} p_{k,i} \left[\mathbb{E}[\varphi_{\text{barrier}}(x'_{k,i}) \mid \text{clone}] - \varphi_{\text{barrier}}(x_{k,i})\right] + \frac{1}{N} \sum_{i \in \mathcal{D}(S_k)} \mathbb{E}[\varphi_{\text{barrier}}(x'_{k,i})]
+
 $$
 
 **Step 2: Bound contribution from boundary-exposed walkers**
@@ -7538,16 +8093,19 @@ $$
 \sum_{i \in \mathcal{E}_{\text{boundary}}(S_k)} p_{k,i} &\left[\mathbb{E}[\varphi_{\text{barrier}}(x'_{k,i}) \mid \text{clone}] - \varphi_{\text{barrier}}(x_{k,i})\right] \\
 &\leq \sum_{i \in \mathcal{E}_{\text{boundary}}(S_k)} p_{\text{boundary}} [C_{\text{jitter}} - \varphi_{\text{barrier}}(x_{k,i})]
 \end{aligned}
+
 $$
 
 Since $\varphi_{\text{barrier}}(x_{k,i}) > \phi_{\text{thresh}}$ for $i \in \mathcal{E}_{\text{boundary}}$:
 
 $$
 \leq -p_{\text{boundary}} \sum_{i \in \mathcal{E}_{\text{boundary}}(S_k)} [\varphi_{\text{barrier}}(x_{k,i}) - C_{\text{jitter}}]
+
 $$
 
 $$
 \leq -p_{\text{boundary}} \left[\sum_{i \in \mathcal{E}_{\text{boundary}}(S_k)} \varphi_{\text{barrier}}(x_{k,i}) - |\mathcal{E}_{\text{boundary}}| C_{\text{jitter}}\right]
+
 $$
 
 **Step 3: Relate to total boundary potential**
@@ -7556,12 +8114,14 @@ The boundary-exposed mass satisfies:
 
 $$
 M_{\text{boundary}}(S_k) = \frac{1}{N}\sum_{i \in \mathcal{E}_{\text{boundary}}(S_k)} \varphi_{\text{barrier}}(x_{k,i})
+
 $$
 
 If most of $W_b$ comes from exposed walkers (which is true when $W_b$ is large):
 
 $$
 M_{\text{boundary}}(S_k) \geq W_b(S_k) - \frac{k_{\text{alive}}}{N} \phi_{\text{thresh}}
+
 $$
 
 **Step 4: Combine to get contraction**
@@ -7570,22 +8130,26 @@ Combining Steps 2-3:
 
 $$
 \mathbb{E}[\Delta W_b^{(k)}] \leq -\frac{p_{\text{boundary}}}{N} \left[N \cdot M_{\text{boundary}}(S_k) - |\mathcal{E}_{\text{boundary}}| C_{\text{jitter}}\right] + \text{(dead walker contribution)}
+
 $$
 
 $$
 \leq -p_{\text{boundary}} M_{\text{boundary}}(S_k) + C'_{\text{jitter}} + C_{\text{dead}}
+
 $$
 
 Using $M_{\text{boundary}} \approx W_b$ when $W_b$ is large:
 
 $$
 \leq -p_{\text{boundary}} W_b(S_k) + C_{\text{total}}
+
 $$
 
 Summing over both swarms:
 
 $$
 \mathbb{E}[\Delta W_b] \leq -p_{\text{boundary}} W_b + 2C_{\text{total}}
+
 $$
 
 **Step 5: Express as geometric contraction**
@@ -7594,6 +8158,7 @@ Defining $\kappa_b := p_{\text{boundary}}$ and $C_b := 2C_{\text{total}}$:
 
 $$
 \mathbb{E}[W_b(S')] \leq (1 - \kappa_b) W_b(S) + C_b
+
 $$
 
 The constant $\kappa_b > 0$ is independent of $N$ by {prf:ref}`lem-boundary-enhanced-cloning`.
@@ -7612,6 +8177,7 @@ Under the drift inequality from {prf:ref}`thm-boundary-potential-contraction`, t
 
 $$
 \limsup_{t \to \infty} \mathbb{E}[W_b(S_t)] \leq \frac{C_b}{\kappa_b}
+
 $$
 
 This provides a **state-independent upper bound** on how close the swarm ({prf:ref}`def-swarm-and-state-space`) can get to the boundary in equilibrium.
@@ -7627,24 +8193,28 @@ From the Foster-Lyapunov drift condition:
 
 $$
 \mathbb{E}[W_b(S_{t+1})] \leq (1 - \kappa_b) W_b(S_t) + C_b
+
 $$
 
 Taking expectations and iterating:
 
 $$
 \mathbb{E}[W_b(S_t)] \leq (1 - \kappa_b)^t W_b(S_0) + C_b \sum_{j=0}^{t-1} (1 - \kappa_b)^j
+
 $$
 
 As $t \to \infty$, the geometric series converges:
 
 $$
 \sum_{j=0}^{\infty} (1 - \kappa_b)^j = \frac{1}{\kappa_b}
+
 $$
 
 Therefore:
 
 $$
 \limsup_{t \to \infty} \mathbb{E}[W_b(S_t)] \leq \frac{C_b}{\kappa_b}
+
 $$
 
 **Q.E.D.**
@@ -7657,6 +8227,7 @@ As a consequence of {prf:ref}`thm-boundary-potential-contraction`, the boundary 
 
 $$
 P(\text{extinction in one step}) = O(e^{-N \cdot \text{const}})
+
 $$
 
 when the swarm ({prf:ref}`def-swarm-and-state-space`) is in a region where $W_b \leq \frac{C_b}{\kappa_b}$.
@@ -7674,6 +8245,7 @@ Consider a swarm in the quasi-stationary regime where $W_b \leq C_b/\kappa_b$. R
 
 $$
 \varphi_{\text{barrier}}(x) \to \infty \quad \text{as} \quad x \to \partial \mathcal{X}_{\text{valid}}
+
 $$
 
 Define $\mathcal{X}_{\text{extinct}} := \{x \in \mathcal{X}_{\text{valid}} : d(x, \partial \mathcal{X}_{\text{valid}}) < d_{\text{extinct}}\}$ as the boundary layer where walkers are marked as dead (typically $d_{\text{extinct}} = \delta$ is the cloning jitter radius).
@@ -7684,6 +8256,7 @@ Since $\varphi_{\text{barrier}}$ grows to infinity at the boundary and is contin
 
 $$
 \varphi_{\min} := \inf_{x \in \mathcal{X}_{\text{extinct}}} \varphi_{\text{barrier}}(x) > 0
+
 $$
 
 This constant depends only on the geometry of $\mathcal{X}_{\text{valid}}$ and the barrier function construction.
@@ -7694,18 +8267,21 @@ If the average barrier value satisfies:
 
 $$
 W_b = \frac{1}{N} \sum_{i=1}^N \varphi_{\text{barrier}}(x_i) \leq \frac{C_b}{\kappa_b}
+
 $$
 
 then the number of walkers in the extinction zone can be bounded. Let $N_{\text{ext}}$ denote the number of walkers with $x_i \in \mathcal{X}_{\text{extinct}}$. Then:
 
 $$
 N_{\text{ext}} \cdot \varphi_{\min} \leq \sum_{i=1}^N \varphi_{\text{barrier}}(x_i) = N \cdot W_b \leq N \cdot \frac{C_b}{\kappa_b}
+
 $$
 
 Therefore:
 
 $$
 N_{\text{ext}} \leq N \cdot \frac{C_b}{\kappa_b \varphi_{\min}}
+
 $$
 
 **Step 4: Extinction Requires All Walkers to Cross.**
@@ -7714,6 +8290,7 @@ For total extinction in one step, all $N$ walkers must transition from their cur
 
 $$
 N_{\text{cross}} := N - N_{\text{ext}} \geq N \left(1 - \frac{C_b}{\kappa_b \varphi_{\min}}\right) =: N \cdot f_{\text{safe}}
+
 $$
 
 where $f_{\text{safe}} \in (0, 1)$ is the fraction of walkers in the safe interior (bounded away from zero for sufficiently large $\varphi_{\min}$).
@@ -7726,6 +8303,7 @@ By Hoeffding's inequality (or Gaussian tail bounds if using Gaussian noise), the
 
 $$
 p_{\text{cross}} \leq \exp\left(-\frac{(\Delta d)^2}{2\sigma_{\text{noise}}^2}\right)
+
 $$
 
 **Step 6: Union Bound for Total Extinction.**
@@ -7734,18 +8312,21 @@ For all $N \cdot f_{\text{safe}}$ safe walkers to simultaneously cross requires:
 
 $$
 P(\text{extinction}) \leq p_{\text{cross}}^{N \cdot f_{\text{safe}}} = \exp\left(-N \cdot f_{\text{safe}} \cdot \frac{(\Delta d)^2}{2\sigma_{\text{noise}}^2}\right)
+
 $$
 
 Defining the rate constant:
 
 $$
 c_{\text{extinct}} := f_{\text{safe}} \cdot \frac{(\Delta d)^2}{2\sigma_{\text{noise}}^2} > 0
+
 $$
 
 we obtain:
 
 $$
 P(\text{extinction}) \leq \exp(-N \cdot c_{\text{extinct}})
+
 $$
 
 **Step 7: Parameter Dependence.**
@@ -7754,6 +8335,7 @@ The rate constant $c_{\text{extinct}}$ is bounded below by:
 
 $$
 c_{\text{extinct}} \geq \left(1 - \frac{C_b}{\kappa_b \varphi_{\min}}\right) \cdot \frac{d_{\text{safe}}^2}{2\sigma_{\text{noise}}^2}
+
 $$
 
 where $d_{\text{safe}}$ is the typical distance from the safe interior to the extinction zone. This remains strictly positive when $C_b/(\kappa_b \varphi_{\min}) < 1$, which is guaranteed by the equilibrium bound.
@@ -7786,6 +8368,7 @@ The cloning operator ({prf:ref}`def-cloning-operator`) $\Psi_{\text{clone}}$ ind
 
 $$
 \mathbb{E}_{\text{clone}}[\Delta W_b] \leq -\kappa_b W_b + C_b
+
 $$
 
 where:
@@ -7860,6 +8443,7 @@ $$
 \mathbb{E}_{\text{clone}}[\Delta V_{\text{Var},v}] &\leq C_v \quad &\text{(bounded expansion)} \\
 \mathbb{E}_{\text{clone}}[\Delta W_b] &\leq -\kappa_b W_b + C_b \quad &\text{(strong contraction)}
 \end{aligned}
+
 $$
 
 **Next step:**
@@ -7907,6 +8491,7 @@ For the coupled cloning operator ({prf:ref}`def-cloning-operator`) acting on two
 
 $$
 \mathbb{E}_{\text{clone}}[\Delta V_W] \leq C_W
+
 $$
 
 where $V_W = W_h^2(\mu_1, \mu_2) = V_{\text{loc}} + V_{\text{struct}}$ is the total inter-swarm ({prf:ref}`def-swarm-and-state-space`) error and $C_W < \infty$ is a state-independent constant.
@@ -7915,6 +8500,7 @@ Equivalently:
 
 $$
 \mathbb{E}_{\text{clone}}[V_W(S'_1, S'_2)] \leq V_W(S_1, S_2) + C_W
+
 $$
 
 Referenced by {prf:ref}`cor-component-bounds-vw`.
@@ -7942,24 +8528,28 @@ The location error is:
 
 $$
 V_{\text{loc}} = \|\Delta\mu_x\|^2 + \lambda_v \|\Delta\mu_v\|^2 + b\langle\Delta\mu_x, \Delta\mu_v\rangle
+
 $$
 
 The barycenters change based on the cloning decisions. In the worst case, if walker $i$ clones in swarm 1 but not in swarm 2:
 
 $$
 \Delta\mu'_x = \Delta\mu_x + \frac{1}{N}(x'_{1,i} - x_{1,i}) - 0
+
 $$
 
 Since positions are bounded within $\mathcal{X}_{\text{valid}}$:
 
 $$
 \|\Delta\mu'_x - \Delta\mu_x\| \leq \frac{2D_{\text{valid}}}{N}
+
 $$
 
 Squaring and summing over all potential mismatches:
 
 $$
 \mathbb{E}[\|\Delta\mu'_x\|^2] \leq \|\Delta\mu_x\|^2 + O(D_{\text{valid}}^2)
+
 $$
 
 Similarly for velocity barycenters.
@@ -7975,18 +8565,21 @@ The expected number of desynchronized events is bounded by the differences in cl
 
 $$
 \mathbb{E}[\text{# desynchronized}] \leq \sum_{i=1}^N |p_{1,i} - p_{2,i}|
+
 $$
 
 By the Lipschitz continuity of the cloning probability with respect to swarm configuration (proven in the framework document, Section 15.2):
 
 $$
 |p_{1,i} - p_{2,i}| \leq L_{\text{clone}} \cdot d_{\text{Disp}}(S_1, S_2)
+
 $$
 
 Combined with the bounded displacement per desynchronized event:
 
 $$
 \mathbb{E}[\Delta V_{\text{struct}}] \leq N \cdot L_{\text{clone}} \cdot d_{\text{Disp}}(S_1, S_2) \cdot D_{\text{valid}}^2 + C_{\text{jitter}}
+
 $$
 
 **Step 4: Combine and use Wasserstein decomposition**
@@ -7995,18 +8588,21 @@ From {prf:ref}`lem-wasserstein-decomposition`:
 
 $$
 V_W = V_{\text{loc}} + V_{\text{struct}}
+
 $$
 
 Combining the bounds from Steps 2-3:
 
 $$
 \mathbb{E}[\Delta V_W] \leq O(D_{\text{valid}}^2) + O(N \cdot d_{\text{Disp}}(S_1, S_2)) + C_{\text{jitter}}
+
 $$
 
 In the drift analysis regime where we consider bounded swarm configurations, $d_{\text{Disp}}(S_1, S_2)$ is bounded, yielding:
 
 $$
 \mathbb{E}[\Delta V_W] \leq C_W
+
 $$
 
 for a state-independent constant $C_W$.
@@ -8042,6 +8638,7 @@ $$
 \mathbb{E}_{\text{clone}}[\Delta V_{\text{loc}}] &\leq C_{\text{loc}} \\
 \mathbb{E}_{\text{clone}}[\Delta V_{\text{struct}}] &\leq C_{\text{struct}}
 \end{aligned}
+
 $$
 
 where $C_{\text{loc}}, C_{\text{struct}} < \infty$ are state-independent constants with $C_W = C_{\text{loc}} + C_{\text{struct}}$.
@@ -8056,12 +8653,14 @@ The total inter-swarm ({prf:ref}`def-swarm-and-state-space`) Wasserstein distanc
 
 $$
 \mathbb{E}_{\text{clone}}[\Delta V_W] \leq C_W
+
 $$
 
 where $C_W < \infty$ is a state-independent constant satisfying:
 
 $$
 C_W = C_{\text{loc}} + C_{\text{struct}}
+
 $$
 
 **Component Bounds:**
@@ -8073,6 +8672,7 @@ $$
 \mathbb{E}_{\text{clone}}[\Delta V_{\text{loc}}] &\leq C_{\text{loc}} \\
 \mathbb{E}_{\text{clone}}[\Delta V_{\text{struct}}] &\leq C_{\text{struct}}
 \end{aligned}
+
 $$
 
 where:
@@ -8085,6 +8685,7 @@ While the cloning operator ({prf:ref}`def-cloning-operator`) allows bounded expa
 
 $$
 \mathbb{E}_{\text{kin}}[\Delta V_W] \leq -\kappa_W^{\text{kin}} \tau V_W + C_W^{\text{kin}} \tau
+
 $$
 
 where $\kappa_W^{\text{kin}} \sim \min(\gamma, \alpha_U, \sigma_{\min}^2) > 0$ provides the necessary contraction to overcome cloning expansion.
@@ -8098,16 +8699,19 @@ By linearity of expectation and the Wasserstein decomposition {prf:ref}`lem-wass
 
 $$
 \mathbb{E}_{\text{clone}}[\Delta V_W] = \mathbb{E}_{\text{clone}}[\Delta(V_{\text{loc}} + V_{\text{struct}})]
+
 $$
 
 $$
 = \mathbb{E}_{\text{clone}}[\Delta V_{\text{loc}}] + \mathbb{E}_{\text{clone}}[\Delta V_{\text{struct}}]
+
 $$
 
 Applying the component bounds from {prf:ref}`cor-component-bounds-vw`:
 
 $$
 \leq C_{\text{loc}} + C_{\text{struct}} =: C_W
+
 $$
 
 This establishes the combined drift bound.
@@ -8120,6 +8724,7 @@ From the proof of {prf:ref}`thm-inter-swarm-bounded-expansion`:
 
 $$
 C_{\text{loc}} = O\left(\mathbb{E}\left[\left\|\mathbb{E}_{c_1 \sim \mathcal{C}_i(S_1)}[x_{c_1}] - \mathbb{E}_{c_2 \sim \mathcal{C}_i(S_2)}[x_{c_2}]\right\|^2\right]\right)
+
 $$
 
 which is bounded by the domain diameter and companion selection variance.
@@ -8128,6 +8733,7 @@ which is bounded by the domain diameter and companion selection variance.
 
 $$
 C_{\text{struct}} = O(\sigma_x^2 f_{\text{clone}})
+
 $$
 
 where $f_{\text{clone}}$ is the expected fraction of walkers that clone per step and $\sigma_x^2$ is the jitter variance.
@@ -8148,6 +8754,7 @@ Under the foundational axioms (Chapter 4), the cloning operator ({prf:ref}`def-c
 
 $$
 V_{\text{total}}(S_1, S_2) = V_W(S_1, S_2) + c_V V_{\text{Var}}(S_1, S_2) + c_B W_b(S_1, S_2)
+
 $$
 
 **Individual Component Drifts:**
@@ -8159,12 +8766,14 @@ $$
 \mathbb{E}_{\text{clone}}[\Delta V_{\text{Var},v}] &\leq C_v \quad &\text{(bounded expansion)} \\
 \mathbb{E}_{\text{clone}}[\Delta W_b] &\leq -\kappa_b W_b + C_b \quad &\text{(strong contraction)}
 \end{aligned}
+
 $$
 
 **Combined Drift:**
 
 $$
 \mathbb{E}_{\text{clone}}[\Delta V_{\text{total}}] \leq C_W + c_V(-\kappa_x V_{\text{Var},x} + C_v + C_x) + c_B(-\kappa_b W_b + C_b)
+
 $$
 
 **Critical Property - Partial Contraction:**
@@ -8173,6 +8782,7 @@ When $V_{\text{Var},x}$ and $W_b$ are sufficiently large relative to the expansi
 
 $$
 \mathbb{E}_{\text{clone}}[\Delta V_{\text{total}}] < 0 \quad \text{when } c_V V_{\text{Var},x} + c_B W_b > \frac{C_W + c_V(C_v + C_x) + c_B C_b}{\min(\kappa_x, \kappa_b)}
+
 $$
 
 :::
@@ -8188,24 +8798,28 @@ $$
 \mathbb{E}_{\text{clone}}[\Delta V_{\text{total}}] &= \mathbb{E}_{\text{clone}}[\Delta V_W] + c_V \mathbb{E}_{\text{clone}}[\Delta V_{\text{Var}}] + c_B \mathbb{E}_{\text{clone}}[\Delta W_b] \\
 &= \mathbb{E}_{\text{clone}}[\Delta V_W] + c_V (\mathbb{E}_{\text{clone}}[\Delta V_{\text{Var},x}] + \mathbb{E}_{\text{clone}}[\Delta V_{\text{Var},v}]) + c_B \mathbb{E}_{\text{clone}}[\Delta W_b]
 \end{aligned}
+
 $$
 
 Substituting the individual bounds from Theorems 10.3.1, 10.4.1, 11.3.1, and 12.2.1:
 
 $$
 \leq C_W + c_V(-\kappa_x V_{\text{Var},x} + C_x + C_v) + c_B(-\kappa_b W_b + C_b)
+
 $$
 
 Rearranging:
 
 $$
 = -c_V \kappa_x V_{\text{Var},x} - c_B \kappa_b W_b + (C_W + c_V C_x + c_V C_v + c_B C_b)
+
 $$
 
 For the drift to be negative, we need the contraction terms to dominate:
 
 $$
 c_V \kappa_x V_{\text{Var},x} + c_B \kappa_b W_b > C_W + c_V C_x + c_V C_v + c_B C_b
+
 $$
 
 This holds when the weighted variance and boundary potential are sufficiently large.
@@ -8297,6 +8911,7 @@ When the coupling constants $c_V$ and $c_B$ are chosen appropriately, the compos
 
 $$
 \mathbb{E}_{\text{total}}[V_{\text{total}}(S')] \leq (1 - \kappa_{\text{total}}) V_{\text{total}}(S) + C_{\text{total}}
+
 $$
 
 for some $\kappa_{\text{total}} > 0$ and $C_{\text{total}} < \infty$, both independent of $N$.
@@ -8337,6 +8952,7 @@ The total one-step expectation for $\Psi_{\text{total}} = \Psi_{\text{kin}} \cir
 
 $$
 \mathbb{E}_{\text{total}}[V_{\text{total}}(S')] = \mathbb{E}_{\text{kin}}[\mathbb{E}_{\text{clone}}[V_{\text{total}}(S')]]
+
 $$
 
 Expanding $V_{\text{total}} = V_W + c_V V_{\text{Var}} + c_B W_b$ where $V_{\text{Var}} = V_{\text{Var},x} + V_{\text{Var},v}$:
@@ -8350,6 +8966,7 @@ $$
 &= (1 - c_V \kappa_x) V_{\text{Var},x} + V_{\text{Var},v} + V_W + (1 - c_B \kappa_b) W_b \\
 &\quad + C_W + c_V C_x + c_V C_v + c_B C_b
 \end{aligned}
+
 $$
 
 **Step 2: Kinetic stage analysis.**
@@ -8363,6 +8980,7 @@ $$
 &\quad + (1 - \kappa_W)(V_W + C_W) + C'_W \\
 &\quad + (1 - c_B \kappa_b)(W_b + C'_b) + c_B C_b + \text{cross terms}
 \end{aligned}
+
 $$
 
 **Step 3: Choosing coupling constants.**
@@ -8378,6 +8996,7 @@ When these conditions are satisfied (existence proven in companion document via 
 
 $$
 \mathbb{E}_{\text{total}}[V_{\text{total}}(S')] \leq (1 - \kappa_{\text{total}}) V_{\text{total}}(S) + C_{\text{total}}
+
 $$
 
 where:
@@ -8412,6 +9031,7 @@ There exist coupling constants $c_V, c_B > 0$ that satisfy the synergistic drift
 
 $$
 \frac{\kappa_x}{\text{(kinetic diffusion)}} > 1, \quad \frac{\kappa_v}{\text{(cloning velocity expansion)}} > 1, \quad \frac{\kappa_W}{C_W} > 1
+
 $$
 
 :::
@@ -8440,6 +9060,7 @@ In practice, the coupling constants are chosen as:
 
 $$
 c_V \approx \frac{\kappa_W}{2\kappa_x}, \quad c_B \approx \frac{\kappa_W}{2\kappa_b}
+
 $$
 
 This balances the contraction rates across components, ensuring no single component dominates the drift inequality. The factor of 2 provides safety margin.
@@ -8570,6 +9191,7 @@ $$
 \mathbb{E}_{\text{kin}}[\Delta V_{\text{Var},v}] &\leq -\kappa_v V_{\text{Var},v} + C_{\text{kin},v} \quad &\text{(Langevin dissipation)} \\
 \mathbb{E}_{\text{kin}}[\Delta W_b] &\leq -\kappa_{\text{pot}} W_b + C_{\text{pot}} \quad &\text{(confining potential)}
 \end{aligned}
+
 $$
 
 **Key Results:**
@@ -8583,6 +9205,7 @@ Prove that the composed operator satisfies:
 
 $$
 \mathbb{E}_{\text{total}}[\Delta V_{\text{total}}] \leq -\kappa_{\text{total}} V_{\text{total}} + C_{\text{total}}
+
 $$
 
 **Key Steps:**
@@ -8596,6 +9219,7 @@ Using the Foster-Lyapunov drift condition:
 
 $$
 \mathbb{E}[V_{\text{total}}(S_t)] \leq (1-\kappa_{\text{total}})^t V_{\text{total}}(S_0) + \frac{C_{\text{total}}}{\kappa_{\text{total}}}
+
 $$
 
 Prove:

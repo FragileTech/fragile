@@ -46,6 +46,7 @@ Consider the boundary stream $(X_t)_{t\ge 0}$ and the induced internal state pro
 
 $$
 I_{\text{bulk}} \;\le\; C_{\partial},
+
 $$
 where $C_{\partial}$ is the effective information capacity of the boundary channel and $I_{\text{bulk}}$ is the amount of information the agent can stably maintain in $\mathcal{Z}$ without violating Causal Enclosure (no internal source term $\sigma$; Definition {prf:ref}`def-source-residual`).
 Units: $[I_{\text{bulk}}]=[C_{\partial}]=\mathrm{nat}$.
@@ -69,6 +70,7 @@ Let $\rho(z,s)$ denote the probability density of the agent's belief state at po
 
 $$
 \rho_I(z,s) := -\rho(z,s) \log \rho(z,s) + \frac{1}{2}\rho(z,s) \log\det G(z),
+
 $$
 with units of nats per unit Riemannian volume $d\mu_G=\sqrt{|G|}\,dz^n$ ($n=\dim\mathcal{Z}$). The first term is the local entropy contribution (Shannon density); the second term is the geometric correction accounting for the metric-induced volume distortion.
 
@@ -88,6 +90,7 @@ Define the bulk information volume over a region $\Omega\subseteq\mathcal{Z}$ by
 
 $$
 I_{\text{bulk}}(\Omega) := \int_{\Omega} \rho_I(z,s)\, d\mu_G.
+
 $$
 When $\Omega=\mathcal{Z}$ we write $I_{\text{bulk}}:=I_{\text{bulk}}(\mathcal{Z})$. This is conceptually distinct from the probability-mass balance in {ref}`Section 2.11 <sec-variance-value-duality-and-information-conservation>`; here the integral measures grounded structure in nats.
 
@@ -112,6 +115,7 @@ $$
 C_{\partial}(\partial\mathcal{Z})
 :=
 \frac{1}{\eta_\ell}\oint_{\partial\mathcal{Z}} dA_G,
+
 $$
 where $\eta_\ell$ is the effective boundary area-per-nat at resolution $\ell$ (a resolution-dependent constant set by the interface).
 Units: $[\eta_\ell]=[dA_G]/\mathrm{nat}$ and $[\ell]$ is the chosen boundary resolution length scale.
@@ -120,6 +124,7 @@ Units: $[\eta_\ell]=[dA_G]/\mathrm{nat}$ and $[\ell]$ is the chosen boundary res
 
 $$
 C_{\partial}\ \approx\ \mathbb{E}[I(X_t;K_t)]\ \le\ \log|\mathcal{K}|,
+
 $$
 which is exactly Node 13 (BoundaryCheck) and Theorem {prf:ref}`thm-information-stability-window-operational`'s grounding condition.
 
@@ -159,6 +164,7 @@ Under the regularity and boundary-clamping hypotheses stated in {ref}`Appendix A
 
 $$
 R_{ij} - \frac{1}{2}R\,G_{ij} + \Lambda G_{ij} = \kappa\, T_{ij},
+
 $$
 where $\Lambda$ and $\kappa$ are constants and $T_{ij}$ is the **total Risk Tensor** induced by the reward field. *Units:* $\Lambda$ has the same units as curvature ($[R]\sim [z]^{-2}$), and $\kappa$ is chosen so that $\kappa\,T_{ij}$ matches those curvature units.
 
@@ -198,6 +204,7 @@ The total Risk Tensor $T_{ij}$ decomposes into gradient and curl contributions:
 
 $$
 T_{ij} = T_{ij}^{\text{gradient}} + T_{ij}^{\text{Maxwell}},
+
 $$
 where:
 
@@ -205,11 +212,13 @@ where:
 
 $$
 T_{ij}^{\text{gradient}} = \partial_i \Phi \, \partial_j \Phi - \frac{1}{2}G_{ij} \|\nabla\Phi\|_G^2
+
 $$
 2. **Maxwell Stress** (from {prf:ref}`def-value-curl` $\mathcal{F}$):
 
 $$
 T_{ij}^{\text{Maxwell}} = \mathcal{F}_{ik}\mathcal{F}_j^{\;k} - \frac{1}{4}G_{ij}\mathcal{F}^{kl}\mathcal{F}_{kl}
+
 $$
 *Units:* $[T_{ij}] = \mathrm{nat}^2/[z]^2$.
 
@@ -253,6 +262,7 @@ This is exactly what you'd want from a bounded agent. It doesn't have infinite p
 
 $$
 R_{ij} - \frac{1}{2}R\,G_{ij} + \Lambda G_{ij} = \kappa T_{ij}
+
 $$
 **Correspondence Table:**
 
@@ -302,6 +312,7 @@ Compute the capacity saturation ratio:
 
 $$
 \nu_{\text{cap}}(s) := \frac{I_{\text{bulk}}(s)}{C_{\partial}},
+
 $$
 where $I_{\text{bulk}}(s) = \int_{\mathcal{Z}} \rho_I(z,s)\, d\mu_G$ per Definition 18.1.2a.
 
@@ -337,6 +348,7 @@ The latent metric obeys a **Capacity-Constrained Consistency Law** (Theorem {prf
 
 $$
 R_{ij} - \frac{1}{2}R\, G_{ij} + \Lambda G_{ij} = \kappa\, T_{ij}
+
 $$
 where $R_{ij}$ is Ricci curvature and $T_{ij}$ is the Risk Tensor. The constraint is the **DPI inequality**: $I_{\text{bulk}} \le C_\partial \le \log|\mathcal{K}|$.
 
@@ -347,6 +359,7 @@ Remove geometric structure ($G \to I$, $R_{ij} \to 0$). Replace the area law wit
 
 $$
 \max_\theta I(Z; Y) - \beta I(Z; X)
+
 $$
 This recovers the **Information Bottleneck** {cite}`tishby2015ib` and **Variational Information Bottleneck (VIB)** {cite}`alemi2016vib`.
 

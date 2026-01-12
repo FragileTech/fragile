@@ -55,6 +55,7 @@ The symplectic form is:
 
 $$
 \omega = \sum_{i=1}^n dq^i \wedge dp_i.
+
 $$
 Units: $[\omega] = [q][p] = \mathrm{nat}$.
 
@@ -77,6 +78,7 @@ The sensory input stream $\phi(x)$ imposes a **Dirichlet** (position-clamping) c
 
 $$
 \rho_{\partial}^{\text{sense}}(q, t) = \delta(q - q_{\text{obs}}(t)),
+
 $$
 where $q_{\text{obs}}(t) = E_\phi(x_t)$ is the encoded observation. This clamps the *configuration* of the belief state.
 
@@ -97,11 +99,13 @@ The motor output stream $A(x)$ imposes a **Neumann** (flux-clamping) condition:
 
 $$
 \nabla_n \rho \cdot \mathbf{n} \big|_{\partial\mathcal{Z}_{\text{motor}}} = j_{\text{motor}}(p, t),
+
 $$
 where $j_{\text{motor}}$ is the motor current density determined by the policy:
 
 $$
 j_{\text{motor}} = D_A(u_\pi) = \text{Decoder}(z, u_\pi, z_{\text{tex,motor}}).
+
 $$
 *Interpretation:* Information flow from agent to environment (action).
 
@@ -227,11 +231,13 @@ The Visual and Action Atlases are related by the Legendre transform $\mathcal{L}
 
 $$
 \mathcal{A}_{\text{act}} = \mathcal{L}(\mathcal{A}_{\text{vis}}),
+
 $$
 where the chart transition functions satisfy:
 
 $$
 \psi_\beta \circ \mathcal{L} \circ \phi_\alpha^{-1} = \nabla_{\dot{q}} L(q, \dot{q})
+
 $$
 for Lagrangian $L(q, \dot{q}) = \frac{1}{2}\|\dot{q}\|_G^2 - V(q)$.
 
@@ -239,6 +245,7 @@ for Lagrangian $L(q, \dot{q}) = \frac{1}{2}\|\dot{q}\|_G^2 - V(q)$.
 
 $$
 \mathcal{L}: T\mathcal{Q} \to T^*\mathcal{Q}, \qquad (q, \dot{q}) \mapsto \left(q, \frac{\partial L}{\partial \dot{q}}\right).
+
 $$
 For $L = \frac{1}{2}\|\dot{q}\|_G^2 - V(q)$, this gives $p = G(q)\dot{q}$, which is invertible when $G > 0$.
 
@@ -248,6 +255,7 @@ For $L = \frac{1}{2}\|\dot{q}\|_G^2 - V(q)$, this gives $p = G(q)\dot{q}$, which
 
 $$
 \psi_\beta \circ \mathcal{L} \circ \phi_\alpha^{-1}: (q^\alpha, \dot{q}^\alpha) \mapsto (q^\alpha, G_{\alpha\beta}(q)\dot{q}^\beta),
+
 $$
 which is smooth and invertible by positive-definiteness of $G$. $\square$
 
@@ -270,6 +278,7 @@ which is smooth and invertible by positive-definiteness of $G$. $\square$
 
 $$
 \mathcal{L}: T\mathcal{Q} \to T^*\mathcal{Q}, \quad (z, \dot{z}) \mapsto (z, p = G\dot{z})
+
 $$
 **Correspondence Table:**
 | Analytical Mechanics | Agent (Symplectic Interface) |
@@ -292,6 +301,7 @@ The Shutter is extended from {ref}`Section 2.2b <sec-the-shutter-as-a-vq-vae>` t
 
 $$
 \mathbb{S} = (\mathcal{A}_{\text{vis}}, \mathcal{A}_{\text{act}}),
+
 $$
 where:
 - **Ingress (Perception):** $E_\phi: \mathcal{Q} \to \mathcal{Z}$ via Visual Atlas
@@ -321,6 +331,7 @@ The motor output decomposes as:
 
 $$
 a_t = (A_t, z_{n,\text{motor}}, z_{\text{tex,motor}}),
+
 $$
 where:
 - $A_t \in \mathcal{K}_{\text{act}}$ is the **discrete motor macro** (action primitive/chart index)
@@ -343,6 +354,7 @@ The motor nuisance encodes the **compliance tensor**:
 
 $$
 C_{ij}(z_{n,\text{motor}}) = \frac{\partial a^i}{\partial f^j},
+
 $$
 where $f$ is the external force/feedback. This determines how the motor output responds to perturbations:
 - **High compliance** ($C$ large): Soft, yielding response (safe interaction)
@@ -358,11 +370,13 @@ At the motor boundary, texture is sampled from a geometry-dependent Gaussian:
 
 $$
 z_{\text{tex,motor}} \sim \mathcal{N}(0, \Sigma_{\text{motor}}(z)),
+
 $$
 where:
 
 $$
 \Sigma_{\text{motor}}(z) = \sigma_{\text{motor}}^2 \cdot G_{\text{motor}}^{-1}(z) = \sigma_{\text{motor}}^2 \cdot \frac{(1-|z|^2)^2}{4} I_{d_{\text{motor,tex}}}.
+
 $$
 This follows the same conformal scaling as visual texture (Definition {prf:ref}`def-boundary-texture-distribution`), ensuring consistent thermodynamic behavior.
 
@@ -374,6 +388,7 @@ Motor texture is decoupled from the Bulk dynamics:
 
 $$
 \partial_{z_{\text{tex,motor}}} \dot{z} = 0, \qquad \partial_{z_{\text{tex,motor}}} u_\pi = 0.
+
 $$
 The policy $\pi_\theta$ operates on $(K, z_n, A, z_{n,\text{motor}})$ but **never** on $(z_{\text{tex}}, z_{\text{tex,motor}})$.
 
@@ -426,6 +441,7 @@ During perception, the agent compresses external entropy into internal free ener
 
 $$
 W_{\text{compress}} = T_c \cdot I(X_t; K_t) \geq 0,
+
 $$
 where $T_c$ is the cognitive temperature ({prf:ref}`def-cognitive-temperature`) and $I(X_t; K_t)$ is the mutual information extracted from the observation $X_t$ into the macro-state $K_t$.
 
@@ -441,6 +457,7 @@ During action, the agent expands internal free energy into external control:
 
 $$
 W_{\text{expand}} = T_c \cdot I(A_t; K_t) \geq 0,
+
 $$
 where $I(A_t; K_t)$ is the mutual information injected from the intention into the motor output.
 
@@ -456,11 +473,13 @@ In the dreaming phase, the internal dynamics are approximately unitary (energy-c
 
 $$
 \partial_s \rho + [H_{\text{internal}}, \rho]_{\text{Poisson}} = 0,
+
 $$
 where $H_{\text{internal}}$ is the effective Hamiltonian:
 
 $$
 H_{\text{internal}}(z, p) = \frac{1}{2}\|p\|_{G^{-1}}^2 + V_{\text{critic}}(z).
+
 $$
 *Mechanism:* The agent is decoupled from the boundary (adiabatic/isolated). The Bulk evolves under Hamiltonian dynamics (BAOAB integrator with $\gamma \to 0$).
 
@@ -474,6 +493,7 @@ The agent's efficiency in converting sensory information to control information 
 
 $$
 \eta = \frac{I(A_t; K_t)}{I(X_t; K_t)} \leq 1 - \frac{T_{\text{motor}}}{T_{\text{sensor}}},
+
 $$
 where $T_{\text{sensor}}$ and $T_{\text{motor}}$ are the effective temperatures at the sensory and motor boundaries.
 
@@ -508,11 +528,13 @@ During waking ($u_\pi \neq 0$), the sensory stream creates a high-mass source at
 
 $$
 \rho_{\partial}^{\text{sense}}(z, t) = \delta(z - z_{\text{obs}}(t)) \quad \text{(Dirichlet)},
+
 $$
 and the motor stream creates a flux sink:
 
 $$
 \nabla_n \rho \cdot \mathbf{n} = j_{\text{motor}}(u_\pi) \quad \text{(Neumann)}.
+
 $$
 The internal belief $\rho_{\text{bulk}}$ evolves to minimize the **WFR Geodesic Distance** to $\rho_{\partial}$:
 - **Small Error** ($d_{\text{WFR}} < \lambda$): Transport dominates ($v$ term). The agent smoothly tracks the observation.
@@ -526,6 +548,7 @@ During dreaming ($u_\pi = 0$), the sensory stream is cut. The boundary condition
 
 $$
 \nabla_n \rho \cdot \mathbf{n} = 0 \quad \text{(Reflective/Neumann-zero)}.
+
 $$
 The system is closed:
 - Total mass is conserved: $\int_{\mathcal{Z}} \rho\, r\, d\mu_G = 0$
@@ -551,6 +574,7 @@ The grounding rate (cf. Definition 16.1.1) is:
 
 $$
 G_t = \oint_{\partial\mathcal{Z}_{\text{sense}}} j_{\text{obs}} \cdot dA - \oint_{\partial\mathcal{Z}_{\text{motor}}} j_{\text{motor}} \cdot dA,
+
 $$
 which is:
 - **Positive** during waking (net information inflow from sensors)
@@ -589,11 +613,13 @@ The **Context Space** $\mathcal{C}$ is a manifold parameterizing the control/con
 
 $$
 \mathcal{C} := \{c : c \text{ specifies a boundary condition on } \partial\mathcal{Z}\}.
+
 $$
 The context determines the target distribution at the motor boundary via the effective potential:
 
 $$
 \pi(a | z, c) \propto \exp\left(-\frac{1}{T_c} \Phi_{\text{eff}}(z, K, c)\right).
+
 $$
 Units: $[\mathcal{C}]$ inherits from the task domain.
 
@@ -622,12 +648,14 @@ All context instantiations share the same geometric structure:
 
    $$
    u_\pi(0) = G^{-1}(0) \cdot e_c = \frac{1}{4} e_c
+
    $$
    (at the Poincare disk origin where $G(0) = 4I$)
 3. **Motor Distribution:** The output distribution is:
 
    $$
    \pi(a | z, c) = \text{softmax}\left(-\frac{\Phi_{\text{eff}}(z, K, c)}{T_c}\right)
+
    $$
 *Proof.* The holographic expansion ({ref}`Section 21 <sec-radial-generation-entropic-drift-and-policy-control>`) is invariant to the interpretation of the control field $u_\pi$. Whether $u_\pi$ encodes "go left" (RL), "class = cat" (classification), or "continue with tone = formal" (LLM), the bulk dynamics follow the same geodesic SDE ({ref}`Section 22 <sec-the-equations-of-motion-geodesic-jump-diffusion>`). The interpretation is purely a boundary condition. $\square$
 
@@ -639,6 +667,7 @@ The WFR dynamics ({ref}`Section 20.2 <sec-the-wfr-metric>`) generalize to contex
 
 $$
 \partial_s \rho + \nabla \cdot (\rho\, v_c) = \rho\, r_c,
+
 $$
 where:
 - $v_c(z) = -G^{-1}(z) \nabla_z \Phi_{\text{eff}}(z, K, c) + u_\pi(z, c)$ is the context-conditioned velocity
@@ -652,6 +681,7 @@ The following are isomorphic as boundary conditions on $\partial\mathcal{Z}$:
 
 $$
 \text{RL Action} \;\cong\; \text{Classification Label} \;\cong\; \text{LLM Prompt}.
+
 $$
 Each specifies:
 1. **Which chart** to route to (discrete macro $K$ or $A$)
@@ -1036,6 +1066,7 @@ The HolographicInterface implements latent dynamics via **symplectic integrators
 
 $$
 \hat{z}_{t+1} = \Phi_{\text{BAOAB}}(z_t) \quad \text{with} \quad \omega(\Phi_* X, \Phi_* Y) = \omega(X, Y).
+
 $$
 The dual atlas structure (Definition 23.2) decomposes latent space into Visual and Action atlases with matched boundary conditions.
 
@@ -1047,6 +1078,7 @@ World-model RL uses generic neural network dynamics:
 
 $$
 z_{t+1} = f_\theta(z_t, a_t), \quad \hat{r}_t = r_\theta(z_t), \quad \hat{\gamma}_t = \gamma_\theta(z_t).
+
 $$
 The RNN/GRU/Transformer architecture has no geometric constraints—it's a universal function approximator.
 

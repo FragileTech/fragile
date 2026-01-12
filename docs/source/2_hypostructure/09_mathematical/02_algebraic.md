@@ -57,6 +57,7 @@ Then there exists a contravariant functor to Chow motives:
 
 $$
 \mathcal{M}: \mathbf{SmProj}_k^{\text{op}} \to \mathbf{Mot}_k^{\text{eff}}, \quad X \mapsto h(X) = (X, \Delta_X, 0)
+
 $$
 
 satisfying:
@@ -66,6 +67,7 @@ satisfying:
 
    $$
    \text{Gr}_k^W h(X) \cong \bigoplus_{\alpha - \beta = k} h(X)_{\alpha,\beta}
+
    $$
 
    where $(\alpha, \beta)$ are the scaling exponents from $K_{\mathrm{SC}_\lambda}^+$
@@ -95,12 +97,14 @@ satisfying:
 
 $$
 \sum_{i=0}^{2n} \pi^i = \Delta_X, \quad \pi^i \circ \pi^j = \delta_{ij}\pi^i, \quad H^*(\pi^i) = H^i(X)
+
 $$
 
 *Step 4 (Frobenius action).* The flow $S_t$ induces a correspondence $\Gamma_{S_t} \subset X \times X$. For self-similar profiles with scaling data from $K_{\mathrm{SC}_\lambda}^+$:
 
 $$
 F_t^* = [\Gamma_{S_t}]^*: H^*(X) \to H^*(X), \quad F_t^*[\alpha] = t^{\alpha - \beta}[\alpha] \text{ for } \alpha \in H^{p,q}
+
 $$
 
 The exponent $\alpha - \beta = p - q$ is the Hodge weight difference.
@@ -109,6 +113,7 @@ The exponent $\alpha - \beta = p - q$ is the Hodge weight difference.
 
 $$
 W_k h(X) := \bigoplus_{\substack{i \leq k \\ \text{Frob. wt.} \leq k}} h^i(X)
+
 $$
 
 The scaling certificate $K_{\mathrm{SC}_\lambda}^+$ with exponents $(\alpha, \beta)$ gives: $\text{Gr}_k^W \cong h(X)_{\alpha - \beta = k}$. This identifies weight graded pieces with mode sectors.
@@ -117,6 +122,7 @@ The scaling certificate $K_{\mathrm{SC}_\lambda}^+$ with exponents $(\alpha, \be
 
 $$
 \#\text{Fix}(F) = \sum_{i=0}^{2n} (-1)^i \text{Tr}(F^* \mid H^i(X))
+
 $$
 
 The topological entropy satisfies $\exp(h_{\text{top}}) = \lim_{n \to \infty} |\text{Tr}((F^*)^n)|^{1/n} = \rho(F^*)$, the spectral radius.
@@ -125,6 +131,7 @@ The topological entropy satisfies $\exp(h_{\text{top}}) = \lim_{n \to \infty} |\
 
 $$
 K_{\text{motive}}^+ = \left(h(X), \{\pi^i\}_{i=0}^{2n}, W_\bullet, \{(\alpha_j, \beta_j)\}_j, \rho(F^*)\right)
+
 $$
 
 containing the motive, Künneth projectors, weight filtration, scaling exponents, and spectral radius.
@@ -164,6 +171,7 @@ The permit certificates define polynomial inequalities. The *safe region* is:
 
 $$
 S = \{x \in \mathbb{R}^n \mid g_1(x) \geq 0, \ldots, g_k(x) \geq 0\}
+
 $$
 
 where:
@@ -177,12 +185,14 @@ Let $B \subset \mathbb{R}^n$ be the *bad pattern region* (states violating safet
 
 $$
 S \cap B = \emptyset
+
 $$
 
 if and only if there exist sum-of-squares polynomials $\{p_\alpha\}_{\alpha \in \{0,1\}^k} \subset \sum \mathbb{R}[x]^2$ such that:
 
 $$
 -1 = p_0 + \sum_{i} p_i g_i + \sum_{i<j} p_{ij} g_i g_j + \cdots + p_{1\ldots k} g_1 \cdots g_k
+
 $$
 
 **Required Interface Permits:** $\mathrm{Cap}_H$ (Capacity), $\mathrm{LS}_\sigma$ (Stiffness), $\mathrm{SC}_\lambda$ (Scaling), $\mathrm{TB}_\pi$ (Topology)
@@ -208,6 +218,7 @@ The original Nullstellensatz formulation applies to equalities over $\mathbb{C}$
 
 $$
 B_i = \{x \in \mathbb{R}^n \mid h_1(x) \geq 0, \ldots, h_m(x) \geq 0, f(x) = 0\}
+
 $$
 
 representing states that lead to singularity type $i$.
@@ -220,6 +231,7 @@ representing states that lead to singularity type $i$.
 
 $$
 K_{\text{SOS}}^+ = \left(\{p_\alpha\}_\alpha, \{g_i\}_i, \text{SDP feasibility witness}\right)
+
 $$
 :::
 
@@ -280,6 +292,7 @@ Consider the tangent sheaf cohomology groups $H^i(V, T_V)$ for $i = 0, 1, 2$. Th
 
 $$
 \text{Def}_V(A) := \left\{\text{flat } \mathcal{V} \to \text{Spec}(A) \mid \mathcal{V} \times_A k \cong V\right\} / \sim
+
 $$
 
 This is the moduli problem for flat families with special fiber $V$.
@@ -288,6 +301,7 @@ This is the moduli problem for flat families with special fiber $V$.
 
 $$
 \text{KS}: T_0\text{Def}_V \xrightarrow{\cong} H^1(V, T_V)
+
 $$
 
 identifies first-order deformations with cohomology classes. This is an isomorphism by the exponential sequence.
@@ -301,6 +315,7 @@ identifies first-order deformations with cohomology classes. This is an isomorph
 
 $$
 \text{ob}: \text{Sym}^2 H^1(V, T_V) \to H^2(V, T_V)
+
 $$
 
 arises from the bracket $[-, -]: T_V \otimes T_V \to T_V$. If $H^2 = 0$, the Kuranishi space is smooth of dimension $h^1(T_V)$.
@@ -314,6 +329,7 @@ arises from the bracket $[-, -]: T_V \otimes T_V \to T_V$. If $H^2 = 0$, the Kur
 
 $$
 \dim \mathcal{M} = h^1(V, T_V) - \dim(\text{Im ob}) < \infty
+
 $$
 
 Concentration forces $h^1 < \infty$, which holds for all coherent sheaf cohomology on proper varieties.
@@ -322,6 +338,7 @@ Concentration forces $h^1 < \infty$, which holds for all coherent sheaf cohomolo
 
 $$
 K_{\text{KS}}^+ = \left((h^0, h^1, h^2), \text{ob}, \text{classification}\right)
+
 $$
 
 where classification $\in \{\text{rigid}, \text{obstructed}, \text{unobstructed-positive}\}$.
@@ -364,6 +381,7 @@ Then:
 
    $$
    [\mathcal{M}]^{\text{vir}} = 0_E^![\mathfrak{C}_{\mathcal{M}}] \in A_{\text{vdim}}(\mathcal{M}, \mathbb{Q})
+
    $$
 
    where $\mathfrak{C}_{\mathcal{M}} \subset E^{-1}|_{\mathcal{M}}$ is the intrinsic normal cone and $0_E^!$ is the refined Gysin map.
@@ -372,6 +390,7 @@ Then:
 
    $$
    \int_{[\mathcal{M}]^{\text{vir}}} \chi_A = \#^{\text{vir}}\{p \in \mathcal{M} : K_A^-(p)\}
+
    $$
 
    counts (with virtual multiplicity) points where certificate $K_A$ fails.
@@ -380,6 +399,7 @@ Then:
 
    $$
    \text{GW}_{g,n,\beta}(X; \gamma_1, \ldots, \gamma_n) = \int_{[\overline{M}_{g,n}(X,\beta)]^{\text{vir}}} \prod_{i=1}^n \text{ev}_i^*(\gamma_i)
+
    $$
 
    counts stable maps with $K_{\mathrm{Rep}}^+$ ensuring curve representability.
@@ -388,6 +408,7 @@ Then:
 
    $$
    \text{DT}_{\text{ch}}(X) = \int_{[\mathcal{M}_{\text{ch}}^{\text{st}}(X)]^{\text{vir}}} 1
+
    $$
 
    counts stable sheaves with $K_{\mathrm{Cap}_H}^+$ ensuring proper moduli.
@@ -1078,6 +1099,7 @@ The reconstruction procedure must produce one of the following outcomes:
 
 $$
 \text{Structural Reconstruction}: \mathsf{Obl}(\Gamma) \to \left(\{K^+_{\text{new}}\} \text{ enabling discharge}\right) \cup \left(\mathsf{Obl}'(\Gamma) \text{ with refined } \mathsf{missing}\right)
+
 $$
 
 This ensures reconstruction makes definite progress: either discharging obligations or producing a strictly refined $\mathsf{missing}$ specification.
@@ -1142,6 +1164,7 @@ Under the hypotheses of {prf:ref}`mt-lock-reconstruction` (with all interface pe
 
 $$
 \mathcal{A}|_{\langle\mathcal{H}_{\text{bad}}\rangle} \simeq_{\text{Hom}} \mathcal{S}|_{\langle F_{\text{Rec}}(\mathcal{H}_{\text{bad}})\rangle}
+
 $$
 
 This equivalence is the rigorous formulation of "soft implies hard" for morphisms. In particular:
@@ -1211,6 +1234,7 @@ The beautiful thing is that each step uses a different piece of the certificate 
 
   $$
   \|\nabla^2 \Phi(\eta)\| \geq \lambda > 0
+
   $$
 
   This is the **stiffness condition**: the energy landscape admits no flat directions.
@@ -1219,6 +1243,7 @@ The beautiful thing is that each step uses a different piece of the certificate 
 
   $$
   \Sigma(\eta) = \{x \in X : \eta(x) \text{ is not real-analytic}\}
+
   $$
 
   is definable in an o-minimal structure $\mathcal{O}$ expanding $\mathbb{R}$ (e.g., $\mathbb{R}_{\text{an}}$, $\mathbb{R}_{\exp}$).
@@ -1229,6 +1254,7 @@ Then $\eta$ is the fundamental class of an algebraic cycle with rational coeffic
 
 $$
 [\eta] \in \mathcal{Z}^k(X)_{\mathbb{Q}}
+
 $$
 
 The sieve issues certificate $K_{\mathrm{Alg}}^+$ with payload $(Z^{\text{alg}}, [Z^{\text{alg}}] = [\eta], \mathbb{Q})$.
@@ -1247,6 +1273,7 @@ Because $\psi$ is localized, its interactions with the global Hodge-Riemann pair
 
 $$
 \langle \nabla^2\Phi(\eta) \cdot \psi, \psi \rangle \to 0 \quad \text{as } U \to \{p\}
+
 $$
 
 This violates the uniform spectral gap condition $\|\nabla^2\Phi\| \geq \lambda > 0$ from $K_{\mathrm{LS}_\sigma}^+$. The Łojasiewicz-Simon inequality ({cite}`Simon83`; {cite}`Lojasiewicz65`) implies the energy landscape admits no flat directions at critical points.
@@ -1259,6 +1286,7 @@ By the **Cell Decomposition Theorem** for o-minimal structures ({cite}`vandenDri
 
 $$
 \Sigma = \bigsqcup_{i=1}^N S_i
+
 $$
 
 where each $S_i$ is a $C^m$-submanifold definable in $\mathcal{O}$. The finiteness $N < \infty$ is guaranteed by o-minimality.
@@ -1267,6 +1295,7 @@ The finite energy certificate $K_{D_E}^+$ implies $\|\eta\|_{L^2}^2 < \infty$, h
 
 $$
 \mathbb{M}(\eta) = \int_X |\eta| \,dV < \infty
+
 $$
 
 By the **Federer-Fleming Closure Theorem** adapted to tame geometry ({cite}`Federer69`, §4.2; {cite}`vandenDries98`, Ch. 6), a current with:
@@ -1283,6 +1312,7 @@ On a Kähler manifold $X$, a real-analytic harmonic $(k,k)$-form with integral p
 
 $$
 \frac{i}{2\pi} \partial\bar{\partial} \log |s|^2 = [Z]
+
 $$
 
 relates $(k,k)$-currents to zero sets of holomorphic sections. This provides the bridge from analytic to holomorphic.
@@ -1291,6 +1321,7 @@ The stiffness certificate $K_{\mathrm{LS}_\sigma}^+$ implies **deformation rigid
 
 $$
 H^1(Z, \mathcal{N}_{Z/X}) = 0
+
 $$
 
 where $\mathcal{N}_{Z/X}$ is the normal bundle ({cite}`Demailly12`, §VII). The moduli space is discrete (zero-dimensional). A "stiff" form cannot deform continuously into a non-holomorphic form without breaking harmonicity or Hodge type.
@@ -1311,6 +1342,7 @@ Therefore:
 
 $$
 Z = (Z^{\text{alg}})^{\text{an}}
+
 $$
 
 for a unique algebraic subvariety $Z^{\text{alg}} \subset X$.
@@ -1319,6 +1351,7 @@ for a unique algebraic subvariety $Z^{\text{alg}} \subset X$.
 
 $$
 [\eta] = [Z^{\text{alg}}] \in H^{2k}(X, \mathbb{Q})
+
 $$
 
 The failure mode **N.A (Non-Algebraic)** is excluded.

@@ -17,19 +17,20 @@ Let $\pi_N \in \mathcal{P}(\Sigma_N)$ be the unique Quasi-Stationary Distributio
 
 $$
 \pi_N(\{(w_1, \ldots, w_N) \in A\}) = \pi_N(\{(w_{\sigma(1)}, \ldots, w_{\sigma(N)}) \in A\})
+
 $$
 
 where $w_i = (x_i, v_i, s_i)$ is the state of walker $i$.
 :::
 
 :::{prf:proof}
-:label: proof-thm-qsd-exchangeability
 The dynamics are manifestly symmetric under permutation of walker labels.
 
 **Kinetic operator**: Each walker evolves according to the same Langevin dynamics:
 
 $$
 \mathcal{L}_{\text{kin}} f(S) = \sum_{i=1}^N \left[ v_i \cdot \nabla_{x_i} + F_i \cdot \nabla_{v_i} + \frac{\sigma_i^2}{2}\Delta_{v_i} \right] f
+
 $$
 
 Permuting indices preserves this structure since the sum is symmetric.
@@ -38,6 +39,7 @@ Permuting indices preserves this structure since the sum is symmetric.
 
 $$
 \mathcal{L}_{\text{clone}} f(S) = \sum_{i \in \mathcal{D}} \lambda_i \sum_{j \in \mathcal{A}} p_{ij} \int [f(S^{i \leftarrow j}_\delta) - f(S)] \phi_\delta
+
 $$
 
 where $p_{ij} \propto V_{\text{fit}}(w_j)$ depends only on walker states, not labels.
@@ -56,6 +58,7 @@ Since $\pi_N$ is exchangeable on the compact space $\Omega$, there exists a prob
 
 $$
 d_{\text{TV}}\left(\pi_{N,k}, \int_{\mathcal{P}(\Omega)} \mu^{\otimes k} \, d\mathcal{Q}_N(\mu)\right) \leq \frac{k(k-1)}{2N}
+
 $$
 
 where $\pi_{N,k}$ is the law of the first $k$ walkers under $\pi_N$, $\mu^{\otimes k}$ denotes the $k$-fold product measure (walkers are i.i.d. with law $\mu$), and $d_{\text{TV}}$ is total variation distance.
@@ -78,7 +81,6 @@ where $\pi_{N,k}$ is the law of the first $k$ walkers under $\pi_N$, $\mu^{\otim
 :::
 
 :::{prf:proof}
-:label: proof-thm-hewitt-savage-representation
 
 This proof applies the Diaconis-Freedman finite de Finetti theorem to the QSD of the Euclidean Gas.
 
@@ -96,6 +98,7 @@ By {prf:ref}`thm-qsd-exchangeability`, the QSD $\pi_N$ is an exchangeable probab
 
 $$
 \pi_N(\{(w_1, \ldots, w_N) \in A\}) = \pi_N(\{(w_{\sigma(1)}, \ldots, w_{\sigma(N)}) \in A\})
+
 $$
 
 **Step 3: Apply Diaconis-Freedman Theorem 4**
@@ -106,6 +109,7 @@ $$
 
 $$
 d_{\text{TV}}\left(\pi_{N,k}, \int_{\mathcal{P}(S)} \mu^{\otimes k} \, dQ(\mu)\right) \leq \frac{k(k-1)}{2N}
+
 $$
 
 **Application to our setting**: Set $S = \Omega$ (compact metric space, verified in Step 1). The QSD $\pi_N$ on $\Omega^N$ is exchangeable (verified in Step 2). Therefore, Diaconis-Freedman's theorem directly applies, establishing the existence of a mixing measure $\mathcal{Q}_N$ on $\mathcal{P}(\Omega)$ with the stated quantitative bound.
@@ -118,12 +122,14 @@ While Diaconis-Freedman's theorem guarantees existence, the mixing measure can b
 
 $$
 L_N(w_1, \ldots, w_N) := \frac{1}{N}\sum_{i=1}^N \delta_{w_i} \in \mathcal{P}(\Omega)
+
 $$
 
 The **canonical mixing measure** is:
 
 $$
 \mathcal{Q}_N := \text{Law}_{\pi_N}(L_N)
+
 $$
 
 That is, $\mathcal{Q}_N$ is the pushforward of $\pi_N$ under the empirical measure map $L_N: \Omega^N \to \mathcal{P}(\Omega)$.
@@ -138,6 +144,7 @@ The bound becomes:
 
 $$
 d_{\text{TV}}\left(\pi_{N,k}, \int \mu^{\otimes k} d\mathcal{Q}_N(\mu)\right) \leq \frac{k(k-1)}{2N} = O(1/N)
+
 $$
 
 This is the regime of practical importance:
@@ -149,6 +156,7 @@ This is the regime of practical importance:
 
 $$
 d_{\text{TV}}\left(\pi_N, \int \mu^{\otimes N} d\mathcal{Q}_N(\mu)\right) \leq \frac{N(N-1)}{2N} = \frac{N-1}{2} \approx \frac{N}{2}
+
 $$
 
 This bound is $O(N)$ and does NOT vanish as $N \to \infty$. The full N-particle distribution is **not** well-approximated by the mixture for finite $N$. However, this is not a limitation: propagation of chaos results only require good approximation of low-order marginals.
@@ -179,6 +187,7 @@ The single-particle marginal of $\pi_N$ is:
 
 $$
 \mu_N(A) := \pi_N(\{(w_1, \ldots, w_N) : w_1 \in A\})
+
 $$
 
 By exchangeability, this is the same for any walker index.
@@ -191,6 +200,7 @@ From the finite de Finetti representation ({prf:ref}`thm-hewitt-savage-represent
 
 $$
 \mu_N = \int_{\mathcal{P}(\Omega)} \mu \, d\mathcal{Q}_N(\mu)
+
 $$
 
 where $\mu_N$ is the single-particle marginal of $\pi_N$. This is an **exact** representation (the bound $k(k-1)/(2N) = 0$ for $k=1$).
@@ -199,12 +209,12 @@ where $\mu_N$ is the single-particle marginal of $\pi_N$. This is an **exact** r
 :::
 
 :::{prf:proof}
-:label: proof-prop-marginal-mixture
 
 Apply {prf:ref}`thm-hewitt-savage-representation` with $k=1$. The bound becomes:
 
 $$
 d_{\text{TV}}\left(\mu_N, \int_{\mathcal{P}(\Omega)} \mu \, d\mathcal{Q}_N(\mu)\right) \leq \frac{1(1-1)}{2N} = 0
+
 $$
 
 Therefore, the representation is exact. $\square$
@@ -223,12 +233,14 @@ As $N \to \infty$, the single-particle marginal $\mu_N$ converges weakly to a un
 
 $$
 \mu_N \Rightarrow \mu_\infty
+
 $$
 
 Moreover, $\mu_\infty$ is the unique stationary solution of the mean-field McKean-Vlasov equation:
 
 $$
 \frac{\partial \rho}{\partial t} = \mathcal{L}[\rho] \rho
+
 $$
 
 where the generator $\mathcal{L}[\rho]$ depends nonlinearly on $\rho$ through mean-field interactions.
@@ -237,7 +249,6 @@ where the generator $\mathcal{L}[\rho]$ depends nonlinearly on $\rho$ through me
 :::
 
 :::{prf:proof}
-:label: proof-thm-propagation-chaos-qsd
 
 This result is established in detail in **Chapter 08: Propagation of Chaos** (`08_propagation_chaos.md`). We provide a brief outline of the three-step proof strategy:
 
@@ -247,6 +258,7 @@ From the Foster-Lyapunov analysis in `06_convergence.md`, the N-particle QSD $\p
 
 $$
 \sup_{N \geq 1} \mathbb{E}_{\pi_N}[\|w_1\|^p] < \infty
+
 $$
 
 for any $p \geq 1$, where $w_1$ is the state of a single walker. These N-uniform bounds imply tightness of the sequence of single-particle marginals $\{\mu_N\}$ in the space $\mathcal{P}(\Omega)$ equipped with the weak topology. By Prokhorov's theorem, $\{\mu_N\}$ is relatively compact: every subsequence has a convergent sub-subsequence.
@@ -257,6 +269,7 @@ Let $\mu_\infty$ be any weak limit point of $\{\mu_N\}$. The mean-field analysis
 
 $$
 \mathcal{L}[\mu_\infty] \mu_\infty = 0
+
 $$
 
 in the weak (distributional) sense, where $\mathcal{L}[\rho]$ is the generator of the mean-field dynamics (kinetic operator + nonlocal cloning operator). This identification is proven via the martingale problem formulation and taking limits in the weak formulation of the Fokker-Planck-McKean-Vlasov PDE.
@@ -283,6 +296,7 @@ For bounded single-particle test functions $g: \Omega \to \mathbb{R}$ with $\|g\
 
 $$
 \left|\text{Cov}_{\pi_N}(g(w_i), g(w_j))\right| \leq \frac{C}{N}
+
 $$
 
 for $i \neq j$, where $C$ is independent of $N$.
@@ -291,7 +305,6 @@ for $i \neq j$, where $C$ is independent of $N$.
 :::
 
 :::{prf:proof}
-:label: proof-thm-correlation-decay
 
 This proof uses the finite de Finetti representation ({prf:ref}`thm-hewitt-savage-representation`) for **pairwise marginals** ($k=2$), where the approximation error is $O(1/N)$.
 
@@ -301,6 +314,7 @@ From {prf:ref}`thm-hewitt-savage-representation` with $k=2$, the pairwise margin
 
 $$
 d_{\text{TV}}\left(\pi_{N,2}, \int_{\mathcal{P}(\Omega)} \mu^{\otimes 2} \, d\mathcal{Q}_N(\mu)\right) \leq \frac{2(2-1)}{2N} = \frac{1}{N}
+
 $$
 
 Let $\tilde{\pi}_{N,2} := \int \mu^{\otimes 2} d\mathcal{Q}_N(\mu)$ denote the approximating mixture measure.
@@ -311,12 +325,14 @@ For any bounded function $h: \Omega^2 \to \mathbb{R}$ with $\|h\|_\infty \leq M$
 
 $$
 \left|\mathbb{E}_{\pi_{N,2}}[h] - \mathbb{E}_{\tilde{\pi}_{N,2}}[h]\right| \leq 2M \cdot d_{\text{TV}}(\pi_{N,2}, \tilde{\pi}_{N,2}) \leq \frac{2M}{N}
+
 $$
 
 Apply this to $h(w_i, w_j) = g(w_i)g(w_j)$ with $\|h\|_\infty \leq \|g\|_\infty^2$:
 
 $$
 \left|\mathbb{E}_{\pi_N}[g(w_i)g(w_j)] - \mathbb{E}_{\tilde{\pi}_{N,2}}[g(w_i)g(w_j)]\right| \leq \frac{2\|g\|_\infty^2}{N}
+
 $$
 
 **Step 3: Exact de Finetti Identity for the Approximating Measure**
@@ -325,6 +341,7 @@ For the approximating mixture $\tilde{\pi}_{N,2} = \int \mu^{\otimes 2} d\mathca
 
 $$
 \mathbb{E}_{\tilde{\pi}_{N,2}}[g(w_i)g(w_j)] = \int \mathbb{E}_{\mu}[g] \mathbb{E}_{\mu}[g] \, d\mathcal{Q}_N(\mu) = \int (\mathbb{E}_{\mu}[g])^2 \, d\mathcal{Q}_N(\mu)
+
 $$
 
 by conditional independence given $\mu$ in the product measure $\mu^{\otimes 2}$.
@@ -335,6 +352,7 @@ For $k=1$, the bound in {prf:ref}`thm-hewitt-savage-representation` gives $0/N =
 
 $$
 \mathbb{E}_{\pi_N}[g(w_i)] = \int \mathbb{E}_{\mu}[g] \, d\mathcal{Q}_N(\mu)
+
 $$
 
 exactly (no approximation error).
@@ -345,16 +363,19 @@ The covariance is:
 
 $$
 \text{Cov}_{\pi_N}(g(w_i), g(w_j)) = \mathbb{E}_{\pi_N}[g(w_i)g(w_j)] - \mathbb{E}_{\pi_N}[g(w_i)] \mathbb{E}_{\pi_N}[g(w_j)]
+
 $$
 
 Using Steps 2-4:
 
 $$
 \text{Cov}_{\pi_N}(g(w_i), g(w_j)) = \left(\int (\mathbb{E}_{\mu}[g])^2 d\mathcal{Q}_N \pm \frac{2\|g\|_\infty^2}{N}\right) - \left(\int \mathbb{E}_{\mu}[g] d\mathcal{Q}_N\right)^2
+
 $$
 
 $$
 = \text{Var}_{\mathcal{Q}_N}(\mathbb{E}_{\mu}[g]) + O\left(\frac{\|g\|_\infty^2}{N}\right)
+
 $$
 
 **Step 6: Apply Mixing Measure Variance Bound**
@@ -363,12 +384,14 @@ By Theorem {prf:ref}`thm-mixing-variance-corrected`:
 
 $$
 \text{Var}_{\mathcal{Q}_N}(\mathbb{E}_{\mu}[g]) \leq \frac{3\|g\|_\infty^2}{N}
+
 $$
 
 Therefore:
 
 $$
 \left|\text{Cov}_{\pi_N}(g(w_i), g(w_j))\right| \leq \frac{3\|g\|_\infty^2}{N} + \frac{2\|g\|_\infty^2}{N} = \frac{5\|g\|_\infty^2}{N}
+
 $$
 
 For $\|g\|_\infty \leq 1$, this gives $|\text{Cov}| \leq 5/N$, establishing the $O(1/N)$ decay with explicit constant $C=5$. $\square$
@@ -383,31 +406,34 @@ Let $\pi_N = \int \mu^{\otimes N} d\mathcal{Q}_N(\mu)$ be the de Finetti represe
 
 $$
 D_{KL}(\pi_N \| \rho_0^{\otimes N}) \leq \frac{C_{\text{int}}}{N}
+
 $$
 
 Then for any bounded measurable function $g: \Omega \to \mathbb{R}$ with $\|g\|_{\infty} \leq B$:
 
 $$
 \text{Var}_{\mathcal{Q}_N}(\mathbb{E}_{\mu}[g]) \leq \frac{2 \cdot e^{C_{\text{int}}/N} \cdot B^2}{N}
+
 $$
 
 For sufficiently large $N$ (such that $e^{C_{\text{int}}/N} \leq 3/2$):
 
 $$
 \text{Var}_{\mathcal{Q}_N}(\mathbb{E}_{\mu}[g]) \leq \frac{3B^2}{N}
+
 $$
 
 **Consequence**: Combined with the corrected de Finetti identity:
 
 $$
 |\text{Cov}_{\pi_N}(g(w_i), g(w_j))| = \text{Var}_{\mathcal{Q}_N}(\mathbb{E}_{\mu}[g]) \leq \frac{3\|g\|_{\infty}^2}{N}
+
 $$
 
 for $i \neq j$, establishing O(1/N) decorrelation for **all bounded measurable functions**, including indicator functions used in companion selection.
 :::
 
 :::{prf:proof}
-:label: proof-thm-mixing-variance-corrected
 
 This proof uses **information-theoretic variance bounds** without relying on the de Finetti representation being exact for the N-particle system. The key advantage is that it requires only the KL-divergence bound and boundedness of $g$.
 
@@ -417,6 +443,7 @@ By the structure of the de Finetti mixing measure (law of empirical measure, see
 
 $$
 \text{Var}_{\mathcal{Q}_N}(\mathbb{E}_{\mu}[g]) = \text{Cov}_{\pi_N}(g(w_i), g(w_j)) \quad \text{for } i \neq j
+
 $$
 
 This is an **exact identity** (no approximation) following from the construction $\mathcal{Q}_N = \text{Law}_{\pi_N}(L_N)$ where $L_N = \frac{1}{N}\sum \delta_{w_i}$ is the empirical measure.
@@ -425,10 +452,12 @@ This is an **exact identity** (no approximation) following from the construction
 
 $$
 \mathbb{E}_{\mathcal{Q}_N}[(\mathbb{E}_{\mu}[g])^2] = \mathbb{E}_{\pi_N}\left[\left(\frac{1}{N}\sum_{i=1}^N g(w_i)\right) \mathbb{E}_{L_N}[g]\right] = \mathbb{E}_{\pi_N}\left[\frac{1}{N}\sum_i g(w_i) \cdot \frac{1}{N}\sum_j g(w_j)\right]
+
 $$
 
 $$
 = \frac{1}{N^2}\sum_{i,j} \mathbb{E}_{\pi_N}[g(w_i)g(w_j)] = \frac{1}{N}\mathbb{E}[g_1^2] + \frac{N-1}{N}\mathbb{E}[g_1 g_2]
+
 $$
 
 Similarly, $\mathbb{E}_{\mathcal{Q}_N}[\mathbb{E}_{\mu}[g]]^2 = \mathbb{E}[g_1]^2$. Taking the difference yields the covariance identity.
@@ -441,6 +470,7 @@ We use the **variance perturbation inequality**: For probability measures $P, Q$
 
 $$
 \text{Var}_P(F) \leq \text{Var}_Q(F) + 2M^2 \cdot D_{\text{KL}}(P \| Q)
+
 $$
 
 This is a standard result in information theory (Boucheron-Lugosi-Massart 2013, Ledoux 2001).
@@ -453,6 +483,7 @@ Apply Step 2 with $P = \pi_N$, $Q = \rho_0^{\otimes N}$, and $F = F_g$:
 
 $$
 \text{Var}_{\pi_N}(F_g) \leq \text{Var}_{\rho_0^{\otimes N}}(F_g) + 2B^2 \cdot D_{\text{KL}}(\pi_N \| \rho_0^{\otimes N})
+
 $$
 
 **Step 4: Compute Reference Variance**
@@ -461,6 +492,7 @@ Under the product measure $\rho_0^{\otimes N}$, the particles are independent:
 
 $$
 \text{Var}_{\rho_0^{\otimes N}}\left(\frac{1}{N}\sum_{i=1}^N g(w_i)\right) = \frac{1}{N^2} \sum_{i=1}^N \text{Var}_{\rho_0}(g) = \frac{\text{Var}_{\rho_0}(g)}{N} \leq \frac{B^2}{N}
+
 $$
 
 **Step 5: Apply KL Bound**
@@ -469,6 +501,7 @@ From the hypothesis, $D_{\text{KL}}(\pi_N \| \rho_0^{\otimes N}) \leq C_{\text{i
 
 $$
 \text{Var}_{\pi_N}(F_g) \leq \frac{B^2}{N} + 2B^2 \cdot \frac{C_{\text{int}}}{N} = \frac{B^2}{N}(1 + 2C_{\text{int}})
+
 $$
 
 **Step 6: Variance Decomposition**
@@ -477,12 +510,14 @@ The variance of the empirical average decomposes as:
 
 $$
 \text{Var}_{\pi_N}(F_g) = \frac{1}{N^2}\left[\sum_{i=1}^N \text{Var}_{\pi_N}(g(w_i)) + \sum_{i \neq j} \text{Cov}_{\pi_N}(g(w_i), g(w_j))\right]
+
 $$
 
 By exchangeability, all single-particle variances are equal and all pairwise covariances are equal:
 
 $$
 = \frac{1}{N^2}\left[N \cdot \text{Var}(g_1) + N(N-1) \cdot \text{Cov}(g_1, g_2)\right] = \frac{\text{Var}(g_1)}{N} + \frac{N-1}{N}\text{Cov}(g_1, g_2)
+
 $$
 
 **Step 7: Solve for Covariance**
@@ -491,12 +526,14 @@ Rearranging the decomposition:
 
 $$
 \text{Cov}_{\pi_N}(g(w_i), g(w_j)) = \frac{N}{N-1}\left[\text{Var}_{\pi_N}(F_g) - \frac{\text{Var}(g_1)}{N}\right]
+
 $$
 
 Since $\text{Var}(g_1) \leq B^2$ and $\text{Var}_{\pi_N}(F_g) \leq \frac{B^2(1+2C_{\text{int}})}{N}$:
 
 $$
 \text{Cov}(g_1, g_2) \leq \frac{N}{N-1}\left[\frac{B^2(1+2C_{\text{int}})}{N} - \frac{B^2}{N}\right] = \frac{N}{N-1} \cdot \frac{2C_{\text{int}}B^2}{N} = \frac{2C_{\text{int}}B^2}{N-1}
+
 $$
 
 For $N \geq 2$, this gives $\text{Cov}(g_1, g_2) \leq \frac{2C_{\text{int}}B^2}{N-1} \leq \frac{2C_{\text{int}}B^2}{N/2} = \frac{4C_{\text{int}}B^2}{N}$.
@@ -505,6 +542,7 @@ Taking $C = 4C_{\text{int}}$ (and noting that for large $N$, more careful analys
 
 $$
 \text{Var}_{\mathcal{Q}_N}(\mathbb{E}_{\mu}[g]) = \text{Cov}_{\pi_N}(g_1, g_2) \leq \frac{3B^2}{N}
+
 $$
 
 by Step 1. This completes the proof without using the full N-particle de Finetti representation.
@@ -539,6 +577,7 @@ The QSD $\pi_N$ satisfies a Log-Sobolev inequality:
 
 $$
 D_{\text{KL}}(\nu \| \pi_N) \leq C_{\text{LSI}} \cdot I(\nu \| \pi_N)
+
 $$
 
 where the LSI constant $C_{\text{LSI}}$ is **independent of $N$** for all $N \geq 2$.
@@ -547,7 +586,6 @@ where the LSI constant $C_{\text{LSI}}$ is **independent of $N$** for all $N \ge
 :::
 
 :::{prf:proof}
-:label: proof-thm-n-uniform-lsi-exchangeable
 
 The proof of N-uniform LSI for the Euclidean Gas QSD is developed in detail in **Chapter 9: KL Convergence** (`09_kl_convergence.md`). We outline the key steps:
 
@@ -587,6 +625,7 @@ For fixed positions $\mathbf{x} = (x_1, \ldots, x_N)$, the conditional velocity 
 
 $$
 \pi_N(\mathbf{v} | \mathbf{x}) = \prod_{i=1}^N \mathcal{N}(0, \Sigma_{v_i})
+
 $$
 
 where each $\Sigma_{v_i}$ is the stationary covariance for the individual Langevin dynamics (no coupling between walkers).
@@ -595,35 +634,39 @@ For the Euclidean Gas with constant diffusion $\sigma I$, the conditional covari
 
 $$
 \Sigma_{v_i} = \frac{\sigma^2}{2\gamma} I
+
 $$
 
 **N-uniform eigenvalue bound**:
 
 $$
 \lambda_{\max}(\Sigma_{v_i}) = \frac{\sigma^2}{2\gamma}
+
 $$
 
 independent of $N$ and $\mathbf{x}$.
 :::
 
 :::{prf:proof}
-:label: proof-lem-conditional-gaussian-qsd-euclidean
 For fixed positions, the velocity dynamics of walker $i$ is:
 
 $$
 dv_i = -\gamma v_i \, dt + \sigma \, dW_i
+
 $$
 
 This is a standard Ornstein-Uhlenbeck process (no coupling to other walkers in Euclidean Gas). The stationary distribution is Gaussian $\mathcal{N}(0, \Sigma_{v_i})$ where:
 
 $$
 \gamma \Sigma_{v_i} + \Sigma_{v_i} \gamma = \sigma^2 I \implies \Sigma_{v_i} = \frac{\sigma^2}{2\gamma} I
+
 $$
 
 Since the Wiener processes $W_i$ are independent and the dynamics are uncoupled, the conditional distribution factorizes:
 
 $$
 \pi_N(\mathbf{v} | \mathbf{x}) = \prod_{i=1}^N \pi_i(v_i | x_i)
+
 $$
 
 The eigenvalue bound follows immediately from the explicit formula. $\square$
@@ -642,6 +685,7 @@ The mean-field density $\rho_\infty$ (limit of $\mu_N$ as $N \to \infty$) satisf
 
 $$
 D_{\text{KL}}(\nu \| \rho_\infty) \leq C_{\text{LSI}}^{\text{MF}} \cdot I(\nu \| \rho_\infty)
+
 $$
 
 where $C_{\text{LSI}}^{\text{MF}} = \limsup_{N \to \infty} C_{\text{LSI}}^{(N)} < \infty$.
@@ -650,7 +694,6 @@ where $C_{\text{LSI}}^{\text{MF}} = \limsup_{N \to \infty} C_{\text{LSI}}^{(N)} 
 :::
 
 :::{prf:proof}
-:label: proof-cor-mean-field-lsi
 
 This corollary follows by taking the $N \to \infty$ limit in the finite-N LSI established in {prf:ref}`thm-n-uniform-lsi-exchangeable`.
 
@@ -660,6 +703,7 @@ From {prf:ref}`thm-n-uniform-lsi-exchangeable`, for each $N \geq 2$, the single-
 
 $$
 \sup_{N \geq 2} C_{\text{LSI}}^{(N)} < \infty
+
 $$
 
 Define $C_{\text{LSI}}^{\text{MF}} := \limsup_{N \to \infty} C_{\text{LSI}}^{(N)} < \infty$.
@@ -670,6 +714,7 @@ By {prf:ref}`thm-propagation-chaos-qsd`, the single-particle marginals converge 
 
 $$
 \mu_N \Rightarrow \rho_\infty \quad \text{as } N \to \infty
+
 $$
 
 **Step 3: Lower Semicontinuity of Fisher Information**
@@ -678,6 +723,7 @@ The Fisher information functional $I(\nu \| \cdot)$ is **lower semicontinuous** 
 
 $$
 I(\nu \| \rho_\infty) \leq \liminf_{N \to \infty} I(\nu \| \mu_N)
+
 $$
 
 for any absolutely continuous $\nu \ll \rho_\infty$.
@@ -688,6 +734,7 @@ The KL-divergence $D_{\text{KL}}(\nu \| \cdot)$ is **continuous** with respect t
 
 $$
 D_{\text{KL}}(\nu \| \rho_\infty) = \lim_{N \to \infty} D_{\text{KL}}(\nu \| \mu_N)
+
 $$
 
 **Step 5: Pass to the Limit**
@@ -696,12 +743,14 @@ For each $N$, the LSI for $\mu_N$ states:
 
 $$
 D_{\text{KL}}(\nu \| \mu_N) \leq C_{\text{LSI}}^{(N)} \cdot I(\nu \| \mu_N)
+
 $$
 
 Taking $\liminf_{N \to \infty}$ on both sides and using Steps 3-4:
 
 $$
 D_{\text{KL}}(\nu \| \rho_\infty) = \lim_{N \to \infty} D_{\text{KL}}(\nu \| \mu_N) \leq \limsup_{N \to \infty} C_{\text{LSI}}^{(N)} \cdot \liminf_{N \to \infty} I(\nu \| \mu_N) \leq C_{\text{LSI}}^{\text{MF}} \cdot I(\nu \| \rho_\infty)
+
 $$
 
 Therefore, the mean-field density $\rho_\infty$ satisfies the LSI with constant $C_{\text{LSI}}^{\text{MF}}$. $\square$

@@ -41,13 +41,13 @@ Under the N-uniform LSI ({prf:ref}`thm-kl-convergence-euclidean` from [09_kl_con
 
 $$
 W_2^2(\nu_N^{QSD}, \rho_0^{\otimes N}) \leq \frac{2}{\lambda_{\text{LSI}}} \cdot D_{KL}(\nu_N^{QSD} \| \rho_0^{\otimes N})
+
 $$
 
 where $\lambda_{\text{LSI}} = \gamma \kappa_{\text{conf}} \kappa_W \delta^2 / C_0$ is the LSI constant from {prf:ref}`thm-kl-convergence-euclidean`.
 :::
 
 :::{prf:proof}
-:label: proof-lem-wasserstein-entropy
 
 This result follows from Talagrand's inequality relating the Wasserstein distance to relative entropy for probability measures on a metric space.
 
@@ -57,6 +57,7 @@ From {prf:ref}`thm-kl-convergence-euclidean`, the N-particle system satisfies a 
 
 $$
 D_{KL}(\mu \| \nu_N^{QSD}) \leq \frac{1}{\lambda_{\text{LSI}}} \int_{\Omega^N} \frac{|\nabla_Z f|^2}{f} d\nu_N^{QSD}
+
 $$
 
 for any smooth probability density $f$ with $\mu = f \cdot \nu_N^{QSD}$.
@@ -65,6 +66,7 @@ The constant is:
 
 $$
 \lambda_{\text{LSI}} = \frac{\gamma \kappa_{\text{conf}} \kappa_W \delta^2}{C_0}
+
 $$
 
 where:
@@ -80,12 +82,14 @@ Otto & Villani (2000, Theorem 1) established that a logarithmic Sobolev inequali
 
 $$
 D_{KL}(\mu \| \pi) \leq \frac{1}{2\lambda} \int \frac{|\nabla f|^2}{f} d\pi
+
 $$
 
 then for any probability measure $\mu$:
 
 $$
 W_2^2(\mu, \pi) \leq \frac{2}{\lambda} D_{KL}(\mu \| \pi)
+
 $$
 
 **Step 3: Apply to our setting**
@@ -101,6 +105,7 @@ By symmetry of the Wasserstein distance:
 
 $$
 W_2^2(\nu_N^{QSD}, \rho_0^{\otimes N}) = W_2^2(\rho_0^{\otimes N}, \nu_N^{QSD})
+
 $$
 
 **Step 4: Measure-theoretic setup**
@@ -120,12 +125,14 @@ To resolve this, we work with a common reference measure:
 
 $$
 D_{KL}(\mu \| \nu_N^{QSD}) \leq \frac{1}{\lambda_{\text{LSI}}} \mathcal{I}(\mu | \nu_N^{QSD})
+
 $$
 
 This can be reformulated with respect to the Lebesgue reference measure using the standard identity:
 
 $$
 D_{KL}(\mu \| \nu) = D_{KL}(\mu \| \mathcal{L}^N) - D_{KL}(\nu \| \mathcal{L}^N) + \log Z_\nu
+
 $$
 
 where $Z_\nu$ is the normalization constant of $\nu$.
@@ -134,6 +141,7 @@ where $Z_\nu$ is the normalization constant of $\nu$.
 
 $$
 W_2^2(\mu, \nu) \leq \frac{2}{\lambda_{\text{LSI}}} D_{KL}(\mu \| \nu)
+
 $$
 
 This holds even when $\mu$ and $\nu$ are mutually singular, as long as they share the common reference measure $\pi_{\text{ref}}$.
@@ -144,12 +152,14 @@ From the N-uniform LSI and Otto-Villani theorem:
 
 $$
 W_2^2(\nu_N^{QSD}, \rho_0^{\otimes N}) \leq \frac{2}{\lambda_{\text{LSI}}} D_{KL}(\nu_N^{QSD} \| \rho_0^{\otimes N})
+
 $$
 
 where we use the KL-divergence:
 
 $$
 D_{KL}(\nu_N^{QSD} \| \rho_0^{\otimes N}) = \int_{\Omega^N} \log\left(\frac{d\nu_N^{QSD}}{d\rho_0^{\otimes N}}\right) d\nu_N^{QSD}
+
 $$
 
 **Step 6: Explicit constant**
@@ -158,6 +168,7 @@ Substituting the explicit LSI constant:
 
 $$
 W_2^2(\nu_N^{QSD}, \rho_0^{\otimes N}) \leq \frac{2 C_0}{\gamma \kappa_{\text{conf}} \kappa_W \delta^2} \cdot D_{KL}(\nu_N^{QSD} \| \rho_0^{\otimes N})
+
 $$
 
 :::
@@ -178,6 +189,7 @@ Let $\mathcal{H}_N := D_{KL}(\nu_N^{QSD} \| \rho_0^{\otimes N})$ be the relative
 
 $$
 \mathcal{H}_N \leq \frac{C_{\text{int}}}{N}
+
 $$
 
 where $C_{\text{int}}$ is the **interaction complexity constant**, which quantifies the strength of particle interactions through the diversity companion probability.
@@ -186,13 +198,13 @@ where $C_{\text{int}}$ is the **interaction complexity constant**, which quantif
 
 $$
 C_{\text{int}} := \sup_{Z \in \Omega^N} \left\{ \sum_{i=1}^N \left| \mathbb{E}_{j \sim P_{\text{comp}}^i(Z)} [\Phi_j - \Phi_i] \right| \right\}
+
 $$
 
 where $P_{\text{comp}}^i(Z)$ is the diversity companion probability for particle $i$ and $\Phi_i$ is the fitness of particle $i$.
 :::
 
 :::{prf:proof}
-:label: proof-lem-quantitative-kl-bound
 
 The proof uses a modulated free energy argument combined with the entropy production inequality from {prf:ref}`thm-entropy-production-discrete`.
 
@@ -202,6 +214,7 @@ Let $\mu_N(t)$ be the distribution of the N-particle system at time $t$ (in disc
 
 $$
 \mathcal{H}_N(k+1) - \mathcal{H}_N(k) = -I_N(k) + R_N(k)
+
 $$
 
 where:
@@ -214,6 +227,7 @@ From the N-uniform LSI ({prf:ref}`thm-kl-convergence-euclidean`) and the cloning
 
 $$
 I_N(k) \geq \lambda_{\text{eff}} \cdot \mathcal{H}_N(k)
+
 $$
 
 where $\lambda_{\text{eff}} = \min(\lambda, \lambda_{\text{LSI}})$ is the effective dissipation rate, combining:
@@ -232,6 +246,7 @@ Following Jabin & Wang (2016), we can bound:
 
 $$
 |R_N(k)| \leq \frac{C_{\text{int}}}{N}
+
 $$
 
 where $C_{\text{int}}$ captures the interaction complexity.
@@ -242,6 +257,7 @@ In the Fragile Gas, interactions enter through the diversity companion probabili
 
 $$
 R_N(k) = \mathbb{E}_{\mu_N(k)} \left[ \sum_{i=1}^N P_{\text{clone}}^i(Z) \mathbb{E}_{j \sim P_{\text{comp}}^i(Z)} \left[ \log\left(\frac{\rho_0(z_j)}{\rho_0(z_i)}\right) \right] \right]
+
 $$
 
 The interaction complexity constant is defined from this expression:
@@ -252,18 +268,21 @@ At the QSD (stationary distribution), the entropy production and interaction cor
 
 $$
 0 = -\lambda_{\text{eff}} \cdot \mathcal{H}_N + O\left(\frac{C_{\text{int}}}{N}\right)
+
 $$
 
 Solving for $\mathcal{H}_N$:
 
 $$
 \mathcal{H}_N \leq \frac{C_{\text{int}}}{\lambda_{\text{eff}} \cdot N}
+
 $$
 
 For simplicity, we absorb $\lambda_{\text{eff}}^{-1}$ into $C_{\text{int}}$:
 
 $$
 \mathcal{H}_N \leq \frac{C_{\text{int}}}{N}
+
 $$
 
 **Step 6: Bounding $C_{\text{int}}$ - see proposition below**
@@ -274,6 +293,7 @@ With this result, we conclude:
 
 $$
 \mathcal{H}_N \leq \frac{C_{\text{int}}}{N} = O(1/N)
+
 $$
 
 :::
@@ -294,12 +314,14 @@ The interaction complexity constant appearing in {prf:ref}`lem-quantitative-kl-b
 
 $$
 |R_N(k)| \leq \frac{C_{\text{int}}}{N}
+
 $$
 
 is finite and independent of $N$. Specifically:
 
 $$
 C_{\text{int}} \leq \lambda \cdot L_{\log \rho_0} \cdot \text{diam}(\Omega)
+
 $$
 
 where:
@@ -311,7 +333,6 @@ All terms are independent of the number of particles $N$.
 :::
 
 :::{prf:proof}
-:label: proof-prop-interaction-complexity-bound
 
 The proof follows the methodology of Jabin & Wang (2016, Lemma 3.2) for bounding interaction terms in mean-field systems. The core insight is that the interaction correction term in the evolution of the KL-divergence, $R_N(t)$, arises from the difference between the N-particle dynamics and the mean-field dynamics. Due to the exchangeability of the particles, the leading-order interaction effects cancel out, leaving a residual term that scales as $O(1/N)$.
 
@@ -319,18 +340,21 @@ To formalize this, we analyze the term:
 
 $$
 R_N(t) = \mathbb{E}_{\mu_N(t)} \left[ \sum_{i=1}^N P_{\text{clone}}^i(Z) \mathbb{E}_{j \sim P_{\text{comp}}^i(Z)} \left[ \log\left(\frac{\rho_0(z_j)}{\rho_0(z_i)}\right) \right] \right]
+
 $$
 
 To bound the log-ratio, we introduce an additional regularity assumption on the mean-field invariant measure $\rho_0$. We assume that its logarithm, $\log \rho_0$, is Lipschitz continuous with a Lipschitz constant $L_{\log \rho_0} < \infty$. This is a standard assumption in the analysis of mean-field convergence. Under this assumption, we have:
 
 $$
 \left| \log \rho_0(z_j) - \log \rho_0(z_i) \right| \leq L_{\log \rho_0} \cdot d_\Omega(z_i, z_j)
+
 $$
 
 By applying this bound and following the mean-field scaling argument from Jabin & Wang (2016), the sum over all particles collapses to the desired $O(1/N)$ rate. This yields the bound on the interaction complexity constant:
 
 $$
 C_{\text{int}} = \lambda L_{\log \rho_0} \cdot \text{diam}(\Omega)
+
 $$
 
 Since $\lambda$, $L_{\log \rho_0}$, and $\text{diam}(\Omega)$ are all independent of $N$, the constant $C_{\text{int}}$ is also independent of $N$, which completes the proof.
@@ -352,6 +376,7 @@ For any Lipschitz observable $\phi: \Omega \to \mathbb{R}$ with constant $L_\phi
 
 $$
 \left| \mathbb{E}_{\nu_N^{QSD}} \left[ \frac{1}{N} \sum_{i=1}^N \phi(z_i) \right] - \int_\Omega \phi(z) \rho_0(z) dz \right| \leq L_\phi \cdot \mathbb{E}_{\nu_N^{QSD}} \left[ W_1(\bar{\mu}_N, \rho_0) \right]
+
 $$
 
 where $\bar{\mu}_N = \frac{1}{N}\sum_{i=1}^N \delta_{z_i}$ is the empirical measure.
@@ -360,13 +385,13 @@ Furthermore:
 
 $$
 \mathbb{E}_{\nu_N^{QSD}} \left[ W_1(\bar{\mu}_N, \rho_0) \right] \leq \sqrt{\mathbb{E}_{\nu_N^{QSD}} \left[ W_2^2(\bar{\mu}_N, \rho_0) \right]} \leq C_W \cdot \frac{1}{\sqrt{N}}
+
 $$
 
 where $C_W$ depends on $C_{\text{int}}$, $\lambda_{\text{LSI}}$, and the geometry of $\Omega$.
 :::
 
 :::{prf:proof}
-:label: proof-lem-lipschitz-observable-error
 
 The proof proceeds in three steps: (1) Kantorovich-Rubinstein duality, (2) relating empirical measure Wasserstein distance to KL divergence, (3) applying previous lemmas.
 
@@ -376,12 +401,14 @@ By the Kantorovich-Rubinstein theorem, for any two probability measures $\mu, \n
 
 $$
 W_1(\mu, \nu) = \sup_{\|g\|_{\text{Lip}} \leq 1} \left\{ \int g d\mu - \int g d\nu \right\}
+
 $$
 
 For a Lipschitz function $\phi$ with constant $L_\phi$, we have $\phi / L_\phi$ is 1-Lipschitz, so:
 
 $$
 \left| \int \phi d\mu - \int \phi d\nu \right| \leq L_\phi \cdot W_1(\mu, \nu)
+
 $$
 
 **Step 2: Apply to empirical measure**
@@ -390,18 +417,21 @@ Let $\bar{\mu}_N = \frac{1}{N}\sum_{i=1}^N \delta_{z_i}$ be the empirical measur
 
 $$
 \frac{1}{N} \sum_{i=1}^N \phi(z_i) = \int_\Omega \phi(z) d\bar{\mu}_N(z)
+
 $$
 
 Applying the Kantorovich-Rubinstein bound:
 
 $$
 \left| \int \phi d\bar{\mu}_N - \int \phi d\rho_0 \right| \leq L_\phi \cdot W_1(\bar{\mu}_N, \rho_0)
+
 $$
 
 Taking expectation over $Z \sim \nu_N^{QSD}$:
 
 $$
 \left| \mathbb{E}_{\nu_N^{QSD}} \left[ \frac{1}{N} \sum_{i=1}^N \phi(z_i) \right] - \int \phi d\rho_0 \right| \leq L_\phi \cdot \mathbb{E}_{\nu_N^{QSD}} \left[ W_1(\bar{\mu}_N, \rho_0) \right]
+
 $$
 
 **Step 3: Bound expected $W_1$ distance**
@@ -410,6 +440,7 @@ By Cauchy-Schwarz and the relation $W_1 \leq W_2$:
 
 $$
 \mathbb{E}_{\nu_N^{QSD}} \left[ W_1(\bar{\mu}_N, \rho_0) \right] \leq \sqrt{\mathbb{E}_{\nu_N^{QSD}} \left[ W_1^2(\bar{\mu}_N, \rho_0) \right]} \leq \sqrt{\mathbb{E}_{\nu_N^{QSD}} \left[ W_2^2(\bar{\mu}_N, \rho_0) \right]}
+
 $$
 
 **Step 4: Relate empirical measure to product measure**
@@ -425,6 +456,7 @@ For i.i.d. samples $(z_1, \ldots, z_N) \sim \rho_0^{\otimes N}$, the empirical m
 
 $$
 \mathbb{E}_{\rho_0^{\otimes N}} \left[ W_2^2(\bar{\mu}_N, \rho_0) \right] \leq \frac{C_{\text{var}}}{N}
+
 $$
 
 where $C_{\text{var}}$ depends on the second moment of $\rho_0$.
@@ -440,6 +472,7 @@ We apply **Fournier & Guillin (2015, Theorem 2)**: For an exchangeable probabili
 
 $$
 \mathbb{E}_{\nu_N} \left[ W_2^2(\bar{\mu}_N, \rho) \right] \leq \frac{C_{\text{var}}(\rho)}{N} + C_{\text{dep}} \cdot D_{KL}(\nu_N \| \rho^{\otimes N})
+
 $$
 
 where:
@@ -455,18 +488,21 @@ Applying to our setting with $C' := C_{\text{dep}}$:
 
 $$
 \mathbb{E}_{\nu_N^{QSD}} \left[ W_2^2(\bar{\mu}_N, \rho_0) \right] \leq \frac{C_{\text{var}}(\rho_0)}{N} + C' \cdot D_{KL}(\nu_N^{QSD} \| \rho_0^{\otimes N})
+
 $$
 
 Using {prf:ref}`lem-quantitative-kl-bound`:
 
 $$
 D_{KL}(\nu_N^{QSD} \| \rho_0^{\otimes N}) \leq \frac{C_{\text{int}}}{N}
+
 $$
 
 Therefore:
 
 $$
 \mathbb{E}_{\nu_N^{QSD}} \left[ W_2^2(\bar{\mu}_N, \rho_0) \right] \leq \frac{C_{\text{var}}(\rho_0) + C' C_{\text{int}}}{N} = \frac{C_W^2}{N}
+
 $$
 
 where $C_W := \sqrt{C_{\text{var}}(\rho_0) + C' C_{\text{int}}}$.
@@ -477,12 +513,14 @@ Combining steps 3 and 5:
 
 $$
 \mathbb{E}_{\nu_N^{QSD}} \left[ W_1(\bar{\mu}_N, \rho_0) \right] \leq \sqrt{\frac{C_W^2}{N}} = \frac{C_W}{\sqrt{N}}
+
 $$
 
 Therefore:
 
 $$
 \left| \mathbb{E}_{\nu_N^{QSD}} \left[ \frac{1}{N} \sum_{i=1}^N \phi(z_i) \right] - \int \phi d\rho_0 \right| \leq \frac{L_\phi \cdot C_W}{\sqrt{N}}
+
 $$
 
 :::
@@ -504,6 +542,7 @@ The mean-field invariant measure $\rho_0$ of the McKean-Vlasov PDE has finite se
 
 $$
 C_{\text{var}}(\rho_0) := \int_\Omega |z - \bar{z}|^2 d\rho_0(z) < \infty
+
 $$
 
 where $\bar{z} = \int_\Omega z d\rho_0(z)$ is the mean.
@@ -512,11 +551,11 @@ More explicitly, both the position and velocity moments are finite:
 
 $$
 \int_\Omega (|x|^2 + |v|^2) d\rho_0(z) < \infty
+
 $$
 :::
 
 :::{prf:proof}
-:label: proof-prop-finite-second-moment-meanfield
 
 The proof relies on the confinement axiom and energy bounds for the mean-field dynamics.
 
@@ -526,12 +565,14 @@ By the confinement axiom ({prf:ref}`def-confined-potential`), the potential $U: 
 
 $$
 U(x) \to +\infty \quad \text{as } |x| \to \infty
+
 $$
 
 More precisely, there exists $\kappa_{\text{conf}} > 0$ and $R_0 > 0$ such that for all $|x| > R_0$:
 
 $$
 \langle x, \nabla U(x) \rangle \geq \kappa_{\text{conf}} |x|^2
+
 $$
 
 This ensures that the potential grows superlinearly at infinity, providing a restoring force that confines particles.
@@ -542,12 +583,14 @@ Define the total energy functional:
 
 $$
 \mathcal{E}[\rho] := \int_\Omega \left[ \frac{1}{2}|v|^2 + U(x) \right] \rho(z) dz
+
 $$
 
 For the mean-field McKean-Vlasov PDE (see [07_mean_field](07_mean_field)), the energy satisfies a dissipation inequality. Following standard Langevin dynamics analysis, the invariant measure $\rho_0$ satisfies:
 
 $$
 \int_\Omega \left[ \frac{1}{2}|v|^2 + U(x) \right] \rho_0(z) dz < \infty
+
 $$
 
 **Step 3: Velocity moment bound**
@@ -556,6 +599,7 @@ From the energy bound, the velocity second moment is immediately bounded:
 
 $$
 \int_\Omega |v|^2 d\rho_0(z) \leq 2 \int_\Omega \left[ \frac{1}{2}|v|^2 + U(x) \right] \rho_0(z) dz < \infty
+
 $$
 
 **Step 4: Position moment bound**
@@ -564,6 +608,7 @@ For the position moment, we use the confinement property. Outside the ball $B_{R
 
 $$
 U(x) \geq \kappa_{\text{conf}} \int_1^{|x|/R_0} r^2 dr \geq \frac{\kappa_{\text{conf}}}{3R_0^2} |x|^3 - C
+
 $$
 
 Wait, this gives cubic growth, not quadratic. Let me use a simpler argument.
@@ -574,6 +619,7 @@ By the confinement condition, for large $|x|$:
 
 $$
 U(x) \geq \kappa_{\text{conf}}' |x|^2 - C'
+
 $$
 
 for some constants $\kappa_{\text{conf}}' > 0$ and $C'$ (this follows from integrating the drift condition).
@@ -582,12 +628,14 @@ Therefore:
 
 $$
 \int_\Omega |x|^2 \rho_0(z) dz \leq \frac{1}{\kappa_{\text{conf}}'} \int_\Omega (U(x) + C') \rho_0(z) dz
+
 $$
 
 Since $\int U(x) \rho_0(z) dz \leq \mathcal{E}[\rho_0] < \infty$ and $\int \rho_0(z) dz = 1$, we have:
 
 $$
 \int_\Omega |x|^2 \rho_0(z) dz < \infty
+
 $$
 
 **Step 5: Combined bound**
@@ -596,12 +644,14 @@ Combining the position and velocity bounds:
 
 $$
 \int_\Omega |z|^2 d\rho_0(z) = \int_\Omega (|x|^2 + |v|^2) d\rho_0(z) < \infty
+
 $$
 
 Therefore the variance is also finite:
 
 $$
 C_{\text{var}}(\rho_0) = \int_\Omega |z - \bar{z}|^2 d\rho_0(z) \leq 2 \int_\Omega |z|^2 d\rho_0(z) + 2|\bar{z}|^2 < \infty
+
 $$
 
 :::
@@ -624,12 +674,14 @@ Let $\nu_N^{QSD}$ be the quasi-stationary distribution of the N-particle system 
 
 $$
 \left| \mathbb{E}_{\nu_N^{QSD}} \left[ \frac{1}{N} \sum_{i=1}^N \phi(z_i) \right] - \int_\Omega \phi(z) \rho_0(z) dz \right| \leq \frac{C_{\text{obs}} \cdot L_\phi}{\sqrt{N}}
+
 $$
 
 where the constant $C_{\text{obs}}$ is given explicitly by:
 
 $$
 C_{\text{obs}} = \sqrt{C_{\text{var}} + C' \cdot C_{\text{int}}}
+
 $$
 
 and depends on:
@@ -639,7 +691,6 @@ and depends on:
 :::
 
 :::{prf:proof}
-:label: proof-thm-quantitative-propagation-chaos
 
 **Step 1: Apply {prf:ref}`lem-lipschitz-observable-error`**
 
@@ -647,6 +698,7 @@ From the empirical measure observable error lemma:
 
 $$
 \left| \mathbb{E}_{\nu_N^{QSD}} \left[ \frac{1}{N} \sum_{i=1}^N \phi(z_i) \right] - \int \phi d\rho_0 \right| \leq L_\phi \cdot \mathbb{E}_{\nu_N^{QSD}} \left[ W_1(\bar{\mu}_N, \rho_0) \right]
+
 $$
 
 **Step 2: Bound $\mathbb{E}[W_1]$ via $\mathbb{E}[W_2^2]$**
@@ -655,6 +707,7 @@ By Cauchy-Schwarz:
 
 $$
 \mathbb{E}_{\nu_N^{QSD}} \left[ W_1(\bar{\mu}_N, \rho_0) \right] \leq \sqrt{\mathbb{E}_{\nu_N^{QSD}} \left[ W_2^2(\bar{\mu}_N, \rho_0) \right]}
+
 $$
 
 **Step 3: Apply Fournier-Guillin bound**
@@ -663,24 +716,28 @@ For exchangeable particles:
 
 $$
 \mathbb{E}_{\nu_N^{QSD}} \left[ W_2^2(\bar{\mu}_N, \rho_0) \right] \leq \frac{C_{\text{var}}}{N} + C' \cdot D_{KL}(\nu_N^{QSD} \| \rho_0^{\otimes N})
+
 $$
 
 **Step 4: Apply {prf:ref}`lem-quantitative-kl-bound`**
 
 $$
 D_{KL}(\nu_N^{QSD} \| \rho_0^{\otimes N}) \leq \frac{C_{\text{int}}}{N}
+
 $$
 
 **Step 5: Combine**
 
 $$
 \mathbb{E}_{\nu_N^{QSD}} \left[ W_2^2(\bar{\mu}_N, \rho_0) \right] \leq \frac{C_{\text{var}} + C' C_{\text{int}}}{N}
+
 $$
 
 Therefore:
 
 $$
 \mathbb{E}_{\nu_N^{QSD}} \left[ W_1(\bar{\mu}_N, \rho_0) \right] \leq \sqrt{\frac{C_{\text{var}} + C' C_{\text{int}}}{N}} = \frac{C_{\text{obs}}}{\sqrt{N}}
+
 $$
 
 where $C_{\text{obs}} := \sqrt{C_{\text{var}} + C' C_{\text{int}}}$.
@@ -713,6 +770,7 @@ $$
 \boxed{
 \left| \mathbb{E}_{\nu_N^{QSD}} \left[ \phi_N \right] - \int \phi d\rho_0 \right| \leq \frac{C_{\text{obs}} \cdot L_\phi}{\sqrt{N}}
 }
+
 $$
 
 **Proof components:**
@@ -749,13 +807,13 @@ Let $\{Z_k\}_{k \geq 0}$ be the BAOAB chain with step size $\Delta t$ initialize
 
 $$
 \sup_{k \geq 0} \mathbb{E}_{\nu^{\text{cont}}} [|Z_k|^4] \leq M_4
+
 $$
 
 where $|Z|^4 = (|x|^2 + |v|^2)^2$ for $Z = (x, v)$.
 :::
 
 :::{prf:proof}
-:label: proof-prop-fourth-moment-baoab
 
 The proof uses a discrete-time Lyapunov argument on the squared energy of the system. The methodology is a standard technique for establishing uniform moment bounds for numerical integrators of Langevin dynamics under a confining potential, ensuring the scheme does not diverge and has a well-behaved invariant measure. For a comprehensive treatment of the underlying theory, see **Leimkuhler & Matthews (2015, Chapter 7)**. For completeness, we provide a detailed proof adapted to the BAOAB integrator and the specific assumptions of the Fragile Gas framework.
 
@@ -765,12 +823,14 @@ Define the discrete-time energy:
 
 $$
 E(Z) := \frac{1}{2}|v|^2 + U(x)
+
 $$
 
 From the energy bounds for the continuous-time Langevin dynamics ({prf:ref}`thm-energy-bounds`), we have:
 
 $$
 \mathbb{E}_{\nu^{\text{cont}}} [E(Z)] = \mathbb{E}_{\nu^{\text{cont}}} \left[\frac{1}{2}|v|^2 + U(x)\right] < \infty
+
 $$
 
 **Step 2: BAOAB energy evolution**
@@ -786,6 +846,7 @@ For the O-step (where noise is added), the expected energy change is:
 
 $$
 \mathbb{E}[|v_{k+3/5}|^2] = |v_{k+2/5}|^2 + (1 - e^{-\gamma \Delta t}) \frac{d\sigma^2}{\gamma}
+
 $$
 
 where $d$ is the dimension.
@@ -796,6 +857,7 @@ The A-steps provide exponential friction:
 
 $$
 |v_{k+2/5}|^2 = e^{-\gamma \Delta t} |v_{k+1/5}|^2 \leq |v_{k+1/5}|^2
+
 $$
 
 The B-steps change position but not velocity magnitude. However, they couple velocity to the potential gradient.
@@ -804,6 +866,7 @@ By the confinement condition:
 
 $$
 \mathbb{E}[\Delta U] \approx \mathbb{E}[\langle \nabla U(x_k), \Delta x_k \rangle] = \frac{\Delta t}{2} \mathbb{E}[\langle \nabla U(x_k), v_k \rangle]
+
 $$
 
 For large $|x|$, confinement gives $\langle x, \nabla U(x) \rangle \geq \kappa_{\text{conf}} |x|^2$, providing a restoring force.
@@ -814,6 +877,7 @@ Combining the heating (O-step) and dissipation (friction + confinement), the ene
 
 $$
 \mathbb{E}[E(Z_{k+1}) | Z_k] \leq (1 - \kappa_E \Delta t) E(Z_k) + C_E \Delta t
+
 $$
 
 for some constants $\kappa_E, C_E > 0$ (dependent on $\gamma, \sigma, \kappa_{\text{conf}}$) when $\Delta t$ is sufficiently small.
@@ -822,6 +886,7 @@ At stationarity ($k \to \infty$):
 
 $$
 \mathbb{E}_{\nu^{\Delta t}} [E(Z)] \leq \frac{C_E}{\kappa_E}
+
 $$
 
 **Step 5: From energy to fourth moment (Lyapunov on $E^2$)**
@@ -834,6 +899,7 @@ We will show:
 
 $$
 \mathbb{E}[E^2(Z_{k+1}) | Z_k] \leq (1 - \kappa_4 \Delta t) E^2(Z_k) + C_4 \Delta t
+
 $$
 
 for some constants $\kappa_4, C_4 > 0$ when $\Delta t$ is sufficiently small.
@@ -844,6 +910,7 @@ We will compute $\mathbb{E}[E^2(Z_{k+1}) | Z_k]$ by tracking the evolution throu
 
 $$
 V(Z) := E^2(Z) = \left(\frac{1}{2}|v|^2 + U(x)\right)^2
+
 $$
 
 Let $Z_k = (x_k, v_k)$ and track the evolution:
@@ -859,12 +926,14 @@ The energy at step $k+1$ is:
 
 $$
 E(Z_{k+1}) = \frac{1}{2}|v'''|^2 + U(x_{k+1})
+
 $$
 
 Expand $U(x_{k+1})$ using Taylor expansion around $x_k$:
 
 $$
 U(x_{k+1}) = U(x_k) + \langle \nabla U(x_k), x_{k+1} - x_k \rangle + \frac{1}{2} \langle x_{k+1} - x_k, \nabla^2 U(\xi) (x_{k+1} - x_k) \rangle
+
 $$
 
 where $\xi$ is between $x_k$ and $x_{k+1}$.
@@ -873,12 +942,14 @@ Since $|x_{k+1} - x_k| = O(\Delta t |v_k|)$, we have:
 
 $$
 U(x_{k+1}) = U(x_k) + O(\Delta t |v_k| |\nabla U(x_k)|) + O((\Delta t)^2 |v_k|^2 \|\nabla^2 U\|)
+
 $$
 
 For $|v'''|^2$, after the A-O-A composition:
 
 $$
 |v'''|^2 = e^{-\gamma \Delta t} |v_k|^2 + (1 - e^{-\gamma \Delta t}) \frac{d\sigma^2}{\gamma} + O(\Delta t |v_k| |\xi|)
+
 $$
 
 where $\mathbb{E}[|\xi|^2] = (1-e^{-\gamma \Delta t})\frac{d\sigma^2}{\gamma}$.
@@ -895,6 +966,7 @@ Combining these effects, for large $E(Z_k)$:
 
 $$
 \mathbb{E}[E(Z_{k+1}) | Z_k] \leq E(Z_k) - \kappa_E \Delta t E(Z_k) + C_E \Delta t
+
 $$
 
 where $\kappa_E \sim \gamma$ (friction) and $C_E$ accounts for noise and confinement.
@@ -903,6 +975,7 @@ For $V(Z_k) = E^2(Z_k)$, we need to control:
 
 $$
 \mathbb{E}[E^2(Z_{k+1}) | Z_k] = \mathbb{E}[(E(Z_k) + \Delta E)^2 | Z_k]
+
 $$
 
 where $\Delta E := E(Z_{k+1}) - E(Z_k)$.
@@ -911,6 +984,7 @@ Expanding:
 
 $$
 \mathbb{E}[E^2(Z_{k+1}) | Z_k] = E^2(Z_k) + 2 E(Z_k) \mathbb{E}[\Delta E | Z_k] + \mathbb{E}[(\Delta E)^2 | Z_k]
+
 $$
 
 **Substep 5.5: Bound the terms**
@@ -919,6 +993,7 @@ From the first-moment analysis:
 
 $$
 \mathbb{E}[\Delta E | Z_k] \leq -\kappa_E \Delta t E(Z_k) + C_E \Delta t
+
 $$
 
 For the second term, we need to bound the variance of the energy change. We will derive this carefully.
@@ -934,24 +1009,28 @@ The energy change is:
 
 $$
 \Delta E = \frac{1}{2}(|v'''|^2 - |v_k|^2) + (U(x_{k+1}) - U(x_k))
+
 $$
 
 **Velocity contribution**: After A-O-A composition:
 
 $$
 v''' = e^{-\gamma \Delta t/2}(e^{-\gamma \Delta t/2} v_k + \xi) = e^{-\gamma \Delta t} v_k + e^{-\gamma \Delta t/2} \xi
+
 $$
 
 Therefore:
 
 $$
 |v'''|^2 = e^{-2\gamma \Delta t} |v_k|^2 + 2 e^{-3\gamma \Delta t/2} \langle v_k, \xi \rangle + e^{-\gamma \Delta t} |\xi|^2
+
 $$
 
 The variance of the velocity contribution:
 
 $$
 \text{Var}[\frac{1}{2}(|v'''|^2 - |v_k|^2) | Z_k] \leq C_v (\Delta t)^2 |v_k|^4 + C'_v \Delta t |v_k|^2 + C''_v \Delta t
+
 $$
 
 where we used $\mathbb{E}[|\xi|^2] = O(\Delta t)$, $\mathbb{E}[|\xi|^4] = O((\Delta t)^2)$, and $\mathbb{E}[\langle v_k, \xi \rangle^2] = |v_k|^2 \mathbb{E}[|\xi|^2] = O(\Delta t |v_k|^2)$.
@@ -960,18 +1039,21 @@ where we used $\mathbb{E}[|\xi|^2] = O(\Delta t)$, $\mathbb{E}[|\xi|^4] = O((\De
 
 $$
 U(x_{k+1}) - U(x_k) = \langle \nabla U(x_k), x_{k+1} - x_k \rangle + \frac{1}{2} \langle x_{k+1} - x_k, \nabla^2 U(\xi) (x_{k+1} - x_k) \rangle
+
 $$
 
 Since $|x_{k+1} - x_k| = O(\Delta t (|v_k| + |v'''|)) = O(\Delta t |v_k|) + O((\Delta t)^{3/2})$, we have:
 
 $$
 \text{Var}[U(x_{k+1}) - U(x_k) | Z_k] \leq C_U (\Delta t)^2 |v_k|^2 \|\nabla U\|^2 + C'_U \Delta t \|\nabla U\|^2
+
 $$
 
 **Cross-term**: The expansion $(\Delta E)^2 = (\Delta E_v)^2 + (\Delta E_U)^2 + 2 \Delta E_v \Delta E_U$ includes a cross-term. By Cauchy-Schwarz:
 
 $$
 2|\mathbb{E}[\Delta E_v \Delta E_U | Z_k]| \leq 2\sqrt{\text{Var}[\Delta E_v | Z_k] \cdot \text{Var}[\Delta E_U | Z_k]} \leq \text{Var}[\Delta E_v | Z_k] + \text{Var}[\Delta E_U | Z_k]
+
 $$
 
 This is absorbed into the bounds for the squared terms.
@@ -980,6 +1062,7 @@ This is absorbed into the bounds for the squared terms.
 
 $$
 \mathbb{E}[(\Delta E)^2 | Z_k] \leq C_{\text{var}} \Delta t (1 + E(Z_k))
+
 $$
 
 where $C_{\text{var}} = 2\max\{C_v + C_U, C'_v + C'_U, C''_v\}$ depends on $\gamma, \sigma, \|\nabla U\|, \|\nabla^2 U\|$.
@@ -991,30 +1074,35 @@ $$
 \mathbb{E}[E^2(Z_{k+1}) | Z_k] &\leq E^2(Z_k) + 2 E(Z_k) (-\kappa_E \Delta t E(Z_k) + C_E \Delta t) + C_{\text{var}} \Delta t (1 + E(Z_k)) \\
 &= E^2(Z_k) - 2\kappa_E \Delta t E^2(Z_k) + (2 C_E + C_{\text{var}}) \Delta t E(Z_k) + C_{\text{var}} \Delta t
 \end{align*}
+
 $$
 
 **Handle the linear term using Young's inequality**: The term $(2 C_E + C_{\text{var}}) \Delta t E(Z_k)$ grows with $E(Z_k)$ and cannot be absorbed into a constant. We use Young's inequality: for any $\epsilon > 0$,
 
 $$
 E(Z_k) \leq \epsilon E^2(Z_k) + \frac{1}{4\epsilon}
+
 $$
 
 Therefore:
 
 $$
 (2 C_E + C_{\text{var}}) \Delta t E(Z_k) \leq (2 C_E + C_{\text{var}}) \Delta t \left[ \epsilon E^2(Z_k) + \frac{1}{4\epsilon} \right]
+
 $$
 
 **Choose $\epsilon$ to absorb into dissipation**: Set
 
 $$
 \epsilon := \frac{\kappa_E}{2 C_E + C_{\text{var}}}
+
 $$
 
 Then:
 
 $$
 (2 C_E + C_{\text{var}}) \Delta t \epsilon E^2(Z_k) = \kappa_E \Delta t E^2(Z_k)
+
 $$
 
 Substituting back:
@@ -1025,12 +1113,14 @@ $$
 &= E^2(Z_k) - \kappa_E \Delta t E^2(Z_k) + \left[ \frac{(2 C_E + C_{\text{var}})^2}{4\kappa_E} + C_{\text{var}} \right] \Delta t \\
 &= (1 - \kappa_E \Delta t) E^2(Z_k) + C'_4 \Delta t
 \end{align*}
+
 $$
 
 where:
 
 $$
 C'_4 := \frac{(2 C_E + C_{\text{var}})^2}{4\kappa_E} + C_{\text{var}}
+
 $$
 
 This gives the Lyapunov inequality with $\kappa_4 := \kappa_E$ and $C_4 := C'_4$.
@@ -1041,6 +1131,7 @@ At stationarity:
 
 $$
 \mathbb{E}_{\nu^{\Delta t}} [E^2(Z)] \leq \frac{C_4}{\kappa_4} = \frac{C'_4}{\kappa_E} = \frac{1}{\kappa_E}\left[\frac{(2 C_E + C_{\text{var}})^2}{4\kappa_E} + C_{\text{var}}\right]
+
 $$
 
 **Substep 5.7: From $E^2$ to fourth moment**
@@ -1049,18 +1140,21 @@ Since $E(Z) = \frac{1}{2}|v|^2 + U(x)$, we have:
 
 $$
 |Z|^4 = (|x|^2 + |v|^2)^2 \leq C_{\text{coeff}} (|v|^4 + |x|^4)
+
 $$
 
 By confinement, $U(x) \geq \kappa_{\text{conf}} |x|^2 - C_{\text{conf}}$, so:
 
 $$
 |x|^2 \leq \frac{1}{\kappa_{\text{conf}}} (U(x) + C_{\text{conf}}) \leq \frac{1}{\kappa_{\text{conf}}} (E(Z) + C_{\text{conf}})
+
 $$
 
 Therefore:
 
 $$
 |x|^4 \leq \frac{1}{\kappa_{\text{conf}}^2} (E(Z) + C_{\text{conf}})^2 \leq \frac{2}{\kappa_{\text{conf}}^2} (E^2(Z) + C_{\text{conf}}^2)
+
 $$
 
 Similarly, $|v|^4 \leq 4 E^2(Z)$ since $|v|^2 \leq 2 E(Z)$.
@@ -1069,10 +1163,12 @@ Combining:
 
 $$
 \mathbb{E}_{\nu^{\Delta t}}[|Z|^4] \leq C_{\text{coeff}} \left( 4 \mathbb{E}[E^2(Z)] + \frac{2}{\kappa_{\text{conf}}^2} (\mathbb{E}[E^2(Z)] + C_{\text{conf}}^2) \right)
+
 $$
 
 $$
 \leq M_4 := C_{\text{coeff}} \left( 4 + \frac{2}{\kappa_{\text{conf}}^2} \right) \frac{C_4}{\kappa_4} + \frac{2 C_{\text{coeff}} C_{\text{conf}}^2}{\kappa_{\text{conf}}^2}
+
 $$
 
 This is finite and depends only on $\gamma, \sigma, \kappa_{\text{conf}}, d$, independent of $\Delta t$ for $\Delta t < \Delta t_0$ (sufficiently small).
@@ -1098,12 +1194,14 @@ $$
 dX_t = V_t dt \\
 dV_t = -\nabla U(X_t) dt - \gamma V_t dt + \sigma dW_t
 \end{cases}
+
 $$
 
 and let $Z_k$ be the BAOAB approximation with step size $\Delta t$ starting from $Z_0 = Z(0)$. For any test function $\phi \in C^4(\Omega)$ with bounded derivatives up to order 4, we have:
 
 $$
 |\mathbb{E}[\phi(Z_k)] - \mathbb{E}[\phi(Z(k\Delta t))]| \leq C_{\text{weak}} \cdot \|\phi\|_{C^4} \cdot (\Delta t)^2 \cdot k\Delta t
+
 $$
 
 where $C_{\text{weak}}$ depends on $\gamma, \sigma, \|\nabla U\|_{\text{Lip}}, M_4$ but not on $\Delta t$ or $k$.
@@ -1112,11 +1210,11 @@ In particular, for fixed time $T = k\Delta t$:
 
 $$
 |\mathbb{E}[\phi(Z_k)] - \mathbb{E}[\phi(Z(T))]| = O((\Delta t)^2)
+
 $$
 :::
 
 :::{prf:proof}
-:label: proof-lem-baoab-weak-error
 
 The proof uses backward error analysis and Taylor expansion of the BAOAB integrator.
 
@@ -1126,6 +1224,7 @@ The BAOAB integrator is a splitting scheme that can be written as:
 
 $$
 Z_{k+1} = \Phi_{\text{BAOAB}}^{\Delta t}(Z_k) = \Phi_B^{\Delta t/2} \circ \Phi_A^{\Delta t/2} \circ \Phi_O^{\Delta t} \circ \Phi_A^{\Delta t/2} \circ \Phi_B^{\Delta t/2}(Z_k)
+
 $$
 
 where each $\Phi$ corresponds to one of the sub-steps.
@@ -1138,6 +1237,7 @@ For a test function $\phi \in C^4(\Omega)$, the weak error evolution satisfies:
 
 $$
 \frac{d}{dt} \mathbb{E}[\phi(Z_k)] = \mathbb{E}[\mathcal{L}_{\text{BAOAB}}^{\Delta t} \phi(Z_k)]
+
 $$
 
 where $\mathcal{L}_{\text{BAOAB}}^{\Delta t}$ is the discrete-time generator.
@@ -1146,12 +1246,14 @@ The continuous-time generator is:
 
 $$
 \mathcal{L} \phi = v \cdot \nabla_x \phi - \nabla U(x) \cdot \nabla_v \phi - \gamma v \cdot \nabla_v \phi + \frac{\sigma^2}{2} \Delta_v \phi
+
 $$
 
 By backward error analysis (Bou-Rabee & Sanz-Serna 2017, Theorem 3.1), the BAOAB generator can be expanded as:
 
 $$
 \mathcal{L}_{\text{BAOAB}}^{\Delta t} = \mathcal{L} + (\Delta t)^2 \mathcal{L}_2 + O((\Delta t)^4)
+
 $$
 
 where $\mathcal{L}_2$ is a fourth-order differential operator with bounded coefficients (depending on derivatives of $U$ up to order 3).
@@ -1166,30 +1268,35 @@ From the generator expansion:
 
 $$
 \varepsilon_{k+1} = \varepsilon_k + \Delta t \cdot \mathbb{E}[(\mathcal{L}_{\text{BAOAB}}^{\Delta t} - \mathcal{L})\phi(Z_k)] + O((\Delta t)^2)
+
 $$
 
 The generator difference contributes:
 
 $$
 \mathbb{E}[(\mathcal{L}_{\text{BAOAB}}^{\Delta t} - \mathcal{L})\phi(Z_k)] = (\Delta t)^2 \mathbb{E}[\mathcal{L}_2 \phi(Z_k)] + O((\Delta t)^4)
+
 $$
 
 Using the fourth-moment bounds ({prf:ref}`prop-fourth-moment-baoab`):
 
 $$
 |\mathbb{E}[\mathcal{L}_2 \phi(Z_k)]| \leq C_2 \|\phi\|_{C^4} \mathbb{E}[|Z_k|^4]^{1/2} \leq C_2 \|\phi\|_{C^4} M_4^{1/2}
+
 $$
 
 Therefore:
 
 $$
 |\varepsilon_{k+1}| \leq |\varepsilon_k| + C_2 M_4^{1/2} \|\phi\|_{C^4} (\Delta t)^3 + O((\Delta t)^4)
+
 $$
 
 With $\varepsilon_0 = 0$, summing from $k=0$ to $k=K-1$ where $K\Delta t = T$:
 
 $$
 |\varepsilon_K| \leq K \cdot C_2 M_4^{1/2} \|\phi\|_{C^4} (\Delta t)^3 = C_{\text{weak}} \|\phi\|_{C^4} (\Delta t)^2 \cdot T
+
 $$
 
 where $C_{\text{weak}} = C_2 M_4^{1/2}$.
@@ -1212,6 +1319,7 @@ Let $\nu^{\text{cont}}$ be the invariant measure of the continuous-time Langevin
 
 $$
 \left| \mathbb{E}_{\nu^{\Delta t}} [\phi] - \mathbb{E}_{\nu^{\text{cont}}} [\phi] \right| \leq C_{\text{inv}} \cdot \|\phi\|_{C^4} \cdot (\Delta t)^2
+
 $$
 
 where $C_{\text{inv}}$ depends on $\gamma, \sigma, \|\nabla U\|_{\text{Lip}}, M_4, \kappa_{\text{mix}}$ but not on $\Delta t$.
@@ -1220,7 +1328,6 @@ where $C_{\text{inv}}$ depends on $\gamma, \sigma, \|\nabla U\|_{\text{Lip}}, M_
 :::
 
 :::{prf:proof}
-:label: proof-lem-baoab-invariant-measure-error
 
 The proof uses the Poisson equation method and exploits the symmetry of the BAOAB integrator.
 
@@ -1230,12 +1337,14 @@ For an observable $\phi \in C^4$, consider the centered observable:
 
 $$
 \tilde{\phi}(z) := \phi(z) - \mathbb{E}_{\nu^{\text{cont}}}[\phi]
+
 $$
 
 The Poisson equation for the continuous-time generator $\mathcal{L}$ is:
 
 $$
 \mathcal{L} \psi = \tilde{\phi}
+
 $$
 
 This equation has a unique solution $\psi \in C^{\infty}(\Omega)$ under the geometric ergodicity assumption, and moreover $\mathbb{E}_{\nu^{\text{cont}}}[\psi] = 0$.
@@ -1246,12 +1355,14 @@ The key regularity result (from elliptic PDE theory applied to the hypoelliptic 
 
 $$
 \|\psi\|_{C^{k+2}} \leq \frac{C_{\text{reg}}}{\kappa_{\text{mix}}^{k+1}} \|\tilde{\phi}\|_{C^k}
+
 $$
 
 For $\phi \in C^4$, we have:
 
 $$
 \|\psi\|_{C^6} \leq \frac{C_{\text{reg}} \|\phi\|_{C^4}}{\kappa_{\text{mix}}^5}
+
 $$
 
 **Step 3: Error decomposition via Poisson equation**
@@ -1263,6 +1374,7 @@ $$
 \mathbb{E}_{\nu^{\Delta t}}[\phi] - \mathbb{E}_{\nu^{\text{cont}}}[\phi] &= \mathbb{E}_{\nu^{\Delta t}}[\tilde{\phi}] \\
 &= \mathbb{E}_{\nu^{\Delta t}}[\mathcal{L} \psi] \quad \text{(by Poisson equation)}
 \end{align*}
+
 $$
 
 **Step 4: Key identity using invariant measure property**
@@ -1271,12 +1383,14 @@ Since $\nu^{\Delta t}$ is the invariant measure of the discrete-time generator $
 
 $$
 \mathbb{E}_{\nu^{\Delta t}}[\mathcal{L}_{\text{BAOAB}}^{\Delta t} \psi] = 0
+
 $$
 
 This is because for any function $g$:
 
 $$
 \mathbb{E}_{\nu^{\Delta t}}[\mathcal{L}_{\text{BAOAB}}^{\Delta t} g] = \mathbb{E}_{\nu^{\Delta t}}[g(Z_1) - g(Z_0)] = 0
+
 $$
 
 when $Z_0 \sim \nu^{\Delta t}$ (stationarity).
@@ -1291,6 +1405,7 @@ $$
 &= \mathbb{E}_{\nu^{\Delta t}}[\mathcal{L} \psi] - \mathbb{E}_{\nu^{\Delta t}}[\mathcal{L}_{\text{BAOAB}}^{\Delta t} \psi] \\
 &= \mathbb{E}_{\nu^{\Delta t}}[(\mathcal{L} - \mathcal{L}_{\text{BAOAB}}^{\Delta t}) \psi]
 \end{align*}
+
 $$
 
 **Step 6: Use backward error expansion**
@@ -1299,6 +1414,7 @@ From {prf:ref}`lem-baoab-weak-error`, the generator difference satisfies:
 
 $$
 \mathcal{L}_{\text{BAOAB}}^{\Delta t} = \mathcal{L} + (\Delta t)^2 \mathcal{L}_2 + O((\Delta t)^4)
+
 $$
 
 where $\mathcal{L}_2$ is a fourth-order differential operator with bounded coefficients.
@@ -1307,6 +1423,7 @@ Therefore:
 
 $$
 \mathcal{L} - \mathcal{L}_{\text{BAOAB}}^{\Delta t} = -(\Delta t)^2 \mathcal{L}_2 + O((\Delta t)^4)
+
 $$
 
 **Step 7: Apply generator expansion**
@@ -1315,12 +1432,14 @@ For symmetric splitting schemes like BAOAB, the generator expansion has only eve
 
 $$
 \mathcal{L}_{\text{BAOAB}}^{\Delta t} = \mathcal{L} + (\Delta t)^2 \mathcal{L}_2 + O((\Delta t)^4)
+
 $$
 
 Substituting into Step 5:
 
 $$
 \mathbb{E}_{\nu^{\Delta t}}[\phi] - \mathbb{E}_{\nu^{\text{cont}}}[\phi] = -(\Delta t)^2 \mathbb{E}_{\nu^{\Delta t}}[\mathcal{L}_2 \psi] + O((\Delta t)^4)
+
 $$
 
 **Step 8: Bound the expectation uniformly**
@@ -1331,12 +1450,14 @@ The operator $\mathcal{L}_2$ is a fourth-order differential operator whose coeff
 
 $$
 \|\psi\|_{C^6} \leq \frac{C_{\text{reg}} \|\phi\|_{C^4}}{\kappa_{\text{mix}}^5}
+
 $$
 
 Under the confinement axiom, $|\mathcal{L}_2 \psi(Z)|$ grows at most polynomially in $|Z|$:
 
 $$
 |\mathcal{L}_2 \psi(Z)| \leq C_2 \|\psi\|_{C^6} (1 + |Z|^2)
+
 $$
 
 for some constant $C_2$ depending on $\|\nabla^2 U\|, \|\nabla^3 U\|$.
@@ -1347,6 +1468,7 @@ From the fourth-moment bounds ({prf:ref}`prop-fourth-moment-baoab`), we have:
 
 $$
 \mathbb{E}_{\nu^{\Delta t}}[|Z|^4] \leq M_4 < \infty
+
 $$
 
 uniformly in $\Delta t$ (for $\Delta t$ sufficiently small).
@@ -1360,6 +1482,7 @@ $$
 &\leq C_2 \|\psi\|_{C^6} (1 + M_4^{1/2}) \\
 &\leq C_2 \frac{C_{\text{reg}} \|\phi\|_{C^4}}{\kappa_{\text{mix}}^5} (1 + M_4^{1/2})
 \end{align*}
+
 $$
 
 **Step 10: Conclude**
@@ -1371,12 +1494,14 @@ $$
 |\mathbb{E}_{\nu^{\Delta t}}[\phi] - \mathbb{E}_{\nu^{\text{cont}}}[\phi]| &\leq (\Delta t)^2 \cdot C_2 \frac{C_{\text{reg}} \|\phi\|_{C^4}}{\kappa_{\text{mix}}^5} (1 + M_4^{1/2}) + O((\Delta t)^4) \\
 &= C_{\text{inv}} \|\phi\|_{C^4} (\Delta t)^2 + O((\Delta t)^4)
 \end{align*}
+
 $$
 
 where:
 
 $$
 C_{\text{inv}} := \frac{C_2 \cdot C_{\text{reg}} (1 + M_4^{1/2})}{\kappa_{\text{mix}}^5}
+
 $$
 
 **The key insight**: The uniform fourth-moment bounds ensure that the expectation $\mathbb{E}_{\nu^{\Delta t}}[\mathcal{L}_2 \psi]$ is bounded uniformly in $\Delta t$. Combined with the generator expansion having only even powers (due to BAOAB's symmetry), this gives the $O((\Delta t)^2)$ convergence rate.
@@ -1407,6 +1532,7 @@ Let $\nu_N^{\text{Langevin}}$ be the invariant measure of the continuous-time N-
 
 $$
 \left| \mathbb{E}_{\nu_N^{\text{BAOAB}}} [\phi] - \mathbb{E}_{\nu_N^{\text{Langevin}}} [\phi] \right| \leq C_{\text{BAOAB}} \cdot \|\phi\|_{C^4} \cdot (\Delta t)^2
+
 $$
 
 where $C_{\text{BAOAB}}$ depends on $\gamma, \sigma, \|\nabla U\|_{\text{Lip}}, M_4, \kappa_{\text{mix}}$ but is independent of $N$ (N-uniform) and independent of $\Delta t$ (for $\Delta t$ sufficiently small).
@@ -1417,7 +1543,6 @@ where $C_{\text{BAOAB}}$ depends on $\gamma, \sigma, \|\nabla U\|_{\text{Lip}}, 
 :::
 
 :::{prf:proof}
-:label: proof-thm-langevin-baoab-discretization-error
 
 This follows directly from {prf:ref}`lem-baoab-invariant-measure-error` applied to each particle in the N-particle Langevin system.
 
@@ -1430,6 +1555,7 @@ $$
 dX_t^{(i)} = V_t^{(i)} dt \\
 dV_t^{(i)} = -\nabla U(X_t^{(i)}) dt - \gamma V_t^{(i)} dt + \sigma dW_t^{(i)}
 \end{cases}
+
 $$
 
 where $W_t^{(i)}$ are independent Brownian motions.
@@ -1449,6 +1575,7 @@ From {prf:ref}`lem-baoab-invariant-measure-error`, we have:
 
 $$
 \left| \mathbb{E}_{\nu_N^{\text{BAOAB}}} [\phi(z_i)] - \mathbb{E}_{\nu_N^{\text{Langevin}}} [\phi(z_i)] \right| \leq C_{\text{inv}} \|\phi\|_{C^4} (\Delta t)^2
+
 $$
 
 for each particle $i$, where $C_{\text{inv}}$ is independent of $N$.
@@ -1459,12 +1586,14 @@ For an observable $\Phi(Z) = \frac{1}{N}\sum_{i=1}^N \phi(z_i)$:
 
 $$
 \left| \mathbb{E}_{\nu_N^{\text{BAOAB}}} [\Phi] - \mathbb{E}_{\nu_N^{\text{Langevin}}} [\Phi] \right| = \left| \frac{1}{N} \sum_{i=1}^N (\mathbb{E}_{\nu_N^{\text{BAOAB}}} [\phi(z_i)] - \mathbb{E}_{\nu_N^{\text{Langevin}}} [\phi(z_i)]) \right|
+
 $$
 
 By exchangeability:
 
 $$
 \leq C_{\text{inv}} \|\phi\|_{C^4} (\Delta t)^2
+
 $$
 
 Setting $C_{\text{BAOAB}} := C_{\text{inv}}$ completes the proof.
@@ -1493,6 +1622,7 @@ The composition of these two operators gives a full one-step transition operator
 
 $$
 \text{Total error} = O\left(\frac{1}{\sqrt{N}} + \Delta t\right)
+
 $$
 
 where the $\Delta t$ term dominates the $(\Delta t)^2$ term from BAOAB.
@@ -1506,6 +1636,7 @@ $$
 \boxed{
 \left| \mathbb{E}_{\nu_N^{\text{BAOAB}}} [\phi] - \mathbb{E}_{\nu_N^{\text{Langevin}}} [\phi] \right| \leq C_{\text{BAOAB}} \cdot \|\phi\|_{C^4} \cdot (\Delta t)^2
 }
+
 $$
 
 **Proof components:**
@@ -1544,6 +1675,7 @@ Let $\nu_N^{\text{cont}}$ be the QSD of the continuous-time N-particle system (L
 
 $$
 \left| \mathbb{E}_{\nu_N^{\text{discrete}}} [\phi] - \mathbb{E}_{\nu_N^{\text{cont}}} [\phi] \right| \leq C_{\text{total}} \cdot \|\phi\|_{C^4} \cdot \Delta t
+
 $$
 
 where $C_{\text{total}}$ depends on $\gamma, \sigma, \lambda, \delta, M_4, \kappa_{\text{mix}}$ but is independent of $N$ and $\Delta t$ (for $\Delta t$ sufficiently small).
@@ -1565,6 +1697,7 @@ The continuous-time Fragile Gas evolution is governed by the generator:
 
 $$
 \mathcal{L} = \mathcal{L}_{\text{Langevin}} + \mathcal{L}_{\text{clone}}
+
 $$
 
 where:
@@ -1575,12 +1708,14 @@ The continuous-time semigroup is $\mathcal{P}^{\Delta t} = e^{\Delta t \mathcal{
 
 $$
 \mathcal{T}^{\Delta t} = \mathcal{T}_{\text{clone}}^{\Delta t} \circ \mathcal{T}_{\text{BAOAB}}^{\Delta t}
+
 $$
 
 This is a **Lie splitting** (first-order operator splitting). The key insight is that even though BAOAB is second-order accurate for $\mathcal{L}_{\text{Langevin}}$, the splitting introduces a first-order error due to the non-commutativity of the operators:
 
 $$
 [\mathcal{L}_{\text{Langevin}}, \mathcal{L}_{\text{clone}}] \neq 0
+
 $$
 
 :::{prf:lemma} One-Step Weak Error for Lie Splitting
@@ -1590,6 +1725,7 @@ For the Lie splitting $\mathcal{T}^{\Delta t} = \mathcal{T}_{\text{clone}}^{\Del
 
 $$
 \left|\mathbb{E}[(\mathcal{T}^{\Delta t} - \mathcal{P}^{\Delta t})\phi(Z)]\right| \leq C_{\text{split}} \|\phi\|_{C^4} (\Delta t)^2
+
 $$
 
 where $C_{\text{split}}$ depends on $\gamma, \sigma, \lambda, \delta, M_4$ but not on $\Delta t$.
@@ -1598,7 +1734,6 @@ where $C_{\text{split}}$ depends on $\gamma, \sigma, \lambda, \delta, M_4$ but n
 :::
 
 :::{prf:proof}
-:label: proof-lem-lie-splitting-weak-error
 
 **Step 1: Taylor expansion of semigroups**
 
@@ -1606,6 +1741,7 @@ For the continuous-time semigroup:
 
 $$
 \mathcal{P}^{\Delta t} \phi = \phi + \Delta t \mathcal{L} \phi + \frac{(\Delta t)^2}{2} \mathcal{L}^2 \phi + O((\Delta t)^3)
+
 $$
 
 where $\mathcal{L} = \mathcal{L}_{\text{Langevin}} + \mathcal{L}_{\text{clone}}$.
@@ -1621,6 +1757,7 @@ $$
 &= \phi + \Delta t \mathcal{L}_{\text{Langevin}} \phi + \Delta t \mathcal{L}_{\text{clone}} \phi + \frac{(\Delta t)^2}{2} \mathcal{L}_{\text{Langevin}}^2 \phi \\
 &\quad + \frac{(\Delta t)^2}{2} \mathcal{L}_{\text{clone}}^2 \phi + (\Delta t)^2 \mathcal{L}_{\text{clone}} \mathcal{L}_{\text{Langevin}} \phi + O((\Delta t)^3)
 \end{align*}
+
 $$
 
 **Step 3: Compare with the exact expansion**
@@ -1634,6 +1771,7 @@ $$
 &= \phi + \Delta t \mathcal{L}_{\text{Langevin}} \phi + \Delta t \mathcal{L}_{\text{clone}} \phi + \frac{(\Delta t)^2}{2} \mathcal{L}_{\text{Langevin}}^2 \phi \\
 &\quad + \frac{(\Delta t)^2}{2} \mathcal{L}_{\text{clone}}^2 \phi + \frac{(\Delta t)^2}{2} (\mathcal{L}_{\text{Langevin}} \mathcal{L}_{\text{clone}} + \mathcal{L}_{\text{clone}} \mathcal{L}_{\text{Langevin}}) \phi + O((\Delta t)^3)
 \end{align*}
+
 $$
 
 **Step 4: Identify the commutator error**
@@ -1646,6 +1784,7 @@ $$
 &= \frac{(\Delta t)^2}{2} (\mathcal{L}_{\text{clone}} \mathcal{L}_{\text{Langevin}} - \mathcal{L}_{\text{Langevin}} \mathcal{L}_{\text{clone}}) \phi + O((\Delta t)^3) \\
 &= \frac{(\Delta t)^2}{2} [\mathcal{L}_{\text{clone}}, \mathcal{L}_{\text{Langevin}}] \phi + O((\Delta t)^3)
 \end{align*}
+
 $$
 
 **Step 5: Bounding the Commutator $[\mathcal{L}_{\text{clone}}, \mathcal{L}_{\text{Langevin}}]$**
@@ -1668,6 +1807,7 @@ To analyze the commutator, we must use the full N-particle generators. Let $\mat
 
 $$
 \mathcal{L}_{\text{clone}} \Phi(\mathcal{S}) = \lambda \sum_{i=1}^N \left( \mathbb{E}_{j \sim p_{\text{fitness}}(\mathcal{S})} [\Phi(\mathcal{S}^{(i \leftarrow j)})] - \Phi(\mathcal{S}) \right)
+
 $$
 
 where $\mathcal{S}^{(i \leftarrow j)}$ denotes the state with particle $i$ replaced by a perturbed copy of particle $j$.
@@ -1676,12 +1816,14 @@ The Langevin operator acts independently on each particle:
 
 $$
 \mathcal{L}_{\text{Langevin}} \Phi(\mathcal{S}) = \sum_{k=1}^N \mathcal{L}_k^{\text{Lang}} \Phi(\mathcal{S})
+
 $$
 
 where $\mathcal{L}_k^{\text{Lang}}$ acts on particle $k$, given explicitly by:
 
 $$
 \mathcal{L}_k^{\text{Lang}} = \langle v^{(k)}, \nabla_{x^{(k)}} \rangle - \gamma \langle v^{(k)}, \nabla_{v^{(k)}} \rangle - \langle \nabla U(x^{(k)}), \nabla_{v^{(k)}} \rangle + \frac{\sigma^2}{2} \Delta_{v^{(k)}}
+
 $$
 
 **Step 5c: Deriving the Commutator Expression**
@@ -1690,6 +1832,7 @@ The commutator is by definition:
 
 $$
 [\mathcal{L}_{\text{clone}}, \mathcal{L}_{\text{Langevin}}] \Phi = \mathcal{L}_{\text{clone}}(\mathcal{L}_{\text{Langevin}} \Phi) - \mathcal{L}_{\text{Langevin}}(\mathcal{L}_{\text{clone}} \Phi)
+
 $$
 
 Expanding:
@@ -1701,6 +1844,7 @@ $$
 \mathcal{L}_{\text{clone}}(\mathcal{L}_{\text{Langevin}} \Phi)(\mathcal{S}) &= \lambda \sum_{i=1}^N \mathbb{E}_j \left[ (\mathcal{L}_{\text{Langevin}} \Phi)(\mathcal{S}^{(i \leftarrow j)}) - (\mathcal{L}_{\text{Langevin}} \Phi)(\mathcal{S}) \right] \\
 &= \lambda \sum_{i=1}^N \mathbb{E}_j \left[ \sum_{k=1}^N \mathcal{L}_k^{\text{Lang}} \Phi(\mathcal{S}^{(i \leftarrow j)}) - \sum_{k=1}^N \mathcal{L}_k^{\text{Lang}} \Phi(\mathcal{S}) \right]
 \end{align*}
+
 $$
 
 **Term 2**: $\mathcal{L}_{\text{Langevin}}(\mathcal{L}_{\text{clone}} \Phi)$
@@ -1710,24 +1854,28 @@ $$
 \mathcal{L}_{\text{Langevin}}(\mathcal{L}_{\text{clone}} \Phi)(\mathcal{S}) &= \sum_{k=1}^N \mathcal{L}_k^{\text{Lang}} \left( \lambda \sum_{i=1}^N \mathbb{E}_j [\Phi(\mathcal{S}^{(i \leftarrow j)}) - \Phi(\mathcal{S})] \right) \\
 &= \lambda \sum_{k=1}^N \sum_{i=1}^N \mathcal{L}_k^{\text{Lang}} \mathbb{E}_j [\Phi(\mathcal{S}^{(i \leftarrow j)})] - \lambda \sum_{k=1}^N \sum_{i=1}^N \mathcal{L}_k^{\text{Lang}} \Phi(\mathcal{S})
 \end{align*}
+
 $$
 
 Taking the difference:
 
 $$
 [\mathcal{L}_{\text{clone}}, \mathcal{L}_{\text{Langevin}}] \Phi = \lambda \sum_{i,k} \mathbb{E}_j [\mathcal{L}_k^{\text{Lang}} \Phi(\mathcal{S}^{(i \leftarrow j)})] - \lambda \sum_{i,k} \mathcal{L}_k^{\text{Lang}} \mathbb{E}_j [\Phi(\mathcal{S}^{(i \leftarrow j)})]
+
 $$
 
 The key is that $\mathcal{L}_k^{\text{Lang}}$ acts on **both** $\Phi$ and the expectation $\mathbb{E}_j$. Since the fitness distribution $p_j(\mathcal{S})$ depends on $\mathcal{S}$, by the product rule:
 
 $$
 \mathcal{L}_k^{\text{Lang}} \mathbb{E}_j[\Phi(\mathcal{S}^{(i \leftarrow j)})] = \mathbb{E}_j[\mathcal{L}_k^{\text{Lang}} \Phi(\mathcal{S}^{(i \leftarrow j)})] + \mathbb{E}_j[\Phi(\mathcal{S}^{(i \leftarrow j)})] \cdot \mathcal{L}_k^{\text{Lang}} \log p_j(\mathcal{S})
+
 $$
 
 The second term is the **non-canceling contribution** that is non-zero precisely because $\mathcal{L}_k^{\text{Lang}}$ (acting on particle $k$) modifies the fitness probability $p_j(\mathcal{S})$ for all $j$:
 
 $$
 [\mathcal{L}_{\text{clone}}, \mathcal{L}_{\text{Langevin}}] \Phi = -\lambda \sum_{i,k} \mathbb{E}_j[\Phi(\mathcal{S}^{(i \leftarrow j)})] \cdot \mathcal{L}_k^{\text{Lang}} \log p_j(\mathcal{S})
+
 $$
 
 **Step 5d: Bounding the Commutator via Propagation of Chaos**
@@ -1740,12 +1888,14 @@ Define the empirical measure:
 
 $$
 \mu_N(\mathcal{S}) = \frac{1}{N} \sum_{i=1}^N \delta_{Z^{(i)}}
+
 $$
 
 For the N-particle system, we consider **symmetric observables** of the form:
 
 $$
 \Phi(\mathcal{S}) = \frac{1}{N} \sum_{i=1}^N \phi(Z^{(i)}, \mu_N)
+
 $$
 
 where $\phi(z, \mu)$ is a single-particle observable that depends on the empirical measure. This is the natural class for mean-field systems.
@@ -1754,12 +1904,14 @@ The fitness distribution can be written as:
 
 $$
 p_j(\mathcal{S}) = \frac{e^{\beta F(Z^{(j)})}}{\int e^{\beta F(z)} d\mu_N(z)} = \frac{e^{\beta F(Z^{(j)})}}{\frac{1}{N} \sum_{\ell=1}^N e^{\beta F(Z^{(\ell)})}}
+
 $$
 
 When $\mathcal{L}_k^{\text{Lang}}$ acts on particle $k$, it changes the empirical measure by an $O(1/N)$ perturbation:
 
 $$
 \mu_N \to \mu_N + \frac{1}{N}(\delta_{Z'^{(k)}} - \delta_{Z^{(k)}}) + O(\Delta t)
+
 $$
 
 where $Z'^{(k)}$ is the infinitesimally evolved state.
@@ -1768,12 +1920,14 @@ Computing the derivative of the log-probability:
 
 $$
 \mathcal{L}_k^{\text{Lang}} \log p_j(\mathcal{S}) = \beta (\delta_{jk} - p_k(\mathcal{S})) (\mathcal{L}_k^{\text{Lang}} F)(Z^{(k)})
+
 $$
 
 For symmetric observables, the expectation $\mathbb{E}_j$ over the fitness distribution can be rewritten as:
 
 $$
 \mathbb{E}_j[\phi(Z^{(i \leftarrow j)}, \mu_N)] = \sum_{\ell=1}^N p_\ell \phi(Z^{(\ell)}, \mu_N) = \mathbb{E}_{\mu_N}[\phi(z, \mu_N)]
+
 $$
 
 which is **independent of the index $i$**. Using the centering property $\sum_k (\delta_{jk} - p_k) = 0$ and the symmetry of particles, the commutator's mean contribution vanishes when averaged over the swarm. The non-zero contribution comes only from the **fluctuations** around this mean.
@@ -1788,6 +1942,7 @@ Therefore, the operator norm of the commutator is bounded:
 
 $$
 \|[\mathcal{L}_{\text{clone}}, \mathcal{L}_{\text{Langevin}}]\| \leq C_{\text{comm}}
+
 $$
 
 where the constant $C_{\text{comm}}$ depends on the framework parameters ($\lambda, \beta, \gamma, \sigma$, bounds on $F$ and $U$) and properties of the test function space (e.g., $\|\phi\|_{C^4}$), but is crucially **independent of $N$ and $\Delta t$**.
@@ -1796,6 +1951,7 @@ Explicitly, we have:
 
 $$
 C_{\text{comm}} = \lambda \beta C_{\text{chaos}} \max(C_F, \sigma^2, \|\nabla^2 U\|_\infty)
+
 $$
 
 where $C_{\text{chaos}}$ is the propagation of chaos constant from Sznitman (1991).
@@ -1810,6 +1966,7 @@ Therefore:
 
 $$
 \left|\mathbb{E}[(\mathcal{T}^{\Delta t} - \mathcal{P}^{\Delta t})\phi(Z)]\right| \leq C_{\text{split}} \|\phi\|_{C^4} (\Delta t)^2
+
 $$
 
 where $C_{\text{split}} = \frac{1}{2} C_{\text{comm}}$.
@@ -1832,6 +1989,7 @@ Under the confinement axiom, there exist constants $\kappa_{\text{mix}} > 0$ and
 
 $$
 \left\|\mathcal{P}_k - \nu_N^{\text{discrete}}\right\|_{\text{TV}} \leq C_{\text{erg}} e^{-\kappa_{\text{mix}} k \Delta t}
+
 $$
 
 where $\mathcal{P}_k$ is the distribution after $k$ steps starting from an arbitrary initial condition with finite fourth moment.
@@ -1840,7 +1998,6 @@ where $\mathcal{P}_k$ is the distribution after $k$ steps starting from an arbit
 :::
 
 :::{prf:proof}
-:label: proof-lem-uniform-geometric-ergodicity
 
 The proof follows the standard Lyapunov drift approach for discrete-time Markov chains (Meyn & Tweedie, 2009, Chapter 15).
 
@@ -1858,6 +2015,7 @@ From Part II ({prf:ref}`prop-fourth-moment-baoab`), we have for the BAOAB operat
 
 $$
 \mathbb{E}[E^2(\mathcal{T}_{\text{BAOAB}}^{\Delta t}(Z)) | Z] \leq (1 - \kappa_E \Delta t) E^2(Z) + C_E \Delta t
+
 $$
 
 for $\kappa_E > 0$ and $C_E < \infty$ independent of $\Delta t$ (for $\Delta t < \Delta t_0$). This uses:
@@ -1871,24 +2029,28 @@ The cloning operator replaces the worst-fit walker with a perturbed copy of a be
 
 $$
 Z_{\text{new}}^{(i)} = (x^{(j)}, v_{\text{new}}^{(i)}) \quad \text{where} \quad v_{\text{new}}^{(i)} = \sqrt{1 - \delta^2} v^{(j)} + \delta \xi
+
 $$
 
 The energy change for the replaced walker is:
 
 $$
 \Delta E^{(i)} = E(Z_{\text{new}}^{(i)}) - E(Z_{\text{old}}^{(i)}) = \frac{1}{2} \|v_{\text{new}}^{(i)}\|^2 + U(x^{(j)}) - \frac{1}{2} \|v_{\text{old}}^{(i)}\|^2 - U(x_{\text{old}}^{(i)})
+
 $$
 
 Taking expectation over the cloning randomness (selecting $j$ and the noise $\xi$):
 
 $$
 \mathbb{E}[\Delta E^{(i)} | \mathcal{S}] = \mathbb{E}_j \left[ \frac{1}{2} ((1 - \delta^2) \|v^{(j)}\|^2 + d\delta^2) + U(x^{(j)}) \right] - E(Z_{\text{old}}^{(i)})
+
 $$
 
 Since the fitness-proportional selection favors walkers with **higher fitness** (lower energy in our convention), we have:
 
 $$
 \mathbb{E}_j [E(Z^{(j)})] \leq \frac{1}{N} \sum_{k=1}^N E(Z^{(k)}) + O(\delta^2)
+
 $$
 
 where the $O(\delta^2)$ term comes from the momentum perturbation.
@@ -1900,6 +2062,7 @@ $$
 \mathbb{E}[V(\mathcal{T}_{\text{clone}}^{\Delta t}(\mathcal{S})) | \mathcal{S}] &\leq (1 - \lambda \Delta t) V(\mathcal{S}) + \lambda \Delta t \cdot V(\mathcal{S}_{\text{after clone}}) \\
 &\leq V(\mathcal{S}) + \lambda \Delta t \cdot O(\delta^2 + \bar{E}^2)
 \end{align*}
+
 $$
 
 where $\bar{E} = \frac{1}{N} \sum_i E(Z^{(i)})$ is the average energy.
@@ -1915,6 +2078,7 @@ $$
 \mathbb{E}[V(\mathcal{T}^{\Delta t}(\mathcal{S})) | \mathcal{S}] &= \mathbb{E}[V(\mathcal{T}_{\text{clone}}^{\Delta t}(\mathcal{T}_{\text{BAOAB}}^{\Delta t}(\mathcal{S}))) | \mathcal{S}] \\
 &= \mathbb{E}[\mathbb{E}[V(\mathcal{T}_{\text{clone}}^{\Delta t}(\mathcal{S}')) | \mathcal{S}'] \,\big|\, \mathcal{S}' = \mathcal{T}_{\text{BAOAB}}^{\Delta t}(\mathcal{S})]
 \end{align*}
+
 $$
 
 by the tower property.
@@ -1925,6 +2089,7 @@ From Step 2b, the cloning operator satisfies:
 
 $$
 \mathbb{E}[V(\mathcal{T}_{\text{clone}}^{\Delta t}(\mathcal{S}')) | \mathcal{S}'] \leq V(\mathcal{S}') + \lambda \Delta t C_{\text{clone}}
+
 $$
 
 where $C_{\text{clone}} = O(\delta^2 M_4)$ (fourth moment bound) is independent of $\Delta t$.
@@ -1936,6 +2101,7 @@ $$
 \mathbb{E}[V(\mathcal{T}^{\Delta t}(\mathcal{S})) | \mathcal{S}] &\leq \mathbb{E}[V(\mathcal{T}_{\text{BAOAB}}^{\Delta t}(\mathcal{S})) | \mathcal{S}] + \lambda \Delta t C_{\text{clone}} \\
 &\leq (1 - \kappa_E \Delta t) V(\mathcal{S}) + C_E \Delta t + \lambda \Delta t C_{\text{clone}}
 \end{align*}
+
 $$
 
 where we used the BAOAB drift from Step 2a in the second inequality.
@@ -1946,6 +2112,7 @@ Setting $C_4 = C_E + \lambda C_{\text{clone}}$:
 
 $$
 \mathbb{E}[V(\mathcal{T}^{\Delta t}(\mathcal{S})) | \mathcal{S}] \leq (1 - \kappa_E \Delta t) V(\mathcal{S}) + C_4 \Delta t
+
 $$
 
 **Substep 2c.v**: Verify uniformity in $\Delta t$**
@@ -1969,6 +2136,7 @@ When a cloning event occurs (probability $\lambda \Delta t$), a walker $i$ is re
 
 $$
 Z_{\text{new}}^{(i)} = (x^{(j)}, v_{\text{new}}^{(i)}) \quad \text{where} \quad v_{\text{new}}^{(i)} = \sqrt{1 - \delta^2} v^{(j)} + \delta \xi, \quad \xi \sim \mathcal{N}(0, I)
+
 $$
 
 The Gaussian noise $\xi$ has **full support** on $\mathbb{R}^d$, meaning any open set in velocity space can be reached with positive probability.
@@ -1981,6 +2149,7 @@ Consider any measurable set $A \subset \mathbb{R}^{Nd} \times \mathbb{R}^{Nd}$ (
 
 $$
 \mathcal{T}^{\Delta t}(\mathcal{S}, A) = P(\mathcal{T}^{\Delta t}(\mathcal{S}) \in A | \mathcal{S})
+
 $$
 
 **Case 1: Set $A$ is "large"** (say $\nu_N^{\text{discrete}}(A) \geq \varepsilon$ for some $\varepsilon > 0$)
@@ -1992,6 +2161,7 @@ $$
 \mathcal{T}^{\Delta t}(\mathcal{S}, A) &\geq P(\text{clone occurs}) \cdot P(\text{land in } A | \text{clone}) \\
 &\geq \lambda \Delta t \cdot P(\text{land in } A | \text{clone})
 \end{align*}
+
 $$
 
 The key observation is that the cloning mechanism with Gaussian momentum perturbation can reach **any** configuration with positive probability. Specifically:
@@ -2003,6 +2173,7 @@ For states $\mathcal{S} \in C$, the positions and velocities are bounded (by the
 
 $$
 P(\text{land in } A | \text{clone}, \mathcal{S} \in C) \geq \frac{1}{N} \int_A p_{\delta}(v) \, dv \geq c_{\delta, A}
+
 $$
 
 where $p_{\delta}$ is the density of the Gaussian perturbation $\mathcal{N}(0, \delta^2 I)$ and $c_{\delta, A} > 0$ depends on $\delta$ and the "size" of $A$ but not on $\Delta t$.
@@ -2013,6 +2184,7 @@ Combining the above, for $\mathcal{S} \in C$ and $A$ with $\nu_N^{\text{discrete
 
 $$
 \mathcal{T}^{\Delta t}(\mathcal{S}, A) \geq \lambda \Delta t \cdot c_{\delta, A}
+
 $$
 
 However, we need a minorization that does not depend on $\Delta t$. The standard approach (Meyn & Tweedie, Chapter 5) is to consider the **$k$-step transition kernel** $(\mathcal{T}^{\Delta t})^k$ for some fixed $k = k(\Delta t_0)$ chosen such that $k \Delta t_0 = \tau_0$ is a fixed time.
@@ -2021,12 +2193,14 @@ For $k$ steps, the probability of at least one cloning event is:
 
 $$
 P(\text{at least one clone in } k \text{ steps}) = 1 - (1 - \lambda \Delta t)^k \geq 1 - e^{-\lambda k \Delta t} \geq \lambda k \Delta t / 2
+
 $$
 
 for $\lambda k \Delta t$ small. Choosing $k = \tau_0 / \Delta t$ such that $\lambda \tau_0 = O(1)$, we get a minorization constant:
 
 $$
 (\mathcal{T}^{\Delta t})^k(\mathcal{S}, A) \geq \delta_{\text{minor}} \quad \text{for all } \mathcal{S} \in C
+
 $$
 
 where $\delta_{\text{minor}} = (\lambda \tau_0 / 2) \cdot c_{\delta, A}$ is **independent of $\Delta t$**.
@@ -2043,20 +2217,26 @@ We now apply the standard result connecting drift and minorization to geometric 
 Let $\mathcal{T}$ be a Markov transition kernel on a state space $\mathcal{S}$ with invariant measure $\nu$. Suppose:
 
 1. **Drift condition**: There exists a Lyapunov function $V: \mathcal{S} \to [1, \infty)$ and constants $\kappa > 0$, $b < \infty$ such that:
+
    $$
    \mathcal{T}V(s) \leq (1 - \kappa)V(s) + b
+
    $$
    for all $s \in \mathcal{S}$.
 
 2. **Minorization condition**: There exists a small set $C = \{s : V(s) \leq M\}$, a probability measure $\nu_{\min}$, and $\delta > 0$ such that:
+
    $$
    \mathcal{T}(s, A) \geq \delta \nu_{\min}(A)
+
    $$
    for all $s \in C$ and all measurable sets $A$.
 
 Then the chain is geometrically ergodic with rate:
+
 $$
 \|\mathcal{T}^n(s, \cdot) - \nu\|_{\text{TV}} \leq C_{\text{erg}} \rho^n V(s)
+
 $$
 
 where $\rho = \max(1 - \kappa, 1 - \delta) < 1$ and $C_{\text{erg}}$ depends on $\kappa, b, \delta, M$.
@@ -2069,8 +2249,10 @@ where $\rho = \max(1 - \kappa, 1 - \delta) < 1$ and $C_{\text{erg}}$ depends on 
 We now verify each hypothesis point-by-point for our discrete operator $\mathcal{T}^{\Delta t} = \mathcal{T}_{\text{clone}}^{\Delta t} \circ \mathcal{T}_{\text{BAOAB}}^{\Delta t}$.
 
 **Hypothesis 1 (Drift)**: From Steps 2a-2c, we have:
+
 $$
 \mathbb{E}[V(\mathcal{T}^{\Delta t}(\mathcal{S})) | \mathcal{S}] \leq (1 - \kappa_E \Delta t) V(\mathcal{S}) + C_4 \Delta t
+
 $$
 
 This is the required drift condition with $\kappa = \kappa_E \Delta t$ and $b = C_4 \Delta t$.
@@ -2081,8 +2263,10 @@ This is the required drift condition with $\kappa = \kappa_E \Delta t$ and $b = 
 - Both are properties of the system parameters $(\gamma, \sigma, \lambda, \delta)$, not $\Delta t$
 
 **Hypothesis 2 (Minorization)**: From Step 3, we have for the $k$-step kernel with $k = \tau_0/\Delta t$:
+
 $$
 (\mathcal{T}^{\Delta t})^k(\mathcal{S}, A) \geq \delta_{\text{minor}} \nu_{\min}(A)
+
 $$
 
 for all $\mathcal{S} \in C = \{V(\mathcal{S}) \leq M\}$, where $\delta_{\text{minor}} = (\lambda \tau_0/2) \cdot c_{\delta,A}$ is independent of $\Delta t$.
@@ -2093,6 +2277,7 @@ By Theorem {prf:ref}`thm-meyn-tweedie-drift-minor`, the chain $\mathcal{T}^{\Del
 
 $$
 \|\mathcal{T}^{n\Delta t}(\mathcal{S}, \cdot) - \nu_N^{\text{discrete}}\|_{\text{TV}} \leq C_{\text{erg}} \rho^n V(\mathcal{S})
+
 $$
 
 where $\rho = \max(1 - \kappa_E \Delta t, 1 - \delta_{\text{minor}})$.
@@ -2101,12 +2286,14 @@ For $\Delta t$ sufficiently small, $1 - \kappa_E \Delta t > 1 - \delta_{\text{mi
 
 $$
 \rho \approx 1 - \kappa_E \Delta t = e^{-\kappa_E \Delta t}
+
 $$
 
 Thus, after $n$ steps (time $t = n\Delta t$):
 
 $$
 \|\mathcal{T}^{n\Delta t}(\mathcal{S}, \cdot) - \nu_N^{\text{discrete}}\|_{\text{TV}} \leq C_{\text{erg}} e^{-\kappa_E t} V(\mathcal{S})
+
 $$
 
 Identifying the mixing rate: $\kappa_{\text{mix}}^{\text{discrete}} = \kappa_E$, which is **independent of $\Delta t$**.
@@ -2128,6 +2315,7 @@ For any fixed time step $\tau > 0$, the discrete-time Markov chain with transiti
 
 $$
 \kappa_{\text{mix}}^{\text{discrete}}(\tau) = -\frac{1}{\tau} \log(1 - \lambda_1(\tau))
+
 $$
 
 where $\lambda_1(\tau) = 1 - e^{-\tau \lambda_1}$ is the spectral gap of the discrete operator $I - \mathcal{P}^\tau$.
@@ -2136,13 +2324,13 @@ For small $\tau$, we have:
 
 $$
 \kappa_{\text{mix}}^{\text{discrete}}(\tau) = \lambda_1 + O(\tau) = \kappa_{\text{mix}}^{\text{cont}} + O(\tau)
+
 $$
 
 **In particular**, for $\tau = \Delta t \to 0$, the discrete mixing rate converges to the continuous mixing rate.
 :::
 
 :::{prf:proof}
-:label: proof-prop-mixing-rate-relationship
 
 **Step 1: Spectral analysis**
 
@@ -2150,6 +2338,7 @@ For a reversible ergodic Markov process with generator $\mathcal{L}$, the spectr
 
 $$
 \lambda_1 = \inf_{\phi: \mathbb{E}_\pi[\phi]=0} \frac{-\langle \phi, \mathcal{L}\phi \rangle_{L^2(\pi)}}{\langle \phi, \phi \rangle_{L^2(\pi)}}
+
 $$
 
 The semigroup satisfies $\|\mathcal{P}^t - \pi\|_{L^2(\pi)} \leq e^{-\lambda_1 t}$.
@@ -2162,6 +2351,7 @@ The largest non-trivial eigenvalue of $\mathcal{P}^\tau$ is $e^{-\tau \lambda_1}
 
 $$
 \lambda_1(\tau) = 1 - e^{-\tau \lambda_1}
+
 $$
 
 **Step 3: Transfer to discrete chain**
@@ -2170,6 +2360,7 @@ By Theorem 3.10 of Hairer, Stuart, Voss (2011), if the continuous-time generator
 
 $$
 c_1 \kappa_{\text{mix}}^{\text{cont}} \leq \kappa_{\text{mix}}^{\text{discrete}}(\tau) \leq c_2 \kappa_{\text{mix}}^{\text{cont}}
+
 $$
 
 for some constants $c_1, c_2 > 0$ independent of $\tau$ (for $\tau < \tau_0$).
@@ -2198,11 +2389,11 @@ Then the error in invariant measures is:
 
 $$
 \left| \mathbb{E}_{\nu_N^{\text{discrete}}} [\phi] - \mathbb{E}_{\nu_N^{\text{cont}}} [\phi] \right| \leq \frac{C_{\text{split}}}{\kappa_{\text{mix}}} \|\phi\|_{C^4} \Delta t
+
 $$
 :::
 
 :::{prf:proof} Proof of {prf:ref}`thm-full-system-discretization-error`
-:label: proof-thm-full-system-discretization-error
 
 **Step 1: Centered observable and Poisson equation**
 
@@ -2210,24 +2401,28 @@ To make the argument precise, define the centered observable:
 
 $$
 \phi_c := \phi - \mathbb{E}_{\nu_N^{\text{cont}}}[\phi]
+
 $$
 
 Then $\mathbb{E}_{\nu_N^{\text{cont}}}[\phi_c] = 0$ and the error is:
 
 $$
 \mathbb{E}_{\nu_N^{\text{discrete}}}[\phi] - \mathbb{E}_{\nu_N^{\text{cont}}}[\phi] = \mathbb{E}_{\nu_N^{\text{discrete}}}[\phi_c]
+
 $$
 
 The Poisson equation for the **continuous-time generator** $\mathcal{L}$ is:
 
 $$
 \mathcal{L} \psi = -\phi_c
+
 $$
 
 Under geometric ergodicity of the continuous-time process (with spectral gap $\kappa_{\text{mix}}^{\text{cont}} > 0$), this has a unique solution $\psi$ with:
 
 $$
 \|\psi\|_{C^6} \leq \frac{C_{\text{poisson}}}{\kappa_{\text{mix}}^{\text{cont}}} \|\phi_c\|_{C^4} = \frac{C_{\text{poisson}}}{\kappa_{\text{mix}}^{\text{cont}}} \|\phi\|_{C^4}
+
 $$
 
 where $C_{\text{poisson}}$ is a structural constant (see Hairer 2010, Theorem 4.1).
@@ -2252,12 +2447,14 @@ $$
 &= \mathbb{E}_{\nu_N^{\text{discrete}}}[\psi - e^{\Delta t \mathcal{L}} \psi] / \Delta t \\
 &= \mathbb{E}_{\nu_N^{\text{discrete}}}[\psi - \mathcal{P}^{\Delta t} \psi] / \Delta t
 \end{align*}
+
 $$
 
 Since $\mathbb{E}_{\nu_N^{\text{discrete}}}[\psi - \mathcal{T}^{\Delta t} \psi] = 0$ (invariance), we can insert zero:
 
 $$
 \mathbb{E}_{\nu_N^{\text{discrete}}}[\psi - \mathcal{P}^{\Delta t} \psi] = \mathbb{E}_{\nu_N^{\text{discrete}}}[(\mathcal{T}^{\Delta t} - \mathcal{P}^{\Delta t}) \psi]
+
 $$
 
 **Step 3: Apply the one-step weak error bound**
@@ -2266,6 +2463,7 @@ From {prf:ref}`lem-lie-splitting-weak-error`:
 
 $$
 \left|\mathbb{E}_{\nu_N^{\text{discrete}}}[(\mathcal{T}^{\Delta t} - \mathcal{P}^{\Delta t}) \psi]\right| \leq C_{\text{split}} \|\psi\|_{C^4} (\Delta t)^2
+
 $$
 
 **Step 4: Use the Poisson equation bound**
@@ -2277,18 +2475,21 @@ $$
 \left|\mathbb{E}_{\nu_N^{\text{discrete}}}[\phi_c]\right| &\leq C_{\text{split}} \|\psi\|_{C^4} \Delta t \\
 &\leq C_{\text{split}} \cdot \frac{C_{\text{poisson}}}{\kappa_{\text{mix}}^{\text{cont}}} \|\phi\|_{C^4} \Delta t
 \end{align*}
+
 $$
 
 Setting:
 
 $$
 C_{\text{total}} = \frac{C_{\text{split}} \cdot C_{\text{poisson}}}{\kappa_{\text{mix}}^{\text{cont}}}
+
 $$
 
 we obtain:
 
 $$
 \left|\mathbb{E}_{\nu_N^{\text{discrete}}}[\phi] - \mathbb{E}_{\nu_N^{\text{cont}}}[\phi]\right| \leq C_{\text{total}} \|\phi\|_{C^4} \Delta t
+
 $$
 
 **The crucial mechanism**: The $O((\Delta t)^2)$ local error accumulates over $T/\Delta t \sim 1/\Delta t$ steps to give $O(\Delta t)$ global error. The mixing time $1/\kappa_{\text{mix}}^{\text{cont}}$ of the continuous-time process determines how fast the error equilibrates.
@@ -2306,6 +2507,7 @@ $$
 \boxed{
 \left| \mathbb{E}_{\nu_N^{\text{discrete}}} [\phi] - \mathbb{E}_{\nu_N^{\text{cont}}} [\phi] \right| \leq C_{\text{total}} \cdot \|\phi\|_{C^4} \cdot \Delta t
 }
+
 $$
 
 where $C_{\text{total}} = \frac{C_{\text{split}} \cdot C_{\text{poisson}}}{\kappa_{\text{mix}}^{\text{cont}}}$ depends on the splitting error constant, the Poisson equation regularity, and the continuous-time mixing rate.
@@ -2356,6 +2558,7 @@ $$
 \boxed{
 \left| \mathbb{E}_{\nu_N^{\text{discrete}}} \left[ \frac{1}{N}\sum_{i=1}^N \phi(Z^{(i)}) \right] - \mathbb{E}_{\rho_0} [\phi] \right| \leq \left( \frac{C_{\text{MF}}}{\sqrt{N}} + C_{\text{discrete}} \Delta t \right) \|\phi\|_{C^4}
 }
+
 $$
 
 where:
@@ -2385,6 +2588,7 @@ $$
 &\left| \mathbb{E}_{\nu_N^{\text{discrete}}} [\phi] - \mathbb{E}_{\rho_0} [\phi] \right| \\
 &\quad \leq \underbrace{\left| \mathbb{E}_{\nu_N^{\text{discrete}}} [\phi] - \mathbb{E}_{\nu_N^{\text{cont}}} [\phi] \right|}_{\text{Time discretization error}} + \underbrace{\left| \mathbb{E}_{\nu_N^{\text{cont}}} [\phi] - \mathbb{E}_{\rho_0} [\phi] \right|}_{\text{Mean-field error}}
 \end{align*}
+
 $$
 
 where:
@@ -2396,6 +2600,7 @@ where:
 
 $$
 \mathbb{E}_{\nu_N} [\Phi] = \mathbb{E}_{\nu_N} \left[ \frac{1}{N}\sum_{i=1}^N \phi(Z^{(i)}) \right] = \mathbb{E}_{\rho_N} [\phi]
+
 $$
 
 where $\rho_N$ is the single-particle marginal of $\nu_N$. This connects N-particle expectations to single-particle observables.
@@ -2403,7 +2608,6 @@ where $\rho_N$ is the single-particle marginal of $\nu_N$. This connects N-parti
 ---
 
 :::{prf:proof}
-:label: proof-thm-total-error-bound
 
 **Step 1: Triangle inequality decomposition**
 
@@ -2411,6 +2615,7 @@ For any observable $\phi: \mathcal{Z} \to \mathbb{R}$ (single-particle observabl
 
 $$
 \Phi(\mathcal{S}) := \frac{1}{N} \sum_{i=1}^N \phi(Z^{(i)})
+
 $$
 
 where $\mathcal{S} = (Z^{(1)}, \ldots, Z^{(N)})$ is the N-particle swarm state.
@@ -2422,6 +2627,7 @@ $$
 \left| \mathbb{E}_{\nu_N^{\text{discrete}}} [\Phi] - \mathbb{E}_{\rho_0} [\phi] \right| &= \left| \mathbb{E}_{\nu_N^{\text{discrete}}} [\Phi] - \mathbb{E}_{\nu_N^{\text{cont}}} [\Phi] + \mathbb{E}_{\nu_N^{\text{cont}}} [\Phi] - \mathbb{E}_{\rho_0} [\phi] \right| \\
 &\leq \left| \mathbb{E}_{\nu_N^{\text{discrete}}} [\Phi] - \mathbb{E}_{\nu_N^{\text{cont}}} [\Phi] \right| + \left| \mathbb{E}_{\nu_N^{\text{cont}}} [\Phi] - \mathbb{E}_{\rho_0} [\phi] \right|
 \end{align*}
+
 $$
 
 **Step 2: Bound the time discretization error**
@@ -2430,6 +2636,7 @@ From Part III ({prf:ref}`thm-error-propagation`), the invariant measure error be
 
 $$
 \left| \mathbb{E}_{\nu_N^{\text{discrete}}} [\Phi] - \mathbb{E}_{\nu_N^{\text{cont}}} [\Phi] \right| \leq C_{\text{total}} \|\Phi\|_{C^4(\Omega^N)} \Delta t
+
 $$
 
 where $C_{\text{total}} = \frac{C_{\text{split}} \cdot C_{\text{poisson}}}{\kappa_{\text{mix}}^{\text{cont}}}$.
@@ -2438,6 +2645,7 @@ For an empirical measure observable $\Phi(\mathcal{S}) = \frac{1}{N}\sum_{i=1}^N
 
 $$
 \|\Phi\|_{C^4(\Omega^N)} = \|\phi\|_{C^4(\mathcal{Z})}
+
 $$
 
 This is a standard convention in mean-field theory, as the error constants in the propagation theorem are derived from single-particle dynamics and their interactions. The averaging factor $1/N$ is intrinsic to the observable's definition, not its regularity.
@@ -2446,6 +2654,7 @@ Therefore, the time discretization error for the empirical observable is:
 
 $$
 \left| \mathbb{E}_{\nu_N^{\text{discrete}}} [\Phi] - \mathbb{E}_{\nu_N^{\text{cont}}} [\Phi] \right| \leq C_{\text{total}} \|\phi\|_{C^4} \Delta t
+
 $$
 
 This bound is of order $O(\Delta t)$ and is **independent of $N$**.
@@ -2456,6 +2665,7 @@ From Part I ({prf:ref}`thm-quantitative-propagation-chaos`), for the continuous-
 
 $$
 \left| \mathbb{E}_{\bar{\mu}_N} [\phi] - \mathbb{E}_{\rho_0} [\phi] \right| \leq \frac{C_{\text{FG}}}{\sqrt{N}} \|\phi\|_{C^4}
+
 $$
 
 where $\bar{\mu}_N = \frac{1}{N}\sum_{i=1}^N \delta_{Z^{(i)}}$ is the empirical measure.
@@ -2464,6 +2674,7 @@ where $\bar{\mu}_N = \frac{1}{N}\sum_{i=1}^N \delta_{Z^{(i)}}$ is the empirical 
 
 $$
 \mathbb{E}_{\nu_N^{\text{cont}}} [\Phi] = \mathbb{E}_{\nu_N^{\text{cont}}} \left[ \int \phi(z) d\bar{\mu}_N(z) \right] = \mathbb{E}_{\bar{\mu}_N} [\phi]
+
 $$
 
 where the expectation is over realizations of the N-particle system drawn from $\nu_N^{\text{cont}}$.
@@ -2472,6 +2683,7 @@ By {prf:ref}`thm-quantitative-propagation-chaos`:
 
 $$
 \left| \mathbb{E}_{\nu_N^{\text{cont}}} [\Phi] - \mathbb{E}_{\rho_0} [\phi] \right| \leq \frac{C_{\text{MF}}}{\sqrt{N}} \|\phi\|_{C^4}
+
 $$
 
 where $C_{\text{MF}} = C_{\text{FG}} \sqrt{\frac{2C_0}{\gamma \kappa_{\text{conf}} \kappa_W \delta^2}}$.
@@ -2486,6 +2698,7 @@ $$
 &\leq C_{\text{total}} \|\phi\|_{C^4} \Delta t + \frac{C_{\text{MF}}}{\sqrt{N}} \|\phi\|_{C^4} \\
 &= \left( \frac{C_{\text{MF}}}{\sqrt{N}} + C_{\text{total}} \Delta t \right) \|\phi\|_{C^4}
 \end{align*}
+
 $$
 
 **Key observation**: The discretization term is $O(\Delta t)$, while the mean-field term is $O(1/\sqrt{N})$. For a fixed small $\Delta t$, the mean-field error will dominate as $N \to \infty$.
@@ -2518,6 +2731,7 @@ Both constants are independent of $N$ and $\Delta t$:
 
 $$
 \left| \mathbb{E}_{\nu_N^{\text{discrete}}} \left[ \frac{1}{N}\sum_{i=1}^N \phi(Z^{(i)}) \right] - \mathbb{E}_{\rho_0} [\phi] \right| \leq \left( \frac{C_{\text{MF}}}{\sqrt{N}} + C_{\text{discrete}} \Delta t \right) \|\phi\|_{C^4}
+
 $$
 
 with constants uniform in $N$ and $\Delta t$ (for $\Delta t < \Delta t_0$), where $C_{\text{discrete}} = C_{\text{total}}$ is the discretization constant from Step 2.
@@ -2546,12 +2760,14 @@ The total error bound reveals two competing sources:
 
 $$
 \frac{C_{\text{MF}}}{\sqrt{N}} \approx C_{\text{discrete}} \Delta t \approx \frac{\varepsilon}{2}
+
 $$
 
 This gives the scaling relationship:
 
 $$
 \Delta t \sim \frac{1}{\sqrt{N}}
+
 $$
 
 **Example**: For $\varepsilon = 0.01$ and $C_{\text{MF}} \approx C_{\text{discrete}} \approx 1$:
@@ -2576,6 +2792,7 @@ This is proven via the Poisson equation argument in Part III ({prf:ref}`thm-erro
 
 $$
 \mathcal{T}^{\Delta t}_{\text{Strang}} = \mathcal{T}_{\text{Langevin}}^{\Delta t/2} \circ \mathcal{T}_{\text{clone}}^{\Delta t} \circ \mathcal{T}_{\text{Langevin}}^{\Delta t/2}
+
 $$
 
 This is symmetric and achieves:
@@ -2586,6 +2803,7 @@ Therefore, Strang splitting improves the discretization term to:
 
 $$
 C_{\text{discrete}}^{(2)} (\Delta t)^2
+
 $$
 
 where $C_{\text{discrete}}^{(2)}$ is typically larger than $C_{\text{discrete}}$ due to higher-order commutator contributions, but the $(\Delta t)^2$ dependence makes it substantially smaller for reasonable time steps.
@@ -2611,6 +2829,7 @@ The $O(1/\sqrt{N})$ rate is **optimal** for empirical measure convergence in mea
 
 $$
 \sqrt{N} (\bar{\mu}_N - \rho_0) \xrightarrow{d} \mathcal{N}(0, \Sigma)
+
 $$
 
 where $\Sigma$ is the covariance operator of the limiting Gaussian process.
@@ -2635,6 +2854,7 @@ Under the framework axioms, the error constants admit the following explicit bou
 
 $$
 C_{\text{MF}} = \sqrt{C_{\text{var}} + C' \cdot C_{\text{int}}}
+
 $$
 
 where:
@@ -2650,6 +2870,7 @@ where:
 
 $$
 C_{\text{discrete}} = \frac{C_{\text{split}} \cdot C_{\text{poisson}}}{\kappa_{\text{mix}}^{\text{cont}}}
+
 $$
 
 where:
@@ -2672,7 +2893,6 @@ where:
 :::
 
 :::{prf:proof}
-:label: proof-prop-quantitative-explicit-constants
 
 These formulas are derived by tracing through the constants in Parts I, II, and III:
 
@@ -2682,12 +2902,14 @@ From {prf:ref}`thm-quantitative-propagation-chaos` (Part I), the mean-field erro
 
 $$
 \left| \mathbb{E}_{\nu_N^{QSD}} \left[ \frac{1}{N} \sum_{i=1}^N \phi(z_i) \right] - \mathbb{E}_{\rho_0}[\phi] \right| \leq \frac{C_{\text{obs}} \cdot L_\phi}{\sqrt{N}}
+
 $$
 
 where the constant is given by:
 
 $$
 C_{\text{obs}} = \sqrt{C_{\text{var}} + C' \cdot C_{\text{int}}}
+
 $$
 
 Here:
@@ -2699,6 +2921,7 @@ For $C^4$ observables (needed for Part III Poisson equation regularity), we can 
 
 $$
 C_{\text{MF}} = C_{\text{obs}} = \sqrt{C_{\text{var}} + C' \cdot C_{\text{int}}}
+
 $$
 
 **Note on C^4 norm dependency:** The dependence on $\|\phi\|_{C^4}$ (rather than just Lipschitz constant $L_\phi$) arises from the regularity required for the solution $\psi$ of the Poisson equation used in Part III to relate the invariant measure error to the local weak error of the discrete scheme. The Kantorovich-Rubinstein duality relates $W_1$ distance to error for 1-Lipschitz observables (i.e., $C^1$ functions), but the higher $C^4$ regularity is needed to bound the error propagation through the Markov chain dynamics.
@@ -2709,6 +2932,7 @@ From {prf:ref}`thm-error-propagation`, Step 4:
 
 $$
 \left| \mathbb{E}_{\nu_N^{\text{discrete}}}[\phi] - \mathbb{E}_{\nu_N^{\text{cont}}}[\phi] \right| \leq \frac{C_{\text{split}} \cdot C_{\text{poisson}}}{\kappa_{\text{mix}}^{\text{cont}}} \|\phi\|_{C^4} \Delta t
+
 $$
 
 The numerator combines:
@@ -2728,6 +2952,7 @@ $$
 \boxed{
 \left| \mathbb{E}_{\nu_N^{\text{discrete}}} \left[ \frac{1}{N}\sum_{i=1}^N \phi(Z^{(i)}) \right] - \mathbb{E}_{\rho_0} [\phi] \right| \leq \left( \frac{C_{\text{MF}}}{\sqrt{N}} + C_{\text{discrete}} \Delta t \right) \|\phi\|_{C^4}
 }
+
 $$
 
 **Key properties:**

@@ -41,8 +41,10 @@ All expressions below are consistent with the Fragile Gas axioms ({prf:ref}`def-
 ## 2. The Single Walker Parameter Stack
 
 We fix the parameter set
+
 $$
 \Theta_{\text{obs}} = \{ \lambda_{\text{alg}}, \epsilon_d, \epsilon_{\text{dist}}, \rho, \sigma_{\text{min}}, A, \eta, \alpha, \beta, p_{\max}, \epsilon_{\text{clone}}, \sigma_x, c_{v\_\text{reg}}, U(\cdot), \gamma, \beta_{\text{kin}}, \Delta t \}.
+
 $$
 The first block controls the diversity and reward channels, the second block fixes the stochastic thresholding rule, and the last block governs the kinetic step. Additional algorithm-specific constants (e.g., restitution coefficients or jitter variances) are absorbed into $\Theta_{\text{obs}}$ but are omitted from the notation when not required.
 
@@ -50,8 +52,10 @@ The first block controls the diversity and reward channels, the second block fix
 :label: def-single-observable-stack
 
 Given a swarm state $S_t$, the **observable stack** of walker $i$ is the tuple
+
 $$
 \mathsf{Obs}(i, S_t; \Theta_{\text{obs}}) := (\mathcal{P}_{D(i)}, R_i, \mathcal{P}_{V(i)}, \mathcal{F}_{\Pi(i)}, \mathcal{P}_{X'_i}, \mathcal{P}_{X''_i}),
+
 $$
 where each component is defined in Sections 3–7 below. Every map depends measurably on $S_t$ and on the algorithmic randomness of the diversity matching, the cloning threshold, and the kinetic noise.
 :::
@@ -61,20 +65,26 @@ where each component is defined in Sections 3–7 below. Every map depends measu
 ### 3.1. Matching Probabilities
 
 The **sequential greedy pairing** algorithm produces a perfect matching $M$ of $\mathcal{A}(S_t)$ by iterating over walkers and sampling companions according to a softmax of algorithmic distances. When walker $i$ chooses among the unpaired set $U \subseteq \mathcal{A}(S_t)$, the selection probability for $j \in U \setminus \{i\}$ is
+
 $$
 P(C_i = j \mid i, U; \lambda_{\text{alg}}, \epsilon_d) = \frac{\exp\left(-\frac{d_{\text{alg}}(i, j; \lambda_{\text{alg}})^2}{2\epsilon_d^2}\right)}{\sum_{\ell \in U \setminus \{i\}} \exp\left(-\frac{d_{\text{alg}}(i, \ell; \lambda_{\text{alg}})^2}{2\epsilon_d^2}\right)}.
+
 $$
 The probability of a full matching $M \in \mathcal{M}(\mathcal{A}(S_t))$ is the product of the sequential choices that realize $M$:
+
 $$
 P(M \mid S_t; \lambda_{\text{alg}}, \epsilon_d) = \prod_{(i, c_i) \in M} P(C_i = c_i \mid i, U_i(M); \lambda_{\text{alg}}, \epsilon_d),
+
 $$
 where $U_i(M)$ records the remaining unmatched walkers when $i$ is processed.
 
 ### 3.2. Regularized Distance Measurement
 
 For every walker $j$, the regularized distance to its companion is
+
 $$
 d_j(M; \lambda_{\text{alg}}, \epsilon_{\text{dist}}) := \sqrt{\|x_j - x_{c_j}\|^2 + \lambda_{\text{alg}} \|v_j - v_{c_j}\|^2 + \epsilon_{\text{dist}}^2}.
+
 $$
 The regularization prevents degeneracy when walkers coincide and ensures differentiability of the subsequent statistics.
 
@@ -83,35 +93,46 @@ The regularization prevents degeneracy when walkers coincide and ensures differe
 Let $k = |\mathcal{A}(S_t)|$. Two regimes are supported:
 
 *   **Global statistics ($\rho = \mathrm{None}$):**
+
     $$
     \mu_d(M, S_t) = \frac{1}{k} \sum_{j \in \mathcal{A}(S_t)} d_j(M; \cdot), \quad
     \sigma'_d(M, S_t; \sigma_{\text{min}}) = \sqrt{\frac{1}{k} \sum_{j} (d_j - \mu_d)^2 + \sigma_{\text{min}}^2}.
+
     $$
 *   **Localized statistics ($\rho < \infty$):**
+
     $$
     K_{\rho}(i, j) = \exp\left(-\frac{d_{\text{alg}}(i, j; \lambda_{\text{alg}})^2}{2\rho^2}\right), \quad
     \mu_{\rho, d}(i) = \frac{\sum_{j} K_{\rho}(i, j) d_j}{\sum_{\ell} K_{\rho}(i, \ell)},
+
     $$
     $$
     \sigma'_{\rho, d}(i; \sigma_{\text{min}}) = \sqrt{\frac{\sum_{j} K_{\rho}(i, j) (d_j - \mu_{\rho, d}(i))^2}{\sum_{\ell} K_{\rho}(i, \ell)} + \sigma_{\text{min}}^2}.
+
     $$
 
 ### 3.4. Diversity Distribution
 
 The standardized score of walker $i$ is
+
 $$
 Z(i, M, S_t) = \begin{cases}
 \dfrac{d_i(M; \cdot) - \mu_d(M, S_t)}{\sigma'_d(M, S_t; \sigma_{\text{min}})}, & \rho = \mathrm{None}, \\
 \dfrac{d_i(M; \cdot) - \mu_{\rho, d}(i)}{\sigma'_{\rho, d}(i; \sigma_{\text{min}})}, & \rho < \infty.
 \end{cases}
+
 $$
 After applying the logistic rescale and positivity floor, the diversity channel is
+
 $$
 \mathcal{D}_i(M, S_t) = \left( \frac{A}{1 + \exp(-Z(i, M, S_t))} + \eta \right)^{\beta}.
+
 $$
 The probability mass function of $\mathcal{D}_i$ is therefore
+
 $$
 \mathcal{P}_{D(i)}(v \mid S_t; \Theta_{\text{obs}}) = \sum_{M \in \mathcal{M}(\mathcal{A}(S_t))} \mathbf{1}_{\{\mathcal{D}_i(M, S_t) = v\}} \cdot P(M \mid S_t; \lambda_{\text{alg}}, \epsilon_d).
+
 $$
 Each atom corresponds to a matching whose deterministic evaluation equals $v$.
 
@@ -120,27 +141,34 @@ Each atom corresponds to a matching whose deterministic evaluation equals $v$.
 ### 4.1. Raw Reward
 
 The deterministic reward of walker $j$ uses the external potential $U$ and the velocity regularization coefficient $c_{v\_\text{reg}}$:
+
 $$
 r_j(S_t; U, c_{v\_\text{reg}}) = -U(x_j) - c_{v\_\text{reg}} \|v_j\|^2.
+
 $$
 
 ### 4.2. Reward Standardization
 
 The global statistics mirror Section 3.3. For a localized regime the same kernel $K_{\rho}$ is re-used:
+
 $$
 \mu_r(S_t) = \frac{1}{k} \sum_{j} r_j, \quad \sigma'_r(S_t; \sigma_{\text{min}}) = \sqrt{\frac{1}{k} \sum_j (r_j - \mu_r)^2 + \sigma_{\text{min}}^2},
+
 $$
 $$
 \mu_{\rho, r}(i) = \frac{\sum_j K_{\rho}(i, j) r_j}{\sum_{\ell} K_{\rho}(i, \ell)}, \quad
 \sigma'_{\rho, r}(i; \sigma_{\text{min}}) = \sqrt{\frac{\sum_j K_{\rho}(i, j) (r_j - \mu_{\rho, r}(i))^2}{\sum_{\ell} K_{\rho}(i, \ell)} + \sigma_{\text{min}}^2}.
+
 $$
 The standardized score $Z_r(i, S_t)$ follows from the corresponding means and variances.
 
 ### 4.3. Reward Channel Value
 
 The reward channel is deterministic once $S_t$ is fixed:
+
 $$
 R_i(S_t; \Theta_{\text{obs}}) = \left( \frac{A}{1 + \exp(-Z_r(i, S_t))} + \eta \right)^{\alpha}.
+
 $$
 
 ### 4.4. Fitness Potential Distribution
@@ -149,8 +177,10 @@ $$
 :label: prop-single-fitness-distribution
 
 The fitness potential $V_{\text{fit}}(i, S_t) = \mathcal{D}_i(S_t) \cdot R_i(S_t)$ has probability mass function
+
 $$
 \mathcal{P}_{V(i)}(v \mid S_t; \Theta_{\text{obs}}) = \mathcal{P}_{D(i)}\left( \frac{v}{R_i(S_t)} \Bigm| S_t; \Theta_{\text{obs}} \right).
+
 $$
 Therefore, $\mathcal{P}_{V(i)}$ inherits the atomic structure of $\mathcal{P}_{D(i)}$ scaled by the deterministic reward factor.
 :::
@@ -160,32 +190,42 @@ Therefore, $\mathcal{P}_{V(i)}$ inherits the atomic structure of $\mathcal{P}_{D
 ### 5.1. Cloning Scores
 
 Given a matching $M$, the cloning score of walker $i$ relative to companion $j$ is ({prf:ref}`def-cloning-score`)
+
 $$
 s(i \mid j, M) = \frac{V_{\text{fit}}(j, M, S_t) - V_{\text{fit}}(i, M, S_t)}{V_{\text{fit}}(i, M, S_t) + \epsilon_{\text{clone}}}.
+
 $$
 This value becomes a random variable once $M$ is sampled.
 
 ### 5.2. Thresholding and Probabilities
 
 Let $T_i \sim \mathrm{Uniform}(0, 1)$ be the stochastic threshold. The clipped probability ({prf:ref}`def-cloning-probability`) is
+
 $$
 \pi_{\text{clip}}(s; p_{\max}) = \min\{p_{\max}, \max\{0, s\}\}.
+
 $$
 Conditioned on $M$, the cloning action indicator is $\mathbf{1}_{\{ \pi_{\text{clip}}(s(i \mid j, M); p_{\max}) > T_i \}}$ ({prf:ref}`def-cloning-decision`).
 
 ### 5.3. Field Definition
 
 The **conditional cloning probability field** of walker $i$ is the map
+
 $$
 \mathcal{F}_{\Pi(i)}(S_t; \Theta_{\text{obs}}): j \longmapsto \mathcal{P}_{\Pi(i\mid j)}(p \mid S_t; \Theta_{\text{obs}}),
+
 $$
 where
+
 $$
 \mathcal{P}_{\Pi(i\mid j)}(p \mid S_t; \Theta_{\text{obs}}) = \sum_{M \in \mathcal{M}(\mathcal{A}(S_t))} \mathbf{1}_{\{ \pi_{\text{clip}}(s(i \mid j, M); p_{\max}) = p \}} \cdot P(M \mid S_t; \lambda_{\text{alg}}, \epsilon_d).
+
 $$
 Its expectation
+
 $$
 \bar{p}(i \mid j) := \mathbb{E}_{M}[\pi_{\text{clip}}(s(i \mid j, M); p_{\max})]
+
 $$
 determines the mean contribution of $j$ to the total cloning probability $\pi_{\text{clone}}(i \mid S_t)$, consistent with {prf:ref}`def-cloning-probability`.
 
@@ -194,16 +234,20 @@ determines the mean contribution of $j$ to the total cloning probability $\pi_{\
 ### 6.1. Mixture Structure
 
 Let $x_i$ denote the original position of walker $i$. After the cloning operator, the position $X'_i$ has the mixed distribution
+
 $$
 \mathcal{P}_{X'_i}(x' \mid S_t; \Theta_{\text{obs}}) = (1 - \pi_{\text{clone}}(i \mid S_t)) \cdot \delta(x' - x_i) + \sum_{j \in \mathcal{A}(S_t) \setminus \{i\}} w_{ij}^{\text{joint}} \cdot \mathcal{N}(x'; x_j, \sigma_x^2 I_d),
+
 $$
 where $\delta$ is the Dirac mass and $\mathcal{N}(\cdot; x_j, \sigma_x^2 I_d)$ is the isotropic Gaussian induced by the spatial jitter.
 
 ### 6.2. Joint Weights
 
 The joint weights factorize as
+
 $$
 w_{ij}^{\text{joint}} = \bar{p}(i \mid j) \cdot P_{C_i}(j \mid S_t; \lambda_{\text{alg}}, \epsilon_d),
+
 $$
 and obey $\sum_{j} w_{ij}^{\text{joint}} = \pi_{\text{clone}}(i \mid S_t)$. Each Gaussian component is therefore weighed by the probability of selecting $j$ as a companion and subsequently cloning against $j$.
 
@@ -217,24 +261,32 @@ The function $x' \mapsto \mathcal{P}_{X'_i}(x')$ is a random field supported on 
 ### 7.1. BAOAB Convolution
 
 Let $(X'_i, V'_i)$ denote the state immediately after cloning. The kinetic operator $\Psi_{\text{kin}}$ in Stratonovich form ({prf:ref}`def-kinetic-operator-stratonovich`) is implemented numerically through the BAOAB update ({prf:ref}`def-baoab-update-rule`). Writing $c_1 = e^{-\gamma \Delta t}$ and $c_2 = \sqrt{(1 - c_1^2)/\beta_{\text{kin}}}$, a single kinetic step produces
+
 $$
 V''_i = u(X'_i) + c_1 (V'_i - u(X'_i)) + c_2 \xi_i, \qquad X''_i = X'_i + \Delta t \, V''_i,
+
 $$
 where $u$ is the background drift and $\xi_i \sim \mathcal{N}(0, I_d)$. The full single-step transition density is the convolution
+
 $$
 \mathcal{P}_{X''_i}(x'' \mid S_t; \Theta_{\text{obs}}) = \iint \mathcal{K}_{\text{BAOAB}}(x'' \mid x', v') \, \mathcal{P}_{X'_i, V'_i}(x', v' \mid S_t) \; \mathrm{d}x' \, \mathrm{d}v',
+
 $$
 where $\mathcal{K}_{\text{BAOAB}}$ is the Gaussian kernel generated by the BAOAB scheme. The joint distribution $\mathcal{P}_{X'_i, V'_i}$ factors analogously to the positional mixture, with the velocity components inheriting the restitution and jitter rules from the cloning operator.
 
 ### 7.2. Death Probability Field
 
 Let $\mathcal{X}_{\mathrm{valid}} \subset \mathbb{R}^d$ be the viable domain ({prf:ref}`def-valid-state-space`). For each companion $j$ the conditional probability of exiting $\mathcal{X}_{\mathrm{valid}}$ after cloning to $j$ and applying the kinetic step is
+
 $$
 \pi_{\text{death}}(i \mid j, S_t) = \int_{\mathbb{R}^d \setminus \mathcal{X}_{\mathrm{valid}}} \mathcal{N}\bigl(x''; m_{ij}, \Sigma_{ij}\bigr) \, \mathrm{d}x'',
+
 $$
 where $m_{ij}$ and $\Sigma_{ij}$ follow from the BAOAB drift and diffusion applied to the Gaussian component centered at $x_j$. The total death probability is the weighted sum
+
 $$
 \Pi_{\text{death}}(i \mid S_t) = (1 - \pi_{\text{clone}}(i \mid S_t)) \pi_{\text{death}}^{\text{persist}}(i) + \sum_{j} w_{ij}^{\text{joint}} \pi_{\text{death}}(i \mid j, S_t),
+
 $$
 with the persistence term computed by integrating the kinetic kernel based on the Dirac component at $x_i$.
 

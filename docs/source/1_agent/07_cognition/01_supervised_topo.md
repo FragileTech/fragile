@@ -61,6 +61,7 @@ Let $\mathcal{Y} = \{1, \ldots, C\}$ be the set of class labels and $\mathcal{K}
 
 $$
 \mathcal{A}_y := \{k \in \mathcal{K} : P(Y=y \mid K=k) > 1 - \epsilon_{\text{purity}}\},
+
 $$
 where $\epsilon_{\text{purity}} \in (0, 0.5)$ is the purity threshold.
 
@@ -122,6 +123,7 @@ Given a target class $y \in \mathcal{Y}$, define the semantic potential:
 
 $$
 V_y(z, K) := -\beta_{\text{class}} \log P(Y=y \mid K) + V_{\text{base}}(z, K),
+
 $$
 where:
 - $P(Y=y \mid K) = \text{softmax}(\Theta_{K,:})_y$ with learnable parameters $\Theta \in \mathbb{R}^{N_c \times C}$
@@ -135,6 +137,7 @@ where:
 
 $$
 \hat{P}(Y=y \mid K=k) = \frac{\text{EMA}[\mathbb{I}[Y=y, K=k]]}{\text{EMA}[\mathbb{I}[K=k]]}.
+
 $$
 This is non-differentiable w.r.t. chart assignment but more grounded in observations. A hybrid approach initializes learnable $\Theta$ from empirical estimates after warmup.
 
@@ -177,6 +180,7 @@ The **region of attraction** for class $y$ is:
 
 $$
 \mathcal{B}_y := \{z \in \mathcal{Z} : \lim_{t \to \infty} \phi_t(z) \in \mathcal{A}_y\},
+
 $$
 where $\phi_t$ denotes the flow of the gradient dynamical system $\dot{z} = -G^{-1}(z)\nabla V_y(z)$.
 
@@ -201,11 +205,13 @@ Under the overdamped dynamics ({ref}`Section 22.5 <sec-the-overdamped-limit>`) w
 
 $$
 dz = -G^{-1}(z) \nabla V_y(z, K)\, ds + \sqrt{2T_c}\, G^{-1/2}(z)\, dW_s, \quad T_c \text{ cognitive temperature } ({prf:ref}`def-cognitive-temperature`)
+
 $$
 the limiting chart assignment satisfies:
 
 $$
 \lim_{s \to \infty} K(z(s)) \in \mathcal{A}_y \quad \text{almost surely},
+
 $$
 provided:
 1. $z(0) \in \mathcal{B}_y$ (initial condition in the basin)
@@ -216,6 +222,7 @@ provided:
 
 $$
 \frac{dL}{ds} = \nabla V_y \cdot \dot{z} = -\|\nabla V_y\|_G^2 + \text{noise terms}.
+
 $$
 For small $T_c$, the deterministic term dominates, ensuring $L$ decreases until $z$ reaches a local minimum. The class-$y$ region is the global minimum of $V_y$ by construction. Full proof in {ref}`Appendix A.5 <sec-appendix-a-full-derivations>`. $\square$
 
@@ -279,6 +286,7 @@ Class labels define **Semantic Partitions** with **Class-Conditioned Potentials*
 
 $$
 V_y(z, K) = -\beta_{\text{class}} \log P(Y=y \mid K) + V_{\text{base}}(z, K)
+
 $$
 Trajectories relax into class-specific basins via gradient flow on the learned metric.
 
@@ -289,6 +297,7 @@ Set $V_{\text{base}} = 0$. Interpret labels as expert actions. Use Euclidean min
 
 $$
 \mathcal{L}_{\text{BC}} = \mathbb{E}_{(s,a^*) \sim \mathcal{D}_{\text{expert}}}[-\log \pi(a^*|s)]
+
 $$
 This recovers **Behavioral Cloning** and **Imitation Learning** {cite}`pomerleau1991bc`.
 
@@ -319,6 +328,7 @@ For the WFR reaction term (Definition {prf:ref}`def-the-wfr-action`), modulate t
 
 $$
 \lambda_{i \to j}^{\text{sup}} := \lambda_{i \to j}^{(0)} \cdot \exp\left(-\gamma_{\text{sep}} \cdot D_{\text{class}}(i, j)\right),
+
 $$
 where:
 - $\lambda^{(0)}_{i \to j}$ is the **base transition rate** from the GKSL master equation ({prf:ref}`def-gksl-generator`, {cite}`lindblad1976gksl,gorini1976gksl`, {ref}`Section 20.5 <sec-connection-to-gksl-master-equation>`), derived from the overlap consistency of jump operators (Section 7.13)
@@ -362,6 +372,7 @@ As $\gamma_{\text{sep}} \to \infty$, the effective WFR distance between charts o
 
 $$
 d_{\text{WFR}}(\mathcal{A}_{y_1}, \mathcal{A}_{y_2}) \to \infty \quad \text{for } y_1 \neq y_2.
+
 $$
 *Proof sketch.* The WFR distance (Definition {prf:ref}`def-the-wfr-action`) involves minimizing over paths that may use both transport (continuous flow within charts) and reaction (jumps between charts). Consider a path from $\mathcal{A}_{y_1}$ to $\mathcal{A}_{y_2}$:
 
@@ -465,6 +476,7 @@ The purity loss measures how well charts separate classes:
 
 $$
 \mathcal{L}_{\text{purity}} = \sum_{k=1}^{N_c} P(K=k) \cdot H(Y \mid K=k),
+
 $$
 where:
 - $P(K=k) = \mathbb{E}_{x \sim \mathcal{D}}[w_k(x)]$ is the marginal chart probability
@@ -491,6 +503,7 @@ Minimizing $\mathcal{L}_{\text{purity}}$ is equivalent to maximizing the mutual 
 
 $$
 \mathcal{L}_{\text{purity}} = H(Y) - I(K; Y).
+
 $$
 Since $H(Y)$ is fixed by the data, $\min \mathcal{L}_{\text{purity}} \Leftrightarrow \max I(K; Y)$.
 
@@ -520,6 +533,7 @@ Prevent degenerate solutions where all samples route to few charts:
 
 $$
 \mathcal{L}_{\text{balance}} = D_{\text{KL}}\left(\bar{w} \;\|\; \text{Uniform}(N_c)\right),
+
 $$
 where $\bar{w} = \mathbb{E}_{x \sim \mathcal{D}}[w(x)]$ is the average router weight vector.
 
@@ -559,6 +573,7 @@ Enforce that different-class samples are geometrically separated:
 
 $$
 \mathcal{L}_{\text{metric}} = \frac{1}{|\mathcal{P}|} \sum_{(i,j) \in \mathcal{P}: y_i \neq y_j} w_i^\top w_j \cdot \max(0, m - d_{\text{jump}}(z_i, z_j))^2,
+
 $$
 where:
 - $\mathcal{P}$ is the set of sample pairs in the batch
@@ -602,6 +617,7 @@ The primary classification loss:
 
 $$
 \mathcal{L}_{\text{route}} = \mathbb{E}_{x, y_{\text{true}}}\left[\text{CE}\left(\sum_k w_k(x) \cdot P(Y=\cdot \mid K=k), \; y_{\text{true}}\right)\right],
+
 $$
 where $\text{CE}$ denotes cross-entropy.
 
@@ -629,6 +645,7 @@ The full supervised topology loss:
 
 $$
 \mathcal{L}_{\text{sup-topo}} = \mathcal{L}_{\text{route}} + \lambda_{\text{pur}} \mathcal{L}_{\text{purity}} + \lambda_{\text{bal}} \mathcal{L}_{\text{balance}} + \lambda_{\text{met}} \mathcal{L}_{\text{metric}}.
+
 $$
 Typical hyperparameters: $\lambda_{\text{pur}} = 0.1$, $\lambda_{\text{bal}} = 0.01$, $\lambda_{\text{met}} = 0.01$.
 
@@ -828,6 +845,7 @@ The Mobius re-centering $\phi_c$ for conditioned generation (Definition {prf:ref
 
 $$
 c_y := \mathbb{E}_{x: Y(x)=y}[\text{Enc}(x)],
+
 $$
 i.e., the average latent position of class-$y$ samples. Conditioned generation "starts" the holographic expansion from this centroid.
 
@@ -848,6 +866,7 @@ The generative Langevin equation {cite}`welling2011sgld,song2019ncsn` (Definitio
 
 $$
 dz = -\nabla_G V_y(z, K)\,d\tau + \sqrt{2T_c}\,G^{-1/2}(z)\,dW_\tau,
+
 $$
 where $V_y$ is the class-conditioned potential (Definition {prf:ref}`def-class-conditioned-potential`).
 
@@ -892,6 +911,7 @@ For the Poincare disk embedding {cite}`nickel2017poincare,ganea2018hnn`, define 
 
 $$
 c_y := \arg\min_{c \in \mathbb{D}} \sum_{x: Y(x)=y} d_{\mathbb{D}}(c, \text{Enc}(x))^2.
+
 $$
 This is well-defined since the Poincare disk has negative curvature (unique Frechet means).
 
@@ -924,6 +944,7 @@ The TopologicalDecoder ({ref}`Section 7.10 <sec-decoder-architecture-overview-to
 
    $$
    \mathcal{L}_{\text{route-consistency}} = \mathbb{E}_{x,y}\left[\text{CE}\left(w_{\text{dec}}(z_{\text{geo}}), w_{\text{enc}}(x)\right)\right]
+
    $$
    where $w_{\text{dec}}$ are the decoder's soft router weights and $w_{\text{enc}}$ are the encoder's.
 
@@ -963,6 +984,7 @@ A **label hierarchy** is a sequence of label spaces:
 
 $$
 \mathcal{Y}_0 \twoheadrightarrow \mathcal{Y}_1 \twoheadrightarrow \cdots \twoheadrightarrow \mathcal{Y}_L,
+
 $$
 where $\twoheadrightarrow$ denotes a surjection (coarsening). $\mathcal{Y}_0$ are coarse labels (super-categories), $\mathcal{Y}_L$ are fine labels (leaf categories).
 
@@ -985,16 +1007,19 @@ In the stacked TopoEncoder ({ref}`Section 7.12 <sec-stacked-topoencoders-deep-re
 
   $$
   \mathcal{L}_{\text{purity}}^{(0)} = H(\mathcal{Y}_0 \mid K^{(0)})
+
   $$
 - **Layer $\ell$ (Intermediate):** Charts at level $\ell$ correspond to level-$\ell$ classes. Enforce:
 
   $$
   \mathcal{L}_{\text{purity}}^{(\ell)} = H(\mathcal{Y}_\ell \mid K^{(\ell)})
+
   $$
 - **Layer $L$ (Boundary/Fast):** Charts at level $L$ correspond to fine classes. Enforce:
 
   $$
   \mathcal{L}_{\text{purity}}^{(L)} = H(\mathcal{Y}_L \mid K^{(L)})
+
   $$
 :::
 
@@ -1044,6 +1069,7 @@ The total hierarchical loss:
 
 $$
 \mathcal{L}_{\text{hier}} = \sum_{\ell=0}^{L} \alpha_\ell \left(\mathcal{L}_{\text{route}}^{(\ell)} + \lambda_{\text{pur}} \mathcal{L}_{\text{purity}}^{(\ell)}\right),
+
 $$
 where $\alpha_\ell$ weights the contribution of each scale (typically $\alpha_\ell = 1$ or decaying with $\ell$).
 

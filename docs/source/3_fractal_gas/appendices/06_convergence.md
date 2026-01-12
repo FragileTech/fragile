@@ -233,6 +233,7 @@ From 03_cloning.md Definition 3.3.1:
 
 $$
 V_{\text{total}}(S_1, S_2) = V_W(S_1, S_2) + c_V V_{\text{Var}}(S_1, S_2) + c_B W_b(S_1, S_2)
+
 $$
 
 where:
@@ -270,15 +271,19 @@ Under the foundational axioms, there exist coupling constants $c_V^*, c_B^* > 0$
 
 $$
 \mathbb{E}_{\text{total}}[V_{\text{total}}(S') \mid S] \leq (1 - \kappa_{\text{total}}\tau) V_{\text{total}}(S) + C_{\text{total}}
+
 $$
 
 where:
+
 $$
 \kappa_{\text{total}} := \min\left(\frac{\kappa_W}{2}, \frac{c_V^* \kappa_x}{2}, \frac{c_V^* \gamma}{2}, \frac{c_B^*(\kappa_b + \kappa_{\text{pot}}\tau)}{2}\right) > 0
+
 $$
 
 $$
 C_{\text{total}} := C_W + C_W'\tau + c_V^*(C_x + C_v + C_{\text{kin},x}\tau) + c_B^*(C_b + C_{\text{pot}}\tau) < \infty
+
 $$
 
 **Both constants are independent of $N$.**
@@ -292,7 +297,6 @@ $$
 ### 3.5. Proof: Choosing the Coupling Constants
 
 :::{prf:proof}
-:label: proof-thm-foster-lyapunov-main
 
 **Proof (Rigorous Verification of Coupling Constants).**
 
@@ -304,6 +308,7 @@ The total Lyapunov function is:
 
 $$
 V_{\text{total}} = V_W + c_V V_{\text{Var}} + c_B W_b
+
 $$
 
 where $V_{\text{Var}} = V_{\text{Var},x} + V_{\text{Var},v}$.
@@ -312,12 +317,14 @@ The composed operator $\Psi_{\text{total}} = \Psi_{\text{kin}} \circ \Psi_{\text
 
 $$
 S \xrightarrow{\Psi_{\text{clone}}} S^{\text{clone}} \xrightarrow{\Psi_{\text{kin}}} S'
+
 $$
 
 **By the tower property of expectation:**
 
 $$
 \mathbb{E}_{\text{total}}[\Delta V_{\text{total}}] = \mathbb{E}_{\text{clone}}[\Delta V_{\text{total}}] + \mathbb{E}_{\text{clone}}[\mathbb{E}_{\text{kin}}[\Delta V_{\text{total}} \mid S^{\text{clone}}]]
+
 $$
 
 **PART II: Collect All Drift Inequalities**
@@ -342,78 +349,94 @@ From previous chapters, we have the following drift bounds:
 
 $$
 \mathbb{E}_{\text{total}}[\Delta V_W] = \mathbb{E}_{\text{clone}}[\Delta V_W] + \mathbb{E}_{\text{kin}}[\Delta V_W]
+
 $$
 
 $$
 \leq C_W + (-\kappa_W V_W \tau + C_W'\tau) = -\kappa_W V_W \tau + (C_W + C_W'\tau)
+
 $$
 
 **Component 2: Positional variance $V_{\text{Var},x}$**
 
 $$
 \mathbb{E}_{\text{total}}[\Delta V_{\text{Var},x}] = \mathbb{E}_{\text{clone}}[\Delta V_{\text{Var},x}] + \mathbb{E}_{\text{kin}}[\Delta V_{\text{Var},x}]
+
 $$
 
 $$
 \leq (-\kappa_x V_{\text{Var},x} + C_x) + C_{\text{kin},x}\tau = -\kappa_x V_{\text{Var},x} + (C_x + C_{\text{kin},x}\tau)
+
 $$
 
 **Component 3: Velocity variance $V_{\text{Var},v}$**
 
 $$
 \mathbb{E}_{\text{total}}[\Delta V_{\text{Var},v}] = \mathbb{E}_{\text{clone}}[\Delta V_{\text{Var},v}] + \mathbb{E}_{\text{kin}}[\Delta V_{\text{Var},v}]
+
 $$
 
 $$
 \leq C_v + (-2\gamma V_{\text{Var},v}\tau + d\sigma_{\max}^2\tau) = -2\gamma V_{\text{Var},v}\tau + (C_v + d\sigma_{\max}^2\tau)
+
 $$
 
 **Component 4: Boundary potential $W_b$**
 
 $$
 \mathbb{E}_{\text{total}}[\Delta W_b] = \mathbb{E}_{\text{clone}}[\Delta W_b] + \mathbb{E}_{\text{kin}}[\Delta W_b]
+
 $$
 
 $$
 \leq (-\kappa_b W_b + C_b) + (-\kappa_{\text{pot}} W_b\tau + C_{\text{pot}}\tau)
+
 $$
 
 $$
 = -(\kappa_b + \kappa_{\text{pot}}\tau) W_b + (C_b + C_{\text{pot}}\tau)
+
 $$
 
 **PART IV: Combine with Coupling Constants**
 
 $$
 \mathbb{E}_{\text{total}}[\Delta V_{\text{total}}] = \mathbb{E}_{\text{total}}[\Delta V_W] + c_V \mathbb{E}_{\text{total}}[\Delta V_{\text{Var},x}] + c_V \mathbb{E}_{\text{total}}[\Delta V_{\text{Var},v}] + c_B \mathbb{E}_{\text{total}}[\Delta W_b]
+
 $$
 
 Substituting the bounds:
 
 $$
 \leq -\kappa_W V_W \tau + (C_W + C_W'\tau)
+
 $$
 
 $$
 + c_V[-\kappa_x V_{\text{Var},x} + (C_x + C_{\text{kin},x}\tau)]
+
 $$
 
 $$
 + c_V[-2\gamma V_{\text{Var},v}\tau + (C_v + d\sigma_{\max}^2\tau)]
+
 $$
 
 $$
 + c_B[-(\kappa_b + \kappa_{\text{pot}}\tau) W_b + (C_b + C_{\text{pot}}\tau)]
+
 $$
 
 **Factor out the Lyapunov components:**
 
 $$
 = -[\kappa_W\tau \cdot V_W + c_V\kappa_x \cdot V_{\text{Var},x} + c_V 2\gamma\tau \cdot V_{\text{Var},v} + c_B(\kappa_b + \kappa_{\text{pot}}\tau) \cdot W_b]
+
 $$
 
 $$
 + [C_W + C_W'\tau + c_V(C_x + C_{\text{kin},x}\tau) + c_V(C_v + d\sigma_{\max}^2\tau) + c_B(C_b + C_{\text{pot}}\tau)]
+
 $$
 
 **PART V: Design Coupling Constants for Balanced Contraction**
@@ -428,6 +451,7 @@ We need to find $c_V^*, c_B^* > 0$ such that all components contract at a common
 
 $$
 c_V^* = \frac{\kappa_W\tau}{2\kappa_x}
+
 $$
 
 **Verification that $c_V^* < \infty$:** By Theorem 03_cloning.md (Ch 10), $\kappa_x > 0$ is bounded below by a constant independent of $N$, so $c_V^* < \infty$. ✓
@@ -436,10 +460,12 @@ $$
 
 $$
 \frac{\kappa_W\tau}{2\kappa_x} \cdot 2\gamma\tau = \frac{\kappa_W\tau}{2}
+
 $$
 
 $$
 \implies \frac{\gamma\tau}{\kappa_x} = \frac{1}{2}
+
 $$
 
 **This is NOT automatically satisfied!** We have a constraint: we must choose $\tau$ such that $\gamma\tau \leq \kappa_x/2$.
@@ -448,6 +474,7 @@ $$
 
 $$
 \kappa_{\text{total}} := \min\left(\frac{\kappa_W\tau}{2}, \frac{c_V^*\kappa_x}{2}, \frac{c_V^* 2\gamma\tau}{2}, \frac{c_B^*(\kappa_b + \kappa_{\text{pot}}\tau)}{2}\right)
+
 $$
 
 This ensures $\kappa_{\text{total}} > 0$ is the **minimum** contraction rate across all components.
@@ -456,6 +483,7 @@ This ensures $\kappa_{\text{total}} > 0$ is the **minimum** contraction rate acr
 
 $$
 c_B^* = \frac{\kappa_W\tau}{2(\kappa_b + \kappa_{\text{pot}}\tau)}
+
 $$
 
 **Verification that $c_B^* < \infty$:** By Theorem 03_cloning.md (Ch 11), $\kappa_b > 0$, so $c_B^* < \infty$. ✓
@@ -466,28 +494,33 @@ With the chosen coupling constants:
 
 $$
 \mathbb{E}_{\text{total}}[\Delta V_{\text{total}}] \leq -2\kappa_{\text{total}} V_{\text{total}} + C_{\text{total}}
+
 $$
 
 where:
 
 $$
 \kappa_{\text{total}} = \min\left(\frac{\kappa_W\tau}{2}, \frac{c_V^*\kappa_x}{2}, \frac{c_V^* 2\gamma\tau}{2}, \frac{c_B^*(\kappa_b + \kappa_{\text{pot}}\tau)}{2}\right) > 0
+
 $$
 
 $$
 C_{\text{total}} = C_W + C_W'\tau + c_V^*(C_x + C_{\text{kin},x}\tau + C_v + d\sigma_{\max}^2\tau) + c_B^*(C_b + C_{\text{pot}}\tau) < \infty
+
 $$
 
 **Rewrite in standard Foster-Lyapunov form:**
 
 $$
 \mathbb{E}_{\text{total}}[V_{\text{total}}(S')] \leq (1 - 2\kappa_{\text{total}}) V_{\text{total}}(S) + C_{\text{total}}
+
 $$
 
 **For small $\tau$:** $(1 - 2\kappa_{\text{total}}) \approx (1 - \kappa_{\text{total}}\tau)$, giving:
 
 $$
 \mathbb{E}_{\text{total}}[V_{\text{total}}(S')] \leq (1 - \kappa_{\text{total}}\tau) V_{\text{total}}(S) + C_{\text{total}}
+
 $$
 
 **PART VII: Verify N-Independence**
@@ -505,6 +538,7 @@ The inequality:
 
 $$
 \mathbb{E}[V_{\text{total}}(S')] \leq (1 - \kappa_{\text{total}}\tau) V_{\text{total}}(S) + C_{\text{total}}
+
 $$
 
 is the **Foster-Lyapunov drift condition** with:
@@ -617,6 +651,7 @@ A **quasi-stationary distribution** is a probability measure $\nu_{\text{QSD}}$ 
 
 $$
 P(S_{t+1} \in A \mid S_t \sim \nu_{\text{QSD}}, \text{not absorbed}) = \nu_{\text{QSD}}(A)
+
 $$
 
 for all measurable sets $A \subseteq \Sigma_N^{\text{alive}}$.
@@ -641,13 +676,13 @@ The Euclidean Gas Markov chain on $\Sigma_N^{\text{alive}}$ is **φ-irreducible*
 
 $$
 P^M(S_A, O_B) := P(S_M \in O_B \mid S_0 = S_A) > 0
+
 $$
 
 **Consequence:** The chain can reach any configuration from any other configuration with positive probability, ensuring no isolated regions exist.
 :::
 
 :::{prf:proof}
-:label: proof-thm-phi-irreducibility
 
 **Proof (Two-Stage Construction: Gathering + Spreading).**
 
@@ -670,6 +705,7 @@ Define the **core set** $\mathcal{C} \subset \Sigma_N^{\text{alive}}$ as the set
 
 $$
 P(S_1 \in \mathcal{C} \mid S_0 = S_A) > 0
+
 $$
 
 **Proof of Claim:**
@@ -680,6 +716,7 @@ In state $S_A$, at least one walker is alive. Among alive walkers, identify the 
 
 $$
 i_* = \arg\min_{i \in \mathcal{A}(S_A)} \varphi_{\text{barrier}}(x_i)
+
 $$
 
 This "alpha" walker $i_*$ is in a favorable position.
@@ -690,6 +727,7 @@ The cloning operator proceeds through $N$ walkers sequentially. For each dead or
 
 $$
 P(\text{walker } j \text{ selects walker } i_* \text{ as companion}) = \frac{r_{i_*}}{\sum_{k \in \mathcal{A}(S_A)} r_k} =: p_{\alpha} > 0
+
 $$
 
 This probability $p_{\alpha}$ is strictly positive by the reward structure (Axiom 4.2.1 in 03_cloning.md).
@@ -702,6 +740,7 @@ The probability of this event is:
 
 $$
 P(E_{\text{lucky}}) \geq p_{\alpha}^{N-1} > 0
+
 $$
 
 **Step 3: Post-Cloning Configuration**
@@ -719,6 +758,7 @@ The perturbation adds Gaussian noise: $x_i \gets x_i + \eta_x$, $v_i \gets v_i +
 
 $$
 P(\text{all } N \text{ perturbed walkers land in } B_r(x_*) \text{ with } \|v_i\| < v_{\max}) = \prod_{i=1}^N \int_{B_r(x_*)} \int_{\|v\| < v_{\max}} \phi(x-x_i, v-v_i) \, dv \, dx > 0
+
 $$
 
 where $\phi$ is the Gaussian density.
@@ -727,6 +767,7 @@ where $\phi$ is the Gaussian density.
 
 $$
 P(S_1 \in \mathcal{C} \mid S_0 = S_A) \geq P(E_{\text{lucky}}) \cdot P(\text{perturbation lands in } \mathcal{C}) > 0
+
 $$
 
 ✓ **Stage 1 Complete**
@@ -737,6 +778,7 @@ $$
 
 $$
 P^M(S_C, O_B) > 0
+
 $$
 
 **Proof of Claim via Hörmander's Theorem:**
@@ -750,6 +792,7 @@ $$
 dx_i &= v_i \, dt \\
 dv_i &= [F(x_i) - \gamma v_i] \, dt + \Sigma(x_i, v_i) \circ dW_i
 \end{aligned}
+
 $$
 
 This is a **hypoelliptic system**. By **Hörmander's Theorem** (Hörmander, 1967, "Hypoelliptic second order differential equations," *Acta Math.* 119:147-171):
@@ -780,6 +823,7 @@ Now consider all $N$ particles. We want to show that from $S_C$, we can reach an
 
 $$
 P(\text{all } N \text{ walkers reach their targets}) \geq \prod_{i=1}^N p_i \cdot \prod_{j=1}^{N-1} (1 - \delta_j) > 0
+
 $$
 
 **Step 3: Avoiding Absorption**
@@ -792,6 +836,7 @@ During the $M$ steps of kinetic evolution from $\mathcal{C}$ to $O_B$, walkers m
 
 $$
 P(\text{any walker exits during } M \text{ steps} \mid S_C) \leq M \cdot N \cdot e^{-c/\tau} \ll 1
+
 $$
 
 for appropriate choice of $M$ and $\tau$.
@@ -800,6 +845,7 @@ for appropriate choice of $M$ and $\tau$.
 
 $$
 P^M(S_C, O_B) \geq P(\text{reach } O_B) \cdot P(\text{no exit}) > 0
+
 $$
 
 ✓ **Stage 2 Complete**
@@ -810,14 +856,17 @@ Combining Stage 1 and Stage 2 via the **Chapman-Kolmogorov equation**:
 
 $$
 P^{1+M}(S_A, O_B) = \int_{\Sigma_N^{\text{alive}}} P^1(S_A, dS') P^M(S', O_B)
+
 $$
 
 $$
 \geq \int_{\mathcal{C}} P^1(S_A, dS') P^M(S', O_B)
+
 $$
 
 $$
 \geq P^1(S_A, \mathcal{C}) \cdot \inf_{S' \in \mathcal{C}} P^M(S', O_B)
+
 $$
 
 From Stage 1: $P^1(S_A, \mathcal{C}) > 0$
@@ -828,6 +877,7 @@ Therefore:
 
 $$
 P^{1+M}(S_A, O_B) > 0
+
 $$
 
 **This proves φ-irreducibility.** ✓
@@ -844,13 +894,13 @@ The Euclidean Gas Markov chain is **aperiodic**: For any state $S \in \Sigma_N^{
 
 $$
 P^m(S, U) > 0 \quad \text{and} \quad P^n(S, U) > 0
+
 $$
 
 **Consequence:** The chain has no periodic structure, ensuring convergence to QSD without oscillations.
 :::
 
 :::{prf:proof}
-:label: proof-thm-aperiodicity
 
 **Proof (Non-Degenerate Noise Prevents Periodicity).**
 
@@ -860,6 +910,7 @@ The kinetic operator adds continuous Gaussian noise at every step. The probabili
 
 $$
 P(S_1 = S_0 \mid S_0) = 0
+
 $$
 
 because the perturbation $\eta \sim \mathcal{N}(0, \sigma_{\text{pert}}^2 I)$ has density with respect to Lebesgue measure.
@@ -872,6 +923,7 @@ Suppose, for contradiction, that the chain has period $d > 1$. Then the state sp
 
 $$
 P(S_1 \in \mathcal{S}_{(k+1) \mod d} \mid S_0 \in \mathcal{S}_k) = 1
+
 $$
 
 But from the irreducibility proof (Theorem {prf:ref}`thm-phi-irreducibility` in Section 6.4.1), we showed that from any state in $\mathcal{S}_0$, we can reach the core set $\mathcal{C}$ in **one** step with positive probability.
@@ -924,6 +976,7 @@ For any initial distribution $\mu_0$ on $\Sigma_N^{\text{alive}}$ and for all $t
 
 $$
 \|\mu_t - \nu_{\text{QSD}}\|_{\text{TV}} \leq C_{\text{conv}} e^{-\kappa_{\text{QSD}} t}
+
 $$
 
 where:
@@ -937,6 +990,7 @@ Starting from $\nu_{\text{QSD}}$, the expected time until absorption satisfies:
 
 $$
 \mathbb{E}_{\nu_{\text{QSD}}}[\tau_{\dagger}] = e^{\Theta(N)}
+
 $$
 
 The survival time grows **exponentially with $N$**.
@@ -947,6 +1001,7 @@ For any $\epsilon > 0$, there exists $N_0(\epsilon)$ such that for $N > N_0$:
 
 $$
 P(V_{\text{total}}(S_t) > (1+\epsilon) V_{\text{total}}^{\text{QSD}} \mid \text{survived to time } t) \leq e^{-\Theta(N)}
+
 $$
 
 where $V_{\text{total}}^{\text{QSD}} = \mathbb{E}_{\nu_{\text{QSD}}}[V_{\text{total}}]$ is the equilibrium Lyapunov value.
@@ -955,7 +1010,6 @@ where $V_{\text{total}}^{\text{QSD}} = \mathbb{E}_{\nu_{\text{QSD}}}[V_{\text{to
 ### 4.5.1. Proof Sketch
 
 :::{prf:proof}
-:label: proof-thm-main-convergence
 
 **Proof Sketch.**
 
@@ -980,8 +1034,10 @@ implies existence of a unique invariant measure. In the absorbing case, this bec
 The drift condition implies geometric ergodicity via the **Lyapunov drift method**:
 
 From any initial state:
+
 $$
 \mathbb{E}[V_{\text{total}}(S_t)] \leq (1-\kappa_{\text{total}}\tau)^t V_{\text{total}}(S_0) + \frac{C_{\text{total}}}{\kappa_{\text{total}}\tau}
+
 $$
 
 This exponential decay in the Lyapunov function translates (via Markov coupling techniques) to exponential convergence in total variation distance.
@@ -992,6 +1048,7 @@ The survival probability per step is bounded below:
 
 $$
 P(\text{survive one step} \mid S_t) \geq 1 - e^{-\Theta(N)}
+
 $$
 
 This follows from:
@@ -1000,8 +1057,10 @@ This follows from:
 - McDiarmid's inequality: probability of all $N$ walkers simultaneously exiting is exponentially small
 
 Over $T$ steps:
+
 $$
 P(\text{survive } T \text{ steps}) \geq (1 - e^{-\Theta(N)})^T \approx e^{-T e^{-\Theta(N)}}
+
 $$
 
 For $T = e^{\Theta(N)}$, this remains close to 1.
@@ -1026,8 +1085,10 @@ The QSD $\nu_{\text{QSD}}$ satisfies:
 **1. Position Distribution:**
 
 The marginal position distribution is approximately:
+
 $$
 \rho_{\text{pos}}(x) \propto e^{-U(x) - \varphi_{\text{barrier}}(x)} \quad \text{for } x \in \mathcal{X}_{\text{valid}}
+
 $$
 
 Walkers are concentrated in low-potential regions, avoiding the boundary.
@@ -1035,8 +1096,10 @@ Walkers are concentrated in low-potential regions, avoiding the boundary.
 **2. Velocity Distribution:**
 
 The marginal velocity distribution approaches:
+
 $$
 \rho_{\text{vel}}(v) \propto e^{-\frac{\|v\|^2}{2\sigma_v^2/\gamma}}
+
 $$
 
 The Gibbs distribution at effective temperature $\sigma_v^2/\gamma$.
@@ -1044,8 +1107,10 @@ The Gibbs distribution at effective temperature $\sigma_v^2/\gamma$.
 **3. Correlations:**
 
 Position-velocity correlations decay exponentially:
+
 $$
 \mathbb{E}_{\nu_{\text{QSD}}}[\langle x - \bar{x}, v - \bar{v}\rangle] = O(e^{-\gamma \Delta t})
+
 $$
 
 over time separation $\Delta t$.
@@ -1053,8 +1118,10 @@ over time separation $\Delta t$.
 **4. Internal Variance:**
 
 The equilibrium variances satisfy:
+
 $$
 V_{\text{Var},x}^{\text{QSD}} = O(C_x/\kappa_x), \quad V_{\text{Var},v}^{\text{QSD}} = O(\sigma_v^2/\gamma)
+
 $$
 
 Both are finite and N-independent in the mean-field limit.
@@ -1071,6 +1138,7 @@ From {prf:ref}`thm-positional-variance-contraction` (cloning contraction) and ki
 
 $$
 V_{\text{Var},x}^{\text{QSD}} \leq \frac{C_x}{\kappa_x}
+
 $$
 
 where:
@@ -1083,6 +1151,7 @@ From {prf:ref}`thm-bounded-velocity-expansion-cloning` (cloning expansion) and {
 
 $$
 V_{\text{Var},v}^{\text{QSD}} \leq \frac{C_v + \sigma_{\max}^2 d \tau}{2\gamma\tau}
+
 $$
 
 where:
@@ -1094,6 +1163,7 @@ where:
 
 $$
 V_{\text{Var},v}^{\text{QSD}} \approx \frac{d\sigma_{\max}^2}{2\gamma}
+
 $$
 
 recovering the classical equipartition result.
@@ -1104,6 +1174,7 @@ From {prf:ref}`thm-boundary-potential-contraction`, setting $\mathbb{E}[\Delta W
 
 $$
 W_b^{\text{QSD}} \leq \frac{C_b}{\kappa_b}
+
 $$
 
 ensuring bounded boundary exposure in the QSD.
@@ -1118,7 +1189,6 @@ All bounds are N-uniform, ensuring the QSD remains well-defined in the thermodyn
 :::
 
 :::{prf:proof}
-:label: proof-thm-equilibrium-variance-bounds
 
 **Proof.**
 
@@ -1130,18 +1200,21 @@ From the positional variance drift inequality (Theorem 10.3.1 in 03_cloning.md):
 
 $$
 \mathbb{E}_{\text{clone}}[\Delta V_{\text{Var},x}] \leq -\kappa_x V_{\text{Var},x} + C_x
+
 $$
 
 At equilibrium, $\mathbb{E}[\Delta V_{\text{Var},x}] = 0$, thus:
 
 $$
 0 = -\kappa_x V_{\text{Var},x}^{\text{QSD}} + C_x
+
 $$
 
 Solving for $V_{\text{Var},x}^{\text{QSD}}$:
 
 $$
 V_{\text{Var},x}^{\text{QSD}} = \frac{C_x}{\kappa_x}
+
 $$
 
 **Velocity Variance:**
@@ -1154,18 +1227,21 @@ Combined per-step drift:
 
 $$
 \mathbb{E}_{\text{total}}[\Delta V_{\text{Var},v}] \leq -2\gamma V_{\text{Var},v} \tau + (C_v + \sigma_{\max}^2 d \tau)
+
 $$
 
 At equilibrium, $\mathbb{E}[\Delta V_{\text{Var},v}] = 0$:
 
 $$
 0 = -2\gamma V_{\text{Var},v}^{\text{QSD}} \tau + (C_v + \sigma_{\max}^2 d \tau)
+
 $$
 
 Solving:
 
 $$
 V_{\text{Var},v}^{\text{QSD}} = \frac{C_v + \sigma_{\max}^2 d \tau}{2\gamma\tau}
+
 $$
 
 **Boundary Potential:**
@@ -1174,12 +1250,14 @@ From Theorem 11.3.1 in 03_cloning.md:
 
 $$
 \mathbb{E}_{\text{clone}}[\Delta W_b] \leq -\kappa_b W_b + C_b
+
 $$
 
 Setting $\mathbb{E}[\Delta W_b] = 0$ at equilibrium:
 
 $$
 W_b^{\text{QSD}} = \frac{C_b}{\kappa_b}
+
 $$
 
 **Q.E.D.**
@@ -1236,6 +1314,7 @@ From Section 3, the velocity variance satisfies:
 
 $$
 \mathbb{E}[\Delta V_{\text{Var},v}] \leq -2\gamma V_{\text{Var},v} + C_v'
+
 $$
 
 **Explicit expansion:**
@@ -1247,10 +1326,12 @@ The velocity variance dissipation rate and equilibrium constant are:
 
 $$
 \kappa_v = 2\gamma - O(\tau)
+
 $$
 
 $$
 C_v' = \frac{d \sigma_v^2}{\gamma} + O(\tau \sigma_v^2)
+
 $$
 
 **Proof:**
@@ -1259,40 +1340,47 @@ From the BAOAB scheme (Eq. 1.15), the O-step gives:
 
 $$
 v_{n+1/2} = e^{-\gamma \tau} v_n + \sqrt{\frac{\sigma_v^2}{\gamma}(1 - e^{-2\gamma\tau})} \xi_n
+
 $$
 
 The expected variance after this step is:
 
 $$
 \mathbb{E}[\|v_{n+1/2}\|^2] = e^{-2\gamma\tau} \mathbb{E}[\|v_n\|^2] + d \frac{\sigma_v^2}{\gamma}(1 - e^{-2\gamma\tau})
+
 $$
 
 Expanding $e^{-2\gamma\tau} = 1 - 2\gamma\tau + 2\gamma^2\tau^2 + O(\tau^3)$:
 
 $$
 \mathbb{E}[\|v_{n+1/2}\|^2] = (1 - 2\gamma\tau + 2\gamma^2\tau^2) \mathbb{E}[\|v_n\|^2] + d \sigma_v^2 (2\tau - 2\gamma\tau^2 + O(\tau^3))
+
 $$
 
 $$
 = \mathbb{E}[\|v_n\|^2] - 2\gamma\tau \mathbb{E}[\|v_n\|^2] + 2d\sigma_v^2 \tau + O(\tau^2)
+
 $$
 
 The swarm-averaged variance is:
 
 $$
 V_{\text{Var},v} = \frac{1}{N}\sum_{i=1}^N \|v_i - \bar{v}\|^2 = \frac{1}{N}\sum_{i=1}^N \|v_i\|^2 - \|\bar{v}\|^2
+
 $$
 
 The expected drift is:
 
 $$
 \mathbb{E}[\Delta V_{\text{Var},v}] = -2\gamma\tau V_{\text{Var},v} + 2d\sigma_v^2 \tau + O(\tau^2 V_{\text{Var},v} + \tau^2 \sigma_v^2)
+
 $$
 
 Dividing by $\tau$ and taking the continuous limit:
 
 $$
 \frac{d}{dt}\mathbb{E}[V_{\text{Var},v}] = -2\gamma V_{\text{Var},v} + 2d\sigma_v^2 + O(\tau)
+
 $$
 
 Thus:
@@ -1303,6 +1391,7 @@ Thus:
 
 $$
 V_{\text{Var},v}^{\text{eq}} = \frac{C_v'}{\kappa_v} = \frac{d\sigma_v^2}{\gamma}(1 + O(\tau))
+
 $$
 
 This is the **Gibbs thermal variance** at effective temperature $\sigma_v^2/\gamma$.
@@ -1324,6 +1413,7 @@ From 03_cloning.md, the positional variance satisfies:
 
 $$
 \mathbb{E}[\Delta V_{\text{Var},x}] \leq -\kappa_x V_{\text{Var},x} + C_x
+
 $$
 
 **Explicit expansion:**
@@ -1335,12 +1425,14 @@ The positional variance contraction rate depends on the cloning rate $\lambda$ a
 
 $$
 \kappa_x = \lambda \cdot \mathbb{E}\left[\frac{\text{Cov}(f_i, \|x_i - \bar{x}\|^2)}{\mathbb{E}[\|x_i - \bar{x}\|^2]}\right] + O(\tau)
+
 $$
 
 The equilibrium constant is:
 
 $$
 C_x = O\left(\frac{\sigma_v^2 \tau^3}{\gamma}\right) + O(\tau \sigma_x^2)
+
 $$
 
 where $\sigma_x^2 \sim \sigma_v^2 \tau^2$ is the effective positional diffusion.
@@ -1351,54 +1443,63 @@ From the Keystone Principle (03_cloning.md, Theorem 5.1), the cloning operator c
 
 $$
 \mathbb{E}[\Delta V_{\text{Var},x}^{\text{clone}}] = -\lambda \cdot \frac{\sum_{i=1}^N f_i \|x_i - \bar{x}\|^2}{\sum_{j=1}^N f_j} + \lambda \cdot \frac{(\sum_{i=1}^N f_i \|x_i - \bar{x}\|)^2}{(\sum_{j=1}^N f_j)^2}
+
 $$
 
 For large $N$ and centered distribution:
 
 $$
 \mathbb{E}[\Delta V_{\text{Var},x}^{\text{clone}}] \approx -\lambda \cdot \text{Cov}(f_i, \|x_i - \bar{x}\|^2) + O(1/N)
+
 $$
 
 Normalizing by $V_{\text{Var},x} = \mathbb{E}[\|x_i - \bar{x}\|^2]$:
 
 $$
 \kappa_x = \lambda \cdot \frac{\text{Cov}(f_i, \|x_i - \bar{x}\|^2)}{V_{\text{Var},x}}
+
 $$
 
 The kinetic operator expands positional variance via:
 
 $$
 \mathbb{E}[\Delta V_{\text{Var},x}^{\text{kin}}] = \mathbb{E}\left[\frac{1}{N}\sum_{i=1}^N (v_i - \bar{v}) \cdot (x_i - \bar{x})\right] \tau + O(\tau^2)
+
 $$
 
 For thermalized velocities ($\mathbb{E}[v \mid x]$ weakly correlated):
 
 $$
 \mathbb{E}[\Delta V_{\text{Var},x}^{\text{kin}}] \lesssim \sqrt{V_{\text{Var},x} V_{\text{Var},v}} \tau
+
 $$
 
 Using $V_{\text{Var},v} \sim \sigma_v^2/\gamma$:
 
 $$
 C_x \sim \sqrt{V_{\text{Var},x}} \cdot \frac{\sigma_v}{\sqrt{\gamma}} \tau + O(\tau^2)
+
 $$
 
 For equilibrium $V_{\text{Var},x}^{\text{eq}} = C_x/\kappa_x$, we get:
 
 $$
 C_x \sim \frac{\sigma_v^2 \tau^2}{\gamma \kappa_x} + O(\tau^2)
+
 $$
 
 Assuming $\kappa_x \sim \lambda$:
 
 $$
 C_x \sim \frac{\sigma_v^2 \tau^2}{\gamma \lambda}
+
 $$
 
 **Higher-order correction:** The $O(\tau)$ in $\kappa_x$ comes from positional diffusion during BAB steps:
 
 $$
 \Delta x = v \tau + O(\tau^2), \quad \Delta V_{\text{Var},x} \sim 2\langle v, x - \bar{x}\rangle \tau + O(\tau^2)
+
 $$
 
 This adds $O(\tau)$ to the rate.
@@ -1422,6 +1523,7 @@ From Section 2, the inter-swarm Wasserstein error satisfies:
 
 $$
 \mathbb{E}[\Delta V_W] \leq -\kappa_W V_W + C_W'
+
 $$
 
 **Explicit expansion:**
@@ -1433,6 +1535,7 @@ The Wasserstein contraction rate depends on friction and the spectral gap of the
 
 $$
 \kappa_W = \frac{c_{\text{hypo}}^2 \gamma}{1 + \gamma^2/\lambda_{\min}^2}
+
 $$
 
 where:
@@ -1443,6 +1546,7 @@ The equilibrium constant is:
 
 $$
 C_W' = O\left(\frac{\sigma_v^2 \tau}{\gamma N^{1/d}}\right) + O(\tau^2)
+
 $$
 
 **Proof:**
@@ -1451,6 +1555,7 @@ From Theorem 2.1 (Hypocoercive Wasserstein Contraction), the continuous-time gen
 
 $$
 \frac{d}{dt}\mathbb{E}[V_W] \leq -\kappa_W V_W + \text{Source terms}
+
 $$
 
 The hypocoercive rate comes from the interplay of:
@@ -1461,24 +1566,28 @@ The optimal rate is achieved when these are balanced:
 
 $$
 \kappa_W \sim \frac{\gamma \lambda_{\min}}{\gamma + \lambda_{\min}}
+
 $$
 
 For underdamped dynamics ($\gamma \ll \lambda_{\min}$):
 
 $$
 \kappa_W \sim \gamma
+
 $$
 
 For overdamped dynamics ($\gamma \gg \lambda_{\min}$):
 
 $$
 \kappa_W \sim \lambda_{\min}
+
 $$
 
 The explicit formula with hypocoercivity constant $c_{\text{hypo}}$ from the proof:
 
 $$
 \kappa_W = c_{\text{hypo}}^2 \cdot \frac{\gamma \lambda_{\min}}{\gamma + \lambda_{\min}} = \frac{c_{\text{hypo}}^2 \gamma}{1 + \gamma/\lambda_{\min}}
+
 $$
 
 The source term $C_W'$ comes from:
@@ -1486,6 +1595,7 @@ The source term $C_W'$ comes from:
 
 $$
 \Delta W_2 \sim \frac{1}{\sqrt{N}} \sigma_v \sqrt{\tau}
+
 $$
 
 (Law of large numbers for empirical measures)
@@ -1496,6 +1606,7 @@ Combining:
 
 $$
 C_W' \sim \frac{\sigma_v^2 \tau}{N^{1/d}} + O(\tau^2)
+
 $$
 
 The $N^{-1/d}$ comes from the Wasserstein-to-variance scaling in dimension $d$.
@@ -1521,6 +1632,7 @@ From Section 5 and 03_cloning.md, the boundary potential satisfies:
 
 $$
 \mathbb{E}[\Delta W_b] \leq -\kappa_b W_b + C_b
+
 $$
 
 **Explicit expansion:**
@@ -1532,6 +1644,7 @@ The boundary contraction rate depends on the cloning rate and boundary stiffness
 
 $$
 \kappa_b = \min\left(\lambda \cdot \frac{\Delta f_{\text{boundary}}}{f_{\text{typical}}}, \kappa_{\text{wall}}\right)
+
 $$
 
 where:
@@ -1542,6 +1655,7 @@ The equilibrium constant is:
 
 $$
 C_b = O\left(\frac{\sigma_v^2 \tau}{d_{\text{safe}}^2}\right) + O(\tau^2)
+
 $$
 
 **Proof:**
@@ -1550,30 +1664,35 @@ From the Safe Harbor Theorem (03_cloning.md, Section 7), the cloning operator re
 
 $$
 \kappa_b^{\text{clone}} = \lambda \cdot P(\text{walker is near boundary}) \cdot \frac{\Delta f_{\text{boundary}}}{\mathbb{E}[f]}
+
 $$
 
 For walkers inside the Safe Harbor region ($|x - \bar{x}| \geq d_{\text{safe}}$), the fitness deficit is:
 
 $$
 \Delta f_{\text{boundary}} \sim \varphi_{\text{barrier}}(x) - \varphi_{\text{barrier}}(\bar{x}) \sim \kappa_{\text{wall}} (x - \bar{x})^2
+
 $$
 
 Thus:
 
 $$
 \kappa_b^{\text{clone}} \sim \lambda \cdot \frac{\kappa_{\text{wall}} d_{\text{safe}}^2}{f_{\text{typical}}}
+
 $$
 
 The kinetic operator also contracts via the confining potential:
 
 $$
 \kappa_b^{\text{kin}} = \kappa_{\text{pot}} + \gamma
+
 $$
 
 where $\kappa_{\text{pot}}$ comes from:
 
 $$
 -\nabla \varphi_{\text{barrier}}(x) = -\kappa_{\text{wall}} (x - x_{\partial})
+
 $$
 
 and $\gamma$ from velocity damping.
@@ -1582,24 +1701,28 @@ The total rate is the minimum:
 
 $$
 \kappa_b = \min(\kappa_b^{\text{clone}}, \kappa_b^{\text{kin}})
+
 $$
 
 The source term $C_b$ comes from thermal kicks pushing walkers outward:
 
 $$
 \Delta x \sim v \tau \sim \frac{\sigma_v}{\sqrt{\gamma}} \sqrt{\tau} \cdot \tau = \frac{\sigma_v \tau^{3/2}}{\sqrt{\gamma}}
+
 $$
 
 The probability of reaching the boundary from distance $d_{\text{safe}}$ in one step is:
 
 $$
 P(\text{reach boundary}) \sim \frac{\sigma_v \tau^{3/2}}{\sqrt{\gamma} d_{\text{safe}}}
+
 $$
 
 The expected increase in $W_b$ per step is:
 
 $$
 C_b \sim \frac{\sigma_v^2 \tau}{d_{\text{safe}}^2} + O(\tau^2)
+
 $$
 :::
 
@@ -1622,6 +1745,7 @@ From Section 6, the total Lyapunov function is:
 
 $$
 V_{\text{total}} = V_{\text{Var},x} + \alpha_v V_{\text{Var},v} + \alpha_W V_W + \alpha_b W_b
+
 $$
 
 with weights chosen to ensure **all expansion terms** are dominated by contraction from other components.
@@ -1644,6 +1768,7 @@ $$
 \mathbb{E}_{\text{clone}}[\Delta V_W] &\leq -\kappa_W V_W + C_W \\
 \mathbb{E}_{\text{clone}}[\Delta W_b] &\leq -\kappa_b W_b + C_b
 \end{aligned}
+
 $$
 
 where cross-component coupling terms $C_{xv}, C_{xW}, C_{vx}$ arise from expansion by the complementary operator.
@@ -1654,6 +1779,7 @@ Define the weighted Lyapunov function:
 
 $$
 V_{\text{total}} = V_{\text{Var},x} + \alpha_v V_{\text{Var},v} + \alpha_W V_W + \alpha_b W_b
+
 $$
 
 Taking expectations over a full step (kinetic + cloning):
@@ -1666,6 +1792,7 @@ $$
 &\quad + \alpha_W(-\kappa_W V_W + C_W) \\
 &\quad + \alpha_b(-\kappa_b W_b + C_b)
 \end{aligned}
+
 $$
 
 **Weight Selection for Coupling Domination:**
@@ -1676,12 +1803,14 @@ $$
 \alpha_v \geq \frac{C_{xv}}{\kappa_v V_{\text{Var},v}^{\text{eq}}}, \quad
 \alpha_W \geq \frac{C_{xW}}{\kappa_W V_W^{\text{eq}}}, \quad
 \alpha_v \kappa_v \geq C_{vx} / V_{\text{Var},x}^{\text{eq}}
+
 $$
 
 With these weights, the coupling terms satisfy:
 
 $$
 C_{xv} V_{\text{Var},v} - \alpha_v \kappa_v V_{\text{Var},v} \leq -\epsilon_v \alpha_v \kappa_v V_{\text{Var},v}
+
 $$
 
 and similarly for other cross terms, where $\epsilon_v, \epsilon_W \ll 1$ are small positive fractions.
@@ -1692,16 +1821,19 @@ After cancellation of dominated coupling terms:
 
 $$
 \mathbb{E}[\Delta V_{\text{total}}] \leq -\kappa_{\text{total}} V_{\text{total}} + C_{\text{total}}
+
 $$
 
 where:
 
 $$
 \kappa_{\text{total}} = \min(\kappa_x, \alpha_v \kappa_v, \alpha_W \kappa_W, \alpha_b \kappa_b) \cdot (1 - \epsilon_{\text{coupling}})
+
 $$
 
 $$
 C_{\text{total}} = C_x + \alpha_v C_v + \alpha_W C_W + \alpha_b C_b
+
 $$
 
 and $\epsilon_{\text{coupling}} = \max(\epsilon_v, \epsilon_W, \ldots)$ is the residual coupling ratio after weight balancing.
@@ -1717,6 +1849,7 @@ When $\epsilon_{\text{coupling}} \ll 1$, the total rate approaches the bottlenec
 
 $$
 V_{\text{total}}^{\text{QSD}} = \frac{C_{\text{total}}}{\kappa_{\text{total}}}
+
 $$
 
 **Q.E.D.**
@@ -1746,6 +1879,7 @@ The total geometric convergence rate is:
 
 $$
 \kappa_{\text{total}} = \min(\kappa_x, \kappa_v, \kappa_W, \kappa_b) \cdot (1 - \epsilon_{\text{coupling}})
+
 $$
 
 where $\epsilon_{\text{coupling}} \ll 1$ is the expansion-to-contraction ratio:
@@ -1757,12 +1891,14 @@ $$
 \frac{C_{vx}}{\kappa_x V_{\text{Var},x}},
 \ldots
 \right)
+
 $$
 
 The equilibrium constant is:
 
 $$
 C_{\text{total}} = \frac{C_x + \alpha_v C_v' + \alpha_W C_W' + \alpha_b C_b}{\kappa_{\text{total}}}
+
 $$
 
 **Explicit formulas:**
@@ -1773,12 +1909,14 @@ $$
 \kappa_{\text{total}} \sim \min\left(
 \lambda, \quad 2\gamma, \quad \frac{c_{\text{hypo}}^2 \gamma}{1 + \gamma/\lambda_{\min}}, \quad \lambda \frac{\Delta f_{\text{boundary}}}{f_{\text{typical}}}
 \right) \cdot (1 - O(\tau))
+
 $$
 
 $$
 C_{\text{total}} \sim \frac{1}{\kappa_{\text{total}}} \left(
 \frac{\sigma_v^2 \tau^2}{\gamma \lambda} + \frac{d\sigma_v^2}{\gamma} + \frac{\sigma_v^2 \tau}{N^{1/d}} + \frac{\sigma_v^2 \tau}{d_{\text{safe}}^2}
 \right)
+
 $$
 
 **Proof:**
@@ -1789,18 +1927,21 @@ $$
 \alpha_v \geq \frac{C_{xv}}{\kappa_v V_{\text{Var},v}^{\text{eq}}}, \quad
 \alpha_W \geq \frac{C_{xW}}{\kappa_W V_W^{\text{eq}}}, \quad
 \text{etc.}
+
 $$
 
 These ensure:
 
 $$
 \mathbb{E}[\Delta V_{\text{total}}] \leq -\kappa_{\text{total}} V_{\text{total}} + C_{\text{total}}
+
 $$
 
 The coupling ratio $\epsilon_{\text{coupling}}$ is the fraction of contraction "wasted" on compensating other operators' expansion. As long as:
 
 $$
 \epsilon_{\text{coupling}} < 1 - \delta \quad (\text{for some } \delta > 0)
+
 $$
 
 we have geometric convergence.
@@ -1809,12 +1950,14 @@ The weakest contraction rate dominates (bottleneck):
 
 $$
 \kappa_{\text{total}} = \min_i(\kappa_i) \cdot (1 - \epsilon_{\text{coupling}})
+
 $$
 
 The equilibrium is determined by balancing all source terms:
 
 $$
 V_{\text{total}}^{\text{eq}} = \frac{C_{\text{total}}}{\kappa_{\text{total}}}
+
 $$
 :::
 
@@ -1851,6 +1994,7 @@ For balanced convergence (no single bottleneck), choose:
 
 $$
 \lambda \sim \gamma \sim \lambda_{\min}
+
 $$
 
 Typical values:
@@ -1869,12 +2013,14 @@ The time to reach $\epsilon$-proximity to equilibrium is:
 
 $$
 T_{\text{mix}}(\epsilon) = \frac{1}{\kappa_{\text{total}}} \ln\left(\frac{V_{\text{total}}^{\text{init}}}{\epsilon C_{\text{total}}}\right)
+
 $$
 
 For typical initialization $V_{\text{total}}^{\text{init}} \sim O(1)$ and target $\epsilon = 0.01$:
 
 $$
 T_{\text{mix}} \sim \frac{5}{\kappa_{\text{total}}} = \frac{5}{\min(\lambda, 2\gamma, \kappa_W, \kappa_b)}
+
 $$
 
 **Proof:**
@@ -1883,36 +2029,42 @@ From the Foster-Lyapunov condition:
 
 $$
 \mathbb{E}[V_{\text{total}}(t)] \leq e^{-\kappa_{\text{total}} t} V_{\text{total}}^{\text{init}} + \frac{C_{\text{total}}}{\kappa_{\text{total}}}(1 - e^{-\kappa_{\text{total}} t})
+
 $$
 
 At equilibrium:
 
 $$
 \mathbb{E}[V_{\text{total}}^{\text{eq}}] = \frac{C_{\text{total}}}{\kappa_{\text{total}}}
+
 $$
 
 The error decays as:
 
 $$
 |\mathbb{E}[V_{\text{total}}(t)] - V_{\text{total}}^{\text{eq}}| \leq e^{-\kappa_{\text{total}} t} V_{\text{total}}^{\text{init}}
+
 $$
 
 To reach $\epsilon$-accuracy:
 
 $$
 e^{-\kappa_{\text{total}} T_{\text{mix}}} V_{\text{total}}^{\text{init}} = \epsilon \cdot V_{\text{total}}^{\text{eq}} = \epsilon \frac{C_{\text{total}}}{\kappa_{\text{total}}}
+
 $$
 
 Solving:
 
 $$
 T_{\text{mix}} = \frac{1}{\kappa_{\text{total}}} \ln\left(\frac{V_{\text{total}}^{\text{init}} \kappa_{\text{total}}}{\epsilon C_{\text{total}}}\right)
+
 $$
 
 For $V_{\text{total}}^{\text{init}} / C_{\text{total}} \sim O(1)$:
 
 $$
 T_{\text{mix}} \sim \frac{\ln(1/\epsilon)}{\kappa_{\text{total}}}
+
 $$
 
 With $\epsilon = 0.01$: $\ln(1/\epsilon) \approx 4.6 \approx 5$.
@@ -1965,6 +2117,7 @@ Choose $\gamma \sim \lambda$ to avoid bottlenecks:
 
 $$
 \gamma = \lambda = \sqrt{\lambda_{\min}}
+
 $$
 
 **Justification:**
@@ -1978,12 +2131,14 @@ Set thermal noise to match desired exploration scale $\sigma_{\text{explore}}$:
 
 $$
 \sigma_v = \sqrt{\gamma \sigma_{\text{explore}}^2}
+
 $$
 
 **Justification:** The equilibrium positional variance is:
 
 $$
 V_{\text{Var},x}^{\text{eq}} \sim \frac{\sigma_v^2 \tau^2}{\gamma \lambda} \sim \sigma_{\text{explore}}^2
+
 $$
 
 **Step 3: Choose timestep from stability**
@@ -1992,6 +2147,7 @@ Use CFL-like condition:
 
 $$
 \tau = \frac{c_{\text{CFL}}}{\sqrt{\gamma \lambda_{\max}}}
+
 $$
 
 where $\lambda_{\max}$ is the largest curvature and $c_{\text{CFL}} \sim 0.1 - 0.5$.
@@ -2007,12 +2163,14 @@ Choose Safe Harbor distance from swarm variance:
 
 $$
 d_{\text{safe}} = 3\sqrt{V_{\text{Var},x}^{\text{eq}}} \sim 3\sigma_{\text{explore}}
+
 $$
 
 Choose boundary stiffness from extinction tolerance:
 
 $$
 \kappa_{\text{wall}} = \frac{\lambda f_{\text{typical}}}{\Delta f_{\text{desired}}}
+
 $$
 
 to ensure $P(\text{extinction per step}) \lesssim e^{-\Theta(N)}$.
@@ -2023,6 +2181,7 @@ For dimension $d$ and desired Wasserstein accuracy $\epsilon_W$:
 
 $$
 N \geq \left(\frac{\sigma_v^2 \tau}{\epsilon_W^2 \kappa_W}\right)^d
+
 $$
 
 **Output:** Optimized parameters $(\gamma^*, \lambda^*, \sigma_v^*, \tau^*, d_{\text{safe}}^*, \kappa_{\text{wall}}^*)$
@@ -2032,6 +2191,7 @@ $$
 $$
 \kappa_{\text{total}} \sim \sqrt{\lambda_{\min}}, \quad
 T_{\text{mix}} \sim \frac{5}{\sqrt{\lambda_{\min}}}
+
 $$
 :::
 
@@ -2055,6 +2215,7 @@ Suppose we want to optimize a function with:
 
 $$
 T_{\text{mix}} \sim \frac{5}{0.32} \approx 16 \text{ time units} \approx 300 \text{ steps}
+
 $$
 
 ### 5.8. Summary Table: Parameter Effects
@@ -2091,6 +2252,7 @@ Low noise $\sigma_v$ → tight equilibrium → fast local convergence, but risk 
 
 $$
 \sigma_v(t) = \sigma_v^{\text{init}} \cdot e^{-t/T_{\text{anneal}}}
+
 $$
 
 **Computational cost:**
@@ -2104,6 +2266,7 @@ To reach equilibrium:
 
 $$
 \text{Total cost} = T_{\text{mix}} \cdot O(N(d + \log N)) = \frac{5}{\kappa_{\text{total}}} \cdot O(N(d + \log N))
+
 $$
 
 Faster convergence (higher $\kappa_{\text{total}}$) directly reduces computational cost.
@@ -2148,6 +2311,7 @@ This chapter has derived **explicit, parameter-dependent formulas** for all conv
 
 $$
 T_{\text{mix}} \sim \frac{5}{\kappa_{\text{total}}} = \frac{5}{\min(\lambda, 2\gamma, c_{\text{hypo}}^2\gamma/(1+\gamma/\lambda_{\min}), \kappa_b)}
+
 $$
 
 **Optimal parameters:**
@@ -2156,6 +2320,7 @@ $$
 \gamma \sim \lambda \sim \sqrt{\lambda_{\min}}, \quad
 \sigma_v = \sqrt{\gamma \sigma_{\text{explore}}^2}, \quad
 \tau \sim 1/\sqrt{\gamma\lambda_{\max}}
+
 $$
 
 **Expected performance:**
@@ -2163,6 +2328,7 @@ $$
 $$
 \kappa_{\text{total}} \sim \sqrt{\lambda_{\min}}, \quad
 T_{\text{mix}} \sim \frac{5}{\sqrt{\lambda_{\min}}}
+
 $$
 
 **Practical impact:**
@@ -2211,6 +2377,7 @@ The Euclidean Gas algorithm is controlled by the parameter vector:
 
 $$
 \mathbf{P} = (\lambda, \sigma_x, \alpha_{\text{rest}}, \lambda_{\text{alg}}, \epsilon_c, \epsilon_d, \gamma, \sigma_v, \tau, N, \kappa_{\text{wall}}, d_{\text{safe}}) \in \mathbb{R}_{+}^{12}
+
 $$
 
 where:
@@ -2339,6 +2506,7 @@ The **rate sensitivity matrix** $M_\kappa \in \mathbb{R}^{4 \times 12}$ is defin
 
 $$
 (M_\kappa)_{ij} = \frac{\partial \log \kappa_i}{\partial \log P_j}\bigg|_{P_0}
+
 $$
 
 where $\kappa = (\kappa_x, \kappa_v, \kappa_W, \kappa_b)$ and $\mathbf{P}$ is the parameter vector.
@@ -2349,6 +2517,7 @@ where $\kappa = (\kappa_x, \kappa_v, \kappa_W, \kappa_b)$ and $\mathbf{P}$ is th
 
 $$
 \frac{\delta \kappa_i}{\kappa_i} \approx \sum_{j=1}^{12} (M_\kappa)_{ij} \frac{\delta P_j}{P_j} + O(\|\delta \mathbf{P}\|^2)
+
 $$
 :::
 
@@ -2360,18 +2529,21 @@ From {prf:ref}`prop-position-rate-explicit` (Positional Contraction Rate, Sectio
 
 $$
 \kappa_x = \lambda \cdot \mathbb{E}\left[\frac{\text{Cov}(f_i, \|x_i - \bar{x}\|^2)}{\mathbb{E}[\|x_i - \bar{x}\|^2]}\right] + O(\tau)
+
 $$
 
 The fitness-variance correlation coefficient $c_{\text{fit}}$ depends on the geometric parameters:
 
 $$
 c_{\text{fit}} = c_{\text{fit}}(\lambda_{\text{alg}}, \epsilon_c, \epsilon_d)
+
 $$
 
 **Partial derivatives:**
 
 $$
 \frac{\partial \log \kappa_x}{\partial \log \lambda} = \frac{\lambda}{\kappa_x} \cdot \frac{\partial \kappa_x}{\partial \lambda} = \frac{\lambda \cdot c_{\text{fit}}}{\lambda \cdot c_{\text{fit}} \cdot (1 - \epsilon_\tau\tau)} = 1 + O(\tau)
+
 $$
 
 For the geometric parameters, we approximate:
@@ -2381,6 +2553,7 @@ $$
 0 & \text{if } \lambda_{\text{alg}} = 0 \text{ (position-only)} \\
 0.2-0.5 & \text{if } \lambda_{\text{alg}} > 0 \text{ (phase-space)}
 \end{cases}
+
 $$
 
 The exact value depends on the velocity structure, but empirically:
@@ -2392,10 +2565,12 @@ Similarly:
 
 $$
 \frac{\partial \log \kappa_x}{\partial \log \epsilon_c} \approx -0.3 \quad \text{(tighter pairing → better correlation)}
+
 $$
 
 $$
 \frac{\partial \log \kappa_x}{\partial \log \tau} = -\frac{\epsilon_\tau \tau}{1 - \epsilon_\tau \tau} \approx -0.1 \quad \text{for } \tau \sim 0.01
+
 $$
 
 **Row 2: $\kappa_v = 2\gamma(1 - \epsilon_\tau \tau)$**
@@ -2404,10 +2579,12 @@ From {prf:ref}`prop-velocity-rate-explicit` (Velocity Dissipation Rate, Section 
 
 $$
 \frac{\partial \log \kappa_v}{\partial \log \gamma} = 1 + O(\tau)
+
 $$
 
 $$
 \frac{\partial \log \kappa_v}{\partial \log \tau} \approx -0.1
+
 $$
 
 All other entries are zero (velocity dissipation is independent of cloning parameters).
@@ -2418,16 +2595,19 @@ From {prf:ref}`prop-wasserstein-rate-explicit` (Wasserstein Contraction Rate, Se
 
 $$
 \frac{\partial \log \kappa_W}{\partial \log \gamma} = \frac{\partial}{\partial \log \gamma}\left[\log \gamma - \log(1 + \gamma/\lambda_{\min})\right]
+
 $$
 
 $$
 = 1 - \frac{\gamma/\lambda_{\min}}{1 + \gamma/\lambda_{\min}} = \frac{\lambda_{\min}}{\gamma + \lambda_{\min}}
+
 $$
 
 At the optimal balanced point $\gamma \approx \lambda_{\min}$:
 
 $$
 \frac{\partial \log \kappa_W}{\partial \log \gamma}\bigg|_{\gamma = \lambda_{\min}} = \frac{1}{2}
+
 $$
 
 **Row 4: $\kappa_b = \min(\lambda \cdot \Delta f_{\text{boundary}}/f_{\text{typical}}, \kappa_{\text{wall}} + \gamma)$**
@@ -2440,18 +2620,21 @@ This is **piecewise** depending on which mechanism dominates.
 
 $$
 \frac{\partial \log \kappa_b}{\partial \log \lambda} = 1, \quad \frac{\partial \log \kappa_b}{\partial \log \gamma} = 0
+
 $$
 
 **Case 2: Kinetic-limited** ($\lambda > \kappa_{\text{wall}} + \gamma$):
 
 $$
 \frac{\partial \log \kappa_b}{\partial \log \kappa_{\text{wall}}} = \frac{\kappa_{\text{wall}}}{\kappa_{\text{wall}} + \gamma}, \quad \frac{\partial \log \kappa_b}{\partial \log \gamma} = \frac{\gamma}{\kappa_{\text{wall}} + \gamma}
+
 $$
 
 For typical parameters where both mechanisms are comparable ($\lambda \approx \kappa_{\text{wall}} + \gamma \approx 0.5$), we approximate the mixed case:
 
 $$
 \frac{\partial \log \kappa_b}{\partial \log \lambda} \approx 0.5, \quad \frac{\partial \log \kappa_b}{\partial \log \gamma} \approx 0.3, \quad \frac{\partial \log \kappa_b}{\partial \log \kappa_{\text{wall}}} \approx 0.4
+
 $$
 
 **Complete Matrix:**
@@ -2468,12 +2651,14 @@ M_\kappa = \begin{bmatrix}
 0 & 0 & 0 & 0 & 0 & 0 & 0.5 & 0 & 0 & 0 & 0 & 0 \\
 0.5 & 0 & 0 & 0 & 0 & 0 & 0.3 & 0 & 0 & 0 & 0.4 & 0
 \end{bmatrix}
+
 $$
 
 where rows correspond to $(\kappa_x, \kappa_v, \kappa_W, \kappa_b)$ and columns to:
 
 $$
 (\lambda, \sigma_x, \alpha_{\text{rest}}, \lambda_{\text{alg}}, \epsilon_c, \epsilon_d, \gamma, \sigma_v, \tau, N, \kappa_{\text{wall}}, d_{\text{safe}})
+
 $$
 
 **Interpretation:**
@@ -2510,6 +2695,7 @@ Similarly, we construct the matrix for equilibrium constants:
 
 $$
 (M_C)_{ij} = \frac{\partial \log C_i}{\partial \log P_j}\bigg|_{P_0}
+
 $$
 
 where $\mathbf{C} = (C_x, C_v, C_W, C_b)$.
@@ -2519,12 +2705,14 @@ where $\mathbf{C} = (C_x, C_v, C_W, C_b)$.
 
 $$
 \frac{\partial \log C_x}{\partial \log \sigma_v} = \frac{2\sigma_v^2 \tau^2 / (\gamma\lambda)}{C_x}, \quad \frac{\partial \log C_x}{\partial \log \sigma_x} = \frac{2\sigma_x^2}{C_x}
+
 $$
 
 At equilibrium where both terms are comparable:
 
 $$
 \frac{\partial \log C_x}{\partial \log \sigma_v} \approx 1.0, \quad \frac{\partial \log C_x}{\partial \log \sigma_x} \approx 1.0
+
 $$
 
 Similarly: $\frac{\partial \log C_x}{\partial \log \tau} \approx 2.0$, $\frac{\partial \log C_x}{\partial \log \gamma} \approx -1.0$, $\frac{\partial \log C_x}{\partial \log \lambda} \approx -1.0$
@@ -2535,16 +2723,19 @@ Where $f(\alpha_{\text{rest}})$ is the restitution correction factor. For perfec
 
 $$
 \frac{\partial \log C_v}{\partial \log \sigma_v} = 2.0, \quad \frac{\partial \log C_v}{\partial \log \gamma} = -1.0
+
 $$
 
 $$
 \frac{\partial \log C_v}{\partial \log \alpha_{\text{rest}}} = \frac{f'(\alpha) \cdot \alpha}{1 + f(\alpha)} \approx 0.3-0.8 \quad \text{(higher for more elastic)}
+
 $$
 
 **Row 3: $C_W = \sigma_v^2 \tau / (\gamma N^{1/d})$**
 
 $$
 \frac{\partial \log C_W}{\partial \log N} = -\frac{1}{d}
+
 $$
 
 For $d=10$: $\frac{\partial \log C_W}{\partial \log N} = -0.1$ (weak dependence - curse of dimensionality)
@@ -2553,6 +2744,7 @@ For $d=10$: $\frac{\partial \log C_W}{\partial \log N} = -0.1$ (weak dependence 
 
 $$
 \frac{\partial \log C_b}{\partial \log d_{\text{safe}}} = -\frac{2\sigma_v^2\tau/d_{\text{safe}}^2}{C_b} \approx -1.5 \quad \text{(strong safety effect)}
+
 $$
 
 **Complete Matrix:**
@@ -2564,6 +2756,7 @@ M_C \approx \begin{bmatrix}
 0 & 0 & 0 & 0 & 0 & 0 & -1.0 & 2.0 & 1.0 & -0.1 & 0 & 0 \\
 0 & 1.0 & 0 & 0 & 0 & 0 & 0 & 1.0 & 1.0 & 0 & 0 & -1.5
 \end{bmatrix}
+
 $$
 
 **Key observation:** $\sigma_v$ affects **all** equilibrium constants (column 8 has nonzero entries in every row) but has **zero** effect on rates (column 8 of $M_\kappa$ is all zeros). This confirms $\sigma_v$ is a **pure exploration parameter** in the null space.
@@ -2579,6 +2772,7 @@ The singular value decomposition of $M_\kappa \in \mathbb{R}^{4 \times 12}$ is:
 
 $$
 M_\kappa = U \Sigma V^T
+
 $$
 
 where:
@@ -2589,15 +2783,19 @@ where:
 **Computed values** (using the explicit $M_\kappa$ derived in Section 6.3):
 
 **Singular values:**
+
 $$
 \sigma_1 \approx 1.58, \quad \sigma_2 \approx 1.12, \quad \sigma_3 \approx 0.76, \quad \sigma_4 \approx 0.29
+
 $$
 
 **Principal right singular vectors** (parameter space directions):
 
 **Mode 1 ($v_1$): Balanced kinetic control**
+
 $$
 v_1 \approx (0.52, 0, 0, 0.12, -0.12, 0, 0.61, 0, -0.05, 0, 0, 0) \cdot \lambda, \gamma, \text{ small corrections}
+
 $$
 
 Physical meaning: **Simultaneously increase friction and cloning** in balanced proportion.
@@ -2606,8 +2804,10 @@ Physical meaning: **Simultaneously increase friction and cloning** in balanced p
 - Optimal parameter adjustments should primarily move in this direction
 
 **Mode 2 ($v_2$): Boundary safety control**
+
 $$
 v_2 \approx (0.42, 0, 0, 0, 0, 0, 0.22, 0, 0, 0, 0.85, 0) \cdot \lambda, \gamma, \kappa_{\text{wall}}
+
 $$
 
 Physical meaning: **Increase boundary protection mechanisms**.
@@ -2616,8 +2816,10 @@ Physical meaning: **Increase boundary protection mechanisms**.
 - Decoupled from velocity thermalization
 
 **Mode 3 ($v_3$): Geometric fine-tuning**
+
 $$
 v_3 \approx (0.15, 0, 0, 0.81, -0.56, 0, 0.05, 0, 0, 0, 0, 0) \cdot \lambda_{\text{alg}}, \epsilon_c
+
 $$
 
 Physical meaning: **Optimize companion selection quality**.
@@ -2625,8 +2827,10 @@ Physical meaning: **Optimize companion selection quality**.
 - Smaller singular value → less leverage, but important for fine-tuning
 
 **Mode 4 ($v_4$): Timestep penalty**
+
 $$
 v_4 \approx (0, 0, 0, 0, 0, 0, 0, 0, -1.0, 0, 0, 0) \cdot \tau
+
 $$
 
 Physical meaning: **Pure degradation mode**.
@@ -2640,26 +2844,32 @@ These directions have **zero singular values** (numerically $\sigma_i < 10^{-10}
 
 $$
 v_5 \approx (0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0) \cdot \sigma_x \quad \text{(position jitter)}
+
 $$
 
 $$
 v_6 \approx (0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0) \cdot \alpha_{\text{rest}} \quad \text{(restitution)}
+
 $$
 
 $$
 v_7 \approx (0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0) \cdot \sigma_v \quad \text{(exploration noise)}
+
 $$
 
 $$
 v_8 \approx (0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0) \cdot N \quad \text{(swarm size)}
+
 $$
 
 $$
 v_9 \approx (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1) \cdot d_{\text{safe}} \quad \text{(safety buffer)}
+
 $$
 
 $$
 v_{10}, v_{11}, v_{12} \approx \text{combinations of } \epsilon_d, \text{ cross-terms}
+
 $$
 
 **Physical meaning of null space:** Parameters that do **not affect convergence rates**, only equilibrium widths, computational cost, or safety margins.
@@ -2691,6 +2901,7 @@ For the full publication-ready proof with detailed verification, see:
 
 $$
 \kappa(M_\kappa) = \frac{\sigma_1}{\sigma_4} = \frac{1.58}{0.29} \approx 5.4
+
 $$
 
 This is a **moderately well-conditioned** matrix:
@@ -2711,28 +2922,37 @@ We now analyze the optimization problem: **maximize $\kappa_{\text{total}}(\math
 
 $$
 \max_{\mathbf{P} \in \mathbb{R}_{+}^{12}} \kappa_{\text{total}}(\mathbf{P}) = \max_{\mathbf{P}} \left[\min(\kappa_x, \kappa_v, \kappa_W, \kappa_b) \cdot (1 - \epsilon_{\text{coupling}}(\mathbf{P}))\right]
+
 $$
 
 **Subject to:**
 
 1. **Stability constraints:**
+
    $$
    \gamma \tau < 0.5, \quad \sqrt{\lambda_{\max}} \tau < 1.0
+
    $$
 
 2. **Feasibility constraints:**
+
    $$
    d_{\text{safe}} > 3\sqrt{C_x/\kappa_x}, \quad \text{all } P_i > 0
+
    $$
 
 3. **Cost budget** (optional):
+
    $$
    N \leq N_{\max}, \quad \lambda \leq \lambda_{\max}
+
    $$
 
 4. **Physical bounds:**
+
    $$
    \alpha_{\text{rest}} \in [0, 1]
+
    $$
 :::
 
@@ -2747,6 +2967,7 @@ At a point $\mathbf{P}$ where $\kappa_{\text{total}} = \min(\kappa_1, \ldots, \k
 
 $$
 \partial \kappa_{\text{total}} = \text{conv}\left\{\nabla \kappa_i : \kappa_i(\mathbf{P}) = \kappa_{\text{total}}(\mathbf{P})\right\}
+
 $$
 
 where $\text{conv}(\cdot)$ denotes the convex hull.
@@ -2754,18 +2975,24 @@ where $\text{conv}(\cdot)$ denotes the convex hull.
 **Examples:**
 
 1. **Unique minimum** (e.g., $\kappa_x < \kappa_v, \kappa_W, \kappa_b$):
+
    $$
    \partial \kappa_{\text{total}} = \{\nabla \kappa_x\}
+
    $$
 
 2. **Two-way tie** (e.g., $\kappa_x = \kappa_v < \kappa_W, \kappa_b$):
+
    $$
    \partial \kappa_{\text{total}} = \{\alpha \nabla \kappa_x + (1-\alpha) \nabla \kappa_v : \alpha \in [0,1]\}
+
    $$
 
 3. **Four-way tie** ($\kappa_x = \kappa_v = \kappa_W = \kappa_b$):
+
    $$
    \partial \kappa_{\text{total}} = \left\{\sum_{i=1}^4 \alpha_i \nabla \kappa_i : \alpha_i \geq 0, \sum \alpha_i = 1\right\}
+
    $$
 :::
 
@@ -2780,6 +3007,7 @@ If $\mathbf{P}^*$ is a **local maximum** of $\kappa_{\text{total}}(\mathbf{P})$ 
 
 $$
 \exists i \neq j : \kappa_i(\mathbf{P}^*) = \kappa_j(\mathbf{P}^*) = \kappa_{\text{total}}(\mathbf{P}^*)
+
 $$
 
 **Proof by contradiction:**
@@ -2788,24 +3016,30 @@ Suppose all four rates are strictly distinct at $\mathbf{P}^*$. Without loss of 
 
 $$
 \kappa_1(\mathbf{P}^*) < \kappa_2(\mathbf{P}^*) < \kappa_3(\mathbf{P}^*) < \kappa_4(\mathbf{P}^*)
+
 $$
 
 Then $\kappa_{\text{total}}(\mathbf{P}^*) = \kappa_1(\mathbf{P}^*)$.
 
 **Step 1:** The subgradient is unique:
+
 $$
 \partial \kappa_{\text{total}}(\mathbf{P}^*) = \{\nabla \kappa_1(\mathbf{P}^*)\}
+
 $$
 
 **Step 2:** For $\mathbf{P}^*$ to be a local maximum, we need:
+
 $$
 \nabla \kappa_1(\mathbf{P}^*) = 0 \quad \text{(first-order optimality condition)}
+
 $$
 
 **Step 3:** But $\nabla \kappa_1 \neq 0$ in general. From the explicit formula $\kappa_1 = \lambda \cdot c_{\text{fit}} \cdot (1 - O(\tau))$:
 
 $$
 \frac{\partial \kappa_1}{\partial \lambda} = c_{\text{fit}} \cdot (1 - O(\tau)) > 0
+
 $$
 
 So we can increase $\kappa_1$ by increasing $\lambda$.
@@ -2836,6 +3070,7 @@ For a two-way tie (most common case), assume $\kappa_x(\mathbf{P}^*) = \kappa_v(
 
 $$
 \lambda \cdot c_{\text{fit}} = 2\gamma
+
 $$
 
 This defines a **manifold** $\mathcal{M}$ in parameter space.
@@ -2848,6 +3083,7 @@ On this manifold, $\kappa_{\text{total}}(\mathbf{P}(t)) = \lambda(t) \cdot c_{\t
 
 $$
 H_{ij} = \frac{\partial^2 \kappa_{\text{total}}}{\partial t_i \partial t_j}\bigg|_{t^*}
+
 $$
 
 **Expected structure:**
@@ -2858,6 +3094,7 @@ H \approx \begin{bmatrix}
 0 & -0.1 & \ldots \\
 \vdots & \vdots & \ddots
 \end{bmatrix}
+
 $$
 
 **Negative eigenvalues** (for maximization problem) confirm $\mathbf{P}^*$ is a **local maximum**.
@@ -2876,6 +3113,7 @@ The previous sections analyzed individual parameter effects. We now study **cros
 
 $$
 V_{\text{Var},v}^{\text{eq}} = \frac{C_v(\alpha_{\text{rest}})}{\kappa_v(\gamma)} = \frac{d\sigma_v^2}{\gamma} \cdot (1 + f(\alpha_{\text{rest}}))
+
 $$
 
 where $f(\alpha_{\text{rest}})$ quantifies the energy retained in inelastic collisions.
@@ -2887,18 +3125,21 @@ For a target velocity equilibrium width $V_{\text{eq}}^{\text{target}}$, the opt
 
 $$
 \gamma^*(\alpha_{\text{rest}}) = \frac{d\sigma_v^2}{V_{\text{eq}}^{\text{target}}} \cdot (1 + f(\alpha_{\text{rest}}))
+
 $$
 
 **Explicit formula for $f$:** Empirically, from the collision model:
 
 $$
 f(\alpha) \approx \frac{\alpha^2}{2 - \alpha^2}
+
 $$
 
 Thus:
 
 $$
 \gamma^*(\alpha_{\text{rest}}) = \frac{d\sigma_v^2}{V_{\text{eq}}^{\text{target}}} \cdot \frac{2}{2 - \alpha_{\text{rest}}^2}
+
 $$
 
 **Extreme cases:**
@@ -2931,6 +3172,7 @@ For fixed $V_{\text{eq}} = 0.1$, $\sigma_v = 0.2$, $d = 10$:
 
 $$
 V_{\text{Var},x}^{\text{eq}} = \frac{C_x(\sigma_x)}{\kappa_x(\lambda)} \sim \frac{\sigma_x^2}{\lambda} + \frac{\sigma_v^2\tau^2}{\gamma\lambda}
+
 $$
 
 For small $\sigma_x$, the second term dominates. For large $\sigma_x$, the first term dominates.
@@ -2942,6 +3184,7 @@ For a target positional variance $V_{\text{Var},x}^{\text{target}}$, the iso-var
 
 $$
 \lambda^*(\sigma_x) = \frac{\sigma_x^2 + \sigma_v^2\tau^2/\gamma}{V_{\text{Var},x}^{\text{target}}}
+
 $$
 
 **Limiting behaviors:**
@@ -2951,6 +3194,7 @@ $$
 \frac{\sigma_v^2\tau^2}{\gamma V_{\text{Var},x}^{\text{target}}} & \text{if } \sigma_x \ll \sigma_v\tau/\sqrt{\gamma} \quad \text{(clean cloning)} \\
 \frac{\sigma_x^2}{V_{\text{Var},x}^{\text{target}}} & \text{if } \sigma_x \gg \sigma_v\tau/\sqrt{\gamma} \quad \text{(noisy cloning)}
 \end{cases}
+
 $$
 
 **Crossover point:** $\sigma_x^* = \sigma_v\tau/\sqrt{\gamma}$
@@ -2991,6 +3235,7 @@ The fitness-variance correlation coefficient is:
 
 $$
 c_{\text{fit}}(\lambda_{\text{alg}}, \epsilon_c) \approx c_0 \cdot \left(1 + \frac{\lambda_{\text{alg}} \sigma_v^2}{\sigma_x^2}\right)^{-1/2} \cdot \left(1 + \frac{\epsilon_c^2}{\sigma_x^2}\right)^{-1}
+
 $$
 
 where $c_0 \approx 0.5-0.8$ is the baseline correlation in position-only mode with tight pairing.
@@ -3011,6 +3256,7 @@ where $c_0 \approx 0.5-0.8$ is the baseline correlation in position-only mode wi
 
 $$
 \epsilon_c^*(\lambda_{\text{alg}}) = \sigma_x \sqrt{\frac{c_0}{c_{\text{target}}} \left(1 + \frac{\lambda_{\text{alg}} \sigma_v^2}{\sigma_x^2}\right)^{1/2} - 1}
+
 $$
 
 **Numerical example:** $\sigma_x = 0.01$, $\sigma_v = 0.2$, target $c_{\text{fit}} = 0.6$:
@@ -3041,6 +3287,7 @@ If parameters have multiplicative errors $\delta \mathbf{P} / \mathbf{P}_0 = \ma
 
 $$
 \frac{|\delta \kappa_{\text{total}}|}{\kappa_{\text{total}}} \leq \kappa(M_\kappa) \cdot \|M_\kappa\|_\infty \cdot \epsilon_{\max} + O(\epsilon_{\max}^2)
+
 $$
 
 where $\kappa(M_\kappa) \approx 5.4$ and $\|M_\kappa\|_\infty = \max_i \sum_j |(M_\kappa)_{ij}| \approx 1.6$.
@@ -3049,6 +3296,7 @@ where $\kappa(M_\kappa) \approx 5.4$ and $\|M_\kappa\|_\infty = \max_i \sum_j |(
 
 $$
 \frac{|\delta \kappa_{\text{total}}|}{\kappa_{\text{total}}} \leq 5.4 \times 1.6 \times 0.1 \approx 0.86
+
 $$
 
 Wait - that's too large! The issue is we should use the spectral norm, not infinity norm.
@@ -3057,6 +3305,7 @@ Wait - that's too large! The issue is we should use the spectral norm, not infin
 
 $$
 \frac{|\delta \kappa_{\text{total}}|}{\kappa_{\text{total}}} \leq 5.4 \times 1.58 \times 0.1 / \sqrt{12} \approx 0.25
+
 $$
 
 So **10% parameter errors → ≤25% rate slowdown**.
@@ -3097,6 +3346,7 @@ $$
 \kappa_{\text{wall}} &= 5.0 \quad \text{(moderate boundary)} \\
 d_{\text{safe}} &= 0.2
 \end{aligned}
+
 $$
 
 **Step 2: Compute convergence rates**
@@ -3111,10 +3361,12 @@ $$
 \kappa_W &= \frac{0.5 \times \gamma}{1 + \gamma/0.1} = \frac{0.158}{1 + 3.16} = 0.038 \quad \text{(BOTTLENECK!)} \\
 \kappa_b &= \min(0.316, 5 + 0.316) = 0.316
 \end{aligned}
+
 $$
 
 $$
 \kappa_{\text{total}} = \min(0.205, 0.631, 0.038, 0.316) = 0.038
+
 $$
 
 **Bottleneck:** Wasserstein term! The system is **hypocoercivity-limited**.
@@ -3127,12 +3379,14 @@ The Wasserstein rate is too slow because $\gamma/(1 + \gamma/\lambda_{\min}) \ap
 
 $$
 \gamma_{\text{new}} = \lambda_{\min} = 0.1
+
 $$
 
 But this unbalances friction-cloning! Need to adjust $\lambda$ too:
 
 $$
 \lambda_{\text{new}} = 2\gamma_{\text{new}} = 0.2 \quad \text{(maintain } \kappa_x = \kappa_v \text{)}
+
 $$
 
 **Step 4: Recompute with adjusted parameters**
@@ -3144,6 +3398,7 @@ $$
 \kappa_W &= \frac{0.5 \times 0.1}{1 + 1} = 0.025 \quad \text{(still bottleneck, but improved)} \\
 \kappa_b &= 0.2
 \end{aligned}
+
 $$
 
 Still Wasserstein-limited! This landscape is **intrinsically hypocoercivity-limited**.
@@ -3161,6 +3416,7 @@ $$
 \alpha_{\text{rest}} &= 0.25 \quad \text{(reduce friction needs)} \\
 \gamma &= \frac{d\sigma_v^2}{V_{\text{eq}}} \cdot \frac{2}{2 - 0.25^2} = 0.095 \approx 0.1 \quad \text{(consistent!)}
 \end{aligned}
+
 $$
 
 **Final optimized parameters:**
@@ -3186,6 +3442,7 @@ $$
 \kappa_{\text{total}} &\approx 0.025 \\
 T_{\text{mix}} &= \frac{5}{\kappa_{\text{total}}} = 200 \text{ time units} = 20,000 \text{ steps} \\
 \end{aligned}
+
 $$
 
 **Conclusion:** Even with optimization, this landscape requires ~20k steps due to poor conditioning ($\lambda_{\max}/\lambda_{\min} = 100$). This is **intrinsic to the problem**, not a parameter tuning issue.
@@ -3204,57 +3461,73 @@ The previous sections provided the **forward map** ($\mathbf{P} \to \kappa$) and
 For the unconstrained optimization problem, the optimal parameters are:
 
 **Step 1: Friction from landscape**
+
 $$
 \gamma^* = \lambda_{\min}
+
 $$
 
 **Justification:** Maximizes $\kappa_W = c^2\gamma/(1 + \gamma/\lambda_{\min})$, which is optimal when $\gamma = \lambda_{\min}$.
 
 **Step 2: Cloning rate from balance**
+
 $$
 \lambda^* = \frac{2\gamma^*}{c_{\text{fit}}} \approx \frac{2\lambda_{\min}}{0.65} \approx 3\lambda_{\min}
+
 $$
 
 **Justification:** Achieves $\kappa_x = \lambda c_{\text{fit}} = 2\gamma = \kappa_v$ (balanced two-way tie).
 
 **Step 3: Timestep from stability**
+
 $$
 \tau^* = \min\left(\frac{0.5}{\gamma^*}, \frac{1}{\sqrt{\lambda_{\max}}}, 0.01\right)
+
 $$
 
 **Justification:** Ensures $\gamma\tau < 0.5$ and $\sqrt{\lambda_{\max}}\tau < 1$ for BAOAB stability.
 
 **Step 4: Exploration noise from target**
+
 $$
 \sigma_v^* = \sqrt{\gamma^* \cdot V_{\text{target}}}
+
 $$
 
 **Justification:** Equilibrium variance is $V_{\text{eq}} \sim \sigma_v^2/\gamma$, so $\sigma_v = \sqrt{\gamma V_{\text{eq}}}$.
 
 **Step 5: Position jitter from crossover**
+
 $$
 \sigma_x^* = \frac{\sigma_v^* \tau^*}{\sqrt{\gamma^*}}
+
 $$
 
 **Justification:** This is the crossover point where jitter equals kinetic diffusion.
 
 **Step 6: Geometric parameters**
+
 $$
 \lambda_{\text{alg}}^* = \frac{(\sigma_x^*)^2}{(\sigma_v^*)^2}, \quad \epsilon_c^* = \sigma_x^*
+
 $$
 
 **Justification:** Balances position and velocity in pairing metric.
 
 **Step 7: Restitution coefficient**
+
 $$
 \alpha_{\text{rest}}^* = \sqrt{2 - \frac{2\gamma_{\text{budget}}}{\gamma^*}}
+
 $$
 
 where $\gamma_{\text{budget}}$ is the available friction (typically $\gamma_{\text{budget}} = 1.5\gamma^*$ for modest dissipation).
 
 **Step 8: Boundary parameters**
+
 $$
 d_{\text{safe}}^* = 3\sqrt{V_{\text{target}}}, \quad \kappa_{\text{wall}}^* = 10\lambda_{\min}
+
 $$
 
 **Justification:** Three-sigma safety buffer, moderate boundary stiffness.
@@ -3263,11 +3536,14 @@ $$
 
 $$
 \kappa_{\text{total}}^* = \min\left(3\lambda_{\min}, 2\lambda_{\min}, \frac{c^2\lambda_{\min}}{2}\right) = \frac{c^2\lambda_{\min}}{2} \approx 0.125\lambda_{\min}
+
 $$
 
 **Mixing time:**
+
 $$
 T_{\text{mix}} = \frac{5}{\kappa_{\text{total}}^*} = \frac{40}{\lambda_{\min}}
+
 $$
 :::
 
@@ -3290,6 +3566,7 @@ $$
 d_{\text{safe}}^* &= 0.95 \\
 \kappa_{\text{wall}}^* &= 1.0
 \end{aligned}
+
 $$
 
 **Predicted rate:** $\kappa_{\text{total}}^* \approx 0.0125$, $T_{\text{mix}} \approx 400$ time units.
@@ -3610,6 +3887,7 @@ $$
 N^* &= 500 \quad \text{(use full budget)} \\
 \alpha_{\text{rest}}^* &= 0 \quad \text{(fully inelastic)}
 \end{aligned}
+
 $$
 
 **Predicted rates:**
@@ -3621,15 +3899,19 @@ $$
 \kappa_W &= 0.5 \times 0.05 / (1 + 1) = 0.0125 \quad \textbf{(BOTTLENECK!)} \\
 \kappa_b &= \min(0.15, 0.55) = 0.15
 \end{aligned}
+
 $$
 
 $$
 \kappa_{\text{total}} = 0.0125
+
 $$
 
 **Mixing time:**
+
 $$
 T_{\text{mix}} = \frac{5}{0.0125} = 400 \text{ time units} = 40,000 \text{ steps}
+
 $$
 
 **Cost:** $\lambda N = 0.15 \times 500 = 75$
@@ -3648,13 +3930,17 @@ $$
 **Q:** If we could increase $N$ to 1000, how much improvement?
 
 **A:** Wasserstein rate scales as:
+
 $$
 \kappa_W \propto \frac{1}{1 + \text{const}/N^{1/d}}
+
 $$
 
 For $d=20$: $N^{1/d} = 1000^{0.05} = 1.38$, so:
+
 $$
 \kappa_W^{\text{new}} = \kappa_W \times \frac{1 + c/500^{0.05}}{1 + c/1000^{0.05}} \approx 1.015 \times \kappa_W
+
 $$
 
 **Only 1.5% improvement!** High dimensionality ($d=20$) makes Wasserstein insensitive to $N$.
@@ -3670,6 +3956,7 @@ $$
 \text{Cost}^{\text{reduced}} &= 0.15 \times 250 = 37.5 \\
 T_{\text{mix}}^{\text{reduced}} &= 5/0.0129 = 387 \text{ time units}
 \end{aligned}
+
 $$
 
 **Trade-off:** Cut memory in half, gain 3% speed, halve cost. **Excellent deal!**

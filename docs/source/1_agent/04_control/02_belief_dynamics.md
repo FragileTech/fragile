@@ -76,6 +76,7 @@ Given the learned macro kernel $\bar{P}(k'\mid k,a_t)$ ({ref}`Section 2.8 <sec-c
 
 $$
 \tilde p_{t+1}(k') := \sum_{k\in\mathcal{K}} p_t(k)\,\bar{P}(k'\mid k,a_t).
+
 $$
 
 **In plain words:** "For each macro-state $k'$ I might end up in, sum over all the ways I could get there. The ways are weighted by (a) how much I currently believe I'm in state $k$, and (b) how likely my model says the transition $k \to k'$ is given action $a_t$."
@@ -94,6 +95,7 @@ $$
 p_{t+1}(k')
 :=
 \frac{L_{t+1}(k')\,\tilde p_{t+1}(k')}{\sum_{j\in\mathcal{K}} L_{t+1}(j)\,\tilde p_{t+1}(j)}.
+
 $$
 
 **In plain words:** "Take my predicted belief $\tilde{p}_{t+1}(k')$, weight it by how well state $k'$ explains what I actually observed, and normalize so it's still a probability distribution."
@@ -123,6 +125,7 @@ There are two flavors of this, and they're worth understanding separately.
 
 $$
 p'_{t}(k)\propto p_t(k)\cdot \mathbb{I}\!\left[\text{feasible}(k)\right].
+
 $$
 
 **What this means:** Some states are simply forbidden. Maybe state $k$ would violate a cost budget ($V(k) > V_{\max}$). Maybe it would put you in an irrecoverable situation. Whatever the reason, we set the belief mass on that state to exactly zero and renormalize what's left.
@@ -139,6 +142,7 @@ Example: feasibility defined by a cost budget $V(k)\le V_{\max}$ (CostBoundCheck
 
 $$
 p'_t(k)\propto p_t(k)\,\exp\!\left(-\lambda\cdot \text{penalty}(k)\right),
+
 $$
 
 which implements a differentiable "push away" from unstable regions.
@@ -208,6 +212,7 @@ $$
 \underbrace{-i[H,\varrho]}_{\text{conservative drift}}
 \;+\;
 \underbrace{\sum_{j} \gamma_j\left(L_j\varrho L_j^\dagger-\frac12\{L_j^\dagger L_j,\varrho\}\right)}_{\text{dissipative update}},
+
 $$
 where {math}`H=H^\dagger` is Hermitian, {math}`\gamma_j\ge 0` are rates, and {math}`\{L_j\}` are (learned) operators.
 
@@ -241,6 +246,7 @@ The magic is that this decomposition is *complete*: any Markovian, positive-pres
 
 $$
 \mathcal{L}_{\text{GKSL}}(\varrho) = -i[H_{\text{eff}}, \varrho] + \sum_k \gamma_k \left( L_k \varrho L_k^\dagger - \frac{1}{2}\{L_k^\dagger L_k, \varrho\} \right)
+
 $$
 **Correspondence Table:**
 | Open Quantum Systems | Agent (Belief Dynamics) |
@@ -274,6 +280,7 @@ $$
 \;-\;
 \mathcal{L}_{\text{GKSL}}(\varrho_t)
 \right\|_F^2,
+
 $$
 where $\mathcal{L}_{\text{GKSL}}(\cdot)$ denotes the right-hand side of Definition 11.5.2. This is the quantity monitored by MECCheck (Node 22).
 :::
@@ -333,6 +340,7 @@ $$
 \mathcal{L}_{\text{NEP}}
 :=
 \mathrm{ReLU}\!\left(D_{\mathrm{KL}}(p_{t+1}\Vert p_t)-I(X_t;K_t)\right)^2.
+
 $$
 
 **In plain words:** "The KL-divergence from old belief to new belief is how much your mind changed. The mutual information $I(X_t; K_t)$ is how much evidence you received. If you changed your mind more than your evidence justified, that's a problem."
@@ -347,6 +355,7 @@ Impose a hard/soft bound on how far internal state may move per step under the s
 
 $$
 \mathcal{L}_{\text{QSL}}:=\mathrm{ReLU}\!\left(d_G(z_{t+1},z_t)-v_{\max}\right)^2,
+
 $$
 
 **In plain words:** "Measure the distance traveled in state space using the metric $G$. If it exceeds the speed limit $v_{\max}$, penalize."
@@ -362,6 +371,7 @@ Belief evolution follows the **Filtering + Projection Template** on the discrete
 
 $$
 p_{t+1}(k') = \frac{L_{t+1}(k')\, \tilde{p}_{t+1}(k')}{\sum_j L_{t+1}(j)\, \tilde{p}_{t+1}(j)}, \quad \tilde{p}_{t+1}(k') = \sum_k p_t(k)\, \bar{P}(k'|k,a_t)
+
 $$
 with **Sieve projections** applied after each update: hard masking or soft reweighting to enforce feasibility constraints.
 
@@ -372,6 +382,7 @@ Remove the Sieve projections ($\text{feasible}(k) = 1$ for all $k$). Use continu
 
 $$
 b_{t+1}(s') \propto O(o_{t+1}|s') \sum_s T(s'|s,a) b_t(s)
+
 $$
 This recovers standard **POMDP belief updates** {cite}`kaelbling1998planning` without safety constraints.
 

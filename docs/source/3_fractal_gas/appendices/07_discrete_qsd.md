@@ -34,6 +34,7 @@ The object of our study is the time-independent probability density $\rho(x, v)$
 
 $$
 \underbrace{L^\dagger \rho}_{\text{Kinetic Transport}} + \underbrace{S[\rho]}_{\text{Internal Cloning}} + \underbrace{B[\rho, m_d] - c(x)\rho}_{\text{Boundary Reaction}} = 0
+
 $$
 
 where:
@@ -73,6 +74,7 @@ Let the walkers be distributed in a $D$-dimensional space with local probability
 
 $$
 d(z) \approx \left( \frac{\Gamma(D/2 + 1)}{N \cdot \rho(z) \cdot \pi^{D/2}} \right)^{1/D} \propto \rho(z)^{-1/D}
+
 $$
 
 where $D$ is the effective dimension of the algorithmic space.
@@ -90,13 +92,16 @@ The cloning operator $S[\rho]$ defined in `07_mean_field.md` acts as a non-linea
 
 $$
 \frac{\partial \rho}{\partial t} \propto (V(z) - \bar{V}) \rho(z)
+
 $$
 
 **Stationarity Condition**: For the density profile to be stationary under the action of cloning ($\partial_t \rho = 0$), there can be no net flow of probability mass from one region to another. This implies that the driving force—the fitness potential—must be uniform across the support of the distribution.
 
 We call this the **Iso-Fitness Principle**:
+
 $$
 V_{\text{fitness}}(z) = \text{Constant} \quad \forall z \in \text{supp}(\rho)
+
 $$
 
 ### 2.4. Derivation of the Equilibrium Density
@@ -104,8 +109,10 @@ $$
 We can now solve for the specific density profile $\rho_{\text{clone}}(z)$ that satisfies the Iso-Fitness Principle.
 
 Recall the definition of the fitness potential from `07_mean_field.md`:
+
 $$
 V(z) \approx (d(z))^\beta \cdot (R(z))^\alpha
+
 $$
 *(Note: We omit the rescaling constants $g_A$ and $\eta$ here to reveal the scaling laws, assuming the system is in the active linear regime of the sigmoid).*
 
@@ -113,18 +120,22 @@ Substituting the mean-field distance approximation $d(z) \propto \rho(z)^{-1/D}$
 
 $$
 V(z) \propto \left( \rho(z)^{-1/D} \right)^\beta \cdot R(z)^\alpha = \rho(z)^{-\beta/D} \cdot R(z)^\alpha
+
 $$
 
 Setting $V(z) = C$ (constant) and solving for $\rho(z)$:
 
 $$
 C = \rho(z)^{-\beta/D} \cdot R(z)^\alpha
+
 $$
 $$
 \rho(z)^{\beta/D} \propto R(z)^\alpha
+
 $$
 $$
 \rho(z) \propto R(z)^{\frac{\alpha D}{\beta}}
+
 $$
 
 This result is fundamental. It gives us the explicit functional form of the distribution that the cloning operator tries to create.
@@ -136,12 +147,14 @@ In the mean-field limit, the stationary distribution of the pure cloning operato
 
 $$
 \rho_{\text{clone}}(z) = \frac{1}{Z} \left( R(z) \right)^{\gamma_{\text{eff}}}
+
 $$
 
 where the **concentration exponent** is:
 
 $$
 \gamma_{\text{eff}} = \frac{\alpha \cdot D}{\beta}
+
 $$
 
 **Implications:**
@@ -159,12 +172,14 @@ Let the optimization objective be defined by a potential energy $U(z)$ such that
 
 $$
 \rho_{\text{clone}}(z) \propto \left( e^{-U(z)} \right)^{\frac{\alpha D}{\beta}} = \exp\left( - \frac{\alpha D}{\beta} U(z) \right)
+
 $$
 
 This is exactly the Boltzmann distribution $\rho \propto e^{-U(z)/T_{eff}}$ with an **Effective Cloning Temperature**:
 
 $$
 T_{\text{clone}} = \frac{\beta}{\alpha \cdot D}
+
 $$
 
 #### 2.5.1. The "Incompressible Fluid" Behavior
@@ -202,6 +217,7 @@ In the absence of cloning ($S[\rho] = 0$) and revival ($B = 0$), the swarm densi
 
 $$
 \partial_t \rho = \underbrace{-v \cdot \nabla_x \rho}_{\text{Transport}} + \underbrace{\nabla_v \cdot \left( (\gamma v + \nabla_x U_{kin}) \rho \right)}_{\text{Drift & Friction}} + \underbrace{\frac{\sigma_v^2}{2} \Delta_v \rho}_{\text{Diffusion}} - \underbrace{c(x)\rho}_{\text{Killing}}
+
 $$
 
 Here, $U_{kin}(x)$ is the confining potential used in the Langevin steps (typically the negative log-reward). The term $-c(x)\rho$ represents the loss of mass at the boundary $\partial \mathcal{X}_{\text{valid}}$.
@@ -218,8 +234,10 @@ This creates a competition:
 #### 3.3.1. The Quasi-Stationary Eigenmode
 
 Since mass is constantly lost, there is no true stationary state ($\partial_t \rho = 0$). Instead, the distribution converges to a **Quasi-Stationary Distribution** (QSD) that decays at a constant rate $\lambda_0$:
+
 $$
 \rho(t, x, v) \approx e^{-\lambda_0 t} \phi_0(x, v)
+
 $$
 where $\phi_0$ is the principal eigenfunction of the Fokker-Planck operator with Dirichlet boundaries.
 
@@ -238,8 +256,10 @@ Crucially, the **cloning operator** modifies this picture. By re-injecting mass 
 In the full mean-field equilibrium, the cloning/revival source term $S[\rho] + B[\rho]$ balances the kinetic loss. The resulting spatial density $\rho_{QSD}(x)$ near the boundary scales as the **principal eigenfunction of the Laplacian** (or Witten Laplacian) on the domain.
 
 For a flat potential ($U_{kin}=0$) on a domain of width $L$, the profile is sine-like:
+
 $$
 \rho_{QSD}(x) \sim \sin\left( \frac{\pi x}{L} \right)
+
 $$
 This forces the density to zero at the edges, preventing the "stacking" of walkers against the walls that would occur with purely reflective boundaries.
 :::
@@ -264,11 +284,14 @@ Assume the cloning rate $\lambda_{clone}$ is finite. In the Mean-Field limit, th
 
 $$
 \rho_v(v) = \left( \frac{1}{2\pi T_{kin}} \right)^{d/2} \exp\left( - \frac{\|v\|^2}{2 T_{kin}} \right)
+
 $$
 
 where the kinetic temperature is defined by the fluctuation-dissipation theorem:
+
 $$
 T_{kin} = \frac{\sigma_v^2}{2\gamma}
+
 $$
 
 **Proof Sketch:**
@@ -278,8 +301,10 @@ The kinetic operator $L^\dagger$ contains the term $\mathcal{L}_{OU} = \gamma \n
 #### 3.4.2. Decoupling of Position and Velocity
 
 This thermalization result justifies a major simplification in the analysis of the algorithm. In the QSD, we can approximate the full density as a product state:
+
 $$
 \rho_{QSD}(x, v) \approx \rho_x(x) \cdot \mathcal{N}(v; 0, T_{kin})
+
 $$
 This means the "intelligence" of the swarm is encoded almost entirely in its **spatial** distribution $\rho_x(x)$, while the **velocity** distribution serves primarily as a thermal bath to facilitate exploration.
 
@@ -313,18 +338,21 @@ The stationary state satisfies the balance equation where the net flux from kine
 
 $$
 \nabla \cdot J_{kinetic} + J_{cloning} = 0
+
 $$
 
 In the high-friction (overdamped) limit, this balance yields a distribution of the Boltzmann form:
 
 $$
 \rho_{\text{QSD}}(x) \approx \frac{1}{Z} \exp\left( - V_{\text{eff}}(x) \right)
+
 $$
 
 where the **Effective Potential** $V_{\text{eff}}$ is a weighted sum of the competing potentials:
 
 $$
 V_{\text{eff}}(x) = \underbrace{\frac{U(x)}{T_{kin}}}_{\text{Kinetic Drive}} + \underbrace{\frac{\alpha D}{\beta} U(x)}_{\text{Cloning Drive}}
+
 $$
 
 #### 4.2.2. The Generalized Temperature
@@ -333,12 +361,14 @@ We can rewrite this as a standard Gibbs measure with a **Renormalized Temperatur
 
 $$
 \rho_{\text{QSD}}(x) \propto \exp\left( - \frac{U(x)}{T_{sys}} \right)
+
 $$
 
 where the system temperature is defined by the harmonic sum of the kinetic and cloning temperatures:
 
 $$
 \frac{1}{T_{sys}} = \frac{1}{T_{kin}} + \frac{1}{T_{clone}} = \frac{2\gamma}{\sigma_v^2} + \frac{\alpha D}{\beta}
+
 $$
 
 **Physical Interpretation:**
@@ -360,6 +390,7 @@ The spatial profile of the QSD approximates a **Decorated Gibbs Measure**:
 
 $$
 \rho_{\text{QSD}}(x) \approx \underbrace{e^{-U(x)/T_{sys}}}_{\text{Macroscopic Envelope}} \cdot \underbrace{\Xi(x)}_{\text{Microscopic Decorator}}
+
 $$
 
 where:
@@ -377,6 +408,7 @@ Near the boundary $\partial \mathcal{X}_{\text{valid}}$, the barrier function $\
 
 $$
 V_{\text{eff}}(x) \approx \frac{\alpha D}{\beta} \varphi_{barrier}(x) \to \infty \quad \text{as } x \to \partial \mathcal{X}_{\text{valid}}
+
 $$
 
 Combined with the kinetic "Halo" effect (Chapter 3), this creates a **double-layer protection**:
@@ -413,6 +445,7 @@ The balance between cloning pressure and kinetic noise is captured by the ratio 
 
 $$
 \Gamma := \frac{T_{kin}}{T_{clone}} = \frac{\sigma_v^2}{2\gamma} \cdot \frac{\alpha D}{\beta}
+
 $$
 
 *   **$\Gamma \gg 1$ (Kinetic Dominance):** The system is hot. Kinetic diffusion overwhelms the selection pressure.

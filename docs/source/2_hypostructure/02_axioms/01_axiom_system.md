@@ -1,4 +1,4 @@
-# Part III: The Axiom System
+# The Axiom System
 
 :::{div} feynman-prose
 Now we come to the heart of the matter. Everything we have built so far---the categorical foundations, the hypostructure object, the fixed-point principle---has been preparation. Here is where we actually say what it *means* for a dynamical system to be well-behaved.
@@ -30,6 +30,7 @@ The energy-dissipation inequality holds:
 
 $$
 \Phi(S_t x) + \int_0^t \mathfrak{D}(S_s x) \, ds \leq \Phi(x)
+
 $$
 
 **Enforced by:** {prf:ref}`def-node-energy` --- Certificate $K_{D_E}^+$
@@ -77,6 +78,7 @@ Bounded energy sequences admit convergent subsequences modulo the symmetry group
 
 $$
 \sup_n \Phi(u_n) < \infty \implies \exists (n_k), \, g_k \in G: \, g_k \cdot u_{n_k} \to u_\infty
+
 $$
 
 **Enforced by:** {prf:ref}`def-node-compact` --- Certificate $K_{C_\mu}^+$ (or dispersion via $K_{C_\mu}^-$)
@@ -128,6 +130,7 @@ The Łojasiewicz-Simon inequality holds near equilibria, ensuring a mass gap:
 
 $$
 \inf \sigma(L) > 0
+
 $$
 
 where $L$ is the linearized operator at equilibrium.
@@ -177,6 +180,7 @@ Topological sectors are separated by an action gap:
 
 $$
 [\pi] \in \pi_0(\mathcal{C})_{\mathrm{acc}} \implies E < S_{\min} + \Delta
+
 $$
 
 **Enforced by:** {prf:ref}`def-node-topo` --- Certificate $K_{TB_\pi}^+$
@@ -199,6 +203,7 @@ Capacity density bounds prevent concentration on thin sets:
 
 $$
 \operatorname{codim}(S) \geq 2 \implies \operatorname{Cap}_H(S) = 0
+
 $$
 
 **Enforced by:** {prf:ref}`def-node-geom` --- Certificate $K_{\text{Cap}_H}^+$
@@ -233,6 +238,7 @@ The Thin Kernel's simplicial complex $K$ must satisfy the **Discrete Tits Altern
 
 $$
 P_{\mathrm{Geom}}(K) := (\operatorname{Growth}(K) \leq \operatorname{Poly}(d)) \lor (\delta_{\mathrm{hyp}}(K) < \infty) \lor (\operatorname{Cone}(K) \in \operatorname{Buildings})
+
 $$
 
 **Operational Check** (Node 7c):
@@ -253,6 +259,7 @@ The Tits Alternative is the **universal dichotomy** for discrete geometric struc
 
 $$
 K_{\mathrm{Geom}}^{+} = (\operatorname{GrowthType} \in \{\text{Poly}, \text{Hyp}, \text{CAT0}\}, \, \text{evidence}, \, \text{parameters})
+
 $$
 
 **Literature:** {cite}`Tits72` (Tits Alternative); {cite}`Gromov87` (Hyperbolic groups); {cite}`BridsonHaefliger99` (CAT(0) geometry); {cite}`Lubotzky94` (Expander graphs)
@@ -274,12 +281,14 @@ Let $\rho(\lambda)$ be the spectral density of states for the combinatorial Lapl
 
 $$
 S(t) := \left|\int e^{i\lambda t} \rho(\lambda) \, d\lambda\right|^2
+
 $$
 
 The object passes the **Spectral Resonance Test** if:
 
 $$
 \exists \{p_i\}_{i=1}^N : \, \lim_{T \to \infty} \frac{1}{T} \int_0^T S(t) \, dt > \eta_{\mathrm{noise}}
+
 $$
 
 where $\{p_i\}$ are **quasi-periods** (resonances) and $\eta_{\mathrm{noise}}$ is the random matrix theory baseline.
@@ -293,6 +302,7 @@ where $\{p_i\}$ are **quasi-periods** (resonances) and $\eta_{\mathrm{noise}}$ i
 
 $$
 \rho(\lambda) = \rho_{\mathrm{Weyl}}(\lambda) + \sum_{\gamma \text{ periodic}} A_\gamma \cos(\lambda \ell_\gamma)
+
 $$
 
    If present, emit $K_{\mathrm{Spec}}^{+}(\text{ArithmeticChaos})$
@@ -307,6 +317,7 @@ The **Selberg Trace Formula** and **Explicit Formula** for the Riemann zeta func
 
 $$
 \psi(x) = x - \sum_\rho \frac{x^\rho}{\rho} - \log(2\pi)
+
 $$
 
 where $\rho$ are the non-trivial zeros. The zeros exhibit GUE statistics (quantum chaos) but are **arithmetically structured**.
@@ -315,6 +326,7 @@ where $\rho$ are the non-trivial zeros. The zeros exhibit GUE statistics (quantu
 
 $$
 K_{\mathrm{Spec}}^{+} = (\operatorname{LevelStatistics} = \text{GUE/GOE}, \, \operatorname{TraceFormula}, \, \{p_i\}, \, \eta_{\mathrm{signal}}/\eta_{\mathrm{noise}})
+
 $$
 
 **Literature:** {cite}`Selberg56` (Trace formula); {cite}`MontgomeryOdlyzko73` (Pair correlation conjecture); {cite}`Sarnak95` (Quantum chaos); {cite}`KatzSarnak99` (Random matrix theory)
@@ -372,6 +384,7 @@ The system's boundary morphisms satisfy:
 
 $$
 \mathcal{J}_{\mathrm{out}} \simeq \mathcal{J}_{\mathrm{in}} \circ \mathcal{R} \quad \text{in } \operatorname{Hom}_{\mathcal{E}}(\mathcal{B}, \underline{\mathbb{R}})
+
 $$
 
 **Enforced by:** {prf:ref}`def-node-boundary`, {prf:ref}`def-node-overload`, {prf:ref}`def-node-starve`, {prf:ref}`def-node-align`
@@ -405,6 +418,7 @@ Categorically, this defines a **non-local boundary condition** as a span:
 
 $$
 \mathcal{X} \xleftarrow{\operatorname{Tr}} \mathcal{B} \xrightarrow{\mathcal{R}} \mathcal{P}(\mathcal{X})
+
 $$
 
 The resulting integro-differential structure is tamed by **Axiom C** applied to the Wasserstein $\infty$-stack $\mathcal{P}_2(\mathcal{X})$.
