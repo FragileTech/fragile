@@ -143,6 +143,7 @@ parts:
     chapters:
     - file: source/2_hypostructure/11_appendices/01_zfc
     - file: source/2_hypostructure/11_appendices/02_notation
+    - file: source/2_hypostructure/11_appendices/03_faq
 
   # ══════════════════════════════════════════════════════════════════════════════
   # SUPPLEMENTARY
