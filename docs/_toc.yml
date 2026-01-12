@@ -151,4 +151,6 @@ parts:
 
   - caption: "Supplementary · Fractal Gas"
     chapters:
+    - file: source/3_fractal_gas/02_fractal_gas
     - file: source/3_fractal_gas/03_fractal_gas_latent
+    - file: source/3_fractal_gas/04_latent_gas_theorems

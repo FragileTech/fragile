@@ -183,13 +183,13 @@ class Encoder(nn.Module):
         # For image observations, use CNN
         self.conv = nn.Sequential(
             nn.Conv2d(3, 32, 4, stride=2, padding=1),
-            nn.ReLU(),
+            nn.GELU(),
             nn.Conv2d(32, 64, 4, stride=2, padding=1),
-            nn.ReLU(),
+            nn.GELU(),
             nn.Conv2d(64, 128, 4, stride=2, padding=1),
-            nn.ReLU(),
+            nn.GELU(),
             nn.Conv2d(128, 256, 4, stride=2, padding=1),
-            nn.ReLU(),
+            nn.GELU(),
             nn.Flatten(),
         )
         # Compute flattened size (for 64x64 input: 256 * 4 * 4 = 4096)
@@ -200,9 +200,9 @@ class Encoder(nn.Module):
         if x.dim() == 5:
             B, T = x.shape[:2]
             x = x.view(B * T, *x.shape[2:])
-            h = F.relu(self.fc(self.conv(x)))
+            h = F.gelu(self.fc(self.conv(x)))
             return h.view(B, T, -1)
-        return F.relu(self.fc(self.conv(x)))
+        return F.gelu(self.fc(self.conv(x)))
 ```
 
 :::{div} feynman-prose
@@ -276,18 +276,18 @@ class Decoder(nn.Module):
         self.fc = nn.Linear(macro_dim + nuisance_dim + tex_dim, 4096)
         self.deconv = nn.Sequential(
             nn.ConvTranspose2d(256, 128, 4, stride=2, padding=1),
-            nn.ReLU(),
+            nn.GELU(),
             nn.ConvTranspose2d(128, 64, 4, stride=2, padding=1),
-            nn.ReLU(),
+            nn.GELU(),
             nn.ConvTranspose2d(64, 32, 4, stride=2, padding=1),
-            nn.ReLU(),
+            nn.GELU(),
             nn.ConvTranspose2d(32, obs_channels, 4, stride=2, padding=1),
             nn.Sigmoid(),  # Normalize to [0, 1]
         )
 
     def forward(self, z_macro: torch.Tensor, z_nuis: torch.Tensor, z_tex: torch.Tensor) -> torch.Tensor:
         z = torch.cat([z_macro, z_nuis, z_tex], dim=-1)
-        h = F.relu(self.fc(z))
+        h = F.gelu(self.fc(z))
         h = h.view(-1, 256, 4, 4)
         return self.deconv(h)
 ```
@@ -330,7 +330,7 @@ class MacroDynamicsModel(nn.Module):
         # Project hidden state to a distribution over next macro symbol K_{t+1}
         self.predictor = nn.Sequential(
             nn.Linear(hidden_dim, hidden_dim),
-            nn.ReLU(),
+            nn.GELU(),
             nn.Linear(hidden_dim, codebook_size),  # logits over K
         )
 

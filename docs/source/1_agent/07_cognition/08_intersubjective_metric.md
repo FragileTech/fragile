@@ -1105,14 +1105,14 @@ class GaugeCovariantMetricSynchronizer(nn.Module):
         # (Definition 37.5: Language Channel)
         self.message_encoder = nn.Sequential(
             nn.Linear(latent_dim * latent_dim, gauge_dim * 4),
-            nn.ReLU(),
+            nn.GELU(),
             nn.Linear(gauge_dim * 4, gauge_dim)
         )
 
         # Message decoder: lifts language channel back to metric update
         self.message_decoder = nn.Sequential(
             nn.Linear(gauge_dim, gauge_dim * 4),
-            nn.ReLU(),
+            nn.GELU(),
             nn.Linear(gauge_dim * 4, latent_dim * latent_dim)
         )
 

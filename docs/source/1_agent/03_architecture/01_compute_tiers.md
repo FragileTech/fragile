@@ -1055,9 +1055,9 @@ class HypoUniversal(nn.Module):
         # Standard layers (no orthogonality needed—cuts don't need isometry)
         self.router = nn.Sequential(
             nn.Linear(input_dim, 128),
-            nn.ReLU(),
+            nn.GELU(),
             nn.Linear(128, 64),
-            nn.ReLU(),
+            nn.GELU(),
             nn.Linear(64, num_charts),
             nn.Softmax(dim=1)
         )
@@ -1068,9 +1068,9 @@ class HypoUniversal(nn.Module):
         for _ in range(num_charts):
             expert = nn.Sequential(
                 OrthogonalLinear(input_dim, 128),
-                nn.ReLU(),
+                nn.GELU(),
                 OrthogonalLinear(128, 128),
-                nn.ReLU(),
+                nn.GELU(),
                 OrthogonalLinear(128, latent_dim)
             )
             self.charts.append(expert)
@@ -1316,9 +1316,9 @@ class AttentiveAtlasEncoder(nn.Module):
         self.feature_extractor = nn.Sequential(
             nn.Linear(input_dim, hidden_dim),
             nn.LayerNorm(hidden_dim),
-            nn.ReLU(),
+            nn.GELU(),
             nn.Linear(hidden_dim, hidden_dim),
-            nn.ReLU(),
+            nn.GELU(),
         )
 
         # --- Routing (Topology) ---
@@ -1340,7 +1340,7 @@ class AttentiveAtlasEncoder(nn.Module):
         # --- Recursive Decomposition ---
         self.structure_filter = nn.Sequential(
             nn.Linear(latent_dim, latent_dim // 2 if latent_dim > 2 else latent_dim),
-            nn.ReLU(),
+            nn.GELU(),
             nn.Linear(latent_dim // 2 if latent_dim > 2 else latent_dim, latent_dim),
         )
 
@@ -1621,7 +1621,7 @@ class TopologicalDecoder(nn.Module):
         # Shared renderer
         self.renderer = nn.Sequential(
             nn.LayerNorm(latent_dim),
-            nn.ReLU(),
+            nn.GELU(),
             nn.Linear(latent_dim, output_dim)
         )
 
@@ -1962,7 +1962,7 @@ The rescaling $x^{(\ell+1)} = z_{\mathrm{tex}}^{(\ell)} / \sigma^{(\ell)}$ ensur
 
 With variance rescaling:
 1. $\mathrm{Var}(x^{(\ell)}) = 1$ for all $\ell$ (by construction).
-2. Non-linearities (ReLU, GELU) operate in their active region, avoiding saturation.
+2. Non-linearities (GELU) operate in their active region, avoiding saturation.
 3. The backward gradient is scaled by $1/\sigma^{(\ell)}$, amplifying gradients for fine-scale layers.
 
 **Gradient Amplification Analysis:** Let the loss $\mathcal{L}$ depend on the output of block $\ell$. The gradient flowing back to block $\ell-1$ includes the factor:
@@ -1986,7 +1986,7 @@ For additional stability, each layer can use **spectral normalization** {cite}`m
 $$
 W_{\text{SN}} = \frac{W}{\sigma_{\max}(W)}
 $$
-This ensures $\|W_{\text{SN}}\|_2 = 1$, making each layer 1-Lipschitz. Combined with 1-Lipschitz activations (e.g., ReLU), this bounds the network Lipschitz constant by the product of per-layer spectral norms.
+This ensures $\|W_{\text{SN}}\|_2 = 1$, making each layer 1-Lipschitz. Combined with 1-Lipschitz activations (e.g., GELU), this bounds the network Lipschitz constant by the product of per-layer spectral norms.
 
 The framework's **LipschitzCheck** (Node 20) monitors $\max_\ell \sigma(W_\ell)$ at runtime, and the spectral (Lipschitz) barrier ({ref}`Section 3.3 <sec-defect-functionals-implementing-regulation>`, Table; {cite}`miyato2018spectral`) enforces:
 
