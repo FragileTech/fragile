@@ -1,3 +1,9 @@
+---
+title: "Permits and Preconditions"
+---
+
+# Permits and Preconditions
+
 (sec-weakest-precondition)=
 ## The Weakest Precondition Principle
 

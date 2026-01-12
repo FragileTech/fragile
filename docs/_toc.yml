@@ -135,9 +135,10 @@ parts:
     - file: source/2_hypostructure/09_mathematical/05_algorithmic
     - file: source/2_hypostructure/09_mathematical/06_complexity_bridge
 
-  - caption: "Part X - Meta-Learning"
+  - caption: "Part X - Information Processing"
     chapters:
-    - file: source/2_hypostructure/10_metalearning/01_metalearning
+    - file: source/2_hypostructure/10_information_processing/01_metalearning
+    - file: source/2_hypostructure/10_information_processing/02_fractal_gas
 
   - caption: "Part XI - Appendices"
     chapters:

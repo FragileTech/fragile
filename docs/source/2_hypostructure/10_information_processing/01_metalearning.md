@@ -2695,10 +2695,6 @@ This is a structural analogue of standard results for equivariant neural network
 
 ---
 
-
----
-
-
 (ch-general-loss)=
 
 ## The General Loss Functional
@@ -3077,8 +3073,8 @@ $$\bar{S}_t: Y \to \mathcal{P}(Y), \quad \bar{S}_t(y) := \mathbb{E}[\Pi(S_t(x)) 
 where the expectation averages over micro-states compatible with macro-state $y$ using the conditional measure $\mu(\cdot \mid \Pi^{-1}(y))$. When this expectation is deterministic (i.e., concentrates on a single point), we write $\bar{S}_t: Y \to Y$.
 :::
 
-:::{prf:definition} Closure Defect
-:label: def-closure-defect
+:::{prf:definition} Closure Defect (Variance Form)
+:label: def-closure-defect-variance
 
 The **closure defect** measures how much the macro-dynamics depend on discarded micro-details:
 $$\delta_\Pi := \mathbb{E}_{x \sim \mu}\left[\|\Pi(S_t(x)) - \bar{S}_t(\Pi(x))\|^2\right]^{1/2}$$

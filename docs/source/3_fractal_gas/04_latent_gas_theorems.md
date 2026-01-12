@@ -27,7 +27,7 @@ The following theorems have "classical" analytic assumptions that are **not need
 *   **Justification:** The Factory computes a total contraction rate $\kappa_{\text{total}}$ combining:
     *   Velocity contraction $\kappa_v$ (from OU friction $\gamma$).
     *   Selection pressure $\lambda_{\text{alg}}^{\text{eff}}$ (from cloning).
-    *   Wasserstein contraction $\kappa_W$ (from pairing geometry).
+    *   Wasserstein contraction $\kappa_W$ (from companion selection geometry).
     If $\kappa_{\text{total}} > 0$, the framework certifies exponential ergodicity (LSI) *without* requiring $\Phi$ to be globally convex. The selection/cloning mechanism provides the necessary confinement even if the potential has local non-convexities (as long as `kappa_total` remains positive).
 
 ### 1.2 The Spectral Generator (`mt:spectral-generator`)
@@ -66,7 +66,7 @@ The following theorems have assumptions that are explicitly verified by the cert
 ### 2.1 Topological Regularization / Cheeger Bound (`thm:cheeger-bound`)
 *   **Original Assumption:** Uniform minorization / Doeblin condition ($P \ge \delta \pi$) for the graph kernel.
 *   **Latent Gas Status:** **Satisfied**.
-*   **Witness:** `lem-latent-fractal-gas-pairing-doeblin` (Node 10) explicitly proves the minorization bound $m_\epsilon$ for the Spatially-Aware Pairing operator on the alive core. This witness discharges the "Conditional" status of the Cheeger bound.
+*   **Witness:** `lem-latent-fractal-gas-companion-doeblin` (Node 10) explicitly proves the minorization bound $p_{\min}\ge m_\epsilon/(k-1)$ for the soft companion selection kernel on the alive core. This witness discharges the "Conditional" status of the Cheeger bound.
 
 ### 2.2 Induced Local Geometry (`thm:induced-riemannian-structure`)
 *   **Original Assumption:** Hessian-based quadratic forms define a metric.

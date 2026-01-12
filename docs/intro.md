@@ -108,7 +108,7 @@ The economic layer introduces a novel consensus mechanism where the cryptographi
 | **Byzantine validators** | Minimum Friction BFT (Theorem {prf:ref}`thm-minimum-friction-bft`) | Tolerates $< 1/3$ adversarial validators |
 | **Gradient poisoning** | Adversarial Geometric Damping (Theorem {prf:ref}`thm-adversarial-geometric-damping`) | Adversaries geometrically isolated, not just outvoted |
 | **Flash loans / front-running** | Causal Theft Prevention (Theorem {prf:ref}`thm-causal-theft-prevention`) | CausalityViolationCheck rejects acausal transactions |
-| **Coordinated deception** | Babel Limit Attack (Theorem {prf:ref}`thm-babel-limit-attack`) | Information-theoretic bound on collusion effectiveness |
+| **Coordinated deception** | Babel Limit Attack (Theorem {prf:ref}`thm-corruption-babel-detection`) | Information-theoretic bound on collusion effectiveness |
 
 *Core insight:* Adversaries are not defeated by voting—they are **geometrically damped**. Their updates carry infinite inertia (Causal Stasis) and cannot influence the consensus trajectory. Security comes from coherence, not coercion.
 
