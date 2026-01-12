@@ -435,7 +435,7 @@ class EfficientInfoNCE(nn.Module):
         # Projection head (optional, improves quality)
         self.projector = nn.Sequential(
             nn.Linear(latent_dim, latent_dim),
-            nn.ReLU(),
+            nn.GELU(),
             nn.Linear(latent_dim, latent_dim),
         )
 

@@ -4626,7 +4626,7 @@ This is why the gradient flow table ({ref}`Section 7.7.2 <sec-orthonormal-constr
 
 With variance rescaling:
 1. $\mathrm{Var}(x^{(\ell)}) = 1$ for all $\ell$ (by construction).
-2. Non-linearities (ReLU, GELU) operate in their active region, avoiding saturation.
+2. Non-linearities (GELU) operate in their active region, avoiding saturation.
 3. The backward gradient is scaled by $1/\sigma^{(\ell)}$, amplifying gradients for fine-scale layers.
 
 **Gradient Amplification Analysis:** Let the loss $\mathcal{L}$ depend on the output of block $\ell$. The gradient flowing back to block $\ell-1$ includes the factor:

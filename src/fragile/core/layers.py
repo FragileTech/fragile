@@ -24,9 +24,9 @@ class StandardVQ(nn.Module):
         # Encoder: x → z_e
         self.encoder = nn.Sequential(
             nn.Linear(input_dim, hidden_dim),
-            nn.ReLU(),
+            nn.GELU(),
             nn.Linear(hidden_dim, hidden_dim),
-            nn.ReLU(),
+            nn.GELU(),
             nn.Linear(hidden_dim, latent_dim),
         )
 
@@ -38,9 +38,9 @@ class StandardVQ(nn.Module):
         # Decoder: z_q → x_recon
         self.decoder = nn.Sequential(
             nn.Linear(latent_dim, hidden_dim),
-            nn.ReLU(),
+            nn.GELU(),
             nn.Linear(hidden_dim, hidden_dim),
-            nn.ReLU(),
+            nn.GELU(),
             nn.Linear(hidden_dim, input_dim),
         )
 
@@ -104,17 +104,17 @@ class VanillaAE(nn.Module):
 
         self.encoder = nn.Sequential(
             nn.Linear(input_dim, hidden_dim),
-            nn.ReLU(),
+            nn.GELU(),
             nn.Linear(hidden_dim, hidden_dim),
-            nn.ReLU(),
+            nn.GELU(),
             nn.Linear(hidden_dim, latent_dim),
         )
 
         self.decoder = nn.Sequential(
             nn.Linear(latent_dim, hidden_dim),
-            nn.ReLU(),
+            nn.GELU(),
             nn.Linear(hidden_dim, hidden_dim),
-            nn.ReLU(),
+            nn.GELU(),
             nn.Linear(hidden_dim, input_dim),
         )
 
@@ -161,9 +161,9 @@ class AttentiveAtlasEncoder(nn.Module):
         self.feature_extractor = nn.Sequential(
             nn.Linear(input_dim, hidden_dim),
             nn.LayerNorm(hidden_dim),
-            nn.ReLU(),
+            nn.GELU(),
             nn.Linear(hidden_dim, hidden_dim),
-            nn.ReLU(),  # Added - was missing
+            nn.GELU(),  # Added - was missing
         )
 
         # --- Routing (Topology) ---
@@ -189,7 +189,7 @@ class AttentiveAtlasEncoder(nn.Module):
         # Structure filter: extracts structured nuisance z_n from residual
         self.structure_filter = nn.Sequential(
             nn.Linear(latent_dim, latent_dim // 2 if latent_dim > 2 else latent_dim),
-            nn.ReLU(),
+            nn.GELU(),
             nn.Linear(latent_dim // 2 if latent_dim > 2 else latent_dim, latent_dim),
         )
 
@@ -436,9 +436,9 @@ class TopologicalDecoder(nn.Module):
         # Shared renderer
         self.renderer = nn.Sequential(
             nn.LayerNorm(hidden_dim),
-            nn.ReLU(),
+            nn.GELU(),
             nn.Linear(hidden_dim, hidden_dim),
-            nn.ReLU(),
+            nn.GELU(),
             nn.Linear(hidden_dim, output_dim),
         )
 

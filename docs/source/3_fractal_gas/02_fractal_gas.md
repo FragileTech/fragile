@@ -122,9 +122,14 @@ Metatheorem {prf:ref}`mt-fact-germ-density`. The modality-exhaustion fallback is
 
 **Status:** Definition.
 
-The **State Space** is a metric measure space $(X, d_X, \mu_X)$ representing the domain of the problem (the "Territory").
-- **Agents:** $w_i \in X$
-- **Base Dynamics:** $\mathcal{F}_t$ (gradient descent, physics engine)
+The **State Space** is a metric-measure space $(X, d_X, \mathfrak{m})$ supporting the swarm dynamics.
+
+- **Walkers:** $w_i \in X$, $i=1,\dots,N$.
+- **Algorithmic reading (used by proof objects):** in algorithmic Fractal Gas instantiations (e.g. the latent proof object
+  `03_fractal_gas_latent.md`), a walker state is explicitly a pair $w_i=(z_i,v_i)$ where $z_i$ is a representation
+  coordinate used for pairing/fitness and $v_i$ is an auxiliary “velocity-like” coordinate used for pairing/cloning.
+- **Kinetic/mutation operator:** deliberately left unspecified at the level of this chapter; all assumptions about it are
+  carried by the thin cost object $\mathfrak{D}^{\text{thin}}$ and verified (or blocked) by the sieve permits.
 :::
 
 :::{prf:definition} Algorithmic Space (Y)
@@ -136,9 +141,168 @@ The **State Space** is a metric measure space $(X, d_X, \mu_X)$ representing the
 
 **Status:** Definition.
 
-The **Algorithmic Space** is a normed vector space $(Y, \|\cdot\|_Y)$ equipped with a **Projection Map** $\pi: X \to Y$ (the "Map").
-- **Distance:** $d_{\text{alg}}(i, j) := \| \pi(w_i) - \pi(w_j) \|_Y$
-- **Role:** Cognitive workspace for companion selection.
+The **Algorithmic Space** is a normed vector space $(Y, \|\cdot\|_Y)$ equipped with a **projection/representation map**
+$\pi: X \to Y$ (the “map”).
+
+For the Fractal Gas algorithmic kernel used throughout this part, we specialize to the product form
+$$
+\pi(w) = (z(w), v(w)) \in \mathbb{R}^{d_z}\times \mathbb{R}^{d_v} =: Y,
+$$
+with a weighted norm
+$$
+\|(z,v)\|_Y^2 := \|z\|_2^2 + \lambda_{\mathrm{alg}}\|v\|_2^2,\qquad \lambda_{\mathrm{alg}}\ge 0.
+$$
+The induced **algorithmic distance** is
+$$
+d_{\mathrm{alg}}(w_i,w_j) := \|\pi(w_i)-\pi(w_j)\|_Y.
+$$
+
+**Role:** $d_{\mathrm{alg}}$ is the only distance used for **companion selection** and for the **distance term** inside
+fitness (Definition {prf:ref}`def:fractal-gas-fitness-cloning-kernel`).
+:::
+
+:::{prf:definition} Spatially-Aware Pairing Operator (Diversity Companion Selection)
+:label: def-spatial-pairing-operator-diversity
+:class: rigor-class-f
+
+**Thin inputs:** $\mathcal{X}^{\text{thin}}$ (via the alive slice and $d_{\mathrm{alg}}$).
+**Permits:** none (finite algorithmic sampling rule).
+
+**Rigor Class:** F (Framework-Original) — see {prf:ref}`def-rigor-classification`
+
+**Status:** Definition (algorithmic kernel).
+
+Let $\mathcal{A}$ be the alive index set on a time slice (Definition depends on the open-system boundary interface
+$\partial^{\text{thin}}$). Fix a bandwidth $\epsilon>0$ and define symmetric weights on $\mathcal{A}$:
+$$
+w_{ij} := \exp\!\left(-\frac{d_{\mathrm{alg}}(w_i,w_j)^2}{2\epsilon^2}\right)\quad (i\neq j),\qquad
+w_{ii}:=0.
+$$
+
+**Even alive count ($|\mathcal{A}|$ even).**
+Sample a perfect matching $M$ of the complete graph on $\mathcal{A}$ with probability proportional to the matching weight
+$$
+W(M) := \prod_{(i,j)\in M} w_{ij}.
+$$
+The matching induces a companion map $c:\mathcal{A}\to\mathcal{A}$ by setting $c_i=j$ and $c_j=i$ for each matched pair
+$(i,j)\in M$.
+
+**Odd alive count ($|\mathcal{A}|$ odd).**
+Select a single index $i_\star\in\mathcal{A}$ to be self-paired (by convention, uniformly at random), set $c_{i_\star} :=
+i_\star$, and sample a perfect matching on $\mathcal{A}\setminus\{i_\star\}$ using the even rule above.
+
+This “spatially-aware Gaussian pairing” rule is the default companion-selection kernel used by the Fractal Gas schema
+(Definition {prf:ref}`def:fractal-gas-fitness-cloning-kernel`) and by the latent proof object
+`docs/source/3_fractal_gas/03_fractal_gas_latent.md`.
+:::
+
+:::{prf:definition} Fractal Gas Fitness/Cloning Kernel (Fixed Operators)
+:label: def:fractal-gas-fitness-cloning-kernel
+:class: rigor-class-f
+
+**Thin inputs:** $\mathcal{X}^{\text{thin}}$, $\Phi^{\text{thin}}$ (via the construction below), and (optionally) $\partial^{\text{thin}}$ for alive/dead masking.
+**Permits:** none (this is the algorithmic definition; permits enter when certifying boundedness/mixing/regularity).
+
+**Rigor Class:** F (Framework-Original) — see {prf:ref}`def-rigor-classification`
+
+**Status:** Definition (algorithmic schema).
+
+This chapter treats **Fractal Gas** as an algorithmic schema whose **fixed** components are exactly those used in the
+latent proof object `03_fractal_gas_latent.md`:
+
+- the algorithmic distance $d_{\mathrm{alg}}$ (Definition {prf:ref}`def:algorithmic-space-fg`),
+- the spatially-aware Gaussian pairing companion-selection rule,
+- the fitness construction from a reward scalar and a companion distance,
+- the cloning mechanism (jitter + inelastic collision update).
+
+The only **unspecified** components are:
+1. the **reward observable** $r_i$ (a scalar computed from $w_i$, left abstract), and
+2. the **kinetic/mutation operator** (the post-cloning update of $(z,v)$, left abstract).
+
+All hypotheses about these two unspecified pieces are carried by the thin permits ($D_E$, $\mathrm{Cap}_H$,
+$\mathrm{LS}_\sigma$, $\mathrm{GC}_\nabla$, boundary permits, etc.) and are discharged case-by-case by running the sieve.
+
+**Notation (avoid collisions).**
+- $r_i$ in this definition is a *reward observable* used inside $V_{\mathrm{fit},i}$; it is **not** the reaction-rate
+  symbol $r$ used in the continuum WFR equation in {prf:ref}`mt:darwinian-ratchet`.
+- $v(w)$ in this definition is an auxiliary “velocity-like” coordinate carried by the state; it is **not** the transport
+  vector field $v$ that appears in continuum PDE notation.
+
+**Companion selection (spatially-aware Gaussian pairing).**
+On each time slice, define the alive index set $\mathcal{A}$ (from an open-system boundary $\partial^{\text{thin}}$ or any
+other “alive mask” rule). On $\mathcal{A}$, companion indices are sampled from the spatially-aware random matching rule
+({prf:ref}`def-spatial-pairing-operator-diversity`) with weights
+$$
+w_{ij} := \exp\!\left(-\frac{d_{\mathrm{alg}}(w_i,w_j)^2}{2\epsilon^2}\right),\qquad \epsilon>0.
+$$
+For odd $|\mathcal{A}|$, allow exactly one self-pair and sample a matching on the remaining walkers (the maximal-matching
+convention).
+In a full step, this pairing rule is typically sampled twice: once to obtain companions for the **distance term** inside
+fitness and once to obtain companions for **cloning** (these two draws may be independent or shared, depending on the
+instantiation).
+When $|\mathcal{A}|<2$, the matching law is degenerate; an instantiation must specify a fallback (e.g. cemetery state,
+uniform companion-from-alive recovery, or a no-op), and this is treated as part of the open-system boundary interface
+$\partial^{\text{thin}}$.
+
+**Fitness construction.**
+Fix hyperparameters $\alpha_{\mathrm{fit}},\beta_{\mathrm{fit}}\ge 0$ and regularizers $\epsilon_{\mathrm{dist}}>0$,
+$A>0$, $\eta>0$. Given a “distance companion” $c_i$, define the regularized companion distance
+$$
+d_i := \sqrt{d_{\mathrm{alg}}(w_i,w_{c_i})^2 + \epsilon_{\mathrm{dist}}^2}.
+$$
+Let $r_i$ be a user-specified scalar **reward observable** (left abstract). Standardize rewards and distances using
+patched (alive-only) statistics (optionally localized at scale $\rho$, with $\rho=\texttt{None}$ meaning global alive
+statistics):
+$$
+z_r(i) = \frac{r_i - \mu_r}{\sigma_r},\qquad
+z_d(i) = \frac{d_i - \mu_d}{\sigma_d}.
+$$
+Assumption (schema-level): the patching procedure supplies finite $\mu_r,\mu_d$ and strictly positive
+$\sigma_r,\sigma_d$ on the alive slice; if not, add an explicit variance floor in the instantiation.
+Apply the logistic rescale $g_A(z) = A / (1 + \exp(-z))$ and positivity floor $\eta$:
+$$
+r_i' = g_A(z_r(i)) + \eta,\qquad d_i' = g_A(z_d(i)) + \eta.
+$$
+Define per-walker fitness
+$$
+V_{\mathrm{fit},i} := (d_i')^{\beta_{\mathrm{fit}}}(r_i')^{\alpha_{\mathrm{fit}}}.
+$$
+
+**Canonical height functional (thin potential).**
+Define the global height as a bounded negative mean fitness (up to an additive constant):
+$$
+\Phi(w_1,\dots,w_N) := V_{\max} - \frac{1}{N}\sum_{i=1}^N V_{\mathrm{fit},i},
+$$
+where $V_{\max}:=(A+\eta)^{\alpha_{\mathrm{fit}}+\beta_{\mathrm{fit}}}$ is the deterministic per-walker upper bound.
+This is the default $\Phi^{\text{thin}}$ used by Fractal Gas proof objects because it makes EnergyCheck discharge
+explicit and purely algebraic.
+
+**Cloning (jitter + inelastic collision update).**
+Fix cloning hyperparameters $p_{\max}>0$, $\epsilon_{\mathrm{clone}}>0$, $\sigma_x\ge 0$,
+$\alpha_{\mathrm{rest}}\in[0,1]$. Given a “clone companion” $c_i$, define the score and probability
+$$
+S_i := \frac{V_{\mathrm{fit},c_i} - V_{\mathrm{fit},i}}{V_{\mathrm{fit},i} + \epsilon_{\mathrm{clone}}},\qquad
+p_i := \min(1,\max(0,S_i/p_{\max})).
+$$
+Cloning decisions are Bernoulli draws with parameter $p_i$ (dead walkers clone deterministically). If $i$ clones, update
+positions via Gaussian jitter
+$$
+z_i' = z_{c_i} + \sigma_x\zeta_i,\qquad \zeta_i\sim\mathcal{N}(0,I),
+$$
+and update the auxiliary “velocity-like” coordinates via a momentum-preserving inelastic collision map. For each
+collision group $G$ (a companion together with all cloners to it), let
+$$
+V_{\mathrm{COM}} = |G|^{-1}\sum_{k\in G} v_k,\qquad u_k = v_k - V_{\mathrm{COM}},
+$$
+and set
+$$
+v_k' = V_{\mathrm{COM}} + \alpha_{\mathrm{rest}}u_k,\qquad k\in G.
+$$
+This conserves $\sum_{k\in G} v_k$ for each group update.
+
+**Kinetic/mutation step (unspecified).**
+After cloning, apply a user-specified kinetic/mutation operator (Definition {prf:ref}`def:fractal-gas-kinetic-operator`)
+to evolve $(z,v)$; all regularity/mixing assumptions needed by later theorems are recorded as sieve permits.
 :::
 
 :::{prf:definition} Emergent Manifold (M)
@@ -179,13 +343,61 @@ the local identification $g_{\text{eff}}\approx D^{-1}$. This is a model-specifi
 **Remark:** The metric $g_{\text{eff}}$ emerges from swarm dynamics and is not imposed a priori. It reflects how the swarm "perceives" distances through its collective exploration behavior.
 :::
 
+:::{prf:definition} Anisotropic Diffusion (Stiffness-Adapted)
+:label: def:anisotropic-diffusion-fg
+:class: rigor-class-f
+
+**Thin inputs:** $\mathcal{X}^{\text{thin}}$, $\Phi^{\text{thin}}$.
+**Permits:** $\mathrm{LS}_\sigma$ (N7).
+
+**Status:** Definition (canonical stiffness-adapted noise).
+
+**Statement:**
+When the kinetic operator injects Gaussian noise, a canonical **stiffness-adapted** choice is to precondition that noise
+by the local curvature of the fitness landscape. Concretely, define the diffusion preconditioner from the Hessian of the
+fitness potential $V_{\mathrm{fit}}$ (Definition {prf:ref}`def:fractal-gas-fitness-cloning-kernel`):
+$$
+\Sigma_{\mathrm{reg}}(x) = \bigl(\nabla_x^2 V_{\mathrm{fit}}(x)+\epsilon_{\Sigma} I\bigr)^{-1/2},
+$$
+where $\epsilon_{\Sigma} > 0$ is a regularization constant. This tensor scales the driving noise
+$\xi \sim \mathcal{N}(0, I)$ in any kinetic/mutation update that injects Gaussian noise (see Definition
+{prf:ref}`def:fractal-gas-kinetic-operator` for a Langevin/BAOAB example).
+:::
+
+:::{prf:definition} Kinetic / Mutation Operator (Abstract)
+:label: def:fractal-gas-kinetic-operator
+:class: rigor-class-f
+
+**Thin inputs:** $\mathcal{X}^{\text{thin}}$, $\mathfrak{D}^{\text{thin}}$.
+**Permits:** $D_E$ (N1), $\mathrm{LS}_\sigma$ (N7).
+
+**Status:** Definition (interface placeholder for the “transport” part of Fractal Gas).
+
+**Statement:**
+The Fractal Gas schema intentionally leaves the **kinetic/mutation operator** unspecified: it is any (possibly
+state-dependent) Markov kernel on the swarm state that is composed after cloning (Definition
+{prf:ref}`def:fractal-gas-fitness-cloning-kernel`).
+
+All assumptions about this operator (regularity, noise injection/ellipticity, drift/dissipation, boundary behavior,
+mixing, etc.) are not hard-coded here; they are tracked by the thin objects and discharged (or blocked) by the sieve via
+the permits listed in theorems.
+
+**Example (Langevin/BAOAB instantiation).**
+One common choice is an underdamped Langevin diffusion on a smooth representation manifold, which (in flat coordinates)
+takes the schematic form
+$$
+dx = v \, dt, \quad dv = -\gamma v \, dt - \nabla \Phi \, dt + \Sigma_{\mathrm{reg}}(x) \, dW_t
+$$
+where $\gamma$ is friction, $\Phi$ is the fitness potential (often disabled in viscous-only variants), and $\Sigma_{\mathrm{reg}}(x)$ is the **anisotropic diffusion tensor** (Definition {prf:ref}`def:anisotropic-diffusion-fg`) which preconditions the Wiener process $dW_t$ to align noise with the local stiffness of the landscape.
+:::
+
 ### Solver Metatheorems
 
 :::{prf:theorem} Geometric Adaptation (Metric Distortion Under Representation)
 :label: thm:geometric-adaptation
 
 **Thin inputs:** $\mathcal{X}^{\text{thin}}$, $\Phi^{\text{thin}}$, $G^{\text{thin}}$, embedding $\pi: X \to Y$.
-**Permits:** $\mathrm{Rep}_K$ (N11), $\mathrm{SC}_\lambda$ (N4).
+**Permits:** $\mathrm{Rep}_K$ (N11).
 
 **Status:** Conditional (linear-algebraic; no solver assumptions).
 
@@ -219,9 +431,17 @@ Substituting $\|\Delta\|_2=d_{\mathrm{alg}}^{(1)}(x,y)$ and $\|T\Delta\|_2=d_{\m
 :label: mt:darwinian-ratchet
 
 **Thin inputs:** $\mathcal{X}^{\text{thin}}$, $\Phi^{\text{thin}}$, $\mathfrak{D}^{\text{thin}}$.
-**Permits:** $C_\mu$ (N3), $D_E$ (N1), $\mathrm{SC}_\lambda$ (N4).
+**Permits:** $C_\mu$ (N3), $D_E$ (N1).
 
 **Status:** Imported (agent geometry; WFR dynamics and stationarity).
+
+**Statement (algorithmic split; always).**
+For any Fractal Gas instantiation using the fixed fitness/pairing/cloning kernel (Definition
+{prf:ref}`def:fractal-gas-fitness-cloning-kernel`), the one-step update decomposes *by construction* into:
+- a **reaction/resampling** operator (selection + cloning), and
+- a **transport/mutation** operator (the user-specified kinetic/mutation step).
+This is the discrete-time version of “transport + reaction” and does not require any scaling limit nor a particular
+choice of kinetic operator.
 
 **Statement (WFR dynamics).**
 In the WFR instantiation of Fractal Gas, the (unnormalized) particle/belief density $\rho(s,z)$ evolves in computation
@@ -253,9 +473,10 @@ the long-time normalized law is described by quasi-stationary distributions (see
 :::
 
 :::{prf:proof}
-This is an instantiation of Fractal Gas dynamics as WFR belief dynamics (Definition {prf:ref}`def-the-wfr-action`),
-together with the value-determined reaction rate (Theorem {prf:ref}`thm-wfr-consistency-value-creates-mass`) and the
-steady-state characterizations ({prf:ref}`cor-equilibrium-distribution`, {prf:ref}`thm-ness-existence`).
+The algorithmic transport+reaction split is definitional for the kernel in {prf:ref}`def:fractal-gas-fitness-cloning-kernel`.
+The continuum WFR equation and the value-determined reaction rate are imported statements (Definition
+{prf:ref}`def-the-wfr-action`, Theorem {prf:ref}`thm-wfr-consistency-value-creates-mass`), which apply when a chosen
+instantiation admits the corresponding continuum/scaling interpretation.
 :::
 
 :::{prf:principle} Coherence Phase Transition
@@ -310,16 +531,35 @@ A crossover is expected when $l_\nu/l_{\mathrm{clone}}$ is $O(1)$; extracting a 
 
 **Status:** Conditional (graph/Markov-chain mixing; not implied by viscosity alone).
 
-**Assumption (uniform minorization / Doeblin condition):** The Information Graph induces a reversible Markov kernel $P_t$ on vertices with stationary law $\pi_t$, and there exists $\delta\in(0,1]$ such that for all times $t$ and all vertices $i$,
+**Assumption (uniform minorization / Doeblin condition):** The Information Graph induces a reversible Markov kernel $P_t$
+on vertices with stationary law $\pi_t$, and there exist $\delta\in(0,1]$ and a probability measure $\nu_t$ such that for
+all times $t$ and all vertices $i$,
 $$
-P_t(i,\cdot)\ \ge\ \delta\,\pi_t(\cdot).
+P_t(i,\cdot)\ \ge\ \delta\,\nu_t(\cdot).
 $$
 
 **Statement:** Under this assumption, the chain has a uniform spectral gap $\lambda_1(P_t)\ge \delta$ and the Cheeger (conductance) constant is uniformly bounded below:
 $$
 h(G_t)\ \ge\ \frac{\lambda_1(P_t)}{2}\ \ge\ \frac{\delta}{2}\ >\ 0.
 $$
-In particular the graph stays connected and does not “pinch off”. (In concrete Fractal/Geometric Gas instantiations, a Doeblin $\delta$ typically comes from a **softmax floor** on companion/edge weights on a bounded diameter domain; viscosity $\nu$ affects *velocity mixing*, but does not by itself create edges.)
+In particular the graph stays connected and does not “pinch off”.
+
+**FG-kernel discharge (default companion selection).**
+For the spatially-aware Gaussian pairing rule used by the Fractal Gas kernel (Definition
+{prf:ref}`def:fractal-gas-fitness-cloning-kernel`), a Doeblin floor is explicit on any alive core with bounded
+algorithmic diameter $D_{\mathrm{alg}}$: with
+$$
+m_\epsilon := \exp\!\left(-\frac{D_{\mathrm{alg}}^2}{2\epsilon^2}\right),
+$$
+the induced one-step companion kernel has an explicit **off-diagonal** floor on the even-$|\mathcal{A}|$ slice:
+$$
+P(c_i=j)\ \ge\ \frac{m_\epsilon^{|\mathcal{A}|/2}}{|\mathcal{A}|-1}\qquad (j\neq i).
+$$
+Because perfect matchings have no self-loop for even $|\mathcal{A}|$, the strict one-step Doeblin form
+$P(i,\cdot)\ge \delta\,\nu(\cdot)$ may fail as stated (it would force $P(i,i)>0$ whenever $\nu(i)>0$). In such cases one
+applies the theorem to a **lazified** kernel or to a fixed power $P^m$ (typically $m=2$), which inherits an explicit
+Doeblin minorization from the off-diagonal floor above. In particular, Fractal Gas proof objects typically discharge the
+mixing/minorization hypothesis directly from bounded diameter, independent of any kinetic details.
 :::
 
 :::{prf:proof}

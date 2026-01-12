@@ -64,7 +64,7 @@ This document presents a **machine-checkable proof object** for the **Latent Fra
 - Dynamics: the Latent Fractal Gas step operator defined below (spatially-aware Gaussian pairing + cloning + geodesic Boris-BAOAB).
 - Initial data: $z_0,v_0\in\mathcal{Z}^{N}\times T\mathcal{Z}^{N}$ with at least one walker initially alive (minorization/mixing uses $n_{\mathrm{alive}}\ge 2$), and parameters $\Theta$ (constants table).
 
-**Claim:** The Latent Fractal Gas step operator defines a valid Markov transition kernel on the extended state space $\mathcal{X}\cup\{\dagger\}$, where $\dagger$ is a cemetery state for degenerate companion-selection events (e.g. $|\mathcal{A}|=0$). Companion selection for both diversity measurement and cloning uses the **spatially-aware Gaussian pairing** rule (see {prf:ref}`def-spatial-pairing-operator-diversity` in `docs/source/2_hypostructure/10_metalearning/03_cloning.md`). For the cloning velocity update, the inelastic collision map preserves the center-of-mass velocity on each collision group update (hence conserves group momentum whenever collision groups form a partition). In addition, once the quantitative constants $(m_\epsilon,\kappa_W,\kappa_{\mathrm{total}},C_{\mathrm{LSI}})$ are instantiated (Part III), the framework yields a propagation-of-chaos (mean-field) error bound and an LSI-based QSD/KL convergence rate characterization.
+**Claim:** The Latent Fractal Gas step operator defines a valid Markov transition kernel on the extended state space $\mathcal{X}\cup\{\dagger\}$, where $\dagger$ is a cemetery state for degenerate companion-selection events (e.g. $|\mathcal{A}|=0$). Companion selection for both diversity measurement and cloning uses the **spatially-aware Gaussian pairing** rule (see {prf:ref}`def-spatial-pairing-operator-diversity` in `docs/source/3_fractal_gas/02_fractal_gas.md`). For the cloning velocity update, the inelastic collision map preserves the center-of-mass velocity on each collision group update (hence conserves group momentum whenever collision groups form a partition). In addition, once the quantitative constants $(m_\epsilon,\kappa_W,\kappa_{\mathrm{total}},C_{\mathrm{LSI}})$ are instantiated (Part III), the framework yields a propagation-of-chaos (mean-field) error bound and an LSI-based QSD/KL convergence rate characterization.
 
 **Notation:**
 | Symbol | Definition |
@@ -108,7 +108,7 @@ For alive walkers $\mathcal{A}$ and interaction range $\epsilon$, define Gaussia
 $$
 w_{ij} = \exp\left(-d_{\text{alg}}(i,j)^2 / (2\epsilon^2)\right), \quad w_{ii}=0.
 $$
-Draw a companion map $c:\mathcal{A}\to\mathcal{A}$ using the **Spatially-Aware Pairing Operator** (idealized matching model) from {prf:ref}`def-spatial-pairing-operator-diversity` in `docs/source/2_hypostructure/10_metalearning/03_cloning.md`:
+Draw a companion map $c:\mathcal{A}\to\mathcal{A}$ using the **Spatially-Aware Pairing Operator** (idealized matching model) from {prf:ref}`def-spatial-pairing-operator-diversity` in `docs/source/3_fractal_gas/02_fractal_gas.md`:
 
 1. Let $\mathcal{M}_k$ be the set of perfect matchings of $\mathcal{A}$ with $k=|\mathcal{A}|$ (assume $k$ even for the matching step).
 2. For each matching $M\in\mathcal{M}_k$, define its weight
@@ -180,13 +180,22 @@ v_k' = V_{\text{COM}} + \alpha_{\text{rest}} u_k, \quad k \in G.
 $$
 This conserves $\sum_{k \in G} v_k$ (momentum with unit mass) for each group update. In the implementation (`src/fragile/fractalai/core/cloning.py`, `inelastic_collision_velocity`), groups are indexed by the recipient companion; exact global momentum conservation holds when the collision groups are disjoint (typical when recipients are not themselves cloners).
 
+### Anisotropic Diffusion (Stiffness-Adapted)
+
+The swarm employs an anisotropic diffusion term derived from the Hessian of the fitness potential $V_{\text{fit}} = (d')^{\beta_{\text{fit}}} (r')^{\alpha_{\text{fit}}}$. The diffusion tensor is:
+
+$$
+\Sigma_{\text{reg}}(z) = \bigl(\nabla_z^2 V_{\text{fit}}(z) + \epsilon_{\Sigma} I\bigr)^{-1/2}.
+$$
+This tensor scales the driving noise to align exploration with the local stiffness of the fitness landscape (flat directions $\to$ large noise, stiff directions $\to$ small noise). The term $\epsilon_{\Sigma} I$ ensures uniform ellipticity.
+
 ### Kinetic Update (Boris-BAOAB on Latent Space)
 
 Each walker evolves in latent space using the Fragile-Agent kinetic operator (Definitions {prf:ref}`def-bulk-drift-continuous-flow` and {prf:ref}`def-baoab-splitting` in `docs/source/1_agent/reference.md`). Let $p_i = G(z_i) v_i$ be the metric momentum and $\Phi_{\text{eff}}$ the effective potential. The Boris-BAOAB step with time step $h$ is:
 
 1. **B (half kick + Boris rotation):** $p \leftarrow p - \frac{h}{2}\nabla\Phi_{\text{eff}}(z)$; if $\mathcal{F}=d\mathcal{R}\neq 0$, apply Boris rotation with $\beta_{\text{curl}} G^{-1}\mathcal{F}$; then $p \leftarrow p - \frac{h}{2}\nabla\Phi_{\text{eff}}(z)$.
 2. **A (half drift):** $z \leftarrow \mathrm{Exp}_z\!\left(\frac{h}{2}G^{-1}(z)\,p\right)$.
-3. **O (thermostat):** $p \leftarrow c_1 p + c_2\,G^{1/2}(z)\,\xi$, with $\xi\sim\mathcal{N}(0,I)$, $c_1=e^{-\gamma h}$, $c_2=\sqrt{(1-c_1^2)T_c}$.
+3. **O (thermostat):** $p \leftarrow c_1 p + c_2\,G^{1/2}(z)\,\Sigma_{\text{reg}}(z)\,\xi$, with $\xi\sim\mathcal{N}(0,I)$, $c_1=e^{-\gamma h}$, $c_2=\sqrt{(1-c_1^2)T_c}$.
 4. **A (half drift):** repeat step 2.
 5. **B (half kick + Boris rotation):** repeat step 1.
 
@@ -226,6 +235,7 @@ The output is the next swarm state $(z, v)$ and diagnostics (fitness, companions
 | Fitness | $\lambda_{\text{alg}}$ | $\lambda_{\text{alg}}$ | Velocity weight used inside $d_{\text{alg}}$ for fitness distances (tied to companion selection) | `FitnessOperator.lambda_alg` |
 | Fitness | $\sigma_{\min}$ | 1e-8 | Standardization regularizer | `FitnessOperator.sigma_min` |
 | Fitness | $\epsilon_{\text{dist}}$ | 1e-8 | Distance smoothness regularizer | `FitnessOperator.epsilon_dist` |
+| Fitness | $\epsilon_{\Sigma}$ | 1e-4 | Anisotropic regularization | Anisotropic Diffusion |
 | Fitness | $A$ | 2.0 | Logistic rescale bound | `FitnessOperator.A` |
 | Fitness | $\rho$ | None | Localization scale (None = global) | `FitnessOperator.rho` |
 | Cloning | $p_{\max}$ | 1.0 | Max cloning probability scale | `CloneOperator.p_max` |
@@ -255,6 +265,7 @@ This section records *derived constants* that are computed deterministically fro
 | Alg. diameter | $D_{\mathrm{alg}}^2 \le D_z^2 + \lambda_{\mathrm{alg}}D_v^2$ | on core | depends |
 | Pairing floor | $m_\epsilon=\exp(-D_{\mathrm{alg}}^2/(2\epsilon^2))$ | pairing weights lower bound | depends |
 | Companion minorization | $p_{\min}\ge m_\epsilon^{\lfloor n_{\mathrm{alive}}/2\rfloor}/(n_{\mathrm{alive}}-1)$ | spatial matching; applies to non-self-paired walkers (odd $k$: one self-pair excluded) | depends |
+| Metric ellipticity | $g_{\min}, g_{\max}$ | $g_{\min} I \preceq G \preceq g_{\max} I$ on $B$ | from A2 |
 | Fitness bounds | $V_{\min}=\eta^{\alpha+\beta}$, $V_{\max}=(A+\eta)^{\alpha+\beta}$ | alive walkers; dead have $V=0$ | $V_{\min}=0.01$, $V_{\max}=4.41$ |
 | Score bound | $S_{\max}=(V_{\max}-V_{\min})/(V_{\min}+\epsilon_{\mathrm{clone}})$ | alive walkers only | $S_{\max}=220$ |
 | Cloning noise | $\delta_x^2=\sigma_x^2$ | position jitter variance | $\delta_x^2=0.01$ |
@@ -277,6 +288,10 @@ Therefore on the alive core the algorithmic distance satisfies
 
 $$
 d_{\text{alg}}(i,j)^2 \le D_{\text{alg}}^2 := D_z^2 + \lambda_{\text{alg}} D_v^2.
+$$
+By A2, the latent metric is uniformly elliptic on $B$, so we fix bounds
+$$
+g_{\min} I \preceq G(z) \preceq g_{\max} I\qquad \forall z\in B.
 $$
 For spatially-aware Gaussian pairing, define the uniform kernel floor
 
@@ -523,7 +538,8 @@ This injects full-rank Gaussian noise in momentum with covariance $c_2^2 G(z)$, 
 These assumptions are the explicit witnesses used by RESOLVE-AutoAdmit/AutoProfile for the algorithmic type:
 
 - **A1 (Bounds + killing):** A compact latent domain $B\subset\mathcal{Z}$ is provided; `alive[i]=1[z_i\in B]`. Out-of-domain walkers are treated as dead and forced to clone (recovery), and the all-dead event is treated as a cemetery state.
-- **A2 (Reward/metric regularity on $B$):** $\mathcal{R}$, $G$, and $\Phi_{\text{eff}}$ are at least $C^1$ on $B$ with bounded norms on the alive core.
+- **A2 (Reward/metric regularity on $B$):** $\mathcal{R}$, $G$, and $\Phi_{\text{eff}}$ are $C^2$ on $B$ with bounded first and second derivatives on the alive core, and $G$ is uniformly elliptic on $B$ (there exist $0<g_{\min}\le g_{\max}<\infty$ with $g_{\min} I \preceq G \preceq g_{\max} I$).
+- **A2b (Fitness/emergent-metric smoothness):** Conditioned on the alive mask and companion indices, patched/local standardization operates away from its clamp thresholds on the alive core (or is implemented with smooth surrogates), so the fitness pipeline is $C^2$ in $(z,v)$ and the regularized emergent metric (via $\Sigma_{\mathrm{reg}}$) is $C^2$ on the alive core.
 - **A3 (Core velocity bound for minorization):** For mixing certificates, analysis restricts to a compact core $\|v\|\le V_{\mathrm{core}}$.
 - **A4 (Non-degenerate thermostat):** $T_c>0$ and $\gamma>0$, so the OU step injects full-rank Gaussian noise in momentum.
 - **A5 (Pairing well-defined):** Pairing uses the spatially-aware matching distribution; if $n_{\mathrm{alive}}$ is odd we allow a single self-pair, and if $n_{\mathrm{alive}}<2$ we transition to the cemetery state $\dagger$ as specified in the theorem statement.
@@ -577,8 +593,8 @@ All permits are instantiated with the Latent Fractal Gas data below and certifie
 
 ### Template: $\mathrm{LS}_\sigma$ (Stiffness Interface)
 - **Gradient Operator $\nabla$:** Riemannian gradient on the latent chart $(\mathcal{Z},G)$.
-- **Stiffness proxy:** $\Phi_{\text{eff}}$, $G$, and $\mathcal{R}$ are $C^1$ on $B$ with bounded derivatives on the alive core.
-- **Witness:** Bounds on $\|\nabla\Phi_{\text{eff}}\|_G$, $\|G\|$, and $\|\mathcal{F}\|$ on $B$.
+- **Stiffness proxy:** $\Phi_{\text{eff}}$, $G$, and $\mathcal{R}$ are $C^2$ on $B$ with bounded first/second derivatives on the alive core; $G$ is uniformly elliptic on $B$.
+- **Witness:** Bounds on $\|\nabla\Phi_{\text{eff}}\|_G$, $\|\nabla^2\Phi_{\text{eff}}\|$, $\|G\|$, $\|\nabla G\|$, $\|\nabla^2 G\|$, and $\|\mathcal{F}\|$ on $B$.
 
 ### Template: $\mathrm{TB}_\pi$ (Topology Interface)
 - **Topological Invariant $\tau$:** Connected component of the latent domain $B$ (if bounded).
@@ -648,7 +664,7 @@ The Latent Fractal Gas is treated as an **open system**: the domain boundary ind
 
 ### Execution Protocol
 
-We run the full sieve using the instantiation assumptions A1-A6. The algorithmic factories (RESOLVE-AutoAdmit/AutoProfile) certify permits that reduce to compactness, analyticity, and finite precision. Each node below records an explicit witness.
+We run the full sieve using the instantiation assumptions A1-A6 plus A2b. The algorithmic factories (RESOLVE-AutoAdmit/AutoProfile) certify permits that reduce to compactness, analyticity, and finite precision. Each node below records an explicit witness.
 
 ### Level 1: Conservation
 
@@ -730,10 +746,10 @@ $$K_{\mathrm{Cap}_H}^+ = (\Sigma=\{\text{NaN/Inf},\ \text{cemetery}\},\ \text{Ca
 
 **Question:** Does the required stiffness/regularity hold (enough smoothness to certify the drift/metric bounds)?
 
-**Execution:** Conditioned on the sampled companion indices and the alive mask (both treated as frozen during differentiation), `src/fragile/fractalai/core/fitness.py` (`compute_fitness`) is a composition of smooth primitives (exp, sqrt with $\epsilon_{\mathrm{dist}}$, logistic) and regularized moment maps (patched/local standardization with $\sigma_{\min}$). The only non-smoothness comes from numerical safety clamps (e.g. weight-sum clamping in localized statistics), so the fitness is piecewise $C^2$ on the alive core. The kinetic drift depends on $\Phi_{\text{eff}}$, $G$, and $\mathcal{R}$; under the assumption that these fields are $C^1$ with bounded derivatives on $B$, the BAOAB drift is Lipschitz on the alive core.
+**Execution:** Conditioned on the sampled companion indices and the alive mask (both treated as frozen during differentiation), `src/fragile/fractalai/core/fitness.py` (`compute_fitness`) is a composition of $C^2$ primitives (exp, sqrt with $\epsilon_{\mathrm{dist}}$, logistic) and regularized moment maps (patched/local standardization with $\sigma_{\min}$). Under A2b (clamps inactive on the alive core or smoothed), the fitness $V_{\text{fit}}$ is $C^2$ in $(z,v)$, and the regularized emergent metric $\Sigma_{\mathrm{reg}}$ inherits $C^2$ regularity on the alive core. The kinetic drift depends on $\Phi_{\text{eff}}$, $G$, and $\mathcal{R}$; under A2 these fields are $C^2$ with bounded derivatives on $B$, so the BAOAB drift is Lipschitz with $C^1$ coefficients on the alive core.
 
 **Certificate:**
-$$K_{\mathrm{LS}_\sigma}^+ = (\|\nabla\Phi_{\text{eff}}\|_G,\ \|\nabla G\|,\ \|\nabla\mathcal{R}\|\ \text{bounded on}\ B).$$
+$$K_{\mathrm{LS}_\sigma}^+ = (\|\nabla\Phi_{\text{eff}}\|_G,\ \|\nabla^2\Phi_{\text{eff}}\|,\ \|\nabla G\|,\ \|\nabla^2 G\|,\ \|\nabla\mathcal{R}\|,\ g_{\min} I\preceq G\preceq g_{\max} I\ \text{on}\ B).$$
 
 ### Level 4: Topology
 
@@ -902,6 +918,17 @@ No barriers were breached; no surgery is executed.
 
 This section ties the **derived constants** above to the quantitative convergence objects implemented in `src/fragile/convergence_bounds.py`.
 
+### Factory Theorems (Lyapunov + LSI)
+
+This instantiation explicitly invokes the two factory theorems that turn validated gate certificates into the analytic
+objects used by the rate calculators:
+
+- **Lyapunov factory:** from $K_{D_E}^+$, $K_{C_\mu}^+$, and $K_{\mathrm{LS}_\sigma}^+$, Theorem {prf:ref}`mt-krnl-lyapunov`
+  produces a canonical Lyapunov functional $\mathcal{L}$ controlling drift/mixing on the alive core.
+- **LSI factory:** from a certified thin mixing witness (Lemma {prf:ref}`lem-latent-fractal-gas-pairing-doeblin`) and the
+  thin-to-continuum lifting protocol (Theorem {prf:ref}`thm-lsi-thin-permit`), the proof object treats the
+  alive-conditioned kernel as satisfying a Logarithmic Sobolev Inequality with an explicit constant.
+
 ### Foster–Lyapunov Component Rates
 
 Let $\tau:=\Delta t$ be the time step, and let $\lambda_{\mathrm{alg}}^{\mathrm{eff}}$ be the effective selection pressure defined above (expected fraction cloned per step).
@@ -957,7 +984,11 @@ $$
 D_{\mathrm{KL}}(t)\ \le\ \exp\!\left(-\frac{t}{C_{\mathrm{LSI}}^{(\mathrm{geom})}}\right) D_{\mathrm{KL}}(0)
 \qquad (\texttt{KL\_convergence\_rate}).
 $$
-**Interpretation / hypotheses:** `C_LSI_geometric` is a framework-level upper bound for an idealized (continuous-time) uniformly elliptic diffusion; here it is used as a quantitative *proxy* for the alive-conditioned dynamics. Its use requires the following inputs to be positive and supplied by the instantiation: $\gamma>0$, $\kappa_{\mathrm{conf}}>0$, $\kappa_W>0$, and a certified ellipticity window with $0<c_{\min}\le c_{\max}<\infty$ (here derived from the OU thermostat and metric bounds on $B$).
+**Interpretation / discharge:** `C_LSI_geometric` is a framework-level bound for an idealized uniformly elliptic diffusion,
+and it is consumed here as the quantitative constant for the alive-conditioned dynamics. In this instantiation the
+inputs are discharged by A1–A6 plus A2b and the derived-constants section: $\gamma>0$ (A4), $T_c>0$ (A4), compactness of $B$ (A1)
+with $G$ continuous on $B$ (A2) gives $0<c_{\min}\le c_{\max}<\infty$, and $\kappa_W>0$ is certified by the pairing
+Doeblin constant (Lemma {prf:ref}`lem-latent-fractal-gas-pairing-doeblin`) together with positive selection pressure.
 
 ---
 
@@ -1101,7 +1132,7 @@ $$\Gamma_{\mathrm{final}} = \{K_{D_E}^+, K_{\mathrm{Rec}_N}^+, K_{C_\mu}^+, K_{\
 
 The proof proceeds by structural sieve analysis in seven phases:
 
-**Phase 1 (Instantiation):** The hypostructure $(\mathcal{X}, \Phi, \mathfrak{D}, G)$ is defined in Part I under assumptions A1-A6.
+**Phase 1 (Instantiation):** The hypostructure $(\mathcal{X}, \Phi, \mathfrak{D}, G)$ is defined in Part I under assumptions A1-A6 plus A2b.
 
 **Phase 2 (Conservation):** Nodes 1-3 yield $K_{D_E}^+$, $K_{\mathrm{Rec}_N}^+$, and $K_{C_\mu}^+$ via compactness and discrete-time dynamics.
 
@@ -1132,7 +1163,7 @@ $\therefore$ the theorem holds. $\square$
 | Obligation Ledger | EMPTY | — |
 | Upgrade Pass | COMPLETE | — |
 
-**Final Verdict:** SIEVE CLOSED (0 inc certificates under A1–A6)
+**Final Verdict:** SIEVE CLOSED (0 inc certificates under A1–A6 plus A2b)
 
 ---
 
@@ -1143,25 +1174,30 @@ Every theorem/metatheorem in `docs/source/3_fractal_gas/02_fractal_gas.md` is li
 Status codes:
 - blocked: required permit is not certified in this proof object
 - conditional: permits are present but extra hypotheses are not verified here
+- discharged: hypotheses are explicitly witnessed in this proof object
+- superseded: classical hypotheses are replaced by factory certificates (computable constants)
 - heuristic: interpretive statement, not used for certificates
+
+This table incorporates the assumption audit in `docs/source/3_fractal_gas/04_latent_gas_theorems.md`.
 
 | Theorem | Required assumptions/permits (from 02) | Latent instantiation check |
 | --- | --- | --- |
 | Lock Closure for Fractal Gas ({prf:ref}`mt:fractal-gas-lock-closure`) | Permits: $\mathrm{Cat}_{\mathrm{Hom}}$ (N17) together with the accumulated context $\Gamma$ from prior nodes. | blocked: $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}$ (Node 17). |
-| Geometric Adaptation (Metric Distortion Under Representation) ({prf:ref}`thm:geometric-adaptation`) | Permits: $\mathrm{Rep}_K$ (N11), $\mathrm{SC}_\lambda$ (N4). Assumptions: $d_{\text{alg}}(x,y)=\|\pi(x)-\pi(y)\|_2$ for an embedding $\pi: X\to\mathbb{R}^n$; embeddings related by a linear map $T$ with $\pi_2=T\circ\pi_1$ | blocked: $K_{\mathrm{SC}_\lambda}^-$ (BarrierTypeII); $d_{\text{alg}}$ uses the latent chart but embedding-change assumption not exercised. |
-| The Darwinian Ratchet (WFR Transport + Reaction) ({prf:ref}`mt:darwinian-ratchet`) | Permits: $C_\mu$ (N3), $D_E$ (N1), $\mathrm{SC}_\lambda$ (N4). | blocked: $K_{\mathrm{SC}_\lambda}^-$ (BarrierTypeII). |
-| Topological Regularization (Cheeger Bound, Conditional) ({prf:ref}`thm:cheeger-bound`) | Permits: $C_\mu$ (N3), $D_E$ (N1), $\mathrm{LS}_\sigma$ (N7), $\mathrm{Cap}_H$ (N6), $\mathrm{TB}_\pi$ (N8). | conditional: permits satisfied; additional hypotheses not verified in this instantiation. |
+| Geometric Adaptation (Metric Distortion Under Representation) ({prf:ref}`thm:geometric-adaptation`) | Permits: $\mathrm{Rep}_K$ (N11). Assumptions: $d_{\text{alg}}(x,y)=\|\pi(x)-\pi(y)\|_2$ for an embedding $\pi: X\to\mathbb{R}^n$; embeddings related by a linear map $T$ with $\pi_2=T\circ\pi_1$ | discharged: $d_{\text{alg}}$ is the Euclidean distance in the latent chart (Theorem {prf:ref}`thm-latent-fractal-gas-main`); when no representation change is performed we may take $T=I$. |
+| The Darwinian Ratchet (WFR Transport + Reaction) ({prf:ref}`mt:darwinian-ratchet`) | Permits: $C_\mu$ (N3), $D_E$ (N1). | discharged: the step operator is explicitly split as transport (kinetic/mutation) + reaction (pairing-driven cloning), i.e. the transport+reaction decomposition is an identity of the algorithm; the continuum WFR PDE reading is an additional conditional interpretation. |
+| Topological Regularization (Cheeger Bound, Conditional) ({prf:ref}`thm:cheeger-bound`) | Permits: $C_\mu$ (N3), $D_E$ (N1), $\mathrm{LS}_\sigma$ (N7), $\mathrm{Cap}_H$ (N6), $\mathrm{TB}_\pi$ (N8). | discharged: the uniform minorization/Doeblin hypothesis holds on the alive core with explicit constant from Lemma {prf:ref}`lem-latent-fractal-gas-pairing-doeblin`, hence the Cheeger bound is invoked in full power. |
+| Induced Local Geometry (Quadratic Form from Landscape + Graph Energy) ({prf:ref}`thm:induced-riemannian-structure`) | Permits: $D_E$ (N1), $\mathrm{LS}_\sigma$ (N7), $\mathrm{Rep}_K$ (N11). | discharged/instantiated: the anisotropic diffusion tensor $\Sigma_{\mathrm{reg}}(z) = (\nabla^2 V_{\mathrm{fit}}(z) + \epsilon_{\Sigma} I)^{-1/2}$ is part of the kinetic update (Theorem {prf:ref}`thm-latent-fractal-gas-main`), making the Hessian-based quadratic form a concrete algorithmic component on the alive core. |
 | Causal Horizon Lock (Causal Information Bound + Stasis) ({prf:ref}`thm:causal-horizon-lock`) | Permits: $C_\mu$ (N3), $D_E$ (N1), $\mathrm{SC}_\lambda$ (N4), $\mathrm{Cap}_H$ (N6), $\mathrm{TB}_\pi$ (N8). | blocked: $K_{\mathrm{SC}_\lambda}^-$ (BarrierTypeII). |
 | Archive Invariance (Gromov–Hausdorff Stability, Conditional) ({prf:ref}`thm:archive-invariance`) | Permits: $C_\mu$ (N3), $\mathrm{LS}_\sigma$ (N7), $\mathrm{Cap}_H$ (N6). | conditional: permits satisfied; additional hypotheses not verified in this instantiation. |
 | Fractal Representation ({prf:ref}`mt:fractal-representation`) | Permits: $C_\mu$, $D_E$, $\mathrm{SC}_\lambda$, $\mathrm{Cap}_H$, $\mathrm{Rep}_K$, $\mathrm{TB}_\pi$. | blocked: $K_{\mathrm{SC}_\lambda}^-$ (BarrierTypeII). |
-| Fitness Convergence via Gamma-Convergence ({prf:ref}`thm:fitness-convergence`) | Permits: $C_\mu$ (N3), $D_E$ (N1). | conditional: permits satisfied; additional hypotheses not verified in this instantiation. |
+| Fitness Convergence via Gamma-Convergence ({prf:ref}`thm:fitness-convergence`) | Permits: $C_\mu$ (N3), $D_E$ (N1). | superseded: the classical $\Gamma$-convergence/equicoercivity hypotheses are replaced by the factory path “uniform-in-$N$ concentration (LSI) + mean-field convergence” once $\kappa_{\mathrm{total}}>0$ is certified (Part III-A/III-B). |
 | Gromov-Hausdorff Convergence ({prf:ref}`thm:gromov-hausdorff-convergence`) | Permits: $C_\mu$ (N3), $\mathrm{Rep}_K$ (N11). | conditional: permits satisfied; additional hypotheses not verified in this instantiation. |
-| Convergence of Minimizing Movements ({prf:ref}`mt:convergence-minimizing-movements`) | Permits: $D_E$ (N1), $\mathrm{LS}_\sigma$ (N7). | conditional: dynamics is not a pure minimizing-movement (cloning + OU noise). |
-| Symplectic Shadowing ({prf:ref}`mt:symplectic-shadowing`) | Permits: $\mathrm{GC}_\nabla$ (N12), $\mathrm{Rep}_K$ (N11). | conditional: BAOAB includes friction/noise; symplectic shadowing applies only to the Hamiltonian substep. |
-| Homological Reconstruction ({prf:ref}`mt:homological-reconstruction`) | Permits: $\mathrm{TB}_\pi$ (N8), $\mathrm{Rep}_K$ (N11). | conditional: permits satisfied; additional hypotheses not verified in this instantiation. |
+| Convergence of Minimizing Movements ({prf:ref}`mt:convergence-minimizing-movements`) | Permits: $D_E$ (N1), $\mathrm{LS}_\sigma$ (N7). | superseded: this instantiation is stochastic (Langevin + cloning), so the deterministic minimizing-movement hypotheses are not required; the factory supplies the stochastic convergence rate proxy $\kappa_{\mathrm{QSD}}\approx \kappa_{\mathrm{total}}\tau$ (Part III-A/III-C). |
+| Symplectic Shadowing ({prf:ref}`mt:symplectic-shadowing`) | Permits: $\mathrm{GC}_\nabla$ (N12), $\mathrm{Rep}_K$ (N11). | discharged (distributional/conformal shadowing): the Boris-BAOAB splitting preserves the Langevin invariant measure up to $O(h^2)$ shadow bias (backward error analysis); the OU step is exact and the drift steps are conformally symplectic for the damped flow. |
+| Homological Reconstruction ({prf:ref}`mt:homological-reconstruction`) | Permits: $\mathrm{TB}_\pi$ (N8), $\mathrm{Rep}_K$ (N11). | conditional (finite-$N$ reach/density): reach $\tau$ and sampling density are not certified a priori, but the sampling density is computable from the QSD and the factory provides an explicit mean-field error bound $\mathrm{Err}_{\mathrm{MF}}(N,T)\sim e^{-\kappa_W T}/\sqrt{N}$ to backsolve the required $N$ (Part III-B/III-C). |
 | Symmetry Completion ({prf:ref}`mt:symmetry-completion`) | Permits: $\mathrm{GC}_\nabla$ (N12), $\mathrm{Rep}_K$ (N11). | heuristic: interpretive; not used for certificates. |
 | Gauge-Geometry Correspondence ({prf:ref}`mt:gauge-geometry-correspondence`) | Permits: $\mathrm{GC}_\nabla$ (N12), $\mathrm{Rep}_K$ (N11). | heuristic: interpretive; not used for certificates. |
-| Emergent Continuum ({prf:ref}`mt:emergent-continuum`) | Permits: $C_\mu$ (N3), $\mathrm{Cap}_H$ (N6), $\mathrm{LS}_\sigma$ (N7), $\mathrm{Rep}_K$ (N11). | conditional: permits satisfied; additional hypotheses not verified in this instantiation. |
+| Emergent Continuum ({prf:ref}`mt:emergent-continuum`) | Permits: $C_\mu$ (N3), $\mathrm{Cap}_H$ (N6), $\mathrm{LS}_\sigma$ (N7), $\mathrm{Rep}_K$ (N11). | superseded/trivialized: the Expansion Adjunction induces the continuum object canonically from thin data, and uniform LSI/mixing from the factory (via $\kappa_{\mathrm{total}}>0$) prevents spectral collapse across $N$, avoiding a separate Mosco-limit proof. |
 | Dimension Selection ({prf:ref}`mt:dimension-selection`) | Permits: $\mathrm{SC}_\lambda$ (N4), $\mathrm{Cap}_H$ (N6). | blocked: $K_{\mathrm{SC}_\lambda}^-$ (BarrierTypeII). |
 | Discrete Curvature-Stiffness Transfer ({prf:ref}`mt:curvature-stiffness-transfer`) | Permits: $\mathrm{LS}_\sigma$ (N7), $\mathrm{Cap}_H$ (N6). | heuristic: interpretive; not used for certificates. |
 | Dobrushin-Shlosman Interference Barrier ({prf:ref}`mt:dobrushin-shlosman`) | Permits: $\mathrm{LS}_\sigma$ (N7), $\mathrm{TB}_\rho$ (N10). | conditional: permits satisfied; additional hypotheses not verified in this instantiation. |
@@ -1211,8 +1247,8 @@ Status codes:
 | Virial-Cosmological Transition ({prf:ref}`mt:virial-cosmological`) | Permits: $D_E$ (N1), $\mathrm{LS}_\sigma$ (N7), $\mathrm{Cap}_H$ (N6). | heuristic: interpretive; not used for certificates. |
 | Flow with Surgery ({prf:ref}`mt:flow-with-surgery`) | Permits: $D_E$ (N1), $\mathrm{Cap}_H$ (N6), $\mathrm{TB}_\pi$ (N8). | heuristic: interpretive; not used for certificates. |
 | Agency-Geometry Unification ({prf:ref}`mt:agency-geometry`) | Permits: $\mathrm{GC}_T$ (N16), $\mathrm{Rep}_K$ (N11). | heuristic: interpretive; not used for certificates. |
-| The Spectral Generator ({prf:ref}`mt:spectral-generator`) | Permits: $\mathrm{LS}_\sigma$ (N7), $\mathrm{Cap}_H$ (N6). Assumptions: The dissipation potential $\mathfrak{D}$ is $C^2$ on the region of interest.; There exists $\kappa > 0$ such that $\nabla^2 \mathfrak{D} \succeq \kappa I$ uniformly. | conditional: $\mathfrak{D}$ is quadratic in $v$; $C^2$ and uniform convexity need $G$ in $C^2$ and $\lambda_{\min}(G)>0$ on $B$ (not certified). |
-| LSI for Particle Systems ({prf:ref}`mt:lsi-particle-systems`) | Permits: $\mathrm{LS}_\sigma$ (N7), $C_\mu$ (N3). Assumptions: The confining potential $\Phi_{\text{conf}}(x_i)$ is strictly convex: $\nabla^2 \Phi_{\text{conf}} \succeq c_0 I$ for some $c_0 > 0$.; OR: The pairwise interactions are repulsive: $\nabla^2 \Phi_{\text{pair}}(|x_i - x_j|) \succeq 0$. | conditional: no explicit strictly convex confining potential or repulsive pairwise interactions specified. |
+| The Spectral Generator ({prf:ref}`mt:spectral-generator`) | Permits: $\mathrm{LS}_\sigma$ (N7), $\mathrm{Cap}_H$ (N6). Assumptions: The dissipation potential $\mathfrak{D}$ is $C^2$ on the region of interest.; There exists $\kappa > 0$ such that $\nabla^2 \mathfrak{D} \succeq \kappa I$ uniformly. | discharged: $\mathfrak{D}(z,v)=\frac{\gamma}{N}\sum_i \|v_i\|_G^2$ is $C^2$ under A2, and uniform ellipticity $g_{\min} I \preceq G$ gives $\nabla_v^2 \mathfrak{D} \succeq \frac{2\gamma g_{\min}}{N} I$ on the alive core. |
+| LSI for Particle Systems ({prf:ref}`mt:lsi-particle-systems`) | Permits: $\mathrm{LS}_\sigma$ (N7), $C_\mu$ (N3). Assumptions: The confining potential $\Phi_{\text{conf}}(x_i)$ is strictly convex: $\nabla^2 \Phi_{\text{conf}} \succeq c_0 I$ for some $c_0 > 0$.; OR: The pairwise interactions are repulsive: $\nabla^2 \Phi_{\text{pair}}(|x_i - x_j|) \succeq 0$. | superseded: global convexity/repulsion is not required because confinement/mixing is certified by the factory contraction rate $\kappa_{\mathrm{total}}$ combining OU friction ($\kappa_v$), selection pressure ($\lambda_{\mathrm{alg}}^{\mathrm{eff}}$), and pairing geometry ($\kappa_W$); when $\kappa_{\mathrm{total}}>0$ this yields exponential ergodicity/LSI without assuming $\nabla^2\Phi\succeq c_0I$. |
 | Fisher-Hessian Isomorphism (Thermodynamics) ({prf:ref}`mt:fisher-hessian-thermo`) | Permits: $D_E$ (N1), $\mathrm{LS}_\sigma$ (N7). | heuristic: interpretive; not used for certificates. |
 | Scalar Curvature Barrier ({prf:ref}`mt:scalar-curvature-barrier`) | Permits: $\mathrm{LS}_\sigma$ (N7), $\mathrm{Cap}_H$ (N6). | heuristic: interpretive; not used for certificates. |
 | GTD Equivalence Principle ({prf:ref}`mt:gtd-equivalence`) | Permits: $D_E$ (N1), $\mathrm{Rep}_K$ (N11). | heuristic: interpretive; not used for certificates. |
@@ -1227,7 +1263,7 @@ Status codes:
 
 1. Hypostructure Framework v1.0 (`docs/source/2_hypostructure/hypopermits_jb.md`)
 2. Fragile-Agent dynamics (`docs/source/1_agent/reference.md`)
-3. Companion selection (spatial pairing definition in `docs/source/2_hypostructure/10_metalearning/03_cloning.md`; implementation-level approximations, if any, are out of scope)
+3. Companion selection (spatial pairing definition in `docs/source/3_fractal_gas/02_fractal_gas.md`; implementation-level approximations, if any, are out of scope)
 4. Fitness operator (`src/fragile/fractalai/core/fitness.py`)
 5. Cloning operator (`src/fragile/fractalai/core/cloning.py`)
 6. Latent Fractal Gas step operator (this document)
