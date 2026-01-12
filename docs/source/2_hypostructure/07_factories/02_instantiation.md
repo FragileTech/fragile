@@ -2,7 +2,7 @@
 title: "Instantiation Protocol"
 ---
 
-# Part XIII: Instantiation
+# Instantiation
 
 :::{div} feynman-prose
 Now we come to the part where theory meets practice. You have all these beautiful metatheorems from Part XII saying "there exist factories that build verifiers" and "there exist barriers with correct properties." Wonderful. But the working mathematician or engineer asks: "Fine, but how do I actually use this thing?"
@@ -113,7 +113,7 @@ The dependency graph is acyclic by construction: factories are numbered in topol
 - If barrier $\mathcal{B}_j^T$ blocks, then the obstruction is genuine (TM-2 soundness)
 - Combined: if the Sieve reaches VICTORY, all 17 gates passed with valid certificates
 
-*Step 4 (Contract Satisfaction).* The composed implementation satisfies all contracts from the {ref}`Gate Catalog <sec-node-specs>`:
+*Step 4 (Contract Satisfaction).* The composed implementation satisfies all contracts from the {ref}`Gate Catalog <sec-gate-node-specs>`:
 - Each gate contract specifies: Pre-certificates required, Post-certificates produced, Routing rules
 - Factory composition ensures: $\text{Post}(V_i^T) \subseteq \text{Pre}(V_{i+1}^T)$ for the graph edges
 - Transport lemmas (TM-4) ensure certificate validity is preserved across equivalence moves

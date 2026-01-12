@@ -50,6 +50,7 @@ No. We use the **Physics-Informed Neural Network (PINN)** paradigm: the neural n
 
    $$
    \mathcal{L}_{\text{critic}} = \|\text{TD-Error}\|^2 + \lambda_{\text{PDE}} \| -\Delta_G V + \kappa^2 V - \rho_r \|^2.
+
    $$
    The network learns to satisfy the PDE via standard gradient descent—an optimization problem, not an integration problem. See Theorem {prf:ref}`thm-the-hjb-helmholtz-correspondence` and {ref}`Section 24.2 <sec-the-bulk-potential-screened-poisson-equation>`.
 
@@ -164,6 +165,7 @@ The split between texture and structure is **learned**, not manual.
 
    $$
    \min I(X_t; Z_{\text{tex}}) \quad \text{s.t.} \quad I(Z_n, K; X_{t+1}) \approx I(X_t; X_{t+1}).
+
    $$
    If "noise" predicts the future, the encoder **must** promote it to $z_n$ or $K$ to satisfy the prediction objective. See {ref}`Section 2.2b <sec-the-shutter-as-a-vq-vae>` and {ref}`Section 2.8 <sec-conditional-independence-and-sufficiency>`.
 
@@ -714,6 +716,7 @@ The coefficient is geometry-dependent; the *structure* of the bound is universal
 
    $$
    \nu_D = \frac{(D-1)\pi^{(D-2)/2}}{4\,\Gamma(D/2)}.
+
    $$
    Explicit values: $\nu_2 = 1/4$, $\nu_3 = 1$, $\nu_4 = 3\pi/4 \approx 2.36$. The coefficient peaks at $D \approx 9$ and then decreases. For typical latent dimensions ($D \le 20$), $\nu_D > 1/4$; for very high dimensions ($D \gtrsim 22$), $\nu_D < 1/4$.
 

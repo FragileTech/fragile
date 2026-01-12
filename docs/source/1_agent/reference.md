@@ -15,6 +15,7 @@ The agent is a controller with internal state
 
 $$
 Z_t := (K_t, Z_{n,t}, Z_{\mathrm{tex},t}) \in \mathcal{Z}=\mathcal{K}\times\mathcal{Z}_n\times\mathcal{Z}_{\mathrm{tex}},
+
 $$
 and internal components (Encoder/Shutter, World Model, Critic, Policy). Its evolution is driven only by the observable interaction stream at the interface (observations/feedback) and by its own outgoing control signals (actions).
 
@@ -24,6 +25,7 @@ The boundary variables at time $t$ are the interface tuple
 
 $$
 B_t := (x_t,\ r_t,\ d_t,\ \iota_t,\ a_t),
+
 $$
 where:
 - $x_t\in\mathcal{X}$ is the observation (input sample),
@@ -38,11 +40,13 @@ The "environment" is the conditional law of future interface signals given past 
 
 $$
 P_{\partial}(x_{t+1}, r_t, d_t, \iota_{t+1}\mid x_{\le t}, a_{\le t}).
+
 $$
 In the Markov case this reduces to the familiar RL kernel
 
 $$
 P_{\partial}(x_{t+1}, r_t, d_t, \iota_{t+1}\mid x_t, a_t),
+
 $$
 but the **interpretation changes**: $P_{\partial}$ is not "a dataset generator"; it is the **input-output law** that the controller must cope with under partial observability and model mismatch.
 
@@ -55,6 +59,7 @@ Let:
 
   $$
   G_{\text{obj}} := \{(a,b): a>0,\ r\mapsto ar+b\}.
+
   $$
   (If representing value as a unit-norm phase variable, one may instead use $U(1)$; {ref}`Section 3.3 <sec-defect-functionals-implementing-regulation>`.C treats the real-valued case via projective heads.)
 - $G_{\text{spatial}}$ be an **observation gauge** acting on raw observations $x$ (e.g., pose/translation/rotation; choose $SE(3)$, $SE(2)$, $\mathrm{Sim}(2)$, or a task-specific subgroup depending on sensors).
@@ -73,6 +78,7 @@ G_{\text{spatial}}
 S_{|\mathcal{K}|}
 \times
 \mathrm{Symp}(2n,\mathbb{R}).
+
 $$
 **Internal vs. external symmetries.**
 - **Internal (objective) gauge:** transformations of the scalar feedback scale/offset (and any potentials) that should not qualitatively change the policy update direction.
@@ -83,6 +89,7 @@ $$
 
   $$
   K(x)\approx K(g\cdot x)\quad (g\in G_{\text{spatial}}),
+
   $$
   while $z_n$ carries structured nuisance parameters (pose/basis/disturbance coordinates) and $z_{\mathrm{tex}}$ carries reconstruction-only texture ({ref}`Section 2.2b <sec-the-shutter-as-a-vq-vae>`, {ref}`Section 3.3 <sec-defect-functionals-implementing-regulation>`.A).
 - **World model $S$ and policy $\pi$:** be covariant to symbol permutations $S_{|\mathcal{K}|}$ by treating $K$ only through its embedding $e_K$ (not the integer label) and by using permutation-invariant diagnostics.
@@ -96,6 +103,7 @@ The **state-space sensitivity metric** $G_{ij}$ at a point $z$ in the latent spa
 
 $$
 G_{ij} = \frac{\partial^2 V}{\partial z_i \partial z_j} = \text{Hess}(V)
+
 $$
 
 Units: $[G_{ij}]=\mathrm{nat}\,[z]^{-2}$ if $z$ is measured in units $[z]$.
@@ -106,6 +114,7 @@ The complete state-space sensitivity metric on $\mathcal{Z}$ is defined as:
 
 $$
 G_{ij}(z) = \underbrace{\frac{\partial^2 V(z)}{\partial z_i \partial z_j}}_{\text{Hessian (value curvature)}} + \lambda \underbrace{\mathbb{E}_{a \sim \pi} \left[ \frac{\partial \log \pi(a|z)}{\partial z_i} \frac{\partial \log \pi(a|z)}{\partial z_j} \right]}_{\text{Fisher (control sensitivity)}}
+
 $$
 
 Units: the Fisher term has units $[z]^{-2}$; therefore $\lambda$ carries the same units as $V$ (here $\mathrm{nat}$) so both addends match.
@@ -116,11 +125,13 @@ Units: the Fisher term has units $[z]^{-2}$; therefore $\lambda$ carries the sam
 
 $$
 K_{t+1}\ \perp\!\!\!\perp\ (Z_{n,t}, Z_{\mathrm{tex},t})\ \big|\ (K_t,A_t),
+
 $$
 equivalently the vanishing of a conditional mutual information:
 
 $$
 I(K_{t+1};Z_{n,t},Z_{\mathrm{tex},t}\mid K_t,A_t)=0.
+
 $$
 
 ({prf:ref}`def-closure-defect`) *definition* — **Closure Defect**
@@ -130,6 +141,7 @@ $$
 $$
 P_\Pi(\cdot\mid z,a)=\bar{P}(\cdot\mid \Pi(z),a)
 \quad\text{for }P\text{-a.e. }z.
+
 $$
 A canonical defect functional is the expected divergence
 
@@ -137,6 +149,7 @@ $$
 \delta_{\text{CE}}
 :=
 \mathbb{E}_{z,a}\Big[D_{\mathrm{KL}}\big(P_\Pi(\cdot\mid z,a)\ \Vert\ \bar{P}(\cdot\mid \Pi(z),a)\big)\Big].
+
 $$
 
 ({prf:ref}`def-local-conditioning-scale`) *definition* — **Local Conditioning Scale**
@@ -145,6 +158,7 @@ Let $(\mathcal{Z}, G)$ be the Riemannian latent manifold. Define a local scale p
 
 $$
 \Theta(z) := \frac{1}{d} \operatorname{Tr}\left( G^{-1}(z) \right)
+
 $$
 where $d = \dim(\mathcal{Z})$. The corresponding **precision / coupling coefficient** is $\beta(z) = [\Theta(z)]^{-1}$.
 Units: if $z$ carries units $[z]$, then $[G]=\mathrm{nat}\,[z]^{-2}$ implies $[\Theta]=[z]^2/\mathrm{nat}$ and $[\beta]=\mathrm{nat}/[z]^2$ (dimensionless when $z$ is normalized).
@@ -157,6 +171,7 @@ $$
 \mathcal{F}[p,\pi]
 :=
 \int_{\mathcal{Z}} p(z)\Big(V(z) - \tau\,H(\pi(\cdot\mid z))\Big)\,d\mu_G,
+
 $$
 where $H(\pi(\cdot\mid z)) := -\mathbb{E}_{a\sim \pi(\cdot\mid z)}[\log \pi(a\mid z)]$ is the per-state policy entropy (in nats). Because $V$ and $H$ are measured in nats ({ref}`Section 1.2 <sec-units-and-dimensional-conventions>`), $\tau$ is dimensionless.
 
@@ -170,6 +185,7 @@ Let $v\in\Gamma(T\mathcal{Z})$ be a vector field describing the instantaneous tr
 
 $$
 v^i(z) := -G^{ij}(z)\frac{\partial V}{\partial z^j},
+
 $$
 so transport points in the direction of decreasing $V$ (Riemannian steepest descent). Units: if computation time is measured in solver units, then $[v]=[z]/\mathrm{solver\ time}$ (map to $\mathrm{step}$ using the $t \leftrightarrow s$ budget in {ref}`Section 1.3 <sec-the-chronology-temporal-distinctions>`).
 
@@ -179,6 +195,7 @@ In general, belief evolution may include additional update effects (e.g. approxi
 
 $$
 \frac{\partial p}{\partial s} + \operatorname{div}_G(p v) = \sigma
+
 $$
 Interpreting $\sigma$:
 1. If $\sigma>0$ on a region, belief mass is being created there beyond pure transport; this indicates an **ungrounded internal update** relative to the transport model.
@@ -190,6 +207,7 @@ Interpreting $\sigma$:
    =
    -\oint_{\partial U}\langle p v,n\rangle\,dA_G
    +\int_U \sigma\,d\mu_G.
+
    $$
    For {math}`U=\mathcal{Z}` this relates net mass change to boundary flux and the integrated residual.
 
@@ -201,6 +219,7 @@ Let $j \in \Omega^{d-1}(\partial \mathcal{Z})$ be the **observation inflow form*
 
 $$
 w_i(x) := \frac{\exp\left(\frac{\langle q_i, k(x) \rangle}{\sqrt{d}}\right)}{\sum_{j=1}^{N_c} \exp\left(\frac{\langle q_j, k(x) \rangle}{\sqrt{d}}\right)}
+
 $$
 This mechanism is **permutation invariant**: shuffling the memory order of the queries $\{q_i\}$ merely shuffles the output indices without changing the underlying topology or geometry.
 
@@ -221,6 +240,7 @@ We model the latent space $\mathcal{Z}$ as a disjoint union of fibres over the d
 
 $$
 \mathcal{Z} = \bigsqcup_{k \in \mathcal{K}} \mathcal{Z}_n^{(k)}, \qquad \mathcal{Z}_n^{(k)} \cong \mathbb{R}^{d_n}.
+
 $$
 For each macro-symbol $k \in \mathcal{K}$, the fibre $\mathcal{Z}_n^{(k)}$ represents the **structured nuisance** space (local pose/basis coordinates).
 
@@ -232,6 +252,7 @@ Working in the upper half-space model where depth $\rho \in [0, \infty)$ corresp
 
 $$
 ds^2 = d\rho^2 + d\sigma_{\mathcal{K}}^2 + e^{-2\rho} \|dz_n\|^2
+
 $$
 where:
 
@@ -251,16 +272,19 @@ At layer $\ell$, the input signal $x^{(\ell)}$ is decomposed into a structural c
 
 $$
 (K^{(\ell)}, z_n^{(\ell)}) = \mathcal{E}^{(\ell)}(x^{(\ell)})
+
 $$
 2. **Synthesis (Effective Reconstruction):** The block generates the signal explained by this structure:
 
 $$
 \hat{x}^{(\ell)} = \mathcal{D}^{(\ell)}(K^{(\ell)}, z_n^{(\ell)})
+
 $$
 3. **Residual Computation (Texture Extraction):** The unexplained signal is isolated:
 
 $$
 z_{\mathrm{tex}}^{(\ell)} = x^{(\ell)} - \hat{x}^{(\ell)}
+
 $$
 
 ({prf:ref}`def-the-rescaling-operator-renormalization`) *definition* — **The Rescaling Operator / Renormalization**
@@ -269,6 +293,7 @@ To prevent signal decay (vanishing activations) without using skip connections, 
 
 $$
 x^{(\ell+1)} = \frac{z_{\mathrm{tex}}^{(\ell)}}{\sigma^{(\ell)} + \epsilon}, \qquad \sigma^{(\ell)} = \sqrt{\mathrm{Var}(z_{\mathrm{tex}}^{(\ell)}) + \epsilon}
+
 $$
 The scalar $\sigma^{(\ell)}$ is stored as a state variable (the **scale factor**) for the decoding pass.
 
@@ -278,6 +303,7 @@ The original signal is reconstructed by summing the contributions of all scales,
 
 $$
 \hat{x} = \sum_{\ell=0}^{L-1} \Pi^{(\ell)} \cdot \hat{x}^{(\ell)} + \Pi^{(L)} \cdot x^{(L)}
+
 $$
 
 ({prf:ref}`def-factorized-jump-operator`) *definition* — **Factorized Jump Operator**
@@ -291,6 +317,7 @@ The transition $L_{i \to j}$ is then:
 
 $$
 L_{i \to j}(z) = A_j(B_i z + c_i) + d_j
+
 $$
 
 ({prf:ref}`def-overlap-consistency-loss`) *definition* — **Overlap Consistency Loss**
@@ -299,11 +326,13 @@ For a pair of charts $(i, j)$ with non-empty overlap, define the pairwise consis
 
 $$
 \mathcal{L}_{\text{jump}}^{(i,j)} = \mathbb{E}_{x : w_i(x) > \tau, \, w_j(x) > \tau} \left[ \left\| z_n^{(j)} - L_{i \to j}(z_n^{(i)}) \right\|^2 \right]
+
 $$
 where $z_n^{(i)}$ and $z_n^{(j)}$ are the nuisance coordinates computed independently by chart $i$ and chart $j$'s encoders, and $w_i(x), w_j(x)$ are the soft router weights. The total overlap consistency loss sums over all overlapping pairs:
 
 $$
 \mathcal{L}_{\text{jump}} = \sum_{i < j} \mathcal{L}_{\text{jump}}^{(i,j)}
+
 $$
 **Intuition:** If the encoder correctly identifies that $x$ belongs to both charts, then applying the jump operator to chart $i$'s encoding should yield chart $j$'s encoding. Any discrepancy indicates that the transition functions are inconsistent with the actual data manifold.
 
@@ -313,6 +342,7 @@ $$
 
    $$
    \mathbf{1}[x \in U_i \cap U_j] \approx \mathbf{1}[w_i(x) > \tau] \cdot \mathbf{1}[w_j(x) > \tau]
+
    $$
    With soft routers ({ref}`Section 7.8 <sec-tier-the-attentive-atlas>`), we use the product $w_i(x) \cdot w_j(x)$ as a soft indicator.
 
@@ -324,6 +354,7 @@ $$
 
    $$
    \mathcal{L}_{\text{inv}} = \mathbb{E}_{x, i, j} \left[ \left\| z_n^{(i)} - L_{j \to i}(L_{i \to j}(z_n^{(i)})) \right\|^2 \right]
+
    $$
 
 ({prf:ref}`def-three-channel-latent`) *definition* — **The Three-Channel Latent Decomposition**
@@ -332,6 +363,7 @@ The disentangled agent's internal state at time $t$ decomposes as:
 
 $$
 Z_t = (K_t, z_{n,t}, z_{\mathrm{tex},t})
+
 $$
 
 where each component serves a distinct representational role:
@@ -348,18 +380,21 @@ The macro symbol must satisfy the **causal enclosure** property:
 
 $$
 P(K_{t+1}\mid K_t,a_t)\ \text{is sharply concentrated (ideally deterministic)}
+
 $$
 
 and the **texture independence** property:
 
 $$
 I(K_{t+1};Z_{\mathrm{tex},t}\mid K_t,a_t)=0.
+
 $$
 
 Optionally, in the strongest form, nuisance independence also holds:
 
 $$
 I(K_{t+1};Z_{n,t}\mid K_t,a_t)=0.
+
 $$
 
 That is: nuisance should not be needed to predict the next macro symbol once action is accounted for.
@@ -377,6 +412,7 @@ $$
 \;+\;\lambda_{\text{slowness}}\mathcal{L}_{\text{slowness}}
 \;+\;\lambda_{\text{nuis}}\mathcal{L}_{\text{nuis-KL}}
 \;+\;\lambda_{\text{tex}}\mathcal{L}_{\text{tex-KL}}
+
 $$
 
 where:
@@ -395,6 +431,7 @@ $$
 \text{Closure Ratio}
 =
 \frac{\mathbb{E}\big[-\log p_\psi(K_{t+1}\mid K_t,a_t)\big]}{\mathbb{E}\big[-\log p_{\text{base}}(K_{t+1})\big]}.
+
 $$
 
 With $p_{\text{base}}$ chosen as the marginal symbol model, the numerator estimates $H(K_{t+1}\mid K_t,a_t)$ and the denominator estimates $H(K_{t+1})$, so the *gap* is a direct estimate of predictive information $I(K_{t+1};K_t,a_t)$.
@@ -407,6 +444,7 @@ $$
 Z_t = (K_t^{(1)}, K_t^{(2)}, \ldots, K_t^{(L)}, z_{\mu,t}),
 \qquad
 z_{\text{macro}}^{(i)} := e^{(i)}_{K_t^{(i)}}\in\mathbb{R}^{d_i}.
+
 $$
 
 Where $K^{(1)}$ is the slowest (most abstract) level and $K^{(L)}$ is the fastest (most detailed) macro symbol. The micro residual $z_{\mu,t}$ handles reconstruction detail below the finest macro scale.
@@ -423,6 +461,7 @@ V(Z_t)
 + \beta_n D_{\mathrm{KL}}\!\left(q(z_{n,t}\mid x_t)\ \Vert\ p(z_n)\right)
 + \beta_{\mathrm{tex}} D_{\mathrm{KL}}\!\left(q(z_{\mathrm{tex},t}\mid x_t)\ \Vert\ p(z_{\mathrm{tex}})\right)
 + T_c D_{\mathrm{KL}}\!\left(\pi(\cdot\mid K_t)\ \Vert\ \pi_0(\cdot\mid K_t)\right),
+
 $$
 
 where {math}`Z_t=(K_t,z_{n,t},z_{\mathrm{tex},t})` and all terms are measured in nats.
@@ -433,6 +472,7 @@ Fix a horizon $H\in\mathbb{N}$ and a (possibly stochastic) policy $\pi(a\mid k)$
 
 $$
 \xi := (K_{t+1},\dots,K_{t+H}) \in \mathcal{K}^H
+
 $$
 conditioned on $K_t=k$ is
 
@@ -441,6 +481,7 @@ P_\pi(\xi\mid k)
 :=
 \sum_{a_{t:t+H-1}}
 \prod_{h=0}^{H-1}\pi(a_{t+h}\mid K_{t+h})\ \bar{P}(K_{t+h+1}\mid K_{t+h},a_{t+h}).
+
 $$
 (For continuous $\mathcal{A}$, replace the sum by an integral with respect to the action reference measure.)
 
@@ -451,6 +492,7 @@ The causal path entropy at $(k,H)$ under $\pi$ is the Shannon entropy of the pat
 $$
 S_c(k,H;\pi) := H\!\left(P_\pi(\cdot\mid k)\right)
 = -\sum_{\xi\in\mathcal{K}^H} P_\pi(\xi\mid k)\log P_\pi(\xi\mid k).
+
 $$
 This quantity is well-typed precisely because the macro register is discrete: there is no differential-entropy ambiguity.
 
@@ -460,6 +502,7 @@ Let $z_{\text{macro}}=e_k\in\mathbb{R}^{d_m}$ denote the code embedding of $k$ (
 
 $$
 \mathbf{g}_{\text{expl}}(e_k) := T_c\ \nabla_G S_c(k,H;\pi),
+
 $$
 where $T_c>0$ is the cognitive temperature ({prf:ref}`def-cognitive-temperature`). Operationally, gradients are taken through the continuous pre-quantization coordinates (straight-through VQ estimator); in the strictly symbolic limit, the gradient becomes a discrete preference ordering induced by $S_c(k,H;\pi)$.
 
@@ -473,6 +516,7 @@ $$
 J_{T_c}(\pi)
 :=
 \mathbb{E}_\pi\left[\sum_{t\ge 0}\gamma^t\left(\mathcal{R}(K_t,A_t) + T_c\,\mathcal{H}(\pi(\cdot\mid K_t))\right)\right],
+
 $$
 where $\mathcal{H}$ is Shannon entropy. This is the standard "utility + entropy regularization" objective.
 
@@ -487,6 +531,7 @@ For a macrostate $k\in\mathcal{K}$ and horizon $H$, define the future macro path
 
 $$
 \Gamma_H(k) := \mathcal{K}^H.
+
 $$
 
 ({prf:ref}`def-path-probability`) *definition* — **Path Probability**
@@ -503,6 +548,7 @@ On a macro chart with metric $G$ ({ref}`Section 2.5 <sec-second-order-sensitivit
 
 $$
 \mathbf{g}_{\text{expl}}(e_k) := T_c\,\nabla_G S_c(k,H;\pi).
+
 $$
 
 ({prf:ref}`def-belief-operator`) *definition* — **Belief operator**
@@ -519,6 +565,7 @@ $$
 \underbrace{-i[H,\varrho]}_{\text{conservative drift}}
 \;+\;
 \underbrace{\sum_{j} \gamma_j\left(L_j\varrho L_j^\dagger-\frac12\{L_j^\dagger L_j,\varrho\}\right)}_{\text{dissipative update}},
+
 $$
 where {math}`H=H^\dagger` is Hermitian, {math}`\gamma_j\ge 0` are rates, and {math}`\{L_j\}` are (learned) operators.
 
@@ -536,6 +583,7 @@ Let $G_t:=I(X_t;K_t)$ be the symbolic mutual information injected through the bo
 
 $$
 \lambda_{\text{in}} := \mathbb{E}[G_t].
+
 $$
 Units: $[\lambda_{\text{in}}]=\mathrm{nat/step}$.
 
@@ -545,6 +593,7 @@ Let $S_t:=H(K_t)$ be the macro entropy. The *mixing rate* is the expected entrop
 
 $$
 \lambda_{\text{mix}} := \mathbb{E}[(S_{t+1}-S_t)_+].
+
 $$
 Units: $[\lambda_{\text{mix}}]=\mathrm{nat/step}$.
 
@@ -554,6 +603,7 @@ Consider the boundary stream $(X_t)_{t\ge 0}$ and the induced internal state pro
 
 $$
 I_{\text{bulk}} \;\le\; C_{\partial},
+
 $$
 where $C_{\partial}$ is the effective information capacity of the boundary channel and $I_{\text{bulk}}$ is the amount of information the agent can stably maintain in $\mathcal{Z}$ without violating Causal Enclosure (no internal source term $\sigma$; Definition {prf:ref}`def-source-residual`).
 Units: $[I_{\text{bulk}}]=[C_{\partial}]=\mathrm{nat}$.
@@ -564,6 +614,7 @@ Let $\rho(z,s)$ denote the probability density of the agent's belief state at po
 
 $$
 \rho_I(z,s) := -\rho(z,s) \log \rho(z,s) + \frac{1}{2}\rho(z,s) \log\det G(z),
+
 $$
 with units of nats per unit Riemannian volume $d\mu_G=\sqrt{|G|}\,dz^n$ ($n=\dim\mathcal{Z}$). The first term is the local entropy contribution (Shannon density); the second term is the geometric correction accounting for the metric-induced volume distortion.
 
@@ -575,6 +626,7 @@ Define the bulk information volume over a region $\Omega\subseteq\mathcal{Z}$ by
 
 $$
 I_{\text{bulk}}(\Omega) := \int_{\Omega} \rho_I(z,s)\, d\mu_G.
+
 $$
 When $\Omega=\mathcal{Z}$ we write $I_{\text{bulk}}:=I_{\text{bulk}}(\mathcal{Z})$. This is conceptually distinct from the probability-mass balance in {ref}`Section 2.11 <sec-variance-value-duality-and-information-conservation>`; here the integral measures grounded structure in nats.
 
@@ -586,6 +638,7 @@ $$
 C_{\partial}(\partial\mathcal{Z})
 :=
 \frac{1}{\eta_\ell}\oint_{\partial\mathcal{Z}} dA_G,
+
 $$
 where $\eta_\ell$ is the effective boundary area-per-nat at resolution $\ell$ (a resolution-dependent constant set by the interface).
 Units: $[\eta_\ell]=[dA_G]/\mathrm{nat}$ and $[\ell]$ is the chosen boundary resolution length scale.
@@ -594,6 +647,7 @@ Units: $[\eta_\ell]=[dA_G]/\mathrm{nat}$ and $[\ell]$ is the chosen boundary res
 
 $$
 C_{\partial}\ \approx\ \mathbb{E}[I(X_t;K_t)]\ \le\ \log|\mathcal{K}|,
+
 $$
 which is exactly Node 13 (BoundaryCheck) and Theorem {prf:ref}`thm-information-stability-window-operational`'s grounding condition.
 
@@ -603,6 +657,7 @@ The total Risk Tensor $T_{ij}$ decomposes into gradient and curl contributions:
 
 $$
 T_{ij} = T_{ij}^{\text{gradient}} + T_{ij}^{\text{Maxwell}},
+
 $$
 where:
 
@@ -610,11 +665,13 @@ where:
 
 $$
 T_{ij}^{\text{gradient}} = \partial_i \Phi \, \partial_j \Phi - \frac{1}{2}G_{ij} \|\nabla\Phi\|_G^2
+
 $$
 2. **Maxwell Stress** (from {prf:ref}`def-value-curl` $\mathcal{F}$):
 
 $$
 T_{ij}^{\text{Maxwell}} = \mathcal{F}_{ik}\mathcal{F}_j^{\;k} - \frac{1}{4}G_{ij}\mathcal{F}^{kl}\mathcal{F}_{kl}
+
 $$
 *Units:* $[T_{ij}] = \mathrm{nat}^2/[z]^2$.
 
@@ -628,6 +685,7 @@ Compute the capacity saturation ratio:
 
 $$
 \nu_{\text{cap}}(s) := \frac{I_{\text{bulk}}(s)}{C_{\partial}},
+
 $$
 where $I_{\text{bulk}}(s) = \int_{\mathcal{Z}} \rho_I(z,s)\, d\mu_G$ per Definition 18.1.2a.
 
@@ -644,11 +702,13 @@ The squared WFR distance $d^2_{\mathrm{WFR}}(\rho_0, \rho_1)$ is the infimum of 
 
 $$
 \mathcal{E}[\rho, v, r] = \int_0^1 \int_{\mathcal{Z}} \left( \underbrace{\|v_s(z)\|_G^2}_{\text{Transport Cost}} + \underbrace{\lambda^2 |r_s(z)|^2}_{\text{Reaction Cost}} - \underbrace{2\langle \mathbf{A}(z), v_s(z) \rangle}_{\text{Vector Potential}} \right) d\rho_s(z) \, ds
+
 $$
 subject to the **Unbalanced Continuity Equation**:
 
 $$
 \partial_s \rho + \nabla \cdot (\rho v) = \rho r
+
 $$
 where:
 - $v_s(z) \in T_z\mathcal{Z}$ is the **velocity field** (transport/flow)
@@ -673,6 +733,7 @@ Let $G$ be the latent metric on $\mathcal{Z}$. The canonical choice for $\lambda
 
 $$
 \lambda := \min_{z \in \mathcal{Z}} \text{inj}_G(z),
+
 $$
 where $\text{inj}_G(z)$ is the injectivity radius at $z$ -- the largest $r$ such that the exponential map $\exp_z: T_z\mathcal{Z} \to \mathcal{Z}$ is a diffeomorphism on $B_r(0)$.
 
@@ -680,6 +741,7 @@ where $\text{inj}_G(z)$ is the injectivity radius at $z$ -- the largest $r$ such
 
 $$
 \lambda_{\text{default}} = \sqrt{\frac{\text{tr}(G^{-1})}{n}} \approx \text{mean characteristic length of } \mathcal{Z}.
+
 $$
 This corresponds to the RMS geodesic step size in an isotropic metric.
 
@@ -774,6 +836,7 @@ class WFRWorldModel(nn.Module):
 
 $$
 \lambda^{(\ell)} \propto \sigma^{(\ell)} \quad \text{(jump cost scales with residual variance)}
+
 $$
 where $\sigma^{(\ell)}$ is the scale factor from Definition {prf:ref}`def-the-rescaling-operator-renormalization`.
 
@@ -786,6 +849,7 @@ In the capacity-constrained metric law ({ref}`Section 18 <sec-capacity-constrain
 
 $$
 \Lambda^{(\ell)} \sim \frac{1}{(\lambda^{(\ell)})^2}
+
 $$
 - Bulk (low $\Lambda$): Flat, rigid, transport-dominated
 - Boundary (high $\Lambda$): Curved, fluid, reaction-dominated
@@ -796,6 +860,7 @@ The cone-space representation linearizes WFR locally. From $\partial_s \rho = \r
 
 $$
 \mathcal{L}_{\mathrm{WFR}} = \left\| \sqrt{\rho_{t+1}} - \sqrt{\rho_t} - \frac{\Delta t}{2\sqrt{\rho_t}}\left(\rho_t r_t - \nabla \cdot (\rho_t v_t)\right) \right\|_{L^2}^2
+
 $$
 This penalizes deviations from the unbalanced continuity equation.
 
@@ -840,11 +905,13 @@ Let $\mathcal{Z}$ be the latent manifold with Poincare disk model. The **boundar
 
 $$
 \partial\mathcal{Z} := \{z \in \mathbb{C}^n : |z| = 1\}.
+
 $$
 The **interior** (or bulk) is the open disk:
 
 $$
 \text{int}(\mathcal{Z}) := \{z \in \mathbb{C}^n : |z| < 1\}.
+
 $$
 These are standard differential geometry terms; the boundary is the ideal boundary at infinity in the hyperbolic metric.
 
@@ -854,6 +921,7 @@ With metric $G_{ij} = \frac{4\delta_{ij}}{(1-|z|^2)^2}$, the volume of a hyperbo
 
 $$
 \mathrm{Vol}(B_r(0)) = 4\pi \sinh^2\!\left(\frac{r}{2}\right) \;\approx\; \pi e^r \quad \text{as } r \to \infty.
+
 $$
 Units: $[\mathrm{Vol}] = [z]^2$.
 
@@ -863,6 +931,7 @@ The "Free Energy" of a state at radius $r$ is dominated by the entropic volume t
 
 $$
 F_{\text{entropy}}(z) = \nabla_G S(z) = \frac{z}{\|z\|}
+
 $$
 In normalized hyperbolic coordinates, this yields a **constant radial drift**.
 
@@ -874,6 +943,7 @@ The **information potential** $U: \mathbb{D} \to \mathbb{R}$ is the negative hyp
 
 $$
 U(z) := -d_{\mathbb{D}}(0, z) = -2 \operatorname{artanh}(|z|) = -\log\!\left(\frac{1+|z|}{1-|z|}\right).
+
 $$
 Units: $[U] = \mathrm{nat}$.
 
@@ -885,6 +955,7 @@ The Policy $\pi_\theta(a|z)$ outputs a **control field** $u_\pi(z)$ on the tange
 
 $$
 u_\pi(z) = G^{-1}(z) \cdot \mathbb{E}_{a \sim \pi_\theta}[a]
+
 $$
 This vector field represents the **Information Preference** of the agent (or the User).
 
@@ -898,6 +969,7 @@ At $\tau=0$, the total drift is:
 
 $$
 F_{\text{total}} = F_{\text{entropy}} + u_\pi(0)
+
 $$
 Since $F_{\text{entropy}}(0) = 0$ (isotropic), the initial trajectory is determined **entirely** by $u_\pi(0)$.
 
@@ -907,11 +979,13 @@ At the terminal position $z_{\text{final}}$, texture is sampled from a **geometr
 
 $$
 z_{\text{tex}} \sim \mathcal{N}\big(0,\, \Sigma(z_{\text{final}})\big),
+
 $$
 where the covariance matrix is:
 
 $$
 \Sigma(z) = \sigma_{\text{tex}}^2 \cdot G^{-1}(z) = \sigma_{\text{tex}}^2 \cdot \frac{(1-|z|^2)^2}{4} I.
+
 $$
 Units: $[\Sigma] = [z_{\text{tex}}]^2$.
 
@@ -921,6 +995,7 @@ The Decoder $\mathcal{D}$ is the **only** component that sees texture. It perfor
 
 $$
 x = \mathcal{D}(z_{\text{final}}, z_{\text{tex}})
+
 $$
 where:
 - $z_{\text{final}} = (e_K, z_n)$: Determines the shape, physics, and causal structure
@@ -932,6 +1007,7 @@ The flow terminates when the radial coordinate exceeds a cutoff:
 
 $$
 \tau_{\text{stop}} := \inf\{\tau \ge 0 : |z(\tau)| \ge R_{\text{cutoff}}\}
+
 $$
 This is equivalent to the information stopping criterion $I_{\text{bulk}}(z) \ge C_\partial$ (Theorem {prf:ref}`thm-capacity-constrained-metric-law`).
 
@@ -980,6 +1056,7 @@ We define the **inertial mass tensor** $\mathbf{M}(z)$ as the capacity-constrain
 
 $$
 \mathbf{M}(z) := G(z).
+
 $$
 This definition has the following operational consequences:
 - **High curvature regions** (large $G$) have larger effective mass, yielding smaller velocity updates per unit force
@@ -991,6 +1068,7 @@ Units: $[\mathbf{M}_{ij}] = [z]^{-2}$ (same as metric).
 
 $$
 \text{High risk } T_{ij} \;\Rightarrow\; \text{Large } G_{ij} \;\Rightarrow\; \text{Large } \mathbf{M}_{ij} \;\Rightarrow\; \text{Reduced step size}
+
 $$
 The metric-weighted step size decreases in high-curvature (high-risk) regions without explicit penalty terms.
 
@@ -1000,6 +1078,7 @@ Let $(\mathcal{Z}, G)$ be the latent Riemannian manifold with the capacity-const
 
 $$
 S_{\mathrm{OM}}[z] = \int_0^T \left( \frac{1}{2}\mathbf{M}(z)\|\dot{z}\|^2 + \Phi_{\text{eff}}(z) + \frac{T_c}{12}\,R(z) + T_c \cdot H_{\pi}(z) \right) ds,
+
 $$
 where:
 - $\mathbf{M}(z)\|\dot{z}\|^2 = G_{ij}(z)\,\dot{z}^i\,\dot{z}^j$ is the kinetic energy (mass = metric)
@@ -1018,6 +1097,7 @@ The position coordinates $z^k$ evolve according to the **Lorentz-Langevin SDE**:
 
 $$
 dz^k = \underbrace{\left( -G^{kj}\partial_j \Phi + u_\pi^k \right)}_{\text{gradient + control}} ds \;+\; \underbrace{\beta_{\text{curl}}\, G^{km} \mathcal{F}_{mj} \dot{z}^j\,ds}_{\text{Lorentz force}} \;-\; \underbrace{\Gamma^k_{ij}\dot{z}^i \dot{z}^j\,ds}_{\text{geodesic correction}} \;+\; \underbrace{\sqrt{2T_c}\,(G^{-1/2})^{kj}\,dW^j_s}_{\text{thermal noise}},
+
 $$
 where:
 - $\Phi$ is the **scalar potential** from the Hodge decomposition (Theorem {prf:ref}`thm-hodge-decomposition`)
@@ -1048,6 +1128,7 @@ The importance weight $m(s)$ evolves according to a coupled jump-diffusion:
 
 $$
 dm = m \cdot r(z, a)\,ds + m \cdot (\eta - 1)\,dN_s,
+
 $$
 where:
 - $r(z, a)$ is the **reaction rate** from the WFR dynamics ({ref}`Section 20.2 <sec-the-wfr-metric>`)
@@ -1062,6 +1143,7 @@ The unified effective potential is:
 
 $$
 \Phi_{\text{eff}}(z, K) = \alpha\, U(z) + (1 - \alpha)\, V_{\text{critic}}(z, K) + \gamma_{risk}\, \Psi_{\text{risk}}(z),
+
 $$
 where:
 - $U(z) = -d_{\mathbb{D}}(0, z) = -2\operatorname{artanh}(|z|)$ is the **hyperbolic information potential** (Definition {prf:ref}`def-hyperbolic-volume-growth`)
@@ -1194,6 +1276,7 @@ The fluctuation-dissipation relation requires:
 
 $$
 \sigma^2(z) = \frac{2\gamma(z)\, T_c}{G(z)},
+
 $$
 where $\sigma^2$ is the noise variance. This ensures the correct equilibrium distribution.
 
@@ -1203,6 +1286,7 @@ The inverse relationship between uncertainty and metric:
 
 $$
 G(z) \approx \Sigma^{-1}(z),
+
 $$
 where $\Sigma(z)$ is the posterior covariance of the belief at $z$. This duality underlies the Mass=Metric principle (Definition {prf:ref}`def-mass-tensor`).
 
@@ -1237,6 +1321,7 @@ The symplectic form is:
 
 $$
 \omega = \sum_{i=1}^n dq^i \wedge dp_i.
+
 $$
 Units: $[\omega] = [q][p] = \mathrm{nat}$.
 
@@ -1248,6 +1333,7 @@ The sensory input stream $\phi(x)$ imposes a **Dirichlet** (position-clamping) c
 
 $$
 \rho_{\partial}^{\text{sense}}(q, t) = \delta(q - q_{\text{obs}}(t)),
+
 $$
 where $q_{\text{obs}}(t) = E_\phi(x_t)$ is the encoded observation. This clamps the *configuration* of the belief state.
 
@@ -1259,11 +1345,13 @@ The motor output stream $A(x)$ imposes a **Neumann** (flux-clamping) condition:
 
 $$
 \nabla_n \rho \cdot \mathbf{n} \big|_{\partial\mathcal{Z}_{\text{motor}}} = j_{\text{motor}}(p, t),
+
 $$
 where $j_{\text{motor}}$ is the motor current density determined by the policy:
 
 $$
 j_{\text{motor}} = D_A(u_\pi) = \text{Decoder}(z, u_\pi, z_{\text{tex,motor}}).
+
 $$
 *Interpretation:* Information flow from agent to environment (action).
 
@@ -1297,6 +1385,7 @@ The Shutter is extended from {ref}`Section 2.2b <sec-the-shutter-as-a-vq-vae>` t
 
 $$
 \mathbb{S} = (\mathcal{A}_{\text{vis}}, \mathcal{A}_{\text{act}}),
+
 $$
 where:
 - **Ingress (Perception):** $E_\phi: \mathcal{Q} \to \mathcal{Z}$ via Visual Atlas
@@ -1311,6 +1400,7 @@ The motor output decomposes as:
 
 $$
 a_t = (A_t, z_{n,\text{motor}}, z_{\text{tex,motor}}),
+
 $$
 where:
 - $A_t \in \mathcal{K}_{\text{act}}$ is the **discrete motor macro** (action primitive/chart index)
@@ -1331,6 +1421,7 @@ The motor nuisance encodes the **compliance tensor**:
 
 $$
 C_{ij}(z_{n,\text{motor}}) = \frac{\partial a^i}{\partial f^j},
+
 $$
 where $f$ is the external force/feedback. This determines how the motor output responds to perturbations:
 - **High compliance** ($C$ large): Soft, yielding response (safe interaction)
@@ -1344,11 +1435,13 @@ At the motor boundary, texture is sampled from a geometry-dependent Gaussian:
 
 $$
 z_{\text{tex,motor}} \sim \mathcal{N}(0, \Sigma_{\text{motor}}(z)),
+
 $$
 where:
 
 $$
 \Sigma_{\text{motor}}(z) = \sigma_{\text{motor}}^2 \cdot G_{\text{motor}}^{-1}(z) = \sigma_{\text{motor}}^2 \cdot \frac{(1-|z|^2)^2}{4} I_{d_{\text{motor,tex}}}.
+
 $$
 This follows the same conformal scaling as visual texture (Definition {prf:ref}`def-boundary-texture-distribution`), ensuring consistent thermodynamic behavior.
 
@@ -1368,11 +1461,13 @@ In the dreaming phase, the internal dynamics are approximately unitary (energy-c
 
 $$
 \partial_s \rho + [H_{\text{internal}}, \rho]_{\text{Poisson}} = 0,
+
 $$
 where $H_{\text{internal}}$ is the effective Hamiltonian:
 
 $$
 H_{\text{internal}}(z, p) = \frac{1}{2}\|p\|_{G^{-1}}^2 + V_{\text{critic}}(z).
+
 $$
 *Mechanism:* The agent is decoupled from the boundary (adiabatic/isolated). The Bulk evolves under Hamiltonian dynamics (BAOAB integrator with $\gamma \to 0$).
 
@@ -1384,11 +1479,13 @@ During waking ($u_\pi \neq 0$), the sensory stream creates a high-mass source at
 
 $$
 \rho_{\partial}^{\text{sense}}(z, t) = \delta(z - z_{\text{obs}}(t)) \quad \text{(Dirichlet)},
+
 $$
 and the motor stream creates a flux sink:
 
 $$
 \nabla_n \rho \cdot \mathbf{n} = j_{\text{motor}}(u_\pi) \quad \text{(Neumann)}.
+
 $$
 The internal belief $\rho_{\text{bulk}}$ evolves to minimize the **WFR Geodesic Distance** to $\rho_{\partial}$:
 - **Small Error** ($d_{\text{WFR}} < \lambda$): Transport dominates ($v$ term). The agent smoothly tracks the observation.
@@ -1400,6 +1497,7 @@ During dreaming ($u_\pi = 0$), the sensory stream is cut. The boundary condition
 
 $$
 \nabla_n \rho \cdot \mathbf{n} = 0 \quad \text{(Reflective/Neumann-zero)}.
+
 $$
 The system is closed:
 - Total mass is conserved: $\int_{\mathcal{Z}} \rho\, r\, d\mu_G = 0$
@@ -1412,11 +1510,13 @@ The **Context Space** $\mathcal{C}$ is a manifold parameterizing the control/con
 
 $$
 \mathcal{C} := \{c : c \text{ specifies a boundary condition on } \partial\mathcal{Z}\}.
+
 $$
 The context determines the target distribution at the motor boundary via the effective potential:
 
 $$
 \pi(a | z, c) \propto \exp\left(-\frac{1}{T_c} \Phi_{\text{eff}}(z, K, c)\right).
+
 $$
 Units: $[\mathcal{C}]$ inherits from the task domain.
 
@@ -1438,6 +1538,7 @@ The WFR dynamics ({ref}`Section 20.2 <sec-the-wfr-metric>`) generalize to contex
 
 $$
 \partial_s \rho + \nabla \cdot (\rho\, v_c) = \rho\, r_c,
+
 $$
 where:
 - $v_c(z) = -G^{-1}(z) \nabla_z \Phi_{\text{eff}}(z, K, c) + u_\pi(z, c)$ is the context-conditioned velocity
@@ -1449,6 +1550,7 @@ Let $\mathcal{R}$ be a differential 1-form on the latent manifold $(\mathcal{Z},
 
 $$
 r_t = \langle \mathcal{R}(z), v \rangle_G = \mathcal{R}_i(z) \dot{z}^i.
+
 $$
 
 *Units:* $[\mathcal{R}] = \mathrm{nat}/[\text{length}]$.
@@ -1457,6 +1559,7 @@ The cumulative reward along a trajectory $\gamma: [0,T] \to \mathcal{Z}$ is the 
 
 $$
 R_{\text{cumulative}} = \int_\gamma \mathcal{R} = \int_0^T \mathcal{R}_i(\gamma(t)) \dot{\gamma}^i(t) \, dt.
+
 $$
 
 *Remark.* Instantaneous reward depends on both position $z$ and velocity $\dot{z}$. A stationary agent ($\dot{z} = 0$) receives zero instantaneous reward.
@@ -1467,6 +1570,7 @@ The environment provides reward via a flux form $J_r$ on the boundary $\partial\
 
 $$
 \int_{\partial\Omega} J_r = \text{Cumulative Boundary Reward}.
+
 $$
 In the discrete limit, this manifests as point charges $r_t$ deposited at the boundary coordinates $(t, z_{\text{boundary}})$.
 
@@ -1480,6 +1584,7 @@ The **Value Curl** is the exterior derivative of the reward form:
 
 $$
 \mathcal{F} := d\mathcal{R} = d\delta\Psi.
+
 $$
 In coordinates: $\mathcal{F}_{ij} = \partial_i \mathcal{R}_j - \partial_j \mathcal{R}_i$.
 
@@ -1496,6 +1601,7 @@ The reward field $\mathcal{R}$ is **conservative** if and only if:
 
 $$
 \mathcal{F} = d\mathcal{R} = 0 \quad \text{(curl-free)}.
+
 $$
 Equivalently, $\mathcal{R} = d\Phi$ for some scalar potential $\Phi$ (the solenoidal and harmonic components vanish).
 
@@ -1503,6 +1609,7 @@ Equivalently, $\mathcal{R} = d\Phi$ for some scalar potential $\Phi$ (the soleno
 
 $$
 \oint_\gamma \mathcal{R} = \int_\Sigma d\mathcal{R} = \int_\Sigma \mathcal{F} = 0.
+
 $$
 
 *Remark.* Standard RL assumes conservative reward fields. The scalar value function $V(s)$ exists precisely because path-independence holds.
@@ -1513,6 +1620,7 @@ This potential induces a probability measure on the manifold via the **Canonical
 
 $$
 P_{\text{stationary}}(z) = \frac{1}{Z} \exp\left(\frac{V(z)}{T_c}\right),
+
 $$
 where $Z = \int_{\mathcal{Z}} \exp(V(z)/T_c) \, d\mu_G(z)$ is the partition function.
 
@@ -1524,11 +1632,13 @@ We model the effect of Value on the Metric $G$ as a **Conformal Transformation**
 
 $$
 \tilde{G}_{ij}(z) = \Omega^2(z) \cdot G_{ij}(z),
+
 $$
 where the conformal factor $\Omega(z)$ depends on the **Hessian of the Value**:
 
 $$
 \Omega(z) = 1 + \alpha_{\text{conf}} \cdot \|\nabla^2_G V(z)\|_{\text{op}},
+
 $$
 with $\alpha_{\text{conf}} \ge 0$ the conformal coupling strength and $\|\cdot\|_{\text{op}}$ the operator norm.
 
@@ -1540,6 +1650,7 @@ The **Holographic Coefficient** $\nu_D$ for a $D$-dimensional latent manifold wi
 
 $$
 \nu_D := \frac{(D-1)\,\Omega_{D-1}}{8\pi}
+
 $$
 
 where $\Omega_{D-1} = \frac{2\pi^{D/2}}{\Gamma(D/2)}$ is the surface area of the unit $(D-1)$-sphere.
@@ -1565,6 +1676,7 @@ Let $\eta_\ell$ be the boundary area-per-nat at resolution $\ell$ (Definition {p
 
 $$
 \ell_L := \sqrt{\eta_\ell}.
+
 $$
 Units: $[\ell_L] = [z]$ (latent coordinate length).
 
@@ -1578,6 +1690,7 @@ The agent is at the **Saturation Limit** when the bulk information volume (Defin
 
 $$
 I_{\text{bulk}} = C_\partial.
+
 $$
 At this limit, the DPI constraint $I_{\text{bulk}} \le C_\partial$ is satisfied with equality.
 
@@ -1587,6 +1700,7 @@ Compute the **Saturation Ratio**:
 
 $$
 \eta_{\text{Sch}}(s) := \frac{I_{\text{bulk}}(s)}{I_{\max}} = \frac{I_{\text{bulk}}(s)}{\nu_D \cdot \text{Area}(\partial\mathcal{Z}) / \ell_L^{D-1}},
+
 $$
 where:
 - $I_{\text{bulk}}(s) = \int_{\mathcal{Z}} \rho_I(z,s) \, d\mu_G$ per Definition {prf:ref}`def-a-bulk-information-volume`
@@ -1609,6 +1723,7 @@ Let $\mathcal{Y} = \{1, \ldots, C\}$ be the set of class labels and $\mathcal{K}
 
 $$
 \mathcal{A}_y := \{k \in \mathcal{K} : P(Y=y \mid K=k) > 1 - \epsilon_{\text{purity}}\},
+
 $$
 where $\epsilon_{\text{purity}} \in (0, 0.5)$ is the purity threshold.
 
@@ -1620,6 +1735,7 @@ Given a target class $y \in \mathcal{Y}$, define the semantic potential:
 
 $$
 V_y(z, K) := -\beta_{\text{class}} \log P(Y=y \mid K) + V_{\text{base}}(z, K),
+
 $$
 where:
 - $P(Y=y \mid K) = \text{softmax}(\Theta_{K,:})_y$ with learnable parameters $\Theta \in \mathbb{R}^{N_c \times C}$
@@ -1633,6 +1749,7 @@ where:
 
 $$
 \hat{P}(Y=y \mid K=k) = \frac{\text{EMA}[\mathbb{I}[Y=y, K=k]]}{\text{EMA}[\mathbb{I}[K=k]]}.
+
 $$
 This is non-differentiable w.r.t. chart assignment but more grounded in observations. A hybrid approach initializes learnable $\Theta$ from empirical estimates after warmup.
 
@@ -1642,6 +1759,7 @@ The **region of attraction** for class $y$ is:
 
 $$
 \mathcal{B}_y := \{z \in \mathcal{Z} : \lim_{t \to \infty} \phi_t(z) \in \mathcal{A}_y\},
+
 $$
 where $\phi_t$ denotes the flow of the gradient dynamical system $\dot{z} = -G^{-1}(z)\nabla V_y(z)$.
 
@@ -1653,6 +1771,7 @@ For the WFR reaction term (Definition {prf:ref}`def-the-wfr-action`), modulate t
 
 $$
 \lambda_{i \to j}^{\text{sup}} := \lambda_{i \to j}^{(0)} \cdot \exp\left(-\gamma_{\text{sep}} \cdot D_{\text{class}}(i, j)\right),
+
 $$
 where:
 - $\lambda^{(0)}_{i \to j}$ is the **base transition rate** from the GKSL master equation ({prf:ref}`def-gksl-generator`, {cite}`lindblad1976gksl,gorini1976gksl`, {ref}`Section 20.5 <sec-connection-to-gksl-master-equation>`), derived from the overlap consistency of jump operators (Section 7.13)
@@ -1703,6 +1822,7 @@ The purity loss measures how well charts separate classes:
 
 $$
 \mathcal{L}_{\text{purity}} = \sum_{k=1}^{N_c} P(K=k) \cdot H(Y \mid K=k),
+
 $$
 where:
 - $P(K=k) = \mathbb{E}_{x \sim \mathcal{D}}[w_k(x)]$ is the marginal chart probability
@@ -1716,6 +1836,7 @@ Prevent degenerate solutions where all samples route to few charts:
 
 $$
 \mathcal{L}_{\text{balance}} = D_{\text{KL}}\left(\bar{w} \;\|\; \text{Uniform}(N_c)\right),
+
 $$
 where $\bar{w} = \mathbb{E}_{x \sim \mathcal{D}}[w(x)]$ is the average router weight vector.
 
@@ -1727,6 +1848,7 @@ Enforce that different-class samples are geometrically separated:
 
 $$
 \mathcal{L}_{\text{metric}} = \frac{1}{|\mathcal{P}|} \sum_{(i,j) \in \mathcal{P}: y_i \neq y_j} w_i^\top w_j \cdot \max(0, m - d_{\text{jump}}(z_i, z_j))^2,
+
 $$
 where:
 - $\mathcal{P}$ is the set of sample pairs in the batch
@@ -1742,6 +1864,7 @@ The primary classification loss:
 
 $$
 \mathcal{L}_{\text{route}} = \mathbb{E}_{x, y_{\text{true}}}\left[\text{CE}\left(\sum_k w_k(x) \cdot P(Y=\cdot \mid K=k), \; y_{\text{true}}\right)\right],
+
 $$
 where $\text{CE}$ denotes cross-entropy.
 
@@ -1753,6 +1876,7 @@ The full supervised topology loss:
 
 $$
 \mathcal{L}_{\text{sup-topo}} = \mathcal{L}_{\text{route}} + \lambda_{\text{pur}} \mathcal{L}_{\text{purity}} + \lambda_{\text{bal}} \mathcal{L}_{\text{balance}} + \lambda_{\text{met}} \mathcal{L}_{\text{metric}}.
+
 $$
 Typical hyperparameters: $\lambda_{\text{pur}} = 0.1$, $\lambda_{\text{bal}} = 0.01$, $\lambda_{\text{met}} = 0.01$.
 
@@ -1880,6 +2004,7 @@ For the Poincare disk embedding {cite}`nickel2017poincare,ganea2018hnn`, define 
 
 $$
 c_y := \arg\min_{c \in \mathbb{D}} \sum_{x: Y(x)=y} d_{\mathbb{D}}(c, \text{Enc}(x))^2.
+
 $$
 This is well-defined since the Poincare disk has negative curvature (unique Frechet means).
 
@@ -1891,6 +2016,7 @@ A **label hierarchy** is a sequence of label spaces:
 
 $$
 \mathcal{Y}_0 \twoheadrightarrow \mathcal{Y}_1 \twoheadrightarrow \cdots \twoheadrightarrow \mathcal{Y}_L,
+
 $$
 where $\twoheadrightarrow$ denotes a surjection (coarsening). $\mathcal{Y}_0$ are coarse labels (super-categories), $\mathcal{Y}_L$ are fine labels (leaf categories).
 
@@ -1902,6 +2028,7 @@ The total hierarchical loss:
 
 $$
 \mathcal{L}_{\text{hier}} = \sum_{\ell=0}^{L} \alpha_\ell \left(\mathcal{L}_{\text{route}}^{(\ell)} + \lambda_{\text{pur}} \mathcal{L}_{\text{purity}}^{(\ell)}\right),
+
 $$
 where $\alpha_\ell$ weights the contribution of each scale (typically $\alpha_\ell = 1$ or decaying with $\ell$).
 
@@ -1919,6 +2046,7 @@ Standard gradient descent defines a discrete flow on $\mathcal{M}_\Theta$:
 
 $$
 \theta_{t+1} = \theta_t - \eta \nabla \mathcal{L}_{\text{task}}(\theta_t),
+
 $$
 where $\eta > 0$ is the step size.
 
@@ -1930,6 +2058,7 @@ The Fragile Agent imposes $K$ constraints $\{C_k(\theta) \leq 0\}_{k=1}^K$ defin
 
 $$
 C_k(\theta) = \text{Node}_k(\theta) - \epsilon_k,
+
 $$
 where $\epsilon_k$ is the tolerance threshold. The learning dynamics must satisfy these constraints throughout training.
 
@@ -1939,6 +2068,7 @@ The controlled update with adaptive multipliers is:
 
 $$
 \theta_{t+1} = \theta_t - \eta_t \left( G^{-1}(\theta_t) \nabla \mathcal{L}_{\text{task}}(\theta_t) + \sum_{k=1}^K \lambda_{k,t} \nabla C_k(\theta_t) \right),
+
 $$
 where:
 - $G(\theta)$ is the parameter-space metric (cf. natural gradient, {ref}`Section 2.5 <sec-second-order-sensitivity-value-defines-a-local-metric>`)
@@ -1957,6 +2087,7 @@ The Governor observes the **Sieve Residuals** via the constraint evaluation map 
 
 $$
 s_t = \Psi(\theta_t) = [C_1(\theta_t), \ldots, C_K(\theta_t)]^\top.
+
 $$
 The components of $s_t$ are the normalized defect functionals corresponding to diagnostic nodes 1–41 ({ref}`Section 3.1 <sec-theory-thin-interfaces>`). Positive values indicate constraint violation.
 
@@ -1968,6 +2099,7 @@ The Governor is a policy $\pi_{\mathfrak{G}}: \mathbb{R}^{K \times H} \to \mathb
 
 $$
 \Lambda_t = \pi_{\mathfrak{G}}(s_t, s_{t-1}, \ldots, s_{t-H}; \phi),
+
 $$
 where:
 - $\Lambda_t = (\eta_t, \lambda_{1,t}, \ldots, \lambda_{K,t}, T_{c,t}) \in \mathbb{R}_+^{K+2}$, where $T_c$ is the cognitive temperature ({prf:ref}`def-cognitive-temperature`)
@@ -1984,6 +2116,7 @@ Given fixed control $\Lambda$, the agent minimizes the regularized objective:
 
 $$
 \theta^*(\Lambda) = \arg\min_{\theta} \left[ \mathcal{L}_{\text{task}}(\theta) + \sum_{k=1}^K \lambda_k C_k(\theta) \right].
+
 $$
 
 ({prf:ref}`def-outer-problem-governor-optimization`) *definition* — **Outer Problem: Governor Optimization**
@@ -1992,6 +2125,7 @@ The Governor minimizes the **Training Regret** over the distribution of tasks $\
 
 $$
 J(\phi) = \mathbb{E}_{\mathcal{T} \sim P(\mathcal{T})} \left[ \sum_{t=0}^T \left( \mathcal{L}_{\text{task}}(\theta_t) + \gamma_{\text{viol}} \sum_{k=1}^K \text{ReLU}(C_k(\theta_t))^2 \right) \right],
+
 $$
 subject to: $\theta_{t+1} = \Phi(\theta_t, \pi_{\mathfrak{G}}(\Psi(\theta_t); \phi))$.
 
@@ -2005,6 +2139,7 @@ Define the candidate Lyapunov function for the training dynamics:
 
 $$
 V_{\mathfrak{L}}(\theta) = \mathcal{L}_{\text{task}}(\theta) + \sum_{k=1}^K \frac{\mu_k}{2} \max(0, C_k(\theta))^2,
+
 $$
 where $\mu_k > 0$ are penalty weights for constraint violations.
 
@@ -2040,6 +2175,7 @@ The *memory screen* is the signed measure on $\mathcal{Z}$ defined by
 
 $$
 \Xi_T := \int_0^T \alpha(t') \, \delta_{\gamma(t')} \, dt',
+
 $$
 where:
 - $\delta_{\gamma(t')}$ is the Dirac measure concentrated at $\gamma(t') \in \mathcal{Z}$,
@@ -2057,6 +2193,7 @@ The canonical memory kernel is the *Heat Kernel* $H_\tau(z, z')$ on $(\mathcal{Z
 
 $$
 (\partial_\tau - \Delta_G) H_\tau(z, z') = 0, \quad H_0(z, z') = \delta(z - z'),
+
 $$
 where:
 - $\tau > 0$ is the *diffusion time* (memory smoothing scale),
@@ -2072,11 +2209,13 @@ The *memory potential* is defined by
 
 $$
 \Psi_{\text{mem}}(z) := -\int_{\mathcal{Z}} H_\tau(z, z') \, d\Xi_T(z').
+
 $$
 Expanding using Definition {prf:ref}`def-memory-screen`:
 
 $$
 \Psi_{\text{mem}}(z) = -\int_0^T \alpha(t') H_\tau(z, \gamma(t')) \, dt'.
+
 $$
 *Units:* $[\Psi_{\text{mem}}] = \text{nat}$.
 
@@ -2092,6 +2231,7 @@ The memory-augmented dynamics on $(\mathcal{Z}, G)$ are:
 
 $$
 dz^k = \left[ -G^{kj}\partial_j\bigl(\Phi_{\text{eff}} + \Psi_{\text{mem}}\bigr) + u_\pi^k \right] ds - \Gamma^k_{ij}\dot{z}^i\dot{z}^j\,ds + \sqrt{2T_c}\,(G^{-1/2})^{kj}\,dW^j_s,
+
 $$
 where:
 - $\Phi_{\text{eff}}$ is the effective potential (Definition {prf:ref}`def-effective-potential`),
@@ -2111,6 +2251,7 @@ The WFR dynamics with memory are:
 
 $$
 \partial_s \rho + \nabla \cdot (\rho \mathbf{v}) = \rho \left(\frac{\Phi_{\text{eff}} + \Psi_{\text{mem}} - \bar{\Phi}_{\text{aug}}}{T_c}\right),
+
 $$
 where:
 - $\rho(z, s)$ is the belief density,
@@ -2127,6 +2268,7 @@ The *non-locality ratio* at position $z$ is:
 
 $$
 \Omega_{\text{mem}}(z) := \frac{\|\nabla_G \Psi_{\text{mem}}(z)\|_G}{\|\nabla_G \Phi_{\text{eff}}(z)\|_G + \epsilon},
+
 $$
 where $\epsilon > 0$ is a regularization constant preventing division by zero.
 
@@ -2136,6 +2278,7 @@ where $\epsilon > 0$ is a regularization constant preventing division by zero.
 
 $$
 \Omega_{\text{mem}} \in [\Omega_{\min}, \Omega_{\max}],
+
 $$
 with empirically recommended bounds $\Omega_{\min} \approx 0.01$, $\Omega_{\max} \approx 10$. These bounds are task-dependent and should be tuned based on the environment's stationarity.
 
@@ -2151,6 +2294,7 @@ Let $\mathcal{Z}_{\text{ext}}$ denote the external knowledge manifold equipped w
 
 $$
 \mathcal{Z}_{\text{ext}} = \mathcal{K} \times \mathcal{Z}_n \times \mathcal{Z}_{\text{tex}},
+
 $$
 where $\mathcal{K}$ is the macro-concept space, $\mathcal{Z}_n$ the nuisance coordinates, and $\mathcal{Z}_{\text{tex}}$ the texture fiber.
 
@@ -2173,6 +2317,7 @@ For points $z, \xi \in \mathbb{D}^d$ (the Poincare disk), the geodesic distance 
 
 $$
 d_{\mathbb{D}}(z, \xi) = \operatorname{acosh}\left(1 + \frac{2\|z - \xi\|^2}{(1 - \|z\|^2)(1 - \|\xi\|^2)}\right).
+
 $$
 *Units:* $[d_{\mathbb{D}}] = [z]$ (dimensionless in Poincare coordinates).
 
@@ -2184,6 +2329,7 @@ Given a query position $z \in \mathcal{Z}_{\text{int}}$ and archive prior $\mu_{
 
 $$
 \nu_\omega = \arg\min_{\nu \in \mathcal{P}(\mathcal{Z}_{\text{ext}})} \left\{ \int d_{\mathbb{D}}(z, \xi) \, d\nu(\xi) + T_{\text{ret}} D_{\text{KL}}(\nu \| \mu_{\mathcal{E}}) \right\},
+
 $$
 where $T_{\text{ret}} > 0$ is the *retrieval temperature*.
 
@@ -2197,6 +2343,7 @@ The *bulk projection* $\Pi_{\text{bulk}}: \mathcal{Z}_{\text{ext}} \to \mathcal{
 
 $$
 \Pi_{\text{bulk}}(\xi) = \Pi_{\text{bulk}}(K, z_n, z_{\text{tex}}) := (K, z_n).
+
 $$
 *Interpretation:* This projection discards texture, retaining only control-relevant coordinates.
 
@@ -2208,11 +2355,13 @@ The *retrieval potential* is:
 
 $$
 \Psi_{\text{ret}}(z) = -\Lambda_{\text{ret}} \int_{\mathcal{Z}_{\text{ext}}} \exp\left(-\lambda \, d_{\mathbb{D}}(z, \Pi_{\text{bulk}}(\xi))\right) d\nu_\omega(\xi),
+
 $$
 with the firewall constraint:
 
 $$
 \frac{\partial \Psi_{\text{ret}}}{\partial z_{\text{tex,ext}}} \equiv 0.
+
 $$
 *Units:* $[\Psi_{\text{ret}}] = \text{nat}$, $[\Lambda_{\text{ret}}] = \text{nat}$, $[\lambda] = [z]^{-1}$.
 
@@ -2224,6 +2373,7 @@ The equations of motion with retrieval are:
 
 $$
 dz^k = \left[ -G^{kj}\partial_j(\Phi_{\text{eff}} + \Psi_{\text{mem}} + \Psi_{\text{ret}}) + u_\pi^k \right] ds - \Gamma^k_{ij}\dot{z}^i\dot{z}^j\,ds + \sqrt{2T_c}(G^{-1/2})^{kj}dW^j_s,
+
 $$
 where:
 - $\Phi_{\text{eff}}$: effective potential (Definition {prf:ref}`def-effective-potential`)
@@ -2241,6 +2391,7 @@ The Wasserstein–Fisher–Rao continuity equation with retrieval is:
 
 $$
 \partial_s \rho + \nabla \cdot (\rho \mathbf{v}) = \rho \, r_{\text{local}}(z) + \sigma_{\text{ret}}(z),
+
 $$
 where:
 - $r_{\text{local}}(z)$: local mass creation rate (reward-driven, Definition {prf:ref}`def-the-wfr-action`)
@@ -2250,6 +2401,7 @@ The retrieval source is:
 
 $$
 \sigma_{\text{ret}}(z) = \eta_{\text{ret}} \cdot \Psi_{\text{ret}}(z) \cdot \mathbf{1}[\Psi_{\text{ret}}(z) > \Psi_{\text{threshold}}],
+
 $$
 with $[\sigma_{\text{ret}}] = \text{nat}/[z]^d/\text{step}$.
 
@@ -2261,6 +2413,7 @@ Let $(\mathbb{D}, G)$ be the Poincare disk with metric $G_{ij}(z) = 4\delta_{ij}
 
 $$
 \emptyset := \{z \in \mathcal{Z} : |z| = 0\} = \{0\} \times \mathcal{Z}_{\text{tex}},
+
 $$
 equipped with the following properties:
 
@@ -2272,6 +2425,7 @@ equipped with the following properties:
 
    $$
    \mu_{\emptyset} := \delta_0 \otimes \mathcal{N}(0, \sigma_{\text{tex}}^2 I),
+
    $$
    where the texture component is drawn from the isotropic prior (Definition {prf:ref}`def-boundary-texture-distribution` with $G^{-1}(0) = I/4$).
 
@@ -2287,6 +2441,7 @@ Let $(K_t, z_{n,t}, z_{\text{tex},t})$ be the agent's state at time $t$ (Definit
 
 $$
 \Xi := I(z_{\text{tex},t}; z_{\text{tex},t+1} \mid K_t, z_{n,t}, A_t),
+
 $$
 where $I(\cdot;\cdot|\cdot)$ denotes conditional mutual information in nats.
 
@@ -2302,6 +2457,7 @@ Let $q_i \in \mathbb{R}^d$ be a chart query vector ({ref}`Section 7.8 <sec-tier-
 
 $$
 q_i \mapsto \{q_i^+, q_i^-\} := \{q_i + \epsilon u, q_i - \epsilon u\},
+
 $$
 where $u \in \mathbb{R}^d$ is the **fission direction** (unit vector) and $\epsilon > 0$ is the **fission amplitude**.
 
@@ -2309,11 +2465,13 @@ The daughter codebooks are initialized as copies:
 
 $$
 e_{i^\pm, c} := e_{i, c} \quad \forall c \in \{1, \ldots, N_v\}.
+
 $$
 *Selection of fission direction.* The optimal $u$ maximizes the variance of router assignments under the new queries:
 
 $$
 u^* = \arg\max_{\|u\|=1} \text{Var}_{x \sim \mathcal{D}}\left[\langle k(x), u \rangle \mid w_i(x) > 1/N_c\right],
+
 $$
 i.e., the principal component of keys within the chart's Voronoi cell.
 
@@ -2323,6 +2481,7 @@ Let $G_{ij}(z, s)$ be the capacity-constrained metric (Theorem {prf:ref}`thm-cap
 
 $$
 \frac{\partial G_{ij}}{\partial s} = -2\left(R_{ij} - \frac{1}{2}R\, G_{ij} + \Lambda G_{ij} - \kappa T_{ij}\right) + \nu \nabla_i \nabla_j \Xi(z),
+
 $$
 where:
 - $R_{ij}$ is the Ricci curvature tensor, $R = G^{ij}R_{ij}$ the scalar curvature
@@ -2340,6 +2499,7 @@ Let $K_i$ and $K_j$ be two charts with associated belief distributions $\mu_i, \
 
 $$
 \Upsilon_{ij} := \exp\left(-\left[ d_{\text{WFR}}(\mu_i, \mu_j) + D_{\mathrm{KL}}(\bar{P}_i \| \bar{P}_j) + \|V_i - V_j\|_G^2 \right]\right)
+
 $$
 where:
 - $d_{\text{WFR}}(\mu_i, \mu_j)$ is the Wasserstein-Fisher-Rao distance ({prf:ref}`def-the-wfr-action`) between belief distributions,
@@ -2356,6 +2516,7 @@ The **Discrimination Gain** $G_\Delta(i, j)$ is the mutual information the agent
 
 $$
 G_\Delta(i, j) := I(X; \{K_i, K_j\}) - I(X; K_{i \cup j})
+
 $$
 where $K_{i \cup j}$ is the merged chart that routes observations previously assigned to $K_i$ or $K_j$ to a single index.
 
@@ -2369,6 +2530,7 @@ Given charts $i, j$ satisfying the Fusion Criterion ({prf:ref}`thm-fusion-criter
 
 $$
 q_{\text{merged}} := \frac{\bar{w}_i q_i + \bar{w}_j q_j}{\bar{w}_i + \bar{w}_j}
+
 $$
 where $\bar{w}_k := \mathbb{E}[w_k(x)]$ is the historical routing weight from the Attentive Atlas ({prf:ref}`def-attentive-routing-law`).
 
@@ -2380,6 +2542,7 @@ Let $L_{j \to i}: \mathcal{F}_j \to \mathcal{F}_i$ be the factorized jump operat
 
 $$
 z_n^{(i, \text{reconciled})} := L_{j \to i}(z_n^{(j)}) = A_i(B_j z_n^{(j)} + c_j) + d_i
+
 $$
 where $B_j$ is the chart-to-global encoder and $A_i$ is the global-to-chart decoder.
 
@@ -2397,6 +2560,7 @@ where $B_j$ is the chart-to-global encoder and $A_i$ is the global-to-chart deco
 
 $$
 \text{FusionReady} := \mathbb{I}\left[ \max_{i \neq j} \Upsilon_{ij} > \Upsilon_{\text{crit}} \right]
+
 $$
 **Computational cost:** $O(N_c^2)$ pairwise comparisons.
 
@@ -2421,6 +2585,7 @@ $$
 
 $$
 \text{DeadCodeDetected} := \mathbb{I}\left[ \min_k P(K = k) < \epsilon_{\text{dead}} \right]
+
 $$
 where $P(K = k)$ is the empirical usage frequency of code $k$ over a trailing window.
 
@@ -2438,6 +2603,7 @@ For code $e_k$ in chart $i$, the **geometric tension** is:
 
 $$
 \sigma_k^2 := \mathbb{E}\left[ \|z_e - e_k\|^2 \;\Big|\; \text{VQ}(z_e) = k \right]
+
 $$
 where $z_e$ is the pre-quantized encoder output.
 
@@ -2451,6 +2617,7 @@ Two symbols $k_1, k_2$ within the same chart are fusion candidates if the **poli
 
 $$
 \mathcal{D}_f(k_1, k_2) := D_{\mathrm{KL}}\left( \pi(\cdot | k_1) \| \pi(\cdot | k_2) \right) + |V(k_1) - V(k_2)|
+
 $$
 If $\mathcal{D}_f(k_1, k_2) < \epsilon_{\text{indist}}$, the distinction provides no **control authority**.
 
@@ -2464,11 +2631,13 @@ Let $\mathcal{Z}_i$ be the continuous fiber associated with chart $i$. The codeb
 
 $$
 \mathcal{V}_k := \left\{ z \in \mathcal{Z}_i : d_G(z, e_k) \leq d_G(z, e_j) \;\forall j \neq k \right\}
+
 $$
 The probability mass of symbol $k$ is the measure of its Voronoi cell:
 
 $$
 P(k) := \int_{\mathcal{V}_k} p(z)\, d\mu_G(z)
+
 $$
 where $d\mu_G = \sqrt{\det G}\, dz$ is the Riemannian volume form.
 
@@ -2478,6 +2647,7 @@ The **local distortion** of symbol $k$ quantifies the representational error wit
 
 $$
 \mathcal{D}_k := \int_{\mathcal{V}_k} d_G(z, e_k)^2\, p(z)\, d\mu_G(z)
+
 $$
 *Units:* $[z]^2$ (weighted squared geodesic distance).
 
@@ -2489,6 +2659,7 @@ The **utility** $U_k$ of symbol $k$ measures its contribution to control authori
 
 $$
 U_k := P(k) \cdot I(K=k; A) + P(k) \cdot I(K=k; K_{t+1})
+
 $$
 where:
 - $I(K=k; A)$ is the mutual information between symbol activation and action selection,
@@ -2504,6 +2675,7 @@ Let $\{q_i\}_{i=1}^k \subset \mathbb{D}$ be a set of chart query vectors with as
 
 $$
 q_{\text{merged}} := \operatorname*{arg\,min}_{q \in \mathbb{D}} \sum_{i=1}^k \bar{w}_i \cdot d^2_{\mathbb{D}}(q, q_i),
+
 $$
 where $d_{\mathbb{D}}(x, y) = \operatorname{arccosh}\left(1 + \frac{2\|x-y\|^2}{(1-\|x\|^2)(1-\|y\|^2)}\right)$ is the hyperbolic distance.
 
@@ -2517,11 +2689,13 @@ Let $\rho(s, z)$ be the belief density evolving in computation time $s$ accordin
 
 $$
 \partial_s \rho + \nabla \cdot (\rho v) = \rho r.
+
 $$
 We define the **Metabolic Flux** $\dot{\mathcal{M}}: \mathbb{R}_{\ge 0} \to \mathbb{R}_{\ge 0}$ as:
 
 $$
 \dot{\mathcal{M}}(s) := \sigma_{\text{met}} \int_{\mathcal{Z}} \left( \|v_s(z)\|_G^2 + \lambda^2 |r_s(z)|^2 \right) \rho(s, z) \, d\mu_G,
+
 $$
 where:
 - $\sigma_{\text{met}} > 0$ is the **metabolic resistance coefficient** (units: nat$\cdot$step)
@@ -2553,11 +2727,13 @@ Formally, the operator acts by truncated factorization:
 
 $$
 P(z' | z, do(a)) := P(z' | z, a),
+
 $$
 where the structural mechanism $P(z' | z, a)$ is preserved but $a$ is no longer a function of $z$. For marginal interventional queries:
 
 $$
 P(z' | do(a)) = \int_{\mathcal{Z}} P(z' | \tilde{z}, a) P_{\text{pre}}(\tilde{z}) \, d\mu_G(\tilde{z}),
+
 $$
 where $P_{\text{pre}}(\tilde{z})$ is the pre-intervention distribution over latent states.
 
@@ -2567,6 +2743,7 @@ Recall the World Model scaling coefficient $\gamma$ ({ref}`Section 3.2 <sec-scal
 
 $$
 \Psi_{\text{causal}}(z, a) := \mathbb{E}_{z' \sim \bar{P}(\cdot | z, a)} \left[ D_{\text{KL}} \left( p(\theta_W | z, a, z') \| p(\theta_W | z, a) \right) \right].
+
 $$
 Units: $[\Psi_{\text{causal}}] = \text{nat}$.
 
@@ -2578,6 +2755,7 @@ The **Reward Flux** $J_r(t)$ is the instantaneous rate of reward accumulation (D
 
 $$
 J_r(t) = \langle \mathcal{R}(z_t), v_t \rangle_G = r_t
+
 $$
 
 where $\mathcal{R}$ is the reward 1-form ({ref}`Section 24.1 <sec-the-reward-field-value-forms-and-hodge-geometry>`) and $v_t = \dot{z}_t$ is the velocity in latent space.
@@ -2592,6 +2770,7 @@ The **Information Utility** $\mathcal{I}_{\text{util}}(r_t)$ quantifies the acti
 
 $$
 \mathcal{I}_{\text{util}}(r_t) := I(Z_t; R_t) = H[R_t] - H[R_t \mid Z_t]
+
 $$
 
 where $I(Z_t; R_t)$ is the mutual information between the agent's state $Z_t$ and the reward $R_t$.
@@ -2608,6 +2787,7 @@ The **Metabolic Transducer** $\mathfrak{T}_{\text{harvest}}$ is the operator con
 
 $$
 \dot{E}_{\text{in}}(t) = \mathfrak{T}_{\text{harvest}}(r_t) := \eta \cdot k_B T_{\text{env}} \cdot \mathcal{I}_{\text{util}}(r_t)
+
 $$
 
 where:
@@ -2623,6 +2803,7 @@ where:
 
 $$
 \mathfrak{T}_{\text{harvest}}(r_t) = \eta \cdot T_{\text{env}} \cdot r_t
+
 $$
 
 where $r_t$ is measured in nats.
@@ -2633,6 +2814,7 @@ The **Internal Battery** $B(t)$ is a scalar state variable representing the agen
 
 $$
 B: [0, \infty) \to [0, B_{\max}]
+
 $$
 
 where:
@@ -2649,6 +2831,7 @@ The battery level $B(t)$ induces a scalar potential field acting on the policy:
 
 $$
 \Phi_{\text{homeo}}(z, B) = \frac{\lambda_{\text{surv}}}{B + \epsilon} \cdot \mathbb{1}[z \in \mathcal{Z}_{\text{food}}]
+
 $$
 
 where:
@@ -2664,6 +2847,7 @@ The **Waste Heat Flux** is the rate at which the agent must dump entropy to the 
 
 $$
 \dot{Q}_{\text{waste}} = (1 - \eta) \cdot \mathfrak{T}_{\text{gross}}(r_t) + \dot{\mathcal{M}}(t)
+
 $$
 
 where $\mathfrak{T}_{\text{gross}} = k_B T_{\text{env}} \cdot \mathcal{I}_{\text{util}}(r_t)$ is the gross transduction before efficiency losses.
@@ -2678,6 +2862,7 @@ The agent is **thermally viable** if there exists a steady-state solution to:
 
 $$
 \dot{Q}_{\text{waste}}(T_c) = \dot{Q}_{\text{radiate}}(T_c)
+
 $$
 
 with $T_c < T_{\text{env}}$ and $\eta(T_c) > \eta_{\min}$ where $\eta_{\min}$ is the minimum efficiency for survival (from Theorem {prf:ref}`thm-autopoietic-inequality`).
@@ -2690,6 +2875,7 @@ Let $\phi_{A \to B}: \mathcal{Z}_A \to \mathcal{Z}_B$ be the best-fit map betwee
 
 $$
 \mathcal{F}_{AB}(z) := \| G_A(z) - \phi_{A \to B}^* G_B(\phi(z)) \|_F^2
+
 $$
 
 where $\phi^* G_B$ denotes the pullback metric and $\|\cdot\|_F$ is the Frobenius norm.
@@ -2704,6 +2890,7 @@ Let agents $A$ and $B$ each possess a nuisance bundle with gauge connection $A_\
 
 $$
 \mathcal{A}_{AB}^\mu(z_A, z_B) := A_\mu^{(A)}(z_A) \otimes \mathbb{1}_B + \mathbb{1}_A \otimes A_\mu^{(B)}(z_B) + \lambda_{\text{lock}} \mathcal{C}_{AB}^\mu
+
 $$
 
 where:
@@ -2719,12 +2906,14 @@ The **Locking Curvature** tensor measuring gauge mismatch between agents is:
 
 $$
 \mathcal{F}_{AB}^{\mu\nu} := \partial^\mu \mathcal{A}_{AB}^\nu - \partial^\nu \mathcal{A}_{AB}^\mu - ig_{\text{lock}}[\mathcal{A}_{AB}^\mu, \mathcal{A}_{AB}^\nu]
+
 $$
 
 where $g_{\text{lock}}$ is the inter-agent coupling constant. The **Integrated Friction** (gauge-invariant scalar) is:
 
 $$
 \Psi_{\text{sync}} := \int_{\mathcal{Z}_{\text{shared}}} \text{Tr}(\mathcal{F}_{AB}^{\mu\nu} \mathcal{F}_{AB,\mu\nu}) \sqrt{|G_{\text{shared}}|} \, d^D z
+
 $$
 
 *Interpretation:* When $\mathcal{F}_{AB}^{\mu\nu} = 0$, the inter-agent connection is flat—parallel transport is path-independent, meaning the agents' gauge choices are compatible. When $\mathcal{F}_{AB}^{\mu\nu} \neq 0$, the agents disagree on how to "translate" internal states.
@@ -2735,12 +2924,14 @@ The **Gauge Alignment Order Parameter** measuring the relative orientation of ag
 
 $$
 \phi_{AB}(z) := \text{Tr}(U_A(z) U_B^\dagger(z)) \in \mathbb{C}
+
 $$
 
 where $U_A, U_B \in G_{\text{Fragile}}$ are the local gauge transformations. The **Locking Potential** governing its dynamics is:
 
 $$
 \mathcal{V}_{\text{lock}}(\phi_{AB}) = -\mu_{\text{lock}}^2 |\phi_{AB}|^2 + \lambda_{\text{lock}} |\phi_{AB}|^4
+
 $$
 
 where:
@@ -2754,6 +2945,7 @@ A **Message** $m_{A \to B}$ from Agent $A$ to Agent $B$ is an element of the Lie
 
 $$
 m_{A \to B} \in \mathfrak{g} = \text{Lie}(G_{\text{Fragile}}), \quad m = m^a T_a
+
 $$
 
 where $\{T_a\}$ are the generators satisfying $[T_a, T_b] = i f^{abc} T_c$.
@@ -2766,6 +2958,7 @@ The **Language Channel** $\mathcal{L}$ is a low-bandwidth projection of the full
 
 $$
 \mathcal{L}: \mathfrak{g} \to \mathfrak{g}_{\mathcal{L}} \subset \mathfrak{g}
+
 $$
 
 where $\dim(\mathfrak{g}_{\mathcal{L}}) \ll \dim(\mathfrak{g})$. The channel satisfies the bandwidth constraint of Axiom {prf:ref}`ax-finite-communication-bandwidth`.
@@ -2778,6 +2971,7 @@ The **Translation Operator** $\mathcal{T}_{A \to B}(m)$ induced by message $m$ a
 
 $$
 \mathcal{T}_{A \to B}(m) := \exp\left(-ig \int_{\gamma_{AB}} m^a A_\mu^a \, dz^\mu\right) \cdot \mathcal{P}\exp\left(-ig \int_{\gamma_{AB}} A_\mu \, dz^\mu\right)
+
 $$
 
 where:
@@ -2796,6 +2990,7 @@ where:
 
 $$
 \text{Understanding}(m) \iff \mathcal{F}_{AB}(z; t+\Delta t) < \mathcal{F}_{AB}(z; t)
+
 $$
 
 after Agent $B$ receives and processes message $m$.
@@ -2808,6 +3003,7 @@ Decompose the metric tensor into its principal components:
 
 $$
 G_A = \sum_{k=1}^{D} \sigma_k^{(A)} v_k^{(A)} \otimes v_k^{(A)}
+
 $$
 
 where $\sigma_1 \geq \sigma_2 \geq \cdots \geq \sigma_D > 0$ are eigenvalues (principal curvatures) and $v_k^{(A)}$ are eigenvectors.
@@ -2821,6 +3017,7 @@ The **Institutional Manifold** $\mathcal{Z}_{\text{Inst}}$ is a **Static Referen
 
 $$
 \mathcal{F}_{A,\text{Inst}} + \mathcal{F}_{B,\text{Inst}} \quad \text{replaces} \quad \mathcal{F}_{AB}
+
 $$
 
 *Scaling:* Institution-mediated locking is $O(N)$ instead of $O(N^2)$.
@@ -2831,11 +3028,13 @@ The global configuration space is the product manifold:
 
 $$
 \mathcal{Z}^{(N)} := \mathcal{Z}^{(1)} \times \mathcal{Z}^{(2)} \times \cdots \times \mathcal{Z}^{(N)}.
+
 $$
 The metric on $\mathcal{Z}^{(N)}$ is the direct sum of individual metrics:
 
 $$
 G^{(N)} := \bigoplus_{i=1}^N G^{(i)},
+
 $$
 where each $G^{(i)}$ is the capacity-constrained metric from Theorem {prf:ref}`thm-capacity-constrained-metric-law`. In coordinates, this is block-diagonal: if $\mathbf{z} = (z^{(1)}, \ldots, z^{(N)})$ with $z^{(i)} \in \mathbb{R}^{d_i}$, then $G^{(N)}_{\mu\nu}(\mathbf{z}) = G^{(i)}_{ab}(z^{(i)})$ when indices $\mu, \nu$ both lie in agent $i$'s block, and $G^{(N)}_{\mu\nu} = 0$ otherwise.
 
@@ -2870,6 +3069,7 @@ The **Causal Interval** between spacetime events $(z^{(i)}, t_i)$ and $(z^{(j)},
 
 $$
 \Delta s^2_{ij} := -c_{\text{info}}^2 (t_j - t_i)^2 + (d_{\mathcal{E}}^{ij})^2.
+
 $$
 The events are classified as:
 - **Timelike** ($\Delta s^2_{ij} < 0$): $|t_j - t_i| > \tau_{ij}$. Causal influence is possible.
@@ -2884,11 +3084,13 @@ The **Past Light Cone** of Agent $i$ at time $t$ is the set of all agent-time pa
 
 $$
 \mathcal{C}^-_i(t) := \left\{ (j, t') \in \{1,\ldots,N\} \times \mathbb{R} : t' \leq t - \tau_{ij} \right\}.
+
 $$
 The **Future Light Cone** is defined symmetrically:
 
 $$
 \mathcal{C}^+_i(t) := \left\{ (j, t') : t' \geq t + \tau_{ij} \right\}.
+
 $$
 *Physical interpretation:* Agent $i$ at time $t$ can only receive information from events in $\mathcal{C}^-_i(t)$ and can only influence events in $\mathcal{C}^+_i(t)$. The region outside both cones is causally disconnected.
 
@@ -2898,11 +3100,13 @@ Let $\rho^{(j)}(t, z)$ be the reward/action flux emitted by Agent $j$. The poten
 
 $$
 \Psi_{\text{ret}}^{(i)}(t, z) = \sum_{j \neq i} \int_{-\infty}^{t} \int_{\mathcal{Z}^{(j)}} G_{\text{ret}}(z, t; \zeta, \tau) \rho^{(j)}(\tau, \zeta) \, d\mu_G(\zeta) \, d\tau,
+
 $$
 where $G_{\text{ret}}$ is the **Retarded Green's Function** for the wave operator on the manifold:
 
 $$
 G_{\text{ret}}(z, t; \zeta, \tau) \propto \frac{\delta\left((t-\tau) - d_{\mathcal{E}}(z, \zeta)/c_{\text{info}}\right)}{d_{\mathcal{E}}(z, \zeta)^{(D-2)/2}}.
+
 $$
 
 *Interpretation:* Agent $i$ does not perceive Agent $j$'s current state. It perceives the "ghost" of Agent $j$ from time $\tau_{ij} = d_{\mathcal{E}}^{ij}/c_{\text{info}}$ ago.
@@ -2915,6 +3119,7 @@ The **Causal Bundle** is the augmented state space:
 
 $$
 \mathcal{Z}_{\text{causal}} := \mathcal{Z}^{(N)} \times \Xi_{<t},
+
 $$
 where:
 - $\mathcal{Z}^{(N)} = \prod_i \mathcal{Z}^{(i)}$ is the product configuration space (Definition {prf:ref}`def-n-agent-product-manifold`)
@@ -2924,6 +3129,7 @@ The **Relativistic State** for Agent $i$ at time $t$ is:
 
 $$
 \mathcal{S}^{(i)}_t := \left( z^{(i)}_t, \Xi^{(i)}_{<t} \right),
+
 $$
 where $\Xi^{(i)}_{<t}$ stores the history of received retarded potentials over the interval $[t - \tau_{\text{horizon}}, t)$.
 
@@ -2935,6 +3141,7 @@ The **Ghost Interface** $\mathcal{G}_{ij}(t)$ between agents $i$ and $j$ at time
 
 $$
 \mathcal{G}_{ij}(t) := \partial\mathcal{Z}^{(i)}(t) \times \partial\mathcal{Z}^{(j)}(t - \tau_{ij}),
+
 $$
 coupling Agent $i$'s current boundary to Agent $j$'s past boundary, where $\tau_{ij} = d_{\mathcal{E}}^{ij}/c_{\text{info}}$ is the causal delay.
 
@@ -2942,6 +3149,7 @@ The **Ghost Symplectic Structure** is:
 
 $$
 \omega_{\mathcal{G},ij} := \omega^{(i)}(t) \oplus \omega^{(j)}(t - \tau_{ij})\big|_{\mathcal{G}_{ij}}.
+
 $$
 
 *Mechanism:* Agent $i$ couples not to $z^{(j)}_t$, but to the **Ghost State** $\hat{z}^{(j)}_t := z^{(j)}_{t-\tau_{ij}}$—the state of Agent $j$ when the signal was emitted.
@@ -2954,6 +3162,7 @@ The **Retarded Interaction Potential** from Agent $j$ to Agent $i$ at time $t$ i
 
 $$
 \Phi^{\text{ret}}_{ij}(z^{(i)}, t) := \alpha_{ij} \cdot \mathcal{G}_{\kappa}(z^{(i)}, \hat{z}^{(j)}_t) \cdot \sigma^{(j)}_r(\hat{z}^{(j)}_t),
+
 $$
 where:
 - $\hat{z}^{(j)}_t = z^{(j)}_{t - \tau_{ij}}$ is the ghost state
@@ -2971,6 +3180,7 @@ We define the **Game Tensor** $\mathcal{G}_{ij}^{kl}$ as the cross-Hessian of Ag
 
 $$
 \mathcal{G}_{ij}^{kl}(z^{(i)}, z^{(j)}) := \frac{\partial^2 V^{(i)}}{\partial z^{(j)}_k \partial z^{(j)}_l}\bigg|_{z^{(j)} = z^{(j)*}},
+
 $$
 where $z^{(j)*}$ is Agent $j$'s current position (or expected position under their policy). This tensor measures how sensitive Agent $i$'s value landscape is to Agent $j$'s location.
 
@@ -2982,6 +3192,7 @@ For Agent $i$, the "risk" includes the **Predictive Volatility** of the adversar
 
 $$
 \delta^2 V^{(i)} = (\delta z^{(i)})^\top \left( \nabla_{z^{(i)}}^2 V^{(i)} + \underbrace{(\nabla_{z^{(j)}} \nabla_{z^{(i)}} V^{(i)}) \mathcal{J}_{ji}}_{\text{Strategic back-reaction}} \right) \delta z^{(i)}.
+
 $$
 **Agent $i$'s perceived geometry** is modified by adversarial presence as follows:
 
@@ -2989,6 +3200,7 @@ $$
 
    $$
    \tilde{G}^{(i)}_{kl}(z) = G^{(i)}_{kl}(z) + \sum_{j \neq i} \beta_{ij} \cdot \mathcal{G}_{ij,kl}(z),
+
    $$
    where $\mathcal{G}_{ij,kl} = G^{(i)}_{km} G^{(i)}_{ln} \mathcal{G}_{ij}^{mn}$ is the Game Tensor with lowered indices, and $\beta_{ij} > 0$ for adversarial agents, $\beta_{ij} = 0$ for neutral, $\beta_{ij} < 0$ for cooperative.
 
@@ -2996,6 +3208,7 @@ $$
 
    $$
    \tilde{\Gamma}^{(i),m}_{kl} = \Gamma^{(i),m}_{kl} + \frac{1}{2}(G^{(i)})^{mn}\left(\nabla_k (\beta \mathcal{G})_{nl} + \nabla_l (\beta \mathcal{G})_{nk} - \nabla_n (\beta \mathcal{G})_{kl}\right),
+
    $$
    where $(\beta\mathcal{G})_{kl} := \sum_{j \neq i} \beta_{ij} \mathcal{G}_{ij,kl}$.
 
@@ -3003,6 +3216,7 @@ $$
 
    $$
    T^{(i)}_{kl} \to T^{(i)}_{kl} + \gamma_{\text{game}} \sum_{j \neq i} |\beta_{ij}| \cdot \mathcal{G}_{ij,kl}.
+
    $$
 *Physical interpretation:* Adversarial agents effectively "curve" each other's latent space. An agent approaching a contested region experiences increased geodesic resistance (higher mass), making aggressive maneuvers more costly.
 
@@ -3027,6 +3241,7 @@ Under finite information speed $c_{\text{info}}$, the Game Tensor acquires a **r
 
 $$
 \mathcal{G}_{ij}^{kl,\text{ret}}(z^{(i)}, t) := \frac{\partial^2 V^{(i)}}{\partial z^{(j)}_k \partial z^{(j)}_l}\bigg|_{z^{(j)} = \hat{z}^{(j)}_t},
+
 $$
 where $\hat{z}^{(j)}_t = z^{(j)}_{t - \tau_{ij}}$ is the ghost state of Agent $j$ at the retarded time.
 
@@ -3034,6 +3249,7 @@ The **total effective metric** including retardation is:
 
 $$
 \tilde{G}^{(i)}_{kl}(z, t) = G^{(i)}_{kl}(z) + \sum_{j \neq i} \beta_{ij} \cdot \mathcal{G}_{ij,kl}^{\text{ret}}(z, t).
+
 $$
 
 *Consequence (Strategic Hysteresis):* The metric inflation Agent $i$ experiences depends on Agent $j$'s position at the retarded time, not the current time. An agent may enter a region expecting low resistance, only to encounter a "delayed wall" of metric inflation arriving from the opponent's past position.
@@ -3044,6 +3260,7 @@ The N-agent WFR action on the product space with retarded interactions is:
 
 $$
 \mathcal{A}^{(N)}[\boldsymbol{\rho}, \mathbf{v}, \mathbf{r}] = \int_0^T \left[ \sum_{i=1}^N \int_{\mathcal{Z}^{(i)}} \left(\|v^{(i)}\|_{\tilde{G}^{(i)}}^2 + \lambda_i^2 |r^{(i)}|^2 \right) d\rho^{(i)} + \mathcal{V}_{\text{int}}^{\text{ret}}(\boldsymbol{\rho}, t) \right] dt,
+
 $$
 where:
 - $v^{(i)}$ is the velocity field for Agent $i$'s belief flow
@@ -3076,12 +3293,14 @@ The **Matter Field** for agent $i$ is the complex-valued section
 
 $$
 \psi^{(i)}: \mathcal{Z}^{(i)} \times \mathbb{R} \to V
+
 $$
 
 where $V$ is the representation space of $G$. The matter field is related to the belief wave-function by:
 
 $$
 \psi^{(i)}(z, t) = \sqrt{\rho^{(i)}(z, t)} \exp\left(\frac{iV^{(i)}(z, t)}{\sigma}\right) \cdot \xi^{(i)}(z)
+
 $$
 
 where:
@@ -3096,6 +3315,7 @@ where:
 
 $$
 \psi'^{(i)}(z, t) = \rho(U(z))\psi^{(i)}(z, t)
+
 $$
 
 where $\rho: G \to GL(V)$ is the representation.
@@ -3106,6 +3326,7 @@ The **Strategic Connection** is a $\mathfrak{g}$-valued 1-form on $\mathcal{Z}$:
 
 $$
 A = A_\mu^a T_a \, dz^\mu
+
 $$
 
 where:
@@ -3123,12 +3344,14 @@ The **Covariant Derivative** acting on matter fields is:
 
 $$
 D_\mu = \partial_\mu - igA_\mu
+
 $$
 
 For a matter field $\psi$ in representation $\rho$:
 
 $$
 D_\mu\psi = \partial_\mu\psi - igA_\mu^a \rho(T_a)\psi
+
 $$
 
 *Properties:*
@@ -3144,12 +3367,14 @@ The **Gauge-Covariant Game Tensor** is defined using covariant derivatives:
 
 $$
 \tilde{\mathcal{G}}_{ij}^{kl}(z) := D_k D_l V^{(i)}\big|_{z^{(j)}}
+
 $$
 
 Explicitly:
 
 $$
 \tilde{\mathcal{G}}_{ij}^{kl} = \partial_k\partial_l V^{(i)} - ig(\partial_k A_l + \partial_l A_k)V^{(i)} - g^2[A_k, A_l]V^{(i)} + \Gamma^m_{kl}\partial_m V^{(i)}
+
 $$
 
 where $\Gamma^m_{kl}$ are the Christoffel symbols of the strategic metric.
@@ -3165,12 +3390,14 @@ The **Field Strength Tensor** is the $\mathfrak{g}$-valued 2-form:
 
 $$
 \mathcal{F}_{\mu\nu} = \partial_\mu A_\nu - \partial_\nu A_\mu - ig[A_\mu, A_\nu]
+
 $$
 
 In components with Lie algebra generators:
 
 $$
 \mathcal{F}_{\mu\nu}^a = \partial_\mu A_\nu^a - \partial_\nu A_\mu^a + gf^{abc}A_\mu^b A_\nu^c
+
 $$
 
 where $f^{abc}$ are the structure constants of $\mathfrak{g}$.
@@ -3187,6 +3414,7 @@ The **Strategic Curvature Scalar** is the gauge-invariant contraction:
 
 $$
 \mathcal{R}_{\text{strat}} := \text{Tr}(\mathcal{F}_{\mu\nu}\mathcal{F}^{\mu\nu}) = \mathcal{F}_{\mu\nu}^a \mathcal{F}^{\mu\nu,a}
+
 $$
 
 where indices are raised with the Lorentzian metric $\eta^{\mu\nu} = \text{diag}(-1, +1, \ldots, +1)$ or the strategic metric $\tilde{G}^{\mu\nu}$.
@@ -3202,6 +3430,7 @@ The **Yang-Mills Action** for the strategic gauge field is:
 
 $$
 S_{\text{YM}}[A] = -\frac{1}{4g^2}\int_{\mathcal{Z} \times \mathbb{R}} \text{Tr}(\mathcal{F}_{\mu\nu}\mathcal{F}^{\mu\nu})\sqrt{|\tilde{G}|}\,d^{D+1}x
+
 $$
 
 where:
@@ -3223,6 +3452,7 @@ The **Complete Multi-Agent Lagrangian** is:
 
 $$
 \mathcal{L}_{\text{SMFT}} = \mathcal{L}_{\text{YM}} + \mathcal{L}_{\text{Dirac}} + \mathcal{L}_{\text{Higgs}} + \mathcal{L}_{\text{Yukawa}}
+
 $$
 
 where each sector contributes:
@@ -3231,6 +3461,7 @@ where each sector contributes:
 
 $$
 \mathcal{L}_{\text{YM}} = -\frac{1}{4}\text{Tr}(\mathcal{F}_{\mu\nu}\mathcal{F}^{\mu\nu})
+
 $$
 
 This governs the dynamics of the strategic connection $A_\mu$.
@@ -3239,6 +3470,7 @@ This governs the dynamics of the strategic connection $A_\mu$.
 
 $$
 \mathcal{L}_{\text{Dirac}} = \sum_{i=1}^N \bar{\psi}^{(i)}(i\gamma^\mu D_\mu - m_i)\psi^{(i)}
+
 $$
 
 where:
@@ -3251,12 +3483,14 @@ where:
 
 $$
 \mathcal{L}_{\text{Higgs}} = |D_\mu\Phi|^2 - V(\Phi)
+
 $$
 
 with the Higgs potential:
 
 $$
 V(\Phi) = \mu^2|\Phi|^2 + \lambda|\Phi|^4
+
 $$
 
 where $\Phi$ is the **value order parameter** (a scalar field in a representation of $G$).
@@ -3265,6 +3499,7 @@ where $\Phi$ is the **value order parameter** (a scalar field in a representatio
 
 $$
 \mathcal{L}_{\text{Yukawa}} = -\sum_{i,j=1}^N y_{ij}\bar{\psi}^{(i)}\Phi\psi^{(j)}
+
 $$
 
 where $y_{ij}$ are the **Yukawa coupling constants** determining how strongly agents couple through the value field.
@@ -3277,6 +3512,7 @@ The **Mass Gap** of the strategic Hamiltonian $\hat{H}_{\text{strat}}$ is:
 
 $$
 \Delta := \inf\left\{\text{spec}(\hat{H}_{\text{strat}}) \setminus \{E_0\}\right\} - E_0
+
 $$
 
 where $E_0$ is the ground state energy.
@@ -3293,6 +3529,7 @@ The **Computational Swampland** $\mathcal{S}_{\text{swamp}}$ is the set of all f
 
 $$
 \mathcal{S}_{\text{swamp}} := \left\{ \mathcal{T} : \exists R < \infty \text{ such that } I_{\text{bulk}}(R) > C_\partial(R) \right\}
+
 $$
 
 Equivalently, $\mathcal{S}_{\text{swamp}}$ consists of theories with Levin Length $\ell_L \to 0$ (infinite information density).
@@ -3310,11 +3547,13 @@ Let $(\mathcal{Z}, G)$ be the latent manifold with capacity-constrained metric (
 
 $$
 \mathcal{H} := L^2(\mathcal{Z}, d\mu_G), \quad d\mu_G := \sqrt{\det G(z)}\, d^n z,
+
 $$
 with inner product:
 
 $$
 \langle \psi_1 | \psi_2 \rangle := \int_{\mathcal{Z}} \overline{\psi_1(z)} \psi_2(z)\, d\mu_G(z).
+
 $$
 The measure $d\mu_G$ is the **Riemannian volume form**, ensuring coordinate invariance of the inner product.
 
@@ -3328,6 +3567,7 @@ Let $\rho(z, s)$ be the belief density from the WFR dynamics (Definition {prf:re
 
 $$
 \psi(z, s) := \sqrt{\rho(z, s)} \exp\left(\frac{i V(z, s)}{\sigma}\right),
+
 $$
 where $\sigma > 0$ is the **Cognitive Action Scale** (Definition {prf:ref}`def-cognitive-action-scale`).
 
@@ -3339,6 +3579,7 @@ where $\sigma > 0$ is the **Cognitive Action Scale** (Definition {prf:ref}`def-c
 
 $$
 |\psi(z, s)|^2 = \rho(z, s), \quad \int_{\mathcal{Z}} |\psi|^2 d\mu_G = 1.
+
 $$
 *Physical interpretation:* The amplitude $R$ encodes "how much" belief mass is at $z$; the phase $\phi$ encodes "which direction" the belief is flowing (via $\nabla V$).
 
@@ -3348,6 +3589,7 @@ The **Cognitive Action Scale** $\sigma$ is the information-theoretic analog of P
 
 $$
 \sigma := T_c \cdot \tau_{\text{update}},
+
 $$
 where:
 - $T_c$ is the Cognitive Temperature ({prf:ref}`def-cognitive-temperature`, {ref}`Section 22.4 <sec-the-geodesic-baoab-integrator>`), setting the scale of stochastic exploration
@@ -3368,6 +3610,7 @@ The **Bohm Quantum Potential** is:
 
 $$
 Q_B(z, s) := -\frac{\sigma^2}{2} \frac{\Delta_G \sqrt{\rho}}{\sqrt{\rho}} = -\frac{\sigma^2}{2} \frac{\Delta_G R}{R},
+
 $$
 where $R = \sqrt{\rho}$ is the amplitude.
 
@@ -3375,6 +3618,7 @@ where $R = \sqrt{\rho}$ is the amplitude.
 
 $$
 Q_B = -\frac{\sigma^2}{8\rho^2} \|\nabla_G \rho\|_G^2 + \frac{\sigma^2}{4\rho} \Delta_G \rho.
+
 $$
 **Physical interpretation:** $Q_B$ represents the **energetic cost of belief localization**. Regions where $\rho$ has high curvature (sharp belief features) incur an effective potential energy penalty. This prevents the belief from concentrating to delta functions.
 
@@ -3390,6 +3634,7 @@ For $N$ agents with individual Hilbert spaces $\mathcal{H}^{(i)} = L^2(\mathcal{
 
 $$
 \mathcal{H}^{(N)} := \bigotimes_{i=1}^N \mathcal{H}^{(i)} = L^2\left(\mathcal{Z}^{(N)}, d\mu_{G^{(N)}}\right),
+
 $$
 where:
 - $\mathcal{Z}^{(N)} = \prod_{i=1}^N \mathcal{Z}^{(i)}$ is the product manifold (Definition {prf:ref}`def-n-agent-product-manifold`)
@@ -3399,6 +3644,7 @@ Elements $\Psi \in \mathcal{H}^{(N)}$ are functions $\Psi: \mathcal{Z}^{(N)} \to
 
 $$
 \|\Psi\|^2 = \int_{\mathcal{Z}^{(N)}} |\Psi(\mathbf{z})|^2 d\mu_{G^{(N)}}(\mathbf{z}) < \infty.
+
 $$
 *Notation:* We use uppercase $\Psi$ for joint wave-functions and lowercase $\psi^{(i)}$ for single-agent wave-functions.
 
@@ -3408,11 +3654,13 @@ A joint wave-function $\Psi \in \mathcal{H}^{(N)}$ exhibits **Strategic Entangle
 
 $$
 \Psi(z^{(1)}, \ldots, z^{(N)}) \neq \prod_{i=1}^N \psi^{(i)}(z^{(i)}) \quad \text{for any choice of } \psi^{(i)} \in \mathcal{H}^{(i)}.
+
 $$
 **Entanglement Entropy:** For a bipartition $\{i\} \cup \{j \neq i\}$, the **Strategic Entanglement Entropy** is:
 
 $$
 S_{\text{ent}}(i) := -\text{Tr}\left[\hat{\rho}^{(i)} \ln \hat{\rho}^{(i)}\right],
+
 $$
 where $\hat{\rho}^{(i)} = \text{Tr}_{j \neq i}[|\Psi\rangle\langle\Psi|]$ is the **reduced density operator** obtained by partial trace over all agents except $i$.
 
@@ -3429,6 +3677,7 @@ The **Strategic Hamiltonian** on $\mathcal{H}^{(N)}$ is:
 
 $$
 \hat{H}_{\text{strat}} := \sum_{i=1}^N \hat{H}^{(i)}_{\text{kin}} + \sum_{i=1}^N \hat{\Phi}^{(i)}_{\text{eff}} + \sum_{i < j} \hat{V}_{ij},
+
 $$
 where:
 1. **Kinetic terms:** $\hat{H}^{(i)}_{\text{kin}} = -\frac{\sigma_i^2}{2} \Delta_{G^{(i)}}$ (acting on $\mathcal{Z}^{(i)}$ coordinates)
@@ -3450,6 +3699,7 @@ The **barrier height** is:
 
 $$
 \Delta \Phi_P := \max_{\mathbf{z} \in \mathcal{B}_P} \left[ \sum_{i=1}^N \Phi^{(i)}_{\text{eff}}(\mathbf{z}) - \sum_{i=1}^N \Phi^{(i)}_{\text{eff}}(\mathbf{z}^*_A) \right].
+
 $$
 *Mathematical characterization:* A Pareto barrier is a region where the total potential $\sum_i \Phi^{(i)}_{\text{eff}}$ exceeds its value at nearby Nash equilibria. Classical gradient descent with initial condition in the basin of attraction of $\mathbf{z}^*_A$ converges to $\mathbf{z}^*_A$ and cannot reach $\mathbf{z}^*_B$.
 
@@ -3459,6 +3709,7 @@ Let the Belief Wave-Function $\psi(z)$ be defined as in Definition {prf:ref}`def
 
 $$
 \psi(z) = \sqrt{\rho(z)} \exp\left(\frac{i V(z)}{\sigma}\right),
+
 $$
 
 where:
@@ -3474,6 +3725,7 @@ Both are invariant under the global phase transformation:
 
 $$
 \psi(z) \to e^{i\theta} \psi(z), \quad \theta \in \mathbb{R}.
+
 $$
 
 This corresponds to the global gauge invariance of the Value function: $V(z) \to V(z) + \sigma\theta$. The addition of a constant baseline does not alter the policy gradient $\nabla V$.
@@ -3484,6 +3736,7 @@ We define the **Left-Handed Field** $\Psi_L$ as an isospin doublet residing in t
 
 $$
 \Psi_L(x) = \begin{pmatrix} \psi_{\text{pred}}(x) \\ \psi_{\text{obs}}(x) \end{pmatrix}
+
 $$
 
 where:
@@ -3494,6 +3747,7 @@ We define the **Right-Handed Field** $\Psi_R$ as an isospin singlet (invariant u
 
 $$
 \Psi_R(x) = \psi_{\text{act}}(x)
+
 $$
 
 representing the settled **Posterior/Action** plan ready for execution.
@@ -3520,6 +3774,7 @@ Let the nuisance vector $z_n$ at layer $\ell$ of the TopoEncoder be an element o
 
 $$
 \psi_{\text{feature}}(x) \to U(x) \psi_{\text{feature}}(x), \quad U(x) \in SU(N_f)
+
 $$
 
 This symmetry represents the **Internal Basis Invariance** of a concept: an object's identity $K$ is invariant under the mixing of its constituent feature definitions, provided the geometric relationship between them is preserved.
@@ -3532,6 +3787,7 @@ The belief state is a spinor field $\Psi(x)$ belonging to the **Inference Hilber
 
 $$
 \Psi(x) = \begin{pmatrix} \Psi_L(x) \\ \Psi_R(x) \end{pmatrix} \in L^2(\mathcal{M}, \mathbb{C}^4 \otimes \mathbb{C}^{2} \otimes \mathbb{C}^{N_f})
+
 $$
 
 where $\mathbb{C}^4$ is the Dirac spinor space, $\mathbb{C}^2$ is the $SU(2)_L$ isospin space, and $\mathbb{C}^{N_f}$ is the $SU(N_f)_C$ color space. The components are:
@@ -3543,6 +3799,7 @@ where $\mathbb{C}^4$ is the Dirac spinor space, $\mathbb{C}^2$ is the $SU(2)_L$ 
 
 $$
 J^\mu = \bar{\Psi} \gamma^\mu \Psi
+
 $$
 
 where $J^0 = \Psi^\dagger \Psi = \rho$ is the probability density (WFR mass from Definition {prf:ref}`def-the-wfr-action`), and $\vec{J}$ is the probability flux. Conservation $\partial_\mu J^\mu = 0$ corresponds to unitarity.
@@ -3553,6 +3810,7 @@ The operator moving the belief spinor through the latent manifold is:
 
 $$
 D_\mu = \underbrace{\partial_\mu}_{\text{Change}} - \underbrace{ig_1 \frac{Y}{2} B_\mu}_{U(1)_Y \text{ (Value)}} - \underbrace{ig_2 \frac{\tau^a}{2} W^a_\mu}_{SU(2)_L \text{ (Error)}} - \underbrace{ig_s \frac{\lambda^a}{2} G^a_\mu}_{SU(N_f)_C \text{ (Binding)}}
+
 $$
 
 where $\lambda^a$ ($a = 1, \ldots, N_f^2 - 1$) are the generators of $SU(N_f)$, and:
@@ -3568,6 +3826,7 @@ Let the local chart structure at spacetime point $x$ be described by a complex s
 
 $$
 \phi(x) = r(x) e^{i\theta(x)}
+
 $$
 
 where:
@@ -3587,6 +3846,7 @@ The simplest $G_{\text{Fragile}}$-invariant coupling is:
 
 $$
 \mathcal{L}_{\text{Yukawa}} = -Y_{ij} \left( \bar{\Psi}_{L,i} \cdot \phi \cdot \Psi_{R,j} + \bar{\Psi}_{R,j} \cdot \phi^\dagger \cdot \Psi_{L,i} \right)
+
 $$
 
 where $Y_{ij}$ is the **Affordance Matrix** (a learned weight matrix determining which concepts trigger which actions).
@@ -3599,6 +3859,7 @@ We lift the effective potential $\Phi_{\text{eff}}(z)$ (Definition {prf:ref}`def
 
 $$
 A^{\text{ext}}_\mu(z) = (-\Phi_{\text{eff}}(z), \vec{0})
+
 $$
 
 This is an **external background field**, distinct from the internal gauge field $B_\mu$.
@@ -3615,6 +3876,7 @@ $$
 & - \underbrace{\bar{\Psi} \gamma^\mu A^{\text{ext}}_\mu \Psi}_{\text{V. External Sector: Value Drive}}
 \end{aligned}
 }
+
 $$
 
 ({prf:ref}`def-agent-parameter-vector`) *definition* — **The Agent Parameter Vector**
@@ -3623,6 +3885,7 @@ Let the **Agent Parameter Vector** $\Lambda$ be the tuple of fundamental operati
 
 $$
 \Lambda = (c_{\text{info}}, \sigma, \ell_L, T_c, g_s, \gamma)
+
 $$
 
 where:
@@ -3650,6 +3913,7 @@ Define the **Causal Horizon Length** $\ell_0 = c_{\text{info}} \cdot \tau_{\text
 
 $$
 \kappa = \frac{-\ln\gamma}{\ell_0}
+
 $$
 
 with dimension $[L^{-1}]$ (Corollary {prf:ref}`cor-discount-as-screening-length`).
@@ -3662,6 +3926,7 @@ Let $\mathcal{S}(\Lambda)$ denote the vector of constraint functions. The agent 
 
 $$
 \mathcal{S}(\Lambda) \le \mathbf{0}
+
 $$
 
 where the inequality holds component-wise. Each component corresponds to a Sieve node that enforces a specific consistency condition. A constraint violation ($\mathcal{S}_i > 0$) triggers a diagnostic halt at the corresponding node.
@@ -3672,12 +3937,14 @@ Under the physics isomorphism ({ref}`Section 34.6 <sec-isomorphism-dictionary>`)
 
 $$
 \ell_L \leftrightarrow \ell_P = \sqrt{\frac{\hbar G}{c^3}}
+
 $$
 
 The holographic bound becomes the Bekenstein-Hawking entropy bound:
 
 $$
 S_{\text{BH}} = \frac{A}{4\ell_P^2}
+
 $$
 
 *Remark:* The coefficient $\nu_2 = 1/4$ is derived in Theorem {prf:ref}`thm-a-complete-derivation-area-law` from first principles, recovering the Bekenstein-Hawking result without invoking black hole physics.
@@ -3701,6 +3968,7 @@ The coupling evolves according to the **Beta Function**:
 
 $$
 \mu \frac{dg_s}{d\mu} = \beta(g_s)
+
 $$
 
 where both sides are dimensionless (since $g_s$ is dimensionless and $\mu \, dg_s/d\mu$ has $[\mu] \cdot [\mu^{-1}] = [1]$).
@@ -3713,6 +3981,7 @@ Let $\Delta E$ denote the characteristic energy gap between metastable states in
 
 $$
 \chi = \frac{\Delta E}{T_c}
+
 $$
 
 This ratio determines the tradeoff between memory persistence and adaptability.
@@ -3723,6 +3992,7 @@ Let $\Lambda = (c_{\text{info}}, \sigma, \ell_L, T_c, g_s, \gamma)$ be the param
 
 $$
 \mathbf{A} \cdot \Lambda \le \mathbf{b}
+
 $$
 
 where:
@@ -3746,6 +4016,7 @@ The agent's objective trades representational power against computational cost:
 
 $$
 \mathcal{J}(\Lambda) = \underbrace{I_{\text{bulk}}(\Lambda)}_{\text{World Model Capacity}} - \beta \cdot \underbrace{\mathcal{V}_{\text{metabolic}}(\Lambda)}_{\text{Thermodynamic Cost}}
+
 $$
 
 where:
@@ -3759,6 +4030,7 @@ For a consensus protocol $\mathcal{P}$, the **Waste Quotient** is:
 
 $$
 W_\mathcal{P} := 1 - \frac{\Delta I_{\text{world}}}{\int \dot{\mathcal{M}}(t) \, dt}
+
 $$
 
 where:
@@ -3777,6 +4049,7 @@ The **Global Model State** at block height $h$ is a parameter vector:
 
 $$
 \Theta_h \in T_{\bar{z}} \mathcal{Z} \cong \mathbb{R}^D
+
 $$
 
 where:
@@ -3794,6 +4067,7 @@ A **Curriculum Block** $B_h$ at height $h$ is a tuple:
 
 $$
 B_h := (\mathcal{H}_{\text{prev}}, \mathcal{H}_D, g_h, \pi_{\text{stake}}, \zeta_h)
+
 $$
 
 where:
@@ -3811,6 +4085,7 @@ The global model evolves by **Stochastic Gradient Descent**:
 
 $$
 \Theta_{h+1} = \Theta_h - \eta_h \cdot g_h
+
 $$
 
 where $\eta_h > 0$ is the learning rate at height $h$, determined by the difficulty adjustment algorithm (Definition {prf:ref}`def-difficulty-adjustment`).
@@ -3837,6 +4112,7 @@ The network **Difficulty** $\mathcal{D}_h$ at height $h$ controls the minimum ba
 
 $$
 \mathcal{D}_{h+1} = \mathcal{D}_h \cdot \exp\left( \alpha_{\text{diff}} \left( \frac{t_h - t_{\text{target}}}{t_{\text{target}}} \right) \right)
+
 $$
 
 where:
@@ -3854,6 +4130,7 @@ The **Boundary Flux Certificate** $\zeta_h$ included in block $B_h$ contains:
 
 $$
 \zeta_h := \left( \|g_h\|_G, \, \nabla_{\partial} g_h, \, \text{Tr}(H_h), \, \sigma_{\text{sample}} \right)
+
 $$
 
 where:
@@ -3899,6 +4176,7 @@ Each validator $i$ maintains a local metric tensor $G^{(i)}$ on the shared laten
 
 $$
 \mathcal{F}(\mathcal{C}_A, \mathcal{C}_B) := \sum_{i,j} \mathcal{F}_{ij}(\Theta_{\text{head}}^A, \Theta_{\text{head}}^B)
+
 $$
 
 where $\mathcal{F}_{ij}$ is the pairwise metric friction (Definition {prf:ref}`def-metric-friction`).
@@ -3909,6 +4187,7 @@ The **Canonical Chain** is selected by minimizing global metric friction:
 
 $$
 \mathcal{C}^* = \arg\min_{\mathcal{C}} \sum_{i < j} \mathcal{F}_{ij}(\Theta_{\text{head}}^\mathcal{C})
+
 $$
 
 *Mechanism:*
@@ -3925,6 +4204,7 @@ The $\text{COG}$ token has three fundamental operations:
 
 $$
 \Delta \text{Supply} = \kappa_{\text{mint}} \cdot \max(0, -\Delta \Xi_{\text{global}})
+
 $$
 
 where $\kappa_{\text{mint}}$ is the minting coefficient (tokens per nat of stress reduction).
@@ -3935,6 +4215,7 @@ where $\kappa_{\text{mint}}$ is the minting coefficient (tokens per nat of stres
 
 $$
 \text{Cost}(Q) = \mathfrak{T}_{\text{harvest}}^{-1}(\dot{\mathcal{M}}_Q)
+
 $$
 
 where $\dot{\mathcal{M}}_Q$ is the metabolic cost of answering query $Q$.
@@ -3951,6 +4232,7 @@ Old blocks are **coarse-grained** into **Epoch Blocks** via the Projection Opera
 
 $$
 B_{\text{epoch}} = \Pi\left( \sum_{h \in \text{epoch}} B_h \right)
+
 $$
 
 where $\Pi$ projects onto the low-frequency components of the gradient history.
@@ -3968,6 +4250,7 @@ Define the boundary capacity $(n\!-\!1)$-form
 
 $$
 \omega_{\partial} := \frac{1}{\eta_\ell}\, dA_G,
+
 $$
 so that $C_{\partial}(\partial\mathcal{Z})=\oint_{\partial\mathcal{Z}}\omega_{\partial}$ (Definition 17.1.3).
 
@@ -3981,6 +4264,7 @@ $$
 \underbrace{\int_{\mathcal{Z}} \rho_I(G,V)\, d\mu_G}_{I_{\text{bulk}}}
 \;-\;
 \underbrace{\oint_{\partial\mathcal{Z}}\omega_{\partial}}_{C_{\partial}},
+
 $$
 where $\rho_I(G,V)$ is an *information density* (nats per unit $d\mu_G$) compatible with the agent's representation scheme (Definition 17.1.2). This $\rho_I$ is distinct from the belief density $p$ used in {ref}`Section 2.11 <sec-variance-value-duality-and-information-conservation>`. When $\rho_I$ is instantiated via the split shutter, the most conservative computable proxy is a global one, $I_{\text{bulk}}\approx \mathbb{E}[I(X;K)]$ (Node 13), and the window theorem (Theorem {prf:ref}`thm-information-stability-window-operational`) supplies the admissible operating range.
 
@@ -3990,6 +4274,7 @@ Fix a smooth potential $V\in C^\infty(\mathcal{Z})$. A canonical risk Lagrangian
 
 $$
 \mathcal{L}_{\text{risk}}(V;G) := \frac{1}{2}\,G^{ab}\nabla_a V\,\nabla_b V + U(V),
+
 $$
 where $U:\mathbb{R}\to\mathbb{R}$ is a (possibly learned) on-site potential capturing non-gradient costs. (The sign convention is chosen for a Riemannian metric; see e.g. Lee, *Riemannian Manifolds*, 2018, for the variational identities used below.)
 
@@ -4003,6 +4288,7 @@ $$
 \int_{\mathcal{Z}}\left(R(G)-2\Lambda + 2\kappa\,\mathcal{L}_{\text{risk}}(V;G)\right)d\mu_G
 \;-\;
 2\kappa\oint_{\partial\mathcal{Z}}\omega_{\partial},
+
 $$
 with coupling $\kappa\in\mathbb{R}$. The last term is the explicit boundary capacity penalty, and $\Lambda$ is a bulk capacity offset that remains once the boundary is clamped at finite resolution.
 
@@ -4027,6 +4313,7 @@ The **information horizon** $r_h$ is the smallest positive root of:
 
 $$
 1 - \frac{2\mu(r_h)}{(n-2)r_h^{n-2}} - \frac{\Lambda_{\text{eff}} r_h^2}{n(n-1)} = 0.
+
 $$
 At this radius, $A(r_h) \to \infty$ and $G^{rr}(r_h) \to 0$.
 
@@ -4036,6 +4323,7 @@ Let $G^{(i)}$ be the capacity-constrained metric on $\mathcal{Z}^{(i)}$ (Theorem
 
 $$
 \mathbf{g}(\mathbf{z}) := \bigoplus_{i=1}^N G^{(i)}(z^{(i)}) + \alpha \sum_{i \neq j} \mathcal{G}_{ij}(\mathbf{z}),
+
 $$
 where the pullback of the cross-Hessian interaction acts on tangent vectors in the obvious way.
 
@@ -4047,6 +4335,7 @@ The self-adjoint **Strategic Hamiltonian** operator $\hat{H}_\sigma: H^2(\mathca
 
 $$
 \hat{H}_\sigma := -\frac{\sigma^2}{2} \Delta_{\mathbf{g}} + \mathcal{V}(\mathbf{z}),
+
 $$
 where:
 - $\Delta_{\mathbf{g}}$ is the Laplace-Beltrami operator associated with the strategic metric $\mathbf{g}$
@@ -4061,6 +4350,7 @@ Let $E_0 := \inf \text{spec}(\hat{H}_\sigma)$ be the ground state energy. The **
 
 $$
 \mathcal{K} := \{ \mathbf{z} \in \mathcal{M} : \mathcal{V}(\mathbf{z}) > E_0 \}.
+
 $$
 Let $\Omega_A, \Omega_B \subset \mathcal{M} \setminus \mathcal{K}$ be disjoint open sets (Nash basins) where $\mathcal{V}(\mathbf{z}) \leq E_0$.
 
@@ -4072,11 +4362,13 @@ Inside the barrier $\mathcal{K}$, we define the **Agmon Metric** $\rho_E$, a deg
 
 $$
 (\rho_E)_{ij}(\mathbf{z}) := \max\left(0, \mathcal{V}(\mathbf{z}) - E_0\right) \cdot \mathbf{g}_{ij}(\mathbf{z}).
+
 $$
 The **Agmon distance** between points $\mathbf{x}, \mathbf{y} \in \mathcal{M}$ is:
 
 $$
 d_{\text{Ag}}(\mathbf{x}, \mathbf{y}) := \inf_{\gamma: \mathbf{x} \to \mathbf{y}} \int_0^1 \sqrt{\max(0, \mathcal{V}(\gamma(t)) - E_0)} \cdot \|\dot{\gamma}(t)\|_{\mathbf{g}} \, dt,
+
 $$
 where the infimum is over all piecewise smooth paths $\gamma$ from $\mathbf{x}$ to $\mathbf{y}$.
 
@@ -4095,16 +4387,19 @@ The state decomposition $Z = (K, z_n, z_{\text{tex}})$ satisfies a **partition c
 
 $$
 \dot{z} = f(z, u_\pi) \quad (\text{No } z_{\text{tex}} \text{ dependence})
+
 $$
 2. **Boundary Interface:** Texture $z_{\text{tex}}$ is a stochastic component that exists **only** at the interface where the internal state meets the external observation:
 
 $$
 z_{\text{tex}} \sim \mathcal{N}(0, \Sigma(z_{\text{final}}))
+
 $$
 Formally, the partition condition is:
 
 $$
 \frac{\partial}{\partial z_{\text{tex}}} \left[ \dot{z}^k, \lambda_{\text{jump}}, u_\pi \right] = 0 \quad \forall \tau \in [0, \tau_{\text{stop}})
+
 $$
 
 ({prf:ref}`ax-motor-texture-firewall`) *axiom* — **Motor Texture Firewall**
@@ -4113,6 +4408,7 @@ Motor texture is decoupled from the Bulk dynamics:
 
 $$
 \partial_{z_{\text{tex,motor}}} \dot{z} = 0, \qquad \partial_{z_{\text{tex,motor}}} u_\pi = 0.
+
 $$
 The policy $\pi_\theta$ operates on $(K, z_n, A, z_{n,\text{motor}})$ but **never** on $(z_{\text{tex}}, z_{\text{tex,motor}})$.
 
@@ -4129,6 +4425,7 @@ The scalar potential $\Phi(z)$ from the Hodge decomposition (Theorem {prf:ref}`t
 
 $$
 \Phi(z) = E(z) - T_c S(z),
+
 $$
 where:
 - $E(z)$ is the **task risk/cost** at state $z$
@@ -4147,11 +4444,13 @@ There exists a canonical isometry $\Phi: \mathcal{Z}_{\text{int}} \to \mathcal{Z
 
 $$
 d_{G_{\text{int}}}(z, z') = d_{G_{\text{ext}}}(\Phi(z), \Phi(z')),
+
 $$
 where both manifolds carry the Poincare metric (Definition {prf:ref}`def-hyperbolic-volume-growth`):
 
 $$
 G_{ij}(z) = \frac{4\delta_{ij}}{(1 - \|z\|^2)^2}.
+
 $$
 *Interpretation:* The isometry axiom asserts that embedding models trained on shared semantic corpora induce compatible distance structures. This is the mathematical foundation for cross-modal retrieval.
 
@@ -4161,6 +4460,7 @@ The agent should expand its chart structure (increase $N_c$) if and only if the 
 
 $$
 \mathbb{E}\left[\Delta V \mid \text{fission}\right] > \mathcal{C}_{\text{complexity}}(N_c \to N_c + 1),
+
 $$
 where $\Delta V$ is the value gain from finer discrimination and $\mathcal{C}_{\text{complexity}}$ is measured in nats (to match units with value).
 
@@ -4172,6 +4472,7 @@ The agent shall reduce ontological complexity when the expected value of maintai
 
 $$
 \mathcal{C}_{\text{saved}}(N_c \to N_c - 1) > G_\Delta(i, j) + \mathbb{E}[\Delta V \mid \text{no fusion}]
+
 $$
 where $\mathcal{C}_{\text{saved}}$ is the metabolic savings from eliminating a chart.
 
@@ -4183,6 +4484,7 @@ For any interaction step $t$, the agent selects a total computation budget $S \i
 
 $$
 \mathcal{S}_{\text{delib}}[S] = -\underbrace{\mathbb{E}_{z \sim \rho_S} [V(z)]}_{\text{Expected Terminal Value}} + \underbrace{\Psi_{\text{met}}(S)}_{\text{Computational Cost}},
+
 $$
 where $V(z)$ is the task potential ({ref}`Section 24.2 <sec-hodge-decomposition-of-value>`). Units: $[\mathcal{S}_{\text{delib}}] = \text{nat}$.
 
@@ -4196,6 +4498,7 @@ Information about low-entropy configurations can be converted to extractable wor
 
 $$
 W_{\max} = k_B T_{\text{env}} \cdot I
+
 $$
 
 joules of work, where $k_B$ is Boltzmann's constant.
@@ -4210,6 +4513,7 @@ The battery evolves according to the First Law of Thermodynamics:
 
 $$
 \frac{dB}{dt} = \underbrace{\mathfrak{T}_{\text{harvest}}(r_t)}_{\text{Income}} - \underbrace{\dot{\mathcal{M}}(t)}_{\text{Metabolic Cost}} - \underbrace{\gamma_{\text{leak}} B(t)}_{\text{Passive Dissipation}}
+
 $$
 
 where:
@@ -4225,6 +4529,7 @@ The communication channel $\mathcal{L}$ between agents has finite Shannon capaci
 
 $$
 C_{\mathcal{L}} \leq \nu_D \cdot \frac{\text{Area}(\partial\mathcal{L})}{\ell_L^{D-1}}
+
 $$
 
 *Justification:* Communication occurs through the agent's boundary interface. The Area Law limits the information rate of any boundary channel.
@@ -4235,6 +4540,7 @@ There exists a maximum speed $c_{\text{info}} > 0$ at which information propagat
 
 $$
 \tau_{ij} := \frac{d_{\mathcal{E}}^{ij}}{c_{\text{info}}},
+
 $$
 where $d_{\mathcal{E}}^{ij}$ is the environment distance (Definition {prf:ref}`def-environment-distance`).
 
@@ -4252,6 +4558,7 @@ The physical dynamics of the multi-agent system are invariant under position-dep
 
 $$
 \psi'(z, t) = U(z)\psi(z, t)
+
 $$
 
 leaves observable quantities (reward, policy output, Nash conditions) unchanged.
@@ -4266,6 +4573,7 @@ In a distributed agent with finite information speed $c_{\text{info}}$ (Axiom {p
 
 $$
 \psi(x) \to e^{i\theta(x)} \psi(x),
+
 $$
 
 where $x$ denotes the spacetime coordinate on the agent's computational manifold. The choice of "zero utility" can vary locally across different charts without affecting the physical transfer of control authority.
@@ -4298,6 +4606,7 @@ The dynamics of the belief state follow the Dirac equation on the curved latent 
 
 $$
 (i \gamma^\mu D_\mu - m) \Psi = 0
+
 $$
 
 *Justification:* The WFR equation ({ref}`Section 20 <sec-wasserstein-fisher-rao-geometry-unified-transport-on-hybrid-state-spaces>`) is a second-order diffusion (Fokker-Planck). In the relativistic limit with finite information speed $c_{\text{info}}$ (Axiom {prf:ref}`ax-information-speed-limit`), this factorizes into two first-order wave equations coupled by mass. The Dirac equation is the unique first-order differential equation invariant under Lorentz transformations (causal structure) and the internal gauge group $G_{\text{Fragile}} = SU(N_f)_C \times SU(2)_L \times U(1)_Y$.
@@ -4311,6 +4620,7 @@ The belief current $J^\mu = \bar{\Psi} \gamma^\mu \Psi$ couples to the Value pot
 
 $$
 \mathcal{L}_{\text{Drive}} = J^\mu A^{\text{ext}}_\mu = -\rho(z) \Phi_{\text{eff}}(z)
+
 $$
 
 where $\rho = \Psi^\dagger \Psi = J^0$.
@@ -4330,6 +4640,7 @@ Two probability distributions $p, q \in \mathcal{P}(\mathcal{Z})$ are **operatio
 
 $$
 D_{\text{KL}}(p \| q) \geq 1 \text{ nat}.
+
 $$
 *Justification.* This is an **operational definition**, not a derived fact. The choice of 1 nat as the threshold is grounded in:
 
@@ -4368,6 +4679,7 @@ The covariance of the policy $\pi(a|z)$ is coupled to the curvature/sensitivity 
 
 $$
 \Sigma_\pi(z) \propto \beta(z)^{-1} \cdot G^{-1}(z)
+
 $$
 
 ({prf:ref}`lem-continuity-equation-for-transport`) *lemma* — **Continuity Equation for Transport**
@@ -4376,6 +4688,7 @@ If the belief density evolves only by deterministic transport under $v$ (no inte
 
 $$
 \frac{\partial p}{\partial s} + \nabla_i \left( p v^i \right) = 0
+
 $$
 where $\nabla_i$ denotes the Levi-Civita covariant derivative associated with $G$.
 
@@ -4389,6 +4702,7 @@ Consider an isotropic latent space of dimension $n \ge 3$ with polar coordinates
 
 $$
 A(r) = \left( 1 - \frac{2\mu(r)}{(n-2)r^{n-2}} - \frac{\Lambda_{\text{eff}} r^2}{n(n-1)} \right)^{-1},
+
 $$
 where $\mu(r) := \frac{\kappa}{n-2} \int_0^r \sigma_{\max} r'^{n-1} dr'$ is the integrated **information mass** (with $\kappa$ the coupling constant from the Metric Law) and $\Lambda_{\text{eff}} = \Lambda + \kappa\sigma_{\max}$.
 
@@ -4399,6 +4713,7 @@ where $\mu(r) := \frac{\kappa}{n-2} \int_0^r \sigma_{\max} r'^{n-1} dr'$ is the 
 
 $$
 1 - \frac{2\mu(r_h)}{(n-2)r_h^{n-2}} - \frac{\Lambda_{\text{eff}} r_h^2}{n(n-1)} = 0.
+
 $$
 At this radius, $G_{rr} \to \infty$ and consequently $G^{rr} \to 0$.
 
@@ -4408,6 +4723,7 @@ The infinitesimal work performed by the memory force during displacement $dz$ is
 
 $$
 dW_{\text{mem}} := \langle -\nabla_G \Psi_{\text{mem}}, dz \rangle_G = -G_{kj}\,G^{k\ell}\partial_\ell \Psi_{\text{mem}}\, dz^j = -\partial_j \Psi_{\text{mem}}\, dz^j.
+
 $$
 *Units:* $[dW_{\text{mem}}] = \text{nat}$.
 
@@ -4419,11 +4735,13 @@ Let $\{q_i\}_{i=1}^{N_c}$ be the chart query bank (Definition {prf:ref}`def-atte
 
 $$
 w_i(x) = \frac{1}{N_c} \quad \forall i \in \{1, \ldots, N_c\}.
+
 $$
 The resulting soft codebook embedding is the **barycenter**:
 
 $$
 z_q(x) = \sum_{i=1}^{N_c} w_i(x) e_{i, K_{\text{code},i}(x)} = \frac{1}{N_c} \sum_{i=1}^{N_c} e_{i,*},
+
 $$
 which equals $0$ if the per-chart codebooks are also centered ($\sum_c e_{i,c} = 0$ for each chart $i$).
 
@@ -4434,6 +4752,7 @@ which equals $0$ if the per-chart codebooks are also centered ($\sum_c e_{i,c} =
 
 $$
 \mathcal{L}_{\text{center}} := \left\|\sum_{i=1}^{N_c} q_i\right\|^2 + \sum_{i=1}^{N_c} \left\|\sum_{c=1}^{N_v} e_{i,c}\right\|^2.
+
 $$
 
 ({prf:ref}`lem-redundancy-gain`) *lemma* — **Redundancy-Gain Relationship**
@@ -4442,6 +4761,7 @@ Under the assumption that charts partition the observation space and the encoder
 
 $$
 G_\Delta(i, j) \leq H(K_i, K_j) - H(K_{i \cup j}) = \log 2 - H(K_i | K_j) \cdot \mathbb{I}[\Upsilon_{ij} < 1]
+
 $$
 When $\Upsilon_{ij} \to 1$, the bound tightens: $G_\Delta \to 0$.
 
@@ -4458,6 +4778,7 @@ Let $V_{\text{coop}}$ denote the cooperative value achievable by agents $A$ and 
 
 $$
 V_{\text{coop}} \leq V_{\text{max}} \cdot \exp\left(-\frac{\mathcal{F}_{AB}}{\mathcal{F}_0}\right)
+
 $$
 
 where $V_{\text{max}}$ is the optimal cooperative value under perfect alignment and $\mathcal{F}_0$ is a characteristic friction scale.
@@ -4468,6 +4789,7 @@ The gradient $g$ uniquely determines the local metric tensor $G(\Theta + \epsilo
 
 $$
 G_{ij}(\Theta + \epsilon g) = G_{ij}(\Theta) + \epsilon \, \partial_k G_{ij} \cdot g^k + O(\epsilon^2)
+
 $$
 
 
@@ -4479,6 +4801,7 @@ For any sufficiently regular information flux field $\mathbf{j}$ on $\mathcal{Z}
 
 $$
 \int_{\mathcal{Z}} \operatorname{div}_G(\mathbf{j})\, d\mu_G = \oint_{\partial \mathcal{Z}} \langle \mathbf{j}, \mathbf{n}\rangle\, dA_G,
+
 $$
 which is the Riemannian divergence theorem underlying the global balance equation in Theorem {prf:ref}`thm-generalized-conservation-of-belief`.
 
@@ -4488,24 +4811,29 @@ On the 1-simplex $\Delta^1 = \{(p, 1-p) : p \in [0,1]\}$ with Fisher Information
 
 $$
 d_{\text{Fisher}}\left(\tfrac{1}{2}, 1\right) = \frac{\pi}{2}.
+
 $$
 $$
 ds^2 = \frac{dp^2}{p(1-p)}.
+
 $$
 Introduce the angular parameterization $p = \cos^2(\theta/2)$, so that $1-p = \sin^2(\theta/2)$ and:
 
 $$
 dp = -\cos(\theta/2)\sin(\theta/2)d\theta = -\frac{1}{2}\sin\theta \, d\theta.
+
 $$
 Then:
 
 $$
 ds^2 = \frac{\frac{1}{4}\sin^2\theta \, d\theta^2}{\cos^2(\theta/2)\sin^2(\theta/2)} = \frac{\frac{1}{4}\sin^2\theta \, d\theta^2}{\frac{1}{4}\sin^2\theta} = d\theta^2.
+
 $$
 The uniform distribution $(1/2, 1/2)$ corresponds to $\theta = \pi/2$. The vertex $(1, 0)$ corresponds to $\theta = 0$. The geodesic distance is:
 
 $$
 d = \int_0^{\pi/2} d\theta = \frac{\pi}{2}. \quad \square
+
 $$
 *Interpretation.* One bit of information (distinguishing "heads" from "tails") corresponds to geodesic distance $\pi/2$ in Fisher geometry. This is a derived quantity, not an assumption.
 
@@ -4515,11 +4843,13 @@ The Poincare disk model with constant sectional curvature $K = -1$ has metric:
 
 $$
 ds^2 = \frac{4(dx^2 + dy^2)}{(1-|z|^2)^2}.
+
 $$
 The factor of 4 is uniquely determined by the curvature normalization.
 
 $$
 K = -\frac{1}{2\lambda}\Delta(\log \lambda),
+
 $$
 where $\Delta = \partial_x^2 + \partial_y^2$ is the flat Laplacian.
 
@@ -4531,16 +4861,19 @@ For $\lambda = c/(1-r^2)^2$ where $r^2 = x^2 + y^2$ and $c > 0$:
 
 $$
 \partial_x f = \frac{-2x}{1-r^2}.
+
 $$
 Applying the quotient rule to $\partial_x f = -2x \cdot (1-r^2)^{-1}$:
 
 $$
 \partial_x^2 f = \frac{-2(1-r^2) - (-2x)(-2x)}{(1-r^2)^2} = \frac{-2 + 2r^2 - 4x^2}{(1-r^2)^2}.
+
 $$
 Similarly for $y$. Adding:
 
 $$
 \Delta f = \frac{(-2 + 2r^2 - 4x^2) + (-2 + 2r^2 - 4y^2)}{(1-r^2)^2} = \frac{-4 + 4r^2 - 4r^2}{(1-r^2)^2} = \frac{-4}{(1-r^2)^2}.
+
 $$
 **Step 3:** Therefore $\Delta(\log \lambda) = -2\Delta f = \frac{8}{(1-r^2)^2}$.
 
@@ -4548,6 +4881,7 @@ $$
 
 $$
 K = -\frac{1}{2\lambda} \cdot \frac{8}{(1-r^2)^2} = -\frac{(1-r^2)^2}{2c} \cdot \frac{8}{(1-r^2)^2} = -\frac{4}{c}.
+
 $$
 **Step 5:** For $K = -1$, we require $c = 4$. $\square$
 
@@ -4559,11 +4893,13 @@ For a stationary information distribution satisfying the Metric Law, the bulk in
 
 $$
 I_{\text{bulk}} = \int_{\mathcal{Z}} \rho_I \, d\mu_G = \frac{1}{\kappa} \oint_{\partial\mathcal{Z}} \text{Tr}(K) \, dA_G,
+
 $$
 where $K_{ij}$ is the extrinsic curvature (second fundamental form) of the boundary and $\kappa$ is the coupling constant from the Metric Law.
 
 $$
 R - 2\Lambda = \kappa \, T,
+
 $$
 where $T = G^{ij}T_{ij}$ is the trace of the stress tensor. For uniform saturation, $T = n \cdot \sigma_{\max}$.
 
@@ -4571,6 +4907,7 @@ Integrating the Einstein tensor identity over $\mathcal{Z}$ and applying Lemma {
 
 $$
 \int_{\mathcal{Z}} R \, d\mu_G = 2 \oint_{\partial\mathcal{Z}} \text{Tr}(K) \, dA_G.
+
 $$
 Combining with $R = \kappa T + 2\Lambda$ and noting that the $\Lambda$ term contributes a volume integral that cancels under the capacity constraint, we obtain the stated identity. $\square$
 
@@ -4580,6 +4917,7 @@ On the 1-simplex $\Delta^1 = \{(p, 1-p) : p \in [0,1]\}$ with the Fisher Informa
 
 $$
 d_{\text{Fisher}}\left(\frac{1}{2}, 1\right) = \frac{\pi}{2}.
+
 $$
 
 ## Propositions
@@ -4590,11 +4928,13 @@ If $\sigma\equiv 0$ and the boundary flux vanishes (e.g. $\langle p v,n\rangle=0
 
 $$
 \mathcal{V}(s):=\int_{\mathcal{Z}}p(z,s)\,d\mu_G
+
 $$
 is constant in time.
 
 $$
 \frac{d\mathcal{V}}{ds} = \int_{\mathcal{Z}} \frac{\partial p}{\partial s} d\mu_G = -\int_{\mathcal{Z}} \operatorname{div}_G(p v) d\mu_G = -\int_{\partial \mathcal{Z}} \langle p v, n \rangle dA = 0
+
 $$
 assuming there is no net boundary contribution and no internal source term. In applications we do not estimate $\sigma$ pointwise; instead we monitor surrogate checks (e.g. BoundaryCheck and coupling-window metrics) that are sensitive to persistent boundary decoupling (Sections 3 and 15).
 
@@ -4633,6 +4973,7 @@ With variance rescaling:
 
 $$
 \frac{\partial x^{(\ell)}}{\partial z_{\mathrm{tex}}^{(\ell-1)}} = \frac{1}{\sigma^{(\ell-1)}}
+
 $$
 Since each block successfully explains part of the signal, the residual standard deviation $\sigma^{(\ell)} < 1$ (the texture has less variance than the unit-normalized input). This implies:
 - **Without rescaling:** inputs to deeper layers decay exponentially ($\|x^{(\ell)}\| \to 0$), killing activations.
@@ -4654,6 +4995,7 @@ Assume finite $\mathcal{A}$. Define the soft state value
 
 $$
 V^*(k) := \max_{\pi} \ \mathbb{E}\Big[\sum_{t\ge 0}\gamma^t(\mathcal{R}+T_c\mathcal{H})\ \Big|\ K_0=k\Big].
+
 $$
 Then $V^*$ satisfies the entropic Bellman fixed point
 
@@ -4662,12 +5004,14 @@ V^*(k)
 =
 T_c \log \sum_{a\in\mathcal{A}}
 \exp\!\left(\frac{1}{T_c}\left(\mathcal{R}(k,a)+\gamma\,\mathbb{E}_{k'\sim\bar{P}(\cdot\mid k,a)}[V^*(k')]\right)\right),
+
 $$
 and the corresponding optimal policy is the softmax policy
 
 $$
 \pi^*(a\mid k)\propto
 \exp\!\left(\frac{1}{T_c}\left(\mathcal{R}(k,a)+\gamma\,\mathbb{E}[V^*(k')]\right)\right).
+
 $$
 **Consequence.** The same mathematics can be read as:
 1) maximize reward while retaining policy entropy (MaxEnt RL), or
@@ -4700,6 +5044,7 @@ If acting alone (no policy steering), the entropic drift produces the isotropic 
 
 $$
 r(\tau) = \tanh(\tau/2)
+
 $$
 This represents isotropic diffusion---expanding uniformly in all directions.
 
@@ -4709,11 +5054,13 @@ The gradient in the Poincare metric is:
 
 $$
 \nabla_G U(z) = G^{-1} \nabla U = -\frac{(1-|z|^2)}{2} z.
+
 $$
 The **entropic drift** (negative gradient) pushes radially outward:
 
 $$
 -\nabla_G U(z) = \frac{(1-|z|^2)}{2} z.
+
 $$
 *Remark (Connection to {ref}`Section 7.11 <sec-the-geometry-of-the-latent-space-a-hyperbolic-hierarchy>`).* The Poincare coordinate $z$ relates to depth via $\rho = d_{\mathbb{D}}(0, z) = 2\operatorname{artanh}(|z|)$. Chart transitions are handled by the WFR jump process ({ref}`Section 22.2 <sec-the-coupled-jump-diffusion-sde>`), governed by the {prf:ref}`def-the-wfr-action`.
 
@@ -4750,6 +5097,7 @@ For the Poincare disk, the mass tensor scales as:
 
 $$
 \mathbf{M}(z) = \frac{4}{(1-|z|^2)^2} I_d \quad \xrightarrow{|z| \to 1} \quad +\infty.
+
 $$
 The metric diverges as $|z| \to 1$, which bounds all finite-action trajectories to the interior of the disk.
 
@@ -4759,6 +5107,7 @@ For the controlled diffusion
 
 $$
 dz^k = b^k(z)\,ds + \sqrt{2T_c}\,\sigma^{kj}(z)\,dW^j_s,
+
 $$
 where $\sigma \sigma^T = G^{-1}$, the most probable path connecting $z(0) = z_0$ and $z(T) = z_1$ minimizes the Onsager-Machlup action $S_{\mathrm{OM}}[z]$ subject to the boundary conditions.
 
@@ -4768,11 +5117,13 @@ For the Poincare disk model with metric $G_{ij} = \frac{4\delta_{ij}}{(1-|z|^2)^
 
 $$
 \Gamma^k_{ij}(z) = \frac{2}{1-|z|^2}\left(\delta^k_i z_j + \delta^k_j z_i - \delta_{ij} z^k\right).
+
 $$
 The geodesic correction term $\Gamma^k_{ij}\dot{z}^i\dot{z}^j$ contracts to:
 
 $$
 \Gamma^k_{ij}\dot{z}^i\dot{z}^j = \frac{4(z \cdot \dot{z})}{1-|z|^2}\dot{z}^k - \frac{2|\dot{z}|^2}{1-|z|^2}z^k.
+
 $$
 
 *Geometric interpretation:* The first term $(z \cdot \dot{z})\dot{z}$ accelerates motion radially when moving outward; the second term $|\dot{z}|^2 z$ provides centripetal correction. Together they ensure geodesics are circular arcs perpendicular to the boundary.
@@ -4783,6 +5134,7 @@ The jump intensity $\lambda_{\text{jump}}(z)$ is determined by the value differe
 
 $$
 \lambda_{\text{jump}}(z) = \lambda_0 \cdot \exp\left(\beta \cdot \left( V_{\text{target}}(L(z)) - V_{\text{source}}(z) - c_{\text{transport}} \right) \right),
+
 $$
 where:
 - $\lambda_0 > 0$ is a base jump rate
@@ -4854,6 +5206,7 @@ The agent's efficiency in converting sensory information to control information 
 
 $$
 \eta = \frac{I(A_t; K_t)}{I(X_t; K_t)} \leq 1 - \frac{T_{\text{motor}}}{T_{\text{sensor}}},
+
 $$
 where $T_{\text{sensor}}$ and $T_{\text{motor}}$ are the effective temperatures at the sensory and motor boundaries.
 
@@ -4869,6 +5222,7 @@ The grounding rate (cf. Definition 16.1.1) is:
 
 $$
 G_t = \oint_{\partial\mathcal{Z}_{\text{sense}}} j_{\text{obs}} \cdot dA - \oint_{\partial\mathcal{Z}_{\text{motor}}} j_{\text{motor}} \cdot dA,
+
 $$
 which is:
 - **Positive** during waking (net information inflow from sensors)
@@ -4883,6 +5237,7 @@ The Value Curl $\mathcal{F}$ can be estimated from trajectory data. For a closed
 
 $$
 \oint_\gamma \mathcal{R} = \int_\Sigma \mathcal{F} \, d\Sigma \neq 0 \implies \text{Non-conservative rewards.}
+
 $$
 **Diagnostic:** If the TD-error accumulated around closed loops in latent space has non-zero mean, the value field is non-conservative.
 
@@ -4892,6 +5247,7 @@ The Critic computes the **Green's function** of the screened Laplacian on the la
 
 $$
 V(z) = \int_{\partial\Omega} G_\kappa(z, z') \sigma_r(z') \, d\Sigma(z'),
+
 $$
 where $G_\kappa(z, z')$ is the Green's function satisfying $(-\Delta_G + \kappa^2) G_\kappa(z, \cdot) = \delta_z$.
 
@@ -4903,6 +5259,7 @@ On a manifold with bounded curvature, the Green's function decays exponentially:
 
 $$
 G_\kappa(z, z') \sim \frac{1}{d_G(z, z')^{(d-2)/2}} \exp\left(-\kappa \cdot d_G(z, z')\right),
+
 $$
 where $d_G$ is the geodesic distance and $d$ is the dimension.
 
@@ -4912,6 +5269,7 @@ The probability current in a NESS decomposes into:
 
 $$
 J = J_{\text{gradient}} + J_{\text{cyclic}}
+
 $$
 where:
 - $J_{\text{gradient}} = -D\rho\nabla\ln\rho + \rho\nabla\Phi$ derives from the scalar potential
@@ -4935,11 +5293,13 @@ Under the conformal transformation $G \to \tilde{G} = \Omega^2 G$, the Laplace-B
 
 $$
 \Delta_{\tilde{G}} f = \Omega^{-2} \left( \Delta_G f + (d-2) \frac{G^{ij} \partial_i \Omega}{\Omega} \partial_j f \right),
+
 $$
 where $d$ is the dimension. For the Value function $V$ itself (which determines $\Omega$), this creates a **nonlinear coupling**. The screened Poisson equation (Theorem {prf:ref}`thm-the-hjb-helmholtz-correspondence`) in the conformally modified metric becomes:
 
 $$
 -\Delta_{\tilde{G}} V + \tilde{\kappa}^2 V = \tilde{\rho}_r,
+
 $$
 with effective screening mass $\tilde{\kappa}^2 = \Omega^{-2} \kappa^2$.
 
@@ -4967,6 +5327,7 @@ As $\gamma_{\text{sep}} \to \infty$, the effective WFR distance between charts o
 
 $$
 d_{\text{WFR}}(\mathcal{A}_{y_1}, \mathcal{A}_{y_2}) \to \infty \quad \text{for } y_1 \neq y_2.
+
 $$
 1. **Transport-only paths:** If $\mathcal{A}_{y_1}$ and $\mathcal{A}_{y_2}$ are not geometrically adjacent (no shared chart boundary), pure transport paths have infinite cost.
 
@@ -4982,6 +5343,7 @@ Minimizing $\mathcal{L}_{\text{purity}}$ is equivalent to maximizing the mutual 
 
 $$
 \mathcal{L}_{\text{purity}} = H(Y) - I(K; Y).
+
 $$
 Since $H(Y)$ is fixed by the data, $\min \mathcal{L}_{\text{purity}} \Leftrightarrow \max I(K; Y)$.
 
@@ -4991,6 +5353,7 @@ The generative Langevin equation {cite}`welling2011sgld,song2019ncsn` (Definitio
 
 $$
 dz = -\nabla_G V_y(z, K)\,d\tau + \sqrt{2T_c}\,G^{-1/2}(z)\,dW_\tau,
+
 $$
 where $V_y$ is the class-conditioned potential (Definition {prf:ref}`def-class-conditioned-potential`).
 
@@ -5004,16 +5367,19 @@ In the stacked TopoEncoder ({ref}`Section 7.12 <sec-stacked-topoencoders-deep-re
 
   $$
   \mathcal{L}_{\text{purity}}^{(0)} = H(\mathcal{Y}_0 \mid K^{(0)})
+
   $$
 - **Layer $\ell$ (Intermediate):** Charts at level $\ell$ correspond to level-$\ell$ classes. Enforce:
 
   $$
   \mathcal{L}_{\text{purity}}^{(\ell)} = H(\mathcal{Y}_\ell \mid K^{(\ell)})
+
   $$
 - **Layer $L$ (Boundary/Fast):** Charts at level $L$ correspond to fine classes. Enforce:
 
   $$
   \mathcal{L}_{\text{purity}}^{(L)} = H(\mathcal{Y}_L \mid K^{(L)})
+
   $$
 
 ({prf:ref}`prop-subsumption-of-section`) *proposition* — **Subsumption of {ref}`Section 3.5 <sec-adaptive-multipliers-learned-penalties-setpoints-and-calibration>`**
@@ -5050,6 +5416,7 @@ Then, with probability at least $1 - \delta$, a Governor trained on $N$ sampled 
 
 $$
 \mathbb{E}_{S \sim \mathcal{S}}[J_S(\hat{\phi}_N)] \leq C_1\left(\varepsilon_N + \sqrt{\frac{\log(1/\delta)}{N}}\right)
+
 $$
 where $\varepsilon_N$ is the optimization accuracy.
 
@@ -5077,6 +5444,7 @@ Alternative kernels may be used depending on application requirements:
 
    $$
    K_{\text{Gauss}}(z, z') := \exp\left(-\frac{d_G(z, z')^2}{2\ell^2}\right),
+
    $$
    where $d_G$ is the geodesic distance and $\ell > 0$ is the length scale. This provides fast (exponential) decay, suitable for short-range memory effects.
 
@@ -5084,6 +5452,7 @@ Alternative kernels may be used depending on application requirements:
 
    $$
    K_{\nu}(z, z') \propto (-\Delta_G + \kappa^2)^{-\nu}\delta(z - z'),
+
    $$
    where $\nu > 0$ is the smoothness parameter and $\kappa > 0$ is the inverse correlation length. For $\nu = 1$, this recovers the Green's function $G_\kappa$ from {ref}`Section 24.2 <sec-the-bulk-potential-screened-poisson-equation>`. The Matérn kernel has polynomial (rather than exponential) tails, providing longer-range correlations. See {cite}`rasmussen2006gp` Chapter 4 for the Euclidean case.
 
@@ -5095,6 +5464,7 @@ The memory contribution to the reaction term is:
 
 $$
 r_{\text{mem}}(z) := \frac{\rho(z)(\Psi_{\text{mem}}(z) - \bar{\Psi}_{\text{mem}})}{T_c},
+
 $$
 where $\bar{\Psi}_{\text{mem}} = \int_{\mathcal{Z}} \Psi_{\text{mem}} \rho \, d\mu_G$.
 
@@ -5106,6 +5476,7 @@ The volume of a geodesic ball in the Poincare disk grows exponentially with radi
 
 $$
 \text{Vol}(B_r(z)) \sim \sinh^{d-1}(r) \sim \frac{1}{2^{d-1}} e^{(d-1)r} \quad \text{as } r \to \infty.
+
 $$
 
 *Interpretation:* As the agent descends toward the boundary (increasing semantic specificity), the number of accessible knowledge atoms grows exponentially. This captures the combinatorial explosion of specific facts relative to abstract concepts---compare TopoEncoder hierarchy ({ref}`Section 25 <sec-supervised-topology-semantic-potentials-and-metric-segmentation>`).
@@ -5116,6 +5487,7 @@ The total non-local force is:
 
 $$
 \mathbf{f}_{\text{non-local}} = -G^{-1}\nabla_G(\Psi_{\text{mem}} + \Psi_{\text{ret}}),
+
 $$
 where:
 - Memory force $\mathbf{f}_{\text{mem}}$ integrates over the agent's past trajectory
@@ -5129,6 +5501,7 @@ Mass injection at retrieved locations enables transitions without continuous geo
 
 $$
 \rho(z', s + \Delta s) > 0 \quad \text{even if} \quad d_G(z, z') > \sup_{0 \leq \tau \leq \Delta s} \|\mathbf{v}(z, s+\tau)\| \cdot \Delta s.
+
 $$
 *Interpretation:* Retrieval teleports probability mass to semantically relevant regions, bypassing the diffusion constraint. This is the WFR-level description of "jumping to a retrieved fact."
 
@@ -5149,6 +5522,7 @@ $$
 \dot{\Lambda}_{\text{ret}} &\propto \alpha_1 \cdot \Delta_{\text{causal}} \\
 \dot{\Lambda}_{\text{mem}} &\propto \alpha_2 \cdot (\Delta_{\text{causal}}^{\text{target}} - \Delta_{\text{causal}}) - \alpha_3 \cdot \operatorname{ReLU}(\Omega_{\text{mem}} - \Omega_{\max})
 \end{aligned}
+
 $$
 where $\alpha_1, \alpha_2, \alpha_3 > 0$ are learning rates and $\Omega_{\max}$ is the maximum tolerable non-locality ratio.
 
@@ -5164,6 +5538,7 @@ Condition (2) is satisfied when either $\Xi$ is constant (uniform stress) or $\X
 
 $$
 \mathcal{L}_{\text{Ricci}} := \left\|R_{ij} - \frac{1}{2}R\,G_{ij} + \Lambda G_{ij} - \kappa T_{ij}\right\|_F^2 + \nu^2 \|\nabla_i \nabla_j \Xi\|_F^2,
+
 $$
 encouraging the learned metric to satisfy the capacity constraint while penalizing stress gradients.
 
@@ -5173,6 +5548,7 @@ At metabolic equilibrium, the marginal utility per bit is uniform across the ont
 
 $$
 \frac{\partial U}{\partial H(K_{\text{chart}})} \approx \frac{\partial U}{\partial H(K_{\text{code}})} \approx \text{const.}
+
 $$
 where $U$ is the total utility functional (value minus complexity cost).
 
@@ -5184,6 +5560,7 @@ The **pairwise interaction potential** $\Phi_{\text{int}}: \mathcal{Z} \times \m
 
 $$
 \Phi_{\text{int}}(z, \zeta) := \alpha \cdot \mathcal{G}_{\kappa}(z, \zeta)
+
 $$
 where $\mathcal{G}_{\kappa}$ is the screened Green's function (Proposition {prf:ref}`prop-green-s-function-interpretation`) and $\alpha$ encodes the strategic relationship.
 
@@ -5198,11 +5575,13 @@ The solution to the inhomogeneous Klein-Gordon equation is given by convolution 
 
 $$
 V^{(i)}(z, t) = \int_{-\infty}^{t} \int_{\mathcal{Z}^{(i)}} G_{\text{ret}}(z, t; \zeta, \tau) \left[ \rho^{(i)}_r(\zeta, \tau) + \sum_{j} \Phi^{\text{ret}}_{ij}(\zeta, \tau) \right] d\mu_G(\zeta) \, d\tau,
+
 $$
 where $G_{\text{ret}}$ satisfies:
 
 $$
 \left( \frac{1}{c_{\text{info}}^2} \frac{\partial^2}{\partial t^2} - \Delta_G + \kappa^2 \right) G_{\text{ret}}(z, t; \zeta, \tau) = \delta(z - \zeta)\delta(t - \tau),
+
 $$
 with the **causal boundary condition** $G_{\text{ret}} = 0$ for $t < \tau$.
 
@@ -5210,6 +5589,7 @@ with the **causal boundary condition** $G_{\text{ret}} = 0$ for $t < \tau$.
 
 $$
 G_{\text{ret}}(z, t; \zeta, \tau) = \frac{\Theta(t - \tau)}{4\pi |z - \zeta|} \delta\left(t - \tau - \frac{|z-\zeta|}{c_{\text{info}}}\right) \cdot e^{-\kappa|z-\zeta|}.
+
 $$
 
 ({prf:ref}`prop-retarded-metric-propagation`) *proposition* — **Retarded Metric Propagation**
@@ -5218,6 +5598,7 @@ The effective metric $\tilde{G}^{(i)}(z, t)$ satisfies a wave-like propagation e
 
 $$
 \frac{\partial \tilde{G}^{(i)}_{kl}}{\partial t} = \sum_{j \neq i} \beta_{ij} \frac{\partial \mathcal{G}_{ij,kl}^{\text{ret}}}{\partial t} = \sum_{j \neq i} \beta_{ij} \frac{d\mathcal{G}_{ij,kl}}{dt}\bigg|_{t-\tau_{ij}}.
+
 $$
 
 The metric perturbation at time $t$ depends on the opponent's dynamics at time $t - \tau_{ij}$. Information about strategic coupling propagates at speed $c_{\text{info}}$.
@@ -5228,6 +5609,7 @@ Under a local gauge transformation $U(z) \in G$, the connection transforms as:
 
 $$
 A'_\mu = U A_\mu U^{-1} - \frac{i}{g}(\partial_\mu U)U^{-1}
+
 $$
 
 where $g > 0$ is the **coupling constant** (strategic coupling strength).
@@ -5237,12 +5619,14 @@ $$
 D'_\mu\psi' &= (\partial_\mu - igA'_\mu)(U\psi) \\
 &= (\partial_\mu U)\psi + U(\partial_\mu\psi) - igA'_\mu U\psi
 \end{aligned}
+
 $$
 
 For this to equal $U(\partial_\mu - igA_\mu)\psi = U(\partial_\mu\psi) - igUA_\mu\psi$, we require:
 
 $$
 (\partial_\mu U)\psi - igA'_\mu U\psi = -igUA_\mu\psi
+
 $$
 
 Solving for $A'_\mu$ yields the stated transformation law. $\square$
@@ -5255,6 +5639,7 @@ To maintain gauge invariance, all derivatives in the dynamics must be replaced b
 
 $$
 \partial_\mu \longrightarrow D_\mu = \partial_\mu - igA_\mu
+
 $$
 
 This **Minimal Coupling Principle** ensures that:
@@ -5270,13 +5655,16 @@ Under a local gauge transformation $U(z)$, the Game Tensor transforms as:
 
 $$
 \mathcal{G}'_{ij}(z) = U(z) \mathcal{G}_{ij}(z) U(z)^\dagger + \mathcal{C}_{ij}[A, U]
+
 $$
 
 where $\mathcal{C}_{ij}[A, U]$ is a **connection correction** involving commutators $[A_\mu, \mathcal{G}_{ij}]$.
 
 For **Abelian** gauge groups ($[T_a, T_b] = 0$), the correction vanishes:
+
 $$
 \mathcal{G}'_{ij} = \mathcal{G}_{ij} \quad \text{(Abelian)}
+
 $$
 
 For **non-Abelian** groups, the Game Tensor is not gauge-invariant but transforms covariantly.
@@ -5289,6 +5677,7 @@ Under gauge transformation $U(z)$, the field strength transforms **covariantly**
 
 $$
 \mathcal{F}'_{\mu\nu} = U \mathcal{F}_{\mu\nu} U^{-1}
+
 $$
 
 $$
@@ -5297,6 +5686,7 @@ $$
 &= U(\partial_\mu A_\nu - \partial_\nu A_\mu - ig[A_\mu, A_\nu])U^{-1} \\
 &= U\mathcal{F}_{\mu\nu}U^{-1}
 \end{aligned}
+
 $$
 
 The inhomogeneous terms from $A'_\mu$ cancel exactly. $\square$
@@ -5309,6 +5699,7 @@ The energy-momentum tensor of the gauge field is:
 
 $$
 T^{\text{gauge}}_{\mu\nu} = -\frac{1}{g^2}\text{Tr}\left(\mathcal{F}_{\mu\rho}\mathcal{F}_\nu^{\ \rho} - \frac{1}{4}\tilde{G}_{\mu\nu}\mathcal{F}_{\rho\sigma}\mathcal{F}^{\rho\sigma}\right)
+
 $$
 
 *Properties:*
@@ -5324,6 +5715,7 @@ The Laplace-Beltrami operator
 
 $$
 \Delta_G := \frac{1}{\sqrt{|G|}} \partial_i \left( \sqrt{|G|} G^{ij} \partial_j \right)
+
 $$
 is essentially self-adjoint on $\mathcal{H} = L^2(\mathcal{Z}, d\mu_G)$ with domain $C_c^\infty(\mathcal{Z})$ (smooth functions with compact support), provided either:
 1. $(\mathcal{Z}, G)$ is **geodesically complete**, or
@@ -5338,11 +5730,13 @@ The kinetic term $-\frac{\sigma^2}{2}\Delta_G$ in the Inference Hamiltonian uses
 
 $$
 -\frac{\sigma^2}{2}\Delta_G \psi = -\frac{\sigma^2}{2} \cdot \frac{1}{\sqrt{|G|}} \partial_i \left( \sqrt{|G|} G^{ij} \partial_j \psi \right).
+
 $$
 This is equivalent to:
 
 $$
 -\frac{\sigma^2}{2}\Delta_G = -\frac{\sigma^2}{2} \left( G^{ij} \partial_i \partial_j + \Gamma^k \partial_k \right),
+
 $$
 where $\Gamma^k := G^{ij}\Gamma^k_{ij}$ is the trace of Christoffel symbols.
 
@@ -5356,11 +5750,13 @@ For a pure joint state $|\Psi\rangle \in \mathcal{H}^{(N)}$, the **reduced densi
 
 $$
 \hat{\rho}^{(i)} := \text{Tr}_{j \neq i}\left[ |\Psi\rangle\langle\Psi| \right] = \int_{\prod_{j \neq i} \mathcal{Z}^{(j)}} |\Psi|^2 \prod_{j \neq i} d\mu_{G^{(j)}}.
+
 $$
 The diagonal elements give the **marginal belief density**:
 
 $$
 \rho^{(i)}(z^{(i)}) = \langle z^{(i)} | \hat{\rho}^{(i)} | z^{(i)} \rangle = \int |\Psi(z^{(i)}, z^{(-i)})|^2 d\mu_{G^{(-i)}},
+
 $$
 which is exactly the marginalization from the joint WFR density.
 
@@ -5372,11 +5768,13 @@ The substitution $s \to -i\tau$ (**Wick rotation**) transforms the Schrödinger 
 
 $$
 -\sigma \frac{\partial \Psi}{\partial \tau} = \hat{H}_{\text{strat}} \Psi.
+
 $$
 Under this **imaginary time evolution**, any initial state $\Psi_0$ converges to the ground state:
 
 $$
 \Psi(\tau) = e^{-\hat{H}_{\text{strat}} \tau / \sigma} \Psi_0 \xrightarrow{\tau \to \infty} c \cdot \Psi_{\text{Nash}},
+
 $$
 where $c$ is a normalization constant.
 
@@ -5415,6 +5813,7 @@ On a 2-dimensional latent manifold with Fisher-compatible geometry (curvature $K
 
 $$
 A_{\text{1 nat}} = 4\ell_L^2,
+
 $$
 where $\ell_L$ is the Levin Length.
 
@@ -5424,6 +5823,7 @@ where $\ell_L$ is the Levin Length.
 
 $$
 ds = 2 \, dx \quad \text{(from } ds^2 = 4(dx^2 + dy^2) \text{ at } z = 0\text{)}.
+
 $$
 A coordinate displacement $\ell_L$ corresponds to geodesic (Riemannian) distance $2\ell_L$.
 
@@ -5431,6 +5831,7 @@ A coordinate displacement $\ell_L$ corresponds to geodesic (Riemannian) distance
 
 $$
 D_{\text{KL}}(p \| q) \approx \frac{1}{2} d_{\text{geo}}(p, q)^2.
+
 $$
 Thus, 1 nat of KL divergence corresponds to geodesic distance $\sqrt{2}$.
 
@@ -5454,11 +5855,13 @@ Under uniform saturation $T_{ij} = \sigma_{\max} G_{ij}$, the Metric Law reduces
 
 $$
 \frac{n-2}{r^2}\left(1 - \frac{1}{A(r)}\right) + \frac{n-2}{r} \cdot \frac{A'(r)}{A(r)^2} = \kappa \sigma_{\max} + \Lambda.
+
 $$
 The solution is:
 
 $$
 A(r) = \left( 1 - \frac{2\mu(r)}{(n-2)r^{n-2}} - \frac{\Lambda_{\text{eff}} r^2}{n(n-1)} \right)^{-1},
+
 $$
 where $\mu(r) = \frac{\kappa}{n-2} \int_0^r \sigma_{\max} r'^{n-1} dr'$ is the information mass function and $\Lambda_{\text{eff}} = \Lambda + \kappa \sigma_{\max}$.
 
@@ -5475,6 +5878,7 @@ On a 2-dimensional Fisher manifold, the area of a cell corresponding to 1 nat of
 
 $$
 A_{\text{cell}} = 4 \ell_L^2.
+
 $$
 
 ## Theorems
@@ -5489,6 +5893,7 @@ $$
 -\oint_{\partial \mathcal{Z}} \langle p v,n\rangle\,dA_G
 \;+\;
 \int_{\mathcal{Z}} \sigma\,d\mu_G.
+
 $$
 where $n$ is the outward unit normal and $dA_G$ is the induced boundary area element. (Equivalently, if $\iota:\partial\mathcal{Z}\hookrightarrow \mathcal{Z}$ is the inclusion map, then the boundary flux is the pullback $\iota^*(p v\;\lrcorner\; d\mu_G)$.)
 
@@ -5498,6 +5903,7 @@ $$
 \frac{d\mathcal{V}}{ds}
 =
 -\oint_{\partial \mathcal{Z}} \langle p v,n\rangle\,dA_G,
+
 $$
 in the case $\sigma\equiv 0$.
 
@@ -5531,6 +5937,7 @@ Then the following are equivalent characterizations of the same optimal control 
 
    $$
    \omega := (A_t,\dots,A_{t+H-1},K_{t+1},\dots,K_{t+H}),
+
    $$
    the optimal controlled path law admits an exponential-family form relative to the reference measure induced by $\pi_0$ and $\bar{P}$:
 
@@ -5538,6 +5945,7 @@ Then the following are equivalent characterizations of the same optimal control 
    P^*(\omega\mid K_t=k)\ \propto\
    \Big[\prod_{h=0}^{H-1}\pi_0(A_{t+h}\mid K_{t+h})\,\bar{P}(K_{t+h+1}\mid K_{t+h},A_{t+h})\Big]\,
    \exp\!\left(\frac{1}{T_c}\sum_{h=0}^{H-1}\gamma^h\,\mathcal{R}(K_{t+h},A_{t+h})\right),
+
    $$
    where the normalizer is the (state-dependent) path-space normalizing constant.
 3. **Soft Bellman optimality:** the optimal value function $V^*$ satisfies the soft Bellman recursion of Proposition 10.2.2, and $\pi^*$ is the corresponding softmax policy.
@@ -5552,6 +5960,7 @@ $$
 \frac{1}{T_c}\,\mathbb{E}_{P}\!\left[\sum_{h=0}^{H-1}\gamma^h\,\mathcal{R}\right]
 -D_{\mathrm{KL}}(P(\cdot\mid k)\Vert P_0(\cdot\mid k))
 \right\},
+
 $$
 and the optimizer is exactly the exponentially tilted law {math}`P^*`. In the special case where {math}`P_0` is uniform (or treated as constant), the KL term differs from Shannon path entropy by an additive constant, recovering the standard "maximize entropy subject to expected reward" view.
 
@@ -5561,11 +5970,13 @@ A necessary condition for stable, grounded macrostates is the existence of const
 
 $$
 \epsilon \le I(X_t;K_t) \quad\text{and}\quad H(K_t)\le \log|\mathcal{K}|-\epsilon,
+
 $$
 and the net entropy balance satisfies
 
 $$
 \lambda_{\text{in}} \gtrsim \lambda_{\text{mix}}.
+
 $$
 Violations correspond to identifiable barrier modes:
 - If $I(X;K)\approx 0$: under-coupling - ungrounded inference / decoupling (Mode D.C).
@@ -5579,6 +5990,7 @@ Under the regularity and boundary-clamping hypotheses stated in {ref}`Appendix A
 
 $$
 R_{ij} - \frac{1}{2}R\,G_{ij} + \Lambda G_{ij} = \kappa\, T_{ij},
+
 $$
 where $\Lambda$ and $\kappa$ are constants and $T_{ij}$ is the **total Risk Tensor** induced by the reward field. *Units:* $\Lambda$ has the same units as curvature ($[R]\sim [z]^{-2}$), and $\kappa$ is chosen so that $\kappa\,T_{ij}$ matches those curvature units.
 
@@ -5595,11 +6007,13 @@ $$
 =
 \frac12\int_0^T\int_{\mathcal{Z}}
 \rho\left(\|v\|_G^2+\lambda^2 r^2\right)\,d\mu_G\,ds,
+
 $$
 with continuity equation
 
 $$
 \partial_s\rho+\nabla\!\cdot(\rho v)=\rho r.
+
 $$
 Define
 
@@ -5607,6 +6021,7 @@ $$
 T_{ij}:=
 -\frac{2}{\sqrt{|G|}}\frac{\delta(\sqrt{|G|}\,\mathcal{L}_{\mathrm{WFR}})}{\delta G^{ij}}
 \quad\text{(holding }\rho,v,r\text{ fixed).}
+
 $$
 Then
 
@@ -5614,6 +6029,7 @@ $$
 T_{ij}=\rho\,v_i v_j + P\,G_{ij},
 \qquad
 P=\frac12\,\rho\left(\|v\|_G^2+\lambda^2 r^2\right),
+
 $$
 which is the perfect-fluid form with reaction contributing an additive pressure term
 {math}`P_{\mathrm{react}}=\tfrac12\lambda^2\rho r^2`.
@@ -5634,6 +6050,7 @@ Near the origin, the combined dynamics exhibit a **supercritical pitchfork bifur
 
 $$
 \dot{r} = \mu r - r^3 + \sigma \xi
+
 $$
 where $r = |z|$, $\mu = 1$ (unstable fixed point), and $\sigma = \sqrt{2T_c}$ is the noise amplitude (see {prf:ref}`def-cognitive-temperature`).
 
@@ -5643,11 +6060,13 @@ where $r = |z|$, $\mu = 1$ (unstable fixed point), and $\sigma = \sqrt{2T_c}$ is
 
 $$
 dr = \left(\frac{1-r^2}{2} + u_\pi^r\right) d\tau + \sqrt{T_c(1-r^2)} dW_\tau
+
 $$
 where $u_\pi^r = u_\pi \cdot \hat{r}$ is the radial component of the control field. Taylor expanding near $r = 0$:
 
 $$
 dr \approx \left(\frac{1}{2} + u_\pi^r - \frac{r^2}{2}\right) d\tau + \sqrt{T_c}\, dW_\tau.
+
 $$
 For small control $u_\pi^r \ll 1$ and setting $\mu = 1/2 + u_\pi^r$, this matches the normal form $\dot{r} = \mu r - r^3/2 + \sigma\xi$.
 
@@ -5655,6 +6074,7 @@ For small control $u_\pi^r \ll 1$ and setting $\mu = 1/2 + u_\pi^r$, this matche
 
 $$
 T_c^* = \frac{\mu^2}{4} = \frac{1}{16}(1 + 2u_\pi^r)^2 \approx \frac{1}{16}.
+
 $$
 For $T_c > T_c^*$: symmetric phase; for $T_c < T_c^*$: broken phase with directional flow. $\square$
 
@@ -5664,11 +6084,13 @@ Consider the second-order SDE from Definition {prf:ref}`def-bulk-drift-continuou
 
 $$
 m\,\ddot{z}^k + \gamma\,\dot{z}^k + G^{kj}\partial_j\Phi + \Gamma^k_{ij}\dot{z}^i\dot{z}^j = \sqrt{2T_c}\,\left(G^{-1/2}\right)^{kj}\,\xi^j,
+
 $$
 where $m$ is the "inertial mass" and $\xi$ is white noise. In the limit $\gamma \to \infty$ with $m$ fixed (or equivalently, $m \to 0$ with $\gamma$ fixed), the dynamics reduce to the first-order Langevin equation:
 
 $$
 dz^k = -G^{kj}(z)\,\partial_j\Phi_{\text{gen}}(z)\,ds + \sqrt{2T_c}\,\left(G^{-1/2}(z)\right)^{kj}\,dW^j_s.
+
 $$
 
 ({prf:ref}`thm-atlas-duality-via-legendre-transform`) *theorem* — **Atlas Duality via Legendre Transform**
@@ -5677,16 +6099,19 @@ The Visual and Action Atlases are related by the Legendre transform $\mathcal{L}
 
 $$
 \mathcal{A}_{\text{act}} = \mathcal{L}(\mathcal{A}_{\text{vis}}),
+
 $$
 where the chart transition functions satisfy:
 
 $$
 \psi_\beta \circ \mathcal{L} \circ \phi_\alpha^{-1} = \nabla_{\dot{q}} L(q, \dot{q})
+
 $$
 for Lagrangian $L(q, \dot{q}) = \frac{1}{2}\|\dot{q}\|_G^2 - V(q)$.
 
 $$
 \mathcal{L}: T\mathcal{Q} \to T^*\mathcal{Q}, \qquad (q, \dot{q}) \mapsto \left(q, \frac{\partial L}{\partial \dot{q}}\right).
+
 $$
 For $L = \frac{1}{2}\|\dot{q}\|_G^2 - V(q)$, this gives $p = G(q)\dot{q}$, which is invertible when $G > 0$.
 
@@ -5696,6 +6121,7 @@ For $L = \frac{1}{2}\|\dot{q}\|_G^2 - V(q)$, this gives $p = G(q)\dot{q}$, which
 
 $$
 \psi_\beta \circ \mathcal{L} \circ \phi_\alpha^{-1}: (q^\alpha, \dot{q}^\alpha) \mapsto (q^\alpha, G_{\alpha\beta}(q)\dot{q}^\beta),
+
 $$
 which is smooth and invertible by positive-definiteness of $G$. $\square$
 
@@ -5712,6 +6138,7 @@ During perception, the agent compresses external entropy into internal free ener
 
 $$
 W_{\text{compress}} = T_c \cdot I(X_t; K_t) \geq 0,
+
 $$
 where $T_c$ is the cognitive temperature ({prf:ref}`def-cognitive-temperature`) and $I(X_t; K_t)$ is the mutual information extracted from the observation $X_t$ into the macro-state $K_t$.
 
@@ -5725,6 +6152,7 @@ During action, the agent expands internal free energy into external control:
 
 $$
 W_{\text{expand}} = T_c \cdot I(A_t; K_t) \geq 0,
+
 $$
 where $I(A_t; K_t)$ is the mutual information injected from the intention into the motor output.
 
@@ -5750,12 +6178,14 @@ All context instantiations share the same geometric structure:
 
    $$
    u_\pi(0) = G^{-1}(0) \cdot e_c = \frac{1}{4} e_c
+
    $$
    (at the Poincare disk origin where $G(0) = 4I$)
 3. **Motor Distribution:** The output distribution is:
 
    $$
    \pi(a | z, c) = \text{softmax}\left(-\frac{\Phi_{\text{eff}}(z, K, c)}{T_c}\right)
+
    $$
 
 ({prf:ref}`thm-hodge-decomposition`) *theorem* — **Hodge Decomposition of the Reward Field**
@@ -5764,6 +6194,7 @@ On the compact latent Riemannian manifold $(\mathcal{Z}, G)$, the Reward 1-form 
 
 $$
 \mathcal{R} = \underbrace{d\Phi}_{\text{Gradient}} + \underbrace{\delta \Psi}_{\text{Solenoidal}} + \underbrace{\eta}_{\text{Harmonic}}
+
 $$
 where:
 1. **$\Phi \in \Omega^0(\mathcal{Z})$** (Scalar Potential): The conservative/optimizable component. $d\Phi$ is an exact form.
@@ -5778,11 +6209,13 @@ Let the discount factor be $\gamma = e^{-\kappa \Delta t}$ where $\kappa > 0$ is
 
 $$
 V(z) = \mathbb{E}[r + \gamma V(z')]
+
 $$
 approaches the following PDE in the limit $\Delta t \to 0$:
 
 $$
 \boxed{-\Delta_G V(z) + \kappa^2 V(z) = \rho_r(z)}
+
 $$
 where:
 - $\Delta_G = \frac{1}{\sqrt{|G|}} \partial_i \left( \sqrt{|G|} G^{ij} \partial_j \right)$ is the **Laplace-Beltrami operator** on the manifold $(\mathcal{Z}, G)$
@@ -5791,11 +6224,13 @@ where:
 
 $$
 V(z) = r \Delta t + \gamma \mathbb{E}[V(z')] \approx r \Delta t + (1 - \kappa \Delta t)\left(V + \nabla V \cdot b \Delta t + T_c \Delta_G V \Delta t\right).
+
 $$
 Rearranging and dividing by $\Delta t$, then taking $\Delta t \to 0$:
 
 $$
 \kappa V = r + \nabla V \cdot b + T_c \Delta_G V.
+
 $$
 For the stationary case ($b = 0$) and absorbing the temperature into the source term, this yields the Helmholtz equation $-\Delta_G V + \kappa^2 V = \rho_r$. Details in {ref}`Appendix A.5 <sec-appendix-a-full-derivations>`. $\square$
 
@@ -5811,6 +6246,7 @@ In the WFR dynamics ({prf:ref}`def-the-wfr-action`, {ref}`Section 20 <sec-wasser
 
 $$
 r(z) = \frac{1}{s_r} \left( V(z) - \bar{V} \right),
+
 $$
 where $\bar{V} = \mathbb{E}_\rho[V]$ is the mean value and $s_r$ is the reaction time scale (computation time).
 
@@ -5818,6 +6254,7 @@ where $\bar{V} = \mathbb{E}_\rho[V]$ is the mean value and $s_r$ is the reaction
 
 $$
 \dot{m}(s) = m(s) \cdot r(z(s)) \propto m(s) \cdot (V(z(s)) - \bar{V}).
+
 $$
 
 Probability density increases in regions where $V > \bar{V}$ and decreases where $V < \bar{V}$.
@@ -5832,6 +6269,7 @@ Probability density increases in regions where $V > \bar{V}$ and decreases where
 
 $$
 \dot{S}_i = \int_{\mathcal{Z}} \frac{\|J\|_G^2}{\rho D} \, d\mu_G > 0
+
 $$
 
 *Remark.* The probability density $\rho_\infty$ is time-independent, but individual trajectories circulate indefinitely. This distinguishes NESS from true equilibrium (where $J = 0$).
@@ -5852,6 +6290,7 @@ moving according to the **geodesic SDE** (Definition {prf:ref}`def-bulk-drift-co
 $$
 dq^k = G^{kj}(q) p_j \, ds, \qquad
 dp_k = -\frac{\partial V}{\partial q^k} ds - \frac{1}{2}\frac{\partial G^{ij}}{\partial q^k} p_i p_j \, ds + u_{\pi,k} \, ds + \sqrt{2T_c} \, (G^{1/2})_{kj} dW^j_s,
+
 $$
 on a **curved manifold** with metric $G$ satisfying the **capacity constraint** (Theorem {prf:ref}`thm-capacity-constrained-metric-law`), in a **screened potential** $V$ satisfying the **Helmholtz equation** (Theorem {prf:ref}`thm-the-hjb-helmholtz-correspondence`). The term $\frac{1}{2}\frac{\partial G^{ij}}{\partial q^k} p_i p_j$ encodes the geodesic correction (equivalent to Christoffel symbols in the position formulation).
 
@@ -5871,6 +6310,7 @@ For a $D$-dimensional latent manifold $(\mathcal{Z}, G)$, the maximum informatio
 
 $$
 \boxed{I_{\max} = \nu_D \cdot \frac{\text{Area}(\partial\mathcal{Z})}{\ell_L^{D-1}}}
+
 $$
 
 where:
@@ -5879,8 +6319,10 @@ where:
 - $\nu_D$ is the Holographic Coefficient (Definition {prf:ref}`def-holographic-coefficient`)
 
 *Corollary (Poincare disk, $D=2$).* For the 2-dimensional Poincare disk, the formula reduces to the Bekenstein-Hawking form:
+
 $$
 I_{\max} = \frac{\text{Area}(\partial\mathcal{Z})}{4\ell_L^2}
+
 $$
 where the $\ell_L^2$ (rather than $\ell_L^{D-1} = \ell_L$) arises from the Poincare disk metric normalization $G(0) = 4I$, which maps a coordinate cell of side $\ell_L$ to Riemannian area $4\ell_L^2$.
 
@@ -5888,6 +6330,7 @@ where the $\ell_L^2$ (rather than $\ell_L^{D-1} = \ell_L$) arises from the Poinc
 
 $$
 I_{\text{bulk}} = \int_{\mathcal{Z}} \rho_I \, d\mu_G = \frac{1}{\kappa} \oint_{\partial\mathcal{Z}} \text{Tr}(K) \, dA_G,
+
 $$
 where $K$ is the extrinsic curvature of the boundary and $\kappa$ is the coupling constant from the Metric Law.
 
@@ -5911,19 +6354,23 @@ Let $v^k = dz^k/ds$ be the velocity of the agent's belief update in computation 
 
 $$
 \|v\|_G \to 0.
+
 $$
 $$
 dz^k = \left( -G^{kj}\partial_j \Phi_{\text{eff}} + u_\pi^k - \Gamma^k_{ij}\dot{z}^i\dot{z}^j \right) ds + \sqrt{2T_c}(G^{-1/2})^{kj} dW^j_s.
+
 $$
 The drift velocity scales as:
 
 $$
 v^k \propto G^{kj} \partial_j \Phi_{\text{eff}}.
+
 $$
 As the information density approaches saturation, Lemma {prf:ref}`lem-metric-divergence-at-saturation` implies $G_{rr} \to \infty$, hence $G^{rr} \to 0$. The radial component of velocity:
 
 $$
 v^r = -G^{rr}\partial_r \Phi_{\text{eff}} \to 0. \quad \blacksquare
+
 $$
 *Operational interpretation.* The agent becomes **frozen in thought**. Its internal update rate slows as the "inertia" (mass = metric, per Definition {prf:ref}`def-mass-tensor`) becomes infinite. The agent can still receive observations (inflow), but it cannot process them into updated beliefs or emit actions (outflow). This is **Causal Stasis**: the agent is overwhelmed by its own representational complexity.
 
@@ -5935,11 +6382,13 @@ Under the overdamped dynamics ({ref}`Section 22.5 <sec-the-overdamped-limit>`) w
 
 $$
 dz = -G^{-1}(z) \nabla V_y(z, K)\, ds + \sqrt{2T_c}\, G^{-1/2}(z)\, dW_s, \quad T_c \text{ cognitive temperature } ({prf:ref}`def-cognitive-temperature`)
+
 $$
 the limiting chart assignment satisfies:
 
 $$
 \lim_{s \to \infty} K(z(s)) \in \mathcal{A}_y \quad \text{almost surely},
+
 $$
 provided:
 1. $z(0) \in \mathcal{B}_y$ (initial condition in the basin)
@@ -5948,6 +6397,7 @@ provided:
 
 $$
 \frac{dL}{ds} = \nabla V_y \cdot \dot{z} = -\|\nabla V_y\|_G^2 + \text{noise terms}.
+
 $$
 For small $T_c$, the deterministic term dominates, ensuring $L$ decreases until $z$ reaches a local minimum. The class-$y$ region is the global minimum of $V_y$ by construction. Full proof in {ref}`Appendix A.5 <sec-appendix-a-full-derivations>`. $\square$
 
@@ -5957,6 +6407,7 @@ The training of the Universal Governor has bilevel structure:
 
 $$
 \min_\phi \; J(\phi) \quad \text{s.t.} \quad \theta_t = \theta_t(\Lambda_{0:t-1}), \quad \Lambda_t = \pi_{\mathfrak{G}}(s_{t:t-H}; \phi).
+
 $$
 The inner problem (agent learning) depends on the outer variables (Governor parameters) through the control sequence $\{\Lambda_t\}$.
 
@@ -5970,6 +6421,7 @@ If the Governor $\pi_{\mathfrak{G}}$ selects $\Lambda_t$ such that:
 
 $$
 \Delta V_{\mathfrak{L}} := V_{\mathfrak{L}}(\theta_{t+1}) - V_{\mathfrak{L}}(\theta_t) < 0 \quad \forall t \text{ where } \theta_t \notin \Omega,
+
 $$
 then the training process converges to the largest invariant set $\Omega$ where $\Delta V_{\mathfrak{L}} = 0$. Under standard regularity (twice-differentiable $\mathcal{L}$, LICQ), $\Omega$ consists of KKT points.
 
@@ -5992,6 +6444,7 @@ Then the memory gradient $\|\nabla_G \Psi_{\text{mem}}\|_G$ can exceed the local
 
 $$
 \|\nabla_G \Psi_{\text{mem}}(z_t)\|_G \approx |\alpha(t^*)| \cdot \|\nabla_G H_\tau(z_t, z^*)\|_G.
+
 $$
 For $d_G(z_t, z^*) \sim O(\sqrt{\tau})$, the gradient $\|\nabla_G H_\tau\|_G \sim O(\tau^{-(d+1)/2})$ can be made arbitrarily large by choosing small $\tau$. If $|\alpha(t^*)|$ is sufficiently large, this dominates $\|\nabla_G \Phi_{\text{eff}}\|_G$. $\square$
 
@@ -6005,6 +6458,7 @@ Under the firewall constraint (Definition {prf:ref}`def-bulk-filtered-retrieval-
 
 $$
 \mathbf{f}_{\text{ret}} = -G^{-1}\nabla_G \Psi_{\text{ret}}
+
 $$
 is smooth (Lipschitz in $z$) and independent of external texture coordinates $z_{\text{tex,ext}}$.
 
@@ -6027,6 +6481,7 @@ Let $\sigma_{\text{ret}}(z)$ be the retrieval source term in the WFR continuity 
 
 $$
 \int_{\mathcal{Z}} \left( \rho_I(z) + \sigma_{\text{ret}}(z) \right) \, d\mu_G \leq \kappa \, C_{\partial}
+
 $$
 where $C_{\partial} = \nu_D \cdot \text{Area}(\partial\mathcal{Z})/\ell_L^{D-1}$ is the boundary capacity (Definition {prf:ref}`def-holographic-coefficient`, {prf:ref}`def-levin-length`).
 
@@ -6052,11 +6507,13 @@ Let $\mathcal{F}[p, \pi]$ be the entropy-regularized objective (Definition {prf:
 
 $$
 \mathcal{F}[p, \pi] = \int_{\mathcal{Z}} p(z) \Big( V(z) - \tau H(\pi(\cdot|z)) \Big) d\mu_G.
+
 $$
 If the value function $V$ is **uninformative** in a region $\Omega \subset \mathcal{Z}$ -- i.e., $\nabla V|_\Omega \approx 0$ and $\nabla^2 V|_\Omega \approx 0$ -- then the entropy term dominates and the optimal belief concentrates toward maximum-entropy configurations:
 
 $$
 p^*(z) \propto \exp\left(-\frac{V(z)}{\tau}\right) \xrightarrow{\nabla V \to 0} \text{uniform on } \Omega.
+
 $$
 In the Poincare disk geometry, the maximum-entropy state is the vacuum $z = 0$.
 
@@ -6071,6 +6528,7 @@ Let $\Xi$ be the Ontological Stress (Definition {prf:ref}`def-ontological-stress
 
 $$
 \text{Fission} \iff \Xi > \Xi_{\text{crit}} \quad \text{AND} \quad \Delta V_{\text{proj}} > \mathcal{C}_{\text{complexity}}.
+
 $$
 *Units:* All quantities are in nats. The complexity cost $\mathcal{C}_{\text{complexity}}(N_c \to N_c + 1)$ includes the entropy increase $\log((N_c+1)/N_c)$ from the expanded codebook plus any regularization penalty on parameter count.
 
@@ -6080,6 +6538,7 @@ The query fission dynamics exhibit the **supercritical pitchfork bifurcation** s
 
 $$
 \frac{dr}{ds} = (\Xi - \Xi_{\text{crit}}) r - \alpha r^3 + \sigma\xi,
+
 $$
 where:
 - $\Xi - \Xi_{\text{crit}}$ plays the role of the bifurcation parameter $\mu$ in Theorem {prf:ref}`thm-pitchfork-bifurcation-structure`
@@ -6093,9 +6552,11 @@ where:
 
    $$
    r^* = \sqrt{\frac{\Xi - \Xi_{\text{crit}}}{\alpha}}.
+
    $$
 $$
 \Phi_{\text{fission}}(r) = -\frac{(\Xi - \Xi_{\text{crit}})}{2} r^2 + \frac{\alpha}{4} r^4,
+
 $$
 which has the standard pitchfork form. For $\Xi > \Xi_{\text{crit}}$, the origin has $\Phi_{\text{fission}}''(0) = -(\Xi - \Xi_{\text{crit}}) < 0$, becoming unstable. Stable minima appear at $r = \pm r^*$. The cubic term arises from router saturation: as daughters separate, they compete for data, and the loss landscape penalizes excessive separation. This matches the normal form of Theorem {prf:ref}`thm-pitchfork-bifurcation-structure` with $\mu = \Xi - \Xi_{\text{crit}}$. $\square$
 
@@ -6103,6 +6564,7 @@ which has the standard pitchfork form. For $\Xi > \Xi_{\text{crit}}$, the origin
 
 $$
 T_c < \frac{(\Xi - \Xi_{\text{crit}})^2}{4\alpha}.
+
 $$
 
 ({prf:ref}`thm-fusion-criterion`) *theorem* — **Fusion Criterion**
@@ -6111,6 +6573,7 @@ Charts $i$ and $j$ shall be merged if and only if:
 
 $$
 G_\Delta(i, j) < \mathcal{C}_{\text{complexity}}(N_c) - \mathcal{C}_{\text{complexity}}(N_c - 1) + \epsilon_{\text{hysteresis}}
+
 $$
 where:
 - $\mathcal{C}_{\text{complexity}}(N_c) = \log N_c + \lambda_{\text{param}} |\theta_{\text{chart}}|$ is the metabolic cost of maintaining $N_c$ charts ({ref}`Section 30.3 <sec-the-fission-criterion>`),
@@ -6118,6 +6581,7 @@ where:
 
 $$
 \mathcal{C}_{\text{complexity}}(N_c) - \mathcal{C}_{\text{complexity}}(N_c - 1) = \log\frac{N_c}{N_c - 1} + \lambda_{\text{param}} |\theta_{\text{chart}}|
+
 $$
 The hysteresis term $\epsilon_{\text{hysteresis}}$ breaks the symmetry with Fission, ensuring that a chart is not immediately re-created after being destroyed. $\square$
 
@@ -6129,6 +6593,7 @@ Let $r(s) := \|q_i(s) - q_j(s)\|$ be the query separation at computation time $s
 
 $$
 \frac{dr}{ds} = -(\Upsilon_{ij} - \Upsilon_{\text{crit}}) r - \alpha r^3 + \sigma\xi(s)
+
 $$
 where:
 - $\Upsilon_{\text{crit}} \in (0, 1)$ is the critical redundancy threshold,
@@ -6155,6 +6620,7 @@ Let $k_{\text{dead}}$ satisfy $U_{k_{\text{dead}}} < \epsilon_U$ and let $k_{\te
 
 $$
 \frac{\delta \mathcal{D}}{\delta N_{\text{codes}}} \approx \frac{\mathcal{D}_{k_{\text{stressed}}}}{H(K = k_{\text{stressed}})}
+
 $$
 
 ({prf:ref}`thm-thermodynamic-hysteresis-bound`) *theorem* — **Thermodynamic Lower Bound on Hysteresis**
@@ -6163,6 +6629,7 @@ Let $\mathcal{C}$ be a cycle of ontological operations consisting of a fission e
 
 $$
 \epsilon_{\text{hysteresis}} \geq \frac{1}{\beta_{\text{eff}}} \left( \Delta H_{\text{Shannon}} + \frac{1}{T_c}\mathcal{W}_{\text{comp}} \right)
+
 $$
 where $\beta_{\text{eff}} = 1/T_c$ is the inverse cognitive temperature and $\Delta H_{\text{Shannon}}$ is the entropy reduction associated with the discarded distinction.
 
@@ -6176,6 +6643,7 @@ where $\beta_{\text{eff}} = 1/T_c$ is the inverse cognitive temperature and $\De
 
 $$
 \epsilon_{\text{hysteresis}} \geq \inf_{\mathcal{C}} \oint \dot{\mathcal{M}}(s) ds
+
 $$
 Substituting the Landauer bound yields the stated inequality. $\square$
 
@@ -6201,21 +6669,25 @@ The metabolic flux $\dot{\mathcal{M}}$ provides a physical lower bound on the ra
 
 $$
 \dot{\mathcal{M}}(s) \ge T_c \left| \frac{d}{ds} H(\rho_s) \right|,
+
 $$
 where $H(\rho_s) = -\int_{\mathcal{Z}} \rho \ln \rho \, d\mu_G$ is the Shannon entropy and $T_c$ is the cognitive temperature ({prf:ref}`def-cognitive-temperature`, {ref}`Section 22.4 <sec-the-geodesic-baoab-integrator>`).
 
 $$
 \frac{d}{ds} H(\rho_s) = -\int_{\mathcal{Z}} (1 + \ln \rho) \partial_s \rho \, d\mu_G.
+
 $$
 Substituting the WFR continuity equation and integrating by parts (assuming vanishing flux at $\partial\mathcal{Z}$):
 
 $$
 \frac{d}{ds} H = \int_{\mathcal{Z}} \rho \langle \nabla \ln \rho, v \rangle_G \, d\mu_G - \int_{\mathcal{Z}} r \ln \rho \cdot \rho \, d\mu_G.
+
 $$
 By the Cauchy-Schwarz inequality on the tangent bundle $(T\mathcal{Z}, G)$:
 
 $$
 \left| \int_{\mathcal{Z}} \rho \langle \nabla \ln \rho, v \rangle_G \, d\mu_G \right| \le \left( \int_{\mathcal{Z}} \rho \|\nabla \ln \rho\|_G^2 \, d\mu_G \right)^{1/2} \left( \int_{\mathcal{Z}} \rho \|v\|_G^2 \, d\mu_G \right)^{1/2}.
+
 $$
 The first factor is the **Fisher Information** $\mathcal{I}(\rho) = \int \rho \|\nabla \ln \rho\|_G^2 \, d\mu_G$ {cite}`amari2016information`. Under the optimal transport scaling $v = -T_c \nabla \ln \rho$ (gradient flow of the free energy), we recover the de Bruijn identity {cite}`stam1959some` and the bound follows. The reaction term satisfies an analogous inequality via the $L^2(\rho)$ norm. See {ref}`Appendix E.3 <sec-appendix-e-rigorous-proof-sketches-for-ontological-and-metabolic-laws>` for the full proof. $\square$
 
@@ -6227,31 +6699,37 @@ Let $\rho_s$ evolve as a gradient flow of $V$ under WFR dynamics. The optimal co
 
 $$
 \left. \frac{d}{ds} \langle V \rangle_{\rho_s} \right|_{s=S^*} = \dot{\mathcal{M}}(S^*),
+
 $$
 provided such an $S^*$ exists in $(0, S_{\max})$.
 
 $$
 \frac{d}{dS} \mathcal{S}_{\text{delib}} = -\frac{d}{dS} \langle V \rangle_{\rho_S} + \dot{\mathcal{M}}(S).
+
 $$
 The first term is the **Value-Improvement Rate**:
 
 $$
 \frac{d}{dS} \langle V \rangle_{\rho_S} = \int_{\mathcal{Z}} V(z) \partial_s \rho(S, z) \, d\mu_G.
+
 $$
 Applying the WFR continuity equation $\partial_s \rho = \rho r - \nabla \cdot (\rho v)$:
 
 $$
 \frac{d}{dS} \langle V \rangle_{\rho_S} = \int_{\mathcal{Z}} V \cdot \rho r \, d\mu_G + \int_{\mathcal{Z}} V (-\nabla \cdot (\rho v)) \, d\mu_G.
+
 $$
 Integrating the divergence term by parts (assuming vanishing flux at $\partial\mathcal{Z}$):
 
 $$
 \int_{\mathcal{Z}} V (-\nabla \cdot (\rho v)) \, d\mu_G = \int_{\mathcal{Z}} \rho \langle \nabla V, v \rangle_G \, d\mu_G.
+
 $$
 For gradient flow dynamics, $v = -G^{-1} \nabla V$ (up to temperature scaling), so $\langle \nabla V, v \rangle_G = -\|\nabla V\|_G^2 \le 0$. Thus:
 
 $$
 \frac{d}{dS} \langle V \rangle_{\rho_S} = \int_{\mathcal{Z}} \rho \left( V r - \|\nabla V\|_G^2 \right) d\mu_G.
+
 $$
 The stationarity condition $\frac{d}{dS} \mathcal{S}_{\text{delib}} = 0$ yields the optimality condition. See {ref}`Appendix E.4 <sec-appendix-e-rigorous-proof-sketches-for-ontological-and-metabolic-laws>` for the full proof using the WFR adjoint operator. $\square$
 
@@ -6267,6 +6745,7 @@ Let $\Gamma(s) := \left| \frac{d}{ds} \langle V \rangle_{\rho_s} \right|$ be the
 
 $$
 \left. \frac{d}{dS} \mathcal{S}_{\text{delib}} \right|_{S=0} = -\Gamma(0) + \dot{\mathcal{M}}(0).
+
 $$
 If $\Gamma(0) < \dot{\mathcal{M}}(0)$, then $\frac{d}{dS} \mathcal{S}_{\text{delib}}|_{S=0} > 0$. Since $\mathcal{S}_{\text{delib}}$ is increasing at $S=0$ and we assume $\mathcal{S}_{\text{delib}}$ is convex (which holds when $\Gamma(s)$ is decreasing due to diminishing returns), the minimum occurs at the boundary $S^* = 0$.
 
@@ -6279,21 +6758,27 @@ If $\Gamma(0) > \dot{\mathcal{M}}(0)$, then $\frac{d}{dS} \mathcal{S}_{\text{del
 When the Value Curl does not vanish ($\mathcal{F} \neq 0$, Definition {prf:ref}`def-value-curl`), the agent converges to a Non-Equilibrium Steady State (Theorem {prf:ref}`thm-ness-existence`) rather than a fixed point. The stopping criterion generalizes as follows:
 
 **Conservative Case ($\mathcal{F} = 0$):** Stop when the Value-Improvement Rate equals the metabolic cost:
+
 $$
 \Gamma(S^*) = \dot{\mathcal{M}}(S^*)
+
 $$
 
 **Non-Conservative Case ($\mathcal{F} \neq 0$):** Stop when the **orbit parameters converge**:
+
 $$
 \frac{d}{ds}\|\text{Orbit}(s)\|_{\text{param}} < \epsilon_{\text{orbit}}
+
 $$
 even if the agent continues moving within the limit cycle.
 
 *Remark.* In the conservative case, convergence is to a fixed point ($\dot{z} \to 0$). In the non-conservative case, convergence is to a stable limit cycle (periodic orbit with constant parameters).
 
 **Operational Criterion:** Define the orbit-change metric as:
+
 $$
 \Delta_{\text{orbit}}(s) := \left\| \oint_{\gamma_s} \mathcal{R} - \oint_{\gamma_{s-\delta}} \mathcal{R} \right\|
+
 $$
 where $\gamma_s$ is the closed trajectory over one cycle at time $s$. Stop when $\Delta_{\text{orbit}}(s) < \epsilon_{\text{orbit}}$.
 
@@ -6305,9 +6790,11 @@ The total entropy production rate of the agent $\sigma_{\text{tot}}$ during comp
 
 $$
 \sigma_{\text{tot}}(s) := \frac{d}{ds} H(\rho_s) + \frac{1}{T_c} \dot{\mathcal{M}}(s) \ge 0.
+
 $$
 $$
 \sigma_{\text{tot}} = \frac{dH}{ds} + \frac{\dot{\mathcal{M}}}{T_c} \ge \frac{dH}{ds} + \left| \frac{dH}{ds} \right| = \frac{dH}{ds} - \frac{dH}{ds} = 0.
+
 $$
 If $\frac{d}{ds} H \ge 0$, then $\sigma_{\text{tot}} \ge 0$ trivially since $\dot{\mathcal{M}} \ge 0$. $\square$
 
@@ -6315,6 +6802,7 @@ If $\frac{d}{ds} H \ge 0$, then $\sigma_{\text{tot}} \ge 0$ trivially since $\do
 
 $$
 \eta_{\text{thought}} := \frac{-T_c \cdot dH/ds}{\dot{\mathcal{M}}} \le 1.
+
 $$
 An agent is "thermodynamically fragile" if it requires high metabolic flux for low entropy reduction ($\eta_{\text{thought}} \ll 1$).
 
@@ -6324,11 +6812,13 @@ Let $P_{\text{obs}}(z' | z, a)$ be the conditional density obtained via passive 
 
 $$
 \Delta_{\text{causal}}(z, a) := D_{\text{KL}} \left( P_{\text{int}}(z' | do(z, a)) \| P_{\text{obs}}(z' | z, a) \right).
+
 $$
 *Interpretation:* The Causal Deficit measures the discrepancy between interventional and observational predictions. If $\Delta_{\text{causal}} = 0$, the observational model is causally correct -- correlations reflect true causal mechanisms. If $\Delta_{\text{causal}} > 0$, the agent has mistaken a correlation for a causal link (confounding) or vice versa.
 
 $$
 \text{Vol}_{\text{ignorant}} := \int_{\mathcal{Z} \times \mathcal{A}} \mathbb{I}[\Delta_{\text{causal}}(z, a) > 0] \, d\mu_G(z) \, da.
+
 $$
 This volume represents the region of state-action space where the agent's observational model fails to predict interventional outcomes. $\square$
 
@@ -6338,6 +6828,7 @@ The Equation of Motion ({ref}`Section 22.2 <sec-the-coupled-jump-diffusion-sde>`
 
 $$
 F_{\text{total}} = \underbrace{-G^{-1} \nabla_G V}_{\text{Utility Force}} + \underbrace{\beta_{\text{exp}} \mathbf{f}_{\text{exp}}}_{\text{Curiosity Force}},
+
 $$
 where:
 - $\mathbf{f}_{\text{exp}} := G^{-1} \nabla_z \Psi_{\text{causal}}$ is the gradient of the causal potential
@@ -6345,16 +6836,19 @@ where:
 
 $$
 \frac{d}{dt}\left( G_{kj} \dot{z}^j \right) - \frac{1}{2} \partial_k G_{ij} \dot{z}^i \dot{z}^j = -\partial_k V - \beta_{\text{exp}} \partial_k \Psi_{\text{causal}}.
+
 $$
 Expanding the left-hand side and identifying the Christoffel symbols of the first kind $[ij, k] = \frac{1}{2}(\partial_i G_{jk} + \partial_j G_{ik} - \partial_k G_{ij})$:
 
 $$
 G_{kj} \ddot{z}^j + [ij, k] \dot{z}^i \dot{z}^j = -\partial_k V - \beta_{\text{exp}} \partial_k \Psi_{\text{causal}}.
+
 $$
 Contracting with $G^{mk}$ and using $\Gamma^m_{ij} = G^{mk}[ij, k]$:
 
 $$
 \ddot{z}^m + \Gamma^m_{ij} \dot{z}^i \dot{z}^j = -G^{mk} \partial_k V - \beta_{\text{exp}} G^{mk} \partial_k \Psi_{\text{causal}}.
+
 $$
 In the overdamped limit ({ref}`Section 22.3 <sec-the-unified-effective-potential>`), the acceleration term vanishes and the drift field is $F_{\text{total}} = -G^{-1}\nabla V + \beta_{\text{exp}} G^{-1}\nabla\Psi_{\text{causal}}$. See {ref}`Appendix E.5 <sec-appendix-e-rigorous-proof-sketches-for-ontological-and-metabolic-laws>` for the full derivation. $\square$
 
@@ -6366,6 +6860,7 @@ The macro-ontology $K$ is **Interventionally Closed** if and only if the predict
 
 $$
 I(K_{t+1} ; Z_{\text{micro}, t} | K_t, do(A_t)) = 0.
+
 $$
 *Interpretation:* If an agent moves an object (intervention), and the resulting macro-state $K_{t+1}$ depends on micro-texture $z_{\text{tex}}$ that was previously labeled "noise," the ontology has failed. The intervention has **exposed a hidden variable**, triggering **Ontological Expansion** ({ref}`Section 30 <sec-ontological-expansion-topological-fission-and-the-semantic-vacuum>`).
 
@@ -6379,6 +6874,7 @@ Let $r_t$ be the instantaneous reward signal with information content $\mathcal{
 
 $$
 \dot{E}_{\text{in}}^{\max}(t) = k_B T_{\text{env}} \cdot \mathcal{I}_{\text{util}}(r_t)
+
 $$
 
 where $T_{\text{env}}$ is the environmental temperature (characterizing energy availability).
@@ -6389,12 +6885,14 @@ Let $\tau > 0$ be a target survival horizon. A **sufficient condition** for the 
 
 $$
 \int_0^\tau \left( \mathfrak{T}_{\text{harvest}}(r_t) - \dot{\mathcal{M}}(t) \right) dt > \gamma_{\text{leak}} \int_0^\tau B(t) \, dt - B_0
+
 $$
 
 *Equivalently:* The time-averaged **Net Harvest Rate** must be positive:
 
 $$
 \langle \mathfrak{T} - \dot{\mathcal{M}} \rangle_\tau > \gamma_{\text{leak}} \langle B \rangle_\tau - \frac{B_0}{\tau}
+
 $$
 
 Requiring $B(\tau) > 0$ and rearranging yields the inequality. $\square$
@@ -6407,6 +6905,7 @@ Maintaining Fisher Information $I_F$ on the latent manifold $(\mathcal{Z}, G)$ r
 
 $$
 \dot{E}_{\text{maintain}} \geq \frac{1}{2} T_c \cdot I_F
+
 $$
 
 where $T_c$ is the cognitive temperature ({prf:ref}`def-cognitive-temperature`) and $I_F$ is the Fisher Information of the belief distribution.
@@ -6426,6 +6925,7 @@ When available energy $B(t)$ falls below the maintenance requirement, the effect
 
 $$
 G_{ij}^{\text{eff}}(z, B) = f\left(\frac{B}{B_{\text{crit}}}\right) \cdot G_{ij}(z)
+
 $$
 
 where:
@@ -6437,6 +6937,7 @@ where:
 
 $$
 f(x) = 1 - e^{-x}
+
 $$
 
 This gives exponential saturation: $f(x) \approx x$ for $x \ll 1$ (linear regime) and $f(x) \approx 1$ for $x \gg 1$ (saturation).
@@ -6458,12 +6959,14 @@ The total effective potential combines task and homeostatic contributions:
 
 $$
 \Phi_{\text{total}}(z, B) = \Phi_{\text{task}}(z) + \Phi_{\text{homeo}}(z, B)
+
 $$
 
 The value function satisfies the augmented screened Poisson equation ({ref}`Section 24 <sec-the-reward-field-value-forms-and-hodge-geometry>`):
 
 $$
 (-\Delta_{G^{\text{eff}}} + \kappa^2) V = \rho_r + \rho_{\text{homeo}}
+
 $$
 
 where:
@@ -6479,6 +6982,7 @@ The transduction efficiency is bounded by the Carnot limit:
 
 $$
 \eta \leq \eta_{\text{Carnot}} = 1 - \frac{T_c}{T_{\text{env}}}
+
 $$
 
 where $T_c$ is the agent's cognitive temperature and $T_{\text{env}}$ is the environmental temperature.
@@ -6492,6 +6996,7 @@ The Locking Operator $\mathfrak{L}_{\text{sync}}$ is the Yang-Mills energy of th
 
 $$
 \mathfrak{L}_{\text{sync}}(G_A, G_B) := -\frac{1}{4g_{\text{lock}}^2} \int_{\mathcal{Z}_{\text{shared}}} \text{Tr}(\mathcal{F}_{AB}^{\mu\nu} \mathcal{F}_{AB,\mu\nu}) \sqrt{|G_{AB}|} \, d^D z
+
 $$
 
 **Step 1.** By Definition {prf:ref}`def-gauge-covariant-game-tensor`, each agent's belief spinor $\psi^{(i)}$ transforms under local gauge $U^{(i)}(z) \in G_{\text{Fragile}}$.
@@ -6502,6 +7007,7 @@ $$
 
 $$
 A_\mu^{(A)}(z) \sim A_\mu^{(B)}(z) \quad \text{(gauge equivalent)}
+
 $$
 
 **Step 4.** The Yang-Mills action principle (Definition {prf:ref}`def-yang-mills-action`) states that physical configurations minimize the integrated curvature squared. Applying this to $\mathcal{A}_{AB}$ yields the Locking Operator.
@@ -6512,6 +7018,7 @@ $$
 
 $$
 d_{\text{GH}}(\mathcal{U}_A, \mathcal{U}_B) \leq C \cdot \|\mathcal{F}_{AB}\|^{1/2}
+
 $$
 
 for a universal constant $C > 0$. Thus $\mathfrak{L}_{\text{sync}}$ controls the metric alignment.
@@ -6524,24 +7031,28 @@ Consider two agents interacting in a shared environment $E$. If they minimize th
 
 $$
 \mathcal{L}_{\text{joint}} = \|\hat{x}_{t+1}^A - x_{t+1}\|^2 + \|\hat{x}_{t+1}^B - x_{t+1}\|^2 + \beta \Psi_{\text{sync}}
+
 $$
 
 Then, as the interaction coupling $\beta \to \infty$, the system undergoes a phase transition where the internal gauge groups $U_A(z)$ and $U_B(z)$ become locked:
 
 $$
 U_A(z) \cdot U_B^{-1}(z) \to \text{const}.
+
 $$
 
 **Step 1 (Setup).** Let $\psi^{(A)}, \psi^{(B)}$ be belief spinors (Definition {prf:ref}`def-cognitive-spinor`) with local gauge transformations:
 
 $$
 \psi'^{(i)} = U^{(i)}(z) \psi^{(i)}, \quad U^{(i)} \in G_{\text{Fragile}}
+
 $$
 
 **Step 2 (Prediction Error).** The prediction error for agent $i$ is:
 
 $$
 \epsilon^{(i)} = \|D^{(i)}(\psi^{(i)}) - x_{t+1}\|^2
+
 $$
 
 where $D^{(i)}$ is the TopologicalDecoder ({ref}`Section 7.10 <sec-decoder-architecture-overview-topological-decoder>`).
@@ -6550,6 +7061,7 @@ where $D^{(i)}$ is the TopologicalDecoder ({ref}`Section 7.10 <sec-decoder-archi
 
 $$
 \Delta U(z) := U_A(z) U_B^{-1}(z)
+
 $$
 
 When $\Delta U \neq \text{const}$, the agents encode the same environment state $x$ with spatially varying internal orientations.
@@ -6558,18 +7070,21 @@ When $\Delta U \neq \text{const}$, the agents encode the same environment state 
 
 $$
 \Psi_{\text{sync}} = \int_{\mathcal{Z}_{\text{shared}}} \text{Tr}(\mathcal{F}_{AB}^{\mu\nu} \mathcal{F}_{AB,\mu\nu}) \, d\mu_G
+
 $$
 
 **Step 5 (Joint Action).** The joint WFR action (Definition {prf:ref}`def-joint-wfr-action`) becomes:
 
 $$
 \mathcal{A}_{\text{joint}} = \mathcal{A}_{\text{WFR}}^{(A)} + \mathcal{A}_{\text{WFR}}^{(B)} + \beta \Psi_{\text{sync}}
+
 $$
 
 **Step 6 (Gradient Flow).** At equilibrium, the functional derivative vanishes:
 
 $$
 \frac{\delta \mathcal{A}_{\text{joint}}}{\delta A_\mu^{(i)}} = 0
+
 $$
 
 This yields coupled Yang-Mills equations for both agents.
@@ -6580,6 +7095,7 @@ This yields coupled Yang-Mills equations for both agents.
 
 $$
 [D_{AB}^\mu, D_{AB}^\nu] = 0
+
 $$
 
 Parallel transport on the joint bundle is path-independent.
@@ -6588,6 +7104,7 @@ Parallel transport on the joint bundle is path-independent.
 
 $$
 A_\mu^{(A)}(z) - A_\mu^{(B)}(z) = \partial_\mu \chi(z)
+
 $$
 
 for some $\chi: \mathcal{Z} \to \mathfrak{g}$.
@@ -6596,6 +7113,7 @@ for some $\chi: \mathcal{Z} \to \mathfrak{g}$.
 
 $$
 A_\mu^{(A)}(z) = A_\mu^{(B)}(z)
+
 $$
 
 in this fixed gauge.
@@ -6607,6 +7125,7 @@ $$
 0 & \beta < \beta_c \\
 v_{\text{lock}} = \sqrt{(\beta - \beta_c)/\lambda_{\text{lock}}} & \beta > \beta_c
 \end{cases}
+
 $$
 
 This is analogous to Corollary {prf:ref}`cor-ontological-ssb`.
@@ -6621,6 +7140,7 @@ The **Untranslatability** $\mathcal{U}_{AB}(m)$ of message $m$ between agents wi
 
 $$
 \mathcal{U}_{AB}(m) \leq \|m\| \cdot \oint_{\partial\Sigma} \|\mathcal{F}_{AB}\|_F \, dA
+
 $$
 
 where $\Sigma$ is any surface bounded by the communication path.
@@ -6629,12 +7149,14 @@ where $\Sigma$ is any surface bounded by the communication path.
 
 $$
 \mathcal{H}_\gamma = \mathcal{P}\exp\left(-ig \oint_\gamma A_\mu \, dz^\mu\right)
+
 $$
 
 **Step 2.** By the non-Abelian Stokes theorem:
 
 $$
 \mathcal{H}_\gamma = \exp\left(-ig \int_\Sigma \mathcal{F}_{\mu\nu} \, dS^{\mu\nu}\right) + O(\mathcal{F}^2)
+
 $$
 
 **Step 3.** When $\mathcal{F}_{AB} \neq 0$, the holonomy is non-trivial: the message received by $B$ differs from the message sent by $A$.
@@ -6643,6 +7165,7 @@ $$
 
 $$
 \|m_{\text{received}} - m_{\text{sent}}\| \leq \|m\| \cdot \|\mathcal{H}_\gamma - \mathbb{1}\|
+
 $$
 
 **Step 5.** Bounding the holonomy deviation by the curvature integral via standard estimates yields the theorem.
@@ -6655,12 +7178,14 @@ Let $\mathcal{L}$ be the Language Channel with Shannon capacity $C_{\mathcal{L}}
 
 $$
 \dim(\mathfrak{g}) \cdot H(G_A) \leq C_{\mathcal{L}}
+
 $$
 
 **Step 1.** By Theorem {prf:ref}`thm-causal-information-bound`, the maximum information transmittable through the Language Channel is:
 
 $$
 C_{\mathcal{L}} = \nu_D \cdot \frac{\text{Area}(\partial\mathcal{L})}{\ell_L^{D-1}}
+
 $$
 
 **Step 2.** To achieve complete gauge alignment, Agent $A$ must transmit sufficient information to specify all $\dim(\mathfrak{g})$ independent gauge parameters.
@@ -6671,12 +7196,14 @@ $$
 
 $$
 I_{\text{required}} = \dim(\mathfrak{g}) \cdot H(G_A)
+
 $$
 
 **Step 5.** If $I_{\text{required}} > C_{\mathcal{L}}$, complete locking is impossible by Shannon's theorem. The residual unlocked subspace has dimension:
 
 $$
 d_{\text{unlocked}} = \dim(\mathfrak{g}) - \lfloor C_{\mathcal{L}} / H(G_A) \rfloor
+
 $$
 
 $\square$
@@ -6687,6 +7214,7 @@ Under bandwidth-constrained communication, gauge locking proceeds in eigenvalue 
 
 $$
 k_{\max} = \max\left\{k : \sum_{j=1}^k H(\sigma_j v_j) \leq C_{\mathcal{L}} \cdot T\right\}
+
 $$
 
 
@@ -6698,6 +7226,7 @@ In the limit of perfect locking ($\mathcal{F}_{AB} \to 0$), the private manifold
 
 $$
 \mathcal{Z}_{\text{shared}} := (\mathcal{Z}_A \sqcup \mathcal{Z}_B) / \sim_{\text{isometry}}
+
 $$
 
 where $\sim_{\text{isometry}}$ identifies points with vanishing metric friction.
@@ -6708,6 +7237,7 @@ where $\sim_{\text{isometry}}$ identifies points with vanishing metric friction.
 
 $$
 G_A(z) = \phi_{A \to B}^* G_B(\phi(z))
+
 $$
 
 The manifolds are isometric.
@@ -6727,13 +7257,17 @@ $\square$
 Let $P(z^{(N)}_{t+\Delta t} | z^{(N)}_t, \Xi_{<t})$ denote the transition probability. When agents have finite causal delay $\tau_{ij} > 0$:
 
 1. **On $\mathcal{Z}^{(N)}$ alone:** The Markov property fails:
+
    $$
    P(z^{(N)}_{t+\Delta t} | z^{(N)}_t) \neq P(z^{(N)}_{t+\Delta t} | z^{(N)}_{\leq t}).
+
    $$
 
 2. **On $\mathcal{Z}_{\text{causal}}$:** The Markov property is restored:
+
    $$
    P\left((z^{(N)}_{t+\Delta t}, \Xi_{<t+\Delta t}) \,\big|\, (z^{(N)}_t, \Xi_{<t})\right) = P\left((z^{(N)}_{t+\Delta t}, \Xi_{<t+\Delta t}) \,\big|\, \text{full history}\right).
+
    $$
 
 ({prf:ref}`thm-strategic-delay-tensor`) *theorem* — **Strategic Delay Tensor**
@@ -6742,6 +7276,7 @@ The effective coupling tensor $\mathcal{T}_{ij}$ between agents splits into inst
 
 $$
 \mathcal{T}_{ij}^{\text{total}}(t) = \underbrace{\mathcal{T}_{ij}^{\text{local}}(t)}_{\text{Short-range}} + \underbrace{\int_{-\infty}^t \mathcal{K}_{\text{delay}}(t-\tau) \mathcal{T}_{ij}^{\text{ghost}}(\tau) \, d\tau}_{\text{Long-range Retarded}},
+
 $$
 where $\mathcal{K}_{\text{delay}}(t-\tau) = \delta(t - \tau - \tau_{ij})$ is the delay kernel.
 
@@ -6753,6 +7288,7 @@ Let information propagate at speed $c_{\text{info}}$. The Value Function $V^{(i)
 
 $$
 \boxed{\left( \frac{1}{c_{\text{info}}^2} \frac{\partial^2}{\partial t^2} + \gamma_{\text{damp}} \frac{\partial}{\partial t} - \Delta_{G^{(i)}} + \kappa_i^2 \right) V^{(i)}(z, t) = \rho^{(i)}_r(z, t) + \sum_{j \neq i} \Phi^{\text{ret}}_{ij}(z, t)}
+
 $$
 where:
 - $\square_{G} = \frac{1}{c_{\text{info}}^2}\partial_t^2 - \Delta_G$ is the **D'Alembertian** on the manifold
@@ -6772,6 +7308,7 @@ In a competitive game where Agent $j$ is adversarial ($\beta_{ij} > 0$) and the 
 
 $$
 \tilde{G}^{(i)}_{kl} \xi^k \xi^l \geq G^{(i)}_{kl} \xi^k \xi^l \quad \forall \xi \in T_{z}\mathcal{Z}^{(i)}.
+
 $$
 *Consequence:* The effective **Mass** $M^{(i)}(z)$ (Definition {prf:ref}`def-mass-tensor`) of Agent $i$ increases: $\tilde{M}^{(i)} \geq M^{(i)}$.
 
@@ -6783,25 +7320,32 @@ In the relativistic formulation, a Nash equilibrium is a joint density $\boldsym
 
 $$
 \left\langle \frac{\partial \boldsymbol{\rho}^*}{\partial t} \right\rangle_T := \frac{1}{T}\int_0^T \frac{\partial \boldsymbol{\rho}^*}{\partial t}(\mathbf{z}, t') \, dt' = 0,
+
 $$
 where the averaging period $T \gg \max_{i,j} \tau_{ij}$ exceeds all causal delays.
 
 **Characterization:** A standing wave Nash equilibrium satisfies:
 
 1. **Time-averaged gradient vanishing:**
+
    $$
    \left\langle (G^{(i)})^{-1} \nabla_{z^{(i)}} \Phi_{\text{eff}}^{(i,\text{ret})} \right\rangle_T = 0 \quad \forall i
+
    $$
 
 2. **Balanced probability currents:** The flux exchanged between agents via retarded potentials is balanced over one wave period:
+
    $$
    \int_0^T \mathbf{J}^{(i)}(z, t) \, dt = 0 \quad \text{for all } z \in \mathcal{Z}^{(i)}
+
    $$
    where $\mathbf{J}^{(i)} = \rho^{(i)} \mathbf{v}^{(i)}$ is the probability current.
 
 3. **Resonance condition:** The system oscillates at the characteristic causal frequency:
+
    $$
    \omega_{\text{Nash}} \sim \frac{c_{\text{info}}}{\bar{d}_{\mathcal{E}}},
+
    $$
    where $\bar{d}_{\mathcal{E}}$ is the mean environment distance between agents.
 
@@ -6810,18 +7354,24 @@ where the averaging period $T \gg \max_{i,j} \tau_{ij}$ exceeds all causal delay
 In the Newtonian limit ($c_{\text{info}} \to \infty$), a strategy profile $\mathbf{z}^* = (z^{(1)*}, \ldots, z^{(N)*})$ is a Nash equilibrium if and only if it satisfies the instantaneous **geometric stasis conditions**:
 
 1. **Vanishing individual gradient:**
+
    $$
    (G^{(i)})^{-1} \nabla_{z^{(i)}} \Phi_{\text{eff}}^{(i)}(z^{(i)*}; z^{(-i)*}) = 0 \quad \forall i
+
    $$
 
 2. **Stationary Game Tensor:**
+
    $$
    \frac{d}{dt}\mathcal{G}_{ij}^{kl}\bigg|_{\mathbf{z}^*} = 0 \quad \forall i,j
+
    $$
 
 3. **Non-positive second variation:**
+
    $$
    \delta^2 V^{(i)}|_{z^{(i)*}} \leq 0 \quad \forall i, \forall \delta z^{(i)}
+
    $$
 
 *Remark (Nash vs. Pareto).* Geometric stasis need not coincide with global optimality (Pareto). The Game Tensor eigenstructure determines the gap: trace-negative (cooperative) tends toward Pareto-improving basins; trace-positive (adversarial) tends toward Pareto-suboptimal saddles.
@@ -6832,6 +7382,7 @@ Let $\boldsymbol{z} = (z_1, \dots, z_N)$ be the configuration of $N$ agents on $
 
 $$
 \tilde{G}(z) = G_{\text{intrinsic}}(z) + \alpha_{\text{adv}} \nabla^2_z \left( \Phi_{\text{int}} * \rho \right)(z)
+
 $$
 where $\Phi_{\text{int}}(z, \zeta)$ is the pairwise interaction potential ({prf:ref}`prop-interaction-kernel`) and $*$ denotes the Riemannian convolution.
 
@@ -6839,11 +7390,13 @@ where $\Phi_{\text{int}}(z, \zeta)$ is the pairwise interaction potential ({prf:
 
 $$
 (\delta G)_{ab}(z_i) = \alpha_{\text{adv}} \sum_{j \neq i} \frac{\partial^2 \Phi_{\text{int}}(z_i, z_j)}{\partial z_i^a \partial z_i^b}.
+
 $$
 3. **Continuum Limit:** We rewrite the sum as an integral against the empirical measure:
 
 $$
 (\delta G)_{ab}(z) = \alpha_{\text{adv}} \int_{\mathcal{Z}} \nabla^2_{z, a, b} \Phi_{\text{int}}(z, \zeta) \, d\mu_N(\zeta).
+
 $$
 4. **Convergence:** Assuming $\Phi_{\text{int}}$ is $C^2$ and bounded, and $\mu_N \rightharpoonup \rho$ weakly, the integral converges to the convolution $(\nabla^2 \Phi_{\text{int}} * \rho)(z)$.
 
@@ -6855,6 +7408,7 @@ Let $z^*(t)$ be a time-varying Nash equilibrium. An agent with maximum metabolic
 
 $$
 \|\dot{z}^*\|_{\tilde{G}(z^*)} \leq \sqrt{\frac{2 \dot{\mathcal{M}}_{\max}}{\sigma_{\text{met}}}}
+
 $$
 where $\tilde{G}$ is the game-augmented metric ({prf:ref}`thm-adversarial-mass-inflation`).
 
@@ -6882,6 +7436,7 @@ The Klein-Gordon equation for Value (Theorem {prf:ref}`thm-hjb-klein-gordon`) ge
 
 $$
 \left(\frac{1}{c_{\text{info}}^2}D_t^2 - D^i D_i + \kappa^2\right)V^{(i)} = \rho_r^{(i)} + \sum_{j \neq i} \Phi_{ij}^{\text{ret}}
+
 $$
 
 where:
@@ -6891,6 +7446,7 @@ where:
 
 $$
 \Box_A := \frac{1}{c_{\text{info}}^2}D_t^2 - \tilde{G}^{ij}D_i D_j = \frac{1}{\sqrt{|\tilde{G}|}}D_\mu\left(\sqrt{|\tilde{G}|}\tilde{G}^{\mu\nu}D_\nu\right)
+
 $$
 
 The screening term $\kappa^2 V$ and source terms are gauge-invariant scalars. $\square$
@@ -6901,6 +7457,7 @@ The effective metric (Theorem {prf:ref}`thm-adversarial-mass-inflation`) general
 
 $$
 \tilde{G}^{(i)}_{kl}(z) = G^{(i)}_{kl}(z) + \sum_{j \neq i} \beta_{ij} \text{Tr}\left[\tilde{\mathcal{G}}_{ij,kl}\right]
+
 $$
 
 where the trace projects onto the gauge-invariant component.
@@ -6914,6 +7471,7 @@ The field strength measures the failure of covariant derivatives to commute:
 
 $$
 [D_\mu, D_\nu]\psi = -ig\mathcal{F}_{\mu\nu}\psi
+
 $$
 
 $$
@@ -6925,6 +7483,7 @@ $$
 &= -ig(\partial_\mu A_\nu - \partial_\nu A_\mu - ig[A_\mu, A_\nu])\psi \\
 &= -ig\mathcal{F}_{\mu\nu}\psi \quad \square
 \end{aligned}
+
 $$
 
 *Interpretation:* If $\mathcal{F}_{\mu\nu} \neq 0$, parallel transport around a closed loop results in a non-trivial rotation. The "meaning" of strategic nuisance **twists** as one navigates the latent space.
@@ -6935,18 +7494,21 @@ The field strength satisfies the **Bianchi Identity**:
 
 $$
 D_\mu \mathcal{F}_{\nu\rho} + D_\nu \mathcal{F}_{\rho\mu} + D_\rho \mathcal{F}_{\mu\nu} = 0
+
 $$
 
 or in differential form notation: $D\mathcal{F} = 0$ where $D = d - ig[A, \cdot]$.
 
 $$
 [[D_\mu, D_\nu], D_\rho] + [[D_\nu, D_\rho], D_\mu] + [[D_\rho, D_\mu], D_\nu] = 0
+
 $$
 
 Since $[D_\mu, D_\nu] = -ig\mathcal{F}_{\mu\nu}$, this becomes:
 
 $$
 -ig([D_\rho, \mathcal{F}_{\mu\nu}] + \text{cyclic}) = 0
+
 $$
 
 The covariant derivative of $\mathcal{F}$ is $D_\rho\mathcal{F}_{\mu\nu} = \partial_\rho\mathcal{F}_{\mu\nu} - ig[A_\rho, \mathcal{F}_{\mu\nu}]$, and the identity follows. See **{ref}`Appendix E.17 <sec-appendix-e-rigorous-proof-sketches-for-ontological-and-metabolic-laws>`** for the complete algebraic derivation with component verification. $\square$
@@ -6959,12 +7521,14 @@ The Euler-Lagrange equations for the Yang-Mills action yield:
 
 $$
 D_\mu \mathcal{F}^{\mu\nu} = J^\nu
+
 $$
 
 where the **strategic current** (source term) is:
 
 $$
 J^{\nu,a} = g\sum_{i=1}^N \bar{\psi}^{(i)}\gamma^\nu T^a \psi^{(i)}
+
 $$
 
 Here $\gamma^\nu$ are the Dirac matrices (or their appropriate generalization to curved space), and the sum is over all $N$ agents.
@@ -6973,10 +7537,12 @@ Here $\gamma^\nu$ are the Dirac matrices (or their appropriate generalization to
 
 $$
 \partial_\mu \mathcal{F}^{\mu\nu,a} + gf^{abc}A_\mu^b\mathcal{F}^{\mu\nu,c} = J^{\nu,a}
+
 $$
 
 $$
 \frac{\delta S}{\delta A_\mu^a} = 0 \implies -\frac{1}{g^2}\partial_\nu(\sqrt{|\tilde{G}|}\mathcal{F}^{\mu\nu,a}) + \frac{1}{g}f^{abc}A_\nu^b\mathcal{F}^{\mu\nu,c} + \frac{\delta S_{\text{matter}}}{\delta A_\mu^a} = 0
+
 $$
 
 The matter variation gives the current $J^{\mu,a}$, and reorganizing yields the Yang-Mills equation. $\square$
@@ -6988,21 +7554,27 @@ The matter variation gives the current $J^{\mu,a}$, and reorganizing yields the 
 When the Higgs mass parameter satisfies $\mu^2 < 0$, the potential $V(\Phi)$ has a non-trivial minimum, and the gauge symmetry is **spontaneously broken**.
 
 **Vacuum Expectation Value:**
+
 $$
 \langle\Phi\rangle = \frac{v}{\sqrt{2}}, \quad v = \sqrt{-\mu^2/\lambda}
+
 $$
 
 **Mass Generation:**
 
 1. **Gauge boson masses:** The gauge fields acquire mass
+
    $$
    m_A = \frac{gv}{2}
+
    $$
    transforming from massless to massive (strategic inertia).
 
 2. **Fermion masses:** The belief spinors acquire effective mass
+
    $$
    m_{\text{eff},i} = \frac{y_{ii}v}{\sqrt{2}}
+
    $$
    through Yukawa coupling.
 
@@ -7010,6 +7582,7 @@ $$
 
 $$
 |D_\mu\Phi|^2 = \frac{1}{2}(\partial_\mu h)^2 + \frac{g^2v^2}{4}A_\mu A^\mu + \ldots
+
 $$
 
 The term $\frac{g^2v^2}{4}A_\mu A^\mu$ is a mass term for $A_\mu$ with $m_A^2 = g^2v^2/4$. Similarly, the Yukawa term generates fermion masses. See **{ref}`Appendix E.18 <sec-appendix-e-rigorous-proof-sketches-for-ontological-and-metabolic-laws>`** for the complete derivation including VEV calculation, Goldstone absorption, and the symmetry breaking pattern. $\square$
@@ -7022,6 +7595,7 @@ The screening mass $\kappa = -\ln\gamma$ from the Helmholtz equation (Theorem {p
 
 $$
 \Delta \geq \frac{\kappa^2}{2m_{\text{eff}}}
+
 $$
 
 where $m_{\text{eff}}$ is the effective inertia from Game Tensor inflation (Theorem {prf:ref}`thm-adversarial-mass-inflation`).
@@ -7038,18 +7612,24 @@ where $m_{\text{eff}}$ is the effective inertia from Game Tensor inflation (Theo
 1. **Assume gapless theory:** Suppose $\Delta = 0$, so the lowest excitation above the vacuum is massless.
 
 2. **Infinite correlation length:** The screening mass $\kappa = 0$ implies the correlation length diverges:
+
    $$
    \xi = \frac{1}{\kappa} \to \infty
+
    $$
 
 3. **Divergent information volume:** For massless correlations decaying as $1/r^{D-2}$ (rather than $e^{-\kappa r}$ for massive), the integrated mutual information in a volume $V$ diverges:
+
    $$
    I_{\text{bulk}} \propto \int_V \text{Corr}(x, y)\,dV \to \infty
+
    $$
 
 4. **Area law violation:** By Assumption 1 (Causal Information Bound):
+
    $$
    I_{\text{bulk}} \leq \nu_D \cdot \frac{\text{Area}(\partial V)}{\ell_L^{D-1}}
+
    $$
    A bounded system cannot store infinite information, so the bound is saturated.
 
@@ -7073,8 +7653,10 @@ Suppose $\Delta = 0$. By Theorem {prf:ref}`thm-computational-necessity-mass-gap`
 Therefore $\Delta > 0$ for any non-trivial theory describing an evolving system that satisfies the Causal Information Bound. $\square$
 
 *Bound:* The mass gap is bounded below by thermodynamic considerations:
+
 $$
 \Delta \geq \frac{1}{\beta}\left(\Delta H + \frac{\mathcal{W}}{T_c}\right)
+
 $$
 where $\Delta H$ is the enthalpy barrier for excitation, $\mathcal{W}$ is computational work, and $T_c$ is cognitive temperature. This follows from Theorem 30.15 (Thermodynamic Hysteresis).
 
@@ -7085,24 +7667,32 @@ where $\Delta H$ is the enthalpy barrier for excitation, $\mathcal{W}$ is comput
 Let $\mathcal{T}$ be a Conformal Field Theory on $\mathbb{R}^d$ ($d \geq 2$) with at least one primary operator of scaling dimension $\Delta_\phi < d/2$. Then $\mathcal{T}$ lies in the **Computational Swampland** (Definition {prf:ref}`def-computational-swampland`).
 
 1. **Infinite correlation length:** By conformal symmetry, two-point correlations decay algebraically:
+
    $$
    \langle \phi(x) \phi(0) \rangle \sim \frac{1}{|x|^{2\Delta_\phi}}
+
    $$
    The correlation length is $\xi = \infty$ (no exponential screening).
 
 2. **Bulk information divergence:** Consider a spherical region $V$ of radius $R$. The mutual information between bulk degrees of freedom is bounded below by the integrated correlation:
+
    $$
    I_{\text{bulk}}(V) \gtrsim \int_V \int_V \frac{dx\,dy}{|x-y|^{2\Delta_\phi}} \sim R^{2d - 2\Delta_\phi}
+
    $$
    For $\Delta_\phi < d/2$, the exponent $2d - 2\Delta_\phi > d$, so $I_{\text{bulk}}$ grows faster than volume.
 
 3. **Causal Information Bound violation:** The boundary capacity scales as:
+
    $$
    C_\partial(V) = \nu_d \cdot \frac{\text{Area}(\partial V)}{\ell_L^{d-1}} \sim R^{d-1}
+
    $$
    where $\nu_d$ is the Holographic Coefficient (Definition {prf:ref}`def-holographic-coefficient`). Since $2d - 2\Delta_\phi > d > d-1$ for $d \geq 2$ and $\Delta_\phi < d/2$, there exists $R_c$ such that for all $R > R_c$:
+
    $$
    I_{\text{bulk}}(V) > C_\partial(V)
+
    $$
    The Causal Information Bound (Theorem {prf:ref}`thm-causal-information-bound`) is violated.
 
@@ -7120,25 +7710,34 @@ Let $(\mathcal{Z}, G, \ell_L)$ be a latent manifold at resolution $\ell_L$ satis
 
 $$
 I'_{\text{bulk}} \leq C'_\partial
+
 $$
 
 1. **Information reduction:** By the Data Processing Inequality, coarse-graining cannot increase mutual information:
+
    $$
    I'_{\text{bulk}} \leq I_{\text{bulk}}
+
    $$
 
 2. **Capacity reduction:** Under coarse-graining by factor $\alpha$, the effective boundary area scales as:
+
    $$
    \text{Area}'(\partial\mathcal{Z}') \sim \frac{\text{Area}(\partial\mathcal{Z})}{\alpha^{d-1}}
+
    $$
    and the new capacity is (using the generalized bound with $\nu_d$):
+
    $$
    C'_\partial = \nu_d \cdot \frac{\text{Area}'}{(\ell'_L)^{d-1}} = \nu_d \cdot \frac{\text{Area}/\alpha^{d-1}}{\alpha^{d-1}\ell_L^{d-1}} = \frac{C_\partial}{\alpha^{2(d-1)}}
+
    $$
 
 3. **Bound preservation:** The information-to-capacity ratio under coarse-graining:
+
    $$
    \frac{I'_{\text{bulk}}}{C'_\partial} \leq \frac{I_{\text{bulk}}}{C_\partial/\alpha^{2(d-1)}} = \alpha^{2(d-1)} \frac{I_{\text{bulk}}}{C_\partial}
+
    $$
    For massive theories (exponentially decaying correlations), $I_{\text{bulk}}$ scales as area, so $I_{\text{bulk}}/C_\partial$ is scale-independent. For gapless theories, the ratio diverges—confirming they violate the bound at some scale. $\square$
 
@@ -7176,11 +7775,13 @@ Then the belief wave-function $\psi = \sqrt{\rho} e^{iV/\sigma}$ satisfies the *
 
 $$
 i\sigma \frac{\partial \psi}{\partial s} = \hat{H}_{\text{inf}} \psi,
+
 $$
 where the **Inference Hamiltonian** is:
 
 $$
 \hat{H}_{\text{inf}} := -\frac{\sigma^2}{2} \Delta_G + \Phi_{\text{eff}} + Q_B - \frac{i\sigma}{2} r.
+
 $$
 The terms are:
 - **Kinetic:** $-\frac{\sigma^2}{2} \Delta_G$ (belief diffusion via Laplace-Beltrami)
@@ -7194,6 +7795,7 @@ The terms are:
 
 $$
 i\sigma \partial_s \psi = i\sigma \left( \frac{\partial_s R}{R} + \frac{i}{\sigma}\partial_s V \right) \psi = \left( \frac{i\sigma \partial_s \rho}{2\rho} - \partial_s V \right) \psi.
+
 $$
 **Step 3 (Use governing equations).** Substitute the continuity equation for $\partial_s \rho$ and HJB for $\partial_s V$.
 
@@ -7205,6 +7807,7 @@ The joint belief wave-function $\Psi(\mathbf{z}, s)$ of $N$ strategically couple
 
 $$
 i\sigma \frac{\partial \Psi}{\partial s} = \hat{H}_{\text{strat}} \Psi + i\frac{\sigma}{2} \mathcal{R} \Psi,
+
 $$
 where:
 - $\hat{H}_{\text{strat}}$ is the Strategic Hamiltonian (Definition {prf:ref}`def-strategic-hamiltonian`)
@@ -7214,6 +7817,7 @@ where:
 
 $$
 i\sigma \frac{\partial \Psi}{\partial s} = \left[ \sum_{i=1}^N \left( -\frac{\sigma_i^2}{2} \Delta_{G^{(i)}} + \Phi^{(i)}_{\text{eff}} \right) + \sum_{i < j} \Phi_{ij} \right] \Psi + i\frac{\sigma}{2} \mathcal{R} \Psi.
+
 $$
 **Sources of entanglement:** Strategic entanglement arises from:
 1. **Potential coupling:** Non-zero $\Phi_{ij}(z^{(i)}, z^{(j)})$ creates position-position correlations
@@ -7227,11 +7831,13 @@ Under adversarial coupling, the effective kinetic operator for agent $i$ incorpo
 
 $$
 \hat{H}^{(i)}_{\text{kin,eff}} = -\frac{\sigma_i^2}{2} \tilde{\Delta}^{(i)},
+
 $$
 where the **Game-Augmented Laplacian** is:
 
 $$
 \tilde{\Delta}^{(i)} := \frac{1}{\sqrt{|\tilde{G}^{(i)}|}} \partial_a \left( \sqrt{|\tilde{G}^{(i)}|} (\tilde{G}^{(i)})^{ab} \partial_b \right),
+
 $$
 with strategic metric $\tilde{G}^{(i)} = G^{(i)} + \sum_{j \neq i} \beta_{ij} \mathcal{G}_{ij}$ (Definition {prf:ref}`def-the-game-tensor`, Equation 29.4.1).
 
@@ -7239,6 +7845,7 @@ with strategic metric $\tilde{G}^{(i)} = G^{(i)} + \sum_{j \neq i} \beta_{ij} \m
 
 $$
 \tilde{\Delta}^{(i)} = \tilde{\Delta}^{(i)}(z^{(i)}; z^{(-i)}).
+
 $$
 This creates **kinetic entanglement**—even without potential coupling, adversarial metric inflation entangles the agents.
 
@@ -7252,16 +7859,19 @@ A Nash equilibrium $\mathbf{z}^* = (z^{(1)*}, \ldots, z^{(N)*})$ (Theorem {prf:r
 
    $$
    \hat{H}_{\text{strat}} \Psi_{\text{Nash}} = E_0 \Psi_{\text{Nash}}, \quad E_0 = \min \text{spec}(\hat{H}_{\text{strat}}).
+
    $$
 2. **Localization:** In the semiclassical limit ($\sigma \to 0$), $|\Psi_{\text{Nash}}|^2$ concentrates near $\mathbf{z}^*$:
 
    $$
    \lim_{\sigma \to 0} |\Psi_{\text{Nash}}(\mathbf{z})|^2 = \delta(\mathbf{z} - \mathbf{z}^*).
+
    $$
 3. **Energy interpretation:** The ground state energy $E_0$ equals the total effective potential at Nash:
 
    $$
    E_0 = \sum_{i=1}^N \Phi^{(i)}_{\text{eff}}(\mathbf{z}^*) + \sum_{i < j} \Phi_{ij}(\mathbf{z}^*) + O(\sigma).
+
    $$
 See **{ref}`Appendix E.19 <sec-appendix-e-rigorous-proof-sketches-for-ontological-and-metabolic-laws>`** for the complete WKB/semiclassical analysis proving Gaussian concentration to delta function as $\sigma \to 0$, with explicit energy correction formulas. $\square$
 
@@ -7273,6 +7883,7 @@ In the semiclassical limit ($\sigma \ll \Delta \Phi_P$), the probability of cros
 
 $$
 P_{\text{tunnel}} \sim \exp\left(-\frac{2}{\sigma} \int_{\gamma} \sqrt{2(\Phi_{\text{eff,total}}(\mathbf{z}) - E_0)}\, d\ell_{G^{(N)}}\right),
+
 $$
 where:
 - $\gamma$ is the **optimal tunneling path** (instanton) connecting $\mathbf{z}^*_A$ to $\mathbf{z}^*_B$
@@ -7290,6 +7901,7 @@ To preserve the invariance of the kinetic term in the Inference Action under the
 
 $$
 D_\mu = \partial_\mu - i g_1 \frac{Y}{2} B_\mu,
+
 $$
 
 where:
@@ -7301,12 +7913,14 @@ where:
 
 $$
 \mathcal{L}_{\text{kin}} = \psi^* (i\sigma \partial_t) \psi - \frac{\sigma^2}{2}|\nabla \psi|^2.
+
 $$
 
 Under local transformation $\psi \to e^{i\theta(x)}\psi$:
 
 $$
 \partial_\mu \psi \to e^{i\theta}(\partial_\mu \psi + i(\partial_\mu\theta)\psi).
+
 $$
 
 The kinetic term acquires a spurious contribution $\sigma(\partial_\mu\theta)|\psi|^2$ that depends on the arbitrary function $\theta(x)$.
@@ -7315,12 +7929,14 @@ The kinetic term acquires a spurious contribution $\sigma(\partial_\mu\theta)|\p
 
 $$
 B_\mu \to B_\mu + \frac{2}{g_1 Y} \partial_\mu \theta(x).
+
 $$
 
 **Step 3.** The covariant derivative $D_\mu \psi = (\partial_\mu - ig_1(Y/2)B_\mu)\psi$ transforms homogeneously:
 
 $$
 D_\mu \psi \to e^{i\theta(x)} D_\mu \psi.
+
 $$
 
 **Step 4.** The gauge-invariant kinetic term is $(D_\mu\psi)^\dagger(D^\mu\psi) = |D_\mu\psi|^2$.
@@ -7341,6 +7957,7 @@ The process of **Belief Update** (e.g., Kalman Filtering or Predictive Coding) c
 
 $$
 \Psi_L' = U(x) \Psi_L, \quad U(x) = \exp\left( i \frac{\vec{\tau} \cdot \vec{\theta}(x)}{2} \right) \in SU(2)
+
 $$
 
 where $\vec{\tau} = (\tau_1, \tau_2, \tau_3)$ are the Pauli matrices and $\vec{\theta}(x)$ determines the mixing angle (the Kalman Gain in standard filtering).
@@ -7351,12 +7968,14 @@ where $\vec{\tau} = (\tau_1, \tau_2, \tau_3)$ are the Pauli matrices and $\vec{\
 
 $$
 D_\mu \Psi_L = \left( \partial_\mu - i g_2 \frac{\vec{\tau}}{2} \cdot \vec{W}_\mu - i g_1 \frac{Y_L}{2} B_\mu \right) \Psi_L
+
 $$
 
 **Step 4.** The gauge field transforms as:
 
 $$
 W_\mu^a \to W_\mu^a + \frac{1}{g_2}\partial_\mu \theta^a + \epsilon^{abc}\theta^b W_\mu^c
+
 $$
 
 to maintain covariance.
@@ -7376,6 +7995,7 @@ To gauge the $SU(N_f)$ feature symmetry, we introduce the **Gluon Field** $G_\mu
 
 $$
 D_\mu \psi = \left( \partial_\mu - i g_s \frac{\lambda^a}{2} G_\mu^a \right) \psi
+
 $$
 
 where $\lambda^a$ ($a = 1, \ldots, N_f^2 - 1$) are the generalized Gell-Mann matrices (generators of $SU(N_f)$), satisfying $\text{Tr}(\lambda^a \lambda^b) = 2\delta^{ab}$ and $[\lambda^a, \lambda^b] = 2i f^{abc} \lambda^c$.
@@ -7384,6 +8004,7 @@ where $\lambda^a$ ($a = 1, \ldots, N_f^2 - 1$) are the generalized Gell-Mann mat
 
 $$
 G_{\mu\nu}^a = \partial_\mu G_\nu^a - \partial_\nu G_\mu^a + g_s f^{abc} G_\mu^b G_\nu^c
+
 $$
 
 where $f^{abc}$ are the structure constants of $SU(N_f)$, defined by $[\lambda^a, \lambda^b] = 2i f^{abc} \lambda^c$.
@@ -7411,20 +8032,26 @@ $\square$
 The commutator of the covariant derivatives $[D_\mu, D_\nu]$ generates three distinct curvature tensors corresponding to each gauge factor.
 
 1. **$U(1)_Y$ Curvature:**
+
    $$
    B_{\mu\nu} = \partial_\mu B_\nu - \partial_\nu B_\mu
+
    $$
    When $B_{\mu\nu} \neq 0$, the reward field is non-conservative (Definition {prf:ref}`def-conservative-reward-field`). The resulting Lorentz-type force generates cyclic dynamics.
 
 2. **$SU(2)_L$ Curvature:**
+
    $$
    W_{\mu\nu}^a = \partial_\mu W_\nu^a - \partial_\nu W_\mu^a + g_2 \epsilon^{abc} W_\mu^b W_\nu^c
+
    $$
    When $W_{\mu\nu} \neq 0$, the belief update depends on the path taken in the manifold: parallel transport around a closed loop yields a non-trivial rotation in the prediction-observation space.
 
 3. **$SU(N_f)_C$ Curvature:**
+
    $$
    G_{\mu\nu}^a = \partial_\mu G_\nu^a - \partial_\nu G_\mu^a + g_s f^{abc} G_\mu^b G_\nu^c
+
    $$
    When $G_{\mu\nu} \neq 0$, the feature binding is under stress. This corresponds to the Ontological Stress $\Xi$ (Definition {prf:ref}`def-ontological-stress`). When $\Xi > \Xi_{\text{crit}}$, chart fission is triggered ({ref}`Section 30 <sec-ontological-expansion-topological-fission-and-the-semantic-vacuum>`).
 
@@ -7438,6 +8065,7 @@ The Lagrangian density for the scalar field is uniquely determined by the **Supe
 
 $$
 \frac{dr}{ds} = (\Xi - \Xi_{\text{crit}})r - \alpha r^3
+
 $$
 
 where:
@@ -7449,6 +8077,7 @@ where:
 
 $$
 \mathcal{V}_{\text{onto}}(\phi) = -\frac{(\Xi - \Xi_{\text{crit}})}{2} |\phi|^2 + \frac{\alpha}{4} |\phi|^4
+
 $$
 
 **Step 3.** Define the standard Higgs potential parameters by matching coefficients:
@@ -7459,6 +8088,7 @@ $$
 
 $$
 \mathcal{V}_{\text{onto}}(\phi) = -\mu^2 |\phi|^2 + \lambda |\phi|^4
+
 $$
 
 **Term Identification:**
@@ -7473,6 +8103,7 @@ The kinetic term of the scalar field in the Lagrangian is covariant:
 
 $$
 \mathcal{L}_{\text{Kinetic}} = (D_\mu \phi)^\dagger (D_\mu \phi)
+
 $$
 
 where $D_\mu = \partial_\mu - ig \mathcal{A}_\mu$ includes the Strategic Connection.
@@ -7483,12 +8114,14 @@ where $D_\mu = \partial_\mu - ig \mathcal{A}_\mu$ includes the Strategic Connect
 
 $$
 |D_\mu v|^2 = |(-ig \mathcal{A}_\mu) v|^2 = g^2 v^2 \mathcal{A}_\mu \mathcal{A}^\mu
+
 $$
 
 **Step 3.** This is a **Mass Term** for the Gauge Field:
 
 $$
 M_{\mathcal{A}} = g v = g \sqrt{\frac{\Xi - \Xi_{\text{crit}}}{\alpha}}
+
 $$
 
 **Step 4.** Connection to Theorem {prf:ref}`thm-capacity-constrained-metric-law`: The mass $M_{\mathcal{A}}$ corresponds to an increase in the effective metric eigenvalues. From the Capacity-Constrained Metric Law, higher information density (more distinct concepts, larger $v$) induces higher curvature, which manifests as increased "inertia" in the metric.
@@ -7511,6 +8144,7 @@ In the **Broken Phase** ($\Xi > \Xi_{\text{crit}}$), the Yukawa coupling generat
 
 $$
 \mathcal{L}_{\text{Yukawa}} = -\underbrace{(Y v)}_{\text{Mass}} \bar{\psi} \psi - \underbrace{Y h \bar{\psi} \psi}_{\text{Higgs Interaction}}
+
 $$
 
 **Step 3.** The belief spinor $\psi$ acquires effective mass $m_\psi = Y v$.
@@ -7531,12 +8165,14 @@ Varying the total action yields the Dirac equation with potential. In the non-re
 
 $$
 (i \gamma^\mu \partial_\mu - \Phi_{\text{eff}})\Psi = 0
+
 $$
 
 **Step 2.** Apply the inverse Madelung transform (Theorem {prf:ref}`thm-madelung-transform`). In the non-relativistic limit ($c_{\text{info}} \to \infty$), the Schrödinger reduction recovers:
 
 $$
 \vec{v} \approx -\nabla \Phi_{\text{eff}}
+
 $$
 
 This is the WFR drift velocity from Definition {prf:ref}`def-bulk-drift-continuous-flow`.
@@ -7551,6 +8187,7 @@ The information speed $c_{\text{info}}$ must satisfy the **Speed Window Inequali
 
 $$
 \frac{d_{\text{sync}}}{\tau_{\text{proc}}} \le c_{\text{info}} \le \frac{L_{\text{buf}}}{\tau_{\text{proc}}}
+
 $$
 
 **Lower Bound (Node 2: ZenoCheck):**
@@ -7571,6 +8208,7 @@ Let $\text{Area}_\partial$ denote the boundary area of the agent's latent manifo
 
 $$
 \ell_L^{D-1} \le \frac{\nu_D \cdot \text{Area}_\partial}{I_{\text{req}}}
+
 $$
 
 where $\nu_D$ is a **dimensionless** holographic coefficient (Corollary {prf:ref}`cor-a-dimension-dependent-coefficient`). Both sides have dimension $[L^{D-1}]$.
@@ -7579,12 +8217,14 @@ where $\nu_D$ is a **dimensionless** holographic coefficient (Corollary {prf:ref
 
 $$
 I_{\text{bulk}} \le \frac{\nu_D \cdot \text{Area}_\partial}{\ell_L^{D-1}}
+
 $$
 
 **Step 2.** The agent requires $I_{\text{bulk}} \ge I_{\text{req}}$ to represent its world model. Substituting:
 
 $$
 I_{\text{req}} \le \frac{\nu_D \cdot \text{Area}_\partial}{\ell_L^{D-1}}
+
 $$
 
 **Step 3.** Rearranging yields the constraint on $\ell_L$.
@@ -7597,10 +8237,12 @@ As $I_{\text{bulk}} \to I_{\max} = \nu_D \cdot \text{Area}_\partial / \ell_L^{D-
 
 $$
 \|v\|_G \to 0 \quad \text{as} \quad I_{\text{bulk}} \to I_{\max}
+
 $$
 
 $$
 g_{\text{FR}} = \frac{1}{\rho(1-\rho)} \to \infty \quad \text{as} \quad \rho \to 1
+
 $$
 
 (Lemma {prf:ref}`lem-metric-divergence-at-saturation`). The geodesic velocity vanishes, creating **causal stasis**: no information can cross the saturation boundary.
@@ -7615,6 +8257,7 @@ The Cognitive Temperature must satisfy:
 
 $$
 T_c \le \frac{\dot{E}_{\text{met}}}{\dot{I}_{\text{erase}} \cdot \ln 2}
+
 $$
 
 where we use natural units with $k_B = 1$.
@@ -7623,6 +8266,7 @@ where we use natural units with $k_B = 1$.
 
 $$
 \dot{\mathcal{M}}(s) \ge T_c \left| \frac{dH}{ds} \right|
+
 $$
 
 where $\dot{\mathcal{M}}$ is the metabolic flux and $dH/ds$ is the entropy change rate.
@@ -7631,12 +8275,14 @@ where $\dot{\mathcal{M}}$ is the metabolic flux and $dH/ds$ is the entropy chang
 
 $$
 \left| \frac{dH}{ds} \right| = \dot{I}_{\text{erase}} \cdot \ln 2
+
 $$
 
 **Step 3.** The metabolic constraint $\dot{\mathcal{M}} \le \dot{E}_{\text{met}}$ bounds the erasure capacity:
 
 $$
 \dot{E}_{\text{met}} \ge T_c \cdot \dot{I}_{\text{erase}} \cdot \ln 2
+
 $$
 
 **Step 4.** Rearranging yields the temperature bound.
@@ -7651,6 +8297,7 @@ At the macro-scale ($\mu \to 0$), the coupling must exceed a critical threshold:
 
 $$
 g_s(\mu_{\text{IR}}) \ge g_s^{\text{crit}}
+
 $$
 
 **Step 1.** From Axiom {prf:ref}`ax-feature-confinement`, the agent observes Concepts $K$, not raw features. This requires features to bind into stable composite objects at the macro-scale.
@@ -7659,6 +8306,7 @@ $$
 
 $$
 \lim_{r \to \infty} V_{\text{eff}}(r) = \infty
+
 $$
 
 where $r$ is the separation between features.
@@ -7677,12 +8325,14 @@ At the texture scale ($\mu \to \infty$), the coupling must vanish:
 
 $$
 \lim_{\mu \to \infty} g_s(\mu) = 0
+
 $$
 
 **Step 1.** From the Texture Firewall (Axiom {prf:ref}`ax-bulk-boundary-decoupling`):
 
 $$
 \partial_{z_{\text{tex}}} \dot{z} = 0
+
 $$
 
 Texture coordinates are invisible to the dynamics.
@@ -7703,6 +8353,7 @@ The Stiffness Ratio must satisfy:
 
 $$
 1 < \chi < \chi_{\text{max}}
+
 $$
 
 **Lower Bound ($\chi > 1$):**
@@ -7711,6 +8362,7 @@ $$
 
 $$
 P_{\text{flip}} \propto e^{-\Delta E / T_c} = e^{-\chi}
+
 $$
 
 **Step 2.** For $\chi < 1$, we have $P_{\text{flip}} > e^{-1} \approx 0.37$. States flip with high probability—the agent cannot maintain stable beliefs.
@@ -7723,6 +8375,7 @@ $$
 
 $$
 \Gamma_{\text{update}} \propto e^{-\chi}
+
 $$
 
 **Step 5.** For $\chi \to \infty$, transitions become exponentially suppressed—the agent freezes in its initial configuration, unable to learn.
@@ -7739,6 +8392,7 @@ The temporal discount factor $\gamma$ must satisfy:
 
 $$
 \gamma_{\text{min}} < \gamma < 1
+
 $$
 
 with $\gamma_{\text{min}} > 0$.
@@ -7749,6 +8403,7 @@ with $\gamma_{\text{min}} > 0$.
 
 $$
 (\kappa^2 - \nabla^2) V = r
+
 $$
 
 where the screening mass $\kappa = (-\ln\gamma)/\ell_0$ has dimension $[L^{-1}]$, and $\ell_0 = c_{\text{info}} \cdot \tau_{\text{proc}}$ is the causal horizon length (Definition {prf:ref}`def-agent-parameter-vector`). This ensures dimensional consistency: $[\kappa^2] = [L^{-2}] = [\nabla^2]$.
@@ -7757,6 +8412,7 @@ where the screening mass $\kappa = (-\ln\gamma)/\ell_0$ has dimension $[L^{-1}]$
 
 $$
 -\nabla^2 V = r
+
 $$
 
 The Green's function decays as $1/r^{D-2}$ (long-range).
@@ -7771,6 +8427,7 @@ The Green's function decays as $1/r^{D-2}$ (long-range).
 
 $$
 \ell_\gamma = \frac{1}{\kappa} = \frac{\ell_0}{-\ln\gamma} = \frac{c_{\text{info}} \tau_{\text{proc}}}{-\ln\gamma} \to 0
+
 $$
 
 **Step 6.** Zero screening length means the agent responds only to immediate rewards—it has no planning horizon.
@@ -7785,6 +8442,7 @@ The **Feasible Region** $\mathcal{F} \subset \mathbb{R}^n_+$ is the intersection
 
 $$
 \mathcal{F} = \{ \Lambda : \mathcal{S}_i(\Lambda) \le 0 \; \forall i \}
+
 $$
 
 A viable agent exists if and only if $\mathcal{F} \neq \emptyset$.
@@ -7803,6 +8461,7 @@ The optimal parameter vector $\Lambda^*$ satisfies:
 
 $$
 \Lambda^* = \arg\max_{\Lambda \in \mathcal{F}} \mathcal{J}(\Lambda)
+
 $$
 
 subject to the Sieve constraints (Definition {prf:ref}`def-constraint-matrix`).
@@ -7823,6 +8482,7 @@ Let $\mathcal{C}_{\text{hash}}$ be the computational task of finding a nonce $n$
 
 $$
 E_{\text{min}} \geq k_B T_c \ln 2 \cdot B_{\text{comp}}
+
 $$
 
 where $B_{\text{comp}}$ is the number of irreversible bit operations.
@@ -7831,12 +8491,14 @@ where $B_{\text{comp}}$ is the number of irreversible bit operations.
 
 $$
 \dot{\mathcal{M}} \geq T_c \left| \frac{dH}{ds} \right|
+
 $$
 
 **Step 2 (Hash Computation).** Computing $H(n)$ requires approximately $B_{\text{SHA}} \approx 64 \times 80 = 5120$ irreversible bit operations per hash. The minimum energy is:
 
 $$
 E_{\text{hash}} \geq k_B T_c \ln 2 \cdot B_{\text{SHA}} \cdot N_{\text{trials}}
+
 $$
 
 where $N_{\text{trials}} \approx 2^{d}$ for difficulty $d$.
@@ -7845,6 +8507,7 @@ where $N_{\text{trials}} \approx 2^{d}$ for difficulty $d$.
 
 $$
 E_{\text{grad}} \geq k_B T_c \ln 2 \cdot c_{\text{MAC}} \cdot |\Theta| \cdot |D|
+
 $$
 
 for architecture-dependent constant $c_{\text{MAC}}$.
@@ -7863,18 +8526,21 @@ The difficulty adjustment algorithm maintains the **Landauer Invariant**: the mi
 
 $$
 E_{\min}(B_h) \approx k_B T_c \ln 2 \cdot c_{\text{MAC}} \cdot |\Theta| \cdot \mathcal{D}_h = E_{\text{target}}
+
 $$
 
 **Step 1.** By the Generalized Landauer Bound (Theorem {prf:ref}`thm-generalized-landauer-bound`), gradient computation costs:
 
 $$
 E_{\text{grad}} \geq k_B T_c \ln 2 \cdot c_{\text{MAC}} \cdot |\Theta| \cdot |D_h|
+
 $$
 
 **Step 2.** The difficulty constraint $|D_h| \geq \mathcal{D}_h$ enforces:
 
 $$
 E_{\text{grad}} \geq k_B T_c \ln 2 \cdot c_{\text{MAC}} \cdot |\Theta| \cdot \mathcal{D}_h
+
 $$
 
 **Step 3.** The exponential adjustment (Definition {prf:ref}`def-difficulty-adjustment`) stabilizes block time at $t_{\text{target}}$, hence stabilizes energy expenditure rate at $E_{\text{target}} / t_{\text{target}}$.
@@ -7900,6 +8566,7 @@ then with probability $\geq 1 - \delta$, the gradient is valid.
 
 $$
 I_{\text{bulk}}(g) \leq \nu_D \cdot \frac{\text{Area}(\partial\mathcal{Z})}{\ell_L^{D-1}} = I_{\max}
+
 $$
 
 **Step 2 (Bulk-Boundary Correspondence).** The gradient $g \in T_\Theta \mathcal{M}$ projects to boundary flux $\nabla_\partial g$ via the restriction map. By the Bulk-Boundary Decoupling Axiom ({prf:ref}`ax-bulk-boundary-decoupling`), the boundary flux determines the bulk gradient up to texture degrees of freedom.
@@ -7908,6 +8575,7 @@ $$
 
 $$
 P(\text{escape}) \leq (1 - p_{\text{detect}})^k
+
 $$
 
 where $p_{\text{detect}} \geq \epsilon_{\min}$ is the minimum detection probability per check.
@@ -7916,6 +8584,7 @@ where $p_{\text{detect}} \geq \epsilon_{\min}$ is the minimum detection probabil
 
 $$
 \|g\|_G^2 < k_B T_c |\Delta H| / \dot{\mathcal{M}}_{\text{claimed}}
+
 $$
 
 This is detectable from the certificate without recomputation.
@@ -7930,6 +8599,7 @@ In the Mining Game $\Gamma$ with exogenous detection probability $p_{\text{detec
 
 $$
 \frac{S}{R + S} > \frac{C_{\text{honest}} - C_{\text{cheat}}}{R}
+
 $$
 
 **Honest** is a strictly dominant strategy, and $\sigma^* = (\text{Honest}, \ldots, \text{Honest})$ is the unique Nash Equilibrium.
@@ -7938,10 +8608,12 @@ $$
 
 $$
 U_i(\text{Honest}) = R - C_{\text{honest}}
+
 $$
 
 $$
 U_i(\text{Cheat}) = (1 - p_{\text{detect}}) \cdot R + p_{\text{detect}} \cdot (-S) - C_{\text{cheat}}
+
 $$
 
 where $p_{\text{detect}} \in (0, 1]$ is the probability of detection via spot-checking.
@@ -7950,6 +8622,7 @@ where $p_{\text{detect}} \in (0, 1]$ is the probability of detection via spot-ch
 
 $$
 p_{\text{detect}} \geq 1 - (1 - \epsilon_{\min})^k
+
 $$
 
 for $k$ spot-check samples with $\epsilon_{\min} > 0$. Since $p_{\text{detect}}$ is exogenous (determined by the protocol, not other players), each miner faces a constant detection probability regardless of others' strategies.
@@ -7958,26 +8631,31 @@ for $k$ spot-check samples with $\epsilon_{\min} > 0$. Since $p_{\text{detect}}$
 
 $$
 U_i(\text{Honest}) > U_i(\text{Cheat})
+
 $$
 
 $$
 R - C_{\text{honest}} > (1 - p_{\text{detect}}) R - p_{\text{detect}} S - C_{\text{cheat}}
+
 $$
 
 Rearranging:
 
 $$
 p_{\text{detect}} (R + S) > C_{\text{honest}} - C_{\text{cheat}}
+
 $$
 
 $$
 p_{\text{detect}} > \frac{C_{\text{honest}} - C_{\text{cheat}}}{R + S} := p^*
+
 $$
 
 **Step 4 (Equilibrium Condition).** The theorem condition implies:
 
 $$
 \frac{S}{R + S} > \frac{C_{\text{honest}} - C_{\text{cheat}}}{R} \implies C_{\text{honest}} - C_{\text{cheat}} < \frac{S \cdot R}{R + S} < R
+
 $$
 
 Therefore $p^* = \frac{C_{\text{honest}} - C_{\text{cheat}}}{R + S} < 1$, ensuring the threshold is achievable with finite spot-checks.
@@ -7986,6 +8664,7 @@ Therefore $p^* = \frac{C_{\text{honest}} - C_{\text{cheat}}}{R + S} < 1$, ensuri
 
 $$
 \Delta U = U(\text{Cheat}) - U(\text{Honest}) = -p_{\text{detect}}(R + S) + (C_{\text{honest}} - C_{\text{cheat}}) < 0
+
 $$
 
 This holds regardless of what other miners do. Thus Honest is a **strictly dominant strategy**, and the unique Nash Equilibrium is all-Honest. $\square$
@@ -8002,6 +8681,7 @@ The Metric Friction Consensus achieves Byzantine Fault Tolerance against $f < N/
 
 $$
 \tilde{G}^{(i)} = G^{(i)} + \alpha_{\text{adv}} \mathcal{G}_{ij}, \quad \alpha_{\text{adv}} = \|g_{\text{adv}} - g_{\text{true}}\|_G > 0
+
 $$
 
 where $\mathcal{G}_{ij}$ is the Game Tensor (Definition {prf:ref}`def-gauge-covariant-game-tensor`). The key insight: *there is no "zero-curvature" way to submit a fake gradient*.
@@ -8017,6 +8697,7 @@ For the attack to succeed while evading detection, the adversary requires $\alph
 
 $$
 \mathcal{F}_{\text{total}}^{\text{honest}} \leq \binom{N-f}{2} c_1 \epsilon^2 + f(N-f) c_2 \alpha_{\text{adv}}
+
 $$
 
 An adversarial chain has friction at least $\mathcal{F}_{\text{total}}^{\text{adv}} \geq (N-f) c_2 \alpha_{\text{adv}}$.
@@ -8031,12 +8712,14 @@ An adversary controlling fraction $\alpha < 1/3$ of validators has influence on 
 
 $$
 \|\Delta \Theta_{\text{adversarial}}\|_G \leq \frac{\alpha}{1 - 2\alpha} \|\Delta \Theta_{\text{honest}}\|_G
+
 $$
 
 **Step 1.** The consensus update is a friction-weighted average:
 
 $$
 \Delta \Theta = \frac{\sum_i w_i \Delta \Theta^{(i)}}{\sum_i w_i}
+
 $$
 
 where weights $w_i = 1/\mathcal{F}_{i,\text{total}}$ penalize high-friction validators.
@@ -8045,18 +8728,21 @@ where weights $w_i = 1/\mathcal{F}_{i,\text{total}}$ penalize high-friction vali
 
 $$
 w_{\text{adv}} \leq w_{\text{honest}} / (1 + \alpha_{\text{adv}}/\epsilon^2)
+
 $$
 
 **Step 3.** The adversarial contribution is:
 
 $$
 \|\Delta \Theta_{\text{adv}}\| \leq \frac{\alpha \cdot w_{\text{adv}}}{(1-\alpha) w_{\text{honest}} + \alpha w_{\text{adv}}} \|\Delta \Theta_{\text{total}}\|
+
 $$
 
 **Step 4.** Taking $w_{\text{adv}} \to 0$ in the limit of high adversarial friction:
 
 $$
 \|\Delta \Theta_{\text{adv}}\| \to 0
+
 $$
 
 The adversary is geometrically isolated. $\square$
@@ -8069,18 +8755,21 @@ The equilibrium token price $P_{\text{COG}}$ is bounded by:
 
 $$
 P_{\text{floor}} \leq P_{\text{COG}} \leq P_{\text{ceiling}}
+
 $$
 
 where:
 
 $$
 P_{\text{floor}} = \frac{C_{\text{electricity}}}{J_{\text{per\_COG}}}
+
 $$
 
 (cost of electricity to generate one COG worth of computation)
 
 $$
 P_{\text{ceiling}} = \frac{V_{\text{inference}}}{J_{\text{per\_query}}}
+
 $$
 
 (value of inference output per Joule)
@@ -8093,6 +8782,7 @@ $$
 
 $$
 P_{\text{COG}}^* = \sqrt{P_{\text{floor}} \cdot P_{\text{ceiling}}}
+
 $$
 
 (geometric mean under log-linear supply/demand). $\square$
@@ -8103,6 +8793,7 @@ Let $\Xi_T$ be the Memory Screen (Definition {prf:ref}`def-memory-screen`) and $
 
 $$
 \Phi: \mathcal{L}_H \to \Xi_T
+
 $$
 
 given by:
@@ -8118,6 +8809,7 @@ given by:
 
 $$
 \Xi_T = \int_0^T \alpha(t') \, \delta_{\gamma(t')} \, dt'
+
 $$
 
 where $\alpha(t) = J_r(t)$ is the reward flux and $\gamma(t)$ is the trajectory.
@@ -8126,6 +8818,7 @@ where $\alpha(t) = J_r(t)$ is the reward flux and $\gamma(t)$ is the trajectory.
 
 $$
 \mathcal{L}_H = \sum_{h=0}^{H} B_h = \sum_{h=0}^{H} (g_h, \mathcal{H}_h, \ldots)
+
 $$
 
 **Step 3.** Define the correspondence:
@@ -8137,6 +8830,7 @@ $$
 
 $$
 \sum_{h=0}^{H} g_h \cdot \mathbb{1}_{\Theta_h} \to \int_0^T \alpha(t) \delta_{\gamma(t)} dt
+
 $$
 
 as $\Delta t \to 0$. $\square$
@@ -8153,12 +8847,14 @@ An attacker controlling $> 50\%$ of compute cannot rewrite history without trigg
 
 $$
 \tilde{G}_{\text{attack}} = G + \alpha_{\text{adv}} \mathcal{G}
+
 $$
 
 **Step 3.** The Metric Friction between honest and attack chains is:
 
 $$
 \mathcal{F}(\mathcal{C}, \mathcal{C}') = \|G - \tilde{G}_{\text{attack}}\|_F^2 \sim O(\alpha_{\text{adv}}^2)
+
 $$
 
 **Step 4.** When $\mathcal{F} > \mathcal{F}_{\text{crit}}$ (Fission Threshold from Theorem {prf:ref}`thm-fission-criterion`), the network undergoes **Spontaneous Fission**:
@@ -8181,12 +8877,14 @@ Flash-loan attacks and front-running are rejected by **CausalityViolationCheck (
 
 $$
 v_{\max} = \frac{d_G(z, z')}{t}
+
 $$
 
 **Step 4.** **Node 62 (CausalityViolationCheck)** detects transactions using information from the future:
 
 $$
 \Delta_{\text{causal}} = D_{\text{KL}}(P_{\text{interventional}} \| P_{\text{observational}}) > \delta_{\text{causal}}
+
 $$
 
 **Step 5.** The transaction is rejected as **geometrically impossible**. $\square$
@@ -8201,18 +8899,21 @@ Sustained deception by corrupt actors exceeds the **Babel Limit** (Theorem {prf:
 
 $$
 \dot{I}_{\text{deception}} = H(G_{\text{corrupt}}) - H(G_{\text{true}})
+
 $$
 
 **Step 3.** By Theorem {prf:ref}`thm-babel-limit`, complete gauge locking requires:
 
 $$
 \dim(\mathfrak{g}) \cdot H(G) \leq C_{\mathcal{L}}
+
 $$
 
 **Step 4.** The deception increases effective entropy, violating the Babel Limit:
 
 $$
 \dim(\mathfrak{g}) \cdot (H(G_{\text{true}}) + \dot{I}_{\text{deception}}) > C_{\mathcal{L}}
+
 $$
 
 **Step 5.** The corrupt actor loses gauge locking with honest validators. Their words become "noise"---they are **topologically exiled** from consensus. $\square$
@@ -8225,11 +8926,13 @@ Under the hypotheses of Section A.2, stationarity of $\mathcal{S}[G,V]$ with res
 
 $$
 R_{ij} - \frac{1}{2}R\,G_{ij} + \Lambda G_{ij} = \kappa\, T_{ij},
+
 $$
 with $T_{ij}$ given by Section A.2.3.
 
 $$
 \delta\mathcal{S} = \int_{\mathcal{Z}}\left[\left(R_{ij}-\frac12 R\,G_{ij}\right) + \Lambda G_{ij} - \kappa T_{ij}\right]\delta G^{ij}\,d\mu_G + \text{(boundary terms)}.
+
 $$
 Boundary terms vanish under the clamped boundary condition (or after adding an appropriate boundary term). Because $\delta G^{ij}$ is arbitrary in the interior, the fundamental lemma of the calculus of variations implies the bracketed tensor must vanish pointwise almost everywhere, yielding the stated identity (see e.g. Evans, *Partial Differential Equations*, 2010, for the functional-analytic lemma).
 
@@ -8243,6 +8946,7 @@ Under the overdamped dynamics with class-conditioned potential $V_y$:
 
 $$
 dz = -G^{-1}(z) \nabla V_y(z, K)\, ds + \sqrt{2T_c}\, G^{-1/2}(z)\, dW_s,
+
 $$
 the limiting chart assignment satisfies $\lim_{s \to \infty} K(z(s)) \in \mathcal{A}_y$ almost surely, provided the initial condition lies in the basin $\mathcal{B}_y$ and $T_c$ is sufficiently small.
 
@@ -8258,6 +8962,7 @@ is proportional to the Fisher Information Metric:
 
 $$
 g_{ij}(\theta) = c \cdot \mathbb{E}_\theta\left[\frac{\partial \log p(x|\theta)}{\partial \theta^i} \frac{\partial \log p(x|\theta)}{\partial \theta^j}\right]
+
 $$
 for some constant $c > 0$.
 
@@ -8270,14 +8975,17 @@ The channel capacity of a 2-dimensional boundary $\partial\mathcal{Z}$ with Riem
 
 $$
 C_\partial = \frac{A}{4\ell_L^2} \text{ nats}.
+
 $$
 $$
 C_\partial = N_{\text{cells}} \times 1 \text{ nat} = \frac{A}{4\ell_L^2}. \quad \square
+
 $$
 *Remark (Dimension Generalization).* For a $(D-1)$-dimensional boundary with $D > 2$, the formula generalizes to:
 
 $$
 C_\partial = \nu_D \cdot \frac{A}{\ell_L^{D-1}},
+
 $$
 where $\nu_D$ is the Holographic Coefficient (Definition {prf:ref}`def-holographic-coefficient`). The 2D case with $\nu_2 = 1/4$ is the primary focus of this specification.
 
@@ -8289,11 +8997,13 @@ The number of boundary-distinguishable microstates in the bulk is:
 
 $$
 \Omega = \exp\left(\frac{A}{4\ell_L^2}\right),
+
 $$
 and the maximum information about bulk configuration, as measured by an external observer, is:
 
 $$
 I_{\max} = \ln \Omega = \frac{A}{4\ell_L^2}.
+
 $$
 2. The maximum number of distinguishable messages through a channel of capacity $C$ nats is $e^C$ (Shannon's channel coding theorem {cite}`cover2006elements`).
 
@@ -8301,6 +9011,7 @@ $$
 
 $$
 \Omega \leq e^{C_\partial} = \exp\left(\frac{A}{4\ell_L^2}\right).
+
 $$
 4. **Achievability:** The bound is saturated when the boundary is tiled with minimal distinguishable cells, each encoding 1 nat via orthogonal degrees of freedom. This follows from the channel capacity achievability in Shannon's theorem.
 
@@ -8308,6 +9019,7 @@ $$
 
 $$
 I_{\max} = \ln \Omega = \frac{A}{4\ell_L^2}. \quad \square
+
 $$
 *Remark (Non-Circularity).* This derivation uses only:
 - Chentsov's uniqueness theorem (statistics)
@@ -8333,16 +9045,20 @@ Substituting:
 
 $$
 I_{\max} = \frac{1}{8\pi \ell_L^{n-1}} \cdot \frac{n-1}{r_h} \cdot \Omega_{n-1} r_h^{n-1} = \frac{(n-1)\Omega_{n-1}}{8\pi} \cdot \frac{\text{Area}(\partial\mathcal{Z})}{\ell_L^{n-1}}.
+
 $$
 Identifying the **Holographic Coefficient** $\nu_n := (n-1)\Omega_{n-1}/(8\pi)$ (Definition {prf:ref}`def-holographic-coefficient`), we obtain the **general result**:
 
 $$
 \boxed{I_{\max} = \nu_n \cdot \frac{\text{Area}(\partial\mathcal{Z})}{\ell_L^{n-1}}}.
+
 $$
 
 **Special case ($n = 2$, Poincare disk):** With $\Omega_1 = 2\pi$ (circumference of unit circle), we get $\nu_2 = 1/4$. The familiar Bekenstein-Hawking form:
+
 $$
 I_{\max} = \frac{\text{Area}(\partial\mathcal{Z})}{4\ell_L^2}
+
 $$
 uses $\ell_L^2$ (rather than $\ell_L^{n-1} = \ell_L$) because the Poincare disk metric normalization $G(0) = 4I$ maps coordinate cells to Riemannian areas.
 
@@ -8359,11 +9075,13 @@ Let $\Psi_0$ be the ground state eigenfunction of $\hat{H}_\sigma$ (the eigenfun
 
 $$
 |\Psi_0(\mathbf{z})| > 0 \quad \forall \mathbf{z} \in \mathcal{M}.
+
 $$
 *Consequence:* For any open set $\Omega_B \subset \mathcal{M}$, the probability measure satisfies:
 
 $$
 \mu(\Omega_B) = \int_{\Omega_B} |\Psi_0(\mathbf{z})|^2 \, d\mu_{\mathbf{g}}(\mathbf{z}) > 0.
+
 $$
 Therefore, if an agent is localized in $\Omega_A$, there is strictly positive probability of finding it in $\Omega_B$.
 
@@ -8373,6 +9091,7 @@ Let $\Psi_0$ be the ground state of $\hat{H}_\sigma$ with eigenvalue $E_0$. For 
 
 $$
 |\Psi_0(\mathbf{z})| \leq C_\epsilon \exp\left( - \frac{1 - \epsilon}{\sigma} d_{\text{Ag}}(\mathbf{z}, \Omega_A) \right) \quad \forall \mathbf{z} \in \mathcal{M},
+
 $$
 where $d_{\text{Ag}}(\mathbf{z}, \Omega_A) := \inf_{\mathbf{y} \in \Omega_A} d_{\text{Ag}}(\mathbf{z}, \mathbf{y})$.
 
@@ -8384,6 +9103,7 @@ Let $(\mathbf{X}_s)_{s \geq 0}$ be Brownian motion on the Riemannian manifold $(
 
 $$
 \Psi_0(\mathbf{z}) = \lim_{t \to \infty} e^{E_0 t} \cdot \mathbb{E}_{\mathbf{z}}\left[ \exp\left( -\frac{1}{\sigma^2} \int_0^t \mathcal{V}(\mathbf{X}_s) \, ds \right) \phi(\mathbf{X}_t) \right],
+
 $$
 where $\phi \in L^2(\mathcal{M})$ is any function with $\langle \Psi_0, \phi \rangle \neq 0$.
 
@@ -8410,11 +9130,13 @@ The gradient of the effective potential decomposes as:
 
 $$
 \nabla_G \Phi_{\text{eff}} = \alpha\, \nabla_G U + (1 - \alpha)\, \nabla_G V_{\text{critic}} + \gamma_{risk}\, \nabla_G \Psi_{\text{risk}}.
+
 $$
 For the Poincare disk model, the first term simplifies to:
 
 $$
 \nabla_G U = -\frac{(1-|z|^2)}{2}\, \hat{z}, \qquad \hat{z} = \frac{z}{|z|}.
+
 $$
 **Cross-references:** Definition {prf:ref}`def-hyperbolic-volume-growth`, {ref}`Section 2.7 <sec-the-hjb-correspondence>` (Critic $V$), Section 14.2 (MaxEnt control), Theorem {prf:ref}`thm-capacity-constrained-metric-law`.
 
@@ -8426,6 +9148,7 @@ Setting $\alpha = 1$ (pure generation) and $T_c \to 0$ (deterministic limit) in 
 
 $$
 \dot{z} = -G^{-1}(z)\,\nabla U(z).
+
 $$
 For the Poincare disk, this gives $\dot{z} = \frac{(1-|z|^2)}{2}\,z$, which integrates to $|z(\tau)| = \tanh(\tau/2)$.
 
@@ -8438,11 +9161,13 @@ The stationary distribution of the overdamped SDE is:
 
 $$
 p_*(z) \propto \exp\left(-\frac{\Phi_{\text{gen}}(z)}{T_c}\right)\,\sqrt{|G(z)|},
+
 $$
 where $|G| = \det(G)$ is the metric determinant. This is the Boltzmann distribution on the curved manifold.
 
 $$
 \partial_s p = \nabla_i\left( G^{ij}\left( p\,\partial_j\Phi + T_c\,\partial_j p \right) \right).
+
 $$
 Setting $\partial_s p = 0$ and using detailed balance gives $p \propto e^{-\Phi/T_c} \sqrt{|G|}$. The $\sqrt{|G|}$ factor accounts for the Riemannian volume form. $\square$
 
@@ -8454,6 +9179,7 @@ As $|z| \to 1$:
 
 $$
 T_c(z) \to 0, \qquad \text{noise} \to 0.
+
 $$
 The agent becomes deterministic at the boundary, ensuring reproducible outputs.
 
@@ -8463,6 +9189,7 @@ The following are isomorphic as boundary conditions on $\partial\mathcal{Z}$:
 
 $$
 \text{RL Action} \;\cong\; \text{Classification Label} \;\cong\; \text{LLM Prompt}.
+
 $$
 Each specifies:
 1. **Which chart** to route to (discrete macro $K$ or $A$)
@@ -8481,6 +9208,7 @@ The discount factor $\gamma$ determines a characteristic **screening length**:
 
 $$
 \ell_{\text{screen}} = \frac{1}{\kappa} = \frac{\Delta t}{-\ln\gamma}.
+
 $$
 For $\gamma = 0.99$ and $\Delta t = 1$: $\ell_{\text{screen}} \approx 100$ steps.
 
@@ -8503,6 +9231,7 @@ For $\gamma = 0.99$ and $\Delta t = 1$: $\ell_{\text{screen}} \approx 100$ steps
 
 $$
 \rho_\infty(z) \propto \exp\left(\frac{\Phi(z)}{T_c}\right),
+
 $$
 which is exactly the canonical ensemble (Definition {prf:ref}`def-canonical-ensemble`).
 
@@ -8514,6 +9243,7 @@ Let $\mathcal{I}(a|z) = -\ln \pi(a|z)$ be the surprisal of an action. Define the
 
 $$
 V_H(z) := \mathrm{Var}_{a \sim \pi}[\mathcal{I}(a|z)] = \mathbb{E}_{\pi}\left[ \left( \ln \pi(a|z) + H(\pi) \right)^2 \right].
+
 $$
 *Units:* $\mathrm{nat}^2$.
 
@@ -8521,11 +9251,13 @@ Under the Boltzmann-Value Law (Axiom {prf:ref}`ax-the-boltzmann-value-law`), the
 
 $$
 V_H(z) = \beta^2 \mathrm{Var}_\pi[Q] = C_v,
+
 $$
 where $\beta = 1/T_c$ is the inverse cognitive temperature. Equivalently:
 
 $$
 V_H(z) = T_c \frac{\partial H(\pi)}{\partial T_c}.
+
 $$
 **Operational Consequence:**
 1. **Thermal Stability:** $V_H$ measures the sensitivity of the agent's exploration strategy to changes in the cognitive temperature $T_c$.
@@ -8534,6 +9266,7 @@ $$
 
 $$
 |\dot{T}_c| \ll \frac{T_c}{\sqrt{V_H(z)}}.
+
 $$
 
 ({prf:ref}`cor-inertia-at-critical-regions`) *corollary* — **Inertia at Critical Regions**
@@ -8566,6 +9299,7 @@ Let $\eta := I_{\text{bulk}}/I_{\max}$ be the saturation ratio. Near the bound, 
 
 $$
 \|v\|_G \sim (1 - \eta)^{1/2}.
+
 $$
 
 *Interpretation.* At 90% saturation ($\eta = 0.9$), the agent operates at $\sim 32\%$ of its maximum velocity. At 99% saturation, velocity drops to $\sim 10\%$. The approach to the bound is gradual but accelerating.
@@ -8605,6 +9339,7 @@ For the optimization trajectory to remain in the basin of attraction of the glob
 
 $$
 \frac{d T_c}{dt} = - \eta \cdot \frac{T_c}{1 + \gamma V_H(\theta_t)},
+
 $$
 where $\eta, \gamma > 0$ are constants.
 
@@ -8622,6 +9357,7 @@ If the policy $\pi(\cdot|K)$ is a mixture of two disjoint, equally weighted stra
 
 $$
 V_H(K) = \frac{1}{4}\left(\frac{\Delta Q}{T_c}\right)^2,
+
 $$
 where $\Delta Q = |Q_1 - Q_2|$ is the value gap between the modes. In the limit of distinct modes ($\Delta Q \gg T_c$), $V_H$ is maximized, whereas for a uniform (maximum entropy) distribution, $V_H = 0$.
 
@@ -8632,6 +9368,7 @@ The **Geometric Tension** $\sigma_k^2$ (Definition {prf:ref}`def-intra-symbol-va
 
 $$
 \text{Fission}(K) \iff V_H(K) > \mathcal{V}_{\text{crit}} \quad \text{AND} \quad H(K) > H_{\text{noise}}.
+
 $$
 **Interpretation:**
 - **High $H$, Low $V_H$:** Aleatoric Uncertainty (Noise/Fog). The distribution is flat. *Action:* Smoothing/Integration.
@@ -8651,6 +9388,7 @@ The Causal Information Potential $\Psi_{\text{causal}}$ (Definition {prf:ref}`de
 
 $$
 \nabla \Psi_{\text{causal}} \propto \nabla \mathbb{E}_{z'} \left[ V_H [P(\theta_W | z, a, z')] \right].
+
 $$
 *Units:* nat (for $\Psi_{\text{causal}}$), $\mathrm{nat}^2$ (for $V_H$).
 
@@ -8672,6 +9410,7 @@ The agent's fundamental objective is not reward maximization but **energy surplu
 
 $$
 \mathcal{J}_{\text{survival}} = \mathbb{E}\left[ \int_0^\infty \left( \mathfrak{T}_{\text{harvest}}(r_t) - \dot{\mathcal{M}}(t) \right) e^{-\gamma_{\text{leak}} t} \, dt \right]
+
 $$
 
 Standard reward maximization $\max \mathbb{E}[\sum_t \gamma^t r_t]$ emerges as a degenerate case when:
@@ -8701,6 +9440,7 @@ As $B(t) \to 0$, the signal-to-noise ratio of internal dynamics degrades:
 
 $$
 \text{SNR}_{\text{dynamics}} = \frac{\|v\|_{G^{\text{eff}}}^2}{2T_c} \propto f(B/B_{\text{crit}}) \to 0
+
 $$
 
 In this regime:
@@ -8726,6 +9466,7 @@ Let $\dot{Q}_{\text{radiate}}$ be the maximum heat dissipation rate (determined 
 
 $$
 \dot{Q}_{\text{waste}} > \dot{Q}_{\text{radiate}}
+
 $$
 
 then the agent's internal temperature $T_c$ increases. This triggers a positive feedback loop:
@@ -8744,6 +9485,7 @@ The critical coupling $\beta_c$ for spontaneous gauge locking is:
 
 $$
 \beta_c = \frac{\sigma^2 \text{Vol}(\mathcal{Z}_{\text{shared}})}{2 g_{\text{lock}}^2}
+
 $$
 
 where $\sigma$ is the Cognitive Action Scale (Definition {prf:ref}`def-cognitive-action-scale`).
@@ -8760,6 +9502,7 @@ When the Babel Limit is violated ($\dim(\mathfrak{g}) \cdot H(G_A) > C_{\mathcal
 
 $$
 \dim(\mathfrak{q}) = \dim(\mathfrak{g}) - \lfloor C_{\mathcal{L}} / H(G_A) \rfloor > 0
+
 $$
 
 This subspace corresponds to **Private Qualia**: aspects of Agent $A$'s experience that cannot be communicated to Agent $B$ regardless of the symbol system used.
@@ -8772,6 +9515,7 @@ For a population of $N$ agents, spontaneous emergence of a shared "Objective Rea
 
 $$
 N > N_c = \frac{\sigma^2}{\lambda_{\text{lock}} \cdot \langle \mathcal{F}_{ij} \rangle}
+
 $$
 
 where $\langle \mathcal{F}_{ij} \rangle$ is the average pairwise friction.
@@ -8790,11 +9534,13 @@ As $c_{\text{info}} \to \infty$, the causal delay vanishes: $\tau_{ij} \to 0$ fo
 
 $$
 \lim_{c_{\text{info}} \to \infty} \mathcal{G}_{ij}(t) = \partial\mathcal{Z}^{(i)}(t) \times \partial\mathcal{Z}^{(j)}(t),
+
 $$
 and the retarded potential becomes instantaneous:
 
 $$
 \lim_{c_{\text{info}} \to \infty} \Phi^{\text{ret}}_{ij}(z^{(i)}, t) = \Phi_{ij}(z^{(i)}, z^{(j)}_t).
+
 $$
 
 *Interpretation:* Co-located agents ($d_{\mathcal{E}}^{ij} = 0$) or systems with negligible propagation delay operate in the Newtonian regime where standard MARL applies.
@@ -8805,6 +9551,7 @@ A sudden change in reward at location $z_A$ and time $t_0$ propagates outward as
 
 $$
 V(z, t) \sim \frac{\Theta(t - t_0 - d_G(z, z_A)/c_{\text{info}})}{d_G(z, z_A)^{(D-2)/2}} \cdot e^{-\kappa d_G(z, z_A)} \cdot \rho_r(z_A, t_0),
+
 $$
 where $\Theta$ is the Heaviside step function enforcing causality.
 
@@ -8816,11 +9563,13 @@ In the limit $c_{\text{info}} \to \infty$, the temporal derivatives become negli
 
 $$
 \frac{1}{c_{\text{info}}^2} \frac{\partial^2 V}{\partial t^2} \to 0,
+
 $$
 and the Klein-Gordon equation reduces to the **stationary Helmholtz equation**:
 
 $$
 (-\Delta_G + \kappa^2) V = \rho_r + \sum_{j \neq i} \Phi_{ij}.
+
 $$
 This recovers Theorem {prf:ref}`thm-the-hjb-helmholtz-correspondence` as the instantaneous (Newtonian) limit.
 
@@ -8830,6 +9579,7 @@ As $c_{\text{info}} \to \infty$, the standing wave Nash reduces to the static Na
 
 $$
 \lim_{c_{\text{info}} \to \infty} \boldsymbol{\rho}^*(\mathbf{z}, t) = \boldsymbol{\rho}^*_{\text{static}}(\mathbf{z}),
+
 $$
 and the geometric stasis conditions (vanishing gradient, stationary Game Tensor) hold instantaneously rather than on average.
 
@@ -8839,6 +9589,7 @@ At a standing wave Nash equilibrium, the **time-averaged probability current** v
 
 $$
 \langle \mathbf{J}^{(i)} \rangle_T = \langle \rho^{(i)} \mathbf{v}^{(i)} \rangle_T = 0 \quad \forall i.
+
 $$
 
 *Interpretation:* The agents are not "frozen"—they oscillate with the causal frequency $\omega_{\text{Nash}}$—but the net flow averages to zero. Nash equilibrium is dynamic balance, not static rest.
@@ -8860,6 +9611,7 @@ For an Abelian gauge group $G = U(1)$ with $[T_a, T_b] = 0$:
 
 $$
 \partial_\mu F^{\mu\nu} = J^\nu
+
 $$
 
 This recovers the **Maxwell equations** of electromagnetism in covariant form.
@@ -8876,10 +9628,12 @@ The strategic current is covariantly conserved:
 
 $$
 D_\mu J^{\mu,a} = 0
+
 $$
 
 $$
 D_\nu D_\mu \mathcal{F}^{\mu\nu} = D_\nu J^\nu
+
 $$
 
 By the Bianchi identity (Theorem {prf:ref}`thm-bianchi-identity`) and the antisymmetry of $\mathcal{F}^{\mu\nu}$, the left side vanishes, giving $D_\nu J^\nu = 0$. $\square$
@@ -8927,6 +9681,7 @@ A CFT restricted to a finite spatial volume $V$ with characteristic length $L$ a
 
 $$
 \Delta_{\text{eff}} \sim \frac{1}{L}
+
 $$
 
 The gapless limit exists only as $L \to \infty$.
@@ -8951,6 +9706,7 @@ The **complex potential** formulation is:
 
 $$
 W(z) := \Phi_{\text{eff}}(z) - \frac{i\sigma}{2} r(z),
+
 $$
 so that $\hat{H}_{\text{inf}} = -\frac{\sigma^2}{2}\Delta_G + W + Q_B$.
 
@@ -8958,6 +9714,7 @@ so that $\hat{H}_{\text{inf}} = -\frac{\sigma^2}{2}\Delta_G + W + Q_B$.
 
 $$
 \frac{d}{ds} \|\psi\|^2 = \int_{\mathcal{Z}} r(z) |\psi(z)|^2 d\mu_G(z) = \langle r \rangle_\rho,
+
 $$
 which matches the WFR mass balance equation.
 
@@ -8973,11 +9730,13 @@ In the limit $\sigma \to 0$ (classical limit), the Schrödinger dynamics recover
 
 $$
 \partial_s S + \frac{1}{2}\|\nabla_G S\|_G^2 + \Phi_{\text{eff}} = 0.
+
 $$
 **Next Order ($O(\sigma^0)$):** The transport equation
 
 $$
 \partial_s |A|^2 + \nabla_G \cdot (|A|^2 \nabla_G S) = 0.
+
 $$
 These are exactly the HJB and continuity equations from WFR dynamics. The quantum correction $Q_B \to 0$ as $\sigma \to 0$.
 
@@ -8989,6 +9748,7 @@ At Nash equilibrium, the **probability current** vanishes:
 
 $$
 \mathbf{J}^{(i)}(\mathbf{z}^*) := \text{Im}\left[\bar{\Psi}_{\text{Nash}} \cdot \sigma \nabla_{G^{(i)}} \Psi_{\text{Nash}}\right]_{\mathbf{z}^*} = 0 \quad \forall i.
+
 $$
 **Derivation:** The probability current is $\mathbf{J} = \rho \mathbf{v}$ where $\mathbf{v} = G^{-1}\nabla V$ is the velocity field. At Nash:
 - $\nabla V^{(i)}|_{\mathbf{z}^*} = 0$ (stationarity condition)
@@ -9005,6 +9765,7 @@ When the Bohm potential $Q_B$ dominates (high belief curvature), the **effective
 
 $$
 \Phi^{\text{quantum}}_{\text{eff}}(\mathbf{z}) := \Phi_{\text{eff,total}}(\mathbf{z}) + Q_B(\mathbf{z}).
+
 $$
 In regions where $Q_B < 0$ (convex $\rho$), the effective barrier can become **negative** even when $\Phi_{\text{eff}} > 0$. This enables "teleportation" across classically forbidden regions.
 
@@ -9021,6 +9782,7 @@ The total internal symmetry group of the Fragile Agent is uniquely determined by
 
 $$
 G_{\text{Fragile}} = SU(N_f)_C \times SU(2)_L \times U(1)_Y
+
 $$
 
 where:
@@ -9036,6 +9798,7 @@ The gauge field dynamics are governed by the Yang-Mills Lagrangian:
 
 $$
 \mathcal{L}_{\text{Gauge}} = -\frac{1}{4} B_{\mu\nu}B^{\mu\nu} -\frac{1}{4} W^a_{\mu\nu}W^{a\mu\nu} -\frac{1}{4} G^a_{\mu\nu}G^{a\mu\nu}
+
 $$
 
 The stationary points of this action satisfy the Yang-Mills equations. A **flat connection** ($B_{\mu\nu} = W_{\mu\nu} = G_{\mu\nu} = 0$) corresponds to a representation where all curvatures vanish: the reward field is conservative, belief updates are path-independent, and concepts are stable.
@@ -9054,6 +9817,7 @@ Then $\mu^2 > 0$. The origin $\phi=0$ becomes a local maximum. The global minima
 
 $$
 v = \langle |\phi| \rangle = \sqrt{\frac{\mu^2}{2\lambda}} = \sqrt{\frac{(\Xi - \Xi_{\text{crit}})/2}{2 \cdot \alpha/4}} = \sqrt{\frac{\Xi - \Xi_{\text{crit}}}{\alpha}}
+
 $$
 
 This matches the equilibrium separation $r^*$ from Theorem {prf:ref}`thm-supercritical-pitchfork-bifurcation-for-charts`.
@@ -9068,6 +9832,7 @@ The ratio of buffer depth to synchronization distance is bounded:
 
 $$
 \frac{L_{\text{buf}}}{d_{\text{sync}}} \ge 1
+
 $$
 
 with equality only in the degenerate case of a single-module agent. For distributed agents, this ratio determines the dynamic range of viable information speeds.
@@ -9078,12 +9843,14 @@ Combining the Landauer constraint with the bifurcation dynamics, the Cognitive T
 
 $$
 0 < T_c \le \min\left( T_c^*, \frac{\dot{E}_{\text{met}}}{\dot{I}_{\text{erase}} \cdot \ln 2} \right)
+
 $$
 
 where the **Critical Temperature** is derived from the barrier height of the pitchfork bifurcation (Theorem {prf:ref}`thm-pitchfork-bifurcation-structure`):
 
 $$
 T_c^* = \frac{\mu^2}{4} = \frac{(1 + 2u_\pi^r)^2}{16}
+
 $$
 
 with $\mu = 1/2 + u_\pi^r$ the bifurcation parameter and $u_\pi^r$ the radial policy control. For small control ($u_\pi^r \ll 1$), this reduces to $T_c^* \approx 1/16$.
@@ -9099,6 +9866,7 @@ $$
 g_s(\mu) \ge g_s^{\text{crit}} & \text{for } \mu \le \mu_{\text{conf}} \\
 g_s(\mu) \to 0 & \text{for } \mu \to \infty
 \end{cases}
+
 $$
 
 where $\mu_{\text{conf}}$ is the confinement scale separating bound states from free texture.
@@ -9111,6 +9879,7 @@ Under the physics isomorphism, the Stiffness Ratio for atomic systems is:
 
 $$
 \chi = \frac{\Delta E_{\text{bond}}}{k_B T} \propto \frac{m_e c^2 \alpha^2}{k_B T}
+
 $$
 
 where $\Delta E_{\text{bond}} \sim \text{Ry} = m_e c^2 \alpha^2 / 2 \approx 13.6$ eV is the atomic binding scale.
@@ -9129,6 +9898,7 @@ The screening length and buffer depth must satisfy:
 
 $$
 \ell_\gamma = \frac{c_{\text{info}} \tau_{\text{proc}}}{-\ln\gamma} \lesssim L_{\text{buf}}
+
 $$
 
 Both sides have dimension $[L]$. For $\gamma \to 1$, the screening length $\ell_\gamma \to \infty$ (unlimited planning horizon). For $\gamma \to 0$, the screening length $\ell_\gamma \to 0$ (myopic behavior).
@@ -9141,6 +9911,7 @@ The observed fundamental constants lie on the **Pareto-optimal surface** of the 
 
 $$
 \max_{\Lambda \in \mathcal{F}} \left( I_{\text{bulk}}(\Lambda), -\mathcal{V}_{\text{metabolic}}(\Lambda) \right)
+
 $$
 
 Moving off this surface triggers constraint violation:
@@ -9155,12 +9926,14 @@ For the equilibrium to hold with detection probability $p_{\text{detect}} = 0.1$
 
 $$
 \frac{S}{R} > \frac{C_{\text{honest}} - C_{\text{cheat}}}{0.1 \cdot R} - 1
+
 $$
 
 For typical gradient computation where $C_{\text{honest}} / C_{\text{cheat}} \approx 10$ (cheating saves 90% of compute):
 
 $$
 \frac{S}{R} > 90 - 1 = 89
+
 $$
 
 *Interpretation:* Miners must stake approximately 90x the block reward to make cheating unprofitable.
@@ -9184,6 +9957,7 @@ The maximum information in a block is bounded by:
 
 $$
 I_{\text{block}} \leq \nu_D \cdot \frac{\text{Area}(\partial \mathcal{Z})}{\ell_L^{D-1}}
+
 $$
 
 where the area is measured in the header's Merkle tree.
@@ -9197,11 +9971,13 @@ For a $D$-dimensional latent manifold with $(D-1)$-sphere boundary, the Causal I
 
 $$
 I_{\max}(D) = \nu_D \cdot \frac{\text{Area}(\partial\mathcal{Z})}{\ell_L^{D-1}},
+
 $$
 where the Holographic Coefficient $\nu_D$ (Definition {prf:ref}`def-holographic-coefficient`) is:
 
 $$
 \nu_D = \frac{(D-1)\Omega_{D-1}}{8\pi} = \frac{(D-1)\pi^{(D-2)/2}}{4\,\Gamma(D/2)},
+
 $$
 with $\Omega_{D-1} = 2\pi^{D/2}/\Gamma(D/2)$ the surface area of the unit $(D-1)$-sphere.
 
@@ -9227,11 +10003,13 @@ Then the Agmon distances satisfy:
 
 $$
 d_{\text{Ag}}^{\text{adv}}(\Omega_A, \Omega_B) \geq d_{\text{Ag}}^{0}(\Omega_A, \Omega_B),
+
 $$
 and consequently the tunneling probability is exponentially suppressed:
 
 $$
 P_{\text{tunnel}}^{\text{adv}} \lesssim \exp\left(-\frac{d_{\text{Ag}}^{\text{adv}}}{\sigma}\right) \leq \exp\left(-\frac{d_{\text{Ag}}^{0}}{\sigma}\right) \lesssim P_{\text{tunnel}}^{0}.
+
 $$
 
 ({prf:ref}`cor-e7-large-deviations`) *corollary* — **E.7.5 (Tunneling via Large Deviations)**
@@ -9242,6 +10020,7 @@ The rate function (Freidlin-Wentzell action) is:
 
 $$
 I[\gamma] = \frac{1}{2} \int_0^T \|\dot{\gamma}(t)\|_{\mathbf{g}}^2 \, dt,
+
 $$
 and paths that cross the barrier $\mathcal{K}$ while minimizing $I[\gamma] + \int_0^T (\mathcal{V}(\gamma) - E_0) \, dt$ are precisely the **instantons** that govern tunneling.
 
@@ -9255,6 +10034,7 @@ The nuisance fiber at each macro-state $K \in \mathcal{K}$ admits interpretation
 
 $$
 \mathcal{Z}_n\big|_K \cong G_K / H_K
+
 $$
 
 where:
@@ -9292,6 +10072,7 @@ The resolution lies in the proof derivation. The intermediate equation before no
 
 $$
 \kappa V = r + \nabla V \cdot b + T_c \Delta_G V
+
 $$
 
 where $T_c$ is the **cognitive temperature** (Definition {prf:ref}`def-cognitive-temperature`), which acts as a diffusion coefficient with units $[T_c] = [\text{length}]^2/[\text{time}]$.
@@ -9302,6 +10083,7 @@ where $T_c$ is the **cognitive temperature** (Definition {prf:ref}`def-cognitive
 
 $$
 \kappa_{\text{phys}} = \frac{-\ln\gamma}{\sqrt{T_c \cdot \Delta t}}, \qquad [\kappa_{\text{phys}}] = \frac{1}{\text{length}}
+
 $$
 
 The screening length $\ell_{\text{screen}} = 1/\kappa$ thus depends on both the temporal horizon ($\gamma$) and the diffusive spreading rate ($T_c$). This is physically sensible: slower diffusion (smaller $T_c$) increases the effective screening length because value information takes longer to propagate.
@@ -9332,6 +10114,7 @@ The Mobius re-centering $\phi_c$ for conditioned generation (Definition {prf:ref
 
 $$
 c_y := \mathbb{E}_{x: Y(x)=y}[\text{Enc}(x)],
+
 $$
 i.e., the average latent position of class-$y$ samples. Conditioned generation "starts" the holographic expansion from this centroid.
 
@@ -9347,6 +10130,7 @@ The TopologicalDecoder ({ref}`Section 7.10 <sec-decoder-architecture-overview-to
 
    $$
    \mathcal{L}_{\text{route-consistency}} = \mathbb{E}_{x,y}\left[\text{CE}\left(w_{\text{dec}}(z_{\text{geo}}), w_{\text{enc}}(x)\right)\right]
+
    $$
    where $w_{\text{dec}}$ are the decoder's soft router weights and $w_{\text{enc}}$ are the encoder's.
 
@@ -9390,6 +10174,7 @@ The minimizer can be computed via Riemannian gradient descent:
 
 $$
 q_{t+1} = \operatorname{Exp}_{q_t}\left( -\eta \sum_i \bar{w}_i \operatorname{Log}_{q_t}(q_i) \right)
+
 $$
 where:
 - $\operatorname{Exp}_p: T_p\mathbb{D} \to \mathbb{D}$ is the exponential map at $p$
@@ -9407,6 +10192,7 @@ The corrected loss function must include grounding:
 
 $$
 \mathcal{L}_{\text{total}} = \lambda_{\text{lock}} \mathcal{F}_{AB} + \lambda_{\text{ground}} (\mathcal{F}_{AE} + \mathcal{F}_{BE})
+
 $$
 
 where $\mathcal{F}_{iE}$ measures the friction between agent $i$ and the environment's causal structure.
@@ -9419,6 +10205,7 @@ where $\mathcal{F}_{iE}$ measures the friction between agent $i$ and the environ
 
 $$
 d_{\text{money}}(z_1, z_2) = \inf_{\gamma: z_1 \to z_2} \int_\gamma \text{Price}(\dot{z}) \, dt
+
 $$
 
 This provides a normalized gauge that allows agents with disjoint utility functions to coordinate.
@@ -9498,6 +10285,7 @@ The derivation in Lemma {prf:ref}`lem-a-bulk-to-boundary-conversion` uses the **
 
 $$
 \int_{\mathcal{Z}} R \, d\mu_G = 2 \oint_{\partial\mathcal{Z}} \text{Tr}(K) \, dA_G,
+
 $$
 which is valid in **arbitrary dimension**. This is more general than the classical 2D Gauss-Bonnet theorem (which relates $\int K \, dA$ to the Euler characteristic $\chi$).
 
@@ -9539,6 +10327,7 @@ Similarly, the microstate counting here is analogous to Strominger-Vafa, while t
 
    $$
    k_{\text{stressed}} := \arg\max_k \sigma_k^2
+
    $$
 2. Perform Symbol Fission on $k_{\text{stressed}}$, reusing index $k_{\text{dead}}$:
    - Compute split direction $v_1$ from $\Sigma_{k_{\text{stressed}}}$.

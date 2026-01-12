@@ -2,7 +2,7 @@
 title: "Stability and Composition Metatheorems"
 ---
 
-# Part XVI: Stability & Composition Metatheorems
+# Stability & Composition Metatheorems
 
 (sec-perturbation-and-coupling)=
 ## Perturbation and Coupling
@@ -53,6 +53,7 @@ Think of it like a mountain pass. If you are at the very top of the saddle point
 
 $$
 K_{\text{Lock}}^{\mathrm{blk}}(\theta_0) \wedge (\mathrm{Gap} > \epsilon) \wedge (\mathrm{Cap} < \delta) \Rightarrow \exists U: \forall \theta \in U, K_{\text{Lock}}^{\mathrm{blk}}(\theta)
+
 $$
 
 **Use:** Validates that the proof is robust to small modeling errors or physical noise.
@@ -98,6 +99,7 @@ This is how numerical analysis gets upgraded to rigorous existence proofs. You c
 
 $$
 K_{\mathrm{LS}_\sigma}^+ \wedge K_{\text{pseudo}}^{\varepsilon} \Rightarrow K_{\text{true}}^{\delta(\varepsilon)}
+
 $$
 
 **Use:** Upgrades a high-precision **Numerical Simulation** into a rigorous **Existence Proof** for a nearby solution (essential for $T_{\text{algorithmic}}$).
@@ -145,6 +147,7 @@ This is profoundly reassuring. Your compactness construction did not introduce s
 
 $$
 K_{C_\mu}^{\text{weak}} \wedge K_{\mathrm{LS}_\sigma}^{\text{strong}} \Rightarrow K_{\text{unique}}
+
 $$
 
 **Use:** Resolves the "Non-Uniqueness" anxiety in weak solutions. If you can prove stiffness locally, the weak solution cannot branch off.
@@ -201,6 +204,7 @@ Each backend accommodates different proof styles. Use whichever matches your pro
 
 $$
 K_{\text{Lock}}^A \wedge K_{\text{Lock}}^B \wedge \left((K_{\mathrm{SC}_\lambda}^{\text{sub}} \wedge K_{\mathrm{CouplingSmall}}^+) \vee (K_{D_E}^{\text{pert}} \wedge K_{\mathrm{ACP}}^+) \vee K_{\mathrm{LS}_\sigma}^{\text{abs}}\right) \Rightarrow K_{\text{Lock}}^{A \times B}
+
 $$
 
 :::
@@ -225,12 +229,14 @@ $$
 
 $$
 \Phi_{\text{tot}}(\lambda \cdot x) = \lambda^{\alpha_A} \Phi_A(x_A) + \lambda^{\alpha_B} \Phi_B(x_B) + \lambda^{\alpha_{\text{int}}} \Phi_{\text{int}}(x_A, x_B)
+
 $$
 
 *Step 2 (Subcritical Dominance).* Since $\alpha_{\text{int}} < \min(\alpha_c^A, \alpha_c^B)$, the interaction term is asymptotically subdominant. For large $\lambda$:
 
 $$
 |\Phi_{\text{int}}(\lambda \cdot x)| \leq C \lambda^{\alpha_{\text{int}}} = o(\lambda^{\alpha_c})
+
 $$
 
 The interaction cannot drive blow-up faster than the natural scaling.
@@ -239,6 +245,7 @@ The interaction cannot drive blow-up faster than the natural scaling.
 
 $$
 \|u_A(t)\|_{\mathcal{X}_A} \leq M_A, \quad \|u_B(t)\|_{\mathcal{X}_B} \leq M_B \quad \forall t \geq 0
+
 $$
 
 Under subcritical coupling, these bounds persist with at most polynomial growth correction.
@@ -247,6 +254,7 @@ Under subcritical coupling, these bounds persist with at most polynomial growth 
 
 $$
 \frac{d}{dt} E_{\text{tot}} \leq -\mathfrak{D}_A - \mathfrak{D}_B + |\dot{E}_{\text{int}}|
+
 $$
 
 where $\mathfrak{D}_A, \mathfrak{D}_B \geq 0$ are the dissipation rates (energy loss per unit time). Subcriticality implies $|\dot{E}_{\text{int}}| \leq \varepsilon (E_A + E_B) + C_\varepsilon$ for any $\varepsilon > 0$. Choosing $\varepsilon$ small enough that $\varepsilon < \min(\lambda_A, \lambda_B)$ (where $\mathfrak{D}_i \geq \lambda_i E_i$), the dissipation dominates the interaction.
@@ -277,6 +285,7 @@ where $\mathfrak{D}_A, \mathfrak{D}_B \geq 0$ are the dissipation rates (energy 
 
 $$
 \|T_0(t)\| \leq M_A M_B e^{\max(\omega_A, \omega_B) t}
+
 $$
 
 *Step 2 (Perturbation Classification).* The total generator is $A = A_0 + B$ where $B$ represents coupling. By hypothesis, $B$ is either bounded or relatively bounded with bound $< 1$.
@@ -289,6 +298,7 @@ $$
 
 $$
 \sup_{t \in [0,T]} \|(u_A(t), u_B(t))\|_{D(A_0)} < \infty
+
 $$
 
 Standard semigroup theory: if $u(t) \in D(A)$ initially and $A$ generates $C_0$-semigroup, solution exists globally.
@@ -306,18 +316,21 @@ Standard semigroup theory: if $u(t) \in D(A)$ initially and $A$ generates $C_0$-
 
    $$
    E_A(u) \geq c_A \|u\|_{\mathcal{X}_A}^p - C_A, \quad E_B(v) \geq c_B \|v\|_{\mathcal{X}_B}^q - C_B
+
    $$
 
 2. Dissipation structure from Lock certificates:
 
    $$
    \frac{d}{dt} E_A \leq -\lambda_A E_A + d_A, \quad \frac{d}{dt} E_B \leq -\lambda_B E_B + d_B
+
    $$
 
 3. **Absorbability condition:** The coupling contribution to energy evolution satisfies:
 
    $$
    \left|\frac{d}{dt}\Phi_{\text{int}}(u(t), v(t))\right| \leq \varepsilon (E_A(u) + E_B(v)) + C_\varepsilon
+
    $$
 
    for some $\varepsilon < \min(\lambda_A, \lambda_B)$. (This bounds the *rate* of energy exchange, not the potential itself.)
@@ -331,6 +344,7 @@ Standard semigroup theory: if $u(t) \in D(A)$ initially and $A$ generates $C_0$-
 
 $$
 E_{\text{tot}}(u, v) \geq c_{\min}(\|u\|^p + \|v\|^q) - C_{\max}
+
 $$
 
 This controls the product norm.
@@ -339,12 +353,14 @@ This controls the product norm.
 
 $$
 \frac{d}{dt} E_{\text{tot}} = \frac{d}{dt} E_A + \frac{d}{dt} E_B + \underbrace{\text{coupling contribution}}_{\leq \varepsilon E_{\text{tot}} + C_\varepsilon}
+
 $$
 
 *Step 3 (Grönwall Closure).* Combining dissipation and absorbability:
 
 $$
 \frac{d}{dt} E_{\text{tot}} \leq -(\lambda_{\min} - \varepsilon) E_{\text{tot}} + C
+
 $$
 
 where $\lambda_{\min} = \min(\lambda_A, \lambda_B)$. Since $\varepsilon < \lambda_{\min}$, the coefficient is negative.
@@ -353,6 +369,7 @@ where $\lambda_{\min} = \min(\lambda_A, \lambda_B)$. Since $\varepsilon < \lambd
 
 $$
 E_{\text{tot}}(t) \leq E_{\text{tot}}(0) e^{-(\lambda_{\min} - \varepsilon)t} + \frac{C}{\lambda_{\min} - \varepsilon}
+
 $$
 
 Bounded uniformly in time.
@@ -408,6 +425,7 @@ This is useful in practice. Sometimes the full system is easier to analyze than 
 
 $$
 K_{\text{Lock}}^{\mathrm{blk}}(\mathcal{H}) \wedge (\mathcal{S} \subset \mathcal{H} \text{ invariant}) \Rightarrow K_{\text{Lock}}^{\mathrm{blk}}(\mathcal{S})
+
 $$
 
 **Use:** Proves safety for restricted dynamics (e.g., "If the general 3D fluid is safe, the axisymmetric flow is also safe").

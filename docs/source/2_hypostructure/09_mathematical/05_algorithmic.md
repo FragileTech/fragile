@@ -2,7 +2,7 @@
 title: "Algorithmic Completeness"
 ---
 
-# Part XIX: Algorithmic Completeness
+# Algorithmic Completeness
 
 (sec-taxonomy-computational-methods)=
 ## The Taxonomy of Computational Methods

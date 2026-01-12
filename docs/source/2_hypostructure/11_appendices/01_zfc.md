@@ -3,7 +3,7 @@ title: "Set-Theoretic Foundation"
 ---
 
 (sec-zfc-translation)=
-# The Set-Theoretic Foundation
+# Appendix A: The Set-Theoretic Foundation
 
 :::{div} feynman-prose
 Now, here is a question you might reasonably ask: why bother with all this fancy topos theory if we are just going to translate everything back to ordinary set theory anyway?
@@ -53,6 +53,7 @@ The ambient cohesive $(\infty, 1)$-topos $\mathcal{E}$ (Definition {prf:ref}`def
 
    $$
    \Gamma: \mathcal{E}_\mathcal{U} \to \mathbf{Set}_\mathcal{U} \hookrightarrow \mathbf{Set}
+
    $$
 
 3. **Stability:** For any hypostructure $\mathbb{H} \in \mathbf{Hypo}_T$, the certificate chain $(K_1, \ldots, K_{17})$ produced by the Sieve is $\mathcal{U}$-small.
@@ -75,7 +76,6 @@ Let $\mathcal{E}$ be a universe-anchored topos with universe $\mathcal{U}$. Then
 :::
 
 :::{prf:proof}
-:label: proof-universe-closure
 
 By the accessibility of $\mathcal{E}$, all small colimits exist and are computed level-wise in the universe hierarchy. The Sieve traversal is a finite sequence of 17 gate evaluations, each producing certificates that are finite structures. The finiteness of the certificate chain ensures $\mathcal{U}$-smallness. The Hom-set bound follows from the representability of $\mathbb{H}_{\mathrm{bad}}$ as a $\mathcal{U}$-compact object.
 :::
@@ -102,30 +102,35 @@ Let $\mathrm{Disc}: \mathbf{Set} \hookrightarrow \infty\text{-}\mathrm{Grpd}$ de
 
 $$
 \Delta := \flat \circ \mathrm{Disc}: \mathbf{Set} \hookrightarrow \mathcal{E}
+
 $$
 
 Define the **0-truncated shape** (connected components) functor:
 
 $$
 \tau_0 := \pi_0 \circ \Pi: \mathcal{E} \to \mathbf{Set}
+
 $$
 
 where $\pi_0: \infty\text{-}\mathrm{Grpd} \to \mathbf{Set}$ sends an $\infty$-groupoid to its set of connected components. Then:
 
 $$
 \tau_0 \dashv \Delta
+
 $$
 
 For any $X \in \mathcal{E}$, the **set-theoretic reflection** is:
 
 $$
 \tau_0(X) := \pi_0(\Pi(X)) \in \mathbf{Set}
+
 $$
 
 which may be read as the set of connected components of the "shape" of $X$. In particular, for any set $S$:
 
 $$
 \tau_0(\Delta(S)) \cong S
+
 $$
 
 **Distinction from Axiom Truncations:** The 0-truncation $\tau_0$ is distinct from the truncation structure $\tau = (\tau_C, \tau_D, \tau_{SC}, \tau_{LS})$ defined in {prf:ref}`def-categorical-hypostructure`. The axiom truncations $\tau_\bullet$ are functorial constraints enforcing physical bounds, while $\tau_0$ is the homotopy-theoretic extraction of $\pi_0$.
@@ -147,13 +152,13 @@ The 0-truncation functor preserves the essential structure of certificates:
 
    $$
    \tau_0(K^+) = \text{YES}, \qquad \tau_0(K^-) = \text{NO}
+
    $$
 
 3. **Structural Preservation (what the bridge uses):** $\tau_0$ preserves all colimits (as a left adjoint) and finite products (because $\Pi$ and $\pi_0$ preserve finite products). In particular, it preserves the finite sums/products used to assemble certificate tuples, witness packages, and the 17-node certificate chain.
 :::
 
 :::{prf:proof}
-:label: proof-truncation-preservation
 
 (1) is functoriality. (2) holds because the certificate polarity/witness payload is discrete by construction. (3) follows from $\tau_0 \dashv \Delta$ (colimits) together with the cohesion axiom that $\Pi$ preserves finite products (Definition {prf:ref}`def-higher-coherences`) and the fact that $\pi_0$ preserves finite products of $\infty$-groupoids.
 :::
@@ -186,6 +191,7 @@ Then:
 
    $$
    \tau_0(\Delta(S)) \cong S \cong \Gamma(\Delta(S)) \in V_\mathcal{U}.
+
    $$
 
 3. **Classical fragment:** Reasoning about objects in $\Delta(\mathbf{Set}_\mathcal{U})$ is just ordinary classical reasoning about sets in $V_\mathcal{U}$. In particular, any ZFC predicate $P$ on $S$ corresponds to an internal predicate on $\Delta(S)$.
@@ -194,7 +200,6 @@ Then:
 :::
 
 :::{prf:proof}
-:label: proof-zfc-grounding
 
 Full faithfulness of $\flat$ is part of the cohesion axioms (Definition {prf:ref}`def-higher-coherences`); restricting along $\mathrm{Disc}$ yields full faithfulness of $\Delta$. The adjunctions $\tau_0 \dashv \Delta$ (Definition {prf:ref}`def-truncation-functor-tau0`) and $\Delta \dashv \Gamma$ (global sections) give the identifications in (2). Since $\Delta(\mathbf{Set}_\mathcal{U})$ is equivalent to $\mathbf{Set}_\mathcal{U}$, its internal logic is Boolean and coincides with classical first-order reasoning about sets.
 :::
@@ -214,7 +219,6 @@ All certificates produced by the Structural Sieve have ZFC representations:
 :::
 
 :::{prf:proof}
-:label: proof-certificate-zfc-rep
 
 Certificates are 0-truncated by construction (they encode Boolean decisions, finite witnesses, and bounded counters). Apply Theorem {prf:ref}`thm-zfc-grounding` to each certificate component.
 :::
@@ -278,7 +282,6 @@ The Sieve-to-ZFC correspondence is complete in the following sense:
 :::
 
 :::{prf:proof}
-:label: proof-axiom-coverage
 
 Each node's interface permit specifies finite-complexity predicates on the input data. By Replacement and Separation, these predicates define sets. The consistency follows from the finite nature of the Sieve traversal---no transfinite recursion beyond $\omega$ is required for certificate computation.
 :::
@@ -356,6 +359,7 @@ Note what this theorem does *not* claim: it does not say that a classical mathem
 
 $$
 K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}(\mathbb{H}(Z)) \Rightarrow \exists \varphi \in \mathcal{L}_{\text{ZFC}}: \,\, V_\mathcal{U} \vDash \varphi \wedge (\varphi \Rightarrow \text{Reg}(Z))
+
 $$
 
 where $\text{Reg}(Z)$ is the regularity statement for $Z$ expressed in the first-order language of set theory.
@@ -364,6 +368,7 @@ where $\text{Reg}(Z)$ is the regularity statement for $Z$ expressed in the first
 
 $$
 \mathcal{B}_{\text{ZFC}} := (\mathcal{U}, \varphi, \text{axioms\_used}, \text{AC\_status}, \text{translation\_trace})
+
 $$
 
 where:
@@ -392,6 +397,7 @@ Each node invokes specific ZFC axioms per the Sieve-to-ZFC Correspondence (Defin
 
 $$
 \text{axioms\_used} := \bigcup_{i=1}^{17} \text{Axioms}(\text{Node}_i)
+
 $$
 
 The conjunction of invoked axioms forms the hypothesis of $\varphi$.
@@ -401,12 +407,14 @@ The blocked certificate $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}$ states:
 
 $$
 \mathrm{Hom}_{\mathbf{Hypo}_T}(\mathbb{H}_{\mathrm{bad}}, \mathbb{H}(Z)) \simeq \emptyset
+
 $$
 
 The 0-truncation functor preserves initial objects: $\tau_0(\emptyset) = \emptyset$. Since $\mathrm{Hom}(\mathbb{H}_{\mathrm{bad}}, \mathbb{H}(Z)) \simeq \emptyset$, we have:
 
 $$
 \tau_0\bigl(\mathrm{Hom}(\mathbb{H}_{\mathrm{bad}}, \mathbb{H}(Z))\bigr) = \emptyset \in \mathbf{Set}_\mathcal{U}
+
 $$
 
 This Hom-emptiness translates to a first-order ZFC statement: there exists no morphism from the bad pattern to the hypostructure.
@@ -416,6 +424,7 @@ By the Principle of Structural Exclusion ({prf:ref}`mt-krnl-exclusion`), Hom-emp
 
 $$
 \text{Rep}_K(T, Z) \text{ holds} \Leftrightarrow Z \text{ admits no bad pattern embedding}
+
 $$
 
 This is equivalent to $\text{Reg}(Z)$ in the set-theoretic formulation.
@@ -425,6 +434,7 @@ Define $\varphi$ as the first-order sentence:
 
 $$
 \varphi := \text{``}\mathrm{Hom}_{\mathbf{Set}}(\tau_0(\mathbb{H}_{\mathrm{bad}}), \tau_0(\mathbb{H}(Z))) = \emptyset\text{''}
+
 $$
 
 By construction, $V_\mathcal{U} \vDash \varphi$ (the truncated Hom-set is empty in the universe), and $\varphi \Rightarrow \text{Reg}(Z)$ by Step 4.
@@ -507,6 +517,7 @@ The mapping $\mathcal{M}: \text{ZFC} \to \mathcal{E}$ is defined by the followin
 
    $$
    \mathcal{X} \cong \mathcal{Y} \iff \forall S \in \mathcal{E}, \,\, \text{Map}_{\mathcal{E}}(S, \mathcal{X}) \simeq \text{Map}_{\mathcal{E}}(S, \mathcal{Y})
+
    $$
 
    This ensures that objects with identical mapping properties are set-theoretically identical under $\tau_0$.
@@ -516,6 +527,7 @@ The mapping $\mathcal{M}: \text{ZFC} \to \mathcal{E}$ is defined by the followin
 
    $$
    \forall \text{ orbit } \gamma, \,\, \exists t_0 \text{ s.t. } \Phi(\gamma(t)) \text{ is minimized for } t > t_0
+
    $$
 
 3. **Axiom Schema of Specification $\longleftrightarrow$ Subobject Classifier $\Omega$:**
@@ -523,6 +535,7 @@ The mapping $\mathcal{M}: \text{ZFC} \to \mathcal{E}$ is defined by the followin
 
    $$
    \mathcal{X}_{\text{reg}} \hookrightarrow \mathcal{X} \text{ is the pullback of } \top: 1 \to \Omega \text{ along the Sieve predicate } P_{\text{Sieve}}
+
    $$
 
 4. **Axiom of Pairing $\longleftrightarrow$ Finite Products (Tuples):**
@@ -530,6 +543,7 @@ The mapping $\mathcal{M}: \text{ZFC} \to \mathcal{E}$ is defined by the followin
 
    $$
    K \;\simeq\; K^{(1)} \times \cdots \times K^{(m)}
+
    $$
 
 5. **Axiom of Union $\longleftrightarrow$ Colimits:**
@@ -540,6 +554,7 @@ The mapping $\mathcal{M}: \text{ZFC} \to \mathcal{E}$ is defined by the followin
 
    $$
    \mathcal{X} \twoheadrightarrow \mathrm{im}(f) \hookrightarrow \mathcal{Y}
+
    $$
 
    which is a valid object in $\mathcal{E}$.
@@ -549,6 +564,7 @@ The mapping $\mathcal{M}: \text{ZFC} \to \mathcal{E}$ is defined by the followin
 
    $$
    \text{For any } X \in \mathcal{E} \text{ with } x_0: 1 \to X \text{ and } s: X \to X, \,\, \exists! \,\, f: \mathbb{N}_\mathcal{E} \to X \text{ s.t. } f(0) = x_0, \,\, f \circ \operatorname{succ} = s \circ f
+
    $$
 
    This ensures that event counting (Node 2) is a valid recursion.
@@ -561,6 +577,7 @@ The mapping $\mathcal{M}: \text{ZFC} \to \mathcal{E}$ is defined by the followin
 
    $$
    \forall \text{ epi } p: \mathcal{X} \twoheadrightarrow \mathcal{Y}, \,\, \exists s: \tau_0(\mathcal{Y}) \to \tau_0(\mathcal{X}) \text{ s.t. } \tau_0(p) \circ s = \operatorname{id}
+
    $$
 
    This enables witness selection for $K^{\mathrm{wit}}$ certificates.
@@ -600,6 +617,7 @@ Let $\mathcal{E}$ be a cohesive $(\infty, 1)$-topos with subobject classifier $\
 
    $$
    \mathcal{B} := \{P \in \mathcal{H} \mid P \vee \neg P = \top\}
+
    $$
 
 3. **Flat Objects are Decidable:** For any object in the image of $\flat: \mathbf{Set} \to \mathcal{E}$, all internal propositions are decidable.
@@ -612,6 +630,7 @@ The image of the discrete modality $\flat: \mathbf{Set}_\mathcal{U} \to \mathcal
 
 $$
 \forall P \in \flat(\mathbf{Set}_\mathcal{U}), \,\, P \vee \neg P \simeq \top
+
 $$
 
 **Consequence:** Any certificate that can be fully "flattened" (computed entirely within the image of $\flat$) yields a classical ZFC proof.
@@ -620,7 +639,6 @@ $$
 :::
 
 :::{prf:proof}
-:label: proof-classical-reflection
 
 1. The functor $\flat$ is left exact (preserves finite limits), hence preserves the truth-value object: $\flat(\{0,1\}) = \{0,1\}_\mathcal{E}$.
 2. For any $\flat(S)$ with $S \in \mathbf{Set}$, propositions on $\flat(S)$ correspond to characteristic functions $S \to \{0,1\}$.
@@ -635,6 +653,7 @@ The **decidability operator** $\delta: \operatorname{Sub}(X) \to \Omega$ classif
 
 $$
 \delta(U) := \begin{cases} \top & \text{if } U \vee \neg U = X \\ \bot & \text{otherwise} \end{cases}
+
 $$
 
 For the Sieve, a certificate $K$ is **classically valid** if $\delta(\tau_0(K)) = \top$, meaning its truth value is decidable in ZFC.
@@ -666,6 +685,7 @@ Let $\mathcal{E}$ be a topos with Natural Number Object.
 
    $$
    \text{IAC}: \forall p: X \twoheadrightarrow Y, \,\, \exists s: Y \to X, \,\, p \circ s = \operatorname{id}_Y
+
    $$
 
    This **fails** in most non-trivial topoi, including sheaf topoi over non-discrete sites.
@@ -674,6 +694,7 @@ Let $\mathcal{E}$ be a topos with Natural Number Object.
 
    $$
    \forall \text{ epi } p: X \twoheadrightarrow Y, \,\, \exists s: \Gamma(Y) \to \Gamma(X), \,\, \Gamma(p) \circ s = \operatorname{id}
+
    $$
 
    where $\Gamma$ is the global sections functor.
@@ -682,6 +703,7 @@ Let $\mathcal{E}$ be a topos with Natural Number Object.
 
    $$
    \forall \text{ epi } p: X \twoheadrightarrow Y, \,\, \exists s: \tau_0(Y) \to \tau_0(X), \,\, \tau_0(p) \circ s = \operatorname{id}
+
    $$
 
 :::
@@ -729,6 +751,7 @@ Let $\mathcal{U}_0 \in \mathcal{U}_1 \in \mathcal{U}_2 \in \cdots$ be a tower of
 
    $$
    \operatorname{level}(\operatorname{colim} \,\, D) \leq n
+
    $$
 
 :::
@@ -746,7 +769,6 @@ All Sieve operations preserve universe levels:
 :::
 
 :::{prf:proof}
-:label: proof-universe-stability
 
 Each Sieve node performs operations (pullback, pushout, hom-evaluation) that are level-preserving by the universe axioms. Surgery replaces subobjects with isomorphic subobjects at the same level. The Lock computes a hom-set within the same universe stratum.
 
@@ -779,12 +801,14 @@ For an object $\mathcal{X} \in \mathcal{E}$, the **translation residual** is the
 
 $$
 \mathcal{R}(\mathcal{X}) := \bigoplus_{n \geq 1} \pi_n(\mathcal{X})
+
 $$
 
 More precisely, $\mathcal{R}$ is the homotopy fiber of the truncation map $\mathcal{X} \to \tau_0(\mathcal{X})$:
 
 $$
 \mathcal{R}(\mathcal{X}) := \operatorname{hofib}(\mathcal{X} \to \tau_0(\mathcal{X}))
+
 $$
 
 **Properties:**
@@ -872,6 +896,7 @@ The correspondence is:
 
 $$
 \text{Descent data on } \{U_i\} \xrightarrow{\tau_0} \text{Replacement image } \{F(i)\}_{i \in I}
+
 $$
 
 :::
@@ -891,7 +916,6 @@ Under these conditions, the glued global section lies in $\mathcal{U}$, and the 
 :::
 
 :::{prf:proof}
-:label: proof-descent-size
 
 This follows from the closure properties of Grothendieck universes under the operations used in descent: products indexed by $\mathcal{U}$-small sets, equalizers, and images of $\mathcal{U}$-small morphisms.
 :::
@@ -910,6 +934,7 @@ If $\mathcal{E} \models \phi$, then:
 
 $$
 V_\mathcal{U} \vDash \phi^{\mathrm{set}}
+
 $$
 
 In particular, if the Sieve derives a certificate $K$ whose payload lives in the discrete fragment (as in Corollary {prf:ref}`cor-certificate-zfc-rep`), then its extracted set-level payload $\tau_0(K)$ is true in $V_\mathcal{U}$ and hence consistent with ZFC reasoning in that universe.
@@ -923,7 +948,6 @@ In particular, if the Sieve derives a certificate $K$ whose payload lives in the
 :::
 
 :::{prf:proof}
-:label: proof-consistency-invariant
 
 1. By Theorem {prf:ref}`thm-zfc-grounding`, the discrete fragment $\Delta(\mathbf{Set}_\mathcal{U})$ is equivalent to $\mathbf{Set}_\mathcal{U}$.
 2. Soundness of the internal language of $\mathcal{E}$ implies that $\mathcal{E} \models \phi$ forces $\phi$ to hold under every set-based interpretation of the discrete variables.
@@ -939,7 +963,6 @@ If a well-founded relation $(A,\prec)$ in $\mathcal{E}$ is carried by a discrete
 :::
 
 :::{prf:proof}
-:label: proof-foundation-preservation
 
 An infinite $\prec$-descending sequence in $S$ would define an infinite descending sequence of generalized points of $A$ in the discrete fragment, contradicting well-foundedness in $\mathcal{E}$.
 
@@ -968,6 +991,7 @@ Let $\mathcal{E}$ be a universe-anchored cohesive $(\infty,1)$-topos (Definition
 
 $$
 \mathcal{E} \models \left( \operatorname{Hom}(\mathbb{H}_{\mathrm{bad}}, \mathbb{H}) \simeq \emptyset \right) \implies V_\mathcal{U} \vDash \forall u \in \tau_0(\mathcal{X}), \,\, \Psi(u)
+
 $$
 
 where $\Psi(u)$ is the set-theoretic translation of "no morphism from the bad pattern $\mathbb{H}_{\mathrm{bad}}$ lands on the orbit represented by $u$."
@@ -986,6 +1010,7 @@ The flat modality $\flat: \mathbf{Set}_\mathcal{U} \hookrightarrow \mathcal{E}$ 
 
 $$
 \operatorname{Hom}_{\mathbf{Set}_\mathcal{U}}(S, T) \cong \operatorname{Hom}_\mathcal{E}(\flat S, \flat T)
+
 $$
 
 for all sets $S, T \in \mathbf{Set}_\mathcal{U}$. The Boolean sub-topos $\flat(\mathbf{Set}_\mathcal{U}) \subseteq \mathcal{E}$ therefore provides an exact copy of classical set theory within the intuitionistic environment. Any statement $\phi$ about discrete objects in $\mathcal{E}$ is equivalent to its set-theoretic counterpart $\tau_0(\phi)$ in $\mathbf{Set}_\mathcal{U}$.
@@ -996,6 +1021,7 @@ The Lock at Node 17 certifies:
 
 $$
 \operatorname{Hom}_{\mathbf{Hypo}_T}(\mathbb{H}_{\mathrm{bad}}, \mathbb{H}) \simeq \emptyset
+
 $$
 
 In the internal logic of $\mathcal{E}$, this is a negative existential statement: "there does not exist a morphism $f: \mathbb{H}_{\mathrm{bad}} \to \mathbb{H}$." By Diaconescu's methodology, we translate this to the language of subobjects.
@@ -1004,6 +1030,7 @@ The empty hom-object corresponds to the initial subobject $\emptyset \hookrighta
 
 $$
 \tau_0\bigl(\operatorname{Hom}(\mathbb{H}_{\mathrm{bad}}, \mathbb{H})\bigr) = \emptyset \in \mathbf{Set}_\mathcal{U}
+
 $$
 
 The empty set is the unique initial object in $\mathbf{Set}$, and its emptiness is decidable (Boolean).
@@ -1024,6 +1051,7 @@ For each node $n$ with certificate $K_n^{\mathrm{blk}}$, the truncation $\tau_0(
 
 $$
 \bigwedge_{n \in \text{Sieve}} \psi_n
+
 $$
 
 therefore holds in $V_\mathcal{U}$.
@@ -1040,6 +1068,7 @@ Therefore, no counterexample exists, and:
 
 $$
 V_\mathcal{U} \vDash \forall u \in \tau_0(\mathcal{X}), \,\, \Psi(u)
+
 $$
 
 **Rigor Class:** B (Bridge metatheorem translating between foundations). $\blacksquare$
@@ -1052,12 +1081,12 @@ Under the hypotheses of Theorem {prf:ref}`thm-bridge-zfc-fundamental`, if $x_* \
 
 $$
 V_\mathcal{U} \vDash \neg\bigl(\exists x_* \in \tau_0(\mathcal{X}) : x_* \models \mathbb{H}_{\mathrm{bad}}\bigr)
+
 $$
 
 :::
 
 :::{prf:proof}
-:label: proof-singular-contradiction
 
 Suppose $x_* \in \mathcal{X}$ satisfies the bad pattern, i.e., the germ of $\mathbb{H}$ at $x_*$ admits a structure morphism from $\mathbb{H}_{\mathrm{bad}}$. Then there exists a non-trivial morphism $f: \mathbb{H}_{\mathrm{bad}} \to \mathbb{H}$ in $\mathbf{Hypo}_T$, contradicting $\operatorname{Hom}(\mathbb{H}_{\mathrm{bad}}, \mathbb{H}) \simeq \emptyset$. By Theorem {prf:ref}`thm-bridge-zfc-fundamental`, the corresponding set-level non-existence holds in $V_\mathcal{U}$.
 :::

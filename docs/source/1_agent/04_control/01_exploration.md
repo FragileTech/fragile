@@ -38,6 +38,7 @@ We work on the **macro model** (the discrete register). Assume a macro Markov ke
 
 $$
 \bar{P}(k'\mid k,a),\qquad k,k'\in\mathcal{K},\ a\in\mathcal{A},
+
 $$
 which is the learned effective dynamics demanded by Causal Enclosure ({ref}`Section 2.8 <sec-conditional-independence-and-sufficiency>`).
 :::
@@ -49,6 +50,7 @@ Fix a horizon $H\in\mathbb{N}$ and a (possibly stochastic) policy $\pi(a\mid k)$
 
 $$
 \xi := (K_{t+1},\dots,K_{t+H}) \in \mathcal{K}^H
+
 $$
 conditioned on $K_t=k$ is
 
@@ -57,6 +59,7 @@ P_\pi(\xi\mid k)
 :=
 \sum_{a_{t:t+H-1}}
 \prod_{h=0}^{H-1}\pi(a_{t+h}\mid K_{t+h})\ \bar{P}(K_{t+h+1}\mid K_{t+h},a_{t+h}).
+
 $$
 (For continuous $\mathcal{A}$, replace the sum by an integral with respect to the action reference measure.)
 
@@ -76,6 +79,7 @@ The causal path entropy at $(k,H)$ under $\pi$ is the Shannon entropy of the pat
 $$
 S_c(k,H;\pi) := H\!\left(P_\pi(\cdot\mid k)\right)
 = -\sum_{\xi\in\mathcal{K}^H} P_\pi(\xi\mid k)\log P_\pi(\xi\mid k).
+
 $$
 This quantity is well-typed precisely because the macro register is discrete: there is no differential-entropy ambiguity.
 
@@ -94,6 +98,7 @@ Let $z_{\text{macro}}=e_k\in\mathbb{R}^{d_m}$ denote the code embedding of $k$ (
 
 $$
 \mathbf{g}_{\text{expl}}(e_k) := T_c\ \nabla_G S_c(k,H;\pi),
+
 $$
 where $T_c>0$ is the cognitive temperature ({prf:ref}`def-cognitive-temperature`). Operationally, gradients are taken through the continuous pre-quantization coordinates (straight-through VQ estimator); in the strictly symbolic limit, the gradient becomes a discrete preference ordering induced by $S_c(k,H;\pi)$.
 
@@ -125,6 +130,7 @@ $$
 J_{T_c}(\pi)
 :=
 \mathbb{E}_\pi\left[\sum_{t\ge 0}\gamma^t\left(\mathcal{R}(K_t,A_t) + T_c\,\mathcal{H}(\pi(\cdot\mid K_t))\right)\right],
+
 $$
 where $\mathcal{H}$ is Shannon entropy. This is the standard "utility + entropy regularization" objective.
 
@@ -157,6 +163,7 @@ Assume finite $\mathcal{A}$. Define the soft state value
 
 $$
 V^*(k) := \max_{\pi} \ \mathbb{E}\Big[\sum_{t\ge 0}\gamma^t(\mathcal{R}+T_c\mathcal{H})\ \Big|\ K_0=k\Big].
+
 $$
 Then $V^*$ satisfies the entropic Bellman fixed point
 
@@ -165,12 +172,14 @@ V^*(k)
 =
 T_c \log \sum_{a\in\mathcal{A}}
 \exp\!\left(\frac{1}{T_c}\left(\mathcal{R}(k,a)+\gamma\,\mathbb{E}_{k'\sim\bar{P}(\cdot\mid k,a)}[V^*(k')]\right)\right),
+
 $$
 and the corresponding optimal policy is the softmax policy
 
 $$
 \pi^*(a\mid k)\propto
 \exp\!\left(\frac{1}{T_c}\left(\mathcal{R}(k,a)+\gamma\,\mathbb{E}[V^*(k')]\right)\right).
+
 $$
 *Proof sketch.* Standard convex duality / log-sum-exp variational identity: maximizing expected reward plus entropy yields a softmax (exponential-family) distribution; substituting back produces the log-partition recursion. (This is the "soft"/MaxEnt Bellman equation used in SAC-like methods.)
 
@@ -233,6 +242,7 @@ For a macrostate $k\in\mathcal{K}$ and horizon $H$, define the future macro path
 
 $$
 \Gamma_H(k) := \mathcal{K}^H.
+
 $$
 :::
 
@@ -261,6 +271,7 @@ On a macro chart with metric $G$ ({ref}`Section 2.5 <sec-second-order-sensitivit
 
 $$
 \mathbf{g}_{\text{expl}}(e_k) := T_c\,\nabla_G S_c(k,H;\pi).
+
 $$
 :::
 
@@ -292,6 +303,7 @@ Then the following are equivalent characterizations of the same optimal control 
 
    $$
    \omega := (A_t,\dots,A_{t+H-1},K_{t+1},\dots,K_{t+H}),
+
    $$
    the optimal controlled path law admits an exponential-family form relative to the reference measure induced by $\pi_0$ and $\bar{P}$:
 
@@ -299,6 +311,7 @@ Then the following are equivalent characterizations of the same optimal control 
    P^*(\omega\mid K_t=k)\ \propto\
    \Big[\prod_{h=0}^{H-1}\pi_0(A_{t+h}\mid K_{t+h})\,\bar{P}(K_{t+h+1}\mid K_{t+h},A_{t+h})\Big]\,
    \exp\!\left(\frac{1}{T_c}\sum_{h=0}^{H-1}\gamma^h\,\mathcal{R}(K_{t+h},A_{t+h})\right),
+
    $$
    where the normalizer is the (state-dependent) path-space normalizing constant.
 3. **Soft Bellman optimality:** the optimal value function $V^*$ satisfies the soft Bellman recursion of Proposition 10.2.2, and $\pi^*$ is the corresponding softmax policy.
@@ -313,6 +326,7 @@ $$
 \frac{1}{T_c}\,\mathbb{E}_{P}\!\left[\sum_{h=0}^{H-1}\gamma^h\,\mathcal{R}\right]
 -D_{\mathrm{KL}}(P(\cdot\mid k)\Vert P_0(\cdot\mid k))
 \right\},
+
 $$
 and the optimizer is exactly the exponentially tilted law {math}`P^*`. In the special case where {math}`P_0` is uniform (or treated as constant), the KL term differs from Shannon path entropy by an additive constant, recovering the standard "maximize entropy subject to expected reward" view.
 
@@ -352,6 +366,7 @@ MaxEnt control is equivalent to an **Exponentially Tilted Trajectory Measure**:
 
 $$
 P^*(\omega|K_t=k) \propto P_0(\omega|k) \exp\!\left(\frac{1}{T_c}\sum_{h=0}^{H-1} \gamma^h \mathcal{R}(K_{t+h}, A_{t+h})\right)
+
 $$
 The path-space log-normalizer equals the soft value (Theorem {prf:ref}`thm-equivalence-of-entropy-regularized-control-forms-discrete-macro`). This is a **Schrodinger bridge** formulation.
 
@@ -362,6 +377,7 @@ Use single-step KL penalty instead of path-space tilting. Ignore the trajectory 
 
 $$
 J(\pi) = \mathbb{E}[R] - \lambda D_{\mathrm{KL}}(\pi \| \pi_0)
+
 $$
 This recovers **KL-Regularized Policy Gradient** and exponential family policies.
 

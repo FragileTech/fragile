@@ -32,6 +32,7 @@ $$
 \underbrace{\mathcal{L}_{\text{control}}}_{\text{control cost / regularization}}
 + \underbrace{C(z_t,a_t)}_{\text{task cost}}
 \Big)\,dt.
+
 $$
 
 :::{div} feynman-prose
@@ -55,6 +56,7 @@ The Fragile Agent has four parts, and I want you to think of them like organs in
 
 $$
 \mathbb{A} = (\text{Split VQ-VAE Shutter}, \text{World Model}, \text{Critic}, \text{Policy})
+
 $$
 
 :::{div} feynman-prose
@@ -174,11 +176,13 @@ K_t \in \mathcal{K}\ \text{(discrete; may be hierarchical)},
 Z_{n,t}\in\mathbb{R}^{d_n}\ \text{(continuous nuisance; gauge fiber in Sec.\ 29.13)},
 \quad
 Z_{\mathrm{tex},t}\in\mathbb{R}^{d_{\mathrm{tex}}}\ \text{(continuous texture)}.
+
 $$
 For the Attentive Atlas shutter, the macro register is a two-level tuple:
 
 $$
 K_t = (K_{\text{chart}}, K_{\text{code}}),
+
 $$
 with $K_{\text{chart}}\in\{1,\dots,N_c\}$ and $K_{\text{code}}\in\{1,\dots,N_v\}$.
 
@@ -196,6 +200,7 @@ $$
 K(x) := \arg\min_{k\in\mathcal{K}} \|z_e(x)-e_k\|_2^2,
 \qquad
 z_{\text{macro}}(x):=e_{K(x)}.
+
 $$
 We equip $\mathcal{K}$ with the induced finite metric $d_{\mathcal{K}}(k,k'):=\|e_k-e_{k'}\|_2$ (or its $G_\mu$-weighted variant), so $\mathcal{Z}$ is a bundle of continuous fibres over a discrete base.
 
@@ -207,6 +212,7 @@ The state is encoded via a learned VQ-VAE discretization:
 
 $$
 K(x) := \arg\min_{k \in \mathcal{K}} \|z_e(x) - e_k\|_2^2
+
 $$
 where $\{e_k\}_{k \in \mathcal{K}}$ is a learned codebook and $z_e(x)$ is the encoder output.
 
@@ -217,6 +223,7 @@ Set $|\mathcal{K}| = |\mathcal{S}|$ (codebook size equals state space) and encod
 
 $$
 K(x) = s \in \{1, \ldots, N\} \quad \text{(tabular state index)}
+
 $$
 This recovers **Tabular Q-Learning** with discrete state enumeration.
 
@@ -244,16 +251,19 @@ Now let me tell you about a more sophisticated version of this, called the Atten
   w_i(x) = \frac{\exp(\langle k(x), q_i\rangle/\sqrt{d})}{\sum_j \exp(\langle k(x), q_j\rangle/\sqrt{d})},
   \qquad
   K_{\text{chart}} = \arg\max_i w_i(x).
+
   $$
 Each chart has its own codebook $\{e_{i,c}\}_{c=1}^{N_v}$. For each chart, pick the closest code
 
 $$
 K_{\text{code},i}(x) := \arg\min_c \|v(x)-e_{i,c}\|_2^2,
+
 $$
 then form a soft blended code for differentiability:
 
 $$
 z_q(x) := \sum_i w_i(x)\, e_{i,K_{\text{code},i}(x)}.
+
 $$
 The hard code index used for discrete state is $K_{\text{code}}:=K_{\text{code},K_{\text{chart}}}(x)$.
 
@@ -271,6 +281,7 @@ $$
 z_n = \text{StructureFilter}(\Delta_{\text{total}}),
 \qquad
 z_{\text{tex}} = \Delta_{\text{total}} - z_n.
+
 $$
 Finally, the geometric latent for the decoder is
 
@@ -278,6 +289,7 @@ $$
 z_{\text{geo}} = z_q^{\text{st}} + z_n,
 \qquad
 z_q^{\text{st}} := v(x) + \operatorname{sg}[z_q(x)-v(x)],
+
 $$
 so reconstruction uses the discrete macro code plus structured nuisance.
 
@@ -291,6 +303,7 @@ Here's a practical problem: if you show the same mug from two different angles, 
 
 $$
 C_\psi(g\cdot x)\approx C_\psi(x)\qquad (g\in G_{\text{spatial}}).
+
 $$
 One implementation is a Spatial Transformer Network (STN) that predicts and applies an input warp before the VQ encoder {cite}`jaderberg2015stn`. An alternative is to use an explicitly group-equivariant encoder and then pool to an invariant statistic {cite}`cohen2016group`.
 
@@ -319,6 +332,7 @@ The agent's state is a **Split VQ-VAE** with learned hierarchy:
 
 $$
 Z_t = (K_t, z_{n,t}, z_{\text{tex},t}) \in \mathcal{K} \times \mathcal{Z}_n \times \mathcal{Z}_{\text{tex}}
+
 $$
 where:
 - $K_t \in \mathcal{K}$: Discrete macro-symbol (learned via codebook)
@@ -334,6 +348,7 @@ Hard-code the semantics of $K$ to be fixed sub-policies rather than learned symb
 
 $$
 \text{Options Framework (Sutton et al.)}: o \in \{o_1, \ldots, o_N\}, \quad \pi_o(a|s)
+
 $$
 where $o$ is a fixed option index and $\pi_o$ is a pre-specified intra-option policy.
 
@@ -355,6 +370,7 @@ While the macro channel $K$ is discrete, the nuisance and texture channels remai
 
 $$
 q_\phi(z_n\mid x)=\mathcal{N}(\mu_\phi(x),\operatorname{diag}(\sigma_\phi^2(x))),
+
 $$
 with a task-appropriate prior $p(z_n)$ (often standard normal as a conservative default). The key requirement is *typed*: nuisance may influence reconstruction and may be used to explain structured deviations, but macro prediction/closure must not require it beyond $(K_t,A_t)$ ({ref}`Section 2.8 <sec-conditional-independence-and-sufficiency>`).
 
@@ -362,6 +378,7 @@ with a task-appropriate prior $p(z_n)$ (often standard normal as a conservative 
 
 $$
 q_\phi(z_{\mathrm{tex}}\mid x)=\mathcal{N}(\mu_{\mathrm{tex}}(x),\operatorname{diag}(\sigma_{\mathrm{tex}}^2(x))),
+
 $$
 and a simple high-entropy prior $p(z_{\mathrm{tex}})=\mathcal{N}(0,I)$ so that matching $q_\phi(\cdot\mid x)$ to $p$ operationalizes the statement "texture is reconstruction-only": it should explain details that do not belong in the macro dynamics.
 
@@ -384,6 +401,7 @@ $$
 &\quad + \underbrace{\beta_n D_{\mathrm{KL}}(q_\phi(Z_n\mid X)\Vert p(Z_n))}_{\text{nuisance prior}} \\[4pt]
 &\quad + \underbrace{\beta_{\mathrm{tex}} D_{\mathrm{KL}}(q_\phi(Z_{\mathrm{tex}}\mid X)\Vert p(Z_{\mathrm{tex}}))}_{\text{texture-as-residual}}
 \end{aligned}
+
 $$
 *Units:* {math}`\beta`, {math}`\beta_n`, and {math}`\beta_{\mathrm{tex}}` are dimensionless weights; each {math}`D_{\mathrm{KL}}` is measured in nats. In the Attentive Atlas shutter, the codebook/commitment terms are computed per chart and weighted by {math}`w_i(x)` so inactive charts do not receive spurious updates.
 
@@ -397,6 +415,7 @@ Here's the beautiful thing about having a discrete macro channel: we can make ex
 
 $$
 I(X;K)\le H(K)\le \log|\mathcal{K}|.
+
 $$
 For the hierarchical macro $(K_{\text{chart}},K_{\text{code}})$, this becomes $H(K)\le \log(N_c N_v)$.
 For deterministic nearest-neighbor quantization, $H(K\mid X)=0$ and hence $I(X;K)=H(K)$: the macro channel is a bounded-rate symbolic memory with capacity at most $\log|\mathcal{K}|$ bits.
@@ -413,6 +432,7 @@ The agent optimizes an entropy-regularized objective on the Riemannian manifold 
 
 $$
 \mathcal{F}[p, \pi] = \int_{\mathcal{Z}} p(z) \Big( V(z) - \tau H(\pi(\cdot|z)) \Big) d\mu_G
+
 $$
 where $d\mu_G = \sqrt{|G|}\, dz$ is the Riemannian volume form and $\tau$ is the entropy weight.
 
@@ -423,6 +443,7 @@ Restrict entropy regularization to action space only; ignore state-space geometr
 
 $$
 J_{\text{SAC}}(\pi) = \mathbb{E}\left[\sum_{t=0}^\infty \gamma^t \big(r_t + \alpha H(\pi(\cdot|s_t))\big)\right]
+
 $$
 This recovers **Soft Actor-Critic** (SAC) with action entropy bonus.
 
@@ -444,6 +465,7 @@ For those who want the deep foundation: VQ-VAE is really a computational instant
 
 $$
 \min_{E,D}\ \mathbb{E}\big[d(X,\hat{X})\big] + \lambda\,\mathbb{E}\big[-\log p_\psi(K)\big],
+
 $$
 with rate controlled by the symbolic model and distortion controlled by the decoder. This is the rigorous information-theoretic envelope in which VQ-VAE-style macrostates live.
 Units: $\lambda$ has units of the distortion scale divided by nats (dimensionless if $d$ is itself a negative-log-likelihood in nats).
@@ -452,6 +474,7 @@ Units: $\lambda$ has units of the distortion scale divided by nats (dimensionles
 
 $$
 z_\mu \equiv (z_n, z_{\mathrm{tex}}),
+
 $$
 where $z_n$ is **structured nuisance** (may be used for actuation/auditing) and $z_{\mathrm{tex}}$ is **texture** (likelihood/reconstruction-only). Unless a section explicitly discusses texture, occurrences of $z_\mu$ should be read as the nuisance channel $z_n$.
 
@@ -507,6 +530,7 @@ The Critic $V(z)$ serves as a **Control Lyapunov Function** with explicit stabil
 
 $$
 \dot{V}(z) := \nabla V(z)^\top \dot{z} \le -\lambda V(z), \quad [\lambda] = s^{-1}
+
 $$
 The Sieve (Node 7: StiffnessCheck) enforces $\|\nabla V\| > \epsilon$ and monitors bifurcation (Node 7a).
 
@@ -541,6 +565,7 @@ We can write an update objective that combines (i) a geometry-aware smoothness/t
 
 $$
 \mathcal{S} = \int \left( \underbrace{\frac{1}{2} \lVert\dot{\pi}\rVert^2_{G}}_{\text{Update smoothness / trust region}} - \underbrace{\frac{d V}{d t}}_{\text{Value improvement}} \right) dt
+
 $$
 Where $\lVert\cdot\rVert_G$ is the norm under a **state-space sensitivity metric** $G$ ({ref}`Section 2.5 <sec-second-order-sensitivity-value-defines-a-local-metric>`). This biases updates toward paths that are conservative in sensitive regions and more aggressive where the value landscape is well-conditioned.
 
@@ -552,6 +577,7 @@ Policy updates follow **geodesic flow** on the Riemannian manifold $(\mathcal{Z}
 
 $$
 \mathcal{S} = \int \left( \frac{1}{2} \|\dot{\pi}\|_G^2 - \dot{V} \right) dt
+
 $$
 The Euler-Lagrange equations yield updates along geodesics---shortest paths that respect curvature.
 
@@ -562,6 +588,7 @@ Set $G = I$ (flat metric). Geodesics become straight lines.
 
 $$
 \theta_{t+1} = \theta_t + \eta \nabla_\theta J(\theta)
+
 $$
 This recovers **Euclidean SGD**---parameter updates as straight-line steps in flat space.
 
@@ -608,6 +635,7 @@ The **state-space sensitivity metric** $G_{ij}$ at a point $z$ in the latent spa
 
 $$
 G_{ij} = \frac{\partial^2 V}{\partial z_i \partial z_j} = \text{Hess}(V)
+
 $$
 
 Units: $[G_{ij}]=\mathrm{nat}\,[z]^{-2}$ if $z$ is measured in units $[z]$.
@@ -634,6 +662,7 @@ Policy updates follow a flow on the Riemannian manifold $(\mathcal{Z}, G)$:
 
 $$
 \delta z = G^{-1}(z) \nabla_z \mathcal{L}
+
 $$
 where $G(z)$ is the state-space sensitivity metric (Definition {prf:ref}`def-local-conditioning-scale`).
 
@@ -644,6 +673,7 @@ Set $G = I$ (identity matrix). The manifold becomes flat Euclidean space.
 
 $$
 \delta\theta = \nabla_\theta J(\theta) \quad \text{(REINFORCE / Vanilla Policy Gradient)}
+
 $$
 This recovers **REINFORCE** with Euclidean gradient ascent.
 
@@ -661,6 +691,7 @@ In the Fragile Agent implementation, the **Riemannian metric lives in state spac
 
 $$
 \dot{V}_M = \nabla V(z)^\top M^{-1}(z) \Delta z
+
 $$
 Current state-space metric options (diagonal approximations):
 
@@ -668,16 +699,19 @@ Current state-space metric options (diagonal approximations):
 
   $$
   M^{-1}_{ii}(z) = \frac{1}{\mathrm{Var}(z_i) + \epsilon}
+
   $$
 * **Policy Fisher on states:**
 
   $$
   M^{-1}_{ii}(z) = \frac{1}{\mathbb{E}[(\partial_{z_i}\log \pi(a|z))^2] + \epsilon}
+
   $$
 * **Gradient RMS (critic):**
 
   $$
   M^{-1}_{ii}(z) = \frac{1}{\sqrt{\mathbb{E}[(\partial_{z_i} V)^2]} + \epsilon}
+
   $$
 In all three cases, $\epsilon$ is a numerical stabilizer with the **same units as the denominator term** it is added to.
 
@@ -701,6 +735,7 @@ We construct a diagonal state-space sensitivity metric using the **scaling coeff
 
 $$
 G = \text{diag}(\alpha, \beta, \gamma, \delta)
+
 $$
 Where:
 * $\alpha$: critic curvature scale (value landscape sensitivity).
@@ -723,6 +758,7 @@ The complete state-space sensitivity metric on $\mathcal{Z}$ is defined as:
 
 $$
 G_{ij}(z) = \underbrace{\frac{\partial^2 V(z)}{\partial z_i \partial z_j}}_{\text{Hessian (value curvature)}} + \lambda \underbrace{\mathbb{E}_{a \sim \pi} \left[ \frac{\partial \log \pi(a|z)}{\partial z_i} \frac{\partial \log \pi(a|z)}{\partial z_j} \right]}_{\text{Fisher (control sensitivity)}}
+
 $$
 
 Units: the Fisher term has units $[z]^{-2}$; therefore $\lambda$ carries the same units as $V$ (here $\mathrm{nat}$) so both addends match.
@@ -754,11 +790,13 @@ Because $G$ is a Riemannian metric on $\mathcal{Z}$, it induces a unique torsion
 
 $$
 \Gamma^k_{ij}(z) = \frac12\,G^{k\ell}(z)\left(\partial_i G_{j\ell}(z)+\partial_j G_{i\ell}(z)-\partial_\ell G_{ij}(z)\right).
+
 $$
 The covariant derivative of a vector field $v$ is then
 
 $$
 (\nabla_i v)^k = \partial_i v^k + \Gamma^k_{ij}v^j.
+
 $$
 **Why this matters here.** Most of the document uses $G$ operationally via diagonal preconditioning $G^{-1}$ (which is computationally cheap). The connection becomes relevant when we ask whether updates are **path dependent** in state space: transporting a tangent vector (e.g., a value gradient direction) around a loop can return a different direction if curvature is present. {ref}`Section 3 <sec-diagnostics-stability-checks>` introduces an operational HolonomyCheck that detects loop drift without explicitly computing $\Gamma$.
 
@@ -772,6 +810,7 @@ $$
 
 $$
 \Gamma^k_{ij}(z) = \frac{1}{2}G^{kl}(z)\left(\partial_i G_{jl} + \partial_j G_{il} - \partial_l G_{ij}\right)
+
 $$
 appearing in the geodesic correction term of the dynamics (Definition {prf:ref}`def-bulk-drift-continuous-flow`).
 
@@ -812,6 +851,7 @@ Think of it this way: the parameter space is like the DNA that encodes an organi
 
 $$
 G_{ij}(z) = \mathbb{E}_{a \sim \pi} \left[ \frac{\partial \log \pi(a|z)}{\partial z_i} \frac{\partial \log \pi(a|z)}{\partial z_j} \right]
+
 $$
 This measures the **Information Bottleneck** between the Shutter (Split VQ-VAE) and the Actuator (Policy):
 - High $G_{ii}$: The policy is sensitive to state dimension $i$, meaning high control authority
@@ -832,6 +872,7 @@ The trust region is defined by the **state-space sensitivity metric** $G(z)$:
 
 $$
 G_{ij}(z) = \mathbb{E}_{a \sim \pi}\left[\frac{\partial \log\pi(a|z)}{\partial z_i} \frac{\partial \log\pi(a|z)}{\partial z_j}\right] + \nabla^2_z V(z)
+
 $$
 Updates satisfy $\|\delta\pi\|_G^2 \le \epsilon$ in **state space**.
 
@@ -843,6 +884,7 @@ Conflate state space with parameter space. Use the parameter-space Fisher $\math
 $$
 \text{TRPO: } D_{\text{KL}}(\pi_\theta \| \pi_{\theta'}) \le \delta \quad \text{(parameter-space constraint)} \\
 \text{PPO: } \text{clip}(\rho, 1-\epsilon, 1+\epsilon) \quad \text{(surrogate approximation)}
+
 $$
 **Result:** TRPO/PPO constrain updates in the wrong space. They measure "how much the policy changed" but not "how much the value landscape changed at this state."
 
@@ -865,6 +907,7 @@ We replace the heuristic Bellman equation {cite}`bellman1957dynamic` with the ri
 
 $$
 \underbrace{\mathcal{L}_f V}_{\text{Lie Derivative}} + \underbrace{\mathfrak{D}(z, a)}_{\text{Control Effort / Regularizer}} = \underbrace{-\mathcal{R}(z, a)}_{\text{Instantaneous cost rate}}
+
 $$
 
 :::{div} feynman-prose
@@ -877,6 +920,7 @@ The **Lie derivative** $\mathcal{L}_f V$ tells you how fast the value function i
 
 $$
 \mathcal{L}_f V = dV(f) = \partial_i V \cdot f^i = \nabla V \cdot f
+
 $$
 This is the natural pairing between the 1-form $dV$ and the vector field $f$---NO metric $G$ appears.
 
@@ -888,6 +932,7 @@ This is important! The Lie derivative just asks "how fast is $V$ changing along 
 
 $$
 [\nabla V \cdot f] = \frac{[V]}{[z]} \cdot \frac{[z]}{[t]} = \mathrm{nat}\,\mathrm{step}^{-1}
+
 $$
 All terms in the HJB equation have units of a **cost rate**. In discrete time this is naturally $\mathrm{nat/step}$; in continuous time it is $\mathrm{nat\,s^{-1}}$.
 
@@ -935,11 +980,13 @@ The transition from micro to macro is a **projection operator** $\Pi:\mathcal{Z}
 
 $$
 K_{t+1}\ \perp\!\!\!\perp\ (Z_{n,t}, Z_{\mathrm{tex},t})\ \big|\ (K_t,A_t),
+
 $$
 equivalently the vanishing of a conditional mutual information:
 
 $$
 I(K_{t+1};Z_{n,t},Z_{\mathrm{tex},t}\mid K_t,A_t)=0.
+
 $$
 :::
 
@@ -953,6 +1000,7 @@ This is the information-theoretic statement that the macro-symbols are a suffici
 $$
 P_\Pi(\cdot\mid z,a)=\bar{P}(\cdot\mid \Pi(z),a)
 \quad\text{for }P\text{-a.e. }z.
+
 $$
 A canonical defect functional is the expected divergence
 
@@ -960,6 +1008,7 @@ $$
 \delta_{\text{CE}}
 :=
 \mathbb{E}_{z,a}\Big[D_{\mathrm{KL}}\big(P_\Pi(\cdot\mid z,a)\ \Vert\ \bar{P}(\cdot\mid \Pi(z),a)\big)\Big].
+
 $$
 :::
 
@@ -1020,6 +1069,7 @@ g_t
 \approx
 \mathbb{E}_{a\sim\pi(\cdot\mid z_t)}\!\left[\left(\nabla_{z}\log\pi(a\mid z_t)\right)\odot\left(\nabla_{z}\log\pi(a\mid z_t)\right)\right]
 \operatorname{diag}(\nabla^2_z V(z_t)),
+
 $$
 where $\odot$ denotes elementwise product (and the Hessian term can be omitted when too expensive).
 
@@ -1032,6 +1082,7 @@ $$
 +\eta_G\,g_t,
 \qquad
 \eta_G\in(0,1].
+
 $$
 Use a stabilized inverse in preconditioning:
 
@@ -1039,6 +1090,7 @@ $$
 \left(\widehat{G}^{\mathrm{diag}}_{t}+\epsilon_t\mathbf{1}\right)^{-1},
 \qquad
 \epsilon_t>0,
+
 $$
 and optionally clamp inverse entries to a bounded interval to avoid singular trust regions in flat directions.
 
@@ -1053,6 +1105,7 @@ G
 G_{\text{macro}} & 0 \\
 0 & G_{n}
 \end{bmatrix},
+
 $$
 where:
 - $G_{\text{macro}}$ is a discrete/categorical sensitivity for the macro channel (e.g., the Fisher of $q(K\mid x)$ or curvature proxies derived from macro closure cross-entropy),
@@ -1075,6 +1128,7 @@ $$
 \epsilon_{\min}
 +
 c_\epsilon\,\widehat{\sigma}_t,
+
 $$
 where $\widehat{\sigma}_t$ can be any bounded "update unreliability" proxy consistent with the Sieve (e.g., SNRCheck, NEPCheck, residual-event statistics from {ref}`Section 12.3 <sec-sieve-events-as-projections-reweightings>`). The design intent is monotone: noisier / less-grounded regimes should imply more damping, not larger steps.
 
@@ -1117,6 +1171,7 @@ Let $(\mathcal{Z}, G)$ be the Riemannian latent manifold. Define a local scale p
 
 $$
 \Theta(z) := \frac{1}{d} \operatorname{Tr}\left( G^{-1}(z) \right)
+
 $$
 where $d = \dim(\mathcal{Z})$. The corresponding **precision / coupling coefficient** is $\beta(z) = [\Theta(z)]^{-1}$.
 Units: if $z$ carries units $[z]$, then $[G]=\mathrm{nat}\,[z]^{-2}$ implies $[\Theta]=[z]^2/\mathrm{nat}$ and $[\beta]=\mathrm{nat}/[z]^2$ (dimensionless when $z$ is normalized).
@@ -1130,6 +1185,7 @@ The covariance of the policy $\pi(a|z)$ is coupled to the curvature/sensitivity 
 
 $$
 \Sigma_\pi(z) \propto \beta(z)^{-1} \cdot G^{-1}(z)
+
 $$
 *Proof (sketch).* In maximum-entropy control / exponential-family models, stationary distributions over latent states often take an exponential form $p(z)\propto \exp(-\beta V(z))$. Matching this form with a geometry-aware update implies that policy covariance scales inversely with the sensitivity metric. Deviations can be measured by a **consistency defect** $\mathcal{D}_{\beta} := \|\nabla \log p + \beta \nabla V\|_G^2$.
 
@@ -1144,6 +1200,7 @@ $$
 \mathcal{F}[p,\pi]
 :=
 \int_{\mathcal{Z}} p(z)\Big(V(z) - \tau\,H(\pi(\cdot\mid z))\Big)\,d\mu_G,
+
 $$
 where $H(\pi(\cdot\mid z)) := -\mathbb{E}_{a\sim \pi(\cdot\mid z)}[\log \pi(a\mid z)]$ is the per-state policy entropy (in nats). Because $V$ and $H$ are measured in nats ({ref}`Section 1.2 <sec-units-and-dimensional-conventions>`), $\tau$ is dimensionless.
 
@@ -1172,6 +1229,7 @@ Let $v\in\Gamma(T\mathcal{Z})$ be a vector field describing the instantaneous tr
 
 $$
 v^i(z) := -G^{ij}(z)\frac{\partial V}{\partial z^j},
+
 $$
 so transport points in the direction of decreasing $V$ (Riemannian steepest descent). Units: if computation time is measured in solver units, then $[v]=[z]/\mathrm{solver\ time}$ (map to $\mathrm{step}$ using the $t \leftrightarrow s$ budget in {ref}`Section 1.3 <sec-the-chronology-temporal-distinctions>`).
 
@@ -1184,6 +1242,7 @@ If the belief density evolves only by deterministic transport under $v$ (no inte
 
 $$
 \frac{\partial p}{\partial s} + \nabla_i \left( p v^i \right) = 0
+
 $$
 where $\nabla_i$ denotes the Levi-Civita covariant derivative associated with $G$.
 
@@ -1196,6 +1255,7 @@ In general, belief evolution may include additional update effects (e.g. approxi
 
 $$
 \frac{\partial p}{\partial s} + \operatorname{div}_G(p v) = \sigma
+
 $$
 Interpreting $\sigma$:
 1. If $\sigma>0$ on a region, belief mass is being created there beyond pure transport; this indicates an **ungrounded internal update** relative to the transport model.
@@ -1207,6 +1267,7 @@ Interpreting $\sigma$:
    =
    -\oint_{\partial U}\langle p v,n\rangle\,dA_G
    +\int_U \sigma\,d\mu_G.
+
    $$
    For {math}`U=\mathcal{Z}` this relates net mass change to boundary flux and the integrated residual.
 
@@ -1219,6 +1280,7 @@ If $\sigma\equiv 0$ and the boundary flux vanishes (e.g. $\langle p v,n\rangle=0
 
 $$
 \mathcal{V}(s):=\int_{\mathcal{Z}}p(z,s)\,d\mu_G
+
 $$
 is constant in time.
 
@@ -1226,6 +1288,7 @@ is constant in time.
 
 $$
 \frac{d\mathcal{V}}{ds} = \int_{\mathcal{Z}} \frac{\partial p}{\partial s} d\mu_G = -\int_{\mathcal{Z}} \operatorname{div}_G(p v) d\mu_G = -\int_{\partial \mathcal{Z}} \langle p v, n \rangle dA = 0
+
 $$
 assuming there is no net boundary contribution and no internal source term. In applications we do not estimate $\sigma$ pointwise; instead we monitor surrogate checks (e.g. BoundaryCheck and coupling-window metrics) that are sensitive to persistent boundary decoupling (Sections 3 and 15).
 
@@ -1277,6 +1340,7 @@ $$
 -\oint_{\partial \mathcal{Z}} \langle p v,n\rangle\,dA_G
 \;+\;
 \int_{\mathcal{Z}} \sigma\,d\mu_G.
+
 $$
 where $n$ is the outward unit normal and $dA_G$ is the induced boundary area element. (Equivalently, if $\iota:\partial\mathcal{Z}\hookrightarrow \mathcal{Z}$ is the inclusion map, then the boundary flux is the pullback $\iota^*(p v\;\lrcorner\; d\mu_G)$.)
 
@@ -1286,6 +1350,7 @@ $$
 \frac{d\mathcal{V}}{ds}
 =
 -\oint_{\partial \mathcal{Z}} \langle p v,n\rangle\,dA_G,
+
 $$
 in the case $\sigma\equiv 0$.
 
@@ -1319,6 +1384,7 @@ To maintain stability, the value/cost function $V$ must satisfy interface constr
 
 $$
 \langle \nabla_G V, n \rangle \big|_{\partial \mathcal{Z}} = \gamma(x_t)
+
 $$
 where $\gamma$ is an **instantaneous external cost/risk signal** of the external state $x_t$, with units matching $\langle \nabla_G V, n \rangle$ (dimensionless in normalized coordinates).
 

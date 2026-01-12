@@ -10,6 +10,7 @@ In the optimal / sound regime the constraint is active (saturated):
 
 $$
 I_{\text{bulk}}(\mathcal{Z}) = C_{\partial}(\partial\mathcal{Z}).
+
 $$
 We now encode this as a variational constraint to obtain a *metric law* from information limits.
 
@@ -20,6 +21,7 @@ Define the boundary capacity $(n\!-\!1)$-form
 
 $$
 \omega_{\partial} := \frac{1}{\eta_\ell}\, dA_G,
+
 $$
 so that $C_{\partial}(\partial\mathcal{Z})=\oint_{\partial\mathcal{Z}}\omega_{\partial}$ (Definition 17.1.3).
 
@@ -35,6 +37,7 @@ $$
 \underbrace{\int_{\mathcal{Z}} \rho_I(G,V)\, d\mu_G}_{I_{\text{bulk}}}
 \;-\;
 \underbrace{\oint_{\partial\mathcal{Z}}\omega_{\partial}}_{C_{\partial}},
+
 $$
 where $\rho_I(G,V)$ is an *information density* (nats per unit $d\mu_G$) compatible with the agent's representation scheme (Definition 17.1.2). This $\rho_I$ is distinct from the belief density $p$ used in {ref}`Section 2.11 <sec-variance-value-duality-and-information-conservation>`. When $\rho_I$ is instantiated via the split shutter, the most conservative computable proxy is a global one, $I_{\text{bulk}}\approx \mathbb{E}[I(X;K)]$ (Node 13), and the window theorem (Theorem {prf:ref}`thm-information-stability-window-operational`) supplies the admissible operating range.
 
@@ -46,6 +49,7 @@ Fix a smooth potential $V\in C^\infty(\mathcal{Z})$. A canonical risk Lagrangian
 
 $$
 \mathcal{L}_{\text{risk}}(V;G) := \frac{1}{2}\,G^{ab}\nabla_a V\,\nabla_b V + U(V),
+
 $$
 where $U:\mathbb{R}\to\mathbb{R}$ is a (possibly learned) on-site potential capturing non-gradient costs. (The sign convention is chosen for a Riemannian metric; see e.g. Lee, *Riemannian Manifolds*, 2018, for the variational identities used below.)
 
@@ -61,6 +65,7 @@ $$
 \int_{\mathcal{Z}}\left(R(G)-2\Lambda + 2\kappa\,\mathcal{L}_{\text{risk}}(V;G)\right)d\mu_G
 \;-\;
 2\kappa\oint_{\partial\mathcal{Z}}\omega_{\partial},
+
 $$
 with coupling $\kappa\in\mathbb{R}$. The last term is the explicit boundary capacity penalty, and $\Lambda$ is a bulk capacity offset that remains once the boundary is clamped at finite resolution.
 
@@ -83,6 +88,7 @@ Let $d\mu_G=\sqrt{|G|}\,dz^n$. The determinant identity gives
 
 $$
 \delta \sqrt{|G|} = -\frac{1}{2}\sqrt{|G|}\,G_{ij}\,\delta G^{ij},
+
 $$
 equivalently $\delta d\mu_G = -\tfrac12\,G_{ij}\,\delta G^{ij}\, d\mu_G$.
 
@@ -93,26 +99,31 @@ Write the curvature functional as $\mathcal{S}_{\text{geo}}[G]:=\int_{\mathcal{Z
 
 $$
 \delta(R\,d\mu_G) = (\delta R)\,d\mu_G + R\,\delta d\mu_G.
+
 $$
 For the scalar curvature, use
 
 $$
 R = G^{ij}R_{ij},
+
 $$
 hence
 
 $$
 \delta R = R_{ij}\,\delta G^{ij} + G^{ij}\,\delta R_{ij}.
+
 $$
 The Palatini identity gives
 
 $$
 \delta R_{ij} = \nabla_k(\delta \Gamma^k_{ij})-\nabla_j(\delta\Gamma^k_{ik}),
+
 $$
 and the Christoffel variation is
 
 $$
 \delta\Gamma^k_{ij} = \frac12\,G^{k\ell}\left(\nabla_i \delta G_{j\ell}+\nabla_j \delta G_{i\ell}-\nabla_\ell \delta G_{ij}\right),
+
 $$
 where $\delta G_{ij} = -G_{ia}G_{jb}\,\delta G^{ab}$.
 
@@ -120,6 +131,7 @@ Substituting and collecting terms yields the standard decomposition
 
 $$
 \delta\mathcal{S}_{\text{geo}} = \int_{\mathcal{Z}}\left(R_{ij}-\frac12 R\,G_{ij}\right)\delta G^{ij}\,d\mu_G + \oint_{\partial\mathcal{Z}} \mathcal{B}_{\text{curv}}(\delta G,\nabla\delta G),
+
 $$
 where $\mathcal{B}_{\text{curv}}$ is an explicit boundary $(n\!-\!1)$-form built from $\delta\Gamma$ (equivalently from $\delta G$ and its first derivatives). For a well-posed Dirichlet variational problem one can add an appropriate boundary term to cancel $\mathcal{B}_{\text{curv}}$. In our setting the boundary is clamped, so we impose $\delta G\vert_{\partial\mathcal{Z}}=0$ and the boundary term vanishes.
 
@@ -130,21 +142,25 @@ Let $\mathcal{S}_{\text{risk}}[G,V] := \int_{\mathcal{Z}}\mathcal{L}_{\text{risk
 
 $$
 T_{ij} := -\frac{2}{\sqrt{|G|}}\frac{\delta(\sqrt{|G|}\,\mathcal{L}_{\text{risk}})}{\delta G^{ij}}.
+
 $$
 Holding $V$ fixed under $\delta G$ and using $\delta d\mu_G = -\tfrac12 G_{ij}\delta G^{ij} d\mu_G$ gives the standard identity
 
 $$
 \delta \mathcal{S}_{\text{risk}} = -\frac12 \int_{\mathcal{Z}} T_{ij}\,\delta G^{ij}\,d\mu_G.
+
 $$
 For the risk Lagrangian
 
 $$
 \mathcal{L}_{\text{risk}}=\tfrac12 G^{ab}\nabla_a V\nabla_b V + U(V),
+
 $$
 the explicit computation yields
 
 $$
 T_{ij} = \nabla_i V\,\nabla_j V - G_{ij}\left(\frac12\,G^{ab}\nabla_a V\nabla_b V + U(V)\right).
+
 $$
 (sec-appendix-a-capacity-term-and-the-emergence-of)=
 ### A.2.4 Capacity (boundary) term and the emergence of $\Lambda$
@@ -155,6 +171,7 @@ The remaining constant $\Lambda$ in Definition A.1.4 plays the role of the bulk 
 
 $$
 \delta\left(-2\Lambda\int_{\mathcal{Z}} d\mu_G\right) = \int_{\mathcal{Z}} \Lambda G_{ij}\,\delta G^{ij}\,d\mu_G.
+
 $$
 (sec-appendix-a-recovery-of-the-metric-stationarity-condition)=
 ## A.3 Recovery of the Metric Stationarity Condition
@@ -166,6 +183,7 @@ For any sufficiently regular information flux field $\mathbf{j}$ on $\mathcal{Z}
 
 $$
 \int_{\mathcal{Z}} \operatorname{div}_G(\mathbf{j})\, d\mu_G = \oint_{\partial \mathcal{Z}} \langle \mathbf{j}, \mathbf{n}\rangle\, dA_G,
+
 $$
 which is the Riemannian divergence theorem underlying the global balance equation in Theorem {prf:ref}`thm-generalized-conservation-of-belief`.
 
@@ -177,6 +195,7 @@ Under the hypotheses of Section A.2, stationarity of $\mathcal{S}[G,V]$ with res
 
 $$
 R_{ij} - \frac{1}{2}R\,G_{ij} + \Lambda G_{ij} = \kappa\, T_{ij},
+
 $$
 with $T_{ij}$ given by Section A.2.3.
 
@@ -184,6 +203,7 @@ with $T_{ij}$ given by Section A.2.3.
 
 $$
 \delta\mathcal{S} = \int_{\mathcal{Z}}\left[\left(R_{ij}-\frac12 R\,G_{ij}\right) + \Lambda G_{ij} - \kappa T_{ij}\right]\delta G^{ij}\,d\mu_G + \text{(boundary terms)}.
+
 $$
 Boundary terms vanish under the clamped boundary condition (or after adding an appropriate boundary term). Because $\delta G^{ij}$ is arbitrary in the interior, the fundamental lemma of the calculus of variations implies the bracketed tensor must vanish pointwise almost everywhere, yielding the stated identity (see e.g. Evans, *Partial Differential Equations*, 2010, for the functional-analytic lemma).
 
@@ -201,6 +221,7 @@ This section provides the full proof of Theorem {prf:ref}`def-control-field-at-o
 
 $$
 dz_\tau = -\nabla_G U(z_\tau)\, d\tau + \sqrt{2T_c}\, G^{-1/2}(z_\tau)\, dW_\tau,
+
 $$
 with $U(z) = -2\operatorname{artanh}(|z|)$ and initial condition $z(0) = 0$.
 
@@ -210,16 +231,19 @@ Near $z = 0$, expand the potential:
 
 $$
 U(z) = -2\operatorname{artanh}(|z|) \approx -2|z| - \frac{2}{3}|z|^3 + O(|z|^5) \approx -|z|^2 + O(|z|^4).
+
 $$
 The Euclidean gradient is:
 
 $$
 \nabla U(z) = -\frac{2z}{1-|z|^2} \approx -2z + O(|z|^3).
+
 $$
 The Riemannian gradient (with $G^{-1} = \frac{(1-|z|^2)^2}{4}I \approx \frac{1}{4}I$ near origin):
 
 $$
 \nabla_G U(z) \approx -\frac{1}{2}z + O(|z|^3).
+
 $$
 **Step 2: Fokker-Planck equation.**
 
@@ -227,11 +251,13 @@ The probability density $p(z, \tau)$ satisfies the Fokker-Planck equation:
 
 $$
 \partial_\tau p = \nabla \cdot \left( p\,\nabla_G U \right) + T_c\,\nabla \cdot (G^{-1} \nabla p).
+
 $$
 Near the origin, with the linearization $\nabla_G U \approx -\frac{1}{2}z$ and $G^{-1} \approx \frac{1}{4}I$:
 
 $$
 \partial_\tau p \approx \nabla \cdot \left( -\frac{p\,z}{2} \right) + \frac{T_c}{4}\,\Delta p = \frac{p}{2} + \frac{z \cdot \nabla p}{2} + \frac{T_c}{4}\,\Delta p.
+
 $$
 **Step 3: Stationary distribution.**
 
@@ -239,16 +265,19 @@ The stationary solution $p_*(z)$ satisfies detailed balance:
 
 $$
 \nabla_G U + T_c\,G^{-1}\,\nabla \log p_* = 0.
+
 $$
 Substituting and solving:
 
 $$
 \nabla \log p_* = -\frac{1}{T_c}\,G\,\nabla_G U = -\frac{1}{T_c}\,\nabla U.
+
 $$
 Integrating:
 
 $$
 p_*(z) \propto \exp\left(-\frac{U(z)}{T_c}\right) = \exp\left(\frac{2\operatorname{artanh}(|z|)}{T_c}\right).
+
 $$
 This distribution is **rotationally symmetric** (depends only on $|z|$), proving Part 1 of Theorem {prf:ref}`def-control-field-at-origin`.
 
@@ -258,6 +287,7 @@ Write $z = re^{i\theta}$ in polar coordinates. The effective potential in the ra
 
 $$
 U_{\text{eff}}(r) = -2\operatorname{artanh}(r).
+
 $$
 The radial force is $F_r = -\frac{dU_{\text{eff}}}{dr} = \frac{2}{1-r^2} > 0$ for all $r \in [0, 1)$.
 
@@ -282,6 +312,7 @@ The escape time from the neighborhood of the origin scales as:
 
 $$
 \tau_{\text{escape}} \sim \frac{1}{T_c}\,\exp\left(\frac{\Delta U}{T_c}\right),
+
 $$
 where $\Delta U$ is the "barrier height" (which is zero here since the origin is unstable). Thus $\tau_{\text{escape}} \sim O(1)$—the system escapes quickly.
 
@@ -298,6 +329,7 @@ This section provides the full proof of Theorem {prf:ref}`thm-overdamped-limit` 
 
 $$
 m\,\ddot{z}^k + \gamma\,\dot{z}^k + G^{kj}\partial_j\Phi + \Gamma^k_{ij}\dot{z}^i\dot{z}^j = \sqrt{2T_c}\,(G^{-1/2})^{kj}\,\xi^j,
+
 $$
 where $m$ is inertial mass, $\gamma$ is friction, and $\xi^j$ is white noise.
 
@@ -307,6 +339,7 @@ Introduce the dimensionless parameter $\epsilon = m/\gamma$ (mass-to-friction ra
 
 $$
 \epsilon\,\frac{d^2z^k}{d\tilde{s}^2} + \frac{dz^k}{d\tilde{s}} + \frac{1}{\gamma}\,G^{kj}\partial_j\Phi + \frac{\epsilon}{\gamma}\,\Gamma^k_{ij}\frac{dz^i}{d\tilde{s}}\frac{dz^j}{d\tilde{s}} = \sqrt{\frac{2T_c}{\gamma}}\,(G^{-1/2})^{kj}\,\tilde{\xi}^j,
+
 $$
 where $\tilde{\xi}$ is appropriately rescaled noise.
 
@@ -316,16 +349,19 @@ In the limit $\epsilon \to 0$, expand:
 
 $$
 z(\tilde{s}) = z_0(\tilde{s}) + \epsilon\,z_1(\tilde{s}) + O(\epsilon^2).
+
 $$
 At leading order ($\epsilon^0$):
 
 $$
 \frac{dz_0^k}{d\tilde{s}} = -\frac{1}{\gamma}\,G^{kj}(z_0)\,\partial_j\Phi(z_0) + \sqrt{\frac{2T_c}{\gamma}}\,(G^{-1/2})^{kj}\,\tilde{\xi}^j.
+
 $$
 Returning to original computation time $s = \gamma\tilde{s}$ and using $dz_0/ds = (1/\gamma)\,dz_0/d\tilde{s}$:
 
 $$
 dz_0^k = -G^{kj}(z_0)\,\partial_j\Phi(z_0)\,ds + \sqrt{2T_c}\,(G^{-1/2})^{kj}\,dW^j_s.
+
 $$
 This is exactly the overdamped equation stated in Theorem {prf:ref}`thm-overdamped-limit`.
 
@@ -335,11 +371,13 @@ The Christoffel term has magnitude:
 
 $$
 |\Gamma^k_{ij}\dot{z}^i\dot{z}^j| \sim |\Gamma|\,|\dot{z}|^2.
+
 $$
 In the overdamped limit, $|\dot{z}| \sim |F|/\gamma = |G^{-1}\nabla\Phi|/\gamma$. Thus:
 
 $$
 |\Gamma|\,|\dot{z}|^2 \sim \frac{|\Gamma|\,|F|^2}{\gamma^2} \to 0 \quad \text{as } \gamma \to \infty.
+
 $$
 The geodesic correction is suppressed by $O(\gamma^{-2})$.
 
@@ -353,6 +391,7 @@ The error in the overdamped approximation is bounded by:
 
 $$
 \|z(s) - z_0(s)\| \le C\,\epsilon\,(1 + s)\,e^{-s/\epsilon},
+
 $$
 where $C$ depends on the smoothness of $G$, $\Phi$, and $\Gamma$. For $s \gg \epsilon$, this error is exponentially small.
 
@@ -377,6 +416,7 @@ Under the overdamped dynamics with class-conditioned potential $V_y$:
 
 $$
 dz = -G^{-1}(z) \nabla V_y(z, K)\, ds + \sqrt{2T_c}\, G^{-1/2}(z)\, dW_s,
+
 $$
 the limiting chart assignment satisfies $\lim_{s \to \infty} K(z(s)) \in \mathcal{A}_y$ almost surely, provided the initial condition lies in the basin $\mathcal{B}_y$ and $T_c$ is sufficiently small.
 
@@ -391,6 +431,7 @@ Define the Lyapunov function:
 
 $$
 L(z) := V_y(z, K(z)) = -\beta_{\text{class}} \log P(Y=y \mid K(z)) + V_{\text{base}}(z, K(z)).
+
 $$
 By construction, $L(z)$ achieves its global minimum on the sub-atlas $\mathcal{A}_y$, where $P(Y=y \mid K) > 1 - \epsilon_{\text{purity}}$, hence $-\log P(Y=y \mid K) < -\log(1 - \epsilon_{\text{purity}})$ is minimized.
 
@@ -400,6 +441,7 @@ Applying Itô's lemma to $L(z(s))$:
 
 $$
 dL = \nabla L \cdot dz + \frac{1}{2} \text{tr}(\nabla^2 L \cdot \Sigma)\, ds,
+
 $$
 where $\Sigma = 2T_c\, G^{-1}$ is the diffusion covariance.
 
@@ -407,6 +449,7 @@ Substituting the SDE:
 
 $$
 dL = \nabla L \cdot \left(-G^{-1} \nabla V_y\, ds + \sqrt{2T_c}\, G^{-1/2}\, dW_s\right) + T_c\, \Delta_G L\, ds,
+
 $$
 where $\Delta_G L = \text{tr}(G^{-1} \nabla^2 L)$ is the Laplace-Beltrami operator.
 
@@ -414,6 +457,7 @@ Since $L = V_y$, we have $\nabla L = \nabla V_y$, so:
 
 $$
 dL = -\|\nabla V_y\|_G^2\, ds + \sqrt{2T_c}\, \nabla V_y \cdot G^{-1/2}\, dW_s + T_c\, \Delta_G V_y\, ds.
+
 $$
 **Step 3: Expected Drift.**
 
@@ -421,6 +465,7 @@ Taking expectations:
 
 $$
 \frac{d}{ds}\mathbb{E}[L(z(s))] = -\mathbb{E}[\|\nabla V_y\|_G^2] + T_c\, \mathbb{E}[\Delta_G V_y].
+
 $$
 The first term is always non-positive (negative unless $\nabla V_y = 0$). The second term is $O(T_c)$ and bounded if $V_y$ has bounded Hessian.
 
@@ -430,6 +475,7 @@ For $T_c \to 0$, the drift becomes:
 
 $$
 \frac{d}{ds}\mathbb{E}[L] \approx -\mathbb{E}[\|\nabla V_y\|_G^2] \le 0,
+
 $$
 with equality only at critical points of $V_y$.
 
@@ -443,6 +489,7 @@ If $z(0) \in \mathcal{B}_y$ (the basin of attraction for $\mathcal{A}_y$), the t
 
 $$
 \lim_{s \to \infty} z(s) \in \mathcal{A}_y \quad \text{a.s.}
+
 $$
 **Step 6: Chart Assignment.**
 
@@ -456,6 +503,7 @@ Since $z(s) \to \mathcal{A}_y$ and the chart assignment $K(z)$ eventually stabil
 
 $$
 \lim_{s \to \infty} K(z(s)) \in \mathcal{A}_y.
+
 $$
 **Quantitative Bound (Low Temperature).**
 
@@ -463,6 +511,7 @@ For small but positive $T_c$, standard results on diffusions in potential wells 
 
 $$
 \text{Rate}_{\text{escape}} \sim e^{-\Delta V / T_c},
+
 $$
 where $\Delta V$ is the barrier height. For $T_c \ll \Delta V$, escape is exponentially unlikely, ensuring practical convergence.
 
@@ -505,6 +554,7 @@ Two probability distributions $p, q \in \mathcal{P}(\mathcal{Z})$ are **operatio
 
 $$
 D_{\text{KL}}(p \| q) \geq 1 \text{ nat}.
+
 $$
 *Justification.* This is an **operational definition**, not a derived fact. The choice of 1 nat as the threshold is grounded in:
 
@@ -531,6 +581,7 @@ is proportional to the Fisher Information Metric:
 
 $$
 g_{ij}(\theta) = c \cdot \mathbb{E}_\theta\left[\frac{\partial \log p(x|\theta)}{\partial \theta^i} \frac{\partial \log p(x|\theta)}{\partial \theta^j}\right]
+
 $$
 for some constant $c > 0$.
 
@@ -550,6 +601,7 @@ for some constant $c > 0$.
 
 $$
 G_{ij}(z) = \nabla^2_{ij} V(z) + \lambda\,\mathcal{F}_{ij}(z)
+
 $$
 where $\mathcal{F}_{ij} = \mathbb{E}_{a\sim\pi}[\partial_i \log\pi \cdot \partial_j \log\pi]$ is the state-space Fisher metric.
 
@@ -595,26 +647,31 @@ On the 1-simplex $\Delta^1 = \{(p, 1-p) : p \in [0,1]\}$ with Fisher Information
 
 $$
 d_{\text{Fisher}}\left(\tfrac{1}{2}, 1\right) = \frac{\pi}{2}.
+
 $$
 *Proof.* The Fisher metric on $\Delta^1$ is:
 
 $$
 ds^2 = \frac{dp^2}{p(1-p)}.
+
 $$
 Introduce the angular parameterization $p = \cos^2(\theta/2)$, so that $1-p = \sin^2(\theta/2)$ and:
 
 $$
 dp = -\cos(\theta/2)\sin(\theta/2)d\theta = -\frac{1}{2}\sin\theta \, d\theta.
+
 $$
 Then:
 
 $$
 ds^2 = \frac{\frac{1}{4}\sin^2\theta \, d\theta^2}{\cos^2(\theta/2)\sin^2(\theta/2)} = \frac{\frac{1}{4}\sin^2\theta \, d\theta^2}{\frac{1}{4}\sin^2\theta} = d\theta^2.
+
 $$
 The uniform distribution $(1/2, 1/2)$ corresponds to $\theta = \pi/2$. The vertex $(1, 0)$ corresponds to $\theta = 0$. The geodesic distance is:
 
 $$
 d = \int_0^{\pi/2} d\theta = \frac{\pi}{2}. \quad \square
+
 $$
 *Interpretation.* One bit of information (distinguishing "heads" from "tails") corresponds to geodesic distance $\pi/2$ in Fisher geometry. This is a derived quantity, not an assumption.
 
@@ -627,6 +684,7 @@ The Poincare disk model with constant sectional curvature $K = -1$ has metric:
 
 $$
 ds^2 = \frac{4(dx^2 + dy^2)}{(1-|z|^2)^2}.
+
 $$
 The factor of 4 is uniquely determined by the curvature normalization.
 
@@ -634,6 +692,7 @@ The factor of 4 is uniquely determined by the curvature normalization.
 
 $$
 K = -\frac{1}{2\lambda}\Delta(\log \lambda),
+
 $$
 where $\Delta = \partial_x^2 + \partial_y^2$ is the flat Laplacian.
 
@@ -645,16 +704,19 @@ For $\lambda = c/(1-r^2)^2$ where $r^2 = x^2 + y^2$ and $c > 0$:
 
 $$
 \partial_x f = \frac{-2x}{1-r^2}.
+
 $$
 Applying the quotient rule to $\partial_x f = -2x \cdot (1-r^2)^{-1}$:
 
 $$
 \partial_x^2 f = \frac{-2(1-r^2) - (-2x)(-2x)}{(1-r^2)^2} = \frac{-2 + 2r^2 - 4x^2}{(1-r^2)^2}.
+
 $$
 Similarly for $y$. Adding:
 
 $$
 \Delta f = \frac{(-2 + 2r^2 - 4x^2) + (-2 + 2r^2 - 4y^2)}{(1-r^2)^2} = \frac{-4 + 4r^2 - 4r^2}{(1-r^2)^2} = \frac{-4}{(1-r^2)^2}.
+
 $$
 **Step 3:** Therefore $\Delta(\log \lambda) = -2\Delta f = \frac{8}{(1-r^2)^2}$.
 
@@ -662,6 +724,7 @@ $$
 
 $$
 K = -\frac{1}{2\lambda} \cdot \frac{8}{(1-r^2)^2} = -\frac{(1-r^2)^2}{2c} \cdot \frac{8}{(1-r^2)^2} = -\frac{4}{c}.
+
 $$
 **Step 5:** For $K = -1$, we require $c = 4$. $\square$
 
@@ -676,6 +739,7 @@ On a 2-dimensional latent manifold with Fisher-compatible geometry (curvature $K
 
 $$
 A_{\text{1 nat}} = 4\ell_L^2,
+
 $$
 where $\ell_L$ is the Levin Length.
 
@@ -687,6 +751,7 @@ where $\ell_L$ is the Levin Length.
 
 $$
 ds = 2 \, dx \quad \text{(from } ds^2 = 4(dx^2 + dy^2) \text{ at } z = 0\text{)}.
+
 $$
 A coordinate displacement $\ell_L$ corresponds to geodesic (Riemannian) distance $2\ell_L$.
 
@@ -694,6 +759,7 @@ A coordinate displacement $\ell_L$ corresponds to geodesic (Riemannian) distance
 
 $$
 D_{\text{KL}}(p \| q) \approx \frac{1}{2} d_{\text{geo}}(p, q)^2.
+
 $$
 Thus, 1 nat of KL divergence corresponds to geodesic distance $\sqrt{2}$.
 
@@ -720,6 +786,7 @@ The channel capacity of a 2-dimensional boundary $\partial\mathcal{Z}$ with Riem
 
 $$
 C_\partial = \frac{A}{4\ell_L^2} \text{ nats}.
+
 $$
 *Proof.*
 1. Tile the boundary with minimal distinguishable cells (Proposition {prf:ref}`prop-a-area-minimal-distinguishable-cell`)
@@ -730,11 +797,13 @@ $$
 
 $$
 C_\partial = N_{\text{cells}} \times 1 \text{ nat} = \frac{A}{4\ell_L^2}. \quad \square
+
 $$
 *Remark (Dimension Generalization).* For a $(D-1)$-dimensional boundary with $D > 2$, the formula generalizes to:
 
 $$
 C_\partial = \nu_D \cdot \frac{A}{\ell_L^{D-1}},
+
 $$
 where $\nu_D$ is the Holographic Coefficient (Definition {prf:ref}`def-holographic-coefficient`). The 2D case with $\nu_2 = 1/4$ is the primary focus of this specification.
 
@@ -749,11 +818,13 @@ The number of boundary-distinguishable microstates in the bulk is:
 
 $$
 \Omega = \exp\left(\frac{A}{4\ell_L^2}\right),
+
 $$
 and the maximum information about bulk configuration, as measured by an external observer, is:
 
 $$
 I_{\max} = \ln \Omega = \frac{A}{4\ell_L^2}.
+
 $$
 *Proof.*
 1. By the **Data Processing Inequality**, information about the bulk cannot exceed the channel capacity of the boundary: $I_{\text{bulk} \to \text{observer}} \leq C_\partial$.
@@ -764,6 +835,7 @@ $$
 
 $$
 \Omega \leq e^{C_\partial} = \exp\left(\frac{A}{4\ell_L^2}\right).
+
 $$
 4. **Achievability:** The bound is saturated when the boundary is tiled with minimal distinguishable cells, each encoding 1 nat via orthogonal degrees of freedom. This follows from the channel capacity achievability in Shannon's theorem.
 
@@ -771,6 +843,7 @@ $$
 
 $$
 I_{\max} = \ln \Omega = \frac{A}{4\ell_L^2}. \quad \square
+
 $$
 *Remark (Non-Circularity).* This derivation uses only:
 - Chentsov's uniqueness theorem (statistics)
@@ -794,6 +867,7 @@ For a stationary information distribution satisfying the Metric Law, the bulk in
 
 $$
 I_{\text{bulk}} = \int_{\mathcal{Z}} \rho_I \, d\mu_G = \frac{1}{\kappa} \oint_{\partial\mathcal{Z}} \text{Tr}(K) \, dA_G,
+
 $$
 where $K_{ij}$ is the extrinsic curvature (second fundamental form) of the boundary and $\kappa$ is the coupling constant from the Metric Law.
 
@@ -801,6 +875,7 @@ where $K_{ij}$ is the extrinsic curvature (second fundamental form) of the bound
 
 $$
 R - 2\Lambda = \kappa \, T,
+
 $$
 where $T = G^{ij}T_{ij}$ is the trace of the stress tensor. For uniform saturation, $T = n \cdot \sigma_{\max}$.
 
@@ -808,6 +883,7 @@ Integrating the Einstein tensor identity over $\mathcal{Z}$ and applying Lemma {
 
 $$
 \int_{\mathcal{Z}} R \, d\mu_G = 2 \oint_{\partial\mathcal{Z}} \text{Tr}(K) \, dA_G.
+
 $$
 Combining with $R = \kappa T + 2\Lambda$ and noting that the $\Lambda$ term contributes a volume integral that cancels under the capacity constraint, we obtain the stated identity. $\square$
 
@@ -822,6 +898,7 @@ For an isotropic manifold with spherical symmetry, we use the ansatz:
 
 $$
 ds^2 = A(r) \, dr^2 + r^2 \, d\Omega_{n-1}^2,
+
 $$
 where $d\Omega_{n-1}^2$ is the metric on the unit $(n-1)$-sphere.
 
@@ -832,11 +909,13 @@ Under uniform saturation $T_{ij} = \sigma_{\max} G_{ij}$, the Metric Law reduces
 
 $$
 \frac{n-2}{r^2}\left(1 - \frac{1}{A(r)}\right) + \frac{n-2}{r} \cdot \frac{A'(r)}{A(r)^2} = \kappa \sigma_{\max} + \Lambda.
+
 $$
 The solution is:
 
 $$
 A(r) = \left( 1 - \frac{2\mu(r)}{(n-2)r^{n-2}} - \frac{\Lambda_{\text{eff}} r^2}{n(n-1)} \right)^{-1},
+
 $$
 where $\mu(r) = \frac{\kappa}{n-2} \int_0^r \sigma_{\max} r'^{n-1} dr'$ is the information mass function and $\Lambda_{\text{eff}} = \Lambda + \kappa \sigma_{\max}$.
 
@@ -863,6 +942,7 @@ The **information horizon** $r_h$ is the smallest positive root of:
 
 $$
 1 - \frac{2\mu(r_h)}{(n-2)r_h^{n-2}} - \frac{\Lambda_{\text{eff}} r_h^2}{n(n-1)} = 0.
+
 $$
 At this radius, $A(r_h) \to \infty$ and $G^{rr}(r_h) \to 0$.
 
@@ -872,6 +952,7 @@ For $n = 2$ (the Poincare disk case), the formula simplifies. The Poincare metri
 
 $$
 G_{ij}(z) = \frac{4\delta_{ij}}{(1-|z|^2)^2} \xrightarrow{|z| \to 1} \infty.
+
 $$
 
 
@@ -899,6 +980,7 @@ On the 1-simplex $\Delta^1 = \{(p, 1-p) : p \in [0,1]\}$ with the Fisher Informa
 
 $$
 d_{\text{Fisher}}\left(\frac{1}{2}, 1\right) = \frac{\pi}{2}.
+
 $$
 *Proof.* See Lemma {prf:ref}`lem-a-geodesic-distance-probability-simplex` for the full derivation. $\square$
 
@@ -911,6 +993,7 @@ On a 2-dimensional Fisher manifold, the area of a cell corresponding to 1 nat of
 
 $$
 A_{\text{cell}} = 4 \ell_L^2.
+
 $$
 *Proof.* See Proposition {prf:ref}`prop-a-area-minimal-distinguishable-cell` for the full derivation. The key steps are:
 1. Poincare metric at origin: $G(0) = 4I$ (from curvature normalization $K = -1$)
@@ -940,16 +1023,20 @@ Substituting:
 
 $$
 I_{\max} = \frac{1}{8\pi \ell_L^{n-1}} \cdot \frac{n-1}{r_h} \cdot \Omega_{n-1} r_h^{n-1} = \frac{(n-1)\Omega_{n-1}}{8\pi} \cdot \frac{\text{Area}(\partial\mathcal{Z})}{\ell_L^{n-1}}.
+
 $$
 Identifying the **Holographic Coefficient** $\nu_n := (n-1)\Omega_{n-1}/(8\pi)$ (Definition {prf:ref}`def-holographic-coefficient`), we obtain the **general result**:
 
 $$
 \boxed{I_{\max} = \nu_n \cdot \frac{\text{Area}(\partial\mathcal{Z})}{\ell_L^{n-1}}}.
+
 $$
 
 **Special case ($n = 2$, Poincare disk):** With $\Omega_1 = 2\pi$ (circumference of unit circle), we get $\nu_2 = 1/4$. The familiar Bekenstein-Hawking form:
+
 $$
 I_{\max} = \frac{\text{Area}(\partial\mathcal{Z})}{4\ell_L^2}
+
 $$
 uses $\ell_L^2$ (rather than $\ell_L^{n-1} = \ell_L$) because the Poincare disk metric normalization $G(0) = 4I$ maps coordinate cells to Riemannian areas.
 
@@ -969,11 +1056,13 @@ For a $D$-dimensional latent manifold with $(D-1)$-sphere boundary, the Causal I
 
 $$
 I_{\max}(D) = \nu_D \cdot \frac{\text{Area}(\partial\mathcal{Z})}{\ell_L^{D-1}},
+
 $$
 where the Holographic Coefficient $\nu_D$ (Definition {prf:ref}`def-holographic-coefficient`) is:
 
 $$
 \nu_D = \frac{(D-1)\Omega_{D-1}}{8\pi} = \frac{(D-1)\pi^{(D-2)/2}}{4\,\Gamma(D/2)},
+
 $$
 with $\Omega_{D-1} = 2\pi^{D/2}/\Gamma(D/2)$ the surface area of the unit $(D-1)$-sphere.
 
@@ -1000,6 +1089,7 @@ The saturation ratio $\eta_{\text{Sch}} = I_{\text{bulk}} / I_{\max}$ depends on
 
 $$
 I_{\max}(D) = \nu_D \cdot \frac{\text{Area}(\partial\mathcal{Z})}{\ell_L^{D-1}}.
+
 $$
 The default $\nu_2 = 1/4$ assumes a 2-dimensional latent manifold (Poincare disk). For $D$-dimensional latent spaces, use the appropriate $\nu_D$ from Corollary {prf:ref}`cor-a-dimension-dependent-coefficient`.
 
@@ -1027,6 +1117,7 @@ The derivation in Lemma {prf:ref}`lem-a-bulk-to-boundary-conversion` uses the **
 
 $$
 \int_{\mathcal{Z}} R \, d\mu_G = 2 \oint_{\partial\mathcal{Z}} \text{Tr}(K) \, dA_G,
+
 $$
 which is valid in **arbitrary dimension**. This is more general than the classical 2D Gauss-Bonnet theorem (which relates $\int K \, dA$ to the Euler characteristic $\chi$).
 

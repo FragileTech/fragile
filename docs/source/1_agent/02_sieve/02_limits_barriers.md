@@ -110,6 +110,7 @@ Why care? Our world model predicts the future, and if predictions are too sensit
 
         $$
         \mathcal{L}_{GP} = \mathbb{E}_{\hat{s}} [(\lVert\nabla_{\hat{s}} V(\hat{s})\rVert - K)^2]
+
         $$
         Gradient-norm penalties discourage vanishing gradients on sampled points and help avoid large flat regions; they do not provide a global guarantee without additional assumptions {cite}`gulrajani2017improved`.
 
@@ -141,6 +142,7 @@ These are not bugs you can fix with cleverness. They are like the uncertainty pr
         \underbrace{\beta_K\,\mathbb{E}[-\log p_\psi(K)] + \beta_n D_{\mathrm{KL}}(q(z_n \mid x)\Vert p(z_n)) + \beta_{\mathrm{tex}} D_{\mathrm{KL}}(q(z_{\mathrm{tex}} \mid x)\Vert p(z_{\mathrm{tex}}))}_{\text{Compression (Rate)}}
         +
         \underbrace{\gamma\,\mathbb{E}[\mathfrak{D}(Z,A)]}_{\text{Control Effort}}
+
         $$
         where {math}`\mathfrak{D}` is an actuation cost (e.g. KL-control to a prior {math}`\pi_0`, or a calibrated norm/penalty on actions).
     *   *Mechanism:* Use Lagrange multipliers to find the Pareto frontier. If control performance drops, decrease $\beta_K,\beta_n,\beta_{\mathrm{tex}}$ (allocate more bits to the shutter).
@@ -159,6 +161,7 @@ The loss function balances these concerns: the first term rewards compression, t
 
         $$
         \mathcal{L}_{\text{EWC}} = \sum_i F_i (\theta_i - \theta^*_{i,old})^2
+
         $$
     *   *Mechanism:* The Fisher Information Matrix $F_i$ quantifies parameter sensitivity. Updates are permitted for low-sensitivity weights while high-sensitivity (structurally important) weights are constrained.
 
@@ -176,6 +179,7 @@ Elastic Weight Consolidation uses Fisher Information to identify which weights m
 
         $$
         \mathcal{L}_{\text{Bode}} = \lVert \mathcal{F}(e_t) \cdot W(\omega) \rVert^2
+
         $$
     *   *Mechanism:* Explicitly decide *where* to be blind. We penalize high-frequency errors heavily (instability) while accepting low-frequency drift (steady-state error), or vice versa.
 

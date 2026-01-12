@@ -33,6 +33,7 @@ For a consensus protocol $\mathcal{P}$, the **Waste Quotient** is:
 
 $$
 W_\mathcal{P} := 1 - \frac{\Delta I_{\text{world}}}{\int \dot{\mathcal{M}}(t) \, dt}
+
 $$
 
 where:
@@ -66,6 +67,7 @@ Let $\mathcal{C}_{\text{hash}}$ be the computational task of finding a nonce $n$
 
 $$
 E_{\text{min}} \geq k_B T_c \ln 2 \cdot B_{\text{comp}}
+
 $$
 
 where $B_{\text{comp}}$ is the number of irreversible bit operations.
@@ -76,12 +78,14 @@ where $B_{\text{comp}}$ is the number of irreversible bit operations.
 
 $$
 \dot{\mathcal{M}} \geq T_c \left| \frac{dH}{ds} \right|
+
 $$
 
 **Step 2 (Hash Computation).** Computing $H(n)$ requires approximately $B_{\text{SHA}} \approx 64 \times 80 = 5120$ irreversible bit operations per hash. The minimum energy is:
 
 $$
 E_{\text{hash}} \geq k_B T_c \ln 2 \cdot B_{\text{SHA}} \cdot N_{\text{trials}}
+
 $$
 
 where $N_{\text{trials}} \approx 2^{d}$ for difficulty $d$.
@@ -90,6 +94,7 @@ where $N_{\text{trials}} \approx 2^{d}$ for difficulty $d$.
 
 $$
 E_{\text{grad}} \geq k_B T_c \ln 2 \cdot c_{\text{MAC}} \cdot |\Theta| \cdot |D|
+
 $$
 
 for architecture-dependent constant $c_{\text{MAC}}$.
@@ -164,6 +169,7 @@ The **Global Model State** at block height $h$ is a parameter vector:
 
 $$
 \Theta_h \in T_{\bar{z}} \mathcal{Z} \cong \mathbb{R}^D
+
 $$
 
 where:
@@ -184,6 +190,7 @@ A **Curriculum Block** $B_h$ at height $h$ is a tuple:
 
 $$
 B_h := (\mathcal{H}_{\text{prev}}, \mathcal{H}_D, g_h, \pi_{\text{stake}}, \zeta_h)
+
 $$
 
 where:
@@ -204,6 +211,7 @@ The global model evolves by **Stochastic Gradient Descent**:
 
 $$
 \Theta_{h+1} = \Theta_h - \eta_h \cdot g_h
+
 $$
 
 where $\eta_h > 0$ is the learning rate at height $h$, determined by the difficulty adjustment algorithm (Definition {prf:ref}`def-difficulty-adjustment`).
@@ -279,6 +287,7 @@ The network **Difficulty** $\mathcal{D}_h$ at height $h$ controls the minimum ba
 
 $$
 \mathcal{D}_{h+1} = \mathcal{D}_h \cdot \exp\left( \alpha_{\text{diff}} \left( \frac{t_h - t_{\text{target}}}{t_{\text{target}}} \right) \right)
+
 $$
 
 where:
@@ -299,6 +308,7 @@ The difficulty adjustment algorithm maintains the **Landauer Invariant**: the mi
 
 $$
 E_{\min}(B_h) \approx k_B T_c \ln 2 \cdot c_{\text{MAC}} \cdot |\Theta| \cdot \mathcal{D}_h = E_{\text{target}}
+
 $$
 
 *Proof.*
@@ -307,12 +317,14 @@ $$
 
 $$
 E_{\text{grad}} \geq k_B T_c \ln 2 \cdot c_{\text{MAC}} \cdot |\Theta| \cdot |D_h|
+
 $$
 
 **Step 2.** The difficulty constraint $|D_h| \geq \mathcal{D}_h$ enforces:
 
 $$
 E_{\text{grad}} \geq k_B T_c \ln 2 \cdot c_{\text{MAC}} \cdot |\Theta| \cdot \mathcal{D}_h
+
 $$
 
 **Step 3.** The exponential adjustment (Definition {prf:ref}`def-difficulty-adjustment`) stabilizes block time at $t_{\text{target}}$, hence stabilizes energy expenditure rate at $E_{\text{target}} / t_{\text{target}}$.
@@ -378,6 +390,7 @@ The **Boundary Flux Certificate** $\zeta_h$ included in block $B_h$ contains:
 
 $$
 \zeta_h := \left( \|g_h\|_G, \, \nabla_{\partial} g_h, \, \text{Tr}(H_h), \, \sigma_{\text{sample}} \right)
+
 $$
 
 where:
@@ -407,6 +420,7 @@ then with probability $\geq 1 - \delta$, the gradient is valid.
 
 $$
 I_{\text{bulk}}(g) \leq \nu_D \cdot \frac{\text{Area}(\partial\mathcal{Z})}{\ell_L^{D-1}} = I_{\max}
+
 $$
 
 **Step 2 (Bulk-Boundary Correspondence).** The gradient $g \in T_\Theta \mathcal{M}$ projects to boundary flux $\nabla_\partial g$ via the restriction map. By the Bulk-Boundary Decoupling Axiom ({prf:ref}`ax-bulk-boundary-decoupling`), the boundary flux determines the bulk gradient up to texture degrees of freedom.
@@ -415,6 +429,7 @@ $$
 
 $$
 P(\text{escape}) \leq (1 - p_{\text{detect}})^k
+
 $$
 
 where $p_{\text{detect}} \geq \epsilon_{\min}$ is the minimum detection probability per check.
@@ -423,6 +438,7 @@ where $p_{\text{detect}} \geq \epsilon_{\min}$ is the minimum detection probabil
 
 $$
 \|g\|_G^2 < k_B T_c |\Delta H| / \dot{\mathcal{M}}_{\text{claimed}}
+
 $$
 
 This is detectable from the certificate without recomputation.
@@ -502,6 +518,7 @@ The math is straightforward expected value calculation. If cheating saves you $C
 
 $$
 p \cdot S > C_{\text{honest}} - C_{\text{cheat}}
+
 $$
 
 The theorem below makes this rigorous. The punchline: if the stake is high enough relative to the reward, honest computation is not just one equilibrium---it is the *only* equilibrium. No rational miner would cheat.
@@ -538,6 +555,7 @@ In the Mining Game $\Gamma$ with exogenous detection probability $p_{\text{detec
 
 $$
 \frac{S}{R + S} > \frac{C_{\text{honest}} - C_{\text{cheat}}}{R}
+
 $$
 
 **Honest** is a strictly dominant strategy, and $\sigma^* = (\text{Honest}, \ldots, \text{Honest})$ is the unique Nash Equilibrium.
@@ -548,10 +566,12 @@ $$
 
 $$
 U_i(\text{Honest}) = R - C_{\text{honest}}
+
 $$
 
 $$
 U_i(\text{Cheat}) = (1 - p_{\text{detect}}) \cdot R + p_{\text{detect}} \cdot (-S) - C_{\text{cheat}}
+
 $$
 
 where $p_{\text{detect}} \in (0, 1]$ is the probability of detection via spot-checking.
@@ -560,6 +580,7 @@ where $p_{\text{detect}} \in (0, 1]$ is the probability of detection via spot-ch
 
 $$
 p_{\text{detect}} \geq 1 - (1 - \epsilon_{\min})^k
+
 $$
 
 for $k$ spot-check samples with $\epsilon_{\min} > 0$. Since $p_{\text{detect}}$ is exogenous (determined by the protocol, not other players), each miner faces a constant detection probability regardless of others' strategies.
@@ -568,26 +589,31 @@ for $k$ spot-check samples with $\epsilon_{\min} > 0$. Since $p_{\text{detect}}$
 
 $$
 U_i(\text{Honest}) > U_i(\text{Cheat})
+
 $$
 
 $$
 R - C_{\text{honest}} > (1 - p_{\text{detect}}) R - p_{\text{detect}} S - C_{\text{cheat}}
+
 $$
 
 Rearranging:
 
 $$
 p_{\text{detect}} (R + S) > C_{\text{honest}} - C_{\text{cheat}}
+
 $$
 
 $$
 p_{\text{detect}} > \frac{C_{\text{honest}} - C_{\text{cheat}}}{R + S} := p^*
+
 $$
 
 **Step 4 (Equilibrium Condition).** The theorem condition implies:
 
 $$
 \frac{S}{R + S} > \frac{C_{\text{honest}} - C_{\text{cheat}}}{R} \implies C_{\text{honest}} - C_{\text{cheat}} < \frac{S \cdot R}{R + S} < R
+
 $$
 
 Therefore $p^* = \frac{C_{\text{honest}} - C_{\text{cheat}}}{R + S} < 1$, ensuring the threshold is achievable with finite spot-checks.
@@ -596,6 +622,7 @@ Therefore $p^* = \frac{C_{\text{honest}} - C_{\text{cheat}}}{R + S} < 1$, ensuri
 
 $$
 \Delta U = U(\text{Cheat}) - U(\text{Honest}) = -p_{\text{detect}}(R + S) + (C_{\text{honest}} - C_{\text{cheat}}) < 0
+
 $$
 
 This holds regardless of what other miners do. Thus Honest is a **strictly dominant strategy**, and the unique Nash Equilibrium is all-Honest. $\square$
@@ -623,12 +650,14 @@ For the equilibrium to hold with detection probability $p_{\text{detect}} = 0.1$
 
 $$
 \frac{S}{R} > \frac{C_{\text{honest}} - C_{\text{cheat}}}{0.1 \cdot R} - 1
+
 $$
 
 For typical gradient computation where $C_{\text{honest}} / C_{\text{cheat}} \approx 10$ (cheating saves 90% of compute):
 
 $$
 \frac{S}{R} > 90 - 1 = 89
+
 $$
 
 *Interpretation:* Miners must stake approximately 90x the block reward to make cheating unprofitable.
@@ -695,6 +724,7 @@ Each validator $i$ maintains a local metric tensor $G^{(i)}$ on the shared laten
 
 $$
 \mathcal{F}(\mathcal{C}_A, \mathcal{C}_B) := \sum_{i,j} \mathcal{F}_{ij}(\Theta_{\text{head}}^A, \Theta_{\text{head}}^B)
+
 $$
 
 where $\mathcal{F}_{ij}$ is the pairwise metric friction (Definition {prf:ref}`def-metric-friction`).
@@ -708,6 +738,7 @@ The **Canonical Chain** is selected by minimizing global metric friction:
 
 $$
 \mathcal{C}^* = \arg\min_{\mathcal{C}} \sum_{i < j} \mathcal{F}_{ij}(\Theta_{\text{head}}^\mathcal{C})
+
 $$
 
 *Mechanism:*
@@ -725,6 +756,7 @@ The gradient $g$ uniquely determines the local metric tensor $G(\Theta + \epsilo
 
 $$
 G_{ij}(\Theta + \epsilon g) = G_{ij}(\Theta) + \epsilon \, \partial_k G_{ij} \cdot g^k + O(\epsilon^2)
+
 $$
 
 *Proof.* Direct Taylor expansion of the metric tensor. The metric is a smooth function of parameters, and its derivatives are observable from model predictions. $\square$
@@ -748,6 +780,7 @@ The Metric Friction Consensus achieves Byzantine Fault Tolerance against $f < N/
 
 $$
 \tilde{G}^{(i)} = G^{(i)} + \alpha_{\text{adv}} \mathcal{G}_{ij}, \quad \alpha_{\text{adv}} = \|g_{\text{adv}} - g_{\text{true}}\|_G > 0
+
 $$
 
 where $\mathcal{G}_{ij}$ is the Game Tensor (Definition {prf:ref}`def-gauge-covariant-game-tensor`). The key insight: *there is no "zero-curvature" way to submit a fake gradient*.
@@ -763,6 +796,7 @@ For the attack to succeed while evading detection, the adversary requires $\alph
 
 $$
 \mathcal{F}_{\text{total}}^{\text{honest}} \leq \binom{N-f}{2} c_1 \epsilon^2 + f(N-f) c_2 \alpha_{\text{adv}}
+
 $$
 
 An adversarial chain has friction at least $\mathcal{F}_{\text{total}}^{\text{adv}} \geq (N-f) c_2 \alpha_{\text{adv}}$.
@@ -780,6 +814,7 @@ An adversary controlling fraction $\alpha < 1/3$ of validators has influence on 
 
 $$
 \|\Delta \Theta_{\text{adversarial}}\|_G \leq \frac{\alpha}{1 - 2\alpha} \|\Delta \Theta_{\text{honest}}\|_G
+
 $$
 
 *Proof.*
@@ -788,6 +823,7 @@ $$
 
 $$
 \Delta \Theta = \frac{\sum_i w_i \Delta \Theta^{(i)}}{\sum_i w_i}
+
 $$
 
 where weights $w_i = 1/\mathcal{F}_{i,\text{total}}$ penalize high-friction validators.
@@ -796,18 +832,21 @@ where weights $w_i = 1/\mathcal{F}_{i,\text{total}}$ penalize high-friction vali
 
 $$
 w_{\text{adv}} \leq w_{\text{honest}} / (1 + \alpha_{\text{adv}}/\epsilon^2)
+
 $$
 
 **Step 3.** The adversarial contribution is:
 
 $$
 \|\Delta \Theta_{\text{adv}}\| \leq \frac{\alpha \cdot w_{\text{adv}}}{(1-\alpha) w_{\text{honest}} + \alpha w_{\text{adv}}} \|\Delta \Theta_{\text{total}}\|
+
 $$
 
 **Step 4.** Taking $w_{\text{adv}} \to 0$ in the limit of high adversarial friction:
 
 $$
 \|\Delta \Theta_{\text{adv}}\| \to 0
+
 $$
 
 The adversary is geometrically isolated. $\square$
@@ -866,6 +905,7 @@ The $\text{COG}$ token has three fundamental operations:
 
 $$
 \Delta \text{Supply} = \kappa_{\text{mint}} \cdot \max(0, -\Delta \Xi_{\text{global}})
+
 $$
 
 where $\kappa_{\text{mint}}$ is the minting coefficient (tokens per nat of stress reduction).
@@ -876,6 +916,7 @@ where $\kappa_{\text{mint}}$ is the minting coefficient (tokens per nat of stres
 
 $$
 \text{Cost}(Q) = \mathfrak{T}_{\text{harvest}}^{-1}(\dot{\mathcal{M}}_Q)
+
 $$
 
 where $\dot{\mathcal{M}}_Q$ is the metabolic cost of answering query $Q$.
@@ -895,18 +936,21 @@ The equilibrium token price $P_{\text{COG}}$ is bounded by:
 
 $$
 P_{\text{floor}} \leq P_{\text{COG}} \leq P_{\text{ceiling}}
+
 $$
 
 where:
 
 $$
 P_{\text{floor}} = \frac{C_{\text{electricity}}}{J_{\text{per\_COG}}}
+
 $$
 
 (cost of electricity to generate one COG worth of computation)
 
 $$
 P_{\text{ceiling}} = \frac{V_{\text{inference}}}{J_{\text{per\_query}}}
+
 $$
 
 (value of inference output per Joule)
@@ -921,6 +965,7 @@ $$
 
 $$
 P_{\text{COG}}^* = \sqrt{P_{\text{floor}} \cdot P_{\text{ceiling}}}
+
 $$
 
 (geometric mean under log-linear supply/demand). $\square$
@@ -984,6 +1029,7 @@ Between these bounds, the price floats freely based on supply and demand. But th
 
 $$
 \text{Value}(\text{COG}) = \mathfrak{T}_{\text{harvest}}(r) - T_c \cdot S_{\text{overhead}}
+
 $$
 
 where $S_{\text{overhead}}$ is the entropy cost of coordination.
@@ -1030,6 +1076,7 @@ Let $\Xi_T$ be the Memory Screen (Definition {prf:ref}`def-memory-screen`) and $
 
 $$
 \Phi: \mathcal{L}_H \to \Xi_T
+
 $$
 
 given by:
@@ -1047,6 +1094,7 @@ given by:
 
 $$
 \Xi_T = \int_0^T \alpha(t') \, \delta_{\gamma(t')} \, dt'
+
 $$
 
 where $\alpha(t) = J_r(t)$ is the reward flux and $\gamma(t)$ is the trajectory.
@@ -1055,6 +1103,7 @@ where $\alpha(t) = J_r(t)$ is the reward flux and $\gamma(t)$ is the trajectory.
 
 $$
 \mathcal{L}_H = \sum_{h=0}^{H} B_h = \sum_{h=0}^{H} (g_h, \mathcal{H}_h, \ldots)
+
 $$
 
 **Step 3.** Define the correspondence:
@@ -1066,6 +1115,7 @@ $$
 
 $$
 \sum_{h=0}^{H} g_h \cdot \mathbb{1}_{\Theta_h} \to \int_0^T \alpha(t) \delta_{\gamma(t)} dt
+
 $$
 
 as $\Delta t \to 0$. $\square$
@@ -1081,6 +1131,7 @@ The maximum information in a block is bounded by:
 
 $$
 I_{\text{block}} \leq \nu_D \cdot \frac{\text{Area}(\partial \mathcal{Z})}{\ell_L^{D-1}}
+
 $$
 
 where the area is measured in the header's Merkle tree.
@@ -1098,6 +1149,7 @@ Old blocks are **coarse-grained** into **Epoch Blocks** via the Projection Opera
 
 $$
 B_{\text{epoch}} = \Pi\left( \sum_{h \in \text{epoch}} B_h \right)
+
 $$
 
 where $\Pi$ projects onto the low-frequency components of the gradient history.
@@ -1159,12 +1211,14 @@ An attacker controlling $> 50\%$ of compute cannot rewrite history without trigg
 
 $$
 \tilde{G}_{\text{attack}} = G + \alpha_{\text{adv}} \mathcal{G}
+
 $$
 
 **Step 3.** The Metric Friction between honest and attack chains is:
 
 $$
 \mathcal{F}(\mathcal{C}, \mathcal{C}') = \|G - \tilde{G}_{\text{attack}}\|_F^2 \sim O(\alpha_{\text{adv}}^2)
+
 $$
 
 **Step 4.** When $\mathcal{F} > \mathcal{F}_{\text{crit}}$ (Fission Threshold from Theorem {prf:ref}`thm-fission-criterion`), the network undergoes **Spontaneous Fission**:
@@ -1210,12 +1264,14 @@ Flash-loan attacks and front-running are rejected by **CausalityViolationCheck (
 
 $$
 v_{\max} = \frac{d_G(z, z')}{t}
+
 $$
 
 **Step 4.** **Node 62 (CausalityViolationCheck)** detects transactions using information from the future:
 
 $$
 \Delta_{\text{causal}} = D_{\text{KL}}(P_{\text{interventional}} \| P_{\text{observational}}) > \delta_{\text{causal}}
+
 $$
 
 **Step 5.** The transaction is rejected as **geometrically impossible**. $\square$
@@ -1255,18 +1311,21 @@ Sustained deception by corrupt actors exceeds the **Babel Limit** (Theorem {prf:
 
 $$
 \dot{I}_{\text{deception}} = H(G_{\text{corrupt}}) - H(G_{\text{true}})
+
 $$
 
 **Step 3.** By Theorem {prf:ref}`thm-babel-limit`, complete gauge locking requires:
 
 $$
 \dim(\mathfrak{g}) \cdot H(G) \leq C_{\mathcal{L}}
+
 $$
 
 **Step 4.** The deception increases effective entropy, violating the Babel Limit:
 
 $$
 \dim(\mathfrak{g}) \cdot (H(G_{\text{true}}) + \dot{I}_{\text{deception}}) > C_{\mathcal{L}}
+
 $$
 
 **Step 5.** The corrupt actor loses gauge locking with honest validators. Their words become "noise"---they are **topologically exiled** from consensus. $\square$

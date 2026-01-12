@@ -549,6 +549,7 @@ We reuse the canonical Fragile framework proofs, updating every bound so it live
 
    $$
    \kappa_{\mathrm{revival}}\;=\;\frac{\eta^{\alpha+\beta}}{\varepsilon_{\mathrm{clone}}\,p_{\max}}\;>\;1
+
    $$
    is therefore the same as in the framework, so each dead walker survives the Clone/Persist gate with strictly positive probability and the all-alive intermediate swarm satisfies the axiom (Theorem *Almost-sure revival* ({prf:ref}`thm-revival-guarantee`, {prf:ref}`def-axiom-guaranteed-revival`).
 
@@ -1320,24 +1321,28 @@ The following coefficients bound the error in the standardization operator when 
 
     $$
     C_{V,\mathrm{direct}} := \frac{1}{\sigma_{\min,\mathrm{patch}}}
+
     $$
 
 -   **Mean Shift Coefficient ($C_{V,\mathrm{mean}}$):** Bounding the error from the resulting change in the empirical mean.
 
     $$
     C_{V,\mathrm{mean}} := \frac{1}{\sigma_{\min,\mathrm{patch}}}
+
     $$
 
 -   **Denominator Shift Coefficient ($C_{V,\mathrm{denom}}$):** Bounding the error from the resulting change in the regularized standard deviation.
 
     $$
     C_{V,\mathrm{denom}} := \frac{8\big(V_{\mathrm{max}}^{(R)}\big)^2 L_{\sigma'_{\mathrm{patch}}}}{\sigma_{\min,\mathrm{patch}}^2}
+
     $$
 
 -   **Total Value Error Coefficient ($C_{V,\mathrm{total}}^{\mathrm{Sasaki}}$):** The composite coefficient for the full Lipschitz bound on the value error, which aggregates the component-wise effects.
 
     $$
     C_{V,\mathrm{total}}^{\mathrm{Sasaki}} := L_R^{\mathrm{Sasaki}} \left( C_{V,\mathrm{direct}} + C_{V,\mathrm{mean}} + C_{V,\mathrm{denom}} \right) = L_R^{\mathrm{Sasaki}} \left( \frac{2}{\sigma_{\min,\mathrm{patch}}} + \frac{8\big(V_{\mathrm{max}}^{(R)}\big)^2 L_{\sigma'_{\mathrm{patch}}}}{\sigma_{\min,\mathrm{patch}}^2} \right)
+
     $$
 
 ##### Structural Error Coefficients
@@ -1391,12 +1396,14 @@ where:
 
     $$
     \Delta_{\text{direct}} := \frac{\mathbf r_1 - \mathbf r_2}{\sigma'_1}
+
     $$
 
 2.  **The Mean Shift ($\Delta_{\text{mean}}$):** The error from the change in the aggregator's computed mean, applied uniformly to all walkers.
 
     $$
     \Delta_{\text{mean}} := \frac{\mu_2 - \mu_1}{\sigma'_1} \cdot \mathbf{1}
+
     $$
     where $\mathbf{1}$ is a k-dimensional vector of ones.
 
@@ -1404,6 +1411,7 @@ where:
 
     $$
     \Delta_{\text{denom}} := \mathbf z_2 \cdot \frac{\sigma'_2 - \sigma'_1}{\sigma'_1}
+
     $$
 
 Furthermore, the total squared error is bounded by three times the sum of the squared norms of these components:
@@ -1469,6 +1477,7 @@ The proof is a direct application of the definition of $\Delta_{\text{direct}}$ 
 
     $$
     \|\Delta_{\text{direct}}\|_2^2 = \left\| \frac{\mathbf r_1 - \mathbf r_2}{\sigma'_1} \right\|_2^2
+
     $$
 
 2.  **Factor out the Scalar Term.**
@@ -1476,6 +1485,7 @@ The proof is a direct application of the definition of $\Delta_{\text{direct}}$ 
 
     $$
     \|\Delta_{\text{direct}}\|_2^2 = \frac{1}{(\sigma'_1)^2} \cdot \|\mathbf r_1 - \mathbf r_2\|_2^2
+
     $$
 
 3.  **Apply the Uniform Lower Bound.**
@@ -1483,6 +1493,7 @@ The proof is a direct application of the definition of $\Delta_{\text{direct}}$ 
 
     $$
     \frac{1}{(\sigma'_1)^2} \le \frac{1}{\sigma_{\min,\mathrm{patch}}^2}
+
     $$
 
 4.  **Combine to Finalize the Bound.**
@@ -1490,6 +1501,7 @@ The proof is a direct application of the definition of $\Delta_{\text{direct}}$ 
 
     $$
     \|\Delta_{\text{direct}}\|_2^2 \le \frac{1}{\sigma_{\min,\mathrm{patch}}^2} \cdot \|\mathbf r_1 - \mathbf r_2\|_2^2
+
     $$
 
 **Q.E.D.**
@@ -1521,6 +1533,7 @@ The proof combines the definition of the mean shift component with the axiomatic
 
     $$
     \|\Delta_{\text{mean}}\|_2^2 = \left\| \frac{\mu_2 - \mu_1}{\sigma'_1} \cdot \mathbf{1} \right\|_2^2
+
     $$
 
 2.  **Factor out the Scalar and Evaluate the Norm.**
@@ -1528,6 +1541,7 @@ The proof combines the definition of the mean shift component with the axiomatic
 
     $$
     \|\Delta_{\text{mean}}\|_2^2 = \frac{(\mu_2 - \mu_1)^2}{(\sigma'_1)^2} \cdot \|\mathbf{1}\|_2^2 = \frac{k \cdot (\mu_2 - \mu_1)^2}{(\sigma'_1)^2}
+
     $$
 
 3.  **Apply Axiomatic Continuity of the Mean.**
@@ -1535,6 +1549,7 @@ The proof combines the definition of the mean shift component with the axiomatic
 
     $$
     |\mu_2 - \mu_1|^2 \le \left(L_{\mu,M}^{\mathrm{Sasaki}}(k)\right)^2 \cdot \|\mathbf r_1 - \mathbf r_2\|_2^2
+
     $$
 
 4.  **Apply the Uniform Lower Bound.**
@@ -1545,6 +1560,7 @@ The proof combines the definition of the mean shift component with the axiomatic
 
     $$
     \|\Delta_{\text{mean}}\|_2^2 \le \frac{k \cdot (L_{\mu,M}^{\mathrm{Sasaki}}(k))^2}{\sigma_{\min,\mathrm{patch}}^2} \cdot \|\mathbf r_1 - \mathbf r_2\|_2^2
+
     $$
 
 **Q.E.D.**
@@ -1576,6 +1592,7 @@ The proof bounds the squared norm by bounding its three constituent parts: the n
 
     $$
     \|\Delta_{\text{denom}}\|_2^2 = \left\| \mathbf z_2 \cdot \frac{\sigma'_2 - \sigma'_1}{\sigma'_1} \right\|_2^2
+
     $$
 
 2.  **Factor out the Scalar Term.**
@@ -1583,6 +1600,7 @@ The proof bounds the squared norm by bounding its three constituent parts: the n
 
     $$
     \|\Delta_{\text{denom}}\|_2^2 = \|\mathbf z_2\|_2^2 \cdot \frac{(\sigma'_2 - \sigma'_1)^2}{(\sigma'_1)^2}
+
     $$
 
 3.  **Bound Each Factor.**
@@ -1591,18 +1609,21 @@ The proof bounds the squared norm by bounding its three constituent parts: the n
 
         $$
         \|\mathbf z_2\|_2^2 \le k \left( \frac{2V_{\max}^{(R)}}{\sigma_{\min,\mathrm{patch}}} \right)^2
+
         $$
 
     *   **Bound on `(sigma'_2 - sigma'_1)^2`**: The regularized standard deviation function is Lipschitz continuous with respect to the raw value vector, as established by composing the Lipschitz properties of the aggregator moments and the patching function itself ({prf:ref}`lem-stats-value-continuity` in the framework). This gives:
 
         $$
         (\sigma'_2 - \sigma'_1)^2 \le \left(L_{\sigma',M}^{\mathrm{Sasaki}}(k)\right)^2 \cdot \|\mathbf r_1 - \mathbf r_2\|_2^2
+
         $$
 
     *   **Bound on `1/(sigma'_1)^2`**: As in the preceding lemmas, we use the uniform lower bound:
 
         $$
         \frac{1}{(\sigma'_1)^2} \le \frac{1}{\sigma_{\min,\mathrm{patch}}^2}
+
         $$
 
 4.  **Combine to Finalize the Bound.**
@@ -1610,6 +1631,7 @@ The proof bounds the squared norm by bounding its three constituent parts: the n
 
     $$
     \|\Delta_{\text{denom}}\|_2^2 \le \left( k \left( \frac{2V_{\max}^{(R)}}{\sigma_{\min,\mathrm{patch}}} \right)^2 \right) \cdot \left( \left(L_{\sigma',M}^{\mathrm{Sasaki}}(k)\right)^2 \cdot \|\mathbf r_1 - \mathbf r_2\|_2^2 \right) \cdot \left( \frac{1}{\sigma_{\min,\mathrm{patch}}^2} \right)
+
     $$
     Rearranging the terms gives the stated result.
 
@@ -1638,16 +1660,19 @@ We substitute the deterministic bounds for the squared norm of each component, w
 
     $$
     \|\Delta_{\text{direct}}\|_2^2 \le C_{V,\mathrm{direct}}^{\mathrm{sq}}(\mathcal S_1) \cdot \|\mathbf r_1 - \mathbf r_2\|_2^2
+
     $$
 *   From {prf:ref}`lem-sasaki-mean-shift-bound-sq`:
 
     $$
     \|\Delta_{\text{mean}}\|_2^2 \le C_{V,\mathrm{mean}}^{\mathrm{sq}}(\mathcal S_1) \cdot \|\mathbf r_1 - \mathbf r_2\|_2^2
+
     $$
 *   From {prf:ref}`lem-sasaki-denom-shift-bound-sq`:
 
     $$
     \|\Delta_{\text{denom}}\|_2^2 \le C_{V,\mathrm{denom}}^{\mathrm{sq}}(\mathcal S_1) \cdot \|\mathbf r_1 - \mathbf r_2\|_2^2
+
     $$
 
 **Step 3: Combine and Factor.**
@@ -1688,24 +1713,28 @@ Referenced by {prf:ref}`unlabeled-proof-1047` and {prf:ref}`thm-sasaki-standardi
 
     $$
     C_{V,\mathrm{direct}}^{\mathrm{sq}}(\mathcal S) := \frac{1}{\sigma_{\min,\mathrm{patch}}^2}
+
     $$
 
 2.  **The Squared Mean Shift Coefficient ($C_{V,\mathrm{mean}}^{\mathrm{sq}}(\mathcal S)$):**
 
     $$
     C_{V,\mathrm{mean}}^{\mathrm{sq}}(\mathcal S) := \frac{k \cdot (L_{\mu,M}^{\mathrm{Sasaki}}(k))^2}{\sigma_{\min,\mathrm{patch}}^2}
+
     $$
 
 3.  **The Squared Denominator Shift Coefficient ($C_{V,\mathrm{denom}}^{\mathrm{sq}}(\mathcal S)$):**
 
     $$
     C_{V,\mathrm{denom}}^{\mathrm{sq}}(\mathcal S) := k \left( \frac{2V_{\max}^{(R)}}{\sigma_{\min,\mathrm{patch}}} \right)^2 \left( \frac{L_{\sigma',M}^{\mathrm{Sasaki}}(k)}{\sigma_{\min,\mathrm{patch}}} \right)^2
+
     $$
 
 4.  **The Total Value Error Coefficient ($C_{V,\mathrm{total}}^{\mathrm{Sasaki}}(\mathcal S)$):** The composite coefficient that bounds the total squared value error, incorporating the factor of 3 from the error decomposition.
 
     $$
     C_{V,\mathrm{total}}^{\mathrm{Sasaki}}(\mathcal S) := 3 \cdot \left( C_{V,\mathrm{direct}}^{\mathrm{sq}}(\mathcal S) + C_{V,\mathrm{mean}}^{\mathrm{sq}}(\mathcal S) + C_{V,\mathrm{denom}}^{\mathrm{sq}}(\mathcal S) \right)
+
     $$
 
 where $L_{\mu,M}^{\mathrm{Sasaki}}(k)$ and $L_{\sigma',M}^{\mathrm{Sasaki}}(k)$ are the value Lipschitz functions for the aggregator's mean and regularized standard deviation, respectively. For the canonical empirical aggregator, these coefficients simplify, notably making the mean shift coefficient independent of $k$: $C_{V,\mathrm{mean}}^{\mathrm{sq}}(\mathcal S) = 1/\sigma_{\min,\mathrm{patch}}^2$.
@@ -1778,6 +1807,7 @@ The proof follows from partitioning the sum of squared errors over the N walker 
 
     $$
     \|\Delta\mathbf{z}\|_2^2 = \|\Delta_{\text{direct}} + \Delta_{\text{indirect}}\|_2^2 = \|\Delta_{\text{direct}}\|_2^2 + \|\Delta_{\text{indirect}}\|_2^2 + 2(\Delta_{\text{direct}} \cdot \Delta_{\text{indirect}}) = \|\Delta_{\text{direct}}\|_2^2 + \|\Delta_{\text{indirect}}\|_2^2
+
     $$
 
 This completes the proof.
@@ -1809,6 +1839,7 @@ The proof bounds the squared error for each unstable walker and sums the results
 
     $$
     \|\Delta_{\text{direct}}\|_2^2 = \sum_{i \in \mathcal{A}_{\text{unstable}}} (z_{1,i} - z_{2,i})^2
+
     $$
 
 2.  **Bound the Error for a Single Unstable Walker.**
@@ -1823,6 +1854,7 @@ The proof bounds the squared error for each unstable walker and sums the results
 
     $$
     (z_{1,i} - z_{2,i})^2 \le \left( \frac{2V_{\max}^{(R)}}{\sigma_{\min,\mathrm{patch}}} \right)^2
+
     $$
 
 4.  **Sum Over All Unstable Walkers.**
@@ -1830,12 +1862,14 @@ The proof bounds the squared error for each unstable walker and sums the results
 
     $$
     \|\Delta_{\text{direct}}\|_2^2 = \sum_{i \in \mathcal{A}_{\text{unstable}}} (z_{1,i} - z_{2,i})^2 \le \sum_{i=1}^{n_c} \left( \frac{2V_{\max}^{(R)}}{\sigma_{\min,\mathrm{patch}}} \right)^2
+
     $$
 
     This yields the final result as stated in the lemma.
 
     $$
     \|\Delta_{\text{direct}}\|_2^2 \le n_c \cdot \left( \frac{2V_{\max}^{(R)}}{\sigma_{\min,\mathrm{patch}}} \right)^2
+
     $$
 
 **Q.E.D.**
@@ -1901,16 +1935,19 @@ We now bound each term using the axiomatic properties of the aggregator and the 
 
     $$
     (\mu_2 - \mu_1)^2 \le \left(L_{\mu,S}^{\mathrm{Sasaki}}(k_{\min}) \cdot n_c\right)^2
+
     $$
 *   **Bound on `(sigma'_2 - sigma'_1)^2`**: By composing the structural continuity of the variance with the Lipschitz property of the patching function ({prf:ref}`lem-stats-structural-continuity` in the framework), we get:
 
     $$
     (\sigma'_2 - \sigma'_1)^2 \le \left(L_{\sigma',S}^{\mathrm{Sasaki}}(\mathcal S_1, \mathcal S_2) \cdot n_c\right)^2
+
     $$
 *   **Bound on `sum(z_2,i^2)`**: The sum is over the stable set, which is a subset of the alive walkers in $\mathcal S_2$. Thus, the sum is bounded by the total squared norm of the z-score vector for $\mathcal S_2$:
 
     $$
     \sum_{i \in \mathcal A_{\mathrm{stable}}} (z_{2,i})^2 \le \|\mathbf z_2\|_2^2 \le k_2 \left(\frac{2V_{\max}^{(R)}}{\sigma_{\min,\mathrm{patch}}}\right)^2
+
     $$
 *   **Bound on `1/(sigma'_1)^2`**: This is bounded by $1/\sigma_{\min,\mathrm{patch}}^2$.
 
@@ -1954,12 +1991,14 @@ We substitute the deterministic bounds for the squared norm of each component.
 
     $$
     \|\Delta_{\text{direct}}\|_2^2 \le C_{S,\mathrm{direct}}^{\mathrm{sq}} \cdot n_c(\mathcal S_1, \mathcal S_2)
+
     $$
 
 *   From {prf:ref}`lem-sasaki-indirect-structural-error-sq`, the indirect error is bounded by a term quadratic in $n_c$:
 
     $$
     \|\Delta_{\text{indirect}}\|_2^2 \le C_{S,\mathrm{indirect}}^{\mathrm{sq}}(\mathcal S_1, \mathcal S_2) \cdot n_c(\mathcal S_1, \mathcal S_2)^2
+
     $$
 
 **Step 3: Combine the Bounds.**
@@ -1987,12 +2026,14 @@ Referenced by {prf:ref}`lem-sasaki-indirect-structural-error-sq` and {prf:ref}`t
 
     $$
     C_{S,\mathrm{direct}}^{\mathrm{sq}} := \left( \frac{2V_{\max}^{(R)}}{\sigma_{\min,\mathrm{patch}}} \right)^2
+
     $$
 
 2.  **The Squared Indirect Structural Error Coefficient ($C_{S,\mathrm{indirect}}^{\mathrm{sq}}(\mathcal S_1, \mathcal S_2)$):** The coefficient of the term quadratic in $n_c$, which bounds the error for the stable walkers.
 
     $$
     C_{S,\mathrm{indirect}}^{\mathrm{sq}}(\mathcal S_1, \mathcal S_2) := 2 k_{\mathrm{stable}} \frac{(L_{\mu,S}^{\mathrm{Sasaki}})^2}{\sigma_{\min,\mathrm{patch}}^{2}} + 2 k_2 \left(\frac{2V_{\max}^{(R)}}{\sigma_{\min,\mathrm{patch}}}\right)^2 \frac{(L_{\sigma',S}^{\mathrm{Sasaki}})^2}{\sigma_{\min,\mathrm{patch}}^{2}}
+
     $$
 :::
 
@@ -2190,18 +2231,21 @@ If the alive index set $\mathcal A(\mathcal S_t)$ is empty, the operator returns
 
    $$
    P(\text{choose } j \mid \mathcal S_t, i) \propto \exp\left(-\frac{d_{\text{alg}}(i,j)^2}{2\epsilon^2}\right).
+
    $$
 
    The raw distance to this sampled companion is then computed using the algorithmic distance ({prf:ref}`def-alg-distance`):
 
    $$
    d_i:=d_{\text{alg}}(i,c_{\mathrm{pot}}(i)),
+
    $$
    while $d_i:=0$ for $i\notin\mathcal A_t$.
 3.  **Potential pipeline.** Apply the canonical patched standardization and logistic rescale operators of Section 3.2 to $(r_i)$ and $(d_i)$ restricted to the alive set. Denote the positive outputs by $r'_i$ and $d'_i$, and combine them with the canonical exponents
 
    $$
    V_{\text{fit},i}:=(d'_i)^\beta (r'_i)^\alpha \quad (i\in\mathcal A_t),\qquad V_{\text{fit},i}:=0 \quad (i\notin\mathcal A_t).
+
    $$
    The vector $\mathbf V_{\text{fit}}\in\mathbb R_+^N$ is frozen for the remainder of the step.
 
@@ -2215,6 +2259,7 @@ For each index $i\in\{1,\dots,N\}$ independently:
 
    $$
    S_i:=\frac{v_c-v_i}{v_i+\varepsilon_{\mathrm{clone}}}.
+
    $$
    Set $a_i=\textsf{Clone}$ if $S_i>T_i$, else $a_i=\textsf{Persist}$. (Note: For a dead walker `i`, this condition is guaranteed to be met by the Axiom of Guaranteed Revival.)
 3.  **Intermediate state (Inelastic Collision Model).**
@@ -2229,6 +2274,7 @@ For each index $i\in\{1,\dots,N\}$ independently:
 
      $$
      I_c := \{j \in C_{\text{set}} \mid c_{\mathrm{clone}}(j) = c\}.
+
      $$
 
      Let $M_c := |I_c|$ be the number of walkers cloning from companion $c$. Each $(M_c+1)$-particle system (companion $c$ plus its cloners $I_c$) undergoes a coupled collision event.
@@ -2237,6 +2283,7 @@ For each index $i\in\{1,\dots,N\}$ independently:
 
      $$
      \tilde x_j := x_c + \sigma_x \zeta_j^x.
+
      $$
 
      The companion's position remains unchanged: $\tilde x_c := x_c$.
@@ -2247,18 +2294,21 @@ For each index $i\in\{1,\dots,N\}$ independently:
 
         $$
         V_{\text{COM}, c} := \frac{1}{M_c+1} \left( v_c + \sum_{j \in I_c} v_j \right).
+
         $$
 
      2. **Relative velocities in CoM frame:** For each walker $k \in I_c \cup \{c\}$, compute:
 
         $$
         u_k := v_k - V_{\text{COM}, c}.
+
         $$
 
      3. **Inelastic contraction with random rotation:** Let $R_k$ be a random orthogonal transformation that isotropically rotates $u_k$ to a uniformly random direction on the $(d-1)$-sphere while preserving magnitude. The new relative velocity is:
 
         $$
         u'_k := \alpha_{\text{restitution}} \cdot R_k(u_k),
+
         $$
 
         where $\alpha_{\text{restitution}} \in [0, 1]$ is the coefficient of restitution controlling energy dissipation.
@@ -2267,6 +2317,7 @@ For each index $i\in\{1,\dots,N\}$ independently:
 
         $$
         \tilde v_k := V_{\text{COM}, c} + u'_k.
+
         $$
 
    - **Uninvolved walkers:** Any walker that is neither a cloner nor selected as a companion has its state unchanged: $(\tilde x_i, \tilde v_i) := (x_i, v_i)$.

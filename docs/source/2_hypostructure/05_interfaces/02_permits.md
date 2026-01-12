@@ -220,12 +220,14 @@ The uniqueness part is remarkable: any other functional with these properties is
 
 $$
 \mathcal{L}(x) := \inf\left\{\Phi(y) + \mathcal{C}(x \to y) : y \in M\right\}
+
 $$
 
 where the infimal cost is:
 
 $$
 \mathcal{C}(x \to y) := \inf\left\{\int_0^T \mathfrak{D}(S_s x) \, ds : S_T x = y, T < \infty\right\}
+
 $$
 
 **Certificate Produced:** $K_{\mathcal{L}}^+ = (\mathcal{L}, M, \Phi_{\min}, \mathcal{C})$
@@ -241,6 +243,7 @@ $$
 
 $$
 \mathcal{L}(x) \leq \int_0^t \mathfrak{D}(S_s x)\, ds + \mathcal{L}(S_t x)
+
 $$
 
 Hence $\mathcal{L}(S_t x) \leq \mathcal{L}(x) - \int_0^t \mathfrak{D}(S_s x)\, ds \leq \mathcal{L}(x)$, with strict inequality when $\mathfrak{D}(S_s x) > 0$ for $s$ in a set of positive measure.
@@ -280,18 +283,21 @@ This connection to Riemannian geometry is powerful because it imports the entire
 
 $$
 g_{\mathfrak{D}} := \mathfrak{D} \cdot g \quad \text{(conformal scaling by dissipation)}
+
 $$
 
 **Explicit Formula:**
 
 $$
 \mathcal{L}(x) = \Phi_{\min} + \inf_{\gamma: x \to M} \int_0^1 \sqrt{\mathfrak{D}(\gamma(s))} \cdot \|\dot{\gamma}(s)\|_g \, ds
+
 $$
 
 **Simplified Form:**
 
 $$
 \mathcal{L}(x) = \Phi_{\min} + \mathrm{dist}_{g_{\mathfrak{D}}}(x, M)
+
 $$
 
 **Certificate Produced:** $K_{\text{Jacobi}}^+ = (g_{\mathfrak{D}}, \mathrm{dist}_{g_{\mathfrak{D}}}, M)$
@@ -307,12 +313,14 @@ $$
 
 $$
 \mathrm{Length}_{g_{\mathfrak{D}}}(\gamma) = \int_0^T \|\dot{\gamma}(t)\|_{g_{\mathfrak{D}}} \, dt = \int_0^T \sqrt{\mathfrak{D}(\gamma(t))} \|\dot{\gamma}(t)\|_g \, dt
+
 $$
 
 *Step 3 (Flow Paths Have Optimal Length).* Along gradient flow $u(t) = S_t x$, by Step 1: $\sqrt{\mathfrak{D}(u(t))} \|\dot{u}(t)\|_g = \sqrt{\mathfrak{D}} \cdot \sqrt{\mathfrak{D}} = \mathfrak{D}(u(t))$. Integrating:
 
 $$
 \mathrm{Length}_{g_{\mathfrak{D}}}(u|_{[0,T]}) = \int_0^T \mathfrak{D}(u(t))\, dt = \mathcal{C}(x \to u(T))
+
 $$
 
 Thus Jacobi length equals accumulated cost, and by {prf:ref}`mt-krnl-lyapunov`, gradient flow achieves the infimal cost to $M$.
@@ -321,6 +329,7 @@ Thus Jacobi length equals accumulated cost, and by {prf:ref}`mt-krnl-lyapunov`, 
 
 $$
 \mathrm{dist}_{g_{\mathfrak{D}}}(x, M) = \inf_{\gamma: x \to M} \mathrm{Length}_{g_{\mathfrak{D}}}(\gamma) = \mathcal{C}(x \to M) = \mathcal{L}(x) - \Phi_{\min}
+
 $$
 
 *Step 5 (Lyapunov Verification).* Along flow: $\frac{d}{dt}\mathcal{L}(u(t)) = \frac{d}{dt}\mathrm{dist}_{g_{\mathfrak{D}}}(u(t), M) + 0 = -\|\dot{u}(t)\|_{g_{\mathfrak{D}}} = -\mathfrak{D}(u(t)) \leq 0$, confirming monotone decay.
@@ -344,6 +353,7 @@ The Lyapunov functional satisfies a static Hamilton-Jacobi equation, providing a
 
 $$
 \|\nabla_g \mathcal{L}(x)\|_g^2 = \mathfrak{D}(x)
+
 $$
 
 subject to the boundary condition $\mathcal{L}(x) = \Phi_{\min}$ for $x \in M$.
@@ -358,6 +368,7 @@ For Jacobi metric $g_{\mathfrak{D}} = \mathfrak{D} \cdot g$, setting $\phi = \ma
 
 $$
 \|\nabla_{g_{\mathfrak{D}}} f\|_{g_{\mathfrak{D}}}^2 = \mathfrak{D}^{-1} \|\nabla_g f\|_g^2
+
 $$
 
 **Certificate Produced:** $K_{\text{HJ}}^+ = (\mathcal{L}, \nabla_g \mathcal{L}, \mathfrak{D})$
@@ -371,6 +382,7 @@ $$
 
 $$
 \|\nabla_{g_{\mathfrak{D}}} d_M^{g_{\mathfrak{D}}}\|_{g_{\mathfrak{D}}} = 1
+
 $$
 
 where $d_M^{g_{\mathfrak{D}}} = \mathrm{dist}_{g_{\mathfrak{D}}}(\cdot, M)$.
@@ -379,6 +391,7 @@ where $d_M^{g_{\mathfrak{D}}} = \mathrm{dist}_{g_{\mathfrak{D}}}(\cdot, M)$.
 
 $$
 1 = \|\nabla_{g_{\mathfrak{D}}} d_M^{g_{\mathfrak{D}}}\|_{g_{\mathfrak{D}}}^2 = \mathfrak{D}^{-1} \|\nabla_g d_M^{g_{\mathfrak{D}}}\|_g^2
+
 $$
 
 Hence $\|\nabla_g d_M^{g_{\mathfrak{D}}}\|_g^2 = \mathfrak{D}$.
@@ -387,6 +400,7 @@ Hence $\|\nabla_g d_M^{g_{\mathfrak{D}}}\|_g^2 = \mathfrak{D}$.
 
 $$
 \|\nabla_g \mathcal{L}\|_g^2 = \|\nabla_g d_M^{g_{\mathfrak{D}}}\|_g^2 = \mathfrak{D}
+
 $$
 
 with boundary condition $\mathcal{L}|_M = \Phi_{\min}$.
@@ -407,6 +421,7 @@ The **metric slope** of $\Phi$ at $u \in \mathcal{X}$ is:
 
 $$
 |\partial \Phi|(u) := \limsup_{v \to u} \frac{(\Phi(u) - \Phi(v))^+}{d(u, v)}
+
 $$
 
 where $(a)^+ := \max(a, 0)$. This generalizes $\|\nabla \Phi\|$ to metric spaces.
@@ -419,6 +434,7 @@ Interface permit $\mathrm{GC}'_\nabla$ (dissipation-slope equality) holds if alo
 
 $$
 \mathfrak{D}(u(t)) = |\partial \Phi|^2(u(t))
+
 $$
 
 This extends $\mathrm{GC}_\nabla$ from Riemannian to general metric spaces.
@@ -436,6 +452,7 @@ This extends $\mathrm{GC}_\nabla$ from Riemannian to general metric spaces.
 
 $$
 \mathcal{L}(x) = \Phi_{\min} + \inf_{\gamma: M \to x} \int_0^1 |\partial \Phi|(\gamma(s)) \cdot |\dot{\gamma}|(s) \, ds
+
 $$
 
 where $|\dot{\gamma}|$ denotes the metric derivative and the infimum ranges over all absolutely continuous curves from the safe manifold $M$ to $x$.
@@ -460,6 +477,7 @@ where $|\dot{\gamma}|$ denotes the metric derivative and the infimum ranges over
 
 $$
 \int_0^T |\partial\Phi|(u(t)) \cdot |\dot{u}|(t)\, dt = \int_0^T |\partial\Phi|^2(u(t))\, dt = \int_0^T \mathfrak{D}(u(t))\, dt = \mathcal{C}(x \to u(T))
+
 $$
 
 By the Energy-Dissipation-Identity (EDI) in metric gradient flow theory {cite}`AmbrosioGigliSavare08`, this equals $\Phi(x) - \Phi(u(T))$ for curves of maximal slope.
@@ -468,6 +486,7 @@ By the Energy-Dissipation-Identity (EDI) in metric gradient flow theory {cite}`A
 
 $$
 \mathcal{L}(x) - \Phi_{\min} = \inf_{\gamma: M \to x} \int_0^1 |\partial\Phi|(\gamma) \cdot |\dot{\gamma}|\, ds
+
 $$
 
 This extends {prf:ref}`mt-krnl-jacobi` to non-smooth settings where $|\partial\Phi|$ replaces $\|\nabla\Phi\|_g$.
@@ -518,12 +537,14 @@ The following **tower-specific interface permits** extend the standard permits t
 
 $$
 \sum_t w(t) \mathfrak{D}(t) < \infty
+
 $$
 
 **$\mathrm{SC}_\lambda^{\mathrm{tower}}$ (Scale coherence):** For any $t_1 < t_2$:
 
 $$
 \Phi(t_2) - \Phi(t_1) = \sum_{u=t_1}^{t_2-1} L(u) + o(1)
+
 $$
 
 where each $L(u)$ is a **local contribution** determined by level $u$ data, and $o(1)$ is uniformly bounded.
@@ -532,6 +553,7 @@ where each $L(u)$ is a **local contribution** determined by level $u$ data, and 
 
 $$
 \Phi(t) = F(\{I_\alpha(t)\}_\alpha) + O(1)
+
 $$
 :::
 
@@ -555,6 +577,7 @@ $$
 
 $$
 X_\infty = \varprojlim X_t
+
 $$
 
 **(2)** The asymptotic behavior of $\Phi$ and the defect structure of $X_\infty$ is **completely determined** by the collection of local reconstruction invariants from $\mathrm{Rep}_K^{\mathrm{tower}}$.
@@ -572,6 +595,7 @@ $$
 
 $$
 \sum_t w(t) \mathfrak{D}(t) < \infty
+
 $$
 
 This implies $\mathfrak{D}(t) \to 0$ as $t \to \infty$ (otherwise the weighted sum diverges). Hence dynamics becomes increasingly frozen.
@@ -580,12 +604,14 @@ This implies $\mathfrak{D}(t) \to 0$ as $t \to \infty$ (otherwise the weighted s
 
 $$
 \Phi(t_2) - \Phi(t_1) = \sum_{u=t_1}^{t_2-1} L(u) + O(1)
+
 $$
 
 The $O(1)$ error bound is **uniform** in $t_1, t_2$: by scale coherence, the error comes from boundary terms at the scale interfaces, and there are only $O(1)$ such boundaries per unit interval (the interface permit quantifies this). Taking $t_2 \to \infty$ and using finite dissipation from Step 1:
 
 $$
 \Phi(\infty) - \Phi(t_1) = \sum_{u=t_1}^{\infty} L(u) + O(1)
+
 $$
 
 The sum converges absolutely: $|L(u)| \leq C \cdot \mathfrak{D}(u)$ by the scale-coherence permit, and $\sum_u \mathfrak{D}(u) < \infty$ by Step 1. Thus $\Phi(\infty)$ is well-defined.
@@ -594,12 +620,14 @@ The sum converges absolutely: $|L(u)| \leq C \cdot \mathfrak{D}(u)$ by the scale
 
 $$
 \Phi(t) = F(\{I_\alpha(t)\}_\alpha) + O(1)
+
 $$
 
 for local invariants $\{I_\alpha(t)\}$. Taking $t \to \infty$: local invariants stabilize (by finite dissipation) to limiting values $I_\alpha(\infty)$. Therefore:
 
 $$
 \Phi(\infty) = F(\{I_\alpha(\infty)\}_\alpha) + O(1)
+
 $$
 
 The asymptotic height is completely determined by the asymptotic local data.
@@ -608,6 +636,7 @@ The asymptotic height is completely determined by the asymptotic local data.
 
 $$
 \sum_t w(t)\mathfrak{D}(t) \geq \sum_{u=t_0}^\infty e^{-\alpha u} \cdot u^{\gamma-1} = \infty
+
 $$
 
 for any $\gamma > 0$, contradicting $K_{D_E^{\mathrm{tower}}}^+$.
@@ -658,6 +687,7 @@ The following **obstruction-specific interface permits** extend the standard per
 
 $$
 \sum_t w(t) \sum_{x \in \mathcal{O}_t} H_{\mathcal{O}}(x) < \infty
+
 $$
 
 **$D_E^{\mathcal{O}}$ (Subcritical obstruction dissipation):** The obstruction defect $\mathfrak{D}_{\mathcal{O}}$ grows strictly slower than structural permits allow for infinite accumulation.
@@ -696,12 +726,14 @@ $$
 
 $$
 S := \sum_t w(t) \sum_{x \in \mathcal{O}_t} H_{\mathcal{O}}(x) < \infty
+
 $$
 
 For each $t$, let $N_t := |\{x \in \mathcal{O}_t : H_{\mathcal{O}}(x) \geq \varepsilon\}|$ count non-trivial obstructions. Then:
 
 $$
 S \geq \sum_t w(t) \cdot N_t \cdot \varepsilon
+
 $$
 
 Since $S < \infty$ and $w(t) > 0$, we have $\sum_t w(t) N_t < \infty$, implying $N_t \to 0$ as $t \to \infty$.
@@ -712,6 +744,7 @@ Since $S < \infty$ and $w(t) > 0$, we have $\sum_t w(t) N_t < \infty$, implying 
 
 $$
 \mathfrak{D}_{\mathcal{O}}(x_n) \leq C \cdot H_{\mathcal{O}}(x_n)^{1-\delta}
+
 $$
 
 for some $\delta > 0$. But accumulating such obstructions requires $\sum_n H_{\mathcal{O}}(x_n) = \infty$, contradicting $K_{\mathrm{SC}_\lambda}^{\mathcal{O}+}$.
@@ -999,18 +1032,21 @@ For any algorithm $\mathcal{A}$ with configuration $q_t$ at time $t$, the **repr
 
 $$
 \mathcal{R}(q_t) := \{x \in \{0,1\}^n : x \text{ is explicitly encoded or computable from } q_t \text{ in } O(1)\}
+
 $$
 
 The **capacity** of state $q_t$ is:
 
 $$
 \mathrm{Cap}(q_t) := |\mathcal{R}(q_t)|
+
 $$
 
 **Polynomial capacity bound:** An algorithm $\mathcal{A}$ satisfies $K_{\mathrm{Cap}}^{\mathrm{poly}}$ if:
 
 $$
 \forall t, \forall q_t: \mathrm{Cap}(q_t) \leq \mathrm{poly}(n)
+
 $$
 
 This holds for all polynomial-time algorithms by definition (tape length bound).
@@ -1023,6 +1059,7 @@ For configuration $q_t$ of any algorithm $\mathcal{A}$, the **representable indu
 
 $$
 \mu_{q_t} := \mathrm{Unif}(\mathcal{R}(q_t))
+
 $$
 
 **Certificate:** $K_{\mu \leftarrow \mathcal{R}}^+ := (\mathrm{supp}(\mu_{q_t}) \subseteq \mathcal{R}(q_t))$

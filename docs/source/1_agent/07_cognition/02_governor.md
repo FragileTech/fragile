@@ -76,6 +76,7 @@ Standard gradient descent defines a discrete flow on $\mathcal{M}_\Theta$:
 
 $$
 \theta_{t+1} = \theta_t - \eta \nabla \mathcal{L}_{\text{task}}(\theta_t),
+
 $$
 where $\eta > 0$ is the step size.
 
@@ -94,6 +95,7 @@ The Fragile Agent imposes $K$ constraints $\{C_k(\theta) \leq 0\}_{k=1}^K$ defin
 
 $$
 C_k(\theta) = \text{Node}_k(\theta) - \epsilon_k,
+
 $$
 where $\epsilon_k$ is the tolerance threshold. The learning dynamics must satisfy these constraints throughout training.
 
@@ -112,6 +114,7 @@ The controlled update with adaptive multipliers is:
 
 $$
 \theta_{t+1} = \theta_t - \eta_t \left( G^{-1}(\theta_t) \nabla \mathcal{L}_{\text{task}}(\theta_t) + \sum_{k=1}^K \lambda_{k,t} \nabla C_k(\theta_t) \right),
+
 $$
 where:
 - $G(\theta)$ is the parameter-space metric (cf. natural gradient, {ref}`Section 2.5 <sec-second-order-sensitivity-value-defines-a-local-metric>`)
@@ -168,6 +171,7 @@ The Governor observes the **Sieve Residuals** via the constraint evaluation map 
 
 $$
 s_t = \Psi(\theta_t) = [C_1(\theta_t), \ldots, C_K(\theta_t)]^\top.
+
 $$
 The components of $s_t$ are the normalized defect functionals corresponding to diagnostic nodes 1–41 ({ref}`Section 3.1 <sec-theory-thin-interfaces>`). Positive values indicate constraint violation.
 
@@ -188,6 +192,7 @@ The Governor is a policy $\pi_{\mathfrak{G}}: \mathbb{R}^{K \times H} \to \mathb
 
 $$
 \Lambda_t = \pi_{\mathfrak{G}}(s_t, s_{t-1}, \ldots, s_{t-H}; \phi),
+
 $$
 where:
 - $\Lambda_t = (\eta_t, \lambda_{1,t}, \ldots, \lambda_{K,t}, T_{c,t}) \in \mathbb{R}_+^{K+2}$, where $T_c$ is the cognitive temperature ({prf:ref}`def-cognitive-temperature`)
@@ -247,6 +252,7 @@ Given fixed control $\Lambda$, the agent minimizes the regularized objective:
 
 $$
 \theta^*(\Lambda) = \arg\min_{\theta} \left[ \mathcal{L}_{\text{task}}(\theta) + \sum_{k=1}^K \lambda_k C_k(\theta) \right].
+
 $$
 :::
 
@@ -263,6 +269,7 @@ The Governor minimizes the **Training Regret** over the distribution of tasks $\
 
 $$
 J(\phi) = \mathbb{E}_{\mathcal{T} \sim P(\mathcal{T})} \left[ \sum_{t=0}^T \left( \mathcal{L}_{\text{task}}(\theta_t) + \gamma_{\text{viol}} \sum_{k=1}^K \text{ReLU}(C_k(\theta_t))^2 \right) \right],
+
 $$
 subject to: $\theta_{t+1} = \Phi(\theta_t, \pi_{\mathfrak{G}}(\Psi(\theta_t); \phi))$.
 
@@ -301,6 +308,7 @@ The training of the Universal Governor has bilevel structure:
 
 $$
 \min_\phi \; J(\phi) \quad \text{s.t.} \quad \theta_t = \theta_t(\Lambda_{0:t-1}), \quad \Lambda_t = \pi_{\mathfrak{G}}(s_{t:t-H}; \phi).
+
 $$
 The inner problem (agent learning) depends on the outer variables (Governor parameters) through the control sequence $\{\Lambda_t\}$.
 
@@ -350,6 +358,7 @@ Define the candidate Lyapunov function for the training dynamics:
 
 $$
 V_{\mathfrak{L}}(\theta) = \mathcal{L}_{\text{task}}(\theta) + \sum_{k=1}^K \frac{\mu_k}{2} \max(0, C_k(\theta))^2,
+
 $$
 where $\mu_k > 0$ are penalty weights for constraint violations.
 
@@ -384,6 +393,7 @@ If the Governor $\pi_{\mathfrak{G}}$ selects $\Lambda_t$ such that:
 
 $$
 \Delta V_{\mathfrak{L}} := V_{\mathfrak{L}}(\theta_{t+1}) - V_{\mathfrak{L}}(\theta_t) < 0 \quad \forall t \text{ where } \theta_t \notin \Omega,
+
 $$
 then the training process converges to the largest invariant set $\Omega$ where $\Delta V_{\mathfrak{L}} = 0$. Under standard regularity (twice-differentiable $\mathcal{L}$, LICQ), $\Omega$ consists of KKT points.
 
@@ -433,6 +443,7 @@ For the optimization trajectory to remain in the basin of attraction of the glob
 
 $$
 \frac{d T_c}{dt} = - \eta \cdot \frac{T_c}{1 + \gamma V_H(\theta_t)},
+
 $$
 where $\eta, \gamma > 0$ are constants.
 
@@ -490,6 +501,7 @@ The Governor is an automated metallurgist for neural networks. It watches the di
 
 $$
 \mathcal{L}_{\text{Lyap}}(\theta) = \mathcal{L}_{\text{task}}(\theta) + \sum_k \frac{\mu_k}{2} \max(0, C_k(\theta))^2
+
 $$
 with $\Delta\mathcal{L}_{\text{Lyap}} < 0$ along gradient flow.
 
@@ -514,6 +526,7 @@ The **Universal Governor** solves bilevel optimization over Sieve diagnostics:
 
 $$
 V_{\mathfrak{L}} = \mathcal{L}_{\text{task}} + \sum_k \frac{\mu_k}{2} \max(0, C_k)^2
+
 $$
 where $C_k(\theta)$ are constraint residuals from the Sieve Diagnostic Nodes.
 
@@ -524,6 +537,7 @@ Replace Sieve residuals with task loss only. Set history window $H=1$. Ignore co
 
 $$
 \theta^* = \theta - \alpha \nabla_\theta \mathcal{L}_{\text{inner}}, \quad \phi^* = \arg\min_\phi \mathcal{L}_{\text{outer}}(\theta^*(\phi))
+
 $$
 This recovers **MAML** {cite}`finn2017maml` and **Meta-RL** {cite}`hospedales2021metalearning`.
 
@@ -588,6 +602,7 @@ Then, with probability at least $1 - \delta$, a Governor trained on $N$ sampled 
 
 $$
 \mathbb{E}_{S \sim \mathcal{S}}[J_S(\hat{\phi}_N)] \leq C_1\left(\varepsilon_N + \sqrt{\frac{\log(1/\delta)}{N}}\right)
+
 $$
 where $\varepsilon_N$ is the optimization accuracy.
 

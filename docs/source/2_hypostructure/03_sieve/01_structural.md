@@ -1,4 +1,4 @@
-# Part IV: The Structural Sieve
+# The Structural Sieve
 
 (sec-homotopical-resolution)=
 ## The Homotopical Resolution of the Singularity Spectrum
@@ -83,6 +83,7 @@ For any predicate $P$ with YES certificate $K_P^+$, the NO certificate is a **co
 
 $$
 K_P^- := K_P^{\mathrm{wit}} + K_P^{\mathrm{inc}}
+
 $$
 
 **Component 1: NO-with-witness** ($K_P^{\mathrm{wit}}$)
@@ -91,6 +92,7 @@ A constructive refutation consisting of a counterexample or breach object that d
 
 $$
 K_P^{\mathrm{wit}} := (\mathsf{witness}: W_P, \mathsf{verification}: W_P \vdash \neg P)
+
 $$
 
 where $W_P$ is the type of refutation witnesses for $P$.
@@ -101,6 +103,7 @@ A record of evaluator failure that does *not* constitute a semantic refutation. 
 
 $$
 K_P^{\mathrm{inc}} := (\mathsf{obligation}: P, \mathsf{missing}: \mathcal{M}, \mathsf{code}: \mathcal{C}, \mathsf{trace}: \mathcal{T})
+
 $$
 
 where:
@@ -113,12 +116,14 @@ where:
 
 $$
 \iota_{\mathrm{wit}}: K_P^{\mathrm{wit}} \to K_P^-, \quad \iota_{\mathrm{inc}}: K_P^{\mathrm{inc}} \to K_P^-
+
 $$
 
 **Case Analysis:** Any function $f: K_P^- \to X$ factors uniquely through case analysis:
 
 $$
 f = [f_{\mathrm{wit}}, f_{\mathrm{inc}}] \circ \mathrm{case}
+
 $$
 
 where $f_{\mathrm{wit}}: K_P^{\mathrm{wit}} \to X$ and $f_{\mathrm{inc}}: K_P^{\mathrm{inc}} \to X$.
@@ -668,6 +673,7 @@ Each admissibility node $A_i$ implements the following evaluation:
 
 $$
 \mathrm{eval}_{A_i}(K^{\mathrm{br}}_{\mathrm{Barrier}}, \Sigma, V) \rightarrow \{K^+_{A_i}, K^-_{A_i}\}
+
 $$
 
 **Inputs:**

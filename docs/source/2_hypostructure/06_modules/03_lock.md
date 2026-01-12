@@ -1,5 +1,5 @@
 (sec-lock)=
-# Part XI: The Lock (Conjecture Prover Backend)
+# The Lock (Conjecture Prover Backend)
 
 :::{div} feynman-prose
 Now we come to the final gate. All the diagnostics we have seen so far ask specific questions: Is the energy bounded? Does the system mix properly? Are there dangerous symmetry-breaking cascades? Each of these is a necessary condition for regularity. But here is the real question: can a pathological structure actually *embed* into our system?
@@ -75,6 +75,7 @@ The Lock attempts thirteen proof-producing tactics to establish Hom-emptiness:
 
 $$
 K_{\mathrm{Rep}_K}^+ \wedge (d_{\mathrm{bad}} \neq d_{\mathcal{H}}) \Rightarrow K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}
+
 $$
 
 **Certificate Payload**: $(d_{\text{bad}}, d_{\mathcal{H}}, \text{dimension mismatch proof})$
@@ -107,6 +108,7 @@ E1 is the simplest obstruction: dimension counting. You cannot fit a three-dimen
 
 $$
 K_{\mathrm{TB}_\pi}^+ \wedge (I_{\mathrm{bad}} \neq I_{\mathcal{H}}) \Rightarrow K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}
+
 $$
 
 **Certificate Payload**: $(I, I_{\text{bad}}, I_{\mathcal{H}}, I_{\text{bad}} \neq I_{\mathcal{H}} \text{ proof})$
@@ -139,6 +141,7 @@ E2 uses topological invariants. Even if two spaces have the same dimension, they
 
 $$
 K_{\mathrm{LS}_\sigma}^+ \wedge (\Phi_{\mathrm{bad}} \notin \mathcal{C}_+) \Rightarrow K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}
+
 $$
 
 **Certificate Payload**: $(P, \text{positivity constraint}, \text{violation witness})$
@@ -171,6 +174,7 @@ E3 is about positivity constraints. Physical systems often require energy to be 
 
 $$
 K_{\mathrm{Rep}_K}^+ \wedge (\Lambda_{\mathrm{bad}} \not\hookrightarrow \Lambda_{\mathcal{H}}) \Rightarrow K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}
+
 $$
 
 **Certificate Payload**: $(\text{arithmetic structure}, \text{incompatibility proof})$
@@ -199,6 +203,7 @@ $$
 
 $$
 K_{\mathrm{Rep}_K}^+ \wedge (\text{FuncEq}(\phi) = \bot) \Rightarrow K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}
+
 $$
 
 **Certificate Payload**: $(\text{functional eq.}, \text{unsolvability proof})$
@@ -231,6 +236,7 @@ E4 and E5 deal with discrete arithmetic and functional constraints. Sometimes th
 
 $$
 K_{\mathrm{TB}_\pi}^+ \wedge K_{D_E}^+ \wedge (\exists \text{ infinite descending chain in } \mathbb{H}_{\mathrm{bad}}) \Rightarrow K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}
+
 $$
 
 **Certificate Payload**: $(\prec_{\mathrm{bad}}, \text{descending chain witness}, \text{Artinian violation proof})$
@@ -263,6 +269,7 @@ E6 is deep. It says: if the bad pattern contains closed timelike curves, infinit
 
 $$
 K_{D_E}^+ \wedge K_{\mathrm{SC}_\lambda}^+ \wedge (\Delta S_{\mathrm{bad}} < 0) \Rightarrow K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}
+
 $$
 
 **Certificate Payload**: $(S_{\mathrm{bad}}, S_{\mathcal{H}}, \Delta S < 0 \text{ witness}, \text{Second Law violation proof})$
@@ -295,6 +302,7 @@ E7 is the Second Law as a morphism obstruction. If the bad pattern requires entr
 
 $$
 K_{\mathrm{Cap}_H}^+ \wedge K_{\mathrm{TB}_\pi}^+ \wedge (I_{\mathrm{bad}} > C_{\max}(\partial \mathcal{H})) \Rightarrow K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}
+
 $$
 
 **Certificate Payload**: $(I_{\mathrm{bad}}, C_{\max}, \text{DPI violation proof})$
@@ -327,6 +335,7 @@ E8 uses information theory. The boundary of your system acts like a communicatio
 
 $$
 K_{\mathrm{TB}_\rho}^+ \wedge K_{C_\mu}^+ \wedge (\gamma_{\mathrm{bad}} = 0 \wedge \gamma_{\mathcal{H}} > 0) \Rightarrow K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}
+
 $$
 
 **Certificate Payload**: $(\tau_{\text{mix, bad}}, \tau_{\text{mix}, \mathcal{H}}, \text{spectral gap mismatch proof})$
@@ -359,6 +368,7 @@ E9 is about dynamics. A rapidly mixing system forgets its initial conditions exp
 
 $$
 K_{\mathrm{TB}_O}^+ \wedge K_{\mathrm{Rep}_K}^+ \wedge (\mathbb{H}_{\mathrm{bad}} \notin \mathcal{O}\text{-min}) \Rightarrow K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}
+
 $$
 
 **Certificate Payload**: $(\text{definability class}, \text{wild topology witness}, \text{cell decomposition failure})$
@@ -403,6 +413,7 @@ For a differential equation with singularities, the **monodromy group** $\mathrm
 
    $$
    |\{\sigma(\alpha) : \sigma \in \mathrm{Gal}(f)\}| = |\mathrm{Gal}(f)| < \infty
+
    $$
 
 2. **Solvability Obstruction:** If $\mathrm{Gal}(f)$ is not solvable (e.g., $S_n$ for $n \geq 5$), then $f$ has no solution in radicals. The system cannot be simplified beyond a certain complexity threshold.
@@ -415,6 +426,7 @@ For a differential equation with singularities, the **monodromy group** $\mathrm
 
 $$
 K_{\mathrm{Rep}_K}^+ \wedge K_{\mathrm{TB}_\pi}^+ \wedge (\mathrm{Gal}(f) \text{ non-solvable} \vee |\mathrm{Mon}(f)| = \infty) \Rightarrow K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}
+
 $$
 
 **Certificate Payload**: $(\mathrm{Gal}(f), \text{solvability status}, \mathrm{Mon}(f), \text{Abel-Ruffini witness})$
@@ -452,6 +464,7 @@ An **algebraic variety** $V \subset \mathbb{P}^n$ (or $\mathbb{C}^n$) is the zer
 
 $$
 V = \{x \in \mathbb{P}^n : f_1(x) = \cdots = f_k(x) = 0\}
+
 $$
 
 :::
@@ -463,6 +476,7 @@ The **degree** $\deg(V)$ of an irreducible variety $V \subset \mathbb{P}^n$ of d
 
 $$
 \deg(V) = \#(V \cap L)
+
 $$
 
 counted with multiplicity. Equivalently, $\deg(V) = \int_V c_1(\mathcal{O}(1))^d$.
@@ -489,6 +503,7 @@ counted with multiplicity. Equivalently, $\deg(V) = \int_V c_1(\mathcal{O}(1))^d
 
 $$
 K_{\mathrm{Rep}_K}^+ \wedge K_{\mathrm{SC}_\lambda}^+ \wedge \left(K_{\mathrm{E12}}^{\text{hypersurf}} \vee K_{\mathrm{E12}}^{\text{c.i.}} \vee K_{\mathrm{E12}}^{\text{morph}}\right) \Rightarrow K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}
+
 $$
 
 ---
@@ -558,6 +573,7 @@ $$
 
 $$
 \deg(g) = \deg(f) + \deg(h) \geq \deg(f) = \delta
+
 $$
 
 *Step 4 (Sharpness).* The bound is achieved by $g = f$ itself. No polynomial of degree $< \delta$ can define $V$.
@@ -574,6 +590,7 @@ $$
 
 $$
 \deg(V) = d_1 \cdot d_2 \cdots d_k
+
 $$
 
 This follows from iterative application of Bézout's theorem {cite}`Fulton84` (Example 8.4.6).
@@ -582,6 +599,7 @@ This follows from iterative application of Bézout's theorem {cite}`Fulton84` (E
 
 $$
 \deg(V) = e_1 \cdots e_k = d_1 \cdots d_k
+
 $$
 
 The product of degrees is an invariant of the scheme structure.
@@ -590,6 +608,7 @@ The product of degrees is an invariant of the scheme structure.
 
 $$
 \max_i(e_i) \geq \deg(V)^{1/k}
+
 $$
 
 by AM-GM. If $d_1 \geq d_2 \geq \cdots \geq d_k$, then $d_1 \geq \deg(V)^{1/k}$.
@@ -606,6 +625,7 @@ by AM-GM. If $d_1 \geq d_2 \geq \cdots \geq d_k$, then $d_1 \geq \deg(V)^{1/k}$.
 
 $$
 \deg(V) \cdot d_\phi = \deg(\phi^* H^{\dim V})
+
 $$
 
 More directly: $\deg(V) \leq d_\phi \cdot \deg(W)$ with equality for finite morphisms.
@@ -614,6 +634,7 @@ More directly: $\deg(V) \leq d_\phi \cdot \deg(W)$ with equality for finite morp
 
 $$
 \deg(\overline{\phi(W)}) \leq m^{\dim W} \cdot \deg(W)
+
 $$
 
 The permit payload specifies whether $\phi$ is treated as a morphism $W \to \mathbb{P}^N$ or a rational map with resolved base locus.
@@ -622,6 +643,7 @@ The permit payload specifies whether $\phi$ is treated as a morphism $W \to \mat
 
 $$
 \delta = \deg(V) \leq m^d \cdot w < m^d \cdot \delta
+
 $$
 
 This is only possible if $m^d \geq \delta/w > 1$, hence $m \geq (\delta/w)^{1/d}$.
@@ -630,6 +652,7 @@ This is only possible if $m^d \geq \delta/w > 1$, hence $m \geq (\delta/w)^{1/d}
 
 $$
 m_{\min} = \left(\frac{\delta}{\deg(W)}\right)^{1/\dim V}
+
 $$
 
 Any compression must have complexity at least $m_{\min}$.
@@ -669,6 +692,7 @@ If all thirteen tactics fail to prove Hom-emptiness but also fail to construct a
 
 $$
 K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{br\text{-}inc}} = (\mathsf{tactics\_exhausted}: \{E1,\ldots,E13\}, \mathsf{partial\_progress}, \mathsf{trace})
+
 $$
 
 This is a NO verdict (Breached) with inconclusive subtype—routing to {prf:ref}`mt-lock-reconstruction` (Structural Reconstruction) rather than fatal error. The certificate records which tactics were attempted and any partial progress (e.g., dimension bounds that narrowed but did not close, spectral gaps that are positive but not sufficient).

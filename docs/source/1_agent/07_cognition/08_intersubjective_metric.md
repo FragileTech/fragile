@@ -43,6 +43,7 @@ Let $\phi_{A \to B}: \mathcal{Z}_A \to \mathcal{Z}_B$ be the best-fit map betwee
 
 $$
 \mathcal{F}_{AB}(z) := \| G_A(z) - \phi_{A \to B}^* G_B(\phi(z)) \|_F^2
+
 $$
 
 where $\phi^* G_B$ denotes the pullback metric and $\|\cdot\|_F$ is the Frobenius norm.
@@ -70,6 +71,7 @@ Let $V_{\text{coop}}$ denote the cooperative value achievable by agents $A$ and 
 
 $$
 V_{\text{coop}} \leq V_{\text{max}} \cdot \exp\left(-\frac{\mathcal{F}_{AB}}{\mathcal{F}_0}\right)
+
 $$
 
 where $V_{\text{max}}$ is the optimal cooperative value under perfect alignment and $\mathcal{F}_0$ is a characteristic friction scale.
@@ -108,6 +110,7 @@ Let agents $A$ and $B$ each possess a nuisance bundle with gauge connection $A_\
 
 $$
 \mathcal{A}_{AB}^\mu(z_A, z_B) := A_\mu^{(A)}(z_A) \otimes \mathbb{1}_B + \mathbb{1}_A \otimes A_\mu^{(B)}(z_B) + \lambda_{\text{lock}} \mathcal{C}_{AB}^\mu
+
 $$
 
 where:
@@ -140,12 +143,14 @@ The **Locking Curvature** tensor measuring gauge mismatch between agents is:
 
 $$
 \mathcal{F}_{AB}^{\mu\nu} := \partial^\mu \mathcal{A}_{AB}^\nu - \partial^\nu \mathcal{A}_{AB}^\mu - ig_{\text{lock}}[\mathcal{A}_{AB}^\mu, \mathcal{A}_{AB}^\nu]
+
 $$
 
 where $g_{\text{lock}}$ is the inter-agent coupling constant. The **Integrated Friction** (gauge-invariant scalar) is:
 
 $$
 \Psi_{\text{sync}} := \int_{\mathcal{Z}_{\text{shared}}} \text{Tr}(\mathcal{F}_{AB}^{\mu\nu} \mathcal{F}_{AB,\mu\nu}) \sqrt{|G_{\text{shared}}|} \, d^D z
+
 $$
 
 *Interpretation:* When $\mathcal{F}_{AB}^{\mu\nu} = 0$, the inter-agent connection is flat—parallel transport is path-independent, meaning the agents' gauge choices are compatible. When $\mathcal{F}_{AB}^{\mu\nu} \neq 0$, the agents disagree on how to "translate" internal states.
@@ -169,6 +174,7 @@ The Locking Operator $\mathfrak{L}_{\text{sync}}$ is the Yang-Mills energy of th
 
 $$
 \mathfrak{L}_{\text{sync}}(G_A, G_B) := -\frac{1}{4g_{\text{lock}}^2} \int_{\mathcal{Z}_{\text{shared}}} \text{Tr}(\mathcal{F}_{AB}^{\mu\nu} \mathcal{F}_{AB,\mu\nu}) \sqrt{|G_{AB}|} \, d^D z
+
 $$
 
 *Proof.*
@@ -181,6 +187,7 @@ $$
 
 $$
 A_\mu^{(A)}(z) \sim A_\mu^{(B)}(z) \quad \text{(gauge equivalent)}
+
 $$
 
 **Step 4.** The Yang-Mills action principle (Definition {prf:ref}`def-yang-mills-action`) states that physical configurations minimize the integrated curvature squared. Applying this to $\mathcal{A}_{AB}$ yields the Locking Operator.
@@ -191,6 +198,7 @@ $$
 
 $$
 d_{\text{GH}}(\mathcal{U}_A, \mathcal{U}_B) \leq C \cdot \|\mathcal{F}_{AB}\|^{1/2}
+
 $$
 
 for a universal constant $C > 0$. Thus $\mathfrak{L}_{\text{sync}}$ controls the metric alignment.
@@ -214,6 +222,7 @@ The communication channel $\mathcal{L}$ between agents has finite Shannon capaci
 
 $$
 C_{\mathcal{L}} \leq \nu_D \cdot \frac{\text{Area}(\partial\mathcal{L})}{\ell_L^{D-1}}
+
 $$
 
 *Justification:* Communication occurs through the agent's boundary interface. The Area Law limits the information rate of any boundary channel.
@@ -244,12 +253,14 @@ The **Gauge Alignment Order Parameter** measuring the relative orientation of ag
 
 $$
 \phi_{AB}(z) := \text{Tr}(U_A(z) U_B^\dagger(z)) \in \mathbb{C}
+
 $$
 
 where $U_A, U_B \in G_{\text{Fragile}}$ are the local gauge transformations. The **Locking Potential** governing its dynamics is:
 
 $$
 \mathcal{V}_{\text{lock}}(\phi_{AB}) = -\mu_{\text{lock}}^2 |\phi_{AB}|^2 + \lambda_{\text{lock}} |\phi_{AB}|^4
+
 $$
 
 where:
@@ -278,12 +289,14 @@ Consider two agents interacting in a shared environment $E$. If they minimize th
 
 $$
 \mathcal{L}_{\text{joint}} = \|\hat{x}_{t+1}^A - x_{t+1}\|^2 + \|\hat{x}_{t+1}^B - x_{t+1}\|^2 + \beta \Psi_{\text{sync}}
+
 $$
 
 Then, as the interaction coupling $\beta \to \infty$, the system undergoes a phase transition where the internal gauge groups $U_A(z)$ and $U_B(z)$ become locked:
 
 $$
 U_A(z) \cdot U_B^{-1}(z) \to \text{const}.
+
 $$
 
 *Proof.*
@@ -292,12 +305,14 @@ $$
 
 $$
 \psi'^{(i)} = U^{(i)}(z) \psi^{(i)}, \quad U^{(i)} \in G_{\text{Fragile}}
+
 $$
 
 **Step 2 (Prediction Error).** The prediction error for agent $i$ is:
 
 $$
 \epsilon^{(i)} = \|D^{(i)}(\psi^{(i)}) - x_{t+1}\|^2
+
 $$
 
 where $D^{(i)}$ is the TopologicalDecoder ({ref}`Section 7.10 <sec-decoder-architecture-overview-topological-decoder>`).
@@ -306,6 +321,7 @@ where $D^{(i)}$ is the TopologicalDecoder ({ref}`Section 7.10 <sec-decoder-archi
 
 $$
 \Delta U(z) := U_A(z) U_B^{-1}(z)
+
 $$
 
 When $\Delta U \neq \text{const}$, the agents encode the same environment state $x$ with spatially varying internal orientations.
@@ -314,18 +330,21 @@ When $\Delta U \neq \text{const}$, the agents encode the same environment state 
 
 $$
 \Psi_{\text{sync}} = \int_{\mathcal{Z}_{\text{shared}}} \text{Tr}(\mathcal{F}_{AB}^{\mu\nu} \mathcal{F}_{AB,\mu\nu}) \, d\mu_G
+
 $$
 
 **Step 5 (Joint Action).** The joint WFR action (Definition {prf:ref}`def-joint-wfr-action`) becomes:
 
 $$
 \mathcal{A}_{\text{joint}} = \mathcal{A}_{\text{WFR}}^{(A)} + \mathcal{A}_{\text{WFR}}^{(B)} + \beta \Psi_{\text{sync}}
+
 $$
 
 **Step 6 (Gradient Flow).** At equilibrium, the functional derivative vanishes:
 
 $$
 \frac{\delta \mathcal{A}_{\text{joint}}}{\delta A_\mu^{(i)}} = 0
+
 $$
 
 This yields coupled Yang-Mills equations for both agents.
@@ -336,6 +355,7 @@ This yields coupled Yang-Mills equations for both agents.
 
 $$
 [D_{AB}^\mu, D_{AB}^\nu] = 0
+
 $$
 
 Parallel transport on the joint bundle is path-independent.
@@ -344,6 +364,7 @@ Parallel transport on the joint bundle is path-independent.
 
 $$
 A_\mu^{(A)}(z) - A_\mu^{(B)}(z) = \partial_\mu \chi(z)
+
 $$
 
 for some $\chi: \mathcal{Z} \to \mathfrak{g}$.
@@ -352,6 +373,7 @@ for some $\chi: \mathcal{Z} \to \mathfrak{g}$.
 
 $$
 A_\mu^{(A)}(z) = A_\mu^{(B)}(z)
+
 $$
 
 in this fixed gauge.
@@ -363,6 +385,7 @@ $$
 0 & \beta < \beta_c \\
 v_{\text{lock}} = \sqrt{(\beta - \beta_c)/\lambda_{\text{lock}}} & \beta > \beta_c
 \end{cases}
+
 $$
 
 This is analogous to Corollary {prf:ref}`cor-ontological-ssb`.
@@ -394,6 +417,7 @@ The critical coupling $\beta_c$ for spontaneous gauge locking is:
 
 $$
 \beta_c = \frac{\sigma^2 \text{Vol}(\mathcal{Z}_{\text{shared}})}{2 g_{\text{lock}}^2}
+
 $$
 
 where $\sigma$ is the Cognitive Action Scale (Definition {prf:ref}`def-cognitive-action-scale`).
@@ -444,6 +468,7 @@ A **Message** $m_{A \to B}$ from Agent $A$ to Agent $B$ is an element of the Lie
 
 $$
 m_{A \to B} \in \mathfrak{g} = \text{Lie}(G_{\text{Fragile}}), \quad m = m^a T_a
+
 $$
 
 where $\{T_a\}$ are the generators satisfying $[T_a, T_b] = i f^{abc} T_c$.
@@ -473,6 +498,7 @@ The **Language Channel** $\mathcal{L}$ is a low-bandwidth projection of the full
 
 $$
 \mathcal{L}: \mathfrak{g} \to \mathfrak{g}_{\mathcal{L}} \subset \mathfrak{g}
+
 $$
 
 where $\dim(\mathfrak{g}_{\mathcal{L}}) \ll \dim(\mathfrak{g})$. The channel satisfies the bandwidth constraint of Axiom {prf:ref}`ax-finite-communication-bandwidth`.
@@ -500,6 +526,7 @@ The **Translation Operator** $\mathcal{T}_{A \to B}(m)$ induced by message $m$ a
 
 $$
 \mathcal{T}_{A \to B}(m) := \exp\left(-ig \int_{\gamma_{AB}} m^a A_\mu^a \, dz^\mu\right) \cdot \mathcal{P}\exp\left(-ig \int_{\gamma_{AB}} A_\mu \, dz^\mu\right)
+
 $$
 
 where:
@@ -521,6 +548,7 @@ where:
 
 $$
 \text{Understanding}(m) \iff \mathcal{F}_{AB}(z; t+\Delta t) < \mathcal{F}_{AB}(z; t)
+
 $$
 
 after Agent $B$ receives and processes message $m$.
@@ -546,6 +574,7 @@ The **Untranslatability** $\mathcal{U}_{AB}(m)$ of message $m$ between agents wi
 
 $$
 \mathcal{U}_{AB}(m) \leq \|m\| \cdot \oint_{\partial\Sigma} \|\mathcal{F}_{AB}\|_F \, dA
+
 $$
 
 where $\Sigma$ is any surface bounded by the communication path.
@@ -556,12 +585,14 @@ where $\Sigma$ is any surface bounded by the communication path.
 
 $$
 \mathcal{H}_\gamma = \mathcal{P}\exp\left(-ig \oint_\gamma A_\mu \, dz^\mu\right)
+
 $$
 
 **Step 2.** By the non-Abelian Stokes theorem:
 
 $$
 \mathcal{H}_\gamma = \exp\left(-ig \int_\Sigma \mathcal{F}_{\mu\nu} \, dS^{\mu\nu}\right) + O(\mathcal{F}^2)
+
 $$
 
 **Step 3.** When $\mathcal{F}_{AB} \neq 0$, the holonomy is non-trivial: the message received by $B$ differs from the message sent by $A$.
@@ -570,6 +601,7 @@ $$
 
 $$
 \|m_{\text{received}} - m_{\text{sent}}\| \leq \|m\| \cdot \|\mathcal{H}_\gamma - \mathbb{1}\|
+
 $$
 
 **Step 5.** Bounding the holonomy deviation by the curvature integral via standard estimates yields the theorem.
@@ -633,6 +665,7 @@ Let $\mathcal{L}$ be the Language Channel with Shannon capacity $C_{\mathcal{L}}
 
 $$
 \dim(\mathfrak{g}) \cdot H(G_A) \leq C_{\mathcal{L}}
+
 $$
 
 *Proof.*
@@ -641,6 +674,7 @@ $$
 
 $$
 C_{\mathcal{L}} = \nu_D \cdot \frac{\text{Area}(\partial\mathcal{L})}{\ell_L^{D-1}}
+
 $$
 
 **Step 2.** To achieve complete gauge alignment, Agent $A$ must transmit sufficient information to specify all $\dim(\mathfrak{g})$ independent gauge parameters.
@@ -651,12 +685,14 @@ $$
 
 $$
 I_{\text{required}} = \dim(\mathfrak{g}) \cdot H(G_A)
+
 $$
 
 **Step 5.** If $I_{\text{required}} > C_{\mathcal{L}}$, complete locking is impossible by Shannon's theorem. The residual unlocked subspace has dimension:
 
 $$
 d_{\text{unlocked}} = \dim(\mathfrak{g}) - \lfloor C_{\mathcal{L}} / H(G_A) \rfloor
+
 $$
 
 $\square$
@@ -682,6 +718,7 @@ When the Babel Limit is violated ($\dim(\mathfrak{g}) \cdot H(G_A) > C_{\mathcal
 
 $$
 \dim(\mathfrak{q}) = \dim(\mathfrak{g}) - \lfloor C_{\mathcal{L}} / H(G_A) \rfloor > 0
+
 $$
 
 This subspace corresponds to **Private Qualia**: aspects of Agent $A$'s experience that cannot be communicated to Agent $B$ regardless of the symbol system used.
@@ -727,6 +764,7 @@ Decompose the metric tensor into its principal components:
 
 $$
 G_A = \sum_{k=1}^{D} \sigma_k^{(A)} v_k^{(A)} \otimes v_k^{(A)}
+
 $$
 
 where $\sigma_1 \geq \sigma_2 \geq \cdots \geq \sigma_D > 0$ are eigenvalues (principal curvatures) and $v_k^{(A)}$ are eigenvectors.
@@ -743,6 +781,7 @@ Under bandwidth-constrained communication, gauge locking proceeds in eigenvalue 
 
 $$
 k_{\max} = \max\left\{k : \sum_{j=1}^k H(\sigma_j v_j) \leq C_{\mathcal{L}} \cdot T\right\}
+
 $$
 
 *Proof sketch.* Optimal channel coding allocates bandwidth to components by decreasing significance (eigenvalue magnitude). The waterfilling algorithm from information theory specifies the allocation. Locking proceeds from high-curvature (salient) features to low-curvature (subtle) features. $\square$
@@ -797,6 +836,7 @@ In the limit of perfect locking ($\mathcal{F}_{AB} \to 0$), the private manifold
 
 $$
 \mathcal{Z}_{\text{shared}} := (\mathcal{Z}_A \sqcup \mathcal{Z}_B) / \sim_{\text{isometry}}
+
 $$
 
 where $\sim_{\text{isometry}}$ identifies points with vanishing metric friction.
@@ -809,6 +849,7 @@ where $\sim_{\text{isometry}}$ identifies points with vanishing metric friction.
 
 $$
 G_A(z) = \phi_{A \to B}^* G_B(\phi(z))
+
 $$
 
 The manifolds are isometric.
@@ -852,6 +893,7 @@ The corrected loss function must include grounding:
 
 $$
 \mathcal{L}_{\text{total}} = \lambda_{\text{lock}} \mathcal{F}_{AB} + \lambda_{\text{ground}} (\mathcal{F}_{AE} + \mathcal{F}_{BE})
+
 $$
 
 where $\mathcal{F}_{iE}$ measures the friction between agent $i$ and the environment's causal structure.
@@ -883,6 +925,7 @@ For a population of $N$ agents, spontaneous emergence of a shared "Objective Rea
 
 $$
 N > N_c = \frac{\sigma^2}{\lambda_{\text{lock}} \cdot \langle \mathcal{F}_{ij} \rangle}
+
 $$
 
 where $\langle \mathcal{F}_{ij} \rangle$ is the average pairwise friction.
@@ -925,6 +968,7 @@ The **Institutional Manifold** $\mathcal{Z}_{\text{Inst}}$ is a **Static Referen
 
 $$
 \mathcal{F}_{A,\text{Inst}} + \mathcal{F}_{B,\text{Inst}} \quad \text{replaces} \quad \mathcal{F}_{AB}
+
 $$
 
 *Scaling:* Institution-mediated locking is $O(N)$ instead of $O(N^2)$.
@@ -938,6 +982,7 @@ $$
 
 $$
 d_{\text{money}}(z_1, z_2) = \inf_{\gamma: z_1 \to z_2} \int_\gamma \text{Price}(\dot{z}) \, dt
+
 $$
 
 This provides a normalized gauge that allows agents with disjoint utility functions to coordinate.
@@ -1018,6 +1063,7 @@ The libration -- the Moon's slight wobble -- corresponds to residual gauge fluct
 
 $$
 \frac{d\theta_i}{dt} = \omega_i + \frac{K}{N}\sum_{j=1}^N \sin(\theta_j - \theta_i)
+
 $$
 
 Above critical coupling $K > K_c$, oscillators spontaneously synchronize.
@@ -1026,6 +1072,7 @@ Above critical coupling $K > K_c$, oscillators spontaneously synchronize.
 
 $$
 \frac{d\theta^{(i)}}{dt} = \omega^{(i)} + \beta \sum_{j \neq i} \nabla_\theta \mathcal{F}_{ij}
+
 $$
 
 **Correspondence Table:**

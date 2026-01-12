@@ -69,6 +69,7 @@ Let $G_t:=I(X_t;K_t)$ be the symbolic mutual information injected through the bo
 
 $$
 \lambda_{\text{in}} := \mathbb{E}[G_t].
+
 $$
 Units: $[\lambda_{\text{in}}]=\mathrm{nat/step}$.
 
@@ -87,6 +88,7 @@ Let $S_t:=H(K_t)$ be the macro entropy. The *mixing rate* is the expected entrop
 
 $$
 \lambda_{\text{mix}} := \mathbb{E}[(S_{t+1}-S_t)_+].
+
 $$
 Units: $[\lambda_{\text{mix}}]=\mathrm{nat/step}$.
 
@@ -105,11 +107,13 @@ A necessary condition for stable, grounded macrostates is the existence of const
 
 $$
 \epsilon \le I(X_t;K_t) \quad\text{and}\quad H(K_t)\le \log|\mathcal{K}|-\epsilon,
+
 $$
 and the net entropy balance satisfies
 
 $$
 \lambda_{\text{in}} \gtrsim \lambda_{\text{mix}}.
+
 $$
 Violations correspond to identifiable barrier modes:
 - If $I(X;K)\approx 0$: under-coupling - ungrounded inference / decoupling (Mode D.C).
@@ -150,6 +154,7 @@ The **Coupling Window** (Theorem {prf:ref}`thm-information-stability-window-oper
 
 $$
 \epsilon \le I(X_t; K_t) \quad \text{and} \quad H(K_t) \le \log|\mathcal{K}| - \epsilon.
+
 $$
 If violated, the Sieve halts execution (BoundaryCheck failure). This ensures that offline data cannot drive the agent into ungrounded regions of state space.
 
@@ -161,6 +166,7 @@ Conservative Q-Learning {cite}`kumar2020conservative` adds a penalty for out-of-
 
 $$
 \min_Q \mathbb{E}_{s \sim \mathcal{D}, a \sim \mu}\left[\log \sum_a \exp Q(s,a)\right] - \mathbb{E}_{s,a \sim \mathcal{D}}[Q(s,a)] + \text{Bellman}.
+
 $$
 This softly penalizes overestimation on unseen actions but **does not prevent** the agent from taking them.
 

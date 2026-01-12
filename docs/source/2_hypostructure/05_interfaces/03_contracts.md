@@ -1,4 +1,4 @@
-# Part VIII: Barrier and Surgery Contracts
+# Barrier and Surgery Contracts
 
 (sec-barrier-atlas)=
 ## Certificate-Driven Barrier Atlas

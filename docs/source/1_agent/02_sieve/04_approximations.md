@@ -35,6 +35,7 @@ What are we really trying to detect? Errors getting bigger over time. Oscillatio
 
 $$
 \int_{0}^{\infty} \log \lvert S(j\omega) \rvert d\omega = \text{const.} \quad \text{(Bode sensitivity integral)}
+
 $$
 **Problem:** Requires frequency-domain analysis of the closed-loop transfer function $S(j\omega)$. Neural policies don't have closed-form transfer functions, and FFT requires long stationary trajectories.
 
@@ -42,6 +43,7 @@ $$
 
 $$
 \mathcal{L}_{\text{gain}} = \sum_{k=1}^{K} \max\left(0, \frac{\Vert e_{t+k} \Vert}{\Vert e_t \Vert + \epsilon} - G_{\max}\right)^2
+
 $$
 
 :::{div} feynman-prose
@@ -122,6 +124,7 @@ But the full Jacobian costs $O(Z^2)$ to form and $O(Z^3)$ for eigenvalues. For l
 
 $$
 \det(J_{S_t}) \quad \text{where } J_{S_t} = \frac{\partial S_t(z)}{\partial z}
+
 $$
 **Problem:** Computing the full Jacobian is $O(Z^3)$. For $Z = 256$, this is ~16M operations per sample.
 
@@ -129,6 +132,7 @@ $$
 
 $$
 \mathcal{L}_{\text{bifurcate}} = \text{Var}_v\left[\Vert J_{S_t} v \Vert^2\right] \quad \text{where } v \sim \mathcal{N}(0, I)
+
 $$
 
 :::{div} feynman-prose
@@ -216,6 +220,7 @@ But the Hessian is even more expensive than the Jacobian: $O(Z^2 \times P)$ for 
 
 $$
 \Vert \nabla^2 S_t \Vert \quad \text{(Hessian norm)}
+
 $$
 **Problem:** Full Hessian is $O(Z^2 \times P_{WM})$ — prohibitive for large world models.
 
@@ -223,6 +228,7 @@ $$
 
 $$
 \mathcal{L}_{\text{tame}} = \frac{\Vert \nabla_z S_t(z_1) - \nabla_z S_t(z_2) \Vert}{\Vert z_1 - z_2 \Vert + \epsilon}
+
 $$
 
 :::{div} feynman-prose
@@ -310,6 +316,7 @@ Why care about reachability? We need the value function to tell the truth. If $V
 
 $$
 T_{\text{reach}}(z_{\text{goal}}) \quad \text{(Reachability time)}
+
 $$
 **Problem:** Requires multi-step planning through world model: $O(H \times B \times Z)$ with potentially large horizon $H$.
 
@@ -317,6 +324,7 @@ $$
 
 $$
 \mathcal{L}_{\text{topo}} = -\left\langle \nabla_z V(z), \frac{z_{\text{goal}} - z}{\Vert z_{\text{goal}} - z \Vert} \right\rangle
+
 $$
 
 :::{div} feynman-prose
@@ -392,6 +400,7 @@ The problem: "all pairwise." Batch size $B$ means $B^2$ similarity computations.
 
 $$
 \mathcal{L}_{\text{InfoNCE}} = -\log \frac{\exp(\text{sim}(z_t, z_{t+k}))}{\sum_{j=1}^{B} \exp(\text{sim}(z_t, z_j))}
+
 $$
 **Problem:** Full pairwise computation is $O(B^2 \times Z)$.
 
@@ -399,6 +408,7 @@ $$
 
 $$
 \mathcal{L}_{\text{InfoNCE}}^{\text{eff}} = -\log \frac{\exp(\text{sim}(z_t, z_{t+k}))}{\exp(\text{sim}(z_t, z_{t+k})) + \sum_{j=1}^{K} \exp(\text{sim}(z_t, z_{\text{neg},j}))}
+
 $$
 
 :::{div} feynman-prose

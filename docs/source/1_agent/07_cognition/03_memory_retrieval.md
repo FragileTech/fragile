@@ -51,6 +51,7 @@ The *memory screen* is the signed measure on $\mathcal{Z}$ defined by
 
 $$
 \Xi_T := \int_0^T \alpha(t') \, \delta_{\gamma(t')} \, dt',
+
 $$
 where:
 - $\delta_{\gamma(t')}$ is the Dirac measure concentrated at $\gamma(t') \in \mathcal{Z}$,
@@ -103,6 +104,7 @@ The canonical memory kernel is the *Heat Kernel* $H_\tau(z, z')$ on $(\mathcal{Z
 
 $$
 (\partial_\tau - \Delta_G) H_\tau(z, z') = 0, \quad H_0(z, z') = \delta(z - z'),
+
 $$
 where:
 - $\tau > 0$ is the *diffusion time* (memory smoothing scale),
@@ -127,11 +129,13 @@ The *memory potential* is defined by
 
 $$
 \Psi_{\text{mem}}(z) := -\int_{\mathcal{Z}} H_\tau(z, z') \, d\Xi_T(z').
+
 $$
 Expanding using Definition {prf:ref}`def-memory-screen`:
 
 $$
 \Psi_{\text{mem}}(z) = -\int_0^T \alpha(t') H_\tau(z, \gamma(t')) \, dt'.
+
 $$
 *Units:* $[\Psi_{\text{mem}}] = \text{nat}$.
 
@@ -163,6 +167,7 @@ It's like having a bunch of tiny magnets scattered across the manifold, some att
 
 $$
 \Psi_{\text{mem}}(z) = -\int_0^T \alpha(t') H_\tau(z, \gamma(t'))\, dt'
+
 $$
 where $H_\tau$ is the heat kernel on $(\mathcal{Z}, G)$.
 
@@ -187,6 +192,7 @@ Alternative kernels may be used depending on application requirements:
 
    $$
    K_{\text{Gauss}}(z, z') := \exp\left(-\frac{d_G(z, z')^2}{2\ell^2}\right),
+
    $$
    where $d_G$ is the geodesic distance and $\ell > 0$ is the length scale. This provides fast (exponential) decay, suitable for short-range memory effects.
 
@@ -194,6 +200,7 @@ Alternative kernels may be used depending on application requirements:
 
    $$
    K_{\nu}(z, z') \propto (-\Delta_G + \kappa^2)^{-\nu}\delta(z - z'),
+
    $$
    where $\nu > 0$ is the smoothness parameter and $\kappa > 0$ is the inverse correlation length. For $\nu = 1$, this recovers the Green's function $G_\kappa$ from {ref}`Section 24.2 <sec-the-bulk-potential-screened-poisson-equation>`. The Matérn kernel has polynomial (rather than exponential) tails, providing longer-range correlations. See {cite}`rasmussen2006gp` Chapter 4 for the Euclidean case.
 
@@ -252,6 +259,7 @@ The memory-augmented dynamics on $(\mathcal{Z}, G)$ are:
 
 $$
 dz^k = \left[ -G^{kj}\partial_j\bigl(\Phi_{\text{eff}} + \Psi_{\text{mem}}\bigr) + u_\pi^k \right] ds - \Gamma^k_{ij}\dot{z}^i\dot{z}^j\,ds + \sqrt{2T_c}\,(G^{-1/2})^{kj}\,dW^j_s,
+
 $$
 where:
 - $\Phi_{\text{eff}}$ is the effective potential (Definition {prf:ref}`def-effective-potential`),
@@ -280,6 +288,7 @@ The infinitesimal work performed by the memory force during displacement $dz$ is
 
 $$
 dW_{\text{mem}} := \langle -\nabla_G \Psi_{\text{mem}}, dz \rangle_G = -G_{kj}\,G^{k\ell}\partial_\ell \Psi_{\text{mem}}\, dz^j = -\partial_j \Psi_{\text{mem}}\, dz^j.
+
 $$
 *Units:* $[dW_{\text{mem}}] = \text{nat}$.
 
@@ -306,6 +315,7 @@ Then the memory gradient $\|\nabla_G \Psi_{\text{mem}}\|_G$ can exceed the local
 
 $$
 \|\nabla_G \Psi_{\text{mem}}(z_t)\|_G \approx |\alpha(t^*)| \cdot \|\nabla_G H_\tau(z_t, z^*)\|_G.
+
 $$
 For $d_G(z_t, z^*) \sim O(\sqrt{\tau})$, the gradient $\|\nabla_G H_\tau\|_G \sim O(\tau^{-(d+1)/2})$ can be made arbitrarily large by choosing small $\tau$. If $|\alpha(t^*)|$ is sufficiently large, this dominates $\|\nabla_G \Phi_{\text{eff}}\|_G$. $\square$
 
@@ -333,6 +343,7 @@ Trajectory history induces a **Memory Potential** via heat-kernel convolution:
 
 $$
 \Psi_{\text{mem}}(z) = -\int_0^T \alpha(t') H_\tau(z, \gamma(t'))\, dt'
+
 $$
 where $H_\tau$ is the heat kernel on $(\mathcal{Z}, G)$ and $\alpha(t')$ is the reward flux at past times.
 
@@ -343,6 +354,7 @@ Replace geometric kernel with uniform sampling. Ignore metric structure ($G \to 
 
 $$
 \mathcal{D} = \{(s_t, a_t, r_t, s_{t+1})\}, \quad \text{sample } \sim \text{Uniform}(\mathcal{D})
+
 $$
 This recovers **Experience Replay** {cite}`lin1992experience,mnih2015humanlevel`.
 
@@ -373,6 +385,7 @@ The WFR dynamics with memory are:
 
 $$
 \partial_s \rho + \nabla \cdot (\rho \mathbf{v}) = \rho \left(\frac{\Phi_{\text{eff}} + \Psi_{\text{mem}} - \bar{\Phi}_{\text{aug}}}{T_c}\right),
+
 $$
 where:
 - $\rho(z, s)$ is the belief density,
@@ -391,6 +404,7 @@ The memory contribution to the reaction term is:
 
 $$
 r_{\text{mem}}(z) := \frac{\rho(z)(\Psi_{\text{mem}}(z) - \bar{\Psi}_{\text{mem}})}{T_c},
+
 $$
 where $\bar{\Psi}_{\text{mem}} = \int_{\mathcal{Z}} \Psi_{\text{mem}} \rho \, d\mu_G$.
 
@@ -426,6 +440,7 @@ The *non-locality ratio* at position $z$ is:
 
 $$
 \Omega_{\text{mem}}(z) := \frac{\|\nabla_G \Psi_{\text{mem}}(z)\|_G}{\|\nabla_G \Phi_{\text{eff}}(z)\|_G + \epsilon},
+
 $$
 where $\epsilon > 0$ is a regularization constant preventing division by zero.
 
@@ -435,6 +450,7 @@ where $\epsilon > 0$ is a regularization constant preventing division by zero.
 
 $$
 \Omega_{\text{mem}} \in [\Omega_{\min}, \Omega_{\max}],
+
 $$
 with empirically recommended bounds $\Omega_{\min} \approx 0.01$, $\Omega_{\max} \approx 10$. These bounds are task-dependent and should be tuned based on the environment's stationarity.
 
@@ -547,6 +563,7 @@ Let $\mathcal{Z}_{\text{ext}}$ denote the external knowledge manifold equipped w
 
 $$
 \mathcal{Z}_{\text{ext}} = \mathcal{K} \times \mathcal{Z}_n \times \mathcal{Z}_{\text{tex}},
+
 $$
 where $\mathcal{K}$ is the macro-concept space, $\mathcal{Z}_n$ the nuisance coordinates, and $\mathcal{Z}_{\text{tex}}$ the texture fiber.
 
@@ -562,11 +579,13 @@ There exists a canonical isometry $\Phi: \mathcal{Z}_{\text{int}} \to \mathcal{Z
 
 $$
 d_{G_{\text{int}}}(z, z') = d_{G_{\text{ext}}}(\Phi(z), \Phi(z')),
+
 $$
 where both manifolds carry the Poincare metric (Definition {prf:ref}`def-hyperbolic-volume-growth`):
 
 $$
 G_{ij}(z) = \frac{4\delta_{ij}}{(1 - \|z\|^2)^2}.
+
 $$
 *Interpretation:* The isometry axiom asserts that embedding models trained on shared semantic corpora induce compatible distance structures. This is the mathematical foundation for cross-modal retrieval.
 
@@ -605,6 +624,7 @@ For points $z, \xi \in \mathbb{D}^d$ (the Poincare disk), the geodesic distance 
 
 $$
 d_{\mathbb{D}}(z, \xi) = \operatorname{acosh}\left(1 + \frac{2\|z - \xi\|^2}{(1 - \|z\|^2)(1 - \|\xi\|^2)}\right).
+
 $$
 *Units:* $[d_{\mathbb{D}}] = [z]$ (dimensionless in Poincare coordinates).
 
@@ -618,6 +638,7 @@ Given a query position $z \in \mathcal{Z}_{\text{int}}$ and archive prior $\mu_{
 
 $$
 \nu_\omega = \arg\min_{\nu \in \mathcal{P}(\mathcal{Z}_{\text{ext}})} \left\{ \int d_{\mathbb{D}}(z, \xi) \, d\nu(\xi) + T_{\text{ret}} D_{\text{KL}}(\nu \| \mu_{\mathcal{E}}) \right\},
+
 $$
 where $T_{\text{ret}} > 0$ is the *retrieval temperature*.
 
@@ -633,6 +654,7 @@ The volume of a geodesic ball in the Poincare disk grows exponentially with radi
 
 $$
 \text{Vol}(B_r(z)) \sim \sinh^{d-1}(r) \sim \frac{1}{2^{d-1}} e^{(d-1)r} \quad \text{as } r \to \infty.
+
 $$
 *Proof sketch:* The hyperbolic metric has constant negative curvature $\kappa = -1$. Standard volume comparison (Bishop-Gromov) yields exponential growth. $\square$
 
@@ -664,6 +686,7 @@ The *bulk projection* $\Pi_{\text{bulk}}: \mathcal{Z}_{\text{ext}} \to \mathcal{
 
 $$
 \Pi_{\text{bulk}}(\xi) = \Pi_{\text{bulk}}(K, z_n, z_{\text{tex}}) := (K, z_n).
+
 $$
 *Interpretation:* This projection discards texture, retaining only control-relevant coordinates.
 
@@ -677,11 +700,13 @@ The *retrieval potential* is:
 
 $$
 \Psi_{\text{ret}}(z) = -\Lambda_{\text{ret}} \int_{\mathcal{Z}_{\text{ext}}} \exp\left(-\lambda \, d_{\mathbb{D}}(z, \Pi_{\text{bulk}}(\xi))\right) d\nu_\omega(\xi),
+
 $$
 with the firewall constraint:
 
 $$
 \frac{\partial \Psi_{\text{ret}}}{\partial z_{\text{tex,ext}}} \equiv 0.
+
 $$
 *Units:* $[\Psi_{\text{ret}}] = \text{nat}$, $[\Lambda_{\text{ret}}] = \text{nat}$, $[\lambda] = [z]^{-1}$.
 
@@ -695,6 +720,7 @@ Under the firewall constraint (Definition {prf:ref}`def-bulk-filtered-retrieval-
 
 $$
 \mathbf{f}_{\text{ret}} = -G^{-1}\nabla_G \Psi_{\text{ret}}
+
 $$
 is smooth (Lipschitz in $z$) and independent of external texture coordinates $z_{\text{tex,ext}}$.
 
@@ -741,6 +767,7 @@ The equations of motion with retrieval are:
 
 $$
 dz^k = \left[ -G^{kj}\partial_j(\Phi_{\text{eff}} + \Psi_{\text{mem}} + \Psi_{\text{ret}}) + u_\pi^k \right] ds - \Gamma^k_{ij}\dot{z}^i\dot{z}^j\,ds + \sqrt{2T_c}(G^{-1/2})^{kj}dW^j_s,
+
 $$
 where:
 - $\Phi_{\text{eff}}$: effective potential (Definition {prf:ref}`def-effective-potential`)
@@ -760,6 +787,7 @@ The total non-local force is:
 
 $$
 \mathbf{f}_{\text{non-local}} = -G^{-1}\nabla_G(\Psi_{\text{mem}} + \Psi_{\text{ret}}),
+
 $$
 where:
 - Memory force $\mathbf{f}_{\text{mem}}$ integrates over the agent's past trajectory
@@ -784,6 +812,7 @@ The Wasserstein–Fisher–Rao continuity equation with retrieval is:
 
 $$
 \partial_s \rho + \nabla \cdot (\rho \mathbf{v}) = \rho \, r_{\text{local}}(z) + \sigma_{\text{ret}}(z),
+
 $$
 where:
 - $r_{\text{local}}(z)$: local mass creation rate (reward-driven, Definition {prf:ref}`def-the-wfr-action`)
@@ -793,6 +822,7 @@ The retrieval source is:
 
 $$
 \sigma_{\text{ret}}(z) = \eta_{\text{ret}} \cdot \Psi_{\text{ret}}(z) \cdot \mathbf{1}[\Psi_{\text{ret}}(z) > \Psi_{\text{threshold}}],
+
 $$
 with $[\sigma_{\text{ret}}] = \text{nat}/[z]^d/\text{step}$.
 
@@ -806,6 +836,7 @@ Mass injection at retrieved locations enables transitions without continuous geo
 
 $$
 \rho(z', s + \Delta s) > 0 \quad \text{even if} \quad d_G(z, z') > \sup_{0 \leq \tau \leq \Delta s} \|\mathbf{v}(z, s+\tau)\| \cdot \Delta s.
+
 $$
 *Interpretation:* Retrieval teleports probability mass to semantically relevant regions, bypassing the diffusion constraint. This is the WFR-level description of "jumping to a retrieved fact."
 
@@ -917,6 +948,7 @@ $$
 \dot{\Lambda}_{\text{ret}} &\propto \alpha_1 \cdot \Delta_{\text{causal}} \\
 \dot{\Lambda}_{\text{mem}} &\propto \alpha_2 \cdot (\Delta_{\text{causal}}^{\text{target}} - \Delta_{\text{causal}}) - \alpha_3 \cdot \operatorname{ReLU}(\Omega_{\text{mem}} - \Omega_{\max})
 \end{aligned}
+
 $$
 where $\alpha_1, \alpha_2, \alpha_3 > 0$ are learning rates and $\Omega_{\max}$ is the maximum tolerable non-locality ratio.
 
@@ -954,6 +986,7 @@ Let $\sigma_{\text{ret}}(z)$ be the retrieval source term in the WFR continuity 
 
 $$
 \int_{\mathcal{Z}} \left( \rho_I(z) + \sigma_{\text{ret}}(z) \right) \, d\mu_G \leq \kappa \, C_{\partial}
+
 $$
 where $C_{\partial} = \nu_D \cdot \text{Area}(\partial\mathcal{Z})/\ell_L^{D-1}$ is the boundary capacity (Definition {prf:ref}`def-holographic-coefficient`, {prf:ref}`def-levin-length`).
 

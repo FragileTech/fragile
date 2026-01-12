@@ -1,4 +1,4 @@
-# Part I: Categorical Foundations
+# Categorical Foundations
 
 :::{div} feynman-prose
 Now, here is something that trips people up when they first encounter this material. They see "category theory" and "infinity-toposes" and think we are doing abstract nonsense for its own sake. But that is exactly backwards. The reason we use these tools is *precision*, not abstraction.

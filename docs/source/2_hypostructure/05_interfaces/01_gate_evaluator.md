@@ -2,6 +2,7 @@
 title: "Universal Gate Evaluator Interface"
 ---
 
+(sec-gate-evaluator)=
 # Universal Gate Evaluator Interface
 
 (sec-gate-evaluator-interface)=
@@ -386,7 +387,7 @@ $$\frac{d^2}{dt^2} M_\phi(t) \geq c \cdot \|\nabla u\|^2 - C \cdot \|u\|^2$$
 
 **Does Not Promise:** Rigidity directly. Combined with $K_{\mathrm{LS}_\sigma}^+$ and Lock obstruction, enables hybrid rigidity derivation.
 
-**Used by:** MT-SOFT→Rigidity compilation metatheorem ({prf:ref}`mt-fact-soft-rigidity`).
+**Used by:** MT-SOFT→Rigidity compilation metatheorem.
 
 **Literature:** Morawetz estimates {cite}`Morawetz68`; virial identities {cite}`GlasseyScattering77`; interaction Morawetz {cite}`CollianderKeelStaffilaniTakaokaTao08`.
 :::

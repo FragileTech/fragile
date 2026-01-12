@@ -3,7 +3,7 @@ title: "Notation Index"
 ---
 
 (sec-notation-index)=
-# Notation Index
+# Appendix B: Notation Index
 
 :::{div} feynman-prose
 Let me tell you how to use this notation index, because notation is one of those things that can either help you think or get in your way.

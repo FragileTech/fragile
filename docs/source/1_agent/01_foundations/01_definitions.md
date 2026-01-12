@@ -63,6 +63,7 @@ The agent is a controller with internal state
 
 $$
 Z_t := (K_t, Z_{n,t}, Z_{\mathrm{tex},t}) \in \mathcal{Z}=\mathcal{K}\times\mathcal{Z}_n\times\mathcal{Z}_{\mathrm{tex}},
+
 $$
 and internal components (Encoder/Shutter, World Model, Critic, Policy). Its evolution is driven only by the observable interaction stream at the interface (observations/feedback) and by its own outgoing control signals (actions).
 
@@ -81,6 +82,7 @@ The boundary variables at time $t$ are the interface tuple
 
 $$
 B_t := (x_t,\ r_t,\ d_t,\ \iota_t,\ a_t),
+
 $$
 where:
 - $x_t\in\mathcal{X}$ is the observation (input sample),
@@ -106,11 +108,13 @@ The "environment" is the conditional law of future interface signals given past 
 
 $$
 P_{\partial}(x_{t+1}, r_t, d_t, \iota_{t+1}\mid x_{\le t}, a_{\le t}).
+
 $$
 In the Markov case this reduces to the familiar RL kernel
 
 $$
 P_{\partial}(x_{t+1}, r_t, d_t, \iota_{t+1}\mid x_t, a_t),
+
 $$
 but the **interpretation changes**: $P_{\partial}$ is not "a dataset generator"; it is the **input-output law** that the controller must cope with under partial observability and model mismatch.
 
@@ -162,6 +166,7 @@ Now let's go through the standard RL vocabulary and see how each term looks from
 
      $$
      x_t \mapsto (K_t, Z_{n,t}, Z_{\mathrm{tex},t}),
+
      $$
      where $K_t$ is the **discrete predictive signal** (bounded-rate latent statistic), $Z_{n,t}$ is a **structured nuisance / gauge residual** (pose/basis/disturbance coordinates), and $Z_{\mathrm{tex},t}$ is a **texture residual** (high-rate reconstruction detail).
    - *Boundary gate nodes ({ref}`Section 3 <sec-diagnostics-stability-checks>`):*
@@ -230,6 +235,7 @@ Let:
 
   $$
   G_{\text{obj}} := \{(a,b): a>0,\ r\mapsto ar+b\}.
+
   $$
   (If representing value as a unit-norm phase variable, one may instead use $U(1)$; {ref}`Section 3.3 <sec-defect-functionals-implementing-regulation>`.C treats the real-valued case via projective heads.)
 - $G_{\text{spatial}}$ be an **observation gauge** acting on raw observations $x$ (e.g., pose/translation/rotation; choose $SE(3)$, $SE(2)$, $\mathrm{Sim}(2)$, or a task-specific subgroup depending on sensors).
@@ -248,6 +254,7 @@ G_{\text{spatial}}
 S_{|\mathcal{K}|}
 \times
 \mathrm{Symp}(2n,\mathbb{R}).
+
 $$
 **Internal vs. external symmetries.**
 - **Internal (objective) gauge:** transformations of the scalar feedback scale/offset (and any potentials) that should not qualitatively change the policy update direction.
@@ -258,6 +265,7 @@ $$
 
   $$
   K(x)\approx K(g\cdot x)\quad (g\in G_{\text{spatial}}),
+
   $$
   while $z_n$ carries structured nuisance parameters (pose/basis/disturbance coordinates) and $z_{\mathrm{tex}}$ carries reconstruction-only texture ({ref}`Section 2.2b <sec-the-shutter-as-a-vq-vae>`, {ref}`Section 3.3 <sec-defect-functionals-implementing-regulation>`.A).
 - **World model $S$ and policy $\pi$:** be covariant to symbol permutations $S_{|\mathcal{K}|}$ by treating $K$ only through its embedding $e_K$ (not the integer label) and by using permutation-invariant diagnostics.
@@ -366,6 +374,7 @@ This is the integration variable of the internal solver and the Equation of Moti
 
 $$
 \frac{dz}{ds} = -G^{-1}\nabla \Phi_{\text{eff}} + \dots
+
 $$
 - **Relationship to $t$:** to transition from $t$ to $t+1$, the agent integrates its internal dynamics from $s=0$ to $s=S_{\text{budget}}$.
 - **Thinking fast vs. slow:** small $S_{\text{budget}}$ yields reflexive action; large $S_{\text{budget}}$ yields deliberate planning.

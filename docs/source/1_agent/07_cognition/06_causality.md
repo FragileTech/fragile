@@ -56,11 +56,13 @@ Formally, the operator acts by truncated factorization:
 
 $$
 P(z' | z, do(a)) := P(z' | z, a),
+
 $$
 where the structural mechanism $P(z' | z, a)$ is preserved but $a$ is no longer a function of $z$. For marginal interventional queries:
 
 $$
 P(z' | do(a)) = \int_{\mathcal{Z}} P(z' | \tilde{z}, a) P_{\text{pre}}(\tilde{z}) \, d\mu_G(\tilde{z}),
+
 $$
 where $P_{\text{pre}}(\tilde{z})$ is the pre-intervention distribution over latent states.
 
@@ -116,6 +118,7 @@ Recall the World Model scaling coefficient $\gamma$ ({ref}`Section 3.2 <sec-scal
 
 $$
 \Psi_{\text{causal}}(z, a) := \mathbb{E}_{z' \sim \bar{P}(\cdot | z, a)} \left[ D_{\text{KL}} \left( p(\theta_W | z, a, z') \| p(\theta_W | z, a) \right) \right].
+
 $$
 Units: $[\Psi_{\text{causal}}] = \text{nat}$.
 
@@ -131,6 +134,7 @@ The agent explores via the **Causal Information Potential** $\Psi_{\text{causal}
 
 $$
 \Psi_{\text{causal}}(z, a) := \mathbb{E}_{z' \sim \bar{P}(\cdot | z, a)} \left[ D_{\text{KL}} \left( p(\theta_W | z, a, z') \| p(\theta_W | z, a) \right) \right].
+
 $$
 This measures the **Expected Information Gain** about the world model—the agent seeks actions that maximally resolve uncertainty about causal dynamics.
 
@@ -142,6 +146,7 @@ Standard MaxEnt RL maximizes action entropy without considering *what* the entro
 
 $$
 \max_\pi \mathbb{E}\left[ \sum_t r_t + \alpha H(\pi(\cdot | s_t)) \right].
+
 $$
 This encourages diverse actions but is **causally blind** -- it cannot distinguish correlation from causation, confounded from unconfounded observations.
 
@@ -169,6 +174,7 @@ Let $P_{\text{obs}}(z' | z, a)$ be the conditional density obtained via passive 
 
 $$
 \Delta_{\text{causal}}(z, a) := D_{\text{KL}} \left( P_{\text{int}}(z' | do(z, a)) \| P_{\text{obs}}(z' | z, a) \right).
+
 $$
 *Interpretation:* The Causal Deficit measures the discrepancy between interventional and observational predictions. If $\Delta_{\text{causal}} = 0$, the observational model is causally correct -- correlations reflect true causal mechanisms. If $\Delta_{\text{causal}} > 0$, the agent has mistaken a correlation for a causal link (confounding) or vice versa.
 
@@ -176,6 +182,7 @@ $$
 
 $$
 \text{Vol}_{\text{ignorant}} := \int_{\mathcal{Z} \times \mathcal{A}} \mathbb{I}[\Delta_{\text{causal}}(z, a) > 0] \, d\mu_G(z) \, da.
+
 $$
 This volume represents the region of state-action space where the agent's observational model fails to predict interventional outcomes. $\square$
 
@@ -189,6 +196,7 @@ The Causal Information Potential $\Psi_{\text{causal}}$ (Definition {prf:ref}`de
 
 $$
 \nabla \Psi_{\text{causal}} \propto \nabla \mathbb{E}_{z'} \left[ V_H [P(\theta_W | z, a, z')] \right].
+
 $$
 *Units:* nat (for $\Psi_{\text{causal}}$), $\mathrm{nat}^2$ (for $V_H$).
 
@@ -238,6 +246,7 @@ The Equation of Motion ({ref}`Section 22.2 <sec-the-coupled-jump-diffusion-sde>`
 
 $$
 F_{\text{total}} = \underbrace{-G^{-1} \nabla_G V}_{\text{Utility Force}} + \underbrace{\beta_{\text{exp}} \mathbf{f}_{\text{exp}}}_{\text{Curiosity Force}},
+
 $$
 where:
 - $\mathbf{f}_{\text{exp}} := G^{-1} \nabla_z \Psi_{\text{causal}}$ is the gradient of the causal potential
@@ -247,16 +256,19 @@ where:
 
 $$
 \frac{d}{dt}\left( G_{kj} \dot{z}^j \right) - \frac{1}{2} \partial_k G_{ij} \dot{z}^i \dot{z}^j = -\partial_k V - \beta_{\text{exp}} \partial_k \Psi_{\text{causal}}.
+
 $$
 Expanding the left-hand side and identifying the Christoffel symbols of the first kind $[ij, k] = \frac{1}{2}(\partial_i G_{jk} + \partial_j G_{ik} - \partial_k G_{ij})$:
 
 $$
 G_{kj} \ddot{z}^j + [ij, k] \dot{z}^i \dot{z}^j = -\partial_k V - \beta_{\text{exp}} \partial_k \Psi_{\text{causal}}.
+
 $$
 Contracting with $G^{mk}$ and using $\Gamma^m_{ij} = G^{mk}[ij, k]$:
 
 $$
 \ddot{z}^m + \Gamma^m_{ij} \dot{z}^i \dot{z}^j = -G^{mk} \partial_k V - \beta_{\text{exp}} G^{mk} \partial_k \Psi_{\text{causal}}.
+
 $$
 In the overdamped limit ({ref}`Section 22.3 <sec-the-unified-effective-potential>`), the acceleration term vanishes and the drift field is $F_{\text{total}} = -G^{-1}\nabla V + \beta_{\text{exp}} G^{-1}\nabla\Psi_{\text{causal}}$. See {ref}`Appendix E.5 <sec-appendix-e-rigorous-proof-sketches-for-ontological-and-metabolic-laws>` for the full derivation. $\square$
 
@@ -308,6 +320,7 @@ The macro-ontology $K$ is **Interventionally Closed** if and only if the predict
 
 $$
 I(K_{t+1} ; Z_{\text{micro}, t} | K_t, do(A_t)) = 0.
+
 $$
 *Interpretation:* If an agent moves an object (intervention), and the resulting macro-state $K_{t+1}$ depends on micro-texture $z_{\text{tex}}$ that was previously labeled "noise," the ontology has failed. The intervention has **exposed a hidden variable**, triggering **Ontological Expansion** ({ref}`Section 30 <sec-ontological-expansion-topological-fission-and-the-semantic-vacuum>`).
 

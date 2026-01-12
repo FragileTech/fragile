@@ -124,7 +124,6 @@ Let $\mathcal{S}$ be a structural flow datum with **strict dissipation** (i.e., 
 :::
 
 :::{prf:proof} Proof Sketch (for strict dissipation)
-:label: sketch-mt-krnl-consistency
 
 *Step 1 (1 ⇒ 2).* If $\mathcal{S}$ satisfies the axioms, then by the Dissipation axiom ($D_E$), energy is non-increasing: $\Phi(S_t x) \leq \Phi(x)$. Combined with the Compactness axiom, bounded orbits have convergent subsequences. Any limit point $x^*$ satisfies $S_t x^* = x^*$ by continuity.
 
@@ -177,7 +176,6 @@ then Interface Permit $\mathrm{Rep}_K(T, Z)$ holds, and hence the conjecture for
 :::
 
 :::{prf:proof}
-:label: proof-thm-categorical-completeness
 
 See the Initiality Lemma (N9) and Cofinality argument below.
 :::
@@ -286,7 +284,6 @@ The empty Hom-set (N11) verifies the antecedent, yielding the consequent.
 :::
 
 :::{prf:proof} Proof Sketch
-:label: sketch-mt-krnl-trichotomy
 
 *Step 1 (Energy Dichotomy).* By (D), $\Phi(u(t))$ is non-increasing. Either $\Phi(u(t)) \to 0$ (dispersion, Mode D.D), or $\Phi(u(t)) \to \Phi_* > 0$ (concentration). This is the **concentration-compactness dichotomy** of {cite}`Lions84` Lemma I.1: for bounded sequences in Sobolev spaces, either mass disperses to infinity or concentrates at finitely many points.
 
@@ -342,7 +339,6 @@ Then:
 :::
 
 :::{prf:proof} Proof Sketch
-:label: sketch-mt-krnl-equivariance
 
 *Step 1 (Risk Invariance).* By hypothesis (1), if $S \sim \mathcal{S}$ then $g \cdot S \sim \mathcal{S}$. The risk functional $R(\Theta) = \mathbb{E}_{S \sim \mathcal{S}}[\mathcal{L}(\Theta, S)]$ satisfies $R(g \cdot \Theta) = R(\Theta)$ by change of variables.
 
@@ -444,7 +440,6 @@ See {prf:ref}`thm-halting-ait-sieve-thermo` for the phase transition witness the
 :::
 
 :::{prf:proof} Proof
-:label: proof-mt-krnl-horizon-limit
 
 **Step 1 (Information-Theoretic Lower Bound)**:
 To decide membership in $\mathcal{I}$, the sieve must store a representation of $\mathcal{I}$ requiring at least $K(\mathcal{I})$ bits (by definition of Kolmogorov complexity). Any shorter representation would contradict the minimality of $K(\mathcal{I})$.
@@ -913,7 +908,6 @@ For abstract cohesive toposes, this theorem is conditional on items (1)–(3). F
 :::
 
 :::{prf:proof}
-:label: proof-thm-expansion-adjunction
 
 *Step 1 (Ambient Setup & Canonical Embedding via Flat Modality).*
 By the axioms of cohesion {cite}`Lurie09`; {cite}`Schreiber13`, $\mathcal{E}$ admits the adjoint quadruple. Given the analytic space $\underline{X}$ from the Thin Kernel, we invoke the flat modality embedding. Let $\text{Disc}: \mathbf{Set} \to \mathcal{E}$ be the discrete functor. Since $\underline{X}$ carries a metric topology (locally Hessian or Polish with synthetic differential structure), we define the base stack $X_0 \in \mathcal{E}$ as the unique object satisfying:
@@ -1813,6 +1807,7 @@ Each admissibility node $A_i$ implements the following evaluation:
 
 $$
 \mathrm{eval}_{A_i}(K^{\mathrm{br}}_{\mathrm{Barrier}}, \Sigma, V) \rightarrow \{K^+_{A_i}, K^-_{A_i}\}
+
 $$
 
 **Inputs:**
@@ -2090,7 +2085,6 @@ The sieve diagram is a directed acyclic graph (DAG). All edges, including dotted
 :::
 
 :::{prf:proof}
-:label: proof-thm-dag
 
 By inspection of the diagram: all solid edges flow downward (increasing node number or to barriers/modes), and all dotted surgery edges target nodes strictly later in the flow than their source mode. The restoration subtree (7a--7d) only exits forward to TopoCheck or TameCheck.
 
@@ -2106,7 +2100,6 @@ Each epoch terminates in finite time, visiting finitely many nodes.
 :::
 
 :::{prf:proof}
-:label: proof-thm-epoch-termination
 
 Immediate from Theorem {ref}`thm-dag`: the DAG structure ensures no cycles, hence any path through the sieve has bounded length.
 
@@ -2122,7 +2115,6 @@ A complete sieve run consists of finitely many epochs.
 :::
 
 :::{prf:proof}
-:label: proof-thm-finite-runs
 
 Each surgery has an associated progress measure (Definition {ref}`def-progress-measures`):
 
@@ -2152,7 +2144,6 @@ Every transition in a sieve run is certificate-justified. Formally, if the sieve
 :::
 
 :::{prf:proof}
-:label: proof-thm-soundness
 
 By construction: Definition {ref}`def-node-evaluation` requires each node evaluation to produce a certificate, and Definition {ref}`def-edge-validity` requires edge validity.
 
@@ -2201,7 +2192,6 @@ Under the certificate finiteness condition (Definition {ref}`def-cert-finite`), 
 :::
 
 :::{prf:proof}
-:label: proof-thm-closure-termination
 
 *Step 1 (Ambient Setup: Certificate Lattice).* Define the **certificate lattice** $(\mathcal{L}, \sqsubseteq)$ where:
 - $\mathcal{L} := \mathcal{P}(\mathcal{K}(T))$ is the power set of all certificates of type $T$
@@ -6229,7 +6219,6 @@ where $\text{Result} \in \{\text{GlobalRegularity}, \text{Mode}_{1..15}, \text{F
 :::
 
 :::{prf:proof} Proof Sketch
-:label: sketch-mt-fact-valid-inst
 
 *Step 1 (Well-Formedness).* Given the inputs (1)-(3), we verify: (a) $\mathcal{E}$ admits finite limits and colimits (required for Sieve diagram), (b) predicates $\mathcal{P}_I$ are total on their domains, (c) certificate schemas form a coherent type system.
 
@@ -6273,7 +6262,6 @@ where $\text{Result} \in \{\text{GlobalRegularity}, \text{Mode}_{1..15}, \text{F
 :::
 
 :::{prf:proof} Proof Sketch
-:label: sketch-mt-fact-min-inst
 
 *Step 1 (Profile Derivation).* Given $(\mathcal{X}, \Phi, G)$, the profile extractor is constructed via the concentration-compactness principle: bounded energy sequences have subsequences converging modulo $G$-action. The profile space is $\mathcal{X} // G$.
 
@@ -6564,7 +6552,6 @@ Given thin objects $(\mathcal{X}^{\text{thin}}, \Phi^{\text{thin}}, \mathfrak{D}
 :::
 
 :::{prf:proof}
-:label: proof-mt-resolve-expansion
 
 *Step 1 (Topological Construction).* Given $(\mathcal{X}, d)$ complete, compute $\pi_0(\mathcal{X})$ as equivalence classes under path-connectivity. The dimension is extracted from local tangent space dimension or covering dimension. This yields SectorMap and Dictionary.
 
@@ -6641,7 +6628,6 @@ $K_{\mathrm{WP}_{s_c}}^+ = (\mathsf{template\_ID}, \mathsf{theorem\_citation}, s
 :::
 
 :::{prf:proof} Proof Sketch
-:label: sketch-mt-fact-soft-wp
 
 *Step 1 (Template Identification).* Given type $T$ with soft certificates, extract the signature $(D_E, \mathrm{Bound}, \mathrm{SC}_\lambda, \mathrm{Rep}_K)$. Pattern-match against the template database.
 
@@ -6685,7 +6671,6 @@ $$K_{\mathrm{ProfDec}}^+ = (\{V^{(j)}\}, \{g_n^{(j)}\}, \mathsf{orthogonality}, 
 :::
 
 :::{prf:proof} Proof Sketch
-:label: sketch-mt-fact-soft-profdec
 
 *Step 1 (Concentration Extraction).* Given bounded sequence $(u_n)$ with $\sup_n \Phi(u_n) \leq E < \infty$ and $C_\mu^+$ (concentration occurs), apply Lions' concentration-compactness {cite}`Lions84`: either $u_n \to 0$ (vanishing), or there exist $(x_n, \lambda_n)$ such that $\lambda_n^{-d/2} u_n(\lambda_n^{-1}(\cdot - x_n)) \rightharpoonup V^{(1)} \neq 0$.
 
@@ -6722,7 +6707,6 @@ $$K_{\mathrm{KM}}^+ = (\mathsf{minimal\_u^*}, E_c, \mathsf{almost\_periodic\_mod
 :::
 
 :::{prf:proof} Proof Sketch
-:label: sketch-mt-fact-soft-km
 
 *Step 1 (Critical Element).* By $D_E^+$, energy is bounded below. By $\mathrm{ProfDec}^+$, any non-scattering solution concentrates to profiles. The infimum $E_c := \inf\{E : \exists u \text{ non-scattering with } \Phi(u) = E\}$ is achieved by some $u^*$ (compactness from profile decomposition).
 
@@ -6795,7 +6779,6 @@ $$K_{\mathrm{Attr}}^+ = (\mathcal{A}, \mathsf{absorbing\_set}, \mathsf{asymptoti
 :::
 
 :::{prf:proof} Proof Sketch
-:label: sketch-mt-fact-soft-attr
 
 *Step 1 (Absorbing Set).* By $D_E^+$, there exists $R > 0$ such that $\Phi(S_t x) \leq R$ for all $t \geq T_0(x)$. The ball $B_R := \{x : \Phi(x) \leq R\}$ is absorbing: every trajectory enters and remains in $B_R$.
 
@@ -6833,7 +6816,6 @@ $$K_{\mathrm{MorseDecomp}}^+ = (\mathsf{gradient\_like}, \mathcal{E}, \{W^u(\xi)
 :::
 
 :::{prf:proof} Proof Sketch
-:label: sketch-mt-fact-soft-morse
 
 *Step 1 (Attractor Structure).* By $K_{\mathrm{Attr}}^+$, the global attractor $\mathcal{A}$ exists. All asymptotic dynamics are confined to $\mathcal{A}$.
 
@@ -6865,7 +6847,6 @@ $$\mathbb{H}_{[P,\pi]} \to B_i \to \mathbb{H}_{\mathrm{bad}}^{(T)}$$
 :::
 
 :::{prf:proof} Proof Sketch
-:label: sketch-mt-fact-germ-density
 
 *Step 1 (Library Generation).* The Bad Pattern Library $\mathcal{B}$ is constructed to be a **generating set** for the germ category: every germ $[P, \pi] \in \mathcal{G}_T$ admits a morphism to some $B_i \in \mathcal{B}$.
 
@@ -6897,7 +6878,6 @@ $$\underbrace{K_{\mathrm{WP}}^+ \wedge K_{\mathrm{ProfDec}}^+ \wedge K_{\mathrm{
 :::
 
 :::{prf:proof}
-:label: proof-thm-soft-backend-complete
 
 Chain of MT-SOFT→WP ({prf:ref}`mt-fact-soft-wp`), MT-SOFT→ProfDec ({prf:ref}`mt-fact-soft-profdec`), MT-SOFT→KM ({prf:ref}`mt-fact-soft-km`), MT-SOFT→Rigidity ({prf:ref}`mt-fact-soft-rigidity`).
 :::
@@ -7114,7 +7094,6 @@ $$\mathcal{C}(x \to y) := \inf\left\{\int_0^T \mathfrak{D}(S_s x) \, ds : S_T x 
 :::
 
 :::{prf:proof}
-:label: proof-mt-krnl-lyapunov
 
 *Step 1 (Well-definedness).* Define $\mathcal{L}$ via inf-convolution as above. The functional is well-defined since $\mathfrak{D} \geq 0$ implies $\mathcal{C} \geq 0$. By the **direct method of calculus of variations** ({cite}`Dacorogna08` Chapter 3): $C_\mu$ provides compactness of sublevel sets, and $\Phi + \mathcal{C}$ is lower semicontinuous (as sum of l.s.c. functions). Therefore the infimum is attained at some $y^* \in M$.
 
@@ -7160,7 +7139,6 @@ $$\mathcal{L}(x) = \Phi_{\min} + \mathrm{dist}_{g_{\mathfrak{D}}}(x, M)$$
 :::
 
 :::{prf:proof}
-:label: proof-mt-krnl-jacobi
 
 *Step 1 (Gradient Consistency).* Interface permit $\mathrm{GC}_\nabla$ asserts: along gradient flow $\dot{u} = -\nabla_g \Phi$, we have $\|\dot{u}(t)\|_g^2 = \mathfrak{D}(u(t))$. This identifies dissipation with squared velocity.
 
@@ -7213,7 +7191,6 @@ $$\|\nabla_{g_{\mathfrak{D}}} f\|_{g_{\mathfrak{D}}}^2 = \mathfrak{D}^{-1} \|\na
 :::
 
 :::{prf:proof}
-:label: proof-mt-krnl-hamilton-jacobi
 
 *Step 1 (Eikonal for Distance).* In any Riemannian manifold, the distance function $d_M(x) = \mathrm{dist}(x, M)$ satisfies the eikonal equation $\|\nabla d_M\| = 1$ almost everywhere (away from cut locus). For $g_{\mathfrak{D}}$:
 $$\|\nabla_{g_{\mathfrak{D}}} d_M^{g_{\mathfrak{D}}}\|_{g_{\mathfrak{D}}} = 1$$
@@ -7280,7 +7257,6 @@ where $|\dot{\gamma}|$ denotes the metric derivative and the infimum ranges over
 :::
 
 :::{prf:proof}
-:label: proof-mt-krnl-metric-action
 
 *Step 1 (Metric Derivative Identity).* For absolutely continuous curves $\gamma: [0,1] \to \mathcal{X}$, the metric derivative is $|\dot{\gamma}|(s) := \lim_{h \to 0} d(\gamma(s+h), \gamma(s))/|h|$. By $\mathrm{GC}'_\nabla$, along gradient flow curves: $|\dot{u}|(t)^2 = \mathfrak{D}(u(t)) = |\partial\Phi|^2(u(t))$, hence $|\dot{u}|(t) = |\partial\Phi|(u(t))$.
 
@@ -7894,7 +7870,6 @@ Routes to T.C/D.C-family modes for reconstruction or explicit wildness acknowled
 :::
 
 :::{prf:proof} Proof Sketch
-:label: sketch-mt-resolve-profile
 
 *Step 1 (Limit Extraction).* Given singularity sequence $(t_n, x_n) \to (T_*, x_*)$ with $t_n \nearrow T_*$, apply compactness modulo symmetry (from $C_\mu$): there exist $g_n \in G$ such that $g_n \cdot u(t_n)$ has a convergent subsequence $\to V$.
 
@@ -8039,7 +8014,6 @@ The Automation Guarantee ensures at least one of these conditions holds for "goo
 :::
 
 :::{prf:proof}
-:label: proof-mt-resolve-auto-profile
 
 ### Dispatcher Logic
 
@@ -8223,7 +8197,6 @@ Explicit reason certificate:
 :::
 
 :::{prf:proof} Proof Sketch
-:label: sketch-mt-resolve-admissibility
 
 *Step 1 (Canonicity Verification).* Given surgery data $(\Sigma, V)$, query profile library: is $V \in \mathcal{L}_T$? If yes, proceed. If $V \in \mathcal{F}_T \setminus \mathcal{L}_T$, check for equivalence move (YES$^\sim$). If $V \notin \mathcal{F}_T$, return Case 3 (Horizon).
 
@@ -8313,7 +8286,6 @@ using the measure $\mu$ from $\mathcal{X}^{\text{thin}}$ and the metric $d$.
 :::
 
 :::{prf:proof} Proof Sketch
-:label: sketch-mt-resolve-auto-admit
 
 *Step 1 (Thin Object Extraction).* From $\mathcal{X}^{\text{thin}} = (\mathcal{X}, d, \mu)$, extract the metric structure for capacity computation. From $\mathfrak{D}^{\text{thin}} = (R, \beta)$, identify the singular locus $\Sigma = \{x : R(x) \to \infty\}$.
 
@@ -8357,7 +8329,6 @@ Let $M$ be a failure mode with breach certificate $K^{\mathrm{br}}$, and let $S$
 :::
 
 :::{prf:proof} Proof Sketch
-:label: sketch-mt-act-surgery
 
 *Step 1 (Excision).* Given admissible singularity $(\Sigma, V)$ with $\text{Cap}(\Sigma) \leq \varepsilon_{\text{adm}}$, remove neighborhood $\mathcal{X}_\Sigma = B_\epsilon(\Sigma)$. The removed region has controlled measure: $\mu(\mathcal{X}_\Sigma) \lesssim \epsilon^2 \cdot \text{Cap}(\Sigma)$.
 
@@ -8418,7 +8389,6 @@ For any admissible surgery $\mathcal{O}_S: \mathcal{X} \dashrightarrow \mathcal{
 :::
 
 :::{prf:proof} Proof Sketch
-:label: sketch-mt-resolve-conservation
 
 *Step 1 (Energy Drop).* The excised region $\mathcal{X}_\Sigma$ contains concentrated curvature/energy. By the isoperimetric inequality and capacity bounds:
 $$\Delta\Phi_{\text{surg}} \geq c_n \cdot \text{Vol}(\Sigma)^{(n-2)/n} \cdot \sup_{\mathcal{X}_\Sigma} |\nabla^2 \Phi|$$
@@ -8473,7 +8443,6 @@ For any Hypostructure satisfying the Automation Guarantee, the Structural Surger
 :::
 
 :::{prf:proof} Proof Sketch
-:label: sketch-mt-resolve-auto-surgery
 
 *Step 1 (Cap Existence).* Given profile $V \in \mathcal{L}_T$ with finite automorphism group, asymptotic analysis determines a unique cap geometry matching $V$'s asymptotic expansion. For Ricci flow, this is the Bryant soliton; for MCF, this is the standard cylinder cap.
 
@@ -9426,7 +9395,6 @@ For any system of type $T$, there exist default barrier implementations with cor
 :::
 
 :::{prf:proof}
-:label: proof-mt-fact-barrier
 
 *Step 1 (Barrier Catalog).* For each gate NO outcome, identify the corresponding barrier type from literature:
 - EnergyCheck NO $\to$ Foster-Lyapunov barrier (drift $\mathcal{L}V \leq -\gamma V + C\mathbf{1}_K$)
@@ -9481,7 +9449,6 @@ For any type $T$ admitting surgery, there exist default surgery operators matchi
 :::
 
 :::{prf:proof}
-:label: proof-mt-fact-surgery
 
 *Step 1 (Profile-Surgery Correspondence).* For each canonical profile $\mathcal{P}_i \in \mathcal{L}_T$, identify the corresponding surgery operator from literature:
 - Concentration profile $\to$ bubble extraction (blow-up analysis + rescaling)
@@ -9544,7 +9511,6 @@ For any type $T$, there exists a library of admissible equivalence moves and tra
 :::
 
 :::{prf:proof}
-:label: proof-mt-fact-transport
 
 *Step 1 (Equivalence Instantiation).* For each abstract equivalence $\mathrm{Eq}_i$, instantiate using the type's structural assumptions:
 - {prf:ref}`def-equiv-symmetry` (Scaling): $u \sim_\lambda \lambda^{\alpha} u(\lambda^\beta \cdot)$ with exponents from $T$'s critical scaling
@@ -9604,7 +9570,6 @@ For any type $T$ with $\mathrm{Rep}_K$ available, there exist E1--E10 tactics fo
 :::
 
 :::{prf:proof}
-:label: proof-mt-fact-lock
 
 *Step 1 (Tactic Classification).* The Lock backend tactics E1--E5 are instantiated from the type's representation substrate $\mathrm{Rep}_K$:
 - E1 (Geometric): Direct geometric obstruction (Hausdorff dimension, capacity bounds)
@@ -9709,7 +9674,6 @@ For any system of type $T$ with user-supplied functionals, there exists a canoni
 :::
 
 :::{prf:proof}
-:label: proof-mt-fact-instantiation
 
 *Step 1 (Factory Composition).* Given type $T$ and user-supplied functionals $(\Phi, \mathfrak{D}, G, \ldots)$, apply factories TM-1 through TM-5 in sequence:
 - TM-1 instantiates gate evaluators $\{V_i^T\}_{i=1}^{17}$ from $(\Phi, \mathfrak{D})$
@@ -9843,7 +9807,6 @@ $$K_{D_E}^- \wedge K_{\text{sat}}^{\mathrm{blk}} \Rightarrow K_{D_E}^{\sim}$$
 :::
 
 :::{prf:proof} Proof Sketch
-:label: sketch-mt-up-saturation
 
 The drift condition implies geometric ergodicity by the Foster-Lyapunov criterion (Meyn and Tweedie, 1993, Theorem 15.0.1). The invariant measure $\pi$ satisfies $\pi(\Phi) < \infty$ by Theorem 14.0.1 of the same reference. The renormalized height $\hat{\Phi} = \Phi - \pi(\Phi)$ is centered and the dynamics converge exponentially to equilibrium.
 :::
@@ -9874,7 +9837,6 @@ $$K_{\mathrm{Rec}_N}^- \wedge K_{\mathrm{Rec}_N}^{\mathrm{blk}} \Rightarrow K_{\
 :::
 
 :::{prf:proof} Proof Sketch
-:label: sketch-mt-up-censorship
 
 By the weak cosmic censorship conjecture (Penrose, 1969), generic gravitational collapse produces singularities cloaked by event horizons. The Hawking-Penrose theorems (1970) establish geodesic incompleteness, but the Christodoulou-Klainerman stability theorem (1993) ensures the exterior remains regular. Any observer worldline $\gamma \subset J^-(\mathcal{I}^+)$ experiences finite proper time and finite events before the singularity becomes causally relevant.
 :::
@@ -9912,7 +9874,6 @@ $$K_{C_\mu}^- \wedge K_{C_\mu}^{\mathrm{ben}} \Rightarrow \text{Global Regularit
 :::
 
 :::{prf:proof}
-:label: sketch-mt-up-scattering
 
 *Step 1 (Morawetz Spacetime Bound).* The **Morawetz estimate** ({cite}`Morawetz68`) provides spacetime integrability:
 $$\int_0^\infty \int_{\mathbb{R}^n} \frac{|u(t,x)|^{p+1}}{|x|} \, dx \, dt \leq C \cdot E[u_0]$$
@@ -9955,7 +9916,6 @@ $$K_{\mathrm{SC}_\lambda}^- \wedge K_{\mathrm{SC}_\lambda}^{\mathrm{blk}} \Right
 :::
 
 :::{prf:proof}
-:label: sketch-mt-up-type-ii
 
 The monotonicity formula (Merle and Zaag, 1998) bounds the blow-up rate from below. For Type II blow-up, the energy remains bounded while the scale $\lambda(t) \to 0$. The logarithmic divergence of the renormalization integral creates an energy barrier that prevents finite-time singularity formation. This mechanism underlies the Raphaël-Szeftel soliton resolution (2011).
 :::
@@ -9986,7 +9946,6 @@ $$K_{\mathrm{Cap}_H}^- \wedge K_{\mathrm{Cap}_H}^{\mathrm{blk}} \Rightarrow K_{\
 :::
 
 :::{prf:proof}
-:label: sketch-mt-up-capacity
 
 By Federer's theorem on removable singularities (1969, Section 4.7), sets of zero $(1,p)$-capacity are removable for $W^{1,p}$ functions. For $p=2$, the extension follows from the Lax-Milgram theorem applied to the weak formulation. The uniqueness follows from the maximum principle. See also Evans and Gariepy (2015, Theorem 4.7.2).
 :::
@@ -10017,7 +9976,6 @@ $$K_{\mathrm{LS}_\sigma}^- \wedge K_{\text{gap}}^{\mathrm{blk}} \Rightarrow K_{\
 :::
 
 :::{prf:proof}
-:label: sketch-mt-up-spectral
 
 The Łojasiewicz-Simon inequality states $|\Phi(x) - \Phi(x^*)|^{1-\theta} \leq C\|\nabla\Phi(x)\|$ for some $\theta \in (0,1/2]$. When the Hessian is non-degenerate ($\lambda_1 > 0$), Taylor expansion gives $\theta = 1/2$. The exponential convergence then follows from the Gronwall inequality applied to the energy functional. See Simon (1983, Theorem 3) and Feehan and Maridakis (2019).
 :::
@@ -10048,7 +10006,6 @@ $$K_{\mathrm{TB}_O}^- \wedge K_{\mathrm{TB}_O}^{\mathrm{blk}} \Rightarrow K_{\ma
 :::
 
 :::{prf:proof}
-:label: sketch-mt-up-o-minimal
 
 *Step 1 (Cell Decomposition).* By the **cell decomposition theorem** ({cite}`vandenDries98` Theorem 3.2.11), every definable set $W \subset \mathbb{R}^n$ in an o-minimal structure admits a finite partition:
 $$W = \bigsqcup_{i=1}^N C_i$$
@@ -10096,7 +10053,6 @@ This **classification of local models** eliminates surgery ambiguity: the excisi
 :::
 
 :::{prf:proof}
-:label: sketch-mt-up-surgery
 
 The surgery construction follows Hamilton (1997) for Ricci flow and Perelman (2002-2003) for the rigorous completion. The key ingredients are: (1) canonical neighborhood theorem ensuring surgery regions are standard, (2) non-collapsing estimates controlling geometry, (3) finite surgery time theorem bounding the number of surgeries. The post-surgery manifold inherits all regularity properties.
 :::
@@ -10127,7 +10083,6 @@ $$K_{\text{Lock}}^{\mathrm{blk}} \Rightarrow \text{Global Regularity}$$
 :::
 
 :::{prf:proof}
-:label: sketch-mt-up-lock
 
 The proof uses the contrapositive: if a singularity existed, it would generate a non-trivial morphism $\phi: \mathcal{B}_{\text{univ}} \to \mathcal{H}$ by the universal property. The emptiness of the Hom-set is established via cohomological/spectral obstructions (E1-E10 tactics). This is the "Grothendieck yoga" of reducing existence questions to non-existence of maps. See SGA 4 for the categorical framework.
 :::
@@ -10159,7 +10114,6 @@ $$K_{D_E}^- \wedge K_{\mathrm{Bound}_\partial}^+ \wedge (\text{Flux} < 0) \Right
 ::::
 
 :::{prf:proof}
-:label: sketch-mt-up-absorbing
 
 The energy identity is $\frac{dE}{dt} = -\mathfrak{D}(t) + \int_{\partial\Omega} \mathbf{n} \cdot \mathbf{F} \, dS + \int_\Omega \text{source}(x,t) \, dx$. By hypothesis 3, the flux term satisfies $\int_{\partial\Omega} \mathbf{n} \cdot \mathbf{F} \, dS < 0$ (strictly outgoing). Since dissipation satisfies $\mathfrak{D}(t) \geq 0$, we have:
 $$\frac{dE}{dt} \leq \int_\Omega \text{source}(x,t) \, dx \leq \|\text{source}(\cdot, t)\|_{L^1(\Omega)}$$
@@ -10196,7 +10150,6 @@ $$K_{\mathrm{LS}_\sigma}^- \wedge K_{\mathrm{LS}_{\partial^k V}}^+ \Rightarrow K
 :::
 
 :::{prf:proof}
-:label: sketch-mt-up-catastrophe
 
 The Łojasiewicz exponent at a degenerate critical point is $\theta = 1/k$ for the $A_{k-1}$ catastrophe (Thom, 1975). For the normal form $V(x) = x^{k+1}/(k+1)$ with critical point at $x^* = 0$, we have $\nabla V(x) = x^k$ and $V(x) - V(x^*) = x^{k+1}/(k+1)$. The Łojasiewicz gradient inequality $\|\nabla V(x)\| \geq C|V(x) - V(x^*)|^{1-\theta}$ with $\theta = 1/k$ becomes $|x^k| \geq C|x^{k+1}|^{(k-1)/k}$. Since $(k+1)(k-1)/k = k - 1/k < k$ for $k \geq 2$, this holds near $x=0$. Integrating the gradient flow $\dot{x} = -x^k$ yields polynomial convergence $|x(t)| \sim t^{-1/(k-1)}$. Arnold's classification (1972) ensures these are the only structurally stable degeneracies.
 :::
@@ -10228,7 +10181,6 @@ $$\mathsf{Obl}(\Gamma) \setminus \{(\mathsf{id}_P, \ldots)\} \cup \{K_P^+\}$$
 :::
 
 :::{prf:proof}
-:label: sketch-mt-up-inc-complete
 
 The NO-inconclusive certificate records an epistemic gap, not a semantic refutation (Definition {prf:ref}`def-typed-no-certificates`). When all prerequisites in $\mathsf{missing}$ are satisfied, the original predicate $P$ becomes decidable. The discharge condition (Definition {prf:ref}`def-inc-upgrades`) ensures the premises genuinely imply the obligation. The upgrade is sound because $K^{\mathrm{inc}}$ records the exact obligation and its missing prerequisites; when those prerequisites are satisfied, the original predicate $P$ holds by the discharge condition.
 :::
@@ -10256,7 +10208,6 @@ $$\mathrm{Cl}(\Gamma_{\mathrm{final}}) \ni K_P^+ \quad \text{(discharged from } 
 :::
 
 :::{prf:proof}
-:label: sketch-mt-up-inc-aposteriori
 
 The promotion closure iterates until fixed point. On each iteration, inc-upgrade rules (Definition {prf:ref}`def-inc-upgrades`) are applied alongside blk-promotion rules. The a-posteriori discharge is triggered when certificates from later nodes enter the closure and match the $\mathsf{missing}$ set. Termination follows from the certificate finiteness condition (Definition {prf:ref}`def-cert-finite`).
 :::
@@ -10302,7 +10253,6 @@ $$K_{\mathrm{Rec}_N}^- \wedge K_{\mathrm{TB}_\pi}^+ \wedge K_{\text{Action}}^{\m
 :::
 
 :::{prf:proof}
-:label: sketch-mt-up-shadow-retroactive
 
 Each sector transition costs at least $\delta$ units of action/energy. With bounded total energy $E_{\max}$, at most $E_{\max}/\delta$ transitions can occur. This is the Conley index argument (1978) applied to gradient-like flows: the Morse-Conley theory bounds the number of critical point transitions by the total change in index. Combined with energy dissipation, this forbids Zeno accumulation.
 :::
@@ -10332,7 +10282,6 @@ $$K_{\text{Lock}}^{\mathrm{blk}} \Rightarrow \forall i: K_{\text{Barrier}_i}^{\m
 :::
 
 :::{prf:proof}
-:label: sketch-mt-up-lockback
 
 The morphism obstruction at the Lock is a global invariant. If no bad pattern embeds globally, then any local certificate that was "Blocked" (i.e., locally ambiguous) must resolve to "Regular" since the alternative (singular) is globally forbidden. This is the "principle of the excluded middle" applied via the universal property of the bad pattern functor.
 :::
@@ -10362,7 +10311,6 @@ $$K_{\mathrm{LS}_\sigma}^{\mathrm{stag}} \wedge K_{\text{Sym}}^+ \wedge K_{\text
 :::
 
 :::{prf:proof}
-:label: sketch-mt-up-symmetry-bridge
 
 The Goldstone theorem (1961) states that spontaneous breaking of a continuous symmetry produces massless bosons. However, if the symmetry group is *compact* and the vacuum is unique (CheckSC), the would-be Goldstones acquire mass via the Higgs mechanism or explicit breaking. The resulting spectral gap $\lambda > 0$ provides stiffness. For gauge theories, this is the mass gap conjecture; for condensed matter, this is the BCS mechanism.
 :::
@@ -10392,7 +10340,6 @@ $$K_{\mathrm{Cap}_H}^{\mathrm{blk}} \wedge K_{\mathrm{TB}_O}^+ \Rightarrow K_{\m
 :::
 
 :::{prf:proof}
-:label: sketch-mt-up-tame-smoothing
 
 In an o-minimal structure, every definable set admits a Whitney stratification into smooth manifolds (Łojasiewicz, 1965; van den Dries-Miller, 1996). A set of zero capacity is contained in a stratum of positive codimension. By the Kurdyka-Łojasiewicz inequality, the solution extends uniquely across such strata. The gradient flow cannot accumulate on a positive-codimension set.
 :::
@@ -10422,7 +10369,6 @@ $$K_{\text{sat}}^{\mathrm{blk}} \wedge K_{\mathrm{TB}_\rho}^+ \Rightarrow K_{D_E
 :::
 
 :::{prf:proof}
-:label: sketch-mt-up-ergodic
 
 The Poincaré recurrence theorem (1890) states that for a measure-preserving transformation, almost every point returns arbitrarily close to its initial position. Combined with mixing (strong ergodicity), the time averages converge to the space average: $\frac{1}{T}\int_0^T \Phi(x(t)) \, dt \to \int \Phi \, d\mu$. If the invariant measure has $\mu(\Phi) < \infty$ (Saturation), recurrence to low-energy states is guaranteed.
 :::
@@ -10452,7 +10398,6 @@ $$K_{\mathrm{SC}_\lambda}^- \wedge K_{\mathrm{GC}_T}^+ \Rightarrow K_{\mathrm{SC
 :::
 
 :::{prf:proof}
-:label: sketch-mt-up-variety-control
 
 Ashby's Law of Requisite Variety (1956) states that "only variety can absorb variety." If the controller has sufficient degrees of freedom ($\log|\mathcal{U}| \geq \log|\mathcal{D}|$), it can cancel any disturbance. The Conant-Ashby theorem (1970) formalizes this: every good regulator of a system must be a model of that system. Applied to scaling instabilities, a sufficiently complex controller can inject anti-scaling corrections that neutralize supercritical growth.
 :::
@@ -10482,7 +10427,6 @@ $$K_{\mathrm{Rec}_N}^{\mathrm{blk}} \wedge K_{\mathrm{Rep}_K}^+ \Rightarrow K_{\
 :::
 
 :::{prf:proof}
-:label: sketch-mt-up-algorithm-depth
 
 Kolmogorov complexity bounds the information content of an object. If $K(x) \leq C$ for some constant $C$, then $x$ is compressible/simple. A genuinely singular object (fractal, infinitely complex) has $K(x) \to \infty$. Therefore, a Zeno singularity with finite complexity must be a coordinate artifact—like the event horizon in Schwarzschild coordinates, which disappears in Eddington-Finkelstein coordinates. Algorithmic removability follows.
 :::
@@ -10514,7 +10458,6 @@ $$K_{\mathrm{Cap}_H}^{\text{ambiguous}} \wedge K_{\mathrm{Rep}_K}^+ \Rightarrow 
 :::
 
 :::{prf:proof}
-:label: sketch-mt-up-holographic
 
 The connection between algorithmic complexity and geometric dimension is mediated by *effective Hausdorff dimension* {cite}`Lutz03`. For a set $\Sigma$, define:
 $$\dim_{\mathrm{eff}}(\Sigma) := \liminf_{\varepsilon \to 0} \frac{K(\Sigma|_\varepsilon)}{\log(1/\varepsilon)}$$
@@ -10552,7 +10495,6 @@ $$K_{\mathrm{GC}_\nabla}^{\text{chaotic}} \wedge K_{\text{Lock}}^{\mathrm{blk}} 
 :::
 
 :::{prf:proof}
-:label: sketch-mt-lock-spectral-quant
 
 Weyl's law (1911) relates the spectral asymptotics $N(\lambda) \sim C\lambda^{n/2}$ to the geometry. If global invariants are quantized (integers), the spectrum is discrete: $\sigma(L) \subset \{\lambda_n\}_{n \in \mathbb{N}}$. By the Paley-Wiener theorem, functions with discrete spectrum are almost periodic. Kac's "Can one hear the shape of a drum?" (1966) shows geometry determines spectrum and vice versa.
 :::
@@ -10585,7 +10527,6 @@ where $K_{\text{Backend}}^+$ is one of:
 :::
 
 :::{prf:proof}
-:label: proof-mt-lock-unique-attractor
 
 #### Backend A: Unique Ergodicity + Discrete Attractor
 
@@ -10727,7 +10668,6 @@ $$K_{\mathrm{OGP}}^+ \wedge K_{C_\mu}^+ \wedge K_{\mu \leftarrow \mathcal{R}}^+ 
 :::
 
 :::{prf:proof}
-:label: proof-mt-up-selchi-cap
 
 *Step 1 (Correlation–Support Lemma).* Define the correlation function:
 $$\mathrm{corr}(\mu_q, x^*) := \mathbb{E}_{z \sim \mu_q}\left[\frac{1}{n}\sum_{i=1}^n \mathbf{1}[z_i = x^*_i]\right]$$
@@ -10788,7 +10728,6 @@ $$K_{C_\mu}^+ \wedge K_{\mathrm{Sel}_\chi}^+ \Rightarrow K_{\mathrm{Scope}}^+$$
 :::
 
 :::{prf:proof}
-:label: proof-mt-up-ogpchi
 
 *Step 1 (Selector Discontinuity Implies Guessing).* By $K_{\mathrm{Sel}_\chi}^+$, any algorithm $\mathcal{A}$ must transition from:
 $$\mathrm{corr}(\mu_{q_0}, x^*) \leq \varepsilon \quad \text{(initial state)}$$
@@ -10934,7 +10873,6 @@ $$K_{\text{Lock}}^{\mathrm{blk}}(\theta_0) \wedge (\mathrm{Gap} > \epsilon) \wed
 :::
 
 :::{prf:proof}
-:label: sketch-mt-krnl-openness
 
 Strict inequalities define open sets. The Morse-Smale stability theorem (Palis and de Melo, 1982) states that structurally stable systems form an open set. The key is non-degeneracy: if all eigenvalues are strictly away from zero and all capacities are strictly bounded, small perturbations preserve these properties. This is the implicit function theorem applied to the certificate functionals.
 :::
@@ -10965,7 +10903,6 @@ $$K_{\mathrm{LS}_\sigma}^+ \wedge K_{\text{pseudo}}^{\varepsilon} \Rightarrow K_
 :::
 
 :::{prf:proof}
-:label: sketch-mt-krnl-shadowing
 
 The Anosov shadowing lemma (1967) states that uniformly hyperbolic systems have the shadowing property. The spectral gap $\lambda$ controls the contraction rate, and the shadowing distance is $\delta \sim \varepsilon/\lambda$. Bowen (1975) extended this to Axiom A systems. Palmer (1988) gave a proof via the contraction mapping theorem on sequence spaces.
 :::
@@ -10996,7 +10933,6 @@ $$K_{C_\mu}^{\text{weak}} \wedge K_{\mathrm{LS}_\sigma}^{\text{strong}} \Rightar
 :::
 
 :::{prf:proof}
-:label: sketch-mt-krnl-weak-strong
 
 The weak-strong uniqueness principle uses energy estimates. If $v = u_w - u_s$, then $\frac{d}{dt}\|v\|^2 \leq C\|v\|^2 \cdot \|u_s\|_{X}$ for an appropriate norm $X$. If $u_s \in L^p([0,T]; X)$ (Serrin class), Gronwall's inequality gives $\|v(t)\| = 0$. For Navier-Stokes, $X = L^r$ with $\frac{2}{p} + \frac{3}{r} = 1$, $r > 3$ (Serrin, 1963; Lions, 1996).
 :::
@@ -11026,7 +10962,6 @@ $$K_{\text{Lock}}^A \wedge K_{\text{Lock}}^B \wedge \left((K_{\mathrm{SC}_\lambd
 :::
 
 :::{prf:proof}
-:label: proof-mt-lock-product
 
 #### Backend A: Subcritical Scaling
 
@@ -11173,7 +11108,6 @@ $$K_{\text{Lock}}^{\mathrm{blk}}(\mathcal{H}) \wedge (\mathcal{S} \subset \mathc
 :::
 
 :::{prf:proof}
-:label: sketch-mt-krnl-subsystem
 
 If $\mathcal{S}$ developed a singularity, it would correspond to a morphism $\phi: \mathcal{B}_{\text{univ}} \to \mathcal{S} \hookrightarrow \mathcal{H}$. But this contradicts $\mathrm{Hom}(\mathcal{B}_{\text{univ}}, \mathcal{H}) = \emptyset$. The Fenichel invariant manifold theorem (1971) shows that normally hyperbolic invariant manifolds persist under perturbation; combined with Hirsch-Pugh-Shub (1977), the restriction maintains all regularity properties.
 :::
@@ -11219,7 +11153,6 @@ $$\int_{-\infty}^0 \mathfrak{D}(v_\infty(s)) \, ds = \infty$$
 :::
 
 :::{prf:proof}
-:label: proof-mt-lock-tactic-scale
 
 *Step 1 (Change of Variables).* For rescaled time $s = \lambda_n^\beta(t - t_n)$ and rescaled state $v_n(s) = \mathcal{S}_{\lambda_n} \cdot u(t)$:
 $$\int_{t_n}^{T_*(x)} \mathfrak{D}(u(t)) \, dt$$
@@ -11262,7 +11195,6 @@ for some $\theta \in [1/2, 1)$ and $c > 0$.
 :::
 
 :::{prf:proof}
-:label: proof-mt-lock-spectral-gen
 
 *Step 1 (Hessian structure).* Near a critical point $x_* \in M$, the height functional $\Phi$ admits Taylor expansion:
 $$\Phi(x) = \Phi(x_*) + \frac{1}{2}\langle \nabla^2 \Phi|_{x_*} (x - x_*), (x - x_*) \rangle + O(|x - x_*|^3)$$
@@ -11304,7 +11236,6 @@ This gives the Łojasiewicz exponent $\theta = 1/2$ (optimal for analytic functi
 :::
 
 :::{prf:proof}
-:label: proof-mt-lock-ergodic-mixing
 
 *Step 1 (Mixing definition).* The system is mixing if for all $f, g \in L^2(\mu)$:
 $$\lim_{t \to \infty} \int f(S_t x) g(x) d\mu = \int f d\mu \int g d\mu$$
@@ -11348,7 +11279,6 @@ The interface permit $\mathrm{GC}_\nabla$ (Gradient Consistency) is equivalent t
 :::
 
 :::{prf:proof}
-:label: proof-mt-lock-spectral-dist
 
 *Step 1 (Spectral triple).* A spectral triple $(\mathcal{A}, \mathcal{H}, D)$ consists of: algebra $\mathcal{A}$ acting on Hilbert space $\mathcal{H}$, self-adjoint Dirac operator $D$ with compact resolvent.
 
@@ -11387,7 +11317,6 @@ The interface permit $\mathrm{GC}_\nabla$ (Gradient Consistency) is equivalent t
 :::
 
 :::{prf:proof}
-:label: proof-mt-lock-antichain
 
 *Step 1 (Menger's theorem).* In a finite graph, the maximum flow from source to sink equals the minimum cut capacity. For causal graphs, this relates the "information flow" through time to the minimal separating surface.
 
@@ -11438,7 +11367,6 @@ for generator $\mathcal{L}$, constant $\lambda > 0$, bound $b < \infty$, and com
 :::
 
 :::{prf:proof}
-:label: proof-mt-up-saturation-principle
 
 *Step 1 (Generator bound).* Apply Itô's lemma to $\mathcal{V}(X_t)$:
 $$d\mathcal{V}(X_t) = \mathcal{L}\mathcal{V}(X_t) dt + \text{martingale}$$
@@ -11490,7 +11418,6 @@ $$K_{D_E}^+ \wedge (N_{\text{req}} = \infty) \Rightarrow K_{\mathrm{Rec}_N}^{\ma
 :::
 
 :::{prf:proof}
-:label: proof-mt-up-causal-barrier
 
 *Step 1 (Energy bound).* By interface permit $D_E$, the system has finite average energy $E = \int_0^T (E(t) - E_0) dt < \infty$.
 
@@ -11528,7 +11455,6 @@ Then **occupation time bounds** hold: the trajectory cannot spend infinite time 
 :::
 
 :::{prf:proof}
-:label: proof-mt-lock-tactic-capacity
 
 *Step 1 (Capacity-codimension bound).* By the background geometry interface permit (BG4):
 $$\text{Cap}(B) \leq C \cdot r^{d-\kappa}$$
@@ -11568,7 +11494,6 @@ for universal constants $C = 1$, $c = 1/8$.
 :::
 
 :::{prf:proof}
-:label: proof-mt-up-shadow
 
 *Step 1 (Herbst argument).* The log-Sobolev inequality (LSI) with constant $\lambda_{\text{LS}}$ implies concentration of measure. For any 1-Lipschitz function $f$:
 $$\mu(\{f \geq \mathbb{E}_\mu[f] + t\}) \leq \exp\left(-\frac{\lambda_{\text{LS}} t^2}{2}\right)$$
@@ -11612,7 +11537,6 @@ $$\int_0^\infty \log |S(j\omega)| \, d\omega = \pi \sum_{i=1}^{n_p} p_i$$
 :::
 
 :::{prf:proof}
-:label: proof-thm-bode
 
 *Step 1 (Cauchy integral setup).* Consider the contour integral of $\log S(s)$ around the right half-plane: a semicircle from $-jR$ to $jR$ closed by the imaginary axis.
 
@@ -11658,7 +11582,6 @@ where the sum is over unstable poles of $L(s)$.
 :::
 
 :::{prf:proof}
-:label: proof-mt-act-horizon
 
 *Step 1 (Entropy production).* For a system with positive Lyapunov exponents $\lambda_i > 0$, Pesin's formula gives the KS entropy:
 $$h_\mu = \sum_{\lambda_i > 0} \lambda_i > 0$$
@@ -11716,7 +11639,6 @@ where $\xi$ is distributional noise (e.g., space-time white noise) and $F$ invol
 :::
 
 :::{prf:proof}
-:label: proof-mt-act-lift
 
 *Step 1 (Regularity structure).* Build an abstract polynomial-like structure that encodes:
 - Basis elements representing canonical noise terms
@@ -11768,7 +11690,6 @@ The procedure maintains:
 :::
 
 :::{prf:proof}
-:label: proof-mt-act-surgery-2
 
 *Step 1 (Canonical neighborhood theorem).* Near high-curvature points, the geometry is modeled by one of:
 - Shrinking round spheres $S^n$
@@ -11818,7 +11739,6 @@ The relaxation satisfies:
 :::
 
 :::{prf:proof}
-:label: proof-mt-act-projective
 
 *Step 1 (Slack introduction).* Replace hard constraint $g_i(x) \leq 0$ with soft constraint $g_i(x) - s_i \leq 0$ and $s_i \geq 0$. The feasible region expands.
 
@@ -11862,7 +11782,6 @@ The BRST construction provides:
 :::
 
 :::{prf:proof}
-:label: proof-mt-act-ghost
 
 *Step 1 (Gauge fixing).* Choose gauge-fixing function $F(A) = 0$. Insert:
 $$1 = \int_\mathcal{G} \mathcal{D}g \, \delta(F(A^g)) \det\left(\frac{\delta F(A^g)}{\delta g}\right)$$
@@ -11911,7 +11830,6 @@ ensures:
 :::
 
 :::{prf:proof}
-:label: proof-mt-act-align
 
 *Step 1 (KKT conditions).* At the saddle point $(x^*, \lambda^*)$:
 $$\nabla_x f(x^*) + \lambda^{*T} \nabla_x g(x^*) = 0$$
@@ -11955,7 +11873,6 @@ The Hamiltonian $H = f + \lambda^T \dot{x}$ couples state and costate dynamics.
 :::
 
 :::{prf:proof}
-:label: proof-mt-act-compactify
 
 *Step 1 (Conformal factor construction).* Choose $\Omega$ vanishing at infinity:
 $$\Omega(x) = \frac{1}{1 + d_g(x, x_0)^2}$$
@@ -12072,7 +11989,6 @@ satisfying:
 :::
 
 :::{prf:proof}
-:label: proof-mt-lock-motivic
 
 *Step 1 (Profile space construction).* The certificate $K_{C_\mu}^+$ guarantees concentration: there exists a finite-dimensional algebraic variety $\mathcal{P} \subset \text{Hilb}(X)$ such that all limit profiles lie in $\mathcal{P}/G$ where $G$ is the symmetry group. By Grothendieck's representability, $\mathcal{P}$ is a quasi-projective scheme.
 
@@ -12147,7 +12063,6 @@ The original Nullstellensatz formulation applies to equalities over $\mathbb{C}$
 :::
 
 :::{prf:proof}
-:label: proof-mt-lock-schematic
 
 *Step 1 (Real algebraic geometry).* The permit certificates define polynomial inequalities over $\mathbb{R}$, not equalities over $\mathbb{C}$. Hilbert's Nullstellensatz does not apply directly to inequalities; we use the Positivstellensatz instead.
 
@@ -12202,7 +12117,6 @@ Consider the tangent sheaf cohomology groups $H^i(V, T_V)$ for $i = 0, 1, 2$. Th
 :::
 
 :::{prf:proof}
-:label: proof-mt-lock-kodaira
 
 *Step 1 (Deformation functor).* Define the deformation functor $\text{Def}_V: \mathbf{Art}_k \to \mathbf{Sets}$ by:
 $$\text{Def}_V(A) := \left\{\text{flat } \mathcal{V} \to \text{Spec}(A) \mid \mathcal{V} \times_A k \cong V\right\} / \sim$$
@@ -12283,7 +12197,6 @@ Then:
 :::
 
 :::{prf:proof}
-:label: proof-mt-lock-virtual
 
 *Step 1 (Obstruction theory).* A perfect obstruction theory is a morphism $\phi: \mathbb{E}^\bullet \to \mathbb{L}_{\mathcal{M}}$ in $D^{[-1,0]}(\mathcal{M})$ satisfying:
 - $h^0(\phi): h^0(\mathbb{E}^\bullet) \xrightarrow{\cong} h^0(\mathbb{L}_{\mathcal{M}}) = \Omega_{\mathcal{M}}$ is an isomorphism
@@ -12373,7 +12286,6 @@ Then the limiting mixed Hodge structure (MHS) satisfies:
 :::
 
 :::{prf:proof}
-:label: proof-mt-lock-hodge
 
 *Step 1 (Monodromy).* Let $T: H^k(X_t, \mathbb{Z}) \to H^k(X_t, \mathbb{Z})$ be the monodromy operator for a loop $\gamma$ around $0$. The certificate $K_{\mathrm{TB}_\pi}^+$ ensures $\|\nabla\Pi\|$ is bounded, which by Borel's theorem implies $T$ is quasi-unipotent:
 $$(T^m - I)^{k+1} = 0 \quad \text{for some } m \geq 1$$
@@ -12467,7 +12379,6 @@ Then:
 :::
 
 :::{prf:proof}
-:label: proof-mt-lock-tannakian
 
 *Step 1 (Tannakian axioms).* The certificate $K_{\mathrm{Cat}_{\mathrm{Hom}}}^+$ ensures $\mathcal{C}$ satisfies the Tannakian axioms:
 - **Abelian:** $\mathcal{C}$ is a $k$-linear abelian category
@@ -12547,7 +12458,6 @@ Then the **Data Processing Inequality** provides an information-theoretic lock:
 :::
 
 :::{prf:proof} Proof Sketch
-:label: sketch-mt-lock-entropy
 
 *Step 1 (Data Processing Inequality).* Consider the Markov chain $X \to Y \to Z$, where $X$ is the bulk state, $Y$ is the boundary state, and $Z$ is the observer's measurement. The Data Processing Inequality states that $I(X; Z) \leq I(X; Y)$.
 
@@ -12736,7 +12646,6 @@ Given the tactic trace from $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{br\text{-}
 :::
 
 :::{prf:proof}
-:label: proof-mt-lock-reconstruction
 
 *Step 1 (Breached-inconclusive certificate analysis).* The certificate $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{br\text{-}inc}}$ records that tactics E1-E12 have been exhausted at Node 17 without determining whether $\text{Hom}_{\mathcal{A}}(\mathcal{H}_{\text{bad}}, \mathcal{X}) = \emptyset$. The upstream certificates $K_{D_E}^+$, $K_{C_\mu}^+$, $K_{\mathrm{SC}_\lambda}^+$, $K_{\mathrm{LS}_\sigma}^+$ provide **partial progress data**:
 
@@ -13557,7 +13466,6 @@ where $\sim$ denotes equivalence of certificate types at each node.
 :::
 
 :::{prf:proof}
-:label: proof-thm-meta-identifiability
 :nonumber:
 
 **Outline:**
@@ -13638,7 +13546,6 @@ The proof strategy for any dynamical system is determined by its location in the
 :::
 
 :::{prf:proof}
-:label: proof-mt-lock-periodic
 :nonumber:
 
 **Outline:**
@@ -13945,7 +13852,6 @@ $((\sharp\text{-status}, \int\text{-status}, \flat\text{-status}, \ast\text{-sta
 ::::
 
 :::{prf:proof}
-:label: proof-mt-alg-complete
 :nonumber:
 
 **Proof (Following Categorical Proof Template — Topos Internal Logic):**

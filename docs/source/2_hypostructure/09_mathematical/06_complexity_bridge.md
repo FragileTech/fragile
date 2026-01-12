@@ -2,7 +2,7 @@
 title: "The P/NP Bridge to Classical Complexity"
 ---
 
-# Part XX: The P/NP Bridge to Classical Complexity
+# The P/NP Bridge to Classical Complexity
 
 (sec-complexity-bridge)=
 ## Completing the Export to ZFC Complexity Theory
@@ -34,12 +34,14 @@ This chapter establishes the **bidirectional bridge** between the Hypostructure 
 
 $$
 P_{\text{Fragile}} = P_{\text{DTM}} \quad\text{and}\quad NP_{\text{Fragile}} = NP_{\text{DTM}}
+
 $$
 
 Therefore:
 
 $$
 P_{\text{Fragile}} \neq NP_{\text{Fragile}} \quad\Rightarrow\quad P_{\text{DTM}} \neq NP_{\text{DTM}}
+
 $$
 
 ---
@@ -72,12 +74,14 @@ Let $\mathsf{Prog}_{\text{FM}}$ denote the set of all effective Fragile programs
 
 $$
 \llbracket \mathcal{A} \rrbracket : \mathcal{X} \to \mathcal{X}'
+
 $$
 
 **Evaluation Semantics:** The Fragile runtime evaluator $\mathsf{Eval}$ is a ZFC-definable function that takes a program representation and an input, and produces an output:
 
 $$
 \mathsf{Eval}: \mathsf{Prog}_{\text{FM}} \times \mathcal{X} \to \mathcal{X}'
+
 $$
 
 This evaluator is the operational semantics of the hypostructure computational model.
@@ -92,6 +96,7 @@ A **cost certificate** is a ZFC-checkable predicate
 
 $$
 \mathsf{CostCert}(\mathcal{A}, p)
+
 $$
 
 where $\mathcal{A} \in \mathsf{Prog}_{\text{FM}}$ is an effective program and $p: \mathbb{N} \to \mathbb{N}$ is a polynomial, asserting:
@@ -108,6 +113,7 @@ where $\mathcal{A} \in \mathsf{Prog}_{\text{FM}}$ is an effective program and $p
 
 $$
 P_{\text{FM}} := \{\,\mathcal{A} \in \mathsf{Prog}_{\text{FM}} \;:\; \exists \text{ polynomial } p,\, \mathsf{CostCert}(\mathcal{A}, p)\,\}
+
 $$
 
 **Rigorous Verification:** $\mathsf{CostCert}$ is *not* a heuristic or estimate. It is a formally verifiable property that can be checked in ZFC. The certificate must be:
@@ -143,6 +149,7 @@ A language $L \subseteq \{0,1\}^*$ is in $NP_{\text{FM}}$ (Fragile NP) if there 
 
    $$
    \mathcal{V}: \{0,1\}^* \times \{0,1\}^* \to \{0,1\}
+
    $$
 
    (takes instance $x$ and witness $w$, outputs accept/reject)
@@ -151,6 +158,7 @@ A language $L \subseteq \{0,1\}^*$ is in $NP_{\text{FM}}$ (Fragile NP) if there 
 
    $$
    \mathsf{CostCert}(\mathcal{V}, p)
+
    $$
 
    where $p$ bounds the runtime on inputs $(x, w)$ with $|x| + |w| = n$
@@ -159,6 +167,7 @@ A language $L \subseteq \{0,1\}^*$ is in $NP_{\text{FM}}$ (Fragile NP) if there 
 
    $$
    x \in L \iff \exists w \in \{0,1\}^{q(|x|)}\, \mathcal{V}(x, w) = 1
+
    $$
 
 **Intuition:** This is the standard verifier definition of NP, transplanted into the Fragile computational model. A language is in NP if membership can be *verified* quickly given a witness, even if finding the witness is hard.
@@ -196,6 +205,7 @@ Once both lanes are built, we have a true equivalence. And *that* is what lets u
 
 $$
 \mathcal{A}(x) = M(x) \quad\text{for all }x \in \{0,1\}^*
+
 $$
 
 **Proof (Construction via Causal Chain Factorization):**
@@ -208,6 +218,7 @@ A DTM $M$ with state set $Q$, tape alphabet $\Gamma$, and transition function $\
 
 $$
 \mathrm{Config}_M = Q \times \Gamma^* \times \mathbb{N}
+
 $$
 
 (state, tape contents, head position)
@@ -216,6 +227,7 @@ The transition $\delta$ induces a deterministic update:
 
 $$
 \mathrm{step}_M: \mathrm{Config}_M \to \mathrm{Config}_M
+
 $$
 
 *Step 2 (Causal Factorization — Class II):*
@@ -224,6 +236,7 @@ The key observation: polynomial-time computation means the DTM reaches a halting
 
 $$
 \mathcal{A} := \mathrm{acc}_M \circ \mathrm{step}_M^{O(n^k)} \circ \mathrm{init}_M
+
 $$
 
 where:
@@ -248,6 +261,7 @@ By construction:
 
 $$
 \mathcal{A}(x) = \mathrm{acc}_M(\mathrm{step}_M^{t(x)}(\mathrm{init}_M(x))) = M(x)
+
 $$
 
 where $t(x) \leq p(|x|)$ is the number of steps $M$ takes on input $x$.
@@ -289,17 +303,18 @@ This is why the forward bridge is easy. The hard direction is the reverse bridge
 
 $$
 P_{\text{FM}} \subseteq P_{\text{DTM}}
+
 $$
 
 Combined with Theorem I:
 
 $$
 P_{\text{FM}} = P_{\text{DTM}}
+
 $$
 :::
 
 :::{prf:proof}
-:label: proof-extraction-p-fragile-to-dtm
 
 *Step 1 (Given):*
 
@@ -307,6 +322,7 @@ Let $\mathcal{A} \in P_{\text{FM}}$. By definition, there exists a polynomial $p
 
 $$
 \forall x \in \{0,1\}^n,\, \mathsf{Eval}(\mathcal{A}, x) \text{ terminates in } \leq p(n) \text{ steps}
+
 $$
 
 *Step 2 (DTM Construction):*
@@ -331,6 +347,7 @@ Therefore, the total DTM time is:
 
 $$
 T(n) \leq q(|\mathcal{A}| + n) \cdot p(n) = O(n^{k})
+
 $$
 
 for some constant $k$ (since $|\mathcal{A}|$ is fixed and both $p$ and $q$ are polynomials).
@@ -341,6 +358,7 @@ By construction, $M_{\mathcal{A}}$ simulates $\mathsf{Eval}(\mathcal{A}, x)$ ste
 
 $$
 M_{\mathcal{A}}(x) = \mathcal{A}(x)
+
 $$
 
 *Step 5 (Conclusion):*
@@ -351,12 +369,14 @@ Since this holds for arbitrary $\mathcal{A} \in P_{\text{FM}}$:
 
 $$
 P_{\text{FM}} \subseteq P_{\text{DTM}}
+
 $$
 
 Combined with Theorem I ($P_{\text{DTM}} \subseteq P_{\text{FM}}$):
 
 $$
 P_{\text{FM}} = P_{\text{DTM}}
+
 $$
 
 **Q.E.D.**
@@ -405,6 +425,7 @@ Precisely: if there exist polynomials $q, p$ and a polynomial-time DTM verifier 
 
 $$
 x \in L \iff \exists w \in \{0,1\}^{q(|x|)}\, M_V(x, w) = 1
+
 $$
 
 and $M_V$ runs in time $O(p(|x| + |w|))$,
@@ -413,11 +434,11 @@ then there exists a Fragile verifier $\mathcal{V} \in P_{\text{FM}}$ such that:
 
 $$
 x \in L \iff \exists w \in \{0,1\}^{q(|x|)}\, \mathcal{V}(x, w) = 1
+
 $$
 :::
 
 :::{prf:proof}
-:label: proof-bridge-np-dtm-to-fragile
 
 *Step 1 (Given):*
 
@@ -429,12 +450,14 @@ By Theorem I (P-Bridge), since $M_V$ is a polynomial-time DTM, there exists a Fr
 
 $$
 \mathcal{V}(x, w) = M_V(x, w) \quad\text{for all }x, w
+
 $$
 
 Specifically, we apply the Class II (causal chain) factorization:
 
 $$
 \mathcal{V}(x, w) := \mathrm{acc}_{M_V}\Big(\mathrm{step}_{M_V}^{p(|x| + |w|)}(\mathrm{init}_{M_V}(x, w))\Big)
+
 $$
 
 *Step 3 (Verify Cost Certificate):*
@@ -443,6 +466,7 @@ Since $M_V$ runs in time $O(p(|x| + |w|))$, and each DTM step is simulated by $O
 
 $$
 \mathsf{CostCert}(\mathcal{V}, p')
+
 $$
 
 for some polynomial $p'(n) = O(p(n))$. Therefore $\mathcal{V} \in P_{\text{FM}}$.
@@ -453,6 +477,7 @@ By construction:
 
 $$
 x \in L \iff \exists w \in \{0,1\}^{q(|x|)}\, M_V(x, w) = 1 \iff \exists w \in \{0,1\}^{q(|x|)}\, \mathcal{V}(x, w) = 1
+
 $$
 
 *Step 5 (Conclusion):*
@@ -493,6 +518,7 @@ such that:
 
 $$
 x \in L \iff \exists w \in \{0,1\}^{q(|x|)}\, \mathcal{V}(x, w) = 1
+
 $$
 
 *Step 2 (Extract DTM Verifier via Theorem II):*
@@ -507,6 +533,7 @@ We have:
 
 $$
 x \in L \iff \exists w \in \{0,1\}^{q(|x|)}\, M_{\mathcal{V}}(x, w) = 1
+
 $$
 
 with $M_{\mathcal{V}}$ a polynomial-time DTM. This is exactly the definition of $NP_{\text{DTM}}$.
@@ -525,6 +552,7 @@ Assuming hypotheses **(A1)** and **(A2)**:
 
 $$
 NP_{\text{FM}} = NP_{\text{DTM}}
+
 $$
 
 :::
@@ -549,6 +577,7 @@ Assuming adequacy hypotheses **(A1)** (Definable Semantics) and **(A2)** (Polyno
 
 $$
 P_{\text{FM}} = P_{\text{DTM}} \quad\text{and}\quad NP_{\text{FM}} = NP_{\text{DTM}}
+
 $$
 
 **Proof:** Immediate from Theorems I–IV. $\square$
@@ -570,6 +599,7 @@ Assume:
 
 $$
 P_{\text{DTM}} \neq NP_{\text{DTM}}
+
 $$
 
 **Proof:**
@@ -580,6 +610,7 @@ By Corollary {prf:ref}`cor-class-equivalence-full`:
 
 $$
 P_{\text{FM}} = P_{\text{DTM}} = NP_{\text{DTM}} = NP_{\text{FM}}
+
 $$
 
 Therefore $P_{\text{FM}} = NP_{\text{FM}}$, contradicting hypothesis (2).
@@ -625,6 +656,7 @@ If $\mathsf{Eval}(\mathcal{A}, x)$ takes $t$ internal steps, then $U(\text{code}
 
 $$
 T_U(m, n) \leq q(m, n) \cdot t
+
 $$
 
 **Proof Strategy:**
@@ -687,6 +719,7 @@ Each internal step requires:
 
 $$
 O(\log^2(m + n + t)) \leq O(\log^2(m + n \cdot p(n))) = O(\log^2(n \cdot p(n))) = O(\operatorname{poly}(n))
+
 $$
 
 for polynomial-time programs (where $t = O(p(n))$ for some polynomial $p$).
@@ -697,6 +730,7 @@ Define:
 
 $$
 q(m, n) = c \cdot (m + n)^2
+
 $$
 
 for a sufficiently large constant $c$ that bounds all the operations above.
@@ -705,12 +739,14 @@ Then:
 
 $$
 T_U(m, n) = \sum_{i=1}^{t} O(q(m + \text{stack}_i, n)) \leq t \cdot O(q(m + t, n))
+
 $$
 
 For polynomial-time programs with $t = O(p(n))$:
 
 $$
 T_U(m, n) = O(p(n)) \cdot O((m + p(n))^2) = O(\operatorname{poly}(n))
+
 $$
 
 (since $m$ is fixed for a given program $\mathcal{A}$).
@@ -831,9 +867,9 @@ That is the value of this chapter. We have built a bridge that can bear the weig
 - Avanzini et al. (2015): Analysing the complexity of functional programs
 
 **Connections to This Work:**
-- Part XIX ({prf:ref}`sec-taxonomy-computational-methods`): Algorithmic Completeness
-- Part XV ({prf:ref}`sec-bridge-verification-algorithmic`): Initial DTM embedding
-- Appendix: ZFC Translation Layer ({prf:ref}`sec-zfc-translation`): Foundations
+- Part XIX ({ref}`sec-taxonomy-computational-methods`): Algorithmic Completeness
+- Part XV ({ref}`sec-bridge-verification-algorithmic`): Initial DTM embedding
+- Appendix: ZFC Translation Layer ({ref}`sec-zfc-translation`): Foundations
 
 ---
 

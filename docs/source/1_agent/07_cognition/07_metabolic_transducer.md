@@ -39,6 +39,7 @@ The **Reward Flux** $J_r(t)$ is the instantaneous rate of reward accumulation (D
 
 $$
 J_r(t) = \langle \mathcal{R}(z_t), v_t \rangle_G = r_t
+
 $$
 
 where $\mathcal{R}$ is the reward 1-form ({ref}`Section 24.1 <sec-the-reward-field-value-forms-and-hodge-geometry>`) and $v_t = \dot{z}_t$ is the velocity in latent space.
@@ -64,6 +65,7 @@ The **Information Utility** $\mathcal{I}_{\text{util}}(r_t)$ quantifies the acti
 
 $$
 \mathcal{I}_{\text{util}}(r_t) := I(Z_t; R_t) = H[R_t] - H[R_t \mid Z_t]
+
 $$
 
 where $I(Z_t; R_t)$ is the mutual information between the agent's state $Z_t$ and the reward $R_t$.
@@ -83,6 +85,7 @@ Information about low-entropy configurations can be converted to extractable wor
 
 $$
 W_{\max} = k_B T_{\text{env}} \cdot I
+
 $$
 
 joules of work, where $k_B$ is Boltzmann's constant.
@@ -122,6 +125,7 @@ Let us trace through the Szilard engine carefully, because it is one of those ar
 
 $$
 W = \int P \, dV = \int \frac{k_B T}{V} dV = k_B T \ln 2
+
 $$
 
 **The Bottom Line:** The demon extracted $k_B T \ln 2$ joules of work, but it acquired 1 bit of information to do so. When that bit is eventually erased, the books balance. The Second Law survives.
@@ -136,6 +140,7 @@ Let $r_t$ be the instantaneous reward signal with information content $\mathcal{
 
 $$
 \dot{E}_{\text{in}}^{\max}(t) = k_B T_{\text{env}} \cdot \mathcal{I}_{\text{util}}(r_t)
+
 $$
 
 where $T_{\text{env}}$ is the environmental temperature (characterizing energy availability).
@@ -156,6 +161,7 @@ The **Metabolic Transducer** $\mathfrak{T}_{\text{harvest}}$ is the operator con
 
 $$
 \dot{E}_{\text{in}}(t) = \mathfrak{T}_{\text{harvest}}(r_t) := \eta \cdot k_B T_{\text{env}} \cdot \mathcal{I}_{\text{util}}(r_t)
+
 $$
 
 where:
@@ -171,6 +177,7 @@ where:
 
 $$
 \mathfrak{T}_{\text{harvest}}(r_t) = \eta \cdot T_{\text{env}} \cdot r_t
+
 $$
 
 where $r_t$ is measured in nats.
@@ -184,12 +191,14 @@ Notice the beautiful symmetry with what we did in the metabolism chapter. There 
 
 $$
 \dot{\mathcal{M}} \geq T_c \left| \frac{dH}{ds} \right| \quad \text{(cost of sharpening beliefs)}
+
 $$
 
 And here we have:
 
 $$
 \dot{E}_{\text{in}} = \eta \cdot T_{\text{env}} \cdot r_t \quad \text{(income from correct predictions)}
+
 $$
 
 The agent lives in the gap between these two. If you can harvest more than you burn, you survive. If you cannot, you die. It really is that simple.
@@ -248,6 +257,7 @@ The **Internal Battery** $B(t)$ is a scalar state variable representing the agen
 
 $$
 B: [0, \infty) \to [0, B_{\max}]
+
 $$
 
 where:
@@ -267,6 +277,7 @@ The battery evolves according to the First Law of Thermodynamics:
 
 $$
 \frac{dB}{dt} = \underbrace{\mathfrak{T}_{\text{harvest}}(r_t)}_{\text{Income}} - \underbrace{\dot{\mathcal{M}}(t)}_{\text{Metabolic Cost}} - \underbrace{\gamma_{\text{leak}} B(t)}_{\text{Passive Dissipation}}
+
 $$
 
 where:
@@ -283,6 +294,7 @@ This equation is just accounting, but read it carefully:
 
 $$
 \frac{dB}{dt} = \text{(harvest)} - \text{(thinking costs)} - \text{(just existing costs)}
+
 $$
 
 The first term is income: what you extract from the environment by finding and exploiting resources. The second term is the Landauer cost of inference—every time you update your beliefs, you pay. The third term is the basal metabolic rate—the cost of just staying organized, keeping your proteins folded, maintaining the machinery.
@@ -320,18 +332,22 @@ Let $\tau > 0$ be a target survival horizon. A **sufficient condition** for the 
 
 $$
 \int_0^\tau \left( \mathfrak{T}_{\text{harvest}}(r_t) - \dot{\mathcal{M}}(t) \right) dt > \gamma_{\text{leak}} \int_0^\tau B(t) \, dt - B_0
+
 $$
 
 *Equivalently:* The time-averaged **Net Harvest Rate** must be positive:
 
 $$
 \langle \mathfrak{T} - \dot{\mathcal{M}} \rangle_\tau > \gamma_{\text{leak}} \langle B \rangle_\tau - \frac{B_0}{\tau}
+
 $$
 
 *Proof.*
 Integrate the battery ODE (Axiom {prf:ref}`ax-energy-conservation-battery`):
+
 $$
 B(\tau) - B_0 = \int_0^\tau \mathfrak{T}(r_t) \, dt - \int_0^\tau \dot{\mathcal{M}}(t) \, dt - \gamma_{\text{leak}} \int_0^\tau B(t) \, dt
+
 $$
 
 Requiring $B(\tau) > 0$ and rearranging yields the inequality. $\square$
@@ -357,6 +373,7 @@ The agent's fundamental objective is not reward maximization but **energy surplu
 
 $$
 \mathcal{J}_{\text{survival}} = \mathbb{E}\left[ \int_0^\infty \left( \mathfrak{T}_{\text{harvest}}(r_t) - \dot{\mathcal{M}}(t) \right) e^{-\gamma_{\text{leak}} t} \, dt \right]
+
 $$
 
 Standard reward maximization $\max \mathbb{E}[\sum_t \gamma^t r_t]$ emerges as a degenerate case when:
@@ -416,6 +433,7 @@ Maintaining Fisher Information $I_F$ on the latent manifold $(\mathcal{Z}, G)$ r
 
 $$
 \dot{E}_{\text{maintain}} \geq \frac{1}{2} T_c \cdot I_F
+
 $$
 
 where $T_c$ is the cognitive temperature ({prf:ref}`def-cognitive-temperature`) and $I_F$ is the Fisher Information of the belief distribution.
@@ -452,6 +470,7 @@ When available energy $B(t)$ falls below the maintenance requirement, the effect
 
 $$
 G_{ij}^{\text{eff}}(z, B) = f\left(\frac{B}{B_{\text{crit}}}\right) \cdot G_{ij}(z)
+
 $$
 
 where:
@@ -463,6 +482,7 @@ where:
 
 $$
 f(x) = 1 - e^{-x}
+
 $$
 
 This gives exponential saturation: $f(x) \approx x$ for $x \ll 1$ (linear regime) and $f(x) \approx 1$ for $x \gg 1$ (saturation).
@@ -548,6 +568,7 @@ As $B(t) \to 0$, the signal-to-noise ratio of internal dynamics degrades:
 
 $$
 \text{SNR}_{\text{dynamics}} = \frac{\|v\|_{G^{\text{eff}}}^2}{2T_c} \propto f(B/B_{\text{crit}}) \to 0
+
 $$
 
 In this regime:
@@ -626,6 +647,7 @@ The battery level $B(t)$ induces a scalar potential field acting on the policy:
 
 $$
 \Phi_{\text{homeo}}(z, B) = \frac{\lambda_{\text{surv}}}{B + \epsilon} \cdot \mathbb{1}[z \in \mathcal{Z}_{\text{food}}]
+
 $$
 
 where:
@@ -654,12 +676,14 @@ The total effective potential combines task and homeostatic contributions:
 
 $$
 \Phi_{\text{total}}(z, B) = \Phi_{\text{task}}(z) + \Phi_{\text{homeo}}(z, B)
+
 $$
 
 The value function satisfies the augmented screened Poisson equation ({ref}`Section 24 <sec-the-reward-field-value-forms-and-hodge-geometry>`):
 
 $$
 (-\Delta_{G^{\text{eff}}} + \kappa^2) V = \rho_r + \rho_{\text{homeo}}
+
 $$
 
 where:
@@ -734,6 +758,7 @@ The transduction efficiency is bounded by the Carnot limit:
 
 $$
 \eta \leq \eta_{\text{Carnot}} = 1 - \frac{T_c}{T_{\text{env}}}
+
 $$
 
 where $T_c$ is the agent's cognitive temperature and $T_{\text{env}}$ is the environmental temperature.
@@ -751,6 +776,7 @@ The maximum efficiency is:
 
 $$
 \eta_{\text{Carnot}} = 1 - \frac{T_{\text{cold}}}{T_{\text{hot}}} = 1 - \frac{T_c}{T_{\text{env}}}
+
 $$
 
 This is a hard limit. No cleverness, no engineering trick can exceed it. It is written into the laws of physics.
@@ -767,6 +793,7 @@ The **Waste Heat Flux** is the rate at which the agent must dump entropy to the 
 
 $$
 \dot{Q}_{\text{waste}} = (1 - \eta) \cdot \mathfrak{T}_{\text{gross}}(r_t) + \dot{\mathcal{M}}(t)
+
 $$
 
 where $\mathfrak{T}_{\text{gross}} = k_B T_{\text{env}} \cdot \mathcal{I}_{\text{util}}(r_t)$ is the gross transduction before efficiency losses.
@@ -784,6 +811,7 @@ Let $\dot{Q}_{\text{radiate}}$ be the maximum heat dissipation rate (determined 
 
 $$
 \dot{Q}_{\text{waste}} > \dot{Q}_{\text{radiate}}
+
 $$
 
 then the agent's internal temperature $T_c$ increases. This triggers a positive feedback loop:
@@ -837,6 +865,7 @@ The agent is **thermally viable** if there exists a steady-state solution to:
 
 $$
 \dot{Q}_{\text{waste}}(T_c) = \dot{Q}_{\text{radiate}}(T_c)
+
 $$
 
 with $T_c < T_{\text{env}}$ and $\eta(T_c) > \eta_{\min}$ where $\eta_{\min}$ is the minimum efficiency for survival (from Theorem {prf:ref}`thm-autopoietic-inequality`).

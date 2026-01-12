@@ -449,7 +449,6 @@ This is the **generator** of the kinetic operator on the density space.
 :::
 
 :::{prf:proof}
-:label: proof-prop-fokker-planck-kinetic
 **Proof.**
 
 This follows from standard SDE theory. For Stratonovich SDEs, the Fokker-Planck equation is derived by:
@@ -717,7 +716,6 @@ where $K_{\text{Var}} = C(d,N) \cdot \max(\gamma^2, L_F^2, \sigma_{\max}^2)$ wit
 :::
 
 :::{prf:proof}
-:label: proof-prop-weak-error-variance
 **Proof (Many-Body Taylor Expansion with Self-Referential Truncation).**
 
 **PART I: Derivative Structure**
@@ -786,7 +784,6 @@ where $K_b = K_b(\kappa_{\text{total}}, C_{\text{total}}, \gamma, \sigma_{\max})
 :::
 
 :::{prf:proof}
-:label: proof-prop-weak-error-boundary
 **Proof (Self-Referential Probability Truncation).**
 
 **PART I: The Challenge**
@@ -891,7 +888,6 @@ where $K_W = K_W(d, \gamma, L_F, L_\Sigma, \sigma_{\max}, \lambda_v, b)$ is **in
 :::
 
 :::{prf:proof}
-:label: proof-prop-weak-error-wasserstein
 **Proof (Synchronous Coupling at Particle Level).**
 
 **PART I: Synchronous Coupling Setup**
@@ -1078,7 +1074,6 @@ The correct approach uses **synchronous coupling at the particle level** - a sta
 ##### 3.7.3.4. Assembly: Proof of {prf:ref}`thm-discretization` for $V_{\text{total}}$
 
 :::{prf:proof}
-:label: proof-thm-discretization
 **Proof of {prf:ref}`thm-discretization` for the Synergistic Lyapunov Function.**
 
 **PART I: Decompose by Components**
@@ -1477,7 +1472,6 @@ where:
 :::
 
 :::{prf:proof}
-:label: proof-lem-location-error-drift-kinetic
 **Proof (Drift Matrix Analysis).**
 
 This proof establishes hypocoercive contraction **without assuming convexity** of $U$. Instead, we use:
@@ -1734,7 +1728,6 @@ where $\kappa_{\text{struct}} \sim \min(\gamma, \sigma_{\min}^2/\text{diam}^2)$ 
 :::
 
 :::{prf:proof}
-:label: proof-lem-structural-error-drift-kinetic
 **Proof (Empirical Measure and Optimal Transport).**
 
 This proof adapts Wasserstein gradient flow theory to **discrete N-particle systems** using empirical measures and optimal transport.
@@ -1916,7 +1909,6 @@ where $\kappa_{\text{struct}} \sim \min(\gamma, \frac{\gamma^2}{\gamma + L_F})$ 
 ### 4.7. Proof of Main Theorem
 
 :::{prf:proof}
-:label: proof-thm-inter-swarm-contraction-kinetic
 **Proof of {prf:ref}`thm-inter-swarm-contraction-kinetic`.**
 
 Combine Lemmas 2.5.1 and 2.6.1 using the decomposition $V_W = V_{\text{loc}} + V_{\text{struct}}$:
@@ -2025,7 +2017,6 @@ $$
 ### 5.4. Proof
 
 :::{prf:proof}
-:label: proof-thm-velocity-variance-contraction-kinetic
 **Proof (Complete Algebraic Derivation).**
 
 This proof provides the full algebraic decomposition of velocity variance evolution using Itô's lemma, the parallel axis theorem, and careful bookkeeping.
@@ -2426,7 +2417,6 @@ The constant $C_{\text{kin},x}$ is **state-independent** when velocity variance 
 ### 6.4. Proof
 
 :::{prf:proof}
-:label: proof-thm-positional-variance-bounded-expansion
 **Proof (Integral Representation with OU Covariance Bounds).**
 
 **PART I: Integral Representation**
@@ -2645,6 +2635,7 @@ These bounds are ensured by:
 
    $$
    \mathbb{E}_{\text{clone}}[\Delta V_{\text{Var},x}] \leq -\kappa_x V_{\text{Var},x} + C_x
+
    $$
 
    with $\kappa_x > 0$ and $C_x < \infty$ independent of $N$. This implies a uniform equilibrium bound $M_x = C_x / \kappa_x$ when combined with the bounded expansion from the kinetic operator (this theorem).
@@ -2794,7 +2785,6 @@ where:
 ### 7.4. Proof
 
 :::{prf:proof} Boundary Potential Contraction from Confining Force
-:label: proof-thm-boundary-potential-contraction-kinetic
 **Proof (Velocity-Weighted Lyapunov with Corrected Signs).**
 
 This proof establishes that the confining potential $U$ creates negative drift for the boundary potential $W_b$ through alignment between the inward-pointing force $F = -\nabla U$ and the outward-pointing barrier gradient $\nabla\varphi_{\text{barrier}}$.

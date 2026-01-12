@@ -37,6 +37,7 @@ The metric tensor from {ref}`Section 7.11.3 <sec-the-induced-riemannian-geometry
 
 $$
 ds^2 = d\rho_{\text{depth}}^2 + d\sigma_{\mathcal{K}}^2 + e^{-2\rho_{\text{depth}}}\|dz_n\|^2
+
 $$
 assumes a fixed point moving through the bundle. This creates two problems:
 
@@ -89,11 +90,13 @@ The squared WFR distance $d^2_{\mathrm{WFR}}(\rho_0, \rho_1)$ is the infimum of 
 
 $$
 \mathcal{E}[\rho, v, r] = \int_0^1 \int_{\mathcal{Z}} \left( \underbrace{\|v_s(z)\|_G^2}_{\text{Transport Cost}} + \underbrace{\lambda^2 |r_s(z)|^2}_{\text{Reaction Cost}} - \underbrace{2\langle \mathbf{A}(z), v_s(z) \rangle}_{\text{Vector Potential}} \right) d\rho_s(z) \, ds
+
 $$
 subject to the **Unbalanced Continuity Equation**:
 
 $$
 \partial_s \rho + \nabla \cdot (\rho v) = \rho r
+
 $$
 where:
 - $v_s(z) \in T_z\mathcal{Z}$ is the **velocity field** (transport/flow)
@@ -150,6 +153,7 @@ The WFR metric finds the optimal mix. If $x_1$ is close to $x_0$, transport domi
 
 $$
 d_{\text{WFR}}^2(\rho_0, \rho_1) = \inf_{\rho, v, r} \int_0^1 \int_{\mathcal{Z}} \left( \|v\|_G^2 + \lambda^2 r^2 \right) \rho \, d\mu_G \, dt
+
 $$
 **Correspondence Table:**
 | Optimal Transport | Agent (Belief Dynamics) |
@@ -239,6 +243,7 @@ Let $G$ be the latent metric on $\mathcal{Z}$. The canonical choice for $\lambda
 
 $$
 \lambda := \min_{z \in \mathcal{Z}} \text{inj}_G(z),
+
 $$
 where $\text{inj}_G(z)$ is the injectivity radius at $z$ -- the largest $r$ such that the exponential map $\exp_z: T_z\mathcal{Z} \to \mathcal{Z}$ is a diffeomorphism on $B_r(0)$.
 
@@ -246,6 +251,7 @@ where $\text{inj}_G(z)$ is the injectivity radius at $z$ -- the largest $r$ such
 
 $$
 \lambda_{\text{default}} = \sqrt{\frac{\text{tr}(G^{-1})}{n}} \approx \text{mean characteristic length of } \mathcal{Z}.
+
 $$
 This corresponds to the RMS geodesic step size in an isotropic metric.
 
@@ -312,6 +318,7 @@ Belief states evolve on $\mathcal{M}^+(\mathcal{Z})$ via **Wasserstein-Fisher-Ra
 
 $$
 d^2_{\text{WFR}}(\rho_0, \rho_1) = \inf \int_0^1 \int_{\mathcal{Z}} \left( \|v_s\|_G^2 + \lambda^2 |r_s|^2 \right) d\rho_s\, ds
+
 $$
 subject to the unbalanced continuity equation $\partial_s \rho + \nabla \cdot (\rho v) = \rho r$.
 
@@ -322,6 +329,7 @@ Restrict to value distributions at single states (no spatial transport). Use Euc
 
 $$
 Z(s, a) \stackrel{D}{=} R + \gamma Z(S', A'), \quad Q(s,a) = \mathbb{E}[Z(s,a)]
+
 $$
 This recovers **Distributional RL**: C51, QR-DQN, IQN {cite}`bellemare2017c51,dabney2018qrdqn`.
 
@@ -526,6 +534,7 @@ Recall the WFR action:
 
 $$
 \mathcal{E} = \int \left( \|v\|_G^2 + \lambda^2 |r|^2 \right) d\rho
+
 $$
 For a hierarchy of layers $\ell = 0, \ldots, L$:
 
@@ -534,6 +543,7 @@ For a hierarchy of layers $\ell = 0, \ldots, L$:
 
 $$
 \lambda^{(\ell)} \propto \sigma^{(\ell)} \quad \text{(jump cost scales with residual variance)}
+
 $$
 where $\sigma^{(\ell)}$ is the scale factor from Definition {prf:ref}`def-the-rescaling-operator-renormalization`.
 
@@ -546,6 +556,7 @@ In the capacity-constrained metric law ({ref}`Section 18 <sec-capacity-constrain
 
 $$
 \Lambda^{(\ell)} \sim \frac{1}{(\lambda^{(\ell)})^2}
+
 $$
 - Bulk (low $\Lambda$): Flat, rigid, transport-dominated
 - Boundary (high $\Lambda$): Curved, fluid, reaction-dominated
@@ -595,11 +606,13 @@ $$
 =
 \frac12\int_0^T\int_{\mathcal{Z}}
 \rho\left(\|v\|_G^2+\lambda^2 r^2\right)\,d\mu_G\,ds,
+
 $$
 with continuity equation
 
 $$
 \partial_s\rho+\nabla\!\cdot(\rho v)=\rho r.
+
 $$
 Define
 
@@ -607,6 +620,7 @@ $$
 T_{ij}:=
 -\frac{2}{\sqrt{|G|}}\frac{\delta(\sqrt{|G|}\,\mathcal{L}_{\mathrm{WFR}})}{\delta G^{ij}}
 \quad\text{(holding }\rho,v,r\text{ fixed).}
+
 $$
 Then
 
@@ -614,6 +628,7 @@ $$
 T_{ij}=\rho\,v_i v_j + P\,G_{ij},
 \qquad
 P=\frac12\,\rho\left(\|v\|_G^2+\lambda^2 r^2\right),
+
 $$
 which is the perfect-fluid form with reaction contributing an additive pressure term
 {math}`P_{\mathrm{react}}=\tfrac12\lambda^2\rho r^2`.
@@ -646,6 +661,7 @@ What does this mean in practice? Regions of high belief dynamics---where the age
 
 $$
 T_{ij} = \rho\left(v_i v_j - \frac{1}{2}\|v\|_G^2 G_{ij}\right) + \frac{\lambda^2}{2}\rho r^2 G_{ij}
+
 $$
 derived from $\delta \mathcal{S}_{\text{WFR}}/\delta G^{ij}$.
 
@@ -739,6 +755,7 @@ The cone-space representation linearizes WFR locally. From $\partial_s \rho = \r
 
 $$
 \mathcal{L}_{\mathrm{WFR}} = \left\| \sqrt{\rho_{t+1}} - \sqrt{\rho_t} - \frac{\Delta t}{2\sqrt{\rho_t}}\left(\rho_t r_t - \nabla \cdot (\rho_t v_t)\right) \right\|_{L^2}^2
+
 $$
 This penalizes deviations from the unbalanced continuity equation.
 

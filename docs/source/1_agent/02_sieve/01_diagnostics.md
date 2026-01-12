@@ -26,6 +26,7 @@ Safety is a **topological constraint** enforced by the Sieve—a hard binary fil
 
 $$
 \text{Sieve}(a \mid z) = \begin{cases} \text{PASS} & \text{if all 60 diagnostics pass} \\ \text{BLOCK} & \text{otherwise} \end{cases}
+
 $$
 Actions failing any diagnostic are **blocked**, not penalized. The Sieve is not subject to reward-cost trade-offs.
 
@@ -36,6 +37,7 @@ Replace the hard binary filter with a soft Lagrange multiplier $\lambda > 0$.
 
 $$
 J_{\text{CMDP}}(\pi) = \mathbb{E}\left[\sum_t \gamma^t r_t\right] - \lambda \sum_i c_i(\pi)
+
 $$
 This recovers **Constrained MDPs** (CMDPs) with penalty-based constraint satisfaction.
 
@@ -182,6 +184,7 @@ Stable training requires separation of timescales: the representation should cha
 
 $$
 \delta \ll \gamma \ll \alpha,\qquad \beta \le \alpha
+
 $$
 1.  **$\delta \ll \gamma$ (Representation Stability):** the representation (encoder/codebook) drifts slower than the learned dynamics model.
 2.  **$\gamma \ll \alpha$ (Predictability / Trackability):** the learned dynamics do not drift faster than the value function can track.
@@ -253,6 +256,7 @@ The loss terms below prevent both pathologies. The VQ codebook loss keeps the en
     + \underbrace{\beta_n D_{\mathrm{KL}}(q(z_n \mid x) \Vert p(z_n))}_{\text{nuisance prior (regularize)}}
     + \underbrace{\beta_{\mathrm{tex}} D_{\mathrm{KL}}(q(z_{\mathrm{tex}} \mid x) \Vert p(z_{\mathrm{tex}}))}_{\text{texture-as-residual}}
     + \underbrace{\lambda_{\text{use}} D_{\mathrm{KL}}(\hat{p}(K)\ \Vert\ \mathrm{Unif}(\mathcal{K}))}_{\text{anti-collapse (optional)}}.
+
     $$
     Units: {math}`\beta`, {math}`\beta_n`, {math}`\beta_{\mathrm{tex}}`, and {math}`\lambda_{\text{use}}` are dimensionless weights; each {math}`D_{\mathrm{KL}}` is measured in nats.
     *   *Effect:* The macro channel is a bounded-rate symbolic register. The nuisance channel is regularized but typed (it may be used to explain structured deviations or support actuation). The texture channel is reconstruction-only: it is forced toward a high-entropy prior and must not be required for macro closure or control.
@@ -263,6 +267,7 @@ The loss terms below prevent both pathologies. The VQ codebook loss keeps the en
     \mathcal{L}_{\text{orbit}}
     :=
     \mathbb{E}_{g}\!\left[D_{\mathrm{KL}}\!\left(q(K\mid x)\ \Vert\ q(K\mid g\cdot x)\right)\right].
+
     $$
     This is a direct operationalization of the quotient intent “$K$ approximates $x/G_{\text{spatial}}$” ({ref}`Section 2.2b <sec-the-shutter-as-a-vq-vae>`) and prevents symmetry-blind representations.
 *   **Macro–residual disentanglement (Node 19: DisentanglementCheck).**
@@ -274,6 +279,7 @@ The loss terms below prevent both pathologies. The VQ codebook loss keeps the en
     \left\|\mathrm{Cov}(z_{\text{macro}}, z_n)\right\|_F^2
     +
     \left\|\mathrm{Cov}(z_{\text{macro}}, z_{\mathrm{tex}})\right\|_F^2.
+
     $$
     This complements enclosure/closure constraints ({ref}`Section 2.8 <sec-conditional-independence-and-sufficiency>`). Texture leakage is treated as strictly disallowed; nuisance leakage is allowed only insofar as it does not alter macro identity.
 *   **Canonicalization shutter (optional).**
@@ -282,6 +288,7 @@ The loss terms below prevent both pathologies. The VQ codebook loss keeps the en
 
     $$
     \mathcal{L}_{\text{InfoNCE}} = -\log \frac{\exp(\text{sim}(z_t, z_{t+k}))}{\sum \exp(\text{sim}(z_t, z_{neg}))}
+
     $$
     *   *Effect:* Ensures the latent space captures long-term structural dependencies (slow features), not just pixel reconstruction.
 
@@ -307,6 +314,7 @@ This replaces the combinatorial problem of sampling negatives with simple batch 
 
     $$
     \mathcal{L}_{\text{inv}} = \lVert z - z'\rVert^2
+
     $$
     - $z, z'$ are embeddings of two augmented views of the same input
     - *Effect:* Forces representations to be stable under perturbations
@@ -315,6 +323,7 @@ This replaces the combinatorial problem of sampling negatives with simple batch 
 
     $$
     \mathcal{L}_{\text{var}} = \frac{1}{d} \sum_{j=1}^{d} \max(0, \gamma - \sqrt{\text{Var}(z_j) + \epsilon})
+
     $$
 - $\gamma$ is the target standard deviation (typically 1)
 - Units: $[\gamma]=[z_j]$ and $[\epsilon]=[z_j]^2$ in this expression.
@@ -324,6 +333,7 @@ This replaces the combinatorial problem of sampling negatives with simple batch 
 
     $$
     \mathcal{L}_{\text{cov}} = \frac{1}{d} \sum_{i \neq j} [\text{Cov}(z)]_{ij}^2
+
     $$
     - *Effect:* Forces off-diagonal covariance to zero (decorrelates dimensions)
 
@@ -331,6 +341,7 @@ This replaces the combinatorial problem of sampling negatives with simple batch 
 
 $$
 \mathcal{L}_{\text{VICReg}} = \lambda \mathcal{L}_{\text{inv}} + \mu \mathcal{L}_{\text{var}} + \nu \mathcal{L}_{\text{cov}}
+
 $$
 Units: $\lambda,\mu,\nu$ are dimensionless weights; each component loss is taken dimensionless (nats after normalization).
 
@@ -355,6 +366,7 @@ Units: $\lambda,\mu,\nu$ are dimensionless weights; each component loss is taken
 
 $$
 \mathcal{L}_{\text{InfoNCE}} = -\log \frac{\exp(\text{sim}(z_t, z_{t+k})/\tau)}{\sum_j \exp(\text{sim}(z_t, z^-_j)/\tau)}
+
 $$
 This is one of *multiple* anchoring signals in the Fragile Agent, applied specifically to the **macro channel** $K$ to ensure slow features dominate over fast texture.
 
@@ -365,6 +377,7 @@ Use InfoNCE as the *primary* representation objective rather than auxiliary anch
 
 $$
 I(z_t; z_{t+k}) \ge \log N - \mathcal{L}_{\text{CPC}}
+
 $$
 This recovers **Contrastive Predictive Coding (CPC)** {cite}`oord2018cpc` and **Contrastive RL** methods.
 
@@ -379,6 +392,7 @@ This recovers **Contrastive Predictive Coding (CPC)** {cite}`oord2018cpc` and **
 
     $$
     \mathcal{L}_{\text{orth}} = \lVert \operatorname{Cov}(z) - I \rVert_F^2 \quad \text{or} \quad \lVert J_S^T J_S - I \rVert^2
+
     $$
     *   *Effect:* Removes redundant/degenerate directions in the representation. Approximate whitening makes the latent coordinates identifiable up to permutation/sign, improves conditioning, and reduces collapse/exploding-gradient pathologies.
     Units: $\mathcal{L}_{\text{orth}}$ is dimensionless; the weight multiplying it is dimensionless.
@@ -400,6 +414,7 @@ Another useful structure is the Hamiltonian or symplectic parameterization, appr
 
     $$
     \mathcal{L}_{\text{Lip}} = \mathbb{E}_{z, z'}[(\lVert S(z) - S(z')\rVert / \lVert z - z'\rVert - K)^+]^2
+
     $$
     Or via Spectral Normalization on weights.
     *   *Effect:* Enforces **tameness**: bounds sensitivity of the learned dynamics and reduces non-smooth / ill-conditioned rollouts that destabilize planning and control.
@@ -407,6 +422,7 @@ Another useful structure is the Hamiltonian or symplectic parameterization, appr
 
     $$
     \mathcal{L}_{\text{pred}} = \lVert S(z_t, a_t) - z_{t+1} \rVert^2
+
     $$
     *   *Effect:* Standard dynamics learning, but constrained by the Lyapunov potential (see below).
 *   **Symplectic / Hamiltonian parameterization (Node 21; optional).**
@@ -416,6 +432,7 @@ Another useful structure is the Hamiltonian or symplectic parameterization, appr
     \dot q = \nabla_p H_\psi(q,p,a),
     \qquad
     \dot p = -\nabla_q H_\psi(q,p,a).
+
     $$
     Equivalently, $\dot z = J\nabla_z H_\psi(z,a)$ for the canonical symplectic matrix $J$. This induces a divergence-free flow in $z$ and supports stable long-horizon rollouts when the environment is approximately conservative in the chosen coordinates {cite}`greydanus2019hamiltonian`. For a discrete-time transition $S$, one can monitor (or penalize) departures from symplecticity via
 
@@ -425,6 +442,7 @@ Another useful structure is the Hamiltonian or symplectic parameterization, appr
     \left\|J_S^\top J J_S - J\right\|_F^2,
     \qquad
     J_S := \frac{\partial S(z,a)}{\partial z}.
+
     $$
     This is optional: if the environment is strongly dissipative or control-dominated, forcing symplectic structure can be counterproductive.
 *   **Residual-event (jump) codebook (optional).**
@@ -434,6 +452,7 @@ Another useful structure is the Hamiltonian or symplectic parameterization, appr
     \Delta z_{n,t} := z_{n,t+1}-S_n(z_{n,t},K_t,a_t),
     \qquad
     J_t := \mathrm{VQ}(\Delta z_{n,t})\in\{1,\dots,|\mathcal{J}|\}.
+
     $$
     Here $z_n$ is the **structured nuisance** coordinate ({ref}`Section 2.2b <sec-the-shutter-as-a-vq-vae>`). Texture $z_{\mathrm{tex}}$ is explicitly not used to form jump types: it is treated as an emission residual for reconstruction/likelihood, not as a disturbance class for dynamics. The resulting index $J_t$ provides an online-codable label for recurring disturbance types and supports conditional noise modeling (e.g., a mixture model for nuisance residuals). Section 11.5 shows how the same idea can be lifted to operator-valued belief updates, where discrete residual types parameterize jump operators.
 
@@ -472,6 +491,7 @@ The Critic does not just predict reward; it defines a **stability-oriented poten
     \omega:=\frac{\tilde \omega}{\|\tilde \omega\|+\epsilon},
     \qquad
     V(z):=V_{\mathrm{scale}}\,(1-u(z)\cdot \omega),
+
     $$
     where $\phi$ is a learned embedding and $\tilde\omega$ is a learned goal direction. The dot product is dimensionless; $V_{\mathrm{scale}}$ carries units of nats ({ref}`Section 1.2 <sec-units-and-dimensional-conventions>`) and can be calibrated or learned via adaptive multipliers ({ref}`Section 3.5 <sec-adaptive-multipliers-learned-penalties-setpoints-and-calibration>`).
 
@@ -482,6 +502,7 @@ The Critic does not just predict reward; it defines a **stability-oriented poten
 
     $$
     \mathcal{L}_{\text{Lyapunov}} = \mathbb{E}_{z} [\max(0, \dot{V}(z) + \alpha V(z))^2]
+
     $$
     * *Mechanism:* Penalize states where the estimated decrease $\dot{V}$ is not sufficiently negative (relative to rate $\alpha$). This encourages $V$ to decrease along trajectories in regions the agent visits.
 
@@ -489,6 +510,7 @@ The Critic does not just predict reward; it defines a **stability-oriented poten
 
     $$
     \mathcal{L}_{\text{Eikonal}} = (\lVert\nabla_z V\rVert - 1)^2
+
     $$
     * *Effect:* Encourages distance-like scaling of $V$ and mitigates exploding/vanishing gradients. It does not, by itself, guarantee that $V$ is an exact geodesic distance without additional conditions (e.g. boundary conditions and regularity).
 
@@ -496,12 +518,14 @@ The Critic does not just predict reward; it defines a **stability-oriented poten
 
     $$
     \mathcal{L}_{\text{Stiff}} = \max(0, \epsilon - \lVert\nabla V(z)\rVert)^2 + \lVert\nabla V(z)\rVert^2_{\text{reg}}
+
     $$
     *   *Effect:* The gradient $\nabla V$ must be non-zero (to drive the policy) but bounded (to prevent explosion).
 *   **Safety Budget (Node 1):**
 
     $$
     \mathcal{L}_{\text{Risk}} = \lambda_{\text{safety}} \cdot \mathbb{E}[\max(0, V(z) - V_{\text{limit}})]
+
     $$
     *   *Effect:* Hard Lagrangian enforcement of the risk budget.
 
@@ -534,6 +558,7 @@ The Policy is the controller. Its objective is to choose actions that reduce exp
 
     $$
     \mathcal{L}_{\text{nat}} = -\mathbb{E}_{z, a \sim \pi} \left[ \frac{\nabla_z V(z) \cdot f(z, a)}{\sqrt{G_{ii}(z)}} \right]
+
     $$
     * *Mechanism:* Maximize the alignment between the value gradient $\nabla V$ and the realized dynamics $f(z,a)$, normalized by the local sensitivity scale ($G_{ii}$).
     * *Effect:* Where the metric indicates high sensitivity or ill-conditioning (large $G$), effective steps shrink; where it is well-conditioned (small $G$), steps can be larger.
@@ -547,6 +572,7 @@ The Policy is the controller. Its objective is to choose actions that reduce exp
     \Delta z := S(z_t,a_t)-z_t,
     \qquad
     \mathcal{L}_{\text{Hodge}} := 1-\cos(\Delta z,\ g(z_t)).
+
     $$
     This does not remove exploration; rather it penalizes large *solenoidal* (looping) components when they produce oscillatory instability (Mode D.E). It is most appropriate when $V$ is well-shaped and the world model is reliable on-policy.
 
@@ -554,6 +580,7 @@ The Policy is the controller. Its objective is to choose actions that reduce exp
 
     $$
     \mathcal{L}_{\text{Zeno}} = \lVert\pi_t - \pi_{t-1}\rVert^2_{G}
+
     $$
     * *Effect:* Penalizes high-frequency switching, weighted by geometry. Switching is penalized more strongly in regions where the metric indicates high sensitivity (large $G$).
 
@@ -561,12 +588,14 @@ The Policy is the controller. Its objective is to choose actions that reduce exp
 
     $$
     \mathcal{L}_{\text{Zeno}}^{\text{Euc}} = D_{\mathrm{KL}}(\pi(\cdot \mid z_t) \Vert \pi(\cdot \mid z_{t-1}))
+
     $$
     *   *Effect:* Penalizes high-frequency action switching (chattering).
 *   **Entropy Regularization (Node 10):**
 
     $$
     \mathcal{L}_{\text{Ent}} = -\mathcal{H}(\pi(\cdot \mid z))
+
     $$
     *   *Effect:* Prevents premature collapse to deterministic policies (BarrierMix).
 
@@ -590,6 +619,7 @@ A key design choice in the Fragile Agent is to make inter-component alignment ex
 
         $$
         \mathcal{L}_{\text{Sync}_{K-W}} = \mathrm{CE}\!\left(K_{t+1},\ \hat{p}_\phi(K_{t+1}\mid K_t, A_t)\right)
+
         $$
     *   *Meaning:* If the shutter emits macrostates that the WM cannot predict (large closure cross-entropy), then the ontology is inconsistent: either the symbol inventory is unstable (codebook churn) or the WM class is misspecified (Mode D.C / T.E).
 
@@ -598,6 +628,7 @@ A key design choice in the Fragile Agent is to make inter-component alignment ex
 
         $$
         \mathcal{L}_{\text{Sync}_{V-\pi}} = \lVert V(z) - (r + \gamma V(z')) \rVert^2 \quad (\text{TD-Error})
+
         $$
     *   *Critically:* We track the **Advantage Gap** $\Delta A = |A^{\pi}(s, a) - A^{\text{Buffer}}(s, a)|$. If $\Delta A$ grows, the policy has drifted off-manifold (BarrierTypeII).
 
@@ -606,6 +637,7 @@ A key design choice in the Fragile Agent is to make inter-component alignment ex
 
         $$
         \mathcal{L}_{\text{Sync}_{W-\pi}} = \mathbb{E}_{z \sim \pi} [\mathcal{L}_{\text{pred}}(z)]
+
         $$
     *   *Meaning:* Accuracy on the *optimal path* matters more than global accuracy.
 
@@ -630,6 +662,7 @@ The synchronization and component losses above enforce internal consistency. The
     \mathcal{L}_{\text{KL-ctrl}}
     :=
     T_c\,\mathbb{E}_{K_t}\!\left[D_{\mathrm{KL}}\!\left(\pi(\cdot\mid K_t)\ \Vert\ \pi_0(\cdot\mid K_t)\right)\right].
+
     $$
     When $\pi_0$ is uniform, this reduces (up to an additive constant) to standard entropy regularization; when $\pi_0$ encodes actuator limits, it becomes a calibrated control-effort penalty.
 
@@ -639,6 +672,7 @@ The synchronization and component losses above enforce internal consistency. The
     \mathcal{L}_{\text{expl}}
     :=
     -\sum_{h=1}^{H} w_h\,S_c(K_t,h;\pi),
+
     $$
     with weights $w_h\ge 0$. In practice, a computable proxy is the entropy of the WM-predicted horizon marginals $\hat{P}_\phi(K_{t+h}\mid K_t)$ obtained by rollout or dynamic programming.
 
@@ -650,6 +684,7 @@ The synchronization and component losses above enforce internal consistency. The
     \mathrm{ReLU}\!\big(\epsilon - I(X_t;K_t)\big)^2
     +
     \mathrm{ReLU}\!\big(H(K_t)-(\log|\mathcal{K}|-\epsilon)\big)^2.
+
     $$
     This is an explicit online enforcement of the coupling window: $I(X;K)$ must not collapse, and $H(K)$ must not saturate.
 
@@ -664,6 +699,7 @@ The synchronization and component losses above enforce internal consistency. The
     + \beta_{\mathrm{tex}} D_{\mathrm{KL}}\!\left(q(z_{\mathrm{tex},t}\mid x_t)\ \Vert\ p(z_{\mathrm{tex}})\right)
     + T_c D_{\mathrm{KL}}\!\left(\pi(\cdot\mid K_t)\ \Vert\ \pi_0(\cdot\mid K_t)\right),
     \qquad \text{where } Z_t=(K_t,z_{n,t},z_{\mathrm{tex},t}).
+
     $$
     A monotonicity surrogate is then enforced by
 
@@ -671,6 +707,7 @@ The synchronization and component losses above enforce internal consistency. The
     \mathcal{L}_{\downarrow F}
     :=
     \mathbb{E}\!\left[\mathrm{ReLU}\!\left(F_{t+1}-F_t\right)^2\right],
+
     $$
     optionally applied only inside the safety budget (Node 1 / CostBoundCheck) to avoid suppressing necessary exploration.
 
@@ -691,6 +728,7 @@ The total Fragile Agent training objective is the weighted sum of component and 
 
 $$
 \mathcal{L}_{\text{Fragile}} = \mathcal{L}_{\text{Task}} + \sum \lambda_i \mathcal{L}_{\text{Self-Reg}_i} + \sum \lambda_{ij} \mathcal{L}_{\text{Sync}_{ij}}
+
 $$
 This defines the coupled-system "stiffness". In practice, the coefficients $\lambda$ should be treated as **adaptive multipliers** (not fixed constants): different constraints become active at different times, and gradient scales drift as representation and policy change ({ref}`Section 3.5 <sec-adaptive-multipliers-learned-penalties-setpoints-and-calibration>`). If $\lambda_{\text{Sync}}$ is too low, components drift out of alignment; if it is too high, optimization becomes over-regularized and can stall (BarrierBode).
 
@@ -738,6 +776,7 @@ Choose online-computable nonnegative constraint metrics $\mathcal{C}_i(\theta)$ 
 $$
 \mathcal{C}_i(\theta)\le \epsilon_i,
 \qquad i=1,\dots,m.
+
 $$
 Examples include enclosure defects ({ref}`Section 2.8 <sec-conditional-independence-and-sufficiency>`), Zeno/step-size limits (Node 2), saturation measures (BarrierSat), and Lyapunov defects (Node 7).
 
@@ -751,6 +790,7 @@ $$
 \sum_{i=1}^{m}\lambda_i\big(\mathcal{C}_i(\theta)-\epsilon_i\big),
 \qquad
 \lambda_i\ge 0.
+
 $$
 **Online algorithm (two-step loop).**
 1. **Primal step (agent):** update $\theta$ to reduce $\mathcal{L}(\theta,\lambda)$ using your standard optimizer.
@@ -760,6 +800,7 @@ $$
    \lambda_i
    \leftarrow
    \Pi_{[0,\lambda_{\max}]}\!\left(\lambda_i + \eta_{\lambda}\,(\mathcal{C}_i(\theta)-\epsilon_i)\right),
+
    $$
    where $\Pi$ is projection/clipping and $\eta_\lambda$ is a small dual step size.
 
@@ -808,6 +849,7 @@ K_i \sum_{t' \le t} e_{t'}
 +
 K_d(e_t-e_{t-1})
 \Big).
+
 $$
 **Sign discipline.** Choose the loss term so that increasing $\lambda$ pushes the metric in the desired direction. For example, if you want higher entropy when it is too low, include $\lambda_{\text{ent}}\,(-H(\pi))$ in the minimized loss: increasing $\lambda_{\text{ent}}$ increases the incentive to raise $H$.
 
@@ -836,6 +878,7 @@ $$
 \mathcal{L}_{\text{total}}
 =
 \sum_i \frac12\Big(\exp(-s_i)\,\mathcal{L}_i + s_i\Big).
+
 $$
 The effective weight is {math}`\exp(-s_i)`, and the {math}`s_i` term prevents degenerate solutions where all weights collapse to zero.
 
@@ -875,6 +918,7 @@ A practical, implementable calibration procedure is:
 
    $$
    \epsilon_i := Q_p\!\big(\mathcal{C}_i(\mathcal{D}_{\text{cal}})\big) + \Delta_i,
+
    $$
    with $p$ chosen by strictness (e.g. $p=0.9$ for "usually satisfied", $p=0.99$ for "almost always satisfied").
 
@@ -901,6 +945,7 @@ A practical, implementable calibration procedure is:
   H(K)\ \ge\ \log\!\big((1-\rho_{\text{dead}})\,|\mathcal{K}|\big)
   \quad\Longleftrightarrow\quad
   \log|\mathcal{K}|-H(K)\ \le\ -\log(1-\rho_{\text{dead}}).
+
   $$
   With $\rho_{\text{dead}}=0.05$, the right-hand side is $\approx 0.051$ nats.
 - **Sampling noise floors.** For per-update KL constraints estimated from batches, a typical noise scale is $O(1/B)$, so a conservative starting tolerance is $\epsilon_{\text{KL}}\approx c/B$ with $c\in[0.5,5]$ depending on variance.

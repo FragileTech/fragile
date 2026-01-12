@@ -1,4 +1,4 @@
-# Part VI: Node Specifications
+# Node Specifications
 
 (sec-gate-node-specs)=
 ## Gate Node Specifications (Blue Nodes)
@@ -48,6 +48,7 @@ graph LR
 
 $$
 P_1 \equiv \sup_{t \in [0, T)} \Phi(u(t)) < \infty
+
 $$
 
 **YES certificate** $K_{D_E}^+ = (E_{\max}, \text{bound proof})$ where $E_{\max} = \sup_t \Phi(u(t))$.
@@ -83,6 +84,7 @@ $$
 
 $$
 P_2 \equiv \#\{\text{events in } [0, T)\} < \infty \quad \forall T < T_*
+
 $$
 
 **YES certificate** $K_{\mathrm{Rec}_N}^+ = (N_{\max}, \text{event bound proof})$.
@@ -108,6 +110,7 @@ $$
 
 $$
 P_3 \equiv \exists \text{ concentration profile as } t \to T_*
+
 $$
 
 **Semantics**: This is a *dichotomy check*. YES means concentration occurs (proceed to profile extraction). NO means energy scatters (global existence via dispersion).
@@ -148,12 +151,14 @@ The dichotomy mirrors the **thermodynamic distinction** between ordered (low-ent
 
 $$
 P_4 \equiv \alpha > \beta
+
 $$
 
 where $\alpha, \beta$ are the scaling exponents satisfying:
 
 $$
 \Phi(\mathcal{S}_\lambda x) = \lambda^\alpha \Phi(x), \quad \mathfrak{D}(\mathcal{S}_\lambda x) = \lambda^\beta \mathfrak{D}(x)
+
 $$
 
 **YES certificate** $K_{\mathrm{SC}_\lambda}^+ = (\alpha, \beta, \alpha > \beta \text{ proof})$.
@@ -179,6 +184,7 @@ $$
 
 $$
 P_5 \equiv \|\theta(t) - \theta_0\| \leq C \quad \forall t \in [0, T)
+
 $$
 
 **YES certificate** $K_{\mathrm{SC}_{\partial c}}^+ = (\theta_0, C, \text{stability proof})$.
@@ -202,6 +208,7 @@ $$
 
 $$
 P_6 \equiv \mathrm{codim}(\mathcal{Y}_{\text{sing}}) \geq d_{\text{crit}} \quad \text{equivalently} \quad \dim_H(\mathcal{Y}_{\text{sing}}) \leq d - d_{\text{crit}}
+
 $$
 
 where $d$ is the ambient dimension and $d_{\text{crit}}$ is the critical codimension threshold (typically $d_{\text{crit}} = 2$ for parabolic problems).
@@ -231,6 +238,7 @@ where $d$ is the ambient dimension and $d_{\text{crit}}$ is the critical codimen
 
 $$
 P_7 \equiv \exists \theta \in (0, \tfrac{1}{2}], C_{\text{LS}} > 0, \delta > 0 : \|\nabla \Phi(x)\| \geq C_{\text{LS}} |\Phi(x) - \Phi_*|^{1-\theta}
+
 $$
 
 for all $x$ with $d(x, M) < \delta$, where $M$ is the set of critical points and $\Phi_*$ is the critical value.
@@ -247,6 +255,7 @@ for all $x$ with $d(x, M) < \delta$, where $M$ is the set of critical points and
 
 $$
 \text{Ent}(f^2 | \mathfrak{m}) \leq \frac{2}{K_{\text{LSI}}}\int_X |\nabla f|^2 \, d\mathfrak{m}
+
 $$
 
 **Enhanced Certificate:** $K_{\mathrm{LS}_\sigma}^{\text{LSI}} = (K_{\text{LSI}}, \text{LSI proof}, \text{spectral gap} \lambda_1)$ where:
@@ -298,6 +307,7 @@ For any four points $w, x, y, z \in X$, define the **Gromov product** with respe
 
 $$
 (x \mid y)_w := \frac{1}{2}\left(d(x, w) + d(y, w) - d(x, y)\right)
+
 $$
 
 **Physical Interpretation:** $(x \mid y)_w$ measures "how long $x$ and $y$ travel together from $w$ before separating."
@@ -306,12 +316,14 @@ The space is **δ-hyperbolic** if there exists a constant $\delta \geq 0$ such t
 
 $$
 (x \mid z)_w \geq \min\{(x \mid y)_w, (y \mid z)_w\} - \delta
+
 $$
 
 **Equivalently (4-Point Supremum):** Define
 
 $$
 \delta_{\text{Gromov}}(X) := \sup_{w,x,y,z \in X} \left[\min\{(x \mid y)_w, (y \mid z)_w\} - (x \mid z)_w\right]
+
 $$
 
 Then $X$ is $\delta$-hyperbolic if $\delta_{\text{Gromov}}(X) < \infty$.
@@ -348,6 +360,7 @@ For a metric space $(X, d)$ with basepoint $o$, the **asymptotic cone** $\text{C
 
 $$
 \text{Cone}_\omega(X) = \lim_{\omega} (X, \frac{1}{n}d, o)
+
 $$
 
 where $\omega$ is a non-principal ultrafilter. Intuitively: "The view from infinity after rescaling."
@@ -410,6 +423,7 @@ Matrix representation:
 
 $$
 \text{Sol} = \left\{\begin{pmatrix} e^t & 0 & x \\ 0 & e^{-t} & y \\ 0 & 0 & 1 \end{pmatrix} : t, x, y \in \mathbb{R}\right\}
+
 $$
 
 **Key properties:**
@@ -444,12 +458,14 @@ For metric space $(X,d)$ with $|B_r| \sim e^{\alpha r}$ and $\dim(\text{Cone}_\o
 
 $$
 \text{Vol}_{\text{intrinsic}}(B_r) \sim e^{\beta r} \quad \text{where } \beta = \alpha \text{ (geometric constraint)}
+
 $$
 
 **Density ratio:**
 
 $$
 \rho(r) = \frac{|B_r|}{\text{Vol}_{\text{intrinsic}}(B_r)} = \frac{e^{\alpha r}}{e^{\beta r}} \approx \text{const.}
+
 $$
 
 **LSI constant** (Bakry-Émery):
@@ -501,6 +517,7 @@ For discrete systems, refine the Thin State Object $\mathcal{X}^{\text{thin}} = 
 
 $$
 G = (V, E, W)
+
 $$
 
 where:
@@ -543,6 +560,7 @@ where:
 
 $$
 \frac{d}{dt} H(q_t) \leq -C \cdot H(q_t)
+
 $$
 
 where:
@@ -578,6 +596,7 @@ The system is admitted if the discrete Thin Kernel satisfies **BOTH**:
 
    $$
    \lambda_2(L) > \epsilon
+
    $$
 
    for some $\epsilon > 0$ independent of discretization level, where $L$ is the graph Laplacian.
@@ -590,6 +609,7 @@ The system is admitted if the discrete Thin Kernel satisfies **BOTH**:
 
    $$
    \text{Vol}(B_r(x)) \leq C r^D
+
    $$
 
    for all balls of radius $r$ centered at $x \in V$, where $D < \infty$ is the effective dimension.
@@ -621,6 +641,7 @@ The system is admitted if the discrete Thin Kernel satisfies **BOTH**:
 
    $$
    \frac{|\partial R|}{\text{Vol}(R)} \leq \epsilon_{\text{boundary}}
+
    $$
 
    where $\partial R$ is the boundary (interface vertices) and $\text{Vol}(R)$ is the internal volume.
@@ -638,6 +659,7 @@ The system is admitted if the discrete Thin Kernel satisfies **BOTH**:
 
    $$
    S(k) = \left|\sum_{n=1}^{N} e^{2\pi i k x_n}\right|^2
+
    $$
 
    where $\{x_n\}$ are rescaled point positions (Riemann zeros, eigenvalues, etc.).
@@ -646,6 +668,7 @@ The system is admitted if the discrete Thin Kernel satisfies **BOTH**:
 
    $$
    \max_k S(k) > \eta \cdot \overline{S} \qquad (\eta > 10)
+
    $$
 
    Equivalently via **number variance**: $\Sigma^2(L) \sim \log L$ (GUE) vs $\Sigma^2(L) \sim L$ (Poisson).
@@ -732,6 +755,7 @@ Let $(X,d)$ be $\delta$-hyperbolic and let $B_r$ denote metric balls. If both th
 
 $$
 \rho(r) := \frac{|B_r|}{\mathrm{Vol}_{\mathbb{H}}(B_r)}
+
 $$
 
 remains uniformly bounded in $r$, preventing spurious "mass inflation" artifacts in energy/entropy accounting.
@@ -752,6 +776,7 @@ A Thin Kernel object $\mathcal{T}$ with exponential volume growth $|B_r| \sim k^
 
 $$
 \delta_{\text{Gromov}}(X) < \epsilon \cdot \text{diam}(X)
+
 $$
 
 where:
@@ -810,6 +835,7 @@ For random $N \times N$ Hermitian matrices $H$ with probability measure $d\mu(H)
 
 $$
 P(\lambda_1, \ldots, \lambda_N) = \frac{1}{Z_N} \prod_{i<j} |\lambda_i - \lambda_j|^2 \cdot e^{-\frac{N}{2}\sum_i \lambda_i^2}
+
 $$
 
 **Key statistics:**
@@ -822,12 +848,14 @@ Let $\rho = \frac{1}{2} + i\gamma$ denote nontrivial zeros of $\zeta(s)$, rescal
 
 $$
 R_2(r) = 1 - \left(\frac{\sin(\pi r)}{\pi r}\right)^2 + \delta(r)
+
 $$
 
 This matches GUE eigenvalue statistics. Equivalently, normalized zero spacings $\{t_n = \gamma_n \cdot \frac{\log \gamma_n}{2\pi}\}$ satisfy:
 
 $$
 \lim_{T \to \infty} \frac{1}{N(T)} \sum_{\gamma_n < T} f(t_{n+1} - t_n) = \int_0^\infty f(s) \cdot p_{\text{GUE}}(s) \, ds
+
 $$
 
 **Selberg Trace Formula:**
@@ -836,6 +864,7 @@ For automorphic L-functions, the explicit formula relates primes $p^m$ to spectr
 
 $$
 \sum_{n} h(\gamma_n) = \frac{1}{2\pi} \int_{-\infty}^\infty h(r) \Phi(r) \, dr - \sum_{p^m} \frac{\log p}{p^{m/2}} g(m \log p) + \text{(boundary terms)}
+
 $$
 
 where $\gamma_n$ are imaginary parts of zeros, $h$ is a test function, and $\Phi$ is the scattering phase. This is the **trace formula**: arithmetic spectrum (primes) ↔ spectral data (zeros).
@@ -846,6 +875,7 @@ where $\gamma_n$ are imaginary parts of zeros, $h$ is a test function, and $\Phi
 
 $$
 S(k) = \left|\sum_{n} e^{2\pi i k x_n}\right|^2
+
 $$
 
 **Classification:**
@@ -865,6 +895,7 @@ For the Riemann zeta function, the **explicit formula** relates prime powers to 
 
 $$
 \psi(x) = x - \sum_\rho \frac{x^\rho}{\rho} - \log(2\pi) - \frac{1}{2}\log(1 - x^{-2})
+
 $$
 
 This is a **trace formula**: it expresses a sum over primes (arithmetic object) as a sum over zeros (spectral object). The structure factor of the zeros encodes this duality.
@@ -913,6 +944,7 @@ Cryptographic functions (AES, SHA-256, RSA) are **intentionally designed as expa
 
    $$
    \frac{|\partial R_i|}{\text{Vol}(R_i)} \leq \epsilon_{\text{boundary}}
+
    $$
 
 **Geometric Interpretation:**
@@ -945,6 +977,7 @@ Let $R \subset X$ be a subregion of the state space that violates $\delta$-hyper
 
 $$
 \frac{|\partial R|}{\text{Vol}(R)} \leq \epsilon_{\text{boundary}}
+
 $$
 
 where:
@@ -1001,6 +1034,7 @@ A kernel with expander-like geometry (positive curvature, $\delta \to \infty$) t
 
 $$
 \exists \text{ sharp peaks: } \max_k S(k) > \eta \cdot \text{mean}(S(k))
+
 $$
 
 where:
@@ -1019,6 +1053,7 @@ The structure factor measures **long-range correlations**:
 
 $$
 \Sigma^2(L) = \langle (\text{\# zeros in interval of length } L)^2 \rangle - \langle \text{\# zeros} \rangle^2
+
 $$
 
 - **Thermal/Poisson:** $\Sigma^2(L) \sim L$ (uncorrelated)
@@ -1256,6 +1291,7 @@ The beautiful thing is that all of these cases, which seem so different physical
 
 $$
 P_{7c} \equiv \|\theta_{\text{broken}} - \theta_0\| \leq C_{\text{SSB}}
+
 $$
 
 where $\theta_{\text{broken}}$ are the parameters in the broken-symmetry phase.
@@ -1279,6 +1315,7 @@ where $\theta_{\text{broken}}$ are the parameters in the broken-symmetry phase.
 
 $$
 P_{7d} \equiv \mathcal{A}_{\text{tunnel}} < \infty
+
 $$
 
 where $\mathcal{A}_{\text{tunnel}}$ is the instanton action connecting the current metastable state to a lower-energy sector.
@@ -1306,6 +1343,7 @@ where $\mathcal{A}_{\text{tunnel}}$ is the instanton action connecting the curre
 
 $$
 P_8 \equiv \tau(x) \in \mathcal{T}_{\text{accessible}}
+
 $$
 
 where $\tau: X \to \mathcal{T}$ is the sector label.
@@ -1333,6 +1371,7 @@ where $\tau: X \to \mathcal{T}$ is the sector label.
 
 $$
 P_9 \equiv \text{Singular locus is o-minimally definable}
+
 $$
 
 **YES certificate** $K_{\mathrm{TB}_O}^+ = (\text{o-minimal structure}, \text{definability proof})$.
@@ -1358,6 +1397,7 @@ $$
 
 $$
 P_{10} \equiv \tau_{\text{mix}} < \infty
+
 $$
 
 **Equivalence Note:** A positive spectral gap $\rho(\mu) > 0$ is a *sufficient* condition for finite mixing time: $\tau_{\text{mix}} \lesssim \rho^{-1} \log(1/\varepsilon)$.
@@ -1397,6 +1437,7 @@ The spectral gap $\rho > 0$ quantifies how fast the Second Law of Thermodynamics
 
 $$
 P_{11} \equiv K(x) \in \mathbb{N} \text{ (Kolmogorov complexity is decidable and finite)}
+
 $$
 
 **Semantic Clarification:**
@@ -1471,6 +1512,7 @@ These boundary checks ensure that the system's interface with the external world
 
 $$
 P_{13} \equiv \partial X \neq \varnothing \text{ or } \exists \text{ external input/output coupling}
+
 $$
 
 **YES certificate** $K_{\mathrm{Bound}_\partial}^+ = (\partial X, u_{\text{in}}, y_{\text{out}}, \text{coupling structure})$: Documents the boundary structure, input space, output space, and their interaction.
@@ -1492,6 +1534,7 @@ $$
 
 $$
 P_{14} \equiv \|u_{\text{in}}\|_{L^\infty} \leq U_{\max} \quad \text{and} \quad \int_0^T \|u_{\text{in}}(t)\|^2 \, dt < \infty
+
 $$
 
 **YES certificate** $K_{\mathrm{Bound}_B}^+ = (U_{\max}, \text{input bound proof})$: Documents the maximum input magnitude and its boundedness proof.
@@ -1513,6 +1556,7 @@ $$
 
 $$
 P_{15} \equiv \int_0^T \|u_{\text{in}}(t)\| \, dt \geq U_{\min}(T) \quad \text{for required supply threshold } U_{\min}
+
 $$
 
 **YES certificate** $K_{\mathrm{Bound}_{\Sigma}}^+ = (U_{\min}, \int u_{\text{in}}, \text{supply sufficiency proof})$: Documents the required supply threshold and that actual supply meets or exceeds it.
@@ -1534,6 +1578,7 @@ $$
 
 $$
 P_{16} \equiv d(\mathcal{L}_{\text{proxy}}, \mathcal{L}_{\text{true}}) \leq \varepsilon_{\text{align}}
+
 $$
 
 where $\mathcal{L}_{\text{proxy}}$ is the optimized/measured objective and $\mathcal{L}_{\text{true}}$ is the intended objective.
@@ -1583,6 +1628,7 @@ The Lock is where all the information from the entire Sieve comes together. It i
 
   $$
   \mathrm{Hom}_{\mathbf{Hypo}}(\mathbb{H}_{\mathrm{bad}}, \mathcal{H}) = \varnothing
+
   $$
 
 **Natural Language Logic:**

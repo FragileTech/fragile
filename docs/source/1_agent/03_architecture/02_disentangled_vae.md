@@ -42,6 +42,7 @@ The disentangled agent's internal state at time $t$ decomposes as:
 
 $$
 Z_t = (K_t, z_{n,t}, z_{\mathrm{tex},t})
+
 $$
 
 where each component serves a distinct representational role:
@@ -86,18 +87,21 @@ The macro symbol must satisfy the **causal enclosure** property:
 
 $$
 P(K_{t+1}\mid K_t,a_t)\ \text{is sharply concentrated (ideally deterministic)}
+
 $$
 
 and the **texture independence** property:
 
 $$
 I(K_{t+1};Z_{\mathrm{tex},t}\mid K_t,a_t)=0.
+
 $$
 
 Optionally, in the strongest form, nuisance independence also holds:
 
 $$
 I(K_{t+1};Z_{n,t}\mid K_t,a_t)=0.
+
 $$
 
 That is: nuisance should not be needed to predict the next macro symbol once action is accounted for.
@@ -531,6 +535,7 @@ $$
 \;+\;\lambda_{\text{slowness}}\mathcal{L}_{\text{slowness}}
 \;+\;\lambda_{\text{nuis}}\mathcal{L}_{\text{nuis-KL}}
 \;+\;\lambda_{\text{tex}}\mathcal{L}_{\text{tex-KL}}
+
 $$
 
 where:
@@ -824,6 +829,7 @@ $$
 \text{Closure Ratio}
 =
 \frac{\mathbb{E}\big[-\log p_\psi(K_{t+1}\mid K_t,a_t)\big]}{\mathbb{E}\big[-\log p_{\text{base}}(K_{t+1})\big]}.
+
 $$
 
 With $p_{\text{base}}$ chosen as the marginal symbol model, the numerator estimates $H(K_{t+1}\mid K_t,a_t)$ and the denominator estimates $H(K_{t+1})$, so the *gap* is a direct estimate of predictive information $I(K_{t+1};K_t,a_t)$.
@@ -852,6 +858,7 @@ Here's another way to think about it. The closure ratio is essentially:
 
 $$
 \text{Closure Ratio} = \frac{H(K_{t+1} \mid K_t, a_t)}{H(K_{t+1})}
+
 $$
 
 Now, by the chain rule of entropy, $H(K_{t+1}) = H(K_{t+1} \mid K_t, a_t) + I(K_{t+1}; K_t, a_t)$.
@@ -860,6 +867,7 @@ So the closure ratio is:
 
 $$
 \text{Closure Ratio} = \frac{H(K_{t+1} \mid K_t, a_t)}{H(K_{t+1} \mid K_t, a_t) + I(K_{t+1}; K_t, a_t)}
+
 $$
 
 When the ratio approaches 0, almost all of $H(K_{t+1})$ is "explained" by the predictive information---the macro symbol is nearly deterministic given the past. When the ratio approaches 1, there's no predictive information at all.
@@ -992,6 +1000,7 @@ $$
 Z_t = (K_t^{(1)}, K_t^{(2)}, \ldots, K_t^{(L)}, z_{\mu,t}),
 \qquad
 z_{\text{macro}}^{(i)} := e^{(i)}_{K_t^{(i)}}\in\mathbb{R}^{d_i}.
+
 $$
 
 Where $K^{(1)}$ is the slowest (most abstract) level and $K^{(L)}$ is the fastest (most detailed) macro symbol. The micro residual $z_{\mu,t}$ handles reconstruction detail below the finest macro scale.
@@ -1276,6 +1285,7 @@ The Fragile Agent uses differential geometry as a **regulation tool**: the metri
 
 $$
 \theta_{t+1} = \theta_t + \eta\,G^{-1}\nabla_\theta \mathcal{L}.
+
 $$
 
 **Dictionary (geometry to optimization):**
@@ -1323,6 +1333,7 @@ V(Z_t)
 + \beta_n D_{\mathrm{KL}}\!\left(q(z_{n,t}\mid x_t)\ \Vert\ p(z_n)\right)
 + \beta_{\mathrm{tex}} D_{\mathrm{KL}}\!\left(q(z_{\mathrm{tex},t}\mid x_t)\ \Vert\ p(z_{\mathrm{tex}})\right)
 + T_c D_{\mathrm{KL}}\!\left(\pi(\cdot\mid K_t)\ \Vert\ \pi_0(\cdot\mid K_t)\right),
+
 $$
 
 where {math}`Z_t=(K_t,z_{n,t},z_{\mathrm{tex},t})` and all terms are measured in nats.
@@ -1334,6 +1345,7 @@ $$
 \mathcal{L}_{\downarrow F}
 :=
 \mathbb{E}\!\left[\mathrm{ReLU}\!\left(F_{t+1}-F_t\right)^2\right].
+
 $$
 
 :::{div} feynman-prose

@@ -1,4 +1,4 @@
-# Part IX: Universal Singularity Modules
+# Universal Singularity Modules
 
 :::{div} feynman-prose feynman-added
 
@@ -39,6 +39,7 @@ A Hypostructure $\mathcal{H}$ satisfies the **Automation Guarantee** if:
 
    $$
    V = \lim_{\lambda \to 0} \lambda^{-\alpha} \cdot x(t^* + \lambda^2 t, x^* + \lambda y)
+
    $$
 
 2. **Surgery construction is automatic:** Given admissibility certificate $K_{\text{adm}}$, the Framework constructs the surgery operator $\mathcal{O}_S$ as a categorical pushout.
@@ -102,6 +103,7 @@ At the Profile node (after CompactCheck YES), the framework produces exactly one
 
 $$
 K_{\text{lib}} = (V, \text{canonical list } \mathcal{L}, V \in \mathcal{L})
+
 $$
 
 The limiting profile $V$ belongs to a finite, pre-classified library $\mathcal{L}$ of canonical profiles. Each library member has known properties enabling subsequent checks.
@@ -110,6 +112,7 @@ The limiting profile $V$ belongs to a finite, pre-classified library $\mathcal{L
 
 $$
 K_{\text{strat}} = (V, \text{definable family } \mathcal{F}, V \in \mathcal{F}, \text{stratification data})
+
 $$
 
 Profiles are parameterized in a definable (o-minimal) family $\mathcal{F}$ with finite stratification. Classification is tractable though not finite.
@@ -118,6 +121,7 @@ Profiles are parameterized in a definable (o-minimal) family $\mathcal{F}$ with 
 
 $$
 K_{\mathrm{prof}}^- := K_{\mathrm{prof}}^{\mathrm{wild}} \sqcup K_{\mathrm{prof}}^{\mathrm{inc}}
+
 $$
 
 - **NO-wild** ($K_{\mathrm{prof}}^{\mathrm{wild}}$): Profile exhibits wildness witness (chaotic attractor, turbulent cascade, undecidable structure)
@@ -163,6 +167,7 @@ The trichotomy is exhaustive since $V$ either belongs to a classifiable family o
 
 $$
 V_{n+p} \approx V_n \quad \text{for some period } p
+
 $$
 
 then the profile $V$ is defined as the **orbit** $\{V_n\}_{n \mod p}$, which falls into Case 2 (Tame Family) with a finite-dimensional parameter space $\mathbb{Z}/p\mathbb{Z}$ or $\mathbb{T}^k$ (torus for quasi-periodic).
@@ -182,6 +187,7 @@ The **Moduli Space of Profiles** for type $T$ is:
 
 $$
 \mathcal{M}_{\text{prof}}(T) := \{V : V \text{ is a scaling-invariant limit of type } T \text{ flow}\} / \sim
+
 $$
 
 where $V_1 \sim V_2$ if related by symmetry action: $V_2 = g \cdot V_1$ for $g \in G$.
@@ -195,11 +201,12 @@ where $V_1 \sim V_2$ if related by symmetry action: $V_2 = g \cdot V_1$ for $g \
 
 $$
 \mathcal{M}_{\text{prof}}(T) = \{V : \mathcal{S} \cdot V = V, \nabla F(V) = 0\} / \text{Grp}
+
 $$
 
 :::
 
-### Implementation in Sieve
+### Implementation in Sieve: Profile Classification
 
 :::{prf:remark} Profile Extraction Algorithm
 :label: rem-profile-extraction
@@ -213,6 +220,7 @@ The Framework implements `ProfileExtractor` as follows:
 
    $$
    V_n := \lambda_n^{-\alpha} \cdot x(t^* + \lambda_n^2 t, x^* + \lambda_n y)
+
    $$
 
 2. **Compactification:** Apply CompactCheck ($\mathrm{Cap}_H$) to verify subsequence converges
@@ -242,6 +250,7 @@ For any Hypostructure $\mathcal{H} = (\mathcal{X}, \Phi, \mathfrak{D}, G)$ satis
 
 $$
 K_{\mathrm{prof}}^+ := (V, \mathcal{L}_T \text{ or } \mathcal{F}_T, \mathsf{route\_tag}, \mathsf{classification\_data})
+
 $$
 
 where $\mathsf{route\_tag} \in \{\text{CC-Rig}, \text{Attr-Morse}, \text{Tame-LS}, \text{Lock-Excl}\}$ indicates which mechanism produced the certificate.
@@ -256,6 +265,7 @@ where $\mathsf{route\_tag} \in \{\text{CC-Rig}, \text{Attr-Morse}, \text{Tame-LS
 
 $$
 K_{D_E}^+ \wedge K_{C_\mu}^+ \wedge K_{\mathrm{SC}_\lambda}^+ \wedge K_{\mathrm{LS}_\sigma}^+
+
 $$
 
 **Mechanism-Specific Soft Extensions:**
@@ -270,6 +280,7 @@ $$
 
 $$
 \underbrace{K_{D_E}^+ \wedge K_{C_\mu}^+ \wedge K_{\mathrm{SC}_\lambda}^+ \wedge K_{\mathrm{LS}_\sigma}^+}_{\text{SoftCore}} \wedge \big(\text{MechA} \lor \text{MechB} \lor \text{MechC} \lor \text{MechD}\big) \Rightarrow K_{\mathrm{prof}}^+
+
 $$
 
 **Unified Proof (5 Steps):**
@@ -320,6 +331,7 @@ else emit NO with K_prof^inc (mechanism_failures: [A,B,C,D])
 
 $$
 K_{D_E}^+ \wedge K_{C_\mu}^+ \wedge K_{\mathrm{SC}_\lambda}^+ \wedge K_{\mathrm{LS}_\sigma}^+ \wedge K_{\mathrm{Mon}_\phi}^+ \wedge K_{\mathrm{Rep}_K}^+
+
 $$
 
 (proof-mt-resolve-auto-profile-mech-a)=
@@ -327,19 +339,20 @@ $$
 
 *Step A1 (Well-Posedness).* By MT-SOFT→WP (MT {prf:ref}`mt-fact-soft-wp`), derive $K_{\mathrm{WP}_{s_c}}^+$ from template matching. The evaluator recognizes the equation structure and applies the appropriate critical LWP theorem.
 
-*Step A2 (Profile Decomposition).* By MT-SOFT→ProfDec (MT {prf:ref}`mt-fact-soft-profdec`), derive $K_{\mathrm{ProfDec}_{s_c,G}}^+$ from $K_{C_\mu}^+ \wedge K_{\mathrm{SC}_\lambda}^+$. Any bounded sequence $\{u_n\}$ in $\dot{H}^{s_c}$ admits:
+*Step A2 (Profile Decomposition).* By MT-SOFT→ProfDec (MT-SOFT→ProfDec), derive $K_{\mathrm{ProfDec}_{s_c,G}}^+$ from $K_{C_\mu}^+ \wedge K_{\mathrm{SC}_\lambda}^+$. Any bounded sequence $\{u_n\}$ in $\dot{H}^{s_c}$ admits:
 
 $$
 u_n = \sum_{j=1}^J g_n^{(j)} \cdot V^{(j)} + w_n^{(J)}
+
 $$
 
 with orthogonal symmetry parameters and vanishing remainder.
 
-*Step A3 (Kenig-Merle Machine).* By MT-SOFT→KM (MT {prf:ref}`mt-fact-soft-km`), derive $K_{\mathrm{KM}_{\mathrm{CC+stab}}}^+$ from composition of $K_{\mathrm{WP}}^+ \wedge K_{\mathrm{ProfDec}}^+ \wedge K_{D_E}^+$. This extracts the minimal counterexample $u^*$ with:
+*Step A3 (Kenig-Merle Machine).* By MT-SOFT→KM (MT-SOFT→KM), derive $K_{\mathrm{KM}_{\mathrm{CC+stab}}}^+$ from composition of $K_{\mathrm{WP}}^+ \wedge K_{\mathrm{ProfDec}}^+ \wedge K_{D_E}^+$. This extracts the minimal counterexample $u^*$ with:
 - $\Phi(u^*) = E_c$ (critical energy threshold),
 - Trajectory is **almost periodic modulo $G$**.
 
-*Step A4 (Hybrid Rigidity).* By MT-SOFT→Rigidity (MT {prf:ref}`mt-fact-soft-rigidity`), derive $K_{\mathrm{Rigidity}_T}^+$ via the hybrid mechanism:
+*Step A4 (Hybrid Rigidity).* By MT-SOFT→Rigidity (MT-SOFT→Rigidity), derive $K_{\mathrm{Rigidity}_T}^+$ via the hybrid mechanism:
 1. **Monotonicity:** $K_{\mathrm{Mon}_\phi}^+$ provides virial/Morawetz identity forcing dispersion or concentration.
 2. **Łojasiewicz Closure:** $K_{\mathrm{LS}_\sigma}^+$ prevents oscillation near critical points.
 3. **Lock Exclusion:** Any "bad" $u^*$ would embed a forbidden pattern; Lock blocks this.
@@ -363,21 +376,24 @@ Conclusion: almost-periodic solutions are either **stationary** (soliton/ground 
 
 $$
 K_{D_E}^+ \wedge K_{C_\mu}^+ \wedge K_{\mathrm{SC}_\lambda}^+ \wedge K_{\mathrm{LS}_\sigma}^+ \wedge K_{\mathrm{TB}_\pi}^+
+
 $$
 
 (proof-mt-resolve-auto-profile-mech-b)=
 **Proof (4 Steps via Compilation):**
 
-*Step B1 (Global Attractor).* By MT-SOFT→Attr (MT {prf:ref}`mt-fact-soft-attr`), derive $K_{\mathrm{Attr}}^+$ from $K_{D_E}^+ \wedge K_{C_\mu}^+ \wedge K_{\mathrm{TB}_\pi}^+$. The attractor $\mathcal{A}$ exists, is compact, invariant, and attracts bounded sets:
+*Step B1 (Global Attractor).* By MT-SOFT→Attr (MT-SOFT→Attr), derive $K_{\mathrm{Attr}}^+$ from $K_{D_E}^+ \wedge K_{C_\mu}^+ \wedge K_{\mathrm{TB}_\pi}^+$. The attractor $\mathcal{A}$ exists, is compact, invariant, and attracts bounded sets:
 
 $$
 \mathcal{A} := \bigcap_{t \geq 0} \overline{\bigcup_{s \geq t} S_s(\mathcal{X})}
+
 $$
 
-*Step B2 (Morse Decomposition).* By MT-SOFT→MorseDecomp (MT {prf:ref}`mt-fact-soft-morse`), derive $K_{\mathrm{MorseDecomp}}^+$ from $K_{\mathrm{Attr}}^+ \wedge K_{D_E}^+ \wedge K_{\mathrm{LS}_\sigma}^+$. For gradient-like systems, the attractor decomposes as:
+*Step B2 (Morse Decomposition).* By MT-SOFT→MorseDecomp (MT-SOFT→MorseDecomp), derive $K_{\mathrm{MorseDecomp}}^+$ from $K_{\mathrm{Attr}}^+ \wedge K_{D_E}^+ \wedge K_{\mathrm{LS}_\sigma}^+$. For gradient-like systems, the attractor decomposes as:
 
 $$
 \mathcal{A} = \mathcal{E} \cup \bigcup_{\xi \in \mathcal{E}} W^u(\xi)
+
 $$
 
 where $\mathcal{E}$ is the equilibrium set. No periodic orbits exist (Lyapunov monotonicity).
@@ -386,12 +402,14 @@ where $\mathcal{E}$ is the equilibrium set. No periodic orbits exist (Lyapunov m
 
 $$
 \mathcal{M}_{\text{prof}} = \mathcal{A} / G
+
 $$
 
 By compactness of $\mathcal{A}$, this is a compact moduli space. The canonical library is:
 
 $$
 \mathcal{L}_T := \{\xi \in \mathcal{E} / G : \xi \text{ isolated}, |\text{Stab}(\xi)| < \infty\}
+
 $$
 
 *Step B4 (Emit Certificate).* Classify rescaling limits into $\mathcal{A}/G$:
@@ -411,6 +429,7 @@ $$
 
 $$
 K_{D_E}^+ \wedge K_{C_\mu}^+ \wedge K_{\mathrm{LS}_\sigma}^+ \wedge K_{\mathrm{TB}_O}^+
+
 $$
 
 (proof-mt-resolve-auto-profile-mech-c)=
@@ -422,6 +441,7 @@ $$
 
 $$
 \mathcal{M}_{\text{prof}} = \bigsqcup_{i=1}^N C_i
+
 $$
 
 where each $C_i$ is a definable cell (diffeomorphic to $(0,1)^{d_i}$). The stratification is canonical and computable from the defining formulas.
@@ -445,6 +465,7 @@ where each $C_i$ is a definable cell (diffeomorphic to $(0,1)^{d_i}$). The strat
 
 $$
 K_{D_E}^+ \wedge K_{C_\mu}^+ \wedge K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}
+
 $$
 
 (proof-mt-resolve-auto-profile-mech-d)=
@@ -454,6 +475,7 @@ $$
 
 $$
 \mathrm{Hom}(\mathbb{H}_{\mathrm{bad}}, \mathcal{H}) = \emptyset
+
 $$
 
 for all "bad patterns" $\mathbb{H}_{\mathrm{bad}}$ (singularity templates, wild dynamics markers). This is a **categorical statement**: no morphism from any forbidden object can land in the hypostructure.
@@ -516,6 +538,7 @@ Before invoking any surgery $S$ with mode $M$ and data $D_S$, the framework prod
 
 $$
 K_{\text{adm}} = (M, D_S, \text{admissibility proof}, K_{\epsilon}^+)
+
 $$
 
 The surgery satisfies:
@@ -528,6 +551,7 @@ The surgery satisfies:
 
 $$
 K_{\text{adm}}^{\sim} = (K_{\text{equiv}}, K_{\text{transport}}, K_{\text{adm}}[\tilde{x}])
+
 $$
 
 After an admissible equivalence move, the surgery becomes admissible.
@@ -536,6 +560,7 @@ After an admissible equivalence move, the surgery becomes admissible.
 
 $$
 K_{\text{inadm}} = (\text{failure reason}, \text{witness})
+
 $$
 
 Explicit reason certificate:
@@ -566,6 +591,7 @@ The **Canonical Library** for type $T$ is:
 
 $$
 \mathcal{L}_T := \{V \in \mathcal{M}_{\text{prof}}(T) : \text{Aut}(V) \text{ is finite}, V \text{ is isolated in } \mathcal{M}_{\text{prof}}\}
+
 $$
 
 **Properties:**
@@ -598,7 +624,7 @@ A type $T$ is **good** if:
 **Algorithmic types:** $T_{\text{algorithmic}}$ is good when the complexity measure $\mathcal{C}$ is well-founded (terminates in finite steps). In this case, "profiles" are limit cycles or fixed points of the discrete dynamics.
 :::
 
-### Implementation in Sieve
+### Implementation in Sieve: Surgery Admissibility
 
 :::{prf:remark} Admissibility Check Algorithm
 :label: rem-admissibility-algorithm
@@ -637,6 +663,7 @@ For any Hypostructure satisfying the Automation Guarantee, the Surgery Admissibi
 
 $$
 \text{Cap}(\Sigma) = \inf\left\{\int |\nabla \phi|^2 \, d\mu : \phi|_\Sigma = 1, \phi \in H^1(\mathcal{X})\right\}
+
 $$
 
 using the measure $\mu$ from $\mathcal{X}^{\text{thin}}$ and the metric $d$.
@@ -729,6 +756,7 @@ $$
 @V{\text{excise}}VV @VV{\mathcal{O}_S}V \\
 \mathcal{X}_{\text{cap}} @>{\text{glue}}>> \mathcal{X}'
 \end{CD}
+
 $$
 
 where:
@@ -773,6 +801,7 @@ For any admissible surgery $\mathcal{O}_S: \mathcal{X} \dashrightarrow \mathcal{
 
    $$
    \Phi(x') \leq \Phi(x^-) - \Delta\Phi_{\text{surg}}
+
    $$
 
    where $\Delta\Phi_{\text{surg}} \geq \epsilon_T > 0$ is the **problem-specific discrete progress constant**. This bound follows from:
@@ -784,6 +813,7 @@ For any admissible surgery $\mathcal{O}_S: \mathcal{X} \dashrightarrow \mathcal{
 
    $$
    \sup_{\mathcal{X}'} |\nabla^k \Phi| < \infty \quad \text{for all } k \leq k_{\max}(V)
+
    $$
 
    The surgered solution has bounded derivatives (smoother than pre-surgery).
@@ -792,6 +822,7 @@ For any admissible surgery $\mathcal{O}_S: \mathcal{X} \dashrightarrow \mathcal{
 
    $$
    N_{\text{surgeries}} \leq \frac{\Phi(x_0) - \Phi_{\min}}{\epsilon_T}
+
    $$
 
    Since each surgery drops energy by at least $\epsilon_T > 0$, the surgery count is explicitly bounded. This is a finite natural number, not merely an abstract well-foundedness argument.
@@ -804,6 +835,7 @@ Proof Sketch
 
 $$
 \Delta\Phi_{\text{surg}} \geq c_n \cdot \text{Vol}(\Sigma)^{(n-2)/n} \cdot \sup_{\mathcal{X}_\Sigma} |\nabla^2 \Phi|
+
 $$
 
 Excision removes this energy permanently.
@@ -814,12 +846,13 @@ Excision removes this energy permanently.
 
 $$
 N \cdot \delta_{\min} \leq \Phi(x_0) - \Phi_{\min}
+
 $$
 
 Hence $N \leq (\Phi(x_0) - \Phi_{\min})/\delta_{\min} < \infty$.
 :::
 
-### Implementation in Sieve
+### Implementation in Sieve: Structural Surgery
 
 :::{prf:remark} Surgery Operator Construction
 :label: rem-surgery-construction

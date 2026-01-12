@@ -134,6 +134,7 @@ sphinx:
     bibtex_reference_style    : 'author_year'
     # autosectionlabel configuration - prefix with document name to avoid duplicate labels
     autosectionlabel_prefix_document: true
+    autosectionlabel_maxdepth: 3  # Only create labels for H1-H3, skip deeper levels
     # Expert mode toggle - load custom JavaScript and CSS
     html_js_files:
       - expert-mode.js

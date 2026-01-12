@@ -116,6 +116,7 @@ For production systems with tight compute budgets.
 
 $$
 \mathcal{L}_{\text{Fragile}}^{\text{core}} = \mathcal{L}_{\text{task}} + \lambda_{\text{shutter}} \mathcal{L}_{\text{shutter}} + \lambda_{\text{ent}} (-H(\pi)) + \lambda_{\text{zeno}} D_{\mathrm{KL}}(\pi_t \Vert \pi_{t-1}) + \lambda_{\text{stiff}} \max(0, \epsilon - \Vert \nabla V \Vert)^2
+
 $$
 **Coverage:** Prevents Mode C.E (Blow-up), C.C (Zeno), C.D (Collapse), D.C (Ungrounded inference), T.D (Freeze), S.D (Blindness)
 
@@ -187,6 +188,7 @@ For research and safety-conscious applications.
 
 $$
 \mathcal{L}_{\text{Fragile}}^{\text{std}} = \mathcal{L}_{\text{Fragile}}^{\text{core}} + \lambda_{\text{scale}} \max(0, \beta - \alpha) + \lambda_{\text{sync}}\,\mathcal{L}_{\text{Sync}_{K-W}} + \lambda_{\text{osc}} \Vert z_t - z_{t-2} \Vert
+
 $$
 **Additional Implementation (Diagnostics Only):**
 ```python
@@ -272,6 +274,7 @@ For safety-critical applications with verification requirements.
 
 $$
 \mathcal{L}_{\text{Fragile}}^{\text{full}} = \mathcal{L}_{\text{Fragile}}^{\text{std}} + \lambda_{\text{lip}} \mathcal{L}_{\text{Lipschitz}} + \lambda_{\text{geo}} \mathcal{L}_{\text{InfoNCE}} + \lambda_{\text{gain}} \mathcal{L}_{\text{gain}}
+
 $$
 See {ref}`Section 8 <sec-infeasible-implementation-replacements>` for efficient implementations of the expensive terms.
 
@@ -909,6 +912,7 @@ The **Universal Loss** combines four components, each with a geometric interpret
 
 $$
 \mathcal{L}_{\text{universal}} = \mathcal{L}_{\text{vicreg}} + \mathcal{L}_{\text{topology}} + \mathcal{L}_{\text{separation}} + \mathcal{L}_{\text{orth}}
+
 $$
 **Component Breakdown:**
 
@@ -928,6 +932,7 @@ Each chart enforces **VICReg** constraints to prevent representation collapse:
 
 $$
 \mathcal{L}_{\text{VICReg}} = \lambda \mathcal{L}_{\text{inv}} + \mu \mathcal{L}_{\text{var}} + \nu \mathcal{L}_{\text{cov}}
+
 $$
 where $\mathcal{L}_{\text{inv}}$ enforces augmentation invariance, $\mathcal{L}_{\text{var}}$ maintains variance above a floor, and $\mathcal{L}_{\text{cov}}$ decorrelates embedding dimensions.
 
@@ -938,6 +943,7 @@ Use contrastive loss (InfoNCE) instead of geometric constraints. Remove atlas st
 
 $$
 \mathcal{L}_{\text{CURL}} = -\log \frac{\exp(\text{sim}(z_t, z^+_t)/\tau)}{\sum_j \exp(\text{sim}(z_t, z^-_j)/\tau)}
+
 $$
 This recovers **CURL** {cite}`laskin2020curl`, **DrQ** {cite}`kostrikov2020drq`, and **SPR** {cite}`schwarzer2021spr`—contrastive self-supervised RL methods.
 
@@ -1249,6 +1255,7 @@ We reframe the routing problem as a **Query-Key Matching** problem.
 
 $$
 w_i(x) := \frac{\exp\left(\frac{\langle q_i, k(x) \rangle}{\sqrt{d}}\right)}{\sum_{j=1}^{N_c} \exp\left(\frac{\langle q_j, k(x) \rangle}{\sqrt{d}}\right)}
+
 $$
 This mechanism is **permutation invariant**: shuffling the memory order of the queries $\{q_i\}$ merely shuffles the output indices without changing the underlying topology or geometry.
 
@@ -1260,6 +1267,7 @@ In this architecture, the macro-state $K_t$ decomposes into a two-level hierarch
 
 $$
 K_t = (K_{\text{chart}}, K_{\text{code}})
+
 $$
 1.  **$K_{\text{chart}} \in \{1, \dots, N_c\}$:** The Topological ID (Which manifold are we on?). Determined by the **Slot Attention** (Router).
 2.  **$K_{\text{code}} \in \{1, \dots, N_v\}$:** The Geometric ID (Where are we locally?). Determined by the **Local VQ** of the active chart.
@@ -1268,11 +1276,13 @@ The full latent state is:
 
 $$
 Z_t = (\underbrace{K_{\text{chart}}, K_{\text{code}}}_{\text{Macro}}, \underbrace{z_{n}}_{\text{Structured Local Coords}}, \underbrace{z_{\text{tex}}}_{\text{Texture}})
+
 $$
 We enforce a recursive residual decomposition in chart space:
 
 $$
 V(x) = e_{K} + z_n + z_{\text{tex}},
+
 $$
 where $z_n$ is a filtered residual (structured, predictable) and $z_{\text{tex}}$ is the residual of that residual (stochastic detail).
 
@@ -1414,6 +1424,7 @@ The Attentive Atlas offers unique geometric diagnostics unavailable to standard 
 
     $$
     H_{\text{route}}(x) = - \sum_i w_i(x) \log w_i(x)
+
     $$
     *   **Low Entropy:** The state lies within a single chart (e.g., inside a room).
     *   **High Entropy:** The state lies in a **Transition Zone** or near a **Singularity** (e.g., a doorway, or the pole of a sphere). This is a direct detector for topological boundaries.
@@ -1463,12 +1474,14 @@ w = softmax(logits, dim=-1)
   $$
   \mathcal{L}_k = \mathbb{E}_{x \sim \text{Chart}_k}\left[\|x - \hat{x}\|^2\right], \quad
   \mathcal{L}_k > \tau_{\text{expand}}
+
   $$
   Spawn a child query $q_{\text{new}} = q_k + \epsilon$, duplicate its local codebook, and reset its usage stats.
 - **Fusion trigger (redundancy or death):**
 
   $$
   P(k) = \frac{1}{T} \sum_t w_k(x_t), \quad P(k) < \epsilon_{\text{dead}}
+
   $$
   or $\Upsilon_{ij} > \Upsilon_{\text{crit}}$ ({ref}`Section 30.8 <sec-ontological-fusion-concept-consolidation>`). Merge $q_i, q_j$ or deactivate the redundant chart.
 
@@ -1664,6 +1677,7 @@ class TopologicalDecoder(nn.Module):
 
 $$
 \mathcal{L}_{\text{consistency}} = D_{\mathrm{KL}}\!\left(w_{\text{enc}}(x)\ \Vert\ w_{\text{dec}}(z_{\text{geo}})\right)
+
 $$
 This keeps the inverse router aligned with the encoder routing.
 
@@ -1755,6 +1769,7 @@ We model the latent space $\mathcal{Z}$ as a disjoint union of fibres over the d
 
 $$
 \mathcal{Z} = \bigsqcup_{k \in \mathcal{K}} \mathcal{Z}_n^{(k)}, \qquad \mathcal{Z}_n^{(k)} \cong \mathbb{R}^{d_n}.
+
 $$
 For each macro-symbol $k \in \mathcal{K}$, the fibre $\mathcal{Z}_n^{(k)}$ represents the **structured nuisance** space (local pose/basis coordinates).
 
@@ -1791,6 +1806,7 @@ Working in the upper half-space model where depth $\rho \in [0, \infty)$ corresp
 
 $$
 ds^2 = d\rho^2 + d\sigma_{\mathcal{K}}^2 + e^{-2\rho} \|dz_n\|^2
+
 $$
 where:
 
@@ -1876,16 +1892,19 @@ At layer $\ell$, the input signal $x^{(\ell)}$ is decomposed into a structural c
 
 $$
 (K^{(\ell)}, z_n^{(\ell)}) = \mathcal{E}^{(\ell)}(x^{(\ell)})
+
 $$
 2. **Synthesis (Effective Reconstruction):** The block generates the signal explained by this structure:
 
 $$
 \hat{x}^{(\ell)} = \mathcal{D}^{(\ell)}(K^{(\ell)}, z_n^{(\ell)})
+
 $$
 3. **Residual Computation (Texture Extraction):** The unexplained signal is isolated:
 
 $$
 z_{\mathrm{tex}}^{(\ell)} = x^{(\ell)} - \hat{x}^{(\ell)}
+
 $$
 :::
 :::{prf:definition} The Rescaling Operator / Renormalization
@@ -1895,6 +1914,7 @@ To prevent signal decay (vanishing activations) without using skip connections, 
 
 $$
 x^{(\ell+1)} = \frac{z_{\mathrm{tex}}^{(\ell)}}{\sigma^{(\ell)} + \epsilon}, \qquad \sigma^{(\ell)} = \sqrt{\mathrm{Var}(z_{\mathrm{tex}}^{(\ell)}) + \epsilon}
+
 $$
 The scalar $\sigma^{(\ell)}$ is stored as a state variable (the **scale factor**) for the decoding pass.
 
@@ -1906,6 +1926,7 @@ The original signal is reconstructed by summing the contributions of all scales,
 
 $$
 \hat{x} = \sum_{\ell=0}^{L-1} \Pi^{(\ell)} \cdot \hat{x}^{(\ell)} + \Pi^{(L)} \cdot x^{(L)}
+
 $$
 :::
 (sec-dynamical-isometry-why-gradients-do-not-vanish)=
@@ -1938,6 +1959,7 @@ The **OrthogonalLinear** layers enforce approximate isometry via the loss:
 
 $$
 \mathcal{L}_{\text{orth}} = \sum_{\ell} \|W_\ell^T W_\ell - I\|_F^2
+
 $$
 :::{prf:proposition} Gradient Preservation via Orthogonality
 :label: prop-gradient-preservation-via-orthogonality
@@ -1969,6 +1991,7 @@ With variance rescaling:
 
 $$
 \frac{\partial x^{(\ell)}}{\partial z_{\mathrm{tex}}^{(\ell-1)}} = \frac{1}{\sigma^{(\ell-1)}}
+
 $$
 Since each block successfully explains part of the signal, the residual standard deviation $\sigma^{(\ell)} < 1$ (the texture has less variance than the unit-normalized input). This implies:
 - **Without rescaling:** inputs to deeper layers decay exponentially ($\|x^{(\ell)}\| \to 0$), killing activations.
@@ -1985,6 +2008,7 @@ For additional stability, each layer can use **spectral normalization** {cite}`m
 
 $$
 W_{\text{SN}} = \frac{W}{\sigma_{\max}(W)}
+
 $$
 This ensures $\|W_{\text{SN}}\|_2 = 1$, making each layer 1-Lipschitz. Combined with 1-Lipschitz activations (e.g., GELU), this bounds the network Lipschitz constant by the product of per-layer spectral norms.
 
@@ -1992,6 +2016,7 @@ The framework's **LipschitzCheck** (Node 20) monitors $\max_\ell \sigma(W_\ell)$
 
 $$
 \mathcal{L}_{\text{Lip}} = \sum_\ell \max(0, \sigma_{\max}(W_\ell) - K)^2
+
 $$
 (sec-combined-effect-the-isometry-triangle)=
 #### Combined Effect: The Isometry Triangle
@@ -2195,11 +2220,13 @@ $$
     \lambda_{\text{vq}} \mathcal{L}_{\text{VQ}}^{(\ell)} +
     \lambda_{\text{orth}} \mathcal{L}_{\text{orth}}^{(\ell)}
 \right) + \lambda_{\text{decay}} \mathcal{L}_{\text{scale-decay}}
+
 $$
 where the **scale decay loss** encourages the residual variance to decrease with depth:
 
 $$
 \mathcal{L}_{\text{scale-decay}} = \sum_{\ell=0}^{L-2} \max(0, \sigma^{(\ell+1)} - \sigma^{(\ell)})^2
+
 $$
 This ensures that deeper blocks explain progressively less variance—the RG flow moves toward a fixed point.
 
@@ -2259,6 +2286,7 @@ One could learn a separate transition function $L_{i \to j}$ for each ordered pa
 
 $$
 L_{i \to j} : \mathbb{R}^{d_n} \to \mathbb{R}^{d_n}, \quad \forall i \neq j
+
 $$
 **Failure Mode 1: Parameter Explosion.**
 
@@ -2276,6 +2304,7 @@ Without explicit constraints, there is no guarantee that:
 $$
 L_{j \to k} \circ L_{i \to j} = L_{i \to k} \quad \text{(transitivity)} \\
 L_{j \to i} \circ L_{i \to j} = \mathrm{Id} \quad \text{(invertibility)}
+
 $$
 Training can easily produce inconsistent atlases where traversing a cycle of overlaps returns to a different coordinate than the starting point.
 
@@ -2296,6 +2325,7 @@ The transition $L_{i \to j}$ is then:
 
 $$
 L_{i \to j}(z) = A_j(B_i z + c_i) + d_j
+
 $$
 :::
 :::{prf:proposition} Parameter Efficiency
@@ -2335,11 +2365,13 @@ For a pair of charts $(i, j)$ with non-empty overlap, define the pairwise consis
 
 $$
 \mathcal{L}_{\text{jump}}^{(i,j)} = \mathbb{E}_{x : w_i(x) > \tau, \, w_j(x) > \tau} \left[ \left\| z_n^{(j)} - L_{i \to j}(z_n^{(i)}) \right\|^2 \right]
+
 $$
 where $z_n^{(i)}$ and $z_n^{(j)}$ are the nuisance coordinates computed independently by chart $i$ and chart $j$'s encoders, and $w_i(x), w_j(x)$ are the soft router weights. The total overlap consistency loss sums over all overlapping pairs:
 
 $$
 \mathcal{L}_{\text{jump}} = \sum_{i < j} \mathcal{L}_{\text{jump}}^{(i,j)}
+
 $$
 **Intuition:** If the encoder correctly identifies that $x$ belongs to both charts, then applying the jump operator to chart $i$'s encoding should yield chart $j$'s encoding. Any discrepancy indicates that the transition functions are inconsistent with the actual data manifold.
 
@@ -2349,6 +2381,7 @@ $$
 
    $$
    \mathbf{1}[x \in U_i \cap U_j] \approx \mathbf{1}[w_i(x) > \tau] \cdot \mathbf{1}[w_j(x) > \tau]
+
    $$
    With soft routers ({ref}`Section 7.8 <sec-tier-the-attentive-atlas>`), we use the product $w_i(x) \cdot w_j(x)$ as a soft indicator.
 
@@ -2360,6 +2393,7 @@ $$
 
    $$
    \mathcal{L}_{\text{inv}} = \mathbb{E}_{x, i, j} \left[ \left\| z_n^{(i)} - L_{j \to i}(L_{i \to j}(z_n^{(i)})) \right\|^2 \right]
+
    $$
 :::
 (sec-computational-cost-analysis)=

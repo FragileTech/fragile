@@ -32,6 +32,7 @@ Multi-agent interaction is modeled via **Ghost Interfaces** (Definition {prf:ref
 
 $$
 \mathcal{G}_{ij}(t) \subset \partial\mathcal{Z}^{(i)}(t) \times \partial\mathcal{Z}^{(j)}(t - \tau_{ij}), \quad \omega_{\mathcal{G},ij} := \omega^{(i)}(t) \oplus \omega^{(j)}(t - \tau_{ij})\big|_{\mathcal{G}_{ij}}.
+
 $$
 The **Game Tensor** $\mathcal{G}_{ij}$ (Definition {prf:ref}`def-the-game-tensor`) encodes strategic coupling with retarded components: how Agent $i$'s latent inertia changes due to Agent $j$'s past state.
 
@@ -43,6 +44,7 @@ Independent PPO {cite}`de2020independent` runs separate learners with shared rew
 
 $$
 \pi^{(i)} = \arg\max_{\pi} \mathbb{E}\left[ \sum_t r^{(i)}_t(\mathbf{s}, \mathbf{a}) \right], \quad \text{treating } \pi^{(-i)} \text{ as fixed}.
+
 $$
 Each agent optimizes against a stationary environment—other agents are part of the "MDP noise."
 
@@ -78,11 +80,13 @@ The global configuration space is the product manifold:
 
 $$
 \mathcal{Z}^{(N)} := \mathcal{Z}^{(1)} \times \mathcal{Z}^{(2)} \times \cdots \times \mathcal{Z}^{(N)}.
+
 $$
 The metric on $\mathcal{Z}^{(N)}$ is the direct sum of individual metrics:
 
 $$
 G^{(N)} := \bigoplus_{i=1}^N G^{(i)},
+
 $$
 where each $G^{(i)}$ is the capacity-constrained metric from Theorem {prf:ref}`thm-capacity-constrained-metric-law`. In coordinates, this is block-diagonal: if $\mathbf{z} = (z^{(1)}, \ldots, z^{(N)})$ with $z^{(i)} \in \mathbb{R}^{d_i}$, then $G^{(N)}_{\mu\nu}(\mathbf{z}) = G^{(i)}_{ab}(z^{(i)})$ when indices $\mu, \nu$ both lie in agent $i$'s block, and $G^{(N)}_{\mu\nu} = 0$ otherwise.
 
@@ -142,6 +146,7 @@ There exists a maximum speed $c_{\text{info}} > 0$ at which information propagat
 
 $$
 \tau_{ij} := \frac{d_{\mathcal{E}}^{ij}}{c_{\text{info}}},
+
 $$
 where $d_{\mathcal{E}}^{ij}$ is the environment distance (Definition {prf:ref}`def-environment-distance`).
 
@@ -162,6 +167,7 @@ The **Causal Interval** between spacetime events $(z^{(i)}, t_i)$ and $(z^{(j)},
 
 $$
 \Delta s^2_{ij} := -c_{\text{info}}^2 (t_j - t_i)^2 + (d_{\mathcal{E}}^{ij})^2.
+
 $$
 The events are classified as:
 - **Timelike** ($\Delta s^2_{ij} < 0$): $|t_j - t_i| > \tau_{ij}$. Causal influence is possible.
@@ -179,11 +185,13 @@ The **Past Light Cone** of Agent $i$ at time $t$ is the set of all agent-time pa
 
 $$
 \mathcal{C}^-_i(t) := \left\{ (j, t') \in \{1,\ldots,N\} \times \mathbb{R} : t' \leq t - \tau_{ij} \right\}.
+
 $$
 The **Future Light Cone** is defined symmetrically:
 
 $$
 \mathcal{C}^+_i(t) := \left\{ (j, t') : t' \geq t + \tau_{ij} \right\}.
+
 $$
 *Physical interpretation:* Agent $i$ at time $t$ can only receive information from events in $\mathcal{C}^-_i(t)$ and can only influence events in $\mathcal{C}^+_i(t)$. The region outside both cones is causally disconnected.
 
@@ -211,6 +219,7 @@ Now here is the crucial point for multi-agent systems: if two agents are spaceli
 
 $$
 \Delta s^2_{ij} = -c_{\text{info}}^2 \Delta t^2 + d_{\mathcal{E}}^2.
+
 $$
 
 **Correspondence Table:**
@@ -249,11 +258,13 @@ Let $\rho^{(j)}(t, z)$ be the reward/action flux emitted by Agent $j$. The poten
 
 $$
 \Psi_{\text{ret}}^{(i)}(t, z) = \sum_{j \neq i} \int_{-\infty}^{t} \int_{\mathcal{Z}^{(j)}} G_{\text{ret}}(z, t; \zeta, \tau) \rho^{(j)}(\tau, \zeta) \, d\mu_G(\zeta) \, d\tau,
+
 $$
 where $G_{\text{ret}}$ is the **Retarded Green's Function** for the wave operator on the manifold:
 
 $$
 G_{\text{ret}}(z, t; \zeta, \tau) \propto \frac{\delta\left((t-\tau) - d_{\mathcal{E}}(z, \zeta)/c_{\text{info}}\right)}{d_{\mathcal{E}}(z, \zeta)^{(D-2)/2}}.
+
 $$
 
 *Interpretation:* Agent $i$ does not perceive Agent $j$'s current state. It perceives the "ghost" of Agent $j$ from time $\tau_{ij} = d_{\mathcal{E}}^{ij}/c_{\text{info}}$ ago.
@@ -269,6 +280,7 @@ The **Causal Bundle** is the augmented state space:
 
 $$
 \mathcal{Z}_{\text{causal}} := \mathcal{Z}^{(N)} \times \Xi_{<t},
+
 $$
 where:
 - $\mathcal{Z}^{(N)} = \prod_i \mathcal{Z}^{(i)}$ is the product configuration space (Definition {prf:ref}`def-n-agent-product-manifold`)
@@ -278,6 +290,7 @@ The **Relativistic State** for Agent $i$ at time $t$ is:
 
 $$
 \mathcal{S}^{(i)}_t := \left( z^{(i)}_t, \Xi^{(i)}_{<t} \right),
+
 $$
 where $\Xi^{(i)}_{<t}$ stores the history of received retarded potentials over the interval $[t - \tau_{\text{horizon}}, t)$.
 
@@ -291,13 +304,17 @@ where $\Xi^{(i)}_{<t}$ stores the history of received retarded potentials over t
 Let $P(z^{(N)}_{t+\Delta t} | z^{(N)}_t, \Xi_{<t})$ denote the transition probability. When agents have finite causal delay $\tau_{ij} > 0$:
 
 1. **On $\mathcal{Z}^{(N)}$ alone:** The Markov property fails:
+
    $$
    P(z^{(N)}_{t+\Delta t} | z^{(N)}_t) \neq P(z^{(N)}_{t+\Delta t} | z^{(N)}_{\leq t}).
+
    $$
 
 2. **On $\mathcal{Z}_{\text{causal}}$:** The Markov property is restored:
+
    $$
    P\left((z^{(N)}_{t+\Delta t}, \Xi_{<t+\Delta t}) \,\big|\, (z^{(N)}_t, \Xi_{<t})\right) = P\left((z^{(N)}_{t+\Delta t}, \Xi_{<t+\Delta t}) \,\big|\, \text{full history}\right).
+
    $$
 
 *Proof sketch.* The Memory Screen $\Xi_{<t}$ encodes all information about past states that can causally influence the future. By the definition of the past light cone (Definition {prf:ref}`def-past-light-cone`), no additional information from $\Xi_{<t'}$ for $t' < t$ is needed beyond what is already encoded in $\Xi_{<t}$. The causal structure guarantees that spacelike-separated events cannot contribute new information. See **{ref}`Appendix E.14 <sec-appendix-e-rigorous-proof-sketches-for-ontological-and-metabolic-laws>`** for the complete proof using causal factorization and Chapman-Kolmogorov. $\square$
@@ -339,6 +356,7 @@ The **Ghost Interface** $\mathcal{G}_{ij}(t)$ between agents $i$ and $j$ at time
 
 $$
 \mathcal{G}_{ij}(t) := \partial\mathcal{Z}^{(i)}(t) \times \partial\mathcal{Z}^{(j)}(t - \tau_{ij}),
+
 $$
 coupling Agent $i$'s current boundary to Agent $j$'s past boundary, where $\tau_{ij} = d_{\mathcal{E}}^{ij}/c_{\text{info}}$ is the causal delay.
 
@@ -346,6 +364,7 @@ The **Ghost Symplectic Structure** is:
 
 $$
 \omega_{\mathcal{G},ij} := \omega^{(i)}(t) \oplus \omega^{(j)}(t - \tau_{ij})\big|_{\mathcal{G}_{ij}}.
+
 $$
 
 *Mechanism:* Agent $i$ couples not to $z^{(j)}_t$, but to the **Ghost State** $\hat{z}^{(j)}_t := z^{(j)}_{t-\tau_{ij}}$—the state of Agent $j$ when the signal was emitted.
@@ -361,6 +380,7 @@ The **pairwise interaction potential** $\Phi_{\text{int}}: \mathcal{Z} \times \m
 
 $$
 \Phi_{\text{int}}(z, \zeta) := \alpha \cdot \mathcal{G}_{\kappa}(z, \zeta)
+
 $$
 where $\mathcal{G}_{\kappa}$ is the screened Green's function (Proposition {prf:ref}`prop-green-s-function-interpretation`) and $\alpha$ encodes the strategic relationship.
 
@@ -377,6 +397,7 @@ The **Retarded Interaction Potential** from Agent $j$ to Agent $i$ at time $t$ i
 
 $$
 \Phi^{\text{ret}}_{ij}(z^{(i)}, t) := \alpha_{ij} \cdot \mathcal{G}_{\kappa}(z^{(i)}, \hat{z}^{(j)}_t) \cdot \sigma^{(j)}_r(\hat{z}^{(j)}_t),
+
 $$
 where:
 - $\hat{z}^{(j)}_t = z^{(j)}_{t - \tau_{ij}}$ is the ghost state
@@ -397,6 +418,7 @@ The effective coupling tensor $\mathcal{T}_{ij}$ between agents splits into inst
 
 $$
 \mathcal{T}_{ij}^{\text{total}}(t) = \underbrace{\mathcal{T}_{ij}^{\text{local}}(t)}_{\text{Short-range}} + \underbrace{\int_{-\infty}^t \mathcal{K}_{\text{delay}}(t-\tau) \mathcal{T}_{ij}^{\text{ghost}}(\tau) \, d\tau}_{\text{Long-range Retarded}},
+
 $$
 where $\mathcal{K}_{\text{delay}}(t-\tau) = \delta(t - \tau - \tau_{ij})$ is the delay kernel.
 
@@ -413,11 +435,13 @@ As $c_{\text{info}} \to \infty$, the causal delay vanishes: $\tau_{ij} \to 0$ fo
 
 $$
 \lim_{c_{\text{info}} \to \infty} \mathcal{G}_{ij}(t) = \partial\mathcal{Z}^{(i)}(t) \times \partial\mathcal{Z}^{(j)}(t),
+
 $$
 and the retarded potential becomes instantaneous:
 
 $$
 \lim_{c_{\text{info}} \to \infty} \Phi^{\text{ret}}_{ij}(z^{(i)}, t) = \Phi_{ij}(z^{(i)}, z^{(j)}_t).
+
 $$
 
 *Interpretation:* Co-located agents ($d_{\mathcal{E}}^{ij} = 0$) or systems with negligible propagation delay operate in the Newtonian regime where standard MARL applies.
@@ -434,6 +458,7 @@ $$
 
 $$
 \Phi^{\text{ret}}_{ij}(z^{(i)}, t) = \Phi_{ij}(z^{(i)}, z^{(j)}_{t-\tau_{ij}}).
+
 $$
 
 **Correspondence Table:**
@@ -472,6 +497,7 @@ Let information propagate at speed $c_{\text{info}}$. The Value Function $V^{(i)
 
 $$
 \boxed{\left( \frac{1}{c_{\text{info}}^2} \frac{\partial^2}{\partial t^2} + \gamma_{\text{damp}} \frac{\partial}{\partial t} - \Delta_{G^{(i)}} + \kappa_i^2 \right) V^{(i)}(z, t) = \rho^{(i)}_r(z, t) + \sum_{j \neq i} \Phi^{\text{ret}}_{ij}(z, t)}
+
 $$
 where:
 - $\square_{G} = \frac{1}{c_{\text{info}}^2}\partial_t^2 - \Delta_G$ is the **D'Alembertian** on the manifold
@@ -495,6 +521,7 @@ A sudden change in reward at location $z_A$ and time $t_0$ propagates outward as
 
 $$
 V(z, t) \sim \frac{\Theta(t - t_0 - d_G(z, z_A)/c_{\text{info}})}{d_G(z, z_A)^{(D-2)/2}} \cdot e^{-\kappa d_G(z, z_A)} \cdot \rho_r(z_A, t_0),
+
 $$
 where $\Theta$ is the Heaviside step function enforcing causality.
 
@@ -509,11 +536,13 @@ In the limit $c_{\text{info}} \to \infty$, the temporal derivatives become negli
 
 $$
 \frac{1}{c_{\text{info}}^2} \frac{\partial^2 V}{\partial t^2} \to 0,
+
 $$
 and the Klein-Gordon equation reduces to the **stationary Helmholtz equation**:
 
 $$
 (-\Delta_G + \kappa^2) V = \rho_r + \sum_{j \neq i} \Phi_{ij}.
+
 $$
 This recovers Theorem {prf:ref}`thm-the-hjb-helmholtz-correspondence` as the instantaneous (Newtonian) limit.
 
@@ -526,11 +555,13 @@ The solution to the inhomogeneous Klein-Gordon equation is given by convolution 
 
 $$
 V^{(i)}(z, t) = \int_{-\infty}^{t} \int_{\mathcal{Z}^{(i)}} G_{\text{ret}}(z, t; \zeta, \tau) \left[ \rho^{(i)}_r(\zeta, \tau) + \sum_{j} \Phi^{\text{ret}}_{ij}(\zeta, \tau) \right] d\mu_G(\zeta) \, d\tau,
+
 $$
 where $G_{\text{ret}}$ satisfies:
 
 $$
 \left( \frac{1}{c_{\text{info}}^2} \frac{\partial^2}{\partial t^2} - \Delta_G + \kappa^2 \right) G_{\text{ret}}(z, t; \zeta, \tau) = \delta(z - \zeta)\delta(t - \tau),
+
 $$
 with the **causal boundary condition** $G_{\text{ret}} = 0$ for $t < \tau$.
 
@@ -538,6 +569,7 @@ with the **causal boundary condition** $G_{\text{ret}} = 0$ for $t < \tau$.
 
 $$
 G_{\text{ret}}(z, t; \zeta, \tau) = \frac{\Theta(t - \tau)}{4\pi |z - \zeta|} \delta\left(t - \tau - \frac{|z-\zeta|}{c_{\text{info}}}\right) \cdot e^{-\kappa|z-\zeta|}.
+
 $$
 
 :::
@@ -552,6 +584,7 @@ $$
 
 $$
 \left(\frac{1}{c_{\text{info}}^2}\partial_t^2 - \Delta_G + \kappa^2\right)V = \rho_r
+
 $$
 
 **Correspondence Table:**
@@ -592,6 +625,7 @@ We define the **Game Tensor** $\mathcal{G}_{ij}^{kl}$ as the cross-Hessian of Ag
 
 $$
 \mathcal{G}_{ij}^{kl}(z^{(i)}, z^{(j)}) := \frac{\partial^2 V^{(i)}}{\partial z^{(j)}_k \partial z^{(j)}_l}\bigg|_{z^{(j)} = z^{(j)*}},
+
 $$
 where $z^{(j)*}$ is Agent $j$'s current position (or expected position under their policy). This tensor measures how sensitive Agent $i$'s value landscape is to Agent $j$'s location.
 
@@ -603,6 +637,7 @@ For Agent $i$, the "risk" includes the **Predictive Volatility** of the adversar
 
 $$
 \delta^2 V^{(i)} = (\delta z^{(i)})^\top \left( \nabla_{z^{(i)}}^2 V^{(i)} + \underbrace{(\nabla_{z^{(j)}} \nabla_{z^{(i)}} V^{(i)}) \mathcal{J}_{ji}}_{\text{Strategic back-reaction}} \right) \delta z^{(i)}.
+
 $$
 **Agent $i$'s perceived geometry** is modified by adversarial presence as follows:
 
@@ -610,6 +645,7 @@ $$
 
    $$
    \tilde{G}^{(i)}_{kl}(z) = G^{(i)}_{kl}(z) + \sum_{j \neq i} \beta_{ij} \cdot \mathcal{G}_{ij,kl}(z),
+
    $$
    where $\mathcal{G}_{ij,kl} = G^{(i)}_{km} G^{(i)}_{ln} \mathcal{G}_{ij}^{mn}$ is the Game Tensor with lowered indices, and $\beta_{ij} > 0$ for adversarial agents, $\beta_{ij} = 0$ for neutral, $\beta_{ij} < 0$ for cooperative.
 
@@ -617,6 +653,7 @@ $$
 
    $$
    \tilde{\Gamma}^{(i),m}_{kl} = \Gamma^{(i),m}_{kl} + \frac{1}{2}(G^{(i)})^{mn}\left(\nabla_k (\beta \mathcal{G})_{nl} + \nabla_l (\beta \mathcal{G})_{nk} - \nabla_n (\beta \mathcal{G})_{kl}\right),
+
    $$
    where $(\beta\mathcal{G})_{kl} := \sum_{j \neq i} \beta_{ij} \mathcal{G}_{ij,kl}$.
 
@@ -624,6 +661,7 @@ $$
 
    $$
    T^{(i)}_{kl} \to T^{(i)}_{kl} + \gamma_{\text{game}} \sum_{j \neq i} |\beta_{ij}| \cdot \mathcal{G}_{ij,kl}.
+
    $$
 *Physical interpretation:* Adversarial agents effectively "curve" each other's latent space. An agent approaching a contested region experiences increased geodesic resistance (higher mass), making aggressive maneuvers more costly.
 
@@ -650,6 +688,7 @@ In a competitive game where Agent $j$ is adversarial ($\beta_{ij} > 0$) and the 
 
 $$
 \tilde{G}^{(i)}_{kl} \xi^k \xi^l \geq G^{(i)}_{kl} \xi^k \xi^l \quad \forall \xi \in T_{z}\mathcal{Z}^{(i)}.
+
 $$
 *Consequence:* The effective **Mass** $M^{(i)}(z)$ (Definition {prf:ref}`def-mass-tensor`) of Agent $i$ increases: $\tilde{M}^{(i)} \geq M^{(i)}$.
 
@@ -672,6 +711,7 @@ Under finite information speed $c_{\text{info}}$, the Game Tensor acquires a **r
 
 $$
 \mathcal{G}_{ij}^{kl,\text{ret}}(z^{(i)}, t) := \frac{\partial^2 V^{(i)}}{\partial z^{(j)}_k \partial z^{(j)}_l}\bigg|_{z^{(j)} = \hat{z}^{(j)}_t},
+
 $$
 where $\hat{z}^{(j)}_t = z^{(j)}_{t - \tau_{ij}}$ is the ghost state of Agent $j$ at the retarded time.
 
@@ -679,6 +719,7 @@ The **total effective metric** including retardation is:
 
 $$
 \tilde{G}^{(i)}_{kl}(z, t) = G^{(i)}_{kl}(z) + \sum_{j \neq i} \beta_{ij} \cdot \mathcal{G}_{ij,kl}^{\text{ret}}(z, t).
+
 $$
 
 *Consequence (Strategic Hysteresis):* The metric inflation Agent $i$ experiences depends on Agent $j$'s position at the retarded time, not the current time. An agent may enter a region expecting low resistance, only to encounter a "delayed wall" of metric inflation arriving from the opponent's past position.
@@ -692,6 +733,7 @@ The effective metric $\tilde{G}^{(i)}(z, t)$ satisfies a wave-like propagation e
 
 $$
 \frac{\partial \tilde{G}^{(i)}_{kl}}{\partial t} = \sum_{j \neq i} \beta_{ij} \frac{\partial \mathcal{G}_{ij,kl}^{\text{ret}}}{\partial t} = \sum_{j \neq i} \beta_{ij} \frac{d\mathcal{G}_{ij,kl}}{dt}\bigg|_{t-\tau_{ij}}.
+
 $$
 
 The metric perturbation at time $t$ depends on the opponent's dynamics at time $t - \tau_{ij}$. Information about strategic coupling propagates at speed $c_{\text{info}}$.
@@ -726,6 +768,7 @@ The N-agent WFR action on the product space with retarded interactions is:
 
 $$
 \mathcal{A}^{(N)}[\boldsymbol{\rho}, \mathbf{v}, \mathbf{r}] = \int_0^T \left[ \sum_{i=1}^N \int_{\mathcal{Z}^{(i)}} \left(\|v^{(i)}\|_{\tilde{G}^{(i)}}^2 + \lambda_i^2 |r^{(i)}|^2 \right) d\rho^{(i)} + \mathcal{V}_{\text{int}}^{\text{ret}}(\boldsymbol{\rho}, t) \right] dt,
+
 $$
 where:
 - $v^{(i)}$ is the velocity field for Agent $i$'s belief flow
@@ -744,25 +787,32 @@ In the relativistic formulation, a Nash equilibrium is a joint density $\boldsym
 
 $$
 \left\langle \frac{\partial \boldsymbol{\rho}^*}{\partial t} \right\rangle_T := \frac{1}{T}\int_0^T \frac{\partial \boldsymbol{\rho}^*}{\partial t}(\mathbf{z}, t') \, dt' = 0,
+
 $$
 where the averaging period $T \gg \max_{i,j} \tau_{ij}$ exceeds all causal delays.
 
 **Characterization:** A standing wave Nash equilibrium satisfies:
 
 1. **Time-averaged gradient vanishing:**
+
    $$
    \left\langle (G^{(i)})^{-1} \nabla_{z^{(i)}} \Phi_{\text{eff}}^{(i,\text{ret})} \right\rangle_T = 0 \quad \forall i
+
    $$
 
 2. **Balanced probability currents:** The flux exchanged between agents via retarded potentials is balanced over one wave period:
+
    $$
    \int_0^T \mathbf{J}^{(i)}(z, t) \, dt = 0 \quad \text{for all } z \in \mathcal{Z}^{(i)}
+
    $$
    where $\mathbf{J}^{(i)} = \rho^{(i)} \mathbf{v}^{(i)}$ is the probability current.
 
 3. **Resonance condition:** The system oscillates at the characteristic causal frequency:
+
    $$
    \omega_{\text{Nash}} \sim \frac{c_{\text{info}}}{\bar{d}_{\mathcal{E}}},
+
    $$
    where $\bar{d}_{\mathcal{E}}$ is the mean environment distance between agents.
 
@@ -777,6 +827,7 @@ As $c_{\text{info}} \to \infty$, the standing wave Nash reduces to the static Na
 
 $$
 \lim_{c_{\text{info}} \to \infty} \boldsymbol{\rho}^*(\mathbf{z}, t) = \boldsymbol{\rho}^*_{\text{static}}(\mathbf{z}),
+
 $$
 and the geometric stasis conditions (vanishing gradient, stationary Game Tensor) hold instantaneously rather than on average.
 
@@ -788,18 +839,24 @@ and the geometric stasis conditions (vanishing gradient, stationary Game Tensor)
 In the Newtonian limit ($c_{\text{info}} \to \infty$), a strategy profile $\mathbf{z}^* = (z^{(1)*}, \ldots, z^{(N)*})$ is a Nash equilibrium if and only if it satisfies the instantaneous **geometric stasis conditions**:
 
 1. **Vanishing individual gradient:**
+
    $$
    (G^{(i)})^{-1} \nabla_{z^{(i)}} \Phi_{\text{eff}}^{(i)}(z^{(i)*}; z^{(-i)*}) = 0 \quad \forall i
+
    $$
 
 2. **Stationary Game Tensor:**
+
    $$
    \frac{d}{dt}\mathcal{G}_{ij}^{kl}\bigg|_{\mathbf{z}^*} = 0 \quad \forall i,j
+
    $$
 
 3. **Non-positive second variation:**
+
    $$
    \delta^2 V^{(i)}|_{z^{(i)*}} \leq 0 \quad \forall i, \forall \delta z^{(i)}
+
    $$
 
 *Remark (Nash vs. Pareto).* Geometric stasis need not coincide with global optimality (Pareto). The Game Tensor eigenstructure determines the gap: trace-negative (cooperative) tends toward Pareto-improving basins; trace-positive (adversarial) tends toward Pareto-suboptimal saddles.
@@ -813,6 +870,7 @@ At a standing wave Nash equilibrium, the **time-averaged probability current** v
 
 $$
 \langle \mathbf{J}^{(i)} \rangle_T = \langle \rho^{(i)} \mathbf{v}^{(i)} \rangle_T = 0 \quad \forall i.
+
 $$
 
 *Interpretation:* The agents are not "frozen"—they oscillate with the causal frequency $\omega_{\text{Nash}}$—but the net flow averages to zero. Nash equilibrium is dynamic balance, not static rest.
@@ -956,6 +1014,7 @@ Let $\boldsymbol{z} = (z_1, \dots, z_N)$ be the configuration of $N$ agents on $
 
 $$
 \tilde{G}(z) = G_{\text{intrinsic}}(z) + \alpha_{\text{adv}} \nabla^2_z \left( \Phi_{\text{int}} * \rho \right)(z)
+
 $$
 where $\Phi_{\text{int}}(z, \zeta)$ is the pairwise interaction potential ({prf:ref}`prop-interaction-kernel`) and $*$ denotes the Riemannian convolution.
 
@@ -966,11 +1025,13 @@ where $\Phi_{\text{int}}(z, \zeta)$ is the pairwise interaction potential ({prf:
 
 $$
 (\delta G)_{ab}(z_i) = \alpha_{\text{adv}} \sum_{j \neq i} \frac{\partial^2 \Phi_{\text{int}}(z_i, z_j)}{\partial z_i^a \partial z_i^b}.
+
 $$
 3. **Continuum Limit:** We rewrite the sum as an integral against the empirical measure:
 
 $$
 (\delta G)_{ab}(z) = \alpha_{\text{adv}} \int_{\mathcal{Z}} \nabla^2_{z, a, b} \Phi_{\text{int}}(z, \zeta) \, d\mu_N(\zeta).
+
 $$
 4. **Convergence:** Assuming $\Phi_{\text{int}}$ is $C^2$ and bounded, and $\mu_N \rightharpoonup \rho$ weakly, the integral converges to the convolution $(\nabla^2 \Phi_{\text{int}} * \rho)(z)$.
 
@@ -993,6 +1054,7 @@ Let $z^*(t)$ be a time-varying Nash equilibrium. An agent with maximum metabolic
 
 $$
 \|\dot{z}^*\|_{\tilde{G}(z^*)} \leq \sqrt{\frac{2 \dot{\mathcal{M}}_{\max}}{\sigma_{\text{met}}}}
+
 $$
 where $\tilde{G}$ is the game-augmented metric ({prf:ref}`thm-adversarial-mass-inflation`).
 
@@ -1106,6 +1168,7 @@ The physical dynamics of the multi-agent system are invariant under position-dep
 
 $$
 \psi'(z, t) = U(z)\psi(z, t)
+
 $$
 
 leaves observable quantities (reward, policy output, Nash conditions) unchanged.
@@ -1143,12 +1206,14 @@ The **Matter Field** for agent $i$ is the complex-valued section
 
 $$
 \psi^{(i)}: \mathcal{Z}^{(i)} \times \mathbb{R} \to V
+
 $$
 
 where $V$ is the representation space of $G$. The matter field is related to the belief wave-function by:
 
 $$
 \psi^{(i)}(z, t) = \sqrt{\rho^{(i)}(z, t)} \exp\left(\frac{iV^{(i)}(z, t)}{\sigma}\right) \cdot \xi^{(i)}(z)
+
 $$
 
 where:
@@ -1163,6 +1228,7 @@ where:
 
 $$
 \psi'^{(i)}(z, t) = \rho(U(z))\psi^{(i)}(z, t)
+
 $$
 
 where $\rho: G \to GL(V)$ is the representation.
@@ -1176,6 +1242,7 @@ The nuisance fiber at each macro-state $K \in \mathcal{K}$ admits interpretation
 
 $$
 \mathcal{Z}_n\big|_K \cong G_K / H_K
+
 $$
 
 where:
@@ -1249,6 +1316,7 @@ The **Strategic Connection** is a $\mathfrak{g}$-valued 1-form on $\mathcal{Z}$:
 
 $$
 A = A_\mu^a T_a \, dz^\mu
+
 $$
 
 where:
@@ -1269,6 +1337,7 @@ Under a local gauge transformation $U(z) \in G$, the connection transforms as:
 
 $$
 A'_\mu = U A_\mu U^{-1} - \frac{i}{g}(\partial_\mu U)U^{-1}
+
 $$
 
 where $g > 0$ is the **coupling constant** (strategic coupling strength).
@@ -1281,12 +1350,14 @@ $$
 D'_\mu\psi' &= (\partial_\mu - igA'_\mu)(U\psi) \\
 &= (\partial_\mu U)\psi + U(\partial_\mu\psi) - igA'_\mu U\psi
 \end{aligned}
+
 $$
 
 For this to equal $U(\partial_\mu - igA_\mu)\psi = U(\partial_\mu\psi) - igUA_\mu\psi$, we require:
 
 $$
 (\partial_\mu U)\psi - igA'_\mu U\psi = -igUA_\mu\psi
+
 $$
 
 Solving for $A'_\mu$ yields the stated transformation law. $\square$
@@ -1302,12 +1373,14 @@ The **Covariant Derivative** acting on matter fields is:
 
 $$
 D_\mu = \partial_\mu - igA_\mu
+
 $$
 
 For a matter field $\psi$ in representation $\rho$:
 
 $$
 D_\mu\psi = \partial_\mu\psi - igA_\mu^a \rho(T_a)\psi
+
 $$
 
 *Properties:*
@@ -1326,6 +1399,7 @@ The Klein-Gordon equation for Value (Theorem {prf:ref}`thm-hjb-klein-gordon`) ge
 
 $$
 \left(\frac{1}{c_{\text{info}}^2}D_t^2 - D^i D_i + \kappa^2\right)V^{(i)} = \rho_r^{(i)} + \sum_{j \neq i} \Phi_{ij}^{\text{ret}}
+
 $$
 
 where:
@@ -1338,6 +1412,7 @@ The minimal coupling principle replaces $\partial_\mu \to D_\mu$ in the Klein-Go
 
 $$
 \Box_A := \frac{1}{c_{\text{info}}^2}D_t^2 - \tilde{G}^{ij}D_i D_j = \frac{1}{\sqrt{|\tilde{G}|}}D_\mu\left(\sqrt{|\tilde{G}|}\tilde{G}^{\mu\nu}D_\nu\right)
+
 $$
 
 The screening term $\kappa^2 V$ and source terms are gauge-invariant scalars. $\square$
@@ -1351,6 +1426,7 @@ To maintain gauge invariance, all derivatives in the dynamics must be replaced b
 
 $$
 \partial_\mu \longrightarrow D_\mu = \partial_\mu - igA_\mu
+
 $$
 
 This **Minimal Coupling Principle** ensures that:
@@ -1395,13 +1471,16 @@ Under a local gauge transformation $U(z)$, the Game Tensor transforms as:
 
 $$
 \mathcal{G}'_{ij}(z) = U(z) \mathcal{G}_{ij}(z) U(z)^\dagger + \mathcal{C}_{ij}[A, U]
+
 $$
 
 where $\mathcal{C}_{ij}[A, U]$ is a **connection correction** involving commutators $[A_\mu, \mathcal{G}_{ij}]$.
 
 For **Abelian** gauge groups ($[T_a, T_b] = 0$), the correction vanishes:
+
 $$
 \mathcal{G}'_{ij} = \mathcal{G}_{ij} \quad \text{(Abelian)}
+
 $$
 
 For **non-Abelian** groups, the Game Tensor is not gauge-invariant but transforms covariantly.
@@ -1417,12 +1496,14 @@ The **Gauge-Covariant Game Tensor** is defined using covariant derivatives:
 
 $$
 \tilde{\mathcal{G}}_{ij}^{kl}(z) := D_k D_l V^{(i)}\big|_{z^{(j)}}
+
 $$
 
 Explicitly:
 
 $$
 \tilde{\mathcal{G}}_{ij}^{kl} = \partial_k\partial_l V^{(i)} - ig(\partial_k A_l + \partial_l A_k)V^{(i)} - g^2[A_k, A_l]V^{(i)} + \Gamma^m_{kl}\partial_m V^{(i)}
+
 $$
 
 where $\Gamma^m_{kl}$ are the Christoffel symbols of the strategic metric.
@@ -1441,6 +1522,7 @@ The effective metric (Theorem {prf:ref}`thm-adversarial-mass-inflation`) general
 
 $$
 \tilde{G}^{(i)}_{kl}(z) = G^{(i)}_{kl}(z) + \sum_{j \neq i} \beta_{ij} \text{Tr}\left[\tilde{\mathcal{G}}_{ij,kl}\right]
+
 $$
 
 where the trace projects onto the gauge-invariant component.
@@ -1480,12 +1562,14 @@ The **Field Strength Tensor** is the $\mathfrak{g}$-valued 2-form:
 
 $$
 \mathcal{F}_{\mu\nu} = \partial_\mu A_\nu - \partial_\nu A_\mu - ig[A_\mu, A_\nu]
+
 $$
 
 In components with Lie algebra generators:
 
 $$
 \mathcal{F}_{\mu\nu}^a = \partial_\mu A_\nu^a - \partial_\nu A_\mu^a + gf^{abc}A_\mu^b A_\nu^c
+
 $$
 
 where $f^{abc}$ are the structure constants of $\mathfrak{g}$.
@@ -1505,6 +1589,7 @@ Under gauge transformation $U(z)$, the field strength transforms **covariantly**
 
 $$
 \mathcal{F}'_{\mu\nu} = U \mathcal{F}_{\mu\nu} U^{-1}
+
 $$
 
 *Proof.*
@@ -1516,6 +1601,7 @@ $$
 &= U(\partial_\mu A_\nu - \partial_\nu A_\mu - ig[A_\mu, A_\nu])U^{-1} \\
 &= U\mathcal{F}_{\mu\nu}U^{-1}
 \end{aligned}
+
 $$
 
 The inhomogeneous terms from $A'_\mu$ cancel exactly. $\square$
@@ -1531,6 +1617,7 @@ The field strength measures the failure of covariant derivatives to commute:
 
 $$
 [D_\mu, D_\nu]\psi = -ig\mathcal{F}_{\mu\nu}\psi
+
 $$
 
 *Proof.*
@@ -1545,6 +1632,7 @@ $$
 &= -ig(\partial_\mu A_\nu - \partial_\nu A_\mu - ig[A_\mu, A_\nu])\psi \\
 &= -ig\mathcal{F}_{\mu\nu}\psi \quad \square
 \end{aligned}
+
 $$
 
 *Interpretation:* If $\mathcal{F}_{\mu\nu} \neq 0$, parallel transport around a closed loop results in a non-trivial rotation. The "meaning" of strategic nuisance **twists** as one navigates the latent space.
@@ -1558,6 +1646,7 @@ The field strength satisfies the **Bianchi Identity**:
 
 $$
 D_\mu \mathcal{F}_{\nu\rho} + D_\nu \mathcal{F}_{\rho\mu} + D_\rho \mathcal{F}_{\mu\nu} = 0
+
 $$
 
 or in differential form notation: $D\mathcal{F} = 0$ where $D = d - ig[A, \cdot]$.
@@ -1567,12 +1656,14 @@ Apply the Jacobi identity for covariant derivatives:
 
 $$
 [[D_\mu, D_\nu], D_\rho] + [[D_\nu, D_\rho], D_\mu] + [[D_\rho, D_\mu], D_\nu] = 0
+
 $$
 
 Since $[D_\mu, D_\nu] = -ig\mathcal{F}_{\mu\nu}$, this becomes:
 
 $$
 -ig([D_\rho, \mathcal{F}_{\mu\nu}] + \text{cyclic}) = 0
+
 $$
 
 The covariant derivative of $\mathcal{F}$ is $D_\rho\mathcal{F}_{\mu\nu} = \partial_\rho\mathcal{F}_{\mu\nu} - ig[A_\rho, \mathcal{F}_{\mu\nu}]$, and the identity follows. See **{ref}`Appendix E.17 <sec-appendix-e-rigorous-proof-sketches-for-ontological-and-metabolic-laws>`** for the complete algebraic derivation with component verification. $\square$
@@ -1588,6 +1679,7 @@ The **Strategic Curvature Scalar** is the gauge-invariant contraction:
 
 $$
 \mathcal{R}_{\text{strat}} := \text{Tr}(\mathcal{F}_{\mu\nu}\mathcal{F}^{\mu\nu}) = \mathcal{F}_{\mu\nu}^a \mathcal{F}^{\mu\nu,a}
+
 $$
 
 where indices are raised with the Lorentzian metric $\eta^{\mu\nu} = \text{diag}(-1, +1, \ldots, +1)$ or the strategic metric $\tilde{G}^{\mu\nu}$.
@@ -1645,6 +1737,7 @@ The **Yang-Mills Action** for the strategic gauge field is:
 
 $$
 S_{\text{YM}}[A] = -\frac{1}{4g^2}\int_{\mathcal{Z} \times \mathbb{R}} \text{Tr}(\mathcal{F}_{\mu\nu}\mathcal{F}^{\mu\nu})\sqrt{|\tilde{G}|}\,d^{D+1}x
+
 $$
 
 where:
@@ -1669,12 +1762,14 @@ The Euler-Lagrange equations for the Yang-Mills action yield:
 
 $$
 D_\mu \mathcal{F}^{\mu\nu} = J^\nu
+
 $$
 
 where the **strategic current** (source term) is:
 
 $$
 J^{\nu,a} = g\sum_{i=1}^N \bar{\psi}^{(i)}\gamma^\nu T^a \psi^{(i)}
+
 $$
 
 Here $\gamma^\nu$ are the Dirac matrices (or their appropriate generalization to curved space), and the sum is over all $N$ agents.
@@ -1683,6 +1778,7 @@ Here $\gamma^\nu$ are the Dirac matrices (or their appropriate generalization to
 
 $$
 \partial_\mu \mathcal{F}^{\mu\nu,a} + gf^{abc}A_\mu^b\mathcal{F}^{\mu\nu,c} = J^{\nu,a}
+
 $$
 
 *Proof sketch.*
@@ -1690,6 +1786,7 @@ Vary the total action $S = S_{\text{YM}} + S_{\text{matter}}$ with respect to $A
 
 $$
 \frac{\delta S}{\delta A_\mu^a} = 0 \implies -\frac{1}{g^2}\partial_\nu(\sqrt{|\tilde{G}|}\mathcal{F}^{\mu\nu,a}) + \frac{1}{g}f^{abc}A_\nu^b\mathcal{F}^{\mu\nu,c} + \frac{\delta S_{\text{matter}}}{\delta A_\mu^a} = 0
+
 $$
 
 The matter variation gives the current $J^{\mu,a}$, and reorganizing yields the Yang-Mills equation. $\square$
@@ -1705,6 +1802,7 @@ For an Abelian gauge group $G = U(1)$ with $[T_a, T_b] = 0$:
 
 $$
 \partial_\mu F^{\mu\nu} = J^\nu
+
 $$
 
 This recovers the **Maxwell equations** of electromagnetism in covariant form.
@@ -1724,6 +1822,7 @@ The energy-momentum tensor of the gauge field is:
 
 $$
 T^{\text{gauge}}_{\mu\nu} = -\frac{1}{g^2}\text{Tr}\left(\mathcal{F}_{\mu\rho}\mathcal{F}_\nu^{\ \rho} - \frac{1}{4}\tilde{G}_{\mu\nu}\mathcal{F}_{\rho\sigma}\mathcal{F}^{\rho\sigma}\right)
+
 $$
 
 *Properties:*
@@ -1742,6 +1841,7 @@ The strategic current is covariantly conserved:
 
 $$
 D_\mu J^{\mu,a} = 0
+
 $$
 
 *Proof.*
@@ -1749,6 +1849,7 @@ Apply $D_\nu$ to the Yang-Mills equation $D_\mu\mathcal{F}^{\mu\nu} = J^\nu$:
 
 $$
 D_\nu D_\mu \mathcal{F}^{\mu\nu} = D_\nu J^\nu
+
 $$
 
 By the Bianchi identity (Theorem {prf:ref}`thm-bianchi-identity`) and the antisymmetry of $\mathcal{F}^{\mu\nu}$, the left side vanishes, giving $D_\nu J^\nu = 0$. $\square$
@@ -1789,6 +1890,7 @@ The **Complete Multi-Agent Lagrangian** is:
 
 $$
 \mathcal{L}_{\text{SMFT}} = \mathcal{L}_{\text{YM}} + \mathcal{L}_{\text{Dirac}} + \mathcal{L}_{\text{Higgs}} + \mathcal{L}_{\text{Yukawa}}
+
 $$
 
 where each sector contributes:
@@ -1797,6 +1899,7 @@ where each sector contributes:
 
 $$
 \mathcal{L}_{\text{YM}} = -\frac{1}{4}\text{Tr}(\mathcal{F}_{\mu\nu}\mathcal{F}^{\mu\nu})
+
 $$
 
 This governs the dynamics of the strategic connection $A_\mu$.
@@ -1805,6 +1908,7 @@ This governs the dynamics of the strategic connection $A_\mu$.
 
 $$
 \mathcal{L}_{\text{Dirac}} = \sum_{i=1}^N \bar{\psi}^{(i)}(i\gamma^\mu D_\mu - m_i)\psi^{(i)}
+
 $$
 
 where:
@@ -1817,12 +1921,14 @@ where:
 
 $$
 \mathcal{L}_{\text{Higgs}} = |D_\mu\Phi|^2 - V(\Phi)
+
 $$
 
 with the Higgs potential:
 
 $$
 V(\Phi) = \mu^2|\Phi|^2 + \lambda|\Phi|^4
+
 $$
 
 where $\Phi$ is the **value order parameter** (a scalar field in a representation of $G$).
@@ -1831,6 +1937,7 @@ where $\Phi$ is the **value order parameter** (a scalar field in a representatio
 
 $$
 \mathcal{L}_{\text{Yukawa}} = -\sum_{i,j=1}^N y_{ij}\bar{\psi}^{(i)}\Phi\psi^{(j)}
+
 $$
 
 where $y_{ij}$ are the **Yukawa coupling constants** determining how strongly agents couple through the value field.
@@ -1845,21 +1952,27 @@ where $y_{ij}$ are the **Yukawa coupling constants** determining how strongly ag
 When the Higgs mass parameter satisfies $\mu^2 < 0$, the potential $V(\Phi)$ has a non-trivial minimum, and the gauge symmetry is **spontaneously broken**.
 
 **Vacuum Expectation Value:**
+
 $$
 \langle\Phi\rangle = \frac{v}{\sqrt{2}}, \quad v = \sqrt{-\mu^2/\lambda}
+
 $$
 
 **Mass Generation:**
 
 1. **Gauge boson masses:** The gauge fields acquire mass
+
    $$
    m_A = \frac{gv}{2}
+
    $$
    transforming from massless to massive (strategic inertia).
 
 2. **Fermion masses:** The belief spinors acquire effective mass
+
    $$
    m_{\text{eff},i} = \frac{y_{ii}v}{\sqrt{2}}
+
    $$
    through Yukawa coupling.
 
@@ -1870,6 +1983,7 @@ Expand $\Phi = (v + h)/\sqrt{2}$ around the vacuum, where $h$ is the physical Hi
 
 $$
 |D_\mu\Phi|^2 = \frac{1}{2}(\partial_\mu h)^2 + \frac{g^2v^2}{4}A_\mu A^\mu + \ldots
+
 $$
 
 The term $\frac{g^2v^2}{4}A_\mu A^\mu$ is a mass term for $A_\mu$ with $m_A^2 = g^2v^2/4$. Similarly, the Yukawa term generates fermion masses. See **{ref}`Appendix E.18 <sec-appendix-e-rigorous-proof-sketches-for-ontological-and-metabolic-laws>`** for the complete derivation including VEV calculation, Goldstone absorption, and the symmetry breaking pattern. $\square$
@@ -1955,6 +2069,7 @@ The **Mass Gap** of the strategic Hamiltonian $\hat{H}_{\text{strat}}$ is:
 
 $$
 \Delta := \inf\left\{\text{spec}(\hat{H}_{\text{strat}}) \setminus \{E_0\}\right\} - E_0
+
 $$
 
 where $E_0$ is the ground state energy.
@@ -1974,6 +2089,7 @@ The screening mass $\kappa = -\ln\gamma$ from the Helmholtz equation (Theorem {p
 
 $$
 \Delta \geq \frac{\kappa^2}{2m_{\text{eff}}}
+
 $$
 
 where $m_{\text{eff}}$ is the effective inertia from Game Tensor inflation (Theorem {prf:ref}`thm-adversarial-mass-inflation`).
@@ -1998,18 +2114,24 @@ The Klein-Gordon operator $(-\Box + \kappa^2)$ has spectrum bounded below by $\k
 1. **Assume gapless theory:** Suppose $\Delta = 0$, so the lowest excitation above the vacuum is massless.
 
 2. **Infinite correlation length:** The screening mass $\kappa = 0$ implies the correlation length diverges:
+
    $$
    \xi = \frac{1}{\kappa} \to \infty
+
    $$
 
 3. **Divergent information volume:** For massless correlations decaying as $1/r^{D-2}$ (rather than $e^{-\kappa r}$ for massive), the integrated mutual information in a volume $V$ diverges:
+
    $$
    I_{\text{bulk}} \propto \int_V \text{Corr}(x, y)\,dV \to \infty
+
    $$
 
 4. **Area law violation:** By Assumption 1 (Causal Information Bound):
+
    $$
    I_{\text{bulk}} \leq \nu_D \cdot \frac{\text{Area}(\partial V)}{\ell_L^{D-1}}
+
    $$
    A bounded system cannot store infinite information, so the bound is saturated.
 
@@ -2038,8 +2160,10 @@ Suppose $\Delta = 0$. By Theorem {prf:ref}`thm-computational-necessity-mass-gap`
 Therefore $\Delta > 0$ for any non-trivial theory describing an evolving system that satisfies the Causal Information Bound. $\square$
 
 *Bound:* The mass gap is bounded below by thermodynamic considerations:
+
 $$
 \Delta \geq \frac{1}{\beta}\left(\Delta H + \frac{\mathcal{W}}{T_c}\right)
+
 $$
 where $\Delta H$ is the enthalpy barrier for excitation, $\mathcal{W}$ is computational work, and $T_c$ is cognitive temperature. This follows from Theorem 30.15 (Thermodynamic Hysteresis).
 
@@ -2089,6 +2213,7 @@ The **Computational Swampland** $\mathcal{S}_{\text{swamp}}$ is the set of all f
 
 $$
 \mathcal{S}_{\text{swamp}} := \left\{ \mathcal{T} : \exists R < \infty \text{ such that } I_{\text{bulk}}(R) > C_\partial(R) \right\}
+
 $$
 
 Equivalently, $\mathcal{S}_{\text{swamp}}$ consists of theories with Levin Length $\ell_L \to 0$ (infinite information density).
@@ -2110,24 +2235,32 @@ Let $\mathcal{T}$ be a Conformal Field Theory on $\mathbb{R}^d$ ($d \geq 2$) wit
 *Proof.*
 
 1. **Infinite correlation length:** By conformal symmetry, two-point correlations decay algebraically:
+
    $$
    \langle \phi(x) \phi(0) \rangle \sim \frac{1}{|x|^{2\Delta_\phi}}
+
    $$
    The correlation length is $\xi = \infty$ (no exponential screening).
 
 2. **Bulk information divergence:** Consider a spherical region $V$ of radius $R$. The mutual information between bulk degrees of freedom is bounded below by the integrated correlation:
+
    $$
    I_{\text{bulk}}(V) \gtrsim \int_V \int_V \frac{dx\,dy}{|x-y|^{2\Delta_\phi}} \sim R^{2d - 2\Delta_\phi}
+
    $$
    For $\Delta_\phi < d/2$, the exponent $2d - 2\Delta_\phi > d$, so $I_{\text{bulk}}$ grows faster than volume.
 
 3. **Causal Information Bound violation:** The boundary capacity scales as:
+
    $$
    C_\partial(V) = \nu_d \cdot \frac{\text{Area}(\partial V)}{\ell_L^{d-1}} \sim R^{d-1}
+
    $$
    where $\nu_d$ is the Holographic Coefficient (Definition {prf:ref}`def-holographic-coefficient`). Since $2d - 2\Delta_\phi > d > d-1$ for $d \geq 2$ and $\Delta_\phi < d/2$, there exists $R_c$ such that for all $R > R_c$:
+
    $$
    I_{\text{bulk}}(V) > C_\partial(V)
+
    $$
    The Causal Information Bound (Theorem {prf:ref}`thm-causal-information-bound`) is violated.
 
@@ -2146,6 +2279,7 @@ A CFT restricted to a finite spatial volume $V$ with characteristic length $L$ a
 
 $$
 \Delta_{\text{eff}} \sim \frac{1}{L}
+
 $$
 
 The gapless limit exists only as $L \to \infty$.
@@ -2173,27 +2307,36 @@ Let $(\mathcal{Z}, G, \ell_L)$ be a latent manifold at resolution $\ell_L$ satis
 
 $$
 I'_{\text{bulk}} \leq C'_\partial
+
 $$
 
 *Proof.*
 
 1. **Information reduction:** By the Data Processing Inequality, coarse-graining cannot increase mutual information:
+
    $$
    I'_{\text{bulk}} \leq I_{\text{bulk}}
+
    $$
 
 2. **Capacity reduction:** Under coarse-graining by factor $\alpha$, the effective boundary area scales as:
+
    $$
    \text{Area}'(\partial\mathcal{Z}') \sim \frac{\text{Area}(\partial\mathcal{Z})}{\alpha^{d-1}}
+
    $$
    and the new capacity is (using the generalized bound with $\nu_d$):
+
    $$
    C'_\partial = \nu_d \cdot \frac{\text{Area}'}{(\ell'_L)^{d-1}} = \nu_d \cdot \frac{\text{Area}/\alpha^{d-1}}{\alpha^{d-1}\ell_L^{d-1}} = \frac{C_\partial}{\alpha^{2(d-1)}}
+
    $$
 
 3. **Bound preservation:** The information-to-capacity ratio under coarse-graining:
+
    $$
    \frac{I'_{\text{bulk}}}{C'_\partial} \leq \frac{I_{\text{bulk}}}{C_\partial/\alpha^{2(d-1)}} = \alpha^{2(d-1)} \frac{I_{\text{bulk}}}{C_\partial}
+
    $$
    For massive theories (exponentially decaying correlations), $I_{\text{bulk}}$ scales as area, so $I_{\text{bulk}}/C_\partial$ is scale-independent. For gapless theories, the ratio diverges—confirming they violate the bound at some scale. $\square$
 
@@ -2414,11 +2557,13 @@ Let $(\mathcal{Z}, G)$ be the latent manifold with capacity-constrained metric (
 
 $$
 \mathcal{H} := L^2(\mathcal{Z}, d\mu_G), \quad d\mu_G := \sqrt{\det G(z)}\, d^n z,
+
 $$
 with inner product:
 
 $$
 \langle \psi_1 | \psi_2 \rangle := \int_{\mathcal{Z}} \overline{\psi_1(z)} \psi_2(z)\, d\mu_G(z).
+
 $$
 The measure $d\mu_G$ is the **Riemannian volume form**, ensuring coordinate invariance of the inner product.
 
@@ -2435,6 +2580,7 @@ Let $\rho(z, s)$ be the belief density from the WFR dynamics (Definition {prf:re
 
 $$
 \psi(z, s) := \sqrt{\rho(z, s)} \exp\left(\frac{i V(z, s)}{\sigma}\right),
+
 $$
 where $\sigma > 0$ is the **Cognitive Action Scale** (Definition {prf:ref}`def-cognitive-action-scale`).
 
@@ -2446,6 +2592,7 @@ where $\sigma > 0$ is the **Cognitive Action Scale** (Definition {prf:ref}`def-c
 
 $$
 |\psi(z, s)|^2 = \rho(z, s), \quad \int_{\mathcal{Z}} |\psi|^2 d\mu_G = 1.
+
 $$
 *Physical interpretation:* The amplitude $R$ encodes "how much" belief mass is at $z$; the phase $\phi$ encodes "which direction" the belief is flowing (via $\nabla V$).
 
@@ -2458,6 +2605,7 @@ The **Cognitive Action Scale** $\sigma$ is the information-theoretic analog of P
 
 $$
 \sigma := T_c \cdot \tau_{\text{update}},
+
 $$
 where:
 - $T_c$ is the Cognitive Temperature ({prf:ref}`def-cognitive-temperature`, {ref}`Section 22.4 <sec-the-geodesic-baoab-integrator>`), setting the scale of stochastic exploration
@@ -2481,6 +2629,7 @@ The Laplace-Beltrami operator
 
 $$
 \Delta_G := \frac{1}{\sqrt{|G|}} \partial_i \left( \sqrt{|G|} G^{ij} \partial_j \right)
+
 $$
 is essentially self-adjoint on $\mathcal{H} = L^2(\mathcal{Z}, d\mu_G)$ with domain $C_c^\infty(\mathcal{Z})$ (smooth functions with compact support), provided either:
 1. $(\mathcal{Z}, G)$ is **geodesically complete**, or
@@ -2502,6 +2651,7 @@ The **holonomy** around a closed loop $\gamma$ is:
 
 $$
 \exp\left(\frac{i}{\sigma} \oint_\gamma dV\right) = \exp\left(\frac{i}{\sigma} \Delta V_\gamma\right),
+
 $$
 where $\Delta V_\gamma$ is the value change around the loop. Non-trivial holonomy ($\Delta V_\gamma \neq 0 \mod 2\pi\sigma$) implies the phase $V/\sigma$ is not globally defined; instead, $\psi$ is a section of a non-trivial complex line bundle $\mathcal{L} \to \mathcal{Z}$.
 
@@ -2519,6 +2669,7 @@ For most applications where $\mathcal{Z}$ is simply connected (e.g., Poincare di
 
 $$
 \exp\left(\frac{i}{\sigma} \oint_\gamma dV\right) = \exp\left(\frac{i}{\sigma} \Delta V_\gamma\right)
+
 $$
 **Correspondence Table:**
 | Gauge Theory | Agent (Value Phase) |
@@ -2564,11 +2715,13 @@ Then the belief wave-function $\psi = \sqrt{\rho} e^{iV/\sigma}$ satisfies the *
 
 $$
 i\sigma \frac{\partial \psi}{\partial s} = \hat{H}_{\text{inf}} \psi,
+
 $$
 where the **Inference Hamiltonian** is:
 
 $$
 \hat{H}_{\text{inf}} := -\frac{\sigma^2}{2} \Delta_G + \Phi_{\text{eff}} + Q_B - \frac{i\sigma}{2} r.
+
 $$
 The terms are:
 - **Kinetic:** $-\frac{\sigma^2}{2} \Delta_G$ (belief diffusion via Laplace-Beltrami)
@@ -2584,6 +2737,7 @@ The terms are:
 
 $$
 i\sigma \partial_s \psi = i\sigma \left( \frac{\partial_s R}{R} + \frac{i}{\sigma}\partial_s V \right) \psi = \left( \frac{i\sigma \partial_s \rho}{2\rho} - \partial_s V \right) \psi.
+
 $$
 **Step 3 (Use governing equations).** Substitute the continuity equation for $\partial_s \rho$ and HJB for $\partial_s V$.
 
@@ -2601,6 +2755,7 @@ $$
 
 $$
 \psi(z,s) = \sqrt{\rho(z,s)}\exp(iV(z,s)/\sigma)
+
 $$
 with information resolution limit $Q_B = -\frac{\sigma^2}{2}\frac{\Delta_G\sqrt{\rho}}{\sqrt{\rho}}$.
 
@@ -2621,6 +2776,7 @@ The **Bohm Quantum Potential** is:
 
 $$
 Q_B(z, s) := -\frac{\sigma^2}{2} \frac{\Delta_G \sqrt{\rho}}{\sqrt{\rho}} = -\frac{\sigma^2}{2} \frac{\Delta_G R}{R},
+
 $$
 where $R = \sqrt{\rho}$ is the amplitude.
 
@@ -2628,6 +2784,7 @@ where $R = \sqrt{\rho}$ is the amplitude.
 
 $$
 Q_B = -\frac{\sigma^2}{8\rho^2} \|\nabla_G \rho\|_G^2 + \frac{\sigma^2}{4\rho} \Delta_G \rho.
+
 $$
 **Physical interpretation:** $Q_B$ represents the **energetic cost of belief localization**. Regions where $\rho$ has high curvature (sharp belief features) incur an effective potential energy penalty. This prevents the belief from concentrating to delta functions.
 
@@ -2650,6 +2807,7 @@ The **complex potential** formulation is:
 
 $$
 W(z) := \Phi_{\text{eff}}(z) - \frac{i\sigma}{2} r(z),
+
 $$
 so that $\hat{H}_{\text{inf}} = -\frac{\sigma^2}{2}\Delta_G + W + Q_B$.
 
@@ -2657,6 +2815,7 @@ so that $\hat{H}_{\text{inf}} = -\frac{\sigma^2}{2}\Delta_G + W + Q_B$.
 
 $$
 \frac{d}{ds} \|\psi\|^2 = \int_{\mathcal{Z}} r(z) |\psi(z)|^2 d\mu_G(z) = \langle r \rangle_\rho,
+
 $$
 which matches the WFR mass balance equation.
 
@@ -2671,11 +2830,13 @@ The kinetic term $-\frac{\sigma^2}{2}\Delta_G$ in the Inference Hamiltonian uses
 
 $$
 -\frac{\sigma^2}{2}\Delta_G \psi = -\frac{\sigma^2}{2} \cdot \frac{1}{\sqrt{|G|}} \partial_i \left( \sqrt{|G|} G^{ij} \partial_j \psi \right).
+
 $$
 This is equivalent to:
 
 $$
 -\frac{\sigma^2}{2}\Delta_G = -\frac{\sigma^2}{2} \left( G^{ij} \partial_i \partial_j + \Gamma^k \partial_k \right),
+
 $$
 where $\Gamma^k := G^{ij}\Gamma^k_{ij}$ is the trace of Christoffel symbols.
 
@@ -2696,11 +2857,13 @@ In the limit $\sigma \to 0$ (classical limit), the Schrödinger dynamics recover
 
 $$
 \partial_s S + \frac{1}{2}\|\nabla_G S\|_G^2 + \Phi_{\text{eff}} = 0.
+
 $$
 **Next Order ($O(\sigma^0)$):** The transport equation
 
 $$
 \partial_s |A|^2 + \nabla_G \cdot (|A|^2 \nabla_G S) = 0.
+
 $$
 These are exactly the HJB and continuity equations from WFR dynamics. The quantum correction $Q_B \to 0$ as $\sigma \to 0$.
 
@@ -2734,6 +2897,7 @@ For $N$ agents with individual Hilbert spaces $\mathcal{H}^{(i)} = L^2(\mathcal{
 
 $$
 \mathcal{H}^{(N)} := \bigotimes_{i=1}^N \mathcal{H}^{(i)} = L^2\left(\mathcal{Z}^{(N)}, d\mu_{G^{(N)}}\right),
+
 $$
 where:
 - $\mathcal{Z}^{(N)} = \prod_{i=1}^N \mathcal{Z}^{(i)}$ is the product manifold (Definition {prf:ref}`def-n-agent-product-manifold`)
@@ -2743,6 +2907,7 @@ Elements $\Psi \in \mathcal{H}^{(N)}$ are functions $\Psi: \mathcal{Z}^{(N)} \to
 
 $$
 \|\Psi\|^2 = \int_{\mathcal{Z}^{(N)}} |\Psi(\mathbf{z})|^2 d\mu_{G^{(N)}}(\mathbf{z}) < \infty.
+
 $$
 *Notation:* We use uppercase $\Psi$ for joint wave-functions and lowercase $\psi^{(i)}$ for single-agent wave-functions.
 
@@ -2755,11 +2920,13 @@ A joint wave-function $\Psi \in \mathcal{H}^{(N)}$ exhibits **Strategic Entangle
 
 $$
 \Psi(z^{(1)}, \ldots, z^{(N)}) \neq \prod_{i=1}^N \psi^{(i)}(z^{(i)}) \quad \text{for any choice of } \psi^{(i)} \in \mathcal{H}^{(i)}.
+
 $$
 **Entanglement Entropy:** For a bipartition $\{i\} \cup \{j \neq i\}$, the **Strategic Entanglement Entropy** is:
 
 $$
 S_{\text{ent}}(i) := -\text{Tr}\left[\hat{\rho}^{(i)} \ln \hat{\rho}^{(i)}\right],
+
 $$
 where $\hat{\rho}^{(i)} = \text{Tr}_{j \neq i}[|\Psi\rangle\langle\Psi|]$ is the **reduced density operator** obtained by partial trace over all agents except $i$.
 
@@ -2779,6 +2946,7 @@ The **Strategic Hamiltonian** on $\mathcal{H}^{(N)}$ is:
 
 $$
 \hat{H}_{\text{strat}} := \sum_{i=1}^N \hat{H}^{(i)}_{\text{kin}} + \sum_{i=1}^N \hat{\Phi}^{(i)}_{\text{eff}} + \sum_{i < j} \hat{V}_{ij},
+
 $$
 where:
 1. **Kinetic terms:** $\hat{H}^{(i)}_{\text{kin}} = -\frac{\sigma_i^2}{2} \Delta_{G^{(i)}}$ (acting on $\mathcal{Z}^{(i)}$ coordinates)
@@ -2798,6 +2966,7 @@ The joint belief wave-function $\Psi(\mathbf{z}, s)$ of $N$ strategically couple
 
 $$
 i\sigma \frac{\partial \Psi}{\partial s} = \hat{H}_{\text{strat}} \Psi + i\frac{\sigma}{2} \mathcal{R} \Psi,
+
 $$
 where:
 - $\hat{H}_{\text{strat}}$ is the Strategic Hamiltonian (Definition {prf:ref}`def-strategic-hamiltonian`)
@@ -2807,6 +2976,7 @@ where:
 
 $$
 i\sigma \frac{\partial \Psi}{\partial s} = \left[ \sum_{i=1}^N \left( -\frac{\sigma_i^2}{2} \Delta_{G^{(i)}} + \Phi^{(i)}_{\text{eff}} \right) + \sum_{i < j} \Phi_{ij} \right] \Psi + i\frac{\sigma}{2} \mathcal{R} \Psi.
+
 $$
 **Sources of entanglement:** Strategic entanglement arises from:
 1. **Potential coupling:** Non-zero $\Phi_{ij}(z^{(i)}, z^{(j)})$ creates position-position correlations
@@ -2823,11 +2993,13 @@ Under adversarial coupling, the effective kinetic operator for agent $i$ incorpo
 
 $$
 \hat{H}^{(i)}_{\text{kin,eff}} = -\frac{\sigma_i^2}{2} \tilde{\Delta}^{(i)},
+
 $$
 where the **Game-Augmented Laplacian** is:
 
 $$
 \tilde{\Delta}^{(i)} := \frac{1}{\sqrt{|\tilde{G}^{(i)}|}} \partial_a \left( \sqrt{|\tilde{G}^{(i)}|} (\tilde{G}^{(i)})^{ab} \partial_b \right),
+
 $$
 with strategic metric $\tilde{G}^{(i)} = G^{(i)} + \sum_{j \neq i} \beta_{ij} \mathcal{G}_{ij}$ (Definition {prf:ref}`def-the-game-tensor`, Equation 29.4.1).
 
@@ -2835,6 +3007,7 @@ with strategic metric $\tilde{G}^{(i)} = G^{(i)} + \sum_{j \neq i} \beta_{ij} \m
 
 $$
 \tilde{\Delta}^{(i)} = \tilde{\Delta}^{(i)}(z^{(i)}; z^{(-i)}).
+
 $$
 This creates **kinetic entanglement**—even without potential coupling, adversarial metric inflation entangles the agents.
 
@@ -2849,11 +3022,13 @@ For a pure joint state $|\Psi\rangle \in \mathcal{H}^{(N)}$, the **reduced densi
 
 $$
 \hat{\rho}^{(i)} := \text{Tr}_{j \neq i}\left[ |\Psi\rangle\langle\Psi| \right] = \int_{\prod_{j \neq i} \mathcal{Z}^{(j)}} |\Psi|^2 \prod_{j \neq i} d\mu_{G^{(j)}}.
+
 $$
 The diagonal elements give the **marginal belief density**:
 
 $$
 \rho^{(i)}(z^{(i)}) = \langle z^{(i)} | \hat{\rho}^{(i)} | z^{(i)} \rangle = \int |\Psi(z^{(i)}, z^{(-i)})|^2 d\mu_{G^{(-i)}},
+
 $$
 which is exactly the marginalization from the joint WFR density.
 
@@ -2889,16 +3064,19 @@ A Nash equilibrium $\mathbf{z}^* = (z^{(1)*}, \ldots, z^{(N)*})$ (Theorem {prf:r
 
    $$
    \hat{H}_{\text{strat}} \Psi_{\text{Nash}} = E_0 \Psi_{\text{Nash}}, \quad E_0 = \min \text{spec}(\hat{H}_{\text{strat}}).
+
    $$
 2. **Localization:** In the semiclassical limit ($\sigma \to 0$), $|\Psi_{\text{Nash}}|^2$ concentrates near $\mathbf{z}^*$:
 
    $$
    \lim_{\sigma \to 0} |\Psi_{\text{Nash}}(\mathbf{z})|^2 = \delta(\mathbf{z} - \mathbf{z}^*).
+
    $$
 3. **Energy interpretation:** The ground state energy $E_0$ equals the total effective potential at Nash:
 
    $$
    E_0 = \sum_{i=1}^N \Phi^{(i)}_{\text{eff}}(\mathbf{z}^*) + \sum_{i < j} \Phi_{ij}(\mathbf{z}^*) + O(\sigma).
+
    $$
 *Proof sketch.*
 - At Nash, $\nabla_{z^{(i)}} \Phi^{(i)}_{\text{eff}} = 0$ for all $i$ (Condition 1 of Theorem {prf:ref}`thm-nash-equilibrium-as-geometric-stasis`).
@@ -2918,6 +3096,7 @@ At Nash equilibrium, the **probability current** vanishes:
 
 $$
 \mathbf{J}^{(i)}(\mathbf{z}^*) := \text{Im}\left[\bar{\Psi}_{\text{Nash}} \cdot \sigma \nabla_{G^{(i)}} \Psi_{\text{Nash}}\right]_{\mathbf{z}^*} = 0 \quad \forall i.
+
 $$
 **Derivation:** The probability current is $\mathbf{J} = \rho \mathbf{v}$ where $\mathbf{v} = G^{-1}\nabla V$ is the velocity field. At Nash:
 - $\nabla V^{(i)}|_{\mathbf{z}^*} = 0$ (stationarity condition)
@@ -2937,11 +3116,13 @@ The substitution $s \to -i\tau$ (**Wick rotation**) transforms the Schrödinger 
 
 $$
 -\sigma \frac{\partial \Psi}{\partial \tau} = \hat{H}_{\text{strat}} \Psi.
+
 $$
 Under this **imaginary time evolution**, any initial state $\Psi_0$ converges to the ground state:
 
 $$
 \Psi(\tau) = e^{-\hat{H}_{\text{strat}} \tau / \sigma} \Psi_0 \xrightarrow{\tau \to \infty} c \cdot \Psi_{\text{Nash}},
+
 $$
 where $c$ is a normalization constant.
 
@@ -2994,6 +3175,7 @@ The **barrier height** is:
 
 $$
 \Delta \Phi_P := \max_{\mathbf{z} \in \mathcal{B}_P} \left[ \sum_{i=1}^N \Phi^{(i)}_{\text{eff}}(\mathbf{z}) - \sum_{i=1}^N \Phi^{(i)}_{\text{eff}}(\mathbf{z}^*_A) \right].
+
 $$
 *Mathematical characterization:* A Pareto barrier is a region where the total potential $\sum_i \Phi^{(i)}_{\text{eff}}$ exceeds its value at nearby Nash equilibria. Classical gradient descent with initial condition in the basin of attraction of $\mathbf{z}^*_A$ converges to $\mathbf{z}^*_A$ and cannot reach $\mathbf{z}^*_B$.
 
@@ -3006,6 +3188,7 @@ In the semiclassical limit ($\sigma \ll \Delta \Phi_P$), the probability of cros
 
 $$
 P_{\text{tunnel}} \sim \exp\left(-\frac{2}{\sigma} \int_{\gamma} \sqrt{2(\Phi_{\text{eff,total}}(\mathbf{z}) - E_0)}\, d\ell_{G^{(N)}}\right),
+
 $$
 where:
 - $\gamma$ is the **optimal tunneling path** (instanton) connecting $\mathbf{z}^*_A$ to $\mathbf{z}^*_B$
@@ -3029,6 +3212,7 @@ where:
 
 $$
 P_{\text{tunnel}} \sim \exp\left(-\frac{2}{\sigma}\int_\gamma \sqrt{2(\Phi_{\text{eff}} - E_0)}\,d\ell_G\right)
+
 $$
 **Correspondence Table:**
 
@@ -3047,6 +3231,7 @@ When the Bohm potential $Q_B$ dominates (high belief curvature), the **effective
 
 $$
 \Phi^{\text{quantum}}_{\text{eff}}(\mathbf{z}) := \Phi_{\text{eff,total}}(\mathbf{z}) + Q_B(\mathbf{z}).
+
 $$
 In regions where $Q_B < 0$ (convex $\rho$), the effective barrier can become **negative** even when $\Phi_{\text{eff}} > 0$. This enables "teleportation" across classically forbidden regions.
 
@@ -3170,6 +3355,7 @@ Following the diagnostic node convention ({ref}`Section 3.1 <sec-theory-thin-int
 
 $$
 \sigma_z \cdot \sigma_p \geq \frac{\sigma}{2} |\langle[\hat{z}, \hat{p}]\rangle| = \frac{\sigma}{2},
+
 $$
 where:
 - $\sigma_z := \sqrt{\langle z^2 \rangle - \langle z \rangle^2}$ is position uncertainty
@@ -3202,6 +3388,7 @@ where:
 
 $$
 \Gamma_{\text{tunnel}} = \int_{\partial \mathcal{B}_P} \mathbf{J} \cdot \mathbf{n}\, d\Sigma,
+
 $$
 where $\mathbf{J}$ is probability current and $\partial \mathcal{B}_P$ is the barrier boundary.
 

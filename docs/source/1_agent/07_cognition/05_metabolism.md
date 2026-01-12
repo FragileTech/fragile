@@ -48,11 +48,13 @@ Let $\rho(s, z)$ be the belief density evolving in computation time $s$ accordin
 
 $$
 \partial_s \rho + \nabla \cdot (\rho v) = \rho r.
+
 $$
 We define the **Metabolic Flux** $\dot{\mathcal{M}}: \mathbb{R}_{\ge 0} \to \mathbb{R}_{\ge 0}$ as:
 
 $$
 \dot{\mathcal{M}}(s) := \sigma_{\text{met}} \int_{\mathcal{Z}} \left( \|v_s(z)\|_G^2 + \lambda^2 |r_s(z)|^2 \right) \rho(s, z) \, d\mu_G,
+
 $$
 where:
 - $\sigma_{\text{met}} > 0$ is the **metabolic resistance coefficient** (units: nat$\cdot$step)
@@ -86,6 +88,7 @@ The metabolic flux $\dot{\mathcal{M}}$ provides a physical lower bound on the ra
 
 $$
 \dot{\mathcal{M}}(s) \ge T_c \left| \frac{d}{ds} H(\rho_s) \right|,
+
 $$
 where $H(\rho_s) = -\int_{\mathcal{Z}} \rho \ln \rho \, d\mu_G$ is the Shannon entropy and $T_c$ is the cognitive temperature ({prf:ref}`def-cognitive-temperature`, {ref}`Section 22.4 <sec-the-geodesic-baoab-integrator>`).
 
@@ -93,16 +96,19 @@ where $H(\rho_s) = -\int_{\mathcal{Z}} \rho \ln \rho \, d\mu_G$ is the Shannon e
 
 $$
 \frac{d}{ds} H(\rho_s) = -\int_{\mathcal{Z}} (1 + \ln \rho) \partial_s \rho \, d\mu_G.
+
 $$
 Substituting the WFR continuity equation and integrating by parts (assuming vanishing flux at $\partial\mathcal{Z}$):
 
 $$
 \frac{d}{ds} H = \int_{\mathcal{Z}} \rho \langle \nabla \ln \rho, v \rangle_G \, d\mu_G - \int_{\mathcal{Z}} r \ln \rho \cdot \rho \, d\mu_G.
+
 $$
 By the Cauchy-Schwarz inequality on the tangent bundle $(T\mathcal{Z}, G)$:
 
 $$
 \left| \int_{\mathcal{Z}} \rho \langle \nabla \ln \rho, v \rangle_G \, d\mu_G \right| \le \left( \int_{\mathcal{Z}} \rho \|\nabla \ln \rho\|_G^2 \, d\mu_G \right)^{1/2} \left( \int_{\mathcal{Z}} \rho \|v\|_G^2 \, d\mu_G \right)^{1/2}.
+
 $$
 The first factor is the **Fisher Information** $\mathcal{I}(\rho) = \int \rho \|\nabla \ln \rho\|_G^2 \, d\mu_G$ {cite}`amari2016information`. Under the optimal transport scaling $v = -T_c \nabla \ln \rho$ (gradient flow of the free energy), we recover the de Bruijn identity {cite}`stam1959some` and the bound follows. The reaction term satisfies an analogous inequality via the $L^2(\rho)$ norm. See {ref}`Appendix E.3 <sec-appendix-e-rigorous-proof-sketches-for-ontological-and-metabolic-laws>` for the full proof. $\square$
 
@@ -131,6 +137,7 @@ The entropy reduction is $\Delta H \approx 2.3$ nats. By the Landauer bound, the
 
 $$
 \Psi_{\text{met}} \ge T_c \cdot |\Delta H| = 2.3 \, T_c \text{ nats}
+
 $$
 
 If $T_c = 1$, that is about 2.3 nats of metabolic energy. If $T_c = 0.1$ (a more "decisive" agent), the cost drops to 0.23 nats---but recall that low temperature also means less exploration.
@@ -148,6 +155,7 @@ This is the fundamental tradeoff: certainty costs energy, and the price depends 
 
 $$
 \dot{\mathcal{M}}(s) \geq T_c \left|\frac{d}{ds} H(\rho_s)\right|
+
 $$
 **Correspondence Table:**
 
@@ -170,6 +178,7 @@ The agent optimizes a **Free Energy** objective that includes the metabolic cost
 
 $$
 \mathcal{F}[p, \pi] = \int_{\mathcal{Z}} p(z) \Big( V(z) - T_c H(\pi(\cdot|z)) \Big) d\mu_G - \Psi_{\text{met}}
+
 $$
 where $\Psi_{\text{met}} = \int_0^S \dot{\mathcal{M}}(s)\,ds$ is the cumulative metabolic energy. The agent stops thinking when marginal returns equal marginal costs.
 
@@ -180,6 +189,7 @@ Set $T_c \to 0$ (computational temperature zero). Compute is free and infinite.
 
 $$
 J(\pi) = \max_\pi \mathbb{E}\left[\sum_{t=0}^\infty \gamma^t r_t\right]
+
 $$
 This recovers standard **Maximum Expected Utility**---the objective used in DQN, PPO, SAC, etc.
 
@@ -219,6 +229,7 @@ For any interaction step $t$, the agent selects a total computation budget $S \i
 
 $$
 \mathcal{S}_{\text{delib}}[S] = -\underbrace{\mathbb{E}_{z \sim \rho_S} [V(z)]}_{\text{Expected Terminal Value}} + \underbrace{\Psi_{\text{met}}(S)}_{\text{Computational Cost}},
+
 $$
 where $V(z)$ is the task potential ({ref}`Section 24.2 <sec-hodge-decomposition-of-value>`). Units: $[\mathcal{S}_{\text{delib}}] = \text{nat}$.
 
@@ -274,6 +285,7 @@ Let $\rho_s$ evolve as a gradient flow of $V$ under WFR dynamics. The optimal co
 
 $$
 \left. \frac{d}{ds} \langle V \rangle_{\rho_s} \right|_{s=S^*} = \dot{\mathcal{M}}(S^*),
+
 $$
 provided such an $S^*$ exists in $(0, S_{\max})$.
 
@@ -281,26 +293,31 @@ provided such an $S^*$ exists in $(0, S_{\max})$.
 
 $$
 \frac{d}{dS} \mathcal{S}_{\text{delib}} = -\frac{d}{dS} \langle V \rangle_{\rho_S} + \dot{\mathcal{M}}(S).
+
 $$
 The first term is the **Value-Improvement Rate**:
 
 $$
 \frac{d}{dS} \langle V \rangle_{\rho_S} = \int_{\mathcal{Z}} V(z) \partial_s \rho(S, z) \, d\mu_G.
+
 $$
 Applying the WFR continuity equation $\partial_s \rho = \rho r - \nabla \cdot (\rho v)$:
 
 $$
 \frac{d}{dS} \langle V \rangle_{\rho_S} = \int_{\mathcal{Z}} V \cdot \rho r \, d\mu_G + \int_{\mathcal{Z}} V (-\nabla \cdot (\rho v)) \, d\mu_G.
+
 $$
 Integrating the divergence term by parts (assuming vanishing flux at $\partial\mathcal{Z}$):
 
 $$
 \int_{\mathcal{Z}} V (-\nabla \cdot (\rho v)) \, d\mu_G = \int_{\mathcal{Z}} \rho \langle \nabla V, v \rangle_G \, d\mu_G.
+
 $$
 For gradient flow dynamics, $v = -G^{-1} \nabla V$ (up to temperature scaling), so $\langle \nabla V, v \rangle_G = -\|\nabla V\|_G^2 \le 0$. Thus:
 
 $$
 \frac{d}{dS} \langle V \rangle_{\rho_S} = \int_{\mathcal{Z}} \rho \left( V r - \|\nabla V\|_G^2 \right) d\mu_G.
+
 $$
 The stationarity condition $\frac{d}{dS} \mathcal{S}_{\text{delib}} = 0$ yields the optimality condition. See {ref}`Appendix E.4 <sec-appendix-e-rigorous-proof-sketches-for-ontological-and-metabolic-laws>` for the full proof using the WFR adjoint operator. $\square$
 
@@ -335,6 +352,7 @@ Let $\Gamma(s) := \left| \frac{d}{ds} \langle V \rangle_{\rho_s} \right|$ be the
 
 $$
 \left. \frac{d}{dS} \mathcal{S}_{\text{delib}} \right|_{S=0} = -\Gamma(0) + \dot{\mathcal{M}}(0).
+
 $$
 If $\Gamma(0) < \dot{\mathcal{M}}(0)$, then $\frac{d}{dS} \mathcal{S}_{\text{delib}}|_{S=0} > 0$. Since $\mathcal{S}_{\text{delib}}$ is increasing at $S=0$ and we assume $\mathcal{S}_{\text{delib}}$ is convex (which holds when $\Gamma(s)$ is decreasing due to diminishing returns), the minimum occurs at the boundary $S^* = 0$.
 
@@ -378,21 +396,27 @@ The same agent, the same decision rule, wildly different behavior---all determin
 When the Value Curl does not vanish ($\mathcal{F} \neq 0$, Definition {prf:ref}`def-value-curl`), the agent converges to a Non-Equilibrium Steady State (Theorem {prf:ref}`thm-ness-existence`) rather than a fixed point. The stopping criterion generalizes as follows:
 
 **Conservative Case ($\mathcal{F} = 0$):** Stop when the Value-Improvement Rate equals the metabolic cost:
+
 $$
 \Gamma(S^*) = \dot{\mathcal{M}}(S^*)
+
 $$
 
 **Non-Conservative Case ($\mathcal{F} \neq 0$):** Stop when the **orbit parameters converge**:
+
 $$
 \frac{d}{ds}\|\text{Orbit}(s)\|_{\text{param}} < \epsilon_{\text{orbit}}
+
 $$
 even if the agent continues moving within the limit cycle.
 
 *Remark.* In the conservative case, convergence is to a fixed point ($\dot{z} \to 0$). In the non-conservative case, convergence is to a stable limit cycle (periodic orbit with constant parameters).
 
 **Operational Criterion:** Define the orbit-change metric as:
+
 $$
 \Delta_{\text{orbit}}(s) := \left\| \oint_{\gamma_s} \mathcal{R} - \oint_{\gamma_{s-\delta}} \mathcal{R} \right\|
+
 $$
 where $\gamma_s$ is the closed trajectory over one cycle at time $s$. Stop when $\Delta_{\text{orbit}}(s) < \epsilon_{\text{orbit}}$.
 
@@ -422,6 +446,7 @@ The agent explores based on the **Thermodynamic Value of Information**:
 
 $$
 \text{VOI}(a) := \mathbb{E}[\Delta H(\rho) \mid a] - \frac{1}{T_c} \dot{\mathcal{M}}(a)
+
 $$
 Exploration is justified when the expected entropy reduction exceeds the metabolic cost.
 
@@ -432,6 +457,7 @@ Assume a **single-state manifold** (no dynamics, stateless bandit). Use simplifi
 
 $$
 a^* = \arg\max_a \left[ \hat{\mu}_a + c \sqrt{\frac{\ln t}{n_a}} \right]
+
 $$
 This recovers **UCB1 (Upper Confidence Bound)**. The exploration bonus $c\sqrt{\ln t / n_a}$ is the specific solution to the Landauer inequality for Gaussian arm distributions.
 
@@ -465,11 +491,13 @@ The total entropy production rate of the agent $\sigma_{\text{tot}}$ during comp
 
 $$
 \sigma_{\text{tot}}(s) := \frac{d}{ds} H(\rho_s) + \frac{1}{T_c} \dot{\mathcal{M}}(s) \ge 0.
+
 $$
 *Proof.* From Theorem {prf:ref}`thm-generalized-landauer-bound`, $\dot{\mathcal{M}}(s) \ge T_c |\frac{d}{ds} H(\rho_s)|$. If $\frac{d}{ds} H < 0$ (entropy decreasing), then:
 
 $$
 \sigma_{\text{tot}} = \frac{dH}{ds} + \frac{\dot{\mathcal{M}}}{T_c} \ge \frac{dH}{ds} + \left| \frac{dH}{ds} \right| = \frac{dH}{ds} - \frac{dH}{ds} = 0.
+
 $$
 If $\frac{d}{ds} H \ge 0$, then $\sigma_{\text{tot}} \ge 0$ trivially since $\dot{\mathcal{M}} \ge 0$. $\square$
 
@@ -477,6 +505,7 @@ If $\frac{d}{ds} H \ge 0$, then $\sigma_{\text{tot}} \ge 0$ trivially since $\do
 
 $$
 \eta_{\text{thought}} := \frac{-T_c \cdot dH/ds}{\dot{\mathcal{M}}} \le 1.
+
 $$
 An agent is "thermodynamically fragile" if it requires high metabolic flux for low entropy reduction ($\eta_{\text{thought}} \ll 1$).
 

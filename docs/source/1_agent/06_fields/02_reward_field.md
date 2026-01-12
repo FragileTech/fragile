@@ -53,6 +53,7 @@ Let $\mathcal{R}$ be a differential 1-form on the latent manifold $(\mathcal{Z},
 
 $$
 r_t = \langle \mathcal{R}(z), v \rangle_G = \mathcal{R}_i(z) \dot{z}^i.
+
 $$
 
 *Units:* $[\mathcal{R}] = \mathrm{nat}/[\text{length}]$.
@@ -61,6 +62,7 @@ The cumulative reward along a trajectory $\gamma: [0,T] \to \mathcal{Z}$ is the 
 
 $$
 R_{\text{cumulative}} = \int_\gamma \mathcal{R} = \int_0^T \mathcal{R}_i(\gamma(t)) \dot{\gamma}^i(t) \, dt.
+
 $$
 
 *Remark.* Instantaneous reward depends on both position $z$ and velocity $\dot{z}$. A stationary agent ($\dot{z} = 0$) receives zero instantaneous reward.
@@ -74,6 +76,7 @@ The environment provides reward via a flux form $J_r$ on the boundary $\partial\
 
 $$
 \int_{\partial\Omega} J_r = \text{Cumulative Boundary Reward}.
+
 $$
 In the discrete limit, this manifests as point charges $r_t$ deposited at the boundary coordinates $(t, z_{\text{boundary}})$.
 
@@ -135,6 +138,7 @@ On the compact latent Riemannian manifold $(\mathcal{Z}, G)$, the Reward 1-form 
 
 $$
 \mathcal{R} = \underbrace{d\Phi}_{\text{Gradient}} + \underbrace{\delta \Psi}_{\text{Solenoidal}} + \underbrace{\eta}_{\text{Harmonic}}
+
 $$
 where:
 1. **$\Phi \in \Omega^0(\mathcal{Z})$** (Scalar Potential): The conservative/optimizable component. $d\Phi$ is an exact form.
@@ -154,6 +158,7 @@ The **Value Curl** is the exterior derivative of the reward form:
 
 $$
 \mathcal{F} := d\mathcal{R} = d\delta\Psi.
+
 $$
 In coordinates: $\mathcal{F}_{ij} = \partial_i \mathcal{R}_j - \partial_j \mathcal{R}_i$.
 
@@ -173,6 +178,7 @@ The reward field $\mathcal{R}$ is **conservative** if and only if:
 
 $$
 \mathcal{F} = d\mathcal{R} = 0 \quad \text{(curl-free)}.
+
 $$
 Equivalently, $\mathcal{R} = d\Phi$ for some scalar potential $\Phi$ (the solenoidal and harmonic components vanish).
 
@@ -180,6 +186,7 @@ Equivalently, $\mathcal{R} = d\Phi$ for some scalar potential $\Phi$ (the soleno
 
 $$
 \oint_\gamma \mathcal{R} = \int_\Sigma d\mathcal{R} = \int_\Sigma \mathcal{F} = 0.
+
 $$
 
 *Remark.* Standard RL assumes conservative reward fields. The scalar value function $V(s)$ exists precisely because path-independence holds.
@@ -193,6 +200,7 @@ The Value Curl $\mathcal{F}$ can be estimated from trajectory data. For a closed
 
 $$
 \oint_\gamma \mathcal{R} = \int_\Sigma \mathcal{F} \, d\Sigma \neq 0 \implies \text{Non-conservative rewards.}
+
 $$
 **Diagnostic:** If the TD-error accumulated around closed loops in latent space has non-zero mean, the value field is non-conservative.
 
@@ -206,6 +214,7 @@ The Reward 1-form $\mathcal{R}$ decomposes via Hodge theory into gradient, solen
 
 $$
 \oint_\gamma \mathcal{R} = \int_\Sigma \mathcal{F} \, d\Sigma
+
 $$
 Non-zero Value Curl implies optimal strategies may involve sustained orbiting rather than converging to fixed points.
 
@@ -216,6 +225,7 @@ Assume $\mathcal{F} = 0$ everywhere (curl-free reward field).
 
 $$
 V(s) = \mathbb{E}\left[\sum_{t=0}^\infty \gamma^t r_t \mid s_0 = s\right]
+
 $$
 This recovers the **scalar Value function**, which exists precisely because rewards are path-independent (conservative). The Value at state $s$ is well-defined regardless of how the agent arrived there.
 
@@ -255,11 +265,13 @@ Let the discount factor be $\gamma = e^{-\kappa \Delta t}$ where $\kappa > 0$ is
 
 $$
 V(z) = \mathbb{E}[r + \gamma V(z')]
+
 $$
 approaches the following PDE in the limit $\Delta t \to 0$:
 
 $$
 \boxed{-\Delta_G V(z) + \kappa^2 V(z) = \rho_r(z)}
+
 $$
 where:
 - $\Delta_G = \frac{1}{\sqrt{|G|}} \partial_i \left( \sqrt{|G|} G^{ij} \partial_j \right)$ is the **Laplace-Beltrami operator** on the manifold $(\mathcal{Z}, G)$
@@ -270,11 +282,13 @@ where:
 
 $$
 V(z) = r \Delta t + \gamma \mathbb{E}[V(z')] \approx r \Delta t + (1 - \kappa \Delta t)\left(V + \nabla V \cdot b \Delta t + T_c \Delta_G V \Delta t\right).
+
 $$
 Rearranging and dividing by $\Delta t$, then taking $\Delta t \to 0$:
 
 $$
 \kappa V = r + \nabla V \cdot b + T_c \Delta_G V.
+
 $$
 For the stationary case ($b = 0$) and absorbing the temperature into the source term, this yields the Helmholtz equation $-\Delta_G V + \kappa^2 V = \rho_r$. Details in {ref}`Appendix A.5 <sec-appendix-a-full-derivations>`. $\square$
 
@@ -295,6 +309,7 @@ The resolution lies in the proof derivation. The intermediate equation before no
 
 $$
 \kappa V = r + \nabla V \cdot b + T_c \Delta_G V
+
 $$
 
 where $T_c$ is the **cognitive temperature** (Definition {prf:ref}`def-cognitive-temperature`), which acts as a diffusion coefficient with units $[T_c] = [\text{length}]^2/[\text{time}]$.
@@ -305,6 +320,7 @@ where $T_c$ is the **cognitive temperature** (Definition {prf:ref}`def-cognitive
 
 $$
 \kappa_{\text{phys}} = \frac{-\ln\gamma}{\sqrt{T_c \cdot \Delta t}}, \qquad [\kappa_{\text{phys}}] = \frac{1}{\text{length}}
+
 $$
 
 The screening length $\ell_{\text{screen}} = 1/\kappa$ thus depends on both the temporal horizon ($\gamma$) and the diffusive spreading rate ($T_c$). This is physically sensible: slower diffusion (smaller $T_c$) increases the effective screening length because value information takes longer to propagate.
@@ -323,6 +339,7 @@ The screening length $\ell_{\text{screen}} = 1/\kappa$ thus depends on both the 
 
 $$
 \kappa = -\ln\gamma, \quad \ell_\gamma = 1/\kappa
+
 $$
 **Correspondence Table:**
 
@@ -345,6 +362,7 @@ The Value Function $V(z)$ satisfies the **Screened Poisson (Helmholtz) Equation*
 
 $$
 (-\Delta_G + \kappa^2) V(z) = \rho_r(z)
+
 $$
 where $\Delta_G$ is the Laplace-Beltrami operator on the Riemannian manifold and $\kappa$ is the screening mass (see Remark {prf:ref}`rem-helmholtz-dimensions` for the precise dimensional relationship with the discount factor $\gamma$ and diffusivity $T_c$).
 
@@ -356,6 +374,7 @@ The Green's function solution on a discrete graph is the **Neumann series** expa
 
 $$
 V(s) = \sum_{t=0}^\infty \gamma^t \mathbb{E}[r_t | s_0 = s] = (I - \gamma P)^{-1} r
+
 $$
 This recovers the **Bellman equation** $V = r + \gamma P V$.
 
@@ -375,6 +394,7 @@ The Critic computes the **Green's function** of the screened Laplacian on the la
 
 $$
 V(z) = \int_{\partial\Omega} G_\kappa(z, z') \sigma_r(z') \, d\Sigma(z'),
+
 $$
 where $G_\kappa(z, z')$ is the Green's function satisfying $(-\Delta_G + \kappa^2) G_\kappa(z, \cdot) = \delta_z$.
 
@@ -392,6 +412,7 @@ where $G_\kappa(z, z')$ is the Green's function satisfying $(-\Delta_G + \kappa^
 
 $$
 V(z) = \int_{\partial\Omega} G_\kappa(z, z') \sigma_r(z') \, d\Sigma(z')
+
 $$
 where $(-\Delta_G + \kappa^2) G_\kappa(z, \cdot) = \delta_z$.
 
@@ -414,6 +435,7 @@ On a manifold with bounded curvature, the Green's function decays exponentially:
 
 $$
 G_\kappa(z, z') \sim \frac{1}{d_G(z, z')^{(d-2)/2}} \exp\left(-\kappa \cdot d_G(z, z')\right),
+
 $$
 where $d_G$ is the geodesic distance and $d$ is the dimension.
 
@@ -425,6 +447,7 @@ The discount factor $\gamma$ determines a characteristic **screening length**:
 
 $$
 \ell_{\text{screen}} = \frac{1}{\kappa} = \frac{\Delta t}{-\ln\gamma}.
+
 $$
 For $\gamma = 0.99$ and $\Delta t = 1$: $\ell_{\text{screen}} \approx 100$ steps.
 
@@ -451,11 +474,13 @@ The discount factor $\gamma$ defines a **Screening Length** with geometric meani
 
 $$
 \kappa = -\ln\gamma, \quad \ell_{\text{screen}} = \frac{1}{\kappa}
+
 $$
 Value correlations decay exponentially with **geodesic distance**:
 
 $$
 G_\kappa(z, z') \sim \frac{1}{d_G(z,z')^{(d-2)/2}} \exp\!\left(-\kappa \cdot d_G(z, z')\right)
+
 $$
 The Critic computes the Green's function of the screened Laplacian $(-\Delta_G + \kappa^2)^{-1}$.
 
@@ -466,6 +491,7 @@ Interpret $\gamma$ purely temporally. Ignore spatial/geometric structure of the 
 
 $$
 V(s) = \sum_{t=0}^\infty \gamma^t r_t
+
 $$
 This recovers the standard **temporal horizon interpretation** where $\gamma$ controls how far into the future rewards are considered.
 
@@ -503,6 +529,7 @@ The scalar potential $\Phi(z)$ from the Hodge decomposition (Theorem {prf:ref}`t
 
 $$
 \Phi(z) = E(z) - T_c S(z),
+
 $$
 where:
 - $E(z)$ is the **task risk/cost** at state $z$
@@ -523,6 +550,7 @@ This potential induces a probability measure on the manifold via the **Canonical
 
 $$
 P_{\text{stationary}}(z) = \frac{1}{Z} \exp\left(\frac{V(z)}{T_c}\right),
+
 $$
 where $Z = \int_{\mathcal{Z}} \exp(V(z)/T_c) \, d\mu_G(z)$ is the partition function.
 
@@ -540,6 +568,7 @@ where $Z = \int_{\mathcal{Z}} \exp(V(z)/T_c) \, d\mu_G(z)$ is the partition func
 
 $$
 P_{\text{stationary}}(z) = \frac{1}{Z} \exp\left(\frac{V(z)}{T_c}\right)
+
 $$
 where $Z = \int_{\mathcal{Z}} \exp(V(z)/T_c) \, d\mu_G(z)$ is the partition function.
 
@@ -563,6 +592,7 @@ In the WFR dynamics ({prf:ref}`def-the-wfr-action`, {ref}`Section 20 <sec-wasser
 
 $$
 r(z) = \frac{1}{s_r} \left( V(z) - \bar{V} \right),
+
 $$
 where $\bar{V} = \mathbb{E}_\rho[V]$ is the mean value and $s_r$ is the reaction time scale (computation time).
 
@@ -570,6 +600,7 @@ where $\bar{V} = \mathbb{E}_\rho[V]$ is the mean value and $s_r$ is the reaction
 
 $$
 \dot{m}(s) = m(s) \cdot r(z(s)) \propto m(s) \cdot (V(z(s)) - \bar{V}).
+
 $$
 
 Probability density increases in regions where $V > \bar{V}$ and decreases where $V < \bar{V}$.
@@ -584,6 +615,7 @@ Probability density increases in regions where $V > \bar{V}$ and decreases where
 
 $$
 \rho_\infty(z) \propto \exp\left(\frac{\Phi(z)}{T_c}\right),
+
 $$
 which is exactly the canonical ensemble (Definition {prf:ref}`def-canonical-ensemble`).
 
@@ -602,6 +634,7 @@ which is exactly the canonical ensemble (Definition {prf:ref}`def-canonical-ense
 
 $$
 \dot{S}_i = \int_{\mathcal{Z}} \frac{\|J\|_G^2}{\rho D} \, d\mu_G > 0
+
 $$
 
 *Remark.* The probability density $\rho_\infty$ is time-independent, but individual trajectories circulate indefinitely. This distinguishes NESS from true equilibrium (where $J = 0$).
@@ -615,6 +648,7 @@ The probability current in a NESS decomposes into:
 
 $$
 J = J_{\text{gradient}} + J_{\text{cyclic}}
+
 $$
 where:
 - $J_{\text{gradient}} = -D\rho\nabla\ln\rho + \rho\nabla\Phi$ derives from the scalar potential
@@ -646,6 +680,7 @@ Let $\mathcal{I}(a|z) = -\ln \pi(a|z)$ be the surprisal of an action. Define the
 
 $$
 V_H(z) := \mathrm{Var}_{a \sim \pi}[\mathcal{I}(a|z)] = \mathbb{E}_{\pi}\left[ \left( \ln \pi(a|z) + H(\pi) \right)^2 \right].
+
 $$
 *Units:* $\mathrm{nat}^2$.
 
@@ -653,11 +688,13 @@ Under the Boltzmann-Value Law (Axiom {prf:ref}`ax-the-boltzmann-value-law`), the
 
 $$
 V_H(z) = \beta^2 \mathrm{Var}_\pi[Q] = C_v,
+
 $$
 where $\beta = 1/T_c$ is the inverse cognitive temperature. Equivalently:
 
 $$
 V_H(z) = T_c \frac{\partial H(\pi)}{\partial T_c}.
+
 $$
 **Operational Consequence:**
 1. **Thermal Stability:** $V_H$ measures the sensitivity of the agent's exploration strategy to changes in the cognitive temperature $T_c$.
@@ -666,6 +703,7 @@ $$
 
 $$
 |\dot{T}_c| \ll \frac{T_c}{\sqrt{V_H(z)}}.
+
 $$
 *Proof:* See Appendix {ref}`E.8 <sec-appendix-e-proof-of-corollary-varentropy-stability>`.
 
@@ -694,11 +732,13 @@ We model the effect of Value on the Metric $G$ as a **Conformal Transformation**
 
 $$
 \tilde{G}_{ij}(z) = \Omega^2(z) \cdot G_{ij}(z),
+
 $$
 where the conformal factor $\Omega(z)$ depends on the **Hessian of the Value**:
 
 $$
 \Omega(z) = 1 + \alpha_{\text{conf}} \cdot \|\nabla^2_G V(z)\|_{\text{op}},
+
 $$
 with $\alpha_{\text{conf}} \ge 0$ the conformal coupling strength and $\|\cdot\|_{\text{op}}$ the operator norm.
 
@@ -716,6 +756,7 @@ Units: $[\Omega] = 1$ (dimensionless), $[\alpha_{\text{conf}}] = \text{length}^2
 
 $$
 \tilde{G}_{ij}(z) = \Omega(z)^2 \cdot G_{ij}(z), \quad \Omega(z) = 1 + \alpha_{\text{conf}} \|\nabla^2_G V(z)\|_{\text{op}}
+
 $$
 **Correspondence Table:**
 | Conformal Field Theory | Agent (Value-Metric Coupling) |
@@ -762,11 +803,13 @@ Under the conformal transformation $G \to \tilde{G} = \Omega^2 G$, the Laplace-B
 
 $$
 \Delta_{\tilde{G}} f = \Omega^{-2} \left( \Delta_G f + (d-2) \frac{G^{ij} \partial_i \Omega}{\Omega} \partial_j f \right),
+
 $$
 where $d$ is the dimension. For the Value function $V$ itself (which determines $\Omega$), this creates a **nonlinear coupling**. The screened Poisson equation (Theorem {prf:ref}`thm-the-hjb-helmholtz-correspondence`) in the conformally modified metric becomes:
 
 $$
 -\Delta_{\tilde{G}} V + \tilde{\kappa}^2 V = \tilde{\rho}_r,
+
 $$
 with effective screening mass $\tilde{\kappa}^2 = \Omega^{-2} \kappa^2$.
 
@@ -786,6 +829,7 @@ The value function modulates the metric via **Conformal Coupling**:
 
 $$
 \tilde{G}_{ij} = \Omega^2(z)\, G_{ij}, \quad \Omega(z) = 1 + \alpha_{\text{conf}} \|\nabla^2_G V(z)\|_{\text{op}}
+
 $$
 High-curvature value regions acquire inertia, slowing agent dynamics near critical decision boundaries.
 
@@ -796,6 +840,7 @@ Remove metric coupling ($\alpha_{\text{conf}} \to 0$). Treat auxiliary losses as
 
 $$
 \mathcal{L} = \mathcal{L}_{\text{RL}} + \sum_k \lambda_k \mathcal{L}_{\text{aux},k}
+
 $$
 This recovers **Auxiliary Tasks** (reward prediction, inverse dynamics, world models) {cite}`jaderberg2017unreal`.
 
@@ -1134,6 +1179,7 @@ moving according to the **geodesic SDE** (Definition {prf:ref}`def-bulk-drift-co
 $$
 dq^k = G^{kj}(q) p_j \, ds, \qquad
 dp_k = -\frac{\partial V}{\partial q^k} ds - \frac{1}{2}\frac{\partial G^{ij}}{\partial q^k} p_i p_j \, ds + u_{\pi,k} \, ds + \sqrt{2T_c} \, (G^{1/2})_{kj} dW^j_s,
+
 $$
 on a **curved manifold** with metric $G$ satisfying the **capacity constraint** (Theorem {prf:ref}`thm-capacity-constrained-metric-law`), in a **screened potential** $V$ satisfying the **Helmholtz equation** (Theorem {prf:ref}`thm-the-hjb-helmholtz-correspondence`). The term $\frac{1}{2}\frac{\partial G^{ij}}{\partial q^k} p_i p_j$ encodes the geodesic correction (equivalent to Christoffel symbols in the position formulation).
 

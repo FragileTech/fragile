@@ -32,6 +32,7 @@ You cannot represent more information than your sensors can ground. This section
 
 $$
 I_{\max} = \nu_D \cdot \frac{\text{Area}(\partial\mathcal{Z})}{\ell_L^{D-1}}
+
 $$
 where $\ell_L$ is the Levin length (Definition {prf:ref}`def-levin-length`) and $\nu_D$ is the Holographic Coefficient (Definition {prf:ref}`def-holographic-coefficient`). For $D=2$: $I_{\max} = \text{Area}/(4\ell_L^2)$.
 
@@ -76,6 +77,7 @@ The **Holographic Coefficient** $\nu_D$ for a $D$-dimensional latent manifold wi
 
 $$
 \nu_D := \frac{(D-1)\,\Omega_{D-1}}{8\pi}
+
 $$
 
 where $\Omega_{D-1} = \frac{2\pi^{D/2}}{\Gamma(D/2)}$ is the surface area of the unit $(D-1)$-sphere.
@@ -123,6 +125,7 @@ Let $\eta_\ell$ be the boundary area-per-nat at resolution $\ell$ (Definition {p
 
 $$
 \ell_L := \sqrt{\eta_\ell}.
+
 $$
 Units: $[\ell_L] = [z]$ (latent coordinate length).
 
@@ -158,6 +161,7 @@ The agent is at the **Saturation Limit** when the bulk information volume (Defin
 
 $$
 I_{\text{bulk}} = C_\partial.
+
 $$
 At this limit, the DPI constraint $I_{\text{bulk}} \le C_\partial$ is satisfied with equality.
 
@@ -170,6 +174,7 @@ Consider an isotropic latent space of dimension $n \ge 3$ with polar coordinates
 
 $$
 A(r) = \left( 1 - \frac{2\mu(r)}{(n-2)r^{n-2}} - \frac{\Lambda_{\text{eff}} r^2}{n(n-1)} \right)^{-1},
+
 $$
 where $\mu(r) := \frac{\kappa}{n-2} \int_0^r \sigma_{\max} r'^{n-1} dr'$ is the integrated **information mass** (with $\kappa$ the coupling constant from the Metric Law) and $\Lambda_{\text{eff}} = \Lambda + \kappa\sigma_{\max}$.
 
@@ -181,6 +186,7 @@ where $\mu(r) := \frac{\kappa}{n-2} \int_0^r \sigma_{\max} r'^{n-1} dr'$ is the 
 
 $$
 1 - \frac{2\mu(r_h)}{(n-2)r_h^{n-2}} - \frac{\Lambda_{\text{eff}} r_h^2}{n(n-1)} = 0.
+
 $$
 At this radius, $G_{rr} \to \infty$ and consequently $G^{rr} \to 0$.
 
@@ -206,6 +212,7 @@ The result is elegant:
 
 $$
 I_{\max} = \nu_D \cdot \frac{\text{Area}(\partial\mathcal{Z})}{\ell_L^{D-1}}
+
 $$
 
 Maximum information equals holographic coefficient times boundary area divided by Levin Length to the appropriate power. That's it. That's the bound.
@@ -220,6 +227,7 @@ For a $D$-dimensional latent manifold $(\mathcal{Z}, G)$, the maximum informatio
 
 $$
 \boxed{I_{\max} = \nu_D \cdot \frac{\text{Area}(\partial\mathcal{Z})}{\ell_L^{D-1}}}
+
 $$
 
 where:
@@ -228,8 +236,10 @@ where:
 - $\nu_D$ is the Holographic Coefficient (Definition {prf:ref}`def-holographic-coefficient`)
 
 *Corollary (Poincare disk, $D=2$).* For the 2-dimensional Poincare disk, the formula reduces to the Bekenstein-Hawking form:
+
 $$
 I_{\max} = \frac{\text{Area}(\partial\mathcal{Z})}{4\ell_L^2}
+
 $$
 where the $\ell_L^2$ (rather than $\ell_L^{D-1} = \ell_L$) arises from the Poincare disk metric normalization $G(0) = 4I$, which maps a coordinate cell of side $\ell_L$ to Riemannian area $4\ell_L^2$.
 
@@ -239,6 +249,7 @@ where the $\ell_L^2$ (rather than $\ell_L^{D-1} = \ell_L$) arises from the Poinc
 
 $$
 I_{\text{bulk}} = \int_{\mathcal{Z}} \rho_I \, d\mu_G = \frac{1}{\kappa} \oint_{\partial\mathcal{Z}} \text{Tr}(K) \, dA_G,
+
 $$
 where $K$ is the extrinsic curvature of the boundary and $\kappa$ is the coupling constant from the Metric Law.
 
@@ -286,21 +297,25 @@ Let $v^k = dz^k/ds$ be the velocity of the agent's belief update in computation 
 
 $$
 \|v\|_G \to 0.
+
 $$
 *Proof.* From the Equation of Motion (Definition {prf:ref}`def-bulk-drift-continuous-flow`) with effective potential $\Phi_{\text{eff}}$ ({prf:ref}`def-effective-potential`):
 
 $$
 dz^k = \left( -G^{kj}\partial_j \Phi_{\text{eff}} + u_\pi^k - \Gamma^k_{ij}\dot{z}^i\dot{z}^j \right) ds + \sqrt{2T_c}(G^{-1/2})^{kj} dW^j_s.
+
 $$
 The drift velocity scales as:
 
 $$
 v^k \propto G^{kj} \partial_j \Phi_{\text{eff}}.
+
 $$
 As the information density approaches saturation, Lemma {prf:ref}`lem-metric-divergence-at-saturation` implies $G_{rr} \to \infty$, hence $G^{rr} \to 0$. The radial component of velocity:
 
 $$
 v^r = -G^{rr}\partial_r \Phi_{\text{eff}} \to 0. \quad \blacksquare
+
 $$
 *Operational interpretation.* The agent becomes **frozen in thought**. Its internal update rate slows as the "inertia" (mass = metric, per Definition {prf:ref}`def-mass-tensor`) becomes infinite. The agent can still receive observations (inflow), but it cannot process them into updated beliefs or emit actions (outflow). This is **Causal Stasis**: the agent is overwhelmed by its own representational complexity.
 
@@ -315,6 +330,7 @@ Let $\eta := I_{\text{bulk}}/I_{\max}$ be the saturation ratio. Near the bound, 
 
 $$
 \|v\|_G \sim (1 - \eta)^{1/2}.
+
 $$
 *Proof.* From Lemma {prf:ref}`lem-metric-divergence-at-saturation`, the metric component $G^{rr} = A(r)^{-1}$ vanishes at the horizon. Under uniform saturation, the information mass $\mu(r)$ grows with radius. At the horizon, $\mu(r_h) = \mu_{\max}$. The saturation ratio $\eta := I_{\text{bulk}}/I_{\max} = \mu/\mu_{\max}$ measures the fraction of capacity used. Near the horizon, $G^{rr} \sim (1 - \mu/\mu_{\max}) = (1 - \eta)$. Since velocity scales as $v^r \propto G^{rr}$, we have $\|v\| \sim (G^{rr})^{1/2} \sim (1-\eta)^{1/2}$. $\square$
 
@@ -353,6 +369,7 @@ Compute the **Saturation Ratio**:
 
 $$
 \eta_{\text{Sch}}(s) := \frac{I_{\text{bulk}}(s)}{I_{\max}} = \frac{I_{\text{bulk}}(s)}{\nu_D \cdot \text{Area}(\partial\mathcal{Z}) / \ell_L^{D-1}},
+
 $$
 where:
 - $I_{\text{bulk}}(s) = \int_{\mathcal{Z}} \rho_I(z,s) \, d\mu_G$ per Definition {prf:ref}`def-a-bulk-information-volume`
@@ -385,6 +402,7 @@ where:
 
 $$
 \hat{\eta}_{\text{Sch}} = \frac{|\mathcal{K}| \cdot \bar{H}(z_n | K)}{\log |\mathcal{K}| + d_n \cdot \log(A_{\text{eff}}/\ell_L^2)},
+
 $$
 where $|\mathcal{K}|$ is the number of active charts, $\bar{H}(z_n | K)$ is the average conditional entropy of nuisance coordinates, $d_n = \dim(z_n)$, and $A_{\text{eff}}$ is the effective boundary area.
 
