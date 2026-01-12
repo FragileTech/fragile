@@ -124,6 +124,7 @@ A hypostructure is an object carrying *surgery-resolution data*—the informatio
 - *Want P/NP complexity bridge?* → [P/NP Bridge](09_mathematical/06_complexity_bridge.md)
 - *Want meta-learning?* → [Meta-Learning](10_metalearning/01_metalearning.md)
 - *Want ZFC translation?* → [ZFC Translation](11_appendices/01_zfc.md)
+- *Want frequently asked questions?* → [FAQ](11_appendices/03_faq.md)
 :::
 
 (sec-hypo-how-to-read)=
@@ -235,6 +236,7 @@ A recommended approach for understanding this framework:
 **Part XI: Appendices**
 - [ZFC Translation](11_appendices/01_zfc.md)
 - [Notation Guide](11_appendices/02_notation.md)
+- [FAQ](11_appendices/03_faq.md)
 
 (sec-hypo-positioning)=
 ## Positioning: Connections to Prior Work, Differences, and Advantages
@@ -492,3 +494,5 @@ This framework makes strong claims about categorical structure and proof-carryin
 4. **How does this relate to proof assistants?** The certificate system is analogous to proof terms in Coq/Lean. The difference is operational focus—we verify dynamical properties, not static types. See [Sieve Kernel](03_sieve/02_kernel.md).
 
 5. **What if the axioms are incomplete?** The Meta-Learning extension addresses this—axioms can be learned as optimization over defect functionals. See [Meta-Learning](10_metalearning/01_metalearning.md).
+
+**For additional questions and rigorous objections,** see the comprehensive [FAQ](11_appendices/03_faq.md) covering 40+ foundational questions about category theory, constructive mathematics, the hypostructure framework, and connections to classical PDE analysis.
