@@ -129,7 +129,7 @@ sphinx:
     tippy_enable_doitips      : true   # DOI link hover previews
     tippy_enable_mathjax      : true   # Math rendering in tooltips
     # sphinxcontrib-bibtex configuration
-    bibtex_bibfiles           : ['references.bib']
+    bibtex_bibfiles           : ['references.bib', 'source/2_hypostructure/references.bib']
     bibtex_default_style      : 'unsrt'
     bibtex_reference_style    : 'author_year'
     # autosectionlabel configuration - prefix with document name to avoid duplicate labels

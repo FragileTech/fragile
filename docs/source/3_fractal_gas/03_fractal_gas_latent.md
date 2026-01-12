@@ -8,7 +8,7 @@ title: "Hypostructure Proof Object: Fractal Gas (Latent Fragile Agent)"
 
 | Field | Value |
 |-------|-------|
-| **Problem** | Latent Fractal Gas with spatially-aware Gaussian pairing, fitness-based cloning, and Fragile-Agent kinetics |
+| **Problem** | Latent Fractal Gas with soft companion selection, fitness-based cloning, and Fragile-Agent kinetics |
 | **System Type** | $T_{\text{algorithmic}}$ |
 | **Target Claim** | Rigorous constants; mean-field limit; QSD characterization (killed + cloning) |
 | **Framework Version** | Hypostructure v1.0 |
@@ -22,7 +22,7 @@ When filling out this template, replace `[problem-slug]` with a lowercase, hyphe
 |------|---------|---------|
 | Definitions | `def-latent-fractal-gas-*` | `def-latent-fractal-gas-distance` |
 | Theorems | `thm-latent-fractal-gas-*` | `thm-latent-fractal-gas-main` |
-| Lemmas | `lem-latent-fractal-gas-*` | `lem-latent-fractal-gas-pairing` |
+| Lemmas | `lem-latent-fractal-gas-*` | `lem-latent-fractal-gas-companion` |
 | Remarks | `rem-latent-fractal-gas-*` | `rem-latent-fractal-gas-constants` |
 | Proofs | `proof-latent-fractal-gas-*` | `proof-thm-latent-fractal-gas-main` |
 | Proof Sketches | `sketch-latent-fractal-gas-*` | `sketch-thm-latent-fractal-gas-main` |
@@ -45,7 +45,7 @@ $$K_{\mathrm{Auto}}^+ = (T_{\text{algorithmic}}\ \text{good},\ \text{AutomationG
 
 This document presents a **machine-checkable proof object** for the **Latent Fractal Gas** (Fragile-Agent kinetics) using the Hypostructure framework.
 
-**Approach:** We instantiate thin interfaces for a swarm in the **latent space** $(\mathcal{Z}, G)$ with: (i) **Gaussian pairing matching** via the spatially-aware random pairing operator (collective matching on alive walkers, no PBC), (ii) **fitness-based cloning** with Gaussian position jitter and **inelastic collision** velocity updates, and (iii) the **Fragile-Agent kinetic operator**: geodesic Boris-BAOAB on the Lorentz-Langevin dynamics driven by the reward 1-form and the effective potential.
+**Approach:** We instantiate thin interfaces for a swarm in the **latent space** $(\mathcal{Z}, G)$ with: (i) **soft companion selection** via the phase-space softmax kernel (as in `docs/source/3_fractal_gas/appendices/03_cloning.md`), (ii) **fitness-based cloning** with Gaussian position jitter and **inelastic collision** velocity updates, and (iii) the **Fragile-Agent kinetic operator**: geodesic Boris-BAOAB on the Lorentz-Langevin dynamics driven by the reward 1-form and the effective potential.
 
 **Result:** A fully specified step operator (in distribution), a complete constants table, derived constants computed from parameters, and a sieve run that reduces mean-field/QSD convergence claims to the framework rate calculators in `src/fragile/convergence_bounds.py`.
 
@@ -53,7 +53,7 @@ This document presents a **machine-checkable proof object** for the **Latent Fra
 
 ## Theorem Statement
 
-::::{prf:theorem} Latent Fractal Gas Step Operator (Spatially-Aware Gaussian Pairing, Fragile-Agent Kinetics)
+::::{prf:theorem} Latent Fractal Gas Step Operator (Soft Companion Selection, Fragile-Agent Kinetics)
 :label: thm-latent-fractal-gas-main
 
 **Status:** Certified (this file is a closed sieve proof object; see Part II and the proof sketch below).
@@ -61,10 +61,14 @@ This document presents a **machine-checkable proof object** for the **Latent Fra
 **Given:**
 - State space: $\mathcal{X} = (\mathcal{Z} \times T\mathcal{Z})^N$ with state $s=(z,v)$ and metric $G$ on $\mathcal{Z}$.
 - Bounds: a compact latent domain $B\subset \mathcal{Z}$ (e.g., chart domain or $B_{R_{\mathrm{cutoff}}}$) used to define the alive mask.
-- Dynamics: the Latent Fractal Gas step operator defined below (spatially-aware Gaussian pairing + cloning + geodesic Boris-BAOAB).
+- Dynamics: the Latent Fractal Gas step operator defined below (soft companion selection + cloning + geodesic Boris-BAOAB).
 - Initial data: $z_0,v_0\in\mathcal{Z}^{N}\times T\mathcal{Z}^{N}$ with at least one walker initially alive (minorization/mixing uses $n_{\mathrm{alive}}\ge 2$), and parameters $\Theta$ (constants table).
 
-**Claim:** The Latent Fractal Gas step operator defines a valid Markov transition kernel on the extended state space $\mathcal{X}\cup\{\dagger\}$, where $\dagger$ is a cemetery state for degenerate companion-selection events (e.g. $|\mathcal{A}|=0$). Companion selection for both diversity measurement and cloning uses the **spatially-aware Gaussian pairing** rule (see {prf:ref}`def-spatial-pairing-operator-diversity` in `docs/source/3_fractal_gas/02_fractal_gas.md`). For the cloning velocity update, the inelastic collision map preserves the center-of-mass velocity on each collision group update (hence conserves group momentum whenever collision groups form a partition). In addition, once the quantitative constants $(m_\epsilon,\kappa_W,\kappa_{\mathrm{total}},C_{\mathrm{LSI}})$ are instantiated (Part III), the framework yields a propagation-of-chaos (mean-field) error bound and an LSI-based QSD/KL convergence rate characterization.
+**Claim:** The Latent Fractal Gas step operator defines a valid Markov transition kernel on the extended state space $\mathcal{X}\cup\{\dagger\}$, where $\dagger$ is a cemetery state for degenerate companion-selection events (e.g. $|\mathcal{A}|=0$).
+Companion selection for both diversity measurement and cloning uses the **softmax companion kernel** (Definition {prf:ref}`def-softmax-companion-selection-fg`; see also {prf:ref}`def-cloning-companion-operator` for the implementation-facing statement).
+Fitness distances are computed from a sampled distance companion with $\epsilon_{\mathrm{dist}}$ regularization; smoothness requirements are discharged conditionally on the sampled indices (as in `compute_fitness`/derivative calls treating companions as frozen during differentiation).
+For the cloning velocity update, the inelastic collision map preserves the center-of-mass velocity on each collision group update (hence conserves group momentum whenever collision groups form a partition).
+In addition, once the quantitative constants $(m_\epsilon,\kappa_W,\kappa_{\mathrm{total}},C_{\mathrm{LSI}})$ are instantiated (Part III), the framework yields a propagation-of-chaos (mean-field) error bound and an LSI-based QSD/KL convergence rate characterization.
 
 **Notation:**
 | Symbol | Definition |
@@ -89,7 +93,7 @@ See `docs/source/prompts/template.md` for the deterministic protocol. This docum
 
 ---
 
-## Algorithm Definition (Variant: Spatially-Aware Gaussian Pairing + Fragile-Agent Kinetics)
+## Algorithm Definition (Variant: Soft Companion Selection + Fragile-Agent Kinetics)
 
 ### State and Distance
 
@@ -101,38 +105,31 @@ d_{\text{alg}}(i, j)^2 = \|z_i - z_j\|^2 + \lambda_{\text{alg}} \|v_i - v_j\|^2.
 $$
 PBC is disabled; distances use the coordinate Euclidean metric in the latent chart.
 
-### Spatially-Aware Gaussian Pairing (Companion Selection)
+### Soft Companion Selection (Phase-Space Softmax)
 
 For alive walkers $\mathcal{A}$ and interaction range $\epsilon$, define Gaussian kernel weights
-
 $$
 w_{ij} = \exp\left(-d_{\text{alg}}(i,j)^2 / (2\epsilon^2)\right), \quad w_{ii}=0.
 $$
-Draw a companion map $c:\mathcal{A}\to\mathcal{A}$ using the **Spatially-Aware Pairing Operator** (idealized matching model) from {prf:ref}`def-spatial-pairing-operator-diversity` in `docs/source/3_fractal_gas/02_fractal_gas.md`:
+For each alive walker $i\in\mathcal{A}$, define the soft companion distribution (Definition {prf:ref}`def-softmax-companion-selection-fg`):
+$$
+P_i(j) := \frac{w_{ij}}{\sum_{l \in \mathcal{A}\setminus\{i\}} w_{il}}\qquad (j\in\mathcal{A}\setminus\{i\}).
+$$
+Dead walkers select companions uniformly from $\mathcal{A}$. If $|\mathcal{A}|<2$, the step transitions to the cemetery state $\dagger$.
 
-1. Let $\mathcal{M}_k$ be the set of perfect matchings of $\mathcal{A}$ with $k=|\mathcal{A}|$ (assume $k$ even for the matching step).
-2. For each matching $M\in\mathcal{M}_k$, define its weight
+**Distance companions (fitness channel):** alive walkers sample a distance companion $c_i^{\mathrm{dist}}\sim P_i(\cdot)$ and define the regularized distance
+$$
+d_i := \sqrt{\|z_i - z_{c_i^{\mathrm{dist}}}\|^2 + \lambda_{\text{alg}} \|v_i - v_{c_i^{\mathrm{dist}}}\|^2 + \epsilon_{\text{dist}}^2}.
+$$
+This map is $C^\infty$ in $(z,v)$ conditional on the sampled indices (and alive mask), which is the differentiability notion used by the sieve and by the implementation (e.g. `compute_fitness`, `compute_gradient`, `compute_hessian`) when treating companions as frozen during differentiation.
 
-   $$
-   W(M) := \prod_{(i,j)\in M} w_{ij}.
-   $$
-3. Sample a matching with probability
-
-   $$
-   P(M) = \frac{W(M)}{\sum_{M'\in\mathcal{M}_k} W(M')}.
-   $$
-4. For each edge $(i,j)\in M$, set $c(i)=j$ and $c(j)=i$.
-
-If $k$ is odd, select one index $i_\star$ uniformly from $\mathcal{A}$, set $c(i_\star)=i_\star$, and sample a perfect matching on the remaining $k-1$ walkers (maximal matching convention). This keeps the pairing law explicit and preserves symmetry on the non-self-paired subset.
-
-Dead walkers select companions uniformly from $\mathcal{A}$. If $|\mathcal{A}|=0$, the step transitions to the cemetery state $\dagger$. This instantiation assumes the spatially-aware matching distribution from {prf:ref}`def-spatial-pairing-operator-diversity`; any approximation algorithm must be justified separately and is not used in this proof object.
+**Cloning companions:** alive walkers sample $c_i^{\mathrm{clone}} \sim P_i$ and dead walkers sample uniformly from $\mathcal{A}$, as specified in {prf:ref}`def-softmax-companion-selection-fg`.
 
 ### Fitness Potential
 
-Define regularized distances to companions:
-
+Define regularized companion distances (from the softmax kernel above):
 $$
-d_i = \sqrt{\|z_i - z_{c_i}\|^2 + \lambda_{\text{alg}} \|v_i - v_{c_i}\|^2 + \epsilon_{\text{dist}}^2}.
+d_i := \sqrt{\|z_i - z_{c_i^{\mathrm{dist}}}\|^2 + \lambda_{\text{alg}} \|v_i - v_{c_i^{\mathrm{dist}}}\|^2 + \epsilon_{\text{dist}}^2}.
 $$
 Rewards follow the Fragile-Agent reward 1-form (Definition {prf:ref}`def-reward-1-form` in `docs/source/1_agent/reference.md`):
 
@@ -161,14 +158,14 @@ $$
 Cloning scores and probabilities:
 
 $$
-S_i = \frac{V_{c_i} - V_i}{V_i + \epsilon_{\text{clone}}}, \quad
+S_i = \frac{V_{c_i^{\mathrm{clone}}} - V_i}{V_i + \epsilon_{\text{clone}}}, \quad
 p_i = \min(1, \max(0, S_i / p_{\max})).
 $$
 Cloning decisions are Bernoulli draws with parameter $p_i$; dead walkers always clone.
 Positions update via Gaussian jitter:
 
 $$
-z_i' = z_{c_i} + \sigma_x \zeta_i, \quad \zeta_i \sim \mathcal{N}(0, I).
+z_i' = z_{c_i^{\mathrm{clone}}} + \sigma_x \zeta_i, \quad \zeta_i \sim \mathcal{N}(0, I).
 $$
 Walkers that do not clone keep their positions unchanged.
 Velocities update via inelastic collisions. For each collision group $G$ (a companion and all cloners to it),
@@ -207,9 +204,9 @@ Let $S$ denote the current swarm state.
 
 1. Rewards: $r_i = \langle \mathcal{R}(z_i), v_i \rangle_G$ (reward 1-form).
 2. Alive mask: `alive[i] = 1[z_i \in B]` for latent domain $B$.
-3. Companion draw for fitness distances: sample $c^{\mathrm{dist}}$ via spatially-aware Gaussian pairing.
+3. Companion draw for fitness distances: sample $c^{\mathrm{dist}}$ from the phase-space softmax kernel $P_i(\cdot)$ (uniform for dead walkers).
 4. Fitness: compute $V(S;c^{\mathrm{dist}})$ (dead walkers get fitness $0$).
-5. Companion draw for cloning: sample $c^{\mathrm{clone}}$ via spatially-aware Gaussian pairing and apply cloning using $V(S;c^{\mathrm{dist}})$.
+5. Companion draw for cloning: sample $c^{\mathrm{clone}}$ from $P_i$ for alive walkers (uniform for dead), and apply cloning using $V(S;c^{\mathrm{dist}})$.
 6. Kinetic: apply the latent Boris-BAOAB step for the Lorentz-Langevin dynamics.
 
 The output is the next swarm state $(z, v)$ and diagnostics (fitness, companions, cloning stats).
@@ -226,8 +223,8 @@ The output is the next swarm state $(z, v)$ and diagnostics (fitness, companions
 | Swarm | $B$ | required (compact latent domain) | Alive/killing domain in latent space | chart boundary / $R_{\text{cutoff}}$ |
 | Swarm | `enable_cloning` | True (fixed) | Cloning is always enabled | algorithm config |
 | Swarm | `enable_kinetic` | True (fixed) | Kinetic update is always enabled | algorithm config |
-| Companion | `method` | spatial\_pairing (fixed) | Spatially-aware Gaussian pairing matching | {prf:ref}`def-spatial-pairing-operator-diversity` |
-| Companion | $\epsilon$ | 0.1 | Pairing kernel range | `CompanionSelection.epsilon` |
+| Companion | `method` | softmax (fixed) | Soft companion selection kernel | {prf:ref}`def-softmax-companion-selection-fg` |
+| Companion | $\epsilon$ | 0.1 | Companion kernel range | `CompanionSelection.epsilon` |
 | Companion | $\lambda_{\text{alg}}$ | 0.0 | Velocity weight in $d_{\text{alg}}$ | `CompanionSelection.lambda_alg` |
 | Fitness | $\alpha_{\text{fit}}$ | 1.0 | Reward channel exponent | `FitnessOperator.alpha` |
 | Fitness | $\beta_{\text{fit}}$ | 1.0 | Diversity channel exponent | `FitnessOperator.beta` |
@@ -263,8 +260,8 @@ This section records *derived constants* that are computed deterministically fro
 | Latent diameter | $D_z=\mathrm{diam}(B)$ | $B\subset\mathcal{Z}$ | depends on domain |
 | Core velocity radius | $V_{\mathrm{core}}$ | analysis core for $\|v\|$ | chosen |
 | Alg. diameter | $D_{\mathrm{alg}}^2 \le D_z^2 + \lambda_{\mathrm{alg}}D_v^2$ | on core | depends |
-| Pairing floor | $m_\epsilon=\exp(-D_{\mathrm{alg}}^2/(2\epsilon^2))$ | pairing weights lower bound | depends |
-| Companion minorization | $p_{\min}\ge m_\epsilon^{\lfloor n_{\mathrm{alive}}/2\rfloor}/(n_{\mathrm{alive}}-1)$ | spatial matching; applies to non-self-paired walkers (odd $k$: one self-pair excluded) | depends |
+| Kernel floor | $m_\epsilon=\exp(-D_{\mathrm{alg}}^2/(2\epsilon^2))$ | kernel weights lower bound | depends |
+| Companion minorization | $p_{\min}\ge m_\epsilon/(n_{\mathrm{alive}}-1)$ | softmax kernel; requires $n_{\mathrm{alive}}\ge 2$ | depends |
 | Metric ellipticity | $g_{\min}, g_{\max}$ | $g_{\min} I \preceq G \preceq g_{\max} I$ on $B$ | from A2 |
 | Fitness bounds | $V_{\min}=\eta^{\alpha+\beta}$, $V_{\max}=(A+\eta)^{\alpha+\beta}$ | alive walkers; dead have $V=0$ | $V_{\min}=0.01$, $V_{\max}=4.41$ |
 | Score bound | $S_{\max}=(V_{\max}-V_{\min})/(V_{\min}+\epsilon_{\mathrm{clone}})$ | alive walkers only | $S_{\max}=220$ |
@@ -293,50 +290,37 @@ By A2, the latent metric is uniformly elliptic on $B$, so we fix bounds
 $$
 g_{\min} I \preceq G(z) \preceq g_{\max} I\qquad \forall z\in B.
 $$
-For spatially-aware Gaussian pairing, define the uniform kernel floor
+For soft companion selection, define the uniform kernel floor
 
 $$
 m_\epsilon := \exp\!\left(-\frac{D_{\text{alg}}^2}{2\epsilon^2}\right) \in (0,1].
 $$
-### Spatially-Aware Pairing Minorization (Discrete, Alive Set)
+### Soft Companion Selection Minorization (Discrete, Alive Set)
 
-Let $k := |\mathcal{A}|$. Under the spatially-aware pairing distribution, the companion map is the matching draw on $\mathcal{A}$. On the alive core the Gaussian weights lie in $[m_\epsilon,1]$, so every matching weight is in $[m_\epsilon^{\lfloor k/2\rfloor},1]$. This yields an explicit lower bound on the marginal pairing probability for any fixed walker.
+Let $k := |\mathcal{A}|$. Under the softmax companion kernel, the Gaussian weights lie in $[m_\epsilon,1]$ on the alive core, so every marginal companion probability has an explicit lower bound.
 
-:::{prf:lemma} Spatially-aware pairing admits an explicit Doeblin constant
-:label: lem-latent-fractal-gas-pairing-doeblin
+:::{prf:lemma} Soft companion selection admits an explicit Doeblin constant
+:label: lem-latent-fractal-gas-companion-doeblin
 
 **Status:** Certified (finite-swarm minorization; proof below).
 
 Assume $k=|\mathcal{A}|\ge 2$ and that on the alive core
 $d_{\mathrm{alg}}(i,j)^2 \le D_{\mathrm{alg}}^2$ for all $i,j\in\mathcal{A}$ (so each Gaussian weight lies in $[m_\epsilon,1]$ with $m_\epsilon=\exp(-D_{\mathrm{alg}}^2/(2\epsilon^2))$).
-For even $k$, the marginal companion distribution $P_i(\cdot)$ for any alive walker $i$ satisfies
+Then the marginal companion distribution $P_i(\cdot)$ for any alive walker $i$ satisfies
 
 $$
-P_i(\cdot)\ \ge\ m_\epsilon^{k/2}\,U_i(\cdot),
+P_i(\cdot)\ \ge\ \frac{m_\epsilon}{k-1}\,U_i(\cdot),
 $$
-where $U_i$ is uniform on $\mathcal{A}\setminus\{i\}$. For odd $k$, condition on $i\neq i_\star$ (the self-paired index), and apply the same bound with $k-1$ on the remaining walkers; for $i=i_\star$, $P_i(c_i=i)=1$ and no Doeblin bound is asserted.
+where $U_i$ is uniform on $\mathcal{A}\setminus\{i\}$. If $k<2$, the step transitions to the cemetery state $\dagger$ by definition.
 :::
 
 :::{prf:proof}
-Let $\mathcal{M}_k$ be the set of perfect matchings of $\mathcal{A}$ (assume $k$ even). For any fixed $i\neq j$, the number of matchings containing $(i,j)$ is $(k-3)!!$. Each matching weight satisfies
+For any $i$ and $j\neq i$, $w_{ij}\ge m_\epsilon$ and $\sum_{l\neq i} w_{il}\le (k-1)$ because each weight is at most $1$. Hence
 
 $$
-W(M) \ge m_\epsilon^{k/2},
+P_i(j)=\frac{w_{ij}}{\sum_{l\neq i} w_{il}} \ge \frac{m_\epsilon}{k-1},
 $$
-so
-
-$$
-\sum_{M\ni(i,j)} W(M) \ge (k-3)!!\,m_\epsilon^{k/2}.
-$$
-The partition function obeys $Z=\sum_{M\in\mathcal{M}_k} W(M) \le (k-1)!!$ because $w_{ab}\le 1$. Therefore
-
-$$
-P(c_i=j)=\frac{\sum_{M\ni(i,j)} W(M)}{Z}
-\ge \frac{(k-3)!!}{(k-1)!!}\,m_\epsilon^{k/2}
-= \frac{m_\epsilon^{k/2}}{k-1}
-= m_\epsilon^{k/2}\,U_i(\{j\}).
-$$
-This gives $P_i(\cdot)\ge m_\epsilon^{k/2}U_i(\cdot)$ for even $k$. For odd $k$, condition on $i\neq i_\star$ and apply the even-$k$ bound to the remaining $k-1$ walkers; the self-paired walker is excluded from the minorization.
+so $P_i(\cdot)\ge \frac{m_\epsilon}{k-1}U_i(\cdot)$.
 :::
 
 For dead walkers, the implementation assigns companions uniformly from $\mathcal{A}$.
@@ -401,7 +385,7 @@ $$
 Cloning score:
 
 $$
-S_i = \frac{V_{c_i}-V_i}{V_i+\epsilon_{\text{clone}}}.
+S_i = \frac{V_{c_i^{\mathrm{clone}}}-V_i}{V_i+\epsilon_{\text{clone}}}.
 $$
 Using the fitness bounds,
 
@@ -431,28 +415,28 @@ $$
 
 **Status:** Certified (conditional expectation identity; proof below).
 
-Fix a step of the algorithm and condition on the realized companion indices $c=(c_i)$ and the realized fitness values $V=(V_i)$ that are fed into cloning (`src/fragile/fractalai/core/fitness.py`, `compute_fitness` output, with dead walkers having $V_i=0$).
+Fix a step of the algorithm and condition on the realized clone-companion indices $c^{\mathrm{clone}}=(c_i^{\mathrm{clone}})$ and the realized fitness values $V=(V_i)$ that are fed into cloning (`src/fragile/fractalai/core/fitness.py`, `compute_fitness` output, with dead walkers having $V_i=0$).
 Define the cloning score and probability
 
 $$
-S_i=\frac{V_{c_i}-V_i}{V_i+\epsilon_{\mathrm{clone}}},\qquad
+S_i=\frac{V_{c_i^{\mathrm{clone}}}-V_i}{V_i+\epsilon_{\mathrm{clone}}},\qquad
 p_i=\min\!\Bigl(1,\max(0,S_i/p_{\max})\Bigr),
 $$
 and for dead walkers set $p_i:=1$ (as enforced in `src/fragile/fractalai/core/cloning.py`).
-Let $B_i\sim \mathrm{Bernoulli}(p_i)$ be the cloning decision, conditionally independent given $(V,c)$.
+Let $B_i\sim \mathrm{Bernoulli}(p_i)$ be the cloning decision, conditionally independent given $(V,c^{\mathrm{clone}})$.
 Define the selection-stage surrogate fitness update
 
 $$
-V_i^{\mathrm{sel}}:=(1-B_i)V_i + B_i V_{c_i}.
+V_i^{\mathrm{sel}}:=(1-B_i)V_i + B_i V_{c_i^{\mathrm{clone}}}.
 $$
 Then for every $i$,
 
 $$
-\mathbb{E}[V_i^{\mathrm{sel}}-V_i\mid V,c] = p_i\,(V_{c_i}-V_i)\ \ge\ 0,
+\mathbb{E}[V_i^{\mathrm{sel}}-V_i\mid V,c^{\mathrm{clone}}] = p_i\,(V_{c_i^{\mathrm{clone}}}-V_i)\ \ge\ 0,
 $$
 hence the mean fitness is nondecreasing in expectation across the selection stage:
 $
-\mathbb{E}\big[\frac{1}{N}\sum_i V_i^{\mathrm{sel}}\mid V,c\big]\ge \frac{1}{N}\sum_i V_i.
+\mathbb{E}\big[\frac{1}{N}\sum_i V_i^{\mathrm{sel}}\mid V,c^{\mathrm{clone}}\big]\ge \frac{1}{N}\sum_i V_i.
 $
 Equivalently, the height functional $\Phi:=V_{\max}-\frac{1}{N}\sum_i V_i$ is nonincreasing in expectation under the **selection component** of the step operator.
 
@@ -462,12 +446,12 @@ Equivalently, the height functional $\Phi:=V_{\max}-\frac{1}{N}\sum_i V_i$ is no
 :::{prf:proof}
 By definition,
 $
-V_i^{\mathrm{sel}}-V_i = B_i\,(V_{c_i}-V_i)
+V_i^{\mathrm{sel}}-V_i = B_i\,(V_{c_i^{\mathrm{clone}}}-V_i)
 $
-so $\mathbb{E}[V_i^{\mathrm{sel}}-V_i\mid V,c]=p_i(V_{c_i}-V_i)$.
-If $V_{c_i}\le V_i$ then $S_i\le 0$ and $p_i=0$, giving equality.
-If $V_{c_i}>V_i$ then $p_i\in(0,1]$ and $V_{c_i}-V_i>0$, giving strict positivity.
-For dead walkers, $p_i=1$ and $V_{c_i}\ge 0=V_i$, so the inequality still holds.
+so $\mathbb{E}[V_i^{\mathrm{sel}}-V_i\mid V,c^{\mathrm{clone}}]=p_i(V_{c_i^{\mathrm{clone}}}-V_i)$.
+If $V_{c_i^{\mathrm{clone}}}\le V_i$ then $S_i\le 0$ and $p_i=0$, giving equality.
+If $V_{c_i^{\mathrm{clone}}}>V_i$ then $p_i\in(0,1]$ and $V_{c_i^{\mathrm{clone}}}-V_i>0$, giving strict positivity.
+For dead walkers, $p_i=1$ and $V_{c_i^{\mathrm{clone}}}\ge 0=V_i$, so the inequality still holds.
 Summing over $i$ yields the mean-fitness statement.
 :::
 
@@ -525,11 +509,11 @@ This injects full-rank Gaussian noise in momentum with covariance $c_2^2 G(z)$, 
 
 | Operator | Contract | Implementation |
 |----------|----------|----------------|
-| Companion Selection | Spatially-aware random pairing with Gaussian weights $w_{ij}=\exp(-d_{\text{alg}}^2/(2\epsilon^2))$ | {prf:ref}`def-spatial-pairing-operator-diversity` |
+| Companion Selection | Soft companion selection with Gaussian weights $w_{ij}=\exp(-d_{\text{alg}}^2/(2\epsilon^2))$ and softmax kernel $P_i$ | {prf:ref}`def-softmax-companion-selection-fg` |
 | Fitness | $V_i = (d_i')^{\beta_{\text{fit}}} (r_i')^{\alpha_{\text{fit}}}$ | `FitnessOperator.__call__` |
-| Cloning | Pairing companions + momentum-conserving collision | `CloneOperator.__call__` + `inelastic_collision_velocity` |
+| Cloning | Companion selection + momentum-conserving collision | `CloneOperator.__call__` + `inelastic_collision_velocity` |
 | Kinetic | Boris-BAOAB on latent manifold (Lorentz-Langevin) | {prf:ref}`def-baoab-splitting` |
-| Step | Compose reward 1-form, pairing, fitness, cloning, kinetic | this document |
+| Step | Compose reward 1-form, companion selection, fitness, cloning, kinetic | this document |
 
 ---
 
@@ -539,10 +523,10 @@ These assumptions are the explicit witnesses used by RESOLVE-AutoAdmit/AutoProfi
 
 - **A1 (Bounds + killing):** A compact latent domain $B\subset\mathcal{Z}$ is provided; `alive[i]=1[z_i\in B]`. Out-of-domain walkers are treated as dead and forced to clone (recovery), and the all-dead event is treated as a cemetery state.
 - **A2 (Reward/metric regularity on $B$):** $\mathcal{R}$, $G$, and $\Phi_{\text{eff}}$ are $C^2$ on $B$ with bounded first and second derivatives on the alive core, and $G$ is uniformly elliptic on $B$ (there exist $0<g_{\min}\le g_{\max}<\infty$ with $g_{\min} I \preceq G \preceq g_{\max} I$).
-- **A2b (Fitness/emergent-metric smoothness):** Conditioned on the alive mask and companion indices, patched/local standardization operates away from its clamp thresholds on the alive core (or is implemented with smooth surrogates), so the fitness pipeline is $C^2$ in $(z,v)$ and the regularized emergent metric (via $\Sigma_{\mathrm{reg}}$) is $C^2$ on the alive core.
+- **A2b (Fitness/emergent-metric smoothness):** Conditioned on the alive mask and companion indices, patched/local standardization operates away from its clamp thresholds on the alive core (or is implemented with smooth surrogates), so the fitness pipeline is $C^2$ in $(z,v)$ (and $C^\infty$ if the reward/metric inputs are $C^\infty$) and the regularized emergent metric (via $\Sigma_{\mathrm{reg}}$) inherits the same regularity on the alive core.
 - **A3 (Core velocity bound for minorization):** For mixing certificates, analysis restricts to a compact core $\|v\|\le V_{\mathrm{core}}$.
 - **A4 (Non-degenerate thermostat):** $T_c>0$ and $\gamma>0$, so the OU step injects full-rank Gaussian noise in momentum.
-- **A5 (Pairing well-defined):** Pairing uses the spatially-aware matching distribution; if $n_{\mathrm{alive}}$ is odd we allow a single self-pair, and if $n_{\mathrm{alive}}<2$ we transition to the cemetery state $\dagger$ as specified in the theorem statement.
+- **A5 (Companion kernel well-defined):** For $n_{\mathrm{alive}}\ge 2$, the softmax kernel $P_i$ is defined with strictly positive weights; if $n_{\mathrm{alive}}<2$, the step transitions to the cemetery state $\dagger$ as specified in the theorem statement (dead walkers sample uniformly from $\mathcal{A}$ when $\mathcal{A}\neq\varnothing$).
 - **A6 (No PBC):** Periodic boundary conditions are disabled.
 
 These are part of the **problem instantiation**; the sieve uses them as certified inputs.
@@ -611,7 +595,7 @@ All permits are instantiated with the Latent Fractal Gas data below and certifie
 ### Template: $\mathrm{TB}_\rho$ (Mixing Interface)
 - **Measure $\mathcal{M}$:** The conditioned (alive) law on $B\times B_{V_{\mathrm{core}}}$.
 - **Invariant/QSD Measure $\mu$:** The QSD $\pi_{\mathrm{QSD}}$ characterized in Part III-C.
-- **Mixing Time $\tau_{\text{mix}}$:** Controlled by $\kappa_{\mathrm{total}}$ and the Doeblin constant from spatially-aware pairing minorization (Part III-A).
+- **Mixing Time $\tau_{\text{mix}}$:** Controlled by $\kappa_{\mathrm{total}}$ and the Doeblin constant from soft companion selection minorization (Part III-A).
 
 ### Template: $\mathrm{Rep}_K$ (Dictionary Interface)
 - **Language $\mathcal{L}$:** Finite program describing operators and parameters.
@@ -746,7 +730,7 @@ $$K_{\mathrm{Cap}_H}^+ = (\Sigma=\{\text{NaN/Inf},\ \text{cemetery}\},\ \text{Ca
 
 **Question:** Does the required stiffness/regularity hold (enough smoothness to certify the drift/metric bounds)?
 
-**Execution:** Conditioned on the sampled companion indices and the alive mask (both treated as frozen during differentiation), `src/fragile/fractalai/core/fitness.py` (`compute_fitness`) is a composition of $C^2$ primitives (exp, sqrt with $\epsilon_{\mathrm{dist}}$, logistic) and regularized moment maps (patched/local standardization with $\sigma_{\min}$). Under A2b (clamps inactive on the alive core or smoothed), the fitness $V_{\text{fit}}$ is $C^2$ in $(z,v)$, and the regularized emergent metric $\Sigma_{\mathrm{reg}}$ inherits $C^2$ regularity on the alive core. The kinetic drift depends on $\Phi_{\text{eff}}$, $G$, and $\mathcal{R}$; under A2 these fields are $C^2$ with bounded derivatives on $B$, so the BAOAB drift is Lipschitz with $C^1$ coefficients on the alive core.
+**Execution:** Conditioned on the sampled companion indices and the alive mask (both treated as frozen during differentiation), `src/fragile/fractalai/core/fitness.py` (`compute_fitness`) is a composition of $C^2$ primitives (exp, sqrt with $\epsilon_{\mathrm{dist}}$, logistic) and regularized moment maps (patched/local standardization with $\sigma_{\min}$). Under A2b (clamps inactive on the alive core or smoothed), the fitness $V_{\text{fit}}$ is $C^2$ in $(z,v)$ (and $C^\infty$ if the reward/metric inputs are $C^\infty$), and the regularized emergent metric $\Sigma_{\mathrm{reg}}$ inherits the same regularity on the alive core. The kinetic drift depends on $\Phi_{\text{eff}}$, $G$, and $\mathcal{R}$; under A2 these fields are $C^2$ with bounded derivatives on $B$, so the BAOAB drift is Lipschitz with $C^1$ coefficients on the alive core.
 
 **Certificate:**
 $$K_{\mathrm{LS}_\sigma}^+ = (\|\nabla\Phi_{\text{eff}}\|_G,\ \|\nabla^2\Phi_{\text{eff}}\|,\ \|\nabla G\|,\ \|\nabla^2 G\|,\ \|\nabla\mathcal{R}\|,\ g_{\min} I\preceq G\preceq g_{\max} I\ \text{on}\ B).$$
@@ -781,13 +765,13 @@ $$K_{\mathrm{TB}_O}^+ = (\mathbb{R}_{\mathrm{an},\exp},\ \Sigma\ \text{definable
 
 **Execution:** We certify a Doeblin-style mixing witness for the alive-conditioned dynamics by combining (i) explicit discrete minorization from companion refreshment and (ii) hypoelliptic smoothing from Langevin noise.
 
-1. **Companion refreshment (discrete Doeblin):** On the alive slice with $k=n_{\mathrm{alive}}\ge 2$, Lemma {prf:ref}`lem-latent-fractal-gas-pairing-doeblin` gives the marginal minorization
+1. **Companion refreshment (discrete Doeblin):** On the alive slice with $k=n_{\mathrm{alive}}\ge 2$, Lemma {prf:ref}`lem-latent-fractal-gas-companion-doeblin` gives the marginal minorization
 
    $$
-   \mathbb{P}(c_i\in\cdot)\ \ge\ m_\epsilon^{\lfloor k/2\rfloor}\,U_i(\cdot),
+   \mathbb{P}(c_i\in\cdot)\ \ge\ \frac{m_\epsilon}{k-1}\,U_i(\cdot),
    \qquad m_\epsilon=\exp\!\left(-\frac{D_{\mathrm{alg}}^2}{2\epsilon^2}\right),
    $$
-   where $U_i$ is uniform on $\mathcal{A}\setminus\{i\}$. For odd $k$, the bound applies conditionally on $i\neq i_\star$ (the self-paired index); for $i=i_\star$ the companion is deterministic. When $n_{\mathrm{alive}}=1$, pairing maps the lone walker to itself; the sieve uses $n_{\mathrm{alive}}\ge 2$ for mixing/QSD proxies.
+   where $U_i$ is uniform on $\mathcal{A}\setminus\{i\}$. When $n_{\mathrm{alive}}<2$, the step transitions to the cemetery state; the sieve uses $n_{\mathrm{alive}}\ge 2$ for mixing/QSD proxies.
 
 2. **Mutation smoothing (hypoelliptic):** The OU thermostat injects full-rank Gaussian noise in momentum (Derived Constants). While a *single* BAOAB step is rank-deficient in $(z,p)$ (noise enters only through $p$), the *two-step* kernel $P^2$ is non-degenerate (standard hypoelliptic Langevin smoothing) and admits a jointly continuous, strictly positive density on any compact core $C\Subset \mathrm{int}(B)\times B_{V_{\mathrm{core}}}$. Hence there exists $\varepsilon_C>0$ such that
 
@@ -796,7 +780,7 @@ $$K_{\mathrm{TB}_O}^+ = (\mathbb{R}_{\mathrm{an},\exp},\ \Sigma\ \text{definable
    $$
    i.e. a small-set minorization for the alive-conditioned mutation kernel.
 
-3. **Doeblin witness $\Rightarrow$ finite mixing time:** Combining (1) and (2) yields a regeneration witness for the alive-conditioned chain; the framework consumes $(m_\epsilon,c_{\min},c_{\max},\varepsilon_C)$ as the quantitative inputs certifying $\tau_{\mathrm{mix}}(\delta)<\infty$ and enabling the Part III-A rate proxies.
+3. **Doeblin witness $\Rightarrow$ finite mixing time:** Combining (1) and (2) yields a regeneration witness for the alive-conditioned chain; the framework consumes $(p_{\min},c_{\min},c_{\max},\varepsilon_C)$ as the quantitative inputs certifying $\tau_{\mathrm{mix}}(\delta)<\infty$ and enabling the Part III-A rate proxies.
 
 **Certificate:**
 
@@ -804,7 +788,7 @@ $$
 K_{\mathrm{TB}_\rho}^+
 =
 \left(
-m_\epsilon>0,\ (c_{\min},c_{\max})\ \text{certified},\ \exists\,C\Subset \Omega_{\mathrm{alive}},\ \varepsilon_C>0:\ P^2\ge \varepsilon_C\,\mathrm{Unif}_C,\ \tau_{\mathrm{mix}}<\infty
+p_{\min}>0,\ (c_{\min},c_{\max})\ \text{certified},\ \exists\,C\Subset \Omega_{\mathrm{alive}},\ \varepsilon_C>0:\ P^2\ge \varepsilon_C\,\mathrm{Unif}_C,\ \tau_{\mathrm{mix}}<\infty
 \right).
 $$
 ## Level 6: Complexity
@@ -925,7 +909,7 @@ objects used by the rate calculators:
 
 - **Lyapunov factory:** from $K_{D_E}^+$, $K_{C_\mu}^+$, and $K_{\mathrm{LS}_\sigma}^+$, Theorem {prf:ref}`mt-krnl-lyapunov`
   produces a canonical Lyapunov functional $\mathcal{L}$ controlling drift/mixing on the alive core.
-- **LSI factory:** from a certified thin mixing witness (Lemma {prf:ref}`lem-latent-fractal-gas-pairing-doeblin`) and the
+- **LSI factory:** from a certified thin mixing witness (Lemma {prf:ref}`lem-latent-fractal-gas-companion-doeblin`) and the
   thin-to-continuum lifting protocol (Theorem {prf:ref}`thm-lsi-thin-permit`), the proof object treats the
   alive-conditioned kernel as satisfying a Logarithmic Sobolev Inequality with an explicit constant.
 
@@ -987,8 +971,8 @@ $$
 **Interpretation / discharge:** `C_LSI_geometric` is a framework-level bound for an idealized uniformly elliptic diffusion,
 and it is consumed here as the quantitative constant for the alive-conditioned dynamics. In this instantiation the
 inputs are discharged by A1–A6 plus A2b and the derived-constants section: $\gamma>0$ (A4), $T_c>0$ (A4), compactness of $B$ (A1)
-with $G$ continuous on $B$ (A2) gives $0<c_{\min}\le c_{\max}<\infty$, and $\kappa_W>0$ is certified by the pairing
-Doeblin constant (Lemma {prf:ref}`lem-latent-fractal-gas-pairing-doeblin`) together with positive selection pressure.
+with $G$ continuous on $B$ (A2) gives $0<c_{\min}\le c_{\max}<\infty$, and $\kappa_W>0$ is certified by the companion-selection
+Doeblin constant (Lemma {prf:ref}`lem-latent-fractal-gas-companion-doeblin`) together with positive selection pressure.
 
 ---
 
@@ -1006,14 +990,14 @@ Because the companion selection and the fitness standardization depend on swarm-
 The mean-field (nonlinear) limit is described by a nonlinear Markov kernel $P_{\mu}$ acting on a representative particle $Z(k)$ whose companion draws and cloning law are driven by the current law $\mu_k$.
 
 At fixed $\Delta t$, the mean-field step is most naturally expressed as a nonlinear map on measures obtained by composing:
-1. the **pairwise selection/resampling operator** induced by spatially-aware Gaussian pairing + Bernoulli cloning (see `docs/source/sketches/fragile/fragile_gas.md` Appendix A, Equation defining $\mathcal{S}$), and
+1. the **companion selection/resampling operator** induced by the soft companion kernel (phase-space softmax) + Bernoulli cloning (see `docs/source/sketches/fragile/fragile_gas.md` Appendix A, Equation defining $\mathcal{S}$), and
 2. the **mutation/killing operator** (Boris-BAOAB with boundary killing at $\partial B$).
 
 In weak-selection continuous-time scalings (cloning probabilities $=O(\Delta t)$), this nonlinear map linearizes into a mutation–selection/replicator-type evolution with an *effective* selection functional induced by the pairwise rule; this proof object controls it through explicit bounded ranges and minorization constants (rather than asserting $\tilde V\equiv V_{\mathrm{fit}}$ as an identity).
 
 ### Propagation-of-Chaos Error (Framework Bound)
 
-When the Wasserstein contraction rate $\kappa_W>0$ is certified (typically from the pairing minorization constant and cloning pressure), the framework uses the generic propagation-of-chaos bound
+When the Wasserstein contraction rate $\kappa_W>0$ is certified (typically from the companion-selection minorization constant and cloning pressure), the framework uses the generic propagation-of-chaos bound
 
 $$
 \mathrm{Err}_{\mathrm{MF}}(N,T)\ \lesssim\ \frac{e^{-\kappa_W T}}{\sqrt{N}}
@@ -1022,7 +1006,7 @@ $$
 ### How Fitness/Cloning Enter
 
 Fitness and cloning affect the mean-field limit through:
-1. **Minorization / locality:** $\epsilon$ and $D_{\mathrm{alg}}$ determine $m_\epsilon$, hence the strength of the companion-selection Doeblin constant $m_\epsilon^{\lfloor k/2\rfloor}$.
+1. **Minorization / locality:** $\epsilon$ and $D_{\mathrm{alg}}$ determine $m_\epsilon$, hence the softmax Doeblin constant $p_{\min}\ge m_\epsilon/(k-1)$ on the alive core ($k=n_{\mathrm{alive}}\ge 2$).
 2. **Selection pressure:** $(\alpha_{\mathrm{fit}},\beta_{\mathrm{fit}},A,\eta,\epsilon_{\mathrm{clone}},p_{\max})$ determine $V_{\min},V_{\max},S_{\max}$ and therefore the range of clone probabilities; this controls $\lambda_{\mathrm{alg}}^{\mathrm{eff}}$ and ultimately $\kappa_x$.
 3. **Noise regularization:** $\sigma_x$ injects positional noise at cloning; this prevents genealogical collapse and enters the KL/LSI constants as $\delta_x^2=\sigma_x^2$.
 
@@ -1066,7 +1050,7 @@ The constants make the dependence transparent:
 
 1. **Exponents $\alpha_{\mathrm{fit}},\beta_{\mathrm{fit}}$:** increase $\alpha+\beta$ increases the ratio $V_{\max}/V_{\min}=\bigl(\frac{A+\eta}{\eta}\bigr)^{\alpha+\beta}$, increasing the range of scores and pushing clone probabilities toward the clip ($0$ or $1$). This typically increases $\lambda_{\mathrm{alg}}^{\mathrm{eff}}$ (faster contraction) but increases genealogical concentration, making $\sigma_x$ more important.
 2. **Floors $\eta,\epsilon_{\mathrm{clone}}$:** increasing either raises denominators and reduces $S_{\max}$, reducing selection pressure.
-3. **Pairing range $\epsilon$:** larger $\epsilon$ increases $m_\epsilon$ (stronger minorization, better mixing) but makes pairing less local (weaker geometric alignment).
+3. **Companion kernel range $\epsilon$:** larger $\epsilon$ increases $m_\epsilon$ (stronger minorization, better mixing) but makes companion selection less local (weaker geometric alignment).
 4. **Cloning jitter $\sigma_x$:** larger $\sigma_x$ increases regularization (better KL/LSI constants) but also increases equilibrium variance; too small $\sigma_x$ risks particle collapse and degraded Wasserstein contraction.
 5. **Diffusion regularization $\epsilon_\Sigma$:** larger $\epsilon_\Sigma$ improves ellipticity (reduces $c_{\max}/c_{\min}$) and improves LSI/KL rates, at the cost of injecting larger kinetic noise (via $\Sigma_{\mathrm{reg}}$).
 
@@ -1184,8 +1168,8 @@ This table incorporates the assumption audit in `docs/source/3_fractal_gas/04_la
 | --- | --- | --- |
 | Lock Closure for Fractal Gas ({prf:ref}`mt:fractal-gas-lock-closure`) | Permits: $\mathrm{Cat}_{\mathrm{Hom}}$ (N17) together with the accumulated context $\Gamma$ from prior nodes. | blocked: $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}$ (Node 17). |
 | Geometric Adaptation (Metric Distortion Under Representation) ({prf:ref}`thm:geometric-adaptation`) | Permits: $\mathrm{Rep}_K$ (N11). Assumptions: $d_{\text{alg}}(x,y)=\|\pi(x)-\pi(y)\|_2$ for an embedding $\pi: X\to\mathbb{R}^n$; embeddings related by a linear map $T$ with $\pi_2=T\circ\pi_1$ | discharged: $d_{\text{alg}}$ is the Euclidean distance in the latent chart (Theorem {prf:ref}`thm-latent-fractal-gas-main`); when no representation change is performed we may take $T=I$. |
-| The Darwinian Ratchet (WFR Transport + Reaction) ({prf:ref}`mt:darwinian-ratchet`) | Permits: $C_\mu$ (N3), $D_E$ (N1). | discharged: the step operator is explicitly split as transport (kinetic/mutation) + reaction (pairing-driven cloning), i.e. the transport+reaction decomposition is an identity of the algorithm; the continuum WFR PDE reading is an additional conditional interpretation. |
-| Topological Regularization (Cheeger Bound, Conditional) ({prf:ref}`thm:cheeger-bound`) | Permits: $C_\mu$ (N3), $D_E$ (N1), $\mathrm{LS}_\sigma$ (N7), $\mathrm{Cap}_H$ (N6), $\mathrm{TB}_\pi$ (N8). | discharged: the uniform minorization/Doeblin hypothesis holds on the alive core with explicit constant from Lemma {prf:ref}`lem-latent-fractal-gas-pairing-doeblin`, hence the Cheeger bound is invoked in full power. |
+| The Darwinian Ratchet (WFR Transport + Reaction) ({prf:ref}`mt:darwinian-ratchet`) | Permits: $C_\mu$ (N3), $D_E$ (N1). | discharged: the step operator is explicitly split as transport (kinetic/mutation) + reaction (companion-driven cloning), i.e. the transport+reaction decomposition is an identity of the algorithm; the continuum WFR PDE reading is an additional conditional interpretation. |
+| Topological Regularization (Cheeger Bound, Conditional) ({prf:ref}`thm:cheeger-bound`) | Permits: $C_\mu$ (N3), $D_E$ (N1), $\mathrm{LS}_\sigma$ (N7), $\mathrm{Cap}_H$ (N6), $\mathrm{TB}_\pi$ (N8). | discharged (via lazified / 2-step minorization): Lemma {prf:ref}`lem-latent-fractal-gas-companion-doeblin` gives an explicit off-diagonal Doeblin floor for the companion kernel on the alive core; applying {prf:ref}`thm:cheeger-bound` to a lazified kernel (or to $P^2$) yields the stated Cheeger/connectedness bound. |
 | Induced Local Geometry (Quadratic Form from Landscape + Graph Energy) ({prf:ref}`thm:induced-riemannian-structure`) | Permits: $D_E$ (N1), $\mathrm{LS}_\sigma$ (N7), $\mathrm{Rep}_K$ (N11). | discharged/instantiated: the anisotropic diffusion tensor $\Sigma_{\mathrm{reg}}(z) = (\nabla^2 V_{\mathrm{fit}}(z) + \epsilon_{\Sigma} I)^{-1/2}$ is part of the kinetic update (Theorem {prf:ref}`thm-latent-fractal-gas-main`), making the Hessian-based quadratic form a concrete algorithmic component on the alive core. |
 | Causal Horizon Lock (Causal Information Bound + Stasis) ({prf:ref}`thm:causal-horizon-lock`) | Permits: $C_\mu$ (N3), $D_E$ (N1), $\mathrm{SC}_\lambda$ (N4), $\mathrm{Cap}_H$ (N6), $\mathrm{TB}_\pi$ (N8). | blocked: $K_{\mathrm{SC}_\lambda}^-$ (BarrierTypeII). |
 | Archive Invariance (Gromov–Hausdorff Stability, Conditional) ({prf:ref}`thm:archive-invariance`) | Permits: $C_\mu$ (N3), $\mathrm{LS}_\sigma$ (N7), $\mathrm{Cap}_H$ (N6). | conditional: permits satisfied; additional hypotheses not verified in this instantiation. |
@@ -1248,7 +1232,7 @@ This table incorporates the assumption audit in `docs/source/3_fractal_gas/04_la
 | Flow with Surgery ({prf:ref}`mt:flow-with-surgery`) | Permits: $D_E$ (N1), $\mathrm{Cap}_H$ (N6), $\mathrm{TB}_\pi$ (N8). | heuristic: interpretive; not used for certificates. |
 | Agency-Geometry Unification ({prf:ref}`mt:agency-geometry`) | Permits: $\mathrm{GC}_T$ (N16), $\mathrm{Rep}_K$ (N11). | heuristic: interpretive; not used for certificates. |
 | The Spectral Generator ({prf:ref}`mt:spectral-generator`) | Permits: $\mathrm{LS}_\sigma$ (N7), $\mathrm{Cap}_H$ (N6). Assumptions: The dissipation potential $\mathfrak{D}$ is $C^2$ on the region of interest.; There exists $\kappa > 0$ such that $\nabla^2 \mathfrak{D} \succeq \kappa I$ uniformly. | discharged: $\mathfrak{D}(z,v)=\frac{\gamma}{N}\sum_i \|v_i\|_G^2$ is $C^2$ under A2, and uniform ellipticity $g_{\min} I \preceq G$ gives $\nabla_v^2 \mathfrak{D} \succeq \frac{2\gamma g_{\min}}{N} I$ on the alive core. |
-| LSI for Particle Systems ({prf:ref}`mt:lsi-particle-systems`) | Permits: $\mathrm{LS}_\sigma$ (N7), $C_\mu$ (N3). Assumptions: The confining potential $\Phi_{\text{conf}}(x_i)$ is strictly convex: $\nabla^2 \Phi_{\text{conf}} \succeq c_0 I$ for some $c_0 > 0$.; OR: The pairwise interactions are repulsive: $\nabla^2 \Phi_{\text{pair}}(|x_i - x_j|) \succeq 0$. | superseded: global convexity/repulsion is not required because confinement/mixing is certified by the factory contraction rate $\kappa_{\mathrm{total}}$ combining OU friction ($\kappa_v$), selection pressure ($\lambda_{\mathrm{alg}}^{\mathrm{eff}}$), and pairing geometry ($\kappa_W$); when $\kappa_{\mathrm{total}}>0$ this yields exponential ergodicity/LSI without assuming $\nabla^2\Phi\succeq c_0I$. |
+| LSI for Particle Systems ({prf:ref}`mt:lsi-particle-systems`) | Permits: $\mathrm{LS}_\sigma$ (N7), $C_\mu$ (N3). Assumptions: The confining potential $\Phi_{\text{conf}}(x_i)$ is strictly convex: $\nabla^2 \Phi_{\text{conf}} \succeq c_0 I$ for some $c_0 > 0$.; OR: The pairwise interactions are repulsive: $\nabla^2 \Phi_{\text{pair}}(|x_i - x_j|) \succeq 0$. | superseded: global convexity/repulsion is not required because confinement/mixing is certified by the factory contraction rate $\kappa_{\mathrm{total}}$ combining OU friction ($\kappa_v$), selection pressure ($\lambda_{\mathrm{alg}}^{\mathrm{eff}}$), and companion selection geometry ($\kappa_W$); when $\kappa_{\mathrm{total}}>0$ this yields exponential ergodicity/LSI without assuming $\nabla^2\Phi\succeq c_0I$. |
 | Fisher-Hessian Isomorphism (Thermodynamics) ({prf:ref}`mt:fisher-hessian-thermo`) | Permits: $D_E$ (N1), $\mathrm{LS}_\sigma$ (N7). | heuristic: interpretive; not used for certificates. |
 | Scalar Curvature Barrier ({prf:ref}`mt:scalar-curvature-barrier`) | Permits: $\mathrm{LS}_\sigma$ (N7), $\mathrm{Cap}_H$ (N6). | heuristic: interpretive; not used for certificates. |
 | GTD Equivalence Principle ({prf:ref}`mt:gtd-equivalence`) | Permits: $D_E$ (N1), $\mathrm{Rep}_K$ (N11). | heuristic: interpretive; not used for certificates. |
@@ -1263,7 +1247,7 @@ This table incorporates the assumption audit in `docs/source/3_fractal_gas/04_la
 
 1. Hypostructure Framework v1.0 (`docs/source/2_hypostructure/hypopermits_jb.md`)
 2. Fragile-Agent dynamics (`docs/source/1_agent/reference.md`)
-3. Companion selection (spatial pairing definition in `docs/source/3_fractal_gas/02_fractal_gas.md`; implementation-level approximations, if any, are out of scope)
+3. Companion selection (soft companion kernel definition in `docs/source/3_fractal_gas/appendices/03_cloning.md`; implementation-level approximations, if any, are out of scope)
 4. Fitness operator (`src/fragile/fractalai/core/fitness.py`)
 5. Cloning operator (`src/fragile/fractalai/core/cloning.py`)
 6. Latent Fractal Gas step operator (this document)
