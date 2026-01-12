@@ -53,11 +53,10 @@ The cohesive structure is not decoration—it provides essential capabilities th
 
 A hypostructure is an object carrying **surgery-resolution data**—the structured information needed to detect, classify, and repair singularities if they occur. The term emphasizes that we package not just the system dynamics but also the diagnostic and repair mechanisms into a single categorical entity.
 
-**Why "Dynamical System" Is Insufficient.** A classical dynamical system is a tuple $(X, S_t)$ specifying a state space and evolution. This captures *what happens* but not *what can go wrong* or *how to fix it*. The hypostructure $\mathbb{H} = (\mathcal{X}, 
-abla, \Phi_ullet, 	au, \partial_ullet)$ ({prf:ref}`def-categorical-hypostructure`) extends this by adding:
-- **Cohomological height $\Phi_ullet$:** Tracks energy/complexity across all homotopy levels, detecting blow-up before it occurs
-- **Truncation structure $	au$:** Encodes the axioms (C, D, SC, LS) as functorial constraints, making regularity conditions type-checkable
-- **Boundary morphism $\partial_ullet$:** Represents the holographic interface for surgery operations, enabling certified repair via cobordism gluing
+**Why "Dynamical System" Is Insufficient.** A classical dynamical system is a tuple $(X, S_t)$ specifying a state space and evolution. This captures *what happens* but not *what can go wrong* or *how to fix it*. The hypostructure $\mathbb{H} = (\mathcal{X}, \nabla, \Phi_\bullet, \tau, \partial_\bullet)$ ({prf:ref}`def-categorical-hypostructure`) extends this by adding:
+- **Cohomological height $\Phi_\bullet$:** Tracks energy/complexity across all homotopy levels, detecting blow-up before it occurs
+- **Truncation structure $\tau$:** Encodes the axioms (C, D, SC, LS) as functorial constraints, making regularity conditions type-checkable
+- **Boundary morphism $\partial_\bullet$:** Represents the holographic interface for surgery operations, enabling certified repair via cobordism gluing
 
 **Why "PDE" Is Insufficient.** A PDE specifies local evolution rules but provides no global regularity framework. Classical PDE analysis assembles energy estimates, compactness arguments, and Łojasiewicz inequalities *ad hoc* for each problem. The hypostructure packages these into a systematic architecture: Gates 1-17 check the axioms ({ref}`sec-gate-node-specs`), barrier nodes provide fallback defenses when gates fail ({ref}`sec-barrier-nodes`), and surgery nodes repair violations with certified re-entry ({ref}`sec-surgery-nodes`). This trichotomy structure ({prf:ref}`mt-krnl-trichotomy`) has no classical analogue.
 
@@ -72,7 +71,7 @@ abla, \Phi_ullet, 	au, \partial_ullet)$ ({prf:ref}`def-categorical-hypostructu
 
 No. The categorical machinery is for *building* the framework; *using* it requires only understanding the interface permits and verification protocol. There are three levels of engagement:
 
-**Level 1: Verification Only (No Category Theory Required).** If you want to verify a regularity claim, read the Bridge Certificate $\mathcal{B}_{	ext{ZFC}}$ ({prf:ref}`mt-krnl-zfc-bridge`). This is a classical set-theoretic statement with an explicit axiom manifest listing which ZFC axioms were invoked and whether Choice was used ({prf:ref}`def-ac-dependency`). The ZFC Translation Layer ({ref}`sec-zfc-translation`) provides the complete mapping from categorical certificates to first-order formulas. You can audit the proof in standard set theory without learning a single categorical definition. This is the level for skeptical reviewers and external verification.
+**Level 1: Verification Only (No Category Theory Required).** If you want to verify a regularity claim, read the Bridge Certificate $\mathcal{B}_{\text{ZFC}}$ ({prf:ref}`mt-krnl-zfc-bridge`). This is a classical set-theoretic statement with an explicit axiom manifest listing which ZFC axioms were invoked and whether Choice was used ({prf:ref}`def-ac-dependency`). The ZFC Translation Layer ({ref}`sec-zfc-translation`) provides the complete mapping from categorical certificates to first-order formulas. You can audit the proof in standard set theory without learning a single categorical definition. This is the level for skeptical reviewers and external verification.
 
 **Level 2: Application (Minimal Category Theory).** If you want to apply the framework to a specific PDE, you need to instantiate the hypostructure ({prf:ref}`def-categorical-hypostructure`) for your problem. This requires:
 - Identifying the state space $\mathcal{X}$ (your function space)
@@ -96,7 +95,7 @@ The framework uses HoTT *methodology* (thinking in terms of homotopy types) but 
 
 **Layer 1: Universe-Anchored Construction.** The ambient topos $\mathcal{E}$ ({prf:ref}`def-ambient-topos`) is constructed within a Grothendieck universe $\mathcal{U}$ satisfying Tarski-Grothendieck axioms ({prf:ref}`def-universe-anchored-topos`). This is classical higher topos theory (Lurie 2009), not dependent on HoTT foundations. The cohesive structure $\Pi \dashv lat \dashv \sharp$ has been rigorously developed in traditional category theory for over a decade. The existence of one strongly inaccessible cardinal—required for $\mathcal{U}$—is a mild large cardinal axiom, weaker than those routinely used in modern algebraic geometry and number theory.
 
-**Layer 2: ZFC Translation for Audit.** Every categorical certificate has a set-theoretic translation ({prf:ref}`thm-bridge-zfc-fundamental`). The truncation functor $	au_0$ ({prf:ref}`def-truncation-functor-tau0`) extracts discrete content from higher groupoids, producing classical ZFC statements. The Consistency Invariant ({prf:ref}`thm-consistency-invariant`) guarantees that if the categorical proof is valid, its ZFC projection is also valid. Thus, even if HoTT foundations undergo revision, the *conclusions* remain verifiable in classical set theory.
+**Layer 2: ZFC Translation for Audit.** Every categorical certificate has a set-theoretic translation ({prf:ref}`thm-bridge-zfc-fundamental`). The truncation functor $\tau_0$ ({prf:ref}`def-truncation-functor-tau0`) extracts discrete content from higher groupoids, producing classical ZFC statements. The Consistency Invariant ({prf:ref}`thm-consistency-invariant`) guarantees that if the categorical proof is valid, its ZFC projection is also valid. Thus, even if HoTT foundations undergo revision, the *conclusions* remain verifiable in classical set theory.
 
 **Layer 3: Modularity of HoTT Dependency.** The framework uses HoTT concepts primarily for *thinking about* gauge symmetries and coherence conditions—the $\pi_n$ structure of the state stack $\mathcal{X}$. These higher homotopy groups are not speculative: they are well-defined in classical algebraic topology. HoTT provides a convenient *internal language* for reasoning about them, but the mathematical objects exist independently. The Translation Residual ({prf:ref}`def-translation-residual`) formalizes what information lives in higher homotopy; certificates are 0-truncated by construction, so their validity is HoTT-independent.
 
@@ -113,15 +112,14 @@ The *mathematical objects* reduce; the *organizational structure* remains. This 
 
 **What Reduces (Mathematical Content):**
 - **State stack $\mathcal{X}$:** Becomes a Polish space $X$ (separable complete metric space), the standard setting for PDE analysis ({prf:ref}`rem-classical-recovery`)
-- **Flat connection $
-abla$:** Becomes a vector field generating a semiflow $S_t: X 	o X$ via the exponential map
-- **Cohomological height $\Phi_ullet$:** Becomes a real-valued energy functional $\Phi: X 	o \mathbb{R}$, as in classical energy methods
-- **Truncation functors $	au$:** Become decidable predicates $	au_C, 	au_D, 	au_{SC}, 	au_{LS}$ checking compactness, dissipation, subcriticality, and stiffness
-- **Boundary morphism $\partial_ullet$:** Becomes the Sobolev trace operator $u \mapsto u|_{\partial\Omega}$ with flux $\mathcal{J} = 
-abla u \cdot 
-u$ (normal derivative)
+- **Flat connection $\nabla$:** Becomes a vector field generating a semiflow $S_t: X \to X$ via the exponential map
+- **Cohomological height $\Phi_\bullet$:** Becomes a real-valued energy functional $\Phi: X \to \mathbb{R}$, as in classical energy methods
+- **Truncation functors $\tau$:** Become decidable predicates $\tau_C, \tau_D, \tau_{SC}, \tau_{LS}$ checking compactness, dissipation, subcriticality, and stiffness
+- **Boundary morphism $\partial_\bullet$:** Becomes the Sobolev trace operator $u \mapsto u|_{\partial\Omega}$ with flux $\mathcal{J} = \nabla u \cdot \nu$ (normal derivative)
 
 These are exactly the ingredients of classical PDE regularity theory: you work on a function space, you have an energy functional, you verify compactness and energy estimates, you impose boundary conditions.
+
+**What Remains (Organizational Framework):**
 
 **What Remains (Organizational Framework):**
 - **Gates 1-17:** These are specific checks (energy bounded, Zeno events finite, compactness holds, etc.). Classical analysis performs these checks implicitly during proofs. The framework makes them explicit and systematic. Gate 1 ($D_E$) checks $\Phi(S_t x) < M$—this is the classical energy bound. Gate 3 ($C_\mu$) checks profile convergence—this is concentration-compactness ({prf:ref}`mt-krnl-trichotomy`). The gates *formalize* classical arguments.
