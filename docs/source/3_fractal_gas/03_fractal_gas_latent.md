@@ -95,6 +95,7 @@ See `docs/source/prompts/template.md` for the deterministic protocol. This docum
 
 Let $z_i \in \mathcal{Z}$ and $v_i \in T_{z_i}\mathcal{Z}$ be the latent position and tangent velocity of walker $i$.
 Define the algorithmic distance:
+
 $$
 d_{\text{alg}}(i, j)^2 = \|z_i - z_j\|^2 + \lambda_{\text{alg}} \|v_i - v_j\|^2.
 $$
@@ -103,6 +104,7 @@ PBC is disabled; distances use the coordinate Euclidean metric in the latent cha
 ### Spatially-Aware Gaussian Pairing (Companion Selection)
 
 For alive walkers $\mathcal{A}$ and interaction range $\epsilon$, define Gaussian kernel weights
+
 $$
 w_{ij} = \exp\left(-d_{\text{alg}}(i,j)^2 / (2\epsilon^2)\right), \quad w_{ii}=0.
 $$
@@ -110,10 +112,12 @@ Draw a companion map $c:\mathcal{A}\to\mathcal{A}$ using the **Spatially-Aware P
 
 1. Let $\mathcal{M}_k$ be the set of perfect matchings of $\mathcal{A}$ with $k=|\mathcal{A}|$ (assume $k$ even for the matching step).
 2. For each matching $M\in\mathcal{M}_k$, define its weight
+
    $$
    W(M) := \prod_{(i,j)\in M} w_{ij}.
    $$
 3. Sample a matching with probability
+
    $$
    P(M) = \frac{W(M)}{\sum_{M'\in\mathcal{M}_k} W(M')}.
    $$
@@ -126,37 +130,43 @@ Dead walkers select companions uniformly from $\mathcal{A}$. If $|\mathcal{A}|=0
 ### Fitness Potential
 
 Define regularized distances to companions:
+
 $$
 d_i = \sqrt{\|z_i - z_{c_i}\|^2 + \lambda_{\text{alg}} \|v_i - v_{c_i}\|^2 + \epsilon_{\text{dist}}^2}.
 $$
 Rewards follow the Fragile-Agent reward 1-form (Definition {prf:ref}`def-reward-1-form` in `docs/source/1_agent/reference.md`):
+
 $$
 r_i = \langle \mathcal{R}(z_i), v_i \rangle_G.
 $$
 In the conservative case $\mathcal{R}=d\Phi$, this reduces to $r_i=\langle\nabla\Phi(z_i), v_i\rangle_G$.
 Standardize rewards and distances using patched (alive-only) statistics, optionally localized with scale $\rho$:
+
 $$
 z_r(i) = \frac{r_i - \mu_r}{\sigma_r}, \quad
 z_d(i) = \frac{d_i - \mu_d}{\sigma_d}.
 $$
 Apply logistic rescale $g_A(z) = A / (1 + \exp(-z))$ and positivity floor $\eta$:
+
 $$
 r_i' = g_A(z_r(i)) + \eta, \quad d_i' = g_A(z_d(i)) + \eta.
 $$
 Fitness is
+
 $$
 V_i = (d_i')^{\beta_{\text{fit}}} (r_i')^{\alpha_{\text{fit}}}.
 $$
-
 ### Momentum-Conserving Cloning
 
 Cloning scores and probabilities:
+
 $$
 S_i = \frac{V_{c_i} - V_i}{V_i + \epsilon_{\text{clone}}}, \quad
 p_i = \min(1, \max(0, S_i / p_{\max})).
 $$
 Cloning decisions are Bernoulli draws with parameter $p_i$; dead walkers always clone.
 Positions update via Gaussian jitter:
+
 $$
 z_i' = z_{c_i} + \sigma_x \zeta_i, \quad \zeta_i \sim \mathcal{N}(0, I).
 $$
@@ -164,6 +174,7 @@ Walkers that do not clone keep their positions unchanged.
 Velocities update via inelastic collisions. For each collision group $G$ (a companion and all cloners to it),
 let $V_{\text{COM}} = |G|^{-1} \sum_{k \in G} v_k$ and $u_k = v_k - V_{\text{COM}}$.
 Then
+
 $$
 v_k' = V_{\text{COM}} + \alpha_{\text{rest}} u_k, \quad k \in G.
 $$
@@ -253,23 +264,25 @@ This section records *derived constants* that are computed deterministically fro
 ### Domain and Metric Bounds
 
 Let the latent domain be a compact set $B\subset\mathcal{Z}$ with coordinate diameter
+
 $$
 D_z := \sup_{z,z'\in B}\|z-z'\|.
 $$
 For explicit minorization bounds we fix a compact **velocity core** $\|v\|\le V_{\mathrm{core}}$, which gives
+
 $$
 D_v := \sup_{v,w\in B_{V_{\mathrm{core}}}}\|v-w\|\le 2V_{\mathrm{core}}.
 $$
 Therefore on the alive core the algorithmic distance satisfies
+
 $$
 d_{\text{alg}}(i,j)^2 \le D_{\text{alg}}^2 := D_z^2 + \lambda_{\text{alg}} D_v^2.
 $$
-
 For spatially-aware Gaussian pairing, define the uniform kernel floor
+
 $$
 m_\epsilon := \exp\!\left(-\frac{D_{\text{alg}}^2}{2\epsilon^2}\right) \in (0,1].
 $$
-
 ### Spatially-Aware Pairing Minorization (Discrete, Alive Set)
 
 Let $k := |\mathcal{A}|$. Under the spatially-aware pairing distribution, the companion map is the matching draw on $\mathcal{A}$. On the alive core the Gaussian weights lie in $[m_\epsilon,1]$, so every matching weight is in $[m_\epsilon^{\lfloor k/2\rfloor},1]$. This yields an explicit lower bound on the marginal pairing probability for any fixed walker.
@@ -282,6 +295,7 @@ Let $k := |\mathcal{A}|$. Under the spatially-aware pairing distribution, the co
 Assume $k=|\mathcal{A}|\ge 2$ and that on the alive core
 $d_{\mathrm{alg}}(i,j)^2 \le D_{\mathrm{alg}}^2$ for all $i,j\in\mathcal{A}$ (so each Gaussian weight lies in $[m_\epsilon,1]$ with $m_\epsilon=\exp(-D_{\mathrm{alg}}^2/(2\epsilon^2))$).
 For even $k$, the marginal companion distribution $P_i(\cdot)$ for any alive walker $i$ satisfies
+
 $$
 P_i(\cdot)\ \ge\ m_\epsilon^{k/2}\,U_i(\cdot),
 $$
@@ -290,14 +304,17 @@ where $U_i$ is uniform on $\mathcal{A}\setminus\{i\}$. For odd $k$, condition on
 
 :::{prf:proof}
 Let $\mathcal{M}_k$ be the set of perfect matchings of $\mathcal{A}$ (assume $k$ even). For any fixed $i\neq j$, the number of matchings containing $(i,j)$ is $(k-3)!!$. Each matching weight satisfies
+
 $$
 W(M) \ge m_\epsilon^{k/2},
 $$
 so
+
 $$
 \sum_{M\ni(i,j)} W(M) \ge (k-3)!!\,m_\epsilon^{k/2}.
 $$
 The partition function obeys $Z=\sum_{M\in\mathcal{M}_k} W(M) \le (k-1)!!$ because $w_{ab}\le 1$. Therefore
+
 $$
 P(c_i=j)=\frac{\sum_{M\ni(i,j)} W(M)}{Z}
 \ge \frac{(k-3)!!}{(k-1)!!}\,m_\epsilon^{k/2}
@@ -312,6 +329,7 @@ For dead walkers, the implementation assigns companions uniformly from $\mathcal
 ### Confinement Constant from Latent Domain (Dirichlet)
 
 For QSD/killed-kernel characterizations on a bounded domain, it is convenient to record a geometric confinement scale from the latent domain. Define the Dirichlet spectral gap
+
 $$
 \kappa_{\mathrm{conf}}^{(B)} := \lambda_1(-\Delta\ \text{on}\ B\ \text{with Dirichlet bc})
 $$
@@ -320,20 +338,22 @@ This constant plays the role of “confinement strength” in KL/LSI-style bound
 ### Reward/Distance Ranges and Z-Score Bounds (Alive Set)
 
 Assume the reward 1-form is bounded on $B$:
+
 $$
 R_{\max}^{(B)} := \sup_{z\in B}\|\mathcal{R}(z)\|_G < \infty.
 $$
 On the alive core with $\|v_i\|\le V_{\mathrm{core}}$, rewards satisfy
+
 $$
 |r_i| \le R_{\max}^{(B)}\,V_{\mathrm{core}},\qquad \mathrm{range}(r)\le 2R_{\max}^{(B)}V_{\mathrm{core}}.
 $$
-
 For alive companions, the regularized fitness distance satisfies
+
 $$
 \epsilon_{\mathrm{dist}} \le d_i \le D_{\mathrm{dist}} := \sqrt{D_z^2 + \lambda_{\mathrm{alg}}D_v^2 + \epsilon_{\mathrm{dist}}^2}.
 $$
-
 Patched standardization uses $\sigma_{\min}>0$ (with optional localization $\rho$), so for alive walkers one has the deterministic bounds
+
 $$
 |z_r(i)| \le \frac{2R_{\max}^{(B)}V_{\mathrm{core}}}{\sigma_{\min}},\qquad
 |z_d(i)| \le \frac{D_{\mathrm{dist}}-\epsilon_{\mathrm{dist}}}{\sigma_{\min}}.
@@ -343,10 +363,12 @@ These bounds are crude but fully explicit; they provide deterministic envelopes 
 ### Fitness Bounds (Exact)
 
 Fitness uses logistic rescaling $g_A(z)=A/(1+e^{-z}) \in [0,A]$ and positivity floor $\eta>0$, so
+
 $$
 r_i' \in [\eta, A+\eta], \qquad d_i' \in [\eta, A+\eta].
 $$
 Hence, for exponents $\alpha_{\text{fit}},\beta_{\text{fit}}\ge 0$,
+
 $$
 V_{\min} := \eta^{\alpha_{\text{fit}}+\beta_{\text{fit}}}
 \le V_i \le
@@ -355,36 +377,40 @@ $$
 Dead walkers have fitness set to $V_i=0$ by definition (`src/fragile/fractalai/core/fitness.py`, `compute_fitness`).
 
 **With the default values** $\alpha_{\text{fit}}=\beta_{\text{fit}}=1$, $\eta=0.1$, $A=2.0$:
+
 $$
 V_{\min}=0.1^2=10^{-2}, \qquad V_{\max}=(2.1)^2=4.41.
 $$
-
 ### Cloning Score and Selection Pressure
 
 Cloning score:
+
 $$
 S_i = \frac{V_{c_i}-V_i}{V_i+\epsilon_{\text{clone}}}.
 $$
 Using the fitness bounds,
+
 $$
 |S_i| \le S_{\max} :=
 \frac{V_{\max}-V_{\min}}{V_{\min}+\epsilon_{\text{clone}}}.
 $$
 Cloning probability is clipped:
+
 $$
 p_i = \min\!\Bigl(1,\max\!\bigl(0, S_i/p_{\max}\bigr)\Bigr)\in[0,1].
 $$
 Define the **effective (discrete-time) selection pressure**
+
 $$
 \lambda_{\text{alg}}^{\mathrm{eff}} := \mathbb{E}\Bigl[\frac{1}{N}\sum_{i=1}^N \mathbf{1}\{\text{walker $i$ clones}\}\Bigr]\in[0,1].
 $$
 This is the quantity that enters the Foster–Lyapunov contraction bounds (see `src/fragile/convergence_bounds.py`).
 
 **With defaults** $\epsilon_{\text{clone}}=0.01$, $p_{\max}=1$, and the default $V_{\min},V_{\max}$ above:
+
 $$
 S_{\max} = \frac{4.41-0.01}{0.01+0.01} = 220.
 $$
-
 :::{prf:lemma} Cloning selection is fitness-aligned (mean fitness increases at the selection stage)
 :label: lem-latent-fractal-gas-selection-alignment
 
@@ -392,6 +418,7 @@ $$
 
 Fix a step of the algorithm and condition on the realized companion indices $c=(c_i)$ and the realized fitness values $V=(V_i)$ that are fed into cloning (`src/fragile/fractalai/core/fitness.py`, `compute_fitness` output, with dead walkers having $V_i=0$).
 Define the cloning score and probability
+
 $$
 S_i=\frac{V_{c_i}-V_i}{V_i+\epsilon_{\mathrm{clone}}},\qquad
 p_i=\min\!\Bigl(1,\max(0,S_i/p_{\max})\Bigr),
@@ -399,10 +426,12 @@ $$
 and for dead walkers set $p_i:=1$ (as enforced in `src/fragile/fractalai/core/cloning.py`).
 Let $B_i\sim \mathrm{Bernoulli}(p_i)$ be the cloning decision, conditionally independent given $(V,c)$.
 Define the selection-stage surrogate fitness update
+
 $$
 V_i^{\mathrm{sel}}:=(1-B_i)V_i + B_i V_{c_i}.
 $$
 Then for every $i$,
+
 $$
 \mathbb{E}[V_i^{\mathrm{sel}}-V_i\mid V,c] = p_i\,(V_{c_i}-V_i)\ \ge\ 0,
 $$
@@ -430,6 +459,7 @@ Summing over $i$ yields the mean-fitness statement.
 ### Cloning Noise Scale (Exact)
 
 The cloning position update injects Gaussian noise with variance
+
 $$
 \delta_x^2 := \sigma_x^2.
 $$
@@ -445,6 +475,7 @@ The Lorentz term is integrated with a Boris rotation (Definition {prf:ref}`def-b
 **Status:** Certified (orthogonal rotation in the metric).
 
 Let $p$ denote momentum and let $\mathcal{F}$ be the Value Curl. The Boris update rotates $p$ by a skew-symmetric operator in the $G$-metric, so
+
 $$
 \|p'\|_G = \|p\|_G.
 $$
@@ -454,6 +485,7 @@ Hence the Lorentz term does not change kinetic energy; it only redistributes mom
 ### OU Thermostat (Momentum Ellipticity)
 
 The O-step applies the Ornstein-Uhlenbeck thermostat
+
 $$
 p \leftarrow c_1 p + c_2\,G^{1/2}(z)\,\xi,\qquad \xi\sim\mathcal{N}(0,I),
 $$
@@ -647,6 +679,7 @@ $$K_{\mathrm{Rec}_N}^+ = (\mathcal{B}, \mathcal{R}, N_{\max}=T).$$
 **Question:** Do sublevel sets of $\Phi$ have compact closure modulo symmetry?
 
 **Execution:** The QSD/mean-field analysis is performed on the **alive-conditioned** slice
+
 $$
 \Omega_{\mathrm{alive}} := (B\times B_{V_{\mathrm{core}}})^N,
 $$
@@ -733,6 +766,7 @@ $$K_{\mathrm{TB}_O}^+ = (\mathbb{R}_{\mathrm{an},\exp},\ \Sigma\ \text{definable
 **Execution:** We certify a Doeblin-style mixing witness for the alive-conditioned dynamics by combining (i) explicit discrete minorization from companion refreshment and (ii) hypoelliptic smoothing from Langevin noise.
 
 1. **Companion refreshment (discrete Doeblin):** On the alive slice with $k=n_{\mathrm{alive}}\ge 2$, Lemma {prf:ref}`lem-latent-fractal-gas-pairing-doeblin` gives the marginal minorization
+
    $$
    \mathbb{P}(c_i\in\cdot)\ \ge\ m_\epsilon^{\lfloor k/2\rfloor}\,U_i(\cdot),
    \qquad m_\epsilon=\exp\!\left(-\frac{D_{\mathrm{alg}}^2}{2\epsilon^2}\right),
@@ -740,6 +774,7 @@ $$K_{\mathrm{TB}_O}^+ = (\mathbb{R}_{\mathrm{an},\exp},\ \Sigma\ \text{definable
    where $U_i$ is uniform on $\mathcal{A}\setminus\{i\}$. For odd $k$, the bound applies conditionally on $i\neq i_\star$ (the self-paired index); for $i=i_\star$ the companion is deterministic. When $n_{\mathrm{alive}}=1$, pairing maps the lone walker to itself; the sieve uses $n_{\mathrm{alive}}\ge 2$ for mixing/QSD proxies.
 
 2. **Mutation smoothing (hypoelliptic):** The OU thermostat injects full-rank Gaussian noise in momentum (Derived Constants). While a *single* BAOAB step is rank-deficient in $(z,p)$ (noise enters only through $p$), the *two-step* kernel $P^2$ is non-degenerate (standard hypoelliptic Langevin smoothing) and admits a jointly continuous, strictly positive density on any compact core $C\Subset \mathrm{int}(B)\times B_{V_{\mathrm{core}}}$. Hence there exists $\varepsilon_C>0$ such that
+
    $$
    P^2(z,\cdot)\ \ge\ \varepsilon_C\,\mathrm{Unif}_C(\cdot)\qquad \forall z\in C,
    $$
@@ -748,6 +783,7 @@ $$K_{\mathrm{TB}_O}^+ = (\mathbb{R}_{\mathrm{an},\exp},\ \Sigma\ \text{definable
 3. **Doeblin witness $\Rightarrow$ finite mixing time:** Combining (1) and (2) yields a regeneration witness for the alive-conditioned chain; the framework consumes $(m_\epsilon,c_{\min},c_{\max},\varepsilon_C)$ as the quantitative inputs certifying $\tau_{\mathrm{mix}}(\delta)<\infty$ and enabling the Part III-A rate proxies.
 
 **Certificate:**
+
 $$
 K_{\mathrm{TB}_\rho}^+
 =
@@ -755,7 +791,6 @@ K_{\mathrm{TB}_\rho}^+
 m_\epsilon>0,\ (c_{\min},c_{\max})\ \text{certified},\ \exists\,C\Subset \Omega_{\mathrm{alive}},\ \varepsilon_C>0:\ P^2\ge \varepsilon_C\,\mathrm{Unif}_C,\ \tau_{\mathrm{mix}}<\infty
 \right).
 $$
-
 ## Level 6: Complexity
 
 ### Node 11: ComplexCheck ($\mathrm{Rep}_K$)
@@ -829,6 +864,7 @@ $$K_{\mathrm{Bound}_{\Sigma}}^{\mathrm{blk}} = (\text{QSD/conditioned dynamics e
 **Question:** Is control matched to disturbance (requisite variety)?
 
 **Execution:** AlignCheck is a directionality check for the *selection/resampling* component. Conditional on the realized companion indices and realized fitness values fed into the cloning operator, Lemma {prf:ref}`lem-latent-fractal-gas-selection-alignment` shows that the selection-stage surrogate update satisfies
+
 $$
 \mathbb{E}\!\left[\frac{1}{N}\sum_i V_i^{\mathrm{sel}}\ \middle|\ V,c\right]\ \ge\ \frac{1}{N}\sum_i V_i,
 $$
@@ -871,51 +907,56 @@ This section ties the **derived constants** above to the quantitative convergenc
 Let $\tau:=\Delta t$ be the time step, and let $\lambda_{\mathrm{alg}}^{\mathrm{eff}}$ be the effective selection pressure defined above (expected fraction cloned per step).
 
 The framework uses the component-rate abstractions
+
 $$
 \kappa_v \approx \texttt{kappa\_v}(\gamma,\tau),\qquad
 \kappa_x \approx \texttt{kappa\_x}(\lambda_{\mathrm{alg}}^{\mathrm{eff}},\tau).
 $$
 In this Latent Fractal Gas variant (Fragile-Agent kinetics), Wasserstein contraction is taken from the **cloning-driven** contraction theorem:
+
 $$
 \kappa_W \approx \texttt{kappa\_W\_cluster}(f_{UH},p_u,c_{\mathrm{align}}),
 $$
 where $f_{UH}$, $p_u$, $c_{\mathrm{align}}$ can be instantiated either from a proof-level lower bound (worst case) or from a profiled run (tight).
 
 The total discrete-time contraction rate is
+
 $$
 \kappa_{\mathrm{total}} = \texttt{kappa\_total}(\kappa_x,\kappa_v,\kappa_W,\kappa_b;\epsilon_{\mathrm{coupling}}),
 $$
 and mixing time estimates use
+
 $$
 T_{\mathrm{mix}}(\varepsilon)=\texttt{T\_mix}(\varepsilon,\kappa_{\mathrm{total}},V_{\mathrm{init}},C_{\mathrm{total}}).
 $$
-
 ### QSD and KL Rates (LSI-Based)
 
 The continuous-time QSD convergence rate proxy used by the framework is
+
 $$
 \kappa_{\mathrm{QSD}} = \texttt{kappa\_QSD}(\kappa_{\mathrm{total}},\tau) \approx \kappa_{\mathrm{total}}\tau.
 $$
-
 Let $\rho$ denote the localization scale parameter used by the latent LSI proxy. In this instantiation the alive arena is globally bounded, so we may take $\rho:=D_{\mathrm{alg}}$ (full alive diameter) without loss.
 
 For relative-entropy convergence, the framework encodes geometric LSI constants via an ellipticity window $(c_{\min},c_{\max})$ and an effective confinement constant. On the alive core, the OU thermostat yields a momentum covariance $c_2^2 G(z)$, so we may record
+
 $$
 c_{\min}=c_2^2\,\lambda_{\min}(G|_B),\qquad c_{\max}=c_2^2\,\lambda_{\max}(G|_B),\qquad
 \kappa_{\mathrm{conf}}=\kappa_{\mathrm{conf}}^{(B)},
 $$
 and the geometric LSI constant proxy is
+
 $$
 C_{\mathrm{LSI}}^{(\mathrm{geom})}
 \approx
 \texttt{C\_LSI\_geometric}\!\left(\rho,\ c_{\min},c_{\max},\ \gamma,\ \kappa_{\mathrm{conf}},\ \kappa_W\right).
 $$
 Then KL decay is tracked via
+
 $$
 D_{\mathrm{KL}}(t)\ \le\ \exp\!\left(-\frac{t}{C_{\mathrm{LSI}}^{(\mathrm{geom})}}\right) D_{\mathrm{KL}}(0)
 \qquad (\texttt{KL\_convergence\_rate}).
 $$
-
 **Interpretation / hypotheses:** `C_LSI_geometric` is a framework-level upper bound for an idealized (continuous-time) uniformly elliptic diffusion; here it is used as a quantitative *proxy* for the alive-conditioned dynamics. Its use requires the following inputs to be positive and supplied by the instantiation: $\gamma>0$, $\kappa_{\mathrm{conf}}>0$, $\kappa_W>0$, and a certified ellipticity window with $0<c_{\min}\le c_{\max}<\infty$ (here derived from the OU thermostat and metric bounds on $B$).
 
 ---
@@ -925,6 +966,7 @@ $$
 ### Empirical Measure and Nonlinear Limit
 
 Let $Z_i^N(k)=(z_i(k),v_i(k))$ and define the empirical measure
+
 $$
 \mu_k^N := \frac{1}{N}\sum_{i=1}^N \delta_{Z_i^N(k)}.
 $$
@@ -941,11 +983,11 @@ In weak-selection continuous-time scalings (cloning probabilities $=O(\Delta t)$
 ### Propagation-of-Chaos Error (Framework Bound)
 
 When the Wasserstein contraction rate $\kappa_W>0$ is certified (typically from the pairing minorization constant and cloning pressure), the framework uses the generic propagation-of-chaos bound
+
 $$
 \mathrm{Err}_{\mathrm{MF}}(N,T)\ \lesssim\ \frac{e^{-\kappa_W T}}{\sqrt{N}}
 \qquad (\texttt{mean\_field\_error\_bound}(N,\kappa_W,T)).
 $$
-
 ### How Fitness/Cloning Enter
 
 Fitness and cloning affect the mean-field limit through:
@@ -960,6 +1002,7 @@ Fitness and cloning affect the mean-field limit through:
 ### Killed Kernel and QSD Definition (Discrete Time)
 
 Let $Q$ be the **sub-Markov** one-step kernel of the single-walker mutation dynamics on $E:=B\times B_{V_{\mathrm{core}}}$ with cemetery $^\dagger$, where exiting $B$ is killing (sent to $^\dagger$). A QSD is a probability measure $\nu$ and a scalar $\alpha\in(0,1)$ such that
+
 $$
 \nu Q = \alpha\,\nu.
 $$
@@ -972,6 +1015,7 @@ For pure boundary killing, the “kill + resample from survivors” mechanism is
 The implemented Latent Fractal Gas performs fitness-based resampling among alive walkers (pairwise cloning), which is a Del Moral interacting particle system. In mean field, the evolution is a normalized nonlinear semigroup (cf. `docs/source/sketches/fragile/fragile_gas.md` Appendix A) whose fixed points play the role of QSD/eigenmeasure objects for the killed/selection-corrected dynamics.
 
 In the idealized special case where selection is a classical Feynman–Kac weighting by a potential $G$ (Appendix A.2 in `docs/source/sketches/fragile/fragile_gas.md`), the continuous-time analogue characterizes the stationary object as the principal eigenmeasure of the twisted generator (Dirichlet/killing incorporated into $\mathcal{L}$):
+
 $$
 (\mathcal{L}+G)^* \nu \;=\; \lambda_0 \nu,
 $$
