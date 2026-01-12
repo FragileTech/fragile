@@ -318,6 +318,83 @@ Formally: If $\pi_1(\int \mathcal{X}) \neq 0$ (non-trivial fundamental group), t
 **Application:** Random 3-SAT has frustrated loops (conflicting clause cycles), blocking Class II. Horn-SAT has $\pi_1 = 0$ (acyclic implications), enabling Class II.
 :::
 
+:::{prf:definition} Propagator Tube Witness (Geodesic Progress Certificate)
+:label: def-propagator-tube-witness
+
+This definition packages a common “thin-solution-manifold” situation in the **Propagator / shape** regime into an
+explicit certificate that yields a **linear-in-depth** bound for population-based propagators (including Fractal Gas
+instantiations) on tree/graph growth problems.
+
+**Setup (rooted transition system).**
+Let $(X,x_0,\mathsf{Next},\mathsf{Goal})$ be a rooted transition system, where $\mathsf{Next}(x)\subseteq X$ is finite
+and $\mathsf{Goal}\subseteq X$ is the goal set. Define the depth
+$$
+\mathrm{depth}(x):=\min\{k:\exists x_1,\dots,x_k\ \text{s.t.}\ x_1\in\mathsf{Next}(x_0),\ x_{i+1}\in\mathsf{Next}(x_i),\ x_k=x\},
+$$
+and the optimal goal depth $d_\star:=\min_{x\in\mathsf{Goal}}\mathrm{depth}(x)$.
+
+**Definition (tube witness).**
+Fix a population-based Propagator update rule (one “outer iteration”) consisting of:
+1. a one-step proposal/transition mechanism, and
+2. a selection/resampling mechanism that can preserve promising branches.
+
+A **Propagator tube witness** is a tuple $(\mathcal{T},V,\delta,p)$ where $\mathcal{T}\subseteq X$ is a “tube”,
+$V:X\to\mathbb{R}$ is a progress functional, and $\delta,p>0$ are constants such that:
+1. (**Tube**) $x_0\in\mathcal{T}$ and $\mathcal{T}\cap\mathsf{Goal}\neq\varnothing$.
+2. (**Forward connectivity**) For every $x\in\mathcal{T}$ with $\mathrm{depth}(x)<d_\star$ there exists
+   $y\in\mathsf{Next}(x)\cap\mathcal{T}$ with $\mathrm{depth}(y)=\mathrm{depth}(x)+1$.
+3. (**Strict progress**) For any such tube edge $x\to y$, $V(y)\ge V(x)+\delta$.
+4. (**Tube-following probability**) Conditioned on any walker being at any $x\in\mathcal{T}$ with
+   $\mathrm{depth}(x)<d_\star$, the proposal mechanism proposes at least one tube successor as in (2) with probability
+   $\ge p$.
+5. (**Non-extinction on the tube**) The selection/resampling step preserves at least one tube walker until
+   $\mathsf{Goal}$ is reached.
+
+**Interpretation:** This is an explicit “geodesic tube” regularity certificate inside Class II (Propagators): the
+effective branching factor on $\mathcal{T}$ is 1 (a wavefront advances down a well-founded chain), even if the ambient
+branching factor $b=\sup_x|\mathsf{Next}(x)|$ is large.
+:::
+
+:::{prf:theorem} [MT-GeodesicTunneling] The Geodesic Tunneling of Fractal Trees
+:label: mt:geodesic-tunneling-fractal-trees
+
+**Status:** Conditional (solver-specific envelope inside Class II; the singular-case fallback uses {prf:ref}`mt:levin-search`).
+
+**Statement (Propagator wavefront bound).**
+Assume the instance is Regular in the **Propagator / shape** sense (Definition {prf:ref}`def-class-ii-propagators`) and
+admits a Propagator tube witness $(\mathcal{T},V,\delta,p)$ (Definition {prf:ref}`def-propagator-tube-witness`). Then the
+expected number of outer iterations for a population-based Propagator to reach $\mathsf{Goal}$ satisfies
+$$
+\mathbb{E}[T_{\mathrm{hit}}]\ \le\ d_\star/p,
+$$
+independent of the ambient branching factor $b$.
+
+**Statement (singular regime fallback).**
+If all five modalities are blocked (Definition {prf:ref}`def-obstruction-certificates`), no polynomial-time progress
+certificate exists in the worst case. In that regime, guarantees reduce to the chosen prior/schedule; an explicit
+Levin-equivalent instantiation exists by Metatheorem {prf:ref}`mt:levin-search`.
+:::
+
+:::{prf:proof}
+Let $Z_t$ be the maximum depth among walkers in the tube $\mathcal{T}$ after iteration $t$. By the non-extinction
+assumption in Definition {prf:ref}`def-propagator-tube-witness`, there is always at least one tube walker at depth $Z_t$
+until $d_\star$ is reached.
+
+Conditioned on being at any $x\in\mathcal{T}$ with $\mathrm{depth}(x)<d_\star$, the tube-following probability yields
+$$
+\mathbb{P}(Z_{t+1}=Z_t+1\mid Z_t<d_\star)\ge p.
+$$
+Therefore the waiting time to advance the wavefront by one depth level is stochastically dominated by a geometric
+random variable with mean $1/p$. By linearity of expectation over the $d_\star$ required advances,
+$\mathbb{E}[T_{\mathrm{hit}}]\le d_\star/p$.
+
+The bound is independent of $b$ because the tube witness asserts screening onto $\mathcal{T}$: only a
+constant-probability “correct successor” event is needed per depth increment.
+
+In the singular regime (all obstruction certificates), the absence of any separating modal structure prevents such a
+tube progress certificate in the worst case; the Levin-equivalent fallback is exactly Metatheorem {prf:ref}`mt:levin-search`.
+:::
+
 :::{prf:definition} Class III: Alchemists (Flat Modality)
 :label: def-class-iii-alchemists
 
@@ -854,4 +931,3 @@ This is the answer to the question: "Could there be a clever algorithm we have n
 
 That is the power of category theory. It does not just organize what we know; it reveals the **boundaries** of what is possible.
 :::
-

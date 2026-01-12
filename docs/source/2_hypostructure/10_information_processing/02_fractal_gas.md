@@ -1953,93 +1953,10 @@ This is the standard universal-search guarantee. The “Fractal Gas” phrasing 
 single scalar “energy” whose cutoff induces Levin’s resource allocation.
 :::
 
-:::{prf:metatheorem} The Geodesic Tunneling of Fractal Trees (Linear-Time Wavefront in the Propagator Regime; Levin Envelope in the Singular Regime)
-:label: mt:geodesic-tunneling-fractal-trees
-
-**Thin inputs:** $\mathcal{X}^{\text{thin}}$, $\Phi^{\text{thin}}$, $\mathfrak{D}^{\text{thin}}$.
-**Permits:** $C_\mu$ (N3), $D_E$ (N1), $\mathrm{TB}_\pi$ (N8), $\mathrm{Rep}_K$ (N11).
-
-**Status:** Conditional (structured-case bound requires an explicit “tube/progress” certificate; unstructured-case bound reduces to Metatheorem {prf:ref}`mt:levin-search`).
-
-**Setup (search in path form).**
-Let $(X,x_0,\mathsf{Next},\mathsf{Goal})$ be a rooted transition system, where $\mathsf{Next}(x)\subseteq X$ is the
-finite successor set and $\mathsf{Goal}\subseteq X$ is the goal set. Define the depth
-
-$$
-\mathrm{depth}(x):=\min\{k:\exists x_1,\dots,x_k\ \text{s.t.}\ x_1\in\mathsf{Next}(x_0),\ x_{i+1}\in\mathsf{Next}(x_i),\ x_k=x\},
-
-$$
-and let $d_\star:=\min_{x\in\mathsf{Goal}}\mathrm{depth}(x)$.
-
-Assume a Fractal-Gas instantiation where each outer iteration (i) advances each walker by one transition via the
-kinetic operator and (ii) applies the selection/cloning kernel using a scalar fitness/proxy $V:X\to\mathbb{R}$.
-
-**Complexity-class alignment (uses the framework definitions).**
-We use the internal polynomial/hard distinction from the Algorithmic Classification chapter:
-- A problem is **polynomial-time / Regular (P)** if it admits a polynomial-time algorithmic morphism (Definition
-  {prf:ref}`def-algorithmic-morphism`), equivalently (by Algorithmic Completeness {prf:ref}`mt-alg-complete`) at least one
-  modality admits a polynomial-time witness $K_\lozenge^+$.
-- A problem is **hard / Singular** when all five modalities are blocked, witnessed by the obstruction certificates
-  (Definition {prf:ref}`def-obstruction-certificates`).
-
-This metatheorem is an *algorithm-specific* refinement: it gives an explicit **linear-in-depth wavefront bound** for the
-Propagator/shape regime (Class II) and an explicit **universal-search envelope** in the singular regime.
-
-**Additional structured hypothesis (a Class II / Propagator tube witness).**
-Assume the instance’s Regularity is witnessed in the **shape/Propagator** sense (Definition {prf:ref}`def-class-ii-propagators`),
-so there is a well-founded depth functional (DAG/topological order). In the search-tree picture, record this as a **tube
-witness** $(\mathcal{T},V,\delta,p)$:
-1. (**Tube**) $x_0\in\mathcal{T}$ and $\mathcal{T}\cap\mathsf{Goal}\neq\varnothing$.
-2. (**Forward connectivity**) For every $x\in\mathcal{T}$ with $\mathrm{depth}(x)<d_\star$ there exists
-   $y\in\mathsf{Next}(x)\cap\mathcal{T}$ with $\mathrm{depth}(y)=\mathrm{depth}(x)+1$.
-3. (**Strict progress**) For any such tube edge $x\to y$, $V(y)\ge V(x)+\delta$ for some $\delta>0$.
-4. (**Tube-following probability**) Conditioned on a walker being at any $x\in\mathcal{T}$ with
-   $\mathrm{depth}(x)<d_\star$, the kinetic operator proposes at least one tube successor with probability $\ge p>0$,
-   and selection/cloning preserves at least one tube walker until $\mathsf{Goal}$ is reached (non-extinction on
-   $\mathcal{T}$).
-
-**Statement (complexity envelope).**
-1. (**Linear time (in depth) on Regular Propagator instances.**) Under the tube-witness assumptions above, the expected
-   number of outer iterations to reach $\mathsf{Goal}$ is
-
-   $$
-   \mathbb{E}[T_{\mathrm{hit}}]\ \le\ d_\star/p,
-
-   $$
-   and the bound is independent of the ambient branching factor $b:=\sup_x|\mathsf{Next}(x)|$. Measured in successor
-   expansions, the cost is $O(N\,d_\star/p)$ for a swarm of size $N$.
-2. (**Levin envelope on hard/singular problems.**) When the problem is singular in the sense of Definition
-   {prf:ref}`def-obstruction-certificates`, no polynomial-time progress certificate exists in the worst case; any
-   guarantee reduces to the chosen prior/schedule. There is a Fractal-Gas instantiation that is Levin-equivalent on
-   program space (Metatheorem {prf:ref}`mt:levin-search`), hence it solves any computable search/inversion problem within
-   the usual $O(2^{|p_\star|}t_\star)$ universal-search envelope (up to constants).
-
-**Remark (what this does and does not claim).**
-The “linear time” conclusion is linear in *solution depth* $d_\star$ (the length of the certified tube), not a claim of
-$O(n)$ time for all inputs of length $n$ nor a claim that every $P$ instance admits such a tube witness. For
-NP-hard/no-structure instances the guarantee is the Levin envelope, which is still exponential in the shortest
-description length of a solution.
-:::
-
-:::{prf:proof}
-**Part 1 (Wavefront / depth advance).**
-Let $Z_t$ be the maximum depth among walkers in the tube $\mathcal{T}$ after iteration $t$. By the non-extinction
-assumption, there is always at least one tube walker at depth $Z_t$ until the goal depth $d_\star$ is reached.
-Conditioned on being at any $x\in\mathcal{T}$ with $\mathrm{depth}(x)<d_\star$, the kinetic operator proposes a tube
-successor with probability at least $p$, which yields $\mathbb{P}(Z_{t+1}=Z_t+1\mid Z_t<d_\star)\ge p$.
-
-Therefore the waiting time to advance the wavefront by one depth level is stochastically dominated by a geometric
-random variable with mean $1/p$. By linearity of expectation over the $d_\star$ required advances,
-$\mathbb{E}[T_{\mathrm{hit}}]\le d_\star/p$.
-
-The bound does not depend on the ambient branching factor $b$ because the certificate asserts that the dynamics are
-screened onto $\mathcal{T}$: only a constant-probability “correct successor” event is needed per depth increment.
-
-**Part 2 (Flat limit reduces to Levin).**
-If no separating tube/progress functional exists, selection/cloning cannot bias toward a correct branch in the
-worst case. In that regime, the best generic guarantee is to fall back to a prior-driven enumeration of
-computations. Metatheorem {prf:ref}`mt:levin-search` provides an explicit Fractal-Gas instantiation whose schedule is
-Levin/universal search, yielding the standard $O(2^{|p_\star|}t_\star)$ envelope.
+:::{prf:remark} Complexity Envelope (Framework Classes)
+The complexity-class refinement (Propagator-regime linear-in-depth wavefront bound; singular-regime Levin fallback) is
+stated in the Algorithmic Classification chapter as Definition {prf:ref}`def-propagator-tube-witness` and Theorem
+{prf:ref}`mt:geodesic-tunneling-fractal-trees`.
 :::
 
 :::{prf:principle} Algorithmic Tunneling
