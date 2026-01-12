@@ -1394,7 +1394,7 @@ No obligations were introduced in this run.
 Node 1:  K_{D_E}^+
 Node 2:  K_{Rec_N}^+
 Node 3:  K_{C_mu}^+
-Node 4:  K_{SC_lambda}^- -> K_{TypeII}^{blk}
+Node 4:  K_{SC_lambda}^{crit} -> K_{TypeII}^{blk}
 Node 5:  K_{SC_∂c}^+
 Node 6:  K_{Cap_H}^+
 Node 7:  K_{LS_sigma}^+
