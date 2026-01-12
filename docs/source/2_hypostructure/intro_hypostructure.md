@@ -274,22 +274,26 @@ This formalism is a **categorical foundation for runtime safety verification**. 
 **Novel Contributions:**
 
 *Categorical Framework:*
+
 1. **Hypostructure as categorical object.** The tuple $\mathbb{H} = (\mathcal{X}, \nabla, \Phi_\bullet, \tau, \partial_\bullet)$ in a cohesive $(\infty,1)$-topos, with the boundary morphism $\partial_\bullet$ encoding the holographic interface.
 2. **Fixed-Point Principle.** The Consistency Metatheorem ({prf:ref}`mt-krnl-consistency`) unifying all axioms as manifestations of self-consistency under evolution.
 3. **Trichotomy Metatheorem.** Complete classification of system states into VICTORY/Mode/Surgery ({prf:ref}`mt-krnl-trichotomy`).
 4. **Mutual Exclusion.** Proof that VICTORY and failure modes are disjoint ({prf:ref}`mt-krnl-exclusion`).
 
 *Proof Architecture:*
+
 5. **Certificate-typed execution.** Formal specification of YES/NO/INC certificates with witness types and verification functions ({prf:ref}`def-gate-permits`).
 6. **Factory Metatheorems.** Natural transformation soundness for correct-by-construction code generation ({prf:ref}`mt-fact-gate`, {prf:ref}`mt-fact-barrier`, {prf:ref}`mt-fact-surgery`).
 7. **Instantaneous Upgrade Metatheorems.** Systematic promotion of "Blocked" barrier certificates and "Surgery" re-entry certificates to full YES permits—allows recovery of Lyapunov functions under drift conditions, promotes zero eigenvalue + spectral gap to exponential convergence, upgrades no concentration + finite Morawetz to scattering. These validate Thin interfaces and promote them to full objects ([Instantaneous Upgrades](08_upgrades/01_instantaneous.md)).
 
 *Operational Specifications:*
+
 8. **17 Gate Nodes.** Complete formal specifications for all diagnostic checks with decidability analysis ([Gate Nodes](04_nodes/01_gate_nodes.md)).
 9. **Barrier/Surgery Architecture.** Fallback defense layer and repair mechanisms with re-entry protocols ([Barrier Nodes](04_nodes/02_barrier_nodes.md), [Surgery Nodes](04_nodes/03_surgery_nodes.md)).
 10. **Exclusion Tactics E1-E12.** Obstruction-theoretic methods for proving non-existence of bad morphisms ([Lock Mechanism](06_modules/03_lock.md)).
 
 *Meta-Theoretic:*
+
 11. **Algorithmic Completeness Theory.** The five algorithm classes (Climbers, Propagators, Alchemists, Dividers, Interference Engines) are proven exhaustive via Schreiber's structure theorem—polynomial-time algorithms must factor through cohesive modalities $\{\sharp, \int, \flat, \ast, \partial\}$. Tactic E13 (Algorithmic Completeness Lock) establishes hardness by blocking all five modalities ([Algorithmic Completeness](09_mathematical/05_algorithmic.md)).
 12. **P/NP Bridge to Classical Complexity.** Bidirectional bridge theorems establish $P_{\text{Fragile}} = P_{\text{DTM}}$ and $NP_{\text{Fragile}} = NP_{\text{DTM}}$ via adequacy of the Fragile runtime. Internal complexity separations export to classical ZFC statements about P and NP ([P/NP Bridge](09_mathematical/06_complexity_bridge.md)).
 13. **Meta-Learning Axioms.** Learning hypostructure constraints as optimization over defect functionals ([Meta-Learning](10_metalearning/01_metalearning.md)).
