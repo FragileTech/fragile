@@ -601,7 +601,7 @@ The **Latent Fractal Gas** operates in a learned latent space $\mathcal{Z}$ with
 - Reward $r_i = \langle \mathcal{R}(z_i), v_i \rangle_G$ is the inner product of a reward 1-form with velocity
 - Kinetics: Boris-BAOAB with anisotropic diffusion
 
-This is the variant formally treated in {doc}`03_fractal_gas_latent`.
+This is the variant formally treated in {doc}`02_fractal_gas_latent`.
 
 ### Fragile Gas
 
@@ -660,7 +660,7 @@ $$
 
 where $\kappa_W > 0$ is the Wasserstein contraction rate certified by the sieve.
 
-For formal treatment of convergence, see {doc}`03_fractal_gas_latent` (Part III-B).
+For formal treatment of convergence, see {doc}`02_fractal_gas_latent` (Part III-B).
 
 ---
 
@@ -710,14 +710,14 @@ The Fractal Gas is a principled algorithm for optimization and sampling that com
 4. **Guaranteed revival**: Dead walkers always return, preventing extinction
 5. **Flexible kinetics**: Pluggable dynamics (Langevin, Boris-BAOAB, etc.)
 
-The formal treatment in {doc}`03_fractal_gas_latent` proves that this algorithm:
+The formal treatment in {doc}`02_fractal_gas_latent` proves that this algorithm:
 - Defines a valid Markov transition kernel
 - Converges to a quasi-stationary distribution
 - Admits a mean-field limit with explicit error bounds
 - Satisfies the sieve conditions for the Hypostructure framework
 
 :::{seealso}
-- {doc}`03_fractal_gas_latent`: Proof object with full sieve verification
+- {doc}`02_fractal_gas_latent`: Proof object with full sieve verification
 - {doc}`../2_hypostructure/10_information_processing/02_fractal_gas`: Hypostructure metatheorems
 - {doc}`appendices/01_fragile_gas_framework`: Axiom system and revival guarantee proof
 :::
