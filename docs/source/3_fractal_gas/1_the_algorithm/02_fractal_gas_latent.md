@@ -14,11 +14,114 @@ title: "Hypostructure Proof Object: Fractal Gas (Latent Fragile Agent)"
 
 ## Introduction
 
+:::{div} feynman-prose
+Let me tell you what this document is really about. Imagine you have a swarm of particles exploring some high-dimensional space, and you want guarantees that they will actually find what they are looking for. Not just "it usually works" but genuine mathematical certificates that say: *given these conditions, convergence is guaranteed at this rate*.
+
+The problem is that classical mathematical proofs require assumptions that are almost never satisfied in practice. They say things like "if your potential is globally convex..." but real fitness landscapes are full of local bumps and non-convexities. So the question is: can we build a verification system that gives rigorous guarantees without requiring impossible assumptions?
+
+That is what the Hypostructure framework does, and this document is a complete worked example. We take a specific algorithm (the Latent Fractal Gas), run it through 17 verification nodes, and either certify each property or explicitly identify what blocks it. The beautiful thing is that classical requirements like "global convexity" get *replaced* by computable quantities like "is $\kappa_{\mathrm{total}} > 0$?" that you can check at runtime.
+:::
+
 The Latent Fractal Gas represents the natural evolution of the Fragile Gas framework from Euclidean observation space into the structured latent representations learned by modern agents. Where the Euclidean Gas operates on raw positions and velocities, the Latent Gas operates on the compressed, semantically meaningful coordinates that emerge from representation learning. This shift brings both opportunities and challenges: the latent metric $G$ may be curved and state-dependent, the reward signal becomes a 1-form on a manifold rather than a simple scalar field, and the effective potential must account for both the agent's objectives and the geometry of its internal representations.
 
 This document constructs a complete proof object certifying that the Latent Fractal Gas satisfies all requirements of the Hypostructure framework. The core innovation is the integration of Fragile-Agent kinetics (geodesic Boris-BAOAB integrating Lorentz-Langevin dynamics) with the measurement-selection-cloning pipeline of the Fragile Gas. Companion selection uses a phase-space softmax kernel that weights neighbors by both positional and velocity similarity, enabling the swarm to exploit coherent motion patterns. The cloning operator implements momentum-conserving inelastic collisions that preserve center-of-mass velocity within collision groups, providing controlled energy dissipation while maintaining physical plausibility.
 
 The technical heart of the document is the derivation of explicit quantitative constants that feed into the framework's rate calculators. These include: the kernel floor $m_\epsilon$ controlling minorization strength, the fitness bounds $(V_{\min}, V_{\max})$ determining selection pressure range, the Wasserstein contraction rate $\kappa_W$ from companion selection geometry, and the LSI constant $C_{\mathrm{LSI}}^{(\mathrm{geom})}$ governing KL decay. Perhaps most importantly, the proof object demonstrates how the Algorithmic Factories transform classical analytic requirements (global convexity, spectral gaps, Mosco convergence) into computable certificates that can be verified at runtime. This shifts the burden of proof from manual mathematical analysis to automated verification: convergence guarantees become diagnostic outputs rather than input assumptions.
+
+## Why Hypostructure? Classical Analysis vs. Structural Verification
+
+:::{div} feynman-prose
+Let me be direct about something that may puzzle readers familiar with mathematical analysis: why do we need this elaborate Hypostructure machinery when the appendices contain perfectly rigorous classical proofs? The Euclidean Gas convergence analysis in {doc}`../appendices/02_euclidean_gas`, {doc}`../appendices/05_kinetic_contraction`, and {doc}`../appendices/06_convergence` establishes exponential ergodicity using standard tools—Lyapunov functions, hypocoercive estimates, Foster drift conditions. These proofs work. They give quantitative rates. So what is the point of redoing everything in this categorical language?
+
+The answer is that we are not redoing the same thing. We are doing something fundamentally different, and the difference matters precisely when you try to extend the theory beyond its original comfortable domain.
+:::
+
+### The Appendices: Classical Analysis of the Euclidean Variant
+
+The appendices to this volume provide a complete classical treatment of the Euclidean Fragile Gas using the standard machinery of stochastic analysis:
+
+| Document | Content | Analytical Technique |
+|----------|---------|---------------------|
+| {doc}`../appendices/01_fragile_gas_framework` | Axiomatic foundations | Measure-theoretic framework |
+| {doc}`../appendices/02_euclidean_gas` | Euclidean instantiation | Sasaki metric geometry |
+| {doc}`../appendices/03_cloning` | Cloning operator analysis | Wasserstein contraction |
+| {doc}`../appendices/05_kinetic_contraction` | Kinetic operator | Hypocoercivity theory |
+| {doc}`../appendices/06_convergence` | Full convergence theorem | Composed Lyapunov function |
+| {doc}`../appendices/08_mean_field` | Mean-field limit | Propagation of chaos |
+
+These documents establish that the Euclidean Gas converges exponentially to a unique quasi-stationary distribution under appropriate parameter choices. The proofs are rigorous, the constants are explicit, and the results are mathematically unimpeachable.
+
+**We recover precisely these results using Hypostructure.** The sieve nodes instantiated in this document reproduce the convergence rates, mean-field bounds, and QSD characterization from the classical analysis. This is not coincidence—it is validation that the Hypostructure framework correctly captures the essential mathematical structure.
+
+### The Limitations of Classical Analysis
+
+:::{div} feynman-prose
+Now here is where things get interesting. The classical proofs work beautifully for the Euclidean Gas, but watch what happens when you try to extend them:
+
+**The Lyapunov function problem.** To prove convergence classically, you need a Lyapunov function—a clever energy-like quantity that decreases along trajectories. The Euclidean Gas proof constructs $\mathcal{L} = W_h^2 + \alpha V_{\text{Var},x} + \beta V_{\text{Var},v} + \gamma W_b$ with carefully tuned coefficients. But how did we know to use *this* function? The honest answer is: we knew what we were trying to prove, and we reverse-engineered a function that would prove it. This is standard practice in analysis, but it means you must already understand the answer before you can write the proof.
+
+**The perturbative trap.** The hypocoercivity analysis in {doc}`../appendices/05_kinetic_contraction` decomposes the dynamics as "equilibrium plus small perturbation"—the kinetic operator has a nice invariant measure, and cloning is treated as a perturbation that must be controlled. This works when cloning is genuinely a small effect. But what if cloning is not small? What if it fundamentally restructures the dynamics? The perturbative framework has no answer.
+
+**The boundary nightmare.** Classical PDE theory requires smooth boundaries with well-defined normal vectors. But agent boundaries are not smooth. The terminal state of an Atari game is not a manifold with a tangent space. An agent entering causal stasis due to information overload—the sieve detecting an unrecoverable state—does not have a differentiable boundary. In classical analysis, you either pretend these boundaries do not exist or you spend enormous effort constructing regularized approximations.
+:::
+
+### The Gauge Symmetry Blindspot
+
+The deepest limitation of classical analysis is its inability to recognize **gauge symmetries**—transformations that leave the physics invariant but change the mathematical representation. Consider two walkers with identical fitness exploring symmetric regions of the state space. Classically, these are different states requiring separate tracking. But from the algorithm's perspective, they are equivalent—any observable property is identical under the symmetry.
+
+Classical analysis handles this by **adding axioms to exclude symmetric configurations**. The framework document {doc}`../appendices/01_fragile_gas_framework` must explicitly specify that certain "pathological" configurations are forbidden. But these configurations are not pathological—they are *features* of the underlying symmetry structure being treated as *bugs* because the mathematical formalism cannot accommodate them.
+
+:::{prf:remark} Symmetry as Bug vs. Feature
+:label: rem-symmetry-bug-feature
+
+In classical analysis of the Fragile Gas, the following must be handled via explicit axioms:
+- **Permutation symmetry**: Walkers are indistinguishable, but the state space treats them as labeled
+- **Gauge redundancy in fitness**: Only fitness *differences* matter, but absolute values appear in equations
+- **Coordinate freedom**: Results must be independent of latent coordinate choice, but proofs use specific coordinates
+
+Each of these requires careful axiom engineering to prevent "valid" mathematical states that have no physical meaning. Hypostructure handles all three automatically through its categorical structure: permutation symmetry via the swarm functor, fitness gauge via the selection kernel's dependence on ratios, and coordinate freedom via the naturality conditions on the metric.
+:::
+
+### What Hypostructure Provides
+
+The Hypostructure framework addresses each limitation:
+
+**No Lyapunov reverse-engineering.** The sieve nodes derive contraction rates from *structural properties* of the operators—companion selection geometry, fitness bounds, kinetic diffusion. You do not guess a Lyapunov function and verify it decreases; you compute $\kappa_{\text{total}}$ from the operator specifications and read off whether convergence holds.
+
+**No perturbative decomposition.** The framework treats cloning and kinetics as equal partners in the transition kernel. There is no "equilibrium plus perturbation"—there is a single Markov operator whose properties are computed directly. This allows analysis of regimes where cloning dominates, where kinetics dominates, or where they interact in complex ways.
+
+**Arbitrary boundaries.** The sieve's boundary analysis (Level 7) handles arbitrary stopping conditions through the **cemetery state** $\dagger$ and the **boundary measure** $P_\partial$. Terminal game states, sieve failures, information overloads—all enter uniformly as transitions to $\dagger$ with computable probability. No smoothness required.
+
+**Gauge symmetry by construction.** The categorical formulation automatically quotients by symmetries. Permutation-invariant observables, coordinate-free rates, gauge-independent fitness comparisons—all emerge from the naturality conditions rather than being imposed as axioms.
+
+### This Document: Beyond the Euclidean Setting
+
+:::{div} feynman-prose
+The present document demonstrates these advantages concretely. We analyze the **Latent Fractal Gas**, which extends the Euclidean variant in ways that would be extremely difficult classically:
+
+**Delayed potentials.** The effective potential $\Phi_{\text{eff}}(z)$ depends on the fitness landscape, which depends on the swarm configuration, which evolves in time. This creates a feedback loop where the potential "sees" the recent history of the swarm. Classically, you would need to track this history explicitly and prove uniform bounds over all possible histories—a combinatorial nightmare.
+
+**Fitness-dependent diffusion.** The anisotropic diffusion tensor $\Sigma_{\text{reg}}(z) = (\nabla^2 V_{\text{fit}} + \epsilon_\Sigma I)^{-1/2}$ adapts to local curvature of the fitness landscape. This is not a small perturbation of isotropic diffusion—it fundamentally changes the geometry of the noise. Classical hypocoercivity theory has no standard tools for state-dependent, fitness-coupled diffusion tensors.
+
+**Non-smooth agent boundaries.** When the agent's sieve detects an unrecoverable state—an information overload, a causal paradox, a failed consistency check—the walker transitions to the cemetery. These boundaries have no tangent space, no normal vector, no smooth collar neighborhood. Hypostructure handles them through the boundary measure $P_\partial$ without requiring geometric regularity.
+:::
+
+The convergence rates we derive in Part III are not approximations or formal limits—they are exact certificates that hold for the full algorithm including all feedback effects, anisotropic diffusion, and irregular boundaries. This is what structural verification provides: guarantees that survive contact with the messiness of real systems.
+
+### Summary: Two Paths to the Same Destination
+
+| Aspect | Classical Analysis | Hypostructure |
+|--------|-------------------|---------------|
+| **Proof strategy** | Construct Lyapunov function, verify decrease | Compute $\kappa_{\text{total}}$ from operator structure |
+| **Perturbative regime** | Required (cloning ≪ kinetics) | Not required (arbitrary mixing) |
+| **Boundary regularity** | Smooth manifold with tangent space | Arbitrary (cemetery state handles all) |
+| **Gauge symmetries** | Excluded via axioms | Automatic via categorical quotient |
+| **Extensions** | Case-by-case re-proof | Uniform framework (new instances) |
+| **Verification** | Human mathematician | Algorithmic (sieve execution) |
+
+Both paths arrive at exponential convergence for the Euclidean Gas. But only Hypostructure extends naturally to the Latent Gas with its delayed potentials, adaptive diffusion, and non-smooth boundaries. The appendices provide valuable intuition and serve as independent validation; this document provides the machinery for general deployment.
+
+---
 
 ## Metadata
 
@@ -111,6 +214,12 @@ See `docs/source/prompts/template.md` for the deterministic protocol. This docum
 
 ## Algorithm Definition (Variant: Soft Companion Selection + Fragile-Agent Kinetics)
 
+:::{div} feynman-prose
+Now we come to the actual algorithm, and I want you to keep a clear picture in your head. Imagine $N$ particles floating in some abstract space. Each particle has a position $z$ and a velocity $v$. At each step, three things happen: (1) each particle looks around and probabilistically picks a "companion" nearby, (2) particles with low fitness get replaced by copies of their companions (with some noise added), and (3) all particles take a step according to Langevin dynamics with friction.
+
+The key insight is that this creates a self-correcting system. Particles that wander into bad regions get pulled back by the cloning mechanism. Particles in good regions spread their influence. And the Langevin noise prevents the whole swarm from collapsing onto a single point. The mathematics below makes all of this precise.
+:::
+
 ### State and Distance
 
 Let $z_i \in \mathcal{Z}$ and $v_i \in T_{z_i}\mathcal{Z}$ be the latent position and tangent velocity of walker $i$.
@@ -123,6 +232,12 @@ $$
 PBC is disabled; distances use the coordinate Euclidean metric in the latent chart.
 
 ### Soft Companion Selection (Phase-Space Softmax)
+
+:::{div} feynman-prose
+Here is something that should make you sit up. When particle $i$ needs to pick a companion, it does not just pick the nearest one. It picks randomly, with nearby particles more likely to be chosen. The probability drops off as a Gaussian with distance. Why do we do this?
+
+The answer is *minorization*. If we always picked the nearest neighbor, the system could get stuck. Distant particles would never interact, and you could have isolated clusters that never mix. But with soft selection, even the farthest particle has some tiny probability of being chosen. This guarantees that the Markov chain is irreducible, that any configuration can eventually reach any other. And that is exactly what we need for the ergodic theorems to apply.
+:::
 
 For alive walkers $\mathcal{A}$ and interaction range $\epsilon$, define Gaussian kernel weights
 
@@ -149,6 +264,12 @@ This map is $C^\infty$ in $(z,v)$ conditional on the sampled indices (and alive 
 **Cloning companions:** alive walkers sample $c_i^{\mathrm{clone}} \sim P_i$ and dead walkers sample uniformly from $\mathcal{A}$, as specified in {prf:ref}`def-softmax-companion-selection-fg`.
 
 ### Fitness Potential
+
+:::{div} feynman-prose
+Now, here is the thing to keep in your mind: fitness has two channels, reward and diversity. The reward channel says "how good is your current location?" The diversity channel says "how far are you from your companions?"
+
+Why two channels? Because pure reward-seeking leads to premature convergence. All the particles would rush to the first local maximum they find and get stuck there. The diversity channel provides pressure to spread out, to explore, to maintain coverage of the space. The exponents $\alpha_{\mathrm{fit}}$ and $\beta_{\mathrm{fit}}$ let you tune the balance between exploitation and exploration. This is not just a heuristic. It falls directly out of the trade-off between information and reward in bounded-rational control.
+:::
 
 Define regularized companion distances (from the softmax kernel above):
 
@@ -183,6 +304,12 @@ V_i = (d_i')^{\beta_{\text{fit}}} (r_i')^{\alpha_{\text{fit}}}.
 
 $$
 ### Momentum-Conserving Cloning
+
+:::{div} feynman-prose
+When a low-fitness particle clones from a high-fitness companion, we face a choice: what happens to its velocity? We could just copy the companion's velocity, but that creates energy out of nothing. We could set it to zero, but that loses information.
+
+The elegant solution is *inelastic collision*. Group the cloner with its companion, compute the center-of-mass velocity, and have both particles move toward that shared velocity. The collision dissipates energy (controlled by the restitution coefficient $\alpha_{\mathrm{rest}}$), but momentum is conserved within each collision group. This is physically sensible and, more importantly, it provides controlled mixing in velocity space without artificial acceleration.
+:::
 
 Cloning scores and probabilities:
 
@@ -220,6 +347,14 @@ $$
 This tensor scales the driving noise to align exploration with the local stiffness of the fitness landscape (flat directions $\to$ large noise, stiff directions $\to$ small noise). The term $\epsilon_{\Sigma} I$ ensures uniform ellipticity.
 
 ### Kinetic Update (Boris-BAOAB on Latent Space)
+
+:::{div} feynman-prose
+The way I think about the kinetic update is this: you have a particle sliding on a curved surface, being pushed by a force field, with friction slowing it down and random kicks from thermal noise. The Boris-BAOAB integrator is a clever way to discretize this continuous motion while preserving the important structural properties.
+
+The name tells you the splitting: B-A-O-A-B. The B steps are "kicks" that change the momentum based on the force. The A steps are "drifts" that move the position based on the velocity. And the O step is the "Ornstein-Uhlenbeck thermostat" that adds friction and noise. By interleaving these in a symmetric pattern, we get a method that is accurate to second order and preserves the correct long-time statistical properties.
+
+The "Boris" part handles the curl of the reward field. If the reward is not a pure gradient (if there is a rotational component), this shows up as a Lorentz-like force that twists the momentum without adding energy. The Boris rotation handles this exactly.
+:::
 
 Each walker evolves in latent space using the Fragile-Agent kinetic operator (Definitions {prf:ref}`def-bulk-drift-continuous-flow` and {prf:ref}`def-baoab-splitting` in `docs/source/1_agent/reference.md`). Let $p_i = G(z_i) v_i$ be the metric momentum and $\Phi_{\text{eff}}$ the effective potential. The Boris-BAOAB step with time step $h$ is:
 
@@ -711,6 +846,12 @@ The Latent Fractal Gas is treated as an **open system**: the domain boundary ind
 
 ## Part II: Sieve Execution (Verification Run)
 
+:::{div} feynman-prose
+Now we come to the verification run itself. Think of the sieve as a checklist of 17 questions that any well-behaved dynamical system should be able to answer. Things like: "Is your energy bounded?" "Do bad events only happen finitely often?" "Does your system mix properly?" For each question, we either produce a certificate saying "yes, and here is the proof" or we identify exactly what blocks us.
+
+The key insight is that a "no" answer is not necessarily fatal. Some theorems get blocked by the scaling structure of the problem (we have balanced scaling $\alpha = \beta = 2$, which blocks certain anomalous diffusion results). But as long as the main convergence certificates come through, the system is certified. Let us walk through it.
+:::
+
 ### Execution Protocol
 
 We run the full sieve using the instantiation assumptions A1-A6 plus A2b. The algorithmic factories (RESOLVE-AutoAdmit/AutoProfile) certify permits that reduce to Foster-Lyapunov confinement, analyticity, and finite precision. Each node below records an explicit witness.
@@ -956,6 +1097,12 @@ $$K_{\mathrm{GC}_T}^+ = (\mathbb{E}[\Phi^{\mathrm{sel}}-\Phi\mid V,c]\le 0\ \tex
 
 ## Level 8: The Lock
 
+:::{div} feynman-prose
+And here is the punchline. After all the individual checks, we need to prove that the "universal bad pattern" cannot map into our system. The bad pattern is an abstract hypostructure that would produce pathological behavior: unbounded energy, infinite blow-up times, the kind of thing that makes theorems fail.
+
+The Lock (Node 17) uses tactic E2: invariant mismatch. Our system has bounded energy $B < \infty$, but the bad pattern requires unbounded energy. You simply cannot embed something unbounded into something bounded. The morphism does not exist. And therefore the pathology does not exist. And there it is.
+:::
+
 ### Node 17: BarrierExclusion ($\mathrm{Cat}_{\mathrm{Hom}}$)
 
 **Question:** Is $\mathrm{Hom}(\mathcal{H}_{\mathrm{bad}}, \mathcal{H}) = \emptyset$?
@@ -1067,6 +1214,12 @@ Doeblin constant (Lemma {prf:ref}`lem-latent-fractal-gas-companion-doeblin`) tog
 
 ## Part III-B: Mean-Field Limit (Propagation of Chaos)
 
+:::{div} feynman-prose
+Ask yourself: why should a finite swarm of $N$ particles tell us anything about the "true" behavior? The answer is the *mean-field limit*. As $N \to \infty$, the empirical distribution of particles converges to a deterministic density that satisfies a nonlinear PDE. Individual particles become statistically independent, each following a law determined by the overall density. This is "propagation of chaos": the chaos of individual particle interactions gets averaged out.
+
+The practical implication is that we can analyze the behavior of a large swarm by studying a single representative particle whose dynamics depend on the swarm's overall density. And the factory gives us explicit error bounds: the mean-field approximation is accurate to order $1/\sqrt{N}$, with the constant depending on the contraction rate $\kappa_W$.
+:::
+
 ### Empirical Measure and Nonlinear Limit
 
 Let $Z_i^N(k)=(z_i(k),v_i(k))$ and define the empirical measure
@@ -1104,6 +1257,12 @@ Fitness and cloning affect the mean-field limit through:
 ---
 
 ## Part III-C: Quasi-Stationary Distribution (QSD) Characterization
+
+:::{div} feynman-prose
+Here is the beautiful thing about the quasi-stationary distribution. In an ordinary Markov chain, you look for the stationary distribution: the distribution that is unchanged by the dynamics. But our system has *killing*. Particles that wander outside the alive region $B$ get absorbed by a "cemetery" state. So there is no true stationary distribution; mass eventually drains away.
+
+The QSD is the answer: it is the distribution that remains unchanged *conditioned on survival*. If you start from the QSD and run the dynamics, then condition on not being killed, you get back the QSD. This is exactly the right object for understanding what the swarm looks like while it is alive and working. The cloning mechanism keeps resurrecting particles from the QSD, so the living population maintains this shape indefinitely.
+:::
 
 ### Killed Kernel and QSD Definition (Discrete Time)
 
@@ -1291,6 +1450,14 @@ This is a fundamental shift: convergence guarantees become **computable at runti
 :::
 
 ### E.5 Recovered Lyapunov Functions (Explicit Forms)
+
+:::{div} feynman-prose
+Now let me make sure you understand what the Lyapunov function is doing. In physics, you often have a quantity like energy that always decreases (or at least cannot increase) along the natural dynamics. If you find such a quantity and it is bounded below, you know the system must settle down somewhere.
+
+The Lyapunov function $\mathcal{L}$ plays exactly this role. It combines "how far is the swarm from optimal fitness?" with "how much kinetic energy does the swarm have?" The drift condition says: on average, $\mathcal{L}$ decreases by a factor of $(1 - \kappa_{\mathrm{total}} \tau)$ at each step, plus a bounded noise term. Iterate this, and you get exponential convergence to a neighborhood of equilibrium.
+
+This is what determines whether the algorithm works. If $\kappa_{\mathrm{total}} > 0$, you have a genuine Lyapunov function and convergence is guaranteed. If $\kappa_{\mathrm{total}} \leq 0$, the system might diffuse forever without converging. And the beautiful thing is that $\kappa_{\mathrm{total}}$ is computable from the algorithm parameters.
+:::
 
 The Hypostructure framework recovers explicit Lyapunov functions from the sieve certificates. We state them here for completeness.
 
@@ -1599,6 +1766,12 @@ For external machine replay, a bundle for this proof object would consist of:
 ---
 
 ## Executive Summary: The Proof Dashboard
+
+:::{div} feynman-prose
+Let me give you the bird's-eye view. We started with an algorithm (the Latent Fractal Gas) and a claim (it converges to a quasi-stationary distribution at a computable rate). We instantiated a hypostructure (position, velocity, fitness, cloning), ran 17 verification nodes, and emerged with a closed certificate chain. Every node either passed or was blocked for reasons that do not affect the main claim.
+
+The executive summary below is the dashboard: what is the system, what did we check, what blocked what, and what can we now guarantee? If you want to use this algorithm for planning, these tables tell you exactly what you are getting.
+:::
 
 ### 1. System Instantiation (The Physics)
 
