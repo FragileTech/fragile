@@ -156,6 +156,7 @@ We certify that this instance is eligible for the Universal Singularity Modules.
 - **Automation witness:** The Hypostructure satisfies the **Automation Guarantee** (Definition {prf:ref}`def-automation-guarantee`), hence profile extraction and admissibility checks are delegated to the algorithmic factories.
 
 **Certificate:**
+
 $$K_{\mathrm{Auto}}^+ = (T_{\text{algorithmic}}\ \text{good},\ \text{AutomationGuarantee holds},\ \text{factories enabled: RESOLVE-AutoProfile, RESOLVE-AutoAdmit, RESOLVE-AutoSurgery})$$
 
 ---
@@ -493,6 +494,7 @@ For walkers $i$ and $j$ in $d$-dimensional latent space, the **pairwise complex 
 
 $$
 W_{ij}^{(\alpha)} := K_{\mathrm{visc}}(z_i, z_j) \cdot \exp\left(i \frac{m(v_j^{(\alpha)} - v_i^{(\alpha)})}{\hbar_{\mathrm{eff}}}\right) \in \mathbb{C}
+
 $$
 
 where:
@@ -515,18 +517,21 @@ The **color state** of walker $i$ is the $d$-component complex vector obtained b
 
 $$
 c_i^{(\alpha)} := \sum_{j \neq i} W_{ij}^{(\alpha)} = \sum_{j \neq i} K_{\mathrm{visc}}(z_i, z_j) \cdot \exp\left(i \frac{m(v_j^{(\alpha)} - v_i^{(\alpha)})}{\hbar_{\mathrm{eff}}}\right), \quad \alpha \in \{1, \ldots, d\}
+
 $$
 
 The **color state vector** in the fundamental representation of SU($d$) is:
 
 $$
 |\Psi_i^{(\mathrm{color})}\rangle := \begin{pmatrix} c_i^{(1)} \\ c_i^{(2)} \\ \vdots \\ c_i^{(d)} \end{pmatrix} \in \mathbb{C}^d
+
 $$
 
 The **normalized color state** is:
 
 $$
 |\hat{\Psi}_i^{(\mathrm{color})}\rangle := \frac{1}{\|\mathbf{c}_i\| + \epsilon_c} |\Psi_i^{(\mathrm{color})}\rangle \in \mathbb{C}^d
+
 $$
 
 where $\epsilon_c > 0$ is a regularization constant preventing division by zero.
@@ -546,6 +551,7 @@ The color state vectors $|\Psi_i^{(\mathrm{color})}\rangle \in \mathbb{C}^d$ tra
 
 $$
 |\Psi_i^{(\mathrm{color})}\rangle \mapsto U_i |\Psi_i^{(\mathrm{color})}\rangle, \quad U_i \in \mathrm{SU}(d)
+
 $$
 
 where SU($d$) acts on the **latent direction indices** $\alpha \in \{1, \ldots, d\}$.
@@ -562,6 +568,7 @@ For $d = 3$, the generators are the **Gell-Mann matrices** $\lambda_a/2$ of QCD 
 
 $$
 U_{ij} := \exp\left(i g \sum_{a=1}^{d^2-1} A_{ij}^a T^a\right) \in \mathrm{SU}(d)
+
 $$
 
 where $A_{ij}^a \in \mathbb{R}$ are gluon field components and $g > 0$ is the gauge coupling.
@@ -570,6 +577,7 @@ where $A_{ij}^a \in \mathbb{R}$ are gluon field components and $g > 0$ is the ga
 
 $$
 U_{ij} \mapsto U_i \, U_{ij} \, U_j^\dagger
+
 $$
 
 This ensures gauge-covariant parallel transport: $(U_{ij} |\Psi_j\rangle)' = U_i (U_{ij} |\Psi_j\rangle)$.
@@ -584,12 +592,14 @@ The **gluon field components** $A_{ij}^a$ encode how the pairwise phase differen
 
 $$
 \Phi_{ij} := \mathrm{diag}\left(\phi_{ij}^{(1)}, \phi_{ij}^{(2)}, \ldots, \phi_{ij}^{(d)}\right), \quad \phi_{ij}^{(\alpha)} := \frac{m(v_j^{(\alpha)} - v_i^{(\alpha)})}{\hbar_{\mathrm{eff}}}
+
 $$
 
 **Traceless projection**: Extract the SU($d$) (traceless) part by removing the mean phase:
 
 $$
 \bar{\phi}_{ij} := \frac{1}{d} \sum_{\alpha=1}^d \phi_{ij}^{(\alpha)}, \qquad \Phi_{ij}^{(0)} := \Phi_{ij} - \bar{\phi}_{ij} \cdot I
+
 $$
 
 The matrix $\Phi_{ij}^{(0)}$ is traceless and lies in the Cartan subalgebra of $\mathfrak{su}(d)$.
@@ -598,6 +608,7 @@ The matrix $\Phi_{ij}^{(0)}$ is traceless and lies in the Cartan subalgebra of $
 
 $$
 A_{ij}^a := \frac{2}{g} \mathrm{Tr}\left[T^a \cdot \Phi_{ij}^{(0)}\right]
+
 $$
 
 where the factor of 2 accounts for the normalization $\mathrm{Tr}(T^a T^b) = \frac{1}{2}\delta^{ab}$.
@@ -606,6 +617,7 @@ where the factor of 2 accounts for the normalization $\mathrm{Tr}(T^a T^b) = \fr
 
 $$
 A_{ij}^3 = \frac{1}{g}(\phi_{ij}^{(1)} - \phi_{ij}^{(2)}), \qquad A_{ij}^8 = \frac{1}{g\sqrt{3}}(\phi_{ij}^{(1)} + \phi_{ij}^{(2)} - 2\phi_{ij}^{(3)})
+
 $$
 
 The off-diagonal generators ($a = 1,2,4,5,6,7$) give $A_{ij}^a = 0$ since $\Phi_{ij}^{(0)}$ is diagonal.
@@ -614,6 +626,7 @@ The off-diagonal generators ($a = 1,2,4,5,6,7$) give $A_{ij}^a = 0$ since $\Phi_
 
 $$
 U_{ij} := \exp\left(i \Phi_{ij}^{(0)}\right) = \exp\left(ig \sum_{a=1}^{d^2-1} A_{ij}^a T^a\right) \in \mathrm{SU}(d)
+
 $$
 
 This is diagonal with $\det(U_{ij}) = e^{i \cdot \mathrm{Tr}(\Phi_{ij}^{(0)})} = e^{i \cdot 0} = 1$, confirming $U_{ij} \in \mathrm{SU}(d)$.
@@ -640,6 +653,7 @@ The localization kernel $K_{\mathrm{visc}}(z_i, z_j) = \exp\!\left(-\|z_i - z_j\
 
 $$
 K_{\mathrm{visc}} = e^{-d^2/2\epsilon^2} \begin{cases} \approx 1 & \text{if } d \ll \epsilon \\ \approx 0 & \text{if } d \gg \epsilon \end{cases}
+
 $$
 
 The pairwise coupling modulus satisfies $|W_{ij}^{(\alpha)}| = K_{\mathrm{visc}}(z_i, z_j)$, inheriting this distance dependence. $\square$
@@ -652,12 +666,14 @@ The color state component $c_i^{(\alpha)} = \sum_{j \neq i} W_{ij}^{(\alpha)}$ e
 
 $$
 \frac{dc_i^{(\alpha)}}{dt} = \sum_{j \neq i} \frac{dW_{ij}^{(\alpha)}}{dt}
+
 $$
 
 where each pairwise contribution evolves as:
 
 $$
 \frac{dW_{ij}^{(\alpha)}}{dt} = W_{ij}^{(\alpha)} \left[ \frac{\dot{K}_{\mathrm{visc}}}{K_{\mathrm{visc}}} + i \frac{m(a_j^{(\alpha)} - a_i^{(\alpha)})}{\hbar_{\mathrm{eff}}} \right]
+
 $$
 
 with $a_k^{(\alpha)} = dv_k^{(\alpha)}/dt$ the acceleration in direction $\alpha$.
@@ -666,12 +682,14 @@ with $a_k^{(\alpha)} = dv_k^{(\alpha)}/dt$ the acceleration in direction $\alpha
 
 $$
 \frac{dW_{ij}^{(\alpha)}}{dt} = \dot{K}_{\mathrm{visc}} \cdot e^{i\phi_{ij}^{(\alpha)}} + K_{\mathrm{visc}} \cdot \frac{d}{dt}\left(e^{i\phi_{ij}^{(\alpha)}}\right)
+
 $$
 
 where $\phi_{ij}^{(\alpha)} = m(v_j^{(\alpha)} - v_i^{(\alpha)})/\hbar_{\mathrm{eff}}$. The second term gives:
 
 $$
 K_{\mathrm{visc}} \cdot i \frac{m(a_j^{(\alpha)} - a_i^{(\alpha)})}{\hbar_{\mathrm{eff}}} \cdot e^{i\phi_{ij}^{(\alpha)}}
+
 $$
 
 Factoring out $W_{ij}^{(\alpha)} = K_{\mathrm{visc}} e^{i\phi_{ij}^{(\alpha)}}$ yields the result. $\square$
@@ -688,6 +706,7 @@ The **gauge-covariant evolution** of the color state is obtained by adding the m
 
 $$
 \frac{dc_i^{(\alpha)}}{dt} = \left.\frac{dc_i^{(\alpha)}}{dt}\right|_{\mathrm{kin}} + i g \sum_{a=1}^{d^2-1} A_0^a (T^a \mathbf{c}_i)^{(\alpha)}
+
 $$
 
 where $A_0^a$ are the temporal components of the gluon field and $(T^a \mathbf{c}_i)^{(\alpha)} = \sum_\beta (T^a)^{\alpha\beta} c_i^{(\beta)}$.
@@ -1238,6 +1257,7 @@ We run the full sieve using the instantiation assumptions A1-A6 plus A2b. The al
 **Execution:** By construction, $\Phi := V_{\max}-\frac{1}{N}\sum_i V_{\mathrm{fit},i}$ and fitness satisfies $0\le V_{\mathrm{fit},i}\le V_{\max}$ (derived constants). Hence $\Phi\in[0,V_{\max}]$ deterministically.
 
 **Certificate:**
+
 $$K_{D_E}^+ = (\Phi, \mathfrak{D}, B), \quad B = V_{\max}.$$
 
 ---
@@ -1249,6 +1269,7 @@ $$K_{D_E}^+ = (\Phi, \mathfrak{D}, B), \quad B = V_{\max}.$$
 **Execution:** The system is discrete-time. In any finite horizon of $T$ steps, the number of bad events is at most $T$ (no Zeno accumulation).
 
 **Certificate:**
+
 $$K_{\mathrm{Rec}_N}^+ = (\mathcal{B}, \mathcal{R}, N_{\max}=T).$$
 
 ---
@@ -1267,10 +1288,12 @@ $$K_{\mathrm{Rec}_N}^+ = (\mathcal{B}, \mathcal{R}, N_{\max}=T).$$
 3. **Boundary killing:** Environment termination flags kill walkers that exit operational regions; cloning resamples from survivors.
 
 The **effective alive region** is
+
 $$\Omega_{\mathrm{alive}} := \{(z,v) : \mathcal{L}(z,v) \le L_{\max}\}^N / S_N,$$
 which has bounded moments under the QSD (probabilistic compactness).
 
 **Certificate:**
+
 $$K_{C_\mu}^+ = (S_N, \Omega_{\mathrm{alive}}//S_N, \text{Foster-Lyapunov confinement}, \kappa_{\text{total}} > 0).$$
 
 ### Level 2: Duality & Symmetry
@@ -1290,6 +1313,7 @@ This is **non-trivial scaling** (unlike $\alpha = \beta = 0$ for compact domains
 **Outcome:** $K_{\mathrm{SC}_\lambda}^{\text{crit}}$ (critical but non-trivial), then BarrierTypeII blocks blow-up via Foster-Lyapunov confinement.
 
 **Certificates:**
+
 $$K_{\mathrm{SC}_\lambda}^{\text{crit}} = (\alpha=2, \beta=2, \alpha-\beta=0, \text{parabolic confinement}),$$
 $$K_{\mathrm{TypeII}}^{\mathrm{blk}} = (\text{BarrierTypeII}, \text{Foster-Lyapunov confinement}, \{K_{D_E}^+, K_{C_\mu}^+\}).$$
 
@@ -1302,6 +1326,7 @@ $$K_{\mathrm{TypeII}}^{\mathrm{blk}} = (\text{BarrierTypeII}, \text{Foster-Lyapu
 **Execution:** Constants are fixed parameters; $\theta(s) = \Theta$.
 
 **Certificate:**
+
 $$K_{\mathrm{SC}_{\partial c}}^+ = (\Theta, \theta_0, C=0).$$
 
 ### Level 3: Geometry & Stiffness
@@ -1313,6 +1338,7 @@ $$K_{\mathrm{SC}_{\partial c}}^+ = (\Theta, \theta_0, C=0).$$
 **Execution:** The only genuine singularities are NaN/Inf numerical states and the cemetery “all-dead” event. Out-of-domain is treated as a boundary/killing interface and is repaired by cloning (boundary, not singular).
 
 **Certificate:**
+
 $$K_{\mathrm{Cap}_H}^+ = (\Sigma=\{\text{NaN/Inf},\ \text{cemetery}\},\ \text{Cap}(\Sigma)=0\ \text{(framework sense)}).$$
 
 ---
@@ -1324,6 +1350,7 @@ $$K_{\mathrm{Cap}_H}^+ = (\Sigma=\{\text{NaN/Inf},\ \text{cemetery}\},\ \text{Ca
 **Execution:** Conditioned on the sampled companion indices and the alive mask (both treated as frozen during differentiation), `src/fragile/fractalai/core/fitness.py` (`compute_fitness`) is a composition of $C^2$ primitives (exp, sqrt with $\epsilon_{\mathrm{dist}}$, logistic) and regularized moment maps (patched/local standardization with $\sigma_{\min}$). Under A2b (clamps inactive on the alive core or smoothed), the fitness $V_{\text{fit}}$ is $C^2$ in $(z,v)$ (and $C^\infty$ if the reward/metric inputs are $C^\infty$), and the regularized emergent metric $\Sigma_{\mathrm{reg}}$ inherits the same regularity on the alive core. The kinetic drift depends on $\Phi_{\text{eff}}$, $G$, and $\mathcal{R}$; under A2 these fields are $C^2$ with bounded derivatives on $B$, so the BAOAB drift is Lipschitz with $C^1$ coefficients on the alive core.
 
 **Certificate:**
+
 $$K_{\mathrm{LS}_\sigma}^+ = (\|\nabla\Phi_{\text{eff}}\|_G,\ \|\nabla^2\Phi_{\text{eff}}\|,\ \|\nabla G\|,\ \|\nabla^2 G\|,\ \|\nabla\mathcal{R}\|,\ g_{\min} I\preceq G\preceq g_{\max} I\ \text{on}\ B).$$
 
 ### Level 4: Topology
@@ -1335,6 +1362,7 @@ $$K_{\mathrm{LS}_\sigma}^+ = (\|\nabla\Phi_{\text{eff}}\|_G,\ \|\nabla^2\Phi_{\t
 **Execution:** $B$ is assumed connected (e.g., a latent ball), so the alive slice has a single topological sector. Killing + reinjection via cloning does not introduce new components; the sector map is constant on the conditioned/alive dynamics.
 
 **Certificate:**
+
 $$K_{\mathrm{TB}_\pi}^+ = (\tau \equiv \text{const}, \pi_0(\mathcal{X})=\{\ast\}, \text{sector preserved}).$$
 
 ---
@@ -1346,6 +1374,7 @@ $$K_{\mathrm{TB}_\pi}^+ = (\tau \equiv \text{const}, \pi_0(\mathcal{X})=\{\ast\}
 **Execution:** With $B$ a definable latent domain and the operators built from elementary functions (exp, sqrt, clamp), the relevant sets (alive/dead, cemetery, NaN checks) are definable in an o-minimal expansion (e.g. $\mathbb{R}_{\mathrm{an},\exp}$), hence admit finite stratifications.
 
 **Certificate:**
+
 $$K_{\mathrm{TB}_O}^+ = (\mathbb{R}_{\mathrm{an},\exp},\ \Sigma\ \text{definable},\ \text{finite stratification}).$$
 
 ### Level 5: Mixing
@@ -1394,6 +1423,7 @@ $$
 **Execution:** States and operators are encoded at finite precision (dtype).
 
 **Certificate:**
+
 $$K_{\mathrm{Rep}_K}^+ = (\mathcal{L}_{\mathrm{fp}}, D_{\mathrm{fp}}, K(z) \le C_{\mathrm{fp}}).$$
 
 ---
@@ -1407,6 +1437,7 @@ $$K_{\mathrm{Rep}_K}^+ = (\mathcal{L}_{\mathrm{fp}}, D_{\mathrm{fp}}, K(z) \le C
 **Outcome:** $K_{\mathrm{GC}_\nabla}^+$ with BarrierFreq blocked.
 
 **Certificates:**
+
 $$K_{\mathrm{GC}_\nabla}^+ = (\text{non-gradient stochastic flow}),$$
 $$K_{\mathrm{Freq}}^{\mathrm{blk}} = (\text{BarrierFreq}, \text{oscillation bounded on the alive core}, \{V_{\mathrm{core}}\}).$$
 
@@ -1422,6 +1453,7 @@ $$K_{\mathrm{Freq}}^{\mathrm{blk}} = (\text{BarrierFreq}, \text{oscillation boun
 - **Maps:** $\iota$ injects noise into $(z,v)$ via kinetic/cloning; $\pi$ extracts observables/diagnostics.
 
 **Certificate:**
+
 $$K_{\mathrm{Bound}_\partial}^+ = (\partial\Omega=\mathcal{Z}\setminus B,\ \iota,\ \pi).$$
 
 ---
@@ -1437,6 +1469,7 @@ $$K_{\mathrm{Bound}_\partial}^+ = (\partial\Omega=\mathcal{Z}\setminus B,\ \iota
 So the open-system injection is controlled at the level relevant for the QSD/mean-field analysis (the conditioned/alive law on $B\times B_{V_{\mathrm{core}}}$).
 
 **Certificates:**
+
 $$K_{\mathrm{Bound}_B}^- = (\text{Gaussian injection is unbounded}),$$
 $$K_{\mathrm{Bode}}^{\mathrm{blk}} = (\text{thermostat + killing/recovery prevent overload on the alive slice}).$$
 
@@ -1449,6 +1482,7 @@ $$K_{\mathrm{Bode}}^{\mathrm{blk}} = (\text{thermostat + killing/recovery preven
 **Execution:** Starvation corresponds to “no alive walkers available to clone from”. In the proof object we treat the all-dead event as a cemetery state and define the QSD/mean-field statements on the conditioned (alive) dynamics. Under this conditioning, the system is never starved.
 
 **Certificate:**
+
 $$K_{\mathrm{Bound}_{\Sigma}}^{\mathrm{blk}} = (\text{QSD/conditioned dynamics exclude starvation; cemetery absorbs all-dead}).$$
 
 ---
@@ -1466,6 +1500,7 @@ $$
 equivalently $\mathbb{E}[\Phi^{\mathrm{sel}}-\Phi\mid V,c]\le 0$ for $\Phi:=V_{\max}-\frac{1}{N}\sum_i V_i$. (The mutation component BAOAB + jitter can reduce the next-step fitness; AlignCheck certifies only the selection-stage alignment.)
 
 **Certificate:**
+
 $$K_{\mathrm{GC}_T}^+ = (\mathbb{E}[\Phi^{\mathrm{sel}}-\Phi\mid V,c]\le 0\ \text{(selection-stage)},\ \text{fitness-aligned resampling}).$$
 
 ## Level 8: The Lock
@@ -1483,6 +1518,7 @@ The Lock (Node 17) uses tactic E2: invariant mismatch. Our system has bounded en
 **Execution (Tactic E2 - Invariant):** The energy bound $B$ is finite for the instantiated system, while the universal bad pattern requires unbounded height. Invariant mismatch excludes morphisms.
 
 **Certificate:**
+
 $$K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}} = (\text{E2-Invariant}, I(\mathcal{H})=B < \infty, I(\mathcal{H}_{\mathrm{bad}})=\infty).$$
 
 ---
@@ -1529,6 +1565,7 @@ In this Latent Fractal Gas variant (Fragile-Agent kinetics), Wasserstein contrac
 
 $$
 \kappa_W = \kappa_W(f_{UH},p_u,c_{\mathrm{align}})
+
 $$
 
 (Code: `kappa_W_cluster`), where $f_{UH}$, $p_u$, $c_{\mathrm{align}}$ can be instantiated either from a proof-level lower bound (worst case) or from a profiled run (tight).
@@ -1537,21 +1574,25 @@ The total discrete-time contraction rate is
 
 $$
 \kappa_{\mathrm{total}} = \kappa_{\mathrm{total}}(\kappa_x,\kappa_v,\kappa_W,\kappa_b;\epsilon_{\mathrm{coupling}})
+
 $$
 
 (Code: `kappa_total`), and mixing time estimates use
 
 $$
 T_{\mathrm{mix}}(\varepsilon) = T_{\mathrm{mix}}(\varepsilon,\kappa_{\mathrm{total}},V_{\mathrm{init}},C_{\mathrm{total}})
+
 $$
 
 (Code: `T_mix`).
+
 ### QSD and KL Rates (LSI-Based)
 
 The continuous-time QSD convergence rate proxy used by the framework is
 
 $$
 \kappa_{\mathrm{QSD}} \approx \kappa_{\mathrm{total}}\tau
+
 $$
 
 (Code: `kappa_QSD`). Let $\rho$ denote the localization scale parameter used by the latent LSI proxy. In this instantiation the alive arena is globally bounded, so we may take $\rho:=D_{\mathrm{alg}}$ (full alive diameter) without loss.
@@ -1561,18 +1602,21 @@ For relative-entropy convergence, the framework encodes geometric LSI constants 
 $$
 c_{\min}=c_2^2\,\lambda_{\min}(G|_B),\qquad c_{\max}=c_2^2\,\lambda_{\max}(G|_B),\qquad
 \kappa_{\mathrm{conf}}=\kappa_{\mathrm{conf}}^{(B)},
+
 $$
 
 and the geometric LSI constant proxy is
 
 $$
 C_{\mathrm{LSI}}^{(\mathrm{geom})} = C_{\mathrm{LSI}}^{(\mathrm{geom})}\!\left(\rho,\ c_{\min},c_{\max},\ \gamma,\ \kappa_{\mathrm{conf}},\ \kappa_W\right)
+
 $$
 
 (Code: `C_LSI_geometric`). Then KL decay is tracked via
 
 $$
 D_{\mathrm{KL}}(t)\ \le\ \exp\!\left(-\frac{t}{C_{\mathrm{LSI}}^{(\mathrm{geom})}}\right) D_{\mathrm{KL}}(0)
+
 $$
 
 (Code: `KL_convergence_rate`).
@@ -1617,9 +1661,11 @@ When the Wasserstein contraction rate $\kappa_W>0$ is certified (typically from 
 
 $$
 \mathrm{Err}_{\mathrm{MF}}(N,T)\ \lesssim\ \frac{e^{-\kappa_W T}}{\sqrt{N}}
+
 $$
 
 (Code: `mean_field_error_bound`).
+
 ### How Fitness/Cloning Enter
 
 Fitness and cloning affect the mean-field limit through:

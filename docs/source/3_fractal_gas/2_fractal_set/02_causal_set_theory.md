@@ -155,6 +155,7 @@ The Fractal Set $\mathcal{F} = (E, \prec_{\mathrm{CST}})$ satisfies all BLMS axi
 We verify each axiom:
 
 **Axiom CS1 (Irreflexivity):** For any episode $e_i$:
+
 $$
 e_i \prec e_i \iff t_i < t_i \;\wedge\; d(x_i, x_i) < c(t_i - t_i)
 $$
@@ -165,17 +166,20 @@ Both $t_i < t_i$ (false) and $0 < 0$ (false), so $e_i \not\prec e_i$. ✓
 - $d(x_1, x_2) < c(t_2 - t_1)$ and $d(x_2, x_3) < c(t_3 - t_2)$
 
 By the triangle inequality:
+
 $$
 d(x_1, x_3) \leq d(x_1, x_2) + d(x_2, x_3) < c(t_2 - t_1) + c(t_3 - t_2) = c(t_3 - t_1)
 $$
 Therefore $e_1 \prec e_3$. ✓
 
 **Axiom CS3 (Local Finiteness):** The causal interval $I(e_1, e_2) := \{e : e_1 \prec e \prec e_2\}$ is contained in a bounded spacetime region:
+
 $$
 \mathcal{D} = \{(t, x) : t_1 < t < t_2, \, d(x_1, x) < c(t - t_1), \, d(x, x_2) < c(t_2 - t)\}
 $$
 
 This is a compact "double cone." The expected episode count is:
+
 $$
 \mathbb{E}[|I(e_1, e_2)|] = \int_{\mathcal{D}} \rho_{\mathrm{adaptive}}(t, x) \, dt \, dx < \infty
 $$
@@ -219,6 +223,7 @@ All axioms verified using only ZFC set theory and real analysis. $\square$
 The Fractal Set faithfully discretizes the emergent Riemannian manifold $(\mathcal{X}, g)$:
 
 **Volume Matching**: The episode count in region $\Omega$ satisfies:
+
 $$
 \mathbb{E}\left[\frac{|E \cap \Omega|}{N}\right] = \frac{1}{Z} \int_{\Omega} \sqrt{\det g(x)} \, e^{-U_{\mathrm{eff}}(x)/T} \, dx
 $$
@@ -228,6 +233,7 @@ with variance scaling as $O(1/N)$ by the law of large numbers.
 **Metric Recovery**: Riemannian distance is recoverable from causal structure.
 
 **Dimension Estimation**: The Myrheim-Meyer estimator converges:
+
 $$
 d_{\mathrm{MM}} \xrightarrow{N \to \infty} d = \dim \mathcal{X}
 $$
@@ -260,6 +266,7 @@ With the Fractal Set established as a valid causal set, all CST mathematical too
 :label: def-cst-volume
 
 The **causal set volume** of element $e \in E$ is:
+
 $$
 V_{\mathrm{CST}}(e) := \frac{1}{\bar{\rho}} \sum_{e' \in E} \mathbb{1}_{e' \prec e}
 $$
@@ -274,6 +281,7 @@ where $\bar{\rho}$ is the average adaptive density.
 :label: def-cst-dalembertian
 
 The **Benincasa-Dowker d'Alembertian** acting on $f: E \to \mathbb{R}$ in $d$ dimensions is:
+
 $$
 (\Box_{\mathrm{BD}} f)(e) := \frac{4}{\ell_d^2} \left( -\alpha_d f(e) + \sum_{k=0}^{n_d} C_k^{(d)} \sum_{\substack{e' \prec e \\ |I(e', e)| = k}} f(e') \right)
 $$
@@ -284,6 +292,7 @@ where:
 - $|I(e', e)|$ is the number of elements in the causal interval between $e'$ and $e$
 
 **Convergence** (Benincasa-Dowker 2010): For smooth functions on the emergent spacetime:
+
 $$
 \lim_{N \to \infty} \mathbb{E}[(\Box_{\mathrm{BD}} f)(e_i)] = (\Box_g f)(x_i) + O(\ell_d^2)
 $$
@@ -296,11 +305,13 @@ where $\Box_g = g^{\mu\nu}\nabla_\mu\nabla_\nu$ is the continuum d'Alembertian.
 :label: def-myrheim-meyer
 
 The dimension of the emergent manifold is estimated from the ordering fraction:
+
 $$
 r := \frac{C_2}{\binom{N}{2}} = \frac{|\{(e_i, e_j) : e_i \prec e_j\}|}{N(N-1)/2}
 $$
 
 For a causal set faithfully embedded in $d$-dimensional Minkowski space:
+
 $$
 r \xrightarrow{N \to \infty} \frac{\Gamma(d+1) \Gamma(d/2)}{4 \Gamma(3d/2)}
 $$
@@ -314,12 +325,14 @@ The **Myrheim-Meyer estimator** inverts this relation to obtain $d_{\mathrm{MM}}
 The Ricci scalar curvature is estimated via the **Benincasa-Dowker action** (2010):
 
 For a small causal diamond $\mathcal{A}(p, q)$ with $N$ elements:
+
 $$
 S_{\mathrm{BD}}[\mathcal{A}] = \frac{\hbar}{\ell_d^{d-2}} \left( \alpha_d N - \sum_{k=0}^{n_d} \beta_k^{(d)} N_k \right)
 $$
 where $N_k$ counts $k$-element intervals and $\ell_d$ is the discreteness scale.
 
 **Curvature extraction**: In the continuum limit:
+
 $$
 \lim_{\ell \to 0} \frac{S_{\mathrm{BD}}[\mathcal{A}]}{V(\mathcal{A})} = \frac{1}{d(d-1)} R + O(\ell^2)
 $$
@@ -337,6 +350,7 @@ where $R$ is the Ricci scalar and $V(\mathcal{A})$ is the spacetime volume.
 :class: important
 
 The causal set path integral for quantum gravity:
+
 $$
 Z_{\mathrm{Fractal}} = \sum_{\mathcal{F} \in \mathcal{F}_N} e^{iS_{\mathrm{CST}}(\mathcal{F})} \cdot \mathcal{P}_{\mathrm{QSD}}(\mathcal{F})
 $$
@@ -352,11 +366,13 @@ $$
 The Fractal Set causal structure leads to observable consequences:
 
 1. **Discreteness scale**: Average proper distance between episodes:
+
 $$
 \ell_{\mathrm{Planck}}^{\mathrm{eff}} = \left(\frac{V_{\mathrm{total}}}{N}\right)^{1/d}
 $$
 
 2. **Modified dispersion relations**: High-energy particles experience corrections:
+
 $$
 E^2 = p^2 c^2 + m^2 c^4 + \eta_1 \frac{E^3}{E_{\mathrm{Planck}}} + \eta_2 \frac{E^4}{E_{\mathrm{Planck}}^2} + \ldots
 $$

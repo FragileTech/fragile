@@ -270,6 +270,7 @@ P_i(j) = \frac{w_{ij}}{\sum_{l \in \mathcal{A}, l \neq i} w_{il}}, \quad w_{ij} 
 $$
 
 **Key property (Minorization):** For any $i, j \in \mathcal{A}$:
+
 $$
 P_i(j) \ge \frac{m_\epsilon}{n_{\text{alive}} - 1}, \quad m_\epsilon = \exp\left(-\frac{D_{\text{alg}}^2}{2\epsilon^2}\right)
 $$
@@ -313,12 +314,15 @@ The OU thermostat injects full-rank Gaussian noise, ensuring hypoelliptic mixing
 The viscous force between walkers generates gauge symmetry:
 
 1. **Pairwise complex coupling:**
+
    $$W_{ij}^{(\alpha)} = K_\rho(z_i, z_j) \cdot \exp\left(i\frac{m(v_j^{(\alpha)} - v_i^{(\alpha)})}{\hbar_{\text{eff}}}\right)$$
 
 2. **Color state (coherent sum):**
+
    $$c_i^{(\alpha)} = \sum_{j \neq i} W_{ij}^{(\alpha)}$$
 
 3. **Gauge link variable:**
+
    $$U_{ij} = \exp(i\Phi_{ij}^{(0)}) \in \text{SU}(d)$$
 
 The modulus encodes distance (via kernel), the phase encodes momentum difference (de Broglie relation). This is the algorithmic analog of QCD color charge.

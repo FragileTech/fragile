@@ -230,6 +230,7 @@ Walkers that are both high-reward *and* well-separated from companions get the h
 For walker $i$ with distance companion $c_i^{\text{dist}}$:
 
 **Diversity (distance to companion)**:
+
 $$
 d_i = \sqrt{d_{\text{alg}}(i, c_i^{\text{dist}})^2 + \epsilon_{\text{dist}}^2}
 $$
@@ -237,6 +238,7 @@ $$
 where $\epsilon_{\text{dist}} > 0$ is a regularization constant preventing division by zero.
 
 **Reward (application-specific)**:
+
 $$
 r_i = \langle \mathcal{R}(z_i), v_i \rangle_G
 $$
@@ -393,6 +395,7 @@ Cloning is the selection mechanism that drives the swarm toward high-fitness reg
 For walker $i$ with clone companion $c_i^{\text{clone}}$, define:
 
 **Cloning score** (relative fitness advantage of companion):
+
 $$
 S_i = \frac{V_{\text{fit}, c_i^{\text{clone}}} - V_{\text{fit}, i}}{V_{\text{fit}, i} + \varepsilon_{\text{clone}}}
 $$
@@ -447,11 +450,13 @@ Position updates are straightforward, but what about velocities? The Fractal Gas
 When a set of walkers $G$ (a "collision group") all clone from the same companion, their velocities are updated as follows:
 
 **Step 1**: Compute the center-of-mass velocity:
+
 $$
 V_{\text{COM}} = \frac{1}{|G|} \sum_{k \in G} v_k
 $$
 
 **Step 2**: Apply restitution toward the center of mass:
+
 $$
 v_k' = V_{\text{COM}} + \alpha_{\text{rest}} (v_k - V_{\text{COM}}), \quad k \in G
 $$
@@ -558,16 +563,19 @@ The **Boris-BAOAB** scheme is a splitting integrator for Langevin dynamics {cite
 For a walker at $(z, p)$ with $p = G(z) v$ (metric momentum), the Boris-BAOAB step with time step $h$ is:
 
 **B (half-kick)**:
+
 $$
 p \leftarrow p - \frac{h}{2} \nabla \Phi_{\text{eff}}(z)
 $$
 
 **A (half-drift)**:
+
 $$
 z \leftarrow \mathrm{Exp}_z\left(\frac{h}{2} G^{-1}(z) p\right)
 $$
 
 **O (thermostat)**:
+
 $$
 p \leftarrow c_1 p + c_2 G^{1/2}(z) \Sigma_{\text{reg}}(z) \xi, \quad \xi \sim \mathcal{N}(0, I)
 $$
@@ -771,6 +779,7 @@ For formal treatment of convergence, see {doc}`02_fractal_gas_latent` (Part III-
 :class: feynman-added warning
 
 Parameters must satisfy:
+
 $$
 \varepsilon_{\text{clone}} \cdot p_{\max} < \eta^{\alpha_{\text{fit}} + \beta_{\text{fit}}}
 $$
