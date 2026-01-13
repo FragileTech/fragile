@@ -4,6 +4,22 @@ title: "Hypostructure Proof Object: Fractal Gas (Latent Fragile Agent)"
 
 # Structural Sieve Proof: Fractal Gas (Latent Fragile Agent)
 
+## TLDR
+
+**Latent Space Instantiation**: This document provides a complete, machine-checkable proof object for the Latent Fractal Gas, a swarm algorithm operating in an agent's learned latent space rather than raw observation space. Walkers evolve via geodesic Boris-BAOAB dynamics driven by a reward 1-form and effective potential, with soft companion selection and momentum-conserving inelastic collisions for cloning.
+
+**Quantitative Certification**: The proof object instantiates all 17 sieve nodes and derives explicit constants for mean-field convergence and QSD characterization. Key innovations include phase-space softmax companion selection (weighting by both position and velocity), anisotropic diffusion adapted to the local fitness landscape curvature, and a complete Foster-Lyapunov analysis that certifies exponential ergodicity without requiring global convexity of the effective potential.
+
+**Factory-Enabled Guarantees**: By leveraging the Algorithmic Factories, classical assumptions like global convexity and deterministic gradient flow structure are replaced by computable runtime certificates. The total contraction rate $\kappa_{\mathrm{total}}$ becomes the single diagnostic: if positive, the framework guarantees exponential convergence to a unique quasi-stationary distribution with explicit bounds on mixing time, mean-field error, and KL decay rate.
+
+## Introduction
+
+The Latent Fractal Gas represents the natural evolution of the Fragile Gas framework from Euclidean observation space into the structured latent representations learned by modern agents. Where the Euclidean Gas operates on raw positions and velocities, the Latent Gas operates on the compressed, semantically meaningful coordinates that emerge from representation learning. This shift brings both opportunities and challenges: the latent metric $G$ may be curved and state-dependent, the reward signal becomes a 1-form on a manifold rather than a simple scalar field, and the effective potential must account for both the agent's objectives and the geometry of its internal representations.
+
+This document constructs a complete proof object certifying that the Latent Fractal Gas satisfies all requirements of the Hypostructure framework. The core innovation is the integration of Fragile-Agent kinetics (geodesic Boris-BAOAB integrating Lorentz-Langevin dynamics) with the measurement-selection-cloning pipeline of the Fragile Gas. Companion selection uses a phase-space softmax kernel that weights neighbors by both positional and velocity similarity, enabling the swarm to exploit coherent motion patterns. The cloning operator implements momentum-conserving inelastic collisions that preserve center-of-mass velocity within collision groups, providing controlled energy dissipation while maintaining physical plausibility.
+
+The technical heart of the document is the derivation of explicit quantitative constants that feed into the framework's rate calculators. These include: the kernel floor $m_\epsilon$ controlling minorization strength, the fitness bounds $(V_{\min}, V_{\max})$ determining selection pressure range, the Wasserstein contraction rate $\kappa_W$ from companion selection geometry, and the LSI constant $C_{\mathrm{LSI}}^{(\mathrm{geom})}$ governing KL decay. Perhaps most importantly, the proof object demonstrates how the Algorithmic Factories transform classical analytic requirements (global convexity, spectral gaps, Mosco convergence) into computable certificates that can be verified at runtime. This shifts the burden of proof from manual mathematical analysis to automated verification: convergence guarantees become diagnostic outputs rather than input assumptions.
+
 ## Metadata
 
 | Field | Value |
