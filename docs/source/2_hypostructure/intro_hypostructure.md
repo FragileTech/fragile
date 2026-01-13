@@ -231,7 +231,7 @@ A recommended approach for understanding this framework:
 - [Meta-Learning Framework](10_information_processing/01_metalearning.md)
 
 **Fractal Gas (Supplementary)**
-- [Fractal Gas Model](../3_fractal_gas/02_fractal_gas_latent.md)
+- [Fractal Gas Model](../3_fractal_gas/1_the_algorithm/02_fractal_gas_latent.md)
 
 **Part XI: Appendices**
 - [ZFC Translation](11_appendices/01_zfc.md)
@@ -297,7 +297,7 @@ This formalism is a **categorical foundation for runtime safety verification**. 
 11. **Algorithmic Completeness Theory.** The five algorithm classes (Climbers, Propagators, Alchemists, Dividers, Interference Engines) are proven exhaustive via Schreiber's structure theorem—polynomial-time algorithms must factor through cohesive modalities $\{\sharp, \int, \flat, \ast, \partial\}$. Tactic E13 (Algorithmic Completeness Lock) establishes hardness by blocking all five modalities ([Algorithmic Completeness](09_mathematical/05_algorithmic.md)).
 12. **P/NP Bridge to Classical Complexity.** Bidirectional bridge theorems establish $P_{\text{Fragile}} = P_{\text{DTM}}$ and $NP_{\text{Fragile}} = NP_{\text{DTM}}$ via adequacy of the Fragile runtime. Internal complexity separations export to classical ZFC statements about P and NP ([P/NP Bridge](09_mathematical/06_complexity_bridge.md)).
 13. **Meta-Learning Axioms.** Learning hypostructure constraints as optimization over defect functionals ([Meta-Learning](10_information_processing/01_metalearning.md)).
-14. **Fractal Gas Model.** Scale-free dynamics for axiom discovery ([Fractal Gas](../3_fractal_gas/02_fractal_gas_latent.md)).
+14. **Fractal Gas Model.** Scale-free dynamics for axiom discovery ([Fractal Gas](../3_fractal_gas/1_the_algorithm/02_fractal_gas_latent.md)).
 
 **Repackaging (directly inherited ingredients):**
 

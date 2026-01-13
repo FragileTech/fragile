@@ -187,3 +187,4 @@ parts:
     - file: source/3_fractal_gas/appendices/11_hk_convergence
     - file: source/3_fractal_gas/appendices/12_qsd_exchangeability_theory
     - file: source/3_fractal_gas/appendices/13_quantitative_error_bounds
+    - file: source/3_fractal_gas/appendices/14_faq
