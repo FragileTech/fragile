@@ -33,11 +33,11 @@ The three volumes form a coherent whole: Vol I specifies *what* an agent should 
 
 | If you want... | Start with... | Key sections |
 |:---------------|:--------------|:-------------|
-| Build a safe AI agent | Vol I: The Sieve | Parts II–III |
-| Understand the mathematics | Vol II: Axioms | Part II |
-| Use parallel planning/sampling | Vol III: Algorithm | Part I |
-| See the gauge theory | Vol I: Standard Model | Part VIII |
-| Understand convergence proofs | Vol II: Factories + Vol III: Sieve | Parts VII, II |
+| Build a safe AI agent | {doc}`Vol I: The Sieve <source/1_agent/02_sieve/01_diagnostics>` | {doc}`Part II <source/1_agent/02_sieve/01_diagnostics>`–{doc}`III <source/1_agent/03_architecture/01_compute_tiers>` |
+| Understand the mathematics | {doc}`Vol II: Axioms <source/2_hypostructure/02_axioms/01_axiom_system>` | {doc}`Part II <source/2_hypostructure/02_axioms/01_axiom_system>` |
+| Use parallel planning/sampling | {doc}`Vol III: Algorithm <source/3_fractal_gas/1_the_algorithm/01_algorithm_intuition>` | {doc}`Part I <source/3_fractal_gas/1_the_algorithm/01_algorithm_intuition>` |
+| See the gauge theory | {doc}`Vol I: Standard Model <source/1_agent/08_multiagent/02_standard_model>` | {doc}`Part VIII <source/1_agent/08_multiagent/01_gauge_theory>` |
+| Understand convergence proofs | {doc}`Vol II: Factories <source/2_hypostructure/07_factories/01_metatheorems>` + {doc}`Vol III: Sieve <source/3_fractal_gas/1_the_algorithm/03_algorithmic_sieve>` | Parts VII, II |
 
 **Volume Links:**
 - {doc}`Volume I: Fragile Mechanics <source/1_agent/intro_agent>`
@@ -69,11 +69,11 @@ This work is designed to be **modular**. You are not required to read all three 
 
 | If you want... | Read... | Prerequisites |
 |:---------------|:--------|:--------------|
-| Build safe AI agents | Vol I Parts II–III | Minimal |
-| Understand the mathematics | Vol II | Basic category theory helpful |
-| Use parallel planning/sampling | Vol III Part I | Minimal |
-| Full gauge-theoretic picture | Vol I Part VIII + Vol III Part II | Vol I foundations |
-| Convergence proofs | Vol II Part VII + Vol III Appendices | Mathematical maturity |
+| Build safe AI agents | {doc}`Vol I Part II <source/1_agent/02_sieve/01_diagnostics>`–{doc}`III <source/1_agent/03_architecture/01_compute_tiers>` | Minimal |
+| Understand the mathematics | {doc}`Vol II <source/2_hypostructure/intro_hypostructure>` | Basic category theory helpful |
+| Use parallel planning/sampling | {doc}`Vol III Part I <source/3_fractal_gas/1_the_algorithm/01_algorithm_intuition>` | Minimal |
+| Full gauge-theoretic picture | {doc}`Vol I Part VIII <source/1_agent/08_multiagent/01_gauge_theory>` + {doc}`Vol III Part II <source/3_fractal_gas/2_fractal_set/01_fractal_set>` | Vol I foundations |
+| Convergence proofs | {doc}`Vol II Part VII <source/2_hypostructure/07_factories/01_metatheorems>` + {doc}`Vol III Appendices <source/3_fractal_gas/appendices/06_convergence>` | Mathematical maturity |
 
 Each volume has its own introduction with detailed navigation. Cross-references link related material across volumes.
 
@@ -261,10 +261,10 @@ The structural parallel is not accidental: gauge symmetry is the mathematical ex
 **Goal:** Build safer, more interpretable agents
 
 **Recommended Path:**
-1. Vol I TL;DR (get the overview)
-2. Vol I Part II: The Sieve (the 60 diagnostics)
-3. Vol I Part III: Architecture (implementation patterns)
-4. Vol III Part I: Algorithm Intuition (if you need optimization)
+1. {doc}`Vol I Introduction <source/1_agent/intro_agent>` (get the overview)
+2. {doc}`Vol I Part II: The Sieve <source/1_agent/02_sieve/01_diagnostics>` (the 60 diagnostics)
+3. {doc}`Vol I Part III: Architecture <source/1_agent/03_architecture/01_compute_tiers>` (implementation patterns)
+4. {doc}`Vol III Part I: Algorithm Intuition <source/3_fractal_gas/1_the_algorithm/01_algorithm_intuition>` (if you need parallel planning/sampling)
 
 **Skip:** Vol II entirely unless you want proofs; Vol I Parts V–VIII unless you want theory
 
@@ -273,11 +273,11 @@ The structural parallel is not accidental: gauge symmetry is the mathematical ex
 **Goal:** Understand the categorical and geometric foundations
 
 **Recommended Path:**
-1. Vol II TL;DR (categorical overview)
-2. Vol II Part I: Categorical Foundations (cohesive topoi)
-3. Vol II Part II: Axiom System (the 5 axioms)
-4. Vol I Part V: Geometric Dynamics (WFR metric)
-5. Vol II Part IX: Mathematical Foundations (algorithmic completeness)
+1. {doc}`Vol II Introduction <source/2_hypostructure/intro_hypostructure>` (categorical overview)
+2. {doc}`Vol II Part I: Categorical Foundations <source/2_hypostructure/01_foundations/01_categorical>` (cohesive topoi)
+3. {doc}`Vol II Part II: Axiom System <source/2_hypostructure/02_axioms/01_axiom_system>` (the 5 axioms)
+4. {doc}`Vol I Part V: Geometric Dynamics <source/1_agent/05_geometry/01_metric_law>` (WFR metric)
+5. {doc}`Vol II Part IX: Mathematical Foundations <source/2_hypostructure/09_mathematical/05_algorithmic>` (algorithmic completeness)
 
 **Skip:** Implementation details in Vol I Parts II–III; algorithm details in Vol III Part I
 
@@ -286,10 +286,10 @@ The structural parallel is not accidental: gauge symmetry is the mathematical ex
 **Goal:** See the gauge-theoretic structure
 
 **Recommended Path:**
-1. Vol I Part VIII: Standard Model of Cognition
-2. Vol I Part VI: Holography and Field Theory
-3. Vol III Part II: Fractal Set (lattice QFT, causal sets)
-4. Vol I Part V: WFR geometry
+1. {doc}`Vol I Part VIII: Standard Model of Cognition <source/1_agent/08_multiagent/02_standard_model>`
+2. {doc}`Vol I Part VI: Holography and Field Theory <source/1_agent/06_fields/01_boundary_interface>`
+3. {doc}`Vol III Part II: Fractal Set <source/3_fractal_gas/2_fractal_set/01_fractal_set>` (lattice QFT, causal sets)
+4. {doc}`Vol I Part V: WFR geometry <source/1_agent/05_geometry/02_wfr_geometry>`
 
 **Skip:** Implementation/engineering details
 
@@ -298,9 +298,9 @@ The structural parallel is not accidental: gauge symmetry is the mathematical ex
 **Goal:** Understand the P/NP bridge
 
 **Recommended Path:**
-1. Vol II Part IX: Algorithmic Completeness + P/NP Bridge
-2. Vol II Part VII: Factory Metatheorems
-3. Vol II Part II: Axiom System
+1. {doc}`Vol II Part IX: Algorithmic Completeness <source/2_hypostructure/09_mathematical/05_algorithmic>` + {doc}`P/NP Bridge <source/2_hypostructure/09_mathematical/06_complexity_bridge>`
+2. {doc}`Vol II Part VII: Factory Metatheorems <source/2_hypostructure/07_factories/01_metatheorems>`
+3. {doc}`Vol II Part II: Axiom System <source/2_hypostructure/02_axioms/01_axiom_system>`
 
 **Skip:** Most of Vol I and Vol III
 
@@ -309,11 +309,11 @@ The structural parallel is not accidental: gauge symmetry is the mathematical ex
 **Goal:** Understand the Fractal Gas as a computational engine for parallel exploration and efficient sampling
 
 **Recommended Path:**
-1. Vol III TL;DR
-2. Vol III Part I: The Algorithm (complete treatment)
-3. Vol III Appendices (convergence proofs)
-4. Vol I Part IV: Belief Dynamics (how agents use the gas internally)
-5. Vol I Part V: WFR geometry (the continuum limit)
+1. {doc}`Vol III Introduction <source/3_fractal_gas/intro_fractal_gas>` (overview)
+2. {doc}`Vol III Part I: The Algorithm <source/3_fractal_gas/1_the_algorithm/01_algorithm_intuition>` (complete treatment)
+3. {doc}`Vol III Appendices: Convergence <source/3_fractal_gas/appendices/06_convergence>` (proofs)
+4. {doc}`Vol I Part IV: Belief Dynamics <source/1_agent/04_control/02_belief_dynamics>` (how agents use the gas internally)
+5. {doc}`Vol I Part V: WFR geometry <source/1_agent/05_geometry/02_wfr_geometry>` (the continuum limit)
 
 **Skip:** Most of Vol II; gauge-theoretic parts unless interested
 
@@ -344,19 +344,19 @@ No. Each volume has a different purpose. Engineers can focus on Vol I Parts II�
 
 **Q3: How does this relate to existing AI safety work?**
 
-Vol I's Sieve is a systematic catalog of failure modes with explicit detection and correction mechanisms. Unlike post-hoc safety constraints, these are derived from first principles and built into the architecture. See Vol I Appendix D for detailed comparisons.
+Vol I's {doc}`Sieve <source/1_agent/02_sieve/01_diagnostics>` is a systematic catalog of failure modes with explicit detection and correction mechanisms. Unlike post-hoc safety constraints, these are derived from first principles and built into the architecture. See {doc}`Vol I FAQ <source/1_agent/10_appendices/04_faq>` for detailed comparisons.
 
 **Q4: Is the gauge theory just metaphor?**
 
-No. The gauge group $G_{\text{Fragile}} = SU(N_f)_C \times SU(2)_L \times U(1)_Y$ is derived from three invariance principles. The gauge fields have explicit interpretations and constrain dynamics. See Vol I Section 34 for the full derivation.
+No. The gauge group $G_{\text{Fragile}} = SU(N_f)_C \times SU(2)_L \times U(1)_Y$ is derived from three invariance principles. The gauge fields have explicit interpretations and constrain dynamics. See {doc}`Vol I Part VIII: Standard Model <source/1_agent/08_multiagent/02_standard_model>` for the full derivation.
 
 **Q5: What is the relationship to reinforcement learning?**
 
-Standard RL is a degenerate limit of the Fragile Agent (Vol I Section 0.6). The 37 reductions show how each standard RL algorithm appears when geometric, capacity, and safety constraints are removed.
+Standard RL is a degenerate limit of the Fragile Agent. See {doc}`Vol I Introduction <source/1_agent/intro_agent>` for the 37 reductions showing how each standard RL algorithm appears when geometric, capacity, and safety constraints are removed.
 
 **Q6: How does Proof of Useful Work relate to blockchain?**
 
-Vol I Part IX introduces a consensus mechanism where hash mining is replaced by gradient computation on a shared neural network. Energy expenditure produces intelligence instead of heat. Security comes from geometric coherence, not wasted computation. See the PoUW theorems for formal guarantees.
+{doc}`Vol I Part IX: Economics <source/1_agent/09_economics/01_pomw>` introduces a consensus mechanism where hash mining is replaced by gradient computation on a shared neural network. Energy expenditure produces intelligence instead of heat. Security comes from geometric coherence, not wasted computation.
 
 (sec-quick-links)=
 ## Quick Links
@@ -376,8 +376,13 @@ Vol I Part IX introduces a consensus mechanism where hash mining is replaced by 
 - {doc}`Standard Model of Cognition <source/1_agent/08_multiagent/02_standard_model>`
 - {doc}`Algorithmic Completeness <source/2_hypostructure/09_mathematical/05_algorithmic>`
 
+**FAQs:**
+- {doc}`Vol I FAQ: 40 Objections Answered <source/1_agent/10_appendices/04_faq>`
+- {doc}`Vol II FAQ: Hypostructure Questions <source/2_hypostructure/11_appendices/03_faq>`
+- {doc}`Vol III FAQ: Fractal Gas Questions <source/3_fractal_gas/appendices/14_faq>`
+
 **Appendices:**
-- {doc}`Vol I: FAQ (40 objections answered) <source/1_agent/10_appendices/04_faq>`
+- {doc}`Vol I: Derivations <source/1_agent/10_appendices/01_derivations>`
 - {doc}`Vol II: ZFC Translation <source/2_hypostructure/11_appendices/01_zfc>`
 - {doc}`Vol III: Convergence Proofs <source/3_fractal_gas/appendices/06_convergence>`
 

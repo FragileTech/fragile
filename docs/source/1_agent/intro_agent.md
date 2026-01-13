@@ -224,62 +224,62 @@ The extensive cross-referencing, formal definitions, and explicit theorem statem
 Table of contents:
 
 **Part I: Foundations**
-- {doc}`source/1_agent/01_foundations/01_definitions`
-- {doc}`source/1_agent/01_foundations/02_control_loop`
+- {doc}`01_foundations/01_definitions`
+- {doc}`01_foundations/02_control_loop`
 
 **Part II: The Sieve (Runtime Safety)**
-- {doc}`source/1_agent/02_sieve/01_diagnostics`
-- {doc}`source/1_agent/02_sieve/02_limits_barriers`
-- {doc}`source/1_agent/02_sieve/03_failures_interventions`
-- {doc}`source/1_agent/02_sieve/04_approximations`
+- {doc}`02_sieve/01_diagnostics`
+- {doc}`02_sieve/02_limits_barriers`
+- {doc}`02_sieve/03_failures_interventions`
+- {doc}`02_sieve/04_approximations`
 
 **Part III: Implementation Architecture**
-- {doc}`source/1_agent/03_architecture/01_compute_tiers`
-- {doc}`source/1_agent/03_architecture/02_disentangled_vae`
+- {doc}`03_architecture/01_compute_tiers`
+- {doc}`03_architecture/02_disentangled_vae`
 
 **Part IV: Control and Belief**
-- {doc}`source/1_agent/04_control/01_exploration`
-- {doc}`source/1_agent/04_control/02_belief_dynamics`
-- {doc}`source/1_agent/04_control/03_coupling_window`
+- {doc}`04_control/01_exploration`
+- {doc}`04_control/02_belief_dynamics`
+- {doc}`04_control/03_coupling_window`
 
 **Part V: Geometric Dynamics**
-- {doc}`source/1_agent/05_geometry/01_metric_law`
-- {doc}`source/1_agent/05_geometry/02_wfr_geometry`
-- {doc}`source/1_agent/05_geometry/03_holographic_gen`
-- {doc}`source/1_agent/05_geometry/04_equations_motion`
+- {doc}`05_geometry/01_metric_law`
+- {doc}`05_geometry/02_wfr_geometry`
+- {doc}`05_geometry/03_holographic_gen`
+- {doc}`05_geometry/04_equations_motion`
 
 **Part VI: Holography and Field Theory**
-- {doc}`source/1_agent/06_fields/01_boundary_interface`
-- {doc}`source/1_agent/06_fields/02_reward_field`
-- {doc}`source/1_agent/06_fields/03_info_bound`
+- {doc}`06_fields/01_boundary_interface`
+- {doc}`06_fields/02_reward_field`
+- {doc}`06_fields/03_info_bound`
 
 **Part VII: Cognitive Extensions**
-- {doc}`source/1_agent/07_cognition/01_supervised_topo`
-- {doc}`source/1_agent/07_cognition/02_governor`
-- {doc}`source/1_agent/07_cognition/03_memory_retrieval`
-- {doc}`source/1_agent/07_cognition/04_ontology`
-- {doc}`source/1_agent/07_cognition/05_metabolism`
-- {doc}`source/1_agent/07_cognition/06_causality`
-- {doc}`source/1_agent/07_cognition/07_metabolic_transducer`
-- {doc}`source/1_agent/07_cognition/08_intersubjective_metric`
+- {doc}`07_cognition/01_supervised_topo`
+- {doc}`07_cognition/02_governor`
+- {doc}`07_cognition/03_memory_retrieval`
+- {doc}`07_cognition/04_ontology`
+- {doc}`07_cognition/05_metabolism`
+- {doc}`07_cognition/06_causality`
+- {doc}`07_cognition/07_metabolic_transducer`
+- {doc}`07_cognition/08_intersubjective_metric`
 
 **Part VIII: Multi-Agent Gauge Theory**
-- {doc}`source/1_agent/08_multiagent/01_gauge_theory`
-- {doc}`source/1_agent/08_multiagent/02_standard_model`
-- {doc}`source/1_agent/08_multiagent/03_parameter_sieve`
+- {doc}`08_multiagent/01_gauge_theory`
+- {doc}`08_multiagent/02_standard_model`
+- {doc}`08_multiagent/03_parameter_sieve`
 
 **Part IX: Economics**
-- {doc}`source/1_agent/09_economics/01_pomw`
+- {doc}`09_economics/01_pomw`
 
 **Conclusion**
-- {doc}`conclusions`
+- {doc}`/conclusions`
 
 **Appendices**
-- {doc}`source/1_agent/10_appendices/01_derivations`
-- {doc}`source/1_agent/10_appendices/02_parameters`
-- {doc}`source/1_agent/10_appendices/03_wfr_tensor`
-- {doc}`source/1_agent/10_appendices/04_faq`
-- {doc}`source/1_agent/10_appendices/05_proofs`
+- {doc}`10_appendices/01_derivations`
+- {doc}`10_appendices/02_parameters`
+- {doc}`10_appendices/03_wfr_tensor`
+- {doc}`10_appendices/04_faq`
+- {doc}`10_appendices/05_proofs`
 
 (sec-positioning-connections-to-prior-work-differences-and-advantages)=
 ## Positioning: Connections to Prior Work, Differences, and Advantages
