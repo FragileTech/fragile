@@ -1,4 +1,23 @@
+(sec-failure-modes)=
 # Failure Modes (Observed Pathologies)
+
+## TLDR
+
+- Enumerate a “periodic table” of **observable failure patterns** (collapse, oscillation, Zeno/chatter, overfitting,
+  paralysis, fragility) and map each to a responsible component.
+- Treat failures as **structured diagnostics**: identify the signature, then apply the corresponding intervention
+  (damping, regularization, projection, reset, curriculum changes).
+- Use the table to distinguish **fundamental limits** (barriers) from **implementation/optimization issues**
+  (fixable by schedule/architecture changes).
+- Provide a shared vocabulary for debugging: “what failed” is named, and “where it lives” is explicit.
+- This chapter pairs with `Diagnostics` and `Barriers`: together they define what to monitor, what limits exist, and what
+  to do when something triggers.
+
+## Roadmap
+
+1. Failure taxonomy and how to read the table.
+2. Canonical interventions and what signals should trigger them.
+3. Worked interpretations: how failures relate to Sieve nodes and barrier surfaces.
 
 :::{div} feynman-prose
 Here is something fascinating about learning systems: they fail in characteristic ways. Not randomly, but in patterns that repeat across wildly different domains. Whether you are training a robot to walk or a neural network to recognize faces, the same breakdowns keep appearing.
@@ -122,5 +141,3 @@ Finally, only SurgBC (Controller Expansion) and SurgTE (Architecture Search) act
 :class: feynman-added
 The relationship between failures and interventions is not always one-to-one. Some failures may require multiple interventions applied in sequence, and some interventions may help with multiple failure modes. The table gives the primary mapping, but clinical judgment is still required.
 :::
-
-(sec-computational-considerations)=

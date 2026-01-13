@@ -1,6 +1,28 @@
+(sec-computational-metabolism-the-landauer-bound-and-deliberation-dynamics)=
 # Computational Metabolism: The Landauer Bound and Deliberation Dynamics
 
-*Abstract.* We establish a thermodynamic foundation for internal inference by coupling computation time $s$ to an energetic cost functional. We model the agent as an open system where belief updates are dissipative processes. By applying Landauer's Principle {cite}`landauer1961irreversibility` to the Wasserstein-Fisher-Rao (WFR) flow, we prove that the optimal allocation of computation time $S^*$ emerges from the stationarity of a **Dual-Horizon Action**. We derive a rigorous phase transition between reflexive (fast) and deliberative (slow) regimes {cite}`kahneman2011thinking`, governed by the ratio of the task-gradient norm to the metabolic dissipation rate.
+## TLDR
+
+- Compute is not free: belief updates dissipate energy. This chapter gives a thermodynamic model of **deliberation
+  dynamics**.
+- Use Landauer’s principle to derive a **cost functional for computation time** and an optimal stopping condition:
+  stop thinking when marginal value gain equals marginal metabolic cost.
+- This yields principled “fast vs. slow” behavior (reflex vs. deliberation) as a phase transition in compute allocation.
+- Practical implication: track and regulate compute as part of control, not as an external budget afterthought.
+- Connects metabolism to stability: excessive deliberation can be as harmful as insufficient compute.
+
+## Roadmap
+
+1. Thermodynamic framing (Landauer cost for information updates).
+2. Derive the dual-horizon action and optimal compute allocation.
+3. Operational regimes, phase transition intuition, and implementation guidance.
+
+*Abstract.* We establish a thermodynamic foundation for internal inference by coupling computation time $s$ to an
+energetic cost functional. We model the agent as an open system where belief updates are dissipative processes. By
+applying Landauer's Principle {cite}`landauer1961irreversibility` to the Wasserstein-Fisher-Rao (WFR) flow, we prove that
+the optimal allocation of computation time $S^*$ emerges from the stationarity of a **Dual-Horizon Action**. We derive a
+rigorous phase transition between reflexive (fast) and deliberative (slow) regimes {cite}`kahneman2011thinking`,
+governed by the ratio of the task-gradient norm to the metabolic dissipation rate.
 
 (rb-thinking-fast-slow)=
 :::{admonition} Researcher Bridge: Principled "Thinking Fast and Slow"
@@ -8,9 +30,16 @@
 Most agents spend the same amount of FLOPs on a trivial decision as a critical one. We use the **Landauer Bound** to assign a thermodynamic cost to information updates. The agent stops "deliberating" ($S^*$) exactly when the marginal gain in Value is outweighed by the metabolic cost of more compute. This derives "System 1 vs System 2" behavior from first principles.
 :::
 
-*Cross-references:* This section extends the WFR dynamics ({ref}`Section 20 <sec-wasserstein-fisher-rao-geometry-unified-transport-on-hybrid-state-spaces>`) to account for the thermodynamic cost of belief updates, building on the cognitive temperature framework ({ref}`Section 22.4 <sec-the-geodesic-baoab-integrator>`) and the value potential ({ref}`Section 24 <sec-the-reward-field-value-forms-and-hodge-geometry>`).
+*Cross-references:* This section extends the WFR dynamics
+({ref}`Section 20 <sec-wasserstein-fisher-rao-geometry-unified-transport-on-hybrid-state-spaces>`) to account for the
+thermodynamic cost of belief updates, building on the cognitive temperature framework
+({ref}`Section 22.4 <sec-the-geodesic-baoab-integrator>`) and the value potential
+({ref}`Section 24 <sec-the-reward-field-value-forms-and-hodge-geometry>`).
 
-*Literature:* Landauer's principle {cite}`landauer1961irreversibility`; thermodynamics of computation {cite}`bennett1982thermodynamics`; thermodynamics of information {cite}`parrondo2015thermodynamics`; dual-process theory {cite}`kahneman2011thinking`; free energy principle {cite}`friston2010free`; information geometry {cite}`amari2016information`.
+*Literature:* Landauer's principle {cite}`landauer1961irreversibility`; thermodynamics of computation
+{cite}`bennett1982thermodynamics`; thermodynamics of information {cite}`parrondo2015thermodynamics`; dual-process theory
+{cite}`kahneman2011thinking`; free energy principle {cite}`friston2010free`; information geometry
+{cite}`amari2016information`.
 
 :::{div} feynman-prose
 Now here is a question that I think is absolutely fundamental, and yet most people building intelligent systems never even ask it: **How long should you think before you act?**
@@ -665,7 +694,3 @@ For practical implementation, this means two things. First, track your metabolic
 
 The physics will guide you if you let it.
 :::
-
-
-
-(sec-causal-discovery-interventional-geometry-and-the-singularity-of-action)=

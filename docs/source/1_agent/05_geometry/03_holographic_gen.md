@@ -1,4 +1,21 @@
+(sec-radial-generation-entropic-drift-and-policy-control)=
 # Radial Generation: Entropic Drift and Policy Control
+
+## TLDR
+
+- Model “generation” as **radial flow**: start near a symmetric, high-entropy center and move outward toward committed,
+  specific states.
+- Two forces drive the flow: **entropic drift** (push outward) and **policy/value control** (choose direction).
+- This unifies diffusion-style generation and RL control as the same geometric picture on the latent manifold.
+- The practical outputs are monitorable diagnostics (RadialGenCheck / HoloGenCheck) and knob interpretations (horizon,
+  cutoff radius, temperature).
+- This chapter links WFR belief geometry to concrete generative/control behavior at the boundary.
+
+## Roadmap
+
+1. Motivation and the radial-flow picture.
+2. The drift/control decomposition and its relation to diffusion models.
+3. Diagnostics and practical failure modes (early stop vs. runaway drift).
 
 :::{div} feynman-prose
 Let me tell you what generation really is. Not the mathematical abstraction---that's coming---but the *idea* first.
@@ -761,7 +778,3 @@ This is generation: break symmetry at the origin, ride the entropic flow toward 
 - Remedy: Increase $\tau_{\text{max}}$ or decrease $R_{\text{cutoff}}$.
 
 **Cross-references:** {ref}`Section 2.2b <sec-the-shutter-as-a-vq-vae>` (VQ-VAE texture channel), {ref}`Section 7.10 <sec-decoder-architecture-overview-topological-decoder>` (TopologicalDecoder), {ref}`Section 18 <sec-capacity-constrained-metric-law-geometry-from-interface-limits>` (Capacity constraints).
-
-
-
-(sec-the-equations-of-motion-geodesic-jump-diffusion)=

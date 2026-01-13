@@ -1,4 +1,22 @@
+(sec-causal-information-bound)=
 # The Causal Information Bound
+
+## TLDR
+
+- There is a hard limit on representational capacity: stable internal information is bounded by **interface area** (an
+  “area law” analogue).
+- As the agent approaches this bound, internal updates slow down (**causal stasis**): gradients vanish and learning
+  effectively freezes.
+- This chapter derives the bound from the capacity-constrained metric law and turns it into a measurable diagnostic.
+- Practical implication: over-parameterization is not just “wasted compute”; it can push you toward a geometric regime
+  where learning dies.
+- Use the bound to size models, tune horizons, and justify when ontology expansion is necessary.
+
+## Roadmap
+
+1. State the bound and the physical/geometry analogy (area law).
+2. Derive causal stasis as the operational consequence near saturation.
+3. Diagnostics and implementation guidance for monitoring proximity to the bound.
 
 :::{div} feynman-prose
 Now I want to tell you about a fundamental limit---perhaps the most important limit in the whole theory. It's the kind of thing that, once you understand it, changes how you think about intelligence, memory, and computation.
@@ -14,7 +32,12 @@ This might remind you of something from physics. It should. This is the same str
 And there's a consequence that's even more striking: as you approach this limit, *you slow down*. Your internal update rate drops toward zero. We call this Causal Stasis, and it's the geometric explanation for why overparameterized models "die"---they're not running out of memory in the computer science sense; they're running out of *geometric capacity*.
 :::
 
-*Abstract.* We derive a fundamental limit on representational capacity: the maximum information an agent can stably represent is bounded by the area of its interface, measured in units of a characteristic length scale we call the **Levin Length**. This bound follows from the capacity-constrained metric law ({ref}`Section 18.2 <sec-main-result>`) and has a striking consequence: as the agent approaches this limit, its internal update rate slows to zero---a phenomenon we call **Causal Stasis**. This section provides the rigorous derivation (with full proofs in {ref}`Appendix A.6 <sec-appendix-a-area-law>`) and defines Diagnostic Node 56 to monitor proximity to this bound.
+*Abstract.* We derive a fundamental limit on representational capacity: the maximum information an agent can stably
+represent is bounded by the area of its interface, measured in units of a characteristic length scale we call the
+**Levin Length**. This bound follows from the capacity-constrained metric law ({ref}`Section 18.2 <sec-main-result>`) and
+has a striking consequence: as the agent approaches this limit, its internal update rate slows to zero---a phenomenon we
+call **Causal Stasis**. This section provides the rigorous derivation (with full proofs in
+{ref}`Appendix A.6 <sec-appendix-a-area-law>`) and defines Diagnostic Node 56 to monitor proximity to this bound.
 
 (rb-sensor-bandwidth)=
 :::{admonition} Researcher Bridge: The Sensor Bandwidth Ceiling
@@ -47,9 +70,14 @@ where $\ell_L$ is the Levin length (Definition {prf:ref}`def-levin-length`) and 
 | Horizon singularity ($g_{rr} \to \infty$) | Causal Stasis ($G_{rr} \to \infty$, $v \to 0$) |
 ::::
 
-*Cross-references:* This section extends the Capacity-Constrained Metric Law (Theorem {prf:ref}`thm-capacity-constrained-metric-law`), the Boundary Capacity Definition ({prf:ref}`def-boundary-capacity-area-law-at-finite-resolution`), and the Equation of Motion (Definition {prf:ref}`def-bulk-drift-continuous-flow`). The remediation connects to Ontological Fusion ({ref}`Section 30.8 <sec-ontological-fusion-concept-consolidation>`).
+*Cross-references:* This section extends the Capacity-Constrained Metric Law (Theorem
+{prf:ref}`thm-capacity-constrained-metric-law`), the Boundary Capacity Definition
+({prf:ref}`def-boundary-capacity-area-law-at-finite-resolution`), and the Equation of Motion (Definition
+{prf:ref}`def-bulk-drift-continuous-flow`). The remediation connects to Ontological Fusion
+({ref}`Section 30.8 <sec-ontological-fusion-concept-consolidation>`).
 
-*Literature:* Holographic bounds {cite}`thooft1993holographic,susskind1995world`; Fisher information geometry {cite}`amari2016information`; Levin complexity {cite}`levin1973universal`.
+*Literature:* Holographic bounds {cite}`thooft1993holographic,susskind1995world`; Fisher information geometry
+{cite}`amari2016information`; Levin complexity {cite}`levin1973universal`.
 
 
 
@@ -665,6 +693,3 @@ Appendices (Derivations, Units, WFR Tensor)
 | 55 | {prf:ref}`node-codebook-liveness-check`                 | 30.11   | $\min_k P(K=k) < \epsilon_{\text{dead}}$                                                                         |
 | 56 | [CapacityHorizonCheck](#node-56)                  | 33.5    | $\eta_{\text{Sch}} := I_{\text{bulk}} / I_{\max}$                                                                |
 | 61 | [ValueCurlCheck](#node-61)                        | 24.8    | $\oint_\gamma \delta_{\text{TD}} \approx \int\lVert\nabla\times\mathcal{R}\rVert$                                |
-
-
-

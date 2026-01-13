@@ -1,6 +1,11 @@
 (sec-appendix-e-rigorous-proof-sketches-for-ontological-and-metabolic-laws)=
 # {ref}`Appendix E <sec-appendix-e-rigorous-proof-sketches-for-ontological-and-metabolic-laws>`: Rigorous Proof Sketches for Ontological and Metabolic Laws
 
+## TLDR
+
+- This appendix contains rigorous proof sketches backing the ontology/metabolism results in the later cognition chapters.
+- Read it when you want the mathematical spine behind the narrative statements; otherwise treat it as a reference.
+
 This appendix provides the rigorous mathematical foundations for the theorems and propositions introduced in Sections 30, 31, and 32. We operate on the latent Riemannian manifold $(\mathcal{Z}, G)$ with belief measures $\rho \in \mathcal{P}(\mathcal{Z})$.
 
 

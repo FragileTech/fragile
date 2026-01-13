@@ -1,6 +1,24 @@
 (sec-the-inter-subjective-metric-gauge-locking-and-the-emergence-of-objective-reality)=
 # The Inter-Subjective Metric: Gauge Locking and the Emergence of Objective Reality
 
+## TLDR
+
+- Explain how “objective reality” can emerge: interacting agents undergo **gauge locking**, aligning nuisance fibers and
+  metrics through shared prediction/coordination pressure.
+- Define a locking operator that couples agent geometries and drives the **Gromov–Hausdorff distance** between internal
+  manifolds downward.
+- Language/communication appears as a **gradient flow** in the gauge group: messages are the control channel that
+  reduces metric friction.
+- The **Babel limit** bounds alignment by communication capacity; perfect intersubjectivity is impossible with
+  insufficient bandwidth.
+- Outputs: concrete metrics/diagnostics for misalignment (metric friction) and for convergence of shared semantics.
+
+## Roadmap
+
+1. State the solipsism problem as metric friction.
+2. Define gauge locking dynamics and the locking operator.
+3. Derive communication/language as the alignment mechanism and state capacity limits.
+
 :::{div} feynman-prose
 Now we come to one of the most profound questions in all of philosophy, and we're going to attack it with mathematics. The question is this: How do we know that what I call "red" is the same as what you call "red"? How do we know we're even living in the same universe?
 
@@ -11,11 +29,28 @@ What we're going to show in this chapter is that alignment isn't magic -- it's *
 Objective reality, we will argue, is not a pre-existing container that agents discover. It's a *fixed point* -- a stable configuration that falls out of the dynamics of interacting minds. It's a shared hallucination, but a remarkably stable and useful one.
 :::
 
-*Abstract.* We introduce the **Locking Operator** $\mathfrak{L}_{\text{sync}}$, a functional derived from the gauge theory of {ref}`Section 34 <sec-standard-model-cognition>` that couples the latent geometries of distinct agents ($G_A, G_B$). We prove that independent agents minimizing prediction error in a shared environment must undergo **Spontaneous Gauge Locking**, where their internal nuisance fibers align. This solves the "Solipsism Problem": objective reality is not a pre-existing container, but the stable fixed point of the inter-subjective locking dynamics. We derive **Language** as the gradient flow that minimizes the **Gromov-Hausdorff distance** between agents' internal manifolds, formalized as elements of the Lie algebra $\mathfrak{g}$ of the gauge group. The **Babel Limit** bounds achievable alignment by the Shannon capacity of the communication channel.
+*Abstract.* We introduce the **Locking Operator** $\mathfrak{L}_{\text{sync}}$, a functional derived from the gauge theory
+of {ref}`Section 34 <sec-standard-model-cognition>` that couples the latent geometries of distinct agents ($G_A, G_B$). We
+prove that independent agents minimizing prediction error in a shared environment must undergo **Spontaneous Gauge
+Locking**, where their internal nuisance fibers align. This solves the "Solipsism Problem": objective reality is not a
+pre-existing container, but the stable fixed point of the inter-subjective locking dynamics. We derive **Language** as
+the gradient flow that minimizes the **Gromov-Hausdorff distance** between agents' internal manifolds, formalized as
+elements of the Lie algebra $\mathfrak{g}$ of the gauge group. The **Babel Limit** bounds achievable alignment by the
+Shannon capacity of the communication channel.
 
-*Cross-references:* This section extends the Multi-Agent Field Theory ({ref}`Section 29 <sec-symplectic-multi-agent-field-theory>`) by providing the mechanism for metric convergence. It connects to the Nuisance Bundle ({ref}`Section 29.13 <sec-local-gauge-symmetry-nuisance-bundle>`), the Gauge-Theoretic Formulation ({ref}`Section 34 <sec-standard-model-cognition>`), and the Causal Information Bound ({ref}`Section 33 <sec-causal-information-bound>`). It provides the geometric foundation for the Game Tensor (Definition {prf:ref}`def-gauge-covariant-game-tensor`) to be well-defined.
+*Cross-references:*
+- Extends the Multi-Agent Field Theory ({ref}`Section 29 <sec-symplectic-multi-agent-field-theory>`) by providing the
+  mechanism for metric convergence.
+- Connects to the Nuisance Bundle ({ref}`Section 29.13 <sec-local-gauge-symmetry-nuisance-bundle>`), the
+  Gauge-Theoretic Formulation ({ref}`Section 34 <sec-standard-model-cognition>`), and the Causal Information Bound
+  ({ref}`Section 33 <sec-causal-information-bound>`).
+- Provides the geometric foundation for the Game Tensor (Definition {prf:ref}`def-gauge-covariant-game-tensor`) to be
+  well-defined.
 
-*Literature:* Gromov-Hausdorff distance and metric geometry {cite}`gromov1999metric`; Kuramoto model for coupled oscillator synchronization {cite}`acebron2005kuramoto`; consensus problems in multi-agent systems {cite}`olfati2004consensus`; theory of mind in primates {cite}`premack1978does`; convention and signaling games {cite}`lewis1969convention`; non-Abelian gauge theory {cite}`yang1954conservation`.
+*Literature:* Gromov-Hausdorff distance and metric geometry {cite}`gromov1999metric`; Kuramoto model for coupled
+oscillator synchronization {cite}`acebron2005kuramoto`; consensus problems in multi-agent systems
+{cite}`olfati2004consensus`; theory of mind in primates {cite}`premack1978does`; convention and signaling games
+{cite}`lewis1969convention`; non-Abelian gauge theory {cite}`yang1954conservation`.
 
 
 

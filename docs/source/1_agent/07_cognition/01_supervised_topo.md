@@ -1,4 +1,23 @@
+(sec-supervised-topology-semantic-potentials-and-metric-segmentation)=
 # Supervised Topology: Semantic Potentials and Metric Segmentation
+
+## TLDR
+
+- Supervision is not just labels; it is a **geometric constraint** that shapes the latent metric and partitions state
+  space into semantic regions.
+- Class structure appears as **potentials and jump structure**: “belong together” becomes “live near each other” in
+  $\mathcal{Z}$.
+- This chapter links metric learning/contrastive ideas to the broader geometry/control story: classification is a
+  topological segmentation problem.
+- Use the derived losses and diagnostics to detect when semantics are collapsing (merged classes) or fragmenting
+  (over-segmentation).
+- Outputs: a principled interpretation of supervised losses as semantic field constraints, not heuristics.
+
+## Roadmap
+
+1. Why classification should be read as geometry/topology.
+2. Semantic potentials, metric segmentation, and trainable losses.
+3. Diagnostics: what “good semantic structure” looks like in $\mathcal{Z}$.
 
 :::{div} feynman-prose
 Here's a question that sounds simple but has kept me up at night: What does it mean to classify something?
@@ -1175,7 +1194,3 @@ When you think about it that way, a lot of things make sense. Why does represent
 
 The math in this section---the potentials, the jump rates, the losses---is just making these intuitions precise and trainable. But the core idea is simple: classification is geometry.
 :::
-
-
-
-(sec-theory-of-meta-stability-the-universal-governor-as-homeostatic-controller)=

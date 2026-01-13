@@ -1,6 +1,32 @@
+(sec-symplectic-multi-agent-field-theory)=
 # Relativistic Symplectic Multi-Agent Field Theory
 
-*Abstract.* We derive Multi-Agent Reinforcement Learning (MARL) as a system of $N$ coupled field equations on a causal spacetime structure. When agents do not share exactly the same boundary, information propagates at finite speed $c_{\text{info}}$, transforming the elliptic (Helmholtz) value equation into a hyperbolic (Klein-Gordon) wave equation. The Markov property, lost on the spatial manifold $\mathcal{Z}^{(N)}$ alone, is restored on the **Causal Bundle** $\mathcal{Z}^{(N)} \times \Xi_{<t}$, where $\Xi_{<t}$ is the Memory Screen integrating incoming wavefronts from the past light cone. We derive the **Ghost Interface**, where agents optimize against retarded images of their opponents, and prove that Nash Equilibrium is a standing wave pattern in the joint causal field. The instantaneous (Newtonian) formulation emerges as the $c_{\text{info}} \to \infty$ limit.
+## TLDR
+
+- Treat multi-agent interaction as a **field theory** on a causal bundle: information propagates at finite speed, so
+  value/belief become dynamical fields (hyperbolic rather than elliptic equations).
+- Replace “instantaneous observation of opponents” with **ghost interfaces** (retarded coupling): agents optimize
+  against delayed images consistent with causality.
+- Nash equilibria appear as **standing-wave patterns** in the joint field; the Newtonian MARL picture is the
+  $c_{\text{info}}\to\infty$ limit.
+- The symplectic structure persists: coupled agents interact via structured boundary terms, not arbitrary reward hacks.
+- Outputs: a principled language for MARL stability diagnostics, causal delay effects, and where standard algorithms
+  break their assumptions.
+
+## Roadmap
+
+1. Upgrade MARL to causal field dynamics (why instantaneous coupling is wrong).
+2. Define ghost interfaces and the causal bundle that restores Markov structure.
+3. Derive equilibrium/interaction structure and connect to diagnostics/implementation.
+
+*Abstract.* We derive Multi-Agent Reinforcement Learning (MARL) as a system of $N$ coupled field equations on a causal
+spacetime structure. When agents do not share exactly the same boundary, information propagates at finite speed
+$c_{\text{info}}$, transforming the elliptic (Helmholtz) value equation into a hyperbolic (Klein-Gordon) wave equation.
+The Markov property, lost on the spatial manifold $\mathcal{Z}^{(N)}$ alone, is restored on the **Causal Bundle**
+$\mathcal{Z}^{(N)} \times \Xi_{<t}$, where $\Xi_{<t}$ is the Memory Screen integrating incoming wavefronts from the past
+light cone. We derive the **Ghost Interface**, where agents optimize against retarded images of their opponents, and
+prove that Nash Equilibrium is a standing wave pattern in the joint causal field. The instantaneous (Newtonian)
+formulation emerges as the $c_{\text{info}} \to \infty$ limit.
 
 (rb-relativistic-marl)=
 :::{admonition} Researcher Bridge: From Action-at-a-Distance to Field Theory
@@ -8,9 +34,14 @@
 Standard Multi-Agent RL assumes a global clock: when Agent A acts, Agent B sees it instantly. In distributed systems or physical reality, this violates causality. We upgrade the framework: Value is not a static field but a **propagating wave**. Agents do not interact with each other's current states; they interact with the **Past Light Cone** of the environment. Memory is no longer optional—it is the physical requirement to restore the Markov property in a relativistic universe.
 :::
 
-*Cross-references:* This section generalizes the Helmholtz equation ({ref}`Section 24.2 <sec-the-bulk-potential-screened-poisson-equation>`) to the Klein-Gordon equation, and elevates the Memory Screen ({ref}`Section 27.1 <sec-the-historical-manifold-and-memory-screen>`) from a recording device to a primary state variable. It extends the single-agent geometry (Sections 20–24) to the multi-agent setting.
+*Cross-references:* This section generalizes the Helmholtz equation
+({ref}`Section 24.2 <sec-the-bulk-potential-screened-poisson-equation>`) to the Klein-Gordon equation, and elevates the
+Memory Screen ({ref}`Section 27.1 <sec-the-historical-manifold-and-memory-screen>`) from a recording device to a primary
+state variable. It extends the single-agent geometry (Sections 20–24) to the multi-agent setting.
 
-*Literature:* Game theory {cite}`fudenberg1991game`; stochastic games {cite}`shapley1953stochastic`; multi-agent RL {cite}`littman1994markov,lowe2017multi`; symplectic geometry {cite}`arnold1989mathematical`; retarded potentials {cite}`jackson1999classical`.
+*Literature:* Game theory {cite}`fudenberg1991game`; stochastic games {cite}`shapley1953stochastic`; multi-agent RL
+{cite}`littman1994markov,lowe2017multi`; symplectic geometry {cite}`arnold1989mathematical`; retarded potentials
+{cite}`jackson1999classical`.
 
 :::{div} feynman-prose
 Now, I want to tell you about something that bothered me for a long time when I first thought about multi-agent systems. You see, in most of the literature, people write down these beautiful game-theoretic equations where all the agents can see each other perfectly, instantly, at every moment. Agent A knows what Agent B is doing right now. Agent B knows what Agent A is thinking right now. It is all very nice and symmetric and mathematically convenient.
@@ -3567,7 +3598,3 @@ class RelativisticMultiAgentInterface(nn.Module):
 3. *Entanglement witnesses:* Can we design efficient diagnostics to detect and quantify strategic entanglement without full state tomography?
 4. *Quantum speedup:* Does the Schrödinger formulation enable faster Nash-finding algorithms (quantum advantage in game theory)?
 5. *Topological phases:* When $\mathcal{Z}$ has non-trivial topology, can agents exhibit "topologically protected" strategies immune to local perturbations?
-
-
-
-(sec-ontological-expansion-topological-fission-and-the-semantic-vacuum)=

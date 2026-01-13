@@ -1,4 +1,21 @@
+(sec-implementation-note-entropy-regularized-optimal-transport-bridge)=
 # Implementation Note: Entropy-Regularized Optimal Transport Bridge
+
+## TLDR
+
+- The Schrödinger / entropy-regularized OT bridge is a **path-space view of KL control**: find the closest trajectory
+  measure to a reference dynamics subject to boundary beliefs.
+- Operationally: it gives you a principled way to connect priors/posteriors (or start/end distributions) without ad-hoc
+  interpolation.
+- Use it as an implementation tool: it explains why soft policy iteration behaves like a transport problem on
+  trajectories.
+- This chapter is optional but clarifies the coupling-window theorem by making “regularized control” geometrically
+  explicit.
+
+## Roadmap
+
+1. Set up the bridge problem (reference dynamics + endpoint constraints).
+2. Show the KL-control equivalence and what it means for implementation.
 
 :::{div} feynman-prose
 Before we get into the coupling window theorem, I want to give you a beautiful piece of optional machinery. It's not required for what follows, but if you understand it, you'll see the whole story from a different angle---a path-space angle.
@@ -226,7 +243,3 @@ The agent is a Bounded-Rationality Controller ({prf:ref}`def-bounded-rationality
 
 This is not a bug to be fixed; it's a feature to be monitored. The boundaries of the coupling window tell you exactly where your agent's competence ends.
 :::
-
-
-
-(sec-capacity-constrained-metric-law-geometry-from-interface-limits)=

@@ -1,4 +1,38 @@
+(sec-the-disentangled-variational-architecture-hierarchical-latent-separation)=
 # The Disentangled Variational Architecture: Hierarchical Latent Separation
+
+## TLDR
+
+- Enforce a **typed latent split**: discrete macro symbols $K$ (control-relevant), structured nuisance $z_n$
+  (pose/disturbance), and reconstruction-only texture $z_{\mathrm{tex}}$.
+- Use the split to prevent “texture Trojan horses”: policies and world models must be **blind to texture** while still
+  allowing high-fidelity reconstruction.
+- Measure success with **closure/grounding diagnostics** (macro predictability, synchronization, mixing windows) rather
+  than only reconstruction loss.
+- Treat disentanglement as a stability/safety tool: it targets information overload (BarrierEpi) and model mismatch
+  (BarrierOmin) by making dependence paths auditable.
+- Provide an implementation-oriented training recipe: what losses to add, what to ablate first when unstable, and what
+  diagnostic nodes should light up when things go wrong.
+
+## Roadmap
+
+1. The split-brain concept and the three-channel decomposition.
+2. Losses/constraints that enforce closure and texture blindness.
+3. Architectural choices and training/checklist guidance.
+4. Diagnostics: what to monitor to confirm disentanglement is real.
+
+## Training Checklist (Practical)
+
+1. **Stage the objectives.** Start with shutter + decoder reconstruction and codebook stabilization before coupling in
+   long-horizon rollouts or heavy control objectives.
+2. **Enforce macro closure early.** Add shutter↔world-model synchronization (closure cross-entropy) as soon as the macro
+   channel exists; otherwise $K$ drifts into a decorative code.
+3. **Make texture blindness explicit.** Ensure the policy and the world model do not have access paths that can exploit
+   $z_{\mathrm{tex}}$; if they must consume a shared embedding, use stop-grad or explicit penalties to prevent leakage.
+4. **Monitor the right diagnostics.** Track closure, grounding windows, mixing/compactness, and any
+   “texture firewall” checks; reconstruction loss alone is not evidence of disentanglement.
+5. **Ablate when unstable.** If training diverges: reduce codebook size, increase commitment weight slowly, shorten
+   rollout horizons, and verify that nuisance $z_n$ is not collapsing into texture.
 
 :::{div} feynman-prose
 Let me start with a question that puzzled me for a long time: Why do most neural networks for control fail so badly when you change the lighting, or add some irrelevant texture to the background, or do anything that a human wouldn't even notice?
@@ -1477,7 +1511,3 @@ The Hairy Ball Theorem tells us you can't comb a sphere with a single continuous
 | **InfoNCE**              | {cite}`oord2018cpc`               | Contrastive predictive coding                |
 | **Information Geometry** | {cite}`saxe2019information`       | Fisher information in NNs                    |
 :::
-
-
-
-(sec-intrinsic-motivation-maximum-entropy-exploration)=

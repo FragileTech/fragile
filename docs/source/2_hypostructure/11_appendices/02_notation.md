@@ -90,9 +90,13 @@ For barrier nodes, we have blocked ($K^{\text{blk}}$) versus breached ($K^{\text
 | $K^-$ | Negative certificate (sum type: $K^{\mathrm{wit}} \sqcup K^{\mathrm{inc}}$) |
 | $K^{\mathrm{wit}}$ | NO-with-witness certificate (actual refutation / counterexample found) |
 | $K^{\mathrm{inc}}$ | NO-inconclusive certificate (method insufficient, not a semantic refutation) |
+| $K^{\circ}$ | Neutral/benign certificate (classification without failure) |
 | $K^{\text{blk}}$ | Blocked certificate (barrier holds, obstruction present) |
 | $K^{\text{br}}$ | Breached certificate (barrier fails: $K^{\mathrm{br\text{-}wit}}$ or $K^{\mathrm{br\text{-}inc}}$) |
 | $K^{\text{re}}$ | Re-entry certificate (surgery completed successfully) |
+| $K^{\mathrm{ext}}$ | Extension certificate (synthetic/auxiliary extension required) |
+| $K^{\mathrm{morph}}$ | Morphism-found certificate (explicit bad-pattern embedding) |
+| $K^{\mathrm{hor}}$ | Horizon certificate (epistemic/paradox horizon reached) |
 | $\Gamma$ | Certificate accumulator (full chain of certificates) |
 
 (sec-notation-categorical)=

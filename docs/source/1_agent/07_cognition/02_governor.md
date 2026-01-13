@@ -1,4 +1,23 @@
+(sec-theory-of-meta-stability-the-universal-governor-as-homeostatic-controller)=
 # Theory of Meta-Stability: The Universal Governor as Homeostatic Controller
+
+## TLDR
+
+- Replace manual hyperparameter tuning with a **meta-controller (Governor)** that adjusts multipliers/precisions in
+  response to diagnostic residuals.
+- Model training as a dynamical system and use **Lyapunov stability** to define what “convergence” means for learning
+  dynamics, not just for losses.
+- Formulate the Governor as a **bilevel optimization**: it chooses update rules that keep the inner learning loop on a
+  stable manifold.
+- Treat common instabilities (oscillation, collapse, divergence) as control failures with monitorable causes and
+  prescribed remedies.
+- Outputs: a training protocol and implementation guidance for a “homeostatic” tuning module.
+
+## Roadmap
+
+1. Formalize learning dynamics and define the Lyapunov view.
+2. Derive the Universal Governor objective (bilevel/meta-learning).
+3. Stability analysis, protocols, and implementation notes.
 
 {cite}`finn2017maml,franceschi2018bilevel,hospedales2021metalearning`
 
@@ -935,6 +954,3 @@ But if it keeps happening, you have a deeper problem. Either the optimization la
 
 This is the beauty of making everything a diagnostic: when things go wrong, you know exactly where to look.
 :::
-
-
-(sec-section-non-local-memory-as-self-interaction-functional)=

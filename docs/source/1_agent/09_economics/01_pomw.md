@@ -1,11 +1,44 @@
 (sec-proof-of-useful-work-cognitive-metabolism-as-consensus)=
 # Proof of Useful Work: Cognitive Metabolism as Consensus
 
-*Abstract.* We derive a consensus protocol where the cryptographic puzzle is replaced by **Stochastic Gradient Descent** on a public data curriculum. We prove that the security of the ledger is guaranteed not by arbitrary hash inversions, but by the **Metabolic Flux** $\dot{\mathcal{M}}$ required to minimize **Ontological Stress** $\Xi$ of a shared global model. We introduce **Holographic Verification** derived from the Causal Information Bound (Theorem {prf:ref}`thm-causal-information-bound`) to solve the verification asymmetry problem. We prove that a game-theoretic equilibrium exists where honest gradient computation is the unique Nash Equilibrium. The resulting blockchain is a **Thermodynamic Record of Learning**.
+## TLDR
 
-*Cross-references:* Extends {ref}`Section 36 <sec-the-metabolic-transducer-autopoiesis-and-the-szilard-engine>` (Metabolic Transducer) to decentralized networks. Utilizes {ref}`Section 37 <sec-the-inter-subjective-metric-gauge-locking-and-the-emergence-of-objective-reality>` (Gauge Locking) for consensus. Relies on {ref}`Section 33 <sec-causal-information-bound>` (Causal Information Bound) for verification and capacity limits. Connects to {ref}`Section 30 <sec-ontological-expansion-topological-fission-and-the-semantic-vacuum>` (Ontological Fission) for network topology.
+- Replace “wasteful hash puzzles” with **useful work**: consensus is secured by verifiable learning (e.g., SGD on a public
+  curriculum) rather than arbitrary inversion.
+- Security is tied to **metabolic flux**: it is thermodynamically expensive to fake gradient computation at scale.
+- Use holographic/capacity-style bounds to address the **verification asymmetry** (cheap to verify, hard to forge).
+- Frame consensus as an intersubjective alignment problem: shared models + gauge locking give a natural route to
+  agreement.
+- Outputs: a protocol sketch plus game-theoretic and thermodynamic arguments for why honest computation is an
+  equilibrium.
 
-*Literature:* Bitcoin/PoW {cite}`nakamoto2008bitcoin`; Proof of Useful Work {cite}`ball2017proof`; Federated Learning {cite}`mcmahan2017communication`; Zero-Knowledge ML {cite}`zhang2020zkcnn`; Game Theory of Verification {cite}`canetti2011verification`.
+## Roadmap
+
+1. Why Nakamoto PoW is thermodynamically inefficient (the “waste quotient”).
+2. Define Proof of Useful Work via public learning objectives and verification.
+3. Security, equilibrium, and implementation considerations for a cognitive ledger.
+
+*Abstract.* We derive a consensus protocol where the cryptographic puzzle is replaced by
+**Stochastic Gradient Descent** on a public data curriculum. We prove that the security of the ledger is guaranteed not
+by arbitrary hash inversions, but by the **Metabolic Flux** $\dot{\mathcal{M}}$ required to minimize
+**Ontological Stress** $\Xi$ of a shared global model. We introduce **Holographic Verification** derived from the Causal
+Information Bound (Theorem {prf:ref}`thm-causal-information-bound`) to solve the verification asymmetry problem. We
+prove that a game-theoretic equilibrium exists where honest gradient computation is the unique Nash Equilibrium. The
+resulting blockchain is a **Thermodynamic Record of Learning**.
+
+*Cross-references:*
+- Extends {ref}`Section 36 <sec-the-metabolic-transducer-autopoiesis-and-the-szilard-engine>` (Metabolic Transducer) to
+  decentralized networks.
+- Utilizes {ref}`Section 37 <sec-the-inter-subjective-metric-gauge-locking-and-the-emergence-of-objective-reality>`
+  (Gauge Locking) for consensus.
+- Relies on {ref}`Section 33 <sec-causal-information-bound>` (Causal Information Bound) for verification and capacity
+  limits.
+- Connects to {ref}`Section 30 <sec-ontological-expansion-topological-fission-and-the-semantic-vacuum>` (Ontological
+  Fission) for network topology.
+
+*Literature:* Bitcoin/PoW {cite}`nakamoto2008bitcoin`; Proof of Useful Work {cite}`ball2017proof`; Federated Learning
+{cite}`mcmahan2017communication`; Zero-Knowledge ML {cite}`zhang2020zkcnn`; Game Theory of Verification
+{cite}`canetti2011verification`.
 
 :::{div} feynman-prose
 

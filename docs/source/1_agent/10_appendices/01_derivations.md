@@ -1,6 +1,12 @@
 (sec-appendix-a-full-derivations)=
 # {ref}`Appendix A <sec-appendix-a-full-derivations>`: Full Derivations (Capacity-Constrained Curvature Functional)
 
+## TLDR
+
+- This appendix records the **full derivations** behind the main geometric/information-theoretic claims in Volume 1.
+- It is reference material: use it when you want the complete steps, not first-pass intuition.
+- Most readers can skim the statements and return to details when implementing or auditing proofs.
+
 (sec-appendix-a-capacity-constrained-curvature-functional)=
 ## A.1 Capacity-Constrained Curvature Functional (Variational Principle)
 
@@ -213,9 +219,9 @@ Boundary terms vanish under the clamped boundary condition (or after adding an a
 
 :::
 (sec-appendix-a-pitchfork-bifurcation-at-the-origin)=
-## A.3 Pitchfork Bifurcation at the Origin (Proof of Theorem {prf:ref}`def-control-field-at-origin`)
+## A.3b Pitchfork Bifurcation at the Origin (Derivation supporting Definition {prf:ref}`def-control-field-at-origin`)
 
-This section provides the full proof of Theorem {prf:ref}`def-control-field-at-origin`.
+This section provides a full derivation underpinning Definition {prf:ref}`def-control-field-at-origin`.
 
 **Setup.** Consider the Langevin equation on the Poincare disk $\mathbb{D}$ from Definition {prf:ref}`prop-so-d-symmetry-at-origin`:
 
@@ -279,7 +285,7 @@ $$
 p_*(z) \propto \exp\left(-\frac{U(z)}{T_c}\right) = \exp\left(\frac{2\operatorname{artanh}(|z|)}{T_c}\right).
 
 $$
-This distribution is **rotationally symmetric** (depends only on $|z|$), proving Part 1 of Theorem {prf:ref}`def-control-field-at-origin`.
+This distribution is **rotationally symmetric** (depends only on $|z|$), establishing Part 1 of Definition {prf:ref}`def-control-field-at-origin`.
 
 **Step 4: Bifurcation analysis.**
 
@@ -318,7 +324,7 @@ where $\Delta U$ is the "barrier height" (which is zero here since the origin is
 
 The direction selected $\theta^*$ is uniformly distributed: $\theta^* \sim \mathrm{Uniform}[0, 2\pi)$.
 
-This completes the proof of Theorem {prf:ref}`def-control-field-at-origin`. $\square$
+This completes the derivation supporting Definition {prf:ref}`def-control-field-at-origin`. $\square$
 
 (sec-appendix-a-overdamped-limit-via-singular-perturbation)=
 ## A.4 Overdamped Limit via Singular Perturbation (Proof of Theorem {prf:ref}`thm-overdamped-limit`)
@@ -1169,6 +1175,4 @@ The key difference is the interpretation:
 - In the Fragile Agent: $\ell_L$ is the Levin length (information-theoretic scale); $I$ is representational information
 
 The mathematical structure is identical; the physical content is distinct. This suggests that holographic bounds are a general feature of capacity-constrained field theories, independent of whether the underlying dynamics are gravitational or information-theoretic.
-
-
 

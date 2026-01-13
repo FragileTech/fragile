@@ -1,4 +1,22 @@
+(sec-the-boundary-interface-symplectic-structure)=
 # The Boundary Interface: Symplectic Structure
+
+## TLDR
+
+- The agent–world interface is not just I/O plumbing: it has a **symplectic structure** where observations and actions
+  are conjugate boundary conditions.
+- Treat sensors/actions as boundary constraints on latent dynamics (Dirichlet/Neumann-style), making coupling auditable.
+- This chapter defines the “contact surface” that later field equations (reward/value forms, information bounds) depend
+  on.
+- Operationally: it tells you what information must be exposed at the boundary and how to test coupling/grounding.
+- The main failure modes are decoupling (ungrounded inference) and instability (feedback amplification); both are
+  monitorable.
+
+## Roadmap
+
+1. Symplectic interface picture and why it is the right mathematical type.
+2. How observations/actions appear as boundary conditions on internal dynamics.
+3. Diagnostics for coupling and grounding at the interface.
 
 {cite}`arnold1989mathematical`
 
@@ -1167,7 +1185,3 @@ The RNN/GRU/Transformer architecture has no geometric constraints—it's a unive
 **Trigger conditions:**
 - Low ContextGroundingCheck: Context is not influencing motor output (ungrounded generation).
 - Remedy: Increase context embedding strength; verify context-conditioned potential; check symmetry-breaking kick.
-
-
-
-(sec-the-reward-field-value-forms-and-hodge-geometry)=

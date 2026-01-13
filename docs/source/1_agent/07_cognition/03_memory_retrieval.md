@@ -1,4 +1,23 @@
+(sec-section-non-local-memory-as-self-interaction-functional)=
 # 27: Non-Local Memory as Self-Interaction Functional
+
+## TLDR
+
+- Memory is modeled as a **non-local force**: the past acts back on the present via a self-interaction functional, not a
+  passive buffer.
+- Introduce the **memory screen / historical manifold** needed to restore Markov structure when information propagates
+  with delay.
+- This chapter reframes experience replay and retrieval as geometric objects: kernels on history with stability
+  diagnostics.
+- Use the formalism to detect pathological memory behavior (stale recall, runaway attraction to a single trajectory,
+  catastrophic forgetting).
+- Sets up the multi-agent chapter: delayed coupling naturally leads to field-theoretic interaction pictures.
+
+## Roadmap
+
+1. The historical manifold and memory screen construction.
+2. Memory as self-interaction: kernels, potentials, and retrieval dynamics.
+3. Diagnostics and failure modes for memory-driven control.
 
 :::{div} feynman-prose
 Now we come to something that, if you think about it carefully, is rather remarkable. Up until now, everything we've done has been *local*. The agent looks at where it is right now, checks the gradient of the potential right here, and decides which way to move. It's like a hiker who can only feel the slope under their feet---very sensible, very Markovian.
@@ -539,7 +558,12 @@ The key challenge is what we call the "texture firewall problem." External docum
 If you know episodic control or retrieval-augmented generation, this is the geometric version: retrieval is a geodesic search in a shared embedding space. The firewall ensures retrieved texture does not leak into policy decisions.
 :::
 
-*Cross-references:* {ref}`Section 21 <sec-radial-generation-entropic-drift-and-policy-control>` (Poincare metric), {ref}`Section 22 <sec-the-equations-of-motion-geodesic-jump-diffusion>` (Equations of Motion), {ref}`Section 27 <sec-section-non-local-memory-as-self-interaction-functional>` (Memory Potential), {ref}`Section 7.8 <sec-tier-the-attentive-atlas>` (Atlas architecture), {ref}`Section 2.8 <sec-conditional-independence-and-sufficiency>` (macro closure).
+*Cross-references:*
+- {ref}`Section 21 <sec-radial-generation-entropic-drift-and-policy-control>` (Poincare metric).
+- {ref}`Section 22 <sec-the-equations-of-motion-geodesic-jump-diffusion>` (Equations of Motion).
+- {ref}`Section 27 <sec-section-non-local-memory-as-self-interaction-functional>` (Memory potential).
+- {ref}`Section 7.8 <sec-tier-the-attentive-atlas>` (Atlas architecture).
+- {ref}`Section 2.8 <sec-conditional-independence-and-sufficiency>` (Macro closure).
 
 **Motivation.** While {ref}`Section 27 <sec-section-non-local-memory-as-self-interaction-functional>` treated memory as self-interaction—retrieval from the agent's own trajectory—this section addresses *external* retrieval from knowledge bases, embedding indices, and document stores. The central observation is that the Poincare disk geometry introduced in {ref}`Section 21 <sec-radial-generation-entropic-drift-and-policy-control>` applies equally to both internal latent representations and external knowledge embeddings. This isomorphism enables principled Retrieval-Augmented Generation (RAG) as geodesic search on a shared hyperbolic manifold.
 
@@ -1033,7 +1057,3 @@ Let $\mathcal{M}_A$ and $\mathcal{M}_B$ be latent manifolds encoding modalities 
 :::
 
 *Interpretation:* Latent representations of the same concept in different modalities (e.g., visual vs. textual) are geometrically isometric because the risk functional governing the metric depends only on the causal structure of the environment, not the sensory channel. This justifies cross-modal retrieval: information retrieved from one modality can inform reasoning in another if both are grounded in the same causal graph.
-
-
-
-(sec-symplectic-multi-agent-field-theory)=

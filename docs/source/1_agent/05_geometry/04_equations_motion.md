@@ -1,4 +1,20 @@
+(sec-the-equations-of-motion-geodesic-jump-diffusion)=
 # The Equations of Motion: Geodesic Jump-Diffusion
+
+## TLDR
+
+- Once geometry is fixed, dynamics “almost write themselves”: the agent follows **controlled geodesic motion** with
+  stochastic exploration noise.
+- Continuous motion within charts + discrete chart transitions yields a **jump-diffusion** equation of motion.
+- The metric plays the role of **mass/preconditioner**: curvature slows or speeds updates depending on capacity and risk.
+- This chapter is the bridge from geometric laws (metric/WFR) to implementable update rules and diagnostics.
+- Use the diagnostic suite (geodesic consistency, jump consistency, boundary-reached checks) to validate dynamics.
+
+## Roadmap
+
+1. Continuous-time limit: geodesic/Langevin-style motion on $(\mathcal{Z},G)$.
+2. Discrete events: jump rates and chart transitions.
+3. Summary tables and diagnostics for implementation validation.
 
 {cite}`oksendal2003sde,risken1996fokkerplanck`
 
@@ -1301,5 +1317,3 @@ The beautiful thing is how much emerges from the geometry. The caution in risky 
 
 In the next sections, we will see how this dynamical picture connects to the boundary structure and the decoder. But the core message of this chapter is simple: **once you have the geometry right, the dynamics follow**.
 :::
-
-(sec-the-boundary-interface-symplectic-structure)=

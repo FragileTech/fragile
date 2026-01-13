@@ -1,4 +1,22 @@
+(sec-ontological-expansion-topological-fission-and-the-semantic-vacuum)=
 # Ontological Expansion: Topological Fission and the Semantic Vacuum
+
+## TLDR
+
+- Formalize **concept creation** as a dynamical instability: when residual structure cannot be represented, the latent
+  atlas undergoes a bifurcation (topological fission).
+- The “semantic vacuum” at $z=0$ is the symmetric reference state; under stress, symmetry breaks and new charts/experts
+  emerge.
+- This chapter turns ontology growth into something monitorable: define stress signals and thresholds for when to spawn
+  new representational structure.
+- The goal is controlled growth: expand capacity when needed, but avoid runaway fragmentation.
+- Connects directly to the capacity-constrained metric law and the metabolism chapter (growth has thermodynamic cost).
+
+## Roadmap
+
+1. Define the semantic vacuum and the notion of ontological stress.
+2. Derive topological fission as a pitchfork-like bifurcation.
+3. Practical triggers, diagnostics, and how ontology growth interacts with stability/metabolism.
 
 :::{div} feynman-prose
 Let me tell you about one of the most interesting problems in building intelligent agents: how do you learn new concepts?
@@ -20,11 +38,21 @@ This section formalizes the mechanism by which agents expand their ontology---cr
 Standard models have fixed tensor shapes chosen at initialization. If the environment's complexity exceeds the model's capacity, it fails. **Ontological Fission** is our version of "Dynamic Architecture Growth." When the agent detects "Ontological Stress" (unaccounted-for structure in the noise floor), it triggers a **pitchfork bifurcation** to spawn new latent charts (experts). The model grows to match the data, rather than trying to cram the world into a fixed bottleneck.
 :::
 
-**Abstract.** We formalize the expansion of the latent manifold $(\mathcal{Z}, G)$ under representational stress. The **Semantic Vacuum** $\emptyset$ is defined as the fiber over the origin ($z=0$), characterized by maximal $SO(D)$ symmetry. When the residual texture $z_{\mathrm{tex}}$ exhibits temporal predictability---violating **Bulk-Boundary Decoupling** (Axiom {prf:ref}`ax-bulk-boundary-decoupling`)---the manifold undergoes **Topological Fission**: a supercritical pitchfork bifurcation that instantiates new chart queries, expanding the agent's categorical structure.
+**Abstract.** We formalize the expansion of the latent manifold $(\mathcal{Z}, G)$ under representational stress. The
+**Semantic Vacuum** $\emptyset$ is defined as the fiber over the origin ($z=0$), characterized by maximal $SO(D)$
+symmetry. When the residual texture $z_{\mathrm{tex}}$ exhibits temporal predictability---violating
+**Bulk-Boundary Decoupling** (Axiom {prf:ref}`ax-bulk-boundary-decoupling`)---the manifold undergoes **Topological
+Fission**: a supercritical pitchfork bifurcation that instantiates new chart queries, expanding the agent's categorical
+structure.
 
-*Cross-references:* {ref}`Section 21 <sec-radial-generation-entropic-drift-and-policy-control>` (Pitchfork bifurcation, $SO(D)$ symmetry), {ref}`Section 7.8 <sec-tier-the-attentive-atlas>` (Attentive Atlas, chart queries), {ref}`Section 18.2 <sec-main-result>` (Capacity-constrained metric), {ref}`Section 2.11 <sec-variance-value-duality-and-information-conservation>` (Entropy-regularized objective).
+*Cross-references:*
+- {ref}`Section 21 <sec-radial-generation-entropic-drift-and-policy-control>` (Pitchfork bifurcation, $SO(D)$ symmetry).
+- {ref}`Section 7.8 <sec-tier-the-attentive-atlas>` (Attentive Atlas, chart queries).
+- {ref}`Section 18.2 <sec-main-result>` (Capacity-constrained metric).
+- {ref}`Section 2.11 <sec-variance-value-duality-and-information-conservation>` (Entropy-regularized objective).
 
-*Literature:* Symmetry breaking in dynamical systems {cite}`strogatz2015nonlinear`; Ricci flow {cite}`hamilton1982ricci,perelman2002entropy`; ontology learning {cite}`wong2012`.
+*Literature:* Symmetry breaking in dynamical systems {cite}`strogatz2015nonlinear`; Ricci flow
+{cite}`hamilton1982ricci,perelman2002entropy`; ontology learning {cite}`wong2012`.
 
 
 
@@ -649,7 +677,11 @@ The solution is **fusion**: merging concepts that have become redundant. If two 
 Fusion is the dual of fission. Fission creates distinctions when the data demands them. Fusion removes distinctions when they stop mattering. Together, they form a complete metabolism: concepts are born, live, and die according to their utility.
 :::
 
-*Abstract.* If Fission ({ref}`Section 30.4 <sec-symmetry-breaking-and-chart-birth>`) is the birth of a concept driven by ontological stress, **Fusion** is the death or merging of concepts driven by **metabolic efficiency**. Without Fusion, the agent suffers from **topological heat death**: unbounded chart fragmentation where every observation eventually gets its own private chart, destroying generalization. Fusion is triggered when the **Discrimination Gain** of keeping two charts separate falls below the **Metabolic Cost** of maintaining them.
+*Abstract.* If Fission ({ref}`Section 30.4 <sec-symmetry-breaking-and-chart-birth>`) is the birth of a concept driven by
+ontological stress, **Fusion** is the death or merging of concepts driven by **metabolic efficiency**. Without Fusion,
+the agent suffers from **topological heat death**: unbounded chart fragmentation where every observation eventually gets
+its own private chart, destroying generalization. Fusion is triggered when the **Discrimination Gain** of keeping two
+charts separate falls below the **Metabolic Cost** of maintaining them.
 
 (rb-pruning-efficiency)=
 :::{admonition} Researcher Bridge: Pruning via Metabolic Efficiency
@@ -657,7 +689,12 @@ Fusion is the dual of fission. Fission creates distinctions when the data demand
 Most MoE (Mixture of Experts) or multi-chart models suffer from "Expert Explosion," where they create a new index for every minor variation. **Ontological Fusion** provides a principled way to forget. It merges latent charts when the **Discrimination Gain** (the information provided by keeping them separate) falls below the **Metabolic Cost** of maintaining them. It is the geometric derivation of Occam's Razor.
 :::
 
-*Cross-references:* This section addresses Open Problem 1 from {ref}`Section 30.7 <sec-summary-the-lifecycle-of-an-ontology>`. It is the dual of {ref}`Section 30.4 <sec-symmetry-breaking-and-chart-birth>` (Fission) and connects to the Universal Governor's metabolic monitoring ({ref}`Section 26 <sec-theory-of-meta-stability-the-universal-governor-as-homeostatic-controller>`) and the complexity cost functional ({ref}`Section 30.3 <sec-the-fission-criterion>`).
+*Cross-references:*
+- Addresses Open Problem 1 from {ref}`Section 30.7 <sec-summary-the-lifecycle-of-an-ontology>`.
+- Dual to {ref}`Section 30.4 <sec-symmetry-breaking-and-chart-birth>` (Fission).
+- Connects to the Universal Governor's metabolic monitoring
+  ({ref}`Section 26 <sec-theory-of-meta-stability-the-universal-governor-as-homeostatic-controller>`) and the complexity
+  cost functional ({ref}`Section 30.3 <sec-the-fission-criterion>`).
 
 
 
@@ -1359,7 +1396,8 @@ Substituting the Landauer bound yields the stated inequality. $\square$
 
 *Units:* $[\epsilon_{\text{hysteresis}}] = \text{nat}$, consistent with the complexity cost functional.
 
-*Cross-references:* This resolves the hysteresis calibration question by grounding it in the Landauer thermodynamics of {ref}`Section 31 <sec-computational-metabolism-the-landauer-bound-and-deliberation-dynamics>`.
+*Cross-references:* This resolves the hysteresis calibration question by grounding it in the Landauer thermodynamics of
+{ref}`Section 31 <sec-computational-metabolism-the-landauer-bound-and-deliberation-dynamics>`.
 
 
 
@@ -1465,7 +1503,3 @@ The stacked architecture is **inherently stable** against fission cascades. Onto
 :::
 
 *Cross-references:* This resolves the hierarchical metabolism question by showing that the RG structure naturally dampens topological perturbations from propagating upward.
-
-
-
-(sec-computational-metabolism-the-landauer-bound-and-deliberation-dynamics)=

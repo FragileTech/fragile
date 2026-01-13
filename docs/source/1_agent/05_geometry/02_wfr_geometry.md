@@ -1,4 +1,23 @@
+(sec-wasserstein-fisher-rao-geometry-unified-transport-on-hybrid-state-spaces)=
 # Wasserstein-Fisher-Rao Geometry: Unified Transport on Hybrid State Spaces
+
+## TLDR
+
+- When state is hybrid (discrete $K$ + continuous $z_n$), belief evolution requires a geometry that handles both **flow**
+  (transport within charts) and **jumps** (reaction between charts).
+- The Wasserstein–Fisher–Rao (WFR / Hellinger–Kantorovich) metric gives a **single variational principle** for this
+  hybrid belief dynamics.
+- WFR resolves “duct-tape” product-metric heuristics by pricing transport and reaction consistently, and it yields
+  implementable consistency diagnostics (WFRCheck).
+- Think operationally: belief is a **fluid** that can move and transform; WFR measures the cheapest way to do both.
+- This chapter connects the metric law (capacity) to dynamics (geodesic jump-diffusion) and to the information bound
+  (area-law-like limits).
+
+## Roadmap
+
+1. Why product metrics fail for hybrid state spaces.
+2. Define WFR and interpret transport vs. reaction components.
+3. Connect WFR to filtering/control objectives and to implementation diagnostics.
 
 :::{div} feynman-prose
 Let me tell you about one of the most elegant solutions I've ever seen to a problem that seems hopelessly messy at first.
@@ -865,5 +884,3 @@ Let me summarize the key benefits of the WFR framework:
 
 The framework is mathematically sophisticated, but the core intuition is simple: treat belief as a fluid that can flow and react, measure the cost of both, and find the cheapest path.
 :::
-
-(sec-radial-generation-entropic-drift-and-policy-control)=

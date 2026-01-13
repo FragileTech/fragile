@@ -1,6 +1,23 @@
 (sec-standard-model-cognition)=
 # The Standard Model of Cognition: Gauge-Theoretic Formulation
 
+## TLDR
+
+- Show that “gauge fields” are not physics-only: they emerge from **local consistency requirements** when modules/agents
+  cannot globally coordinate representations.
+- Derive a “standard model” symmetry group for cognition from redundancies that leave observable behavior invariant.
+- Interpret gauge connections as the bookkeeping needed to compare values/beliefs across locally chosen conventions.
+- This chapter synthesizes the geometry/control stack (metric law, WFR, boundary interface, belief waves, ontology
+  dynamics) into a single invariance principle.
+- Outputs: a precise vocabulary for what is invariant, what is conventional, and where consistency constraints live in a
+  cognitive architecture.
+
+## Roadmap
+
+1. State the gauge principle: redundancy + locality ⇒ connection fields.
+2. Derive the symmetry factors and interpret them operationally.
+3. Connect the resulting fields to diagnostics, stability, and multi-agent interaction.
+
 :::{div} feynman-prose
 Now we come to what I think is the most beautiful part of this whole framework. And I want to be honest with you upfront: this is ambitious. We're going to show that the same mathematical structure that physicists use to describe the fundamental forces of nature---electromagnetism, the weak force, the strong force---emerges naturally from the requirements of being a bounded, distributed, reward-seeking agent.
 
@@ -15,7 +32,15 @@ An agent is in exactly the same situation. Different parts of the agent's comput
 This is not a metaphor. It's a theorem.
 :::
 
-*Abstract.* This chapter demonstrates that the internal symmetry group $G_{\text{Fragile}} = SU(N_f)_C \times SU(2)_L \times U(1)_Y$ emerges necessarily from the cybernetic constraints of a bounded, distributed, reward-seeking agent. The **Feature Dimension** $N_f$ is determined by the agent's environment; the physics Standard Model corresponds to the special case $N_f = 3$. Each factor is derived from redundancies in the agent's description that leave physical observables invariant. The proofs rely explicitly on prior definitions from the WFR framework ({ref}`Section 20 <sec-wasserstein-fisher-rao-geometry-unified-transport-on-hybrid-state-spaces>`), the Belief Wave-Function ({ref}`Section 29.21 <sec-the-belief-wave-function-schrodinger-representation>`), the Boundary Interface ({ref}`Section 23 <sec-the-boundary-interface-symplectic-structure>`), and the Ontological Fission dynamics ({ref}`Section 30 <sec-ontological-expansion-topological-fission-and-the-semantic-vacuum>`).
+*Abstract.* This chapter demonstrates that the internal symmetry group
+$G_{\text{Fragile}} = SU(N_f)_C \times SU(2)_L \times U(1)_Y$ emerges necessarily from the cybernetic constraints of a
+bounded, distributed, reward-seeking agent. The **Feature Dimension** $N_f$ is determined by the agent's environment;
+the physics Standard Model corresponds to the special case $N_f = 3$. Each factor is derived from redundancies in the
+agent's description that leave physical observables invariant. The proofs rely explicitly on prior definitions from the
+WFR framework ({ref}`Section 20 <sec-wasserstein-fisher-rao-geometry-unified-transport-on-hybrid-state-spaces>`), the
+Belief Wave-Function ({ref}`Section 29.21 <sec-the-belief-wave-function-schrodinger-representation>`), the Boundary
+Interface ({ref}`Section 23 <sec-the-boundary-interface-symplectic-structure>`), and the Ontological Fission dynamics
+({ref}`Section 30 <sec-ontological-expansion-topological-fission-and-the-semantic-vacuum>`).
 
 *Cross-references:* This chapter synthesizes:
 - {ref}`Section 29.21 <sec-the-belief-wave-function-schrodinger-representation>`–29.27 (Quantum Layer: Belief Wave-Function, Schrödinger Representation)

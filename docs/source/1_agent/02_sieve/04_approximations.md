@@ -1,4 +1,23 @@
+(sec-infeasible-implementation-replacements)=
 # Infeasible Implementation Replacements
+
+## TLDR
+
+- Many “ideal” stability/geometry criteria are **computationally intractable**; this chapter provides cheap surrogates
+  that preserve the same failure-detection intent.
+- Each replacement is a **mapping**: (theoretical barrier/diagnostic) → (practical probe/loss) with an operational
+  interpretation and a PyTorch-friendly form.
+- Use these surrogates to keep the Sieve runnable in real systems: online checks (✓) plus amortized/offline probes (⚡/✗).
+- The goal is *not* to weaken the theory; it is to make the same contracts **implementable** without pretending you can
+  compute impossible objects.
+- Treat the summary table as an engineering index: it tells you what to compute when a given theoretical requirement is
+  out of reach.
+
+## Roadmap
+
+1. Replacement patterns (what gets approximated and why).
+2. A catalog of concrete substitutions with code-ready formulas.
+3. A summary mapping from theory labels to implementation losses/probes.
 
 (rb-practical-substitutions)=
 :::{admonition} Researcher Bridge: Practical Substitutions for Idealized Laws
@@ -540,7 +559,3 @@ This is a deep principle. In physics: "effective theories"---no need to simulate
 :class: feynman-added
 A word of caution: these surrogates are not mathematically equivalent to the originals. They are designed to trigger on the same failure modes, but there may be edge cases where one catches something the other misses. In practice, this is rarely a problem---the surrogates are often more robust because they are less sensitive to numerical issues that plague the exact computations.
 :::
-
-
-
-(sec-the-disentangled-variational-architecture-hierarchical-latent-separation)=

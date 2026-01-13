@@ -77,6 +77,7 @@ To keep the math honest and usable, every nontrivial block should (in decreasing
    - **Heuristic**: interpretation/analogy; never used as certificate input.
 
 **Default rule:** if a block does not explicitly declare a `Rigor Class` or a `Status`, treat it as **Heuristic**.
+**Proof blocks:** a `:::{prf:proof}` block inherits the Rigor Class / Status of the theorem or definition it proves.
 
 When a statement depends on nontrivial analytic inputs (minorization, Lyapunov drift, reach/sampling density, etc.),
 those inputs are recorded as explicit assumptions rather than being silently imported.

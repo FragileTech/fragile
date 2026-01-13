@@ -466,5 +466,4 @@ This framework makes strong claims about convergence, gauge structure, and verif
 
 ```{bibliography}
 :filter: docname in docnames
-:style: unsrt
 ```
