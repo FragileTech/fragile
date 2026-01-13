@@ -170,6 +170,12 @@ where $m_\epsilon = \exp(-D_{\text{alg}}^2 / (2\epsilon^2))$ is the **kernel flo
 
 *Proof.* The numerator $w_{ij} \geq m_\epsilon$ by definition. The denominator $\sum_{l \neq i} w_{il} \leq n_{\text{alive}} - 1$ since each weight is at most 1. $\square$
 
+:::{div} feynman-prose
+Here is something worth sitting with for a moment. The minorization bound says that no matter how far apart two walkers are, there is always a positive probability that one will select the other as a companion. This is not just a mathematical convenience. It is the reason the swarm cannot fragment into disconnected islands that never communicate. Even walkers on opposite ends of the state space have a small but nonzero chance of interacting, and that small chance is enough to guarantee that information eventually flows everywhere.
+
+The exponential in $m_\epsilon = \exp(-D_{\text{alg}}^2/(2\epsilon^2))$ falls off rapidly with distance, so distant pairs are rarely selected. But "rarely" is infinitely different from "never." In Markov chain theory, this distinction is the difference between an irreducible chain and a reducible one, between a system that eventually mixes and one that gets stuck forever.
+:::
+
 :::{note}
 :class: feynman-added
 The minorization floor $m_\epsilon$ depends on both the kernel bandwidth $\epsilon$ and the swarm diameter $D_{\text{alg}}$. A larger $\epsilon$ (wider kernel) increases $m_\epsilon$, making selection more uniform. A smaller $\epsilon$ (tighter kernel) decreases $m_\epsilon$, making selection more localized.
@@ -223,9 +229,25 @@ $$
 where $\mathcal{R}: \mathcal{Z} \to T^*\mathcal{Z}$ is a **reward 1-form** (e.g., gradient of a potential, or environment feedback).
 :::
 
+:::{div} feynman-prose
+The reward 1-form notation $\langle \mathcal{R}(z), v \rangle_G$ might look intimidating, but here is what it really means: the reward depends not just on where you are, but on which direction you are moving.
+
+Think of skiing downhill. Your position on the mountain matters, but what really determines whether you are having a good time is whether you are moving toward the bottom or toward the cliff. The inner product $\langle \mathcal{R}, v \rangle$ asks: "Is this walker's velocity aligned with the reward gradient?" A walker heading toward high reward gets positive contribution. A walker heading away gets negative contribution.
+
+The simplest case is when $\mathcal{R} = \nabla \Phi$ for some potential $\Phi$. Then the reward reduces to $r = \langle \nabla \Phi, v \rangle$, which is the directional derivative. It measures how fast the potential is increasing in the direction of motion. But the framework allows more general reward signals that do not come from a potential, such as environmental feedback in reinforcement learning.
+:::
+
 ### 3.2 Standardization Pipeline
 
 Raw reward and distance values are standardized to ensure comparable scales and bounded outputs.
+
+:::{div} feynman-prose
+Now here is a piece of engineering that looks pedestrian but is actually rather clever. Suppose your reward signal ranges from 0 to 1000, and your distance measurements range from 0.001 to 0.1. If you multiply them directly, the reward completely dominates. Even a tiny reward difference swamps a huge distance difference. The standardization pipeline fixes this by asking: "How unusual is this value compared to what we are seeing right now?"
+
+The z-score transformation centers each quantity at zero and scales it by its current variability. A reward two standard deviations above average gets the same standardized value as a distance two standard deviations above average. Now they speak the same language.
+
+But z-scores can be arbitrarily large, which causes numerical problems and makes the fitness function too sensitive to outliers. The logistic squashing fixes this: it takes any real number and maps it smoothly into a bounded interval. Extreme values saturate rather than explode. And the positivity floor ensures we never divide by zero or take logarithms of zero later in the pipeline.
+:::
 
 :::{prf:definition} Fitness Standardization
 :label: def-fg-standardization
@@ -481,6 +503,12 @@ Between cloning events, walkers evolve according to a **kinetic operator** that 
 
 ### 6.1 Abstract Kinetic Interface
 
+:::{div} feynman-prose
+The kinetic operator is deliberately left abstract here because the Fractal Gas framework does not care how walkers move between cloning events. It only cares that they move in a way that injects some noise and respects some basic regularity conditions.
+
+This is a good design principle: separate the concerns. The companion selection and cloning mechanics handle the swarm-level intelligence, the selection pressure that drives walkers toward good regions. The kinetic operator handles the individual-level dynamics, how each walker explores its local neighborhood. You can swap in different kinetic operators without changing the rest of the algorithm. Brownian motion works. Langevin dynamics works. Hamiltonian Monte Carlo works. Each choice gives different exploration characteristics, but the overall framework remains the same.
+:::
+
 :::{prf:definition} Kinetic Operator (Abstract)
 :label: def-fg-kinetic-abstract
 
@@ -661,6 +689,14 @@ $$
 $$
 
 :::{div} feynman-prose
+Let me explain what each piece of this equation is doing, because once you see it, the whole algorithm starts to feel inevitable.
+
+The term $\Delta \rho$ is diffusion. It spreads the walkers out, like cream dispersing in coffee. If you did nothing but diffuse, the swarm would eventually become a uniform smear across the entire space. This is pure exploration with no exploitation.
+
+The term $\nabla \cdot (\rho \nabla \Phi)$ is drift. It pushes walkers downhill on the potential $\Phi$. If the potential represents negative reward, this pulls walkers toward high-reward regions. If you did nothing but drift, the swarm would collapse to a single point at the global minimum. This is pure exploitation with no exploration.
+
+The term $\rho(V_{\text{fit}} - \bar{V}_{\text{fit}})$ is the replicator dynamics. It says that density grows where fitness exceeds the mean and shrinks where fitness is below the mean. The $-\bar{V}_{\text{fit}}$ term is crucial: it conserves total mass. Without it, the equation would create or destroy walkers out of nothing.
+
 The Darwinian Ratchet is a beautiful synthesis: the diffusion term spreads mass outward (exploration), the drift term pulls mass toward low-potential regions (gradient descent), and the reaction term amplifies mass in high-fitness regions while depleting low-fitness regions (natural selection). Together, they create a "ratchet" that steadily concentrates mass at optima while maintaining diversity.
 
 This is why the Fractal Gas works: it's not just a heuristic algorithm—it's a discretization of a well-understood PDE. The convergence guarantees of the PDE transfer (with appropriate error bounds) to the discrete algorithm.
@@ -704,7 +740,7 @@ For formal treatment of convergence, see {doc}`02_fractal_gas_latent` (Part III-
 | **Kinetic** | $\epsilon_\Sigma$ | 1e-4 | Diffusion regularizer |
 
 :::{admonition} Revival Constraint Check
-:class: warning
+:class: feynman-added warning
 
 Parameters must satisfy:
 $$
@@ -732,7 +768,14 @@ The formal treatment in {doc}`02_fractal_gas_latent` proves that this algorithm:
 - Admits a mean-field limit with explicit error bounds
 - Satisfies the sieve conditions for the Hypostructure framework
 
+:::{div} feynman-prose
+And there it is. The Fractal Gas is not a collection of heuristics cobbled together. It is a principled system where every piece has a reason: soft selection guarantees mixing, dual-channel fitness balances exploration and exploitation, momentum conservation prevents artificial energy injection, and the revival guarantee prevents extinction. Each piece enables a mathematical property, and together they yield a discretization of a well-understood reaction-diffusion PDE.
+
+The beauty is that you do not need to understand the PDE to use the algorithm. You can treat it as a black box: initialize some walkers, run the loop, and watch them converge to the good regions. But if you want to know why it works, why it has to work given its construction, the mathematics is there waiting for you.
+:::
+
 :::{seealso}
+:class: feynman-added
 - {doc}`02_fractal_gas_latent`: Proof object with full sieve verification
 - {doc}`../2_hypostructure/10_information_processing/02_fractal_gas`: Hypostructure metatheorems
 - {doc}`appendices/01_fragile_gas_framework`: Axiom system and revival guarantee proof
