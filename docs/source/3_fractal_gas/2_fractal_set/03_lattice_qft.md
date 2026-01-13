@@ -55,6 +55,7 @@ This chapter establishes:
 A **U(1) gauge field** assigns parallel transport operators to edges:
 
 **CST edges (timelike):**
+
 $$
 U_{\mathrm{time}}(e_i \to e_j) = \exp\left(-i q A_0(e_i, e_j) \tau_{ij}\right) \in U(1)
 $$
@@ -62,6 +63,7 @@ $$
 where $A_0$ is the temporal gauge potential and $\tau_{ij}$ is proper time.
 
 **IG edges (spacelike):**
+
 $$
 U_{\mathrm{space}}(e_i \sim e_j) = \exp\left(i q \int_{e_i}^{e_j} \mathbf{A} \cdot d\mathbf{x}\right) \in U(1)
 $$
@@ -69,6 +71,7 @@ $$
 where $\mathbf{A}$ is the spatial gauge potential.
 
 **Gauge transformation:** Under $\Omega : \mathcal{E} \to U(1)$:
+
 $$
 U(e_i, e_j) \mapsto \Omega(e_i) \, U(e_i, e_j) \, \Omega(e_j)^{-1}
 $$
@@ -126,6 +129,7 @@ $$
 where $\beta = 2N/g^2$ is the inverse coupling constant.
 
 **Continuum limit:** As lattice spacing $a \to 0$:
+
 $$
 S_{\mathrm{Wilson}} \to \frac{1}{4g^2} \int d^4x \, F_{\mu\nu} F^{\mu\nu}
 $$
@@ -192,11 +196,13 @@ S_i(j) := \frac{V_j - V_i}{V_i + \varepsilon_{\mathrm{clone}}}
 $$
 
 **Antisymmetry relation:**
+
 $$
 S_i(j) \cdot (V_i + \varepsilon_{\mathrm{clone}}) = -(V_i - V_j) = -S_j(i) \cdot (V_j + \varepsilon_{\mathrm{clone}})
 $$
 
 Therefore:
+
 $$
 S_i(j) = -S_j(i) \cdot \frac{V_j + \varepsilon_{\mathrm{clone}}}{V_i + \varepsilon_{\mathrm{clone}}}
 $$
@@ -265,6 +271,7 @@ $$
 $$
 
 **Transition amplitudes:**
+
 $$
 \mathcal{A}(i \to j) \propto \bar{\psi}_j S_i(j) \psi_i
 $$
@@ -284,11 +291,13 @@ $$
 $$
 
 **Spatial component** (IG edges):
+
 $$
 S_{\mathrm{fermion}}^{\mathrm{spatial}} = -\sum_{(i,j) \in E_{\mathrm{IG}}} \bar{\psi}_i \tilde{K}_{ij} \psi_j
 $$
 
 **Temporal component** (CST edges):
+
 $$
 S_{\mathrm{fermion}}^{\mathrm{temporal}} = \sum_{(i \to j) \in E_{\mathrm{CST}}} \bar{\psi}_j \frac{\psi_j - U_{ij} \psi_i}{\Delta t_{ij}}
 $$
@@ -382,11 +391,13 @@ where:
 **Discrete derivatives** (for analysis):
 
 **Timelike (CST):** Forward difference to children:
+
 $$
 (\partial_0 \phi)(e) = \frac{1}{|\mathrm{Children}(e)|} \sum_{e_c \in \mathrm{Children}(e)} \frac{\phi(e_c) - \phi(e)}{\tau_{e,e_c}}
 $$
 
 **Spacelike (IG):** Average over neighbors:
+
 $$
 (\nabla \phi)(e) \cdot \hat{n}_{ee'} \approx \frac{\phi(e') - \phi(e)}{d_g(x_e, x_{e'})}
 $$
@@ -400,12 +411,14 @@ $$
 The discrete Laplacian on the Fractal Set converges to the continuum Laplace-Beltrami operator.
 
 **Definition**: The unnormalized graph Laplacian is:
+
 $$
 (\Delta_{\mathcal{F}} \phi)(e) := \sum_{e' \sim e} w_{ee'} (\phi(e') - \phi(e))
 $$
 where $w_{ee'} = d_g(x_e, x_{e'})^{-2}$ are distance-weighted edge weights encoding local geometry.
 
 **Convergence** (requires proof): Under appropriate regularity conditions on the QSD sampling:
+
 $$
 \mathbb{E}[(\Delta_{\mathcal{F}} \phi)(e_i)] \xrightarrow{N \to \infty} (\Delta_g \phi)(x_i)
 $$

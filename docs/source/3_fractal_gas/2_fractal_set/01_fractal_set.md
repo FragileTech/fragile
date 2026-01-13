@@ -102,6 +102,7 @@ A **coordinate system** on the state space $\mathcal{X} \subseteq \mathbb{R}^d$ 
 :label: def-fractal-set-scalar
 
 A quantity $\phi: \mathcal{X} \to \mathbb{R}$ is **frame-invariant** (or a **scalar field**) if its value at any physical point is independent of coordinate choice:
+
 $$\phi'(x') = \phi(x) \quad \text{for all } x \in \mathcal{X}, \; R \in \mathrm{SO}(d), \; x' = Rx.$$
 Equivalently, $\phi' = \phi \circ R^{-1}$ implies $\phi'(Rx) = \phi(x)$.
 :::
@@ -112,6 +113,7 @@ Scalars include: kinetic energy $E_{\mathrm{kin}} = \frac{1}{2}\|v\|^2$, potenti
 :label: def-fractal-set-vector
 
 A quantity $\mathbf{v}: \mathcal{X} \to \mathbb{R}^d$ is **frame-covariant** (or a **vector field**) if its components transform by the same rotation relating the coordinate systems:
+
 $$\mathbf{v}'(x') = R\mathbf{v}(x) \quad \text{for all } x \in \mathcal{X}, \; R \in \mathrm{SO}(d), \; x' = Rx.$$
 :::
 
@@ -167,10 +169,12 @@ The explicit correspondence uses the **Clifford algebra** $\mathrm{Cl}(d)$ gener
 The **vector-to-spinor embedding** $\iota: \mathbb{R}^d \to \mathbb{S}_d$ encodes vectors as spinors with a **canonical phase convention**. For $v = \sum_i v_i e_i \in \mathbb{R}^d$:
 
 **Case $d = 2$**: Direct complex encoding,
+
 $$\iota(v) = v_1 + i v_2 \in \mathbb{C}.$$
 This is bijective; $\pi(\iota(v)) = v$ exactly.
 
 **Case $d = 3$**: Using the **canonical lift** with real first component when possible,
+
 $$\iota(v) = \|v\| \begin{pmatrix} \cos(\theta/2) \\ \sin(\theta/2) e^{i\phi} \end{pmatrix} \in \mathbb{C}^2,$$
 where $(\|v\|, \theta, \phi)$ are spherical coordinates: $v = \|v\|(\sin\theta\cos\phi, \sin\theta\sin\phi, \cos\theta)$.
 
@@ -189,6 +193,7 @@ where $(\|v\|, \theta, \phi)$ are spherical coordinates: $v = \|v\|(\sin\theta\c
 The **spinor-to-vector extraction** $\pi: \mathbb{S}_d \to \mathbb{R}^d$ is the left inverse of $\iota$ (on the image of $\iota$):
 
 **Case $d = 3$**: For $\psi = \begin{pmatrix} \alpha \\ \beta \end{pmatrix} \in \mathbb{C}^2$,
+
 $$\pi(\psi) = \begin{pmatrix} 2\mathrm{Re}(\alpha^*\beta) \\ 2\mathrm{Im}(\alpha^*\beta) \\ |\alpha|^2 - |\beta|^2 \end{pmatrix}.$$
 
 This is the standard formula for extracting a 3-vector from a Pauli spinor.
@@ -198,6 +203,7 @@ This is the standard formula for extracting a 3-vector from a Pauli spinor.
 :label: prop-fractal-set-spinor-covariance
 
 For any rotation $R \in \mathrm{SO}(d)$ with spinor lift $U \in \mathrm{Spin}(d)$ (either of the two preimages), the following holds:
+
 $$\pi(U \psi) = R \cdot \pi(\psi) \quad \text{and} \quad U \cdot \iota(v) = \iota(Rv)$$
 for all $v \in \mathbb{R}^d$ and $\psi \in \mathbb{S}_d$ in the image of $\iota$.
 
@@ -223,6 +229,7 @@ This is not just aesthetic. When the Fractal Set is passed between systems, seri
 :label: def-fractal-set-node
 
 A **spacetime node** $n_{i,t}$ represents walker $i \in \{1, \ldots, N\}$ at discrete timestep $t \in \{0, 1, \ldots, T\}$. The **node set** is:
+
 $$\mathcal{N} := \{n_{i,t} : i \in \{1, \ldots, N\}, \; t \in \{0, \ldots, T\}\}.$$
 The cardinality is $|\mathcal{N}| = N(T+1)$.
 :::
@@ -344,6 +351,7 @@ This separation is not arbitrary. It reflects a deep physical principle: the sta
 :label: def-fractal-set-cst-edges
 
 The **Causal Spacetime Tree (CST) edge set** is:
+
 $$E_{\mathrm{CST}} := \{(n_{i,t}, n_{i,t+1}) : i \in \{1, \ldots, N\}, \; t \in \{0, \ldots, T-1\}, \; s(n_{i,t}) = 1\}.$$
 Each CST edge connects a walker to its immediate temporal successor, provided the walker is alive. The edges are **directed** from earlier to later time.
 :::
@@ -354,6 +362,7 @@ CST edges form a **forest** structure: each walker's trajectory is a directed pa
 :label: def-fractal-set-alive-set
 
 At timestep $t$, the **alive walker set** is:
+
 $$\mathcal{A}(t) := \{i \in \{1, \ldots, N\} : s(n_{i,t}) = 1\}.$$
 The number of alive walkers is $k_t := |\mathcal{A}(t)|$.
 :::
@@ -378,6 +387,7 @@ A **causal set** is a pair $(\mathcal{C}, \prec)$ where $\mathcal{C}$ is a set a
 :label: prop-fractal-set-cst-causal
 
 Define the causal relation $\prec_{\mathrm{CST}}$ on $\mathcal{N}$ as the transitive closure of $E_{\mathrm{CST}}$:
+
 $$n_{i,t} \prec_{\mathrm{CST}} n_{j,s} \iff \exists \text{ directed path in } E_{\mathrm{CST}} \text{ from } n_{i,t} \text{ to } n_{j,s}.$$
 Then $(\mathcal{N}, \prec_{\mathrm{CST}})$ satisfies CS1, CS2, and CS3.
 
@@ -469,7 +479,9 @@ The CST edge data encodes one complete step of the stochastic differential equat
 :label: def-fractal-set-sde
 
 The Adaptive Gas dynamics for walker $i$ with state $(x_i, v_i)$ is governed by:
+
 $$dv_i = \left[\mathbf{F}_{\mathrm{stable}}(x_i) + \mathbf{F}_{\mathrm{adapt}}(x_i, S) + \mathbf{F}_{\mathrm{viscous}}(x_i, S) - \gamma v_i\right] dt + \Sigma_{\mathrm{reg}}(x_i, S) \circ dW_i,$$
+
 $$dx_i = v_i \, dt,$$
 where:
 - $\mathbf{F}_{\mathrm{stable}}(x) = -\nabla U(x)$ is the conservative force from the potential
@@ -483,9 +495,13 @@ where:
 :label: prop-fractal-set-cst-sde
 
 Given the CST edge attributes for $e = (n_{i,t}, n_{i,t+1})$, the complete evolution from $(x_i(t), v_i(t))$ to $(x_i(t+1), v_i(t+1))$ can be reconstructed:
+
 $$v_i(t) = \pi(\psi_{v,t}(e)), \quad v_i(t+1) = \pi(\psi_{v,t+1}(e)),$$
+
 $$\Delta x = \pi(\psi_{\Delta x}(e)), \quad x_i(t+1) = x_i(t) + \Delta x,$$
+
 and all force components:
+
 $$\mathbf{F}_{\cdot}(x_i, S, t) = \pi(\psi_{\mathbf{F}_\cdot}(e)).$$
 
 *Proof.* By {prf:ref}`prop-fractal-set-spinor-covariance`, the spinor-to-vector map $\pi$ recovers the geometric vector from its spinor representation. The spinor attributes store exactly the quantities appearing in the SDE {prf:ref}`def-fractal-set-sde`. $\square$
@@ -527,6 +543,7 @@ For $d \leq 4$, conversions are constant-time with fixed arithmetic operations. 
 :label: def-fractal-set-ig-edges
 
 The **Information Graph (IG) edge set** is:
+
 $$E_{\mathrm{IG}} := \{(n_{i,t}, n_{j,t}) : i, j \in \mathcal{A}(t), \; i \neq j, \; t \in \{0, \ldots, T\}\}.$$
 Each IG edge connects an **ordered pair** of distinct alive walkers at the same timestep. The edges are **directed**: $(n_{i,t}, n_{j,t})$ represents the influence of walker $j$ on walker $i$.
 :::
@@ -535,6 +552,7 @@ Each IG edge connects an **ordered pair** of distinct alive walkers at the same 
 :label: prop-fractal-set-ig-cardinality
 
 At timestep $t$ with $k_t = |\mathcal{A}(t)|$ alive walkers, the number of IG edges is $k_t(k_t - 1)$. The total across all timesteps is:
+
 $$|E_{\mathrm{IG}}| = \sum_{t=0}^{T} k_t(k_t - 1).$$
 
 *Proof.* Each ordered pair $(i, j)$ with $i \neq j$ and both $i, j \in \mathcal{A}(t)$ contributes one edge. The number of such pairs is $k_t(k_t - 1)$. $\square$
@@ -550,6 +568,7 @@ The key structural property of IG edges is the **antisymmetry** of the cloning p
 :label: def-fractal-set-cloning-potential
 
 The **directed cloning potential** from walker $i$ to walker $j$ at timestep $t$ is:
+
 $$V_{\mathrm{clone}}(i \to j; t) := \Phi(n_{j,t}) - \Phi(n_{i,t}) = \Phi_j(t) - \Phi_i(t),$$
 where $\Phi_i(t) := \Phi(n_{i,t})$ is the fitness of walker $i$ at time $t$.
 :::
@@ -558,9 +577,11 @@ where $\Phi_i(t) := \Phi(n_{i,t})$ is the fitness of walker $i$ at time $t$.
 :label: prop-fractal-set-antisymmetry
 
 The cloning potential is **antisymmetric** under exchange of walkers:
+
 $$V_{\mathrm{clone}}(j \to i; t) = -V_{\mathrm{clone}}(i \to j; t).$$
 
 *Proof.* Direct computation:
+
 $$V_{\mathrm{clone}}(j \to i; t) = \Phi_i(t) - \Phi_j(t) = -(\Phi_j(t) - \Phi_i(t)) = -V_{\mathrm{clone}}(i \to j; t). \quad \square$$
 :::
 
@@ -650,10 +671,13 @@ The viscous force creates momentum exchange between nearby walkers.
 :label: def-fractal-set-viscous-force
 
 The **pairwise viscous force** exerted by walker $j$ on walker $i$ is:
+
 $$\mathbf{F}_{\mathrm{viscous}, ij} := \nu K_\rho(x_i, x_j)(v_j - v_i),$$
+
 where $K_\rho(x, y) := \exp(-\|x - y\|^2 / 2\rho^2)$ is the Gaussian kernel with bandwidth $\rho$.
 
 The total viscous force on walker $i$ is:
+
 $$\mathbf{F}_{\mathrm{viscous}}(x_i, S) = \sum_{j \in \mathcal{A}(t) \setminus \{i\}} \mathbf{F}_{\mathrm{viscous}, ij}.$$
 :::
 
@@ -661,6 +685,7 @@ $$\mathbf{F}_{\mathrm{viscous}}(x_i, S) = \sum_{j \in \mathcal{A}(t) \setminus \
 :label: prop-fractal-set-viscous-reconstruction
 
 The total viscous force on any walker $i$ at any timestep $t$ can be reconstructed from IG edge data:
+
 $$\mathbf{F}_{\mathrm{viscous}}(x_i, S, t) = \sum_{e \in E_{\mathrm{IG}}: i(e) = i, t(e) = t} \pi(\psi_{\mathrm{viscous}, ij}(e)).$$
 
 *Proof.* Each IG edge $(n_{i,t}, n_{j,t})$ stores the spinor $\psi_{\mathrm{viscous}, ij}$ of the pairwise force. Summing over all edges with source $i$ at time $t$ and applying the spinor-to-vector map gives the total viscous force. $\square$
@@ -674,6 +699,7 @@ The Latent Fractal Gas uses **algorithmic distance** in phase space to determine
 :label: def-fractal-set-alg-distance
 
 The **algorithmic distance** between walkers $i$ and $j$ is:
+
 $$d_{\mathrm{alg}}(i, j)^2 := \|x_i - x_j\|^2 + \lambda_{\mathrm{alg}} \|v_i - v_j\|^2,$$
 where $\lambda_{\mathrm{alg}} \geq 0$ is a parameter weighting velocity similarity relative to position similarity.
 :::
@@ -682,6 +708,7 @@ where $\lambda_{\mathrm{alg}} \geq 0$ is a parameter weighting velocity similari
 :label: def-fractal-set-phase-potential
 
 The **phase potential** associated with the pair $(i, j)$ is:
+
 $$\theta_{ij} := -\frac{d_{\mathrm{alg}}(i, j)^2}{2\varepsilon_c^2 \hbar_{\mathrm{eff}}},$$
 where $\varepsilon_c$ is a coherence scale and $\hbar_{\mathrm{eff}}$ is an effective Planck constant for the algorithm.
 :::
@@ -705,6 +732,7 @@ The phase potential then converts this distance into a quantum-like phase. Close
 :label: def-fractal-set-complete
 
 The **Fractal Set** generated by a run of the Fractal Gas algorithm with $N$ walkers for $T$ timesteps is the **2-dimensional simplicial complex**:
+
 $$\mathcal{F} := (\mathcal{N}, E_{\mathrm{CST}} \cup E_{\mathrm{IG}} \cup E_{\mathrm{IA}}, \mathcal{T}, \boldsymbol{\omega}, \mathcal{D})$$
 where:
 
@@ -758,6 +786,7 @@ All spinor attributes stored in $\mathcal{D}_{\mathrm{CST}}$ and $\mathcal{D}_{\
 :label: cor-fractal-set-coordinate-free
 
 Two observers using coordinate systems related by $R \in \mathrm{SO}(d)$ can independently reconstruct all vector quantities from the Fractal Set. Their reconstructions are related by $R$:
+
 $$\mathbf{v}^{(2)} = R \mathbf{v}^{(1)}.$$
 
 *Proof.* Observer 1 computes $\mathbf{v}^{(1)} = \pi^{(1)}(\psi)$. Observer 2 computes $\mathbf{v}^{(2)} = \pi^{(2)}(\psi)$. Since the spinor-to-vector maps are related by $\pi^{(2)} = R \circ \pi^{(1)}$ (the spinor representation intertwines), we have $\mathbf{v}^{(2)} = R\mathbf{v}^{(1)}$. $\square$
@@ -781,6 +810,7 @@ The direction is deliberately "retrocausal"—from later to earlier time. We are
 :label: def-fractal-set-ia-edges
 
 The **Influence Attribution (IA) edge set** is:
+
 $$E_{\mathrm{IA}} := \{(n_{i,t+1}, n_{j,t}) : i, j \in \mathcal{A}(t), \; i \neq j, \; s(n_{i,t+1}) = 1, \; t \in \{0, \ldots, T-1\}\}.$$
 Each IA edge connects the **effect** (walker $i$ at time $t+1$) to a **cause** (walker $j$ at time $t$). The direction is **retrocausal**: from later to earlier time, attributing the outcome to its source.
 :::
@@ -805,6 +835,7 @@ For **cloning**, $w_{\mathrm{IA}}(e) = 1$ if $\chi_{\mathrm{clone}}(e) = 1$, els
 :label: prop-fractal-set-ia-cardinality
 
 The IA edge cardinality equals the IG edge cardinality:
+
 $$|E_{\mathrm{IA}}| = |E_{\mathrm{IG}}| = \sum_{t=0}^{T-1} k_t(k_t - 1).$$
 
 *Proof.* Each IA edge $(n_{i,t+1}, n_{j,t})$ corresponds bijectively to an IG edge $(n_{i,t}, n_{j,t})$ at the same timestep, for the same ordered pair $(i, j)$. $\square$
@@ -818,6 +849,7 @@ $$|E_{\mathrm{IA}}| = |E_{\mathrm{IG}}| = \sum_{t=0}^{T-1} k_t(k_t - 1).$$
 An **interaction triangle** $\triangle_{ij,t}$ is the 2-simplex with:
 
 **Vertices** (0-faces):
+
 $$V(\triangle_{ij,t}) = \{n_{j,t}, n_{i,t}, n_{i,t+1}\}$$
 
 **Edges** (1-faces), forming the **boundary** $\partial\triangle_{ij,t}$:
@@ -826,6 +858,7 @@ $$V(\triangle_{ij,t}) = \{n_{j,t}, n_{i,t}, n_{i,t+1}\}$$
 - $e_{\mathrm{IA}} = (n_{i,t+1}, n_{j,t}) \in E_{\mathrm{IA}}$: "attribute $i$'s update to $j$"
 
 The **triangle set** is:
+
 $$\mathcal{T} := \{\triangle_{ij,t} : i, j \in \mathcal{A}(t), \; i \neq j, \; s(n_{i,t+1}) = 1, \; t \in \{0, \ldots, T-1\}\}.$$
 :::
 
@@ -833,6 +866,7 @@ $$\mathcal{T} := \{\triangle_{ij,t} : i, j \in \mathcal{A}(t), \; i \neq j, \; s
 :label: prop-fractal-set-triangle-cardinality
 
 The number of interaction triangles equals the number of IG edges:
+
 $$|\mathcal{T}| = |E_{\mathrm{IG}}| = |E_{\mathrm{IA}}| = \sum_{t=0}^{T-1} k_t(k_t - 1).$$
 
 At each timestep $t$, there is one triangle for each ordered pair of distinct alive walkers.
@@ -856,6 +890,7 @@ The triangle is irreducible. It's the smallest closed loop in the structure. And
 :label: def-fractal-set-plaquette
 
 A **plaquette** $P_{ij,t}$ is the simplicial 2-chain formed by two adjacent interaction triangles:
+
 $$P_{ij,t} = \triangle_{ij,t} \cup \triangle_{ji,t}$$
 where:
 - $\triangle_{ij,t}$ has vertices $\{n_{j,t}, n_{i,t}, n_{i,t+1}\}$ ("$j$ influences $i$")
@@ -868,6 +903,7 @@ The two triangles share the **IG edge at time $t$**: $(n_{i,t}, n_{j,t})$, which
 :label: prop-fractal-set-plaquette-decomposition
 
 The boundary of a plaquette is a 4-cycle formed by the non-shared edges:
+
 $$\partial P_{ij,t} = \partial\triangle_{ij,t} + \partial\triangle_{ji,t} - 2e_{\mathrm{IG}}$$
 where the shared IG edge appears in both triangles with opposite orientation and cancels.
 
@@ -920,6 +956,7 @@ The complex satisfies the **closure property**: every face of a simplex is also 
 - Every edge in $E_{\mathrm{CST}}$, $E_{\mathrm{IG}}$, and $E_{\mathrm{IA}}$ has both endpoints in $\mathcal{N}$ by definition.
 - Every triangle $\triangle_{ij,t} \in \mathcal{T}$ has its three vertices in $\mathcal{N}$ and its three boundary edges in $E_{\mathrm{CST}} \cup E_{\mathrm{IG}} \cup E_{\mathrm{IA}}$ by construction.
 - The boundary operator $\partial_2: \mathcal{T} \to \mathbb{Z}[E]$ is well-defined:
+
 $$\partial_2 \triangle_{ij,t} = e_{\mathrm{IG}} + e_{\mathrm{CST}} - e_{\mathrm{IA}}$$
 (with appropriate orientations). $\square$
 :::
@@ -928,6 +965,7 @@ $$\partial_2 \triangle_{ij,t} = e_{\mathrm{IG}} + e_{\mathrm{CST}} - e_{\mathrm{
 :label: cor-fractal-set-euler
 
 For a single timestep $t$ with $k = k_t$ alive walkers, the local Euler characteristic of the $(t, t+1)$ slice is:
+
 $$\chi_t = |V_t| - |E_t| + |F_t| = 2k - k(2k-1) + k(k-1) = k(2 - k).$$
 
 For $k \geq 3$, this is negative, indicating nontrivial topology.
@@ -935,6 +973,7 @@ For $k \geq 3$, this is negative, indicating nontrivial topology.
 *Proof.* Vertices: $2k$ (walkers at $t$ and $t+1$). Edges: $k$ (CST) + $k(k-1)$ (IG at $t$) + $k(k-1)$ (IA) = $k + 2k(k-1) = k(2k-1)$. Faces: $k(k-1)$ triangles.
 
 Calculation:
+
 $$\chi_t = 2k - k(2k-1) + k(k-1) = 2k - 2k^2 + k + k^2 - k = 2k - k^2 = k(2-k).$$
 $\square$
 :::
@@ -968,9 +1007,11 @@ Orientation reversal conjugates: $U_{-e} = U_e^* = e^{-i\theta}$.
 :label: def-fractal-set-wilson-loop
 
 The **Wilson loop** around an interaction triangle $\triangle_{ij,t}$ is the **holonomy** of the gauge connection:
+
 $$W(\triangle_{ij,t}) := U_{\mathrm{IG}}(e_{\mathrm{IG}}) \cdot U_{\mathrm{CST}}(e_{\mathrm{CST}}) \cdot U_{\mathrm{IA}}(e_{\mathrm{IA}})^* = e^{i(\theta_{ij} + \phi_{\mathrm{CST}} - \phi_{\mathrm{IA}})}.$$
 
 For a general gauge group $G$, the Wilson loop is:
+
 $$W(\triangle) = \mathrm{tr}\left[\mathcal{P}\exp\left(i\oint_{\partial\triangle} A\right)\right]$$
 where $\mathcal{P}$ denotes path ordering and $A$ is the gauge connection 1-form.
 :::
@@ -979,6 +1020,7 @@ where $\mathcal{P}$ denotes path ordering and $A$ is the gauge connection 1-form
 :label: prop-fractal-set-wilson-factorization
 
 The Wilson loop around a plaquette factorizes into triangle Wilson loops:
+
 $$W(P_{ij,t}) = W(\triangle_{ij,t}) \cdot W(\triangle_{ji,t})^*$$
 
 *Proof.* The plaquette boundary $\partial P_{ij,t}$ equals $\partial\triangle_{ij,t} + \partial\triangle_{ji,t}$ minus twice the shared IG edge (which cancels due to opposite orientations). The path-ordered exponential around $\partial P$ equals the product of path-ordered exponentials around each triangle boundary, with the shared IG edge contributing $U_{\mathrm{IG}} \cdot U_{\mathrm{IG}}^* = 1$. $\square$
@@ -1074,9 +1116,11 @@ Given the Fractal Set $\mathcal{F}$, the complete phase-space trajectory $(x_i(t
 *Proof.*
 
 **Velocity reconstruction**: For each node $n_{i,t}$, find the incoming CST edge $e = (n_{i,t-1}, n_{i,t})$ (if $t > 0$) or outgoing CST edge $e' = (n_{i,t}, n_{i,t+1})$ (if $t < T$ and $s(n_{i,t}) = 1$). The velocity spinor $\psi_{v,t}(e')$ or $\psi_{v,t+1}(e)$ gives:
+
 $$v_i(t) = \pi(\psi_{v,t}).$$
 
 **Position reconstruction**: Starting from $x_i(0)$ (stored in the initial condition or reconstructed from the first IG edges), accumulate displacements:
+
 $$x_i(t) = x_i(0) + \sum_{s=0}^{t-1} \pi(\psi_{\Delta x}(e_s)),$$
 where $e_s = (n_{i,s}, n_{i,s+1})$ is the CST edge at timestep $s$.
 
@@ -1091,6 +1135,7 @@ Alternatively, positions can be reconstructed from IG edge position spinors $\ps
 All force components at any walker position and time can be reconstructed from CST edge spinors.
 
 *Proof.* Each CST edge $e = (n_{i,t}, n_{i,t+1})$ stores force spinors $\psi_{\mathbf{F}_\cdot}(e)$ for each force component. The reconstruction is:
+
 $$\mathbf{F}_{\cdot}(x_i(t), S(t), t) = \pi(\psi_{\mathbf{F}_\cdot}(e)).$$
 This gives force values at the sampled positions $\{x_i(t) : i \in \mathcal{A}(t)\}$. $\square$
 :::
@@ -1113,6 +1158,7 @@ The diffusion tensor $\Sigma_{\mathrm{reg}}(x, S, t)$ can be reconstructed at sa
 The fitness $\Phi(x)$ and virtual reward $V_{\mathrm{fit}}(x)$ fields can be reconstructed at all sampled positions.
 
 *Proof.* Node attributes directly store $\Phi(n)$ and $V_{\mathrm{fit}}(n)$. For node $n_{i,t}$:
+
 $$\Phi(x_i(t)) = \Phi(n_{i,t}), \quad V_{\mathrm{fit}}(x_i(t)) = V_{\mathrm{fit}}(n_{i,t}).$$
 This provides a sampling of the landscapes at walker-visited positions. $\square$
 :::
@@ -1128,6 +1174,7 @@ The alive walker set $\mathcal{A}(t)$ and empirical measure $f_k(t)$ can be reco
 **Alive set**: $\mathcal{A}(t) = \{i : s(n_{i,t}) = 1\}$ from node status flags.
 
 **Empirical measure**: Using reconstructed trajectories,
+
 $$f_k(t) = \frac{1}{k_t}\sum_{i \in \mathcal{A}(t)} \delta_{(x_i(t), v_i(t))}$$
 where $(x_i(t), v_i(t))$ comes from {prf:ref}`thm-fractal-set-trajectory`. $\square$
 :::
@@ -1140,6 +1187,7 @@ where $(x_i(t), v_i(t))$ comes from {prf:ref}`thm-fractal-set-trajectory`. $\squ
 The complete cloning history—which walker cloned from which, at which timestep—can be reconstructed from node attributes.
 
 *Proof.* Each node $n_{i,t}$ stores the **clone source** attribute $c(n_{i,t}) \in \mathbb{Z}_+ \cup \{\bot\}$ ({prf:ref}`def-fractal-set-node-attributes`). The cloning events are:
+
 $$\mathcal{E}_{\mathrm{clone}} = \{(i, j, t) : c(n_{i,t}) = j \neq \bot\},$$
 indicating walker $i$ cloned from walker $j$ at timestep $t$. The genealogical tree can be reconstructed by following clone source pointers backward in time. $\square$
 :::
@@ -1200,6 +1248,7 @@ The **latent state space** is a Riemannian manifold $(\mathcal{Z}, G)$ where:
 - $G: \mathcal{Z} \to \mathbb{R}^{d_z \times d_z}$ is a position-dependent metric tensor, $G(z) \succ 0$
 
 The metric defines inner products and norms:
+
 $$\langle u, v \rangle_{G(z)} := u^\top G(z) v, \quad \|u\|_{G(z)} := \sqrt{\langle u, u \rangle_{G(z)}}.$$
 :::
 
@@ -1223,10 +1272,13 @@ The Latent Fractal Gas uses **phase-space softmax** to select companions for clo
 :label: def-fractal-set-companion-kernel
 
 The **companion selection weight** between walkers $i$ and $j$ is:
+
 $$w_{ij} := \exp\left(-\frac{d_{\mathrm{alg}}(i, j)^2}{2\varepsilon^2}\right), \quad w_{ii} := 0,$$
+
 where $d_{\mathrm{alg}}(i, j)$ is the algorithmic distance ({prf:ref}`def-fractal-set-alg-distance`) and $\varepsilon > 0$ is a temperature parameter.
 
 The **soft companion distribution** for walker $i$ at timestep $t$ is:
+
 $$P_i(j; t) := \frac{w_{ij}}{\sum_{l \in \mathcal{A}(t) \setminus \{i\}} w_{il}}, \quad j \in \mathcal{A}(t) \setminus \{i\}.$$
 :::
 
@@ -1240,18 +1292,25 @@ Two companions are sampled independently at each timestep $t$:
 :label: def-fractal-set-two-channel-fitness
 
 The **fitness potential** for walker $i$ combines reward and diversity:
+
 $$V_i := (d_i')^{\beta_{\mathrm{fit}}} (r_i')^{\alpha_{\mathrm{fit}}},$$
+
 where:
 
 **Reward channel**:
+
 $$r_i := \langle \mathcal{R}(z_i), v_i \rangle_{G(z_i)},$$
+
 the metric contraction of the reward 1-form $\mathcal{R}$ with velocity.
 
 **Diversity channel**:
+
 $$d_i := d_G(z_i, z_{c_i^{\mathrm{dist}}}),$$
+
 the geodesic distance to the distance companion.
 
 Both are standardized and transformed:
+
 $$r_i' := g_A((\tilde{r}_i - \mu_r) / \sigma_r), \quad d_i' := g_A((\tilde{d}_i - \mu_d) / \sigma_d),$$
 where $g_A(z) := A / (1 + e^{-z})$ is the logistic function with range $[0, A]$.
 
@@ -1264,10 +1323,13 @@ The exponents $\alpha_{\mathrm{fit}}, \beta_{\mathrm{fit}} > 0$ balance exploita
 :label: def-fractal-set-cloning-score
 
 The **cloning score** for walker $i$ toward its cloning companion $c_i^{\mathrm{clone}}$ is:
+
 $$S_i := \frac{V_{c_i^{\mathrm{clone}}} - V_i}{V_i + \varepsilon_{\mathrm{clone}}},$$
+
 where $\varepsilon_{\mathrm{clone}} > 0$ prevents division by zero.
 
 The **cloning probability** is:
+
 $$p_i := \min\left(1, \max\left(0, \frac{S_i}{p_{\max}}\right)\right),$$
 where $p_{\max}$ is the maximum cloning probability.
 :::
@@ -1278,10 +1340,13 @@ where $p_{\max}$ is the maximum cloning probability.
 When walker $i$ clones from walker $j = c_i^{\mathrm{clone}}$:
 
 **Position update** (Gaussian jitter):
+
 $$z_i' := z_j + \sigma_z \zeta_i, \quad \zeta_i \sim \mathcal{N}(0, I).$$
 
 **Velocity update** (inelastic collision): Let $G$ be the collision group (companion $j$ and all walkers cloning from $j$ this step).
+
 $$V_{\mathrm{COM}} := \frac{1}{|G|} \sum_{k \in G} v_k, \quad u_k := v_k - V_{\mathrm{COM}},$$
+
 $$v_k' := V_{\mathrm{COM}} + \alpha_{\mathrm{rest}} u_k,$$
 where $\alpha_{\mathrm{rest}} \in [0, 1]$ is the coefficient of restitution.
 :::
@@ -1290,11 +1355,15 @@ where $\alpha_{\mathrm{rest}} \in [0, 1]$ is the coefficient of restitution.
 :label: prop-fractal-set-momentum
 
 The cloning update conserves total momentum within each collision group:
+
 $$\sum_{k \in G} v_k' = \sum_{k \in G} v_k.$$
 
 *Proof.*
+
 $$\sum_{k \in G} v_k' = \sum_{k \in G} (V_{\mathrm{COM}} + \alpha_{\mathrm{rest}} u_k) = |G| V_{\mathrm{COM}} + \alpha_{\mathrm{rest}} \sum_{k \in G} u_k.$$
+
 Since $\sum_k u_k = \sum_k (v_k - V_{\mathrm{COM}}) = \sum_k v_k - |G| V_{\mathrm{COM}} = 0$ by definition of $V_{\mathrm{COM}}$:
+
 $$\sum_{k \in G} v_k' = |G| V_{\mathrm{COM}} = \sum_{k \in G} v_k. \quad \square$$
 :::
 
@@ -1304,6 +1373,7 @@ $$\sum_{k \in G} v_k' = |G| V_{\mathrm{COM}} = \sum_{k \in G} v_k. \quad \square
 :label: def-fractal-set-anisotropic-diffusion
 
 The **regularized diffusion tensor** at position $z$ is:
+
 $$\Sigma_{\mathrm{reg}}(z) := \left(\nabla_z^2 V_{\mathrm{fit}}(z) + \varepsilon_\Sigma I\right)^{-1/2},$$
 where $\nabla_z^2 V_{\mathrm{fit}}$ is the Hessian of the virtual fitness potential and $\varepsilon_\Sigma > 0$ ensures uniform ellipticity.
 :::
@@ -1327,10 +1397,13 @@ Let $p = G(z)v$ be the metric momentum and $\Phi_{\mathrm{eff}}$ the effective p
 3. $p \leftarrow p - \frac{h}{2}\nabla\Phi_{\mathrm{eff}}(z)$
 
 **A (half drift)**:
+
 $$z \leftarrow \mathrm{Exp}_z\left(\frac{h}{2}G^{-1}(z)p\right),$$
+
 where $\mathrm{Exp}_z$ is the Riemannian exponential map (geodesic flow).
 
 **O (thermostat)**:
+
 $$p \leftarrow c_1 p + c_2 G^{1/2}(z) \Sigma_{\mathrm{reg}}(z) \xi,$$
 where $\xi \sim \mathcal{N}(0, I)$, $c_1 = e^{-\gamma h}$, $c_2 = \sqrt{(1 - c_1^2)T_c}$.
 
