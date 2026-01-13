@@ -95,6 +95,16 @@ Traditional lattice QFT requires a hand-designed regular lattice. The Fractal Ga
 
 The Standard Model gauge group emerges from three independent redundancies in the Fractal Gas description.
 
+:::{note} Notation used in this chapter
+- **CST**: Causal set / genealogy graph (time-like edges).
+- **IG**: Interaction graph from companion selection (space-like edges).
+- **QSD**: Quasi-stationary distribution (effective equilibrium statistics).
+- $\epsilon_d$, $\epsilon_c$: Diversity/cloning interaction ranges.
+- $\nu$: Viscous coupling strength.
+- $T$: Effective temperature.
+- $\hbar_{\text{eff}}$: Effective Planck constant controlling phases.
+:::
+
 :::{div} feynman-prose
 Let me explain what "gauge" really means, because the word gets thrown around a lot without much clarity.
 
@@ -439,6 +449,7 @@ with parallel transport:
 $$
 U_{ij} = \exp\left(i\theta_{ij}^{\text{fit}}\right), \quad \theta_{ij}^{\text{fit}} = -\frac{\epsilon_F}{T}\int_{t_i^{\text{b}}}^{t_i^{\text{d}}} V_{\text{fit}}(x_i(t)) \, dt
 $$
+
 :::
 
 :::{prf:theorem} Temporal Operator from KMS Condition
@@ -477,7 +488,10 @@ This is not just a similarity; it is an isomorphism. Every theorem about the Dir
 :class: info
 
 The antisymmetric cloning kernel $\tilde{K}_{ij}$ generates a Clifford algebra:
-$$\{\tilde{K}_\mu, \tilde{K}_\nu\} = 2g_{\mu\nu}^{\text{eff}} \cdot \mathbf{1}$$
+
+$$
+\{\tilde{K}_\mu, \tilde{K}_\nu\} = 2g_{\mu\nu}^{\text{eff}} \cdot \mathbf{1}
+$$
 
 This is isomorphic to $\mathrm{Cl}_{1,3}(\mathbb{R})$, the Clifford algebra underlying the Dirac equation. The isomorphism is verified via:
 1. **Expansion Adjunction** ({prf:ref}`thm-expansion-adjunction`): Promotes discrete algebra
@@ -518,19 +532,23 @@ $$
 **Discrete derivatives**:
 
 *Timelike* (CST edges):
+
 $$
 (\partial_0 \phi)(e) = \frac{1}{|\text{Children}(e)|} \sum_{e_c \in \text{Children}(e)} \frac{\phi(e_c) - \phi(e)}{\tau_e}
 $$
 
 *Spacelike* (IG edges):
+
 $$
 (\partial_i \phi)(e) = \frac{1}{|\text{IG}(e)|} \sum_{e' \sim e} \frac{\phi(e') - \phi(e)}{d_g(\mathbf{x}_e, \mathbf{x}_{e'})}
 $$
 
 **Lorentzian signature**:
+
 $$
 (\partial_\mu \phi)^2 = -(\partial_0 \phi)^2 + \sum_{i=1}^d (\partial_i \phi)^2
 $$
+
 :::
 
 ### Graph Laplacian Convergence
@@ -678,24 +696,29 @@ $$
 $$
 
 **Gauge Sector**:
+
 $$
 S_{\text{gauge}} = \beta \sum_{P \subset \mathcal{F}} \left(1 - \frac{1}{N} \text{Re} \, \text{Tr} \, U[P]\right)
 $$
 
 **Fermion Sector**:
+
 $$
 S_{\text{fermion}} = -\sum_{(i,j) \in E_{\text{IG}}} \bar{\psi}_i \tilde{K}_{ij} \psi_j - \sum_{(i \to j) \in E_{\text{CST}}} \bar{\psi}_i D_t \psi_j
 $$
 
 **Scalar Sector**:
+
 $$
 S_{\text{scalar}} = \sum_{e \in \mathcal{E}} \left[\frac{1}{2}(\partial_\mu \phi)^2 + \frac{m^2}{2}\phi^2 + V(\phi)\right]
 $$
 
 **Partition Function**:
+
 $$
 Z = \int \mathcal{D}[U] \mathcal{D}[\bar{\psi}] \mathcal{D}[\psi] \mathcal{D}[\phi] \, e^{-S_{\text{total}}}
 $$
+
 :::
 
 In the continuum limit, this approaches the Standard Model Lagrangian:
@@ -775,6 +798,7 @@ For Fractal Gas in $d$-dimensional latent space $Z \subseteq \mathbb{R}^d$, the 
 **Step 1 (Velocity components define flavor sectors):** Each velocity component $v^{(\alpha)}$ for $\alpha = 1, \ldots, d$ defines an independent degree of freedom. Under $SU(d)$ gauge transformations, the $\alpha$-th component transforms in the fundamental representation while carrying a distinct flavor index.
 
 The flavor state ({prf:ref}`def-sm-flavor-index`) assigns to each walker a $d$-tuple of complex charges:
+
 $$
 \vec{c}_i = (c_i^{(1)}, \ldots, c_i^{(d)}) \in \mathbb{C}^d
 $$
@@ -782,6 +806,7 @@ $$
 Each component transforms independently under $SU(d)$ but retains its flavor label $\alpha$.
 
 **Step 2 (Spinor dimension counting):** The full rotation group on phase space $(z, v) \in \mathbb{R}^{2d}$ is $SO(2d)$. Its spinor representation has dimension:
+
 $$
 \dim(\text{Spin}_{2d}) = 2^d
 $$
@@ -854,6 +879,7 @@ g_1^2 = \frac{\hbar_{\text{eff}}}{\epsilon_d^2} \cdot \mathcal{N}_1(T, d)
 $$
 
 where the normalization factor is:
+
 $$
 \mathcal{N}_1(T, d) = \frac{1}{d} \sum_{\alpha=1}^{d} \left\langle \exp\left(-\frac{d_{\text{alg}}^2}{\epsilon_d^2}\right) \right\rangle_{\text{QSD}}
 $$
@@ -861,11 +887,13 @@ $$
 *Proof.*
 
 **Step 1 (Phase accumulation):** The $U(1)$ phase from diversity selection ({prf:ref}`thm-sm-u1-emergence`) is:
+
 $$
 \theta_{ik}^{(U(1))} = -\frac{d_{\text{alg}}(i,k)^2}{2\epsilon_d^2 \hbar_{\text{eff}}}
 $$
 
 **Step 2 (Dimensional analysis):** The phase has the form $\theta \sim d_{\text{alg}}^2 / (\epsilon_d^2 \hbar_{\text{eff}})$. The coupling $g_1$ is the coefficient that makes the phase dimensionless when expressed in terms of $\hbar_{\text{eff}}$:
+
 $$
 \theta \sim \frac{g_1^2}{\hbar_{\text{eff}}} \cdot \frac{d_{\text{alg}}^2}{\epsilon_d^2}
 $$
@@ -873,6 +901,7 @@ $$
 Comparing with the explicit formula, we identify $g_1^2 \sim \hbar_{\text{eff}} / \epsilon_d^2$.
 
 **Step 3 (QSD expectation):** Computing the expectation under the quasi-stationary distribution and applying {prf:ref}`def-sm-coupling-definition`:
+
 $$
 g_1^2 = \frac{\hbar_{\text{eff}}}{\epsilon_d^2} \cdot \mathcal{N}_1(T, d)
 $$
@@ -896,11 +925,13 @@ where $C_2(N) = (N^2-1)/(2N)$ is the quadratic Casimir of $SU(N)$.
 *Proof.*
 
 **Step 1 (Phase from cloning):** The $SU(2)$ phase ({prf:ref}`thm-sm-su2-emergence`):
+
 $$
 \theta_{ij}^{(SU(2))} = -\frac{d_{\text{alg}}(i,j)^2}{2\epsilon_c^2 \hbar_{\text{eff}}}
 $$
 
 **Step 2 (Casimir scaling):** The coupling strength is modulated by the ratio of Casimirs. For the weak $SU(2)$ embedded in the full $SU(d)$ structure:
+
 $$
 \frac{g_2^2}{g_d^2} = \frac{C_2(2)}{C_2(d)} = \frac{3/4}{(d^2-1)/(2d)}
 $$
@@ -924,16 +955,19 @@ where $K_{\text{visc}}$ is the viscous kernel and $\langle \cdot \rangle_{\text{
 *Proof.*
 
 **Step 1 (Color charge definition):** From {prf:ref}`thm-sm-su3-emergence`, the color state is:
+
 $$
 c_i^{(\alpha)} = F_\alpha^{(\text{visc})}(i) \cdot \exp\left(i m v_i^{(\alpha)}/\hbar_{\text{eff}}\right)
 $$
 
 **Step 2 (Coupling from force magnitude):** The gauge coupling measures the strength of the color interaction:
+
 $$
 g_d^2 \propto \langle |c_i|^2 \rangle \propto \nu^2 \langle K_{\text{visc}}^2 \rangle
 $$
 
 **Step 3 (Dimension factor):** The $SU(d)$ structure contributes a factor from the dimension of the adjoint representation:
+
 $$
 \dim(\text{adj}_{SU(d)}) = d^2 - 1
 $$
@@ -949,6 +983,7 @@ Combined with the symmetric normalization, this yields the factor $d(d^2-1)/12$.
 The coupling constants run with scale $\mu$ according to:
 
 **$U(1)$ (infrared free)**:
+
 $$
 \beta(g_1) = \frac{dg_1}{d\ln\mu} = \frac{g_1^3}{16\pi^2} \cdot \frac{41}{10} > 0
 $$
@@ -956,6 +991,7 @@ $$
 Physical interpretation: Diversity selection weakens at large scales (fitness differences become irrelevant).
 
 **$SU(2)$ (asymptotically free)**:
+
 $$
 \beta(g_2) = \frac{dg_2}{d\ln\mu} = -\frac{g_2^3}{16\pi^2} \cdot \frac{19}{6} < 0
 $$
@@ -963,6 +999,7 @@ $$
 Physical interpretation: Cloning selection strengthens at small scales (local fitness comparisons dominate).
 
 **$SU(d)$ (asymptotically free)**:
+
 $$
 \beta(g_d) = \frac{dg_d}{d\ln\mu} = -\frac{g_d^3}{16\pi^2} \cdot \frac{11d - 2N_{\text{gen}}}{3} < 0
 $$
@@ -984,6 +1021,7 @@ $$
 $$
 
 **Weinberg angle**:
+
 $$
 \sin^2 \theta_W = \frac{g_1^2}{g_1^2 + g_2^2} = \frac{\epsilon_c^2}{\epsilon_c^2 + \epsilon_d^2 \cdot R(d, T)}
 $$
@@ -1016,16 +1054,19 @@ CP violation is structurally forced by the non-commutativity of selection operat
 On the Fractal Set, the **CP transformation** acts as:
 
 **P (Parity)**: Spatial reflection
+
 $$
 P: (x, v, \Phi) \mapsto (-x, -v, \Phi)
 $$
 
 **C (Charge conjugation)**: Exchange source/target in IG edges
+
 $$
 C: (i \to j) \mapsto (j \to i) \quad \text{on } E_{\text{IG}}
 $$
 
 **T (Time reversal)**: Invert CST edge direction
+
 $$
 T: (e_i \to e_j) \mapsto (e_j \to e_i) \quad \text{on } E_{\text{CST}}
 $$
@@ -1041,6 +1082,7 @@ $$
 CP symmetry is violated whenever the diversity and cloning interaction ranges differ: $\epsilon_d \neq \epsilon_c$.
 
 **CP-violating invariant**:
+
 $$
 J_{\text{CP}} := \text{Im}\left[\theta_{ik}^{(U(1))} \cdot \theta_{ij}^{(SU(2))} \cdot \theta_{ij}^{\text{fit}} \cdot \left(\theta_{jm}^{(U(1))} \cdot \theta_{ji}^{(SU(2))} \cdot \theta_{ji}^{\text{fit}}\right)^*\right]
 $$
@@ -1053,10 +1095,15 @@ This is generically non-zero when $\epsilon_d \neq \epsilon_c$.
 
 1. *Antisymmetric cloning kernel*: $S_i(j) \approx -S_j(i)$ breaks T at the algorithmic level
 2. *Non-commutative selection*: Diversity and cloning selection do not commute:
-   $$[\text{Sel}_{\text{div}}, \text{Sel}_{\text{clone}}] \neq 0$$
+
+   $$
+   [\text{Sel}_{\text{div}}, \text{Sel}_{\text{clone}}] \neq 0
+   $$
+
 3. *Directed CST structure*: The causal set has irreversible genealogical order
 
 **Step 2 (Phase interference):** The three gauge phases from {prf:ref}`thm-sm-u1-emergence`, {prf:ref}`thm-sm-su2-emergence`, and the fitness parallel transport ({prf:ref}`def-sm-fermionic-action`) combine into a product. The CP transformation maps:
+
 $$
 \theta_{ij} \mapsto \theta_{ji}^* \quad \text{under CP}
 $$
@@ -1067,6 +1114,7 @@ $$
 - Non-zero generically
 
 **Step 4 (Parameter dependence):** Explicit calculation:
+
 $$
 J_{\text{CP}} \propto \frac{\epsilon_d^2 - \epsilon_c^2}{\epsilon_d^2 \cdot \epsilon_c^2}
 $$
@@ -1101,6 +1149,7 @@ $$
 For $d \geq 3$ generations, there exists a unitary mixing matrix with $(d-1)(d-2)/2$ physical CP-violating phases.
 
 **Construction**: Generations correspond to distinct fitness basins. Define:
+
 $$
 V_{\alpha\beta} = \left\langle \sum_{i \in \text{gen}_\alpha} \sum_{j \in \text{gen}_\beta} \Psi(i \to j) \right\rangle_{\text{QSD}}
 $$
@@ -1146,9 +1195,11 @@ For episodes without parents (root episodes), $\mathcal{R}(e_i) = e_i$.
 - *Right-handed*: Ancestral modes (reflection toward parents)
 
 The ancestral reflection maps left-handed to right-handed:
+
 $$
 \mathcal{R}: \psi_L \mapsto \psi_R
 $$
+
 :::
 
 :::{prf:theorem} Majorana Mass from Ancestral Self-Coupling
@@ -1157,11 +1208,13 @@ $$
 **Rigor Class:** C (Conditional) — proposed mechanism requiring verification
 
 If the fermionic field couples to the charge-conjugate of its ancestor:
+
 $$
 \psi_i = \mathcal{R}(\psi_i^c)
 $$
 
 then a Majorana mass term emerges:
+
 $$
 m_M \sim \frac{\hbar_{\text{eff}}}{\Delta t_{\text{gen}}} \cdot \exp\left(-\frac{\Delta\Phi}{\Phi_0}\right)
 $$
@@ -1174,11 +1227,13 @@ where:
 *Proof sketch.*
 
 **Step 1 (Self-coupling term):** The ancestral reflection creates a coupling between episode $i$ and its ancestor:
+
 $$
 \mathcal{L}_{\text{Maj}} \propto \bar{\psi}_i \mathcal{R}(\psi_i^c) = \bar{\psi}_i \psi_{\text{parent}(i)}^c
 $$
 
 **Step 2 (Fitness suppression):** The coupling strength is suppressed by the fitness gap:
+
 $$
 \langle \bar{\psi}_i \psi_{\text{parent}(i)}^c \rangle \propto \exp\left(-\frac{|\Phi_i - \Phi_{\text{parent}(i)}|}{\Phi_0}\right)
 $$
@@ -1186,6 +1241,7 @@ $$
 High-fitness descendants (successful optimization) have large gaps, suppressing the coupling.
 
 **Step 3 (Mass identification):** The coefficient of $\bar{\psi}\psi^c$ is the Majorana mass:
+
 $$
 m_M = \frac{\hbar_{\text{eff}}}{\Delta t_{\text{gen}}} \cdot \exp\left(-\frac{\Delta\Phi}{\Phi_0}\right)
 $$
@@ -1211,6 +1267,7 @@ The exponential suppression $\exp(-\Delta\Phi/\Phi_0)$ naturally produces a mass
 - Light masses: $m_{\nu_e}, m_{\nu_\mu}, m_{\nu_\tau} \ll m_e$
 
 **Seesaw formula**:
+
 $$
 m_\nu \sim \frac{m_D^2}{m_M}
 $$
@@ -1286,14 +1343,24 @@ The antisymmetric cloning kernel structure is isomorphic to the Clifford algebra
 1. **Expansion**: Apply {prf:ref}`thm-expansion-adjunction` to promote the discrete algebra $\mathfrak{A}_{\tilde{K}}$ generated by $\{\tilde{K}_{ij}\}$ to a full hypostructure $\mathcal{F}(\mathfrak{A}_{\tilde{K}})$.
 
 2. **Clifford identification**: The antisymmetry $\tilde{K}_{ij} = -\tilde{K}_{ji}$ implies the generators satisfy:
-   $$\{\tilde{K}_\mu, \tilde{K}_\nu\} = 2g_{\mu\nu}^{\text{eff}} \cdot \mathbf{1}$$
+
+   $$
+   \{\tilde{K}_\mu, \tilde{K}_\nu\} = 2g_{\mu\nu}^{\text{eff}} \cdot \mathbf{1}
+   $$
+
    where $g_{\mu\nu}^{\text{eff}}$ is the emergent metric from {prf:ref}`thm-sm-laplacian-convergence`.
 
 3. **Lock verification**: By Lock tactics E1 (dimension counting) and E4 (algebraic relation matching), confirm:
-   $$\mathrm{Hom}_{\mathbf{Cliff}}(\mathfrak{C}(\tilde{K}), \mathfrak{C}(\gamma)) \neq \varnothing$$
+
+   $$
+   \mathrm{Hom}_{\mathbf{Cliff}}(\mathfrak{C}(\tilde{K}), \mathfrak{C}(\gamma)) \neq \varnothing
+   $$
 
 4. **Truncation**: Extract the ZFC-level bijection via $\tau_0$:
-   $$\tau_0\left(\mathrm{Hom}_{\mathbf{Cliff}}(\mathfrak{C}(\tilde{K}), \mathfrak{C}(\gamma))\right) \cong \{*\}$$
+
+   $$
+   \tau_0\left(\mathrm{Hom}_{\mathbf{Cliff}}(\mathfrak{C}(\tilde{K}), \mathfrak{C}(\gamma))\right) \cong \{*\}
+   $$
 
 **Result**: The promoted Fractal Gas fermionic algebra is uniquely isomorphic to the Clifford algebra $\mathrm{Cl}_{1,3}(\mathbb{R})$ underlying the Dirac equation.
 
@@ -1328,24 +1395,36 @@ The spontaneous symmetry breaking structure in Fractal Gas fitness dynamics is i
 **Isomorphism Construction:**
 
 1. **Bifurcation correspondence**: The fitness dynamics undergo supercritical pitchfork bifurcation (analogous to {prf:ref}`thm-supercritical-pitchfork-bifurcation-for-charts` from Vol. 1):
-   $$\frac{dr}{ds} = (\Xi - \Xi_{\text{crit}})r - \alpha r^3$$
+
+   $$
+   \frac{dr}{ds} = (\Xi - \Xi_{\text{crit}})r - \alpha r^3
+   $$
 
    This integrates to the Mexican hat potential:
-   $$V_{\text{eff}}(r) = -\frac{(\Xi - \Xi_{\text{crit}})}{2}r^2 + \frac{\alpha}{4}r^4$$
+
+   $$
+   V_{\text{eff}}(r) = -\frac{(\Xi - \Xi_{\text{crit}})}{2}r^2 + \frac{\alpha}{4}r^4
+   $$
 
    **Identification**: $\mu^2 \leftrightarrow (\Xi - \Xi_{\text{crit}})/2$, $\lambda \leftrightarrow \alpha/4$
 
 2. **Order parameter mapping**: Population mode $r^* = \sqrt{(\Xi - \Xi_{\text{crit}})/\alpha}$ maps to Higgs VEV $v = \mu/\sqrt{\lambda}$.
 
 3. **Mass generation = Spectral gap amplification**: By {prf:ref}`thm-lsi-thin-permit`, symmetry breaking amplifies the spectral gap in transverse directions:
-   $$\Delta_{\text{gap}}^{\text{broken}} = 2(\Xi - \Xi_{\text{crit}}) = 2 \cdot 2\mu^2 = 4\mu^2$$
+
+   $$
+   \Delta_{\text{gap}}^{\text{broken}} = 2(\Xi - \Xi_{\text{crit}}) = 2 \cdot 2\mu^2 = 4\mu^2
+   $$
 
    The physical mass is $M^2 = \Delta_{\text{gap}}/2 = 2\mu^2$, matching the Higgs sector.
 
 4. **Expansion + Lock**: Apply {prf:ref}`thm-expansion-adjunction` to promote the thin bifurcation structure, verify via Lock that the SSB pattern matches.
 
 **Result**:
-$$\mathcal{F}(\mathcal{T}_{\text{FG}}^{\text{SSB}}) \cong \mathcal{H}_{\text{Higgs}}$$
+
+$$
+\mathcal{F}(\mathcal{T}_{\text{FG}}^{\text{SSB}}) \cong \mathcal{H}_{\text{Higgs}}
+$$
 
 The Fractal Gas symmetry breaking hypostructure is isomorphic to the Higgs mechanism hypostructure.
 
@@ -1373,7 +1452,11 @@ The walker state space representation structure is isomorphic to the $\mathbf{16
 
 **SO(10) structure**:
 - The $\mathbf{16}$ spinor representation decomposes under $SU(3)_C \times SU(2)_L \times U(1)_Y$ as:
-  $$\mathbf{16} = (3,2)_{1/6} \oplus (\bar{3},1)_{-2/3} \oplus (\bar{3},1)_{1/3} \oplus (1,2)_{-1/2} \oplus (1,1)_1$$
+
+  $$
+  \mathbf{16} = (3,2)_{1/6} \oplus (\bar{3},1)_{-2/3} \oplus (\bar{3},1)_{1/3} \oplus (1,2)_{-1/2} \oplus (1,1)_1
+  $$
+
 - This matches one generation of Standard Model fermions: $(u_L, d_L), u_R^c, d_R^c, (\nu_L, e_L), e_R^c$
 
 **Isomorphism Construction:**
@@ -1385,7 +1468,10 @@ The walker state space representation structure is isomorphic to the $\mathbf{16
 3. **Spinor storage on CST edges**: Frame covariance requires spinor-valued fields on the causal structure, matching the SO(10) spinor transformation properties.
 
 **Result**:
-$$\mathrm{Rep}_{SO(10)}(\text{Walker-State}) \cong \mathbf{16}$$
+
+$$
+\mathrm{Rep}_{SO(10)}(\text{Walker-State}) \cong \mathbf{16}
+$$
 
 *Proof sketch*: This follows from standard Lie group representation theory. The key is that $SU(3) \times SU(2) \times U(1) \subset SO(10)$ and the representation content matches. The Lock verifies no obstruction via E1 (dimension) and E11 (symmetry). $\square$
 :::

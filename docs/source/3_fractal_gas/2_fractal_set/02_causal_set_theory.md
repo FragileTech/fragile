@@ -38,7 +38,7 @@ Causal set theory (CST) posits that spacetime is fundamentally discrete: a finit
 (sec-cst-axioms)=
 ## Causal Set Theory: Axioms and Framework
 
-### 2.1. Standard Causal Set Definition
+### Standard Causal Set Definition
 
 :::{div} feynman-prose
 Let me tell you what causal set theory is really about. The idea is almost embarrassingly simple, which is often a sign that it might be right.
@@ -71,7 +71,7 @@ A **causal set** $(C, \prec)$ is a locally finite partially ordered set satisfyi
 - Local finiteness = finite events in any causal interval (discreteness)
 :::
 
-### 2.2. Poisson Sprinkling (Standard Construction)
+### Poisson Sprinkling (Standard Construction)
 
 :::{div} feynman-prose
 Now comes the question that every discrete theory must face: how do you go from the discrete to the continuous? If spacetime is really made of discrete events, we had better be able to recover ordinary smooth spacetime in some limit—otherwise the theory would contradict everything we know about physics at everyday scales.
@@ -122,7 +122,7 @@ This is not something we had to put in by hand. It emerges automatically from th
 Think of it this way. If you wanted to draw a picture of a mountain, you would use more ink on the parts where the terrain changes rapidly—the ridges, the valleys—and less ink on the flat plains. The Fractal Set does exactly this, but for spacetime. It puts more "events" where the geometry is interesting, and fewer where it is bland.
 :::
 
-### 3.1. Causal Order on Episodes
+### Causal Order on Episodes
 
 :::{prf:definition} Causal Order on Fractal Set
 :label: def-fractal-causal-order
@@ -152,7 +152,7 @@ The effective speed $c_{\mathrm{eff}}$ is like a "speed limit" for information p
 Here is the physical picture. Draw a diagram with time going up and space going sideways. At each event, draw a cone opening upward—this is the "future light cone." Only events inside this cone can be influenced by the original event. The causal order $e_i \prec e_j$ means exactly that $e_j$ is inside the future cone of $e_i$.
 :::
 
-### 3.2. QSD Sampling = Adaptive Sprinkling
+### QSD Sampling = Adaptive Sprinkling
 
 :::{prf:theorem} Fractal Set Episodes Follow Adaptive Density
 :label: thm-fractal-adaptive-sprinkling
@@ -293,7 +293,7 @@ Why is this better? Because it automatically concentrates resolution where it ma
 The Myrheim-Meyer dimension estimator is a beautiful piece of mathematical machinery that extracts the dimension of spacetime from pure causal order. You count the fraction of pairs that are causally related, and this fraction depends on the dimension. In two dimensions, more pairs are causally related than in four dimensions—because light cones are "wider" in lower dimensions. The Fractal Set inherits this machinery: count the ordering fraction, and you recover the dimension.
 :::
 
-### 5.1. Volume Matching
+### Volume Matching
 
 :::{prf:theorem} Fractal Set Provides Faithful Discretization
 :label: thm-fractal-faithful-embedding
@@ -317,7 +317,7 @@ d_{\mathrm{MM}} \xrightarrow{N \to \infty} d = \dim \mathcal{X}
 $$
 :::
 
-### 5.2. Advantages over Poisson Sprinkling
+### Advantages over Poisson Sprinkling
 
 :::{prf:proposition} Adaptive Sprinkling Improves Geometric Fidelity
 :label: prop-adaptive-vs-poisson
@@ -350,7 +350,7 @@ The dimension estimator is my favorite example. It counts nothing but the fracti
 
 With the Fractal Set established as a valid causal set, all CST mathematical tools apply.
 
-### 6.1. Causal Set Volume Element
+### Causal Set Volume Element
 
 :::{prf:definition} Causal Set Volume
 :label: def-cst-volume
@@ -365,7 +365,7 @@ where $\bar{\rho}$ is the average adaptive density.
 **Continuum limit**: $V_{\mathrm{CST}}(e) \to V(J^-(e))$ as $N \to \infty$.
 :::
 
-### 6.2. Discrete d'Alembertian (Benincasa-Dowker Operator)
+### Discrete d'Alembertian (Benincasa-Dowker Operator)
 
 :::{div} feynman-prose
 The d'Alembertian $\Box = \partial_t^2 - \nabla^2$ is the wave operator—it tells you how waves propagate through spacetime. In the continuum, it is defined using second derivatives. But on a discrete set, there are no derivatives. How do you take a derivative when there is no notion of "infinitesimally close"?
@@ -401,7 +401,7 @@ $$
 where $\Box_g = g^{\mu\nu}\nabla_\mu\nabla_\nu$ is the continuum d'Alembertian.
 :::
 
-### 6.3. Dimension and Curvature Estimation
+### Dimension and Curvature Estimation
 
 :::{div} feynman-prose
 Here is something that should make you sit up. We are going to measure the dimension of spacetime—an integer!—by counting pairs and computing a fraction. No coordinates. No metric. No calculus. Just counting.
@@ -474,7 +474,7 @@ The Fractal Set does something extra. In ordinary causal set quantum gravity, yo
 This is like the difference between uniform and Boltzmann sampling. In statistical mechanics, you do not count all configurations equally—you weight them by $e^{-E/kT}$. The QSD provides the analogous weighting for quantum gravity.
 :::
 
-### 7.1. Quantum Gravity Path Integral
+### Quantum Gravity Path Integral
 
 :::{admonition} Path Integral Formulation
 :class: important
@@ -488,7 +488,7 @@ $$
 **Key advantage**: The QSD provides a **physically motivated measure** on the space of causal sets, replacing ad-hoc uniform measures.
 :::
 
-### 7.2. Observable Predictions
+### Observable Predictions
 
 :::{div} feynman-prose
 Can we actually test any of this? The scale of quantum gravity—the Planck length, $10^{-35}$ meters—is so far below anything we can probe directly that you might think the whole enterprise is purely theoretical.
@@ -521,7 +521,7 @@ where $E_{\mathrm{Planck}} = \sqrt{\hbar c^5 / G}$ and $\eta_i$ are $O(1)$ coeff
 3. **Lorentz violation bounds**: Observable in cosmic rays, gamma-ray bursts, ultra-high-energy neutrinos
 :::
 
-### 7.3. Connection to Loop Quantum Gravity
+### Connection to Loop Quantum Gravity
 
 :::{div} feynman-prose
 One question that always comes up: how does this relate to Loop Quantum Gravity, the other major approach to quantum gravity?
