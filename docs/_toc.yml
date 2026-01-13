@@ -67,10 +67,6 @@ parts:
     chapters:
     - file: source/1_agent/09_economics/01_pomw
 
-  - caption: Conclusion
-    chapters:
-    - file: conclusions
-
   - caption: Appendices
     chapters:
     - file: source/1_agent/10_appendices/01_derivations
@@ -188,3 +184,7 @@ parts:
     - file: source/3_fractal_gas/appendices/12_qsd_exchangeability_theory
     - file: source/3_fractal_gas/appendices/13_quantitative_error_bounds
     - file: source/3_fractal_gas/appendices/14_faq
+
+  - caption: Conclusion
+    chapters:
+    - file: conclusions

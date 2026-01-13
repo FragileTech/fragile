@@ -7,7 +7,9 @@ project:
   title: Fragile Mechanics
   subtitle: On Geometry, Thermodynamics, and Bounded Intelligence
   authors:
-    - name: Guillem Duran Ballester
+    - name: Guillem Duran-Ballester
+      # Spanish naming convention: "Duran Ballester" is the complete surname
+      # (paternal: Duran, maternal: Ballester). Index under "D" for Duran.
   copyright: "2025"
   bibliography:
     - references.bib
