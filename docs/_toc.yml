@@ -158,6 +158,7 @@ parts:
     chapters:
     - file: source/3_fractal_gas/1_the_algorithm/01_algorithm_intuition
     - file: source/3_fractal_gas/1_the_algorithm/02_fractal_gas_latent
+    - file: source/3_fractal_gas/1_the_algorithm/04_algorithmic_sieve
 
   - caption: "Part II - The Fractal Set"
     chapters:
