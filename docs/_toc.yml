@@ -147,14 +147,37 @@ parts:
     - file: source/2_hypostructure/11_appendices/03_faq
 
   # ══════════════════════════════════════════════════════════════════════════════
-  # SUPPLEMENTARY
+  # VOLUME 3: FRACTAL GAS
   # ══════════════════════════════════════════════════════════════════════════════
 
   - caption: "Vol. 3 · Fractal Gas"
     chapters:
     - file: source/3_fractal_gas/intro_fractal_gas
+
+  - caption: "Part I - The Algorithm"
+    chapters:
     - file: source/3_fractal_gas/1_the_algorithm/01_algorithm_intuition
     - file: source/3_fractal_gas/1_the_algorithm/02_fractal_gas_latent
+
+  - caption: "Part II - The Fractal Set"
+    chapters:
     - file: source/3_fractal_gas/2_fractal_set/01_fractal_set
     - file: source/3_fractal_gas/2_fractal_set/02_causal_set_theory
     - file: source/3_fractal_gas/2_fractal_set/03_lattice_qft
+
+  - caption: "Part III - Appendices"
+    chapters:
+    - file: source/3_fractal_gas/appendices/01_fragile_gas_framework
+    - file: source/3_fractal_gas/appendices/02_euclidean_gas
+    - file: source/3_fractal_gas/appendices/03_cloning
+    - file: source/3_fractal_gas/appendices/04_single_particle
+    - file: source/3_fractal_gas/appendices/04_wasserstein_contraction
+    - file: source/3_fractal_gas/appendices/05_kinetic_contraction
+    - file: source/3_fractal_gas/appendices/06_convergence
+    - file: source/3_fractal_gas/appendices/07_discrete_qsd
+    - file: source/3_fractal_gas/appendices/08_mean_field
+    - file: source/3_fractal_gas/appendices/09_propagation_chaos
+    - file: source/3_fractal_gas/appendices/10_kl_hypocoercive
+    - file: source/3_fractal_gas/appendices/11_hk_convergence
+    - file: source/3_fractal_gas/appendices/12_qsd_exchangeability_theory
+    - file: source/3_fractal_gas/appendices/13_quantitative_error_bounds
