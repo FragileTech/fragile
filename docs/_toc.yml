@@ -152,4 +152,5 @@ parts:
 
   - caption: "Supplementary · Fractal Gas"
     chapters:
-    - file: source/3_fractal_gas/03_fractal_gas_latent
+    - file: source/3_fractal_gas/01_algorithm_intuition
+    - file: source/3_fractal_gas/02_fractal_gas_latent
