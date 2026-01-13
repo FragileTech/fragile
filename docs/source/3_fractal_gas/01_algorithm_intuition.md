@@ -1,5 +1,23 @@
 # The Fractal Gas Algorithm Family
 
+## TLDR
+
+**Population-Based Search with Selection Pressure**: The Fractal Gas is a swarm algorithm where walkers explore a state space through soft companion selection, dual-channel fitness evaluation (balancing reward and diversity), and momentum-conserving cloning. Low-fitness walkers are replaced by perturbed copies of high-fitness companions, creating an adaptive search that automatically concentrates effort in promising regions.
+
+**Three-Timescale Analysis**: The algorithm admits rigorous mathematical characterization across three timescales: discrete (individual Markov transitions), scaling (mean-field limit with $N \to \infty$ walkers), and continuum (WFR reaction-diffusion PDE). This hierarchy connects practical implementation to theoretical guarantees.
+
+**Guaranteed Revival and Population Maintenance**: Under mild parameter constraints, dead walkers are guaranteed to resurrect with probability 1 whenever at least one walker remains alive. This prevents gradual extinction and ensures the swarm maintains constant population $N$—only the distribution of walkers evolves, not their count.
+
+**Flexible Instantiation Framework**: The core mechanisms (companion selection, fitness computation, cloning, kinetics) define an abstract framework that admits multiple instantiations: the Latent Fractal Gas (learned latent space with Riemannian geometry), the Fragile Gas (RL with environment feedback), and the Abstract Fractal Gas (minimal specification for theoretical analysis).
+
+## Introduction
+
+This chapter provides an intuitive, implementation-oriented introduction to the Fractal Gas algorithm family. Where the formal treatment in {doc}`02_fractal_gas_latent` develops the mathematical machinery for convergence proofs and sieve verification, this chapter focuses on *what the algorithm does* and *why each component exists*. The goal is to build understanding before formalism—to make the subsequent mathematical analysis feel inevitable rather than arbitrary.
+
+The Fractal Gas sits at the intersection of several algorithmic traditions: particle swarm optimization (population-based search), genetic algorithms (selection and reproduction), MCMC methods (sampling from distributions), and interacting particle systems (mean-field limits). What distinguishes it is the precise mathematical characterization available in the continuum limit: the swarm density evolves according to a reaction-diffusion equation where mass flows toward high-fitness regions while diffusion maintains diversity. This connection to well-understood PDEs is what enables the strong convergence guarantees developed in the appendices.
+
+The chapter is organized around the algorithm's core components: **Section 1** defines walkers and swarm state; **Section 2** develops soft companion selection with its minorization guarantees; **Section 3** constructs the dual-channel fitness function balancing exploitation and exploration; **Section 4** specifies momentum-conserving cloning mechanics; **Section 5** proves the revival guarantee preventing extinction; **Section 6** introduces the kinetic operator interface; **Section 7** assembles the complete step operator; **Section 8** surveys algorithm variants; and **Section 9** previews the connection to continuum theory. A parameter glossary provides quick reference for all tunable quantities.
+
 :::{div} feynman-prose
 Imagine you're trying to find the highest point in a vast, fog-covered mountain range. You can't see the peaks, but you have a team of hikers scattered across the landscape. Each hiker can sense the altitude at their location and can communicate with nearby teammates. The clever strategy isn't to have everyone climb independently—it's to have hikers in promising locations "clone" themselves while hikers in dead ends "die off," with the dead hikers respawning near successful ones.
 
@@ -8,7 +26,7 @@ This is the essence of the Fractal Gas: a swarm of *walkers* exploring a space, 
 
 ---
 
-## Introduction
+## Overview
 
 A **Fractal Gas** is a population-based algorithm for optimization and sampling in high-dimensional spaces. It operates through three fundamental mechanisms:
 
