@@ -1,4 +1,24 @@
+(sec-diagnostics-stability-checks)=
 # Diagnostics: Stability Checks (Monitors)
+
+## TLDR
+
+- Replace “hope + reward shaping” with **hard runtime contracts**: diagnostics are assertions that can halt/revert rather
+  than accumulate penalties.
+- Organize stability monitoring into **typed checks** (the “dashboard”) with clear semantics: switching/Zenoness,
+  compactness, scaling, coupling, value/pathology, and cross-network synchronization.
+- Use diagnostics both as **safety guarantees** (block unsafe actions) and as **training signals** (calibrate
+  multipliers, tune tolerances, gate updates).
+- Make failures **localizable**: each node answers “what failed, where, why”, which is essential for debugging complex
+  learning systems.
+- This chapter defines the stability layer; the next chapters cover **limits/barriers** and **failure/intervention**
+  logic.
+
+## Roadmap
+
+1. The core stability checks and the pathologies they detect.
+2. How to set tolerances and mix checks into optimization.
+3. How diagnostics gate training updates and trigger interventions.
 
 :::{div} feynman-prose
 Here is the central idea: instead of hoping your agent behaves well and debugging after it fails, you build in runtime contracts that catch problems as they happen. Think of a car dashboard. The engine does not just explode when oil pressure drops. A sensor notices, a light comes on, and you pull over before the damage is done.
@@ -1014,7 +1034,3 @@ The three adaptive multiplier methods above (Primal–Dual, PID, Learned Precisi
 
 The Governor subsumes these by learning the appropriate response to each diagnostic signature via bilevel optimization. See {ref}`Section 26 <sec-theory-of-meta-stability-the-universal-governor-as-homeostatic-controller>` for stability guarantees via Lyapunov analysis.
 :::
-
-
-
-(sec-limits-barriers)=

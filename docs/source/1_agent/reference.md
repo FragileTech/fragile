@@ -1,5 +1,11 @@
 # Agent reference (no proofs)
 
+## TLDR
+
+- This is a **proof-free glossary** of every labeled definition/axiom/theorem in Volume 1 (`docs/source/1_agent/`).
+- Use it as a fast lookup when reading lectures; each item links back to its original context via `{prf:ref}`.
+- It is intentionally redundant and not narrative: the lectures explain *why*; this file records *what was stated*.
+
 This file is an **exhaustive, proof-free** extraction of every labeled mathematical object
 (`definition`, `axiom`, `assumption`, `lemma`, `proposition`, `theorem`, `corollary`,
 `conjecture`, `remark`, `algorithm`) in `docs/source/1_agent/`.

@@ -1,6 +1,11 @@
 (sec-appendix-b-units-parameters-and-coefficients)=
 # {ref}`Appendix B <sec-appendix-b-units-parameters-and-coefficients>`: Units, Parameters, and Coefficients (Audit Table)
 
+## TLDR
+
+- Centralize **units, parameters, and coefficients** so thresholds and regularizers are auditable across chapters.
+- Use this when implementing: it prevents silent unit mismatches and makes “what is this constant?” a lookup, not a hunt.
+
 (sec-appendix-b-base-units)=
 ## B.1 Base Units (Information + Steps)
 
@@ -91,6 +96,5 @@ Some Greek letters are intentionally overloaded in different submodels:
 - $\tau$ appears as (i) scale time ({ref}`Section 1.3 <sec-the-chronology-temporal-distinctions>`), (ii) the entropy-weight coefficient in Section 2.11.3, and (iii) the temperature in some contrastive losses; use local definitions.
 - $\gamma$ appears as (i) discount factor, (ii) the World Model volatility scaling coefficient $\gamma$ ({ref}`Section 3.2 <sec-scaling-exponents-characterizing-the-agent>`), and (iii) friction coefficient in overdamped dynamics ({ref}`Section 22.4 <sec-the-geodesic-baoab-integrator>`).
 - $\lambda$ appears as (i) Lyapunov rate ($s^{-1}$), (ii) generic loss weights (dimensionless), and (iii) other Lagrange multipliers (units stated locally).
-
 
 

@@ -1,7 +1,7 @@
 ---
 title: "The Hypostructure Formalism: A Categorical Framework for Singularity Resolution"
 subtitle: "From Higher Topos Theory to Constructive Verification"
-author: "Guillem Duran Ballester"
+author: "Guillem Duran-Ballester"
 ---
 
 # The Hypostructure Formalism
@@ -21,6 +21,16 @@ This approach resolves the "circularity of compactness" critique by treating com
 6. **Factory metatheorems** enabling type-based instantiation from definitions alone
 
 ---
+
+## About This File (Single-File Edition)
+
+This is a **consolidated single-file** edition of the Hypostructure volume. For the modular chapter layout, see the files under `docs/source/2_hypostructure/`.
+
+## How to Use This File
+
+- Use this file for full-text search or single-file export (PDF/print).
+- Prefer the modular chapters for navigation and cross-references.
+- When editing, update the modular chapters first and regenerate this file.
 
 # Part I: Categorical Foundations
 
@@ -154,10 +164,14 @@ then Interface Permit $\mathrm{Rep}_K(T, Z)$ holds, and hence the conjecture for
 1. **(N1)** Category $\mathbf{Hypo}_T$ of admissible T-hypostructures satisfying core interface permits $C_\mu$, $D_E$, $\mathrm{SC}_\lambda$, $\mathrm{LS}_\sigma$, $\mathrm{Cap}_H$, $\mathrm{TB}_\pi$, $\mathrm{GC}_\nabla$
 2. **(N2)** Hypostructure assignment $Z \mapsto \mathbb{H}(Z)$
 3. **(N3)** Conjecture equivalence: $\mathrm{Conj}(T,Z) \Leftrightarrow \text{Interface Permit } \mathrm{Rep}_K(T,Z)$
-4. **(N8)** Representational completeness of parametrization $\Theta$
-5. **(N9)** Existence of universal Rep-breaking pattern with initiality property (see Initiality Lemma below)
-6. **(N10)** Admissibility of $\mathbb{H}(Z)$
-7. **(N11)** Obstruction condition: $\mathrm{Hom}(\mathbb{H}_{\mathrm{bad}}^{(T)}, \mathbb{H}(Z)) = \emptyset$
+4. **(N4)** Thin kernel objects exist and expand to hypostructures (Definitions {prf:ref}`def-thin-objects`, {prf:ref}`thm-expansion-adjunction`)
+5. **(N5)** The Sieve functor and certificate chain are well-defined and finite (Definitions {prf:ref}`def-sieve-functor`, {prf:ref}`def-cert-finite`)
+6. **(N6)** Gate evaluators are sound (Metatheorem {prf:ref}`mt-fact-gate`)
+7. **(N7)** Rep-constructive representation substrate exists for $T$ (Definition {prf:ref}`def-rep-constructive`)
+8. **(N8)** Representational completeness of parametrization $\Theta$
+9. **(N9)** Existence of universal Rep-breaking pattern with initiality property (see Initiality Lemma below)
+10. **(N10)** Admissibility of $\mathbb{H}(Z)$
+11. **(N11)** Obstruction condition: $\mathrm{Hom}(\mathbb{H}_{\mathrm{bad}}^{(T)}, \mathbb{H}(Z)) = \emptyset$
 
 :::{prf:theorem} Categorical Completeness of the Singularity Spectrum
 :label: thm-categorical-completeness
@@ -1721,7 +1735,7 @@ To instantiate the sieve for a specific system, one must implement each projecti
 | 1    | $D_E$                         | EnergyCheck      | $K_{D_E}^+$ / $K_{D_E}^-$                                                                             | $E$            | Flow $\Phi$              | $\mathfrak{D}$ on $\Phi$        | Energy functional                  | Is Energy Finite?                               | $E[\Phi] < \infty$                            |
 | 2    | $\mathrm{Rec}_N$              | ZenoCheck        | $K_{\mathrm{Rec}_N}^+$ / $K_{\mathrm{Rec}_N}^-$                                                       | $N$            | Jump sequence $J$        | $\mathfrak{D}$ on $\Phi$        | Event counter                      | Are Discrete Events Finite?                     | $N(J) < \infty$                               |
 | 3    | $C_\mu$                       | CompactCheck     | $K_{C_\mu}^+$ / $K_{C_\mu}^-$                                                                         | $\mu$          | Profile $V$              | $\mathfrak{D}$ on $\mathcal{X}$ | Concentration measure              | Does Energy Concentrate?                        | $\mu(V) > 0$                                  |
-| 4    | $\mathrm{SC}_\lambda$         | ScaleCheck       | $K_{\mathrm{SC}_\lambda}^+$ / $K_{\mathrm{SC}_\lambda}^-$                                             | $\lambda$      | Profile $V$              | $\mathfrak{D}$ on $\mathcal{X}$ | Scaling dimension                  | Is Profile Subcritical?                         | $\lambda(V) < \lambda_c$                      |
+| 4    | $\mathrm{SC}_\lambda$         | ScaleCheck       | $K_{\mathrm{SC}_\lambda}^+$ / $K_{\mathrm{SC}_\lambda}^-$                                             | $(\alpha,\beta)$ | Profile $V$              | $\mathfrak{D}$ on $\mathcal{X}$ | Scaling exponents                  | Is Profile Subcritical?                         | $\alpha > \beta$                               |
 | 5    | $\mathrm{SC}_{\partial c}$    | ParamCheck       | $K_{\mathrm{SC}_{\partial c}}^+$ / $K_{\mathrm{SC}_{\partial c}}^-$                                   | $\partial c$   | Constants $c$            | $\mathfrak{D}$ on $\mathcal{X}$ | Parameter derivative               | Are Constants Stable?                           | $\lVert\partial_c\rVert < \epsilon$           |
 | 6    | $\mathrm{Cap}_H$              | GeomCheck        | $K_{\mathrm{Cap}_H}^+$ / $K_{\mathrm{Cap}_H}^-$                                                       | $\dim_H$       | Singular set $S$         | $\mathfrak{D}$ on $\mathcal{X}$ | Hausdorff dimension                | Is Codim $\geq$ Threshold?                      | $\mathrm{codim}(S) \geq 2$                    |
 | 7    | $\mathrm{LS}_\sigma$          | StiffnessCheck   | $K_{\mathrm{LS}_\sigma}^+$ / $K_{\mathrm{LS}_\sigma}^-$                                               | $\sigma$       | Linearization $L$        | $\mathfrak{D}$ on $\Phi$        | Spectrum                           | Is Gap Certified?                               | $\inf \sigma(L) > 0$                          |
@@ -13751,7 +13765,7 @@ The thermodynamic language provides a **unified vocabulary** for describing deci
 
 ---
 
-# Part XIX: Algorithmic Completeness
+# Part XVIII: Algorithmic Completeness
 
 ## 55. The Taxonomy of Computational Methods
 
@@ -14058,7 +14072,7 @@ This framing avoids the Razborov-Rudich barrier by not claiming constructive acc
 
 ---
 
-# Part XX: The Set-Theoretic Foundation
+# Part XIX: The Set-Theoretic Foundation
 
 ## 56. The ZFC Translation Layer
 
@@ -14907,7 +14921,7 @@ The following notation is used consistently throughout this document. Symbols ar
 
 **Note:** Type A/B classification refers to *progress measures* for termination analysis (Definition {prf:ref}`def-progress-measures`), distinct from Rigor Class L/F/B which refers to *proof provenance*.
 
-## ZFC Translation (Part XX)
+## ZFC Translation (Part XIX)
 
 | Symbol | Name | Definition | Section |
 |--------|------|------------|---------|

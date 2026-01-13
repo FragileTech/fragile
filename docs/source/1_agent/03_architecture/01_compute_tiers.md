@@ -1,4 +1,23 @@
+(sec-computational-considerations)=
 # Computational Considerations
+
+## TLDR
+
+- You cannot run every diagnostic/barrier at every step; this chapter organizes the Sieve into **compute tiers**.
+- Split checks into **online vitals** (cheap), **periodic checks** (medium), and **offline/surrogates** (expensive or
+  infeasible).
+- Provide order-of-growth guidance for interface checks, barrier enforcement, and synchronization losses so you can
+  budget compute explicitly.
+- Use the tiering to design a **fail-fast monitoring stack** that stays tractable in real training loops.
+- This chapter is the engineering bridge to the approximation chapter: anything infeasible here should map to a proxy in
+  {ref}`Section 8 <sec-infeasible-implementation-replacements>`.
+
+## Roadmap
+
+1. Interface check tiers (what to run each step).
+2. Barrier tiers (architectural vs. specialized vs. infeasible).
+3. Synchronization loss costs and rollout/closure overhead.
+4. Recommended deployment schedules by compute budget.
 
 :::{div} feynman-prose
 Now we come to the part that separates theorists from engineers---and frankly, I have a lot of sympathy for the engineers here.
@@ -2674,5 +2693,3 @@ The jump consistency loss should be introduced after the atlas structure has sta
 | **Full training**     | 100+   | 0.1–1.0                 | Joint optimization of all components        |
 
 **Rationale:** Enforcing jump consistency before charts are stable can prevent the atlas from finding the optimal partition. Once charts are stable, the jump operators learn to reconcile their coordinate systems.
-
-(sec-infeasible-implementation-replacements)=

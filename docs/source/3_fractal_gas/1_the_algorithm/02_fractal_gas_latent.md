@@ -223,6 +223,14 @@ The key insight is that this creates a self-correcting system. Particles that wa
 
 ### State and Distance
 
+:::{div} feynman-prose
+:class: feynman-added
+
+Before we get into the details, let me make sure you have the right picture. Each "walker" is a point in phase space: it has a position $z$ (where am I?) and a velocity $v$ (which way am I going?). The position lives in the latent space $\mathcal{Z}$, which might be the internal representation of a neural network, a compressed encoding of the world, or any other abstract space where optimization happens.
+
+Now, when we say two walkers are "close," we need to define what that means. The algorithmic distance $d_{\text{alg}}$ combines position similarity and velocity similarity with a tunable weight $\lambda_{\text{alg}}$. If $\lambda_{\text{alg}} = 0$, only position matters (two particles going opposite directions can still be "close"). If $\lambda_{\text{alg}}$ is large, velocity agreement becomes important (particles moving the same direction are "closer" even if separated in space). This turns out to matter for the companion selection: do we want particles to team up based on where they are, or based on where they are going?
+:::
+
 Let $z_i \in \mathcal{Z}$ and $v_i \in T_{z_i}\mathcal{Z}$ be the latent position and tangent velocity of walker $i$.
 Define the algorithmic distance:
 
@@ -334,6 +342,16 @@ This conserves $\sum_{k \in G} v_k$ (momentum with unit mass) for each group upd
 
 ### Anisotropic Diffusion (Stiffness-Adapted)
 
+:::{div} feynman-prose
+:class: feynman-added
+
+Here is something that should make you sit up. Most algorithms use the same amount of noise in every direction. But nature is smarter than that. When you are exploring a fitness landscape, some directions are "stiff" (changing rapidly) and some are "flat" (changing slowly). If you use the same noise everywhere, you waste exploration budget in the flat directions where it does not matter, and you destabilize the stiff directions where small perturbations cause large changes.
+
+The anisotropic diffusion tensor looks at the local curvature of the fitness landscape (the Hessian) and adjusts the noise accordingly. In flat directions, it injects more noise because you can afford to explore widely. In stiff directions, it injects less noise because you need to be careful. The regularization term $\epsilon_{\Sigma} I$ ensures the tensor is always well-defined, even when some eigenvalues of the Hessian are near zero.
+
+This is not just a heuristic. It is the natural thing to do if you think about exploration as a control problem: you want to maximize information gain per unit of noise injected, and that means adapting to the local geometry of the landscape.
+:::
+
 The swarm employs an anisotropic diffusion term derived from the Hessian of the fitness potential $V_{\text{fit}} = (d')^{\beta_{\text{fit}}} (r')^{\alpha_{\text{fit}}}$. The diffusion tensor is:
 
 $$
@@ -343,6 +361,16 @@ $$
 This tensor scales the driving noise to align exploration with the local stiffness of the fitness landscape (flat directions $\to$ large noise, stiff directions $\to$ small noise). The term $\epsilon_{\Sigma} I$ ensures uniform ellipticity.
 
 ### Viscous Coupling (State-Dependent Velocity Smoothing)
+
+:::{div} feynman-prose
+:class: feynman-added
+
+Here is an optional ingredient that makes the swarm behave more like a fluid than a gas. Without viscous coupling, each particle moves independently: its velocity is only affected by the external force and thermal noise. With viscous coupling, nearby particles start to *influence each other's velocities*.
+
+The physics is like a viscous fluid: if your neighbors are all moving right and you are moving left, you feel a force pushing you rightward. The strength of this force depends on how close your neighbors are (via the Gaussian kernel) and how different their velocities are from yours. The key property is that this coupling *dissipates relative kinetic energy* without adding or removing net momentum from the system. It is a smoothing operation: it makes the velocity field more coherent, reducing the wild fluctuations where neighboring particles point in opposite directions.
+
+Why would you want this? For exploration, sometimes you want the swarm to "flow" coherently through regions of the landscape rather than having each particle wander independently. The viscous coupling provides this coherence while still allowing the thermostat to inject randomness for exploration.
+:::
 
 The latent gas includes an optional *viscous-like* velocity coupling that smooths the swarm's velocity field and dissipates *relative* kinetic energy without injecting momentum. This is embedded within the broader framework of Langevin dynamics {cite}`gardiner2009stochastic,pavliotis2014stochastic`.
 
@@ -479,6 +507,10 @@ since each term in the final sum is nonnegative and $K_{ij}\ge 0$.
 
 :::{div} feynman-prose
 Here is something remarkable that I want you to see. The viscous force we just defined is not merely a fluid-like smoothing term—it is the gateway to gauge symmetry {cite}`yang1954conservation,weinberg1995quantum`. The same structure that makes walkers share velocity information creates what physicists call "color charge."
+
+Now, what does "gauge symmetry" mean in plain language? Imagine you have a bunch of arrows (the velocity vectors) at each walker position. The question is: if you rotate all the arrows at position $i$ by some angle $\theta_i$, and rotate all the arrows at position $j$ by some different angle $\theta_j$, can you still make physical sense of the dynamics? If the answer is yes, and if the physics only depends on the *differences* between these rotations, then you have a gauge symmetry.
+
+The beautiful thing is that the viscous coupling naturally creates this structure. Each walker accumulates a complex "color charge" by summing over its interactions with neighbors. The *phase* of each contribution is the momentum difference (like a rotation angle), and the *amplitude* is the distance-based kernel weight (how strongly they interact). When you sum these up across all latent directions, you get a vector in $\mathbb{C}^d$, which transforms under the gauge group SU($d$).
 
 The key insight is that viscous coupling is fundamentally **pairwise**: walker $i$ couples to walker $j$ with strength determined by (1) their distance, via the localization kernel $K_{\mathrm{visc}}(z_i, z_j)$ (Definition {prf:ref}`def-latent-fractal-gas-viscous-force`), and (2) their velocity difference $(v_j - v_i)$. These two quantities—distance and momentum difference—are precisely what we need to construct a complex coupling. We reuse the viscous kernel; its range parameter $\epsilon$ sets the color interaction scale.
 
@@ -809,6 +841,16 @@ The output is the next swarm state $(z, v)$ and diagnostics (fitness, companions
 
 ## Derived Constants (Computed from Parameters)
 
+:::{div} feynman-prose
+:class: feynman-added
+
+Let me tell you what this section is really about. You have a bunch of knobs you can turn on your algorithm: the kernel range $\epsilon$, the fitness exponents $\alpha$ and $\beta$, the cloning jitter $\sigma_x$, and so on. But what you actually *care about* are things like: "How fast does my algorithm converge?" and "What is the mean-field error at swarm size $N$?"
+
+The derived constants bridge this gap. They are the quantities that appear in the convergence theorems, computed from your tunable parameters. The kernel floor $m_\epsilon$ tells you how much overlap your companion distributions must have (critical for minorization). The fitness bounds $V_{\min}$ and $V_{\max}$ determine how much selection pressure you can apply. The OU coefficients $c_1$ and $c_2$ determine your temperature bath dynamics.
+
+Think of this section as a lookup table. You plug in your algorithm configuration, and out come the numbers that go into the rate equations. If your convergence is too slow, you can trace back through these derived constants to figure out which knob to turn.
+:::
+
 This section records *derived constants* that are computed deterministically from the algorithm parameters (and the bounds object). These are the constants that appear in the mean-field/QSD convergence statements.
 
 ### Summary Table (Derived)
@@ -893,6 +935,14 @@ so $P_i(\cdot)\ge \frac{m_\epsilon}{k-1}U_i(\cdot)$.
 For dead walkers, the implementation assigns companions uniformly from $\mathcal{A}$.
 
 ### Confinement Constant from Latent Domain (Dirichlet)
+
+:::{div} feynman-prose
+:class: feynman-added
+
+The Dirichlet spectral gap is the answer to a beautiful question: "If you have a particle diffusing in a box, and you absorb it whenever it hits the wall, how fast does the survival probability decay?" The answer is exponential, with rate given by the lowest eigenvalue of the Laplacian with Dirichlet (absorbing) boundary conditions.
+
+For our purposes, this gap $\kappa_{\mathrm{conf}}^{(B)}$ sets the time scale for confinement. A large gap means particles quickly get absorbed at the boundary and recycled. A small gap means particles can wander for a long time before hitting the edge. This constant feeds into the LSI/KL decay rates: faster confinement means faster mixing.
+:::
 
 For QSD/killed-kernel characterizations on a bounded domain, it is convenient to record a geometric confinement scale from the latent domain. Define the Dirichlet spectral gap
 
@@ -1050,6 +1100,16 @@ This is the “cloning noise” scale that appears in KL/LSI conditions in the f
 
 ### Boris Rotation and Thermostat Bounds
 
+:::{div} feynman-prose
+:class: feynman-added
+
+Now, here is something that trips people up about the Boris rotation. You might think: "We have a curl in the reward field. That means the force is not conservative. Does that not pump energy into the system?"
+
+The answer is no, and here is why. Think about a charged particle in a magnetic field. The magnetic force is always perpendicular to the velocity, so it can change the *direction* of motion but never the *speed*. It does zero work. The Boris rotation is the discrete-time version of exactly this physics.
+
+The curl of the reward field $\mathcal{F} = d\mathcal{R}$ acts like a magnetic field in the space of rewards. When $\mathcal{F} \neq 0$, there is no single "reward potential" that the particle is descending; instead, there are rotational currents. The Boris step handles these by rotating the momentum vector without changing its length. This is crucial for numerical stability: you do not want your integrator to accidentally create or destroy energy because of the non-conservative part of the force.
+:::
+
 The Lorentz term is integrated with a Boris rotation (Definition {prf:ref}`def-baoab-splitting`), which is a metric-orthogonal rotation in momentum space. As a result, it preserves the kinetic norm $\|p\|_G$ and does no work.
 
 :::{prf:lemma} Boris rotation preserves kinetic energy
@@ -1068,6 +1128,16 @@ Hence the Lorentz term does not change kinetic energy; it only redistributes mom
 
 ### OU Thermostat (Momentum Ellipticity)
 
+:::{div} feynman-prose
+:class: feynman-added
+
+The thermostat is the "temperature bath" that couples your system to the outside world. Without it, you would have a deterministic system that conserves energy and cannot escape local minima. With it, you have controlled randomness that enables exploration.
+
+The Ornstein-Uhlenbeck thermostat does two things simultaneously. First, it applies friction (the $c_1 p$ term contracts momentum toward zero). Second, it adds noise (the $c_2 G^{1/2} \xi$ term kicks momentum randomly). The beautiful thing is that these two effects are *balanced*: the friction removes energy at exactly the rate the noise adds it, so the system equilibrates at temperature $T_c$ instead of either freezing or exploding.
+
+The coefficients $c_1 = e^{-\gamma h}$ and $c_2 = \sqrt{(1-c_1^2)T_c}$ are not arbitrary. They are the *exact* discrete-time solution to the Langevin equation. This means the thermostat step is not an approximation; it is the true Ornstein-Uhlenbeck process sampled at finite time step. And because it injects noise in *all* momentum directions (full-rank Gaussian), it guarantees that the Markov chain can eventually reach any state from any other state. This is the hypoelliptic smoothing that makes the whole mixing theory work.
+:::
+
 The O-step applies the Ornstein-Uhlenbeck thermostat
 
 $$
@@ -1080,6 +1150,16 @@ This injects full-rank Gaussian noise in momentum with covariance $c_2^2 G(z)$, 
 ---
 
 ## Thin Interfaces and Operator Contracts
+
+:::{div} feynman-prose
+:class: feynman-added
+
+The phrase "thin interface" might sound like software engineering jargon, but it captures a deep idea. When you have a complex system with many interacting parts, you need a way to describe it that is *minimal* yet *complete*. Minimal means you only specify what is absolutely necessary for the verification machinery to work. Complete means nothing essential is left out.
+
+Think of it like this: if you are proving theorems about Langevin dynamics, you do not need to know the color of the walkers or what programming language implements the random number generator. What you *do* need to know is: the state space, the potential function, the dissipation rate, the symmetries, and the boundary conditions. These five things (Arena, Potential, Cost, Invariance, Boundary) are the thin objects. Everything else is implementation detail.
+
+The beauty of thin interfaces is compositionality. Once you specify these five objects and check that they satisfy certain contracts, you can invoke the framework's convergence theorems without thinking about the messy details of your particular algorithm. The theorems are proven once, generically, for any system that satisfies the thin contracts.
+:::
 
 ### Thin Objects (Summary)
 
@@ -1104,6 +1184,24 @@ This injects full-rank Gaussian noise in momentum with covariance $c_2^2 G(z)$, 
 ---
 
 ## Instantiation Assumptions (Algorithmic Type)
+
+:::{div} feynman-prose
+:class: feynman-added
+
+Every mathematical theorem comes with fine print: the assumptions under which it holds. The question is: are these assumptions reasonable? Can you check them in practice? Here is what each assumption buys us:
+
+**A1 (Confinement + killing):** This says the walkers cannot escape to infinity. Not because the space is bounded (the latent space can be $\mathbb{R}^d$), but because three forces conspire to keep them home: (1) selection pressure makes distant particles have low fitness, so they get cloned away; (2) the environment kills particles that leave the operational region; (3) a confining potential $\Phi_{\text{conf}} \sim |z|^2$ grows without bound. The interior can be arbitrarily wild, but at large distances, there is no escaping the potential well.
+
+**A2 (Regularity):** The reward field and metric must be smooth enough that we can take derivatives without hitting singularities. This is almost always satisfied by neural network architectures.
+
+**A3 (Velocity bound):** We restrict attention to a "velocity core" $\|v\| \le V_{\text{core}}$ for the quantitative bounds. This is not a physical restriction; it is an analysis convenience that can be removed with more work.
+
+**A4 (Non-degenerate noise):** Temperature and friction must be strictly positive. This ensures the thermostat actually thermalizes instead of being frozen or frictionless.
+
+**A5-A7:** Technical conditions ensuring the companion kernel is well-defined, no periodic boundary conditions interfere, and the viscous coupling behaves sensibly.
+
+The key insight is that these assumptions are *checkable at runtime*. You do not need a mathematician to verify them for each new problem; the sieve machinery does it automatically.
+:::
 
 These assumptions are the explicit witnesses used by RESOLVE-AutoAdmit/AutoProfile for the algorithmic type:
 
@@ -1541,6 +1639,18 @@ This section ties the **derived constants** above to the quantitative convergenc
 
 ### Factory Theorems (Lyapunov + LSI)
 
+:::{div} feynman-prose
+:class: feynman-added
+
+Now we come to the payoff. All those certificates we accumulated in Part II are not just for show. They are the *inputs* to two factory theorems that produce the actual convergence rates.
+
+The first factory takes your energy bound, confinement certificate, and stiffness bounds, and produces a Lyapunov function. Not just any Lyapunov function, but a specific one with explicit coefficients that you can compute.
+
+The second factory takes your mixing witness (the Doeblin constant from companion selection) and lifts it through a thin-to-continuum protocol to produce a Log-Sobolev Inequality. The LSI then implies exponential decay of relative entropy, which is one of the strongest forms of convergence you can ask for.
+
+The point is: you do not *construct* these certificates by hand. You provide the structural inputs, and the machinery produces the analytic outputs. This is what makes the framework scalable.
+:::
+
 This instantiation explicitly invokes the two factory theorems that turn validated gate certificates into the analytic
 objects used by the rate calculators:
 
@@ -1717,6 +1827,16 @@ Once $(c_{\min},c_{\max})$ (ellipticity), $\kappa_{\mathrm{conf}}$ (confinement)
 
 ## Part III-D: Fitness/Cloning Sensitivity (What Moves the Rates)
 
+:::{div} feynman-prose
+:class: feynman-added
+
+Ask yourself: if you wanted to make this algorithm converge faster, which knob would you turn? This section answers that question explicitly. Each parameter has a trade-off, and understanding these trade-offs is the key to practical tuning.
+
+The fitness exponents control selection pressure: high exponents mean aggressive cloning (fast convergence but risk of particle collapse). The floors $\eta$ and $\epsilon_{\mathrm{clone}}$ provide safety margins: increase them to stabilize the algorithm at the cost of slower adaptation. The kernel range $\epsilon$ is the exploration/exploitation dial: large $\epsilon$ means particles interact globally (good mixing, weak locality), small $\epsilon$ means particles interact locally (strong geometric alignment, weaker mixing).
+
+The cloning jitter $\sigma_x$ is particularly subtle. Too small, and cloned particles bunch up in exactly the same location, destroying the diversity that makes the swarm effective. Too large, and cloning is effectively random noise that ignores the fitness landscape. There is a sweet spot where cloning spreads good information without erasing it.
+:::
+
 The constants make the dependence transparent:
 
 1. **Exponents $\alpha_{\mathrm{fit}},\beta_{\mathrm{fit}}$:** increase $\alpha+\beta$ increases the ratio $V_{\max}/V_{\min}=\bigl(\frac{A+\eta}{\eta}\bigr)^{\alpha+\beta}$, increasing the range of scores and pushing clone probabilities toward the clip ($0$ or $1$). This typically increases $\lambda_{\mathrm{alg}}^{\mathrm{eff}}$ (faster contraction) but increases genealogical concentration, making $\sigma_x$ more important.
@@ -1732,6 +1852,16 @@ The constants make the dependence transparent:
 This section consolidates how the sieve execution and factory certificates discharge the assumptions required by framework metatheorems, transforming classical analytic requirements into computable algorithmic certificates.
 
 ### E.1 Superseded Assumptions (Factory Certificates Replace Classical Requirements)
+
+:::{div} feynman-prose
+:class: feynman-added
+
+Here is what I think is the most important insight of this whole document. Classical theorems in stochastic analysis require assumptions like "the potential is globally convex" or "the dissipation is uniformly bounded." These assumptions are almost never satisfied in practice, which means the theorems are almost never applicable. So what do you do?
+
+The Hypostructure framework sidesteps this problem entirely. Instead of asking "Is your potential convex?" it asks "Is $\kappa_{\mathrm{total}}$ positive?" The first question requires manual mathematical analysis of your specific potential. The second question requires running a computer program. And crucially, the second question is *sufficient* for the convergence guarantee, even when the first question has the answer "no."
+
+This is not cheating. The factory certificate genuinely replaces the classical assumption with something weaker but still sufficient. The selection mechanism provides confinement that the potential alone does not, and the factory tracks this contribution explicitly.
+:::
 
 The following classical assumptions are **not required** because the Algorithmic Factory (`src/fragile/convergence_bounds.py`) provides equivalent guarantees via computable certificates:
 

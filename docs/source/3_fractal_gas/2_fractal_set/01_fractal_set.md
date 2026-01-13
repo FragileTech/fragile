@@ -91,6 +91,19 @@ The following table summarizes the structural properties:
 
 ---
 
+:::{admonition} The Big Picture: Why This Structure?
+:class: feynman-added tip
+
+Before diving into the technical details, here is the forest before the trees:
+
+1. **Goal**: Store everything about an algorithm run in a coordinate-free way
+2. **Problem**: Some quantities (energies) are coordinate-free already; others (velocities, forces) depend on coordinate choice
+3. **Solution**: Split data into scalars (store on nodes) and vectors-as-spinors (store on edges)
+4. **Bonus**: The resulting structure is a 2D simplicial complex with natural gauge-theoretic properties
+
+The rest of this document makes these ideas precise. Section 1 explains the scalar/vector distinction. Section 2 defines nodes. Section 3 defines temporal edges (CST). Section 4 defines spatial edges (IG). Section 5 puts it all together with influence attribution (IA) edges and triangles. Section 6 proves that everything can be reconstructed. Section 7 shows how it works on curved manifolds. Section 8 gives practical guarantees.
+:::
+
 (sec-frame-invariance)=
 ## 1. Frame Invariance and Covariance
 
@@ -122,6 +135,18 @@ Vectors include: position $x$, velocity $v$, force $\mathbf{F}$, gradient $\nabl
 The key distinction: **scalars are the same number in all frames; vectors are the same geometric object but with different numerical components in different frames.**
 
 ### 1.2 The Spinor Representation
+
+:::{div} feynman-prose
+Now we come to what I think is the most beautiful part of this whole construction. You might ask: why not just store vectors as lists of numbers? What is all this spinor business about?
+
+Here is the problem. When you write a vector as $(3, 4, 5)$, you have secretly made a choice: you have picked a coordinate system. The number "3" means nothing by itself—it only means "3 units in the direction I am calling $e_1$." If someone else uses a different $e_1$, they get different numbers for the same physical arrow.
+
+Ordinarily this is fine—you just agree on coordinates. But what if you want to store data that can be read by *anyone*, in *any* coordinate system, without prior agreement? You need a representation that carries the geometry intrinsically, not relative to some arbitrary basis.
+
+Spinors do exactly this. A spinor is a complex object that encodes directional information in a basis-independent way. Two observers using different coordinates can both extract vectors from the same spinor—and they will get answers that are related by exactly the rotation relating their coordinate systems. The spinor is the common ground.
+
+This is not just mathematical elegance. It is operational: the Fractal Set can be serialized, transmitted, stored, and reconstructed by systems that never communicated about coordinate choices. The spinors carry the geometry with them.
+:::
 
 Vectors transform by $d \times d$ rotation matrices. For computational and geometric reasons, it is often preferable to represent vectors using **spinors**—complex objects that transform by a simpler (though higher-dimensional in complex terms) representation.
 
@@ -159,7 +184,31 @@ where $\iota: \mathbb{R}^d \to \mathbb{S}_d$ is the vector-to-spinor embedding.
 
 The sign ambiguity ($\pm U$ both correspond to $R$) reflects the double-cover structure and is a **gauge freedom**—both choices encode the same physical vector.
 
+:::{note}
+:class: feynman-added
+
+**The double cover: why $\pm U$ give the same rotation.** Imagine rotating a coffee cup 360 degrees. It returns to its starting position—that is the rotation $R = I$. But in spinor space, a 360-degree rotation corresponds to $U = -I$, not $U = +I$. You need to rotate *twice* (720 degrees) to get $U = +I$.
+
+This strange fact is not a bug; it is how spinors detect orientation. Fermions (like electrons) pick up a minus sign under 360-degree rotations, which is why they obey Pauli exclusion. For our purposes, the double cover means two spinor transformations give the same vector transformation—we just pick one consistently.
+
+The gauge freedom is real but harmless: both choices $\pm U$ produce the same physical answer when you extract vectors from spinors.
+:::
+
 ### 1.3 Vector-Spinor Correspondence
+
+:::{div} feynman-prose
+Now we need the actual recipe: given a vector, how do you make a spinor? And given a spinor, how do you get the vector back?
+
+The key tool is the Clifford algebra—a mathematical structure that encodes the geometry of orthonormal bases. Do not worry too much about the formalism; what matters is the result. In low dimensions, the conversion is simple and explicit.
+
+In 2D, a vector $(v_1, v_2)$ becomes the complex number $v_1 + iv_2$. That is the whole story. The spinor *is* a complex number, and you convert by treating the two components as real and imaginary parts.
+
+In 3D, things get more interesting. A vector becomes a 2-component complex spinor using spherical coordinates. The magnitude of the spinor equals the magnitude of the vector. The phase encodes the direction. Two spinors that differ by a complex phase of $e^{i\alpha}$ represent vectors that point in different directions. This is the Hopf fibration in disguise—one of the most beautiful structures in mathematics.
+
+In higher dimensions, the pattern continues but gets more complicated. The spinor dimension grows as $2^{\lfloor d/2 \rfloor}$, which eventually exceeds the vector dimension. This is the price of coordinate independence: you need extra degrees of freedom to encode the transformation properties.
+
+The critical property is *roundtrip consistency*: if you convert a vector to a spinor and back, you get the same vector. The spinor representation is faithful.
+:::
 
 The explicit correspondence uses the **Clifford algebra** $\mathrm{Cl}(d)$ generated by $\{e_1, \ldots, e_d\}$ with $e_i e_j + e_j e_i = -2\delta_{ij}$.
 
@@ -222,6 +271,16 @@ This is not just aesthetic. When the Fractal Set is passed between systems, seri
 
 (sec-nodes)=
 ## 2. Nodes: Spacetime Points with Scalar Data
+
+:::{div} feynman-prose
+Let me tell you what a node really is. A node is a *moment in a walker's life*—a snapshot of "who" (which walker), "when" (which timestep), and "how" (what was its state). But here is the key constraint: the node stores only what can be known without picking a direction.
+
+Think of it this way. Suppose you are blind but can feel temperature and hear sounds. You can measure how hot something is (a scalar). You can measure how loud it is (a scalar). But you cannot measure which direction the heat source is—that requires vision, which gives you directional information. The node is like a blind observer: it knows energy, fitness, whether the walker is alive or dead, but it does not know which way things are pointing.
+
+Why this restriction? Because direction requires a coordinate system, and we are building a coordinate-free data structure. Everything directional—velocities, forces, gradients—gets stored on edges, where the spinor representation handles the geometry. The node stays clean: pure scalars, pure frame-invariance.
+
+This separation is not arbitrary. It reflects a fundamental distinction in physics between intrinsic properties (mass, charge, energy) and relational properties (velocity relative to what? force in which direction?). The node captures the intrinsic; the edges capture the relational.
+:::
 
 ### 2.1 Node Set Definition
 
@@ -368,6 +427,18 @@ The number of alive walkers is $k_t := |\mathcal{A}(t)|$.
 :::
 
 ### 3.2 Causal Set Axioms
+
+:::{div} feynman-prose
+Here is something that should make you sit up. The structure we have built—this forest of CST edges connecting walkers across time—turns out to satisfy the mathematical axioms of *causal set theory*, which is one of the serious candidates for quantum gravity.
+
+Causal set theory says: spacetime is fundamentally discrete, and the only structure that matters is the causal ordering—who came before whom. You do not need coordinates, you do not need distances, you do not even need a notion of "space." All you need is a set of events and a relation that says "this event could have caused that event."
+
+The three axioms are almost embarrassingly simple. They say: you cannot be your own grandparent (no time travel). If A caused B and B caused C, then A caused C (causality is transitive). And between any two events, only finitely many things can happen (no infinite regress).
+
+The remarkable thing is that these axioms are *enough* to recover much of the geometry of spacetime. The causal structure determines the conformal structure—the "shape" of spacetime up to an overall scale. Our Fractal Set, by satisfying these axioms, inherits this geometric richness.
+
+I am not claiming that the Fractal Gas is a theory of quantum gravity. But I am pointing out that the mathematical structure we need for coordinate-free data storage is the *same* mathematical structure that appears in fundamental physics. This is not coincidence; it reflects the fact that coordinate-independence is a deep physical principle, not just a software engineering convenience.
+:::
 
 The CST structure satisfies the axioms of **causal set theory**, making it a valid discrete model of spacetime.
 
@@ -664,6 +735,16 @@ Each IG edge $e = (n_{i,t}, n_{j,t}) \in E_{\mathrm{IG}}$ carries the following 
 :::
 
 ### 4.4 Viscous Coupling Representation
+
+:::{div} feynman-prose
+Now let us talk about viscosity. In a real gas, molecules that are close together tend to drag each other along—fast molecules slow down, slow molecules speed up, and the gas develops a kind of internal friction. This is viscosity: the tendency of nearby particles to share momentum.
+
+The Fractal Gas has the same effect, but it is engineered rather than emergent. When walker $i$ is near walker $j$, they exchange momentum through a viscous coupling force. The force is proportional to the *velocity difference* $(v_j - v_i)$—if $j$ is moving faster, it pulls $i$ along; if $j$ is slower, it drags $i$ back.
+
+The strength of this coupling falls off with distance through the kernel $K_\rho(x_i, x_j) = \exp(-\|x_i - x_j\|^2 / 2\rho^2)$. Nearby walkers couple strongly; distant walkers barely feel each other. This is how the algorithm creates local coherence without global rigidity.
+
+Why do we want this? Because optimization benefits from coherent exploration. If all walkers in a region are moving in roughly the same direction, they can explore that direction efficiently. Without viscosity, walkers would scatter chaotically and waste computational effort. With viscosity, they form something like a flock of birds—individually free, but collectively coordinated.
+:::
 
 The viscous force creates momentum exchange between nearby walkers.
 
@@ -1086,6 +1167,23 @@ The IG and IA edges dominate memory for large $N$. Sparse storage (storing only 
 (sec-reconstruction)=
 ## 6. Reconstruction of Algorithm Dynamics
 
+:::{div} feynman-prose
+Now we come to the payoff. We have built this elaborate structure—nodes with scalars, edges with spinors, triangles closing causal loops—but what is it *for*? The answer is reconstruction: the ability to recover everything that happened, exactly, from the stored data.
+
+Think of it like a perfect black box recorder for an airplane. After a flight, you want to know: where was the plane at each moment? What forces acted on it? What did the pilot do? A good recorder captures all of this. A perfect recorder captures it in a way that any investigator, using any coordinate system, can analyze.
+
+The Fractal Set is a perfect recorder for the algorithm. Given the stored data, you can reconstruct:
+- Every walker's trajectory through phase space
+- Every force that acted on every walker at every moment
+- The fitness landscape at every point any walker visited
+- Which walkers cloned from which, and when
+- The full empirical measure—the statistical distribution of the walker swarm
+
+And you can do this without knowing what coordinate system was used to run the algorithm. The spinors carry the geometry; the reconstruction just extracts it.
+
+This is not a theoretical nicety. It means the Fractal Set is a *portable* record. You can run the algorithm on one machine, store the Fractal Set, ship it to another continent, and reconstruct the dynamics perfectly. No coordinate translation, no basis alignment, no information loss.
+:::
+
 The central property of the Fractal Set is **lossless reconstruction**: all algorithm dynamics can be recovered from the stored data.
 
 ### 6.1 Reconstructible Quantities
@@ -1236,6 +1334,18 @@ This is not just theoretical completeness. It means you can take a Fractal Set, 
 (sec-latent-instantiation)=
 ## 7. Instantiation in Latent Space
 
+:::{div} feynman-prose
+Everything we have built so far works in any state space. We have been careful to make no assumptions about geometry beyond what is needed for scalars and vectors. Now we cash in on that generality.
+
+The original Fractal Gas runs in Euclidean space $\mathbb{R}^d$ where the metric is flat: distances are computed the usual way, geodesics are straight lines, and the geometry is simple. But the *interesting* problems live in curved spaces. Think of optimization over probability distributions, where the natural geometry is Fisher-Rao. Or optimization in a learned latent space, where the metric reflects the structure of the data.
+
+The Latent Fractal Gas is what you get when you run the Fractal Set machinery on a curved manifold $(\mathcal{Z}, G)$ instead of flat Euclidean space. The spinors still work—they encode vectors in a coordinate-free way, regardless of whether the underlying space is curved. The triangles still close—they record causal interactions, regardless of the geometry. The reconstruction still works—you can recover trajectories and forces, now as curves on a manifold rather than straight lines in $\mathbb{R}^d$.
+
+What changes is the *dynamics*. In flat space, particles move in straight lines unless a force bends them. On a curved manifold, particles follow geodesics—the "straightest possible" curves on the surface. The integrator must respect this geometry, which is why we use the Boris-BAOAB scheme with its geodesic exponential map.
+
+The beautiful thing is that the Fractal Set does not care about these differences. It stores coordinates-free data regardless of whether the coordinates live in flat or curved space. The geometry is baked into the spinors; the curvature is encoded in how the spinors transform. The data structure is universal.
+:::
+
 The Fractal Set structure is independent of the underlying state space. It can be instantiated in Euclidean space $\mathbb{R}^d$ or in a learned latent manifold $(\mathcal{Z}, G)$. This section describes the **Latent Fractal Gas** instantiation.
 
 ### 7.1 Domain Shift: Euclidean to Latent
@@ -1266,6 +1376,18 @@ The key differences between Euclidean and latent instantiations:
 
 ### 7.2 Soft Companion Selection
 
+:::{div} feynman-prose
+Here is a key design choice in the Latent Fractal Gas: how does a walker decide who to pay attention to?
+
+In the simplest version, every walker would consider every other walker equally. But this is wasteful. A walker exploring the north side of the fitness landscape does not need to know what walkers on the south side are doing—they are too far away to matter.
+
+So we use *soft* companion selection. Each walker computes a probability distribution over other walkers, weighted by proximity in phase space. Close walkers get high weight; distant walkers get low weight. The algorithmic distance combines position and velocity—if two walkers are close *and* moving in similar directions, they are "companions" who should influence each other.
+
+The selection is "soft" because it uses a softmax-style exponential weighting rather than hard cutoffs. This makes the algorithm differentiable and stable. Small changes in walker positions cause small changes in companion weights, which prevents discontinuous jumps in the dynamics.
+
+Each walker samples two companions per timestep: one for computing diversity (how different am I from others?), one for cloning decisions (who should I copy if I am doing badly?). These can be different walkers—you might measure diversity against a nearby explorer while considering cloning from a distant high-performer.
+:::
+
 The Latent Fractal Gas uses **phase-space softmax** to select companions for cloning and diversity computation.
 
 :::{prf:definition} Companion Selection Kernel
@@ -1287,6 +1409,20 @@ Two companions are sampled independently at each timestep $t$:
 - **Cloning companion** $c_i^{\mathrm{clone}} \sim P_i(\cdot; t)$: Used for cloning source selection
 
 ### 7.3 Two-Channel Fitness Potential
+
+:::{div} feynman-prose
+The fitness function is the heart of any optimization algorithm. It tells walkers: "this is good, go here" or "this is bad, go away." But there is a subtlety that most optimization algorithms ignore: you want *both* to find good solutions *and* to explore broadly.
+
+If you only reward high fitness, all walkers converge to the first decent solution and get stuck. This is premature convergence—the bane of optimization. If you only reward diversity, walkers scatter randomly and never exploit what they find. This is pure exploration with no exploitation.
+
+The two-channel fitness solves this by *multiplying* two terms:
+- **Reward channel**: How good is my current position? Am I moving toward high reward?
+- **Diversity channel**: How different am I from nearby walkers? Am I exploring new territory?
+
+The product means you need both. A walker in a good location but surrounded by clones has low diversity, so moderate total fitness. A walker in a bad location but isolated has low reward, so moderate total fitness. The winners are walkers who find *novel* high-quality regions—new discoveries, not just refinements.
+
+The exponents $\alpha_{\mathrm{fit}}$ and $\beta_{\mathrm{fit}}$ let you tune the balance. High $\alpha$ emphasizes exploitation; high $\beta$ emphasizes exploration. The optimal balance depends on the problem landscape and how much you have already explored.
+:::
 
 :::{prf:definition} Two-Channel Fitness
 :label: def-fractal-set-two-channel-fitness
@@ -1318,6 +1454,16 @@ The exponents $\alpha_{\mathrm{fit}}, \beta_{\mathrm{fit}} > 0$ balance exploita
 :::
 
 ### 7.4 Momentum-Conserving Cloning
+
+:::{div} feynman-prose
+Cloning is how the Fractal Gas reallocates resources. When a walker is doing badly—stuck in a low-fitness region while others are thriving—it "dies" and is reborn at the location of a successful walker. This is computational natural selection: successful strategies get copied; unsuccessful ones get replaced.
+
+But there is a problem with naive cloning. If walker $i$ suddenly teleports to walker $j$'s position, the total momentum of the system changes discontinuously. This creates numerical instabilities and violates the physical intuition that the walker swarm is a kind of fluid.
+
+The solution is *momentum-conserving cloning*. When a group of walkers clone to the same target, they undergo an "inelastic collision" in velocity space. The center-of-mass velocity is preserved, but the relative velocities shrink by a factor $\alpha_{\mathrm{rest}}$ (the coefficient of restitution). If $\alpha_{\mathrm{rest}} = 1$, the collision is perfectly elastic and velocities are unchanged. If $\alpha_{\mathrm{rest}} = 0$, all walkers in the group end up with identical velocities—the center-of-mass velocity.
+
+This is exactly like pool balls colliding. The total momentum is conserved, but energy can be lost to "heat" (here, randomness). The effect is that cloning creates local coherence: walkers that clone together end up moving together, at least for a while.
+:::
 
 :::{prf:definition} Cloning Score and Probability
 :label: def-fractal-set-cloning-score
@@ -1369,6 +1515,21 @@ $$\sum_{k \in G} v_k' = |G| V_{\mathrm{COM}} = \sum_{k \in G} v_k. \quad \square
 
 ### 7.5 Anisotropic Diffusion
 
+:::{div} feynman-prose
+Here is a clever trick that makes the Fractal Gas much smarter than isotropic random search.
+
+In standard diffusion, randomness is added equally in all directions—the walker makes small random steps in a spherical cloud. But this is wasteful. Some directions are interesting (where the fitness varies slowly and exploration is needed), while others are dangerous (where the fitness varies rapidly and precision is needed).
+
+Anisotropic diffusion adapts the randomness to the local landscape. The key insight is that the Hessian $\nabla^2 V_{\mathrm{fit}}$—the matrix of second derivatives of the fitness potential—tells you about the curvature of the landscape.
+
+- **Large eigenvalue** = steep direction = the fitness changes rapidly if you move this way. You should step *carefully* here, with small random perturbations.
+- **Small eigenvalue** = flat direction = the fitness barely changes if you move this way. You can step *boldly* here, with large random perturbations.
+
+The diffusion tensor $\Sigma_{\mathrm{reg}} = (\nabla^2 V_{\mathrm{fit}} + \varepsilon_\Sigma I)^{-1/2}$ implements this automatically. It shrinks diffusion in steep directions and expands it in flat directions. The regularization $\varepsilon_\Sigma I$ ensures the tensor is always well-defined, even when the Hessian has zero eigenvalues.
+
+The result is that walkers explore efficiently: they zoom through flat valleys and tiptoe across ridges. This is dramatically more efficient than isotropic diffusion, especially in high-dimensional spaces where most directions are irrelevant.
+:::
+
 :::{prf:definition} Fitness-Adaptive Diffusion Tensor
 :label: def-fractal-set-anisotropic-diffusion
 
@@ -1383,6 +1544,24 @@ The effect is directional noise adaptation:
 - **Stiff directions** (large Hessian eigenvalues): Small diffusion → exploitation
 
 ### 7.6 Geodesic Integration (Boris-BAOAB)
+
+:::{div} feynman-prose
+The final piece of the puzzle is the integrator: how do we actually update walker positions and velocities? This is not as simple as it sounds, especially on a curved manifold.
+
+In flat space, you can use the obvious formula: $x_{\mathrm{new}} = x_{\mathrm{old}} + v \cdot \Delta t$. But on a curved manifold, "add velocity times time" does not even make sense—the velocity lives in a tangent space at one point, and you cannot add it to a point in a different tangent space. You need to use the *geodesic exponential map*, which traces out the path a particle would follow if it moved with that velocity on the curved surface.
+
+The Boris-BAOAB integrator is a sophisticated scheme designed for exactly this situation. It splits each timestep into five substeps:
+
+1. **B (Boris kick)**: Update momentum from forces, with special handling for curl (rotating forces)
+2. **A (drift)**: Move the position along the geodesic
+3. **O (thermostat)**: Add random noise (the Langevin part)
+4. **A (drift)**: Move again along the geodesic
+5. (The B at the end combines with the B at the start of the next step)
+
+The "Boris" part handles magnetic-like forces that would cause particles to spiral. The "BAOAB" structure ensures good statistical properties—the algorithm samples from the correct equilibrium distribution even with finite timesteps. The geodesic exponential map ensures the curved geometry is respected exactly, not approximated.
+
+This is the numerical engine that makes the Latent Fractal Gas work: a symplectic, geometry-respecting integrator that handles forces, curvature, and stochasticity all at once.
+:::
 
 :::{prf:definition} Boris-BAOAB Integrator
 :label: def-fractal-set-boris-baoab
@@ -1420,6 +1599,20 @@ The Boris-BAOAB integrator provides:
 
 (sec-guarantees)=
 ## 8. Operational Guarantees
+
+:::{div} feynman-prose
+You might wonder: is all this machinery practical? Does the coordinate-independence come at a cost that makes the Fractal Set unusable for real problems?
+
+The answer is: the costs are modest, and the benefits are substantial. Let me give you the summary before we dive into the details.
+
+**Storage**: Spinors cost at most 2x the storage of raw vectors (for $d \leq 8$). This is cheap insurance for coordinate independence.
+
+**Accuracy**: Reconstruction is exact for scalars and machine-precision for spinor-encoded vectors. You lose nothing to rounding in the spinor conversion.
+
+**Speed**: Common queries (position at time $t$, force at time $t$, neighbors of walker $i$) are $O(1)$ with simple indexing. Full reconstruction is $O(N^2 T)$—linear in the size of the data structure.
+
+The Fractal Set is not a theoretical curiosity. It is a practical data structure for storing and analyzing optimization algorithm executions, with costs comparable to naive logging and benefits that naive logging cannot provide.
+:::
 
 ### 8.1 Storage Efficiency
 

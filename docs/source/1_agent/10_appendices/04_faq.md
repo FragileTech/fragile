@@ -1,6 +1,13 @@
 (sec-appendix-d-frequently-asked-questions)=
 # {ref}`Appendix D <sec-appendix-d-frequently-asked-questions>`: Frequently Asked Questions
 
+## TLDR
+
+- This appendix answers common “reviewer objections” with **explicit cross-references** to mechanisms in the main text.
+- Use it when something feels implausible: most answers point to a specific diagnostic, theorem, or construction that
+  resolves the concern.
+- It is intentionally blunt: if the responses are unconvincing, the framework should be treated skeptically.
+
 This appendix addresses forty rigorous objections that a skeptical reviewer might raise. Each question is stated in its strongest form; the answers point to specific mechanisms and sections. If the responses are unconvincing, the framework deserves skepticism.
 
 (rb-fragile-lexicon)=
@@ -933,6 +940,5 @@ Yes. Saturation ($\rho = 1$) creates a metric singularity in Fisher-Rao geometry
 3. **Computational enforcement.** Node 62 (CausalityViolationCheck) enforces this constraint: any predicted transition that would violate the metric bound triggers a halt rather than an unphysical state. The singularity is not pathological; it is a prediction boundary that the framework respects ({ref}`sec-saturation-limit`).
 
 4. **Physical interpretation.** Just as a black hole's event horizon represents the boundary of causal influence in general relativity, the saturation boundary represents the limit of the agent's predictive reach. Beyond $\rho = 1$, no further probability mass can be concentrated—the belief has become certain, and no additional information can modify it.
-
 
 

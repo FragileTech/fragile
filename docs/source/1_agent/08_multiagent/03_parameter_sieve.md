@@ -1,6 +1,24 @@
 (sec-parameter-space-sieve)=
 # The Parameter Space Sieve: Deriving Fundamental Constants
 
+## TLDR
+
+- Treat “constants” as **feasibility constraints**: viable agents can only exist inside a region of parameter space where
+  causality, capacity, thermodynamics, and stability all hold simultaneously.
+- Collect operational constants into a single parameter vector $\Lambda$ and express the architecture as coupled
+  inequalities (“the Sieve” in parameter space).
+- Off-feasible-region behavior is categorical: violations produce causal incoherence, holographic overload, thermodynamic
+  inconsistency, or ontological dissolution.
+- This chapter is a synthesis node: it ties together metric law, WFR, belief dynamics, metabolism, and information
+  bounds into one constraint system.
+- Output: a checklist of constraints you can use to reason about scaling limits and “why the knobs can’t be arbitrary”.
+
+## Roadmap
+
+1. Formulate the parameter vector and the constraint system.
+2. Derive/justify each inequality from earlier chapters.
+3. Interpret the feasible region and what failure looks like outside it.
+
 :::{div} feynman-prose
 Here is an audacious question: Why is the speed of light what it is? Why is the fine structure constant approximately 1/137? For a century, physicists have treated these as brute facts---numbers you look up in a table, not numbers you derive.
 
@@ -13,7 +31,12 @@ And here is the punchline: our universe sits inside that feasible region. Not be
 This is not mysticism. It is constraint satisfaction. The same logic that tells you a bridge must be strong enough to hold its own weight tells you that a universe must have constants compatible with agency. We are going to derive those constraints.
 :::
 
-*Abstract.* This chapter derives the constraints on fundamental constants from cybernetic first principles. We formulate the Sieve Architecture as a system of coupled inequalities that any viable agent must satisfy. The fundamental constants $\Lambda = (c_{\text{info}}, \sigma, \ell_L, T_c, g_s, \gamma)$ are not free parameters but decision variables of a constrained optimization problem. The physical universe exists within the **Feasible Region** where all constraints are simultaneously satisfied. We prove that moving off this region triggers a Sieve violation: the agent either loses causal coherence, exceeds its holographic bound, violates thermodynamic consistency, or suffers ontological dissolution.
+*Abstract.* This chapter derives the constraints on fundamental constants from cybernetic first principles. We formulate
+the Sieve Architecture as a system of coupled inequalities that any viable agent must satisfy. The fundamental constants
+$\Lambda = (c_{\text{info}}, \sigma, \ell_L, T_c, g_s, \gamma)$ are not free parameters but decision variables of a
+constrained optimization problem. The physical universe exists within the **Feasible Region** where all constraints are
+simultaneously satisfied. We prove that moving off this region triggers a Sieve violation: the agent either loses causal
+coherence, exceeds its holographic bound, violates thermodynamic consistency, or suffers ontological dissolution.
 
 *Cross-references:* This chapter synthesizes:
 - {ref}`Section 18 <sec-capacity-constrained-metric-law-geometry-from-interface-limits>` (Capacity-Constrained Metric Law)

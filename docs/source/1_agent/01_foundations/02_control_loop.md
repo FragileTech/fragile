@@ -1,4 +1,59 @@
+(sec-the-control-loop-representation-and-control)=
 # The Control Loop: Representation and Control
+
+## TLDR
+
+- Specify the **Fragile Agent control loop**: Shutter/Encoder → World Model → Critic → Policy, all operating on the
+  internal state $Z=(K,z_n,z_{\mathrm{tex}})$.
+- Write the objective as **optimal control under information/effort costs** (KL/MaxEnt control is a special case), so
+  “stability” becomes something you can measure and enforce.
+- Separate **state-space geometry** ($G(z)$, mass/Hessian sensitivity) from **parameter-space optimization** (avoid
+  category errors like treating $G$ as a parameter-metric).
+- Identify where **diagnostics and barriers** attach to the loop (value, representation, dynamics, coupling) and what
+  signals each component must expose.
+- Provide the conceptual bridge from the architecture to the Sieve chapters (stability checks, limits/barriers, and
+  approximations).
+
+## Roadmap
+
+1. Objective and its KL/MaxEnt specializations.
+2. Architecture anatomy: Shutter, World Model, Critic, Policy.
+3. Representation and geometry: what $G$, $V$, and $\bar{P}$ mean operationally.
+4. Training/inference loops and where diagnostics/barriers intervene.
+
+## Notation (Quick)
+
+| Symbol | Meaning (operational) |
+|---|---|
+| $B_t=(x_t,r_t,d_t,\iota_t,a_t)$ | Boundary/Markov-blanket stream (what the agent can actually see and do) |
+| $Z_t=(K_t,z_{n,t},z_{\mathrm{tex},t})$ | Internal state split (macro / nuisance / texture) |
+| $\bar{P}$ | Learned macro dynamics kernel (World Model) |
+| $V$ | Value potential / critic object (task guidance + stability signal) |
+| $G(z)$ | State-space metric (sensitivity “mass” / preconditioner), not a parameter-space metric |
+| $\pi(a\mid z)$ | Policy on actions given internal state (control field) |
+| $\mathcal{S}$ | Objective/action functional (task cost + control/regularization cost) |
+| $T_c$ | “Cognitive temperature” / entropy-regularization strength (where relevant) |
+
+## Minimal Pseudocode
+
+```python
+# Pseudocode: one training step (conceptual)
+# Inputs: boundary batch (x_t, a_t, r_t, d_t, iota_t) and next observations x_{t+1}
+#
+# 1) Shutter/Encoder: x_t -> (K_t, z_n,t, z_tex,t); compute reconstruction + commitment losses
+# 2) World Model: predict (K_{t+1}, z_{n,t+1}); compute closure/synchronization losses vs shutter outputs
+# 3) Critic: update V(z_t) using TD / PDE residual surrogates; compute value/geometry diagnostics
+# 4) Policy: update π(.|z_t) via MaxEnt/KL control objective; apply Sieve gating/projection when diagnostics fail
+# 5) Governor: adjust multipliers/tolerances from diagnostic residuals; gate update schedules by tier
+```
+
+```python
+# Pseudocode: acting at runtime (conceptual)
+# 1) Observe x_t
+# 2) Encode: z_t = shutter(x_t)
+# 3) Propose: a_t ~ π(.|z_t)
+# 4) If any Sieve diagnostic fails: block/repair/revert; else execute a_t
+```
 
 :::{div} feynman-prose
 Now, here we come to the heart of the whole thing. If you've been following along, you know we've set up this idea of an agent as a bounded controller---something that has to make decisions with limited information, limited memory, limited time to think. But *how* does it actually do that? What's the machinery?
@@ -1406,7 +1461,3 @@ The Trinity of Manifolds is extended to the **Boundary Operator**:
 | **Interface Inflow ($j$)**               | Grounding of internal states   | Conservation/balance across $\partial \mathcal{Z}$ |
 
 **Operational audit criterion.** Rather than treating internal variables as inherently grounded, we require that changes in internal belief/state be explainable by boundary coupling and declared projection events. In practice this is enforced via BoundaryCheck, coupling-window constraints, and enclosure/closure defects; persistent violations indicate that internal rollouts are no longer reliable for control and should trigger conservative updates or re-grounding interventions.
-
-
-
-(sec-diagnostics-stability-checks)=

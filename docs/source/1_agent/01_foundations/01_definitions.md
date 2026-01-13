@@ -1,5 +1,37 @@
 # Introduction: The Agent as a Bounded-Rationality Controller
 
+## TLDR
+
+- Treat the environment as an **input-output law** at an observation/action interface (a Markov blanket), not as a hidden
+  state you can “recover”.
+- Define the agent as a **bounded-rationality controller** with an internal state split into macro / nuisance / texture:
+  $Z_t = (K_t, Z_{n,t}, Z_{\mathrm{tex},t})$.
+- Re-type standard RL objects (state, observation, action, reward) as **boundary signals and constraints**, so stability
+  and capacity can be enforced explicitly later (Sieve diagnostics/barriers).
+- Make **symmetries and gauge freedoms** first-class: equivalence classes of representations matter more than raw
+  coordinates.
+- Separate notions of time (interaction, computation, scale, memory) to avoid category errors when connecting theory to
+  implementation.
+
+## Roadmap
+
+1. Define interaction under partial observability and the boundary/Markov blanket view.
+2. Introduce the internal state decomposition and why it is the right type signature for control.
+3. Record symmetries, units, and time conventions that later chapters rely on.
+
+## Symbols (Quick)
+
+| Symbol | Meaning |
+|---|---|
+| $x_t$ | Observation at time $t$ (incoming boundary signal) |
+| $a_t$ | Action at time $t$ (outgoing boundary signal) |
+| $r_t$ | Scalar reward / utility feedback |
+| $d_t$ | Termination / absorbing event indicator |
+| $\iota_t$ | Auxiliary side channels (costs, constraint reasons, privileged signals) |
+| $B_t=(x_t,r_t,d_t,\iota_t,a_t)$ | Boundary / Markov blanket interface tuple |
+| $Z_t=(K_t,z_{n,t},z_{\mathrm{tex},t})$ | Internal state split (macro / nuisance / texture) |
+| $P_{\partial}$ | Environment as an input-output law over boundary signals |
+
 :::{div} feynman-prose
 Let me start with a confession. When most people think about artificial intelligence or reinforcement learning, they imagine a perfect reasoner---something that can consider all possibilities, hold infinite information in its head, and compute instantly. That's a beautiful mathematical fiction, and it has its uses, but it's not what we're going to talk about here.
 
@@ -142,6 +174,25 @@ Here's why that's dangerous:
 4. **Information constraints**: Real agents have limited capacity to process information. Working at the interface level lets you explicitly track information flow.
 
 The input-output law perspective isn't a philosophical indulgence---it's an engineering requirement for building robust systems.
+:::
+
+:::{admonition} Worked Example: A POMDP as Boundary Signals + Split Latents
+:class: tip
+
+Start from the standard POMDP objects $(s_t, o_t, a_t, r_t)$ (latent state, observation, action, reward).
+
+- **Boundary signals:** identify $x_t := o_t$ and form the boundary tuple $B_t := (x_t, r_t, d_t, \iota_t, a_t)$, where
+  $d_t$ is termination and $\iota_t$ collects any extra side channels (costs, constraint reasons, privileged info).
+- **Environment as law:** instead of “learning $s_t$”, treat the environment as the conditional law
+  $P_{\partial}(x_{t+1}, r_t, d_t, \iota_{t+1}\mid x_{\le t}, a_{\le t})$.
+- **Internal split:** choose/learn $Z_t=(K_t,z_{n,t},z_{\mathrm{tex},t})$ so that $K_t$ carries the *predictive,
+  control-relevant* information, $z_{n,t}$ captures structured continuous variation (pose/disturbance), and
+  $z_{\mathrm{tex},t}$ carries reconstruction-only detail.
+
+Concrete intuition (robot navigation):
+- $K_t$: “which room / which mode”.
+- $z_{n,t}$: pose $(x,y,\theta)$ and other controllable continuous coordinates.
+- $z_{\mathrm{tex},t}$: pixel-level texture that helps reconstruct $o_t$ but should not be required for control.
 :::
 
 (sec-re-typing-standard-rl-primitives-as-interface-signals)=
@@ -448,6 +499,3 @@ These are completely different interventions with completely different effects! 
 
 In the equations that follow, you'll see these different time indices appearing in different places. Keeping them straight is essential for understanding what the equations actually say.
 :::
-
-
-(sec-the-control-loop-representation-and-control)=

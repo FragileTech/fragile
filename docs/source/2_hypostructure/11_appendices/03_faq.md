@@ -6,7 +6,20 @@ subtitle: "Frequently Asked Questions about the Categorical Framework"
 (sec-hypo-faq)=
 # Appendix C: Frequently Asked Questions
 
-This appendix addresses forty rigorous objections that a skeptical reviewer might raise about the Hypostructure Formalism. Each question is stated in its strongest form; the answers point to specific mechanisms, theorems, and sections. If the responses are unconvincing, the framework deserves skepticism.
+This appendix addresses a set of rigorous objections that a skeptical reviewer might raise about the Hypostructure Formalism. Each question is stated in its strongest form; the answers point to specific mechanisms, theorems, and sections. If the responses are unconvincing, the framework deserves skepticism.
+
+## Contents
+
+- H.1 Foundations & Category Theory
+- H.2 Certificate System & Verification
+- H.3 Gate/Barrier/Surgery Architecture
+- H.4 Undecidability & Computability
+- H.5 Factory Metatheorems & Code Generation
+- H.6 Axiom System & Completeness
+- H.7 Practical Implementation
+- H.8 Relationship to Classical Mathematics
+
+**Navigation by theme:** Foundations (H.1), verification/certificates (H.2), architecture (H.3), computability (H.4), factories (H.5), axioms (H.6), implementation (H.7), classical links (H.8).
 
 :::{admonition} Reader Bridge: From Classical PDE to Hypostructure
 :class: important
@@ -23,6 +36,19 @@ If you are coming from classical PDE analysis or dynamical systems, use this map
 | **Surgery/gluing** | Surgery nodes with re-entry |
 | **Regularity bootstrap** | Sieve traversal with upgrades |
 :::
+
+## Glossary (Quick)
+
+| Term | Meaning |
+|------|---------|
+| Gate | Primary diagnostic check returning YES/NO certificates |
+| Barrier | Fallback check returning Blocked/Breached certificates |
+| Surgery | Repair operation producing a re-entry certificate |
+| Permit | A gate/barrier predicate plus its certificate type |
+| Certificate | Typed witness payload produced by a node |
+| Lock | Node 17 categorical morphism exclusion check |
+| Thin objects | Minimal input data tuple for the Sieve |
+| Sieve | The 17-node diagnostic pipeline |
 
 (sec-hypo-faq-foundations)=
 ## H.1 Foundations & Category Theory
@@ -932,3 +958,23 @@ Yes, **information is lost**, but this is **by design** and does not compromise 
 
 The residual is not a bug—it is the **price of classical auditability**. The categorical machinery is used to **find** the proof; the ZFC translation provides an **auditable conclusion**. A skeptic need not trust homotopy type theory; they can verify the translated formula in ordinary set theory.
 
+(sec-hypo-faq-limitations)=
+### H.8.6 What Are the Current Limitations and Open Problems?
+
+**Objection:** *What does this framework still not provide, and what remains genuinely open?*
+
+**Response:**
+
+There are real limitations and open problems, and they are explicitly tracked by the certificate system:
+
+1. **Adequacy Proof (A2) for the Runtime.** The reverse bridge to DTMs assumes a polynomial-time interpreter for the Fragile evaluator. This is standard compiler verification work, but it has not been fully mechanized here.
+
+2. **Random SAT Geometry (OGP Hypotheses).** The internal P ≠ NP route depends on geometric properties of random SAT (Optimal Gradient Path, overlap-gap behavior). These are major open problems in probabilistic combinatorics and statistical physics.
+
+3. **Bad Pattern Library Completeness.** The Lock requires a dense library of bad patterns. For many domains this library is incomplete and must be extended (new E-tactics, new categorical obstructions).
+
+4. **Automation of $K^{\mathrm{inc}}$ Upgrades.** The framework is sound but may produce inconclusive certificates when hypotheses are missing. Automating the upgrade path is domain-specific and still partly manual.
+
+5. **Domain-Specific Instantiation.** Each new PDE or dynamical system requires explicit interface verifiers and permits; the factory supplies the structure, not the analytic proofs.
+
+These gaps are visible in the Sieve: they appear as missing permits, $K^{\mathrm{inc}}$ outcomes, or bridge hypotheses marked as open. The framework does not hide them.

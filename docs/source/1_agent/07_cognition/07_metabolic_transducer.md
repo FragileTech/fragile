@@ -1,11 +1,49 @@
 (sec-the-metabolic-transducer-autopoiesis-and-the-szilard-engine)=
 # The Metabolic Transducer: Autopoiesis and the Szilard Engine
 
-*Abstract.* This chapter closes the thermodynamic loop opened in {ref}`Section 31 <sec-computational-metabolism-the-landauer-bound-and-deliberation-dynamics>`. We derive the **Metabolic Transducer** $\mathfrak{T}_{\text{harvest}}$ from the Szilard engine analysis, showing that reward signals encode extractable work. We prove the **Autopoietic Inequality**—the survival condition requiring harvest rate to exceed metabolic dissipation. We derive the **Fading Metric Law** from Fisher Information principles, showing that the latent geometry degrades as energy depletes. Finally, we introduce diagnostic nodes 67–70 to monitor autopoietic viability.
+## TLDR
 
-*Cross-references:* Closes the loop from {ref}`Section 31 <sec-computational-metabolism-the-landauer-bound-and-deliberation-dynamics>` (Metabolism). Connects the Reward Field ({ref}`Section 24 <sec-the-reward-field-value-forms-and-hodge-geometry>`) to survival. Provides the ultimate constraint for the Universal Governor ({ref}`Section 26 <sec-theory-of-meta-stability-the-universal-governor-as-homeostatic-controller>`). Adds metabolic viability to the Parameter Space Sieve ({ref}`Section 35 <sec-parameter-space-sieve>`).
+- Close the thermodynamic loop: if computation dissipates energy (Landauer), then successful prediction/control must
+  enable **work extraction** (Szilard-engine view).
+- Define the **Metabolic Transducer** as the mechanism turning reward/information into usable metabolic budget.
+- Derive the **autopoietic viability condition**: sustained agency requires harvest rate to exceed dissipation.
+- Show that geometry itself degrades when energy is depleted (a “fading metric law”), yielding concrete failure modes.
+- Introduce diagnostics that monitor metabolic viability and couple directly to the Governor and parameter sieve.
 
-*Literature:* Maxwell's Demon {cite}`maxwell1871theory` (Maxwell, *Theory of Heat*, 1871); Szilard engine {cite}`szilard1929entropy` (Szilard, "On the decrease of entropy in a thermodynamic system by the intervention of intelligent beings," *Zeitschrift für Physik* 53:840–856, 1929); Landauer's principle {cite}`landauer1961irreversibility` (Landauer, "Irreversibility and Heat Generation in the Computing Process," *IBM J. Res. Dev.* 5:183–191, 1961); autopoiesis {cite}`maturana1980autopoiesis` (Maturana & Varela, *Autopoiesis and Cognition: The Realization of the Living*, 1980); free energy principle {cite}`friston2010free` (Friston, "The free-energy principle: a unified brain theory?", *Nature Reviews Neuroscience* 11:127–138, 2010); Johnson-Nyquist noise {cite}`johnson1928thermal,nyquist1928thermal` (Johnson, "Thermal Agitation of Electricity in Conductors," *Phys. Rev.* 32:97–109, 1928; Nyquist, "Thermal Agitation of Electric Charge in Conductors," *Phys. Rev.* 32:110–113, 1928).
+## Roadmap
+
+1. Information harvesting (Szilard engine) and the meaning of reward as work.
+2. Autopoietic inequality and survival/viability constraints.
+3. Geometry under depletion + runtime diagnostics for metabolic failure.
+
+*Abstract.* This chapter closes the thermodynamic loop opened in
+{ref}`Section 31 <sec-computational-metabolism-the-landauer-bound-and-deliberation-dynamics>`. We derive the
+**Metabolic Transducer** $\mathfrak{T}_{\text{harvest}}$ from the Szilard engine analysis, showing that reward signals
+encode extractable work. We prove the **Autopoietic Inequality**—the survival condition requiring harvest rate to exceed
+metabolic dissipation. We derive the **Fading Metric Law** from Fisher Information principles, showing that the latent
+geometry degrades as energy depletes. Finally, we introduce diagnostic nodes 67–70 to monitor autopoietic viability.
+
+*Cross-references:*
+- Closes the loop from {ref}`Section 31 <sec-computational-metabolism-the-landauer-bound-and-deliberation-dynamics>`
+  (Metabolism).
+- Connects the Reward Field ({ref}`Section 24 <sec-the-reward-field-value-forms-and-hodge-geometry>`) to survival.
+- Provides the ultimate constraint for the Universal Governor
+  ({ref}`Section 26 <sec-theory-of-meta-stability-the-universal-governor-as-homeostatic-controller>`).
+- Adds metabolic viability to the Parameter Space Sieve ({ref}`Section 35 <sec-parameter-space-sieve>`).
+
+*Literature:*
+- Maxwell's Demon {cite}`maxwell1871theory` (Maxwell, *Theory of Heat*, 1871).
+- Szilard engine {cite}`szilard1929entropy` (Szilard, "On the decrease of entropy in a thermodynamic system by the
+  intervention of intelligent beings," *Zeitschrift für Physik* 53:840–856, 1929).
+- Landauer's principle {cite}`landauer1961irreversibility` (Landauer, "Irreversibility and Heat Generation in the
+  Computing Process," *IBM J. Res. Dev.* 5:183–191, 1961).
+- Autopoiesis {cite}`maturana1980autopoiesis` (Maturana & Varela, *Autopoiesis and Cognition: The Realization of the
+  Living*, 1980).
+- Free energy principle {cite}`friston2010free` (Friston, "The free-energy principle: a unified brain theory?",
+  *Nature Reviews Neuroscience* 11:127–138, 2010).
+- Johnson–Nyquist noise {cite}`johnson1928thermal,nyquist1928thermal` (Johnson, "Thermal Agitation of Electricity in
+  Conductors," *Phys. Rev.* 32:97–109, 1928; Nyquist, "Thermal Agitation of Electric Charge in Conductors,"
+  *Phys. Rev.* 32:110–113, 1928).
 
 :::{div} feynman-prose
 Now we come to something rather beautiful. In the last chapter, we showed that thinking costs energy—the Landauer bound tells us that every time you sharpen your beliefs, you have to pay a thermodynamic price. But that was only half the story. It is like learning that running costs calories without ever mentioning that eating provides them.

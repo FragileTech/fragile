@@ -1,4 +1,23 @@
+(sec-capacity-constrained-metric-law-geometry-from-interface-limits)=
 # Capacity-Constrained Metric Law: Geometry from Interface Limits
+
+## TLDR
+
+- Finite boundary bandwidth implies a hard **capacity constraint**: the agent cannot stably maintain bulk information it
+  cannot ground at the interface.
+- Enforcing this constraint induces a **metric law**: curvature adapts as a regulator when representation approaches
+  capacity saturation (a geometric form of “information bottleneck”).
+- The law is not analogy-first: it is derived from information/variational structure and yields testable diagnostics.
+- The practical output is a **consistency defect** and a runtime diagnostic for when the agent is claiming more
+  information than its boundary can support.
+- This chapter is the geometric backbone for later results: WFR belief geometry, holographic generation, and the causal
+  information bound.
+
+## Roadmap
+
+1. State the capacity constraint and why it must hold for bounded agents.
+2. Derive the metric/curvature response as a variational law.
+3. Define diagnostics and implementation-facing consistency checks.
 
 :::{div} feynman-prose
 Here's a question that sounds almost silly at first: *Why should space be curved?*
@@ -383,7 +402,3 @@ And finally, we have a diagnostic: if the capacity saturation ratio exceeds 1, s
 
 The capacity-constrained metric law is the geometric version of "you can't get something for nothing." Information has to come from somewhere, and the geometry keeps honest books.
 :::
-
-
-
-(sec-conclusion)=

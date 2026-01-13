@@ -158,13 +158,14 @@ parts:
     chapters:
     - file: source/3_fractal_gas/1_the_algorithm/01_algorithm_intuition
     - file: source/3_fractal_gas/1_the_algorithm/02_fractal_gas_latent
-    - file: source/3_fractal_gas/1_the_algorithm/04_algorithmic_sieve
+    - file: source/3_fractal_gas/1_the_algorithm/03_algorithmic_sieve
 
   - caption: "Part II - The Fractal Set"
     chapters:
     - file: source/3_fractal_gas/2_fractal_set/01_fractal_set
     - file: source/3_fractal_gas/2_fractal_set/02_causal_set_theory
     - file: source/3_fractal_gas/2_fractal_set/03_lattice_qft
+    - file: source/3_fractal_gas/2_fractal_set/04_standard_model
 
   - caption: "Part III - Appendices"
     chapters:

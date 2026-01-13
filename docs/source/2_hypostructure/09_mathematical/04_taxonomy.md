@@ -91,13 +91,13 @@ The following unified table displays all **168 structural slots** organized by F
 
 **Columns 7a-7d (Stiffness Restoration Subtree):**
 
-| Family | 7a. $\mathrm{LS}_{\partial^2 V}$ | 7b. $G_{\mathrm{act}}$ | 7c. $\mathrm{SC}_{\partial c}^{\mathrm{re}}$ | 7d. $\mathrm{TB}_S$ |
+| Family | 7a. $\mathrm{LS}_{\partial^2 V}$ ({prf:ref}`def-node-bifurcate`) | 7b. $G_{\mathrm{act}}$ ({prf:ref}`def-node-sym`) | 7c. $\mathrm{SC}_{\partial c}^{\mathrm{re}}$ ({prf:ref}`def-node-checksc`) | 7d. $\mathrm{TB}_S$ ({prf:ref}`def-node-checktb`) |
 |:-------|:--------------------------------|:-----------------------|:--------------------------------------------|:--------------------|
 | **I** | $\varnothing$ Void | $\varnothing$ Void | $\varnothing$ Void | $\varnothing$ Void |
 | **II** | $K_{\mathrm{LS}_{\partial^2 V}}^\circ$ Morse | $K_{G_{\mathrm{act}}}^\circ$ Symmetric | $K_{\mathrm{SC}_{\partial c}}^{\mathrm{phase}}$ Phase | $K_{\mathrm{TB}_S}^\circ$ WKB |
 | **III** | $K_{\mathrm{LS}_{\partial^2 V}}^{\sim}$ Stratified | $K_{G_{\mathrm{act}}}^{\sim}$ Bridge | $K_{\mathrm{SC}_{\partial c}}^{\sim}$ Descent | $K_{\mathrm{TB}_S}^{\sim}$ Holonomy |
 | **IV** | $K_{\mathrm{LS}_{\partial^2 V}}^{\mathrm{re}}$ Bifurcation | $K_{G_{\mathrm{act}}}^{\mathrm{re}}$ Hidden | $K_{\mathrm{SC}_{\partial c}}^{\mathrm{vac}}$ Vacuum | $K_{\mathrm{TB}_S}^{\mathrm{re}}$ Path Integral |
-| **V** | $K_{\mathrm{LS}_{\partial^2 V}}^{\mathrm{ext}}$ Graded | $K_{G_{\mathrm{act}}}^{\mathrm{ext}}$ Higgs | $K_{\mathrm{SC}_{\partial c}}^{\mathrm{ext}}$ Fadeev-Popov | $K_{\mathrm{TB}_S}^{\mathrm{ext}}$ Euclidean |
+| **V** | $K_{\mathrm{LS}_{\partial^2 V}}^{\mathrm{ext}}$ Graded | $K_{G_{\mathrm{act}}}^{\mathrm{ext}}$ Higgs | $K_{\mathrm{SC}_{\partial c}}^{\mathrm{ext}}$ Faddeev-Popov | $K_{\mathrm{TB}_S}^{\mathrm{ext}}$ Euclidean |
 | **VI** | $K_{\mathrm{LS}_{\partial^2 V}}^{\mathrm{blk}}$ Catastrophe | $K_{G_{\mathrm{act}}}^{\mathrm{blk}}$ Gauge | $K_{\mathrm{SC}_{\partial c}}^{\mathrm{blk}}$ SSB | $K_{\mathrm{TB}_S}^{\mathrm{blk}}$ Barrier |
 | **VII** | $K_{\mathrm{LS}_{\partial^2 V}}^{\mathrm{morph}}$ Degenerate | $K_{G_{\mathrm{act}}}^{\mathrm{morph}}$ Decay | $K_{\mathrm{SC}_{\partial c}}^{\mathrm{morph}}$ Vacuum Decay | $K_{\mathrm{TB}_S}^{\mathrm{morph}}$ Infinite Action |
 | **VIII** | $K_{\mathrm{LS}_{\partial^2 V}}^{\mathrm{inc}}$ Singular Hessian | $K_{G_{\mathrm{act}}}^{\mathrm{inc}}$ Anomaly | $K_{\mathrm{SC}_{\partial c}}^{\mathrm{inc}}$ Vacuum Landscape | $K_{\mathrm{TB}_S}^{\mathrm{inc}}$ Infinite Barrier |
@@ -175,13 +175,13 @@ The detailed breakdown by stratum group follows:
 
 This is the **subsidiary decomposition** of the Stiffness stratum—the nodes that distinguish between systems failing primary stiffness but admitting resolution via fundamentally different mechanisms.
 
-| **Family** | **7a. Bifurc** ($\mathrm{LS}_{\partial^2 V}$) | **7b. Symm** ($G_{\mathrm{act}}$) | **7c. SC-Re** ($\mathrm{SC}_{\partial c}^{\mathrm{re}}$) | **7d. Tunn** ($\mathrm{TB}_S$) |
+| **Family** | **7a. Bifurc** ($\mathrm{LS}_{\partial^2 V}$, {prf:ref}`def-node-bifurcate`) | **7b. Symm** ($G_{\mathrm{act}}$, {prf:ref}`def-node-sym`) | **7c. SC-Re** ($\mathrm{SC}_{\partial c}^{\mathrm{re}}$, {prf:ref}`def-node-checksc`) | **7d. Tunn** ($\mathrm{TB}_S$, {prf:ref}`def-node-checktb`) |
 |:-----------|:---------------------------------------------|:----------------------------------|:--------------------------------------------------------|:------------------------------|
 | **I. Stable** ($K^+$) | $\varnothing$ *Void* | $\varnothing$ *Void* | $\varnothing$ *Void* | $\varnothing$ *Void* |
 | **II. Relaxed** ($\circ$) | $K_{\mathrm{LS}_{\partial^2 V}}^\circ$ Morse | $K_{G_{\mathrm{act}}}^\circ$ Symmetric | $K_{\mathrm{SC}_{\partial c}}^{\mathrm{phase}}$ Phase | $K_{\mathrm{TB}_S}^\circ$ WKB |
 | **III. Gauged** ($K^{\sim}$) | $K_{\mathrm{LS}_{\partial^2 V}}^{\sim}$ Stratified | $K_{G_{\mathrm{act}}}^{\sim}$ Bridge | $K_{\mathrm{SC}_{\partial c}}^{\sim}$ Descent | $K_{\mathrm{TB}_S}^{\sim}$ Holonomy |
 | **IV. Resurrected** ($K^{\mathrm{re}}$) | $K_{\mathrm{LS}_{\partial^2 V}}^{\mathrm{re}}$ Bifurcation | $K_{G_{\mathrm{act}}}^{\mathrm{re}}$ Hidden | $K_{\mathrm{SC}_{\partial c}}^{\mathrm{vac}}$ Vacuum | $K_{\mathrm{TB}_S}^{\mathrm{re}}$ Path Integral |
-| **V. Synthetic** ($K^{\mathrm{ext}}$) | $K_{\mathrm{LS}_{\partial^2 V}}^{\mathrm{ext}}$ Graded | $K_{G_{\mathrm{act}}}^{\mathrm{ext}}$ Higgs | $K_{\mathrm{SC}_{\partial c}}^{\mathrm{ext}}$ Fadeev-Popov | $K_{\mathrm{TB}_S}^{\mathrm{ext}}$ Euclidean |
+| **V. Synthetic** ($K^{\mathrm{ext}}$) | $K_{\mathrm{LS}_{\partial^2 V}}^{\mathrm{ext}}$ Graded | $K_{G_{\mathrm{act}}}^{\mathrm{ext}}$ Higgs | $K_{\mathrm{SC}_{\partial c}}^{\mathrm{ext}}$ Faddeev-Popov | $K_{\mathrm{TB}_S}^{\mathrm{ext}}$ Euclidean |
 | **VI. Forbidden** ($K^{\mathrm{blk}}$) | $K_{\mathrm{LS}_{\partial^2 V}}^{\mathrm{blk}}$ Catastrophe | $K_{G_{\mathrm{act}}}^{\mathrm{blk}}$ Gauge | $K_{\mathrm{SC}_{\partial c}}^{\mathrm{blk}}$ SSB | $K_{\mathrm{TB}_S}^{\mathrm{blk}}$ Barrier |
 | **VII. Singular** ($K^{\mathrm{morph}}$) | $K_{\mathrm{LS}_{\partial^2 V}}^{\mathrm{morph}}$ Degenerate | $K_{G_{\mathrm{act}}}^{\mathrm{morph}}$ Decay | $K_{\mathrm{SC}_{\partial c}}^{\mathrm{morph}}$ Vacuum Decay | $K_{\mathrm{TB}_S}^{\mathrm{morph}}$ Infinite Action |
 | **VIII. Horizon** ($K^{\mathrm{inc}}$) | $K_{\mathrm{LS}_{\partial^2 V}}^{\mathrm{inc}}$ Singular Hessian | $K_{G_{\mathrm{act}}}^{\mathrm{inc}}$ Anomaly | $K_{\mathrm{SC}_{\partial c}}^{\mathrm{inc}}$ Vacuum Landscape | $K_{\mathrm{TB}_S}^{\mathrm{inc}}$ Infinite Barrier |
@@ -351,11 +351,11 @@ $$
 
 The problem cannot be solved in its original formulation; one must extend to a richer structure. This includes ghost fields in BRST cohomology, viscosity solutions, analytic continuation, and compactification.
 
-**Proof Logic:** BRST cohomology, Fadeev-Popov ghosts, viscosity methods, auxiliary field introduction, dimensional extension.
+**Proof Logic:** BRST cohomology, Faddeev-Popov ghosts, viscosity methods, auxiliary field introduction, dimensional extension.
 
 **Archetype:** Gauge theories with BRST quantization; viscosity solutions of Hamilton-Jacobi; Euclidean path integrals; string compactification.
 
-**Certificate Signature:** $K^{\mathrm{ext}}$ certificates at synthetic nodes, particularly 7a (Graded extension), 7b (Higgs mechanism), 7c (Fadeev-Popov), 7d (Euclidean continuation).
+**Certificate Signature:** $K^{\mathrm{ext}}$ certificates at synthetic nodes, particularly 7a (Graded extension), 7b (Higgs mechanism), 7c (Faddeev-Popov), 7d (Euclidean continuation).
 :::
 
 :::{prf:definition} Family VI: The Forbidden ($K^{\mathrm{blk}}$) — Categorical Systems
@@ -482,7 +482,7 @@ This is the **critical subtree** that distinguishes the expanded classification.
   - $K^\circ$: Phase—phase transition structure, critical exponents well-defined
   - $K^{\sim}$: Descent—restoration via descent to quotient scale
   - $K^{\mathrm{re}}$: Vacuum—vacuum restoration, running couplings converge to fixed point
-  - $K^{\mathrm{ext}}$: Fadeev-Popov—requires ghost field insertion for scale-consistent quantization
+  - $K^{\mathrm{ext}}$: Faddeev-Popov—requires ghost field insertion for scale-consistent quantization
   - $K^{\mathrm{blk}}$: SSB—spontaneous symmetry breaking obstruction
   - $K^{\mathrm{morph}}$: Vacuum Decay—false vacuum decay, no stable restoration
   - $K^{\mathrm{inc}}$: Vacuum Landscape—landscape of vacua, no unique restoration
@@ -601,7 +601,7 @@ $$
 
 Subtree-equivalent systems admit the **same restoration strategy**, regardless of their behavior at other strata. This enables transfer of restoration techniques between:
 - Yang-Mills instantons <-> Ricci flow singularities (both: $K_{7d}^{\mathrm{re}}$ Path Integral)
-- BRST cohomology <-> Fadeev-Popov gauge fixing (both: $K_{7c}^{\mathrm{ext}}$ Fadeev-Popov)
+- BRST cohomology <-> Faddeev-Popov gauge fixing (both: $K_{7c}^{\mathrm{ext}}$ Faddeev-Popov)
 - Hopf bifurcation <-> Pitchfork bifurcation (both: $K_{7a}^{\mathrm{re}}$ Bifurcation)
 :::
 
@@ -630,7 +630,7 @@ The transitions are **irreversible within a proof attempt**: once a system enter
 :::{div} feynman-prose
 Here is the grand unification. Just as Mendeleev saw that chemical properties recur periodically with atomic number, we see that proof strategies recur periodically with certificate type.
 
-The Periodic Law says this: tell me your row (which family) and your column (which stratum), and I will tell you exactly how to prove your theorem. Not a hint, not a suggestion—the actual proof strategy. Family IV at Node 6? That is Neck Surgery, Perelman style. Family V at Node 7c? That is Fadeev-Popov ghosts, BRST cohomology.
+The Periodic Law says this: tell me your row (which family) and your column (which stratum), and I will tell you exactly how to prove your theorem. Not a hint, not a suggestion—the actual proof strategy. Family IV at Node 6? That is Neck Surgery, Perelman style. Family V at Node 7c? That is Faddeev-Popov ghosts, BRST cohomology.
 
 The mathematics becomes *predictable*. You do not search blindly for the right approach. You diagnose the problem, read off the coordinates, and apply the prescribed treatment.
 

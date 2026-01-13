@@ -1,4 +1,23 @@
+(sec-intrinsic-motivation-maximum-entropy-exploration)=
 # Intrinsic Motivation: Maximum-Entropy Exploration
+
+## TLDR
+
+- Maximum-entropy (MaxEnt) exploration is **not random dithering**: it is a control objective that preserves future
+  reachability (“keep options open”).
+- In practice this becomes entropy/KL-regularized control on the macro trajectory space: a temperature trades reward for
+  diversity.
+- The key identity is a **duality**: maximizing path entropy under reward constraints is equivalent to soft optimal
+  control with a KL penalty toward a reference policy.
+- Use Sieve diagnostics to prevent MaxEnt failure modes (chattering/Zenoness, over-mixing, loss of grounding).
+- This chapter sets up the belief-dynamics and coupling-window chapters: exploration pressure must remain within the
+  information-stability window.
+
+## Roadmap
+
+1. Path entropy and exploration gradients (what is optimized).
+2. Duality with soft optimality (why MaxEnt control is “just” KL control).
+3. Practical guidance: temperatures, horizons, and diagnostic failure modes.
 
 :::{div} feynman-prose
 Let me tell you about a beautiful idea that connects two things you might not have thought were related: exploring the world and keeping your options open.
@@ -216,8 +235,7 @@ For building intuition: if you're optimizing for a known reward function, think 
 :::
 
 
-(sec-belief-dynamics-prediction-update-projection)=
-
+(sec-duality-of-exploration-and-soft-optimality)=
 ## Duality of Exploration and Soft Optimality
 
 (rb-soft-rl-duality)=
@@ -396,6 +414,19 @@ This matters when your MDP has temporal structure. Single-step KL regularization
 For discrete macro-states, this is computationally tractable because the path space is finite. For continuous states, you'd need approximations---which is why practical algorithms like SAC use the single-step version and rely on temporal-difference learning to propagate future information backward.
 :::
 
+## Failure Modes and Diagnostics
 
+MaxEnt exploration is powerful, but it has characteristic failure modes. In the Fragile Agent, these are meant to be
+detectable and actionable:
 
-(sec-implementation-note-entropy-regularized-optimal-transport-bridge)=
+- **Chattering / Zenoness:** entropy pressure can cause rapid action switching. Monitor Zeno-style switching checks and
+  add explicit switching penalties or reduce temperature/horizon.
+- **Over-mixing (loss of macro identity):** excessive entropy destroys stable macrostates. Monitor mixing/compactness and
+  closure diagnostics; enforce the coupling window rather than increasing entropy indefinitely.
+- **Premature collapse (no exploration):** temperature too low collapses the policy to a brittle mode. Monitor entropy /
+  reachability metrics and reintroduce exploration pressure when coverage shrinks.
+- **Ungrounded exploration:** exploring in the internal model without boundary support leads to hallucinated reachability.
+  Monitor grounding/closure synchronization; intervene by tightening closure losses or shortening open-loop rollouts.
+
+The intended workflow is: choose $T_c$ (and horizon) as a knob, then let diagnostics decide when that setting is safe for
+the current regime.

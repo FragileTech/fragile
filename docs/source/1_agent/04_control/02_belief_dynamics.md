@@ -1,4 +1,20 @@
+(sec-belief-dynamics-prediction-update-projection)=
 # Belief Dynamics: Prediction, Update, Projection
+
+## TLDR
+
+- Belief dynamics is a **predict → update → project** loop: forecast with the world model, assimilate observations, then
+  project away unsafe/infeasible mass via the Sieve.
+- Treat projection as a first-class operation: it is what makes filtering compatible with hard constraints.
+- Use small discrete examples (belief vectors/matrices) to sanity-check implementations before scaling up.
+- Keep notation local: this chapter is a bridge between the MaxEnt objective and the coupling-window stability theorem.
+- If you keep the GKSL/Lindblad analogy, treat it as intuition only and keep the mapping explicit.
+
+## Roadmap
+
+1. Prediction and Bayes update on the macro state.
+2. Sieve projection / reweighting and what it guarantees.
+3. Correspondence table linking filtering objects to control-loop components.
 
 :::{div} feynman-prose
 Let me tell you what this chapter is really about: how an agent changes its mind.
@@ -108,6 +124,54 @@ This is the standard Bayesian filtering recursion for a discrete latent state (H
 
 Now here's what I want you to notice: this two-step dance---predict, then update---is completely standard. Any textbook on hidden Markov models will show you this. What's *not* standard is what comes next: the projection step. That's where safety enters the picture.
 :::
+
+## Worked Example: A Tiny Belief Update + Sieve Projection
+
+Take three macrostates $\mathcal{K}=\{k_1,k_2,k_3\}$.
+
+1. **Start with a prior belief:**
+
+   $$
+   p_t = [0.6,\ 0.3,\ 0.1].
+   $$
+
+2. **After the model prediction step** (apply $\bar{P}^T$), suppose you get:
+
+   $$
+   \tilde p_{t+1} = [0.5,\ 0.4,\ 0.1].
+   $$
+
+3. **Assimilate an observation** with likelihoods:
+
+   $$
+   L_{t+1} = [0.1,\ 0.8,\ 0.1].
+   $$
+
+   Elementwise multiply and normalize:
+
+   $$
+   p_{t+1} \propto L_{t+1}\odot \tilde p_{t+1} = [0.05,\ 0.32,\ 0.01],
+   $$
+   so $\sum_j = 0.38$ and
+
+   $$
+   p_{t+1} \approx [0.132,\ 0.842,\ 0.026].
+   $$
+
+4. **Apply a Sieve projection.** If a barrier marks $k_3$ infeasible (e.g., cost bound exceeded), hard projection does:
+
+   $$
+   p'_{t+1}(k)\propto p_{t+1}(k)\cdot \mathbb{I}[\text{feasible}(k)],
+   $$
+
+   which yields
+
+   $$
+   p'_{t+1} \approx [0.135,\ 0.865,\ 0].
+   $$
+
+This is the essential pattern: Bayes updates move mass toward what explains observations; the Sieve then removes mass that
+would be unsafe or inconsistent with runtime contracts.
 
 (sec-sieve-events-as-projections-reweightings)=
 ## Sieve Events as Projections / Reweightings
@@ -415,7 +479,3 @@ The table below is a dictionary from standard **filtering and constrained infere
 | Entropy $H(p_t)$                                          | Macro uncertainty / symbol mixing              | Detect collapse vs dispersion |
 | KL-control $D_{\mathrm{KL}}(\pi\Vert\pi_0)$               | Control-effort regularizer                     | Penalize deviation from prior |
 :::
-
-
-
-(sec-duality-of-exploration-and-soft-optimality)=

@@ -208,10 +208,14 @@ then Interface Permit $\mathrm{Rep}_K(T, Z)$ holds, and hence the conjecture for
 1. **(N1)** Category $\mathbf{Hypo}_T$ of admissible T-hypostructures satisfying core interface permits $C_\mu$, $D_E$, $\mathrm{SC}_\lambda$, $\mathrm{LS}_\sigma$, $\mathrm{Cap}_H$, $\mathrm{TB}_\pi$, $\mathrm{GC}_\nabla$
 2. **(N2)** Hypostructure assignment $Z \mapsto \mathbb{H}(Z)$
 3. **(N3)** Conjecture equivalence: $\mathrm{Conj}(T,Z) \Leftrightarrow \text{Interface Permit } \mathrm{Rep}_K(T,Z)$
-4. **(N8)** Representational completeness of parametrization $\Theta$
-5. **(N9)** Existence of universal Rep-breaking pattern with initiality property (see Initiality Lemma below)
-6. **(N10)** Admissibility of $\mathbb{H}(Z)$
-7. **(N11)** Obstruction condition: $\mathrm{Hom}(\mathbb{H}_{\mathrm{bad}}^{(T)}, \mathbb{H}(Z)) = \emptyset$
+4. **(N4)** Thin kernel objects exist and expand to hypostructures (Definitions {prf:ref}`def-thin-objects`, {prf:ref}`thm-expansion-adjunction`)
+5. **(N5)** The Sieve functor and certificate chain are well-defined and finite (Definitions {prf:ref}`def-sieve-functor`, {prf:ref}`def-cert-finite`)
+6. **(N6)** Gate evaluators are sound (Metatheorem {prf:ref}`mt-fact-gate`)
+7. **(N7)** Rep-constructive representation substrate exists for $T$ (Definition {prf:ref}`def-rep-constructive`)
+8. **(N8)** Representational completeness of parametrization $\Theta$
+9. **(N9)** Existence of universal Rep-breaking pattern with initiality property (see Initiality Lemma below)
+10. **(N10)** Admissibility of $\mathbb{H}(Z)$
+11. **(N11)** Obstruction condition: $\mathrm{Hom}(\mathbb{H}_{\mathrm{bad}}^{(T)}, \mathbb{H}(Z)) = \emptyset$
 
 :::{prf:theorem} Categorical Completeness of the Singularity Spectrum
 :label: thm-categorical-completeness

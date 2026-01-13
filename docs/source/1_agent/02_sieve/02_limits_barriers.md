@@ -1,5 +1,23 @@
+(sec-limits-barriers)=
 (sec-4-limits-barriers-the-limits-of-control)=
 # Limits: Barriers (The Limits of Control)
+
+## TLDR
+
+- Barriers are **hard limit surfaces**: failure modes you cannot “optimize through” with better tuning.
+- Each barrier names a **mechanism** (actuator saturation, information limits, compute horizon, mixing traps, spectral
+  gaps, etc.) and a corresponding **regularizer / intervention**.
+- The “periodic table” is meant as a **diagnostic index**: when something breaks, identify the barrier and apply the
+  matching remedy.
+- Barriers complement the Sieve diagnostics: diagnostics tell you *what is happening*; barriers tell you *why it must
+  happen* and what trade-off surface you are hitting.
+- Expensive barriers (✗) often require approximations/offline checks; cheap barriers (✓) should run continuously.
+
+## Roadmap
+
+1. Catalog the barrier family and how to read the table.
+2. Provide implementation notes: what to compute online vs. offline.
+3. Connect barriers to the intervention chapter (what to do when a barrier activates).
 
 :::{div} feynman-prose
 Here is a question that ought to bother you: if we have a good policy, a good world model, and a good critic, why would the control loop ever fail? The answer is that there are fundamental limits - walls you cannot break through no matter how clever your algorithms are. These are not implementation bugs; they are theorems about what is possible.
@@ -190,5 +208,3 @@ Practically: suppose you build a controller that perfectly tracks fast changes (
 
 The question becomes: where do you want to be sensitive, where can you afford blindness? For a robot arm, you might care about high-frequency stability (no oscillations) but tolerate slow drift. For climate control, priorities might reverse. The frequency-weighted cost $W(\omega)$ encodes these priorities - it tells the optimizer which errors matter and which you can live with.
 :::
-
-(sec-failure-modes)=

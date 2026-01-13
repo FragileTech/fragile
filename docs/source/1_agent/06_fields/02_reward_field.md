@@ -1,4 +1,23 @@
+(sec-the-reward-field-value-forms-and-hodge-geometry)=
 # The Reward Field: Value Forms and Hodge Geometry
+
+## TLDR
+
+- Treat reward as a **field / differential form**, not just a scalar: direction matters when moving through state space.
+- The critic/value becomes a geometric object (potential solving a Helmholtz/Poisson-style equation on the latent
+  manifold).
+- Use Hodge-style decomposition to separate conservative (gradient) structure from cyclic/value-curl structure (games,
+  non-equilibrium tasks).
+- This chapter gives a principled way to detect when “maximize scalar reward” is the wrong model (curl ≠ 0) and what to
+  do about it.
+- Outputs are implementable diagnostics (value curl, conformal backreaction, mass/value correlation) that tie value to
+  geometry.
+
+## Roadmap
+
+1. Reward as a 1-form and why scalar rewards are insufficient.
+2. Value/critic as a PDE object and its geometric interpretation.
+3. Hodge decomposition + diagnostics for cyclic/non-conservative structure.
 
 {cite}`evans2010pde,sutton2018rl`
 
@@ -1326,7 +1345,3 @@ def value_curl_check(
 | 61 | ValueCurlCheck | Non-conservative structure | Context-dependent (see above) |
 
 **Cross-references:** {ref}`Section 3 <sec-diagnostics-stability-checks>` (Sieve Diagnostic Nodes), Section 23.8 (Interface Diagnostics Nodes 30-34), Theorem {prf:ref}`thm-hodge-decomposition` (Hodge Decomposition), Definition {prf:ref}`def-value-curl` (Value Curl).
-
-
-
-(sec-supervised-topology-semantic-potentials-and-metric-segmentation)=
