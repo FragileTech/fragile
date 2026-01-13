@@ -8,7 +8,7 @@ author: "Guillem Duran-Ballester"
 # Fragile Mechanics
 **On Geometry, Thermodynamics, and Bounded Intelligence**
 
-by *Guillem Duran Ballester*
+by *Guillem Duran-Ballester*
 
 :::{admonition} TL;DR — One-Page Summary
 :class: tip dropdown

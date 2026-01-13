@@ -55,7 +55,7 @@ You will be asked for these fields:
 **Default**:
 
 ```python
-"Guillem Duran Ballester"
+"Guillem Duran-Ballester"
 ```
 
 Main author of this library or application (used in `AUTHORS.md` and `pyproject.toml`).
