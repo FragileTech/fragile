@@ -220,8 +220,10 @@ The Fractal Set faithfully discretizes the emergent Riemannian manifold $(\mathc
 
 **Volume Matching**: The episode count in region $\Omega$ satisfies:
 $$
-\mathbb{E}\left[\frac{|E \cap \Omega|}{N}\right] = \frac{1}{Z} \int_{\Omega} \sqrt{\det g(x)} e^{-U_{\mathrm{eff}}/T} dx + O(N^{-1/2})
+\mathbb{E}\left[\frac{|E \cap \Omega|}{N}\right] = \frac{1}{Z} \int_{\Omega} \sqrt{\det g(x)} \, e^{-U_{\mathrm{eff}}(x)/T} \, dx
 $$
+
+with variance scaling as $O(1/N)$ by the law of large numbers.
 
 **Metric Recovery**: Riemannian distance is recoverable from causal structure.
 
@@ -238,7 +240,7 @@ $$
 
 Compared to uniform Poisson sprinkling, the Fractal Set achieves:
 
-1. **Lower variance**: $\mathrm{Var}_{\mathrm{Fractal}}[|E \cap \Omega|] < \mathrm{Var}_{\mathrm{Poisson}}[|E \cap \Omega|]$ in regions where $\sqrt{\det g}$ varies
+1. **Better coverage**: Episodes concentrate in high-curvature regions where geometric information is richer
 
 2. **Optimal information content**: KL divergence from true volume measure is minimized
 
@@ -278,7 +280,7 @@ $$
 
 where:
 - $\ell_d = (\rho V_d)^{-1/d}$ is the discreteness scale
-- $\alpha_d$, $C_k^{(d)}$ are dimension-dependent coefficients (e.g., in $d=4$: $\alpha_4 = 4/\sqrt{6}$, $n_4 = 3$)
+- $\alpha_d$, $C_k^{(d)}$ are dimension-dependent coefficients (see Benincasa-Dowker 2010 for explicit values)
 - $|I(e', e)|$ is the number of elements in the causal interval between $e'$ and $e$
 
 **Convergence** (Benincasa-Dowker 2010): For smooth functions on the emergent spacetime:
@@ -313,9 +315,9 @@ The Ricci scalar curvature is estimated via the **Benincasa-Dowker action** (201
 
 For a small causal diamond $\mathcal{A}(p, q)$ with $N$ elements:
 $$
-S_{\mathrm{BD}}[\mathcal{A}] = \frac{1}{\ell_P^{d-2}} \left( \alpha_d N - \sum_{k=0}^{n_d} \beta_k^{(d)} N_k \right)
+S_{\mathrm{BD}}[\mathcal{A}] = \frac{\hbar}{\ell_d^{d-2}} \left( \alpha_d N - \sum_{k=0}^{n_d} \beta_k^{(d)} N_k \right)
 $$
-where $N_k$ counts $k$-element intervals.
+where $N_k$ counts $k$-element intervals and $\ell_d$ is the discreteness scale.
 
 **Curvature extraction**: In the continuum limit:
 $$
