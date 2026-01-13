@@ -10,7 +10,7 @@
 
 **Complete Lattice QFT Framework**: The Fractal Set admits a full lattice gauge theory structure with U(1) (electromagnetism) and SU(N) (Yang-Mills) gauge fields, where parallel transport operators are defined on both CST (timelike) and IG (spacelike) edges.
 
-**Fermionic Structure from Cloning Antisymmetry**: The cloning score antisymmetry $S_i(j) \approx -S_j(i)$ provides an algorithmic signature of fermionic statistics. The Algorithmic Exclusion Principle (at most one walker per pair clones in any direction) is analogous to Pauli exclusion.
+**Fermionic Structure from Cloning Antisymmetry**: The cloning score satisfies $S_i(j) = -S_j(i) \cdot (V_j + \varepsilon)/(V_i + \varepsilon)$, yielding exact antisymmetry when $V_i \approx V_j$. The Algorithmic Exclusion Principle (at most one walker per pair clones in any direction) is analogous to Pauli exclusion.
 
 **Emergent Matter Fields**: Grassmann variables model the exclusion, yielding a discrete fermionic action. The temporal operator $D_t$ is rigorously derived from the QSD's thermal structure via Wick rotation and the KMS condition.
 
@@ -99,15 +99,17 @@ where:
 :::{prf:definition} Plaquette Holonomy (Field Strength)
 :label: def-plaquette-holonomy
 
-For a plaquette $P = (e_0, e_1, e_2, e_3)$ with alternating CST/IG edges (see {prf:ref}`def-fractal-set-plaquette`), the **discrete field strength** is the plaquette holonomy:
+For a plaquette $P = (e_0, e_1, e_2, e_3)$ with alternating CST/IG edges (see {prf:ref}`def-fractal-set-plaquette`), the **discrete field strength** is the ordered product around the loop:
 
 $$
-F[P] = U(e_0 \to e_1) \, U(e_1 \sim e_2) \, U(e_2 \to e_3)^{\dagger} \, U(e_3 \sim e_0)^{\dagger}
+U[P] = U(e_0, e_1) \, U(e_1, e_2) \, U(e_2, e_3) \, U(e_3, e_0)
 $$
 
-For U(1): $F[P] = e^{i\Phi[P]}$ where $\Phi[P]$ is magnetic flux through $P$.
+where $U(e_i, e_j)$ is the parallel transport from $e_i$ to $e_j$, and we use $U(e_j, e_i) = U(e_i, e_j)^\dagger$ for reversed traversal.
 
-**Continuum limit:** $F[P] \to \exp(iF_{\mu\nu} \cdot \mathrm{Area}(P))$ as area $\to 0$.
+For U(1): $U[P] = e^{i\Phi[P]}$ where $\Phi[P]$ is the total gauge flux through $P$.
+
+**Continuum limit:** $U[P] \to \exp(i \oint_P A_\mu dx^\mu) = \exp(i\iint_P F_{\mu\nu} dS^{\mu\nu})$ by Stokes' theorem.
 :::
 
 ### 2.3. Wilson Action
@@ -333,7 +335,7 @@ Working in Grothendieck universe $\mathcal{U}$, the temporal operator constructi
 
 5. **Unitary transport**: $U_{ij} = e^{i\theta} \in U(1) \subset \mathbb{C}$ with $|U_{ij}| = 1$ (unit circle).
 
-6. **Discrete derivative**: $D_t \psi_j = (\psi_j - U_{ij}\psi_i)/\Delta t_i$ is a linear operator on Grassmann algebra $\Lambda^*(\mathbb{C}^M)$.
+6. **Discrete derivative**: $(D_t \psi)_j = (\psi_j - U_{ij}\psi_i)/\Delta t_{ij}$ is a linear operator on Grassmann algebra $\Lambda^*(\mathbb{C}^M)$.
 
 All constructions are well-defined in ZFC + standard measure theory and functional analysis. $\square$
 :::
@@ -366,22 +368,27 @@ $$
 :::{prf:definition} Scalar Field Action on Fractal Set
 :label: def-scalar-action
 
-A **real scalar field** $\phi : \mathcal{E} \to \mathbb{R}$ has action:
+A **real scalar field** $\phi : \mathcal{E} \to \mathbb{R}$ has lattice action:
 
 $$
-S_{\mathrm{scalar}}[\phi] = \sum_{e \in \mathcal{E}} \left[\frac{1}{2} (\partial_\mu \phi)^2(e) + \frac{m^2}{2} \phi(e)^2 + V(\phi(e))\right]
+S_{\mathrm{scalar}}[\phi] = \frac{1}{2} \sum_{(e,e') \in E_{\mathrm{CST}} \cup E_{\mathrm{IG}}} \frac{(\phi(e') - \phi(e))^2}{\ell_{ee'}^2} + \sum_{e \in \mathcal{E}} \left[\frac{m^2}{2} \phi(e)^2 + V(\phi(e))\right]
 $$
 
-**Discrete derivatives:**
+where:
+- The first sum is over all edges (kinetic term)
+- $\ell_{ee'}$ is the proper distance along edge $(e, e')$
+- The second sum is over all vertices (mass and potential terms)
 
-**Timelike (CST):** Average over children:
+**Discrete derivatives** (for analysis):
+
+**Timelike (CST):** Forward difference to children:
 $$
-(\partial_0 \phi)(e) = \frac{1}{|\mathrm{Children}(e)|} \sum_{e_c \in \mathrm{Children}(e)} \frac{\phi(e_c) - \phi(e)}{\tau_e}
+(\partial_0 \phi)(e) = \frac{1}{|\mathrm{Children}(e)|} \sum_{e_c \in \mathrm{Children}(e)} \frac{\phi(e_c) - \phi(e)}{\tau_{e,e_c}}
 $$
 
 **Spacelike (IG):** Average over neighbors:
 $$
-(\partial_i \phi)(e) = \frac{1}{|\mathrm{IG}(e)|} \sum_{e' \sim e} \frac{\phi(e') - \phi(e)}{d_g(x_e, x_{e'})}
+(\nabla \phi)(e) \cdot \hat{n}_{ee'} \approx \frac{\phi(e') - \phi(e)}{d_g(x_e, x_{e'})}
 $$
 :::
 
@@ -392,11 +399,11 @@ $$
 
 The discrete Laplacian on the Fractal Set converges to the continuum Laplace-Beltrami operator.
 
-**Definition**: The graph Laplacian is:
+**Definition**: The unnormalized graph Laplacian is:
 $$
-(\Delta_{\mathcal{F}} \phi)(e) := \frac{1}{|\mathrm{IG}(e)|} \sum_{e' \sim e} w_{ee'} (\phi(e') - \phi(e))
+(\Delta_{\mathcal{F}} \phi)(e) := \sum_{e' \sim e} w_{ee'} (\phi(e') - \phi(e))
 $$
-where $w_{ee'} = d_g(x_e, x_{e'})^{-2}$ are distance-weighted edge weights.
+where $w_{ee'} = d_g(x_e, x_{e'})^{-2}$ are distance-weighted edge weights encoding local geometry.
 
 **Convergence** (requires proof): Under appropriate regularity conditions on the QSD sampling:
 $$
