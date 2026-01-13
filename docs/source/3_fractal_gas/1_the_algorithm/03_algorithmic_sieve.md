@@ -1,5 +1,17 @@
 # The Algorithmic Sieve: Rigorous Parameter Constraints for Convergence
 
+## TLDR
+
+**Three-Layer Constraint Synthesis**: This chapter derives rigorous parameter bounds for Fractal Gas convergence by combining three complementary analysis layers: appendix proofs (QSD structure, error bounds, contraction rates), algorithm bounds (fitness ranges, cloning scores, Doeblin floors), and hypostructure certificates (17-node systematic verification). Each layer captures different failure modes, and only parameters passing through all layers are guaranteed to work.
+
+**Five Master Constraints**: The synthesis yields five necessary conditions for convergence: (1) phase control keeping the thermal ratio $\Gamma = T_{\text{kin}}/T_{\text{clone}} \in [0.5, 2.0]$ in the liquid regime, (2) acoustic stability requiring friction $\gamma > \mathbb{E}[p_i] M^2 / (2dh)$ to smooth cloning shocks, (3) Doeblin minorization with kernel scale $\varepsilon \geq D_{\text{alg}} / \sqrt{2\ln((N-1)/p_{\min})}$ ensuring ergodic mixing, (4) timestep bounds $h < \min(2/\omega, 0.1)$ for numerical stability, and (5) noise injection $\sigma_x^2$ sufficient for LSI spectral gap.
+
+**Quantitative Convergence Rate**: The total convergence rate is $\kappa_{\text{total}} = \min(\kappa_W, \kappa_{\text{conf}})$, with an irreducible $O(1/\sqrt{N})$ error floor from finite population effects. Recommended defaults ($\gamma = 1.0$, $h = 0.01$, $\varepsilon \approx 0.24$, $N = 50$) satisfy all constraints with explicit safety margins.
+
+**Theory-First Parameter Selection**: The chapter provides an executable algorithm for computing valid parameters from problem specifications, transforming parameter tuning from trial-and-error into systematic derivation. Bounds are classified by rigor: QSD structure, Wasserstein contraction, and error bounds are rigorously proven; hypocoercive rates remain conjectured.
+
+## Introduction
+
 :::{div} feynman-prose
 Now, here is something every engineer learns the hard way: a beautiful algorithm that diverges is worthless. You can have the most elegant mathematical framework in the world, but if your particles fly off to infinity, or your cloning rates explode, or your population collapses to a single point—well, you have nothing.
 
@@ -10,40 +22,9 @@ The trouble is, there are three different sources telling us about constraints, 
 What we are going to do in this chapter is show you how to combine all three sources into a single, coherent system of constraints. Think of it as building a sieve: each layer catches different problems, and only parameters that pass through *all* the layers are guaranteed to work.
 :::
 
-## TLDR
+This chapter derives **rigorous parameter constraints** for the Fractal Gas algorithm by synthesizing results from three analysis layers. Where {doc}`01_algorithm_intuition` explains what the algorithm does and {doc}`02_fractal_gas_latent` provides the formal machinery, this chapter answers the practical question: given a problem, what parameter values guarantee convergence?
 
-::::{dropdown} One-Page Summary
-:open:
-
-**Goal**: Derive **rigorous parameter bounds** for Fractal Gas convergence by combining three analysis layers with explicit, first-principles derivations.
-
-**Three-Layer Hierarchy**:
-1. **Appendix analysis** (rigorous): QSD structure, quantitative error bounds, propagation of chaos
-2. **Algorithm bounds** (exact): Fitness range, cloning score, Doeblin floor from softmax kernel
-3. **Hypostructure certificates** (systematic): 17-node verification of constraint satisfaction
-
-**Five Master Constraints** (derived from first principles):
-
-| Constraint | Bound | Source |
-|------------|-------|--------|
-| Phase Control | $\Gamma = T_{\text{kin}}/T_{\text{clone}} \in [0.5, 2.0]$ | Empirical + mean-field analysis |
-| Acoustic Stability | $\gamma > \mathbb{E}[p_i] M^2 / (2dh)$ | Fokker-Planck perturbation |
-| Doeblin Minorization | $\varepsilon \geq D_{\text{alg}} / \sqrt{2\ln((N-1)/p_{\min})}$ | Softmax kernel floor |
-| Timestep (CFL) | $h < \min(2/\omega, 0.1)$ | BAOAB stability |
-| Noise Injection | $\sigma_x^2 \geq \lambda_{\text{target}} C_0 / (\gamma \kappa_{\text{conf}} \kappa_W)$ | LSI spectral gap |
-
-**Rigorous Convergence Rate** (from Appendices 04, 06):
-
-$$
-\kappa_{\text{total}} = \min(\kappa_W, \kappa_{\text{conf}}), \quad \text{with error floor } O(1/\sqrt{N})
-$$
-
-**Status**: Bounds marked with $\checkmark$ are rigorously proven; bounds marked with $\dagger$ are heuristic guidance.
-::::
-
-## Introduction
-
-This chapter derives **rigorous parameter constraints** for the Fractal Gas algorithm by synthesizing results from three analysis layers. Unlike heuristic tuning approaches, we derive all bounds from first principles with explicit constants.
+The approach is systematic rather than heuristic. Each of five master constraints captures a distinct failure mode—phase instability, acoustic shocks, population fragmentation, numerical divergence, and insufficient mixing. The chapter derives each bound from first principles, traces its origin to specific appendix theorems or algorithm definitions, and provides explicit formulas for computing valid parameter ranges from problem specifications.
 
 :::{admonition} Philosophy: Theory Takes Precedence
 :class: important

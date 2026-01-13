@@ -22,10 +22,9 @@ specification for theoretical analysis).
 
 ## Introduction
 
-This chapter provides an intuitive, implementation-oriented introduction to the Fractal Gas algorithm family. Where the
-formal treatment in {doc}`02_fractal_gas_latent` develops the mathematical machinery for convergence proofs and sieve
-verification, this chapter focuses on *what the algorithm does* and *why each component exists*. The goal is to build
-understanding before formalism—to make the subsequent mathematical analysis feel inevitable rather than arbitrary.
+This chapter provides an intuitive, implementation-oriented introduction to the Fractal Gas algorithm family. Where the formal treatment in {doc}`02_fractal_gas_latent` develops the mathematical machinery for convergence proofs and sieve verification, this chapter focuses on *what the algorithm does* and *why each component exists*. The goal is to build understanding before formalism—to make the subsequent mathematical analysis feel inevitable rather than arbitrary.
+
+**Prerequisites**: This chapter is designed to be self-contained for readers with basic familiarity with optimization and probability. No prior knowledge of the Fragile framework or Hypostructure is required—those concepts are developed in subsequent chapters. Readers seeking the rigorous mathematical treatment should proceed to {doc}`02_fractal_gas_latent` after building intuition here; those interested in the complete axiomatic foundations will find them in {doc}`../appendices/01_fragile_gas_framework`.
 
 The chapter is organized around the algorithm's core components:
 

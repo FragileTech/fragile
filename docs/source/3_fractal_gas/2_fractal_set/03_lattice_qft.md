@@ -8,19 +8,19 @@
 
 *Notation: $\mathcal{F}$ = Fractal Set; $U(e)$ = parallel transport on edge $e$; $W[\gamma]$ = Wilson loop; $S_i(j)$ = cloning score; $\tilde{K}$ = antisymmetric kernel.*
 
-**Complete Lattice QFT Framework**: The Fractal Set admits lattice gauge theory with three independent gauge groups arising from distinct algorithmic mechanisms:
+**The Fractal Set is a Natural Lattice for Quantum Field Theory**: The alternating CST (timelike) and IG (spacelike) edge structure provides exactly the geometry needed for lattice gauge theory. Three independent gauge groups emerge from distinct algorithmic mechanisms:
 
-| Gauge Group | Algorithmic Origin |
-|-------------|-------------------|
-| $U(1)$ | Diversity companion selection (fitness phase invariance) |
-| $SU(2)$ | Cloning companion selection (weak isospin doublet) |
-| $SU(N)$ | Viscous force coupling (color charge confinement) |
+| Gauge Group | Algorithmic Origin | Physical Force |
+|-------------|-------------------|----------------|
+| $U(1)$ | Diversity companion selection (fitness phase invariance) | Electromagnetism |
+| $SU(2)$ | Cloning companion selection (weak isospin doublet) | Weak force |
+| $SU(N)$ | Viscous force coupling (color charge confinement) | Strong force |
 
-Parallel transport operators are defined on both CST (timelike) and IG (spacelike) edges.
+For $N = d = 3$ dimensional latent space, this yields the Standard Model gauge group $SU(3) \times SU(2) \times U(1)$.
 
-**Fermionic Structure from Cloning Antisymmetry**: The cloning score satisfies $S_i(j) = -S_j(i) \cdot (V_j + \varepsilon)/(V_i + \varepsilon)$, yielding exact antisymmetry when $V_i \approx V_j$. The Algorithmic Exclusion Principle (at most one walker per pair clones in any direction) is analogous to Pauli exclusion.
+**Fermionic Statistics Emerge from Cloning Antisymmetry**: The cloning score satisfies $S_i(j) = -S_j(i) \cdot (V_j + \varepsilon)/(V_i + \varepsilon)$, yielding exact antisymmetry when $V_i \approx V_j$. The Algorithmic Exclusion Principle—at most one walker per pair can clone in any direction—is the discrete analog of Pauli exclusion. This is not put in by hand; it emerges from the logic of fitness-based selection.
 
-**Emergent Matter Fields**: Grassmann variables model the exclusion, yielding a discrete fermionic action. The temporal operator $D_t$ is rigorously derived from the QSD's thermal structure via Wick rotation and the KMS condition.
+**Quantum Dynamics from Thermal Structure**: The temporal operator $D_t$ arises rigorously from the QSD's thermal equilibrium via Wick rotation and the KMS condition. Grassmann variables model the exclusion structure, yielding a discrete fermionic action that converges to the Dirac equation in the continuum limit. The algorithm discovers quantum field theory.
 
 ---
 

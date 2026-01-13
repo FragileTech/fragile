@@ -5,7 +5,11 @@ parts:
   # VOLUME 1: FRAGILE MECHANICS
   # ══════════════════════════════════════════════════════════════════════════════
 
-  - caption: "Vol. 1 · Part I - Foundations"
+  - caption: "Vol. 1 · Fragile Mechanics"
+    chapters:
+    - file: source/1_agent/intro_agent
+
+  - caption: "Part I - Foundations"
     chapters:
     - file: source/1_agent/01_foundations/01_definitions
     - file: source/1_agent/01_foundations/02_control_loop
