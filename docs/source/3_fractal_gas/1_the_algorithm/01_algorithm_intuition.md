@@ -41,17 +41,17 @@ The algorithm exhibits behavior across three timescales:
 | **Continuum** | Infinite walkers, continuous time | WFR (Wasserstein-Fisher-Rao) PDE |
 
 :::{div} feynman-prose
-The Fractal Gas sits at the intersection of several algorithmic traditions. Like *particle swarm optimization*, it uses a population of interacting agents. Like *genetic algorithms*, it employs selection and reproduction. Like *MCMC methods*, it samples from a target distribution. But unlike any of these, it achieves a precise mathematical characterization: in the continuum limit, the swarm density evolves according to a reaction-diffusion equation where mass flows toward high-fitness regions while maintaining diversity through diffusion.
+The Fractal Gas sits at the intersection of several algorithmic traditions. Like *particle swarm optimization* {cite}`kennedy1995particle,shi1998modified`, it uses a population of interacting agents. Like *genetic algorithms* {cite}`holland1992genetic,goldberg1989genetic`, it employs selection and reproduction. Like *MCMC methods* {cite}`metropolis1953equation,hastings1970monte`, it samples from a target distribution. But unlike any of these, it achieves a precise mathematical characterization: in the continuum limit, the swarm density evolves according to a reaction-diffusion equation where mass flows toward high-fitness regions while maintaining diversity through diffusion.
 :::
 
 ### Relationship to Other Algorithms
 
 | Algorithm Family | Shared Feature | Key Difference |
 |------------------|----------------|----------------|
-| Particle Swarm | Population-based, local communication | Fractal Gas: explicit selection pressure, no global best |
-| Genetic Algorithms | Selection and reproduction | Fractal Gas: continuous state space, soft selection |
-| MCMC / Langevin | Sampling from distributions | Fractal Gas: selection creates non-equilibrium dynamics |
-| Interacting Particle Systems | Mean-field limits | Fractal Gas: dual-channel fitness, momentum conservation |
+| Particle Swarm {cite}`kennedy1995particle` | Population-based, local communication | Fractal Gas: explicit selection pressure, no global best |
+| Genetic Algorithms {cite}`holland1992genetic` | Selection and reproduction | Fractal Gas: continuous state space, soft selection |
+| MCMC / Langevin {cite}`metropolis1953equation,roberts1996exponential` | Sampling from distributions | Fractal Gas: selection creates non-equilibrium dynamics |
+| Interacting Particle Systems {cite}`del2004feynman` | Mean-field limits | Fractal Gas: dual-channel fitness, momentum conservation |
 
 ---
 
@@ -68,7 +68,7 @@ A **walker** is a tuple $w = (z, v, s)$ where:
 - $v \in T_z\mathcal{Z}$ is the **velocity** (tangent vector at $z$)
 - $s \in \{0, 1\}$ is the **status** (0 = dead, 1 = alive)
 
-The latent space $\mathcal{Z}$ is equipped with a Riemannian metric $G$, inducing the inner product $\langle u, w \rangle_G = u^\top G(z) w$ for tangent vectors $u, w \in T_z\mathcal{Z}$.
+The latent space $\mathcal{Z}$ is equipped with a Riemannian metric $G$ {cite}`lee2018introduction`, inducing the inner product $\langle u, w \rangle_G = u^\top G(z) w$ for tangent vectors $u, w \in T_z\mathcal{Z}$.
 :::
 
 :::{prf:definition} Swarm State
@@ -80,10 +80,17 @@ $$
 \Sigma_N = (\mathcal{Z} \times T\mathcal{Z} \times \{0,1\})^N.
 $$
 
-For a swarm $\mathcal{S}$, we define:
+For a swarm $\mathcal{S}$, we define (where $[N] := \{1, \ldots, N\}$):
 - **Alive set**: $\mathcal{A}(\mathcal{S}) = \{i \in [N] : s_i = 1\}$
 - **Dead set**: $\mathcal{D}(\mathcal{S}) = \{i \in [N] : s_i = 0\}$
 - **Alive count**: $n_{\text{alive}} = |\mathcal{A}(\mathcal{S})|$
+:::
+
+:::{note}
+:class: feynman-added
+In most variants, a walker is marked **dead** ($s=0$) when it violates constraints (for example, leaving an admissible
+region $B$) during the kinetic update stage (via a boundary/constraints check). Dead walkers remain in the swarm and are
+revived via cloning (Section 5).
 :::
 
 :::{div} feynman-prose
@@ -111,6 +118,12 @@ where:
 When $\lambda_{\text{alg}} = 0$, only positions matter; when $\lambda_{\text{alg}} > 0$, walkers with similar velocities are considered "closer."
 :::
 
+:::{note}
+:class: feynman-added
+On a curved manifold, velocities live in different tangent spaces. In practice, $d_{\text{alg}}$ is computed in a common
+coordinate chart (or after transporting velocities) so the difference $v_i - v_j$ is well-defined.
+:::
+
 ---
 
 (sec-companion-selection)=
@@ -130,7 +143,7 @@ $$
 where $\epsilon > 0$ is the **kernel bandwidth**. The **companion distribution** for walker $i$ is the softmax:
 
 $$
-P_i(j) = \frac{w_{ij}}{\sum_{l \in \mathcal{A}, l \neq i} w_{il}}, \quad j \in \mathcal{A}(\mathcal{S}) \setminus \{i\}
+P_i(j) = \frac{w_{ij}}{\sum_{l \in \mathcal{A}(\mathcal{S}), l \neq i} w_{il}}, \quad j \in \mathcal{A}(\mathcal{S}) \setminus \{i\}
 $$
 
 For **dead walkers** $i \in \mathcal{D}(\mathcal{S})$, the companion distribution is uniform over the alive set:
@@ -139,7 +152,9 @@ $$
 P_i(j) = \frac{1}{|\mathcal{A}(\mathcal{S})|}, \quad j \in \mathcal{A}(\mathcal{S})
 $$
 
-The kernel is **degenerate** when $|\mathcal{A}(\mathcal{S})| < 2$; this case triggers transition to a **cemetery state** $\dagger$.
+The kernel is **degenerate** when $|\mathcal{A}(\mathcal{S})| < 2$ (an alive walker has no valid companion). Analyses
+often handle this with an explicit **cemetery state** $\dagger$, while implementations may special-case the
+single-survivor regime by freezing the lone alive walker and reviving everyone else from it.
 :::
 
 :::{div} feynman-prose
@@ -147,7 +162,7 @@ Why *soft* selection instead of just picking the nearest neighbor? Three reasons
 
 1. **Smoothness**: The soft kernel makes the companion distribution a differentiable function of walker positions. This is crucial for theoretical analysis—it lets us apply calculus tools to understand the algorithm's behavior.
 
-2. **Minorization**: Even distant walkers have a small but positive probability of being selected. This ensures the Markov chain is *irreducible*: any configuration can eventually reach any other. Without this, the swarm could fragment into disconnected clusters.
+2. **Minorization**: Even distant walkers have a small but positive probability of being selected. This ensures the Markov chain is *irreducible* {cite}`meyn2012markov`: any configuration can eventually reach any other. Without this, the swarm could fragment into disconnected clusters.
 
 3. **Robustness**: Hard selection (always pick the nearest) is sensitive to small perturbations—a tiny position change can completely switch the selected companion. Soft selection degrades gracefully.
 :::
@@ -159,7 +174,7 @@ The soft kernel guarantees a minimum selection probability for any pair of alive
 :::{prf:proposition} Companion Minorization
 :label: prop-companion-minorization
 
-Let $D_{\text{alg}} = \max_{i,j \in \mathcal{A}} d_{\text{alg}}(i,j)$ be the algorithmic diameter of the alive set. Then for any $i, j \in \mathcal{A}(\mathcal{S})$ with $i \neq j$:
+Let $D_{\text{alg}} = \max_{i,j \in \mathcal{A}(\mathcal{S})} d_{\text{alg}}(i,j)$ be the algorithmic diameter of the alive set. Then for any $i, j \in \mathcal{A}(\mathcal{S})$ with $i \neq j$:
 
 $$
 P_i(j) \geq \frac{m_\epsilon}{n_{\text{alive}} - 1}
@@ -173,7 +188,7 @@ where $m_\epsilon = \exp(-D_{\text{alg}}^2 / (2\epsilon^2))$ is the **kernel flo
 :::{div} feynman-prose
 Here is something worth sitting with for a moment. The minorization bound says that no matter how far apart two walkers are, there is always a positive probability that one will select the other as a companion. This is not just a mathematical convenience. It is the reason the swarm cannot fragment into disconnected islands that never communicate. Even walkers on opposite ends of the state space have a small but nonzero chance of interacting, and that small chance is enough to guarantee that information eventually flows everywhere.
 
-The exponential in $m_\epsilon = \exp(-D_{\text{alg}}^2/(2\epsilon^2))$ falls off rapidly with distance, so distant pairs are rarely selected. But "rarely" is infinitely different from "never." In Markov chain theory, this distinction is the difference between an irreducible chain and a reducible one, between a system that eventually mixes and one that gets stuck forever.
+The exponential in $m_\epsilon = \exp(-D_{\text{alg}}^2/(2\epsilon^2))$ falls off rapidly with distance, so distant pairs are rarely selected. But "rarely" is infinitely different from "never." In Markov chain theory {cite}`meyn2012markov,robert2004monte`, this distinction is the difference between an irreducible chain and a reducible one, between a system that eventually mixes and one that gets stuck forever.
 :::
 
 :::{note}
@@ -200,7 +215,7 @@ Fitness determines which walkers thrive and which must relocate. The Fractal Gas
 ### 3.1 The Dual-Channel Design
 
 :::{div} feynman-prose
-Here's the central tension in any search algorithm: you want to *exploit* what you've learned (go where rewards are high) but also *explore* new regions (maintain diversity). Pure exploitation leads to premature convergence on local optima. Pure exploration wastes computation on unpromising areas.
+Here's the central tension in any search algorithm: you want to *exploit* what you've learned (go where rewards are high) but also *explore* new regions (maintain diversity) {cite}`sutton2018reinforcement`. Pure exploitation leads to premature convergence on local optima. Pure exploration wastes computation on unpromising areas.
 
 The Fractal Gas resolves this with two fitness channels:
 - **Reward channel**: How good is this walker's current reward signal?
@@ -246,7 +261,7 @@ Now here is a piece of engineering that looks pedestrian but is actually rather 
 
 The z-score transformation centers each quantity at zero and scales it by its current variability. A reward two standard deviations above average gets the same standardized value as a distance two standard deviations above average. Now they speak the same language.
 
-But z-scores can be arbitrarily large, which causes numerical problems and makes the fitness function too sensitive to outliers. The logistic squashing fixes this: it takes any real number and maps it smoothly into a bounded interval. Extreme values saturate rather than explode. And the positivity floor ensures we never divide by zero or take logarithms of zero later in the pipeline.
+But z-scores can be arbitrarily large, which causes numerical problems and makes the fitness function too sensitive to outliers. The logistic squashing fixes this: it takes any real number and maps it smoothly into a bounded interval {cite}`bishop2006pattern`. Extreme values saturate rather than explode. And the positivity floor ensures we never divide by zero or take logarithms of zero later in the pipeline.
 :::
 
 :::{prf:definition} Fitness Standardization
@@ -327,38 +342,38 @@ Consider a swarm of $N = 4$ walkers with the following raw values (all alive):
 | 3 | 0.8 | 3.0 |
 | 4 | 2.0 | 0.5 |
 
-**Step 1: Compute statistics**
+**Step 1: Compute statistics** (population mean/std, rounded)
 - $\mu_d = (0.5 + 1.2 + 0.8 + 2.0)/4 = 1.125$
-- $\sigma_d = 0.574$ (standard deviation)
+- $\sigma_d \approx 0.563$
 - $\mu_r = (2.0 + 1.5 + 3.0 + 0.5)/4 = 1.75$
-- $\sigma_r = 0.901$
+- $\sigma_r \approx 0.901$
 
 **Step 2: Z-scores** (with $\sigma_{\min} = 10^{-8}$)
 
 | Walker | $z_d(i)$ | $z_r(i)$ |
 |--------|----------|----------|
-| 1 | -1.09 | 0.28 |
+| 1 | -1.11 | 0.28 |
 | 2 | 0.13 | -0.28 |
-| 3 | -0.57 | 1.39 |
-| 4 | 1.52 | -1.39 |
+| 3 | -0.58 | 1.39 |
+| 4 | 1.55 | -1.39 |
 
 **Step 3: Logistic rescaling** (with $A = 2$, $\eta = 0.1$)
 
 | Walker | $d_i' = g_2(z_d) + 0.1$ | $r_i' = g_2(z_r) + 0.1$ |
 |--------|-------------------------|-------------------------|
 | 1 | 0.60 | 1.24 |
-| 2 | 1.16 | 0.96 |
-| 3 | 0.82 | 1.80 |
-| 4 | 1.92 | 0.40 |
+| 2 | 1.17 | 0.96 |
+| 3 | 0.82 | 1.70 |
+| 4 | 1.75 | 0.50 |
 
 **Step 4: Fitness** (with $\alpha_{\text{fit}} = \beta_{\text{fit}} = 1$)
 
 | Walker | $V_{\text{fit}} = d' \cdot r'$ | Interpretation |
 |--------|-------------------------------|----------------|
 | 1 | 0.74 | Good reward, low diversity |
-| 2 | 1.11 | Moderate both |
-| 3 | 1.48 | **Highest**: good reward AND diversity |
-| 4 | 0.77 | High diversity, low reward |
+| 2 | 1.12 | Moderate both |
+| 3 | 1.39 | **Highest**: good reward AND diversity |
+| 4 | 0.88 | High diversity, low reward |
 
 Walker 3 has the highest fitness because it balances both channels well.
 :::
@@ -394,7 +409,11 @@ The cloning score $S_i$ measures how much better the companion is than the walke
 - $S_i > 0$: Companion is fitter → walker may clone
 - $S_i \leq 0$: Walker is at least as fit → no cloning
 
-The randomized threshold $T_i \sim \text{Uniform}(0, p_{\max})$ introduces stochasticity: even a small fitness advantage can trigger cloning (if $T_i$ is small), and even a large advantage might not (if $T_i$ is large). This prevents deterministic collapse and maintains exploration.
+The randomized threshold $T_i \sim \text{Uniform}(0, p_{\max})$ introduces stochasticity: even a small fitness advantage
+can trigger cloning (if $T_i$ is small), and even a large advantage might not (if $T_i$ is large)—unless $S_i > p_{\max}$
+(then cloning is certain). This prevents deterministic collapse and maintains exploration. The stochastic acceptance
+mechanism is reminiscent of simulated annealing {cite}`kirkpatrick1983optimization` and Metropolis-Hastings sampling
+{cite}`hastings1970monte`.
 :::
 
 ### 4.2 Position Update (Jitter)
@@ -480,7 +499,8 @@ where:
 Under the revival constraint, if $|\mathcal{A}(\mathcal{S})| \geq 1$, then every dead walker clones with probability 1.
 :::
 
-*Proof.* For a dead walker $i$, we have $V_{\text{fit}, i} = 0$. Its companion $c$ is alive (since dead walkers sample from $\mathcal{A}$), so $V_{\text{fit}, c} \geq V_{\min}$. The cloning score is:
+*Proof.* For a dead walker $i$, we have $V_{\text{fit}, i} = 0$. Its companion $c$ is alive (since dead walkers sample
+from $\mathcal{A}(\mathcal{S})$), so $V_{\text{fit}, c} \geq V_{\min}$. The cloning score is:
 
 $$
 S_i = \frac{V_{\text{fit}, c} - 0}{0 + \varepsilon_{\text{clone}}} = \frac{V_{\text{fit}, c}}{\varepsilon_{\text{clone}}} \geq \frac{V_{\min}}{\varepsilon_{\text{clone}}} > p_{\max}
@@ -489,9 +509,12 @@ $$
 The last inequality uses the revival constraint. Since $T_i \leq p_{\max}$ always, we have $S_i > T_i$ with probability 1. $\square$
 
 :::{div} feynman-prose
-The revival guarantee is the safety net of the Fractal Gas. No matter how poorly the search is going, dead walkers will always be reborn near alive ones. The only failure mode is **catastrophic**: all walkers dying simultaneously. This is typically a measure-zero event (assuming continuous dynamics with noise), so in practice the swarm persists indefinitely.
+The revival guarantee is the safety net of the Fractal Gas. No matter how poorly the search is going, dead walkers will
+always be reborn near alive ones. The only failure mode is **catastrophic**: all walkers dying simultaneously. In many
+settings this probability decays rapidly with $N$ (for example, like $p^N$ if deaths are weakly dependent), so for
+moderate swarm sizes it is typically negligible—but it is not literally zero.
 
-This is a key difference from genetic algorithms, where population can dwindle through selection pressure. The Fractal Gas maintains constant population $N$—it's the *distribution* of walkers that evolves, not the count.
+This is a key difference from genetic algorithms {cite}`goldberg1989genetic`, where population can dwindle through selection pressure. The Fractal Gas maintains constant population $N$—it's the *distribution* of walkers that evolves, not the count.
 :::
 
 ---
@@ -506,7 +529,7 @@ Between cloning events, walkers evolve according to a **kinetic operator** that 
 :::{div} feynman-prose
 The kinetic operator is deliberately left abstract here because the Fractal Gas framework does not care how walkers move between cloning events. It only cares that they move in a way that injects some noise and respects some basic regularity conditions.
 
-This is a good design principle: separate the concerns. The companion selection and cloning mechanics handle the swarm-level intelligence, the selection pressure that drives walkers toward good regions. The kinetic operator handles the individual-level dynamics, how each walker explores its local neighborhood. You can swap in different kinetic operators without changing the rest of the algorithm. Brownian motion works. Langevin dynamics works. Hamiltonian Monte Carlo works. Each choice gives different exploration characteristics, but the overall framework remains the same.
+This is a good design principle: separate the concerns. The companion selection and cloning mechanics handle the swarm-level intelligence, the selection pressure that drives walkers toward good regions. The kinetic operator handles the individual-level dynamics, how each walker explores its local neighborhood. You can swap in different kinetic operators without changing the rest of the algorithm. Brownian motion works {cite}`einstein1905bewegung`. Langevin dynamics works {cite}`leimkuhler2015molecular`. Hamiltonian Monte Carlo works {cite}`neal2011mcmc`. Each choice gives different exploration characteristics, but the overall framework remains the same.
 :::
 
 :::{prf:definition} Kinetic Operator (Abstract)
@@ -515,7 +538,7 @@ This is a good design principle: separate the concerns. The companion selection 
 A **kinetic operator** is a Markov transition kernel $K_\tau: (\mathcal{Z} \times T\mathcal{Z}) \to (\mathcal{Z} \times T\mathcal{Z})$ that:
 
 1. **Preserves the alive set**: $K_\tau$ acts only on $(z, v)$, not on status $s$
-2. **Admits a stationary measure**: There exists a reference measure $\mu$ such that $K_\tau^* \mu = \mu$ (or $K_\tau$ contracts toward $\mu$)
+2. **Admits a stationary measure**: There exists a reference measure $\mu$ such that $K_\tau^* \mu = \mu$ (or $K_\tau$ contracts toward $\mu$) {cite}`leimkuhler2015molecular`
 3. **Injects noise**: $K_\tau$ is not deterministic; it has a positive diffusion component
 
 The kinetic operator advances walkers by time step $\tau$:
@@ -527,7 +550,7 @@ $$
 
 ### 6.2 Concrete Example: Boris-BAOAB
 
-The **Boris-BAOAB** scheme is a splitting integrator for Langevin dynamics on Riemannian manifolds, adapted for the Fractal Gas with anisotropic diffusion.
+The **Boris-BAOAB** scheme is a splitting integrator for Langevin dynamics {cite}`leimkuhler2016efficient` on Riemannian manifolds, adapted for the Fractal Gas with anisotropic diffusion.
 
 :::{prf:definition} Boris-BAOAB Splitting
 :label: def-fg-boris-baoab
@@ -585,7 +608,7 @@ where $\nabla_z^2 V_{\text{fit}}$ is the Hessian of fitness with respect to posi
 :::{div} feynman-prose
 Why anisotropic diffusion? Consider a fitness landscape with a narrow valley: stiff in one direction (walls of the valley) and flat in another (along the valley floor). Isotropic diffusion would waste energy bouncing off the walls. Anisotropic diffusion, scaled by the inverse square root of the Hessian, injects more noise along flat directions and less along stiff directions. The walker slides along the valley floor instead of bouncing off walls.
 
-This is the same principle behind preconditioned gradient descent and natural gradient methods—adapting the step size to the local geometry of the loss landscape.
+This is the same principle behind preconditioned gradient descent and natural gradient methods {cite}`amari1998natural`—adapting the step size to the local geometry of the loss landscape.
 :::
 
 ---
@@ -612,22 +635,27 @@ The **one-step operator** $P_\tau: \Sigma_N \to \Sigma_N$ acts as follows:
 1. Sample clone companions: $c_i^{\text{clone}} \sim P_i$ for each $i$
 2. Compute cloning scores $S_i$ and sample thresholds $T_i$
 3. For each $i$ with $S_i > T_i$:
-   - Update position: $z_i' = z_{c_i^{\text{clone}}} + \sigma_x \zeta_i$
-   - Group walkers by recipient companion and apply inelastic collision
-4. Set status: $s_i' = 1$ for all cloned walkers
+   - Update position: $\tilde{z}_i = z_{c_i^{\text{clone}}} + \sigma_x \zeta_i$
+4. For each $i$ with $S_i \leq T_i$: keep $\tilde{z}_i = z_i$, $\tilde{v}_i = v_i$, and $\tilde{s}_i = s_i$
+5. Group cloned walkers by parent and apply inelastic collision to produce intermediate velocities $\tilde{v}_i$ (non-cloned walkers keep $\tilde{v}_i = v_i$)
+6. Set intermediate status: $\tilde{s}_i = 1$ for cloned walkers
 
-**Step 3 (Kinetics)**:
-1. Apply kinetic operator: $(z_i', v_i') \sim K_\tau(\cdot \mid z_i, v_i)$ for each $i$
+**Step 3 (Kinetics + Killing)**:
+1. Apply kinetic operator: $(z_i', v_i') \sim K_\tau(\cdot \mid \tilde{z}_i, \tilde{v}_i)$ for each $i$
+2. Apply a status check (boundary/constraints) to set $s_i' \in \{0,1\}$ from $(z_i', v_i')$
 
 **Output**: Updated swarm $\mathcal{S}' = ((z_i', v_i', s_i'))_{i=1}^N$
 
-**Cemetery**: If $|\mathcal{A}(\mathcal{S})| < 2$ at any point, transition to absorbing state $\dagger$.
+**Cemetery**: If companion selection for alive walkers is undefined (for example, $|\mathcal{A}(\mathcal{S})| < 2$) and
+no special case is used, transition to absorbing state $\dagger$.
 :::
 
 :::{div} feynman-prose
 The order of operations matters. Fitness is computed first because it depends on the current swarm configuration. Cloning comes next because it uses the fitness values. Kinetics comes last because it advances positions *after* cloning has redistributed walkers.
 
-The cemetery state $\dagger$ is a theoretical necessity: if only one or zero walkers remain alive, companion selection is undefined. In practice, the revival guarantee ensures this almost never happens—it requires all walkers to die in a single step, which has probability zero under continuous dynamics with noise.
+The cemetery state $\dagger$ is a theoretical convenience: if fewer than two walkers remain alive, the companion kernel
+for alive walkers needs a special case. In practice, catastrophic extinction (all walkers dying in one step) can be made
+extremely unlikely, and the single-survivor regime can be handled explicitly (see Section 2).
 :::
 
 ---
@@ -682,7 +710,7 @@ where:
 - $T_\tau$ = transport (Langevin diffusion)
 - $R_\tau$ = reaction (fitness-weighted resampling)
 
-In the continuum limit, this becomes the **WFR (Wasserstein-Fisher-Rao)** equation:
+In the continuum limit, this becomes the **WFR (Wasserstein-Fisher-Rao)** equation {cite}`liero2018optimal,chizat2018interpolating`:
 
 $$
 \partial_t \rho = \underbrace{\nabla \cdot (\rho \nabla \Phi) + \Delta \rho}_{\text{transport (WFR)}} + \underbrace{\rho (V_{\text{fit}} - \bar{V}_{\text{fit}})}_{\text{reaction (replicator)}}
@@ -695,7 +723,7 @@ The term $\Delta \rho$ is diffusion. It spreads the walkers out, like cream disp
 
 The term $\nabla \cdot (\rho \nabla \Phi)$ is drift. It pushes walkers downhill on the potential $\Phi$. If the potential represents negative reward, this pulls walkers toward high-reward regions. If you did nothing but drift, the swarm would collapse to a single point at the global minimum. This is pure exploitation with no exploration.
 
-The term $\rho(V_{\text{fit}} - \bar{V}_{\text{fit}})$ is the replicator dynamics. It says that density grows where fitness exceeds the mean and shrinks where fitness is below the mean. The $-\bar{V}_{\text{fit}}$ term is crucial: it conserves total mass. Without it, the equation would create or destroy walkers out of nothing.
+The term $\rho(V_{\text{fit}} - \bar{V}_{\text{fit}})$ is the replicator dynamics {cite}`hofbauer1998evolutionary`. It says that density grows where fitness exceeds the mean and shrinks where fitness is below the mean. The $-\bar{V}_{\text{fit}}$ term is crucial: it conserves total mass. Without it, the equation would create or destroy walkers out of nothing.
 
 The Darwinian Ratchet is a beautiful synthesis: the diffusion term spreads mass outward (exploration), the drift term pulls mass toward low-potential regions (gradient descent), and the reaction term amplifies mass in high-fitness regions while depleting low-fitness regions (natural selection). Together, they create a "ratchet" that steadily concentrates mass at optima while maintaining diversity.
 
@@ -704,7 +732,7 @@ This is why the Fractal Gas works: it's not just a heuristic algorithm—it's a 
 
 ### Mean-Field Limit
 
-As $N \to \infty$, the empirical measure $\mu_N = \frac{1}{N} \sum_{i=1}^N \delta_{(z_i, v_i)}$ converges to a deterministic measure $\mu_t$ solving the mean-field equation. The error bound (propagation of chaos) is:
+As $N \to \infty$, the empirical measure $\mu_N = \frac{1}{N} \sum_{i=1}^N \delta_{(z_i, v_i)}$ converges to a deterministic measure $\mu_t$ solving the mean-field equation {cite}`sznitman1991topics,del2004feynman`. The error bound (propagation of chaos) is:
 
 $$
 \mathbb{E}[W_2(\mu_N, \mu)] \lesssim \frac{e^{-\kappa_W t}}{\sqrt{N}}
@@ -747,7 +775,8 @@ $$
 \varepsilon_{\text{clone}} \cdot p_{\max} < \eta^{\alpha_{\text{fit}} + \beta_{\text{fit}}}
 $$
 
-With defaults: $0.01 \times 1.0 = 0.01 < 0.1^2 = 0.01$. **Warning**: Default parameters are at the boundary! Use $\eta = 0.15$ or $\varepsilon_{\text{clone}} = 0.005$ for safety margin.
+With defaults: $0.01 \times 1.0 = 0.01 = 0.1^2 = 0.01$. The condition is tight; in floating point it's safer to add
+slack (for example, use $\eta = 0.15$ or $\varepsilon_{\text{clone}} = 0.005$).
 :::
 
 ---
@@ -777,6 +806,6 @@ The beauty is that you do not need to understand the PDE to use the algorithm. Y
 :::{seealso}
 :class: feynman-added
 - {doc}`02_fractal_gas_latent`: Proof object with full sieve verification
-- {doc}`../2_hypostructure/10_information_processing/02_fractal_gas`: Hypostructure metatheorems
-- {doc}`appendices/01_fragile_gas_framework`: Axiom system and revival guarantee proof
+- {doc}`../../2_hypostructure/10_information_processing/02_fractal_gas`: Hypostructure metatheorems
+- {doc}`../appendices/01_fragile_gas_framework`: Axiom system and revival guarantee proof
 :::

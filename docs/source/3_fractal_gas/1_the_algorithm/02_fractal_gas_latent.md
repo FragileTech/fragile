@@ -6,7 +6,7 @@ title: "Hypostructure Proof Object: Fractal Gas (Latent Fragile Agent)"
 
 ## TLDR
 
-**Latent Space Instantiation**: This document provides a complete, machine-checkable proof object for the Latent Fractal Gas, a swarm algorithm operating in an agent's learned latent space rather than raw observation space. Walkers evolve via geodesic Boris-BAOAB dynamics driven by a reward 1-form and effective potential, with soft companion selection and momentum-conserving inelastic collisions for cloning.
+**Latent Space Instantiation**: This document provides a complete, machine-checkable proof object for the Latent Fractal Gas, a swarm algorithm operating in an agent's learned latent space rather than raw observation space. Walkers evolve via geodesic Boris-BAOAB Lorentz-Langevin dynamics driven by a reward 1-form and effective potential, augmented with a state-dependent viscous velocity coupling, with soft companion selection and momentum-conserving inelastic collisions for cloning.
 
 **Quantitative Certification**: The proof object instantiates all 17 sieve nodes and derives explicit constants for mean-field convergence and QSD characterization. Key innovations include phase-space softmax companion selection (weighting by both position and velocity), anisotropic diffusion adapted to the local fitness landscape curvature, and a complete Foster-Lyapunov analysis that certifies exponential ergodicity without requiring global convexity of the effective potential.
 
@@ -24,7 +24,7 @@ That is what the Hypostructure framework does, and this document is a complete w
 
 The Latent Fractal Gas represents the natural evolution of the Fragile Gas framework from Euclidean observation space into the structured latent representations learned by modern agents. Where the Euclidean Gas operates on raw positions and velocities, the Latent Gas operates on the compressed, semantically meaningful coordinates that emerge from representation learning. This shift brings both opportunities and challenges: the latent metric $G$ may be curved and state-dependent, the reward signal becomes a 1-form on a manifold rather than a simple scalar field, and the effective potential must account for both the agent's objectives and the geometry of its internal representations.
 
-This document constructs a complete proof object certifying that the Latent Fractal Gas satisfies all requirements of the Hypostructure framework. The core innovation is the integration of Fragile-Agent kinetics (geodesic Boris-BAOAB integrating Lorentz-Langevin dynamics) with the measurement-selection-cloning pipeline of the Fragile Gas. Companion selection uses a phase-space softmax kernel that weights neighbors by both positional and velocity similarity, enabling the swarm to exploit coherent motion patterns. The cloning operator implements momentum-conserving inelastic collisions that preserve center-of-mass velocity within collision groups, providing controlled energy dissipation while maintaining physical plausibility.
+This document constructs a complete proof object certifying that the Latent Fractal Gas satisfies all requirements of the Hypostructure framework. The core innovation is the integration of Fragile-Agent kinetics (geodesic Boris-BAOAB integrating Lorentz-Langevin dynamics) with the measurement-selection-cloning pipeline of the Fragile Gas, and a state-dependent viscous coupling that dissipates relative kinetic energy in velocity space. Companion selection uses a phase-space softmax kernel that weights neighbors by both positional and velocity similarity, enabling the swarm to exploit coherent motion patterns. The cloning operator implements momentum-conserving inelastic collisions that preserve center-of-mass velocity within collision groups, providing controlled energy dissipation while maintaining physical plausibility.
 
 The technical heart of the document is the derivation of explicit quantitative constants that feed into the framework's rate calculators. These include: the kernel floor $m_\epsilon$ controlling minorization strength, the fitness bounds $(V_{\min}, V_{\max})$ determining selection pressure range, the Wasserstein contraction rate $\kappa_W$ from companion selection geometry, and the LSI constant $C_{\mathrm{LSI}}^{(\mathrm{geom})}$ governing KL decay. Perhaps most importantly, the proof object demonstrates how the Algorithmic Factories transform classical analytic requirements (global convexity, spectral gaps, Mosco convergence) into computable certificates that can be verified at runtime. This shifts the burden of proof from manual mathematical analysis to automated verification: convergence guarantees become diagnostic outputs rather than input assumptions.
 
@@ -164,7 +164,7 @@ $$K_{\mathrm{Auto}}^+ = (T_{\text{algorithmic}}\ \text{good},\ \text{AutomationG
 
 This document presents a **machine-checkable proof object** for the **Latent Fractal Gas** (Fragile-Agent kinetics) using the Hypostructure framework.
 
-**Approach:** We instantiate thin interfaces for a swarm in the **latent space** $(\mathcal{Z}, G)$ with: (i) **soft companion selection** via the phase-space softmax kernel (as in `docs/source/3_fractal_gas/appendices/03_cloning.md`), (ii) **fitness-based cloning** with Gaussian position jitter and **inelastic collision** velocity updates, and (iii) the **Fragile-Agent kinetic operator**: geodesic Boris-BAOAB on the Lorentz-Langevin dynamics driven by the reward 1-form and the effective potential.
+**Approach:** We instantiate thin interfaces for a swarm in the **latent space** $(\mathcal{Z}, G)$ with: (i) **soft companion selection** via the phase-space softmax kernel (as in `docs/source/3_fractal_gas/appendices/03_cloning.md`), (ii) **fitness-based cloning** with Gaussian position jitter and **inelastic collision** velocity updates, and (iii) the **Fragile-Agent kinetic operator**: geodesic Boris-BAOAB on Lorentz-Langevin dynamics driven by the reward 1-form and effective potential, augmented with a state-dependent viscous velocity coupling.
 
 **Result:** A fully specified step operator (in distribution), a complete constants table, derived constants computed from parameters, and a sieve run that reduces mean-field/QSD convergence claims to the framework rate calculators in `src/fragile/convergence_bounds.py`.
 
@@ -239,7 +239,7 @@ Here is something that should make you sit up. When particle $i$ needs to pick a
 The answer is *minorization*. If we always picked the nearest neighbor, the system could get stuck. Distant particles would never interact, and you could have isolated clusters that never mix. But with soft selection, even the farthest particle has some tiny probability of being chosen. This guarantees that the Markov chain is irreducible, that any configuration can eventually reach any other. And that is exactly what we need for the ergodic theorems to apply.
 :::
 
-For alive walkers $\mathcal{A}$ and interaction range $\epsilon$, define Gaussian kernel weights
+For alive walkers $\mathcal{A}$ and interaction range $\epsilon$, define Gaussian kernel weights {cite}`scholkopf2002learning`
 
 $$
 w_{ij} = \exp\left(-d_{\text{alg}}(i,j)^2 / (2\epsilon^2)\right), \quad w_{ii}=0.
@@ -268,15 +268,10 @@ This map is $C^\infty$ in $(z,v)$ conditional on the sampled indices (and alive 
 :::{div} feynman-prose
 Now, here is the thing to keep in your mind: fitness has two channels, reward and diversity. The reward channel says "how good is your current location?" The diversity channel says "how far are you from your companions?"
 
-Why two channels? Because pure reward-seeking leads to premature convergence. All the particles would rush to the first local maximum they find and get stuck there. The diversity channel provides pressure to spread out, to explore, to maintain coverage of the space. The exponents $\alpha_{\mathrm{fit}}$ and $\beta_{\mathrm{fit}}$ let you tune the balance between exploitation and exploration. This is not just a heuristic. It falls directly out of the trade-off between information and reward in bounded-rational control.
+Why two channels? Because pure reward-seeking leads to premature convergence. All the particles would rush to the first local maximum they find and get stuck there. The diversity channel provides pressure to spread out, to explore, to maintain coverage of the space. The exponents $\alpha_{\mathrm{fit}}$ and $\beta_{\mathrm{fit}}$ let you tune the balance between exploitation and exploration {cite}`sutton2018reinforcement`. This is not just a heuristic. It falls directly out of the trade-off between information and reward in bounded-rational control {cite}`tishby2011information`.
 :::
 
-Define regularized companion distances (from the softmax kernel above):
-
-$$
-d_i := \sqrt{\|z_i - z_{c_i^{\mathrm{dist}}}\|^2 + \lambda_{\text{alg}} \|v_i - v_{c_i^{\mathrm{dist}}}\|^2 + \epsilon_{\text{dist}}^2}.
-
-$$
+Use the regularized companion distance $d_i$ from the distance-companion draw above (with $\epsilon_{\text{dist}}$ regularization).
 Rewards follow the Fragile-Agent reward 1-form (Definition {prf:ref}`def-reward-1-form` in `docs/source/1_agent/reference.md`):
 
 $$
@@ -308,7 +303,7 @@ $$
 :::{div} feynman-prose
 When a low-fitness particle clones from a high-fitness companion, we face a choice: what happens to its velocity? We could just copy the companion's velocity, but that creates energy out of nothing. We could set it to zero, but that loses information.
 
-The elegant solution is *inelastic collision*. Group the cloner with its companion, compute the center-of-mass velocity, and have both particles move toward that shared velocity. The collision dissipates energy (controlled by the restitution coefficient $\alpha_{\mathrm{rest}}$), but momentum is conserved within each collision group. This is physically sensible and, more importantly, it provides controlled mixing in velocity space without artificial acceleration.
+The elegant solution is *inelastic collision*. Group the cloner with its companion, compute the center-of-mass velocity, and have both particles move toward that shared velocity. The collision dissipates energy (controlled by the restitution coefficient $\alpha_{\mathrm{rest}}$), but momentum is conserved within each collision group. This is physically sensible and, more importantly, it provides controlled mixing in velocity space without artificial acceleration. The cloning/selection mechanism follows the general framework of genetic algorithms {cite}`holland1975adaptation,goldberg1989genetic` and sequential Monte Carlo resampling {cite}`delmoral2004feynman`.
 :::
 
 Cloning scores and probabilities:
@@ -346,23 +341,395 @@ $$
 $$
 This tensor scales the driving noise to align exploration with the local stiffness of the fitness landscape (flat directions $\to$ large noise, stiff directions $\to$ small noise). The term $\epsilon_{\Sigma} I$ ensures uniform ellipticity.
 
+### Viscous Coupling (State-Dependent Velocity Smoothing)
+
+The latent gas includes an optional *viscous-like* velocity coupling that smooths the swarm's velocity field and dissipates *relative* kinetic energy without injecting momentum. This is embedded within the broader framework of Langevin dynamics {cite}`gardiner2009stochastic,pavliotis2014stochastic`.
+
+:::{prf:definition} State-dependent viscous force on the latent chart
+:label: def-latent-fractal-gas-viscous-force
+
+Let $\mathcal{A}$ be the alive index set in the current step, and let $\epsilon>0$ be the companion-kernel range parameter from the constants table. Define the strictly positive, bounded kernel
+
+$$
+K_{\mathrm{visc}}(z_i,z_j) := \exp\!\left(-\frac{\|z_i-z_j\|^2}{2\epsilon^2}\right).
+
+$$
+
+Here $\|\cdot\|$ is the Euclidean norm on the latent chart; on the alive region $B$, uniform ellipticity of $G$ (Assumption A2) implies equivalence of $\|\cdot\|$ and $\|\cdot\|_G$ up to constants.
+
+For each $i\in\mathcal{A}$ with $|\mathcal{A}|\ge 2$, define the local degree and row-normalized weights
+
+$$
+\deg(i) := \sum_{k\in\mathcal{A}\setminus\{i\}} K_{\mathrm{visc}}(z_i,z_k), \qquad
+\omega_{ij} := \frac{K_{\mathrm{visc}}(z_i,z_j)}{\deg(i)} \quad (j\in\mathcal{A}\setminus\{i\}),
+
+$$
+
+so $\omega_{ij}\ge 0$ and $\sum_{j\in\mathcal{A}\setminus\{i\}}\omega_{ij}=1$. The **viscous force** on walker $i$ is the velocity-space coupling
+
+$$
+\mathbf{F}_{\mathrm{viscous},i}(S)
+:=
+\nu_{\mathrm{visc}} \sum_{j\in\mathcal{A}\setminus\{i\}} \omega_{ij}\,(v_j - v_i),
+
+$$
+
+with viscosity strength $\nu_{\mathrm{visc}}\ge 0$. If $i\notin\mathcal{A}$ or $|\mathcal{A}|<2$, set $\mathbf{F}_{\mathrm{viscous},i}(S)=0$.
+:::
+
+:::{prf:lemma} N-uniform bound for the viscous force on the alive core
+:label: lem-latent-fractal-gas-viscous-bounded
+
+On the velocity core $\max_{k\in\mathcal{A}}\|v_k\|\le V_{\mathrm{core}}$, the viscous force satisfies, for all $i\in\mathcal{A}$,
+
+$$
+\|\mathbf{F}_{\mathrm{viscous},i}(S)\|
+\le 2\nu_{\mathrm{visc}} V_{\mathrm{core}}.
+
+$$
+
+In particular, the operator norm of the viscous coupling is **independent of** $|\mathcal{A}|$ (hence N-uniform).
+:::
+
+:::{prf:proof}
+Row-normalization gives $\sum_{j\ne i}\omega_{ij}=1$ and
+$
+\mathbf{F}_{\mathrm{viscous},i}
+= \nu_{\mathrm{visc}}\left(\sum_{j\ne i}\omega_{ij}v_j - v_i\right).
+$
+Hence
+$
+\|\mathbf{F}_{\mathrm{viscous},i}\|
+\le \nu_{\mathrm{visc}}\left(\sum_{j\ne i}\omega_{ij}\|v_j\| + \|v_i\|\right)
+\le 2\nu_{\mathrm{visc}}\max_{k\in\mathcal{A}}\|v_k\|
+\le 2\nu_{\mathrm{visc}} V_{\mathrm{core}}.
+$
+:::
+
+:::{prf:lemma} Viscous coupling is dissipative (relative kinetic energy)
+:label: lem-latent-fractal-gas-viscous-dissipative
+
+Fix the latent positions $z$ (hence $K_{\mathrm{visc}}$ and $\deg(i)$) during the viscous drift and consider the velocity ODE $\dot v_i=\mathbf{F}_{\mathrm{viscous},i}(S)$ on the alive set $\mathcal{A}$.
+
+Let $k:=|\mathcal{A}|$ and define the total degree
+
+$$
+D_{\mathrm{tot}} := \sum_{i\in\mathcal{A}}\deg(i) = \sum_{\substack{i\ne j\\ i,j\in\mathcal{A}}} K_{\mathrm{visc}}(z_i,z_j) > 0,
+
+$$
+
+the degree-weighted mean velocity
+
+$$
+\bar v_{\deg} := \frac{1}{D_{\mathrm{tot}}}\sum_{i\in\mathcal{A}}\deg(i)\,v_i,
+
+$$
+
+and the degree-weighted velocity variance
+
+$$
+V_{\mathrm{Var},v}^{(\deg)} := \frac{1}{D_{\mathrm{tot}}}\sum_{i\in\mathcal{A}}\deg(i)\,\|v_i-\bar v_{\deg}\|^2.
+
+$$
+
+Then the viscous coupling has a strictly non-positive drift:
+
+$$
+\frac{d}{dt}V_{\mathrm{Var},v}^{(\deg)}
+=
+-\frac{2\nu_{\mathrm{visc}}}{D_{\mathrm{tot}}}\sum_{i<j,\ i,j\in\mathcal{A}} K_{\mathrm{visc}}(z_i,z_j)\,\|v_i-v_j\|^2
+\le 0.
+
+$$
+
+Consequently, $\mathbf{F}_{\mathrm{viscous}}$ dissipates relative velocity disagreements (and thus is stabilizing); on the alive core, uniform ellipticity of $G$ implies the same dissipation statement for $\|\cdot\|_G$ up to constants (Assumption A2).
+:::
+
+:::{prf:proof}
+Let $K_{ij}:=K_{\mathrm{visc}}(z_i,z_j)=K_{ji}$ and define $\delta_i := v_i-\bar v_{\deg}$. Since $z$ is held fixed during this drift substep, the degrees $\deg(i)$ are constant in time and
+
+$$
+\dot{\bar v}_{\deg}
+= \frac{1}{D_{\mathrm{tot}}}\sum_{i\in\mathcal{A}}\deg(i)\,\dot v_i
+= \frac{\nu_{\mathrm{visc}}}{D_{\mathrm{tot}}}\sum_{i\in\mathcal{A}}\sum_{j\in\mathcal{A}\setminus\{i\}} K_{ij}\,(v_j-v_i)
+= 0,
+
+$$
+
+by symmetry of $K_{ij}$. Thus $\dot\delta_i=\dot v_i$.
+
+Using $\deg(i)\,\omega_{ij}=K_{ij}$ and $\sum_{j\ne i}\omega_{ij}=1$, we obtain
+
+$$
+\begin{aligned}
+\frac{d}{dt}V_{\mathrm{Var},v}^{(\deg)}
+&= \frac{2}{D_{\mathrm{tot}}}\sum_{i\in\mathcal{A}}\deg(i)\,\langle \delta_i,\dot v_i\rangle \\
+&= \frac{2\nu_{\mathrm{visc}}}{D_{\mathrm{tot}}}\sum_{i\in\mathcal{A}}\sum_{j\in\mathcal{A}\setminus\{i\}} K_{ij}\,\langle \delta_i, \delta_j-\delta_i\rangle \\
+&= -\frac{\nu_{\mathrm{visc}}}{D_{\mathrm{tot}}}\sum_{\substack{i\ne j\\ i,j\in\mathcal{A}}} K_{ij}\,\|\delta_i-\delta_j\|^2 \\
+&= -\frac{\nu_{\mathrm{visc}}}{D_{\mathrm{tot}}}\sum_{\substack{i\ne j\\ i,j\in\mathcal{A}}} K_{ij}\,\|v_i-v_j\|^2 \\
+&= -\frac{2\nu_{\mathrm{visc}}}{D_{\mathrm{tot}}}\sum_{i<j,\ i,j\in\mathcal{A}} K_{ij}\,\|v_i-v_j\|^2 \;\le\; 0,
+\end{aligned}
+$$
+
+since each term in the final sum is nonnegative and $K_{ij}\ge 0$.
+:::
+
+### SU($d$) Gauge Structure from Viscous Coupling
+
+:::{div} feynman-prose
+Here is something remarkable that I want you to see. The viscous force we just defined is not merely a fluid-like smoothing term—it is the gateway to gauge symmetry {cite}`yang1954conservation,weinberg1995quantum`. The same structure that makes walkers share velocity information creates what physicists call "color charge."
+
+The key insight is that viscous coupling is fundamentally **pairwise**: walker $i$ couples to walker $j$ with strength determined by (1) their distance, via the localization kernel $K_{\mathrm{visc}}(z_i, z_j)$ (Definition {prf:ref}`def-latent-fractal-gas-viscous-force`), and (2) their velocity difference $(v_j - v_i)$. These two quantities—distance and momentum difference—are precisely what we need to construct a complex coupling. We reuse the viscous kernel; its range parameter $\epsilon$ sets the color interaction scale.
+
+For each latent direction $\alpha \in \{1, \ldots, d\}$, we sum over all pairwise contributions to get a complex color component. The **modulus** of each contribution is the kernel weight (encoding distance), and the **phase** is the momentum difference in that direction. This gives a $d$-component complex vector—a state in the fundamental representation of SU($d$).
+
+The gauge group SU($d$) acts on the latent directions, not on walker indices. This means the symmetry is independent of the number of walkers $N$ and depends only on the latent space dimension $d$. For $d=3$, we recover SU(3)—the gauge group of quantum chromodynamics {cite}`gellmann1964schematic,peskin1995introduction`.
+:::
+
+:::{prf:definition} Pairwise Complex Coupling
+:label: def-latent-fractal-gas-color-link
+
+For walkers $i$ and $j$ in $d$-dimensional latent space, the **pairwise complex coupling** in direction $\alpha$ is:
+
+$$
+W_{ij}^{(\alpha)} := K_{\mathrm{visc}}(z_i, z_j) \cdot \exp\left(i \frac{m(v_j^{(\alpha)} - v_i^{(\alpha)})}{\hbar_{\mathrm{eff}}}\right) \in \mathbb{C}
+$$
+
+where:
+- $K_{\mathrm{visc}}(z_i, z_j) = \exp\left(-\|z_i - z_j\|^2 / 2\epsilon^2\right)$ is the viscous localization kernel from {prf:ref}`def-latent-fractal-gas-viscous-force` (equivalent to the $G$-norm on $B$ by A2)
+- $v_j^{(\alpha)} - v_i^{(\alpha)}$ is the velocity (momentum) difference in direction $\alpha$
+- $m$ is an effective mass (default 1; absorbed into the velocity scale)
+- $\hbar_{\mathrm{eff}} := \sqrt{T_c}$ is the effective Planck constant, with $T_c$ the cognitive temperature. The phase encoding $e^{ip \cdot x/\hbar}$ follows the de Broglie relation {cite}`debroglie1924recherches`
+
+**Modulus and phase decomposition**:
+- **Modulus** $|W_{ij}^{(\alpha)}| = K_{\mathrm{visc}}(z_i, z_j)$: Encodes **distance** between walkers via Gaussian decay
+- **Phase** $\arg(W_{ij}^{(\alpha)}) = m(v_j^{(\alpha)} - v_i^{(\alpha)})/\hbar_{\mathrm{eff}}$: Encodes **momentum difference** in direction $\alpha$
+
+**Antisymmetry**: The phase satisfies $\arg(W_{ij}^{(\alpha)}) = -\arg(W_{ji}^{(\alpha)})$ since $(v_j - v_i) = -(v_i - v_j)$, while the modulus is symmetric. Thus $W_{ji}^{(\alpha)} = (W_{ij}^{(\alpha)})^*$.
+:::
+
+:::{prf:definition} Color State Vector
+:label: def-latent-fractal-gas-complex-color
+
+The **color state** of walker $i$ is the $d$-component complex vector obtained by summing pairwise couplings over all neighbors:
+
+$$
+c_i^{(\alpha)} := \sum_{j \neq i} W_{ij}^{(\alpha)} = \sum_{j \neq i} K_{\mathrm{visc}}(z_i, z_j) \cdot \exp\left(i \frac{m(v_j^{(\alpha)} - v_i^{(\alpha)})}{\hbar_{\mathrm{eff}}}\right), \quad \alpha \in \{1, \ldots, d\}
+$$
+
+The **color state vector** in the fundamental representation of SU($d$) is:
+
+$$
+|\Psi_i^{(\mathrm{color})}\rangle := \begin{pmatrix} c_i^{(1)} \\ c_i^{(2)} \\ \vdots \\ c_i^{(d)} \end{pmatrix} \in \mathbb{C}^d
+$$
+
+The **normalized color state** is:
+
+$$
+|\hat{\Psi}_i^{(\mathrm{color})}\rangle := \frac{1}{\|\mathbf{c}_i\| + \epsilon_c} |\Psi_i^{(\mathrm{color})}\rangle \in \mathbb{C}^d
+$$
+
+where $\epsilon_c > 0$ is a regularization constant preventing division by zero.
+
+**Physical interpretation**:
+- Each component $c_i^{(\alpha)}$ is a **coherent sum** of pairwise contributions from all neighbors
+- The **modulus** $|c_i^{(\alpha)}|$ depends on distances (kernel weights) and phase coherence among neighbors
+- The **phase** $\arg(c_i^{(\alpha)})$ encodes the net momentum imbalance in direction $\alpha$
+- When all neighbors have similar velocities to walker $i$, phases align and $|c_i^{(\alpha)}|$ is large
+- When momentum differences are incoherent, phases cancel and $|c_i^{(\alpha)}|$ is small
+:::
+
+:::{prf:definition} SU($d$) Gauge Structure
+:label: def-latent-fractal-gas-gauge-structure
+
+The color state vectors $|\Psi_i^{(\mathrm{color})}\rangle \in \mathbb{C}^d$ transform under **local SU($d$) gauge transformations**:
+
+$$
+|\Psi_i^{(\mathrm{color})}\rangle \mapsto U_i |\Psi_i^{(\mathrm{color})}\rangle, \quad U_i \in \mathrm{SU}(d)
+$$
+
+where SU($d$) acts on the **latent direction indices** $\alpha \in \{1, \ldots, d\}$.
+
+**Generators**: The Lie algebra $\mathfrak{su}(d)$ has $d^2 - 1$ generators $T^a$ satisfying:
+- Hermiticity: $(T^a)^\dagger = T^a$
+- Tracelessness: $\mathrm{Tr}(T^a) = 0$
+- Commutation: $[T^a, T^b] = i f^{abc} T^c$ with structure constants $f^{abc}$
+- Normalization: $\mathrm{Tr}(T^a T^b) = \frac{1}{2}\delta^{ab}$
+
+For $d = 3$, the generators are the **Gell-Mann matrices** $\lambda_a/2$ of QCD {cite}`gellmann1962symmetries`.
+
+**Gluon link variable**: The parallel transport of color between walkers $i$ and $j$ is mediated by:
+
+$$
+U_{ij} := \exp\left(i g \sum_{a=1}^{d^2-1} A_{ij}^a T^a\right) \in \mathrm{SU}(d)
+$$
+
+where $A_{ij}^a \in \mathbb{R}$ are gluon field components and $g > 0$ is the gauge coupling.
+
+**Gauge transformation of links**: Under local transformations $U_i$, $U_j$:
+
+$$
+U_{ij} \mapsto U_i \, U_{ij} \, U_j^\dagger
+$$
+
+This ensures gauge-covariant parallel transport: $(U_{ij} |\Psi_j\rangle)' = U_i (U_{ij} |\Psi_j\rangle)$.
+:::
+
+:::{prf:definition} Gluon Field from Pairwise Couplings
+:label: def-latent-fractal-gas-gluon-field
+
+The **gluon field components** $A_{ij}^a$ encode how the pairwise phase differences decompose onto the SU($d$) generators.
+
+**Phase matrix**: For walkers $i$ and $j$, define the diagonal phase matrix:
+
+$$
+\Phi_{ij} := \mathrm{diag}\left(\phi_{ij}^{(1)}, \phi_{ij}^{(2)}, \ldots, \phi_{ij}^{(d)}\right), \quad \phi_{ij}^{(\alpha)} := \frac{m(v_j^{(\alpha)} - v_i^{(\alpha)})}{\hbar_{\mathrm{eff}}}
+$$
+
+**Traceless projection**: Extract the SU($d$) (traceless) part by removing the mean phase:
+
+$$
+\bar{\phi}_{ij} := \frac{1}{d} \sum_{\alpha=1}^d \phi_{ij}^{(\alpha)}, \qquad \Phi_{ij}^{(0)} := \Phi_{ij} - \bar{\phi}_{ij} \cdot I
+$$
+
+The matrix $\Phi_{ij}^{(0)}$ is traceless and lies in the Cartan subalgebra of $\mathfrak{su}(d)$.
+
+**Gluon field extraction**: The gluon field components are obtained by projecting onto the SU($d$) generators:
+
+$$
+A_{ij}^a := \frac{2}{g} \mathrm{Tr}\left[T^a \cdot \Phi_{ij}^{(0)}\right]
+$$
+
+where the factor of 2 accounts for the normalization $\mathrm{Tr}(T^a T^b) = \frac{1}{2}\delta^{ab}$.
+
+**Explicit form for $d=3$ (SU(3))**: With Gell-Mann matrices $\lambda_a$ and $T^a = \lambda_a/2$:
+
+$$
+A_{ij}^3 = \frac{1}{g}(\phi_{ij}^{(1)} - \phi_{ij}^{(2)}), \qquad A_{ij}^8 = \frac{1}{g\sqrt{3}}(\phi_{ij}^{(1)} + \phi_{ij}^{(2)} - 2\phi_{ij}^{(3)})
+$$
+
+The off-diagonal generators ($a = 1,2,4,5,6,7$) give $A_{ij}^a = 0$ since $\Phi_{ij}^{(0)}$ is diagonal.
+
+**Link variable reconstruction**: The gluon link variable is:
+
+$$
+U_{ij} := \exp\left(i \Phi_{ij}^{(0)}\right) = \exp\left(ig \sum_{a=1}^{d^2-1} A_{ij}^a T^a\right) \in \mathrm{SU}(d)
+$$
+
+This is diagonal with $\det(U_{ij}) = e^{i \cdot \mathrm{Tr}(\Phi_{ij}^{(0)})} = e^{i \cdot 0} = 1$, confirming $U_{ij} \in \mathrm{SU}(d)$.
+
+**Equilibrium limit**: When all walkers have equal velocities, $\phi_{ij}^{(\alpha)} = 0$ for all $\alpha$, hence $A_{ij}^a = 0$ and $U_{ij} = I$.
+
+**Remark (Cartan subalgebra)**: The diagonal phase structure produces gluon fields only in the **Cartan subalgebra** of $\mathfrak{su}(d)$ (the $d-1$ diagonal generators). Off-diagonal gluon components ($A^1, A^2, A^4, A^5, A^6, A^7$ for SU(3)) vanish in this construction. Full non-Abelian dynamics would require off-diagonal coupling between different latent directions, which could arise from anisotropic viscous coupling or metric effects. This structure parallels lattice gauge theory, where link variables mediate gauge-covariant transport between lattice sites {cite}`wilson1974confinement,kogut1979introduction`.
+:::
+
+:::{prf:proposition} Short-Range Coupling from Localization Kernel
+:label: prop-latent-fractal-gas-confinement
+
+The localization kernel $K_{\mathrm{visc}}(z_i, z_j) = \exp\!\left(-\|z_i - z_j\|^2 / 2\epsilon^2\right)$, a radial basis function (RBF) kernel {cite}`rasmussen2006gaussian`, produces **short-range color coupling**:
+
+1. **Strong coupling** at short range: For $\|z_i - z_j\| \ll \epsilon$, we have $K_{\mathrm{visc}} \approx 1$ and $|W_{ij}^{(\alpha)}| \approx 1$
+2. **Exponential suppression** at long range: For $\|z_i - z_j\| \gg \epsilon$, we have $K_{\mathrm{visc}} \approx 0$ and $|W_{ij}^{(\alpha)}| \approx 0$
+
+**Physical interpretation**:
+- Walkers within distance $\epsilon$ contribute significantly to each other's color state
+- Distant walkers ($d \gg \epsilon$) have negligible color coupling
+- The scale $\epsilon$ sets the **color interaction range**
+
+*Proof.* Direct from the Gaussian kernel structure. For $d = \|z_i - z_j\|$:
+
+$$
+K_{\mathrm{visc}} = e^{-d^2/2\epsilon^2} \begin{cases} \approx 1 & \text{if } d \ll \epsilon \\ \approx 0 & \text{if } d \gg \epsilon \end{cases}
+$$
+
+The pairwise coupling modulus satisfies $|W_{ij}^{(\alpha)}| = K_{\mathrm{visc}}(z_i, z_j)$, inheriting this distance dependence. $\square$
+:::
+
+:::{prf:proposition} Color State Kinematic Evolution
+:label: prop-latent-fractal-gas-color-dynamics
+
+The color state component $c_i^{(\alpha)} = \sum_{j \neq i} W_{ij}^{(\alpha)}$ evolves kinematically according to:
+
+$$
+\frac{dc_i^{(\alpha)}}{dt} = \sum_{j \neq i} \frac{dW_{ij}^{(\alpha)}}{dt}
+$$
+
+where each pairwise contribution evolves as:
+
+$$
+\frac{dW_{ij}^{(\alpha)}}{dt} = W_{ij}^{(\alpha)} \left[ \frac{\dot{K}_{\mathrm{visc}}}{K_{\mathrm{visc}}} + i \frac{m(a_j^{(\alpha)} - a_i^{(\alpha)})}{\hbar_{\mathrm{eff}}} \right]
+$$
+
+with $a_k^{(\alpha)} = dv_k^{(\alpha)}/dt$ the acceleration in direction $\alpha$.
+
+*Proof.* Apply the product rule to $W_{ij}^{(\alpha)} = K_{\mathrm{visc}}(z_i, z_j) \cdot e^{im(v_j^{(\alpha)} - v_i^{(\alpha)})/\hbar_{\mathrm{eff}}}$:
+
+$$
+\frac{dW_{ij}^{(\alpha)}}{dt} = \dot{K}_{\mathrm{visc}} \cdot e^{i\phi_{ij}^{(\alpha)}} + K_{\mathrm{visc}} \cdot \frac{d}{dt}\left(e^{i\phi_{ij}^{(\alpha)}}\right)
+$$
+
+where $\phi_{ij}^{(\alpha)} = m(v_j^{(\alpha)} - v_i^{(\alpha)})/\hbar_{\mathrm{eff}}$. The second term gives:
+
+$$
+K_{\mathrm{visc}} \cdot i \frac{m(a_j^{(\alpha)} - a_i^{(\alpha)})}{\hbar_{\mathrm{eff}}} \cdot e^{i\phi_{ij}^{(\alpha)}}
+$$
+
+Factoring out $W_{ij}^{(\alpha)} = K_{\mathrm{visc}} e^{i\phi_{ij}^{(\alpha)}}$ yields the result. $\square$
+
+**Physical interpretation**:
+- **Spatial term** $\dot{K}_{\mathrm{visc}}/K_{\mathrm{visc}}$: Walker motion changes kernel weights (distance-dependent)
+- **Phase term** $i m(a_j - a_i)/\hbar_{\mathrm{eff}}$: Acceleration differences create phase rotation
+:::
+
+:::{prf:definition} Gauge-Covariant Color Dynamics
+:label: def-latent-fractal-gas-color-dynamics-gauge
+
+The **gauge-covariant evolution** of the color state is obtained by adding the minimal coupling term:
+
+$$
+\frac{dc_i^{(\alpha)}}{dt} = \left.\frac{dc_i^{(\alpha)}}{dt}\right|_{\mathrm{kin}} + i g \sum_{a=1}^{d^2-1} A_0^a (T^a \mathbf{c}_i)^{(\alpha)}
+$$
+
+where $A_0^a$ are the temporal components of the gluon field and $(T^a \mathbf{c}_i)^{(\alpha)} = \sum_\beta (T^a)^{\alpha\beta} c_i^{(\beta)}$.
+
+**Three physical contributions**:
+1. **Spatial dynamics** $\sum_j (\dot{K}_{\mathrm{visc}}/K_{\mathrm{visc}}) W_{ij}^{(\alpha)}$: Walker motion changes pairwise distances
+2. **Phase dynamics** $\sum_j i m(a_j^{(\alpha)} - a_i^{(\alpha)})/\hbar_{\mathrm{eff}} \cdot W_{ij}^{(\alpha)}$: Acceleration differences rotate phases
+3. **Gauge rotation** $ig A_0^a (T^a \mathbf{c}_i)^{(\alpha)}$: Temporal gluons mediate color mixing
+
+**Remark**: The minimal coupling term is the standard Yang-Mills prescription ensuring local SU($d$) gauge invariance. It is not derived from kinematics but imposed as a symmetry requirement.
+:::
+
+:::{div} feynman-prose
+Let me summarize what we have established. The viscous velocity coupling generates the structure of non-Abelian gauge theory through a precise construction:
+
+1. **Pairwise complex couplings** $W_{ij}^{(\alpha)}$ encode distance (modulus) and momentum difference (phase)
+2. **Color states** $c_i^{(\alpha)} = \sum_j W_{ij}^{(\alpha)}$ are coherent sums over neighbors in each latent direction
+3. **Gluon fields** $A_{ij}^a$ emerge from the SU($d$) decomposition of pairwise couplings
+4. **Short-range coupling** follows from the exponential decay of the localization kernel
+
+The gauge group is SU($d$) where $d$ is the latent space dimension—not the number of walkers. For a 3-dimensional latent space, we recover SU(3), the gauge group of QCD. The framework generalizes: any latent dimension $d$ produces SU($d$) gauge structure.
+
+The key physical insight: **distance encodes coupling strength** (modulus) while **momentum difference encodes phase**. This is the natural complexification of the viscous force.
+:::
+
 ### Kinetic Update (Boris-BAOAB on Latent Space)
 
 :::{div} feynman-prose
-The way I think about the kinetic update is this: you have a particle sliding on a curved surface, being pushed by a force field, with friction slowing it down and random kicks from thermal noise. The Boris-BAOAB integrator is a clever way to discretize this continuous motion while preserving the important structural properties.
+The way I think about the kinetic update is this: you have a particle sliding on a curved surface, being pushed by a force field, with friction slowing it down and random kicks from thermal noise. The Boris-BAOAB integrator {cite}`leimkuhler2015molecular,leimkuhler2016computation` is a clever way to discretize this continuous motion while preserving the important structural properties.
 
 The name tells you the splitting: B-A-O-A-B. The B steps are "kicks" that change the momentum based on the force. The A steps are "drifts" that move the position based on the velocity. And the O step is the "Ornstein-Uhlenbeck thermostat" that adds friction and noise. By interleaving these in a symmetric pattern, we get a method that is accurate to second order and preserves the correct long-time statistical properties.
 
-The "Boris" part handles the curl of the reward field. If the reward is not a pure gradient (if there is a rotational component), this shows up as a Lorentz-like force that twists the momentum without adding energy. The Boris rotation handles this exactly.
+The "Boris" part handles the curl of the reward field {cite}`boris1970relativistic`. If the reward is not a pure gradient (if there is a rotational component), this shows up as a Lorentz-like force that twists the momentum without adding energy. The Boris rotation handles this exactly.
 :::
 
-Each walker evolves in latent space using the Fragile-Agent kinetic operator (Definitions {prf:ref}`def-bulk-drift-continuous-flow` and {prf:ref}`def-baoab-splitting` in `docs/source/1_agent/reference.md`). Let $p_i = G(z_i) v_i$ be the metric momentum and $\Phi_{\text{eff}}$ the effective potential. The Boris-BAOAB step with time step $h$ is:
+Each walker evolves in latent space using the Fragile-Agent kinetic operator (Definitions {prf:ref}`def-bulk-drift-continuous-flow` and {prf:ref}`def-baoab-splitting` in `docs/source/1_agent/reference.md`) with the additional state-dependent viscous drift from Definition {prf:ref}`def-latent-fractal-gas-viscous-force`. Let $S$ denote the current (post-cloning) swarm state, let $p_i = G(z_i) v_i$ be the metric momentum, and let $\Phi_{\text{eff}}$ be the effective potential. The Boris-BAOAB step with time step $h$ (written for a generic walker $i$, suppressing the index in $(z,p)$) is:
 
-1. **B (half kick + Boris rotation):** $p \leftarrow p - \frac{h}{2}\nabla\Phi_{\text{eff}}(z)$; if $\mathcal{F}=d\mathcal{R}\neq 0$, apply Boris rotation with $\beta_{\text{curl}} G^{-1}\mathcal{F}$; then $p \leftarrow p - \frac{h}{2}\nabla\Phi_{\text{eff}}(z)$.
+1. **B (half kick + viscous kick + Boris rotation):** $p \leftarrow p - \frac{h}{2}\nabla\Phi_{\text{eff}}(z) + \frac{h}{2}G(z)\mathbf{F}_{\mathrm{viscous},i}(S)$; if $\mathcal{F}=d\mathcal{R}\neq 0$, apply Boris rotation with $\beta_{\text{curl}} G^{-1}\mathcal{F}$; then $p \leftarrow p - \frac{h}{2}\nabla\Phi_{\text{eff}}(z) + \frac{h}{2}G(z)\mathbf{F}_{\mathrm{viscous},i}(S)$.
 2. **A (half drift):** $z \leftarrow \mathrm{Exp}_z\!\left(\frac{h}{2}G^{-1}(z)\,p\right)$.
 3. **O (thermostat):** $p \leftarrow c_1 p + c_2\,G^{1/2}(z)\,\Sigma_{\text{reg}}(z)\,\xi$, with $\xi\sim\mathcal{N}(0,I)$, $c_1=e^{-\gamma h}$, $c_2=\sqrt{(1-c_1^2)T_c}$.
 4. **A (half drift):** repeat step 2.
-5. **B (half kick + Boris rotation):** repeat step 1.
+5. **B (half kick + viscous kick + Boris rotation):** repeat step 1.
 
 In the conservative case $\mathcal{F}=0$, the Boris rotation is identity and the scheme reduces to standard BAOAB.
 
@@ -375,7 +742,7 @@ Let $S$ denote the current swarm state.
 3. Companion draw for fitness distances: sample $c^{\mathrm{dist}}$ from the phase-space softmax kernel $P_i(\cdot)$ (uniform for dead walkers).
 4. Fitness: compute $V(S;c^{\mathrm{dist}})$ (dead walkers get fitness $0$).
 5. Companion draw for cloning: sample $c^{\mathrm{clone}}$ from $P_i$ for alive walkers (uniform for dead), and apply cloning using $V(S;c^{\mathrm{dist}})$.
-6. Kinetic: apply the latent Boris-BAOAB step for the Lorentz-Langevin dynamics.
+6. Kinetic: apply the latent Boris-BAOAB step for the Lorentz-Langevin dynamics, including the viscous coupling term $\mathbf{F}_{\mathrm{viscous}}$.
 
 The output is the next swarm state $(z, v)$ and diagnostics (fitness, companions, cloning stats).
 
@@ -409,7 +776,11 @@ The output is the next swarm state $(z, v)$ and diagnostics (fitness, companions
 | Cloning | $\alpha_{\text{rest}}$ | 0.5 | Restitution coefficient | `CloneOperator.alpha_restitution` |
 | Kinetic | $h$ | 0.01 | BAOAB time step | {prf:ref}`def-baoab-splitting` |
 | Kinetic | $\gamma$ | 1.0 | Friction coefficient | {prf:ref}`def-baoab-splitting` |
+| Kinetic | $\nu_{\mathrm{visc}}$ | 0.0 | Viscous velocity coupling strength | {prf:ref}`def-latent-fractal-gas-viscous-force` |
 | Kinetic | $T_c$ | $>0$ | Cognitive temperature | {prf:ref}`def-cognitive-temperature` |
+| Kinetic | $\hbar_{\mathrm{eff}}$ | $\sqrt{T_c}$ | Effective Planck constant for phase encoding | {prf:ref}`def-latent-fractal-gas-complex-color` |
+| Kinetic | $m$ | 1.0 | Effective mass for phase encoding (unit mass) | {prf:ref}`def-latent-fractal-gas-color-link` |
+| Kinetic | $g$ | $>0$ | SU($d$) gauge coupling constant | {prf:ref}`def-latent-fractal-gas-gauge-structure` |
 | Kinetic | $\beta_{\text{curl}}$ | $\ge 0$ | Curl coupling strength | {prf:ref}`def-bulk-drift-continuous-flow` |
 | Kinetic | $\Phi_{\text{eff}}$ | field | Effective potential | {prf:ref}`def-effective-potential` |
 | Kinetic | $\mathcal{R}$ | field | Reward 1-form | {prf:ref}`def-reward-1-form` |
@@ -427,6 +798,7 @@ This section records *derived constants* that are computed deterministically fro
 |---|---|---|---|
 | Latent diameter | $D_z=\mathrm{diam}(B)$ | $B\subset\mathcal{Z}$ | depends on domain |
 | Core velocity radius | $V_{\mathrm{core}}$ | analysis core for $\|v\|$ | chosen |
+| Viscous force bound | $F_{\mathrm{visc,max}}\le 2\nu_{\mathrm{visc}} V_{\mathrm{core}}$ | N-uniform on the alive core | depends |
 | Alg. diameter | $D_{\mathrm{alg}}^2 \le D_z^2 + \lambda_{\mathrm{alg}}D_v^2$ | on core | depends |
 | Kernel floor | $m_\epsilon=\exp(-D_{\mathrm{alg}}^2/(2\epsilon^2))$ | kernel weights lower bound | depends |
 | Companion minorization | $p_{\min}\ge m_\epsilon/(n_{\mathrm{alive}}-1)$ | softmax kernel; requires $n_{\mathrm{alive}}\ge 2$ | depends |
@@ -696,7 +1068,7 @@ This injects full-rank Gaussian noise in momentum with covariance $c_2^2 G(z)$, 
 |-------------|------------|----------------|
 | Arena $\mathcal{X}^{\text{thin}}$ | Metric-measure arena $(X,d,\mathfrak{m})$ with $(z,v)\in(\mathcal{Z}\times T\mathcal{Z})^N$ and alive mask induced by $B$; metric $d_{\mathrm{alg}}^2=\sum_i\|z_i-z_i'\|^2+\lambda_{\mathrm{alg}}\|v_i-v_i'\|^2$ on a latent chart; reference measure $\mathfrak{m}$ = product Riemannian volume on $B$ and Gaussian momentum law on the core | Latent dynamics + definitions in `docs/source/1_agent/reference.md` |
 | Potential $\Phi^{\text{thin}}$ | $\Phi := V_{\max}-\frac{1}{N}\sum_i V_{\mathrm{fit},i}$ (bounded “height”, i.e. negative mean fitness up to an additive constant) | `FitnessOperator.__call__` (fitness), Derived constants $V_{\max}$ |
-| Cost $\mathfrak{D}^{\text{thin}}$ | $\mathfrak{D}(z,v)=\frac{\gamma}{N}\sum_i \|v_i\|_G^2$ (OU friction dissipation term) | Boris-BAOAB thermostat |
+| Cost $\mathfrak{D}^{\text{thin}}$ | $\mathfrak{D}(z,v)=\frac{\gamma}{N}\sum_i \|v_i\|_G^2$ (OU friction dissipation; viscous coupling dissipates relative velocity and generates SU($d$) gauge structure) | Boris-BAOAB thermostat + viscous coupling |
 | Invariance $G^{\text{thin}}$ | Permutation symmetry $S_N$; optional chart symmetries | Implicit in vectorized operators |
 | Boundary $\partial^{\text{thin}}$ | Killing set $\partial\Omega=\mathcal{Z}\setminus B$; recovery map = forced cloning of dead walkers; observables = rewards/fitness | Latent boundary + cloning |
 
@@ -707,7 +1079,7 @@ This injects full-rank Gaussian noise in momentum with covariance $c_2^2 G(z)$, 
 | Companion Selection | Soft companion selection with Gaussian weights $w_{ij}=\exp(-d_{\text{alg}}^2/(2\epsilon^2))$ and softmax kernel $P_i$ | {prf:ref}`def-softmax-companion-selection-fg` |
 | Fitness | $V_i = (d_i')^{\beta_{\text{fit}}} (r_i')^{\alpha_{\text{fit}}}$ | `FitnessOperator.__call__` |
 | Cloning | Companion selection + momentum-conserving collision | `CloneOperator.__call__` + `inelastic_collision_velocity` |
-| Kinetic | Boris-BAOAB on latent manifold (Lorentz-Langevin) | {prf:ref}`def-baoab-splitting` |
+| Kinetic | Boris-BAOAB on latent manifold (Lorentz-Langevin + viscous coupling → SU($d$) gauge structure) | {prf:ref}`def-baoab-splitting`, {prf:ref}`def-latent-fractal-gas-gauge-structure` |
 | Step | Compose reward 1-form, companion selection, fitness, cloning, kinetic | this document |
 
 ---
@@ -728,6 +1100,7 @@ These assumptions are the explicit witnesses used by RESOLVE-AutoAdmit/AutoProfi
 - **A4 (Non-degenerate thermostat):** $T_c>0$ and $\gamma>0$, so the OU step injects full-rank Gaussian noise in momentum.
 - **A5 (Companion kernel well-defined):** For $n_{\mathrm{alive}}\ge 2$, the softmax kernel $P_i$ is defined with strictly positive weights; if $n_{\mathrm{alive}}<2$, the step transitions to the cemetery state $\dagger$ as specified in the theorem statement (dead walkers sample uniformly from $\mathcal{A}$ when $\mathcal{A}\neq\varnothing$).
 - **A6 (No PBC):** Periodic boundary conditions are disabled.
+- **A7 (Viscous coupling well-behaved):** The state-dependent viscous force $\mathbf{F}_{\mathrm{viscous}}$ is defined by Definition {prf:ref}`def-latent-fractal-gas-viscous-force` using a smooth, strictly positive kernel on the latent chart. Hence $\deg(i)>0$ whenever $|\mathcal{A}|\ge 2$, the coupling is bounded on the alive core (Lemma {prf:ref}`lem-latent-fractal-gas-viscous-bounded`), and it is dissipative in relative kinetic energy (Lemma {prf:ref}`lem-latent-fractal-gas-viscous-dissipative`).
 
 These are part of the **problem instantiation**; the sieve uses them as certified inputs.
 
@@ -741,7 +1114,7 @@ All permits are instantiated with the Latent Fractal Gas data below and certifie
 
 ### Template: $D_E$ (Energy Interface)
 - **Height Functional $\Phi$:** $\Phi := V_{\max}-\frac{1}{N}\sum_i V_{\mathrm{fit},i}$ (bounded “negative mean fitness”).
-- **Dissipation Rate $\mathfrak{D}$:** $\mathfrak{D}(z,v) = \frac{\gamma}{N}\sum_i \|v_i\|_G^2$ (OU friction term).
+- **Dissipation Rate $\mathfrak{D}$:** $\mathfrak{D}(z,v) = \frac{\gamma}{N}\sum_i \|v_i\|_G^2$ (OU friction term; viscous coupling contributes additional nonnegative dissipation of relative velocity).
 - **Energy Inequality:** $\Phi\in[0,V_{\max}]$ deterministically by construction (fitness bounds).
 - **Bound Witness:** $B = V_{\max}$ (computed explicitly in the derived-constants section).
 
@@ -828,7 +1201,7 @@ The Latent Fractal Gas is treated as an **open system**: the domain boundary ind
 * **Scaling Exponent ($\alpha$):** $\alpha = 2$ from parabolic confining potential.
 
 ### 3. The Cost ($\mathfrak{D}^{\text{thin}}$)
-* **Dissipation Rate ($R$):** $\mathfrak{D}(z,v) = \frac{\gamma}{N}\sum_i \|v_i\|_G^2$
+* **Dissipation Rate ($R$):** $\mathfrak{D}(z,v) = \frac{\gamma}{N}\sum_i \|v_i\|_G^2$ (viscous coupling dissipates relative velocity and generates SU($d$) gauge structure via {prf:ref}`def-latent-fractal-gas-gauge-structure`)
 * **Scaling Exponent ($\beta$):** $\beta = 2$ from quadratic kinetic dissipation
 
 ### 4. The Invariance ($G^{\text{thin}}$)
@@ -1217,7 +1590,7 @@ Doeblin constant (Lemma {prf:ref}`lem-latent-fractal-gas-companion-doeblin`) tog
 :::{div} feynman-prose
 Ask yourself: why should a finite swarm of $N$ particles tell us anything about the "true" behavior? The answer is the *mean-field limit*. As $N \to \infty$, the empirical distribution of particles converges to a deterministic density that satisfies a nonlinear PDE. Individual particles become statistically independent, each following a law determined by the overall density. This is "propagation of chaos": the chaos of individual particle interactions gets averaged out.
 
-The practical implication is that we can analyze the behavior of a large swarm by studying a single representative particle whose dynamics depend on the swarm's overall density. And the factory gives us explicit error bounds: the mean-field approximation is accurate to order $1/\sqrt{N}$, with the constant depending on the contraction rate $\kappa_W$.
+The practical implication is that we can analyze the behavior of a large swarm by studying a single representative particle whose dynamics depend on the swarm's overall density {cite}`sznitman1991topics,mckean1966class`. And the factory gives us explicit error bounds: the mean-field approximation is accurate to order $1/\sqrt{N}$, with the constant depending on the contraction rate $\kappa_W$.
 :::
 
 ### Empirical Measure and Nonlinear Limit
@@ -1261,7 +1634,7 @@ Fitness and cloning affect the mean-field limit through:
 :::{div} feynman-prose
 Here is the beautiful thing about the quasi-stationary distribution. In an ordinary Markov chain, you look for the stationary distribution: the distribution that is unchanged by the dynamics. But our system has *killing*. Particles that wander outside the alive region $B$ get absorbed by a "cemetery" state. So there is no true stationary distribution; mass eventually drains away.
 
-The QSD is the answer: it is the distribution that remains unchanged *conditioned on survival*. If you start from the QSD and run the dynamics, then condition on not being killed, you get back the QSD. This is exactly the right object for understanding what the swarm looks like while it is alive and working. The cloning mechanism keeps resurrecting particles from the QSD, so the living population maintains this shape indefinitely.
+The QSD is the answer: it is the distribution that remains unchanged *conditioned on survival* {cite}`collet2013quasi,meleard2012quasi`. If you start from the QSD and run the dynamics, then condition on not being killed, you get back the QSD. This is exactly the right object for understanding what the swarm looks like while it is alive and working. The cloning mechanism keeps resurrecting particles from the QSD, so the living population maintains this shape indefinitely.
 :::
 
 ### Killed Kernel and QSD Definition (Discrete Time)
@@ -1274,9 +1647,9 @@ $$
 $$
 Equivalently, $\nu$ is stationary for the normalized (conditioned-on-survival) evolution.
 
-### Fleming–Viot / Feynman–Kac Interpretation
+### Fleming-Viot / Feynman-Kac Interpretation
 
-For pure boundary killing, the “kill + resample from survivors” mechanism is the classical Fleming–Viot particle system and provides an empirical approximation of the conditioned law/QSD of $Q$.
+For pure boundary killing, the "kill + resample from survivors" mechanism is the classical Fleming-Viot particle system {cite}`burdzy2000fleming` and provides an empirical approximation of the conditioned law/QSD of $Q$.
 
 The implemented Latent Fractal Gas performs fitness-based resampling among alive walkers (pairwise cloning), which is a Del Moral interacting particle system. In mean field, the evolution is a normalized nonlinear semigroup (cf. `docs/source/sketches/fragile/fragile_gas.md` Appendix A) whose fixed points play the role of QSD/eigenmeasure objects for the killed/selection-corrected dynamics.
 
@@ -1374,7 +1747,7 @@ The following theorems have assumptions explicitly verified by the certificates 
 |---------|---------------------|---------|--------|
 | **Cheeger Bound** (`thm:cheeger-bound`) | Uniform minorization / Doeblin condition $P \ge \delta \pi$ | $p_{\min} \ge m_\epsilon/(k-1)$ via soft companion kernel | **Satisfied** (Lemma {prf:ref}`lem-latent-fractal-gas-companion-doeblin`) |
 | **Induced Riemannian Structure** (`thm:induced-riemannian-structure`) | Hessian-based quadratic forms define a metric | $\Sigma_{\text{reg}}(z) = (\nabla^2 V + \epsilon_{\Sigma} I)^{-1/2}$ in kinetic update | **Instantiated** |
-| **Darwinian Ratchet** (`mt:darwinian-ratchet`) | WFR (Transport + Reaction) dynamics | Langevin Transport + Cloning Reaction split | **Satisfied** |
+| **Darwinian Ratchet** (`mt:darwinian-ratchet`) | WFR (Transport + Reaction) dynamics {cite}`chizat2018interpolating,liero2018optimal` | Langevin Transport + Cloning Reaction split | **Satisfied** |
 | **Geometric Adaptation** (`thm:geometric-adaptation`) | Euclidean embedding $d(x,y)=\|\pi(x)-\pi(y)\|$ | $d_{\text{alg}}$ defined as Euclidean distance in latent chart | **Satisfied** |
 | **Symplectic Shadowing** (`mt:symplectic-shadowing`) | Symplectic splitting of Hamiltonian system | Boris-BAOAB: conformally symplectic drift + exact OU thermostat | **Conformal Shadowing** |
 
@@ -1454,7 +1827,7 @@ This is a fundamental shift: convergence guarantees become **computable at runti
 :::{div} feynman-prose
 Now let me make sure you understand what the Lyapunov function is doing. In physics, you often have a quantity like energy that always decreases (or at least cannot increase) along the natural dynamics. If you find such a quantity and it is bounded below, you know the system must settle down somewhere.
 
-The Lyapunov function $\mathcal{L}$ plays exactly this role. It combines "how far is the swarm from optimal fitness?" with "how much kinetic energy does the swarm have?" The drift condition says: on average, $\mathcal{L}$ decreases by a factor of $(1 - \kappa_{\mathrm{total}} \tau)$ at each step, plus a bounded noise term. Iterate this, and you get exponential convergence to a neighborhood of equilibrium.
+The Lyapunov function $\mathcal{L}$ plays exactly this role {cite}`meyn2012markov`. It combines "how far is the swarm from optimal fitness?" with "how much kinetic energy does the swarm have?" The drift condition says: on average, $\mathcal{L}$ decreases by a factor of $(1 - \kappa_{\mathrm{total}} \tau)$ at each step, plus a bounded noise term. Iterate this, and you get exponential convergence to a neighborhood of equilibrium.
 
 This is what determines whether the algorithm works. If $\kappa_{\mathrm{total}} > 0$, you have a genuine Lyapunov function and convergence is guaranteed. If $\kappa_{\mathrm{total}} \leq 0$, the system might diffuse forever without converging. And the beautiful thing is that $\kappa_{\mathrm{total}}$ is computable from the algorithm parameters.
 :::
@@ -1872,4 +2245,3 @@ The Hypostructure framework transforms classical mathematical requirements into 
 
 *This document constitutes a machine-checkable proof object under the Hypostructure framework.*
 *Each certificate can be independently verified against the definitions in `hypopermits_jb.md`.*
-
