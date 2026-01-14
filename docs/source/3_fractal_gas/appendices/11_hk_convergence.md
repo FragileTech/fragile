@@ -2132,7 +2132,7 @@ $$
 $$
 
 where:
-- $K_{\text{clone}}(z, z') = \frac{1}{(2\pi\sigma_x^2)^{d/2}} \exp(-\|x - x'\|^2 / (2\sigma_x^2)) \times \delta(v - v')$ is the Gaussian kernel
+- $K_{\text{clone}}(z, z') = \frac{1}{(2\pi\sigma_x^2)^{d/2}} \exp(-\|x - x'\|^2 / (2\sigma_x^2)) \times \delta(v - v')$ is the Gaussian positional kernel (in the Euclidean Gas implementation, the velocity component is updated by the inelastic collision operator; replacing $\delta(v - v')$ with the collision-induced velocity kernel leaves the $L^\infty$ bound unchanged)
 - $V[f](z, z')$ is the **fitness weighting functional** (depends nonlinearly on $f$ via virtual reward)
 
 **Critical Observation**: The cloning operator is **NOT** a simple convolution due to the fitness weighting $V[f]$. The operator has a nonlinear source-sink structure:

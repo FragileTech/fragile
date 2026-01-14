@@ -491,7 +491,7 @@ Walker $i$ arrives at state $z$ if:
 1. It was originally at some state $z_d = (x_d, v_d)$
 2. It selected companion at state $z_c = (x_c, v_c)$
 3. Cloning occurred: $P_{\text{clone}}(V[z_d], V[z_c])$
-4. The jitter placed it at $z$: $Q_\delta(z \mid z_c)$ where $Q_\delta(x,v \mid x_c, v_c) = \mathcal{N}(x; x_c, \delta^2 I) \delta(v - v_c)$
+4. The jitter placed it at $z$: $Q_\delta(z \mid z_c)$ where $Q_\delta(x,v \mid x_c, v_c) = \mathcal{N}(x; x_c, \delta^2 I) \delta(v - v_c)$. In the Euclidean Gas implementation, cloning also updates velocities via the inelastic collision operator; the mean-field derivation here uses the positional marginal and can be extended by replacing $\delta(v - v_c)$ with the collision-induced velocity kernel.
 
 The probability density for this transition is:
 
