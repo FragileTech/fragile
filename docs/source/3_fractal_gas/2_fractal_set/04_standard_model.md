@@ -1001,12 +1001,12 @@ Physical interpretation: Cloning selection strengthens at small scales (local fi
 **$SU(d)$ (asymptotically free)**:
 
 $$
-\beta(g_d) = \frac{dg_d}{d\ln\mu} = -\frac{g_d^3}{16\pi^2} \cdot \frac{11d - 2N_{\text{gen}}}{3} < 0
+\beta(g_d) = \frac{dg_d}{d\ln\mu} = -\frac{g_d^3}{16\pi^2} \cdot \frac{11d - 4N_{\text{gen}}}{3} < 0
 $$
 
 Physical interpretation: Viscous confinement increases at large scales (walkers trapped in fitness basins).
 
-*Proof sketch*: The beta function signs follow from the standard one-loop calculation, with the coefficients determined by the matter content. The physical interpretation follows from the algorithmic origin of each gauge group. $\square$
+*Proof sketch*: The beta function signs follow from the standard one-loop calculation. The coefficient $4N_{\text{gen}}$ (rather than $2N_{\text{gen}}$) accounts for the $SU(2)$ doublet structure: each generation contributes two quark flavors (up-type and down-type), so $N_f = 2N_{\text{gen}}$. The standard QCD result $b_0 = 11 - 2N_f/3 = 11 - 4N_{\text{gen}}/3$ is recovered for $d = 3$, $N_{\text{gen}} = 3$: $b_0 = (33-12)/3 = 7$. The physical interpretation follows from the algorithmic origin of each gauge group. $\square$
 :::
 
 :::{prf:proposition} Unification Relations
@@ -1487,11 +1487,11 @@ The Standard Model coupling constants correspond bijectively to Fractal Gas algo
 
 **Correspondence table**:
 
-| SM Coupling | Symbol | FG Parameter | Symbol | Structural Role |
-|-------------|--------|--------------|--------|-----------------|
-| Hypercharge | $g_1$ | Diversity range | $\epsilon_d$ | Sets $U(1)$ interaction scale |
-| Weak | $g_2$ | Cloning range | $\epsilon_c$ | Sets $SU(2)$ interaction scale |
-| Strong | $g_3$ | Viscosity | $\nu$ | Sets $SU(3)$ interaction scale |
+| SM Coupling | Symbol | FG Parameter | Symbol | Structural Role | Unit |
+|-------------|--------|--------------|--------|-----------------|------|
+| Hypercharge | $g_1$ | Diversity range | $\epsilon_d$ | Sets $U(1)$ interaction scale | [dimensionless] |
+| Weak | $g_2$ | Cloning range | $\epsilon_c$ | Sets $SU(2)$ interaction scale | [dimensionless] |
+| Strong | $g_3$ | Viscosity | $\nu$ | Sets $SU(3)$ interaction scale | [dimensionless] |
 
 **Dimensional analysis**:
 - All couplings are dimensionless ratios

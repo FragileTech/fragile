@@ -191,17 +191,17 @@ For the cloning velocity update, the inelastic collision map preserves the cente
 In addition, once the quantitative constants $(m_\epsilon,\kappa_W,\kappa_{\mathrm{total}},C_{\mathrm{LSI}})$ are instantiated (Part III), the framework yields a propagation-of-chaos (mean-field) error bound and an LSI-based QSD/KL convergence rate characterization.
 
 **Notation:**
-| Symbol | Definition |
-|--------|------------|
-| $N$ | Number of walkers |
-| $d_z$ | Latent dimension |
-| $\mathcal{R}$ | Reward 1-form on latent space |
-| $\Phi_{\text{eff}}$ | Effective potential driving the drift |
-| $d_{\text{alg}}$ | Algorithmic distance |
-| $\Phi$ | Height functional |
-| $\mathfrak{D}$ | Dissipation rate |
-| $S_t$ | Discrete-time step operator |
-| $\Sigma$ | Singular/bad set (NaN, out-of-domain) |
+| Symbol | Definition | Unit |
+|--------|------------|------|
+| $N$ | Number of walkers | [count] |
+| $d_z$ | Latent dimension | [count] |
+| $\mathcal{R}$ | Reward 1-form on latent space | [dimensionless] |
+| $\Phi_{\text{eff}}$ | Effective potential driving the drift | [dimensionless] |
+| $d_{\text{alg}}$ | Algorithmic distance | [distance] |
+| $\Phi$ | Height functional | [dimensionless] |
+| $\mathfrak{D}$ | Dissipation rate | [1/step] |
+| $S_t$ | Discrete-time step operator | [dimensionless] |
+| $\Sigma$ | Singular/bad set (NaN, out-of-domain) | [dimensionless] |
 
 ::::
 
@@ -801,41 +801,41 @@ The output is the next swarm state $(z, v)$ and diagnostics (fitness, companions
 
 ## Constants and Hyperparameters (All Algorithm Constants)
 
-| Category | Symbol / Name | Default / Type | Meaning | Source |
-|----------|---------------|----------------|---------|--------|
-| Swarm | $N$ | 50 | Number of walkers | algorithm config |
-| Swarm | $d_z$ | model-specific | Latent dimension | latent encoder |
-| Swarm | $G$ | learned / implicit | Latent metric tensor | Metric Law in `docs/source/1_agent/reference.md` |
-| Swarm | $B$ | induced (selection + boundaries) | Effective alive region (high-fitness + within boundaries) | selection pressure, $\Phi_{\text{conf}}$, environment flags |
-| Swarm | `enable_cloning` | True (fixed) | Cloning is always enabled | algorithm config |
-| Swarm | `enable_kinetic` | True (fixed) | Kinetic update is always enabled | algorithm config |
-| Companion | `method` | softmax (fixed) | Soft companion selection kernel | {prf:ref}`def-softmax-companion-selection-fg` |
-| Companion | $\epsilon$ | 0.1 | Companion kernel range | `CompanionSelection.epsilon` |
-| Companion | $\lambda_{\text{alg}}$ | 0.0 | Velocity weight in $d_{\text{alg}}$ | `CompanionSelection.lambda_alg` |
-| Fitness | $\alpha_{\text{fit}}$ | 1.0 | Reward channel exponent | `FitnessOperator.alpha` |
-| Fitness | $\beta_{\text{fit}}$ | 1.0 | Diversity channel exponent | `FitnessOperator.beta` |
-| Fitness | $\eta$ | 0.1 | Positivity floor | `FitnessOperator.eta` |
-| Fitness | $\lambda_{\text{alg}}$ | $\lambda_{\text{alg}}$ | Velocity weight used inside $d_{\text{alg}}$ for fitness distances (tied to companion selection) | `FitnessOperator.lambda_alg` |
-| Fitness | $\sigma_{\min}$ | 1e-8 | Standardization regularizer | `FitnessOperator.sigma_min` |
-| Fitness | $\epsilon_{\text{dist}}$ | 1e-8 | Distance smoothness regularizer | `FitnessOperator.epsilon_dist` |
-| Fitness | $\epsilon_{\Sigma}$ | 1e-4 | Anisotropic regularization | Anisotropic Diffusion |
-| Fitness | $A$ | 2.0 | Logistic rescale bound | `FitnessOperator.A` |
-| Fitness | $\rho$ | None | Localization scale (None = global) | `FitnessOperator.rho` |
-| Cloning | $p_{\max}$ | 1.0 | Max cloning probability scale | `CloneOperator.p_max` |
-| Cloning | $\epsilon_{\text{clone}}$ | 0.01 | Cloning score regularizer | `CloneOperator.epsilon_clone` |
-| Cloning | $\sigma_x$ | 0.1 | Position jitter scale | `CloneOperator.sigma_x` |
-| Cloning | $\alpha_{\text{rest}}$ | 0.5 | Restitution coefficient | `CloneOperator.alpha_restitution` |
-| Kinetic | $h$ | 0.01 | BAOAB time step | {prf:ref}`def-baoab-splitting` |
-| Kinetic | $\gamma$ | 1.0 | Friction coefficient | {prf:ref}`def-baoab-splitting` |
-| Kinetic | $\nu_{\mathrm{visc}}$ | 0.0 | Viscous velocity coupling strength | {prf:ref}`def-latent-fractal-gas-viscous-force` |
-| Kinetic | $T_c$ | $>0$ | Cognitive temperature | {prf:ref}`def-cognitive-temperature` |
-| Kinetic | $\hbar_{\mathrm{eff}}$ | $\sqrt{T_c}$ | Effective Planck constant for phase encoding | {prf:ref}`def-latent-fractal-gas-complex-color` |
-| Kinetic | $m$ | 1.0 | Effective mass for phase encoding (unit mass) | {prf:ref}`def-latent-fractal-gas-color-link` |
-| Kinetic | $g$ | $>0$ | SU($d$) gauge coupling constant | {prf:ref}`def-latent-fractal-gas-gauge-structure` |
-| Kinetic | $\beta_{\text{curl}}$ | $\ge 0$ | Curl coupling strength | {prf:ref}`def-bulk-drift-continuous-flow` |
-| Kinetic | $\Phi_{\text{eff}}$ | field | Effective potential | {prf:ref}`def-effective-potential` |
-| Kinetic | $\mathcal{R}$ | field | Reward 1-form | {prf:ref}`def-reward-1-form` |
-| Kinetic | $u_\pi$ | policy field | Control drift | {prf:ref}`def-bulk-drift-continuous-flow` |
+| Category | Symbol / Name | Default / Type | Meaning | Source | Unit |
+|----------|---------------|----------------|---------|--------|------|
+| Swarm | $N$ | 50 | Number of walkers | algorithm config | [count] |
+| Swarm | $d_z$ | model-specific | Latent dimension | latent encoder | [count] |
+| Swarm | $G$ | learned / implicit | Latent metric tensor | Metric Law in `docs/source/1_agent/reference.md` | [dimensionless] |
+| Swarm | $B$ | induced (selection + boundaries) | Effective alive region (high-fitness + within boundaries) | selection pressure, $\Phi_{\text{conf}}$, environment flags | [dimensionless] |
+| Swarm | `enable_cloning` | True (fixed) | Cloning is always enabled | algorithm config | [dimensionless] |
+| Swarm | `enable_kinetic` | True (fixed) | Kinetic update is always enabled | algorithm config | [dimensionless] |
+| Companion | `method` | softmax (fixed) | Soft companion selection kernel | {prf:ref}`def-softmax-companion-selection-fg` | [dimensionless] |
+| Companion | $\epsilon$ | 0.1 | Companion kernel range | `CompanionSelection.epsilon` | [distance] |
+| Companion | $\lambda_{\text{alg}}$ | 0.0 | Velocity weight in $d_{\text{alg}}$ | `CompanionSelection.lambda_alg` | [dimensionless] |
+| Fitness | $\alpha_{\text{fit}}$ | 1.0 | Reward channel exponent | `FitnessOperator.alpha` | [dimensionless] |
+| Fitness | $\beta_{\text{fit}}$ | 1.0 | Diversity channel exponent | `FitnessOperator.beta` | [dimensionless] |
+| Fitness | $\eta$ | 0.1 | Positivity floor | `FitnessOperator.eta` | [dimensionless] |
+| Fitness | $\lambda_{\text{alg}}$ | $\lambda_{\text{alg}}$ | Velocity weight used inside $d_{\text{alg}}$ for fitness distances (tied to companion selection) | `FitnessOperator.lambda_alg` | [dimensionless] |
+| Fitness | $\sigma_{\min}$ | 1e-8 | Standardization regularizer | `FitnessOperator.sigma_min` | [dimensionless] |
+| Fitness | $\epsilon_{\text{dist}}$ | 1e-8 | Distance smoothness regularizer | `FitnessOperator.epsilon_dist` | [dimensionless] |
+| Fitness | $\epsilon_{\Sigma}$ | 1e-4 | Anisotropic regularization | Anisotropic Diffusion | [dimensionless] |
+| Fitness | $A$ | 2.0 | Logistic rescale bound | `FitnessOperator.A` | [dimensionless] |
+| Fitness | $\rho$ | None | Localization scale (None = global) | `FitnessOperator.rho` | [distance] |
+| Cloning | $p_{\max}$ | 1.0 | Max cloning probability scale | `CloneOperator.p_max` | [probability] |
+| Cloning | $\epsilon_{\text{clone}}$ | 0.01 | Cloning score regularizer | `CloneOperator.epsilon_clone` | [dimensionless] |
+| Cloning | $\sigma_x$ | 0.1 | Position jitter scale | `CloneOperator.sigma_x` | [distance] |
+| Cloning | $\alpha_{\text{rest}}$ | 0.5 | Restitution coefficient | `CloneOperator.alpha_restitution` | [dimensionless] |
+| Kinetic | $h$ | 0.01 | BAOAB time step | {prf:ref}`def-baoab-splitting` | [time] |
+| Kinetic | $\gamma$ | 1.0 | Friction coefficient | {prf:ref}`def-baoab-splitting` | [1/time] |
+| Kinetic | $\nu_{\mathrm{visc}}$ | 0.0 | Viscous velocity coupling strength | {prf:ref}`def-latent-fractal-gas-viscous-force` | [dimensionless] |
+| Kinetic | $T_c$ | $>0$ | Cognitive temperature | {prf:ref}`def-cognitive-temperature` | [dimensionless] |
+| Kinetic | $\hbar_{\mathrm{eff}}$ | $\sqrt{T_c}$ | Effective Planck constant for phase encoding | {prf:ref}`def-latent-fractal-gas-complex-color` | [dimensionless] |
+| Kinetic | $m$ | 1.0 | Effective mass for phase encoding (unit mass) | {prf:ref}`def-latent-fractal-gas-color-link` | [dimensionless] |
+| Kinetic | $g$ | $>0$ | SU($d$) gauge coupling constant | {prf:ref}`def-latent-fractal-gas-gauge-structure` | [dimensionless] |
+| Kinetic | $\beta_{\text{curl}}$ | $\ge 0$ | Curl coupling strength | {prf:ref}`def-bulk-drift-continuous-flow` | [dimensionless] |
+| Kinetic | $\Phi_{\text{eff}}$ | field | Effective potential | {prf:ref}`def-effective-potential` | [dimensionless] |
+| Kinetic | $\mathcal{R}$ | field | Reward 1-form | {prf:ref}`def-reward-1-form` | [dimensionless] |
+| Kinetic | $u_\pi$ | policy field | Control drift | {prf:ref}`def-bulk-drift-continuous-flow` | [dimensionless] |
 
 ---
 

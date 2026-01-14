@@ -6138,33 +6138,33 @@ $$
 
 The following table provides a complete reference for all parameters appearing in the Keystone constants:
 
-| Parameter | Type | Description | Typical Value |
-|:----------|:-----|:------------|:--------------|
-| **Cloning Parameters** | | | |
-| $p_{\max}$ | User | Maximum cloning probability threshold | 0.75 |
-| $\varepsilon_{\text{clone}}$ | User | Cloning denominator regularizer | 0.01 |
-| **Fitness Pipeline Parameters** | | | |
-| $\alpha$ | User | Diversity weight exponent | 1.0 |
-| $\beta$ | User | Reward weight exponent | 1.0 |
-| $\eta$ | User | Positivity floor parameter | 0.1 |
-| $g_{A,\max}$ | Derived | Maximum rescaled score (Z-score bound) | 3.0 |
-| $g'_{\min}$ | Derived | Minimum rescaling gradient | 1.0 |
-| $\sigma'_{\max}$ | Derived | Maximum patched standard deviation | Bounded |
-| **Geometric Parameters** | | | |
-| $\epsilon$ | User | Interaction range (companion selection) | Problem-dependent |
-| $c_d$ | User | Cluster diameter constant | 2.0 |
-| $D_{\text{valid}}$ | Environment | Domain diameter | Problem-dependent |
-| **Variance & Error Thresholds** | | | |
-| $R^2_{\text{var}}$ | User | High-variance threshold | 1.0 |
-| $R^2_{\text{spread}}$ | User | High structural error threshold | 1.0 |
-| $\varepsilon_O$ | User | Outlier detection threshold | 0.1 |
-| **Measurement Parameters** | | | |
-| $f_H, f_L$ | Derived | High/low error population fractions | Ch. 6 |
-| $D_H(\epsilon), R_L(\epsilon)$ | Derived | Phase-space separation radii | $\epsilon$-dependent |
-| $C_{\text{tail}}(\epsilon)$ | Derived | Distribution overlap correction | $\epsilon$-dependent |
-| **Population Fractions** | | | |
-| $f_U, f_F$ | State | Unfit/fit population fractions | State-dependent |
-| $k$ | State | Number of alive walkers in swarm | $2 \leq k \leq N$ |
+| Parameter | Type | Description | Unit | Typical Value |
+|:----------|:-----|:------------|:-----|:--------------|
+| **Cloning Parameters** | | | | |
+| $p_{\max}$ | User | Maximum cloning probability threshold | [probability] | 0.75 |
+| $\varepsilon_{\text{clone}}$ | User | Cloning denominator regularizer | [dimensionless] | 0.01 |
+| **Fitness Pipeline Parameters** | | | | |
+| $\alpha$ | User | Diversity weight exponent | [dimensionless] | 1.0 |
+| $\beta$ | User | Reward weight exponent | [dimensionless] | 1.0 |
+| $\eta$ | User | Positivity floor parameter | [dimensionless] | 0.1 |
+| $g_{A,\max}$ | Derived | Maximum rescaled score (Z-score bound) | [dimensionless] | 3.0 |
+| $g'_{\min}$ | Derived | Minimum rescaling gradient | [dimensionless] | 1.0 |
+| $\sigma'_{\max}$ | Derived | Maximum patched standard deviation | [dimensionless] | Bounded |
+| **Geometric Parameters** | | | | |
+| $\epsilon$ | User | Interaction range (companion selection) | [distance] | Problem-dependent |
+| $c_d$ | User | Cluster diameter constant | [dimensionless] | 2.0 |
+| $D_{\text{valid}}$ | Environment | Domain diameter | [distance] | Problem-dependent |
+| **Variance & Error Thresholds** | | | | |
+| $R^2_{\text{var}}$ | User | High-variance threshold | [distance$^2$] | 1.0 |
+| $R^2_{\text{spread}}$ | User | High structural error threshold | [distance$^2$] | 1.0 |
+| $\varepsilon_O$ | User | Outlier detection threshold | [dimensionless] | 0.1 |
+| **Measurement Parameters** | | | | |
+| $f_H, f_L$ | Derived | High/low error population fractions | [dimensionless] | Ch. 6 |
+| $D_H(\epsilon), R_L(\epsilon)$ | Derived | Phase-space separation radii | [distance] | $\epsilon$-dependent |
+| $C_{\text{tail}}(\epsilon)$ | Derived | Distribution overlap correction | [dimensionless] | $\epsilon$-dependent |
+| **Population Fractions** | | | | |
+| $f_U, f_F$ | State | Unfit/fit population fractions | [dimensionless] | State-dependent |
+| $k$ | State | Number of alive walkers in swarm | [count] | $2 \leq k \leq N$ |
 
 **Computational Formula for $\chi(\epsilon)$:**
 

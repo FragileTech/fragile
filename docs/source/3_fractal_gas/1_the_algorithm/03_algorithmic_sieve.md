@@ -604,20 +604,20 @@ $\square$
 :::{prf:definition} Valid Parameter Ranges (Theory-Derived)
 :label: def-alg-sieve-parameter-table
 
-| Parameter | Symbol | Lower Bound (derived) | Upper Bound | Recommended Default | Status |
-|-----------|--------|----------------------|-------------|---------------------|--------|
-| Population | $N$ | $\geq 2$ | $\infty$ | 50 | $\checkmark$ |
-| Kernel scale | $\varepsilon$ | $D_{\text{alg}} / \sqrt{2\ln((N-1)/p_{\min})}$ | $\infty$ | $\max(0.1, \varepsilon_{\min})$ | $\checkmark$ |
-| Friction | $\gamma$ | $\mathbb{E}[p_i] M^2 / (2dh)$ | $\sigma_v^2 / (2h)$ | 1.0 | $\checkmark$ |
-| Temperature | $T_c$ | $> 0$ | $\infty$ | 1.0 | $\checkmark$ |
-| Timestep | $h$ | $> 0$ | $\min(2/\omega, 0.1)$ | 0.01 | $\checkmark$ |
-| Cloning jitter | $\sigma_x$ | $\sqrt{\lambda_{\text{target}} C_0 / (\gamma \kappa_{\text{conf}} \kappa_W)}$ | $\varepsilon$ | 0.1 | $\checkmark$ |
-| Reward exponent | $\alpha$ | $\geq 0$ | $< \beta + \lambda_c$ (subcritical) | 1.0 | $\checkmark$ |
-| Diversity exponent | $\beta$ | $> 0$ | $\infty$ | 1.0 | $\checkmark$ |
-| Positivity floor | $\eta$ | $> 0$ | $\ll A$ | 0.1 | $\checkmark$ |
-| Logistic bound | $A$ | $> 0$ | $\infty$ | 2.0 | $\checkmark$ |
-| Clone regularizer | $\varepsilon_{\text{clone}}$ | $> 0$ | $V_{\min}$ | 0.01 | $\checkmark$ |
-| Max clone prob | $p_{\max}$ | $> 0$ | $1$ | 1.0 | $\checkmark$ |
+| Parameter | Symbol | Unit | Lower Bound (derived) | Upper Bound | Recommended Default | Status |
+|-----------|--------|------|----------------------|-------------|---------------------|--------|
+| Population | $N$ | [count] | $\geq 2$ | $\infty$ | 50 | $\checkmark$ |
+| Kernel scale | $\varepsilon$ | [distance] | $D_{\text{alg}} / \sqrt{2\ln((N-1)/p_{\min})}$ | $\infty$ | $\max(0.1, \varepsilon_{\min})$ | $\checkmark$ |
+| Friction | $\gamma$ | [1/time] | $\mathbb{E}[p_i] M^2 / (2dh)$ | $\sigma_v^2 / (2h)$ | 1.0 | $\checkmark$ |
+| Temperature | $T_c$ | [dimensionless] | $> 0$ | $\infty$ | 1.0 | $\checkmark$ |
+| Timestep | $h$ | [time] | $> 0$ | $\min(2/\omega, 0.1)$ | 0.01 | $\checkmark$ |
+| Cloning jitter | $\sigma_x$ | [distance] | $\sqrt{\lambda_{\text{target}} C_0 / (\gamma \kappa_{\text{conf}} \kappa_W)}$ | $\varepsilon$ | 0.1 | $\checkmark$ |
+| Reward exponent | $\alpha$ | [dimensionless] | $\geq 0$ | $< \beta + \lambda_c$ (subcritical) | 1.0 | $\checkmark$ |
+| Diversity exponent | $\beta$ | [dimensionless] | $> 0$ | $\infty$ | 1.0 | $\checkmark$ |
+| Positivity floor | $\eta$ | [dimensionless] | $> 0$ | $\ll A$ | 0.1 | $\checkmark$ |
+| Logistic bound | $A$ | [dimensionless] | $> 0$ | $\infty$ | 2.0 | $\checkmark$ |
+| Clone regularizer | $\varepsilon_{\text{clone}}$ | [dimensionless] | $> 0$ | $V_{\min}$ | 0.01 | $\checkmark$ |
+| Max clone prob | $p_{\max}$ | [probability] | $> 0$ | $1$ | 1.0 | $\checkmark$ |
 
 **Verification for $d=50$, $N=50$, $D_{\text{alg}}=1.0$**:
 - $\gamma_{\min} = 0.1 \cdot 1 / (2 \cdot 50 \cdot 0.01) = 0.1$ → Default $\gamma = 1.0$ $\checkmark$

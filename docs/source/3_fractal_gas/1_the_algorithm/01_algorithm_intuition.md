@@ -1078,25 +1078,25 @@ noise (more exploration). Higher $\gamma$ means more friction (faster equilibrat
 means more accurate integration but more computation.
 :::
 
-| Category | Symbol | Default | Description |
-|----------|--------|---------|-------------|
-| **Swarm** | $N$ | 50 | Number of walkers |
-| **Companion** | $\epsilon$ | 0.1 | Kernel bandwidth |
-| **Companion** | $\lambda_{\text{alg}}$ | 0.0 | Velocity weight in $d_{\text{alg}}$ |
-| **Fitness** | $\alpha_{\text{fit}}$ | 1.0 | Reward exponent |
-| **Fitness** | $\beta_{\text{fit}}$ | 1.0 | Diversity exponent |
-| **Fitness** | $\eta$ | 0.1 | Positivity floor |
-| **Fitness** | $A$ | 2.0 | Logistic amplitude |
-| **Fitness** | $\sigma_{\min}$ | 1e-8 | Standardization regularizer |
-| **Fitness** | $\epsilon_{\text{dist}}$ | 1e-8 | Distance regularizer |
-| **Cloning** | $\varepsilon_{\text{clone}}$ | 0.01 | Score regularizer |
-| **Cloning** | $p_{\max}$ | 1.0 | Max threshold |
-| **Cloning** | $\sigma_x$ | 0.1 | Jitter scale |
-| **Cloning** | $\alpha_{\text{rest}}$ | 0.5 | Restitution coefficient |
-| **Kinetic** | $h$ | 0.01 | Time step |
-| **Kinetic** | $\gamma$ | 1.0 | Friction coefficient |
-| **Kinetic** | $T_c$ | 1.0 | Cognitive temperature |
-| **Kinetic** | $\epsilon_\Sigma$ | 1e-4 | Diffusion regularizer |
+| Category | Symbol | Default | Unit | Description |
+|----------|--------|---------|------|-------------|
+| **Swarm** | $N$ | 50 | [count] | Number of walkers |
+| **Companion** | $\epsilon$ | 0.1 | [distance] | Kernel bandwidth |
+| **Companion** | $\lambda_{\text{alg}}$ | 0.0 | [dimensionless] | Velocity weight in $d_{\text{alg}}$ |
+| **Fitness** | $\alpha_{\text{fit}}$ | 1.0 | [dimensionless] | Reward exponent |
+| **Fitness** | $\beta_{\text{fit}}$ | 1.0 | [dimensionless] | Diversity exponent |
+| **Fitness** | $\eta$ | 0.1 | [dimensionless] | Positivity floor |
+| **Fitness** | $A$ | 2.0 | [dimensionless] | Logistic amplitude |
+| **Fitness** | $\sigma_{\min}$ | 1e-8 | [dimensionless] | Standardization regularizer |
+| **Fitness** | $\epsilon_{\text{dist}}$ | 1e-8 | [dimensionless] | Distance regularizer |
+| **Cloning** | $\varepsilon_{\text{clone}}$ | 0.01 | [dimensionless] | Score regularizer |
+| **Cloning** | $p_{\max}$ | 1.0 | [probability] | Max threshold |
+| **Cloning** | $\sigma_x$ | 0.1 | [distance] | Jitter scale |
+| **Cloning** | $\alpha_{\text{rest}}$ | 0.5 | [dimensionless] | Restitution coefficient |
+| **Kinetic** | $h$ | 0.01 | [time] | Time step |
+| **Kinetic** | $\gamma$ | 1.0 | [1/time] | Friction coefficient |
+| **Kinetic** | $T_c$ | 1.0 | [dimensionless] | Cognitive temperature |
+| **Kinetic** | $\epsilon_\Sigma$ | 1e-4 | [dimensionless] | Diffusion regularizer |
 
 :::{admonition} Revival Constraint Check
 :class: feynman-added warning
