@@ -434,7 +434,7 @@ For any constant $C>0$ define $\psi_C: \mathbb R^d\to B(0,C)$ by $\psi_C(z):=C\,
   D\psi_C(z)=\frac{C}{C+\|z\|}I-\frac{C}{(C+\|z\|)^2}\,\frac{z z^{\top}}{\|z\|}.
 
   $$
-  The first term has operator norm at most $1$. The second term is positive semidefinite with norm $C\|z\|/(C+\|z\|)^2\le 1$. Hence $\|D\psi_C(z)\|\le 1$ for all $z\neq 0$. Continuity gives $\|D\psi_C(0)\|=1$. The mean-value inequality then implies $\|\psi_C(z)-\psi_C(z')\|\le\|z-z'\|$ for all $z,z'\in\mathbb R^d$.
+  Setting $\alpha := C/(C+\|z\|)$ and $\hat{z} := z/\|z\|$, this becomes $D\psi_C(z) = \alpha I - \alpha^2\hat{z}\hat{z}^\top/C$. The eigenvalues are $\alpha$ (with multiplicity $d-1$, for directions perpendicular to $z$) and $\alpha - \alpha^2\|z\|/C = C^2/(C+\|z\|)^2$ (for the $z$ direction). Since $0 < \alpha < 1$ and $C^2/(C+\|z\|)^2 < \alpha$ for $\|z\| > 0$, the operator norm is $\|D\psi_C(z)\| = \alpha = C/(C+\|z\|) < 1$ for all $z\neq 0$. At $z=0$, $\psi_C$ is differentiable with $D\psi_C(0) = I$, so $\|D\psi_C(0)\| = 1$. The mean-value inequality then implies $\|\psi_C(z)-\psi_C(z')\|\le\|z-z'\|$ for all $z,z'\in\mathbb R^d$.
 
 2. *Smoothness away from the origin.* For $z\neq 0$, $\psi_C$ is a composition of smooth functions: $z\mapsto\|z\|$, inversion on $(0,\infty)$, and scalar-vector multiplication. Hence $\psi_C\in C^{\infty}(\mathbb R^d\setminus\{0\})$.
 
@@ -452,11 +452,11 @@ Both the positional squashing map $\psi_x$ and the velocity squashing map $\psi_
 For $(x,v),(x',v')\in\mathbb R^d\times\mathbb R^d$ the projection $\varphi(x,v)=(\psi_x(x),\psi_v(v))$ satisfies
 
 $$
-d_{\mathcal Y}^{\mathrm{Sasaki}}\bigl(\varphi(x,v),\varphi(x',v')\bigr)\le L_{\varphi}\,\sqrt{\|x-x'\|^2+\lambda_v\|v-v'\|^2},
+d_{\mathcal Y}^{\mathrm{Sasaki}}\bigl(\varphi(x,v),\varphi(x',v')\bigr)\le\sqrt{\|x-x'\|^2+\lambda_v\|v-v'\|^2}.
 
 $$
 
-with Lipschitz constant $L_{\varphi}\le\max\{1,\sqrt{\lambda_v}\}$.
+That is, $\varphi$ is $1$-Lipschitz when both domain and codomain carry the Sasaki metric with the same weight $\lambda_v$.
 
 ```{dropdown} Proof
 :::{prf:proof}
@@ -473,13 +473,12 @@ $$
 \begin{aligned}
 d_{\mathcal Y}^{\mathrm{Sasaki}}\bigl(\varphi(x,v),\varphi(x',v')\bigr)^2
 &=\|\psi_x(x)-\psi_x(x')\|^2+\lambda_v\|\psi_v(v)-\psi_v(v')\|^2\\
-&\le\|x-x'\|^2+\lambda_v\|v-v'\|^2\\
-&\le L_{\varphi}^2\bigl(\|x-x'\|^2+\lambda_v\|v-v'\|^2\bigr)
+&\le\|x-x'\|^2+\lambda_v\|v-v'\|^2.
 \end{aligned}
 
 $$
 
-with $L_{\varphi}=1$ if $\lambda_v\le 1$ and $L_{\varphi}=\sqrt{\lambda_v}$ otherwise. Taking square roots gives the stated bound.
+Taking square roots gives the stated bound.
 ```
 :::
 
@@ -617,6 +616,14 @@ The constant in parentheses is $L_{\mathrm{flow}}$, completing the proof.
 :::{prf:lemma} Hölder continuity of the death probability
 :label: lem-euclidean-boundary-holder
 
+Let $p_{\mathrm{dead}}(x,v) := \mathbb{P}(x^+ \notin \mathcal{X}_{\mathrm{valid}})$ denote the probability that a walker at $(x,v)$ exits the valid domain after one kinetic step. Then for any compact $C \subset \mathcal{X}_{\mathrm{valid}}$ containing $(x,v)$ and $(x',v')$, there exists a constant $L_{\mathrm{death}}^{\mathrm{Sasaki}}(C) < \infty$ such that
+
+$$
+|p_{\mathrm{dead}}(x,v) - p_{\mathrm{dead}}(x',v')| \le L_{\mathrm{death}}^{\mathrm{Sasaki}}(C) \cdot d_{\mathcal{Y}}^{\mathrm{Sasaki}}((x,v),(x',v')).
+$$
+
+This establishes Hölder continuity with exponent $\alpha_B^{\mathrm{Sasaki}} = 1$.
+
 Referenced by {prf:ref}`thm-euclidean-feller`.
 
 ```{dropdown} Proof
@@ -743,7 +750,6 @@ The ambient space ({prf:ref}`def-ambient-euclidean`) $(\mathcal X,d_{\mathcal X}
 
 The reward function $R(x,v)=R_{\mathrm{pos}}(x)-\lambda_{\mathrm{vel}}\|v\|^2$ is continuous on $(\mathcal Y,d_{\mathcal Y}^{\mathrm{Sasaki}})$ and therefore satisfies the Axiom of Reward Regularity ({prf:ref}`def-axiom-reward-regularity`).
 
-Referenced by {prf:ref}`unlabeled-proof-1047`.
 
 ```{dropdown} Proof
 :::{prf:proof}
@@ -809,6 +815,14 @@ On an unbounded domain we cannot demand a uniform moment bound. Instead, the kin
 
 :::{prf:lemma} Perturbation second moment in the Sasaki metric
 :label: lem-euclidean-perturb-moment
+
+Let $(x^+, v^+)$ denote the walker state after one BAOAB kinetic step from $(x,v)$. The expected squared Sasaki displacement satisfies the quadratic growth bound
+
+$$
+\mathbb{E}\big[d_{\mathcal{Y}}^{\mathrm{Sasaki}}\big((x,v),(x^+,v^+)\big)^2\big] \le C_x^{(\mathrm{pert})}\|x\|^2 + C_v^{(\mathrm{pert})}\|v\|^2 + C_0^{(\mathrm{pert})}
+$$
+
+where $C_x^{(\mathrm{pert})}$, $C_v^{(\mathrm{pert})}$, and $C_0^{(\mathrm{pert})}$ are explicit constants depending on the physical parameters $(\tau, \sigma_v, \sigma_x, \gamma_{\mathrm{fric}}, L_F, L_u, \lambda_v, V_{\mathrm{alg}})$. Moreover, the kinetic kernel is Feller: it maps bounded continuous functions to bounded continuous functions.
 
 Referenced by {prf:ref}`thm-euclidean-feller`.
 
@@ -907,7 +921,7 @@ Referenced by {prf:ref}`lem-euclidean-boundary-holder`.
 
 ```{dropdown} Proof
 :::{prf:proof}
-Because $\mathcal X_{\mathrm{valid}}$ is compact and $F$ and $u$ are continuous, the drift and anisotropy envelopes appearing in the Axiom of Geometric Consistency admit finite global bounds. To make the dependence on the geometry explicit we index the constants by an arbitrary compact subset $C \subset \mathcal X_{\mathrm{valid}}`; in practice we take $C = \mathcal X_{\mathrm{valid}}` and obtain uniform constants on the entire valid domain.
+Because $\mathcal X_{\mathrm{valid}}$ is compact and $F$ and $u$ are continuous, the drift and anisotropy envelopes appearing in the Axiom of Geometric Consistency admit finite global bounds. To make the dependence on the geometry explicit we index the constants by an arbitrary compact subset $C \subset \mathcal X_{\mathrm{valid}}$; in practice we take $C = \mathcal X_{\mathrm{valid}}$ and obtain uniform constants on the entire valid domain.
 
 Let $C\subset\mathbb R^d$ be an arbitrary compact set and define the local envelopes
 
@@ -930,7 +944,7 @@ a(x,v):=\frac{\tau}{m}F(x)-\gamma_{\mathrm{fric}}\tau\big(v-u(x)\big).
 
 $$
 
-We supply explicit constants for the drift and anisotropy parts of Definition {prf:ref}`def-axiom-geometric-consistency`.
+We supply explicit constants for the drift and anisotropy parts of Definition {prf:ref}`axiom-geometric-consistency`.
 
 1. **Drift of the mean displacement.** Because $\|v\|\le V_{\mathrm{alg}}$ we have
 
@@ -946,17 +960,17 @@ $$
 
 $$
 
-The affine term obeys $\|\mathbb E[\tilde v-v]\|=\|a(x,v)\|\le\tau C_{\mathrm{force}}(C)$. The projection error equals $(\|\tilde v\|-V_{\mathrm{alg}})_+$ and is supported on the capping event $E:=\{\|\tilde v\|>V_{\mathrm{alg}}\}$. Markov's inequality applied to
+The affine term obeys $\|\mathbb E[\tilde v-v]\|=\|a(x,v)\|\le\tau C_{\mathrm{force}}(C)$. The projection error equals $(\|\tilde v\|-V_{\mathrm{alg}})_+$ and is supported on the capping event $E:=\{\|\tilde v\|>V_{\mathrm{alg}}\}$. Since $\tilde v = v + a(x,v) + \sqrt{\sigma_v^2\tau}\xi_v$ and $\mathbb E[\xi_v]=0$, the second moment satisfies
 
 $$
-\mathbb E\|\tilde v\|^2=\|a(x,v)\|^2+\sigma_v^2\tau\,\mathbb E\|\xi\|^2\le(\tau C_{\mathrm{force}}(C))^2+\sigma_v^2\tau d+V_{\mathrm{alg}}^2
+\mathbb E[\|\tilde v\|^2]=\|v+a(x,v)\|^2+\sigma_v^2\tau d\le(V_{\mathrm{alg}}+\tau C_{\mathrm{force}}(C))^2+\sigma_v^2\tau d
 
 $$
 
-then yields
+where we used $\|v\|\le V_{\mathrm{alg}}$ and $\|a(x,v)\|\le\tau C_{\mathrm{force}}(C)$. By Markov's inequality, $\mathbb P(E)\le\mathbb E[\|\tilde v\|^2]/V_{\mathrm{alg}}^2$, and since $(\|\tilde v\|-V_{\mathrm{alg}})_+\le\|\tilde v\|-V_{\mathrm{alg}}$ on $E$ and equals zero elsewhere, we have
 
 $$
-\mathbb E[(\|\tilde v\|-V_{\mathrm{alg}})_+]\le\frac{(V_{\mathrm{alg}}+\tau C_{\mathrm{force}}(C))^2+\sigma_v^2\tau d-V_{\mathrm{alg}}^2}{V_{\mathrm{alg}}}=:\varepsilon_{\mathrm{cap}}^{\max}(C).
+\mathbb E[(\|\tilde v\|-V_{\mathrm{alg}})_+]\le\sqrt{\mathbb E[\|\tilde v\|^2]}-V_{\mathrm{alg}}\le\frac{(V_{\mathrm{alg}}+\tau C_{\mathrm{force}}(C))^2+\sigma_v^2\tau d-V_{\mathrm{alg}}^2}{V_{\mathrm{alg}}}=:\varepsilon_{\mathrm{cap}}^{\max}(C).
 
 $$
 
@@ -1032,7 +1046,7 @@ $$
 
 $$
 
-These constants realise the drift and anisotropy requirements of Definition {prf:ref}`def-axiom-geometric-consistency` on the compact set $C$. Since $C$ was arbitrary, the bounds hold uniformly on every compact subset of the state space, which suffices for the non-compact geometric-consistency axiom.
+These constants realise the drift and anisotropy requirements of Definition {prf:ref}`axiom-geometric-consistency` on the compact set $C$. Since $C$ was arbitrary, the bounds hold uniformly on every compact subset of the state space, which suffices for the non-compact geometric-consistency axiom.
 
 ```
 :::
@@ -1223,7 +1237,7 @@ $$
 
 ```{dropdown} Proof
 :::{prf:proof}
-Decompose the index set into stable walkers $\mathcal A_{\mathrm{stable}}$ and the complement. For stable walkers the bound in Lemma {prf:ref}`lem-sasaki-total-squared-error-stable` applies. For walkers whose status changes between the two swarms we use $|d^{(1)}_i-d^{(2)}_i|\le D_{\mathcal Y}$ because each expected distance is bounded by the diameter of the Sasaki algorithmic space. There are at most $2n_c$ such indices, contributing at most $4D_{\mathcal Y}^2n_c$ to the squared error.
+Decompose the index set into stable walkers $\mathcal A_{\mathrm{stable}}$ and the complement. For stable walkers the bound in Lemma {prf:ref}`lem-sasaki-total-squared-error-stable` applies. For walkers whose status changes between the two swarms we use $|d^{(1)}_i-d^{(2)}_i|\le D_{\mathcal Y}$ because each expected distance is bounded by the diameter of the Sasaki algorithmic space. There are at most $n_c$ such indices (one per status change), contributing at most $D_{\mathcal Y}^2 n_c$ to the squared error.
 
 Finally, the structural perturbation of the companion distribution for stable walkers is controlled by Lemma {prf:ref}`lem-sasaki-single-walker-structural-error`. Squaring its bound and summing over the $k_{\mathrm{stable}}$ indices yields the middle term in $F_{d,ms}^{\mathrm{Sasaki}}$. Adding the three contributions completes the proof.```
 :::
@@ -1302,7 +1316,7 @@ Combine Lemmas {prf:ref}`lem-sasaki-aggregator-value` and {prf:ref}`lem-sasaki-a
 ```
 :::
 
-7. **Standardization & rescale continuity.** Let $\sigma_{\min,\mathrm{patch}}:=\sqrt{\kappa_{\mathrm{var,min}}+\varepsilon_{\mathrm{std}}^2}$ be the lower bound supplied by the regularized standard deviation operator, and denote by $L_{\sigma'_{\mathrm{patch}}}$ the global derivative bound from Lemma {prf:ref}`lem-sigma-patch-lipschitz`. For notational compactness write
+7. **Standardization & rescale continuity.** Let $\sigma_{\min,\mathrm{patch}}:=\sqrt{\kappa_{\mathrm{var,min}}+\varepsilon_{\mathrm{std}}^2}$ be the lower bound supplied by the regularized standard deviation operator, and denote by $L_{\sigma'_{\mathrm{patch}}}$ the global derivative bound from Lemma {prf:ref}`lem-sigma-patch-derivative-bound`. For notational compactness write
 
 $$
 L_{\sigma',M}^{\mathrm{Sasaki}}(k):=L_{\sigma'_{\mathrm{patch}}}\Big(L_{m_2,M}^{\mathrm{Sasaki}}(k)+2V_{\mathrm{max}}^{(R)}L_{\mu,M}^{\mathrm{Sasaki}}(k)\Big).
@@ -1312,7 +1326,7 @@ $$
 :::{prf:definition} Standardization constants (Sasaki geometry)
 :label: def-sasaki-standardization-constants
 
-Let $\sigma_{\min,\mathrm{patch}}:=\sqrt{\kappa_{\mathrm{var,min}}+\varepsilon_{\mathrm{std}}^2}$ be the uniform lower bound on the regularized standard deviation, and let $L_{\sigma'_{\mathrm{patch}}}$ be its global Lipschitz constant from Lemma {prf:ref}`lem-sigma-patch-lipschitz`.
+Let $\sigma_{\min,\mathrm{patch}}:=\sqrt{\kappa_{\mathrm{var,min}}+\varepsilon_{\mathrm{std}}^2}$ be the uniform lower bound on the regularized standard deviation, and let $L_{\sigma'_{\mathrm{patch}}}$ be its global Lipschitz constant from Lemma {prf:ref}`lem-sigma-patch-derivative-bound`.
 
 ##### Value Error Coefficients
 The following coefficients bound the error in the standardization operator when the swarm structure is fixed but the raw values change due to positional displacement. They are notably independent of the number of alive walkers, `k`.
@@ -1382,7 +1396,6 @@ where $C_{V,\mathrm{total}}^{\mathrm{Sasaki}}$ is the **Total Value Error Coeffi
 
 Let $\mathcal S$ be a fixed swarm state with alive set $\mathcal A$ of size $k$. Let $\mathbf r_1$ and $\mathbf r_2$ be two raw value vectors for the alive set. Let $(\mu_1, \sigma'_1)$ and $(\mu_2, \sigma'_2)$ be the corresponding statistical properties, and let $\mathbf z_1$ and $\mathbf z_2$ be the corresponding standardized vectors.
 
-Referenced by {prf:ref}`unlabeled-proof-1047`.
 
 The total value error vector, $\Delta\mathbf{z} = \mathbf z_1 - \mathbf z_2$, can be expressed as the sum of three components:
 
@@ -1459,7 +1472,6 @@ This completes the proof.
 
 Let $\mathcal S$ be a fixed swarm state. Let $\mathbf r_1$ and $\mathbf r_2$ be two raw value vectors for the alive set. The squared Euclidean norm of the direct shift error component, $\Delta_{\text{direct}} = (\mathbf r_1 - \mathbf r_2) / \sigma'_1$, is bounded as follows:
 
-Referenced by {prf:ref}`unlabeled-proof-1047`.
 
 $$
 \|\Delta_{\text{direct}}\|_2^2 \le \frac{1}{\sigma_{\min,\mathrm{patch}}^2} \cdot \|\mathbf r_1 - \mathbf r_2\|_2^2
@@ -1515,7 +1527,6 @@ The proof is a direct application of the definition of $\Delta_{\text{direct}}$ 
 
 Let $\mathcal S$ be a fixed swarm state with alive set $\mathcal A$ of size $k \ge 1$. Let $\mathbf r_1$ and $\mathbf r_2$ be two raw value vectors. The squared Euclidean norm of the mean shift error component, $\Delta_{\text{mean}} = ((\mu_2 - \mu_1) / \sigma'_1) \cdot \mathbf{1}$, is bounded as follows:
 
-Referenced by {prf:ref}`unlabeled-proof-1047`.
 
 $$
 \|\Delta_{\text{mean}}\|_2^2 \le \frac{k \cdot (L_{\mu,M}^{\mathrm{Sasaki}}(k))^2}{\sigma_{\min,\mathrm{patch}}^2} \cdot \|\mathbf r_1 - \mathbf r_2\|_2^2
@@ -1574,7 +1585,6 @@ The proof combines the definition of the mean shift component with the axiomatic
 
 Let $\mathcal S$ be a fixed swarm state with alive set $\mathcal A$ of size $k \ge 1$. Let $\mathbf r_1$ and $\mathbf r_2$ be two raw value vectors with components bounded by $V_{\max}^{(R)}$. The squared Euclidean norm of the denominator shift error component, $\Delta_{\text{denom}} = \mathbf z_2 \cdot ((\sigma'_2 - \sigma'_1) / \sigma'_1)$, is bounded as follows:
 
-Referenced by {prf:ref}`unlabeled-proof-1047`.
 
 $$
 \|\Delta_{\text{denom}}\|_2^2 \le k \left( \frac{2V_{\max}^{(R)}}{\sigma_{\min,\mathrm{patch}}} \right)^2 \left( \frac{L_{\sigma',M}^{\mathrm{Sasaki}}(k)}{\sigma_{\min,\mathrm{patch}}} \right)^2 \cdot \|\mathbf r_1 - \mathbf r_2\|_2^2
@@ -1694,8 +1704,19 @@ $$
 $$
 
 **Step 5: Final Assembly.**
-Substituting the bound from Step 4 into the inequality from Step 3 yields the final result. The constant of proportionality in the theorem statement absorbs the Lipschitz constant of the reward function. For clarity, we can redefine the total coefficient to include this factor, or leave it explicit as shown here. Let's define a new total coefficient to match the theorem statement:
-$C_{V,\mathrm{total}}^{\mathrm{Sasaki}} := 3 \cdot \left( C_{V,\mathrm{direct}}^{\mathrm{sq}} + \dots \right) \cdot (L_R^{\mathrm{Sasaki}})^2$. This completes the proof.
+Substituting the bound from Step 4 into the inequality from Step 3:
+
+$$
+\|z_1 - z_2\|_2^2 \le 3 \left( C_{V,\mathrm{direct}}^{\mathrm{sq}} + C_{V,\mathrm{mean}}^{\mathrm{sq}} + C_{V,\mathrm{denom}}^{\mathrm{sq}} \right) \cdot \left(L_R^{\mathrm{Sasaki}}\right)^2 \Delta_{\mathrm{pos,Sasaki}}^2(\mathcal S_1,\mathcal S_2)
+$$
+
+Defining the **Total Value Error Coefficient** as
+
+$$
+C_{V,\mathrm{total}}^{\mathrm{Sasaki}}(\mathcal S) := 3 \left( C_{V,\mathrm{direct}}^{\mathrm{sq}}(\mathcal S) + C_{V,\mathrm{mean}}^{\mathrm{sq}}(\mathcal S) + C_{V,\mathrm{denom}}^{\mathrm{sq}}(\mathcal S) \right) \cdot \left(L_R^{\mathrm{Sasaki}}\right)^2
+$$
+
+completes the proof.
 
 **Q.E.D.**
 :::
@@ -1707,7 +1728,7 @@ $C_{V,\mathrm{total}}^{\mathrm{Sasaki}} := 3 \cdot \left( C_{V,\mathrm{direct}}^
 
 Let $\mathcal S$ be a fixed swarm state with alive set $\mathcal A$ of size $k \ge 1$, and let $M$ be the chosen **Swarm Aggregation Operator**. The coefficients for the bounds on the squared value error are defined as follows:
 
-Referenced by {prf:ref}`unlabeled-proof-1047` and {prf:ref}`thm-sasaki-standardization-value-sq`.
+Referenced by {prf:ref}`thm-sasaki-standardization-value-sq`.
 
 1.  **The Squared Direct Shift Coefficient ($C_{V,\mathrm{direct}}^{\mathrm{sq}}(\mathcal S)$):**
 
@@ -2066,7 +2087,7 @@ $$
 $$
 
 **Step 2: Bounding the Squared Value Error Term (`||E_V||_2^2`).**
-The first term is a pure value error for the fixed swarm structure $\mathcal S_1$. We apply Theorem {prf:ref}`thm-sasaki-standardization-value`:
+The first term is a pure value error for the fixed swarm structure $\mathcal S_1$. We apply Theorem {prf:ref}`thm-sasaki-standardization-value-sq`:
 
 $$
 \|E_V\|_2^2 \le C_{V,\mathrm{total}}^{\mathrm{Sasaki}}(\mathcal S_1) \cdot \|\mathbf r_1 - \mathbf r_2\|_2^2
@@ -2154,8 +2175,8 @@ The inequality is precisely the statement of Theorem {prf:ref}`thm-sasaki-standa
 | $\kappa_{\mathrm{drift}}^{\mathrm{Sasaki}}(C)$                                                             | $\sqrt{\tau^2(\tau C_{\mathrm{force}}(C)+\varepsilon_{\mathrm{cap}}^{\max}(C)+V_{\mathrm{alg}})^2+\lambda_v(\tau C_{\mathrm{force}}(C)+\varepsilon_{\mathrm{cap}}^{\max}(C))^2}$                                                                                                                                             | {prf:ref}`lem-euclidean-geometric-consistency`   |
 | $\kappa_{\mathrm{anisotropy}}^{\mathrm{Sasaki}}(C)$                                                        | $[(1-\rho_*(C))c_d(C)]^{-1}$                                                                                                                                                                                                                                                                                                 | {prf:ref}`lem-euclidean-geometric-consistency`   |
 | $L_{\mu,M}^{\mathrm{Sasaki}}(k)$, $L_{m_2,M}^{\mathrm{Sasaki}}(k)$                                         | $k^{-1/2}$, $2V_{\max}/k^{1/2}$ (with $V_{\max}=V_{\max}^{(R)}$ or $V_{\max}^{(d)}$)                                                                                                                                                                                                                                         | {prf:ref}`lem-sasaki-aggregator-lipschitz`       |
-| $C_{V,\mathrm{total}}^{\mathrm{Sasaki}}$                                                                   | $L_R^{\mathrm{Sasaki}}\left(\frac{2}{\sigma_{\min,\mathrm{patch}}}+\frac{8(V_{\mathrm{max}}^{(R)})^2}{\sigma_{\min,\mathrm{patch}}^2}L_{\sigma'_{\mathrm{patch}}}\right)$                                                                                                                                                    | {prf:ref}`thm-sasaki-standardization-value`      |
-| $C_{S,\mathrm{direct}}^{\mathrm{Sasaki}}(k_{\min})$, $C_{S,\mathrm{indirect}}^{\mathrm{Sasaki}}(k_{\min})$ | $\frac{V_{\mathrm{max}}^{(R)}}{\sigma_{\min,\mathrm{patch}}}+\frac{2(V_{\mathrm{max}}^{(R)})^2}{\sigma_{\min,\mathrm{patch}}^2}$, $\frac{3V_{\mathrm{max}}^{(R)}}{\sigma_{\min,\mathrm{patch}}k_{\min}}+\frac{6(V_{\mathrm{max}}^{(R)})^2}{\sigma_{\min,\mathrm{patch}}^2k_{\min}}L_{\sigma',M}^{\mathrm{Sasaki}}(k_{\min})$ | {prf:ref}`thm-sasaki-standardization-structural` |
+| $C_{V,\mathrm{total}}^{\mathrm{Sasaki}}$                                                                   | $L_R^{\mathrm{Sasaki}}\left(\frac{2}{\sigma_{\min,\mathrm{patch}}}+\frac{8(V_{\mathrm{max}}^{(R)})^2}{\sigma_{\min,\mathrm{patch}}^2}L_{\sigma'_{\mathrm{patch}}}\right)$                                                                                                                                                    | {prf:ref}`thm-sasaki-standardization-value-sq`      |
+| $C_{S,\mathrm{direct}}^{\mathrm{Sasaki}}(k_{\min})$, $C_{S,\mathrm{indirect}}^{\mathrm{Sasaki}}(k_{\min})$ | $\frac{V_{\mathrm{max}}^{(R)}}{\sigma_{\min,\mathrm{patch}}}+\frac{2(V_{\mathrm{max}}^{(R)})^2}{\sigma_{\min,\mathrm{patch}}^2}$, $\frac{3V_{\mathrm{max}}^{(R)}}{\sigma_{\min,\mathrm{patch}}k_{\min}}+\frac{6(V_{\mathrm{max}}^{(R)})^2}{\sigma_{\min,\mathrm{patch}}^2k_{\min}}L_{\sigma',M}^{\mathrm{Sasaki}}(k_{\min})$ | {prf:ref}`thm-sasaki-standardization-structural-sq` |
 | $L_{\mathrm{death}}^{\mathrm{Sasaki}}(C)$                                                                  | $2\big(p_{\mathrm{aff}}+\rho_*(C) q_{\mathrm{dir}}(C)\big) C_{\partial} L_{\mathrm{flow}}$                                                                                                                                                                                                                                   | {prf:ref}`lem-euclidean-boundary-holder`         |
 
 Note. The mean-square continuity bound $F_{d,ms}^{\mathrm{Sasaki}}$ retains both $d_{\mathrm{Disp},\mathcal Y}^{\mathrm{Sasaki}}(\mathcal S_1,\mathcal S_2)^2$ and $d_{\mathrm{Disp},\mathcal Y}^{\mathrm{Sasaki}}(\mathcal S_1,\mathcal S_2)^4$ contributions through the $n_c$ and $n_c^2$ terms in Theorem {prf:ref}`thm-sasaki-distance-ms`; the bound is therefore a composite Lipschitz–Hölder function of the dispersion distance rather than purely Lipschitz.
@@ -2193,7 +2214,7 @@ The Kinetic Euclidean Gas is a valid Fragile Gas because every axiom required by
 - **Noise validity & growth control:** Lemma {prf:ref}`lem-euclidean-perturb-moment` bounds the second moment of the kinetic perturbation by a quadratic function of $\|x\|$ and $\|v\|$ and confirms the Feller property of the capped kernel.
 - **Geometric constants & non-degeneracy:** Lemma {prf:ref}`lem-euclidean-geometric-consistency` supplies drift and anisotropy bounds that are uniform on compact subsets of the state space, while the parameter choices $\sigma_v^2>0$, $\sigma_x>0$, and random rotations $R_k$ in the inelastic collision model keep the noise non-degenerate.
 - **Measurement operator continuity:** Lemma {prf:ref}`thm-sasaki-distance-ms` proves the mean-square continuity of the Sasaki distance measurement with explicit error function $F_{d,ms}^{\mathrm{Sasaki}}$.
-- **Deterministic operator pipeline:** Lemma {prf:ref}`lem-sasaki-aggregator-lipschitz` together with Theorems {prf:ref}`thm-sasaki-standardization-value` and {prf:ref}`thm-sasaki-standardization-structural` (culminating in Lemma {prf:ref}`lem-sasaki-standardization-lipschitz`) provide Sasaki-specific Lipschitz and Feller bounds for the empirical aggregators, patched standardization, and logistic rescale, so the deterministic stage respects the dispersion metric ({prf:ref}`def-assumption-instep-independence`).
+- **Deterministic operator pipeline:** Lemma {prf:ref}`lem-sasaki-aggregator-lipschitz` together with Theorems {prf:ref}`thm-sasaki-standardization-value-sq` and {prf:ref}`thm-sasaki-standardization-structural-sq` (culminating in Lemma {prf:ref}`lem-sasaki-standardization-lipschitz`) provide Sasaki-specific Lipschitz and Feller bounds for the empirical aggregators, patched standardization, and logistic rescale, so the deterministic stage respects the dispersion metric ({prf:ref}`def-assumption-instep-independence`).
 - **Viability:** Section 4.1 re-establishes guaranteed revival and boundary regularity via Lemma {prf:ref}`lem-euclidean-boundary-holder`.
 
 Since all axioms are satisfied, $\Psi_{\mathcal F_{\mathrm{EG}}}$ is a Feller Markov kernel on the alive-swarm space and the Euclidean Gas realises a Fragile Gas.
@@ -2206,7 +2227,7 @@ Since all axioms are satisfied, $\Psi_{\mathcal F_{\mathrm{EG}}}$ is a Feller Ma
 | Reward Regularity ({prf:ref}`def-axiom-reward-regularity`) | Lemma {prf:ref}`lem-euclidean-reward-regularity` |
 | Environmental Richness ({prf:ref}`def-axiom-environmental-richness`) | Lemma {prf:ref}`lem-euclidean-richness` |
 | Measurement Stability (patched standardisation & logistic rescale) | Lemmas {prf:ref}`lem-sasaki-aggregator-lipschitz`, {prf:ref}`lem-sasaki-standardization-lipschitz` |
-| Geometric Consistency ({prf:ref}`def-axiom-geometric-consistency`) | Lemma {prf:ref}`lem-euclidean-geometric-consistency` |
+| Geometric Consistency ({prf:ref}`axiom-geometric-consistency`) | Lemma {prf:ref}`lem-euclidean-geometric-consistency` |
 | Patched Standardisation ({prf:ref}`def-statistical-properties-measurement`) | Algorithm {prf:ref}`alg-euclidean-gas` and Section 3.2 |
 | Boundary Regularity | Lemma {prf:ref}`lem-euclidean-boundary-holder` |
 ````
@@ -2365,7 +2386,7 @@ Write the single-step operator as the composition of the cemetery check (Stage 1
 
 1. **Stage 1 (cemetery absorption).** The map $\mathcal S\mapsto\delta_{\mathcal S}$ is continuous. The absorbing branch fires only when $\mathcal A(\mathcal S)=\varnothing$, which is a closed condition, so Stage 1 is Feller.
 
-2. **Stage 2 (measurement and potential pipeline).** Conditional on $\mathcal S$, the companion draws $(c_{\mathrm{pot}}(i))$ are sampled from the product coupling $\mathbb C(\mathcal S)$, which depends continuously on $\mathcal S$ in the dispersion metric by Lemma {prf:ref}`lem-sasaki-single-walker-positional-error`. Lemma {prf:ref}`thm-sasaki-distance-ms` bounds the mean-square variation of the companion distances, and Lemma {prf:ref}`lem-sasaki-aggregator-lipschitz` together with Theorems {prf:ref}`thm-sasaki-standardization-value` and {prf:ref}`thm-sasaki-standardization-structural` show that the patched standardisation and logistic rescale operators depend continuously on the raw values. Consequently the kernel that outputs $(\mathbf r,\mathbf d,\mathbf V_{\text{fit}})$ is Feller.
+2. **Stage 2 (measurement and potential pipeline).** Conditional on $\mathcal S$, the companion draws $(c_{\mathrm{pot}}(i))$ are sampled from the product coupling $\mathbb C(\mathcal S)$, which depends continuously on $\mathcal S$ in the dispersion metric by Lemma {prf:ref}`lem-sasaki-single-walker-positional-error`. Lemma {prf:ref}`thm-sasaki-distance-ms` bounds the mean-square variation of the companion distances, and Lemma {prf:ref}`lem-sasaki-aggregator-lipschitz` together with Theorems {prf:ref}`thm-sasaki-standardization-value-sq` and {prf:ref}`thm-sasaki-standardization-structural-sq` show that the patched standardisation and logistic rescale operators depend continuously on the raw values. Consequently the kernel that outputs $(\mathbf r,\mathbf d,\mathbf V_{\text{fit}})$ is Feller.
 
 3. **Stage 3 (Clone/Persist gate).** The Bernoulli probabilities $p_i(\mathcal S)$ governing the Clone/Persist decision are continuous functions of the standardized scores produced in Stage 2. Conditional on cloning, the jitter distribution is Gaussian with fixed covariance; the resulting pushforward through the 1-Lipschitz squashing map $\psi_v$ is Feller by Lemma {prf:ref}`lem-squashing-properties-generic`. Therefore the Stage-3 kernel is a finite mixture of Feller kernels with continuous weights and is itself Feller.
 

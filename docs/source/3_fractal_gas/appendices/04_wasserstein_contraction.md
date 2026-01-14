@@ -41,7 +41,7 @@ Wasserstein-2 contraction of the cloning operator is not merely a technical resu
 
 The Foster-Lyapunov drift analysis (Chapter 12 of [03_cloning](03_cloning)) combines these partial contractions to prove exponential convergence to a unique quasi-stationary distribution (QSD). Our Wasserstein-2 result provides the geometric foundation for this convergence.
 
-**Complementary to KL-Convergence**: An alternative convergence analysis using Kullback-Leibler (KL) divergence and log-Sobolev inequalities (LSI) is developed in [09_kl_convergence](09_kl_convergence). The KL approach may yield faster convergence rates via entropy methods, while the Wasserstein-2 approach provides geometric intuition and explicit N-uniform constants. Both frameworks are valid and mutually reinforcing—the existence of multiple independent proofs strengthens confidence in the Fragile Gas's stability.
+**Complementary to KL-Convergence**: An alternative convergence analysis using Kullback-Leibler (KL) divergence and log-Sobolev inequalities (LSI) is developed in [15_kl_convergence](15_kl_convergence). The KL approach may yield faster convergence rates via entropy methods, while the Wasserstein-2 approach provides geometric intuition and explicit N-uniform constants. Both frameworks are valid and mutually reinforcing—the existence of multiple independent proofs strengthens confidence in the Fragile Gas's stability.
 
 :::{important}
 **Why N-Uniformity is Non-Negotiable**
@@ -1093,7 +1093,7 @@ For $\kappa_W = 5 \times 10^{-5}$:
 
 ### 8.3. Comparison with KL-Convergence
 
-The KL-convergence framework ([09_kl_convergence](09_kl_convergence)) may provide faster convergence rates via entropy methods. The Wasserstein-2 contraction proven here is complementary:
+The KL-convergence framework ([15_kl_convergence](15_kl_convergence)) may provide faster convergence rates via entropy methods. The Wasserstein-2 contraction proven here is complementary:
 
 - **W_2 contraction**: Geometric, explicit constants, suitable for mean-field limit
 - **KL contraction**: Entropy-based, potentially faster, uses LSI theory
@@ -1145,7 +1145,7 @@ This result enables:
 
 **Secondary**:
 - [01_fragile_gas_framework.md](../docs/source/01_fragile_gas_framework.md): Axioms
-- [09_kl_convergence.md](../docs/source/10_kl_convergence/10_kl_convergence.md): Alternative convergence analysis
+- [15_kl_convergence.md](../docs/source/10_kl_convergence/10_kl_convergence.md): Alternative convergence analysis
 
 ---
 
