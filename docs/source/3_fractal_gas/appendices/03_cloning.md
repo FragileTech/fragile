@@ -6937,13 +6937,13 @@ We now bound the contribution from walkers that are alive in both swarms (the st
 For walkers in the stably alive set ({prf:ref}`def-alive-dead-sets`) $I_{11}$, the expected change in their contribution to variance satisfies:
 
 $$
-\mathbb{E}_{\text{clone}}\left[\sum_{i \in I_{11}} \sum_{k=1,2} \left(\|\delta'_{x,k,i}\|^2 - \|\delta_{x,k,i}\|^2\right)\right] \leq -\frac{\chi(\epsilon)}{2N} \cdot V_{\text{struct}} + \frac{g_{\max}(\epsilon)}{N} + C_{\text{pers}}
+\mathbb{E}_{\text{clone}}\left[\frac{1}{N}\sum_{i \in I_{11}} \sum_{k=1,2} \left(\|\delta'_{x,k,i}\|^2 - \|\delta_{x,k,i}\|^2\right)\right] \leq -\frac{\chi(\epsilon)}{4} V_{\text{struct}} + \frac{g_{\max}(\epsilon)}{4} + C_{\text{pers}}
 
 $$
 
-where $\chi(\epsilon) > 0$ and $g_{\max}(\epsilon)$ are the Keystone constants ({prf:ref}`lem-quantitative-keystone`), and $C_{\text{pers}}$ accounts for persisting walkers.
+where $\chi(\epsilon) > 0$ and $g_{\max}(\epsilon)$ are the Keystone constants ({prf:ref}`lem-quantitative-keystone`), and $C_{\text{pers}}$ accounts for persisting walkers and bounded jitter effects.
 
-**Note on normalization:** The left side is an **un-normalized sum** over walkers. The Keystone Lemma (8.1.1) provides an N-normalized bound. We explicitly track the $\frac{1}{N}$ conversion factor in the proof below.
+**Note on normalization:** The left side is **N-normalized** to match $V_{\text{Var},x}$. In the proof we temporarily scale by $N$ to apply the Keystone Lemma and then divide back, so all constants remain N-uniform.
 :::
 
 :::{prf:proof}
@@ -7024,6 +7024,13 @@ $$
 
 $$
 
+Dividing by $N$ to match the variance normalization:
+
+$$
+\mathbb{E}_{\text{clone}}\left[\frac{1}{N}\sum_{i \in I_{11}} \sum_{k=1,2} \left(\|\delta'_{x,k,i}\|^2 - \|\delta_{x,k,i}\|^2\right)\right] \leq -\frac{\chi(\epsilon)}{4} V_{\text{struct}} + \frac{g_{\max}(\epsilon)}{4} + C_{\text{jitter}}
+
+$$
+
 **Case 2: Walker persists in both swarms**
 
 For walkers that persist in both swarms, their centered positions change only due to barycenter shifts:
@@ -7035,7 +7042,7 @@ $$
 
 The barycenter shift is bounded by the number of cloning events, yielding a bounded contribution $C_{\text{pers}}$.
 
-Combining both cases yields the stated bound.
+Combining both cases and absorbing the bounded jitter term into $C_{\text{pers}}$ yields the stated bound.
 
 **Q.E.D.**
 :::
@@ -7206,17 +7213,17 @@ Combining Lemmas 10.3.4 and 10.3.5:
 $$
 \begin{aligned}
 \mathbb{E}_{\text{clone}}[\Delta V_{\text{Var},x}] &= \sum_{k=1,2} \mathbb{E}[\Delta V_{\text{Var},x}^{(k,\text{alive})} + \Delta V_{\text{Var},x}^{(k,\text{status})}] \\
-&\leq -\frac{\chi(\epsilon)}{2N} V_{\text{struct}} + \frac{g_{\max}(\epsilon)}{N} + C_{\text{pers}} + \frac{8 D_{\text{valid}}^2}{N} \sum_{k} |\mathcal{D}(S_k)|
+&\leq -\frac{\chi(\epsilon)}{4} V_{\text{struct}} + \frac{g_{\max}(\epsilon)}{4} + C_{\text{pers}} + \frac{8 D_{\text{valid}}^2}{N} \sum_{k} |\mathcal{D}(S_k)|
 \end{aligned}
 
 $$
 
 **Step 1: Relate $V_{\text{struct}}$ to $V_{\text{Var},x}$**
 
-From {prf:ref}`lem-sx-implies-variance`, if the structural error satisfies $V_{\text{struct}} \geq \frac{1}{2} V_{\text{Var},x}$ (which holds when both swarms have similar numbers of alive walkers), then:
+From {prf:ref}`lem-sx-implies-variance`, if the structural error satisfies $V_{\text{struct}} \geq c_{\text{struct}} V_{\text{Var},x}$ for some N-independent $c_{\text{struct}} > 0$ (e.g., $c_{\text{struct}} = \frac{1}{2}$ when both swarms have similar numbers of alive walkers), then:
 
 $$
-\mathbb{E}_{\text{clone}}[\Delta V_{\text{Var},x}] \leq -\frac{\chi(\epsilon)}{4N} V_{\text{Var},x} + C_{\text{total}}
+\mathbb{E}_{\text{clone}}[\Delta V_{\text{Var},x}] \leq -\frac{\chi(\epsilon)}{4} c_{\text{struct}} V_{\text{Var},x} + C_{\text{total}}
 
 $$
 
@@ -7227,11 +7234,11 @@ where $C_{\text{total}}$ absorbs all bounded terms.
 Define:
 
 $$
-\kappa_x := \frac{\chi(\epsilon)}{4N} \cdot \frac{1}{\text{(typical variance)}}
+\kappa_x := \frac{\chi(\epsilon)}{4} c_{\text{struct}}
 
 $$
 
-After rescaling and using the fact that $V_{\text{Var},x}$ is $N$-normalized:
+After rescaling and using the fact that $V_{\text{Var},x}$ is $N$-normalized (so the $N$-factors cancel in the Keystone bound):
 
 $$
 \mathbb{E}_{\text{clone}}[V_{\text{Var},x}(S')] \leq (1 - \kappa_x) V_{\text{Var},x}(S) + C_x
@@ -8522,10 +8529,10 @@ $$
 
 $$
 
-Combined with the bounded displacement per desynchronized event:
+Each desynchronized event perturbs a single empirical atom of mass $1/N$, so its contribution to $V_{\text{struct}}$ scales as $D_{\text{valid}}^2 / N$. Combined with the bound above:
 
 $$
-\mathbb{E}[\Delta V_{\text{struct}}] \leq N \cdot L_{\text{clone}} \cdot d_{\text{Disp}}(S_1, S_2) \cdot D_{\text{valid}}^2 + C_{\text{jitter}}
+\mathbb{E}[\Delta V_{\text{struct}}] \leq \frac{1}{N} \sum_{i=1}^N |p_{1,i} - p_{2,i}| \cdot D_{\text{valid}}^2 + C_{\text{jitter}} \leq L_{\text{clone}} \cdot d_{\text{Disp}}(S_1, S_2) \cdot D_{\text{valid}}^2 + C_{\text{jitter}}
 
 $$
 
@@ -8541,7 +8548,7 @@ $$
 Combining the bounds from Steps 2-3:
 
 $$
-\mathbb{E}[\Delta V_W] \leq O(D_{\text{valid}}^2) + O(N \cdot d_{\text{Disp}}(S_1, S_2)) + C_{\text{jitter}}
+\mathbb{E}[\Delta V_W] \leq O(D_{\text{valid}}^2) + O(d_{\text{Disp}}(S_1, S_2)) + C_{\text{jitter}}
 
 $$
 
@@ -9068,7 +9075,7 @@ For the full publication-ready proof with detailed verification, see:
 - Complete verification of Keystone Principle causal chain (variance → structure → fitness → pressure)
 - Detailed consolidation of all five summary items with N-uniformity tracking
 - Framework dependency verification (Axioms EG-0, EG-2, EG-3, EG-4)
-- Explicit constant formulas: $\kappa_x = \chi(\epsilon)c_{\text{struct}}$, $\kappa_b = c_{\text{fit}}c_{\text{barrier}}$, $C_v = 4(1+\alpha_{\text{restitution}})^2 V_{\max}^2$
+- Explicit constant formulas: $\kappa_x = \frac{\chi(\epsilon)}{4}c_{\text{struct}}$, $\kappa_b = c_{\text{fit}}c_{\text{barrier}}$, $C_v = 4(1+\alpha_{\text{restitution}})^2 V_{\max}^2$
 - No circular reasoning verification (summary after all components proven)
 - Complete scoping of synergistic Foster-Lyapunov foundation
 :::
@@ -9080,7 +9087,7 @@ This theorem is proven by systematic consolidation and verification. The complet
 
 **Step 1 - Keystone Principle**: Chapters 5-8 establish the four-link causal chain (variance → structure → fitness → pressure) culminating in the quantitative inequality (Keystone Lemma, Lines 4669-4683). Constants $\chi(\epsilon) > 0$ and $g_{\max}(\epsilon) < \infty$ are verified as N-uniform and constructive.
 
-**Step 2 - Positional Variance Contraction**: {prf:ref}`thm-positional-variance-contraction` (Lines 6291-6293) rigorously proves the drift inequality using the Keystone Lemma as primary engine. Contraction rate $\kappa_x = \chi(\epsilon) c_{\text{struct}} > 0$ verified as N-uniform via variance decomposition.
+**Step 2 - Positional Variance Contraction**: {prf:ref}`thm-positional-variance-contraction` (Lines 6291-6293) rigorously proves the drift inequality using the Keystone Lemma as primary engine. Contraction rate $\kappa_x = \frac{\chi(\epsilon)}{4} c_{\text{struct}} > 0$ verified as N-uniform via variance decomposition.
 
 **Step 3 - Velocity Variance Bounded Expansion**: {prf:ref}`thm-velocity-variance-bounded-expansion` (Lines 6671-6673) establishes state-independent bound $C_v = 4(1 + \alpha_{\text{restitution}})^2 V_{\max}^2$ via inelastic collision analysis and {prf:ref}`axiom-velocity-regularization`.
 
