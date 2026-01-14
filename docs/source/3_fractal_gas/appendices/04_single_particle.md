@@ -292,24 +292,24 @@ with the persistence term computed by integrating the kinetic kernel based on th
 
 ## 8. Parameter Glossary
 
-| Parameter | Symbol | Role | Primary Reference |
-| :-- | :-- | :-- | :-- |
-| Algorithmic distance weight | $\lambda_{\text{alg}}$ | Balances position and velocity terms in $d_{\text{alg}}$ | {prf:ref}`def-algorithmic-distance-metric` |
-| Diversity interaction radius | $\epsilon_d$ | Controls softness of the pairing kernel | Section 3.1 |
-| Distance regularizer | $\epsilon_{\text{dist}}$ | Prevents degeneracy of $d_j$ | Section 3.2 |
-| Localization scale | $\rho$ | Chooses between global and local statistics | Section 3.3 |
-| Variance patch | $\sigma_{\text{min}}$ | Ensures positive denominators in Z-scores | Sections 3.3–4.2 |
-| Logistic bound | $A$ | Caps the rescaled channel output | Sections 3.4–4.3 |
-| Positivity floor | $\eta$ | Guarantees strictly positive channels | Sections 3.4–4.3 |
-| Reward exponent | $\alpha$ | Shapes the non-linearity of the reward channel | Section 4.3 |
-| Diversity exponent | $\beta$ | Controls sensitivity of the diversity channel | Section 3.4 |
-| Reward velocity penalty | $c_{v\_\text{reg}}$ | Penalizes high kinetic energy in $r_j$ | Section 4.1 |
-| Potential function | $U(\cdot)$ | Encodes the external energy landscape | Section 4.1 |
-| Threshold clip | $p_{\max}$ | Upper bound of the cloning probability | Section 5.2 |
-| Cloning denominator regularizer | $\epsilon_{\text{clone}}$ | Prevents division by zero in $s(i \mid j, M)$ | Section 5.1 |
-| Spatial jitter | $\sigma_x$ | Variance of positional perturbations during cloning | Section 6.1 |
-| Kinetic friction | $\gamma$ | BAOAB damping coefficient | Section 7.1 |
-| Kinetic inverse temperature | $\beta_{\text{kin}}$ | Scales the kinetic noise term | Section 7.1 |
-| Time step | $\Delta t$ | Temporal discretization of the kinetic operator | Section 7.1 |
+| Parameter | Symbol | Unit | Role | Primary Reference |
+| :-- | :-- | :-- | :-- | :-- |
+| Algorithmic distance weight | $\lambda_{\text{alg}}$ | $[\text{dimensionless}]$ | Balances position and velocity terms in $d_{\text{alg}}$ | {prf:ref}`def-algorithmic-distance-metric` |
+| Diversity interaction radius | $\epsilon_d$ | $[\text{distance}]$ | Controls softness of the pairing kernel | Section 3.1 |
+| Distance regularizer | $\epsilon_{\text{dist}}$ | $[\text{distance}]$ | Prevents degeneracy of $d_j$ | Section 3.2 |
+| Localization scale | $\rho$ | $[\text{distance}]$ | Chooses between global and local statistics | Section 3.3 |
+| Variance patch | $\sigma_{\text{min}}$ | $[\text{dimensionless}]$ | Ensures positive denominators in Z-scores | Sections 3.3–4.2 |
+| Logistic bound | $A$ | $[\text{dimensionless}]$ | Caps the rescaled channel output | Sections 3.4–4.3 |
+| Positivity floor | $\eta$ | $[\text{dimensionless}]$ | Guarantees strictly positive channels | Sections 3.4–4.3 |
+| Reward exponent | $\alpha$ | $[\text{dimensionless}]$ | Shapes the non-linearity of the reward channel | Section 4.3 |
+| Diversity exponent | $\beta$ | $[\text{dimensionless}]$ | Controls sensitivity of the diversity channel | Section 3.4 |
+| Reward velocity penalty | $c_{v\_\text{reg}}$ | $[\text{dimensionless}]$ | Penalizes high kinetic energy in $r_j$ | Section 4.1 |
+| Potential function | $U(\cdot)$ | $[\text{dimensionless}]$ | Encodes the external energy landscape | Section 4.1 |
+| Threshold clip | $p_{\max}$ | $[\text{dimensionless}]$ | Upper bound of the cloning probability | Section 5.2 |
+| Cloning denominator regularizer | $\epsilon_{\text{clone}}$ | $[\text{dimensionless}]$ | Prevents division by zero in $s(i \mid j, M)$ | Section 5.1 |
+| Spatial jitter | $\sigma_x$ | $[\text{distance}]$ | Variance of positional perturbations during cloning | Section 6.1 |
+| Kinetic friction | $\gamma$ | $[1/\text{time}]$ | BAOAB damping coefficient | Section 7.1 |
+| Kinetic inverse temperature | $\beta_{\text{kin}}$ | $[\text{dimensionless}]$ | Scales the kinetic noise term | Section 7.1 |
+| Time step | $\Delta t$ | $[\text{time}]$ | Temporal discretization of the kinetic operator | Section 7.1 |
 
 The table collects the parameters that appear explicitly in the observable stack, enabling traceability between algorithmic implementation and the formal probability objects derived above.

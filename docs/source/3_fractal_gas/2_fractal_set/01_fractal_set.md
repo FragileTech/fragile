@@ -306,69 +306,69 @@ Each node $n_{i,t} \in \mathcal{N}$ carries the following scalar attributes:
 
 **Identity attributes:**
 
-| Attribute | Symbol | Type | Description |
-|-----------|--------|------|-------------|
-| Walker ID | $\mathrm{id}(n)$ | $\mathbb{Z}_+$ | Unique identifier for walker |
-| Timestep | $t(n)$ | $\mathbb{Z}_{\geq 0}$ | Discrete time index |
-| Node ID | $\mathrm{nid}(n)$ | $\mathbb{Z}_+$ | Unique identifier for node |
+| Attribute | Symbol | Type | Unit | Description |
+|-----------|--------|------|------|-------------|
+| Walker ID | $\mathrm{id}(n)$ | $\mathbb{Z}_+$ | [count] | Unique identifier for walker |
+| Timestep | $t(n)$ | $\mathbb{Z}_{\geq 0}$ | [count] | Discrete time index |
+| Node ID | $\mathrm{nid}(n)$ | $\mathbb{Z}_+$ | [count] | Unique identifier for node |
 
 **Temporal attributes:**
 
-| Attribute | Symbol | Type | Description |
-|-----------|--------|------|-------------|
-| Proper time | $\tau(n)$ | $\mathbb{R}_{\geq 0}$ | Continuous time: $\tau = t \cdot \Delta t$ |
-| Timestep duration | $\Delta t$ | $\mathbb{R}_{>0}$ | Time between consecutive steps |
+| Attribute | Symbol | Type | Unit | Description |
+|-----------|--------|------|------|-------------|
+| Proper time | $\tau(n)$ | $\mathbb{R}_{\geq 0}$ | [time] | Continuous time: $\tau = t \cdot \Delta t$ |
+| Timestep duration | $\Delta t$ | $\mathbb{R}_{>0}$ | [time] | Time between consecutive steps |
 
 **Status attributes:**
 
-| Attribute | Symbol | Type | Description |
-|-----------|--------|------|-------------|
-| Alive flag | $s(n)$ | $\{0, 1\}$ | 1 if walker alive at this timestep, 0 otherwise |
-| Clone source | $c(n)$ | $\mathbb{Z}_+ \cup \{\bot\}$ | ID of cloning source if cloned this step, $\bot$ otherwise |
+| Attribute | Symbol | Type | Unit | Description |
+|-----------|--------|------|------|-------------|
+| Alive flag | $s(n)$ | $\{0, 1\}$ | [boolean] | 1 if walker alive at this timestep, 0 otherwise |
+| Clone source | $c(n)$ | $\mathbb{Z}_+ \cup \{\bot\}$ | [count] | ID of cloning source if cloned this step, $\bot$ otherwise |
 
 **Energy attributes:**
 
-| Attribute | Symbol | Type | Description |
-|-----------|--------|------|-------------|
-| Kinetic energy | $E_{\mathrm{kin}}(n)$ | $\mathbb{R}_{\geq 0}$ | $\frac{1}{2}\|v\|^2$ at this node |
-| Potential energy | $U(n)$ | $\mathbb{R}$ | Potential energy $U(x)$ at position |
-| Total energy | $E(n)$ | $\mathbb{R}$ | $E_{\mathrm{kin}}(n) + U(n)$ |
+| Attribute | Symbol | Type | Unit | Description |
+|-----------|--------|------|------|-------------|
+| Kinetic energy | $E_{\mathrm{kin}}(n)$ | $\mathbb{R}_{\geq 0}$ | [energy] | $\frac{1}{2}\|v\|^2$ at this node |
+| Potential energy | $U(n)$ | $\mathbb{R}$ | [energy] | Potential energy $U(x)$ at position |
+| Total energy | $E(n)$ | $\mathbb{R}$ | [energy] | $E_{\mathrm{kin}}(n) + U(n)$ |
 
 **Fitness attributes:**
 
-| Attribute | Symbol | Type | Description |
-|-----------|--------|------|-------------|
-| Fitness | $\Phi(n)$ | $\mathbb{R}_{\geq 0}$ | Objective function value $\Phi(x)$ |
-| Virtual reward | $V_{\mathrm{fit}}(n)$ | $\mathbb{R}$ | Localized fitness potential $V_{\mathrm{fit}}[f_k, \rho](x)$ |
-| Reward signal | $r(n)$ | $\mathbb{R}$ | Instantaneous reward (if applicable) |
+| Attribute | Symbol | Type | Unit | Description |
+|-----------|--------|------|------|-------------|
+| Fitness | $\Phi(n)$ | $\mathbb{R}_{\geq 0}$ | [dimensionless] | Objective function value $\Phi(x)$ |
+| Virtual reward | $V_{\mathrm{fit}}(n)$ | $\mathbb{R}$ | [dimensionless] | Localized fitness potential $V_{\mathrm{fit}}[f_k, \rho](x)$ |
+| Reward signal | $r(n)$ | $\mathbb{R}$ | [dimensionless] | Instantaneous reward (if applicable) |
 
 **Localized statistics:**
 
-| Attribute | Symbol | Type | Description |
-|-----------|--------|------|-------------|
-| Local mean | $\mu_\rho(n)$ | $\mathbb{R}$ | Kernel-weighted mean fitness around $x$ |
-| Local std | $\sigma_\rho(n)$ | $\mathbb{R}_{\geq 0}$ | Kernel-weighted std of fitness |
-| Local derivative | $\sigma'_\rho(n)$ | $\mathbb{R}$ | Derivative of $\sigma_\rho$ w.r.t. $\rho$ |
-| Partition function | $Z_\rho(n)$ | $\mathbb{R}_{>0}$ | Normalizing constant for kernel |
+| Attribute | Symbol | Type | Unit | Description |
+|-----------|--------|------|------|-------------|
+| Local mean | $\mu_\rho(n)$ | $\mathbb{R}$ | [dimensionless] | Kernel-weighted mean fitness around $x$ |
+| Local std | $\sigma_\rho(n)$ | $\mathbb{R}_{\geq 0}$ | [dimensionless] | Kernel-weighted std of fitness |
+| Local derivative | $\sigma'_\rho(n)$ | $\mathbb{R}$ | [1/distance] | Derivative of $\sigma_\rho$ w.r.t. $\rho$ |
+| Partition function | $Z_\rho(n)$ | $\mathbb{R}_{>0}$ | [dimensionless] | Normalizing constant for kernel |
 
 **Initial condition spinors (stored only at $t = 0$):**
 
-| Attribute | Symbol | Type | Description |
-|-----------|--------|------|-------------|
-| Initial position | $\psi_{x,0}(n)$ | $\mathbb{S}_d$ | Spinor of initial position $x_i(0)$ (only for $t(n) = 0$) |
-| Initial velocity | $\psi_{v,0}(n)$ | $\mathbb{S}_d$ | Spinor of initial velocity $v_i(0)$ (only for $t(n) = 0$) |
+| Attribute | Symbol | Type | Unit | Description |
+|-----------|--------|------|------|-------------|
+| Initial position | $\psi_{x,0}(n)$ | $\mathbb{S}_d$ | [distance] | Spinor of initial position $x_i(0)$ (only for $t(n) = 0$) |
+| Initial velocity | $\psi_{v,0}(n)$ | $\mathbb{S}_d$ | [distance/time] | Spinor of initial velocity $v_i(0)$ (only for $t(n) = 0$) |
 
 **Remark**: Initial positions and velocities are stored as spinors at $t = 0$ nodes to enable trajectory reconstruction. For $t > 0$, positions are reconstructed from displacements stored on CST edges. Alternatively, positions can be recovered from IG edge attributes which store position spinors redundantly for query efficiency.
 
 **Global parameters (constant across nodes):**
 
-| Attribute | Symbol | Type | Description |
-|-----------|--------|------|-------------|
-| Fermi energy | $\epsilon_F$ | $\mathbb{R}$ | Selection threshold parameter |
-| Viscosity | $\nu$ | $\mathbb{R}_{\geq 0}$ | Viscous coupling strength |
-| Friction | $\gamma$ | $\mathbb{R}_{\geq 0}$ | Velocity damping coefficient |
-| Localization scale | $\rho$ | $\mathbb{R}_{>0}$ | Kernel bandwidth |
-| Diffusion floor | $\epsilon_\Sigma$ | $\mathbb{R}_{>0}$ | Regularization for diffusion tensor |
+| Attribute | Symbol | Type | Unit | Description |
+|-----------|--------|------|------|-------------|
+| Fermi energy | $\epsilon_F$ | $\mathbb{R}$ | [energy] | Selection threshold parameter |
+| Viscosity | $\nu$ | $\mathbb{R}_{\geq 0}$ | [1/time] | Viscous coupling strength |
+| Friction | $\gamma$ | $\mathbb{R}_{\geq 0}$ | [1/time] | Velocity damping coefficient |
+| Localization scale | $\rho$ | $\mathbb{R}_{>0}$ | [distance] | Kernel bandwidth |
+| Diffusion floor | $\epsilon_\Sigma$ | $\mathbb{R}_{>0}$ | [dimensionless] | Regularization for diffusion tensor |
 :::
 
 ### 2.3 Frame-Invariance of Node Data
@@ -488,58 +488,58 @@ Each CST edge $e = (n_{i,t}, n_{i,t+1}) \in E_{\mathrm{CST}}$ carries the follow
 
 **Identity attributes:**
 
-| Attribute | Symbol | Type | Description |
-|-----------|--------|------|-------------|
-| Walker ID | $\mathrm{id}(e)$ | $\mathbb{Z}_+$ | Walker this edge belongs to |
-| Start timestep | $t(e)$ | $\mathbb{Z}_{\geq 0}$ | Timestep of source node |
-| Edge ID | $\mathrm{eid}(e)$ | $\mathbb{Z}_+$ | Unique edge identifier |
+| Attribute | Symbol | Type | Unit | Description |
+|-----------|--------|------|------|-------------|
+| Walker ID | $\mathrm{id}(e)$ | $\mathbb{Z}_+$ | [count] | Walker this edge belongs to |
+| Start timestep | $t(e)$ | $\mathbb{Z}_{\geq 0}$ | [count] | Timestep of source node |
+| Edge ID | $\mathrm{eid}(e)$ | $\mathbb{Z}_+$ | [count] | Unique edge identifier |
 
 **Velocity spinors:**
 
-| Attribute | Symbol | Type | Description |
-|-----------|--------|------|-------------|
-| Initial velocity | $\psi_{v,t}(e)$ | $\mathbb{S}_d$ | Spinor of $v_i(t)$ |
-| Final velocity | $\psi_{v,t+1}(e)$ | $\mathbb{S}_d$ | Spinor of $v_i(t+1)$ |
-| Velocity increment | $\psi_{\Delta v}(e)$ | $\mathbb{S}_d$ | Spinor of $\Delta v = v_i(t+1) - v_i(t)$ |
+| Attribute | Symbol | Type | Unit | Description |
+|-----------|--------|------|------|-------------|
+| Initial velocity | $\psi_{v,t}(e)$ | $\mathbb{S}_d$ | [distance/time] | Spinor of $v_i(t)$ |
+| Final velocity | $\psi_{v,t+1}(e)$ | $\mathbb{S}_d$ | [distance/time] | Spinor of $v_i(t+1)$ |
+| Velocity increment | $\psi_{\Delta v}(e)$ | $\mathbb{S}_d$ | [distance/time] | Spinor of $\Delta v = v_i(t+1) - v_i(t)$ |
 
 **Position spinor:**
 
-| Attribute | Symbol | Type | Description |
-|-----------|--------|------|-------------|
-| Displacement | $\psi_{\Delta x}(e)$ | $\mathbb{S}_d$ | Spinor of $\Delta x = x_i(t+1) - x_i(t)$ |
+| Attribute | Symbol | Type | Unit | Description |
+|-----------|--------|------|------|-------------|
+| Displacement | $\psi_{\Delta x}(e)$ | $\mathbb{S}_d$ | [distance] | Spinor of $\Delta x = x_i(t+1) - x_i(t)$ |
 
 **Force spinors:**
 
-| Attribute | Symbol | Type | Description |
-|-----------|--------|------|-------------|
-| Stable force | $\psi_{\mathbf{F}_{\mathrm{stable}}}(e)$ | $\mathbb{S}_d$ | Spinor of $\mathbf{F}_{\mathrm{stable}}(x_i)$ |
-| Adaptive force | $\psi_{\mathbf{F}_{\mathrm{adapt}}}(e)$ | $\mathbb{S}_d$ | Spinor of $\mathbf{F}_{\mathrm{adapt}}(x_i, S)$ |
-| Viscous force | $\psi_{\mathbf{F}_{\mathrm{viscous}}}(e)$ | $\mathbb{S}_d$ | Spinor of $\mathbf{F}_{\mathrm{viscous}}(x_i, S)$ |
-| Friction force | $\psi_{\mathbf{F}_{\mathrm{friction}}}(e)$ | $\mathbb{S}_d$ | Spinor of $-\gamma v_i$ |
-| Total force | $\psi_{\mathbf{F}_{\mathrm{total}}}(e)$ | $\mathbb{S}_d$ | Spinor of $\mathbf{F}_{\mathrm{total}} = \sum \mathbf{F}_{\cdot}$ |
+| Attribute | Symbol | Type | Unit | Description |
+|-----------|--------|------|------|-------------|
+| Stable force | $\psi_{\mathbf{F}_{\mathrm{stable}}}(e)$ | $\mathbb{S}_d$ | [distance/time^2] | Spinor of $\mathbf{F}_{\mathrm{stable}}(x_i)$ |
+| Adaptive force | $\psi_{\mathbf{F}_{\mathrm{adapt}}}(e)$ | $\mathbb{S}_d$ | [distance/time^2] | Spinor of $\mathbf{F}_{\mathrm{adapt}}(x_i, S)$ |
+| Viscous force | $\psi_{\mathbf{F}_{\mathrm{viscous}}}(e)$ | $\mathbb{S}_d$ | [distance/time^2] | Spinor of $\mathbf{F}_{\mathrm{viscous}}(x_i, S)$ |
+| Friction force | $\psi_{\mathbf{F}_{\mathrm{friction}}}(e)$ | $\mathbb{S}_d$ | [distance/time^2] | Spinor of $-\gamma v_i$ |
+| Total force | $\psi_{\mathbf{F}_{\mathrm{total}}}(e)$ | $\mathbb{S}_d$ | [distance/time^2] | Spinor of $\mathbf{F}_{\mathrm{total}} = \sum \mathbf{F}_{\cdot}$ |
 
 **Diffusion spinors:**
 
-| Attribute | Symbol | Type | Description |
-|-----------|--------|------|-------------|
-| Diffusion tensor | $\psi_{\Sigma_{\mathrm{reg}}}(e)$ | $\mathbb{S}_d^{\otimes 2}$ | Spinor encoding of $\Sigma_{\mathrm{reg}}(x_i, S)$ |
-| Noise realization | $\psi_{\mathrm{noise}}(e)$ | $\mathbb{S}_d$ | Spinor of the stochastic increment $\Sigma_{\mathrm{reg}} \circ dW_i$ |
+| Attribute | Symbol | Type | Unit | Description |
+|-----------|--------|------|------|-------------|
+| Diffusion tensor | $\psi_{\Sigma_{\mathrm{reg}}}(e)$ | $\mathbb{S}_d^{\otimes 2}$ | [distance/time^{1/2}] | Spinor encoding of $\Sigma_{\mathrm{reg}}(x_i, S)$ |
+| Noise realization | $\psi_{\mathrm{noise}}(e)$ | $\mathbb{S}_d$ | [distance/time] | Spinor of the stochastic increment $\Sigma_{\mathrm{reg}} \circ dW_i$ |
 
 **Gradient spinors:**
 
-| Attribute | Symbol | Type | Description |
-|-----------|--------|------|-------------|
-| Potential gradient | $\psi_{\nabla U}(e)$ | $\mathbb{S}_d$ | Spinor of $\nabla U(x_i)$ |
-| Fitness gradient | $\psi_{\nabla \Phi}(e)$ | $\mathbb{S}_d$ | Spinor of $\nabla \Phi(x_i)$ |
-| Virtual reward gradient | $\psi_{\nabla V_{\mathrm{fit}}}(e)$ | $\mathbb{S}_d$ | Spinor of $\nabla V_{\mathrm{fit}}(x_i)$ |
+| Attribute | Symbol | Type | Unit | Description |
+|-----------|--------|------|------|-------------|
+| Potential gradient | $\psi_{\nabla U}(e)$ | $\mathbb{S}_d$ | [energy/distance] | Spinor of $\nabla U(x_i)$ |
+| Fitness gradient | $\psi_{\nabla \Phi}(e)$ | $\mathbb{S}_d$ | [1/distance] | Spinor of $\nabla \Phi(x_i)$ |
+| Virtual reward gradient | $\psi_{\nabla V_{\mathrm{fit}}}(e)$ | $\mathbb{S}_d$ | [1/distance] | Spinor of $\nabla V_{\mathrm{fit}}(x_i)$ |
 
 **Derived scalars (stored for efficiency):**
 
-| Attribute | Symbol | Type | Description |
-|-----------|--------|------|-------------|
-| Velocity norm change | $\|\Delta v\|(e)$ | $\mathbb{R}_{\geq 0}$ | $\|\Delta v\|$ |
-| Displacement norm | $\|\Delta x\|(e)$ | $\mathbb{R}_{\geq 0}$ | $\|\Delta x\|$ |
-| Timestep | $\Delta t(e)$ | $\mathbb{R}_{>0}$ | Time duration of this step |
+| Attribute | Symbol | Type | Unit | Description |
+|-----------|--------|------|------|-------------|
+| Velocity norm change | $\|\Delta v\|(e)$ | $\mathbb{R}_{\geq 0}$ | [distance/time] | $\|\Delta v\|$ |
+| Displacement norm | $\|\Delta x\|(e)$ | $\mathbb{R}_{\geq 0}$ | [distance] | $\|\Delta x\|$ |
+| Timestep | $\Delta t(e)$ | $\mathbb{R}_{>0}$ | [time] | Time duration of this step |
 :::
 
 ### 3.4 Relationship to SDE Dynamics
@@ -685,53 +685,53 @@ Each IG edge $e = (n_{i,t}, n_{j,t}) \in E_{\mathrm{IG}}$ carries the following 
 
 **Identity attributes:**
 
-| Attribute | Symbol | Type | Description |
-|-----------|--------|------|-------------|
-| Source walker | $i(e)$ | $\mathbb{Z}_+$ | Walker being influenced |
-| Target walker | $j(e)$ | $\mathbb{Z}_+$ | Walker exerting influence |
-| Timestep | $t(e)$ | $\mathbb{Z}_{\geq 0}$ | Timestep of interaction |
-| Edge ID | $\mathrm{eid}(e)$ | $\mathbb{Z}_+$ | Unique edge identifier |
+| Attribute | Symbol | Type | Unit | Description |
+|-----------|--------|------|------|-------------|
+| Source walker | $i(e)$ | $\mathbb{Z}_+$ | [count] | Walker being influenced |
+| Target walker | $j(e)$ | $\mathbb{Z}_+$ | [count] | Walker exerting influence |
+| Timestep | $t(e)$ | $\mathbb{Z}_{\geq 0}$ | [count] | Timestep of interaction |
+| Edge ID | $\mathrm{eid}(e)$ | $\mathbb{Z}_+$ | [count] | Unique edge identifier |
 
 **Position spinors:**
 
-| Attribute | Symbol | Type | Description |
-|-----------|--------|------|-------------|
-| Source position | $\psi_{x_i}(e)$ | $\mathbb{S}_d$ | Spinor of $x_i(t)$ |
-| Target position | $\psi_{x_j}(e)$ | $\mathbb{S}_d$ | Spinor of $x_j(t)$ |
-| Relative position | $\psi_{\Delta x_{ij}}(e)$ | $\mathbb{S}_d$ | Spinor of $x_j - x_i$ |
+| Attribute | Symbol | Type | Unit | Description |
+|-----------|--------|------|------|-------------|
+| Source position | $\psi_{x_i}(e)$ | $\mathbb{S}_d$ | [distance] | Spinor of $x_i(t)$ |
+| Target position | $\psi_{x_j}(e)$ | $\mathbb{S}_d$ | [distance] | Spinor of $x_j(t)$ |
+| Relative position | $\psi_{\Delta x_{ij}}(e)$ | $\mathbb{S}_d$ | [distance] | Spinor of $x_j - x_i$ |
 
 **Velocity spinors:**
 
-| Attribute | Symbol | Type | Description |
-|-----------|--------|------|-------------|
-| Source velocity | $\psi_{v_i}(e)$ | $\mathbb{S}_d$ | Spinor of $v_i(t)$ |
-| Target velocity | $\psi_{v_j}(e)$ | $\mathbb{S}_d$ | Spinor of $v_j(t)$ |
-| Relative velocity | $\psi_{\Delta v_{ij}}(e)$ | $\mathbb{S}_d$ | Spinor of $v_j - v_i$ |
+| Attribute | Symbol | Type | Unit | Description |
+|-----------|--------|------|------|-------------|
+| Source velocity | $\psi_{v_i}(e)$ | $\mathbb{S}_d$ | [distance/time] | Spinor of $v_i(t)$ |
+| Target velocity | $\psi_{v_j}(e)$ | $\mathbb{S}_d$ | [distance/time] | Spinor of $v_j(t)$ |
+| Relative velocity | $\psi_{\Delta v_{ij}}(e)$ | $\mathbb{S}_d$ | [distance/time] | Spinor of $v_j - v_i$ |
 
 **Coupling spinors:**
 
-| Attribute | Symbol | Type | Description |
-|-----------|--------|------|-------------|
-| Viscous coupling | $\psi_{\mathrm{viscous}, ij}(e)$ | $\mathbb{S}_d$ | Spinor of $\nu K_\rho(x_i, x_j)(v_j - v_i)$ |
+| Attribute | Symbol | Type | Unit | Description |
+|-----------|--------|------|------|-------------|
+| Viscous coupling | $\psi_{\mathrm{viscous}, ij}(e)$ | $\mathbb{S}_d$ | [distance/time^2] | Spinor of $\nu K_\rho(x_i, x_j)(v_j - v_i)$ |
 
 **Scalar attributes:**
 
-| Attribute | Symbol | Type | Description |
-|-----------|--------|------|-------------|
-| Kernel weight | $K_\rho(e)$ | $\mathbb{R}_{\geq 0}$ | $K_\rho(x_i, x_j) = \exp(-\|x_i - x_j\|^2 / 2\rho^2)$ |
-| Normalized weight | $w_{ij}(e)$ | $\mathbb{R}_{\geq 0}$ | $w_{ij} = K_\rho(e) / \sum_{l \in \mathcal{A}(t) \setminus \{i\}} K_\rho(x_i, x_l)$ |
-| Euclidean distance | $d_{ij}(e)$ | $\mathbb{R}_{\geq 0}$ | $\|x_i - x_j\|$ |
-| Algorithmic distance | $d_{\mathrm{alg}, ij}(e)$ | $\mathbb{R}_{\geq 0}$ | $\sqrt{\|x_i - x_j\|^2 + \lambda_{\mathrm{alg}}\|v_i - v_j\|^2}$ |
-| Phase potential | $\theta_{ij}(e)$ | $\mathbb{R}$ | $-d_{\mathrm{alg}, ij}^2 / (2\varepsilon_c^2 \hbar_{\mathrm{eff}})$ |
-| Source fitness | $\Phi_i(e)$ | $\mathbb{R}_{\geq 0}$ | $\Phi(x_i)$ |
-| Target fitness | $\Phi_j(e)$ | $\mathbb{R}_{\geq 0}$ | $\Phi(x_j)$ |
-| **Cloning potential** | $V_{\mathrm{clone}}(e)$ | $\mathbb{R}$ | $\Phi_j - \Phi_i$ (antisymmetric) |
+| Attribute | Symbol | Type | Unit | Description |
+|-----------|--------|------|------|-------------|
+| Kernel weight | $K_\rho(e)$ | $\mathbb{R}_{\geq 0}$ | [dimensionless] | $K_\rho(x_i, x_j) = \exp(-\|x_i - x_j\|^2 / 2\rho^2)$ |
+| Normalized weight | $w_{ij}(e)$ | $\mathbb{R}_{\geq 0}$ | [probability] | $w_{ij} = K_\rho(e) / \sum_{l \in \mathcal{A}(t) \setminus \{i\}} K_\rho(x_i, x_l)$ |
+| Euclidean distance | $d_{ij}(e)$ | $\mathbb{R}_{\geq 0}$ | [distance] | $\|x_i - x_j\|$ |
+| Algorithmic distance | $d_{\mathrm{alg}, ij}(e)$ | $\mathbb{R}_{\geq 0}$ | [distance] | $\sqrt{\|x_i - x_j\|^2 + \lambda_{\mathrm{alg}}\|v_i - v_j\|^2}$ |
+| Phase potential | $\theta_{ij}(e)$ | $\mathbb{R}$ | [dimensionless] | $-d_{\mathrm{alg}, ij}^2 / (2\varepsilon_c^2 \hbar_{\mathrm{eff}})$ |
+| Source fitness | $\Phi_i(e)$ | $\mathbb{R}_{\geq 0}$ | [dimensionless] | $\Phi(x_i)$ |
+| Target fitness | $\Phi_j(e)$ | $\mathbb{R}_{\geq 0}$ | [dimensionless] | $\Phi(x_j)$ |
+| **Cloning potential** | $V_{\mathrm{clone}}(e)$ | $\mathbb{R}$ | [dimensionless] | $\Phi_j - \Phi_i$ (antisymmetric) |
 
 **Complex amplitude (optional):**
 
-| Attribute | Symbol | Type | Description |
-|-----------|--------|------|-------------|
-| Coupling amplitude | $\psi_{ij}(e)$ | $\mathbb{C}$ | $\sqrt{P_{\mathrm{comp}}(i,j)} \cdot e^{i\theta_{ij}}$ |
+| Attribute | Symbol | Type | Unit | Description |
+|-----------|--------|------|------|-------------|
+| Coupling amplitude | $\psi_{ij}(e)$ | $\mathbb{C}$ | [probability^{1/2}] | $\sqrt{P_{\mathrm{comp}}(i,j)} \cdot e^{i\theta_{ij}}$ |
 :::
 
 ### 4.4 Viscous Coupling Representation
@@ -901,11 +901,11 @@ Each IA edge connects the **effect** (walker $i$ at time $t+1$) to a **cause** (
 
 Each IA edge $e = (n_{i,t+1}, n_{j,t}) \in E_{\mathrm{IA}}$ carries the following scalar attributes:
 
-| Attribute | Symbol | Type | Description |
-|-----------|--------|------|-------------|
-| Influence weight | $w_{\mathrm{IA}}(e)$ | $[0, 1]$ | Fraction of $i$'s update attributable to $j$: $w_{ij}(t)$ |
-| Clone indicator | $\chi_{\mathrm{clone}}(e)$ | $\{0, 1\}$ | 1 if $c(n_{i,t+1}) = j$ (cloned from $j$), else 0 |
-| Phase contribution | $\phi_{\mathrm{IA}}(e)$ | $\mathbb{R}$ | Phase accumulated on attribution edge |
+| Attribute | Symbol | Type | Unit | Description |
+|-----------|--------|------|------|-------------|
+| Influence weight | $w_{\mathrm{IA}}(e)$ | $[0, 1]$ | [probability] | Fraction of $i$'s update attributable to $j$: $w_{ij}(t)$ |
+| Clone indicator | $\chi_{\mathrm{clone}}(e)$ | $\{0, 1\}$ | [boolean] | 1 if $c(n_{i,t+1}) = j$ (cloned from $j$), else 0 |
+| Phase contribution | $\phi_{\mathrm{IA}}(e)$ | $\mathbb{R}$ | [dimensionless] | Phase accumulated on attribution edge |
 
 For **viscous coupling**, $w_{\mathrm{IA}}(e) = K_\rho(x_i, x_j) / \sum_{l \in \mathcal{A}(t) \setminus \{i\}} K_\rho(x_i, x_l)$.
 
@@ -1676,27 +1676,27 @@ With indexing (hash tables on $(i, t)$ pairs), lookups become $O(1)$ expected ti
 (sec-fractal-set-parameters)=
 ## Parameter Glossary
 
-| Category | Symbol | Typical Range | Description |
-|----------|--------|---------------|-------------|
-| **Dimensions** | $d$ | $2$–$10$ | State space dimension |
-| | $N$ | $10^2$–$10^4$ | Number of walkers |
-| | $T$ | $10^3$–$10^6$ | Number of timesteps |
-| **Time** | $\Delta t$ | $10^{-3}$–$10^{-1}$ | Integration timestep |
-| | $\gamma$ | $0.1$–$10$ | Friction coefficient |
-| **Localization** | $\rho$ | Problem-dependent | Kernel bandwidth |
-| | $\varepsilon$ | $\rho / 2$ | Companion selection temperature |
-| **Fitness** | $\alpha_{\mathrm{fit}}$ | $0.5$–$2$ | Reward exponent |
-| | $\beta_{\mathrm{fit}}$ | $0.5$–$2$ | Diversity exponent |
-| | $\varepsilon_{\mathrm{clone}}$ | $10^{-6}$ | Cloning score regularizer |
-| | $p_{\max}$ | $0.1$–$0.5$ | Maximum cloning probability |
-| **Cloning** | $\sigma_z$ | $\rho / 10$ | Position jitter scale |
-| | $\alpha_{\mathrm{rest}}$ | $0.5$–$0.9$ | Coefficient of restitution |
-| **Diffusion** | $\varepsilon_\Sigma$ | $10^{-4}$–$10^{-2}$ | Diffusion floor |
-| | $T_c$ | $1.0$ | Thermostat temperature |
-| **Viscosity** | $\nu$ | $0$–$1$ | Viscous coupling strength |
-| **Phase** | $\lambda_{\mathrm{alg}}$ | $0.1$–$1$ | Velocity weight in algorithmic distance |
-| | $\varepsilon_c$ | $\rho$ | Coherence scale |
-| | $\hbar_{\mathrm{eff}}$ | Problem-dependent | Effective Planck constant |
+| Category | Symbol | Typical Range | Unit | Description |
+|----------|--------|---------------|------|-------------|
+| **Dimensions** | $d$ | $2$–$10$ | [count] | State space dimension |
+| | $N$ | $10^2$–$10^4$ | [count] | Number of walkers |
+| | $T$ | $10^3$–$10^6$ | [count] | Number of timesteps |
+| **Time** | $\Delta t$ | $10^{-3}$–$10^{-1}$ | [time] | Integration timestep |
+| | $\gamma$ | $0.1$–$10$ | [1/time] | Friction coefficient |
+| **Localization** | $\rho$ | Problem-dependent | [distance] | Kernel bandwidth |
+| | $\varepsilon$ | $\rho / 2$ | [distance] | Companion selection temperature |
+| **Fitness** | $\alpha_{\mathrm{fit}}$ | $0.5$–$2$ | [dimensionless] | Reward exponent |
+| | $\beta_{\mathrm{fit}}$ | $0.5$–$2$ | [dimensionless] | Diversity exponent |
+| | $\varepsilon_{\mathrm{clone}}$ | $10^{-6}$ | [dimensionless] | Cloning score regularizer |
+| | $p_{\max}$ | $0.1$–$0.5$ | [probability] | Maximum cloning probability |
+| **Cloning** | $\sigma_z$ | $\rho / 10$ | [distance] | Position jitter scale |
+| | $\alpha_{\mathrm{rest}}$ | $0.5$–$0.9$ | [dimensionless] | Coefficient of restitution |
+| **Diffusion** | $\varepsilon_\Sigma$ | $10^{-4}$–$10^{-2}$ | [dimensionless] | Diffusion floor |
+| | $T_c$ | $1.0$ | [energy] | Thermostat temperature |
+| **Viscosity** | $\nu$ | $0$–$1$ | [1/time] | Viscous coupling strength |
+| **Phase** | $\lambda_{\mathrm{alg}}$ | $0.1$–$1$ | [time^2] | Velocity weight in algorithmic distance |
+| | $\varepsilon_c$ | $\rho$ | [distance] | Coherence scale |
+| | $\hbar_{\mathrm{eff}}$ | Problem-dependent | [distance^2/time] | Effective Planck constant |
 
 ---
 

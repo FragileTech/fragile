@@ -1291,15 +1291,15 @@ This chapter has proven:
 
 This chapter systematically expands all convergence conditions from previous sections to show **explicit dependence** on the algorithmic parameters:
 
-| Parameter | Symbol | Physical Meaning | Typical Range |
-|-----------|--------|-----------------|---------------|
-| Timestep | $\tau$ | Integration step size | $10^{-3}$ - $10^{-1}$ |
-| Friction | $\gamma$ | Velocity damping coefficient | $0.1$ - $10$ |
-| Noise intensity | $\sigma_v$ | Thermal velocity fluctuations | $0.1$ - $2$ |
-| Swarm size | $N$ | Number of walkers | $10$ - $10^4$ |
-| Cloning rate | $\lambda$ | Resampling frequency | $0.01$ - $1$ |
-| Boundary stiffness | $\kappa_{\text{wall}}$ | Confining potential strength | $1$ - $100$ |
-| Boundary threshold | $d_{\text{safe}}$ | Safe Harbor distance | $0.1$ - $1$ |
+| Parameter | Symbol | Unit | Physical Meaning | Typical Range |
+|-----------|--------|------|-----------------|---------------|
+| Timestep | $\tau$ | [time] | Integration step size | $10^{-3}$ - $10^{-1}$ |
+| Friction | $\gamma$ | [1/time] | Velocity damping coefficient | $0.1$ - $10$ |
+| Noise intensity | $\sigma_v$ | [dimensionless] | Thermal velocity fluctuations | $0.1$ - $2$ |
+| Swarm size | $N$ | [dimensionless] | Number of walkers | $10$ - $10^4$ |
+| Cloning rate | $\lambda$ | [1/step] | Resampling frequency | $0.01$ - $1$ |
+| Boundary stiffness | $\kappa_{\text{wall}}$ | [1/step] | Confining potential strength | $1$ - $100$ |
+| Boundary threshold | $d_{\text{safe}}$ | [distance] | Safe Harbor distance | $0.1$ - $1$ |
 
 The goal is to derive **explicit formulas** for the total convergence rate $\kappa_{\text{total}}$ and equilibrium constants $C_{\text{total}}$ as functions of these parameters, enabling:
 
@@ -2222,15 +2222,15 @@ $$
 
 This table consolidates all parameter dependencies derived in this chapter:
 
-| Parameter | Symbol | $\kappa_x$ | $\kappa_v$ | $\kappa_W$ | $\kappa_b$ | $C_{\text{total}}$ | Optimal Range |
-|-----------|--------|-----------|-----------|-----------|-----------|-------------------|---------------|
-| Friction | $\gamma$ | ➖ | $\propto \gamma$ | $\propto \frac{\gamma}{1+\gamma/\lambda_{\min}}$ | $\propto \gamma$ | $\propto 1/\gamma$ | $\sim \sqrt{\lambda_{\min}}$ |
-| Cloning rate | $\lambda$ | $\propto \lambda$ | ➖ | ➖ | $\propto \lambda$ | $\propto 1/\lambda$ | $\sim \sqrt{\lambda_{\min}}$ |
-| Noise intensity | $\sigma_v$ | ➖ | ➖ | ➖ | ➖ | $\propto \sigma_v^2$ | $\sim \sqrt{\gamma \sigma_{\text{explore}}^2}$ |
-| Timestep | $\tau$ | $-O(\tau)$ | $-O(\tau)$ | ➖ | ➖ | $\propto \tau$ | $\sim 1/\sqrt{\gamma\lambda_{\max}}$ |
-| Swarm size | $N$ | $+O(1/N)$ | ➖ | ➖ | ➖ | $\propto N^{-1/d}$ | $\gg d$ |
-| Boundary stiffness | $\kappa_{\text{wall}}$ | ➖ | ➖ | ➖ | $\propto \kappa_{\text{wall}}$ | ➖ | $\gg \lambda$ |
-| Safe Harbor distance | $d_{\text{safe}}$ | ➖ | ➖ | ➖ | $+O(d_{\text{safe}})$ | $\propto 1/d_{\text{safe}}^2$ | $\sim 3\sigma_{\text{explore}}$ |
+| Parameter | Symbol | Unit | $\kappa_x$ | $\kappa_v$ | $\kappa_W$ | $\kappa_b$ | $C_{\text{total}}$ | Optimal Range |
+|-----------|--------|------|-----------|-----------|-----------|-----------|-------------------|---------------|
+| Friction | $\gamma$ | [1/time] | ➖ | $\propto \gamma$ | $\propto \frac{\gamma}{1+\gamma/\lambda_{\min}}$ | $\propto \gamma$ | $\propto 1/\gamma$ | $\sim \sqrt{\lambda_{\min}}$ |
+| Cloning rate | $\lambda$ | [1/step] | $\propto \lambda$ | ➖ | ➖ | $\propto \lambda$ | $\propto 1/\lambda$ | $\sim \sqrt{\lambda_{\min}}$ |
+| Noise intensity | $\sigma_v$ | [dimensionless] | ➖ | ➖ | ➖ | ➖ | $\propto \sigma_v^2$ | $\sim \sqrt{\gamma \sigma_{\text{explore}}^2}$ |
+| Timestep | $\tau$ | [time] | $-O(\tau)$ | $-O(\tau)$ | ➖ | ➖ | $\propto \tau$ | $\sim 1/\sqrt{\gamma\lambda_{\max}}$ |
+| Swarm size | $N$ | [dimensionless] | $+O(1/N)$ | ➖ | ➖ | ➖ | $\propto N^{-1/d}$ | $\gg d$ |
+| Boundary stiffness | $\kappa_{\text{wall}}$ | [1/step] | ➖ | ➖ | ➖ | $\propto \kappa_{\text{wall}}$ | ➖ | $\gg \lambda$ |
+| Safe Harbor distance | $d_{\text{safe}}$ | [distance] | ➖ | ➖ | ➖ | $+O(d_{\text{safe}})$ | $\propto 1/d_{\text{safe}}^2$ | $\sim 3\sigma_{\text{explore}}$ |
 
 **Key insights:**
 
@@ -3421,19 +3421,19 @@ $$
 
 **Final optimized parameters:**
 
-| Parameter              | Value | Rationale                                         |
-|------------------------|-------|---------------------------------------------------|
-| $\gamma$               | 0.10  | Matches $\lambda_{\min}$ (hypocoercivity optimum) |
-| $\lambda$              | 0.15  | Reduced from 0.2 via smaller jitter               |
-| $\sigma_v$             | 0.20  | Moderate exploration                              |
-| $\sigma_x$             | 0.005 | Small jitter, reduces cloning overhead            |
-| $\alpha_{\text{rest}}$ | 0.25  | Moderate dissipation                              |
-| $\lambda_{\text{alg}}$ | 0.001 | Weak velocity coupling (position-dominated)       |
-| $\epsilon_c$           | 0.005 | Tight pairing                                     |
-| $\tau$                 | 0.01  | Stability limit                                   |
-| $N$                    | 100   | Given                                             |
-| $\kappa_{\text{wall}}$ | 5.0   | Moderate safety                                   |
-| $d_{\text{safe}}$      | 0.2   | 3σ buffer                                         |
+| Parameter              | Value | Unit | Rationale                                         |
+|------------------------|-------|------|---------------------------------------------------|
+| $\gamma$               | 0.10  | [1/time] | Matches $\lambda_{\min}$ (hypocoercivity optimum) |
+| $\lambda$              | 0.15  | [1/step] | Reduced from 0.2 via smaller jitter               |
+| $\sigma_v$             | 0.20  | [dimensionless] | Moderate exploration                              |
+| $\sigma_x$             | 0.005 | [distance] | Small jitter, reduces cloning overhead            |
+| $\alpha_{\text{rest}}$ | 0.25  | [dimensionless] | Moderate dissipation                              |
+| $\lambda_{\text{alg}}$ | 0.001 | [1/step] | Weak velocity coupling (position-dominated)       |
+| $\epsilon_c$           | 0.005 | [distance] | Tight pairing                                     |
+| $\tau$                 | 0.01  | [time] | Stability limit                                   |
+| $N$                    | 100   | [dimensionless] | Given                                             |
+| $\kappa_{\text{wall}}$ | 5.0   | [1/step] | Moderate safety                                   |
+| $d_{\text{safe}}$      | 0.2   | [distance] | 3σ buffer                                         |
 
 **Performance:**
 
@@ -3965,19 +3965,19 @@ $$
 
 **Optimal parameters:**
 
-| Parameter              | Value   | Justification                               |
-|------------------------|---------|---------------------------------------------|
-| $\gamma$               | 0.05    | Hypocoercivity optimum ($= \lambda_{\min}$) |
-| $\lambda$              | 0.15    | Balanced ($\approx 3\lambda_{\min}$)        |
-| $\sigma_v$             | 0.071   | Moderate exploration                        |
-| $\sigma_x$             | 0.0032  | Crossover point                             |
-| $\alpha_{\text{rest}}$ | 0       | Fully inelastic (minimizes friction need)   |
-| $\lambda_{\text{alg}}$ | 0.002   | Weak velocity coupling                      |
-| $\epsilon_c$           | 0.0032  | Tight pairing                               |
-| $\tau$                 | 0.01    | Stability limit                             |
-| $N$                    | **250** | Pareto-optimal (not 500!)                   |
-| $\kappa_{\text{wall}}$ | 0.5     | Moderate boundary                           |
-| $d_{\text{safe}}$      | 0.95    | 3σ buffer                                   |
+| Parameter              | Value   | Unit | Justification                               |
+|------------------------|---------|------|---------------------------------------------|
+| $\gamma$               | 0.05    | [1/time] | Hypocoercivity optimum ($= \lambda_{\min}$) |
+| $\lambda$              | 0.15    | [1/step] | Balanced ($\approx 3\lambda_{\min}$)        |
+| $\sigma_v$             | 0.071   | [dimensionless] | Moderate exploration                        |
+| $\sigma_x$             | 0.0032  | [distance] | Crossover point                             |
+| $\alpha_{\text{rest}}$ | 0       | [dimensionless] | Fully inelastic (minimizes friction need)   |
+| $\lambda_{\text{alg}}$ | 0.002   | [1/step] | Weak velocity coupling                      |
+| $\epsilon_c$           | 0.0032  | [distance] | Tight pairing                               |
+| $\tau$                 | 0.01    | [time] | Stability limit                             |
+| $N$                    | **250** | [dimensionless] | Pareto-optimal (not 500!)                   |
+| $\kappa_{\text{wall}}$ | 0.5     | [1/step] | Moderate boundary                           |
+| $d_{\text{safe}}$      | 0.95    | [distance] | 3σ buffer                                   |
 
 **Achieved performance:**
 - $\kappa_{\text{total}} \approx 0.0129$

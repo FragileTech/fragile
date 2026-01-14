@@ -5559,47 +5559,47 @@ This complete, concrete instantiation will now be used to validate the axiomatic
 ## 21. Continuity Constants: Canonical Values and Glossary
 This section consolidates the constants used across absolute-value and mean‑square continuity results, with short definitions and their explicit expressions under the Canonical Fragile Swarm (Section 19). It is organized to show how algorithmic parameters and design choices impact stability bounds.
 ### 20.1 Quick Table (symbols, meaning, canonical value)
-| Symbol | Type | Meaning | Canonical value (closed form) |
-|---|---|---|---|
-| $R_{\max}$ | env | Reward upper bound | given by environment |
-| $L_R$ | env | Reward Lipschitz const. on $\mathcal{X}$ | given by environment |
-| $D_{\mathcal{Y}}$ | geom | Diameter of algorithmic space ({prf:ref}`def-algorithmic-space-generic`) | $\text{diam}_{d_{\mathcal{Y}}}(\mathcal{Y})$ |
-| $L_\varphi$ | geom | Projection Lipschitz const. | $1$ (identity) |
-| $\sigma$ | noise | Perturbation noise scale | user‑set $> 0$ |
-| $\delta$ | noise | Cloning noise scale | user‑set $> 0$ |
-| $\alpha, \beta$ | dyn | Dynamics weights (reward/diversity) | user‑set $\geq 0$ |
-| $\varepsilon_{\text{std}}$ | reg | Std‑dev regularizer | user‑set $> 0$ |
-| $\kappa_{\text{var,min}}$ | reg | Variance floor threshold | user‑set $> 0$ |
-| $\eta$ | reg | Rescale lower bound (shift) | user‑set $> 0$ |
-| $z_{\max}$ | reg | Rescale saturation knee | user‑set $> 0$ |
-| $p_{\max}$ | clone | Max clone threshold | user‑set $> 0$ |
-| $\varepsilon_{\text{clone}}$ | clone | Clone denom. regularizer | user‑set $> 0$ |
-| $k$ | struct | Alive count $|\mathcal{A}(\mathcal{S})|$ | state‑dependent $\geq 1$ |
-| $n_c$ | struct | Status changes between swarms | state‑dependent $\in \{0,\ldots,N\}$ |
-| $V_{\max}$ | meas | Bound on raw values $|v_i|$ | given by measurement |
-| $\sigma'_{\min,\text{bound}}$ | std | Lower bound on smoothed std | $\sqrt{\kappa_{\text{var,min}} + \varepsilon_{\text{std}}^2}$ |
-| $L_{\mu,M}$ | agg | Mean Lipschitz (value) | empirical: $1/\sqrt{k}$ |
-| $L_{m_2,M}$ | agg | Second moment Lipschitz (value) | empirical: $2 V_{\max}/\sqrt{k}$ |
-| $L_{\text{var}}$ | agg | Variance Lipschitz const. | empirical: $L_{m_2,M}+2 V_{\max} L_{\mu,M} = 4 V_{\max}/\sqrt{k}$ |
-| $L_{\sigma\'_{\text{reg}}}$ | std | Lipschitz of $\sigma\'_{\text{reg}}$ | explicit from Lemma {prf:ref}`lem-sigma-reg-derivative-bounds` |
-| $L_{\sigma',M}$ | std | Lipschitz of regularized $\sigma'$ | $L_{\sigma\'_{\text{reg}}} \cdot (L_{m_2,M}+2V_{\max} L_{\mu,M}) = \frac{1}{2\sigma'_{\min}} \cdot \frac{4 V_{\max}}{\sqrt{k}}$ |
-| $L_P$ | rescale | Poly patch deriv. bound | $1 + \frac{(3 \log 2 - 2)^2}{3(2 \log 2 - 1)} \approx 1.0054$ |
-| $L_{g_A}$ | rescale | Rescale Lipschitz | $L_P$ |
-| $L_{g_A \circ z}$ | std+rescale | Std→rescale Lipschitz | $\leq \max\{L_P,1\} \cdot \tfrac{2 L_{\sigma\'_{\text{reg}}} V_{\max}}{\sqrt{k}}$ |
-| $V_{\text{pot,min}}$ | pot | Min fitness potential | $\eta^{\alpha+\beta}$ |
-| $V_{\text{pot,max}}$ | pot | Max fitness potential | piecewise rescale: $(g_{A,\max}+\eta)^{\alpha+\beta}$, with $g_{A,\max}=\log(1+z_{\max})+1$ |
-| $L_{\pi,c}$ | clone prob | Lipschitz w.r.t. companion potential | $1/(p_{\max}\,\varepsilon_{\text{clone}})$ |
-| $L_{\pi,i}$ | clone prob | Lipschitz w.r.t. walker potential | $(V_{\text{pot,max}}+\varepsilon_{\text{clone}})/(p_{\max}\,\varepsilon_{\text{clone}}^2)$ |
-| $C_{\text{struct}}^{(\pi)}(k)$ | clone struct | Companion‑measure change factor | $2/\max(1,k-1)$ |
-| $C_{\text{val}}^{(\pi)}$ | clone value | $\max(L_{\pi,c}, L_{\pi,i})$ | as left |
-| $M_{\text{pert}}^2$ | pert | Max expected sq. displacement | $L_\varphi^2 \cdot \mathbb{E}[\|\xi\|^2] = d \sigma^2$ (Gaussian in $\mathbb{R}^d$) |
-| $B_M(N)$ | pert | Mean displacement bound | $N \cdot M_{\text{pert}}^2 = N d \sigma^2$ |
-| $B_S(N,\delta)$ | pert | Stochastic fluctuation bound | $D_{\mathcal{Y}}^2 \sqrt{N/2 \cdot \ln(2/\delta)}$ |
-| $L_{\text{death}}$ | boundary | Hölder const. for death prob. | heat kernel: $\leq C_d (\text{Per}(\varphi(E))/\sigma) \cdot L_\varphi$ |
-| $\alpha_B$ | boundary | Boundary Hölder exponent | heat kernel on smooth boundary: $1$ |
-| $C_{\text{pos},d}$ | dist | Positional part constant | $12$ |
-| $C_{\text{status},d}^{(1)}$ | dist | Linear status part const. | $D_{\mathcal{Y}}^2$ |
-| $C_{\text{status},d}^{(2)}(k_1)$ | dist | Quadratic status part const. | $\frac{8 k_1 D_{\mathcal{Y}}^2}{(k_1 - 1)^2}$ (for $k_1\geq 2$) |
+| Symbol | Type | Meaning | Unit | Canonical value (closed form) |
+|---|---|---|---|---|
+| $R_{\max}$ | env | Reward upper bound | [dimensionless] | given by environment |
+| $L_R$ | env | Reward Lipschitz const. on $\mathcal{X}$ | [1/distance] | given by environment |
+| $D_{\mathcal{Y}}$ | geom | Diameter of algorithmic space ({prf:ref}`def-algorithmic-space-generic`) | [distance] | $\text{diam}_{d_{\mathcal{Y}}}(\mathcal{Y})$ |
+| $L_\varphi$ | geom | Projection Lipschitz const. | [dimensionless] | $1$ (identity) |
+| $\sigma$ | noise | Perturbation noise scale | [distance] | user‑set $> 0$ |
+| $\delta$ | noise | Cloning noise scale | [distance] | user‑set $> 0$ |
+| $\alpha, \beta$ | dyn | Dynamics weights (reward/diversity) | [dimensionless] | user‑set $\geq 0$ |
+| $\varepsilon_{\text{std}}$ | reg | Std‑dev regularizer | [dimensionless] | user‑set $> 0$ |
+| $\kappa_{\text{var,min}}$ | reg | Variance floor threshold | [dimensionless] | user‑set $> 0$ |
+| $\eta$ | reg | Rescale lower bound (shift) | [dimensionless] | user‑set $> 0$ |
+| $z_{\max}$ | reg | Rescale saturation knee | [dimensionless] | user‑set $> 0$ |
+| $p_{\max}$ | clone | Max clone threshold | [probability] | user‑set $> 0$ |
+| $\varepsilon_{\text{clone}}$ | clone | Clone denom. regularizer | [dimensionless] | user‑set $> 0$ |
+| $k$ | struct | Alive count $|\mathcal{A}(\mathcal{S})|$ | [count] | state‑dependent $\geq 1$ |
+| $n_c$ | struct | Status changes between swarms | [count] | state‑dependent $\in \{0,\ldots,N\}$ |
+| $V_{\max}$ | meas | Bound on raw values $|v_i|$ | [dimensionless] | given by measurement |
+| $\sigma'_{\min,\text{bound}}$ | std | Lower bound on smoothed std | [dimensionless] | $\sqrt{\kappa_{\text{var,min}} + \varepsilon_{\text{std}}^2}$ |
+| $L_{\mu,M}$ | agg | Mean Lipschitz (value) | [dimensionless] | empirical: $1/\sqrt{k}$ |
+| $L_{m_2,M}$ | agg | Second moment Lipschitz (value) | [dimensionless] | empirical: $2 V_{\max}/\sqrt{k}$ |
+| $L_{\text{var}}$ | agg | Variance Lipschitz const. | [dimensionless] | empirical: $L_{m_2,M}+2 V_{\max} L_{\mu,M} = 4 V_{\max}/\sqrt{k}$ |
+| $L_{\sigma\'_{\text{reg}}}$ | std | Lipschitz of $\sigma\'_{\text{reg}}$ | [dimensionless] | explicit from Lemma {prf:ref}`lem-sigma-reg-derivative-bounds` |
+| $L_{\sigma',M}$ | std | Lipschitz of regularized $\sigma'$ | [dimensionless] | $L_{\sigma\'_{\text{reg}}} \cdot (L_{m_2,M}+2V_{\max} L_{\mu,M}) = \frac{1}{2\sigma'_{\min}} \cdot \frac{4 V_{\max}}{\sqrt{k}}$ |
+| $L_P$ | rescale | Poly patch deriv. bound | [dimensionless] | $1 + \frac{(3 \log 2 - 2)^2}{3(2 \log 2 - 1)} \approx 1.0054$ |
+| $L_{g_A}$ | rescale | Rescale Lipschitz | [dimensionless] | $L_P$ |
+| $L_{g_A \circ z}$ | std+rescale | Std→rescale Lipschitz | [dimensionless] | $\leq \max\{L_P,1\} \cdot \tfrac{2 L_{\sigma\'_{\text{reg}}} V_{\max}}{\sqrt{k}}$ |
+| $V_{\text{pot,min}}$ | pot | Min fitness potential | [dimensionless] | $\eta^{\alpha+\beta}$ |
+| $V_{\text{pot,max}}$ | pot | Max fitness potential | [dimensionless] | piecewise rescale: $(g_{A,\max}+\eta)^{\alpha+\beta}$, with $g_{A,\max}=\log(1+z_{\max})+1$ |
+| $L_{\pi,c}$ | clone prob | Lipschitz w.r.t. companion potential | [1/probability] | $1/(p_{\max}\,\varepsilon_{\text{clone}})$ |
+| $L_{\pi,i}$ | clone prob | Lipschitz w.r.t. walker potential | [1/probability] | $(V_{\text{pot,max}}+\varepsilon_{\text{clone}})/(p_{\max}\,\varepsilon_{\text{clone}}^2)$ |
+| $C_{\text{struct}}^{(\pi)}(k)$ | clone struct | Companion‑measure change factor | [dimensionless] | $2/\max(1,k-1)$ |
+| $C_{\text{val}}^{(\pi)}$ | clone value | $\max(L_{\pi,c}, L_{\pi,i})$ | [1/probability] | as left |
+| $M_{\text{pert}}^2$ | pert | Max expected sq. displacement | [distance$^2$] | $L_\varphi^2 \cdot \mathbb{E}[\|\xi\|^2] = d \sigma^2$ (Gaussian in $\mathbb{R}^d$) |
+| $B_M(N)$ | pert | Mean displacement bound | [distance$^2$] | $N \cdot M_{\text{pert}}^2 = N d \sigma^2$ |
+| $B_S(N,\delta)$ | pert | Stochastic fluctuation bound | [distance$^2$] | $D_{\mathcal{Y}}^2 \sqrt{N/2 \cdot \ln(2/\delta)}$ |
+| $L_{\text{death}}$ | boundary | Hölder const. for death prob. | [probability/distance] | heat kernel: $\leq C_d (\text{Per}(\varphi(E))/\sigma) \cdot L_\varphi$ |
+| $\alpha_B$ | boundary | Boundary Hölder exponent | [dimensionless] | heat kernel on smooth boundary: $1$ |
+| $C_{\text{pos},d}$ | dist | Positional part constant | [dimensionless] | $12$ |
+| $C_{\text{status},d}^{(1)}$ | dist | Linear status part const. | [distance$^2$] | $D_{\mathcal{Y}}^2$ |
+| $C_{\text{status},d}^{(2)}(k_1)$ | dist | Quadratic status part const. | [distance$^2$] | $\frac{8 k_1 D_{\mathcal{Y}}^2}{(k_1 - 1)^2}$ (for $k_1\geq 2$) |
 Notes:
 - Empirical aggregator constants (row group “agg”) come from the closed‑form gradient bounds of empirical moments.
 - For logistic rescale (Section 8.3), set $g_{A,\max}=2$ and keep $L_{g_A}=1/2$ instead of $L_P$.
