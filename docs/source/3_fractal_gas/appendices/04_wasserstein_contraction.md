@@ -165,10 +165,10 @@ J_k(\varepsilon) := \mathcal{A}_k \setminus I_k(\varepsilon)
 
 $$
 
-**Population fractions**:
+**Population fractions** (all-alive regime, so $|\mathcal{A}_k| = N$):
 
 $$
-f_I(\varepsilon) := \frac{|I_k|}{k}, \quad f_J(\varepsilon) := \frac{|J_k|}{k} = 1 - f_I(\varepsilon)
+f_I(\varepsilon) := \frac{|I_k|}{N}, \quad f_J(\varepsilon) := \frac{|J_k|}{N} = 1 - f_I(\varepsilon)
 
 $$
 
@@ -178,6 +178,12 @@ $$
 f_I(\varepsilon) \geq f_{UH}(\varepsilon) > 0 \quad \text{(N-uniform)}
 
 $$
+:::
+
+:::{prf:remark} All-Alive Normalization
+:label: rem-all-alive-normalization
+
+The cloning operator outputs all-alive swarms, so throughout this document we work in the all-alive regime $|\mathcal{A}_k| = N$. This keeps the empirical measure normalization consistent with the $W_2$ formulation and aligns $f_{UH}(\varepsilon)$ with the lower bound proven in [03_cloning](03_cloning) (where $k = N$ in the all-alive state).
 :::
 
 :::{prf:remark} Why These Sets?
@@ -278,7 +284,7 @@ We first establish how variance decomposes with respect to the cluster partition
 :::{prf:lemma} Variance Decomposition by Clusters
 :label: lem-variance-decomposition
 
-For a swarm $S_k$ partitioned into $I_k$ (target) and $J_k$ (complement) with population fractions $f_I = |I_k|/k$ and $f_J = |J_k|/k$:
+For a swarm $S_k$ partitioned into $I_k$ (target) and $J_k$ (complement) with population fractions $f_I = |I_k|/N$ and $f_J = |J_k|/N$:
 
 $$
 \text{Var}_x(S_k) = f_I \text{Var}_x(I_k) + f_J \text{Var}_x(J_k) + f_I f_J \|\mu_x(I_k) - \mu_x(J_k)\|^2
@@ -296,17 +302,17 @@ where:
 Standard variance decomposition. The total variance is:
 
 $$
-\text{Var}_x(S_k) = \frac{1}{k} \sum_{i=1}^k \|x_i - \bar{x}_k\|^2
+\text{Var}_x(S_k) = \frac{1}{N} \sum_{i=1}^N \|x_i - \bar{x}_k\|^2
 
 $$
 
-where $\bar{x}_k = \frac{1}{k}\sum_{i=1}^k x_i = f_I \mu_x(I_k) + f_J \mu_x(J_k)$.
+where $\bar{x}_k = \frac{1}{N}\sum_{i=1}^N x_i = f_I \mu_x(I_k) + f_J \mu_x(J_k)$.
 
 Expand:
 
 $$
 \begin{aligned}
-k \cdot \text{Var}_x(S_k) &= \sum_{i \in I_k} \|x_i - \bar{x}_k\|^2 + \sum_{j \in J_k} \|x_j - \bar{x}_k\|^2 \\
+N \cdot \text{Var}_x(S_k) &= \sum_{i \in I_k} \|x_i - \bar{x}_k\|^2 + \sum_{j \in J_k} \|x_j - \bar{x}_k\|^2 \\
 &= \sum_{i \in I_k} \|x_i - \mu_x(I_k) + \mu_x(I_k) - \bar{x}_k\|^2 + \sum_{j \in J_k} \|x_j - \mu_x(J_k) + \mu_x(J_k) - \bar{x}_k\|^2
 \end{aligned}
 
@@ -330,25 +336,25 @@ Therefore:
 
 $$
 \begin{aligned}
-k \cdot \text{Var}_x(S_k) &= |I_k| \text{Var}_x(I_k) + |I_k| f_J^2 \|\mu_x(I_k) - \mu_x(J_k)\|^2 \\
+N \cdot \text{Var}_x(S_k) &= |I_k| \text{Var}_x(I_k) + |I_k| f_J^2 \|\mu_x(I_k) - \mu_x(J_k)\|^2 \\
 &\quad + |J_k| \text{Var}_x(J_k) + |J_k| f_I^2 \|\mu_x(I_k) - \mu_x(J_k)\|^2 \\
 &= |I_k| \text{Var}_x(I_k) + |J_k| \text{Var}_x(J_k) + (|I_k| f_J^2 + |J_k| f_I^2) \|\mu_x(I_k) - \mu_x(J_k)\|^2
 \end{aligned}
 
 $$
 
-Using $|I_k| = f_I k$ and $|J_k| = f_J k$:
+Using $|I_k| = f_I N$ and $|J_k| = f_J N$:
 
 $$
-|I_k| f_J^2 + |J_k| f_I^2 = k f_I f_J^2 + k f_J f_I^2 = k f_I f_J (f_J + f_I) = k f_I f_J
+|I_k| f_J^2 + |J_k| f_I^2 = N f_I f_J^2 + N f_J f_I^2 = N f_I f_J (f_J + f_I) = N f_I f_J
 
 $$
 
-Dividing by $k$ gives the result. □
+Dividing by $N$ gives the result. □
 :::
 
 :::{note}
-**Algebraic Validation**: The factorization $|I_k| f_J^2 + |J_k| f_I^2 = k f_I f_J$ in this proof has been symbolically verified using sympy. See validation script: `src/proofs/04_wasserstein_contraction/test_variance_decomposition.py` (✅ PASSED).
+**Algebraic Validation**: The factorization $|I_k| f_J^2 + |J_k| f_I^2 = N f_I f_J$ in this proof has been symbolically verified using sympy. See validation script: `src/proofs/04_wasserstein_contraction/test_variance_decomposition.py` (✅ PASSED).
 :::
 
 :::{prf:corollary} Between-Group Variance Dominance
@@ -642,7 +648,7 @@ $$
 
 This follows from the clustering algorithm's identification of outliers as spatially separated from the main body, combined with the geometric fact that the "toward other swarm" direction is not classified as an outlier direction when swarms are sufficiently separated.
 
-**Quantitative Justification**: The separation condition $L > D_{\min}(\varepsilon)$ is chosen such that $D_{\min}(\varepsilon) \geq c_{\text{geom}} \cdot R_{\text{spread}}(\varepsilon)$ for a sufficiently large geometric constant $c_{\text{geom}} > 0$ (typically $c_{\text{geom}} \geq 10$). By Definition 6.3 (Step 3, outlier cluster identification), the clustering algorithm sorts clusters by their contribution to hypocoercive variance:
+**Quantitative Justification**: The separation condition $L > D_{\min}(\varepsilon)$ is chosen such that $D_{\min}(\varepsilon) \geq c_{\text{far}} \cdot R_{\text{spread}}(\varepsilon)$ for a sufficiently large geometric constant $c_{\text{far}} > 0$ (typically $c_{\text{far}} \geq 10$). By Definition 6.3 (Step 3, outlier cluster identification), the clustering algorithm sorts clusters by their contribution to hypocoercive variance:
 
 $$
 \text{Contrib}(G_m) := |G_m| \left(\|\mu_{x,m} - \mu_x\|^2 + \lambda_v \|\mu_{v,m} - \mu_v\|^2\right)
@@ -654,10 +660,10 @@ where $\mu_x$ is the global center of mass. For two swarms of comparable mass se
 - **Far-side clusters** (on opposite side from $\bar{x}_2$): Distance from $\mu_x$ is $\approx L/2 + O(R_{\text{spread}})$
 - **Inter-swarm clusters** (between barycenters): Distance from $\mu_x$ is $< L/2$
 
-For $L \geq c_{\text{geom}} \cdot R_{\text{spread}}$ with $c_{\text{geom}} \gg 1$:
+For $L \geq c_{\text{far}} \cdot R_{\text{spread}}$ with $c_{\text{far}} \gg 1$:
 
 $$
-\|\mu_{x,m}^{\text{far}} - \mu_x\|^2 \approx (L/2 + R_{\text{spread}})^2 \geq (L/2)^2 (1 + 2/c_{\text{geom}})^2 \gg (L/2)^2 \gg \|\mu_{x,m}^{\text{inter}} - \mu_x\|^2
+\|\mu_{x,m}^{\text{far}} - \mu_x\|^2 \approx (L/2 + R_{\text{spread}})^2 \geq (L/2)^2 (1 + 2/c_{\text{far}})^2 \gg (L/2)^2 \gg \|\mu_{x,m}^{\text{inter}} - \mu_x\|^2
 
 $$
 
@@ -806,7 +812,7 @@ $$
 
 $$
 
-where $c_{\text{geom}} = 2c_{\text{align}} / \sqrt{c_{\text{sep}}}$. □
+where $c_{\text{geom}} > 0$ is a geometric constant determined by the alignment bound and the separation regime. □
 :::
 
 ### 5.2. Lower Bound on Average Cloning Probability
@@ -833,14 +839,7 @@ Lemma 8.3.2 ([03_cloning](03_cloning), line 4881) states:
 
 Since $I_k \subseteq U_k$, the bound applies to all $i \in I_k$.
 
-The explicit formula (from Section 8.6.1.1, line 5334):
-
-$$
-p_u(\varepsilon) = \min\left(1, \frac{1}{p_{\max}(V_{\text{pot,max}} + \varepsilon_{\text{clone}})} \cdot \frac{f_F f_U \kappa_{V,\text{gap}}(\varepsilon)}{(k-1)(f_F + f_U^2/f_F)}\right)
-
-$$
-
-N-uniformity is proven in Theorem 8.7.1 (line 5521). □
+See Section 8.6.1.1 of [03_cloning](03_cloning) for an explicit expression in terms of $f_F$, $f_U$, and $\kappa_{V,\text{gap}}(\varepsilon)$. N-uniformity is proven in Theorem 8.7.1 (line 5521). □
 :::
 
 :::{prf:corollary} Average Cloning Pressure Bound
