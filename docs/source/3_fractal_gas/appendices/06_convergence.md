@@ -58,10 +58,10 @@ graph TD
 
     subgraph "Chapter 4: Main Convergence Theorem"
         F["<b>4.2-4.3: QSD Framework</b><br>Cemetery state & quasi-stationarity"]:::stateStyle
-        G["<b>4.4.1: φ-Irreducibility Proof</b><br>Two-stage construction via Gaussian noise"]:::lemmaStyle
+        G["<b>4.4.1: φ-Irreducibility Proof</b><br>Two-stage construction via non-degenerate noise"]:::lemmaStyle
         H["<b>4.4.2: Aperiodicity Proof</b><br>Non-degenerate noise ensures aperiodicity"]:::lemmaStyle
         I["<b>4.5: Main Theorem</b><br><b>Geometric Ergodicity</b><br>Exponential convergence to unique QSD<br>with rate κ_QSD = Θ(κ_total τ)"]:::theoremStyle
-        J["<b>4.6: QSD Physical Structure</b><br>Gibbs-like position distribution,<br>Gaussian velocity distribution"]:::stateStyle
+        J["<b>4.6: QSD Physical Structure</b><br>Gibbs-like position distribution,<br>OU-like velocity profile"]:::stateStyle
     end
 
     subgraph "Chapter 5: Explicit Parameter Dependence"
@@ -117,7 +117,7 @@ graph TD
 
 **Chapter 3** synthesizes operator-level drift inequalities from prerequisite documents. By solving a system of inequalities for coupling constants $(c_V, c_B)$, we prove the composed operator satisfies a Foster-Lyapunov condition with explicit rate $\kappa_{\text{total}}$ and bias $C_{\text{total}}$.
 
-**Chapter 4** establishes the main convergence theorem using the Foster-Lyapunov drift from Chapter 3. We rigorously prove φ-irreducibility through a two-stage construction (perturbation to interior, then Gaussian accessibility) and prove aperiodicity via non-degenerate noise. The Meyn-Tweedie theory then guarantees exponential convergence to a unique QSD. We analyze the QSD's physical structure, showing it exhibits Gibbs-like position concentration and Gaussian velocity distribution.
+**Chapter 4** establishes the main convergence theorem using the Foster-Lyapunov drift from Chapter 3. We rigorously prove φ-irreducibility through a two-stage construction (perturbation to interior, then non-degenerate kinetic accessibility) and prove aperiodicity via non-degenerate noise. The Meyn-Tweedie theory then guarantees exponential convergence to a unique QSD. We analyze the QSD's physical structure, showing it exhibits Gibbs-like position concentration and an OU-like velocity profile (Gaussian in the isotropic limit).
 
 **Chapter 5** derives explicit formulas for all convergence rates in terms of primitive parameters ($\alpha_{\text{rest}}$, $\gamma$, $\sigma_v$, $\sigma_x$, $\lambda$, etc.). This transforms abstract convergence guarantees into quantitative predictions. We provide convergence time estimates, parameter selection guidelines, trade-off analysis, and diagnostic plots for worked examples.
 
@@ -629,11 +629,11 @@ The Euclidean Gas is a **Markov chain on $\bar{\Sigma}_N$** with:
 :::{prf:remark} Why Extinction is Inevitable (Eventually)
 :label: rem-extinction-inevitable
 
-The use of **unbounded Gaussian noise** means:
+The use of **non-degenerate Gaussian velocity noise** (and Gaussian cloning jitter) means:
 
 $$P(\text{all } N \text{ walkers cross boundary in one step} \mid S) > 0$$
 
-for ANY state $S$, no matter how safe. This is because Gaussian tails extend to infinity, so there's always a positive (though perhaps tiny) probability of a coherent, large-deviation event.
+for ANY state $S$, no matter how safe. The BAOAB O-step has unbounded support in velocity, and the resulting position update inherits this tail, so there's always a positive (though perhaps tiny) probability of a coherent, large-deviation event.
 
 Therefore:
 - **Absorption is certain:** $P(\text{reach } \dagger \text{ eventually}) = 1$
@@ -726,11 +726,11 @@ This "alpha" walker $i_*$ is in a favorable position.
 The cloning operator proceeds through $N$ walkers sequentially. For each dead or poorly-positioned walker $j$:
 
 $$
-P(\text{walker } j \text{ selects walker } i_* \text{ as companion}) = \frac{r_{i_*}}{\sum_{k \in \mathcal{A}(S_A)} r_k} =: p_{\alpha} > 0
+P(c_j = i_* \mid j \in \mathcal{A}(S_A)) = \frac{\exp\left(-\frac{d_{\text{alg}}(j, i_*)^2}{2\epsilon_c^2}\right)}{\sum_{k \in \mathcal{A}(S_A) \setminus \{j\}} \exp\left(-\frac{d_{\text{alg}}(j, k)^2}{2\epsilon_c^2}\right)} =: p_{\alpha}(j) > 0
 
 $$
 
-This probability $p_{\alpha}$ is strictly positive by the reward structure (Axiom 4.2.1 in 03_cloning.md).
+For dead walkers, the companion selection is uniform, so $P(c_j = i_*) = 1/|\mathcal{A}(S_A)|$. Let $p_{\alpha} := \min_j p_{\alpha}(j) > 0$.
 
 **Consider the "lucky" event** $E_{\text{lucky}}$ where:
 - All dead walkers select $i_*$ as companion
@@ -748,20 +748,19 @@ $$
 After cloning under $E_{\text{lucky}}$:
 - All $N$ walkers are alive
 - Position barycenter $\mu_x \approx x_{i_*}$ (all clones near alpha)
-- Positional scatter $\|\delta_{x,i}\| \leq \delta_{\text{clone}}$ (inelastic collision spreads them slightly)
+- Positional scatter is set by the Gaussian cloning jitter with scale $\sigma_x$
 
 **Step 4: Perturbation and Kinetic Step**
 
-The perturbation adds Gaussian noise: $x_i \gets x_i + \eta_x$, $v_i \gets v_i + \eta_v$ where $\eta_x, \eta_v \sim \mathcal{N}(0, \sigma_{\text{pert}}^2 I)$.
+The BAOAB kinetic step injects Gaussian noise in the O-step:
+$v_i^{(2)} = c_1 v_i^{(1)} + c_2 \xi_i$ with $\xi_i \sim \mathcal{N}(0, I_d)$, followed by A-steps that update positions. The resulting one-step kernel is the pushforward of the Gaussian noise through the BAOAB map and therefore has a continuous density with full support on phase space.
 
-**Key fact:** Gaussian distribution has positive density everywhere. Therefore:
-
-$$
-P(\text{all } N \text{ perturbed walkers land in } B_r(x_*) \text{ with } \|v_i\| < v_{\max}) = \prod_{i=1}^N \int_{B_r(x_*)} \int_{\|v\| < v_{\max}} \phi(x-x_i, v-v_i) \, dv \, dx > 0
+Let $\mathcal{K}_{\text{kin}}(x, v \mid x_i, v_i)$ denote this one-step density. Then:
 
 $$
+P(\text{all } N \text{ walkers land in } B_r(x_*) \text{ with } \|v_i\| < v_{\max}) = \prod_{i=1}^N \int_{B_r(x_*)} \int_{\|v\| < v_{\max}} \mathcal{K}_{\text{kin}}(x, v \mid x_i, v_i) \, dv \, dx > 0
 
-where $\phi$ is the Gaussian density.
+$$
 
 **Combining all steps:**
 
@@ -906,14 +905,14 @@ $$
 
 **Method 1: Direct Argument via Continuous Noise**
 
-The kinetic operator adds continuous Gaussian noise at every step. The probability of returning to the **exact** same state is zero:
+The kinetic operator injects non-degenerate Gaussian noise in the BAOAB O-step. The resulting transition kernel has a continuous density, so the probability of returning to the **exact** same state is zero:
 
 $$
 P(S_1 = S_0 \mid S_0) = 0
 
 $$
 
-because the perturbation $\eta \sim \mathcal{N}(0, \sigma_{\text{pert}}^2 I)$ has density with respect to Lebesgue measure.
+because the noise has a density with respect to Lebesgue measure and the BAOAB map is smooth.
 
 **Implication:** The chain cannot have any deterministic cycles $S \to S \to S \to \cdots$ of period $d$.
 
@@ -1025,7 +1024,7 @@ By the Meyn-Tweedie theorem (Meyn & Tweedie, 2009, Theorem 14.0.1), this drift c
 - $V_{\text{total}}$ as a Lyapunov function
 - Compact level sets (ensured by the boundary potential $W_b$ and confining potential)
 - **φ-Irreducibility** ({prf:ref}`thm-phi-irreducibility` in Section 6.4.1) - rigorously proven via two-stage construction
-- **Aperiodicity** ({prf:ref}`thm-aperiodicity` in Section 6.4.2) - proven via non-degenerate Gaussian noise
+- **Aperiodicity** ({prf:ref}`thm-aperiodicity` in Section 6.4.2) - proven via non-degenerate kinetic noise
 
 implies existence of a unique invariant measure. In the absorbing case, this becomes a unique QSD (Champagnat & Villemonais, 2016).
 
@@ -1095,14 +1094,14 @@ Walkers are concentrated in low-potential regions, avoiding the boundary.
 
 **2. Velocity Distribution:**
 
-The marginal velocity distribution approaches:
+In the isotropic base case (no adaptive forces, $\Sigma = \sigma_v I_d$), the marginal velocity distribution approaches:
 
 $$
 \rho_{\text{vel}}(v) \propto e^{-\frac{\|v\|^2}{2\sigma_v^2/\gamma}}
 
 $$
 
-The Gibbs distribution at effective temperature $\sigma_v^2/\gamma$.
+The Gibbs distribution at effective temperature $\sigma_v^2/\gamma$. With adaptive forces or anisotropic diffusion enabled, the stationary velocity law is the pushforward of the BAOAB O-step noise and need not be exactly Gaussian.
 
 **3. Correlations:**
 

@@ -1530,7 +1530,7 @@ This algorithm builds the matching iteratively. It selects an unpaired walker, c
 :::{prf:definition} Sequential Stochastic Greedy Pairing Operator
 :label: def-greedy-pairing-algorithm
 
-Let `A_t` be the set of `k` alive walkers at time `t`. The pairing operator generates a **Companion Map**, `c: A_t → A_t`, which is a perfect matching if `k` is even, or a maximal matching if `k` is odd.
+Let `A_t` be the set of `k` alive walkers at time `t`. The pairing operator generates a **Companion Map**, `c: A_t → A_t`, which is a perfect matching if `k` is even, or a maximal matching if `k` is odd. In the reference implementation, any leftover walker when `k` is odd (or `k=1`) is mapped to itself, `c(i) = i`, yielding an involution with at most one fixed point.
 
 **Inputs:**
 *   The set of alive walkers, `A_t = {w_1, w_2, ..., w_k}`.
@@ -1552,7 +1552,8 @@ $$
     d. Sample a companion `c_i` for `i` from this distribution.
     e. Remove `c_i` from `U`.
     f. Set the pairing in the companion map: `c(i) ← c_i` and `c(c_i) ← i`.
-3.  Return the completed companion map `c`.
+3.  If `|U| = 1`, set the remaining walker's companion to itself.
+4.  Return the completed companion map `c`.
 
 **Complexity:** The outer loop runs `k/2` times. In each iteration, the weights and normalization factor are computed over the remaining walkers (at most `k-1`). The complexity is therefore `O(k^2)`, which is a feasible computation.
 
@@ -1599,7 +1600,10 @@ OUTPUT:
 20.     companion_map[i] ← c_i
 21.     companion_map[c_i] ← i
 
-22. RETURN companion_map
+22. IF len(unpaired_set) == 1:
+23.     i ← unpaired_set.pop()
+24.     companion_map[i] ← i
+25. RETURN companion_map
 :::
 
 #### 5.1.3. Signal Preservation and Proof of Correctness

@@ -4,9 +4,9 @@
 
 **Single Walker Observable Stack**: We formalize the observable map of a single walker ({prf:ref}`def-walker`) inside a swarm ({prf:ref}`def-swarm-and-state-space`). The stack couples positional, velocity, and potential data through a fixed parameter set $\Theta_{\text{obs}}$ and produces the diversity, reward, and fitness channels used by the Fragile Gas.
 
-**Diversity Channel Distribution**: The distribution $\mathcal{P}_{D(i)}$ of the diversity channel is an explicit sum over all matchings produced by the sequential greedy pairing routine. Each term factors into the probability of a matching and a deterministic evaluation of the regularized distance statistic.
+**Diversity Channel Distribution**: The distribution $\mathcal{P}_{D(i)}$ of the diversity channel is an explicit sum over all companion maps produced by the sequential greedy pairing routine (including a single self-pair when $k$ is odd). Each term factors into the probability of the pairing realization and a deterministic evaluation of the regularized distance statistic.
 
-**Conditional Cloning Probability Field**: For every potential companion $j$, the cloning pipeline produces a random variable $\Pi(i|j)$ whose law is inherited from diversity matchings. The family $\{\mathcal{P}_{\Pi(i|j)}\}_{j}$ is the discrete probability field controlling local exploration pressure ({prf:ref}`def-cloning-probability`).
+**Conditional Cloning Probability Field**: For every potential companion $j$, the cloning pipeline produces a random variable $\Pi(i|j)$ whose law is inherited from diversity pairing realizations. The family $\{\mathcal{P}_{\Pi(i|j)}\}_{j}$ is the discrete probability field controlling local exploration pressure ({prf:ref}`def-cloning-probability`).
 
 **Post-Cloning Mixture**: The position of walker $i$ after the cloning operator ({prf:ref}`def-cloning-operator-formal`) follows a mixed distribution with a Dirac mass at the original position and a Gaussian mixture centered at the companions. The weights are the joint probabilities of selecting each companion and executing a cloning action.
 
@@ -33,7 +33,7 @@ All expressions below are consistent with the Fragile Gas axioms ({prf:ref}`def-
 ### 1.3. Notation
 
 *   $\mathcal{A}(S_t)$ denotes the set of alive walkers at time $t$ with cardinality $k = |\mathcal{A}(S_t)|$.
-*   $c_j$ is the companion of walker $j$ inside a matching $M \in \mathcal{M}(\mathcal{A}(S_t))$; if $k$ is odd, $c_j$ is defined only for the paired subset returned by the greedy algorithm.
+*   $c_j$ is the companion of walker $j$ in the companion map $M \in \mathcal{M}(\mathcal{A}(S_t))$; if $k$ is odd (or $k=1$), the leftover walker is mapped to itself, $c_j=j$.
 *   $d_{\text{alg}}$ is the algorithmic distance with weight $\lambda_{\text{alg}}$ ({prf:ref}`def-algorithmic-distance-metric`).
 *   $Z(\cdot)$ and $Z_r(\cdot)$ denote standardized statistics with a patched variance $\sigma'$, ensuring the denominators are strictly positive.
 *   Bold symbols represent deterministic functions; calligraphic symbols denote distributions or fields.
@@ -46,7 +46,7 @@ $$
 \Theta_{\text{obs}} = \{ \lambda_{\text{alg}}, \epsilon_d, \epsilon_c, \epsilon_{\text{dist}}, \rho, \sigma_{\text{min}}, A, \eta, \alpha, \beta, p_{\max}, \epsilon_{\text{clone}}, \sigma_x, c_{v\_\text{reg}}, U(\cdot), \gamma, \beta_{\text{kin}}, \Delta t \}.
 
 $$
-The first block controls the diversity and reward channels, the second block fixes the cloning companion selection and thresholding rule, and the last block governs the kinetic step. Additional algorithm-specific constants (e.g., restitution coefficients or jitter variances) are absorbed into $\Theta_{\text{obs}}$ but are omitted from the notation when not required.
+The first block controls the diversity and reward channels, the second block fixes the cloning companion selection and thresholding rule, and the last block governs the kinetic step. In the reference implementation, a single companion-selection operator is typically reused for diversity and cloning, so $\epsilon_c = \epsilon_d$ unless separate operators are configured. Additional algorithm-specific constants (e.g., restitution coefficients or jitter variances) are absorbed into $\Theta_{\text{obs}}$ but are omitted from the notation when not required.
 
 :::{definition} Observable Parameter Stack
 :label: def-single-observable-stack
@@ -57,26 +57,38 @@ $$
 \mathsf{Obs}(i, S_t; \Theta_{\text{obs}}) := (\mathcal{P}_{D(i)}, R_i, \mathcal{P}_{V(i)}, \mathcal{F}_{\Pi(i)}, \mathcal{P}_{X'_i}, \mathcal{P}_{X''_i}),
 
 $$
-where each component is defined in Sections 3–7 below. Every map depends measurably on $S_t$ and on the algorithmic randomness of the diversity matching, the cloning threshold, and the kinetic noise.
+where each component is defined in Sections 3–7 below. Every map depends measurably on $S_t$ and on the algorithmic randomness of the diversity pairing, the cloning threshold, and the kinetic noise.
 :::
 
 ## 3. Distribution of the Diversity Channel
 
 ### 3.1. Matching Probabilities
 
-The **sequential greedy pairing** algorithm produces a perfect matching $M$ of $\mathcal{A}(S_t)$ when $k$ is even, and a maximal matching when $k$ is odd. Let $\mathcal{A}^\star(S_t)$ denote the paired subset (so $|\mathcal{A}^\star(S_t)| = 2\lfloor k/2 \rfloor$). When $k$ is odd, all diversity statistics below are computed over $\mathcal{A}^\star(S_t)$; if $i \notin \mathcal{A}^\star(S_t)$, the diversity channel is undefined for that step. Implementations can enforce even $k$ or add a fallback companion for the leftover walker, in which case the formulas below apply without modification. When walker $i$ chooses among the unpaired set $U \subseteq \mathcal{A}(S_t)$, the selection probability for $j \in U \setminus \{i\}$ is
+The **sequential greedy pairing** algorithm produces a perfect matching $M$ of $\mathcal{A}(S_t)$ when $k$ is even. When $k$ is odd, the implementation returns a companion map that is an involution with one fixed point: the leftover walker is mapped to itself, $c_i=i$, which keeps the distance measurement well-defined because of the $\epsilon_{\text{dist}}$ regularizer. When walker $i$ chooses among the unpaired set $U \subseteq \mathcal{A}(S_t)$, the selection probability for $j \in U \setminus \{i\}$ is
 
 $$
 P(C_i = j \mid i, U; \lambda_{\text{alg}}, \epsilon_d) = \frac{\exp\left(-\frac{d_{\text{alg}}(i, j; \lambda_{\text{alg}})^2}{2\epsilon_d^2}\right)}{\sum_{\ell \in U \setminus \{i\}} \exp\left(-\frac{d_{\text{alg}}(i, \ell; \lambda_{\text{alg}})^2}{2\epsilon_d^2}\right)}.
 
 $$
-The probability of a matching $M \in \mathcal{M}(\mathcal{A}(S_t))$ is the product of the sequential choices that realize $M$, conditioned on the processing order used by the greedy algorithm:
+If $U \setminus \{i\} = \varnothing$ (e.g., $k=1$), the implementation sets $c_i=i$.
+
+Let $\mathcal{I}(M)$ denote the ordered list of walkers selected by the greedy algorithm as the "first" element of each pair. The probability of a pairing realization $M \in \mathcal{M}(\mathcal{A}(S_t))$ is the product of the sequential choices that realize those pairs, conditioned on the processing order used by the greedy algorithm (the fixed point, if present, contributes no factor):
 
 $$
-P(M \mid S_t; \lambda_{\text{alg}}, \epsilon_d) = \prod_{(i, c_i) \in M} P(C_i = c_i \mid i, U_i(M); \lambda_{\text{alg}}, \epsilon_d),
+P(M \mid S_t; \lambda_{\text{alg}}, \epsilon_d) = \prod_{i \in \mathcal{I}(M)} P(C_i = c_i \mid i, U_i(M); \lambda_{\text{alg}}, \epsilon_d).
 
 $$
 where $U_i(M)$ records the remaining unmatched walkers when $i$ is processed.
+
+:::{remark} Independent Companion Selection
+If the diversity channel uses an independent softmax companion selector instead of mutual pairing, interpret $M$ as the vector of companion indices $(c_i)_{i \in \mathcal{A}(S_t)}$. Then
+
+$$
+P(M \mid S_t) = \prod_{i \in \mathcal{A}(S_t)} P(C_i = c_i \mid S_t).
+$$
+
+with the same self-pairing fallback when only one alive walker is available. The downstream definitions of $d_i$, $Z(i, M, S_t)$, and $\mathcal{P}_{D(i)}$ are unchanged.
+:::
 
 ### 3.2. Regularized Distance Measurement
 
@@ -90,24 +102,24 @@ The regularization prevents degeneracy when walkers coincide and ensures differe
 
 ### 3.3. Standardization Regimes
 
-Let $k^\star = |\mathcal{A}^\star(S_t)|$ (so $k^\star = k$ when $k$ is even). Two regimes are supported:
+Let $k = |\mathcal{A}(S_t)|$. Two regimes are supported:
 
 *   **Global statistics ($\rho = \mathrm{None}$):**
 
     $$
-    \mu_d(M, S_t) = \frac{1}{k^\star} \sum_{j \in \mathcal{A}^\star(S_t)} d_j(M; \cdot), \quad
-    \sigma'_d(M, S_t; \sigma_{\text{min}}) = \sqrt{\frac{1}{k^\star} \sum_{j \in \mathcal{A}^\star(S_t)} (d_j - \mu_d)^2 + \sigma_{\text{min}}^2}.
+    \mu_d(M, S_t) = \frac{1}{k} \sum_{j \in \mathcal{A}(S_t)} d_j(M; \cdot), \quad
+    \sigma'_d(M, S_t; \sigma_{\text{min}}) = \sqrt{\frac{1}{k} \sum_{j \in \mathcal{A}(S_t)} (d_j - \mu_d)^2 + \sigma_{\text{min}}^2}.
 
     $$
 *   **Localized statistics ($\rho < \infty$):**
 
     $$
     K_{\rho}(i, j) = \exp\left(-\frac{d_{\text{alg}}(i, j; \lambda_{\text{alg}})^2}{2\rho^2}\right), \quad
-    \mu_{\rho, d}(i) = \frac{\sum_{j \in \mathcal{A}^\star(S_t)} K_{\rho}(i, j) d_j}{\sum_{\ell \in \mathcal{A}^\star(S_t)} K_{\rho}(i, \ell)},
+    \mu_{\rho, d}(i) = \frac{\sum_{j \in \mathcal{A}(S_t)} K_{\rho}(i, j) d_j}{\sum_{\ell \in \mathcal{A}(S_t)} K_{\rho}(i, \ell)},
 
     $$
     $$
-    \sigma'_{\rho, d}(i; \sigma_{\text{min}}) = \sqrt{\frac{\sum_{j \in \mathcal{A}^\star(S_t)} K_{\rho}(i, j) (d_j - \mu_{\rho, d}(i))^2}{\sum_{\ell \in \mathcal{A}^\star(S_t)} K_{\rho}(i, \ell)} + \sigma_{\text{min}}^2}.
+    \sigma'_{\rho, d}(i; \sigma_{\text{min}}) = \sqrt{\frac{\sum_{j \in \mathcal{A}(S_t)} K_{\rho}(i, j) (d_j - \mu_{\rho, d}(i))^2}{\sum_{\ell \in \mathcal{A}(S_t)} K_{\rho}(i, \ell)} + \sigma_{\text{min}}^2}.
 
     $$
 
@@ -134,7 +146,7 @@ $$
 \mathcal{P}_{D(i)}(v \mid S_t; \Theta_{\text{obs}}) = \sum_{M \in \mathcal{M}(\mathcal{A}(S_t))} \mathbf{1}_{\{\mathcal{D}_i(M, S_t) = v\}} \cdot P(M \mid S_t; \lambda_{\text{alg}}, \epsilon_d).
 
 $$
-Each atom corresponds to a matching whose deterministic evaluation equals $v$.
+Each atom corresponds to a companion map realization whose deterministic evaluation equals $v$.
 
 ## 4. Reward Channel and Fitness Potential
 
@@ -189,7 +201,7 @@ Therefore, $\mathcal{P}_{V(i)}$ inherits the atomic structure of $\mathcal{P}_{D
 
 ### 5.1. Cloning Scores
 
-Given a matching $M$, the cloning score of walker $i$ relative to companion $j$ is ({prf:ref}`def-cloning-score`)
+Given a pairing realization $M$, the cloning score of walker $i$ relative to companion $j$ is ({prf:ref}`def-cloning-score`)
 
 $$
 s(i \mid j, M) = \frac{V_{\text{fit}}(j, M, S_t) - V_{\text{fit}}(i, M, S_t)}{V_{\text{fit}}(i, M, S_t) + \epsilon_{\text{clone}}}.
@@ -227,7 +239,7 @@ $$
 \bar{p}(i \mid j) := \mathbb{E}_{M}[\pi_{\text{clip}}(s(i \mid j, M); p_{\max})]
 
 $$
-determines the mean contribution of $j$ to the total cloning probability $\pi_{\text{clone}}(i \mid S_t)$. Assuming the companion draw $C_i$ is independent of the diversity matching $M$, this total probability is
+determines the mean contribution of $j$ to the total cloning probability $\pi_{\text{clone}}(i \mid S_t)$. Assuming the companion draw $C_i$ is independent of the diversity pairing $M$, this total probability is
 
 $$
 \pi_{\text{clone}}(i \mid S_t) = \sum_{j \in \mathcal{A}(S_t) \setminus \{i\}} P_{C_i}(j \mid S_t; \lambda_{\text{alg}}, \epsilon_c) \, \bar{p}(i \mid j),
@@ -266,7 +278,7 @@ The function $x' \mapsto \mathcal{P}_{X'_i}(x')$ is a random field supported on 
 
 ### 7.1. BAOAB Convolution
 
-Let $(X'_i, V'_i)$ denote the state immediately after cloning. The kinetic operator $\Psi_{\text{kin}}$ in Stratonovich form ({prf:ref}`def-kinetic-operator-stratonovich`) is implemented numerically through the BAOAB update ({prf:ref}`def-baoab-update-rule`). Let $\mathcal{K}_{\text{BAOAB}}^x(x'' \mid x', v')$ denote the positional marginal of the BAOAB kernel. The full single-step transition law is the convolution
+Let $(X'_i, V'_i)$ denote the state immediately after cloning. The kinetic operator $\Psi_{\text{kin}}$ in Stratonovich form ({prf:ref}`def-kinetic-operator-stratonovich`) is implemented numerically through the BAOAB update ({prf:ref}`def-baoab-update-rule`). Let $\mathcal{K}_{\text{BAOAB}}^x(x'' \mid x', v')$ denote the positional marginal of the BAOAB kernel. In the reference implementation, this kernel is the pushforward of Gaussian noise through the full BAOAB map (including potential forces and any optional adaptive terms), so it need not be Gaussian when the force field is nonlinear. The full single-step transition law is the convolution
 
 $$
 \mathcal{P}_{X''_i}(x'' \mid S_t; \Theta_{\text{obs}}) = \iint \mathcal{K}_{\text{BAOAB}}^x(x'' \mid x', v') \, \mathcal{P}_{X'_i, V'_i}(x', v' \mid S_t) \; \mathrm{d}x' \, \mathrm{d}v',

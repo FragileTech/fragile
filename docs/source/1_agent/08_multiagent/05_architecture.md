@@ -9,7 +9,7 @@
 - **Christoffel symbols** are parameterized via linear + quadratic Query terms in $z$ ($z, z \otimes z$), with optional $z \odot v$ coupling
 - The $SU(2)_L$ chirality (sensor-motor asymmetry) is preserved via **chiral projectors**
 - The $SU(N_f)_C$ texture firewall is enforced via **area law screening**
-- Five attention heads implement the complete **Boris-BAOAB** geodesic integrator in one forward pass
+- Five BAOAB steps are implemented in one forward pass (four attention heads + a closed-form OU step by default; optional learned thermostat for the O-step)
 
 ## Roadmap
 
@@ -20,7 +20,7 @@
 5. Christoffel symbols from linear + quadratic Query terms
 6. $SU(2)_L$ chirality: observation-action doublet with chiral projector
 7. $SU(N_f)_C$ texture firewall: area law screening for confinement
-8. BAOAB integration via 5 attention heads
+8. BAOAB integration via attention heads + OU thermostat
 9. Implementation: full GeodesicCrossAttention module
 10. Computational complexity and O(N) engineering proxies
 11. Diagnostics: Nodes 67-70 for gauge, temperature, chirality, confinement
@@ -41,7 +41,7 @@ But there is more. The softmax temperature $\sqrt{d_k}$ in standard attention is
 
 And the geodesic correction? The Christoffel symbols? Those come from geometric terms in the Query projection. The standard linear $Q = W_Q x$ (with $x$ encoding $z$) becomes $Q = W_Q x + W_{Qz} z + W_{Qv} x_v + W_{Q,\Gamma}(z \otimes z)$, optionally with a velocity-conditioned $W_{Qzv}(z \odot v)$ term. The geometric coefficients encode the connection.
 
-The result is a single attention module that performs one complete step of the Boris-BAOAB integrator. Five heads for B-A-O-A-B, with the Keys acting as a force bank and the Values as state updates. It is gauge-covariant, symplectic, and thermodynamically consistent---all from attention.
+The result is a single module that performs one complete step of the Boris-BAOAB integrator. Four heads handle B-A-A-B, while the O-step is a closed-form OU update by default (or a fifth, learned thermostat head when you want non-Gaussian noise). It is gauge-covariant, symplectic, and thermodynamically consistent---all from attention plus a physically grounded noise model.
 :::
 
 *Abstract.* This chapter derives the **Covariant Cross-Attention** architecture for the world model, replacing standard sequence models (GRU, Transformer) with a mechanism that respects the gauge structure $G_{\text{Fragile}} = SU(N_f)_C \times SU(2)_L \times U(1)_Y$ derived in {ref}`Section 34 <sec-standard-model-cognition>`. The architecture implements a single-step integrator for the Lorentz-Langevin geodesic equations ({ref}`Section 22 <sec-the-equations-of-motion-geodesic-jump-diffusion>`) using Wilson lines for parallel transport, position-dependent temperature for metric encoding, and linear + quadratic Query projections for Christoffel symbols. The result is a world model that is gauge-invariant by construction rather than by regularization.
@@ -570,7 +570,7 @@ We derive the geometric (linear + quadratic) Query projection that parameterizes
 :::{prf:definition} Geodesic Query Projection
 :label: def-geodesic-query-projection
 
-The **Geodesic Query** extends the linear projection to include geometric terms that encode the Levi-Civita connection:
+The **Geodesic Query** extends the linear projection to include geometric terms that encode the Levi-Civita connection (with optional velocity-conditioned corrections when you want to go beyond Levi-Civita):
 
 $$
 Q_{\text{geo}}(x, z, v) = W_Q x + W_{Qz} z + W_{Qv} x_v + W_{Q,\Gamma}(z, z) + W_{Qzv}(z, v)
@@ -605,6 +605,8 @@ K(z', v') &= W_K z' + W_{Kv} v'
 \end{aligned}
 $$
 
+For clarity, we omit the optional $W_{Qzv}(z, v)$ term; it adds a velocity-conditioned correction without changing the representability argument.
+
 The attention-weighted output
 
 $$
@@ -636,7 +638,7 @@ $$
 \Gamma^k_{ij}(z) = \frac{2}{1-|z|^2}\left(\delta^k_i z_j + \delta^k_j z_i - \delta_{ij} z^k\right)
 $$
 
-A practical initialization is to use a linear geometric term $W_{Qz} z$ to reproduce the linear-in-$z$ structure above (up to a sign convention that can be absorbed into the update rule), and reserve $W_{Q,\Gamma}(z,z)$ for nonlinear corrections.
+A practical initialization is to use a linear geometric term $W_{Qz} z$ to reproduce the linear-in-$z$ structure above (up to a sign convention that can be absorbed into the update rule), and reserve $W_{Q,\Gamma}(z,z)$ for nonlinear corrections. The conformal factor $2/(1-|z|^2)$ is position-dependent and cannot be represented by a constant $W_{Qz}$ alone; capture it via $W_{Q,\Gamma}$ or an explicit scalar modulation.
 
 **Learnable approximation**: Since $\Gamma$ depends on position, a simple parameterization is to scale the nonlinear correction by the conformal factor:
 
@@ -945,74 +947,78 @@ $$
 
 
 (sec-baoab-integration-architecture)=
-## BAOAB Integration via Five Attention Heads
+## BAOAB Integration via Attention Heads and OU Thermostat
 
 :::{div} feynman-prose
-Now we put it all together. The Boris-BAOAB integrator has five steps: B-A-O-A-B. We are going to implement each step as an attention head.
+Now we put it all together. The Boris-BAOAB integrator has five steps: B-A-O-A-B. We implement the B and A steps as attention heads, and the O-step as a closed-form OU update by default (with an optional learned thermostat head when you want richer noise).
 
-Why five heads? Because each step of BAOAB does something different:
+Why five steps? Because each part of BAOAB does something different:
 - **B** (kick): Apply forces from the potential gradient
 - **A** (drift): Move along the geodesic
 - **O** (thermostat): Add thermal noise
 - **A** (drift): Continue moving
 - **B** (kick): Apply more forces
 
-Each step needs to attend to different information. The kick steps need the potential gradient (stored in Keys). The drift steps need the current velocity (stored in Values). The thermostat step needs noise (injected as a random Value).
+Each step needs to attend to different information. The kick steps need the potential gradient (stored in Keys). The drift steps use the explicit velocity $v = G^{-1}p$ and can add attention-based displacement corrections from Values. The thermostat step injects OU noise directly, with an optional learned residual if you enable the O-head.
 
-The Keys act as a "force bank." They store the gradients of the effective potential at various positions. When the Query asks "what force do I feel here?", the Key provides the answer through the attention score.
+The Keys act as a "gradient bank." They store the gradients of the effective potential at various positions. When the Query asks "what force do I feel here?", the Key provides the answer through the attention score.
 
-The Values act as "state updates." After computing the attention weights, the weighted sum of Values gives the update to position or momentum.
+The Values act as "state updates." After computing the attention weights, the weighted sum of Values gives a correction update to position or momentum (added to the explicit drift or OU step).
 
 The temperature of each head is position-dependent, encoding the metric. And the Wilson lines ensure gauge covariance throughout.
 
-The result is a single attention block with five heads that performs one complete step of the geodesic integrator. Stack multiple blocks for multi-step rollouts.
+The result is a single attention block with four heads (or five if you enable the learned thermostat) that performs one complete step of the geodesic integrator. Stack multiple blocks for multi-step rollouts.
 :::
 
-We implement the Boris-BAOAB integrator (Definition {prf:ref}`def-baoab-splitting`) using five specialized attention heads.
+We implement the Boris-BAOAB integrator (Definition {prf:ref}`def-baoab-splitting`) using four specialized attention heads plus a closed-form OU thermostat (or five heads if you enable a learned thermostat).
 
-:::{prf:definition} BAOAB Attention Heads
+:::{prf:definition} BAOAB Steps (Attention Heads + OU)
 :label: def-baoab-attention-heads
 
-The **GeodesicCrossAttention** module contains five attention heads corresponding to the Boris-BAOAB splitting:
+The **GeodesicCrossAttention** module implements B-A-O-A-B with attention heads for B/A and a closed-form OU step in the middle (or an optional learned O-head):
 
-**Head 1: B-step (First half-kick)**
+**Step 1 (Head 1): B-step (First half-kick)**
 - **Query**: Current position $z$ with quadratic geodesic terms
 - **Key**: Gradient bank $\{\nabla\Phi(z')\}_{z' \in \text{context}}$
-- **Value**: Force vectors $\{-\nabla\Phi(z')\}$
+- **Value**: Gradient vectors $\{\nabla\Phi(z')\}$
 - **Output**: Momentum update $\Delta p_1 = -\frac{h}{2}\nabla\Phi(z)$
 
-**Head 2: A-step (First half-drift)**
+**Step 2 (Head 2): A-step (First half-drift)**
 - **Query**: Current position and momentum $(z, p)$
-- **Key**: Exponential map bank $\{\exp_{z'}(v)\}$
-- **Value**: Displacement vectors
-- **Output**: Position update $\Delta z_1 = \frac{h}{2}G^{-1}(z)p$
+- **Key**: Exponential map or transport bank $\{\exp_{z'}(v)\}$
+- **Value**: Displacement corrections
+- **Output**: Drift correction $\Delta z_1$ added to the explicit drift $\frac{h}{2}G^{-1}(z)p$
 
-**Head 3: O-step (Ornstein-Uhlenbeck thermostat)**
-- **Query**: Current momentum $p$
-- **Key**: Noise bank (random vectors)
-- **Value**: Noise vectors $\{\xi\}$
-- **Output**: Momentum thermalization $p \to c_1 p + c_2 G^{1/2}\xi'$
+**Step 3 (OU): O-step (Ornstein-Uhlenbeck thermostat)**
+- **Default**: Closed-form OU update (no attention)
+- **Optional learned thermostat**:
+  - **Query**: Current momentum $p$
+  - **Key**: Noise bank (random vectors)
+  - **Value**: Noise vectors $\{\xi\}$
+  - **Output**: Residual correction added to the OU update
 
-**Head 4: A-step (Second half-drift)**
+**Step 4 (Head 4): A-step (Second half-drift)**
 - Same structure as Head 2
-- **Output**: Position update $\Delta z_2 = \frac{h}{2}G^{-1}(z)p$
+- **Output**: Drift correction $\Delta z_2$ added to the explicit drift $\frac{h}{2}G^{-1}(z)p$
 
-**Head 5: B-step (Second half-kick)**
+**Step 5 (Head 5): B-step (Second half-kick)**
 - Same structure as Head 1
 - **Output**: Momentum update $\Delta p_2 = -\frac{h}{2}\nabla\Phi(z)$
 
 **Composition**: The full update is:
 
 $$
-(z_{t+1}, p_{t+1}) = \text{Head}_5 \circ \text{Head}_4 \circ \text{Head}_3 \circ \text{Head}_2 \circ \text{Head}_1(z_t, p_t)
+(z_{t+1}, p_{t+1}) = \text{Step}_5 \circ \text{Step}_4 \circ \text{Step}_3 \circ \text{Step}_2 \circ \text{Step}_1(z_t, p_t)
 $$
+
+Here $\text{Step}_3$ denotes the OU operator unless a learned thermostat head is enabled.
 
 :::
 
 :::{prf:theorem} BAOAB Attention Preserves Boltzmann Distribution
 :label: thm-baoab-attention-boltzmann
 
-The GeodesicCrossAttention module with five BAOAB heads preserves the Boltzmann distribution
+The GeodesicCrossAttention module with BAOAB steps (four attention heads plus an OU thermostat) preserves the Boltzmann distribution
 
 $$
 \rho(z, p) \propto \exp\left(-\frac{\Phi_{\text{eff}}(z)}{T_c} - \frac{\|p\|_G^2}{2T_c}\right)
@@ -1021,34 +1027,44 @@ $$
 to second order in the timestep $h$, provided:
 
 1. Each head uses position-dependent temperature $\tau(z) = \sqrt{d_k}/\lambda(z)$
-2. The O-step head uses thermalization coefficients $c_1 = e^{-\gamma h}$, $c_2 = \sqrt{(1-c_1^2)T_c}$
+2. The O-step uses thermalization coefficients $c_1 = e^{-\gamma h}$, $c_2 = \sqrt{(1-c_1^2)T_c}$
 3. The geodesic Query projections correctly encode Christoffel symbols
+4. The A-steps include the explicit drift $G^{-1}(z)p$ (with any attention-based correction consistent with the exponential map)
 
 *Proof sketch.* This follows from Proposition {prf:ref}`prop-baoab-preserves-boltzmann` applied to the attention implementation. The key points:
 
 1. The symmetric splitting B-A-O-A-B ensures time-reversibility of deterministic steps.
-2. The O-step exactly samples the Maxwell-Boltzmann momentum distribution.
-3. Position-dependent temperature correctly weights attention by the metric.
-4. Wilson lines preserve gauge covariance without affecting thermodynamic properties.
+2. The A-steps include the explicit drift $G^{-1}p$, with attention providing higher-order corrections.
+3. The O-step exactly samples the Maxwell-Boltzmann momentum distribution when implemented as a closed-form OU update.
+4. Position-dependent temperature correctly weights attention by the metric.
+5. Wilson lines preserve gauge covariance without affecting thermodynamic properties.
 
-The attention-based implementation is equivalent to the original BAOAB up to discretization of the gradient and exponential map, which introduces $O(h^2)$ errors consistent with the original scheme. $\square$
+If a learned thermostat head is enabled, the O-step becomes a data-driven approximation that may deviate from exact Maxwell-Boltzmann sampling; treat this as a controlled modeling choice and monitor with diagnostic checks. The attention-based implementation is equivalent to the original BAOAB up to discretization of the gradient and exponential map, which introduces $O(h^2)$ errors consistent with the original scheme. $\square$
 
 :::
 
-:::{prf:proposition} Keys as Force Bank
+:::{admonition} Experiment: Thermostat Ablation
+:class: feynman-added tip
+
+Compare the exact OU thermostat (no O-head) against a learned thermostat residual (diffusion-style noise). Track (i) momentum marginal vs. Maxwell-Boltzmann, (ii) energy drift over long rollouts, (iii) Node 68 metric-temperature consistency, and (iv) forecast accuracy or sample efficiency. This isolates expressivity vs. thermodynamic fidelity.
+:::
+
+:::{prf:proposition} Keys as Gradient Bank
 :label: prop-keys-as-force-bank
 
 In the B-step attention heads, the Keys store precomputed gradients of the effective potential at context positions:
 
 $$
-K^{(\text{force})}_{z'} = W_K \cdot \nabla\Phi_{\text{eff}}(z')
+K^{(\text{grad})}_{z'} = W_K \cdot \nabla\Phi_{\text{eff}}(z')
 $$
 
-The attention score $Q(z)^T K(z')$ measures how aligned the current position is with the force at $z'$. The weighted sum of Values retrieves the appropriate force:
+The attention score $Q(z)^T K(z')$ measures how aligned the current position is with the gradient at $z'$. The weighted sum of Values retrieves the local gradient estimate:
 
 $$
-F(z) = \sum_{z' \in \text{context}} \alpha(z, z') \cdot V^{(\text{force})}(z') = -\nabla\Phi_{\text{eff}}(z) + O(\text{interpolation error})
+\widehat{\nabla\Phi}(z) = \sum_{z' \in \text{context}} \alpha(z, z') \cdot V^{(\text{grad})}(z') = \nabla\Phi_{\text{eff}}(z) + O(\text{interpolation error})
 $$
+
+The B-step applies the negative sign: $\Delta p = -\frac{h}{2}\widehat{\nabla\Phi}(z)$.
 
 *Advantage*: Precomputing gradients at context positions amortizes the cost of gradient computation across multiple queries.
 
@@ -1057,15 +1073,15 @@ $$
 :::{prf:proposition} Values as State Updates
 :label: prop-values-as-state-updates
 
-In each BAOAB head, the Values encode the update to apply:
+In each attention head, the Values encode the update to apply (the OU step is closed-form unless you enable a learned thermostat):
 
 | Head | Value Content | Update |
 |:-----|:-------------|:-------|
-| B (kick) | $-\nabla\Phi$ | $\Delta p$ |
-| A (drift) | $G^{-1}p$ | $\Delta z$ |
-| O (thermostat) | $\sqrt{T_c G}\xi$ | Noise injection |
+| B (kick) | $\nabla\Phi$ | $\Delta p$ (with negative sign applied in the update) |
+| A (drift) | Displacement correction | $\Delta z$ (added to explicit $G^{-1}p$ drift) |
+| O (thermostat) | $c_2\,G^{1/2}\xi$ (OU) | Noise injection (optional learned residual) |
 
-The attention-weighted Value sum produces the update vector, which is then added to (or replaces) the current state.
+The attention-weighted Value sum produces the correction update, which is added to the explicit drift or momentum update as appropriate.
 
 :::
 
@@ -1077,9 +1093,9 @@ The attention-weighted Value sum produces the update vector, which is then added
 :::{div} feynman-prose
 Here is the complete implementation. It looks like a lot of code, but each piece corresponds directly to something we have derived mathematically.
 
-The main class `GeodesicCrossAttention` has five sub-modules for the five BAOAB heads. Each head uses the `CovariantAttention` helper class, which handles Wilson lines, position-dependent temperature, and geometric (linear + quadratic) Query projections.
+The main class `GeodesicCrossAttention` has four attention heads for the B and A steps, plus an optional learned thermostat head. Each attention head uses the `CovariantAttention` helper class, which handles Wilson lines, position-dependent temperature, and geometric (linear + quadratic) Query projections.
 
-The `forward` method takes the current state $(z, p)$ along with context banks (forces for B-steps, drift context for A-steps) and produces the next state $(z', p')$ in one pass. Inside, it sequences through the five heads: kick, drift, thermostat, drift, kick. Because attention operates in $d_{\text{model}}$, the head outputs are projected back to $d_{\text{latent}}$ before applying updates when the dimensions differ.
+The `forward` method takes the current state $(z, p)$ along with context banks (forces for B-steps, drift corrections for A-steps) and produces the next state $(z', p')$ in one pass. Inside, it sequences through the five BAOAB steps: kick, drift, thermostat, drift, kick, using four attention heads by default and a closed-form OU step for the thermostat. Because attention operates in $d_{\text{model}}$, the head outputs are projected back to $d_{\text{latent}}$ before applying updates when the dimensions differ.
 
 Pay attention to the metric computation. We use the Poincare disk formula, but this is modular---you can swap in any other metric by changing the `conformal_factor` method.
 
@@ -1099,8 +1115,9 @@ The code below is a **prototype implementation** intended to illustrate the arch
 2. **Christoffel initialization**: The linear ($W_{Qz}$) and quadratic ($W_{Q,\Gamma}$) terms should be initialized more carefully if you want an exact Poincare match.
 3. **Numerical stability**: Additional clamping and normalization may be needed near the boundary where $\lambda \to \infty$.
 4. **Chiral projector**: The SU(2) structure uses a real-valued proxy; a full implementation should use complex Pauli matrices and an explicit adjoint mapping for $\hat{n}$.
-5. **Head-specific inputs**: In production, use distinct Key/Value banks per head (forces for B, velocities/exponential maps for A, noise for O). The prototype uses `context_force` for B and reuses `context_x` for A.
-6. **State updates**: If $d_{\text{model}} \neq d_{\text{latent}}$, project attention outputs back to latent coordinates before applying updates.
+5. **Head-specific inputs**: In production, use distinct Key/Value banks per head (forces for B, transport corrections for A, noise for optional learned O). The prototype uses `context_force` for B and reuses `context_x` for A.
+6. **Thermostat choice**: The default OU step is exact. If you enable a learned thermostat head, treat it as a residual correction and monitor distributional drift.
+7. **State updates**: If $d_{\text{model}} \neq d_{\text{latent}}$, project attention outputs back to latent coordinates before applying updates.
 
 **Implementation vs. Theory**: The mathematical formulation (Definition {prf:ref}`def-covariant-qkv-projections`) has Wilson lines embedded in Q, K, V definitions. The code uses an equivalent approach: Wilson line correction is applied at attention-time via `K_transported = U @ K`. Both achieve gauge invariance; the code approach is more modular for experimentation.
 
@@ -1115,7 +1132,7 @@ Cross-references:
     - Definition {prf:ref}`def-covariant-qkv-projections` (Covariant Q/K/V)
     - Theorem {prf:ref}`thm-gauge-invariance-cross-attention` (Gauge invariance)
     - Theorem {prf:ref}`thm-metric-temperature-correspondence` (Metric-temperature)
-    - Definition {prf:ref}`def-baoab-attention-heads` (BAOAB heads)
+    - Definition {prf:ref}`def-baoab-attention-heads` (BAOAB steps)
 """
 
 import torch
@@ -1140,6 +1157,8 @@ class GeodesicConfig:
         g_s: Binding coupling strength (for area law screening)
         g_2: Error field coupling (for SU(2) chirality)
         g_1: Opportunity field coupling (for U(1) hypercharge)
+        use_learned_thermostat: Enable learned thermostat residual (optional)
+        thermostat_residual_scale: Scale for learned thermostat residual
     """
     d_model: int = 256
     d_latent: int = 64
@@ -1150,6 +1169,8 @@ class GeodesicConfig:
     g_s: float = 1.0
     g_2: float = 0.5
     g_1: float = 0.3
+    use_learned_thermostat: bool = False
+    thermostat_residual_scale: float = 0.1
 
 
 class WilsonLineApprox(nn.Module):
@@ -1596,7 +1617,7 @@ class GeodesicCrossAttention(nn.Module):
     """
     Full geodesic world model implementing Boris-BAOAB integration.
 
-    Five attention heads for B-A-O-A-B splitting.
+    Four attention heads for B-A-A-B, with an optional learned thermostat head.
 
     Cross-reference: Definition {prf:ref}`def-baoab-attention-heads`
 
@@ -1619,10 +1640,15 @@ class GeodesicCrossAttention(nn.Module):
         # Metric computations
         self.metric = ConformalMetric()
 
-        # Five BAOAB heads
+        # BAOAB attention heads (B, A, A, B) plus optional learned thermostat
         self.head_B1 = CovariantAttention(config, head_type='B')
         self.head_A1 = CovariantAttention(config, head_type='A')
-        self.head_O = CovariantAttention(config, head_type='O')
+        self.use_learned_thermostat = config.use_learned_thermostat
+        self.thermostat_residual_scale = config.thermostat_residual_scale
+        if self.use_learned_thermostat:
+            self.head_O = CovariantAttention(config, head_type='O')
+        else:
+            self.head_O = None
         self.head_A2 = CovariantAttention(config, head_type='A')
         self.head_B2 = CovariantAttention(config, head_type='B')
 
@@ -1634,15 +1660,18 @@ class GeodesicCrossAttention(nn.Module):
         # Project attention outputs back to latent updates
         self.state_proj = nn.Linear(config.d_model, config.d_latent)
 
-        # Noise projection for O-step
-        self.noise_proj = nn.Linear(config.d_latent, config.d_model)
+        # Noise projection for optional learned thermostat
+        if self.use_learned_thermostat:
+            self.noise_proj = nn.Linear(config.d_latent, config.d_model)
+        else:
+            self.noise_proj = None
 
     def forward(
         self,
         z: torch.Tensor,           # [B, d_latent] current position
         p: torch.Tensor,           # [B, d_latent] current momentum
         context_z: torch.Tensor,   # [B, N, d_latent] context positions
-        context_x: torch.Tensor,   # [B, N, d_model] context features (e.g., drift bank)
+        context_x: torch.Tensor,   # [B, N, d_model] context features (drift corrections)
         context_force: torch.Tensor,  # [B, N, d_latent] force/gradient bank
     ) -> Tuple[torch.Tensor, torch.Tensor]:
         """
@@ -1685,26 +1714,27 @@ class GeodesicCrossAttention(nn.Module):
         )
         # Apply position update via exponential map approximation
         delta_z1_latent = self.state_proj(delta_z1)
-        z = z + (h / 2) * delta_z1_latent
+        z = z + (h / 2) * (v + delta_z1_latent)
         z = self._project_to_disk(z)
 
         # ===== O-step: Ornstein-Uhlenbeck thermostat =====
-        # Inject noise bank
-        noise_bank = torch.randn_like(context_z)
-        noise_features = self.noise_proj(noise_bank)
-
-        delta_p_noise, _ = self.head_O(
-            z_query=z,
-            z_key=context_z,
-            x_query=self.velocity_encoder(p),
-            x_key=noise_features,
-            x_value=noise_features,
-        )
-        delta_p_noise_latent = self.state_proj(delta_p_noise)
-
-        # Thermalize momentum
+        # Thermalize momentum (closed-form OU)
         G_sqrt = self.metric.conformal_factor(z)
-        p = self.c1 * p + self.c2 * G_sqrt * delta_p_noise_latent
+        xi = torch.randn_like(p)
+        p = self.c1 * p + self.c2 * G_sqrt * xi
+        # Optional learned thermostat residual (diffusion-style correction)
+        if self.use_learned_thermostat:
+            noise_bank = torch.randn_like(context_z)
+            noise_features = self.noise_proj(noise_bank)
+            delta_p_noise, _ = self.head_O(
+                z_query=z,
+                z_key=context_z,
+                x_query=self.velocity_encoder(p),
+                x_key=noise_features,
+                x_value=noise_features,
+            )
+            delta_p_noise_latent = self.state_proj(delta_p_noise)
+            p = p + self.thermostat_residual_scale * delta_p_noise_latent
 
         # ===== A-step 2: Second half-drift =====
         G_inv = self.metric.metric_inv(z)
@@ -1720,7 +1750,7 @@ class GeodesicCrossAttention(nn.Module):
             v_query_geom=v,
         )
         delta_z2_latent = self.state_proj(delta_z2)
-        z = z + (h / 2) * delta_z2_latent
+        z = z + (h / 2) * (v + delta_z2_latent)
         z = self._project_to_disk(z)
 
         # ===== B-step 2: Second half-kick =====
@@ -2153,8 +2183,8 @@ We summarize the correspondence between the covariant attention architecture and
 | Observation-action doublet | Left-handed $SU(2)_L$ field $\Psi_L$ | Definition {prf:ref}`def-observation-action-doublet-attention` |
 | Chiral projector $\Pi_{\nabla V}$ | Electroweak symmetry breaking | Definition {prf:ref}`def-chiral-projector-value-gradient` |
 | Area law screening | Confinement string tension | Definition {prf:ref}`def-area-law-screening-attention` |
-| 5 BAOAB heads | Boris-BAOAB integrator | Definition {prf:ref}`def-baoab-attention-heads` |
-| Keys | Force bank | Proposition {prf:ref}`prop-keys-as-force-bank` |
+| BAOAB steps (4 attention heads + OU) | Boris-BAOAB integrator | Definition {prf:ref}`def-baoab-attention-heads` |
+| Keys | Gradient bank | Proposition {prf:ref}`prop-keys-as-force-bank` |
 | Values | State updates | Proposition {prf:ref}`prop-values-as-state-updates` |
 
 **Table 35.11.2 (Gauge Field Implementation).**
@@ -2183,7 +2213,7 @@ The result is a world model that is gauge-invariant by construction. It does not
 
 This is a different philosophy from the usual "train a big neural network and hope it learns the right structure." We are saying: there is a right structure, we know what it is, and we should build it in explicitly.
 
-The five BAOAB heads give you a complete geodesic integrator in one forward pass. The Keys store precomputed forces, the Values store state updates, and the attention mechanism routes information according to the gauge-covariant geometry.
+The BAOAB steps give you a complete geodesic integrator in one forward pass: four attention heads for B/A/A/B, and a closed-form OU thermostat in the middle (or a learned thermostat if enabled). The Keys store precomputed gradients, the Values store state updates, and the attention mechanism routes information according to the gauge-covariant geometry.
 
 Will this work in practice? That is an empirical question. But the theoretical foundations are solid. If the Lorentz-Langevin dynamics are a good model of what the agent should do, and if gauge covariance is important for consistency, then this architecture should outperform flat alternatives.
 
@@ -2199,7 +2229,7 @@ This chapter has derived the **Covariant Cross-Attention** architecture that imp
 3. **Geodesic correction** via geometric Query projections (Section 35.5)
 4. **$SU(2)_L$ chirality** via observation-action doublet and chiral projector (Section 35.6)
 5. **$SU(N_f)_C$ confinement** via area law screening (Section 35.7)
-6. **Boris-BAOAB integration** via five specialized attention heads (Section 35.8)
+6. **Boris-BAOAB integration** via attention heads + OU thermostat (Section 35.8)
 7. **O(N) complexity** via sparse attention, hierarchical Wilson lines, and factorized Christoffel (Section 35.9)
 
 The architecture is a **gauge-invariant world model** that acts as a one-step integrator for the Lorentz-Langevin geodesic equations. Diagnostic nodes 67-70 monitor gauge invariance, metric-temperature consistency, chirality preservation, and texture confinement.

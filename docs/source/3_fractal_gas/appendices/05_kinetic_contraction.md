@@ -531,6 +531,14 @@ $$
 - Separates deterministic and stochastic dynamics cleanly
 :::
 
+:::{remark} Implementation Alignment
+In the Euclidean Gas implementation, the BAOAB map is applied to the total force
+$
+F_{\text{tot}}(x, v) = -\nabla U(x) - \epsilon_F \nabla V_{\text{fit}}(x, v) + \nu F_{\text{viscous}}(x, v),
+$
+with optional anisotropic diffusion and an optional velocity squashing map after the final B-step. The resulting one-step transition kernel is the pushforward of the Gaussian noise through this full BAOAB map, so it is not generally Gaussian when the force field is nonlinear.
+:::
+
 :::{prf:remark} Stratonovich Correction for Anisotropic Case
 :label: rem-baoab-anisotropic
 
