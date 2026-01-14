@@ -1647,7 +1647,7 @@ E \le \frac{2 M_f}{|S_1|} \cdot n_c
 
 $$
 
-This general error bound is applied in {prf:ref}`02_euclidean_gas` for distance operator analysis and in {prf:ref}`09_kl_convergence` for KL-divergence convergence proofs.
+This general error bound is applied in {prf:ref}`02_euclidean_gas` for distance operator analysis and in [15_kl_convergence](15_kl_convergence) for KL-divergence convergence proofs.
 :::
 :::{prf:proof}
 **Proof.**

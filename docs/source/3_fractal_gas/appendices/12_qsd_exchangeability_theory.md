@@ -587,7 +587,7 @@ where the LSI constant $C_{\text{LSI}}$ is **independent of $N$** for all $N \ge
 
 :::{prf:proof}
 
-The proof of N-uniform LSI for the Euclidean Gas QSD is developed in detail in **Chapter 9: KL Convergence** (`09_kl_convergence.md`). We outline the key steps:
+The proof of N-uniform LSI for the Euclidean Gas QSD is developed in detail in **Chapter 9: KL Convergence** (`15_kl_convergence.md`). We outline the key steps:
 
 **Main Observation**: The proof does NOT use tensorization (Bakry-Émery), which would require product structure $\pi_N = \mu^{\otimes N}$. Since the QSD is exchangeable but not a product measure (due to cloning-induced correlations), tensorization fails. Instead, we use **hypocoercivity theory** combined with perturbation analysis.
 
@@ -613,7 +613,7 @@ If $\nu$ satisfies LSI with constant $C_1$ under generator $\mathcal{L}_1$, and 
 
 Since cloning preserves LSI and the kinetic LSI constant is N-uniform, the combined LSI constant $C_{\text{LSI}}$ is also N-uniform.
 
-**Conclusion**: The complete technical proof, including precise definitions of "controlled perturbation" and verification of all hypotheses, is provided in `09_kl_convergence.md`. The N-uniformity of $C_{\text{LSI}}$ is the key technical achievement enabling quantitative propagation of chaos bounds in Chapter 12. $\square$
+**Conclusion**: The complete technical proof, including precise definitions of "controlled perturbation" and verification of all hypotheses, is provided in `15_kl_convergence.md`. The N-uniformity of $C_{\text{LSI}}$ is the key technical achievement enabling quantitative propagation of chaos bounds in Chapter 12. $\square$
 :::
 
 **Key technical lemma**:
@@ -779,7 +779,7 @@ Therefore, the mean-field density $\rho_\infty$ satisfies the LSI with constant 
 - [08_propagation_chaos](08_propagation_chaos) - Wasserstein convergence
 
 **Functional inequalities**:
-- [09_kl_convergence](09_kl_convergence) - Finite-N LSI
+- [15_kl_convergence](15_kl_convergence) - Finite-N LSI
 - Chapter 2 (Geometric Gas) - Extended LSI analysis with viscous coupling
 
 ### A1.4.3 Practical Implications
@@ -821,4 +821,4 @@ Therefore, the mean-field density $\rho_\infty$ satisfies the LSI with constant 
 - [06_convergence](06_convergence) - QSD existence
 - [07_mean_field](07_mean_field) - McKean-Vlasov derivation
 - [08_propagation_chaos](08_propagation_chaos) - Mean-field limit
-- [09_kl_convergence](09_kl_convergence) - KL-convergence analysis
+- [15_kl_convergence](15_kl_convergence) - KL-convergence analysis

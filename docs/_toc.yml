@@ -62,6 +62,7 @@ parts:
     - file: source/1_agent/08_multiagent/02_standard_model
     - file: source/1_agent/08_multiagent/03_parameter_sieve
     - file: source/1_agent/08_multiagent/04_constants_check
+    - file: source/1_agent/08_multiagent/05_architecture
 
   - caption: Part IX - Economics
     chapters:
@@ -74,6 +75,7 @@ parts:
     - file: source/1_agent/10_appendices/03_wfr_tensor
     - file: source/1_agent/10_appendices/04_faq
     - file: source/1_agent/10_appendices/05_proofs
+    - file: source/1_agent/10_appendices/06_losses
 
   # ══════════════════════════════════════════════════════════════════════════════
   # VOLUME 2: THE HYPOSTRUCTURE FORMALISM
@@ -166,6 +168,7 @@ parts:
     - file: source/3_fractal_gas/2_fractal_set/02_causal_set_theory
     - file: source/3_fractal_gas/2_fractal_set/03_lattice_qft
     - file: source/3_fractal_gas/2_fractal_set/04_standard_model
+    - file: source/3_fractal_gas/2_fractal_set/05_yang_mills_noether
 
   - caption: "Part III - Appendices"
     chapters:
@@ -184,6 +187,7 @@ parts:
     - file: source/3_fractal_gas/appendices/12_qsd_exchangeability_theory
     - file: source/3_fractal_gas/appendices/13_quantitative_error_bounds
     - file: source/3_fractal_gas/appendices/14_faq
+    - file: source/3_fractal_gas/appendices/15_kl_convergence
 
   - caption: Conclusion
     chapters:

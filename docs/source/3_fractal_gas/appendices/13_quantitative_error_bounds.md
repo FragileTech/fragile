@@ -9,7 +9,7 @@ This document establishes explicit quantitative convergence rates for the Euclid
 
 This section establishes the quantitative $O(1/\sqrt{N})$ rate for the convergence of the N-particle system to the mean-field limit.
 
-**Strategy:** Use the Relative Entropy Method, leveraging the existing N-uniform LSI ({prf:ref}`thm-kl-convergence-euclidean` from [09_kl_convergence](09_kl_convergence)).
+**Strategy:** Use the Relative Entropy Method, leveraging the existing N-uniform LSI ({prf:ref}`thm-kl-convergence-euclidean` from [15_kl_convergence](15_kl_convergence)).
 
 **Proof chain:**
 1. ~~Wasserstein-entropy inequality: $W_2^2 \leq \frac{2}{\lambda_{\text{LSI}}} D_{KL}$~~ (Not used in final proof - see note below)
@@ -37,7 +37,7 @@ For our purposes (observable approximation), the Fournier-Guillin approach is mo
 :::{prf:lemma} Wasserstein-Entropy Inequality
 :label: lem-wasserstein-entropy
 
-Under the N-uniform LSI ({prf:ref}`thm-kl-convergence-euclidean` from [09_kl_convergence](09_kl_convergence)), the 2-Wasserstein distance between $\nu_N^{QSD}$ (the N-particle quasi-stationary distribution) and $\rho_0^{\otimes N}$ (the product of mean-field invariant measures) satisfies:
+Under the N-uniform LSI ({prf:ref}`thm-kl-convergence-euclidean` from [15_kl_convergence](15_kl_convergence)), the 2-Wasserstein distance between $\nu_N^{QSD}$ (the N-particle quasi-stationary distribution) and $\rho_0^{\otimes N}$ (the product of mean-field invariant measures) satisfies:
 
 $$
 W_2^2(\nu_N^{QSD}, \rho_0^{\otimes N}) \leq \frac{2}{\lambda_{\text{LSI}}} \cdot D_{KL}(\nu_N^{QSD} \| \rho_0^{\otimes N})
@@ -71,8 +71,8 @@ $$
 
 where:
 - $\gamma$: friction coefficient
-- $\kappa_{\text{conf}} > 0$: confinement constant from {prf:ref}`def-confined-potential`
-- $\kappa_W > 0$: Wasserstein Lipschitz constant from {prf:ref}`def-companion-prob-lip-wasserstein`
+- $\kappa_{\text{conf}} > 0$: confinement constant from {prf:ref}`axiom-confining-potential`
+- $\kappa_W > 0$: Wasserstein contraction rate from {prf:ref}`thm-main-contraction-full`
 - $\delta > 0$: cloning noise scale
 - $C_0 > 0$: interaction complexity bound (system-dependent)
 
@@ -561,7 +561,7 @@ The proof relies on the confinement axiom and energy bounds for the mean-field d
 
 **Step 1: Confinement of the potential**
 
-By the confinement axiom ({prf:ref}`def-confined-potential`), the potential $U: \mathcal{X} \to \mathbb{R}$ satisfies:
+By the confinement axiom ({prf:ref}`axiom-confining-potential`), the potential $U: \mathcal{X} \to \mathbb{R}$ satisfies:
 
 $$
 U(x) \to +\infty \quad \text{as } |x| \to \infty
@@ -803,7 +803,7 @@ Before proving weak convergence, we need uniform moment bounds for the BAOAB ite
 :::{prf:proposition} Fourth-Moment Uniform Bounds for BAOAB
 :label: prop-fourth-moment-baoab
 
-Let $\{Z_k\}_{k \geq 0}$ be the BAOAB chain with step size $\Delta t$ initialized from the continuous-time invariant measure $\nu^{\text{cont}}$. Under the confinement axiom ({prf:ref}`def-confined-potential`), there exists a constant $M_4 < \infty$ independent of $\Delta t$ (for $\Delta t$ sufficiently small) such that:
+Let $\{Z_k\}_{k \geq 0}$ be the BAOAB chain with step size $\Delta t$ initialized from the continuous-time invariant measure $\nu^{\text{cont}}$. Under the confinement axiom ({prf:ref}`axiom-confining-potential`), there exists a constant $M_4 < \infty$ independent of $\Delta t$ (for $\Delta t$ sufficiently small) such that:
 
 $$
 \sup_{k \geq 0} \mathbb{E}_{\nu^{\text{cont}}} [|Z_k|^4] \leq M_4
