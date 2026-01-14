@@ -1399,11 +1399,13 @@ $$
 
 **Predictions vs. Measurements:**
 
-| Angle | Formula | Prediction | Measured |
-|-------|---------|------------|----------|
-| $\theta_{12}$ (Cabibbo) | $\arcsin\sqrt{m_d/m_s}$ | $\sim 13°$ | $13.0°$ |
-| $\theta_{23}$ | $\arcsin\sqrt{m_s/m_b}$ | $\sim 2.4°$ | $2.4°$ |
-| $\theta_{13}$ | $\arcsin\sqrt{m_d/m_b}$ | $\sim 0.2°$ | $0.2°$ |
+| Angle | Formula | Prediction | Measured | Status |
+|-------|---------|------------|----------|--------|
+| $\theta_{12}$ (Cabibbo) | $\arcsin\sqrt{m_d/m_s}$ | $12.9°$ | $13.0°$ | **1% error** ✓ |
+| $\theta_{23}$ | $\arcsin\sqrt{m_s/m_b}$ | $8.6°$ | $2.4°$ | Order of magnitude |
+| $\theta_{13}$ | $\arcsin\sqrt{m_d/m_b}$ | $1.9°$ | $0.2°$ | Order of magnitude |
+
+**Interpretation:** The simple mass-ratio formula works excellently for the Cabibbo angle but overestimates the smaller angles. This suggests the spectral gap optimization involves additional suppression mechanisms beyond the leading-order formula. The hierarchy $\theta_{12} > \theta_{23} > \theta_{13}$ is correctly predicted.
 
 *Proof sketch.*
 
@@ -1729,6 +1731,8 @@ The Standard Model gauge group $SU(d)_C \times SU(2)_L \times U(1)_Y$ emerges fr
 
 - CKM angles from spectral gap optimization — {prf:ref}`prop-ckm-angles-spectral`
 - Derived formula: $\sin\theta_{ij} \approx \sqrt{m_{\text{light}}/m_{\text{heavy}}}$
+- Cabibbo angle ($\theta_{12}$) predicted to 1% accuracy
+- Hierarchy $\theta_{12} > \theta_{23} > \theta_{13}$ correctly predicted
 - PMNS angles larger due to more degenerate neutrino masses
 
 ### Methodology
