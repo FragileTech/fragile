@@ -35,7 +35,7 @@
 :::{div} feynman-prose
 Let me start with a confession. When most people think about artificial intelligence or reinforcement learning, they imagine a perfect reasoner---something that can consider all possibilities, hold infinite information in its head, and compute instantly. That's a beautiful mathematical fiction, and it has its uses, but it's not what we're going to talk about here.
 
-We're going to talk about *real* agents. Agents that can only see some of what's happening. Agents that can only remember so much. Agents that have to make decisions *now*, before they've finished thinking. In other words: agents that are *bounded*.
+We're going to talk about *real* agents. Agents that can only see some of what's happening. Agents that can only remember so much. Agents that have to make decisions *now*, before they've finished thinking. In other words: agents that are *bounded*. This notion of bounded rationality---that real decision-makers must satisfice rather than optimize due to computational and informational constraints---was formalized by Herbert Simon {cite}`simon1955behavioral,simon1982models`.
 
 This isn't a limitation we're going to apologize for and then sweep under the rug. This is the central fact we're going to build our entire framework around. Because here's the thing---every interesting agent, biological or artificial, is bounded. Your brain doesn't have infinite capacity. Neither does GPT-4. Neither does any robot we'll ever build. So we'd better have a theory that takes this seriously.
 :::
@@ -128,7 +128,7 @@ where:
 :::{div} feynman-prose
 This is the agent's "skin." Everything the agent knows about the outside world comes through this interface. Everything the agent does to the outside world goes through this interface. The tuple $B_t$ is the complete accounting of the agent's interaction with reality at time $t$.
 
-Why call it a "Markov blanket"? The term comes from graphical models and the theory of self-organizing systems. The Markov blanket of a node in a probabilistic graph is the minimal set of other nodes that, if you knew their values, would tell you everything you could possibly learn about that node from the rest of the graph. Conditioned on the blanket, the node is independent of everything outside.
+Why call it a "Markov blanket"? The term comes from graphical models and the theory of self-organizing systems {cite}`kirchhoff2018markov`. The Markov blanket of a node in a probabilistic graph is the minimal set of other nodes that, if you knew their values, would tell you everything you could possibly learn about that node from the rest of the graph. Conditioned on the blanket, the node is independent of everything outside.
 
 For our agent, the boundary $B_t$ plays exactly this role. If you tell me the complete history of boundary variables $(B_1, B_2, \ldots, B_t)$, I know everything the agent could possibly know. There's no other channel of information. The "environment" is whatever is on the other side of this blanket---and from the agent's perspective, all that matters about the environment is how it responds to actions with new observations.
 :::
@@ -271,7 +271,7 @@ This is wildly inefficient. Worse, it makes the system brittle: show it a lighti
 
 The right way to think about this is through the lens of *symmetry*. If rotating the camera by 10 degrees doesn't change what action you should take, then rotation is a *symmetry* of the problem. If shifting the reward by a constant doesn't change the optimal policy, then reward shifts are a *symmetry*. These symmetries define equivalence classes: different observations that should map to the same decision.
 
-Many of the largest stability and sample-efficiency failures in practice come from **wasting capacity on nuisance degrees of freedom**: the agent learns separate internal states for observations that differ only by pose, basis choice, or arbitrary internal labeling. We formalize these nuisance directions as **symmetries** (group actions) and treat "quotienting them out" as an explicit design constraint.
+Many of the largest stability and sample-efficiency failures in practice come from **wasting capacity on nuisance degrees of freedom**: the agent learns separate internal states for observations that differ only by pose, basis choice, or arbitrary internal labeling. We formalize these nuisance directions as **symmetries** (group actions) and treat "quotienting them out" as an explicit design constraint {cite}`cohen2016group`.
 
 We use "gauge" in the minimal, operational sense: a **gauge transformation** is a change of coordinates or representation that should not change the agent's control-relevant decisions, except through explicitly modeled nuisance variables.
 
@@ -291,7 +291,7 @@ Let:
   (If representing value as a unit-norm phase variable, one may instead use $U(1)$; {ref}`Section 3.3 <sec-defect-functionals-implementing-regulation>`.C treats the real-valued case via projective heads.)
 - $G_{\text{spatial}}$ be an **observation gauge** acting on raw observations $x$ (e.g., pose/translation/rotation; choose $SE(3)$, $SE(2)$, $\mathrm{Sim}(2)$, or a task-specific subgroup depending on sensors).
 - $S_{|\mathcal{K}|}$ be the **symbol-permutation symmetry** of the discrete macro register: relabeling code indices is unobservable if downstream components depend only on embeddings $\{e_k\}$.
-- $\mathrm{Symp}(2n,\mathbb{R})$ be an optional **phase-space symmetry** acting on canonical latent coordinates $z=(q,p)\in\mathbb{R}^{2n}$ when the world model is parameterized as a symplectic/Hamiltonian system ({ref}`Section 3.3 <sec-defect-functionals-implementing-regulation>`.B).
+- $\mathrm{Symp}(2n,\mathbb{R})$ be an optional **phase-space symmetry** acting on canonical latent coordinates $z=(q,p)\in\mathbb{R}^{2n}$ when the world model is parameterized as a symplectic/Hamiltonian system {cite}`greydanus2019hamiltonian` ({ref}`Section 3.3 <sec-defect-functionals-implementing-regulation>`.B).
 
 The (candidate) total symmetry group is the direct product
 
@@ -342,7 +342,7 @@ Gauge invariance isn't fancy math for its own sake. It's the mathematical statem
 ### Units and Dimensional Conventions (Explicit)
 
 :::{div} feynman-prose
-Now, a brief but important aside about units. This might seem pedantic, but confusing units is one of the most common sources of bugs in scientific code. (NASA lost a Mars orbiter because of a unit confusion. If it can happen to rocket scientists, it can happen to you.)
+Now, a brief but important aside about units. This might seem pedantic, but confusing units is one of the most common sources of bugs in scientific code. (NASA lost a Mars orbiter because of a unit confusion {cite}`nasa1999mars`. If it can happen to rocket scientists, it can happen to you.)
 :::
 
 This document expresses objectives in **information units** so that likelihoods, code lengths, KL terms, and entropy regularizers share a common scale.

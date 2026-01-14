@@ -87,7 +87,7 @@ Think about it. If I tell you "state A has value 100 and state B has value 80," 
 This is the utility gauge freedom. And it's not just a philosophical nicety---it has profound implications.
 :::
 
-The fundamental observable in Reinforcement Learning is the **Preference**, defined by the gradient of the Value function, not its absolute magnitude.
+The fundamental observable in Reinforcement Learning is the **Preference**, defined by the gradient of the Value function, not its absolute magnitude. The policy is invariant under certain reward transformations, including constant shifts and potential-based shaping {cite}`ng1999policy`.
 
 :::{prf:definition} Utility Gauge Freedom
 :label: def-utility-gauge-freedom
