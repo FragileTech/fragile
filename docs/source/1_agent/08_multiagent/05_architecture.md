@@ -5,8 +5,8 @@
 
 - Standard world models (GRU, Transformer) ignore geometric structure; we replace them with **Covariant Cross-Attention**
 - Attention between observation and action latents uses **Wilson lines** for parallel transport, ensuring gauge invariance
-- The softmax temperature encodes the **inverse metric**: $\tau(z) = \sqrt{d_k}/\lambda(z)$ (Mass = Metric)
-- **Christoffel symbols** appear through quadratic Query terms $Q \ni (z \otimes z, z \odot v)$
+- The softmax temperature encodes the **inverse metric scale** (inverse conformal factor): $\tau(z) = \sqrt{d_k}/\lambda(z)$ (Mass = Metric)
+- **Christoffel symbols** are parameterized via linear + quadratic Query terms in $z$ ($z, z \otimes z$), with optional $z \odot v$ coupling
 - The $SU(2)_L$ chirality (sensor-motor asymmetry) is preserved via **chiral projectors**
 - The $SU(N_f)_C$ texture firewall is enforced via **area law screening**
 - Five attention heads implement the complete **Boris-BAOAB** geodesic integrator in one forward pass
@@ -17,7 +17,7 @@
 2. Mathematical prerequisites: recap Lorentz-Langevin SDE and gauge structure
 3. Covariant Cross-Attention with Wilson lines and gauge invariance
 4. Metric encoded in temperature: softmax temp = inverse conformal factor
-5. Christoffel symbols from quadratic Query terms
+5. Christoffel symbols from linear + quadratic Query terms
 6. $SU(2)_L$ chirality: observation-action doublet with chiral projector
 7. $SU(N_f)_C$ texture firewall: area law screening for confinement
 8. BAOAB integration via 5 attention heads
@@ -35,16 +35,16 @@ Here is the key insight: a Transformer attention head is secretly a parallel tra
 
 The standard Transformer ignores this completely. It computes $\text{softmax}(QK^T/\sqrt{d_k})$ as if the latent space were flat Euclidean space with a global coordinate system. But we know that is wrong. The latent space is curved, with curvature determined by the metric law. And different parts of the space may be using different local frames, related by gauge transformations.
 
-The fix is Wilson lines. Instead of directly comparing $Q$ at position $z$ with $K$ at position $z'$, you first parallel-transport $K$ from $z'$ to $z$ along a connecting path, then compare. This is gauge-covariant by construction: if you change the local frame at either endpoint, the Wilson line absorbs the transformation.
+The fix is Wilson lines. Instead of directly comparing $Q$ at position $z$ with $K$ at position $z'$, you parallel-transport both to a common reference frame (often the origin), or equivalently transport $K$ from $z'$ to $z$ along a connecting path, and then compare. This is gauge-covariant by construction: if you change the local frame at either endpoint, the Wilson line absorbs the transformation.
 
 But there is more. The softmax temperature $\sqrt{d_k}$ in standard attention is a fixed constant. We are going to show that it should be the *inverse conformal factor* of the metric: $\tau(z) = \sqrt{d_k}/\lambda(z)$. This means the attention becomes sharper in high-curvature regions and softer in low-curvature regions---exactly what you want for safe exploration.
 
-And the geodesic correction? The Christoffel symbols? Those come from quadratic terms in the Query projection. The standard linear $Q = W_Q z$ becomes $Q = W_Q z + W_{QQ}(z \otimes z)$, and the quadratic coefficient encodes the connection.
+And the geodesic correction? The Christoffel symbols? Those come from geometric terms in the Query projection. The standard linear $Q = W_Q x$ (with $x$ encoding $z$) becomes $Q = W_Q x + W_{Qz} z + W_{Qv} x_v + W_{Q,\Gamma}(z \otimes z)$, optionally with a velocity-conditioned $W_{Qzv}(z \odot v)$ term. The geometric coefficients encode the connection.
 
 The result is a single attention module that performs one complete step of the Boris-BAOAB integrator. Five heads for B-A-O-A-B, with the Keys acting as a force bank and the Values as state updates. It is gauge-covariant, symplectic, and thermodynamically consistent---all from attention.
 :::
 
-*Abstract.* This chapter derives the **Covariant Cross-Attention** architecture for the world model, replacing standard sequence models (GRU, Transformer) with a mechanism that respects the gauge structure $G_{\text{Fragile}} = SU(N_f)_C \times SU(2)_L \times U(1)_Y$ derived in {ref}`Section 34 <sec-standard-model-cognition>`. The architecture implements a single-step integrator for the Lorentz-Langevin geodesic equations ({ref}`Section 22 <sec-the-equations-of-motion-geodesic-jump-diffusion>`) using Wilson lines for parallel transport, position-dependent temperature for metric encoding, and quadratic Query projections for Christoffel symbols. The result is a world model that is gauge-invariant by construction rather than by regularization.
+*Abstract.* This chapter derives the **Covariant Cross-Attention** architecture for the world model, replacing standard sequence models (GRU, Transformer) with a mechanism that respects the gauge structure $G_{\text{Fragile}} = SU(N_f)_C \times SU(2)_L \times U(1)_Y$ derived in {ref}`Section 34 <sec-standard-model-cognition>`. The architecture implements a single-step integrator for the Lorentz-Langevin geodesic equations ({ref}`Section 22 <sec-the-equations-of-motion-geodesic-jump-diffusion>`) using Wilson lines for parallel transport, position-dependent temperature for metric encoding, and linear + quadratic Query projections for Christoffel symbols. The result is a world model that is gauge-invariant by construction rather than by regularization.
 
 *Cross-references:* This chapter synthesizes:
 - {ref}`Section 22 <sec-the-equations-of-motion-geodesic-jump-diffusion>` (Lorentz-Langevin SDE, Boris-BAOAB integrator)
@@ -126,7 +126,7 @@ The metric encodes capacity and risk. In the Poincare disk model, the conformal 
 These ingredients will map onto attention components as follows:
 - Wilson lines $\to$ Key/Query preprocessing
 - Metric $\to$ Temperature scaling
-- Christoffel symbols $\to$ Quadratic Query terms
+- Christoffel symbols $\to$ Linear + quadratic Query terms
 - Gauge fields $\to$ Position-dependent projections
 :::
 
@@ -201,7 +201,7 @@ This ensures that $U_\gamma(z, z_0) \psi(z_0)$ transforms correctly at $z$.
 :::{div} feynman-prose
 The Wilson line is the key to gauge-covariant comparison. If you want to compare a vector at $z$ with a vector at $z_0$, you cannot just subtract them---that is not gauge-invariant. Instead, you parallel-transport the vector at $z_0$ to $z$ using the Wilson line, then compare. The result is independent of which gauge you choose at each point.
 
-In our attention mechanism, we will use Wilson lines to preprocess Keys and Queries before comparison. The Query at position $z$ will be compared with Keys that have been parallel-transported *to* $z$ from their original positions. This ensures the attention scores are gauge-invariant.
+In our attention mechanism, we will use Wilson lines to preprocess Keys and Queries before comparison. The Query at position $z$ is compared with Keys that have been parallel-transported to a common reference frame (often the origin). Equivalently, you can transport each Key to the Query point. This ensures the attention scores are gauge-invariant.
 :::
 
 :::{prf:definition} Poincare Disk Metric (Recap)
@@ -245,7 +245,7 @@ This has three problems from our perspective:
 2. The temperature $\sqrt{d_k}$ is position-independent
 3. There is no geodesic correction
 
-We fix all three. The gauge covariance comes from Wilson line preprocessing. The position-dependent temperature comes from the metric. The geodesic correction comes from quadratic Query terms.
+We fix all three. The gauge covariance comes from Wilson line preprocessing. The position-dependent temperature comes from the metric. The geodesic correction comes from geometric (linear + quadratic) Query terms.
 
 Let me walk you through each component.
 
@@ -259,7 +259,7 @@ This is gauge-invariant: if we transform the gauge at $z'$, the Key transforms, 
 
 For the temperature, remember that the metric encodes how "heavy" different regions are. In high-curvature regions, the agent should move cautiously, which means sharp attention (low temperature). In low-curvature regions, the agent can explore freely, which means soft attention (high temperature). The natural choice is $\tau(z) = \sqrt{d_k}/\lambda(z)$: temperature inversely proportional to the conformal factor.
 
-For the geodesic correction, we need the Christoffel symbols. These tell you how straight lines curve on the manifold. In standard attention, the Query is linear in the input: $Q = W_Q z$. To include Christoffel symbols, we add a quadratic term: $Q = W_Q z + W_{QQ}(z \otimes z)$. The quadratic coefficient encodes the connection.
+For the geodesic correction, we need the Christoffel symbols. These tell you how straight lines curve on the manifold. In standard attention, the Query is linear in its input features: $Q = W_Q x$ (with $x$ encoding $z$). To include Christoffel symbols, we add explicit geometric terms: $Q = W_Q x + W_{Qz} z + W_{Qv} x_v + W_{Q,\Gamma}(z \otimes z)$, optionally with a velocity-conditioned $W_{Qzv}(z \odot v)$ term. The geometric coefficients encode the connection.
 :::
 
 We define the gauge-covariant attention mechanism that respects the full gauge structure.
@@ -369,15 +369,15 @@ This is a linear correction that can be implemented efficiently.
 For attention between positions $z$ and $z'$ with $|z - z'| \ll 1$, the Wilson line can be approximated as:
 
 $$
-U(z, z') \approx I - i \sum_a \Theta^a(z) \cdot (z - z')
+U(z, z') \approx I - i A_\mu(z) (z - z')^\mu
 $$
 
-where $\Theta^a(z) = g_s \lambda^a G(z) + g_2 \tau^a W(z) + g_1 Y B(z)$ are the **connection coefficients** contracted with the path direction.
+where $A_\mu$ is the total gauge connection from Definition {prf:ref}`def-wilson-line`, and the contraction $A_\mu(z) (z - z')^\mu$ is the path-directional connection.
 
 In the attention mechanism, this becomes a **relative position encoding**:
 
 $$
-\text{score}(z, z') = Q(z)^T K(z') - i Q(z)^T \Theta(z) (z - z')^T K(z')
+\text{score}(z, z') = Q(z)^T K(z') - i Q(z)^T \left[A_\mu(z) (z - z')^\mu\right] K(z')
 $$
 
 The second term is the **gauge correction** to the attention score.
@@ -412,7 +412,7 @@ No gauge structure, no parallel transport, no position-dependent temperature.
 **What the generalization offers:**
 - Gauge-invariant predictions regardless of local coordinate choice
 - Metric-aware temperature scaling for safe exploration
-- Automatic geodesic correction via quadratic Query terms
+- Automatic geodesic correction via geometric (linear + quadratic) Query terms
 
 :::
 
@@ -422,7 +422,7 @@ No gauge structure, no parallel transport, no position-dependent temperature.
 ## The Metric in Temperature: Softmax Temperature = Inverse Conformal Factor
 
 :::{div} feynman-prose
-Here is one of the most elegant correspondences in this whole construction. The softmax temperature in attention---that innocuous $\sqrt{d_k}$ in the denominator---is actually the *inverse metric*.
+Here is one of the most elegant correspondences in this whole construction. The softmax temperature in attention---that innocuous $\sqrt{d_k}$ in the denominator---is the *inverse metric scale* (the inverse conformal factor).
 
 Think about what temperature does in a softmax. High temperature means soft attention: all positions get similar weight, the distribution is spread out. Low temperature means sharp attention: one position dominates, the distribution is peaked.
 
@@ -470,19 +470,20 @@ $$
 
 The attention becomes infinitely sharp: $\text{softmax}(s/\tau) \to \delta_{z' = z^*}$ where $z^*$ is the argmax. This prevents the weighted average of Values from producing states outside the boundary.
 
-**Step 3 (Boltzmann consistency).** The geodesic distance from $z$ to $z'$ in the Poincare disk is:
+**Step 3 (Boltzmann consistency).** The geodesic distance from $z$ to $z'$ in the Poincare disk can be written as:
 
 $$
-d_G(z, z') = 2 \tanh^{-1}\left(\frac{|z - z'|}{|1 - z\bar{z}'|}\right) \approx \lambda(z) |z - z'| + O(|z-z'|^2)
+d_G(z, z') = \operatorname{arcosh}\left(1 + \frac{2\|z - z'\|^2}{(1-\|z\|^2)(1-\|z'\|^2)}\right)
+\approx \lambda(z) \|z - z'\| + O(\|z-z'\|^2)
 $$
 
-for nearby points. If $Q^T K$ encodes negative squared coordinate distance $-|z-z'|^2$, then:
+for nearby points. If $Q^T K$ encodes negative squared coordinate distance $-\|z-z'\|^2$, then:
 
 $$
-\frac{Q^T K}{\tau} \propto \frac{-|z-z'|^2}{\sqrt{d_k}/\lambda} = -\frac{\lambda |z-z'|^2}{\sqrt{d_k}}
+\frac{Q^T K}{\tau} \propto \frac{-\|z-z'\|^2}{\sqrt{d_k}/\lambda} = -\frac{\lambda \|z-z'\|^2}{\sqrt{d_k}}
 $$
 
-This gives $\alpha \propto \exp(-\lambda |z-z'|^2 / \sqrt{d_k})$, which concentrates attention on nearby points with effective width $\propto 1/\sqrt{\lambda}$. Near the boundary where $\lambda \to \infty$, attention becomes infinitely localized.
+This gives $\alpha \propto \exp(-\lambda \|z-z'\|^2 / \sqrt{d_k})$, which concentrates attention on nearby points with effective width $\propto 1/\sqrt{\lambda}$. Near the boundary where $\lambda \to \infty$, attention becomes infinitely localized.
 
 $\square$
 
@@ -513,7 +514,7 @@ This gives us a unified picture. The metric, which encodes capacity and risk, de
 2. How cautious the attention is (inverse temperature)
 3. How localized the predictions are (attention sharpness)
 
-All from the same geometric quantity. This is not a coincidence---it is forced by consistency. If you want the world model to respect the geometry, the temperature must be the inverse metric.
+All from the same geometric quantity. This is not a coincidence---it is forced by consistency. If you want the world model to respect the geometry, the temperature must track the inverse metric scale.
 :::
 
 (pi-temperature-metric)=
@@ -536,71 +537,70 @@ $$
 | Energy $E$ | Attention score $-Q^T K$ |
 | Partition function $Z$ | Softmax normalizer |
 | Boltzmann weight $e^{-E/T}$ | Attention weight $\alpha$ |
-| Metric factor $\sqrt{g}$ | Conformal factor $\lambda(z)$ |
+| Metric factor $\sqrt{g}$ | Conformal factor $\lambda(z)^d$ (local scale) |
 ::::
 
 
 
 (sec-christoffel-in-query)=
-## Christoffel Symbols in Query: Quadratic Projections for Geodesic Correction
+## Christoffel Symbols in Query: Linear + Quadratic Projections for Geodesic Correction
 
 :::{div} feynman-prose
 Now we encode the geodesic correction into the Query projection. This is the most subtle part of the construction.
 
 In the Lorentz-Langevin equation, the Christoffel symbol term is $-\Gamma^k_{ij} \dot{z}^i \dot{z}^j$. This is *quadratic* in the velocity. It tells you how much to "curve" your path to stay on the geodesic.
 
-In standard attention, the Query is linear: $Q = W_Q z$. This cannot capture the quadratic correction. We need to add a quadratic term: $Q = W_Q z + W_{QQ}(z \otimes z)$.
+In standard attention, the Query is linear in its input features: $Q = W_Q x$ (with $x$ typically encoding $z$). This cannot capture the position-dependent connection. We therefore enrich the Query with explicit geometric terms in $z$ so it can parameterize $\Gamma(z)$. If you need velocity-conditioned corrections (for discretization residuals or non-Levi-Civita effects), you can add a lightweight bilinear term in $(z, v)$; the core geodesic velocity dependence still comes from the Keys and Values.
 
-What should $W_{QQ}$ be? It should encode the Christoffel symbols. Specifically, when you contract the quadratic term with the velocity (which appears in the Key), you should get the geodesic correction.
+What should $W_{Qz}$ and $W_{Q,\Gamma}$ be? They should parameterize the Christoffel symbols. The geodesic correction then emerges from the interaction between $\Gamma(z)$-aware Queries and velocity-carrying Keys/Values.
 
 The implementation is:
 
 $$
-Q_{\text{geodesic}}(z, v) = W_Q z + W_{Qv} v + W_{QQ}(z \otimes z) + W_{Qzv}(z \odot v)
+Q_{\text{geodesic}}(x, z, v) = W_Q x + W_{Qz} z + W_{Qv} x_v + W_{Q,\Gamma}(z \otimes z) + W_{Qzv}(z \odot v)
 $$
 
-where $v$ is the current velocity (or momentum). The $z \otimes z$ term gives the position-dependent curvature correction, and the $z \odot v$ term (Hadamard product) couples position and velocity as needed for the Christoffel contraction.
+where $x_v = \phi_v(v)$ is a feature embedding of the current velocity (or momentum). The $W_{Qz} z$ term captures the linear-in-$z$ structure of $\Gamma(z)$ for the Poincare disk, while the $z \otimes z$ term provides a flexible basis for nonlinear corrections on more general manifolds. The optional $z \odot v$ term (Hadamard product) provides a simple velocity-conditioned correction when the effective connection departs from the pure Levi-Civita form.
 
-This looks complicated, but it is just the minimum structure needed to encode the geodesic equation. The Christoffel symbols $\Gamma^k_{ij}$ are symmetric in $i, j$, which is captured by the symmetric outer product $z \otimes z$. The velocity dependence $\dot{z}^i \dot{z}^j$ comes from the Key, which encodes the action/velocity information.
+This looks complicated, but the core $W_{Qz}$ and $W_{Q,\Gamma}$ terms are the minimum structure needed to encode the geodesic equation; the velocity-conditioned terms are optional corrections. The Christoffel symbols $\Gamma^k_{ij}$ are symmetric in $i, j$, and the symmetric outer product $z \otimes z$ provides a natural basis for that symmetry. The velocity dependence $\dot{z}^i \dot{z}^j$ comes from the Keys/Values, which encode the action/velocity information.
 :::
 
-We derive the quadratic Query projection that encodes Christoffel symbols for geodesic correction.
+We derive the geometric (linear + quadratic) Query projection that parameterizes Christoffel symbols for geodesic correction.
 
 :::{prf:definition} Geodesic Query Projection
 :label: def-geodesic-query-projection
 
-The **Geodesic Query** extends the linear projection to include quadratic terms that encode the Levi-Civita connection:
+The **Geodesic Query** extends the linear projection to include geometric terms that encode the Levi-Civita connection:
 
 $$
-Q_{\text{geo}}(z, v) = W_Q z + W_{Qv} v + W_{Q,\Gamma}(z, z) + W_{Qv,\Gamma}(z, v)
+Q_{\text{geo}}(x, z, v) = W_Q x + W_{Qz} z + W_{Qv} x_v + W_{Q,\Gamma}(z, z) + W_{Qzv}(z, v)
 $$
 
 where:
-- $W_Q \in \mathbb{R}^{d_k \times d}$ is the standard linear projection
-- $W_{Qv} \in \mathbb{R}^{d_k \times d}$ projects the velocity/momentum
+- $W_Q \in \mathbb{R}^{d_k \times d_{\text{model}}}$ is the feature projection
+- $W_{Qz} \in \mathbb{R}^{d_k \times d}$ maps geometric coordinates
+- $W_{Qv} \in \mathbb{R}^{d_k \times d_{\text{model}}}$ projects velocity/momentum features $x_v = \phi_v(v)$
 - $W_{Q,\Gamma} \in \mathbb{R}^{d_k \times d \times d}$ is a 3-tensor encoding position-position quadratic terms
-- $W_{Qv,\Gamma} \in \mathbb{R}^{d_k \times d \times d}$ encodes position-velocity coupling
+- $W_{Qzv} \in \mathbb{R}^{d_k \times d \times d}$ encodes optional position-velocity coupling
 
-**Notation**: $(A, B)$ denotes bilinear contraction: $W_{Q,\Gamma}(z, z) = \sum_{ij} W_{Q,\Gamma}^{a,ij} z^i z^j$.
+Here $x_v = \phi_v(v)$ is a feature embedding of velocity/momentum.
 
-**Christoffel Encoding**: The tensor $W_{Q,\Gamma}$ should satisfy:
+**Notation**: $(A, B)$ denotes bilinear contraction: $W_{Q,\Gamma}(z, z) = \sum_{ij} W_{Q,\Gamma}^{a,ij} z^i z^j$ and $W_{Qzv}(z, v) = \sum_{ij} W_{Qzv}^{a,ij} z^i v^j$.
 
-$$
-W_{Q,\Gamma}^{a,ij} \propto \Gamma^a_{ij}(z_0)
-$$
+The $W_{Qzv}$ term is optional; for Levi-Civita connections it can be omitted. In practice, a Hadamard coupling $z \odot v$ followed by a linear map is often sufficient.
 
-at a reference point $z_0$, with learnable corrections for position dependence.
+**Christoffel Encoding**: Use $W_{Qz}$ to capture the linear-in-$z$ part of $\Gamma(z)$ near a reference point $z_0$, and use $W_{Q,\Gamma}$ for nonlinear corrections with learnable position dependence. Both can be initialized from the Poincare structure and refined during training.
 
 :::
 
-:::{prf:theorem} Geodesic Correction via Attention
+:::{prf:theorem} Geodesic Correction Representability via Attention
 :label: thm-geodesic-correction-attention
 
 Let the Query and Key be:
 
 $$
 \begin{aligned}
-Q(z, v) &= W_Q z + W_{Qv} v + W_{Q,\Gamma}(z, z) \\
+Q(x, z, v) &= W_Q x + W_{Qz} z + W_{Qv} x_v + W_{Q,\Gamma}(z, z) \\
 K(z', v') &= W_K z' + W_{Kv} v'
 \end{aligned}
 $$
@@ -611,18 +611,19 @@ $$
 \Delta z = \sum_{z'} \alpha(z, z') V(z')
 $$
 
-contains the geodesic correction term $-\Gamma^k_{ij} v^i v^j$ when:
+can represent the geodesic correction term $-\Gamma^k_{ij}(z) v^i v^j$ when:
 
-1. The Value encodes velocity updates: $V = W_V v'$
-2. The quadratic Query contracts with velocity Keys: $W_{Q,\Gamma}(z, z) \cdot W_{Kv} v' = \Gamma^k_{ij}(z) z^i z^j \cdot v'^k$
+1. The Keys and Values encode velocity components (e.g., $K = W_{Kv} v'$, $V = W_V v'$)
+2. The Query provides a learned parameterization of $\Gamma(z)$ via $W_{Q,\Gamma}$
+3. The context includes local velocities $v' \approx v$ so the bilinear form is sampled in a neighborhood
 
 *Proof sketch.* The attention score is:
 
 $$
-s(z, z') = Q(z, v)^T K(z', v') = [W_Q z + W_{Qv} v + W_{Q,\Gamma}(z,z)]^T [W_K z' + W_{Kv} v']
+s(z, z') = Q(x, z, v)^T K(z', v') = [W_Q x + W_{Qz} z + W_{Qv} x_v + W_{Q,\Gamma}(z,z)]^T [W_K z' + W_{Kv} v']
 $$
 
-The cross-term $W_{Q,\Gamma}(z,z)^T W_{Kv} v'$ is bilinear in $z$ and linear in $v'$. When Values are velocity-like and the projection weights encode Christoffel symbols, the output recovers the geodesic correction. $\square$
+The cross-term $W_{Q,\Gamma}(z,z)^T W_{Kv} v'$ is linear in $v'$ with coefficients set by $\Gamma(z)$. With Values also linear in $v'$, the weighted sum yields a learned bilinear form in $v'$ whose coefficients can be matched to $\Gamma(z)$, recovering the geodesic correction up to the approximation induced by softmax and context discretization. $\square$
 
 :::
 
@@ -635,28 +636,24 @@ $$
 \Gamma^k_{ij}(z) = \frac{2}{1-|z|^2}\left(\delta^k_i z_j + \delta^k_j z_i - \delta_{ij} z^k\right)
 $$
 
-The quadratic Query tensor $W_{Q,\Gamma}$ should encode:
+A practical initialization is to use a linear geometric term $W_{Qz} z$ to reproduce the linear-in-$z$ structure above (up to a sign convention that can be absorbed into the update rule), and reserve $W_{Q,\Gamma}(z,z)$ for nonlinear corrections.
+
+**Learnable approximation**: Since $\Gamma$ depends on position, a simple parameterization is to scale the nonlinear correction by the conformal factor:
 
 $$
-W_{Q,\Gamma}^{k,ij}(z) = -\frac{2}{1-|z|^2}\left(\delta^k_i z_j + \delta^k_j z_i - \delta_{ij} z^k\right)
+Q_\Gamma(z) = W_{Qz} z + \frac{2}{1-|z|^2}\,\tilde{W}_{Q,\Gamma}(z, z)
 $$
 
-**Learnable approximation**: Since $\Gamma$ depends on position, we parameterize:
-
-$$
-W_{Q,\Gamma}^{k,ij}(z) = \tilde{W}_{Q,\Gamma}^{k,ij} \cdot \frac{2}{1-|z|^2}
-$$
-
-where $\tilde{W}$ is a learnable constant tensor initialized to approximate the Poincare Christoffel structure.
+where $\tilde{W}_{Q,\Gamma}$ is a learnable tensor initialized to approximate higher-order corrections and then refined by training.
 
 :::
 
 :::{div} feynman-prose
-This is a bit technical, so let me give you the intuition. The Christoffel symbols tell you "when I'm at position $z$ and moving with velocity $v$, how much do I need to curve my path to follow the geodesic?" The answer depends quadratically on both position and velocity.
+This is a bit technical, so let me give you the intuition. The Christoffel symbols tell you "when I'm at position $z$ and moving with velocity $v$, how much do I need to curve my path to follow the geodesic?" The answer depends on position and quadratically on velocity.
 
-In attention, the Query asks a question and the Key provides answers. The quadratic Query term is asking: "what is the geodesic correction at my current position?" The Key, which contains velocity information, provides the answer through the bilinear interaction.
+In attention, the Query asks a question and the Key provides answers. The geometric Query terms are asking: "what is the geodesic correction at my current position?" The Key, which contains velocity information, provides the answer through the bilinear interaction.
 
-The nice thing is that this is all learnable. We initialize $W_{Q,\Gamma}$ to the known Christoffel structure, but then let the network fine-tune it based on data. If the Poincare model is exactly right, the network will keep the initialization. If reality is more complex, the network can learn corrections.
+The nice thing is that this is all learnable. We initialize $W_{Q,\Gamma}$ with a Poincare-inspired structure, but then let the network fine-tune it based on data. If the Poincare model is exactly right, the network will keep the initialization. If reality is more complex, the network can learn corrections.
 :::
 
 
@@ -677,21 +674,21 @@ This doublet transforms under $SU(2)_L$, while the right-handed singlet $\Psi_R 
 
 In the attention mechanism, we need to preserve this structure. The observation and action channels must be treated as a doublet, with the $SU(2)$ gauge field mediating their mixing. And the committed action must be extracted via a gauge-covariant projection.
 
-The chiral projector uses the value gradient to define the "direction" of action:
+The chiral projector uses the value gradient to define the "direction" of action. Let $\hat{n}(z)$ be a unit vector in the $SU(2)$ internal space derived from the value gradient, using a learned projection $P: \mathbb{R}^d \to \mathbb{R}^3$ when $d>3$:
 
 $$
-\vec{n}(z) = \frac{\nabla V}{\|\nabla V\|} \cdot \vec{\tau}
+\hat{n}(z) = \frac{P \nabla V}{\|P \nabla V\|}
 $$
 
 where $\vec{\tau}$ are the Pauli matrices. The projection operator is:
 
 $$
-\Pi_{\text{chirality}} = \frac{1}{2}(I + \vec{n} \cdot \vec{\tau})
+\Pi_{\text{chirality}} = \frac{1}{2}(I + \hat{n} \cdot \vec{\tau})
 $$
 
 This projects the doublet onto the component aligned with the value gradient---the direction of improvement.
 
-In flat regions where $\nabla V \approx 0$, the projector becomes ambiguous. This is correct: when there is no preferred direction, the agent should not commit to a definite action. The architecture naturally encodes decision ambiguity as projector degeneracy.
+In flat regions where $P \nabla V \approx 0$, the projector becomes ambiguous. This is correct: when there is no preferred direction, the agent should not commit to a definite action. The architecture naturally encodes decision ambiguity as projector degeneracy.
 :::
 
 We implement the $SU(2)_L$ gauge structure that distinguishes observation and action channels.
@@ -727,18 +724,18 @@ $$
 :::{prf:definition} Chiral Projector from Value Gradient
 :label: def-chiral-projector-value-gradient
 
-The **chiral projector** extracts committed actions from the observation-action doublet using the value gradient:
+The **chiral projector** extracts committed actions from the observation-action doublet using a unit $SU(2)$ direction derived from the value gradient:
 
 $$
-\vec{n}(z) = \frac{\nabla V(z)}{\|\nabla V(z)\|} \cdot \vec{\tau}
+\hat{n}(z) = \frac{P \nabla V(z)}{\|P \nabla V(z)\|}
 $$
 
-where $\vec{\tau} = (\tau_1, \tau_2, \tau_3)$ are Pauli matrices (generators of $SU(2)$).
+where $P: \mathbb{R}^d \to \mathbb{R}^3$ is a learned projection and $\vec{\tau} = (\tau_1, \tau_2, \tau_3)$ are Pauli matrices (generators of $SU(2)$).
 
 The **projection operator** is:
 
 $$
-\Pi_{\text{chirality}}(z) = \frac{1}{2}\left(I_2 + \vec{n}(z) \cdot \vec{\tau}\right)
+\Pi_{\text{chirality}}(z) = \frac{1}{2}\left(I_2 + \hat{n}(z) \cdot \vec{\tau}\right)
 $$
 
 The **committed action** is:
@@ -747,28 +744,34 @@ $$
 \psi_{\text{act}}^{\text{commit}}(z) = \Pi_{\text{chirality}}(z) \cdot \Psi_L(z)
 $$
 
+The **commitment strength** (gauge-invariant under $SU(2)$, per feature channel) is:
+
+$$
+c(z) = \Psi_L(z)^\dagger \Pi_{\text{chirality}}(z) \Psi_L(z)
+$$
+
 **Properties**:
 - $\Pi_{\text{chirality}}^2 = \Pi_{\text{chirality}}$ (idempotent)
 - $\text{Tr}(\Pi_{\text{chirality}}) = 1$ (rank-1 projector)
-- Under $SU(2)$ transformation $\Psi_L \to U\Psi_L$: $\vec{n} \to U\vec{n}U^\dagger$, preserving gauge covariance
+- Under $SU(2)$ transformation $\Psi_L \to U\Psi_L$: if $\hat{n}$ is constructed as an adjoint vector, then $\hat{n} \to U\hat{n}U^\dagger$, preserving gauge covariance
 
-**Degeneracy**: When $\|\nabla V\| \to 0$ (flat value landscape), $\vec{n}$ is undefined. The agent should not commit in ambiguous regions.
+**Degeneracy**: When $\|P \nabla V\| \to 0$ (flat value landscape), $\hat{n}$ is undefined. The agent should not commit in ambiguous regions.
 
 :::
 
 :::{prf:theorem} Gauge Covariance of Chiral Projection
 :label: thm-gauge-covariance-chiral-projection
 
-The committed action scalar $|\psi_{\text{act}}^{\text{commit}}|^2 = \Psi_L^\dagger \Pi_{\text{chirality}} \Psi_L$ is invariant under local $SU(2)_L$ transformations. The projected vector $\Pi_{\text{chirality}} \Psi_L$ transforms covariantly (in the fundamental representation), but gauge-invariant observables are obtained by tracing over $SU(2)$ indices.
+The commitment strength $c(z) = \Psi_L^\dagger \Pi_{\text{chirality}} \Psi_L$ is invariant under local $SU(2)_L$ transformations. The projected vector $\Pi_{\text{chirality}} \Psi_L$ transforms covariantly (in the fundamental representation), but gauge-invariant observables are obtained by contracting the $SU(2)$ indices.
 
 *Proof.*
 
 **Step 1.** Under local $SU(2)_L$ transformation $\Psi_L(z) \to U(z)\Psi_L(z)$, where $U(z) \in SU(2)$.
 
-**Step 2.** The value gradient $\nabla V$ transforms as a covariant vector. The unit vector $\vec{n}$ transforms under the adjoint representation:
+**Step 2.** Assume the unit direction $\hat{n}$ is constructed as an adjoint vector (e.g., via a gauge-covariant map from the value gradient). Then:
 
 $$
-\vec{n}(z) \to U(z) \vec{n}(z) U^\dagger(z)
+\hat{n}(z) \to U(z) \hat{n}(z) U^\dagger(z)
 $$
 
 **Step 3.** The projector transforms as:
@@ -785,10 +788,10 @@ $$
 
 This transforms in the fundamental representation, not as a singlet.
 
-**Step 5.** To obtain a true singlet, we need to trace over the $SU(2)$ indices:
+**Step 5.** To obtain a true singlet, we contract the $SU(2)$ indices:
 
 $$
-\psi_{\text{act}}^{\text{commit,scalar}} = \text{Tr}_{SU(2)}(\Pi_{\text{chirality}} \Psi_L) = \Psi_L^\dagger \Pi_{\text{chirality}} \Psi_L
+c(z) = \Psi_L^\dagger \Pi_{\text{chirality}} \Psi_L
 $$
 
 This is manifestly gauge-invariant: $\Psi_L^\dagger U^\dagger \cdot U \Pi U^\dagger \cdot U \Psi_L = \Psi_L^\dagger \Pi \Psi_L$.
@@ -798,11 +801,11 @@ $\square$
 :::
 
 :::{div} feynman-prose
-There is a subtlety here that is worth clarifying. The projection $\Pi \Psi_L$ itself is not a gauge singlet---it still transforms under $SU(2)$. To get a true invariant, we need to contract the gauge indices, which is what the trace accomplishes.
+There is a subtlety here that is worth clarifying. The projection $\Pi \Psi_L$ itself is not a gauge singlet---it still transforms under $SU(2)$. To get a true invariant, we need to contract the gauge indices (an inner product), not just apply the projector.
 
-In the neural network implementation, this means the "committed action" is computed as an inner product, not just a projection. The observation component $\psi_{\text{obs}}$ and action component $\psi_{\text{act}}^{\text{pre}}$ are combined through the projector to yield a scalar output.
+In the neural network implementation, we compute a gauge-invariant **commitment strength** via the inner product $\Psi_L^\dagger \Pi_{\text{chirality}} \Psi_L$ and use it to gate the projected doublet. If you need a single scalar, you can further sum over feature dimensions.
 
-This has a nice interpretation: the committed action is the "correlation" between observation and action intent, weighted by the value gradient direction. High correlation in the gradient direction means strong commitment. Low correlation or ambiguous gradient means weak commitment.
+This has a nice interpretation: the commitment strength is the "correlation" between observation and action intent, weighted by the value gradient direction. High correlation in the gradient direction means strong commitment. Low correlation or ambiguous gradient means weak commitment.
 :::
 
 
@@ -987,8 +990,8 @@ The **GeodesicCrossAttention** module contains five attention heads correspondin
 **Head 3: O-step (Ornstein-Uhlenbeck thermostat)**
 - **Query**: Current momentum $p$
 - **Key**: Noise bank (random vectors)
-- **Value**: Thermalized momenta $\{c_1 p + c_2 G^{1/2}\xi\}$
-- **Output**: Momentum thermalization $p \to c_1 p + c_2 \xi'$
+- **Value**: Noise vectors $\{\xi\}$
+- **Output**: Momentum thermalization $p \to c_1 p + c_2 G^{1/2}\xi'$
 
 **Head 4: A-step (Second half-drift)**
 - Same structure as Head 2
@@ -1074,15 +1077,15 @@ The attention-weighted Value sum produces the update vector, which is then added
 :::{div} feynman-prose
 Here is the complete implementation. It looks like a lot of code, but each piece corresponds directly to something we have derived mathematically.
 
-The main class `GeodesicCrossAttention` has five sub-modules for the five BAOAB heads. Each head uses the `CovariantAttention` helper class, which handles Wilson lines, position-dependent temperature, and quadratic Query projections.
+The main class `GeodesicCrossAttention` has five sub-modules for the five BAOAB heads. Each head uses the `CovariantAttention` helper class, which handles Wilson lines, position-dependent temperature, and geometric (linear + quadratic) Query projections.
 
-The `forward` method takes the current state $(z, p)$ and produces the next state $(z', p')$ in one pass. Inside, it sequences through the five heads: kick, drift, thermostat, drift, kick.
+The `forward` method takes the current state $(z, p)$ along with context banks (forces for B-steps, drift context for A-steps) and produces the next state $(z', p')$ in one pass. Inside, it sequences through the five heads: kick, drift, thermostat, drift, kick. Because attention operates in $d_{\text{model}}$, the head outputs are projected back to $d_{\text{latent}}$ before applying updates when the dimensions differ.
 
 Pay attention to the metric computation. We use the Poincare disk formula, but this is modular---you can swap in any other metric by changing the `conformal_factor` method.
 
 The Wilson line approximation uses the linearized form for nearby points. For long-range attention, you would need to accumulate the path-ordered product, which is more expensive.
 
-The Christoffel symbols are encoded in the quadratic Query projection. The tensor `W_Q_gamma` is initialized to match the Poincare structure, but it is learnable.
+The Christoffel symbols are encoded in the geometric Query projection. The linear term `W_Qz` and the tensor `W_Q_gamma` can be initialized with a Poincare-inspired pattern, but they are learnable.
 :::
 
 We provide a PyTorch implementation of the GeodesicCrossAttention module. This is **demonstrative code** illustrating the architecture; a production implementation would require additional numerical care.
@@ -1093,13 +1096,15 @@ We provide a PyTorch implementation of the GeodesicCrossAttention module. This i
 The code below is a **prototype implementation** intended to illustrate the architecture's structure. For production use, several enhancements are needed:
 
 1. **Wilson lines**: The linear approximation is valid only for nearby points. Long-range attention requires path-ordered products or geodesic interpolation.
-2. **Christoffel initialization**: The Christoffel tensor should be initialized more carefully to match the exact Poincare structure.
+2. **Christoffel initialization**: The linear ($W_{Qz}$) and quadratic ($W_{Q,\Gamma}$) terms should be initialized more carefully if you want an exact Poincare match.
 3. **Numerical stability**: Additional clamping and normalization may be needed near the boundary where $\lambda \to \infty$.
-4. **Chiral projector**: The SU(2) structure is simplified; a full implementation should use proper Pauli matrix algebra.
+4. **Chiral projector**: The SU(2) structure uses a real-valued proxy; a full implementation should use complex Pauli matrices and an explicit adjoint mapping for $\hat{n}$.
+5. **Head-specific inputs**: In production, use distinct Key/Value banks per head (forces for B, velocities/exponential maps for A, noise for O). The prototype uses `context_force` for B and reuses `context_x` for A.
+6. **State updates**: If $d_{\text{model}} \neq d_{\text{latent}}$, project attention outputs back to latent coordinates before applying updates.
 
 **Implementation vs. Theory**: The mathematical formulation (Definition {prf:ref}`def-covariant-qkv-projections`) has Wilson lines embedded in Q, K, V definitions. The code uses an equivalent approach: Wilson line correction is applied at attention-time via `K_transported = U @ K`. Both achieve gauge invariance; the code approach is more modular for experimentation.
 
-The essential mathematical structure is preserved: Wilson line preprocessing, position-dependent temperature, quadratic Query, and BAOAB splitting.
+The essential mathematical structure is preserved: Wilson line preprocessing, position-dependent temperature, geometric Query, and BAOAB splitting.
 :::
 
 ```python
@@ -1159,58 +1164,64 @@ class WilsonLineApprox(nn.Module):
     Cross-reference: Proposition {prf:ref}`prop-wilson-line-approximation`
     """
 
-    def __init__(self, config: GeodesicConfig):
+    def __init__(self, config: GeodesicConfig, d_k: int):
         super().__init__()
-        d = config.d_latent
+        self.d_k = d_k
+
+        # Project latent displacements into gauge feature space
+        self.delta_proj = nn.Linear(config.d_latent, d_k, bias=False)
 
         # Connection coefficients (learnable, initialized to small values)
-        # Shape: [d_latent, d_latent] - encodes Θ^a_μ contracted indices
+        # Shape: [d_k, d_k] - encodes Θ^a_μ contracted indices
         self.theta_binding = nn.Parameter(
-            config.g_s * 0.1 * torch.randn(d, d)
+            config.g_s * 0.1 * torch.randn(d_k, d_k)
         )  # SU(N_f) contribution
         self.theta_error = nn.Parameter(
-            config.g_2 * 0.1 * torch.randn(d, d)
+            config.g_2 * 0.1 * torch.randn(d_k, d_k)
         )  # SU(2) contribution
         self.theta_opportunity = nn.Parameter(
-            config.g_1 * 0.1 * torch.randn(d)
+            config.g_1 * 0.1 * torch.randn(d_k)
         )  # U(1) contribution
 
     def forward(
         self,
-        z_query: torch.Tensor,  # [B, d]
-        z_key: torch.Tensor,    # [B, N, d]
+        z_query: torch.Tensor,  # [B, d_latent]
+        z_key: torch.Tensor,    # [B, N, d_latent]
     ) -> torch.Tensor:
         """
         Compute Wilson line correction factor.
 
-        Returns: [B, N, d, d] transformation matrix for each key position.
+        Returns: [B, N, d_k, d_k] transformation matrix for each key position.
         """
-        B, N, d = z_key.shape
+        B, N, _ = z_key.shape
 
         # Displacement z - z'
-        delta_z = z_query.unsqueeze(1) - z_key  # [B, N, d]
+        delta_z = z_query.unsqueeze(1) - z_key  # [B, N, d_latent]
+        delta_feat = self.delta_proj(delta_z)  # [B, N, d_k]
 
         # Total connection: Θ · δz
         # SU(N_f) contribution (non-Abelian, matrix-valued)
-        theta_nf = torch.einsum('ij,bnj->bni', self.theta_binding, delta_z)
+        theta_nf = torch.einsum('ij,bnj->bni', self.theta_binding, delta_feat)
 
         # SU(2) contribution (non-Abelian)
-        theta_su2 = torch.einsum('ij,bnj->bni', self.theta_error, delta_z)
+        theta_su2 = torch.einsum('ij,bnj->bni', self.theta_error, delta_feat)
 
         # U(1) contribution (Abelian, scalar)
-        theta_u1 = torch.einsum('j,bnj->bn', self.theta_opportunity, delta_z)
+        theta_u1 = torch.einsum('j,bnj->bn', self.theta_opportunity, delta_feat)
 
         # Build approximate Wilson line: U ≈ I - i*Θ
         # For real implementation, use exp(-i*Θ) via matrix exponential
         # Here we use linear approximation for efficiency
-        identity = torch.eye(d, device=z_key.device).expand(B, N, d, d)
+        d_k = self.d_k
+        identity = torch.eye(d_k, device=z_key.device, dtype=z_key.dtype).expand(B, N, d_k, d_k)
 
         # Combine into correction matrix (simplified: additive corrections)
         correction = identity.clone()
         correction = correction - 0.1 * theta_nf.unsqueeze(-1) * identity
         correction = correction - 0.1 * theta_su2.unsqueeze(-1) * identity
+        correction = correction - 0.1 * theta_u1.unsqueeze(-1).unsqueeze(-1) * identity
 
-        return correction  # [B, N, d, d]
+        return correction  # [B, N, d_k, d_k]
 
 
 class ConformalMetric(nn.Module):
@@ -1250,7 +1261,7 @@ class ConformalMetric(nn.Module):
         """
         B, d = z.shape
         lambda_sq = self.conformal_factor(z) ** 2  # [B, 1]
-        return lambda_sq.unsqueeze(-1) * torch.eye(d, device=z.device)
+        return lambda_sq.unsqueeze(-1) * torch.eye(d, device=z.device, dtype=z.dtype)
 
     def metric_inv(self, z: torch.Tensor) -> torch.Tensor:
         """
@@ -1260,7 +1271,7 @@ class ConformalMetric(nn.Module):
         """
         B, d = z.shape
         lambda_sq_inv = 1.0 / (self.conformal_factor(z) ** 2 + self.epsilon)
-        return lambda_sq_inv.unsqueeze(-1) * torch.eye(d, device=z.device)
+        return lambda_sq_inv.unsqueeze(-1) * torch.eye(d, device=z.device, dtype=z.dtype)
 
     def temperature(self, z: torch.Tensor, d_k: int) -> torch.Tensor:
         """
@@ -1278,9 +1289,9 @@ class ConformalMetric(nn.Module):
 
 class ChristoffelQuery(nn.Module):
     """
-    Quadratic Query projection encoding Christoffel symbols.
+    Geometric Query projection encoding Christoffel symbols.
 
-    Q(z, v) = W_Q z + W_Qv v + W_QΓ(z, z) + W_Qzv(z, v)
+    Q(x, z, v) = W_Q x + W_Qz z + W_Qv v_feat + W_QΓ(z, z) + W_Qzv(z, v)
 
     Cross-reference: Definition {prf:ref}`def-geodesic-query-projection`
     """
@@ -1290,10 +1301,11 @@ class ChristoffelQuery(nn.Module):
 
         # Linear projections
         self.W_Q = nn.Linear(d_in, d_out, bias=False)
+        self.W_Qz = nn.Linear(d_latent, d_out, bias=False)
         self.W_Qv = nn.Linear(d_in, d_out, bias=False)
 
         # Quadratic projection (3-tensor for Christoffel encoding)
-        # Initialized to Poincare Christoffel structure
+        # Initialized with a Poincare-inspired pattern
         self.W_Q_gamma = nn.Parameter(torch.zeros(d_out, d_latent, d_latent))
         self._init_christoffel(d_latent)
 
@@ -1315,31 +1327,33 @@ class ChristoffelQuery(nn.Module):
 
     def forward(
         self,
-        z: torch.Tensor,        # [B, d_in] position
-        v: Optional[torch.Tensor] = None,  # [B, d_in] velocity
+        x: torch.Tensor,        # [B, d_in] feature vector
+        z_geom: torch.Tensor,   # [B, d_latent] position
+        v_feat: Optional[torch.Tensor] = None,  # [B, d_in] velocity features
+        v_geom: Optional[torch.Tensor] = None,  # [B, d_latent] velocity
     ) -> torch.Tensor:
         """
         Compute geodesic Query.
 
         Returns: [B, d_out] Query vectors
         """
-        # Linear term
-        Q = self.W_Q(z)  # [B, d_out]
+        # Linear terms
+        Q = self.W_Q(x) + self.W_Qz(z_geom)  # [B, d_out]
 
         # Velocity term (if provided)
-        if v is not None:
-            Q = Q + self.W_Qv(v)
+        if v_feat is not None:
+            Q = Q + self.W_Qv(v_feat)
 
         # Quadratic term (Christoffel encoding)
         # W_QΓ(z, z) = sum_ij W_QΓ^a_ij z^i z^j
-        d = min(z.shape[-1], self.W_Q_gamma.shape[-1])
-        z_trunc = z[..., :d]
+        d = min(z_geom.shape[-1], self.W_Q_gamma.shape[-1])
+        z_trunc = z_geom[..., :d]
         Q_gamma = torch.einsum('aij,bi,bj->ba', self.W_Q_gamma[:, :d, :d], z_trunc, z_trunc)
         Q = Q + Q_gamma
 
         # Position-velocity coupling (if velocity provided)
-        if v is not None:
-            v_trunc = v[..., :d]
+        if v_geom is not None:
+            v_trunc = v_geom[..., :d]
             Q_zv = torch.einsum('aij,bi,bj->ba', self.W_Qzv[:, :d, :d], z_trunc, v_trunc)
             Q = Q + Q_zv
 
@@ -1350,7 +1364,7 @@ class ChiralProjector(nn.Module):
     """
     SU(2)_L chiral projector from value gradient.
 
-    Π = (1/2)(I + n·τ) where n = ∇V / ||∇V||
+    Π = (1/2)(I + n·τ) where n = proj(∇V) / ||proj(∇V)||
 
     Cross-reference: Definition {prf:ref}`def-chiral-projector-value-gradient`
     """
@@ -1359,8 +1373,12 @@ class ChiralProjector(nn.Module):
         super().__init__()
         self.d_latent = d_latent
 
-        # Pauli matrices (real representation for 2x2 case)
-        # Note: τ_2 is purely imaginary; we use its real rotation effect
+        # Project gradient into SU(2) direction
+        self.grad_proj = nn.Linear(d_latent, 3, bias=False)
+
+        # Pauli matrices (real-valued proxy for 2x2 case)
+        # Note: τ_2 is purely imaginary in SU(2); we use a real proxy here.
+        self.register_buffer('identity', torch.eye(2))
         self.register_buffer('tau_1', torch.tensor([[0., 1.], [1., 0.]]))
         self.register_buffer('tau_2', torch.tensor([[0., -1.], [1., 0.]]))  # Real part of rotation
         self.register_buffer('tau_3', torch.tensor([[1., 0.], [0., -1.]]))
@@ -1368,36 +1386,32 @@ class ChiralProjector(nn.Module):
     def forward(
         self,
         psi_doublet: torch.Tensor,  # [B, 2, d] observation-action doublet
-        grad_V: torch.Tensor,        # [B, d] value gradient
+        grad_V: torch.Tensor,        # [B, d_latent] value gradient
     ) -> torch.Tensor:
         """
-        Apply chiral projection to extract committed action.
+        Apply chiral projection and compute commitment strength.
 
-        Returns: [B, d] committed action (scalar under SU(2))
+        Returns: [B, 2*d] gated projected doublet (commitment strength from Ψ†ΠΨ)
         """
-        B, _, d = psi_doublet.shape
+        # Project and normalize gradient to get SU(2) direction
+        n = self.grad_proj(grad_V)  # [B, 3]
+        n = n / (torch.norm(n, dim=-1, keepdim=True) + 1e-8)
+        n_x, n_y, n_z = n.unbind(dim=-1)
 
-        # Normalize gradient to get direction
-        grad_norm = torch.norm(grad_V, dim=-1, keepdim=True) + 1e-8
-        n = grad_V / grad_norm  # [B, d]
+        # Build projector Π = (1/2)(I + n·τ)
+        proj = 0.5 * (
+            self.identity
+            + n_x[:, None, None] * self.tau_1
+            + n_y[:, None, None] * self.tau_2
+            + n_z[:, None, None] * self.tau_3
+        )
 
-        # Construct n·τ (simplified: use first 3 components of n)
-        # For full implementation, embed into SU(2) algebra
-        n_3 = n[:, :3]  # [B, 3]
-
-        # Projector on first two components of doublet
-        # Π = (1/2)(I + n₃·τ₃) for diagonal approximation
-        proj_diag = 0.5 * (1 + n_3[:, 2:3])  # [B, 1] - projects onto "action" component
-
-        # Extract committed action via gauge-invariant contraction
-        # ψ_commit = ψ_obs† Π ψ_act
-        psi_obs = psi_doublet[:, 0, :]  # [B, d]
-        psi_act = psi_doublet[:, 1, :]  # [B, d]
-
-        # Scalar product weighted by projector
-        committed = proj_diag * (psi_obs * psi_act).sum(dim=-1, keepdim=True)
-
-        return committed.expand(-1, d)  # [B, d]
+        # Apply projector and compute gauge-invariant commitment strength
+        psi_proj = torch.einsum('bij,bjd->bid', proj, psi_doublet)  # [B, 2, d]
+        # For complex fields, replace with (psi_doublet.conj() * psi_proj)
+        commit_strength = (psi_doublet * psi_proj).sum(dim=1, keepdim=True)  # [B, 1, d]
+        psi_proj = psi_proj * commit_strength
+        return psi_proj.reshape(psi_proj.shape[0], -1)  # [B, 2*d]
 
 
 class AreaLawScreening(nn.Module):
@@ -1474,7 +1488,7 @@ class CovariantAttention(nn.Module):
     Combines:
         - Wilson line preprocessing
         - Position-dependent temperature
-        - Quadratic Query (Christoffel)
+        - Geometric Query (Christoffel)
         - Chiral projection (optional)
         - Area law screening (optional)
     """
@@ -1502,7 +1516,7 @@ class CovariantAttention(nn.Module):
         self.output = nn.Linear(d_k, d, bias=False)
 
         # Gauge structures
-        self.wilson = WilsonLineApprox(config)
+        self.wilson = WilsonLineApprox(config, d_k)
         self.metric = ConformalMetric()
 
         if use_chirality:
@@ -1520,7 +1534,8 @@ class CovariantAttention(nn.Module):
         x_query: torch.Tensor,     # [B, d_model] query features
         x_key: torch.Tensor,       # [B, N, d_model] key features
         x_value: torch.Tensor,     # [B, N, d_model] value features
-        v_query: Optional[torch.Tensor] = None,  # [B, d_model] velocity
+        v_query: Optional[torch.Tensor] = None,  # [B, d_model] velocity features
+        v_query_geom: Optional[torch.Tensor] = None,  # [B, d_latent] velocity
         grad_V: Optional[torch.Tensor] = None,   # [B, d_latent] value gradient
         level: int = 0,
     ) -> Tuple[torch.Tensor, torch.Tensor]:
@@ -1534,13 +1549,13 @@ class CovariantAttention(nn.Module):
         B, N, _ = x_key.shape
 
         # Compute Q, K, V with geodesic Query
-        Q = self.query(x_query, v_query)  # [B, d_k]
+        Q = self.query(x_query, z_query, v_query, v_query_geom)  # [B, d_k]
         K = self.key(x_key)                # [B, N, d_k]
         V = self.value(x_value)            # [B, N, d_k]
 
         # Wilson line correction to Keys
         U = self.wilson(z_query, z_key)  # [B, N, d_k, d_k] (approx)
-        K_transported = torch.einsum('bnij,bnj->bni', U[:, :, :self.d_k, :self.d_k], K)
+        K_transported = torch.einsum('bnij,bnj->bni', U, K)
 
         # Attention scores with Wilson-corrected Keys
         scores = torch.einsum('bi,bni->bn', Q, K_transported)  # [B, N]
@@ -1564,10 +1579,12 @@ class CovariantAttention(nn.Module):
 
         # Chiral projection (if enabled and gradient provided)
         if self.use_chirality and grad_V is not None:
+            if output.shape[-1] % 2 != 0:
+                raise ValueError("Chiral projection requires an even d_k.")
             # Reshape output as doublet for projection
-            output_doublet = output.view(B, 2, -1)
+            output_doublet = output.reshape(B, 2, -1)
             output = self.chiral(output_doublet, grad_V)
-            output = output.view(B, -1)
+            output = output.reshape(B, -1)
 
         # Output projection
         output = self.output(output)
@@ -1585,7 +1602,7 @@ class GeodesicCrossAttention(nn.Module):
 
     Usage:
         model = GeodesicCrossAttention(config)
-        z_next, p_next = model(z, p, context_z, context_x)
+        z_next, p_next = model(z, p, context_z, context_x, context_force)
     """
 
     def __init__(self, config: GeodesicConfig):
@@ -1609,9 +1626,13 @@ class GeodesicCrossAttention(nn.Module):
         self.head_A2 = CovariantAttention(config, head_type='A')
         self.head_B2 = CovariantAttention(config, head_type='B')
 
-        # Learnable force/gradient bank projection
+        # Encoders for geometry, forces, and velocities
+        self.pos_encoder = nn.Linear(config.d_latent, config.d_model)
         self.grad_encoder = nn.Linear(config.d_latent, config.d_model)
         self.velocity_encoder = nn.Linear(config.d_latent, config.d_model)
+
+        # Project attention outputs back to latent updates
+        self.state_proj = nn.Linear(config.d_model, config.d_latent)
 
         # Noise projection for O-step
         self.noise_proj = nn.Linear(config.d_latent, config.d_model)
@@ -1621,8 +1642,8 @@ class GeodesicCrossAttention(nn.Module):
         z: torch.Tensor,           # [B, d_latent] current position
         p: torch.Tensor,           # [B, d_latent] current momentum
         context_z: torch.Tensor,   # [B, N, d_latent] context positions
-        context_x: torch.Tensor,   # [B, N, d_model] context features
-        grad_Phi: Optional[torch.Tensor] = None,  # [B, d_latent] potential gradient
+        context_x: torch.Tensor,   # [B, N, d_model] context features (e.g., drift bank)
+        context_force: torch.Tensor,  # [B, N, d_latent] force/gradient bank
     ) -> Tuple[torch.Tensor, torch.Tensor]:
         """
         One step of geodesic BAOAB integration.
@@ -1631,23 +1652,22 @@ class GeodesicCrossAttention(nn.Module):
             z_next: [B, d_latent] updated position
             p_next: [B, d_latent] updated momentum
         """
-        B, d = z.shape
         h = self.dt
 
-        # Encode current state as query features
-        x_query = self.velocity_encoder(z) + self.grad_encoder(p)
+        # Encode force bank
+        force_features = self.grad_encoder(context_force)
 
         # ===== B-step 1: First half-kick =====
         delta_p1, _ = self.head_B1(
             z_query=z,
             z_key=context_z,
-            x_query=x_query,
-            x_key=context_x,
-            x_value=context_x,
-            v_query=self.velocity_encoder(p),
+            x_query=self.pos_encoder(z),
+            x_key=force_features,
+            x_value=force_features,
         )
         # Interpret as momentum update
-        p = p - (h / 2) * delta_p1[:, :d]
+        delta_p1_latent = self.state_proj(delta_p1)
+        p = p - (h / 2) * delta_p1_latent
 
         # ===== A-step 1: First half-drift =====
         # Compute velocity from momentum
@@ -1657,31 +1677,34 @@ class GeodesicCrossAttention(nn.Module):
         delta_z1, _ = self.head_A1(
             z_query=z,
             z_key=context_z,
-            x_query=self.velocity_encoder(z),
+            x_query=self.pos_encoder(z) + self.velocity_encoder(v),
             x_key=context_x,
             x_value=context_x,
             v_query=self.velocity_encoder(v),
+            v_query_geom=v,
         )
         # Apply position update via exponential map approximation
-        z = z + (h / 2) * (v + 0.1 * delta_z1[:, :d])
+        delta_z1_latent = self.state_proj(delta_z1)
+        z = z + (h / 2) * delta_z1_latent
         z = self._project_to_disk(z)
 
         # ===== O-step: Ornstein-Uhlenbeck thermostat =====
-        # Inject noise
-        xi = torch.randn_like(p)
-        noise_features = self.noise_proj(xi)
+        # Inject noise bank
+        noise_bank = torch.randn_like(context_z)
+        noise_features = self.noise_proj(noise_bank)
 
         delta_p_noise, _ = self.head_O(
             z_query=z,
             z_key=context_z,
             x_query=self.velocity_encoder(p),
-            x_key=noise_features.unsqueeze(1).expand(-1, context_z.shape[1], -1),
-            x_value=noise_features.unsqueeze(1).expand(-1, context_z.shape[1], -1),
+            x_key=noise_features,
+            x_value=noise_features,
         )
+        delta_p_noise_latent = self.state_proj(delta_p_noise)
 
         # Thermalize momentum
-        G_sqrt = torch.sqrt(self.metric.conformal_factor(z))
-        p = self.c1 * p + self.c2 * G_sqrt * (xi + 0.1 * delta_p_noise[:, :d])
+        G_sqrt = self.metric.conformal_factor(z)
+        p = self.c1 * p + self.c2 * G_sqrt * delta_p_noise_latent
 
         # ===== A-step 2: Second half-drift =====
         G_inv = self.metric.metric_inv(z)
@@ -1690,25 +1713,26 @@ class GeodesicCrossAttention(nn.Module):
         delta_z2, _ = self.head_A2(
             z_query=z,
             z_key=context_z,
-            x_query=self.velocity_encoder(z),
+            x_query=self.pos_encoder(z) + self.velocity_encoder(v),
             x_key=context_x,
             x_value=context_x,
             v_query=self.velocity_encoder(v),
+            v_query_geom=v,
         )
-        z = z + (h / 2) * (v + 0.1 * delta_z2[:, :d])
+        delta_z2_latent = self.state_proj(delta_z2)
+        z = z + (h / 2) * delta_z2_latent
         z = self._project_to_disk(z)
 
         # ===== B-step 2: Second half-kick =====
-        x_query = self.velocity_encoder(z) + self.grad_encoder(p)
         delta_p2, _ = self.head_B2(
             z_query=z,
             z_key=context_z,
-            x_query=x_query,
-            x_key=context_x,
-            x_value=context_x,
-            v_query=self.velocity_encoder(p),
+            x_query=self.pos_encoder(z),
+            x_key=force_features,
+            x_value=force_features,
         )
-        p = p - (h / 2) * delta_p2[:, :d]
+        delta_p2_latent = self.state_proj(delta_p2)
+        p = p - (h / 2) * delta_p2_latent
 
         return z, p
 
@@ -1723,7 +1747,7 @@ A few notes on the implementation:
 
 1. **Efficiency**: The Wilson line computation is the most expensive part. In practice, you would precompute it for the context positions and cache it across heads.
 
-2. **Initialization**: The Christoffel tensor $W_{Q,\Gamma}$ is initialized to match the Poincare structure. During training, it can adapt to the actual geometry of the learned latent space.
+2. **Initialization**: The linear term $W_{Qz}$ and the Christoffel tensor $W_{Q,\Gamma}$ can be initialized with a Poincare-inspired pattern. During training, they can adapt to the actual geometry of the learned latent space.
 
 3. **Stability**: The projection to disk at the end of each step ensures we never leave the representable region. This is a safety net on top of the geometric constraints.
 
@@ -1738,7 +1762,7 @@ A few notes on the implementation:
 :::{div} feynman-prose
 Now let me address the elephant in the room: computational complexity. The architecture I have described is beautiful mathematically, but if you implement it naively, it will be slow. Very slow.
 
-The problem is that attention is inherently $O(N^2)$---every query attends to every key. On top of that, we have added Wilson lines, which require path integrals. And quadratic Query terms, which add $O(d^2)$ parameters. And area law screening, which requires computing string areas for every pair.
+The problem is that attention is inherently $O(N^2)$---every query attends to every key. On top of that, we have added Wilson lines, which require path integrals. And quadratic/bilinear Query terms, which add $O(d^2)$ parameters. And area law screening, which requires computing string areas for every pair.
 
 For a context of $N = 1000$ positions and latent dimension $d = 64$, the naive complexity is $O(N^2 d^2) \approx 4 \times 10^9$ operations per attention layer. That is not practical.
 
@@ -1829,13 +1853,13 @@ $$
 :::{admonition} Implementation: Efficient Neighbor Finding
 :class: feynman-added tip
 
-For the Poincare disk, geodesic distance is:
+For the Poincare disk, geodesic distance can be written as:
 
 $$
-d_G(z, z') = 2 \tanh^{-1}\left(\frac{|z - z'|}{|1 - \bar{z}z'|}\right)
+d_G(z, z') = \operatorname{arcosh}\left(1 + \frac{2\|z - z'\|^2}{(1-\|z\|^2)(1-\|z'\|^2)}\right)
 $$
 
-This is not Euclidean, but for points far from the boundary, $d_G \approx \lambda(z)|z - z'|$. A practical approach:
+This is not Euclidean, but for points far from the boundary, $d_G \approx \lambda(z)\|z - z'\|$. A practical approach:
 
 1. **Build tree in Euclidean coordinates** (standard k-d tree)
 2. **Query with inflated radius**: Search for Euclidean neighbors within $r_{\text{Euclidean}} = r_\epsilon / \lambda_{\min}$
@@ -2047,9 +2071,9 @@ Following the diagnostic node convention ({ref}`Section 3.1 <sec-theory-thin-int
 
 | **#** | **Name** | **Component** | **Type** | **Interpretation** | **Proxy** | **Cost** |
 |-------|----------|---------------|----------|---------------------|-----------|----------|
-| **67** | **GaugeInvarianceCheck** | Architecture | Invariance | Are attention scores gauge-invariant? | $\Delta_{\text{gauge}} := \max_{U \in G} \|s(z,z') - s(Uz, Uz')\|$ | $O(Nd^2)$ |
+| **67** | **GaugeInvarianceCheck** | Architecture | Invariance | Are attention scores gauge-invariant? | $\Delta_{\text{gauge}} := \max_{\Omega \in G} \|Q(z)^T K(z') - Q_\Omega(z)^T K_\Omega(z')\|$ | $O(Nd^2)$ |
 
-**Interpretation:** Measures the deviation of attention scores under random gauge transformations. For a perfectly gauge-invariant implementation, $\Delta_{\text{gauge}} = 0$. Non-zero values indicate Wilson line approximation errors.
+**Interpretation:** Measures the deviation of attention scores when Q/K are recomputed under random gauge transformations of the latent fields (or equivalently rotated at the common reference frame). For a perfectly gauge-invariant implementation, $\Delta_{\text{gauge}} = 0$. Non-zero values indicate Wilson line approximation errors.
 
 **Threshold:** $\Delta_{\text{gauge}} < 10^{-3}$ (typical).
 
@@ -2075,7 +2099,7 @@ Following the diagnostic node convention ({ref}`Section 3.1 <sec-theory-thin-int
 
 | **#** | **Name** | **Component** | **Type** | **Interpretation** | **Proxy** | **Cost** |
 |-------|----------|---------------|----------|---------------------|-----------|----------|
-| **69** | **ChiralityViolationCheck** | Architecture | Symmetry | Is observation-action asymmetry preserved? | $\chi_{\text{viol}} := \|\Pi_L - \Pi_L^2\|_F$ (deviation from idempotence) | $O(d^2)$ |
+| **69** | **ChiralityViolationCheck** | Architecture | Symmetry | Is observation-action asymmetry preserved? | $\chi_{\text{viol}} := \|\Pi_{\text{chirality}} - \Pi_{\text{chirality}}^2\|_F$ (deviation from idempotence) | $O(d^2)$ |
 
 **Interpretation:** The chiral projector should be idempotent ($\Pi^2 = \Pi$). Deviation indicates numerical instability or incorrect value gradient.
 
@@ -2125,7 +2149,7 @@ We summarize the correspondence between the covariant attention architecture and
 |:-------------------|:-------------------------|:----------|
 | Wilson line preprocessing | Parallel transport on gauge bundle | Definition {prf:ref}`def-wilson-line` |
 | Position-dependent temperature $\tau(z)$ | Inverse conformal factor $1/\lambda(z)$ | Theorem {prf:ref}`thm-metric-temperature-correspondence` |
-| Quadratic Query $W_{QQ}(z,z)$ | Christoffel symbols $\Gamma^k_{ij}$ | Definition {prf:ref}`def-geodesic-query-projection` |
+| Geometric Query $W_{Qz}, W_{Q,\Gamma}$ (optional $W_{Qzv}$) | Christoffel symbols $\Gamma^k_{ij}$ | Definition {prf:ref}`def-geodesic-query-projection` |
 | Observation-action doublet | Left-handed $SU(2)_L$ field $\Psi_L$ | Definition {prf:ref}`def-observation-action-doublet-attention` |
 | Chiral projector $\Pi_{\nabla V}$ | Electroweak symmetry breaking | Definition {prf:ref}`def-chiral-projector-value-gradient` |
 | Area law screening | Confinement string tension | Definition {prf:ref}`def-area-law-screening-attention` |
@@ -2172,7 +2196,7 @@ This chapter has derived the **Covariant Cross-Attention** architecture that imp
 
 1. **Gauge-covariant attention** via Wilson line preprocessing (Section 35.3)
 2. **Metric-encoded temperature** via $\tau(z) = \sqrt{d_k}/\lambda(z)$ (Section 35.4)
-3. **Geodesic correction** via quadratic Query projections (Section 35.5)
+3. **Geodesic correction** via geometric Query projections (Section 35.5)
 4. **$SU(2)_L$ chirality** via observation-action doublet and chiral projector (Section 35.6)
 5. **$SU(N_f)_C$ confinement** via area law screening (Section 35.7)
 6. **Boris-BAOAB integration** via five specialized attention heads (Section 35.8)
