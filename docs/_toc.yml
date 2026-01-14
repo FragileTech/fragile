@@ -61,7 +61,7 @@ parts:
     - file: source/1_agent/08_multiagent/01_gauge_theory
     - file: source/1_agent/08_multiagent/02_standard_model
     - file: source/1_agent/08_multiagent/03_parameter_sieve
-    - file: source/1_agent/08_multiagent/04_constants_check
+    - file: source/1_agent/08_multiagent/new_constraint_check
     - file: source/1_agent/08_multiagent/05_architecture
 
   - caption: Part IX - Economics
