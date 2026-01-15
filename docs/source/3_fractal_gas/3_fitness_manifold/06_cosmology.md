@@ -1,21 +1,21 @@
 (sec-cosmological-constants)=
 # Cosmological Constants and Regime Transitions
 
-**Prerequisites**: {doc}`/3_fractal_gas/3_fitness_manifold/03_curvature_gravity`, {doc}`/3_fractal_gas/3_fitness_manifold/05_holography`
+**Prerequisites:** {doc}`03_curvature_gravity`, {doc}`05_holography`
 
 ---
 
 ## TLDR
 
-*Notation: $\Lambda_{\text{holo}}$ = holographic boundary vacuum; $\Lambda_{\text{bulk}}$ = bulk QSD vacuum; $\Lambda_{\text{eff}}$ = effective exploration vacuum; QSD = quasi-stationary distribution.*
+*Notation: $\Lambda_{\mathrm{holo}}$ = holographic boundary vacuum; $\Lambda_{\mathrm{bulk}}$ = bulk QSD vacuum; $\Lambda_{\mathrm{eff}}$ = effective exploration vacuum; QSD = quasi-stationary distribution.*
 
-**Three Distinct Cosmological Constants**: The "cosmological constant" is not one number but three: (1) $\Lambda_{\text{holo}} < 0$ from IG pressure at horizons (always negative, yields AdS boundary), (2) $\Lambda_{\text{bulk}} = 0$ at QSD equilibrium (no expansion when stationary), and (3) $\Lambda_{\text{eff}} > 0$ possible during exploration phases (drives observed cosmic expansion).
+**Three Distinct Cosmological Constants**: The "cosmological constant" is not one number but three: (1) $\Lambda_{\mathrm{holo}} < 0$ from IG pressure at horizons (always negative, yields AdS boundary), (2) $\Lambda_{\mathrm{bulk}} = 0$ at QSD equilibrium (no expansion when stationary), and (3) $\Lambda_{\mathrm{eff}} > 0$ possible during exploration phases (drives observed cosmic expansion).
 
 **Boundary vs Bulk Resolution**: The apparent contradiction between "AdS from holography" and "dS from observations" dissolves when you recognize they measure different geometric quantities. Holographic calculations probe boundary vacuum (surface integral), while cosmological observations measure bulk dynamics (volume integral). These are mathematically distinct operations.
 
 **Exploration Drives Expansion**: Positive effective cosmological constant arises from non-equilibrium exploration dynamics. When walkers spread uniformly rather than cluster on fitness peaks, the defocusing geometry creates negative Ricci curvature along worldlines, which the Raychaudhuri equation converts into sustained positive expansion.
 
-**Dark Energy Reframed**: The observed $\Lambda_{\text{obs}} \approx 10^{-52}$ m$^{-2}$ is not mysterious vacuum energy but exploration pressure---a dynamical signature of a universe that has not yet reached QSD equilibrium. The "cosmological constant problem" becomes the question: why is the universe so close to equilibrium?
+**Dark Energy Reframed**: The observed $\Lambda_{\mathrm{obs}} \approx 10^{-52}$ m$^{-2}$ is not mysterious vacuum energy but exploration pressure---a dynamical signature of a universe that has not yet reached QSD equilibrium. The "cosmological constant problem" becomes a different question: Why is the universe so close to equilibrium?
 
 ---
 
@@ -31,7 +31,7 @@ This confusion has real consequences. People ask: "Is the cosmological constant 
 
 In this chapter, we are going to untangle this mess. We will define all three vacuum energies precisely, understand why they are different physical quantities, and see how the Latent Fractal Gas framework naturally accommodates all of them. The resolution of apparent contradictions is not that someone made a mistake---it is that the question was ambiguous.
 
-Here is the beautiful thing: once you understand this, the "cosmological constant problem" looks completely different. The question is not "why is the cosmological constant so small?" It is "which cosmological constant are you asking about, and what physical quantity does it measure?"
+Here is the beautiful thing: once you understand this, the "cosmological constant problem" looks completely different. The question is not "Why is the cosmological constant so small?" It is "Which cosmological constant are you asking about, and what physical quantity does it measure?"
 :::
 
 (sec-three-lambda-problem)=
@@ -44,21 +44,21 @@ The standard textbook answer is "vacuum energy density." But vacuum energy densi
 
 Let me give you an analogy. Imagine a water droplet floating in space. You could ask about three different "pressures":
 
-1. **Surface pressure**: The surface tension at the boundary of the droplet. This is a boundary effect, measured per unit area, and it pulls inward (negative pressure convention).
+1. **Surface pressure:** The surface tension at the boundary of the droplet. This is a boundary effect, measured per unit area, and it pulls inward (negative pressure convention).
 
-2. **Interior pressure**: The hydrostatic pressure inside the droplet. If the droplet is in equilibrium, this is constant throughout and balances the surface tension.
+2. **Interior pressure:** The hydrostatic pressure inside the droplet. If the droplet is in equilibrium, this is constant throughout and balances the surface tension.
 
-3. **Expansion pressure**: If the droplet is evaporating or growing, there is a dynamic pressure associated with the volume change.
+3. **Expansion pressure:** If the droplet is evaporating or growing, there is a dynamic pressure associated with the volume change.
 
 These are all called "pressure," but they measure different physical quantities. You cannot add them up or compare them directly. The surface pressure has units of force per length; the interior pressure has units of force per area; the expansion pressure is a rate of change.
 
-The cosmological constant situation is exactly analogous. We have three different Lambda's measuring three different things:
+The cosmological constant situation is exactly analogous. We have three different Lambdas measuring three different things:
 
-1. **Holographic boundary Lambda** ($\Lambda_{\text{holo}}$): Vacuum energy at the boundary/horizon of a localized system. This is what the IG pressure measures.
+1. **Holographic boundary Lambda** ($\Lambda_{\mathrm{holo}}$): Vacuum energy at the boundary/horizon of a localized system. This is what the IG pressure measures.
 
-2. **Bulk equilibrium Lambda** ($\Lambda_{\text{bulk}}$): Vacuum energy in the interior when the system is at quasi-stationary equilibrium.
+2. **Bulk equilibrium Lambda** ($\Lambda_{\mathrm{bulk}}$): Vacuum energy in the interior when the system is at quasi-stationary equilibrium.
 
-3. **Effective expansion Lambda** ($\Lambda_{\text{eff}}$): The effective cosmological constant driving bulk dynamics when the system is *not* at equilibrium.
+3. **Effective expansion Lambda** ($\Lambda_{\mathrm{eff}}$): The effective cosmological constant driving bulk dynamics when the system is *not* at equilibrium.
 
 Let us define each one precisely.
 :::
@@ -71,22 +71,22 @@ Let us define each one precisely.
 :::{prf:definition} Holographic Boundary Vacuum Energy
 :label: def-holographic-boundary-vacuum
 
-The **holographic boundary vacuum energy** $\Lambda_{\text{holo}}$ is measured by the IG pressure at spatial horizons. For a localized system with characteristic length scale $L$ and horizon area $A_H$:
+The **holographic boundary vacuum energy** $\Lambda_{\mathrm{holo}}$ is measured by the IG pressure at spatial horizons. For a localized system with characteristic length scale $L$ and horizon area $A_H$:
 
 $$
-\Lambda_{\text{holo}} = \frac{8\pi G_N}{c^2}\frac{\Pi_{\text{IG}}}{L}
+\Lambda_{\mathrm{holo}} = \frac{8\pi G_N}{c^2}\frac{\Pi_{\mathrm{IG}}}{L}
 $$
 
 where the IG pressure from {prf:ref}`thm-holographic-pressure` is:
 
 $$
-\Pi_{\text{IG}}(L) = -\frac{C_0 \rho_0^2 (2\pi)^{d/2} \varepsilon_c^{d+2}}{8dL^2} < 0
+\Pi_{\mathrm{IG}}(L) = -\frac{C_0 \rho_0^2 (2\pi)^{d/2} \varepsilon_c^{d+2}}{8dL^2} < 0
 $$
 
 **Properties:**
-1. **Always negative**: $\Lambda_{\text{holo}} < 0$ for all $\varepsilon_c > 0$
-2. **Boundary measurement**: Computed from jump Hamiltonian derivative with respect to horizon area
-3. **AdS geometry**: Negative $\Lambda_{\text{holo}}$ implies Anti-de Sitter boundary structure
+1. **Always negative:** $\Lambda_{\mathrm{holo}} < 0$ for all $\varepsilon_c > 0$
+2. **Boundary measurement:** Computed from jump Hamiltonian derivative with respect to horizon area
+3. **AdS geometry:** Negative $\Lambda_{\mathrm{holo}}$ implies Anti-de Sitter boundary structure
 
 **Physical interpretation:** The IG correlation network at the boundary acts as a surface tension, pulling inward. This is the vacuum structure *at the horizon*, not in the bulk.
 :::
@@ -106,7 +106,7 @@ This argument holds for any positive correlation kernel, not just Gaussians. As 
 :::{prf:definition} Bulk QSD Vacuum Energy
 :label: def-bulk-qsd-vacuum
 
-The **bulk QSD vacuum energy** $\Lambda_{\text{bulk}}$ is determined by the QSD equilibrium condition. At quasi-stationary equilibrium:
+The **bulk QSD vacuum energy** $\Lambda_{\mathrm{bulk}}$ is determined by the QSD equilibrium condition. At quasi-stationary equilibrium:
 
 $$
 \nabla_\mu T^{\mu\nu} = 0
@@ -117,14 +117,14 @@ where $T^{\mu\nu}$ is the effective stress-energy tensor ({prf:ref}`def-effectiv
 **Result:** For a spatially confined system at QSD equilibrium:
 
 $$
-\Lambda_{\text{bulk}} = 0
+\Lambda_{\mathrm{bulk}} = 0
 $$
 
 **Conditions for this result:**
-1. **Spatial confinement**: Walkers restricted to bounded domain $\mathcal{X}$
-2. **QSD equilibrium**: $\partial_t \rho = 0$ (density stationary)
-3. **No bulk currents**: $J^\mu = 0$ (no net flow)
-4. **Thermal balance**: Velocity distribution is local Maxwellian
+1. **Spatial confinement:** Walkers restricted to bounded domain $\mathcal{X}$
+2. **QSD equilibrium:** $\partial_t \rho = 0$ (density stationary)
+3. **No bulk currents:** $J^\mu = 0$ (no net flow)
+4. **Thermal balance:** Velocity distribution is local Maxwellian
 
 **Physical interpretation:** At equilibrium, the bulk spacetime has no net expansion or contraction. The vacuum energy density is zero because there is no source driving dynamics.
 :::
@@ -135,7 +135,7 @@ $$
 When the Latent Fractal Gas reaches quasi-stationary equilibrium, the bulk cosmological constant vanishes:
 
 $$
-\Lambda_{\text{bulk}}^{(\text{QSD})} = 0
+\Lambda_{\mathrm{bulk}}^{(\mathrm{QSD})} = 0
 $$
 
 *Proof.*
@@ -146,7 +146,7 @@ At QSD, the walker density satisfies $\partial_t \rho = 0$. The one-point statis
 
 **Step 2. Stress-energy conservation.**
 
-The effective stress-energy tensor satisfies:
+The effective stress-energy tensor satisfies
 
 $$
 \nabla_\mu T^{\mu\nu} = J^\nu
@@ -157,22 +157,22 @@ where $J^\nu$ is the source term from non-equilibrium effects.
 **Step 3. Source vanishes at equilibrium.**
 
 At QSD:
-- **Thermal equilibrium**: $J^0 = 0$ (energy density is stationary)
-- **Force balance**: $J^i = 0$ (no net momentum flow)
+- **Thermal equilibrium:** $J^0 = 0$ (energy density is stationary)
+- **Force balance:** $J^i = 0$ (no net momentum flow)
 
-This follows from detailed balance of the reversible BAOAB diffusion kernel at QSD equilibrium; away from equilibrium the cloning step is dissipative and this argument does not apply.
+This follows from detailed balance of the reversible BAOAB diffusion kernel at QSD equilibrium. Away from equilibrium, the cloning step is dissipative and this argument does not apply.
 
 **Step 4. Einstein equations with vanishing source.**
 
-The field equations become:
+The field equations become
 
 $$
-G_{\mu\nu} + \Lambda_{\text{bulk}} g_{\mu\nu} = \kappa T_{\mu\nu}
+G_{\mu\nu} + \Lambda_{\mathrm{bulk}} g_{\mu\nu} = \kappa T_{\mu\nu}
 $$
 
 with $\nabla_\mu T^{\mu\nu} = 0$.
 
-For a spatially homogeneous QSD in a confined domain, the Einstein tensor satisfies $G_{\mu\nu} = \kappa T_{\mu\nu}$ with $\Lambda_{\text{bulk}} = 0$.
+For a spatially homogeneous QSD in a confined domain, the Einstein tensor satisfies $G_{\mu\nu} = \kappa T_{\mu\nu}$ with $\Lambda_{\mathrm{bulk}} = 0$.
 
 $\square$
 :::
@@ -188,26 +188,26 @@ But notice the key assumption: the system must be *at equilibrium*. Our universe
 :::{prf:definition} Effective Exploration Vacuum Energy
 :label: def-effective-exploration-vacuum
 
-The **effective exploration vacuum energy** $\Lambda_{\text{eff}}$ arises from non-equilibrium bulk dynamics. When the system is not at QSD:
+The **effective exploration vacuum energy** $\Lambda_{\mathrm{eff}}$ arises from non-equilibrium bulk dynamics. When the system is not at QSD:
 
 $$
-\Lambda_{\text{eff}} = \Lambda_{\text{bulk}}^{(\text{QSD})} + \Lambda_{\text{exploration}} = 0 + \Lambda_{\text{exploration}}
+\Lambda_{\mathrm{eff}} = \Lambda_{\mathrm{bulk}}^{(\mathrm{QSD})} + \Lambda_{\mathrm{exploration}} = 0 + \Lambda_{\mathrm{exploration}}
 $$
 
-where $\Lambda_{\text{exploration}}$ is determined by the source term $J^\mu \neq 0$ in the modified field equations:
+where $\Lambda_{\mathrm{exploration}}$ is determined by the source term $J^\mu \neq 0$ in the modified field equations:
 
 $$
-G_{\mu\nu} + \Lambda_{\text{eff}} g_{\mu\nu} = \kappa T_{\mu\nu} + \kappa (J_\mu u_\nu + J_\nu u_\mu)
+G_{\mu\nu} + \Lambda_{\mathrm{eff}} g_{\mu\nu} = \kappa T_{\mu\nu} + \kappa (J_\mu u_\nu + J_\nu u_\mu)
 $$
 
-where the exploration current $J^\mu$ couples symmetrically to form a proper rank-2 tensor.
+where the exploration current $J^\mu$ couples symmetrically to the 4-velocity $u_\nu$ to form a proper rank-2 tensor.
 
 **Properties:**
-1. **Sign depends on dynamics**: $\Lambda_{\text{eff}}$ can be positive, negative, or zero
-2. **Exploration-dominated**: When walkers are spreading (exploration phase), $\Lambda_{\text{eff}} > 0$ is possible
-3. **Exploitation-dominated**: When walkers are converging (exploitation phase), $\Lambda_{\text{eff}} \leq 0$
+1. **Sign depends on dynamics:** $\Lambda_{\mathrm{eff}}$ can be positive, negative, or zero
+2. **Exploration-dominated:** When walkers are spreading (exploration phase), $\Lambda_{\mathrm{eff}} > 0$ is possible
+3. **Exploitation-dominated:** When walkers are converging (exploitation phase), $\Lambda_{\mathrm{eff}} \leq 0$
 
-**Physical interpretation:** The effective cosmological constant measures how far the system is from equilibrium. Positive $\Lambda_{\text{eff}}$ corresponds to expansion-driving dynamics.
+**Physical interpretation:** The effective cosmological constant measures how far the system is from equilibrium. Positive $\Lambda_{\mathrm{eff}}$ corresponds to expansion-driving dynamics.
 :::
 
 :::{div} feynman-prose
@@ -222,9 +222,9 @@ If the universe ever reached QSD equilibrium---walkers clustered on the fitness 
 ## Why They Are Different Physical Quantities
 
 :::{div} feynman-prose
-Now let me explain why these three Lambda's are genuinely different, not just different names for the same thing.
+Now let me explain why these three Lambdas are genuinely different, not just different names for the same thing.
 
-The key is geometry. The holographic Lambda is measured at the *boundary*---it is a surface quantity. The bulk Lambda's are measured in the *interior*---they are volume quantities. These are mathematically distinct operations, like taking a surface integral versus a volume integral.
+The key is geometry. The holographic Lambda is measured at the *boundary*---it is a surface quantity. The bulk Lambdas are measured in the *interior*---they are volume quantities. These are mathematically distinct operations, like taking a surface integral versus a volume integral.
 :::
 
 :::{prf:proposition} Geometric Distinction: Boundary vs Bulk
@@ -232,30 +232,31 @@ The key is geometry. The holographic Lambda is measured at the *boundary*---it i
 
 The three vacuum energies correspond to geometrically distinct measurements:
 
-**Holographic $\Lambda_{\text{holo}}$:** Boundary integral measurement
+**Holographic $\Lambda_{\mathrm{holo}}$:** Boundary integral measurement
 
 $$
-\Lambda_{\text{holo}} \sim \frac{1}{A_H} \frac{\partial}{\partial A_H} \iint_{H \times \mathcal{Z}} K_\varepsilon(z,z') \rho(z) \rho(z') \, dz \, dz'
+\Lambda_{\mathrm{holo}} \sim \frac{1}{A_H} \frac{\partial}{\partial A_H} \iint_{H \times \mathcal{Z}} K_\varepsilon(z,z') \rho(z) \rho(z') \, dz \, dz'
 $$
 
 This is a double integral with one point on the horizon $H$ and one in the bulk.
 
-**Bulk $\Lambda_{\text{bulk}}$:** Volume integral measurement
+**Bulk $\Lambda_{\mathrm{bulk}}$:** Volume integral measurement
 
 $$
-\Lambda_{\text{bulk}} \sim \frac{1}{V} \int_{\mathcal{X}} (\text{vacuum energy density}) \, dV
+\Lambda_{\mathrm{bulk}} \sim \frac{1}{V} \int_{\mathcal{X}} (\text{vacuum energy density}) \, dV
 $$
 
 This is a single integral over the entire bulk volume.
 
-**Effective $\Lambda_{\text{eff}}$:** Dynamical measurement
+**Effective $\Lambda_{\mathrm{eff}}$:** Dynamical measurement
 
-From the $d+1$-dimensional Friedmann equations:
+From the $(d+1)$-dimensional Friedmann equations (rearranged to solve for $\Lambda$ in a flat, matter-dominated universe):
 $$
-\Lambda_{\text{eff}} = \frac{d(d-1)}{4}\frac{\dot{a}^2}{a^2} + \frac{d-1}{2}\frac{\ddot{a}}{a} - \frac{8\pi G_N}{d} \rho_{\text{matter}}
+\Lambda_{\mathrm{eff}} = \frac{d(d-1)}{2} H^2 - (d-1)\frac{\ddot{a}}{a} - \frac{8\pi G_N}{d-1} \rho_{\mathrm{matter}}
 $$
+where $H = \dot{a}/a$ is the Hubble parameter, $\ddot{a}/a$ is the deceleration term, and $d$ is the spatial dimension.
 
-This is computed from the expansion rate (Hubble parameter $H = \dot{a}/a$) and acceleration.
+This is computed from the expansion rate and acceleration.
 
 **Key point:** These are distinct geometric operations that can have different values simultaneously.
 :::
@@ -306,7 +307,7 @@ where $\varepsilon_c$ is the IG correlation length and $L$ is the system size.
 **Physical characteristics:**
 - Correlations are short-range (decay quickly with distance)
 - Elastic pressure dominates radiation pressure
-- Frequency gap $\omega_0 \gg k_B T_{\text{eff}}$
+- Frequency gap $\omega_0 \gg k_B T_{\mathrm{eff}}$
 - Mode occupation is exponentially suppressed
 
 **Consequence:** From {prf:ref}`thm-pressure-regimes`, elastic pressure dominates and total pressure is negative.
@@ -318,32 +319,32 @@ where $\varepsilon_c$ is the IG correlation length and $L$ is the system size.
 In the UV regime ($\varepsilon_c \ll L$), the holographic boundary geometry is always Anti-de Sitter:
 
 $$
-\Lambda_{\text{holo}} = \frac{8\pi G_N}{c^2}\frac{\Pi_{\text{IG}}}{L} < 0 \quad \forall \varepsilon_c > 0
+\Lambda_{\mathrm{holo}} = \frac{8\pi G_N}{c^2}\frac{\Pi_{\mathrm{IG}}}{L} < 0 \quad \forall \varepsilon_c > 0
 $$
 
 **Explicit formula:**
 
 $$
-\Lambda_{\text{holo}} = -\frac{\pi G_N C_0 \rho_0^2 (2\pi)^{d/2} \varepsilon_c^{d+2}}{d c^2 L^3}
+\Lambda_{\mathrm{holo}} = -\frac{\pi G_N C_0 \rho_0^2 (2\pi)^{d/2} \varepsilon_c^{d+2}}{d c^2 L^3}
 $$
 
 **Properties:**
-1. **Universal negativity**: Holds for all positive $\varepsilon_c$, not just UV regime
-2. **Scaling**: $|\Lambda_{\text{holo}}| \propto \varepsilon_c^{d+2} / L^3$
-3. **AdS radius**: $L_{\text{AdS}}^2 = -d(d-1)/(2\Lambda_{\text{holo}}) > 0$
+1. **Universal negativity:** Holds for all positive $\varepsilon_c$, not just UV regime
+2. **Scaling:** $|\Lambda_{\mathrm{holo}}| \propto \varepsilon_c^{d+2} / L^3$
+3. **AdS radius:** $L_{\mathrm{AdS}}^2 = -d(d-1)/(2\Lambda_{\mathrm{holo}}) > 0$
 
 *Proof.*
 
-This follows directly from {prf:ref}`thm-holographic-pressure`. The IG pressure is:
+This follows directly from {prf:ref}`thm-holographic-pressure`. The IG pressure is
 
 $$
-\Pi_{\text{IG}}(L) = -\frac{C_0 \rho_0^2 (2\pi)^{d/2} \varepsilon_c^{d+2}}{8dL^2} < 0
+\Pi_{\mathrm{IG}}(L) = -\frac{C_0 \rho_0^2 (2\pi)^{d/2} \varepsilon_c^{d+2}}{8dL^2} < 0.
 $$
 
-The holographic Lambda is:
+The holographic Lambda is
 
 $$
-\Lambda_{\text{holo}} = \frac{8\pi G_N}{c^2}\frac{\Pi_{\text{IG}}}{L} = -\frac{\pi G_N C_0 \rho_0^2 (2\pi)^{d/2} \varepsilon_c^{d+2}}{d c^2 L^3} < 0
+\Lambda_{\mathrm{holo}} = \frac{8\pi G_N}{c^2}\frac{\Pi_{\mathrm{IG}}}{L} = -\frac{\pi G_N C_0 \rho_0^2 (2\pi)^{d/2} \varepsilon_c^{d+2}}{d c^2 L^3} < 0.
 $$
 
 $\square$
@@ -363,7 +364,7 @@ The connection to AdS/CFT is now clear. The AdS/CFT correspondence was discovere
 :::{div} feynman-prose
 Now we come to the critical distinction: equilibrium versus non-equilibrium dynamics. The quasi-stationary distribution (QSD) represents equilibrium---walkers have settled into their long-time statistical behavior. But the universe is not at equilibrium. It is still evolving, still expanding, still exploring.
 
-Let me define both regimes precisely and show how they lead to different effective Lambda's.
+Let me define both regimes precisely and show how they lead to different effective Lambdas.
 :::
 
 :::{prf:definition} QSD Regime (Exploitation)
@@ -383,13 +384,13 @@ $$
 - Positive Ricci curvature (geodesic focusing toward peaks)
 
 **Geometric consequences:**
-- Bulk vacuum: $\Lambda_{\text{bulk}} = 0$
+- Bulk vacuum: $\Lambda_{\mathrm{bulk}} = 0$
 - Raychaudhuri focusing: $R_{\mu\nu}u^\mu u^\nu > 0$
 - Expansion: $\theta \to 0$ (no net expansion)
 
 **Physical examples:**
 - Optimization algorithm at convergence
-- Galaxy clusters (virially bound)
+- Galaxy clusters (virially relaxed)
 - Black hole interior at equilibrium
 :::
 
@@ -410,7 +411,7 @@ $$
 - Negative or zero Ricci curvature (geodesic defocusing)
 
 **Geometric consequences:**
-- Effective vacuum: $\Lambda_{\text{eff}} > 0$ possible
+- Effective vacuum: $\Lambda_{\mathrm{eff}} > 0$ possible
 - Raychaudhuri defocusing: $R_{\mu\nu}u^\mu u^\nu \leq 0$
 - Expansion: $\theta > 0$ (volume growth)
 
@@ -429,7 +430,7 @@ $$
 | **Source term** | $J^\mu = 0$ | $J^\mu \neq 0$ |
 | **Walker behavior** | Clustered on peaks | Spreading uniformly |
 | **Ricci curvature** | $R_{\mu\nu}u^\mu u^\nu > 0$ (focusing) | $R_{\mu\nu}u^\mu u^\nu \leq 0$ (defocusing) |
-| **Bulk Lambda** | $\Lambda_{\text{bulk}} = 0$ | $\Lambda_{\text{eff}} > 0$ possible |
+| **Bulk Lambda** | $\Lambda_{\mathrm{bulk}} = 0$ | $\Lambda_{\mathrm{eff}} > 0$ possible |
 | **Expansion** | $\theta \to 0$ | $\theta > 0$ sustained |
 | **Geometry** | Static or AdS near boundaries | Expanding (FRW or dS) |
 :::
@@ -449,25 +450,25 @@ Let me show you how exploration dynamics can drive sustained expansion.
 During the exploration-dominated regime, the Raychaudhuri equation allows sustained positive expansion:
 
 $$
-\frac{d\theta}{d\tau} = -\frac{1}{d}\theta^2 - \sigma^2 + \omega^2 - R_{\mu\nu}u^\mu u^\nu
+\frac{d\theta}{d\tau} = -\frac{1}{d}\theta^2 - \sigma_{\mu\nu}\sigma^{\mu\nu} + \omega_{\mu\nu}\omega^{\mu\nu} - R_{\mu\nu}u^\mu u^\nu
 $$
 
 **Exploration conditions:**
-1. **Defocusing curvature**: $R_{\mu\nu}u^\mu u^\nu < 0$ (walkers spreading, not focusing)
-2. **Low shear**: $\sigma^2 \approx 0$ (isotropic expansion)
-3. **Vorticity permitted**: $\omega^2 \geq 0$
+1. **Defocusing curvature:** $R_{\mu\nu}u^\mu u^\nu < 0$ (walkers spreading, not focusing)
+2. **Low shear:** $\sigma_{\mu\nu}\sigma^{\mu\nu} \approx 0$ (isotropic expansion)
+3. **Vorticity permitted:** $\omega_{\mu\nu}\omega^{\mu\nu} \geq 0$
 
-**Result:** With $R_{\mu\nu}u^\mu u^\nu < 0$, the equation becomes:
+**Result:** With $R_{\mu\nu}u^\mu u^\nu < 0$, the equation becomes
 
 $$
-\frac{d\theta}{d\tau} = -\frac{1}{d}\theta^2 + |R_{\mu\nu}u^\mu u^\nu| + \omega^2
+\frac{d\theta}{d\tau} = -\frac{1}{d}\theta^2 + |R_{\mu\nu}u^\mu u^\nu| + \omega_{\mu\nu}\omega^{\mu\nu}
 $$
 
 For sufficiently negative Ricci curvature, $\theta > 0$ can be sustained or even grow.
 
 *Proof sketch.*
 
-The key term is $-R_{\mu\nu}u^\mu u^\nu$. In the exploitation (QSD) regime, walkers focus on fitness peaks, creating positive Ricci curvature along geodesics. This causes $d\theta/d\tau < 0$ (focusing).
+The key term is $-R_{\mu\nu}u^\mu u^\nu$. In the exploitation (QSD) regime, walkers focus on fitness peaks, creating positive Ricci curvature along geodesics. With $\sigma_{\mu\nu}\sigma^{\mu\nu} \geq 0$ and $R_{\mu\nu}u^\mu u^\nu > 0$, this causes $d\theta/d\tau < 0$ (focusing).
 
 In the exploration regime, walkers spread uniformly on a flat or saddle-like fitness landscape. The effective Ricci curvature becomes negative (defocusing). Now $-R_{\mu\nu}u^\mu u^\nu > 0$, which can overcome the $-\theta^2/d$ term and drive $\theta > 0$.
 
@@ -482,7 +483,7 @@ $\square$
 In the exploration-dominated regime, the bulk effective cosmological constant can be positive:
 
 $$
-\Lambda_{\text{eff}} > 0
+\Lambda_{\mathrm{eff}} > 0
 $$
 
 leading to de Sitter-like expanding geometry.
@@ -496,7 +497,7 @@ leading to de Sitter-like expanding geometry.
 **Quantitative relation:**
 
 $$
-\Lambda_{\text{eff}} \propto -R_{\mu\nu}u^\mu u^\nu \cdot L^2
+\Lambda_{\mathrm{eff}} \propto -R_{\mu\nu}u^\mu u^\nu \cdot L^2
 $$
 
 where $R_{\mu\nu}u^\mu u^\nu < 0$ during exploration.
@@ -594,6 +595,20 @@ $$
 \text{Information Closure} \implies \text{Computational Closure}
 $$
 
+*Proof sketch.*
+
+**Equivalence of Information and Causal Closure.**
+
+($\Rightarrow$) If information closure holds, then $I(\overrightarrow{Y}_t ; \overleftarrow{Y}_t) = I(\overrightarrow{Y}_t ; \overleftarrow{X}_t)$. This means all predictive information about macro-futures is contained in macro-pasts. Therefore, micro-pasts that differ only in ways irrelevant to macro-futures map to the same macro causal state, establishing causal closure.
+
+($\Leftarrow$) If causal closure holds, micro-pasts with identical macro-projections induce identical macro-future distributions. By the data processing inequality, no additional predictive information is lost when passing from $\overleftarrow{X}_t$ to $\overleftarrow{Y}_t$, establishing information closure.
+
+**Spatial coarse-grainings imply computational closure.**
+
+For spatially local aggregations, the epsilon-machine structure respects locality: if micro causal states $\sigma_1, \sigma_2$ project to the same macro state under $f$, their transition probabilities also project consistently. This follows from the Markov property of spatially local dynamics.
+
+$\square$
+
 **Application to cosmology:** The renormalization group flow that takes us from micro (walker dynamics) to macro (Friedmann equations) is an instance of computational closure when it preserves physical predictions.
 :::
 
@@ -621,10 +636,10 @@ Now let us connect this framework to what we actually observe in our universe. T
 :::{prf:proposition} Observed Cosmological Constant
 :label: prop-observed-lambda
 
-The observed cosmological constant is:
+The observed cosmological constant is
 
 $$
-\Lambda_{\text{obs}} \approx 1.1 \times 10^{-52} \, \text{m}^{-2} > 0
+\Lambda_{\mathrm{obs}} \approx 1.1 \times 10^{-52} \, \text{m}^{-2} > 0.
 $$
 
 **This is a bulk measurement**, not a boundary measurement. It is extracted from:
@@ -633,7 +648,7 @@ $$
 3. Large-scale structure growth suppression
 
 **Interpretation in Latent Fractal Gas framework:**
-- $\Lambda_{\text{obs}} = \Lambda_{\text{eff}} > 0$ (effective bulk vacuum during exploration)
+- $\Lambda_{\mathrm{obs}} = \Lambda_{\mathrm{eff}} > 0$ (effective bulk vacuum during exploration)
 - Universe is NOT at QSD equilibrium
 - Universe is in exploration-dominated phase
 - Positive Lambda = residual exploration pressure
@@ -645,32 +660,32 @@ $$
 Dark energy is the bulk manifestation of exploration dynamics:
 
 $$
-\rho_{\text{DE}} = \frac{\Lambda_{\text{eff}} c^2}{8\pi G_N}
+\rho_{\mathrm{DE}} = \frac{\Lambda_{\mathrm{eff}} c^2}{8\pi G_N}.
 $$
 
 **Physical interpretation:**
 - Dark energy density measures "distance from QSD"
-- Larger $\rho_{\text{DE}}$ means farther from equilibrium
-- As universe approaches QSD: $\Lambda_{\text{eff}} \to 0$
+- Larger $\rho_{\mathrm{DE}}$ means farther from equilibrium
+- As universe approaches QSD: $\Lambda_{\mathrm{eff}} \to 0$
 - Heat death = QSD equilibrium = no more exploration
 
 **Equation of state:**
 
 $$
-w = \frac{P}{\rho} = -1 + \mathcal{O}\left(\frac{1}{\Lambda_{\text{eff}} L^2}\right)
+w = \frac{P}{\rho} = -1 + \mathcal{O}\left(\frac{1}{\Lambda_{\mathrm{eff}} L^2}\right).
 $$
 
 The $w \approx -1$ equation of state emerges from the exploration dynamics, not from vacuum energy in the traditional sense.
 :::
 
-:::{admonition} Table: Three Lambda's and Observations
+:::{admonition} Table: Three Lambdas and Observations
 :class: feynman-added note
 
 | Lambda | Value | Measurement | Physical Meaning |
 |--------|-------|-------------|------------------|
-| $\Lambda_{\text{holo}}$ | $< 0$ | IG pressure at horizons | Boundary surface tension |
-| $\Lambda_{\text{bulk}}^{(\text{QSD})}$ | $= 0$ | Equilibrium field equations | No expansion at QSD |
-| $\Lambda_{\text{eff}}$ | $\approx 10^{-52}$ m$^{-2}$ | Supernova, CMB | Exploration-driven expansion |
+| $\Lambda_{\mathrm{holo}}$ | $< 0$ | IG pressure at horizons | Boundary surface tension |
+| $\Lambda_{\mathrm{bulk}}^{(\mathrm{QSD})}$ | $= 0$ | Equilibrium field equations | No expansion at QSD |
+| $\Lambda_{\mathrm{eff}}$ | $\approx 10^{-52}$ m$^{-2}$ | Supernova, CMB | Exploration-driven expansion |
 :::
 
 :::{div} feynman-prose
@@ -678,9 +693,9 @@ The observed positive cosmological constant fits perfectly into this framework. 
 
 The universe is exploring. It has not found the fitness peak yet. The positive Lambda tells us how actively it is searching.
 
-This reframes the "cosmological constant problem." The traditional problem is: why is $\Lambda_{\text{obs}}$ so small compared to particle physics predictions? But that comparison is confused. The particle physics predictions are computing something like $\Lambda_{\text{holo}}$ (vacuum energy at short distances, boundary-type calculation). The observations are measuring $\Lambda_{\text{eff}}$ (bulk expansion rate). These are different quantities!
+This reframes the "cosmological constant problem." The traditional problem is: why is $\Lambda_{\mathrm{obs}}$ so small compared to particle physics predictions? But that comparison is confused. The particle physics predictions are computing something like $\Lambda_{\mathrm{holo}}$ (vacuum energy at short distances, boundary-type calculation). The observations are measuring $\Lambda_{\mathrm{eff}}$ (bulk expansion rate). These are different quantities!
 
-The "smallness" of $\Lambda_{\text{obs}}$ is not a fine-tuning problem. It is telling us that the universe is *close* to QSD equilibrium, but not quite there. The exploration pressure is weak, but nonzero. This is consistent with a universe that has been evolving for 13.8 billion years---long enough to settle down significantly, but not long enough to reach equilibrium.
+The "smallness" of $\Lambda_{\mathrm{obs}}$ is not a fine-tuning problem. It is telling us that the universe is *close* to QSD equilibrium, but not quite there. The exploration pressure is weak, but nonzero. This is consistent with a universe that has been evolving for 13.8 billion years---long enough to settle down significantly, but not long enough to reach equilibrium.
 :::
 
 (sec-de-sitter-conjecture)=
@@ -697,23 +712,23 @@ The apparent tension between "AdS from holography" and "dS from observations" is
 
 **Holographic boundary:** Always AdS
 $$
-\Lambda_{\text{holo}} < 0 \quad \text{(proven rigorously)}
+\Lambda_{\mathrm{holo}} < 0 \quad \text{(proven rigorously)}
 $$
 
 **Bulk at QSD:** Zero
 $$
-\Lambda_{\text{bulk}}^{(\text{QSD})} = 0 \quad \text{(proven rigorously)}
+\Lambda_{\mathrm{bulk}}^{(\mathrm{QSD})} = 0 \quad \text{(proven rigorously)}
 $$
 
 **Bulk during exploration:** Can be positive
 $$
-\Lambda_{\text{eff}} > 0 \quad \text{(mechanism established)}
+\Lambda_{\mathrm{eff}} > 0 \quad \text{(mechanism established)}
 $$
 
 **Status summary:**
-- AdS boundary: PROVEN (Theorem {prf:ref}`thm-ads-boundary-uv`)
-- Zero bulk at equilibrium: PROVEN (Theorem {prf:ref}`thm-vanishing-bulk-vacuum`)
-- Positive effective bulk during exploration: MECHANISM ESTABLISHED (Theorem {prf:ref}`thm-bulk-can-be-ds`), quantitative calculation pending
+- AdS boundary: PROVEN ({prf:ref}`thm-ads-boundary-uv`)
+- Zero bulk at equilibrium: PROVEN ({prf:ref}`thm-vanishing-bulk-vacuum`)
+- Positive effective bulk during exploration: MECHANISM ESTABLISHED ({prf:ref}`thm-bulk-can-be-ds`), quantitative calculation pending
 
 **Resolution:** The de Sitter conjecture was asking about boundary vacuum (where AdS is proven). Observations measure bulk vacuum during non-equilibrium (where dS is possible). No contradiction.
 :::
@@ -726,12 +741,12 @@ The holographic calculations in string theory (and our IG pressure calculation) 
 The confusion arose because people assumed there was only one cosmological constant. Once you recognize there are three, the apparent contradiction dissolves.
 
 Let me be precise about what is proven and what is not:
-- **Proven**: Holographic boundary is AdS ($\Lambda_{\text{holo}} < 0$)
-- **Proven**: Bulk at equilibrium has zero vacuum energy ($\Lambda_{\text{bulk}} = 0$)
-- **Established mechanism**: Bulk during exploration can have positive effective vacuum energy ($\Lambda_{\text{eff}} > 0$)
-- **Not yet calculated**: Quantitative value of $\Lambda_{\text{eff}}$ from exploration parameters
+- **Proven:** Holographic boundary is AdS ($\Lambda_{\mathrm{holo}} < 0$)
+- **Proven:** Bulk at equilibrium has zero vacuum energy ($\Lambda_{\mathrm{bulk}} = 0$)
+- **Established mechanism:** Bulk during exploration can have positive effective vacuum energy ($\Lambda_{\mathrm{eff}} > 0$)
+- **Not yet calculated:** Quantitative value of $\Lambda_{\mathrm{eff}}$ from exploration parameters
 
-The third point is not a rigorous theorem yet. We know the mechanism (defocusing geometry from exploration), but computing the exact value of $\Lambda_{\text{eff}}$ requires solving the non-equilibrium McKean-Vlasov equations, which is technically challenging.
+The third point is not a rigorous theorem yet. We know the mechanism (defocusing geometry from exploration), but computing the exact value of $\Lambda_{\mathrm{eff}}$ requires solving the non-equilibrium McKean-Vlasov equations, which is technically challenging.
 :::
 
 (sec-physical-interpretation)=
@@ -752,7 +767,7 @@ The "vacuum" is the quasi-stationary distribution that the swarm approaches over
 
 **Cosmological constant = distance from equilibrium**
 
-$\Lambda_{\text{eff}}$ measures how far the system is from its QSD attractor. Positive Lambda means ongoing exploration; zero Lambda means equilibrium reached.
+$\Lambda_{\mathrm{eff}}$ measures how far the system is from its QSD attractor. Positive Lambda means ongoing exploration; zero Lambda means equilibrium reached.
 
 **Dark energy = residual exploration pressure**
 
@@ -766,19 +781,19 @@ The exploration-exploitation tradeoff has cosmic manifestations:
 
 **Exploration-dominated (early universe)**
 - Inflation: Rapid exploration of vacuum structure
-- $\Lambda_{\text{eff}} \gg 0$: Strong expansion-driving pressure
+- $\Lambda_{\mathrm{eff}} \gg 0$: Strong expansion-driving pressure
 - Defocusing geometry: Walkers spread exponentially
 - Result: Flat, homogeneous universe
 
 **Exploitation-dominated (late universe)**
 - Structure formation: Walkers cluster on fitness peaks
-- $\Lambda_{\text{eff}} \to 0$: Weak expansion pressure
+- $\Lambda_{\mathrm{eff}} \to 0$: Weak expansion pressure
 - Focusing geometry: Matter clusters into galaxies
 - Result: Hierarchical structure
 
 **Current era**
 - Mixture: Both exploration (cosmic expansion) and exploitation (structure formation)
-- $\Lambda_{\text{eff}} \approx 10^{-52}$ m$^{-2}$: Small but positive
+- $\Lambda_{\mathrm{eff}} \approx 10^{-52}$ m$^{-2}$: Small but positive
 - Competition: Dark energy vs gravitational collapse
 - Result: Accelerating expansion with galaxy-scale clustering
 :::
@@ -794,11 +809,11 @@ The Latent Fractal Gas framework reframes this as:
 
 > Why is the universe so close to QSD equilibrium?
 
-**Traditional problem:** $\Lambda_{\text{obs}} / \Lambda_{\text{QFT}} \sim 10^{-120}$ (unnatural fine-tuning)
+**Traditional problem:** $\Lambda_{\mathrm{obs}} / \Lambda_{\mathrm{QFT}} \sim 10^{-120}$ (unnatural fine-tuning)
 
 **Reframed question:** Why has the universe evolved so close to equilibrium in 13.8 billion years?
 
-**Possible answer:** Selection effects. Universes far from equilibrium (large $\Lambda_{\text{eff}}$) expand too fast for structure. Universes at equilibrium ($\Lambda_{\text{eff}} = 0$) might collapse or freeze. Observers exist in the "Goldilocks" zone of exploration---close enough to equilibrium for structure, far enough for expansion.
+**Possible answer:** Selection effects. Universes far from equilibrium (large $\Lambda_{\mathrm{eff}}$) expand too fast for structure. Universes at equilibrium ($\Lambda_{\mathrm{eff}} = 0$) might collapse or freeze. Observers exist in the "Goldilocks" zone of exploration---close enough to equilibrium for structure, far enough for expansion.
 
 This is not a complete solution, but it shows how the problem looks different in this framework.
 :::
@@ -815,7 +830,7 @@ Different "vacua" in the string landscape may correspond to different QSD attrac
 
 **Observable implications:**
 - Our vacuum is one QSD attractor among many
-- Anthropic selection favors vacua with suitable $\Lambda_{\text{eff}}$
+- Anthropic selection favors vacua with suitable $\Lambda_{\mathrm{eff}}$
 - Bubble nucleation = walker "tunneling" to different attractor
 
 **Status:** Speculative interpretation, not proven from the framework.
@@ -831,16 +846,16 @@ We started with a confusion: the cosmological constant seems to be negative (fro
 
 The resolution is that these are three different numbers measuring three different things:
 
-1. **Holographic boundary Lambda** ($\Lambda_{\text{holo}} < 0$): Surface tension at horizons, always negative, creates AdS boundary geometry.
+1. **Holographic boundary Lambda** ($\Lambda_{\mathrm{holo}} < 0$): Surface tension at horizons, always negative, creates AdS boundary geometry.
 
-2. **Bulk equilibrium Lambda** ($\Lambda_{\text{bulk}} = 0$): Vacuum energy in the interior at QSD, zero because there is no expansion at equilibrium.
+2. **Bulk equilibrium Lambda** ($\Lambda_{\mathrm{bulk}} = 0$): Vacuum energy in the interior at QSD, zero because there is no expansion at equilibrium.
 
-3. **Effective exploration Lambda** ($\Lambda_{\text{eff}} > 0$ possible): Dynamical vacuum during non-equilibrium, positive when exploration drives expansion.
+3. **Effective exploration Lambda** ($\Lambda_{\mathrm{eff}} > 0$ possible): Dynamical vacuum during non-equilibrium, positive when exploration drives expansion.
 
 The key theorems are:
-- **Theorem {prf:ref}`thm-ads-boundary-uv`**: Holographic boundary is always AdS (proven)
-- **Theorem {prf:ref}`thm-vanishing-bulk-vacuum`**: Bulk vacuum is zero at QSD (proven)
-- **Theorem {prf:ref}`thm-bulk-can-be-ds`**: Bulk can be dS during exploration (mechanism established)
+- **{prf:ref}`thm-ads-boundary-uv`:** Holographic boundary is always AdS (proven)
+- **{prf:ref}`thm-vanishing-bulk-vacuum`:** Bulk vacuum is zero at QSD (proven)
+- **{prf:ref}`thm-bulk-can-be-ds`:** Bulk can be dS during exploration (mechanism established)
 
 The cosmological implications are profound:
 - **Dark energy** is not mysterious vacuum energy---it is exploration pressure from a universe still searching for equilibrium
@@ -849,7 +864,7 @@ The cosmological implications are profound:
 
 The closure theory connection shows that our effective cosmological descriptions (Friedmann equations) are valid when computational closure is satisfied---macro predicts macro as well as micro does.
 
-What remains open is the quantitative calculation of $\Lambda_{\text{eff}}$ from exploration parameters. This requires solving non-equilibrium dynamics, which is technically challenging. But the mechanism is clear, and the qualitative predictions match observations.
+What remains open is the quantitative calculation of $\Lambda_{\mathrm{eff}}$ from exploration parameters. This requires solving non-equilibrium dynamics, which is technically challenging. But the mechanism is clear, and the qualitative predictions match observations.
 
 The deep insight is this: the vacuum is algorithmic. It is not a fixed backdrop but an emergent attractor of optimization dynamics. Different fitness landscapes produce different vacua, and the cosmological constant measures how far we are from finding the attractor.
 
@@ -863,9 +878,9 @@ The universe is searching. It has not found the answer yet. And the tiny positiv
 
 | Lambda | Formula | Sign | Physical Meaning |
 |--------|---------|------|------------------|
-| $\Lambda_{\text{holo}}$ | $\frac{8\pi G_N}{c^2}\frac{\Pi_{\text{IG}}}{L}$ | $< 0$ always | Boundary surface tension |
-| $\Lambda_{\text{bulk}}^{(\text{QSD})}$ | From $\nabla_\mu T^{\mu\nu} = 0$ | $= 0$ | Equilibrium vacuum |
-| $\Lambda_{\text{eff}}$ | From non-equilibrium $J^\mu \neq 0$ | Can be $> 0$ | Exploration pressure |
+| $\Lambda_{\mathrm{holo}}$ | $\frac{8\pi G_N}{c^2}\frac{\Pi_{\mathrm{IG}}}{L}$ | $< 0$ always | Boundary surface tension |
+| $\Lambda_{\mathrm{bulk}}^{(\mathrm{QSD})}$ | From $\nabla_\mu T^{\mu\nu} = 0$ | $= 0$ | Equilibrium vacuum |
+| $\Lambda_{\mathrm{eff}}$ | From non-equilibrium $J^\mu \neq 0$ | Can be $> 0$ | Exploration pressure |
 
 **Regime Summary:**
 
@@ -876,9 +891,9 @@ The universe is searching. It has not found the answer yet. And the tiny positiv
 
 **Key Theorems:**
 
-1. **AdS Boundary** ({prf:ref}`thm-ads-boundary-uv`): $\Lambda_{\text{holo}} < 0$ always (PROVEN)
-2. **Zero Bulk at QSD** ({prf:ref}`thm-vanishing-bulk-vacuum`): $\Lambda_{\text{bulk}} = 0$ (PROVEN)
-3. **Positive Bulk during Exploration** ({prf:ref}`thm-bulk-can-be-ds`): $\Lambda_{\text{eff}} > 0$ (MECHANISM ESTABLISHED)
+1. **AdS Boundary** ({prf:ref}`thm-ads-boundary-uv`): $\Lambda_{\mathrm{holo}} < 0$ always (PROVEN)
+2. **Zero Bulk at QSD** ({prf:ref}`thm-vanishing-bulk-vacuum`): $\Lambda_{\mathrm{bulk}} = 0$ (PROVEN)
+3. **Positive Bulk during Exploration** ({prf:ref}`thm-bulk-can-be-ds`): $\Lambda_{\mathrm{eff}} > 0$ (MECHANISM ESTABLISHED)
 4. **Closure Equivalence** ({prf:ref}`thm-closure-equivalence-cosmo`): Information closure $\iff$ Causal closure
 
 **Physical Interpretations:**
@@ -894,10 +909,10 @@ The universe is searching. It has not found the answer yet. And the tiny positiv
 
 | Symbol | Definition | Reference |
 |--------|------------|-----------|
-| $\Lambda_{\text{holo}}$ | Holographic boundary vacuum energy | {prf:ref}`def-holographic-boundary-vacuum` |
-| $\Lambda_{\text{bulk}}$ | Bulk QSD vacuum energy | {prf:ref}`def-bulk-qsd-vacuum` |
-| $\Lambda_{\text{eff}}$ | Effective exploration vacuum energy | {prf:ref}`def-effective-exploration-vacuum` |
-| $\Pi_{\text{IG}}$ | IG pressure at horizon | {prf:ref}`thm-holographic-pressure` |
+| $\Lambda_{\mathrm{holo}}$ | Holographic boundary vacuum energy | {prf:ref}`def-holographic-boundary-vacuum` |
+| $\Lambda_{\mathrm{bulk}}$ | Bulk QSD vacuum energy | {prf:ref}`def-bulk-qsd-vacuum` |
+| $\Lambda_{\mathrm{eff}}$ | Effective exploration vacuum energy | {prf:ref}`def-effective-exploration-vacuum` |
+| $\Pi_{\mathrm{IG}}$ | IG pressure at horizon | {prf:ref}`thm-holographic-pressure` |
 | $\varepsilon_c$ | IG correlation length | {prf:ref}`def-ig-structure` |
 | $\rho_0$ | Uniform walker density | {prf:ref}`thm-elastic-pressure` |
 | $J^\mu$ | Non-equilibrium source term | {prf:ref}`def-effective-exploration-vacuum` |
@@ -908,7 +923,26 @@ The universe is searching. It has not found the answer yet. And the tiny positiv
 | $\Sigma_\varepsilon$ | Causal states (epsilon-machine) | {prf:ref}`def-epsilon-machine` |
 | $T_\varepsilon$ | Epsilon-machine transition function | {prf:ref}`def-epsilon-machine` |
 | $I(A;B)$ | Mutual information | {prf:ref}`def-information-closure-cosmo` |
-| $L_{\text{AdS}}$ | AdS radius | {prf:ref}`thm-ads-boundary-uv` |
-| $T_{\text{eff}}$ | Effective temperature | {prf:ref}`thm-qsd-gibbs` |
+| $L_{\mathrm{AdS}}$ | AdS radius | {prf:ref}`thm-ads-boundary-uv` |
+| $T_{\mathrm{eff}}$ | Effective temperature | {prf:ref}`thm-qsd-gibbs` |
 | $w$ | Equation of state parameter | {prf:ref}`prop-dark-energy-exploration` |
 | QSD | Quasi-stationary distribution | {prf:ref}`def-qsd-regime` |
+
+---
+
+## References
+
+### Framework Documents
+
+- {doc}`03_curvature_gravity` --- Emergent curvature and the Raychaudhuri equation
+- {doc}`05_holography` --- Holographic structure, IG pressure, and thermodynamics
+- {doc}`04_field_equations` --- Field equations and pressure regimes
+
+### External References
+
+This chapter draws on standard results from:
+
+- **Cosmology:** Friedmann equations, cosmological constant, dark energy observations
+- **General relativity:** Raychaudhuri equation, de Sitter and Anti-de Sitter spacetimes
+- **Computational mechanics:** Epsilon-machines, information closure, causal states
+- **Quantum gravity:** de Sitter conjecture, string landscape, holographic vacuum structure

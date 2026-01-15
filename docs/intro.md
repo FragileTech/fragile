@@ -252,8 +252,8 @@ This is the **algorithmic instantiation**: the computational engine that runs in
 
 **Gauge Structure from Viscous Coupling:**
 The viscous force between walkers generates an emergent SU($d$) gauge symmetry:
-- **Color Link Variables**: Modulus from distance, phase from momentum difference
-- **Color State Vector**: Coherent sum over neighbors
+- **Color Link Variables**: Amplitude from viscous force, phase from momentum
+- **Color State Vector**: Coherent sum over neighbors (normalized complex force vector)
 - **Gluon Fields**: Extracted from traceless phase matrix
 - **Confinement**: Localization kernel provides asymptotic freedom at long range, confinement at short range
 

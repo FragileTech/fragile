@@ -1,19 +1,20 @@
 (sec-scutoid-spacetime)=
 # Scutoid Spacetime: Discrete Geometry from Cloning
 
-**Prerequisites**: {doc}`01_emergent_geometry`, {doc}`/3_fractal_gas/2_fractal_set/02_causal_set_theory`
+**Prerequisites**: {doc}`01_emergent_geometry`, {doc}`/3_fractal_gas/2_fractal_set/02_causal_set_theory`, {cite}`gomez2018scutoids`
 
 ---
 
+(sec-scutoid-tldr)=
 ## TLDR
 
-*Notation: $\mathrm{Vor}_i(t)$ = Voronoi cell of walker $i$ at time $t$; $\mathcal{N}_i(t)$ = neighbor set; $\chi_{\mathrm{scutoid}}$ = scutoid index (total neighbor changes); $d_g$ = Riemannian geodesic distance.*
+*Notation: $\mathrm{Vor}_i(t)$ = Voronoi cell of walker $i$ at time $t$; $\mathcal{N}_i(t)$ = neighbor set; $\chi_{\mathrm{scutoid}} = |\mathcal{N}_{\mathrm{lost}}| + |\mathcal{N}_{\mathrm{gained}}|$ = scutoid index (total neighbor changes); $d_g$ = Riemannian geodesic distance; $d$ = latent space dimension.*
 
 **Scutoids Bridge Continuous Geometry and Discrete Dynamics**: The Latent Fractal Gas has continuous Riemannian geometry ({doc}`01_emergent_geometry`) but discrete cloning dynamics. Scutoids—$(d+1)$-dimensional polytopes with mid-level vertices—are the natural spacetime cells that accommodate topological transitions when neighbor sets change during cloning.
 
 **Cloning Forces Scutoid Geometry**: Theorem {prf:ref}`thm-cloning-implies-scutoid` proves that cloning events *necessarily* produce scutoid cells. When a walker dies and is replaced by a clone at a different position, the Voronoi neighbor sets change (generically), and connecting incompatible top/bottom faces requires mid-level branching vertices.
 
-**Online Triangulation Algorithm**: Algorithm {prf:ref}`alg-online-triangulation-update` maintains the Voronoi/Delaunay tessellation in $O(N)$ amortized time per timestep—optimal by Theorem {prf:ref}`thm-omega-n-lower-bound`. This is $O(\log N)$ faster than batch recomputation.
+**Online Triangulation Algorithm**: Algorithm {prf:ref}`alg-online-triangulation-update` maintains the Voronoi/Delaunay tessellation in $O(N)$ amortized time per timestep, optimal by Theorem {prf:ref}`thm-omega-n-lower-bound`. This is a factor of $\log N$ faster than batch recomputation.
 
 **Topological Information Rate**: The scutoid index $\chi_{\mathrm{scutoid}} = |\mathcal{N}_{\mathrm{lost}}| + |\mathcal{N}_{\mathrm{gained}}|$ counts neighbor relationship changes. Conjecture {prf:ref}`conj-topological-information-bound` proposes that the rate of topological information generation bounds computational activity.
 
@@ -23,13 +24,13 @@
 ## Introduction
 
 :::{div} feynman-prose
-Let me tell you what this chapter is really about. In {doc}`01_emergent_geometry`, we built a beautiful continuous geometry from the fitness landscape. The metric tensor $g = H + \epsilon_\Sigma I$ told us how to measure distances, and we could compute curvature, volumes, geodesics---all the machinery of Riemannian geometry.
+Let me tell you what this chapter is really about. In {doc}`01_emergent_geometry`, we built a beautiful continuous geometry from the fitness landscape. The metric tensor $g = H + \epsilon_\Sigma I$ told us how to measure distances, and we could compute curvature, volumes, geodesics—all the machinery of Riemannian geometry.
 
-But here is the thing: the Latent Fractal Gas is not a continuous system. It is discrete. Walkers jump. Walkers die. Walkers clone. At each timestep, the swarm undergoes a violent reorganization where the unfit perish and the fit reproduce. This is not smooth Langevin diffusion---it is a birth-death process with all its discrete messiness.
+But here is the thing: the Latent Fractal Gas is not a purely continuous system. It is discrete in its cloning dynamics. Walkers jump. Walkers die. Walkers clone. At each timestep, the swarm undergoes a violent reorganization where the unfit perish and the fit reproduce. This is not smooth Langevin diffusion—it is a birth-death process with all its discrete messiness.
 
 So how do we reconcile the continuous Riemannian geometry of {doc}`01_emergent_geometry` with the discrete cloning dynamics of the algorithm? The answer is a remarkable geometric object called the **scutoid**.
 
-Scutoids were discovered by biologists studying epithelial tissue---the sheets of cells that form your skin, your gut lining, your blood vessels. When tissue curves, cells cannot be simple prisms (like hexagonal columns). They need to swap neighbors as you move from one surface to another. The geometry that accomplishes this neighbor-swapping is the scutoid: a prismatoid with extra vertices in the middle where edges branch and merge.
+Scutoids were discovered by biologists studying epithelial tissue—the sheets of cells that form your skin, your gut lining, your blood vessels. When tissue curves, cells cannot be simple prisms (like hexagonal columns). They need to swap neighbors as you move from one surface to another. The geometry that accomplishes this neighbor-swapping is the scutoid: a prismatoid with extra vertices in the middle where edges branch and merge.
 
 Here is the beautiful correspondence: in the Latent Fractal Gas, **cloning events are topologically equivalent to neighbor-swapping**. When a walker dies and is replaced by a clone from somewhere else, the Voronoi tessellation changes its neighbor structure. The spacetime cell connecting the before-state to the after-state is forced to be a scutoid.
 
@@ -54,9 +55,9 @@ This is not merely an analogy. It is a precise mathematical theorem. The scutoid
 :::
 
 :::{div} feynman-prose
-Before we can talk about spacetime cells, we need to understand what the space looks like at each instant. At any moment $t$, the walker positions $\{z_i(t)\}$ partition the latent space $\mathcal{Z}$ into regions. Each region consists of all points closer to one particular walker than to any other. This is the Voronoi tessellation---the most natural way to divide space among a set of points.
+Before we can talk about spacetime cells, we need to understand what the space looks like at each instant. At any moment $t$, the walker positions $\{z_i(t)\}$ partition the latent space $\mathcal{Z}$ into regions. Each region consists of all points closer to one particular walker than to any other. This is the Voronoi tessellation—the most natural way to divide space among a set of points.
 
-The key subtlety is that we are working in the emergent Riemannian geometry, not flat Euclidean space. "Closer" means closer in the geodesic distance $d_g$ induced by the emergent metric $g = H + \epsilon_\Sigma I$. This means Voronoi boundaries are not flat planes but curved hypersurfaces---the set of points equidistant (in the Riemannian sense) from two walker positions.
+The key subtlety is that we are working in the emergent Riemannian geometry, not flat Euclidean space. "Closer" means closer in the geodesic distance $d_g$ induced by the emergent metric $g = H + \epsilon_\Sigma I$. This means Voronoi boundaries are not flat planes but curved hypersurfaces—the set of points equidistant (in the Riemannian sense) from two walker positions.
 
 As the walkers move, the tessellation evolves. Cells expand, contract, gain neighbors, lose neighbors. Understanding this evolution is the key to understanding the spacetime geometry.
 :::
@@ -103,6 +104,7 @@ $$
 This is a $(d-1)$-dimensional hypersurface in the $d$-dimensional latent space.
 :::
 
+(sec-dual-delaunay-triangulation)=
 ### The Dual Delaunay Triangulation
 
 :::{div} feynman-prose
@@ -137,7 +139,7 @@ The **Delaunay triangulation** $\mathrm{DT}(t)$ at time $t$ is the simplicial co
 :::{div} feynman-prose
 Now we come to the heart of the matter. How do we connect two time slices into a spacetime structure?
 
-Imagine you have a Voronoi tessellation at time $t$ and another at time $t + \Delta t$. The simplest case is when everything lines up perfectly: each walker at time $t$ corresponds to the same walker at time $t + \Delta t$, and the neighbor sets are unchanged. In this case, you can connect the two tessellations with simple prisms---each Voronoi cell at the bottom connects straight up to the corresponding cell at the top.
+Imagine you have a Voronoi tessellation at time $t$ and another at time $t + \Delta t$. The simplest case is when everything lines up perfectly: each walker at time $t$ corresponds to the same walker at time $t + \Delta t$, and the neighbor sets are unchanged. In this case, you can connect the two tessellations with simple prisms—each Voronoi cell at the bottom connects straight up to the corresponding cell at the top.
 
 But what happens when cloning occurs? Walker $i$ at position $z_i$ dies and is replaced by a clone of walker $j$ from position $z_j$. The new walker appears somewhere completely different in space. The Voronoi cell that contained $z_i$ is gone, replaced by a cell around the cloning position. The neighbor sets change: the new cell has different neighbors than the old one.
 
@@ -212,7 +214,7 @@ For neighbors $A, B, C, D$ that appear in both lists, we can connect the corresp
 
 But what about $E$ and $F$? The boundary segment adjacent to $E$ at the bottom has no corresponding segment at the top. The boundary segment adjacent to $F$ at the top has no corresponding segment at the bottom.
 
-The only way to close the surface is to have the geodesics from the $E$-segment terminate at some intermediate location, and have geodesics to the $F$-segment originate from that same location. This intermediate location is the mid-level vertex. It is not something we choose to add---it is topologically forced on us by the mismatch in neighbor sets.
+The only way to close the surface is to have the geodesics from the $E$-segment terminate at some intermediate location, and have geodesics to the $F$-segment originate from that same location. This intermediate location is the mid-level vertex. It is not something we choose to add—it is topologically forced on us by the mismatch in neighbor sets.
 :::
 
 (sec-cloning-topological-transitions)=
@@ -221,7 +223,7 @@ The only way to close the surface is to have the geodesics from the $E$-segment 
 :::{div} feynman-prose
 Now we prove the central theorem: cloning events necessarily produce scutoid geometry. This is not a modeling choice or a convenient approximation. It is a mathematical inevitability.
 
-The argument has two parts. First, we show that cloning changes the neighbor set with probability one. When a walker at position $z_i$ is replaced by a clone from position $z_j$, the new Voronoi cell has different neighbors (generically). Second, we show that different neighbor sets force scutoid geometry---there is no way to construct a simple prism when the top and bottom faces have incompatible combinatorial structure.
+The argument has two parts. First, we show that cloning changes the neighbor set with probability one. When a walker at position $z_i$ is replaced by a clone from position $z_j$, the new Voronoi cell has different neighbors (generically). Second, we show that different neighbor sets force scutoid geometry—there is no way to construct a simple prism when the top and bottom faces have incompatible combinatorial structure.
 :::
 
 :::{prf:theorem} Cloning Implies Scutoid Geometry
@@ -233,16 +235,17 @@ Let $e_i$ be an episode (walker trajectory) traversing the interval $[t, t + \De
 
 1. **No Cloning (Persistence)**: If episode $e_i$ persists without cloning, then with probability 1, $\mathcal{N}_i(t) = \mathcal{N}_i(t + \Delta t)$. The spacetime cell is a **Prism** (Type 0).
 
-2. **Cloning Event**: If episode $e_i$ ends at time $t$ and is replaced by a clone $e_{i'}$ from parent $e_j$ at a different position, then with probability 1, $\mathcal{N}_i(t) \neq \mathcal{N}_{i'}(t + \Delta t)$. The spacetime cell is a **Scutoid** (Type $\geq 1$).
+2. **Cloning Event**: If episode $e_i$ ends at time $t$ and is replaced by a clone $e_{i'}$ from parent $e_j$ at a different position, then generically $\mathcal{N}_i(t) \neq \mathcal{N}_{i'}(t + \Delta t)$ (probability approaching 1 as $\|z_i - z_j\|/\ell \to \infty$). The spacetime cell is a **Scutoid** (Type $\geq 1$).
 
 *Proof.*
 
 **Part 1: Persistence implies prismatic geometry.**
 
-When no cloning occurs, the walker position evolves continuously via the Langevin SDE:
+When no cloning occurs, the walker position evolves continuously via the Langevin SDE ({prf:ref}`def-fractal-set-sde`):
 $$
-dz_i = v_i \, dt
+dz_i = v_i \, dt + \Sigma_{\mathrm{reg}}(z_i, S) \circ dW_i
 $$
+where $v_i$ is the drift velocity, $\Sigma_{\mathrm{reg}}$ is the adaptive diffusion tensor, and $dW_i$ is Brownian noise. The key point is that the trajectory is continuous (no jumps).
 
 For infinitesimal $\Delta t$, the Voronoi boundaries deform continuously. The neighbor graph of a Voronoi tessellation is constant under continuous deformation of seeds, except at **critical configurations** where the Delaunay triangulation is degenerate. In Euclidean space, this occurs when $d+2$ or more seeds lie on a common sphere; in Riemannian geometry, degeneracy occurs when seeds lie on a common geodesic sphere (equidistant from some center point). These critical configurations form a set of measure zero in the space of walker configurations.
 
@@ -270,7 +273,7 @@ Suppose $\mathcal{N}_j(t) \neq \mathcal{N}_{i'}(t + \Delta t)$. Let:
 - $\mathcal{N}_{\mathrm{lost}} = \mathcal{N}_j(t) \setminus \mathcal{N}_{i'}(t + \Delta t)$ (neighbors at bottom only)
 - $\mathcal{N}_{\mathrm{gained}} = \mathcal{N}_{i'}(t + \Delta t) \setminus \mathcal{N}_j(t)$ (neighbors at top only)
 
-For $\ell \in \mathcal{N}_{\mathrm{lost}}$, the boundary segment $\Gamma_{j,\ell}(t)$ has no corresponding segment on the top face. The geodesic ruling from this segment cannot continue to the top---it must terminate somewhere in between.
+For $\ell \in \mathcal{N}_{\mathrm{lost}}$, the boundary segment $\Gamma_{j,\ell}(t)$ has no corresponding segment on the top face. The geodesic ruling from this segment cannot continue to the top—it must terminate somewhere in between.
 
 For $m \in \mathcal{N}_{\mathrm{gained}}$, the boundary segment $\Gamma_{i',m}(t + \Delta t)$ has no corresponding segment on the bottom face. The geodesic ruling to this segment must originate somewhere in between.
 
@@ -296,6 +299,7 @@ $\square$
 - QSD density: {prf:ref}`thm-fractal-adaptive-sprinkling`
 :::
 
+(sec-cell-type-classification)=
 ### Classification of Cell Types
 
 :::{prf:definition} Scutoid Type Classification
@@ -310,32 +314,33 @@ Spacetime cells in the scutoid tessellation are classified by their **topologica
 - Physics: Laminar flow, exploitation phase
 
 **Type 1: Simple Scutoid** (Single neighbor swap)
-- $|\mathcal{N}_{\mathrm{lost}}| = |\mathcal{N}_{\mathrm{gained}}| = 1$
+- $|\mathcal{N}_{\mathrm{lost}}| = |\mathcal{N}_{\mathrm{gained}}| = 1$ (scutoid index $\chi = 2$)
 - One mid-level vertex (or edge in higher dimensions)
 - Represents: Standard cloning event with local reorganization
 - Physics: Plastic deformation, adaptive exploration
 
-**Type K: Complex Scutoid** ($K$ neighbor changes)
-- $|\mathcal{N}_{\mathrm{lost}}| + |\mathcal{N}_{\mathrm{gained}}| = K$ where $K \geq 2$
+**Type $\geq 2$: Complex Scutoid** (Multiple neighbor changes or asymmetric changes)
+- $\chi_{\mathrm{scutoid}} = |\mathcal{N}_{\mathrm{lost}}| + |\mathcal{N}_{\mathrm{gained}}| \geq 2$, excluding the symmetric single-swap case (Type 1)
 - Number of mid-level vertices: $\max(|\mathcal{N}_{\mathrm{lost}}|, |\mathcal{N}_{\mathrm{gained}}|)$
-- Represents: Major reorganization, "teleportation" to distant basin
+- Represents: Major topological reorganization, "teleportation" to distant basin
 - Physics: Phase transition, turbulent exploration
 
-The **scutoid index** $\chi_{\mathrm{scutoid}}(\mathcal{S}) = |\mathcal{N}_{\mathrm{lost}}| + |\mathcal{N}_{\mathrm{gained}}|$ counts the total number of neighbor changes (lost + gained). Note: this need not be even when $|\mathcal{N}_{\mathrm{lost}}| \neq |\mathcal{N}_{\mathrm{gained}}|$.
+The **scutoid index** $\chi_{\mathrm{scutoid}}(\mathcal{S}) = |\mathcal{N}_{\mathrm{lost}}| + |\mathcal{N}_{\mathrm{gained}}|$ counts the total number of neighbor changes (lost + gained). Note: $\chi$ need not be even when $|\mathcal{N}_{\mathrm{lost}}| \neq |\mathcal{N}_{\mathrm{gained}}|$.
 :::
 
 :::{div} feynman-prose
 Think about what these types mean physically.
 
-Type 0 (prism) is the boring case---the walker just diffuses around, not dying, not changing its neighborhood. This happens during exploitation phases when the swarm has settled into local optima.
+Type 0 (prism) is the boring case—the walker just diffuses around, not dying, not changing its neighborhood. This happens during exploitation phases when the swarm has settled into local optima.
 
-Type 1 (simple scutoid) is the typical cloning event. One neighbor relationship is severed, one new relationship is formed. This is the microscopic "atom" of exploration---a small topological change that reshuffles the local structure.
+Type 1 (simple scutoid) is the typical cloning event. One neighbor relationship is severed, one new relationship is formed. This is the microscopic "atom" of exploration—a small topological change that reshuffles the local structure.
 
-Type K (complex scutoid) is dramatic. Multiple neighbor relationships change simultaneously. This happens when a walker "teleports" to a completely different region of the fitness landscape---say, from one basin of attraction to another. The topology tears and reconnects in multiple places.
+Complex scutoids (Type $\geq 2$) are dramatic. Multiple neighbor relationships change simultaneously. This happens when a walker "teleports" to a completely different region of the fitness landscape—say, from one basin of attraction to another. The topology tears and reconnects in multiple places.
 
 The relative frequencies of these types characterize the dynamical state of the swarm. A prism-dominated tessellation indicates convergence and exploitation. A scutoid-dominated tessellation indicates active exploration and phase transitions. We will make this quantitative with the topological information rate.
 :::
 
+(sec-euler-characteristic)=
 ### Euler Characteristic and Topological Information
 
 :::{prf:proposition} Topological Complexity of Scutoid Tessellation
@@ -373,7 +378,7 @@ But this is wasteful. Between timesteps, most walkers move only slightly (contin
 
 The breakthrough insight is that the Causal Spacetime Tree (CST) tells us exactly what changed: which walkers moved continuously, which walkers cloned. This is precisely the information needed to update the triangulation incrementally.
 
-The result is an **online algorithm** that maintains the triangulation with $O(N)$ amortized cost per timestep---a factor of $\log N$ faster than batch recomputation. For large swarms, this makes real-time geometric analysis feasible.
+The result is an **online algorithm** that maintains the triangulation with $O(N)$ amortized cost per timestep—a factor of $\log N$ faster than batch recomputation. For large swarms, this makes real-time geometric analysis feasible.
 :::
 
 :::{prf:algorithm} Online Scutoid-Guided Triangulation Update
@@ -393,7 +398,7 @@ The result is an **online algorithm** that maintains the triangulation with $O(N
 
 **Per-Timestep Update** ($t \to t + \Delta t$):
 
-**Step 1: Identify Changes from CST** --- $O(N)$
+**Step 1: Identify Changes from CST** — $O(N)$
 
 ```{code-block} python
 :caption: Identify walker state changes from CST
@@ -413,7 +418,7 @@ for walker_id in range(N):
         ClonedWalkers.append((walker_id, edge.z_new, edge.parent_id))
 ```
 
-**Step 2: Update Locally Moved Walkers** --- Amortized $O(1)$ per walker
+**Step 2: Update Locally Moved Walkers** — Amortized $O(1)$ per walker
 
 ```{code-block} python
 :caption: Update Delaunay structure for moved walkers
@@ -429,7 +434,7 @@ for (walker_id, z_old, z_new) in MovedWalkers:
     UpdateVoronoiCell(VT, vertex)
 ```
 
-**Step 3: Update Cloned Walkers** --- $O(\log N)$ per walker
+**Step 3: Update Cloned Walkers** — $O(\log N)$ per walker
 
 ```{code-block} python
 :caption: Handle cloning events with point location
@@ -454,9 +459,10 @@ $$
 T(N) = O(N) + O(p_{\mathrm{clone}} \cdot N \cdot \log N)
 $$
 
-For $p_{\mathrm{clone}} \ll 1/\log N$, this is **$O(N)$ amortized**.
+For typical cloning probabilities $p_{\mathrm{clone}} \ll 1/\log N$, the second term is dominated by the first, yielding **$O(N)$ amortized** complexity per timestep.
 :::
 
+(sec-lawson-flip)=
 ### Lawson Flip Algorithm
 
 :::{div} feynman-prose
@@ -522,12 +528,13 @@ def LawsonFlip(DT, v):
 **Key Property:** Lawson flips preserve the Delaunay structure incrementally. The algorithm terminates because each flip reduces a potential function (total circumradius).
 :::
 
+(sec-jump-and-walk)=
 ### Jump-and-Walk Point Location
 
 :::{div} feynman-prose
 For cloning events, we need to insert a new vertex at position $z_{\mathrm{new}}$. The first step is finding which simplex contains this position. This is the **point location** problem.
 
-The naive approach---check every simplex---takes $O(N)$ time. Much too slow.
+The naive approach—check every simplex—takes $O(N)$ time. Much too slow.
 
 The jump-and-walk algorithm does better. Start from some "hint" simplex (say, one incident to the parent walker), then walk through the triangulation toward the target. At each step, check which face of the current simplex is "toward" the target, and cross to the adjacent simplex. Eventually you reach the simplex containing the target.
 
@@ -605,12 +612,12 @@ For $N = 10^6$: approximately $20\times$ speedup.
 
 *Proof.*
 
-**SDE moves (Type 1 scutoids):**
-- Number of moved walkers: $N(1 - p_{\mathrm{clone}})$
+**SDE moves (Type 0 prisms):**
+- Number of persistent walkers: $N(1 - p_{\mathrm{clone}})$
 - Cost per walker: $O(1)$ amortized (Lawson flips for small displacement)
 - Total: $O(N)$
 
-**Cloning events (Type 2 scutoids):**
+**Cloning events (Type $\geq 1$ scutoids):**
 - Number of cloned walkers: $N \cdot p_{\mathrm{clone}}$
 - Cost per walker: $O(\log N)$ (point location) + $O(1)$ (Lawson flips)
 - Total: $O(p_{\mathrm{clone}} \cdot N \cdot \log N)$
@@ -622,6 +629,7 @@ For $p_{\mathrm{clone}} \ll 1/\log N$, the second term is dominated by the first
 $\square$
 :::
 
+(sec-lower-bound-proof)=
 ### Lower Bound Proof
 
 :::{prf:theorem} $\Omega(N)$ Lower Bound for Tessellation Update
@@ -642,7 +650,7 @@ The output is a complete geometric data structure representing:
 
 The **output size is $\Theta(N)$**.
 
-Any algorithm producing $\Theta(N)$ output requires at least $\Omega(N)$ time---it is impossible to write $N$ pieces of information in fewer than $N$ operations.
+Any algorithm producing $\Theta(N)$ output requires at least $\Omega(N)$ time—it is impossible to write $N$ pieces of information in fewer than $N$ operations.
 
 **Worst-case construction:**
 
@@ -654,7 +662,7 @@ $\square$
 :::
 
 :::{div} feynman-prose
-This is a satisfying result. We cannot do better than $O(N)$---the output is that big, and we have to at least look at it. Our algorithm achieves $O(N)$ amortized. We are as good as theoretically possible.
+This is a satisfying result. We cannot do better than $O(N)$—the output is that big, and we have to at least look at it. Our algorithm achieves $O(N)$ amortized. We are as good as theoretically possible.
 
 The improvement over batch computation ($O(N \log N)$) comes from exploiting temporal coherence. Most of the structure is preserved between timesteps; we only update what changed. This is the power of incremental algorithms.
 :::
@@ -667,9 +675,9 @@ Here is a deep question: how fast is the swarm "processing information" about th
 
 One way to think about this: every time a walker clones, the swarm is making a topological decision. It is choosing to redirect resources from a low-fitness region to a high-fitness region. This decision destroys one Voronoi cell and creates another. The neighborhood structure changes. Information is being encoded into the geometry.
 
-The rate at which this happens---the rate of topological changes---is a measure of computational activity. A swarm that sits still (all prisms) is not computing. A swarm with many scutoids is actively exploring, restructuring, processing.
+The rate at which this happens—the rate of topological changes—is a measure of computational activity. A swarm that sits still (all prisms) is not computing. A swarm with many scutoids is actively exploring, restructuring, processing.
 
-We conjecture that this topological information rate is bounded by the scutoid complexity. The more complex the scutoids (higher type $K$), the more information is being processed per cloning event.
+We conjecture that this topological information rate is bounded by the scutoid complexity. The more complex the scutoids (higher scutoid index $\chi$), the more information is being processed per cloning event.
 :::
 
 :::{prf:definition} Topological Information Rate
@@ -698,34 +706,28 @@ where:
 :::{prf:conjecture} Topological Information Rate Bound
 :label: conj-topological-information-bound
 
-The rate of topological information generation in the swarm equals the average scutoid index times the cloning frequency:
-
-$$
-\dot{I}_{\mathrm{topo}} = \langle \chi_{\mathrm{scutoid}} \rangle \cdot f_{\mathrm{clone}}
-$$
-
-**Interpretation:**
-- **Prism-dominated regime** ($\langle \chi_{\mathrm{scutoid}} \rangle = 0$): No information processing, exploitation phase
-- **Simple scutoid regime** ($\langle \chi_{\mathrm{scutoid}} \rangle \approx 2$): Moderate exploration (one neighbor lost, one gained)
-- **Complex scutoid regime** ($\langle \chi_{\mathrm{scutoid}} \rangle \gg 2$): Rapid exploration, phase transitions
-
-**Conjectured bound:**
+The topological information rate $\dot{I}_{\mathrm{topo}} = \langle \chi_{\mathrm{scutoid}} \rangle \cdot f_{\mathrm{clone}}$ is bounded by the density of scutoid vertices in spacetime:
 
 $$
 \dot{I}_{\mathrm{topo}} \leq c \cdot \rho_{\mathrm{scutoid}}
 $$
 
-where $\rho_{\mathrm{scutoid}}$ is the density of scutoid vertices in spacetime.
+where $\rho_{\mathrm{scutoid}}$ is the density of mid-level vertices (branching points) in the spacetime tessellation.
+
+**Physical interpretation by regime:**
+- **Prism-dominated regime** ($\langle \chi_{\mathrm{scutoid}} \rangle \approx 0$): Minimal information processing, exploitation phase
+- **Simple scutoid regime** ($\langle \chi_{\mathrm{scutoid}} \rangle \approx 2$): Moderate exploration (one neighbor lost, one gained per cloning event)
+- **Complex scutoid regime** ($\langle \chi_{\mathrm{scutoid}} \rangle \gg 2$): Rapid exploration, phase transitions
 
 This suggests that **computation requires geometry**: to process information about the landscape, the swarm must break the prismatic symmetry of spacetime.
 :::
 
 :::{div} feynman-prose
-This conjecture connects algorithmic information processing to geometric structure. It says that you cannot compute without creating topological defects---the scutoid vertices are the "footprints" of computation in spacetime.
+This conjecture connects algorithmic information processing to geometric structure. It says that you cannot compute without creating topological defects—the scutoid vertices are the "footprints" of computation in spacetime.
 
 Think of it this way: a prism represents a walker that learned nothing new. It sat in place, diffused a bit, but its relationships with neighbors stayed the same. No information gained.
 
-A scutoid represents a walker that made a discovery. It found a better region, cloned there, established new relationships, severed old ones. The mid-level vertices are the record of this discovery---the geometric signature of learning.
+A scutoid represents a walker that made a discovery. It found a better region, cloned there, established new relationships, severed old ones. The mid-level vertices are the record of this discovery—the geometric signature of learning.
 
 The topological information rate measures how fast these discoveries are happening. High rate means active exploration. Low rate means convergence. This gives us a geometric observable for the computational state of the swarm.
 :::
@@ -742,7 +744,7 @@ The answer is the scutoid tessellation. The spacetime of the Latent Fractal Gas 
 
 This is not a modeling choice. Theorem {prf:ref}`thm-cloning-implies-scutoid` proves that cloning events **necessarily** produce scutoid geometry. The neighbor sets change, so the top and bottom faces are combinatorially incompatible. The only way to connect them is with mid-level vertices. Scutoids are forced on us by topology.
 
-The practical payoff is an efficient algorithm (Algorithm {prf:ref}`alg-online-triangulation-update`) that maintains the tessellation in $O(N)$ amortized time per timestep---optimal by Theorem {prf:ref}`thm-omega-n-lower-bound`. This enables real-time geometric analysis of large swarms.
+The practical payoff is an efficient algorithm (Algorithm {prf:ref}`alg-online-triangulation-update`) that maintains the tessellation in $O(N)$ amortized time per timestep—optimal by Theorem {prf:ref}`thm-omega-n-lower-bound`. This enables real-time geometric analysis of large swarms.
 
 The theoretical payoff is the topological information rate (Conjecture {prf:ref}`conj-topological-information-bound`), which connects computational activity to geometric structure. The scutoid vertices are the atoms of computation; their density measures how fast the swarm is learning.
 
@@ -766,9 +768,9 @@ In the next chapter, we will see how the continuous limit of these discrete scut
 
 | Type | Scutoid Index | Algorithm Event | Physical Phase |
 |------|---------------|-----------------|----------------|
-| 0 (Prism) | $\chi_{\mathrm{scutoid}} = 0$ | Persistence | Exploitation |
-| 1 (Simple) | $\chi_{\mathrm{scutoid}} = 2$ | Single cloning (1 lost, 1 gained) | Exploration |
-| K (Complex) | $\chi_{\mathrm{scutoid}} \geq 3$ | Major reorganization | Phase transition |
+| 0 (Prism) | $\chi = 0$ | Persistence | Exploitation |
+| 1 (Simple) | $\chi = 2$ (symmetric: 1 lost, 1 gained) | Single neighbor swap | Exploration |
+| $\geq 2$ (Complex) | $\chi \geq 2$ (asymmetric or multi-change) | Major reorganization | Phase transition |
 
 **Computational Complexity:**
 
@@ -786,23 +788,27 @@ In the next chapter, we will see how the continuous limit of these discrete scut
 
 ---
 
+(sec-scutoid-references)=
 ## References
 
 ### Computational Geometry
-1. **Voronoi tessellation**: Standard computational geometry construction; see {cite}`berg2008computational` for algorithms
-2. **Delaunay triangulation**: Dual structure to Voronoi; Lawson flips for incremental updates {cite}`lawson1977software`
-3. **Jump-and-walk point location**: Expected $O(\log N)$ complexity for typical point sets {cite}`mucke1999fast`
+
+- **Voronoi tessellation**: Standard computational geometry construction; see {cite}`berg2008computational` for algorithms
+- **Delaunay triangulation**: Dual structure to Voronoi; Lawson flips for incremental updates {cite}`lawson1977software`
+- **Jump-and-walk point location**: Expected $O(\log N)$ complexity for typical point sets {cite}`mucke1999fast`
 
 ### Scutoid Geometry
-4. **Scutoid discovery**: Gómez-Gálvez et al. (2018) discovered scutoids in epithelial tissue packing {cite}`gomez2018scutoids`
-5. **Topological transitions**: Neighbor-swapping in curved tissue requires non-prismatic cells
+
+- **Scutoid discovery**: Gómez-Gálvez et al. (2018) discovered scutoids in epithelial tissue packing {cite}`gomez2018scutoids`
+- **Topological transitions**: Neighbor-swapping in curved tissue requires non-prismatic cells
 
 ### Framework Documents
-6. {doc}`01_emergent_geometry` — Emergent Riemannian geometry from adaptive diffusion
-7. {doc}`/3_fractal_gas/2_fractal_set/02_causal_set_theory` — Causal set structure of the Fractal Set
-8. {prf:ref}`def-adaptive-diffusion-tensor-latent` — Adaptive diffusion tensor and emergent metric
-9. {prf:ref}`def-fractal-set-cst-edges` — CST edge definition
-10. {prf:ref}`def-fractal-set-cloning-score` — Cloning score definition
+
+- {doc}`01_emergent_geometry` — Emergent Riemannian geometry from adaptive diffusion
+- {doc}`/3_fractal_gas/2_fractal_set/02_causal_set_theory` — Causal set structure of the Fractal Set
+- {prf:ref}`def-adaptive-diffusion-tensor-latent` — Adaptive diffusion tensor and emergent metric
+- {prf:ref}`def-fractal-set-cst-edges` — CST edge definition
+- {prf:ref}`def-fractal-set-cloning-score` — Cloning score definition
 
 ```{bibliography}
 :filter: docname in docnames

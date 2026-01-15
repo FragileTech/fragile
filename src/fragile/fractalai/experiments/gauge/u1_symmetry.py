@@ -1,26 +1,15 @@
 """U(1)_fitness symmetry structure tests.
 
-This module implements tests for the U(1) fitness gauge symmetry, comparing the
-current framework (raw distance-based phases) with the proposed framework (collective
-field-based phases).
+This module implements tests for the U(1) fitness gauge symmetry using the unified
+definition:
 
-**Framework References:**
-- old_docs/source/13_fractal_set_new/03_yang_mills_noether.md - Current U(1) structure
-- old_docs/source/13_fractal_set_new/04_symmetry_redefinition_viability_analysis.md §3.1 - Proposed U(1)
-
-**Current U(1) Structure:**
-- Phase: θ_ik^(div) = -d_alg²(i,k)/(2ε_d² ℏ_eff) (pairwise, geometric)
-- Amplitude: √P_comp(k|i) from softmax over distances
+**U(1) Structure:**
+- Phase: θ_ik = -(Φ_k - Φ_i)/ℏ_eff (fitness phase difference)
+- Amplitude: √P_comp(k|i) from diversity companion selection
 - Dressed walker: |ψ_i⟩ = Σ_k √P(k|i) · e^(iθ_ik) |k⟩
 
-**Proposed U(1) Structure:**
-- Phase: θ_i = (d'_i)^β / ℏ_eff (collective field value)
-- Amplitude: SAME as current
-- Dressed walker: |ψ_i⟩ = Σ_k √P(k|i) · e^(iθ_i) |k⟩
-
-**Key Difference:**
-- Current: Pairwise phases θ_ik depend on (i,k) pair geometry
-- Proposed: Walker phases θ_i depend on collective field d'_i (entire swarm through ρ-stats)
+The additive fitness baseline Φ → Φ + c shifts all θ_i equally and leaves θ_ik
+invariant, generating the U(1) redundancy.
 """
 
 from pydantic import BaseModel, Field
@@ -50,109 +39,108 @@ class U1Config(BaseModel):
     lambda_alg: float = Field(default=0.0, ge=0, description="Velocity weight")
 
 
-def compute_u1_phase_current(
+def compute_u1_phase(
     positions: Tensor,
     velocities: Tensor,
-    companions: Tensor,
-    alive: Tensor,
-    config: U1Config | None = None,
-) -> Tensor:
-    """Compute current U(1) phases: θ_ik = -d_alg²(i,k)/(2ε_d² ℏ_eff).
-
-    From {prf:ref}`def-dressed-walker-state` in:
-    old_docs/source/13_fractal_set_new/03_yang_mills_noether.md §1.2
-
-    Args:
-        positions: Walker positions [N, d]
-        velocities: Walker velocities [N, d]
-        companions: Diversity companion indices [N]
-        alive: Boolean mask [N]
-        config: U(1) configuration
-
-    Returns:
-        Phases [N] where phase[i] = θ_i(c_div(i))
-
-    Example:
-        >>> positions = torch.randn(100, 2)
-        >>> velocities = torch.randn(100, 2) * 0.1
-        >>> companions = torch.randint(0, 100, (100,))
-        >>> alive = torch.ones(100, dtype=torch.bool)
-        >>> phases = compute_u1_phase_current(positions, velocities, companions, alive)
-    """
-    if config is None:
-        config = U1Config()
-
-    # Compute full distance matrix [N, N]
-    dist_sq = compute_algorithmic_distance_matrix(positions, velocities, config.lambda_alg)
-
-    # Extract distances to companions [N]
-    N = positions.shape[0]
-    dist_sq_companion = dist_sq[torch.arange(N), companions]
-
-    # Compute phases: θ_ik = -d_alg²(i,k) / (2ε_d² ℏ_eff)
-    phases = -dist_sq_companion / (2 * config.epsilon_d**2 * config.h_eff)
-
-    # Mask dead walkers
-    return torch.where(alive, phases, torch.zeros_like(phases))
-
-
-def compute_u1_phase_proposed(
-    positions: Tensor,
-    velocities: Tensor,
-    rewards: Tensor,
+    rewards: Tensor | None,
     companions: Tensor,
     alive: Tensor,
     rho: float | None = None,
     obs_config: ObservablesConfig | None = None,
     u1_config: U1Config | None = None,
+    fitness: Tensor | None = None,
 ) -> Tensor:
-    """Compute proposed U(1) phases: θ_i = (d'_i)^β / ℏ_eff.
-
-    From §3.1.2 in:
-    old_docs/source/13_fractal_set_new/04_symmetry_redefinition_viability_analysis.md
+    """Compute U(1) phases: θ_ik = -(Φ_k - Φ_i)/ℏ_eff.
 
     Args:
         positions: Walker positions [N, d]
         velocities: Walker velocities [N, d]
-        rewards: Raw reward values [N]
+        rewards: Raw reward values [N] (required if fitness is None)
         companions: Diversity companion indices [N]
         alive: Boolean mask [N]
         rho: Localization scale (None for mean-field)
         obs_config: Observables configuration
         u1_config: U(1) configuration
+        fitness: Optional precomputed fitness potential Φ [N]
 
     Returns:
-        Phases [N] where phase[i] = θ_i = (d'_i)^β / ℏ_eff
+        Phases [N] where phase[i] = θ_i(c_div(i))
 
     Example:
-        >>> # Mean-field regime
-        >>> phases_mf = compute_u1_phase_proposed(
-        ...     positions, velocities, rewards, companions, alive, rho=None
-        ... )
-        >>>
-        >>> # Local regime
-        >>> phases_local = compute_u1_phase_proposed(
+        >>> phases = compute_u1_phase(
         ...     positions, velocities, rewards, companions, alive, rho=0.05
         ... )
     """
-    if obs_config is None:
-        obs_config = ObservablesConfig()
     if u1_config is None:
         u1_config = U1Config()
+    if fitness is None:
+        if rewards is None:
+            raise ValueError("rewards or fitness must be provided to compute U(1) phases.")
+        if obs_config is None:
+            obs_config = ObservablesConfig()
+        fields = compute_collective_fields(
+            positions, velocities, rewards, alive, companions, rho, obs_config
+        )
+        fitness = fields["fitness"]
 
-    # Compute collective fields
-    fields = compute_collective_fields(
-        positions, velocities, rewards, alive, companions, rho, obs_config
-    )
+    # Extract fitness values to companions [N]
+    fitness_companion = fitness[companions]
 
-    # Extract d'_i
-    d_prime = fields["d_prime"]
-
-    # Compute phases: θ_i = (d'_i)^β / ℏ_eff
-    phases = (d_prime**obs_config.beta) / u1_config.h_eff
+    # Compute phases: θ_ik = -(Φ_k - Φ_i) / ℏ_eff
+    phases = -(fitness_companion - fitness) / u1_config.h_eff
 
     # Mask dead walkers
     return torch.where(alive, phases, torch.zeros_like(phases))
+
+
+def compute_u1_phase_current(
+    positions: Tensor,
+    velocities: Tensor,
+    rewards: Tensor | None,
+    companions: Tensor,
+    alive: Tensor,
+    rho: float | None = None,
+    obs_config: ObservablesConfig | None = None,
+    u1_config: U1Config | None = None,
+    fitness: Tensor | None = None,
+) -> Tensor:
+    """Legacy alias for compute_u1_phase (fitness-based U(1) phases)."""
+    return compute_u1_phase(
+        positions,
+        velocities,
+        rewards,
+        companions,
+        alive,
+        rho=rho,
+        obs_config=obs_config,
+        u1_config=u1_config,
+        fitness=fitness,
+    )
+
+
+def compute_u1_phase_proposed(
+    positions: Tensor,
+    velocities: Tensor,
+    rewards: Tensor | None,
+    companions: Tensor,
+    alive: Tensor,
+    rho: float | None = None,
+    obs_config: ObservablesConfig | None = None,
+    u1_config: U1Config | None = None,
+    fitness: Tensor | None = None,
+) -> Tensor:
+    """Legacy alias for compute_u1_phase (fitness-based U(1) phases)."""
+    return compute_u1_phase(
+        positions,
+        velocities,
+        rewards,
+        companions,
+        alive,
+        rho=rho,
+        obs_config=obs_config,
+        u1_config=u1_config,
+        fitness=fitness,
+    )
 
 
 def compute_u1_amplitude(
@@ -161,12 +149,9 @@ def compute_u1_amplitude(
     alive: Tensor,
     config: U1Config | None = None,
 ) -> Tensor:
-    """Compute U(1) amplitude (SAME for current and proposed).
+    """Compute U(1) amplitude from diversity companion selection.
 
     Amplitude: √P_comp(k|i) = softmax probability
-
-    From {prf:ref}`def-dressed-walker-state` in:
-    old_docs/source/13_fractal_set_new/03_yang_mills_noether.md §1.2
 
     Args:
         positions: Walker positions [N, d]
@@ -210,8 +195,8 @@ def compare_u1_phases(
     rho: float | None = None,
     obs_config: ObservablesConfig | None = None,
     u1_config: U1Config | None = None,
-) -> dict[str, Tensor]:
-    """Compare current vs proposed U(1) phase structures.
+) -> dict[str, Tensor | float]:
+    """Compare legacy U(1) phase APIs (now identical under unified definition).
 
     Args:
         positions: Walker positions [N, d]
@@ -225,14 +210,14 @@ def compare_u1_phases(
 
     Returns:
         Dictionary with keys:
-            - "current": Current phases [N]
-            - "proposed": Proposed phases [N]
-            - "difference": |proposed - current| [N]
+            - "current": U(1) phases [N]
+            - "proposed": U(1) phases [N] (alias of current)
+            - "difference": |proposed - current| [N] (zeros)
             - "correlation": Correlation coefficient (scalar)
-            - "current_mean": Mean current phase (scalar)
-            - "current_std": Std current phase (scalar)
-            - "proposed_mean": Mean proposed phase (scalar)
-            - "proposed_std": Std proposed phase (scalar)
+            - "current_mean": Mean phase (scalar)
+            - "current_std": Std phase (scalar)
+            - "proposed_mean": Mean phase (scalar)
+            - "proposed_std": Std phase (scalar)
 
     Example:
         >>> comparison = compare_u1_phases(
@@ -242,20 +227,27 @@ def compare_u1_phases(
         >>> print(f"Mean difference: {comparison['difference'].mean():.4f}")
     """
     # Compute both phase structures
-    current = compute_u1_phase_current(positions, velocities, companions, alive, u1_config)
-    proposed = compute_u1_phase_proposed(
-        positions, velocities, rewards, companions, alive, rho, obs_config, u1_config
+    current = compute_u1_phase(
+        positions,
+        velocities,
+        rewards,
+        companions,
+        alive,
+        rho=rho,
+        obs_config=obs_config,
+        u1_config=u1_config,
     )
+    proposed = current
 
     # Extract alive values
     current_alive = current[alive]
     proposed_alive = proposed[alive]
 
-    # Compute correlation
-    if len(current_alive) > 1:
+    # Compute correlation (identical arrays under unified definition)
+    if len(current_alive) > 1 and current_alive.std().item() > 0:
         correlation = torch.corrcoef(torch.stack([current_alive, proposed_alive]))[0, 1].item()
     else:
-        correlation = 0.0
+        correlation = 1.0
 
     return {
         "current": current,
@@ -275,34 +267,28 @@ def compute_dressed_walker_state(
     walker_idx: int,
     alive: Tensor,
 ) -> Tensor:
-    """Compute dressed walker state |ψ_i⟩ = Σ_k √P(k|i) · e^(iθ) |k⟩.
+    """Compute dressed walker state |ψ_i⟩ = Σ_k √P(k|i) · e^(iθ_ik) |k⟩.
 
     Args:
-        phases: Phases [N] (either θ_ik for current or θ_i for proposed)
+        phases: Phases [N] or [N, N] (θ_i or θ_ik)
         amplitudes: Companion probabilities [N, N]
         walker_idx: Index of walker to compute state for
         alive: Boolean mask [N]
 
     Returns:
         Complex state vector [N] where component k = √P(k|i) · e^(iθ)
-        For current: θ = θ_ik (pairwise)
-        For proposed: θ = θ_i (same for all k)
-
-    Note:
-        For proposed structure, phase θ_i is constant across all companions,
-        making it a global phase on walker i's state.
+        If phases is [N, N], it is interpreted as pairwise θ_ik.
+        If phases is [N], it is interpreted as a per-walker phase (e.g., θ_i or θ_i(c_i)).
     """
     # Get probabilities for this walker
     probs_i = amplitudes[walker_idx]  # [N]
 
-    # For current: need pairwise phases θ_ik (requires full phase matrix)
-    # For proposed: use walker's phase θ_i (broadcast)
-    # Here we assume phase is either [N] (proposed) or should be [N,N] (current)
+    if phases.ndim == 2:
+        phase_i = phases[walker_idx]
+    else:
+        phase_i = phases[walker_idx]
 
-    # Since we only have phases[N], interpret as proposed structure
-    phase_i = phases[walker_idx]
-
-    # Compute complex coefficients: ψ_ik = √P(k|i) · e^(iθ_i)
+    # Compute complex coefficients: ψ_ik = √P(k|i) · e^(iθ_ik)
     psi = torch.sqrt(probs_i) * torch.exp(1j * phase_i)
 
     # Mask dead companions

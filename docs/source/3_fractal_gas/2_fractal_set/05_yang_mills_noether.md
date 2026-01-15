@@ -7,7 +7,7 @@
 ## TLDR
 
 :::{div} feynman-prose
-Here is the audacious claim of this chapter: we derive the Yang-Mills equations from first principles. Not postulate them based on symmetry arguments, not fit them to experimental data, but derive them from the stochastic dynamics of an optimization algorithm. The gauge field turns out to be the phase structure of cloning amplitudes. The Wilson action emerges from closed loops in the discrete spacetime. Noether's theorem gives us conserved currents for fitness (U(1)) and weak isospin (SU(2)). And the continuum limit yields exactly the standard Yang-Mills Lagrangian with asymptotic freedom.
+Here is the audacious claim of this chapter: we derive the Yang-Mills equations from first principles. Not postulate them based on symmetry arguments, not fit them to experimental data, but derive them from the stochastic dynamics of an optimization algorithm. The gauge fields turn out to be the phase structures of the U(1) fitness amplitudes and the SU(2) cloning amplitudes. The Wilson action emerges from closed loops in the discrete spacetime. Noether's theorem gives us conserved currents for fitness (U(1)) and weak isospin (SU(2)). And the continuum limit yields exactly the standard Yang-Mills Lagrangian with asymptotic freedom.
 
 But we go further. We verify that this construction satisfies all three major axiom systems of rigorous quantum field theory: Wightman, Osterwalder-Schrader, and Haag-Kastler. The key technical tool is the N-uniform log-Sobolev inequality, which provides temperedness, spectral gap, exponential clustering, and reflection positivity in one package. The mass gap follows from computational necessity: bounded observers cannot implement gapless theories.
 :::
@@ -41,9 +41,9 @@ In particular, there exists $C_F$ such that $|F_{\mu\nu}(x) - F_{\mu\nu}(y)| \le
 :::{div} feynman-prose
 In standard physics textbooks, you write down the Yang-Mills Lagrangian $\mathcal{L} = -\frac{1}{4}F_{\mu\nu}^a F^{a,\mu\nu}$ because it is the simplest thing consistent with gauge invariance and Lorentz covariance. This is a principled approach, but it is putting the answer in by hand. The Lagrangian is postulated, not derived.
 
-What we are going to do in this chapter is more ambitious: derive Yang-Mills theory from first principles. The starting point is the Fractal Gas algorithm. Walkers explore a fitness landscape, cloning from successful neighbors. The cloning amplitudes carry phases from fitness differences, while their magnitudes come from companion selection probabilities. These phases are the gauge field. We do not introduce the gauge field as an external object; we identify it with structure that is already present in the optimization algorithm.
+What we are going to do in this chapter is more ambitious: derive Yang-Mills theory from first principles. The starting point is the Fractal Gas algorithm. Walkers explore a fitness landscape, cloning from successful neighbors. The cloning amplitudes carry phases from cloning scores (fitness comparisons), while their magnitudes come from cloning companion selection probabilities. These phases are the gauge field. We do not introduce the gauge field as an external object; we identify it with structure that is already present in the optimization algorithm.
 
-Here is the key insight. The Fractal Gas has a path integral structure. Walkers trace paths through the fitness landscape, and the probability of each path depends on the cloning events along the way. The log-probability of a path is an action. When we analyze this action carefully, decomposing it into kinetic, potential, and gauge contributions, we find that the gauge contribution has exactly the Wilson form. The plaquettes are closed loops in the causal set structure. The link variables are the cloning phases. The sum over plaquettes gives the Yang-Mills action.
+Here is the key insight. The Fractal Gas has a path integral structure. Walkers trace paths through the fitness landscape, and the probability of each path depends on the cloning events along the way. The log-probability of a path is an action. When we analyze this action carefully, decomposing it into kinetic, potential, and gauge contributions, we find that the gauge contribution has exactly the Wilson form. The plaquettes are closed loops in the causal set structure. The link variables are the cloning-score phases. The sum over plaquettes gives the Yang-Mills action.
 
 This derivation has consequences. First, all fundamental constants become expressible in terms of algorithmic parameters like the cloning scale $\epsilon_c$, the localization scale $\rho$, and the timestep $\tau$. There are no free parameters to fit. Second, the mass gap becomes a computational necessity rather than a mysterious dynamical property. By {prf:ref}`thm-mass-gap-dichotomy` from the Agent volume, bounded observers cannot implement gapless theories. Since Yang-Mills describes physics, and physics is computed by bounded systems, Yang-Mills must be gapped.
 
@@ -291,7 +291,7 @@ Here is where we depart from the standard approach. In textbooks, you write down
 
 The key insight is that the Fractal Gas already has a path integral structure. Walkers explore paths through the fitness landscape, and the probability of a path depends on the cloning probabilities along the way. This is a stochastic path integral—and stochastic path integrals can be Wick-rotated to quantum path integrals.
 
-The cloning amplitudes have phases: fitness differences set the phase, while algorithmic distance fixes the amplitude through the companion kernel. These phases are exactly the gauge field. We do not introduce the gauge field as an external object; we identify it with the phase structure that is already there.
+The cloning amplitudes have phases: cloning scores set the phase, while algorithmic distance fixes the amplitude through the companion kernel. These phases are exactly the gauge field. We do not introduce the gauge field as an external object; we identify it with the phase structure that is already there.
 
 Once we have the path integral and the gauge field, the action follows. The Wilson action—the sum over plaquettes of $(1 - \text{Re Tr } U)$—is not something we postulate. It is the unique gauge-invariant action that emerges from the structure of the path integral.
 
@@ -518,26 +518,26 @@ $$
 **Analogy to Higgs mechanism**: The fitness potential $V_{\text{fit}}$ plays the role of the Higgs field, giving "mass" (stability) to walker interactions.
 :::
 
-### 3.3. Gauge Field from Fitness Phases
+### 3.3. Gauge Field from Cloning-Score Phases
 
 :::{prf:definition} Gauge Field Identification
 :label: def-gauge-field-from-phases
 
-The SU(2) gauge field is **identified** (not postulated) with fitness phases.
+The SU(2) gauge field is **identified** (not postulated) with cloning-score phases.
 
-**Cloning doublet phase** (from {doc}`03_lattice_qft`):
+**Cloning-score phase** (from {doc}`03_lattice_qft`):
 
 $$
-\theta_{ij}^{(\text{SU}(2))} := \theta_j - \theta_i
-= -\frac{\Phi_j - \Phi_i}{\hbar_{\text{eff}}}
+\theta_{ij}^{(SU(2))} := \frac{S_i(j)}{\hbar_{\text{eff}}}
+= \frac{\Phi_j - \Phi_i}{(\Phi_i + \varepsilon_{\text{clone}})\,\hbar_{\text{eff}}}
 $$
 
-where $\theta_i = -\Phi_i/\hbar_{\text{eff}}$ and $V_{\text{clone}}(i \to j) = \Phi_j - \Phi_i$.
+where $S_i(j)$ is the cloning score ({prf:ref}`def-fractal-set-cloning-score`).
 
 **Gauge field components**: For edge $e = (n_i, n_j)$:
 
 $$
-A_e^{(a)} T^a := \frac{1}{g a_e} \theta_{ij}^{(\text{SU}(2))} \cdot \hat{n}^{(a)}
+A_e^{(a)} T^a := \frac{1}{g a_e} \theta_{ij}^{(SU(2))} \cdot \hat{n}^{(a)}
 $$
 
 where $a_e$ is the edge length ($a_e = \tau$ for CST edges and $a_e = \rho$ for IG edges).
@@ -550,7 +550,7 @@ $$
 U_{ij} = \exp\left(i g a_e \sum_{a=1}^3 A_e^{(a)} T^a\right) \in \text{SU}(2)
 $$
 
-**Key insight**: The gauge field is the fitness difference encoded as a phase, while the companion kernel fixes amplitudes. This is not an analogy—the mathematical structures are identical.
+**Key insight**: The gauge field is the cloning score encoded as a phase, while the cloning companion kernel fixes amplitudes. This is not an analogy—the mathematical structures are identical.
 :::
 
 :::{admonition} Why This Is Not an Effective Field Theory
@@ -897,7 +897,7 @@ Ken Wilson figured this out in the 1970s {cite}`wilson1974confinement`. The key 
 
 The Wilson action is the sum over all plaquettes of $(1 - \frac{1}{N}\text{Re Tr } U_P)$. For small fields, this reduces to the continuum Yang-Mills action. But it is valid even for strong fields, even on coarse lattices. It is the natural action for non-perturbative gauge theory.
 
-And here is what we have accomplished: we have shown that this action emerges from the Fractal Gas. The plaquettes are the elementary closed loops in the CST+IG structure. The link variables are the fitness phases. The action is not put in by hand—it falls out of the stochastic dynamics.
+And here is what we have accomplished: we have shown that this action emerges from the Fractal Gas. The plaquettes are the elementary closed loops in the CST+IG structure. The link variables encode the U(1) fitness phases and the SU(2) cloning-score phases. The action is not put in by hand—it falls out of the stochastic dynamics.
 :::
 
 :::{admonition} Lattice spacing convention
@@ -940,12 +940,12 @@ with $a_e$ the length of edge $e$.
 **Phase identification** (from {prf:ref}`def-gauge-field-from-phases`):
 
 $$
-U_{ij} = \exp\left(i \theta_{ij}^{(\text{SU}(2))} \cdot \hat{\sigma}\right)
+U_{ij} = \exp\left(i \theta_{ij}^{(SU(2))} \cdot \hat{\sigma}\right)
 $$
 
 where $\hat{\sigma}$ is the direction in isospin space, so that
 $$
-A_e^{(a)} T^a = \frac{1}{g a_e} \theta_{ij}^{(\text{SU}(2))} \, \hat{\sigma}.
+A_e^{(a)} T^a = \frac{1}{g a_e} \theta_{ij}^{(SU(2))} \, \hat{\sigma}.
 $$
 :::
 
@@ -1845,9 +1845,9 @@ In four dimensions the SU(2) coupling is dimensionless. From the unit table, the
 
 The link phase is $g a_e A$ (with $a_e$ the link length), while the cloning phase is
 $$
-\theta_{ij} = -\frac{\Phi_j - \Phi_i}{\hbar_{\text{eff}}}.
+\theta_{ij}^{(SU(2))} = \frac{S_i(j)}{\hbar_{\text{eff}}}.
 $$
-Companion selection restricts interactions to $d_{\text{alg}} \lesssim \epsilon_c$, so typical fitness differences are evaluated on that scale; for spatial links $a_e \sim \rho$, the phase variation is controlled by the dimensionless ratio $\rho/\epsilon_c$. The overall normalization of the covariant derivative is set by the timestep ratio $m\tau$ through $\hbar_{\text{eff}}$.
+Companion selection restricts interactions to $d_{\text{alg}} \lesssim \epsilon_c$, so typical cloning-score variations are evaluated on that scale; for spatial links $a_e \sim \rho$, the phase variation is controlled by the dimensionless ratio $\rho/\epsilon_c$. The overall normalization of the covariant derivative is set by the timestep ratio $m\tau$ through $\hbar_{\text{eff}}$.
 
 **Step 3. Identification.**
 
@@ -2396,7 +2396,7 @@ Let me step back and tell you what we have accomplished.
 
 We started with the Fractal Gas—an optimization algorithm where walkers explore a fitness landscape, cloning from successful neighbors. This is not physics; it is computer science. But when we analyzed the structure of this algorithm, we found something remarkable: it generates exactly the mathematical structures of quantum field theory.
 
-The Fractal Set is a discrete spacetime. The cloning amplitudes have phases, and these phases are gauge fields. The fitness symmetries are gauge symmetries. The stochastic path integral Wick-rotates to a quantum path integral. The Wilson action emerges from the structure of closed loops. Noether's theorem gives conserved currents.
+The Fractal Set is a discrete spacetime. The U(1) fitness phases and the SU(2) cloning-score phases are the gauge fields. The fitness baseline symmetry and the cloning asymmetry are gauge symmetries. The stochastic path integral Wick-rotates to a quantum path integral. The Wilson action emerges from the structure of closed loops. Noether's theorem gives conserved currents.
 
 All of this is derived, not postulated. We did not put in Yang-Mills by hand; it fell out of the mathematics.
 

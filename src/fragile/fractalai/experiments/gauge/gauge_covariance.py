@@ -1,14 +1,14 @@
 """Gauge covariance test (Test 1D - CRITICAL EXPERIMENT).
 
-This module implements the definitive test that determines whether the proposed
-collective field structure supports local gauge theory or operates as gauge-invariant
+This module implements the definitive test that determines whether the collective
+field structure supports local gauge theory or operates as gauge-invariant
 mean-field variables.
 
 **Framework Reference:**
 old_docs/source/13_fractal_set_new/04c_test_cases.md §1.5
 
 **Research Question:**
-Does d'_i transform non-trivially under local gauge transformation α_i(x)?
+Does d'_i transform non-trivially under local U(1) fitness-phase transformation α_i(x)?
 
 **Test Procedure:**
 1. Define local gauge transformation on region R
@@ -123,6 +123,8 @@ def apply_gauge_transformation_to_phases(
     α_i = α_0 for i ∈ R
     α_i = 0 for i ∉ R
 
+    The fitness phase transforms as θ_i → θ_i + α_i.
+
     Args:
         positions: Walker positions [N, d]
         alpha_0: Phase shift magnitude
@@ -167,12 +169,11 @@ def modify_companion_probabilities_with_gauge(
         Modified probability matrix [N, N] where P'[i,j] = P'(j|i)
 
     Note:
-        The phase factor exp(i(α_i - α_k)/ℏ_eff) modulates the probability,
-        but we take |·|² to get real probabilities, giving:
-        P'(k|i) ∝ P(k|i) (phase factors cancel in modulus squared)
+        The phase factor exp(i(α_i - α_k)/ℏ_eff) modulates the complex amplitudes.
+        Taking |·|² cancels the phase, so P'(k|i) ∝ P(k|i) in pure probability form.
 
-        Therefore, for this test, we need to use the phase directly in
-        the companion selection (not just the probability).
+        Therefore, for this test, we use the phase directly in the companion
+        selection (not just the probability).
     """
     N = positions.shape[0]
 
@@ -492,7 +493,7 @@ def _explain_implications(verdict: str) -> str:
     if verdict == "covariant":
         return """If gauge covariance is confirmed:
 
-1. **Theoretical Framework**: Proposed structure supports LOCAL GAUGE THEORY
+1. **Theoretical Framework**: Structure supports LOCAL GAUGE THEORY
    - Can define gauge connection A_μ from collective fields
    - Can construct Yang-Mills action
    - Can derive gauge boson spectrum

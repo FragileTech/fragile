@@ -298,7 +298,7 @@ def clone_walkers(
         cloning_probs = compute_cloning_probability(cloning_scores, p_max=p_max)
 
         # Step 3: Make stochastic cloning decisions
-        # Sample uniform thresholds and compare to probabilities
+        # Sampling thresholds is the algorithmic "measurement" of the cloning outcome.
         thresholds = torch.rand(N, device=device)
         will_clone = cloning_probs > thresholds
         will_clone[~alive] = True  # Ensure dead walkers always clone

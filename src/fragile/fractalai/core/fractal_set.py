@@ -17,6 +17,8 @@ from __future__ import annotations
 
 from typing import Any
 
+import math
+
 import networkx as nx
 import torch
 from torch import Tensor
@@ -62,19 +64,23 @@ class FractalSet:
         history: RunHistory,
         epsilon_c: float | None = None,
         hbar_eff: float = 1.0,
+        epsilon_d: float | None = None,
+        lambda_alg: float = 0.0,
     ):
         """Initialize FractalSet from a RunHistory object.
 
         Args:
             history: RunHistory object from EuclideanGas.run()
-            epsilon_c: Cloning interaction range for phase potential computation.
-                      If None, extracts from companion_selection.epsilon or defaults to 1.0.
-            hbar_eff: Effective Planck constant for quantum-like coupling (default: 1.0)
+            epsilon_c: Cloning interaction range (kept for backward compatibility).
+            hbar_eff: Effective Planck constant for fitness-phase encoding (default: 1.0)
+            epsilon_d: Diversity interaction range for companion amplitude computation.
+                If None, falls back to epsilon_c or defaults to 1.0.
+            lambda_alg: Velocity weight in algorithmic distance (default: 0.0)
 
         The constructor immediately builds the complete graph structure by:
         1. Creating nodes for all (walker, timestep) pairs
         2. Adding CST edges for temporal evolution
-        3. Adding IG edges for selection coupling with phase potentials
+        3. Adding IG edges for selection coupling with fitness phase potentials
         """
         self.history = history
         self.graph = nx.DiGraph()
@@ -86,8 +92,10 @@ class FractalSet:
         self.n_recorded = history.n_recorded
         self.record_every = history.record_every
 
-        # Store quantum parameters for IG edge phase potential computation
+        # Store parameters for IG edge phase/amplitude computation
         self.epsilon_c = epsilon_c
+        self.epsilon_d = epsilon_d
+        self.lambda_alg = lambda_alg
         self.hbar_eff = hbar_eff
 
         # Build graph structure
@@ -284,6 +292,8 @@ class FractalSet:
         - Relative velocity: Δv_ij = v_j - v_i
         - Antisymmetric cloning potential: V_clone(i→j) = Φ_j - Φ_i
         - Distance: ||x_i - x_j||
+        - Fitness phase: θ_ij = -(Φ_j - Φ_i)/ħ_eff
+        - Companion amplitude: √P_comp(i,j) from algorithmic distance
         - Companion type flags: is_distance_companion, is_clone_companion
 
         Note: Creates a complete directed graph (tournament) among alive walkers.
@@ -299,6 +309,25 @@ class FractalSet:
             # Get alive walkers at this timestep
             alive_mask = self.history.alive_mask[t_idx - 1, :]
             alive_indices = torch.where(alive_mask)[0].tolist()
+
+            # Precompute pairwise algorithmic distances and companion probabilities
+            if len(alive_indices) < 2:
+                continue
+            x_alive = self.history.x_final[t_idx, alive_indices, :]
+            v_alive = self.history.v_final[t_idx, alive_indices, :]
+            delta_x = x_alive[:, None, :] - x_alive[None, :, :]
+            delta_v = v_alive[:, None, :] - v_alive[None, :, :]
+            d_alg_sq = torch.sum(delta_x**2, dim=2) + self.lambda_alg * torch.sum(
+                delta_v**2, dim=2
+            )
+            epsilon_d = self.epsilon_d if self.epsilon_d is not None else self.epsilon_c
+            if epsilon_d is None:
+                epsilon_d = 1.0
+            weights = torch.exp(-d_alg_sq / (2.0 * epsilon_d**2))
+            weights.fill_diagonal_(0.0)
+            weight_sums = torch.clamp(weights.sum(dim=1, keepdim=True), min=1e-12)
+            p_comp = weights / weight_sums
+            alive_index = {walker_id: idx for idx, walker_id in enumerate(alive_indices)}
 
             # Create directed edges between all pairs of alive walkers
             for i in alive_indices:
@@ -338,6 +367,10 @@ class FractalSet:
                     # Extract algorithmic distances for both walkers (Phase 3)
                     d_alg_i = self.history.distances[t_idx - 1, i].item()
                     d_alg_j = self.history.distances[t_idx - 1, j].item()
+                    i_idx = alive_index[i]
+                    j_idx = alive_index[j]
+                    d_alg_ij = math.sqrt(d_alg_sq[i_idx, j_idx].item())
+                    p_comp_ij = p_comp[i_idx, j_idx].item()
 
                     # Extract intermediate fitness data for both walkers (Phase 3)
                     z_rewards_i = self.history.z_rewards[t_idx - 1, i].item()
@@ -353,18 +386,14 @@ class FractalSet:
                     vel_sq_diff_i = self.history.vel_squared_differences[t_idx - 1, i].item()
                     vel_sq_diff_j = self.history.vel_squared_differences[t_idx - 1, j].item()
 
-                    # Determine epsilon_c for phase potential computation (Phase 3)
-                    # Extraction from companion_selection is deferred - use provided or default
-                    epsilon_c = self.epsilon_c if self.epsilon_c is not None else 1.0
+                    # Fitness phase: theta_ij = -(Phi_j - Phi_i) / hbar_eff
+                    theta_ij = -V_clone / self.hbar_eff
 
-                    # Compute phase potential: theta_ij = -d_alg_i^2 / (2 * epsilon_c^2 * hbar_eff)
-                    # Reference: old_docs/source/13_fractal_set_new/01_fractal_set.md (3.22)
-                    theta_ij = -(d_alg_i**2) / (2.0 * epsilon_c**2 * self.hbar_eff)
-
-                    # Complex amplitude: psi_ij = exp(i*theta_ij)
+                    # Complex amplitude: psi_ij = sqrt(P_comp) * exp(i*theta_ij)
                     import numpy as np
 
-                    psi_ij = np.exp(1j * theta_ij)
+                    psi_amp = math.sqrt(p_comp_ij) if p_comp_ij > 0.0 else 0.0
+                    psi_ij = psi_amp * np.exp(1j * theta_ij)
 
                     attrs = {
                         "edge_type": "ig",
@@ -382,10 +411,13 @@ class FractalSet:
                         # Phase 3: Algorithmic distance
                         "d_alg_i": d_alg_i,
                         "d_alg_j": d_alg_j,
+                        "d_alg_ij": d_alg_ij,
+                        "p_comp_ij": p_comp_ij,
                         # Phase 3: Phase potential and complex amplitude
                         "theta_ij": theta_ij,
                         "psi_ij_real": float(psi_ij.real),
                         "psi_ij_imag": float(psi_ij.imag),
+                        "psi_ij_amp": float(psi_amp),
                         # Phase 3: Intermediate fitness data for both walkers
                         "z_rewards_i": z_rewards_i,
                         "z_rewards_j": z_rewards_j,
@@ -678,8 +710,8 @@ class FractalSet:
 
         Returns:
             Dictionary with phase potential statistics:
-            - mean_theta: Mean phase potential θ_ij
-            - std_theta: Std of phase potential
+            - mean_theta: Mean fitness phase θ_ij
+            - std_theta: Std of fitness phase
             - mean_psi_real: Mean real part of ψ_ij
             - mean_psi_imag: Mean imaginary part of ψ_ij
             - mean_psi_magnitude: Mean |ψ_ij|
