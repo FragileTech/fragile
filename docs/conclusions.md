@@ -55,7 +55,7 @@ The Fractal Gas is a population-based optimization algorithm: walkers in latent 
 
 3. **Revival guarantee.** Dead walkers always resurrect; the population never goes extinct. The quasi-stationary distribution ensures walkers explore under survival constraint, and cloning resurrects from QSD ({prf:ref}`thm-hk-convergence-main-assembly`).
 
-4. **Standard Model from walker interactions.** The gauge group $SU(3)_C \times SU(2)_L \times U(1)_Y$ ({prf:ref}`cor-sm-gauge-group`) emerges from viscous coupling between walkers: color link variables encode distance (modulus) and momentum difference (phase), gluon fields arise from coherent neighbor sums, and confinement follows from the localization kernel.
+4. **Standard Model from walker interactions.** The gauge group $SU(3)_C \times SU(2)_L \times U(1)_Y$ ({prf:ref}`cor-sm-gauge-group`) emerges from viscous coupling between walkers: color link variables encode viscous force amplitude and momentum phase, gluon fields arise from coherent neighbor sums, and confinement follows from the localization kernel.
 
 ---
 

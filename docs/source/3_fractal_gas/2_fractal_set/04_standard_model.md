@@ -155,6 +155,9 @@ $$
 
 Any local rephasing $\psi_i \mapsto e^{i\alpha_i}\psi_i$ leaves the probabilities invariant.
 
+This $P_i(k; t)$ is the **diversity** companion kernel (range $\epsilon_d$); the cloning kernel
+(range $\epsilon_c$) supplies the amplitudes in the SU(2) doublet.
+
 **Fitness phase**: Take the phase from fitness,
 
 $$
@@ -191,8 +194,8 @@ The cloning companion selection mechanism induces an $SU(2)$ gauge field on the 
 $$
 \Psi_{ij} := \frac{1}{\sqrt{P_i^{\text{clone}}(j; t) + P_j^{\text{clone}}(i; t)}}
 \begin{pmatrix}
-\sqrt{P_i^{\text{clone}}(j; t)}\,e^{i\theta_j} \\
-\sqrt{P_j^{\text{clone}}(i; t)}\,e^{i\theta_i}
+\sqrt{P_i^{\text{clone}}(j; t)}\,e^{i\theta_{ij}^{(SU(2))}} \\
+\sqrt{P_j^{\text{clone}}(i; t)}\,e^{i\theta_{ji}^{(SU(2))}}
 \end{pmatrix},
 \quad \|\Psi_{ij}\| = 1.
 $$
@@ -200,10 +203,11 @@ $$
 Here $P_i^{\text{clone}}(j; t) \propto \exp\!\left(-d_{\text{alg}}(i,j)^2/(2\epsilon_c^2)\right)$ with
 $d_{\text{alg}}(i,j)^2 = \|x_i - x_j\|^2 + \lambda_{\text{alg}}\|v_i - v_j\|^2$.
 
-The relative phase in the doublet is the fitness phase difference:
+The cloning-score phases are:
 
 $$
-\theta_{ij}^{(SU(2))} := \theta_j - \theta_i = -\frac{\Phi_j - \Phi_i}{\hbar_{\text{eff}}}.
+\theta_{ij}^{(SU(2))} := \frac{S_i(j)}{\hbar_{\text{eff}}}
+= \frac{\Phi_j - \Phi_i}{(\Phi_i + \varepsilon_{\text{clone}})\,\hbar_{\text{eff}}}.
 $$
 
 Fixing the overall $U(1)$ phase of $\Psi_{ij}$ leaves $SU(2)$ basis rotations as the local redundancy.
@@ -223,6 +227,8 @@ where $\tau^a$ are Pauli matrices (generators of $SU(2)$).
 Now $SU(2)$ is more interesting than $U(1)$. Where does this two-component structure come from?
 
 When two walkers interact via cloning, there is always a winner and a loser. If walker A is fitter than walker B, then A can clone from B (taking B's information), but B cannot clone from A in the same step. This creates a natural binary structure: each walker in a pair is either in the "can clone" state or the "cannot clone" state.
+
+The stochastic decision is made by drawing a uniform threshold and comparing it to the cloning score $S_i(j)$. This is the algorithmic analog of a measurement: the doublet amplitudes define the potential outcomes, and the random threshold selects which outcome is realized.
 
 This is exactly like weak isospin in particle physics. The electron and its neutrino form a doublet—under weak interactions, they can transform into each other. The up quark and down quark form another doublet. The key insight is that this doublet structure is not put in by hand; it emerges automatically from the asymmetry of cloning.
 
@@ -965,10 +971,10 @@ where $C_2(N) = (N^2-1)/(2N)$ is the quadratic Casimir of $SU(N)$.
 
 *Proof.*
 
-**Step 1 (Doublet phases):** The relative phase in the cloning doublet is the fitness phase difference ({prf:ref}`thm-sm-su2-emergence`):
+**Step 1 (Doublet phases):** The cloning doublet phases are set by the cloning score ({prf:ref}`thm-sm-su2-emergence`):
 
 $$
-\theta_{ij}^{(SU(2))} = -\frac{\Phi_j - \Phi_i}{\hbar_{\text{eff}}}.
+\theta_{ij}^{(SU(2))} = \frac{S_i(j)}{\hbar_{\text{eff}}}.
 $$
 
 The cloning companion distribution has width $\epsilon_c$ via $P_i^{\text{clone}}(j; t) \propto \exp(-d_{\text{alg}}(i,j)^2/(2\epsilon_c^2))$, so the relevant interaction scale is $\epsilon_c$.

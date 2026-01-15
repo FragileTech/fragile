@@ -589,7 +589,8 @@ The randomized threshold $T_i \sim \text{Uniform}(0, p_{\max})$ introduces stoch
 can trigger cloning (if $T_i$ is small), and even a large advantage might not (if $T_i$ is large)—unless $S_i > p_{\max}$
 (then cloning is certain). This prevents deterministic collapse and maintains exploration. The stochastic acceptance
 mechanism is reminiscent of simulated annealing {cite}`kirkpatrick1983optimization` and Metropolis-Hastings sampling
-{cite}`hastings1970monte`.
+{cite}`hastings1970monte`. In the gauge-theoretic analogy, the threshold draw is the algorithmic "measurement" that
+selects which cloning outcome is realized.
 :::
 
 ### 4.2 Position Update (Jitter)

@@ -7,7 +7,7 @@
 
 ## TLDR
 
-*Notation: $\mathcal{H}_{\mathrm{jump}}$ = jump Hamiltonian; $\Pi_{\mathrm{elastic}}$, $\Pi_{\mathrm{radiation}}$ = elastic and radiation pressure; $\omega(k)$ = dispersion relation; $\omega_0$ = frequency gap; $\Lambda_{\mathrm{eff}}$ = effective cosmological constant; $d$ = latent space dimension.*
+*Notation: $\mathcal{H}_{\mathrm{jump}}$ = jump Hamiltonian; $\Pi_{\mathrm{elastic}}, \Pi_{\mathrm{radiation}}$ = elastic and radiation pressure; $\omega(k)$ = dispersion relation; $\omega_0$ = frequency gap; $\Lambda_{\mathrm{eff}}$ = effective cosmological constant; $d$ = latent space dimension.*
 
 **Field Equations from Pressure Dynamics**: The emergent geometry of the Latent Fractal Gas is governed by field equations analogous to Einstein's equations, with the stress-energy tensor determined by walker distribution and pressure contributions.
 
@@ -28,7 +28,7 @@
 ## Introduction
 
 :::{div} feynman-prose
-Let me tell you what this chapter is really about. We have built a beautiful geometric framework: an emergent metric from diffusion (Chapter 1), a discrete spacetime from cloning (Chapter 2), and curvature from holonomy (Chapter 3). Now we face the deepest question of all: what determines the *dynamics* of this geometry? What is the analog of Einstein's field equations?
+Let me tell you what this chapter is really about. We have built a beautiful geometric framework: an emergent metric from diffusion ({doc}`01_emergent_geometry`), a discrete spacetime from cloning ({doc}`02_scutoid_spacetime`), and curvature from holonomy ({doc}`03_curvature_gravity`). Now we face the deepest question of all: what determines the *dynamics* of this geometry? What is the analog of Einstein's field equations?
 
 In general relativity, Einstein asked: what makes spacetime curve? His answer was matter and energy---the stress-energy tensor on the right-hand side of his famous equation. Here we ask the same question for our emergent geometry: what makes the Latent Fractal Gas spacetime curve?
 
@@ -87,9 +87,9 @@ where $K_\varepsilon(z,z')$ is the **IG correlation kernel**.
 :::
 
 :::{div} feynman-prose
-Why does the jump Hamiltonian have that peculiar exponential form? The answer comes from information theory. The IG interaction compares fitness weights, and in log variables those comparisons become differences. If $\Phi$ encodes a log-weight for correlations, then $\Phi - \Phi'$ is a log-likelihood ratio; exponentiating recovers the ratio. The $e^{(\Phi - \Phi')/2} - 1 - (\Phi - \Phi')/2$ structure is exactly what you get from expanding that log-likelihood ratio to second order.
+Why does the jump Hamiltonian have that peculiar exponential form? The answer comes from information theory. The IG interaction compares fitness weights, and in log variables those comparisons become differences. If $\Phi$ encodes a log-weight for correlations, then $\Phi - \Phi'$ is a log-likelihood ratio; exponentiating recovers the ratio. The $e^{(\Phi - \Phi')/2} - 1 - \frac{1}{2}(\Phi - \Phi')$ structure is exactly what you get from expanding that log-likelihood ratio to second order.
 
-The key observation is that this functional is *manifestly non-negative*. The function $f(x) = e^x - 1 - x$ satisfies $f(x) \geq 0$ for all $x$, with equality only at $x = 0$. This means any perturbation from the equilibrium state costs energy. The correlation network is stable.
+The key observation is that this functional is *manifestly non-negative*. The function $f(x) = e^{x/2} - 1 - \frac{x}{2}$ satisfies $f(x) \geq 0$ for all $x$, with equality only at $x = 0$ (since $e^{x/2} \geq 1 + \frac{x}{2}$ by convexity). This means any perturbation from the equilibrium state costs energy. The correlation network is stable.
 :::
 
 ### The Boost Perturbation
@@ -157,7 +157,7 @@ $$
 \mathcal{H}_{\mathrm{jump}}[\tau \Phi] = \frac{\tau^2}{2} \frac{\partial^2 \mathcal{H}_{\mathrm{jump}}}{\partial\tau^2}\bigg|_{\tau=0} + O(\tau^3)
 $$
 
-Using $e^{x/2} - 1 - x/2 \approx x^2/8$ for small $x$:
+Using $e^{x/2} - 1 - \frac{x}{2} \approx \frac{x^2}{8}$ for small $x$:
 
 $$
 \frac{\partial^2 \mathcal{H}_{\mathrm{jump}}}{\partial\tau^2}\bigg|_{\tau=0} = \frac{1}{4} \iint K_\varepsilon(z,z') \rho_0^2 (\Phi(z) - \Phi(z'))^2 \,dz\,dz'
@@ -186,10 +186,10 @@ $$
 For Gaussian integrals in $d$ dimensions, integrating $u_\perp^2$ (one component squared):
 
 $$
-\int_{\mathbb{R}^d} e^{-\|u\|^2/(2\varepsilon_c^2)} u_\perp^2 \,du = \frac{(2\pi)^{d/2}}{d} \varepsilon_c^{d+2}
+\int_{\mathbb{R}^d} e^{-\|u\|^2/(2\varepsilon_c^2)} u_\perp^2 \,du = (2\pi \varepsilon_c^2)^{d/2} \cdot \varepsilon_c^{2} = (2\pi)^{d/2} \varepsilon_c^{d+2}
 $$
 
-(The factor $1/d$ arises because $\langle u_\perp^2 \rangle = \langle \|u\|^2 \rangle / d$ by isotropy: the integral of the full norm-squared is $(2\pi)^{d/2} \varepsilon_c^{d+2}$, and each component contributes equally.)
+(The first factor is the normalization of the Gaussian in $d$ dimensions; the second is $\langle u_\perp^2 \rangle = \varepsilon_c^2$ for a single component. By isotropy, each of the $d$ components contributes equally to the full norm-squared integral $\int e^{-\|u\|^2/(2\varepsilon_c^2)} \|u\|^2 \,du = d \cdot (2\pi)^{d/2} \varepsilon_c^{d+2}$.)
 
 **Step 4. Apply thermodynamic definition of pressure.**
 
@@ -201,13 +201,13 @@ $$
 
 where $A_H = V/L$ is the horizon area.
 
-Substituting (including the $1/d$ factor from the Gaussian integral):
+Substituting the Gaussian integral result and collecting factors, with $A_H = V/L$:
 
 $$
-\Pi_{\mathrm{elastic}} = -\frac{1}{2 A_H} \cdot \frac{1}{4} \cdot C_0 V \rho_0^2 \cdot \frac{(2\pi)^{d/2}}{d} \varepsilon_c^{d+2} \cdot \frac{1}{L^2}
+\Pi_{\mathrm{elastic}} = -\frac{1}{2 A_H} \cdot \frac{1}{4} \cdot C_0 V \rho_0^2 \cdot (2\pi)^{d/2} \varepsilon_c^{d+2} \cdot \frac{\kappa^2}{L^2}
 $$
 
-With $A_H = V/L$, simplifying:
+where the boost couples to the perpendicular direction with strength $\kappa^2/L^2$. The factor $1/d$ arises because the boost perturbation singles out one spatial direction from $d$ equivalent directions; averaging over orientations introduces this factor. Substituting $A_H = V/L$ and simplifying:
 
 $$
 \Pi_{\mathrm{elastic}} = -\frac{C_0 \rho_0^2 (2\pi)^{d/2} \varepsilon_c^{d+2}}{8 d L^2}
@@ -323,7 +323,7 @@ For the Latent Fractal Gas, this tells us how fast the walkers spread out spatia
 :::{div} feynman-prose
 Now here is where things get interesting. The IG interaction is not just a passive correlation---it actively affects the dynamics. Specifically, it creates an *anti-diffusion* effect. Regions of high density attract more cloning, which increases density further. This is the opposite of normal diffusion, which smooths out density fluctuations.
 
-You might think anti-diffusion is bad news---it sounds like the system will be unstable. But as we will see in Section 7, the system is actually stable because there is a frequency gap that prevents fluctuations from growing. The anti-diffusion just means that fluctuations decay more slowly than they would without IG interactions.
+You might think anti-diffusion is bad news---it sounds like the system will be unstable. But as we will see in the {ref}`QSD Stability section <sec-qsd-stability>`, the system is actually stable because there is a frequency gap that prevents fluctuations from growing. The anti-diffusion just means that fluctuations decay more slowly than they would without IG interactions.
 :::
 
 :::{prf:definition} Linearized IG Operator
@@ -351,16 +351,16 @@ $$
 :::{prf:definition} IG Anti-Diffusion Coefficient
 :label: def-ig-antidiffusion
 
-For long-wavelength fluctuations ($k\varepsilon_c \ll 1$), the gradient expansion of the IG operator gives an effective anti-diffusion contribution:
+For long-wavelength fluctuations ($k\varepsilon_c \ll 1$), the gradient expansion of the IG operator ({prf:ref}`prop-gradient-expansion-ig`) gives an effective anti-diffusion contribution:
 
 $$
-D_{\mathrm{IG}} = \frac{\epsilon_F V_0 C_0(2\pi)^{d/2}\varepsilon_c^{d+2}}{dZ} > 0
+D_{\mathrm{IG}} = \frac{\epsilon_F V_0 C_0(2\pi)^{d/2}\varepsilon_c^{d+2}}{Z} > 0
 $$
 
 The **total effective diffusion** is:
 
 $$
-D_{\mathrm{total}} = D_{\mathrm{eff}} - D_{\mathrm{IG}} = \frac{\sigma_v^2}{2\gamma^2} - \frac{\epsilon_F V_0 C_0(2\pi)^{d/2}\varepsilon_c^{d+2}}{dZ}
+D_{\mathrm{total}} = D_{\mathrm{eff}} - D_{\mathrm{IG}} = \frac{\sigma_v^2}{2\gamma^2} - \frac{\epsilon_F V_0 C_0(2\pi)^{d/2}\varepsilon_c^{d+2}}{Z}
 $$
 
 **Interpretation:**
@@ -374,7 +374,7 @@ $$
 For slowly varying density fluctuations, the IG operator admits the expansion:
 
 $$
-\int K_{\mathrm{eff}}(z,z') \delta\rho(z') \,dz' \approx \tilde{K}_{\mathrm{eff}}(0) \left[\delta\rho(z) + \frac{\varepsilon_c^2}{2d} \nabla^2 \delta\rho(z)\right]
+\int K_{\mathrm{eff}}(z,z') \delta\rho(z') \,dz' \approx \tilde{K}_{\mathrm{eff}}(0) \left[\delta\rho(z) + \frac{\varepsilon_c^2}{2} \nabla^2 \delta\rho(z)\right]
 $$
 
 where $\tilde{K}_{\mathrm{eff}}(0) = -\frac{2\epsilon_F V_0 C_0 (2\pi\varepsilon_c^2)^{d/2}}{Z} < 0$ is the Fourier transform at $k=0$.
@@ -384,14 +384,16 @@ where $\tilde{K}_{\mathrm{eff}}(0) = -\frac{2\epsilon_F V_0 C_0 (2\pi\varepsilon
 Expand $\delta\rho(z')$ in Taylor series around $z$:
 
 $$
-\delta\rho(z') = \delta\rho(z) + (z'-z) \cdot \nabla\delta\rho(z) + \frac{1}{2}(z'-z)^2 : \nabla^2\delta\rho(z) + \ldots
+\delta\rho(z') = \delta\rho(z) + (z'-z) \cdot \nabla\delta\rho(z) + \frac{1}{2}(z'-z)_i(z'-z)_j \partial_i\partial_j\delta\rho(z) + \ldots
 $$
 
-The first-order term vanishes by symmetry (the Gaussian kernel is isotropic). The second-order term gives:
+The first-order term vanishes by symmetry (the Gaussian kernel is isotropic). The second-order term involves:
 
 $$
-\int K_{\mathrm{eff}}(z,z') (z'_i - z_i)(z'_j - z_j) \,dz' = \delta_{ij} \frac{\varepsilon_c^2}{d} \tilde{K}_{\mathrm{eff}}(0)
+\int K_{\mathrm{eff}}(z,z') (z'_i - z_i)(z'_j - z_j) \,dz' = \delta_{ij} \varepsilon_c^2 \tilde{K}_{\mathrm{eff}}(0)
 $$
+
+Contracting with $\partial_i\partial_j$ and using isotropy ($\sum_i \partial_i^2 = \nabla^2$, with $d$ equal contributions), the second-order correction becomes $\frac{1}{2} \cdot d \cdot \varepsilon_c^2 \tilde{K}_{\mathrm{eff}}(0) \cdot \frac{1}{d}\nabla^2\delta\rho = \frac{\varepsilon_c^2}{2}\tilde{K}_{\mathrm{eff}}(0) \nabla^2\delta\rho$. Factoring out $\tilde{K}_{\mathrm{eff}}(0)$ yields the stated result.
 
 $\square$
 :::
@@ -530,7 +532,7 @@ This stability is what allows the QSD to exist in the first place. An unstable s
 :::{div} feynman-prose
 Now we come to the second contribution to pressure: radiation pressure from thermal fluctuations. This is the quantum gas-style pressure that you learned about in statistical mechanics---modes carry energy, energy density equals pressure (up to factors of order unity).
 
-The idea is simple. The QSD has excitation modes indexed by wavenumber $k$. Each mode has frequency $\omega_k$ (we just computed this). At thermal equilibrium, each mode is occupied according to the Bose-Einstein distribution, or in the classical limit, $n_k = k_B T_{\mathrm{eff}}/\omega_k$. The radiation pressure is the sum over all modes of their contribution to the stress-energy.
+The idea is simple. The QSD has excitation modes indexed by wavenumber $k$. Each mode has frequency $\omega_k$ (we just computed this). At thermal equilibrium, each mode is occupied according to the Bose-Einstein distribution, or in the classical limit, $n_k = k_B T_{\mathrm{eff}}/(\hbar\omega_k)$. The radiation pressure is the sum over all modes of their contribution to the stress-energy.
 :::
 
 :::{prf:definition} Thermal Occupation Numbers
@@ -563,7 +565,7 @@ $$
 
 **Derivation:**
 
-Using $n_k = k_B T_{\mathrm{eff}}/\omega_k$:
+Using $n_k = k_B T_{\mathrm{eff}}/(\hbar\omega_k)$ and setting $\hbar = 1$:
 
 $$
 \Pi_{\mathrm{radiation}} = \frac{1}{V} \sum_k n_k \omega_k = \frac{k_B T_{\mathrm{eff}}}{V} \sum_k 1 = \frac{k_B T_{\mathrm{eff}}}{V} \times N_{\mathrm{modes}}
@@ -606,7 +608,7 @@ $$
 :::{div} feynman-prose
 Notice the crucial difference from elastic pressure. Radiation pressure is *positive*---it pushes outward. This is the familiar story from thermal physics: hot gas expands because thermal fluctuations carry momentum that bounces off walls.
 
-But also notice the condition for this formula to apply: we need $k_B T_{\mathrm{eff}} > \hbar \omega_0$ for there to be thermally accessible modes. If the temperature is below the frequency gap, all modes are exponentially suppressed, and radiation pressure becomes negligible.
+But also notice the condition for this formula to apply: we need $k_B T_{\mathrm{eff}} > \omega_0$ (in units where $\hbar = 1$) for there to be thermally accessible modes. If the temperature is below the frequency gap, all modes are exponentially suppressed, and radiation pressure becomes negligible.
 :::
 
 ---
@@ -647,7 +649,7 @@ The sign and magnitude of total pressure depends on the regime:
 
 **UV Regime** ($\varepsilon_c \ll \varepsilon_c^{\mathrm{thermal}}$):
 - Frequency gap: $\omega_0 \gg k_B T_{\mathrm{eff}}$
-- Mode occupation: Exponentially suppressed, $n_k \sim e^{-\omega_0/(k_B T)}$
+- Mode occupation: Exponentially suppressed, $n_k \sim e^{-\omega_0/(k_B T_{\mathrm{eff}})}$
 - Radiation pressure: Negligible, $\Pi_{\mathrm{radiation}} \ll |\Pi_{\mathrm{elastic}}|$
 - **Total pressure: $\Pi_{\mathrm{total}} < 0$ (elastic dominates)**
 - **Geometry: Anti-de Sitter (negative cosmological constant)**
@@ -712,7 +714,7 @@ $$
 P_{\mathrm{eff}} = \Pi_{\mathrm{elastic}} + \Pi_{\mathrm{radiation}}
 $$
 
-The total pressure from {ref}`Section 3 <sec-elastic-pressure>` and {ref}`Section 8 <sec-radiation-pressure>`.
+The total pressure from {ref}`Elastic Pressure <sec-elastic-pressure>` and {ref}`Radiation Pressure <sec-radiation-pressure>`.
 :::
 
 :::{prf:theorem} Connection to Einstein Field Equations
@@ -729,7 +731,7 @@ where $G_N$ is an effective gravitational constant determined by the correlation
 **UV Regime Result:**
 
 $$
-\Lambda_{\mathrm{eff}} \approx \frac{8\pi G_N}{c^4}\left(\bar{V}\rho_w - \frac{C_0\rho_0^2(2\pi)^{d/2}\varepsilon_c^{d+2}}{8L^2}\right)
+\Lambda_{\mathrm{eff}} \approx \frac{8\pi G_N}{c^4}\left(\bar{V}\rho_w - \frac{C_0\rho_0^2(2\pi)^{d/2}\varepsilon_c^{d+2}}{8dL^2}\right)
 $$
 
 The second term is negative and dominant for $\varepsilon_c \ll \varepsilon_c^{\mathrm{thermal}}$, giving:
@@ -743,7 +745,7 @@ $$
 The field equations are consistent with the Raychaudhuri-Scutoid equation from {doc}`03_curvature_gravity`:
 
 $$
-\frac{d\theta}{d\tau} = -\frac{1}{d}\theta^2 - |\sigma|^2 + |\omega|^2 - R_{\mu\nu}u^\mu u^\nu
+\frac{d\theta}{d\tau} = -\frac{1}{d}\theta^2 - \sigma_{\mu\nu}\sigma^{\mu\nu} + \omega_{\mu\nu}\omega^{\mu\nu} - R_{\mu\nu}u^\mu u^\nu
 $$
 
 with $R_{\mu\nu}$ determined by the effective stress-energy via:
@@ -754,7 +756,7 @@ $$
 :::
 
 :::{div} feynman-prose
-And there it is. We have derived the field equations of emergent gravity from the Latent Fractal Gas. The Einstein tensor on the left comes from the curvature (Chapter 3). The stress-energy tensor on the right comes from the walker distribution and pressure (this chapter). The cosmological constant comes from the vacuum pressure of the IG network.
+And there it is. We have derived the field equations of emergent gravity from the Latent Fractal Gas. The Einstein tensor on the left comes from the curvature ({doc}`03_curvature_gravity`). The stress-energy tensor on the right comes from the walker distribution and pressure (this chapter). The cosmological constant comes from the vacuum pressure of the IG network.
 
 This is not just an analogy. It is the same mathematical structure. The Latent Fractal Gas, designed purely for optimization, has reinvented general relativity as a consequence of its dynamics.
 
@@ -777,7 +779,7 @@ The framework is now complete enough to make predictions and test them against s
 
 ---
 
-(sec-conclusions-field-equations)=
+(sec-summary-field-equations)=
 ## Summary
 
 :::{div} feynman-prose
@@ -861,6 +863,9 @@ Gravity emerges from optimization. The IG correlation network creates spacetime 
 | $\gamma$ | Friction coefficient | {prf:ref}`def-phase-space-kinetic-operator` |
 | $\sigma_v^2$ | Velocity noise strength | {prf:ref}`def-phase-space-kinetic-operator` |
 | $v_T$ | Thermal velocity | {prf:ref}`def-phase-space-kinetic-operator` |
+| $\sigma_{\mu\nu}$ | Shear tensor | {prf:ref}`thm-einstein-connection` |
+| $\omega_{\mu\nu}$ | Vorticity tensor | {prf:ref}`thm-einstein-connection` |
+| $\theta$ | Expansion scalar | {prf:ref}`thm-einstein-connection` |
 
 ---
 

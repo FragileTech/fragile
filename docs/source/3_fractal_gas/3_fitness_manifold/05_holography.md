@@ -5,11 +5,12 @@
 
 ---
 
+(sec-holography-tldr)=
 ## TL;DR
 
-*Notation: $\mathcal{T}$ = Causal Spacetime Tree (CST); $\mathcal{G}_t$ = Interaction Graph (IG); $\gamma_A$ = separating antichain for region $A$; $S_{\text{IG}}(A)$ = IG entanglement entropy; $\text{Area}_{\text{CST}}$ = CST boundary area; $\mathcal{P}_\varepsilon$ = nonlocal perimeter functional; $\alpha$ = area law constant; $\beta$ = effective inverse temperature.*
+*Notation: $\mathcal{T}$ = Causal Spacetime Tree (CST); $\mathcal{G}_t$ = Interaction Graph (IG); $\gamma_A$ = separating antichain for region $A$; $S_{\mathrm{IG}}(A)$ = IG entanglement entropy; $\mathrm{Area}_{\mathrm{CST}}$ = CST boundary area; $\mathcal{P}_\varepsilon$ = nonlocal perimeter functional; $\alpha$ = area law constant; $\beta$ = effective inverse temperature.*
 
-The Latent Fractal Gas produces two structurally independent data streams: the Causal Spacetime Tree (CST), which records walker genealogy through cloning events, and the Interaction Graph (IG), which encodes fitness correlations between walkers. These capture fundamentally different information---ancestry versus interaction---yet both measure the same geometric quantity: boundary area. This coincidence is the algorithmic version of the Bekenstein-Hawking formula, where entanglement entropy equals area divided by four times Newton's constant. The chapter proves the Informational Area Law $S_{\text{IG}}(A) = \alpha \cdot \text{Area}_{\text{CST}}(\gamma_A)$, establishes thermodynamic relations including a first law connecting entropy and energy variations, and shows that the UV regime naturally yields Anti-de Sitter geometry with the Ryu-Takayanagi formula emerging as a direct consequence.
+The Latent Fractal Gas produces two structurally independent data streams: the Causal Spacetime Tree (CST), which records walker genealogy through cloning events, and the Interaction Graph (IG), which encodes fitness correlations between walkers. These capture fundamentally different information---ancestry versus interaction---yet both measure the same geometric quantity: boundary area. This coincidence is the algorithmic version of the Bekenstein-Hawking formula, where entanglement entropy equals area divided by four times Newton's constant. This chapter proves the Informational Area Law $S_{\mathrm{IG}}(A) = \alpha \cdot \mathrm{Area}_{\mathrm{CST}}(\gamma_A)$, establishes thermodynamic relations including a first law connecting entropy and energy variations, and shows that the UV regime naturally yields Anti-de Sitter geometry with the Ryu-Takayanagi formula emerging as a direct consequence.
 
 ---
 
@@ -100,7 +101,7 @@ $$
 
 ---
 
-(sec-jump-hamiltonian-modular)=
+(sec-holography-jump-hamiltonian)=
 ## The Jump Hamiltonian and Modular Structure
 
 :::{div} feynman-prose
@@ -108,7 +109,7 @@ Now we need to understand the energetics of the IG correlations. This is where t
 
 Think about it this way. The IG encodes correlations, and correlations have energy. If you try to perturb the correlation structure---say, by moving walkers around or changing their relative positions---you pay an energy cost. The jump Hamiltonian quantifies this cost.
 
-The key insight is that the jump Hamiltonian has the structure of a *modular Hamiltonian* in quantum information theory. This is not a coincidence. The modular Hamiltonian is the operator whose exponential gives the density matrix: $\rho = e^{-H_{\mathrm{mod}}}/Z$. It encodes all the entanglement structure of a quantum state.
+The key insight is that the jump Hamiltonian has the structure of a *modular Hamiltonian* in quantum information theory. This is not a coincidence. The modular Hamiltonian is the operator whose exponential gives the reduced density matrix: $\rho_A = e^{-H_{\mathrm{mod}}}/Z$. It encodes all the entanglement structure of a quantum state.
 
 In the Latent Fractal Gas, the IG correlation structure plays the role of entanglement. Walkers that are correlated through the IG are "entangled" in the operational sense that knowing one tells you something about the other. The jump Hamiltonian is the modular Hamiltonian for this operational entanglement.
 :::
@@ -119,7 +120,7 @@ In the Latent Fractal Gas, the IG correlation structure plays the role of entang
 Let $\rho(z)$ be the walker density and $\Phi(z)$ be a perturbation potential. The **jump Hamiltonian** is:
 
 $$
-\mathcal{H}_{\text{jump}}[\Phi] = \iint_{\mathcal{Z} \times \mathcal{Z}} K_\varepsilon(z,z')\rho(z)\rho(z')\left(e^{\frac{1}{2}(\Phi(z)-\Phi(z'))}-1-\frac{1}{2}(\Phi(z)-\Phi(z'))\right)dz\,dz'
+\mathcal{H}_{\mathrm{jump}}[\Phi] = \iint_{\mathcal{Z} \times \mathcal{Z}} K_\varepsilon(z,z')\rho(z)\rho(z')\left(e^{\frac{1}{2}(\Phi(z)-\Phi(z'))}-1-\frac{1}{2}(\Phi(z)-\Phi(z'))\right)dz\,dz'
 $$
 
 **Components:**
@@ -128,10 +129,10 @@ $$
 - $\Phi(z)$: Perturbation field (scalar potential)
 
 **Properties:**
-1. **Non-negativity**: $\mathcal{H}_{\text{jump}}[\Phi] \geq 0$ for all $\Phi$, with equality iff $\Phi = \text{const}$
+1. **Non-negativity**: $\mathcal{H}_{\mathrm{jump}}[\Phi] \geq 0$ for all $\Phi$, with equality iff $\Phi = \text{const}$
 2. **Quadratic approximation**: For small $|\Phi(z) - \Phi(z')| \ll 1$:
    $$
-   \mathcal{H}_{\text{jump}}[\Phi] \approx \frac{1}{8} \iint K_\varepsilon(z,z')\rho(z)\rho(z')(\Phi(z)-\Phi(z'))^2 \,dz\,dz'
+   \mathcal{H}_{\mathrm{jump}}[\Phi] \approx \frac{1}{8} \iint K_\varepsilon(z,z')\rho(z)\rho(z')(\Phi(z)-\Phi(z'))^2 \,dz\,dz'
    $$
 3. **Locality**: The kernel $K_\varepsilon$ decays on scale $\varepsilon_c$, so only nearby pairs contribute
 :::
@@ -159,17 +160,17 @@ where $\rho_A$ is the reduced density operator for region $A$ and $Z_A$ is a nor
 
 **Relationship:**
 $$
-\mathcal{H}_{\text{jump}}[\Phi_A] = \langle H_{\mathrm{mod}}(A) \rangle_{\delta\rho} - \langle H_{\mathrm{mod}}(A) \rangle_{\rho_0} + O(\delta\rho^2)
+\mathcal{H}_{\mathrm{jump}}[\Phi_A] = \langle H_{\mathrm{mod}}(A) \rangle_{\delta\rho} - \langle H_{\mathrm{mod}}(A) \rangle_{\rho_0} + O(\delta\rho^2)
 $$
 
 where $\Phi_A$ is the perturbation corresponding to density change $\delta\rho$ and $\langle \cdot \rangle$ denotes expectation.
 
-**Physical interpretation:** The jump Hamiltonian is the change in modular energy when the density is perturbed. This connects the classical correlation structure (IG) to quantum information concepts (modular Hamiltonian).
+**Physical interpretation:** The jump Hamiltonian measures the change in modular energy when the density is perturbed. This connects the classical correlation structure (IG) to quantum information concepts (modular Hamiltonian).
 :::
 
 ---
 
-(sec-antichain-spacelike)=
+(sec-holography-antichain)=
 ## Antichain Structure and Spacelike Hypersurfaces
 
 :::{div} feynman-prose
@@ -207,7 +208,7 @@ Let $A \subseteq \mathcal{Z} \times [0,T]$ be a spacetime region. A **separating
 The **CST boundary area** of a separating antichain $\gamma_A$ is:
 
 $$
-\text{Area}_{\text{CST}}(\gamma_A) = a_0 \cdot |\gamma_A|
+\mathrm{Area}_{\mathrm{CST}}(\gamma_A) = a_0 \cdot |\gamma_A|
 $$
 
 where:
@@ -216,12 +217,12 @@ where:
   $$
   a_0 = \ell_P^{d-1}
   $$
-- $\ell_P = (\mathrm{Vol}(\mathcal{Z})/N)^{1/d}$ is the emergent Planck length scale (typical Voronoi cell linear size), so $a_0 = (\mathrm{Vol}(\mathcal{Z})/N)^{(d-1)/d}$
+- $\ell_P = (\mathrm{Vol}(\mathcal{Z})/N)^{1/d}$ is the emergent Planck length scale (typical Voronoi cell linear dimension), so $a_0 = (\mathrm{Vol}(\mathcal{Z})/N)^{(d-1)/d}$
 
 **Properties:**
 1. **Discreteness**: The CST area is quantized in units of $a_0$
-2. **Extensivity**: For large boundaries, $\text{Area}_{\text{CST}} \propto |\gamma_A|$
-3. **Geometric correspondence**: In the continuum limit, $\text{Area}_{\text{CST}}(\gamma_A) \to \text{Area}_g(\partial A)$, the Riemannian area of the boundary
+2. **Extensivity**: For large boundaries, $\mathrm{Area}_{\mathrm{CST}} \propto |\gamma_A|$
+3. **Geometric correspondence**: In the continuum limit, $\mathrm{Area}_{\mathrm{CST}}(\gamma_A) \to \mathrm{Area}_g(\partial A)$, the Riemannian area of the boundary
 :::
 
 :::{div} feynman-prose
@@ -234,7 +235,7 @@ This discreteness is not an approximation or a numerical artifact. It is fundame
 
 ---
 
-(sec-ig-entanglement-entropy)=
+(sec-holography-ig-entropy)=
 ## IG Entanglement Entropy
 
 :::{div} feynman-prose
@@ -251,7 +252,7 @@ The construction uses the min-cut/max-flow structure of graph theory. Imagine th
 Let $A \subseteq \mathcal{Z}$ be a spatial region and $\mathcal{G} = (V, E, w)$ be the IG at a fixed time. The **IG entanglement entropy** of $A$ is:
 
 $$
-S_{\text{IG}}(A) = \sum_{e \in \Gamma_{\min}(A)} w_e
+S_{\mathrm{IG}}(A) = \sum_{e \in \Gamma_{\min}(A)} w_e
 $$
 
 where $\Gamma_{\min}(A)$ is the **minimum weight cut** separating $A$ from its complement $A^c$:
@@ -261,11 +262,11 @@ $$
 $$
 
 **Properties:**
-1. **Subadditivity**: $S_{\text{IG}}(A \cup B) \leq S_{\text{IG}}(A) + S_{\text{IG}}(B)$
-2. **Symmetry**: $S_{\text{IG}}(A) = S_{\text{IG}}(A^c)$ (cut is the same from both sides)
-3. **Monotonicity**: If $A \subseteq B$, need not have $S_{\text{IG}}(A) \leq S_{\text{IG}}(B)$ (not monotonic in general)
+1. **Subadditivity**: $S_{\mathrm{IG}}(A \cup B) \leq S_{\mathrm{IG}}(A) + S_{\mathrm{IG}}(B)$
+2. **Symmetry**: $S_{\mathrm{IG}}(A) = S_{\mathrm{IG}}(A^c)$ (cut is the same from both sides)
+3. **Monotonicity**: If $A \subseteq B$, need not have $S_{\mathrm{IG}}(A) \leq S_{\mathrm{IG}}(B)$ (not monotonic in general)
 
-**Min-cut/Max-flow interpretation:** By the max-flow min-cut theorem, $S_{\text{IG}}(A)$ equals the maximum flow from $A$ to $A^c$ through the IG network. This is the "information capacity" of the boundary.
+**Min-cut/Max-flow interpretation:** By the max-flow min-cut theorem, $S_{\mathrm{IG}}(A)$ equals the maximum flow from $A$ to $A^c$ through the IG network. This is the "information capacity" of the boundary.
 :::
 
 :::{prf:definition} Nonlocal Perimeter Functional
@@ -289,7 +290,7 @@ $$
 
 **Relationship to discrete entropy:**
 $$
-S_{\text{IG}}(A) \approx \mathcal{P}_\varepsilon(A) \quad \text{as } N \to \infty
+S_{\mathrm{IG}}(A) \approx \mathcal{P}_\varepsilon(A) \quad \text{as } N \to \infty
 $$
 with corrections of order $O(1/N)$.
 :::
@@ -304,7 +305,7 @@ As the correlation length $\varepsilon$ goes to zero, the nonlocal perimeter con
 
 ---
 
-(sec-gamma-convergence)=
+(sec-holography-gamma-convergence)=
 ## Gamma-Convergence of IG Entropy
 
 :::{div} feynman-prose
@@ -358,32 +359,32 @@ $$
 
 For points $z \in A$ and $z' \in A^c$ both near the boundary at $s \in \partial A$:
 - Let $z = s + r \hat{n}$ (inside) and $z' = s' - r' \hat{n}$ (outside)
-- The kernel becomes $K_\varepsilon(z, z') \approx C_0 \exp(-(r+r')^2/(2\varepsilon^2))$
+- The kernel becomes $K_\varepsilon(z, z') \approx C_0 \exp(-(r+r')^2/(2\varepsilon_c^2))$
 
 **Step 4. Asymptotic expansion.**
 
 Integrating over $r, r' > 0$ and $s, s' \in \partial A$:
 $$
-\mathcal{P}_\varepsilon(A) = C_0 \int_{\partial A} \rho(s)^2 \left( \int_0^\infty \int_0^\infty e^{-(r+r')^2/(2\varepsilon^2)} dr \, dr' \right) d\Sigma(s) + O(\varepsilon)
+\mathcal{P}_\varepsilon(A) = C_0 \int_{\partial A} \rho(s)^2 \left( \int_0^\infty \int_0^\infty e^{-(r+r')^2/(2\varepsilon_c^2)} dr \, dr' \right) d\Sigma(s) + O(\varepsilon_c)
 $$
 
 The inner integral is evaluated by substituting $u = r + r'$. For fixed $u$, the variable $r$ ranges from $0$ to $u$, giving a Jacobian factor of $u$:
 $$
-\int_0^\infty \int_0^\infty e^{-(r+r')^2/(2\varepsilon^2)} dr \, dr' = \int_0^\infty u \cdot e^{-u^2/(2\varepsilon^2)} du = \varepsilon^2
+\int_0^\infty \int_0^\infty e^{-(r+r')^2/(2\varepsilon_c^2)} dr \, dr' = \int_0^\infty u \cdot e^{-u^2/(2\varepsilon_c^2)} du = \varepsilon_c^2
 $$
 
 (The last equality follows from the standard Gaussian integral $\int_0^\infty u \, e^{-u^2/(2\sigma^2)} du = \sigma^2$.)
 
 **Step 5. Take the limit.**
 
-The nonlocal perimeter scales as $\mathcal{P}_\varepsilon(A) \sim C_0 \varepsilon^2 \int_{\partial A} \rho(s)^2 \, d\Sigma(s)$. The Gamma-limit is obtained by appropriate rescaling:
+The nonlocal perimeter scales as $\mathcal{P}_\varepsilon(A) \sim C_0 \varepsilon_c^2 \int_{\partial A} \rho(s)^2 \, d\Sigma(s)$. The $\Gamma$-limit is obtained by appropriate rescaling:
 $$
-\mathcal{P}_0(A) := \lim_{\varepsilon \to 0} \frac{\mathcal{P}_\varepsilon(A)}{\varepsilon^2} = C_0 \int_{\partial A} \rho(s)^2 \, d\Sigma(s)
+\mathcal{P}_0(A) := \lim_{\varepsilon_c \to 0} \frac{\mathcal{P}_\varepsilon(A)}{\varepsilon_c^2} = C_0 \int_{\partial A} \rho(s)^2 \, d\Sigma(s)
 $$
 
 Setting $c_0 = C_0$, we have $\mathcal{P}_0(A) = c_0 \int_{\partial A} \rho(s)^2 \, d\Sigma(s)$.
 
-The Gamma-convergence follows from standard localization arguments.
+The $\Gamma$-convergence follows from standard localization arguments.
 
 $\square$
 :::
@@ -398,7 +399,7 @@ The practical upshot is that we can compute IG entanglement entropy for large re
 
 ---
 
-(sec-area-law)=
+(sec-holography-area-law)=
 ## The Informational Area Law
 
 :::{div} feynman-prose
@@ -415,13 +416,13 @@ The key is that both CST and IG are sampling the same underlying geometric struc
 Let $A \subseteq \mathcal{Z}$ be a region with smooth boundary $\partial A$, and let $\gamma_A$ be the separating antichain for $A$. In the large-$N$ limit:
 
 $$
-\lim_{N\to\infty}\frac{|\gamma_A|}{N^{(d-1)/d}} = C_d \cdot \rho_{\text{spatial}}^{(d-1)/d} \cdot \text{Area}(\partial A'_{\min})
+\lim_{N\to\infty}\frac{|\gamma_A|}{N^{(d-1)/d}} = C_d \cdot \rho_{\mathrm{spatial}}^{(d-1)/d} \cdot \mathrm{Area}(\partial A'_{\min})
 $$
 
 where:
 - $|\gamma_A|$ is the antichain cardinality
-- $\rho_{\text{spatial}} = N/\mathrm{Vol}(\mathcal{Z})$ is the spatial walker density
-- $\text{Area}(\partial A'_{\min})$ is the minimal surface area homotopic to $\partial A$
+- $\rho_{\mathrm{spatial}} = N/\mathrm{Vol}(\mathcal{Z})$ is the spatial walker density
+- $\mathrm{Area}(\partial A'_{\min})$ is the minimal surface area homotopic to $\partial A$
 - $C_d$ is a dimension-dependent constant:
   $$
   C_d = \frac{\Gamma(d/2+1)^{(d-1)/d}}{\pi^{(d-1)/2}}
@@ -431,16 +432,16 @@ where:
 
 **Step 1. Relate antichain size to boundary geometry.**
 
-The antichain $\gamma_A$ consists of episodes that "pierce" the boundary $\partial A$ at a given time slice. For a uniform walker distribution with density $\rho_{\text{spatial}} = N/\mathrm{Vol}(\mathcal{Z})$, each walker occupies a Voronoi cell of typical volume $V_{\text{cell}} \sim 1/\rho_{\text{spatial}}$ and typical linear size $\ell \sim \rho_{\text{spatial}}^{-1/d}$.
+The antichain $\gamma_A$ consists of episodes that "pierce" the boundary $\partial A$ at a given time slice. For a uniform walker distribution with density $\rho_{\mathrm{spatial}} = N/\mathrm{Vol}(\mathcal{Z})$, each walker occupies a Voronoi cell of typical volume $V_{\mathrm{cell}} \sim 1/\rho_{\mathrm{spatial}}$ and typical linear size $\ell \sim \rho_{\mathrm{spatial}}^{-1/d}$.
 
 The number of Voronoi cells intersecting $\partial A$ scales as:
 $$
-|\gamma_A| \sim \frac{\text{Area}(\partial A)}{\ell^{d-1}} = \text{Area}(\partial A) \cdot \rho_{\text{spatial}}^{(d-1)/d}
+|\gamma_A| \sim \frac{\mathrm{Area}(\partial A)}{\ell^{d-1}} = \mathrm{Area}(\partial A) \cdot \rho_{\mathrm{spatial}}^{(d-1)/d}
 $$
 
-Substituting $\rho_{\text{spatial}} = N/\mathrm{Vol}(\mathcal{Z})$:
+Substituting $\rho_{\mathrm{spatial}} = N/\mathrm{Vol}(\mathcal{Z})$:
 $$
-|\gamma_A| \sim \text{Area}(\partial A) \cdot \left(\frac{N}{\mathrm{Vol}(\mathcal{Z})}\right)^{(d-1)/d} = \text{Area}(\partial A) \cdot \frac{N^{(d-1)/d}}{\mathrm{Vol}(\mathcal{Z})^{(d-1)/d}}
+|\gamma_A| \sim \mathrm{Area}(\partial A) \cdot \left(\frac{N}{\mathrm{Vol}(\mathcal{Z})}\right)^{(d-1)/d} = \mathrm{Area}(\partial A) \cdot \frac{N^{(d-1)/d}}{\mathrm{Vol}(\mathcal{Z})^{(d-1)/d}}
 $$
 
 **Step 2. Apply mean-field concentration.**
@@ -455,7 +456,7 @@ by sub-Gaussian concentration of Voronoi tessellations.
 
 The separating antichain corresponds to a cut in the CST. By min-cut duality, minimizing antichain cardinality is equivalent to finding a minimal-area surface. Writing the exact relationship:
 $$
-|\gamma_{A,\min}| = C_d \cdot \rho_{\text{spatial}}^{(d-1)/d} \cdot N^{(d-1)/d} \cdot \text{Area}(\partial A'_{\min})
+|\gamma_{A,\min}| = C_d \cdot \rho_{\mathrm{spatial}}^{(d-1)/d} \cdot N^{(d-1)/d} \cdot \mathrm{Area}(\partial A'_{\min})
 $$
 
 where $C_d = \Gamma(d/2+1)^{(d-1)/d}/\pi^{(d-1)/2}$ arises from the geometry of $d$-dimensional balls (relating Voronoi cell size to boundary intersection count).
@@ -469,12 +470,12 @@ $\square$
 The IG entanglement entropy scales with the $(d-1)/d$ power of walker number:
 
 $$
-S_{\text{IG}}(A) \sim N^{(d-1)/d}
+S_{\mathrm{IG}}(A) \sim N^{(d-1)/d}
 $$
 
 More precisely:
 $$
-\lim_{N \to \infty} \frac{S_{\text{IG}}(A)}{N^{(d-1)/d}} = \tilde{C}_d \cdot \rho_{\text{spatial}}^{(d-1)/d} \cdot \mathcal{P}_0(A)
+\lim_{N \to \infty} \frac{S_{\mathrm{IG}}(A)}{N^{(d-1)/d}} = \tilde{C}_d \cdot \rho_{\mathrm{spatial}}^{(d-1)/d} \cdot \mathcal{P}_0(A)
 $$
 
 where $\tilde{C}_d$ is a dimension-dependent constant and $\mathcal{P}_0(A)$ is the local perimeter functional.
@@ -501,7 +502,7 @@ by the discrete isoperimetric inequality on the IG.
 
 The upper and lower bounds have the same $N$-scaling, establishing:
 $$
-S_{\text{IG}}(A) = \Theta(N^{(d-1)/d})
+S_{\mathrm{IG}}(A) = \Theta(N^{(d-1)/d})
 $$
 
 with the limiting coefficient determined by $\mathcal{P}_0(A)$.
@@ -515,7 +516,7 @@ $\square$
 The IG entanglement entropy is proportional to the CST boundary area:
 
 $$
-S_{\text{IG}}(A) = \alpha \cdot \text{Area}_{\text{CST}}(\gamma_A)
+S_{\mathrm{IG}}(A) = \alpha \cdot \mathrm{Area}_{\mathrm{CST}}(\gamma_A)
 $$
 
 where the proportionality constant is:
@@ -529,7 +530,7 @@ $$
 Setting $\alpha = 1/(4G_N)$ gives the Bekenstein-Hawking formula:
 
 $$
-S_{\text{IG}}(A) = \frac{\text{Area}_{\text{CST}}(\gamma_A)}{4G_N}
+S_{\mathrm{IG}}(A) = \frac{\mathrm{Area}_{\mathrm{CST}}(\gamma_A)}{4G_N}
 $$
 
 This **identifies the effective gravitational constant** in terms of IG parameters:
@@ -542,27 +543,27 @@ $$
 
 **Step 1. Apply the two scaling theorems.**
 
-From Theorem {prf:ref}`thm-antichain-surface`:
+From {prf:ref}`thm-antichain-surface`:
 $$
-\text{Area}_{\text{CST}}(\gamma_A) = a_0 |\gamma_A| = a_0 C_d \rho^{(d-1)/d} N^{(d-1)/d} \text{Area}(\partial A'_{\min})
+\mathrm{Area}_{\mathrm{CST}}(\gamma_A) = a_0 |\gamma_A| = a_0 C_d \rho^{(d-1)/d} N^{(d-1)/d} \mathrm{Area}(\partial A'_{\min})
 $$
 
-From Theorem {prf:ref}`thm-ig-cut-scaling`:
+From {prf:ref}`thm-ig-cut-scaling`:
 $$
-S_{\text{IG}}(A) = \tilde{C}_d \rho^{(d-1)/d} N^{(d-1)/d} \mathcal{P}_0(A)
+S_{\mathrm{IG}}(A) = \tilde{C}_d \rho^{(d-1)/d} N^{(d-1)/d} \mathcal{P}_0(A)
 $$
 
 **Step 2. Use Gamma-convergence.**
 
-By Theorem {prf:ref}`thm-gamma-convergence`, for the minimal surface:
+By {prf:ref}`thm-gamma-convergence`, for the minimal surface:
 $$
-\mathcal{P}_0(A) = c_0 \text{Area}(\partial A'_{\min})
+\mathcal{P}_0(A) = c_0 \mathrm{Area}(\partial A'_{\min})
 $$
 
 **Step 3. Form the ratio.**
 
 $$
-\frac{S_{\text{IG}}(A)}{\text{Area}_{\text{CST}}(\gamma_A)} = \frac{\tilde{C}_d \rho^{(d-1)/d} N^{(d-1)/d} c_0 \text{Area}(\partial A'_{\min})}{a_0 C_d \rho^{(d-1)/d} N^{(d-1)/d} \text{Area}(\partial A'_{\min})} = \frac{c_0 \tilde{C}_d}{C_d a_0}
+\frac{S_{\mathrm{IG}}(A)}{\mathrm{Area}_{\mathrm{CST}}(\gamma_A)} = \frac{\tilde{C}_d \rho^{(d-1)/d} N^{(d-1)/d} c_0 \mathrm{Area}(\partial A'_{\min})}{a_0 C_d \rho^{(d-1)/d} N^{(d-1)/d} \mathrm{Area}(\partial A'_{\min})} = \frac{c_0 \tilde{C}_d}{C_d a_0}
 $$
 
 This ratio is independent of $N$, $\rho$, and the choice of region $A$.
@@ -573,7 +574,7 @@ $$
 \alpha = \frac{c_0 \tilde{C}_d}{C_d a_0}
 $$
 
-satisfies $S_{\text{IG}}(A) = \alpha \cdot \text{Area}_{\text{CST}}(\gamma_A)$.
+satisfies $S_{\mathrm{IG}}(A) = \alpha \cdot \mathrm{Area}_{\mathrm{CST}}(\gamma_A)$.
 
 $\square$
 :::
@@ -590,7 +591,7 @@ This suggests that the Bekenstein-Hawking formula is not really about black hole
 
 ---
 
-(sec-first-law)=
+(sec-holography-first-law)=
 ## First Law of Algorithmic Entanglement
 
 :::{div} feynman-prose
@@ -607,14 +608,14 @@ The physical picture is this. When you perturb the walker density, you change bo
 Let $A \subseteq \mathcal{Z}$ be a region and $\delta\rho$ be a density perturbation. The **swarm energy variation** is:
 
 $$
-\delta E_{\text{swarm}}(A) = \int_A \langle T_{00} \rangle_{\delta\rho} \, dV
+\delta E_{\mathrm{swarm}}(A) = \int_A \langle T_{00} \rangle_{\delta\rho} \, dV
 $$
 
 where $T_{00}$ is the energy density component of the effective stress-energy tensor ({prf:ref}`def-effective-stress-energy`) and $\langle \cdot \rangle_{\delta\rho}$ denotes the expectation in the perturbed state.
 
 **Explicit form:**
 $$
-\delta E_{\text{swarm}}(A) = \int_A \left[ \bar{V}(z) \delta\rho(z) + \frac{1}{2} \sum_k \delta n_k \omega_k \right] dV
+\delta E_{\mathrm{swarm}}(A) = \int_A \left[ \bar{V}(z) \delta\rho(z) + \frac{1}{2} \sum_k \delta n_k \omega_k \right] dV
 $$
 
 where:
@@ -630,12 +631,12 @@ where:
 The **IG entropy variation** under density perturbation $\delta\rho$ is:
 
 $$
-\delta S_{\text{IG}}(A) = 2 \iint_{A \times A^c} K_\varepsilon(z,z') \rho_0(z) \delta\rho(z') \, dz \, dz'
+\delta S_{\mathrm{IG}}(A) = 2 \iint_{A \times A^c} K_\varepsilon(z,z') \rho_0(z) \delta\rho(z') \, dz \, dz'
 $$
 
 **Derivation:** This follows from linearizing the nonlocal perimeter functional:
 $$
-\mathcal{P}_\varepsilon(A; \rho_0 + \delta\rho) = \mathcal{P}_\varepsilon(A; \rho_0) + \delta S_{\text{IG}}(A) + O(\delta\rho^2)
+\mathcal{P}_\varepsilon(A; \rho_0 + \delta\rho) = \mathcal{P}_\varepsilon(A; \rho_0) + \delta S_{\mathrm{IG}}(A) + O(\delta\rho^2)
 $$
 
 The factor of 2 comes from the symmetry of the kernel and the two ways a perturbation can affect cross-boundary correlations (perturbing inside or outside).
@@ -647,7 +648,7 @@ The factor of 2 comes from the symmetry of the kernel and the two ways a perturb
 Under density perturbations $\delta\rho$ that preserve the total walker number, the entropy and energy variations satisfy:
 
 $$
-\delta S_{\text{IG}}(A) = \beta \cdot \delta E_{\text{swarm}}(A)
+\delta S_{\mathrm{IG}}(A) = \beta \cdot \delta E_{\mathrm{swarm}}(A)
 $$
 
 where the **effective inverse temperature** is:
@@ -668,21 +669,21 @@ $$
 
 For small $\delta\rho$:
 $$
-\delta E_{\text{swarm}}(A) = \int_A \bar{V}(z) \delta\rho(z) \, dV + O(\delta\rho^2)
+\delta E_{\mathrm{swarm}}(A) = \int_A \bar{V}(z) \delta\rho(z) \, dV + O(\delta\rho^2)
 $$
 
 The mode occupation correction is second order and can be neglected.
 
 **Step 2. Linearize the entropy variation.**
 
-From Definition {prf:ref}`def-ig-entropy-variation`:
+From {prf:ref}`def-ig-entropy-variation`:
 $$
-\delta S_{\text{IG}}(A) = 2 \iint_{A \times A^c} K_\varepsilon(z,z') \rho_0 \delta\rho(z') \, dz \, dz'
+\delta S_{\mathrm{IG}}(A) = 2 \iint_{A \times A^c} K_\varepsilon(z,z') \rho_0 \delta\rho(z') \, dz \, dz'
 $$
 
 **Step 3. Relate the two variations.**
 
-For perturbations localized near the boundary, the dominant contribution to $\delta S_{\text{IG}}$ comes from points $z' \in A^c$ near $\partial A$. For such points, the energy perturbation is:
+For perturbations localized near the boundary, the dominant contribution to $\delta S_{\mathrm{IG}}$ comes from points $z' \in A^c$ near $\partial A$. For such points, the energy perturbation is:
 $$
 \delta E \approx \bar{V}_{\partial} \int_{A^c \cap T_\varepsilon} \delta\rho(z') \, dz'
 $$
@@ -692,7 +693,7 @@ where $\bar{V}_{\partial}$ is the mean fitness at the boundary and $T_\varepsilo
 **Step 4. Compute the ratio.**
 
 $$
-\frac{\delta S_{\text{IG}}}{\delta E} = \frac{2\rho_0 \int_{A} K_\varepsilon(z, z'_{\partial}) dz}{\bar{V}_{\partial}}
+\frac{\delta S_{\mathrm{IG}}}{\delta E} = \frac{2\rho_0 \int_{A} K_\varepsilon(z, z'_{\partial}) dz}{\bar{V}_{\partial}}
 $$
 
 Evaluating the integral:
@@ -716,14 +717,14 @@ $\square$
 :::{div} feynman-prose
 The first law tells us that the IG correlation network is not just a static structure---it responds thermodynamically to perturbations. Adding energy to a region increases its entropy, with the proportionality given by an effective inverse temperature $\beta$.
 
-Notice that the effective temperature $T_{\text{eff}} = 1/\beta$ scales inversely with $\varepsilon_c^d$. Short correlation lengths (UV regime) mean high temperature; long correlation lengths (IR regime) mean low temperature. This makes sense: in the UV, correlations are weak and the system is "hot." In the IR, correlations are strong and the system is "cold."
+Notice that the effective temperature $T_{\mathrm{eff}} = 1/\beta$ scales inversely with $\varepsilon_c^d$. Short correlation lengths (UV regime) mean high temperature; long correlation lengths (IR regime) mean low temperature. This makes sense: in the UV, correlations are weak and the system is "hot." In the IR, correlations are strong and the system is "cold."
 
 This is the algorithmic analog of the relationship between Hawking temperature and black hole mass. Large black holes (large area) are cold; small black holes (small area) are hot. Here, large correlation length (large IG network) is cold; small correlation length is hot.
 :::
 
 ---
 
-(sec-holographic-pressure)=
+(sec-holography-pressure)=
 ## Holographic IG Pressure
 
 :::{div} feynman-prose
@@ -738,13 +739,13 @@ The key insight is that the elastic pressure from {doc}`04_field_equations` is a
 The IG pressure at a horizon $H$ with characteristic length $L$ is:
 
 $$
-\Pi_{\text{IG}}(L) = -\frac{C_0 \rho_0^2 (2\pi)^{d/2} \varepsilon_c^{d+2}}{8dL^2} < 0
+\Pi_{\mathrm{IG}}(L) = -\frac{C_0 \rho_0^2 (2\pi)^{d/2} \varepsilon_c^{d+2}}{8dL^2} < 0
 $$
 
 **Properties:**
-1. **Always negative**: $\Pi_{\text{IG}} < 0$ (surface tension, not radiation)
-2. **Scaling**: $\Pi_{\text{IG}} \propto \varepsilon_c^{d+2}/L^2$
-3. **Agreement with elastic pressure**: $\Pi_{\text{IG}} = \Pi_{\text{elastic}}$ from Theorem {prf:ref}`thm-elastic-pressure`
+1. **Always negative**: $\Pi_{\mathrm{IG}} < 0$ (surface tension, not radiation)
+2. **Scaling**: $\Pi_{\mathrm{IG}} \propto \varepsilon_c^{d+2}/L^2$
+3. **Agreement with elastic pressure**: $\Pi_{\mathrm{IG}} = \Pi_{\mathrm{elastic}}$ from {prf:ref}`thm-elastic-pressure`
 
 *Proof.*
 
@@ -752,7 +753,7 @@ $$
 
 The IG entropy of region $A$ with boundary at $H$ is:
 $$
-S_{\text{IG}}(A) = \alpha \cdot \text{Area}_{\text{CST}}(H) = \alpha \cdot a_0 \cdot |H|
+S_{\mathrm{IG}}(A) = \alpha \cdot \mathrm{Area}_{\mathrm{CST}}(H) = \alpha \cdot a_0 \cdot |H|
 $$
 
 where $|H|$ is the antichain cardinality at the horizon.
@@ -775,22 +776,22 @@ $$
 
 (using $A_H \sim L^{d-1}$ gives $\partial A_H/\partial L = (d-1)A_H/L$). Thus:
 $$
-\delta S_{\text{IG}} = \alpha \cdot a_0 \cdot \rho \cdot \frac{(d-1)A_H}{L} \cdot \delta L
+\delta S_{\mathrm{IG}} = \alpha \cdot a_0 \cdot \rho \cdot \frac{(d-1)A_H}{L} \cdot \delta L
 $$
 
 **Step 4. Evaluate the pressure.**
 
 Using $\Pi = -\frac{1}{\beta}\frac{\partial S}{\partial V}$ and $\partial V/\partial L = A_H$ (for a slab geometry):
 $$
-\Pi_{\text{IG}} = -\frac{\alpha a_0 (d-1)\rho}{\beta L}
+\Pi_{\mathrm{IG}} = -\frac{\alpha a_0 (d-1)\rho}{\beta L}
 $$
 
 For the specific geometry of the IG network, dimensional analysis with $\alpha \cdot a_0 \propto \varepsilon_c^{d+1}$ and $\beta \propto \rho_0 \varepsilon_c^d / V_0$ gives:
 $$
-\Pi_{\text{IG}} = -\frac{C_0 \rho_0^2 (2\pi)^{d/2} \varepsilon_c^{d+2}}{8dL^2}
+\Pi_{\mathrm{IG}} = -\frac{C_0 \rho_0^2 (2\pi)^{d/2} \varepsilon_c^{d+2}}{8dL^2}
 $$
 
-This matches $\Pi_{\text{elastic}}$ from Theorem {prf:ref}`thm-elastic-pressure`.
+This matches $\Pi_{\mathrm{elastic}}$ from {prf:ref}`thm-elastic-pressure`.
 
 $\square$
 :::
@@ -805,7 +806,7 @@ The negative sign is crucial. Negative pressure means the IG network pulls inwar
 
 ---
 
-(sec-ads-cft)=
+(sec-holography-ads-cft)=
 ## AdS/CFT Correspondence
 
 :::{div} feynman-prose
@@ -823,38 +824,38 @@ In the UV regime ($\varepsilon_c \ll L$), the emergent geometry of the Latent Fr
 
 1. **Negative cosmological constant:**
    $$
-   \Lambda_{\text{eff}} < 0
+   \Lambda_{\mathrm{eff}} < 0
    $$
 
 2. **AdS metric structure:** The effective metric in the bulk approaches:
    $$
-   ds^2 = \frac{L_{\text{AdS}}^2}{z^2}(dz^2 + \eta_{ij}dx^i dx^j)
+   ds^2 = \frac{L_{\mathrm{AdS}}^2}{z^2}(dz^2 + \eta_{ij}dx^i dx^j)
    $$
-   where $z$ is the radial (holographic) coordinate and $L_{\text{AdS}}$ is the AdS radius.
+   where $z$ is the radial (holographic) coordinate and $L_{\mathrm{AdS}}$ is the AdS radius.
 
 3. **AdS radius determined by IG:**
    $$
-   L_{\text{AdS}}^2 = -\frac{d(d-1)}{2\Lambda_{\text{eff}}} = \frac{4d(d-1)L^2}{C_0 \rho_0^2 (2\pi)^{d/2} \varepsilon_c^{d+2}}
+   L_{\mathrm{AdS}}^2 = -\frac{d(d-1)}{2\Lambda_{\mathrm{eff}}} = \frac{4d(d-1)L^2}{C_0 \rho_0^2 (2\pi)^{d/2} \varepsilon_c^{d+2}}
    $$
 
 *Proof.*
 
-From Theorem {prf:ref}`thm-pressure-regimes` ({doc}`04_field_equations`), the UV regime has:
+From {prf:ref}`thm-pressure-regimes` ({doc}`04_field_equations`), the UV regime has:
 $$
-\Pi_{\text{total}} \approx \Pi_{\text{elastic}} < 0
+\Pi_{\mathrm{total}} \approx \Pi_{\mathrm{elastic}} < 0
 $$
 
-The effective cosmological constant from Theorem {prf:ref}`thm-einstein-connection` is:
+The effective cosmological constant from {prf:ref}`thm-einstein-connection` is:
 $$
-\Lambda_{\text{eff}} = \frac{8\pi G_N}{c^2} \cdot \frac{\Pi_{\text{total}}}{L} < 0
+\Lambda_{\mathrm{eff}} = \frac{8\pi G_N}{c^2} \cdot \frac{\Pi_{\mathrm{total}}}{L} < 0
 $$
 
 For AdS geometry, the cosmological constant and AdS radius are related by:
 $$
-\Lambda = -\frac{d(d-1)}{2L_{\text{AdS}}^2}
+\Lambda = -\frac{d(d-1)}{2L_{\mathrm{AdS}}^2}
 $$
 
-Solving for $L_{\text{AdS}}$ gives the result.
+Solving for $L_{\mathrm{AdS}}$ gives the result.
 
 $\square$
 :::
@@ -865,7 +866,7 @@ $\square$
 The IG entanglement entropy satisfies the Ryu-Takayanagi formula:
 
 $$
-S_{\text{IG}}(A) = \frac{\text{Area}(\gamma_A^{\min})}{4G_N}
+S_{\mathrm{IG}}(A) = \frac{\mathrm{Area}(\gamma_A^{\min})}{4G_N}
 $$
 
 where $\gamma_A^{\min}$ is the minimal surface in the bulk that is homologous to the boundary region $A$.
@@ -875,7 +876,7 @@ where $\gamma_A^{\min}$ is the minimal surface in the bulk that is homologous to
 - **Bulk:** Interior of the latent space (the "AdS gravity")
 - **Minimal surface:** The separating antichain $\gamma_A$ with smallest cardinality
 
-This is the Informational Area Law (Theorem {prf:ref}`thm-informational-area-law`) expressed in AdS/CFT language.
+This is the Informational Area Law ({prf:ref}`thm-informational-area-law`) expressed in AdS/CFT language.
 :::
 
 :::{div} feynman-prose
@@ -888,7 +889,7 @@ The emergence of a CFT on the boundary is more subtle. We have not proven that t
 
 ---
 
-(sec-qsd-thermal)=
+(sec-holography-qsd-thermal)=
 ## QSD Thermal Equilibrium
 
 :::{div} feynman-prose
@@ -901,39 +902,39 @@ Finally, let us connect the thermodynamic structure to the quasi-stationary dist
 The quasi-stationary distribution has the form of a Gibbs state:
 
 $$
-f_{\text{QSD}}(z, v) \propto \exp\left(-\beta H_{\text{eff}}(z, v)\right)
+f_{\mathrm{QSD}}(z, v) \propto \exp\left(-\beta H_{\mathrm{eff}}(z, v)\right)
 $$
 
 where the **effective Hamiltonian** is:
 
 $$
-H_{\text{eff}}(z, v) = \frac{1}{2}|v|^2 + \Phi_{\text{eff}}(z) + \mathcal{H}_{\text{jump}}[\Phi_z]
+H_{\mathrm{eff}}(z, v) = \frac{1}{2}|v|^2 + \Phi_{\mathrm{eff}}(z) + \mathcal{H}_{\mathrm{jump}}[\Phi_z]
 $$
 
 **Components:**
 - $\frac{1}{2}|v|^2$: Kinetic energy
-- $\Phi_{\text{eff}}(z)$: Effective potential from fitness landscape
-- $\mathcal{H}_{\text{jump}}[\Phi_z]$: IG correlation energy (jump Hamiltonian)
+- $\Phi_{\mathrm{eff}}(z)$: Effective potential from fitness landscape
+- $\mathcal{H}_{\mathrm{jump}}[\Phi_z]$: IG correlation energy (jump Hamiltonian)
 
 **Effective inverse temperature:**
 $$
 \beta = \frac{C_0 \rho_0 (2\pi)^{d/2} \varepsilon_c^d}{V_0}
 $$
-(same as in Theorem {prf:ref}`thm-first-law-entanglement`).
+(same as in {prf:ref}`thm-first-law-entanglement`).
 :::
 
 :::{prf:proposition} Fluctuation-Dissipation Relation
 :label: prop-fluctuation-dissipation
 
-The effective temperature $T_{\text{eff}} = 1/\beta$ satisfies the fluctuation-dissipation relation:
+The effective temperature $T_{\mathrm{eff}} = 1/\beta$ satisfies the fluctuation-dissipation relation:
 
 $$
-\langle \delta\rho(z) \delta\rho(z') \rangle = T_{\text{eff}} \cdot \chi(z, z')
+\langle \delta\rho(z) \delta\rho(z') \rangle = T_{\mathrm{eff}} \cdot \chi(z, z')
 $$
 
 where $\chi(z, z')$ is the susceptibility (response function) for density perturbations.
 
-**Interpretation:** This confirms that $T_{\text{eff}}$ is a true thermodynamic temperature---fluctuations and responses are related by the same temperature that appears in the first law.
+**Interpretation:** This confirms that $T_{\mathrm{eff}}$ is a true thermodynamic temperature---fluctuations and responses are related by the same temperature that appears in the first law.
 :::
 
 :::{prf:proposition} Connection to Unruh/Hawking Temperature
@@ -942,7 +943,7 @@ where $\chi(z, z')$ is the susceptibility (response function) for density pertur
 At horizons where the emergent metric has a Killing horizon with surface gravity $\kappa$, the effective temperature equals the Unruh temperature:
 
 $$
-T_{\text{eff}} = \frac{\kappa}{2\pi}
+T_{\mathrm{eff}} = \frac{\kappa}{2\pi}
 $$
 
 **Conditions for this to hold:**
@@ -963,8 +964,8 @@ This is perhaps the deepest result of the holographic analysis. It says that the
 
 ---
 
-(sec-holography-conclusions)=
-## Conclusions
+(sec-holography-summary)=
+## Summary
 
 :::{div} feynman-prose
 Let me summarize what we have accomplished in this chapter.
@@ -973,13 +974,13 @@ We started with two independent data streams: the CST (genealogical structure) a
 
 The key results are:
 
-1. **CST boundary area** (Definition {prf:ref}`def-cst-boundary-area`) counts antichain episodes
-2. **IG entanglement entropy** (Definition {prf:ref}`def-ig-entanglement-entropy`) is the min-cut weight
-3. **Gamma-convergence** (Theorem {prf:ref}`thm-gamma-convergence`) connects nonlocal perimeter to local area
-4. **Area Law** (Theorem {prf:ref}`thm-informational-area-law`): $S_{\text{IG}} = \alpha \cdot \text{Area}_{\text{CST}}$
-5. **First Law** (Theorem {prf:ref}`thm-first-law-entanglement`): $\delta S = \beta \cdot \delta E$
-6. **Holographic Pressure** (Theorem {prf:ref}`thm-holographic-pressure`): $\Pi_{\text{IG}} < 0$ (surface tension)
-7. **AdS Geometry** (Theorem {prf:ref}`thm-ads-uv-regime`): UV regime gives Anti-de Sitter
+1. **CST boundary area** ({prf:ref}`def-cst-boundary-area`): counts antichain episodes
+2. **IG entanglement entropy** ({prf:ref}`def-ig-entanglement-entropy`): is the min-cut weight
+3. **$\Gamma$-convergence** ({prf:ref}`thm-gamma-convergence`): connects nonlocal perimeter to local area
+4. **Area Law** ({prf:ref}`thm-informational-area-law`): $S_{\mathrm{IG}} = \alpha \cdot \mathrm{Area}_{\mathrm{CST}}$
+5. **First Law** ({prf:ref}`thm-first-law-entanglement`): $\delta S = \beta \cdot \delta E$
+6. **Holographic Pressure** ({prf:ref}`thm-holographic-pressure`): $\Pi_{\mathrm{IG}} < 0$ (surface tension)
+7. **AdS Geometry** ({prf:ref}`thm-ads-uv-regime`): UV regime gives Anti-de Sitter
 
 The deep insight is that holography is not mysterious. It emerges from optimization. Any system with causal structure (who begets whom) and correlation structure (who talks to whom) will exhibit holographic scaling, because both structures are measuring the same geometric quantity: boundary area.
 
@@ -991,7 +992,7 @@ This, I think, is the crown jewel of the fitness manifold framework. We have not
 :::
 
 :::{admonition} Key Takeaways
-:class: tip
+:class: feynman-added tip
 
 **Two Independent Data Streams:**
 
@@ -1004,17 +1005,17 @@ This, I think, is the crown jewel of the fitness manifold framework. We have not
 
 | Quantity | Scaling | Formula |
 |----------|---------|---------|
-| CST boundary area | $N^{(d-1)/d}$ | $\text{Area}_{\text{CST}} = a_0 |\gamma_A|$ |
-| IG entropy | $N^{(d-1)/d}$ | $S_{\text{IG}} = \sum_{e \in \Gamma_{\min}} w_e$ |
-| Area Law | Universal | $S_{\text{IG}} = \alpha \cdot \text{Area}_{\text{CST}}$ |
+| CST boundary area | $N^{(d-1)/d}$ | $\mathrm{Area}_{\mathrm{CST}} = a_0 |\gamma_A|$ |
+| IG entropy | $N^{(d-1)/d}$ | $S_{\mathrm{IG}} = \sum_{e \in \Gamma_{\min}} w_e$ |
+| Area Law | Universal | $S_{\mathrm{IG}} = \alpha \cdot \mathrm{Area}_{\mathrm{CST}}$ |
 
 **Thermodynamic Relations:**
 
 | Relation | Formula | Interpretation |
 |----------|---------|----------------|
 | First Law | $\delta S = \beta \delta E$ | Energy-entropy connection |
-| Temperature | $T_{\text{eff}} = 1/\beta \propto \varepsilon_c^{-d}$ | UV hot, IR cold |
-| Pressure | $\Pi_{\text{IG}} < 0$ | Surface tension |
+| Temperature | $T_{\mathrm{eff}} = 1/\beta \propto \varepsilon_c^{-d}$ | UV hot, IR cold |
+| Pressure | $\Pi_{\mathrm{IG}} < 0$ | Surface tension |
 
 **AdS/CFT Correspondence:**
 
@@ -1029,12 +1030,12 @@ This, I think, is the crown jewel of the fitness manifold framework. We have not
 
 1. **Informational Area Law** ({prf:ref}`thm-informational-area-law`): $S = \alpha \cdot A$
 2. **First Law** ({prf:ref}`thm-first-law-entanglement`): $\delta S = \beta \delta E$
-3. **Ryu-Takayanagi** ({prf:ref}`thm-ryu-takayanagi`): $S = \text{Area}(\gamma_{\min})/(4G_N)$
+3. **Ryu-Takayanagi** ({prf:ref}`thm-ryu-takayanagi`): $S = \mathrm{Area}(\gamma_{\min})/(4G_N)$
 :::
 
 ---
 
-(sec-symbols-holography)=
+(sec-holography-symbols)=
 ## Table of Symbols
 
 | Symbol | Definition | Reference |
@@ -1043,19 +1044,42 @@ This, I think, is the crown jewel of the fitness manifold framework. We have not
 | $e_i \prec e_j$ | Causal relation (ancestor) | {prf:ref}`def-cst-structure` |
 | $\mathcal{G}_t = (V_t, E_t, w)$ | Interaction Graph at time $t$ | {prf:ref}`def-ig-structure` |
 | $K_\varepsilon(z, z')$ | IG correlation kernel | {prf:ref}`def-ig-structure` |
-| $\mathcal{H}_{\text{jump}}[\Phi]$ | Jump Hamiltonian | {prf:ref}`def-jump-hamiltonian-holographic` |
+| $\mathcal{H}_{\mathrm{jump}}[\Phi]$ | Jump Hamiltonian | {prf:ref}`def-jump-hamiltonian-holographic` |
 | $\gamma_A$ | Separating antichain for region $A$ | {prf:ref}`def-separating-antichain` |
-| $\text{Area}_{\text{CST}}(\gamma_A)$ | CST boundary area | {prf:ref}`def-cst-boundary-area` |
+| $\mathrm{Area}_{\mathrm{CST}}(\gamma_A)$ | CST boundary area | {prf:ref}`def-cst-boundary-area` |
 | $a_0$ | Fundamental area quantum | {prf:ref}`def-cst-boundary-area` |
-| $S_{\text{IG}}(A)$ | IG entanglement entropy | {prf:ref}`def-ig-entanglement-entropy` |
+| $S_{\mathrm{IG}}(A)$ | IG entanglement entropy | {prf:ref}`def-ig-entanglement-entropy` |
 | $\Gamma_{\min}(A)$ | Minimum weight cut | {prf:ref}`def-ig-entanglement-entropy` |
 | $\mathcal{P}_\varepsilon(A)$ | Nonlocal perimeter functional | {prf:ref}`def-nonlocal-perimeter` |
-| $\mathcal{P}_0(A)$ | Local perimeter (Gamma-limit) | {prf:ref}`thm-gamma-convergence` |
+| $\mathcal{P}_0(A)$ | Local perimeter ($\Gamma$-limit) | {prf:ref}`thm-gamma-convergence` |
 | $\alpha$ | Area law proportionality constant | {prf:ref}`thm-informational-area-law` |
-| $\delta E_{\text{swarm}}$ | Swarm energy variation | {prf:ref}`def-swarm-energy-variation` |
-| $\delta S_{\text{IG}}$ | IG entropy variation | {prf:ref}`def-ig-entropy-variation` |
+| $\delta E_{\mathrm{swarm}}$ | Swarm energy variation | {prf:ref}`def-swarm-energy-variation` |
+| $\delta S_{\mathrm{IG}}$ | IG entropy variation | {prf:ref}`def-ig-entropy-variation` |
 | $\beta$ | Effective inverse temperature | {prf:ref}`thm-first-law-entanglement` |
-| $\Pi_{\text{IG}}$ | Holographic IG pressure | {prf:ref}`thm-holographic-pressure` |
-| $L_{\text{AdS}}$ | AdS radius | {prf:ref}`thm-ads-uv-regime` |
-| $H_{\text{eff}}$ | Effective Hamiltonian (QSD) | {prf:ref}`thm-qsd-gibbs` |
-| $T_{\text{eff}}$ | Effective temperature | {prf:ref}`thm-qsd-gibbs` |
+| $\Pi_{\mathrm{IG}}$ | Holographic IG pressure | {prf:ref}`thm-holographic-pressure` |
+| $L_{\mathrm{AdS}}$ | AdS radius | {prf:ref}`thm-ads-uv-regime` |
+| $H_{\mathrm{eff}}$ | Effective Hamiltonian (QSD) | {prf:ref}`thm-qsd-gibbs` |
+| $T_{\mathrm{eff}}$ | Effective temperature | {prf:ref}`thm-qsd-gibbs` |
+
+---
+
+(sec-holography-references)=
+## References
+
+### Framework Documents
+
+- {doc}`01_emergent_geometry` --- Emergent Riemannian geometry from fitness landscape
+- {doc}`02_scutoid_spacetime` --- Discrete spacetime tessellation from cloning
+- {doc}`03_curvature_gravity` --- Curvature from discrete holonomy
+- {doc}`04_field_equations` --- Field equations and pressure dynamics
+- {doc}`../2_fractal_set/02_causal_set_theory` --- Causal set theory foundations
+
+### External References
+
+This chapter draws on standard results from:
+
+- **Black hole thermodynamics**: Bekenstein-Hawking entropy formula, area law
+- **Quantum information theory**: Entanglement entropy, modular Hamiltonian, min-cut/max-flow
+- **AdS/CFT correspondence**: Ryu-Takayanagi formula, holographic entanglement entropy
+- **Calculus of variations**: $\Gamma$-convergence, nonlocal perimeter functionals
+- **Graph theory**: Min-cut problems, isoperimetric inequalities

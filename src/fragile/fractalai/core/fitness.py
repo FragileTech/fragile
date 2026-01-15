@@ -1037,7 +1037,7 @@ class FitnessOperator(PanelModel):
         hess_blocks = []
 
         for i in range(N):
-            def fitness_i_fn(pos: Tensor) -> Tensor:
+            def fitness_i_fn(pos: Tensor, idx: int = i) -> Tensor:
                 fitness, _ = compute_fitness(
                     positions=pos,
                     velocities=velocities,
@@ -1053,7 +1053,7 @@ class FitnessOperator(PanelModel):
                     epsilon_dist=self.epsilon_dist,
                     rho=self.rho,
                 )
-                return fitness[i]
+                return fitness[idx]
 
             # Compute Hessian block H[i, :, i, :] using HVPs
             hess_block_i = torch.zeros((d, d), device=positions.device, dtype=positions.dtype)

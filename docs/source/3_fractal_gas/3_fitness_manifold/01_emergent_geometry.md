@@ -1,19 +1,20 @@
 (sec-emergent-geometry)=
 # Emergent Geometry from Adaptive Diffusion
 
-**Prerequisites**: {doc}`/3_fractal_gas/1_the_algorithm/02_fractal_gas_latent`, {doc}`/3_fractal_gas/2_fractal_set/01_fractal_set`
+**Prerequisites**: {doc}`/3_fractal_gas/1_the_algorithm/02_fractal_gas_latent` (Latent Fractal Gas), {doc}`/3_fractal_gas/2_fractal_set/01_fractal_set` (Fractal Set)
 
 ---
 
+(sec-tldr-emergent-geometry)=
 ## TLDR
 
-*Notation: $g(z,S) = H(z,S) + \epsilon_\Sigma I$ = emergent Riemannian metric; $D = g^{-1}$ = diffusion tensor; $\Sigma_{\mathrm{reg}} = D^{1/2}$ = diffusion matrix square root; $H = \nabla^2 V_{\mathrm{fit}}$ = fitness Hessian; $\epsilon_\Sigma$ = spectral floor (regularization); $c_{\min}, c_{\max}$ = ellipticity bounds.*
+*Notation: $g(z, S) = H(z, S) + \epsilon_\Sigma I$ (emergent Riemannian metric); $D_{\mathrm{reg}} = g^{-1}$ (diffusion tensor); $\Sigma_{\mathrm{reg}} = D_{\mathrm{reg}}^{1/2} = g^{-1/2}$ (diffusion matrix square root); $H = \nabla^2 V_{\mathrm{fit}}$ (fitness Hessian); $\epsilon_\Sigma$ (spectral floor/regularization); $c_{\min}, c_{\max}$ (ellipticity bounds).*
 
 **Geometry from Optimization**: The Latent Fractal Gas does not assume a geometry on its state space—it *creates* one. The adaptive diffusion tensor, which modulates exploration noise based on local fitness curvature, defines an emergent Riemannian metric where the fitness Hessian plays the role of the metric tensor. Curved fitness landscapes produce curved geometries; flat regions produce flat space.
 
-**The Diffusion-Metric Duality**: The relationship between diffusion and metric is not an analogy but a mathematical identity: $D = g^{-1}$. Large diffusion in a direction means noise spreads easily; large metric means that direction is "stretched" and noise should not smear the fine structure. The Latent Fractal Gas realizes this by setting the metric $g = H + \epsilon_\Sigma I$, where $H$ is the fitness Hessian and $\epsilon_\Sigma$ provides a spectral floor.
+**The Diffusion-Metric Duality**: The relationship between diffusion and metric is not an analogy but a mathematical identity: $D_{\mathrm{reg}} = g^{-1}$. Large diffusion in a direction means noise spreads easily; large metric means that direction is "stretched" and noise should not smear the fine structure. The Latent Fractal Gas realizes this by setting the metric $g = H + \epsilon_\Sigma I$, where $H$ is the fitness Hessian and $\epsilon_\Sigma$ provides a spectral floor.
 
-**Rigorous Convergence via Uniform Ellipticity**: Despite the anisotropic, state-dependent diffusion, the system converges provably. Uniform ellipticity bounds ($c_{\min} I \preceq D \preceq c_{\max} I$) that are independent of swarm size $N$ guarantee hypocoercive convergence to the quasi-stationary distribution. The geometry helps rather than hinders.
+**Rigorous Convergence via Uniform Ellipticity**: Despite the anisotropic, state-dependent diffusion, the system converges provably. Uniform ellipticity bounds ($c_{\min} I \preceq D_{\mathrm{reg}} \preceq c_{\max} I$) that are independent of swarm size $N$ guarantee hypocoercive convergence to the quasi-stationary distribution. The geometry helps rather than hinders.
 
 **Two Equivalent Descriptions**: The same physics admits two mathematically equivalent formulations: (1) flat space with anisotropic diffusion, or (2) curved Riemannian manifold with isotropic diffusion. All convergence rates, mixing times, and observables are identical in both views—choose whichever makes your calculation simpler.
 
@@ -23,7 +24,7 @@
 ## Introduction
 
 :::{div} feynman-prose
-Let me tell you what this chapter is really about. We are going to ask one of the deepest questions in physics: *where does geometry come from?*
+Let me tell you what this section is really about. We are going to ask one of the deepest questions in physics: *where does geometry come from?*
 
 Now, you might think geometry is just "given"—the stage on which physics happens. Space has three dimensions, distances are measured with rulers, and that is that. But this view has been under attack since Einstein showed us that mass curves spacetime, and the attack has only intensified with quantum gravity, where space itself might be emergent from something more fundamental.
 
@@ -172,15 +173,15 @@ $$
 \mu_k = \lambda_k(H) + \epsilon_\Sigma
 $$
 
-The diffusion matrix $D = g^{-1}$ has eigenvalues $1/\mu_k$.
+The diffusion matrix $D_{\mathrm{reg}} = g^{-1}$ has eigenvalues $1/\mu_k$.
 
-**Deriving $c_{\min}$:** The smallest eigenvalue of $D$ corresponds to the largest eigenvalue of $g$:
+**Deriving $c_{\min}$:** The smallest eigenvalue of $D_{\mathrm{reg}}$ corresponds to the largest eigenvalue of $g$:
 
 $$
-\lambda_{\min}(D) = \frac{1}{\lambda_{\max}(g)} = \frac{1}{\lambda_{\max}(H) + \epsilon_\Sigma} \geq \frac{1}{\Lambda_+ + \epsilon_\Sigma} =: c_{\min}
+\lambda_{\min}(D_{\mathrm{reg}}) = \frac{1}{\lambda_{\max}(g)} = \frac{1}{\lambda_{\max}(H) + \epsilon_\Sigma} \geq \frac{1}{\Lambda_+ + \epsilon_\Sigma} =: c_{\min}
 $$
 
-**Deriving $c_{\max}$:** The largest eigenvalue of $D$ corresponds to the smallest eigenvalue of $g$. By the spectral floor assumption, $\lambda_k(H) \geq -\Lambda_-$, so:
+**Deriving $c_{\max}$:** The largest eigenvalue of $D_{\mathrm{reg}}$ corresponds to the smallest eigenvalue of $g$. By the spectral floor assumption, $\lambda_k(H) \geq -\Lambda_-$, so:
 
 $$
 \lambda_{\min}(g) = \min_k (\lambda_k(H) + \epsilon_\Sigma) \geq \epsilon_\Sigma - \Lambda_- > 0
@@ -189,16 +190,16 @@ $$
 Therefore:
 
 $$
-\lambda_{\max}(D) = \frac{1}{\lambda_{\min}(g)} \leq \frac{1}{\epsilon_\Sigma - \Lambda_-} =: c_{\max}
+\lambda_{\max}(D_{\mathrm{reg}}) = \frac{1}{\lambda_{\min}(g)} \leq \frac{1}{\epsilon_\Sigma - \Lambda_-} =: c_{\max}
 $$
 
-The matrix inequality $c_{\min} I \preceq D \preceq c_{\max} I$ follows from the eigenvalue bounds.
+The matrix inequality $c_{\min} I \preceq D_{\mathrm{reg}} \preceq c_{\max} I$ follows from the eigenvalue bounds.
 
 $\square$
 :::
 
 :::{admonition} Why This Makes Everything Work
-:class: important
+:class: tip
 
 Uniform ellipticity is the **critical property** enabling convergence:
 
@@ -328,7 +329,7 @@ All convergence rates, mixing times, and observables are identical.
 ---
 
 (sec-kinetic-evolution)=
-## Kinetic Evolution in Emerging Geometry
+## Kinetic Evolution in Emergent Geometry
 
 The walkers evolve according to underdamped Langevin dynamics on the emergent Riemannian manifold. The key subtlety is the choice between Ito and Stratonovich interpretations.
 
@@ -389,7 +390,7 @@ $$
 \|b_{\mathrm{corr}}(z)\|_2 \leq \frac{d^{5/2}}{2} \sqrt{c_{\max}} \cdot L_\Sigma
 $$
 
-The factor $d^{5/2}$ arises as follows: the sum over $j, l$ contributes $d^2$ terms, each bounded by $c_{\max}^{1/2} L_\Sigma$, giving $|b^k_{\mathrm{corr}}| \leq \frac{d^2}{2} c_{\max}^{1/2} L_\Sigma$ per component; taking the 2-norm over $d$ components contributes an additional $\sqrt{d}$ factor.
+The factor $d^{5/2}$ arises because the sum over $j, l$ contributes $d^2$ terms (each bounded by $c_{\max}^{1/2} L_\Sigma$), giving $|b^k_{\mathrm{corr}}| \leq \frac{d^2}{2} c_{\max}^{1/2} L_\Sigma$ per component, and the 2-norm over $d$ components adds an additional factor of $\sqrt{d}$.
 :::
 
 :::{div} feynman-prose
@@ -411,16 +412,16 @@ The emergent metric defines a natural notion of volume that differs from the coo
 :::{prf:definition} Riemannian Volume Element
 :label: def-riemannian-volume-element-latent
 
-Let $(\mathcal{Z}, g)$ be the emergent Riemannian manifold with metric $g(z) = H(z) + \epsilon_\Sigma I$. The **Riemannian volume element** at point $z \in \mathcal{Z}$ is:
+Let $(\mathcal{Z}, g)$ be the emergent Riemannian manifold with metric $g(z, S) = H(z, S) + \epsilon_\Sigma I$. The **Riemannian volume element** at point $z \in \mathcal{Z}$ is:
 
 $$
-dV_g(z) = \sqrt{\det g(z)} \, dz
+dV_g(z) = \sqrt{\det g(z, S)} \, dz
 $$
 
 where $dz = dz_1 \wedge \cdots \wedge dz_d$ is the coordinate (Lebesgue) volume element.
 
 **Physical interpretation:**
-- $\sqrt{\det g(z)}$: Jacobian factor relating coordinate volume to intrinsic volume
+- $\sqrt{\det g(z, S)}$: Jacobian factor relating coordinate volume to intrinsic volume
 - Large $\sqrt{\det g}$: "Stretched" region (high curvature), hard to explore
 - Small $\sqrt{\det g}$: "Compressed" region (low curvature), easy to explore
 :::
@@ -726,11 +727,11 @@ For the Latent Fractal Gas with regularization $\epsilon_\Sigma$, this condition
 ## Summary
 
 :::{div} feynman-prose
-Let me summarize what we have accomplished in this chapter. We started with a swarm of walkers diffusing according to local fitness curvature, and we showed that this simple algorithmic rule creates a full Riemannian geometry. The metric tensor, the volume element, the geodesic structure—all emerge from the diffusion.
+Let me summarize what we have accomplished in this section. We started with a swarm of walkers diffusing according to local fitness curvature, and we showed that this simple algorithmic rule creates a full Riemannian geometry. The metric tensor, the volume element, the geodesic structure—all emerge from the diffusion.
 
 The key results are:
 
-1. **Geometry from optimization:** The emergent metric $g = H + \epsilon_\Sigma I$ ties together the fitness landscape (Hessian $H$) and the exploration dynamics (diffusion $D = g^{-1}$). Curved fitness creates curved space.
+1. **Geometry from optimization:** The emergent metric $g = H + \epsilon_\Sigma I$ ties together the fitness landscape (Hessian $H$) and the exploration dynamics (diffusion $D_{\mathrm{reg}} = g^{-1}$). Curved fitness creates curved space.
 
 2. **Rigorous convergence:** Despite the anisotropy, uniform ellipticity guarantees that the system converges to a unique quasi-stationary distribution. The geometry helps rather than hinders.
 
@@ -738,7 +739,7 @@ The key results are:
 
 4. **Two equivalent views:** You can think of the system as flat space with weird diffusion, or curved space with nice diffusion. Same physics, different coordinates.
 
-In the next chapter, we will see how the discrete events of cloning create a tessellation of spacetime—the scutoid geometry that complements this continuous Riemannian picture.
+In the next section, we will see how the discrete events of cloning create a tessellation of spacetime—the scutoid geometry that complements this continuous Riemannian picture.
 :::
 
 :::{admonition} Key Takeaways
@@ -748,14 +749,14 @@ In the next chapter, we will see how the discrete events of cloning create a tes
 
 | Concept | Mathematical Object | Physical Meaning |
 |---------|---------------------|------------------|
-| Emergent metric | $g(z,S) = H(z,S) + \epsilon_\Sigma I$ | Local ruler on fitness landscape |
-| Diffusion tensor | $D = g^{-1}$ | Noise spreading rate |
+| Emergent metric | $g(z, S) = H(z, S) + \epsilon_\Sigma I$ | Local ruler on fitness landscape |
+| Diffusion tensor | $D_{\mathrm{reg}} = g^{-1}$ | Noise spreading rate |
 | Volume element | $dV_g = \sqrt{\det g} \, dz$ | Intrinsic "size" of regions |
 | Regularization | $\epsilon_\Sigma$ | Thermal/quantum cutoff |
 
 **Convergence Guarantees:**
 
-1. Uniform ellipticity: $c_{\min} I \preceq D \preceq c_{\max} I$ (N-independent)
+1. Uniform ellipticity: $c_{\min} I \preceq D_{\mathrm{reg}} \preceq c_{\max} I$ (N-independent)
 2. Lipschitz continuity: $\|\nabla \Sigma_{\mathrm{reg}}\| \leq L_\Sigma$ (N-independent)
 3. Hypocoercive rate: $\kappa \propto \min(\gamma, c_{\min})$
 
@@ -768,10 +769,11 @@ In the next chapter, we will see how the discrete events of cloning create a tes
 
 ---
 
+(sec-emergent-geometry-references)=
 ## References
 
 ### Framework Documents
 
 - {doc}`/3_fractal_gas/1_the_algorithm/02_fractal_gas_latent` — Latent Fractal Gas algorithm definition
 - {doc}`/3_fractal_gas/2_fractal_set/01_fractal_set` — Fractal Set data structure
-- {doc}`02_scutoid_spacetime` — Scutoid tessellation and discrete spacetime geometry
+- {doc}`/3_fractal_gas/3_fitness_manifold/02_scutoid_spacetime` — Scutoid tessellation and discrete spacetime geometry
