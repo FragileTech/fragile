@@ -86,7 +86,7 @@ class RunHistory(BaseModel):
 
     # Fitness channel
     fitness: Tensor = Field(description="Fitness potential values V_fit")
-    rewards: Tensor = Field(description="Raw reward values from potential")
+    rewards: Tensor = Field(description="Raw reward values (potential or reward 1-form)")
 
     # Cloning channel
     cloning_scores: Tensor = Field(description="Cloning scores S_i")

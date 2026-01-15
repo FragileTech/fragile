@@ -13,7 +13,7 @@
 |-------------|-------------------|------------------------|
 | $U(1)_{\text{fitness}}$ | Diversity companion selection | Fitness phase invariance |
 | $SU(2)_{\text{weak}}$ | Cloning companion selection | Weak isospin doublet |
-| $SU(d)_{\text{color}}$ | Viscous force coupling | Color charge confinement |
+| $SU(d)_{\text{color}}$ | Viscous force coupling (O(d) redundancy, complexified to $SU(d)$) | Color charge confinement |
 
 **Structural Isomorphisms**:
 
@@ -140,15 +140,29 @@ where:
 - $\tau_{ij} = t_j^{\text{d}} - t_i^{\text{b}}$: Proper time along edge
 - $q$: Coupling constant
 
-**Phase from diversity selection**: The companion selection probability (see {prf:ref}`def-fractal-set-alg-distance` and {prf:ref}`def-fractal-set-companion-kernel`) induces a phase:
+**Companion amplitudes**: Define a complex amplitude over companions:
 
 $$
-\theta_{ik}^{(U(1))} = -\frac{d_{\text{alg}}(i,k)^2}{2\epsilon_d^2\hbar_{\text{eff}}}
+\psi_i(k) := \sqrt{P_i(k; t)} \, e^{i\theta_k}, \quad \sum_k |\psi_i(k)|^2 = 1
 $$
 
-This represents fitness self-measurement through diversity comparison.
+with
 
-The diversity range $\epsilon_d$ fixes the phase scale, while the gauge redundancy itself is the additive baseline in $\Phi$.
+$$
+P_i(k; t) = \frac{w_{ik}}{\sum_{l \in \mathcal{A}(t) \setminus \{i\}} w_{il}}, \quad
+w_{ik} = \exp\left(-\frac{d_{\text{alg}}(i,k)^2}{2\epsilon_d^2}\right).
+$$
+
+Any local rephasing $\psi_i \mapsto e^{i\alpha_i}\psi_i$ leaves the probabilities invariant.
+
+**Fitness phase**: Take the phase from fitness,
+
+$$
+\theta_k := -\frac{\Phi_k}{\hbar_{\text{eff}}}, \quad
+\theta_{ik}^{(U(1))} := \theta_k - \theta_i = -\frac{\Phi_k - \Phi_i}{\hbar_{\text{eff}}}.
+$$
+
+The diversity range $\epsilon_d$ fixes the amplitude scale, while the fitness baseline supplies the $U(1)$ phase redundancy.
 
 *Proof*: Under $\Phi \to \Phi + c$, $V_{\mathrm{clone}}(i \to j) = \Phi_j - \Phi_i$ is unchanged ({prf:ref}`def-fractal-set-cloning-potential`). The cloning score $S_i(j)$ depends on this difference; for fixed $i$, the denominator rescales all $S_i(j)$ by the same positive factor, preserving signs and ordering. Thus the directed IG structure is invariant under baseline shifts, while locality prevents global synchronization. Standard gauge theory then requires a compensating $U(1)$ field {cite}`yang1954conservation`. $\square$
 :::
@@ -158,10 +172,10 @@ The $U(1)$ symmetry is the simplest kind of gauge symmetry—in the relative-fit
 
 This is exactly like voltage in a circuit. You can add any constant to all your voltages and the physics does not change—only voltage differences drive current. And when you have a circuit spread out in space, you need electromagnetic fields to communicate how the local voltage references relate to each other.
 
-In the Fractal Gas, the analogue of electromagnetism emerges from fitness measurements. The diversity companion selection creates a phase factor that depends on fitness comparisons, and that phase is the $U(1)$ gauge field.
+In the Fractal Gas, the analogue of electromagnetism emerges from fitness measurements. The diversity companion selection fixes amplitudes over neighbors, while the fitness assigns phases. The local freedom to rephase those complex amplitudes is the $U(1)$ gauge symmetry.
 :::
 
-### SU(2) Gauge Field: Cloning Selection Phases
+### SU(2) Gauge Field: Cloning Selection Doublet
 
 :::{prf:theorem} Emergence of SU(2) Gauge Structure
 :label: thm-sm-su2-emergence
@@ -172,16 +186,27 @@ The cloning companion selection mechanism induces an $SU(2)$ gauge field on the 
 
 **Redundancy**: A local choice of basis in the two-state cloning space (can-clone vs cannot-clone) for each interacting pair.
 
-**Phase from cloning selection**:
+**Cloning doublet amplitudes**: Use the cloning-companion distribution $P_i^{\text{clone}}(j; t)$ (from {prf:ref}`def-fractal-set-companion-kernel`) and define a normalized two-component state for each ordered pair:
 
 $$
-\theta_{ij}^{(SU(2))} = -\frac{d_{\text{alg}}(i,j)^2}{2\epsilon_c^2\hbar_{\text{eff}}}
+\Psi_{ij} := \frac{1}{\sqrt{P_i^{\text{clone}}(j; t) + P_j^{\text{clone}}(i; t)}}
+\begin{pmatrix}
+\sqrt{P_i^{\text{clone}}(j; t)}\,e^{i\theta_j} \\
+\sqrt{P_j^{\text{clone}}(i; t)}\,e^{i\theta_i}
+\end{pmatrix},
+\quad \|\Psi_{ij}\| = 1.
 $$
 
-where:
-- $d_{\text{alg}}(i,j)^2 = \|x_i - x_j\|^2 + \lambda_{\text{alg}}\|v_i - v_j\|^2$: Algorithmic distance
-- $\epsilon_c$: Cloning interaction range
-- $\hbar_{\text{eff}}$: Effective Planck constant
+Here $P_i^{\text{clone}}(j; t) \propto \exp\!\left(-d_{\text{alg}}(i,j)^2/(2\epsilon_c^2)\right)$ with
+$d_{\text{alg}}(i,j)^2 = \|x_i - x_j\|^2 + \lambda_{\text{alg}}\|v_i - v_j\|^2$.
+
+The relative phase in the doublet is the fitness phase difference:
+
+$$
+\theta_{ij}^{(SU(2))} := \theta_j - \theta_i = -\frac{\Phi_j - \Phi_i}{\hbar_{\text{eff}}}.
+$$
+
+Fixing the overall $U(1)$ phase of $\Psi_{ij}$ leaves $SU(2)$ basis rotations as the local redundancy.
 
 **Gauge Field**: The weak isospin field $W_\mu^a$ acts on the cloning doublet structure:
 
@@ -221,19 +246,22 @@ $$
 
 where $K_\rho$ is the localization kernel.
 
-**Color State**: Each walker carries a color charge:
+**Color State**: Each walker carries a normalized color state:
 
 $$
 |\Psi_i^{(\text{color})}\rangle \in \mathbb{C}^d \quad (\mathbb{C}^3 \text{ when } d=3)
 $$
 
-defined from complexified force components with momentum-phase encoding:
+constructed from complex force amplitudes:
 
 $$
-c_i^{(\alpha)} = F_\alpha^{(\text{visc})}(i) \cdot \exp\left(i p_i^{(\alpha)} \ell_0/\hbar_{\text{eff}}\right)
+\tilde{c}_i^{(\alpha)} := F_\alpha^{(\text{visc})}(i) \cdot \exp\left(i p_i^{(\alpha)} \ell_0/\hbar_{\text{eff}}\right),
+\quad
+c_i^{(\alpha)} := \frac{\tilde{c}_i^{(\alpha)}}{\|\tilde{c}_i\|}.
 $$
 
-where $p_i^{(\alpha)} = m v_i^{(\alpha)}$ and $\ell_0$ is a characteristic length (e.g., mean IG edge length) to make the phase dimensionless.
+Here $p_i^{(\alpha)} = m v_i^{(\alpha)}$, $\ell_0$ is a characteristic length (e.g., mean IG edge length), and
+$\|\tilde{c}_i\| = \sqrt{\sum_\beta |F_\beta^{(\text{visc})}(i)|^2}$ (with a small $\varepsilon$-regularization if needed when $\tilde{c}_i = 0$).
 
 **Gluon Fields**: Parallel transport with Gell-Mann generators $\lambda_a$ (or $T^a$ for $SU(d)$):
 
@@ -255,7 +283,7 @@ Where does this come from in the Fractal Gas? From the viscous force between wal
 
 Each walker has a velocity vector with $d$ components. The viscous force tries to align nearby walkers' velocities—it is a kind of friction that smooths out velocity differences. Now here is the key: if you rotate the basis of velocity components (any global orthogonal change of basis), the viscous force does not care. It just wants neighboring velocities to match, regardless of which basis you choose.
 
-This basis-rotation redundancy on $d$ velocity components, combined with the complex phase from momentum, generates $SU(d)$ after complexification (a $U(d)$ redundancy modulo the overall phase). In three spatial dimensions, that is $SU(3)$—the color gauge group of the strong force.
+This basis-rotation redundancy on $d$ velocity components, combined with force amplitudes and momentum phases to build a normalized complex vector, generates $SU(d)$ after complexification (a $U(d)$ redundancy modulo the overall phase). In three spatial dimensions, that is $SU(3)$—the color gauge group of the strong force.
 
 The localization kernel $K_\rho$ provides short-range coupling: walkers only feel viscous forces from nearby neighbors. This is exactly the confinement property of the strong force—quarks can never be isolated because the gluon field between them stores energy proportional to distance.
 :::
@@ -452,23 +480,25 @@ $$
 with parallel transport:
 
 $$
-U_{ij} = \exp\left(i\theta_{ij}^{\text{fit}}\right), \quad \theta_{ij}^{\text{fit}} = -\frac{\epsilon_F}{T}\int_{t_i^{\text{b}}}^{t_i^{\text{d}}} V_{\text{fit}}(x_i(t)) \, dt
+U_{ij} = \exp\left(i\theta_{ij}^{\text{fit}}\right), \quad \theta_{ij}^{\text{fit}} = \theta_j - \theta_i = -\frac{\Phi_j - \Phi_i}{\hbar_{\text{eff}}}
 $$
+
+For the CST edge, $\Phi_j - \Phi_i = (\epsilon_F/T)\int_{t_i^{\text{b}}}^{t_i^{\text{d}}} V_{\text{fit}}(x_i(t)) \, dt$.
 
 :::
 
 :::{prf:theorem} Temporal Operator from KMS Condition
 :label: thm-sm-temporal-operator
 
-**Rigor Class:** L (Literature) — KMS condition from {cite}`haag1967equilibrium`
+**Rigor Class:** L (Literature) — detailed balance and KMS {cite}`kubo1957statistical,martin1959theory,haag1967equilibrium,kossakowski1977quantum`
 
-The temporal fermionic operator follows from the QSD's thermal structure:
+The temporal fermionic operator follows from the equilibrium diffusion kernel's thermal structure:
 
-1. **QSD satisfies KMS condition**: The quasi-stationary distribution is a thermal equilibrium state at temperature $T$
-2. **Wick rotation**: KMS analyticity allows $t \to -i\tau$, transforming fitness action to Euclidean action
+1. **Reversible diffusion kernel**: The Boris-BAOAB diffusion kernel preserves the QSD/Gibbs measure and satisfies detailed balance at equilibrium
+2. **KMS and Wick rotation**: Detailed balance implies the KMS condition {cite}`kossakowski1977quantum`, so correlators admit analytic continuation $t \to -i\tau$
 3. **Fermionic sign**: Wick rotation gives a Euclidean action with weight $\exp(-S^E)$ (the Grassmann integral produces the standard fermion determinant)
 
-**Result**: The integral defining $\theta_{ij}^{\text{fit}}$ is real-valued after Wick rotation, so $U_{ij} \in U(1)$ is unitary.
+**Result**: The fitness action defining $\Phi_j - \Phi_i$ is real-valued after Wick rotation, so $U_{ij} \in U(1)$ is unitary.
 
 **Hermiticity**: The action satisfies approximate Hermiticity:
 
@@ -476,7 +506,9 @@ $$
 \left\|S_{\text{fermion}}^{\text{temporal}} - (S_{\text{fermion}}^{\text{temporal}})^\dagger\right\| \leq C \frac{\sqrt{\log N}}{\sqrt{N}}
 $$
 
-*Proof*: The derivation uses the KMS (Kubo-Martin-Schwinger) condition {cite}`haag1967equilibrium`, which characterizes thermal equilibrium states. The QSD satisfies KMS at temperature $T$, enabling Wick rotation $t \to -i\tau$ that converts the fitness action to Euclidean form. The resulting phase is real-valued, ensuring unitarity. See {prf:ref}`thm-temporal-fermion-op` for the formal statement and proof. $\square$
+**Scope**: This argument applies to the reversible diffusion kernel at QSD equilibrium; the cloning/selection step is dissipative and does not satisfy detailed balance.
+
+*Proof*: The derivation uses the KMS (Kubo-Martin-Schwinger) condition {cite}`kubo1957statistical,martin1959theory,haag1967equilibrium`, which characterizes thermal equilibrium states. At QSD equilibrium, the reversible Boris-BAOAB diffusion kernel satisfies detailed balance with respect to the Gibbs measure, so the state is KMS {cite}`kossakowski1977quantum`, enabling Wick rotation $t \to -i\tau$ that converts the fitness action to Euclidean form. The resulting phase is real-valued, ensuring unitarity. See {prf:ref}`thm-temporal-fermion-op` for the formal statement and proof. $\square$
 :::
 
 ### Continuum Limit: Dirac Algebra Isomorphism
@@ -746,7 +778,7 @@ $$
 |--------------------|-----------------|-------------|
 | $U(1)$ electromagnetism | Fitness phase invariance | {prf:ref}`thm-sm-u1-emergence` |
 | $SU(2)$ weak force | Cloning selection doublet | {prf:ref}`thm-sm-su2-emergence` |
-| $SU(d)$ strong force | Viscous coupling | {prf:ref}`thm-sm-su3-emergence` |
+| $SU(d)$ strong force | Viscous coupling (O(d) redundancy, complexified) | {prf:ref}`thm-sm-su3-emergence` |
 | Dirac/Clifford algebra | Antisymmetric kernel | {prf:ref}`thm-sm-dirac-isomorphism` |
 | Pauli exclusion | Algorithmic exclusion | {prf:ref}`thm-sm-exclusion-principle` |
 | Higgs SSB mechanism | Bifurcation dynamics | {prf:ref}`thm-sm-higgs-isomorphism` |
@@ -775,15 +807,15 @@ This section derives from first principles the remaining structural components o
 :::{prf:definition} Flavor Index
 :label: def-sm-flavor-index
 
-The **flavor index** $\alpha \in \{1, \ldots, d\}$ labels the velocity component that carries $SU(d)$ gauge charge. For walker $i$ with velocity $v_i \in \mathbb{R}^d$, the $\alpha$-th **flavor state** is:
+The **flavor index** $\alpha \in \{1, \ldots, d\}$ labels the velocity component used to build the complexified viscous-force charge. For walker $i$ with velocity $v_i \in \mathbb{R}^d$, the $\alpha$-th **flavor state** is:
 
 $$
-c_i^{(\alpha)} = F_\alpha^{(\text{visc})}(i) \cdot \exp\left(i p_i^{(\alpha)} \ell_0/\hbar_{\text{eff}}\right)
+c_i^{(\alpha)} = \frac{F_\alpha^{(\text{visc})}(i)}{\|F^{(\text{visc})}(i)\|} \cdot \exp\left(i p_i^{(\alpha)} \ell_0/\hbar_{\text{eff}}\right)
 $$
 
-where $F_\alpha^{(\text{visc})}(i)$ is the $\alpha$-th component of the viscous force from {prf:ref}`def-fractal-set-viscous-force`, $p_i^{(\alpha)} = m v_i^{(\alpha)}$, and $\ell_0$ is the characteristic length used in the momentum-phase encoding.
+where $F_\alpha^{(\text{visc})}(i)$ is the $\alpha$-th component of the viscous force from {prf:ref}`def-fractal-set-viscous-force`, $\|F^{(\text{visc})}(i)\| = \sqrt{\sum_\beta |F_\beta^{(\text{visc})}(i)|^2}$ (with a small $\varepsilon$-regularization if needed), $p_i^{(\alpha)} = m v_i^{(\alpha)}$, and $\ell_0$ is the characteristic length used in the momentum-phase encoding.
 
-Each flavor index corresponds to one **generation** of fermions. The flavor sectors are labeled $\alpha = 1, \ldots, d$.
+The underlying velocity components are real; $SU(d)$ acts on the complexified amplitude-phase vector $\vec{c}_i$ built from those components. Each flavor index corresponds to one **generation** of fermions. The flavor sectors are labeled $\alpha = 1, \ldots, d$.
 :::
 
 :::{prf:theorem} Generation-Dimension Correspondence
@@ -802,7 +834,7 @@ For Fractal Gas in $d$-dimensional latent space $Z \subseteq \mathbb{R}^d$, the 
 
 *Proof.*
 
-**Step 1 (Velocity components define flavor sectors):** Each velocity component $v^{(\alpha)}$ for $\alpha = 1, \ldots, d$ defines an independent degree of freedom. Under $SU(d)$ gauge transformations, the $\alpha$-th component transforms in the fundamental representation while carrying a distinct flavor index.
+**Step 1 (Velocity components define flavor sectors):** Each velocity component $v^{(\alpha)}$ for $\alpha = 1, \ldots, d$ defines an independent degree of freedom. Under $SU(d)$ gauge transformations of the complexified viscous-force vector, the $\alpha$-th component transforms in the fundamental representation while carrying a distinct flavor index.
 
 The flavor state ({prf:ref}`def-sm-flavor-index`) assigns to each walker a $d$-tuple of complex charges:
 
@@ -810,7 +842,7 @@ $$
 \vec{c}_i = (c_i^{(1)}, \ldots, c_i^{(d)}) \in \mathbb{C}^d
 $$
 
-Each component transforms independently under $SU(d)$ but retains its flavor label $\alpha$.
+Each complexified component transforms independently under $SU(d)$ but retains its flavor label $\alpha$.
 
 **Step 2 (Spinor dimension counting):** The full rotation group on phase space $(z, v) \in \mathbb{R}^{2d}$ is $SO(2d)$. Its spinor representation has dimension:
 
@@ -893,19 +925,21 @@ $$
 
 *Proof.*
 
-**Step 1 (Phase accumulation):** The $U(1)$ phase from diversity selection ({prf:ref}`thm-sm-u1-emergence`) is:
+**Step 1 (Amplitude scale):** The companion amplitudes satisfy
 
 $$
-\theta_{ik}^{(U(1))} = -\frac{d_{\text{alg}}(i,k)^2}{2\epsilon_d^2 \hbar_{\text{eff}}}
+|\psi_i(k)|^2 = P_i(k; t) \propto \exp\left(-\frac{d_{\text{alg}}(i,k)^2}{2\epsilon_d^2}\right),
 $$
 
-**Step 2 (Dimensional analysis):** The phase has the form $\theta \sim d_{\text{alg}}^2 / (\epsilon_d^2 \hbar_{\text{eff}})$. The coupling $g_1$ is the coefficient that makes the phase dimensionless when expressed in terms of $\hbar_{\text{eff}}$:
+so typical contributing distances are of order $\epsilon_d$.
+
+**Step 2 (Phase scale):** The fitness phase is
 
 $$
-\theta \sim \frac{g_1^2}{\hbar_{\text{eff}}} \cdot \frac{d_{\text{alg}}^2}{\epsilon_d^2}
+\theta_{ik}^{(U(1))} = -\frac{\Phi_k - \Phi_i}{\hbar_{\text{eff}}}.
 $$
 
-Comparing with the explicit formula, we identify $g_1^2 \sim \hbar_{\text{eff}} / \epsilon_d^2$.
+The gauge coupling is the coefficient that weights these phases in parallel transport over the typical interaction scale $\epsilon_d$, so by dimensional analysis $g_1^2 \sim \hbar_{\text{eff}} / \epsilon_d^2$.
 
 **Step 3 (QSD expectation):** Computing the expectation under the quasi-stationary distribution and applying {prf:ref}`def-sm-coupling-definition`:
 
@@ -931,11 +965,13 @@ where $C_2(N) = (N^2-1)/(2N)$ is the quadratic Casimir of $SU(N)$.
 
 *Proof.*
 
-**Step 1 (Phase from cloning):** The $SU(2)$ phase ({prf:ref}`thm-sm-su2-emergence`):
+**Step 1 (Doublet phases):** The relative phase in the cloning doublet is the fitness phase difference ({prf:ref}`thm-sm-su2-emergence`):
 
 $$
-\theta_{ij}^{(SU(2))} = -\frac{d_{\text{alg}}(i,j)^2}{2\epsilon_c^2 \hbar_{\text{eff}}}
+\theta_{ij}^{(SU(2))} = -\frac{\Phi_j - \Phi_i}{\hbar_{\text{eff}}}.
 $$
+
+The cloning companion distribution has width $\epsilon_c$ via $P_i^{\text{clone}}(j; t) \propto \exp(-d_{\text{alg}}(i,j)^2/(2\epsilon_c^2))$, so the relevant interaction scale is $\epsilon_c$.
 
 **Step 2 (Casimir scaling):** The coupling strength is modulated by the ratio of Casimirs. For the weak $SU(2)$ embedded in the full $SU(d)$ structure:
 
@@ -964,15 +1000,15 @@ where $K_{\text{visc}}$ is the viscous kernel and $\langle \cdot \rangle_{\text{
 **Step 1 (Color charge definition):** From {prf:ref}`thm-sm-su3-emergence`, the color state is:
 
 $$
-c_i^{(\alpha)} = F_\alpha^{(\text{visc})}(i) \cdot \exp\left(i p_i^{(\alpha)} \ell_0/\hbar_{\text{eff}}\right)
+\tilde{c}_i^{(\alpha)} = F_\alpha^{(\text{visc})}(i) \cdot \exp\left(i p_i^{(\alpha)} \ell_0/\hbar_{\text{eff}}\right)
 $$
 
-with $p_i^{(\alpha)} = m v_i^{(\alpha)}$ and the momentum-phase length scale $\ell_0$ as in the color-state definition.
+with $p_i^{(\alpha)} = m v_i^{(\alpha)}$ and the momentum-phase length scale $\ell_0$ as in the color-state definition. The normalized color state is $c_i^{(\alpha)} = \tilde{c}_i^{(\alpha)}/\|\tilde{c}_i\|$.
 
 **Step 2 (Coupling from force magnitude):** The gauge coupling measures the strength of the color interaction:
 
 $$
-g_d^2 \propto \langle |c_i|^2 \rangle \propto \nu^2 \langle K_{\text{visc}}^2 \rangle
+g_d^2 \propto \langle \|\tilde{c}_i\|^2 \rangle \propto \nu^2 \langle K_{\text{visc}}^2 \rangle
 $$
 
 **Step 3 (Dimension factor):** The $SU(d)$ structure contributes a factor from the dimension of the adjoint representation:
@@ -1683,7 +1719,7 @@ The Standard Model gauge group $SU(d)_C \times SU(2)_L \times U(1)_Y$ emerges fr
 
 1. **$U(1)$**: Diversity companion selection (fitness phase) — {prf:ref}`thm-sm-u1-emergence`
 2. **$SU(2)$**: Cloning companion selection (weak isospin) — {prf:ref}`thm-sm-su2-emergence`
-3. **$SU(d)$**: Viscous force coupling (color charge) — {prf:ref}`thm-sm-su3-emergence`
+3. **$SU(d)$**: Viscous force coupling (O(d) redundancy, complexified to $SU(d)$) — {prf:ref}`thm-sm-su3-emergence`
 
 ### Fermionic Structure
 
@@ -1769,7 +1805,7 @@ This chapter builds on foundational results from gauge theory and quantum field 
 | CKM mixing | {cite}`cabibbo1963unitary,kobayashi1973cp` |
 | Pauli exclusion principle | {cite}`pauli1925zusammenhang` |
 | Grassmann variables | {cite}`berezin1966method` |
-| KMS condition | {cite}`haag1967equilibrium` |
+| KMS condition | {cite}`kubo1957statistical,martin1959theory,haag1967equilibrium,kossakowski1977quantum` |
 
 ```{bibliography}
 :filter: docname in docnames

@@ -7,7 +7,7 @@ from fragile.core.panel_model import INPUT_WIDTH, PanelModel
 
 
 try:
-    from torch.func import hessian, jacrev, vmap
+    from torch.func import jacrev
 
     TORCH_FUNC_AVAILABLE = True
 except ImportError:
@@ -447,9 +447,9 @@ class FitnessOperator(PanelModel):
     """Fitness operator with automatic differentiation for Langevin dynamics.
 
     This class provides:
-    1. Fitness potential V(x, v, rewards, alive, companions)
-    2. First derivative ∂V/∂x for fitness-based force in Langevin dynamics
-    3. Second derivative ∂²V/∂x² for state-dependent diffusion tensor
+    1. Fitness potential V_i(x, v, rewards, alive, companions)
+    2. First derivative ∂V_i/∂x_i for fitness-based force in Langevin dynamics
+    3. Second derivative ∂²V_i/∂x_i² for state-dependent diffusion tensor
 
     The fitness potential is computed using the Euclidean Gas measurement pipeline
     from Definition def-fitness-potential-operator in 03_cloning.md.
@@ -477,7 +477,7 @@ class FitnessOperator(PanelModel):
     **For HESSIAN DIAGONAL** (second derivative diagonal):
         - **For small N (<50)**: `compute_hessian(..., diagonal_only=True)` (autograd loops)
         - **For large N (>50)**: `compute_hessian_func(..., diagonal_only=True)` (torch.func)
-        - torch.func.hessian gives 10x speedup for N=100, but slower for N=10
+        - torch.func.jacrev can be faster for moderate N, but slower for very small N
         - HVP method is slower and not recommended
 
     **For FULL HESSIAN** (complete second derivative tensor):
@@ -486,7 +486,8 @@ class FitnessOperator(PanelModel):
         - Fastest for small N (typical use case)
 
     Note:
-        Derivatives are computed w.r.t. positions x, treating companions as fixed.
+        Derivatives are computed w.r.t. positions x, treating companions as fixed,
+        and extracting only per-walker blocks (no cross-derivatives through other walkers).
         This gives the "instantaneous force" for the current companion assignment.
         For mean-field forces, expectation over companions would be needed (future work).
         Companion selection is handled externally (by EuclideanGas) - this operator
@@ -697,11 +698,11 @@ class FitnessOperator(PanelModel):
     ) -> Tensor:
         """Compute gradient ∂V/∂x for fitness-based force in Langevin dynamics.
 
-        Uses automatic differentiation to compute the gradient of the fitness
-        potential w.r.t. walker positions. The gradient provides the force term
+        Uses automatic differentiation to compute the gradient of each walker's
+        fitness potential w.r.t. its own position. The gradient provides the force term
         for adaptive Langevin dynamics:
 
-            F_fit(x) = -∂V/∂x
+            F_fit,i(x) = -∂V_i/∂x_i
 
         Args:
             positions: Walker positions [N, d] (requires_grad will be enabled)
@@ -711,11 +712,12 @@ class FitnessOperator(PanelModel):
             companions: Companion indices [N] (required, selected by EuclideanGas)
 
         Returns:
-            Gradient tensor [N, d] where grad[i] = ∂V/∂x_i
+            Gradient tensor [N, d] where grad[i] = ∂V_i/∂x_i
 
         Note:
-            The gradient is computed treating companions as fixed. This gives
-            the instantaneous force for the current companion assignment.
+            The gradient is computed treating companions as fixed and extracting
+            only the per-walker block (no cross-derivatives through other walkers).
+            This gives the instantaneous force for the current companion assignment.
         """
         # Enable gradient tracking on positions
         positions_grad = positions.clone().detach().requires_grad_(True)  # noqa: FBT003
@@ -737,14 +739,17 @@ class FitnessOperator(PanelModel):
             rho=self.rho,
         )
 
-        # Compute gradient: sum fitness to get scalar, then differentiate
-        fitness_sum = fitness.sum()
-        (grad,) = torch.autograd.grad(
-            outputs=fitness_sum,
-            inputs=positions_grad,
-            create_graph=False,
-            retain_graph=False,
-        )
+        # Compute per-walker gradient: ∂V_i/∂positions_i (ignore cross-terms)
+        N = fitness.shape[0]
+        grad = torch.zeros_like(positions_grad)
+        for i in range(N):
+            (grad_i,) = torch.autograd.grad(
+                outputs=fitness[i],
+                inputs=positions_grad,
+                create_graph=False,
+                retain_graph=i < N - 1,
+            )
+            grad[i] = grad_i[i]
 
         return grad
 
@@ -760,7 +765,7 @@ class FitnessOperator(PanelModel):
         """Compute Hessian ∂²V/∂x² for state-dependent diffusion tensor.
 
         Uses automatic differentiation to compute the Hessian (second derivative)
-        of the fitness potential w.r.t. walker positions. The Hessian provides
+        of each walker's fitness potential w.r.t. its own position. The Hessian provides
         the state-dependent diffusion tensor for adaptive Langevin dynamics:
 
             D(x) = f(∂²V/∂x²)
@@ -783,63 +788,13 @@ class FitnessOperator(PanelModel):
         Note:
             - Full Hessian computation is O(N*d²) and can be very expensive
             - Diagonal approximation is O(N*d) and sufficient for many diffusion models
-            - The Hessian is computed treating companions as fixed
+            - The Hessian is computed treating companions as fixed and extracting
+              only per-walker blocks (no cross-derivatives through other walkers)
         """
         N, d = positions.shape
 
         # Enable gradient tracking on positions
         positions_grad = positions.clone().detach().requires_grad_(True)  # noqa: FBT003
-
-        if diagonal_only:
-            # Compute diagonal elements efficiently
-            hessian_diag = torch.zeros_like(positions_grad)
-
-            # Compute fitness once
-            fitness, _ = compute_fitness(
-                positions=positions_grad,
-                velocities=velocities,
-                rewards=rewards,
-                alive=alive,
-                companions=companions,
-                alpha=self.alpha,
-                beta=self.beta,
-                eta=self.eta,
-                lambda_alg=self.lambda_alg,
-                sigma_min=self.sigma_min,
-                A=self.A,
-                epsilon_dist=self.epsilon_dist,
-            )
-
-            # Compute gradient once (with create_graph=True for Hessian)
-            fitness_sum = fitness.sum()
-            (grad,) = torch.autograd.grad(
-                outputs=fitness_sum,
-                inputs=positions_grad,
-                create_graph=True,  # Need to keep graph for second derivative
-                retain_graph=True,
-            )
-
-            # Compute diagonal Hessian elements
-            # Unfortunately, PyTorch doesn't have a fully vectorized diagonal Hessian
-            # We loop over walkers and compute all dimensions at once for each walker
-            for i in range(N):
-                # For walker i, compute gradient of grad[i, :] w.r.t. positions[i, :]
-                # grad[i, :] is [d] vector of ∂(Σfitness)/∂positions[i, :]
-                for j in range(d):
-                    # Compute ∂(grad[i, j])/∂positions[i, j]
-                    (hess_i,) = torch.autograd.grad(
-                        outputs=grad[i, j],
-                        inputs=positions_grad,
-                        create_graph=False,
-                        retain_graph=True,
-                    )
-                    # Extract diagonal: ∂²(Σfitness)/∂positions[i, j]²
-                    hessian_diag[i, j] = hess_i[i, j]
-
-            return hessian_diag
-
-        # Compute full Hessian (expensive!)
-        hessian_full = torch.zeros(N, d, d, dtype=positions.dtype, device=positions.device)
 
         # Compute fitness
         fitness, _ = compute_fitness(
@@ -858,44 +813,46 @@ class FitnessOperator(PanelModel):
             rho=self.rho,
         )
 
-        # Compute gradient
-        fitness_sum = fitness.sum()
-        (grad,) = torch.autograd.grad(
-            outputs=fitness_sum,
-            inputs=positions_grad,
-            create_graph=True,
-            retain_graph=True,
-        )
+        if diagonal_only:
+            # Compute diagonal Hessian elements ∂²V_i/∂positions_i²
+            hessian_diag = torch.zeros_like(positions_grad)
 
-        if TORCH_FUNC_AVAILABLE:
-            # Vectorize Hessian block computation using vmap over basis tangents
-            basis = torch.eye(N * d, device=positions.device, dtype=positions.dtype)
-            tangents = basis.view(N * d, N, d)
-
-            def compute_hvp(tangent: Tensor) -> Tensor:
-                (hess_block,) = torch.autograd.grad(
-                    outputs=grad,
+            for i in range(N):
+                (grad_i,) = torch.autograd.grad(
+                    outputs=fitness[i],
                     inputs=positions_grad,
-                    grad_outputs=tangent,
+                    create_graph=True,
                     retain_graph=True,
-                    create_graph=False,
                 )
-                return hess_block
-
-            hvps = vmap(compute_hvp)(tangents)  # [N*d, N, d]
-            hvps = hvps.view(N, d, N, d)
-            hessian_full = torch.diagonal(hvps, dim1=0, dim2=2).permute(2, 0, 1)
-        else:
-            # Fallback: differentiate each gradient component sequentially
-            for walker_idx in range(N):
-                for dim_idx in range(d):
-                    (hess_block,) = torch.autograd.grad(
-                        outputs=grad[walker_idx, dim_idx],
+                for j in range(d):
+                    (hess_i,) = torch.autograd.grad(
+                        outputs=grad_i[i, j],
                         inputs=positions_grad,
                         create_graph=False,
-                        retain_graph=not (walker_idx == N - 1 and dim_idx == d - 1),
+                        retain_graph=not (i == N - 1 and j == d - 1),
                     )
-                    hessian_full[walker_idx, dim_idx, :] = hess_block[walker_idx]
+                    hessian_diag[i, j] = hess_i[i, j]
+
+            return hessian_diag
+
+        # Compute full Hessian blocks (expensive!)
+        hessian_full = torch.zeros(N, d, d, dtype=positions.dtype, device=positions.device)
+
+        for i in range(N):
+            (grad_i,) = torch.autograd.grad(
+                outputs=fitness[i],
+                inputs=positions_grad,
+                create_graph=True,
+                retain_graph=True,
+            )
+            for j in range(d):
+                (hess_i,) = torch.autograd.grad(
+                    outputs=grad_i[i, j],
+                    inputs=positions_grad,
+                    create_graph=False,
+                    retain_graph=not (i == N - 1 and j == d - 1),
+                )
+                hessian_full[i, :, j] = hess_i[i]
 
         return hessian_full
 
@@ -939,10 +896,11 @@ class FitnessOperator(PanelModel):
             msg = "torch.func not available. Use compute_gradient() or upgrade PyTorch >= 2.0"
             raise RuntimeError(msg)
 
-        # Define fitness function: positions -> scalar (sum of fitness)
-        # This matches the compute_gradient behavior which computes ∂(Σfitness)/∂positions
-        def fitness_sum_fn(pos: Tensor) -> Tensor:
-            """Compute sum of fitness for all walkers given all positions."""
+        N = positions.shape[0]
+
+        # Define fitness function: positions -> vector of per-walker fitness
+        def fitness_vec_fn(pos: Tensor) -> Tensor:
+            """Compute fitness for all walkers given all positions."""
             fitness, _ = compute_fitness(
                 positions=pos,
                 velocities=velocities,
@@ -958,11 +916,12 @@ class FitnessOperator(PanelModel):
                 epsilon_dist=self.epsilon_dist,
                 rho=self.rho,
             )
-            return fitness.sum()
+            return fitness
 
-        # Compute gradient: ∂(Σfitness)/∂positions
-        # This gives us the gradient for each position component
-        return jacrev(fitness_sum_fn)(positions)  # [N, d]
+        # Compute full Jacobian: [N, N, d], then take diagonal blocks
+        jac = jacrev(fitness_vec_fn)(positions)
+        idx = torch.arange(N, device=positions.device)
+        return jac[idx, idx]
 
     def compute_hessian_func(
         self,
@@ -973,10 +932,10 @@ class FitnessOperator(PanelModel):
         companions: Tensor,
         diagonal_only: bool = True,
     ) -> Tensor:
-        """Compute Hessian ∂²V/∂x² using torch.func.hessian (fully vectorized, no loops).
+        """Compute Hessian ∂²V/∂x² using torch.func.jacrev (fully vectorized, no loops).
 
-        This method uses torch.func.hessian to compute the Hessian of each fitness
-        component w.r.t. all positions, then extracts the diagonal blocks.
+        This method uses torch.func.jacrev to compute the per-walker gradient field,
+        then differentiates it to extract each walker's Hessian block.
 
         Args:
             positions: Walker positions [N, d]
@@ -1005,10 +964,9 @@ class FitnessOperator(PanelModel):
 
         N, _d = positions.shape
 
-        # Define fitness function: positions -> scalar (sum of fitness)
-        # This matches the compute_hessian behavior which computes ∂²(Σfitness)/∂positions²
-        def fitness_sum_fn(pos: Tensor) -> Tensor:
-            """Compute sum of fitness for all walkers given all positions."""
+        # Define fitness function: positions -> vector of per-walker fitness
+        def fitness_vec_fn(pos: Tensor) -> Tensor:
+            """Compute fitness for all walkers given all positions."""
             fitness, _ = compute_fitness(
                 positions=pos,
                 velocities=velocities,
@@ -1024,25 +982,20 @@ class FitnessOperator(PanelModel):
                 epsilon_dist=self.epsilon_dist,
                 rho=self.rho,
             )
-            return fitness.sum()
+            return fitness
 
-        # Compute full Hessian of sum of fitness w.r.t. all positions
-        # Shape: [N, d, N, d] - full Hessian of scalar function
-        hess_full_global = hessian(fitness_sum_fn)(positions)  # [N, d, N, d]
+        def per_walker_grad(pos: Tensor) -> Tensor:
+            jac = jacrev(fitness_vec_fn)(pos)  # [N, N, d]
+            idx = torch.arange(pos.shape[0], device=pos.device)
+            return jac[idx, idx]  # [N, d]
 
-        # Extract diagonal blocks: hess[i, :, :] = ∂²(Σfitness)/∂position_i²
-        # This gives us the Hessian block for each walker
-        hess_all = []
-        for i in range(N):
-            hess_i_block = hess_full_global[i, :, i, :]  # [d, d]
-            hess_all.append(hess_i_block)
-
-        # Stack into [N, d, d]
-        hess_full = torch.stack(hess_all)
+        # Differentiate the per-walker gradient field
+        hess_full = jacrev(per_walker_grad)(positions)  # [N, d, N, d]
+        idx = torch.arange(N, device=positions.device)
+        hess_full = hess_full[idx, :, idx, :]  # [N, d, d]
 
         if diagonal_only:
-            # Extract diagonal elements [N, d]
-            return torch.stack([hess_full[i].diagonal() for i in range(N)])
+            return hess_full.diagonal(dim1=1, dim2=2)
         return hess_full
 
     def compute_hessian_hvp(
@@ -1080,30 +1033,28 @@ class FitnessOperator(PanelModel):
         """
         N, d = positions.shape
 
-        # Define fitness sum function
-        def fitness_sum(pos: Tensor) -> Tensor:
-            """Compute sum of fitness for all walkers given all positions."""
-            fitness, _ = compute_fitness(
-                positions=pos,
-                velocities=velocities,
-                rewards=rewards,
-                alive=alive,
-                companions=companions,
-                alpha=self.alpha,
-                beta=self.beta,
-                eta=self.eta,
-                lambda_alg=self.lambda_alg,
-                sigma_min=self.sigma_min,
-                A=self.A,
-                epsilon_dist=self.epsilon_dist,
-                rho=self.rho,
-            )
-            return fitness.sum()
-
         # Compute all Hessian blocks using HVP
         hess_blocks = []
 
         for i in range(N):
+            def fitness_i_fn(pos: Tensor) -> Tensor:
+                fitness, _ = compute_fitness(
+                    positions=pos,
+                    velocities=velocities,
+                    rewards=rewards,
+                    alive=alive,
+                    companions=companions,
+                    alpha=self.alpha,
+                    beta=self.beta,
+                    eta=self.eta,
+                    lambda_alg=self.lambda_alg,
+                    sigma_min=self.sigma_min,
+                    A=self.A,
+                    epsilon_dist=self.epsilon_dist,
+                    rho=self.rho,
+                )
+                return fitness[i]
+
             # Compute Hessian block H[i, :, i, :] using HVPs
             hess_block_i = torch.zeros((d, d), device=positions.device, dtype=positions.dtype)
 
@@ -1114,7 +1065,7 @@ class FitnessOperator(PanelModel):
 
                 # Compute HVP: (H @ e_j) where e_j is the j-th basis vector for walker i
                 _, hvp_result = torch.autograd.functional.hvp(
-                    fitness_sum, positions, tangents, create_graph=False
+                    fitness_i_fn, positions, tangents, create_graph=False
                 )
 
                 # Extract the i-th walker's response (this is column j of H[i, :, i, :])

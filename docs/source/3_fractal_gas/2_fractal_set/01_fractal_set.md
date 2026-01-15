@@ -8,9 +8,9 @@
 
 **Antisymmetric Selection Structure**: IG edges are **directed** with an antisymmetric cloning potential: $V_{\mathrm{clone}}(i \to j) = \Phi_j - \Phi_i = -V_{\mathrm{clone}}(j \to i)$. This sign flip under exchange is formally analogous to fermionic antisymmetry (without claiming physical fermions). The directed structure captures the asymmetric influence of fitness differences on cloning decisions.
 
-**Triangular Interactions and Wilson Loops**: The fundamental closed loops are **3-cycles** (interaction triangles), not 4-cycles. Each triangle $\triangle_{ij,t}$ has vertices $(n_{j,t}, n_{i,t}, n_{i,t+1})$ connected by IG, CST, and IA edges. **Plaquettes** (4-cycles) are derived structures: two adjacent triangles sharing a diagonal. Wilson loops on triangles measure quantum phase accumulated around single interactions; for the $\mathrm{U}(1)$ phase connection, plaquette Wilson loops factorize into products of triangle holonomies.
+**Triangular Interactions and Wilson Loops**: The fundamental closed loops are **3-cycles** (interaction triangles), not 4-cycles. Each triangle $\triangle_{ij,t}$ has vertices $(n_{j,t}, n_{i,t}, n_{i,t+1})$ connected by IG, CST, and IA edges. **Plaquettes** (4-cycles) are derived structures: two adjacent triangles sharing a diagonal. Wilson loops on triangles measure quantum phase accumulated around single interactions; plaquette Wilson loops factorize into products of triangle holonomies.
 
-**Lossless Reconstruction Guarantee**: The Fractal Set contains sufficient information to reconstruct discrete-time dynamics: phase-space trajectories $(x_i(t), v_i(t))$, all force components $(\mathbf{F}_{\mathrm{stable}}, \mathbf{F}_{\mathrm{adapt}}, \mathbf{F}_{\mathrm{viscous}})$, diffusion tensor samples $\Sigma_{\mathrm{reg}}(x_i(t), S(t))$, fitness/reward values at visited points, and the empirical measure $f_k(t)$. Reconstruction is exact for stored scalars and machine-precision for spinor-encoded vectors; randomness is recoverable only through its realized increments.
+**Lossless Reconstruction Guarantee**: The Fractal Set contains sufficient information to reconstruct discrete-time dynamics: phase-space trajectories $(x_i(t), v_i(t))$, all force components $(\mathbf{F}_{\mathrm{stable}}, \mathbf{F}_{\mathrm{adapt}}, \mathbf{F}_{\mathrm{viscous}})$, diffusion tensor samples $\Sigma_{\mathrm{reg}}(x_i(t), S(t))$, fitness/reward values at visited points, and the empirical measure $f_k(t)$. Reconstruction is exact for stored scalars and machine-precision for spinor-encoded vectors; realized stochastic increments are stored explicitly via $\psi_{\mathrm{noise}}$.
 
 ## Introduction
 
@@ -19,7 +19,7 @@ Every physical measurement ultimately reduces to numbers that do not depend on w
 
 But physics also involves quantities that *do* depend on your coordinate choice: velocities, forces, gradients. If I say a particle is moving at 5 m/s "to the right," that statement depends on which direction I call right. These are *vectors*, and they transform in a specific way when you rotate your coordinate system. The challenge is: how do you store vector data in a coordinate-free way?
 
-The answer is *spinors*. A spinor is a mathematical object that encodes the same information as a vector but transforms more naturally under rotations. When you rotate your coordinate system, the spinor transforms by the spin representation (often lower-dimensional and algebraically simpler than the vector representation). More importantly, two observers using different coordinate systems can recover the *same* vector from the *same* spinor—they just apply their respective transformations.
+The answer is *spinors*. A spinor is a mathematical object that encodes the same information as a vector but transforms more naturally under rotations. When you rotate your coordinate system, the spinor transforms by the spin representation (algebraically simpler, and in low dimensions sometimes lower-dimensional than the vector representation). More importantly, two observers using different coordinate systems can recover the *same* vector from the *same* spinor—they just apply their respective transformations.
 
 This document defines the **Fractal Set**: a complete data structure that records everything the Fractal Gas algorithm computes, stored in a coordinate-free way. Scalars go on nodes. Spinors go on edges. The result is a mathematical object that can be passed between observers, stored, analyzed, and reconstructed without any reference to a particular coordinate system.
 :::
@@ -59,13 +59,15 @@ The Fractal Set captures the Fractal Gas algorithm as a **2-dimensional directed
 
 - **CST Edges $E_{\mathrm{CST}}$** (1-simplices): Directed edges $(n_{i,t}, n_{i,t+1})$ connecting consecutive timesteps of the same walker, provided the walker is alive at time $t$. These form a forest of directed paths (one per persistent walker ID); genealogical links from cloning are recorded separately.
 
-- **IG Edges $E_{\mathrm{IG}}$** (1-simplices): Directed edges $(n_{i,t}, n_{j,t})$ connecting all ordered pairs of distinct alive walkers at the same timestep. At timestep $t$ with $k$ alive walkers, there are $k(k-1)$ directed IG edges forming a complete directed graph (all ordered pairs).
+- **IG Edges $E_{\mathrm{IG}}$** (1-simplices): Directed edges $(n_{i,t}, n_{j,t})$ connecting all ordered pairs of distinct alive walkers at the same timestep, for each $t \in \{0, \ldots, T\}$. At timestep $t$ with $k_t$ alive walkers, there are $k_t(k_t-1)$ directed IG edges forming a complete directed graph (all ordered pairs).
 
-- **IA Edges $E_{\mathrm{IA}}$** (1-simplices): Directed edges $(n_{i,t+1}, n_{j,t})$ connecting the effect (walker $i$ at $t+1$) to the cause (walker $j$ at $t$). These **close the causal triangles**, attributing each walker's evolution to its influencers. For a fixed population with persistent IDs, there are $k_t(k_t-1)$ IA edges per timestep.
+- **IA Edges $E_{\mathrm{IA}}$** (1-simplices): Directed edges $(n_{i,t+1}, n_{j,t})$ connecting the effect (walker $i$ at $t+1$) to the cause (walker $j$ at $t$). These **close the causal triangles**, attributing each walker's evolution to its influencers. There are $k_t(k_t-1)$ IA edges per **update** timestep $t \in \{0,\ldots,T-1\}$ (with $k_t = N$ in Fractal Gas).
 
 - **Interaction Triangles $\mathcal{T}$** (2-simplices): Each triangle $\triangle_{ij,t}$ has vertices $\{n_{j,t}, n_{i,t}, n_{i,t+1}\}$ and boundary edges (IG, CST, IA). These are the **fundamental closed loops** of the structure.
 
 - **Weight functions**: $\omega_{\mathrm{CST}}: E_{\mathrm{CST}} \to \mathbb{R}_{>0}$ assigns temporal weights (typically $\Delta t$), $\omega_{\mathrm{IG}}: E_{\mathrm{IG}} \to \mathbb{R}$ assigns selection coupling weights (the antisymmetric cloning potential), and $\omega_{\mathrm{IA}}: E_{\mathrm{IA}} \to [0,1]$ assigns influence attribution weights.
+
+We assume $N \geq 2$ so interaction graphs are nontrivial.
 
 :::{div} feynman-prose
 Why do we need *three* types of edges? Because causality has three components: evolution, influence, and attribution.
@@ -84,12 +86,10 @@ The following table summarizes the structural properties:
 | Property | CST Edges | IG Edges | IA Edges |
 |----------|-----------|----------|----------|
 | **Direction** | Timelike ($t \to t+1$) | Spacelike (same $t$) | Diagonal ($t+1 \to t$) |
-| **Cardinality** | $\sum_t |\mathcal{A}(t)|$ | $\sum_t k_t(k_t - 1)$ | $\sum_t k_t(k_t - 1)$* |
+| **Cardinality** | $\sum_{t=0}^{T-1} |\mathcal{A}(t)|$ | $\sum_{t=0}^{T} k_t(k_t - 1)$ | $\sum_{t=0}^{T-1} k_t(k_t - 1)$ |
 | **Topology** | Forest (acyclic) | Complete directed graph per $t$ | Bipartite per $(t, t+1)$ |
 | **Key weight** | Timestep $\Delta t$ | Cloning potential $V_{\mathrm{clone}}$ | Influence weight $w_{ij}$ |
 | **Role in triangle** | Evolution edge | Influence edge | Attribution edge |
-
-*Cardinality assumes a fixed population with persistent IDs; see {prf:ref}`def-fractal-set-ia-edges` for the general definition.
 
 ---
 
@@ -155,35 +155,41 @@ Vectors transform by $d \times d$ rotation matrices. For computational and geome
 :::{prf:definition} Spinor Space
 :label: def-fractal-set-spinor-space
 
-For state space dimension $d$, let $\mathbb{S}_d$ be a chosen complex spinor module. For odd $d$, $\dim_{\mathbb{C}} \mathbb{S}_d = 2^{(d-1)/2}$. For even $d$, Dirac spinors have $\dim_{\mathbb{C}} = 2^{d/2}$ and split into two Weyl (chiral) modules of dimension $2^{d/2 - 1}$. A **spinor** is an element $\psi \in \mathbb{S}_d$.
+For state space dimension $d$, fix a complex spinor module $\mathbb{S}_d$. For $d \geq 3$, choose a Clifford representation $\{\Gamma_i\}_{i=1}^d$ on $\mathbb{S}_d$. For $d = 2$, we use the minimal Spin(2) module $\mathbb{C}$ with the quadratic map $v = \psi^2$ (already full for $\mathbb{R}^2$). For odd $d$, $\dim_{\mathbb{C}} \mathbb{S}_d = 2^{(d-1)/2}$. For even $d \geq 4$, the Dirac module has $\dim_{\mathbb{C}} = 2^{d/2}$ and splits into two Weyl (chiral) modules; to represent **all** vectors we use the full Dirac module. A **spinor** is an element $\psi \in \mathbb{S}_d$.
 :::
 
-The spinor dimension depends on $d$. We denote $s_d := \dim_{\mathbb{C}} \mathbb{S}_d$ for the representation chosen for storage (Dirac by default; Weyl in even dimensions when a chiral structure is acceptable). Example choices:
+The spinor dimension depends on $d$. We denote $s_d := \dim_{\mathbb{C}} \mathbb{S}_d$ for the representation chosen for storage. The Fractal Set uses the minimal Spin(2) spinor in $d = 2$, Dirac spinors in even dimensions $d \geq 4$ (full vector coverage), and minimal spinors in odd dimensions. Example choices:
 
 | Dimension $d$ | Storage module $\mathbb{S}_d$ | Complex Dimension | Real Parameters | Notes |
 |---------------|-------------------------------|-------------------|-----------------|-------|
-| 2 | $\mathbb{C}$ | 1 | 2 | Vector-as-complex (full-angle); strict Spin(2) uses $v = \psi^2$ |
+| 2 | $\mathbb{C}$ | 1 | 2 | Spin(2) spinor with $v = \psi^2$ |
 | 3 | $\mathbb{C}^2$ | 2 | 4 | Pauli spinors |
-| 4 | $\mathbb{C}^4$ | 4 | 8 | Dirac; Weyl ($\mathbb{C}^2$) if chiral structure is fixed |
+| 4 | $\mathbb{C}^4$ | 4 | 8 | Dirac spinors (full vector coverage) |
 | 5 | $\mathbb{C}^4$ | 4 | 8 | Minimal odd-dimensional spinor |
-| 6 | $\mathbb{C}^4$ (Weyl) | 4 | 8 | Dirac is $\mathbb{C}^8$ if full bilinears are needed |
+| 6 | $\mathbb{C}^8$ | 8 | 16 | Dirac spinors (full vector coverage) |
 | 7 | $\mathbb{C}^8$ | 8 | 16 | Minimal odd-dimensional spinor |
-| 8 | $\mathbb{C}^8$ (Weyl) | 8 | 16 | Dirac is $\mathbb{C}^{16}$ if full bilinears are needed |
+| 8 | $\mathbb{C}^{16}$ | 16 | 32 | Dirac spinors (full vector coverage) |
 
-For general $d$, the Dirac spinor dimension is $2^{\lfloor d/2 \rfloor}$, and Weyl halves it when available. Storage and complexity scale with the chosen $s_d$.
+For general $d$, the Dirac spinor dimension is $2^{\lfloor d/2 \rfloor}$. Storage and complexity scale with the chosen $s_d$.
 
 :::{prf:definition} Spinor Representation of $\mathrm{SO}(d)$
 :label: def-fractal-set-spinor-rep
 
-The **spinor representation** is a group homomorphism $S: \mathrm{Spin}(d) \to \mathrm{GL}(\mathbb{S}_d)$ where $\mathrm{Spin}(d)$ is the double cover of $\mathrm{SO}(d)$. For each rotation $R \in \mathrm{SO}(d)$, there exist exactly two preimages $\pm U \in \mathrm{Spin}(d)$ such that the following diagram commutes up to a unit phase (equivalently, $\pi(S(U)\psi) = R \pi(\psi)$ for all $\psi$):
+The **spinor representation** is a group homomorphism $S: \mathrm{Spin}(d) \to \mathrm{GL}(\mathbb{S}_d)$ where $\mathrm{Spin}(d)$ is the double cover of $\mathrm{SO}(d)$. For each rotation $R \in \mathrm{SO}(d)$, there exist exactly two preimages $\pm U \in \mathrm{Spin}(d)$ such that the **equivariant quadratic map** $\pi$ satisfies:
+
+$$\pi(S(U)\psi) = R \, \pi(\psi).$$
+
+For $d \geq 3$ (or any Clifford module), $\pi(\psi)_i = \psi^\dagger \Gamma_i \psi$. For $d = 2$, $\pi(\psi) = \psi^2$.
+
+Equivalently, the following diagram commutes:
 
 $$\begin{array}{ccc}
-\mathbb{R}^d & \xrightarrow{R} & \mathbb{R}^d \\
-\downarrow \iota & & \downarrow \iota \\
-\mathbb{S}_d & \xrightarrow{S(U)} & \mathbb{S}_d
+\mathbb{S}_d & \xrightarrow{S(U)} & \mathbb{S}_d \\
+\downarrow \pi & & \downarrow \pi \\
+\mathbb{R}^d & \xrightarrow{R} & \mathbb{R}^d
 \end{array}$$
 
-where $\iota: \mathbb{R}^d \to \mathbb{S}_d$ is the vector-to-spinor embedding.
+A vector-to-spinor map $\iota$ is then a choice of section of $\pi$ (a gauge-fixing), introduced below.
 :::
 
 The sign ambiguity ($\pm U$ both correspond to $R$) reflects the double-cover structure and is a **gauge freedom**—both choices encode the same physical vector.
@@ -205,7 +211,7 @@ Now we need the actual recipe: given a vector, how do you make a spinor? And giv
 
 The key tool is the Clifford algebra—a mathematical structure that encodes the geometry of orthonormal bases. Do not worry too much about the formalism; what matters is the result. In low dimensions, the conversion is simple and explicit.
 
-In 2D, we can identify $\mathbb{R}^2$ with $\mathbb{C}$ and store a vector as $v_1 + iv_2$. If you want a strict Spin(2) spinor, you treat the spinor as a square root: $v = \psi^2$, so rotations act by half-angles on $\psi$.
+In 2D, we identify $\mathbb{R}^2$ with $\mathbb{C}$ and represent a vector by a **spinor square**: $v = \psi^2$. This keeps the half-angle action of Spin(2) and makes the U(1) phase the natural gauge freedom.
 
 In 3D, things get more interesting. A vector becomes a 2-component complex spinor using spherical coordinates. With our normalization, $\|\psi\|^2 = \|v\|$. The **relative phase and amplitudes** encode the direction; the **overall U(1) phase** does *not* change the vector. This is the Hopf fibration in disguise: $S^3 / S^1 \cong S^2$.
 
@@ -221,10 +227,11 @@ The explicit correspondence uses the **Clifford algebra** $\mathrm{Cl}(d)$ gener
 
 The **vector-to-spinor embedding** $\iota: \mathbb{R}^d \to \mathbb{S}_d$ encodes vectors as spinors with a **canonical phase convention**. For $v = \sum_i v_i e_i \in \mathbb{R}^d$:
 
-**Case $d = 2$**: Direct complex encoding (vector-as-complex),
+**Case $d = 2$**: Spinor square representation. Write $v = v_1 + i v_2 = r e^{i\phi}$ with $\phi \in (-\pi, \pi]$ and define
 
-$$\iota(v) = v_1 + i v_2 \in \mathbb{C}.$$
-This is bijective; $\pi(\iota(v)) = v$ exactly. If strict Spin(2) covariance is required, one can instead store a half-angle spinor $\psi$ with $v = \psi^2$ and take $\pi(\psi) = \psi^2$. With the linear encoding, rotations act via the squared Spin(2) element.
+$$\iota(v) = \sqrt{r} \, e^{i\phi/2} \in \mathbb{C}.$$
+
+Then the extraction map is $\pi(\psi) = \psi^2$, so $\pi(\iota(v)) = v$. The phase convention fixes the sign ambiguity of the square root.
 
 **Case $d = 3$**: Using the **canonical lift** with real first component when possible,
 
@@ -235,9 +242,9 @@ where $(\|v\|, \theta, \phi)$ are spherical coordinates: $v = \|v\|(\sin\theta\c
 
 **For $v = 0$**: $\iota(0) = (0, 0)^\top$.
 
-**General $d$**: The embedding extends via the irreducible Clifford algebra representation on $\mathbb{S}_d$, with analogous phase conventions ensuring uniqueness.
+**General $d \geq 3$**: The embedding extends via the chosen Clifford representation on $\mathbb{S}_d$, with analogous phase conventions ensuring a unique representative in each gauge class.
 
-**Remark**: The map $\iota$ is continuous but not linear for $d \geq 3$. The phase convention removes the $\mathrm{U}(1)$ gauge freedom inherent in the Hopf fibration $S^3 \to S^2$.
+**Remark**: The map $\iota$ is not linear for $d \geq 3$. Any global phase convention introduces a branch cut; $\iota$ is smooth on each gauge patch but cannot be globally continuous because the $\mathrm{U}(1)$ bundle $S^{2n+1} \to \mathbb{C}P^n$ is nontrivial.
 :::
 
 :::{prf:definition} Spinor-to-Vector Map
@@ -245,11 +252,19 @@ where $(\|v\|, \theta, \phi)$ are spherical coordinates: $v = \|v\|(\sin\theta\c
 
 The **spinor-to-vector extraction** $\pi: \mathbb{S}_d \to \mathbb{R}^d$ is the left inverse of $\iota$ (on the image of $\iota$):
 
+**Case $d = 2$**: For $\psi \in \mathbb{C}$ identified with $\mathbb{R}^2$,
+
+$$\pi(\psi) = \psi^2 = \mathrm{Re}(\psi^2) \, e_1 + \mathrm{Im}(\psi^2) \, e_2.$$
+
 **Case $d = 3$**: For $\psi = \begin{pmatrix} \alpha \\ \beta \end{pmatrix} \in \mathbb{C}^2$,
 
 $$\pi(\psi) = \begin{pmatrix} 2\mathrm{Re}(\alpha^*\beta) \\ 2\mathrm{Im}(\alpha^*\beta) \\ |\alpha|^2 - |\beta|^2 \end{pmatrix}.$$
 
-This is the standard formula for extracting a 3-vector from a Pauli spinor.
+**General $d \geq 3$**: With a fixed Clifford representation $\{\Gamma_i\}$,
+
+$$\pi(\psi)_i = \psi^\dagger \Gamma_i \psi,$$
+
+which is equivariant under $\mathrm{Spin}(d)$ and reduces to the low-dimensional formulas above.
 :::
 
 :::{prf:proposition} Transformation Covariance
@@ -419,6 +434,8 @@ At timestep $t$, the **alive walker set** is:
 
 $$\mathcal{A}(t) := \{i \in \{1, \ldots, N\} : s(n_{i,t}) = 1\}.$$
 The number of alive walkers is $k_t := |\mathcal{A}(t)|$.
+
+In the Fractal Gas algorithm the population is conserved, so $k_t = N$ for all $t$ (walkers may change state, but slots persist).
 :::
 
 ### 3.2 Causal Set Axioms
@@ -595,7 +612,7 @@ The vector-to-spinor map $\iota: \mathbb{R}^d \to \mathbb{S}_d$ and spinor-to-ve
 
 For $d \leq 4$, conversions are constant-time with fixed arithmetic operations. For general $d$, the eigenvector computation in $\iota$ is $O(s^3)$ in the worst case for an $s \times s$ Hermitian matrix, while $\pi$ (the bilinear forms $\psi^\dagger \Gamma_i \psi$) is $O(s^2)$ per component, giving $O(d\,s^2)$ total. Sparse Clifford representations can reduce constants.
 
-*Proof.* For $d = 2$: single complex multiplication/extraction. For $d = 3$: trigonometric functions and 2×2 matrix operations. For general $d$: eigenvalue decomposition of $s \times s$ Hermitian matrix. $\square$
+*Proof.* For $d = 2$: constant-time complex square root/extraction. For $d = 3$: trigonometric functions and 2×2 matrix operations. For general $d$: eigenvalue decomposition of $s \times s$ Hermitian matrix. $\square$
 :::
 
 ---
@@ -611,7 +628,7 @@ For $d \leq 4$, conversions are constant-time with fixed arithmetic operations. 
 The **Information Graph (IG) edge set** is:
 
 $$E_{\mathrm{IG}} := \{(n_{i,t}, n_{j,t}) : i, j \in \mathcal{A}(t), \; i \neq j, \; t \in \{0, \ldots, T\}\}.$$
-Each IG edge connects an **ordered pair** of distinct alive walkers at the same timestep. The edges are **directed**: by convention, $(n_{i,t}, n_{j,t})$ is oriented from the influenced walker $i$ toward the influencer $j$.
+Each IG edge connects an **ordered pair** of distinct alive walkers at the same timestep. The edges are **directed**: by convention, $(n_{i,t}, n_{j,t})$ is oriented from the influenced walker $i$ toward the influencer $j$. Edges at $t = T$ are terminal-time snapshots and do not participate in IA edges or triangles.
 :::
 
 :::{prf:proposition} IG Edge Cardinality
@@ -717,7 +734,7 @@ Each IG edge $e = (n_{i,t}, n_{j,t}) \in E_{\mathrm{IG}}$ carries the following 
 | Normalized weight | $w_{ij}(e)$ | $\mathbb{R}_{\geq 0}$ | [probability] | $w_{ij} = K_\rho(e) / \sum_{l \in \mathcal{A}(t) \setminus \{i\}} K_\rho(x_i, x_l)$ |
 | Euclidean distance | $d_{ij}(e)$ | $\mathbb{R}_{\geq 0}$ | [distance] | $\|x_i - x_j\|$ |
 | Algorithmic distance | $d_{\mathrm{alg}, ij}(e)$ | $\mathbb{R}_{\geq 0}$ | [distance] | $\sqrt{\|x_i - x_j\|^2 + \lambda_{\mathrm{alg}}\|v_i - v_j\|^2}$ |
-| Phase potential | $\theta_{ij}(e)$ | $\mathbb{R}$ | [dimensionless] | $-d_{\mathrm{alg}, ij}^2 / (2\varepsilon_c^2 \hbar_{\mathrm{eff}})$ |
+| Phase potential | $\theta_{ij}(e)$ | $\mathbb{R}$ | [dimensionless] | $-(\Phi_j - \Phi_i)/\hbar_{\mathrm{eff}}$ |
 | Source fitness | $\Phi_i(e)$ | $\mathbb{R}_{\geq 0}$ | [dimensionless] | $\Phi(x_i)$ |
 | Target fitness | $\Phi_j(e)$ | $\mathbb{R}_{\geq 0}$ | [dimensionless] | $\Phi(x_j)$ |
 | **Cloning potential** | $V_{\mathrm{clone}}(e)$ | $\mathbb{R}$ | [dimensionless] | $\Phi_j - \Phi_i$ (antisymmetric) |
@@ -767,7 +784,7 @@ $$\mathbf{F}_{\mathrm{viscous}}(x_i, S, t) = \sum_{e \in E_{\mathrm{IG}}: i(e) =
 *Proof.* Each IG edge $(n_{i,t}, n_{j,t})$ stores the spinor $\psi_{\mathrm{viscous}, ij}$ of the pairwise force. Summing over all edges with source $i$ at time $t$ and applying the spinor-to-vector map gives the total viscous force. $\square$
 :::
 
-### 4.5 Algorithmic Distance and Phase
+### 4.5 Algorithmic Distance and Fitness Phase
 
 The Latent Fractal Gas uses **algorithmic distance** in phase space to determine companion selection weights.
 
@@ -783,18 +800,23 @@ where $\lambda_{\mathrm{alg}} \geq 0$ is a parameter weighting velocity similari
 :::{prf:definition} Phase Potential
 :label: def-fractal-set-phase-potential
 
-The **phase potential** associated with the pair $(i, j)$ is:
+The **phase potential** associated with the pair $(i, j)$ is the fitness phase difference:
 
-$$\theta_{ij} := -\frac{d_{\mathrm{alg}}(i, j)^2}{2\varepsilon_c^2 \hbar_{\mathrm{eff}}},$$
-where $\varepsilon_c$ is a coherence scale and $\hbar_{\mathrm{eff}}$ is a dimensionless phase scale (chosen so $\theta_{ij}$ is dimensionless).
+$$
+\theta_i := -\frac{\Phi_i}{\hbar_{\mathrm{eff}}}, \quad
+\theta_{ij} := \theta_j - \theta_i = -\frac{\Phi_j - \Phi_i}{\hbar_{\mathrm{eff}}}.
+$$
+
+The additive fitness baseline $\Phi \to \Phi + c$ shifts $\theta_i$ by a constant and leaves $\theta_{ij}$ invariant, giving the $U(1)$ phase redundancy.
 :::
 
-The phase potential appears in the complex coupling amplitude $\psi_{ij} = \sqrt{P_{\mathrm{comp}}(i,j)} \cdot e^{i\theta_{ij}}$, which encodes both the magnitude (probability of selection) and phase (interference potential) of the walker-walker interaction.
+The phase potential appears in the complex coupling amplitude
+$\psi_{ij} = \sqrt{P_{\mathrm{comp}}(i,j)} \cdot e^{i\theta_{ij}}$, which encodes the magnitude (selection probability from algorithmic distance) and the phase (fitness difference) of the walker-walker interaction.
 
 :::{div} feynman-prose
 The algorithmic distance combines position and velocity into a single measure of "similarity" in phase space. Two walkers that are close in position but moving in opposite directions are less similar than two walkers that are equally close but moving together. This is sensible for optimization: walkers moving coherently toward a fitness peak should cooperate more than walkers that happen to be nearby but are exploring different directions.
 
-The phase potential then converts this distance into a quantum-like phase. Close walkers have small phase differences and can interfere constructively. Distant walkers have large phase differences and interfere destructively or not at all. This creates the possibility of wave-like behavior in the walker ensemble—a feature that emerges naturally from the algorithm's structure without being explicitly designed.
+The algorithmic distance controls the amplitude of interaction through $P_{\mathrm{comp}}$, while the fitness difference sets the phase. Close walkers interact strongly (large amplitude), and large fitness gaps generate rapid phase winding. This creates the possibility of wave-like interference in the walker ensemble—a feature that emerges naturally from the algorithm's structure without being explicitly designed.
 :::
 
 ---
@@ -890,8 +912,8 @@ The direction is deliberately "retrocausal"—from later to earlier time. We are
 
 The **Influence Attribution (IA) edge set** is:
 
-$$E_{\mathrm{IA}} := \{(n_{i,t+1}, n_{j,t}) : i \in \mathcal{A}(t+1), \; j \in \mathcal{A}(t), \; i \neq j, \; t \in \{0, \ldots, T-1\}\}.$$
-Each IA edge connects the **effect** (walker $i$ at time $t+1$) to a **cause** (walker $j$ at time $t$). The direction is **retrocausal**: from later to earlier time, attributing the outcome to its source. In the common fixed-population case where $\mathcal{A}(t+1) = \mathcal{A}(t)$, this reduces to ordered pairs within a single alive set.
+$$E_{\mathrm{IA}} := \{(n_{i,t+1}, n_{j,t}) : i, j \in \mathcal{A}(t), \; i \neq j, \; t \in \{0, \ldots, T-1\}\}.$$
+Each IA edge connects the **effect** (walker $i$ at time $t+1$) to a **cause** (walker $j$ at time $t$). The direction is **retrocausal**: from later to earlier time, attributing the outcome to its source.
 :::
 
 :::{prf:definition} IA Edge Attributes
@@ -913,13 +935,11 @@ For **cloning**, $w_{\mathrm{IA}}(e) = 1$ if $\chi_{\mathrm{clone}}(e) = 1$, els
 :::{prf:proposition} IA Edge Cardinality
 :label: prop-fractal-set-ia-cardinality
 
-The IA edge cardinality is:
+Let $E_{\mathrm{IG}}^{<T} := \{(n_{i,t}, n_{j,t}) \in E_{\mathrm{IG}} : t \in \{0, \ldots, T-1\}\}$. The IA edge cardinality equals the IG edge cardinality on update timesteps:
 
-$$|E_{\mathrm{IA}}| = \sum_{t=0}^{T-1} \left(k_{t+1}k_t - |\mathcal{A}(t+1) \cap \mathcal{A}(t)|\right).$$
+$$|E_{\mathrm{IA}}| = |E_{\mathrm{IG}}^{<T}| = \sum_{t=0}^{T-1} k_t(k_t - 1).$$
 
-If $\mathcal{A}(t+1) = \mathcal{A}(t)$ for all $t$ (fixed population with persistent IDs), this reduces to $|E_{\mathrm{IA}}| = \sum_{t=0}^{T-1} k_t(k_t - 1)$.
-
-*Proof.* At each $t$, IA edges are all ordered pairs $(i, j)$ with $i \in \mathcal{A}(t+1)$, $j \in \mathcal{A}(t)$, excluding the diagonal $i = j$ for IDs present at both times. Summing over $t$ gives the formula. $\square$
+*Proof.* At each $t \in \{0, \ldots, T-1\}$, IA edges are all ordered pairs $(i, j)$ with $i \neq j$ and $i, j \in \mathcal{A}(t)$. The count is $k_t(k_t - 1)$, matching the IG edges at the same timestep; IG edges at $t = T$ are terminal snapshots and are excluded. $\square$
 :::
 
 ### 5.4 Interaction Triangles: The Fundamental 2-Simplices
@@ -940,17 +960,17 @@ $$V(\triangle_{ij,t}) = \{n_{j,t}, n_{i,t}, n_{i,t+1}\}$$
 
 The **triangle set** is:
 
-$$\mathcal{T} := \{\triangle_{ij,t} : i, j \in \mathcal{A}(t), \; i \neq j, \; s(n_{i,t+1}) = 1, \; t \in \{0, \ldots, T-1\}\}.$$
+$$\mathcal{T} := \{\triangle_{ij,t} : i, j \in \mathcal{A}(t), \; i \neq j, \; t \in \{0, \ldots, T-1\}\}.$$
 :::
 
 :::{prf:proposition} Triangle Cardinality
 :label: prop-fractal-set-triangle-cardinality
 
-The number of interaction triangles equals the number of ordered IG edges participating in updates:
+The number of interaction triangles equals the number of IG edges at each update:
 
-$$|\mathcal{T}| = \sum_{t=0}^{T-1} k_t(k_t - 1).$$
+$$|\mathcal{T}| = |E_{\mathrm{IG}}^{<T}| = |E_{\mathrm{IA}}| = \sum_{t=0}^{T-1} k_t(k_t - 1).$$
 
-At each timestep $t$, there is one triangle for each ordered pair of distinct alive walkers. If the population is fixed with persistent IDs, this count also matches $|E_{\mathrm{IA}}|$ and the subset of $E_{\mathrm{IG}}$ restricted to $t \in \{0, \ldots, T-1\}$.
+At each update timestep $t \in \{0, \ldots, T-1\}$, there is one triangle for each ordered pair of distinct alive walkers.
 
 *Proof.* Each triangle $\triangle_{ij,t}$ is uniquely determined by the ordered pair $(i, j)$ and timestep $t$, in bijection with IG edges at the same timestep. $\square$
 :::
@@ -1041,28 +1061,28 @@ $$\partial_2 \triangle_{ij,t} = e_{\mathrm{IG}} + e_{\mathrm{CST}} - e_{\mathrm{
 :::{prf:corollary} Euler Characteristic
 :label: cor-fractal-set-euler
 
-For a single timestep $t$ with $k = k_t$ alive walkers, the local Euler characteristic of the **directed** $(t, t+1)$ slice (counting oriented IG edges as distinct 1-cells) is:
+For a single timestep $t$ with $k = k_t$ alive walkers, the local Euler characteristic of the $(t, t+1)$ simplicial slice is:
 
-$$\chi_t = |V_t| - |E_t| + |F_t| = 2k - k(2k-1) + k(k-1) = k(2 - k).$$
+$$\chi_t = |V_t| - |E_t| + |F_t| = 2k - \left(k + \frac{k(k-1)}{2} + k(k-1)\right) + k(k-1) = \frac{1}{2}k(3 - k).$$
 
-For $k \geq 3$, this is negative, indicating nontrivial topology. If you identify opposite IG orientations, the count becomes $\chi_t = \tfrac{1}{2}k(3-k)$.
+For $k \geq 4$, this is negative, indicating nontrivial topology.
 
-*Proof.* Vertices: $2k$ (walkers at $t$ and $t+1$). Edges: $k$ (CST) + $k(k-1)$ (IG at $t$) + $k(k-1)$ (IA) = $k + 2k(k-1) = k(2k-1)$. Faces: $k(k-1)$ triangles.
+*Proof.* Vertices: $2k$ (walkers at $t$ and $t+1$). Edges: $k$ (CST) + $\frac{k(k-1)}{2}$ (undirected IG at $t$) + $k(k-1)$ (IA) = $k + \frac{3}{2}k(k-1)$. Faces: $k(k-1)$ triangles.
 
 Calculation:
 
-$$\chi_t = 2k - k(2k-1) + k(k-1) = 2k - 2k^2 + k + k^2 - k = 2k - k^2 = k(2-k).$$
+$$\chi_t = 2k - \left(k + \frac{3}{2}k(k-1)\right) + k(k-1) = k - \frac{1}{2}k(k-1) = \frac{1}{2}k(3-k).$$
 $\square$
 :::
 
 :::{div} feynman-prose
 What does the negative Euler characteristic tell us? It tells us the interaction structure is *rich*—more connected than a simple surface would allow.
 
-For two walkers ($k = 2$), we get $\chi = 0$, the same as a torus or a cylinder. Each walker can only interact with one other, so the structure is relatively simple.
+For two walkers ($k = 2$), we get $\chi = 1$, the same as a disk. Each walker can only interact with one other, so the structure is relatively simple.
 
-For three walkers ($k = 3$), we get $\chi = -3$. Now things get interesting. Each walker influences two others, and is influenced by two others. The triangles start overlapping and sharing edges. You cannot flatten this structure onto a plane without cutting something.
+For three walkers ($k = 3$), we get $\chi = 0$, the same as a cylinder. The triangles start overlapping and sharing edges, and the topology becomes nontrivial but still low-genus.
 
-As $k$ grows, the Euler characteristic becomes increasingly negative: $\chi \approx -k^2$. The interaction structure becomes a high-genus surface—a "sphere with many handles," topologically speaking. This is not a bug; it is a feature. The rich connectivity is what allows information to flow between all pairs of walkers, which is what makes the algorithm work.
+For $k \geq 4$, the Euler characteristic becomes negative: $\chi \approx -\tfrac{1}{2}k^2$ for large $k$. The interaction structure becomes a high-genus surface—a "sphere with many handles," topologically speaking. This is not a bug; it is a feature. The rich connectivity is what allows information to flow between all pairs of walkers, which is what makes the algorithm work.
 
 The fact that the Fractal Set forms a genuine 2-dimensional 2-complex with simplicial support—not just a graph—means we can apply the entire machinery of algebraic topology: homology groups, Betti numbers, and cohomological field theories. The triangles are not decorations; they are load-bearing mathematical structure.
 :::
@@ -1072,7 +1092,7 @@ The fact that the Fractal Set forms a genuine 2-dimensional 2-complex with simpl
 :::{prf:definition} Gauge Connection on Edges
 :label: def-fractal-set-gauge-connection
 
-A **gauge connection** on the Fractal Set assigns to each oriented edge $e$ a **parallel transport operator** $U_e \in \mathrm{U}(1)$ (or more generally, $U_e \in G$ for a gauge group $G$). For the phase connection, we use:
+A **gauge connection** on the Fractal Set assigns to each oriented edge $e$ a **parallel transport phase** $U_e \in \mathrm{U}(1)$. For the phase connection, we use:
 - $U_{\mathrm{IG}}(e) = e^{i\theta_{ij}}$ where $\theta_{ij}$ is the phase potential from {prf:ref}`def-fractal-set-phase-potential`
 - $U_{\mathrm{CST}}(e) = e^{i\phi_{\mathrm{CST}}}$ where $\phi_{\mathrm{CST}}$ is the phase accumulated during evolution
 - $U_{\mathrm{IA}}(e) = e^{i\phi_{\mathrm{IA}}}$ where $\phi_{\mathrm{IA}}$ is the attribution phase
@@ -1087,27 +1107,24 @@ The **Wilson loop** around an interaction triangle $\triangle_{ij,t}$ is the **h
 
 $$W(\triangle_{ij,t}) := U_{\mathrm{IG}}(e_{\mathrm{IG}}) \cdot U_{\mathrm{CST}}(e_{\mathrm{CST}}) \cdot U_{\mathrm{IA}}(e_{\mathrm{IA}})^* = e^{i(\theta_{ij} + \phi_{\mathrm{CST}} - \phi_{\mathrm{IA}})}.$$
 
-For a general gauge group $G$, the Wilson loop is:
-
-$$W(\triangle) = \mathrm{tr}\left[\mathcal{P}\exp\left(i\oint_{\partial\triangle} A\right)\right]$$
-where $\mathcal{P}$ denotes path ordering and $A$ is the gauge connection 1-form.
+This is the phase holonomy around the triangle boundary.
 :::
 
 :::{prf:proposition} Plaquette Wilson Loop Factorization
 :label: prop-fractal-set-wilson-factorization
 
-For the **$\mathrm{U}(1)$ phase connection**, the plaquette holonomy factorizes into triangle holonomies:
+The plaquette holonomy factorizes into triangle holonomies:
 
 $$W(P_{ij,t}) = W(\triangle_{ij,t}) \cdot W(\triangle_{ji,t})^*$$
 
-*Proof.* The plaquette boundary $\partial P_{ij,t}$ equals $\partial\triangle_{ij,t} + \partial\triangle_{ji,t}$, with the shared IG edge canceling due to opposite orientations. In $\mathrm{U}(1)$, the path-ordered exponential around $\partial P$ equals the product of the triangle holonomies, and the shared IG edge contributes $U_{\mathrm{IG}} \cdot U_{\mathrm{IG}}^* = 1$. For non-abelian $G$, the group elements multiply in the same way, but the traced Wilson loop need not factorize. $\square$
+*Proof.* The plaquette boundary $\partial P_{ij,t}$ equals $\partial\triangle_{ij,t} + \partial\triangle_{ji,t}$, with the shared IG edge canceling due to opposite orientations. The holonomy around $\partial P$ is the product of the triangle holonomies, and the shared IG edge contributes $U_{\mathrm{IG}} \cdot U_{\mathrm{IG}}^* = 1$. $\square$
 :::
 
 :::{div} feynman-prose
 What does the Wilson loop around a triangle measure? It measures the **quantum phase accumulated during one complete interaction**.
 
 The Wilson loop combines three phases from the three edges of the triangle boundary:
-- **IG phase** $\theta_{ij}$: the algorithmic distance between walkers $i$ and $j$
+- **IG phase** $\theta_{ij}$: the fitness phase difference between walkers $i$ and $j$
 - **CST phase** $\phi_{\mathrm{CST}}$: the phase accumulated during $i$'s evolution
 - **IA phase** $-\phi_{\mathrm{IA}}$: the attribution phase (conjugated due to edge orientation)
 
@@ -1291,9 +1308,7 @@ indicating walker $i$ cloned from walker $j$ at timestep $t$. The genealogical t
 :::{prf:theorem} Lossless Reconstruction
 :label: thm-fractal-set-lossless
 
-The Fractal Set $\mathcal{F}$ contains **complete information** to reconstruct all Fractal Gas dynamics up to:
-1. The specific realization of the noise process $dW_i$ (which is encoded indirectly via its effects on trajectories)
-2. Interpolation between sampled positions (the landscapes are known only at walker-visited points)
+The Fractal Set $\mathcal{F}$ contains **complete information** to reconstruct all Fractal Gas dynamics at discrete timesteps, including the realized stochastic increments $\Sigma_{\mathrm{reg}} \circ dW_i$ stored on CST edges. The only missing information is interpolation between sampled positions (the landscapes are known only at walker-visited points).
 
 Formally: given $\mathcal{F}$, one can reconstruct all quantities in {prf:ref}`def-fractal-set-reconstruction-targets` exactly for discrete-time values and at sampled positions.
 
@@ -1320,7 +1335,7 @@ Any physical observable computed from the Fractal Gas dynamics—energy, work, e
 :::{div} feynman-prose
 The Fractal Set is the algorithm's complete memory. Nothing is lost. Every force that acted, every step that was taken, every walker that cloned—it is all there, encoded in a coordinate-free way.
 
-The only things not directly recorded are: (1) the specific random numbers that came out of the noise generator (though their effects are recorded in the resulting trajectories), and (2) what the fitness landscape looks like between the points that walkers actually visited (though you could interpolate if you wanted to).
+The only thing not directly recorded is what the fitness landscape looks like *between* the points that walkers actually visited (though you could interpolate if you wanted to). The realized stochastic increments themselves are stored on CST edges, so the full pathwise noise in state space is recoverable.
 
 This is not just theoretical completeness. It means you can take a Fractal Set, hand it to someone using completely different coordinates, and they can reconstruct the exact same physics. They will see the same energies, the same convergence rates, the same optimal solutions. The mathematics guarantees it.
 :::
@@ -1601,7 +1616,7 @@ You might wonder: is all this machinery practical? Does the coordinate-independe
 
 The answer is: the costs are modest, and the benefits are substantial. Let me give you the summary before we dive into the details.
 
-**Storage**: Spinors cost at most about 2x the storage of raw vectors for common low dimensions (e.g., $d \leq 6$ and even $d=8$ with Weyl choices). For $d=7$ the minimal odd-dimensional spinor is about $2.3\times$. This is cheap insurance for coordinate independence.
+**Storage**: Spinors cost at most 2x the storage of raw vectors for $d \leq 4$. The overhead grows for higher even dimensions when Dirac spinors are required, but remains controlled by the spinor dimension $s_d$. This is cheap insurance for coordinate independence.
 
 **Accuracy**: Reconstruction is exact for scalars and machine-precision for spinor-encoded vectors. You lose nothing to rounding in the spinor conversion.
 
@@ -1624,10 +1639,12 @@ For $d > 4$, the spinor dimension grows exponentially (Dirac scales as $2^{\lflo
 | 2 | 2 | 2 | 1.0× |
 | 3 | 3 | 4 | 1.33× |
 | 4 | 4 | 8 | 2.0× |
-| 5, 6 | 5–6 | 8 | 1.33–1.6× |
-| 7, 8 | 7–8 | 16 | 2.0–2.3× |
+| 5 | 5 | 8 | 1.6× |
+| 6 | 6 | 16 | 2.67× |
+| 7 | 7 | 16 | 2.29× |
+| 8 | 8 | 32 | 4.0× |
 
-*Proof.* From the spinor dimension table ({prf:ref}`def-fractal-set-spinor-space`) using the storage-efficient choices listed there; if Dirac spinors are used in even dimensions, the overhead doubles. Direct computation gives the ratios. $\square$
+*Proof.* From the spinor dimension table ({prf:ref}`def-fractal-set-spinor-space`) using the Dirac choices in even dimensions and minimal choices in odd dimensions. Direct computation gives the ratios. $\square$
 :::
 
 The storage overhead is compensated by the coordinate-independence benefit: no need to store or transmit basis information.
@@ -1706,7 +1723,7 @@ With indexing (hash tables on $(i, t)$ pairs), lookups become $O(1)$ expected ti
 
 - **Interaction triangles are the fundamental 2-simplices**: Each triangle $\triangle_{ij,t}$ records one complete interaction: "$j$ influenced $i$'s evolution from $t$ to $t+1$." Plaquettes (4-cycles) are derived structures—pairs of adjacent triangles.
 
-- **Wilson loops on triangles**: The holonomy around a triangle measures the quantum phase accumulated during one interaction. For the $\mathrm{U}(1)$ phase connection, plaquette Wilson loops factorize into products of triangle Wilson loops, establishing triangles as the fundamental gauge-invariant observables.
+- **Wilson loops on triangles**: The holonomy around a triangle measures the quantum phase accumulated during one interaction. Plaquette Wilson loops factorize into products of triangle Wilson loops, establishing triangles as the fundamental gauge-invariant observables.
 
 - **Lossless reconstruction**: The Fractal Set contains sufficient information to recover discrete-time dynamics—trajectories, forces, diffusion samples, fitness values at visited points, population dynamics—in any coordinate system with machine precision.
 

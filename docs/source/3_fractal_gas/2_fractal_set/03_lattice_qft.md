@@ -18,9 +18,11 @@
 
 For $N = d = 3$ dimensional latent space, this yields the Standard Model gauge group $SU(3) \times SU(2) \times U(1)$.
 
+In the real velocity basis the redundancy is $O(N)$ (or $SO(N)$ if orientation-preserving); the $SU(N)$ statement refers to the complexified viscous-force components discussed in §2.1.
+
 **Fermionic Statistics Emerge from Cloning Antisymmetry**: The cloning score satisfies $S_i(j) = -S_j(i) \cdot (V_j + \varepsilon_{\mathrm{clone}})/(V_i + \varepsilon_{\mathrm{clone}})$, yielding exact antisymmetry when $V_i \approx V_j$. The Algorithmic Exclusion Principle—at most one walker per pair can clone in any direction—is the discrete analog of Pauli exclusion. This is not put in by hand; it emerges from the logic of fitness-based selection.
 
-**Quantum Dynamics from Thermal Structure**: The temporal operator $D_t$ arises from the QSD's thermal equilibrium via Wick rotation and the KMS condition; detailed balance of the Boris-BAOAB dynamics ensures the KMS property. Grassmann variables model the exclusion structure, yielding a discrete fermionic action that converges to the Dirac equation in the continuum limit. The algorithm discovers quantum field theory.
+**Quantum Dynamics from Thermal Structure**: At QSD equilibrium, the reversible Boris-BAOAB diffusion kernel satisfies detailed balance, giving the KMS condition and Wick-rotated temporal operator $D_t$. Grassmann variables model the exclusion structure, yielding a discrete fermionic action that converges to the Dirac equation in the continuum limit. The algorithm discovers quantum field theory.
 
 ---
 
@@ -63,11 +65,12 @@ The Standard Model gauge group $SU(N) \times SU(2) \times U(1)$ does not emerge 
 
 The three gauge symmetries emerge from:
 
-**$U(1)$ — Fitness Phase Invariance**: The diversity companion selection mechanism measures fitness differences, not absolute values. The fitness phase $\theta^{\text{fit}} = -(\epsilon_F/T)\int V_{\text{fit}} \, dt$ can be shifted by a global constant without changing cloning probabilities. This $U(1)$ redundancy is the algorithmic origin of electromagnetism.
+**$U(1)$ — Fitness Phase Invariance**: The diversity companion selection mechanism measures fitness differences, not absolute values. Define the fitness phase $\theta_i := -\Phi_i/\hbar_{\text{eff}}$; a global shift $\Phi \to \Phi + c$ shifts all $\theta_i$ by the same constant and leaves $\theta_{ij}$ invariant. This $U(1)$ redundancy is the algorithmic origin of electromagnetism.
 
 **$SU(2)$ — Cloning Companion Doublet**: For each walker pair $(i, j)$ with $V_i \neq V_j$, exactly one can clone from the other ({prf:ref}`cor-fractal-set-selection-asymmetry`). This creates a natural $(+, -)$ doublet structure under local fitness comparison. Since different regions make independent fitness comparisons (locality), maintaining consistency across the CST requires a compensating $SU(2)$ gauge field. This is the algorithmic origin of the weak force.
 
-**$SU(N)$ — Viscous Force Index Symmetry**: The viscous force couples an $N$-component internal velocity vector. If the dynamics depends only on inner products (no preferred basis), it is invariant under unitary rotations of this internal space; factoring out the already-present overall $U(1)$ phase leaves an $SU(N)$ symmetry (with permutations as a discrete subgroup). This is the algorithmic origin of the strong force (with $N = d$ for $d$-dimensional latent space).
+**$SU(N)$ — Viscous Force Index Symmetry**: The viscous force couples an $N$-component **real** internal velocity vector. If the dynamics depends only on inner products (no preferred basis), it is invariant under orthogonal rotations $O(N)$ (or $SO(N)$ for orientation-preserving changes). Complexify the force components with momentum phases,
+$\tilde{c}_i^{(\alpha)} := F_\alpha^{(\text{visc})}(i)\exp(i p_i^{(\alpha)}\ell_0/\hbar_{\text{eff}})$ and $c_i^{(\alpha)} := \tilde{c}_i^{(\alpha)}/\|\tilde{c}_i\|$, with $p_i^{(\alpha)} = m v_i^{(\alpha)}$ and $\ell_0$ a characteristic IG length, and this redundancy lifts to unitary $U(N)$ basis changes; factoring out the overall $U(1)$ phase leaves $SU(N)$ (with permutations as a discrete subgroup). This is the algorithmic origin of the strong force (with $N = d$ for $d$-dimensional latent space). See {prf:ref}`thm-sm-su3-emergence`.
 
 :::{admonition} Connection to Standard Model
 :class: info
@@ -84,7 +87,7 @@ Think of it this way:
 
 - **$SU(2)$**: Like a binary choice—at each location, you decide who is "winning" and who is "losing." But neighboring locations might disagree on which is which. To reconcile these local choices, you need a connection. This is the weak force.
 
-- **$SU(N)$**: Like rotating an $N$-component arrow—any unitary change of basis (up to an overall phase) leaves the dynamics unchanged (permutations are a discrete subset). But different regions might choose different bases. Consistency requires a connection. This is the strong force.
+- **$SU(N)$**: Like rotating an $N$-component **real** arrow (an $O(N)$ redundancy). After complexifying the viscous force into a normalized complex vector with momentum phases, unitary basis changes (up to an overall phase) leave the dynamics unchanged (permutations are a discrete subset). But different regions might choose different bases. Consistency requires a connection. This is the strong force.
 
 Each gauge group has a completely different physical origin. They just happen to fit together into a single Standard Model.
 :::
@@ -326,6 +329,8 @@ $$
 S_i(j) := \frac{V_j - V_i}{V_i + \varepsilon_{\mathrm{clone}}}
 $$
 
+By construction the fitness is bounded below, $V_i \ge V_{\min} > -\varepsilon_{\mathrm{clone}}$ (see {doc}`1_the_algorithm/02_fractal_gas_latent`), so $V_i + \varepsilon_{\mathrm{clone}} > 0$ and the sign of $S_i(j)$ matches $\operatorname{sign}(V_j - V_i)$.
+
 **Antisymmetry relation:**
 
 $$
@@ -463,7 +468,7 @@ For the spatial part, the antisymmetric kernel $\tilde{K}_{ij}$ plays the role t
 
 For the temporal part, we need a discrete version of the time derivative. This is where the parallel transport operator $U_{ij}$ enters: it carries the field from one time to the next while accounting for the gauge phase accumulated along the way. The resulting "covariant derivative" $(\psi_j - U_{ij}\psi_i)/\Delta t$ is the discrete analog of $D_0\psi = \partial_0\psi + iA_0\psi$.
 
-The beautiful thing is that both pieces emerge from the algorithm. The spatial kernel comes from cloning scores. The temporal kernel comes from the KMS condition—the mathematical statement of thermal equilibrium—derived from detailed balance of the QSD dynamics. We are not putting in the Dirac equation by hand; we are deriving it from the structure of fitness-based dynamics.
+The beautiful thing is that both pieces emerge from the algorithm. The spatial kernel comes from cloning scores. The temporal kernel comes from the KMS condition—the mathematical statement of thermal equilibrium—derived from detailed balance of the reversible Boris-BAOAB diffusion kernel at QSD equilibrium. We are not putting in the Dirac equation by hand; we are deriving it from the structure of fitness-based dynamics.
 :::
 
 :::{prf:definition} Discrete Fermionic Action on Fractal Set
@@ -501,9 +506,10 @@ The KMS condition (named after Kubo, Martin, and Schwinger) is the mathematical 
 
 When you have a thermal system and you want to go from the statistical mechanics description (thermal equilibrium at temperature $T$) to the quantum mechanics description (unitary time evolution), you perform what is called a **Wick rotation**: you analytically continue from imaginary time $\tau$ to real time $t$ by setting $\tau = i t$ (equivalently $t = -i\tau$).
 
-In the Fractal Gas, the fitness function $V_{\mathrm{fit}}$ determines cloning probabilities. The probability of surviving for a time interval $\tau$ is proportional to $e^{-V_{\mathrm{fit}}\tau/T}$ (high fitness means better survival). This is exactly the form of a thermal weight—the Boltzmann factor.
+In the Fractal Gas, the fitness function $V_{\mathrm{fit}}$ determines cloning probabilities. The survival weight over a CST edge is proportional to $e^{-S_{\mathrm{fit}}}$, where the dimensionless fitness action is
+$S_{\mathrm{fit}} := (\epsilon_F/T)\int V_{\mathrm{fit}} \, dt$. We store this as the edge fitness action $\Phi_j - \Phi_i$. This is exactly the form of a thermal weight—the Boltzmann factor.
 
-When you Wick-rotate this to real time, the thermal weight $e^{-V_{\mathrm{fit}}\tau/T}$ becomes a phase $e^{-iV_{\mathrm{fit}}t/T}$. That is the origin of the fitness phase $\theta^{\mathrm{fit}}$. The parallel transport operator $U_{ij}$ is not put in by hand; it emerges from the thermal structure of the dynamics.
+When you Wick-rotate this to real time, the thermal weight $e^{-S_{\mathrm{fit}}}$ becomes a phase $e^{-iS_{\mathrm{fit}}/\hbar_{\text{eff}}}$. That is the origin of the fitness phase $\theta_{ij} = -(\Phi_j - \Phi_i)/\hbar_{\text{eff}}$. The parallel transport operator $U_{ij}$ is not put in by hand; it emerges from the thermal structure of the dynamics.
 
 This is one of those results that makes you sit up and pay attention. The algorithm is thermal. Wick rotation is real. The quantum mechanical phase factor is forced on us by the mathematics.
 :::
@@ -520,14 +526,20 @@ $$
 where the **parallel transport operator** is:
 
 $$
-U_{ij} = \exp\left(i\theta_{ij}^{\mathrm{fit}}\right), \quad \theta_{ij}^{\mathrm{fit}} = -\frac{\epsilon_F}{T}\int_{t_i}^{t_j} V_{\mathrm{fit}}(x_{ij}(t)) \, dt
+U_{ij} = \exp\left(i\theta_{ij}^{\mathrm{fit}}\right), \quad \theta_{ij}^{\mathrm{fit}} = \theta_j - \theta_i = -\frac{\Phi_j - \Phi_i}{\hbar_{\text{eff}}}
 $$
 
-where $x_{ij}(t)$ is the trajectory segment along the CST edge from $e_i$ to $e_j$.
+where $x_{ij}(t)$ is the trajectory segment along the CST edge from $e_i$ to $e_j$ and $\Phi_j - \Phi_i = (\epsilon_F/T)\int_{t_i}^{t_j} V_{\mathrm{fit}}(x_{ij}(t)) \, dt$.
 
-**Derivation**: The Boris-BAOAB dynamics ({prf:ref}`def-fractal-set-boris-baoab`) preserves the QSD/Gibbs measure, hence is reversible (detailed balance); the QSD state is therefore KMS {cite}`kossakowski1977quantum`, giving analyticity in the KMS strip and the Wick-rotated phase (see {prf:ref}`thm-os-os2-fg`).
+**Derivation**: At QSD equilibrium, the Boris-BAOAB diffusion kernel ({prf:ref}`def-fractal-set-boris-baoab`) preserves the QSD/Gibbs measure, hence is reversible (detailed balance); the QSD state is therefore KMS {cite}`kossakowski1977quantum`, giving analyticity in the KMS strip and the Wick-rotated phase (see {prf:ref}`thm-os-os2-fg`).
 
-**Status**: **PROVEN** (publication-ready; KMS from detailed balance)
+**Status**: **PROVEN** (publication-ready; equilibrium diffusion kernel, KMS from detailed balance)
+:::
+
+:::{admonition} Equilibrium Scope
+:class: warning
+
+The KMS/Wick-rotation argument applies to the **reversible diffusion kernel at QSD equilibrium**. Away from equilibrium, the cloning/selection step is dissipative and breaks detailed balance, so the KMS condition does not hold for the full interacting dynamics.
 :::
 
 :::{dropdown} 📖 ZFC Proof: Temporal Operator
@@ -539,9 +551,9 @@ Working in Grothendieck universe $\mathcal{U}$, the temporal operator constructi
 
 1. **Edge path**: $\gamma_{ij}: [t_i, t_j] \to \mathcal{X} \times \mathbb{R}^d$ is a continuous map (element of function space $C([a,b], \mathcal{X} \times \mathbb{R}^d) \in V_\mathcal{U}$).
 
-2. **Fitness action**: $S_{\mathrm{fitness}}(i \to j) = -(\epsilon_F/T)\int_{t_i}^{t_j} V_{\mathrm{fit}} \, dt$ is a real number (Lebesgue integral of bounded measurable function).
+2. **Fitness action**: $\Phi_j - \Phi_i = (\epsilon_F/T)\int_{t_i}^{t_j} V_{\mathrm{fit}} \, dt$ is a real number (Lebesgue integral of bounded measurable function), so $\theta_{ij} = -(\Phi_j - \Phi_i)/\hbar_{\text{eff}}$.
 
-3. **KMS analyticity**: Detailed balance of the Boris-BAOAB dynamics with respect to the QSD implies the KMS condition {cite}`kossakowski1977quantum` (see {prf:ref}`thm-os-os2-fg`), so the relevant correlation functions admit analytic continuation $t \to -i\tau$ in the strip $0 < \mathrm{Im}(t) < \beta$ where $\beta = 1/T$.
+3. **KMS analyticity**: Detailed balance of the Boris-BAOAB **diffusion kernel** at QSD equilibrium implies the KMS condition {cite}`kossakowski1977quantum` (see {prf:ref}`thm-os-os2-fg`), so the relevant correlation functions admit analytic continuation $t \to -i\tau$ in the strip $0 < \mathrm{Im}(t) < \beta$ where $\beta = 1/T$.
 
 4. **Wick rotation**: $S[t] \to iS^E[\tau]$ gives real Euclidean action $S^E[\tau] \in \mathbb{R}$.
 
@@ -601,7 +613,7 @@ $$
 Throughout this chapter, $D$ denotes the emergent spacetime dimension, while $d$ denotes the latent spatial dimension (typically $d = D - 1$). The formulas above hold for general $D$, but the physical 3+1 case is obtained by setting $D = 4$:
 
 - The Clifford algebra becomes $\mathrm{Cl}_{1,3}(\mathbb{R})$, and the gamma matrices take their standard 4D form.
-- With $d = 3$ and $N = d$, the non-abelian sector is $SU(3)$, and together with $SU(2) \times U(1)$ yields the Standard Model gauge group.
+- With $d = 3$ and $N = d$, the complexified viscous-force sector yields $SU(3)$, and together with $SU(2) \times U(1)$ this is the Standard Model gauge group.
 - The lattice actions and continuum limits reduce to the usual 3+1-dimensional QFT expressions.
 
 See {doc}`04_standard_model` for the complete $D = 4$ specialization.
@@ -686,6 +698,8 @@ $$
 $$
 where $w_{ee'} = d_g(x_e, x_{e'})^{-2}$ are distance-weighted edge weights encoding local geometry.
 
+**Kernel scaling**: For rigorous convergence {cite}`belkin2008foundation`, one typically uses localized kernel weights with bandwidth $\varepsilon_N \to 0$ and $N \varepsilon_N^{D/2} \to \infty$ (often with density normalization). The $d_g^{-2}$ form here is a shorthand for such localized scaling on the Fractal Set.
+
 **Convergence** (requires proof): Under appropriate regularity conditions on the QSD sampling:
 
 $$
@@ -757,7 +771,7 @@ The three gauge groups of the Standard Model emerge from three different algorit
 
 Fermions emerge from the antisymmetry of cloning scores. This is perhaps the deepest surprise: the algorithm does not know about the Pauli exclusion principle, but it produces a structure with the same mathematical signature. Two walkers cannot both clone from each other, just as two electrons cannot occupy the same state.
 
-The temporal dynamics—the Wick rotation, the KMS condition, the complex phases—all fall out of the thermal structure of the algorithm via detailed balance of the QSD dynamics. We are not putting in quantum mechanics by hand; we are deriving it from statistical mechanics.
+The temporal dynamics—the Wick rotation, the KMS condition, the complex phases—all fall out of the thermal structure of the algorithm via detailed balance of the **equilibrium diffusion kernel**. We are not putting in quantum mechanics by hand; we are deriving it from statistical mechanics.
 
 And in the continuum limit, all of this converges to the standard field theory formalism: the Dirac equation for fermions, the Yang-Mills action for gauge fields, the Klein-Gordon action for scalars.
 
@@ -773,7 +787,7 @@ This is either a very remarkable coincidence, or we have stumbled onto something
 | $SU(N)$ gauge field | Defined | From viscous force coupling |
 | Wilson loops | Defined | Gauge-invariant observables |
 | Fermionic structure | Derived | From cloning antisymmetry (exact when $V_i \approx V_j$) |
-| Temporal operator $D_t$ | Proven | Via detailed balance $\Rightarrow$ KMS condition and Wick rotation |
+| Temporal operator $D_t$ | Proven | Via detailed balance of the equilibrium diffusion kernel $\Rightarrow$ KMS condition and Wick rotation |
 | Dirac limit | Proven | Via Clifford algebra isomorphism ({prf:ref}`thm-sm-dirac-isomorphism`) |
 | Scalar fields | Defined | Graph Laplacian (convergence requires proof) |
 

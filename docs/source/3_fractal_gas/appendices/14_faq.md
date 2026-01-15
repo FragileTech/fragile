@@ -58,7 +58,7 @@ Velocity is not optional—it provides three essential capabilities:
 
 2. **Algorithmic distance.** The companion selection kernel ({prf:ref}`def-fg-soft-companion-kernel`) uses **algorithmic distance** $d_{\text{alg}}^2 = \|z_i - z_j\|^2 + \xi^2 \|v_i - v_j\|^2$, which includes velocity similarity. This ensures walkers moving in similar directions preferentially interact, creating coherent exploration fronts rather than random mixing.
 
-3. **Gauge field emergence.** The velocity encodes the de Broglie phase gradient that gives rise to the $U(1)$ gauge field ({prf:ref}`thm-sm-u1-emergence`). Without velocity, the fitness phase invariance would be trivial, and no electromagnetic-like structure could emerge. The spinor representation ({prf:ref}`def-fractal-set-vec-to-spinor`) stores velocity on edges in a coordinate-independent manner.
+3. **Gauge field emergence.** Velocity supplies the momentum phases used in the $SU(N)$ color complexification and enters the algorithmic distance that sets companion amplitudes. Without velocity, the $SU(N)$ sector collapses and the IG amplitudes lose kinematic structure. The spinor representation ({prf:ref}`def-fractal-set-vec-to-spinor`) stores velocity on edges in a coordinate-independent manner.
 
 The computational cost of doubling state dimension is amortized across benefits: better mixing, momentum conservation, and emergent gauge structure.
 
@@ -196,11 +196,11 @@ Momentum conservation prevents three failure modes:
 
 1. **Energy injection.** Without momentum conservation, cloning could inject arbitrary kinetic energy into the swarm. If walker $i$ (slow) clones from walker $j$ (fast), naive copying would create a second fast walker—injecting energy from nowhere. The inelastic collision $v_{\text{new}} = \alpha_{\text{rest}} v_j + (1 - \alpha_{\text{rest}}) v_i$ blends velocities, conserving total momentum $\sum_i m_i v_i$.
 
-2. **Thermodynamic consistency.** The QSD exists only if the dynamics satisfy detailed balance (or have well-defined steady state). Arbitrary energy injection breaks detailed balance, preventing convergence to any equilibrium distribution.
+2. **Thermodynamic consistency.** A QSD can exist without detailed balance; it only requires a well-defined conditioned steady state for the absorbing dynamics (see {doc}`../appendices/07_discrete_qsd`). Detailed balance is needed only for the reversible diffusion kernel to be an equilibrium Gibbs measure, which is what supports the KMS and Wick-rotation arguments. Arbitrary energy injection can block equilibration, but nonequilibrium QSDs can still exist.
 
 3. **Symplectic structure.** The phase space $(z, v)$ has a symplectic form inherited from Hamiltonian mechanics. Momentum conservation preserves this form, ensuring the BAOAB integrator ({prf:ref}`def-baoab-splitting`) remains symplectic. Without conservation, long-time numerical stability degrades.
 
-4. **Gauge consistency.** The $U(1)$ phase is conjugate to momentum. Violating momentum conservation would break the $U(1)$ gauge symmetry, destroying the electromagnetic-like structure.
+4. **Gauge consistency.** The momentum-phase encoding supplies the complex phases used for the $SU(N)$ color sector. Violating momentum conservation would disrupt that encoding and the resulting $SU(N)$ structure (the $U(1)$ fitness phase is tied to baseline shifts, not momentum).
 
 The restitution coefficient $\alpha_{\text{rest}} \in [0,1]$ controls energy dissipation while preserving momentum.
 
@@ -529,11 +529,11 @@ The appropriate attitude is curiosity, not credulity.
 The gauge structure emerges from two principles: **redundancy** and **locality**:
 
 1. **Redundancy.** A gauge symmetry is a redundancy in description: multiple configurations represent the same physical state. In the Fractal Gas:
-   - **$U(1)$**: Overall fitness scale is arbitrary (multiplying all fitness by constant changes nothing).
+   - **$U(1)$**: Overall fitness baseline is arbitrary (adding a constant to all fitness values changes nothing).
    - **$SU(2)$**: Labeling of source/target in cloning is conventional.
-   - **$SU(N)$**: Index assignment in viscous force coupling is arbitrary.
+   - **$SU(N)$**: The viscous force is invariant under orthogonal basis rotations of the real velocity components; after momentum-phase complexification this lifts to $U(N)$ and yields $SU(N)$.
 
-2. **Locality.** The redundancy is **local**: it can be different at each node. Fitness at node $n_i$ can be rescaled independently of node $n_j$.
+2. **Locality.** The redundancy is **local**: it can be different at each node. Fitness baselines (and the associated phase choices) can shift independently at $n_i$ and $n_j$.
 
 3. **Gauge principle.** When redundancy meets locality, you **must** introduce a connection (parallel transport) to compare values at different locations. This is not a choice—it is forced by the requirement of well-defined physics.
 
@@ -552,11 +552,11 @@ The gauge structure is a **consequence** of the algorithm's redundancies, not an
 
 Three gauge groups emerge from three **independent** redundancies:
 
-1. **$U(1)$ from fitness phase.** The diversity companion selection ({prf:ref}`thm-sm-u1-emergence`) involves a fitness ratio $V_j/V_i$. Multiplying all fitness by $e^{i\theta}$ leaves the ratio invariant. This phase redundancy generates $U(1)$.
+1. **$U(1)$ from fitness phase.** The diversity companion selection ({prf:ref}`thm-sm-u1-emergence`) depends on fitness differences. Writing $\theta_i := -\Phi_i/\hbar_{\text{eff}}$, a global shift $\Phi \to \Phi + c$ shifts all $\theta_i$ by the same constant while leaving $\theta_{ij}$ invariant. This phase redundancy generates $U(1)$.
 
 2. **$SU(2)$ from cloning doublet.** The cloning operation ({prf:ref}`thm-sm-su2-emergence`) distinguishes source (fitter) from target (less fit). The ordered pair $(i,j)$ vs $(j,i)$ forms a doublet. Combined with locality, this generates $SU(2)$.
 
-3. **$SU(N)$ from viscous coupling.** The viscous force ({prf:ref}`thm-sm-su3-emergence`) couples walker $i$ to walkers $\{j_1, \ldots, j_{d}\}$ in $d$ directions. The index assignment is arbitrary, generating $SU(d)$. For $d=3$, this is $SU(3)$.
+3. **$SU(N)$ from viscous coupling.** The viscous force ({prf:ref}`thm-sm-su3-emergence`) has an $O(d)$ redundancy on the real velocity components. Momentum-phase complexification lifts this to $U(d)$ and yields $SU(d)$ (modulo the overall phase). For $d=3$, this is $SU(3)$.
 
 The three redundancies are **logically independent**: you can have fitness phase without cloning asymmetry, or cloning without viscous coupling. Their product $U(1) \times SU(2) \times SU(d)$ is not assumed—it is the **minimal** structure capturing all three redundancies simultaneously.
 
@@ -621,7 +621,7 @@ The emergence is **structural**: the algebraic relations of cloning match the al
 
 The dimension-gauge correspondence ({prf:ref}`thm-sm-generation-dimension`) is the key insight:
 
-1. **Dimension determines structure.** The viscous force couples each walker to $d$ neighbors. The permutation symmetry of these $d$ directions generates $SU(d)$. For $d=3$, this is $SU(3)$.
+1. **Dimension determines structure.** The viscous force acts on $d$ real velocity components. Isotropic coupling is invariant under $O(d)$ basis rotations; after momentum-phase complexification this lifts to $U(d)$ and yields $SU(d)$. For $d=3$, this is $SU(3)$.
 
 2. **Why $d=3$?** The effective dimension of human-relevant environments (3D physical space + time) constrains the latent space. Agents interacting with 3D environments naturally develop $d \approx 3$ macro-state dimensions.
 
@@ -894,7 +894,7 @@ The following would falsify specific claims:
 
 3. **Cloning statistics.** Measure the antisymmetry $S_i(j) + S_j(i) \cdot (V_i + \varepsilon)/(V_j + \varepsilon)$. **Prediction**: equals zero within numerical precision. **Falsification**: systematic non-zero residual.
 
-4. **Gauge group structure.** For $d \neq 3$, the gauge group should be $SU(d) \times SU(2) \times U(1)$. **Prediction**: $d=4$ gives $SU(4)$ color. **Falsification**: different group emerges.
+4. **Gauge group structure.** For $d \neq 3$, the complexified viscous-force sector should yield $SU(d)$, so the gauge group is $SU(d) \times SU(2) \times U(1)$. **Prediction**: $d=4$ gives $SU(4)$ color. **Falsification**: different group emerges.
 
 5. **QSD convergence.** Run the algorithm and measure convergence to predicted QSD. **Prediction**: matches $\rho \propto R^{\alpha D / \beta}$. **Falsification**: different exponent or functional form.
 

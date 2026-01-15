@@ -1,5 +1,5 @@
 """
-Kinetic Operator: Langevin Dynamics with BAOAB Integrator
+Kinetic Operator: Langevin Dynamics with BAOAB / Boris-BAOAB Integrator
 
 This module implements the kinetic operator for the Euclidean Gas algorithm,
 providing Langevin dynamics integration using the BAOAB scheme.
@@ -77,9 +77,10 @@ class KineticOperator(PanelModel):
     """Kinetic operator using BAOAB integrator for Langevin dynamics.
 
     Supports adaptive extensions from the Geometric Viscous Fluid Model:
-    - Fitness-based force: -ε_F · ∇V_fit (optional)
-    - Anisotropic diffusion: Σ_reg = (∇²V_fit + ε_Σ I)^{-1/2} (optional)
+    - Fitness-based force: -ε_F · ∇V_fit,i (optional)
+    - Anisotropic diffusion: Σ_reg = (∇²V_fit,i + ε_Σ I)^{-1/2} (optional)
     - Viscous coupling: ν · F_viscous for fluid-like collective behavior (optional)
+    - Boris rotation: curl-driven velocity rotation for non-conservative reward fields (optional)
 
     Mathematical notation:
     - gamma (γ): Friction coefficient
@@ -88,6 +89,7 @@ class KineticOperator(PanelModel):
     - epsilon_F (ε_F): Adaptation rate for fitness force
     - epsilon_Sigma (ε_Σ): Hessian regularization parameter
     - nu (ν): Viscous coupling strength
+    - beta_curl (β_curl): Curl coupling strength for Boris rotation
 
     Reference: docs/source/2_geometric_gas/11_geometric_gas.md
     """
@@ -118,7 +120,9 @@ class KineticOperator(PanelModel):
         doc="Time step size (Δt)",
     )
     integrator = param.Selector(
-        default="baoab", objects=["baoab"], doc="Integration scheme (baoab)"
+        default="baoab",
+        objects=["baoab", "boris-baoab"],
+        doc="Integration scheme (baoab or boris-baoab)",
     )
 
     # Fitness-based adaptive force (Geometric Gas extension)
@@ -129,7 +133,7 @@ class KineticOperator(PanelModel):
         doc="Adaptation rate for fitness force (ε_F)",
     )
     use_fitness_force = param.Boolean(
-        default=False, doc="Enable fitness-based force -ε_F · ∇V_fit"
+        default=False, doc="Enable fitness-based force -ε_F · ∇V_fit,i"
     )
     use_potential_force = param.Boolean(default=True, doc="Enable potential gradient force -∇U(x)")
 
@@ -154,6 +158,17 @@ class KineticOperator(PanelModel):
         bounds=(0, None),
         inclusive_bounds=(False, True),
         doc="Length scale (l) for Gaussian kernel K(r) = exp(-r²/(2l²))",
+    )
+
+    # Boris rotation (curl-driven velocity rotation)
+    beta_curl = param.Number(
+        default=0.0,
+        bounds=(0, None),
+        doc="Curl coupling strength (β_curl) for Boris rotation",
+    )
+    curl_field = param.Parameter(
+        default=None,
+        doc="Optional curl/2-form field for Boris rotation: callable F(x)->[N, d, d] or [N, 3]",
     )
 
     # Velocity squashing map
@@ -257,6 +272,14 @@ class KineticOperator(PanelModel):
                 "end": 5.0,
                 "step": 0.1,
             },
+            "beta_curl": {
+                "type": pn.widgets.EditableFloatSlider,
+                "width": INPUT_WIDTH,
+                "name": "β_curl (Boris strength)",
+                "start": 0.0,
+                "end": 10.0,
+                "step": 0.1,
+            },
             "V_alg": {
                 "type": pn.widgets.EditableFloatSlider,
                 "width": INPUT_WIDTH,
@@ -289,6 +312,7 @@ class KineticOperator(PanelModel):
             "nu",
             "use_viscous_coupling",
             "viscous_length_scale",
+            "beta_curl",
             "V_alg",
             "use_velocity_squashing",
         ]
@@ -308,6 +332,8 @@ class KineticOperator(PanelModel):
         nu: float = 0.0,
         use_viscous_coupling: bool = False,
         viscous_length_scale: float = 1.0,
+        beta_curl: float = 0.0,
+        curl_field=None,
         V_alg: float = float("inf"),
         use_velocity_squashing: bool = False,
         potential=None,
@@ -333,6 +359,8 @@ class KineticOperator(PanelModel):
             nu: Viscous coupling strength (ν)
             use_viscous_coupling: Enable viscous coupling
             viscous_length_scale: Length scale for Gaussian kernel
+            beta_curl: Curl coupling strength for Boris rotation
+            curl_field: Curl/2-form field; callable F(x)->[N, d, d] or [N, 3]
             V_alg: Algorithmic velocity bound for smooth squashing map (default: inf)
             use_velocity_squashing: Enable smooth velocity squashing map ψ_v
             potential: Target potential (must be callable: U(x) -> [N]).
@@ -366,6 +394,8 @@ class KineticOperator(PanelModel):
             nu=nu,
             use_viscous_coupling=use_viscous_coupling,
             viscous_length_scale=viscous_length_scale,
+            beta_curl=beta_curl,
+            curl_field=curl_field,
             V_alg=V_alg,
             use_velocity_squashing=use_velocity_squashing,
         )
@@ -384,6 +414,10 @@ class KineticOperator(PanelModel):
             if not callable(potential):
                 msg = f"potential must be callable, got {type(potential)}"
                 raise TypeError(msg)
+
+        if self.curl_field is not None and not callable(self.curl_field):
+            msg = f"curl_field must be callable, got {type(self.curl_field)}"
+            raise TypeError(msg)
 
         # Precompute BAOAB constants
         self.dt = self.delta_t
@@ -406,12 +440,12 @@ class KineticOperator(PanelModel):
 
         The total force is: F_total = F_potential + F_fitness where:
         - F_potential = -∇U(x) (if use_potential_force=True)
-        - F_fitness = -ε_F · ∇V_fit (if use_fitness_force=True)
+        - F_fitness = -ε_F · ∇V_fit,i (if use_fitness_force=True)
 
         Args:
             x: Positions [N, d]
             v: Velocities [N, d]
-            grad_fitness: Precomputed fitness gradient ∇V_fit [N, d]
+            grad_fitness: Precomputed per-walker fitness gradient ∇V_fit,i [N, d]
                 (required if use_fitness_force=True)
 
         Returns:
@@ -434,7 +468,7 @@ class KineticOperator(PanelModel):
             force -= grad_U
             x.requires_grad_(False)  # noqa: FBT003
 
-        # Fitness force: -ε_F · ∇V_fit(x)
+        # Fitness force: -ε_F · ∇V_fit,i(x)
         if self.use_fitness_force:
             if grad_fitness is None:
                 msg = "grad_fitness required when use_fitness_force=True"
@@ -516,19 +550,95 @@ class KineticOperator(PanelModel):
         # This is a batched matrix-vector product
         return self.nu * torch.einsum("ij,ijd->id", weights, v_diff)  # [N, d]
 
+    def _boris_rotate(self, v: Tensor, curl: Tensor) -> Tensor:
+        """Apply Boris rotation for curl-driven velocity updates.
+
+        Supports two curl representations:
+        - Vector field [N, 3] (3D only), interpreted as a magnetic field.
+        - Matrix field [N, d, d], interpreted as a skew-symmetric 2-form.
+        """
+        if curl.device != v.device or curl.dtype != v.dtype:
+            curl = curl.to(device=v.device, dtype=v.dtype)
+
+        if curl.dim() == 2:
+            if v.shape[1] != 3:
+                msg = "curl_field must return [N, d, d] for d != 3"
+                raise ValueError(msg)
+            if curl.shape != v.shape:
+                msg = f"curl_field returned {tuple(curl.shape)}, expected {tuple(v.shape)}"
+                raise ValueError(msg)
+
+            t = 0.5 * self.beta_curl * self.dt * curl
+            t_mag_sq = (t * t).sum(dim=-1, keepdim=True)
+            s = 2.0 * t / (1.0 + t_mag_sq)
+            v_prime = v + torch.cross(v, t, dim=-1)
+            return v + torch.cross(v_prime, s, dim=-1)
+
+        if curl.dim() == 3:
+            N, d, d2 = curl.shape
+            if N != v.shape[0] or d != d2 or d != v.shape[1]:
+                msg = f"curl_field returned {tuple(curl.shape)}, expected [N, d, d] = {(v.shape[0], v.shape[1], v.shape[1])}"
+                raise ValueError(msg)
+
+            sym = curl + curl.transpose(-1, -2)
+            max_sym = sym.abs().max().item()
+            if max_sym > 1e-6:
+                msg = f"curl_field must be skew-symmetric (2-form); max asymmetry {max_sym:.2e}"
+                raise ValueError(msg)
+
+            A = 0.5 * self.beta_curl * self.dt * curl
+            eye = torch.eye(d, device=v.device, dtype=v.dtype).expand(N, d, d)
+            rhs = torch.bmm(eye + A, v.unsqueeze(-1))
+            v_rot = torch.linalg.solve(eye - A, rhs).squeeze(-1)
+            return v_rot
+
+        msg = f"curl_field returned {curl.dim()}-D tensor; expected [N, 3] or [N, d, d]"
+        raise ValueError(msg)
+
+    def _apply_boris_kick(
+        self,
+        x: Tensor,
+        v: Tensor,
+        grad_fitness: Tensor | None,
+    ) -> Tensor:
+        """Apply one Boris-aware B step (half kick + rotation + half kick)."""
+        force = self._compute_force(x, v, grad_fitness)
+
+        viscous = (
+            self._compute_viscous_force(x, v)
+            if self.use_viscous_coupling
+            else torch.zeros_like(v)
+        )
+        v_minus = v + (self.dt / 2) * (force + viscous)
+
+        if self.curl_field is not None and self.beta_curl > 0:
+            curl = self.curl_field(x)
+            v_rot = self._boris_rotate(v_minus, curl)
+        else:
+            v_rot = v_minus
+
+        viscous_rot = (
+            self._compute_viscous_force(x, v_rot)
+            if self.use_viscous_coupling
+            else torch.zeros_like(v)
+        )
+        v_plus = v_rot + (self.dt / 2) * (force + viscous_rot)
+
+        return v_plus
+
     def _compute_diffusion_tensor(
         self,
         x: Tensor,
         hess_fitness: Tensor | None = None,
     ) -> Tensor:
-        """Compute anisotropic diffusion tensor Σ_reg = (∇²V_fit + ε_Σ I)^{-1/2}.
+        """Compute anisotropic diffusion tensor σ = c2 · (∇²V_fit,i + ε_Σ I)^{-1/2}.
 
         The regularized Hessian ensures positive definiteness and provides
         state-dependent noise aligned with the fitness landscape geometry.
 
         Args:
             x: Positions [N, d]
-            hess_fitness: Precomputed fitness Hessian ∇²V_fit
+        hess_fitness: Precomputed per-walker Hessian ∇²V_fit,i
                          - If diagonal_diffusion=True: [N, d]
                          - If diagonal_diffusion=False: [N, d, d]
                          Required if use_anisotropic_diffusion=True
@@ -570,8 +680,8 @@ class KineticOperator(PanelModel):
             # Ensure positive values (clamp to avoid NaN from negative values)
             hess_reg = torch.clamp(hess_reg, min=eps_I)
 
-            # Σ_diag = (H_reg)^{-1/2}
-            sigma = 1.0 / torch.sqrt(hess_reg)
+            # Σ_diag = c2 * (H_reg)^{-1/2}
+            sigma = self.c2 / torch.sqrt(hess_reg)
         else:
             # Full anisotropic case: matrix inverse square root
             # Add ε_Σ I to each [d, d] block
@@ -585,7 +695,7 @@ class KineticOperator(PanelModel):
             # Clamp eigenvalues to ensure positivity (handle numerical errors)
             eigenvalues = torch.clamp(eigenvalues, min=eps_I)
 
-            eigenvalues_inv_sqrt = 1.0 / torch.sqrt(eigenvalues)  # [N, d]
+            eigenvalues_inv_sqrt = self.c2 / torch.sqrt(eigenvalues)  # [N, d]
 
             # Reconstruct: Σ = Q Λ^{-1/2} Q^T
             sigma = (
@@ -611,15 +721,16 @@ class KineticOperator(PanelModel):
             A: x → x + (Δt/2) · v                 [Position update]
             B: v → v + (Δt/2) · F(x, v)          [Force step]
 
-        where F(x, v) = -∇U(x) - ε_F · ∇V_fit + ν · F_viscous(x, v) and noise can be:
+        where F(x, v) = -∇U(x) - ε_F · ∇V_fit,i + ν · F_viscous(x, v) and noise can be:
             - Isotropic: c2 · ξ where ξ ~ N(0, I)
-            - Anisotropic: Σ_reg · ξ where Σ_reg = (∇²V_fit + ε_Σ I)^{-1/2}
+            - Anisotropic: c2 Σ_reg · ξ where Σ_reg = (∇²V_fit,i + ε_Σ I)^{-1/2}
+            - Optional Boris rotation if curl_field is provided and beta_curl > 0
 
         Args:
             state: Current swarm state (must have .x and .v attributes)
-            grad_fitness: Precomputed fitness gradient ∇V_fit [N, d]
+            grad_fitness: Precomputed per-walker fitness gradient ∇V_fit,i [N, d]
                          (required if use_fitness_force=True)
-            hess_fitness: Precomputed fitness Hessian ∇²V_fit
+            hess_fitness: Precomputed per-walker Hessian ∇²V_fit,i
                          - If diagonal_diffusion=True: [N, d]
                          - If diagonal_diffusion=False: [N, d, d]
                          (required if use_anisotropic_diffusion=True)
@@ -638,11 +749,8 @@ class KineticOperator(PanelModel):
         x, v = state.x.clone(), state.v.clone()
         N, d = state.N, state.d
 
-        # === FIRST B STEP: Apply forces ===
-        force = self._compute_force(x, v, grad_fitness)
-        if self.use_viscous_coupling:
-            force += self._compute_viscous_force(x, v)
-        v += (self.dt / 2) * force
+        # === FIRST B STEP: Apply forces + optional Boris rotation ===
+        v = self._apply_boris_kick(x, v, grad_fitness)
 
         # === FIRST A STEP: Update positions ===
         x += (self.dt / 2) * v
@@ -670,11 +778,8 @@ class KineticOperator(PanelModel):
         # === SECOND A STEP: Update positions ===
         x += (self.dt / 2) * v
 
-        # === SECOND B STEP: Apply forces ===
-        force = self._compute_force(x, v, grad_fitness)
-        if self.use_viscous_coupling:
-            force += self._compute_viscous_force(x, v)
-        v += (self.dt / 2) * force
+        # === SECOND B STEP: Apply forces + optional Boris rotation ===
+        v = self._apply_boris_kick(x, v, grad_fitness)
 
         # === VELOCITY SQUASHING: Apply smooth radial squashing map ===
         if self.use_velocity_squashing:
