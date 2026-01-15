@@ -1,5 +1,5 @@
 (sec-section-non-local-memory-as-self-interaction-functional)=
-# 27: Non-Local Memory as Self-Interaction Functional
+# Non-Local Memory as Self-Interaction Functional
 
 ## TLDR
 

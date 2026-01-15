@@ -18,9 +18,9 @@
 
 For $N = d = 3$ dimensional latent space, this yields the Standard Model gauge group $SU(3) \times SU(2) \times U(1)$.
 
-**Fermionic Statistics Emerge from Cloning Antisymmetry**: The cloning score satisfies $S_i(j) = -S_j(i) \cdot (V_j + \varepsilon)/(V_i + \varepsilon)$, yielding exact antisymmetry when $V_i \approx V_j$. The Algorithmic Exclusion Principle—at most one walker per pair can clone in any direction—is the discrete analog of Pauli exclusion. This is not put in by hand; it emerges from the logic of fitness-based selection.
+**Fermionic Statistics Emerge from Cloning Antisymmetry**: The cloning score satisfies $S_i(j) = -S_j(i) \cdot (V_j + \varepsilon_{\mathrm{clone}})/(V_i + \varepsilon_{\mathrm{clone}})$, yielding exact antisymmetry when $V_i \approx V_j$. The Algorithmic Exclusion Principle—at most one walker per pair can clone in any direction—is the discrete analog of Pauli exclusion. This is not put in by hand; it emerges from the logic of fitness-based selection.
 
-**Quantum Dynamics from Thermal Structure**: The temporal operator $D_t$ arises rigorously from the QSD's thermal equilibrium via Wick rotation and the KMS condition. Grassmann variables model the exclusion structure, yielding a discrete fermionic action that converges to the Dirac equation in the continuum limit. The algorithm discovers quantum field theory.
+**Quantum Dynamics from Thermal Structure**: The temporal operator $D_t$ arises from the QSD's thermal equilibrium via Wick rotation and the KMS condition; detailed balance of the Boris-BAOAB dynamics ensures the KMS property. Grassmann variables model the exclusion structure, yielding a discrete fermionic action that converges to the Dirac equation in the continuum limit. The algorithm discovers quantum field theory.
 
 ---
 
@@ -67,7 +67,7 @@ The three gauge symmetries emerge from:
 
 **$SU(2)$ — Cloning Companion Doublet**: For each walker pair $(i, j)$ with $V_i \neq V_j$, exactly one can clone from the other ({prf:ref}`cor-fractal-set-selection-asymmetry`). This creates a natural $(+, -)$ doublet structure under local fitness comparison. Since different regions make independent fitness comparisons (locality), maintaining consistency across the CST requires a compensating $SU(2)$ gauge field. This is the algorithmic origin of the weak force.
 
-**$SU(N)$ — Viscous Force Index Symmetry**: The viscous force couples $N$ velocity components. Permuting these indices leaves the dynamics invariant, generating $SU(N)$ symmetry. This is the algorithmic origin of the strong force (with $N = d$ for $d$-dimensional latent space).
+**$SU(N)$ — Viscous Force Index Symmetry**: The viscous force couples an $N$-component internal velocity vector. If the dynamics depends only on inner products (no preferred basis), it is invariant under unitary rotations of this internal space; factoring out the already-present overall $U(1)$ phase leaves an $SU(N)$ symmetry (with permutations as a discrete subgroup). This is the algorithmic origin of the strong force (with $N = d$ for $d$-dimensional latent space).
 
 :::{admonition} Connection to Standard Model
 :class: info
@@ -84,7 +84,7 @@ Think of it this way:
 
 - **$SU(2)$**: Like a binary choice—at each location, you decide who is "winning" and who is "losing." But neighboring locations might disagree on which is which. To reconcile these local choices, you need a connection. This is the weak force.
 
-- **$SU(N)$**: Like shuffling cards—the $N$ velocity components can be permuted, and the physics is unchanged. But different regions might shuffle differently. Consistency requires a connection. This is the strong force.
+- **$SU(N)$**: Like rotating an $N$-component arrow—any unitary change of basis (up to an overall phase) leaves the dynamics unchanged (permutations are a discrete subset). But different regions might choose different bases. Consistency requires a connection. This is the strong force.
 
 Each gauge group has a completely different physical origin. They just happen to fit together into a single Standard Model.
 :::
@@ -111,10 +111,10 @@ A **U(1) gauge field** assigns parallel transport operators to edges:
 **CST edges (timelike):**
 
 $$
-U_{\mathrm{time}}(e_i \to e_j) = \exp\left(-i q A_0(e_i, e_j) \tau_{ij}\right) \in U(1)
+U_{\mathrm{time}}(e_i \to e_j) = \exp\left(i q \int_{t_i}^{t_j} A_0 \, dt\right) \in U(1)
 $$
 
-where $A_0$ is the temporal gauge potential and $\tau_{ij}$ is proper time.
+where $A_0$ is the temporal gauge potential and $\tau_{ij}$ is proper time (for slowly varying $A_0$, this reduces to $e^{i q A_0 \tau_{ij}}$).
 
 **IG edges (spacelike):**
 
@@ -129,12 +129,14 @@ where $\mathbf{A}$ is the spatial gauge potential.
 $$
 U(e_i, e_j) \mapsto \Omega(e_i) \, U(e_i, e_j) \, \Omega(e_j)^{-1}
 $$
+
+Equivalently, $U(e) = \exp\left(i q \int_e A_\mu \, dx^\mu\right)$ with sign conventions absorbed into $A_\mu$.
 :::
 
 :::{prf:definition} SU(N) Gauge Field (Yang-Mills)
 :label: def-sun-gauge-fractal
 
-For non-abelian gauge group $G = SU(N)$, parallel transport operators are $N \times N$ unitary matrices:
+For non-abelian gauge group $G = SU(N)$ (Yang-Mills theory {cite}`yang1954conservation`), parallel transport operators are $N \times N$ unitary matrices:
 
 $$
 U(e_i, e_j) = \mathcal{P} \exp\left(i g \int_{e_i}^{e_j} A_\mu^a T^a dx^\mu\right) \in SU(N)
@@ -160,7 +162,7 @@ Now we come to the question: how do you know if there is a "real" gauge field pr
 
 Here is the key insight. Parallel transport around a closed loop should bring you back to where you started. If I carry my compass from point A to B to C and back to A, the needle should still point the same direction it started. If it does not—if the needle has rotated by some angle $\Phi$—then there is real physics happening inside that loop. There is a magnetic field (or its generalization) threading through the loop.
 
-This is what the **plaquette holonomy** measures. A plaquette is the smallest closed loop in our discrete structure—think of it as a tiny square (or in our case, a small region bounded by CST and IG edges). You multiply together all the parallel transport operators around the loop. For $U(1)$, you get a phase $e^{i\Phi}$. That phase $\Phi$ is the discrete analog of the magnetic flux through the plaquette. It is the field strength tensor encoded in discrete form.
+This is what the **plaquette holonomy** measures. A plaquette is the smallest closed loop in our discrete structure—think of it as a tiny square (or in our case, a small region bounded by CST and IG edges). You multiply together all the parallel transport operators around the loop. For $U(1)$, you get a phase $e^{i q \Phi}$. That phase is the discrete analog of the magnetic flux through the plaquette (weighted by charge). It is the field strength tensor encoded in discrete form.
 
 The wonderful thing is that this is gauge-invariant. You can change your reference directions at each node (a gauge transformation), and the phases on individual edges will change—but the product around any closed loop stays the same. The physics is in the loops, not in the individual edges.
 :::
@@ -176,9 +178,9 @@ $$
 
 where $U(e_i, e_j)$ is the parallel transport from $e_i$ to $e_j$, and we use $U(e_j, e_i) = U(e_i, e_j)^\dagger$ for reversed traversal.
 
-For U(1): $U[P] = e^{i\Phi[P]}$ where $\Phi[P]$ is the total gauge flux through $P$.
+For U(1): $U[P] = e^{i q \Phi[P]}$ where $\Phi[P]$ is the total gauge flux through $P$.
 
-**Continuum limit:** $U[P] \to \exp(i \oint_P A_\mu dx^\mu) = \exp(i\iint_P F_{\mu\nu} dS^{\mu\nu})$ by Stokes' theorem.
+**Continuum limit:** $U[P] \to \exp(i q \oint_P A_\mu dx^\mu) = \exp(i q \iint_P F_{\mu\nu} dS^{\mu\nu})$ by Stokes' theorem.
 :::
 
 ### 2.4. Wilson Action
@@ -196,7 +198,7 @@ The parameter $\beta = 2N/g^2$ controls the coupling. Large $\beta$ means weak c
 :::{prf:definition} Wilson Lattice Gauge Action
 :label: def-wilson-action
 
-The **Wilson action** on the Fractal Set is:
+The **Wilson action** on the Fractal Set is {cite}`wilson1974confinement`:
 
 $$
 S_{\mathrm{Wilson}}[A] = \beta \sum_{\mathrm{plaquettes~} P \subset \mathcal{F}} \left(1 - \frac{1}{N} \mathrm{Re} \, \mathrm{Tr} \, U[P]\right)
@@ -232,10 +234,10 @@ The answer is gauge-invariant (because you came back to where you started), and 
 :::{prf:definition} Wilson Loop Operator
 :label: def-wilson-loop-lqft
 
-For a closed loop $\gamma$ in $\mathcal{F}$, the **Wilson loop** is (cf. {prf:ref}`def-fractal-set-wilson-loop`):
+For a closed loop $\gamma$ in $\mathcal{F}$, the **Wilson loop** is (cf. {prf:ref}`def-fractal-set-wilson-loop`) {cite}`wilson1974confinement,kogut1979introduction`:
 
 $$
-W[\gamma] = \mathrm{Tr}\left[\prod_{\mathrm{edges~} e \in \gamma} U(e)\right]
+W[\gamma] = \mathrm{Tr}\left[\mathcal{P}\prod_{\mathrm{edges~} e \in \gamma} U(e)\right]
 $$
 
 **Properties:**
@@ -243,6 +245,7 @@ $$
 - **Physical interpretation**: Measures gauge field flux through surface bounded by $\gamma$
 - **QED**: $W[\gamma] = e^{iq\Phi_B}$ (Aharonov-Bohm effect)
 - **QCD**: $W[\gamma]$ gives quark confinement potential
+- **Non-abelian note**: $\mathcal{P}$ denotes path ordering (trivial for $U(1)$)
 :::
 
 :::{admonition} Example: The Aharonov-Bohm Effect
@@ -250,9 +253,9 @@ $$
 
 Consider the simplest case: a $U(1)$ Wilson loop around a region containing magnetic flux $\Phi_B$. An electron going around this loop picks up a phase:
 
-$$W[\gamma] = e^{ie\Phi_B/\hbar}$$
+$$W[\gamma] = e^{i q \Phi_B}$$
 
-This is the Aharonov-Bohm effect. The electron never enters the region where the magnetic field is nonzero—yet its quantum phase is affected by the enclosed flux. The Wilson loop "sees" the field even when the particle does not.
+This is the Aharonov-Bohm effect {cite}`aharonov1959significance`. The electron never enters the region where the magnetic field is nonzero—yet its quantum phase is affected by the enclosed flux. (Units with $\hbar=1$; restore $\hbar$ in the exponent if desired.) The Wilson loop "sees" the field even when the particle does not.
 
 On the Fractal Set, the same logic applies. A loop around a region where the gauge field has nontrivial holonomy will give a phase. The gauge field is "felt" through topological properties of paths, not just local field values.
 :::
@@ -266,7 +269,7 @@ Here is one of the most profound results in theoretical physics, and I want you 
 
 Consider a rectangular Wilson loop: a quark at one corner, an antiquark at the opposite corner, separated in both space and time. The loop represents creating the pair, letting them sit apart for time $T$, then annihilating them. The expectation value of this Wilson loop tells you the probability amplitude for this process—and from that, you can read off the potential energy between the quark and antiquark.
 
-In QED (electromagnetism), the Wilson loop falls off like $\exp(-\text{perimeter})$. The potential energy is Coulombic: $V(R) \sim 1/R$. As you separate the charges, the energy grows slowly and eventually you can pull them apart. Electrons are free.
+In QED (electromagnetism), the Wilson loop does not show an area law. For a rectangular loop of spatial size $R$ and temporal extent $T$, $\langle W[\gamma] \rangle \sim e^{-T V(R)}$ with $V(R) \sim 1/R$ (Coulomb), which is consistent with perimeter-dominated decay plus Coulomb corrections. As you separate the charges, the energy grows slowly and eventually you can pull them apart. Electrons are free.
 
 In QCD (the strong force), something completely different happens. The Wilson loop falls off like $\exp(-\text{area})$. The potential energy is linear: $V(R) \sim \sigma R$ where $\sigma$ is the string tension. As you try to separate quarks, the energy grows without bound. You can never pull them apart—this is confinement. The gauge field between them forms a flux tube, like a rubber band, and the energy is proportional to the length.
 
@@ -276,7 +279,7 @@ This is not perturbation theory. This is a non-perturbative, strong-coupling phe
 :::{prf:proposition} Wilson Loop Area Law
 :label: prop-area-law
 
-In **confining gauge theories** (e.g., QCD), large Wilson loops exhibit area law behavior:
+In **confining gauge theories** (e.g., QCD), large Wilson loops exhibit area law behavior {cite}`wilson1974confinement,creutz1983quarks`:
 
 $$
 \langle W[\gamma] \rangle \sim e^{-\sigma \, \mathrm{Area}(\gamma)}
@@ -301,7 +304,7 @@ This is the most surprising result: the cloning dynamics encode fermionic statis
 
 Now we come to what I think is the most remarkable part of this whole story. Let me tell you what is happening here, because it is easy to miss the forest for the trees.
 
-In quantum mechanics, there are two kinds of particles: bosons and fermions. Bosons are gregarious—they like to pile into the same state. Lasers work because photons are bosons. Fermions are antisocial—no two fermions can occupy the same state. This is the Pauli exclusion principle, and it is why atoms have shells, why chemistry works, why you do not fall through the floor.
+In quantum mechanics, there are two kinds of particles: bosons and fermions. Bosons are gregarious—they like to pile into the same state. Lasers work because photons are bosons. Fermions are antisocial—no two fermions can occupy the same state. This is the Pauli exclusion principle {cite}`pauli1925zusammenhang`, and it is why atoms have shells, why chemistry works, why you do not fall through the floor.
 
 The mathematical signature of fermions is **antisymmetry**: if you swap two fermions, the wavefunction picks up a minus sign. This minus sign has profound consequences. It means the amplitude for two fermions to be in the same state is zero (because swapping them should give a minus sign, but if they are in the same state, nothing changes—so the only consistent amplitude is zero).
 
@@ -416,7 +419,7 @@ The deep question is: why do these two different mechanisms produce the same mat
 :::{div} feynman-prose
 :class: feynman-added
 
-How do you write down a path integral for fermions? This is a subtle question, and the answer involves one of the strangest objects in mathematics: **Grassmann numbers**.
+How do you write down a path integral for fermions? This is a subtle question, and the answer involves one of the strangest objects in mathematics: **Grassmann numbers** {cite}`berezin1966method`.
 
 Ordinary numbers commute: $ab = ba$. Grassmann numbers anticommute: $\theta\eta = -\eta\theta$. This has an immediate consequence: $\theta^2 = -\theta^2$, which can only be true if $\theta^2 = 0$.
 
@@ -433,8 +436,10 @@ For the Fractal Gas, we postulate that the algorithmic exclusion structure can b
 To model the algorithmic exclusion in a path integral, episodes are assigned anticommuting (Grassmann) fields satisfying:
 
 $$
-\{\psi_i, \psi_j\} = 0, \quad \{\bar{\psi}_i, \bar{\psi}_j\} = 0, \quad \{\psi_i, \bar{\psi}_j\} = \delta_{ij}
+\{\psi_i, \psi_j\} = 0, \quad \{\bar{\psi}_i, \bar{\psi}_j\} = 0, \quad \{\psi_i, \bar{\psi}_j\} = 0
 $$
+
+**Operator version (after quantization):** $\{\hat{\psi}_i, \hat{\psi}_j^\dagger\} = \delta_{ij}$.
 
 **Transition amplitudes:**
 
@@ -458,7 +463,7 @@ For the spatial part, the antisymmetric kernel $\tilde{K}_{ij}$ plays the role t
 
 For the temporal part, we need a discrete version of the time derivative. This is where the parallel transport operator $U_{ij}$ enters: it carries the field from one time to the next while accounting for the gauge phase accumulated along the way. The resulting "covariant derivative" $(\psi_j - U_{ij}\psi_i)/\Delta t$ is the discrete analog of $D_0\psi = \partial_0\psi + iA_0\psi$.
 
-The beautiful thing is that both pieces emerge from the algorithm. The spatial kernel comes from cloning scores. The temporal kernel comes from the KMS condition—the mathematical statement of thermal equilibrium. We are not putting in the Dirac equation by hand; we are deriving it from the structure of fitness-based dynamics.
+The beautiful thing is that both pieces emerge from the algorithm. The spatial kernel comes from cloning scores. The temporal kernel comes from the KMS condition—the mathematical statement of thermal equilibrium—derived from detailed balance of the QSD dynamics. We are not putting in the Dirac equation by hand; we are deriving it from the structure of fitness-based dynamics.
 :::
 
 :::{prf:definition} Discrete Fermionic Action on Fractal Set
@@ -492,9 +497,9 @@ where $U_{ij} \in U(1)$ is the parallel transport operator along the CST edge an
 
 Where does the complex phase $U_{ij} = e^{i\theta^{\mathrm{fit}}}$ come from? This is not a guess or an ansatz—it follows from deep principles of thermal field theory.
 
-The KMS condition (named after Kubo, Martin, and Schwinger) is the mathematical statement that a system is in thermal equilibrium at some temperature $T$. It says that correlation functions satisfy a certain periodicity in imaginary time. This might sound abstract, but it has concrete consequences.
+The KMS condition (named after Kubo, Martin, and Schwinger) is the mathematical statement that a system is in thermal equilibrium at some temperature $T$ {cite}`kubo1957statistical,martin1959theory,haag1967equilibrium`. It says that correlation functions satisfy a certain periodicity in imaginary time. This might sound abstract, but it has concrete consequences.
 
-When you have a thermal system and you want to go from the statistical mechanics description (thermal equilibrium at temperature $T$) to the quantum mechanics description (unitary time evolution), you perform what is called a **Wick rotation**: you analytically continue from imaginary time $\tau$ to real time $t$ by setting $t = i\tau$.
+When you have a thermal system and you want to go from the statistical mechanics description (thermal equilibrium at temperature $T$) to the quantum mechanics description (unitary time evolution), you perform what is called a **Wick rotation**: you analytically continue from imaginary time $\tau$ to real time $t$ by setting $\tau = i t$ (equivalently $t = -i\tau$).
 
 In the Fractal Gas, the fitness function $V_{\mathrm{fit}}$ determines cloning probabilities. The probability of surviving for a time interval $\tau$ is proportional to $e^{-V_{\mathrm{fit}}\tau/T}$ (high fitness means better survival). This is exactly the form of a thermal weight—the Boltzmann factor.
 
@@ -515,12 +520,14 @@ $$
 where the **parallel transport operator** is:
 
 $$
-U_{ij} = \exp\left(i\theta_{ij}^{\mathrm{fit}}\right), \quad \theta_{ij}^{\mathrm{fit}} = -\frac{\epsilon_F}{T}\int_{t_i^{\mathrm{b}}}^{t_i^{\mathrm{d}}} V_{\mathrm{fit}}(x_i(t)) \, dt
+U_{ij} = \exp\left(i\theta_{ij}^{\mathrm{fit}}\right), \quad \theta_{ij}^{\mathrm{fit}} = -\frac{\epsilon_F}{T}\int_{t_i}^{t_j} V_{\mathrm{fit}}(x_{ij}(t)) \, dt
 $$
 
-**Derivation**: The complex phase emerges rigorously from the QSD's KMS condition via Wick rotation—not by analogy.
+where $x_{ij}(t)$ is the trajectory segment along the CST edge from $e_i$ to $e_j$.
 
-**Status**: **PROVEN** (publication-ready)
+**Derivation**: The Boris-BAOAB dynamics ({prf:ref}`def-fractal-set-boris-baoab`) preserves the QSD/Gibbs measure, hence is reversible (detailed balance); the QSD state is therefore KMS {cite}`kossakowski1977quantum`, giving analyticity in the KMS strip and the Wick-rotated phase (see {prf:ref}`thm-os-os2-fg`).
+
+**Status**: **PROVEN** (publication-ready; KMS from detailed balance)
 :::
 
 :::{dropdown} 📖 ZFC Proof: Temporal Operator
@@ -530,11 +537,11 @@ $$
 
 Working in Grothendieck universe $\mathcal{U}$, the temporal operator construction proceeds as follows:
 
-1. **Episode path**: $\gamma_i: [t_i^b, t_i^d] \to \mathcal{X} \times \mathbb{R}^d$ is a continuous map (element of function space $C([a,b], \mathcal{X} \times \mathbb{R}^d) \in V_\mathcal{U}$).
+1. **Edge path**: $\gamma_{ij}: [t_i, t_j] \to \mathcal{X} \times \mathbb{R}^d$ is a continuous map (element of function space $C([a,b], \mathcal{X} \times \mathbb{R}^d) \in V_\mathcal{U}$).
 
-2. **Fitness action**: $S_{\mathrm{fitness}} = -(\epsilon_F/T)\int V_{\mathrm{fit}} \, dt$ is a real number (Lebesgue integral of bounded measurable function).
+2. **Fitness action**: $S_{\mathrm{fitness}}(i \to j) = -(\epsilon_F/T)\int_{t_i}^{t_j} V_{\mathrm{fit}} \, dt$ is a real number (Lebesgue integral of bounded measurable function).
 
-3. **KMS analyticity**: Under thermal equilibrium (proven via detailed balance), $S_{\mathrm{fitness}}[t]$ admits analytic continuation $t \to -i\tau$ in strip $0 < \mathrm{Im}(t) < \beta$ where $\beta = 1/T$.
+3. **KMS analyticity**: Detailed balance of the Boris-BAOAB dynamics with respect to the QSD implies the KMS condition {cite}`kossakowski1977quantum` (see {prf:ref}`thm-os-os2-fg`), so the relevant correlation functions admit analytic continuation $t \to -i\tau$ in the strip $0 < \mathrm{Im}(t) < \beta$ where $\beta = 1/T$.
 
 4. **Wick rotation**: $S[t] \to iS^E[\tau]$ gives real Euclidean action $S^E[\tau] \in \mathbb{R}$.
 
@@ -554,9 +561,9 @@ Now we come to the punchline of this whole section. The Dirac equation—the fun
 
 The claim here is remarkable: the antisymmetric cloning kernel $\tilde{K}_{ij}$ naturally generates exactly this algebraic structure. When you take the generators built from the cloning kernel and work out their anticommutation relations, you get a Clifford algebra—the same Clifford algebra that underlies the Dirac equation.
 
-Why should this be true? The intuition is that both structures arise from the same source: the need to describe antisymmetric objects that transform correctly under spacetime rotations. The cloning kernel is antisymmetric because fitness differences are antisymmetric. The gamma matrices are antisymmetric (in a certain sense) because they encode the geometry of spinor rotations. These are not the same thing, but they are close enough cousins that the algebra is the same.
+Why should this be true? The intuition is that both structures arise from the need to encode anticommutation relations tied to spacetime geometry. The cloning kernel is antisymmetric because fitness differences are antisymmetric. The gamma matrices are not antisymmetric in general; what matters is that they satisfy the Clifford anticommutation relations. These are not the same objects, but the shared anticommutation structure makes the algebra comparable.
 
-The continuum limit makes this precise: the discrete fermionic action, built from the cloning kernel and the temporal operator, converges to $\int \bar{\psi}\gamma^\mu\partial_\mu\psi\, d^dx$—the Dirac action. The algorithm is not just producing fermionic statistics; it is producing the Dirac equation.
+The continuum limit makes this precise: the discrete fermionic action, built from the cloning kernel and the temporal operator, converges to $\int \bar{\psi}\gamma^\mu\partial_\mu\psi\, d^D x$ (where $D$ is the emergent spacetime dimension)—the Dirac action. The algorithm is not just producing fermionic statistics; it is producing the Dirac equation.
 
 I want you to appreciate what this means. We started with an optimization algorithm—walkers moving through a fitness landscape, cloning from their neighbors. We did not put in Lorentz invariance. We did not put in the Dirac equation. We did not put in spinors. Yet the structure that emerges has all of these features, because they are mathematically necessary consequences of the fitness-based dynamics.
 :::
@@ -574,12 +581,12 @@ $$
 \{\tilde{K}_\mu, \tilde{K}_\nu\} = 2g_{\mu\nu}^{\mathrm{eff}} \cdot \mathbf{1}
 $$
 
-where $g_{\mu\nu}^{\mathrm{eff}}$ is the emergent metric from graph Laplacian convergence. The resulting algebra is isomorphic to $\mathrm{Cl}_{1,3}(\mathbb{R})$, the Clifford algebra underlying the Dirac equation.
+Here $D$ is the emergent spacetime dimension (for the Standard Model case, $D=4$), and $g_{\mu\nu}^{\mathrm{eff}}$ is the emergent metric from graph Laplacian convergence. The resulting algebra is isomorphic to $\mathrm{Cl}_{1,D-1}(\mathbb{R})$, the Clifford algebra underlying the Dirac equation (for $D=4$, this is $\mathrm{Cl}_{1,3}$).
 
 **Continuum limit**: The discrete fermionic action converges to:
 
 $$
-S_{\mathrm{fermion}} \to \int \bar{\psi}(x) \, \gamma^\mu \partial_\mu \psi(x) \, d^d x
+S_{\mathrm{fermion}} \to \int \bar{\psi}(x) \, \gamma^\mu \partial_\mu \psi(x) \, d^D x
 $$
 
 **Convergence mechanism:**
@@ -588,6 +595,16 @@ $$
 
 **Proof**: The isomorphism is established via Expansion Adjunction ({prf:ref}`thm-expansion-adjunction`) and Lock tactics. See {prf:ref}`thm-sm-dirac-isomorphism` in {doc}`04_standard_model` for the complete proof. $\square$
 :::
+
+### 4.7. Special Case: $D = 4$ (3+1 Dimensions)
+
+Throughout this chapter, $D$ denotes the emergent spacetime dimension, while $d$ denotes the latent spatial dimension (typically $d = D - 1$). The formulas above hold for general $D$, but the physical 3+1 case is obtained by setting $D = 4$:
+
+- The Clifford algebra becomes $\mathrm{Cl}_{1,3}(\mathbb{R})$, and the gamma matrices take their standard 4D form.
+- With $d = 3$ and $N = d$, the non-abelian sector is $SU(3)$, and together with $SU(2) \times U(1)$ yields the Standard Model gauge group.
+- The lattice actions and continuum limits reduce to the usual 3+1-dimensional QFT expressions.
+
+See {doc}`04_standard_model` for the complete $D = 4$ specialization.
 
 ---
 
@@ -624,6 +641,8 @@ where:
 - $\ell_{ee'}$ is the proper distance along edge $(e, e')$
 - The second sum is over all vertices (mass and potential terms)
 
+As written this is the Euclidean action; in Lorentzian signature the CST term carries a minus sign.
+
 **Discrete derivatives** (for analysis):
 
 **Timelike (CST):** Forward difference to children:
@@ -648,7 +667,7 @@ Here is a question that should bother you: how do we know that the discrete Lapl
 
 This is not a trivial question. You could imagine a graph that looks locally like a lattice but has some global pathology that makes its Laplacian behave completely differently from the continuum version. The Fractal Set is not a regular lattice—it is generated dynamically by the algorithm, with edge densities and geometries that vary across the structure.
 
-The reassuring answer is that there is a well-developed mathematical theory of graph Laplacian convergence. Under suitable regularity conditions (the graph samples a manifold densely and uniformly enough, the edge weights encode distances correctly), the graph Laplacian provably converges to the Laplace-Beltrami operator.
+The reassuring answer is that there is a well-developed mathematical theory of graph Laplacian convergence {cite}`belkin2008foundation`. Under suitable regularity conditions (the graph samples a manifold densely and uniformly enough, the edge weights encode distances correctly), the graph Laplacian provably converges to the Laplace-Beltrami operator.
 
 The Laplace-Beltrami operator $\Delta_g = \frac{1}{\sqrt{g}}\partial_i(\sqrt{g}g^{ij}\partial_j)$ is the natural generalization of the Laplacian to curved Riemannian manifolds. It encodes how the geometry affects diffusion and wave propagation. The fact that the graph Laplacian converges to it means that our discrete structure correctly captures the curvature of the emergent spacetime.
 
@@ -738,7 +757,7 @@ The three gauge groups of the Standard Model emerge from three different algorit
 
 Fermions emerge from the antisymmetry of cloning scores. This is perhaps the deepest surprise: the algorithm does not know about the Pauli exclusion principle, but it produces a structure with the same mathematical signature. Two walkers cannot both clone from each other, just as two electrons cannot occupy the same state.
 
-The temporal dynamics—the Wick rotation, the KMS condition, the complex phases—all fall out of the thermal structure of the algorithm. We are not putting in quantum mechanics by hand; we are deriving it from statistical mechanics.
+The temporal dynamics—the Wick rotation, the KMS condition, the complex phases—all fall out of the thermal structure of the algorithm via detailed balance of the QSD dynamics. We are not putting in quantum mechanics by hand; we are deriving it from statistical mechanics.
 
 And in the continuum limit, all of this converges to the standard field theory formalism: the Dirac equation for fermions, the Yang-Mills action for gauge fields, the Klein-Gordon action for scalars.
 
@@ -754,7 +773,7 @@ This is either a very remarkable coincidence, or we have stumbled onto something
 | $SU(N)$ gauge field | Defined | From viscous force coupling |
 | Wilson loops | Defined | Gauge-invariant observables |
 | Fermionic structure | Derived | From cloning antisymmetry (exact when $V_i \approx V_j$) |
-| Temporal operator $D_t$ | Proven | Via KMS condition and Wick rotation |
+| Temporal operator $D_t$ | Proven | Via detailed balance $\Rightarrow$ KMS condition and Wick rotation |
 | Dirac limit | Proven | Via Clifford algebra isomorphism ({prf:ref}`thm-sm-dirac-isomorphism`) |
 | Scalar fields | Defined | Graph Laplacian (convergence requires proof) |
 
@@ -764,20 +783,27 @@ This is either a very remarkable coincidence, or we have stumbled onto something
 
 ## References
 
-### Lattice QFT
-1. Wilson, K.G. (1974) "Confinement of Quarks", *Phys. Rev. D* **10**, 2445
-2. Creutz, M. (1983) *Quarks, Gluons and Lattices*, Cambridge University Press
+This chapter draws on standard results from lattice gauge theory, fermionic path integrals, thermal equilibrium/KMS structure, and graph Laplacian convergence:
 
-### Fermionic Path Integrals
-3. Berezin, F.A. (1966) *The Method of Second Quantization*, Academic Press
-4. Negele, J.W. & Orland, H. (1988) *Quantum Many-Particle Systems*, Addison-Wesley
-
-### Thermal Field Theory
-5. Kapusta, J.I. & Gale, C. (2006) *Finite-Temperature Field Theory*, Cambridge University Press
+| Topic | Reference |
+|-------|-----------|
+| Lattice gauge theory and Wilson action | {cite}`wilson1974confinement,kogut1979introduction,creutz1983quarks` |
+| Yang-Mills gauge theory | {cite}`yang1954conservation` |
+| Wilson loops and confinement | {cite}`wilson1974confinement,creutz1983quarks` |
+| Aharonov-Bohm effect | {cite}`aharonov1959significance` |
+| Pauli exclusion principle | {cite}`pauli1925zusammenhang` |
+| Grassmann variables and fermionic path integrals | {cite}`berezin1966method` |
+| KMS condition and thermal equilibrium | {cite}`kubo1957statistical,martin1959theory,haag1967equilibrium,kossakowski1977quantum` |
+| Graph Laplacian convergence | {cite}`belkin2008foundation` |
 
 ### Framework Documents
-6. {doc}`01_fractal_set` — Fractal Set definition and structure
-7. {doc}`02_causal_set_theory` — Causal Set foundations
-8. {prf:ref}`def-fractal-set-wilson-loop` — Wilson Loop definition
-9. {prf:ref}`def-fractal-set-cloning-score` — Cloning Score definition
-10. {prf:ref}`mt:fractal-gas-lock-closure` — Lock Closure (Hypostructure)
+
+- {doc}`01_fractal_set` — Fractal Set definition and structure
+- {doc}`02_causal_set_theory` — Causal Set foundations
+- {prf:ref}`def-fractal-set-wilson-loop` — Wilson Loop definition
+- {prf:ref}`def-fractal-set-cloning-score` — Cloning Score definition
+- {prf:ref}`mt:fractal-gas-lock-closure` — Lock Closure (Hypostructure)
+
+```{bibliography}
+:filter: docname in docnames
+```

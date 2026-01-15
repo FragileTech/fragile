@@ -11,9 +11,10 @@ an adaptive search that automatically concentrates effort in promising regions.
 discrete (individual Markov transitions), scaling (mean-field limit with $N \to \infty$ walkers), and continuum (WFR
 reaction-diffusion PDE). This hierarchy connects practical implementation to theoretical guarantees.
 
-**Guaranteed Revival and Population Maintenance**: Under mild parameter constraints, dead walkers are guaranteed to
-resurrect with probability 1 whenever at least one walker remains alive. This prevents gradual extinction and ensures
-the swarm maintains constant population $N$—only the distribution of walkers evolves, not their count.
+**Guaranteed Revival and Population Maintenance**: Dead walkers are forced to clone from the alive set, so if at least
+one walker remains alive, every dead walker revives with probability 1. This prevents gradual extinction and ensures
+the swarm maintains constant population $N$—only the distribution of walkers evolves, not their count (the only
+catastrophic failure is the all-dead event).
 
 **Flexible Instantiation Framework**: The core mechanisms (companion selection, fitness computation, cloning, kinetics)
 define an abstract framework that admits multiple instantiations: the Latent Fractal Gas (learned latent space with
@@ -112,11 +113,13 @@ diversity through diffusion.
 # Pseudocode: one Fractal Gas step (high level)
 # State: walkers i=1..N with (z_i, v_i, s_i) where s_i ∈ {alive, dead}
 #
-# 1) Kinetics (transport): advance (z_i, v_i) for alive walkers via a chosen operator (e.g., Langevin / BAOAB / Boris)
-# 2) Fitness: compute standardized fitness V_fit(i) from reward and diversity terms
-# 3) Companion selection: sample a companion j for each i using a soft kernel on d_alg(i,j)
-# 4) Cloning + revival (reaction): if i is low-fitness or dead, replace it with a perturbed copy of j (and set alive)
-# 5) Repeat; the population size N stays constant by construction
+# 1) Rewards + alive mask: compute reward signal and mark in-bounds walkers as alive
+# 2) Companion selection (distance): sample c_i^dist using a soft kernel on d_alg(i,j)
+# 3) Fitness: compute standardized V_fit(i) from reward and diversity terms
+# 4) Companion selection (cloning): sample c_i^clone from the same kernel
+# 5) Cloning + revival (reaction): low-fitness walkers may clone; dead walkers always clone
+# 6) Kinetics (transport + killing): advance (z_i, v_i) and update alive/dead by a boundary check
+# 7) Repeat; the population size N stays constant by construction
 ```
 
 ---
@@ -355,13 +358,18 @@ $$
 
 where $\epsilon_{\text{dist}} > 0$ is a regularization constant preventing division by zero.
 
-**Reward (application-specific)**:
+**Reward (application-specific scalar)**:
 
 $$
+r_i = R(z_i)
+$$
+
+where $R:\mathcal{Z}\to\mathbb{R}$ is a scalar reward signal (for example, $R=-U$ for potential minimization).
+In agent/1-form settings, the reward is directional:
+$
 r_i = \langle \mathcal{R}(z_i), v_i \rangle_G
-$$
-
-where $\mathcal{R}: \mathcal{Z} \to T^*\mathcal{Z}$ is a **reward 1-form** (e.g., gradient of a potential, or environment feedback).
+$
+with $\mathcal{R}: \mathcal{Z} \to T^*\mathcal{Z}$ a reward 1-form.
 :::
 
 :::{div} feynman-prose
@@ -399,13 +407,17 @@ by zero or take logarithms of zero later in the pipeline.
 :::{prf:definition} Fitness Standardization
 :label: def-fg-standardization
 
-**Step 1: Z-score normalization** (computed over alive walkers only):
+**Step 1: Z-score normalization** (computed over alive walkers only, with regularized std):
 
 $$
-z_r(i) = \frac{r_i - \mu_r}{\sigma_r + \sigma_{\min}}, \quad z_d(i) = \frac{d_i - \mu_d}{\sigma_d + \sigma_{\min}}
+z_r(i) = \frac{r_i - \mu_r}{\sigma_r'}, \quad z_d(i) = \frac{d_i - \mu_d}{\sigma_d'}
 $$
 
-where $\mu_r, \sigma_r$ (resp. $\mu_d, \sigma_d$) are the mean and standard deviation of rewards (resp. distances) over $\mathcal{A}(\mathcal{S})$, and $\sigma_{\min} > 0$ is a regularizer.
+where $\mu_r, \sigma_r$ (resp. $\mu_d, \sigma_d$) are the mean and standard deviation of rewards (resp. distances) over $\mathcal{A}(\mathcal{S})$, and
+$
+\sigma_r' = \sqrt{\sigma_r^2 + \sigma_{\min}^2}, \quad \sigma_d' = \sqrt{\sigma_d^2 + \sigma_{\min}^2}
+$
+with $\sigma_{\min} > 0$ a regularizer.
 
 **Step 2: Logistic rescaling**:
 
@@ -421,7 +433,7 @@ where $g_A(z) = \frac{A}{1 + e^{-z}}$ is the logistic function with amplitude $A
 The standardization serves several purposes:
 - **Z-score**: Makes the algorithm invariant to scale and shift of raw values
 - **Logistic rescaling**: Bounds the output to $[\eta, A + \eta]$, preventing extreme fitness values
-- **Positivity floor $\eta$**: Ensures rescaled values never reach zero, which is critical for the revival guarantee (see Section 5)
+- **Positivity floor $\eta$**: Ensures rescaled values never reach zero, stabilizing scores and (in variants without forced revival) preventing zero-probability cloning
 :::
 
 ### 3.3 Fitness Formula
@@ -671,48 +683,39 @@ The Fractal Gas is different. The population size $N$ is *exactly conserved*. No
 Every step has the same number of walkers as the step before. The cloning operation does not create new walkers or
 destroy old ones. It *replaces* low-fitness walkers with copies of high-fitness ones.
 
-This conservation is enforced by the revival guarantee: any walker that "dies" (violates constraints, falls off the
-boundary, etc.) is guaranteed to resurrect in the very next step. The dead walker samples a companion uniformly at random
-from the alive population, and because its fitness is zero, the cloning score is always high enough to trigger cloning.
-The dead walker respawns as a perturbed copy of that companion.
+This conservation is enforced by the revival rule: any walker that "dies" (violates constraints, falls off the
+boundary, etc.) is forced to clone from the alive set in the very next step. The dead walker samples a companion
+uniformly at random from the alive population and respawns as a perturbed copy of that companion.
 
-The beauty is that this guarantee is not a separate mechanism bolted onto the algorithm. It emerges automatically from
-the parameter constraints. If you set the parameters correctly, revival is mathematically inevitable. Set them wrong, and
-dead walkers might stay dead, leading to population collapse.
+The beauty is that this guarantee is enforced directly by the cloning rule. No extra parameter constraint is required
+for revival; the only failure mode is catastrophic (all walkers die simultaneously).
 :::
 
 A critical property of the Fractal Gas is that **dead walkers are guaranteed to be revived** (as long as at least one walker remains alive). This prevents gradual extinction and ensures the swarm maintains its population.
 
-:::{prf:definition} Revival Constraint
-:label: def-fg-revival-constraint
+:::{prf:definition} Revival Rule (Implementation)
+:label: def-fg-revival-rule
 
-The algorithm parameters must satisfy the **revival inequality**:
-
-$$
-\varepsilon_{\text{clone}} \cdot p_{\max} < \eta^{\alpha_{\text{fit}} + \beta_{\text{fit}}} = V_{\min}
-$$
-
-where:
-- $\varepsilon_{\text{clone}}$ is the cloning score regularizer
-- $p_{\max}$ is the maximum cloning threshold
-- $\eta$ is the positivity floor
-- $V_{\min}$ is the minimum possible fitness for alive walkers
+Dead walkers are forced to clone: the cloning decision for any walker with $s_i = 0$ is set to **true** (equivalently,
+its cloning probability is set to 1). Companions for dead walkers are drawn uniformly from the alive set.
 :::
 
 :::{prf:proposition} Guaranteed Revival
 :label: prop-fg-guaranteed-revival
 
-Under the revival constraint, if $|\mathcal{A}(\mathcal{S})| \geq 1$, then every dead walker clones with probability 1.
+Under the revival rule, if $|\mathcal{A}(\mathcal{S})| \geq 1$, then every dead walker clones with probability 1.
 :::
 
-*Proof.* For a dead walker $i$, we have $V_{\text{fit}, i} = 0$. Its companion $c$ is alive (since dead walkers sample
-from $\mathcal{A}(\mathcal{S})$), so $V_{\text{fit}, c} \geq V_{\min}$. The cloning score is:
+*Proof.* The cloning operator explicitly sets the cloning decision for dead walkers to true. Since each dead walker
+draws its companion from $\mathcal{A}(\mathcal{S})$, it respawns as a perturbed copy of an alive walker with
+probability 1. $\square$
 
-$$
-S_i = \frac{V_{\text{fit}, c} - 0}{0 + \varepsilon_{\text{clone}}} = \frac{V_{\text{fit}, c}}{\varepsilon_{\text{clone}}} \geq \frac{V_{\min}}{\varepsilon_{\text{clone}}} > p_{\max}
-$$
-
-The last inequality uses the revival constraint. Since $T_i \leq p_{\max}$ always, we have $S_i > T_i$ with probability 1. $\square$
+:::{note}
+:class: feynman-added
+If you disable the explicit dead-always-clone override and apply the same stochastic rule to all walkers, a sufficient
+condition for guaranteed revival is $\varepsilon_{\text{clone}} \cdot p_{\max} < V_{\min}$. This is **not** required in
+the default implementation.
+:::
 
 :::{div} feynman-prose
 The revival guarantee is the safety net of the Fractal Gas. No matter how poorly the search is going, dead walkers will
@@ -1011,17 +1014,17 @@ In the limit of many walkers ($N \to \infty$) and small time steps ($\tau \to 0$
 The one-step operator decomposes into **transport** (kinetics) and **reaction** (selection/cloning):
 
 $$
-P_\tau = R_\tau \circ T_\tau
+P_\tau = T_\tau \circ R_\tau
 $$
 
 where:
 - $T_\tau$ = transport (Langevin diffusion)
 - $R_\tau$ = reaction (fitness-weighted resampling)
 
-In the continuum limit, this becomes the **WFR (Wasserstein-Fisher-Rao)** equation {cite}`liero2018optimal,chizat2018interpolating`:
+In a simplified Euclidean setting (no boundary killing, scalar potential reward), this yields a **reaction-diffusion / replicator** equation; WFR provides the natural metric geometry for transport+reaction {cite}`liero2018optimal,chizat2018interpolating`:
 
 $$
-\partial_t \rho = \underbrace{\nabla \cdot (\rho \nabla \Phi) + \Delta \rho}_{\text{transport (WFR)}} + \underbrace{\rho (V_{\text{fit}} - \bar{V}_{\text{fit}})}_{\text{reaction (replicator)}}
+\partial_t \rho = \underbrace{\nabla \cdot (\rho \nabla \Phi) + \Delta \rho}_{\text{transport (Fokker--Planck)}} + \underbrace{\rho (V_{\text{fit}} - \bar{V}_{\text{fit}})}_{\text{reaction (replicator)}}
 $$
 
 :::{div} feynman-prose
@@ -1101,14 +1104,12 @@ means more accurate integration but more computation.
 :::{admonition} Revival Constraint Check
 :class: feynman-added warning
 
-Parameters must satisfy:
+In the default implementation, dead walkers are forced to clone, so **no parameter constraint is required for revival**.
+If you remove that override and use the stochastic rule for all walkers, a sufficient condition is:
 
 $$
-\varepsilon_{\text{clone}} \cdot p_{\max} < \eta^{\alpha_{\text{fit}} + \beta_{\text{fit}}}
+\varepsilon_{\text{clone}} \cdot p_{\max} < \eta^{\alpha_{\text{fit}} + \beta_{\text{fit}}}.
 $$
-
-With defaults: $0.01 \times 1.0 = 0.01 = 0.1^2 = 0.01$. The condition is tight; in floating point it's safer to add
-slack (for example, use $\eta = 0.15$ or $\varepsilon_{\text{clone}} = 0.005$).
 :::
 
 :::{admonition} Troubleshooting Guide

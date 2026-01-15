@@ -2,13 +2,14 @@
 
 ## TLDR
 
-**Three-Layer Constraint Synthesis**: This chapter derives rigorous parameter bounds for Fractal Gas convergence by combining three complementary analysis layers: appendix proofs (QSD structure, error bounds, contraction rates), algorithm bounds (fitness ranges, cloning scores, Doeblin floors), and hypostructure certificates (17-node systematic verification). Each layer captures different failure modes, and only parameters passing through all layers are guaranteed to work.
+**Three-Layer Constraint Synthesis**: This chapter derives parameter bounds for Fractal Gas convergence by combining three complementary analysis layers: appendix proofs (QSD structure, error bounds, contraction rates), algorithm bounds (fitness ranges, cloning scores, Doeblin floors), and hypostructure certificates (17-node systematic verification). The result is a clear separation between *rigorous constraints* and *heuristic tuning rules*.
 
-**Five Master Constraints**: The synthesis yields five necessary conditions for convergence: (1) phase control keeping the thermal ratio $\Gamma = T_{\text{kin}}/T_{\text{clone}} \in [0.5, 2.0]$ in the liquid regime, (2) acoustic stability requiring friction $\gamma > \mathbb{E}[p_i] M^2 / (2dh)$ to smooth cloning shocks, (3) Doeblin minorization with kernel scale $\varepsilon \geq D_{\text{alg}} / \sqrt{2\ln((N-1)/p_{\min})}$ ensuring ergodic mixing, (4) timestep bounds $h < \min(2/\omega, 0.1)$ for numerical stability, and (5) noise injection $\sigma_x^2$ sufficient for LSI spectral gap.
+**Rigorous vs. Heuristic Constraints**: The sieve yields provable constraints (companion minorization, LSI noise floor, and the acoustic limit under Appendix 15 assumptions) and separates them from heuristic tuning rules (phase-balance targets and timestep stability). This keeps formal guarantees clean while still providing practical guidance.
 
-**Quantitative Convergence Rate**: The total convergence rate is $\kappa_{\text{total}} = \min(\kappa_W, \kappa_{\text{conf}})$, with an irreducible $O(1/\sqrt{N})$ error floor from finite population effects. Recommended defaults ($\gamma = 1.0$, $h = 0.01$, $\varepsilon \approx 0.24$, $N = 50$) satisfy all constraints with explicit safety margins.
+**Quantitative Convergence Rate**: The total convergence rate follows the bottleneck principle
+$\kappa_{\text{total}} = \min(\kappa_x,\kappa_v,\kappa_W,\kappa_b)\,(1-\epsilon_{\text{coupling}})$, with an irreducible $O(1/\sqrt{N})$ error floor from finite population effects. Defaults should be *checked* against the bounds rather than assumed to satisfy them.
 
-**Theory-First Parameter Selection**: The chapter provides an executable algorithm for computing valid parameters from problem specifications, transforming parameter tuning from trial-and-error into systematic derivation. Bounds are classified by rigor: QSD structure, Wasserstein contraction, and error bounds are rigorously proven; hypocoercive rates remain conjectured.
+**Theory-First Parameter Selection**: The chapter provides a conservative parameter recipe and labels which steps are rigorous and which are heuristic. Bounds are classified by rigor: mean-field/QSD structure is asymptotic, Wasserstein contraction and error bounds are provable under stated assumptions, and hypocoercive rates remain conjectured.
 
 ## Introduction
 
@@ -22,9 +23,9 @@ The trouble is, there are three different sources telling us about constraints, 
 What we are going to do in this chapter is show you how to combine all three sources into a single, coherent system of constraints. Think of it as building a sieve: each layer catches different problems, and only parameters that pass through *all* the layers are guaranteed to work.
 :::
 
-This chapter derives **rigorous parameter constraints** for the Fractal Gas algorithm by synthesizing results from three analysis layers. Where {doc}`01_algorithm_intuition` explains what the algorithm does and {doc}`02_fractal_gas_latent` provides the formal machinery, this chapter answers the practical question: given a problem, what parameter values guarantee convergence?
+This chapter derives **parameter constraints** for the Fractal Gas algorithm by synthesizing results from three analysis layers. Where {doc}`01_algorithm_intuition` explains what the algorithm does and {doc}`02_fractal_gas_latent` provides the formal machinery, this chapter answers the practical question: given a problem, what parameter values are *provably sufficient* for convergence, and which are *heuristic tuning rules*?
 
-The approach is systematic rather than heuristic. Each of five master constraints captures a distinct failure mode—phase instability, acoustic shocks, population fragmentation, numerical divergence, and insufficient mixing. The chapter derives each bound from first principles, traces its origin to specific appendix theorems or algorithm definitions, and provides explicit formulas for computing valid parameter ranges from problem specifications.
+The approach is systematic rather than ad hoc. We separate the constraints that are explicitly derived from appendices or algorithm definitions from rules-of-thumb used for tuning. Only the former enter the formal guarantees.
 
 :::{admonition} Philosophy: Theory Takes Precedence
 :class: important
@@ -36,16 +37,18 @@ The theoretical constraints derived here define what parameter values are **perm
 
 Before proceeding, we classify the theoretical results by rigor:
 
-**Rigorously Proven** (use directly):
-1. **QSD structure** (Appendix 07): $\rho_{\text{clone}}(z) = R(z)^{\gamma_{\text{eff}}}/Z$ with $\gamma_{\text{eff}} = \alpha D/\beta$
-2. **Quantitative error bounds** (Appendix 13): Observable error $O(1/\sqrt{N})$
-3. **Propagation of chaos** (Appendix 09): Mean-field convergence rate
-4. **Foster-Lyapunov structure** (Appendix 06): Drift conditions
-5. **Wasserstein contraction** (Appendix 04): N-uniform $\kappa_W > 0$
+**Rigorously Proven (under stated assumptions)**:
+1. **Quantitative error bounds** (Appendix 13): Observable error $O(1/\sqrt{N})$ with explicit constants.
+2. **Propagation of chaos** (Appendix 09): Mean-field convergence rate.
+3. **Foster-Lyapunov structure** (Appendix 06): Drift conditions and bottleneck-rate formula.
+4. **Wasserstein contraction** (Appendix 04): N-uniform $\kappa_W > 0$ with explicit lower bounds.
 
-**Conjectured** (state as heuristic):
-1. **Hypocoercive rate** (Appendix 10): $\Lambda \approx \gamma \rho_{\text{LSI}}/M^2$ — derivation incomplete
-2. **Bounded density ratio** (Appendix 11): $M^2$ bound deferred
+**Asymptotic / Model-Based (mean-field scaling)**:
+1. **QSD structure** (Appendix 07): $\rho_{\text{clone}}(z) \propto R(z)^{\gamma_{\text{eff}}}$ in the mean-field/linear-regime approximation.
+
+**Conjectured / Heuristic**:
+1. **Hypocoercive rate** (Appendix 10): $\Lambda \approx \gamma \rho_{\text{LSI}}/M^2$ — derivation incomplete.
+2. **Bounded density ratio** (Appendix 11): $M^2$ bound deferred.
 
 (sec-three-layer-hierarchy)=
 ## Three-Layer Bound Hierarchy
@@ -64,14 +67,14 @@ Our situation is similar. We have three "experts":
 The beautiful thing is how these three layers complement each other. The appendix gives us the forms of the bounds. The algorithm gives us the exact constants. And the hypostructure gives us the logical machinery to combine them.
 :::
 
-### Layer 1: Appendix Analysis (Rigorous Results)
+### Layer 1: Appendix Analysis (Proven + Asymptotic)
 
-The appendices provide rigorously proven convergence results that we use directly.
+The appendices provide rigorously proven convergence results and explicit mean-field scaling laws. We use the former as hard constraints and the latter as asymptotic guidance.
 
 :::{prf:theorem} QSD Structure (from Appendix 07)
 :label: thm-alg-sieve-qsd-structure
 
-In the mean-field limit, the cloning equilibrium density has the form:
+In the mean-field limit, and in the linear-response regime of the fitness sigmoid (Appendix 07), the cloning equilibrium density has the form:
 
 $$
 \rho_{\text{clone}}(z) = \frac{1}{Z} R(z)^{\gamma_{\text{eff}}}
@@ -145,16 +148,14 @@ $$
 W_2^2(\Psi_{\text{clone}}(\mu_1), \Psi_{\text{clone}}(\mu_2)) \leq (1 - \kappa_W) W_2^2(\mu_1, \mu_2) + C_W
 $$
 
-where $\kappa_W > 0$ is **independent of $N$**, given by:
+where $\kappa_W > 0$ is **independent of $N$**. A conservative explicit form (Appendix 04) is
 
 $$
-\kappa_W = \frac{1}{2} \cdot f_{UH}(\varepsilon) \cdot p_u(\varepsilon) \cdot c_{\text{align}}(\varepsilon)
+\kappa_W = c_{\text{dom}} \cdot p_u(\varepsilon)\, c_{\text{geom}}\, c_{\text{sep}}(\varepsilon),
 $$
 
-with:
-- $f_{UH} \geq 0.1$: target set fraction (from Stability Condition)
-- $p_u \geq 0.01$: cloning pressure (from Keystone Lemma)
-- $c_{\text{align}} \geq c_0 > 0$: geometric alignment constant
+with $p_u(\varepsilon)>0$ (cloning pressure), $c_{\text{geom}}>0$ (geometric constant), and
+$c_{\text{sep}}(\varepsilon)>0$ (cluster-separation constant), all N-uniform under the stated assumptions.
 
 *Proof*: See Appendix 04, Theorem 6.1 (cluster-level analysis avoiding $q_{\min} \sim 1/N!$ obstruction). $\square$
 :::
@@ -237,37 +238,32 @@ The distinction between worst-case bounds and expected behavior matters for stab
 The smarter approach is to use expected values when analyzing typical behavior and worst-case bounds only for hard safety guarantees.
 :::
 
-**Expected value** (more realistic for stability analysis):
-
-$$
-\mathbb{E}[S_i] \approx \frac{V_{\max} - \mathbb{E}[V_{\text{fit}}]}{\mathbb{E}[V_{\text{fit}}] + \varepsilon_{\text{clone}}} \sim 0.1 \cdot S_{\max} \approx 22
-$$
 :::
 
 :::{prf:proposition} Doeblin Floor for Softmax Kernel
 :label: prop-alg-sieve-doeblin-softmax
 
-For the softmax companion kernel:
+For the softmax companion kernel with unnormalized weights
 
 $$
-w_{ij} = \frac{\exp(-d_{ij}^2/(2\varepsilon^2))}{\sum_{k \neq i} \exp(-d_{ik}^2/(2\varepsilon^2))}
+w_{ij} = \exp\!\left(-\frac{d_{ij}^2}{2\varepsilon^2}\right), \quad j\neq i,
 $$
 
-the companion selection probability $P_i(j) = w_{ij}$ satisfies:
+the companion selection probability
 
 $$
-P_i(j) \geq \frac{m_\varepsilon}{m_\varepsilon + (N - 2)}
+P_i(j) = \frac{w_{ij}}{\sum_{k \neq i} w_{ik}}
 $$
 
-where $m_\varepsilon = \exp(-D_{\text{alg}}^2/(2\varepsilon^2))$ is the minimum-to-maximum weight ratio, with $D_{\text{alg}} = \sqrt{D_z^2 + \lambda_{\text{alg}} D_v^2}$ the algorithmic diameter.
-
-*Proof*: The softmax kernel is already normalized ($\sum_{k \neq i} w_{ik} = 1$). The minimum selection probability occurs when walker $j$ is maximally distant ($d_{ij} = D_{\text{alg}}$) and all other $N-2$ walkers are at distance $0$. In this worst case:
+satisfies the minorization bound
 
 $$
-w_{ij} = \frac{\exp(-D_{\text{alg}}^2/(2\varepsilon^2))}{\exp(-D_{\text{alg}}^2/(2\varepsilon^2)) + (N-2) \cdot 1} = \frac{m_\varepsilon}{m_\varepsilon + (N-2)}
+P_i(j) \geq \frac{m_\varepsilon}{n_{\mathrm{alive}} - 1},
 $$
 
-For $m_\varepsilon \ll 1$, this simplifies to $P_{\min} \approx m_\varepsilon/(N-1)$. $\square$
+where $m_\varepsilon = \exp(-D_{\text{alg}}^2/(2\varepsilon^2))$ and $D_{\text{alg}} = \sqrt{D_z^2 + \lambda_{\text{alg}} D_v^2}$ is the algorithmic diameter on the alive core.
+
+*Proof*: Each weight is at least $m_\varepsilon$ and at most $1$, so $\sum_{k\neq i} w_{ik} \le n_{\mathrm{alive}} - 1$. Hence $P_i(j)\ge m_\varepsilon/(n_{\mathrm{alive}}-1)$. $\square$
 :::
 
 :::{div} feynman-prose
@@ -317,7 +313,7 @@ def closure(Gamma: set[Certificate]) -> set[Certificate]:
 ## Master Constraint System
 
 :::{div} feynman-prose
-Here is where the rubber meets the road. We have five master constraints that together determine whether the algorithm works. Each one captures a different failure mode:
+Here is where the rubber meets the road. We organize constraints into five themes, each tied to a distinct failure mode. Some are rigorous (B, C, E); others are heuristic tuning rules (A, D):
 
 1. **Phase Control** — Are we in the liquid phase where optimization actually happens, or have we frozen solid or evaporated into a diffuse gas?
 
@@ -329,10 +325,12 @@ Here is where the rubber meets the road. We have five master constraints that to
 
 5. **Noise Injection** — Is there enough jitter to explore the space, or too much so that we lose precision?
 
-Each of these has a mathematical bound. Violate any one of them, and something breaks. The art is finding parameter settings that satisfy *all* the bounds simultaneously—and that is not as hard as it sounds, because the bounds are designed to be mutually compatible.
+Constraints **B**, **C**, and **E** are derived in the appendices (under stated assumptions). Constraints **A** and **D**
+are **heuristic tuning rules**: they guide practical stability but are not part of the formal convergence proof. The art
+is finding parameter settings that satisfy the rigorous bounds while using the heuristic ones to improve performance.
 :::
 
-We now derive the five master constraints from first principles.
+We now derive the five constraint themes and label which ones are rigorous.
 
 ### A. Phase Control (Thermal Balance)
 
@@ -367,10 +365,10 @@ where:
 - $D$: effective dimension (phase space dimension if $\lambda_{\text{alg}} > 0$, else spatial dimension)
 :::
 
-:::{prf:proposition} Phase Boundaries
-:label: prop-alg-sieve-phase-boundaries
+:::{admonition} Heuristic: Phase Balance
+:class: feynman-added tip
 
-The optimal phase regime is:
+A practical target range is:
 
 $$
 \boxed{\Gamma \in [0.5, 2.0]}
@@ -384,14 +382,13 @@ The phase parameter $\Gamma$ controls the balance between exploration (kinetic d
 - **$\Gamma \in [0.5, 2.0]$**: Balanced regime; effective optimization with maintained diversity (liquid phase)
 - **$\Gamma > 2.0$**: Kinetics dominates cloning; swarm diffuses uniformly (gas phase)
 
-The boundaries $[0.5, 2.0]$ are **empirically validated** operational ranges. Theoretical analysis of the mean-field free energy suggests critical points near $\Gamma \approx 0.3$ and $\Gamma \approx 1.7$; the practical interval $[0.5, 2.0]$ provides safety margins around these transitions.
+The boundaries $[0.5, 2.0]$ are **empirical** operating ranges. Mean-field analysis suggests critical points near $\Gamma \approx 0.3$ and $\Gamma \approx 1.7$; the interval $[0.5, 2.0]$ provides practical safety margins around those transitions.
 
 **Physical interpretation**:
 - $\Gamma \gg 2$: **Gas phase** — high entropy, uniform coverage, slow optimization
 - $\Gamma \approx 1$: **Liquid phase** — balanced exploitation/exploration, optimal
 - $\Gamma \ll 0.5$: **Crystal phase** — locked in local minima, poor exploration
 
-$\square$
 :::
 
 ### B. Acoustic Stability (Friction Bound)
@@ -403,43 +400,27 @@ Now, in fluid dynamics, when you have a shock wave, you need viscosity to smooth
 
 If the friction is too low relative to the cloning rate, these shocks accumulate faster than they dissipate. The distribution develops instabilities—oscillations, fragmentation, eventual divergence. That is the "acoustic" instability (named by analogy with sound waves in compressible fluids).
 
-The bound $\gamma > \mathbb{E}[p_i] M^2 / (2dh)$ is exactly the condition for friction to dominate cloning shocks. It says: the damping rate must exceed the shock production rate.
+The Appendix 15 acoustic limit gives an explicit lower bound on $\gamma$ in terms of the Hessian bound, the cloning rate, and the Dobrushin constant. It says: the damping rate must exceed the shock production rate.
 :::
 
 :::{prf:proposition} Friction Lower Bound
 :label: prop-alg-sieve-friction-bound
 
-The friction coefficient must satisfy:
+The friction coefficient must satisfy the **explicit acoustic limit** (Appendix 15):
 
 $$
-\boxed{\gamma > \frac{\mathbb{E}[p_i] \cdot M^2}{2 d \cdot h}}
+\boxed{\gamma > \gamma_* := \frac{c_2 M^2}{c_1 \lambda} + \frac{C_{\text{Dob}}\,\nu_{\text{clone}}}{c_1 \kappa_W}}
 $$
 
 where:
-- $\mathbb{E}[p_i] \approx 0.1$: expected cloning probability (not worst-case $p_{\max} S_{\max}/h$)
-- $M^2$: Hessian bound of effective potential
-- $d$: latent space dimension
-- $h$: BAOAB timestep
+- $M = \sup_x \|\nabla^2 U(x)\|$ is the Hessian bound of the effective potential,
+- $\lambda>0$ is the position–velocity coupling parameter in the hypocoercive carré du champ,
+- $C_{\text{Dob}}$ is the Dobrushin constant controlling cloning perturbations,
+- $\nu_{\text{clone}}$ is the cloning rate (expected clones per unit time),
+- $\kappa_W$ is the Wasserstein contraction rate, and
+- $c_1, c_2$ are the hypocoercivity constants from Appendix 15.
 
-**Derivation** (from Fokker-Planck perturbation analysis):
-
-The acoustic limit arises from balancing kinetic smoothing against cloning shocks:
-
-1. **Kinetic smoothing rate**: $\lambda_{\text{kin}} \sim \gamma / M^2$ (from hypocoercive theory)
-
-2. **Cloning shock rate**: $\lambda_{\text{clone}} \sim \nu_{\text{clone}} \cdot \Delta S$ where $\nu_{\text{clone}} = \mathbb{E}[p_i]/h$ is the mean cloning rate
-
-3. **Stability condition**: $\lambda_{\text{kin}} > \lambda_{\text{clone}}$
-
-The dimensionless constant $C = 1/(2d)$ emerges from the Fokker-Planck perturbation expansion in $d$ dimensions (averaging over directions).
-
-**Verification for recommended defaults** ($d = 50$, $\mathbb{E}[p_i] = 0.1$, $M^2 = 1$, $h = 0.01$):
-
-$$
-\gamma_{\min} = \frac{0.1 \cdot 1}{100 \cdot 0.01} = 0.1
-$$
-
-The recommended default $\gamma = 1.0$ satisfies $\gamma > \gamma_{\min}$ with a safety factor of 10. $\checkmark$
+This is the rigorous friction lower bound used in the LSI/acoustic-limit analysis; numerical substitutes should be marked as heuristics.
 
 $\square$
 :::
@@ -453,7 +434,7 @@ More precisely, it says that no matter how far apart two particles are, there is
 
 The kernel scale $\varepsilon$ controls this. If $\varepsilon$ is too small, distant particles have negligible companion probability. The softmax kernel gives weight $\exp(-d^2/2\varepsilon^2)$ to a particle at distance $d$. When $d = D_{\text{alg}}$ (the maximum possible distance), this weight is $\exp(-D_{\text{alg}}^2/2\varepsilon^2)$. For this to be non-negligible, we need $\varepsilon$ large enough.
 
-The formula $\varepsilon \geq D_{\text{alg}}/\sqrt{2\ln((N-1)/p_{\min})}$ comes from inverting this requirement: given a target minimum probability $p_{\min}$, how large must $\varepsilon$ be?
+The formula $\varepsilon \geq D_{\text{alg}}/\sqrt{2\ln((n_{\mathrm{alive}}-1)/p_{\min})}$ comes from inverting this requirement: given a target minimum probability $p_{\min}$, how large must $\varepsilon$ be?
 :::
 
 :::{prf:proposition} Kernel Scale Bound
@@ -462,7 +443,7 @@ The formula $\varepsilon \geq D_{\text{alg}}/\sqrt{2\ln((N-1)/p_{\min})}$ comes 
 The companion kernel scale must satisfy:
 
 $$
-\boxed{\varepsilon \geq \frac{D_{\text{alg}}}{\sqrt{2 \ln((N-1)/p_{\min,\text{target}})}}}
+\boxed{\varepsilon \geq \frac{D_{\text{alg}}}{\sqrt{2 \ln((n_{\mathrm{alive}}-1)/p_{\min,\text{target}})}}}
 $$
 
 **Derivation** (from softmax Doeblin condition):
@@ -470,13 +451,13 @@ $$
 From {prf:ref}`prop-alg-sieve-doeblin-softmax`, the minimum companion probability is:
 
 $$
-P_{\min} \geq \frac{\exp(-D_{\text{alg}}^2/(2\varepsilon^2))}{N - 1}
+P_{\min} \geq \frac{\exp(-D_{\text{alg}}^2/(2\varepsilon^2))}{n_{\mathrm{alive}} - 1}
 $$
 
 For the Doeblin condition to yield meaningful mixing, we need $P_{\min} \geq p_{\min,\text{target}}$:
 
 $$
-\frac{\exp(-D_{\text{alg}}^2/(2\varepsilon^2))}{N - 1} \geq p_{\min,\text{target}}
+\frac{\exp(-D_{\text{alg}}^2/(2\varepsilon^2))}{n_{\mathrm{alive}} - 1} \geq p_{\min,\text{target}}
 $$
 
 Solving for $\varepsilon$:
@@ -486,16 +467,11 @@ $$
 $$
 
 $$
-\varepsilon^2 \geq \frac{D_{\text{alg}}^2}{2 \ln((N-1)/p_{\min,\text{target}})}
+ \varepsilon^2 \geq \frac{D_{\text{alg}}^2}{2 \ln((n_{\mathrm{alive}}-1)/p_{\min,\text{target}})}.
 $$
 
-**Verification for defaults** ($N = 50$, $p_{\min} = 0.01$, $D_{\text{alg}} = 1.0$ normalized):
-
-$$
-\varepsilon_{\min} = \frac{1.0}{\sqrt{2 \ln(4900)}} \approx \frac{1.0}{4.1} \approx 0.24
-$$
-
-The algorithm sets $\varepsilon = \max(\varepsilon_{\min}, 0.1) = 0.24$, satisfying the bound exactly. $\checkmark$
+This is a **sufficient** bound derived from the minorization floor. Defaults should be checked against the chosen
+$p_{\min,\text{target}}$ rather than assumed to satisfy it.
 
 $\square$
 :::
@@ -512,16 +488,17 @@ Why? Because if the timestep is larger than a half-period of the fastest oscilla
 The practical bound $h < 0.1$ is conservative—it provides margin for nonlinear effects and multi-scale interactions that the linearized analysis does not capture.
 :::
 
-:::{prf:proposition} Timestep Upper Bound
-:label: prop-alg-sieve-timestep-bound
+:::{admonition} Heuristic: Timestep Stability
+:class: feynman-added tip
 
-The BAOAB timestep must satisfy:
+For numerical stability, a conservative guideline is:
 
 $$
 \boxed{h < \min\left(\frac{2}{\omega}, 0.1\right)}
 $$
 
-where $\omega = \sqrt{\lambda_{\max}(\nabla^2 U)}$ is the maximum eigenfrequency of the potential.
+where $\omega = \sqrt{\lambda_{\max}(\nabla^2 U)}$ is the maximum eigenfrequency of the potential. This bound is a
+discretization guideline, not a formal requirement of the convergence proof.
 
 **Derivation**:
 
@@ -549,7 +526,6 @@ For small $h$: $c_2^2 \approx 2\gamma h \cdot T_c$ (first-order expansion).
 
 The **stationary velocity distribution** has temperature $T_c$ (matching the continuous limit), but the per-step noise variance scales with $h$. This is correct: smaller timesteps inject less noise per step but take more steps, yielding the same equilibrium.
 
-$\square$
 :::
 
 ### E. Noise Injection (LSI Spectral Gap)
@@ -606,23 +582,18 @@ $\square$
 
 | Parameter | Symbol | Unit | Lower Bound (derived) | Upper Bound | Recommended Default | Status |
 |-----------|--------|------|----------------------|-------------|---------------------|--------|
-| Population | $N$ | [count] | $\geq 2$ | $\infty$ | 50 | $\checkmark$ |
-| Kernel scale | $\varepsilon$ | [distance] | $D_{\text{alg}} / \sqrt{2\ln((N-1)/p_{\min})}$ | $\infty$ | $\max(0.1, \varepsilon_{\min})$ | $\checkmark$ |
-| Friction | $\gamma$ | [1/time] | $\mathbb{E}[p_i] M^2 / (2dh)$ | $\sigma_v^2 / (2h)$ | 1.0 | $\checkmark$ |
-| Temperature | $T_c$ | [dimensionless] | $> 0$ | $\infty$ | 1.0 | $\checkmark$ |
-| Timestep | $h$ | [time] | $> 0$ | $\min(2/\omega, 0.1)$ | 0.01 | $\checkmark$ |
-| Cloning jitter | $\sigma_x$ | [distance] | $\sqrt{\lambda_{\text{target}} C_0 / (\gamma \kappa_{\text{conf}} \kappa_W)}$ | $\varepsilon$ | 0.1 | $\checkmark$ |
-| Reward exponent | $\alpha$ | [dimensionless] | $\geq 0$ | $< \beta + \lambda_c$ (subcritical) | 1.0 | $\checkmark$ |
-| Diversity exponent | $\beta$ | [dimensionless] | $> 0$ | $\infty$ | 1.0 | $\checkmark$ |
-| Positivity floor | $\eta$ | [dimensionless] | $> 0$ | $\ll A$ | 0.1 | $\checkmark$ |
-| Logistic bound | $A$ | [dimensionless] | $> 0$ | $\infty$ | 2.0 | $\checkmark$ |
-| Clone regularizer | $\varepsilon_{\text{clone}}$ | [dimensionless] | $> 0$ | $V_{\min}$ | 0.01 | $\checkmark$ |
-| Max clone prob | $p_{\max}$ | [probability] | $> 0$ | $1$ | 1.0 | $\checkmark$ |
-
-**Verification for $d=50$, $N=50$, $D_{\text{alg}}=1.0$**:
-- $\gamma_{\min} = 0.1 \cdot 1 / (2 \cdot 50 \cdot 0.01) = 0.1$ → Default $\gamma = 1.0$ $\checkmark$
-- $\varepsilon_{\min} = 1.0 / 4.1 \approx 0.24$ → Algorithm sets $\varepsilon = 0.24$ $\checkmark$
-- $h_{\max} = 0.1$ → Default $h = 0.01$ $\checkmark$
+| Population | $N$ | [count] | $\geq 2$ (for mixing) | $\infty$ | 50 | rigorous |
+| Kernel scale | $\varepsilon$ | [distance] | $D_{\text{alg}} / \sqrt{2\ln((n_{\mathrm{alive}}-1)/p_{\min})}$ | $\infty$ | 0.1 (check vs. $p_{\min}$) | rigorous (sufficient) |
+| Friction | $\gamma$ | [1/time] | $\gamma_*=\frac{c_2 M^2}{c_1 \lambda} + \frac{C_{\text{Dob}}\nu_{\text{clone}}}{c_1 \kappa_W}$ | — | 1.0 (check) | rigorous (Appendix 15) |
+| Temperature | $T_c$ | [dimensionless] | $> 0$ | $\infty$ | 1.0 | rigorous |
+| Timestep | $h$ | [time] | $> 0$ | heuristic: $\min(2/\omega, 0.1)$ | 0.01 | heuristic |
+| Cloning jitter | $\sigma_x$ | [distance] | $\sqrt{\lambda_{\text{target}} C_0 / (\gamma \kappa_{\text{conf}} \kappa_W)}$ | heuristic: $\le \varepsilon$ | 0.1 (check) | rigorous lower / heuristic upper |
+| Reward exponent | $\alpha$ | [dimensionless] | $\geq 0$ | — | 1.0 | rigorous |
+| Diversity exponent | $\beta$ | [dimensionless] | $> 0$ | — | 1.0 | rigorous |
+| Positivity floor | $\eta$ | [dimensionless] | $> 0$ | — | 0.1 | rigorous |
+| Logistic bound | $A$ | [dimensionless] | $> 0$ | $\infty$ | 2.0 | rigorous |
+| Clone regularizer | $\varepsilon_{\text{clone}}$ | [dimensionless] | $> 0$ | — | 0.01 | rigorous |
+| Max clone prob | $p_{\max}$ | [probability] | $> 0$ | $1$ | 1.0 | rigorous |
 :::
 
 (sec-convergence-rate)=
@@ -635,8 +606,10 @@ The answer is simultaneously simple and subtle. Simple because there is a single
 
 Think of it like a chain: the strength of the chain is determined by the weakest link. The convergence rate is determined by the slowest mechanism:
 
-- Wasserstein contraction $\kappa_W$: How fast does the geometry of cloning compress the distribution?
-- Confinement gap $\kappa_{\text{conf}}$: How fast does the boundary condition drive particles inward?
+- Position contraction $\kappa_x$ (selection + jitter)
+- Velocity contraction $\kappa_v$ (OU friction)
+- Wasserstein contraction $\kappa_W$ (companion geometry + cloning)
+- Boundary contraction $\kappa_b$ (killing/revival)
 
 Whichever of these is smallest becomes your bottleneck. And on top of that, you have the $O(1/\sqrt{N})$ error floor from finite population—a fundamental limit you cannot beat without adding more particles.
 
@@ -649,18 +622,10 @@ The practical implication: if your algorithm is converging slowly, figure out wh
 The discrete-time convergence to the QSD occurs exponentially with rate:
 
 $$
-\kappa_{\text{total}} = \min(\kappa_W, \kappa_{\text{conf}})
+\kappa_{\text{total}} = \min(\kappa_x,\kappa_v,\kappa_W,\kappa_b)\,(1-\epsilon_{\text{coupling}})
 $$
 
-where:
-
-1. **$\kappa_W$**: Wasserstein contraction rate (from {prf:ref}`thm-alg-sieve-wasserstein-contraction`)
-
-$$
-\kappa_W = \frac{1}{2} \cdot f_{UH}(\varepsilon) \cdot p_u(\varepsilon) \cdot c_{\text{align}}(\varepsilon) \approx 5 \times 10^{-5}
-$$
-
-2. **$\kappa_{\text{conf}}$**: Confinement spectral gap (problem-dependent, from Foster-Lyapunov)
+where the component rates are defined in Appendix 06 and implemented in `src/fragile/fractalai/convergence_bounds.py`.
 
 **Finite-N correction**: The mean-field approximation error (Appendix 09, 13) adds an $O(1/\sqrt{N})$ error floor:
 
@@ -671,17 +636,17 @@ $$
 **Stability requirement**: The acoustic stability margin must be positive for convergence:
 
 $$
-\gamma - \frac{\mathbb{E}[p_i] \cdot M^2}{2dh} > 0
+\gamma > \gamma_*
 $$
 
 This is a **necessary condition**, not an additional rate contribution.
 
 *Proof*:
-- $\kappa_W$: Structural contraction from companion geometry (Appendix 04, Theorem 6.1)
-- $\kappa_{\text{conf}}$: Dirichlet spectral gap from Foster-Lyapunov (Appendix 06)
+- $\kappa_W$: Structural contraction from companion geometry (Appendix 04)
+- $\kappa_x,\kappa_v,\kappa_b$: component rates from the Lyapunov decomposition (Appendix 06)
 - The $O(1/\sqrt{N})$ term is an additive error, not a rate correction (Appendix 13, Theorem 4.2)
 
-The minimum of $\kappa_W$ and $\kappa_{\text{conf}}$ determines the asymptotic rate. $\square$
+The minimum component rate (after coupling penalty) determines the asymptotic rate. $\square$
 :::
 
 :::{admonition} Conjectured Enhancement (Heuristic)
@@ -697,150 +662,60 @@ appears in Appendix 10 but the derivation has gaps. If valid, this would add to 
 :::
 
 :::{div} feynman-prose
-Let me unpack what that mixing time really means. If you want error of 1% (that is, $\varepsilon = 0.01$), you need $\ln(100) \approx 4.6$ "relaxation times." With $\kappa_{\text{total}} \sim 10^{-5}$ (a typical value), that is about half a million steps.
+Let me unpack what that mixing time really means. If you want error of 1% (that is, $\varepsilon = 0.01$), you need on the order of $\ln(100)$ relaxation times once you plug in your computed $\kappa_{\text{total}}$ and the equilibrium constant $C_{\text{total}}$.
 
-That sounds like a lot! But remember what we are doing: we are finding the global structure of a high-dimensional distribution, not just a single optimum. The algorithm is not just looking for peaks—it is characterizing the entire landscape.
-
-Also, the $O(1/\sqrt{N})$ floor matters. With $N = 50$ particles and $C_{\text{chaos}} \sim 1$, the floor is about 0.14. You cannot get better than 14% accuracy no matter how long you run. To get 1% accuracy, you need $N \sim 10000$ particles.
-
-This is the fundamental tradeoff: more particles give better accuracy but cost more computation per step.
+The $O(1/\sqrt{N})$ floor still matters: no matter how long you run, finite $N$ creates an irreducible error. To reduce that floor, you must increase $N$.
 :::
 
 :::{prf:corollary} Mixing Time
 :label: cor-alg-sieve-mixing-time
 
-The mixing time to reach error $\varepsilon$ (beyond the finite-N floor) is:
+The mixing time to reach error $\varepsilon$ (beyond the finite-$N$ floor) is:
 
 $$
-T_{\text{mix}}(\varepsilon) = \frac{1}{\kappa_{\text{total}}} \ln\left(\frac{1}{\varepsilon}\right)
+T_{\text{mix}}(\varepsilon) = \frac{1}{\kappa_{\text{total}}} \ln\left(\frac{V_{\text{init}}\kappa_{\text{total}}}{\varepsilon\, C_{\text{total}}}\right)
 $$
 
-For $\kappa_{\text{total}} \sim 10^{-5}$ and $\varepsilon = 0.01$:
+This is the formula implemented in `T_mix` (Appendix 06 / `convergence_bounds.py`). When $V_{\text{init}}$ and $C_{\text{total}}$ are $O(1)$, the simplified $\ln(1/\varepsilon)$ scaling is a good approximation.
 
-$$
-T_{\text{mix}} \sim 5 \times 10^5 \text{ steps}
-$$
-
-**Note**: The achievable error is limited by the finite-N floor $C_{\text{chaos}}/\sqrt{N}$. For $N = 50$ with $C_{\text{chaos}} \sim 1$, the floor is approximately $0.14$, so requesting $\varepsilon < 0.14$ requires increasing $N$.
+**Note**: The achievable error is limited by the finite-$N$ floor $C_{\text{chaos}}/\sqrt{N}$.
 :::
 
 (sec-parameter-selection)=
-## Parameter Selection Algorithm
+## Parameter Selection Checklist
 
 :::{div} feynman-prose
-Now I want to show you something practical. All these theoretical bounds are useless if you cannot turn them into actual parameter values. So here is an algorithm that does exactly that.
+Now I want to show you something practical. All these theoretical bounds are useless if you cannot turn them into actual parameter values. So here is a checklist that does exactly that.
 
-The idea is simple: given your problem specification (Hessian bound $M^2$, dimension $d$, target error $\varepsilon$, population size $N$), compute parameters that satisfy all the constraints. The algorithm walks through each constraint, applies the bound, and checks that everything is consistent.
+The idea is simple: given your problem specification (Hessian bound $M^2$, dimension $d$, target error $\varepsilon$, population size $N$), compute parameters that satisfy the rigorous constraints and flag the heuristic choices. The checklist walks through each constraint, applies the bound, and checks that everything is consistent.
 
-This is not machine learning—it is just arithmetic applied carefully. Each parameter depends on the others, so you have to compute them in the right order. Start with the timestep (that is independent), then friction (depends on timestep), then phase control (depends on friction), and so on.
+This is not machine learning—it is just arithmetic applied carefully. Each parameter depends on the others, so you have to compute them in a sensible order. Start with the bounds that do not depend on the rest (minorization and fitness ranges), then friction (acoustic limit), then noise floor, and finally the heuristic tuning rules.
 
-The code I show you is actual working Python. You can run it, modify it, and see exactly what happens when you change the inputs. That is the power of making the theory explicit.
+The checklist below is a conservative template. It separates rigorous bounds from heuristic choices so you can see which knobs are certified and which are tuning rules.
 :::
 
-:::{prf:algorithm} Theory-Consistent Parameter Selection
+:::{prf:algorithm} Parameter Selection Checklist (Template)
 :label: alg-alg-sieve-parameter-selection
 
-**Input**: Problem parameters $(M^2, d, \varepsilon_{\text{target}}, N, \omega)$
+**Inputs**: problem constants $(M^2, d, N)$, kernel target $p_{\min}$, LSI target $\lambda_{\text{target}}$, and acoustic-limit constants $(c_1, c_2, \lambda, C_{\text{Dob}}, \nu_{\text{clone}}, \kappa_W)$ from Appendix 15 or profiling.
 
-**Output**: Parameter set satisfying all theoretical constraints
+**Steps**:
+1. Compute fitness bounds $V_{\min}=\eta^{\alpha+\beta}$ and $V_{\max}=(A+\eta)^{\alpha+\beta}$.
+2. Choose a target minorization floor $p_{\min}$ and set
+   $\varepsilon \ge D_{\text{alg}} / \sqrt{2\ln((n_{\mathrm{alive}}-1)/p_{\min})}$.
+3. **Acoustic limit (rigorous)**: compute
+   $\gamma_* = \frac{c_2 M^2}{c_1 \lambda} + \frac{C_{\text{Dob}}\,\nu_{\text{clone}}}{c_1 \kappa_W}$ and choose $\gamma \ge \gamma_*.$
+4. **LSI noise floor (rigorous)**: choose
+   $\sigma_x^2 \ge \lambda_{\text{target}} C_0/(\gamma\kappa_{\text{conf}}\kappa_W)$.
+   If $\sigma_x > \varepsilon$, note that the LSI target is not achievable and convergence is dominated by $\kappa_W$.
+5. **Heuristics**: pick a small $h$ for BAOAB stability (e.g., $h<2/\omega$) and, if using phase balance, target $\Gamma\approx 1$.
+6. Once component rates $(\kappa_x,\kappa_v,\kappa_W,\kappa_b)$ are available, compute
+   $\kappa_{\text{total}}=\min(\kappa_x,\kappa_v,\kappa_W,\kappa_b)\,(1-\epsilon_{\text{coupling}})$ and report the finite-$N$ error floor $\sim 1/\sqrt{N}$.
 
-```python
-from math import sqrt, log, exp
-
-def compute_valid_parameters(
-    M2: float = 1.0,       # Hessian bound
-    d: int = 50,           # Latent dimension
-    eps_target: float = 0.01,  # Target error
-    N: int = 50,           # Population size
-    omega: float = 10.0    # Potential frequency
-) -> dict:
-    """Compute parameters satisfying all theoretical constraints."""
-
-    # Algorithm constants (fixed)
-    alpha, beta = 1.0, 1.0
-    eta, A = 0.1, 2.0
-    epsilon_clone = 0.01
-    p_max = 1.0
-
-    # 1. Fitness bounds (exact)
-    V_min = eta ** (alpha + beta)
-    V_max = (A + eta) ** (alpha + beta)
-    S_max = (V_max - V_min) / (V_min + epsilon_clone)
-    E_p = 0.1  # Expected cloning probability (empirical)
-
-    # 2. Timestep from CFL stability
-    h = min(2.0 / omega, 0.1, 0.01)  # Conservative
-
-    # 3. Friction from acoustic stability: gamma > E[p]*M²/(2*d*h)
-    gamma_min = E_p * M2 / (2.0 * d * h)
-    gamma = max(1.0, 2.0 * gamma_min)  # Safety factor 2
-
-    # 4. Phase control: Gamma ~ 1 for liquid phase
-    Gamma_target = 1.0
-    T_clone = beta / (alpha * d)
-    T_kin = Gamma_target * T_clone
-    sigma_v_sq = 2.0 * gamma * T_kin
-    T_c = sigma_v_sq / (2.0 * gamma)
-
-    # 5. Kernel scale from Doeblin: epsilon >= D_alg/sqrt(2*ln((N-1)/p_min))
-    D_z = 1.0  # Normalized latent diameter
-    D_alg = D_z
-    p_min_target = 0.01
-    epsilon = D_alg / sqrt(2.0 * log((N - 1) / p_min_target))
-    epsilon = max(epsilon, 0.1)  # Minimum for stability
-
-    # 6. Jitter from LSI: sigma_x² >= lambda_target*C_0/(gamma*kappa_conf*kappa_W)
-    kappa_conf = 1.0  # Confinement constant
-    kappa_W = 5e-5    # Wasserstein constant (from theory)
-    C_0 = 1.0         # Interaction complexity
-    lambda_target = 0.01
-    sigma_x_sq = lambda_target * C_0 / (gamma * kappa_conf * kappa_W)
-    sigma_x = max(sqrt(sigma_x_sq), 0.01)
-    sigma_x = min(sigma_x, epsilon)  # Upper bound
-
-    # 7. Compute convergence rate
-    acoustic_margin = gamma - E_p * M2 / (2.0 * d * h)
-    kappa_total = min(kappa_W, kappa_conf)  # Rate (not including acoustic)
-
-    # Finite-N error floor
-    C_chaos = 1.0
-    error_floor = C_chaos / sqrt(N)
-
-    # 8. Mixing time (to reach target error beyond floor)
-    achievable_error = max(eps_target, error_floor)
-    T_mix = log(1.0 / achievable_error) / max(kappa_total, 1e-10)
-
-    # 9. Verify all constraints
-    epsilon_min = D_alg / sqrt(2.0 * log((N - 1) / p_min_target))
-    constraints_satisfied = (
-        acoustic_margin > 0 and        # Acoustic stability (required)
-        epsilon >= epsilon_min and     # Doeblin (exact formula)
-        h < 2.0 / omega and            # CFL
-        sigma_x <= epsilon and         # Locality (clipped to epsilon)
-        0.5 <= Gamma_target <= 2.0     # Phase control
-    )
-
-    return {
-        'N': N,
-        'epsilon': epsilon,
-        'gamma': gamma,
-        'T_c': T_c,
-        'h': h,
-        'sigma_x': sigma_x,
-        'alpha': alpha,
-        'beta': beta,
-        'eta': eta,
-        'A': A,
-        'epsilon_clone': epsilon_clone,
-        'p_max': p_max,
-        'kappa_total': kappa_total,
-        'acoustic_margin': acoustic_margin,
-        'error_floor': error_floor,
-        'T_mix': T_mix,
-        'constraints_satisfied': constraints_satisfied
-    }
-```
+**Output**: a parameter set that satisfies the rigorous bounds, plus heuristic choices explicitly flagged as such.
 :::
+
+
 
 (sec-17-node-verification)=
 ## Verification: 17-Node Sieve Instantiation
@@ -862,7 +737,7 @@ The tight bounds are certified by the 17-node sieve:
 | 1 (Energy) | $\Phi \in [0, V_{\max}]$ | $V_{\max} = 4.41$ |
 | 2 (Recovery) | Bad set finite | Cloning repairs |
 | 3 (Confinement) | $S_N$ symmetry | Permutation invariance |
-| 4 (Scaling) | $\alpha < \beta + \lambda_c$ | Subcriticality |
+| 4 (Scaling) | Critical/controlled by confinement | BarrierTypeII + Foster-Lyapunov |
 | 5 (Parameters) | Constants fixed | Table values |
 | 6 (Capacity) | Bad set capacity | Finite |
 | 7 (Analyticity) | $C^2$ regularity | Bounded derivatives |
@@ -882,28 +757,20 @@ The tight bounds are certified by the 17-node sieve:
 :::{div} feynman-prose
 Let me step back and tell you what we have accomplished here.
 
-We started with three separate analyses—appendix proofs, algorithm bounds, hypostructure certificates—each giving partial information about parameter constraints. By combining them systematically, we derived five master constraints that together guarantee convergence:
+We started with three separate analyses—appendix proofs, algorithm bounds, hypostructure certificates—each giving partial information about parameter constraints. By combining them systematically, we separated **rigorous constraints** (acoustic limit, Doeblin minorization, LSI noise floor) from **heuristic tuning rules** (phase balance, timestep stability).
 
-1. Phase control keeps us in the liquid phase where optimization works.
-2. Acoustic stability prevents cloning shocks from destabilizing the dynamics.
-3. Doeblin minorization ensures the population stays connected.
-4. Timestep bounds keep the discretization accurate.
-5. Noise injection provides enough mixing without losing precision.
-
-The recommended defaults ($\gamma = 1.0$, $h = 0.01$, $\varepsilon \approx 0.24$, $N = 50$) satisfy all these constraints with safety margins. You do not have to tune parameters blindly—the theory tells you exactly what is allowed.
-
-But here is the most important thing: this is not the end. We clearly marked which results are rigorously proven (QSD structure, error bounds, Wasserstein contraction) and which are conjectured (hypocoercive rate). Science progresses by being honest about what we know and what we do not. The gaps are opportunities for future work, not embarrassments to hide.
+Defaults are useful starting points, but they must be checked against problem-specific constants such as $D_{\text{alg}}$, $\kappa_W$, and the acoustic-limit $\gamma_*$. We also made clear which statements are proven, which are asymptotic, and which remain conjectured.
 :::
 
-This chapter derived rigorous parameter constraints for the Fractal Gas by:
+This chapter derived parameter constraints for the Fractal Gas by:
 
-1. **Using proven appendix results** (07, 09, 13, 04) for QSD structure, error bounds, and contraction
-2. **Deriving constants from first principles** (acoustic stability $C = 1/(2d)$, phase boundaries from free energy)
-3. **Fixing mathematical errors** (softmax kernel for Doeblin, BAOAB discrete temperature)
-4. **Specifying exact constraints** that code defaults must satisfy
-5. **Clearly marking conjectured results** (hypocoercive term) as heuristic
+1. **Using proven appendix results** (04, 06, 09, 13) for contraction, Lyapunov structure, and error bounds
+2. **Translating algorithm definitions** into explicit bounds (fitness ranges, cloning scores, minorization floors)
+3. **Separating rigorous constraints from heuristics** (phase balance and timestep stability)
+4. **Providing a conservative selection checklist** with explicit dependencies
+5. **Clearly marking asymptotic and conjectured results** (mean-field QSD scaling, hypocoercive rate)
 
-The recommended defaults ($\gamma = 1.0$, $h = 0.01$, $\varepsilon = 0.1$, $N = 50$) satisfy all theoretical constraints with appropriate safety margins.
+Defaults should be validated against the bounds above rather than assumed to satisfy them.
 
 ## References
 
