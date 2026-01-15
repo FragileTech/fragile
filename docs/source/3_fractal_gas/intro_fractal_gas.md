@@ -23,11 +23,13 @@ by *Guillem Duran-Ballester*
 - **Boris-BAOAB Kinetics**: Symplectic integrator on Riemannian manifold with OU thermostat and anisotropic diffusion. See {prf:ref}`def-baoab-splitting`.
 
 **Gauge Structure from Viscous Coupling:**
-The viscous force between walkers generates an emergent SU($d$) gauge symmetry:
-- **Color Link Variables**: $W_{ij}^{(\alpha)} = K_\rho \cdot e^{im(v_j^{(\alpha)} - v_i^{(\alpha)})/\hbar_{\text{eff}}}$ — modulus from distance, phase from momentum difference
-- **Color State Vector**: $c_i^{(\alpha)} = \sum_{j \neq i} W_{ij}^{(\alpha)}$ — coherent sum over neighbors
+The viscous force between walkers has an $O(d)$ redundancy on the **real** velocity components; after momentum-phase complexification this lifts to $U(d)$ and yields $SU(d)$:
+- **Color Link Variables**: $W_{ij}^{(\alpha)} = F_{\mathrm{viscous},ij}^{(\alpha)} \cdot \exp(i p_i^{(\alpha)} \ell_0/\hbar_{\text{eff}})$ with $F_{\mathrm{viscous},ij}^{(\alpha)}=\nu K_\rho (v_j^{(\alpha)}-v_i^{(\alpha)})$ — amplitude from force, phase from momentum
+- **Color State Vector**: $\tilde{c}_i^{(\alpha)} = \sum_{j \neq i} W_{ij}^{(\alpha)}$, $c_i^{(\alpha)} = \tilde{c}_i^{(\alpha)}/\|\tilde{c}_i\|$ — normalized complex force vector
 - **Gluon Fields**: Extracted from traceless phase matrix via $A_{ij}^a = \frac{2}{g}\text{Tr}[T^a \Phi_{ij}^{(0)}]$
 - **Confinement**: Localization kernel provides asymptotic freedom at long range, confinement at short range
+
+Here $p_i = m v_i$ and $\ell_0$ is a characteristic IG length.
 
 See {prf:ref}`def-latent-fractal-gas-gauge-structure`.
 
@@ -71,8 +73,8 @@ The algorithm exhibits self-similar behavior across scales: the same selection-m
 - Revival guarantee ensuring population maintenance
 
 *Gauge-Theoretic:*
-- SU($d$) gauge symmetry emergent from viscous coupling
-- Color charge from velocity-phase encoding (de Broglie relation)
+- $O(d)$ redundancy from viscous coupling, lifted to $SU(d)$ by momentum-phase complexification
+- Color charge from momentum-phase encoding (de Broglie relation)
 - Gluon fields from latent Riemannian geometry
 - Confinement from localization kernel
 
@@ -138,7 +140,7 @@ A recommended approach for understanding this framework:
 5. **Generate examples** by asking the LLM to instantiate the algorithm on specific problems
 
 **Example queries:**
-- "Explain how the viscous force generates SU(d) gauge symmetry"
+- "Explain how the viscous force yields $O(d)$ redundancy and how complexification lifts it to $SU(d)$"
 - "What is the relationship between the Doeblin constant and mixing time?"
 - "How does the revival guarantee prevent population extinction?"
 - "Trace through the sieve verification for Node 10 (ErgoCheck)"
@@ -151,7 +153,7 @@ A recommended approach for understanding this framework:
 - {doc}`1_the_algorithm/02_fractal_gas_latent`: Complete proof object with sieve verification
 
 **Part 2: The Fractal Set (Gauge Structure)**
-- {doc}`2_fractal_set/01_fractal_set`: SU(N) gauge symmetry from viscous coupling
+- {doc}`2_fractal_set/01_fractal_set`: $O(N)$ redundancy from viscous coupling, lifted to $SU(N)$ by complexification
 - {doc}`2_fractal_set/02_causal_set_theory`: Causal structure and discrete spacetime
 - {doc}`2_fractal_set/03_lattice_qft`: Connection to lattice gauge theory
 
@@ -169,7 +171,7 @@ This volume provides a **mathematically rigorous foundation for population-based
 
 3. **Mean-field limit with error bounds.** As $N \to \infty$, the empirical measure converges to a deterministic density with explicit error: $\text{Err}_N \lesssim e^{-\kappa_W T}/\sqrt{N}$. This connects finite swarms to continuum theory ({doc}`1_the_algorithm/02_fractal_gas_latent` Part III-B).
 
-4. **Gauge-theoretic interpretation.** The viscous force generates emergent SU($d$) gauge symmetry, providing a physical interpretation of inter-particle coupling. Gluon fields emerge from the latent Riemannian geometry ({prf:ref}`def-latent-fractal-gas-gauge-structure`).
+4. **Gauge-theoretic interpretation.** The viscous force generates an $O(d)$ redundancy that lifts to emergent $SU(d)$ gauge symmetry after momentum-phase complexification, providing a physical interpretation of inter-particle coupling. Gluon fields emerge from the latent Riemannian geometry ({prf:ref}`def-latent-fractal-gas-gauge-structure`).
 
 5. **Revival guarantee.** Under mild parameter constraints, dead walkers are resurrected with probability 1 whenever at least one walker remains alive. This prevents gradual extinction and ensures constant population ({prf:ref}`prop-fg-guaranteed-revival`).
 
@@ -198,7 +200,7 @@ This volume provides a **mathematically rigorous foundation for population-based
 
 5. **SU($d$) from viscous coupling.** The d-dimensional latent space induces SU($d$) gauge symmetry via complex color states ({prf:ref}`def-latent-fractal-gas-complex-color`).
 
-6. **Pairwise complex coupling.** $W_{ij}^{(\alpha)} = K_\rho \cdot \exp(im(v_j^{(\alpha)} - v_i^{(\alpha)})/\hbar_{\text{eff}})$ encodes distance as modulus, momentum difference as phase ({prf:ref}`def-latent-fractal-gas-color-link`).
+6. **Pairwise complex coupling.** $W_{ij}^{(\alpha)} = F_{\mathrm{viscous},ij}^{(\alpha)} \cdot \exp(i p_i^{(\alpha)} \ell_0/\hbar_{\text{eff}})$ encodes force as amplitude and momentum as phase ({prf:ref}`def-latent-fractal-gas-color-link`).
 
 7. **Gluon field extraction.** The traceless projection $\Phi_{ij}^{(0)} = \Phi_{ij} - \bar{\phi}_{ij} I$ yields gluon components $A_{ij}^a = \frac{2}{g}\text{Tr}[T^a \Phi_{ij}^{(0)}]$ in the Cartan subalgebra ({prf:ref}`def-latent-fractal-gas-gluon-field`).
 
@@ -315,17 +317,17 @@ The viscous force between walkers generates gauge symmetry:
 
 1. **Pairwise complex coupling:**
 
-   $$W_{ij}^{(\alpha)} = K_\rho(z_i, z_j) \cdot \exp\left(i\frac{m(v_j^{(\alpha)} - v_i^{(\alpha)})}{\hbar_{\text{eff}}}\right)$$
+   $$W_{ij}^{(\alpha)} = F_{\mathrm{viscous},ij}^{(\alpha)} \cdot \exp\left(i\frac{p_i^{(\alpha)}\ell_0}{\hbar_{\text{eff}}}\right), \quad F_{\mathrm{viscous},ij}^{(\alpha)}=\nu K_\rho(z_i, z_j)(v_j^{(\alpha)} - v_i^{(\alpha)})$$
 
 2. **Color state (coherent sum):**
 
-   $$c_i^{(\alpha)} = \sum_{j \neq i} W_{ij}^{(\alpha)}$$
+   $$\tilde{c}_i^{(\alpha)} = \sum_{j \neq i} W_{ij}^{(\alpha)}, \quad c_i^{(\alpha)} = \frac{\tilde{c}_i^{(\alpha)}}{\|\tilde{c}_i\|}$$
 
 3. **Gauge link variable:**
 
    $$U_{ij} = \exp(i\Phi_{ij}^{(0)}) \in \text{SU}(d)$$
 
-The modulus encodes distance (via kernel), the phase encodes momentum difference (de Broglie relation). This is the algorithmic analog of QCD color charge.
+The modulus encodes viscous force magnitude (via the kernel and velocity differences), while the phase encodes momentum $p_i^{(\alpha)} = m v_i^{(\alpha)}$ (de Broglie relation). The length scale $\ell_0$ is the characteristic IG spacing used for momentum-phase encoding. This is the algorithmic analog of QCD color charge.
 
 (sec-fg-sieve-overview)=
 ## The Sieve Verification

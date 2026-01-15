@@ -79,7 +79,7 @@ In classical analysis of the Fragile Gas, the following must be handled via expl
 - **Gauge redundancy in fitness**: Only fitness *differences* matter, but absolute values appear in equations
 - **Coordinate freedom**: Results must be independent of latent coordinate choice, but proofs use specific coordinates
 
-Each of these requires careful axiom engineering to prevent "valid" mathematical states that have no physical meaning. Hypostructure handles all three automatically through its categorical structure: permutation symmetry via the swarm functor, fitness gauge via the selection kernel's dependence on ratios, and coordinate freedom via the naturality conditions on the metric.
+Each of these requires careful axiom engineering to prevent "valid" mathematical states that have no physical meaning. Hypostructure handles all three automatically through its categorical structure: permutation symmetry via the swarm functor, fitness gauge via the selection kernel's dependence on fitness differences (baseline shifts), and coordinate freedom via the naturality conditions on the metric.
 :::
 
 ### What Hypostructure Provides
@@ -101,7 +101,7 @@ The present document demonstrates these advantages concretely. We analyze the **
 
 **Delayed potentials.** The effective potential $\Phi_{\text{eff}}(z)$ depends on the fitness landscape, which depends on the swarm configuration, which evolves in time. This creates a feedback loop where the potential "sees" the recent history of the swarm. Classically, you would need to track this history explicitly and prove uniform bounds over all possible histories—a combinatorial nightmare.
 
-**Fitness-dependent diffusion.** The anisotropic diffusion tensor $\Sigma_{\text{reg}}(z) = (\nabla^2 V_{\text{fit}} + \epsilon_\Sigma I)^{-1/2}$ adapts to local curvature of the fitness landscape. This is not a small perturbation of isotropic diffusion—it fundamentally changes the geometry of the noise. Classical hypocoercivity theory has no standard tools for state-dependent, fitness-coupled diffusion tensors.
+**Fitness-dependent diffusion.** The anisotropic diffusion tensor $\Sigma_{\text{reg}}(z) = (\nabla_{z}^2 V_{\text{fit}}^{(z)} + \epsilon_\Sigma I)^{-1/2}$ adapts to local curvature of the fitness landscape. This is not a small perturbation of isotropic diffusion—it fundamentally changes the geometry of the noise. Classical hypocoercivity theory has no standard tools for state-dependent, fitness-coupled diffusion tensors.
 
 **Non-smooth agent boundaries.** When the agent's sieve detects an unrecoverable state—an information overload, a causal paradox, a failed consistency check—the walker transitions to the cemetery. These boundaries have no tangent space, no normal vector, no smooth collar neighborhood. Hypostructure handles them through the boundary measure $P_\partial$ without requiring geometric regularity.
 :::
@@ -356,25 +356,27 @@ The anisotropic diffusion tensor looks at the local curvature of the fitness lan
 This is not just a heuristic. It is the natural thing to do if you think about exploration as a control problem: you want to maximize information gain per unit of noise injected, and that means adapting to the local geometry of the landscape.
 :::
 
-The swarm employs an anisotropic diffusion term derived from the *position* Hessian of the fitness potential
-$V_{\text{fit}} = (d')^{\beta_{\text{fit}}} (r')^{\alpha_{\text{fit}}}$, with companions and velocities treated as frozen
+The swarm employs an anisotropic diffusion term derived from the *position* Hessian of each walker's fitness potential
+$V_{\text{fit},i} = (d'_i)^{\beta_{\text{fit}}} (r'_i)^{\alpha_{\text{fit}}}$, with companions and velocities treated as frozen
 (as in `FitnessOperator.compute_hessian`). Let
 
 $$
-H_{\text{fit}}(z) := \nabla_z^2 V_{\text{fit}}(z, v; c^{\mathrm{dist}}).
+H_{\text{fit}}(z_i,S) := \nabla_{z_i}^2 V_{\text{fit}}^{(i)}(S; c^{\mathrm{dist}}),
 $$
 
 and define the regularized diffusion factor by eigenvalue/diagonal clamping:
 
 $$
-H_{\text{reg}} := \mathrm{Clamp}_{\epsilon_{\Sigma}}\!\left(H_{\text{fit}}(z) + \epsilon_{\Sigma} I\right), \qquad
-\Sigma_{\text{reg}}(z) := H_{\text{reg}}^{-1/2}.
+H_{\text{reg}}(z_i,S) := \mathrm{Clamp}_{\epsilon_{\Sigma}}\!\left(H_{\text{fit}}(z_i,S) + \epsilon_{\Sigma} I\right), \qquad
+\Sigma_{\text{reg}}(z_i,S) := H_{\text{reg}}(z_i,S)^{-1/2}.
 
 $$
 Here $\mathrm{Clamp}_{\epsilon_{\Sigma}}$ raises eigenvalues (or diagonal entries in the diagonal approximation) to at least
-$\epsilon_{\Sigma}$, matching `KineticOperator._compute_diffusion_tensor`. This tensor scales the driving noise to align
-exploration with local stiffness (flat directions -> large noise, stiff directions -> small noise). The clamping guarantees
-uniform ellipticity; if anisotropic diffusion is disabled, take $\Sigma_{\text{reg}}=I$.
+$\epsilon_{\Sigma}$, matching `KineticOperator._compute_diffusion_tensor`. The derivative is taken with respect to $z_i$
+only (other walkers treated as frozen), so $H_{\text{fit}}$ is the local curvature tensor from the fitness-manifold chapter.
+This tensor shapes the driving noise to align exploration with local stiffness (flat directions -> large noise, stiff directions
+-> small noise); the OU scalar $c_2$ sets the overall noise amplitude. The clamping guarantees uniform ellipticity; if
+anisotropic diffusion is disabled, take $\Sigma_{\text{reg}}=I$.
 
 ### Viscous Coupling (State-Dependent Velocity Smoothing)
 
@@ -1699,7 +1701,7 @@ The following theorems have assumptions explicitly verified by the certificates 
 | Theorem | Original Assumption | Witness | Status |
 |---------|---------------------|---------|--------|
 | **Cheeger Bound** (`thm:cheeger-bound`) | Uniform minorization / Doeblin condition $P \ge \delta \pi$ | $p_{\min} \ge m_\epsilon/(k-1)$ via soft companion kernel | **Satisfied** (Lemma {prf:ref}`lem-latent-fractal-gas-companion-doeblin`) |
-| **Induced Riemannian Structure** (`thm:induced-riemannian-structure`) | Hessian-based quadratic forms define a metric | $\Sigma_{\text{reg}}(z) = (\nabla^2 V + \epsilon_{\Sigma} I)^{-1/2}$ in kinetic update | **Instantiated** |
+| **Induced Riemannian Structure** (`thm:induced-riemannian-structure`) | Hessian-based quadratic forms define a metric | $\Sigma_{\text{reg}}(z) = (\nabla_{z}^2 V_{\text{fit}}^{(z)} + \epsilon_{\Sigma} I)^{-1/2}$ in kinetic update | **Instantiated** |
 | **Darwinian Ratchet** (`mt:darwinian-ratchet`) | WFR (Transport + Reaction) dynamics {cite}`chizat2018interpolating,liero2018optimal` | Langevin Transport + Cloning Reaction split | **Satisfied** |
 | **Geometric Adaptation** (`thm:geometric-adaptation`) | Euclidean embedding $d(x,y)=\|\pi(x)-\pi(y)\|$ | $d_{\text{alg}}$ defined as Euclidean distance in latent chart | **Satisfied** |
 | **Symplectic Shadowing** (`mt:symplectic-shadowing`) | Symplectic splitting of Hamiltonian system | Boris-BAOAB: conformally symplectic drift + exact OU thermostat | **Conformal Shadowing** |
@@ -1990,7 +1992,7 @@ This table incorporates the assumption audit from Part III-E (Assumption Dischar
 | Geometric Adaptation (Metric Distortion Under Representation) ({prf:ref}`thm:geometric-adaptation`) | Permits: $\mathrm{Rep}_K$ (N11). Assumptions: $d_{\text{alg}}(x,y)=\|\pi(x)-\pi(y)\|_2$ for an embedding $\pi: X\to\mathbb{R}^n$; embeddings related by a linear map $T$ with $\pi_2=T\circ\pi_1$ | discharged: $d_{\text{alg}}$ is the Euclidean distance in the latent chart (Theorem {prf:ref}`thm-latent-fractal-gas-main`); when no representation change is performed we may take $T=I$. |
 | The Darwinian Ratchet (WFR Transport + Reaction) ({prf:ref}`mt:darwinian-ratchet`) | Permits: $C_\mu$ (N3), $D_E$ (N1). | discharged: the step operator is explicitly split as transport (kinetic/mutation) + reaction (companion-driven cloning), i.e. the transport+reaction decomposition is an identity of the algorithm; the continuum WFR PDE reading is an additional conditional interpretation. |
 | Topological Regularization (Cheeger Bound, Conditional) ({prf:ref}`thm:cheeger-bound`) | Permits: $C_\mu$ (N3), $D_E$ (N1), $\mathrm{LS}_\sigma$ (N7), $\mathrm{Cap}_H$ (N6), $\mathrm{TB}_\pi$ (N8). | discharged (via lazified / 2-step minorization): Lemma {prf:ref}`lem-latent-fractal-gas-companion-doeblin` gives an explicit off-diagonal Doeblin floor for the companion kernel on the alive core; applying {prf:ref}`thm:cheeger-bound` to a lazified kernel (or to $P^2$) yields the stated Cheeger/connectedness bound. |
-| Induced Local Geometry (Quadratic Form from Landscape + Graph Energy) ({prf:ref}`thm:induced-riemannian-structure`) | Permits: $D_E$ (N1), $\mathrm{LS}_\sigma$ (N7), $\mathrm{Rep}_K$ (N11). | discharged/instantiated: the anisotropic diffusion tensor $\Sigma_{\mathrm{reg}}(z) = (\nabla^2 V_{\mathrm{fit}}(z) + \epsilon_{\Sigma} I)^{-1/2}$ is part of the kinetic update (Theorem {prf:ref}`thm-latent-fractal-gas-main`), making the Hessian-based quadratic form a concrete algorithmic component on the alive core. |
+| Induced Local Geometry (Quadratic Form from Landscape + Graph Energy) ({prf:ref}`thm:induced-riemannian-structure`) | Permits: $D_E$ (N1), $\mathrm{LS}_\sigma$ (N7), $\mathrm{Rep}_K$ (N11). | discharged/instantiated: the anisotropic diffusion tensor $\Sigma_{\mathrm{reg}}(z) = (\nabla_{z}^2 V_{\mathrm{fit}}^{(z)} + \epsilon_{\Sigma} I)^{-1/2}$ is part of the kinetic update (Theorem {prf:ref}`thm-latent-fractal-gas-main`), making the Hessian-based quadratic form a concrete algorithmic component on the alive core. |
 | Causal Horizon Lock (Causal Information Bound + Stasis) ({prf:ref}`thm:causal-horizon-lock`) | Permits: $C_\mu$ (N3), $D_E$ (N1), $\mathrm{SC}_\lambda$ (N4), $\mathrm{Cap}_H$ (N6), $\mathrm{TB}_\pi$ (N8). | blocked: $K_{\mathrm{SC}_\lambda}^{\text{crit}}$ (BarrierTypeII). |
 | Archive Invariance (Gromov–Hausdorff Stability, Conditional) ({prf:ref}`thm:archive-invariance`) | Permits: $C_\mu$ (N3), $\mathrm{LS}_\sigma$ (N7), $\mathrm{Cap}_H$ (N6). | conditional: permits satisfied; additional hypotheses not verified in this instantiation. |
 | Fractal Representation ({prf:ref}`mt:fractal-representation`) | Permits: $C_\mu$, $D_E$, $\mathrm{SC}_\lambda$, $\mathrm{Cap}_H$, $\mathrm{Rep}_K$, $\mathrm{TB}_\pi$. | blocked: $K_{\mathrm{SC}_\lambda}^{\text{crit}}$ (BarrierTypeII). |

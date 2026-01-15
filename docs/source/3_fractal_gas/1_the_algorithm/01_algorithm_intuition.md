@@ -860,10 +860,10 @@ The thermostat step uses an **anisotropic diffusion tensor** $\Sigma_{\text{reg}
 The **regularized diffusion tensor** is:
 
 $$
-\Sigma_{\text{reg}}(z) = \left(\nabla_z^2 V_{\text{fit}}(z) + \epsilon_\Sigma I\right)^{-1/2}
+\Sigma_{\text{reg}}(z_i) = \left(\nabla_{z_i}^2 V_{\text{fit}}^{(i)} + \epsilon_\Sigma I\right)^{-1/2}
 $$
 
-where $\nabla_z^2 V_{\text{fit}}$ is the Hessian of fitness with respect to position, and $\epsilon_\Sigma > 0$ is a regularizer ensuring positive definiteness.
+where $\nabla_{z_i}^2 V_{\text{fit}}^{(i)}$ is the per-walker Hessian of fitness with respect to $z_i$ (companions and other walkers treated as frozen), and $\epsilon_\Sigma > 0$ is a regularizer ensuring positive definiteness. The OU step scales this shape by the thermostat amplitude $c_2$.
 :::
 
 :::{div} feynman-prose

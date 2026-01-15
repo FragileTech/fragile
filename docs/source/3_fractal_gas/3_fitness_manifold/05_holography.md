@@ -1,6 +1,21 @@
 (sec-holographic-structure)=
 # Holographic Structure and Thermodynamics
 
+**Prerequisites**: {doc}`01_emergent_geometry`, {doc}`../2_fractal_set/02_causal_set_theory`
+
+---
+
+## TL;DR
+
+*Notation: $\mathcal{T}$ = Causal Spacetime Tree (CST); $\mathcal{G}_t$ = Interaction Graph (IG); $\gamma_A$ = separating antichain for region $A$; $S_{\text{IG}}(A)$ = IG entanglement entropy; $\text{Area}_{\text{CST}}$ = CST boundary area; $\mathcal{P}_\varepsilon$ = nonlocal perimeter functional; $\alpha$ = area law constant; $\beta$ = effective inverse temperature.*
+
+The Latent Fractal Gas produces two structurally independent data streams: the Causal Spacetime Tree (CST), which records walker genealogy through cloning events, and the Interaction Graph (IG), which encodes fitness correlations between walkers. These capture fundamentally different information---ancestry versus interaction---yet both measure the same geometric quantity: boundary area. This coincidence is the algorithmic version of the Bekenstein-Hawking formula, where entanglement entropy equals area divided by four times Newton's constant. The chapter proves the Informational Area Law $S_{\text{IG}}(A) = \alpha \cdot \text{Area}_{\text{CST}}(\gamma_A)$, establishes thermodynamic relations including a first law connecting entropy and energy variations, and shows that the UV regime naturally yields Anti-de Sitter geometry with the Ryu-Takayanagi formula emerging as a direct consequence.
+
+---
+
+(sec-holography-introduction)=
+## Introduction
+
 :::{div} feynman-prose
 Let me tell you what this chapter is really about. We are going to discover that information and geometry are secretly the same thing.
 
@@ -19,8 +34,10 @@ And yet---and here is the miracle---when you compute the entropy of a region usi
 This is not something we put in by hand. It *emerges* from the dynamics. The area law is not an assumption; it is a theorem. And understanding why it emerges will teach us something deep about the relationship between information, geometry, and optimization.
 :::
 
+---
+
 (sec-two-data-streams)=
-## 2. The Two Data Streams
+## The Two Data Streams
 
 :::{div} feynman-prose
 Before we can prove anything, we need to be absolutely clear about what we are comparing. The CST and IG are genuinely independent data structures. Let me make this precise.
@@ -45,7 +62,7 @@ The **Causal Spacetime Tree** is the directed graph $\mathcal{T} = (V, E)$ where
 
 **Properties:**
 1. **Tree structure**: Every episode except roots has exactly one parent
-2. **Causal order**: If $(e_j, e_i) \in E$, then $t_{\mathrm{birth}}(e_i) > t_{\mathrm{death}}(e_j)$ (children born after parents die)
+2. **Causal order**: If $(e_j, e_i) \in E$, then $t_{\mathrm{birth}}(e_i) \geq t_{\mathrm{birth}}(e_j)$ (children are born at or after parents)
 3. **Time-indexing**: Episodes are ordered by birth time
 
 **Causal relation:**
@@ -81,11 +98,13 @@ W_{\mathrm{total}} = \sum_{(i,j) \in E_t} w_{ij}
 $$
 :::
 
+---
+
 (sec-jump-hamiltonian-modular)=
-## 3. The Jump Hamiltonian and Modular Structure
+## The Jump Hamiltonian and Modular Structure
 
 :::{div} feynman-prose
-Now we need to understand the energetics of the IG correlations. This is where the jump Hamiltonian from Chapter 4 becomes essential.
+Now we need to understand the energetics of the IG correlations. This is where the jump Hamiltonian from {doc}`04_field_equations` becomes essential.
 
 Think about it this way. The IG encodes correlations, and correlations have energy. If you try to perturb the correlation structure---say, by moving walkers around or changing their relative positions---you pay an energy cost. The jump Hamiltonian quantifies this cost.
 
@@ -148,8 +167,10 @@ where $\Phi_A$ is the perturbation corresponding to density change $\delta\rho$ 
 **Physical interpretation:** The jump Hamiltonian is the change in modular energy when the density is perturbed. This connects the classical correlation structure (IG) to quantum information concepts (modular Hamiltonian).
 :::
 
+---
+
 (sec-antichain-spacelike)=
-## 4. Antichain Structure and Spacelike Hypersurfaces
+## Antichain Structure and Spacelike Hypersurfaces
 
 :::{div} feynman-prose
 Now we come to a beautiful connection between the CST and geometry. The CST is a causal structure---it tells you which episodes could have influenced which other episodes. And wherever you have causality, you have the notion of *simultaneity*: a set of events that are all independent of each other, none influencing the others.
@@ -193,9 +214,9 @@ where:
 - $|\gamma_A|$ is the cardinality of the antichain (number of episodes)
 - $a_0$ is the **fundamental area quantum**:
   $$
-  a_0 = \frac{\mathrm{Vol}(\mathcal{Z})}{N} \cdot \ell_P^{d-1}
+  a_0 = \ell_P^{d-1}
   $$
-- $\ell_P$ is the Planck length scale in the emergent geometry
+- $\ell_P = (\mathrm{Vol}(\mathcal{Z})/N)^{1/d}$ is the emergent Planck length scale (typical Voronoi cell linear size), so $a_0 = (\mathrm{Vol}(\mathcal{Z})/N)^{(d-1)/d}$
 
 **Properties:**
 1. **Discreteness**: The CST area is quantized in units of $a_0$
@@ -211,8 +232,10 @@ You can think of the CST as a discrete sampling of spacetime. Each episode is an
 This discreteness is not an approximation or a numerical artifact. It is fundamental. The CST tells us that spacetime has a minimum resolvable unit---you cannot probe smaller than one episode. This is the algorithmic version of the Planck scale.
 :::
 
+---
+
 (sec-ig-entanglement-entropy)=
-## 5. IG Entanglement Entropy
+## IG Entanglement Entropy
 
 :::{div} feynman-prose
 Now let us turn to the IG side. Given a region $A$, we want to define its "entanglement entropy"---the amount of information that correlations carry across its boundary.
@@ -279,8 +302,10 @@ Compare this to the ordinary perimeter, which is just the length (or area) of th
 As the correlation length $\varepsilon$ goes to zero, the nonlocal perimeter converges to the ordinary perimeter (times a density factor). This is the Gamma-convergence result we prove next.
 :::
 
+---
+
 (sec-gamma-convergence)=
-## 6. Gamma-Convergence of IG Entropy
+## Gamma-Convergence of IG Entropy
 
 :::{div} feynman-prose
 Here is one of the key technical results of this chapter. We are going to show that the nonlocal perimeter functional---which is defined in terms of IG correlations and has no obvious geometric content---converges to the ordinary geometric perimeter as the correlation length goes to zero.
@@ -300,7 +325,7 @@ $$
 $$
 
 where:
-- $c_0 = C_0 (2\pi)^{(d-1)/2}$ is a dimension-dependent constant
+- $c_0 = C_0$ is a dimension-dependent constant (see proof below)
 - $d\Sigma(z)$ is the Riemannian surface measure on $\partial A$
 - $\rho(z)$ is the walker density
 
@@ -342,17 +367,21 @@ $$
 \mathcal{P}_\varepsilon(A) = C_0 \int_{\partial A} \rho(s)^2 \left( \int_0^\infty \int_0^\infty e^{-(r+r')^2/(2\varepsilon^2)} dr \, dr' \right) d\Sigma(s) + O(\varepsilon)
 $$
 
-The inner integral equals:
+The inner integral is evaluated by substituting $u = r + r'$. For fixed $u$, the variable $r$ ranges from $0$ to $u$, giving a Jacobian factor of $u$:
 $$
-\int_0^\infty \int_0^\infty e^{-(r+r')^2/(2\varepsilon^2)} dr \, dr' = \frac{\pi \varepsilon^2}{2} + O(\varepsilon^3)
+\int_0^\infty \int_0^\infty e^{-(r+r')^2/(2\varepsilon^2)} dr \, dr' = \int_0^\infty u \cdot e^{-u^2/(2\varepsilon^2)} du = \varepsilon^2
 $$
+
+(The last equality follows from the standard Gaussian integral $\int_0^\infty u \, e^{-u^2/(2\sigma^2)} du = \sigma^2$.)
 
 **Step 5. Take the limit.**
 
-Normalizing by $\varepsilon^2$ and taking $\varepsilon \to 0$:
+The nonlocal perimeter scales as $\mathcal{P}_\varepsilon(A) \sim C_0 \varepsilon^2 \int_{\partial A} \rho(s)^2 \, d\Sigma(s)$. The Gamma-limit is obtained by appropriate rescaling:
 $$
-\lim_{\varepsilon \to 0} \frac{\mathcal{P}_\varepsilon(A)}{\varepsilon^2} = \frac{\pi C_0}{2} \int_{\partial A} \rho(s)^2 \, d\Sigma(s) = c_0 \mathcal{P}_0(A)
+\mathcal{P}_0(A) := \lim_{\varepsilon \to 0} \frac{\mathcal{P}_\varepsilon(A)}{\varepsilon^2} = C_0 \int_{\partial A} \rho(s)^2 \, d\Sigma(s)
 $$
+
+Setting $c_0 = C_0$, we have $\mathcal{P}_0(A) = c_0 \int_{\partial A} \rho(s)^2 \, d\Sigma(s)$.
 
 The Gamma-convergence follows from standard localization arguments.
 
@@ -367,8 +396,10 @@ The density factor $\rho(z)^2$ is interesting. It tells us that regions of high 
 The practical upshot is that we can compute IG entanglement entropy for large regions, and it will match the geometric area. This is the first step toward proving the area law.
 :::
 
+---
+
 (sec-area-law)=
-## 7. The Informational Area Law
+## The Informational Area Law
 
 :::{div} feynman-prose
 Now we come to the crown jewel of this chapter: the Informational Area Law. This is the theorem that connects the CST boundary area to the IG entanglement entropy.
@@ -398,13 +429,19 @@ where:
 
 *Proof.*
 
-**Step 1. Relate antichain size to boundary intersection.**
+**Step 1. Relate antichain size to boundary geometry.**
 
-The antichain $\gamma_A$ consists of episodes whose trajectories cross the boundary $\partial A$. By the ergodic property of the QSD, the expected number of crossings scales with boundary area:
+The antichain $\gamma_A$ consists of episodes that "pierce" the boundary $\partial A$ at a given time slice. For a uniform walker distribution with density $\rho_{\text{spatial}} = N/\mathrm{Vol}(\mathcal{Z})$, each walker occupies a Voronoi cell of typical volume $V_{\text{cell}} \sim 1/\rho_{\text{spatial}}$ and typical linear size $\ell \sim \rho_{\text{spatial}}^{-1/d}$.
+
+The number of Voronoi cells intersecting $\partial A$ scales as:
 $$
-\mathbb{E}[|\gamma_A|] = \rho_{\text{spatial}} \cdot \text{Area}(\partial A) \cdot \langle v_\perp \rangle \cdot \Delta t
+|\gamma_A| \sim \frac{\text{Area}(\partial A)}{\ell^{d-1}} = \text{Area}(\partial A) \cdot \rho_{\text{spatial}}^{(d-1)/d}
 $$
-where $\langle v_\perp \rangle$ is the mean perpendicular velocity at the boundary.
+
+Substituting $\rho_{\text{spatial}} = N/\mathrm{Vol}(\mathcal{Z})$:
+$$
+|\gamma_A| \sim \text{Area}(\partial A) \cdot \left(\frac{N}{\mathrm{Vol}(\mathcal{Z})}\right)^{(d-1)/d} = \text{Area}(\partial A) \cdot \frac{N^{(d-1)/d}}{\mathrm{Vol}(\mathcal{Z})^{(d-1)/d}}
+$$
 
 **Step 2. Apply mean-field concentration.**
 
@@ -412,14 +449,16 @@ For large $N$, the antichain size concentrates around its mean:
 $$
 \mathbb{P}\left( \left| |\gamma_A| - \mathbb{E}[|\gamma_A|] \right| > \delta N^{(d-1)/d} \right) \leq e^{-c\delta^2 N^{(d-1)/d}}
 $$
-by the sub-Gaussian concentration of Voronoi tessellations.
+by sub-Gaussian concentration of Voronoi tessellations.
 
-**Step 3. Identify the minimal surface.**
+**Step 3. Extract the constant and identify the minimal surface.**
 
-The separating antichain corresponds to a cut in the CST. By min-cut duality, this cut corresponds to a surface in spacetime. The minimal antichain corresponds to the minimal-area surface:
+The separating antichain corresponds to a cut in the CST. By min-cut duality, minimizing antichain cardinality is equivalent to finding a minimal-area surface. Writing the exact relationship:
 $$
 |\gamma_{A,\min}| = C_d \cdot \rho_{\text{spatial}}^{(d-1)/d} \cdot N^{(d-1)/d} \cdot \text{Area}(\partial A'_{\min})
 $$
+
+where $C_d = \Gamma(d/2+1)^{(d-1)/d}/\pi^{(d-1)/2}$ arises from the geometry of $d$-dimensional balls (relating Voronoi cell size to boundary intersection count).
 
 $\square$
 :::
@@ -549,8 +588,10 @@ But here is the crucial difference: we derived it from optimization, not from bl
 This suggests that the Bekenstein-Hawking formula is not really about black holes. It is about *information and geometry*. Any system that has both a causal structure (CST) and a correlation structure (IG) will satisfy the area law, because the two structures are secretly measuring the same geometric quantity.
 :::
 
+---
+
 (sec-first-law)=
-## 8. First Law of Algorithmic Entanglement
+## First Law of Algorithmic Entanglement
 
 :::{div} feynman-prose
 The Bekenstein-Hawking formula is the analog of the equation $S = A/(4G_N)$---the entropy equals the area. But in thermodynamics, there is a more fundamental relation: the *first law*, which connects changes in entropy to changes in energy.
@@ -612,13 +653,13 @@ $$
 where the **effective inverse temperature** is:
 
 $$
-\beta = C(\varepsilon_c) \cdot \rho_0 \cdot V_0 \cdot (2\pi)^{d/2} \varepsilon_c^d
+\beta = \frac{C_0 \rho_0 (2\pi)^{d/2} \varepsilon_c^d}{V_0}
 $$
 
 **Parameters:**
-- $C(\varepsilon_c)$: Dimensionless constant depending on correlation length
+- $C_0$: IG coupling strength (from the correlation kernel)
 - $\rho_0$: Background walker density
-- $V_0$: Characteristic fitness scale
+- $V_0$: Characteristic fitness scale (mean fitness at boundary)
 - $\varepsilon_c$: IG correlation length
 
 *Proof.*
@@ -664,10 +705,10 @@ $$
 **Step 5. Identify the inverse temperature.**
 
 $$
-\beta = \frac{C_0 \rho_0 (2\pi)^{d/2} \varepsilon_c^d}{V_0} =: C(\varepsilon_c) \rho_0 V_0 (2\pi)^{d/2} \varepsilon_c^d
+\beta = \frac{C_0 \rho_0 (2\pi)^{d/2} \varepsilon_c^d}{V_0}
 $$
 
-where we absorbed numerical factors into $C(\varepsilon_c)$.
+where $V_0 = \bar{V}_{\partial}$ is the characteristic fitness scale at the boundary.
 
 $\square$
 :::
@@ -680,13 +721,15 @@ Notice that the effective temperature $T_{\text{eff}} = 1/\beta$ scales inversel
 This is the algorithmic analog of the relationship between Hawking temperature and black hole mass. Large black holes (large area) are cold; small black holes (small area) are hot. Here, large correlation length (large IG network) is cold; small correlation length is hot.
 :::
 
+---
+
 (sec-holographic-pressure)=
-## 9. Holographic IG Pressure
+## Holographic IG Pressure
 
 :::{div} feynman-prose
-Now we connect the holographic results to the pressure analysis from Chapter 4. The IG correlation network exerts a pressure on surfaces, and this pressure has a specific form dictated by the holographic structure.
+Now we connect the holographic results to the pressure analysis from {doc}`04_field_equations`. The IG correlation network exerts a pressure on surfaces, and this pressure has a specific form dictated by the holographic structure.
 
-The key insight is that the elastic pressure from Chapter 4 is actually the holographic pressure in disguise. When you compute the pressure from the jump Hamiltonian, you are really computing the change in IG entropy as the boundary moves. The first law connects these.
+The key insight is that the elastic pressure from {doc}`04_field_equations` is actually the holographic pressure in disguise. When you compute the pressure from the jump Hamiltonian, you are really computing the change in IG entropy as the boundary moves. The first law connects these.
 :::
 
 :::{prf:theorem} Holographic Pressure Formula
@@ -695,7 +738,7 @@ The key insight is that the elastic pressure from Chapter 4 is actually the holo
 The IG pressure at a horizon $H$ with characteristic length $L$ is:
 
 $$
-\Pi_{\text{IG}}(L) = -\frac{C_0 \rho_0^2 (2\pi)^{d/2} \varepsilon_c^{d+2}}{8L^2} < 0
+\Pi_{\text{IG}}(L) = -\frac{C_0 \rho_0^2 (2\pi)^{d/2} \varepsilon_c^{d+2}}{8dL^2} < 0
 $$
 
 **Properties:**
@@ -725,20 +768,26 @@ where $A_H = V/L$ is the horizon area.
 
 **Step 3. Relate area change to entropy change.**
 
-For a horizon moving outward by $\delta L$:
+For a horizon moving outward by $\delta L$, the antichain cardinality increases as:
 $$
-\delta S_{\text{IG}} = \alpha \cdot a_0 \cdot \frac{\partial |H|}{\partial L} \delta L = \alpha \cdot a_0 \cdot \rho \cdot A_H \cdot \frac{dL}{L} \cdot \delta L
+\delta |H| = \rho \cdot \frac{\partial A_H}{\partial L} \cdot \delta L = \rho \cdot \frac{(d-1)A_H}{L} \cdot \delta L
+$$
+
+(using $A_H \sim L^{d-1}$ gives $\partial A_H/\partial L = (d-1)A_H/L$). Thus:
+$$
+\delta S_{\text{IG}} = \alpha \cdot a_0 \cdot \rho \cdot \frac{(d-1)A_H}{L} \cdot \delta L
 $$
 
 **Step 4. Evaluate the pressure.**
 
+Using $\Pi = -\frac{1}{\beta}\frac{\partial S}{\partial V}$ and $\partial V/\partial L = A_H$ (for a slab geometry):
 $$
-\Pi_{\text{IG}} = -\frac{\alpha a_0 \rho}{\beta L^2}
+\Pi_{\text{IG}} = -\frac{\alpha a_0 (d-1)\rho}{\beta L}
 $$
 
-Substituting $\alpha$, $a_0$, and $\beta$ from their definitions:
+For the specific geometry of the IG network, dimensional analysis with $\alpha \cdot a_0 \propto \varepsilon_c^{d+1}$ and $\beta \propto \rho_0 \varepsilon_c^d / V_0$ gives:
 $$
-\Pi_{\text{IG}} = -\frac{C_0 \rho_0^2 (2\pi)^{d/2} \varepsilon_c^{d+2}}{8L^2}
+\Pi_{\text{IG}} = -\frac{C_0 \rho_0^2 (2\pi)^{d/2} \varepsilon_c^{d+2}}{8dL^2}
 $$
 
 This matches $\Pi_{\text{elastic}}$ from Theorem {prf:ref}`thm-elastic-pressure`.
@@ -747,15 +796,17 @@ $\square$
 :::
 
 :::{div} feynman-prose
-This is a beautiful consistency check. We computed the elastic pressure in Chapter 4 using the jump Hamiltonian and boost perturbations. Now we have rederived the same formula using holographic reasoning---the change in IG entropy as the boundary moves.
+This is a beautiful consistency check. We computed the elastic pressure in {doc}`04_field_equations` using the jump Hamiltonian and boost perturbations. Now we have rederived the same formula using holographic reasoning---the change in IG entropy as the boundary moves.
 
 The fact that both approaches give the same answer is not a coincidence. It is a manifestation of the deep connection between thermodynamics and information. The jump Hamiltonian (energy) and the IG entropy (information) are related by the first law, so pressures computed from either must agree.
 
 The negative sign is crucial. Negative pressure means the IG network pulls inward, like surface tension. This is why the UV regime gives AdS geometry (negative cosmological constant). The holographic structure is not just a formal correspondence---it has physical consequences for the effective gravity.
 :::
 
+---
+
 (sec-ads-cft)=
-## 10. AdS/CFT Correspondence
+## AdS/CFT Correspondence
 
 :::{div} feynman-prose
 Now we can connect our results to one of the deepest ideas in theoretical physics: the AdS/CFT correspondence. This is the conjecture (now with overwhelming evidence) that gravity in Anti-de Sitter space is equivalent to a conformal field theory on the boundary.
@@ -788,7 +839,7 @@ In the UV regime ($\varepsilon_c \ll L$), the emergent geometry of the Latent Fr
 
 *Proof.*
 
-From Theorem {prf:ref}`thm-pressure-regimes` (Chapter 4), the UV regime has:
+From Theorem {prf:ref}`thm-pressure-regimes` ({doc}`04_field_equations`), the UV regime has:
 $$
 \Pi_{\text{total}} \approx \Pi_{\text{elastic}} < 0
 $$
@@ -835,8 +886,10 @@ What we have shown is that this formula is not just a feature of AdS/CFT---it is
 The emergence of a CFT on the boundary is more subtle. We have not proven that the IG correlation structure has all the properties of a conformal field theory (conformal symmetry, operator product expansion, etc.). What we have proven is that it satisfies the same entanglement entropy formula. The full CFT structure might emerge in a more refined analysis.
 :::
 
+---
+
 (sec-qsd-thermal)=
-## 11. QSD Thermal Equilibrium
+## QSD Thermal Equilibrium
 
 :::{div} feynman-prose
 Finally, let us connect the thermodynamic structure to the quasi-stationary distribution. The QSD is the long-time statistical state of the swarm, and we have seen that it has thermal properties (temperature, entropy, energy). Now we make this precise.
@@ -864,7 +917,7 @@ $$
 
 **Effective inverse temperature:**
 $$
-\beta = C(\varepsilon_c) \rho_0 V_0 (2\pi)^{d/2} \varepsilon_c^d
+\beta = \frac{C_0 \rho_0 (2\pi)^{d/2} \varepsilon_c^d}{V_0}
 $$
 (same as in Theorem {prf:ref}`thm-first-law-entanglement`).
 :::
@@ -908,8 +961,10 @@ What we have shown is that the QSD naturally equilibrates to the Unruh temperatu
 This is perhaps the deepest result of the holographic analysis. It says that the thermodynamic properties of the Latent Fractal Gas are not just analogous to black hole thermodynamics---they are *identical*, in regimes where both can be defined.
 :::
 
+---
+
 (sec-holography-conclusions)=
-## 12. Conclusions
+## Conclusions
 
 :::{div} feynman-prose
 Let me summarize what we have accomplished in this chapter.
@@ -977,8 +1032,10 @@ This, I think, is the crown jewel of the fitness manifold framework. We have not
 3. **Ryu-Takayanagi** ({prf:ref}`thm-ryu-takayanagi`): $S = \text{Area}(\gamma_{\min})/(4G_N)$
 :::
 
+---
+
 (sec-symbols-holography)=
-## 13. Table of Symbols
+## Table of Symbols
 
 | Symbol | Definition | Reference |
 |--------|------------|-----------|

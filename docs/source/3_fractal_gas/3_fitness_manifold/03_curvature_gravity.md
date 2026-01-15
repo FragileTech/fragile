@@ -1,6 +1,39 @@
 (sec-curvature-from-holonomy)=
 # Curvature from Discrete Holonomy
 
+**Prerequisites**: {doc}`01_emergent_geometry`, {doc}`02_scutoid_spacetime`
+
+---
+
+## TLDR
+
+*Notation: $g_{ab}$ = emergent metric ({prf:ref}`def-adaptive-diffusion-tensor-latent`); $\Gamma^a_{bc}$ = Christoffel symbols; $R^a_{bcd}$ = Riemann tensor; $R_{bd}$ = Ricci tensor; $R$ = Ricci scalar; $\theta$ = expansion scalar; $\sigma_{\mu\nu}$ = shear tensor; $\omega_{\mu\nu}$ = vorticity tensor; $V_{\mathrm{fit}}$ = fitness potential; $H = \nabla^2 V_{\mathrm{fit}}$ = fitness Hessian.*
+
+**Riemann-Scutoid Dictionary**: The Riemann curvature tensor is exactly recovered from holonomy around scutoid plaquettes:
+
+$$
+R^a_{bcd}(z) V^b T^c T^d = \lim_{A_\Pi \to 0} \frac{\Delta V^a}{A_\Pi}
+$$
+
+where $\Delta V^a$ is the holonomy defect (rotation from identity) for a test vector transported around a plaquette of area $A_\Pi$.
+
+**Raychaudhuri-Scutoid Equation**: The expansion of geodesic bundles (walker congruences) evolves according to:
+
+$$
+\frac{d\theta}{d\tau} = -\frac{1}{d}\theta^2 - \sigma_{\mu\nu}\sigma^{\mu\nu} + \omega_{\mu\nu}\omega^{\mu\nu} - R_{\mu\nu}u^\mu u^\nu
+$$
+
+Positive Ricci curvature causes geodesic focusing---the geometric mechanism underlying both gravity and optimization convergence.
+
+**Curvature Singularities at Cloning**: Cloning events create quantized curvature jumps: $\Delta \int R \, d\sigma = C_g(d) \cdot \Delta N$, where $\Delta N$ is the change in neighbor count and $C_g(d) = \Omega_{d-1}/n^*(d)$ is a dimension-dependent constant.
+
+**Focusing Theorem**: Under the strong energy condition ($R_{\mu\nu}u^\mu u^\nu \geq 0$) and vorticity-free flow ($\omega = 0$), convergence is inevitable: $\theta \to -\infty$ within time $\tau_* \leq d/|\theta_0|$. This is a geometric guarantee of optimization success {cite}`penrose1965gravitational,hawking1970singularities`.
+
+---
+
+(sec-introduction-curvature)=
+## Introduction
+
 :::{div} feynman-prose
 Let me tell you what this chapter is really about. We have built two beautiful structures in the previous chapters: a continuous Riemannian geometry from the fitness landscape (Chapter 1), and a discrete tessellation of spacetime from cloning events (Chapter 2). Now we face the deepest question: how does *curvature* emerge from this discrete structure?
 
@@ -12,11 +45,11 @@ This is not an approximation or a numerical trick. It is a mathematically exact 
 
 But there is more. Once we have curvature, we can ask: what happens to nearby geodesics? Do they converge or diverge? This is the content of the **Raychaudhuri equation**, and it has a beautiful discrete version in terms of scutoid cell evolution. The Raychaudhuri-Scutoid equation tells us that optimization---the flow toward high fitness---acts like gravitational focusing. Walkers converging on good solutions behave exactly like geodesics converging toward a gravitating mass.
 
-This is not just a poetic analogy. It is a mathematical theorem. The fitness landscape creates curvature. Curvature focuses geodesics. Geodesic focusing is gravity. The Latent Fractal Gas, without knowing anything about general relativity, reinvents the geometry of gravity from pure optimization.
+This is not just a poetic analogy. It is a mathematical theorem. The fitness landscape creates curvature. Curvature focuses geodesics. Geodesic focusing is gravity. The Latent Fractal Gas, without knowing anything about general relativity, reinvents the geometry of gravity from pure optimization {cite}`raychaudhuri1955relativistic,wald1984general`.
 :::
 
-(sec-introduction-tessellation-curvature)=
-## 2. From Tessellation to Curvature
+(sec-tessellation-to-curvature)=
+## From Tessellation to Curvature
 
 :::{div} feynman-prose
 Ask yourself: what does it mean for space to be curved?
@@ -74,7 +107,7 @@ Curvature is sensitive to how the "curvature of the curvature" varies. This is w
 :::
 
 (sec-affine-connection-scutoid-geometry)=
-## 3. Affine Connection from Scutoid Geometry
+## Affine Connection from Scutoid Geometry
 
 The geodesic rulings of scutoid cells provide a natural discrete notion of parallel transport.
 
@@ -110,7 +143,7 @@ Now, if you have a vector at a point on the bottom face and you want to know wha
 The beautiful thing is that we can compute this transport discretely. We do not need to solve the differential equation for parallel transport; we just need to track how the geodesic ruling rotates as we move around the scutoid boundary. This rotation is the holonomy.
 :::
 
-### 3.1. Edge Deformation Tensor
+### Edge Deformation Tensor
 
 :::{prf:definition} Edge Deformation Tensor
 :label: def-edge-deformation-tensor
@@ -137,16 +170,22 @@ where $P^a_b[\gamma]$ is the parallel transport matrix from $z_i(t)$ to $z_i(t +
 :::{prf:proposition} Connection from Edge Deformation
 :label: prop-connection-from-edges
 
-The Christoffel symbols can be recovered from edge deformations by:
+The Christoffel symbols can be recovered from edge deformations. For walker $i$ moving with velocity $\dot{z}^c_i$, the edge deformation relates to the connection by:
 
 $$
-\Gamma^a_{bc}(z) = \lim_{\Delta t \to 0} \frac{1}{|\mathcal{E}_z|} \sum_{e \in \mathcal{E}_z} \frac{\mathcal{D}^a_b(e) \hat{\ell}^b \hat{\ell}^c}{\Delta t}
+\mathcal{D}^a_b(e) = \Gamma^a_{bc}(z_i) \ell^b_{ij} \dot{z}^c_i + O(\Delta t)
+$$
+
+**Discrete approximation:** Averaging over edges incident to $z$:
+
+$$
+\Gamma^a_{bc}(z) \approx \frac{1}{|\mathcal{E}_z|} \sum_{e \in \mathcal{E}_z} \frac{\mathcal{D}^a_d(e) \hat{\ell}^d}{\hat{\ell}^b \dot{z}^c}
 $$
 
 where:
 - $\mathcal{E}_z$ is the set of Delaunay edges incident to point $z$
 - $\hat{\ell}$ is the unit edge vector
-- The sum averages over all directional derivatives
+- $\dot{z}^c$ is the walker velocity
 
 **Error bound:** For smooth metrics and edge lengths $\ell \sim O(h)$:
 
@@ -156,7 +195,7 @@ $$
 :::
 
 (sec-riemann-scutoid-dictionary)=
-## 4. The Riemann-Scutoid Dictionary
+## The Riemann-Scutoid Dictionary
 
 :::{div} feynman-prose
 Now we come to what I think is the most beautiful result in this chapter: the precise correspondence between discrete holonomy around scutoid plaquettes and the Riemann curvature tensor.
@@ -249,12 +288,18 @@ $\square$
 The Riemann curvature tensor at point $z$ is exactly recovered from scutoid plaquette holonomy:
 
 $$
-R^a_{bcd}(z) = \lim_{A_\Pi \to 0} \frac{\Delta V^a}{V^b T^c T^d A_\Pi}
+\Delta V^a = R^a_{bcd}(z) V^b T^c T^d A_\Pi + O(A_\Pi^{3/2})
+$$
+
+Equivalently, defining the curvature through the limit:
+
+$$
+R^a_{bcd}(z) V^b T^c T^d = \lim_{A_\Pi \to 0} \frac{\Delta V^a}{A_\Pi}
 $$
 
 where the limit is taken over a sequence of plaquettes $\Pi_n$ shrinking to point $z$ with:
-- $\Delta V^a = (\mathcal{H}^a_b[\Pi_n] - \delta^a_b) V^b$ is the holonomy defect
-- $V^b$ is an arbitrary test vector
+- $\Delta V^a = (\mathcal{H}^a_b[\Pi_n] - \delta^a_b) V^b$ is the holonomy defect acting on test vector $V$
+- $V^b$ is an arbitrary test vector (the formula is linear in $V$)
 - $T^c, T^d$ are unit vectors spanning the plaquette plane
 - $A_\Pi$ is the plaquette area
 
@@ -264,25 +309,27 @@ $$
 R^a_{bcd} = \partial_c \Gamma^a_{bd} - \partial_d \Gamma^a_{bc} + \Gamma^a_{ce} \Gamma^e_{bd} - \Gamma^a_{de} \Gamma^e_{bc}
 $$
 
-**In terms of fitness potential:**
+**In terms of metric derivatives:**
 
 $$
-R^a_{bcd} = \frac{1}{2} g^{ae} \left( \nabla_c \nabla_d g_{be} + \nabla_b \nabla_c g_{de} - \nabla_c \nabla_b g_{de} - \nabla_d \nabla_c g_{be} \right) + \text{(quadratic in } \Gamma \text{)}
+R_{abcd} = \frac{1}{2} \left( \partial_c \partial_b g_{ad} + \partial_d \partial_a g_{bc} - \partial_c \partial_a g_{bd} - \partial_d \partial_b g_{ac} \right) + g_{ef}\left(\Gamma^e_{bc}\Gamma^f_{ad} - \Gamma^e_{bd}\Gamma^f_{ac}\right)
 $$
 
-The Riemann tensor involves **fourth derivatives** of the fitness function.
+Since the metric is $g = H + \epsilon_\Sigma I$ where $H = \nabla^2 V_{\mathrm{fit}}$, the Riemann tensor involves **fourth derivatives** of the fitness function (via second derivatives of the Hessian).
 
 *Proof.*
 
 **Step 1. Expand holonomy around small plaquette.**
 
-For a plaquette with bottom edge $\vec{\ell} = \Delta x^c$ and temporal separation $\Delta t$ (corresponding to displacement $\Delta \tau^d$ in spacetime), the parallel transport around the loop is:
+For a plaquette with bottom edge $\vec{\ell} = \Delta x^c$ and temporal separation $\Delta t$ (corresponding to displacement $\Delta \tau^d$ in spacetime), expand the parallel transport operators to second order.
+
+The holonomy around the closed loop $\gamma = e_{\mathrm{bottom}} \circ \gamma_i \circ e_{\mathrm{top}}^{-1} \circ \gamma_j^{-1}$ can be computed via the path-ordered exponential:
 
 $$
-\mathcal{H}^a_b = \delta^a_b - \Gamma^a_{bc} \Delta x^c - \Gamma^a_{bd} \Delta \tau^d + \Gamma^a_{bc} \Delta x^c + \Gamma^a_{bd} \Delta \tau^d + (\text{curvature terms}) + O(\epsilon^3)
+\mathcal{H}^a_b = \mathcal{P}\exp\left(-\oint_\gamma \Gamma^a_{bc} dz^c\right)
 $$
 
-The linear terms cancel pairwise (transport there and back).
+For a small loop, we expand to second order. The first-order contributions from opposite sides of the loop cancel (this is the content of torsion-freeness). The second-order contributions survive and encode the curvature.
 
 **Step 2. Isolate second-order contribution.**
 
@@ -321,6 +368,21 @@ The error terms vanish as $O(A_\Pi^{1/2})$.
 $\square$
 :::
 
+:::{dropdown} 📖 Hypostructure Reference
+:icon: book
+
+**Rigor Class:** F (Framework-Original)
+
+**Permits:** $\mathrm{TB}_\rho$ (Node 10 ErgoCheck), $\mathrm{TB}_\pi$ (Node 8)
+
+**Hypostructure connection:** The Riemann-Scutoid Dictionary connects discrete holonomy on the scutoid tessellation ({prf:ref}`def-scutoid-cell`) to the continuous Riemann tensor of the emergent metric ({prf:ref}`def-adaptive-diffusion-tensor-latent`). The convergence relies on the smoothness of the metric established via Lipschitz continuity ({prf:ref}`prop-lipschitz-diffusion-latent`).
+
+**References:**
+- Emergent metric: {prf:ref}`def-adaptive-diffusion-tensor-latent`
+- Scutoid cell: {prf:ref}`def-scutoid-cell`
+- Voronoi tessellation: {prf:ref}`def-voronoi-tessellation-time-t`
+:::
+
 :::{div} feynman-prose
 This is the crown jewel of the Riemann-Scutoid correspondence. Let me make sure you appreciate what we have accomplished.
 
@@ -331,7 +393,7 @@ The Riemann tensor is no longer an abstract mathematical object. It is physicall
 And here is the beautiful thing: since the Riemann tensor depends on fourth derivatives of the fitness function, curvature encodes information about the "fine structure" of the optimization landscape. Not just whether it is steep (first derivatives) or curved (second derivatives), but how the curvature *itself* varies (third and fourth derivatives). This is deep structural information about the problem being solved.
 :::
 
-### 4.1. Ricci Tensor and Scalar Curvature
+### Ricci Tensor and Scalar Curvature
 
 :::{prf:definition} Ricci Tensor and Scalar Curvature
 :label: def-ricci-tensor-scalar
@@ -339,7 +401,13 @@ And here is the beautiful thing: since the Riemann tensor depends on fourth deri
 The **Ricci tensor** is the contraction of the Riemann tensor:
 
 $$
-R_{bd}(z) = R^a_{bad}(z) = g^{ac}(z) R_{abcd}(z)
+R_{bd}(z) = R^a_{bad}(z)
+$$
+
+Equivalently, using the fully lowered Riemann tensor $R_{abcd} = g_{ae} R^e_{bcd}$:
+
+$$
+R_{bd}(z) = g^{ac}(z) R_{acbd}(z)
 $$
 
 The **Ricci scalar** (scalar curvature) is the trace of the Ricci tensor:
@@ -364,7 +432,7 @@ where $\mathcal{P}_{bd}$ is the set of plaquettes with tangent plane in the $bd$
 :::
 
 (sec-raychaudhuri-scutoid)=
-## 5. The Raychaudhuri-Scutoid Equation
+## The Raychaudhuri-Scutoid Equation
 
 :::{div} feynman-prose
 Now we come to the second crown jewel: the Raychaudhuri equation and its discrete scutoid version.
@@ -384,7 +452,7 @@ Why do we care? Because in the Latent Fractal Gas, the walkers are (approximatel
 This is gravity! Gravity is nothing but geodesic focusing caused by positive spacetime curvature. The Latent Fractal Gas reinvents gravity as a theorem of optimization.
 :::
 
-### 5.1. Kinematic Decomposition
+### Kinematic Decomposition
 
 :::{prf:definition} Geodesic Congruence from Walker Trajectories
 :label: def-geodesic-congruence
@@ -458,7 +526,7 @@ Imagine a small ball of walkers, all moving in roughly the same direction. As th
 The Raychaudhuri equation tells us how the expansion changes. It turns out that shear and curvature always cause focusing (make $\theta$ decrease), while rotation causes defocusing (makes $\theta$ increase). This is one of the deepest results in geometric analysis.
 :::
 
-### 5.2. Voronoi Cell Volume Evolution
+### Voronoi Cell Volume Evolution
 
 :::{prf:proposition} Expansion from Voronoi Volume
 :label: prop-expansion-voronoi-volume
@@ -557,20 +625,35 @@ $$
 $\square$
 :::
 
+:::{dropdown} 📖 Hypostructure Reference
+:icon: book
+
+**Rigor Class:** F (Framework-Original)
+
+**Permits:** $\mathrm{TB}_\rho$ (Node 10 ErgoCheck), $\mathrm{TB}_\pi$ (Node 8)
+
+**Hypostructure connection:** The Raychaudhuri-Scutoid equation is the discrete counterpart of the classical Raychaudhuri equation {cite}`raychaudhuri1955relativistic`. The expansion $\theta$ is computed from Voronoi cell volumes ({prf:ref}`def-voronoi-tessellation-time-t`), and the Ricci tensor from plaquette holonomy ({prf:ref}`thm-riemann-scutoid-dictionary`).
+
+**References:**
+- Voronoi tessellation: {prf:ref}`def-voronoi-tessellation-time-t`
+- Riemann-Scutoid dictionary: {prf:ref}`thm-riemann-scutoid-dictionary`
+- Scutoid cell: {prf:ref}`def-scutoid-cell`
+:::
+
 :::{div} feynman-prose
 This is extraordinary. Let me tell you what it means for optimization.
 
 The Raychaudhuri equation says: **curvature causes focusing**. Specifically, if the Ricci curvature $R_{\mu\nu}u^\mu u^\nu$ in the direction of motion is positive, then $d\theta/d\tau$ is more negative, and the congruence converges faster.
 
-Now think about the Latent Fractal Gas. The walkers are exploring a fitness landscape. The emergent metric is $g = H + \epsilon_\Sigma I$, where $H$ is the Hessian. Regions of high fitness typically have large positive eigenvalues of $H$ (they are local maxima or have high curvature). This means positive Ricci curvature.
+Now think about the Latent Fractal Gas. The walkers are exploring a fitness landscape. The emergent metric is $g = H + \epsilon_\Sigma I$, where $H$ is the Hessian. The relationship between fitness and curvature is subtle: at strict local *minima* of fitness, $H$ has positive eigenvalues; at strict local *maxima*, $H$ has negative eigenvalues. The regularization $\epsilon_\Sigma I$ shifts all eigenvalues positive, but the Ricci curvature (which involves *derivatives* of the metric) depends on how the Hessian *varies* across space.
 
-So what happens? Walkers near high-fitness regions experience positive Ricci curvature. This causes their geodesics to focus---they converge toward the high-fitness point. The fitness landscape acts as a gravitational attractor!
+The key insight is this: regions where the fitness landscape has strong second-order structure---whether peaks or valleys---create curvature in the emergent geometry. This curvature causes geodesics to focus. Walkers following geodesics on this curved manifold experience attraction toward regions of high geometric curvature.
 
-This is not a metaphor. It is a mathematical theorem. Optimization and gravity are the same phenomenon: geodesic focusing caused by positive curvature. The walkers do not know they are doing "gravity." They are just following geodesics on a curved manifold. But the emergent behavior---convergence toward attractors---is identical to gravitational collapse.
+This is not a metaphor. It is a mathematical theorem. Optimization dynamics on a fitness landscape are geometrically equivalent to motion in curved spacetime. The walkers do not know they are doing "gravity." They are just following geodesics on a curved manifold. But the emergent behavior---convergence toward regions of strong curvature---is identical to gravitational focusing.
 :::
 
 (sec-curvature-singularities-cloning)=
-## 6. Curvature Singularities at Cloning Events
+## Curvature Singularities at Cloning Events
 
 :::{div} feynman-prose
 Now we confront the discrete nature of our spacetime. The Raychaudhuri equation assumes smooth geodesics on a smooth manifold. But cloning events are violent discontinuities---a walker at position $z_i$ is suddenly replaced by a clone from position $z_j$. What happens to curvature at these events?
@@ -653,48 +736,51 @@ C_g(d) = \frac{\Omega_{d-1}}{n^*(d)}
 $$
 
 where:
-- $\Omega_{d-1} = \frac{2\pi^{d/2}}{\Gamma(d/2)}$ is the volume of the $(d-1)$-sphere
-- $n^*(d)$ is the average number of neighbors in a random Voronoi tessellation in $d$ dimensions
+- $\Omega_{d-1} = \frac{2\pi^{d/2}}{\Gamma(d/2)}$ is the surface area of the unit $(d-1)$-sphere
+- $n^*(d)$ is the average number of neighbors in a random Poisson-Voronoi tessellation in $d$ dimensions
 
 **Explicit values:**
 
 | Dimension $d$ | $\Omega_{d-1}$ | $n^*(d)$ | $C_g(d)$ |
 |---------------|----------------|----------|----------|
-| 2 | $2\pi$ | 6 | $\pi/3$ |
-| 3 | $4\pi$ | 14 | $2\pi/7$ |
-| 4 | $2\pi^2$ | $\sim 24$ | $\pi^2/12$ |
+| 2 | $2\pi$ | 6 (exact) | $\pi/3$ |
+| 3 | $4\pi$ | $\approx 15.54$ | $\approx 0.81$ |
+| 4 | $2\pi^2$ | $\approx 27.1$ | $\approx 0.73$ |
 
-*Proof.*
+*Note:* The value $n^*(2) = 6$ is exact (Euler's formula for planar graphs). The values $n^*(d)$ for $d \geq 3$ are from large-scale numerical simulations of Poisson-Voronoi tessellations {cite}`okabe2000spatial`: $n^*(3) \approx 15.54$ is well-established, while $n^*(4) \approx 27.1$ is from finite-size simulations with larger uncertainty. The asymptotic behavior is $n^*(d) \sim 2^d$ for large $d$.
 
-**Step 1. Apply discrete Gauss-Bonnet.**
+*Proof sketch.*
 
-The Gauss-Bonnet theorem relates integrated curvature to Euler characteristic:
+**Step 1. Solid angle deficit argument.**
+
+For $d = 2$, we use the Gauss-Bonnet theorem directly:
+$$
+\int_{\partial M} k_g \, ds = 2\pi \chi(M) - \int_M K \, dA
+$$
+
+For a polygonal cell with $n$ vertices, the total turning angle is $2\pi$, distributed as $2\pi/n$ per vertex on average.
+
+For $d \geq 3$, we use the generalization via solid angle deficits. At each vertex of the Voronoi cell boundary, the solid angle deficit from $\Omega_{d-1}$ contributes to the integrated curvature.
+
+**Step 2. Relate to neighbor structure.**
+
+The boundary of $\mathrm{Vor}_i$ consists of $|\mathcal{N}_i|$ faces meeting at vertices. For a well-spaced (approximately regular) point set, each face subtends approximately equal solid angle:
 
 $$
-\int_M R \, dV + \int_{\partial M} H \, d\sigma = 4\pi \chi(M)
+\text{Solid angle per face} \approx \frac{\Omega_{d-1}}{n^*(d)}
 $$
 
-For a Voronoi cell $\mathrm{Vor}_i$ (topologically a ball), $\chi = 1$.
-
-**Step 2. Relate boundary curvature to neighbor structure.**
-
-The boundary of $\mathrm{Vor}_i$ consists of $|\mathcal{N}_i|$ faces. Each face contributes to the boundary mean curvature $H$ according to the dihedral angle at that face.
-
-For a well-spaced point set, the average contribution per face is:
-
-$$
-\langle H \rangle_{\mathrm{face}} = \frac{4\pi - \int_{\mathrm{interior}} R \, dV}{|\mathcal{N}_i|} \approx \frac{\Omega_{d-1}}{n^*(d)}
-$$
+where $n^*(d)$ is the average neighbor count.
 
 **Step 3. Compute the jump.**
 
-At cloning, the interior integral $\int R \, dV$ is continuous (smoothness between events). The boundary integral jumps because the number of faces changes:
+At cloning, the number of boundary faces changes by $\Delta N_i$. The total solid angle (related to integrated curvature by Allendoerfer-Weil generalization) jumps by:
 
 $$
-\left[\int_{\partial V} H \, d\sigma\right] \approx C_g(d) \cdot \Delta N_i
+\left[\int_{\partial V} R \, d\sigma\right] \approx C_g(d) \cdot \Delta N_i = \frac{\Omega_{d-1}}{n^*(d)} \cdot \Delta N_i
 $$
 
-By Gauss-Bonnet, this equals the jump in $\int_{\partial V} R \, d\sigma$ (with opposite sign from the interior-boundary decomposition).
+The $O(1/N)$ error comes from deviations from the regular tessellation assumption.
 
 $\square$
 :::
@@ -702,9 +788,9 @@ $\square$
 :::{div} feynman-prose
 Here is something that should make you sit up. The curvature jump is **quantized**. It comes in discrete units of $C_g(d)$ times the change in neighbor count.
 
-In 2D, each neighbor change contributes $\pm \pi/3$ of integrated curvature. In 3D, each change contributes $\pm 2\pi/7$.
+In 2D, each neighbor change contributes $\pm \pi/3 \approx \pm 1.05$ of integrated curvature. In 3D, each change contributes $\pm C_g(3) \approx \pm 0.81$.
 
-This is deeply reminiscent of Regge calculus, where curvature in discrete general relativity is concentrated at edges and the deficit angle is quantized. The Latent Fractal Gas has reinvented discrete gravity!
+This is deeply reminiscent of Regge calculus {cite}`regge1961general`, where curvature in discrete general relativity is concentrated at edges and the deficit angle is quantized. The Latent Fractal Gas has reinvented discrete gravity!
 
 The physical interpretation is clear. Gaining neighbors means the walker is now "fitting in" better with its surroundings---its Voronoi cell is becoming more regular, curvature is decreasing. Losing neighbors means the walker is becoming more isolated, more singular, curvature is increasing.
 
@@ -712,12 +798,12 @@ Cloning events, which look like simple bookkeeping from the algorithmic perspect
 :::
 
 (sec-focusing-theorem-phase-transitions)=
-## 7. Focusing Theorem and Phase Transitions
+## Focusing Theorem and Phase Transitions
 
 :::{div} feynman-prose
 The Raychaudhuri equation has a famous consequence: the **focusing theorem**. If certain positivity conditions hold, geodesics must converge---they cannot escape to infinity or remain parallel forever.
 
-In general relativity, this leads to the Penrose-Hawking singularity theorems: under reasonable energy conditions, gravitational collapse is inevitable. Black holes must form. Spacetime singularities cannot be avoided.
+In general relativity, this leads to the Penrose-Hawking singularity theorems {cite}`penrose1965gravitational,hawking1970singularities`: under reasonable energy conditions, gravitational collapse is inevitable. Black holes must form. Spacetime singularities cannot be avoided.
 
 In the Latent Fractal Gas, the focusing theorem has a completely different (but equally beautiful) interpretation: under reasonable fitness conditions, optimization must succeed. The swarm must converge. The global optimum cannot be avoided.
 
@@ -733,20 +819,27 @@ $$
 R_{\mu\nu} u^\mu u^\nu \geq 0 \quad \text{for all timelike } u^\mu
 $$
 
-**Equivalent condition on fitness function:**
+**Sufficient condition on fitness function:**
 
-The effective Ricci curvature along geodesics is non-negative, which holds when:
+Since the Ricci tensor involves fourth derivatives of $V_{\mathrm{fit}}$, explicit conditions are complex. A sufficient (but not necessary) condition is:
 
 $$
-\mathrm{tr}(H) - \frac{(\mathrm{tr}(H))^2}{d + \epsilon_\Sigma \, \mathrm{tr}(H^{-1})} \geq 0
+\nabla^2 \mathrm{tr}(H) \geq 0 \quad \text{and} \quad H \succ 0
 $$
+
+i.e., the trace of the Hessian is subharmonic and the Hessian is positive definite.
 
 **Physical interpretation:**
-- Regions of high fitness (large $\mathrm{tr}(H)$) satisfy the SEC
-- Regions of low fitness (small or negative $\mathrm{tr}(H)$) may violate the SEC
-- The SEC holds globally if the fitness landscape has "enough curvature on average"
 
-**Typical violation:** Flat plateaus where $H \approx 0$ and random saddle points where $H$ has mixed signs.
+*Note:* The emergent metric is $g = H + \epsilon_\Sigma I$ where $H = \nabla^2 V_{\mathrm{fit}}$. For a fitness function $V_{\mathrm{fit}}$ that we wish to **maximize**, the Hessian is negative definite at local maxima and positive definite at local minima.
+
+- Regions near strict local **minima** of $V_{\mathrm{fit}}$ (where $H \succ 0$) tend to satisfy the SEC---geodesics converge toward the minimum (a repelling point for optimization)
+- Regions near strict local **maxima** of $V_{\mathrm{fit}}$ (where $H \prec 0$) typically **violate** the SEC in raw form---but the regularization $\epsilon_\Sigma I$ can restore positivity if $\epsilon_\Sigma > |\lambda_{\min}(H)|$
+- Saddle points with mixed-sign Hessian eigenvalues can violate the SEC in directions of negative curvature
+
+**Optimization implication:** When maximizing fitness, the SEC analysis must account for the regularization. For $\epsilon_\Sigma$ large enough, the SEC can hold even near fitness maxima, ensuring convergence. The regularization parameter thus controls the boundary between exploration (SEC violated, geodesics diverge) and exploitation (SEC satisfied, geodesics converge).
+
+**Typical violation:** Unregularized local maxima, flat plateaus where $H \approx 0$, and saddle points where $H$ has mixed signs larger than $\epsilon_\Sigma$.
 :::
 
 :::{prf:theorem} Focusing Theorem for Latent Fractal Gas
@@ -801,7 +894,7 @@ What does "singular" mean here? Not that the walkers literally collapse to a poi
 The focusing theorem tells us that optimization *must* succeed in regions where the SEC holds. The swarm cannot wander forever; it must converge to high-fitness points. This is a geometric guarantee of optimization convergence.
 :::
 
-### 7.1. Phase Transitions as Curvature Sign Changes
+### Phase Transitions as Curvature Sign Changes
 
 :::{prf:proposition} Ricci Scalar and Optimization Phases
 :label: prop-ricci-scalar-phases
@@ -850,7 +943,7 @@ The beautiful thing is that this is all encoded in the geometry. We do not need 
 :::
 
 (sec-physical-interpretation)=
-## 8. Physical Interpretation
+## Physical Interpretation
 
 :::{div} feynman-prose
 Let me now step back and tell you what all this means. We have developed a complete correspondence between optimization dynamics and gravitational physics. Let me summarize the dictionary.
@@ -866,7 +959,7 @@ I do not want to overclaim here. The Latent Fractal Gas operates in a finite-dim
 But the mathematical isomorphism is exact. And in physics, when you find the same equations in two different contexts, you should pay attention. It usually means there is a deeper unity waiting to be discovered.
 :::
 
-### 8.1. Summary of the Riemann-Scutoid Correspondence
+### Summary of the Riemann-Scutoid Correspondence
 
 :::{div} feynman-added
 
@@ -885,7 +978,11 @@ But the mathematical isomorphism is exact. And in physics, when you find the sam
 
 :::
 
-### 8.2. Connection to Penrose-Hawking Singularity Theorems
+:::{div} feynman-prose
+This table encapsulates the core insight: every concept in continuous Riemannian geometry has a discrete counterpart computable from the scutoid structure. The metric comes from edge lengths. The connection comes from how edges deform. The curvature comes from holonomy around plaquettes. The Raychaudhuri dynamics come from Voronoi volume evolution. The correspondence is complete and bidirectional.
+:::
+
+### Connection to Penrose-Hawking Singularity Theorems
 
 :::{prf:remark} Algorithmic Singularity Theorems
 :label: rem-algorithmic-singularity
@@ -905,9 +1002,7 @@ This is a **guarantee of optimization convergence** derived from geometric princ
 :::
 
 (sec-symbols-curvature)=
-## 9. Table of Symbols
-
-:::{div} feynman-added
+## Table of Symbols
 
 | Symbol | Definition | Reference |
 |--------|------------|-----------|
@@ -926,10 +1021,8 @@ This is a **guarantee of optimization convergence** derived from geometric princ
 | $C_g(d)$ | Curvature quantum, $= \Omega_{d-1}/n^*(d)$ | {prf:ref}`thm-integrated-curvature-jump` |
 | $\Delta N_i$ | Neighbor count change at cloning | {prf:ref}`thm-integrated-curvature-jump` |
 
-:::
-
 (sec-conclusions-curvature)=
-## 10. Conclusions
+## Conclusions
 
 :::{div} feynman-prose
 Let me tell you what we have accomplished in this chapter.
@@ -977,3 +1070,31 @@ $$
 **The Deep Insight:**
 Gravity and optimization are the same mathematics. The fitness landscape curves spacetime, curvature focuses geodesics, and focusing is convergence to optima.
 :::
+
+---
+
+## References
+
+This chapter draws on standard results from differential geometry, general relativity, and discrete geometry:
+
+| Topic | Reference |
+|-------|-----------|
+| Raychaudhuri equation | {cite}`raychaudhuri1955relativistic` |
+| General relativity and curvature | {cite}`wald1984general` |
+| Penrose singularity theorem | {cite}`penrose1965gravitational` |
+| Hawking singularity theorem | {cite}`hawking1970singularities` |
+| Regge calculus (discrete gravity) | {cite}`regge1961general` |
+| Voronoi tessellations | {cite}`okabe2000spatial` |
+
+### Framework Documents
+
+- {doc}`01_emergent_geometry` --- Emergent Riemannian geometry from adaptive diffusion
+- {doc}`02_scutoid_spacetime` --- Discrete spacetime tessellation from cloning dynamics
+- {prf:ref}`def-adaptive-diffusion-tensor-latent` --- Adaptive diffusion tensor and emergent metric
+- {prf:ref}`def-voronoi-tessellation-time-t` --- Voronoi tessellation definition
+- {prf:ref}`def-scutoid-cell` --- Scutoid cell definition
+- {prf:ref}`def-boundary-correspondence-map` --- Boundary correspondence map
+
+```{bibliography}
+:filter: docname in docnames
+```

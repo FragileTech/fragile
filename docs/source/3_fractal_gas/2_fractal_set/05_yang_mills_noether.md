@@ -12,10 +12,12 @@ Here is the audacious claim of this chapter: we derive the Yang-Mills equations 
 But we go further. We verify that this construction satisfies all three major axiom systems of rigorous quantum field theory: Wightman, Osterwalder-Schrader, and Haag-Kastler. The key technical tool is the N-uniform log-Sobolev inequality, which provides temperedness, spectral gap, exponential clustering, and reflection positivity in one package. The mass gap follows from computational necessity: bounded observers cannot implement gapless theories.
 :::
 
+In particular, there exists $C_F$ such that $|F_{\mu\nu}(x) - F_{\mu\nu}(y)| \leq C_F |x-y|^\alpha$.
+
 | Result | Statement | Reference |
 |--------|-----------|-----------|
 | **Action derivation** | $S_{\text{YM}}$ emerges from $Z = \int \mathcal{D}[\text{paths}] \, e^{-S}$ | {prf:ref}`thm-action-from-path-integral` |
-| **U(1) fitness current** | $\partial_\mu J^\mu_{\text{fitness}} = \mathcal{S}_{\text{cloning}}$ | {prf:ref}`thm-u1-noether-current` |
+| **U(1) fitness current** | $\partial_\mu J^\mu_{\text{fitness}} = \mathcal{S}_{\text{fitness}}$ | {prf:ref}`thm-u1-noether-current` |
 | **SU(2) isospin current** | $D_\mu J^{(a),\mu} = 0$ (on-shell) | {prf:ref}`thm-su2-noether-current` |
 | **Gauge invariance** | $S'_{\text{YM}} = S_{\text{YM}}$ under local SU(2) | {prf:ref}`thm-wilson-action-gauge-invariance` |
 | **Continuum limit** | $S \to \frac{1}{4}\int d^{d+1}x \, F_{\mu\nu}^a F^{a,\mu\nu}$ | {prf:ref}`thm-continuum-limit-ym` |
@@ -29,7 +31,7 @@ But we go further. We verify that this construction satisfies all three major ax
 | $\hbar_{\text{eff}}$ | $m\epsilon_c^2/(2\tau)$ | Effective Planck constant |
 | $g_{\text{weak}}^2$ | $m\tau\rho^2/\epsilon_c^2$ | SU(2) gauge coupling |
 | $e_{\text{fitness}}^2$ | $m/\epsilon_F$ | U(1) fitness coupling |
-| $m_{\text{gap}}$ | $\lambda_{\text{gap}}$ | Mass gap from spectral gap |
+| $m_{\text{gap}}$ | $\hbar_{\text{eff}} \lambda_{\text{gap}}$ (=$\lambda_{\text{gap}}$ in $\hbar_{\text{eff}}=1$ units) | Mass gap from spectral gap |
 
 ---
 
@@ -39,13 +41,13 @@ But we go further. We verify that this construction satisfies all three major ax
 :::{div} feynman-prose
 In standard physics textbooks, you write down the Yang-Mills Lagrangian $\mathcal{L} = -\frac{1}{4}F_{\mu\nu}^a F^{a,\mu\nu}$ because it is the simplest thing consistent with gauge invariance and Lorentz covariance. This is a principled approach, but it is putting the answer in by hand. The Lagrangian is postulated, not derived.
 
-What we are going to do in this chapter is more ambitious: derive Yang-Mills theory from first principles. The starting point is the Fractal Gas algorithm. Walkers explore a fitness landscape, cloning from successful neighbors. The cloning amplitudes have phases determined by algorithmic distances. These phases are the gauge field. We do not introduce the gauge field as an external object; we identify it with structure that is already present in the optimization algorithm.
+What we are going to do in this chapter is more ambitious: derive Yang-Mills theory from first principles. The starting point is the Fractal Gas algorithm. Walkers explore a fitness landscape, cloning from successful neighbors. The cloning amplitudes carry phases from fitness differences, while their magnitudes come from companion selection probabilities. These phases are the gauge field. We do not introduce the gauge field as an external object; we identify it with structure that is already present in the optimization algorithm.
 
 Here is the key insight. The Fractal Gas has a path integral structure. Walkers trace paths through the fitness landscape, and the probability of each path depends on the cloning events along the way. The log-probability of a path is an action. When we analyze this action carefully, decomposing it into kinetic, potential, and gauge contributions, we find that the gauge contribution has exactly the Wilson form. The plaquettes are closed loops in the causal set structure. The link variables are the cloning phases. The sum over plaquettes gives the Yang-Mills action.
 
 This derivation has consequences. First, all fundamental constants become expressible in terms of algorithmic parameters like the cloning scale $\epsilon_c$, the localization scale $\rho$, and the timestep $\tau$. There are no free parameters to fit. Second, the mass gap becomes a computational necessity rather than a mysterious dynamical property. By {prf:ref}`thm-mass-gap-dichotomy` from the Agent volume, bounded observers cannot implement gapless theories. Since Yang-Mills describes physics, and physics is computed by bounded systems, Yang-Mills must be gapped.
 
-The chapter proceeds as follows. We begin with the symmetry structure: the three-tier gauge hierarchy of $S_N$ permutation, SU(2) weak isospin, and U(1) fitness ({ref}`sec-ym-symmetry`). We then derive the action from the stochastic path integral ({ref}`sec-ym-first-principles`), establishing that the Euclidean action emerges naturally from the transition kernels. The Noether currents follow ({ref}`sec-ym-noether`): the U(1) fitness symmetry gives a conserved fitness current between cloning events, while the SU(2) symmetry gives three isospin currents that are approximately conserved when fitness variations are small.
+The chapter proceeds as follows. We begin with the symmetry structure: the three-tier gauge hierarchy of $S_N$ permutation, SU(2) weak isospin, and U(1) fitness ({ref}`sec-ym-symmetry`). We then derive the action from the stochastic path integral ({ref}`sec-ym-first-principles`), establishing that the Euclidean action emerges naturally from the transition kernels. The Noether currents follow ({ref}`sec-ym-noether`): the U(1) fitness symmetry gives a local continuity equation for the fitness current (global conservation under no-flux boundary conditions and balanced cloning), while the SU(2) symmetry gives three isospin currents that are approximately conserved when fitness variations are small.
 
 The Wilson action and its gauge invariance are treated in {ref}`sec-ym-action`, with explicit verification that the trace of the plaquette holonomy is unchanged under local SU(2) transformations. The path integral formulation ({ref}`sec-ym-path-integral`) addresses the gauge-fixing problem, with the Haar measure ensuring measure invariance. Physical observables like Wilson loops and their area-law behavior are developed in {ref}`sec-ym-observables`.
 
@@ -156,7 +158,7 @@ $$
 
 **Tier 3: $U(1)_{\text{fitness}}$ Global** (emergent, continuous)
 
-- **Origin**: Absolute fitness scale is unphysical
+- **Origin**: Absolute fitness baseline is unphysical
 - **Transformation**: $\psi_{ik}^{(\text{div})} \to e^{i\alpha} \psi_{ik}^{(\text{div})}$ (same $\alpha$ everywhere)
 - **Physical invariant**: Cloning kernel modulus $|K_{\text{eff}}(i,j)|^2$
 - **Conserved charge**: Fitness current $J_{\text{fitness}}^\mu$
@@ -191,7 +193,8 @@ $$
 
 with:
 - **Probability**: $P_{\text{comp}}^{(\text{div})}(k|i) = \frac{\exp(-d_{\text{alg}}^2(i,k)/(2\epsilon_d^2))}{\sum_{k'} \exp(-d_{\text{alg}}^2(i,k')/(2\epsilon_d^2))}$
-- **Phase**: $\theta_{ik}^{(\text{div})} = -\frac{d_{\text{alg}}^2(i,k)}{2\epsilon_d^2 \hbar_{\text{eff}}}$
+- **Fitness phase**: $\theta_i := -\frac{\Phi_i}{\hbar_{\text{eff}}}$, so
+  $\theta_{ik}^{(\text{div})} = \theta_k - \theta_i = -\frac{\Phi_k - \Phi_i}{\hbar_{\text{eff}}}$
 
 **Isospin Hilbert space**:
 
@@ -288,7 +291,7 @@ Here is where we depart from the standard approach. In textbooks, you write down
 
 The key insight is that the Fractal Gas already has a path integral structure. Walkers explore paths through the fitness landscape, and the probability of a path depends on the cloning probabilities along the way. This is a stochastic path integral—and stochastic path integrals can be Wick-rotated to quantum path integrals.
 
-The cloning amplitudes have phases—the algorithmic distance determines a complex phase through the fitness exponential. These phases are exactly the gauge field. We do not introduce the gauge field as an external object; we identify it with the phase structure that is already there.
+The cloning amplitudes have phases: fitness differences set the phase, while algorithmic distance fixes the amplitude through the companion kernel. These phases are exactly the gauge field. We do not introduce the gauge field as an external object; we identify it with the phase structure that is already there.
 
 Once we have the path integral and the gauge field, the action follows. The Wilson action—the sum over plaquettes of $(1 - \text{Re Tr } U)$—is not something we postulate. It is the unique gauge-invariant action that emerges from the structure of the path integral.
 
@@ -475,7 +478,7 @@ The deep lesson here is that there may be only one way to explore high-dimension
 
 **Hypostructure connection**: The path integral emergence follows from the Lock Closure metatheorem ({prf:ref}`mt:fractal-gas-lock-closure`), which guarantees that discrete constructions on the Fractal Set promote to continuous limits with correct properties.
 
-**Expansion Adjunction**: The Wick rotation is justified by {prf:ref}`thm-expansion-adjunction`, which ensures thermal (KMS) structure lifts to quantum structure.
+**Expansion Adjunction**: The Wick rotation is justified by {prf:ref}`thm-expansion-adjunction`, which ensures the equilibrium (KMS) structure of the reversible diffusion kernel lifts to quantum structure.
 :::
 
 ### 3.2. Matter Action from Cloning Dynamics
@@ -515,20 +518,21 @@ $$
 **Analogy to Higgs mechanism**: The fitness potential $V_{\text{fit}}$ plays the role of the Higgs field, giving "mass" (stability) to walker interactions.
 :::
 
-### 3.3. Gauge Field from Algorithmic Phases
+### 3.3. Gauge Field from Fitness Phases
 
 :::{prf:definition} Gauge Field Identification
 :label: def-gauge-field-from-phases
 
-The SU(2) gauge field is **identified** (not postulated) with algorithmic phases.
+The SU(2) gauge field is **identified** (not postulated) with fitness phases.
 
-**Cloning amplitude phase** (from {doc}`03_lattice_qft`):
+**Cloning doublet phase** (from {doc}`03_lattice_qft`):
 
 $$
-\theta_{ij}^{(\text{SU}(2))} = -\frac{d_{\text{alg}}^2(i,j)}{2\epsilon_c^2 \hbar_{\text{eff}}}
+\theta_{ij}^{(\text{SU}(2))} := \theta_j - \theta_i
+= -\frac{\Phi_j - \Phi_i}{\hbar_{\text{eff}}}
 $$
 
-where $d_{\text{alg}}^2(i,j) = \|z_i - z_j\|^2 + \lambda_{\text{alg}}\|v_i - v_j\|^2$ is the algorithmic distance.
+where $\theta_i = -\Phi_i/\hbar_{\text{eff}}$ and $V_{\text{clone}}(i \to j) = \Phi_j - \Phi_i$.
 
 **Gauge field components**: For edge $e = (n_i, n_j)$:
 
@@ -546,7 +550,7 @@ $$
 U_{ij} = \exp\left(i g a_e \sum_{a=1}^3 A_e^{(a)} T^a\right) \in \text{SU}(2)
 $$
 
-**Key insight**: The gauge field is the algorithmic distance encoded as a phase. This is not an analogy—the mathematical structures are identical.
+**Key insight**: The gauge field is the fitness difference encoded as a phase, while the companion kernel fixes amplitudes. This is not an analogy—the mathematical structures are identical.
 :::
 
 :::{admonition} Why This Is Not an Effective Field Theory
@@ -628,7 +632,7 @@ Noether's theorem {cite}`noether1918invariante` is one of the most beautiful res
 
 For gauge symmetries, Noether's theorem gives something more subtle: conserved currents. The U(1) symmetry of electromagnetism gives electric charge conservation. The SU(2) symmetry of the weak force gives isospin current conservation. The SU(3) symmetry of the strong force gives color current conservation.
 
-What we are going to show is that the Fractal Gas has exactly these Noether currents. The U(1) fitness symmetry gives a conserved fitness current—total fitness is conserved between cloning events. The SU(2) weak symmetry gives three isospin currents.
+What we are going to show is that the Fractal Gas has exactly these Noether currents. The U(1) fitness symmetry gives a fitness current obeying a local continuity equation, with global conservation when boundary flux vanishes and the cloning source balances. The SU(2) weak symmetry gives three isospin currents.
 
 But there is a subtlety. The fitness-dependent mass $m_{\text{eff}}$ breaks exact SU(2) invariance. This means the SU(2) currents are only approximately conserved. This is not a bug—it is a feature. In the Standard Model, electroweak symmetry is also broken by the Higgs mechanism. The approximate conservation we find is the analog of this breaking.
 :::
@@ -638,7 +642,7 @@ But there is a subtlety. The fitness-dependent mass $m_{\text{eff}}$ breaks exac
 :::{prf:theorem} U(1) Fitness Noether Current
 :label: thm-u1-noether-current
 
-The global $U(1)_{\text{fitness}}$ symmetry implies a conserved fitness current.
+The global $U(1)_{\text{fitness}}$ symmetry implies a fitness current obeying a local continuity equation.
 
 **Current definition**: For node $n_{i,t}$ (walker $i$ at time $t$):
 
@@ -652,8 +656,8 @@ where:
 - $s \in \{0,1\}$ is survival status
 
 **Components**:
-- Temporal: $J^0_{\text{fitness}} = V_{\text{fit}}(z_i)$
-- Spatial: $J^k_{\text{fitness}} = V_{\text{fit}}(z_i) \cdot v_i^k$
+- Temporal: $J^0_{\text{fitness}} = V_{\text{fit}}(z_i) \cdot s(n_{i,t})$
+- Spatial: $J^k_{\text{fitness}} = V_{\text{fit}}(z_i) \cdot v_i^k \cdot s(n_{i,t})$
 
 **Discrete continuity equation**:
 
@@ -661,15 +665,18 @@ $$
 \frac{J^0_{\text{fitness}}(n_{i,t+\tau}) - J^0_{\text{fitness}}(n_{i,t})}{\tau} + \sum_{k=1}^d \partial_k J^k_{\text{fitness}}(n_{i,t}) = \mathcal{S}_{\text{fitness}}(n_{i,t})
 $$
 
-where $\mathcal{S}_{\text{fitness}}$ is the source from cloning:
-- Birth: $\mathcal{S} = +V_{\text{fit}}(z_{\text{new}})$
-- Death: $\mathcal{S} = -V_{\text{fit}}(z_{\text{dead}})$
+where $\mathcal{S}_{\text{fitness}} = \mathcal{S}_{\text{eval}} + \mathcal{S}_{\text{cloning}}$ collects:
+- Evaluation/drift: $\mathcal{S}_{\text{eval}} = s \cdot D_t V_{\text{fit}}$ with $D_t := \partial_t + v \cdot \nabla$ (continuum limit)
+- Birth: $\mathcal{S}_{\text{cloning}} = +V_{\text{fit}}(z_{\text{new}})$
+- Death: $\mathcal{S}_{\text{cloning}} = -V_{\text{fit}}(z_{\text{dead}})$
 
-**Global conservation**: Between cloning events ($\mathcal{S} = 0$):
+**Global balance**: For any region $\Omega$,
 
 $$
-Q_{\text{fitness}}(t) := \sum_{i \in A_t} V_{\text{fit}}(z_i) = \text{constant}
+\frac{d}{dt} Q_{\text{fitness}}(t) = -\int_{\partial\Omega} \mathbf{J}_{\text{fitness}} \cdot \hat{n} \, dS + \int_\Omega \mathcal{S}_{\text{fitness}} \, d^{d}x
 $$
+
+with $Q_{\text{fitness}}(t) := \sum_{i \in A_t} V_{\text{fit}}(z_i)$. Thus $Q_{\text{fitness}}$ is conserved under no-flux boundary conditions and net-zero source (for example, balanced cloning in the mean-field limit).
 :::
 
 :::{prf:proof}
@@ -682,39 +689,31 @@ $$
 \Delta Q = \sum_{i \in A_{t+\tau}} V_{\text{fit}}(z_i(t+\tau)) - \sum_{i \in A_t} V_{\text{fit}}(z_i(t))
 $$
 
-**Step 2. Single walker contribution (no cloning).**
+**Step 2. Transport + evaluation source (no cloning).**
 
-Using Taylor expansion:
+For a surviving walker, $z_i(t+\tau) = z_i(t) + v_i \tau + O(\tau^2)$. Taylor expansion gives the convective change:
 $$
-\Delta V_{\text{fit},i} = V_{\text{fit}}(z_i + v_i\tau) - V_{\text{fit}}(z_i) = \nabla V_{\text{fit}} \cdot v_i \tau + O(\tau^2)
+V_{\text{fit}}(z_i(t+\tau)) - V_{\text{fit}}(z_i(t)) = \left(\partial_t + v_i \cdot \nabla\right)V_{\text{fit}} \,\tau + O(\tau^2)
 $$
+which we identify with $\mathcal{S}_{\text{eval}} \tau$. The discrete divergence term $\sum_k \partial_k J^k$ accounts for the transport of the weighted density across neighboring nodes by the flow $v$.
 
-**Step 3. Spatial divergence.**
-
-Since $J^k = V_{\text{fit}} v^k$:
-$$
-\Delta V_{\text{fit},i} = \sum_k \partial_k J^k \cdot \tau
-$$
-
-**Step 4. Cloning source terms.**
+**Step 3. Cloning source terms.**
 
 - **Birth** at node $n_{j,t}$: $\Delta Q = +V_{\text{fit}}(z_j)$
 - **Death** at node $n_{i,t}$: $\Delta Q = -V_{\text{fit}}(z_i)$
 
-Define source: $\mathcal{S}_{\text{fitness}} \cdot \tau = \Delta Q_{\text{cloning}}$
+Define source: $\mathcal{S}_{\text{cloning}} \cdot \tau = \Delta Q_{\text{cloning}}$
 
-**Step 5. Continuity equation.**
+**Step 4. Continuity equation.**
 
-Combining Steps 2-4:
+Combining Steps 2-3:
 $$
-\partial_0 J^0 + \nabla \cdot \mathbf{J} = \mathcal{S}_{\text{fitness}}
+\partial_0 J^0 + \nabla \cdot \mathbf{J} = \mathcal{S}_{\text{eval}} + \mathcal{S}_{\text{cloning}}
 $$
 
-**Step 6. Global conservation.**
+**Step 5. Global balance.**
 
-Summing over all walkers: $\frac{dQ}{dt} = \sum_i \mathcal{S}_i$
-
-Between cloning events, $\mathcal{S}_i = 0$ for all $i$, so $Q$ is conserved. $\square$
+Summing over walkers (or integrating over $\Omega$) yields the boundary-flux form of the global balance. Under no-flux boundary conditions and net-zero source, $Q_{\text{fitness}}$ is conserved. $\square$
 :::
 
 :::{div} feynman-prose feynman-added
@@ -722,15 +721,15 @@ This is Noether's theorem in action, and it is worth pausing to appreciate what 
 
 Emmy Noether showed in 1918 that every continuous symmetry of a physical system corresponds to a conserved quantity. Time translation symmetry gives energy conservation. Space translation gives momentum conservation. Rotation gives angular momentum conservation. These connections are not accidental—they are deep mathematical consequences of the action principle.
 
-For gauge symmetries, Noether's theorem gives conserved currents. The U(1) symmetry of electromagnetism gives electric charge conservation. The SU(3) symmetry of the strong force gives color charge conservation. And here, the U(1) fitness symmetry gives fitness current conservation.
+For gauge symmetries, Noether's theorem gives conserved currents. The U(1) symmetry of electromagnetism gives electric charge conservation. The SU(3) symmetry of the strong force gives color charge conservation. And here, the U(1) fitness symmetry gives a fitness current obeying a local continuity equation.
 
-What does this mean physically? Between cloning events, the total fitness in the population is conserved. Walkers can move around, carrying their fitness with them, but the total cannot change. Fitness flows like a conserved fluid.
+What does this mean physically? Fitness charge flows with the walkers, while evaluation drift and cloning act as local sources. Global conservation holds when boundary flux vanishes and the net source cancels (for example, in mean-field balance).
 
-This is exactly analogous to charge conservation in electrodynamics. Charge cannot be created or destroyed—it can only flow from place to place. The continuity equation $\partial_0 J^0 + \nabla \cdot \mathbf{J} = 0$ says that if charge density decreases somewhere, there must be a current flowing out.
+This is exactly analogous to charge conservation in electrodynamics. Charge cannot be created or destroyed—it can only flow from place to place. The continuity equation $\partial_0 J^0 + \nabla \cdot \mathbf{J} = \mathcal{S}$ says that if charge density decreases somewhere, there must be a current flowing out or a local sink.
 
-For the Fractal Gas, cloning events act as sources and sinks. When a walker clones, fitness is created (at the birth site) and destroyed (at the death site). The cloning source term $\mathcal{S}$ accounts for this. But between cloning events, the conservation is exact.
+For the Fractal Gas, cloning events act as sources and sinks. When a walker clones, fitness is created (at the birth site) and destroyed (at the death site). The cloning source term $\mathcal{S}_{\text{cloning}}$ accounts for this, while $\mathcal{S}_{\text{eval}}$ tracks the drift-driven re-evaluation of fitness. The unweighted count current ($\rho = s$) is exactly conserved because births and deaths are paired; the fitness-weighted charge is conserved when those paired events balance in expectation (for example, in the $\tau \to 0$ mean-field limit at stationarity).
 
-The beautiful thing is that this was not put in by hand. The fitness symmetry emerges from the algorithmic structure—absolute fitness values are arbitrary, only relative fitness matters for cloning decisions. And Noether's theorem automatically gives us the conserved current.
+The beautiful thing is that this was not put in by hand. The fitness symmetry emerges from the algorithmic structure—absolute fitness values are arbitrary, only relative fitness matters for cloning decisions. And Noether's theorem automatically gives us the fitness current and its continuity equation.
 :::
 
 ### 4.2. SU(2) Weak Isospin Local Current
@@ -813,7 +812,7 @@ The SU(2) current conservation is **approximate**, analogous to electroweak symm
 |----------------|-------------|
 | Higgs VEV breaks $\text{SU}(2) \times U(1)$ | Fitness potential breaks SU(2) |
 | $W^\pm, Z$ get mass | Current conservation broken |
-| Photon remains massless | U(1) fitness exactly conserved |
+| Photon remains massless | U(1) fitness current is locally conserved (global balance with sources) |
 :::
 
 ### 4.3. Noether Flow Equations in Algorithmic Parameters
@@ -821,11 +820,13 @@ The SU(2) current conservation is **approximate**, analogous to electroweak symm
 :::{prf:definition} Noether Flow Equations
 :label: def-noether-flow-equations
 
-The fitness charge evolves according to:
+The fitness charge evolves according to (spatially integrated form; add the boundary flux term if no-flux conditions are not imposed):
 
 $$
 \frac{dQ_{\text{fitness}}}{dt} = \sum_{i \in A_t} \nabla V_{\text{fit}} \cdot \left[\underbrace{-\gamma v_i}_{\text{friction}} + \underbrace{(-\nabla U)}_{\text{confining}} + \underbrace{\epsilon_F \sum_j K_\rho \nabla V_{\text{fit}}}_{\text{adaptive}} + \underbrace{\nu \sum_j K_\rho (v_j - v_i)}_{\text{viscous}}\right] + \mathcal{S}_{\text{cloning}}
 $$
+
+The bracketed drift terms correspond to the spatial integral of $\mathcal{S}_{\text{eval}}$; $\mathcal{S}_{\text{cloning}}$ adds the birth/death contribution.
 
 **Five contributions**:
 
@@ -837,13 +838,7 @@ $$
 | Viscous $\nu(v_j - v_i)$ | Velocity coupling | Redistributes $Q$ |
 | Cloning $\mathcal{S}$ | Birth/death | Changes $Q$ discretely |
 
-**Hamiltonian limit**: When $\gamma, D \to 0$:
-
-$$
-\frac{dQ_{\text{fitness}}}{dt} = 0 \quad \text{(between cloning)}
-$$
-
-Fitness charge is exactly conserved in the Hamiltonian regime.
+**Hamiltonian limit**: With $\gamma, \nu \to 0$ and cloning off, the evolution is purely advective; $Q_{\text{fitness}}$ changes only by boundary flux. Under no-flux boundary conditions and stationary $V_{\text{fit}}$, $Q_{\text{fitness}}$ is conserved.
 :::
 
 ### 4.4. Hamiltonian Formulation
@@ -902,7 +897,7 @@ Ken Wilson figured this out in the 1970s {cite}`wilson1974confinement`. The key 
 
 The Wilson action is the sum over all plaquettes of $(1 - \frac{1}{N}\text{Re Tr } U_P)$. For small fields, this reduces to the continuum Yang-Mills action. But it is valid even for strong fields, even on coarse lattices. It is the natural action for non-perturbative gauge theory.
 
-And here is what we have accomplished: we have shown that this action emerges from the Fractal Gas. The plaquettes are the elementary closed loops in the CST+IG structure. The link variables are the algorithmic phases. The action is not put in by hand—it falls out of the stochastic dynamics.
+And here is what we have accomplished: we have shown that this action emerges from the Fractal Gas. The plaquettes are the elementary closed loops in the CST+IG structure. The link variables are the fitness phases. The action is not put in by hand—it falls out of the stochastic dynamics.
 :::
 
 :::{admonition} Lattice spacing convention
@@ -942,15 +937,15 @@ with $a_e$ the length of edge $e$.
    U[\gamma] = U_{12} U_{23} \cdots U_{(k-1)k}
    $$
 
-**Algorithmic identification** (from {prf:ref}`def-gauge-field-from-phases`):
+**Phase identification** (from {prf:ref}`def-gauge-field-from-phases`):
 
 $$
-U_{ij} = \exp\left(-i \frac{d_{\text{alg}}^2(i,j)}{2\epsilon_c^2 \hbar_{\text{eff}}} \cdot \hat{\sigma}\right)
+U_{ij} = \exp\left(i \theta_{ij}^{(\text{SU}(2))} \cdot \hat{\sigma}\right)
 $$
 
 where $\hat{\sigma}$ is the direction in isospin space, so that
 $$
-A_e^{(a)} T^a = -\frac{1}{g a_e} \frac{d_{\text{alg}}^2(i,j)}{2\epsilon_c^2 \hbar_{\text{eff}}} \, \hat{\sigma}.
+A_e^{(a)} T^a = \frac{1}{g a_e} \theta_{ij}^{(\text{SU}(2))} \, \hat{\sigma}.
 $$
 :::
 
@@ -1265,10 +1260,10 @@ On the Fractal Set, there is an interesting open question: does the antisymmetri
 The partition function on the Fractal Set is:
 
 $$
-Z = \int \mathcal{D}[\Psi] \mathcal{D}[A] \, \exp\left(-(S_{\text{matter}} + S_{\text{coupling}} + S_{\text{YM}})\right)
+Z = \int \mathcal{D}[\Psi] \mathcal{D}[A] \, \exp\left(-(S_{\text{matter}} + S_{\text{YM}})\right)
 $$
 
-**Three action components**:
+**Two action components** (the matter-gauge coupling is contained in $D_\mu$):
 
 **1. Matter action**:
 
@@ -1276,17 +1271,13 @@ $$
 S_{\text{matter}} = \sum_{(i,j) \in \text{IG}} \int d\tau \, \bar{\Psi}_{ij} (i\gamma^\mu D_\mu - m_{\text{eff}}) \Psi_{ij}
 $$
 
-**2. Coupling action** (matter-gauge):
-
-$$
-S_{\text{coupling}} = g \sum_{a=1}^3 \sum_{(i,j) \in \text{IG}} \int d\tau \, J_\mu^{(a)}(i,j) A^{(a),\mu}
-$$
-
-**3. Yang-Mills action** ({prf:ref}`def-wilson-action-ym`):
+**2. Yang-Mills action** ({prf:ref}`def-wilson-action-ym`):
 
 $$
 S_{\text{YM}} = \beta \sum_{P} \left(1 - \frac{1}{2}\text{Re Tr}(U_P)\right)
 $$
+
+Expanding $D_\mu$ recovers the usual $g\,J \cdot A$ coupling term.
 :::
 
 ### 6.2. Measure and Gauge Invariance
@@ -1302,13 +1293,14 @@ $$
 
 under local gauge transformations $\{V_x \in \text{SU}(2)\}_{x \in \mathcal{F}}$:
 - Matter: $\Psi'_x = V_x \Psi_x$
-- Gauge: $U'_e = V_x U_e V_y^\dagger$ for edge $e = (x,y)$
+- Gauge (lattice): $U'_e = V_x U_e V_y^\dagger$ for edge $e = (x,y)$
+- Gauge (continuum): $A'_\mu = V A_\mu V^\dagger + \frac{i}{g} V \partial_\mu V^\dagger$
 :::
 
 :::{prf:proof}
 **Step 1: Action invariance (proven in {prf:ref}`thm-wilson-action-gauge-invariance`).**
 
-The total action $S = S_{\text{YM}} + S_{\text{matter}} + S_{\text{coupling}}$ is gauge-invariant:
+The total action $S = S_{\text{YM}} + S_{\text{matter}}$ is gauge-invariant:
 
 $$
 S[\Psi', U'] = S[\Psi, U]
@@ -1316,8 +1308,7 @@ $$
 
 This was established in:
 - $S_{\text{YM}}$: {prf:ref}`thm-wilson-action-gauge-invariance`
-- $S_{\text{matter}}$: Uses $\bar{\Psi}' \Psi' = \bar{\Psi} V^\dagger V \Psi = \bar{\Psi}\Psi$
-- $S_{\text{coupling}}$: Uses $\bar{\Psi}'_x U'_e \Psi'_y = \bar{\Psi}_x V_x^\dagger V_x U_e V_y^\dagger V_y \Psi_y = \bar{\Psi}_x U_e \Psi_y$
+- $S_{\text{matter}}$: $D'_\mu \Psi' = V(D_\mu \Psi)$, so $\bar{\Psi}' (i\gamma^\mu D'_\mu - m_{\text{eff}})\Psi' = \bar{\Psi}(i\gamma^\mu D_\mu - m_{\text{eff}})\Psi$
 
 **Step 2: Gauge field measure invariance (Haar measure).**
 
@@ -1479,10 +1470,10 @@ where $\sigma$ is the **string tension**.
 **String tension from algorithmic parameters**:
 
 $$
-\sigma = \frac{T_{\text{clone}}}{\tau^2 \rho^4}
+\sigma = \frac{T_{\text{clone}}}{a^2}
 $$
 
-where $T_{\text{clone}}$ is the effective cloning temperature.
+where $T_{\text{clone}}$ is the effective cloning temperature (see {doc}`../1_the_algorithm/03_algorithmic_sieve`) and $a$ is the gauge lattice spacing. In lattice units, $\sigma a^2$ is dimensionless and set by $T_{\text{clone}}$.
 :::
 
 ### 7.3. Cluster Decomposition
@@ -1604,13 +1595,11 @@ using $\text{Tr}(T^a T^b) = \frac{1}{2}\delta^{ab}$ and hence $\text{Tr}(F_{\mu\
 
 The lattice $\Lambda_a = a \mathbb{Z}^{d+1} \cap \Omega$ covers a bounded region $\Omega \subset \mathbb{R}^{d+1}$.
 
-**Hölder continuity**: The field strength $F_{\mu\nu}$ is Hölder continuous with exponent $\alpha > 0$:
+:::{prf:lemma} Regularity bridge for $F_{\mu\nu}$
+:label: lem-ym-holder-regularity
 
-$$
-|F_{\mu\nu}(x) - F_{\mu\nu}(y)| \leq C_F |x-y|^\alpha \quad [\text{length}^{-2}]
-$$
-
-This follows from the bounded fitness constraint ({prf:ref}`def-fractal-set-two-channel-fitness`), which implies $\nabla A_\mu$ is bounded.
+Assume the emergent continuum is a compact $C^2$ manifold and the algorithmic embedding is $C^2$ with bounded diameter ({prf:ref}`mt:emergent-continuum`, {prf:ref}`mt:continuum-injection`, {prf:ref}`axiom-bounded-algorithmic-diameter`). Bounded fitness ({prf:ref}`def-fractal-set-two-channel-fitness`) keeps the phase amplitudes and drift contributions uniformly controlled within the regularity class of {prf:ref}`assumption-regularity-summary`. In the canonical Euclidean Gas, those assumptions make the fitness field $\Phi$ a $C^2$ function of the continuum coordinates. The phase field $\theta(x) = -\Phi(x)/\hbar_{\text{eff}}$ is then $C^2$, so the continuum gauge potential $A_\mu := \frac{1}{g}\partial_\mu \theta$ is $C^1$ and the discrete gradients converge to it by {prf:ref}`mt:cheeger-gradient`. The field strength $F_{\mu\nu}$ is therefore Lipschitz on compact sets. Hence $F_{\mu\nu} \in C^\alpha(\Omega)$ for some $\alpha \in (0,1]$, with Hölder bounds compatible with the deterministic potential continuity and Poisson-regularity estimates ({prf:ref}`thm-deterministic-potential-continuity`, {prf:ref}`thm-error-propagation`) and with LSI-based concentration ({prf:ref}`mt:lsi-particle-systems`).
+:::
 
 **Riemann sum theorem** {cite}`tao2011introduction`: For $f \in C^\alpha(\Omega)$ and lattice $\Lambda_a$:
 
@@ -1819,9 +1808,9 @@ $$
 S = \frac{m d_{\text{alg}}^2}{2\tau}
 $$
 
-**Step 2. Characteristic phase.**
+**Step 2. Characteristic action phase.**
 
-Phase unity at cloning scale $\epsilon_c$:
+Kinetic action phase unity at cloning scale $\epsilon_c$:
 $$
 \theta = \frac{S}{\hbar_{\text{eff}}} \sim 1 \quad \text{at } d_{\text{alg}} = \epsilon_c
 $$
@@ -1854,7 +1843,11 @@ In four dimensions the SU(2) coupling is dimensionless. From the unit table, the
 
 **Step 2. Phase and timestep scaling.**
 
-The link phase is $g a_e A$ (with $a_e$ the link length), while the algorithmic phase is $\theta_{ij} \sim d_{\text{alg}}^2/(2\epsilon_c^2 \hbar_{\text{eff}})$. For typical spatial links with $a_e \sim \rho$ and $d_{\text{alg}} \sim \rho$ at fixed $\hbar_{\text{eff}}$, the phase scales like $(\rho/\epsilon_c)^2$, and the overall normalization of the covariant derivative is set by the timestep ratio $m\tau$ through $\hbar_{\text{eff}}$.
+The link phase is $g a_e A$ (with $a_e$ the link length), while the cloning phase is
+$$
+\theta_{ij} = -\frac{\Phi_j - \Phi_i}{\hbar_{\text{eff}}}.
+$$
+Companion selection restricts interactions to $d_{\text{alg}} \lesssim \epsilon_c$, so typical fitness differences are evaluated on that scale; for spatial links $a_e \sim \rho$, the phase variation is controlled by the dimensionless ratio $\rho/\epsilon_c$. The overall normalization of the covariant derivative is set by the timestep ratio $m\tau$ through $\hbar_{\text{eff}}$.
 
 **Step 3. Identification.**
 
@@ -1910,7 +1903,7 @@ Four fundamental mass scales emerge from spectral properties:
 |-----------|-----------|-----------------|
 | $m_{\text{clone}} = 1/\epsilon_c$ | Cloning kernel inverse width | Shortest-range interaction |
 | $m_{\text{MF}} = 1/\rho$ | Localization scale inverse | Mean-field interaction range |
-| $m_{\text{gap}} = \lambda_{\text{gap}}$ | Spectral gap of generator | Convergence rate to QSD |
+| $m_{\text{gap}} = \hbar_{\text{eff}} \lambda_{\text{gap}}$ (=$\lambda_{\text{gap}}$ if $\hbar_{\text{eff}}=1$) | Spectral gap of generator | Convergence rate to QSD |
 | $m_{\text{friction}} = \gamma$ | Friction coefficient | Velocity relaxation |
 
 **Required hierarchy for efficient operation**:
@@ -1934,10 +1927,10 @@ $$
 The correlation length is:
 
 $$
-\boxed{\xi = \frac{1}{m_{\text{gap}}} = \frac{1}{\lambda_{\text{gap}}}}
+\boxed{\xi = \frac{1}{m_{\text{gap}}}}
 $$
 
-**Physical interpretation**: The dimensionless ratio $\xi/\epsilon_c = m_{\text{clone}}/m_{\text{gap}}$ compares correlation length to the cloning scale. Note: $m_{\text{clone}} = 1/\epsilon_c$ and $\lambda_{\text{gap}}$ is the continuous-time spectral gap.
+**Physical interpretation**: The dimensionless ratio $\xi/\epsilon_c = m_{\text{clone}}/m_{\text{gap}}$ compares correlation length to the cloning scale. Note: $m_{\text{clone}} = 1/\epsilon_c$ and $m_{\text{gap}} = \hbar_{\text{eff}}\lambda_{\text{gap}}$ (or $\lambda_{\text{gap}}$ in $\hbar_{\text{eff}}=1$ units).
 
 **Scaling**:
 - Large $\xi$: Long-range correlations, near criticality
@@ -2002,7 +1995,7 @@ Small $\eta_{\text{time}}$: Fast relaxation relative to timestep.
 
 **3. Correlation-to-interaction**:
 $$
-\kappa := \frac{\xi}{\rho} = \frac{1}{\rho \lambda_{\text{gap}}}
+\kappa := \frac{\xi}{\rho} = \frac{1}{\rho \hbar_{\text{eff}} \lambda_{\text{gap}}}
 $$
 Large $\kappa$: Long-range correlations extend beyond interaction range.
 :::
@@ -2055,7 +2048,7 @@ with dynamical exponent $z = T_{\text{clone}} \rho^4/(\epsilon_c^2 \epsilon_F)$.
 $$
 \langle W_{L \times T} \rangle \sim \exp(-\sigma L T)
 $$
-with string tension $\sigma = T_{\text{clone}}/(\tau^2 \rho^4)$.
+with string tension $\sigma = T_{\text{clone}}/a^2$ (using the gauge lattice spacing $a$).
 
 **4. Asymptotic freedom signature**:
 $$
@@ -2144,7 +2137,7 @@ where $(\epsilon_c^{(0)}, \rho^{(0)}, \gamma, \tau_0)$ are reference values. The
 | Quantity | Symbol | Expression | Dimension | Behavior as $\tau \to 0$ |
 |----------|--------|------------|-----------|--------------------------|
 | Effective Planck constant | $\hbar_{\text{eff}}$ | $m\epsilon_c^2/(2\tau)$ | $[\text{GeV}^{-1}]$ | **Fixed** (requirement) |
-| Mass gap | $m_{\text{gap}}$ | $\lambda_{\text{gap}}$ | $[\text{GeV}]$ | **Fixed** (requirement) |
+| Mass gap | $m_{\text{gap}}$ | $\hbar_{\text{eff}}\lambda_{\text{gap}}$ | $[\text{GeV}]$ | **Fixed** (requirement) |
 | Bare gauge coupling | $g^2_{\text{bare}}$ | $m\tau\rho^2/\epsilon_c^2$ | $[\text{dimensionless}]$ | **Runs to 0** (asymptotic freedom) |
 | Physical coupling | $g^2_{\text{phys}}(\mu)$ | Via RG flow | $[\text{dimensionless}]$ | **Fixed** at scale $\mu$ |
 | Correlation length | $\xi$ | $m_{\text{gap}}^{-1}$ | $[\text{GeV}^{-1}]$ | **Fixed** (from $m_{\text{gap}}$ fixed) |
@@ -2163,7 +2156,7 @@ $$
 
 The **physical** mass gap is set by the continuous generator, not the discretization:
 $$
-m_{\text{gap}} := \lambda_{\text{gap}}^{\text{cont}}
+m_{\text{gap}} := \hbar_{\text{eff}} \lambda_{\text{gap}}^{\text{cont}} \quad (= \lambda_{\text{gap}}^{\text{cont}} \text{ if } \hbar_{\text{eff}}=1)
 $$
 
 **Key insight**: The friction $\gamma$ is held **fixed** as $\tau \to 0$. The discretization timestep $\tau$ is a numerical parameter, not a physical one. The spectral gap of the continuous dynamics is independent of how finely we discretize.
@@ -2178,7 +2171,7 @@ $$
 | Quantity | Expression under rescaling | Result |
 |----------|---------------------------|--------|
 | $\hbar_{\text{eff}} = m\epsilon_c^2/(2\tau)$ | $m \cdot (\epsilon_c^{(0)})^2 (\tau/\tau_0) /(2\tau) = m(\epsilon_c^{(0)})^2/(2\tau_0)$ | **Fixed** ✓ |
-| $m_{\text{gap}} = \lambda_{\text{gap}}^{\text{cont}}$ | $\gamma$ (fixed, independent of $\tau$) | **Fixed** ✓ |
+| $m_{\text{gap}} = \hbar_{\text{eff}} \lambda_{\text{gap}}^{\text{cont}}$ | $\hbar_{\text{eff}}\gamma$ (fixed, independent of $\tau$) | **Fixed** ✓ |
 | $g^2_{\text{bare}} = m\tau\rho^2/\epsilon_c^2$ | $m \tau \cdot (\rho^{(0)})^2(\tau/\tau_0) / ((\epsilon_c^{(0)})^2 \tau/\tau_0) = m \tau (\rho^{(0)})^2/(\epsilon_c^{(0)})^2$ | **→ 0** (asymptotic freedom) |
 | $\xi = m_{\text{gap}}^{-1}$ | $1/\gamma$ (fixed) | **Fixed** ✓ |
 
@@ -2237,7 +2230,7 @@ This combination has dimension $[\text{GeV}^2]$ and measures the gauge coupling 
 | Quantity | Symbol | Dimension | Expression |
 |----------|--------|-----------|------------|
 | Running coupling | $g^2(\mu)$ | $[\text{dimensionless}]$ | $[\text{nat}^0]$ |
-| Mass gap | $m_{\text{gap}}$ | $[\text{GeV}]$ | $\lambda_{\text{gap}}^{\text{cont}}$ |
+| Mass gap | $m_{\text{gap}}$ | $[\text{GeV}]$ | $\hbar_{\text{eff}}\lambda_{\text{gap}}^{\text{cont}}$ |
 | Energy scale | $\mu$ | $[\text{GeV}]$ | - |
 | Mass-scaled coupling | $\tilde{g}^2$ | $[\text{GeV}^2]$ | $g^2 \cdot m_{\text{gap}}^2$ |
 
@@ -2273,7 +2266,7 @@ $$
 \tilde{g}^2(\mu) = g^2(\mu) \cdot m_{\text{gap}}^2 \leq g^2(\mu_{\text{IR}}) \cdot m_{\text{gap}}^2 < \infty
 $$
 
-The mass gap $m_{\text{gap}}$ is determined by the spectral gap $\lambda_{\text{gap}}$ of the generator ({prf:ref}`thm-uv-protection-mechanism`), which is independent of $\tau$.
+The mass gap $m_{\text{gap}} = \hbar_{\text{eff}}\lambda_{\text{gap}}$ is determined by the spectral gap of the generator ({prf:ref}`thm-uv-protection-mechanism`), which is independent of $\tau$.
 
 **Step 5. Continuum limit consistency.**
 
@@ -2390,7 +2383,7 @@ where $\kappa = -\ln \gamma$ is the screening mass from {prf:ref}`thm-the-hjb-he
 - $\mathrm{CIB}_\kappa$ (Causal Information Bound)
 - $\mathrm{SG}_\lambda$ (Spectral Gap verification)
 
-**Connection**: The mass gap arises from the same spectral structure that ensures convergence to the QSD. The generator $\mathcal{L}$ has a gap $\lambda_{\text{gap}}$, which translates to mass gap $m_{\text{gap}} = \lambda_{\text{gap}}$ (with $P_\tau = e^{\tau\mathcal{L}}$ having gap $1 - e^{-\lambda_{\text{gap}}\tau}$).
+**Connection**: The mass gap arises from the same spectral structure that ensures convergence to the QSD. The generator $\mathcal{L}$ has a gap $\lambda_{\text{gap}}$, which translates to mass gap $m_{\text{gap}} = \hbar_{\text{eff}}\lambda_{\text{gap}}$ (with $P_\tau = e^{\tau\mathcal{L}}$ having gap $1 - e^{-\lambda_{\text{gap}}\tau}$).
 :::
 
 ---
@@ -2764,14 +2757,16 @@ $$
 **Conversion to physical units**: The physical Hamiltonian is:
 
 $$
-H_{\text{phys}} = \hbar (-\mathcal{L})
+H_{\text{phys}} = \hbar_{\text{eff}} (-\mathcal{L})
 $$
 
-so, with $\hbar = c = 1$, the physical mass gap is:
+so the physical mass gap is:
 
 $$
-m_{\text{gap}} = \lambda_{\text{gap}}
+m_{\text{gap}} = \hbar_{\text{eff}} \lambda_{\text{gap}}
 $$
+
+In the normalization $\hbar_{\text{eff}} = 1$, this reduces to $m_{\text{gap}} = \lambda_{\text{gap}}$.
 
 **Discrete-time relation**: The $\tau$-step kernel is $P_\tau = e^{\tau\mathcal{L}}$, whose spectral gap is
 $$
@@ -2782,7 +2777,7 @@ for small $\tau$.
 **Alternative derivation via correlation length**: Exponential decay (OS3) gives $\xi = 1/m_{\text{gap}}$. In discrete time, correlations decay as $e^{-\lambda_{\text{gap}} n\tau}$, so $e^{-t/\xi}$ with $t = n\tau$ yields:
 
 $$
-\xi = \frac{1}{\lambda_{\text{gap}}}
+\xi = \frac{1}{m_{\text{gap}}} = \frac{1}{\hbar_{\text{eff}} \lambda_{\text{gap}}}
 $$
 
 This is consistent with the dimensional analysis above. The key point is $m_{\text{gap}} > 0$ whenever $\lambda_{\text{gap}} > 0$.
@@ -3062,7 +3057,7 @@ $$
 S_{\text{Eucl}} = \int_0^T d\tau \, \mathcal{L}_{\text{Eucl}}
 $$
 
-where $\mathcal{L}_{\text{Eucl}} = \frac{1}{2}|\dot{x}|^2 + V_{\text{eff}}(x)$ with $V_{\text{eff}} := V_{\text{fit}} + |b|^2/(2\sigma^2)$.
+where $\mathcal{L}_{\text{Eucl}} = \frac{1}{2\sigma^2}|\dot{x}|^2 + V_{\text{eff}}(x)$ with $V_{\text{eff}} := V_{\text{fit}} + |b|^2/(2\sigma^2)$ (dropping the boundary term from $-\dot{x}\cdot b/\sigma^2$ when $b=-\nabla\Phi$).
 :::
 
 :::{prf:theorem} OS0: Temperedness
@@ -3202,13 +3197,13 @@ This is the **critical axiom**. The proof connects three independent results fro
 
 **Step 1: Detailed balance → KMS condition**
 
-The Fractal Gas satisfies **detailed balance** (also called **reversibility**):
+The reversible Boris-BAOAB **diffusion kernel** at QSD equilibrium satisfies **detailed balance** (also called **reversibility**):
 
 $$
 \pi(x) P_\tau(x \to y) = \pi(y) P_\tau(y \to x)
 $$
 
-This follows from the structure of the Boris-BAOAB integrator ({prf:ref}`def-fractal-set-boris-baoab`), which preserves the Gibbs measure.
+This follows from the structure of the Boris-BAOAB integrator ({prf:ref}`def-fractal-set-boris-baoab`), which preserves the Gibbs measure. The cloning/selection step is dissipative and does not satisfy detailed balance away from equilibrium.
 
 By the **Kossakowski-Frigerio-Gorini-Verri theorem** {cite}`kossakowski1977quantum`, detailed balance for quantum dynamical semigroups is equivalent to the **KMS condition** {cite}`kubo1957statistical,martin1959theory`:
 
@@ -3305,7 +3300,7 @@ where:
 - Ensure the reflection positivity inner product is well-defined
 - Guarantee convergence of the spectral expansion
 
-**Role of KMS condition**: The KMS condition (Step 1) ensures that the Euclidean and Minkowski formulations are **consistent under analytic continuation**.
+**Role of KMS condition**: The KMS condition (Step 1) ensures that the Euclidean and Minkowski formulations are **consistent under analytic continuation** for the equilibrium diffusion kernel.
 
 The KMS condition at inverse temperature $\beta = 1$ states:
 
@@ -3315,7 +3310,7 @@ $$
 
 This has two consequences for reflection positivity:
 
-1. **Thermal equilibrium**: The KMS condition characterizes thermal equilibrium states. Detailed balance ensures the QSD is such a state, so the Euclidean path integral measure is well-defined.
+1. **Thermal equilibrium**: The KMS condition characterizes thermal equilibrium states. Detailed balance of the reversible diffusion kernel ensures the equilibrium QSD is such a state, so the Euclidean path integral measure is well-defined.
 
 2. **Analytic continuation**: The KMS condition guarantees that real-time correlation functions can be analytically continued to imaginary time $t \to -i\tau$. The periodicity $\langle A(0) B \rangle = \langle B A(i\beta) \rangle$ ensures the Euclidean correlators close consistently.
 
@@ -3324,7 +3319,7 @@ The transfer matrix $e^{-2t_{\min} H}$ (propagating from $-t_{\min}$ to $+t_{\mi
 **Conclusion**: The combination of:
 - Positive Hamiltonian ($H \geq 0$) from the spectral condition
 - Hypercontractivity from N-uniform LSI (ensuring bounded transfer matrix)
-- KMS condition from detailed balance (ensuring correct Wick rotation)
+- KMS condition from detailed balance of the equilibrium diffusion kernel (ensuring correct Wick rotation)
 
 rigorously establishes $\langle \Theta F, F \rangle_\mu \geq 0$ for all $F$ supported at positive times. $\square$
 :::
@@ -3338,7 +3333,7 @@ Reflection positivity is the Euclidean shadow of this positivity. In Euclidean s
 
 Why does this matter? Because the Osterwalder-Schrader reconstruction theorem says that if your Euclidean theory satisfies reflection positivity, you can analytically continue back to real time and get a proper quantum theory with a positive-definite Hilbert space. No reflection positivity means the "quantum" theory you reconstruct might have negative-norm states—ghosts that give negative probabilities—and the whole thing falls apart.
 
-The proof connects three different-looking things. First, detailed balance—the Markov chain is reversible, transitions are balanced. This gives the KMS condition, which is about thermal equilibrium. Second, the log-Sobolev inequality gives hypercontractivity—the semigroup smooths things out as time evolves. Third, the transfer matrix $e^{-tH}$ is positive because $H \geq 0$.
+The proof connects three different-looking things. First, detailed balance of the equilibrium diffusion kernel---the reversible transitions are balanced. This gives the KMS condition, which is about thermal equilibrium. Second, the log-Sobolev inequality gives hypercontractivity---the semigroup smooths things out as time evolves. Third, the transfer matrix $e^{-tH}$ is positive because $H \geq 0$.
 
 When you put these together, the reflection positivity inner product becomes $\langle F | e^{-2tH} | F \rangle$, which is manifestly non-negative because $e^{-2tH}$ is a positive operator.
 
@@ -3469,10 +3464,10 @@ where $v$ is the characteristic velocity relating time and space units.
 **Mass gap identification**: In natural units where $v = 1$:
 
 $$
-m_{\text{gap}} = \lambda_{\text{gap}}
+m_{\text{gap}} = \hbar_{\text{eff}} \lambda_{\text{gap}} \quad (= \lambda_{\text{gap}} \text{ if } \hbar_{\text{eff}}=1)
 $$
 
-The correlation length is $\xi = 1/m_{\text{gap}} = 1/\lambda_{\text{gap}}$.
+The correlation length is $\xi = 1/m_{\text{gap}}$.
 
 **Final bound**:
 
@@ -3890,7 +3885,7 @@ $$
 By the proof of {prf:ref}`thm-wightman-w2-fg`:
 
 $$
-\Delta = m_{\text{gap}} = \lambda_{\text{gap}} \geq \frac{2}{C_{\text{LSI}}} > 0
+\Delta = m_{\text{gap}} = \hbar_{\text{eff}} \lambda_{\text{gap}} \geq \frac{2\hbar_{\text{eff}}}{C_{\text{LSI}}} > 0
 $$
 
 where $\lambda_{\text{gap}} \geq 2/C_{\text{LSI}}$ is the spectral gap from the N-uniform LSI.

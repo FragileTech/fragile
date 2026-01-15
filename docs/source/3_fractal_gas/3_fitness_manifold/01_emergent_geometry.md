@@ -1,6 +1,27 @@
 (sec-emergent-geometry)=
 # Emergent Geometry from Adaptive Diffusion
 
+**Prerequisites**: {doc}`/3_fractal_gas/1_the_algorithm/02_fractal_gas_latent`, {doc}`/3_fractal_gas/2_fractal_set/01_fractal_set`
+
+---
+
+## TLDR
+
+*Notation: $g(z,S) = H(z,S) + \epsilon_\Sigma I$ = emergent Riemannian metric; $D = g^{-1}$ = diffusion tensor; $\Sigma_{\mathrm{reg}} = D^{1/2}$ = diffusion matrix square root; $H = \nabla^2 V_{\mathrm{fit}}$ = fitness Hessian; $\epsilon_\Sigma$ = spectral floor (regularization); $c_{\min}, c_{\max}$ = ellipticity bounds.*
+
+**Geometry from Optimization**: The Latent Fractal Gas does not assume a geometry on its state space—it *creates* one. The adaptive diffusion tensor, which modulates exploration noise based on local fitness curvature, defines an emergent Riemannian metric where the fitness Hessian plays the role of the metric tensor. Curved fitness landscapes produce curved geometries; flat regions produce flat space.
+
+**The Diffusion-Metric Duality**: The relationship between diffusion and metric is not an analogy but a mathematical identity: $D = g^{-1}$. Large diffusion in a direction means noise spreads easily; large metric means that direction is "stretched" and noise should not smear the fine structure. The Latent Fractal Gas realizes this by setting the metric $g = H + \epsilon_\Sigma I$, where $H$ is the fitness Hessian and $\epsilon_\Sigma$ provides a spectral floor.
+
+**Rigorous Convergence via Uniform Ellipticity**: Despite the anisotropic, state-dependent diffusion, the system converges provably. Uniform ellipticity bounds ($c_{\min} I \preceq D \preceq c_{\max} I$) that are independent of swarm size $N$ guarantee hypocoercive convergence to the quasi-stationary distribution. The geometry helps rather than hinders.
+
+**Two Equivalent Descriptions**: The same physics admits two mathematically equivalent formulations: (1) flat space with anisotropic diffusion, or (2) curved Riemannian manifold with isotropic diffusion. All convergence rates, mixing times, and observables are identical in both views—choose whichever makes your calculation simpler.
+
+---
+
+(sec-emergent-geometry-intro)=
+## Introduction
+
 :::{div} feynman-prose
 Let me tell you what this chapter is really about. We are going to ask one of the deepest questions in physics: *where does geometry come from?*
 
@@ -13,12 +34,15 @@ The key insight is that diffusion and metric are two sides of the same coin. If 
 This is not just mathematically pretty—it is algorithmically powerful. The swarm automatically concentrates exploration where it matters (flat regions with low curvature) and exploits efficiently where the landscape is already well-characterized (peaked regions with high curvature). Geometry and optimization become the same thing.
 :::
 
-## 2. The Adaptive Diffusion Tensor
+---
+
+(sec-adaptive-diffusion-tensor)=
+## The Adaptive Diffusion Tensor
 
 The core mechanism of the Latent Fractal Gas is the modulation of exploration noise based on local fitness information. Rather than diffusing isotropically like a drunk stumbling home, each walker adjusts its random steps to match the local terrain.
 
 :::{div} feynman-prose
-Here is the thing to keep in your mind. Imagine you are exploring a mountain range blindfolded. In flat meadows, you can take big random steps without worrying about falling off cliffs. But near a sharp ridge, you had better take tiny, careful steps, mostly along the ridge rather than perpendicular to it. That is exactly what the adaptive diffusion tensor does: it reads the local curvature from the Hessian and adjusts the noise accordingly.
+Here is the key picture to keep in mind. Imagine you are exploring a mountain range blindfolded. In flat meadows, you can take big random steps without worrying about falling off cliffs. But near a sharp ridge, you had better take tiny, careful steps, mostly along the ridge rather than perpendicular to it. That is exactly what the adaptive diffusion tensor does: it reads the local curvature from the Hessian and adjusts the noise accordingly.
 
 The mathematical machinery looks intimidating—inverse matrix square roots and all that—but the physical content is simple: *explore widely where the landscape is flat, tread carefully where it is curved*.
 :::
@@ -33,7 +57,7 @@ $$
 $$
 
 where:
-- $H(z, S) = \nabla_z^2 V_{\mathrm{fit}}^{(z)}(S)$ is the **local Hessian** of the fitness potential evaluated at position $z$. Specifically, for mean-field fitness $V_{\mathrm{fit}}(S) = \frac{1}{N}\sum_{i,j}\phi(z_i, z_j)$, a walker at position $z$ experiences $H(z, S) = \frac{1}{N}\sum_{j \in S} \nabla_z^2 \phi(z, z_j)$
+- $H(z, S) = \nabla_z^2 V_{\mathrm{fit}}(z; S)$ is the **local Hessian** of the fitness potential evaluated at position $z$. For mean-field fitness $V_{\mathrm{fit}}(S) = \frac{1}{N}\sum_{i,j}\phi(z_i, z_j)$, a walker at position $z$ experiences $H(z, S) = \frac{1}{N}\sum_{j \in S} \nabla_z^2 \phi(z, z_j)$
 - $\epsilon_\Sigma > 0$ is the **regularization parameter** (spectral floor)
 - $I$ is the identity matrix in the latent coordinate basis
 - The matrix square root is the unique symmetric positive definite square root
@@ -45,7 +69,7 @@ D_{\mathrm{reg}}(z, S) = \Sigma_{\mathrm{reg}} \Sigma_{\mathrm{reg}}^T = \left( 
 $$
 :::
 
-### 2.1. Geometric Interpretation: Diffusion Inverse = Metric Tensor
+### Geometric Interpretation: Diffusion Inverse = Metric Tensor
 
 :::{div} feynman-prose
 Now we come to what I think is the most beautiful part of this whole framework. The relationship between diffusion and metric is not an analogy—it is an identity.
@@ -77,10 +101,10 @@ This identification reveals the geometric logic of the algorithm:
 | Flat plateau | Small $\lambda_i$ | Small $g_{ii}$ | Large $D_{ii}$ | **Exploration** |
 | Saddle point | Mixed signs | After regularization: moderate | Moderate | **Balanced** |
 
-### 2.2. The Regularization Scale $\epsilon_\Sigma$
+### The Regularization Scale
 
 :::{div} feynman-prose
-You might wonder: why do we need this $\epsilon_\Sigma$ term? Can not we just use $g = H$ directly?
+You might wonder: why do we need this $\epsilon_\Sigma$ term? Can we not just use $g = H$ directly?
 
 The answer is no, and the reason is deeply physical. The Hessian $H$ can have zero eigenvalues (in perfectly flat regions) or even negative eigenvalues (at saddle points or local maxima). A metric with zero or negative eigenvalues is not a metric at all—distances would become zero or imaginary, and the whole geometric picture would collapse.
 
@@ -95,11 +119,15 @@ The parameter $\epsilon_\Sigma > 0$ plays three essential roles:
 2. **Algorithmic**: Acts as a trust-region radius, preventing infinite step sizes in flat regions
 3. **Physical**: Sets a thermal/quantum cutoff—the minimum geometric stiffness of spacetime
 
-## 3. Regularity and Convergence
+---
+
+(sec-regularity-convergence)=
+## Regularity and Convergence
 
 A major theoretical challenge with anisotropic, state-dependent diffusion is ensuring the stochastic process remains well-behaved. The specific structure of the Latent Fractal Gas guarantees this through two key properties: **uniform ellipticity** and **Lipschitz continuity**.
 
-### 3.1. Uniform Ellipticity
+(sec-uniform-ellipticity)=
+### Uniform Ellipticity
 
 :::{div} feynman-prose
 Here is why uniform ellipticity matters. Imagine the diffusion tensor could become arbitrarily small in some direction. Then noise would not spread at all in that direction, and the stochastic process would effectively become deterministic there. The Markov chain would lose its mixing property, and convergence theorems would fail.
@@ -179,7 +207,8 @@ Uniform ellipticity is the **critical property** enabling convergence:
 3. **N-uniformity**: The bounds depend only on $\epsilon_\Sigma$ and geometry, not on swarm size $N$
 :::
 
-### 3.2. Lipschitz Continuity
+(sec-lipschitz-continuity)=
+### Lipschitz Continuity
 
 :::{div} feynman-prose
 Uniform ellipticity tells us the diffusion tensor is always well-behaved at each point. But for the SDE to have unique solutions, we also need the diffusion to vary *smoothly* as we move through the space. This is Lipschitz continuity: the diffusion tensor cannot change too fast as a function of position.
@@ -253,7 +282,10 @@ Setting $L_\Sigma = K_{\mathrm{sqrt}} \cdot L_H$ completes the proof.
 $\square$
 :::
 
-## 4. The Equivalence Principle: Flat vs Curved
+---
+
+(sec-equivalence-principle)=
+## The Equivalence Principle: Flat vs Curved
 
 :::{div} feynman-prose
 Now we arrive at something that confused me for a long time, until I realized it is actually simple. You can describe the same physics in two completely different ways:
@@ -293,11 +325,15 @@ $$
 All convergence rates, mixing times, and observables are identical.
 :::
 
-## 5. Kinetic Evolution in Emerging Geometry
+---
+
+(sec-kinetic-evolution)=
+## Kinetic Evolution in Emerging Geometry
 
 The walkers evolve according to underdamped Langevin dynamics on the emergent Riemannian manifold. The key subtlety is the choice between Ito and Stratonovich interpretations.
 
-### 5.1. The Stratonovich Formulation
+(sec-stratonovich-formulation)=
+### The Stratonovich Formulation
 
 :::{div} feynman-prose
 Here is something that trips up many people. When you have a stochastic differential equation with state-dependent noise, the answer depends on how you interpret the product of noise and diffusion tensor. The two standard choices are Ito (evaluate the diffusion at the start of the step) and Stratonovich (evaluate it at the midpoint).
@@ -327,7 +363,8 @@ where:
 2. **Geometric invariance:** Results do not depend on coordinate choice
 3. **Physical consistency:** No spurious drift terms that obscure the physics
 
-### 5.2. The Ito Correction Term
+(sec-ito-correction)=
+### The Ito Correction Term
 
 For numerical simulation and Fokker-Planck analysis, we convert to Ito form.
 
@@ -349,10 +386,10 @@ $$
 **Bound on correction term:** Since $\Sigma_{\mathrm{reg}}$ has operator norm bounded by $\|\Sigma_{\mathrm{reg}}\|_{\mathrm{op}} \leq c_{\max}^{1/2}$ and entry-wise gradient bounded by $L_\Sigma$:
 
 $$
-\|b_{\mathrm{corr}}(z)\|_2 \leq \frac{d^{3/2}}{2} \cdot \|\Sigma_{\mathrm{reg}}\|_{\mathrm{op}} \cdot L_\Sigma \leq \frac{d^{3/2}}{2} \sqrt{c_{\max}} \cdot L_\Sigma
+\|b_{\mathrm{corr}}(z)\|_2 \leq \frac{d^{5/2}}{2} \sqrt{c_{\max}} \cdot L_\Sigma
 $$
 
-where the factor $d^{3/2}$ arises from summing $d^2$ bounded terms per component, with $d$ components in total.
+The factor $d^{5/2}$ arises as follows: the sum over $j, l$ contributes $d^2$ terms, each bounded by $c_{\max}^{1/2} L_\Sigma$, giving $|b^k_{\mathrm{corr}}| \leq \frac{d^2}{2} c_{\max}^{1/2} L_\Sigma$ per component; taking the 2-norm over $d$ components contributes an additional $\sqrt{d}$ factor.
 :::
 
 :::{div} feynman-prose
@@ -361,11 +398,15 @@ The Ito correction term has a beautiful physical interpretation. It is a "geomet
 This is not an artifact of our formalism—it is real physics. But for our purposes, the important point is that this correction is *bounded* and does not blow up anywhere, thanks to uniform ellipticity.
 :::
 
-## 6. Riemannian Volume Elements and Integration
+---
+
+(sec-riemannian-volume)=
+## Riemannian Volume Elements and Integration
 
 The emergent metric defines a natural notion of volume that differs from the coordinate (Lebesgue) volume. This is crucial for computing probabilities, entropies, and expectation values.
 
-### 6.1. Volume Element Definition
+(sec-volume-element)=
+### Volume Element Definition
 
 :::{prf:definition} Riemannian Volume Element
 :label: def-riemannian-volume-element-latent
@@ -392,7 +433,8 @@ Why does this happen? Think about it from the diffusion perspective. In regions 
 This is extremely useful for Monte Carlo integration: if you want to compute Riemannian integrals, just average over episodes. The $\sqrt{\det g}$ weighting is automatic.
 :::
 
-### 6.2. Fan Triangulation for Riemannian Areas
+(sec-fan-triangulation)=
+### Fan Triangulation for Riemannian Areas
 
 For computing areas of 2D surfaces (plaquettes) in the emergent geometry:
 
@@ -481,7 +523,8 @@ def compute_riemannian_area_fan(
     return total_area
 ```
 
-### 6.3. Tetrahedral Decomposition for Volumes
+(sec-tetrahedral-decomposition)=
+### Tetrahedral Decomposition for Volumes
 
 :::{prf:definition} Riemannian Volume of Tetrahedron
 :label: def-tetrahedron-volume-latent
@@ -549,7 +592,8 @@ def compute_riemannian_volume_tetrahedron(
     return (1.0 / 6.0) * np.sqrt(max(det_G, 0.0))
 ```
 
-### 6.4. Monte Carlo Integration with QSD Sampling
+(sec-monte-carlo-integration)=
+### Monte Carlo Integration with QSD Sampling
 
 :::{div} feynman-prose
 Here is a beautiful fact that makes practical computation much easier. If you have a function $f(z)$ and you want to compute its integral over the Riemannian manifold:
@@ -585,7 +629,10 @@ $$
 **Convergence rate:** $O(N^{-1/2})$ regardless of dimension.
 :::
 
-## 7. Hypocoercivity in Anisotropic Geometry
+---
+
+(sec-hypocoercivity)=
+## Hypocoercivity in Anisotropic Geometry
 
 :::{div} feynman-prose
 Now we come to the main technical result: proving that the Latent Fractal Gas actually converges, despite all this anisotropic complexity.
@@ -673,7 +720,10 @@ The condition $c_{\min} \underline{\lambda} > C_1 L_\Sigma$ has a clear physical
 For the Latent Fractal Gas with regularization $\epsilon_\Sigma$, this condition is always satisfiable by choosing $\epsilon_\Sigma$ large enough. Larger $\epsilon_\Sigma$ increases $c_{\min}$ (more diffusion everywhere) and decreases $L_\Sigma$ (smoother variation). The price is reduced adaptation to local curvature—you move toward isotropic diffusion. The optimal $\epsilon_\Sigma$ balances convergence speed against geometric adaptation.
 :::
 
-## 8. Conclusions
+---
+
+(sec-emergent-geometry-summary)=
+## Summary
 
 :::{div} feynman-prose
 Let me summarize what we have accomplished in this chapter. We started with a swarm of walkers diffusing according to local fitness curvature, and we showed that this simple algorithmic rule creates a full Riemannian geometry. The metric tensor, the volume element, the geodesic structure—all emerge from the diffusion.
@@ -715,3 +765,13 @@ In the next chapter, we will see how the discrete events of cloning create a tes
 - Fan triangulation computes plaquette areas with $O(h^2)$ error
 - Monte Carlo integration works with $O(N^{-1/2})$ convergence regardless of dimension
 :::
+
+---
+
+## References
+
+### Framework Documents
+
+- {doc}`/3_fractal_gas/1_the_algorithm/02_fractal_gas_latent` — Latent Fractal Gas algorithm definition
+- {doc}`/3_fractal_gas/2_fractal_set/01_fractal_set` — Fractal Set data structure
+- {doc}`02_scutoid_spacetime` — Scutoid tessellation and discrete spacetime geometry

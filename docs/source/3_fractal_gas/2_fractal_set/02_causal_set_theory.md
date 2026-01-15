@@ -6,11 +6,11 @@
 
 ## TLDR
 
-*Notation: $(E, \prec)$ = Fractal Set with causal order; BLMS = Bombelli-Lee-Meyer-Sorkin axioms; $\rho_{\mathrm{adaptive}}$ = QSD sampling density; $\sqrt{\det g}$ = Riemannian volume element.*
+*Notation: $(E, \prec)$ = Fractal Set with causal order; BLMS = Bombelli-Lee-Meyer-Sorkin axioms; $d = \dim \mathcal{X}$, $D = d + 1$ (spacetime dimension for CST formulas); $\rho_{\mathrm{adaptive}}$ = QSD sampling density; $\sqrt{\det g}$ = Riemannian volume element.*
 
 **The Fractal Set is a Valid Causal Set**: The episode set $E$ with CST ordering $\prec$ satisfies all three BLMS axioms (irreflexivity, transitivity, local finiteness), making the Fractal Set a rigorous causal set in the sense of quantum gravity research.
 
-**Adaptive Sprinkling Innovation**: Unlike standard Poisson sprinkling with constant spacetime density, QSD sampling yields an inhomogeneous density $\rho_{\mathrm{adaptive}}(x) \propto \sqrt{\det g(x)} \, e^{-U_{\mathrm{eff}}(x)/T}$, adapting resolution to the learned geometry (higher-weight regions get more episodes).
+**Adaptive Sprinkling Innovation**: Unlike standard Poisson sprinkling with constant spacetime density, QSD sampling yields an inhomogeneous density $\rho_{\mathrm{adaptive}}(x, t) \propto \sqrt{\det g(x, t)} \, e^{-U_{\mathrm{eff}}(x, t)/T}$, adapting resolution to the learned geometry (higher-weight regions get more episodes).
 
 **Causal Set Machinery Applies**: With causal set status established, CST tools (d'Alembertian, dimension estimators, curvature measures) apply in full, using the adaptive-density formulas given here.
 
@@ -90,7 +90,7 @@ This is where the Fractal Set will improve on the standard construction.
 :::{prf:definition} Poisson Sprinkling
 :label: def-poisson-sprinkling-cst
 
-Given a Lorentzian manifold $(M, g_{\mu\nu})$ with volume element $dV = \sqrt{-\det g} \, d^d x$, a **Poisson sprinkling** with constant density $\rho_0$ is ({cite}`BombelliLeeEtAl87,Sorkin05`):
+Given a $D$-dimensional Lorentzian manifold $(M, g_{\mu\nu})$ with volume element $dV = \sqrt{-\det g} \, d^D x$, a **Poisson sprinkling** with constant density $\rho_0$ is ({cite}`BombelliLeeEtAl87,Sorkin05`):
 
 1. **Sample count**: Draw $N \sim \mathrm{Poisson}(\rho_0 V_{\mathrm{total}})$
 
@@ -132,19 +132,50 @@ Think of it this way. If you wanted to draw a picture of a mountain, you would u
 :::{prf:definition} Causal Order on Fractal Set
 :label: def-fractal-causal-order
 
-For episodes $e_i, e_j \in E$ with positions $x_i, x_j \in \mathcal{X}$ and times $t_i, t_j \in \mathbb{R}$, define:
+Let episodes be nodes $e = n_{i,t}$ and let $E_{\mathrm{CST}}$ be the CST edge set
+({prf:ref}`def-fractal-set-cst-edges`). The canonical causal order is the transitive closure:
 
 $$
-e_i \prec_{\mathrm{CST}} e_j \quad \iff \quad t_i < t_j \;\wedge\; d_g(x_i, x_j) < c_{\mathrm{eff}}(t_j - t_i)
+e_i \prec_{\mathrm{CST}} e_j \quad \iff \quad \exists \text{ directed CST path from } e_i \text{ to } e_j .
 $$
 
-where:
-- $d_g(\cdot, \cdot)$ is the geodesic distance on $(\mathcal{X}, g)$ with $g = H + \epsilon_\Sigma I$ the emergent Riemannian metric ({prf:ref}`def-adaptive-diffusion-tensor-latent`)
-- $c_{\mathrm{eff}}$ is the effective speed of causation (maximal information propagation rate)
+To connect with light cones, define the time-indexed metric
+$g_t(x) = H(x, S(t)) + \epsilon_\Sigma I$ ({prf:ref}`def-adaptive-diffusion-tensor-latent`) and,
+for any CST path $\gamma = (e_0, \ldots, e_m)$ with consecutive CST edges at times $t_k$ and
+displacements $\Delta x_k$, define its length
+
+$$
+L_g(\gamma) := \sum_{k=0}^{m-1} \|\Delta x_k\|_{g_{t_k}} .
+$$
+
+The induced (directed) path length on episodes is
+
+$$
+d_g(e_i, e_j) := \inf_{\gamma: e_i \to e_j} L_g(\gamma),
+$$
+with $d_g(e_i, e_j) = \infty$ if no CST path exists. Define the instantaneous propagation bound
+
+$$
+c_{\mathrm{eff}}(t_k) := \max_{(e \to e') \in E_{\mathrm{CST}} \text{ at } t_k}
+\frac{\|\Delta x\|_{g_{t_k}}}{\Delta t} ,
+$$
+
+The maximum exists because each timestep has finitely many CST edges; if a timestep is empty,
+set $c_{\mathrm{eff}}(t)=0$.
+
+Define the geometric (light-cone) order
+
+$$
+e_i \prec_{\mathrm{LC}} e_j \quad \iff \quad t_i < t_j
+\;\wedge\; d_g(e_i, e_j) \leq \int_{t_i}^{t_j} c_{\mathrm{eff}}(t)\, dt .
+$$
+
+For discrete timesteps, interpret the integral as $\sum_k c_{\mathrm{eff}}(t_k)\,\Delta t_k$.
 
 **Physical meaning**: $e_i \prec e_j$ iff information from $e_i$ can causally influence $e_j$.
 
-**Consistency with {prf:ref}`def-fractal-set-cst-axioms`**: This order coincides with the CST edge relation defined in the Fractal Set specification.
+**Equivalence**: Proposition {prf:ref}`prop-fractal-causal-order-equivalence` shows
+$\prec_{\mathrm{CST}} = \prec_{\mathrm{LC}}$, so the geometric form can be used throughout.
 :::
 
 :::{div} feynman-prose
@@ -154,7 +185,24 @@ The second condition is the light cone constraint. If two events are too far apa
 
 The effective speed $c_{\mathrm{eff}}$ is like a "speed limit" for information propagation in this system. It plays the role that the speed of light plays in relativity. Nothing can travel faster, so nothing can causally connect events that are outside each other's "cones."
 
-Here is the physical picture. Draw a diagram with time going up and space going sideways. At each event, draw a cone opening upward—this is the "future light cone." Only events inside this cone can be influenced by the original event. The causal order $e_i \prec e_j$ means exactly that $e_j$ is inside the future cone of $e_i$.
+Here is the physical picture. Draw a diagram with time going up and space going sideways. At each event, draw a cone opening upward—this is the "future light cone." Only events inside (or on) this cone can be influenced by the original event. The causal order $e_i \prec e_j$ means exactly that $e_j$ is inside the future cone of $e_i$.
+:::
+
+:::{prf:proposition} Graph-Light-Cone Equivalence
+:label: prop-fractal-causal-order-equivalence
+
+The graph order $\prec_{\mathrm{CST}}$ equals the geometric order $\prec_{\mathrm{LC}}$.
+
+*Proof.* For any CST edge, the definition of $c_{\mathrm{eff}}(t)$ gives
+$\|\Delta x\|_{g_t} \leq c_{\mathrm{eff}}(t)\,\Delta t$. Hence any CST path $\gamma$ satisfies
+$L_g(\gamma) \leq \int_{t_i}^{t_j} c_{\mathrm{eff}}(t)\, dt$, so
+$e_i \prec_{\mathrm{CST}} e_j \Rightarrow e_i \prec_{\mathrm{LC}} e_j$. Conversely,
+if $e_i \prec_{\mathrm{LC}} e_j$, then $d_g(e_i, e_j) \leq \int_{t_i}^{t_j} c_{\mathrm{eff}}(t)\, dt$.
+Since $d_g = \infty$ when no CST path exists, the inequality implies a CST path exists and
+$e_i \prec_{\mathrm{LC}} e_j \Rightarrow e_i \prec_{\mathrm{CST}} e_j$. Thus the orders coincide.
+By Expansion Adjunction and Lock Closure, $d_g$ converges to the geodesic distance of the
+emergent metric in the continuum lift, so the light-cone criterion matches the manifold
+causal order without assuming a stationary metric or uniform episode rate. $\square$
 :::
 
 ### QSD Sampling = Adaptive Sprinkling
@@ -165,19 +213,34 @@ Here is the physical picture. Draw a diagram with time going up and space going 
 Episodes generated by the Adaptive Gas are distributed according to:
 
 $$
-\rho_{\mathrm{adaptive}}(x) = \frac{1}{Z} \sqrt{\det g(x)} \exp\left(-\frac{U_{\mathrm{eff}}(x)}{T}\right)
+\rho_{\mathrm{adaptive}}(x, t) = \frac{1}{Z(t)} \sqrt{\det g(x, t)} \exp\left(-\frac{U_{\mathrm{eff}}(x, t)}{T}\right)
 $$
 
-where $g(x) = H(x) + \epsilon_\Sigma I$ is the emergent Riemannian metric
-({prf:ref}`def-adaptive-diffusion-tensor-latent`).
+where $g(x, t) = H(x, S(t)) + \epsilon_\Sigma I$ is the emergent Riemannian metric
+({prf:ref}`def-adaptive-diffusion-tensor-latent`) and
+$Z(t) = \int \sqrt{\det g(x, t)} \exp\left(-\frac{U_{\mathrm{eff}}(x, t)}{T}\right) dx$.
 
-This specifies the stationary spatial marginal of the QSD; episodes need not form an independent Poisson process. For a finite run with $N$ episodes, the intensity is $\lambda(x) = N \, \rho_{\mathrm{adaptive}}(x)$.
+This specifies the instantaneous spatial marginal of the QSD; episodes need not form an independent
+Poisson process. For a time window, the spacetime intensity is
+$\lambda(t, x) = r(t)\, \rho_{\mathrm{adaptive}}(x, t)$, where $r(t)$ is the episode rate
+reconstructed from CST edges. For discrete timesteps $\{t_k\}$ with step sizes
+$\Delta t_k = t_{k+1} - t_k$, define
+$$
+E_{\mathrm{CST}}(t_k) := \{(e \to e') \in E_{\mathrm{CST}} : t(e) = t_k\}
+$$
+and
+$$
+r(t_k) := |E_{\mathrm{CST}}(t_k)| / \Delta t_k .
+$$
+Equivalently, since each alive walker contributes exactly one CST edge per step,
+$r(t_k) = |\{e = n_{i,t_k}\}| / \Delta t_k$. For continuous $t$, take $r(t)$ to be the
+piecewise-constant interpolation.
 
 **Comparison with Poisson sprinkling**:
 
 | Standard CST | Fractal Set |
 |:------------|:------------|
-| Density $\rho = \mathrm{const}$ | Density $\rho(x) \propto \sqrt{\det g(x)} \, e^{-U_{\mathrm{eff}}(x)/T}$ |
+| Density $\rho = \mathrm{const}$ | Density $\rho(x, t) \propto \sqrt{\det g(x, t)} \, e^{-U_{\mathrm{eff}}(x, t)/T}$ |
 | Uniform sampling | Adaptive sampling |
 | Ad-hoc choice of $\rho$ | Automatic from QSD |
 :::
@@ -225,9 +288,9 @@ The proof is surprisingly simple, which is always a good sign. The three axioms�
 
 **Irreflexivity** says you cannot be your own cause. Why is this true? Because the causal order requires $t_i < t_j$—strict inequality. An event cannot happen before itself. This is so obvious it almost seems silly to state, but that is the point: the axioms of causality are just formal statements of things that are obviously true about time.
 
-**Transitivity** says that if A causes B and B causes C, then A causes C. This follows from the triangle inequality in geometry. If A is close enough to B to influence it, and B is close enough to C to influence it, then A is close enough to C to influence it—at least if the times work out. And they do: $t_A < t_B < t_C$ means $t_A < t_C$.
+**Transitivity** says that if A causes B and B causes C, then A causes C. This follows from chaining causal steps: a causal path from A to B concatenated with a causal path from B to C is a causal path from A to C.
 
-**Local finiteness** says that only finitely many events can happen between any two events. This is where discreteness enters. Between A and C, the only events that fit are those inside the "causal diamond"—the intersection of the future cone of A and the past cone of C. This is a bounded region of spacetime, and in any finite run (or any bounded time window with finite episode rate), there are only finitely many episodes. Done.
+**Local finiteness** says that only finitely many events can happen between any two events. This is where discreteness enters. Between A and C, only a finite set of discrete timesteps can occur, and each timestep contains finitely many episodes. Done.
 
 You see how the structure of spacetime—time ordering, spatial distances, bounded regions—automatically gives you causality. The math is just making explicit what is already implicit in the physics.
 :::
@@ -245,27 +308,17 @@ The Fractal Set $\mathcal{F} = (E, \prec_{\mathrm{CST}})$ satisfies all BLMS axi
 :::{prf:proof}
 We verify each axiom:
 
-**Axiom CS1 (Irreflexivity):** For any episode $e_i$:
+**Axiom CS1 (Irreflexivity):** If $e_i \prec e_i$, there is a directed CST path from $e_i$ to
+itself. But each CST edge strictly increases time, so no directed path can return to its
+starting node. Hence $e_i \not\prec e_i$. ✓
 
-$$
-e_i \prec e_i \iff t_i < t_i \;\wedge\; d_g(x_i, x_i) < c_{\mathrm{eff}}(t_i - t_i)
-$$
-Both $t_i < t_i$ (false) and $d_g(x_i, x_i) = 0 \not< 0$, so $e_i \not\prec e_i$. ✓
+**Axiom CS2 (Transitivity):** If $e_1 \prec e_2$ and $e_2 \prec e_3$, then there are CST paths
+from $e_1$ to $e_2$ and from $e_2$ to $e_3$. Concatenating them gives a CST path from $e_1$ to
+$e_3$, so $e_1 \prec e_3$. ✓
 
-**Axiom CS2 (Transitivity):** Assume $e_1 \prec e_2$ and $e_2 \prec e_3$. Then:
-- $t_1 < t_2 < t_3$ (time ordering is transitive)
-- $d_g(x_1, x_2) < c_{\mathrm{eff}}(t_2 - t_1)$ and $d_g(x_2, x_3) < c_{\mathrm{eff}}(t_3 - t_2)$
-
-By the triangle inequality:
-
-$$
-d_g(x_1, x_3) \leq d_g(x_1, x_2) + d_g(x_2, x_3) < c_{\mathrm{eff}}(t_2 - t_1) + c_{\mathrm{eff}}(t_3 - t_2) = c_{\mathrm{eff}}(t_3 - t_1)
-$$
-Therefore $e_1 \prec e_3$. ✓
-
-**Axiom CS3 (Local Finiteness):** For any finite run, $E$ is finite, so any subset (including
-$I(e_1, e_2)$) is finite. In an idealized infinite run with finite episode rate, any bounded
-spacetime region contains finitely many episodes almost surely, so $|I(e_1, e_2)| < \infty$. ✓
+**Axiom CS3 (Local Finiteness):** If $e_1 \prec e_2$, then $t_1 < t_2$. Any episode with
+$e_1 \prec e \prec e_2$ must lie at a timestep in $\{t_1+1, \ldots, t_2-1\}$, and each timestep
+contains finitely many episodes (bounded by the walker count). Hence $|I(e_1, e_2)| < \infty$. ✓
 
 $\square$
 :::
@@ -280,14 +333,14 @@ Working in Grothendieck universe $\mathcal{U}$, the Fractal Set $(E, \prec)$ is 
 1. $E \in V_\mathcal{U}$ is a finite set of episodes
 2. $\prec \subseteq E \times E$ is a binary relation
 
-**CS1 (Irreflexivity):** The definition $e_i \prec e_j \Leftrightarrow t_i < t_j \wedge d_g(x_i, x_j) < c_{\mathrm{eff}}(t_j - t_i)$ implies $e_i \not\prec e_i$ because $t_i < t_i$ is false in any ordered field.
+**CS1 (Irreflexivity):** $\prec_{\mathrm{CST}}$ is the transitive closure of CST edges, each of
+which increases time. Thus no directed path can return to its start, so $e_i \not\prec e_i$.
 
-**CS2 (Transitivity):** Given $e_1 \prec e_2$ and $e_2 \prec e_3$:
-- $t_1 < t_2 \wedge t_2 < t_3 \Rightarrow t_1 < t_3$ (transitivity of $<$ in $\mathbb{R}$)
-- Triangle inequality: $d_g(x_1, x_3) \leq d_g(x_1, x_2) + d_g(x_2, x_3)$ (metric axiom)
-- Arithmetic: $c_{\mathrm{eff}}(t_2 - t_1) + c_{\mathrm{eff}}(t_3 - t_2) = c_{\mathrm{eff}}(t_3 - t_1)$ (distributivity)
+**CS2 (Transitivity):** By construction, the transitive closure of any relation is transitive.
 
-**CS3 (Local Finiteness):** For any $e_1, e_2 \in E$, the set $\{e \in E : e_1 \prec e \prec e_2\}$ is a subset of the finite set $E$, hence finite.
+**CS3 (Local Finiteness):** If $e_1 \prec e_2$, then $t_1 < t_2$, and any $e$ with
+$e_1 \prec e \prec e_2$ lies on a timestep between $t_1$ and $t_2$. Each timestep has finitely
+many episodes (bounded by the walker count), so the interval is finite.
 
 All axioms verified using only ZFC set theory and real analysis. $\square$
 :::
@@ -318,14 +371,21 @@ The Fractal Set faithfully discretizes the emergent Riemannian manifold $(\mathc
 with respect to the QSD-weighted measure defined by the Adaptive Gas dynamics
 ({prf:ref}`def-fractal-set-sde`):
 
-**Volume Matching**: The episode count in region $\Omega$ satisfies:
+**Volume Matching**: For a time window $[t_0, t_1]$, condition on $N$ episodes and rate $r(t)$,
+the episode count in a spatial region $\Omega$ satisfies:
 
 $$
-\mathbb{E}\left[\frac{|E \cap \Omega|}{N}\right] = \frac{1}{Z} \int_{\Omega} \sqrt{\det g(x)} \, e^{-U_{\mathrm{eff}}(x)/T} \, dx
+\mathbb{E}\left[\frac{|E \cap ([t_0,t_1]\times \Omega)|}{N}\right]
+= \frac{1}{R} \int_{t_0}^{t_1} \frac{r(t)}{Z(t)}
+\int_{\Omega} \sqrt{\det g(x, t)} \, e^{-U_{\mathrm{eff}}(x, t)/T} \, dx \, dt
 $$
 
-under standard mixing/ergodicity; variance scales as $O(1/N)$. (To recover pure Riemannian
-volume $\int_\Omega \sqrt{\det g} \, dx$, reweight by $e^{U_{\mathrm{eff}}/T}$.)
+with $R = \int_{t_0}^{t_1} r(t)\, dt$ (for discrete steps, $R = \sum_k |E_{\mathrm{CST}}(t_k)|$).
+The expectation is conditional on $N$ (or asymptotic as $N \to \infty$). Variance scales as
+$O(1/N)$ under standard mixing/ergodicity. (To recover
+geometric spacetime volume
+$\int_{t_0}^{t_1}\!\int_\Omega \sqrt{\det g(x,t)} \, dx \, dt$, reweight by
+$e^{U_{\mathrm{eff}}(x,t)/T} \, Z(t) / r(t)$ and multiply by $R$.)
 
 **Distance Estimation**: Timelike distances are estimated by longest-chain length; spatial
 distances follow from reconstructed trajectories and IG-edge geometry
@@ -336,7 +396,7 @@ adaptive-density correction described below; an equivalent implementation is to 
 on local windows of approximately constant density:
 
 $$
-d_{\mathrm{MM}} \xrightarrow{N \to \infty} d = \dim \mathcal{X}
+d_{\mathrm{MM}} \xrightarrow{N \to \infty} D = \dim \mathcal{X} + 1
 $$
 :::
 
@@ -372,32 +432,39 @@ The dimension estimator is my favorite example. It counts nothing but the fracti
 :::
 
 With the Fractal Set established as a valid causal set, standard CST tools apply in their
-adaptive-density form, and all required inputs are reconstructible from the framework.
+adaptive-density form, and all required inputs are reconstructible from the framework. We use
+$d = \dim \mathcal{X}$ for spatial slices and $D = d + 1$ for the spacetime dimension in CST
+formulas.
 
 ### Causal Set Volume Element
 
 :::{prf:definition} Causal Set Volume (Adaptive Measure)
 :label: def-cst-volume
 
-Let $d\mu_{\mathrm{adaptive}}(x) := \rho_{\mathrm{adaptive}}(x)\, dx$ and $N = |E|$. The
-**adaptive causal set volume** of $e \in E$ is:
+Let $r(t)$ be the episode rate and $\rho_{\mathrm{adaptive}}(x, t)$ the instantaneous spatial
+QSD marginal. Define the spacetime measure
+$d\mu_{\mathrm{adaptive}}(t, x) := r(t)\,\rho_{\mathrm{adaptive}}(x, t)\, dt\, dx$ and let
+$E$ denote the episodes in the chosen time window with $N = |E|$. The **adaptive causal set volume** of
+$e \in E$ is:
 
 $$
 V_{\mathrm{adaptive}}(e) := \frac{1}{N} \sum_{e' \in E} \mathbb{1}_{e' \prec e}
 $$
 
-Here $\mu_{\mathrm{adaptive}}$ is the spatial measure on $\mathcal{X}$; spacetime volumes include
-the time measure associated with the episode rate.
+**Continuum limit**: (conditional on $N$, or asymptotically) $V_{\mathrm{adaptive}}(e) \to \mu_{\mathrm{adaptive}}(J^-(e)) / R$ with
 
-**Continuum limit**: $V_{\mathrm{adaptive}}(e) \to \mu_{\mathrm{adaptive}}(J^-(e))
-= \frac{1}{Z} \int_{J^-(e)} \sqrt{\det g(x)} \, e^{-U_{\mathrm{eff}}(x)/T} \, dt \, dx$ as
-$N \to \infty$.
+$$
+\mu_{\mathrm{adaptive}}(J^-(e)) = \int_{J^-(e)} \frac{r(t)}{Z(t)} \sqrt{\det g(x, t)}
+\, e^{-U_{\mathrm{eff}}(x, t)/T} \, dt \, dx, \quad R = \int r(t)\, dt
+\;(\text{discrete } R = \sum_k |E_{\mathrm{CST}}(t_k)|).
+$$
 
 **Geometric volume recovery**: Reweight by the Boltzmann factor to undo the QSD bias:
 
 $$
-V_g(e) := \frac{Z}{N} \sum_{e' \in E,\, e' \prec e} \exp\!\left(\frac{U_{\mathrm{eff}}(x_{e'})}{T}\right),
-\quad \mathbb{E}[V_g(e)] = \int_{J^-(e)} \sqrt{\det g(x)} \, dt \, dx .
+V_g(e) := \frac{1}{N} \sum_{e' \in E,\, e' \prec e}
+\frac{Z(t_{e'})}{r(t_{e'})} \exp\!\left(\frac{U_{\mathrm{eff}}(x_{e'}, t_{e'})}{T}\right),
+\quad \mathbb{E}[V_g(e)] = \frac{1}{R} \int_{J^-(e)} \sqrt{\det g(x, t)} \, dt \, dx .
 $$
 :::
 
@@ -412,32 +479,32 @@ On a causal set, you can define "neighborhood" using the causal structure. The p
 
 The Benincasa-Dowker operator does exactly this. It sums the function values at all points in the causal past, weighted by dimension-dependent coefficients that depend on how many intermediate points exist. The formula looks complicated, but it has a deep structural reason: these are precisely the weights that make the discrete operator converge to the continuum d'Alembertian as you take more and more points {cite}`BenincasaDowker2010`.
 
-The beautiful part is that this works in any dimension. The coefficients $C_k^{(d)}$ change with dimension, but the structure is the same. Count the intervals, weight them properly, and you get waves.
+The beautiful part is that this works in any dimension. The coefficients $C_k^{(D)}$ change with dimension, but the structure is the same. Count the intervals, weight them properly, and you get waves.
 :::
 
 :::{prf:definition} Discrete d'Alembertian on Fractal Set (Benincasa-Dowker)
 :label: def-cst-dalembertian
 
-The **Benincasa-Dowker d'Alembertian** acting on $f: E \to \mathbb{R}$ in $d$ dimensions is:
+The **Benincasa-Dowker d'Alembertian** acting on $f: E \to \mathbb{R}$ in $D$ dimensions is:
 
 $$
-(\Box_{\mathrm{BD}} f)(e) := \frac{1}{\ell_d^2} \left( -\alpha_d f(e) + \sum_{k=0}^{n_d} C_k^{(d)} \sum_{\substack{e' \prec e \\ |I(e', e)| = k}} f(e') \right)
+(\Box_{\mathrm{BD}} f)(e) := \frac{1}{\ell_D^2} \left( -\alpha_D f(e) + \sum_{k=0}^{n_D} C_k^{(D)} \sum_{\substack{e' \prec e \\ |I(e', e)| = k}} f(e') \right)
 $$
 
 where:
-- $\ell_d = \rho^{-1/d}$ is the discreteness scale for sprinkling intensity $\rho$ (use local $\rho(x)$ for inhomogeneous sprinkling)
-- $\alpha_d$, $C_k^{(d)}$ are dimension-dependent coefficients (including the standard normalization; see {cite}`BenincasaDowker2010` for explicit values)
+- $\ell_D = \rho^{-1/D}$ is the discreteness scale for sprinkling intensity $\rho$ (use local spacetime intensity $\lambda(t, x)$ for inhomogeneous sprinkling)
+- $\alpha_D$, $C_k^{(D)}$ are dimension-dependent coefficients (including the standard normalization; see {cite}`BenincasaDowker2010` for explicit values)
 - $|I(e', e)|$ is the number of elements in the causal interval between $e'$ and $e$
 
 **Convergence** ({cite}`BenincasaDowker2010`): For uniform Poisson sprinkling and smooth functions:
 
 $$
-\lim_{N \to \infty} \mathbb{E}[(\Box_{\mathrm{BD}} f)(e_i)] = (\Box_g f)(x_i) + O(\ell_d^2)
+\lim_{N \to \infty} \mathbb{E}[(\Box_{\mathrm{BD}} f)(e_i)] = (\Box_g f)(x_i) + O(\ell_D^2)
 $$
 where $\Box_g = g^{\mu\nu}\nabla_\mu\nabla_\nu$ is the continuum d'Alembertian for the
 induced Lorentzian metric (with spatial part $g$ and time coordinate $t$).
 
-For adaptive density, use the local-density corrected operator (the required $\rho(x)$ is
+For adaptive density, use the local-density corrected operator (the required $\lambda(t, x)$ is
 reconstructible from the episode data).
 :::
 
@@ -450,7 +517,7 @@ The idea is simple but profound. Take any two points in a causal set and ask: ar
 
 Why? Think about light cones. In two dimensions (1 time + 1 space), the light cone is just two lines. Half of spacetime is causally related to you. In four dimensions (1 time + 3 space), the light cone is a narrow cone in a vast 4-dimensional space. A much smaller fraction of points are causally related.
 
-Myrheim and Meyer worked out the exact relationship {cite}`Myrheim1978,Meyer1988`. For a causal set uniformly sprinkled in $d$-dimensional Minkowski space, the ordering fraction converges to a specific function of $d$. Invert this function, and you can read off the dimension from the ordering fraction.
+Myrheim and Meyer worked out the exact relationship {cite}`Myrheim1978,Meyer1988`. For a causal set uniformly sprinkled in $D$-dimensional Minkowski space, the ordering fraction converges to a specific function of $D$. Invert this function, and you can read off the dimension from the ordering fraction.
 
 For curvature, the approach is similar but more subtle. The Benincasa-Dowker action counts intervals with specific weights. In flat space, these counts have certain expected values. Curvature perturbs these expectations in a predictable way. By measuring the deviation from flatness, you can extract the Ricci scalar—the simplest measure of how curved spacetime is.
 
@@ -460,19 +527,19 @@ This is the ultimate vindication of the causal set program: geometry is not prim
 :::{prf:definition} Myrheim-Meyer Dimension Estimator ({cite}`Myrheim1978,Meyer1988`)
 :label: def-myrheim-meyer
 
-The dimension of the emergent manifold is estimated from the ordering fraction:
+The spacetime dimension is estimated from the ordering fraction:
 
 $$
 r := \frac{C_2}{\binom{N}{2}} = \frac{|\{(e_i, e_j) : e_i \prec e_j\}|}{N(N-1)/2}
 $$
 
-For a causal set faithfully embedded in $d$-dimensional Minkowski space:
+For a causal set faithfully embedded in $D$-dimensional Minkowski space:
 
 $$
-r \xrightarrow{N \to \infty} \frac{\Gamma(d+1) \Gamma(d/2)}{2 \Gamma(3d/2)}
+r \xrightarrow{N \to \infty} \frac{\Gamma(D+1) \Gamma(D/2)}{2 \Gamma(3D/2)}
 $$
 
-The **Myrheim-Meyer estimator** inverts this relation to obtain $d_{\mathrm{MM}}$ from the observed ordering fraction $r$. For adaptive density, compute $r$ in local windows or apply density reweighting using the reconstructed $\rho_{\mathrm{adaptive}}$.
+The **Myrheim-Meyer estimator** inverts this relation to obtain $d_{\mathrm{MM}}$ from the observed ordering fraction $r$. For the Fractal Set, $d_{\mathrm{MM}}$ estimates $D$, so the spatial dimension is $d = D - 1$. For adaptive density, compute $r$ in local windows or apply density reweighting using the reconstructed $\rho_{\mathrm{adaptive}}$.
 :::
 
 :::{prf:proposition} Ricci Scalar from Causal Set
@@ -483,16 +550,16 @@ The Ricci scalar curvature is estimated via the **Benincasa-Dowker action** ({ci
 For a small causal diamond $\mathcal{A}(p, q)$ with $N$ elements:
 
 $$
-S_{\mathrm{BD}}[\mathcal{A}] = \frac{\hbar}{\ell_d^{d-2}} \left( \alpha_d N - \sum_{k=0}^{n_d} \beta_k^{(d)} N_k \right)
+S_{\mathrm{BD}}[\mathcal{A}] = \frac{\hbar}{\ell_D^{D-2}} \left( \alpha_D N - \sum_{k=0}^{n_D} \beta_k^{(D)} N_k \right)
 $$
-where $N_k$ counts $k$-element intervals and $\ell_d$ is the discreteness scale.
+where $N_k$ counts $k$-element intervals and $\ell_D$ is the discreteness scale.
 
 **Curvature extraction**: In the continuum limit:
 
 $$
-\lim_{\ell \to 0} \frac{S_{\mathrm{BD}}[\mathcal{A}]}{V(\mathcal{A})} = \kappa_d \, R + O(\ell^2)
+\lim_{\ell \to 0} \frac{S_{\mathrm{BD}}[\mathcal{A}]}{V(\mathcal{A})} = \kappa_D \, R + O(\ell^2)
 $$
-where $R$ is the Ricci scalar, $V(\mathcal{A})$ is the spacetime volume, and the prefactor
+where $R$ is the Ricci scalar of the induced Lorentzian metric, $V(\mathcal{A})$ is the spacetime volume, and the prefactor
 is a known dimension-dependent constant (see {cite}`BenincasaDowker2010`).
 :::
 
@@ -546,11 +613,11 @@ The current observational bounds are beginning to nibble at the interesting para
 
 The Fractal Set causal structure leads to observable consequences:
 
-1. **Discreteness scale**: Average proper distance between episodes:
+1. **Discreteness scale**: Average proper distance between episodes (with $V_{\mathrm{total}}$ the spacetime volume of the window):
 
 $$
-\ell_{\mathrm{eff}} \approx \left(\frac{V_{\mathrm{total}}}{N}\right)^{1/d}, \quad
-\ell(x) \sim \lambda(x)^{-1/d}, \;\; \lambda(x) = N \rho_{\mathrm{adaptive}}(x)
+\ell_{\mathrm{eff}} \approx \left(\frac{V_{\mathrm{total}}}{N}\right)^{1/D}, \quad
+\ell(t, x) \sim \lambda(t, x)^{-1/D}, \;\; \lambda(t, x) = r(t)\, \rho_{\mathrm{adaptive}}(x, t)
 $$
 
 2. **Modified dispersion relations**: High-energy particles experience corrections:
@@ -596,7 +663,7 @@ The key difference is that the Fractal Set is classical and stochastic, not quan
 
 1. ✅ **Fractal Set is a causal set**: Satisfies all BLMS axioms (Theorem {prf:ref}`thm-fractal-is-causal-set`)
 
-2. ✅ **Adaptive sprinkling**: QSD sampling with $\rho \propto \sqrt{\det g} \, e^{-U_{\mathrm{eff}}/T}$ provides geometry-aware resolution
+2. ✅ **Adaptive sprinkling**: QSD sampling with $\rho(x, t) \propto \sqrt{\det g(x, t)} \, e^{-U_{\mathrm{eff}}(x, t)/T}$ provides geometry-aware resolution
 
 3. ✅ **CST machinery applies**: d'Alembertian, volume elements, and dimension/curvature estimators apply in their adaptive-density form
 

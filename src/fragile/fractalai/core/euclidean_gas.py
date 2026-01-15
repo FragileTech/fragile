@@ -104,6 +104,13 @@ class EuclideanGas(PanelModel):
             "Can be an OptimBenchmark instance (which provides bounds) or any callable."
         ),
     )
+    reward_1form = param.Parameter(
+        default=None,
+        doc=(
+            "Optional reward 1-form field. Must be callable: R(x: [N, d]) -> [N, d]. "
+            "If provided, rewards are computed as <R(x), v> per walker."
+        ),
+    )
     kinetic_op = param.Parameter(default=None, doc="Langevin dynamics parameters")
     cloning = param.Parameter(default=None, doc="Cloning operator")
     fitness_op = param.Parameter(
@@ -215,6 +222,11 @@ class EuclideanGas(PanelModel):
             msg = f"potential must be callable, got {type(self.potential)}"
             raise TypeError(msg)
 
+        # Validate that reward 1-form is callable
+        if self.reward_1form is not None and not callable(self.reward_1form):
+            msg = f"reward_1form must be callable, got {type(self.reward_1form)}"
+            raise TypeError(msg)
+
     @property
     def torch_dtype(self) -> torch.dtype:
         """Convert dtype string to torch dtype."""
@@ -255,6 +267,23 @@ class EuclideanGas(PanelModel):
         """
         return None
 
+    def _compute_rewards(self, state: SwarmState) -> Tensor:
+        """Compute per-walker rewards from reward 1-form or potential."""
+        if self.reward_1form is not None:
+            reward_field = self.reward_1form(state.x)
+            if reward_field.shape != state.x.shape:
+                msg = (
+                    "reward_1form must return shape [N, d] matching positions; "
+                    f"got {tuple(reward_field.shape)} vs {tuple(state.x.shape)}"
+                )
+                raise ValueError(msg)
+            return (reward_field * state.v).sum(dim=-1)
+
+        if self.potential is None:
+            msg = "potential required when reward_1form is None"
+            raise ValueError(msg)
+        return -self.potential(state.x)
+
     def step(
         self, state: SwarmState, return_info: bool = False
     ) -> tuple[SwarmState, SwarmState] | tuple[SwarmState, SwarmState, dict] | None:
@@ -262,7 +291,7 @@ class EuclideanGas(PanelModel):
         Perform one full step: compute fitness, clone (optional), then kinetic (optional).
 
         Uses cloning.py functions directly to compute:
-        1. Rewards from potential
+        1. Rewards from reward 1-form or potential
         2. Fitness using compute_fitness (always computed, even if cloning disabled)
         3. Cloning using clone_walkers (if enable_cloning=True)
         4. Kinetic update (if enable_kinetic=True)
@@ -290,8 +319,8 @@ class EuclideanGas(PanelModel):
         freeze_mask = self._freeze_mask(state)
         reference_state = state.clone() if freeze_mask is not None else None
 
-        # Step 1: Compute rewards from potential
-        rewards = -self.potential(state.x)  # [N]
+        # Step 1: Compute rewards from reward 1-form or potential
+        rewards = self._compute_rewards(state)  # [N]
 
         # Step 2: Determine alive status from bounds
         if self.pbc:
