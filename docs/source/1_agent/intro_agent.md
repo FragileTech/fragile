@@ -124,6 +124,7 @@ The economic layer introduces a novel consensus mechanism where the cryptographi
 - *Want blockchain/economics?* → {ref}`Part IX <sec-proof-of-useful-work-cognitive-metabolism-as-consensus>`
 - *Want objections answered?* → {ref}`Appendix D <sec-appendix-d-frequently-asked-questions>`
 - *Want proofs?* → {ref}`Appendix A <sec-appendix-a-full-derivations>`
+- *Want loss functions?* → {ref}`Appendix F <sec-appendix-f-loss-terms-reference>`
 
 **Researcher Bridge Index (Quick Links):**
 | Researcher Bridge | Location |
@@ -280,6 +281,7 @@ Table of contents:
 - {doc}`10_appendices/03_wfr_tensor`
 - {doc}`10_appendices/04_faq`
 - {doc}`10_appendices/05_proofs`
+- {doc}`10_appendices/06_losses`
 
 (sec-positioning-connections-to-prior-work-differences-and-advantages)=
 ## Positioning: Connections to Prior Work, Differences, and Advantages
@@ -455,7 +457,7 @@ The document is organized into nine parts plus appendices:
 | **Cognition**      | VII      | Supervised topology, meta-stability, memory, retrieval, ontology, metabolism, causality                                        |
 | **Gauge Theory**   | VIII     | Multi-agent field theory, Standard Model of Cognition, Parameter Space Sieve                                                   |
 | **Applications**   | IX       | Economic applications (Partially Observable Markov Wealth)                                                                     |
-| **Appendices**     | A–E      | Derivations, units, WFR tensor, FAQ (40 objections), proofs                                                                    |
+| **Appendices**     | A–F      | Derivations, units, WFR tensor, FAQ (40 objections), proofs, loss terms reference                                              |
 
 **Detailed Section Guide:**
 
@@ -520,6 +522,7 @@ The document is organized into nine parts plus appendices:
 - **{ref}`Appendix C <sec-appendix-c-wfr-stress-energy-tensor>`**: WFR stress-energy tensor derivation
 - **{ref}`Appendix D <sec-appendix-d-frequently-asked-questions>`**: FAQ—40 rigorous objections and responses
 - **{ref}`Appendix E <sec-appendix-e-rigorous-proof-sketches-for-ontological-and-metabolic-laws>`**: Rigorous proof sketches for ontological and metabolic laws
+- **{ref}`Appendix F <sec-appendix-f-loss-terms-reference>`**: Loss Terms Reference—37 loss functions with curved formulations and flat limits
 
 (sec-standard-rl-as-the-degenerate-limit)=
 ### Standard RL as the Degenerate Limit
