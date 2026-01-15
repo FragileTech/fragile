@@ -35,7 +35,7 @@ The scope of this document is strictly focused on the cloning operator's Wassers
 
 Wasserstein-2 drift control for the cloning operator is not merely a technical result—it is the **rigorous justification** for treating the Fragile Gas as a continuum physics model and for deriving its mean-field limit.
 
-**Connection to Mean-Field Theory**: The propagation of chaos framework (documented in [08_propagation_chaos](08_propagation_chaos)) establishes that an N-particle system converges to a mean-field limit if its dynamics contract in Wasserstein distance with **N-uniform constants**. Without this property, the limiting behavior could degenerate as $N \to \infty$, invalidating the mean-field PDE. Our result shows that the cloning operator satisfies this requirement in the structural-dominance regime, ensuring that the Fragile Gas has a well-defined continuum limit described by the McKean-Vlasov equation (see [16_convergence_mean_field](../2_geometric_gas/16_convergence_mean_field)).
+**Connection to Mean-Field Theory**: The propagation of chaos framework (documented in [08_propagation_chaos](08_propagation_chaos)) establishes that an N-particle system converges to a mean-field limit if its dynamics contract in Wasserstein distance with **N-uniform constants**. Without this property, the limiting behavior could degenerate as $N \to \infty$, invalidating the mean-field PDE. Our result shows that the cloning operator supplies an N-uniform structural drift; full $W_2$ contraction follows once the kinetic operator controls the location component.
 
 **Role in Convergence Theory**: The Fragile Gas alternates between two operators: the cloning operator $\Psi_{\text{clone}}$ (which we analyze here) and the kinetic operator $\Psi_{\text{kin}}$ (analyzed in [02_euclidean_gas](02_euclidean_gas) and [05_kinetic_contraction](05_kinetic_contraction)). Together, they form a **hypocoercive** dynamics where each operator contracts different error components:
 - **Cloning operator**: Contracts structural/positional variance (proven here via the $W_2$ drift bound)
@@ -120,7 +120,7 @@ graph TD
 
 **Section 4 (Cluster-Level Outlier Alignment)**: This is the **geometric core** of the proof. We prove that target set barycenters $\mu_x(I_k)$ exhibit **spatial alignment** with the inter-swarm separation direction $\bar{x}_1 - \bar{x}_2$ ({prf:ref}`lem-cluster-alignment`). The proof is **static**, using only framework axioms (Confining Potential with fitness valleys, Stability Condition from Theorem 7.5.2.4 in [03_cloning](03_cloning), and Phase-Space Packing from Lemma 6.4.1) rather than dynamical arguments. This lemma replaces the brittle single-walker geometric alignment that caused the original approach to fail.
 
-**Section 5 (Expected Distance Change)**: We analyze how cloning affects population-level cross-distances. When walkers in $I_1$ clone from walkers in $J_1$, the expected distance to $I_2$ decreases proportionally to the cluster separation ({prf:ref}`lem-expected-distance-change`). Combined with the proven lower bound on cloning pressure $p_u(\varepsilon) > 0$ from Lemma 8.3.2 ([03_cloning](03_cloning), Section 8.3), this yields expected contraction of cross-distances.
+**Section 5 (Expected Distance Change)**: We analyze how cloning affects population-level cross-distances. When walkers in $I_1$ clone from walkers in $J_1$, the expected distance to $J_2$ decreases proportionally to the cluster separation ({prf:ref}`lem-expected-distance-change`). Combined with the proven lower bound on cloning pressure $p_u(\varepsilon) > 0$ from Lemma 8.3.2 ([03_cloning](03_cloning), Section 8.3), this yields expected contraction of cross-distances.
 
 **Section 6 (Main Drift Theorem)**: We combine the previous results to prove the main theorem ({prf:ref}`thm-main-contraction-full`). The Wasserstein-2 distance is bounded by population cross-distances ({prf:ref}`lem-wasserstein-population-bound`). The expected change in these cross-distances, driven by the Outlier Alignment and Cloning Pressure lemmas, yields a structural-error-driven drift inequality. All constants are traced back to their sources in [03_cloning](03_cloning).
 
@@ -212,7 +212,7 @@ The cluster-based proof exploits this **correctly-targeted** population.
 **Relationship to Continuum Limit**: The fitness function $F(x)$ and its valley structure are properties of the continuum state space $\mathcal{X}$, while the clusters $I_k, J_k$ are finite-sample objects constructed from the empirical distribution. The proofs in this document use properties of the limiting landscape (e.g., Confining Potential axiom, fitness valleys) to reason about finite-sample cluster behavior.
 
 **Approximation Errors**: For finite $N$, there are approximation errors $O(1/\sqrt{N})$ when estimating continuum properties (like the potential $F(x)$) from empirical measures. These errors are absorbed into:
-1. The noise term $C_W = O(d\delta^2)$ in the contraction inequality
+1. The noise term $C_W = O(d\delta^2)$ in the drift inequality
 2. The clustering threshold $\varepsilon$, which depends on $N$ implicitly through the error tolerance
 
 **N-Uniformity Justification**: The key result is that these finite-sample approximation errors do not affect the *sign* or *N-independence* of the drift coefficient $\kappa_{W,\text{struct}} > 0$. This is because:
@@ -488,7 +488,7 @@ This lemma establishes that for separated swarms, the structural error and the W
 - $V_{\text{struct}}$: Structural component of the inter-swarm error (centered measures)
 - $W_2^2$: Optimal transport cost between full empirical measures
 
-For the contraction analysis, this allows us to translate variance reduction (from the Keystone Lemma machinery) into Wasserstein contraction (the main theorem's target).
+For the drift analysis, this allows us to translate variance reduction (from the Keystone Lemma machinery) into a Wasserstein drift bound (the main theorem's target).
 :::
 
 :::{prf:remark} Structural-Dominance Regime (Optional)
@@ -870,7 +870,7 @@ $$
 Averaging and normalizing gives the bound. □
 :::
 
-### 6.2. Main Contraction Theorem
+### 6.2. Main Drift Theorem
 
 :::{prf:theorem} Wasserstein-2 Drift Bound (Cluster-Based)
 :label: thm-main-contraction-full
@@ -1026,7 +1026,9 @@ From framework parameters (typical values):
 3. **Separation constant**: $c_{\text{sep}}(\varepsilon) \sim 5 \times 10^{-3}$
 4. **Geometric constant**: $c_{\text{geom}} \sim 1$
 
-**Contraction constant**:
+With $c_{\text{sep}}(\varepsilon) = \frac{f_{UH}(\varepsilon) c_{\text{pack}}(\varepsilon)}{2}$, the estimate above corresponds to $f_{UH} \sim 0.1$ and $c_{\text{pack}} \sim 0.1$.
+
+**Structural drift coefficient**:
 
 $$
 \kappa_{W,\text{struct}} \approx 0.01 \cdot 1 \cdot 5 \times 10^{-3} = 5 \times 10^{-5}
@@ -1050,7 +1052,7 @@ Example (if $c_{\text{dom}} = 1$):
 - **Half-life**: $\approx 14{,}000$ iterations
 - **Asymptotic error**: $\approx 80{,}000\, d\delta^2$
 
-**Interpretation**: Contraction is slow but guaranteed. For practical convergence, the kinetic operator (Langevin dynamics) provides faster contraction of the location component, while cloning contracts the structural component.
+**Interpretation**: Structural drift is slow but guaranteed. For practical convergence, the kinetic operator (Langevin dynamics) provides faster contraction of the location component, while cloning contracts the structural component.
 
 ### 8.3. Comparison with KL-Convergence
 
@@ -1072,13 +1074,13 @@ This document establishes Wasserstein-2 drift control for the cloning operator u
 1. ✅ **Avoids q_min problem**: No dependence on minimum matching probability
 2. ✅ **Leverages proven bounds**: All constants are sourced from [03_cloning](03_cloning) Chapters 6-8
 3. ✅ **Static geometric proof**: Outlier Alignment from axioms, no dynamics
-4. ✅ **N-uniform throughout**: All constants independent of N (under the structural-dominance regime)
+4. ✅ **N-uniform throughout**: All constants independent of N
 5. ✅ **Framework-consistent**: Uses exact cluster definitions from Keystone Lemma
 
 ### 8.2. Open Questions
 
 1. **Optimal constants**: Can $\kappa_{W,\text{struct}}$ be improved with better geometric bounds?
-2. **Small separation regime**: Does contraction hold for $L < D_{\min}$?
+2. **Small separation regime**: Does an analogous drift bound hold for $L < D_{\min}$?
 3. **Adaptive extensions**: How does viscous coupling affect the contraction rate?
 4. **Numerical validation**: Explicit swarm simulations to verify $\kappa_{W,\text{struct}}$ is N-independent
 

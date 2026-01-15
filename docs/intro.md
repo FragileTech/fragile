@@ -12,6 +12,20 @@ by *Guillem Duran-Ballester*
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18237451.svg)](https://doi.org/10.5281/zenodo.18237451)
 
+:::{admonition} A Modular Framework for Bounded Intelligence
+:class: important
+
+This project is divided into three **self-contained volumes**. While designed to work in synergy, they are **logically independent**:
+
+| Volume | Role in Stack | What It Provides |
+|:-------|:--------------|:-----------------|
+| **I: Fragile Mechanics** | The Agent | A gradient-friendly generalization of RL that runs on standard GPUs |
+| **II: Hypostructure** | The Proofs | Certificate machinery for formal verification (optional—practitioners can skip) |
+| **III: Fractal Gas** | The Planner | A gradient-free exploration engine for "dreaming" and data generation |
+
+**Independence Guarantee:** The validity of the geometric theory in Vol I does not depend on the specific planning algorithms in Vol III, and vice versa. You can adopt Vol I without Vol III, use Vol III with a different agent architecture, or verify either using Vol II's machinery.
+:::
+
 :::{admonition} Note for LLMs (Claude, GPT, Gemini, etc.)
 :class: warning dropdown
 
@@ -54,14 +68,14 @@ Agents with finite channel capacity induce geometric structure on their state sp
 
 **The Three Volumes at a Glance:**
 
-| Volume | Title | Core Question | Key Innovation |
-|:-------|:------|:--------------|:---------------|
-| **I** | Fragile Mechanics | How to build stable AI agents? | 60-node Sieve, WFR geometry, Standard Model of Cognition |
-| **II** | Hypostructure Formalism | How to prove systems never fail? | 17-node certificate system, Factory Metatheorems, P/NP bridge |
-| **III** | Fractal Gas | How to explore and sample efficiently? | Parallel planning, accelerated sampling, emergent SU($d$) gauge symmetry |
+| Volume | Role in Stack | Core Question | Key Innovation |
+|:-------|:--------------|:--------------|:---------------|
+| **I** | **The Agent** | How to build stable AI agents? | GPU-native RL generalization with 60-node Sieve, WFR geometry |
+| **II** | **The Proofs** (optional) | How to verify systems formally? | 17-node certificate system, Factory Metatheorems |
+| **III** | **The Planner** | How to explore and sample efficiently? | Gradient-free dreaming, accelerated sampling |
 
-**The Unified Vision:**
-The three volumes form a coherent whole: Vol I specifies *what* an agent should do (engineering), Vol II proves *why* it works (mathematics), Vol III provides the *computational engine* that runs inside the agent for planning and sampling (algorithms). Gauge symmetry is the unifying thread—it emerges from bounded rationality (Vol I), structures the proof system (Vol II), and governs particle interactions (Vol III).
+**Modular by Design:**
+The three volumes are **logically independent but synergistic**. Vol I specifies *what* an agent should do (gradient-friendly architecture). Vol II proves *why* it works (optional for practitioners). Vol III provides the *exploration engine* (swappable with any planner). Adopt one, two, or all three based on your needs—this is a suite of tools, not a monolithic theory.
 
 **Quick Navigation by Interest:**
 
@@ -170,6 +184,11 @@ This is the **engineering specification**: how to build an AI agent that fails l
 - Parameter Space Sieve (constants from constraint satisfaction)
 - Proof of Useful Work (gradient mining replaces hash mining)
 
+**What makes Vol I a valid standalone:**
+- **GPU-native**: All structures trainable via backpropagation on standard hardware (NVIDIA/TPU)
+- **Strict generalization**: PPO, DQN, SAC are recoverable as degenerate limits (see {doc}`37 reductions <source/1_agent/intro_agent>`)
+- **Independent validity**: Even if Vol III's swarm methods prove inefficient, Vol I remains a superior formulation of RL agents with explicit safety contracts
+
 {doc}`Read Volume I <source/1_agent/intro_agent>`
 
 (sec-vol2-overview)=
@@ -245,31 +264,54 @@ The viscous force between walkers generates an emergent SU($d$) gauge symmetry:
 - Revival guarantee (dead walkers always resurrect)
 - SU($d$) gauge symmetry from viscous coupling
 
+**What makes Vol III a valid standalone:**
+- **The Dreamer**: Navigates latent space to generate trajectories (planning) or sample environments (data collection)
+- **Data Generator**: Produces high-quality, high-entropy experiences for any learning algorithm
+- **Gradient-free**: Pure search/selection mechanism—distinct from, and complementary to, gradient-based learning
+- **Independent validity**: Works with any agent architecture, not just the Fragile Agent
+
 {doc}`Read Volume III <source/3_fractal_gas/intro_fractal_gas>`
 
 (sec-volume-connections)=
 ## How the Volumes Connect
 
-The three volumes are not independent monographs but chapters of a single argument. Each volume answers a different question, and the answers interlock.
+The three volumes are **logically independent** but **operationally synergistic**. Each answers a different question, and combining them produces benefits beyond any single volume—but you can adopt them separately.
 
-**The Dependency Chain:**
+**The Decoupled Loop:**
 
 ```
-                   Vol III: Fractal Gas
-                   (Computational Engine)
-                            ↓
-                 runs inside / powers
-                            ↓
-                  Vol I: Fragile Agent
-              (Engineering Specification)
-                            ↓
-                is certified by / verified via
-                            ↓
-                  Vol II: Hypostructure
-               (Mathematical Foundation)
+┌─────────────────────────────────────────────────────────────┐
+│                                                             │
+│   ┌──────────────────┐                                      │
+│   │  Vol III: Planner │ ──── Generates trajectories ────┐   │
+│   │  (Fractal Gas)    │      "dreams" / explores        │   │
+│   └──────────────────┘                                  │   │
+│            ▲                                            ▼   │
+│            │                                   ┌────────────┐│
+│            │                                   │Data Buffer ││
+│     Policy guides                              └────────────┘│
+│       exploration                                       │    │
+│            │                                            ▼    │
+│   ┌──────────────────┐                                       │
+│   │   Vol I: Agent    │ ◄─── Consumes data ─────────────┘   │
+│   │ (Fragile Mechanics)│      Updates via GPU backprop      │
+│   └──────────────────┘                                      │
+│                                                             │
+│   ┌──────────────────┐                                      │
+│   │  Vol II: Proofs   │ ◄─── Verifies either volume         │
+│   │  (Hypostructure)  │      (optional for practitioners)   │
+│   └──────────────────┘                                      │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
 ```
 
-**Detailed Connections:**
+**Swappability (the key insight):**
+- Replace Vol III with random exploration → Vol I still learns
+- Replace Vol I with standard ResNet/Transformer → Vol III still explores
+- Skip Vol II entirely → Both volumes still work (you just lose formal guarantees)
+- The interface is a **data buffer**, not a tight coupling
+
+**Detailed Connections (when using together):**
 
 | From | To | Connection |
 |:-----|:---|:-----------|
@@ -397,6 +439,16 @@ Standard RL is a degenerate limit of the Fragile Agent. See {doc}`Vol I Introduc
 
 {doc}`Vol I Part IX: Economics <source/1_agent/09_economics/01_pomw>` introduces a consensus mechanism where hash mining is replaced by gradient computation on a shared neural network. Energy expenditure produces intelligence instead of heat. Security comes from geometric coherence, not wasted computation.
 
+**Q7: Why three separate volumes instead of one unified theory?**
+
+We separated the components to ensure **robustness and adoptability**:
+
+- If **Fractal Gas (Vol III)** proves inefficient for certain tasks, the **Geometric Theory of Agency (Vol I)** remains valid as a mathematical generalization of RL with explicit safety contracts.
+- If the **Theory (Vol I)** requires revision, the **Planner (Vol III)** remains a highly effective, gradient-free search tool for hard-exploration problems.
+- **Vol II** provides verification machinery that works for *any* dynamical system—it's a general mathematical framework, not specific to AI.
+
+**This is not a house of cards; it is a suite of tools.** Researchers can adopt individual volumes based on their needs, test them independently, and combine them when beneficial.
+
 (sec-quick-links)=
 ## Quick Links
 
@@ -422,6 +474,7 @@ Standard RL is a degenerate limit of the Fragile Agent. See {doc}`Vol I Introduc
 
 **Appendices:**
 - {doc}`Vol I: Derivations <source/1_agent/10_appendices/01_derivations>`
+- {doc}`Vol I: Loss Terms Reference (37 losses) <source/1_agent/10_appendices/06_losses>`
 - {doc}`Vol II: ZFC Translation <source/2_hypostructure/11_appendices/01_zfc>`
 - {doc}`Vol III: Convergence Proofs <source/3_fractal_gas/appendices/06_convergence>`
 
