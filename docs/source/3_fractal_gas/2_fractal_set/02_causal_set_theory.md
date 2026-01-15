@@ -1,6 +1,6 @@
 # Fractal Set as Causal Set
 
-**Prerequisites**: {doc}`01_fractal_set`, Causal Set Theory (Bombelli et al. 1987)
+**Prerequisites**: {doc}`01_fractal_set`, Causal Set Theory ({cite}`BombelliLeeEtAl87,Sorkin05`)
 
 ---
 
@@ -10,9 +10,9 @@
 
 **The Fractal Set is a Valid Causal Set**: The episode set $E$ with CST ordering $\prec$ satisfies all three BLMS axioms (irreflexivity, transitivity, local finiteness), making the Fractal Set a rigorous causal set in the sense of quantum gravity research.
 
-**Adaptive Sprinkling Innovation**: Unlike standard Poisson sprinkling with uniform density, QSD sampling produces episodes with density $\rho_{\mathrm{adaptive}}(x) \propto \sqrt{\det g(x)} \, e^{-U_{\mathrm{eff}}/T}$, automatically adapting to local geometry and providing optimal discretization fidelity.
+**Adaptive Sprinkling Innovation**: Unlike standard Poisson sprinkling with constant spacetime density, QSD sampling yields an inhomogeneous density $\rho_{\mathrm{adaptive}}(x) \propto \sqrt{\det g(x)} \, e^{-U_{\mathrm{eff}}(x)/T}$, adapting resolution to the learned geometry (higher-weight regions get more episodes).
 
-**Causal Set Machinery Applies**: With causal set status established, all CST mathematical tools (d'Alembertian, dimension estimators, curvature measures) can be rigorously applied to the Fractal Set, enabling quantum gravity calculations on the emergent spacetime.
+**Causal Set Machinery Applies**: With causal set status established, CST tools (d'Alembertian, dimension estimators, curvature measures) apply in full, using the adaptive-density formulas given here.
 
 ---
 
@@ -20,18 +20,18 @@
 ## Introduction
 
 :::{div} feynman-prose
-Here is a beautiful connection that was waiting to be discovered. Causal set theory is one of the leading approaches to quantum gravity—the idea that spacetime is fundamentally discrete, made up of a finite set of events with a partial ordering that encodes causal structure. The program was launched by Bombelli, Lee, Meyer, and Sorkin in 1987, and it has developed into a sophisticated mathematical framework.
+Here is a beautiful connection that was waiting to be discovered. Causal set theory is one of the leading approaches to quantum gravity—the idea that spacetime is fundamentally discrete, made up of a locally finite (typically countable) set of events with a partial ordering that encodes causal structure. The program was launched by Bombelli, Lee, Meyer, and Sorkin in 1987 {cite}`BombelliLeeEtAl87`, and it has developed into a sophisticated mathematical framework (see {cite}`Sorkin05`).
 
-Now, the Fractal Set is also a discrete structure with a causal ordering. Episodes are events; CST edges encode causal precedence. The question is: does the Fractal Set satisfy the axioms of a causal set? If it does, then all the mathematical machinery of causal set theory—developed over decades by quantum gravity researchers—becomes available to us.
+Now, the Fractal Set is also a discrete structure with a causal ordering. Episodes are events; CST edges encode causal precedence. The question is: does the Fractal Set satisfy the axioms of a causal set? If it does, then the mathematical machinery of causal set theory—developed over decades by quantum gravity researchers—becomes available to us, and the adaptive-density versions are spelled out explicitly here.
 
-The answer is yes. The Fractal Set is a valid causal set. But it is more than that: it is an *adaptive* causal set, where the sampling density automatically adjusts to local geometry. This is something that standard causal set constructions (Poisson sprinkling) cannot achieve.
+The answer is yes. The Fractal Set is a valid causal set. But it is more than that: it is an *adaptive* causal set, where the sampling density automatically adjusts to local geometry. This goes beyond the standard Lorentz-invariant Poisson construction, which fixes a constant density.
 :::
 
-Causal set theory (CST) posits that spacetime is fundamentally discrete: a finite collection of events with a partial ordering encoding causal relationships. The Fractal Set, defined in {doc}`01_fractal_set`, provides exactly such a structure via its CST edges ({prf:ref}`def-fractal-set-cst-edges`) and CST axioms ({prf:ref}`def-fractal-set-cst-axioms`). This chapter establishes that:
+Causal set theory (CST) posits that spacetime is fundamentally discrete: a locally finite (typically countable) collection of events with a partial ordering encoding causal relationships. The Fractal Set, defined in {doc}`01_fractal_set`, provides exactly such a structure via its CST edges ({prf:ref}`def-fractal-set-cst-edges`) and CST axioms ({prf:ref}`def-fractal-set-cst-axioms`). This chapter establishes that:
 
 1. The Fractal Set satisfies all BLMS axioms for causal sets
 2. QSD sampling provides adaptive (not uniform) sprinkling
-3. All CST mathematical machinery applies to the Fractal Set
+3. CST mathematical machinery applies, with explicit adaptive-density formulas
 
 ---
 
@@ -49,12 +49,12 @@ Causal set theory takes a bold step. It says: maybe spacetime is not continuous 
 
 But here is the clever part. You cannot just sprinkle points at random and call it spacetime. You need *structure*. And the structure you need is *causality*—the relationship of "this event can influence that event." In relativity, this is determined by light cones. Event A can influence event B only if a signal traveling at or below light speed can get from A to B.
 
-So a causal set is just this: a finite collection of events, plus a relation that tells you which events can causally influence which other events. That is all. From this minimal structure, the hope is that the entire fabric of spacetime—dimension, curvature, topology—can be *recovered* in the large-scale limit.
+So a causal set is just this: a locally finite collection of events, plus a relation that tells you which events can causally influence which other events. That is all. From this minimal structure, the hope is that the entire fabric of spacetime—dimension, curvature, topology—can be *recovered* in the large-scale limit.
 
 The three axioms you are about to see are just the mathematical way of saying: "You cannot be your own ancestor" (irreflexivity), "If A caused B and B caused C, then A caused C" (transitivity), and "Only finitely many things can happen between any two events" (local finiteness). These are not arbitrary mathematical conditions—they are the minimum requirements for anything deserving the name "causality."
 :::
 
-:::{prf:definition} Causal Set (Bombelli et al. 1987)
+:::{prf:definition} Causal Set ({cite}`BombelliLeeEtAl87`)
 :label: def-causal-set-blms
 
 A **causal set** $(C, \prec)$ is a locally finite partially ordered set satisfying:
@@ -80,7 +80,7 @@ The standard approach is called *Poisson sprinkling*. The idea is beautifully si
 
 Think of it like this. Imagine you have a piece of paper (representing 2D spacetime) and you close your eyes and drop grains of sand on it uniformly at random. The positions where the grains land are your causal set elements. Two grains are causally related if one is in the "light cone" of the other.
 
-Why Poisson? Because a Poisson process gives you *Lorentz invariance for free*. Here is the beautiful thing: if you boost to a different reference frame, the Poisson sprinkling looks exactly the same statistically. The uniform density is Lorentz-invariant. This is crucial—you want the fundamental discreteness to not pick out any preferred frame.
+Why Poisson? Because a Poisson process gives you *Lorentz invariance for free* {cite}`BombelliLeeEtAl87,Sorkin05`. Here is the beautiful thing: if you boost to a different reference frame, the Poisson sprinkling looks exactly the same statistically. The uniform density is Lorentz-invariant. This is crucial—you want the fundamental discreteness to not pick out any preferred frame.
 
 But here is the limitation. Uniform density means you put the same number of points per unit volume everywhere. In flat spacetime, this is fine. But in curved spacetime, "interesting" things happen in high-curvature regions—near black holes, at the Big Bang—and these are precisely the regions where you might want more resolution, more points, to capture the physics accurately. Uniform sprinkling is blind to curvature. It treats boring flat regions and exciting curved regions exactly the same.
 
@@ -90,11 +90,14 @@ This is where the Fractal Set will improve on the standard construction.
 :::{prf:definition} Poisson Sprinkling
 :label: def-poisson-sprinkling-cst
 
-Given a Lorentzian manifold $(M, g_{\mu\nu})$ with volume element $dV = \sqrt{-\det g} \, d^d x$, a **Poisson sprinkling** with constant density $\rho_0$ is:
+Given a Lorentzian manifold $(M, g_{\mu\nu})$ with volume element $dV = \sqrt{-\det g} \, d^d x$, a **Poisson sprinkling** with constant density $\rho_0$ is ({cite}`BombelliLeeEtAl87,Sorkin05`):
 
-1. **Sample points**: Draw $N$ points $\{x_i\}$ from $M$ with probability density $p(x) = \rho_0 \cdot \sqrt{-\det g(x)} / V_{\mathrm{total}}$
+1. **Sample count**: Draw $N \sim \mathrm{Poisson}(\rho_0 V_{\mathrm{total}})$
 
-2. **Define order**: $e_i \prec e_j$ iff $x_i$ is in the causal past of $x_j$
+2. **Sample points**: Conditional on $N$, draw $\{x_i\}$ i.i.d. with density
+   $p(x) = \sqrt{-\det g(x)} / V_{\mathrm{total}}$
+
+3. **Define order**: $e_i \prec e_j$ iff $x_i$ is in the causal past of $x_j$
 
 **Property**: Expected number of elements in causal interval $I(e_1, e_2)$ is $\mathbb{E}[|I|] = \rho_0 \cdot V_{\mathrm{Lorentz}}(I)$.
 :::
@@ -102,6 +105,8 @@ Given a Lorentzian manifold $(M, g_{\mu\nu})$ with volume element $dV = \sqrt{-\
 **Limitation**: Uniform density $\rho_0 = \mathrm{const}$ does not adapt to local geometry:
 - Over-sampling in flat regions (wasteful)
 - Under-sampling in curved regions (loss of information)
+
+An inhomogeneous density generally breaks global Lorentz invariance; in the Fractal Set this tradeoff is intentional because the target geometry and sampling measure are emergent and algorithm-defined.
 
 ---
 
@@ -134,7 +139,7 @@ e_i \prec_{\mathrm{CST}} e_j \quad \iff \quad t_i < t_j \;\wedge\; d_g(x_i, x_j)
 $$
 
 where:
-- $d_g(\cdot, \cdot)$ is the geodesic distance on $(\mathcal{X}, g)$ with $g = H + \epsilon_\Sigma I$ the emergent Riemannian metric
+- $d_g(\cdot, \cdot)$ is the geodesic distance on $(\mathcal{X}, g)$ with $g = H + \epsilon_\Sigma I$ the emergent Riemannian metric ({prf:ref}`def-adaptive-diffusion-tensor-latent`)
 - $c_{\mathrm{eff}}$ is the effective speed of causation (maximal information propagation rate)
 
 **Physical meaning**: $e_i \prec e_j$ iff information from $e_i$ can causally influence $e_j$.
@@ -163,7 +168,10 @@ $$
 \rho_{\mathrm{adaptive}}(x) = \frac{1}{Z} \sqrt{\det g(x)} \exp\left(-\frac{U_{\mathrm{eff}}(x)}{T}\right)
 $$
 
-where $g(x) = H(x) + \epsilon_\Sigma I$ is the emergent Riemannian metric.
+where $g(x) = H(x) + \epsilon_\Sigma I$ is the emergent Riemannian metric
+({prf:ref}`def-adaptive-diffusion-tensor-latent`).
+
+This specifies the stationary spatial marginal of the QSD; episodes need not form an independent Poisson process. For a finite run with $N$ episodes, the intensity is $\lambda(x) = N \, \rho_{\mathrm{adaptive}}(x)$.
 
 **Comparison with Poisson sprinkling**:
 
@@ -188,13 +196,30 @@ where $g(x) = H(x) + \epsilon_\Sigma I$ is the emergent Riemannian metric.
 - Algorithmic space: {prf:ref}`def:algorithmic-space-fg`
 :::
 
+### Framework Lift: CST Operators Are Computable
+
+:::{prf:proposition} Framework Lift for CST Operators
+:label: prop-fractal-cst-framework-lift
+
+By lossless reconstruction ({prf:ref}`thm-fractal-set-lossless`), all quantities in the
+reconstruction target set ({prf:ref}`def-fractal-set-reconstruction-targets`) are recoverable
+at episode locations, including trajectories and the adaptive diffusion tensor
+$\Sigma_{\mathrm{reg}}$ from the SDE ({prf:ref}`def-fractal-set-sde`). The emergent metric is
+defined by $\Sigma_{\mathrm{reg}}$ via {prf:ref}`def-adaptive-diffusion-tensor-latent`, so $g$
+and $d_g$ are available on the same support. Expansion Adjunction
+({prf:ref}`thm-expansion-adjunction`) and Lock Closure
+({prf:ref}`mt:fractal-gas-lock-closure`) lift the discrete causal order to the continuum
+limit. Therefore the adaptive-density CST operators in this chapter are well-defined and
+directly computable on the Fractal Set.
+:::
+
 ---
 
 (sec-axiom-verification)=
 ## Verification of Causal Set Axioms
 
 :::{div} feynman-prose
-Now we come to the heart of the matter: proving that the Fractal Set actually *is* a causal set. This is not just a formal exercise. If we can prove this, then decades of mathematical machinery developed by quantum gravity researchers becomes available to us. All the tools for extracting geometry from causal structure—dimension estimators, curvature measures, wave equations—can be applied directly to the Fractal Set.
+Now we come to the heart of the matter: proving that the Fractal Set actually *is* a causal set. This is not just a formal exercise. If we can prove this, then decades of mathematical machinery developed by quantum gravity researchers becomes available to us. All the tools for extracting geometry from causal structure—dimension estimators, curvature measures, wave equations—can be applied using the adaptive-density formulas given below.
 
 The proof is surprisingly simple, which is always a good sign. The three axioms—irreflexivity, transitivity, and local finiteness—each follow from basic properties of time and space. Let me give you the intuition before we dive into the formalism.
 
@@ -202,7 +227,7 @@ The proof is surprisingly simple, which is always a good sign. The three axioms�
 
 **Transitivity** says that if A causes B and B causes C, then A causes C. This follows from the triangle inequality in geometry. If A is close enough to B to influence it, and B is close enough to C to influence it, then A is close enough to C to influence it—at least if the times work out. And they do: $t_A < t_B < t_C$ means $t_A < t_C$.
 
-**Local finiteness** says that only finitely many events can happen between any two events. This is where discreteness enters. Between A and C, the only events that fit are those inside the "causal diamond"—the intersection of the future cone of A and the past cone of C. This is a bounded region of spacetime, and in any bounded region, there are only finitely many episodes. Done.
+**Local finiteness** says that only finitely many events can happen between any two events. This is where discreteness enters. Between A and C, the only events that fit are those inside the "causal diamond"—the intersection of the future cone of A and the past cone of C. This is a bounded region of spacetime, and in any finite run (or any bounded time window with finite episode rate), there are only finitely many episodes. Done.
 
 You see how the structure of spacetime—time ordering, spatial distances, bounded regions—automatically gives you causality. The math is just making explicit what is already implicit in the physics.
 :::
@@ -223,33 +248,24 @@ We verify each axiom:
 **Axiom CS1 (Irreflexivity):** For any episode $e_i$:
 
 $$
-e_i \prec e_i \iff t_i < t_i \;\wedge\; d(x_i, x_i) < c(t_i - t_i)
+e_i \prec e_i \iff t_i < t_i \;\wedge\; d_g(x_i, x_i) < c_{\mathrm{eff}}(t_i - t_i)
 $$
-Both $t_i < t_i$ (false) and $0 < 0$ (false), so $e_i \not\prec e_i$. ✓
+Both $t_i < t_i$ (false) and $d_g(x_i, x_i) = 0 \not< 0$, so $e_i \not\prec e_i$. ✓
 
 **Axiom CS2 (Transitivity):** Assume $e_1 \prec e_2$ and $e_2 \prec e_3$. Then:
 - $t_1 < t_2 < t_3$ (time ordering is transitive)
-- $d(x_1, x_2) < c(t_2 - t_1)$ and $d(x_2, x_3) < c(t_3 - t_2)$
+- $d_g(x_1, x_2) < c_{\mathrm{eff}}(t_2 - t_1)$ and $d_g(x_2, x_3) < c_{\mathrm{eff}}(t_3 - t_2)$
 
 By the triangle inequality:
 
 $$
-d(x_1, x_3) \leq d(x_1, x_2) + d(x_2, x_3) < c(t_2 - t_1) + c(t_3 - t_2) = c(t_3 - t_1)
+d_g(x_1, x_3) \leq d_g(x_1, x_2) + d_g(x_2, x_3) < c_{\mathrm{eff}}(t_2 - t_1) + c_{\mathrm{eff}}(t_3 - t_2) = c_{\mathrm{eff}}(t_3 - t_1)
 $$
 Therefore $e_1 \prec e_3$. ✓
 
-**Axiom CS3 (Local Finiteness):** The causal interval $I(e_1, e_2) := \{e : e_1 \prec e \prec e_2\}$ is contained in a bounded spacetime region:
-
-$$
-\mathcal{D} = \{(t, x) : t_1 < t < t_2, \, d(x_1, x) < c(t - t_1), \, d(x, x_2) < c(t_2 - t)\}
-$$
-
-This is a compact "double cone." The expected episode count is:
-
-$$
-\mathbb{E}[|I(e_1, e_2)|] = \int_{\mathcal{D}} \rho_{\mathrm{adaptive}}(t, x) \, dt \, dx < \infty
-$$
-by compactness and integrability of $\rho$. For any finite realization, $|I| < \infty$ a.s. ✓
+**Axiom CS3 (Local Finiteness):** For any finite run, $E$ is finite, so any subset (including
+$I(e_1, e_2)$) is finite. In an idealized infinite run with finite episode rate, any bounded
+spacetime region contains finitely many episodes almost surely, so $|I(e_1, e_2)| < \infty$. ✓
 
 $\square$
 :::
@@ -264,12 +280,12 @@ Working in Grothendieck universe $\mathcal{U}$, the Fractal Set $(E, \prec)$ is 
 1. $E \in V_\mathcal{U}$ is a finite set of episodes
 2. $\prec \subseteq E \times E$ is a binary relation
 
-**CS1 (Irreflexivity):** The definition $e_i \prec e_j \Leftrightarrow t_i < t_j \wedge d(x_i, x_j) < c(t_j - t_i)$ implies $e_i \not\prec e_i$ because $t_i < t_i$ is false in any ordered field.
+**CS1 (Irreflexivity):** The definition $e_i \prec e_j \Leftrightarrow t_i < t_j \wedge d_g(x_i, x_j) < c_{\mathrm{eff}}(t_j - t_i)$ implies $e_i \not\prec e_i$ because $t_i < t_i$ is false in any ordered field.
 
 **CS2 (Transitivity):** Given $e_1 \prec e_2$ and $e_2 \prec e_3$:
 - $t_1 < t_2 \wedge t_2 < t_3 \Rightarrow t_1 < t_3$ (transitivity of $<$ in $\mathbb{R}$)
-- Triangle inequality: $d(x_1, x_3) \leq d(x_1, x_2) + d(x_2, x_3)$ (metric axiom)
-- Arithmetic: $c(t_2 - t_1) + c(t_3 - t_2) = c(t_3 - t_1)$ (distributivity)
+- Triangle inequality: $d_g(x_1, x_3) \leq d_g(x_1, x_2) + d_g(x_2, x_3)$ (metric axiom)
+- Arithmetic: $c_{\mathrm{eff}}(t_2 - t_1) + c_{\mathrm{eff}}(t_3 - t_2) = c_{\mathrm{eff}}(t_3 - t_1)$ (distributivity)
 
 **CS3 (Local Finiteness):** For any $e_1, e_2 \in E$, the set $\{e \in E : e_1 \prec e \prec e_2\}$ is a subset of the finite set $E$, hence finite.
 
@@ -290,7 +306,7 @@ But here is where the adaptive density makes things interesting. In ordinary Poi
 
 Why is this better? Because it automatically concentrates resolution where it matters. If you are trying to compute geometric quantities—curvature, for instance—you need more samples in regions where the geometry varies rapidly. The adaptive density provides exactly this. It is as if the discretization has "learned" where to pay attention.
 
-The Myrheim-Meyer dimension estimator is a beautiful piece of mathematical machinery that extracts the dimension of spacetime from pure causal order. You count the fraction of pairs that are causally related, and this fraction depends on the dimension. In two dimensions, more pairs are causally related than in four dimensions—because light cones are "wider" in lower dimensions. The Fractal Set inherits this machinery: count the ordering fraction, and you recover the dimension.
+The Myrheim-Meyer dimension estimator is a beautiful piece of mathematical machinery that extracts the dimension of spacetime from pure causal order {cite}`Myrheim1978,Meyer1988`. You count the fraction of pairs that are causally related, and this fraction depends on the dimension. In two dimensions, more pairs are causally related than in four dimensions—because light cones are "wider" in lower dimensions. The Fractal Set inherits this machinery: count the ordering fraction, and you recover the dimension.
 :::
 
 ### Volume Matching
@@ -298,7 +314,9 @@ The Myrheim-Meyer dimension estimator is a beautiful piece of mathematical machi
 :::{prf:theorem} Fractal Set Provides Faithful Discretization
 :label: thm-fractal-faithful-embedding
 
-The Fractal Set faithfully discretizes the emergent Riemannian manifold $(\mathcal{X}, g)$:
+The Fractal Set faithfully discretizes the emergent Riemannian manifold $(\mathcal{X}, g)$
+with respect to the QSD-weighted measure defined by the Adaptive Gas dynamics
+({prf:ref}`def-fractal-set-sde`):
 
 **Volume Matching**: The episode count in region $\Omega$ satisfies:
 
@@ -306,11 +324,16 @@ $$
 \mathbb{E}\left[\frac{|E \cap \Omega|}{N}\right] = \frac{1}{Z} \int_{\Omega} \sqrt{\det g(x)} \, e^{-U_{\mathrm{eff}}(x)/T} \, dx
 $$
 
-with variance scaling as $O(1/N)$ by the law of large numbers.
+under standard mixing/ergodicity; variance scales as $O(1/N)$. (To recover pure Riemannian
+volume $\int_\Omega \sqrt{\det g} \, dx$, reweight by $e^{U_{\mathrm{eff}}/T}$.)
 
-**Metric Recovery**: Riemannian distance is recoverable from causal structure.
+**Distance Estimation**: Timelike distances are estimated by longest-chain length; spatial
+distances follow from reconstructed trajectories and IG-edge geometry
+({prf:ref}`thm-fractal-set-trajectory`, {prf:ref}`def-fractal-set-ig-edges`).
 
-**Dimension Estimation**: The Myrheim-Meyer estimator converges:
+**Dimension Estimation**: The Myrheim-Meyer estimator converges after applying the
+adaptive-density correction described below; an equivalent implementation is to compute it
+on local windows of approximately constant density:
 
 $$
 d_{\mathrm{MM}} \xrightarrow{N \to \infty} d = \dim \mathcal{X}
@@ -324,9 +347,9 @@ $$
 
 Compared to uniform Poisson sprinkling, the Fractal Set achieves:
 
-1. **Better coverage**: Episodes concentrate in high-curvature regions where geometric information is richer
+1. **Better coverage**: Episodes concentrate where the QSD weight is higher (large $\sqrt{\det g}$ or low $U_{\mathrm{eff}}$)
 
-2. **Optimal information content**: KL divergence from true volume measure is minimized
+2. **Lower variance for QSD-weighted observables**: Estimates aligned with the adaptive measure are more sample-efficient than uniform sprinkling
 
 3. **Automatic adaptation**: No ad-hoc density choices; $\rho$ emerges from QSD
 :::
@@ -337,32 +360,45 @@ Compared to uniform Poisson sprinkling, the Fractal Set achieves:
 ## Causal Set Mathematical Machinery
 
 :::{div} feynman-prose
-Now comes the payoff. Having established that the Fractal Set is a valid causal set, we inherit the entire toolbox that causal set theorists have developed over the past four decades. These are not just abstract mathematical constructions—they are the discrete versions of the most important objects in physics: volume, the wave equation, dimension, curvature.
+Now comes the payoff. Having established that the Fractal Set is a valid causal set, we inherit the toolbox that causal set theorists have developed over the past four decades, now specialized to the adaptive density. These are not just abstract mathematical constructions—they are the discrete versions of the most important objects in physics: volume, the wave equation, dimension, curvature.
 
 Let me give you the philosophy first. In continuum physics, we are used to differential operators—gradients, Laplacians, d'Alembertians. These are defined in terms of infinitesimal limits: "how does the field change as you move an infinitesimally small distance?" But on a causal set, there are no infinitesimals. Space is grainy. So how do you define a derivative?
 
 The answer is: you use *nonlocal* operators that average over many nearby points. The brilliant insight of Benincasa and Dowker is that you can construct a discrete operator that looks wildly nonlocal—it sums over all points in the causal past with complicated dimension-dependent coefficients—but in the continuum limit, this operator converges to the ordinary d'Alembertian. The graininess washes out, and smooth physics emerges.
 
-This is genuinely remarkable. You start with a completely discrete structure—just a finite set of points with an ordering—and you can compute the wave equation, the curvature, the dimension. All of classical and quantum field theory on curved spacetime becomes accessible, not despite the discreteness but *through* it.
+This is genuinely remarkable. You start with a completely discrete structure—just a locally finite set of points with an ordering—and you can compute the wave equation, the curvature, the dimension. All of classical and quantum field theory on curved spacetime becomes accessible, not despite the discreteness but *through* it.
 
 The dimension estimator is my favorite example. It counts nothing but the fraction of pairs that are causally related. That is all. No coordinates, no metric, no tangent spaces. Just counting. And yet from this single number, you can read off the dimension of spacetime. This is causal set theory at its purest: geometry from order alone.
 :::
 
-With the Fractal Set established as a valid causal set, all CST mathematical tools apply.
+With the Fractal Set established as a valid causal set, standard CST tools apply in their
+adaptive-density form, and all required inputs are reconstructible from the framework.
 
 ### Causal Set Volume Element
 
-:::{prf:definition} Causal Set Volume
+:::{prf:definition} Causal Set Volume (Adaptive Measure)
 :label: def-cst-volume
 
-The **causal set volume** of element $e \in E$ is:
+Let $d\mu_{\mathrm{adaptive}}(x) := \rho_{\mathrm{adaptive}}(x)\, dx$ and $N = |E|$. The
+**adaptive causal set volume** of $e \in E$ is:
 
 $$
-V_{\mathrm{CST}}(e) := \frac{1}{\bar{\rho}} \sum_{e' \in E} \mathbb{1}_{e' \prec e}
+V_{\mathrm{adaptive}}(e) := \frac{1}{N} \sum_{e' \in E} \mathbb{1}_{e' \prec e}
 $$
-where $\bar{\rho}$ is the average adaptive density.
 
-**Continuum limit**: $V_{\mathrm{CST}}(e) \to V(J^-(e))$ as $N \to \infty$.
+Here $\mu_{\mathrm{adaptive}}$ is the spatial measure on $\mathcal{X}$; spacetime volumes include
+the time measure associated with the episode rate.
+
+**Continuum limit**: $V_{\mathrm{adaptive}}(e) \to \mu_{\mathrm{adaptive}}(J^-(e))
+= \frac{1}{Z} \int_{J^-(e)} \sqrt{\det g(x)} \, e^{-U_{\mathrm{eff}}(x)/T} \, dt \, dx$ as
+$N \to \infty$.
+
+**Geometric volume recovery**: Reweight by the Boltzmann factor to undo the QSD bias:
+
+$$
+V_g(e) := \frac{Z}{N} \sum_{e' \in E,\, e' \prec e} \exp\!\left(\frac{U_{\mathrm{eff}}(x_{e'})}{T}\right),
+\quad \mathbb{E}[V_g(e)] = \int_{J^-(e)} \sqrt{\det g(x)} \, dt \, dx .
+$$
 :::
 
 ### Discrete d'Alembertian (Benincasa-Dowker Operator)
@@ -374,7 +410,7 @@ Benincasa and Dowker found the answer. The key insight is that derivatives are r
 
 On a causal set, you can define "neighborhood" using the causal structure. The points in your causal past—the ones that can influence you—are your neighbors. But here is the subtle part: you need to weight these points carefully. Points that are one step away in the causal past should contribute differently than points that are two steps away.
 
-The Benincasa-Dowker operator does exactly this. It sums the function values at all points in the causal past, weighted by dimension-dependent coefficients that depend on how many intermediate points exist. The formula looks complicated, but it has a deep structural reason: these are precisely the weights that make the discrete operator converge to the continuum d'Alembertian as you take more and more points.
+The Benincasa-Dowker operator does exactly this. It sums the function values at all points in the causal past, weighted by dimension-dependent coefficients that depend on how many intermediate points exist. The formula looks complicated, but it has a deep structural reason: these are precisely the weights that make the discrete operator converge to the continuum d'Alembertian as you take more and more points {cite}`BenincasaDowker2010`.
 
 The beautiful part is that this works in any dimension. The coefficients $C_k^{(d)}$ change with dimension, but the structure is the same. Count the intervals, weight them properly, and you get waves.
 :::
@@ -385,20 +421,24 @@ The beautiful part is that this works in any dimension. The coefficients $C_k^{(
 The **Benincasa-Dowker d'Alembertian** acting on $f: E \to \mathbb{R}$ in $d$ dimensions is:
 
 $$
-(\Box_{\mathrm{BD}} f)(e) := \frac{4}{\ell_d^2} \left( -\alpha_d f(e) + \sum_{k=0}^{n_d} C_k^{(d)} \sum_{\substack{e' \prec e \\ |I(e', e)| = k}} f(e') \right)
+(\Box_{\mathrm{BD}} f)(e) := \frac{1}{\ell_d^2} \left( -\alpha_d f(e) + \sum_{k=0}^{n_d} C_k^{(d)} \sum_{\substack{e' \prec e \\ |I(e', e)| = k}} f(e') \right)
 $$
 
 where:
-- $\ell_d = (\rho V_d)^{-1/d}$ is the discreteness scale
-- $\alpha_d$, $C_k^{(d)}$ are dimension-dependent coefficients (see Benincasa-Dowker 2010 for explicit values)
+- $\ell_d = \rho^{-1/d}$ is the discreteness scale for sprinkling intensity $\rho$ (use local $\rho(x)$ for inhomogeneous sprinkling)
+- $\alpha_d$, $C_k^{(d)}$ are dimension-dependent coefficients (including the standard normalization; see {cite}`BenincasaDowker2010` for explicit values)
 - $|I(e', e)|$ is the number of elements in the causal interval between $e'$ and $e$
 
-**Convergence** (Benincasa-Dowker 2010): For smooth functions on the emergent spacetime:
+**Convergence** ({cite}`BenincasaDowker2010`): For uniform Poisson sprinkling and smooth functions:
 
 $$
 \lim_{N \to \infty} \mathbb{E}[(\Box_{\mathrm{BD}} f)(e_i)] = (\Box_g f)(x_i) + O(\ell_d^2)
 $$
-where $\Box_g = g^{\mu\nu}\nabla_\mu\nabla_\nu$ is the continuum d'Alembertian.
+where $\Box_g = g^{\mu\nu}\nabla_\mu\nabla_\nu$ is the continuum d'Alembertian for the
+induced Lorentzian metric (with spatial part $g$ and time coordinate $t$).
+
+For adaptive density, use the local-density corrected operator (the required $\rho(x)$ is
+reconstructible from the episode data).
 :::
 
 ### Dimension and Curvature Estimation
@@ -410,14 +450,14 @@ The idea is simple but profound. Take any two points in a causal set and ask: ar
 
 Why? Think about light cones. In two dimensions (1 time + 1 space), the light cone is just two lines. Half of spacetime is causally related to you. In four dimensions (1 time + 3 space), the light cone is a narrow cone in a vast 4-dimensional space. A much smaller fraction of points are causally related.
 
-Myrheim and Meyer worked out the exact relationship. For a causal set uniformly sprinkled in $d$-dimensional Minkowski space, the ordering fraction converges to a specific function of $d$. Invert this function, and you can read off the dimension from the ordering fraction.
+Myrheim and Meyer worked out the exact relationship {cite}`Myrheim1978,Meyer1988`. For a causal set uniformly sprinkled in $d$-dimensional Minkowski space, the ordering fraction converges to a specific function of $d$. Invert this function, and you can read off the dimension from the ordering fraction.
 
 For curvature, the approach is similar but more subtle. The Benincasa-Dowker action counts intervals with specific weights. In flat space, these counts have certain expected values. Curvature perturbs these expectations in a predictable way. By measuring the deviation from flatness, you can extract the Ricci scalar—the simplest measure of how curved spacetime is.
 
 This is the ultimate vindication of the causal set program: geometry is not primary. Order is primary. Geometry—dimension, curvature, volume—emerges from counting causal relationships.
 :::
 
-:::{prf:definition} Myrheim-Meyer Dimension Estimator
+:::{prf:definition} Myrheim-Meyer Dimension Estimator ({cite}`Myrheim1978,Meyer1988`)
 :label: def-myrheim-meyer
 
 The dimension of the emergent manifold is estimated from the ordering fraction:
@@ -429,16 +469,16 @@ $$
 For a causal set faithfully embedded in $d$-dimensional Minkowski space:
 
 $$
-r \xrightarrow{N \to \infty} \frac{\Gamma(d+1) \Gamma(d/2)}{4 \Gamma(3d/2)}
+r \xrightarrow{N \to \infty} \frac{\Gamma(d+1) \Gamma(d/2)}{2 \Gamma(3d/2)}
 $$
 
-The **Myrheim-Meyer estimator** inverts this relation to obtain $d_{\mathrm{MM}}$ from the observed ordering fraction $r$.
+The **Myrheim-Meyer estimator** inverts this relation to obtain $d_{\mathrm{MM}}$ from the observed ordering fraction $r$. For adaptive density, compute $r$ in local windows or apply density reweighting using the reconstructed $\rho_{\mathrm{adaptive}}$.
 :::
 
 :::{prf:proposition} Ricci Scalar from Causal Set
 :label: prop-ricci-cst
 
-The Ricci scalar curvature is estimated via the **Benincasa-Dowker action** (2010):
+The Ricci scalar curvature is estimated via the **Benincasa-Dowker action** ({cite}`BenincasaDowker2010`):
 
 For a small causal diamond $\mathcal{A}(p, q)$ with $N$ elements:
 
@@ -450,9 +490,10 @@ where $N_k$ counts $k$-element intervals and $\ell_d$ is the discreteness scale.
 **Curvature extraction**: In the continuum limit:
 
 $$
-\lim_{\ell \to 0} \frac{S_{\mathrm{BD}}[\mathcal{A}]}{V(\mathcal{A})} = \frac{1}{d(d-1)} R + O(\ell^2)
+\lim_{\ell \to 0} \frac{S_{\mathrm{BD}}[\mathcal{A}]}{V(\mathcal{A})} = \kappa_d \, R + O(\ell^2)
 $$
-where $R$ is the Ricci scalar and $V(\mathcal{A})$ is the spacetime volume.
+where $R$ is the Ricci scalar, $V(\mathcal{A})$ is the spacetime volume, and the prefactor
+is a known dimension-dependent constant (see {cite}`BenincasaDowker2010`).
 :::
 
 ---
@@ -467,7 +508,7 @@ In quantum mechanics, you compute probabilities by summing over all possible pat
 
 But here is the problem. What does it mean to "sum over all geometries"? In the continuum, this is almost impossibly hard. There are infinitely many ways to warp and curve a manifold. How do you put a measure on this space? What does the integral even mean?
 
-Causal set theory provides an answer: sum over all causal sets. The space of finite causal sets is discrete. Counting is well-defined. There is no ultraviolet divergence because the number of points is finite. The sum is, in principle, tractable.
+Causal set theory provides an answer: sum over all causal sets {cite}`Sorkin05`. The space of finite causal sets is discrete. Counting is well-defined. There is no ultraviolet divergence because the number of points is finite. The sum is, in principle, tractable.
 
 The Fractal Set does something extra. In ordinary causal set quantum gravity, you sum over all causal sets with equal weight—every causal set counts the same. But this is arbitrary. Why should a causal set representing flat empty space have the same weight as one representing a black hole? The QSD provides a *physical* measure. Causal sets that arise from the Adaptive Gas dynamics—sets that represent physically sensible configurations—get weighted by $\mathcal{P}_{\mathrm{QSD}}$. Unphysical configurations get suppressed.
 
@@ -508,7 +549,8 @@ The Fractal Set causal structure leads to observable consequences:
 1. **Discreteness scale**: Average proper distance between episodes:
 
 $$
-\ell_{\mathrm{Planck}}^{\mathrm{eff}} = \left(\frac{V_{\mathrm{total}}}{N}\right)^{1/d}
+\ell_{\mathrm{eff}} \approx \left(\frac{V_{\mathrm{total}}}{N}\right)^{1/d}, \quad
+\ell(x) \sim \lambda(x)^{-1/d}, \;\; \lambda(x) = N \rho_{\mathrm{adaptive}}(x)
 $$
 
 2. **Modified dispersion relations**: High-energy particles experience corrections:
@@ -554,9 +596,9 @@ The key difference is that the Fractal Set is classical and stochastic, not quan
 
 1. ✅ **Fractal Set is a causal set**: Satisfies all BLMS axioms (Theorem {prf:ref}`thm-fractal-is-causal-set`)
 
-2. ✅ **Adaptive sprinkling**: QSD sampling with $\rho \propto \sqrt{\det g} \, e^{-U_{\mathrm{eff}}/T}$ provides optimal geometric fidelity
+2. ✅ **Adaptive sprinkling**: QSD sampling with $\rho \propto \sqrt{\det g} \, e^{-U_{\mathrm{eff}}/T}$ provides geometry-aware resolution
 
-3. ✅ **CST machinery applies**: d'Alembertian, volume elements, dimension/curvature estimators all rigorously defined
+3. ✅ **CST machinery applies**: d'Alembertian, volume elements, and dimension/curvature estimators apply in their adaptive-density form
 
 4. ✅ **Physical implications**: Foundation for quantum gravity calculations on emergent spacetime
 
@@ -565,12 +607,18 @@ The key difference is that the Fractal Set is classical and stochastic, not quan
 ## References
 
 ### Causal Set Theory
-1. Bombelli, L., Lee, J., Meyer, D., & Sorkin, R.D. (1987) "Space-Time as a Causal Set", *Phys. Rev. Lett.* **59**, 521
-2. Sorkin, R.D. (2003) "Causal Sets: Discrete Gravity", in *Lectures on Quantum Gravity*, Springer
-3. Benincasa, D.M.T. & Dowker, F. (2010) "The Scalar Curvature of a Causal Set", *Phys. Rev. Lett.* **104**, 181301
+1. Bombelli, L., Lee, J., Meyer, D., & Sorkin, R.D. (1987) "Space-Time as a Causal Set", *Phys. Rev. Lett.* **59**, 521 {cite}`BombelliLeeEtAl87`
+2. Sorkin, R.D. (2005) "Causal Sets: Discrete Gravity", in *Lectures on Quantum Gravity*, Springer {cite}`Sorkin05`
+3. Benincasa, D.M.T. & Dowker, F. (2010) "The Scalar Curvature of a Causal Set", *Phys. Rev. Lett.* **104**, 181301 {cite}`BenincasaDowker2010`
+4. Myrheim, J. (1978) "Statistical Geometry" {cite}`Myrheim1978`
+5. Meyer, D.A. (1988) *The Dimension of Causal Sets* (PhD thesis) {cite}`Meyer1988`
 
 ### Framework Documents
-4. {doc}`01_fractal_set` — Fractal Set definition and structure
-5. {prf:ref}`def-fractal-set-cst-edges` — CST edge definition
-6. {prf:ref}`def-fractal-set-cst-axioms` — CST axioms
-7. {prf:ref}`mt:fractal-gas-lock-closure` — Lock Closure for Fractal Gas (Hypostructure)
+6. {doc}`01_fractal_set` — Fractal Set definition and structure
+7. {prf:ref}`def-fractal-set-cst-edges` — CST edge definition
+8. {prf:ref}`def-fractal-set-cst-axioms` — CST axioms
+9. {prf:ref}`mt:fractal-gas-lock-closure` — Lock Closure for Fractal Gas (Hypostructure)
+10. {prf:ref}`thm-fractal-set-lossless` — Lossless reconstruction theorem
+11. {prf:ref}`def-fractal-set-reconstruction-targets` — Reconstruction target set
+12. {prf:ref}`def-adaptive-diffusion-tensor-latent` — Adaptive diffusion tensor and emergent metric
+13. {prf:ref}`thm-expansion-adjunction` — Expansion Adjunction (framework lift)

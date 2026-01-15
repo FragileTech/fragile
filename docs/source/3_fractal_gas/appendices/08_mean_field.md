@@ -1,4 +1,4 @@
-# The Mean-Field Limit and Continuous Forward Equation**
+# The Mean-Field Limit and Continuous Forward Equation
 
 ## Introduction
 

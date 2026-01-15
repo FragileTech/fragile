@@ -103,6 +103,7 @@ The Standard Model gauge group emerges from three independent redundancies in th
 - $\nu$: Viscous coupling strength.
 - $T$: Effective temperature.
 - $\hbar_{\text{eff}}$: Effective Planck constant controlling phases.
+- $\ell_0$: Characteristic length scale used in momentum-phase encoding.
 :::
 
 :::{div} feynman-prose
@@ -124,7 +125,7 @@ The miracle is that this simple logic—redundancy plus locality—generates exa
 
 The diversity companion selection mechanism induces a $U(1)$ gauge field on the Fractal Set.
 
-**Redundancy**: Global fitness shift $\Phi \to \Phi + c$ does not change cloning probabilities (only fitness differences matter).
+**Redundancy**: The cloning potential is a pure difference, $V_{\mathrm{clone}}(i \to j) = \Phi_j - \Phi_i$. Under a global fitness shift $\Phi \to \Phi + c$, this potential is exactly invariant, so the directed IG structure and any selection rule based on its sign or ordering are unchanged.
 
 **Locality**: Distributed walkers cannot synchronize fitness baselines—each walker measures fitness relative to its local neighborhood.
 
@@ -147,11 +148,13 @@ $$
 
 This represents fitness self-measurement through diversity comparison.
 
-*Proof*: The redundancy under $\Phi \to \Phi + c$ is manifest since cloning scores $S_i(j) = (V_j - V_i)/(V_i + \varepsilon)$ depend only on differences (see {prf:ref}`def-fractal-set-cloning-potential`). The locality requirement (finite information propagation through the CST genealogy) implies different walkers cannot synchronize baselines. Standard gauge theory then requires a compensating $U(1)$ field {cite}`yang1954conservation`. $\square$
+The diversity range $\epsilon_d$ fixes the phase scale, while the gauge redundancy itself is the additive baseline in $\Phi$.
+
+*Proof*: Under $\Phi \to \Phi + c$, $V_{\mathrm{clone}}(i \to j) = \Phi_j - \Phi_i$ is unchanged ({prf:ref}`def-fractal-set-cloning-potential`). The cloning score $S_i(j)$ depends on this difference; for fixed $i$, the denominator rescales all $S_i(j)$ by the same positive factor, preserving signs and ordering. Thus the directed IG structure is invariant under baseline shifts, while locality prevents global synchronization. Standard gauge theory then requires a compensating $U(1)$ field {cite}`yang1954conservation`. $\square$
 :::
 
 :::{div} feynman-prose
-The $U(1)$ symmetry is the simplest kind of gauge symmetry—it just says that absolute fitness values do not matter, only fitness differences. If I told you a walker has fitness 100, that number means nothing by itself. Fitness 100 compared to what? The only meaningful statements are relative: "walker A is fitter than walker B by this much."
+The $U(1)$ symmetry is the simplest kind of gauge symmetry—in the relative-fitness description, absolute fitness values do not matter, only fitness differences. If I told you a walker has fitness 100, that number means nothing by itself. Fitness 100 compared to what? The only meaningful statements are relative: "walker A is fitter than walker B by this much."
 
 This is exactly like voltage in a circuit. You can add any constant to all your voltages and the physics does not change—only voltage differences drive current. And when you have a circuit spread out in space, you need electromagnetic fields to communicate how the local voltage references relate to each other.
 
@@ -167,7 +170,7 @@ In the Fractal Gas, the analogue of electromagnetism emerges from fitness measur
 
 The cloning companion selection mechanism induces an $SU(2)$ gauge field on the Fractal Set.
 
-**Redundancy**: Local isospin doublet structure in the cloning kernel—walkers form natural $(+,-)$ pairs based on fitness comparison.
+**Redundancy**: A local choice of basis in the two-state cloning space (can-clone vs cannot-clone) for each interacting pair.
 
 **Phase from cloning selection**:
 
@@ -210,7 +213,7 @@ The mathematical structure $SU(2)$ describes rotations among two-component objec
 
 The viscous force coupling between walkers induces an $SU(3)$ gauge field on the Fractal Set.
 
-**Redundancy**: Velocity permutation symmetry in the viscous force:
+**Redundancy**: Basis-rotation symmetry in the viscous force (for isotropic $K_\rho$):
 
 $$
 \mathbf{F}_{\text{viscous}}(i) = \nu \sum_j K_\rho(x_i, x_j)(v_j - v_i)
@@ -221,16 +224,18 @@ where $K_\rho$ is the localization kernel.
 **Color State**: Each walker carries a color charge:
 
 $$
-|\Psi_i^{(\text{color})}\rangle \in \mathbb{C}^3
+|\Psi_i^{(\text{color})}\rangle \in \mathbb{C}^d \quad (\mathbb{C}^3 \text{ when } d=3)
 $$
 
 defined from complexified force components with momentum-phase encoding:
 
 $$
-c_i^{(\alpha)} = F_\alpha^{(\text{visc})}(i) \cdot \exp\left(i m v_i^{(\alpha)}/\hbar_{\text{eff}}\right)
+c_i^{(\alpha)} = F_\alpha^{(\text{visc})}(i) \cdot \exp\left(i p_i^{(\alpha)} \ell_0/\hbar_{\text{eff}}\right)
 $$
 
-**Gluon Fields**: Parallel transport with Gell-Mann generators $\lambda_a$:
+where $p_i^{(\alpha)} = m v_i^{(\alpha)}$ and $\ell_0$ is a characteristic length (e.g., mean IG edge length) to make the phase dimensionless.
+
+**Gluon Fields**: Parallel transport with Gell-Mann generators $\lambda_a$ (or $T^a$ for $SU(d)$):
 
 $$
 U_{ij} = \exp\left(i \sum_a g_s \lambda_a A_{ij}^a\right)
@@ -238,19 +243,19 @@ $$
 
 **Confinement**: The localization kernel $K_\rho$ provides short-range coupling—walkers are "confined" to fitness basins by the viscous force structure (see {prf:ref}`def-fractal-set-viscous-force`).
 
-*Proof*: The viscous force $\mathbf{F}_{\text{viscous}}(i) = \nu \sum_j K_\rho(x_i, x_j)(v_j - v_i)$ is invariant under global velocity relabeling $v^{(\alpha)} \to v^{(\sigma(\alpha))}$ for any permutation $\sigma \in S_d$. In $d=3$ spatial dimensions, this permutation symmetry on velocity components, combined with the momentum-phase encoding, generates an $SU(3)$ structure on the complexified force vector.
+*Proof*: If $K_\rho$ depends only on distances, the viscous force $\mathbf{F}_{\text{viscous}}(i) = \nu \sum_j K_\rho(x_i, x_j)(v_j - v_i)$ is invariant under global orthogonal rotations of the velocity basis. After complexification of the force components (via the momentum-phase encoding), this redundancy becomes invariance under $U(d)$ basis changes; quotienting the overall phase yields $SU(d)$. In $d=3$ spatial dimensions, this gives $SU(3)$ on the complexified force vector.
 
 **Note on dimension**: The choice $d=3$ for physical space selects $SU(3)$ as the color group. In general dimension $d$, the structure would be $SU(d)$. $\square$
 :::
 
 :::{div} feynman-prose
-The $SU(3)$ color symmetry is perhaps the most surprising. In particle physics, quarks carry "color charge"—red, green, or blue—and the strong force arises from the symmetry under color permutations.
+The $SU(3)$ color symmetry is perhaps the most surprising. In particle physics, quarks carry "color charge"—red, green, or blue—and the strong force arises from symmetry under rotations in color space.
 
 Where does this come from in the Fractal Gas? From the viscous force between walkers.
 
-Each walker has a velocity vector with $d$ components. The viscous force tries to align nearby walkers' velocities—it is a kind of friction that smooths out velocity differences. Now here is the key: if you permute the labels on velocity components (swap "velocity in the x-direction" with "velocity in the y-direction"), the viscous force does not care. It just wants neighboring velocities to match, regardless of which component is which.
+Each walker has a velocity vector with $d$ components. The viscous force tries to align nearby walkers' velocities—it is a kind of friction that smooths out velocity differences. Now here is the key: if you rotate the basis of velocity components (any global orthogonal change of basis), the viscous force does not care. It just wants neighboring velocities to match, regardless of which basis you choose.
 
-This permutation symmetry on $d$ velocity components, combined with the complex phase from momentum, generates $SU(d)$. In three spatial dimensions, that is $SU(3)$—the color gauge group of the strong force.
+This basis-rotation redundancy on $d$ velocity components, combined with the complex phase from momentum, generates $SU(d)$ after complexification (a $U(d)$ redundancy modulo the overall phase). In three spatial dimensions, that is $SU(3)$—the color gauge group of the strong force.
 
 The localization kernel $K_\rho$ provides short-range coupling: walkers only feel viscous forces from nearby neighbors. This is exactly the confinement property of the strong force—quarks can never be isolated because the gluon field between them stores energy proportional to distance.
 :::
@@ -325,13 +330,13 @@ $$
 **Antisymmetry relation**: The weighted sum vanishes:
 
 $$
-\boxed{S_i(j) \cdot (V_j + \varepsilon) + S_j(i) \cdot (V_i + \varepsilon) = 0}
+\boxed{S_i(j) \cdot (V_i + \varepsilon_{\text{clone}}) + S_j(i) \cdot (V_j + \varepsilon_{\text{clone}}) = 0}
 $$
 
-For small $\varepsilon$ ($\varepsilon \ll V_i, V_j$):
+For comparable fitness values ($V_i \approx V_j$), the scores are approximately antisymmetric:
 
 $$
-S_i(j) \approx -S_j(i) \quad \text{(approximately antisymmetric)}
+S_i(j) \approx -S_j(i)
 $$
 
 **Exact statement**: The numerator of $S_i(j)$ equals the negative of the numerator of $S_j(i)$:
@@ -362,17 +367,17 @@ For any walker pair $(i, j)$, at most one walker can clone in any given directio
 | $V_i > V_j$ | $< 0$ | $> 0$ | Only $j$ from $i$ |
 | $V_i = V_j$ | $= 0$ | $= 0$ | Neither |
 
-**Exclusion Statement**: In each fitness-ordered pair, exactly one direction of cloning is permitted.
+**Exclusion Statement**: For any strictly ordered pair ($V_i \neq V_j$), exactly one direction of cloning is permitted; if $V_i = V_j$, neither direction is.
 
 This is the algorithmic analogue of the **Pauli exclusion principle** {cite}`pauli1925zusammenhang`: "Two fermions cannot occupy the same quantum state."
 
-*Proof*: Follows from the sign structure of $S_i(j) = (V_j - V_i)/(V_i + \varepsilon)$. When $V_j > V_i$, we have $S_i(j) > 0$ (cloning enabled) and $S_j(i) < 0$ (cloning blocked). The cases are exhaustive and mutually exclusive. See {prf:ref}`thm-exclusion-principle` for the formal statement. $\square$
+*Proof*: Follows from the sign structure of $S_i(j) = (V_j - V_i)/(V_i + \varepsilon_{\text{clone}})$. When $V_j > V_i$, we have $S_i(j) > 0$ (cloning enabled) and $S_j(i) < 0$ (cloning blocked). The cases are exhaustive and mutually exclusive. See {prf:ref}`thm-exclusion-principle` for the formal statement. $\square$
 :::
 
 :::{div} feynman-prose
 Here's the key insight. In quantum mechanics, we say fermions are "antisymmetric under exchange"—if you swap two identical fermions, the wave function picks up a minus sign. This is what enforces the Pauli exclusion principle.
 
-In the Fractal Gas, we get the same mathematical structure from cloning dynamics. If walker $i$ can clone from walker $j$ (because $j$ is fitter), then walker $j$ cannot clone from walker $i$ in the same step. The cloning scores are antisymmetric: $S_i(j) \approx -S_j(i)$.
+In the Fractal Gas, we get the same mathematical structure from cloning dynamics. If walker $i$ can clone from walker $j$ (because $j$ is fitter), then walker $j$ cannot clone from walker $i$ in the same step. The cloning scores are antisymmetric in their numerator and approximately antisymmetric when $V_i \approx V_j$: $S_i(j) \approx -S_j(i)$.
 
 This isn't a coincidence. It's telling us that fermionic statistics emerge naturally from any system where "taking information" is a directed, competitive process.
 :::
@@ -461,9 +466,9 @@ The temporal fermionic operator follows from the QSD's thermal structure:
 
 1. **QSD satisfies KMS condition**: The quasi-stationary distribution is a thermal equilibrium state at temperature $T$
 2. **Wick rotation**: KMS analyticity allows $t \to -i\tau$, transforming fitness action to Euclidean action
-3. **Fermionic sign**: Grassmann path integrals give $\exp(+iS^E)$
+3. **Fermionic sign**: Wick rotation gives a Euclidean action with weight $\exp(-S^E)$ (the Grassmann integral produces the standard fermion determinant)
 
-**Result**: The complex phase $\theta_{ij}^{\text{fit}}$ is real-valued (Euclidean action), ensuring $U_{ij}$ is unitary.
+**Result**: The integral defining $\theta_{ij}^{\text{fit}}$ is real-valued after Wick rotation, so $U_{ij} \in U(1)$ is unitary.
 
 **Hermiticity**: The action satisfies approximate Hermiticity:
 
@@ -479,7 +484,7 @@ $$
 :::{div} feynman-prose
 The Dirac equation is the relativistic equation for electrons and other spin-1/2 particles. At its heart are the gamma matrices $\gamma^\mu$, which satisfy the Clifford algebra: $\{\gamma^\mu, \gamma^\nu\} = 2\eta^{\mu\nu}$. This algebraic relation encodes both the spin structure and the relativistic properties of fermions.
 
-Here is what we show: the antisymmetric cloning kernel $\tilde{K}$ satisfies the same algebraic relations. When you form the anticommutator $\{\tilde{K}_\mu, \tilde{K}_\nu\}$, you get $2g_{\mu\nu}^{\text{eff}}$ times the identity—exactly the Clifford algebra structure with the emergent metric playing the role of the Minkowski metric.
+Here is what we show: the antisymmetric cloning kernel $\tilde{K}$ satisfies the same algebraic relations. When you form the anticommutator $\{\tilde{K}_\mu, \tilde{K}_\nu\}$, you get $2g_{\mu\nu}^{\text{eff}}$ times the identity—exactly the Clifford algebra structure with the emergent metric playing the role of the Minkowski metric. The spatial part comes from the IG Laplacian, while the timelike direction is supplied by the CST, giving a Lorentzian signature.
 
 This is not just a similarity; it is an isomorphism. Every theorem about the Dirac equation translates to a theorem about walker dynamics, and vice versa. The abstract algebraic structure that gives fermions their properties emerges naturally from cloning interactions.
 :::
@@ -493,7 +498,7 @@ $$
 \{\tilde{K}_\mu, \tilde{K}_\nu\} = 2g_{\mu\nu}^{\text{eff}} \cdot \mathbf{1}
 $$
 
-This is isomorphic to $\mathrm{Cl}_{1,3}(\mathbb{R})$, the Clifford algebra underlying the Dirac equation. The isomorphism is verified via:
+with $g_{\mu\nu}^{\text{eff}} = \mathrm{diag}(-1, g^{\text{spatial}})$ and $g^{\text{spatial}}$ from {prf:ref}`thm-sm-laplacian-convergence`. This is isomorphic to $\mathrm{Cl}_{1,d}(\mathbb{R})$ (and $\mathrm{Cl}_{1,3}$ when $d=3$), the Clifford algebra underlying the Dirac equation. The isomorphism is verified via:
 1. **Expansion Adjunction** ({prf:ref}`thm-expansion-adjunction`): Promotes discrete algebra
 2. **Lock tactics**: Dimension counting (E1) and algebraic relations (E4)
 3. **Truncation** ({prf:ref}`def-truncation-functor-tau0`): Extracts ZFC bijection
@@ -548,6 +553,8 @@ $$
 $$
 (\partial_\mu \phi)^2 = -(\partial_0 \phi)^2 + \sum_{i=1}^d (\partial_i \phi)^2
 $$
+
+The spatial part is set by the IG geometry, while the timelike direction is set by CST proper time.
 
 :::
 
@@ -771,10 +778,10 @@ This section derives from first principles the remaining structural components o
 The **flavor index** $\alpha \in \{1, \ldots, d\}$ labels the velocity component that carries $SU(d)$ gauge charge. For walker $i$ with velocity $v_i \in \mathbb{R}^d$, the $\alpha$-th **flavor state** is:
 
 $$
-c_i^{(\alpha)} = F_\alpha^{(\text{visc})}(i) \cdot \exp\left(i m v_i^{(\alpha)}/\hbar_{\text{eff}}\right)
+c_i^{(\alpha)} = F_\alpha^{(\text{visc})}(i) \cdot \exp\left(i p_i^{(\alpha)} \ell_0/\hbar_{\text{eff}}\right)
 $$
 
-where $F_\alpha^{(\text{visc})}(i)$ is the $\alpha$-th component of the viscous force from {prf:ref}`def-fractal-set-viscous-force`.
+where $F_\alpha^{(\text{visc})}(i)$ is the $\alpha$-th component of the viscous force from {prf:ref}`def-fractal-set-viscous-force`, $p_i^{(\alpha)} = m v_i^{(\alpha)}$, and $\ell_0$ is the characteristic length used in the momentum-phase encoding.
 
 Each flavor index corresponds to one **generation** of fermions. The flavor sectors are labeled $\alpha = 1, \ldots, d$.
 :::
@@ -788,8 +795,8 @@ For Fractal Gas in $d$-dimensional latent space $Z \subseteq \mathbb{R}^d$, the 
 
 **Structure**:
 - Walker phase space: $(z, v) \in Z \times T_z(Z)$ with $2d$ total degrees of freedom
-- $SU(d)$ color symmetry from velocity component permutation ({prf:ref}`thm-sm-su3-emergence`)
-- Spinor representation in dimension $2^{\lfloor d/2 \rfloor}$
+- $SU(d)$ color symmetry from isotropic viscous coupling ({prf:ref}`thm-sm-su3-emergence`)
+- Spinor representation in dimension $2^d$ for $\mathrm{Spin}(2d)$
 
 **Statement**: $N_{\text{gen}} = d$
 
@@ -808,10 +815,10 @@ Each component transforms independently under $SU(d)$ but retains its flavor lab
 **Step 2 (Spinor dimension counting):** The full rotation group on phase space $(z, v) \in \mathbb{R}^{2d}$ is $SO(2d)$. Its spinor representation has dimension:
 
 $$
-\dim(\text{Spin}_{2d}) = 2^d
+\dim(\text{Spin}(2d)\ \text{spinor}) = 2^d
 $$
 
-This decomposes into $d$ copies of the basic spinor under the diagonal action, one for each flavor sector.
+We use this only as a degrees-of-freedom count; the flavor index itself is tied to the $d$ velocity components.
 
 **Step 3 (Sieve constraint):** By Lock tactic E1 (dimension counting), the number of independent fermionic representations must equal the number of flavor indices. The Grassmann field assignment ({prf:ref}`axm-sm-grassmann`) requires one anticommuting variable per flavor sector.
 
@@ -957,8 +964,10 @@ where $K_{\text{visc}}$ is the viscous kernel and $\langle \cdot \rangle_{\text{
 **Step 1 (Color charge definition):** From {prf:ref}`thm-sm-su3-emergence`, the color state is:
 
 $$
-c_i^{(\alpha)} = F_\alpha^{(\text{visc})}(i) \cdot \exp\left(i m v_i^{(\alpha)}/\hbar_{\text{eff}}\right)
+c_i^{(\alpha)} = F_\alpha^{(\text{visc})}(i) \cdot \exp\left(i p_i^{(\alpha)} \ell_0/\hbar_{\text{eff}}\right)
 $$
+
+with $p_i^{(\alpha)} = m v_i^{(\alpha)}$ and the momentum-phase length scale $\ell_0$ as in the color-state definition.
 
 **Step 2 (Coupling from force magnitude):** The gauge coupling measures the strength of the color interaction:
 
@@ -1006,7 +1015,7 @@ $$
 
 Physical interpretation: Viscous confinement increases at large scales (walkers trapped in fitness basins).
 
-*Proof sketch*: The beta function signs follow from the standard one-loop calculation. The coefficient $4N_{\text{gen}}$ (rather than $2N_{\text{gen}}$) accounts for the $SU(2)$ doublet structure: each generation contributes two quark flavors (up-type and down-type), so $N_f = 2N_{\text{gen}}$. The standard QCD result $b_0 = 11 - 2N_f/3 = 11 - 4N_{\text{gen}}/3$ is recovered for $d = 3$, $N_{\text{gen}} = 3$: $b_0 = (33-12)/3 = 7$. The physical interpretation follows from the algorithmic origin of each gauge group. $\square$
+*Proof sketch*: The beta function signs follow from the standard one-loop calculation {cite}`peskin1995introduction,gross1973ultraviolet,politzer1973reliable`. The coefficient $4N_{\text{gen}}$ (rather than $2N_{\text{gen}}$) accounts for the $SU(2)$ doublet structure: each generation contributes two quark flavors (up-type and down-type), so $N_f = 2N_{\text{gen}}$. The standard QCD result $b_0 = 11 - 2N_f/3 = 11 - 4N_{\text{gen}}/3$ is recovered for $d = 3$, $N_{\text{gen}} = 3$: $b_0 = (33-12)/3 = 7$. The physical interpretation follows from the algorithmic origin of each gauge group. $\square$
 :::
 
 :::{prf:proposition} Unification Relations
@@ -1034,11 +1043,11 @@ where $R(d, T)$ is a dimension and temperature-dependent factor.
 ### CP Violation from Selection Non-Commutativity
 
 :::{div} feynman-prose
-CP symmetry means that the laws of physics are the same if you simultaneously flip all charges (C) and reflect space (P). For a long time, physicists believed this symmetry was exact. Then in 1964, Cronin and Fitch discovered CP violation in kaon decays.
+CP symmetry means that the laws of physics are the same if you simultaneously flip all charges (C) and reflect space (P). For a long time, physicists believed this symmetry was exact. Then in 1964, Cronin and Fitch discovered CP violation in kaon decays {cite}`cronin1964cp`.
 
 CP violation is important for a deep reason: without it, the universe could not contain more matter than antimatter. If CP were exact, the Big Bang would have produced equal amounts, and everything would have annihilated. We exist because CP is violated.
 
-In the Standard Model, CP violation is parameterized by a complex phase in the CKM matrix—but this is just a description, not an explanation. Why is that phase nonzero?
+In the Standard Model, CP violation is parameterized by a complex phase in the CKM matrix {cite}`cabibbo1963unitary,kobayashi1973cp`—but this is just a description, not an explanation. Why is that phase nonzero?
 
 In the Fractal Gas, we can see where CP violation comes from: it is forced by the mismatch between diversity and cloning interaction ranges. When $\epsilon_d \neq \epsilon_c$, the two selection mechanisms do not commute—doing diversity selection first, then cloning selection, gives a different result than the reverse order. This non-commutativity is exactly what generates CP-violating phases.
 
@@ -1093,7 +1102,7 @@ This is generically non-zero when $\epsilon_d \neq \epsilon_c$.
 
 **Step 1 (Source of CP violation):** Three independent mechanisms break CP:
 
-1. *Antisymmetric cloning kernel*: $S_i(j) \approx -S_j(i)$ breaks T at the algorithmic level
+1. *Antisymmetric cloning kernel*: the antisymmetric numerator and directed selection break T at the algorithmic level
 2. *Non-commutative selection*: Diversity and cloning selection do not commute:
 
    $$
@@ -1505,9 +1514,9 @@ The antisymmetric cloning kernel structure is isomorphic to the Clifford algebra
    \tau_0\left(\mathrm{Hom}_{\mathbf{Cliff}}(\mathfrak{C}(\tilde{K}), \mathfrak{C}(\gamma))\right) \cong \{*\}
    $$
 
-**Result**: The promoted Fractal Gas fermionic algebra is uniquely isomorphic to the Clifford algebra $\mathrm{Cl}_{1,3}(\mathbb{R})$ underlying the Dirac equation.
+**Result**: The promoted Fractal Gas fermionic algebra is uniquely isomorphic to the Clifford algebra $\mathrm{Cl}_{1,d}(\mathbb{R})$ (and $\mathrm{Cl}_{1,3}$ when $d=3$) underlying the Dirac equation.
 
-*Proof sketch*: The antisymmetric kernel $\tilde{K}$ generates an algebra whose relations match Clifford relations when the emergent metric from graph Laplacian convergence is identified with the Minkowski metric. The Expansion Adjunction preserves these algebraic relations during promotion, and the Lock verifies no obstruction to isomorphism. The truncation functor produces a unique isomorphism class in $\mathbf{Set}$. $\square$
+*Proof sketch*: The antisymmetric kernel $\tilde{K}$ generates an algebra whose relations match Clifford relations when the spatial metric from graph Laplacian convergence is combined with the CST time direction to form a Lorentzian metric. The Expansion Adjunction preserves these algebraic relations during promotion, and the Lock verifies no obstruction to isomorphism. The truncation functor produces a unique isomorphism class in $\mathbf{Set}$. $\square$
 :::
 
 :::{prf:remark} Physical vs Mathematical Claim
@@ -1583,28 +1592,27 @@ The Fractal Gas symmetry breaking hypostructure is isomorphic to the Higgs mecha
 
 The walker state space representation structure is isomorphic to the $\mathbf{16}$-dimensional spinor representation of $SO(10)$.
 
-**Fractal Gas walker state**:
-- Position: $x \in \mathbb{R}^3$ (3 dimensions)
-- Velocity: $v \in \mathbb{R}^3$ (3 dimensions)
-- Cloning doublet: $(+,-)$ mode (2 dimensions via $SU(2)$)
-- Color triplet: $(r,g,b)$ mode (3 dimensions via $SU(3)$)
-- Fitness phase: $\theta \in U(1)$ (1 dimension)
-- Chirality: Left/Right handedness from CST orientation (2 states)
+**Fractal Gas walker state (internal quantum numbers)**:
+- Weak doublet/singlet structure from cloning selection ($SU(2)$)
+- Color triplet/singlet structure from viscous coupling ($SU(3)$)
+- Hypercharge phase from fitness redundancy ($U(1)$)
+- Chirality from CST orientation (left/right)
+- Sterile singlet from ancestral reflection (for $\nu_R$)
 
-**Total dimension**: Accounting for the representation structure, walker states organize into a $\mathbf{16}$-dimensional spinor.
+**Total internal dimension**: One generation of chiral fermions gives a $\mathbf{16}$-dimensional spinor (including a right-handed neutrino). Spacetime labels $(x, v)$ are external and do not contribute to the internal representation dimension.
 
 **SO(10) structure**:
 - The $\mathbf{16}$ spinor representation decomposes under $SU(3)_C \times SU(2)_L \times U(1)_Y$ as:
 
   $$
-  \mathbf{16} = (3,2)_{1/6} \oplus (\bar{3},1)_{-2/3} \oplus (\bar{3},1)_{1/3} \oplus (1,2)_{-1/2} \oplus (1,1)_1
+  \mathbf{16} = (3,2)_{1/6} \oplus (\bar{3},1)_{-2/3} \oplus (\bar{3},1)_{1/3} \oplus (1,2)_{-1/2} \oplus (1,1)_1 \oplus (1,1)_0
   $$
 
-- This matches one generation of Standard Model fermions: $(u_L, d_L), u_R^c, d_R^c, (\nu_L, e_L), e_R^c$
+- This matches one generation of Standard Model fermions: $(u_L, d_L), u_R^c, d_R^c, (\nu_L, e_L), e_R^c, \nu_R^c$
 
 **Isomorphism Construction:**
 
-1. **Dimension matching**: The Fractal Gas gauge structure $SU(3) \times SU(2) \times U(1)$ ({prf:ref}`cor-sm-gauge-group`) is a maximal subgroup of $SO(10)$.
+1. **Dimension matching**: For $d=3$, the Fractal Gas gauge structure $SU(3) \times SU(2) \times U(1)$ ({prf:ref}`cor-sm-gauge-group`) embeds in $SO(10)$ in the standard GUT chain.
 
 2. **Representation decomposition**: Walker states carrying the three gauge quantum numbers decompose exactly as the $\mathbf{16}$ under the SM subgroup.
 
@@ -1692,7 +1700,7 @@ The Standard Model gauge group $SU(d)_C \times SU(2)_L \times U(1)_Y$ emerges fr
 ### Grand Unification
 
 - Walker state space isomorphic to SO(10) spinor $\mathbf{16}$ — {prf:ref}`thm-sm-so10-isomorphism`
-- Standard Model embedding follows from $SU(d) \times SU(2) \times U(1) \subset SO(2d)$
+- For $d=3$, the Standard Model subgroup embeds in $SO(10)$ (standard GUT embedding)
 
 ### Generation Structure
 
@@ -1756,6 +1764,9 @@ This chapter builds on foundational results from gauge theory and quantum field 
 | Electroweak unification | {cite}`weinberg1967model` |
 | QCD and color | {cite}`fritzsch1973advantages` |
 | Wilson loops and lattice QFT | {cite}`wilson1974confinement` |
+| Asymptotic freedom and beta functions | {cite}`peskin1995introduction,gross1973ultraviolet,politzer1973reliable` |
+| CP violation discovery | {cite}`cronin1964cp` |
+| CKM mixing | {cite}`cabibbo1963unitary,kobayashi1973cp` |
 | Pauli exclusion principle | {cite}`pauli1925zusammenhang` |
 | Grassmann variables | {cite}`berezin1966method` |
 | KMS condition | {cite}`haag1967equilibrium` |

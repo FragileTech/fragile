@@ -18,7 +18,7 @@ But we go further. We verify that this construction satisfies all three major ax
 | **U(1) fitness current** | $\partial_\mu J^\mu_{\text{fitness}} = \mathcal{S}_{\text{cloning}}$ | {prf:ref}`thm-u1-noether-current` |
 | **SU(2) isospin current** | $D_\mu J^{(a),\mu} = 0$ (on-shell) | {prf:ref}`thm-su2-noether-current` |
 | **Gauge invariance** | $S'_{\text{YM}} = S_{\text{YM}}$ under local SU(2) | {prf:ref}`thm-wilson-action-gauge-invariance` |
-| **Continuum limit** | $S \to \frac{1}{4}\int F_{\mu\nu}F^{\mu\nu}$ | {prf:ref}`thm-continuum-limit-ym` |
+| **Continuum limit** | $S \to \frac{1}{4}\int d^{d+1}x \, F_{\mu\nu}^a F^{a,\mu\nu}$ | {prf:ref}`thm-continuum-limit-ym` |
 | **Mass gap preservation** | $\Delta > 0$ survives RG flow | {prf:ref}`thm-mass-gap-rg-fixed-point` |
 | **QFT axioms** | Wightman, OS, Haag-Kastler verified | {ref}`sec-qft-axioms-verification` |
 
@@ -26,9 +26,9 @@ But we go further. We verify that this construction satisfies all three major ax
 
 | Constant | Expression | Physical Meaning |
 |----------|------------|------------------|
-| $\hbar_{\text{eff}}$ | $m\epsilon_c^2/\tau$ | Effective Planck constant |
+| $\hbar_{\text{eff}}$ | $m\epsilon_c^2/(2\tau)$ | Effective Planck constant |
 | $g_{\text{weak}}^2$ | $m\tau\rho^2/\epsilon_c^2$ | SU(2) gauge coupling |
-| $e_{\text{fitness}}^2$ | $m^2/\epsilon_F$ | U(1) fitness coupling |
+| $e_{\text{fitness}}^2$ | $m/\epsilon_F$ | U(1) fitness coupling |
 | $m_{\text{gap}}$ | $\lambda_{\text{gap}}$ | Mass gap from spectral gap |
 
 ---
@@ -395,15 +395,23 @@ $$
 In the limit $\tau \to 0$ with total time $T_{\text{phys}} = T\tau$ held fixed, the stochastic action becomes:
 
 $$
-S^{\text{stoch}}[\gamma] \to S^{\text{Eucl}}[\gamma] = \int_0^{T_{\text{phys}}} \left(\frac{1}{2\sigma^2}|\dot{y}|^2 + V_{\text{fit}}(y)\right) dt \quad [\text{nat}]
+S^{\text{stoch}}[\gamma] \to S^{\text{Eucl}}[\gamma] = \int_0^{T_{\text{phys}}} \left(\frac{1}{2\sigma^2}|\dot{y} - b(y)|^2 + V_{\text{fit}}(y)\right) dt \quad [\text{nat}]
 $$
 
+Equivalently,
+
+$$
+S^{\text{Eucl}}[\gamma] = \int_0^{T_{\text{phys}}} \left(\frac{|\dot{y}|^2}{2\sigma^2} - \frac{\dot{y}\cdot b(y)}{\sigma^2} + \frac{|b(y)|^2}{2\sigma^2} + V_{\text{fit}}(y)\right) dt.
+$$
+
+If $b = -\nabla \Phi$, the cross term integrates to a boundary term $\Phi(y(T)) - \Phi(y(0))$, and $\frac{|b|^2}{2\sigma^2}$ can be absorbed into an effective potential; we drop boundary terms in the bulk action.
+
 **Dimensional check of integrand**:
-- $\frac{|\dot{y}|^2}{\sigma^2} = \frac{[\text{velocity}^2]}{[\text{length}^2/\text{time}]} = \frac{[\text{length}^2/\text{time}^2]}{[\text{length}^2/\text{time}]} = [\text{time}^{-1}]$ ✓
+- $\frac{|\dot{y} - b|^2}{\sigma^2} = \frac{[\text{velocity}^2]}{[\text{length}^2/\text{time}]} = [\text{time}^{-1}]$ ✓
 - $V_{\text{fit}} = [\text{time}^{-1}]$ ✓
 - Integrand $\times \, dt = [\text{time}^{-1}] \cdot [\text{time}] = [\text{dimensionless}]$ ✓
 
-This is the **Euclidean action** for a particle in potential $V_{\text{fit}}$.
+This is the **Euclidean action** for a particle with drift $b$ in potential $V_{\text{fit}}$.
 
 **Step 7: Wick rotation justification.**
 
@@ -525,15 +533,17 @@ where $d_{\text{alg}}^2(i,j) = \|z_i - z_j\|^2 + \lambda_{\text{alg}}\|v_i - v_j
 **Gauge field components**: For edge $e = (n_i, n_j)$:
 
 $$
-A_e^{(a)} T^a := \frac{1}{g\tau} \theta_{ij}^{(\text{SU}(2))} \cdot \hat{n}^{(a)}
+A_e^{(a)} T^a := \frac{1}{g a_e} \theta_{ij}^{(\text{SU}(2))} \cdot \hat{n}^{(a)}
 $$
+
+where $a_e$ is the edge length ($a_e = \tau$ for CST edges and $a_e = \rho$ for IG edges).
 
 where $T^a = \sigma^a/2$ are SU(2) generators and $\hat{n}^{(a)}$ is the direction in Lie algebra space.
 
 **Link variable** (parallel transport):
 
 $$
-U_{ij} = \exp\left(i g\tau \sum_{a=1}^3 A_e^{(a)} T^a\right) \in \text{SU}(2)
+U_{ij} = \exp\left(i g a_e \sum_{a=1}^3 A_e^{(a)} T^a\right) \in \text{SU}(2)
 $$
 
 **Key insight**: The gauge field is the algorithmic distance encoded as a phase. This is not an analogy—the mathematical structures are identical.
@@ -895,6 +905,12 @@ The Wilson action is the sum over all plaquettes of $(1 - \frac{1}{N}\text{Re Tr
 And here is what we have accomplished: we have shown that this action emerges from the Fractal Gas. The plaquettes are the elementary closed loops in the CST+IG structure. The link variables are the algorithmic phases. The action is not put in by hand—it falls out of the stochastic dynamics.
 :::
 
+:::{admonition} Lattice spacing convention
+:class: note
+
+In the gauge-sector formulas below, $a$ denotes the relevant link length. For Fractal Set applications, take $a_e = \tau$ on CST (temporal) edges and $a_e = \rho$ on IG (spatial) edges; for anisotropic plaquettes replace $a^2$ by $a_\mu a_\nu$ in the $(\mu,\nu)$-plane.
+:::
+
 ### 5.1. Link Variables and Parallel Transport
 
 :::{prf:definition} Link Variables
@@ -903,8 +919,10 @@ And here is what we have accomplished: we have shown that this action emerges fr
 Building on the gauge connection structure ({prf:ref}`def-fractal-set-gauge-connection`), for each edge $e = (n_i, n_j)$ in the Fractal Set, the **link variable** is:
 
 $$
-U_e = U_{ij} := \exp\left(i g\tau \sum_{a=1}^3 A_e^{(a)} T^a\right) \in \text{SU}(2)
+U_e = U_{ij} := \exp\left(i g a_e \sum_{a=1}^3 A_e^{(a)} T^a\right) \in \text{SU}(2)
 $$
+
+with $a_e$ the length of edge $e$.
 
 **Physical interpretation**: Parallel transport of isospin from node $i$ to node $j$.
 
@@ -932,7 +950,7 @@ $$
 
 where $\hat{\sigma}$ is the direction in isospin space, so that
 $$
-A_e^{(a)} T^a = -\frac{1}{g\tau} \frac{d_{\text{alg}}^2(i,j)}{2\epsilon_c^2 \hbar_{\text{eff}}} \, \hat{\sigma}.
+A_e^{(a)} T^a = -\frac{1}{g a_e} \frac{d_{\text{alg}}^2(i,j)}{2\epsilon_c^2 \hbar_{\text{eff}}} \, \hat{\sigma}.
 $$
 :::
 
@@ -950,13 +968,13 @@ $$
 **Field strength** (from holonomy):
 
 $$
-F_P := \frac{1}{i g\tau^2} \log U_P \in \mathfrak{su}(2)
+F_P := \frac{1}{i g a^2} \log U_P \in \mathfrak{su}(2)
 $$
 
 **Expansion for small fields**:
 
 $$
-U_P = \exp(i g\tau^2 F_P) = I + i g\tau^2 F_P - \frac{g^2\tau^4}{2} F_P^2 + O(\tau^6)
+U_P = \exp(i g a^2 F_P) = I + i g a^2 F_P - \frac{g^2 a^4}{2} F_P^2 + O(a^6)
 $$
 
 **Three types of plaquettes on Fractal Set**:
@@ -997,31 +1015,31 @@ $$
 
 **Small field expansion**:
 
-Expanding $U_P = \exp(i g\tau^2 F_P)$ to second order:
+Expanding $U_P = \exp(i g a^2 F_P)$ to second order:
 
 $$
-U_P = I + i g\tau^2 F_P - \frac{g^2\tau^4}{2} F_P^2 + O(\tau^6)
+U_P = I + i g a^2 F_P - \frac{g^2 a^4}{2} F_P^2 + O(a^6)
 $$
 
 Taking the trace (using $\text{Tr}(I) = 2$ and $\text{Tr}(F_P) = 0$ for traceless $\mathfrak{su}(2)$):
 
 $$
-\text{Tr}(U_P) = 2 + 0 - \frac{g^2\tau^4}{2}\text{Tr}(F_P^2) + O(\tau^6)
+\text{Tr}(U_P) = 2 + 0 - \frac{g^2 a^4}{2}\text{Tr}(F_P^2) + O(a^6)
 $$
 
 Therefore:
 
 $$
-1 - \frac{1}{2}\text{Re Tr}(U_P) = 1 - 1 + \frac{g^2\tau^4}{4}\text{Tr}(F_P^2) + O(\tau^6) = \frac{g^2\tau^4}{4}\text{Tr}(F_P^2)
+1 - \frac{1}{2}\text{Re Tr}(U_P) = 1 - 1 + \frac{g^2 a^4}{4}\text{Tr}(F_P^2) + O(a^6) = \frac{g^2 a^4}{4}\text{Tr}(F_P^2)
 $$
 
 The per-plaquette contribution to the action is:
 
 $$
-S_P = \beta \cdot \frac{g^2\tau^4}{4} \text{Tr}(F_P^2) = \tau^4 \text{Tr}(F_P^2) = \frac{\tau^4}{2} \sum_{a=1}^3 (F_P^{(a)})^2
+S_P = \beta \cdot \frac{g^2 a^4}{4} \text{Tr}(F_P^2) = a^4 \text{Tr}(F_P^2) = \frac{a^4}{2} \sum_{a=1}^3 (F_P^{(a)})^2
 $$
 
-**Continuum limit**: As $\tau \to 0$:
+**Continuum limit**: As $a \to 0$:
 
 $$
 S_{\text{YM}} \to \frac{1}{4} \int d^{d+1}x \sum_{a=1}^3 F_{\mu\nu}^{(a)} F^{(a),\mu\nu}
@@ -1179,19 +1197,19 @@ $$
 
 **Step 5: Small-field expansion to continuum.**
 
-For small field strength, expand $U_e = \exp(ig\tau A_\mu^{(a)}T^a) \approx I + ig\tau A_\mu^{(a)}T^a + O(\tau^2)$.
+For small field strength, expand $U_e = \exp(ig a A_\mu^{(a)}T^a) \approx I + ig a A_\mu^{(a)}T^a + O(a^2)$.
 
 The plaquette becomes:
 
 $$
-U_P = I + ig\tau^2 F_{\mu\nu}^{(a)} T^a + O(\tau^3)
+U_P = I + ig a^2 F_{\mu\nu}^{(a)} T^a + O(a^3)
 $$
 
 where $F_{\mu\nu}^{(a)} = \partial_\mu A_\nu^{(a)} - \partial_\nu A_\mu^{(a)} + g\epsilon^{abc}A_\mu^{(b)}A_\nu^{(c)}$ is the Yang-Mills field strength.
 
-From $U_P = U_e \Sigma_P^{(e)}$, we have $\Sigma_P^{(e)} = U_e^{-1} U_P \approx (I - ig\tau A_\mu T^a)(I + ig\tau^2 F_{\mu\nu} T^a) + O(\tau^2)$.
+From $U_P = U_e \Sigma_P^{(e)}$, we have $\Sigma_P^{(e)} = U_e^{-1} U_P \approx (I - ig a A_\mu T^a)(I + ig a^2 F_{\mu\nu} T^a) + O(a^2)$.
 
-Substituting and taking $\tau \to 0$, the discrete equation:
+Substituting and taking $a \to 0$, the discrete equation:
 
 $$
 \frac{\beta}{2}\sum_{P \ni e} \text{Im Tr}(T^a U_e \Sigma_P) = J_e^{(a)}
@@ -1234,7 +1252,7 @@ The path integral is the modern way to formulate quantum field theory. Instead o
 
 For gauge theories, this introduces a subtlety: gauge-equivalent configurations should be counted once, not multiple times. If you naively integrate over all gauge field configurations, you overcount by the volume of the gauge group. This is the gauge-fixing problem.
 
-The standard solution is the Faddeev-Popov procedure: you fix a gauge (like Lorenz gauge $\partial_\mu A^\mu = 0$), and introduce ghost fields to maintain the correct measure. The ghost fields are unphysical—they have the wrong spin-statistics relation—but they are necessary for the math to work.
+The standard solution is the Faddeev-Popov procedure {cite}`faddeev1967feynman`: you fix a gauge (like Lorenz gauge $\partial_\mu A^\mu = 0$), and introduce ghost fields to maintain the correct measure. The ghost fields are unphysical—they have the wrong spin-statistics relation—but they are necessary for the math to work.
 
 On the Fractal Set, there is an interesting open question: does the antisymmetric structure of the IG edges (the cloning kernel is antisymmetric) provide a natural gauge-fixing? The fermionic exclusion structure ({prf:ref}`thm-exclusion-principle`) might play the role that ghosts play in standard QFT. This is speculative, but worth investigating.
 :::
@@ -1369,7 +1387,7 @@ $$
 
 The formal gauge invariance proven above creates a problem: the path integral integrates over all gauge field configurations, but physically equivalent configurations (related by gauge transformations) are overcounted. The naive path integral is proportional to $\text{Vol}(\mathcal{G})$, the volume of the gauge group, which is infinite for continuous gauge transformations.
 
-**Standard resolution (Faddeev-Popov)**: Insert a gauge-fixing delta function $\delta(G[A])$ and a compensating determinant (involving ghost fields).
+**Standard resolution (Faddeev-Popov)** {cite}`faddeev1967feynman`: Insert a gauge-fixing delta function $\delta(G[A])$ and a compensating determinant (involving ghost fields).
 
 **Fractal Gas resolution**: The finite walker number $N$ provides a natural regularization:
 - Only $N$ walker positions exist, so only $\text{SU}(2)^N$ gauge transformations are possible
@@ -1386,7 +1404,7 @@ The precise connection between $S_N$ permutation symmetry and Faddeev-Popov ghos
 
 The naive path integral overcounts gauge-equivalent configurations. Standard resolution:
 
-**Faddeev-Popov procedure**:
+**Faddeev-Popov procedure** {cite}`faddeev1967feynman`:
 
 $$
 Z = \int \mathcal{D}[A] \mathcal{D}[\bar{c}] \mathcal{D}[c] \, \delta(G[A]) \det\left(\frac{\delta G}{\delta \omega}\right) e^{-S[A]}
@@ -1503,7 +1521,7 @@ $$
 
 The negative sign is crucial—it means the coupling decreases at high energies (asymptotic freedom). The one-loop coefficient is $b_0 = 11N/3$, so for SU(2) one has $b_0 = 22/3$, giving the prefactor $22/(48\pi^2)$ above.
 
-On the Fractal Set, the lattice spacing is set by $\tau$ (time step) and $\rho$ (localization scale). The continuum limit is $\tau, \rho \to 0$ with physical quantities held fixed. We will show that the Wilson action converges to the standard Yang-Mills action, and the beta function matches the known result.
+On the Fractal Set, temporal and spatial spacings are set by $\tau$ (time step) and $\rho$ (localization scale). In the gauge-sector continuum analysis we denote the common lattice spacing by $a$; map $a$ to $\tau$ or $\rho$ on the corresponding links. The continuum limit is $\tau, \rho \to 0$ with physical quantities held fixed. We will show that the Wilson action converges to the standard Yang-Mills action, and the beta function matches the known result.
 :::
 
 ### 8.1. Lattice to Continuum Convergence
@@ -1511,7 +1529,7 @@ On the Fractal Set, the lattice spacing is set by $\tau$ (time step) and $\rho$ 
 :::{prf:theorem} Continuum Limit of Yang-Mills Action
 :label: thm-continuum-limit-ym
 
-As lattice spacing $\tau \to 0$ with fixed physical coupling $g_{\text{phys}}$, the discrete Wilson action converges to the continuum Yang-Mills action:
+As lattice spacing $a \to 0$ with fixed physical coupling $g_{\text{phys}}$, the discrete Wilson action converges to the continuum Yang-Mills action:
 
 $$
 S_{\text{YM}}^{\text{disc}} \to S_{\text{YM}}^{\text{cont}} = \frac{1}{4} \int d^{d+1}x \sum_{a=1}^3 F_{\mu\nu}^{(a)} F^{(a),\mu\nu}
@@ -1523,25 +1541,27 @@ $$
 
 | Quantity | Dimension | Lattice | Continuum |
 |----------|-----------|---------|-----------|
-| Position | $[\text{length}]$ | $x = n\tau$ | $x \in \mathbb{R}^{d+1}$ |
-| Gauge field | $[\text{length}^{-1}]$ | $A_\mu(n\tau)$ | $A_\mu(x)$ |
-| Field strength | $[\text{length}^{-2}]$ | $F_P = F_{\mu\nu}(n\tau)$ | $F_{\mu\nu}(x)$ |
+| Position | $[\text{length}]$ | $x = n a$ | $x \in \mathbb{R}^{d+1}$ |
+| Gauge field | $[\text{length}^{-1}]$ | $A_\mu(n a)$ | $A_\mu(x)$ |
+| Field strength | $[\text{length}^{-2}]$ | $F_P = F_{\mu\nu}(n a)$ | $F_{\mu\nu}(x)$ |
 | Action | $[\text{dimensionless}]$ | $S^{\text{disc}}$ | $S^{\text{cont}}$ |
+
+In the physical case $d=3$ (so $d+1=4$), $a^4$ is the hypervolume element; for general $d+1$, replace $a^4$ by $a^{d+1}$ in the scaling arguments below.
 
 **Step 1: Plaquette expansion.**
 
-The link variable is $U_e = \exp(ig\tau A_\mu)$ where $A_\mu = A_\mu^{(a)} T^a$ with $T^a = \sigma^a/2$.
+The link variable is $U_e = \exp(ig a A_\mu)$ where $A_\mu = A_\mu^{(a)} T^a$ with $T^a = \sigma^a/2$.
 
-For a plaquette $P$ in the $(\mu,\nu)$-plane with corners at $(x, x+\tau\hat{\mu}, x+\tau\hat{\mu}+\tau\hat{\nu}, x+\tau\hat{\nu})$, the ordered product is:
+For a plaquette $P$ in the $(\mu,\nu)$-plane with corners at $(x, x+a\hat{\mu}, x+a\hat{\mu}+a\hat{\nu}, x+a\hat{\nu})$, the ordered product is:
 
 $$
-U_P = U_\mu(x) U_\nu(x+\tau\hat{\mu}) U_\mu^\dagger(x+\tau\hat{\nu}) U_\nu^\dagger(x)
+U_P = U_\mu(x) U_\nu(x+a\hat{\mu}) U_\mu^\dagger(x+a\hat{\nu}) U_\nu^\dagger(x)
 $$
 
 Using the Baker-Campbell-Hausdorff formula and Taylor expansion:
 
 $$
-U_P = \exp\left(ig\tau^2 F_{\mu\nu}(x) + O(\tau^3)\right) = I + ig\tau^2 F_{\mu\nu}(x) - \frac{g^2\tau^4}{2}F_{\mu\nu}^2 + O(\tau^5)
+U_P = \exp\left(ig a^2 F_{\mu\nu}(x) + O(a^3)\right) = I + ig a^2 F_{\mu\nu}(x) - \frac{g^2 a^4}{2}F_{\mu\nu}^2 + O(a^5)
 $$
 
 where the field strength is:
@@ -1550,7 +1570,7 @@ $$
 F_{\mu\nu} = \partial_\mu A_\nu - \partial_\nu A_\mu - ig[A_\mu, A_\nu]
 $$
 
-**Dimensional check**: $[\tau^2 F_{\mu\nu}] = [\text{length}^2] \cdot [\text{length}^{-2}] = [\text{dimensionless}]$ ✓
+**Dimensional check**: $[a^2 F_{\mu\nu}] = [\text{length}^2] \cdot [\text{length}^{-2}] = [\text{dimensionless}]$ ✓
 
 **Step 2: Action density per plaquette.**
 
@@ -1563,26 +1583,26 @@ $$
 Substituting the expansion:
 
 $$
-\text{Tr}(U_P) = \text{Tr}(I) + ig\tau^2 \text{Tr}(F_{\mu\nu}) - \frac{g^2\tau^4}{2}\text{Tr}(F_{\mu\nu}^2) + O(\tau^5)
+\text{Tr}(U_P) = \text{Tr}(I) + ig a^2 \text{Tr}(F_{\mu\nu}) - \frac{g^2 a^4}{2}\text{Tr}(F_{\mu\nu}^2) + O(a^5)
 $$
 
 Using $\text{Tr}(I) = 2$ for SU(2) and $\text{Tr}(F_{\mu\nu}) = 0$ (traceless):
 
 $$
-\text{Re Tr}(U_P) = 2 - \frac{g^2\tau^4}{2}\text{Tr}(F_{\mu\nu}^2) + O(\tau^6)
+\text{Re Tr}(U_P) = 2 - \frac{g^2 a^4}{2}\text{Tr}(F_{\mu\nu}^2) + O(a^6)
 $$
 
 Therefore:
 
 $$
-s_P = 1 - 1 + \frac{g^2\tau^4}{4}\text{Tr}(F_{\mu\nu}^2) + O(\tau^6) = \frac{g^2\tau^4}{8}\sum_{a=1}^3 (F_{\mu\nu}^{(a)})^2 + O(\tau^6)
+s_P = 1 - 1 + \frac{g^2 a^4}{4}\text{Tr}(F_{\mu\nu}^2) + O(a^6) = \frac{g^2 a^4}{8}\sum_{a=1}^3 (F_{\mu\nu}^{(a)})^2 + O(a^6)
 $$
 
 using $\text{Tr}(T^a T^b) = \frac{1}{2}\delta^{ab}$ and hence $\text{Tr}(F_{\mu\nu}^2) = \frac{1}{2}\sum_a (F_{\mu\nu}^{(a)})^2$.
 
 **Step 3: Riemann sum convergence (rigorous).**
 
-The lattice $\Lambda_\tau = \tau \mathbb{Z}^{d+1} \cap \Omega$ covers a bounded region $\Omega \subset \mathbb{R}^{d+1}$.
+The lattice $\Lambda_a = a \mathbb{Z}^{d+1} \cap \Omega$ covers a bounded region $\Omega \subset \mathbb{R}^{d+1}$.
 
 **Hölder continuity**: The field strength $F_{\mu\nu}$ is Hölder continuous with exponent $\alpha > 0$:
 
@@ -1592,68 +1612,68 @@ $$
 
 This follows from the bounded fitness constraint ({prf:ref}`def-fractal-set-two-channel-fitness`), which implies $\nabla A_\mu$ is bounded.
 
-**Riemann sum theorem** {cite}`tao2011introduction`: For $f \in C^\alpha(\Omega)$ and lattice $\Lambda_\tau$:
+**Riemann sum theorem** {cite}`tao2011introduction`: For $f \in C^\alpha(\Omega)$ and lattice $\Lambda_a$:
 
 $$
-\left|\sum_{x \in \Lambda_\tau} \tau^{d+1} f(x) - \int_\Omega f(x) \, d^{d+1}x\right| \leq C_\alpha \tau^\alpha \|f\|_{C^\alpha} \cdot |\Omega|
+\left|\sum_{x \in \Lambda_a} a^{d+1} f(x) - \int_\Omega f(x) \, d^{d+1}x\right| \leq C_\alpha a^\alpha \|f\|_{C^\alpha} \cdot |\Omega|
 $$
 
 where $|\Omega|$ is the volume of $\Omega$ and $\|f\|_{C^\alpha}$ is the Hölder norm.
 
-**Application**: Using $S_{\text{YM}}^{\text{disc}} = \beta \sum_P s_P$ with $\beta = 4/g^2$, the prefactor becomes $\beta \cdot g^2/8 = 1/2$. Let $f(x) = \frac{1}{2}\sum_a (F_{\mu\nu}^{(a)}(x))^2$. Since $F_{\mu\nu}$ is Hölder, so is $f$. Then:
+**Application**: Using $S_{\text{YM}}^{\text{disc}} = \beta \sum_P s_P$ with $\beta = 4/g^2$, the prefactor becomes $\beta \cdot g^2/8 = 1/2$. The plaquette sum runs over $\mu < \nu$, so $\sum_{\mu < \nu} F_{\mu\nu}^2 = \frac{1}{2}\sum_{\mu,\nu} F_{\mu\nu}^2$. Let $f(x) = \frac{1}{2}\sum_a (F_{\mu\nu}^{(a)}(x))^2$. Since $F_{\mu\nu}$ is Hölder, so is $f$. Then:
 
 $$
-\left|\sum_P \tau^4 \cdot \frac{1}{2}\sum_a (F_{\mu\nu}^{(a)})^2 - \frac{1}{2}\int d^{d+1}x \sum_a (F_{\mu\nu}^{(a)})^2\right| \leq C \tau^\alpha
+\left|\sum_P a^4 \cdot \frac{1}{2}\sum_a (F_{\mu\nu}^{(a)})^2 - \frac{1}{2}\int d^{d+1}x \sum_a (F_{\mu\nu}^{(a)})^2\right| \leq C a^\alpha
 $$
 
-The error is $O(\tau^\alpha)$ and vanishes as $\tau \to 0$.
+The error is $O(a^\alpha)$ and vanishes as $a \to 0$.
 
 **Step 4: Remainder term control.**
 
-The $O(\tau^6)$ remainder in Step 2 contributes:
+The $O(a^6)$ remainder in Step 2 contributes:
 
 $$
-|R_{\text{total}}| \leq \sum_P |R_P| \leq N_P \cdot C\tau^6
+|R_{\text{total}}| \leq \sum_P |R_P| \leq N_P \cdot C a^6
 $$
 
-where $N_P = |\Omega|/\tau^{d+1}$ is the number of plaquettes. Therefore:
+where $N_P = |\Omega|/a^{d+1}$ is the number of plaquettes. Therefore:
 
 $$
-|R_{\text{total}}| \leq C |\Omega| \tau^{6-(d+1)} = C |\Omega| \tau^{5-d}
+|R_{\text{total}}| \leq C |\Omega| a^{6-(d+1)} = C |\Omega| a^{5-d}
 $$
 
-For $d < 5$ (physical dimensions $d = 3$), this vanishes as $\tau \to 0$. ✓
+For $d < 5$ (physical dimensions $d = 3$), this vanishes as $a \to 0$. ✓
 
 **Step 5: Renormalization of coupling.**
 
 The bare lattice coupling $g$ must be renormalized to maintain a finite continuum limit. The one-loop relation {cite}`gross1973ultraviolet,politzer1973reliable` is:
 
 $$
-\frac{1}{g_{\text{phys}}^2(\mu)} = \frac{1}{g^2(\tau)} + \frac{b_0}{8\pi^2} \ln\left(\frac{\mu}{\Lambda}\right)
+\frac{1}{g_{\text{phys}}^2(\mu)} = \frac{1}{g^2(a)} + \frac{b_0}{8\pi^2} \ln\left(\frac{\mu}{\Lambda}\right)
 $$
 
 where:
 - $\mu$ is the renormalization scale $[\text{GeV}]$
-- $\Lambda$ is the QCD scale $[\text{GeV}]$
+- $\Lambda$ is the dynamical scale from dimensional transmutation $[\text{GeV}]$
 - $b_0 = \frac{11N_c}{3} = \frac{22}{3}$ for SU(2) (one-loop coefficient)
 
-The lattice cutoff sets $\Lambda \sim 1/\tau$. As $\tau \to 0$:
+The lattice cutoff is $\mu_{\text{UV}} \sim 1/a$, so $g^2(a)$ can be read as $g^2(\mu_{\text{UV}})$. As $a \to 0$:
 
 $$
-g^2(\tau) \to 0 \quad \text{(asymptotic freedom)}
+g^2(a) \to 0 \quad \text{(asymptotic freedom)}
 $$
 
-but the combination $g^2(\tau) \cdot \ln(1/\tau\Lambda)$ remains finite, giving a well-defined $g_{\text{phys}}$.
+but the combination $g^2(a) \cdot \ln(\mu_{\text{UV}}/\Lambda)$ remains finite, giving a well-defined $g_{\text{phys}}$.
 
 **Conclusion:**
 
 Combining Steps 1-5, the discrete action converges:
 
 $$
-S_{\text{YM}}^{\text{disc}} = \beta(\tau) \sum_P s_P \xrightarrow{\tau \to 0} \frac{1}{4} \int d^{d+1}x \sum_a F_{\mu\nu}^{(a)} F^{(a),\mu\nu}
+S_{\text{YM}}^{\text{disc}} = \beta(a) \sum_P s_P \xrightarrow{a \to 0} \frac{1}{4} \int d^{d+1}x \sum_a F_{\mu\nu}^{(a)} F^{(a),\mu\nu}
 $$
 
-with convergence rate $O(\tau^\alpha)$ for the leading term and $O(\tau^{5-d})$ for the remainder. $\square$
+with convergence rate $O(a^\alpha)$ for the leading term and $O(a^{5-d})$ for the remainder. $\square$
 :::
 
 :::{div} feynman-prose feynman-added
@@ -1663,11 +1683,11 @@ Imagine you have a photograph made of pixels. Each pixel has a color, and when y
 
 The Wilson action is defined on plaquettes—little squares on the lattice. Each plaquette has a value $1 - \frac{1}{2}\text{Re Tr}(U_P)$, which measures how much the gauge field wraps around that square. If there is no field, $U_P = I$ and the action contribution is zero. If there is field, the plaquette picks up a phase, and the action contribution is nonzero.
 
-Now, the field strength $F_{\mu\nu}$ is what the gauge field looks like locally—how fast the phase changes as you move around. When the plaquette is small (small $\tau$), the phase around it is proportional to $\tau^2 F_{\mu\nu}$. The action per plaquette goes like $\tau^4 F^2$.
+Now, the field strength $F_{\mu\nu}$ is what the gauge field looks like locally—how fast the phase changes as you move around. When the plaquette is small (small $a$), the phase around it is proportional to $a^2 F_{\mu\nu}$. The action per plaquette goes like $a^4 F^2$.
 
-Here is the key step. The sum over all plaquettes, times the volume element $\tau^{d+1}$, becomes an integral in the continuum. The errors from each plaquette—the higher-order terms we ignored—are $O(\tau^6)$ per plaquette. But there are $O(\tau^{-(d+1)})$ plaquettes. So the total error is $O(\tau^{5-d})$, which goes to zero in $d < 5$ dimensions.
+Here is the key step. The sum over all plaquettes, times the volume element $a^{d+1}$, becomes an integral in the continuum. The errors from each plaquette—the higher-order terms we ignored—are $O(a^6)$ per plaquette. But there are $O(a^{-(d+1)})$ plaquettes. So the total error is $O(a^{5-d})$, which goes to zero in $d < 5$ dimensions.
 
-The renormalization of coupling is more subtle. The bare coupling $g$ on the lattice is not the same as the physical coupling at some energy scale. They are related by the beta function, which tells you how the coupling runs with scale. For Yang-Mills, the coupling gets weaker at high energies—this is asymptotic freedom. The lattice calculation automatically incorporates this because the bare coupling must be adjusted to keep physical observables finite as $\tau \to 0$.
+The renormalization of coupling is more subtle. The bare coupling $g$ on the lattice is not the same as the physical coupling at some energy scale. They are related by the beta function, which tells you how the coupling runs with scale. For Yang-Mills, the coupling gets weaker at high energies—this is asymptotic freedom. The lattice calculation automatically incorporates this because the bare coupling must be adjusted to keep physical observables finite as $a \to 0$.
 
 The beautiful thing is that all of this—the plaquette expansion, the Riemann sum convergence, the coupling renormalization—works out to give exactly the standard Yang-Mills Lagrangian. The algorithm discovered the same theory that Gross, Wilczek, and Politzer wrote down in 1973.
 :::
@@ -1700,7 +1720,7 @@ $$
 **Algorithmic parameter flow**: The coupling constants evolve with resolution:
 
 $$
-\frac{d g_{\text{weak}}^2}{d \ln \mu} = -\beta_0 g_{\text{weak}}^4 + O(g^6)
+\frac{d g_{\text{weak}}^2}{d \ln \mu} = -\beta_0 g_{\text{weak}}^4 + O(g^6), \quad \beta_0 := \frac{b_0}{8\pi^2}
 $$
 :::
 
@@ -1787,7 +1807,7 @@ This is a strong constraint. If the framework is correct, then the relationships
 The effective Planck constant is:
 
 $$
-\boxed{\hbar_{\text{eff}} = \frac{m \epsilon_c^2}{\tau}}
+\boxed{\hbar_{\text{eff}} = \frac{m \epsilon_c^2}{2\tau}}
 $$
 
 **Derivation**:
@@ -1812,8 +1832,6 @@ $$
 \hbar_{\text{eff}} = S|_{d_{\text{alg}} = \epsilon_c} = \frac{m \epsilon_c^2}{2\tau}
 $$
 
-(factor of 2 absorbed into definition)
-
 **Physical interpretation**: $\hbar_{\text{eff}}$ sets the scale where quantum phases become significant. Larger $\epsilon_c$ (wider cloning kernel) gives larger $\hbar_{\text{eff}}$ (more "quantum").
 :::
 
@@ -1836,7 +1854,7 @@ In four dimensions the SU(2) coupling is dimensionless. From the unit table, the
 
 **Step 2. Phase and timestep scaling.**
 
-The link phase is $g\tau A$, while the algorithmic phase is $\theta_{ij} \sim d_{\text{alg}}^2/(2\epsilon_c^2 \hbar_{\text{eff}})$. For typical links with $d_{\text{alg}} \sim \rho$ and fixed $\hbar_{\text{eff}}$, the phase scales like $(\rho/\epsilon_c)^2$, and the overall normalization of the covariant derivative is set by the timestep ratio $m\tau$.
+The link phase is $g a_e A$ (with $a_e$ the link length), while the algorithmic phase is $\theta_{ij} \sim d_{\text{alg}}^2/(2\epsilon_c^2 \hbar_{\text{eff}})$. For typical spatial links with $a_e \sim \rho$ and $d_{\text{alg}} \sim \rho$ at fixed $\hbar_{\text{eff}}$, the phase scales like $(\rho/\epsilon_c)^2$, and the overall normalization of the covariant derivative is set by the timestep ratio $m\tau$ through $\hbar_{\text{eff}}$.
 
 **Step 3. Identification.**
 
@@ -1863,7 +1881,7 @@ $$
 The fitness (electromagnetic analog) coupling is:
 
 $$
-\boxed{e_{\text{fitness}}^2 = \frac{m^2}{\epsilon_F}}
+\boxed{e_{\text{fitness}}^2 = \frac{m}{\epsilon_F}}
 $$
 
 **Derivation**:
@@ -1875,7 +1893,7 @@ $$
 
 Dimensional analysis gives:
 $$
-e^2 \sim \frac{m^2}{\epsilon_F}
+e^2 \sim \frac{m}{\epsilon_F}
 $$
 
 **Physical interpretation**: Strong adaptive drive ($\epsilon_F$ large) corresponds to weak "electromagnetic" coupling.
@@ -1934,10 +1952,10 @@ $$
 The dimensionless fine-structure constant is:
 
 $$
-\boxed{\alpha_{\text{FS}} = g_{\text{weak}}^2 = \frac{m\tau\rho^2}{\epsilon_c^2}}
+\boxed{\alpha_{\text{FS}} = \frac{e_{\text{fitness}}^2}{4\pi} = \frac{m}{4\pi \epsilon_F}}
 $$
 
-**Physical interpretation**: Controls interaction strength at all scales.
+**Physical interpretation**: Controls the strength of the U(1) fitness interaction.
 
 **Relation to Standard Model**: If this framework describes reality, $\alpha \approx 1/137$ should emerge from specific ratios of algorithmic parameters.
 :::
@@ -2125,7 +2143,7 @@ where $(\epsilon_c^{(0)}, \rho^{(0)}, \gamma, \tau_0)$ are reference values. The
 
 | Quantity | Symbol | Expression | Dimension | Behavior as $\tau \to 0$ |
 |----------|--------|------------|-----------|--------------------------|
-| Effective Planck constant | $\hbar_{\text{eff}}$ | $m\epsilon_c^2/\tau$ | $[\text{GeV}^{-1}]$ | **Fixed** (requirement) |
+| Effective Planck constant | $\hbar_{\text{eff}}$ | $m\epsilon_c^2/(2\tau)$ | $[\text{GeV}^{-1}]$ | **Fixed** (requirement) |
 | Mass gap | $m_{\text{gap}}$ | $\lambda_{\text{gap}}$ | $[\text{GeV}]$ | **Fixed** (requirement) |
 | Bare gauge coupling | $g^2_{\text{bare}}$ | $m\tau\rho^2/\epsilon_c^2$ | $[\text{dimensionless}]$ | **Runs to 0** (asymptotic freedom) |
 | Physical coupling | $g^2_{\text{phys}}(\mu)$ | Via RG flow | $[\text{dimensionless}]$ | **Fixed** at scale $\mu$ |
@@ -2133,7 +2151,7 @@ where $(\epsilon_c^{(0)}, \rho^{(0)}, \gamma, \tau_0)$ are reference values. The
 
 **Step 2. Rescaling derivation from fixed physics.**
 
-**Constraint 1**: Fix $\hbar_{\text{eff}} = m\epsilon_c^2/\tau = \text{const}$:
+**Constraint 1**: Fix $\hbar_{\text{eff}} = m\epsilon_c^2/(2\tau) = \text{const}$:
 $$
 \epsilon_c^2 \sim \tau \implies \boxed{\epsilon_c = \epsilon_c^{(0)}\sqrt{\tau/\tau_0}}
 $$
@@ -2159,7 +2177,7 @@ $$
 
 | Quantity | Expression under rescaling | Result |
 |----------|---------------------------|--------|
-| $\hbar_{\text{eff}} = m\epsilon_c^2/\tau$ | $m \cdot (\epsilon_c^{(0)})^2 (\tau/\tau_0) / \tau = m(\epsilon_c^{(0)})^2/\tau_0$ | **Fixed** ✓ |
+| $\hbar_{\text{eff}} = m\epsilon_c^2/(2\tau)$ | $m \cdot (\epsilon_c^{(0)})^2 (\tau/\tau_0) /(2\tau) = m(\epsilon_c^{(0)})^2/(2\tau_0)$ | **Fixed** ✓ |
 | $m_{\text{gap}} = \lambda_{\text{gap}}^{\text{cont}}$ | $\gamma$ (fixed, independent of $\tau$) | **Fixed** ✓ |
 | $g^2_{\text{bare}} = m\tau\rho^2/\epsilon_c^2$ | $m \tau \cdot (\rho^{(0)})^2(\tau/\tau_0) / ((\epsilon_c^{(0)})^2 \tau/\tau_0) = m \tau (\rho^{(0)})^2/(\epsilon_c^{(0)})^2$ | **→ 0** (asymptotic freedom) |
 | $\xi = m_{\text{gap}}^{-1}$ | $1/\gamma$ (fixed) | **Fixed** ✓ |
@@ -2192,7 +2210,7 @@ The Boris-BAOAB integrator ({prf:ref}`def-fractal-set-boris-baoab`) is second-or
 
 The symplectic structure ensures no secular energy drift, with energy error bounded by $O(\tau^2)$ uniformly in time. $\square$
 
-**Physical interpretation**: The timestep $\tau$ plays the role of lattice spacing squared ($\tau \sim a^2$ in standard lattice QFT notation). The specific rescaling $\epsilon_c \sim \sqrt{\tau}$ ensures the cloning kernel width vanishes in physical units while maintaining quantum coherence at the appropriate scale.
+**Physical interpretation**: The timestep $\tau$ is the discrete time spacing; the spatial scale is set by $\rho$. In the gauge-sector notation we use $a$ for the link length (with $a_e=\tau$ or $a_e=\rho$ as appropriate). The rescaling $\epsilon_c \sim \sqrt{\tau}$ ensures the cloning kernel width vanishes in physical units while maintaining quantum coherence at the appropriate scale.
 :::
 
 ### 10.3. RG Fixed Point and Mass Gap Survival
@@ -2223,7 +2241,7 @@ This combination has dimension $[\text{GeV}^2]$ and measures the gauge coupling 
 | Energy scale | $\mu$ | $[\text{GeV}]$ | - |
 | Mass-scaled coupling | $\tilde{g}^2$ | $[\text{GeV}^2]$ | $g^2 \cdot m_{\text{gap}}^2$ |
 
-In algorithmic units: $\tilde{g}^2 = \frac{\lambda_{\text{gap}} \rho^2}{m \epsilon_c^2}$ (dimensionless in these units).
+In algorithmic parameters, $\tilde{g}^2 = m_{\text{gap}}^2 \cdot \frac{m \tau \rho^2}{\epsilon_c^2}$.
 
 **Step 2. RG flow equation for $\tilde{g}^2$.**
 
@@ -2234,7 +2252,7 @@ $$
 
 Equivalently: $\beta(g) = -\frac{22}{48\pi^2} g^3 + O(g^5)$.
 
-For the dimensionless product $\tilde{g}^2 = g^2 \cdot m_{\text{gap}}^2$, with $m_{\text{gap}}$ fixed:
+For the product $\tilde{g}^2 = g^2 \cdot m_{\text{gap}}^2$, with $m_{\text{gap}}$ fixed:
 $$
 \mu \frac{d\tilde{g}^2}{d\mu} = m_{\text{gap}}^2 \cdot 2g \cdot \mu\frac{dg}{d\mu} = 2m_{\text{gap}}^2 g \beta(g) = -\frac{b_0}{8\pi^2} m_{\text{gap}}^2 g^4 + O(g^6)
 $$
@@ -2265,10 +2283,10 @@ Under the rescaling of {prf:ref}`thm-correct-continuum-limit`:
 
 Therefore:
 $$
-\tilde{g}^2 = \frac{\lambda_{\text{gap}} \rho^2}{m \epsilon_c^2} \sim \lambda_{\text{gap}} \cdot O(1) \xrightarrow{\tau \to 0} \text{finite}
+\tilde{g}^2 = m_{\text{gap}}^2 \, g_{\text{bare}}^2 = m_{\text{gap}}^2 \cdot \frac{m \tau \rho^2}{\epsilon_c^2} \xrightarrow{\tau \to 0} 0
 $$
 
-since $\lambda_{\text{gap}}$ is a spectral property of the continuous dynamics, not the discretization. $\square$
+so $\tilde{g}^2$ remains bounded (indeed vanishes) while the mass gap stays fixed because $\lambda_{\text{gap}}$ is a spectral property of the continuous dynamics, not the discretization. $\square$
 :::
 
 :::{div} feynman-prose feynman-added
@@ -2276,9 +2294,9 @@ This theorem tells you something profound about the relationship between the lat
 
 Think about a vibrating string. The frequency of vibration—the pitch you hear—is determined by the length, tension, and mass density of the string. If you replace the continuous string with a discrete chain of beads connected by springs, the frequencies are slightly different, but in the limit of many beads, the discrete frequencies approach the continuous ones.
 
-The mass gap is like the lowest frequency of the string. It is a property of the continuous system, not the discretization. When we take the lattice spacing $\tau$ to zero, the mass gap does not change—it was never determined by $\tau$ in the first place.
+The mass gap is like the lowest frequency of the string. It is a property of the continuous system, not the discretization. When we take the lattice spacing $a$ to zero, the mass gap does not change—it was never determined by $a$ in the first place.
 
-What does change is the bare coupling constant. As $\tau \to 0$, the bare coupling $g^2_{\text{bare}}$ goes to zero. This looks alarming—is the theory becoming trivial? No. This is asymptotic freedom wearing a disguise.
+What does change is the bare coupling constant. As $a \to 0$, the bare coupling $g^2_{\text{bare}}$ goes to zero. This looks alarming—is the theory becoming trivial? No. This is asymptotic freedom wearing a disguise.
 
 The physical coupling at any fixed energy scale $\mu$ is finite and well-defined. It is related to the bare coupling through the renormalization group. When you compute physical observables—Wilson loops, correlation functions, scattering amplitudes—you always get finite answers, even though the bare coupling is running to zero.
 
@@ -2309,7 +2327,7 @@ Three mechanisms ensure UV safety:
 
 **2. Symplectic BAOAB integrator** (numerical):
 - Second-order accurate
-- Energy drift $O(\tau^4)$ per step
+- Energy error bounded $O(\tau^2)$
 - No secular growth
 
 **3. Exact Ornstein-Uhlenbeck sampling** (stochastic):
@@ -2803,10 +2821,10 @@ By Lorentz invariance (W1), for any Lorentz transformation $\Lambda$, the point 
 
 **Key observation**: If $p^2 < 0$ (spacelike), then there exists a Lorentz boost $\Lambda$ such that $(\Lambda p)^0 < 0$.
 
-**Explicit construction**: For $p = (E, \mathbf{p})$ with $E > 0$ and $|\mathbf{p}| > E$ (so $p^2 < 0$), consider a boost in the direction of $\mathbf{p}$ with velocity $v = E/|\mathbf{p}| < 1$. The boosted energy is:
+**Explicit construction**: For $p = (E, \mathbf{p})$ with $E > 0$ and $|\mathbf{p}| > E$ (so $p^2 < 0$), choose a boost in the direction of $\mathbf{p}$ with velocity $v$ satisfying $E/|\mathbf{p}| < v < 1$. The boosted energy is:
 
 $$
-(\Lambda p)^0 = \gamma(E - v|\mathbf{p}|) = \gamma E \left(1 - \frac{|\mathbf{p}|^2}{E|\mathbf{p}|}\right) = \gamma E \left(1 - \frac{|\mathbf{p}|}{E}\right) < 0
+(\Lambda p)^0 = \gamma(E - v|\mathbf{p}|) < 0
 $$
 
 since $|\mathbf{p}| > E$.
@@ -2850,7 +2868,7 @@ $$
 By {prf:ref}`def-fractal-set-ig-edges`, **interaction graph (IG) edges** connect events $(t, x)$ and $(t, y)$ at the same time $t$ that are spacelike separated:
 
 $$
-(x - y)^2 := -(t - t)^2 + |x - y|^2 = |x - y|^2 > 0 \quad \Leftrightarrow \quad \text{spacelike}
+(x - y)^2 := (t_x - t_y)^2 - |x - y|^2 = -|x - y|^2 < 0 \quad \Leftrightarrow \quad \text{spacelike}
 $$
 
 The IG edge structure encodes that **no causal influence** can propagate between spacelike separated points within a single timestep.
@@ -3038,13 +3056,13 @@ $$
 
 obtained by Wick rotation $t \to -i\tau$ from the Minkowski correlators.
 
-**Euclidean action**: In Euclidean signature, the Fractal Gas action becomes:
+**Euclidean action**: In Euclidean signature, the Fractal Gas action becomes (after completing the square in the drift term and absorbing the $|b|^2/(2\sigma^2)$ contribution into an effective potential):
 
 $$
 S_{\text{Eucl}} = \int_0^T d\tau \, \mathcal{L}_{\text{Eucl}}
 $$
 
-where $\mathcal{L}_{\text{Eucl}} = \frac{1}{2}|\dot{x}|^2 + V_{\text{fit}}(x)$.
+where $\mathcal{L}_{\text{Eucl}} = \frac{1}{2}|\dot{x}|^2 + V_{\text{eff}}(x)$ with $V_{\text{eff}} := V_{\text{fit}} + |b|^2/(2\sigma^2)$.
 :::
 
 :::{prf:theorem} OS0: Temperedness
