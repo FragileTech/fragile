@@ -3,7 +3,7 @@ import param
 import torch
 from torch import Tensor
 
-from fragile.core.panel_model import INPUT_WIDTH, PanelModel
+from fragile.fractalai.core.panel_model import INPUT_WIDTH, PanelModel
 
 
 try:
@@ -76,7 +76,7 @@ def compute_localization_weights(
         - With pbc=True, position distances use minimum image convention
     """
     # Compute pairwise algorithmic distances [N, N] using periodic distance if enabled
-    from fragile.core.companion_selection import compute_algorithmic_distance_matrix
+    from fragile.fractalai.core.companion_selection import compute_algorithmic_distance_matrix
 
     d_alg_sq = compute_algorithmic_distance_matrix(positions, velocities, lambda_alg, bounds, pbc)
 

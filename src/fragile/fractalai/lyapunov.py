@@ -30,7 +30,7 @@ The N-normalization ensures drift inequalities are N-uniform (independent of swa
 Usage Examples:
 
     # Single-state analysis (existing API)
-    from fragile.core import EuclideanGas
+    from fragile.fractalai.core import EuclideanGas
     from fragile.lyapunov import compute_total_lyapunov
 
     gas = EuclideanGas(N=100, d=2, ...)
@@ -68,11 +68,11 @@ from typing import TYPE_CHECKING
 import torch
 from torch import Tensor
 
-from fragile.core.euclidean_gas import SwarmState
+from fragile.fractalai.core.euclidean_gas import SwarmState
 
 
 if TYPE_CHECKING:
-    from fragile.core.history import RunHistory
+    from fragile.fractalai.core.history import RunHistory
 
 
 def compute_internal_variance_position(

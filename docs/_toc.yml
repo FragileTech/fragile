@@ -55,14 +55,13 @@ parts:
     - file: source/1_agent/07_cognition/06_causality
     - file: source/1_agent/07_cognition/07_metabolic_transducer
     - file: source/1_agent/07_cognition/08_intersubjective_metric
-    - file: source/1_agent/07_cognition/09_retreival_attention
+    - file: source/1_agent/07_cognition/09_retrieval_attention
 
   - caption: Part VIII - Multi-Agent Gauge Theory
     chapters:
     - file: source/1_agent/08_multiagent/01_gauge_theory
     - file: source/1_agent/08_multiagent/02_standard_model
     - file: source/1_agent/08_multiagent/03_parameter_sieve
-    - file: source/1_agent/08_multiagent/new_constraint_check
     - file: source/1_agent/08_multiagent/05_architecture
 
   - caption: Part IX - Economics

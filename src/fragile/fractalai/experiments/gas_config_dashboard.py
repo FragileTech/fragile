@@ -4,7 +4,7 @@ DEPRECATED: This module is deprecated in favor of gas_config_panel.GasConfigPane
 which uses the operator PanelModel interfaces instead of manually duplicating parameters.
 
 New code should use:
-    from fragile.experiments.gas_config_panel import GasConfigPanel
+    from fragile.fractalai.experiments.gas_config_panel import GasConfigPanel
 
 This module provides a Panel-based dashboard for configuring simulation parameters
 and running EuclideanGas simulations. It returns RunHistory objects that can be
@@ -21,14 +21,14 @@ import panel.widgets as pnw
 import param
 import torch
 
-from fragile.bounds import TorchBounds
-from fragile.core.benchmarks import BENCHMARK_NAMES, prepare_benchmark_for_explorer
-from fragile.core.cloning import CloneOperator
-from fragile.core.companion_selection import CompanionSelection
-from fragile.core.euclidean_gas import EuclideanGas
-from fragile.core.fitness import FitnessOperator
-from fragile.core.history import RunHistory
-from fragile.core.kinetic_operator import KineticOperator
+from fragile.fractalai.bounds import TorchBounds
+from fragile.fractalai.core.benchmarks import BENCHMARK_NAMES, prepare_benchmark_for_explorer
+from fragile.fractalai.core.cloning import CloneOperator
+from fragile.fractalai.core.companion_selection import CompanionSelection
+from fragile.fractalai.core.euclidean_gas import EuclideanGas
+from fragile.fractalai.core.fitness import FitnessOperator
+from fragile.fractalai.core.history import RunHistory
+from fragile.fractalai.core.kinetic_operator import KineticOperator
 
 
 __all__ = ["GasConfig"]

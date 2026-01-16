@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 520" role="img" aria-label="Light cone diagram showing causal and spacelike events">
+  <defs>
+    <marker id="axis-arrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L10,4 L0,8 Z" fill="#333333" />
+    </marker>
+    <style>
+      .axis { stroke: #333333; stroke-width: 2; marker-end: url(#axis-arrow); }
+      .cone { fill: #cfe9f6; stroke: #2f6f8f; stroke-width: 2; }
+      .cone-edge { stroke: #2f6f8f; stroke-width: 2; }
+      .node { fill: #2a9d8f; stroke: #1d4f4a; stroke-width: 1.5; }
+      .node-causal { fill: #2ca25f; stroke: #1b6d3f; stroke-width: 1.5; }
+      .node-spacelike { fill: #e76f51; stroke: #9b3f2b; stroke-width: 1.5; }
+      .label { fill: #111111; font-size: 16px; font-family: Arial, Helvetica, sans-serif; }
+      .note { fill: #444444; font-size: 14px; font-family: Arial, Helvetica, sans-serif; }
+      .grid { stroke: #e2e2e2; stroke-width: 1; }
+    </style>
+  </defs>
+
+  <rect width="700" height="520" fill="#ffffff" />
+
+  <line class="axis" x1="350" y1="450" x2="350" y2="70" />
+  <line class="axis" x1="80" y1="340" x2="640" y2="340" />
+  <text class="label" x="360" y="65">t</text>
+  <text class="label" x="650" y="360">x</text>
+
+  <polygon class="cone" points="350,340 180,140 520,140" />
+  <line class="cone-edge" x1="350" y1="340" x2="180" y2="140" />
+  <line class="cone-edge" x1="350" y1="340" x2="520" y2="140" />
+
+  <circle class="node" cx="350" cy="340" r="9" />
+  <text class="label" x="365" y="345">e_i</text>
+
+  <circle class="node-causal" cx="330" cy="230" r="8" />
+  <text class="label" x="345" y="235">e_j (causal)</text>
+
+  <circle class="node-spacelike" cx="560" cy="230" r="8" />
+  <text class="label" x="575" y="235">e_k (spacelike)</text>
+
+  <text class="note" x="90" y="175">future light cone</text>
+  <text class="note" x="90" y="195">e_i prec e_j</text>
+  <text class="note" x="90" y="215">no order for e_k</text>
+</svg>

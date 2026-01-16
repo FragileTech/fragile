@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="620" height="320" viewBox="0 0 620 320">
+  <defs>
+    <style>
+      .title { font: 600 18px "IBM Plex Sans", Arial, sans-serif; fill: #1f2933; }
+      .label { font: 500 13px "IBM Plex Sans", Arial, sans-serif; fill: #1f2933; }
+      .small { font: 12px "IBM Plex Sans", Arial, sans-serif; fill: #334e68; }
+      .node-label { font: 12px "IBM Plex Sans", Arial, sans-serif; fill: #334e68; text-anchor: middle; dominant-baseline: middle; }
+      .node { fill: #f5f7fa; stroke: #1f2933; stroke-width: 1.6; }
+      .cst { stroke: #2e86ab; stroke-width: 2.6; }
+      .ig { stroke: #f6ae2d; stroke-width: 2.6; }
+      .ia { stroke: #2a9d8f; stroke-width: 2.6; stroke-dasharray: 6 4; }
+      .tri { fill: #f2f8f7; stroke: #2a9d8f; stroke-width: 1.4; }
+    </style>
+    <marker id="arrow-cst" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#2e86ab" />
+    </marker>
+    <marker id="arrow-ig" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#f6ae2d" />
+    </marker>
+    <marker id="arrow-ia" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#2a9d8f" />
+    </marker>
+  </defs>
+
+  <text x="30" y="34" class="title">Interaction Triangle (IG + CST + IA)</text>
+
+  <polygon class="tri" points="160,90 420,90 160,240" />
+
+  <line x1="160" y1="90" x2="160" y2="232" class="cst" marker-end="url(#arrow-cst)" />
+  <line x1="160" y1="90" x2="412" y2="90" class="ig" marker-end="url(#arrow-ig)" />
+  <line x1="160" y1="240" x2="412" y2="90" class="ia" marker-end="url(#arrow-ia)" />
+
+  <circle cx="160" cy="90" r="20" class="node" />
+  <circle cx="420" cy="90" r="20" class="node" />
+  <circle cx="160" cy="240" r="20" class="node" />
+
+  <text x="160" y="90" class="node-label">i@t</text>
+  <text x="420" y="90" class="node-label">j@t</text>
+  <text x="160" y="240" class="node-label">i@t+1</text>
+
+  <text x="258" y="74" class="label">IG</text>
+  <text x="126" y="168" class="label">CST</text>
+  <text x="285" y="190" class="label">IA</text>
+
+  <text x="52" y="284" class="small">One triangle records: influence (IG), evolution (CST), attribution (IA).</text>
+</svg>

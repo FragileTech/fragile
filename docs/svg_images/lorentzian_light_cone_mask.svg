@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="60 0 820 520" width="820" height="520">
+  <title>Light Cone Causal Mask</title>
+  <desc>Spacetime diagram showing a past light cone J^- with allowed events inside and masked events outside.</desc>
+
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#334155" />
+    </marker>
+    <linearGradient id="coneFill" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#DBEAFE;stop-opacity:0.7" />
+      <stop offset="100%" style="stop-color:#BFDBFE;stop-opacity:0.25" />
+    </linearGradient>
+    <linearGradient id="maskBox" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFFFFF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#F8FAFC;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <rect x="60" y="0" width="820" height="520" fill="#F8FAFC" />
+
+  <text x="470" y="36" font-family="system-ui, -apple-system, Segoe UI, sans-serif" font-size="20" font-weight="600" fill="#0F172A" text-anchor="middle">Light cone causal mask</text>
+  <text x="470" y="58" font-family="system-ui, -apple-system, Segoe UI, sans-serif" font-size="13" fill="#64748B" text-anchor="middle">Only events inside J^-(z,t) can influence the present</text>
+
+  <!-- Axes -->
+  <line x1="110" y1="470" x2="110" y2="120" stroke="#334155" stroke-width="2" marker-end="url(#arrowhead)" />
+  <line x1="110" y1="470" x2="320" y2="470" stroke="#334155" stroke-width="2" marker-end="url(#arrowhead)" />
+  <text x="95" y="130" font-family="system-ui, -apple-system, Segoe UI, sans-serif" font-size="14" fill="#334155">t</text>
+  <text x="330" y="488" font-family="system-ui, -apple-system, Segoe UI, sans-serif" font-size="14" fill="#334155">z</text>
+
+  <!-- Light cone region -->
+  <polygon points="450 130 260 460 640 460" fill="url(#coneFill)" stroke="#1D4ED8" stroke-width="2" />
+  <line x1="450" y1="130" x2="260" y2="460" stroke="#1D4ED8" stroke-width="2" />
+  <line x1="450" y1="130" x2="640" y2="460" stroke="#1D4ED8" stroke-width="2" />
+
+  <text x="450" y="250" font-family="system-ui, -apple-system, Segoe UI, sans-serif" font-size="16" font-weight="600" fill="#1E3A8A" text-anchor="middle">J^-(z,t)</text>
+  <text x="450" y="270" font-family="system-ui, -apple-system, Segoe UI, sans-serif" font-size="12" fill="#1E3A8A" text-anchor="middle">causal past</text>
+
+  <!-- Apex event -->
+  <circle cx="450" cy="130" r="6" fill="#1D4ED8" />
+  <text x="462" y="126" font-family="system-ui, -apple-system, Segoe UI, sans-serif" font-size="12" fill="#1E3A8A">(z, t)</text>
+
+  <!-- Inside points -->
+  <circle cx="450" cy="230" r="6" fill="#10B981" />
+  <circle cx="410" cy="300" r="6" fill="#10B981" />
+  <circle cx="520" cy="310" r="6" fill="#10B981" />
+  <text x="570" y="300" font-family="system-ui, -apple-system, Segoe UI, sans-serif" font-size="12" fill="#059669">allowed</text>
+
+  <!-- Outside points -->
+  <circle cx="680" cy="260" r="6" fill="#EF4444" />
+  <circle cx="230" cy="260" r="6" fill="#EF4444" />
+  <text x="690" y="260" font-family="system-ui, -apple-system, Segoe UI, sans-serif" font-size="12" fill="#DC2626">masked</text>
+
+  <!-- Light cone boundary label -->
+  <text x="640" y="430" font-family="system-ui, -apple-system, Segoe UI, sans-serif" font-size="12" fill="#1E3A8A">boundary: d_G = c_info (t - t')</text>
+
+  <!-- Mask condition box -->
+  <rect x="620" y="90" width="250" height="120" rx="10" fill="url(#maskBox)" stroke="#CBD5E1" />
+  <text x="635" y="115" font-family="system-ui, -apple-system, Segoe UI, sans-serif" font-size="12" font-weight="600" fill="#0F172A">Causal mask M_causal</text>
+  <text x="635" y="138" font-family="system-ui, -apple-system, Segoe UI, sans-serif" font-size="12" fill="#334155">1 if t' &lt; t and</text>
+  <text x="635" y="160" font-family="system-ui, -apple-system, Segoe UI, sans-serif" font-size="12" fill="#334155">d_G(z,z') &lt;= c_info (t - t')</text>
+  <text x="635" y="182" font-family="system-ui, -apple-system, Segoe UI, sans-serif" font-size="12" fill="#334155">0 otherwise</text>
+</svg>

@@ -1,6 +1,6 @@
 import torch
 
-from fragile.core.benchmarks import Rastrigin
+from fragile.fractalai.core.benchmarks import Rastrigin
 from fragile.fractalai import clone_tensor, fai_iteration
 
 

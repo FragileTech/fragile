@@ -26,7 +26,7 @@ or operates in mean-field regime.
 **Quick Start:**
 
     >>> import torch
-    >>> from fragile.experiments.gauge import observables, locality_tests
+    >>> from fragile.fractalai.experiments.gauge import observables, locality_tests
     >>>
     >>> # Setup test configuration
     >>> positions = torch.randn(1000, 2)
@@ -65,7 +65,7 @@ experiment that determines whether the structure supports local gauge theory:
 **Date:** 2025-10-23
 """
 
-from fragile.experiments.gauge import observables
+from fragile.fractalai.experiments.gauge import observables
 
 
 __all__ = [

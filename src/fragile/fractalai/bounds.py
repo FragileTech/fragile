@@ -5,8 +5,8 @@ import numpy
 import torch
 from torch import Tensor
 
-from fragile.fragile_typing import Scalar
-from fragile.utils import numpy_dtype_to_torch_dtype
+from fragile.fractalai.fragile_typing import Scalar
+from fragile.fractalai.utils import numpy_dtype_to_torch_dtype
 
 
 def where(cond, a, b, *args, **kwargs):  # noqa: ARG001

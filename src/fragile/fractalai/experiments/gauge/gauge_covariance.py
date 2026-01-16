@@ -28,8 +28,8 @@ from pydantic import BaseModel, Field
 import torch
 from torch import Tensor
 
-from fragile.core.companion_selection import compute_algorithmic_distance_matrix
-from fragile.experiments.gauge.observables import (
+from fragile.fractalai.core.companion_selection import compute_algorithmic_distance_matrix
+from fragile.fractalai.experiments.gauge.observables import (
     compute_collective_fields,
     ObservablesConfig,
 )

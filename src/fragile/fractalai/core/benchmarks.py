@@ -11,8 +11,8 @@ import panel as pn
 import param
 import torch
 
-from fragile.bounds import Bounds, NumpyBounds, TorchBounds
-from fragile.core.panel_model import INPUT_WIDTH, PanelModel
+from fragile.fractalai.bounds import Bounds, NumpyBounds, TorchBounds
+from fragile.fractalai.core.panel_model import INPUT_WIDTH, PanelModel
 
 
 """

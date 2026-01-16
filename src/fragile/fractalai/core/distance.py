@@ -27,7 +27,7 @@ from __future__ import annotations
 import torch
 from torch import Tensor
 
-from fragile.bounds import TorchBounds
+from fragile.fractalai.bounds import TorchBounds
 
 
 __all__ = [

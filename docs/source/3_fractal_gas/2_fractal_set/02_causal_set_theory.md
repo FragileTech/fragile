@@ -129,6 +129,16 @@ Think of it this way. If you wanted to draw a picture of a mountain, you would u
 
 ### Causal Order on Episodes
 
+To make the growth process concrete, the CST edges form a layered, directed tree as spacetime evolves.
+
+:::{figure} figures/cst-growth-tree.svg
+:alt: CST tree growth across timesteps with directed edges.
+:width: 95%
+:align: center
+
+CST tree growth across timesteps. Each layer is a timestep; directed edges encode causal precedence.
+:::
+
 :::{prf:definition} Causal Order on Fractal Set
 :label: def-fractal-causal-order
 
@@ -188,6 +198,14 @@ The effective speed $c_{\mathrm{eff}}$ is like a "speed limit" for information p
 Here is the physical picture. Draw a diagram with time going up and space going sideways. At each event, draw a cone opening upward—this is the "future light cone." Only events inside (or on) this cone can be influenced by the original event. The causal order $e_i \prec e_j$ means exactly that $e_j$ is inside the future cone of $e_i$.
 :::
 
+:::{figure} figures/cst-light-cone.svg
+:alt: Light cone diagram showing causal and spacelike events.
+:width: 90%
+:align: center
+
+Light-cone causal order. Events inside the cone are causally related; events outside are spacelike.
+:::
+
 :::{prf:proposition} Graph-Light-Cone Equivalence
 :label: prop-fractal-causal-order-equivalence
 
@@ -243,6 +261,14 @@ piecewise-constant interpolation.
 | Density $\rho = \mathrm{const}$ | Density $\rho(x, t) \propto \sqrt{\det g(x, t)} \, e^{-U_{\mathrm{eff}}(x, t)/T}$ |
 | Uniform sampling | Adaptive sampling |
 | Ad-hoc choice of $\rho$ | Automatic from QSD |
+:::
+
+:::{figure} figures/adaptive-sprinkling.svg
+:alt: Comparison of uniform and adaptive sprinkling densities.
+:width: 95%
+:align: center
+
+Uniform versus adaptive sprinkling. Adaptive density concentrates episodes where the geometry and QSD weight are high.
 :::
 
 :::{dropdown} 📖 Hypostructure Reference

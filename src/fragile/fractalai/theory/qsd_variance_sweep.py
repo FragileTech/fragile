@@ -26,13 +26,13 @@ import pandas as pd
 import torch
 from tqdm import tqdm
 
-from fragile.bounds import TorchBounds
-from fragile.core.cloning import CloneOperator
-from fragile.core.companion_selection import CompanionSelection
-from fragile.core.euclidean_gas import EuclideanGas
-from fragile.core.fitness import FitnessOperator
-from fragile.core.history import RunHistory
-from fragile.core.kinetic_operator import KineticOperator
+from fragile.fractalai.bounds import TorchBounds
+from fragile.fractalai.core.cloning import CloneOperator
+from fragile.fractalai.core.companion_selection import CompanionSelection
+from fragile.fractalai.core.euclidean_gas import EuclideanGas
+from fragile.fractalai.core.fitness import FitnessOperator
+from fragile.fractalai.core.history import RunHistory
+from fragile.fractalai.core.kinetic_operator import KineticOperator
 
 # Import utilities from qsd_variance.py
 from fragile.theory.qsd_variance import compute_hypocoercive_variance, estimate_edge_budget

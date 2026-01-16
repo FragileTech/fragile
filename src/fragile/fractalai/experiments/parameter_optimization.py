@@ -12,9 +12,9 @@ from __future__ import annotations
 import panel as pn
 import param
 
-import fragile.convergence_bounds as cb
-from fragile.core.history import RunHistory
-from fragile.experiments.gas_config_dashboard import GasConfig
+import fragile.fractalai.convergence_bounds as cb
+from fragile.fractalai.core.history import RunHistory
+from fragile.fractalai.experiments.gas_config_dashboard import GasConfig
 
 
 __all__ = ["ConvergenceBoundsPanel"]
@@ -169,7 +169,7 @@ class ConvergenceBoundsPanel(param.Parameterized):
         # Note: sigma_v (Langevin noise) = sqrt(2 / (gamma * beta))
         import numpy as np
 
-        from fragile.gas_parameters import (
+        from fragile.fractalai.gas_parameters import (
             estimate_landscape_from_history,
             estimate_rates_from_trajectory,
             extract_trajectory_data_from_history,
@@ -244,7 +244,7 @@ class ConvergenceBoundsPanel(param.Parameterized):
         var_v_eq = cb.equilibrium_variance_v(params["d"], params["sigma_v"], params["gamma"])
 
         # 5. Adaptive Gas Analysis (comprehensive diagnostics)
-        from fragile.experiments.adaptive_gas import (
+        from fragile.fractalai.experiments.adaptive_gas import (
             create_adaptive_gas_diagnostics,
             print_adaptive_gas_report,
         )
@@ -766,13 +766,13 @@ class ConvergenceBoundsPanel(param.Parameterized):
 
     def _extract_gas_params_from_config(self):
         """Extract GasParams from current GasConfig for optimization."""
-        from fragile.gas_parameters import gas_params_from_config
+        from fragile.fractalai.gas_parameters import gas_params_from_config
 
         return gas_params_from_config(self.gas_config)
 
     def _get_default_landscape(self):
         """Get default landscape parameters (fallback when no history available)."""
-        from fragile.gas_parameters import LandscapeParams
+        from fragile.fractalai.gas_parameters import LandscapeParams
 
         return LandscapeParams(
             lambda_min=1.0,
@@ -784,7 +784,7 @@ class ConvergenceBoundsPanel(param.Parameterized):
 
     def _on_suggest_click(self, event):
         """Handle 'Suggest Optimal Parameters' button click."""
-        from fragile.gas_parameters import (
+        from fragile.fractalai.gas_parameters import (
             estimate_landscape_from_history,
             extract_trajectory_data_from_history,
             optimize_parameters_multi_strategy,
@@ -858,7 +858,7 @@ class ConvergenceBoundsPanel(param.Parameterized):
 
     def _on_apply_click(self, event):
         """Handle 'Apply to Config' button click."""
-        from fragile.gas_parameters import apply_gas_params_to_config
+        from fragile.fractalai.gas_parameters import apply_gas_params_to_config
 
         if not hasattr(self, "suggested_params") or self.suggested_params is None:
             return

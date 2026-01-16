@@ -33,8 +33,8 @@ References:
     - old_docs/source/14_scutoid_geometry_framework.md § 5 for deficit angles
 
 Example Usage:
-    >>> from fragile.core.euclidean_gas import EuclideanGas
-    >>> from fragile.core.fractal_set import FractalSet
+    >>> from fragile.fractalai.core.euclidean_gas import EuclideanGas
+    >>> from fragile.fractalai.core.fractal_set import FractalSet
     >>> from fragile.geometry.curvature import (
     ...     compute_ricci_from_fractal_set_graph,
     ...     analyze_curvature_evolution,
@@ -313,8 +313,8 @@ def compute_ricci_from_fractal_set_graph(
         curvature.md § 1.2 "Graph Laplacian Spectrum"
 
     Example:
-        >>> from fragile.core.euclidean_gas import EuclideanGas
-        >>> from fragile.core.fractal_set import FractalSet
+        >>> from fragile.fractalai.core.euclidean_gas import EuclideanGas
+        >>> from fragile.fractalai.core.fractal_set import FractalSet
         >>> # Run simulation
         >>> history = gas.run(n_steps=100, record_every=10)
         >>> fractal_set = FractalSet(history)

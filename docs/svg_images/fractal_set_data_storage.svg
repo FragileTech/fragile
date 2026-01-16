@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="420" viewBox="0 0 980 420">
+  <defs>
+    <style>
+      .title { font: 600 18px "IBM Plex Sans", Arial, sans-serif; fill: #1f2933; }
+      .label { font: 600 14px "IBM Plex Sans", Arial, sans-serif; fill: #1f2933; }
+      .small { font: 12px "IBM Plex Sans", Arial, sans-serif; fill: #334e68; }
+      .node-label { font: 12px "IBM Plex Sans", Arial, sans-serif; fill: #334e68; text-anchor: middle; dominant-baseline: middle; }
+      .panel { fill: #ffffff; stroke: #cbd2d9; stroke-width: 1; }
+      .node { fill: #f5f7fa; stroke: #1f2933; stroke-width: 1.6; }
+      .cst { stroke: #2e86ab; stroke-width: 2.6; }
+      .ig { stroke: #f6ae2d; stroke-width: 2.6; }
+      .ia { stroke: #2a9d8f; stroke-width: 2.6; stroke-dasharray: 6 4; }
+    </style>
+    <marker id="arrow-cst" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#2e86ab" />
+    </marker>
+    <marker id="arrow-ig" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#f6ae2d" />
+    </marker>
+    <marker id="arrow-ia" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#2a9d8f" />
+    </marker>
+  </defs>
+
+  <text x="32" y="34" class="title">What the Fractal Set Stores</text>
+
+  <rect x="36" y="62" width="420" height="320" rx="12" class="panel" />
+  <text x="58" y="92" class="label">Nodes: scalar data (frame-invariant)</text>
+
+  <circle cx="120" cy="190" r="22" class="node" />
+  <text x="120" y="190" class="node-label">n_i,t</text>
+
+  <text x="170" y="142" class="small">- node id, walker id</text>
+  <text x="170" y="162" class="small">- timestep t</text>
+  <text x="170" y="182" class="small">- alive/dead status</text>
+  <text x="170" y="202" class="small">- fitness and reward</text>
+  <text x="170" y="222" class="small">- kinetic/potential energy</text>
+  <text x="170" y="242" class="small">- scalar norms (|v|, |x|)</text>
+
+  <rect x="520" y="62" width="424" height="320" rx="12" class="panel" />
+  <text x="542" y="92" class="label">Edges: vector data via spinors</text>
+
+  <line x1="548" y1="126" x2="618" y2="126" class="cst" marker-end="url(#arrow-cst)" />
+  <text x="630" y="130" class="small">CST edge</text>
+  <text x="630" y="148" class="small">- velocity, force, diffusion noise</text>
+
+  <line x1="548" y1="182" x2="618" y2="182" class="ig" marker-end="url(#arrow-ig)" />
+  <text x="630" y="186" class="small">IG edge</text>
+  <text x="630" y="204" class="small">- relative position, gradients</text>
+  <text x="630" y="222" class="small">- viscous coupling spinors</text>
+
+  <line x1="548" y1="246" x2="618" y2="246" class="ia" marker-end="url(#arrow-ia)" />
+  <text x="630" y="250" class="small">IA edge</text>
+  <text x="630" y="268" class="small">- attribution weight, phase</text>
+  <text x="630" y="286" class="small">- no spinors (scalars only)</text>
+</svg>

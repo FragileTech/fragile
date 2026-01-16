@@ -29,10 +29,10 @@ import numpy as np
 import panel as pn
 from scipy.spatial import Voronoi
 
-from fragile.bounds import TorchBounds
-from fragile.core import create_scutoid_history, ScutoidHistory2D
-from fragile.core.benchmarks import prepare_benchmark_for_explorer
-from fragile.experiments.gas_config_dashboard import GasConfig
+from fragile.fractalai.bounds import TorchBounds
+from fragile.fractalai.core import create_scutoid_history, ScutoidHistory2D
+from fragile.fractalai.core.benchmarks import prepare_benchmark_for_explorer
+from fragile.fractalai.experiments.gas_config_dashboard import GasConfig
 
 
 hv.extension("bokeh")

@@ -8,7 +8,7 @@ import panel
 from PIL import Image
 import torch
 
-from fragile.fragile_typing import BooleanValue, DictValues, Value, Walkers
+from fragile.fractalai.fragile_typing import BooleanValue, DictValues, Value, Walkers
 
 
 def numpy_dtype_to_torch_dtype(dtype):
@@ -62,7 +62,7 @@ def show_root_game(swarm, fps=10, optimize=False):
 
 
 def shape_is_vector(v):
-    from fragile.core.config import ValueConfig  # noqa:PLC0415
+    from fragile.fractalai.core.config import ValueConfig  # noqa:PLC0415
 
     shape = v.shape if isinstance(v, ValueConfig) else v.get("shape", ())
     return not (shape is None or (isinstance(shape, tuple) and len(shape) > 0))

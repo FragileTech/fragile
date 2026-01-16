@@ -24,11 +24,11 @@ import panel as pn
 import param
 import torch
 
-from fragile.bounds import TorchBounds
-from fragile.core.companion_selection import CompanionSelection
-from fragile.core.history import RunHistory
-from fragile.experiments.fluid_utils import FluidFieldComputer
-from fragile.shaolin.stream_plots import Histogram
+from fragile.fractalai.bounds import TorchBounds
+from fragile.fractalai.core.companion_selection import CompanionSelection
+from fragile.fractalai.core.history import RunHistory
+from fragile.fractalai.experiments.fluid_utils import FluidFieldComputer
+from fragile.fractalai.shaolin.stream_plots import Histogram
 
 
 __all__ = ["GasVisualizer"]

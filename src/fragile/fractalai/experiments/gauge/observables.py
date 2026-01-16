@@ -21,8 +21,8 @@ from scipy.optimize import curve_fit
 import torch
 from torch import Tensor
 
-from fragile.core.companion_selection import compute_algorithmic_distance_matrix
-from fragile.core.fitness import compute_fitness
+from fragile.fractalai.core.companion_selection import compute_algorithmic_distance_matrix
+from fragile.fractalai.core.fitness import compute_fitness
 
 
 class ObservablesConfig(BaseModel):

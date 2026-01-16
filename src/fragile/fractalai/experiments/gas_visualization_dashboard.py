@@ -15,10 +15,10 @@ from __future__ import annotations
 import holoviews as hv
 import panel as pn
 
-from fragile.experiments.convergence import ConvergencePanel
-from fragile.experiments.gas_config_panel import GasConfigPanel
-from fragile.experiments.n_particle_swarm import GasVisualizer
-from fragile.experiments.parameter_optimization import ConvergenceBoundsPanel
+from fragile.fractalai.experiments.convergence import ConvergencePanel
+from fragile.fractalai.experiments.gas_config_panel import GasConfigPanel
+from fragile.fractalai.experiments.n_particle_swarm import GasVisualizer
+from fragile.fractalai.experiments.parameter_optimization import ConvergenceBoundsPanel
 
 
 __all__ = ["create_app"]

@@ -15,7 +15,7 @@ import param
 import torch
 from torch import Tensor
 
-from fragile.core.panel_model import INPUT_WIDTH, PanelModel
+from fragile.fractalai.core.panel_model import INPUT_WIDTH, PanelModel
 
 
 class SwarmState:
@@ -495,7 +495,7 @@ class EuclideanGas(PanelModel):
         n_recorded = len(recorded_steps)
 
         # Initialize vectorized history recorder with pre-allocated arrays
-        from fragile.core.vec_history import VectorizedHistoryRecorder
+        from fragile.fractalai.core.vec_history import VectorizedHistoryRecorder
 
         record_gradients = False
         record_hessians_diag = False

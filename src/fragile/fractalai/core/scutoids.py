@@ -71,8 +71,8 @@ import torch
 
 
 if TYPE_CHECKING:
-    from fragile.bounds import TorchBounds
-    from fragile.core.history import RunHistory
+    from fragile.fractalai.bounds import TorchBounds
+    from fragile.fractalai.core.history import RunHistory
 
 
 @dataclass
@@ -1121,7 +1121,7 @@ class ScutoidHistory2D(BaseScutoidHistory):
         Raises:
             Exception: On any error (caller will fallback to batch mode)
         """
-        from fragile.core.incremental_delaunay import IncrementalDelaunay2D
+        from fragile.fractalai.core.incremental_delaunay import IncrementalDelaunay2D
 
         # Step 1: Initialize at t=0
         t_idx = 0

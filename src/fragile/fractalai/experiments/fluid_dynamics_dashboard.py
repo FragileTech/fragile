@@ -30,21 +30,21 @@ import panel as pn
 import param
 import torch
 
-from fragile.core.benchmarks import (
+from fragile.fractalai.core.benchmarks import (
     KelvinHelmholtzInstability,
     LidDrivenCavity,
     TaylorGreenVortex,
 )
-from fragile.core.cloning import CloneOperator
-from fragile.core.companion_selection import CompanionSelection
-from fragile.core.euclidean_gas import EuclideanGas
-from fragile.core.fitness import FitnessOperator
-from fragile.core.kinetic_operator import KineticOperator
-from fragile.experiments.fluid_utils import (
+from fragile.fractalai.core.cloning import CloneOperator
+from fragile.fractalai.core.companion_selection import CompanionSelection
+from fragile.fractalai.core.euclidean_gas import EuclideanGas
+from fragile.fractalai.core.fitness import FitnessOperator
+from fragile.fractalai.core.kinetic_operator import KineticOperator
+from fragile.fractalai.experiments.fluid_utils import (
     FLUID_CONFIGS,
     FluidFieldComputer,
 )
-from fragile.experiments.gas_config_dashboard import GasConfig
+from fragile.fractalai.experiments.gas_config_dashboard import GasConfig
 
 
 __all__ = [

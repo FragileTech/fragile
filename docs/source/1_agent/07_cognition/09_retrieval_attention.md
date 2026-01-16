@@ -278,6 +278,13 @@ At the origin, where $\lambda(0) = 2$, coordinate and geodesic distances are mor
 The key insight is that the causal structure depends on *geodesic* distance, not coordinate distance. This is physically correct: information travels through the manifold, not through the coordinate chart.
 :::
 
+:::{figure} ../../../svg_images/lorentzian_light_cone_mask.svg
+:name: fig-lorentzian-light-cone-mask
+:width: 100%
+
+**Causal mask from the light cone.** Events inside $J^-(z,t)$ are allowed to influence the present; events outside are masked to zero by the causal constraint.
+:::
+
 :::{prf:theorem} Memory Causality Constraint
 :label: thm-memory-causality-constraint
 
@@ -384,6 +391,13 @@ Here $U_{0 \to (z,t)}$ is the Wilson line from origin to $(z, t)$ along a causal
 
 *Units:* $[\alpha] = \text{dimensionless}$, $[\text{SelfAttn}] = [\psi]$.
 
+:::
+
+:::{figure} ../../../svg_images/covariant_self_attention_causal.svg
+:name: fig-covariant-self-attention-causal
+:width: 100%
+
+**Covariant self-attention with causal masking.** Wilson line transport aligns Q/K/V, temperature encodes curvature, and the softmax normalization is restricted to $J^-(z,t)$.
 :::
 
 :::{prf:theorem} Gauge Invariance of Causal Self-Attention
@@ -533,6 +547,13 @@ Here $\theta$ is the Heaviside step function: $\theta(x) = 1$ if $x \geq 0$, els
 
 :::
 
+:::{figure} ../../../svg_images/lorentzian_cross_attention_retarded.svg
+:name: fig-lorentzian-cross-attention-retarded
+:width: 100%
+
+**Lorentzian cross-attention with retarded potentials.** Retrieval is gated by $\Theta_{\text{ret}}$ and delayed by $t_{\text{ret}} = d_G/c_{\text{info}}$, producing a ghost view of the archive.
+:::
+
 :::{prf:definition} Ghost Memory Interface
 :label: def-ghost-memory-interface
 
@@ -675,6 +696,13 @@ where:
 - $H_\tau^{\text{causal}}(z, t; z', t') = 0$ if $d_G(z, z') > c_{\text{info}}(t - t')$ (no superluminal influence)
 - As $\tau \to 0$: $H_\tau^{\text{causal}} \to \delta(z - z') \cdot M_{\text{causal}}$
 
+:::
+
+:::{figure} ../../../svg_images/causal_heat_kernel_memory_potential.svg
+:name: fig-causal-heat-kernel-memory-potential
+:width: 100%
+
+**Causal heat kernel to memory potential.** Spatial smoothing from $H_\tau$ is filtered by the light cone, then integrated to yield $\Psi_{\text{mem}}^{\text{causal}}$ and its force.
 :::
 
 :::{prf:theorem} Causal Memory Potential

@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="420" viewBox="0 0 980 420">
+  <defs>
+    <style>
+      .title { font: 600 18px "IBM Plex Sans", Arial, sans-serif; fill: #1f2933; }
+      .label { font: 600 13px "IBM Plex Sans", Arial, sans-serif; fill: #1f2933; }
+      .small { font: 12px "IBM Plex Sans", Arial, sans-serif; fill: #334e68; }
+      .center { text-anchor: middle; dominant-baseline: middle; }
+      .box { fill: #ffffff; stroke: #cbd2d9; stroke-width: 1.2; }
+      .box-strong { fill: #f5f7fa; stroke: #1f2933; stroke-width: 1.3; }
+      .box-geom { fill: #e8f0fe; stroke: #2e86ab; stroke-width: 1.2; }
+      .box-attn { fill: #e8f4f2; stroke: #2a9d8f; stroke-width: 1.2; }
+      .box-metric { fill: #fff4e6; stroke: #f6ae2d; stroke-width: 1.2; }
+      .arrow { stroke: #1f2933; stroke-width: 1.4; fill: none; marker-end: url(#arrow); }
+    </style>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#1f2933" />
+    </marker>
+  </defs>
+
+  <text x="32" y="34" class="title">Covariant Cross-Attention Module</text>
+
+  <rect x="40" y="90" width="200" height="46" rx="10" class="box" />
+  <text x="140" y="107" class="label center">Observation latent</text>
+  <text x="140" y="123" class="small center">psi_obs(z)</text>
+
+  <rect x="40" y="160" width="200" height="46" rx="10" class="box" />
+  <text x="140" y="177" class="label center">Action latent</text>
+  <text x="140" y="193" class="small center">psi_act(z')</text>
+
+  <rect x="270" y="110" width="160" height="70" rx="10" class="box-strong" />
+  <text x="350" y="137" class="label center">Chiral projector</text>
+  <text x="350" y="153" class="small center">P_L</text>
+
+  <rect x="470" y="18" width="220" height="32" rx="8" class="box-geom" />
+  <text x="580" y="34" class="small center">Geometric Q terms (Christoffel)</text>
+
+  <rect x="470" y="70" width="220" height="90" rx="10" class="box" />
+  <text x="580" y="90" class="label center">Q projection</text>
+  <text x="580" y="106" class="small center">D_mu psi_obs</text>
+  <text x="580" y="122" class="small center">U(0-&gt;z) transport</text>
+  <text x="580" y="138" class="small center">Geometric: z, z outer z</text>
+
+  <rect x="470" y="190" width="220" height="80" rx="10" class="box" />
+  <text x="580" y="210" class="label center">K projection</text>
+  <text x="580" y="226" class="small center">D_nu psi_act</text>
+  <text x="580" y="242" class="small center">U(0-&gt;z') transport</text>
+
+  <rect x="470" y="300" width="220" height="70" rx="10" class="box" />
+  <text x="580" y="320" class="label center">V projection</text>
+  <text x="580" y="336" class="small center">psi_act</text>
+  <text x="580" y="352" class="small center">U(0-&gt;z') transport</text>
+
+  <rect x="730" y="64" width="220" height="40" rx="8" class="box-metric" />
+  <text x="840" y="82" class="small center">Temperature tau(z)</text>
+  <text x="840" y="98" class="small center">= sqrt(d_k) / lambda(z)</text>
+
+  <rect x="730" y="120" width="220" height="60" rx="10" class="box-attn" />
+  <text x="840" y="140" class="label center">Score</text>
+  <text x="840" y="156" class="small center">Q K^T / tau(z)</text>
+
+  <rect x="730" y="190" width="220" height="46" rx="10" class="box-attn" />
+  <text x="840" y="213" class="label center">softmax</text>
+
+  <rect x="730" y="246" width="220" height="46" rx="10" class="box-attn" />
+  <text x="840" y="266" class="label center">Screening</text>
+  <text x="840" y="282" class="small center">exp(-sigma A)</text>
+
+  <rect x="730" y="308" width="220" height="70" rx="10" class="box-strong" />
+  <text x="840" y="330" class="label center">Weighted sum with V</text>
+  <text x="840" y="346" class="small center">Update: delta z or delta p</text>
+
+  <line x1="240" y1="113" x2="270" y2="145" class="arrow" />
+  <line x1="240" y1="183" x2="270" y2="145" class="arrow" />
+
+  <line x1="430" y1="145" x2="470" y2="115" class="arrow" />
+  <line x1="430" y1="145" x2="470" y2="230" class="arrow" />
+  <line x1="430" y1="145" x2="470" y2="335" class="arrow" />
+
+  <line x1="580" y1="50" x2="580" y2="70" class="arrow" />
+
+  <line x1="690" y1="115" x2="730" y2="150" class="arrow" />
+  <line x1="690" y1="230" x2="730" y2="150" class="arrow" />
+
+  <line x1="840" y1="104" x2="840" y2="120" class="arrow" />
+  <line x1="840" y1="180" x2="840" y2="190" class="arrow" />
+  <line x1="840" y1="236" x2="840" y2="246" class="arrow" />
+  <line x1="840" y1="292" x2="840" y2="308" class="arrow" />
+
+  <line x1="690" y1="335" x2="730" y2="343" class="arrow" />
+</svg>
