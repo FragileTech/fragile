@@ -732,6 +732,161 @@ This is what distinguishes rigorous parameter selection from trial-and-error tun
 
 The tight bounds are certified by the 17-node sieve:
 
+```{raw} html
+<figure class="sieve-diagram">
+  <svg
+    width="960"
+    height="520"
+    viewBox="0 0 960 520"
+    role="img"
+    aria-labelledby="sieveTitle sieveDesc"
+    xmlns="http://www.w3.org/2000/svg"
+    shape-rendering="geometricPrecision"
+  >
+    <title id="sieveTitle">17-node verification sieve</title>
+    <desc id="sieveDesc">
+      Seventeen labeled nodes arranged in four rows, showing the verification checkpoints
+      from energy and recovery through alignment and lock.
+    </desc>
+    <defs>
+      <linearGradient id="sieveBg" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#f4f0e8" />
+        <stop offset="100%" stop-color="#e6edf6" />
+      </linearGradient>
+      <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+        <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#0f172a" flood-opacity="0.18" />
+      </filter>
+      <style>
+        .sieve-title {
+          font: 600 22px/1.2 "IBM Plex Sans", "Source Sans 3", "Helvetica Neue", Arial, sans-serif;
+          fill: #1b2430;
+          letter-spacing: 0.4px;
+        }
+        .sieve-divider {
+          stroke: #cbd5e1;
+          stroke-width: 1;
+        }
+        .node rect {
+          fill: #ffffff;
+          stroke: #94a3b8;
+          stroke-width: 1.2;
+        }
+        .node text {
+          font-family: "IBM Plex Sans", "Source Sans 3", "Helvetica Neue", Arial, sans-serif;
+          text-anchor: middle;
+        }
+        .node-num {
+          font-size: 12px;
+          fill: #475569;
+          font-weight: 600;
+        }
+        .node-label {
+          font-size: 14px;
+          fill: #111827;
+          font-weight: 600;
+          letter-spacing: 0.2px;
+        }
+      </style>
+    </defs>
+    <rect width="960" height="520" rx="18" fill="url(#sieveBg)" />
+    <text class="sieve-title" x="480" y="38">17-Node Verification Sieve</text>
+    <line class="sieve-divider" x1="60" y1="167" x2="900" y2="167" />
+    <line class="sieve-divider" x1="60" y1="277" x2="900" y2="277" />
+    <line class="sieve-divider" x1="60" y1="387" x2="900" y2="387" />
+
+    <g class="node">
+      <rect x="150" y="80" width="150" height="64" rx="12" filter="url(#softShadow)" />
+      <text class="node-num" x="225" y="104">Node 1</text>
+      <text class="node-label" x="225" y="126">Energy</text>
+    </g>
+    <g class="node">
+      <rect x="320" y="80" width="150" height="64" rx="12" filter="url(#softShadow)" />
+      <text class="node-num" x="395" y="104">Node 2</text>
+      <text class="node-label" x="395" y="126">Recovery</text>
+    </g>
+    <g class="node">
+      <rect x="490" y="80" width="150" height="64" rx="12" filter="url(#softShadow)" />
+      <text class="node-num" x="565" y="104">Node 3</text>
+      <text class="node-label" x="565" y="126">Confinement</text>
+    </g>
+    <g class="node">
+      <rect x="660" y="80" width="150" height="64" rx="12" filter="url(#softShadow)" />
+      <text class="node-num" x="735" y="104">Node 4</text>
+      <text class="node-label" x="735" y="126">Scaling</text>
+    </g>
+
+    <g class="node">
+      <rect x="65" y="190" width="150" height="64" rx="12" filter="url(#softShadow)" />
+      <text class="node-num" x="140" y="214">Node 5</text>
+      <text class="node-label" x="140" y="236">Parameters</text>
+    </g>
+    <g class="node">
+      <rect x="235" y="190" width="150" height="64" rx="12" filter="url(#softShadow)" />
+      <text class="node-num" x="310" y="214">Node 6</text>
+      <text class="node-label" x="310" y="236">Capacity</text>
+    </g>
+    <g class="node">
+      <rect x="405" y="190" width="150" height="64" rx="12" filter="url(#softShadow)" />
+      <text class="node-num" x="480" y="214">Node 7</text>
+      <text class="node-label" x="480" y="236">Analyticity</text>
+    </g>
+    <g class="node">
+      <rect x="575" y="190" width="150" height="64" rx="12" filter="url(#softShadow)" />
+      <text class="node-num" x="650" y="214">Node 8</text>
+      <text class="node-label" x="650" y="236">Topology</text>
+    </g>
+    <g class="node">
+      <rect x="745" y="190" width="150" height="64" rx="12" filter="url(#softShadow)" />
+      <text class="node-num" x="820" y="214">Node 9</text>
+      <text class="node-label" x="820" y="236">Tameness</text>
+    </g>
+
+    <g class="node">
+      <rect x="150" y="300" width="150" height="64" rx="12" filter="url(#softShadow)" />
+      <text class="node-num" x="225" y="324">Node 10</text>
+      <text class="node-label" x="225" y="346">Ergodicity</text>
+    </g>
+    <g class="node">
+      <rect x="320" y="300" width="150" height="64" rx="12" filter="url(#softShadow)" />
+      <text class="node-num" x="395" y="324">Node 11</text>
+      <text class="node-label" x="395" y="346">Complexity</text>
+    </g>
+    <g class="node">
+      <rect x="490" y="300" width="150" height="64" rx="12" filter="url(#softShadow)" />
+      <text class="node-num" x="565" y="324">Node 12</text>
+      <text class="node-label" x="565" y="346">Oscillation</text>
+    </g>
+    <g class="node">
+      <rect x="660" y="300" width="150" height="64" rx="12" filter="url(#softShadow)" />
+      <text class="node-num" x="735" y="324">Node 13</text>
+      <text class="node-label" x="735" y="346">Boundary</text>
+    </g>
+
+    <g class="node">
+      <rect x="150" y="410" width="150" height="64" rx="12" filter="url(#softShadow)" />
+      <text class="node-num" x="225" y="434">Node 14</text>
+      <text class="node-label" x="225" y="456">Overload</text>
+    </g>
+    <g class="node">
+      <rect x="320" y="410" width="150" height="64" rx="12" filter="url(#softShadow)" />
+      <text class="node-num" x="395" y="434">Node 15</text>
+      <text class="node-label" x="395" y="456">Starvation</text>
+    </g>
+    <g class="node">
+      <rect x="490" y="410" width="150" height="64" rx="12" filter="url(#softShadow)" />
+      <text class="node-num" x="565" y="434">Node 16</text>
+      <text class="node-label" x="565" y="456">Alignment</text>
+    </g>
+    <g class="node">
+      <rect x="660" y="410" width="150" height="64" rx="12" filter="url(#softShadow)" />
+      <text class="node-num" x="735" y="434">Node 17</text>
+      <text class="node-label" x="735" y="456">Lock</text>
+    </g>
+  </svg>
+  <figcaption>Structured layout of the 17 verification nodes used by the sieve.</figcaption>
+</figure>
+```
+
 | Node | Constraint | Bound Verified |
 |------|------------|----------------|
 | 1 (Energy) | $\Phi \in [0, V_{\max}]$ | $V_{\max} = 4.41$ |

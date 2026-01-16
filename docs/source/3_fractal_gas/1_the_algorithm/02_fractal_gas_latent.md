@@ -221,6 +221,14 @@ Now we come to the actual algorithm, and I want you to keep a clear picture in y
 The key insight is that this creates a self-correcting system. Particles that wander into bad regions get pulled back by the cloning mechanism. Particles in good regions spread their influence. And the Langevin noise prevents the whole swarm from collapsing onto a single point. The mathematics below makes all of this precise.
 :::
 
+:::{figure} figures/latent-fractal-gas-step.svg
+:alt: Pipeline of the latent fractal gas step with companion selection, cloning, and geodesic BAOAB.
+:width: 95%
+:align: center
+
+Step overview: companion selection feeds fitness and cloning, followed by geodesic BAOAB kinetics in latent space.
+:::
+
 ### State and Distance
 
 :::{div} feynman-prose
@@ -246,6 +254,14 @@ PBC is disabled; distances use the coordinate Euclidean metric in the latent cha
 Here is something that should make you sit up. When particle $i$ needs to pick a companion, it does not just pick the nearest one. It picks randomly, with nearby particles more likely to be chosen. The probability drops off as a Gaussian with distance. Why do we do this?
 
 The answer is *minorization*. If we always picked the nearest neighbor, the system could get stuck. Distant particles would never interact, and you could have isolated clusters that never mix. But with soft selection, even the farthest particle has some tiny probability of being chosen. This guarantees that the Markov chain is irreducible, that any configuration can eventually reach any other. And that is exactly what we need for the ergodic theorems to apply.
+:::
+
+:::{figure} figures/softmax-companion-selection.svg
+:alt: Phase space neighbors mapped to softmax companion weights.
+:width: 95%
+:align: center
+
+Soft companion selection maps phase-space distances to a softmax weight distribution.
 :::
 
 For alive walkers $\mathcal{A}$ and interaction range $\epsilon$, define Gaussian kernel weights {cite}`scholkopf2002learning`
@@ -317,6 +333,14 @@ $$
 When a low-fitness particle clones from a high-fitness companion, we face a choice: what happens to its velocity? We could just copy the companion's velocity, but that creates energy out of nothing. We could set it to zero, but that loses information.
 
 The elegant solution is *inelastic collision*. Group the cloner with its companion, compute the center-of-mass velocity, and have both particles move toward that shared velocity. The collision dissipates energy (controlled by the restitution coefficient $\alpha_{\mathrm{rest}}$), but momentum is conserved within each collision group. This is physically sensible and, more importantly, it provides controlled mixing in velocity space without artificial acceleration. The cloning/selection mechanism follows the general framework of genetic algorithms {cite}`holland1975adaptation,goldberg1989genetic` and sequential Monte Carlo resampling {cite}`delmoral2004feynman`.
+:::
+
+:::{figure} figures/inelastic-collision-cloning.svg
+:alt: Inelastic collision used to update cloner and companion velocities.
+:width: 90%
+:align: center
+
+Inelastic collision preserves group momentum while dissipating kinetic energy during cloning.
 :::
 
 Cloning scores and probabilities:

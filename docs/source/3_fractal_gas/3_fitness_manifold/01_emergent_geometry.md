@@ -58,6 +58,7 @@ $$
 $$
 
 where:
+
 - $H(z, S) = \nabla_z^2 V_{\mathrm{fit}}(z; S)$ is the **local Hessian** of the fitness potential evaluated at position $z$. For mean-field fitness $V_{\mathrm{fit}}(S) = \frac{1}{N}\sum_{i,j}\phi(z_i, z_j)$, a walker at position $z$ experiences $H(z, S) = \frac{1}{N}\sum_{j \in S} \nabla_z^2 \phi(z, z_j)$
 - $\epsilon_\Sigma > 0$ is the **regularization parameter** (spectral floor)
 - $I$ is the identity matrix in the latent coordinate basis
@@ -455,16 +456,19 @@ For computing areas of 2D surfaces (plaquettes) in the emergent geometry:
 **Step 2.** Evaluate metric at centroid: $g_c = g(z_c)$
 
 **Step 3.** For each triangle $T_i = (z_c, z_i, z_{i+1})$, compute edge vectors:
+
 $$
 v_1^{(i)} = z_i - z_c, \quad v_2^{(i)} = z_{i+1} - z_c
 $$
 
 **Step 4.** Compute Riemannian inner products:
+
 $$
 \langle v_1, v_1 \rangle_{g_c} = (v_1^{(i)})^T g_c v_1^{(i)}, \quad \langle v_2, v_2 \rangle_{g_c} = (v_2^{(i)})^T g_c v_2^{(i)}, \quad \langle v_1, v_2 \rangle_{g_c} = (v_1^{(i)})^T g_c v_2^{(i)}
 $$
 
 **Step 5.** Triangle area via Gram determinant:
+
 $$
 A_i = \frac{1}{2} \sqrt{\langle v_1, v_1 \rangle_{g_c} \cdot \langle v_2, v_2 \rangle_{g_c} - \langle v_1, v_2 \rangle_{g_c}^2}
 $$
@@ -533,21 +537,25 @@ def compute_riemannian_area_fan(
 Let $T = (z_0, z_1, z_2, z_3)$ be a tetrahedron with vertices $z_i \in \mathcal{Z}$.
 
 **Metric at centroid:**
+
 $$
 g_c = g\left(\frac{z_0 + z_1 + z_2 + z_3}{4}\right)
 $$
 
 **Edge vectors from base vertex:**
+
 $$
 v_1 = z_1 - z_0, \quad v_2 = z_2 - z_0, \quad v_3 = z_3 - z_0
 $$
 
 **Gram matrix:** $3 \times 3$ matrix of Riemannian inner products:
+
 $$
 G_{ij} = \langle v_i, v_j \rangle_g = v_i^T g_c v_j
 $$
 
 **Riemannian volume:**
+
 $$
 V_g(T) = \frac{1}{6} \sqrt{\det G}
 $$
@@ -618,11 +626,13 @@ The geometry is baked into the sampling—you do not need to compute determinant
 Let $\{z_i\}_{i=1}^N$ be positions sampled from the QSD with density $\rho(z) \propto \sqrt{\det g(z)} e^{-\Phi_{\mathrm{eff}}(z)/T}$.
 
 **Method 1 (QSD sampling):** If episodes sample from QSD:
+
 $$
 \int_{\mathcal{Z}} f(z) \, dV_g(z) \approx Z \cdot \frac{1}{N} \sum_{i=1}^N f(z_i) \cdot e^{\Phi_{\mathrm{eff}}(z_i)/T}
 $$
 
 **Method 2 (Importance sampling):** For arbitrary sampling density $\rho(z)$:
+
 $$
 \int_{\mathcal{Z}} f(z) \, dV_g(z) \approx \frac{1}{N} \sum_{i=1}^N f(z_i) \cdot \frac{\sqrt{\det g(z_i)}}{\rho(z_i)}
 $$
@@ -657,6 +667,7 @@ $$
 $$
 
 where $\lambda_v > 0$ and $b \in \mathbb{R}$ satisfy the **coercivity condition** $|b| < 2\sqrt{\lambda_v}$, ensuring the quadratic form is positive definite. This condition follows from requiring the matrix
+
 $$
 \begin{pmatrix} 1 & b/2 \\ b/2 & \lambda_v \end{pmatrix}
 $$
@@ -687,12 +698,15 @@ where:
 *Sketch.* We follow the standard hypocoercive framework adapted for state-dependent diffusion.
 
 **Step 1. Lyapunov functional:** Define
+
 $$
 \mathcal{H}(\Delta z, \Delta v) = \|\Delta z\|^2 + \lambda_v \|\Delta v\|^2 + b\langle \Delta z, \Delta v \rangle
 $$
+
 where $\lambda_v > 0$ and $|b| < 2\sqrt{\lambda_v}$ ensure $\mathcal{H}$ is equivalent to $\|\Delta z\|^2 + \|\Delta v\|^2$.
 
 **Step 2. Time derivative:** Applying Ito's lemma to coupled trajectories:
+
 $$
 \frac{d}{dt}\mathbb{E}[\mathcal{H}] = -2\gamma \lambda_v \|\Delta v\|^2 + b\|\Delta v\|^2 - b\gamma\langle \Delta z, \Delta v\rangle + \text{diffusion terms}
 $$
@@ -700,12 +714,15 @@ $$
 **Step 3. Diffusion contribution:** The diffusion terms involve $\mathrm{tr}[D_{\mathrm{reg}}]$ bounded by $d \cdot c_{\max}$, plus cross-terms from spatial variation bounded by $L_\Sigma$.
 
 **Step 4. Gronwall closure:** Choosing $b = \gamma/2$ and $\lambda_v = 1 + \gamma^2/4$ (standard hypocoercive tuning), and using uniform ellipticity to bound the diffusion contributions:
+
 $$
 \frac{d}{dt}\mathbb{E}[\mathcal{H}] \leq -\kappa_{\mathrm{hypo}} \mathbb{E}[\mathcal{H}] + C_1 L_\Sigma \mathbb{E}[\|\Delta z\|^2]
 $$
+
 where $\kappa_{\mathrm{hypo}} = O(\min\{\gamma, c_{\min}\})$.
 
 **Step 5. Combined contraction:** Including cloning-induced contraction $\kappa_z^{\mathrm{clone}}$ in position space:
+
 $$
 \frac{d}{dt}\mathbb{E}[\mathcal{H}] \leq -(\kappa_{\mathrm{hypo}} + \kappa_z^{\mathrm{clone}} - C_1 L_\Sigma) \mathbb{E}[\mathcal{H}]
 $$

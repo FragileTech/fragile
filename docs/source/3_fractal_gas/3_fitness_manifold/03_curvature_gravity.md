@@ -489,6 +489,7 @@ $$
 where:
 
 **1. Expansion scalar $\theta$:**
+
 $$
 \theta = \nabla_\mu u^\mu = \mathrm{div}(u)
 $$
@@ -496,6 +497,7 @@ $$
 - $\theta < 0$: Geodesics converging (volume decreasing)
 
 **2. Shear tensor $\sigma_{\mu\nu}$:**
+
 $$
 \sigma_{\mu\nu} = \frac{1}{2}(\nabla_\mu u_\nu + \nabla_\nu u_\mu) - \frac{1}{d}\theta h_{\mu\nu}
 $$
@@ -503,6 +505,7 @@ $$
 - Measures shape distortion without volume change
 
 **3. Rotation (vorticity) tensor $\omega_{\mu\nu}$:**
+
 $$
 \omega_{\mu\nu} = \frac{1}{2}(\nabla_\mu u_\nu - \nabla_\nu u_\mu)
 $$
@@ -510,6 +513,7 @@ $$
 - Measures local rotation of the congruence
 
 **Projection tensor:**
+
 $$
 h_{\mu\nu} = g_{\mu\nu} + u_\mu u_\nu
 $$
@@ -759,6 +763,7 @@ where:
 **Step 1. Solid angle deficit argument.**
 
 For $d = 2$, we use the Gauss-Bonnet theorem directly:
+
 $$
 \int_{\partial M} k_g \, ds = 2\pi \chi(M) - \int_M K \, dA
 $$
@@ -1055,6 +1060,7 @@ In the next chapter, we push this correspondence further and derive the field eq
 - Fourth derivatives of fitness determine curvature
 
 **The Raychaudhuri-Scutoid Equation:**
+
 $$
 \frac{d\theta}{d\tau} = -\frac{1}{d}\theta^2 - |\sigma|^2 + |\omega|^2 - R_{\mu\nu}u^\mu u^\nu
 $$

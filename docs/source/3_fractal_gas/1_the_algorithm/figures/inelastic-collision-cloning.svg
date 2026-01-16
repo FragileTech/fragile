@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 420" role="img" aria-label="Momentum-conserving inelastic collision for cloning velocities">
+  <defs>
+    <style>
+      .bg { fill: #ffffff; }
+      .panel { fill: #f8fbff; stroke: #c5d3df; stroke-width: 1.5; }
+      .title { fill: #0b1d39; font-size: 20px; font-family: Arial, Helvetica, sans-serif; font-weight: 600; }
+      .panel-title { fill: #1b2a3a; font-size: 16px; font-family: Arial, Helvetica, sans-serif; font-weight: 600; }
+      .label { fill: #4b5563; font-size: 13px; font-family: Arial, Helvetica, sans-serif; }
+      .node { fill: #2a9d8f; }
+      .node-focus { fill: #e76f51; }
+      .arrow { stroke: #1f4b99; stroke-width: 2; fill: none; }
+      .arrow-light { stroke: #5f8cc4; stroke-width: 1.6; fill: none; }
+    </style>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#1f4b99" />
+    </marker>
+    <marker id="arrow-light" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#5f8cc4" />
+    </marker>
+  </defs>
+
+  <rect class="bg" width="920" height="420" />
+  <text class="title" x="460" y="48" text-anchor="middle">Momentum-conserving cloning via inelastic collision</text>
+
+  <rect class="panel" x="60" y="90" width="340" height="250" rx="14" />
+  <rect class="panel" x="520" y="90" width="340" height="250" rx="14" />
+
+  <text class="panel-title" x="230" y="124" text-anchor="middle">Before collision</text>
+  <text class="panel-title" x="690" y="124" text-anchor="middle">After collision</text>
+
+  <circle class="node-focus" cx="170" cy="180" r="9" />
+  <path class="arrow" d="M 178 176 L 230 150" marker-end="url(#arrow)" />
+  <path class="arrow" d="M 280 260 L 330 296" marker-end="url(#arrow)" />
+  <circle class="node" cx="280" cy="260" r="8" />
+  <text class="label" x="235" y="145">v_i</text>
+  <text class="label" x="340" y="308">v_c</text>
+
+  <circle class="node-focus" cx="640" cy="210" r="9" />
+  <circle class="node" cx="750" cy="250" r="8" />
+  <path class="arrow" d="M 648 206 L 710 186" marker-end="url(#arrow)" />
+  <path class="arrow" d="M 758 246 L 820 226" marker-end="url(#arrow)" />
+  <text class="label" x="714" y="182">v_i'</text>
+  <text class="label" x="824" y="222">v_c'</text>
+
+  <path class="arrow-light" d="M 610 300 L 700 300" marker-end="url(#arrow-light)" />
+  <text class="label" x="655" y="320" text-anchor="middle">toward V_COM with restitution</text>
+
+  <path class="arrow" d="M 400 215 L 520 215" marker-end="url(#arrow)" />
+  <text class="label" x="460" y="200" text-anchor="middle">inelastic collision</text>
+</svg>

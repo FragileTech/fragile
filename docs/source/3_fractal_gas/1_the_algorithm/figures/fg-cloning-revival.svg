@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 580" role="img" aria-label="Cloning mechanics with jitter, momentum blending, and revival of dead walkers">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f8fbff" />
+      <stop offset="100%" stop-color="#eef2f7" />
+    </linearGradient>
+    <pattern id="dotGrid" width="36" height="36" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="1.1" fill="#cbd5e1" opacity="0.32" />
+    </pattern>
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="4" stdDeviation="5" flood-color="#0b1f33" flood-opacity="0.16" />
+    </filter>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="11" refY="6" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L12,6 L0,12 z" fill="#334155" />
+    </marker>
+  </defs>
+  <style>
+    .title { font-family: "IBM Plex Sans", "Source Sans Pro", "Helvetica Neue", Arial, sans-serif; font-size: 26px; fill: #102a43; font-weight: 600; }
+    .panel { fill: #ffffff; stroke: #cbd5e1; stroke-width: 2; rx: 16; filter: url(#softShadow); }
+    .label { font-family: "IBM Plex Sans", "Source Sans Pro", "Helvetica Neue", Arial, sans-serif; font-size: 14px; fill: #475569; }
+    .math { font-family: "IBM Plex Mono", "SFMono-Regular", Menlo, Consolas, monospace; font-size: 14px; fill: #102a43; }
+    .alive { fill: #dcfce7; stroke: #2f9e44; stroke-width: 2; }
+    .low { fill: #ffe3e3; stroke: #c92a2a; stroke-width: 2; }
+    .dead { fill: #e2e8f0; stroke: #64748b; stroke-width: 2; }
+    .arrow { stroke: #334155; stroke-width: 2.2; marker-end: url(#arrow); }
+    .dash { stroke-dasharray: 6 6; }
+    .vector { stroke: #0f766e; stroke-width: 2.2; marker-end: url(#arrow); }
+  </style>
+
+  <rect width="1200" height="580" fill="url(#bg)" />
+  <rect width="1200" height="580" fill="url(#dotGrid)" opacity="0.35" />
+
+  <text x="60" y="60" class="title">Cloning mechanics and guaranteed revival</text>
+
+  <rect x="60" y="120" width="340" height="260" class="panel" />
+  <rect x="430" y="120" width="340" height="260" class="panel" />
+  <rect x="800" y="120" width="340" height="260" class="panel" />
+
+  <text x="90" y="150" class="label">Cloning decision</text>
+  <text x="460" y="150" class="label">Jittered position update</text>
+  <text x="830" y="150" class="label">Velocity blending</text>
+
+  <circle cx="130" cy="230" r="16" class="alive" />
+  <circle cx="270" cy="260" r="16" class="low" />
+  <line x1="150" y1="235" x2="250" y2="255" class="arrow" />
+  <text x="90" y="300" class="math">S_i > T_i</text>
+  <text x="90" y="325" class="label">clone from fitter companion</text>
+
+  <circle cx="600" cy="250" r="18" class="alive" />
+  <circle cx="560" cy="210" r="8" class="alive" opacity="0.75" />
+  <circle cx="640" cy="215" r="8" class="alive" opacity="0.75" />
+  <circle cx="560" cy="290" r="8" class="alive" opacity="0.75" />
+  <circle cx="640" cy="295" r="8" class="alive" opacity="0.75" />
+  <circle cx="600" cy="250" r="60" fill="none" stroke="#94a3b8" stroke-width="2" class="dash" />
+  <text x="470" y="330" class="label">Gaussian jitter with scale sigma_x</text>
+
+  <line x1="900" y1="300" x2="960" y2="230" class="vector" />
+  <line x1="900" y1="300" x2="940" y2="200" class="vector" />
+  <line x1="900" y1="300" x2="980" y2="260" class="vector" />
+  <circle cx="900" cy="300" r="10" class="alive" />
+  <line x1="900" y1="300" x2="1040" y2="300" class="arrow" />
+  <circle cx="1040" cy="300" r="10" class="alive" />
+  <text x="840" y="330" class="label">blend toward V_COM</text>
+
+  <rect x="60" y="420" width="1080" height="120" class="panel" />
+  <text x="90" y="455" class="label">Revival rule keeps the population constant</text>
+  <circle cx="150" cy="500" r="14" class="dead" />
+  <line x1="170" y1="500" x2="300" y2="500" class="arrow" />
+  <circle cx="340" cy="500" r="14" class="alive" />
+  <circle cx="380" cy="480" r="10" class="alive" opacity="0.75" />
+  <circle cx="380" cy="520" r="10" class="alive" opacity="0.75" />
+  <text x="430" y="505" class="label">dead walkers always clone from the alive set</text>
+</svg>

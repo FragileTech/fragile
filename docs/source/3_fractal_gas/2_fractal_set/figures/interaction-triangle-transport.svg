@@ -9,16 +9,20 @@
       <circle cx="2" cy="2" r="1.2" fill="#cbd5e1" opacity="0.35" />
     </pattern>
     <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
-      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#0b1f33" flood-opacity="0.18" />
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#0b1f33" flood-opacity="0.18" result="shadow" />
+      <feMerge>
+        <feMergeNode in="shadow" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
     </filter>
-    <marker id="arrow-cst" markerWidth="12" markerHeight="12" refX="12" refY="6" orient="auto" markerUnits="userSpaceOnUse">
-      <path d="M0,0 L12,6 L0,12 z" fill="#2a6fdb" />
+    <marker id="arrow-cst" markerWidth="16" markerHeight="16" refX="16" refY="8" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L16,8 L0,16 z" fill="#2a6fdb" />
     </marker>
-    <marker id="arrow-ig" markerWidth="12" markerHeight="12" refX="12" refY="6" orient="auto" markerUnits="userSpaceOnUse">
-      <path d="M0,0 L12,6 L0,12 z" fill="#2f9e44" />
+    <marker id="arrow-ig" markerWidth="16" markerHeight="16" refX="16" refY="8" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L16,8 L0,16 z" fill="#2f9e44" />
     </marker>
-    <marker id="arrow-ia" markerWidth="12" markerHeight="12" refX="12" refY="6" orient="auto" markerUnits="userSpaceOnUse">
-      <path d="M0,0 L12,6 L0,12 z" fill="#e07a2f" />
+    <marker id="arrow-ia" markerWidth="16" markerHeight="16" refX="16" refY="8" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L16,8 L0,16 z" fill="#e07a2f" />
     </marker>
     <marker id="arrow-loop" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="strokeWidth">
       <path d="M0,0 L10,5 L0,10 z" fill="#1d3557" />
@@ -49,16 +53,16 @@
   <text x="60" y="335" class="label-small">time</text>
 
   <g>
-    <line x1="737" y1="470" x2="243" y2="470" class="edge-ig" marker-end="url(#arrow-ig)" />
+    <line x1="737.0" y1="470.0" x2="243.0" y2="470.0" class="edge-ig" marker-start="url(#arrow-ig)" />
     <line x1="745.3" y1="452.3" x2="534.7" y2="197.7" class="edge-cst" marker-end="url(#arrow-cst)" />
-    <line x1="503.5" y1="196.0" x2="236.5" y2="454.0" class="edge-ia" marker-end="url(#arrow-ia)" />
+    <line x1="503.5" y1="196.0" x2="236.5" y2="454.0" class="edge-ia" marker-start="url(#arrow-ia)" />
   </g>
 
   <path d="M240,450 L520,200 L740,450 Z" class="loop" marker-end="url(#arrow-loop)" />
 
-  <circle cx="220" cy="470" r="22" class="node" />
-  <circle cx="760" cy="470" r="22" class="node" />
-  <circle cx="520" cy="180" r="22" class="node" />
+  <circle cx="220" cy="470" r="22" fill="#ffffff" stroke="#1b263b" stroke-width="3" />
+  <circle cx="760" cy="470" r="22" fill="#ffffff" stroke="#1b263b" stroke-width="3" />
+  <circle cx="520" cy="180" r="22" fill="#ffffff" stroke="#1b263b" stroke-width="3" />
 
   <text x="145" y="505" class="math">n_{j,t}</text>
   <text x="780" y="505" class="math">n_{i,t}</text>
@@ -66,7 +70,7 @@
 
   <text x="300" y="520" class="label">IG edge (space / influence)</text>
   <text x="660" y="320" class="label">CST edge (time)</text>
-  <text x="250" y="310" class="label">IA edge (attribution)</text>
+  <text x="170" y="360" class="label">IA edge<tspan x="170" dy="24">(attribution)</tspan></text>
 
   <text x="465" y="425" class="math">U_IG</text>
   <text x="660" y="250" class="math">U_CST</text>

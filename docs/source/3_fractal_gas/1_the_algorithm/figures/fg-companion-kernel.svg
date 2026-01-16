@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 520" role="img" aria-label="Soft companion selection with Gaussian weights and minorization floor">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f8fbff" />
+      <stop offset="100%" stop-color="#eef2f7" />
+    </linearGradient>
+    <pattern id="dotGrid" width="36" height="36" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="1.1" fill="#cbd5e1" opacity="0.32" />
+    </pattern>
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="4" stdDeviation="5" flood-color="#0b1f33" flood-opacity="0.16" />
+    </filter>
+  </defs>
+  <style>
+    .title { font-family: "IBM Plex Sans", "Source Sans Pro", "Helvetica Neue", Arial, sans-serif; font-size: 26px; fill: #102a43; font-weight: 600; }
+    .panel { fill: #ffffff; stroke: #cbd5e1; stroke-width: 2; rx: 16; filter: url(#softShadow); }
+    .label { font-family: "IBM Plex Sans", "Source Sans Pro", "Helvetica Neue", Arial, sans-serif; font-size: 14px; fill: #475569; }
+    .math { font-family: "IBM Plex Mono", "SFMono-Regular", Menlo, Consolas, monospace; font-size: 14px; fill: #102a43; }
+    .node { fill: #dbeafe; stroke: #2563eb; stroke-width: 2; }
+    .node-center { fill: #bfdbfe; stroke: #1d4ed8; stroke-width: 2.4; }
+    .link-strong { stroke: #1d4ed8; stroke-width: 3.2; }
+    .link-med { stroke: #1d4ed8; stroke-width: 2.2; }
+    .link-weak { stroke: #1d4ed8; stroke-width: 1.4; }
+    .bar { fill: #93c5fd; }
+    .bar-strong { fill: #2563eb; }
+    .bar-med { fill: #60a5fa; }
+    .bar-weak { fill: #bfdbfe; }
+    .axis { stroke: #94a3b8; stroke-width: 2; }
+    .dash { stroke-dasharray: 6 6; }
+  </style>
+
+  <rect width="1200" height="520" fill="url(#bg)" />
+  <rect width="1200" height="520" fill="url(#dotGrid)" opacity="0.35" />
+
+  <text x="60" y="60" class="title">Soft companion selection keeps every pair connected</text>
+
+  <rect x="70" y="120" width="500" height="320" class="panel" />
+  <rect x="630" y="120" width="500" height="320" class="panel" />
+
+  <text x="100" y="150" class="label">Gaussian weights from algorithmic distance</text>
+  <text x="660" y="150" class="label">Softmax probabilities with a nonzero floor</text>
+  <text x="100" y="175" class="math">w_ij = exp(-d_alg(i,j)^2 / (2 * epsilon^2))</text>
+
+  <circle cx="320" cy="280" r="16" class="node-center" />
+  <circle cx="220" cy="210" r="12" class="node" />
+  <circle cx="410" cy="215" r="12" class="node" />
+  <circle cx="200" cy="335" r="12" class="node" />
+  <circle cx="430" cy="340" r="12" class="node" />
+
+  <line x1="320" y1="280" x2="220" y2="210" class="link-strong" />
+  <line x1="320" y1="280" x2="410" y2="215" class="link-med" />
+  <line x1="320" y1="280" x2="200" y2="335" class="link-weak" />
+  <line x1="320" y1="280" x2="430" y2="340" class="link-med" />
+
+  <text x="110" y="390" class="label">closer walkers get larger weights</text>
+
+  <line x1="690" y1="400" x2="1070" y2="400" class="axis" />
+  <rect x="720" y="250" width="50" height="150" class="bar-strong" />
+  <rect x="810" y="280" width="50" height="120" class="bar-med" />
+  <rect x="900" y="320" width="50" height="80" class="bar" />
+  <rect x="990" y="340" width="50" height="60" class="bar-weak" />
+
+  <text x="732" y="420" class="label">j1</text>
+  <text x="822" y="420" class="label">j2</text>
+  <text x="912" y="420" class="label">j3</text>
+  <text x="1002" y="420" class="label">j4</text>
+
+  <line x1="700" y1="340" x2="1070" y2="340" class="axis dash" />
+  <text x="700" y="318" class="label">floor m_epsilon / (n_alive - 1)</text>
+  <text x="700" y="370" class="label">P_i(j) = softmax(w_ij)</text>
+</svg>
