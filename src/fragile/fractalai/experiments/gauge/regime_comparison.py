@@ -22,12 +22,12 @@ import numpy as np
 from pydantic import BaseModel, Field
 from torch import Tensor
 
-from fragile.experiments.gauge.locality_tests import (
+from fragile.fractalai.experiments.gauge.locality_tests import (
     LocalityTestsConfig,
     test_field_gradients,
     test_spatial_correlation,
 )
-from fragile.experiments.gauge.observables import (
+from fragile.fractalai.experiments.gauge.observables import (
     ObservablesConfig,
 )
 

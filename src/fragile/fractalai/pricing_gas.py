@@ -14,9 +14,9 @@ import param
 import torch
 from torch import Tensor
 
-from fragile.core.cloning import CloneOperator
-from fragile.core.companion_selection import CompanionSelection
-from fragile.core.euclidean_gas import EuclideanGas, SwarmState
+from fragile.fractalai.core.cloning import CloneOperator
+from fragile.fractalai.core.companion_selection import CompanionSelection
+from fragile.fractalai.core.euclidean_gas import EuclideanGas, SwarmState
 
 
 class PricingSwarmState(SwarmState):

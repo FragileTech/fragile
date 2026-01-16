@@ -6,7 +6,7 @@ import param
 import torch
 from torch import Tensor
 
-from fragile.core.panel_model import INPUT_WIDTH, PanelModel
+from fragile.fractalai.core.panel_model import INPUT_WIDTH, PanelModel
 
 
 def compute_cloning_score(

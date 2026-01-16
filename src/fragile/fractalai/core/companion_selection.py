@@ -9,7 +9,7 @@ import panel as pn
 import param
 import torch
 
-from fragile.core.panel_model import INPUT_WIDTH, PanelModel
+from fragile.fractalai.core.panel_model import INPUT_WIDTH, PanelModel
 
 
 def compute_algorithmic_distance_matrix(
@@ -48,7 +48,7 @@ def compute_algorithmic_distance_matrix(
     # Compute position distance matrix
     if pbc:
         # Use periodic boundary conditions (minimum image convention)
-        from fragile.core.distance import compute_periodic_distance_matrix
+        from fragile.fractalai.core.distance import compute_periodic_distance_matrix
 
         pos_dist = compute_periodic_distance_matrix(x, y=None, bounds=bounds, pbc=True)
         pos_dist_sq = pos_dist**2

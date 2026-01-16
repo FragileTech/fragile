@@ -18,8 +18,8 @@ import param
 from scipy.stats import gaussian_kde
 import torch
 
-from fragile.bounds import TorchBounds
-from fragile.core.history import RunHistory
+from fragile.fractalai.bounds import TorchBounds
+from fragile.fractalai.core.history import RunHistory
 
 
 __all__ = ["ConvergencePanel"]

@@ -39,6 +39,13 @@ The structure separates data into two categories based on transformation propert
 | **Scalars** | Nodes | Invariant (same in all frames) | Energy, fitness, status flags, norms |
 | **Spinors** | Edges | Covariant (transform under $\mathrm{Spin}(d)$) | Velocities, forces, gradients, displacements |
 
+:::{figure} ../../../svg_images/fractal_set_data_storage.svg
+:name: fig-fractal-set-data-storage
+:width: 100%
+
+**What gets stored where.** Nodes carry only scalar data; CST and IG edges carry spinor-encoded vectors; IA edges store scalar attribution weights and phases.
+:::
+
 The edges divide into **three types** reflecting the algorithm's causal structure:
 
 | Edge Type | Connects | Encodes | Directionality |
@@ -48,6 +55,13 @@ The edges divide into **three types** reflecting the algorithm's causal structur
 | **IA** (Influence Attribution) | $(n_{i,t+1}, n_{j,t})$ | Causal attribution from effect to cause | Directed (retrocausal) |
 
 Together, the three edge types form a **directed 1-skeleton**: CST encodes timelike evolution, IG encodes spacelike coupling, and IA closes causal triangles by attributing each walker's update to its influencers. The underlying undirected support is simplicial.
+
+:::{figure} ../../../svg_images/fractal_set_overview.svg
+:name: fig-fractal-set-overview
+:width: 100%
+
+**Fractal Set on two time slices.** CST edges run forward in time, IG edges connect same-time walkers, and IA edges point back from effects to causes. One interaction triangle is highlighted.
+:::
 
 ---
 
@@ -79,6 +93,13 @@ Why do we need *three* types of edges? Because causality has three components: e
 **IA edges** (diagonal) connect effects to causes across time. When walker $i$'s state at $t+1$ was influenced by walker $j$ at time $t$, that causal link is stored on an IA edge. These edges complete the triangle—they close the causal loop.
 
 The triangle is the atom of interaction. A single influence event involves three nodes and three edges: $j$ at time $t$ (the source), $i$ at time $t$ (the receiver before), and $i$ at time $t+1$ (the receiver after). The IG edge says "j influenced i." The CST edge says "i evolved." The IA edge says "i's evolution was partly due to j." Together, they form an irreducible causal unit.
+:::
+
+:::{figure} ../../../svg_images/fractal_set_triangle.svg
+:name: fig-fractal-set-triangle
+:width: 80%
+
+**The interaction triangle.** One IG edge (influence), one CST edge (evolution), and one IA edge (attribution) close a single causal loop.
 :::
 
 The following table summarizes the structural properties:

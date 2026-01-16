@@ -27,7 +27,7 @@ from pydantic import BaseModel, Field
 import torch
 from torch import Tensor
 
-from fragile.experiments.gauge.observables import (
+from fragile.fractalai.experiments.gauge.observables import (
     bin_by_distance,
     compute_collective_fields,
     compute_field_gradients,

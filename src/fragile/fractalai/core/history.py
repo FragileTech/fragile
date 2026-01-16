@@ -12,7 +12,7 @@ import torch
 from torch import Tensor
 
 # Import TorchBounds directly (not in TYPE_CHECKING) for Pydantic
-from fragile.bounds import TorchBounds
+from fragile.fractalai.bounds import TorchBounds
 
 
 class RunHistory(BaseModel):

@@ -7,7 +7,7 @@ all parameters needed to configure an Euclidean Gas swarm in notebooks.
 import panel as pn
 import param
 
-from fragile.core.benchmarks import (
+from fragile.fractalai.core.benchmarks import (
     Easom,
     EggHolder,
     HolderTable,
@@ -36,7 +36,7 @@ class EuclideanGasParamSelector(param.Parameterized):
 
     Example:
         >>> import panel as pn
-        >>> from fragile.shaolin import EuclideanGasParamSelector
+        >>> from fragile.fractalai.shaolin import EuclideanGasParamSelector
         >>> pn.extension()
         >>> selector = EuclideanGasParamSelector()
         >>> selector.epsilon = 0.8  # Adjust companion selection range
@@ -273,10 +273,10 @@ integrator={self.integrator}
             EuclideanGasParams: Configured parameter object ready for EuclideanGas initialization.
 
         Note:
-            This method requires importing from fragile.core modules:
-            >>> from fragile.core.euclidean_gas import EuclideanGas
-            >>> from fragile.core.kinetic_operator import KineticOperator
-            >>> from fragile.core.cloning import CloneOperator
+            This method requires importing from fragile.fractalai.core modules:
+            >>> from fragile.fractalai.core.euclidean_gas import EuclideanGas
+            >>> from fragile.fractalai.core.kinetic_operator import KineticOperator
+            >>> from fragile.fractalai.core.cloning import CloneOperator
 
         Example:
             >>> selector = EuclideanGasParamSelector()
@@ -300,11 +300,11 @@ integrator={self.integrator}
             "and other intermediate parameter classes no longer exist. "
             "Instead, directly construct EuclideanGas components:\n\n"
             "Example:\n"
-            "  from fragile.core.euclidean_gas import EuclideanGas\n"
-            "  from fragile.core.kinetic_operator import KineticOperator\n"
-            "  from fragile.core.cloning import CloneOperator\n"
-            "  from fragile.core.companion_selection import CompanionSelection\n"
-            "  from fragile.core.fitness import FitnessOperator\n\n"
+            "  from fragile.fractalai.core.euclidean_gas import EuclideanGas\n"
+            "  from fragile.fractalai.core.kinetic_operator import KineticOperator\n"
+            "  from fragile.fractalai.core.cloning import CloneOperator\n"
+            "  from fragile.fractalai.core.companion_selection import CompanionSelection\n"
+            "  from fragile.fractalai.core.fitness import FitnessOperator\n\n"
             "  benchmark = selector.get_benchmark()\n"
             "  kinetic_op = KineticOperator(\n"
             "      gamma=selector.gamma,\n"

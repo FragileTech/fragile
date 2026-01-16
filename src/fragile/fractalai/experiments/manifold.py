@@ -53,8 +53,8 @@ Reference:
     - § 3.3: Lipschitz Continuity
 
 Examples:
-    >>> from fragile.core.euclidean_gas import EuclideanGas
-    >>> from fragile.experiments.manifold import create_manifold_dashboard
+    >>> from fragile.fractalai.core.euclidean_gas import EuclideanGas
+    >>> from fragile.fractalai.experiments.manifold import create_manifold_dashboard
     >>>
     >>> # Example 1: 3D run (standard mode)
     >>> gas_3d = EuclideanGas(N=50, d=3, use_anisotropic_diffusion=True, ...)
@@ -83,8 +83,8 @@ from scipy.spatial import Delaunay
 import torch
 from torch import Tensor
 
-from fragile.core.fitness import FitnessOperator
-from fragile.core.history import RunHistory
+from fragile.fractalai.core.fitness import FitnessOperator
+from fragile.fractalai.core.history import RunHistory
 
 
 # HoloViews extension for 3D visualization
@@ -1176,7 +1176,7 @@ def create_interactive_manifold_explorer(
         Panel Column with integrated configuration + visualization dashboard
 
     Example - 2D Spacetime Bending:
-        >>> from fragile.experiments.convergence_analysis import create_multimodal_potential
+        >>> from fragile.fractalai.experiments.convergence_analysis import create_multimodal_potential
         >>> potential, _ = create_multimodal_potential(dims=2, n_gaussians=3)
         >>> dashboard = create_interactive_manifold_explorer(potential, dims=2)
         >>> dashboard.show()
@@ -1194,7 +1194,7 @@ def create_interactive_manifold_explorer(
         Requires `gas_config_dashboard` module for GasConfig class.
         The visualization automatically handles 2D vs 3D+ modes.
     """
-    from fragile.experiments.gas_config_dashboard import GasConfig  # noqa: PLC0415
+    from fragile.fractalai.experiments.gas_config_dashboard import GasConfig  # noqa: PLC0415
 
     # Create configuration dashboard
     config = GasConfig(potential=potential, dims=dims, **config_params)
@@ -1213,7 +1213,7 @@ def create_interactive_manifold_explorer(
         """Update manifold visualization with new simulation results."""
         try:
             # Create FitnessOperator for on-the-fly Hessian computation if needed
-            from fragile.core.companion_selection import CompanionSelection  # noqa: PLC0415
+            from fragile.fractalai.core.companion_selection import CompanionSelection  # noqa: PLC0415
 
             CompanionSelection(
                 method=config.companion_method,

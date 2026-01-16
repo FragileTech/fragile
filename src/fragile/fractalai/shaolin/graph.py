@@ -12,7 +12,7 @@ import param
 from shaolin.utils import find_closest_point
 
 # import torch
-from fragile.shaolin.dimension_mapper import (
+from fragile.fractalai.shaolin.dimension_mapper import (
     AlphaDim,
     ColorDim,
     Dimensions,

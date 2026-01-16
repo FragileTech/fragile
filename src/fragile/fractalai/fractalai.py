@@ -5,7 +5,7 @@ import numpy as np
 import torch
 from torch import Tensor
 
-from fragile.random_state import random_state
+from fragile.fractalai.random_state import random_state
 
 
 def random_choice(x, size=None, replace=True):

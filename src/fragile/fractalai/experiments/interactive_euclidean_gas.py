@@ -12,8 +12,8 @@ from typing import TYPE_CHECKING
 import holoviews as hv
 import panel as pn
 
-from fragile.core.benchmarks import prepare_benchmark_for_explorer
-from fragile.experiments.gas_config_dashboard import GasConfig
+from fragile.fractalai.core.benchmarks import prepare_benchmark_for_explorer
+from fragile.fractalai.experiments.gas_config_dashboard import GasConfig
 
 
 if TYPE_CHECKING:
@@ -34,7 +34,7 @@ class SwarmExplorer:
     (display) into a unified interface.
 
     Example:
-        >>> from fragile.core.benchmarks import prepare_benchmark_for_explorer
+        >>> from fragile.fractalai.core.benchmarks import prepare_benchmark_for_explorer
         >>> potential, background, mode_points = prepare_benchmark_for_explorer(
         ...     benchmark_name="Mixture of Gaussians",
         ...     dims=2,
@@ -63,7 +63,7 @@ class SwarmExplorer:
             **params: Override default parameter values (passed to GasConfig)
         """
         # Lazy import to avoid circular dependency
-        from fragile.experiments.gas_visualization_dashboard import GasVisualizer
+        from fragile.fractalai.experiments.gas_visualization_dashboard import GasVisualizer
 
         self.potential = potential
         self.background = background
@@ -143,8 +143,8 @@ class SwarmExplorer:
             history: RunHistory from completed simulation
         """
         # Get parameters for visualization
-        from fragile.core.companion_selection import CompanionSelection
-        from fragile.core.fitness import FitnessOperator
+        from fragile.fractalai.core.companion_selection import CompanionSelection
+        from fragile.fractalai.core.fitness import FitnessOperator
 
         companion_selection = CompanionSelection(
             method=self.config.companion_method,

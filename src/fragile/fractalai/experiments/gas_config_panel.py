@@ -13,14 +13,14 @@ import panel.widgets as pnw
 import param
 import torch
 
-from fragile.bounds import TorchBounds
-from fragile.core.benchmarks import BENCHMARK_NAMES, prepare_benchmark_for_explorer
-from fragile.core.cloning import CloneOperator
-from fragile.core.companion_selection import CompanionSelection
-from fragile.core.euclidean_gas import EuclideanGas
-from fragile.core.fitness import FitnessOperator
-from fragile.core.history import RunHistory
-from fragile.core.kinetic_operator import KineticOperator
+from fragile.fractalai.bounds import TorchBounds
+from fragile.fractalai.core.benchmarks import BENCHMARK_NAMES, prepare_benchmark_for_explorer
+from fragile.fractalai.core.cloning import CloneOperator
+from fragile.fractalai.core.companion_selection import CompanionSelection
+from fragile.fractalai.core.euclidean_gas import EuclideanGas
+from fragile.fractalai.core.fitness import FitnessOperator
+from fragile.fractalai.core.history import RunHistory
+from fragile.fractalai.core.kinetic_operator import KineticOperator
 
 
 __all__ = ["GasConfigPanel"]

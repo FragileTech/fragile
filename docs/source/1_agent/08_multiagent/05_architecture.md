@@ -262,6 +262,13 @@ For the temperature, remember that the metric encodes how "heavy" different regi
 For the geodesic correction, we need the Christoffel symbols. These tell you how straight lines curve on the manifold. In standard attention, the Query is linear in its input features: $Q = W_Q x$ (with $x$ encoding $z$). To include Christoffel symbols, we add explicit geometric terms: $Q = W_Q x + W_{Qz} z + W_{Qv} x_v + W_{Q,\Gamma}(z \otimes z)$, optionally with a velocity-conditioned $W_{Qzv}(z \odot v)$ term. The geometric coefficients encode the connection.
 :::
 
+:::{figure} ../../../svg_images/covariant_cross_attention_module.svg
+:name: fig-covariant-cross-attention-module
+:width: 100%
+
+**Covariant cross-attention module.** Observation/action latents pass through a chiral projector, then covariant Q/K/V projections with Wilson lines. Scores use temperature $\tau(z)$ and screening before Values update the state.
+:::
+
 We define the gauge-covariant attention mechanism that respects the full gauge structure.
 
 :::{prf:definition} Covariant Query-Key-Value Projections
@@ -968,6 +975,13 @@ The Values act as "state updates." After computing the attention weights, the we
 The temperature of each head is position-dependent, encoding the metric. And the Wilson lines ensure gauge covariance throughout.
 
 The result is a single attention block with four heads (or five if you enable the learned thermostat) that performs one complete step of the geodesic integrator. Stack multiple blocks for multi-step rollouts.
+:::
+
+:::{figure} ../../../svg_images/geodesic_cross_attention_baoab.svg
+:name: fig-geodesic-cross-attention-baoab
+:width: 100%
+
+**BAOAB attention block.** Four covariant attention heads implement B-A-O-A-B around an OU thermostat, producing one integrator step from $(z_t, p_t)$ to $(z_{t+1}, p_{t+1})$.
 :::
 
 We implement the Boris-BAOAB integrator (Definition {prf:ref}`def-baoab-splitting`) using four specialized attention heads plus a closed-form OU thermostat (or five heads if you enable a learned thermostat).

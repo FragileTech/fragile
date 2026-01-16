@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 420" role="img" aria-label="Uniform versus adaptive sprinkling density">
+  <defs>
+    <radialGradient id="density" cx="50%" cy="50%" r="55%">
+      <stop offset="0%" stop-color="#bfe3f2" stop-opacity="0.9" />
+      <stop offset="100%" stop-color="#bfe3f2" stop-opacity="0" />
+    </radialGradient>
+    <style>
+      .panel { fill: #ffffff; stroke: #c0c0c0; stroke-width: 1.5; }
+      .title { fill: #111111; font-size: 18px; font-family: Arial, Helvetica, sans-serif; }
+      .label { fill: #444444; font-size: 14px; font-family: Arial, Helvetica, sans-serif; }
+      .point { fill: #2a9d8f; }
+      .point-light { fill: #1d6f99; }
+    </style>
+  </defs>
+
+  <rect width="920" height="420" fill="#ffffff" />
+
+  <rect class="panel" x="40" y="60" width="380" height="260" rx="10" />
+  <rect class="panel" x="500" y="60" width="380" height="260" rx="10" />
+
+  <text class="title" x="140" y="40">Uniform sprinkling</text>
+  <text class="title" x="610" y="40">Adaptive sprinkling</text>
+
+  <text class="label" x="120" y="350">rho = const</text>
+  <text class="label" x="520" y="350">rho(x,t) ~ sqrt(det g) * exp(-U/T)</text>
+
+  <circle class="point" cx="90" cy="120" r="4" />
+  <circle class="point" cx="150" cy="120" r="4" />
+  <circle class="point" cx="210" cy="120" r="4" />
+  <circle class="point" cx="270" cy="120" r="4" />
+  <circle class="point" cx="330" cy="120" r="4" />
+  <circle class="point" cx="390" cy="120" r="4" />
+
+  <circle class="point" cx="90" cy="180" r="4" />
+  <circle class="point" cx="150" cy="180" r="4" />
+  <circle class="point" cx="210" cy="180" r="4" />
+  <circle class="point" cx="270" cy="180" r="4" />
+  <circle class="point" cx="330" cy="180" r="4" />
+  <circle class="point" cx="390" cy="180" r="4" />
+
+  <circle class="point" cx="90" cy="240" r="4" />
+  <circle class="point" cx="150" cy="240" r="4" />
+  <circle class="point" cx="210" cy="240" r="4" />
+  <circle class="point" cx="270" cy="240" r="4" />
+  <circle class="point" cx="330" cy="240" r="4" />
+  <circle class="point" cx="390" cy="240" r="4" />
+
+  <circle class="point" cx="90" cy="300" r="4" />
+  <circle class="point" cx="150" cy="300" r="4" />
+  <circle class="point" cx="210" cy="300" r="4" />
+  <circle class="point" cx="270" cy="300" r="4" />
+  <circle class="point" cx="330" cy="300" r="4" />
+  <circle class="point" cx="390" cy="300" r="4" />
+
+  <ellipse cx="690" cy="200" rx="120" ry="80" fill="url(#density)" />
+
+  <circle class="point-light" cx="620" cy="150" r="4" />
+  <circle class="point-light" cx="650" cy="155" r="4" />
+  <circle class="point-light" cx="680" cy="150" r="4" />
+  <circle class="point-light" cx="710" cy="155" r="4" />
+  <circle class="point-light" cx="740" cy="165" r="4" />
+
+  <circle class="point-light" cx="610" cy="185" r="4" />
+  <circle class="point-light" cx="640" cy="190" r="4" />
+  <circle class="point-light" cx="670" cy="190" r="4" />
+  <circle class="point-light" cx="700" cy="190" r="4" />
+  <circle class="point-light" cx="730" cy="195" r="4" />
+  <circle class="point-light" cx="760" cy="200" r="4" />
+
+  <circle class="point-light" cx="615" cy="220" r="4" />
+  <circle class="point-light" cx="645" cy="220" r="4" />
+  <circle class="point-light" cx="675" cy="225" r="4" />
+  <circle class="point-light" cx="705" cy="225" r="4" />
+  <circle class="point-light" cx="735" cy="230" r="4" />
+
+  <circle class="point-light" cx="630" cy="255" r="4" />
+  <circle class="point-light" cx="660" cy="255" r="4" />
+  <circle class="point-light" cx="690" cy="260" r="4" />
+  <circle class="point-light" cx="720" cy="260" r="4" />
+
+  <circle class="point-light" cx="560" cy="110" r="4" />
+  <circle class="point-light" cx="820" cy="115" r="4" />
+  <circle class="point-light" cx="540" cy="280" r="4" />
+  <circle class="point-light" cx="830" cy="270" r="4" />
+</svg>

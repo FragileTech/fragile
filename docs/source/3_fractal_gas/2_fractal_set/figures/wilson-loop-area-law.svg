@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 650" role="img" aria-label="Wilson loop rectangle and area law versus perimeter law">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f9fbff" />
+      <stop offset="100%" stop-color="#eef2f7" />
+    </linearGradient>
+    <linearGradient id="areaFill" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fde2e2" stop-opacity="0.7" />
+      <stop offset="100%" stop-color="#fed7aa" stop-opacity="0.7" />
+    </linearGradient>
+    <marker id="arrow-loop" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L12,6 L0,12 z" fill="#1d3557" />
+    </marker>
+  </defs>
+  <style>
+    .title { font-family: "IBM Plex Sans", "Source Sans Pro", "Helvetica Neue", Arial, sans-serif; font-size: 26px; fill: #102a43; font-weight: 600; }
+    .label { font-family: "IBM Plex Sans", "Source Sans Pro", "Helvetica Neue", Arial, sans-serif; font-size: 18px; fill: #102a43; }
+    .label-small { font-family: "IBM Plex Sans", "Source Sans Pro", "Helvetica Neue", Arial, sans-serif; font-size: 16px; fill: #334e68; }
+    .math { font-family: "IBM Plex Mono", "SFMono-Regular", Menlo, Consolas, monospace; font-size: 18px; fill: #102a43; }
+    .loop { stroke: #1d3557; stroke-width: 4; fill: none; }
+    .axis { stroke: #64748b; stroke-width: 2; }
+    .area { fill: url(#areaFill); stroke: #f59e0b; stroke-width: 1.5; }
+    .flux { stroke: #ef4444; stroke-width: 6; stroke-linecap: round; }
+    .curve-area { stroke: #e11d48; stroke-width: 3; fill: none; }
+    .curve-perim { stroke: #0ea5e9; stroke-width: 3; fill: none; stroke-dasharray: 8 6; }
+  </style>
+
+  <rect width="1000" height="650" fill="url(#bg)" />
+
+  <text x="60" y="70" class="title">Wilson loop: area law and confinement</text>
+
+  <rect x="140" y="190" width="300" height="270" class="area" />
+
+  <path d="M140,460 L140,190 L440,190 L440,460 Z" class="loop" marker-end="url(#arrow-loop)" />
+
+  <line x1="140" y1="325" x2="440" y2="325" class="flux" />
+
+  <circle cx="140" cy="460" r="12" fill="#1d3557" />
+  <circle cx="440" cy="460" r="12" fill="#1d3557" />
+  <text x="110" y="492" class="label-small">q</text>
+  <text x="448" y="492" class="label-small">qbar</text>
+
+  <line x1="90" y1="500" x2="90" y2="170" class="axis" marker-end="url(#arrow-loop)" />
+  <line x1="90" y1="500" x2="470" y2="500" class="axis" marker-end="url(#arrow-loop)" />
+  <text x="68" y="180" class="label-small">T</text>
+  <text x="455" y="528" class="label-small">R</text>
+
+  <text x="150" y="230" class="label">loop gamma</text>
+  <text x="150" y="260" class="label-small">area drives exp(-sigma * Area)</text>
+  <text x="150" y="285" class="label-small">flux tube -> V(R) ~ sigma * R</text>
+
+  <line x1="600" y1="500" x2="930" y2="500" class="axis" marker-end="url(#arrow-loop)" />
+  <line x1="600" y1="500" x2="600" y2="180" class="axis" marker-end="url(#arrow-loop)" />
+  <text x="770" y="528" class="label-small">Area or Perimeter</text>
+  <text x="520" y="200" class="label-small">log &lt;W&gt;</text>
+
+  <path d="M620,470 L900,250" class="curve-area" />
+  <path d="M620,440 L900,330" class="curve-perim" />
+
+  <line x1="620" y1="560" x2="680" y2="560" class="curve-area" />
+  <text x="690" y="566" class="label-small">Area law (QCD)</text>
+  <line x1="620" y1="585" x2="680" y2="585" class="curve-perim" />
+  <text x="690" y="591" class="label-small">Perimeter law (QED)</text>
+</svg>

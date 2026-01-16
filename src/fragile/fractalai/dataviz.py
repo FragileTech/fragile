@@ -1,7 +1,7 @@
 import numpy as np
 from plangym.utils import process_frame
 
-from fragile.shaolin.stream_plots import RGB
+from fragile.fractalai.shaolin.stream_plots import RGB
 
 
 class MontezumaDisplay:

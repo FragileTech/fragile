@@ -17,9 +17,9 @@ import param
 import torch
 from torch import Tensor
 
-from fragile.bounds import TorchBounds
-from fragile.core.distance import compute_periodic_distance_matrix
-from fragile.core.panel_model import INPUT_WIDTH, PanelModel
+from fragile.fractalai.bounds import TorchBounds
+from fragile.fractalai.core.distance import compute_periodic_distance_matrix
+from fragile.fractalai.core.panel_model import INPUT_WIDTH, PanelModel
 
 
 def psi_v(v: Tensor, V_alg: float) -> Tensor:

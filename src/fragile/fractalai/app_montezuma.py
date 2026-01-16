@@ -12,7 +12,7 @@ import plangym
 from plangym.utils import process_frame
 
 from fragile.montezuma import aggregate_visits, FractalTree
-from fragile.shaolin.stream_plots import Image, RGB
+from fragile.fractalai.shaolin.stream_plots import Image, RGB
 
 
 hv.extension("bokeh")

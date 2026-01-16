@@ -29,7 +29,7 @@ from torch import Tensor
 
 
 if TYPE_CHECKING:
-    from fragile.core.history import RunHistory
+    from fragile.fractalai.core.history import RunHistory
     from fragile.experiments.gas_config_dashboard import GasConfig
 
 

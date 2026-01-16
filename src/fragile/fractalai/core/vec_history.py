@@ -14,8 +14,8 @@ from torch import Tensor
 
 
 if TYPE_CHECKING:
-    from fragile.bounds import TorchBounds
-    from fragile.core.euclidean_gas import SwarmState
+    from fragile.fractalai.bounds import TorchBounds
+    from fragile.fractalai.core.euclidean_gas import SwarmState
 
 
 class VectorizedHistoryRecorder:
@@ -276,7 +276,7 @@ class VectorizedHistoryRecorder:
         Returns:
             RunHistory object with complete execution trace
         """
-        from fragile.core.history import RunHistory
+        from fragile.fractalai.core.history import RunHistory
 
         # Actual recorded size (may be less than n_recorded if terminated early)
         actual_recorded = self.recorded_idx

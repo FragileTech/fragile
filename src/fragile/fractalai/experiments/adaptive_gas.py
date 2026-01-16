@@ -40,7 +40,7 @@ import numpy as np
 from numpy.typing import NDArray
 import torch
 
-from fragile.convergence_bounds import (
+from fragile.fractalai.convergence_bounds import (
     c_max,
     c_min,
     epsilon_F_star,
@@ -50,7 +50,7 @@ from fragile.convergence_bounds import (
 
 
 if TYPE_CHECKING:
-    from fragile.core.gas_history import RunHistory
+    from fragile.fractalai.core.gas_history import RunHistory
 
 
 # ============================================================================
@@ -266,7 +266,7 @@ def estimate_H_max_from_history(
 
     This is computationally expensive, so we sample a subset of frames.
     """
-    from fragile.gas_parameters import extract_trajectory_data_from_history
+    from fragile.fractalai.gas_parameters import extract_trajectory_data_from_history
 
     # Get trajectory data
     trajectory_data = extract_trajectory_data_from_history(

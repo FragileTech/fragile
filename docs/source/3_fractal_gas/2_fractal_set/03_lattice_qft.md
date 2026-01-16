@@ -156,6 +156,19 @@ where:
 - $SU(3) \times SU(2) \times U(1)$: Standard Model
 :::
 
+The smallest closed loop in the Fractal Set is a triangle (IG + CST + IA). The figure below
+makes the three edge types and their transport operators explicit; this is the atomic Wilson loop
+that larger loops factorize into.
+
+:::{figure} figures/interaction-triangle-transport.svg
+:alt: Interaction triangle with CST, IG, and IA edges and Wilson loop.
+:width: 95%
+:align: center
+
+Interaction triangle as the atomic gauge loop. The Wilson loop around the 3-cycle multiplies the
+three transport operators.
+:::
+
 ### 2.3. Discrete Field Strength Tensor
 
 :::{div} feynman-prose
@@ -184,6 +197,18 @@ where $U(e_i, e_j)$ is the parallel transport from $e_i$ to $e_j$, and we use $U
 For U(1): $U[P] = e^{i q \Phi[P]}$ where $\Phi[P]$ is the total gauge flux through $P$.
 
 **Continuum limit:** $U[P] \to \exp(i q \oint_P A_\mu dx^\mu) = \exp(i q \iint_P F_{\mu\nu} dS^{\mu\nu})$ by Stokes' theorem.
+:::
+
+Two adjacent interaction triangles form the hourglass plaquette; the shared IG edge cancels and
+the boundary is CST + IA. This is the 4-cycle used in the plaquette holonomy.
+
+:::{figure} figures/triangles-to-plaquette.svg
+:alt: Two interaction triangles forming an hourglass plaquette with CST and IA edges on the boundary.
+:width: 95%
+:align: center
+
+Plaquette as two triangles glued along the IG edge. The boundary holonomy multiplies CST and IA
+transport along the hourglass loop.
 :::
 
 ### 2.4. Wilson Action
@@ -277,6 +302,15 @@ In QED (electromagnetism), the Wilson loop does not show an area law. For a rect
 In QCD (the strong force), something completely different happens. The Wilson loop falls off like $\exp(-\text{area})$. The potential energy is linear: $V(R) \sim \sigma R$ where $\sigma$ is the string tension. As you try to separate quarks, the energy grows without bound. You can never pull them apart—this is confinement. The gauge field between them forms a flux tube, like a rubber band, and the energy is proportional to the length.
 
 This is not perturbation theory. This is a non-perturbative, strong-coupling phenomenon that can only be seen on a lattice. And the Fractal Set gives us exactly such a lattice.
+:::
+
+:::{figure} figures/wilson-loop-area-law.svg
+:alt: Rectangular Wilson loop showing area law versus perimeter law.
+:width: 95%
+:align: center
+
+Rectangular Wilson loop and its expectation value. Area law signals confinement (linear potential),
+while perimeter law gives Coulomb-like behavior.
 :::
 
 :::{prf:proposition} Wilson Loop Area Law
