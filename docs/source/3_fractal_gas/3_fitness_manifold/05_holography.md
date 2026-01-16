@@ -67,6 +67,7 @@ The **Causal Spacetime Tree** is the directed graph $\mathcal{T} = (V, E)$ where
 3. **Time-indexing**: Episodes are ordered by birth time
 
 **Causal relation:**
+
 $$
 e_j \prec e_i \quad \Leftrightarrow \quad \text{there exists a directed path from } e_j \text{ to } e_i \text{ in } \mathcal{T}
 $$
@@ -84,6 +85,7 @@ The **Interaction Graph** at time $t$ is the weighted graph $\mathcal{G}_t = (V_
 **Edges:** $(i, j) \in E_t$ if $K_\varepsilon(z_i, z_j) > \delta$ (correlation above threshold $\delta$)
 
 **Weights:** The edge weight is the correlation strength:
+
 $$
 w_{ij}(t) = K_\varepsilon(z_i(t), z_j(t)) = C_0 \exp\left(-\frac{\|z_i(t) - z_j(t)\|_G^2}{2\varepsilon_c^2}\right)
 $$
@@ -94,6 +96,7 @@ $$
 3. **Decaying**: $w_{ij} \to 0$ as $\|z_i - z_j\| \to \infty$
 
 **Total correlation strength:**
+
 $$
 W_{\mathrm{total}} = \sum_{(i,j) \in E_t} w_{ij}
 $$
@@ -131,6 +134,7 @@ $$
 **Properties:**
 1. **Non-negativity**: $\mathcal{H}_{\mathrm{jump}}[\Phi] \geq 0$ for all $\Phi$, with equality iff $\Phi = \text{const}$
 2. **Quadratic approximation**: For small $|\Phi(z) - \Phi(z')| \ll 1$:
+
    $$
    \mathcal{H}_{\mathrm{jump}}[\Phi] \approx \frac{1}{8} \iint K_\varepsilon(z,z')\rho(z)\rho(z')(\Phi(z)-\Phi(z'))^2 \,dz\,dz'
    $$
@@ -159,6 +163,7 @@ $$
 where $\rho_A$ is the reduced density operator for region $A$ and $Z_A$ is a normalization.
 
 **Relationship:**
+
 $$
 \mathcal{H}_{\mathrm{jump}}[\Phi_A] = \langle H_{\mathrm{mod}}(A) \rangle_{\delta\rho} - \langle H_{\mathrm{mod}}(A) \rangle_{\rho_0} + O(\delta\rho^2)
 $$
@@ -189,6 +194,7 @@ The remarkable thing is that CST antichains correspond exactly to spacelike hype
 Let $A \subseteq \mathcal{Z} \times [0,T]$ be a spacetime region. A **separating antichain** for $A$ is a set $\gamma_A \subseteq V(\mathcal{T})$ of CST episodes satisfying:
 
 1. **Antichain property**: No two episodes in $\gamma_A$ are causally related:
+
    $$
    \forall e_i, e_j \in \gamma_A: \quad e_i \not\prec e_j \text{ and } e_j \not\prec e_i
    $$
@@ -214,6 +220,7 @@ $$
 where:
 - $|\gamma_A|$ is the cardinality of the antichain (number of episodes)
 - $a_0$ is the **fundamental area quantum**:
+
   $$
   a_0 = \ell_P^{d-1}
   $$
@@ -289,6 +296,7 @@ $$
 3. **Monotonicity in $\varepsilon$**: $\mathcal{P}_\varepsilon(A)$ decreases as $\varepsilon \to 0$ (correlations become more local)
 
 **Relationship to discrete entropy:**
+
 $$
 S_{\mathrm{IG}}(A) \approx \mathcal{P}_\varepsilon(A) \quad \text{as } N \to \infty
 $$
@@ -339,6 +347,7 @@ where:
 **Step 1. Tubular neighborhood decomposition.**
 
 For small $\varepsilon$, only points within distance $O(\varepsilon)$ of the boundary contribute significantly to $\mathcal{P}_\varepsilon(A)$. Define the tubular neighborhood:
+
 $$
 T_\varepsilon(\partial A) = \{z : d(z, \partial A) < \varepsilon\}
 $$
@@ -346,6 +355,7 @@ $$
 **Step 2. Change of variables.**
 
 Near the boundary, introduce Fermi coordinates: let $s \in \partial A$ be the nearest boundary point to $z$, and let $r = d(z, \partial A)$ be the signed distance. Then:
+
 $$
 dz \approx d\Sigma(s) \, dr \cdot (1 + O(r H))
 $$
@@ -364,11 +374,13 @@ For points $z \in A$ and $z' \in A^c$ both near the boundary at $s \in \partial 
 **Step 4. Asymptotic expansion.**
 
 Integrating over $r, r' > 0$ and $s, s' \in \partial A$:
+
 $$
 \mathcal{P}_\varepsilon(A) = C_0 \int_{\partial A} \rho(s)^2 \left( \int_0^\infty \int_0^\infty e^{-(r+r')^2/(2\varepsilon_c^2)} dr \, dr' \right) d\Sigma(s) + O(\varepsilon_c)
 $$
 
 The inner integral is evaluated by substituting $u = r + r'$. For fixed $u$, the variable $r$ ranges from $0$ to $u$, giving a Jacobian factor of $u$:
+
 $$
 \int_0^\infty \int_0^\infty e^{-(r+r')^2/(2\varepsilon_c^2)} dr \, dr' = \int_0^\infty u \cdot e^{-u^2/(2\varepsilon_c^2)} du = \varepsilon_c^2
 $$
@@ -378,6 +390,7 @@ $$
 **Step 5. Take the limit.**
 
 The nonlocal perimeter scales as $\mathcal{P}_\varepsilon(A) \sim C_0 \varepsilon_c^2 \int_{\partial A} \rho(s)^2 \, d\Sigma(s)$. The $\Gamma$-limit is obtained by appropriate rescaling:
+
 $$
 \mathcal{P}_0(A) := \lim_{\varepsilon_c \to 0} \frac{\mathcal{P}_\varepsilon(A)}{\varepsilon_c^2} = C_0 \int_{\partial A} \rho(s)^2 \, d\Sigma(s)
 $$
@@ -424,6 +437,7 @@ where:
 - $\rho_{\mathrm{spatial}} = N/\mathrm{Vol}(\mathcal{Z})$ is the spatial walker density
 - $\mathrm{Area}(\partial A'_{\min})$ is the minimal surface area homotopic to $\partial A$
 - $C_d$ is a dimension-dependent constant:
+
   $$
   C_d = \frac{\Gamma(d/2+1)^{(d-1)/d}}{\pi^{(d-1)/2}}
   $$
@@ -435,11 +449,13 @@ where:
 The antichain $\gamma_A$ consists of episodes that "pierce" the boundary $\partial A$ at a given time slice. For a uniform walker distribution with density $\rho_{\mathrm{spatial}} = N/\mathrm{Vol}(\mathcal{Z})$, each walker occupies a Voronoi cell of typical volume $V_{\mathrm{cell}} \sim 1/\rho_{\mathrm{spatial}}$ and typical linear size $\ell \sim \rho_{\mathrm{spatial}}^{-1/d}$.
 
 The number of Voronoi cells intersecting $\partial A$ scales as:
+
 $$
 |\gamma_A| \sim \frac{\mathrm{Area}(\partial A)}{\ell^{d-1}} = \mathrm{Area}(\partial A) \cdot \rho_{\mathrm{spatial}}^{(d-1)/d}
 $$
 
 Substituting $\rho_{\mathrm{spatial}} = N/\mathrm{Vol}(\mathcal{Z})$:
+
 $$
 |\gamma_A| \sim \mathrm{Area}(\partial A) \cdot \left(\frac{N}{\mathrm{Vol}(\mathcal{Z})}\right)^{(d-1)/d} = \mathrm{Area}(\partial A) \cdot \frac{N^{(d-1)/d}}{\mathrm{Vol}(\mathcal{Z})^{(d-1)/d}}
 $$
@@ -447,6 +463,7 @@ $$
 **Step 2. Apply mean-field concentration.**
 
 For large $N$, the antichain size concentrates around its mean:
+
 $$
 \mathbb{P}\left( \left| |\gamma_A| - \mathbb{E}[|\gamma_A|] \right| > \delta N^{(d-1)/d} \right) \leq e^{-c\delta^2 N^{(d-1)/d}}
 $$
@@ -455,6 +472,7 @@ by sub-Gaussian concentration of Voronoi tessellations.
 **Step 3. Extract the constant and identify the minimal surface.**
 
 The separating antichain corresponds to a cut in the CST. By min-cut duality, minimizing antichain cardinality is equivalent to finding a minimal-area surface. Writing the exact relationship:
+
 $$
 |\gamma_{A,\min}| = C_d \cdot \rho_{\mathrm{spatial}}^{(d-1)/d} \cdot N^{(d-1)/d} \cdot \mathrm{Area}(\partial A'_{\min})
 $$
@@ -474,6 +492,7 @@ S_{\mathrm{IG}}(A) \sim N^{(d-1)/d}
 $$
 
 More precisely:
+
 $$
 \lim_{N \to \infty} \frac{S_{\mathrm{IG}}(A)}{N^{(d-1)/d}} = \tilde{C}_d \cdot \rho_{\mathrm{spatial}}^{(d-1)/d} \cdot \mathcal{P}_0(A)
 $$
@@ -485,6 +504,7 @@ where $\tilde{C}_d$ is a dimension-dependent constant and $\mathcal{P}_0(A)$ is 
 **Step 1. Upper bound from explicit cut.**
 
 Construct a cut $\Gamma$ by taking all IG edges that cross $\partial A$. The total weight is:
+
 $$
 \sum_{e \in \Gamma} w_e \leq \mathcal{P}_\varepsilon(A) \sim N^{(d-1)/d} \cdot \mathcal{P}_0(A) \cdot \varepsilon^{d-1}
 $$
@@ -492,6 +512,7 @@ $$
 **Step 2. Lower bound from isoperimetric inequality.**
 
 Any cut separating $A$ from $A^c$ must have total weight at least:
+
 $$
 \sum_{e \in \Gamma} w_e \geq c \cdot \mathcal{P}_0(A)^{(d-1)/d} \cdot N^{(d-1)/d}
 $$
@@ -501,6 +522,7 @@ by the discrete isoperimetric inequality on the IG.
 **Step 3. Combine bounds.**
 
 The upper and lower bounds have the same $N$-scaling, establishing:
+
 $$
 S_{\mathrm{IG}}(A) = \Theta(N^{(d-1)/d})
 $$
@@ -544,11 +566,13 @@ $$
 **Step 1. Apply the two scaling theorems.**
 
 From {prf:ref}`thm-antichain-surface`:
+
 $$
 \mathrm{Area}_{\mathrm{CST}}(\gamma_A) = a_0 |\gamma_A| = a_0 C_d \rho^{(d-1)/d} N^{(d-1)/d} \mathrm{Area}(\partial A'_{\min})
 $$
 
 From {prf:ref}`thm-ig-cut-scaling`:
+
 $$
 S_{\mathrm{IG}}(A) = \tilde{C}_d \rho^{(d-1)/d} N^{(d-1)/d} \mathcal{P}_0(A)
 $$
@@ -556,6 +580,7 @@ $$
 **Step 2. Use Gamma-convergence.**
 
 By {prf:ref}`thm-gamma-convergence`, for the minimal surface:
+
 $$
 \mathcal{P}_0(A) = c_0 \mathrm{Area}(\partial A'_{\min})
 $$
@@ -614,6 +639,7 @@ $$
 where $T_{00}$ is the energy density component of the effective stress-energy tensor ({prf:ref}`def-effective-stress-energy`) and $\langle \cdot \rangle_{\delta\rho}$ denotes the expectation in the perturbed state.
 
 **Explicit form:**
+
 $$
 \delta E_{\mathrm{swarm}}(A) = \int_A \left[ \bar{V}(z) \delta\rho(z) + \frac{1}{2} \sum_k \delta n_k \omega_k \right] dV
 $$
@@ -635,6 +661,7 @@ $$
 $$
 
 **Derivation:** This follows from linearizing the nonlocal perimeter functional:
+
 $$
 \mathcal{P}_\varepsilon(A; \rho_0 + \delta\rho) = \mathcal{P}_\varepsilon(A; \rho_0) + \delta S_{\mathrm{IG}}(A) + O(\delta\rho^2)
 $$
@@ -668,6 +695,7 @@ $$
 **Step 1. Linearize the energy variation.**
 
 For small $\delta\rho$:
+
 $$
 \delta E_{\mathrm{swarm}}(A) = \int_A \bar{V}(z) \delta\rho(z) \, dV + O(\delta\rho^2)
 $$
@@ -677,6 +705,7 @@ The mode occupation correction is second order and can be neglected.
 **Step 2. Linearize the entropy variation.**
 
 From {prf:ref}`def-ig-entropy-variation`:
+
 $$
 \delta S_{\mathrm{IG}}(A) = 2 \iint_{A \times A^c} K_\varepsilon(z,z') \rho_0 \delta\rho(z') \, dz \, dz'
 $$
@@ -684,6 +713,7 @@ $$
 **Step 3. Relate the two variations.**
 
 For perturbations localized near the boundary, the dominant contribution to $\delta S_{\mathrm{IG}}$ comes from points $z' \in A^c$ near $\partial A$. For such points, the energy perturbation is:
+
 $$
 \delta E \approx \bar{V}_{\partial} \int_{A^c \cap T_\varepsilon} \delta\rho(z') \, dz'
 $$
@@ -697,6 +727,7 @@ $$
 $$
 
 Evaluating the integral:
+
 $$
 \int_A K_\varepsilon(z, z'_{\partial}) dz = C_0 (2\pi)^{d/2} \varepsilon_c^d \cdot \frac{1}{2}
 $$
@@ -752,6 +783,7 @@ $$
 **Step 1. Holographic derivation.**
 
 The IG entropy of region $A$ with boundary at $H$ is:
+
 $$
 S_{\mathrm{IG}}(A) = \alpha \cdot \mathrm{Area}_{\mathrm{CST}}(H) = \alpha \cdot a_0 \cdot |H|
 $$
@@ -761,6 +793,7 @@ where $|H|$ is the antichain cardinality at the horizon.
 **Step 2. Compute pressure from entropy derivative.**
 
 The thermodynamic pressure is:
+
 $$
 \Pi = -\frac{1}{\beta} \frac{\partial S}{\partial V} = -\frac{1}{\beta} \frac{\partial S}{\partial L} \cdot \frac{1}{A_H}
 $$
@@ -770,11 +803,13 @@ where $A_H = V/L$ is the horizon area.
 **Step 3. Relate area change to entropy change.**
 
 For a horizon moving outward by $\delta L$, the antichain cardinality increases as:
+
 $$
 \delta |H| = \rho \cdot \frac{\partial A_H}{\partial L} \cdot \delta L = \rho \cdot \frac{(d-1)A_H}{L} \cdot \delta L
 $$
 
 (using $A_H \sim L^{d-1}$ gives $\partial A_H/\partial L = (d-1)A_H/L$). Thus:
+
 $$
 \delta S_{\mathrm{IG}} = \alpha \cdot a_0 \cdot \rho \cdot \frac{(d-1)A_H}{L} \cdot \delta L
 $$
@@ -782,11 +817,13 @@ $$
 **Step 4. Evaluate the pressure.**
 
 Using $\Pi = -\frac{1}{\beta}\frac{\partial S}{\partial V}$ and $\partial V/\partial L = A_H$ (for a slab geometry):
+
 $$
 \Pi_{\mathrm{IG}} = -\frac{\alpha a_0 (d-1)\rho}{\beta L}
 $$
 
 For the specific geometry of the IG network, dimensional analysis with $\alpha \cdot a_0 \propto \varepsilon_c^{d+1}$ and $\beta \propto \rho_0 \varepsilon_c^d / V_0$ gives:
+
 $$
 \Pi_{\mathrm{IG}} = -\frac{C_0 \rho_0^2 (2\pi)^{d/2} \varepsilon_c^{d+2}}{8dL^2}
 $$
@@ -823,17 +860,20 @@ Let me be precise about what we can prove and what remains conjectural.
 In the UV regime ($\varepsilon_c \ll L$), the emergent geometry of the Latent Fractal Gas has:
 
 1. **Negative cosmological constant:**
+
    $$
    \Lambda_{\mathrm{eff}} < 0
    $$
 
 2. **AdS metric structure:** The effective metric in the bulk approaches:
+
    $$
    ds^2 = \frac{L_{\mathrm{AdS}}^2}{z^2}(dz^2 + \eta_{ij}dx^i dx^j)
    $$
    where $z$ is the radial (holographic) coordinate and $L_{\mathrm{AdS}}$ is the AdS radius.
 
 3. **AdS radius determined by IG:**
+
    $$
    L_{\mathrm{AdS}}^2 = -\frac{d(d-1)}{2\Lambda_{\mathrm{eff}}} = \frac{4d(d-1)L^2}{C_0 \rho_0^2 (2\pi)^{d/2} \varepsilon_c^{d+2}}
    $$
@@ -841,16 +881,19 @@ In the UV regime ($\varepsilon_c \ll L$), the emergent geometry of the Latent Fr
 *Proof.*
 
 From {prf:ref}`thm-pressure-regimes` ({doc}`04_field_equations`), the UV regime has:
+
 $$
 \Pi_{\mathrm{total}} \approx \Pi_{\mathrm{elastic}} < 0
 $$
 
 The effective cosmological constant from {prf:ref}`thm-einstein-connection` is:
+
 $$
 \Lambda_{\mathrm{eff}} = \frac{8\pi G_N}{c^2} \cdot \frac{\Pi_{\mathrm{total}}}{L} < 0
 $$
 
 For AdS geometry, the cosmological constant and AdS radius are related by:
+
 $$
 \Lambda = -\frac{d(d-1)}{2L_{\mathrm{AdS}}^2}
 $$
@@ -917,6 +960,7 @@ $$
 - $\mathcal{H}_{\mathrm{jump}}[\Phi_z]$: IG correlation energy (jump Hamiltonian)
 
 **Effective inverse temperature:**
+
 $$
 \beta = \frac{C_0 \rho_0 (2\pi)^{d/2} \varepsilon_c^d}{V_0}
 $$

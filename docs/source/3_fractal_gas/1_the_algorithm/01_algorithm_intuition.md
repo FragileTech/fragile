@@ -122,6 +122,14 @@ diversity through diffusion.
 # 7) Repeat; the population size N stays constant by construction
 ```
 
+:::{figure} figures/fg-overview-flow.svg
+:alt: Flow diagram of a Fractal Gas step from companion selection to kinetics and repeat.
+:width: 95%
+:align: center
+
+Fractal Gas step overview: selection, fitness, cloning, kinetics, and repeat with constant population.
+:::
+
 ---
 
 (sec-state-space)=
@@ -214,6 +222,14 @@ On a curved manifold, velocities live in different tangent spaces. In practice, 
 coordinate chart (or after transporting velocities) so the difference $v_i - v_j$ is well-defined.
 :::
 
+:::{figure} figures/fg-alg-distance.svg
+:alt: Diagram showing algorithmic distance as position distance plus velocity distance.
+:width: 95%
+:align: center
+
+Algorithmic distance combines position similarity with velocity similarity via $\lambda_{\text{alg}}$.
+:::
+
 ---
 
 (sec-companion-selection)=
@@ -245,6 +261,14 @@ $$
 The kernel is **degenerate** when $|\mathcal{A}(\mathcal{S})| < 2$ (an alive walker has no valid companion). Analyses
 often handle this with an explicit **cemetery state** $\dagger$, while implementations may special-case the
 single-survivor regime by freezing the lone alive walker and reviving everyone else from it.
+:::
+
+:::{figure} figures/fg-companion-kernel.svg
+:alt: Soft companion selection with Gaussian weights and a minorization probability floor.
+:width: 95%
+:align: center
+
+Soft companion selection: nearby walkers are weighted more, but every alive walker keeps a nonzero chance.
 :::
 
 :::{div} feynman-prose
@@ -384,6 +408,14 @@ The simplest case is when $\mathcal{R} = \nabla \Phi$ for some potential $\Phi$.
 $r = \langle \nabla \Phi, v \rangle$, which is the directional derivative. It measures how fast the potential is
 increasing in the direction of motion. But the framework allows more general reward signals that do not come from a
 potential, such as environmental feedback in reinforcement learning.
+:::
+
+:::{figure} figures/fg-fitness-pipeline.svg
+:alt: Pipeline diagram for dual-channel fitness: reward and diversity are standardized and multiplied.
+:width: 95%
+:align: center
+
+Dual-channel fitness pipeline: reward and diversity are standardized, bounded, and multiplied into $V_{\text{fit}}$.
 :::
 
 ### 3.2 Standardization Pipeline
@@ -559,6 +591,14 @@ local optima and what enables the nice mathematical properties we will prove lat
 :::
 
 Cloning is the selection mechanism that drives the swarm toward high-fitness regions. Low-fitness walkers are replaced by perturbed copies of their companions.
+
+:::{figure} figures/fg-cloning-revival.svg
+:alt: Diagram of cloning decision, jittered position updates, velocity blending, and revival of dead walkers.
+:width: 95%
+:align: center
+
+Cloning mechanics: fitter companions attract low-fitness walkers, jitter maintains diversity, and revival preserves population size.
+:::
 
 ### 4.1 The Cloning Decision
 

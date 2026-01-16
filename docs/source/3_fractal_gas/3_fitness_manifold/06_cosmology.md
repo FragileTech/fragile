@@ -251,6 +251,7 @@ This is a single integral over the entire bulk volume.
 **Effective $\Lambda_{\mathrm{eff}}$:** Dynamical measurement
 
 From the $(d+1)$-dimensional Friedmann equations (rearranged to solve for $\Lambda$ in a flat, matter-dominated universe):
+
 $$
 \Lambda_{\mathrm{eff}} = \frac{d(d-1)}{2} H^2 - (d-1)\frac{\ddot{a}}{a} - \frac{8\pi G_N}{d-1} \rho_{\mathrm{matter}}
 $$
@@ -711,16 +712,19 @@ There is a famous debate in string theory called the "de Sitter conjecture"---wh
 The apparent tension between "AdS from holography" and "dS from observations" is resolved by recognizing they measure different quantities:
 
 **Holographic boundary:** Always AdS
+
 $$
 \Lambda_{\mathrm{holo}} < 0 \quad \text{(proven rigorously)}
 $$
 
 **Bulk at QSD:** Zero
+
 $$
 \Lambda_{\mathrm{bulk}}^{(\mathrm{QSD})} = 0 \quad \text{(proven rigorously)}
 $$
 
 **Bulk during exploration:** Can be positive
+
 $$
 \Lambda_{\mathrm{eff}} > 0 \quad \text{(mechanism established)}
 $$

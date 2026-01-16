@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 520" role="img" aria-label="Fitness pipeline with reward and diversity channels, standardization, and product">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f8fbff" />
+      <stop offset="100%" stop-color="#eef2f7" />
+    </linearGradient>
+    <pattern id="dotGrid" width="36" height="36" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="1.1" fill="#cbd5e1" opacity="0.32" />
+    </pattern>
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="4" stdDeviation="5" flood-color="#0b1f33" flood-opacity="0.16" />
+    </filter>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="11" refY="6" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L12,6 L0,12 z" fill="#334155" />
+    </marker>
+  </defs>
+  <style>
+    .title { font-family: "IBM Plex Sans", "Source Sans Pro", "Helvetica Neue", Arial, sans-serif; font-size: 26px; fill: #102a43; font-weight: 600; }
+    .box { fill: #ffffff; stroke: #cbd5e1; stroke-width: 2; rx: 14; filter: url(#softShadow); }
+    .reward { fill: #fff4d6; stroke: #f59f00; stroke-width: 2; }
+    .diversity { fill: #dcfce7; stroke: #2f9e44; stroke-width: 2; }
+    .process { fill: #e0f2fe; stroke: #2563eb; stroke-width: 2; }
+    .out { fill: #e2e8f0; stroke: #64748b; stroke-width: 2; }
+    .label { font-family: "IBM Plex Sans", "Source Sans Pro", "Helvetica Neue", Arial, sans-serif; font-size: 14px; fill: #102a43; font-weight: 600; }
+    .text { font-family: "IBM Plex Sans", "Source Sans Pro", "Helvetica Neue", Arial, sans-serif; font-size: 13px; fill: #475569; }
+    .math { font-family: "IBM Plex Mono", "SFMono-Regular", Menlo, Consolas, monospace; font-size: 13px; fill: #102a43; }
+    .box-label { font-family: "IBM Plex Sans", "Source Sans Pro", "Helvetica Neue", Arial, sans-serif; font-size: 14px; fill: #102a43; font-weight: 600; text-anchor: middle; }
+    .box-math { font-family: "IBM Plex Mono", "SFMono-Regular", Menlo, Consolas, monospace; font-size: 13px; fill: #102a43; text-anchor: middle; }
+    .arrow { stroke: #334155; stroke-width: 2.2; marker-end: url(#arrow); }
+  </style>
+
+  <rect width="1200" height="520" fill="url(#bg)" />
+  <rect width="1200" height="520" fill="url(#dotGrid)" opacity="0.35" />
+
+  <text x="60" y="60" class="title">Dual-channel fitness pipeline</text>
+
+  <rect x="70" y="150" width="170" height="70" class="reward" />
+  <rect x="70" y="290" width="170" height="70" class="diversity" />
+  <text x="90" y="180" class="label">Reward r_i</text>
+  <text x="90" y="320" class="label">Distance d_i</text>
+  <text x="90" y="200" class="text">exploitation</text>
+  <text x="90" y="340" class="text">exploration</text>
+
+  <rect x="280" y="150" width="160" height="70" class="process" />
+  <rect x="280" y="290" width="160" height="70" class="process" />
+  <text x="310" y="185" class="label">Z-score</text>
+  <text x="310" y="325" class="label">Z-score</text>
+  <text x="292" y="205" class="math">(x - mu) / sigma</text>
+  <text x="292" y="345" class="math">(x - mu) / sigma</text>
+
+  <rect x="480" y="150" width="210" height="70" class="process" />
+  <rect x="480" y="290" width="210" height="70" class="process" />
+  <text x="505" y="185" class="label">Logistic + floor</text>
+  <text x="505" y="325" class="label">Logistic + floor</text>
+  <text x="505" y="205" class="math">g_A(z) + eta</text>
+  <text x="505" y="345" class="math">g_A(z) + eta</text>
+
+  <rect x="720" y="150" width="140" height="70" class="out" />
+  <rect x="720" y="290" width="140" height="70" class="out" />
+  <text x="760" y="185" class="label">r_i'</text>
+  <text x="760" y="325" class="label">d_i'</text>
+
+  <rect x="900" y="220" width="230" height="90" class="box" />
+  <text x="1015" y="246" class="box-label">Fitness V_fit</text>
+  <text x="1015" y="272" class="box-math">V_fit = (d_i')^beta_fit</text>
+  <text x="1015" y="292" class="box-math">* (r_i')^alpha_fit</text>
+
+  <line x1="240" y1="185" x2="280" y2="185" class="arrow" />
+  <line x1="240" y1="325" x2="280" y2="325" class="arrow" />
+  <line x1="440" y1="185" x2="480" y2="185" class="arrow" />
+  <line x1="440" y1="325" x2="480" y2="325" class="arrow" />
+  <line x1="690" y1="185" x2="720" y2="185" class="arrow" />
+  <line x1="690" y1="325" x2="720" y2="325" class="arrow" />
+  <line x1="860" y1="185" x2="900" y2="250" class="arrow" />
+  <line x1="860" y1="325" x2="900" y2="290" class="arrow" />
+
+  <text x="70" y="420" class="text">Standardization keeps both channels on the same scale and bounded.</text>
+</svg>

@@ -164,6 +164,7 @@ For each $k \in \mathcal{N}_{\mathrm{shared}}$, the **boundary correspondence ma
 1. Parameterize $\Gamma_{j,k}(t)$ by arc length: $\gamma_{\mathrm{bottom}}: [0, L_{\mathrm{bottom}}] \to \Gamma_{j,k}(t)$
 2. Parameterize $\Gamma_{i,k}(t + \Delta t)$ by arc length: $\gamma_{\mathrm{top}}: [0, L_{\mathrm{top}}] \to \Gamma_{i,k}(t + \Delta t)$
 3. Define the correspondence map:
+
 $$
 \phi_k(\gamma_{\mathrm{bottom}}(s)) = \gamma_{\mathrm{top}}\left(s \cdot \frac{L_{\mathrm{top}}}{L_{\mathrm{bottom}}}\right)
 $$
@@ -179,18 +180,21 @@ This maps corresponding fractions of the boundary: the point at 30% along the bo
 A **scutoid** $\mathcal{S}_i$ is a $(d+1)$-dimensional polytope in the swarm spacetime manifold $\mathcal{M} = \mathcal{Z} \times [0, T]$, bounded by:
 
 **1. Bottom face** ($t = t_0$):
+
 $$
 F_{\mathrm{bottom}} = \mathrm{Vor}_j(t_0)
 $$
 where $j$ is the parent (for cloned walkers) or the walker itself (for persistent walkers).
 
 **2. Top face** ($t = t_0 + \Delta t$):
+
 $$
 F_{\mathrm{top}} = \mathrm{Vor}_i(t_0 + \Delta t)
 $$
 
 **3. Lateral faces** (for shared neighbors):
 For each $k \in \mathcal{N}_{\mathrm{shared}}$, the lateral face $\Sigma_k$ is the **ruled surface** swept by geodesic segments:
+
 $$
 \Sigma_k = \bigcup_{p \in \Gamma_{j,k}(t_0)} \gamma_{p \to \phi_k(p)}
 $$
@@ -242,6 +246,7 @@ Let $e_i$ be an episode (walker trajectory) traversing the interval $[t, t + \De
 **Part 1: Persistence implies prismatic geometry.**
 
 When no cloning occurs, the walker position evolves continuously via the Langevin SDE ({prf:ref}`def-fractal-set-sde`):
+
 $$
 dz_i = v_i \, dt + \Sigma_{\mathrm{reg}}(z_i, S) \circ dW_i
 $$
@@ -260,6 +265,7 @@ Consider a neighbor $k \in \mathcal{N}_i(t)$. For $k$ to remain a neighbor of th
 Since $z_i$ and $z_j$ are generically at different locations (the parent is a high-fitness walker, the dying walker is low-fitness), the Voronoi boundaries around $z_i$ and $z_j$ are different hypersurfaces. The probability that a neighbor of $z_i$ is also a neighbor of $z_j$ decreases as $\|z_i - z_j\| / \ell_{\mathrm{local}} \to \infty$, where $\ell_{\mathrm{local}}$ is the typical inter-walker spacing.
 
 **Quantitative bound**: For walker density $\rho \sim N / \mathrm{Vol}(\mathcal{Z})$ and typical spacing $\ell \sim \rho^{-1/d}$:
+
 $$
 \mathbb{P}(\mathcal{N}_i(t) = \mathcal{N}_{i'}(t + \Delta t)) \leq \exp\left(-c \cdot \frac{\|z_i - z_j\|^d}{\ell^d}\right)
 $$
@@ -360,6 +366,7 @@ $$
 **Topological interpretation**: The cumulative scutoid index $\mathcal{K}_{\mathrm{total}}$ counts the total number of neighbor-relationship changes in the tessellation. Each unit of $\mathcal{K}_{\mathrm{total}}$ represents one "topological transaction" where a neighbor relationship is either created or destroyed.
 
 **Relation to boundary structure**: For a single scutoid cell $\mathcal{S}$, the number of lateral faces is:
+
 $$
 |\text{lateral faces}| = |\mathcal{N}_{\mathrm{shared}}| + |\mathcal{N}_{\mathrm{lost}}| + |\mathcal{N}_{\mathrm{gained}}|
 $$
@@ -604,6 +611,7 @@ $$
 - **Effective complexity: $O(N)$ per timestep**
 
 **Speedup vs. Batch:**
+
 $$
 \text{Speedup} = \frac{O(N \log N)}{O(N)} = O(\log N)
 $$

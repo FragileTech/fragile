@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 420" role="img" aria-label="Latent Fractal Gas step with companion selection, cloning, and geodesic BAOAB dynamics">
+  <defs>
+    <style>
+      .bg { fill: #ffffff; }
+      .panel { fill: #f8fbff; stroke: #c5d3df; stroke-width: 1.5; }
+      .title { fill: #0b1d39; font-size: 20px; font-family: Arial, Helvetica, sans-serif; font-weight: 600; }
+      .box-title { fill: #1b2a3a; font-size: 16px; font-family: Arial, Helvetica, sans-serif; font-weight: 600; }
+      .label { fill: #4b5563; font-size: 13px; font-family: Arial, Helvetica, sans-serif; }
+      .node { fill: #2a9d8f; }
+      .node-focus { fill: #e76f51; }
+      .node-companion { fill: #f4a261; }
+      .bar-good { fill: #2a9d8f; }
+      .bar-bad { fill: #e76f51; }
+      .jitter { stroke: #9bb6d0; stroke-width: 1.2; fill: none; stroke-dasharray: 4 4; }
+      .path { stroke: #1f4b99; stroke-width: 2.5; fill: none; }
+      .arrow { stroke: #1f4b99; stroke-width: 2; fill: none; }
+      .arrow-light { stroke: #5f8cc4; stroke-width: 1.5; fill: none; }
+    </style>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#1f4b99" />
+    </marker>
+    <marker id="arrow-light" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#5f8cc4" />
+    </marker>
+  </defs>
+
+  <rect class="bg" width="1000" height="420" />
+  <text class="title" x="500" y="48" text-anchor="middle">Latent Fractal Gas step overview</text>
+
+  <rect class="panel" x="60" y="90" width="260" height="240" rx="14" />
+  <rect class="panel" x="370" y="90" width="260" height="240" rx="14" />
+  <rect class="panel" x="680" y="90" width="260" height="240" rx="14" />
+
+  <text class="box-title" x="190" y="124" text-anchor="middle">Companion selection</text>
+  <text class="box-title" x="500" y="124" text-anchor="middle">Fitness and cloning</text>
+  <text class="box-title" x="810" y="124" text-anchor="middle">Geodesic BAOAB</text>
+
+  <circle class="node" cx="120" cy="170" r="7" />
+  <circle class="node" cx="205" cy="175" r="7" />
+  <circle class="node" cx="150" cy="230" r="7" />
+  <circle class="node" cx="240" cy="230" r="7" />
+  <circle class="node-focus" cx="170" cy="205" r="9" />
+  <circle class="node-companion" cx="245" cy="165" r="8" />
+  <path class="arrow" d="M 174 201 L 236 171" marker-end="url(#arrow)" />
+  <text class="label" x="190" y="320" text-anchor="middle">Softmax kernel in phase space</text>
+
+  <circle class="node-focus" cx="430" cy="245" r="9" />
+  <circle class="node-companion" cx="520" cy="205" r="8" />
+  <path class="arrow" d="M 515 207 L 440 235" marker-end="url(#arrow)" />
+  <path class="arrow-light" d="M 435 250 C 470 270, 505 262, 525 245" marker-end="url(#arrow-light)" />
+  <circle class="jitter" cx="540" cy="235" r="32" />
+  <circle class="node" cx="540" cy="235" r="7" />
+  <circle class="node" cx="558" cy="223" r="7" />
+  <circle class="node" cx="525" cy="252" r="7" />
+  <text class="label" x="500" y="312" text-anchor="middle">Clone + jitter</text>
+  <text class="label" x="500" y="326" text-anchor="middle">around companion</text>
+
+  <path class="path" d="M 710 270 C 760 190, 830 190, 900 140" />
+  <circle class="node" cx="770" cy="225" r="8" />
+  <path class="arrow" d="M 774 221 L 820 205" marker-end="url(#arrow)" />
+  <path class="arrow-light" d="M 800 255 C 815 245, 835 245, 850 255" marker-end="url(#arrow-light)" />
+  <path class="arrow-light" d="M 820 280 C 835 270, 855 270, 870 280" marker-end="url(#arrow-light)" />
+  <text class="label" x="810" y="320" text-anchor="middle">Geodesic drift with noise and friction</text>
+
+  <path class="arrow" d="M 320 210 L 370 210" marker-end="url(#arrow)" />
+  <path class="arrow" d="M 630 210 L 680 210" marker-end="url(#arrow)" />
+</svg>

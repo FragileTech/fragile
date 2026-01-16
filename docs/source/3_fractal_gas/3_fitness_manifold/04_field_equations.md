@@ -70,6 +70,7 @@ where $K_\varepsilon(z,z')$ is the **IG correlation kernel**.
 **Components:**
 
 1. **Correlation kernel**: For Gaussian correlations,
+
    $$
    K_\varepsilon(z,z') = C_0\exp\left(-\frac{\|z-z'\|_G^2}{2\varepsilon_c^2}\right)
    $$
@@ -432,12 +433,14 @@ $$
 **Limiting behavior:**
 
 1. **$k \to 0$ (long wavelength):**
+
    $$
    \omega(0) = \frac{2\epsilon_F V_0 C_0 (2\pi\varepsilon_c^2)^{d/2}}{Z} + \bar{\lambda}_{\mathrm{kill}} =: \omega_0 > 0
    $$
    The frequency gap $\omega_0$ sets the slowest relaxation rate.
 
 2. **$k \to \infty$ (short wavelength):**
+
    $$
    \omega(k) \approx D_{\mathrm{eff}} k^2 + \bar{\lambda}_{\mathrm{kill}}
    $$
@@ -490,6 +493,7 @@ $$
 
 - $D_{\mathrm{eff}} k^2 \geq 0$ by construction (diffusion is non-negative)
 - The IG contribution:
+
   $$
   -\tilde{K}_{\mathrm{eff}}(k) = -\left(-\frac{2\epsilon_F V_0 C_0 (2\pi\varepsilon_c^2)^{d/2}}{Z}\right) e^{-\varepsilon_c^2 k^2/2} = \frac{2\epsilon_F V_0 C_0 (2\pi\varepsilon_c^2)^{d/2}}{Z} e^{-\varepsilon_c^2 k^2/2} > 0
   $$
