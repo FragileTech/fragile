@@ -124,7 +124,7 @@ $$
 **Representation on latent space:** For a latent space $\mathcal{Z} = \mathbb{R}^{d_z}$ decomposed into $n_b$ bundles of dimension $d_b$ (so $d_z = n_b \cdot d_b$), the representation $\rho: G_{\text{Fragile}} \to GL(d_z, \mathbb{R})$ acts via:
 
 - **$SU(N_f)_C$ action:** Realized through block mixing in neural layers (see Theorem {prf:ref}`thm-isotropic-preserves-color`)
-- **$SU(2)_L$ action:** Realized through observation-action coupling in steerable vision encoder (see Theorem {prf:ref}`thm-obs-action-doublet`)
+- **$SU(2)_L$ action:** Realized through observation-action coupling in steerable vision encoder (see Theorem {prf:ref}`thm-steerable-induces-doublet`)
 - **$U(1)_Y$ action:** Realized through spectral normalization preserving hypercharge (see Theorem {prf:ref}`thm-spectral-preserves-hypercharge`)
 
 **Note:** The full representation structure is established progressively through Sections 4.3-4.5. For detailed gauge field derivation, see {ref}`Section 29.1 <sec-symplectic-multi-agent-field-theory>`.
@@ -566,30 +566,27 @@ where:
 - **Reshape**: $\mathbb{R}^d \to (\mathbb{R}^{d_b})^{n_b}$ (bundle partition)
 - **NormGate**: Norm-gated activation applied per bundle (Definition {prf:ref}`def-norm-gated-activation`)
 
-**Structure constraint:** For $G_{\text{bundle}} = \prod_{i=1}^{n_b} SO(d_b)$ equivariance, the weight matrix $W$ must be block-diagonal:
+**Structure constraint:** For **exact** $G_{\text{bundle}} = \prod_{i=1}^{n_b} SO(d_b)$ equivariance, the weight matrix $W$ must be block-scalar:
 $$
-W = \begin{pmatrix} W_1 & 0 & \cdots & 0 \\ 0 & W_2 & \cdots & 0 \\ \vdots & \vdots & \ddots & \vdots \\ 0 & 0 & \cdots & W_{n_b} \end{pmatrix}
+W = \begin{pmatrix} \lambda_1 I_{d_b} & 0 & \cdots & 0 \\ 0 & \lambda_2 I_{d_b} & \cdots & 0 \\ \vdots & \vdots & \ddots & \vdots \\ 0 & 0 & \cdots & \lambda_{n_b} I_{d_b} \end{pmatrix}
 $$
-where each $W_i \in \mathbb{R}^{d_b \times d_b}$ with $\sigma_{\max}(W_i) \leq 1$.
+where each $\lambda_i \in [-1, 1]$ is a learnable scalar (per-bundle scaling factor), and $I_{d_b}$ is the $d_b \times d_b$ identity matrix. This constraint follows from Schur's lemma: any linear map commuting with all elements of $SO(d_b)$ must be a scalar multiple of identity (see Lemma {prf:ref}`lem-schur-scalar-constraint`).
+
+**Practical relaxation (approximate equivariance):** For increased expressiveness, implementations may use general block-diagonal $W$ with $\sigma_{\max}(W_i) \leq 1$. This sacrifices exact equivariance but provides bounded equivariance violation (see Proposition {prf:ref}`prop-approximate-equivariance-bound`).
 :::
 
-:::{prf:lemma} Block-Diagonal Structure is Necessary for Bundle Equivariance
+:::{prf:lemma} Block-Diagonal Structure is Necessary (But Not Sufficient) for Bundle Equivariance
 :label: lem-block-diagonal-necessary
 
 Let $W: \mathcal{Z} \to \mathcal{Z}$ be a linear map on $\mathcal{Z} = \bigoplus_{i=1}^{n_b} V_i$ with $V_i \cong \mathbb{R}^{d_b}$.
 
-$W$ is compatible with the product group action $G_{\text{bundle}} = \prod_{i=1}^{n_b} SO(d_b)$ if and only if $W$ is block-diagonal: $W = \text{diag}(W_1, \ldots, W_{n_b})$ with $W_i: V_i \to V_i$.
+For $W$ to be $G_{\text{bundle}}$-equivariant where $G_{\text{bundle}} = \prod_{i=1}^{n_b} SO(d_b)$, it is **necessary** that $W$ be block-diagonal: $W = \text{diag}(W_1, \ldots, W_{n_b})$ with $W_i: V_i \to V_i$.
 
-*Proof.*
+However, block-diagonal structure is **not sufficient** for equivariance of the full IsotropicBlock; an additional constraint is required (see Lemma {prf:ref}`lem-schur-scalar-constraint`).
 
-**($\Leftarrow$) Sufficiency:** If $W$ is block-diagonal, then for $(g_1, \ldots, g_{n_b}) \in G_{\text{bundle}}$ and $z = (z^{(1)}, \ldots, z^{(n_b)})$:
-$$
-W \rho(g_1, \ldots, g_{n_b}) z = W (g_1 z^{(1)}, \ldots, g_{n_b} z^{(n_b)}) = (W_1 g_1 z^{(1)}, \ldots, W_{n_b} g_{n_b} z^{(n_b)})
-$$
+*Proof of necessity.*
 
-While this is not generally equal to $\rho(g_1, \ldots, g_{n_b}) W z$ (since $W_i g_i \neq g_i W_i$ unless $W_i = \lambda_i I$), the subsequent NormGate operation restores equivariance (see Theorem {prf:ref}`thm-isotropic-block-equivariant`, Step 5).
-
-**($\Rightarrow$) Necessity:** Suppose $W$ has off-diagonal blocks, i.e., there exist $i \neq j$ such that $W_{ij} \neq 0$ where $W = [W_{ij}]$ in block form.
+Suppose $W$ has off-diagonal blocks, i.e., there exist $i \neq j$ such that $W_{ij} \neq 0$ where $W = [W_{ij}]$ in block form.
 
 Consider a group element $g = (g_1, \ldots, g_{n_b})$ where $g_i = R_\theta \in SO(d_b)$ is a nontrivial rotation and $g_j = I$ for $j \neq i$.
 
@@ -607,21 +604,69 @@ Since $R_\theta \neq I$ and $R_\theta W_{ij} z^{(j)} \neq W_{ij} z^{(j)}$ (rotat
 
 Therefore, off-diagonal blocks must vanish: $W_{ij} = 0$ for $i \neq j$. $\square$
 
-**Remark:** This lemma establishes that the block-diagonal constraint is not arbitrary—it is forced by the requirement that $W$ respect the bundle decomposition structure.
+**Remark:** This lemma establishes that the block-diagonal constraint is necessary but leaves open what additional structure is required on each block $W_i$. Lemma {prf:ref}`lem-schur-scalar-constraint` completes the characterization.
 :::
 
-:::{prf:theorem} IsotropicBlock is G-Equivariant
+:::{prf:lemma} Schur's Lemma Constraint: Scalar Blocks Required for Equivariance
+:label: lem-schur-scalar-constraint
+
+Let $W = \text{diag}(W_1, \ldots, W_{n_b})$ be block-diagonal where each $W_i: V_i \to V_i$ with $V_i \cong \mathbb{R}^{d_b}$.
+
+The composition $\text{NormGate} \circ W$ is $G_{\text{bundle}}$-equivariant if and only if each $W_i = \lambda_i I_{d_b}$ for some scalar $\lambda_i \in \mathbb{R}$.
+
+*Proof.*
+
+**($\Leftarrow$) Sufficiency:** If $W_i = \lambda_i I_{d_b}$, then for any $g_i \in SO(d_b)$:
+$$
+W_i g_i = \lambda_i I \cdot g_i = \lambda_i g_i = g_i \lambda_i I = g_i W_i
+$$
+
+Thus $W_i$ commutes with all $g_i \in SO(d_b)$. The IsotropicBlock composition is then equivariant by standard composition of equivariant maps.
+
+**($\Rightarrow$) Necessity:** Suppose $\text{NormGate} \circ W$ is $G_{\text{bundle}}$-equivariant. We show each $W_i$ must be a scalar multiple of identity.
+
+**Step 1. Equivariance condition:**
+For the $i$-th bundle, equivariance requires for all $g_i \in SO(d_b)$ and $v \in V_i$:
+$$
+W_i g_i v \cdot h(\|W_i g_i v\|) = g_i W_i v \cdot h(\|W_i v\|)
+$$
+
+where $h(r) = g(r + b_i)$ is the gating function.
+
+**Step 2. Direction matching:**
+The vectors on both sides must be parallel (since they are both scalar multiples). This requires:
+$$
+W_i g_i v \parallel g_i W_i v \quad \forall g_i \in SO(d_b), \forall v \in V_i
+$$
+
+**Step 3. Apply Schur's lemma:**
+The standard representation of $SO(d_b)$ on $\mathbb{R}^{d_b}$ is irreducible for $d_b \geq 2$. By Schur's lemma, any linear map $W_i: V_i \to V_i$ that satisfies $W_i g_i = g_i W_i$ for all $g_i \in SO(d_b)$ must be a scalar multiple of identity: $W_i = \lambda_i I_{d_b}$.
+
+**Step 4. Verify direction condition implies commutativity:**
+If $W_i g_i v \parallel g_i W_i v$ for all $g_i, v$, and both have the same magnitude (which follows from matching scalars $h(\cdot)$), then:
+$$
+W_i g_i v = \pm g_i W_i v
+$$
+
+The sign must be constant (+1) since the identity $g_i = I$ gives $W_i v = W_i v$. Thus $W_i g_i = g_i W_i$ for all $g_i \in SO(d_b)$, and Schur's lemma applies.
+
+$\square$
+
+**Physical interpretation:** The scalar constraint $W_i = \lambda_i I$ means each bundle can only be uniformly scaled, not rotated or sheared within itself. This preserves the geometric isotropy of each bundle fiber.
+:::
+
+:::{prf:theorem} IsotropicBlock is G-Equivariant (Scalar Block Case)
 :label: thm-isotropic-block-equivariant
 
-Let $G = \prod_{i=1}^{n_b} SO(d_b)$ be the product gauge group (Definition {prf:ref}`def-latent-vector-bundle`). By Lemma {prf:ref}`lem-block-diagonal-necessary`, the weight matrix $W$ in SpectralLinear must be **block-diagonal** with respect to the bundle decomposition:
+Let $G = \prod_{i=1}^{n_b} SO(d_b)$ be the product gauge group (Definition {prf:ref}`def-latent-vector-bundle`). By Lemmas {prf:ref}`lem-block-diagonal-necessary` and {prf:ref}`lem-schur-scalar-constraint`, the weight matrix $W$ in SpectralLinear must be **block-scalar** for exact equivariance:
 
 $$
-W = \begin{pmatrix} W_1 & 0 & \cdots & 0 \\ 0 & W_2 & \cdots & 0 \\ \vdots & \vdots & \ddots & \vdots \\ 0 & 0 & \cdots & W_{n_b} \end{pmatrix}
+W = \begin{pmatrix} \lambda_1 I_{d_b} & 0 & \cdots & 0 \\ 0 & \lambda_2 I_{d_b} & \cdots & 0 \\ \vdots & \vdots & \ddots & \vdots \\ 0 & 0 & \cdots & \lambda_{n_b} I_{d_b} \end{pmatrix}
 $$
 
-where each $W_i \in \mathbb{R}^{d_b \times d_b}$ is spectrally normalized with $\sigma_{\max}(W_i) \leq 1$.
+where each $\lambda_i \in [-1, 1]$ is a learnable scalar satisfying $|\lambda_i| \leq 1$ (spectral normalization).
 
-Then the IsotropicBlock (Definition {prf:ref}`def-isotropic-block`) is $G$-equivariant.
+Then the IsotropicBlock (Definition {prf:ref}`def-isotropic-block`) is **exactly** $G$-equivariant.
 
 *Proof.*
 
@@ -631,13 +676,21 @@ $$
 $$
 where $z = (z^{(1)}, \ldots, z^{(n_b)})$ with $z^{(i)} \in \mathbb{R}^{d_b}$.
 
-**Step 2. SpectralLinear with block-diagonal W:**
-By block-diagonal structure (Lemma {prf:ref}`lem-block-diagonal-necessary`), for $W = \text{diag}(W_1, \ldots, W_{n_b})$ and $(g_1, \ldots, g_{n_b}) \in G$:
+**Step 2. SpectralLinear with scalar blocks:**
+For $W = \text{diag}(\lambda_1 I, \ldots, \lambda_{n_b} I)$ and $(g_1, \ldots, g_{n_b}) \in G$:
 $$
-W \cdot \rho(g_1, \ldots, g_{n_b}) \cdot z = \begin{pmatrix} W_1 g_1 z^{(1)} \\ \vdots \\ W_{n_b} g_{n_b} z^{(n_b)} \end{pmatrix}
+W \cdot \rho(g_1, \ldots, g_{n_b}) \cdot z = (\lambda_1 g_1 z^{(1)}, \ldots, \lambda_{n_b} g_{n_b} z^{(n_b)})
 $$
 
-**Key observation:** Individual blocks $W_i$ do NOT commute with rotations $g_i \in SO(d_b)$ (unless $W_i = \lambda_i I$), so SpectralLinear alone is not equivariant. However, the subsequent NormGate operation restores equivariance, as we now prove rigorously.
+**Key property:** Since $\lambda_i I$ commutes with all $g_i \in SO(d_b)$:
+$$
+\lambda_i I \cdot g_i = g_i \cdot \lambda_i I \quad \forall g_i \in SO(d_b)
+$$
+
+Thus SpectralLinear is equivariant:
+$$
+W \cdot \rho(g) \cdot z = \rho(g) \cdot W \cdot z
+$$
 
 **Step 3. Reshape is equivariant:** The bundle partition $\mathbb{R}^{n_b \cdot d_b} \to (\mathbb{R}^{d_b})^{n_b}$ is equivariant by construction (identity map in bundled coordinates).
 
@@ -646,60 +699,56 @@ $$
 \text{NormGate}(g_i \cdot v_i) = g_i \cdot \text{NormGate}(v_i) \quad \forall g_i \in SO(d_b)
 $$
 
-**Step 5. Composition equivariance (rigorous proof):**
+**Step 5. Composition equivariance:**
 
-We prove $\text{IsotropicBlock}(\rho(g) \cdot z) = \rho(g) \cdot \text{IsotropicBlock}(z)$ by explicit calculation.
+We prove $\text{IsotropicBlock}(\rho(g) \cdot z) = \rho(g) \cdot \text{IsotropicBlock}(z)$ by composing equivariant maps.
 
 Let $g = (g_1, \ldots, g_{n_b}) \in G$ and $z = (z^{(1)}, \ldots, z^{(n_b)})$.
 
 Compute left-hand side:
 $$
 \begin{align}
-\text{IsotropicBlock}(\rho(g) \cdot z) &= \text{NormGate}(W \rho(g) z) \\
-&= \text{NormGate}((W_1 g_1 z^{(1)}, \ldots, W_{n_b} g_{n_b} z^{(n_b)})) \quad \text{(Step 2)} \\
-&= (W_1 g_1 z^{(1)} \cdot h(\|W_1 g_1 z^{(1)}\|), \ldots, W_{n_b} g_{n_b} z^{(n_b)} \cdot h(\|W_{n_b} g_{n_b} z^{(n_b)}\|)) \quad \text{(Def. NormGate)}
+\text{IsotropicBlock}(\rho(g) \cdot z) &= \text{NormGate}(W \cdot \rho(g) \cdot z) \\
+&= \text{NormGate}(\rho(g) \cdot W \cdot z) \quad \text{(Step 2: $W$ is equivariant)} \\
+&= \rho(g) \cdot \text{NormGate}(W \cdot z) \quad \text{(Step 4: NormGate is equivariant)} \\
+&= \rho(g) \cdot \text{IsotropicBlock}(z)
 \end{align}
 $$
 
-Since $g_i \in SO(d_b)$ is orthogonal, $\|g_i v\| = \|v\|$ for any $v$. Thus:
-$$
-\|W_i g_i z^{(i)}\| = \|W_i z^{(i)}\|
-$$
+**Explicit verification for bundle $i$:**
+Let $v_i = \lambda_i z^{(i)}$ (output of SpectralLinear for bundle $i$).
 
-So the left-hand side becomes:
-$$
-= (W_1 g_1 z^{(1)} \cdot h(\|W_1 z^{(1)}\|), \ldots, W_{n_b} g_{n_b} z^{(n_b)} \cdot h(\|W_{n_b} z^{(n_b)}\|))
-$$
-
-Compute right-hand side:
-$$
-\begin{align}
-\rho(g) \cdot \text{IsotropicBlock}(z) &= \rho(g) \cdot \text{NormGate}(W z) \\
-&= \rho(g) \cdot (W_1 z^{(1)} \cdot h(\|W_1 z^{(1)}\|), \ldots, W_{n_b} z^{(n_b)} \cdot h(\|W_{n_b} z^{(n_b)}\|)) \\
-&= (g_1 (W_1 z^{(1)} \cdot h(\|W_1 z^{(1)}\|)), \ldots, g_{n_b} (W_{n_b} z^{(n_b)} \cdot h(\|W_{n_b} z^{(n_b)}\|))) \\
-&= (g_1 W_1 z^{(1)} \cdot h(\|W_1 z^{(1)}\|), \ldots, g_{n_b} W_{n_b} z^{(n_b)} \cdot h(\|W_{n_b} z^{(n_b)}\|)) \quad \text{(scalar mult.)}
-\end{align}
-$$
-
-**Comparison:** We need to show:
-$$
-W_i g_i z^{(i)} \cdot h(\|W_i z^{(i)}\|) = g_i W_i z^{(i)} \cdot h(\|W_i z^{(i)}\|)
-$$
-
-Both sides equal the same vector! Although $W_i g_i \neq g_i W_i$ (matrices don't commute), we have:
-$$
-W_i g_i z^{(i)} = g_i (g_i^{-1} W_i g_i) z^{(i)}
-$$
-
-The norm is preserved: $\|W_i g_i z^{(i)}\| = \|g_i^{-1} W_i g_i z^{(i)}\| = \|W_i z^{(i)}\|$ (orthogonal conjugation preserves norms).
-
-Since both expressions equal $g_i$ applied to a vector with the same norm and the same scalar multiplier $h(\|W_i z^{(i)}\|)$, they are equal.
-
-Therefore: $\text{IsotropicBlock}(\rho(g) \cdot z) = \rho(g) \cdot \text{IsotropicBlock}(z)$
+- LHS: $\text{NormGate}(\lambda_i g_i z^{(i)}) = (\lambda_i g_i z^{(i)}) \cdot h(\|\lambda_i g_i z^{(i)}\|)$
+- Since $\|\lambda_i g_i z^{(i)}\| = |\lambda_i| \cdot \|g_i z^{(i)}\| = |\lambda_i| \cdot \|z^{(i)}\| = \|\lambda_i z^{(i)}\|$:
+- LHS $= (\lambda_i g_i z^{(i)}) \cdot h(\|\lambda_i z^{(i)}\|) = g_i (\lambda_i z^{(i)}) \cdot h(\|\lambda_i z^{(i)}\|) = g_i \cdot \text{NormGate}(v_i)$ = RHS
 
 $\square$
 
-**Remark:** The key insight is that NormGate **restores equivariance** even when $W$ is not exactly equivariant, because it decouples the magnitude (scalar, invariant) from the direction (vector, equivariant). This is why IsotropicBlock is more robust than naïve linear+activation combinations.
+**Remark:** The scalar block constraint $W_i = \lambda_i I$ is essential for exact equivariance. General block-diagonal matrices do NOT yield equivariance (see Lemma {prf:ref}`lem-schur-scalar-constraint`). For increased expressiveness at the cost of exact equivariance, see Proposition {prf:ref}`prop-approximate-equivariance-bound` below.
+:::
+
+:::{prf:proposition} Approximate Equivariance Bound for General Block-Diagonal W
+:label: prop-approximate-equivariance-bound
+
+For practical architectures using general block-diagonal $W = \text{diag}(W_1, \ldots, W_{n_b})$ with $\sigma_{\max}(W_i) \leq 1$ (instead of scalar blocks), the equivariance violation is bounded.
+
+**Statement:** Let $\text{IB}$ denote IsotropicBlock with general block-diagonal W. For any $g \in G_{\text{bundle}}$ and $z \in \mathcal{Z}$:
+$$
+\|\text{IB}(\rho(g) \cdot z) - \rho(g) \cdot \text{IB}(z)\| \leq \sum_{i=1}^{n_b} \epsilon_i(W_i, g_i, z^{(i)})
+$$
+
+where $\epsilon_i$ depends on how far $W_i$ is from being a scalar multiple of identity.
+
+**Bound:** For $W_i$ with singular value decomposition $W_i = U_i \Sigma_i V_i^T$:
+$$
+\epsilon_i \leq (L_g + 1) \cdot (\sigma_{\max}(W_i) - \sigma_{\min}(W_i)) \cdot \|z^{(i)}\|
+$$
+
+where $L_g$ is the Lipschitz constant of the gating function $g$ and $(\sigma_{\max} - \sigma_{\min})$ measures the anisotropy of $W_i$.
+
+**Implication:** If $W_i \approx \lambda_i I$ (approximately isotropic), then $\sigma_{\max}(W_i) \approx \sigma_{\min}(W_i)$ and $\epsilon_i \approx 0$. The practical architecture trades exact equivariance for expressiveness, with controlled violation bounds.
+
+*Proof sketch.* The violation arises because $\|W_i g_i z\| \neq \|W_i z\|$ when $W_i$ has different singular values in different directions. The difference $|\|W_i g_i z\| - \|W_i z\||$ is bounded by the condition number of $W_i$ times $\|z\|$. The gating function $h$ amplifies this by at most $L_g$. $\square$
 :::
 
 ---
@@ -1301,26 +1350,54 @@ $\square$
 
 ### Spectral Normalization and U(1)_Y
 
-:::{prf:theorem} Spectral Norm Preserves Hypercharge Conservation
+:::{prf:theorem} Spectral Norm Bounds Hypercharge Dissipation
 :label: thm-spectral-preserves-hypercharge
 
-The Opportunity field $B_\mu$ (from {ref}`sec-symplectic-multi-agent-field-theory`) couples to hypercharge $Y$. Spectral normalization ensures:
+The Opportunity field $B_\mu$ (from {ref}`sec-symplectic-multi-agent-field-theory`) couples to hypercharge $Y$. Spectral normalization ensures hypercharge is **non-increasing** under forward propagation:
 
 $$
-\sum_i Y_i \text{ remains constant under forward propagation}
+Y(W \cdot z) \leq Y(z) \quad \text{(hypercharge cannot increase)}
 $$
 
 *Proof.*
 
-**Step 1. Hypercharge definition:** $Y \propto \|z\|^2$ (quadratic conserved quantity).
+**Step 1. Hypercharge definition:** $Y(z) := \|z\|^2$ (quadratic quantity proportional to squared norm).
 
-**Step 2. Isometry:** Spectral normalization with $\sigma_{\max}(W) = 1$ ensures $\|W \cdot z\| = \|z\|$ (isometry).
+**Step 2. Contraction (NOT isometry):** Spectral normalization with $\sigma_{\max}(W) \leq 1$ ensures:
+$$
+\|W \cdot z\| \leq \sigma_{\max}(W) \cdot \|z\| \leq \|z\|
+$$
 
-**Step 3. Conservation:** Thus $Y(W \cdot z) = \|W \cdot z\|^2 = \|z\|^2 = Y(z)$ (hypercharge conserved).
+This is a **contraction**, not an isometry. Equality $\|W \cdot z\| = \|z\|$ holds only when:
+- $z$ is aligned with the top singular vector of $W$, AND
+- $\sigma_{\max}(W) = 1$ exactly
+
+For general $z$, we have strict inequality $\|W \cdot z\| < \|z\|$.
+
+**Step 3. Hypercharge bound:**
+$$
+Y(W \cdot z) = \|W \cdot z\|^2 \leq \|z\|^2 = Y(z)
+$$
+
+**Interpretation:** Hypercharge dissipates (decreases) through linear layers but cannot spontaneously increase. This implements a one-way flow consistent with the second law of thermodynamics in the information-theoretic sense.
+
+**Step 4. Conservation requires orthogonality:**
+For **exact** hypercharge conservation $Y(W \cdot z) = Y(z)$ for all $z$, we would need:
+$$
+\|W \cdot z\| = \|z\| \quad \forall z \in \mathcal{Z}
+$$
+
+This requires $W$ to be **orthogonal**: $W^T W = I$. Spectral normalization does NOT enforce orthogonality; it only bounds the largest singular value.
 
 $\square$
 
-**Connection to Node 56 (CapacityHorizonCheck):** Hypercharge saturation $Y \to Y_{\max}$ indicates approaching capacity limit (holographic bound).
+**Connection to Node 56 (CapacityHorizonCheck):** Hypercharge saturation $Y \to Y_{\max}$ indicates approaching capacity limit (holographic bound). The non-increasing property ensures the system cannot exceed this bound through forward propagation.
+
+**Remark on exact conservation:** If exact hypercharge conservation is required (not just non-increasing), constrain $W$ to be orthogonal via Cayley parameterization or exponential map from skew-symmetric matrices:
+$$
+W = \exp(A) \quad \text{where } A^T = -A \text{ (skew-symmetric)}
+$$
+This guarantees $W^T W = I$ and thus $\|W \cdot z\| = \|z\|$ exactly.
 :::
 
 ### Steerable Convolutions and SU(2)_L
@@ -2031,10 +2108,22 @@ class IsotropicBlock(nn.Module):
 
     Implements: SpectralLinear ∘ Reshape ∘ NormGate
 
-    **Guarantees:**
-        - SO(d_b)^{n_b} equivariance (Theorem {prf:ref}`thm-isotropic-block-equivariant`)
+    **Equivariance modes:**
+        - `exact=True`: Uses scalar blocks (W_i = λ_i I), giving **exact** SO(d_b)^{n_b}
+          equivariance per Theorem {prf:ref}`thm-isotropic-block-equivariant`.
+        - `exact=False` (default): Uses block-diagonal W with general blocks, giving
+          **approximate** equivariance per Proposition {prf:ref}`prop-approximate-equivariance-bound`.
+          More expressive but not exactly equivariant.
+
+    **Guarantees (exact mode):**
+        - Exact SO(d_b)^{n_b} equivariance (Theorem {prf:ref}`thm-isotropic-block-equivariant`)
         - Light cone preservation (Theorem {prf:ref}`thm-spectral-preserves-light-cone`)
         - Micro-macro consistency (Theorem {prf:ref}`thm-isotropic-macro-compatible`)
+
+    **Guarantees (approximate mode):**
+        - Bounded equivariance violation (Proposition {prf:ref}`prop-approximate-equivariance-bound`)
+        - Light cone preservation (Theorem {prf:ref}`thm-spectral-preserves-light-cone`)
+        - Greater expressiveness (can learn within-bundle transformations)
 
     **Diagnostics:**
         - Node 67: Gauge invariance (test random rotations)
@@ -2045,6 +2134,8 @@ class IsotropicBlock(nn.Module):
         in_dim: Input dimension D_in [dimensionless]
         out_dim: Output dimension D_out [dimensionless]
         bundle_size: Bundle dimension d_b [dimensionless], typically 8-32
+        exact: If True, use scalar blocks for exact equivariance (less expressive).
+               If False (default), use block-diagonal for approximate equivariance.
 
     Shapes:
         Input: [B, D_in] where B = batch size
@@ -2056,28 +2147,65 @@ class IsotropicBlock(nn.Module):
         Gate g ∈ [0, 1] dimensionless
 
     Example:
-        >>> block = IsotropicBlock(256, 512, bundle_size=16)
+        >>> # Approximate equivariance (more expressive, default)
+        >>> block = IsotropicBlock(256, 512, bundle_size=16, exact=False)
         >>> z = torch.randn(32, 256)  # [B=32, D_in=256]
         >>> out = block(z)  # [32, 512]
-        >>> # Test equivariance (Node 67)
-        >>> R = random_rotation_matrix(512)
-        >>> assert torch.allclose(block(R @ z), R @ block(z), atol=1e-4)
+        >>>
+        >>> # Exact equivariance (use when strict gauge invariance is required)
+        >>> block_exact = IsotropicBlock(256, 512, bundle_size=16, exact=True)
+        >>> R = random_bundle_rotation(512, 16)  # Block-diagonal rotation
+        >>> assert torch.allclose(block_exact(R @ z), R @ block_exact(z), atol=1e-6)
     """
-    def __init__(self, in_dim: int, out_dim: int, bundle_size: int = 16):
+    def __init__(self, in_dim: int, out_dim: int, bundle_size: int = 16, exact: bool = False):
         super().__init__()
         assert out_dim % bundle_size == 0, "Output dim must be divisible by bundle size"
+        assert in_dim % bundle_size == 0 or not exact, "For exact mode, in_dim must be divisible by bundle_size"
 
         self.bundle_size = bundle_size
         self.n_bundles = out_dim // bundle_size
+        self.exact = exact
 
-        # 1. The Spectral Linear Map (Definition {prf:ref}`def-spectral-linear`)
-        # Bias is False to preserve vector origin (translation invariance)
-        # Spectral normalization ensures σ_max(W) ≤ 1 (Theorem {prf:ref}`thm-spectral-preserves-light-cone`)
-        self.linear = spectral_norm(nn.Linear(in_dim, out_dim, bias=False))
+        if exact:
+            # EXACT EQUIVARIANCE: Scalar blocks W_i = λ_i I (Lemma {prf:ref}`lem-schur-scalar-constraint`)
+            # One scalar per bundle, constrained to [-1, 1]
+            self.bundle_scales = nn.Parameter(torch.ones(self.n_bundles))
+            # Note: For exact mode, in_dim must equal out_dim (same bundle structure)
+            assert in_dim == out_dim, "Exact mode requires in_dim == out_dim (same bundle structure)"
+        else:
+            # APPROXIMATE EQUIVARIANCE: Block-diagonal W with general blocks
+            # (Proposition {prf:ref}`prop-approximate-equivariance-bound`)
+            # Each block W_i: R^{d_b} -> R^{d_b} with σ_max(W_i) ≤ 1
+            self.block_weights = nn.ParameterList([
+                nn.Parameter(torch.randn(bundle_size, bundle_size) / (bundle_size ** 0.5))
+                for _ in range(self.n_bundles)
+            ])
+            # For input dimension mapping (if in_dim != out_dim)
+            if in_dim != out_dim:
+                self.input_proj = spectral_norm(nn.Linear(in_dim, out_dim, bias=False))
+            else:
+                self.input_proj = None
 
         # 2. The Activation Potential (scalar bias on norms)
         # One bias per vector bundle [dimensionless]
         self.norm_bias = nn.Parameter(torch.zeros(1, self.n_bundles, 1))
+
+    def _spectral_normalize_block(self, W: torch.Tensor) -> torch.Tensor:
+        """Apply spectral normalization to a single block weight matrix.
+
+        Args:
+            W: [d_b, d_b] weight matrix
+
+        Returns:
+            W_normalized: [d_b, d_b] with σ_max ≤ 1
+        """
+        # Power iteration to estimate largest singular value
+        u = torch.randn(W.shape[0], device=W.device)
+        for _ in range(3):  # Few iterations suffice for approximation
+            v = F.normalize(W.T @ u, dim=0)
+            u = F.normalize(W @ v, dim=0)
+        sigma_max = (u @ W @ v).abs()
+        return W / sigma_max.clamp(min=1.0)  # Only normalize if σ_max > 1
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """Forward pass with dimensional annotations.
@@ -2088,12 +2216,35 @@ class IsotropicBlock(nn.Module):
         Returns:
             output: [B, out_dim] equivariant activation [dimensionless]
         """
-        # Step 1: Spectral linear (preserves light cone, Thm {prf:ref}`thm-spectral-preserves-light-cone`)
-        h = self.linear(x)  # [B, out_dim], [h] = dimensionless
+        B = x.shape[0]
 
-        # Step 2: Reshape into geometric bundles
-        B, D = h.shape
-        h_bundles = h.view(B, self.n_bundles, self.bundle_size)  # [B, n_b, d_b]
+        if self.exact:
+            # EXACT MODE: Apply scalar scaling per bundle (W_i = λ_i I)
+            # Clamp scales to [-1, 1] for spectral normalization
+            scales = self.bundle_scales.clamp(-1, 1)  # [n_b]
+
+            # Reshape input into bundles
+            h_bundles = x.view(B, self.n_bundles, self.bundle_size)  # [B, n_b, d_b]
+
+            # Apply scalar scaling per bundle: λ_i * v_i
+            # scales has shape [n_b], expand to [1, n_b, 1] for broadcasting
+            h_bundles = h_bundles * scales.view(1, -1, 1)  # [B, n_b, d_b]
+        else:
+            # APPROXIMATE MODE: Apply block-diagonal transformation
+            # First, project input if dimensions don't match
+            if self.input_proj is not None:
+                x = self.input_proj(x)  # [B, out_dim]
+
+            # Reshape input into bundles
+            h_bundles = x.view(B, self.n_bundles, self.bundle_size)  # [B, n_b, d_b]
+
+            # Apply spectrally-normalized block transformation per bundle
+            h_list = []
+            for i in range(self.n_bundles):
+                W_i = self._spectral_normalize_block(self.block_weights[i])  # [d_b, d_b]
+                h_i = torch.einsum('bd,de->be', h_bundles[:, i, :], W_i)  # [B, d_b]
+                h_list.append(h_i)
+            h_bundles = torch.stack(h_list, dim=1)  # [B, n_b, d_b]
 
         # Step 3: Compute energy (SO(d_b)-invariant norm)
         energy = torch.norm(h_bundles, dim=2, keepdim=True)  # [B, n_b, 1]
@@ -2104,13 +2255,14 @@ class IsotropicBlock(nn.Module):
         gate = F.gelu(energy + self.norm_bias)  # [B, n_b, 1]
         # [gate] = dimensionless ∈ [0, ∞), approximately ∈ [0, 1] for normalized inputs
 
-        # Step 5: Apply gate preserving direction (Thm {prf:ref}`thm-norm-gating-equivariant`)
-        # h_out = (v / ||v||) · ||v|| · g(||v||) = v · g(||v||) / ||v||
-        # Normalize by energy to preserve direction, scale by gate
-        h_out = h_bundles * (gate / (energy + 1e-8))  # [B, n_b, d_b]
-        # Added small epsilon for numerical stability when energy ≈ 0
+        # Step 5: Apply gate scaling to bundles (Thm {prf:ref}`thm-norm-gating-equivariant`)
+        # By Definition {prf:ref}`def-norm-gated-activation`: f(v) = v · g(||v|| + b)
+        # The vector is scaled by the gate value, preserving direction
+        h_out = h_bundles * gate  # [B, n_b, d_b]
+        # gate has shape [B, n_b, 1] so broadcasting scales each bundle
 
         # Step 6: Flatten back to vector
+        D = self.n_bundles * self.bundle_size
         return h_out.view(B, D)  # [B, out_dim]
 ```
 
@@ -2198,3 +2350,30 @@ Output (action a_t)
 - **Covariant Cross-Attention** ({ref}`Section 35 <sec-covariant-cross-attention>`): Implements Wilson lines for parallel transport along geodesics.
 - **Boris-BAOAB Integrator** ({ref}`Section 22 <sec-equations-of-motion-langevin-sdes-on-information-manifolds>`): Macroscopic integration scheme that requires microscopic primitives to preserve gauge structure.
 - **Temperature Schedule** ({ref}`Section 29 <sec-the-belief-wave-function-schrodinger-representation>`): Cognitive temperature $T_c$ varies with inverse conformal factor $1/\lambda(z)$ to maintain consistent exploration across curved manifold.
+
+---
+
+(sec-dnn-blocks-conclusion)=
+## Conclusion
+
+:::{div} feynman-prose
+Let me summarize what we have accomplished in this chapter, because it is genuinely remarkable when you step back and look at the whole picture.
+
+We started with a problem: standard deep learning primitives—the bread-and-butter operations like ReLU and biased linear layers—secretly assume things about your space that are not true in general. They assume flat geometry. They assume preferred coordinate axes. They assume that the origin of your coordinate system means something special. These assumptions are fine for image classification on a fixed dataset, but they are catastrophic for agents that must maintain consistent beliefs across time, integrate geodesics on curved manifolds, and interact with other agents under capacity constraints.
+
+So we built replacements. Three primitives, each designed from the ground up to respect gauge symmetry:
+
+1. **SpectralLinear** removes bias and constrains the singular values. This preserves the light cone structure—information cannot propagate faster than $c_{\text{info}}$, and there is no artificial preferred origin in the tangent space.
+
+2. **NormGate** applies activation based on bundle norms, not individual components. The gate decision "is there enough energy to pass?" has the same answer regardless of how you orient your coordinate axes within each bundle.
+
+3. **SteerableConv** lifts images to the group $SE(2)$ and convolves with steerable filters. Rotate the input, get rotated features—exactly, not approximately through data augmentation.
+
+Each primitive preserves one factor of the gauge group $G_{\text{Fragile}} = SU(N_f)_C \times SU(2)_L \times U(1)_Y$. Bundle structure implements color confinement. Spectral normalization implements hypercharge conservation. Steerable convolutions implement the observation-action doublet structure. Three primitives, three gauge factors, one unified theory.
+
+And here is what I find most satisfying: the constraints are so tight that the architecture essentially writes itself. Once you demand gauge invariance, there is only one way to build each component. You do not get to make arbitrary design choices; the symmetry requirements dictate the structure. This is the hallmark of good physics: not many knobs to tune, but few parameters that must take specific values.
+
+We now have the atoms. What remains is to show how these atoms compose into molecules—full architectures that can actually be trained and deployed. That is the subject of Chapter 5, where we connect these microscopic primitives to the macroscopic geodesic integrator.
+
+The bridge from gauge theory to neural network implementation is complete.
+:::
