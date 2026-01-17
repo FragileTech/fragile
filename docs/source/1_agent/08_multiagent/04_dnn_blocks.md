@@ -164,11 +164,13 @@ $$
    $$
    acting on observation-action pairs $(z_{\text{obs}}, z_{\text{act}}) \in \mathbb{R}^2 \subset \mathcal{Z}$.
 
-3. **$U(1)_Y$ real representation:** Already real: $U(1) = \{e^{i\theta} : \theta \in [0, 2\pi)\} \cong SO(2)$. We identify:
+3. **$U(1)_Y$ real representation:** As a Lie group, $U(1) = \{e^{i\theta} : \theta \in [0, 2\pi)\} \cong SO(2)$ (both are circles). The real representation is:
    $$
-   \rho_Y: U(1)_Y \to SO(2) \subset GL(2, \mathbb{R})
+   \rho_Y: U(1)_Y \to SO(2) \subset GL(2, \mathbb{R}), \quad e^{i\theta} \mapsto \begin{pmatrix} \cos\theta & -\sin\theta \\ \sin\theta & \cos\theta \end{pmatrix}
    $$
-   acting via **scaling** (realized through spectral normalization constraints).
+   This is a **rotation** in a 2D subspace, NOT scaling.
+
+   **Architecture implementation via conservation law:** Rather than implementing rotations, $U(1)_Y$ symmetry manifests as a **conserved quantity** (hypercharge $Y \propto \|z\|^2$). Spectral normalization $\sigma_{\max}(W) \leq 1$ ensures this quantity cannot grow unbounded (Theorem {prf:ref}`thm-spectral-preserves-hypercharge`). The symmetry is enforced implicitly through conservation, not explicit gauge transformations.
 
 **Product representation:** The full representation is the **direct sum** (⊕) of these factors acting on disjoint subspaces:
 $$
