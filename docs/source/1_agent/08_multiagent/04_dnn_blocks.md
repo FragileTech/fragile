@@ -124,7 +124,7 @@ $$
 **Representation on latent space:** For a latent space $\mathcal{Z} = \mathbb{R}^{d_z}$ decomposed into $n_b$ bundles of dimension $d_b$ (so $d_z = n_b \cdot d_b$), the representation $\rho: G_{\text{Fragile}} \to GL(d_z, \mathbb{R})$ acts via:
 
 - **$SU(N_f)_C$ action:** Realized through block mixing in neural layers (see Theorem {prf:ref}`thm-isotropic-preserves-color`)
-- **$SU(2)_L$ action:** Realized through observation-action coupling in steerable vision encoder (see Theorem {prf:ref}`thm-obs-action-doublet`)
+- **$SU(2)_L$ action:** Realized through observation-action coupling in steerable vision encoder (see Theorem {prf:ref}`thm-steerable-induces-doublet`)
 - **$U(1)_Y$ action:** Realized through spectral normalization preserving hypercharge (see Theorem {prf:ref}`thm-spectral-preserves-hypercharge`)
 
 **Note:** The full representation structure is established progressively through Sections 4.3-4.5. For detailed gauge field derivation, see {ref}`Section 29.1 <sec-symplectic-multi-agent-field-theory>`.
@@ -2104,11 +2104,11 @@ class IsotropicBlock(nn.Module):
         gate = F.gelu(energy + self.norm_bias)  # [B, n_b, 1]
         # [gate] = dimensionless ∈ [0, ∞), approximately ∈ [0, 1] for normalized inputs
 
-        # Step 5: Apply gate preserving direction (Thm {prf:ref}`thm-norm-gating-equivariant`)
-        # h_out = (v / ||v||) · ||v|| · g(||v||) = v · g(||v||) / ||v||
-        # Normalize by energy to preserve direction, scale by gate
-        h_out = h_bundles * (gate / (energy + 1e-8))  # [B, n_b, d_b]
-        # Added small epsilon for numerical stability when energy ≈ 0
+        # Step 5: Apply gate scaling to bundles (Thm {prf:ref}`thm-norm-gating-equivariant`)
+        # By Definition {prf:ref}`def-norm-gated-activation`: f(v) = v · g(||v|| + b)
+        # The vector is scaled by the gate value, preserving direction
+        h_out = h_bundles * gate  # [B, n_b, d_b]
+        # gate has shape [B, n_b, 1] so broadcasting scales each bundle
 
         # Step 6: Flatten back to vector
         return h_out.view(B, D)  # [B, out_dim]
@@ -2198,3 +2198,30 @@ Output (action a_t)
 - **Covariant Cross-Attention** ({ref}`Section 35 <sec-covariant-cross-attention>`): Implements Wilson lines for parallel transport along geodesics.
 - **Boris-BAOAB Integrator** ({ref}`Section 22 <sec-equations-of-motion-langevin-sdes-on-information-manifolds>`): Macroscopic integration scheme that requires microscopic primitives to preserve gauge structure.
 - **Temperature Schedule** ({ref}`Section 29 <sec-the-belief-wave-function-schrodinger-representation>`): Cognitive temperature $T_c$ varies with inverse conformal factor $1/\lambda(z)$ to maintain consistent exploration across curved manifold.
+
+---
+
+(sec-dnn-blocks-conclusion)=
+## Conclusion
+
+:::{div} feynman-prose
+Let me summarize what we have accomplished in this chapter, because it is genuinely remarkable when you step back and look at the whole picture.
+
+We started with a problem: standard deep learning primitives—the bread-and-butter operations like ReLU and biased linear layers—secretly assume things about your space that are not true in general. They assume flat geometry. They assume preferred coordinate axes. They assume that the origin of your coordinate system means something special. These assumptions are fine for image classification on a fixed dataset, but they are catastrophic for agents that must maintain consistent beliefs across time, integrate geodesics on curved manifolds, and interact with other agents under capacity constraints.
+
+So we built replacements. Three primitives, each designed from the ground up to respect gauge symmetry:
+
+1. **SpectralLinear** removes bias and constrains the singular values. This preserves the light cone structure—information cannot propagate faster than $c_{\text{info}}$, and there is no artificial preferred origin in the tangent space.
+
+2. **NormGate** applies activation based on bundle norms, not individual components. The gate decision "is there enough energy to pass?" has the same answer regardless of how you orient your coordinate axes within each bundle.
+
+3. **SteerableConv** lifts images to the group $SE(2)$ and convolves with steerable filters. Rotate the input, get rotated features—exactly, not approximately through data augmentation.
+
+Each primitive preserves one factor of the gauge group $G_{\text{Fragile}} = SU(N_f)_C \times SU(2)_L \times U(1)_Y$. Bundle structure implements color confinement. Spectral normalization implements hypercharge conservation. Steerable convolutions implement the observation-action doublet structure. Three primitives, three gauge factors, one unified theory.
+
+And here is what I find most satisfying: the constraints are so tight that the architecture essentially writes itself. Once you demand gauge invariance, there is only one way to build each component. You do not get to make arbitrary design choices; the symmetry requirements dictate the structure. This is the hallmark of good physics: not many knobs to tune, but few parameters that must take specific values.
+
+We now have the atoms. What remains is to show how these atoms compose into molecules—full architectures that can actually be trained and deployed. That is the subject of Chapter 5, where we connect these microscopic primitives to the macroscopic geodesic integrator.
+
+The bridge from gauge theory to neural network implementation is complete.
+:::
