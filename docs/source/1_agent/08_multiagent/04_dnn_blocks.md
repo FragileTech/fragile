@@ -144,7 +144,19 @@ $$
    R_{n_b 1} I_{d_b} & R_{n_b 2} I_{d_b} & \cdots & R_{n_b n_b} I_{d_b}
    \end{pmatrix} \in GL(d_z, \mathbb{R})
    $$
-   where $R = (R_{ij}) \in SO(n_b)$ is the real orthogonal matrix corresponding to $U_C \in SU(N_f)$, and $I_{d_b}$ is the $d_b \times d_b$ identity (each bundle block rotates together).
+   where $R = (R_{ij}) \in SO(n_b)$ is obtained from $U_C \in SU(N_f)$ by **realification**, and $I_{d_b}$ is the $d_b \times d_b$ identity (each bundle block rotates together).
+
+   **Explicit $SU(N_f) \to SO(n_b)$ realification:** There is no canonical homomorphism $SU(N) \to SO(N)$ in general. Instead, we construct a real representation as follows:
+
+   1. **Complex to real decomposition:** Any $U \in SU(n_b)$ can be written as $U = A + iB$ where $A, B \in \mathbb{R}^{n_b \times n_b}$.
+
+   2. **Block real form:** This induces a real representation $\rho_{\mathbb{R}}: SU(n_b) \to SO(2n_b)$ given by:
+      $$
+      U = A + iB \mapsto \begin{pmatrix} A & -B \\ B & A \end{pmatrix} \in SO(2n_b)
+      $$
+      This is an embedding preserving orthogonality: $\|Uz\|^2 = \|z\|^2$ for $z \in \mathbb{C}^{n_b}$ translates to the block matrix preserving $\mathbb{R}^{2n_b}$ norm.
+
+   3. **Architecture implementation:** In practice, the full $SU(n_b)$ gauge symmetry is **broken to a discrete subgroup** (permutations and sign flips of bundles), which naturally embeds in $SO(n_b)$ as signed permutation matrices. This is enforced implicitly through the isotropic architecture design, not by explicitly constructing gauge transformations.
 
 2. **$SU(2)_L$ real representation:** The Lie algebra $\mathfrak{su}(2)$ is isomorphic to $\mathfrak{so}(3)$ via the adjoint representation. We use the **double cover** $SU(2) \to SO(3)$ and represent via $SO(3)$ acting on a 3-dimensional subspace (typically the observation-action-internal triplet, or as a 2D + 1D decomposition). For simplicity in this architecture, we work with the **2D irreducible real representation** $SO(2) \cong U(1)$:
    $$
