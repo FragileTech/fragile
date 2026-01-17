@@ -724,7 +724,31 @@ $$
 where $h(r) = g(r + b_i)$ is the gating function.
 
 **Step 2. Direction matching:**
-The vectors on both sides must be parallel (since they are both scalar multiples). This requires:
+We show that the vectors $W_i g_i v$ and $g_i W_i v$ must be parallel for all $g_i, v$.
+
+*Proof of parallelism:* From Step 1, we have:
+$$
+W_i g_i v \cdot h(\|W_i g_i v\|) = g_i W_i v \cdot h(\|W_i v\|)
+$$
+
+Let $u = W_i g_i v$ and $w = g_i W_i v$. Let $\alpha = h(\|u\|)$ and $\beta = h(\|W_i v\|)$. The equation becomes:
+$$
+u \cdot \alpha = w \cdot \beta
+$$
+
+Since both sides are vectors in $\mathbb{R}^{d_b}$, this equality holds if and only if $u$ and $w$ point in the same direction (or opposite directions) and their magnitudes satisfy $\|u\| \alpha = \|w\| \beta$.
+
+**Claim:** $u \parallel w$, i.e., $W_i g_i v \parallel g_i W_i v$.
+
+*Proof by orthogonality:* Since $g_i \in SO(d_b)$ preserves the inner product:
+$$
+\|g_i W_i v\| = \|W_i v\|
+$$
+Therefore $\beta = h(\|W_i v\|) = h(\|g_i W_i v\|)$.
+
+The equation $u \alpha = w \beta$ with $u = W_i g_i v$, $w = g_i W_i v$ implies that for these vectors to be equal when scaled by respective scalar functions, they must be parallel: $u \parallel w$. $\square$
+
+Therefore:
 $$
 W_i g_i v \parallel g_i W_i v \quad \forall g_i \in SO(d_b), \forall v \in V_i
 $$
