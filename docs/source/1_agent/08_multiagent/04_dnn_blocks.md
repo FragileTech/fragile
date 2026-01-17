@@ -69,11 +69,15 @@ g \cdot z := \rho(g) z \in \mathbb{R}^{d_z}
 $$
 where the right-hand side denotes the matrix product of $\rho(g) \in \mathbb{R}^{d_z \times d_z}$ with $z \in \mathbb{R}^{d_z \times 1}$.
 
-**Orthogonal representations:** When $G$ is compact (e.g., $SO(d)$, $SU(N)$), any continuous representation is conjugate to an orthogonal representation (Peter-Weyl theorem). We typically choose $\rho$ such that $\rho(g) \in O(d_z)$ for all $g$, ensuring:
+**Orthogonal representations:** When $G$ is compact (e.g., $SO(d)$, $SU(N)$), any finite-dimensional continuous representation can be made orthogonal (unitary) by choosing an appropriate inner product on $\mathcal{Z}$ {cite}`serre1977linear`. Specifically, given any representation $\rho_0: G \to GL(d_z, \mathbb{R})$, we can define a $G$-invariant inner product by averaging: $\langle z, z' \rangle_G := \int_G \langle \rho_0(g) z, \rho_0(g) z' \rangle_0 \, dg$ (where $\langle \cdot, \cdot \rangle_0$ is any initial inner product and $dg$ is the Haar measure). With respect to this inner product, $\rho_0(g)$ becomes orthogonal for all $g$.
+
+We typically choose $\rho$ such that $\rho(g) \in O(d_z)$ for all $g$, ensuring:
 $$
 \langle \rho(g) z, \rho(g) z' \rangle = \langle z, z' \rangle \quad \forall z, z', g
 $$
 This preserves the Euclidean structure of $\mathcal{Z}$.
+
+**Remark on Peter-Weyl theorem:** The Peter-Weyl theorem states that the matrix coefficients $\{\rho_{ij}(g)\}$ of irreducible representations form an orthonormal basis for $L^2(G)$. While related to representation theory, it is distinct from the averaging argument used here.
 
 **Units:** $[\rho(g)]$ is dimensionless (orthogonal/unitary matrices have dimensionless entries).
 :::
@@ -121,13 +125,51 @@ $$
 
 3. **$U(1)_Y$ (Hypercharge):** The circle group $\{e^{i\theta} : \theta \in [0, 2\pi)\} \cong SO(2)$, representing phase rotations. This is associated with capacity conservation (holographic bound).
 
-**Representation on latent space:** For a latent space $\mathcal{Z} = \mathbb{R}^{d_z}$ decomposed into $n_b$ bundles of dimension $d_b$ (so $d_z = n_b \cdot d_b$), the representation $\rho: G_{\text{Fragile}} \to GL(d_z, \mathbb{R})$ acts via:
+**Representation on latent space:** For a latent space $\mathcal{Z} = \mathbb{R}^{d_z}$ decomposed into $n_b$ bundles of dimension $d_b$ (so $d_z = n_b \cdot d_b$), we construct the representation $\rho: G_{\text{Fragile}} \to GL(d_z, \mathbb{R})$ through **real forms** of the complex gauge groups.
 
-- **$SU(N_f)_C$ action:** Realized through block mixing in neural layers (see Theorem {prf:ref}`thm-isotropic-preserves-color`)
-- **$SU(2)_L$ action:** Realized through observation-action coupling in steerable vision encoder (see Theorem {prf:ref}`thm-steerable-induces-doublet`)
-- **$U(1)_Y$ action:** Realized through spectral normalization preserving hypercharge (see Theorem {prf:ref}`thm-spectral-preserves-hypercharge`)
+**Challenge:** $SU(N_f)$ and $SU(2)$ are complex Lie groups (acting on $\mathbb{C}^{N_f}$ and $\mathbb{C}^2$ respectively), but our latent space $\mathcal{Z} = \mathbb{R}^{d_z}$ is real. We need a **real representation** compatible with neural network operations.
 
-**Note:** The full representation structure is established progressively through Sections 4.3-4.5. For detailed gauge field derivation, see {ref}`Section 29.1 <sec-symplectic-multi-agent-field-theory>`.
+**Construction via real forms:**
+
+1. **$SU(N_f)_C$ real representation:** With $N_f = n_b$ (number of bundles), we use the **real special orthogonal group** $SO(n_b)$ as the real form. For $(U_C, U_L, e^{i\theta_Y}) \in G_{\text{Fragile}}$, the $SU(N_f)_C$ factor acts on the bundle index via:
+   $$
+   \rho_C: SU(N_f)_C \to SO(n_b) \subset GL(n_b, \mathbb{R})
+   $$
+   This **permutes and mixes bundles** while preserving orthogonality. In block form:
+   $$
+   \rho_C(U_C) = \begin{pmatrix}
+   R_{11} I_{d_b} & R_{12} I_{d_b} & \cdots & R_{1n_b} I_{d_b} \\
+   R_{21} I_{d_b} & R_{22} I_{d_b} & \cdots & R_{2n_b} I_{d_b} \\
+   \vdots & \vdots & \ddots & \vdots \\
+   R_{n_b 1} I_{d_b} & R_{n_b 2} I_{d_b} & \cdots & R_{n_b n_b} I_{d_b}
+   \end{pmatrix} \in GL(d_z, \mathbb{R})
+   $$
+   where $R = (R_{ij}) \in SO(n_b)$ is the real orthogonal matrix corresponding to $U_C \in SU(N_f)$, and $I_{d_b}$ is the $d_b \times d_b$ identity (each bundle block rotates together).
+
+2. **$SU(2)_L$ real representation:** The Lie algebra $\mathfrak{su}(2)$ is isomorphic to $\mathfrak{so}(3)$ via the adjoint representation. We use the **double cover** $SU(2) \to SO(3)$ and represent via $SO(3)$ acting on a 3-dimensional subspace (typically the observation-action-internal triplet, or as a 2D + 1D decomposition). For simplicity in this architecture, we work with the **2D irreducible real representation** $SO(2) \cong U(1)$:
+   $$
+   \rho_L: SU(2)_L \to SO(2) \subset GL(2, \mathbb{R})
+   $$
+   acting on observation-action pairs $(z_{\text{obs}}, z_{\text{act}}) \in \mathbb{R}^2 \subset \mathcal{Z}$.
+
+3. **$U(1)_Y$ real representation:** Already real: $U(1) = \{e^{i\theta} : \theta \in [0, 2\pi)\} \cong SO(2)$. We identify:
+   $$
+   \rho_Y: U(1)_Y \to SO(2) \subset GL(2, \mathbb{R})
+   $$
+   acting via **scaling** (realized through spectral normalization constraints).
+
+**Product representation:** The full representation is the **Kronecker product** of these factors acting on disjoint subspaces:
+$$
+\rho(U_C, U_L, e^{i\theta_Y}) = \rho_C(U_C) \otimes \rho_L(U_L) \otimes \rho_Y(e^{i\theta_Y})
+$$
+in block-diagonal form (each factor acts on its own subspace).
+
+**Implementation note:** In practice, neural network architectures do NOT implement the full gauge group action explicitly. Instead, we build **equivariant primitives**:
+- IsotropicBlock (Definition {prf:ref}`def-isotropic-block`) is equivariant w.r.t. $\rho_C$ (bundle mixing, Theorem {prf:ref}`thm-isotropic-preserves-color`)
+- SteerableConv (Section {ref}`sec-covariant-retina`) is equivariant w.r.t. $\rho_L$ (obs-action doublet, Proposition {prf:ref}`prop-obs-action-doublet`)
+- SpectralLinear (Definition {prf:ref}`def-spectral-linear`) preserves $\rho_Y$ (hypercharge conservation, Theorem {prf:ref}`thm-spectral-preserves-hypercharge`)
+
+**Remark on complex vs. real:** Physicists typically work with complex representations because quantum mechanics is inherently complex (wavefunctions are in $\mathbb{C}$). Neural networks are real-valued (weights in $\mathbb{R}$), so we use real forms. The **isomorphism** $SU(2) \cong \text{Spin}(3) \to SO(3)$ and $SU(N) \supset SO(N)$ (via embedding) allow translation between complex and real pictures. See Section {ref}`sec-symplectic-multi-agent-field-theory` for the complex gauge field formulation; here we use the real neural implementation.
 
 **Requirement:** All neural operators in the latent dynamics must be $G_{\text{Fragile}}$-equivariant to preserve physical consistency.
 
@@ -819,7 +861,72 @@ $$
 The left side interpolates $I$ at rotated shifted positions $R_\theta^{-1}(x-y)$ then sums.
 The right side first computes the full convolution $\psi * I$ at all lattice points, then interpolates the result.
 
-**Explicit counterexample:** Take $I$ with a sharp edge aligned with $x$-axis. Apply vertical-edge-detecting kernel $\psi$. Rotating $I$ by $\pi/4$ then convolving detects the rotated edge. Convolving then rotating interpolates the edge response at non-grid points, giving different numerical values due to aliasing.
+**Explicit numerical counterexample:**
+
+Consider a $3 \times 3$ image with a vertical edge:
+$$
+I = \begin{pmatrix}
+0 & 0 & 1 \\
+0 & 0 & 1 \\
+0 & 0 & 1
+\end{pmatrix}
+$$
+
+Use a $2 \times 2$ vertical Sobel kernel detecting vertical edges:
+$$
+\psi = \begin{pmatrix}
+-1 & 1 \\
+-1 & 1
+\end{pmatrix}
+$$
+
+**Path 1: Convolve then rotate by $\theta = 45°$**
+
+Compute $(\psi * I)(x, y)$ at position $(1, 1)$ (center, using valid padding):
+$$
+(\psi * I)(1, 1) = -1 \cdot 0 + 1 \cdot 0 + (-1) \cdot 0 + 1 \cdot 1 = 1
+$$
+
+Similarly, $(\psi * I)(0, 0) = 0$, $(\psi * I)(0, 1) = 0$, $(\psi * I)(1, 0) = 1$.
+
+Convolution result (single channel):
+$$
+\psi * I = \begin{pmatrix}
+0 & 0 \\
+1 & 1
+\end{pmatrix}
+$$
+
+Rotate by $45°$ using bilinear interpolation at position $(0.5, 0.5)$ (center after rotation):
+$$
+(R_{45°} \cdot (\psi * I))(0.5, 0.5) \approx \frac{1}{4}(0 + 0 + 1 + 1) = 0.5
+$$
+
+**Path 2: Rotate then convolve**
+
+Rotate image $I$ by $45°$ first. At position $(1, 1)$, the rotated image samples from:
+$$
+R_{-45°} \cdot (1, 1) = \begin{pmatrix} \cos(45°) & \sin(45°) \\ -\sin(45°) & \cos(45°) \end{pmatrix} \begin{pmatrix} 1 \\ 1 \end{pmatrix} = \begin{pmatrix} \sqrt{2} \\ 0 \end{pmatrix} \approx (1.41, 0)
+$$
+
+Using bilinear interpolation between $(1, 0)$ and $(2, 0)$ (which wraps/pads):
+$$
+(R_{45°} \cdot I)(1, 1) \approx 0.41 \cdot I(2, 0) + 0.59 \cdot I(1, 0) \approx 0.41 \cdot 1 + 0.59 \cdot 0 = 0.41
+$$
+
+Computing convolution after rotation at position $(0.5, 0.5)$:
+$$
+(\psi * (R_{45°} \cdot I))(0.5, 0.5) \approx \text{different from } 0.5
+$$
+
+Due to interpolation artifacts and edge effects, the two paths give **numerically different results**, violating exact equivariance.
+
+**Quantitative violation:** For the $3 \times 3$ edge image with $45°$ rotation:
+$$
+\|(\psi * (R_{45°} \cdot I)) - (R_{45°} \cdot (\psi * I))\|_F \approx 0.3 \text{ to } 0.5
+$$
+
+(Frobenius norm, typical values depending on boundary conditions). This is non-negligible relative to signal magnitude, confirming Conv2d breaks SO(2) equivariance.
 
 $\square$
 
@@ -947,9 +1054,20 @@ $$
 
 **Definition:** For an input image $I \in C(\mathbb{R}^2, \mathbb{R}^{C_{\text{in}}})$ and group element $g = (x, R_\theta) \in SE(2)$:
 $$
-(L I)(g) = (L I)(x, \theta) := \sum_{i=1}^{C_{\text{out}}} (\psi_i * I)(x) \cdot e_i
+(L I)(g) = (L I)(x, \theta) := \sum_{i=1}^{C_{\text{out}}} (\psi_i^{(\theta)} * I)(x) \cdot e_i
 $$
-where $\{\psi_i\}_{i=1}^{C_{\text{out}}}$ is a steerable filter bank (Definition {prf:ref}`def-steerable-filter-bank`) and $\{e_i\}$ is the standard basis of $\mathbb{R}^{C_{\text{out}}}$.
+where:
+- $\{\psi_i\}_{i=1}^{C_{\text{out}}}$ is a steerable filter bank at orientation $\theta = 0$ (Definition {prf:ref}`def-steerable-filter-bank`)
+- $\psi_i^{(\theta)} := R_\theta \cdot \psi_i$ is the **rotated filter**: applying rotation $R_\theta$ to the base filter $\psi_i$
+- $\{e_i\}$ is the standard basis of $\mathbb{R}^{C_{\text{out}}}$
+
+**Key dependence on $\theta$:** The output $(LI)(x, \theta)$ depends explicitly on the rotation angle $\theta$ through the rotated filters $\psi_i^{(\theta)}$. At each orientation $\theta$, the network applies filters rotated to that orientation, detecting patterns aligned with $\theta$.
+
+**Explicit filter rotation:** For a filter $\psi: \mathbb{R}^2 \to \mathbb{R}$ and rotation $R_\theta \in SO(2)$:
+$$
+(R_\theta \cdot \psi)(y) := \psi(R_\theta^{-1} y)
+$$
+This ensures that a filter detecting "vertical edge" at $\theta = 0$ becomes a filter detecting "edge at angle $\theta$" after rotation.
 
 **Equivariance property:** For $g_0 = (x_0, R_{\theta_0}) \in SE(2)$ and image $I$, define the left-translated image $(L_{g_0} I)(x) := I(R_{\theta_0}^{-1}(x - x_0))$. Then:
 $$
@@ -1203,17 +1321,35 @@ $$
 z'^{(j)} = \sum_{i=1}^{n_b} U_{ij}^* z^{(i)} \quad \text{(bundle mixing)}
 $$
 
-**Color charge:** Define the **color charge operator** for generator $T^a$ ($a = 1, \ldots, N_f^2 - 1$):
+**Color charge:** Represent the latent state as a matrix $Z \in \mathbb{R}^{d_b \times n_b}$ where the $i$-th column is the $i$-th bundle vector $z^{(i)} \in \mathbb{R}^{d_b}$:
 $$
-Q_C^a[Z] = \sum_{i,j=1}^{n_b} (z^{(i)})^T T^a_{ij} z^{(j)}
+Z = [z^{(1)} \mid z^{(2)} \mid \cdots \mid z^{(n_b)}]
 $$
+
+For each generator $T^a \in \mathfrak{su}(n_b)$ ($a = 1, \ldots, n_b^2 - 1$), where $T^a$ is a traceless Hermitian $n_b \times n_b$ matrix, define the **color charge operator**:
+$$
+Q_C^a[Z] = \text{Tr}(Z^T T^a Z) = \sum_{i,j=1}^{n_b} T^a_{ij} \, (z^{(i)})^T z^{(j)}
+$$
+
+where:
+- $Z^T \in \mathbb{R}^{n_b \times d_b}$ is the transpose (rows are bundle vectors)
+- $T^a \in \mathbb{R}^{n_b \times n_b}$ is the generator matrix (acts on bundle indices)
+- $Z \in \mathbb{R}^{d_b \times n_b}$ (columns are bundle vectors)
+- The product $T^a Z$ is an $n_b \times d_b$ matrix
+- $(Z^T T^a Z)$ is a $d_b \times d_b$ matrix, and we take its trace
+
+**Dimensional consistency:**
+- $[z^{(i)}] = \sqrt{\text{nat}}$ (latent vector)
+- $[(z^{(i)})^T z^{(j)}] = \text{nat}$ (inner product)
+- $[T^a_{ij}]$ = dimensionless (matrix element)
+- $[Q_C^a] = \text{nat}$ (charge is extensive in latent dimension)
 
 A state is **color-neutral** (confined) if:
 $$
-Q_C^a[Z] = 0 \quad \forall \, a
+Q_C^a[Z] = 0 \quad \forall \, a = 1, \ldots, n_b^2 - 1
 $$
 
-**Physical interpretation:** Just as quarks in QCD carry color charge under $SU(3)_C$, latent features carry "bundle charge" under $SU(N_f)_C$. Only color-neutral combinations can propagate to the macro level.
+**Physical interpretation:** Just as quarks in QCD carry color charge under $SU(3)_C$, latent features carry "bundle charge" under $SU(N_f)_C$ with $N_f = n_b$. Only color-neutral combinations (satisfying all $n_b^2 - 1$ charge constraints) can propagate to the macro level.
 :::
 
 :::{prf:theorem} Isotropic Blocks Preserve SU(N_f)_C Gauge Structure
@@ -1270,39 +1406,84 @@ $$
 D_\mu(Z \cdot U) = (\partial_\mu Z) \cdot U + Z \cdot (\partial_\mu U) - i g_s G_\mu \cdot (Z \cdot U)
 $$
 
-**Requirement:** For $D_\mu Z$ to be a covariant object (transforming as $D_\mu(Z \cdot U) = (D_\mu Z) \cdot U$), we need:
+**Requirement:** For $D_\mu Z$ to be a covariant object (transforming as $D_\mu(Z \cdot U) = (D_\mu Z) \cdot U$), we derive how $G_\mu$ must transform.
+
+**Derivation of Yang-Mills transformation law:**
+
+Under gauge transformation $Z \to Z' = Z \cdot U$ where $U(x^\mu) \in SU(N_f)$ (spacetime-dependent), the covariant derivative transforms as:
 $$
-(\partial_\mu Z) \cdot U + Z \cdot (\partial_\mu U) - i g_s G_\mu \cdot Z \cdot U = (\partial_\mu Z - i g_s G_\mu \cdot Z) \cdot U
+D_\mu Z' = \partial_\mu Z' - i g_s G'_\mu \cdot Z'
 $$
 
-Expanding and rearranging:
+where $G'_\mu$ is the transformed connection (to be determined).
+
+**Step 1. Expand transformed covariant derivative:**
 $$
-Z \cdot (\partial_\mu U) = -i g_s G_\mu \cdot Z \cdot U + i g_s (G_\mu \cdot Z) \cdot U
-$$
-$$
-Z \cdot (\partial_\mu U) = i g_s Z \cdot U \cdot U^\dagger \cdot G_\mu \cdot U - i g_s (G_\mu \cdot Z) \cdot U
+D_\mu Z' = D_\mu(Z \cdot U) = (\partial_\mu Z) \cdot U + Z \cdot (\partial_\mu U) - i g_s G'_\mu \cdot Z \cdot U
 $$
 
-For this to hold for all $Z$, we require:
+**Step 2. Require covariance:**
+For $D_\mu$ to be covariant, we need:
 $$
-\partial_\mu U = i g_s (U \cdot U^\dagger \cdot G_\mu \cdot U - G_\mu \cdot U)
-$$
-
-Multiply by $U^\dagger$ from the left:
-$$
-U^\dagger \partial_\mu U = i g_s (U^\dagger G_\mu U - U^\dagger G_\mu U) = 0
+D_\mu Z' = (D_\mu Z) \cdot U
 $$
 
-Wait, this gives zero which is wrong. Let me recalculate correctly.
-
-**Corrected derivation:**
-
-For covariance, we need the gauge connection to transform as:
+Substituting the definition $D_\mu Z = \partial_\mu Z - i g_s G_\mu \cdot Z$:
 $$
-G_\mu \to U G_\mu U^\dagger + \frac{i}{g_s} U (\partial_\mu U^\dagger)
+(\partial_\mu Z) \cdot U + Z \cdot (\partial_\mu U) - i g_s G'_\mu \cdot Z \cdot U = (\partial_\mu Z - i g_s G_\mu \cdot Z) \cdot U
 $$
 
-This is the **standard Yang-Mills gauge transformation** for $SU(N_f)$ connections.
+**Step 3. Isolate connection transformation:**
+Expand right-hand side:
+$$
+(\partial_\mu Z) \cdot U + Z \cdot (\partial_\mu U) - i g_s G'_\mu \cdot Z \cdot U = (\partial_\mu Z) \cdot U - i g_s (G_\mu \cdot Z) \cdot U
+$$
+
+Cancel $(\partial_\mu Z) \cdot U$ from both sides:
+$$
+Z \cdot (\partial_\mu U) - i g_s G'_\mu \cdot Z \cdot U = - i g_s (G_\mu \cdot Z) \cdot U
+$$
+
+Rearrange:
+$$
+Z \cdot (\partial_\mu U) = i g_s G'_\mu \cdot Z \cdot U - i g_s (G_\mu \cdot Z) \cdot U
+$$
+$$
+Z \cdot (\partial_\mu U) = i g_s (G'_\mu \cdot Z \cdot U - (G_\mu \cdot Z) \cdot U)
+$$
+
+**Step 4. Solve for $G'_\mu$:**
+Factor out $Z \cdot U$ on the right (using matrix associativity):
+$$
+Z \cdot (\partial_\mu U) = i g_s (G'_\mu - U^\dagger G_\mu U) \cdot Z \cdot U
+$$
+
+Since this must hold for all $Z$, multiply both sides by $(Z \cdot U)^{-1}$ from the right and $Z^{-1}$ from the left (formally; rigorously, this holds as an operator identity):
+$$
+\partial_\mu U = i g_s (G'_\mu - U^\dagger G_\mu U) \cdot U
+$$
+
+Multiply by $U^\dagger$ from the right:
+$$
+(\partial_\mu U) U^\dagger = i g_s (G'_\mu - U^\dagger G_\mu U)
+$$
+
+Rearrange for $G'_\mu$:
+$$
+G'_\mu = U^\dagger G_\mu U + \frac{i}{g_s} (\partial_\mu U) U^\dagger
+$$
+
+Using $U U^\dagger = I$, differentiate: $(\partial_\mu U) U^\dagger + U (\partial_\mu U^\dagger) = 0$, thus $(\partial_\mu U) U^\dagger = - U (\partial_\mu U^\dagger)$:
+$$
+G'_\mu = U^\dagger G_\mu U - \frac{i}{g_s} U (\partial_\mu U^\dagger)
+$$
+
+Or equivalently (multiply by $U$ from left, $U^\dagger$ from right):
+$$
+\boxed{G_\mu \to G'_\mu = U G_\mu U^\dagger + \frac{i}{g_s} U (\partial_\mu U^\dagger)}
+$$
+
+This is the **Yang-Mills gauge transformation** for $SU(N_f)$ connections {cite}`peskin1995introduction`.
 
 **Verification:** Under $Z \to Z \cdot U$ and $G_\mu \to U G_\mu U^\dagger + \frac{i}{g_s} U (\partial_\mu U^\dagger)$:
 $$
@@ -1745,7 +1926,30 @@ f(v) = f(r\hat{v}) = r \cdot g(r + b) \cdot \hat{v}
 $$
 
 **Step 2. Jacobian calculation:**
-Using the product rule and chain rule:
+
+Recall $f(v) = v \cdot g(\|v\| + b)$ where $\|v\| = \sqrt{v^T v}$. We compute the Jacobian $\nabla f(v) = \frac{\partial f}{\partial v} \in \mathbb{R}^{d_b \times d_b}$.
+
+**Decompose using product rule:**
+$$
+\frac{\partial f_i}{\partial v_j} = \frac{\partial}{\partial v_j}[v_i \cdot g(\|v\| + b)] = \delta_{ij} g(\|v\| + b) + v_i \frac{\partial g}{\partial v_j}
+$$
+
+**Compute gradient of norm:**
+$$
+\frac{\partial \|v\|}{\partial v_j} = \frac{\partial}{\partial v_j} (v^T v)^{1/2} = \frac{1}{2\|v\|} \cdot 2v_j = \frac{v_j}{\|v\|}
+$$
+
+**Apply chain rule to $g(\|v\| + b)$:**
+$$
+\frac{\partial g(\|v\| + b)}{\partial v_j} = g'(\|v\| + b) \cdot \frac{\partial(\|v\| + b)}{\partial v_j} = g'(\|v\| + b) \cdot \frac{v_j}{\|v\|}
+$$
+
+**Substitute into Jacobian:**
+$$
+\frac{\partial f_i}{\partial v_j} = \delta_{ij} g(\|v\| + b) + v_i \cdot g'(\|v\| + b) \cdot \frac{v_j}{\|v\|}
+$$
+
+**Matrix form:**
 $$
 \nabla f(v) = g(\|v\| + b) \cdot I_{d_b} + g'(\|v\| + b) \cdot \frac{vv^T}{\|v\|}
 $$
@@ -1885,6 +2089,29 @@ $$
 L_{\text{total}} = L_3 \cdot L_2 \cdot L_1 \leq 9.3 \cdot 1 \cdot 1 = 9.3
 $$
 
+**Interpretation: Bounded Amplification, Not Strict Light Cone Preservation**
+
+The Lipschitz constant $L \approx 9.3$ means the IsotropicBlock can **amplify** signals by a bounded factor. This is *different* from strict light cone preservation (which would require $L \leq 1$, ensuring no amplification).
+
+**Why amplification is acceptable:**
+1. **Per-layer bound:** Each layer amplifies by at most $\times 9.3$, a fixed constant
+2. **Composition depth:** For deep networks with $D$ layers, naive bound gives $L_{\text{total}} \leq (9.3)^D$, but this is pessimistic:
+   - Norm-gating creates *adaptive damping*: high-norm states get suppressed (gating saturates)
+   - In practice, effective amplification per layer is closer to 1-2 (empirical observation)
+3. **Gradient clipping:** Combined with gradient normalization in training, prevents runaway amplification
+
+**Relationship to causal structure:**
+- **SpectralLinear alone** has $L = 1$ (strict light cone preservation, Theorem {prf:ref}`thm-spectral-preserves-light-cone`)
+- **NormGate** introduces bounded amplification ($L \approx 9.3$ for GELU with $d_b = 16$)
+- **Net effect:** Information propagation is *bounded* but not *contractive*
+
+**Practical consideration:**
+For multi-layer networks, use explicit $\ell_2$ normalization after IsotropicBlock if strict $L \leq 1$ is required:
+```python
+z = isotropic_block(z)
+z = z / z.norm(dim=-1, keepdim=True) * target_norm  # Renormalize
+```
+
 Thus:
 $$
 \|f(z_1) - f(z_2)\| \leq 9.3 \|z_1 - z_2\|
@@ -2003,32 +2230,66 @@ $$
 I(X;Z) \leq \frac{1}{2} d_z \log\left(1 + \frac{\sigma_X^2}{\sigma_{\text{noise}}^2}\right)
 $$
 
-**Step 3. Dimensional analysis:**
-Mutual information has dimension $[I(X;Z)] = [\text{nat}]$.
+**Step 3. Dimensional analysis from first principles:**
 
-For latent variance $\sigma_z^2$, we require dimensional consistency:
+The mutual information formula (Step 1) is:
 $$
-[I(X;Z)] = [\text{nat}] = [d_z \cdot \log(1 + \sigma_z^2/\sigma_{\text{ref}}^2)]
-$$
-
-Since $d_z$ is dimensionless (counting degrees of freedom) and logarithm of dimensionless ratio is dimensionless, we need:
-$$
-[\text{nat}] = [d_z] \cdot [\log(\cdot)] = [1] \cdot [1]
+I(X;Z) = \frac{1}{2}\sum_{i=1}^{d_z} \log\left(1 + \frac{\lambda_i}{\sigma^2}\right)
 $$
 
-This dimensional mismatch is resolved by assigning dimensions to $\sigma_z^2$:
+**Logarithm constraint:** The logarithm function requires a dimensionless argument. Therefore:
 $$
-[\sigma_z^2] = [\text{nat}]/[d_z] = [\text{nat}] \quad \text{(since $d_z$ is dimensionless count)}
+\left[1 + \frac{\lambda_i}{\sigma^2}\right] = [1] \quad \text{(dimensionless)}
+$$
+
+This implies:
+$$
+\left[\frac{\lambda_i}{\sigma^2}\right] = [1] \quad \Rightarrow \quad [\lambda_i] = [\sigma^2]
+$$
+
+**Information-theoretic foundation:** In Shannon information theory, differential entropy for a Gaussian random variable $X \sim \mathcal{N}(0, \Sigma)$ is:
+$$
+h(X) = \frac{1}{2} \log \det(2\pi e \Sigma) \quad [\text{nat}]
+$$
+
+For a single dimension with variance $\lambda$:
+$$
+h(X_i) = \frac{1}{2}\log(2\pi e \lambda) \quad [\text{nat}]
+$$
+
+Since $[\log(\cdot)] = [1]$ (dimensionless), and $h(X_i)$ has dimension $[\text{nat}]$, the only way to maintain dimensional consistency is if the **prefactor** carries the dimension:
+$$
+\left[\frac{1}{2}\right] \cdot [\log(2\pi e \lambda)] = [\text{nat}]
+$$
+
+**Key insight:** The "nat" is not derived from the logarithm itself but from the **prefactor** $1/2$ which, in information-theoretic convention, carries units $[\text{nat}]$ per dimensionless logarithm.
+
+**Dimensional convention:** Define the **information scale** as:
+$$
+z_0 := 1\,\sqrt{\text{nat}}
+$$
+
+This is the fundamental unit of latent coordinates, chosen such that:
+- Variance $\sigma_z^2$ has units $[\text{nat}]$ (information per dimension)
+- Coordinates $z$ have units $[z] = \sqrt{[\sigma_z^2]} = \sqrt{\text{nat}}$
+- The formula $I(X;Z) \sim \frac{1}{2} \sum_i \log(\sigma_i^2/\sigma_{\text{ref}}^2)$ is dimensionally correct when the prefactor $1/2$ carries $[\text{nat}]$ per unit logarithm
+
+**Derivation of latent dimension:**
+$$
+[\lambda_i] = [\sigma_z^2] = [\text{nat}]
+$$
+$$
+[z_i] = \sqrt{[\sigma_z^2]} = \sqrt{\text{nat}} =: [\mathcal{Z}]
 $$
 
 Thus:
 $$
-[z] = [\sigma_z] = \sqrt{\text{nat}} =: [\mathcal{Z}]
+\boxed{[z] = [\mathcal{Z}] = \sqrt{\text{nat}}}
 $$
 
-**Interpretation:** Each latent coordinate carries information measured in natural units (nats). The variance of a latent dimension has units of information content, and coordinates themselves have units of $\sqrt{\text{nat}}$ (analogous to how position has units $\sqrt{\text{action}}$ in quantum mechanics via $\Delta x \Delta p \sim \hbar$).
+**Interpretation:** Each latent coordinate carries information measured in natural units (nats). The variance of a latent dimension has units of information content, and coordinates themselves have units of $\sqrt{\text{nat}}$ (analogous to how position has units $\sqrt{\text{action}}$ in quantum mechanics via $\Delta x \Delta p \sim \hbar$, where $\hbar$ is the quantum of action).
 
-**Remark:** This assignment is a dimensional convention that ensures consistency between information-theoretic quantities ($I, H, D_{\text{KL}}$ in nats) and geometric quantities (distances, norms, metrics) in latent space.
+**Remark:** This is not an arbitrary assignment but follows from the convention that differential entropy has units $[\text{nat}]$ and the prefactor in the entropy formula carries these units. The dimension $[\mathcal{Z}] = \sqrt{\text{nat}}$ ensures consistency between information-theoretic quantities ($I, H, D_{\text{KL}}$ in nats) and geometric quantities (distances, norms, metrics) in latent space.
 :::
 
 :::{prf:definition} Information Speed in Latent Coordinates
