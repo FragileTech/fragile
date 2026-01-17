@@ -1098,10 +1098,24 @@ $$
 
 where $D^{(\ell)}$ is the $\ell$-th irreducible representation of $SO(2)$.
 
+**Explicit form of $SO(2)$ irreducible representations:**
+
+For $\ell \in \mathbb{Z}_{\geq 0}$ (non-negative integers), the $\ell$-th irreducible representation is:
+- **$\ell = 0$:** Trivial representation, $D^{(0)}(\theta) = 1$ (scalar, 1-dimensional)
+- **$\ell \geq 1$:** 2-dimensional representation acting on $\mathbb{R}^2$ or $\mathbb{C}$ via:
+  $$
+  D^{(\ell)}(\theta) = \begin{pmatrix} \cos(\ell\theta) & -\sin(\ell\theta) \\ \sin(\ell\theta) & \cos(\ell\theta) \end{pmatrix} \in SO(2)
+  $$
+  Equivalently, in complex notation: $D^{(\ell)}(\theta) \cdot z = e^{i\ell\theta} z$ for $z \in \mathbb{C}$.
+
+**Physical interpretation:**
+- $\ell$ is the **angular frequency** or **angular momentum quantum number**
+- Under rotation by $\theta$, an $\ell$-mode rotates by $\ell \theta$ (frequency multiplication)
+
 **Interpretation:**
-- $\ell = 0$: Scalars (rotation-invariant, e.g., circularly symmetric filters)
-- $\ell = 1$: Vectors (oriented edge detectors that rotate with image)
-- $\ell = 2$: Quadrupoles (higher-order patterns)
+- $\ell = 0$: Scalars (rotation-invariant, e.g., circularly symmetric filters). $D^{(0)}(\theta) = 1$
+- $\ell = 1$: Vectors (oriented edge detectors). Rotate by $\theta$ → features rotate by $\theta$. $D^{(1)}(\theta) = R_\theta$
+- $\ell = 2$: Quadrupoles (corner detectors). Rotate by $\theta$ → features rotate by $2\theta$. $D^{(2)}(\theta) = R_{2\theta}$
 :::
 
 :::{div} feynman-prose
