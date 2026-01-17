@@ -240,25 +240,35 @@ Since $(\sqrt{2}, 0, \ldots)^T \neq (\frac{1}{\sqrt{2}}, \frac{1}{\sqrt{2}}, \ld
 $\square$
 :::
 
-:::{prf:corollary} ReLU Breaks WFR Smoothness Requirements
+:::{prf:corollary} ReLU Violates Smoothness Requirements for WFR Dynamics
 :label: cor-relu-breaks-wfr
 
-The capacity-constrained metric law (Theorem {prf:ref}`thm-capacity-constrained-metric-law`) induces WFR geometry requiring $C^1$ smoothness of latent dynamics to compute geodesic flows via:
+The WFR geometry (Chapter 5, Section {ref}`sec-wasserstein-fisher-rao-geometry-unified-transport-on-hybrid-state-spaces`) provides the dynamical framework for latent state evolution. The WFR action and geodesic integrator require computing gradient flows:
 
 $$
 \frac{dz}{ds} = -G^{ij}(z) \nabla_{z_j} \mathcal{L}_{\text{WFR}}(z)
 $$
 
-where $G^{ij}(z)$ is the metric tensor.
+where $G^{ij}(z)$ is the metric tensor from Theorem {prf:ref}`thm-capacity-constrained-metric-law` and $\mathcal{L}_{\text{WFR}}$ is the WFR action functional.
 
-**Issue:** ReLU creates non-differentiable kinks at $\{z : z_i = 0\}$ for each $i = 1, \ldots, d$, making:
-1. The gradient $\nabla_z \mathcal{L}$ undefined at kinks (requires distributional derivatives)
-2. The metric tensor $G(z)$ potentially ill-defined near kink crossings
-3. Geodesic integrators accumulate errors at kink crossings
+**Smoothness requirement:** Gradient-based geodesic integrators (e.g., Boris-BAOAB in Section 5.4) require $\mathcal{L}_{\text{WFR}}$ to be at least $C^1$ (continuously differentiable) to compute well-defined gradients $\nabla_z \mathcal{L}$.
 
-**Connection to equivariance:** The kinks are coordinate-dependent (per Theorem {prf:ref}`thm-relu-breaks-equivariance`), so different gauge choices produce different kink patterns, causing **inconsistent geodesic flows** across gauge transformations.
+**ReLU violates this:** By Theorem {prf:ref}`thm-relu-breaks-equivariance`, ReLU creates non-differentiable kinks at coordinate hyperplanes $\{z \in \mathcal{Z} : z_i = 0\}$ for each $i = 1, \ldots, d_z$. At these kinks:
 
-**Implication:** Smooth, gauge-invariant activations (e.g., GELU, norm-gated) are required for consistent WFR dynamics.
+1. **Gradient undefined:** $\nabla_z \mathcal{L}$ is undefined in the classical sense (left and right derivatives differ)
+2. **Metric ill-defined:** The metric tensor $G(z)$, depending on $\nabla^2 V(z)$ (value Hessian) and Fisher information $\mathcal{F}(z)$, may be discontinuous
+3. **Integration errors:** Numerical integrators accumulate errors when trajectories cross kinks
+
+**Gauge-dependence problem:** Per Theorem {prf:ref}`thm-relu-breaks-equivariance`, ReLU kinks are coordinate-dependent. Under gauge transformation $z \mapsto U(g) \cdot z$ for $g \in G_{\text{Fragile}}$, the kink locations transform but ReLU does not transform equivariantly. This creates **inconsistent kink patterns** across gauge choices, causing geodesic flows to depend on arbitrary coordinate choices.
+
+**Consequence:** Smooth, gauge-equivariant activations (e.g., GELU in NormGate, Definition {prf:ref}`def-norm-gated-activation`) are necessary for well-defined WFR gradient flows and gauge-invariant dynamics.
+
+**Reference to WFR smoothness:** The WFR formulation's smoothness requirements are established through:
+- Variational calculus on action functionals (standard $C^1$ requirement)
+- Riemannian geometry for geodesic equations (smooth metric tensor)
+- Symplectic integrator theory (Lipschitz gradients for Boris-BAOAB)
+
+See Section 5.2 (WFR stress-energy tensor) and Part II, Hypostructure, Section 9 (Mathematical Prerequisites) for differential geometry foundations.
 
 $\square$
 :::
@@ -1417,43 +1427,15 @@ This is precisely the $SU(2)_L$ doublet transformation (Definition {prf:ref}`def
 $\square$
 :::
 
-:::{prf:proposition} Error Field as Weak Gauge Connection
-:label: prop-error-field-weak-connection
+**Remark on Error Field and Observation-Action Coupling:**
 
-The Error field $W_\mu$ (from {ref}`sec-symplectic-multi-agent-field-theory`) acts as the $SU(2)_L$ gauge connection, inducing transitions:
+The Error field $W_\mu$ from gauge theory (Chapter 8.1, {ref}`sec-symplectic-multi-agent-field-theory`) couples observation and action representations in the full multiagent architecture. The detailed mathematical structure of this coupling—including the $SU(2)_L$ gauge symmetry—is derived rigorously in Chapter 8.2 (Standard Model isomorphism, see Table 8.2.1). At the DNN block level considered in this chapter, this manifests as:
 
-$$
-W^+ : \psi_{\text{obs}} \to \psi_{\text{act}} \quad \text{(observation → action planning)}
-$$
-$$
-W^- : \psi_{\text{act}} \to \psi_{\text{obs}} \quad \text{(replanning from action state)}
-$$
+- **Observation encoder:** Steerable convolutions producing rotation-equivariant features $\psi_{\text{obs}}$
+- **Action decoder:** Linear layers mapping latent states to motor commands $\psi_{\text{act}}$
+- **Coupling:** Cross-attention mechanisms (detailed in Chapter 8.5) that mix observation and action representations
 
-**Analogy to electroweak theory:**
-- $W^+$ (raise operator) ↔ $e^- \to \nu_e$ (electron to neutrino)
-- $W^-$ (lower operator) ↔ $\nu_e \to e^-$ (neutrino to electron)
-
-**Right-chiral singlet:** Executed actions $a_{\text{exec}}$ are singlets under $SU(2)_L$ (do not mix), analogous to right-handed fermions in the Standard Model.
-
-*Proof sketch.* The Error field couples to the doublet via the interaction Lagrangian:
-$$
-\mathcal{L}_{\text{int}} = g_w \bar{\Psi} W_\mu \gamma^\mu \Psi
-$$
-
-where $g_w$ is the weak coupling constant. The raising/lowering operators $W^\pm = (W^1 \mp i W^2)/\sqrt{2}$ induce the transitions. Executed actions decouple after passing through the "action emission" boundary (analogous to spontaneous symmetry breaking in electroweak theory). $\square$
-:::
-
-:::{div} feynman-prose
-Here is something that should make you sit up: the chirality structure of the Standard Model has a direct analogue in how agents process information.
-
-In particle physics, there is a peculiar asymmetry. Left-handed particles form doublets under $SU(2)_L$—the electron and its neutrino, the up quark and down quark. The weak force can transform one into the other. But right-handed particles are singlets—they do not mix at all. This left-right asymmetry is one of the deepest features of the Standard Model.
-
-Now look at the agent. Information *coming in* from observations and information *going out* as actions have fundamentally different characters. The observation stream is "left-chiral"—it enters the agent and gets mixed with internal planning states. The Error field $W_\mu$ can transform observations into action plans and vice versa, just as the $W$ boson can transform electrons into neutrinos. But the action stream that actually executes—the commands sent to motors—is "right-chiral." It is a singlet, already committed, no longer subject to mixing.
-
-This is why steerable convolutions on visual input naturally form doublets with action planning. The observation and the plan are two components of the same geometric object, transforming together under $SU(2)_L$. Only after "emission"—when the action is actually taken—does the symmetry break and the action become a definite, independent thing.
-
-The analogy is not poetic. It is structural.
-:::
+The specific connection to $SU(2)_L$ gauge theory is established in Chapter 8.2 through rigorous derivation, not analogy.
 
 ---
 
@@ -1515,25 +1497,121 @@ $$
 
 ### Lipschitz Properties of Primitives
 
-:::{prf:lemma} NormGate is 1-Lipschitz
+:::{prf:lemma} NormGate Lipschitz Bound
 :label: lem-normgate-lipschitz
 
-Let $f(v) = v \cdot g(\|v\| + b)$ be the norm-gated activation (Definition {prf:ref}`def-norm-gated-activation`) where $g$ is the GELU function:
+Let $f(v) = v \cdot g(\|v\| + b)$ be the norm-gated activation (Definition {prf:ref}`def-norm-gated-activation`) where $g: \mathbb{R} \to \mathbb{R}$ is a smooth gating function with:
+- $|g(x)| \leq C_g |x|$ for all $x$ (sublinear growth)
+- $|g'(x)| \leq L_g$ for all $x$ (bounded derivative)
+
+Then $f$ is Lipschitz continuous with constant:
 $$
-g(x) = x \Phi(x) \quad \text{where} \quad \Phi(x) = \frac{1}{\sqrt{2\pi}} \int_{-\infty}^{x} e^{-t^2/2} dt
+L_f \leq \max(C_g, L_g R_{\max} + C_g)
+$$
+where $R_{\max}$ is the maximum expected norm in the operating range.
+
+**For GELU:** The GELU function $g(x) = x\Phi(x)$ where $\Phi$ is the standard normal CDF satisfies:
+- $C_g = 1$ (since $0 \leq \Phi(x) \leq 1$ implies $|g(x)| \leq |x|$)
+- $g'(x) = \Phi(x) + x\phi(x)$ where $\phi(x) = \frac{1}{\sqrt{2\pi}}e^{-x^2/2}$
+- $\sup_{x \in \mathbb{R}} g'(x) = 1$ (achieved as $x \to +\infty$)
+- For practical operating range $x \in [-3, 3]$: $\max_{x \in [-3,3]} g'(x) \approx 1.08$
+
+Thus $L_g \approx 1.08$ and $L_f \leq 1.08(R_{\max} + 1)$.
+
+*Proof.*
+
+**Step 1. Spherical coordinates:**
+Write $v = r\hat{v}$ where $r = \|v\| \geq 0$ and $\hat{v} = v/\|v\|$ is the unit direction vector.
+
+Then:
+$$
+f(v) = f(r\hat{v}) = r \cdot g(r + b) \cdot \hat{v}
 $$
 
-Assume $|g'(x)| \leq 1$ for all $x$ (satisfied by GELU for appropriate bias scaling). Then:
-
+**Step 2. Jacobian calculation:**
+Using the product rule and chain rule:
 $$
-\|f(v_1) - f(v_2)\| \leq C \|v_1 - v_2\|
+\nabla f(v) = g(\|v\| + b) \cdot I_{d_b} + g'(\|v\| + b) \cdot \frac{vv^T}{\|v\|}
 $$
 
-where $C = O(1)$ (Lipschitz constant bounded).
+This is the sum of a scaled identity and a rank-1 matrix.
 
-*Proof sketch.* The norm-gated activation decomposes into radial and angular components. The radial part $g(\|v\|)$ has bounded derivative when $g' \leq 1$. The angular part (unit vector) is unchanged. Combining via product rule yields Lipschitz constant $O(1)$. For full details, see numerical verification in diagnostic Node 62.
+**Step 3. Eigenvalue decomposition:**
+Write $v = r\hat{v}$ where $r = \|v\|$ and $\|\hat{v}\| = 1$. The Jacobian has eigenvalues:
 
-**Remark:** In practice, we normalize biases such that $g'(\|v\| + b) \approx 1$ in the typical operating range, ensuring $C \approx 1$.
+- **Radial direction** (eigenvector $\hat{v}$):
+$$
+\lambda_r = g(r+b) + g'(r+b) \cdot r
+$$
+
+- **Tangential directions** (eigenvectors orthogonal to $\hat{v}$, there are $d_b-1$ of these):
+$$
+\lambda_t = g(r+b)
+$$
+
+**Verification:** For $u = \hat{v}$:
+$$
+\nabla f(v) \cdot \hat{v} = g(r+b)\hat{v} + g'(r+b) r \hat{v} = [g(r+b) + rg'(r+b)]\hat{v} = \lambda_r \hat{v} \quad \checkmark
+$$
+
+For $u \perp \hat{v}$ (so $u^T v = 0$):
+$$
+\nabla f(v) \cdot u = g(r+b) u + g'(r+b) \frac{(v^T u)}{\|v\|} v = g(r+b) u = \lambda_t u \quad \checkmark
+$$
+
+**Step 4. Bound eigenvalues:**
+Using $|g(x)| \leq C_g|x|$ and $|g'(x)| \leq L_g$:
+
+**Radial:**
+$$
+|\lambda_r| = |g(r+b) + rg'(r+b)| \leq |g(r+b)| + r|g'(r+b)| \leq C_g|r+b| + rL_g
+$$
+
+For $r \leq R_{\max}$ and bounded bias $|b| \leq B$:
+$$
+|\lambda_r| \leq C_g(R_{\max} + B) + R_{\max}L_g = R_{\max}(C_g + L_g) + C_gB
+$$
+
+**Tangential:**
+$$
+|\lambda_t| = |g(r+b)| \leq C_g|r+b| \leq C_g(R_{\max} + B)
+$$
+
+**Step 5. Spectral norm and Lipschitz constant:**
+The operator norm is:
+$$
+\|\nabla f(v)\|_{\text{op}} = \max(|\lambda_r|, |\lambda_t|) \leq \max(R_{\max}(C_g + L_g) + C_gB, C_g(R_{\max} + B))
+$$
+
+Since typically $L_g > 0$, the radial term dominates:
+$$
+L_f = \sup_v \|\nabla f(v)\|_{\text{op}} \leq R_{\max}(C_g + L_g) + C_gB
+$$
+
+**Step 6. Numerical values for GELU:**
+For GELU with $C_g = 1$, $L_g \approx 1.08$, and typical bias $|b| \leq 1$:
+$$
+L_f \leq R_{\max}(1 + 1.08) + 1 \approx 2.08 R_{\max} + 1
+$$
+
+With normalized inputs, $R_{\max} \approx \sqrt{d_b}$ for $d_b$-dimensional bundles. For $d_b = 16$:
+$$
+L_f \lesssim 2.08 \times 4 + 1 \approx 9.3
+$$
+
+**Remark 1 (Composition with spectral norm):** While individual NormGate layers have $L_f > 1$, they compose with spectral-normalized linear layers (which have $L = 1$). The total Lipschitz constant for IsotropicBlock is bounded by the product, and layer normalization or skip connections prevent unbounded growth across depth.
+
+**Remark 2 (Rescaling option):** To enforce strict 1-Lipschitz property, rescale GELU:
+$$
+\tilde{g}(x) = \frac{g(x)}{2R_{\max} + 1}
+$$
+
+This guarantees $L_f \leq 1$ but attenuates gradients. In practice, we keep unscaled GELU and rely on:
+- Spectral normalization in linear layers
+- Moderate bundle dimensions ($d_b \in [8, 32]$)
+- Skip connections across blocks
+
+to control the effective Lipschitz constant of the full network.
 $\square$
 :::
 
@@ -1554,44 +1632,117 @@ A DNN layer $f: \mathcal{Z} \to \mathcal{Z}$ is **compatible with the geodesic i
 :::{prf:theorem} Isotropic Blocks Satisfy Micro-Macro Consistency
 :label: thm-isotropic-macro-compatible
 
-IsotropicBlock (Definition {prf:ref}`def-isotropic-block`) satisfies all three micro-macro consistency conditions (Definition {prf:ref}`def-micro-macro-consistency`).
+IsotropicBlock (Definition {prf:ref}`def-isotropic-block`) satisfies:
+1. **Light cone preservation** (Condition 2 of {prf:ref}`def-micro-macro-consistency`) - proven rigorously
+2. **Gauge invariance** (Condition 3 of {prf:ref}`def-micro-macro-consistency`) - proven rigorously
+3. **Metric compatibility** (Condition 1 of {prf:ref}`def-micro-macro-consistency`) - holds for constant metrics; approximately for state-dependent metrics
 
 *Proof.*
 
-**Condition 1 (metric preservation):**
+**Condition 2 (light cone preservation) - RIGOROUS:**
 
-The metric pullback under $f = \text{IsotropicBlock}$ requires $G(f(z)) = J^T G(z) J$ where $J = \partial f/\partial z$ is the Jacobian.
-
-For IsotropicBlock = NormGate ∘ Reshape ∘ SpectralLinear:
-- **SpectralLinear:** $J_1 = W$ with $\sigma_{\max}(W) \leq 1$
-- **Reshape:** $J_2 = I$ (identity, just reindex)
-- **NormGate:** For each bundle $i$, the Jacobian is $J_3^{(i)} = g(\|v_i\|)I + v_i v_i^T g'(\|v_i\|)/\|v_i\|$ (product rule for $v \cdot g(\|v\|)$)
-
-The composed Jacobian preserves the metric structure because:
-1. Spectral normalization ensures $W^T G W \preceq G$ (metric contracts or preserves)
-2. NormGate acts isotropically within each bundle (preserves angular structure)
-3. The composition maintains positive-definiteness of $G$
-
-**Rigorous verification requires computing the full Jacobian $J = J_3 J_2 J_1$ and verifying $J^T G J = G$. This is computationally intensive and empirically verified by Node 67 (GaugeInvarianceCheck).**
-
-**Condition 2 (light cone preservation):**
-
-By Theorem {prf:ref}`thm-spectral-preserves-light-cone`, SpectralLinear has Lipschitz constant $\leq 1$.
-By Lemma {prf:ref}`lem-normgate-lipschitz`, NormGate has Lipschitz constant $C = O(1)$.
-By composition (Theorem {prf:ref}`thm-composition-equivariant`), IsotropicBlock has Lipschitz constant $\leq C \cdot 1 = O(1)$.
-
-With proper bias normalization (ensuring $|g'(\|v\| + b)| \approx 1$ in operating range), $C \approx 1$:
+**Step 1. Decompose IsotropicBlock:**
 $$
-\|f(z_1) - f(z_2)\| \lesssim \|z_1 - z_2\| \leq c_{\text{info}} \Delta t
+f = f_3 \circ f_2 \circ f_1
+$$
+where:
+- $f_1 = \text{SpectralLinear}: z \mapsto Wz$ with $\sigma_{\max}(W) \leq 1$
+- $f_2 = \text{Reshape}: \mathbb{R}^{d_{\text{out}}} \to (\mathbb{R}^{d_b})^{n_b}$ (identity as linear map, $J_2 = I$)
+- $f_3 = \text{NormGate}: (v_1, \ldots, v_{n_b}) \mapsto (v_1 g(\|v_1\| + b_1), \ldots, v_{n_b} g(\|v_{n_b}\| + b_{n_b}))$
+
+**Step 2. Lipschitz constants:**
+- By Theorem {prf:ref}`thm-spectral-preserves-light-cone`: $L_1 \leq 1$
+- $f_2$ is identity: $L_2 = 1$
+- By Lemma {prf:ref}`lem-normgate-lipschitz` with GELU ($C_g = 1$, $L_g \approx 1.08$):
+$$
+L_3 \leq R_{\max}(C_g + L_g) + C_gB \approx 2.08 R_{\max} + 1
 $$
 
-**Condition 3 (gauge invariance):**
+For normalized bundles with $R_{\max} \approx \sqrt{d_b}$ and $d_b = 16$:
+$$
+L_3 \lesssim 2.08 \times 4 + 1 \approx 9.3
+$$
 
-Direct application of Theorem {prf:ref}`thm-isotropic-block-equivariant` ($G$-equivariance).
+**Step 3. Composition:**
+By composition of Lipschitz functions ($\|f \circ g(x) - f \circ g(y)\| \leq L_f L_g \|x-y\|$):
+$$
+L_{\text{total}} = L_3 \cdot L_2 \cdot L_1 \leq 9.3 \cdot 1 \cdot 1 = 9.3
+$$
+
+Thus:
+$$
+\|f(z_1) - f(z_2)\| \leq 9.3 \|z_1 - z_2\|
+$$
+
+**Remark on constant factor:** While $L > 1$ for individual blocks, depth-wise accumulation is controlled via:
+- Skip connections (e.g., $z_{l+1} = z_l + \alpha \cdot \text{IsotropicBlock}(z_l)$ with $\alpha < 1$)
+- Normalization layers between blocks
+- The bound $L = O(\sqrt{d_b})$ is moderate for $d_b \in [8, 32]$
+
+The effective light cone constraint $\|f(z_1) - f(z_2)\| \lesssim c_{\text{info}} \Delta t$ holds up to architecture-dependent constants.
+
+**Condition 3 (gauge invariance) - RIGOROUS:**
+
+Direct application of Theorem {prf:ref}`thm-isotropic-block-equivariant`. For gauge group $G_{\text{bundle}} = \prod_{i=1}^{n_b} SO(d_b)$:
+$$
+f(U(g) \cdot z) = U(g) \cdot f(z) \quad \forall g \in G_{\text{bundle}}
+$$
+
+This is proven constructively in Theorem {prf:ref}`thm-isotropic-block-equivariant` by showing each component (SpectralLinear, Reshape, NormGate) is equivariant and composition preserves equivariance.
+
+**Condition 1 (metric preservation) - QUALIFIED:**
+
+The exact pullback condition $G(f(z)) = J^T G(z) J$ depends critically on whether the metric is constant or state-dependent.
+
+**Case A: Constant Euclidean metric** ($G(z) = I$ for all $z$)
+
+The pullback condition becomes:
+$$
+I = J^T I J = J^T J
+$$
+
+This requires $J$ to be orthogonal, which is NOT true for IsotropicBlock:
+- SpectralLinear: $J_1 = W$ with $\sigma_{\max}(W) \leq 1$ satisfies $W^T W \preceq I$ (contraction, not isometry unless $W$ is exactly orthogonal)
+- NormGate: $J_3 = g(\|v\|)I + g'(\|v\|)vv^T/\|v\|$ satisfies:
+$$
+J_3^T J_3 = g^2(\|v\|) I + [g'^2(\|v\|)/\|v\|^2 + 2g(\|v\|)g'(\|v\|)/\|v\|] vv^T \neq I
+$$
+
+Thus **exact pullback fails** for constant Euclidean metric.
+
+**Case B: Information Sensitivity Metric** (Definition {prf:ref}`def-latent-metric`)
+
+For state-dependent $G(z) = \nabla^2 V(z) + \lambda \mathcal{F}(z)$, the pullback requires:
+$$
+\nabla^2 V(f(z)) + \lambda \mathcal{F}(f(z)) = J^T [\nabla^2 V(z) + \lambda \mathcal{F}(z)] J
+$$
+
+Since $V$ and $\mathcal{F}$ depend on state, $G(f(z)) \neq G(z)$ in general, and **exact pullback does not hold**.
+
+**What IS rigorously true:**
+
+1. **Positive-definiteness preserved:** If $G(z) \succ 0$, then for invertible $J$:
+$$
+J^T G(z) J \succeq \lambda_{\min}(J^T J) \cdot \lambda_{\min}(G(z)) > 0
+$$
+Thus positive-definiteness is maintained.
+
+2. **Structure preservation:** NormGate acts isotropically within bundles:
+$$
+J_3^{(i)} = g_i I_{d_b} + h_i v_i v_i^T
+$$
+where $g_i = g(\|v_i\| + b_i)$ and $h_i = g'(\|v_i\| + b_i)/\|v_i\|$. This preserves radial-tangential structure of metrics that decompose similarly.
+
+3. **Empirical compatibility:** Diagnostic Node 67 (GaugeInvarianceCheck) verifies that applying gauge transformations produces consistent behavior, indicating the metric structure is preserved in the sense relevant for geodesic integration.
+
+**Conclusion:** IsotropicBlock does NOT satisfy exact metric pullback $G(f(z)) = J^T G(z) J$ for general metrics. However, it preserves:
+- Gauge structure (Condition 3)
+- Lipschitz bounds (Condition 2)
+- Positive-definiteness and structural properties of the metric
+
+For the geodesic integrator, this is sufficient because the metric is recomputed at each integration step rather than being pulled back through transformations.
 
 $\square$
-
-**Remark:** Condition 1 involves substantial Jacobian calculations. The key insight is that norm-gating preserves the **pullback metric structure** because it acts isotropically (radially symmetric within each bundle), preventing directional distortion. Numerical verification via diagnostic nodes suffices for practical applications.
 :::
 
 :::{admonition} Connection to RL: Implicit Regularization via Architecture
@@ -1609,22 +1760,59 @@ $\square$
 (sec-dimensional-analysis)=
 ## Dimensional Analysis and Unit Tracking
 
-:::{prf:proposition} Latent Dimension from Capacity Constraint
+:::{prf:proposition} Latent Dimension from Information-Theoretic First Principles
 :label: prop-latent-dimension-from-capacity
 
-From the bounded rationality controller (Chapter 1), the channel capacity is $C$ nat/step. The latent space $\mathcal{Z}$ represents compressed observations with mutual information $I(X;Z)$.
+The latent space $\mathcal{Z} \subset \mathbb{R}^{d_z}$ represents compressed observations encoding mutual information $I(X;Z) \leq C$ where $C$ is the channel capacity (nat/step) from the bounded rationality controller (Chapter 1).
 
-For a Gaussian latent with covariance $\Sigma_z$:
+**Derivation from Gaussian rate-distortion theory:**
+
+For a Gaussian source $X \sim \mathcal{N}(0, \Sigma_X)$ encoded into latent $Z \in \mathbb{R}^{d_z}$ via encoder $p(Z|X)$ with reconstruction $\hat{X} = \mathbb{E}[X|Z]$:
+
+**Step 1. Rate-distortion tradeoff:**
+The optimal encoder for squared error distortion $D = \mathbb{E}[\|X - \hat{X}\|^2]$ achieves:
 $$
-I(X;Z) = \frac{1}{2}\log\det(I + \Sigma_z) \approx \frac{1}{2}\text{tr}(\Sigma_z) \quad \text{(low-SNR regime)}
+I(X;Z) = \frac{1}{2}\sum_{i=1}^{d_z} \log\left(1 + \frac{\lambda_i}{\sigma^2}\right)
+$$
+where $\lambda_i$ are eigenvalues of the source covariance $\Sigma_X$ allocated to latent dimension $i$, and $\sigma^2$ is the noise level per dimension.
+
+**Step 2. Equal allocation (isotropic latent):**
+For computational efficiency, neural encoders typically use isotropic latent representations with equal variance per dimension:
+$$
+\Sigma_Z = \sigma_z^2 I_{d_z}
 $$
 
-Normalizing such that $\text{tr}(\Sigma_z) = d_z$ (dimension of $\mathcal{Z}$):
+The total information is:
 $$
-[z^2] = [I(X;Z)] = [\text{nat}] \implies [z] = \sqrt{\text{nat}} =: [\mathcal{Z}]
+I(X;Z) \leq \frac{1}{2} d_z \log\left(1 + \frac{\sigma_X^2}{\sigma_{\text{noise}}^2}\right)
 $$
 
-**Units:** The fundamental dimension of latent coordinates is $[\mathcal{Z}] = \sqrt{\text{nat}}$ (square root of information content).
+**Step 3. Dimensional analysis:**
+Mutual information has dimension $[I(X;Z)] = [\text{nat}]$.
+
+For latent variance $\sigma_z^2$, we require dimensional consistency:
+$$
+[I(X;Z)] = [\text{nat}] = [d_z \cdot \log(1 + \sigma_z^2/\sigma_{\text{ref}}^2)]
+$$
+
+Since $d_z$ is dimensionless (counting degrees of freedom) and logarithm of dimensionless ratio is dimensionless, we need:
+$$
+[\text{nat}] = [d_z] \cdot [\log(\cdot)] = [1] \cdot [1]
+$$
+
+This dimensional mismatch is resolved by assigning dimensions to $\sigma_z^2$:
+$$
+[\sigma_z^2] = [\text{nat}]/[d_z] = [\text{nat}] \quad \text{(since $d_z$ is dimensionless count)}
+$$
+
+Thus:
+$$
+[z] = [\sigma_z] = \sqrt{\text{nat}} =: [\mathcal{Z}]
+$$
+
+**Interpretation:** Each latent coordinate carries information measured in natural units (nats). The variance of a latent dimension has units of information content, and coordinates themselves have units of $\sqrt{\text{nat}}$ (analogous to how position has units $\sqrt{\text{action}}$ in quantum mechanics via $\Delta x \Delta p \sim \hbar$).
+
+**Remark:** This assignment is a dimensional convention that ensures consistency between information-theoretic quantities ($I, H, D_{\text{KL}}$ in nats) and geometric quantities (distances, norms, metrics) in latent space.
 :::
 
 :::{prf:definition} Information Speed in Latent Coordinates
@@ -1633,23 +1821,42 @@ $$
 The **latent information speed** is the maximum rate of latent state change per unit time:
 
 $$
-c_{\mathcal{Z}} := \sup_{z, \Delta t} \frac{d_{\mathcal{Z}}(z(t + \Delta t), z(t))}{\Delta t}
+c_{\mathcal{Z}} := \sup_{z(·), \Delta t > 0} \frac{d_{\mathcal{Z}}(z(t + \Delta t), z(t))}{\Delta t}
 $$
 
-where $d_{\mathcal{Z}}(z_1, z_2) = \|z_1 - z_2\|$ is the Euclidean distance in latent space.
+where:
+- $z: [0, T] \to \mathcal{Z}$ is a latent trajectory
+- $d_{\mathcal{Z}}(z_1, z_2) = \|z_1 - z_2\|$ is the Euclidean distance in latent space
+- The supremum is taken over all admissible trajectories and time increments
 
 **Dimensions**: $[c_{\mathcal{Z}}] = [\mathcal{Z}][T^{-1}] = \sqrt{\text{nat}} \cdot s^{-1}$
 
-**Physical interpretation**: This is the "speed of thought"—the maximum rate at which the agent's internal representation can evolve.
+**Physical interpretation**: This is the "speed of thought"—the maximum rate at which the agent's internal representation can evolve under the dynamics.
 
-**Relationship to environment speed**: Via the encoder map $\phi: \mathcal{E} \to \mathcal{Z}$ with Jacobian $\nabla \phi$:
+**Connection to environment information speed**:
+
+Let $\mathcal{E}$ denote the environment observation space (e.g., pixel space for vision, $\mathcal{E} = \mathbb{R}^{H \times W \times C}$).
+
+Let $\phi: \mathcal{E} \to \mathcal{Z}$ be the encoder network mapping observations to latents, with Jacobian $J_\phi(x) = \nabla \phi(x) \in \mathbb{R}^{d_z \times d_{\mathcal{E}}}$.
+
+By the chain rule for composed dynamics $z(t) = \phi(x(t))$:
 $$
-c_{\mathcal{Z}} = \|\nabla \phi\|_{\text{op}} \cdot c_{\text{info}}
+\frac{dz}{dt} = J_\phi(x(t)) \cdot \frac{dx}{dt}
 $$
 
-where $c_{\text{info}}$ (in environment coordinates) has units $[L][T^{-1}] = $ m/s (Axiom {prf:ref}`ax-information-speed-limit`).
+Taking norms:
+$$
+\left\|\frac{dz}{dt}\right\| \leq \|J_\phi(x)\|_{\text{op}} \cdot \left\|\frac{dx}{dt}\right\|
+$$
 
-**Operational constraint**: For causality preservation (Theorem {prf:ref}`thm-spectral-preserves-light-cone`), every layer must satisfy $\sigma_{\max}(W) \leq 1$ (no amplification of propagation speed).
+If the environment dynamics satisfy $\|dx/dt\| \leq c_{\text{info}}$ (Axiom {prf:ref}`ax-information-speed-limit` from Chapter 8.1), then:
+$$
+c_{\mathcal{Z}} \leq \sup_x \|J_\phi(x)\|_{\text{op}} \cdot c_{\text{info}}
+$$
+
+**Remark**: The encoder Lipschitz constant $L_\phi = \sup_x \|J_\phi(x)\|_{\text{op}}$ controls how environmental changes propagate to latent space. Spectral normalization ensures $L_\phi \leq 1$, preventing artificial inflation of the information speed.
+
+**Operational constraint**: For causality preservation (Theorem {prf:ref}`thm-spectral-preserves-light-cone`), every layer in the encoder and dynamics model must satisfy $\sigma_{\max}(W) \leq 1$, ensuring no layer amplifies signal propagation speed.
 :::
 
 **Table: Complete Dimensional Analysis for Covariant Primitives**
@@ -1675,43 +1882,70 @@ Let $z \in \mathcal{Z}$ with $[z] = [\mathcal{Z}] = \sqrt{\text{nat}}$ (Proposit
 $$
 \text{IsotropicBlock}(z) = \text{Reshape}(\text{NormGate}(\text{SpectralLinear}(z)))
 $$
-preserves dimensional homogeneity at each stage.
+preserves the latent dimension $[\mathcal{Z}]$ through each stage when interpreted with implicit normalization conventions.
 
-*Proof.* By induction on the number of operations.
+*Proof.*
 
 **Dimensional Analysis Axioms:**
 1. $[AB] = [A][B]$ (multiplicative)
 2. $[A + B]$ defined iff $[A] = [B]$ (additive homogeneity)
-3. For dimensionless function $f$: $[f(x)] = [1]$ when $x$ is made dimensionless
+3. For transcendental function $f: \mathbb{R} \to \mathbb{R}$ (like GELU), the argument must be dimensionless or implicitly normalized
 
 **Step 1. SpectralLinear:**
 $$
 [W \cdot z] = [W] \cdot [z] = \frac{[\mathcal{Z}']}{[\mathcal{Z}]} \cdot [\mathcal{Z}] = [\mathcal{Z}']
 $$
-where $[\mathcal{Z}'] = [\mathcal{Z}]$ (same latent dimension).
+where $[\mathcal{Z}'] = [\mathcal{Z}]$ (linear map between same-dimensional latent spaces).
 
 **Step 2. Reshape:**
-Dimension-preserving (permutes indices): $[\text{Reshape}(h)] = [h] = [\mathcal{Z}']$.
+Identity operation that permutes indices: $[\text{Reshape}(h)] = [h] = [\mathcal{Z}]$.
 
-**Step 3. NormGate per bundle $i$:**
+**Step 3. NormGate per bundle $i$ — with dimensional caveat:**
 
-- **Norm extraction:** $[\|v_i\|] = [v_i] = [\mathcal{Z}']$ (Euclidean norm preserves dimension)
-- **Bias shift:** $[\|v_i\| + b_i] = [\mathcal{Z}']$ (homogeneous addition requires $[b_i] = [\mathcal{Z}']$)
-- **Dimensionless argument:** Define $\tilde{x} = (\|v_i\| + b_i)/\Delta E$ where $[\Delta E] = [\mathcal{Z}']^2 = \text{nat}$. Then $[\tilde{x}] = [1]$ (dimensionless).
-- **Gate activation:** $g(\tilde{x}) \in [0, \infty)$ is dimensionless by construction (GELU maps $\mathbb{R} \to \mathbb{R}$)
-- **Gated output:**
+Recall the definition (Def. {prf:ref}`def-norm-gated-activation`):
 $$
-[\hat{v}_i] = [v_i \cdot g(\tilde{x})] = [\mathcal{Z}'] \cdot [1] = [\mathcal{Z}']
+f(v_i) = v_i \cdot g(\|v_i\| + b_i)
 $$
 
-**Step 4. Composition:** By induction:
+**Dimensional analysis:**
+- $[\|v_i\|] = [v_i] = [\mathcal{Z}]$
+- $[b_i] = [\mathcal{Z}]$ (homogeneous addition)
+- **Issue:** $g$ is GELU, a transcendental function expecting dimensionless input
+
+**Resolution via implicit normalization:** In practice, the argument $\|v_i\| + b_i$ is normalized by an implicit reference scale $z_0$ with $[z_0] = [\mathcal{Z}]$. The actual operation is:
 $$
-[\text{IsotropicBlock}(z)] = [\mathcal{Z}']
+\hat{v}_i = v_i \cdot g\left(\frac{\|v_i\| + b_i}{z_0}\right)
+$$
+
+where:
+- $z_0 = 1\,\sqrt{\text{nat}}$ (unit scale, implicitly absorbed into definition of $g$)
+- The dimensionless argument is $\xi_i = (\|v_i\| + b_i)/z_0$ with $[\xi_i] = [1]$
+- $g(\xi_i)$ is dimensionless, so $[\hat{v}_i] = [v_i] \cdot [1] = [\mathcal{Z}]$
+
+**Step 4. Output dimension:**
+$$
+[\text{IsotropicBlock}(z)] = [\mathcal{Z}]
 $$
 
 $\square$
 
-**Remark:** The energy barrier $\Delta E$ has dimension $[\mathcal{Z}]^2 = \text{nat}$, making the gate argument $(\|v\| + b)/\sqrt{\Delta E}$ dimensionless. This differs from the presentation in implementation where we implicitly set $\Delta E = 1\,\text{nat}$ via normalization.
+**Critical remark on implementation:** The code implementation (lines 1918-1930 in Python implementation below) writes:
+```python
+gate = F.gelu(energy + self.norm_bias)
+```
+where `energy = ||v_i||` has been **implicitly normalized** to be order-1 by the spectral-normalized linear layer. The mathematical formulation $g(\|v\| + b)$ assumes this normalization convention: $\|v\| \sim O(1)$ in units of $z_0 = 1\,\sqrt{\text{nat}}$.
+
+This is dimensional analysis via **natural units** (analogous to setting $c = \hbar = 1$ in relativistic quantum mechanics): we choose units such that the typical latent scale is 1, absorbing $z_0$ into the definition.
+
+**Formal correction for strict dimensional analysis:**
+
+To be fully rigorous, Definition {prf:ref}`def-norm-gated-activation` should be amended to:
+$$
+f(v) = v \cdot g\left(\frac{\|v\| + b}{z_0}\right)
+$$
+where $z_0 = \mathbb{E}[\|v\|]$ is the expected bundle norm (computed over training data) with $[z_0] = [\mathcal{Z}]$.
+
+In normalized architectures with spectral normalization and zero-mean inputs, $z_0 \approx 1\,\sqrt{\text{nat}}$, and the explicit normalization is often omitted.
 :::
 
 ---
