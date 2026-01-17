@@ -170,11 +170,17 @@ $$
    $$
    acting via **scaling** (realized through spectral normalization constraints).
 
-**Product representation:** The full representation is the **Kronecker product** of these factors acting on disjoint subspaces:
+**Product representation:** The full representation is the **direct sum** (⊕) of these factors acting on disjoint subspaces:
 $$
-\rho(U_C, U_L, e^{i\theta_Y}) = \rho_C(U_C) \otimes \rho_L(U_L) \otimes \rho_Y(e^{i\theta_Y})
+\rho(U_C, U_L, e^{i\theta_Y}) = \rho_C(U_C) \oplus \rho_L(U_L) \oplus \rho_Y(e^{i\theta_Y})
 $$
 in block-diagonal form (each factor acts on its own subspace).
+
+**Notation clarification:** The direct sum ⊕ (not tensor product ⊗) is correct because:
+- **Direct sum $V \oplus W$:** Dimension = $\dim(V) + \dim(W)$. Transformations are block-diagonal: $\begin{pmatrix} A & 0 \\ 0 & B \end{pmatrix}$
+- **Tensor product $V \otimes W$:** Dimension = $\dim(V) \times \dim(W)$. Transformations are Kronecker products: $A \otimes B$
+
+Since each gauge factor acts independently on separate subspaces of $\mathcal{Z}$, the representation space is $\mathcal{Z} = \mathcal{Z}_C \oplus \mathcal{Z}_L \oplus \mathcal{Z}_Y$ (direct sum), and the group representation is the direct sum of individual representations.
 
 **Implementation note:** In practice, neural network architectures do NOT implement the full gauge group action explicitly. Instead, we build **equivariant primitives**:
 - IsotropicBlock (Definition {prf:ref}`def-isotropic-block`) is equivariant w.r.t. $\rho_C$ (bundle mixing, Theorem {prf:ref}`thm-isotropic-preserves-color`)
