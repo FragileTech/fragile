@@ -1364,15 +1364,16 @@ $$
 
 For each generator $T^a \in \mathfrak{su}(n_b)$ ($a = 1, \ldots, n_b^2 - 1$), where $T^a$ is a traceless Hermitian $n_b \times n_b$ matrix, define the **color charge operator**:
 $$
-Q_C^a[Z] = \text{Tr}(Z^T T^a Z) = \sum_{i,j=1}^{n_b} T^a_{ij} \, (z^{(i)})^T z^{(j)}
+Q_C^a[Z] = \text{Tr}_{\text{bundle}}(Z^T Z \cdot T^a) = \sum_{i,j=1}^{n_b} T^a_{ij} \, (z^{(i)})^T z^{(j)}
 $$
 
 where:
+- $Z \in \mathbb{R}^{d_b \times n_b}$ has columns $z^{(1)}, \ldots, z^{(n_b)} \in \mathbb{R}^{d_b}$ (bundles)
 - $Z^T \in \mathbb{R}^{n_b \times d_b}$ is the transpose (rows are bundle vectors)
+- $Z^T Z \in \mathbb{R}^{n_b \times n_b}$ is the **Gram matrix** with $(Z^T Z)_{ij} = (z^{(i)})^T z^{(j)}$
 - $T^a \in \mathbb{R}^{n_b \times n_b}$ is the generator matrix (acts on bundle indices)
-- $Z \in \mathbb{R}^{d_b \times n_b}$ (columns are bundle vectors)
-- The product $T^a Z$ is an $n_b \times d_b$ matrix
-- $(Z^T T^a Z)$ is a $d_b \times d_b$ matrix, and we take its trace
+- $Z^T Z \cdot T^a \in \mathbb{R}^{n_b \times n_b}$ is matrix multiplication
+- $\text{Tr}_{\text{bundle}}$ denotes trace over bundle indices (summing diagonal elements of the $n_b \times n_b$ matrix)
 
 **Dimensional consistency:**
 - $[z^{(i)}] = \sqrt{\text{nat}}$ (latent vector)
