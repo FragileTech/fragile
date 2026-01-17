@@ -2185,7 +2185,7 @@ This requires $J$ to be orthogonal, which is NOT true for IsotropicBlock:
 - SpectralLinear: $J_1 = W$ with $\sigma_{\max}(W) \leq 1$ satisfies $W^T W \preceq I$ (contraction, not isometry unless $W$ is exactly orthogonal)
 - NormGate: $J_3 = g(\|v\|)I + g'(\|v\|)vv^T/\|v\|$ satisfies:
 $$
-J_3^T J_3 = g^2(\|v\|) I + [g'^2(\|v\|)/\|v\|^2 + 2g(\|v\|)g'(\|v\|)/\|v\|] vv^T \neq I
+J_3^T J_3 = g^2(\|v\|) I + \left[\frac{2g(\|v\|)g'(\|v\|)}{\|v\|} + g'^2(\|v\|)\right] vv^T \neq I
 $$
 
 Thus **exact pullback fails** for constant Euclidean metric.
