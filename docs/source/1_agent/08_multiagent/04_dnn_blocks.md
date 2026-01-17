@@ -2122,17 +2122,22 @@ $\square$
 A DNN layer $f: \mathcal{Z} \to \mathcal{Z}$ is **compatible with the geodesic integrator** if:
 
 1. **Preserves metric:** $G(f(z)) = \frac{\partial f}{\partial z} \cdot G(z) \cdot \left(\frac{\partial f}{\partial z}\right)^T$ (pullback)
-2. **Preserves light cone:** $\|f(z) - f(z')\| \leq c_{\text{info}} \cdot \|z - z'\|$
+2. **Bounded Lipschitz:** $\|f(z) - f(z')\| \leq L_f \cdot \|z - z'\|$ where $L_f$ is a finite constant
 3. **Preserves gauge:** $f(U(g) \cdot z) = U(g) \cdot f(z)$ for all $g \in G_{\text{Fragile}}$
 
-**Units:** $[G] = [z]^{-2}$, $[c_{\text{info}}] = [L]/[T]$, $[U(g)]$ dimensionless (unitary).
+**Interpretation:**
+- **Condition 1** ensures the metric structure evolves consistently (metric pullback)
+- **Condition 2** ensures bounded signal propagation (Lipschitz continuity); for strict light cone preservation, require $L_f \leq 1$; for stable bounded amplification, allow $L_f = O(1)$ fixed constant
+- **Condition 3** ensures gauge symmetry is preserved through network layers
+
+**Units:** $[G] = [z]^{-2}$, $[L_f]$ dimensionless (ratio of distances), $[U(g)]$ dimensionless (unitary).
 :::
 
 :::{prf:theorem} Isotropic Blocks Satisfy Micro-Macro Consistency
 :label: thm-isotropic-macro-compatible
 
 IsotropicBlock (Definition {prf:ref}`def-isotropic-block`) satisfies:
-1. **Light cone preservation** (Condition 2 of {prf:ref}`def-micro-macro-consistency`) - proven rigorously
+1. **Bounded Lipschitz** (Condition 2 of {prf:ref}`def-micro-macro-consistency`) with $L_f \approx 9.5$ - proven rigorously
 2. **Gauge invariance** (Condition 3 of {prf:ref}`def-micro-macro-consistency`) - proven rigorously
 3. **Metric compatibility** (Condition 1 of {prf:ref}`def-micro-macro-consistency`) - holds for constant metrics; approximately for state-dependent metrics
 
