@@ -682,7 +682,16 @@ W_i g_i v \parallel g_i W_i v \quad \forall g_i \in SO(d_b), \forall v \in V_i
 $$
 
 **Step 3. Apply Schur's lemma:**
-The standard representation of $SO(d_b)$ on $\mathbb{R}^{d_b}$ is irreducible for $d_b \geq 2$. By Schur's lemma, any linear map $W_i: V_i \to V_i$ that satisfies $W_i g_i = g_i W_i$ for all $g_i \in SO(d_b)$ must be a scalar multiple of identity: $W_i = \lambda_i I_{d_b}$.
+
+First, we verify that the standard representation of $SO(d_b)$ on $\mathbb{R}^{d_b}$ is irreducible for $d_b \geq 2$:
+
+*Irreducibility proof:* Suppose $V \subseteq \mathbb{R}^{d_b}$ is an $SO(d_b)$-invariant subspace (i.e., $g \cdot v \in V$ for all $g \in SO(d_b)$ and $v \in V$).
+- Since $SO(d_b)$ preserves the Euclidean inner product, the orthogonal complement $V^\perp$ is also $SO(d_b)$-invariant.
+- $SO(d_b)$ acts transitively on the unit sphere $S^{d_b-1} = \{v \in \mathbb{R}^{d_b} : \|v\| = 1\}$: for any two unit vectors $v, w$, there exists $g \in SO(d_b)$ such that $g \cdot v = w$ (construct rotation in the plane spanned by $v$ and $w$, or extend via Gram-Schmidt).
+- If $V$ contains a nonzero vector $v$, then it contains $v/\|v\| \in S^{d_b-1}$. By transitivity, $V$ must contain all unit vectors, hence $V = \mathbb{R}^{d_b}$.
+- Thus the only $SO(d_b)$-invariant subspaces are $\{0\}$ and $\mathbb{R}^{d_b}$, proving irreducibility. $\blacksquare$
+
+By Schur's lemma, any linear map $W_i: V_i \to V_i$ that satisfies $W_i g_i = g_i W_i$ for all $g_i \in SO(d_b)$ must be a scalar multiple of identity: $W_i = \lambda_i I_{d_b}$.
 
 **Step 4. Verify direction condition implies commutativity:**
 If $W_i g_i v \parallel g_i W_i v$ for all $g_i, v$, and both have the same magnitude (which follows from matching scalars $h(\cdot)$), then:
