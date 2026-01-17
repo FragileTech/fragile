@@ -1820,9 +1820,23 @@ $$
 g_s^{(\ell)} = \frac{\|G_\mu^{(\ell)}\|}{\|\partial_\mu Z\|_{\text{normalized}}} = \frac{\beta_\ell \cdot \|W_{\text{off-diag}}\|}{\|\nabla_{W_\ell} \mathcal{L}\| / \sqrt{1 + \alpha \|\nabla_{W_\ell} \mathcal{L}\|^2}}
 $$
 
-Assuming $\|W_{\text{off-diag}}\| \approx \|\nabla_{W_\ell} \mathcal{L}\|$ (weights and gradients have comparable magnitudes during training):
+**Dimensional analysis:**
+- $[g_s^{(\ell)}]$ = dimensionless (coupling constant)
+- $[\beta_\ell]$ = dimensionless (gate derivative factor)
+- $[\|W_{\text{off-diag}}\|]$ = dimensionless (weight matrix norm)
+- $[\|\nabla_{W_\ell} \mathcal{L}\|]$ = [nat] (gradient of loss w.r.t. weights)
+- $[\alpha]$ = [nat]$^{-2}$ (scale parameter ensuring dimensionless argument in square root)
+- Therefore: $[\alpha \|\nabla_{W_\ell} \mathcal{L}\|^2]$ = dimensionless ✓
+
+To make dimensions consistent, define the **dimensionless gradient magnitude**:
 $$
-g_s^{(\ell)} = \frac{\beta_\ell}{\sqrt{1 + \alpha \|\nabla_{W_\ell} \mathcal{L}\|^2}}
+\tilde{g} := \frac{\|\nabla_{W_\ell} \mathcal{L}\|}{\|\nabla_{W_\ell} \mathcal{L}\|_{\text{ref}}}
+$$
+where $\|\nabla \mathcal{L}\|_{\text{ref}}$ is a reference gradient scale (e.g., initialization magnitude). Then $\alpha' = \alpha \|\nabla \mathcal{L}\|_{\text{ref}}^2$ is dimensionless.
+
+Assuming $\|W_{\text{off-diag}}\| \approx \tilde{g}$ (rescaled weights and gradients have comparable magnitudes):
+$$
+g_s^{(\ell)} = \frac{\beta_\ell}{\sqrt{1 + \alpha' \tilde{g}^2}} \quad \text{(dimensionless)}
 $$
 
 **Step 6. Verify IR/UV limits:**
