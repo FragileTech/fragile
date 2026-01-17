@@ -1088,7 +1088,12 @@ $\square$
 $$
 g_1 \cdot g_2 = (x_1 + R_{\theta_1} x_2, R_{\theta_1 + \theta_2})
 $$
-(apply rotation, then translation, then compose rotations).
+
+*Interpretation:* Composition $g_1 \cdot g_2$ means "first apply $g_2$, then $g_1$". Acting on a point $p \in \mathbb{R}^2$:
+$$
+(g_1 \cdot g_2) \cdot p = g_1 \cdot (g_2 \cdot p) = g_1 \cdot (R_{\theta_2} p + x_2) = R_{\theta_1}(R_{\theta_2} p + x_2) + x_1 = R_{\theta_1 + \theta_2} p + (x_1 + R_{\theta_1} x_2)
+$$
+The rotation $R_{\theta_1}$ in $g_1$ acts on the translation $x_2$ from $g_2$, and the rotations compose as $R_{\theta_1} R_{\theta_2} = R_{\theta_1 + \theta_2}$.
 
 **Domain and codomain:** Let $C(\mathbb{R}^2, \mathbb{R}^{C_{\text{in}}})$ be the space of continuous functions (images) from $\mathbb{R}^2$ to $\mathbb{R}^{C_{\text{in}}}$ (e.g., $C_{\text{in}} = 3$ for RGB). Let $C(SE(2), \mathbb{R}^{C_{\text{out}}})$ be functions on $SE(2)$ with values in $\mathbb{R}^{C_{\text{out}}}$ (output feature dimension).
 
