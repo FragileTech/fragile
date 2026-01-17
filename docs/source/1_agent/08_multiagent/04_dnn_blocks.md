@@ -1944,13 +1944,31 @@ $$
 F = f_L \circ \cdots \circ f_1 \text{ is } G\text{-equivariant}
 $$
 
-Moreover, if each $f_i$ has Lipschitz constant $\leq 1$, then:
+Moreover, if each $f_i$ has Lipschitz constant $L_i \leq 1$, then:
 
 $$
-\sigma_{\max}(F) \leq 1 \quad \text{(global light cone preservation)}
+L_F \leq 1 \quad \text{(global light cone preservation)}
 $$
 
-*Proof.* Equivariance: composition of equivariant maps. Lipschitz: $\|F(z_1) - F(z_2)\| \leq \prod_i L_i \cdot \|z_1 - z_2\| \leq \|z_1 - z_2\|$ when $L_i \leq 1$. $\square$
+where $L_F$ is the Lipschitz constant of the composition $F$.
+
+*Proof.*
+
+**Equivariance:** Composition of equivariant maps is equivariant. For any $g \in G$:
+$$
+F(\rho(g) \cdot z) = f_L \circ \cdots \circ f_1(\rho(g) \cdot z) = \rho'(g) \cdot F(z)
+$$
+by repeatedly applying $f_i(\rho_i(g) \cdot w) = \rho_{i+1}(g) \cdot f_i(w)$.
+
+**Lipschitz:** For any $z_1, z_2$:
+$$
+\|F(z_1) - F(z_2)\| = \|f_L \circ \cdots \circ f_1(z_1) - f_L \circ \cdots \circ f_1(z_2)\|
+$$
+Applying the Lipschitz property of each layer successively:
+$$
+\leq L_L \|f_{L-1} \circ \cdots \circ f_1(z_1) - f_{L-1} \circ \cdots \circ f_1(z_2)\| \leq \cdots \leq \left(\prod_{i=1}^L L_i\right) \|z_1 - z_2\|
+$$
+When $L_i \leq 1$ for all $i$, we have $L_F \leq \prod_i L_i \leq 1$. $\square$
 :::
 
 ### Lipschitz Properties of Primitives
