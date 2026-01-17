@@ -33,6 +33,20 @@ Here $p_i = m v_i$ and $\ell_0$ is a characteristic IG length.
 
 See {prf:ref}`def-latent-fractal-gas-gauge-structure`.
 
+Together with diversity and cloning redundancies, this yields a
+$U(1)_{\text{fitness}} \times SU(2)_{\text{weak}} \times SU(d)_{\text{color}}$
+gauge structure. See {doc}`2_fractal_set/04_standard_model`.
+
+**Fractal Set + Gauge/QFT Layer:**
+- **Fractal Set data structure**: Directed 2-complex with CST/IG/IA edges and interaction triangles; scalars on nodes, spinors on edges; lossless reconstruction. See {doc}`2_fractal_set/01_fractal_set`.
+- **Causal set + lattice QFT**: Wilson loops and plaquette holonomies on the emergent lattice. See {doc}`2_fractal_set/02_causal_set_theory`, {doc}`2_fractal_set/03_lattice_qft`.
+- **Yang-Mills + Noether currents**: Wilson action from closed loops, conserved currents, and QFT axiom checks. See {doc}`2_fractal_set/05_yang_mills_noether`.
+
+**Fitness-Manifold Geometry:**
+- **Emergent metric from adaptive diffusion**: $g = \nabla^2 V_{\text{fit}} + \epsilon_\Sigma I$ with diffusion-metric duality. See {doc}`3_fitness_manifold/01_emergent_geometry`.
+- **Scutoid spacetime from cloning**: Voronoi neighbor changes force scutoid cells and a discrete tessellation over time. See {doc}`3_fitness_manifold/02_scutoid_spacetime`.
+- **Curvature and field equations**: Holonomy yields curvature (Raychaudhuri focusing), pressure-driven field equations, plus holography and cosmology. See {doc}`3_fitness_manifold/03_curvature_gravity`, {doc}`3_fitness_manifold/04_field_equations`, {doc}`3_fitness_manifold/05_holography`, {doc}`3_fitness_manifold/06_cosmology`.
+
 **The Sieve (17-Node Verification):**
 Complete certification via the Hypostructure framework:
 - **Conservation (Nodes 1-3)**: Energy bounded, Zeno-free, Foster-Lyapunov confinement
@@ -44,7 +58,8 @@ Complete certification via the Hypostructure framework:
 - **Boundary (Nodes 13-16)**: Open system with killing/reinjection
 - **Lock (Node 17)**: Universal bad pattern excluded via invariant mismatch
 
-See {doc}`1_the_algorithm/02_fractal_gas_latent` Part II.
+See {doc}`1_the_algorithm/02_fractal_gas_latent` Part II and
+{doc}`1_the_algorithm/03_algorithmic_sieve` for parameter constraints.
 
 **Three Timescales:**
 | Timescale | Description | Mathematical Object |
@@ -77,9 +92,16 @@ The algorithm exhibits self-similar behavior across scales: the same selection-m
 - Color charge from momentum-phase encoding (de Broglie relation)
 - Gluon fields from latent Riemannian geometry
 - Confinement from localization kernel
+- Standard Model gauge group from diversity/cloning/viscous redundancies
+- Yang-Mills dynamics and Noether currents from Wilson loops
+
+*Fitness-Manifold:*
+- Emergent metric from adaptive diffusion (fitness Hessian as geometry)
+- Scutoid spacetime and curvature from discrete holonomy
 
 *Proof-Theoretic:*
 - Complete 17-node sieve verification with typed certificates
+- Algorithmic sieve for parameter constraints and rigor classification
 - Factory-generated convergence rates
 - Explicit Lyapunov function recovery
 - Mean-field limit with propagation of chaos bounds
@@ -93,10 +115,12 @@ The algorithm exhibits self-similar behavior across scales: the same selection-m
 
 **Quick Navigation:**
 - *Want the algorithm intuition?* → {doc}`1_the_algorithm/01_algorithm_intuition`
-- *Want formal proofs?* → {doc}`1_the_algorithm/02_fractal_gas_latent`
-- *Want gauge structure?* → {doc}`2_fractal_set/01_fractal_set`
-- *Want lattice QFT connection?* → {doc}`2_fractal_set/03_lattice_qft`
-- *Want causal set theory?* → {doc}`2_fractal_set/02_causal_set_theory`
+- *Want the proof object and sieve details?* → {doc}`1_the_algorithm/02_fractal_gas_latent`
+- *Want parameter constraints and tuning?* → {doc}`1_the_algorithm/03_algorithmic_sieve`
+- *Want the Fractal Set and causal structure?* → {doc}`2_fractal_set/01_fractal_set`, {doc}`2_fractal_set/02_causal_set_theory`
+- *Want lattice QFT, Standard Model, or Yang-Mills?* → {doc}`2_fractal_set/03_lattice_qft`, {doc}`2_fractal_set/04_standard_model`, {doc}`2_fractal_set/05_yang_mills_noether`
+- *Want emergent geometry and fitness-manifold physics?* → {doc}`3_fitness_manifold/01_emergent_geometry`
+- *Want classical proofs, bounds, or FAQ?* → {doc}`appendices/02_euclidean_gas`, {doc}`appendices/13_quantitative_error_bounds`, {doc}`appendices/14_faq`
 :::
 
 (sec-fg-how-to-read)=
@@ -110,11 +134,13 @@ Use the toggle button at the top of the page to switch between **Full Mode** and
 - Start with {doc}`1_the_algorithm/01_algorithm_intuition` for operational understanding
 - Follow the Feynman prose blocks for intuition
 - Then proceed to the formal treatment in {doc}`1_the_algorithm/02_fractal_gas_latent`
+- Read {doc}`1_the_algorithm/03_algorithmic_sieve` for parameter constraints
+- Explore the Fractal Set and fitness-manifold chapters as needed
 
 **Expert Mode** (Category theorists, statistical physicists, optimization researchers):
 - Start with TL;DR above
-- Jump directly to the sieve verification (Part II of {doc}`1_the_algorithm/02_fractal_gas_latent`)
-- Focus on formal definitions and the gauge structure
+- Jump directly to the sieve verification in {doc}`1_the_algorithm/02_fractal_gas_latent` and parameter constraints in {doc}`1_the_algorithm/03_algorithmic_sieve`
+- Focus on formal definitions, gauge/QFT chapters, and fitness-manifold geometry
 - Skip intuitive explanations
 
 ### Modularity: Take Only What You Need
@@ -124,10 +150,14 @@ This volume is designed to be **modular**. Each chapter is self-contained:
 | If you want... | Read... | Dependencies |
 |----------------|---------|--------------|
 | Algorithm overview only | {doc}`1_the_algorithm/01_algorithm_intuition` | Minimal |
-| Full sieve verification | {doc}`1_the_algorithm/02_fractal_gas_latent` | Vol. II helpful |
-| Gauge structure | {doc}`2_fractal_set/01_fractal_set` | Part 1 of this volume |
-| Lattice QFT connection | {doc}`2_fractal_set/03_lattice_qft` | Basic QFT familiarity |
-| Causal set theory | {doc}`2_fractal_set/02_causal_set_theory` | Part 1 of this volume |
+| Full sieve proof object | {doc}`1_the_algorithm/02_fractal_gas_latent` | Vol. II helpful |
+| Parameter constraints and tuning | {doc}`1_the_algorithm/03_algorithmic_sieve` | 01 + 02 helpful |
+| Fractal Set data structure | {doc}`2_fractal_set/01_fractal_set` | Part 1 of this volume |
+| Causal sets and lattice QFT | {doc}`2_fractal_set/02_causal_set_theory`, {doc}`2_fractal_set/03_lattice_qft` | {doc}`2_fractal_set/01_fractal_set` |
+| Standard Model and Yang-Mills | {doc}`2_fractal_set/04_standard_model`, {doc}`2_fractal_set/05_yang_mills_noether` | QFT familiarity |
+| Emergent geometry and fitness manifold | {doc}`3_fitness_manifold/01_emergent_geometry` | Part 1 + {doc}`2_fractal_set/01_fractal_set` |
+| Classical proofs and bounds | {doc}`appendices/02_euclidean_gas`, {doc}`appendices/06_convergence`, {doc}`appendices/13_quantitative_error_bounds` | Minimal |
+| FAQ and objections | {doc}`appendices/14_faq` | None |
 
 ### LLM-Assisted Exploration
 
@@ -144,6 +174,7 @@ A recommended approach for understanding this framework:
 - "What is the relationship between the Doeblin constant and mixing time?"
 - "How does the revival guarantee prevent population extinction?"
 - "Trace through the sieve verification for Node 10 (ErgoCheck)"
+- "How does adaptive diffusion define the emergent metric and why do scutoids appear at cloning events?"
 
 (sec-fg-book-map)=
 ## Volume Map
@@ -151,11 +182,31 @@ A recommended approach for understanding this framework:
 **Part 1: The Algorithm**
 - {doc}`1_the_algorithm/01_algorithm_intuition`: Intuitive, implementation-oriented introduction
 - {doc}`1_the_algorithm/02_fractal_gas_latent`: Complete proof object with sieve verification
+- {doc}`1_the_algorithm/03_algorithmic_sieve`: Parameter constraints and tuning synthesis
 
-**Part 2: The Fractal Set (Gauge Structure)**
-- {doc}`2_fractal_set/01_fractal_set`: $O(N)$ redundancy from viscous coupling, lifted to $SU(N)$ by complexification
+**Part 2: The Fractal Set and Gauge Theory**
+- {doc}`2_fractal_set/01_fractal_set`: Fractal Set data structure (CST/IG/IA edges, interaction triangles)
 - {doc}`2_fractal_set/02_causal_set_theory`: Causal structure and discrete spacetime
 - {doc}`2_fractal_set/03_lattice_qft`: Connection to lattice gauge theory
+- {doc}`2_fractal_set/04_standard_model`: Standard Model gauge group from algorithmic redundancies
+- {doc}`2_fractal_set/05_yang_mills_noether`: Yang-Mills action, Noether currents, QFT axiom checks
+
+**Part 3: The Fitness Manifold**
+- {doc}`3_fitness_manifold/01_emergent_geometry`: Emergent geometry from adaptive diffusion
+- {doc}`3_fitness_manifold/02_scutoid_spacetime`: Scutoid spacetime from cloning and tessellation
+- {doc}`3_fitness_manifold/03_curvature_gravity`: Curvature from discrete holonomy
+- {doc}`3_fitness_manifold/04_field_equations`: Field equations and pressure dynamics
+- {doc}`3_fitness_manifold/05_holography`: Holography and boundary data
+- {doc}`3_fitness_manifold/06_cosmology`: Cosmology and large-scale dynamics
+
+**Appendices: Classical Analysis and Bounds**
+- {doc}`appendices/01_fragile_gas_framework`: Axioms and framework
+- {doc}`appendices/02_euclidean_gas`: Euclidean instantiation
+- {doc}`appendices/06_convergence`: Classical convergence theorem
+- {doc}`appendices/07_discrete_qsd`: QSD structure
+- {doc}`appendices/08_mean_field`: Mean-field limit and propagation of chaos
+- {doc}`appendices/13_quantitative_error_bounds`: Quantitative error bounds
+- {doc}`appendices/14_faq`: FAQ and reviewer objections
 
 (sec-fg-positioning)=
 ## Positioning: Connections to Prior Work, Differences, and Advantages
@@ -196,7 +247,7 @@ This volume provides a **mathematically rigorous foundation for population-based
 
 4. **Revival guarantee from parameter constraints.** The inequality $\varepsilon_{\text{clone}} \cdot p_{\max} < V_{\min}$ ensures dead walkers always clone ({prf:ref}`prop-fg-guaranteed-revival`).
 
-*Gauge-Theoretic Structure:*
+*Gauge-Theoretic Structure and QFT:*
 
 5. **SU($d$) from viscous coupling.** The d-dimensional latent space induces SU($d$) gauge symmetry via complex color states ({prf:ref}`def-latent-fractal-gas-complex-color`).
 
@@ -206,13 +257,29 @@ This volume provides a **mathematically rigorous foundation for population-based
 
 8. **Confinement from localization.** The kernel $K_\rho = \exp(-\|z_i - z_j\|^2/(2\epsilon^2))$ provides asymptotic freedom at $d \gg \epsilon$ and confinement at $d < \epsilon$ ({prf:ref}`prop-latent-fractal-gas-confinement`).
 
+9. **Standard Model gauge group from three redundancies.** $U(1)_{\text{fitness}}$, $SU(2)_{\text{weak}}$, and $SU(d)_{\text{color}}$ emerge from diversity, cloning, and viscous coupling ({doc}`2_fractal_set/04_standard_model`).
+
+10. **Yang-Mills action and Noether currents.** Wilson loops and path integrals yield Yang-Mills dynamics and conserved currents, with QFT axiom checks ({doc}`2_fractal_set/05_yang_mills_noether`).
+
+*Fitness-Manifold Geometry:*
+
+11. **Emergent metric from adaptive diffusion.** $g = \nabla^2 V_{\text{fit}} + \epsilon_\Sigma I$ defines geometry via diffusion-metric duality ({doc}`3_fitness_manifold/01_emergent_geometry`).
+
+12. **Scutoid spacetime from cloning.** Voronoi neighbor changes force scutoid cells and discrete tessellation ({doc}`3_fitness_manifold/02_scutoid_spacetime`).
+
+13. **Curvature from discrete holonomy.** Riemann curvature and Raychaudhuri focusing emerge from scutoid plaquettes ({doc}`3_fitness_manifold/03_curvature_gravity`).
+
+14. **Field equations, holography, and cosmology.** Pressure dynamics and boundary data drive the field equations and large-scale behavior ({doc}`3_fitness_manifold/04_field_equations`, {doc}`3_fitness_manifold/05_holography`, {doc}`3_fitness_manifold/06_cosmology`).
+
 *Proof Architecture:*
 
-9. **Complete sieve verification.** All 17 nodes executed with typed certificates; 0 inconclusive certificates under assumptions A1-A6 plus A2b ({doc}`1_the_algorithm/02_fractal_gas_latent` Part IV).
+15. **Algorithmic sieve for parameter constraints.** Three-layer bound synthesis with rigor classification ({doc}`1_the_algorithm/03_algorithmic_sieve`).
 
-10. **Factory-generated rates.** The framework computes $\kappa_{\text{total}}$, $\kappa_{\text{QSD}}$, $C_{\text{LSI}}^{(\text{geom})}$ from algorithm parameters via explicit formulas ({doc}`1_the_algorithm/02_fractal_gas_latent` Part III-A).
+16. **Complete sieve verification.** All 17 nodes executed with typed certificates; 0 inconclusive certificates under assumptions A1-A6 plus A2b ({doc}`1_the_algorithm/02_fractal_gas_latent` Part IV).
 
-11. **Assumption discharge ledger.** Classical requirements (global convexity, gradient flow structure) are explicitly superseded by factory certificates ({doc}`1_the_algorithm/02_fractal_gas_latent` Part III-E).
+17. **Factory-generated rates.** The framework computes $\kappa_{\text{total}}$, $\kappa_{\text{QSD}}$, $C_{\text{LSI}}^{(\text{geom})}$ from algorithm parameters via explicit formulas ({doc}`1_the_algorithm/02_fractal_gas_latent` Part III-A).
+
+18. **Assumption discharge ledger.** Classical requirements (global convexity, gradient flow structure) are explicitly superseded by factory certificates ({doc}`1_the_algorithm/02_fractal_gas_latent` Part III-E).
 
 **Repackaging (directly inherited ingredients):**
 
