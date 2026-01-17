@@ -1125,6 +1125,16 @@ L(L_{g_0} I) = L_{g_0}(L I)
 $$
 where the right-hand side is left-multiplication on $SE(2)$: $(L_{g_0} f)(g) = f(g_0^{-1} g)$.
 
+*Verification:* Evaluate both sides at $g = (x, R_\theta)$:
+- **LHS:** $(L(L_{g_0} I))(x, \theta) = \sum_i (\psi_i^{(\theta)} * (L_{g_0} I))(x) \cdot e_i$
+- Change variables in convolution: $(\psi_i^{(\theta)} * (L_{g_0} I))(x) = \int \psi_i(R_\theta^{-1}(x - y)) I(R_{\theta_0}^{-1}(y - x_0)) dy$
+- Substitute $u = R_{\theta_0}^{-1}(y - x_0)$, so $y = R_{\theta_0} u + x_0$:
+  $$= \int \psi_i(R_\theta^{-1}(x - x_0 - R_{\theta_0} u)) I(u) du = \int \psi_i(R_{\theta - \theta_0}^{-1}(R_{\theta_0}^{-1}(x - x_0) - u)) I(u) du$$
+- **RHS:** $(L_{g_0}(L I))(g) = (L I)(g_0^{-1} g)$ where $g_0^{-1} = (-R_{\theta_0}^{-1} x_0, R_{\theta_0}^{-1})$
+- $g_0^{-1} g = (R_{\theta_0}^{-1}(x - x_0), R_{\theta - \theta_0})$ (using SE(2) multiplication)
+- $(L I)(R_{\theta_0}^{-1}(x - x_0), \theta - \theta_0) = \sum_i (\psi_i^{(\theta - \theta_0)} * I)(R_{\theta_0}^{-1}(x - x_0)) \cdot e_i$
+- This matches the LHS after recognizing $\psi_i^{(\theta - \theta_0)}(y) = \psi_i(R_{\theta - \theta_0}^{-1} y)$. $\square$
+
 **Geometric interpretation:** Instead of features at spatial locations $x \in \mathbb{R}^2$, lifted features live at *posed locations* $(x, \theta) \in SE(2)$: position AND orientation. The network learns to detect patterns *and* their orientations explicitly.
 
 **Output dimension:** For $N_\theta$ discrete orientations (e.g., $N_\theta = 8$ for $\theta \in \{0°, 45°, 90°, \ldots, 315°\}$), the output has dimension $C_{\text{out}} = N_\theta \times C_{\text{feature}}$ where $C_{\text{feature}}$ is the number of feature types per orientation.
