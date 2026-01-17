@@ -2923,11 +2923,11 @@ class IsotropicBlock(nn.Module):
 
 **Table: Primitive ↔ Gauge Field Correspondence**
 
-| Gauge Field | Group | DNN Primitive | Physical Interpretation | Cross-Reference |
-|:------------|:------|:--------------|:------------------------|:----------------|
-| Binding $G_\mu^a$ | $SU(N_f)_C$ | Isotropic bundles ($n_b$ bundles) | Feature confinement (color charge) | {ref}`sec-symplectic-multi-agent-field-theory`, Node 40 |
-| Error $W_\mu^b$ | $SU(2)_L$ | Obs-action doublet (steerable conv) | Sensor-motor mixing (weak force) | {ref}`sec-symplectic-multi-agent-field-theory` |
-| Opportunity $B_\mu$ | $U(1)_Y$ | Spectral norm (hypercharge) | Capacity conservation | {ref}`sec-parameter-space-sieve`, Node 56 |
+| Gauge Field | Group | DNN Primitive | Physical Interpretation | Cross-Reference | Implementation Note |
+|:------------|:------|:--------------|:------------------------|:----------------|:--------------------|
+| Binding $G_\mu^a$ | $SU(N_f)_C$ | Isotropic bundles ($n_b$ bundles) | Feature confinement (color charge) | {ref}`sec-symplectic-multi-agent-field-theory`, Node 40 | Discrete subgroup: signed permutations |
+| Error $W_\mu^b$ | $SU(2)_L$ | Steerable conv (observation-action coupling) | Sensor-motor mixing (weak force) | {ref}`sec-symplectic-multi-agent-field-theory` | **Reduced to $SO(2) \cong U(1)$** (2D rotation subgroup) |
+| Opportunity $B_\mu$ | $U(1)_Y$ | Spectral norm (hypercharge conservation) | Capacity conservation | {ref}`sec-parameter-space-sieve`, Node 56 | Conserved quantity $Y \propto \|z\|^2$, not explicit rotation |
 
 ### Physics Isomorphism: DNN Primitives ↔ Standard Model
 
