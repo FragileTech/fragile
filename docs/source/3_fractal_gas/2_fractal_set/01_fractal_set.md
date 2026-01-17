@@ -63,6 +63,13 @@ Together, the three edge types form a **directed 1-skeleton**: CST encodes timel
 **Fractal Set on two time slices.** CST edges run forward in time, IG edges connect same-time walkers, and IA edges point back from effects to causes. One interaction triangle is highlighted.
 :::
 
+:::{figure} figures/cst-growth-tree-ig-ia.svg
+:name: fig-fractal-set-growth-tree
+:width: 100%
+
+**CST growth tree with IG and IA edges.** CST edges build the forward-time tree, IG edges link contemporaneous walkers in disjoint pairs, and IA edges attribute influence back across timesteps.
+:::
+
 ---
 
 ## Overview

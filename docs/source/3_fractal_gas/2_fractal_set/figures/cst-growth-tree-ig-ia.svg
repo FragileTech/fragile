@@ -1,0 +1,100 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 540" role="img" aria-label="CST growth tree with IG and IA edges across timesteps">
+  <defs>
+    <style>
+      .title { font: 600 18px "IBM Plex Sans", Arial, sans-serif; fill: #1f2933; }
+      .label { font: 500 14px "IBM Plex Sans", Arial, sans-serif; fill: #1f2933; }
+      .small { font: 12px "IBM Plex Sans", Arial, sans-serif; fill: #334e68; }
+      .node { fill: #f5f7fa; stroke: #1f2933; stroke-width: 1.6; }
+      .axis { stroke: #333333; stroke-width: 2; }
+      .grid { stroke: #cbd2d9; stroke-width: 1; stroke-dasharray: 6 6; }
+      .cst { stroke: #2e86ab; stroke-width: 2.4; }
+      .ig { stroke: #f6ae2d; stroke-width: 2.4; }
+      .ia { stroke: #2a9d8f; stroke-width: 2.4; stroke-dasharray: 6 4; }
+      .tri { fill: #e8f4f2; stroke: #2a9d8f; stroke-width: 1.4; }
+      .legend-box { fill: #ffffff; stroke: #cbd2d9; stroke-width: 1; }
+    </style>
+    <marker id="arrow-cst" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#2e86ab" />
+    </marker>
+    <marker id="arrow-ig" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#f6ae2d" />
+    </marker>
+    <marker id="arrow-ia" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#2a9d8f" />
+    </marker>
+  </defs>
+
+  <rect width="980" height="540" fill="#ffffff" />
+
+  <text class="title" x="32" y="34">CST Growth Tree with IG and IA Edges</text>
+
+  <line class="axis" x1="80" y1="470" x2="80" y2="70" />
+  <path d="M80 60 L70 78 L90 78 Z" fill="#333333" />
+  <text class="label" x="20" y="60">t (future)</text>
+
+  <line class="grid" x1="110" y1="430" x2="620" y2="430" />
+  <line class="grid" x1="110" y1="320" x2="620" y2="320" />
+  <line class="grid" x1="110" y1="210" x2="620" y2="210" />
+  <line class="grid" x1="110" y1="100" x2="620" y2="100" />
+
+  <text class="label" x="40" y="436">t0</text>
+  <text class="label" x="40" y="326">t1</text>
+  <text class="label" x="40" y="216">t2</text>
+  <text class="label" x="40" y="106">t3</text>
+
+  <polygon class="tri" points="250,320 390,320 280,210" />
+
+  <line class="cst" x1="320" y1="430" x2="250" y2="320" marker-end="url(#arrow-cst)" />
+  <line class="cst" x1="320" y1="430" x2="390" y2="320" marker-end="url(#arrow-cst)" />
+
+  <line class="cst" x1="250" y1="320" x2="190" y2="210" marker-end="url(#arrow-cst)" />
+  <line class="cst" x1="250" y1="320" x2="280" y2="210" marker-end="url(#arrow-cst)" />
+  <line class="cst" x1="390" y1="320" x2="360" y2="210" marker-end="url(#arrow-cst)" />
+  <line class="cst" x1="390" y1="320" x2="450" y2="210" marker-end="url(#arrow-cst)" />
+
+  <line class="cst" x1="190" y1="210" x2="160" y2="100" marker-end="url(#arrow-cst)" />
+  <line class="cst" x1="190" y1="210" x2="240" y2="100" marker-end="url(#arrow-cst)" />
+  <line class="cst" x1="280" y1="210" x2="320" y2="100" marker-end="url(#arrow-cst)" />
+  <line class="cst" x1="360" y1="210" x2="400" y2="100" marker-end="url(#arrow-cst)" />
+  <line class="cst" x1="450" y1="210" x2="480" y2="100" marker-end="url(#arrow-cst)" />
+
+  <line class="ig" x1="250" y1="320" x2="384" y2="320" marker-end="url(#arrow-ig)" />
+  <line class="ig" x1="274" y1="210" x2="196" y2="210" marker-end="url(#arrow-ig)" />
+  <line class="ig" x1="360" y1="210" x2="444" y2="210" marker-end="url(#arrow-ig)" />
+  <line class="ig" x1="240" y1="100" x2="314" y2="100" marker-end="url(#arrow-ig)" />
+
+  <line class="ia" x1="280" y1="210" x2="384" y2="320" marker-end="url(#arrow-ia)" />
+  <line class="ia" x1="360" y1="210" x2="256" y2="320" marker-end="url(#arrow-ia)" />
+  <line class="ia" x1="320" y1="100" x2="196" y2="210" marker-end="url(#arrow-ia)" />
+  <line class="ia" x1="400" y1="100" x2="286" y2="210" marker-end="url(#arrow-ia)" />
+
+  <circle class="node" cx="320" cy="430" r="10" />
+  <circle class="node" cx="250" cy="320" r="10" />
+  <circle class="node" cx="390" cy="320" r="10" />
+
+  <circle class="node" cx="190" cy="210" r="10" />
+  <circle class="node" cx="280" cy="210" r="10" />
+  <circle class="node" cx="360" cy="210" r="10" />
+  <circle class="node" cx="450" cy="210" r="10" />
+
+  <circle class="node" cx="160" cy="100" r="10" />
+  <circle class="node" cx="240" cy="100" r="10" />
+  <circle class="node" cx="320" cy="100" r="10" />
+  <circle class="node" cx="400" cy="100" r="10" />
+  <circle class="node" cx="480" cy="100" r="10" />
+
+  <rect x="650" y="120" width="300" height="190" rx="10" class="legend-box" />
+  <text x="670" y="145" class="label">Legend</text>
+
+  <line x1="670" y1="170" x2="730" y2="170" class="cst" marker-end="url(#arrow-cst)" />
+  <text x="742" y="174" class="small">CST edge (time evolution)</text>
+
+  <line x1="670" y1="198" x2="730" y2="198" class="ig" marker-end="url(#arrow-ig)" />
+  <text x="742" y="202" class="small">IG edge (influence at same t)</text>
+
+  <line x1="670" y1="226" x2="730" y2="226" class="ia" marker-end="url(#arrow-ia)" />
+  <text x="742" y="230" class="small">IA edge (attribution back in time)</text>
+
+  <rect x="670" y="250" width="20" height="12" class="tri" />
+  <text x="698" y="260" class="small">Interaction triangle</text>
+</svg>
