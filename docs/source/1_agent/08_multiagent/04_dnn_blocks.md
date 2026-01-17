@@ -763,7 +763,9 @@ First, we verify that the standard representation of $SO(d_b)$ on $\mathbb{R}^{d
 - If $V$ contains a nonzero vector $v$, then it contains $v/\|v\| \in S^{d_b-1}$. By transitivity, $V$ must contain all unit vectors, hence $V = \mathbb{R}^{d_b}$.
 - Thus the only $SO(d_b)$-invariant subspaces are $\{0\}$ and $\mathbb{R}^{d_b}$, proving irreducibility. $\blacksquare$
 
-By Schur's lemma, any linear map $W_i: V_i \to V_i$ that satisfies $W_i g_i = g_i W_i$ for all $g_i \in SO(d_b)$ must be a scalar multiple of identity: $W_i = \lambda_i I_{d_b}$.
+By **Schur's lemma** (see Serre, *Linear Representations of Finite Groups*, Springer 1977, Theorem 2; or Fulton & Harris, *Representation Theory*, Springer 1991, Lemma 1.7), any linear map $W_i: V_i \to V_i$ that **commutes** with all elements of an irreducible representation must be a scalar multiple of identity: $W_i = \lambda_i I_{d_b}$.
+
+**Schur's lemma statement:** If $\rho: G \to GL(V)$ is an irreducible representation and $T: V \to V$ is a linear map satisfying $T \circ \rho(g) = \rho(g) \circ T$ for all $g \in G$, then $T = \lambda I$ for some $\lambda \in \mathbb{R}$ (or $\mathbb{C}$ for complex representations).
 
 **Step 4. Verify direction condition implies commutativity:**
 If $W_i g_i v \parallel g_i W_i v$ for all $g_i, v$, and both have the same magnitude (which follows from matching scalars $h(\cdot)$), then:
