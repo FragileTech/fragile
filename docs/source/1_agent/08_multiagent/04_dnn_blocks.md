@@ -873,7 +873,52 @@ where $L_g$ is the Lipschitz constant of the gating function $g$ and $(\sigma_{\
 
 **Implication:** If $W_i \approx \lambda_i I$ (approximately isotropic), then $\sigma_{\max}(W_i) \approx \sigma_{\min}(W_i)$ and $\epsilon_i \approx 0$. The practical architecture trades exact equivariance for expressiveness, with controlled violation bounds.
 
-*Proof sketch.* The violation arises because $\|W_i g_i z\| \neq \|W_i z\|$ when $W_i$ has different singular values in different directions. The difference $|\|W_i g_i z\| - \|W_i z\||$ is bounded by the condition number of $W_i$ times $\|z\|$. The gating function $h$ amplifies this by at most $L_g$. $\square$
+*Proof.*
+
+**Step 1. Norm perturbation under rotation:**
+For $W_i = U_i \Sigma_i V_i^T$ with singular values $\sigma_1 \geq \sigma_2 \geq \cdots \geq \sigma_{d_b}$, we have:
+$$
+\sigma_{\min}(W_i) \|v\| \leq \|W_i v\| \leq \sigma_{\max}(W_i) \|v\|
+$$
+
+Since $g_i \in SO(d_b)$ preserves norms ($\|g_i z\| = \|z\|$):
+$$
+\sigma_{\min}(W_i) \|z\| \leq \|W_i g_i z\| \leq \sigma_{\max}(W_i) \|z\|
+$$
+
+**Step 2. Norm difference bound:**
+The difference in norms is:
+$$
+|\|W_i g_i z\| - \|W_i z\|| \leq (\sigma_{\max}(W_i) - \sigma_{\min}(W_i)) \|z\|
+$$
+
+*Justification:* In the worst case, $W_i z$ aligns with the maximum singular direction (giving $\|W_i z\| = \sigma_{\max}\|z\|$), while $W_i g_i z$ aligns with the minimum singular direction (giving $\|W_i g_i z\| = \sigma_{\min}\|z\|$). The difference is bounded by $(\sigma_{\max} - \sigma_{\min})\|z\|$.
+
+**Step 3. Gating function amplification:**
+The NormGate output is $f(v) = v \cdot g(\|v\| + b)$. The equivariance violation comes from:
+$$
+\epsilon_i = \|W_i g_i z \cdot g(\|W_i g_i z\| + b) - g_i W_i z \cdot g(\|W_i z\| + b)\|
+$$
+
+Using the triangle inequality and Lipschitz property $|g(x) - g(y)| \leq L_g |x - y|$:
+$$
+\epsilon_i \leq \|W_i g_i z\| |g(\|W_i g_i z\| + b) - g(\|W_i z\| + b)| + |g(\|W_i z\| + b)| \cdot |\|W_i g_i z\| - \|W_i z\||
+$$
+$$
+\leq \sigma_{\max} \|z\| \cdot L_g (\sigma_{\max} - \sigma_{\min}) \|z\| + |g(\|W_i z\| + b)| \cdot (\sigma_{\max} - \sigma_{\min}) \|z\|
+$$
+
+Since $|g(r)| \leq C_g r$ (sublinear growth) and $r \approx \|z\|$:
+$$
+\epsilon_i \leq (L_g + C_g) (\sigma_{\max}(W_i) - \sigma_{\min}(W_i)) \|z\|^2
+$$
+
+For normalized latents with $\|z\| \approx 1$, this simplifies to:
+$$
+\epsilon_i \leq (L_g + 1) (\sigma_{\max}(W_i) - \sigma_{\min}(W_i)) \|z\|
+$$
+
+$\square$
 :::
 
 ---
