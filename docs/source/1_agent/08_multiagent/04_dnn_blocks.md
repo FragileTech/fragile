@@ -1011,21 +1011,52 @@ $$
 $$
 
 **Step 2. Change of variables:**
-Let $y' = R_\theta y$. Since $R_\theta \in SO(2)$ preserves measure ($|\det R_\theta| = 1$):
+Let $u = R_\theta^{-1} y$, so $y = R_\theta u$. Since $R_\theta \in SO(2)$ preserves measure ($|\det R_\theta| = 1$), we have $dy = du$:
 $$
-= \int_{\mathbb{R}^2} \psi_n(R_\theta^{-1} y') I(R_\theta^{-1}(x - y')) \, dy'
-$$
-
-**Step 3. Factor rotation:**
-$$
-= \int_{\mathbb{R}^2} (R_\theta \cdot \psi_n)(y') I(x - y') \, dy' = ((R_\theta \cdot \psi_n) * I)(x)
+= \int_{\mathbb{R}^2} \psi_n(R_\theta u) I(R_\theta^{-1}(x - R_\theta u)) \, du
 $$
 
-**Step 4. Apply steerability:**
-By Definition {prf:ref}`def-steerable-filter-bank`, $R_\theta \cdot \psi_n^{(\ell)} = \sum_m D_{nm}^{(\ell)}(\theta) \psi_m^{(\ell)}$. Thus:
+Using the property $R_\theta^{-1}(x - R_\theta u) = R_\theta^{-1} x - u$:
 $$
-(\psi_n^{(\ell)} * (R_\theta \cdot I))(x) = \sum_m D_{nm}^{(\ell)}(\theta) (\psi_m^{(\ell)} * I)(x)
+= \int_{\mathbb{R}^2} \psi_n(R_\theta u) I(R_\theta^{-1} x - u) \, du
 $$
+
+**Step 3. Apply steerability definition:**
+By the steerability property (Definition {prf:ref}`def-steerable-filter-bank`), the filter transforms as:
+$$
+\psi_n(R_\theta u) = (R_\theta \cdot \psi_n)(u)
+$$
+
+Therefore:
+$$
+= \int_{\mathbb{R}^2} (R_\theta \cdot \psi_n)(u) I(R_\theta^{-1} x - u) \, du
+$$
+
+**Step 4. Apply filter bank steerability:**
+By Definition {prf:ref}`def-steerable-filter-bank`, a steerable filter of type $\ell$ satisfies:
+$$
+(R_\theta \cdot \psi_n)(u) = \psi_n(R_\theta u) = \sum_m D_{nm}^{(\ell)}(\theta) \psi_m(u)
+$$
+
+Substituting:
+$$
+= \int_{\mathbb{R}^2} \left[\sum_m D_{nm}^{(\ell)}(\theta) \psi_m(u)\right] I(R_\theta^{-1} x - u) \, du
+$$
+
+**Step 5. Separate sum from integral:**
+$$
+= \sum_m D_{nm}^{(\ell)}(\theta) \int_{\mathbb{R}^2} \psi_m(u) I(R_\theta^{-1} x - u) \, du
+$$
+
+**Step 6. Recognize convolution:**
+The integral $\int \psi_m(u) I(R_\theta^{-1} x - u) \, du = (\psi_m * I)(R_\theta^{-1} x)$ by definition of convolution. This is precisely $(R_\theta \cdot (\psi_m * I))(x)$ by the definition of rotation action on functions.
+
+Therefore:
+$$
+(\psi_n^{(\ell)} * (R_\theta \cdot I))(x) = \sum_m D_{nm}^{(\ell)}(\theta) (R_\theta \cdot (\psi_m^{(\ell)} * I))(x)
+$$
+
+which shows the desired equivariance property.
 
 In matrix form:
 $$
