@@ -883,23 +883,28 @@ $$
 **Path 1: Convolve then rotate by $\theta = 45°$**
 
 Compute $(\psi * I)(x, y)$ at position $(1, 1)$ (center, using valid padding):
+
+At $(1,1)$, the $2 \times 2$ kernel overlays the patch $I[1:3, 1:3] = \begin{pmatrix} 0 & 1 \\ 0 & 1 \end{pmatrix}$:
 $$
-(\psi * I)(1, 1) = -1 \cdot 0 + 1 \cdot 0 + (-1) \cdot 0 + 1 \cdot 1 = 1
+(\psi * I)(1, 1) = -1 \cdot 0 + 1 \cdot 1 + (-1) \cdot 0 + 1 \cdot 1 = 2
 $$
 
-Similarly, $(\psi * I)(0, 0) = 0$, $(\psi * I)(0, 1) = 0$, $(\psi * I)(1, 0) = 1$.
+Similarly:
+- At $(0, 0)$: patch is $\begin{pmatrix} 0 & 0 \\ 0 & 0 \end{pmatrix}$, result $= 0$
+- At $(0, 1)$: patch is $\begin{pmatrix} 0 & 1 \\ 0 & 1 \end{pmatrix}$, result $= 2$
+- At $(1, 0)$: patch is $\begin{pmatrix} 0 & 0 \\ 0 & 0 \end{pmatrix}$, result $= 0$
 
 Convolution result (single channel):
 $$
 \psi * I = \begin{pmatrix}
-0 & 0 \\
-1 & 1
+0 & 2 \\
+0 & 2
 \end{pmatrix}
 $$
 
 Rotate by $45°$ using bilinear interpolation at position $(0.5, 0.5)$ (center after rotation):
 $$
-(R_{45°} \cdot (\psi * I))(0.5, 0.5) \approx \frac{1}{4}(0 + 0 + 1 + 1) = 0.5
+(R_{45°} \cdot (\psi * I))(0.5, 0.5) \approx \frac{1}{4}(0 + 2 + 0 + 2) = 1.0
 $$
 
 **Path 2: Rotate then convolve**
@@ -923,10 +928,10 @@ Due to interpolation artifacts and edge effects, the two paths give **numericall
 
 **Quantitative violation:** For the $3 \times 3$ edge image with $45°$ rotation:
 $$
-\|(\psi * (R_{45°} \cdot I)) - (R_{45°} \cdot (\psi * I))\|_F \approx 0.3 \text{ to } 0.5
+\|(\psi * (R_{45°} \cdot I)) - (R_{45°} \cdot (\psi * I))\|_F \approx 0.6 \text{ to } 1.0
 $$
 
-(Frobenius norm, typical values depending on boundary conditions). This is non-negligible relative to signal magnitude, confirming Conv2d breaks SO(2) equivariance.
+(Frobenius norm, typical values depending on boundary conditions and interpolation scheme). With correct convolution values ($\psi * I$ has entries of magnitude 2, not 1), the violation is approximately 50-100% of the signal magnitude, confirming Conv2d significantly breaks SO(2) equivariance.
 
 $\square$
 
