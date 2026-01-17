@@ -1947,10 +1947,10 @@ where $R_{\max}$ is the maximum expected norm in the operating range.
 **For GELU:** The GELU function $g(x) = x\Phi(x)$ where $\Phi$ is the standard normal CDF satisfies:
 - $C_g = 1$ (since $0 \leq \Phi(x) \leq 1$ implies $|g(x)| \leq |x|$)
 - $g'(x) = \Phi(x) + x\phi(x)$ where $\phi(x) = \frac{1}{\sqrt{2\pi}}e^{-x^2/2}$
-- $\sup_{x \in \mathbb{R}} g'(x) = 1$ (achieved as $x \to +\infty$)
-- For practical operating range $x \in [-3, 3]$: $\max_{x \in [-3,3]} g'(x) \approx 1.08$
+- $\sup_{x \in \mathbb{R}} g'(x) \approx 1.129$ (achieved near $x \approx 0.87$, verified numerically)
+- For practical operating range $x \in [-3, 3]$: $\max_{x \in [-3,3]} g'(x) \approx 1.129$ (same critical point)
 
-Thus $L_g \approx 1.08$ and $L_f \leq 1.08(R_{\max} + 1)$.
+Thus $L_g \approx 1.129$ and $L_f \leq 1.129(R_{\max} + 1)$.
 
 *Proof.*
 
@@ -2046,14 +2046,14 @@ L_f = \sup_v \|\nabla f(v)\|_{\text{op}} \leq R_{\max}(C_g + L_g) + C_gB
 $$
 
 **Step 6. Numerical values for GELU:**
-For GELU with $C_g = 1$, $L_g \approx 1.08$, and typical bias $|b| \leq 1$:
+For GELU with $C_g = 1$, $L_g \approx 1.129$, and typical bias $|b| \leq 1$:
 $$
-L_f \leq R_{\max}(1 + 1.08) + 1 \approx 2.08 R_{\max} + 1
+L_f \leq R_{\max}(1 + 1.129) + 1 \approx 2.129 R_{\max} + 1
 $$
 
 With normalized inputs, $R_{\max} \approx \sqrt{d_b}$ for $d_b$-dimensional bundles. For $d_b = 16$:
 $$
-L_f \lesssim 2.08 \times 4 + 1 \approx 9.3
+L_f \lesssim 2.129 \times 4 + 1 \approx 9.5
 $$
 
 **Remark 1 (Composition with spectral norm):** While individual NormGate layers have $L_f > 1$, they compose with spectral-normalized linear layers (which have $L = 1$). The total Lipschitz constant for IsotropicBlock is bounded by the product, and layer normalization or skip connections prevent unbounded growth across depth.
@@ -2110,36 +2110,36 @@ where:
 **Step 2. Lipschitz constants:**
 - By Theorem {prf:ref}`thm-spectral-preserves-light-cone`: $L_1 \leq 1$
 - $f_2$ is identity: $L_2 = 1$
-- By Lemma {prf:ref}`lem-normgate-lipschitz` with GELU ($C_g = 1$, $L_g \approx 1.08$):
+- By Lemma {prf:ref}`lem-normgate-lipschitz` with GELU ($C_g = 1$, $L_g \approx 1.129$):
 $$
-L_3 \leq R_{\max}(C_g + L_g) + C_gB \approx 2.08 R_{\max} + 1
+L_3 \leq R_{\max}(C_g + L_g) + C_gB \approx 2.129 R_{\max} + 1
 $$
 
 For normalized bundles with $R_{\max} \approx \sqrt{d_b}$ and $d_b = 16$:
 $$
-L_3 \lesssim 2.08 \times 4 + 1 \approx 9.3
+L_3 \lesssim 2.129 \times 4 + 1 \approx 9.5
 $$
 
 **Step 3. Composition:**
 By composition of Lipschitz functions ($\|f \circ g(x) - f \circ g(y)\| \leq L_f L_g \|x-y\|$):
 $$
-L_{\text{total}} = L_3 \cdot L_2 \cdot L_1 \leq 9.3 \cdot 1 \cdot 1 = 9.3
+L_{\text{total}} = L_3 \cdot L_2 \cdot L_1 \leq 9.5 \cdot 1 \cdot 1 = 9.5
 $$
 
 **Interpretation: Bounded Amplification, Not Strict Light Cone Preservation**
 
-The Lipschitz constant $L \approx 9.3$ means the IsotropicBlock can **amplify** signals by a bounded factor. This is *different* from strict light cone preservation (which would require $L \leq 1$, ensuring no amplification).
+The Lipschitz constant $L \approx 9.5$ means the IsotropicBlock can **amplify** signals by a bounded factor. This is *different* from strict light cone preservation (which would require $L \leq 1$, ensuring no amplification).
 
 **Why amplification is acceptable:**
-1. **Per-layer bound:** Each layer amplifies by at most $\times 9.3$, a fixed constant
-2. **Composition depth:** For deep networks with $D$ layers, naive bound gives $L_{\text{total}} \leq (9.3)^D$, but this is pessimistic:
+1. **Per-layer bound:** Each layer amplifies by at most $\times 9.5$, a fixed constant
+2. **Composition depth:** For deep networks with $D$ layers, naive bound gives $L_{\text{total}} \leq (9.5)^D$, but this is pessimistic:
    - Norm-gating creates *adaptive damping*: high-norm states get suppressed (gating saturates)
    - In practice, effective amplification per layer is closer to 1-2 (empirical observation)
 3. **Gradient clipping:** Combined with gradient normalization in training, prevents runaway amplification
 
 **Relationship to causal structure:**
 - **SpectralLinear alone** has $L = 1$ (strict light cone preservation, Theorem {prf:ref}`thm-spectral-preserves-light-cone`)
-- **NormGate** introduces bounded amplification ($L \approx 9.3$ for GELU with $d_b = 16$)
+- **NormGate** introduces bounded amplification ($L \approx 9.5$ for GELU with $d_b = 16$)
 - **Net effect:** Information propagation is *bounded* but not *contractive*
 
 **Practical consideration:**
@@ -2151,7 +2151,7 @@ z = z / z.norm(dim=-1, keepdim=True) * target_norm  # Renormalize
 
 Thus:
 $$
-\|f(z_1) - f(z_2)\| \leq 9.3 \|z_1 - z_2\|
+\|f(z_1) - f(z_2)\| \leq 9.5 \|z_1 - z_2\|
 $$
 
 **Remark on constant factor:** While $L > 1$ for individual blocks, depth-wise accumulation is controlled via:
