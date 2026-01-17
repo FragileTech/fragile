@@ -315,11 +315,39 @@ where $G^{ij}(z)$ is the metric tensor from Theorem {prf:ref}`thm-capacity-const
 
 **Smoothness requirement:** Gradient-based geodesic integrators (e.g., Boris-BAOAB in Section 5.4) require $\mathcal{L}_{\text{WFR}}$ to be at least $C^1$ (continuously differentiable) to compute well-defined gradients $\nabla_z \mathcal{L}$.
 
-**ReLU violates this:** By Theorem {prf:ref}`thm-relu-breaks-equivariance`, ReLU creates non-differentiable kinks at coordinate hyperplanes $\{z \in \mathcal{Z} : z_i = 0\}$ for each $i = 1, \ldots, d_z$. At these kinks:
+**ReLU violates this:** By Theorem {prf:ref}`thm-relu-breaks-equivariance`, ReLU creates non-differentiable kinks at coordinate hyperplanes $\{z \in \mathcal{Z} : z_i = 0\}$ for each $i = 1, \ldots, d_z$.
 
-1. **Gradient undefined:** $\nabla_z \mathcal{L}$ is undefined in the classical sense (left and right derivatives differ)
-2. **Metric ill-defined:** The metric tensor $G(z)$, depending on $\nabla^2 V(z)$ (value Hessian) and Fisher information $\mathcal{F}(z)$, may be discontinuous
-3. **Integration errors:** Numerical integrators accumulate errors when trajectories cross kinks
+*Explicit derivation:*
+
+**Step 1. Network with ReLU activation:**
+Consider a simple network layer $f(z) = \max(0, Wz + b)$ where $W \in \mathbb{R}^{d \times d}$, $b \in \mathbb{R}^d$. The derivative is:
+$$
+\frac{\partial f_i}{\partial z_j} = \begin{cases}
+W_{ij} & \text{if } (Wz + b)_i > 0 \\
+0 & \text{if } (Wz + b)_i < 0 \\
+\text{undefined} & \text{if } (Wz + b)_i = 0
+\end{cases}
+$$
+
+**Step 2. WFR action functional dependence:**
+The WFR action $\mathcal{L}_{\text{WFR}}[z]$ depends on the value function $V(z)$ and policy $\pi(a|z)$. If the network architecture includes ReLU, then:
+$$
+\mathcal{L}_{\text{WFR}}[z] = V(f(z)) + \lambda I(\pi(\cdot|f(z)))
+$$
+where $f$ contains ReLU non-differentiability.
+
+**Step 3. Chain rule breakdown:**
+To compute $\nabla_z \mathcal{L}_{\text{WFR}}$, we need:
+$$
+\frac{\partial \mathcal{L}}{\partial z_j} = \sum_i \frac{\partial \mathcal{L}}{\partial f_i} \cdot \frac{\partial f_i}{\partial z_j}
+$$
+At kink points where $(Wz + b)_i = 0$, the term $\frac{\partial f_i}{\partial z_j}$ is undefined, causing $\nabla_z \mathcal{L}$ to be undefined.
+
+**Step 4. Consequences at kinks:**
+
+1. **Gradient undefined:** $\nabla_z \mathcal{L}$ does not exist in the classical sense (left derivative $\lim_{h \to 0^-}$ differs from right derivative $\lim_{h \to 0^+}$)
+2. **Metric ill-defined:** The metric tensor $G(z) = \nabla^2 V(z) + \lambda \mathcal{F}(z)$ requires second derivatives $\nabla^2 V$, which are undefined where $\nabla V$ is discontinuous
+3. **Integration errors:** Boris-BAOAB integrator uses $\frac{dz}{ds} = -G^{-1}\nabla \mathcal{L}$. At kinks, the gradient jump causes integration errors that accumulate over trajectory
 
 **Gauge-dependence problem:** Per Theorem {prf:ref}`thm-relu-breaks-equivariance`, ReLU kinks are coordinate-dependent. Under gauge transformation $z \mapsto U(g) \cdot z$ for $g \in G_{\text{Fragile}}$, the kink locations transform but ReLU does not transform equivariantly. This creates **inconsistent kink patterns** across gauge choices, causing geodesic flows to depend on arbitrary coordinate choices.
 
