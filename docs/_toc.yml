@@ -65,10 +65,6 @@ parts:
     - file: source/1_agent/08_multiagent/04_dnn_blocks
     - file: source/1_agent/08_multiagent/05_architecture
 
-  - caption: Part IX - Economics
-    chapters:
-    - file: source/1_agent/09_economics/01_pomw
-
   - caption: Appendices
     chapters:
     - file: source/1_agent/10_appendices/01_derivations

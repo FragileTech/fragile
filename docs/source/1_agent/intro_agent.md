@@ -269,9 +269,6 @@ Table of contents:
 - {doc}`08_multiagent/02_standard_model`
 - {doc}`08_multiagent/03_parameter_sieve`
 
-**Part IX: Economics**
-- {doc}`09_economics/01_pomw`
-
 **Conclusion**
 - {doc}`/conclusions`
 

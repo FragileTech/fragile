@@ -682,32 +682,32 @@ The critical assumption is that detection probability is exogenous---it depends 
 For the equilibrium to hold with detection probability $p_{\text{detect}} = 0.1$ (10% spot-check rate), the minimum stake-to-reward ratio is:
 
 $$
-\frac{S}{R} > \frac{C_{\text{honest}} - C_{\text{cheat}}}{0.1 \cdot R} - 1
+\frac{S}{R} > \frac{C_{\text{honest}} - C_{\text{cheat}}}{p_{\text{detect}} \cdot R} - 1
 
 $$
 
-For typical gradient computation where $C_{\text{honest}} / C_{\text{cheat}} \approx 10$ (cheating saves 90% of compute):
+For typical gradient computation where $C_{\text{cheat}} = 0.1 C_{\text{honest}}$ (cheating saves 90% of compute), and assuming mining equilibrium where $R \approx C_{\text{honest}}$ (reward covers honest computation cost):
 
 $$
-\frac{S}{R} > 90 - 1 = 89
+\frac{S}{R} > \frac{0.9 C_{\text{honest}}}{0.1 \cdot R} - 1 = \frac{9 C_{\text{honest}}}{R} - 1 \approx 9 - 1 = 8
 
 $$
 
-*Interpretation:* Miners must stake approximately 90x the block reward to make cheating unprofitable.
+*Interpretation:* Miners must stake approximately 8-10x the block reward to make cheating unprofitable with 10% spot-check rate.
 
 :::
 
 :::{div} feynman-prose
 
-That 90x stake-to-reward ratio might sound steep, but think about what it means.
+That 8-10x stake-to-reward ratio is actually quite reasonable. Here is what it means.
 
-A miner who wants to earn 1 COG in block rewards must lock up 90 COG as stake. If they cheat and get caught, they lose everything. If they are honest, they keep both the stake and the reward.
+A miner who wants to earn 1 COG in block rewards must lock up approximately 8-10 COG as stake (depending on detection probability). If they cheat and get caught, they lose everything. If they are honest, they keep both the stake and the reward.
 
 Now, here is the key insight: honest miners never lose their stake. It just sits there, block after block, earning rewards. The stake is not a cost; it is a security deposit. Over time, an honest miner earns many block rewards while their stake remains intact.
 
 Compare this to Bitcoin, where miners must continuously spend on electricity---money that never comes back. In Proof of Useful Work, the stake is *recoverable*. You can unstake and leave whenever you want (after a cooldown period). The economic model is fundamentally different: capital commitment instead of ongoing consumption.
 
-The 90x figure comes from the assumption that cheating saves 90% of compute (a worst case). If the verification scheme is better---catching cheaters more often or earlier---the required stake can be lower. The corollary gives us a design equation: decide your detection probability, and the stake ratio follows.
+The 8-10x figure assumes a 10% spot-check rate and that cheating saves 90% of compute (a worst case). If the verification scheme is better---catching cheaters more often or earlier---the required stake can be lower. The corollary gives us a design equation: decide your detection probability, and the stake ratio follows.
 
 :::
 
@@ -725,7 +725,7 @@ The 90x figure comes from the assumption that cheating saves 90% of compute (a w
 
 
 
-(sec-metric-friction-consensus)=
+(sec-consensus-minimum-friction-chain)=
 ## Consensus: The Minimum Friction Chain
 
 :::{div} feynman-prose
@@ -1052,7 +1052,7 @@ Between these bounds, the price floats freely based on supply and demand. But th
 
 :::
 
-::::{admonition} Physics Isomorphism: The Token as Gibbs Free Energy
+:::{admonition} Physics Isomorphism: The Token as Gibbs Free Energy
 :class: note
 :name: pi-gibbs-free-energy
 
@@ -1077,7 +1077,7 @@ where $S_{\text{overhead}}$ is the entropy cost of coordination.
 | Temperature $T$ | Cognitive temperature $T_c$ |
 | Work extraction | Inference service |
 
-::::
+:::
 
 
 
@@ -1739,7 +1739,7 @@ class CogniChainNode(nn.Module):
 
         # 4. Create Block
         prev_hash = self.chain[-1].compute_hash() if self.chain else "0" * 64
-        data_hash = hashlib.sha256(data_batch.numpy().tobytes()).hexdigest()
+        data_hash = hashlib.sha256(data_batch.cpu().numpy().tobytes()).hexdigest()
 
         block = CurriculumBlock(
             prev_hash=prev_hash,
