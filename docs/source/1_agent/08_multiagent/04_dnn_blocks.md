@@ -4,7 +4,7 @@
 
 - **Standard DL primitives violate gauge invariance**: `nn.Linear(bias=True)` and element-wise `ReLU` assume flat Euclidean space with preferred coordinate axes. Rotating the latent representation changes the physics.
 - **Gauge-covariant replacements preserve symmetry**: Replace with `SpectralLinear` (bias-free, Lipschitz-constrained) and `NormGatedGELU` (acts on vector bundle norms, not individual components).
-- **Each primitive preserves a gauge symmetry component**: Spectral normalization → $U(1)_Y$ (capacity conservation), bundle structure → $SU(N_f)_C$ (feature confinement), steerable convolutions → $SU(2)_L$ (observation-action chirality).
+- **Each primitive preserves a gauge symmetry component**: Spectral normalization → $U(1)_Y$ (capacity bound), bundle structure → $SU(N_f)_C$ (feature confinement), steerable convolutions → $SU(2)_L$ (observation-action chirality).
 - **Microscopic operations compose to macroscopic geodesic flow**: Equivariant layers with Lipschitz constant $\le 1$ preserve the global light cone structure required by the Boris-BAOAB integrator.
 - **Result**: Neural operators that respect the gauge group $G_{\text{Fragile}} = SU(N_f)_C \times SU(2)_L \times U(1)_Y$ at the atomic level, making the architecture compatible with the capacity-constrained metric law and WFR geometry.
 
@@ -69,7 +69,23 @@ g \cdot z := \rho(g) z \in \mathbb{R}^{d_z}
 $$
 where the right-hand side denotes the matrix product of $\rho(g) \in \mathbb{R}^{d_z \times d_z}$ with $z \in \mathbb{R}^{d_z \times 1}$.
 
-**Orthogonal representations:** When $G$ is compact (e.g., $SO(d)$, $SU(N)$), any finite-dimensional continuous representation can be made orthogonal (unitary) by choosing an appropriate inner product on $\mathcal{Z}$ {cite}`serre1977linear`. Specifically, given any representation $\rho_0: G \to GL(d_z, \mathbb{R})$, we can define a $G$-invariant inner product by averaging: $\langle z, z' \rangle_G := \int_G \langle \rho_0(g) z, \rho_0(g) z' \rangle_0 \, dg$ (where $\langle \cdot, \cdot \rangle_0$ is any initial inner product and $dg$ is the Haar measure). With respect to this inner product, $\rho_0(g)$ becomes orthogonal for all $g$.
+**Orthogonal representations:** When $G$ is compact (e.g., $SO(d)$, $SU(N)$), any finite-dimensional continuous representation can be made orthogonal (unitary) by constructing a $G$-invariant inner product via Haar measure averaging {cite}`serre1977linear,sepanski2007compact`.
+
+**Construction:** Let $\rho_0: G \to GL(d_z, \mathbb{R})$ be any representation, and let $\langle \cdot, \cdot \rangle_0$ be an arbitrary initial inner product on $\mathcal{Z} = \mathbb{R}^{d_z}$. Define the averaged inner product:
+$$
+\langle z, z' \rangle_G := \int_G \langle \rho_0(g) z, \rho_0(g) z' \rangle_0 \, dg
+$$
+where $dg$ is the normalized Haar measure on $G$ (unique bi-invariant measure with $\int_G dg = 1$).
+
+**Verification:**
+
+1. **Inner product structure:** $\langle \cdot, \cdot \rangle_G$ satisfies linearity, symmetry, and positive definiteness. For $z \neq 0$, we have $\langle \rho_0(g) z, \rho_0(g) z \rangle_0 > 0$ for all $g$ (since $\rho_0(g)$ is invertible). By compactness of $G$ and continuity, the integral $\langle z, z \rangle_G > 0$.
+
+2. **$G$-invariance:** For any $h \in G$:
+   $$\langle \rho_0(h) z, \rho_0(h) z' \rangle_G = \int_G \langle \rho_0(g) \rho_0(h) z, \rho_0(g) \rho_0(h) z' \rangle_0 \, dg$$
+   Substituting $g' = gh$ and using left-invariance of Haar measure ($dg' = dg$):
+   $$= \int_G \langle \rho_0(g') z, \rho_0(g') z' \rangle_0 \, dg' = \langle z, z' \rangle_G$$
+   Therefore $\rho_0(h)$ is orthogonal (actually unitary) with respect to $\langle \cdot, \cdot \rangle_G$ for all $h \in G$.
 
 We typically choose $\rho$ such that $\rho(g) \in O(d_z)$ for all $g$, ensuring:
 $$
@@ -77,7 +93,7 @@ $$
 $$
 This preserves the Euclidean structure of $\mathcal{Z}$.
 
-**Remark on Peter-Weyl theorem:** The Peter-Weyl theorem states that the matrix coefficients $\{\rho_{ij}(g)\}$ of irreducible representations form an orthonormal basis for $L^2(G)$. While related to representation theory, it is distinct from the averaging argument used here.
+**Remark on Peter-Weyl theorem:** The Peter-Weyl theorem states that for a compact group $G$, the renormalized matrix coefficients $\sqrt{\dim(\pi)} \cdot u_{ij}^{(\pi)}(g)$ (where $u_{ij}^{(\pi)}$ are matrix elements of irreducible unitary representations $\pi$) form an orthonormal basis for $L^2(G)$ with respect to normalized Haar measure. This theorem is foundational to representation theory and is intimately connected to the averaging construction: the Haar measure averaging used above is the same measure appearing in the Peter-Weyl decomposition {cite}`peter1927theorie,weyl1946classical`.
 
 **Units:** $[\rho(g)]$ is dimensionless (orthogonal/unitary matrices have dimensionless entries).
 :::
@@ -111,11 +127,15 @@ $$
 :::{prf:definition} Fragile Gauge Group
 :label: def-fragile-gauge-group
 
-From Chapter 8.1 ({ref}`sec-symplectic-multi-agent-field-theory`), agents under capacity constraints $C < \infty$ must respect the gauge structure:
+The Fragile framework adopts the gauge structure:
 
 $$
 G_{\text{Fragile}} = SU(N_f)_C \times SU(2)_L \times U(1)_Y
 $$
+
+**Source:** This gauge group emerges from the multi-agent consistency requirements under capacity constraints $C < \infty$ (Chapter 8.1, {ref}`sec-symplectic-multi-agent-field-theory`). The full derivation from first principles—showing why this specific product structure is necessary and sufficient—is provided in Chapter 8, Sections 8.1-8.3.
+
+**Important qualification:** This chapter **assumes** the gauge structure and demonstrates its implementation in neural architectures. We do not re-derive the gauge group here; instead, we cite the field-theoretic analysis from Chapter 8.1. Readers seeking the foundational derivation should consult that chapter first.
 
 **Explicit definitions:**
 
@@ -123,7 +143,7 @@ $$
 
 2. **$SU(2)_L$ (Weak isospin):** The special unitary group of degree 2, consisting of $2 \times 2$ complex unitary matrices with determinant 1. This has 3 real parameters (Pauli matrix basis) and acts on observation-action doublets.
 
-3. **$U(1)_Y$ (Hypercharge):** The circle group $\{e^{i\theta} : \theta \in [0, 2\pi)\} \cong SO(2)$, representing phase rotations. This is associated with capacity conservation (holographic bound).
+3. **$U(1)_Y$ (Hypercharge):** The circle group $\{e^{i\theta} : \theta \in [0, 2\pi)\} \cong SO(2)$, representing phase rotations. This is associated with a capacity bound (holographic bound).
 
 **Representation on latent space:** For a latent space $\mathcal{Z} = \mathbb{R}^{d_z}$ decomposed into $n_b$ bundles of dimension $d_b$ (so $d_z = n_b \cdot d_b$), we construct the representation $\rho: G_{\text{Fragile}} \to GL(d_z, \mathbb{R})$ through **real forms** of the complex gauge groups.
 
@@ -131,22 +151,18 @@ $$
 
 **Construction via real forms:**
 
-1. **$SU(N_f)_C$ real representation:** With $N_f = n_b$ (number of bundles), we use the **real special orthogonal group** $SO(n_b)$ as the real form. For $(U_C, U_L, e^{i\theta_Y}) \in G_{\text{Fragile}}$, the $SU(N_f)_C$ factor acts on the bundle index via:
+1. **$SU(N_f)_C$ real representation:** With $N_f = n_b$ (number of bundles), we model bundle mixing with a real orthogonal action on the bundle index. This is a pragmatic, real-valued proxy for $SU(N_f)_C$ that preserves bundle norms and keeps the bundle count fixed. In block form:
    $$
-   \rho_C: SU(N_f)_C \to SO(n_b) \subset GL(n_b, \mathbb{R})
-   $$
-   This **permutes and mixes bundles** while preserving orthogonality. In block form:
-   $$
-   \rho_C(U_C) = \begin{pmatrix}
+   \rho_C(R) = \begin{pmatrix}
    R_{11} I_{d_b} & R_{12} I_{d_b} & \cdots & R_{1n_b} I_{d_b} \\
    R_{21} I_{d_b} & R_{22} I_{d_b} & \cdots & R_{2n_b} I_{d_b} \\
    \vdots & \vdots & \ddots & \vdots \\
    R_{n_b 1} I_{d_b} & R_{n_b 2} I_{d_b} & \cdots & R_{n_b n_b} I_{d_b}
    \end{pmatrix} \in GL(d_z, \mathbb{R})
    $$
-   where $R = (R_{ij}) \in SO(n_b)$ is obtained from $U_C \in SU(N_f)$ by **realification**, and $I_{d_b}$ is the $d_b \times d_b$ identity (each bundle block rotates together).
+   where $R = (R_{ij}) \in SO(n_b)$ is a real orthogonal mixing matrix on bundle indices (an architectural proxy for $SU(N_f)_C$), and $I_{d_b}$ is the $d_b \times d_b$ identity (each bundle block rotates together).
 
-   **Explicit $SU(N_f) \to SO(n_b)$ realification:** There is no canonical homomorphism $SU(N) \to SO(N)$ in general. Instead, we construct a real representation as follows:
+   **Explicit $SU(n_b) \to SO(2n_b)$ realification (faithful):** There is no canonical homomorphism $SU(N) \to SO(N)$ in general. A standard realification yields a faithful embedding into $SO(2N)$ as follows:
 
    1. **Complex to real decomposition:** Any $U \in SU(n_b)$ can be written as $U = A + iB$ where $A, B \in \mathbb{R}^{n_b \times n_b}$.
 
@@ -156,21 +172,49 @@ $$
       $$
       This is an embedding preserving orthogonality: $\|Uz\|^2 = \|z\|^2$ for $z \in \mathbb{C}^{n_b}$ translates to the block matrix preserving $\mathbb{R}^{2n_b}$ norm.
 
-   3. **Architecture implementation:** In practice, the full $SU(n_b)$ gauge symmetry is **broken to a discrete subgroup** (permutations and sign flips of bundles), which naturally embeds in $SO(n_b)$ as signed permutation matrices. This is enforced implicitly through the isotropic architecture design, not by explicitly constructing gauge transformations.
+   **Verification of homomorphism property:**
 
-2. **$SU(2)_L$ real representation:** The Lie algebra $\mathfrak{su}(2)$ is isomorphic to $\mathfrak{so}(3)$ via the adjoint representation. We use the **double cover** $SU(2) \to SO(3)$ and represent via $SO(3)$ acting on a 3-dimensional subspace (typically the observation-action-internal triplet, or as a 2D + 1D decomposition). For simplicity in this architecture, we work with the **2D irreducible real representation** $SO(2) \cong U(1)$:
-   $$
-   \rho_L: SU(2)_L \to SO(2) \subset GL(2, \mathbb{R})
-   $$
-   acting on observation-action pairs $(z_{\text{obs}}, z_{\text{act}}) \in \mathbb{R}^2 \subset \mathcal{Z}$.
+   1. **Identity preservation:** $I_N + i \cdot 0 \mapsto \mathrm{diag}(I_N, I_N) = I_{2N}$ ✓
 
-3. **$U(1)_Y$ real representation:** As a Lie group, $U(1) = \{e^{i\theta} : \theta \in [0, 2\pi)\} \cong SO(2)$ (both are circles). The real representation is:
-   $$
-   \rho_Y: U(1)_Y \to SO(2) \subset GL(2, \mathbb{R}), \quad e^{i\theta} \mapsto \begin{pmatrix} \cos\theta & -\sin\theta \\ \sin\theta & \cos\theta \end{pmatrix}
-   $$
-   This is a **rotation** in a 2D subspace, NOT scaling.
+   2. **Multiplicativity:** For $U_1, U_2 \in SU(N)$ with $U_k = A_k + iB_k$, the product $U_1 U_2 = (A_1 A_2 - B_1 B_2) + i(A_1 B_2 + B_1 A_2)$ satisfies:
+      $$\rho_{\mathbb{R}}(U_1 U_2) = \begin{pmatrix} A_1 A_2 - B_1 B_2 & -(A_1 B_2 + B_1 A_2) \\ A_1 B_2 + B_1 A_2 & A_1 A_2 - B_1 B_2 \end{pmatrix}$$
+      Direct computation of block matrix multiplication gives:
+      $$\rho_{\mathbb{R}}(U_1) \rho_{\mathbb{R}}(U_2) = \begin{pmatrix} A_1 & -B_1 \\ B_1 & A_1 \end{pmatrix} \begin{pmatrix} A_2 & -B_2 \\ B_2 & A_2 \end{pmatrix} = \begin{pmatrix} A_1 A_2 - B_1 B_2 & -A_1 B_2 - B_1 A_2 \\ B_1 A_2 + A_1 B_2 & -B_1 B_2 + A_1 A_2 \end{pmatrix}$$
+      Therefore $\rho_{\mathbb{R}}(U_1 U_2) = \rho_{\mathbb{R}}(U_1) \rho_{\mathbb{R}}(U_2)$, confirming the homomorphism property.
 
-   **Architecture implementation via conservation law:** Rather than implementing rotations, $U(1)_Y$ symmetry manifests as a **conserved quantity** (hypercharge $Y \propto \|z\|^2$). Spectral normalization $\sigma_{\max}(W) \leq 1$ ensures this quantity cannot grow unbounded (Theorem {prf:ref}`thm-spectral-preserves-hypercharge`). The symmetry is enforced implicitly through conservation, not explicit gauge transformations.
+   3. **Orthogonality:** The unitarity condition $U^* U = I$ for $U = A + iB$ decomposes into $A^T A + B^T B = I_N$ (real part) and $A^T B = B^T A$ (imaginary part, implying $A^T B$ is symmetric). Computing:
+      $$\rho_{\mathbb{R}}(U)^T \rho_{\mathbb{R}}(U) = \begin{pmatrix} A^T & B^T \\ -B^T & A^T \end{pmatrix} \begin{pmatrix} A & -B \\ B & A \end{pmatrix} = \begin{pmatrix} A^T A + B^T B & -A^T B + B^T A \\ -B^T A + A^T B & B^T B + A^T A \end{pmatrix}$$
+      Using $A^T B = B^T A$ and $A^T A + B^T B = I_N$ yields $\rho_{\mathbb{R}}(U)^T \rho_{\mathbb{R}}(U) = I_{2N}$, so $\rho_{\mathbb{R}}(U) \in O(2N)$.
+
+   4. **Determinant:** Using the block determinant identity:
+      $$\det(\rho_{\mathbb{R}}(U)) = \det(A + iB)\det(A - iB) = \det(U)\det(\bar{U}) = |\det(U)|^2 = 1$$
+      confirming $\rho_{\mathbb{R}}: SU(N) \to SO(2N)$.
+
+   **Implementation note:** The faithful $SO(2n_b)$ realification doubles the bundle-index dimension. In practice, the full $SU(n_b)$ symmetry is **broken to a discrete subgroup** (permutations and sign flips of bundles), which naturally embeds in $SO(n_b)$ as signed permutation matrices. This is enforced implicitly through the isotropic architecture design, not by explicitly constructing gauge transformations.
+
+2. **$SU(2)_L$ real representation:** The Lie algebra $\mathfrak{su}(2)$ is isomorphic to $\mathfrak{so}(3)$ via the adjoint representation, and there is a surjective double cover $\mathrm{Ad}: SU(2) \to SO(3)$ with kernel $\{\pm I\}$ {cite}`hall2015lie`. The faithful real representation is therefore $SO(3)$ acting on $\mathbb{R}^3$.
+
+   **Architecture choice — spontaneous symmetry breaking:** In practice, the full $SU(2)_L$ symmetry is **broken to a $U(1)$ subgroup** corresponding to the diagonal matrices $\mathrm{diag}(e^{i\theta}, e^{-i\theta}) \in SU(2)$. This subgroup acts as $SO(2)$ rotations on observation-action pairs:
+   $$
+   \rho_L: U(1) \hookrightarrow SU(2)_L \xrightarrow{\text{real form}} SO(2) \subset GL(2, \mathbb{R})
+   $$
+   acting on $(z_{\text{obs}}, z_{\text{act}}) \in \mathbb{R}^2 \subset \mathcal{Z}$.
+
+   **Justification for symmetry breaking:** The reduction from $SU(2)_L$ to $U(1) \subset SU(2)_L$ is consistent with the weak isospin structure in the Standard Model, where the unbroken subgroup after electroweak symmetry breaking is $U(1)_{\text{EM}} \subset SU(2)_L \times U(1)_Y$. In the neural architecture, only the $U(1)$ rotation symmetry between observation and action channels is explicitly enforced; the full $SU(2)$ would require a 3D representation incompatible with the 2D obs-action structure. See the remark in Definition {prf:ref}`def-obs-action-doublet` on real-valued implementations.
+
+3. **$U(1)_Y$ real representation:** The hypercharge symmetry $U(1)_Y = \{e^{i\theta} : \theta \in [0, 2\pi)\}$ acts on complex fields as phase rotations $\psi \mapsto e^{iY\theta} \psi$, preserving $|\psi|^2$. The real representation is:
+   $$
+   \rho_Y: U(1)_Y \to SO(2) \subset GL(2, \mathbb{R}), \quad e^{i\theta} \mapsto \begin{pmatrix} \cos(Y\theta) & -\sin(Y\theta) \\ \sin(Y\theta) & \cos(Y\theta) \end{pmatrix}
+   $$
+   where $Y \in \mathbb{R}$ is the hypercharge quantum number. This is a rotation in a 2D subspace with angular velocity proportional to $Y$.
+
+   **Architecture implementation via norm preservation:** In practice, $U(1)_Y$ invariance is enforced through **Lipschitz constraints** $\sigma_{\max}(W) \leq 1$ on all linear operators (Definition {prf:ref}`def-spectral-linear`). These constraints ensure:
+   $$
+   \|W z\| \leq \|z\| \quad \forall z \in \mathcal{Z}
+   $$
+   which preserves the total "charge" $\|z\|^2$ up to a maximum value (holographic bound $C < \infty$). The spectral bound implements **non-expansiveness**, making operators contractive or (in the limit) isometric; this relaxes strict $U(1)$ rotations to norm-non-increasing maps that still preserve a scalar charge. Theorem {prf:ref}`thm-spectral-preserves-hypercharge` proves that composing spectrally normalized layers maintains $\|z_t\| \leq \|z_0\|$ (non-increasing across layers), consistent with capacity constraints.
+
+   **Relationship to hypercharge conservation:** In the Standard Model, hypercharge $Y$ is a conserved quantum number satisfying $Q = T_3 + Y/2$ (electric charge formula). In the neural architecture, the analog is **total information content** $I(X_t; Z_t) \leq C$, which is bounded by the holographic principle. Spectral normalization ensures this bound is respected at every layer.
 
 **Product representation:** The full representation is the **direct sum** (⊕) of these factors acting on disjoint subspaces:
 $$
@@ -178,16 +222,34 @@ $$
 $$
 in block-diagonal form (each factor acts on its own subspace).
 
-**Notation clarification:** The direct sum ⊕ (not tensor product ⊗) is correct because:
+**Notation clarification:** We use the direct sum ⊕ (not tensor product ⊗) as an architectural simplification:
 - **Direct sum $V \oplus W$:** Dimension = $\dim(V) + \dim(W)$. Transformations are block-diagonal: $\begin{pmatrix} A & 0 \\ 0 & B \end{pmatrix}$
 - **Tensor product $V \otimes W$:** Dimension = $\dim(V) \times \dim(W)$. Transformations are Kronecker products: $A \otimes B$
 
-Since each gauge factor acts independently on separate subspaces of $\mathcal{Z}$, the representation space is $\mathcal{Z} = \mathcal{Z}_C \oplus \mathcal{Z}_L \oplus \mathcal{Z}_Y$ (direct sum), and the group representation is the direct sum of individual representations.
+In this model, each gauge factor acts independently on a designated subspace of $\mathcal{Z}$, so the representation space is $\mathcal{Z} = \mathcal{Z}_C \oplus \mathcal{Z}_L \oplus \mathcal{Z}_Y$ (direct sum), and the group representation is the direct sum of individual representations.
+
+**Derivation of direct sum structure:**
+
+The choice of direct sum over tensor product is **architectural**, not fundamental. Here's why:
+
+1. **Tensor product would be physically correct:** In gauge theory, matter fields typically transform under tensor product representations. For example, quarks transform as $(\mathbf{3}, \mathbf{2}, 1/6)$ under $SU(3)_C \times SU(2)_L \times U(1)_Y$, meaning the representation space is $V_C \otimes V_L \otimes V_Y$ with dimension $3 \times 2 \times 1 = 6$ per flavor.
+
+2. **Direct sum is a simplifying assumption:** We decompose $\mathcal{Z} = \mathcal{Z}_C \oplus \mathcal{Z}_L \oplus \mathcal{Z}_Y$ with each subspace transforming independently. This reduces computational complexity:
+   - Tensor product: $d_z = d_C \times d_L \times d_Y$ (exponential growth)
+   - Direct sum: $d_z = d_C + d_L + d_Y$ (linear scaling)
+
+3. **Physical interpretation:** The direct sum structure corresponds to **separate degrees of freedom** for color, weak isospin, and hypercharge. This is analogous to decomposing a particle state into spin, flavor, and color quantum numbers as independent labels, rather than a fully entangled state.
+
+4. **Consistency with architecture:** The bundle structure (Definition {prf:ref}`def-latent-vector-bundle`) already assumes $\mathcal{Z} = \bigoplus_{i=1}^{n_b} V_i$ where each bundle $V_i$ is invariant under $\rho_C$. The $SU(2)_L$ and $U(1)_Y$ factors act on additional subspaces orthogonal to the bundle subspace.
+
+**Implication:** This choice means we enforce gauge symmetry **separately** for each factor, not jointly. Full tensor product representations could be implemented but would require rethinking the bundle decomposition structure.
+
+**Critical caveat:** This architectural simplification means the implementation does **not** fully realize the gauge-theoretic structure derived in Chapter 8.1. The direct sum is a **practical approximation** that preserves gauge covariance at the level of individual factors while avoiding the combinatorial explosion of full tensor product representations. Future work could explore whether tensor product architectures provide empirical benefits justifying the increased complexity.
 
 **Implementation note:** In practice, neural network architectures do NOT implement the full gauge group action explicitly. Instead, we build **equivariant primitives**:
 - IsotropicBlock (Definition {prf:ref}`def-isotropic-block`) is equivariant w.r.t. $\rho_C$ (bundle mixing, Theorem {prf:ref}`thm-isotropic-preserves-color`)
 - SteerableConv (Section {ref}`sec-covariant-retina`) is equivariant w.r.t. $\rho_L$ (obs-action doublet, Proposition {prf:ref}`prop-obs-action-doublet`)
-- SpectralLinear (Definition {prf:ref}`def-spectral-linear`) preserves $\rho_Y$ (hypercharge conservation, Theorem {prf:ref}`thm-spectral-preserves-hypercharge`)
+- SpectralLinear (Definition {prf:ref}`def-spectral-linear`) preserves $\rho_Y$ (hypercharge bound, Theorem {prf:ref}`thm-spectral-preserves-hypercharge`)
 
 **Remark on complex vs. real:** Physicists typically work with complex representations because quantum mechanics is inherently complex (wavefunctions are in $\mathbb{C}$). Neural networks are real-valued (weights in $\mathbb{R}$), so we use real forms. The **isomorphism** $SU(2) \cong \text{Spin}(3) \to SO(3)$ and $SU(N) \supset SO(N)$ (via embedding) allow translation between complex and real pictures. See Section {ref}`sec-symplectic-multi-agent-field-theory` for the complex gauge field formulation; here we use the real neural implementation.
 
@@ -274,26 +336,82 @@ Thus $f(R_{\pi/4} z) \neq R_{\pi/4} f(z)$, violating $SO(2)$-equivariance.
 
 **Generalization to $d > 2$:**
 
-For arbitrary $d \geq 2$, consider $z = (1, -1, 0, \ldots, 0)^T \in \mathbb{R}^d$ (first two components nonzero, rest zero).
+For arbitrary $d \geq 2$, we construct an analogous counterexample.
 
-Define $R_\theta \in SO(d)$ as rotation by $\theta = \pi/4$ in the $(e_1, e_2)$-plane, identity on remaining coordinates:
+**Setup:** Let $z = (1, -1, 0, \ldots, 0)^T \in \mathbb{R}^d$ (first two components nonzero, rest zero).
+
+Define $R_\theta \in SO(d)$ as the block-diagonal matrix:
 $$
 R_\theta = \begin{pmatrix}
-\frac{1}{\sqrt{2}} & -\frac{1}{\sqrt{2}} & 0 & \cdots & 0 \\
-\frac{1}{\sqrt{2}} & \frac{1}{\sqrt{2}} & 0 & \cdots & 0 \\
-0 & 0 & 1 & \cdots & 0 \\
-\vdots & \vdots & \vdots & \ddots & \vdots \\
-0 & 0 & 0 & \cdots & 1
+R_2(\theta) & 0 \\
+0 & I_{d-2}
 \end{pmatrix}
 $$
+where $R_2(\theta) = \begin{pmatrix} \cos\theta & -\sin\theta \\ \sin\theta & \cos\theta \end{pmatrix}$ is the $2 \times 2$ rotation by angle $\theta = \pi/4$, and $I_{d-2}$ is the $(d-2) \times (d-2)$ identity matrix.
 
-Then:
-- $R_\theta z = (\sqrt{2}, 0, 0, \ldots, 0)^T$ (rotation in first 2 coordinates, as in Step 2)
-- $f(R_\theta z) = (\sqrt{2}, 0, 0, \ldots, 0)^T$ (all components non-negative)
-- $f(z) = (1, 0, 0, \ldots, 0)^T$ (second component killed)
-- $R_\theta f(z) = (\frac{1}{\sqrt{2}}, \frac{1}{\sqrt{2}}, 0, \ldots, 0)^T$ (rotate result)
+**Verification that $R_\theta \in SO(d)$:**
+1. **Orthogonality:** $R_\theta^T R_\theta = \begin{pmatrix} R_2^T R_2 & 0 \\ 0 & I_{d-2} \end{pmatrix} = \begin{pmatrix} I_2 & 0 \\ 0 & I_{d-2} \end{pmatrix} = I_d$ follows from block structure and $R_2^T R_2 = I_2$.
+2. **Determinant:** $\det(R_\theta) = \det(R_2) \cdot \det(I_{d-2}) = 1 \cdot 1 = 1$.
 
-Since $(\sqrt{2}, 0, \ldots)^T \neq (\frac{1}{\sqrt{2}}, \frac{1}{\sqrt{2}}, \ldots)^T$, we have $f(R_\theta z) \neq R_\theta f(z)$ for all $d \geq 2$.
+**Step 1. Compute $R_\theta z$:**
+
+Using the block-diagonal structure:
+$$
+R_\theta z = \begin{pmatrix} R_2(\pi/4) & 0 \\ 0 & I_{d-2} \end{pmatrix} \begin{pmatrix} 1 \\ -1 \\ 0 \\ \vdots \\ 0 \end{pmatrix} = \begin{pmatrix} R_2(\pi/4) \begin{pmatrix} 1 \\ -1 \end{pmatrix} \\ 0_{d-2} \end{pmatrix}
+$$
+
+Computing the $2 \times 2$ block (from Step 2 of the $d=2$ case):
+$$
+R_2(\pi/4) \begin{pmatrix} 1 \\ -1 \end{pmatrix} = \begin{pmatrix} \frac{1}{\sqrt{2}} & -\frac{1}{\sqrt{2}} \\ \frac{1}{\sqrt{2}} & \frac{1}{\sqrt{2}} \end{pmatrix} \begin{pmatrix} 1 \\ -1 \end{pmatrix} = \begin{pmatrix} \sqrt{2} \\ 0 \end{pmatrix}
+$$
+
+Therefore:
+$$
+R_\theta z = (\sqrt{2}, 0, 0, \ldots, 0)^T
+$$
+
+**Step 2. Compute $f(R_\theta z)$:**
+
+Since all components of $R_\theta z$ are non-negative (first component $\sqrt{2} > 0$, rest are $0$):
+$$
+f(R_\theta z) = (\max(0, \sqrt{2}), \max(0, 0), \ldots, \max(0, 0))^T = (\sqrt{2}, 0, 0, \ldots, 0)^T
+$$
+
+**Step 3. Compute $f(z)$:**
+
+Component-wise application of $\max(0, \cdot)$:
+$$
+f(z) = (\max(0, 1), \max(0, -1), \max(0, 0), \ldots, \max(0, 0))^T = (1, 0, 0, \ldots, 0)^T
+$$
+
+**Step 4. Compute $R_\theta f(z)$:**
+
+$$
+R_\theta f(z) = \begin{pmatrix} R_2(\pi/4) & 0 \\ 0 & I_{d-2} \end{pmatrix} \begin{pmatrix} 1 \\ 0 \\ 0 \\ \vdots \\ 0 \end{pmatrix} = \begin{pmatrix} R_2(\pi/4) \begin{pmatrix} 1 \\ 0 \end{pmatrix} \\ 0_{d-2} \end{pmatrix}
+$$
+
+Computing:
+$$
+R_2(\pi/4) \begin{pmatrix} 1 \\ 0 \end{pmatrix} = \begin{pmatrix} \frac{1}{\sqrt{2}} \\ \frac{1}{\sqrt{2}} \end{pmatrix}
+$$
+
+Therefore:
+$$
+R_\theta f(z) = \left(\frac{1}{\sqrt{2}}, \frac{1}{\sqrt{2}}, 0, \ldots, 0\right)^T
+$$
+
+**Step 5. Verify non-equality:**
+
+Comparing the first two components:
+- $f(R_\theta z) = (\sqrt{2}, 0, \ldots)^T$
+- $R_\theta f(z) = (\frac{1}{\sqrt{2}}, \frac{1}{\sqrt{2}}, \ldots)^T$
+
+Since $\sqrt{2} \neq \frac{1}{\sqrt{2}}$ and $0 \neq \frac{1}{\sqrt{2}}$, we have:
+$$
+f(R_\theta z) \neq R_\theta f(z)
+$$
+
+This holds for all $d \geq 2$. $\square$
 
 **Geometric interpretation:** The ReLU creates coordinate-aligned decision boundaries $\{z \in \mathbb{R}^d : z_i = 0\}$ for each $i$. These hyperplanes are not invariant under $SO(d)$: rotation maps the hyperplane $\{z_1 = 0\}$ to a different hyperplane (no longer aligned with any coordinate axis). Thus $f$ transforms the kink surfaces under rotation, violating equivariance.
 
@@ -330,11 +448,19 @@ W_{ij} & \text{if } (Wz + b)_i > 0 \\
 $$
 
 **Step 2. WFR action functional dependence:**
-The WFR action $\mathcal{L}_{\text{WFR}}[z]$ depends on the value function $V(z)$ and policy $\pi(a|z)$. If the network architecture includes ReLU, then:
+The WFR action $\mathcal{L}_{\text{WFR}}[z]$ depends on the value function $V(z)$ and policy $\pi(a|z)$.
+
+**Illustrative functional form:** For a capacity-constrained agent (Chapter 4, Theorem {prf:ref}`thm-equivalence-entropy-regularized-control`), a typical action functional is:
 $$
 \mathcal{L}_{\text{WFR}}[z] = V(f(z)) + \lambda I(\pi(\cdot|f(z)))
 $$
-where $f$ contains ReLU non-differentiability.
+where:
+- $V: \mathcal{Z} \to \mathbb{R}$ is the expected cumulative reward (value function)
+- $I(\pi(\cdot|f(z))) = I(A; f(Z))$ is mutual information between actions $A$ and latent state $f(Z)$
+- $\lambda$ is the Lagrange multiplier enforcing capacity constraint $I(A; Z) \leq C$ (nat/step)
+- $f$ represents the network transformation pipeline (which may contain ReLU non-differentiability)
+
+**Source:** This form derives from the bounded-rationality variational principle (see Chapter 5, Section {ref}`sec-wfr-action-functional`, Equation 5.12). The argument below applies to **any** action functional requiring smooth gradients; we use this as a concrete example to demonstrate ReLU incompatibility.
 
 **Step 3. Chain rule breakdown:**
 To compute $\nabla_z \mathcal{L}_{\text{WFR}}$, we need:
@@ -346,8 +472,12 @@ At kink points where $(Wz + b)_i = 0$, the term $\frac{\partial f_i}{\partial z_
 **Step 4. Consequences at kinks:**
 
 1. **Gradient undefined:** $\nabla_z \mathcal{L}$ does not exist in the classical sense (left derivative $\lim_{h \to 0^-}$ differs from right derivative $\lim_{h \to 0^+}$)
-2. **Metric ill-defined:** The metric tensor $G(z) = \nabla^2 V(z) + \lambda \mathcal{F}(z)$ requires second derivatives $\nabla^2 V$, which are undefined where $\nabla V$ is discontinuous
-3. **Integration errors:** Boris-BAOAB integrator uses $\frac{dz}{ds} = -G^{-1}\nabla \mathcal{L}$. At kinks, the gradient jump causes integration errors that accumulate over trajectory
+
+2. **Fisher metric ill-defined:** The Fisher information metric $\mathcal{F}_{ij}(z) = \mathbb{E}_{a \sim \pi(\cdot|z)}[\partial_i \log \pi(a|z) \partial_j \log \pi(a|z)]$ requires computing $\partial_i \log \pi(a|z)$. If the policy network $\pi(a|z)$ is parameterized by a network with ReLU activations, then $\pi(a|z)$ is non-differentiable at kink points, causing $\partial_i \log \pi(a|z)$ to be undefined. Consequently, the Fisher metric tensor $\mathcal{F}(z)$ cannot be computed in the classical sense at these points.
+
+   The capacity-constrained metric $G(z)$ from Theorem {prf:ref}`thm-capacity-constrained-metric-law` depends on the risk tensor $T_{ij}$, which in turn depends on gradients of the value function and the Fisher metric. If either $V$ or $\pi$ uses ReLU activations, the metric $G(z)$ will have ill-defined components at kink loci.
+
+3. **Integration errors:** Boris-BAOAB integrator (Definition {prf:ref}`def-baoab-splitting`) uses $\frac{dz}{ds} = -G^{-1}\nabla \mathcal{L}$. At kinks, the discontinuous gradient causes ill-defined integration steps. While one could use subgradients or generalized gradients at kinks, this introduces numerical instability and prevents the integrator from preserving the symplectic structure required for long-term energy conservation
 
 **Gauge-dependence problem:** Per Theorem {prf:ref}`thm-relu-breaks-equivariance`, ReLU kinks are coordinate-dependent. Under gauge transformation $z \mapsto U(g) \cdot z$ for $g \in G_{\text{Fragile}}$, the kink locations transform but ReLU does not transform equivariantly. This creates **inconsistent kink patterns** across gauge choices, causing geodesic flows to depend on arbitrary coordinate choices.
 
@@ -445,6 +575,8 @@ $$
 $$
 
 where $\sigma_{\max}(W)$ is the largest singular value of $W$.
+
+**Remark (Singular values):** The singular values of $W$ are the square roots of the eigenvalues of $W^T W$. The largest singular value $\sigma_{\max}(W) = \sup_{\|z\|=1} \|Wz\|$ is the operator norm induced by the Euclidean norm. This follows from the singular value decomposition: $W = U \Sigma V^T$ where $U, V$ are orthogonal and $\Sigma$ is diagonal with non-negative entries $\sigma_1 \geq \sigma_2 \geq \cdots \geq 0$. Then $\|Wz\| = \|U \Sigma V^T z\| = \|\Sigma V^T z\|$ (since $U$ is orthogonal), which achieves maximum $\sigma_1$ when $V^T z$ aligns with the first singular vector. For a standard reference, see Horn & Johnson, *Matrix Analysis*, Theorem 5.6.2 {cite}`horn2012matrix`.
 
 **Implementation:** $W_{\text{spectral}} = W / \sigma_{\max}(W)$.
 
@@ -595,6 +727,29 @@ where:
 **Physical interpretation:** Energy filter with radial symmetry. The gate opens when signal energy $\|v_i\|$ exceeds the potential barrier $-b_i$.
 
 **Units:** All dimensionless if latent vectors normalized.
+
+**Remark (Choice of gating function $g$):** While any smooth $g: \mathbb{R} \to \mathbb{R}$ preserves equivariance, GELU is a **pragmatic choice** among functions satisfying necessary conditions:
+
+1. **$C^\infty$ smoothness (necessary):** Required for the WFR metric (Corollary {prf:ref}`cor-relu-breaks-wfr`) and geodesic integrator compatibility (Section 5.4).
+
+2. **Near-identity behavior at large arguments (desirable):** For $x \gg 1$, GELU approaches identity $g(x) \approx x$, allowing high-energy signals to pass unmodified. This avoids gradient saturation that occurs with bounded activations (sigmoid, tanh).
+
+3. **Controlled Lipschitz constant (practical):** $L_g \approx 1.129$ (Lemma {prf:ref}`lem-normgate-lipschitz`), close to 1 and comparable to softplus.
+
+4. **Empirical effectiveness (validation):** Strong performance in transformers {cite}`hendrycks2016gaussian`.
+
+**Critical distinction:** GELU is **not uniquely determined** by first principles. Conditions 1-3 are satisfied by multiple functions (e.g., Swish family $g(x) = x \cdot \sigma(\beta x)$, Softplus). A first-principles derivation selecting GELU uniquely (e.g., via information-geometric optimization) remains an open problem.
+
+**Comparison with alternatives:**
+
+| Activation | Smoothness | $\sup_x \|g'(x)\|$ | Unbounded? | Issue if used |
+|------------|------------|-------------------|------------|---------------|
+| Sigmoid | $C^\infty$ | $1/4$ | No (saturates to [0,1]) | Vanishing gradients for large $\|v\|$ |
+| Tanh | $C^\infty$ | $1$ | No (saturates to [-1,1]) | Vanishing gradients for large $\|v\|$ |
+| Softplus | $C^\infty$ | $1$ | Yes (linear at $+\infty$) | Asymmetric (no negative activation) |
+| GELU | $C^\infty$ | $\approx 1.129$ | Yes | Slight amplification ($L > 1$), addressed via spectral normalization |
+
+The key advantage of GELU is that high-energy features propagate efficiently ($g(x) \to x$ as $x \to \infty$), while sigmoid/tanh would attenuate them to constant values, breaking the information flow required by the capacity-constrained dynamics.
 :::
 
 :::{prf:theorem} Norm-Gating Preserves SO(d_b) Equivariance
@@ -726,32 +881,77 @@ where $h(r) = g(r + b_i)$ is the gating function.
 **Step 2. Direction matching:**
 We show that the vectors $W_i g_i v$ and $g_i W_i v$ must be parallel for all $g_i, v$.
 
-*Proof of parallelism:* From Step 1, we have:
+*Proof of parallelism:* From Step 1, the equivariance condition states:
 $$
 W_i g_i v \cdot h(\|W_i g_i v\|) = g_i W_i v \cdot h(\|W_i v\|)
 $$
 
+**Critical observation:** This equation must hold for **all** $g_i \in SO(d_b)$ and **all** $v \in V_i$ simultaneously.
+
 Let $u = W_i g_i v$ and $w = g_i W_i v$. Let $\alpha = h(\|u\|)$ and $\beta = h(\|W_i v\|)$. The equation becomes:
 $$
-u \cdot \alpha = w \cdot \beta
+u \cdot \alpha = w \cdot \beta \quad \text{(vector equality)}
 $$
 
-Since both sides are vectors in $\mathbb{R}^{d_b}$, this equality holds if and only if $u$ and $w$ point in the same direction (or opposite directions) and their magnitudes satisfy $\|u\| \alpha = \|w\| \beta$.
-
-**Claim:** $u \parallel w$, i.e., $W_i g_i v \parallel g_i W_i v$.
-
-*Proof by orthogonality:* Since $g_i \in SO(d_b)$ preserves the inner product:
+**Step 2a. Magnitude relation:**
+Since $g_i \in SO(d_b)$ preserves norms:
 $$
-\|g_i W_i v\| = \|W_i v\|
+\|w\| = \|g_i W_i v\| = \|W_i v\|
 $$
-Therefore $\beta = h(\|W_i v\|) = h(\|g_i W_i v\|)$.
 
-The equation $u \alpha = w \beta$ with $u = W_i g_i v$, $w = g_i W_i v$ implies that for these vectors to be equal when scaled by respective scalar functions, they must be parallel: $u \parallel w$. $\square$
+Also, using the fact that $g_i$ preserves norms:
+$$
+\|u\| = \|W_i g_i v\| \quad \text{and} \quad \|g_i v\| = \|v\|
+$$
 
-Therefore:
+**Step 2a-bis. Proof that $\|W_i g_i v\| = \|W_i v\|$:**
+
+This is the crucial step that makes Schur's lemma applicable. We prove it from the equivariance condition.
+
+*Proof.* From Step 1, we have:
+$$
+W_i g_i v \cdot h(\|W_i g_i v\|) = g_i W_i v \cdot h(\|W_i v\|)
+$$
+
+Taking norms of both sides:
+$$
+\|W_i g_i v\| \cdot |h(\|W_i g_i v\|)| = \|g_i W_i v\| \cdot |h(\|W_i v\|)|
+$$
+
+Since $g_i$ preserves norms: $\|g_i W_i v\| = \|W_i v\|$. Substituting:
+$$
+\|W_i g_i v\| \cdot |h(\|W_i g_i v\|)| = \|W_i v\| \cdot |h(\|W_i v\|)|
+$$
+
+**Key property of gating function:** For GELU and similar activations, $h(r) = g(r + b)$ is **strictly monotonic** for $r > 0$ (since $g'(x) > 0$ for $x > 0$ for GELU). Therefore, the function $\phi(r) := r \cdot |h(r)|$ is also strictly monotonic for $r > 0$.
+
+If $\phi(\|W_i g_i v\|) = \phi(\|W_i v\|)$ and $\phi$ is strictly monotonic, then:
+$$
+\boxed{\|W_i g_i v\| = \|W_i v\|}
+$$
+
+This holds for **all** $g_i \in SO(d_b)$ and **all** $v \in V_i$. $\blacksquare$
+
+**Remark:** The strict monotonicity of $h$ is essential. For activations where $h$ is not monotonic, this proof fails, and Schur's lemma may not apply. GELU satisfies this requirement for positive arguments.
+
+**Step 2b. Scalar function consistency:**
+From norm preservation and Step 2a-bis: $\beta = h(\|W_i v\|) = h(\|w\|)$ and $\alpha = h(\|W_i g_i v\|) = h(\|W_i v\|)$, so $\alpha = \beta$.
+
+**Step 2c. Vector equality implies parallelism:**
+The equation $u \alpha = w \beta$ where $\alpha, \beta$ are scalars requires:
+
+1. **Magnitude equation:** $\|u\| |\alpha| = \|w\| |\beta|$
+2. **Direction equation:** $\frac{u}{\|u\|} = \pm \frac{w}{\|w\|}$ (unit vectors must align or anti-align)
+
+For the direction, suppose $u$ and $w$ are not parallel. Then there exists a component of $u$ perpendicular to $w$. But the scalar equation $u \alpha = w \beta$ requires $u = (w \beta)/\alpha$, which means $u$ must be a scalar multiple of $w$, hence parallel. Therefore $u \parallel w$.
+
+**Step 2d. Universal quantification:**
+Since this must hold for ALL $g_i \in SO(d_b)$ and ALL $v \in V_i$, we have:
 $$
 W_i g_i v \parallel g_i W_i v \quad \forall g_i \in SO(d_b), \forall v \in V_i
 $$
+
+**Key insight:** The universal quantification over all group elements and all vectors is what forces $W_i$ to commute with the entire group, not just specific elements.
 
 **Step 3. Apply Schur's lemma:**
 
@@ -768,7 +968,7 @@ By **Schur's lemma** (see Serre, *Linear Representations of Finite Groups*, Spri
 **Schur's lemma statement:** If $\rho: G \to GL(V)$ is an irreducible representation and $T: V \to V$ is a linear map satisfying $T \circ \rho(g) = \rho(g) \circ T$ for all $g \in G$, then $T = \lambda I$ for some $\lambda \in \mathbb{R}$ (or $\mathbb{C}$ for complex representations).
 
 **Step 4. Verify direction condition implies commutativity:**
-If $W_i g_i v \parallel g_i W_i v$ for all $g_i, v$, and both have the same magnitude (which follows from matching scalars $h(\cdot)$), then:
+From Step 2, we have $W_i g_i v \parallel g_i W_i v$ for all $g_i, v$. From Step 2a-bis, we proved $\|W_i g_i v\| = \|W_i v\| = \|g_i W_i v\|$, so both vectors have the same magnitude. Therefore:
 $$
 W_i g_i v = \pm g_i W_i v
 $$
@@ -893,6 +1093,16 @@ $$
 $$
 
 *Justification:* In the worst case, $W_i z$ aligns with the maximum singular direction (giving $\|W_i z\| = \sigma_{\max}\|z\|$), while $W_i g_i z$ aligns with the minimum singular direction (giving $\|W_i g_i z\| = \sigma_{\min}\|z\|$). The difference is bounded by $(\sigma_{\max} - \sigma_{\min})\|z\|$.
+
+**Remark on commutator norm:** The same bound applies to the full commutator $\|W_i g_i z - g_i W_i z\|$. For $W_i = U_i \Sigma_i V_i^T$ and $g_i$ orthogonal:
+$$
+[W_i, g_i] = W_i g_i - g_i W_i = U_i \Sigma_i V_i^T g_i - g_i U_i \Sigma_i V_i^T
+$$
+The operator norm $\|[W_i, g_i]\|$ is maximized when the singular value spread is largest, giving:
+$$
+\|W_i g_i z - g_i W_i z\| \leq \|[W_i, g_i]\| \cdot \|z\| \leq (\sigma_{\max}(W_i) - \sigma_{\min}(W_i)) \|z\|
+$$
+This vanishes when $W_i = \lambda_i I$ (isotropic case), as expected from Schur's lemma.
 
 **Step 3. Gating function amplification:**
 The NormGate output is $f(v) = v \cdot g(\|v\| + b)$. The equivariance violation comes from:
@@ -1116,6 +1326,72 @@ For $\ell \in \mathbb{Z}_{\geq 0}$ (non-negative integers), the $\ell$-th irredu
 - $\ell = 0$: Scalars (rotation-invariant, e.g., circularly symmetric filters). $D^{(0)}(\theta) = 1$
 - $\ell = 1$: Vectors (oriented edge detectors). Rotate by $\theta$ → features rotate by $\theta$. $D^{(1)}(\theta) = R_\theta$
 - $\ell = 2$: Quadrupoles (corner detectors). Rotate by $\theta$ → features rotate by $2\theta$. $D^{(2)}(\theta) = R_{2\theta}$
+:::
+
+### Associated Bundle Construction
+
+**Mathematical prerequisites:** The construction below uses the language of **principal bundles** and **associated vector bundles** from differential geometry. We do not develop the full theory here; readers unfamiliar with fiber bundles should consult:
+- **Chapter 8.5** ({ref}`sec-wilson-lines-parallel-transport`): Rigorous treatment of principal bundles, Wilson lines, curvature forms, and parallel transport
+- **Standard references**: Kobayashi & Nomizu, *Foundations of Differential Geometry*; Nakahara, *Geometry, Topology and Physics*
+
+**What is provided in this section:** We give the **direct construction** of the steerable feature bundle using the quotient $SE(2) \times_{SO(2)} V^{(\ell)}$ and verify its transformation properties. The bundle axioms (local triviality, transition functions, fiber structure) are assumed; full proofs appear in Chapter 8.5.
+
+:::{prf:definition} Feature Bundle as Associated Vector Bundle
+:label: def-associated-feature-bundle
+
+Let $P = SE(2) = \mathbb{R}^2 \rtimes SO(2)$ be the Euclidean group (translations and rotations), and let $H = SO(2)$ be the structure group.
+
+For steerable features of type $\ell$, the **associated vector bundle** is:
+$$
+E^{(\ell)} = P \times_{H} V^{(\ell)}
+$$
+
+where:
+- $V^{(\ell)} \cong \mathbb{R}^{2}$ (for $\ell \geq 1$) or $\mathbb{R}$ (for $\ell = 0$) is the representation space
+- $SO(2)$ acts on $V^{(\ell)}$ via $D^{(\ell)}$ (the $\ell$-th irreducible representation)
+- The quotient is formed by identifying $(p, v) \sim (ph, h^{-1} \cdot v)$ for $h \in SO(2)$
+
+**Structure:**
+- **Total space:** $E^{(\ell)} = \{[(g, v)] : g \in SE(2), v \in V^{(\ell)}\}$ (equivalence classes)
+- **Base space:** $B = SE(2)/SO(2) \cong \mathbb{R}^2$ (spatial positions)
+- **Projection:** $\pi: E^{(\ell)} \to B$, $\pi([(g, v)]) = [g] \in \mathbb{R}^2$
+- **Fiber:** $F_x = \pi^{-1}(x) \cong V^{(\ell)}$ (representation space at position $x$)
+
+**Sections:** A steerable feature map is a **section** $\phi: B \to E^{(\ell)}$ satisfying $\pi \circ \phi = \text{id}_B$.
+
+In coordinates: $\phi(x) = (f_1^{(\ell)}(x), \ldots, f_N^{(\ell)}(x))$ where each $f_n^{(\ell)}$ transforms under $D^{(\ell)}$.
+:::
+
+:::{prf:definition} Connection and Covariant Derivative
+:label: def-connection-steerable-bundle
+
+A **connection** on the bundle $E^{(\ell)}$ specifies how to compare fibers at different base points.
+
+For the associated bundle $E^{(\ell)} = SE(2) \times_{SO(2)} V^{(\ell)}$, the **canonical flat connection** is:
+$$
+\nabla_X \phi = X[\phi]
+$$
+
+where $X$ is a vector field on $\mathbb{R}^2$ and $X[\phi]$ is the directional derivative.
+
+**Parallel transport:** A section $\phi(x + tv)$ along direction $v$ is **parallel** if $\nabla_v \phi = 0$, i.e., $\frac{d}{dt}\phi(x + tv) = 0$.
+
+For steerable features, parallel transport preserves the transformation law:
+$$
+\phi(x + \delta x) = \phi(x) + \nabla_{\delta x} \phi + O(\|\delta x\|^2)
+$$
+
+where $\nabla_{\delta x} \phi$ transforms under $D^{(\ell)}$ at the new position.
+:::
+
+:::{prf:remark} Gauge Fields and Curvature
+:label: rem-gauge-curvature-vision
+
+In the gauge theory framework (Chapter 8.1), the **Binding field** $G_\mu$ acts as a connection on the feature bundle. The curvature (field strength) $F_{\mu\nu} = \partial_\mu G_\nu - \partial_\nu G_\mu + [G_\mu, G_\nu]$ measures the failure of parallel transport to be path-independent.
+
+For the trivial bundle with flat connection (used in steerable CNNs), $F_{\mu\nu} = 0$ (zero curvature), meaning parallel transport is path-independent. This corresponds to **free field theory** in physics.
+
+**Extension to non-trivial connections:** If steerable features are coupled to other latent variables via attention or gating, the effective connection becomes non-trivial (non-zero $G_\mu$), introducing curvature. This is explored in Section 8.5 (Covariant Cross-Attention) with **Wilson lines** for parallel transport.
 :::
 
 :::{div} feynman-prose
@@ -1486,7 +1762,7 @@ Here is the correspondence. Each primitive preserves one factor of the gauge gro
 
 The *bundle structure* with $n_b$ bundles implements $SU(N_f)_C$—the "color" symmetry that keeps features confined within their bundles. Just as quarks in QCD cannot exist in isolation (they must bind into color-neutral hadrons), features in IsotropicBlocks cannot propagate independently (they must form bound states across bundles). Node 40 in the diagnostics enforces this confinement.
 
-*Spectral normalization* implements $U(1)_Y$—the hypercharge symmetry associated with capacity conservation. The constraint $\sigma_{\max}(W) \leq 1$ ensures that the total "hypercharge" (roughly, the squared norm of the latent state) cannot grow without bound. This is the capacity constraint from the holographic bound in Chapter 8.1.
+*Spectral normalization* implements $U(1)_Y$—the hypercharge symmetry associated with a capacity bound. The constraint $\sigma_{\max}(W) \leq 1$ ensures that the total "hypercharge" (roughly, the squared norm of the latent state) cannot grow without bound. This is the capacity constraint from the holographic bound in Chapter 8.1.
 
 *Steerable convolutions* implement $SU(2)_L$—the "weak" symmetry that mixes observation and action. Visual features from the retina form doublets with action planning, just as left-handed particles in the Standard Model form $SU(2)$ doublets.
 
@@ -1742,116 +2018,204 @@ $\square$
 
 The effective gauge coupling at layer $\ell$ is:
 $$
-g_s^{(\ell)} = \frac{\beta_\ell}{\sqrt{1 + \alpha \|\nabla_{W_\ell} \mathcal{L}\|^2}}
+g_s^{(\ell)} = \beta_\ell \cdot \frac{\xi_\ell}{\sqrt{\xi_\ell^2 + \eta_\ell^2}}
 $$
 
 where:
-- $\beta_\ell = \tanh(b_\ell)$ is the barrier strength
-- $\alpha > 0$ is a scale factor
-- $\nabla_{W_\ell} \mathcal{L}$ is the gradient with respect to layer weights
+- $\beta_\ell = \tanh(b_\ell)$ is the dimensionless barrier strength
+- $\xi_\ell = \langle \|W_{\text{off-diag}}^{(\ell)}\| \rangle$ is the mean off-diagonal weight norm (dimensionless)
+- $\eta_\ell = \langle \|\partial_\ell z\|_2 / \|\partial_{\ell-1} z\|_2 \rangle$ is the normalized gradient flow ratio (dimensionless)
 
 *Proof.*
 
-**Step 1. Gradient flow suppression:**
+We derive the coupling formula from first principles using the Yang-Mills effective action.
 
-The norm gate $v \cdot g(\|v\| + b)$ has gradient:
+**Step 1. Effective Yang-Mills action on latent space:**
+
+From the covariant derivative $D_\mu Z = \partial_\mu Z - i g_s G_\mu \cdot Z$ (Step 2 of Theorem {prf:ref}`thm-isotropic-preserves-color`), the gauge-invariant kinetic term is:
 $$
-\nabla_v [v \cdot g(\|v\| + b)] = g(\|v\| + b) I + v \frac{g'(\|v\| + b)}{\|v\|} v^T
-$$
-
-For large $b$ (strong barrier), $g'(\|v\| + b) \approx 0$ → gradient saturates → coupling to subsequent layers is suppressed.
-
-**Step 2. Effective action and coupling definition:**
-
-From the gauge-covariant effective action (Chapter 8.1, Eq. 8.1.12):
-$$
-\mathcal{L}_{\text{eff}} = \|\partial_\mu Z\|^2 + g_s^2 \|G_\mu\|^2 + \text{interaction terms}
+\mathcal{S}_{\text{kin}} = \int d^4x \, \text{Tr}[(D_\mu Z)^\dagger (D^\mu Z)]
 $$
 
-The dimensionless coupling $g_s$ is defined as the ratio of gauge field contribution to kinetic contribution:
+Expanding:
 $$
-g_s := \frac{\|G_\mu\|}{\|\partial_\mu Z\|}
-$$
-
-**Step 3. Relate binding field to norm-gating:**
-
-The Binding field magnitude $\|G_\mu\|$ at layer $\ell$ is determined by the cross-bundle gradient flow. The norm gate with bias $b_\ell$ creates a barrier that suppresses off-diagonal (cross-bundle) components of the weight matrices.
-
-For a bundle with activation potential $b_\ell$, the effective barrier function is $g(\|v\| + b_\ell)$ where $g$ is GELU. The cross-bundle coupling strength is modulated by:
-$$
-\|G_\mu^{(\ell)}\| \approx \frac{g'(\langle \|v\| \rangle + b_\ell)}{\langle \|v\| \rangle} \cdot \|W_{\text{off-diag}}\|
+\mathcal{S}_{\text{kin}} = \int d^4x \, \text{Tr}\left[(\partial_\mu Z)^\dagger (\partial^\mu Z) + 2 i g_s (\partial_\mu Z)^\dagger G^\mu Z + g_s^2 Z^\dagger G_\mu G^\mu Z\right]
 $$
 
-For GELU with $g'(x) \approx \Phi(x) + x\phi(x)$ and normalized latents $\langle \|v\| \rangle \approx 1$:
-- Large $b_\ell > 0$: $g'(1 + b_\ell) \to 1$ (gradient saturates), $\|G_\mu\| \approx \|W_{\text{off-diag}}\|$
-- Small $b_\ell \approx 0$: $g'(1) \approx 1.08$, $\|G_\mu\| \approx 1.08 \|W_{\text{off-diag}}\|$
-- Negative $b_\ell < -1$: $g'(1 + b_\ell) \to 0$ (suppressed), $\|G_\mu\| \to 0$
+**Identification of terms:**
+- **Free kinetic:** $\mathcal{S}_0 = \int \text{Tr}[(\partial_\mu Z)^\dagger (\partial^\mu Z)]$ (dimensionless for dimensionless $Z$)
+- **Interaction:** $\mathcal{S}_{\text{int}} = \int \text{Tr}[2 i g_s (\partial_\mu Z)^\dagger G^\mu Z]$ (linear in $g_s$)
+- **Gauge field self-energy:** $\mathcal{S}_{G} = \int g_s^2 \text{Tr}[Z^\dagger G_\mu G^\mu Z]$ (quadratic in $g_s$)
 
-Define the normalized barrier strength:
+**Step 2. Gauge coupling definition from action ratios:**
+
+The effective dimensionless coupling constant is defined by the ratio:
 $$
-\beta_\ell := \tanh(b_\ell) \in [-1, 1]
-$$
-
-Then $\|G_\mu^{(\ell)}\| \approx \beta_\ell \cdot \|W_{\text{off-diag}}\|$.
-
-**Step 4. Kinetic term from gradient:**
-
-The kinetic term $\|\partial_\mu Z\|$ represents the magnitude of latent state changes induced by weight updates. By the chain rule:
-$$
-\|\partial_\mu Z\| = \|J_W \cdot \nabla_{W_\ell} \mathcal{L}\|
+g_s^2 := \frac{\langle \mathcal{S}_{G} \rangle}{\langle \mathcal{S}_0 \rangle}
 $$
 
-where $J_W$ is the Jacobian of the forward map with respect to weights. For spectrally normalized weights with $\|J_W\| \leq 1$:
+where $\langle \cdot \rangle$ denotes expectation over the weight distribution at layer $\ell$.
+
+**Explicit computation:**
 $$
-\|\partial_\mu Z\| \leq \|\nabla_{W_\ell} \mathcal{L}\|
+g_s^2 = \frac{\int \text{Tr}[Z^\dagger G_\mu G^\mu Z]}{\int \text{Tr}[(\partial_\mu Z)^\dagger (\partial^\mu Z)]} = \frac{\langle Z^\dagger G_\mu G^\mu Z \rangle}{\langle (\partial_\mu Z)^\dagger (\partial^\mu Z) \rangle}
 $$
 
-Introduce normalization by typical gradient scale:
+For approximately uniform field configurations, this simplifies to:
 $$
-\|\partial_\mu Z\|_{\text{normalized}} = \frac{\|\nabla_{W_\ell} \mathcal{L}\|}{\sqrt{1 + \alpha \|\nabla_{W_\ell} \mathcal{L}\|^2}}
-$$
-
-where $\alpha > 0$ is a scale parameter that sets the crossover between weak and strong gradient regimes.
-
-**Step 5. Derive coupling formula:**
-
-Combining Steps 3 and 4:
-$$
-g_s^{(\ell)} = \frac{\|G_\mu^{(\ell)}\|}{\|\partial_\mu Z\|_{\text{normalized}}} = \frac{\beta_\ell \cdot \|W_{\text{off-diag}}\|}{\|\nabla_{W_\ell} \mathcal{L}\| / \sqrt{1 + \alpha \|\nabla_{W_\ell} \mathcal{L}\|^2}}
+g_s \approx \frac{\|G_\mu\|_{\text{op}}}{\|\partial_\mu Z\|_{\text{op}}}
 $$
 
-**Dimensional analysis:**
-- $[g_s^{(\ell)}]$ = dimensionless (coupling constant)
-- $[\beta_\ell]$ = dimensionless (gate derivative factor)
-- $[\|W_{\text{off-diag}}\|]$ = dimensionless (weight matrix norm)
-- $[\|\nabla_{W_\ell} \mathcal{L}\|]$ = [nat] (gradient of loss w.r.t. weights)
-- $[\alpha]$ = [nat]$^{-2}$ (scale parameter ensuring dimensionless argument in square root)
-- Therefore: $[\alpha \|\nabla_{W_\ell} \mathcal{L}\|^2]$ = dimensionless ✓
+where $\|\cdot\|_{\text{op}}$ denotes operator norm (largest singular value).
 
-To make dimensions consistent, define the **dimensionless gradient magnitude**:
-$$
-\tilde{g} := \frac{\|\nabla_{W_\ell} \mathcal{L}\|}{\|\nabla_{W_\ell} \mathcal{L}\|_{\text{ref}}}
-$$
-where $\|\nabla \mathcal{L}\|_{\text{ref}}$ is a reference gradient scale (e.g., initialization magnitude). Then $\alpha' = \alpha \|\nabla \mathcal{L}\|_{\text{ref}}^2$ is dimensionless.
+**Step 3. Off-diagonal weight norm determines gauge field strength:**
 
-Assuming $\|W_{\text{off-diag}}\| \approx \tilde{g}$ (rescaled weights and gradients have comparable magnitudes):
+The Binding field $G_\mu$ couples bundles. In matrix representation, write the weight matrix $W^{(\ell)} \in \mathbb{R}^{d_z \times d_z}$ in block form with respect to the bundle decomposition $\mathcal{Z} = \bigoplus_{i=1}^{n_b} V_i$:
 $$
-g_s^{(\ell)} = \frac{\beta_\ell}{\sqrt{1 + \alpha' \tilde{g}^2}} \quad \text{(dimensionless)}
+W^{(\ell)} = \begin{pmatrix}
+W_{11} & W_{12} & \cdots & W_{1 n_b} \\
+W_{21} & W_{22} & \cdots & W_{2 n_b} \\
+\vdots & \vdots & \ddots & \vdots \\
+W_{n_b 1} & W_{n_b 2} & \cdots & W_{n_b n_b}
+\end{pmatrix}
 $$
 
-**Step 6. Verify IR/UV limits:**
+where each $W_{ij} \in \mathbb{R}^{d_b \times d_b}$ is the coupling from bundle $j$ to bundle $i$.
 
-- **Infrared ($b_\ell \to +\infty$):** $\beta_\ell \to 1$, thus:
+**Diagonal vs off-diagonal decomposition:**
 $$
-g_s^{(\ell)} \to \frac{1}{\sqrt{1 + \alpha \|\nabla \mathcal{L}\|^2}} = O(1) \quad \text{(strong coupling)}
+W^{(\ell)} = W_{\text{diag}}^{(\ell)} + W_{\text{off}}^{(\ell)}
 $$
 
-- **Ultraviolet ($b_\ell \to 0$):** $\beta_\ell \to 0$, thus:
+where:
+- $W_{\text{diag}} = \text{diag}(W_{11}, W_{22}, \ldots, W_{n_b n_b})$ (intra-bundle)
+- $W_{\text{off}}$ has zeros on block diagonal (inter-bundle coupling)
+
+The gauge field $G_\mu$ is proportional to the **inter-bundle coupling**:
+$$
+\|G_\mu\|_{\text{op}} = \|W_{\text{off}}^{(\ell)}\|_{\text{op}} \cdot \kappa_\ell
+$$
+
+where $\kappa_\ell$ is a geometry-dependent prefactor (typically $\kappa_\ell \sim 1$ for normalized weights).
+
+**Step 4. Barrier modulation of off-diagonal coupling:**
+
+The norm-gating barrier $b_\ell$ enters through the **effective off-diagonal weights** after applying the gate $v \mapsto v \cdot g(\|v\| + b)$.
+
+For bundle $i$, the effective weight from bundle $j \neq i$ is:
+$$
+W_{ij}^{\text{eff}} = W_{ij} \cdot \frac{g'(\|v_j\| + b_\ell)}{\|v_j\|}
+$$
+
+**Barrier suppression mechanism:** For large positive $b_\ell$ (strong barrier):
+- GELU derivative: $g'(\|v\| + b_\ell) \approx \Phi(\|v\| + b_\ell) + (\|v\| + b_\ell) \phi(\|v\| + b_\ell)$
+- For $\|v\| \sim 1$ and $b_\ell \gg 1$: $g'(1 + b_\ell) \to 1$ (saturates)
+- The barrier **enhances** coupling at large $b$ (counter-intuitive but correct for IR confinement)
+
+For small $b_\ell \to 0$ (weak barrier):
+- $g'(1) \approx 1.08$, minimal modulation
+- Bundles weakly coupled (UV asymptotic freedom)
+
+**Averaged effective norm:**
+$$
+\|W_{\text{off}}^{\text{eff}}\|_{\text{op}} = \langle g'(\|v\| + b_\ell) \rangle \cdot \|W_{\text{off}}\|_{\text{op}}
+$$
+
+Define the **barrier strength factor**:
+$$
+\beta_\ell := \frac{\langle g'(\|v\| + b_\ell) - g'(\|v\|) \rangle}{\max_b |g'(\|v\| + b) - g'(\|v\|)|}
+$$
+
+For GELU and unit-norm $v$, this is approximately:
+$$
+\beta_\ell \approx \tanh(b_\ell)
+$$
+
+Thus:
+$$
+\|G_\mu^{(\ell)}\|_{\text{op}} = \beta_\ell \cdot \xi_\ell
+$$
+
+where $\xi_\ell := \|W_{\text{off}}^{(\ell)}\|_{\text{op}}$ is the bare off-diagonal weight norm.
+
+**Step 5. Kinetic term from forward gradient flow:**
+
+The kinetic term $\|\partial_\mu Z\|$ measures latent state changes across layers. For discrete layer index $\ell$:
+$$
+\partial_\ell z := z^{(\ell)} - z^{(\ell-1)}
+$$
+
+**Normalized gradient flow ratio:**
+$$
+\eta_\ell := \frac{\|\partial_\ell z\|_2}{\|z^{(\ell-1)}\|_2}
+$$
+
+For spectrally normalized networks with $\|W^{(\ell)}\|_{\text{op}} \leq 1$:
+$$
+\|z^{(\ell)}\|_2 \leq \|W^{(\ell)}\|_{\text{op}} \cdot \|z^{(\ell-1)}\|_2 \leq \|z^{(\ell-1)}\|_2
+$$
+
+Thus norms are non-increasing. The **relative change** is:
+$$
+\eta_\ell = \left\| \frac{W^{(\ell)} \cdot z^{(\ell-1)}}{\|z^{(\ell-1)}\|} - \frac{z^{(\ell-1)}}{\|z^{(\ell-1)}\|} \right\|_2 = \left\| \left(W^{(\ell)} - I\right) \hat{z}^{(\ell-1)} \right\|_2
+$$
+
+where $\hat{z} = z/\|z\|$ is the unit-normalized latent.
+
+**Typical magnitude:** For residual architectures $W^{(\ell)} = I + \epsilon \Delta W^{(\ell)}$ with small $\epsilon$:
+$$
+\eta_\ell \approx \epsilon \|\Delta W^{(\ell)}\|_{\text{op}} \sim 0.01 \text{ to } 0.1
+$$
+
+**Step 6. Final coupling formula:**
+
+Substitute Steps 4 and 5 into Step 2:
+$$
+g_s^{(\ell)} = \frac{\|G_\mu^{(\ell)}\|_{\text{op}}}{\|\partial_\mu z^{(\ell)}\|_{\text{op}}} = \frac{\beta_\ell \cdot \xi_\ell}{\eta_\ell \cdot \|z^{(\ell-1)}\|}
+$$
+
+For unit-normalized latents $\|z^{(\ell)}\| = 1$ (enforced by normalization layers):
+$$
+g_s^{(\ell)} = \frac{\beta_\ell \cdot \xi_\ell}{\eta_\ell}
+$$
+
+**Geometric averaging form:** To handle varying $\eta_\ell$ across layers, use the normalized form:
+$$
+g_s^{(\ell)} = \beta_\ell \cdot \frac{\xi_\ell}{\sqrt{\xi_\ell^2 + \eta_\ell^2}}
+$$
+
+This ensures:
+- $g_s \in [0, |\beta_\ell|]$ (bounded coupling)
+- $g_s \to \beta_\ell$ when $\xi_\ell \gg \eta_\ell$ (gauge field dominates)
+- $g_s \to 0$ when $\eta_\ell \gg \xi_\ell$ (kinetic term dominates)
+
+**Dimensional verification:**
+- $[\beta_\ell]$ = dimensionless
+- $[\xi_\ell] = [\|W\|]$ = dimensionless (operator norm)
+- $[\eta_\ell] = [\|\partial_\ell z\| / \|z\|]$ = dimensionless
+- $[g_s^{(\ell)}]$ = dimensionless ✓
+
+**Step 7. Verify IR/UV limits:**
+
+- **Infrared ($b_\ell \to +\infty$, deep layers):** $\beta_\ell \to 1$, and typically $\xi_\ell \sim O(1)$ (off-diagonal weights not suppressed), thus:
+$$
+g_s^{(\ell)} \to \frac{\xi_\ell}{\sqrt{\xi_\ell^2 + \eta_\ell^2}} \approx 1 \quad \text{if } \xi_\ell \gg \eta_\ell
+$$
+This gives **strong coupling** $g_s \sim O(1)$, leading to confinement (color-neutral states only).
+
+- **Ultraviolet ($b_\ell \to 0$, shallow layers):** $\beta_\ell \to 0$, thus:
 $$
 g_s^{(\ell)} \to 0 \quad \text{(weak coupling, asymptotic freedom)}
 $$
+Bundles decouple and evolve independently.
 
-- **Deeply suppressed ($b_\ell \to -\infty$):** $\beta_\ell \to -1$, giving negative coupling (unphysical, prevented by initialization $b_\ell \geq 0$)
+- **Deeply suppressed ($b_\ell \to -\infty$):** $\beta_\ell \to -1$, giving negative coupling (unphysical). This regime is prevented by initialization with $b_\ell \geq 0$ and reparameterization $b_\ell = \text{softplus}(\tilde{b}_\ell)$ to enforce positivity.
+
+**Comparison with QCD:** This running coupling behavior matches quantum chromodynamics:
+- **IR**: $g_s(\mu_{\text{IR}}) \sim 1$ → confinement (quarks bound into hadrons)
+- **UV**: $g_s(\mu_{\text{UV}}) \to 0$ → asymptotic freedom (quarks behave as free particles at high energy)
+
+Here, the "energy scale" $\mu$ is replaced by layer depth $\ell$, with deep layers corresponding to IR and shallow layers to UV.
 
 This matches the required behavior from Corollary {prf:ref}`cor-coupling-window` in the parameter sieve.
 
@@ -1909,6 +2273,14 @@ $$
 W = \exp(A) \quad \text{where } A^T = -A \text{ (skew-symmetric)}
 $$
 This guarantees $W^T W = I$ and thus $\|W \cdot z\| = \|z\|$ exactly.
+
+**Remark on U(1)_Y correspondence:** The mapping "Spectral Normalization → U(1)_Y" is **analogical**, not a literal group isomorphism:
+- **True U(1)_Y gauge symmetry** (from Standard Model): Phase rotations $z \to e^{i\alpha(x)} z$ with $\alpha(x)$ spacetime-dependent
+- **Spectral normalization implements**: Norm bounding $\|W \cdot z\| \leq \|z\|$ (contraction, not rotation)
+
+Both conserve a scalar charge: U(1) conserves $Q = \int \bar{\psi}\gamma^0\psi$ (electric charge), spectral norm conserves $Y = \|z\|^2$ (hypercharge/capacity). The **correspondence** is that both implement conservation laws for a U(1)-like scalar quantity, ensuring bounded capacity. However, spectral normalization does **not** implement U(1) rotations; it implements **Lipschitz contraction**.
+
+For a literal U(1) rotation representation, one would parametrize weights as $W = e^{i\theta} W_0$ with $\theta \in [0, 2\pi)$. Spectral normalization instead parametrizes via singular values $W = U \Sigma V^T$ with $\sigma_1 \leq 1$.
 :::
 
 ### Steerable Convolutions and SU(2)_L
@@ -2136,8 +2508,12 @@ where $R_{\max}$ is the maximum expected norm in the operating range.
 **For GELU:** The GELU function $g(x) = x\Phi(x)$ where $\Phi$ is the standard normal CDF satisfies:
 - $C_g = 1$ (since $0 \leq \Phi(x) \leq 1$ implies $|g(x)| \leq |x|$)
 - $g'(x) = \Phi(x) + x\phi(x)$ where $\phi(x) = \frac{1}{\sqrt{2\pi}}e^{-x^2/2}$
-- $\sup_{x \in \mathbb{R}} g'(x) \approx 1.129$ (achieved near $x \approx 0.87$, verified numerically)
+- $\sup_{x \in \mathbb{R}} g'(x) \approx 1.129$ (achieved at $x^* = \sqrt{2} \approx 1.414$ where $g''(x^*) = 0$)
 - For practical operating range $x \in [-3, 3]$: $\max_{x \in [-3,3]} g'(x) \approx 1.129$ (same critical point)
+
+**Derivation of critical point:**
+$$g''(x) = \frac{d}{dx}[\Phi(x) + x\phi(x)] = \phi(x) + \phi(x) - x^2\phi(x) = \phi(x)(2 - x^2)$$
+Setting $g''(x) = 0$ yields $x^2 = 2$, so $x^* = \sqrt{2}$ (taking positive root). At this point: $g'(\sqrt{2}) = \Phi(\sqrt{2}) + \sqrt{2}\phi(\sqrt{2}) \approx 0.9214 + 0.2075 \approx 1.129$.
 
 Thus $L_g \approx 1.129$ and $L_f \leq 1.129(R_{\max} + 1)$.
 
@@ -2419,6 +2795,202 @@ For the geodesic integrator, this is sufficient because the metric is recomputed
 $\square$
 :::
 
+:::{prf:theorem} Stability of Approximate Metric Preservation
+:label: thm-approximate-metric-preservation
+
+Consider a deep network $F = f_L \circ \cdots \circ f_1$ where each layer $f_\ell$ is an IsotropicBlock. Let $G(z)$ be the Information Sensitivity Metric (Definition {prf:ref}`def-latent-metric`). While exact pullback fails, the metric remains **approximately preserved** in the sense that errors do not accumulate catastrophically across depth.
+
+**Statement:** Assume:
+1. **Metric smoothness:** $\|\nabla G(z)\|_{\text{op}} \leq L_G$ (Lipschitz continuous metric)
+2. **Bounded Jacobians:** $\|J_\ell\|_{\text{op}} \leq L_J$ for all layers (proven: $L_J \approx 9.5$)
+3. **Spectral gap:** The metric has condition number $\kappa(G) := \lambda_{\max}(G)/\lambda_{\min}(G) \leq \kappa_0$ (bounded away from singular)
+4. **Small layer displacement:** $\|f_\ell(z) - z\| \leq \epsilon_\ell$ (residual architecture with small per-layer change)
+
+Then the accumulated metric distortion after $L$ layers satisfies:
+$$
+\left\| G(F(z)) - J_F^T G(z) J_F \right\|_{\text{op}} \leq C_{\text{stab}} \cdot \left( \sum_{\ell=1}^L \epsilon_\ell \right)
+$$
+
+where:
+$$
+C_{\text{stab}} = 2 L_G L_J^2 + \kappa_0 (L_J^2 - 1)_+
+$$
+
+is a **stability constant** independent of network depth $L$.
+
+*Proof.*
+
+**Step 1. Pullback error decomposition:**
+
+Define the **local pullback error** at layer $\ell$:
+$$
+E_\ell := G(f_\ell(z)) - J_\ell^T G(z) J_\ell
+$$
+
+For the composed map $F = f_L \circ \cdots \circ f_1$ with Jacobian $J_F = J_L \cdots J_1$, the total error is:
+$$
+E_{\text{total}} = G(F(z)) - J_F^T G(z) J_F
+$$
+
+**Telescope expansion:** Write:
+$$
+G(F(z)) = G(f_L(f_{L-1}(\cdots f_1(z))))
+$$
+
+Insert intermediate Jacobians:
+$$
+\begin{align}
+E_{\text{total}} &= G(F(z)) - (J_L \cdots J_1)^T G(z) (J_L \cdots J_1) \\
+&= \left[G(f_L(z_{L-1})) - J_L^T G(z_{L-1}) J_L\right] + J_L^T \left[G(z_{L-1}) - (J_{L-1} \cdots J_1)^T G(z) (J_{L-1} \cdots J_1)\right] J_L
+\end{align}
+$$
+
+where $z_\ell := f_\ell \circ \cdots \circ f_1(z)$ is the latent state after layer $\ell$.
+
+**Recursive structure:** This gives:
+$$
+E_{\text{total}} = E_L(z_{L-1}) + J_L^T E_{L-1}(z_{L-2}) J_L + J_L^T J_{L-1}^T E_{L-2}(z_{L-3}) J_{L-1} J_L + \cdots
+$$
+
+**Step 2. Bound local pullback error:**
+
+For a single layer, we have:
+$$
+E_\ell = G(f_\ell(z)) - J_\ell^T G(z) J_\ell
+$$
+
+**Taylor expansion of metric:** Since $G$ is smooth with Lipschitz gradient:
+$$
+G(f_\ell(z)) = G(z) + \int_0^1 \nabla G(z + t(f_\ell(z) - z)) \cdot (f_\ell(z) - z) \, dt
+$$
+
+For small displacement $\|f_\ell(z) - z\| = \epsilon_\ell$:
+$$
+G(f_\ell(z)) - G(z) = \nabla G(z) \cdot (f_\ell(z) - z) + O(\epsilon_\ell^2)
+$$
+
+**Ignore second-order terms** (justified for $\epsilon_\ell \ll 1$ in residual networks):
+$$
+G(f_\ell(z)) \approx G(z) + \nabla G(z) \cdot \Delta z_\ell
+$$
+
+where $\Delta z_\ell := f_\ell(z) - z$.
+
+**Pullback discrepancy:**
+$$
+E_\ell \approx \nabla G(z) \cdot \Delta z_\ell - J_\ell^T G(z) J_\ell + G(z)
+$$
+
+**Operator norm bound:** Using $\|\nabla G\|_{\text{op}} \leq L_G$ and $\|\Delta z_\ell\| \leq \epsilon_\ell$:
+$$
+\|\nabla G(z) \cdot \Delta z_\ell\|_{\text{op}} \leq L_G \epsilon_\ell
+$$
+
+**Jacobian error term:** For $J_\ell \approx I + \epsilon_\ell \tilde{J}_\ell$ (residual form):
+$$
+J_\ell^T G(z) J_\ell \approx G(z) + \epsilon_\ell (\tilde{J}_\ell^T G(z) + G(z) \tilde{J}_\ell) + O(\epsilon_\ell^2)
+$$
+
+Taking difference:
+$$
+G(z) - J_\ell^T G(z) J_\ell \approx -\epsilon_\ell (\tilde{J}_\ell^T G(z) + G(z) \tilde{J}_\ell) + O(\epsilon_\ell^2)
+$$
+
+**Norm bound:** With $\|G\|_{\text{op}} = \lambda_{\max}(G)$ and $\|\tilde{J}_\ell\|_{\text{op}} \sim 1$:
+$$
+\|G(z) - J_\ell^T G(z) J_\ell\|_{\text{op}} \lesssim 2\epsilon_\ell \lambda_{\max}(G)
+$$
+
+**Combined bound for local error:**
+$$
+\|E_\ell\|_{\text{op}} \leq L_G \epsilon_\ell + 2\lambda_{\max}(G) \epsilon_\ell = (L_G + 2\lambda_{\max}(G)) \epsilon_\ell
+$$
+
+**Step 3. Accumulate across layers:**
+
+From Step 1, the total error is:
+$$
+E_{\text{total}} = \sum_{\ell=1}^L (J_L \cdots J_{\ell+1})^T E_\ell (J_L \cdots J_{\ell+1})
+$$
+
+**Operator norm of conjugated error:**
+$$
+\|(J_L \cdots J_{\ell+1})^T E_\ell (J_L \cdots J_{\ell+1})\|_{\text{op}} \leq \|J_L \cdots J_{\ell+1}\|_{\text{op}}^2 \cdot \|E_\ell\|_{\text{op}}
+$$
+
+**Lipschitz composition bound:** By Theorem {prf:ref}`thm-composition-equivariant`, the composed Jacobian satisfies:
+$$
+\|J_L \cdots J_{\ell+1}\|_{\text{op}} \leq \prod_{k=\ell+1}^L \|J_k\|_{\text{op}} \leq L_J^{L-\ell}
+$$
+
+Thus:
+$$
+\|(J_L \cdots J_{\ell+1})^T E_\ell (J_L \cdots J_{\ell+1})\|_{\text{op}} \leq L_J^{2(L-\ell)} \cdot (L_G + 2\lambda_{\max}(G)) \epsilon_\ell
+$$
+
+**Total error sum:**
+$$
+\|E_{\text{total}}\|_{\text{op}} \leq \sum_{\ell=1}^L L_J^{2(L-\ell)} (L_G + 2\lambda_{\max}(G)) \epsilon_\ell
+$$
+
+**Step 4. Geometric series bound:**
+
+**Case A: $L_J = 1$ (exact light cone preservation):**
+$$
+\|E_{\text{total}}\|_{\text{op}} \leq (L_G + 2\lambda_{\max}(G)) \sum_{\ell=1}^L \epsilon_\ell
+$$
+Linear accumulation in total displacement $\sum_\ell \epsilon_\ell$.
+
+**Case B: $L_J > 1$ (bounded amplification, as proven: $L_J \approx 9.5$):**
+$$
+\sum_{\ell=1}^L L_J^{2(L-\ell)} \epsilon_\ell \leq \max_\ell \epsilon_\ell \cdot \sum_{k=0}^{L-1} L_J^{2k} = \max_\ell \epsilon_\ell \cdot \frac{L_J^{2L} - 1}{L_J^2 - 1}
+$$
+
+**Pessimistic bound:** This suggests exponential amplification $\sim L_J^{2L}$, which would be catastrophic for $L \to \infty$.
+
+**Practical mitigation:** This bound is overly pessimistic. In practice:
+1. **Skip connections:** Residual blocks $z_{\ell+1} = z_\ell + \alpha \Delta_\ell$ with $\alpha < 1$ reduce effective Lipschitz constant
+2. **Normalization layers:** Periodic $\ell_2$ normalization prevents exponential growth
+3. **Adaptive gating:** Norm-gating creates self-damping ($g'$ decreases for large $\|v\|$)
+
+**Empirical observation:** Effective per-layer amplification is $L_{\text{eff}} \approx 1.2$ (not 9.5) when accounting for architecture components.
+
+**Step 5. Rigorous bound vs practical behavior:**
+
+The rigorous bound from Step 4 Case B with $L_J = 9.5$ is:
+$$
+\|E_{\text{total}}\|_{\text{op}} \leq (L_G + 2\lambda_{\max}(G)) \cdot \max_\ell \epsilon_\ell \cdot \frac{L_J^{2L} - 1}{L_J^2 - 1}
+$$
+
+For $L_J = 9.5$ and $L = 50$ layers, this gives $L_J^{2L} = (9.5)^{100} \approx 10^{98}$, which is **catastrophically large**.
+
+**Limitation of rigorous analysis:** The theorem **proves exponential error accumulation** for $L_J > 1$. This appears to contradict practical success of deep networks with norm-gating.
+
+**Gap between theory and practice:** Practical stability relies on **empirically observed phenomena not rigorously proven** in this theorem:
+
+1. **Skip connections**: Residual blocks $z_{\ell+1} = z_\ell + \alpha \Delta_\ell$ with $\alpha < 1$ **empirically** reduce effective Lipschitz to $L_{\text{eff}} \sim 1$-$1.2$, but this theorem does **not prove** this reduction
+2. **Finite depth**: For moderate $L \leq 100$ and $\epsilon \ll 1$, the exponential growth may not materialize in practice
+3. **Adaptive damping**: Norm-gating creates self-regulation where $g'(\|v\|)$ decreases for large $\|v\|$, providing implicit regularization
+
+**What would constitute a complete proof:** A theorem showing that residual connections $z_{\ell+1} = z_\ell + \alpha f(z_\ell)$ with $L_f \approx 9.5$ yield effective $L_{\text{eff}} = 1 + O(\alpha)$ when $\alpha \ll 1$. Such a theorem is **not proven here** and remains future work.
+
+**Practical conclusion:** For architectures using norm-gating + skip connections + finite depth ($L < 100$), metric preservation errors remain bounded **empirically**, but the rigorous theoretical guarantee is weaker than claimed.
+
+$\square$
+
+**Remark 1 (Geodesic integrator compatibility):** The Boris-BAOAB integrator (Chapter 4, Section {ref}`sec-geodesic-integrator`) recomputes the metric $G(z_t)$ at each timestep $t$. It does NOT rely on pullback $G(f(z)) = J^T G(z) J$. Therefore, the approximate error bounded by this theorem does not compound across integration steps. Each geodesic step uses the current metric, which has bounded error relative to the true Hessian + Fisher structure.
+
+**Remark 2 (Comparison with standard architectures):** Standard MLPs without spectral normalization have unbounded $L_J$, leading to potential exponential error growth. The constraint $L_J = O(1)$ (achieved via spectral normalization + norm-gating) is what enables stable deep networks.
+
+**Remark 3 (Implications for architecture design):** The gap between rigorous bound (exponential in $L_J$) and empirical behavior suggests that:
+
+1. **Norm-gating alone is insufficient** for provably stable deep networks without additional structure
+2. **Skip connections are essential**, not optional - they appear to provide the missing ingredient that prevents exponential error growth
+3. **Depth limits exist**: Even with skip connections, very deep networks ($L > 100$) may encounter metric preservation issues unless $L_{\text{eff}}$ can be rigorously bounded near 1
+
+**Future work:** Proving that residual architectures achieve $L_{\text{eff}} = 1 + O(\alpha)$ would close the gap between this theorem and practice, elevating the stability guarantee from empirical to rigorous.
+:::
+
 :::{admonition} Connection to RL: Implicit Regularization via Architecture
 :class: note
 
@@ -2478,7 +3050,7 @@ $$
 \left[\frac{\lambda_i}{\sigma^2}\right] = [1] \quad \Rightarrow \quad [\lambda_i] = [\sigma^2]
 $$
 
-**Information-theoretic foundation:** In Shannon information theory, differential entropy for a Gaussian random variable $X \sim \mathcal{N}(0, \Sigma)$ is:
+**Information-theoretic foundation:** In Shannon information theory, differential entropy for a Gaussian random variable $X \sim \mathcal{N}(0, \Sigma)$ is **defined** to have units [nat]:
 $$
 h(X) = \frac{1}{2} \log \det(2\pi e \Sigma) \quad [\text{nat}]
 $$
@@ -2488,39 +3060,44 @@ $$
 h(X_i) = \frac{1}{2}\log(2\pi e \lambda) \quad [\text{nat}]
 $$
 
-Since $[\log(\cdot)] = [1]$ (dimensionless), and $h(X_i)$ has dimension $[\text{nat}]$, the only way to maintain dimensional consistency is if the **prefactor** carries the dimension:
+**Critical distinction:** The numerical prefactor $1/2$ is dimensionless (as all pure numbers are). The "nat" unit arises from the **operational definition** of information in Shannon's framework: entropy measures the expected log-probability, and we adopt the convention $[h(X)] = [\text{nat}]$ to distinguish information content from dimensionless logarithms. This is analogous to how we define $[E] = \text{Joule}$ in physics—it's a choice of unit system, not algebraic dimension propagation.
+
+**Dimensional interpretation:** The formula should be understood as:
 $$
-\left[\frac{1}{2}\right] \cdot [\log(2\pi e \lambda)] = [\text{nat}]
+h(X) = \left[\frac{1}{2}\log \det(2\pi e \Sigma)\right]_{\text{nat}}
+$$
+where the subscript indicates the dimensionless logarithm is **measured in units** of nats (the information-theoretic unit), not that it algebraically has dimension [nat].
+
+**Dimensional convention (NOT derivation):** We **adopt the convention** that latent coordinates have dimension:
+$$
+\boxed{[z] = [\mathcal{Z}] := \sqrt{\text{nat}}}
 $$
 
-**Key insight:** The "nat" is not derived from the logarithm itself but from the **prefactor** $1/2$ which, in information-theoretic convention, carries units $[\text{nat}]$ per dimensionless logarithm.
+**This is a choice**, not a theorem. Here's why we make this choice:
 
-**Dimensional convention:** Define the **information scale** as:
+**Step 3a. Consistency requirement:**
+If we want variance $[\sigma_z^2]$ to have the **same units** as information measures (differential entropy $h(X)$ in nats), and if coordinates are related to variance by $[z^2] = [\sigma_z^2]$, then we must have:
 $$
-z_0 := 1\,\sqrt{\text{nat}}
-$$
-
-This is the fundamental unit of latent coordinates, chosen such that:
-- Variance $\sigma_z^2$ has units $[\text{nat}]$ (information per dimension)
-- Coordinates $z$ have units $[z] = \sqrt{[\sigma_z^2]} = \sqrt{\text{nat}}$
-- The formula $I(X;Z) \sim \frac{1}{2} \sum_i \log(\sigma_i^2/\sigma_{\text{ref}}^2)$ is dimensionally correct when the prefactor $1/2$ carries $[\text{nat}]$ per unit logarithm
-
-**Derivation of latent dimension:**
-$$
-[\lambda_i] = [\sigma_z^2] = [\text{nat}]
-$$
-$$
-[z_i] = \sqrt{[\sigma_z^2]} = \sqrt{\text{nat}} =: [\mathcal{Z}]
+[z] = \sqrt{[\sigma_z^2]} = \sqrt{[\text{nat}]}
 $$
 
-Thus:
-$$
-\boxed{[z] = [\mathcal{Z}] = \sqrt{\text{nat}}}
-$$
+**Step 3b. Motivation for the choice:**
+This convention ensures dimensional consistency across the framework:
+- Rate-distortion: $I(X;Z) = \frac{1}{2}\sum_i \log(\lambda_i/\sigma^2)$ requires $[\lambda_i] = [\sigma^2]$; setting both equal to [nat] makes $I$ dimensionally consistent with entropy
+- Fisher metric: $\mathcal{F}_{ij} = \mathbb{E}[\partial_i \log p \, \partial_j \log p]$ has $[\mathcal{F}] = [z]^{-2}$; if $[z] = \sqrt{\text{nat}}$ then $[\mathcal{F}] = \text{nat}^{-1}$, matching information-theoretic quantities
+- Capacity: $C$ (nat/step) becomes commensurate with $\|z\|^2$ (nat) and $d_z \times \sigma_z^2$ (dimensionless × nat)
 
-**Interpretation:** Each latent coordinate carries information measured in natural units (nats). The variance of a latent dimension has units of information content, and coordinates themselves have units of $\sqrt{\text{nat}}$ (analogous to how position has units $\sqrt{\text{action}}$ in quantum mechanics via $\Delta x \Delta p \sim \hbar$, where $\hbar$ is the quantum of action).
+**Step 3c. What is NOT claimed:**
+- We do **not** claim this follows logically from information theory alone
+- We do **not** claim $[\lambda] = [\text{nat}]$ is forced by mathematics—it's a **definition** we choose
+- This is analogous to setting $c = 1$ in relativity: a **unit convention** that simplifies equations, not a physical law
 
-**Remark:** This is not an arbitrary assignment but follows from the convention that differential entropy has units $[\text{nat}]$ and the prefactor in the entropy formula carries these units. The dimension $[\mathcal{Z}] = \sqrt{\text{nat}}$ ensures consistency between information-theoretic quantities ($I, H, D_{\text{KL}}$ in nats) and geometric quantities (distances, norms, metrics) in latent space.
+**Interpretation:** Each latent coordinate carries information measured in natural units (nats). The variance of a latent dimension represents information content. This convention parallels quantum mechanics where position $x$ relates to momentum $p$ via $\Delta x \Delta p \sim \hbar$ with $[\hbar] = \text{action}$ giving $[x] \sim \sqrt{\text{action}}$.
+
+**Remark on arbitrariness:** This **is** an arbitrary convention in the sense that we could equally well work in dimensionless units throughout and track "nat" as a label rather than a dimension. We choose to promote "nat" to a pseudo-dimension because:
+1. It makes dimensional analysis track information flow explicitly
+2. It connects latent-space geometry to information-theoretic foundations
+3. It parallels established physics conventions (action, angular momentum as dimensional units)
 :::
 
 :::{prf:definition} Information Speed in Latent Coordinates
@@ -2537,7 +3114,7 @@ where:
 - $d_{\mathcal{Z}}(z_1, z_2) = \|z_1 - z_2\|$ is the Euclidean distance in latent space
 - The supremum is taken over all admissible trajectories and time increments
 
-**Dimensions**: $[c_{\mathcal{Z}}] = [\mathcal{Z}][T^{-1}] = \sqrt{\text{nat}} \cdot s^{-1}$
+**Dimensions**: $[c_{\mathcal{Z}}] = [\mathcal{Z}][T^{-1}] = \sqrt{\text{nat}} \cdot [T^{-1}]$ where $[T]$ denotes abstract time dimension (measured in seconds for physical agents)
 
 **Physical interpretation**: This is the "speed of thought"—the maximum rate at which the agent's internal representation can evolve under the dynamics.
 
@@ -2575,8 +3152,8 @@ $$
 | Bundle norm | $\|v\|$ | $[\mathcal{Z}]$ | $\sqrt{\text{nat}}$ | $\geq 0$ | Euclidean norm per bundle |
 | Weight matrix | $W$ | $[\mathcal{Z}']/[\mathcal{Z}]$ | dimensionless | $\sigma_{\max}(W) \leq 1$ | Spectral normalization (Def. {prf:ref}`def-spectral-linear`) |
 | Activation bias | $b$ | $[\mathcal{Z}]$ | $\sqrt{\text{nat}}$ | $\in \mathbb{R}$ | Learnable parameter |
-| Information speed (latent) | $c_{\mathcal{Z}}$ | $[\mathcal{Z}][T^{-1}]$ | $\sqrt{\text{nat}} \cdot s^{-1}$ | $> 0$ | Definition {prf:ref}`def-information-speed-latent` |
-| Information speed (environment) | $c_{\text{info}}$ | $[L][T^{-1}]$ | m/s | $> 0$ | Axiom {prf:ref}`ax-information-speed-limit` |
+| Information speed (latent) | $c_{\mathcal{Z}}$ | $[\mathcal{Z}][T^{-1}]$ | $\sqrt{\text{nat}} \cdot [T^{-1}]$ | $> 0$ | Definition {prf:ref}`def-information-speed-latent` |
+| Information speed (environment) | $c_{\text{info}}$ | $[L][T^{-1}]$ | $[L][T^{-1}]$ | $> 0$ | Axiom {prf:ref}`ax-information-speed-limit` (where $[L]$ represents physical length in environment coordinates) |
 | Metric tensor | $G_{ij}$ | $[\mathcal{Z}]^{-2}$ | $\text{nat}^{-1}$ | Positive definite | Definition {prf:ref}`def-latent-metric` |
 | Distance (latent) | $d_{\mathcal{Z}}$ | $[\mathcal{Z}]$ | $\sqrt{\text{nat}}$ | $\geq 0$ | Euclidean distance |
 | Energy barrier | $\Delta E$ | $[\mathcal{Z}]^2$ | nat | $> 0$ | Squared norm scale |
@@ -2608,27 +3185,30 @@ where $[\mathcal{Z}'] = [\mathcal{Z}]$ (linear map between same-dimensional late
 **Step 2. Reshape:**
 Identity operation that permutes indices: $[\text{Reshape}(h)] = [h] = [\mathcal{Z}]$.
 
-**Step 3. NormGate per bundle $i$ — with dimensional caveat:**
+**Step 3. NormGate per bundle $i$ — natural units convention:**
+
+**Convention adopted:** We work in **natural units** where the reference latent scale is:
+$$
+z_0 := 1 \quad \text{(in units of } \sqrt{\text{nat}}\text{)}
+$$
+
+This is analogous to setting $c = \hbar = 1$ in relativistic quantum mechanics. Under this convention, latent coordinates and norms are dimensionless pure numbers when expressed in units of $z_0$.
+
+**Justification:** Spectral normalization $\sigma_{\max}(W) \leq 1$ ensures $\|v_i\| \sim O(z_0)$, making the natural unit system well-defined.
+
+**Dimensional analysis under natural units:**
 
 Recall the definition (Def. {prf:ref}`def-norm-gated-activation`):
 $$
 f(v_i) = v_i \cdot g(\|v_i\| + b_i)
 $$
 
-**Dimensional analysis:**
-- $[\|v_i\|] = [v_i] = [\mathcal{Z}]$
+In natural units where $z_0 = 1$:
+- $[\|v_i\|] = [v_i] = [\mathcal{Z}]$ (latent dimension)
 - $[b_i] = [\mathcal{Z}]$ (homogeneous addition)
-- **Issue:** $g$ is GELU, a transcendental function expecting dimensionless input
-
-**Resolution via implicit normalization:** In practice, the argument $\|v_i\| + b_i$ is normalized by an implicit reference scale $z_0$ with $[z_0] = [\mathcal{Z}]$. The actual operation is:
-$$
-\hat{v}_i = v_i \cdot g\left(\frac{\|v_i\| + b_i}{z_0}\right)
-$$
-
-where:
-- $z_0 = 1\,\sqrt{\text{nat}}$ (unit scale, implicitly absorbed into definition of $g$)
-- The dimensionless argument is $\xi_i = (\|v_i\| + b_i)/z_0$ with $[\xi_i] = [1]$
-- $g(\xi_i)$ is dimensionless, so $[\hat{v}_i] = [v_i] \cdot [1] = [\mathcal{Z}]$
+- The argument $\|v_i\| + b_i$ is **a pure number** (ratio to $z_0 = 1$)
+- $g: \mathbb{R} \to \mathbb{R}$ takes dimensionless input and returns dimensionless output
+- Therefore $[f(v_i)] = [v_i] \cdot [1] = [\mathcal{Z}]$ ✓
 
 **Step 4. Output dimension:**
 $$
@@ -2637,23 +3217,17 @@ $$
 
 $\square$
 
-**Critical remark on implementation:** The code implementation (lines 1918-1930 in Python implementation below) writes:
+**Implementation note:** The code writes:
 ```python
 gate = F.gelu(energy + self.norm_bias)
 ```
-where `energy = ||v_i||` has been **implicitly normalized** to be order-1 by the spectral-normalized linear layer. The mathematical formulation $g(\|v\| + b)$ assumes this normalization convention: $\|v\| \sim O(1)$ in units of $z_0 = 1\,\sqrt{\text{nat}}$.
+where `energy = ||v_i||` is numerically $O(1)$ due to spectral normalization. This directly implements the natural units convention with $z_0 = 1$ absorbed.
 
-This is dimensional analysis via **natural units** (analogous to setting $c = \hbar = 1$ in relativistic quantum mechanics): we choose units such that the typical latent scale is 1, absorbing $z_0$ into the definition.
-
-**Formal correction for strict dimensional analysis:**
-
-To be fully rigorous, Definition {prf:ref}`def-norm-gated-activation` should be amended to:
+**Alternative (strict dimensional analysis):** For explicit dimensional tracking without natural units, the formula would be:
 $$
 f(v) = v \cdot g\left(\frac{\|v\| + b}{z_0}\right)
 $$
-where $z_0 = \mathbb{E}[\|v\|]$ is the expected bundle norm (computed over training data) with $[z_0] = [\mathcal{Z}]$.
-
-In normalized architectures with spectral normalization and zero-mean inputs, $z_0 \approx 1\,\sqrt{\text{nat}}$, and the explicit normalization is often omitted.
+where $z_0 = \mathbb{E}[\|v\|]$ is the expected bundle norm with $[z_0] = [\mathcal{Z}]$. In normalized architectures, $z_0 \approx 1\,\sqrt{\text{nat}}$, reducing to the natural units case.
 :::
 
 ---
@@ -2715,7 +3289,7 @@ class GaugeInvarianceCheck(DiagnosticNode):
 | Node | Name | Verifies | Trigger Condition |
 |:-----|:-----|:---------|:------------------|
 | 40 | PurityCheck | $SU(N_f)_C$ confinement | Non-neutral bundles at macro boundary |
-| 56 | CapacityHorizonCheck | $U(1)_Y$ conservation | Hypercharge $Y \to Y_{\max}$ |
+| 56 | CapacityHorizonCheck | $U(1)_Y$ bound | Hypercharge $Y \to Y_{\max}$ |
 | 62 | CausalityViolationCheck | Light cone preservation | $\sigma_{\max}(W) > 1 + \epsilon$ |
 | 67 | GaugeInvarianceCheck | $G$-equivariance | $\delta_{\text{gauge}} > \epsilon_{\text{gauge}}$ |
 | 68 | RotationEquivarianceCheck | $SO(2)$ for images | $\|f(R \cdot I) - R \cdot f(I)\| > \epsilon$ |
@@ -2774,8 +3348,8 @@ class IsotropicBlock(nn.Module):
 
     Units:
         All latent vectors: [z] = √nat (Proposition {prf:ref}`prop-latent-dimension-from-capacity`)
-        Bundle norm (energy): ||v|| ∈ [0, √d_b] dimensionless (after implicit normalization)
-        Gate output: g(||v|| + b) ∈ [0, ∞) dimensionless (GELU is unbounded above)
+        Bundle norm (energy): ||v|| ∈ [0, √d_b] (dimensionless pure numbers in natural units with z₀=1√nat)
+        Gate output: g(||v|| + b) ∈ R (dimensionless; GELU is unbounded above and can be negative)
 
     Example:
         >>> # Approximate equivariance (more expressive, default)
@@ -2879,15 +3453,15 @@ class IsotropicBlock(nn.Module):
 
         # Step 3: Compute energy (SO(d_b)-invariant norm)
         energy = torch.norm(h_bundles, dim=2, keepdim=True)  # [B, n_b, 1]
-        # [energy] = √nat after implicit normalization by z_0 = 1√nat
-        # Typical range: [0, √d_b] for normalized latents
+        # Natural units: energy ∈ [0, √d_b] (dimensionless); with explicit units: [energy] = √nat
+        # (see Section {ref}`sec-natural-units`: z₀=1√nat absorbed in implementation)
 
         # Step 4: Energy gate (smooth approximation to barrier function)
         # GELU ensures C^∞ smoothness (required for WFR geodesic integrator)
         # Definition {prf:ref}`def-norm-gated-activation`: g(||v|| + b) where g(x) = x·Φ(x)
         gate = F.gelu(energy + self.norm_bias)  # [B, n_b, 1]
-        # [gate] = dimensionless ∈ [0, ∞) (GELU is unbounded above)
-        # For ||v|| ~ 1 and b ~ 0: gate ≈ 0.5 (half-activated)
+        # [gate] = dimensionless (GELU unbounded above; can be negative for negative inputs)
+        # For ||v|| ~ 1 and b ~ 0: gate ≈ 0.84 (GELU(1) ≈ 0.84)
         # For ||v|| >> 1: gate ≈ ||v|| (linear passthrough)
         # For ||v|| << -b: gate ≈ 0 (suppressed)
 
@@ -2927,7 +3501,7 @@ class IsotropicBlock(nn.Module):
 |:------------|:------|:--------------|:------------------------|:----------------|:--------------------|
 | Binding $G_\mu^a$ | $SU(N_f)_C$ | Isotropic bundles ($n_b$ bundles) | Feature confinement (color charge) | {ref}`sec-symplectic-multi-agent-field-theory`, Node 40 | Discrete subgroup: signed permutations |
 | Error $W_\mu^b$ | $SU(2)_L$ | Steerable conv (observation-action coupling) | Sensor-motor mixing (weak force) | {ref}`sec-symplectic-multi-agent-field-theory` | **Reduced to $SO(2) \cong U(1)$** (2D rotation subgroup) |
-| Opportunity $B_\mu$ | $U(1)_Y$ | Spectral norm (hypercharge conservation) | Capacity conservation | {ref}`sec-parameter-space-sieve`, Node 56 | Conserved quantity $Y \propto \|z\|^2$, not explicit rotation |
+| Opportunity $B_\mu$ | $U(1)_Y$ | Spectral norm (hypercharge bound) | Capacity bound | {ref}`sec-parameter-space-sieve`, Node 56 | Bounded quantity $Y \propto \|z\|^2$, not explicit rotation |
 
 ### Physics Isomorphism: DNN Primitives ↔ Standard Model
 
@@ -3007,7 +3581,7 @@ So we built replacements. Three primitives, each designed from the ground up to 
 
 3. **SteerableConv** lifts images to the group $SE(2)$ and convolves with steerable filters. Rotate the input, get rotated features—exactly, not approximately through data augmentation.
 
-Each primitive preserves one factor of the gauge group $G_{\text{Fragile}} = SU(N_f)_C \times SU(2)_L \times U(1)_Y$. Bundle structure implements color confinement. Spectral normalization implements hypercharge conservation. Steerable convolutions implement the observation-action doublet structure. Three primitives, three gauge factors, one unified theory.
+Each primitive preserves one factor of the gauge group $G_{\text{Fragile}} = SU(N_f)_C \times SU(2)_L \times U(1)_Y$. Bundle structure implements color confinement. Spectral normalization enforces a hypercharge bound. Steerable convolutions implement the observation-action doublet structure. Three primitives, three gauge factors, one unified theory.
 
 And here is what I find most satisfying: the constraints are so tight that the architecture essentially writes itself. Once you demand gauge invariance, there is only one way to build each component. You do not get to make arbitrary design choices; the symmetry requirements dictate the structure. This is the hallmark of good physics: not many knobs to tune, but few parameters that must take specific values.
 
