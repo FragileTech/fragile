@@ -22,7 +22,7 @@ In the real velocity basis the redundancy is $O(N)$ (or $SO(N)$ if orientation-p
 
 **Fermionic Statistics Emerge from Cloning Antisymmetry**: The cloning score satisfies $S_i(j) = -S_j(i) \cdot (V_j + \varepsilon_{\mathrm{clone}})/(V_i + \varepsilon_{\mathrm{clone}})$, yielding exact antisymmetry when $V_i \approx V_j$. The Algorithmic Exclusion Principle—at most one walker per pair can clone in any direction—is the discrete analog of Pauli exclusion. This is not put in by hand; it emerges from the logic of fitness-based selection.
 
-**Quantum Dynamics from Thermal Structure**: At QSD equilibrium, the reversible Boris-BAOAB diffusion kernel satisfies detailed balance, giving the KMS condition and Wick-rotated temporal operator $D_t$. Grassmann variables model the exclusion structure, yielding a discrete fermionic action that converges to the Dirac equation in the continuum limit. The algorithm discovers quantum field theory.
+**Quantum Dynamics from Equilibrium Structure**: At QSD equilibrium, the Fractal Set supports a Euclidean path measure whose Wick rotation yields the temporal operator $D_t$ via OS reconstruction. Grassmann variables model the exclusion structure, yielding a discrete fermionic action that converges to the Dirac equation in the continuum limit. The algorithm discovers quantum field theory.
 
 ---
 
@@ -502,7 +502,7 @@ For the spatial part, the antisymmetric kernel $\tilde{K}_{ij}$ plays the role t
 
 For the temporal part, we need a discrete version of the time derivative. This is where the parallel transport operator $U_{ij}$ enters: it carries the field from one time to the next while accounting for the gauge phase accumulated along the way. The resulting "covariant derivative" $(\psi_j - U_{ij}\psi_i)/\Delta t$ is the discrete analog of $D_0\psi = \partial_0\psi + iA_0\psi$.
 
-The beautiful thing is that both pieces emerge from the algorithm. The spatial kernel comes from cloning scores. The temporal kernel comes from the KMS condition—the mathematical statement of thermal equilibrium—derived from detailed balance of the reversible Boris-BAOAB diffusion kernel at QSD equilibrium. We are not putting in the Dirac equation by hand; we are deriving it from the structure of fitness-based dynamics.
+The beautiful thing is that both pieces emerge from the algorithm. The spatial kernel comes from cloning scores. The temporal kernel comes from the equilibrium Euclidean weight along CST edges and its Wick rotation under OS reconstruction. We are not putting in the Dirac equation by hand; we are deriving it from the structure of fitness-based dynamics.
 :::
 
 :::{prf:definition} Discrete Fermionic Action on Fractal Set
@@ -529,21 +529,19 @@ $$
 where $U_{ij} \in U(1)$ is the parallel transport operator along the CST edge and $\Delta t_{ij} = t_j - t_i$.
 :::
 
-### 4.5. Temporal Operator from KMS Condition
+### 4.5. Temporal Operator from Equilibrium Euclidean Structure
 
 :::{div} feynman-prose
 :class: feynman-added
 
-Where does the complex phase $U_{ij} = e^{i\theta^{\mathrm{fit}}}$ come from? This is not a guess or an ansatz—it follows from deep principles of thermal field theory.
+Where does the complex phase $U_{ij} = e^{i\theta^{\mathrm{fit}}}$ come from? This is not a guess or an ansatz—it follows from the equilibrium Euclidean structure of the Fractal Set.
 
-The KMS condition (named after Kubo, Martin, and Schwinger) is the mathematical statement that a system is in thermal equilibrium at some temperature $T$ {cite}`kubo1957statistical,martin1959theory,haag1967equilibrium`. It says that correlation functions satisfy a certain periodicity in imaginary time. This might sound abstract, but it has concrete consequences.
-
-When you have a thermal system and you want to go from the statistical mechanics description (thermal equilibrium at temperature $T$) to the quantum mechanics description (unitary time evolution), you perform what is called a **Wick rotation**: you analytically continue from imaginary time $\tau$ to real time $t$ by setting $\tau = i t$ (equivalently $t = -i\tau$).
+At QSD equilibrium, the fitness action defines a Euclidean weight on CST edges. OS reconstruction justifies the analytic continuation to real time (Wick rotation), turning the Euclidean weight into a phase. This is the origin of the fitness phase stored on CST edges.
 
 In the Fractal Gas, the fitness function $V_{\mathrm{fit}}$ determines cloning probabilities. The survival weight over a CST edge is proportional to $e^{-S_{\mathrm{fit}}}$, where the dimensionless fitness action is
 $S_{\mathrm{fit}} := (\epsilon_F/T)\int V_{\mathrm{fit}} \, dt$. We store this as the edge fitness action $\Phi_j - \Phi_i$. This is exactly the form of a thermal weight—the Boltzmann factor.
 
-When you Wick-rotate this to real time, the thermal weight $e^{-S_{\mathrm{fit}}}$ becomes a phase $e^{-iS_{\mathrm{fit}}/\hbar_{\text{eff}}}$. That is the origin of the fitness phase $\theta_{ij} = -(\Phi_j - \Phi_i)/\hbar_{\text{eff}}$. The parallel transport operator $U_{ij}$ is not put in by hand; it emerges from the thermal structure of the dynamics.
+When you Wick-rotate this to real time, the Euclidean weight $e^{-S_{\mathrm{fit}}}$ becomes a phase $e^{-iS_{\mathrm{fit}}/\hbar_{\text{eff}}}$. That is the origin of the fitness phase $\theta_{ij} = -(\Phi_j - \Phi_i)/\hbar_{\text{eff}}$. The parallel transport operator $U_{ij}$ is not put in by hand; it emerges from the equilibrium Euclidean structure of the dynamics.
 
 This is one of those results that makes you sit up and pay attention. The algorithm is thermal. Wick rotation is real. The quantum mechanical phase factor is forced on us by the mathematics.
 :::
@@ -565,15 +563,15 @@ $$
 
 where $x_{ij}(t)$ is the trajectory segment along the CST edge from $e_i$ to $e_j$ and $\Phi_j - \Phi_i = (\epsilon_F/T)\int_{t_i}^{t_j} V_{\mathrm{fit}}(x_{ij}(t)) \, dt$.
 
-**Derivation**: At QSD equilibrium, the Boris-BAOAB diffusion kernel ({prf:ref}`def-fractal-set-boris-baoab`) preserves the QSD/Gibbs measure, hence is reversible (detailed balance); the QSD state is therefore KMS {cite}`kossakowski1977quantum`, giving analyticity in the KMS strip and the Wick-rotated phase (see {prf:ref}`thm-os-os2-fg`).
+**Derivation**: At QSD equilibrium, the Euclidean weight defined by the fitness action is real-valued. OS reconstruction provides the analytic continuation needed for Wick rotation, yielding the phase $U_{ij}$ without assuming detailed balance for the full dynamics (see {prf:ref}`thm-os-os2-fg`).
 
-**Status**: **PROVEN** (publication-ready; equilibrium diffusion kernel, KMS from detailed balance)
+**Status**: **PROVEN** (publication-ready; equilibrium Euclidean measure + OS reconstruction)
 :::
 
 :::{admonition} Equilibrium Scope
 :class: warning
 
-The KMS/Wick-rotation argument applies to the **reversible diffusion kernel at QSD equilibrium**. Away from equilibrium, the cloning/selection step is dissipative and breaks detailed balance, so the KMS condition does not hold for the full interacting dynamics.
+This argument applies to the **QSD equilibrium** Euclidean measure on the Fractal Set. Away from equilibrium, the cloning/selection step is dissipative and the measure is not stationary, so the Wick-rotation step is not justified for the full interacting dynamics.
 :::
 
 :::{dropdown} 📖 ZFC Proof: Temporal Operator
@@ -587,7 +585,7 @@ Working in Grothendieck universe $\mathcal{U}$, the temporal operator constructi
 
 2. **Fitness action**: $\Phi_j - \Phi_i = (\epsilon_F/T)\int_{t_i}^{t_j} V_{\mathrm{fit}} \, dt$ is a real number (Lebesgue integral of bounded measurable function), so $\theta_{ij} = -(\Phi_j - \Phi_i)/\hbar_{\text{eff}}$.
 
-3. **KMS analyticity**: Detailed balance of the Boris-BAOAB **diffusion kernel** at QSD equilibrium implies the KMS condition {cite}`kossakowski1977quantum` (see {prf:ref}`thm-os-os2-fg`), so the relevant correlation functions admit analytic continuation $t \to -i\tau$ in the strip $0 < \mathrm{Im}(t) < \beta$ where $\beta = 1/T$.
+3. **OS reconstruction**: The Schwinger functions defined by the QSD-weighted Euclidean action satisfy OS axioms (see {prf:ref}`thm-os-os2-fg`), enabling analytic continuation to real time.
 
 4. **Wick rotation**: $S[t] \to iS^E[\tau]$ gives real Euclidean action $S^E[\tau] \in \mathbb{R}$.
 
@@ -805,7 +803,7 @@ The three gauge groups of the Standard Model emerge from three different algorit
 
 Fermions emerge from the antisymmetry of cloning scores. This is perhaps the deepest surprise: the algorithm does not know about the Pauli exclusion principle, but it produces a structure with the same mathematical signature. Two walkers cannot both clone from each other, just as two electrons cannot occupy the same state.
 
-The temporal dynamics—the Wick rotation, the KMS condition, the complex phases—all fall out of the thermal structure of the algorithm via detailed balance of the **equilibrium diffusion kernel**. We are not putting in quantum mechanics by hand; we are deriving it from statistical mechanics.
+The temporal dynamics—the Wick rotation and the complex phases—follow from the equilibrium Euclidean structure of the QSD measure together with reflection positivity (OS reconstruction). We are not putting in quantum mechanics by hand; we are deriving it from equilibrium structure.
 
 And in the continuum limit, all of this converges to the standard field theory formalism: the Dirac equation for fermions, the Yang-Mills action for gauge fields, the Klein-Gordon action for scalars.
 
@@ -821,7 +819,7 @@ This is either a very remarkable coincidence, or we have stumbled onto something
 | $SU(N)$ gauge field | Defined | From viscous force coupling |
 | Wilson loops | Defined | Gauge-invariant observables |
 | Fermionic structure | Derived | From cloning antisymmetry (exact when $V_i \approx V_j$) |
-| Temporal operator $D_t$ | Proven | Via detailed balance of the equilibrium diffusion kernel $\Rightarrow$ KMS condition and Wick rotation |
+| Temporal operator $D_t$ | Proven | Via QSD Euclidean measure + OS reconstruction (reflection positivity) |
 | Dirac limit | Proven | Via Clifford algebra isomorphism ({prf:ref}`thm-sm-dirac-isomorphism`) |
 | Scalar fields | Defined | Graph Laplacian (convergence requires proof) |
 
@@ -831,7 +829,7 @@ This is either a very remarkable coincidence, or we have stumbled onto something
 
 ## References
 
-This chapter draws on standard results from lattice gauge theory, fermionic path integrals, thermal equilibrium/KMS structure, and graph Laplacian convergence:
+This chapter draws on standard results from lattice gauge theory, fermionic path integrals, equilibrium Euclidean structure (OS reconstruction), and graph Laplacian convergence:
 
 | Topic | Reference |
 |-------|-----------|
@@ -841,7 +839,7 @@ This chapter draws on standard results from lattice gauge theory, fermionic path
 | Aharonov-Bohm effect | {cite}`aharonov1959significance` |
 | Pauli exclusion principle | {cite}`pauli1925zusammenhang` |
 | Grassmann variables and fermionic path integrals | {cite}`berezin1966method` |
-| KMS condition and thermal equilibrium | {cite}`kubo1957statistical,martin1959theory,haag1967equilibrium,kossakowski1977quantum` |
+| Osterwalder-Schrader axioms and reconstruction | {cite}`osterwalder1973axioms` |
 | Graph Laplacian convergence | {cite}`belkin2008foundation` |
 
 ### Framework Documents

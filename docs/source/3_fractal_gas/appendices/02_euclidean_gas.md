@@ -253,7 +253,7 @@ def Psi_kin_BAOAB(x, v, params):
         x (np.array): (N, D) array of current positions.
         v (np.array): (N, D) array of current velocities.
         params (dict): Dictionary of physical parameters:
-                       'tau', 'gamma_fric', 'm', 'sigma_v', 'sigma_x'.
+                       'tau', 'gamma_fric', 'm', 'sigma_v', 'sigma_x', 'V_alg'.
                        Also needs access to force F(x) and flow u(x).
 
     Returns:
@@ -291,7 +291,7 @@ def Psi_kin_BAOAB(x, v, params):
         x_next += np.sqrt(p['tau']) * p['sigma_x'] * noise_x
 
     # Final Velocity Capping
-    v_next = psi_v(v_almost_final) # Assumes psi_v is a vectorized function
+    v_next = psi_v(v_almost_final, p['V_alg']) # Assumes psi_v is a vectorized function
 
     return x_next, v_next
 
@@ -434,7 +434,7 @@ For any constant $C>0$ define $\psi_C: \mathbb R^d\to B(0,C)$ by $\psi_C(z):=C\,
   D\psi_C(z)=\frac{C}{C+\|z\|}I-\frac{C}{(C+\|z\|)^2}\,\frac{z z^{\top}}{\|z\|}.
 
   $$
-  Setting $\alpha := C/(C+\|z\|)$ and $\hat{z} := z/\|z\|$, this becomes $D\psi_C(z) = \alpha I - \alpha^2\hat{z}\hat{z}^\top/C$. The eigenvalues are $\alpha$ (with multiplicity $d-1$, for directions perpendicular to $z$) and $\alpha - \alpha^2\|z\|/C = C^2/(C+\|z\|)^2$ (for the $z$ direction). Since $0 < \alpha < 1$ and $C^2/(C+\|z\|)^2 < \alpha$ for $\|z\| > 0$, the operator norm is $\|D\psi_C(z)\| = \alpha = C/(C+\|z\|) < 1$ for all $z\neq 0$. At $z=0$, $\psi_C$ is differentiable with $D\psi_C(0) = I$, so $\|D\psi_C(0)\| = 1$. The mean-value inequality then implies $\|\psi_C(z)-\psi_C(z')\|\le\|z-z'\|$ for all $z,z'\in\mathbb R^d$.
+  Setting $\alpha := C/(C+\|z\|)$ and $\hat{z} := z/\|z\|$, this becomes $D\psi_C(z) = \alpha I - (\alpha^2\|z\|/C)\hat{z}\hat{z}^\top$. The eigenvalues are $\alpha$ (with multiplicity $d-1$, for directions perpendicular to $z$) and $\alpha - \alpha^2\|z\|/C = \alpha^2 = C^2/(C+\|z\|)^2$ (for the $z$ direction). Since $0 < \alpha < 1$ and $C^2/(C+\|z\|)^2 < \alpha$ for $\|z\| > 0$, the operator norm is $\|D\psi_C(z)\| = \alpha = C/(C+\|z\|) < 1$ for all $z\neq 0$. At $z=0$, $\psi_C$ is differentiable with $D\psi_C(0) = I$, so $\|D\psi_C(0)\| = 1$. The mean-value inequality then implies $\|\psi_C(z)-\psi_C(z')\|\le\|z-z'\|$ for all $z,z'\in\mathbb R^d$.
 
 2. *Smoothness away from the origin.* For $z\neq 0$, $\psi_C$ is a composition of smooth functions: $z\mapsto\|z\|$, inversion on $(0,\infty)$, and scalar-vector multiplication. Hence $\psi_C\in C^{\infty}(\mathbb R^d\setminus\{0\})$.
 
@@ -660,7 +660,7 @@ $$
 
 $$
 
-Then $\tilde x:=x+\tau\tilde v+\sqrt{\tau}\,\sigma_x\,\xi_x$ is Gaussian with mean $x+\tau m(x,v)$, where $m(x,v):=\frac{\tau}{m}F(x)-\gamma_{\mathrm{fric}}\tau(v-u(x))$, and covariance $\tau(\sigma_v^2\tau^2+\sigma_x^2)I_d$. Its density is
+Then $\tilde x:=x+\tau\tilde v+\sqrt{\tau}\,\sigma_x\,\xi_x$ is Gaussian with mean $x+\tau m(x,v)$, where $m(x,v):=v+\frac{\tau}{m}F(x)-\gamma_{\mathrm{fric}}\tau(v-u(x))$, and covariance $\tau(\sigma_v^2\tau^2+\sigma_x^2)I_d$. Its density is
 
 $$
 p_{\tilde x}(y)=\frac{1}{(2\pi\tau(\sigma_v^2\tau^2+\sigma_x^2))^{d/2}}\exp\Big(-\frac{\|y-(x+\tau m(x,v))\|^2}{2\tau(\sigma_v^2\tau^2+\sigma_x^2)}\Big).
@@ -970,7 +970,7 @@ $$
 where we used $\|v\|\le V_{\mathrm{alg}}$ and $\|a(x,v)\|\le\tau C_{\mathrm{force}}(C)$. By Markov's inequality, $\mathbb P(E)\le\mathbb E[\|\tilde v\|^2]/V_{\mathrm{alg}}^2$, and since $(\|\tilde v\|-V_{\mathrm{alg}})_+\le\|\tilde v\|-V_{\mathrm{alg}}$ on $E$ and equals zero elsewhere, we have
 
 $$
-\mathbb E[(\|\tilde v\|-V_{\mathrm{alg}})_+]\le\sqrt{\mathbb E[\|\tilde v\|^2]}-V_{\mathrm{alg}}\le\frac{(V_{\mathrm{alg}}+\tau C_{\mathrm{force}}(C))^2+\sigma_v^2\tau d-V_{\mathrm{alg}}^2}{V_{\mathrm{alg}}}=:\varepsilon_{\mathrm{cap}}^{\max}(C).
+\mathbb E[(\|\tilde v\|-V_{\mathrm{alg}})_+]\le\frac{\mathbb E[\|\tilde v\|^2]}{V_{\mathrm{alg}}}\le\frac{(V_{\mathrm{alg}}+\tau C_{\mathrm{force}}(C))^2+\sigma_v^2\tau d}{V_{\mathrm{alg}}}=:\varepsilon_{\mathrm{cap}}^{\max}(C).
 
 $$
 
@@ -1222,7 +1222,7 @@ which is the claimed bound.```
 Let $\mathbf d^{(r)}$ be the expected raw distance vectors of swarms $\mathcal S_r$. With $k_{\min}:=\max\{1,\min(k_1,k_2)\}$, $k_{\mathrm{stable}}:=|\mathcal A_{\mathrm{stable}}|$, and alive-difference count $n_c:=\sum_{i=1}^N(s_{1,i}-s_{2,i})^2$, define
 
 $$
-F_{d,ms}^{\mathrm{Sasaki}}(\Delta_{\mathrm{pos}}^2,n_c):=C_{\mathrm{pos}}^{\mathrm{Sasaki}}(k_1,k_{\mathrm{stable}})\,\Delta_{\mathrm{pos}}^2+4k_{\mathrm{stable}}\frac{D_{\mathcal Y}^2}{\max\{1,k_1-1\}^2}\,n_c^2+4D_{\mathcal Y}^2 n_c.
+F_{d,ms}^{\mathrm{Sasaki}}(\Delta_{\mathrm{pos}}^2,n_c):=C_{\mathrm{pos}}^{\mathrm{Sasaki}}(k_1,k_{\mathrm{stable}})\,\Delta_{\mathrm{pos}}^2+4k_{\mathrm{stable}}\frac{D_{\mathcal Y}^2}{\max\{1,k_1-1\}^2}\,n_c^2+D_{\mathcal Y}^2 n_c.
 
 $$
 
@@ -1308,11 +1308,11 @@ $$
 L_{\mu,S}^{\mathrm{Sasaki}}(k_{\min})=\frac{3V_{\max}}{k_{\min}},\qquad L_{m_2,S}^{\mathrm{Sasaki}}(k_{\min})=\frac{3V_{\max}^2}{k_{\min}},
 
 $$
-and growth exponents $p_{\mu,S}=p_{m_2,S}=p_{\mathrm{worst	ext{-}case}}=-1$. Consequently $\kappa_{\mathrm{var}}^{\mathrm{Sasaki}}=\kappa_{\mathrm{range}}^{\mathrm{Sasaki}}=1$ as in the canonical framework.
+and growth exponents $p_{\mu,S}=p_{m_2,S}=p_{\mathrm{worst\text{-}case}}=-1$. Consequently $\kappa_{\mathrm{var}}^{\mathrm{Sasaki}}=\kappa_{\mathrm{range}}^{\mathrm{Sasaki}}=1$ as in the canonical framework.
 
 ```{dropdown} Proof
 :::{prf:proof}
-Combine Lemmas {prf:ref}`lem-sasaki-aggregator-value` and {prf:ref}`lem-sasaki-aggregator-structural` with the dispersion metric identity $n_c\le(N/\sqrt{\lambda_{\mathrm{status}}})d_{\mathrm{Disp},\mathcal Y}^{\mathrm{Sasaki}}(\mathcal S_1,\mathcal S_2)$ to obtain the stated Lipschitz functions and exponents.
+Combine Lemmas {prf:ref}`lem-sasaki-aggregator-value` and {prf:ref}`lem-sasaki-aggregator-structural` with the dispersion metric identity $n_c\le\frac{N}{\lambda_{\mathrm{status}}}d_{\mathrm{Disp},\mathcal Y}^{\mathrm{Sasaki}}(\mathcal S_1,\mathcal S_2)^2$ to obtain the stated Lipschitz functions and exponents.
 ```
 :::
 
@@ -1352,10 +1352,10 @@ The following coefficients bound the error in the standardization operator when 
 
     $$
 
--   **Total Value Error Coefficient ($C_{V,\mathrm{total}}^{\mathrm{Sasaki}}$):** The composite coefficient for the full Lipschitz bound on the value error, which aggregates the component-wise effects.
+-   **Total Value Error Coefficient (Linear Form) ($C_{V,\mathrm{total,lin}}^{\mathrm{Sasaki}}$):** The composite coefficient for the full (unsquared) Lipschitz bound on the value error, which aggregates the component-wise effects.
 
     $$
-    C_{V,\mathrm{total}}^{\mathrm{Sasaki}} := L_R^{\mathrm{Sasaki}} \left( C_{V,\mathrm{direct}} + C_{V,\mathrm{mean}} + C_{V,\mathrm{denom}} \right) = L_R^{\mathrm{Sasaki}} \left( \frac{2}{\sigma_{\min,\mathrm{patch}}} + \frac{8\big(V_{\mathrm{max}}^{(R)}\big)^2 L_{\sigma'_{\mathrm{patch}}}}{\sigma_{\min,\mathrm{patch}}^2} \right)
+    C_{V,\mathrm{total,lin}}^{\mathrm{Sasaki}} := L_R^{\mathrm{Sasaki}} \left( C_{V,\mathrm{direct}} + C_{V,\mathrm{mean}} + C_{V,\mathrm{denom}} \right) = L_R^{\mathrm{Sasaki}} \left( \frac{2}{\sigma_{\min,\mathrm{patch}}} + \frac{8\big(V_{\mathrm{max}}^{(R)}\big)^2 L_{\sigma'_{\mathrm{patch}}}}{\sigma_{\min,\mathrm{patch}}^2} \right)
 
     $$
 
@@ -1369,6 +1369,8 @@ C_{S,\mathrm{direct}}^{\mathrm{Sasaki}}(k_{\min}):=\frac{V_{\mathrm{max}}^{(R)}}
 $$
 :::
 
+The squared coefficients used in the mean-square bounds are defined in {prf:ref}`def-sasaki-standardization-constants-sq`.
+
 
 Set $C_R:=L_R^{\mathrm{Sasaki}}\sqrt{N}+R_{\max}\sqrt{\tfrac{N}{\lambda_{\mathrm{status}}}}$ for later use.
 
@@ -1379,10 +1381,10 @@ These constants verify the continuity axioms for the patched standardization and
 :::{prf:theorem} Value continuity of patched standardization (Sasaki)
 :label: thm-sasaki-standardization-value-sq
 
-Suppose $\mathcal S_1$ and $\mathcal S_2$ share the same alive set $\mathcal A$ of size $k\ge 1$ (so $n_c(\mathcal S_1,\mathcal S_2)=0$). The N-dimensional standardization operator is Lipschitz continuous with respect to positional changes in the Sasaki metric. The squared L2-norm of the output error is bounded as follows:
+Suppose $\mathcal S_1$ and $\mathcal S_2$ share the same alive set $\mathcal A$ of size $k\ge 1$ (so $n_c(\mathcal S_1,\mathcal S_2)=0$). Let $\mathbf r^{(r)}$ denote the raw reward vectors on $\mathcal A$. The N-dimensional standardization operator is Lipschitz continuous with respect to positional changes in the Sasaki metric. The squared L2-norm of the output error is bounded as follows:
 
 $$
-\big\|z(\mathcal S_1)-z(\mathcal S_2)\big\|_2^2 \le C_{V,\mathrm{total}}^{\mathrm{Sasaki}}(\mathcal S_1) \cdot \Delta_{\mathrm{pos,Sasaki}}^2(\mathcal S_1,\mathcal S_2).
+\big\|z(\mathcal S_1)-z(\mathcal S_2)\big\|_2^2 \le C_{V,\mathrm{total}}^{\mathrm{Sasaki}}(\mathcal S_1)\cdot\big\|\mathbf r^{(1)}-\mathbf r^{(2)}\big\|_2^2 \le C_{V,\mathrm{total}}^{\mathrm{Sasaki}}(\mathcal S_1)\cdot\left(L_R^{\mathrm{Sasaki}}\right)^2 \Delta_{\mathrm{pos,Sasaki}}^2(\mathcal S_1,\mathcal S_2).
 
 $$
 
@@ -1704,19 +1706,15 @@ $$
 $$
 
 **Step 5: Final Assembly.**
-Substituting the bound from Step 4 into the inequality from Step 3:
+Substituting the bound from Step 4 into the inequality from Step 3 gives
 
 $$
-\|z_1 - z_2\|_2^2 \le 3 \left( C_{V,\mathrm{direct}}^{\mathrm{sq}} + C_{V,\mathrm{mean}}^{\mathrm{sq}} + C_{V,\mathrm{denom}}^{\mathrm{sq}} \right) \cdot \left(L_R^{\mathrm{Sasaki}}\right)^2 \Delta_{\mathrm{pos,Sasaki}}^2(\mathcal S_1,\mathcal S_2)
+\|z_1 - z_2\|_2^2 \le C_{V,\mathrm{total}}^{\mathrm{Sasaki}}(\mathcal S_1)\cdot\left(L_R^{\mathrm{Sasaki}}\right)^2 \Delta_{\mathrm{pos,Sasaki}}^2(\mathcal S_1,\mathcal S_2),
 $$
 
-Defining the **Total Value Error Coefficient** as
+where $C_{V,\mathrm{total}}^{\mathrm{Sasaki}}$ is defined in {prf:ref}`def-sasaki-standardization-constants-sq`.
 
-$$
-C_{V,\mathrm{total}}^{\mathrm{Sasaki}}(\mathcal S) := 3 \left( C_{V,\mathrm{direct}}^{\mathrm{sq}}(\mathcal S) + C_{V,\mathrm{mean}}^{\mathrm{sq}}(\mathcal S) + C_{V,\mathrm{denom}}^{\mathrm{sq}}(\mathcal S) \right) \cdot \left(L_R^{\mathrm{Sasaki}}\right)^2
-$$
-
-completes the proof.
+This completes the proof.
 
 **Q.E.D.**
 :::
@@ -1757,6 +1755,8 @@ Referenced by {prf:ref}`thm-sasaki-standardization-value-sq`.
     C_{V,\mathrm{total}}^{\mathrm{Sasaki}}(\mathcal S) := 3 \cdot \left( C_{V,\mathrm{direct}}^{\mathrm{sq}}(\mathcal S) + C_{V,\mathrm{mean}}^{\mathrm{sq}}(\mathcal S) + C_{V,\mathrm{denom}}^{\mathrm{sq}}(\mathcal S) \right)
 
     $$
+
+    When raw values are induced by positions, the positional coefficient in Theorem {prf:ref}`thm-sasaki-standardization-value-sq` is $\left(L_R^{\mathrm{Sasaki}}\right)^2 C_{V,\mathrm{total}}^{\mathrm{Sasaki}}$.
 
 where $L_{\mu,M}^{\mathrm{Sasaki}}(k)$ and $L_{\sigma',M}^{\mathrm{Sasaki}}(k)$ are the value Lipschitz functions for the aggregator's mean and regularized standard deviation, respectively. For the canonical empirical aggregator, these coefficients simplify, notably making the mean shift coefficient independent of $k$: $C_{V,\mathrm{mean}}^{\mathrm{sq}}(\mathcal S) = 1/\sigma_{\min,\mathrm{patch}}^2$.
 :::
@@ -2096,7 +2096,7 @@ $$
 The squared difference of the raw reward vectors is bounded by the sum of contributions from walkers with stable status and unstable status:
 
 $$
-\|\mathbf r_1 - \mathbf r_2\|_2^2 = \sum_{i \in \mathcal A_1 \cap \mathcal A_2} |r_{1,i}-r_{2,i}|^2 + \sum_{i \in \mathcal A_1 \triangle \mathcal A_2} |r_{1,i}-r_{2,i}|^2 \le (L_R^{\mathrm{Sasaki}})^2 \Delta_{\mathrm{pos,Sasaki}}^2 + n_c (2 V_{\max}^{(R)})^2
+\|\mathbf r_1 - \mathbf r_2\|_2^2 = \sum_{i \in \mathcal A_1 \cap \mathcal A_2} |r_{1,i}-r_{2,i}|^2 + \sum_{i \in \mathcal A_1 \triangle \mathcal A_2} |r_{1,i}-r_{2,i}|^2 \le (L_R^{\mathrm{Sasaki}})^2 \Delta_{\mathrm{pos,Sasaki}}^2 + n_c \big(V_{\max}^{(R)}\big)^2
 
 $$
 where we used that for unstable walkers, one reward is zero and the other is bounded by $V_{\max}^{(R)}$.
@@ -2113,7 +2113,7 @@ $$
 Combining the bounds from Steps 2 and 3 into the decomposition from Step 1 gives a complete bound in terms of $\Delta_{\mathrm{pos,Sasaki}}^2$ and $n_c$:
 
 $$
-\|z_1 - z_2\|_2^2 \le 2\,C_{V,\mathrm{total}}^{\mathrm{Sasaki}} \left[ (L_R^{\mathrm{Sasaki}})^2 \Delta_{\mathrm{pos,Sasaki}}^2 + 4(V_{\max}^{(R)})^2 n_c \right] + 2 \left[ C_{S,\mathrm{direct}}^{\mathrm{sq}} n_c + C_{S,\mathrm{indirect}}^{\mathrm{sq}} n_c^2 \right]
+\|z_1 - z_2\|_2^2 \le 2\,C_{V,\mathrm{total}}^{\mathrm{Sasaki}} \left[ (L_R^{\mathrm{Sasaki}})^2 \Delta_{\mathrm{pos,Sasaki}}^2 + \big(V_{\max}^{(R)}\big)^2 n_c \right] + 2 \left[ C_{S,\mathrm{direct}}^{\mathrm{sq}} n_c + C_{S,\mathrm{indirect}}^{\mathrm{sq}} n_c^2 \right]
 
 $$
 
@@ -2136,7 +2136,7 @@ The coefficients are explicit:
 
 $$
 \begin{aligned}
-L_{z,L}^2(\mathcal S_1,\mathcal S_2)&:=2C_{V,\mathrm{total}}^{\mathrm{Sasaki}}(\mathcal S_1)(L_R^{\mathrm{Sasaki}})^2N\\&\quad{}+\frac{N}{\lambda_{\mathrm{status}}}\Big(8C_{V,\mathrm{total}}^{\mathrm{Sasaki}}(\mathcal S_1)(V_{\max}^{(R)})^2+2C_{S,\mathrm{direct}}^{\mathrm{sq}}(\mathcal S_1,\mathcal S_2)\Big),\\[4pt]
+L_{z,L}^2(\mathcal S_1,\mathcal S_2)&:=2C_{V,\mathrm{total}}^{\mathrm{Sasaki}}(\mathcal S_1)(L_R^{\mathrm{Sasaki}})^2N\\&\quad{}+\frac{N}{\lambda_{\mathrm{status}}}\Big(2C_{V,\mathrm{total}}^{\mathrm{Sasaki}}(\mathcal S_1)\big(V_{\max}^{(R)}\big)^2+2C_{S,\mathrm{direct}}^{\mathrm{sq}}(\mathcal S_1,\mathcal S_2)\Big),\\[4pt]
 L_{z,H}^2(\mathcal S_1,\mathcal S_2)&:=2C_{S,\mathrm{indirect}}^{\mathrm{sq}}(\mathcal S_1,\mathcal S_2)\left(\frac{N}{\lambda_{\mathrm{status}}}\right)^2.
 \end{aligned}
 
@@ -2175,8 +2175,8 @@ The inequality is precisely the statement of Theorem {prf:ref}`thm-sasaki-standa
 | $\kappa_{\mathrm{drift}}^{\mathrm{Sasaki}}(C)$                                                             | $\sqrt{\tau^2(\tau C_{\mathrm{force}}(C)+\varepsilon_{\mathrm{cap}}^{\max}(C)+V_{\mathrm{alg}})^2+\lambda_v(\tau C_{\mathrm{force}}(C)+\varepsilon_{\mathrm{cap}}^{\max}(C))^2}$                                                                                                                                             | {prf:ref}`lem-euclidean-geometric-consistency`   |
 | $\kappa_{\mathrm{anisotropy}}^{\mathrm{Sasaki}}(C)$                                                        | $[(1-\rho_*(C))c_d(C)]^{-1}$                                                                                                                                                                                                                                                                                                 | {prf:ref}`lem-euclidean-geometric-consistency`   |
 | $L_{\mu,M}^{\mathrm{Sasaki}}(k)$, $L_{m_2,M}^{\mathrm{Sasaki}}(k)$                                         | $k^{-1/2}$, $2V_{\max}/k^{1/2}$ (with $V_{\max}=V_{\max}^{(R)}$ or $V_{\max}^{(d)}$)                                                                                                                                                                                                                                         | {prf:ref}`lem-sasaki-aggregator-lipschitz`       |
-| $C_{V,\mathrm{total}}^{\mathrm{Sasaki}}$                                                                   | $L_R^{\mathrm{Sasaki}}\left(\frac{2}{\sigma_{\min,\mathrm{patch}}}+\frac{8(V_{\mathrm{max}}^{(R)})^2}{\sigma_{\min,\mathrm{patch}}^2}L_{\sigma'_{\mathrm{patch}}}\right)$                                                                                                                                                    | {prf:ref}`thm-sasaki-standardization-value-sq`      |
-| $C_{S,\mathrm{direct}}^{\mathrm{Sasaki}}(k_{\min})$, $C_{S,\mathrm{indirect}}^{\mathrm{Sasaki}}(k_{\min})$ | $\frac{V_{\mathrm{max}}^{(R)}}{\sigma_{\min,\mathrm{patch}}}+\frac{2(V_{\mathrm{max}}^{(R)})^2}{\sigma_{\min,\mathrm{patch}}^2}$, $\frac{3V_{\mathrm{max}}^{(R)}}{\sigma_{\min,\mathrm{patch}}k_{\min}}+\frac{6(V_{\mathrm{max}}^{(R)})^2}{\sigma_{\min,\mathrm{patch}}^2k_{\min}}L_{\sigma',M}^{\mathrm{Sasaki}}(k_{\min})$ | {prf:ref}`thm-sasaki-standardization-structural-sq` |
+| $C_{V,\mathrm{total}}^{\mathrm{Sasaki}}$                                                                   | $3\left(\frac{1}{\sigma_{\min,\mathrm{patch}}^2}+\frac{k\left(L_{\mu,M}^{\mathrm{Sasaki}}(k)\right)^2}{\sigma_{\min,\mathrm{patch}}^2}+k\left(\frac{2V_{\mathrm{max}}^{(R)}}{\sigma_{\min,\mathrm{patch}}}\right)^2\left(\frac{L_{\sigma',M}^{\mathrm{Sasaki}}(k)}{\sigma_{\min,\mathrm{patch}}}\right)^2\right)$; positional coefficient is $\left(L_R^{\mathrm{Sasaki}}\right)^2 C_{V,\mathrm{total}}^{\mathrm{Sasaki}}$ | {prf:ref}`def-sasaki-standardization-constants-sq`  |
+| $C_{S,\mathrm{direct}}^{\mathrm{sq}}$, $C_{S,\mathrm{indirect}}^{\mathrm{sq}}(\mathcal S_1,\mathcal S_2)$ | $\left(\frac{2V_{\mathrm{max}}^{(R)}}{\sigma_{\min,\mathrm{patch}}}\right)^2$, $2 k_{\mathrm{stable}} \frac{\left(L_{\mu,S}^{\mathrm{Sasaki}}\right)^2}{\sigma_{\min,\mathrm{patch}}^2}+2 k_2 \left(\frac{2V_{\mathrm{max}}^{(R)}}{\sigma_{\min,\mathrm{patch}}}\right)^2 \frac{\left(L_{\sigma',S}^{\mathrm{Sasaki}}\right)^2}{\sigma_{\min,\mathrm{patch}}^2}$ | {prf:ref}`def-sasaki-structural-coeffs-sq`          |
 | $L_{\mathrm{death}}^{\mathrm{Sasaki}}(C)$                                                                  | $2\big(p_{\mathrm{aff}}+\rho_*(C) q_{\mathrm{dir}}(C)\big) C_{\partial} L_{\mathrm{flow}}$                                                                                                                                                                                                                                   | {prf:ref}`lem-euclidean-boundary-holder`         |
 
 Note. The mean-square continuity bound $F_{d,ms}^{\mathrm{Sasaki}}$ retains both $d_{\mathrm{Disp},\mathcal Y}^{\mathrm{Sasaki}}(\mathcal S_1,\mathcal S_2)^2$ and $d_{\mathrm{Disp},\mathcal Y}^{\mathrm{Sasaki}}(\mathcal S_1,\mathcal S_2)^4$ contributions through the $n_c$ and $n_c^2$ terms in Theorem {prf:ref}`thm-sasaki-distance-ms`; the bound is therefore a composite Lipschitz–Hölder function of the dispersion distance rather than purely Lipschitz.
@@ -2350,10 +2350,10 @@ Collect the intermediate swarm $\mathcal S_{t+1/2}=((\tilde x_i,\tilde v_i,1))_{
 (sec-eg-stage4)=
 ### 6.4 Stage 4 — Kinetic perturbation and status update
 
-Independently for each $i$, draw $\xi_i\sim\mathcal N(0,I_d)$ and apply the kinetic Euler step of Section 3.5:
+Independently for each $i$, draw $\xi_i^v,\xi_i^x\sim\mathcal N(0,I_d)$ and apply the kinetic Euler step of Section 3.5:
 
 $$
-\hat v_i:=\psi_v\!\Big(\tilde v_i+\frac{\tau}{m}F(\tilde x_i)-\gamma_{\mathrm{fric}}\tau(\tilde v_i-u(\tilde x_i))+\sqrt{\sigma_v^2\tau}\,\xi_i\Big),\qquad\hat x_i:=\tilde x_i+\tau\hat v_i.
+\hat v_i:=\psi_v\!\Big(\tilde v_i+\frac{\tau}{m}F(\tilde x_i)-\gamma_{\mathrm{fric}}\tau(\tilde v_i-u(\tilde x_i))+\sqrt{\sigma_v^2\tau}\,\xi_i^v\Big),\qquad\hat x_i:=\tilde x_i+\tau\hat v_i+\sqrt{\tau}\,\sigma_x\,\xi_i^x.
 
 $$
 Set the terminal status by the deterministic boundary check
@@ -2367,7 +2367,7 @@ The next swarm is $\mathcal S_{t+1}=((\hat x_i,\hat v_i,s_i^{(t+1)}))_{i=1}^N$.
 (sec-eg-kernel-repr)=
 ### 6.5 Kernel representation
 
-Let $\boldsymbol U=(T_i)$, $\boldsymbol C^{\mathrm{pot}}=(c_{\mathrm{pot}}(i))$, $\boldsymbol C^{\mathrm{clone}}=(c_{\mathrm{clone}}(i))$, $\boldsymbol\zeta=(\zeta_i^x,\zeta_i^v)$, and $\boldsymbol\xi=(\xi_i)$. Writing $\nu$ for the product law of these arrays, the one-step operator is the pushforward
+Let $\boldsymbol U=(T_i)$, $\boldsymbol C^{\mathrm{pot}}=(c_{\mathrm{pot}}(i))$, $\boldsymbol C^{\mathrm{clone}}=(c_{\mathrm{clone}}(i))$, $\boldsymbol\zeta=(\zeta_i^x)$, and $\boldsymbol\xi=(\xi_i^v,\xi_i^x)$. Writing $\nu$ for the product law of these arrays, the one-step operator is the pushforward
 
 $$
 \Psi_{\mathcal F_{\mathrm{EG}}}(\mathcal S_t,A)=\int\mathbf 1\big\{\Phi(\mathcal S_t;\boldsymbol U,\boldsymbol C^{\mathrm{pot}},\boldsymbol C^{\mathrm{clone}},\boldsymbol\zeta,\boldsymbol\xi)\in A\big\}\,\nu(d\boldsymbol U\,d\boldsymbol C^{\mathrm{pot}}\,d\boldsymbol C^{\mathrm{clone}}\,d\boldsymbol\zeta\,d\boldsymbol\xi)

@@ -69,6 +69,7 @@ dependencies = [
     "jupyter",
     "notebook",
     "e2cnn>=0.2.3",
+    "mlflow>=3.8.1",
 ]  # ToDo: Modify according to your needs!
 [project.urls]
 # important URLs for this project

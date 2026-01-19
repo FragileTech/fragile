@@ -639,12 +639,16 @@ def train_benchmark(config: TopoEncoderCIFAR10Config) -> dict:
             epoch % config.save_every == 0 or epoch == config.epochs
         )
         if should_log or should_save:
+            was_training = model_atlas.training
+            model_atlas.eval()
             with torch.no_grad():
                 K_chart_full, _, _, _, enc_w_full, _, _, _, _ = model_atlas.encoder(X_test)
                 usage = enc_w_full.mean(dim=0).cpu().numpy()
                 chart_assignments = K_chart_full.cpu().numpy()
                 ami = compute_ami(labels_test, chart_assignments)
                 perplexity = model_atlas.compute_perplexity(K_chart_full)
+            if was_training:
+                model_atlas.train()
 
             # Clear GPU cache after heavy test inference
             if torch.cuda.is_available():
@@ -678,8 +682,12 @@ def train_benchmark(config: TopoEncoderCIFAR10Config) -> dict:
             enc_w_test = None
             z_geo_test = None
             if supervised_loss is not None or classifier_head is not None:
+                was_training = model_atlas.training
+                model_atlas.eval()
                 with torch.no_grad():
                     _, _, _, _, enc_w_test, z_geo_test, _, _, _ = model_atlas.encoder(X_test)
+                if was_training:
+                    model_atlas.train()
 
             if supervised_loss is not None and enc_w_test is not None:
                 with torch.no_grad():
@@ -737,6 +745,12 @@ def train_benchmark(config: TopoEncoderCIFAR10Config) -> dict:
     print("\n" + "=" * 50)
     print("FINAL RESULTS")
     print("=" * 50)
+
+    if model_ae is not None:
+        model_ae.eval()
+    if model_std is not None:
+        model_std.eval()
+    model_atlas.eval()
 
     with torch.no_grad():
         # VanillaAE metrics

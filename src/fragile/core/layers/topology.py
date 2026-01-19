@@ -168,7 +168,7 @@ class SupervisedTopologyLoss(nn.Module):
         p_k = chart_assignments.mean(dim=0)  # [N_c]
 
         p_y_x = torch.matmul(chart_assignments, p_y_k)  # [B, C]
-        loss_route = F.cross_entropy(torch.log(p_y_x + 1e-8), class_labels)  # []
+        loss_route = F.nll_loss(torch.log(p_y_x + 1e-8), class_labels)  # []
 
         entropy_per_chart = -(p_y_k * torch.log(p_y_k + 1e-8)).sum(dim=1)  # [N_c]
         loss_purity = (p_k * entropy_per_chart).sum()  # []

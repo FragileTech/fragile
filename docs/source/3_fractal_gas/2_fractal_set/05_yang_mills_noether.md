@@ -478,7 +478,7 @@ The deep lesson here is that there may be only one way to explore high-dimension
 
 **Hypostructure connection**: The path integral emergence follows from the Lock Closure metatheorem ({prf:ref}`mt:fractal-gas-lock-closure`), which guarantees that discrete constructions on the Fractal Set promote to continuous limits with correct properties.
 
-**Expansion Adjunction**: The Wick rotation is justified by {prf:ref}`thm-expansion-adjunction`, which ensures the equilibrium (KMS) structure of the reversible diffusion kernel lifts to quantum structure.
+**Expansion Adjunction**: The Wick rotation is justified by {prf:ref}`thm-expansion-adjunction`, which lifts the equilibrium Euclidean structure of the Fractal Set to the quantum structure.
 :::
 
 ### 3.2. Matter Action from Cloning Dynamics
@@ -3195,23 +3195,9 @@ $$
 :::{prf:proof}
 This is the **critical axiom**. The proof connects three independent results from the literature.
 
-**Step 1: Detailed balance → KMS condition**
+**Step 1: Equilibrium Euclidean measure (QSD)**
 
-The reversible Boris-BAOAB **diffusion kernel** at QSD equilibrium satisfies **detailed balance** (also called **reversibility**):
-
-$$
-\pi(x) P_\tau(x \to y) = \pi(y) P_\tau(y \to x)
-$$
-
-This follows from the structure of the Boris-BAOAB integrator ({prf:ref}`def-fractal-set-boris-baoab`), which preserves the Gibbs measure. The cloning/selection step is dissipative and does not satisfy detailed balance away from equilibrium.
-
-By the **Kossakowski-Frigerio-Gorini-Verri theorem** {cite}`kossakowski1977quantum`, detailed balance for quantum dynamical semigroups is equivalent to the **KMS condition** {cite}`kubo1957statistical,martin1959theory`:
-
-$$
-\langle A(t) B \rangle_\pi = \langle B A(t + i\beta) \rangle_\pi
-$$
-
-at inverse temperature $\beta = 1$. The physical meaning: KMS characterizes thermal equilibrium states, and detailed balance is the dynamical expression of equilibrium {cite}`haag1967equilibrium`.
+At QSD equilibrium, the Fractal Gas defines a stationary Euclidean path measure on the Fractal Set. The Schwinger functions are computed from the QSD-weighted Euclidean action, and the equilibrium measure is invariant under Euclidean time translations along the chosen CST time coordinate. This step uses QSD stationarity and the Euclidean action from Section 3; it does not assume detailed balance for the full interacting dynamics.
 
 **Step 2: N-uniform LSI → Hypercontractivity (Gross's Theorem)**
 
@@ -3300,26 +3286,12 @@ where:
 - Ensure the reflection positivity inner product is well-defined
 - Guarantee convergence of the spectral expansion
 
-**Role of KMS condition**: The KMS condition (Step 1) ensures that the Euclidean and Minkowski formulations are **consistent under analytic continuation** for the equilibrium diffusion kernel.
-
-The KMS condition at inverse temperature $\beta = 1$ states:
-
-$$
-\langle A(t) B \rangle_\beta = \langle B A(t + i\beta) \rangle_\beta
-$$
-
-This has two consequences for reflection positivity:
-
-1. **Thermal equilibrium**: The KMS condition characterizes thermal equilibrium states. Detailed balance of the reversible diffusion kernel ensures the equilibrium QSD is such a state, so the Euclidean path integral measure is well-defined.
-
-2. **Analytic continuation**: The KMS condition guarantees that real-time correlation functions can be analytically continued to imaginary time $t \to -i\tau$. The periodicity $\langle A(0) B \rangle = \langle B A(i\beta) \rangle$ ensures the Euclidean correlators close consistently.
-
-The transfer matrix $e^{-2t_{\min} H}$ (propagating from $-t_{\min}$ to $+t_{\min}$) correctly implements this Euclidean time evolution because the KMS condition ensures it arises from the same Hamiltonian that generates real-time dynamics.
+**Note (KMS not required here)**: The reflection-positivity argument uses transfer-matrix positivity and hypercontractivity. We do not invoke KMS or detailed balance for the full interacting dynamics. The Gaussian companion-selection kernel with symmetric weights $w_{ij} = \exp(-d_{\mathrm{alg}}(i,j)^2/(2\epsilon^2))$ (see {prf:ref}`def-softmax-companion-selection-fg`) is reversible with respect to $\pi_i \propto \sum_k w_{ik}$ since $\pi_i P_i(j) = w_{ij} = w_{ji} = \pi_j P_j(i)$. KMS holds for that reversible subkernel as a corollary, but it is not used in this proof.
 
 **Conclusion**: The combination of:
 - Positive Hamiltonian ($H \geq 0$) from the spectral condition
 - Hypercontractivity from N-uniform LSI (ensuring bounded transfer matrix)
-- KMS condition from detailed balance of the equilibrium diffusion kernel (ensuring correct Wick rotation)
+- Equilibrium Euclidean measure on the Fractal Set (QSD) defines the Schwinger functions used for OS reconstruction
 
 rigorously establishes $\langle \Theta F, F \rangle_\mu \geq 0$ for all $F$ supported at positive times. $\square$
 :::
@@ -3333,7 +3305,7 @@ Reflection positivity is the Euclidean shadow of this positivity. In Euclidean s
 
 Why does this matter? Because the Osterwalder-Schrader reconstruction theorem says that if your Euclidean theory satisfies reflection positivity, you can analytically continue back to real time and get a proper quantum theory with a positive-definite Hilbert space. No reflection positivity means the "quantum" theory you reconstruct might have negative-norm states—ghosts that give negative probabilities—and the whole thing falls apart.
 
-The proof connects three different-looking things. First, detailed balance of the equilibrium diffusion kernel---the reversible transitions are balanced. This gives the KMS condition, which is about thermal equilibrium. Second, the log-Sobolev inequality gives hypercontractivity---the semigroup smooths things out as time evolves. Third, the transfer matrix $e^{-tH}$ is positive because $H \geq 0$.
+The proof connects three different-looking things. First, the QSD defines a stationary Euclidean measure for the Fractal Set fields. Second, the log-Sobolev inequality gives hypercontractivity---the semigroup smooths things out as time evolves. Third, the transfer matrix $e^{-tH}$ is positive because $H \geq 0$.
 
 When you put these together, the reflection positivity inner product becomes $\langle F | e^{-2tH} | F \rangle$, which is manifestly non-negative because $e^{-2tH}$ is a positive operator.
 

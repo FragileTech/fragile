@@ -34,8 +34,24 @@ def _load_checkpoint(path: str) -> dict[str, Any]:
     except TypeError:
         return torch.load(path, map_location="cpu")
 
+def _load_benchmarks(checkpoint_path: str) -> dict[str, Any] | None:
+    bench_path = os.path.join(os.path.dirname(checkpoint_path), "benchmarks.pt")
+    if not os.path.exists(bench_path):
+        return None
+    try:
+        return torch.load(bench_path, map_location="cpu", weights_only=False)
+    except TypeError:
+        return torch.load(bench_path, map_location="cpu")
 
-def _prepare_models(config: dict, state: dict, metrics: dict, device: str) -> dict[str, Any]:
+
+def _prepare_models(
+    config: dict,
+    state: dict,
+    metrics: dict,
+    bench_state: dict | None,
+    bench_dims: dict | None,
+    device: str,
+) -> dict[str, Any]:
     model_atlas = TopoEncoderPrimitives(
         input_dim=config["input_dim"],
         hidden_dim=config["hidden_dim"],
@@ -57,6 +73,20 @@ def _prepare_models(config: dict, state: dict, metrics: dict, device: str) -> di
         ).to(device)
         model_std.load_state_dict(state["std"])
         model_std.eval()
+    elif bench_state is not None and bench_state.get("std") is not None and not config.get(
+        "disable_vq", False
+    ):
+        std_hidden_dim = (
+            (bench_dims or {}).get("std_hidden_dim") or metrics.get("std_hidden_dim")
+        ) or config["hidden_dim"]
+        model_std = StandardVQ(
+            input_dim=config["input_dim"],
+            hidden_dim=int(std_hidden_dim),
+            latent_dim=config["latent_dim"],
+            num_codes=config["num_codes_standard"],
+        ).to(device)
+        model_std.load_state_dict(bench_state["std"])
+        model_std.eval()
 
     model_ae = None
     if state.get("ae") is not None and not config.get("disable_ae", False):
@@ -67,6 +97,19 @@ def _prepare_models(config: dict, state: dict, metrics: dict, device: str) -> di
             latent_dim=config["latent_dim"],
         ).to(device)
         model_ae.load_state_dict(state["ae"])
+        model_ae.eval()
+    elif bench_state is not None and bench_state.get("ae") is not None and not config.get(
+        "disable_ae", False
+    ):
+        ae_hidden_dim = (
+            (bench_dims or {}).get("ae_hidden_dim") or metrics.get("ae_hidden_dim")
+        ) or config["hidden_dim"]
+        model_ae = VanillaAE(
+            input_dim=config["input_dim"],
+            hidden_dim=int(ae_hidden_dim),
+            latent_dim=config["latent_dim"],
+        ).to(device)
+        model_ae.load_state_dict(bench_state["ae"])
         model_ae.eval()
 
     jump_op = None
@@ -129,14 +172,33 @@ def _analyze_checkpoint(
     device: str,
     skip_latent: bool,
     skip_results: bool,
+    only_missing: bool,
 ) -> None:
+    stem = os.path.splitext(os.path.basename(checkpoint_path))[0]
+    latent_path = os.path.join(output_dir, f"{stem}_latent.png")
+    results_path = os.path.join(output_dir, f"{stem}_results.png")
+
+    do_latent = not skip_latent
+    do_results = not skip_results
+    if only_missing:
+        if do_latent and os.path.exists(latent_path):
+            do_latent = False
+        if do_results and os.path.exists(results_path):
+            do_results = False
+        if not do_latent and not do_results:
+            print(f"Skipping {os.path.basename(checkpoint_path)} (plots already exist)")
+            return
+
     checkpoint = _load_checkpoint(checkpoint_path)
     config = checkpoint["config"]
     data = checkpoint["data"]
     metrics = checkpoint.get("metrics", {})
     state = checkpoint["state"]
 
-    models = _prepare_models(config, state, metrics, device)
+    benchmarks = _load_benchmarks(checkpoint_path)
+    bench_state = benchmarks.get("state", {}) if benchmarks else None
+    bench_dims = benchmarks.get("dims", {}) if benchmarks else None
+    models = _prepare_models(config, state, metrics, bench_state, bench_dims, device)
     model_atlas = models["model_atlas"]
     model_std = models["model_std"]
     model_ae = models["model_ae"]
@@ -151,27 +213,28 @@ def _analyze_checkpoint(
 
     X_test_device = X_test_tensor.to(device)
 
-    with torch.no_grad():
-        recon_atlas, _, _, _, K_chart = model_atlas(X_test_device, use_hard_routing=False)
-        chart_assignments = K_chart.cpu().numpy()
-        recon_atlas_cpu = recon_atlas.cpu()
+    chart_assignments = None
+    recon_atlas_cpu = None
+    recon_std_cpu = None
+    recon_ae_cpu = None
+    if do_results:
+        with torch.no_grad():
+            recon_atlas, _, _, _, K_chart = model_atlas(X_test_device, use_hard_routing=False)
+            chart_assignments = K_chart.cpu().numpy()
+            recon_atlas_cpu = recon_atlas.cpu()
 
-        recon_std_cpu = None
-        if model_std is not None:
-            recon_std, _, _ = model_std(X_test_device)
-            recon_std_cpu = recon_std.cpu()
+            if model_std is not None:
+                recon_std, _, _ = model_std(X_test_device)
+                recon_std_cpu = recon_std.cpu()
 
-        recon_ae_cpu = None
-        if model_ae is not None:
-            recon_ae, _ = model_ae(X_test_device)
-            recon_ae_cpu = recon_ae.cpu()
+            if model_ae is not None:
+                recon_ae, _ = model_ae(X_test_device)
+                recon_ae_cpu = recon_ae.cpu()
 
     dataset = config.get("dataset", "mnist")
     class_names, image_shape = _dataset_specs(dataset)
 
-    stem = os.path.splitext(os.path.basename(checkpoint_path))[0]
-    if not skip_latent:
-        latent_path = os.path.join(output_dir, f"{stem}_latent.png")
+    if do_latent:
         visualize_latent_images(
             model_atlas,
             X_test_device,
@@ -183,7 +246,7 @@ def _analyze_checkpoint(
             image_shape=image_shape,
         )
 
-    if not skip_results:
+    if do_results:
         results = {
             "X": X_test_tensor.cpu(),
             "labels": labels_test,
@@ -205,7 +268,6 @@ def _analyze_checkpoint(
             "sup_acc": metrics.get("sup_acc", 0.0),
             "model_atlas": model_atlas,
         }
-        results_path = os.path.join(output_dir, f"{stem}_results.png")
         visualize_results_images(results, class_names, save_path=results_path, image_shape=image_shape)
 
 
@@ -245,6 +307,11 @@ def main() -> None:
         action="store_true",
         help="Skip benchmark summary visualization",
     )
+    parser.add_argument(
+        "--only_missing",
+        action="store_true",
+        help="Only generate images that do not already exist",
+    )
 
     args = parser.parse_args()
 
@@ -263,6 +330,7 @@ def main() -> None:
             args.device,
             args.skip_latent,
             args.skip_results,
+            args.only_missing,
         )
 
 

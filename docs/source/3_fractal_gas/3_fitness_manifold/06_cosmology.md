@@ -160,7 +160,7 @@ At QSD:
 - **Thermal equilibrium:** $J^0 = 0$ (energy density is stationary)
 - **Force balance:** $J^i = 0$ (no net momentum flow)
 
-This follows from detailed balance of the reversible BAOAB diffusion kernel at QSD equilibrium. Away from equilibrium, the cloning step is dissipative and this argument does not apply.
+This follows from the QSD balance equation: transport flux and cloning source cancel locally, so the stationary current vanishes (see {doc}`../appendices/07_discrete_qsd`). Away from equilibrium, the cloning step is dissipative and this argument does not apply.
 
 **Step 4. Einstein equations with vanishing source.**
 

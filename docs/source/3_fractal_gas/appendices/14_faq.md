@@ -196,7 +196,7 @@ Momentum conservation prevents three failure modes:
 
 1. **Energy injection.** Without momentum conservation, cloning could inject arbitrary kinetic energy into the swarm. If walker $i$ (slow) clones from walker $j$ (fast), naive copying would create a second fast walker—injecting energy from nowhere. The inelastic collision $v_{\text{new}} = \alpha_{\text{rest}} v_j + (1 - \alpha_{\text{rest}}) v_i$ blends velocities, conserving total momentum $\sum_i m_i v_i$.
 
-2. **Thermodynamic consistency.** A QSD can exist without detailed balance; it only requires a well-defined conditioned steady state for the absorbing dynamics (see {doc}`../appendices/07_discrete_qsd`). Detailed balance is needed only for the reversible diffusion kernel to be an equilibrium Gibbs measure, which is what supports the KMS and Wick-rotation arguments. Arbitrary energy injection can block equilibration, but nonequilibrium QSDs can still exist.
+2. **Thermodynamic consistency.** A QSD can exist without detailed balance; it only requires a well-defined conditioned steady state for the absorbing dynamics (see {doc}`../appendices/07_discrete_qsd`). The Volume 3 construction uses the QSD equilibrium Euclidean measure and OS reconstruction for Wick rotation, not a KMS argument. Arbitrary energy injection can block equilibration, but nonequilibrium QSDs can still exist.
 
 3. **Symplectic structure.** The phase space $(z, v)$ has a symplectic form inherited from Hamiltonian mechanics. Momentum conservation preserves this form, ensuring the BAOAB integrator ({prf:ref}`def-baoab-splitting`) remains symplectic. Without conservation, long-time numerical stability degrades.
 

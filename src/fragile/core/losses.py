@@ -69,7 +69,7 @@ class SupervisedTopologyLoss(nn.Module):
         # === Route Alignment Loss (Definition 25.4.5) ===
         # P(Y|x) = sum_k w_k(x) * P(Y|K=k)
         p_y_x = torch.matmul(router_weights, p_y_k)  # [B, C]
-        loss_route = F.cross_entropy(torch.log(p_y_x + 1e-8), y_true)
+        loss_route = F.nll_loss(torch.log(p_y_x + 1e-8), y_true)
 
         # === Purity Loss (Definition 25.4.1) ===
         # H(Y|K=k) for each chart
@@ -294,7 +294,14 @@ def compute_orthogonality_loss(
             rows, cols = param.shape
             if max(rows, cols) > max_svd_dim:
                 continue
-            svals = torch.linalg.svdvals(param)
+            if param.numel() == 0 or not torch.isfinite(param).all():
+                continue
+            try:
+                svals = torch.linalg.svdvals(param)
+            except RuntimeError:
+                continue
+            if not torch.isfinite(svals).all():
+                continue
             svals = svals.clamp(min=eps)
             log_s = torch.log(svals)
             loss = loss + log_s.var()

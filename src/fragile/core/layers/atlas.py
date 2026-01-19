@@ -259,7 +259,8 @@ class TopologicalDecoder(nn.Module):
         self.chart_bias = nn.Parameter(torch.zeros(num_charts, hidden_dim))
 
         self.latent_router = nn.Linear(latent_dim, num_charts)
-        self.tex_projector = nn.Linear(latent_dim, hidden_dim)
+        self.tex_residual = nn.Linear(latent_dim, output_dim)
+        self.tex_residual_scale = nn.Parameter(torch.tensor(0.1))
 
         self.renderer = nn.Sequential(
             nn.GELU(),
@@ -267,24 +268,26 @@ class TopologicalDecoder(nn.Module):
             nn.GELU(),
             nn.Linear(hidden_dim, output_dim),
         )
+        self.render_skip = nn.Linear(hidden_dim, output_dim)
 
     def forward(
         self,
         z_geo: torch.Tensor,
-        z_tex: torch.Tensor,
+        z_tex: torch.Tensor | None = None,
         chart_index: torch.Tensor | None = None,
     ) -> tuple[torch.Tensor, torch.Tensor]:
-        """Decode from latent geometry and texture.
+        """Decode from latent geometry.
 
         Args:
             z_geo: [B, D] geometric latent
-            z_tex: [B, D] texture residual
+            z_tex: [B, D] optional texture residual (added to output)
             chart_index: [B] optional chart ids
 
         Returns:
             x_hat: [B, D_out] reconstruction
             router_weights: [B, N_c] routing weights
         """
+        z_geo = torch.tanh(z_geo)
         if chart_index is not None:
             router_weights = F.one_hot(chart_index, num_classes=self.num_charts).float()  # [B, N_c]
         else:
@@ -295,10 +298,10 @@ class TopologicalDecoder(nn.Module):
         h_stack = h_stack + self.chart_bias.unsqueeze(0)  # [B, N_c, H]
         h_global = (h_stack * router_weights.unsqueeze(-1)).sum(dim=1)  # [B, H]
 
-        h_tex = self.tex_projector(z_tex)  # [B, H]
-        h_total = h_global + h_tex  # [B, H]
-
-        x_hat = self.renderer(h_total)  # [B, D_out]
+        x_hat = self.renderer(h_global) + self.render_skip(h_global)  # [B, D_out]
+        if z_tex is not None:
+            z_tex = torch.tanh(z_tex)
+            x_hat = x_hat + self.tex_residual_scale * self.tex_residual(z_tex)
         return x_hat, router_weights
 
 
@@ -543,7 +546,8 @@ class PrimitiveTopologicalDecoder(nn.Module):
         bundle_size, n_bundles = _resolve_bundle_params(hidden_dim, latent_dim, bundle_size)
 
         self.latent_router = SpectralLinear(latent_dim, num_charts, bias=True)
-        self.tex_projector = SpectralLinear(latent_dim, hidden_dim, bias=True)
+        self.tex_residual = SpectralLinear(latent_dim, output_dim, bias=True)
+        self.tex_residual_scale = nn.Parameter(torch.tensor(0.1))
 
         self.renderer = nn.Sequential(
             SpectralLinear(hidden_dim, hidden_dim, bias=True),
@@ -552,14 +556,16 @@ class PrimitiveTopologicalDecoder(nn.Module):
             NormGatedGELU(bundle_size=bundle_size, n_bundles=n_bundles),
             SpectralLinear(hidden_dim, output_dim, bias=True),
         )
+        self.render_skip = SpectralLinear(hidden_dim, output_dim, bias=True)
 
     def forward(
         self,
         z_geo: torch.Tensor,
-        z_tex: torch.Tensor,
+        z_tex: torch.Tensor | None = None,
         chart_index: torch.Tensor | None = None,
     ) -> tuple[torch.Tensor, torch.Tensor]:
-        """Decode from latent geometry and texture."""
+        """Decode from latent geometry."""
+        z_geo = torch.tanh(z_geo)
         if chart_index is not None:
             router_weights = F.one_hot(chart_index, num_classes=self.num_charts).float()  # [B, N_c]
         else:
@@ -570,10 +576,10 @@ class PrimitiveTopologicalDecoder(nn.Module):
         h_stack = h_stack + self.chart_bias.unsqueeze(0)  # [B, N_c, H]
         h_global = (h_stack * router_weights.unsqueeze(-1)).sum(dim=1)  # [B, H]
 
-        h_tex = self.tex_projector(z_tex)  # [B, H]
-        h_total = h_global + h_tex  # [B, H]
-
-        x_hat = self.renderer(h_total)  # [B, D_out]
+        x_hat = self.renderer(h_global) + self.render_skip(h_global)  # [B, D_out]
+        if z_tex is not None:
+            z_tex = torch.tanh(z_tex)
+            x_hat = x_hat + self.tex_residual_scale * self.tex_residual(z_tex)
         return x_hat, router_weights
 
 

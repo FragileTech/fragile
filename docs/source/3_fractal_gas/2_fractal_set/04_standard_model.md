@@ -493,18 +493,18 @@ For the CST edge, $\Phi_j - \Phi_i = (\epsilon_F/T)\int_{t_i^{\text{b}}}^{t_i^{\
 
 :::
 
-:::{prf:theorem} Temporal Operator from KMS Condition
+:::{prf:theorem} Temporal Operator from Equilibrium Euclidean Structure
 :label: thm-sm-temporal-operator
 
-**Rigor Class:** L (Literature) — detailed balance and KMS {cite}`kubo1957statistical,martin1959theory,haag1967equilibrium,kossakowski1977quantum`
+**Rigor Class:** F (Framework-Original) — QSD Euclidean measure + OS reconstruction ({prf:ref}`thm-os-os2-fg`)
 
-The temporal fermionic operator follows from the equilibrium diffusion kernel's thermal structure:
+The temporal fermionic operator follows from the equilibrium Euclidean structure of the QSD measure:
 
-1. **Reversible diffusion kernel**: The Boris-BAOAB diffusion kernel preserves the QSD/Gibbs measure and satisfies detailed balance at equilibrium
-2. **KMS and Wick rotation**: Detailed balance implies the KMS condition {cite}`kossakowski1977quantum`, so correlators admit analytic continuation $t \to -i\tau$
-3. **Fermionic sign**: Wick rotation gives a Euclidean action with weight $\exp(-S^E)$ (the Grassmann integral produces the standard fermion determinant)
+1. **QSD Euclidean weight**: The fitness action defines a real-valued Euclidean weight along CST edges at QSD equilibrium ({prf:ref}`thm-temporal-fermion-op`)
+2. **Reflection positivity**: The QSD Schwinger functions satisfy the OS axioms, in particular reflection positivity ({prf:ref}`thm-os-os2-fg`)
+3. **Wick rotation**: OS reconstruction provides analytic continuation to real time, turning the Euclidean weight into the unitary phase $U_{ij}$
 
-**Result**: The fitness action defining $\Phi_j - \Phi_i$ is real-valued after Wick rotation, so $U_{ij} \in U(1)$ is unitary.
+**Result**: The fitness action is real in Euclidean time, so Wick rotation yields a pure phase and $U_{ij} \in U(1)$ is unitary.
 
 **Hermiticity**: The action satisfies approximate Hermiticity:
 
@@ -512,9 +512,9 @@ $$
 \left\|S_{\text{fermion}}^{\text{temporal}} - (S_{\text{fermion}}^{\text{temporal}})^\dagger\right\| \leq C \frac{\sqrt{\log N}}{\sqrt{N}}
 $$
 
-**Scope**: This argument applies to the reversible diffusion kernel at QSD equilibrium; the cloning/selection step is dissipative and does not satisfy detailed balance.
+**Scope**: This argument applies to the QSD equilibrium Euclidean measure on the Fractal Set; the cloning/selection step is dissipative, but OS reconstruction uses the stationary Euclidean measure and does not require detailed balance.
 
-*Proof*: The derivation uses the KMS (Kubo-Martin-Schwinger) condition {cite}`kubo1957statistical,martin1959theory,haag1967equilibrium`, which characterizes thermal equilibrium states. At QSD equilibrium, the reversible Boris-BAOAB diffusion kernel satisfies detailed balance with respect to the Gibbs measure, so the state is KMS {cite}`kossakowski1977quantum`, enabling Wick rotation $t \to -i\tau$ that converts the fitness action to Euclidean form. The resulting phase is real-valued, ensuring unitarity. See {prf:ref}`thm-temporal-fermion-op` for the formal statement and proof. $\square$
+*Proof*: The QSD equilibrium defines a real Euclidean weight for the fitness action. Reflection positivity and OS reconstruction ({prf:ref}`thm-os-os2-fg`) justify analytic continuation to real time, yielding the unitary phase $U_{ij}$. See {prf:ref}`thm-temporal-fermion-op` for the formal statement and proof. $\square$
 :::
 
 ### Continuum Limit: Dirac Algebra Isomorphism
@@ -1524,7 +1524,7 @@ The antisymmetric cloning kernel structure is isomorphic to the Clifford algebra
 
 **Fractal Gas structure**:
 - Antisymmetric cloning kernel: $\tilde{K}_{ij} = K_{ij} - K_{ji}$
-- Temporal operator: $D_t$ from KMS condition ({prf:ref}`thm-sm-temporal-operator`)
+- Temporal operator: $D_t$ from equilibrium Euclidean structure ({prf:ref}`thm-sm-temporal-operator`)
 - Combined action: $S_{\text{fermion}} = S^{\text{spatial}} + S^{\text{temporal}}$
 
 **Dirac structure**:
@@ -1731,7 +1731,7 @@ The Standard Model gauge group $SU(d)_C \times SU(2)_L \times U(1)_Y$ emerges fr
 
 - Antisymmetric cloning kernel generates Clifford algebra — {prf:ref}`thm-sm-dirac-isomorphism`
 - Algorithmic exclusion principle matches Pauli exclusion — {prf:ref}`thm-sm-exclusion-principle`
-- Temporal operator from KMS condition provides gauge covariant derivative — {prf:ref}`thm-sm-temporal-operator`
+- Temporal operator from equilibrium Euclidean structure provides gauge covariant derivative — {prf:ref}`thm-sm-temporal-operator`
 
 ### Scalar/Higgs Structure
 
@@ -1811,7 +1811,7 @@ This chapter builds on foundational results from gauge theory and quantum field 
 | CKM mixing | {cite}`cabibbo1963unitary,kobayashi1973cp` |
 | Pauli exclusion principle | {cite}`pauli1925zusammenhang` |
 | Grassmann variables | {cite}`berezin1966method` |
-| KMS condition | {cite}`kubo1957statistical,martin1959theory,haag1967equilibrium,kossakowski1977quantum` |
+| Osterwalder-Schrader axioms and reconstruction | {cite}`osterwalder1973axioms` |
 
 ```{bibliography}
 :filter: docname in docnames
