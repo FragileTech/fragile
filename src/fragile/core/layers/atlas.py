@@ -140,7 +140,6 @@ class AttentiveAtlasEncoder(nn.Module):
 
         self.feature_extractor = nn.Sequential(
             nn.Linear(input_dim, hidden_dim),
-            nn.LayerNorm(hidden_dim),
             nn.GELU(),
             nn.Linear(hidden_dim, hidden_dim),
             nn.GELU(),
@@ -263,7 +262,6 @@ class TopologicalDecoder(nn.Module):
         self.tex_projector = nn.Linear(latent_dim, hidden_dim)
 
         self.renderer = nn.Sequential(
-            nn.LayerNorm(hidden_dim),
             nn.GELU(),
             nn.Linear(hidden_dim, hidden_dim),
             nn.GELU(),
@@ -437,7 +435,6 @@ class PrimitiveAttentiveAtlasEncoder(nn.Module):
         self.feature_extractor = nn.Sequential(
             SpectralLinear(input_dim, hidden_dim, bias=True),
             NormGatedGELU(bundle_size=bundle_size, n_bundles=n_bundles),
-            nn.LayerNorm(hidden_dim),
             SpectralLinear(hidden_dim, hidden_dim, bias=True),
             NormGatedGELU(bundle_size=bundle_size, n_bundles=n_bundles),
         )
@@ -549,7 +546,6 @@ class PrimitiveTopologicalDecoder(nn.Module):
         self.tex_projector = SpectralLinear(latent_dim, hidden_dim, bias=True)
 
         self.renderer = nn.Sequential(
-            nn.LayerNorm(hidden_dim),
             SpectralLinear(hidden_dim, hidden_dim, bias=True),
             NormGatedGELU(bundle_size=bundle_size, n_bundles=n_bundles),
             SpectralLinear(hidden_dim, hidden_dim, bias=True),

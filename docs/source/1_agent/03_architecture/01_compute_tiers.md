@@ -124,7 +124,7 @@ The core loss function has five terms. Let me tell you what each one does and wh
 
 **The Zeno term** $D_{\text{KL}}(\pi_t \| \pi_{t-1})$ is beautiful. It penalizes the policy for changing too rapidly from one timestep to the next. Why? Because in continuous time, if your policy oscillates infinitely fast, you get a phenomenon called "Zeno behavior"---like Zeno's paradox, you take infinitely many infinitely small steps and never get anywhere. This term prevents that pathology.
 
-**The stiffness term** $\max(0, \epsilon - \|\nabla V\|)^2$ is a little less obvious. It penalizes the critic for being *too flat*. If the value function has zero gradient everywhere, your policy has no information about which direction to go. This ensures the critic maintains enough curvature to be useful.
+**The stiffness term** $\max(0, \epsilon - \|\nabla_A V\|)^2$ is a little less obvious. It penalizes the critic for being *too flat*. If the value function has zero gradient everywhere, your policy has no information about which direction to go. This ensures the critic maintains enough curvature to be useful.
 
 With these five terms, you cover the six most common failure modes. That's good bang for your computational buck.
 :::
@@ -134,7 +134,7 @@ For production systems with tight compute budgets.
 **Loss Function:**
 
 $$
-\mathcal{L}_{\text{Fragile}}^{\text{core}} = \mathcal{L}_{\text{task}} + \lambda_{\text{shutter}} \mathcal{L}_{\text{shutter}} + \lambda_{\text{ent}} (-H(\pi)) + \lambda_{\text{zeno}} D_{\mathrm{KL}}(\pi_t \Vert \pi_{t-1}) + \lambda_{\text{stiff}} \max(0, \epsilon - \Vert \nabla V \Vert)^2
+\mathcal{L}_{\text{Fragile}}^{\text{core}} = \mathcal{L}_{\text{task}} + \lambda_{\text{shutter}} \mathcal{L}_{\text{shutter}} + \lambda_{\text{ent}} (-H(\pi)) + \lambda_{\text{zeno}} D_{\mathrm{KL}}(\pi_t \Vert \pi_{t-1}) + \lambda_{\text{stiff}} \max(0, \epsilon - \Vert \nabla_A V \Vert)^2
 
 $$
 **Coverage:** Prevents Mode C.E (Blow-up), C.C (Zeno), C.D (Collapse), D.C (Ungrounded inference), T.D (Freeze), S.D (Blindness)

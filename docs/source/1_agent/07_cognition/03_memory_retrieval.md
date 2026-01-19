@@ -162,7 +162,7 @@ $$
 - Near high-reward past positions ($\alpha > 0$): $\Psi_{\text{mem}} < 0$, creating a potential well. The force $-\nabla_G \Psi_{\text{mem}}$ points toward the memory (attractive).
 - Near high-penalty past positions ($\alpha < 0$): $\Psi_{\text{mem}} > 0$, creating a potential barrier. The force $-\nabla_G \Psi_{\text{mem}}$ points away from the memory (repulsive).
 
-The sign convention ensures that the drift $-G^{-1}\nabla \Psi_{\text{mem}}$ moves toward rewarding experiences and away from penalizing ones.
+The sign convention ensures that the drift term inside $\mathcal{M}_{\text{curl}}\!\left(-G^{-1}\nabla \Psi_{\text{mem}}\right)$ moves toward rewarding experiences and away from penalizing ones.
 
 :::
 
@@ -277,7 +277,7 @@ The beautiful thing is that it fits in so naturally. The memory potential $\Psi_
 The memory-augmented dynamics on $(\mathcal{Z}, G)$ are:
 
 $$
-dz^k = \left[ -G^{kj}\partial_j\bigl(\Phi_{\text{eff}} + \Psi_{\text{mem}}\bigr) + u_\pi^k \right] ds - \Gamma^k_{ij}\dot{z}^i\dot{z}^j\,ds + \sqrt{2T_c}\,(G^{-1/2})^{kj}\,dW^j_s,
+dz^k = \left[\mathcal{M}_{\text{curl}}\right]^k{}_{j}\left(-G^{j\ell}\partial_\ell\bigl(\Phi_{\text{eff}} + \Psi_{\text{mem}}\bigr) + u_\pi^j\right) ds - \Gamma^k_{ij}\dot{z}^i\dot{z}^j\,ds + \sqrt{2T_c}\,(G^{-1/2})^{kj}\,dW^j_s,
 
 $$
 where:
@@ -286,7 +286,8 @@ where:
 - $\Gamma^k_{ij}$ are the Christoffel symbols of $G$ (Definition 2.5.1),
 - $u_\pi^k$ is the policy control field (Definition {prf:ref}`def-the-control-field`),
 - $T_c$ is the cognitive temperature ({prf:ref}`def-cognitive-temperature`, {ref}`Section 22.4 <sec-the-geodesic-baoab-integrator>`),
-- $W^j_s$ is a standard Wiener process.
+- $W^j_s$ is a standard Wiener process,
+- $\mathcal{M}_{\text{curl}} := (I - \beta_{\text{curl}} G^{-1}\mathcal{F})^{-1}$ is the curl-corrected mobility.
 
 *Cross-reference:* Definition {prf:ref}`def-bulk-drift-continuous-flow`.
 
@@ -408,7 +409,7 @@ $$
 $$
 where:
 - $\rho(z, s)$ is the belief density,
-- $\mathbf{v} = -G^{-1}\nabla(\Phi_{\text{eff}} + \Psi_{\text{mem}}) + u_\pi$ is the augmented drift,
+- $\mathbf{v} = \mathcal{M}_{\text{curl}}\!\left(-G^{-1}\nabla(\Phi_{\text{eff}} + \Psi_{\text{mem}}) + u_\pi\right)$ is the curl-corrected drift,
 - $\bar{\Phi}_{\text{aug}} = \int_{\mathcal{Z}} (\Phi_{\text{eff}} + \Psi_{\text{mem}}) \rho \, d\mu_G$ is the mean augmented potential.
 
 *Cross-reference:* Definition {prf:ref}`def-the-wfr-action`, Theorem {prf:ref}`thm-wfr-consistency-value-creates-mass`.
@@ -790,7 +791,7 @@ The full equation now has three potential terms: $\Phi_{\text{eff}}$ (local valu
 The equations of motion with retrieval are:
 
 $$
-dz^k = \left[ -G^{kj}\partial_j(\Phi_{\text{eff}} + \Psi_{\text{mem}} + \Psi_{\text{ret}}) + u_\pi^k \right] ds - \Gamma^k_{ij}\dot{z}^i\dot{z}^j\,ds + \sqrt{2T_c}(G^{-1/2})^{kj}dW^j_s,
+dz^k = \left[\mathcal{M}_{\text{curl}}\right]^k{}_{j}\left(-G^{j\ell}\partial_\ell(\Phi_{\text{eff}} + \Psi_{\text{mem}} + \Psi_{\text{ret}}) + u_\pi^j\right) ds - \Gamma^k_{ij}\dot{z}^i\dot{z}^j\,ds + \sqrt{2T_c}(G^{-1/2})^{kj}dW^j_s,
 
 $$
 where:
@@ -1049,7 +1050,7 @@ Let $\mathcal{M}_A$ and $\mathcal{M}_B$ be latent manifolds encoding modalities 
 *Proof.*
 1. **Metric Genesis:** According to the Capacity-Constrained Metric Law ({prf:ref}`thm-capacity-constrained-metric-law`), the metric $G$ is determined by the solution to the Einstein-like equation $R_{ij} - \frac{1}{2}R G_{ij} + \Lambda G_{ij} = \kappa T_{ij}$, where the stress-energy tensor $T_{ij}$ is derived from the risk Lagrangian $\mathcal{L}_{\text{risk}}$.
 
-2. **Risk Invariance:** The risk Lagrangian $\mathcal{L}_{\text{risk}}(V) = \frac{1}{2}\|\nabla V\|^2 + U(V)$ depends only on the Value function $V$ and the Causal Potential $\Psi_{\text{causal}}$.
+2. **Risk Invariance:** The risk Lagrangian $\mathcal{L}_{\text{risk}}(V) = \frac{1}{2}\|\nabla_A V\|^2 + U(V)$ depends only on the Value function $V$ and the Causal Potential $\Psi_{\text{causal}}$.
 
 3. **Task Invariance:** The potentials $V$ and $\Psi_{\text{causal}}$ are functions of the *causal graph* of the environment $\mathcal{E}$, which is an invariant independent of the sensory modality (pixels vs. tokens).
 

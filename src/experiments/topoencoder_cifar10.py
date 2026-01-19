@@ -35,7 +35,13 @@ from tqdm import tqdm
 
 from dataviz import visualize_latent_images, visualize_results_images
 from fragile.datasets import CIFAR10_CLASSES, get_cifar10_data
-from fragile.core.layers import FactorizedJumpOperator, StandardVQ, TopoEncoder, VanillaAE
+from fragile.core.layers import (
+    FactorizedJumpOperator,
+    InvariantChartClassifier,
+    StandardVQ,
+    TopoEncoder,
+    VanillaAE,
+)
 from fragile.core.losses import (
     compute_code_entropy_loss,
     compute_disentangle_loss,
@@ -94,14 +100,14 @@ class TopoEncoderCIFAR10Config:
     disentangle_weight: float = 0.1
 
     # Tier 3 losses (geometry/codebook health)
-    orthogonality_weight: float = 0.01
+    orthogonality_weight: float = 0.0  # Singular-value spread penalty (SVD; disabled by default)
     code_entropy_weight: float = 0.0
     per_chart_code_entropy_weight: float = 0.1
 
     # Tier 4 losses (invariance)
-    kl_prior_weight: float = 0.01
+    kl_prior_weight: float = 0.01  # Radial energy prior
     orbit_weight: float = 0.0
-    vicreg_inv_weight: float = 0.0
+    vicreg_inv_weight: float = 0.0  # Gram invariance (O(B^2), disabled by default)
     augment_noise_std: float = 0.1
 
     # Tier 5: Jump Operator
@@ -119,6 +125,11 @@ class TopoEncoderCIFAR10Config:
     sup_metric_weight: float = 0.01
     sup_metric_margin: float = 1.0
     sup_temperature: float = 1.0
+
+    # Classifier readout (detached, invariant)
+    enable_classifier_head: bool = True
+    classifier_lr: float = 0.0  # 0 = use main lr
+    classifier_bundle_size: int = 0  # 0 = global norm
 
     # Learning rate scheduling
     use_scheduler: bool = True
@@ -335,6 +346,24 @@ def train_benchmark(config: TopoEncoderCIFAR10Config) -> dict:
             f"lambda_metric={config.sup_metric_weight}"
         )
 
+    # Invariant classifier head (detached readout)
+    classifier_head = None
+    classifier_bundle_size = config.classifier_bundle_size or None
+    classifier_lr = config.classifier_lr if config.classifier_lr > 0 else config.lr
+    if config.enable_classifier_head:
+        classifier_head = InvariantChartClassifier(
+            num_charts=config.num_charts,
+            num_classes=num_classes,
+            latent_dim=config.latent_dim,
+            bundle_size=classifier_bundle_size,
+        ).to(device)
+        print(
+            "  Classifier Readout: "
+            f"classes={num_classes}, "
+            f"bundle_size={classifier_bundle_size or 'global'}, "
+            f"lr={classifier_lr}"
+        )
+
     # Optimizers
     if model_std is not None:
         opt_std = optim.Adam(model_std.parameters(), lr=config.lr)
@@ -342,6 +371,9 @@ def train_benchmark(config: TopoEncoderCIFAR10Config) -> dict:
     if supervised_loss is not None:
         atlas_params.extend(list(supervised_loss.parameters()))
     opt_atlas = optim.Adam(atlas_params, lr=config.lr)
+    opt_classifier = None
+    if classifier_head is not None:
+        opt_classifier = optim.Adam(classifier_head.parameters(), lr=classifier_lr)
     if model_ae is not None:
         opt_ae = optim.Adam(model_ae.parameters(), lr=config.lr)
 
@@ -388,6 +420,8 @@ def train_benchmark(config: TopoEncoderCIFAR10Config) -> dict:
         "sup_balance": [],
         "sup_metric": [],
         "sup_acc": [],
+        "cls_loss": [],
+        "cls_acc": [],
     }
     info_metrics: dict[str, list[float]] = {
         "I_XK": [],
@@ -453,11 +487,19 @@ def train_benchmark(config: TopoEncoderCIFAR10Config) -> dict:
             dis_loss = compute_disentangle_loss(z_geo, enc_w)
 
             # Tier 3 losses
-            orth_loss = compute_orthogonality_loss(model_atlas)
-            code_ent_loss = compute_code_entropy_loss(indices_stack, config.codes_per_chart)
-            per_chart_code_ent_loss = compute_per_chart_code_entropy_loss(
-                indices_stack, K_chart, config.num_charts, config.codes_per_chart
-            )
+            orth_loss = torch.tensor(0.0, device=device)
+            if config.orthogonality_weight > 0:
+                orth_loss = compute_orthogonality_loss(model_atlas)
+
+            code_ent_loss = torch.tensor(0.0, device=device)
+            if config.code_entropy_weight > 0:
+                code_ent_loss = compute_code_entropy_loss(indices_stack, config.codes_per_chart)
+
+            per_chart_code_ent_loss = torch.tensor(0.0, device=device)
+            if config.per_chart_code_entropy_weight > 0:
+                per_chart_code_ent_loss = compute_per_chart_code_entropy_loss(
+                    indices_stack, K_chart, config.num_charts, config.codes_per_chart
+                )
 
             # Tier 4 losses
             if config.kl_prior_weight > 0:
@@ -534,6 +576,19 @@ def train_benchmark(config: TopoEncoderCIFAR10Config) -> dict:
                 torch.nn.utils.clip_grad_norm_(all_params, config.grad_clip)
             opt_atlas.step()
 
+            # --- Classifier Readout Step (detached) ---
+            cls_loss = torch.tensor(0.0, device=device)
+            cls_acc = torch.tensor(0.0, device=device)
+            if classifier_head is not None and opt_classifier is not None:
+                logits = classifier_head(enc_w.detach(), z_geo.detach())
+                cls_loss = F.cross_entropy(logits, batch_labels)
+                opt_classifier.zero_grad()
+                cls_loss.backward()
+                opt_classifier.step()
+                cls_acc = (
+                    logits.detach().argmax(dim=1) == batch_labels
+                ).float().mean()
+
             # Accumulate batch losses
             epoch_std_loss += loss_s.item()
             epoch_atlas_loss += loss_a.item()
@@ -560,6 +615,8 @@ def train_benchmark(config: TopoEncoderCIFAR10Config) -> dict:
             epoch_losses["sup_balance"] += sup_balance.item()
             epoch_losses["sup_metric"] += sup_metric.item()
             epoch_losses["sup_acc"] += sup_acc.item()
+            epoch_losses["cls_loss"] += cls_loss.item()
+            epoch_losses["cls_acc"] += cls_acc.item()
             epoch_info["I_XK"] += window_info["I_XK"]
             epoch_info["H_K"] += window_info["H_K"]
 
@@ -600,6 +657,8 @@ def train_benchmark(config: TopoEncoderCIFAR10Config) -> dict:
             avg_consistency = loss_components["consistency"][-1]
             avg_sup_acc = loss_components["sup_acc"][-1]
             avg_sup_route = loss_components["sup_route"][-1]
+            avg_cls_loss = loss_components["cls_loss"][-1]
+            avg_cls_acc = loss_components["cls_acc"][-1]
             avg_ixk = info_metrics["I_XK"][-1]
             avg_hk = info_metrics["H_K"][-1]
 
@@ -616,9 +675,14 @@ def train_benchmark(config: TopoEncoderCIFAR10Config) -> dict:
                 f"entropy={avg_entropy:.4f} "
                 f"consistency={avg_consistency:.4f}"
             )
-            if supervised_loss is not None:
+            enc_w_test = None
+            z_geo_test = None
+            if supervised_loss is not None or classifier_head is not None:
                 with torch.no_grad():
                     _, _, _, _, enc_w_test, z_geo_test, _, _, _ = model_atlas.encoder(X_test)
+
+            if supervised_loss is not None and enc_w_test is not None:
+                with torch.no_grad():
                     sup_test = supervised_loss(enc_w_test, labels_test_t, z_geo_test)
                     p_y_x_test = torch.matmul(enc_w_test, supervised_loss.p_y_given_k)
                     test_sup_acc = (
@@ -634,6 +698,19 @@ def train_benchmark(config: TopoEncoderCIFAR10Config) -> dict:
                     f"  Sup: train_acc={avg_sup_acc:.4f} "
                     f"test_acc={test_sup_acc:.4f} "
                     f"route={avg_sup_route:.4f}"
+                )
+
+            if classifier_head is not None and enc_w_test is not None:
+                with torch.no_grad():
+                    cls_logits_test = classifier_head(enc_w_test, z_geo_test)
+                    test_cls_acc = (
+                        cls_logits_test.argmax(dim=1) == labels_test_t
+                    ).float().mean().item()
+
+                print(
+                    f"  Readout: train_loss={avg_cls_loss:.4f} "
+                    f"train_acc={avg_cls_acc:.4f} "
+                    f"test_acc={test_cls_acc:.4f}"
                 )
             print(
                 f"  Info: I(X;K)={avg_ixk:.3f} H(K)={avg_hk:.3f} "
@@ -699,6 +776,11 @@ def train_benchmark(config: TopoEncoderCIFAR10Config) -> dict:
         if supervised_loss is not None:
             p_y_x = torch.matmul(enc_w, supervised_loss.p_y_given_k)
             sup_acc = (p_y_x.argmax(dim=1) == labels_test_t).float().mean().item()
+        cls_acc = 0.0
+        if classifier_head is not None:
+            _, _, _, _, enc_w_cls, z_geo_cls, _, _, _ = model_atlas.encoder(X_test)
+            cls_logits = classifier_head(enc_w_cls, z_geo_cls)
+            cls_acc = (cls_logits.argmax(dim=1) == labels_test_t).float().mean().item()
 
     # Results table
     print("\n" + "-" * 70)
@@ -714,6 +796,8 @@ def train_benchmark(config: TopoEncoderCIFAR10Config) -> dict:
     print(f"\nRouting Consistency (KL): {final_consistency:.4f}")
     if supervised_loss is not None:
         print(f"Supervised Accuracy: {sup_acc:.4f}")
+    if classifier_head is not None:
+        print(f"Readout Accuracy: {cls_acc:.4f}")
 
     # Save final visualization
     if config.save_every > 0:
@@ -744,6 +828,7 @@ def train_benchmark(config: TopoEncoderCIFAR10Config) -> dict:
         "std_perplexity": std_perplexity,
         "atlas_perplexity": atlas_perplexity,
         "sup_acc": sup_acc,
+        "cls_acc": cls_acc,
         "X": X_test,
         "labels": labels_test,
         "colors": colors_test,
@@ -886,6 +971,25 @@ def main():
         help="Temperature for chart-to-class mapping (default: 1.0)"
     )
 
+    # Classifier readout (detached)
+    parser.add_argument(
+        "--disable_classifier_head",
+        action="store_true",
+        help="Disable invariant classifier readout head",
+    )
+    parser.add_argument(
+        "--classifier_lr",
+        type=float,
+        default=0.0,
+        help="Classifier head learning rate (0 = use main lr)",
+    )
+    parser.add_argument(
+        "--classifier_bundle_size",
+        type=int,
+        default=0,
+        help="Bundle size for radial readout (0 = global norm)",
+    )
+
     # Benchmark control
     parser.add_argument(
         "--disable_ae", action="store_true", help="Disable VanillaAE baseline"
@@ -948,6 +1052,9 @@ def main():
         sup_metric_weight=args.sup_metric_weight,
         sup_metric_margin=args.sup_metric_margin,
         sup_temperature=args.sup_temperature,
+        enable_classifier_head=not args.disable_classifier_head,
+        classifier_lr=args.classifier_lr,
+        classifier_bundle_size=args.classifier_bundle_size,
         # Benchmark control
         disable_ae=args.disable_ae,
         disable_vq=args.disable_vq,

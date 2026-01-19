@@ -42,7 +42,7 @@ We rigorously frame Reward not as a scalar signal, but as a **Differential 1-For
 (rb-non-conservative-value)=
 :::{admonition} Researcher Bridge: Beyond Conservative Value Functions
 :class: tip
-Standard RL assumes a scalar Value function $V(z)$ exists such that reward gradients are conservative: $\mathcal{R} = \nabla V$. This implies that the total reward around any closed loop is zero—no cyclic preference structures exist. But many real-world scenarios violate this:
+Standard RL assumes a scalar Value function $V(z)$ exists such that the reward 1-form is exact: $\mathcal{R} = dV$ (equivalently $\mathcal{R} = \nabla_A V$ with $A=0$). This implies that the total reward around any closed loop is zero—no cyclic preference structures exist. But many real-world scenarios violate this:
 - **Rock-Paper-Scissors**: Cyclic dominance creates non-zero reward loops
 - **Exploration-Exploitation Orbits**: Optimal behavior may involve sustained cycling
 - **Paradoxical Preferences**: Humans exhibit intransitive preferences
@@ -343,13 +343,14 @@ $V(z') = V(z + dz)$ to second order and taking expectations, with instantaneous 
 $r := \mathcal{R}_i(z) b^i(z,a)$:
 
 $$
-V(z) = r \Delta t + \gamma \mathbb{E}[V(z')] \approx r \Delta t + (1 - \kappa \Delta t)\left(V + \nabla V \cdot b \Delta t + T_c \Delta_G V \Delta t\right).
+V(z) = r \Delta t + \gamma \mathbb{E}[V(z')] \approx r \Delta t + (1 - \kappa \Delta t)\left(V + \nabla_A V \cdot b \Delta t + T_c \Delta_G V \Delta t\right).
 
 $$
 Rearranging and dividing by $\Delta t$, then taking $\Delta t \to 0$:
 
 $$
-\kappa V = r + \nabla V \cdot b + T_c \Delta_G V.
+\kappa V = r + \nabla_A V \cdot b + T_c \Delta_G V.
+Here $\nabla_A V := \nabla V - A$ with $A$ the reward 1-form (conservative case: $A=0$).
 
 $$
 For the stationary case ($b = 0$) and absorbing the temperature into the source term, this yields the Helmholtz equation $-\Delta_G V + \kappa^2 V = \rho_r$. Details in {ref}`Appendix A.5 <sec-appendix-a-full-derivations>`. $\square$

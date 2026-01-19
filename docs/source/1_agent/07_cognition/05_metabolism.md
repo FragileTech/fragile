@@ -339,13 +339,13 @@ $$
 Integrating the divergence term by parts (assuming vanishing flux at $\partial\mathcal{Z}$):
 
 $$
-\int_{\mathcal{Z}} V (-\nabla \cdot (\rho v)) \, d\mu_G = \int_{\mathcal{Z}} \rho \langle \nabla V, v \rangle_G \, d\mu_G.
+\int_{\mathcal{Z}} V (-\nabla \cdot (\rho v)) \, d\mu_G = \int_{\mathcal{Z}} \rho \langle \nabla_A V, v \rangle_G \, d\mu_G.
 
 $$
-For gradient flow dynamics, $v = -G^{-1} \nabla V$ (up to temperature scaling), so $\langle \nabla V, v \rangle_G = -\|\nabla V\|_G^2 \le 0$. Thus:
+For gradient flow dynamics, $v = -G^{-1} \nabla_A V$ (up to temperature scaling), so $\langle \nabla_A V, v \rangle_G = -\|\nabla_A V\|_G^2 \le 0$. Thus:
 
 $$
-\frac{d}{dS} \langle V \rangle_{\rho_S} = \int_{\mathcal{Z}} \rho \left( V r - \|\nabla V\|_G^2 \right) d\mu_G.
+\frac{d}{dS} \langle V \rangle_{\rho_S} = \int_{\mathcal{Z}} \rho \left( V r - \|\nabla_A V\|_G^2 \right) d\mu_G.
 
 $$
 The stationarity condition $\frac{d}{dS} \mathcal{S}_{\text{delib}} = 0$ yields the optimality condition. See {ref}`Appendix E.4 <sec-appendix-e-rigorous-proof-sketches-for-ontological-and-metabolic-laws>` for the full proof using the WFR adjoint operator. $\square$
@@ -663,7 +663,7 @@ Let me wrap up by giving you the complete dictionary between thermodynamic conce
 |:-----------------------|:-----------------------|:--------------------------------------------------------------|
 | **Energy**             | Gibbs Free Energy      | Task Potential $V(z)$                                         |
 | **Heat**               | Metabolic Dissipation  | WFR Action $\dot{\mathcal{M}}$                                |
-| **Work**               | Value Improvement      | Gradient Flux $\langle \nabla V, v \rangle_G$                 |
+| **Work**               | Value Improvement      | Gradient Flux $\langle \nabla_A V, v \rangle_G$                 |
 | **Equilibrium**        | $dG = 0$               | $S^*$ (Optimal Stopping)                                      |
 | **Temperature**        | $T$                    | Cognitive Temperature $T_c$                                   |
 | **Entropy Production** | $\sigma \ge 0$         | $\sigma_{\text{tot}} = \dot{H} + \dot{\mathcal{M}}/T_c \ge 0$ |

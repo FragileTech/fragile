@@ -298,16 +298,22 @@ $$
 Expanding the left-hand side and identifying the Christoffel symbols of the first kind $[ij, k] = \frac{1}{2}(\partial_i G_{jk} + \partial_j G_{ik} - \partial_k G_{ij})$:
 
 $$
-G_{kj} \ddot{z}^j + [ij, k] \dot{z}^i \dot{z}^j = -\partial_k V - \beta_{\text{exp}} \partial_k \Psi_{\text{causal}}.
+G_{kj} \ddot{z}^j + [ij, k] \dot{z}^i \dot{z}^j = -(\nabla_A V)_k - \beta_{\text{exp}} \partial_k \Psi_{\text{causal}} + \beta_{\text{curl}} \mathcal{F}_{kj}\dot{z}^j.
 
 $$
 Contracting with $G^{mk}$ and using $\Gamma^m_{ij} = G^{mk}[ij, k]$:
 
 $$
-\ddot{z}^m + \Gamma^m_{ij} \dot{z}^i \dot{z}^j = -G^{mk} \partial_k V - \beta_{\text{exp}} G^{mk} \partial_k \Psi_{\text{causal}}.
+\ddot{z}^m + \Gamma^m_{ij} \dot{z}^i \dot{z}^j = -G^{mk} (\nabla_A V)_k - \beta_{\text{exp}} G^{mk} \partial_k \Psi_{\text{causal}} + \beta_{\text{curl}} G^{mk} \mathcal{F}_{kj}\dot{z}^j.
 
 $$
-In the overdamped limit ({ref}`Section 22.3 <sec-the-unified-effective-potential>`), the acceleration term vanishes and the drift field is $F_{\text{total}} = -G^{-1}\nabla V + \beta_{\text{exp}} G^{-1}\nabla\Psi_{\text{causal}}$. See {ref}`Appendix E.5 <sec-appendix-e-rigorous-proof-sketches-for-ontological-and-metabolic-laws>` for the full derivation. $\square$
+In the overdamped limit ({ref}`Section 22.3 <sec-the-unified-effective-potential>`), the acceleration term vanishes and the drift field is
+$$
+\dot{z} = \mathcal{M}_{\text{curl}}\!\left(-G^{-1}\nabla_A V + \beta_{\text{exp}} G^{-1}\nabla\Psi_{\text{causal}}\right),
+$$
+with $\mathcal{M}_{\text{curl}} := (I - \beta_{\text{curl}} G^{-1}\mathcal{F})^{-1}$.
+Here $\nabla_A V := \nabla V - A$ with $A$ the reward 1-form (conservative case: $A=0$).
+See {ref}`Appendix E.5 <sec-appendix-e-rigorous-proof-sketches-for-ontological-and-metabolic-laws>` for the full derivation. $\square$
 
 *Physical interpretation:* The curiosity force $\mathbf{f}_{\text{exp}}$ pulls the agent toward regions of high epistemic uncertainty about the transition dynamics. This is the geometric formulation of **intrinsic motivation** {cite}`schmidhuber2010formal,oudeyer2007intrinsic`: the agent is rewarded for reducing its causal ignorance, independent of external task reward. This connects to curiosity-driven exploration in reinforcement learning {cite}`pathak2017curiosity,houthooft2016vime`.
 
@@ -317,7 +323,9 @@ In the overdamped limit ({ref}`Section 22.3 <sec-the-unified-effective-potential
 
 In the absence of task reward ($V = \text{const}$), the agent behaves as a "Pure Scientist," traversing the latent manifold to minimize the total epistemic entropy of the World Model.
 
-*Proof.* Setting $V = \text{const}$ implies $\nabla V = 0$. The equation of motion reduces to $\ddot{z}^m + \Gamma^m_{ij} \dot{z}^i \dot{z}^j = \beta_{\text{exp}} G^{mk} \partial_k \Psi_{\text{causal}}$. The agent follows geodesics modified by the curiosity potential, exploring the manifold to maximize $\Psi_{\text{causal}}$ (i.e., to find maximally informative experiments). $\square$
+*Proof.* Setting $V = \text{const}$ and $A=0$ implies $\nabla_A V = 0$. The equation of motion reduces to
+$\ddot{z}^m + \Gamma^m_{ij} \dot{z}^i \dot{z}^j = \beta_{\text{exp}} G^{mk} \partial_k \Psi_{\text{causal}} + \beta_{\text{curl}} G^{mk} \mathcal{F}_{kj}\dot{z}^j$.
+The agent follows geodesics modified by the curiosity potential (and any value-curl drift), exploring the manifold to maximize $\Psi_{\text{causal}}$ (i.e., to find maximally informative experiments). $\square$
 
 :::
 

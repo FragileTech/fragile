@@ -33,6 +33,7 @@ from fragile.core.layers.primitives import (
 )
 from fragile.core.layers.topology import (
     FactorizedJumpOperator,
+    InvariantChartClassifier,
     SupervisedTopologyLoss,
     class_modulated_jump_rate,
     compute_jump_consistency_loss,
@@ -85,6 +86,7 @@ __all__ = [
     "GeodesicConfig",
     "GeodesicCrossAttention",
     "HierarchicalDisentangled",
+    "InvariantChartClassifier",
     "IsotropicBlock",
     "LorentzianConfig",
     "LorentzianMemoryAttention",

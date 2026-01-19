@@ -201,7 +201,12 @@ $$
 \mathcal{B}_y := \{z \in \mathcal{Z} : \lim_{t \to \infty} \phi_t(z) \in \mathcal{A}_y\},
 
 $$
-where $\phi_t$ denotes the flow of the gradient dynamical system $\dot{z} = -G^{-1}(z)\nabla V_y(z)$.
+where $\phi_t$ denotes the flow of the curl-corrected system
+$$
+\dot{z} = \mathcal{M}_{\text{curl}}\!\left(-G^{-1}(z)\nabla_A V_y(z)\right), \qquad \mathcal{M}_{\text{curl}} := (I - \beta_{\text{curl}} G^{-1}\mathcal{F})^{-1}
+$$
+(conservative case: $\mathcal{F}=0$).
+Here $\nabla_A V_y := \nabla V_y - A$ with $A$ the reward 1-form (conservative case: $A=0$).
 
 *Interpretation:* $\mathcal{B}_y$ is the set of initial conditions from which the deterministic gradient flow on $V_y$ converges to the class-$y$ region.
 
@@ -223,10 +228,11 @@ This is why I keep saying "classification is relaxation." You encode an input in
 Under the overdamped dynamics ({ref}`Section 22.5 <sec-the-overdamped-limit>`) with potential $V_y$:
 
 $$
-dz = -G^{-1}(z) \nabla V_y(z, K)\, ds + \sqrt{2T_c}\, G^{-1/2}(z)\, dW_s, \quad T_c \text{ cognitive temperature } ({prf:ref}`def-cognitive-temperature`)
+dz = \mathcal{M}_{\text{curl}}\!\left(-G^{-1}(z) \nabla_A V_y(z, K)\right) ds + \sqrt{2T_c}\, G^{-1/2}(z)\, dW_s, \quad T_c \text{ cognitive temperature } ({prf:ref}`def-cognitive-temperature`)
 
 $$
-the limiting chart assignment satisfies:
+When $\mathcal{F}=0$ (conservative case), $\mathcal{M}_{\text{curl}} = I$ and we recover pure gradient flow.
+The limiting chart assignment satisfies:
 
 $$
 \lim_{s \to \infty} K(z(s)) \in \mathcal{A}_y \quad \text{almost surely},
@@ -240,9 +246,10 @@ provided:
 *Proof sketch.* Define the Lyapunov function $L(z) := V_y(z, K(z))$ (see {cite}`khalil2002nonlinear` for Lyapunov theory, {cite}`lasalle1960invariance` for the invariance principle). Under the overdamped dynamics:
 
 $$
-\frac{dL}{ds} = \nabla V_y \cdot \dot{z} = -\|\nabla V_y\|_G^2 + \text{noise terms}.
+\frac{dL}{ds} = \nabla_A V_y \cdot \dot{z} = -\nabla_A V_y \cdot \mathcal{M}_{\text{curl}} G^{-1}\nabla_A V_y + \text{noise terms}.
 
 $$
+The antisymmetric curl contribution in $\mathcal{M}_{\text{curl}}$ does no work, so it does not increase $L$.
 For small $T_c$, the deterministic term dominates, ensuring $L$ decreases until $z$ reaches a local minimum. The class-$y$ region is the global minimum of $V_y$ by construction. Full proof in {ref}`Appendix A.5 <sec-appendix-a-full-derivations>`. $\square$
 
 :::
@@ -282,7 +289,7 @@ Let me contrast the "proper" relaxation path with the fast path:
 
 **The Relaxation Path (Theoretically Clean):**
 ```
-Input x → Encode to z₀ → Let z flow: dz = -∇V → Wait for convergence → Read K(z*) → Predict argmax P(Y|K)
+Input x → Encode to z₀ → Let z flow: dz = M_curl(-∇V) → Wait for convergence → Read K(z*) → Predict argmax P(Y|K)
 ```
 This is what the theorem describes. It's principled, it respects the geometry, and it has nice theoretical properties. But it requires running a dynamical system to convergence, which takes time.
 
@@ -884,7 +891,7 @@ This is a form of "conditioning by re-centering"---changing where you stand in t
 The generative Langevin equation {cite}`welling2011sgld,song2019ncsn` (Definition {prf:ref}`prop-so-d-symmetry-at-origin`) with class conditioning becomes:
 
 $$
-dz = -\nabla_G V_y(z, K)\,d\tau + \sqrt{2T_c}\,G^{-1/2}(z)\,dW_\tau,
+dz = \mathcal{M}_{\text{curl}}\!\left(-\nabla_G V_y(z, K)\right) d\tau + \sqrt{2T_c}\,G^{-1/2}(z)\,dW_\tau,
 
 $$
 where $V_y$ is the class-conditioned potential (Definition {prf:ref}`def-class-conditioned-potential`).
@@ -906,8 +913,8 @@ The result: the Langevin process prefers to spend time in regions where $V_y$ is
 
 The class label $y$ breaks the $SO(2)$ symmetry of the unconditioned flow in the Poincare disk. At the origin:
 
-1. **Unconditioned:** $\nabla V_{\text{base}}(0) = 0$ (symmetric saddle)
-2. **Conditioned:** $\nabla V_y(0) = -\beta_{\text{class}} \nabla_z \log P(Y=y \mid K(z))|_{z=0} \neq 0$
+1. **Unconditioned:** $\nabla_A V_{\text{base}}(0) = 0$ (symmetric saddle)
+2. **Conditioned:** $\nabla_A V_y(0) = -\beta_{\text{class}} \nabla_z \log P(Y=y \mid K(z))|_{z=0} \neq 0$
 
 The non-zero gradient aligns the initial "kick" direction with the class-$y$ basin.
 

@@ -28,7 +28,7 @@
 | $B_t=(x_t,r_t,d_t,\iota_t,a_t)$ | Boundary/Markov-blanket stream (what the agent can actually see and do) |
 | $Z_t=(K_t,z_{n,t},z_{\mathrm{tex},t})$ | Internal state split (macro / nuisance / texture) |
 | $\bar{P}$ | Learned macro dynamics kernel (World Model) |
-| $V$ | Value potential / critic object (task guidance + stability signal) |
+| $V$ | Value potential (scalar field for the exact component of the reward 1-form) / critic object (task guidance + stability signal) |
 | $G(z)$ | State-space metric (sensitivity “mass” / preconditioner), not a parameter-space metric |
 | $\pi(a\mid z)$ | Policy on actions given internal state (control field) |
 | $\mathcal{S}$ | Objective/action functional (task cost + control/regularization cost) |
@@ -132,8 +132,10 @@ This tuple directly instantiates the core objects of the Hypostructure $\mathbb{
 |:-------------------------------|:---------------------------------------------|:------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:------------------------------------------------------------|
 | **Autoencoder (Split VQ-VAE)** | **State Space Construction ($\mathcal{X}$)** | **Information Bottleneck Encoder** {cite}`tishby2015ib`: maps $x \mapsto (K, z_{n}, z_{\mathrm{tex}})$ where $K$ is a *discrete predictive latent*, $z_{n}$ is a *structured nuisance residual*, and $z_{\mathrm{tex}}$ is a *reconstruction-only texture residual*. | Defines the representation used for prediction and control. |
 | **World Model**                | **Dynamics Model ($\nabla, S_t$)**           | **Predictive Model:** simulates/learns latent dynamics to support planning and counterfactual evaluation.                                                                                                                                       | Defines the learned transition structure within $Z$.        |
-| **Critic**                     | **Value/Cost Functional ($\Phi$)**           | **Value Function:** assigns a scalar cost-to-go/value to points in $Z$, representing risk/undesirability.                                                                                                                                       | Defines the gradient signal $\nabla V$.                     |
+| **Critic**                     | **Value/Cost Functional ($\Phi$)**           | **Value Function:** assigns a scalar cost-to-go/value to points in $Z$, representing risk/undesirability.                                                                                                                                       | Defines the gradient signal $\nabla_A V$.                     |
 | **Policy**                     | **Control Regularization ($\mathfrak{D}$)**  | **Controller (Policy):** chooses actions that reduce expected future cost subject to constraints and regularization.                                                                                                                            | Implements the control law minimizing $\mathcal{S}$.        |
+
+Throughout, the policy-driving signal is the **covariant value gradient** $\nabla_A V := \nabla V - A$, where $A$ is the reward 1-form (conservative case: $A=0$).
 
 :::{figure} ../../../svg_images/fragile_architecture.svg
 :name: fig-fragile-architecture
@@ -574,7 +576,7 @@ Here's the insight: **these perspectives align around the same mathematical obje
 | **Reinforcement Learning** | Improve value estimates/policy                                       | TD learning + policy gradients      |
 
 :::{div} feynman-prose
-The key insight is that these perspectives align around the same mathematical objects: a scalar value/cost-to-go function and constraints on how fast it can improve without destabilizing the loop.
+The key insight is that these perspectives align around the same mathematical objects: a scalar value/cost-to-go function (for the exact component of the reward 1-form) and constraints on how fast it can improve without destabilizing the loop.
 :::
 
 :::{admonition} Connection to RL #18: Lyapunov Stability as Implicit Hope
@@ -584,10 +586,10 @@ The key insight is that these perspectives align around the same mathematical ob
 The Critic $V(z)$ serves as a **Control Lyapunov Function** with explicit stability constraint:
 
 $$
-\dot{V}(z) := \nabla V(z)^\top \dot{z} \le -\lambda V(z), \quad [\lambda] = s^{-1}
+\dot{V}(z) := \nabla_A V(z)^\top \dot{z} \le -\lambda V(z), \quad [\lambda] = s^{-1}
 
 $$
-The Sieve (Node 7: StiffnessCheck) enforces $\|\nabla V\| > \epsilon$ and monitors bifurcation (Node 7a).
+The Sieve (Node 7: StiffnessCheck) enforces $\|\nabla_A V\| > \epsilon$ and monitors bifurcation (Node 7a).
 
 **The Degenerate Limit:**
 Remove the explicit stability check. Assume SGD will find a stable fixpoint.
@@ -745,7 +747,7 @@ In the Fragile Agent implementation, the **Riemannian metric lives in state spac
 :::
 
 $$
-\dot{V}_M = \nabla V(z)^\top M^{-1}(z) \Delta z
+\dot{V}_M = \nabla_A V(z)^\top M^{-1}(z) \Delta z
 
 $$
 Current state-space metric options (diagonal approximations):
@@ -821,7 +823,7 @@ Units: the Fisher term has units $[z]^{-2}$; therefore $\lambda$ carries the sam
 
 **Dimensional Verification:**
 
-- $V$ is a scalar potential (0-form) on $\mathcal{Z}$
+- $V$ is a scalar potential (0-form) for the exact component of the reward 1-form on $\mathcal{Z}$
 - $\nabla_z V$ is a 1-form (covector): $dV = (\partial_i V) dz^i$
 - $\text{Hess}_z(V) = \partial_i \partial_j V$ is a $(0,2)$-tensor
 - The Fisher term is the covariance of the score function $\nabla_z \log \pi$, also a $(0,2)$-tensor
@@ -979,6 +981,7 @@ $$
 \mathcal{L}_f V = dV(f) = \partial_i V \cdot f^i = \nabla V \cdot f
 
 $$
+When reward is non-conservative, the gauge-invariant driving signal is $\nabla_A V$; the Lie derivative itself remains the pairing $dV(f)$.
 This is the natural pairing between the 1-form $dV$ and the vector field $f$---NO metric $G$ appears.
 
 :::{div} feynman-prose
@@ -1001,7 +1004,7 @@ All terms in the HJB equation have units of a **cost rate**. In discrete time th
 | **Natural Gradient**  | $\delta z = G^{-1} \nabla_z \mathcal{L}$                         | YES (index raising) |
 | **Geodesic Distance** | $d_G(z_1, z_2)^2 = (z_1-z_2)^T G (z_1-z_2)$                      | YES                 |
 | **Trust Region**      | $\lVert\delta \pi\rVert_G^2 \leq \epsilon$                       | YES                 |
-| **Gradient Norm**     | $\lVert\nabla V\rVert_G^2 = G^{ij} (\partial_i V)(\partial_j V)$ | YES                 |
+| **Gradient Norm**     | $\lVert\nabla_A V\rVert_G^2 = G^{ij} (\partial_i V - A_i)(\partial_j V - A_j)$ | YES                 |
 
 :::{admonition} Anti-Mixing Rule no. 2
 :class: warning
@@ -1016,7 +1019,7 @@ The Lie derivative $\mathcal{L}_f V = dV(f)$ is a **pairing**, not an inner prod
 - $\mathfrak{D}(z,a)$ is an explicit control-effort / regularization term (e.g., KL control, action penalties).
 - At optimality, the relation enforces a local consistency between value change, immediate cost, and control effort.
 
-*Forward reference (Helmholtz Continuum Limit).* {ref}`Section 24.2 <sec-the-bulk-potential-screened-poisson-equation>` shows that in the continuum limit on the manifold $(\mathcal{Z}, G)$, the Bellman/HJB equation becomes the **Screened Poisson (Helmholtz) Equation**: $-\Delta_G V + \kappa^2 V = \rho_r$, where $\kappa = \lambda / c_{\text{info}}$ with $\lambda = -\ln\gamma / \Delta t$ (natural units: $\kappa = -\ln\gamma$). This reveals the Critic as a **Field Solver** computing the Green's function of the screened Laplacian.
+*Forward reference (Helmholtz Continuum Limit).* {ref}`Section 24.2 <sec-the-bulk-potential-screened-poisson-equation>` shows that in the continuum limit on the manifold $(\mathcal{Z}, G)$, the Bellman/HJB equation becomes the **Screened Poisson (Helmholtz) Equation** for the exact component of the reward 1-form: $-\Delta_G V + \kappa^2 V = \rho_r$, where $\kappa = \lambda / c_{\text{info}}$ with $\lambda = -\ln\gamma / \Delta t$ (natural units: $\kappa = -\ln\gamma$). This reveals the Critic as a **Field Solver** computing the Green's function of the screened Laplacian.
 
 (sec-conditional-independence-and-sufficiency)=
 ## Conditional Independence and Sufficiency (Causal Enclosure)
@@ -1245,7 +1248,7 @@ $$
 \Sigma_\pi(z) \propto \beta(z)^{-1} \cdot G^{-1}(z)
 
 $$
-*Proof (sketch).* In maximum-entropy control / exponential-family models, stationary distributions over latent states often take an exponential form $p(z)\propto \exp(-\beta V(z))$. Matching this form with a geometry-aware update implies that policy covariance scales inversely with the sensitivity metric. Deviations can be measured by a **consistency defect** $\mathcal{D}_{\beta} := \|\nabla \log p + \beta \nabla V\|_G^2$.
+*Proof (sketch).* In maximum-entropy control / exponential-family models, stationary distributions over latent states often take an exponential form $p(z)\propto \exp(-\beta V(z))$. Matching this form with a geometry-aware update implies that policy covariance scales inversely with the sensitivity metric. Deviations can be measured by a **consistency defect** $\mathcal{D}_{\beta} := \|\nabla \log p + \beta \nabla_A V\|_G^2$.
 
 :::
 

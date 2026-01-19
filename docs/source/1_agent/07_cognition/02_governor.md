@@ -585,7 +585,7 @@ When the Governor is trained to respond to these invariants, it's not learning "
 
 The input to the Governor, $s_t = \Psi(\theta_t)$, consists of quantities that depend only on the learned representations, not on the raw data $\mathcal{D}$:
 - Entropies: $H(K)$, $H(Y|K)$, $I(K;X)$
-- Spectral norms: $\|\nabla V\|$, $\lambda_{\max}(G)$
+- Spectral norms: $\|\nabla_A V\|$, $\lambda_{\max}(G)$
 - Curvatures: $\|\nabla^2 V\|$, $R_{\text{Ric}}$
 
 These are computed from the model's internal state $\theta_t$ and its outputs on training batches.

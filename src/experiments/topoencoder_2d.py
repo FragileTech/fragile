@@ -37,6 +37,7 @@ from tqdm import tqdm
 from fragile.datasets import CIFAR10_CLASSES, get_cifar10_data, get_mnist_data
 from fragile.core.layers import (
     FactorizedJumpOperator,
+    InvariantChartClassifier,
     StandardVQ,
     TopoEncoderPrimitives,
     VanillaAE,
@@ -99,14 +100,14 @@ class TopoEncoderConfig:
     disentangle_weight: float = 0.1  # Gauge coherence (K ⊥ z_n)
 
     # Tier 3 losses (geometry/codebook health)
-    orthogonality_weight: float = 0.01  # Metric isometry (W^T W ≈ I)
+    orthogonality_weight: float = 0.0  # Singular-value spread penalty (SVD; disabled by default)
     code_entropy_weight: float = 0.0  # Global code entropy (disabled by default)
     per_chart_code_entropy_weight: float = 0.1  # Per-chart code diversity (enabled)
 
     # Tier 4 losses (invariance - expensive when enabled, disabled by default)
-    kl_prior_weight: float = 0.01  # Residual KL prior on z_n, z_tex
+    kl_prior_weight: float = 0.01  # Radial energy prior on z_n, z_tex
     orbit_weight: float = 0.0  # Chart invariance under augmentation (2x slowdown)
-    vicreg_inv_weight: float = 0.0  # Latent invariance (shares augmentation pass)
+    vicreg_inv_weight: float = 0.0  # Gram invariance (O(B^2), disabled by default)
     augment_noise_std: float = 0.1  # Augmentation noise level
     augment_rotation_max: float = 0.3  # Max rotation in radians
 
@@ -125,6 +126,11 @@ class TopoEncoderConfig:
     sup_metric_weight: float = 0.01
     sup_metric_margin: float = 1.0
     sup_temperature: float = 1.0
+
+    # Classifier readout (detached, invariant)
+    enable_classifier_head: bool = True
+    classifier_lr: float = 0.0  # 0 = use main lr
+    classifier_bundle_size: int = 0  # 0 = global norm
 
     # Learning rate scheduling
     use_scheduler: bool = True  # Use cosine annealing LR scheduler
@@ -204,9 +210,11 @@ def save_checkpoint(
     model_std: nn.Module | None = None,
     model_ae: nn.Module | None = None,
     supervised_loss: nn.Module | None = None,
+    classifier_head: nn.Module | None = None,
     optimizer_atlas: optim.Optimizer | None = None,
     optimizer_std: optim.Optimizer | None = None,
     optimizer_ae: optim.Optimizer | None = None,
+    optimizer_classifier: optim.Optimizer | None = None,
     scheduler: optim.lr_scheduler._LRScheduler | None = None,
 ) -> None:
     """Save training checkpoint for later analysis/plotting."""
@@ -219,11 +227,15 @@ def save_checkpoint(
             "std": _state_dict_cpu(model_std),
             "ae": _state_dict_cpu(model_ae),
             "supervised": _state_dict_cpu(supervised_loss),
+            "classifier": _state_dict_cpu(classifier_head),
         },
         "optim": {
             "atlas": optimizer_atlas.state_dict() if optimizer_atlas is not None else None,
             "std": optimizer_std.state_dict() if optimizer_std is not None else None,
             "ae": optimizer_ae.state_dict() if optimizer_ae is not None else None,
+            "classifier": (
+                optimizer_classifier.state_dict() if optimizer_classifier is not None else None
+            ),
             "scheduler": scheduler.state_dict() if scheduler is not None else None,
         },
         "metrics": metrics,
@@ -285,6 +297,9 @@ def _init_loss_components() -> dict[str, list[float]]:
         "sup_balance": [],
         "sup_metric": [],
         "sup_acc": [],
+        # Classifier readout (detached)
+        "cls_loss": [],
+        "cls_acc": [],
     }
 
 
@@ -375,6 +390,7 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
                 "mse_std": resume_metrics.get("mse_std", 0.0),
                 "mse_atlas": resume_metrics.get("mse_atlas", 0.0),
                 "sup_acc": resume_metrics.get("sup_acc", 0.0),
+                "cls_acc": resume_metrics.get("cls_acc", 0.0),
                 "atlas_perplexity": resume_metrics.get("atlas_perplexity", 0.0),
                 "std_perplexity": resume_metrics.get("std_perplexity", 0.0),
                 "checkpoint_path": config.resume_checkpoint,
@@ -552,6 +568,26 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
             f"λ_metric={config.sup_metric_weight}"
         )
 
+    # Invariant classifier head (detached readout)
+    classifier_head = None
+    classifier_bundle_size = config.classifier_bundle_size or None
+    classifier_lr = config.classifier_lr if config.classifier_lr > 0 else config.lr
+    if config.enable_classifier_head:
+        classifier_head = InvariantChartClassifier(
+            num_charts=config.num_charts,
+            num_classes=num_classes,
+            latent_dim=config.latent_dim,
+            bundle_size=classifier_bundle_size,
+        ).to(device)
+        if resume_state is not None and resume_state.get("classifier") is not None:
+            classifier_head.load_state_dict(resume_state["classifier"])
+        print(
+            "  Classifier Readout: "
+            f"classes={num_classes}, "
+            f"bundle_size={classifier_bundle_size or 'global'}, "
+            f"lr={classifier_lr}"
+        )
+
     # Optimizers (joint training of atlas model and jump operator)
     if model_std is not None:
         opt_std = optim.Adam(model_std.parameters(), lr=config.lr)
@@ -559,6 +595,9 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
     if supervised_loss is not None:
         atlas_params.extend(list(supervised_loss.parameters()))
     opt_atlas = optim.Adam(atlas_params, lr=config.lr)
+    opt_classifier = None
+    if classifier_head is not None:
+        opt_classifier = optim.Adam(classifier_head.parameters(), lr=classifier_lr)
     if model_ae is not None:
         opt_ae = optim.Adam(model_ae.parameters(), lr=config.lr)
 
@@ -579,6 +618,9 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
         if opt_ae is not None and resume_optim.get("ae") is not None:
             opt_ae.load_state_dict(resume_optim["ae"])
             _move_optimizer_state(opt_ae, device)
+        if opt_classifier is not None and resume_optim.get("classifier") is not None:
+            opt_classifier.load_state_dict(resume_optim["classifier"])
+            _move_optimizer_state(opt_classifier, device)
         if scheduler is not None and resume_optim.get("scheduler") is not None:
             scheduler.load_state_dict(resume_optim["scheduler"])
 
@@ -672,11 +714,19 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
             dis_loss = compute_disentangle_loss(z_geo, enc_w)
 
             # Tier 3 losses (geometry/codebook health)
-            orth_loss = compute_orthogonality_loss(model_atlas)
-            code_ent_loss = compute_code_entropy_loss(indices_stack, config.codes_per_chart)
-            per_chart_code_ent_loss = compute_per_chart_code_entropy_loss(
-                indices_stack, K_chart, config.num_charts, config.codes_per_chart
-            )
+            orth_loss = torch.tensor(0.0, device=device)
+            if config.orthogonality_weight > 0:
+                orth_loss = compute_orthogonality_loss(model_atlas)
+
+            code_ent_loss = torch.tensor(0.0, device=device)
+            if config.code_entropy_weight > 0:
+                code_ent_loss = compute_code_entropy_loss(indices_stack, config.codes_per_chart)
+
+            per_chart_code_ent_loss = torch.tensor(0.0, device=device)
+            if config.per_chart_code_entropy_weight > 0:
+                per_chart_code_ent_loss = compute_per_chart_code_entropy_loss(
+                    indices_stack, K_chart, config.num_charts, config.codes_per_chart
+                )
 
             # Tier 4 losses (invariance - expensive, conditional computation)
             # KL prior (cheap, compute if enabled)
@@ -767,6 +817,19 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
                 torch.nn.utils.clip_grad_norm_(all_params, config.grad_clip)
             opt_atlas.step()
 
+            # --- Classifier Readout Step (detached) ---
+            cls_loss = torch.tensor(0.0, device=device)
+            cls_acc = torch.tensor(0.0, device=device)
+            if classifier_head is not None and opt_classifier is not None:
+                logits = classifier_head(enc_w.detach(), z_geo.detach())
+                cls_loss = F.cross_entropy(logits, batch_labels)
+                opt_classifier.zero_grad()
+                cls_loss.backward()
+                opt_classifier.step()
+                cls_acc = (
+                    logits.detach().argmax(dim=1) == batch_labels
+                ).float().mean()
+
             # Accumulate batch losses
             epoch_std_loss += loss_s.item()
             epoch_atlas_loss += loss_a.item()
@@ -793,6 +856,8 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
             epoch_losses["sup_balance"] += sup_balance.item()
             epoch_losses["sup_metric"] += sup_metric.item()
             epoch_losses["sup_acc"] += sup_acc.item()
+            epoch_losses["cls_loss"] += cls_loss.item()
+            epoch_losses["cls_acc"] += cls_acc.item()
             epoch_info["I_XK"] += window_info["I_XK"]
             epoch_info["H_K"] += window_info["H_K"]
 
@@ -847,6 +912,8 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
             avg_sup_balance = loss_components["sup_balance"][-1]
             avg_sup_metric = loss_components["sup_metric"][-1]
             avg_sup_acc = loss_components["sup_acc"][-1]
+            avg_cls_loss = loss_components["cls_loss"][-1]
+            avg_cls_acc = loss_components["cls_acc"][-1]
             avg_ixk = info_metrics["I_XK"][-1]
             avg_hk = info_metrics["H_K"][-1]
 
@@ -888,11 +955,16 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
                 f"  Tier5: jump={avg_jump:.3f} "
                 f"(λ={log_jump_weight:.3f})"
             )
-            if supervised_loss is not None:
+            enc_w_test = None
+            z_geo_test = None
+            if supervised_loss is not None or classifier_head is not None:
                 with torch.no_grad():
                     _, _, _, _, enc_w_test, z_geo_test, _, _, _ = model_atlas.encoder(
                         X_test
                     )
+
+            if supervised_loss is not None and enc_w_test is not None:
+                with torch.no_grad():
                     sup_test = supervised_loss(enc_w_test, labels_test_t, z_geo_test)
                     p_y_x_test = torch.matmul(enc_w_test, supervised_loss.p_y_given_k)
                     test_sup_acc = (
@@ -913,6 +985,19 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
                     f"balance={avg_sup_balance:.3f} "
                     f"metric={avg_sup_metric:.3f} "
                     f"acc={avg_sup_acc:.3f}"
+                )
+
+            if classifier_head is not None and enc_w_test is not None:
+                with torch.no_grad():
+                    cls_logits_test = classifier_head(enc_w_test, z_geo_test)
+                    test_cls_acc = (
+                        cls_logits_test.argmax(dim=1) == labels_test_t
+                    ).float().mean().item()
+
+                print(
+                    f"  Readout: train_loss={avg_cls_loss:.3f} "
+                    f"train_acc={avg_cls_acc:.3f} "
+                    f"test_acc={test_cls_acc:.3f}"
                 )
             print(
                 f"  Info: I(X;K)={avg_ixk:.3f} "
@@ -947,9 +1032,11 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
                     model_std=model_std,
                     model_ae=model_ae,
                     supervised_loss=supervised_loss,
+                    classifier_head=classifier_head,
                     optimizer_atlas=opt_atlas,
                     optimizer_std=opt_std,
                     optimizer_ae=opt_ae,
+                    optimizer_classifier=opt_classifier,
                     scheduler=scheduler,
                 )
                 print(f"Checkpoint saved: {save_path}")
@@ -999,6 +1086,11 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
         if supervised_loss is not None:
             p_y_x = torch.matmul(enc_w, supervised_loss.p_y_given_k)
             sup_acc = (p_y_x.argmax(dim=1) == labels_test_t).float().mean().item()
+        cls_acc = 0.0
+        if classifier_head is not None:
+            _, _, _, _, enc_w_cls, z_geo_cls, _, _, _ = model_atlas.encoder(X_test)
+            cls_logits = classifier_head(enc_w_cls, z_geo_cls)
+            cls_acc = (cls_logits.argmax(dim=1) == labels_test_t).float().mean().item()
 
     # Results table
     print("\n" + "-" * 70)
@@ -1025,6 +1117,8 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
     print(f"\nRouting Consistency (KL): {final_consistency:.4f}")
     if supervised_loss is not None:
         print(f"Supervised Accuracy: {sup_acc:.4f}")
+    if classifier_head is not None:
+        print(f"Readout Accuracy: {cls_acc:.4f}")
 
     final_checkpoint = f"{config.output_dir}/topo_final.pt"
     final_metrics = {
@@ -1045,6 +1139,7 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
         "std_perplexity": std_perplexity,
         "atlas_perplexity": atlas_perplexity,
         "sup_acc": sup_acc,
+        "cls_acc": cls_acc,
         "chart_assignments": chart_assignments,
         "std_hidden_dim": std_hidden_dim,
         "ae_hidden_dim": ae_hidden_dim,
@@ -1060,9 +1155,11 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
         model_std=model_std,
         model_ae=model_ae,
         supervised_loss=supervised_loss,
+        classifier_head=classifier_head,
         optimizer_atlas=opt_atlas,
         optimizer_std=opt_std,
         optimizer_ae=opt_ae,
+        optimizer_classifier=opt_classifier,
         scheduler=scheduler,
     )
     print(f"\nFinal checkpoint saved to: {final_checkpoint}")
@@ -1075,6 +1172,7 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
         "mse_std": mse_std,
         "mse_atlas": mse_atlas,
         "sup_acc": sup_acc,
+        "cls_acc": cls_acc,
         "atlas_perplexity": atlas_perplexity,
         "std_perplexity": std_perplexity,
         "checkpoint_path": final_checkpoint,
@@ -1305,6 +1403,25 @@ def main():
         help="Temperature for chart-to-class mapping",
     )
 
+    # Classifier readout (detached)
+    parser.add_argument(
+        "--disable_classifier_head",
+        action="store_true",
+        help="Disable invariant classifier readout head",
+    )
+    parser.add_argument(
+        "--classifier_lr",
+        type=float,
+        default=0.0,
+        help="Classifier head learning rate (0 = use main lr)",
+    )
+    parser.add_argument(
+        "--classifier_bundle_size",
+        type=int,
+        default=0,
+        help="Bundle size for radial readout (0 = global norm)",
+    )
+
     # Benchmark control
     parser.add_argument(
         "--disable_ae",
@@ -1375,6 +1492,9 @@ def main():
             sup_metric_weight=args.sup_metric_weight,
             sup_metric_margin=args.sup_metric_margin,
             sup_temperature=args.sup_temperature,
+            enable_classifier_head=not args.disable_classifier_head,
+            classifier_lr=args.classifier_lr,
+            classifier_bundle_size=args.classifier_bundle_size,
             # Benchmark control
             disable_ae=args.disable_ae,
             disable_vq=args.disable_vq,

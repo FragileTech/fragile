@@ -308,7 +308,7 @@ $$
 | Lagrangian $L(q,\dot{q})$ | Kinetic action |
 | Hamiltonian $H(q,p)$ | Effective potential $\Phi_{\text{eff}}$ |
 | Velocity $\dot{q}$ | Policy output $u_\pi$ |
-| Momentum $p$ | Value gradient $\nabla V$ |
+| Momentum $p$ | Value gradient $\nabla_A V$ |
 
 **Duality:** Perception (Dirichlet) fixes position; Action (Neumann) fixes momentum flux.
 ::::

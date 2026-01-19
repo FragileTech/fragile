@@ -56,7 +56,7 @@ Do not memorize all of these. Use the table as a reference when something goes w
 | **BarrierTypeII**  | Type II Exclusion       | **Critic/Policy** | **Scaling Mismatch**              | $\beta>\alpha$ (Policy update scale outruns critic signal).                                   | $\max(0, \beta - \alpha)$ (Scaling Penalty)                                                                        | $O(P)$ ⚡       |
 | **BarrierVac**     | Model Stability Limit   | **World Model**   | **Regime Stability**              | Operational mode is metastable; WM predicts collapse.                                         | $\Vert \nabla^2 V(z) \Vert$ (Hessian Regularization)                                                               | $O(BZ^2)$ ✗    |
 | **BarrierCap**     | Capacity                | **Policy**        | **Fundamental Uncontrollability** | Unsafe region is too large for Policy to steer around.                                         | $V(z) \to \infty$ for $z \in \text{Bad}$ (Safe RL)                                                                 | $O(B)$ ⚡       |
-| **BarrierGap**     | Spectral Gap            | **Critic**        | **Convergence Stagnation**        | Error surface is too flat ($\nabla V \approx 0$).                                             | $\max(0, \epsilon - \Vert \nabla V \Vert)$ (Stiffness)                                                             | $O(BZ)$ ✓      |
+| **BarrierGap**     | Spectral Gap            | **Critic**        | **Convergence Stagnation**        | Error surface is too flat ($\nabla_A V \approx 0$).                                             | $\max(0, \epsilon - \Vert \nabla_A V \Vert)$ (Stiffness)                                                             | $O(BZ)$ ✓      |
 | **BarrierAction**  | Action Gap              | **Critic**        | **Cost Prohibitive**              | Correct move requires more cost budget ($V$) than affordable.                                 | $\Vert \nabla_\pi V(s, \pi) \Vert$ (Action Gradient)                                                               | $O(BAZ)$ ⚡     |
 | **BarrierOmin**    | O-Minimal               | **World Model**   | **Model Mismatch**                | World exhibits non-smooth or non-stationary structure outside the WM class.                   | $\Vert \nabla S_t \Vert$ for O-Minimality (Lipschitz)                                                              | $O(ZP_{WM})$ ⚡ |
 | **BarrierMix**     | Mixing                  | **Policy**        | **Exploration Trap**              | Policy converges to a local minimum with insufficient state coverage.                                                            | $-H(\pi)$ (Entropy Bonus)                                                                                          | $O(BA)$ ✓      |
@@ -123,7 +123,7 @@ Why care? Our world model predicts the future, and if predictions are too sensit
 :::
 
 4.  **BarrierGap (Spectral Gap):**
-    *   *Constraint:* $\lVert\nabla V\rVert \ge \epsilon$ (No flat plateaus).
+    *   *Constraint:* $\lVert\nabla_A V\rVert \ge \epsilon$ (No flat plateaus).
     *   *Implementation:* **Gradient Penalty**.
 
         $$

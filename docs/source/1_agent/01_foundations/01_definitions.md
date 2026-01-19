@@ -246,17 +246,19 @@ Now let's go through the standard RL vocabulary and see how each term looks from
    - *Fragile:* boundary reward flux (a 1-form) evaluated along the trajectory. In continuous time it appears as an
      instantaneous **cost rate** $r_t=\langle\mathcal{R},\dot{z}\rangle$; in discrete time it appears as an
      incremental term in the Bellman/HJB consistency relation ({ref}`Section 2.7 <sec-the-hjb-correspondence>`).
-   - *Mechanism:* the critic's $V$ is the internal value/cost-to-go; reward provides the task-aligned signal shaping $V$.
+   - *Mechanism:* the critic's $V$ is the internal value/cost-to-go for the **exact (conservative) component**; the
+     non-conservative component remains as a curl/connection term in the dynamics ({ref}`Section 24.1 <sec-the-reward-1-form>`).
    - *Boundary interpretation ({ref}`Section 24.1 <sec-the-reward-1-form>`):* Reward is a boundary reward flux
-     1-form $J_r$; in the conservative case this reduces to a scalar charge density $\sigma_r$. The Critic solves the
-     **Screened Poisson Equation** (Theorem {prf:ref}`thm-the-hjb-helmholtz-correspondence`) to propagate this boundary
-     condition into the bulk, generating the scalar potential $V(z)$.
+     1-form $J_r$. By Hodge decomposition, $J_r = dV + \delta \Psi + \eta$; only the exact part $dV$ (often written
+     $d\Phi$) yields a scalar charge density $\sigma_r$ and a **Screened Poisson Equation**
+     (Theorem {prf:ref}`thm-the-hjb-helmholtz-correspondence`). The solenoidal/harmonic parts encode path-dependent reward
+     and are carried by the connection/field strength.
 
 :::{div} feynman-prose
    I want you to really think about this one. Reward isn't a magical signal from God telling you what's good. It's just
-   another input---a boundary flux sampled as a scalar $r_t$. The agent has to figure out what to do with it. And the
-   beautiful thing is that this "figuring out" corresponds to solving a boundary value problem: the reward at the edge
-   propagates inward to create a potential landscape that guides decisions.
+   another input---a boundary flux sampled as a scalar $r_t$. The agent has to figure out what to do with it. The
+   conservative component propagates inward as a potential landscape, while the non-conservative component drives
+   circulation and direction-dependent gains.
 :::
 
 5. **Termination $d_t$ (Absorbing Boundary Event).**
@@ -434,7 +436,7 @@ We parameterize this internal process with a continuous variable $s$. The agent 
 This is the integration variable of the internal solver and the Equation of Motion ({ref}`Section 22 <sec-the-equations-of-motion-geodesic-jump-diffusion>`). It represents the agent's "thinking" process:
 
 $$
-\frac{dz}{ds} = -G^{-1}\nabla \Phi_{\text{eff}} + \dots
+\frac{dz}{ds} = \mathcal{M}_{\text{curl}}\!\left(-G^{-1}\nabla \Phi_{\text{eff}} + \dots\right), \qquad \mathcal{M}_{\text{curl}} := (I - \beta_{\text{curl}} G^{-1}\mathcal{F})^{-1}
 
 $$
 - **Relationship to $t$:** to transition from $t$ to $t+1$, the agent integrates its internal dynamics from $s=0$ to $s=S_{\text{budget}}$.

@@ -540,7 +540,7 @@ These losses enforce fundamental limits and trade-offs ({ref}`Section 4 <sec-4-l
 :label: def-f-gradient-penalty
 
 $$
-\mathcal{L}_{GP} = \mathbb{E}_{\hat{s}} \left[\left(\|\nabla V\|_G - K\right)^2\right], \qquad \|\nabla V\|_G^2 := G^{ij}(\hat{s}) \, \partial_i V \, \partial_j V
+\mathcal{L}_{GP} = \mathbb{E}_{\hat{s}} \left[\left(\|\nabla_A V\|_G - K\right)^2\right], \qquad \|\nabla_A V\|_G^2 := G^{ij}(\hat{s}) \, (\partial_i V - A_i) \, (\partial_j V - A_j)
 $$
 
 **Parameters:**
@@ -549,11 +549,11 @@ $$
 - $G^{ij}(\hat{s})$ – inverse metric tensor (contravariant) at sample
 - $K$ – target gradient norm (typically 1)
 
-**Purpose:** Enforces Lipschitz constraint on the critic using the metric-induced norm. The covariant gradient norm $\|\nabla V\|_G$ measures the "true" rate of change along geodesics. Prevents vanishing gradients in flat value regions (BarrierGap) and ensures smooth value landscape for stable learning.
+**Purpose:** Enforces Lipschitz constraint on the critic using the metric-induced norm. The covariant gradient norm $\|\nabla_A V\|_G$ measures the gauge-invariant rate of change along geodesics. Prevents vanishing gradients in flat value regions (BarrierGap) and ensures smooth value landscape for stable learning.
 
 **Units:** Dimensionless.
 
-**Flat limit:** When $G^{ij} = \delta^{ij}$, recovers $(\|\nabla V\|_2 - K)^2$.
+**Flat limit:** When $G^{ij} = \delta^{ij}$ and $A=0$, recovers $(\|\nabla_A V\|_2 - K)^2$.
 
 **Source:** {ref}`Section 4 <sec-barrier-implementation-details>`
 
@@ -878,7 +878,7 @@ All distance-based losses use the metric tensor $G_{ij}$. Flat limits recover st
 | **Nuisance KL** | 3.2 | $D_{\text{KL}}(q(z_n) \| \mathcal{N})$ | Structured residual prior |
 | **Texture KL** | 3.2 | $D_{\text{KL}}(q(z_{\text{tex}}) \| \mathcal{N})$ | Reconstruction residual |
 | **Monotonicity** | 3.2 | $\text{ReLU}(F_{t+1} - F_t)^2$ | Objective descent |
-| **Gradient Penalty** | 4 | $(\|\nabla V\|_G - K)^2$ | Lipschitz constraint |
+| **Gradient Penalty** | 4 | $(\|\nabla_A V\|_G - K)^2$ | Lipschitz constraint |
 | **InfoControl** | 4 | Compression + Control effort | Information-control tradeoff |
 | **EWC** | 4 | $\sum_i F_i (\theta_i - \theta^*_i)^2$ | Stability-plasticity balance |
 | **Bode** | 4 | $\|\mathcal{F}(e_t) W(\omega)\|^2$ | Frequency sensitivity |

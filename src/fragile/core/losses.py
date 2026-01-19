@@ -1,4 +1,5 @@
 import math
+from typing import Protocol
 
 import numpy as np
 import torch
@@ -6,6 +7,11 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 from .layers import FactorizedJumpOperator
+
+
+class _ConformalMetricLike(Protocol):
+    def conformal_factor(self, z: torch.Tensor) -> torch.Tensor:
+        ...
 
 
 class SupervisedTopologyLoss(nn.Module):
@@ -116,15 +122,29 @@ def compute_routing_entropy(router_weights: torch.Tensor, eps: float = 1e-6) -> 
     return entropy.mean().item()
 
 
-def compute_variance_loss(z: torch.Tensor, eps: float = 1e-4) -> torch.Tensor:
-    """Prevent latent collapse by ensuring std >= 1 per dimension.
+def compute_variance_loss(
+    z: torch.Tensor,
+    target_std: float = 1.0,
+    bundle_size: int | None = None,
+    eps: float = 1e-6,
+) -> torch.Tensor:
+    """Prevent latent collapse using invariant energy (trace of covariance).
 
-    From VICReg (variance component only). Skips invariance which requires augmentation.
-    Overhead: ~1-2% (just variance computation).
+    Uses per-bundle or global energy to avoid fixing a basis.
     """
-    var_z = z.var(dim=0).clamp(min=eps)
-    std_z = torch.sqrt(var_z + eps)
-    return F.relu(1 - std_z).mean()
+    batch, dim = z.shape
+    z_centered = z - z.mean(dim=0, keepdim=True)
+
+    if bundle_size is not None and bundle_size > 0 and dim % bundle_size == 0:
+        n_bundles = dim // bundle_size
+        bundled = z_centered.reshape(batch, n_bundles, bundle_size)
+        energy = (bundled**2).sum(dim=-1).mean(dim=0)
+        target = (target_std**2) * bundle_size
+        return F.relu(target - energy).mean()
+
+    mean_energy = (z_centered**2).sum(dim=1).mean()
+    target = (target_std**2) * dim
+    return F.relu(target - mean_energy + eps)
 
 
 def compute_diversity_loss(
@@ -149,6 +169,7 @@ def compute_separation_loss(
     router_weights: torch.Tensor,
     num_charts: int,
     margin: float = 2.0,
+    metric: _ConformalMetricLike | None = None,
     eps: float = 1e-6,
 ) -> torch.Tensor:
     """Force chart centers apart in latent space.
@@ -175,6 +196,10 @@ def compute_separation_loss(
     for i in range(num_charts):
         for j in range(i + 1, num_charts):
             dist = torch.norm(centers_tensor[i] - centers_tensor[j])
+            if metric is not None:
+                lambda_i = metric.conformal_factor(centers_tensor[i].unsqueeze(0)).squeeze()
+                lambda_j = metric.conformal_factor(centers_tensor[j].unsqueeze(0)).squeeze()
+                dist = dist * 0.5 * (lambda_i + lambda_j)
             loss_sep = loss_sep + F.relu(margin - dist)
             n_pairs += 1
 
@@ -217,35 +242,33 @@ def compute_window_loss(
 def compute_disentangle_loss(
     z_geo: torch.Tensor,
     router_weights: torch.Tensor,
+    bundle_size: int | None = None,
     eps: float = 1e-6,
 ) -> torch.Tensor:
-    """Gauge coherence: macro-nuisance independence.
+    """Gauge coherence using invariant radial statistics.
 
-    L_{K⊥n} = ||Cov(q(K|x), z_geo)||²_F
-
-    Chart ID (macro) shouldn't predict position within chart (micro).
-    Encourages clean separation of routing and geometry.
-
-    Overhead: ~3% (cross-covariance computation).
+    L = ||Cov(q(K|x), ||z||)||^2_F (global or per-bundle norms).
     """
     device = z_geo.device
-    B = z_geo.shape[0]
+    batch, dim = z_geo.shape
 
-    if B < 2:
+    if batch < 2:
         return torch.tensor(0.0, device=device)
 
-    # Center both representations
-    z_centered = z_geo - z_geo.mean(dim=0, keepdim=True)
+    if bundle_size is not None and bundle_size > 0 and dim % bundle_size == 0:
+        n_bundles = dim // bundle_size
+        bundled = z_geo.reshape(batch, n_bundles, bundle_size)
+        norms = torch.norm(bundled, dim=-1)
+    else:
+        norms = torch.norm(z_geo, dim=-1, keepdim=True)
+
+    norms_centered = norms - norms.mean(dim=0, keepdim=True)
     w_centered = router_weights - router_weights.mean(dim=0, keepdim=True)
 
-    # Clamp to prevent extreme values
-    z_centered = torch.clamp(z_centered, -100, 100)
+    norms_centered = torch.clamp(norms_centered, -100, 100)
     w_centered = torch.clamp(w_centered, -1, 1)
 
-    # Cross-covariance matrix [K, D]
-    cross_cov = (w_centered.T @ z_centered) / max(B - 1, 1)
-
-    # Frobenius norm squared
+    cross_cov = (w_centered.T @ norms_centered) / max(batch - 1, 1)
     result = (cross_cov**2).sum()
 
     if torch.isnan(result) or torch.isinf(result):
@@ -254,37 +277,29 @@ def compute_disentangle_loss(
     return result
 
 
-def compute_orthogonality_loss(model: nn.Module) -> torch.Tensor:
-    """Enforce W^T W ≈ I for linear layers (metric isometry).
+def compute_orthogonality_loss(
+    model: nn.Module,
+    max_svd_dim: int = 64,
+    eps: float = 1e-6,
+) -> torch.Tensor:
+    """Penalize anisotropy using singular-value spread (basis-invariant).
 
-    Keeps the latent space well-conditioned by ensuring projections
-    preserve distances (Section 7.7.2 - Action Metric).
-
-    Without this, linear layers can stretch/squash space arbitrarily,
-    breaking the geometric assumptions of the atlas.
-
-    Overhead: ~1% (O(d³) matrix multiplication, tiny vs data forward pass).
+    Uses log-variance of singular values. Skip large matrices by default.
     """
     loss = torch.tensor(0.0, device=next(model.parameters()).device)
     n_layers = 0
 
     for name, param in model.named_parameters():
-        # Apply to linear weights (2D tensors)
         if "weight" in name and param.dim() == 2:
-            W = param
-            rows, cols = W.shape
-            if rows > cols:  # Semi-orthogonal: W^T W ≈ I
-                gram = torch.mm(W.t(), W)
-                I = torch.eye(cols, device=W.device)
-            else:  # W W^T ≈ I
-                gram = torch.mm(W, W.t())
-                I = torch.eye(rows, device=W.device)
-
-            # Frobenius norm of deviation from identity
-            loss = loss + torch.norm(gram - I) ** 2
+            rows, cols = param.shape
+            if max(rows, cols) > max_svd_dim:
+                continue
+            svals = torch.linalg.svdvals(param)
+            svals = svals.clamp(min=eps)
+            log_s = torch.log(svals)
+            loss = loss + log_s.var()
             n_layers += 1
 
-    # Average over layers for stable gradient
     return loss / max(n_layers, 1)
 
 
@@ -472,19 +487,26 @@ def get_jump_weight_schedule(
         return final_weight
 
 
-def compute_kl_prior_loss(z_n: torch.Tensor, z_tex: torch.Tensor) -> torch.Tensor:
-    """KL divergence from standard normal prior for residual channels.
+def compute_kl_prior_loss(
+    z_n: torch.Tensor,
+    z_tex: torch.Tensor,
+    target_std: float = 1.0,
+    center: bool = True,
+) -> torch.Tensor:
+    """Radial prior using invariant energy statistics.
 
-    Regularizes z_n and z_tex toward N(0,1). Uses simplified form assuming
-    unit variance: KL(N(mu, 1) || N(0, 1)) = 0.5 * mu^2.
-
-    Reference: fragile-index.md L_nuis-KL and L_tex-KL.
-
-    Overhead: ~0.01% (element-wise operations on small vectors).
+    Matches expected ||z||^2 to target without fixing a basis.
     """
-    kl_n = 0.5 * (z_n**2).mean()
-    kl_tex = 0.5 * (z_tex**2).mean()
-    return kl_n + kl_tex
+
+    def energy_loss(z: torch.Tensor) -> torch.Tensor:
+        if center:
+            z = z - z.mean(dim=0, keepdim=True)
+        dim = z.shape[1]
+        mean_energy = (z**2).sum(dim=1).mean()
+        target = (target_std**2) * dim
+        return (mean_energy - target).pow(2)
+
+    return energy_loss(z_n) + energy_loss(z_tex)
 
 
 def compute_orbit_loss(
@@ -515,19 +537,17 @@ def compute_orbit_loss(
 def compute_vicreg_invariance_loss(
     z_geo: torch.Tensor,
     z_geo_aug: torch.Tensor,
+    center: bool = True,
 ) -> torch.Tensor:
-    """Latent geometry should be stable under augmentation (Section 7.7.3).
+    """Invariant alignment using Gram matrices.
 
-    Simple MSE between original and augmented geometric latents.
-    Encourages the encoder to learn transformation-invariant representations.
-
-    Reference: VICReg invariance component, fragile-index.md L_inv.
-
-    Args:
-        z_geo: Geometric latent for original input [B, D]
-        z_geo_aug: Geometric latent for augmented input [B, D]
-
-    Returns:
-        MSE loss (scalar)
+    Uses Gram(z) = z z^T to avoid fixing a basis. O(B^2) overhead.
     """
-    return F.mse_loss(z_geo, z_geo_aug)
+
+    def gram(z: torch.Tensor) -> torch.Tensor:
+        if center:
+            z = z - z.mean(dim=0, keepdim=True)
+        scale = max(z.shape[1], 1)
+        return (z @ z.t()) / scale
+
+    return F.mse_loss(gram(z_geo), gram(z_geo_aug))

@@ -645,7 +645,7 @@ Appendices (Derivations, Units, WFR Tensor)
 | 4  | [ScaleCheck](#sec-the-stability-checks)           | 3.5     | $\lVert \nabla \theta \rVert / \lVert \Delta S \rVert$                                                           |
 | 5  | [ParamCheck](#sec-the-stability-checks)           | 3.5     | $\lVert \nabla_t S_t \rVert^2$                                                                                   |
 | 6  | [GeomCheck](#sec-the-stability-checks)            | 3.5     | $\mathcal{L}_{\text{contrastive}}$ (InfoNCE)                                                                     |
-| 7  | [StiffnessCheck](#sec-the-stability-checks)       | 3.5     | $\max(0, \epsilon - \lVert \nabla V \rVert)$                                                                     |
+| 7  | [StiffnessCheck](#sec-the-stability-checks)       | 3.5     | $\max(0, \epsilon - \lVert \nabla_A V \rVert)$                                                                     |
 | 8  | [TopoCheck](#sec-the-stability-checks)            | 3.5     | $T_{\text{reach}}(z_{\text{goal}})$                                                                              |
 | 9  | [TameCheck](#sec-the-stability-checks)            | 3.5     | $\lVert \nabla^2 S_t \rVert$                                                                                     |
 | 10 | [ErgoCheck](#sec-the-stability-checks)            | 3.5     | $-H(\pi)$                                                                                                        |
@@ -664,8 +664,8 @@ Appendices (Derivations, Units, WFR Tensor)
 | 23 | [NEPCheck](#sec-the-stability-checks)             | 3.5     | $\mathrm{ReLU}(D_{\mathrm{KL}}(p_{t+1}\Vert p_t)-I(X_t;K_t))^2$                                                  |
 | 24 | [QSLCheck](#sec-the-stability-checks)             | 3.5     | $\mathrm{ReLU}(d_G(z_{t+1},z_t)-v_{\max})^2$                                                                     |
 | 25 | [HoloGenCheck](#node-25)                          | 21.4    | $\mathbf{1}(\lVert z\rVert \geq R_{\text{cutoff}})$                                                              |
-| 26 | [GeodesicCheck](#node-26)                         | 22.6    | $\lVert\ddot{z} + \Gamma(\dot{z},\dot{z}) + G^{-1}\nabla\Phi_{\text{eff}} - u_\pi\rVert_G$                       |
-| 27 | [OverdampedCheck](#node-27)                       | 22.6    | $\gamma / \lVert G^{-1}\nabla\Phi_{\text{eff}}\rVert$                                                            |
+| 26 | [GeodesicCheck](#node-26)                         | 22.6    | $\lVert\ddot{z} + \Gamma(\dot{z},\dot{z}) + G^{-1}\nabla\Phi_{\text{eff}} - u_\pi - \beta_{\text{curl}} G^{-1}\mathcal{F}\dot{z}\rVert_G$ |
+| 27 | [OverdampedCheck](#node-27)                       | 22.6    | $\gamma / \lVert \mathcal{M}_\gamma^{-1}\,v\rVert$             |
 | 28 | [JumpConsistencyCheck](#node-28)                  | 22.6    | $\lVert m_{\text{pre}} - m_{\text{post}}\eta\rVert$                                                              |
 | 29 | [TextureFirewallCheck](#node-29)                  | 22.6    | $\lVert\partial_{z_{\text{tex}}} \dot{z}\rVert$                                                                  |
 | 30 | [SymplecticBoundaryCheck](#node-30)               | 23.8    | $\lVert E_\phi(x) - q_{\text{clamp}}\rVert_G$                                                                    |
@@ -678,6 +678,8 @@ Appendices (Derivations, Units, WFR Tensor)
 | 37 | [BoltzmannConsistencyCheck](#node-37)             | 24.7    | $D_{\mathrm{KL}}(P_{\text{empirical}} \lVert P_{\text{Boltzmann}})$                                              |
 | 38 | [ConformalBackReactionCheck](#node-38)            | 24.7    | $\text{Var}(\Omega)$                                                                                             |
 | 39 | [ValueMassCorrelationCheck](#node-39)             | 24.7    | $\text{corr}(m_t, V(z_t))$                                                                                       |
+
+Here $v := \dot{z}$ and $\mathcal{M}_\gamma^{-1} = \gamma I - \beta_{\text{curl}} G^{-1}\mathcal{F}$.
 | 40 | [CapacitySaturationCheck](#node-40)               | 18.3    | $I_{\text{bulk}}/C_\partial$                                                                                     |
 | 41 | [SupervisedTopologyChecks](#node-41)              | 25.4    | (See {ref}`Section 25.4 <sec-the-supervised-topology-loss>`)                                                                                               |
 | 42 | [GovernorStabilityCheck](#node-42)                | 26.9    | $\Delta V_{\mathfrak{L}} = V_{\mathfrak{L}}(\theta_{t+1}) - V_{\mathfrak{L}}(\theta_t)$                          |

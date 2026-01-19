@@ -108,7 +108,7 @@ where:
 
 The system's observables are:
 1. **Probability density:** $\rho = |\psi|^2$
-2. **Probability current:** $J^\mu = \text{Im}(\psi^* \partial^\mu \psi) = \frac{\rho}{\sigma} \partial^\mu V$
+2. **Probability current:** $J^\mu = \text{Im}(\psi^* D^\mu \psi) = \frac{\rho}{\sigma}(\partial^\mu V - A^\mu)$ (conservative case: $A^\mu=0$)
 
 Both are invariant under the global phase transformation:
 
@@ -117,7 +117,7 @@ $$
 
 $$
 
-This corresponds to the global gauge invariance of the Value function: $V(z) \to V(z) + \sigma\theta$. The addition of a constant baseline does not alter the policy gradient $\nabla V$.
+This corresponds to the global gauge invariance of the Value function: $V(z) \to V(z) + \sigma\theta$. The addition of a constant baseline does not alter the policy gradient $\nabla_A V$.
 
 :::
 
@@ -170,7 +170,7 @@ where:
 
 *Proof.*
 
-**Step 1.** Consider the kinetic term from the Inference Schrödinger Equation (Theorem {prf:ref}`thm-madelung-transform`):
+**Step 1.** Consider the kinetic term from the Inference Schrödinger Equation in the conservative limit ($A=0$):
 
 $$
 \mathcal{L}_{\text{kin}} = \psi^* (i\sigma \partial_t) \psi - \frac{\sigma^2}{2}|\nabla \psi|^2.
@@ -201,6 +201,7 @@ D_\mu \psi \to e^{i\theta(x)} D_\mu \psi.
 $$
 
 **Step 4.** The gauge-invariant kinetic term is $(D_\mu\psi)^\dagger(D^\mu\psi) = |D_\mu\psi|^2$.
+Equivalently, $\mathcal{L}_{\text{kin}} = \psi^*(i\sigma D_t)\psi - \frac{\sigma^2}{2}|D\psi|^2$ in the non-conservative case.
 
 **Identification:** The field $B_\mu$ is the $U(1)$ connection associated with the reward 1-form (the Opportunity Field).
 In the conservative case, $B_\mu = \partial_\mu \Phi$ is pure gauge. On each time slice, the spatial components $\vec{B}$
@@ -337,9 +338,10 @@ Note that prediction is *derived* from your committed action via your forward mo
 The selection of "which component is action" in the $\Psi_L$ doublet is a gauge choice (selecting a basis in the $\mathbb{C}^2_{\text{mode}}$ fiber). To make action commitment gauge-covariant, we introduce a unit vector **order parameter** $\vec{n}(x) \in \mathfrak{su}(2)$ derived from the value field:
 
 $$
-\vec{n}(x) = \frac{\nabla V(x)}{\|\nabla V(x)\|} \cdot \vec{\tau}
+\vec{n}(x) = \frac{\nabla_A V(x)}{\|\nabla_A V(x)\|} \cdot \vec{\tau}
 
 $$
+Here $\nabla_A V := \nabla V - A$ with $A$ given by the spatial components of $B_\mu$ (conservative case: $A=0$).
 
 where $\vec{\tau} = (\tau_1, \tau_2, \tau_3)$ are the Pauli matrices (generators of $\mathfrak{su}(2)$), and $V(x)$ is
 the scalar Value potential for the conservative component (Theorem {prf:ref}`thm-the-hjb-helmholtz-correspondence`).
@@ -358,18 +360,18 @@ $$
 
 $$
 
-*Justification:* The value gradient $\nabla V$ points in the "favorable direction" in state space. By using it to define $\vec{n}(x)$, we make the action commitment intrinsic to the local value landscape, not an arbitrary choice of basis. This projection is gauge-covariant: under local $SU(2)$ transformations $\Psi_L \to U(x)\Psi_L$, the order parameter transforms as $\vec{n} \to U \vec{n} U^\dagger$, ensuring the committed action remains well-defined.
+*Justification:* The covariant value gradient $\nabla_A V$ points in the "favorable direction" in state space. By using it to define $\vec{n}(x)$, we make the action commitment intrinsic to the local value landscape, not an arbitrary choice of basis. This projection is gauge-covariant: under local $SU(2)$ transformations $\Psi_L \to U(x)\Psi_L$, the order parameter transforms as $\vec{n} \to U \vec{n} U^\dagger$, ensuring the committed action remains well-defined.
 
-*Remark:* In regions where $\nabla V \approx 0$ (flat value landscape), the order parameter becomes undefined, corresponding to decision ambiguity. The agent requires sufficient value gradient to commit to a definite action direction.
+*Remark:* In regions where $\nabla_A V \approx 0$ (flat value landscape), the order parameter becomes undefined, corresponding to decision ambiguity. The agent requires sufficient value gradient to commit to a definite action direction.
 
 :::
 
 :::{div} feynman-prose
 This definition solves a subtle problem: if we just say "action is the second component of $\Psi_L$," we've made an arbitrary choice of basis in the mode fiber. Different parts of the agent's computational manifold might use different bases (that's what gauge freedom *means*).
 
-To make action commitment physically meaningful, we need an intrinsic criterion. The value gradient provides exactly that: it points toward "where things get better." By projecting the doublet onto the direction defined by $\nabla V$, we extract the committed action in a way that's independent of arbitrary basis choices.
+To make action commitment physically meaningful, we need an intrinsic criterion. The covariant value gradient provides exactly that: it points toward "where things get better." By projecting the doublet onto the direction defined by $\nabla_A V$, we extract the committed action in a way that's independent of arbitrary basis choices.
 
-When the value landscape is steep (large $\|\nabla V\|$), the order parameter $\vec{n}$ is well-defined, and the agent commits decisively. When the landscape is flat (small $\|\nabla V\|$), $\vec{n}$ becomes ambiguous, reflecting genuine decision uncertainty.
+When the value landscape is steep (large $\|\nabla_A V\|$), the order parameter $\vec{n}$ is well-defined, and the agent commits decisively. When the landscape is flat (small $\|\nabla_A V\|$), $\vec{n}$ becomes ambiguous, reflecting genuine decision uncertainty.
 
 This is the gauge-theoretic formalization of "value induces action" while keeping the conservative scalar potential as a
 scalar field (not promoted to the doublet structure).
@@ -651,7 +653,7 @@ $$
 where:
 - **$SU(N_f)_C$:** Required for **Object Permanence** (binding $N_f$-dimensional features into stable concepts)
 - **$SU(2)_L$:** Required for **Predictive Processing** (asymmetric update of beliefs between prior and likelihood)
-- **$U(1)_Y$:** Required for **Value Maximization** (invariance of the conservative scalar baseline)
+- **$U(1)_Y$:** Required for **Value Maximization** (local reward phase; conservative baseline shift as the special case)
 
 **Special Case (Physics Standard Model):** When $N_f = 3$, we recover $G_{\text{SM}} = SU(3)_C \times SU(2)_L \times U(1)_Y$.
 
@@ -663,7 +665,7 @@ where:
 And there it is. The symmetry group of the Standard Model emerges from the requirements of bounded, distributed, reward-seeking agency.
 
 Let me summarize what we've done:
-- **$U(1)_Y$** comes from the freedom to shift the conservative utility baseline locally
+- **$U(1)_Y$** comes from the freedom to shift the local reward phase (conservative utility baseline as special case)
 - **$SU(2)_L$** comes from the asymmetry between perception and action (chirality)
 - **$SU(N_f)_C$** comes from the freedom to relabel feature channels locally
 
@@ -764,7 +766,7 @@ Here, we're saying that the belief dynamics of a bounded agent, in the limit of 
 :::{div} feynman-prose
 Now we need to connect the matter sector (beliefs) to the gauge sector (forces). The key is the covariant derivative---the modification of the ordinary derivative that accounts for the gauge fields.
 
-Remember the problem: if you try to compare beliefs at two different points in the latent space, you have to account for the fact that the local "gauge" (utility baseline, prediction/observation basis, feature labeling) might be different at each point. The covariant derivative does this bookkeeping automatically.
+Remember the problem: if you try to compare beliefs at two different points in the latent space, you have to account for the fact that the local "gauge" (reward phase/opportunity baseline, prediction/observation basis, feature labeling) might be different at each point. The covariant derivative does this bookkeeping automatically.
 :::
 
 The agent cannot simply compare beliefs at $x$ and $x+\delta x$ because the "meaning" of the internal features and the "baseline" of value may twist locally. The **Covariant Derivative** $D_\mu$ corrects for this transport.
@@ -1344,9 +1346,11 @@ $$
 **Step 2.** Apply the inverse Madelung transform (Theorem {prf:ref}`thm-madelung-transform`). In the non-relativistic limit ($c_{\text{info}} \to \infty$), the Schrödinger reduction recovers:
 
 $$
-\vec{v} \approx -\nabla \Phi_{\text{eff}}
+\vec{v} \approx -\nabla_A \Phi_{\text{eff}}
 
 $$
+Here $\nabla_A \Phi_{\text{eff}} := \nabla \Phi_{\text{eff}} - A$ with $A$ given by the spatial components of $B_\mu$
+(conservative case: $A=0$).
 
 This is the WFR drift velocity from Definition {prf:ref}`def-bulk-drift-continuous-flow`.
 
@@ -1359,7 +1363,7 @@ $\square$
 :::{div} feynman-prose
 This theorem closes the circle. We started the whole framework with the WFR equation describing belief flow toward high-value regions. Now we see that this emerges from the non-relativistic limit of a gauge theory.
 
-The velocity $\vec{v} = -\nabla \Phi_{\text{eff}}$ says: beliefs flow downhill on the effective potential landscape.
+The velocity $\vec{v} = -\nabla_A \Phi_{\text{eff}}$ (with $A$ from $B_\mu$) says: beliefs flow downhill on the effective potential landscape.
 Since $\Phi_{\text{eff}}$ includes both immediate reward flux (conservative component) and discounted future values, this
 flow moves beliefs toward states with high long-term value.
 

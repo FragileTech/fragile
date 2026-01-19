@@ -192,19 +192,19 @@ $$
 $$
 where $\mathcal{L}_{\text{WFR}}^* V = -\langle \nabla V, v \rangle_G + Vr$ (transport-adjoint plus reaction).
 
-For gradient flows where $v = -G^{-1}\nabla V$:
+For gradient flows in the covariant case, $v = -G^{-1}\nabla_A V$ with $\nabla_A V := \nabla V - A$:
 
 $$
-\mathcal{L}_{\text{WFR}}^* V = \|\nabla V\|_G^2 + Vr.
+\mathcal{L}_{\text{WFR}}^* V = G^{-1}(\nabla V, \nabla_A V) + Vr.
 
 $$
 Thus:
 
 $$
-\mathcal{F}'(S) = -\int \rho \left( \|\nabla V\|_G^2 + Vr \right) d\mu_G + \dot{\mathcal{M}}(S).
+\mathcal{F}'(S) = -\int \rho \left( G^{-1}(\nabla V, \nabla_A V) + Vr \right) d\mu_G + \dot{\mathcal{M}}(S).
 
 $$
-The term $\int \rho \|\nabla V\|_G^2 d\mu_G$ is the power dissipated by the value-gradient flow. The stationarity condition $\mathcal{F}'(S^*) = 0$ gives:
+In the conservative case ($A=0$), $G^{-1}(\nabla V, \nabla_A V) = \|\nabla V\|_G^2$, the power dissipated by the value-gradient flow. The stationarity condition $\mathcal{F}'(S^*) = 0$ gives:
 
 $$
 \frac{d}{ds} \langle V \rangle_{\rho_s}\bigg|_{s=S^*} = \dot{\mathcal{M}}(S^*).
@@ -219,7 +219,7 @@ This states that the optimal stopping time $S^*$ is reached when the power dissi
 (sec-appendix-e-proof-of-theorem-prf-ref-d)=
 ## E.5 Proof of Theorem {prf:ref}`thm-augmented-drift-law`
 
-**Statement:** $F_{\text{total}} = -G^{-1}\nabla V + \beta_{\text{exp}} G^{-1}\nabla\Psi_{\text{causal}}$.
+**Statement:** $F_{\text{total}} = -G^{-1}\nabla_A V + \beta_{\text{exp}} G^{-1}\nabla\Psi_{\text{causal}}$.
 
 **Hypothesis:** The agent's path minimizes $\mathcal{S} = \int L(z, \dot{z}) \, dt$ with Lagrangian $L = \frac{1}{2}\|\dot{z}\|_G^2 - (V + \beta_{\text{exp}}\Psi_{\text{causal}})$.
 
@@ -1062,7 +1062,7 @@ $$
 **Statement:** Under finite information propagation speed $c_{\text{info}}$, the Bellman equation generalizes to the hyperbolic Klein-Gordon equation:
 
 $$
-\left(\frac{1}{c_{\text{info}}^2}\partial_t^2 - \Delta_G + \kappa^2\right)V^{(i)} = \rho_r^{(i)} + \sum_{j \neq i} \Phi_{ij}^{\text{ret}}
+\left(\frac{1}{c_{\text{info}}^2}\partial_t^2 - \Delta_G + \kappa^2\right)V^{(i)} = \rho_r^{(i)} + \sum_{j \neq i} \rho^{\text{ret}}_{ij}
 
 $$
 
@@ -1101,7 +1101,7 @@ $$
 Taking expectations:
 
 $$
-\mathbb{E}[V(z', t + \Delta t)] = V + \partial_t V \Delta t + \frac{1}{2}\partial_t^2 V (\Delta t)^2 + \nabla V \cdot b \Delta t + T_c \text{Tr}(G^{-1}\nabla^2 V) \Delta t + O((\Delta t)^{3/2})
+\mathbb{E}[V(z', t + \Delta t)] = V + \partial_t V \Delta t + \frac{1}{2}\partial_t^2 V (\Delta t)^2 + \nabla_A V \cdot b \Delta t + T_c \text{Tr}(G^{-1}\nabla^2 V) \Delta t + O((\Delta t)^{3/2})
 
 $$
 
@@ -1112,7 +1112,7 @@ The trace term is the Laplace-Beltrami operator: $\text{Tr}(G^{-1}\nabla^2 V) = 
 Substituting into the Bellman equation:
 
 $$
-V = r \Delta t + (1 - \kappa_t \Delta t)\left(V + \partial_t V \Delta t + \frac{1}{2}\partial_t^2 V (\Delta t)^2 + \nabla V \cdot b \Delta t + T_c \Delta_G V \Delta t\right)
+V = r \Delta t + (1 - \kappa_t \Delta t)\left(V + \partial_t V \Delta t + \frac{1}{2}\partial_t^2 V (\Delta t)^2 + \nabla_A V \cdot b \Delta t + T_c \Delta_G V \Delta t\right)
 
 $$
 
@@ -1121,7 +1121,7 @@ $$
 Dividing by $\Delta t$ and taking $\Delta t \to 0$ while keeping only $O(\Delta t)$ terms:
 
 $$
-0 = r - \kappa_t V + \partial_t V + \nabla V \cdot b + T_c \Delta_G V
+0 = r - \kappa_t V + \partial_t V + \nabla_A V \cdot b + T_c \Delta_G V
 
 $$
 
@@ -1167,7 +1167,7 @@ $$
 In the **stationary wave regime** where $\partial_t V \ll c_{\text{info}} \partial_t^2 V / \kappa$, the first-order time derivative is negligible compared to the second-order term, yielding:
 
 $$
-\frac{1}{c_{\text{info}}^2}\partial_t^2 V - \Delta_G V + \kappa^2 V = \rho_r + \sum_j \Phi_{ij}^{\text{ret}}
+\frac{1}{c_{\text{info}}^2}\partial_t^2 V - \Delta_G V + \kappa^2 V = \rho_r + \sum_j \rho^{\text{ret}}_{ij}
 
 $$
 
@@ -1200,7 +1200,8 @@ All terms have consistent units. $\square$
 
 ## E.13 Derivation of the Madelung Transform (Theorem {prf:ref}`thm-madelung-transform`)
 
-**Statement:** The belief wave-function $\psi = \sqrt{\rho} e^{iV/\sigma}$ satisfies the Inference Schrödinger Equation if and only if $(\rho, V)$ satisfy the WFR-HJB system.
+**Statement:** The belief wave-function $\psi = \sqrt{\rho} e^{iV/\sigma}$ satisfies the Inference Schrödinger Equation with
+$D_i := \nabla_i - \frac{i}{\sigma}A_i$ and $\nabla_A V := \nabla V - A$ if and only if $(\rho, V)$ satisfy the WFR-HJB system.
 
 (proof-madelung-transform)=
 :::{prf:proof}
@@ -1230,52 +1231,24 @@ $$
 
 $$
 
-**Step 3: Compute Laplace-Beltrami of $\psi$.**
+**Step 3: Compute the covariant Laplacian of $\psi$.**
 
-The key calculation is $\Delta_G \psi = \Delta_G(R e^{i\phi})$. Using the product rule for the Laplacian:
-
-$$
-\Delta_G(R e^{i\phi}) = (\Delta_G R) e^{i\phi} + 2 G^{-1}(\nabla R, \nabla e^{i\phi}) + R \Delta_G(e^{i\phi})
+Let $D_i := \nabla_i - \frac{i}{\sigma}A_i$ and $\nabla_A V := \nabla V - A$. Then:
 
 $$
-
-**(i) Gradient of $e^{i\phi}$:**
-
-$$
-\nabla e^{i\phi} = i(\nabla \phi) e^{i\phi} = \frac{i}{\sigma}(\nabla V) e^{i\phi}
+D_i \psi = \left(\nabla_i R + \frac{i}{\sigma} R (\nabla_A V)_i\right) e^{i\phi}
 
 $$
-
-**(ii) Inner product term:**
-
+and
 $$
-G^{-1}(\nabla R, \nabla e^{i\phi}) = \frac{i}{\sigma} G^{-1}(\nabla R, \nabla V) e^{i\phi}
-
-$$
-
-**(iii) Laplacian of $e^{i\phi}$:**
-
-$$
-\Delta_G(e^{i\phi}) = \nabla \cdot (i(\nabla \phi) e^{i\phi}) = i(\Delta_G \phi) e^{i\phi} + i^2 \|\nabla \phi\|_G^2 e^{i\phi}
-
-$$
-
-$$
-= \left(\frac{i}{\sigma}\Delta_G V - \frac{1}{\sigma^2}\|\nabla V\|_G^2\right) e^{i\phi}
-
-$$
-
-**(iv) Combining:**
-
-$$
-\Delta_G \psi = \left[\Delta_G R + \frac{2i}{\sigma} G^{-1}(\nabla R, \nabla V) + R\left(\frac{i}{\sigma}\Delta_G V - \frac{1}{\sigma^2}\|\nabla V\|_G^2\right)\right] e^{i\phi}
+D^i D_i \psi = \left[\Delta_G R + \frac{2i}{\sigma} G^{-1}(\nabla R, \nabla_A V) + \frac{i}{\sigma} R \nabla_G \cdot (G^{-1}\nabla_A V) - \frac{1}{\sigma^2} R \|\nabla_A V\|_G^2\right] e^{i\phi}.
 
 $$
 
 Dividing by $\psi = R e^{i\phi}$:
 
 $$
-\frac{\Delta_G \psi}{\psi} = \frac{\Delta_G R}{R} + \frac{2i}{\sigma} \frac{G^{-1}(\nabla R, \nabla V)}{R} + \frac{i}{\sigma}\Delta_G V - \frac{1}{\sigma^2}\|\nabla V\|_G^2
+\frac{D^i D_i \psi}{\psi} = \frac{\Delta_G R}{R} + \frac{2i}{\sigma} \frac{G^{-1}(\nabla R, \nabla_A V)}{R} + \frac{i}{\sigma}\nabla_G \cdot (G^{-1}\nabla_A V) - \frac{1}{\sigma^2}\|\nabla_A V\|_G^2.
 
 $$
 
@@ -1300,7 +1273,7 @@ $$
 The Inference Schrödinger Equation is:
 
 $$
-i\sigma \partial_s \psi = \hat{H}_{\text{inf}} \psi, \quad \hat{H}_{\text{inf}} = -\frac{\sigma^2}{2}\Delta_G + \Phi_{\text{eff}} + Q_B - \frac{i\sigma}{2}r
+i\sigma \partial_s \psi = \hat{H}_{\text{inf}} \psi, \quad \hat{H}_{\text{inf}} = -\frac{\sigma^2}{2} D^i D_i + \Phi_{\text{eff}} + Q_B - \frac{i\sigma}{2}r
 
 $$
 
@@ -1312,74 +1285,74 @@ i\sigma \partial_s \psi = i\sigma\left(\frac{\partial_s \rho}{2\rho} + \frac{i}{
 $$
 
 $$
-\hat{H}_{\text{inf}}\psi = \left[-\frac{\sigma^2}{2}\frac{\Delta_G \psi}{\psi} + \Phi_{\text{eff}} + Q_B - \frac{i\sigma}{2}r\right]\psi
+\hat{H}_{\text{inf}}\psi = \left[-\frac{\sigma^2}{2}\frac{D^i D_i \psi}{\psi} + \Phi_{\text{eff}} + Q_B - \frac{i\sigma}{2}r\right]\psi
 
 $$
 
 **Step 6: Separate Real and Imaginary Parts.**
 
-Expanding $-\frac{\sigma^2}{2}\frac{\Delta_G \psi}{\psi}$:
+Expanding $-\frac{\sigma^2}{2}\frac{D^i D_i \psi}{\psi}$:
 
 $$
--\frac{\sigma^2}{2}\frac{\Delta_G \psi}{\psi} = -\frac{\sigma^2}{2}\frac{\Delta_G R}{R} - i\sigma \frac{G^{-1}(\nabla R, \nabla V)}{R} - \frac{i\sigma}{2}\Delta_G V + \frac{1}{2}\|\nabla V\|_G^2
+-\frac{\sigma^2}{2}\frac{D^i D_i \psi}{\psi} = -\frac{\sigma^2}{2}\frac{\Delta_G R}{R} - i\sigma \frac{G^{-1}(\nabla R, \nabla_A V)}{R} - \frac{i\sigma}{2}\nabla_G \cdot (G^{-1}\nabla_A V) + \frac{1}{2}\|\nabla_A V\|_G^2
 
 $$
 
 $$
-= Q_B - i\sigma \frac{G^{-1}(\nabla \sqrt{\rho}, \nabla V)}{\sqrt{\rho}} - \frac{i\sigma}{2}\Delta_G V + \frac{1}{2}\|\nabla V\|_G^2
+= Q_B - i\sigma \frac{G^{-1}(\nabla \sqrt{\rho}, \nabla_A V)}{\sqrt{\rho}} - \frac{i\sigma}{2}\nabla_G \cdot (G^{-1}\nabla_A V) + \frac{1}{2}\|\nabla_A V\|_G^2
 
 $$
 
 The Schrödinger equation $i\sigma \partial_s \psi = \hat{H}_{\text{inf}}\psi$ becomes:
 
 $$
-\frac{i\sigma \partial_s \rho}{2\rho} - \partial_s V = Q_B + Q_B - i\sigma \frac{G^{-1}(\nabla \sqrt{\rho}, \nabla V)}{\sqrt{\rho}} - \frac{i\sigma}{2}\Delta_G V + \frac{1}{2}\|\nabla V\|_G^2 + \Phi_{\text{eff}} - \frac{i\sigma}{2}r
+\frac{i\sigma \partial_s \rho}{2\rho} - \partial_s V = Q_B + Q_B - i\sigma \frac{G^{-1}(\nabla \sqrt{\rho}, \nabla_A V)}{\sqrt{\rho}} - \frac{i\sigma}{2}\nabla_G \cdot (G^{-1}\nabla_A V) + \frac{1}{2}\|\nabla_A V\|_G^2 + \Phi_{\text{eff}} - \frac{i\sigma}{2}r
 
 $$
 
 Wait—there's a double $Q_B$. Let me redo this more carefully. The $Q_B$ in $\hat{H}_{\text{inf}}$ cancels with the $-\frac{\sigma^2}{2}\frac{\Delta_G R}{R}$ from the kinetic term:
 
 $$
-\hat{H}_{\text{inf}}\psi = \left[- i\sigma \frac{G^{-1}(\nabla \sqrt{\rho}, \nabla V)}{\sqrt{\rho}} - \frac{i\sigma}{2}\Delta_G V + \frac{1}{2}\|\nabla V\|_G^2 + \Phi_{\text{eff}} - \frac{i\sigma}{2}r\right]\psi
+\hat{H}_{\text{inf}}\psi = \left[- i\sigma \frac{G^{-1}(\nabla \sqrt{\rho}, \nabla_A V)}{\sqrt{\rho}} - \frac{i\sigma}{2}\nabla_G \cdot (G^{-1}\nabla_A V) + \frac{1}{2}\|\nabla_A V\|_G^2 + \Phi_{\text{eff}} - \frac{i\sigma}{2}r\right]\psi
 
 $$
 
 **Real part (coefficient of $\psi$):**
 
 $$
--\partial_s V = \frac{1}{2}\|\nabla V\|_G^2 + \Phi_{\text{eff}}
+-\partial_s V = \frac{1}{2}\|\nabla_A V\|_G^2 + \Phi_{\text{eff}}
 
 $$
 
 This is the **Hamilton-Jacobi-Bellman equation**:
 
 $$
-\partial_s V + \frac{1}{2}\|\nabla_G V\|_G^2 + \Phi_{\text{eff}} = 0 \quad \checkmark
+\partial_s V + \frac{1}{2}\|\nabla_A V\|_G^2 + \Phi_{\text{eff}} = 0 \quad \checkmark
 
 $$
 
 **Imaginary part (coefficient of $i\psi$):**
 
 $$
-\frac{\sigma \partial_s \rho}{2\rho} = -\sigma \frac{G^{-1}(\nabla \sqrt{\rho}, \nabla V)}{\sqrt{\rho}} - \frac{\sigma}{2}\Delta_G V - \frac{\sigma}{2}r
+\frac{\sigma \partial_s \rho}{2\rho} = -\sigma \frac{G^{-1}(\nabla \sqrt{\rho}, \nabla_A V)}{\sqrt{\rho}} - \frac{\sigma}{2}\nabla_G \cdot (G^{-1}\nabla_A V) - \frac{\sigma}{2}r
 
 $$
 
-Simplifying: $\frac{G^{-1}(\nabla \sqrt{\rho}, \nabla V)}{\sqrt{\rho}} = \frac{G^{-1}(\nabla \rho, \nabla V)}{2\rho}$. Thus:
+Simplifying: $\frac{G^{-1}(\nabla \sqrt{\rho}, \nabla_A V)}{\sqrt{\rho}} = \frac{G^{-1}(\nabla \rho, \nabla_A V)}{2\rho}$. Thus:
 
 $$
-\frac{\partial_s \rho}{2\rho} = -\frac{G^{-1}(\nabla \rho, \nabla V)}{2\rho} - \frac{1}{2}\Delta_G V - \frac{1}{2}r
+\frac{\partial_s \rho}{2\rho} = -\frac{G^{-1}(\nabla \rho, \nabla_A V)}{2\rho} - \frac{1}{2}\nabla_G \cdot (G^{-1}\nabla_A V) - \frac{1}{2}r
 
 $$
 
 Multiplying by $2\rho$:
 
 $$
-\partial_s \rho = -G^{-1}(\nabla \rho, \nabla V) - \rho \Delta_G V - \rho r
+\partial_s \rho = -G^{-1}(\nabla \rho, \nabla_A V) - \rho \nabla_G \cdot (G^{-1}\nabla_A V) - \rho r
 
 $$
 
-Using the velocity field $\mathbf{v} = -G^{-1}\nabla V$ and the identity $\nabla_G \cdot (\rho \mathbf{v}) = G^{-1}(\nabla \rho, \mathbf{v}) + \rho \nabla_G \cdot \mathbf{v}$:
+Using the velocity field $\mathbf{v} = -G^{-1}\nabla_A V$ (conservative case: $A=0$) and the identity $\nabla_G \cdot (\rho \mathbf{v}) = G^{-1}(\nabla \rho, \mathbf{v}) + \rho \nabla_G \cdot \mathbf{v}$:
 
 $$
 \partial_s \rho = G^{-1}(\nabla \rho, \mathbf{v}) + \rho \nabla_G \cdot \mathbf{v} - \rho r = \nabla_G \cdot (\rho \mathbf{v}) - \rho r
@@ -1548,21 +1521,21 @@ $$
 \langle \mathbf{J}^{(i)} \rangle_T := \frac{1}{T}\int_0^T \mathbf{J}^{(i)}(z^{(i)*}, t) \, dt = 0 \quad \forall i
 
 $$
-where $\mathbf{J}^{(i)} = -\rho^{(i)} G^{-1} \nabla V^{(i)}$ is the probability current.
+where $\mathbf{J}^{(i)} = -\rho^{(i)} G^{-1} \nabla_A V^{(i)}$ is the probability current.
 
 **Claim:** At a standing wave equilibrium, $\langle \mathbf{J}^{(i)} \rangle_T = 0$.
 
 *Proof of Claim:* For the standing wave ansatz:
 
 $$
-\nabla V^{(i)} = \nabla \bar{V}^{(i)} + \sum_n \left[\nabla a_n^{(i)} \cos(\omega_n t) + \nabla b_n^{(i)} \sin(\omega_n t)\right]
+\nabla_A V^{(i)} = \nabla_A \bar{V}^{(i)} + \sum_n \left[\nabla_A a_n^{(i)} \cos(\omega_n t) + \nabla_A b_n^{(i)} \sin(\omega_n t)\right]
 
 $$
 
 Time-averaging over period $T \gg 2\pi/\omega_1$:
 
 $$
-\langle \nabla V^{(i)} \rangle_T = \nabla \bar{V}^{(i)}
+\langle \nabla_A V^{(i)} \rangle_T = \nabla_A \bar{V}^{(i)}
 
 $$
 since $\langle \cos(\omega_n t) \rangle_T = \langle \sin(\omega_n t) \rangle_T = 0$.
@@ -1582,7 +1555,7 @@ This is equivalent to $z^{(i)*}$ being a local maximum of $V^{(i)}(\cdot, z^{(-i
 1. **First-order:** $\nabla_{z^{(i)}} V^{(i)}|_{z^*} = 0$
 2. **Second-order:** $\nabla^2_{z^{(i)}} V^{(i)}|_{z^*} \preceq 0$ (negative semi-definite Hessian)
 
-The standing wave equilibrium satisfies the first-order condition via $\langle \nabla V^{(i)} \rangle_T = 0$.
+The standing wave equilibrium satisfies the first-order condition via $\langle \nabla_A V^{(i)} \rangle_T = 0$.
 
 **Step 6: Ground State Correspondence.**
 

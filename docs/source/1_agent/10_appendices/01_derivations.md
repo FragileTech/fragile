@@ -213,7 +213,7 @@ $$
 $$
 Boundary terms vanish under the clamped boundary condition (or after adding an appropriate boundary term). Because $\delta G^{ij}$ is arbitrary in the interior, the fundamental lemma of the calculus of variations implies the bracketed tensor must vanish pointwise almost everywhere, yielding the stated identity (see e.g. Evans, *Partial Differential Equations*, 2010, for the functional-analytic lemma).
 
-*Interpretation.* The Ricci curvature governs local volume growth; enforcing a boundary-limited bulk information volume forces the metric to stretch/compress coordinates so that information-dense regions (large $\|\nabla V\|$ and/or large $U(V)$) do not generate bulk structure that cannot be grounded at the boundary.
+*Interpretation.* The Ricci curvature governs local volume growth; enforcing a boundary-limited bulk information volume forces the metric to stretch/compress coordinates so that information-dense regions (large $\|\nabla_A V\|$ and/or large $U(V)$) do not generate bulk structure that cannot be grounded at the boundary.
 
 *Remark (regularizer).* The squared residual of this identity defines the capacity-consistency loss $\mathcal{L}_{\text{cap-metric}}$; see {ref}`Appendix B <sec-appendix-b-units-parameters-and-coefficients>`.
 
@@ -379,10 +379,11 @@ $$
 |\Gamma^k_{ij}\dot{z}^i\dot{z}^j| \sim |\Gamma|\,|\dot{z}|^2.
 
 $$
-In the overdamped limit, $|\dot{z}| \sim |F|/\gamma = |G^{-1}\nabla\Phi|/\gamma$. Thus:
+In the overdamped limit, $\dot{z} \approx \mathcal{M}_\gamma(-G^{-1}\nabla\Phi)$ with
+$\mathcal{M}_\gamma := (\gamma I - \beta_{\text{curl}} G^{-1}\mathcal{F})^{-1}$. Thus:
 
 $$
-|\Gamma|\,|\dot{z}|^2 \sim \frac{|\Gamma|\,|F|^2}{\gamma^2} \to 0 \quad \text{as } \gamma \to \infty.
+|\Gamma|\,|\dot{z}|^2 \sim |\Gamma|\,\|\mathcal{M}_\gamma G^{-1}\nabla\Phi\|^2 \to 0 \quad \text{as } \gamma \to \infty.
 
 $$
 The geodesic correction is suppressed by $O(\gamma^{-2})$.
@@ -421,9 +422,10 @@ The overdamped limit corresponds to:
 Under the overdamped dynamics with class-conditioned potential $V_y$:
 
 $$
-dz = -G^{-1}(z) \nabla V_y(z, K)\, ds + \sqrt{2T_c}\, G^{-1/2}(z)\, dW_s,
+dz = \mathcal{M}_{\text{curl}}\!\left(-G^{-1}(z) \nabla_A V_y(z, K)\right) ds + \sqrt{2T_c}\, G^{-1/2}(z)\, dW_s,
 
 $$
+where $\mathcal{M}_{\text{curl}} := (I - \beta_{\text{curl}} G^{-1}\mathcal{F})^{-1}$. Here $\nabla_A V_y := \nabla V_y - A$ (conservative case: $A=0$). When $\mathcal{F}=0$ (conservative case), the curl term vanishes.
 the limiting chart assignment satisfies $\lim_{s \to \infty} K(z(s)) \in \mathcal{A}_y$ almost surely, provided the initial condition lies in the basin $\mathcal{B}_y$ and $T_c$ is sufficiently small.
 
 :::
@@ -454,7 +456,7 @@ where $\Sigma = 2T_c\, G^{-1}$ is the diffusion covariance.
 Substituting the SDE:
 
 $$
-dL = \nabla L \cdot \left(-G^{-1} \nabla V_y\, ds + \sqrt{2T_c}\, G^{-1/2}\, dW_s\right) + T_c\, \Delta_G L\, ds,
+dL = \nabla L \cdot \left(-G^{-1} \nabla_A V_y\, ds + \sqrt{2T_c}\, G^{-1/2}\, dW_s\right) + T_c\, \Delta_G L\, ds,
 
 $$
 where $\Delta_G L = \text{tr}(G^{-1} \nabla^2 L)$ is the Laplace-Beltrami operator.
@@ -462,7 +464,7 @@ where $\Delta_G L = \text{tr}(G^{-1} \nabla^2 L)$ is the Laplace-Beltrami operat
 Since $L = V_y$, we have $\nabla L = \nabla V_y$, so:
 
 $$
-dL = -\|\nabla V_y\|_G^2\, ds + \sqrt{2T_c}\, \nabla V_y \cdot G^{-1/2}\, dW_s + T_c\, \Delta_G V_y\, ds.
+dL = -G^{-1}(\nabla V_y, \nabla_A V_y)\, ds + \sqrt{2T_c}\, \nabla V_y \cdot G^{-1/2}\, dW_s + T_c\, \Delta_G V_y\, ds.
 
 $$
 **Step 3: Expected Drift.**
@@ -470,24 +472,24 @@ $$
 Taking expectations:
 
 $$
-\frac{d}{ds}\mathbb{E}[L(z(s))] = -\mathbb{E}[\|\nabla V_y\|_G^2] + T_c\, \mathbb{E}[\Delta_G V_y].
+\frac{d}{ds}\mathbb{E}[L(z(s))] = -\mathbb{E}[G^{-1}(\nabla V_y, \nabla_A V_y)] + T_c\, \mathbb{E}[\Delta_G V_y].
 
 $$
-The first term is always non-positive (negative unless $\nabla V_y = 0$). The second term is $O(T_c)$ and bounded if $V_y$ has bounded Hessian.
+The first term is non-positive in the conservative case ($A=0$), reducing to $-\|\nabla V_y\|_G^2$. The second term is $O(T_c)$ and bounded if $V_y$ has bounded Hessian.
 
 **Step 4: Low-Temperature Limit.**
 
 For $T_c \to 0$, the drift becomes:
 
 $$
-\frac{d}{ds}\mathbb{E}[L] \approx -\mathbb{E}[\|\nabla V_y\|_G^2] \le 0,
+\frac{d}{ds}\mathbb{E}[L] \approx -\mathbb{E}[G^{-1}(\nabla V_y, \nabla_A V_y)],
 
 $$
 with equality only at critical points of $V_y$.
 
 **Step 5: Convergence to Attractor Basin.**
 
-By LaSalle's invariance principle, the trajectory converges to the largest invariant set where $\|\nabla V_y\|_G = 0$. Since $V_y$ is constructed with:
+By LaSalle's invariance principle (conservative case), the trajectory converges to the largest invariant set where $\|\nabla V_y\|_G = 0$. Since $V_y$ is constructed with:
 - A global minimum on $\mathcal{A}_y$ (the class-$y$ sub-atlas)
 - Local maxima or saddles in transition regions $\mathcal{A}_i \cap \mathcal{A}_j$
 
@@ -1175,4 +1177,3 @@ The key difference is the interpretation:
 - In the Fragile Agent: $\ell_L$ is the Levin length (information-theoretic scale); $I$ is representational information
 
 The mathematical structure is identical; the physical content is distinct. This suggests that holographic bounds are a general feature of capacity-constrained field theories, independent of whether the underlying dynamics are gravitational or information-theoretic.
-

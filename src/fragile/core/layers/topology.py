@@ -31,6 +31,87 @@ def class_modulated_jump_rate(
     return lambda_sup
 
 
+class InvariantChartClassifier(nn.Module):
+    """Invariant chart-aware classifier using router weights and radial features."""
+
+    def __init__(
+        self,
+        num_charts: int,
+        num_classes: int,
+        latent_dim: int,
+        bundle_size: int | None = None,
+        use_router_logits: bool = True,
+        use_radial_logits: bool = True,
+        smooth_norm_eps: float = 1e-6,
+    ) -> None:
+        super().__init__()
+        if not use_router_logits and not use_radial_logits:
+            raise ValueError("At least one of use_router_logits or use_radial_logits must be True.")
+        if latent_dim <= 0:
+            raise ValueError("latent_dim must be positive.")
+        if bundle_size is not None and bundle_size <= 0:
+            raise ValueError("bundle_size must be positive.")
+        if bundle_size is not None and latent_dim % bundle_size != 0:
+            raise ValueError("latent_dim must be divisible by bundle_size.")
+        if smooth_norm_eps < 0.0:
+            raise ValueError("smooth_norm_eps must be >= 0.")
+
+        self.num_charts = num_charts
+        self.num_classes = num_classes
+        self.latent_dim = latent_dim
+        self.bundle_size = bundle_size
+        self.smooth_norm_eps = smooth_norm_eps
+        self.use_router_logits = use_router_logits
+        self.use_radial_logits = use_radial_logits
+
+        if use_router_logits:
+            self.chart_logits = nn.Parameter(torch.zeros(num_charts, num_classes))
+        else:
+            self.register_parameter("chart_logits", None)
+
+        self.n_radial = 1
+        if use_radial_logits:
+            if bundle_size is not None:
+                self.n_radial = latent_dim // bundle_size
+            self.radial_weight = nn.Parameter(
+                torch.randn(num_charts, self.n_radial, num_classes) * 0.01
+            )
+            self.radial_bias = nn.Parameter(torch.zeros(num_charts, num_classes))
+        else:
+            self.register_parameter("radial_weight", None)
+            self.register_parameter("radial_bias", None)
+
+    def _radial_features(self, z_geo: torch.Tensor) -> torch.Tensor:
+        batch = z_geo.shape[0]
+        if self.bundle_size is None:
+            energy = (z_geo**2).sum(dim=-1, keepdim=True)
+            return torch.sqrt(energy + self.smooth_norm_eps**2)
+
+        bundled = z_geo.reshape(batch, self.n_radial, self.bundle_size)
+        energy = (bundled**2).sum(dim=-1)
+        return torch.sqrt(energy + self.smooth_norm_eps**2)
+
+    def forward(self, router_weights: torch.Tensor, z_geo: torch.Tensor) -> torch.Tensor:
+        logits = 0.0
+        if self.use_router_logits:
+            logits = router_weights @ self.chart_logits
+        if self.use_radial_logits:
+            radial = self._radial_features(z_geo)
+            radial_logits = torch.einsum(
+                "bk,bm,kmc->bc", router_weights, radial, self.radial_weight
+            )
+            radial_logits = radial_logits + router_weights @ self.radial_bias
+            logits = logits + radial_logits
+        return logits
+
+    def extra_repr(self) -> str:
+        return (
+            f"num_charts={self.num_charts}, num_classes={self.num_classes}, "
+            f"latent_dim={self.latent_dim}, bundle_size={self.bundle_size}, "
+            f"radial_features={self.n_radial}"
+        )
+
+
 class SupervisedTopologyLoss(nn.Module):
     """Supervised topology loss enforcing purity, balance, and metric separation."""
 

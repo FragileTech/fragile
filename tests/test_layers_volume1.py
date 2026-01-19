@@ -14,6 +14,7 @@ from fragile.core.layers import (
     GeodesicConfig,
     GeodesicCrossAttention,
     HierarchicalDisentangled,
+    InvariantChartClassifier,
     LorentzianConfig,
     LorentzianMemoryAttention,
     LorentzianMetric,
@@ -165,6 +166,36 @@ def test_topology_helpers_and_jump_consistency() -> None:
     )
     orth_loss = compute_orthogonality_loss([dummy])
     assert orth_loss.ndim == 0
+
+
+def test_invariant_chart_classifier_rotation_invariance() -> None:
+    torch.manual_seed(5)
+    batch = 8
+    num_charts = 4
+    num_classes = 3
+    latent_dim = 6
+    bundle_size = 3
+
+    classifier = InvariantChartClassifier(
+        num_charts=num_charts,
+        num_classes=num_classes,
+        latent_dim=latent_dim,
+        bundle_size=bundle_size,
+    )
+
+    router_weights = torch.softmax(torch.randn(batch, num_charts), dim=-1)
+    z_geo = torch.randn(batch, latent_dim)
+
+    q1, _ = torch.linalg.qr(torch.randn(bundle_size, bundle_size))
+    q2, _ = torch.linalg.qr(torch.randn(bundle_size, bundle_size))
+    q = torch.block_diag(q1, q2)
+    z_geo_rot = z_geo @ q
+
+    logits = classifier(router_weights, z_geo)
+    logits_rot = classifier(router_weights, z_geo_rot)
+
+    assert logits.shape == (batch, num_classes)
+    assert torch.allclose(logits, logits_rot, atol=1e-5)
 
 
 def test_lorentzian_modules() -> None:

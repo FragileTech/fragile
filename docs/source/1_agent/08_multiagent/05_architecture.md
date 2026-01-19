@@ -119,7 +119,7 @@ Before we build the architecture, let me collect the key mathematical ingredient
 
 The dynamics are governed by the Lorentz-Langevin equation. The agent moves on the latent manifold $(\mathcal{Z}, G)$, pulled by gradients, pushed by noise, and deflected by the Lorentz force from the value curl. The Christoffel symbols keep the motion on the manifold---they are the "geodesic correction" that accounts for curvature.
 
-The gauge structure comes from three symmetries: $U(1)_Y$ for utility baseline, $SU(2)_L$ for observation-action mixing, and $SU(N_f)_C$ for feature binding. Each symmetry has an associated gauge field: the Opportunity field $B_\mu$, the Error field $W_\mu^b$, and the Binding field $G_\mu^a$. To compare quantities at different locations, we need parallel transport via Wilson lines.
+The gauge structure comes from three symmetries: $U(1)_Y$ for value baseline and path-dependent opportunity, $SU(2)_L$ for observation-action mixing, and $SU(N_f)_C$ for feature binding. Each symmetry has an associated gauge field: the Opportunity field $B_\mu$, the Error field $W_\mu^b$, and the Binding field $G_\mu^a$. To compare quantities at different locations, we need parallel transport via Wilson lines.
 
 The metric encodes capacity and risk. In the Poincare ball/disk model, the conformal factor $\lambda(z) = 2/(1-|z|^2)$ diverges at the boundary. High-curvature regions have high effective mass---the agent moves slowly there.
 
@@ -672,7 +672,7 @@ In the attention mechanism, we need to preserve this structure. The observation 
 The chiral projector uses the value gradient to define the "direction" of action. Let $\hat{n}(z)$ be a unit vector in the $SU(2)$ internal space derived from the value gradient, using a learned projection $P: \mathbb{R}^d \to \mathbb{R}^3$ when $d>3$:
 
 $$
-\hat{n}(z) = \frac{P \nabla V}{\|P \nabla V\|}
+\hat{n}(z) = \frac{P \nabla_A V}{\|P \nabla_A V\|}
 $$
 
 where $\vec{\sigma}$ are the Pauli matrices. The projection operator is:
@@ -683,7 +683,7 @@ $$
 
 This projects the doublet onto the component aligned with the value gradient---the direction of improvement.
 
-In flat regions where $P \nabla V \approx 0$, the projector becomes ambiguous. This is correct: when there is no preferred direction, the agent should not commit to a definite action. The architecture naturally encodes decision ambiguity as projector degeneracy.
+In flat regions where $P \nabla_A V \approx 0$, the projector becomes ambiguous. This is correct: when there is no preferred direction, the agent should not commit to a definite action. The architecture naturally encodes decision ambiguity as projector degeneracy.
 :::
 
 We implement the $SU(2)_L$ gauge structure that distinguishes observation and action channels.
@@ -722,7 +722,7 @@ $$
 The **chiral projector** extracts committed actions from the observation-action doublet using a unit $SU(2)$ direction derived from the value gradient:
 
 $$
-\hat{n}(z) = \frac{P \nabla V(z)}{\|P \nabla V(z)\|}
+\hat{n}(z) = \frac{P \nabla_A V(z)}{\|P \nabla_A V(z)\|}
 $$
 
 where $P: \mathbb{R}^d \to \mathbb{R}^3$ is a learned projection and $\vec{\sigma} = (\sigma_1, \sigma_2, \sigma_3)$ are Pauli matrices (generators of $SU(2)$).
@@ -750,7 +750,7 @@ $$
 - $\text{Tr}(\Pi_{\text{chirality}}) = 1$ (rank-1 projector)
 - Under $SU(2)$ transformation $\Psi_L \to U\Psi_L$: if $\hat{n}$ is constructed as an adjoint vector, then $\hat{n} \to U\hat{n}U^\dagger$, preserving gauge covariance
 
-**Degeneracy**: When $\|P \nabla V\| \to 0$ (flat value landscape), $\hat{n}$ is undefined. The agent should not commit in ambiguous regions.
+**Degeneracy**: When $\|P \nabla_A V\| \to 0$ (flat value landscape), $\hat{n}$ is undefined. The agent should not commit in ambiguous regions.
 
 :::
 
@@ -2162,7 +2162,7 @@ We summarize the correspondence between the covariant attention architecture and
 | Position-dependent temperature $\tau(z)$ | Inverse conformal factor $1/\lambda(z)$ | Theorem {prf:ref}`thm-metric-temperature-correspondence` |
 | Geometric Query $W_{Qz}, W_{Q,\Gamma}$ (optional $W_{Qzv}$) | Christoffel symbols $\Gamma^k_{ij}$ | Definition {prf:ref}`def-geodesic-query-projection` |
 | Observation-action doublet | Left-handed $SU(2)_L$ field $\Psi_L$ | Definition {prf:ref}`def-observation-action-doublet-attention` |
-| Chiral projector $\Pi_{\nabla V}$ | Electroweak symmetry breaking | Definition {prf:ref}`def-chiral-projector-value-gradient` |
+| Chiral projector $\Pi_{\nabla_A V}$ | Electroweak symmetry breaking | Definition {prf:ref}`def-chiral-projector-value-gradient` |
 | Area law screening | Confinement string tension | Definition {prf:ref}`def-area-law-screening-attention` |
 | BAOAB steps (4 attention heads + OU) | Boris-BAOAB integrator | Definition {prf:ref}`def-baoab-attention-heads` |
 | Keys | Gradient bank | Proposition {prf:ref}`prop-keys-as-force-bank` |

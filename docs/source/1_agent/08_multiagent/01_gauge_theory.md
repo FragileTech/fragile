@@ -1186,7 +1186,7 @@ Consider $N$ agents with Game Tensor $\mathcal{G}_{ij}$ ({prf:ref}`def-the-game-
 
 2. **Kinetic Cost:** The WFR action ({prf:ref}`def-joint-wfr-action`) includes the transport term $\int \|v\|_{\tilde{G}}^2 d\rho$. An inflated metric implies a higher metabolic cost for any movement $v \neq 0$.
 
-3. **Energy Minimization:** The system evolves to minimize the free energy $\mathcal{F}$. If the potential gain $\nabla V$ is bounded, but the kinetic cost scales with $\mathcal{G}_{ij}$, trajectories with large $\mathcal{G}_{ij}$ (intense conflict) become energetically prohibitive.
+3. **Energy Minimization:** The system evolves to minimize the free energy $\mathcal{F}$. If the potential gain $\nabla_A V$ is bounded, but the kinetic cost scales with $\mathcal{G}_{ij}$, trajectories with large $\mathcal{G}_{ij}$ (intense conflict) become energetically prohibitive.
 
 4. **Stationarity:** The system relaxes to a state where either $v \to 0$ (Nash stasis, {prf:ref}`thm-nash-equilibrium-as-geometric-stasis`) or the metric perturbation vanishes ($\mathcal{G}_{ij} \to 0$). The condition $\mathcal{G}_{ij} \to 0$ implies $\nabla_{z^{(j)}}\nabla_{z^{(i)}} V^{(i)} \to 0$, which defines a region of **strategic decoupling**. $\square$
 :::
@@ -2681,7 +2681,7 @@ $$
 |\psi(z, s)|^2 = \rho(z, s), \quad \int_{\mathcal{Z}} |\psi|^2 d\mu_G = 1.
 
 $$
-*Physical interpretation:* The amplitude $R$ encodes "how much" belief mass is at $z$; the phase $\phi$ encodes "which direction" the belief is flowing (via $\nabla V$).
+*Physical interpretation:* The amplitude $R$ encodes "how much" belief mass is at $z$; the phase $\phi$ encodes "which direction" the belief is flowing (via $\nabla_A V$).
 
 :::
 
@@ -2792,11 +2792,15 @@ We now derive the **Schrödinger equation** for the belief wave-function from th
 :::{prf:theorem} The Madelung Transform (WFR-Schrödinger Equivalence)
 :label: thm-madelung-transform
 
-Let the belief density $\rho$ and value $V$ satisfy the WFR-HJB system:
+Let the belief density $\rho$ and value $V$ satisfy the WFR-HJB system with vector potential:
 1. **WFR Continuity (unbalanced):** $\partial_s \rho + \nabla_G \cdot (\rho \mathbf{v}) = \rho r$
-2. **Hamilton-Jacobi-Bellman:** $\partial_s V + \frac{1}{2}\|\nabla_G V\|_G^2 + \Phi_{\text{eff}} = 0$
+2. **Hamilton-Jacobi-Bellman:** $\partial_s V + \frac{1}{2}\|\nabla_A V\|_G^2 + \Phi_{\text{eff}} = 0$
 
-where $\mathbf{v} = -G^{-1}\nabla V$ is the gradient flow velocity and $r$ is the WFR reaction rate (Definition {prf:ref}`def-the-wfr-action`).
+where $\nabla_A V := \nabla V - A$ and $A$ is the vector potential for the reward 1-form (Value Curl), $dA = \mathcal{F}$.
+The drift is $\mathbf{v} = -G^{-1}\nabla_A V$ (canonical mobility; conservative case: $A=0$, $\mathcal{F}=0$).
+If curl-induced mobility is included, replace $\mathbf{v}$ by $\mathcal{M}_{\text{curl}}\!\left(-G^{-1}\nabla_A V\right)$ with
+$\mathcal{M}_{\text{curl}} := (I - \beta_{\text{curl}} G^{-1}\mathcal{F})^{-1}$.
+$r$ is the WFR reaction rate (Definition {prf:ref}`def-the-wfr-action`).
 
 Then the belief wave-function $\psi = \sqrt{\rho} e^{iV/\sigma}$ satisfies the **Inference Schrödinger Equation**:
 
@@ -2807,14 +2811,17 @@ $$
 where the **Inference Hamiltonian** is:
 
 $$
-\hat{H}_{\text{inf}} := -\frac{\sigma^2}{2} \Delta_G + \Phi_{\text{eff}} + Q_B - \frac{i\sigma}{2} r.
+\hat{H}_{\text{inf}} := -\frac{\sigma^2}{2} D^i D_i + \Phi_{\text{eff}} + Q_B - \frac{i\sigma}{2} r,
 
 $$
 The terms are:
-- **Kinetic:** $-\frac{\sigma^2}{2} \Delta_G$ (belief diffusion via Laplace-Beltrami)
+- **Kinetic:** $-\frac{\sigma^2}{2} D^i D_i$ (covariant Laplacian with vector potential)
 - **Potential:** $\Phi_{\text{eff}}$ (effective potential from rewards and constraints)
 - **Quantum Correction:** $Q_B$ (Bohm potential, Definition {prf:ref}`def-bohm-quantum-potential`)
 - **Dissipation:** $-\frac{i\sigma}{2} r$ (non-Hermitian term from WFR reaction)
+
+Here $D_i := \nabla_i - \frac{i}{\sigma} A_i$ is the $U(1)$ covariant derivative; in the gauge-theory notation,
+the spatial components of $A$ correspond to the Opportunity field $B_i$ (up to coupling).
 
 *Proof.* See {ref}`Appendix E.13 <sec-appendix-e-rigorous-proof-sketches-for-ontological-and-metabolic-laws>` for the rigorous derivation. The key steps are:
 
@@ -2826,7 +2833,7 @@ $$
 i\sigma \partial_s \psi = i\sigma \left( \frac{\partial_s R}{R} + \frac{i}{\sigma}\partial_s V \right) \psi = \left( \frac{i\sigma \partial_s \rho}{2\rho} - \partial_s V \right) \psi.
 
 $$
-**Step 3 (Use governing equations).** Substitute the continuity equation for $\partial_s \rho$ and HJB for $\partial_s V$.
+**Step 3 (Use governing equations).** Substitute the continuity equation for $\partial_s \rho$ and HJB for $\partial_s V$, using $\nabla_A V$ and the covariant Laplacian $D^i D_i$.
 
 **Step 4 (Identify terms).** The real part of the resulting equation gives the HJB with Bohm correction; the imaginary part gives the continuity equation with reaction. Combining yields the Schrödinger form. $\square$
 
@@ -2836,7 +2843,7 @@ $$
 ::::{admonition} Physics Isomorphism: Madelung Transform
 :class: note
 
-**In Physics:** The Madelung transform $\psi = \sqrt{\rho}e^{iS/\hbar}$ converts the Schrödinger equation into hydrodynamic form: continuity + quantum Hamilton-Jacobi with Bohm potential $Q = -\frac{\hbar^2}{2m}\frac{\nabla^2\sqrt{\rho}}{\sqrt{\rho}}$ {cite}`madelung1927quantentheorie,bohm1952suggested`.
+**In Physics:** The Madelung transform $\psi = \sqrt{\rho}e^{iS/\hbar}$ converts the Schrödinger equation into hydrodynamic form: continuity + quantum Hamilton-Jacobi with Bohm potential $Q = -\frac{\hbar^2}{2m}\frac{\nabla^2\sqrt{\rho}}{\sqrt{\rho}}$ {cite}`madelung1927quantentheorie,bohm1952suggested`. With a vector potential, minimal coupling replaces $\nabla$ by $\nabla - iA/\hbar$ (covariant Laplacian).
 
 **In Implementation:** The WFR-to-Schrödinger correspondence (Theorem {prf:ref}`thm-madelung-transform`):
 
@@ -2896,7 +2903,7 @@ $$
 W(z) := \Phi_{\text{eff}}(z) - \frac{i\sigma}{2} r(z),
 
 $$
-so that $\hat{H}_{\text{inf}} = -\frac{\sigma^2}{2}\Delta_G + W + Q_B$.
+so that $\hat{H}_{\text{inf}} = -\frac{\sigma^2}{2} D^i D_i + W + Q_B$.
 
 **Norm evolution:** The normalization $\|\psi\|^2 = \int |\psi|^2 d\mu_G$ evolves as:
 
@@ -2913,23 +2920,23 @@ which matches the WFR mass balance equation.
 :::{prf:proposition} Operator Ordering and Coordinate Invariance
 :label: prop-operator-ordering-invariance
 
-The kinetic term $-\frac{\sigma^2}{2}\Delta_G$ in the Inference Hamiltonian uses the unique **coordinate-invariant** ordering:
+The kinetic term $-\frac{\sigma^2}{2} D^i D_i$ in the Inference Hamiltonian uses the unique **coordinate-invariant** ordering:
 
 $$
--\frac{\sigma^2}{2}\Delta_G \psi = -\frac{\sigma^2}{2} \cdot \frac{1}{\sqrt{|G|}} \partial_i \left( \sqrt{|G|} G^{ij} \partial_j \psi \right).
+-\frac{\sigma^2}{2} D^i D_i \psi = -\frac{\sigma^2}{2} \cdot \frac{1}{\sqrt{|G|}} D_i \left( \sqrt{|G|} G^{ij} D_j \psi \right).
 
 $$
 This is equivalent to:
 
 $$
--\frac{\sigma^2}{2}\Delta_G = -\frac{\sigma^2}{2} \left( G^{ij} \partial_i \partial_j + \Gamma^k \partial_k \right),
+-\frac{\sigma^2}{2} D^i D_i = -\frac{\sigma^2}{2} \left( G^{ij} D_i D_j + \Gamma^k D_k \right),
 
 $$
 where $\Gamma^k := G^{ij}\Gamma^k_{ij}$ is the trace of Christoffel symbols.
 
 **Alternative orderings** (Weyl, symmetric, etc.) would introduce frame-dependent terms that break the geometric interpretation.
 
-*Cross-reference:* This matches the Laplace-Beltrami operator used in the Helmholtz equation (Theorem {prf:ref}`thm-the-hjb-helmholtz-correspondence`), ensuring consistency between the PDE and wave-function formulations.
+*Cross-reference:* This reduces to the Laplace-Beltrami operator used in the Helmholtz equation (Theorem {prf:ref}`thm-the-hjb-helmholtz-correspondence`) when $A=0$, ensuring consistency between the PDE and wave-function formulations.
 
 :::
 
@@ -2938,20 +2945,22 @@ where $\Gamma^k := G^{ij}\Gamma^k_{ij}$ is the trace of Christoffel symbols.
 
 In the limit $\sigma \to 0$ (classical limit), the Schrödinger dynamics recover the **geodesic flow**:
 
-**WKB Ansatz:** $\psi = A(z) e^{iS(z)/\sigma}$ with $A$ slowly varying.
+**WKB Ansatz:** $\psi = a(z) e^{iS(z)/\sigma}$ with $a$ slowly varying.
 
 **Leading Order ($O(\sigma^{-1})$):** The Hamilton-Jacobi equation
 
 $$
-\partial_s S + \frac{1}{2}\|\nabla_G S\|_G^2 + \Phi_{\text{eff}} = 0.
+\partial_s S + \frac{1}{2}\|\nabla_A S\|_G^2 + \Phi_{\text{eff}} = 0,
 
 $$
 **Next Order ($O(\sigma^0)$):** The transport equation
 
 $$
-\partial_s |A|^2 + \nabla_G \cdot (|A|^2 \nabla_G S) = 0.
+\partial_s |a|^2 + \nabla_G \cdot (|a|^2 \nabla_A S) = 0.
 
 $$
+*Definition:* $\nabla_A S := \nabla S - A$. If curl-induced mobility is present, replace the flux by
+$|a|^2 \mathcal{M}_{\text{curl}} G^{-1}\nabla_A S$.
 These are exactly the HJB and continuity equations from WFR dynamics. The quantum correction $Q_B \to 0$ as $\sigma \to 0$.
 
 *Interpretation:* The wave-function collapses to a delta function following the optimal trajectory. Quantum effects (tunneling, interference) vanish in this limit.
@@ -3036,9 +3045,12 @@ $$
 
 $$
 where:
-1. **Kinetic terms:** $\hat{H}^{(i)}_{\text{kin}} = -\frac{\sigma_i^2}{2} \Delta_{G^{(i)}}$ (acting on $\mathcal{Z}^{(i)}$ coordinates)
+1. **Kinetic terms:** $\hat{H}^{(i)}_{\text{kin}} = -\frac{\sigma_i^2}{2} D^{(i)a} D^{(i)}_a$ (acting on $\mathcal{Z}^{(i)}$ coordinates)
 2. **Individual potentials:** $\hat{\Phi}^{(i)}_{\text{eff}}$ (local reward landscape for agent $i$)
 3. **Interaction potentials:** $\hat{V}_{ij} = \Phi_{ij}(z^{(i)}, z^{(j)})$ (strategic coupling)
+
+Here $D^{(i)}_a := \nabla^{(i)}_a - \frac{i}{\sigma_i} A^{(i)}_a$ is the covariant derivative for agent $i$ and
+$A^{(i)}$ is the reward 1-form (Opportunity field). Conservative case: $A^{(i)} = 0$.
 
 *Notation (Per-Agent Action Scale):* Here $\sigma_i := T_{c,i} \cdot \tau_{\text{update},i}$ is the cognitive action scale for agent $i$, generalizing Definition {prf:ref}`def-cognitive-action-scale`. For **homogeneous** agents with identical cognitive properties, $\sigma_i = \sigma$ for all $i$. For **heterogeneous** agents (e.g., different computation rates), $\sigma_i$ may vary.
 
@@ -3062,7 +3074,7 @@ where:
 **Expanded form:**
 
 $$
-i\sigma \frac{\partial \Psi}{\partial s} = \left[ \sum_{i=1}^N \left( -\frac{\sigma_i^2}{2} \Delta_{G^{(i)}} + \Phi^{(i)}_{\text{eff}} \right) + \sum_{i < j} \Phi_{ij} \right] \Psi + i\frac{\sigma}{2} \mathcal{R} \Psi.
+i\sigma \frac{\partial \Psi}{\partial s} = \left[ \sum_{i=1}^N \left( -\frac{\sigma_i^2}{2} D^{(i)a} D^{(i)}_a + \Phi^{(i)}_{\text{eff}} \right) + \sum_{i < j} \Phi_{ij} \right] \Psi + i\frac{\sigma}{2} \mathcal{R} \Psi.
 
 $$
 **Sources of entanglement:** Strategic entanglement arises from:
@@ -3099,6 +3111,8 @@ $$
 This creates **kinetic entanglement**—even without potential coupling, adversarial metric inflation entangles the agents.
 
 *Physical interpretation:* Agent $j$ "curves" agent $i$'s configuration space. Moving through a contested region requires more "effort" (higher effective mass), and this coupling cannot be factorized away.
+
+*Remark (Gauge coupling).* With a non-conservative reward 1-form, replace $\partial_a$ by $D^{(i)}_a$ in $\tilde{\Delta}^{(i)}$.
 
 :::
 
@@ -3182,11 +3196,11 @@ See **{ref}`Appendix E.19 <sec-appendix-e-rigorous-proof-sketches-for-ontologica
 At Nash equilibrium, the **probability current** vanishes:
 
 $$
-\mathbf{J}^{(i)}(\mathbf{z}^*) := \text{Im}\left[\bar{\Psi}_{\text{Nash}} \cdot \sigma \nabla_{G^{(i)}} \Psi_{\text{Nash}}\right]_{\mathbf{z}^*} = 0 \quad \forall i.
+\mathbf{J}^{(i)}(\mathbf{z}^*) := \text{Im}\left[\bar{\Psi}_{\text{Nash}} \cdot \sigma D^{(i)} \Psi_{\text{Nash}}\right]_{\mathbf{z}^*} = 0 \quad \forall i.
 
 $$
-**Derivation:** The probability current is $\mathbf{J} = \rho \mathbf{v}$ where $\mathbf{v} = G^{-1}\nabla V$ is the velocity field. At Nash:
-- $\nabla V^{(i)}|_{\mathbf{z}^*} = 0$ (stationarity condition)
+**Derivation:** The probability current is $\mathbf{J} = \rho \mathbf{v}$ where $\mathbf{v} = G^{-1}\nabla_A V$ is the velocity field. At Nash:
+- $\nabla_A V^{(i)}|_{\mathbf{z}^*} = 0$ (stationarity condition)
 - Therefore $\mathbf{v}^{(i)}|_{\mathbf{z}^*} = 0$
 - Hence $\mathbf{J}^{(i)}|_{\mathbf{z}^*} = 0$
 
@@ -3362,7 +3376,7 @@ The following table consolidates the correspondence between quantum mechanical c
 | **Planck constant $\hbar$** | Cognitive Action Scale $\sigma$ | {prf:ref}`def-cognitive-action-scale` |
 | **Hilbert space $\mathcal{H}$** | $L^2(\mathcal{Z}, d\mu_G)$ | {prf:ref}`def-inference-hilbert-space` |
 | **Hamiltonian $\hat{H}$** | Inference Hamiltonian $\hat{H}_{\text{inf}}$ | {prf:ref}`thm-madelung-transform` |
-| **Kinetic energy $-\frac{\hbar^2}{2m}\nabla^2$** | Diffusion term $-\frac{\sigma^2}{2}\Delta_G$ | {ref}`Section 29.9 <sec-summary-table-from-single-to-multi-agent>` |
+| **Kinetic energy $-\frac{\hbar^2}{2m}\nabla^2$** | Diffusion term $-\frac{\sigma^2}{2} D^i D_i$ | {ref}`Section 29.9 <sec-summary-table-from-single-to-multi-agent>` |
 | **Potential energy $V(x)$** | Effective Potential $\Phi_{\text{eff}}$ | Definition {prf:ref}`def-effective-potential` |
 | **Quantum potential $Q$** | Information Resolution Limit $Q_B$ | {prf:ref}`def-bohm-quantum-potential` |
 | **Schrödinger equation** | Inference-Wave equation | {prf:ref}`thm-madelung-transform` |
@@ -3446,9 +3460,9 @@ $$
 $$
 where:
 - $\sigma_z := \sqrt{\langle z^2 \rangle - \langle z \rangle^2}$ is position uncertainty
-- $\sigma_p := \sqrt{\langle p^2 \rangle - \langle p \rangle^2}$ is momentum uncertainty ($p = G\mathbf{v} = \nabla V$)
+- $\sigma_p := \sqrt{\langle p^2 \rangle - \langle p \rangle^2}$ is momentum uncertainty ($p = G\mathbf{v} = \nabla_A V$)
 
-**Violation $\eta_{\text{unc}} > 1$:** The agent claims to know both "where it is" (position $z$) and "where it is going" (momentum $\nabla V$) with precision exceeding the information-theoretic limit. This indicates:
+**Violation $\eta_{\text{unc}} > 1$:** The agent claims to know both "where it is" (position $z$) and "where it is going" (momentum $\nabla_A V$) with precision exceeding the information-theoretic limit. This indicates:
 - Over-confident world model
 - Ungrounded predictions
 - Numerical precision issues
@@ -3634,7 +3648,7 @@ class RelativisticMultiAgentInterface(nn.Module):
 | **State Rep.** | Density $\rho(z)$ | Causal Bundle $(z^{(i)}_t, \Xi^{(i)}_{<t})$ | + Gauge connection $A_\mu$ | Wave-function $\Psi(\mathbf{z})$ or operator $\hat{\rho}$ |
 | **Dynamics** | WFR Continuity + HJB | Coupled WFR + Retardation | + Yang-Mills equations | Schrödinger equation |
 | **Generator** | Fokker-Planck / WFR | Coupled continuity (Klein-Gordon) | + $D_\mu \mathcal{F}^{\mu\nu} = J^\nu$ | Hamiltonian $\hat{H}_{\text{strat}}$ |
-| **Kinetic Term** | $\nabla \cdot (\rho G^{-1}\nabla V)$ | $\frac{1}{c^2}\partial_t^2 - \Delta_G$ | $\frac{1}{c^2}D_t^2 - D^i D_i$ | $-\frac{\sigma^2}{2}\Delta_{\tilde{G}}$ |
+| **Kinetic Term** | $\nabla \cdot (\rho G^{-1}\nabla_A V)$ | $\frac{1}{c^2}\partial_t^2 - \Delta_G$ | $\frac{1}{c^2}D_t^2 - D^i D_i$ | $-\frac{\sigma^2}{2} D^i D_i$ (with $\tilde{G}$) |
 | **Potential** | $\Phi_{\text{eff}}(z)$ | $\Phi^{\text{ret}}_{ij}(z^{(i)}, t)$ (quasi-static: $\approx \Phi_{ij}(z^{(i)}, z^{(j)}_{t-\tau})$) | + Higgs $\mu^2|\Phi|^2 + \lambda|\Phi|^4$ | Operator $\hat{\Phi}_{\text{eff}} + \sum \hat{V}_{ij}$ |
 | **Metric Effect** | $G$ | $\tilde{G}^{(i)}(t) = G^{(i)} + \sum_j \beta_{ij}\mathcal{G}^{\text{ret}}_{ij}$ | + Gauge-covariant $\tilde{\mathcal{G}}_{ij}$ | Game-Augmented Laplacian |
 | **Coupling Mechanism** | — | Ghost Interface $\mathcal{G}_{ij}(t)$ | + Gauge connection $A_\mu$ | + Strategic Entanglement |
@@ -3642,7 +3656,7 @@ class RelativisticMultiAgentInterface(nn.Module):
 | **Coupling Type** | — | Potential + Metric + Retardation | + Gauge curvature $\mathcal{F}_{\mu\nu}$ | + Entanglement |
 | **Correlation** | — | Classical (delayed, factorizable) | + Screened ($\xi = 1/\kappa < \infty$) | Quantum (non-factorizable) |
 | **Equilibrium** | Value maxima | Standing Wave (time-averaged Nash) | + Symmetry breaking (VEV) | Ground state of $\hat{H}_{\text{strat}}$ |
-| **Equilibrium Char.** | $\nabla V = 0$ | $\langle \mathbf{J}^{(i)} \rangle_T = 0$ | $\langle\Phi\rangle = v/\sqrt{2}$ | $\hat{H}\Psi = E_0\Psi$ |
+| **Equilibrium Char.** | $\nabla_A V = 0$ | $\langle \mathbf{J}^{(i)} \rangle_T = 0$ | $\langle\Phi\rangle = v/\sqrt{2}$ | $\hat{H}\Psi = E_0\Psi$ |
 | **Barrier Crossing** | Thermal noise | Strategic delay + coupling | Confinement (basin locking) | Quantum tunneling |
 | **Nash Finding** | Gradient descent | Coupled gradient + causal buffer | + Gauge-covariant descent | Imaginary time evolution |
 | **Diagnostics** | Nodes 1–45 | + Nodes 46–48, 62 | + Nodes 63–66 | + Nodes 57–60 |

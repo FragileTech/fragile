@@ -851,7 +851,7 @@ where $\rho_* \propto \exp(-\Phi_{\text{eff}}/T_c)\sqrt{|G|}$ is the Boltzmann d
 | Entropy production $\dot{S}$ | Zero at equilibrium |
 | Fluctuation-dissipation | Einstein relation for $T_c$ |
 
-**Consequence:** Detailed balance ensures the BAOAB thermostat samples the correct distribution.
+**Consequence (conservative case):** Detailed balance ensures the BAOAB thermostat samples the correct distribution. When $\mathcal{F} \neq 0$, detailed balance is broken and the steady state is a NESS.
 ::::
 
 (sec-the-overdamped-limit)=
@@ -865,9 +865,13 @@ This is the **overdamped limit**, and it is important for two reasons:
 1. **Simplicity**: First-order dynamics are easier to simulate and analyze than second-order
 2. **Relevance**: Many real systems operate in this regime---diffusion models, Brownian motion in viscous fluids, biological processes
 
-The mathematical statement is: when friction $\gamma$ is large compared to the forces, the momentum quickly relaxes to $p \approx -\gamma^{-1} G^{-1}\nabla\Phi$. You do not need to track the momentum explicitly; you can just compute it from the force.
+The mathematical statement is: when friction $\gamma$ is large compared to the forces, the velocity quickly relaxes to
+$$
+\dot{z} \approx \mathcal{M}_\gamma\!\left(-G^{-1}\nabla\Phi\right), \qquad \mathcal{M}_\gamma := (\gamma I - \beta_{\text{curl}} G^{-1}\mathcal{F})^{-1}.
+$$
+You do not need to track the momentum explicitly; you can just compute it from the force using the curl-corrected mobility.
 
-The resulting dynamics are pure gradient flow with noise: roll downhill, get jostled by thermal fluctuations. No inertia, no coasting, no overshoot. The agent responds instantaneously to changes in the potential.
+The resulting dynamics are curl-corrected gradient flow with noise: roll downhill, get jostled by thermal fluctuations, and (if $\mathcal{F} \neq 0$) pick up sideways drift through $\mathcal{M}_\gamma$. No inertia, no coasting, no overshoot. The agent responds instantaneously to changes in the potential.
 
 When is this a good approximation? When the timescale of momentum relaxation ($\sim 1/\gamma$) is much shorter than the timescale of position changes. In that case, the momentum "slaves" to the position, and you can eliminate it.
 :::
@@ -880,29 +884,34 @@ In many applications (diffusion models, biological control), the system operates
 Consider the second-order SDE from Definition {prf:ref}`def-bulk-drift-continuous-flow` with friction coefficient $\gamma$:
 
 $$
-m\,\ddot{z}^k + \gamma\,\dot{z}^k + G^{kj}\partial_j\Phi + \Gamma^k_{ij}\dot{z}^i\dot{z}^j = \sqrt{2T_c}\,\left(G^{-1/2}\right)^{kj}\,\xi^j,
+m\,\ddot{z}^k + \gamma\,\dot{z}^k - \beta_{\text{curl}} G^{km}\mathcal{F}_{mj}\dot{z}^j + G^{kj}\partial_j\Phi + \Gamma^k_{ij}\dot{z}^i\dot{z}^j = \sqrt{2T_c}\,\left(G^{-1/2}\right)^{kj}\,\xi^j,
 
 $$
 where $m$ is the "inertial mass" and $\xi$ is white noise. In the limit $\gamma \to \infty$ with $m$ fixed (or equivalently, $m \to 0$ with $\gamma$ fixed), the dynamics reduce to the first-order Langevin equation:
 
 $$
-dz^k = -G^{kj}(z)\,\partial_j\Phi_{\text{gen}}(z)\,ds + \sqrt{2T_c}\,\left(G^{-1/2}(z)\right)^{kj}\,dW^j_s.
+dz^k = \left[\mathcal{M}_\gamma(z)\right]^{k}{}_{j}\left(-G^{j\ell}(z)\,\partial_\ell\Phi_{\text{gen}}(z)\right) ds + \sqrt{2T_c}\,\left(G^{-1/2}(z)\right)^{kj}\,dW^j_s.
 
 $$
-*Proof sketch.* In the high-friction limit, velocity equilibrates instantaneously to the force: $\gamma\,\dot{z} \approx -G^{-1}\nabla\Phi$. The geodesic term $\Gamma(\dot{z},\dot{z}) \sim O(|\dot{z}|^2) = O(\gamma^{-2})$ is negligible. What remains is the gradient flow with diffusion. See {ref}`Appendix A.4 <sec-appendix-a-full-derivations>` for the full singular perturbation analysis. $\square$
+*Proof sketch.* In the high-friction limit, velocity equilibrates instantaneously to
+$\dot{z} \approx \mathcal{M}_\gamma(-G^{-1}\nabla\Phi)$. The geodesic term
+$\Gamma(\dot{z},\dot{z}) \sim O(|\dot{z}|^2) = O(\gamma^{-2})$ is negligible. What remains is the curl-corrected
+gradient flow with diffusion. See {ref}`Appendix A.4 <sec-appendix-a-full-derivations>` for the full singular
+perturbation analysis. $\square$
 
 :::
 
 :::{div} feynman-prose
 Notice what disappears in the overdamped limit: the geodesic correction term $\Gamma(\dot{z},\dot{z})$. This makes sense. The geodesic correction is about inertia---it tells you how to maintain your direction on a curved surface when you are coasting. But in the overdamped limit, you are not coasting. You are always being dragged to a halt by friction and then pushed by the force. There is no inertia to correct for.
 
-This is why the overdamped equation is so much simpler: just $dz = -G^{-1}\nabla\Phi\,ds + \text{noise}$. The curvature still matters---it is hiding in the metric $G$---but the explicit Christoffel symbols are gone.
+This is why the overdamped equation is so much simpler: just
+$dz = \mathcal{M}_{\text{curl}}\!\left(-G^{-1}\nabla\Phi\right) ds + \text{noise}$ with $\mathcal{M}_{\text{curl}} := (I - \beta_{\text{curl}} G^{-1}\mathcal{F})^{-1}$. The curvature still matters---it is hiding in the metric $G$---but the explicit Christoffel symbols are gone.
 :::
 
 :::{prf:corollary} Recovery of Holographic Flow
 :label: cor-recovery-of-holographic-flow
 
-Setting $\alpha = 1$ (pure generation) and $T_c \to 0$ (deterministic limit) in the overdamped equation recovers the holographic gradient flow from {ref}`Section 21.2 <sec-policy-control-field>`:
+Setting $\alpha = 1$ (pure generation), $T_c \to 0$ (deterministic limit), and $\mathcal{F} = 0$ (conservative case) in the overdamped equation recovers the holographic gradient flow from {ref}`Section 21.2 <sec-policy-control-field>`:
 
 $$
 \dot{z} = -G^{-1}(z)\,\nabla U(z).
@@ -1249,8 +1258,8 @@ These are the kinds of things you want to monitor in a running system. Not just 
 | Equation                 | Expression                                                                                                                  | Regime       | Units                |
 |--------------------------|-----------------------------------------------------------------------------------------------------------------------------|--------------|----------------------|
 | Extended Onsager-Machlup | $S_{\mathrm{OM}} = \int (\frac{1}{2}\mathbf{M}\lVert\dot{z}\rVert^2 + \Phi_{\text{eff}} + \frac{T_c}{12}R + T_c H_\pi)\,ds$ | Path-space   | nat                  |
-| Full Geodesic SDE        | $dz = (-G^{-1}\nabla\Phi_{\text{eff}} + u_\pi - \Gamma(\dot{z},\dot{z}))\,ds + \sqrt{2T_c}\,G^{-1/2}\,dW_s$                 | Second-order | $[z]$                |
-| Overdamped               | $dz = (-G^{-1}\nabla\Phi_{\text{eff}} + u_\pi)\,ds + \sqrt{2T_c}\,G^{-1/2}\,dW_s$                                           | First-order  | $[z]$                |
+| Full Geodesic SDE        | $dz = (-G^{-1}\nabla\Phi_{\text{eff}} + u_\pi + \beta_{\text{curl}} G^{-1}\mathcal{F}\dot{z} - \Gamma(\dot{z},\dot{z}))\,ds + \sqrt{2T_c}\,G^{-1/2}\,dW_s$                 | Second-order | $[z]$                |
+| Overdamped               | $dz = \mathcal{M}_{\text{curl}}\!\left(-G^{-1}\nabla\Phi_{\text{eff}} + u_\pi\right)\,ds + \sqrt{2T_c}\,G^{-1/2}\,dW_s$                                                      | First-order  | $[z]$                |
 | Jump Intensity           | $\lambda_{K\to j} = \lambda_0 \exp(\beta\,\Delta V)$                                                                        | Discrete     | step$^{-1}$          |
 | Mass = Metric            | $\mathbf{M}(z) \equiv G(z)$                                                                                                 | Kinematic    | $[z]^{-2}$           |
 | Texture Covariance       | $\Sigma_{\text{tex}}(z) = \sigma_{\text{tex}}^2\, G^{-1}(z)$                                                                | Boundary     | $[z_{\text{tex}}]^2$ |
@@ -1276,7 +1285,7 @@ $$
 
 | **#**  | **Name**          | **Component**            | **Type**                   | **Interpretation**                    | **Proxy**                                                                                  | **Cost**  |
 |--------|-------------------|--------------------------|----------------------------|---------------------------------------|--------------------------------------------------------------------------------------------|-----------|
-| **26** | **GeodesicCheck** | **World Model / Policy** | **Trajectory Consistency** | Is trajectory approximately geodesic? | $\lVert\ddot{z} + \Gamma(\dot{z},\dot{z}) + G^{-1}\nabla\Phi_{\text{eff}} - u_\pi\rVert_G$ | $O(BZ^2)$ |
+| **26** | **GeodesicCheck** | **World Model / Policy** | **Trajectory Consistency** | Is trajectory approximately geodesic? | $\lVert\ddot{z} + \Gamma(\dot{z},\dot{z}) + G^{-1}\nabla\Phi_{\text{eff}} - u_\pi - \beta_{\text{curl}} G^{-1}\mathcal{F}\dot{z}\rVert_G$ | $O(BZ^2)$ |
 
 **Trigger conditions:**
 - High GeodesicCheck: Trajectory deviates from controlled geodesic (unexpected forces or integration errors).
@@ -1287,7 +1296,9 @@ $$
 
 | **#**  | **Name**            | **Component** | **Type**            | **Interpretation**              | **Proxy**                                             | **Cost** |
 |--------|---------------------|---------------|---------------------|---------------------------------|-------------------------------------------------------|----------|
-| **27** | **OverdampedCheck** | **Policy**    | **Regime Validity** | Is friction dominating inertia? | $\gamma / \lVert G^{-1}\nabla\Phi_{\text{eff}}\rVert$ | $O(BZ)$  |
+| **27** | **OverdampedCheck** | **Policy**    | **Regime Validity** | Is friction dominating inertia? | $\gamma / \lVert \mathcal{M}_\gamma^{-1}\,v\rVert$ | $O(BZ)$  |
+
+Here $v := \dot{z}$ and $\mathcal{M}_\gamma^{-1} = \gamma I - \beta_{\text{curl}} G^{-1}\mathcal{F}$.
 
 **Trigger conditions:**
 - Low OverdampedCheck: Operating in inertial regime; use full BAOAB integrator.

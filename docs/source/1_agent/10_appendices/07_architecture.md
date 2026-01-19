@@ -780,11 +780,11 @@ class ChiralProjector(nn.Module):
 **Purpose:** Implements the $SU(2)_L$ chiral projector that extracts committed actions from the observation-action doublet using the value gradient direction.
 
 **Mathematical operation:**
-$$\hat{n}(z) = \frac{P \nabla V}{\|P \nabla V\|}, \quad \Pi_{\text{chirality}} = \frac{1}{2}(I_2 + \hat{n} \cdot \vec{\tau})$$
+$$\hat{n}(z) = \frac{P \nabla_A V}{\|P \nabla_A V\|}, \quad \Pi_{\text{chirality}} = \frac{1}{2}(I_2 + \hat{n} \cdot \vec{\tau})$$
 
 where $\vec{\tau} = (\tau_1, \tau_2, \tau_3)$ are Pauli matrices.
 
-**Key insight:** The projection extracts the component of the doublet aligned with the value gradient—the direction of improvement. When $\nabla V \approx 0$ (flat landscape), the projector is degenerate, encoding decision ambiguity.
+**Key insight:** The projection extracts the component of the doublet aligned with the value gradient—the direction of improvement. When $\nabla_A V \approx 0$ (flat landscape), the projector is degenerate, encoding decision ambiguity.
 
 **Gauge covariance:** The commitment strength $c(z) = \Psi_L^\dagger \Pi \Psi_L$ is $SU(2)$-invariant (Theorem {prf:ref}`thm-gauge-covariance-chiral-projection`).
 

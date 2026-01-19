@@ -754,7 +754,7 @@ where the gradient is with respect to the spatial coordinates $z$, holding $t$ f
 :::{div} feynman-prose
 Now we integrate the memory force into the equations of motion. The structure is the same as Section 35: the Boris-BAOAB integrator with five steps. The key difference is that the memory potential $\Psi_{\text{mem}}$ is now the causal version, and the attention mechanism uses the Lorentzian structure.
 
-The B-steps (kicks) apply forces from the total potential gradient, including both the effective potential $\Phi_{\text{eff}}$ and the causal memory potential $\Psi_{\text{mem}}^{\text{causal}}$. The A-steps (drifts) move along geodesics. The O-step (thermostat) maintains temperature.
+The B-steps (kicks) apply forces from the total potential gradient, including both the effective potential $\Phi_{\text{eff}}$ and the causal memory potential $\Psi_{\text{mem}}^{\text{causal}}$. If the reward field has curl, insert the Boris rotation from Definition {prf:ref}`def-baoab-splitting` between the half-kicks to account for the Lorentz term. The A-steps (drifts) move along geodesics. The O-step (thermostat) maintains temperature.
 
 The causal mask ensures that when computing the memory gradient, only contributions from the past light cone are included. This is enforced at the attention level, not as a post-hoc correction.
 :::
@@ -768,6 +768,8 @@ The **Causal BAOAB** integrator for memory-augmented dynamics uses five steps as
 $$
 p \leftarrow p - \frac{h}{2} \nabla_z \left( \Phi_{\text{eff}}(z) + \Psi_{\text{mem}}^{\text{causal}}(z, t) \right)
 $$
+
+**Step 1.5 (Boris rotation, if $\mathcal{F} \neq 0$):** Apply the rotation from Definition {prf:ref}`def-baoab-splitting` using the Value Curl $\mathcal{F}$.
 
 **Step 2 (A-step, first half-drift):**
 $$
@@ -789,6 +791,8 @@ $$
 $$
 p \leftarrow p - \frac{h}{2} \nabla_z \left( \Phi_{\text{eff}}(z) + \Psi_{\text{mem}}^{\text{causal}}(z, t) \right)
 $$
+
+**Step 5.5 (Boris rotation, if $\mathcal{F} \neq 0$):** Apply the same rotation as in Step 1.5.
 
 **Time update:** $t \leftarrow t + h$
 
