@@ -454,7 +454,12 @@ $$
 $$
 **Cross-references:** Definition {prf:ref}`def-hyperbolic-volume-growth`, {ref}`Section 2.7 <sec-the-hjb-correspondence>` (Critic $V$), Section 14.2 (MaxEnt control), Theorem {prf:ref}`thm-capacity-constrained-metric-law`.
 
-*Forward reference (Scalar Field Interpretation).* {ref}`Section 24 <sec-the-reward-field-value-forms-and-hodge-geometry>` provides the complete field-theoretic interpretation of $V_{\text{critic}}$: the Critic solves the **Screened Poisson Equation** (Theorem {prf:ref}`thm-the-hjb-helmholtz-correspondence`) with rewards as boundary charges (Definition {prf:ref}`def-the-reward-flux`), the Value represents **Gibbs Free Energy** (Axiom {prf:ref}`ax-the-boltzmann-value-law`), and the Value Hessian induces a **Conformal Coupling** to the metric (Definition {prf:ref}`def-value-metric-conformal-coupling`).
+*Forward reference (Scalar Field Interpretation).* {ref}`Section 24 <sec-the-reward-field-value-forms-and-hodge-geometry>`
+provides the complete field-theoretic interpretation of $V_{\text{critic}}$: the Critic solves the **Screened Poisson
+Equation** (Theorem {prf:ref}`thm-the-hjb-helmholtz-correspondence`) with rewards as boundary flux (scalar charges in the
+conservative case; Definition {prf:ref}`def-the-reward-flux`), the Value represents **Gibbs Free Energy** (Axiom
+{prf:ref}`ax-the-boltzmann-value-law`), and the Value Hessian induces a **Conformal Coupling** to the metric (Definition
+{prf:ref}`def-value-metric-conformal-coupling`).
 
 :::
 

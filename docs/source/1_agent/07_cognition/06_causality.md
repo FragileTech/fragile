@@ -43,7 +43,11 @@ Interventional Gap, thereby transforming observational correlations into structu
 (rb-curiosity-vector)=
 :::{admonition} Researcher Bridge: Curiosity as a Vector Field (Not a Scalar)
 :class: tip
-Standard curiosity-driven RL (like RND) uses a scalar reward bonus to encourage exploration. We reframe "Curiosity" as a **Riemannian Force Field**. It is defined by the **Interventional Gap** - the discrepancy between what the model predicts through passive observation vs. active $do$-sampling. Curiosity is not an "incentive" you add to the reward; it is a vector that physically steers the agent toward states where its causal model is most likely to be proven wrong.
+Standard curiosity-driven RL (like RND) uses a scalar reward bonus (conservative case) to encourage exploration. We
+reframe "Curiosity" as a **Riemannian Force Field**. It is defined by the **Interventional Gap** - the discrepancy
+between what the model predicts through passive observation vs. active $do$-sampling. Curiosity is not an "incentive"
+you add to the reward; it is a vector that physically steers the agent toward states where its causal model is most
+likely to be proven wrong.
 :::
 
 *Cross-references:*

@@ -33,7 +33,7 @@ Conventions:
 | $\tau$                                                                               | scale time (depth)                                                                                  | dimensionless                                  |
 | $\Delta t$                                                                           | optional mapping from steps to wall-clock                                                           | $\mathrm{s/step}$                              |
 | $r_t$                                                                                | reward/cost per step                                                                                | $\mathrm{nat}$                                 |
-| $\mathcal{R}$                                                                        | reward/cost rate (when written as a rate)                                                           | $\mathrm{nat/step}$                            |
+| $\mathcal{R}$                                                                        | reward 1-form (rate per length; paired with velocity gives nat/step)                                | $\mathrm{nat}/[\text{length}]$                 |
 | $V$                                                                                  | value / cost-to-go                                                                                  | $\mathrm{nat}$                                 |
 | $\Delta V$                                                                           | value change per step                                                                               | $\mathrm{nat/step}$                            |
 | $\mathfrak{D}$                                                                       | control-effort / regularization rate term                                                           | $\mathrm{nat/step}$                            |
@@ -96,5 +96,4 @@ Some Greek letters are intentionally overloaded in different submodels:
 - $\tau$ appears as (i) scale time ({ref}`Section 1.3 <sec-the-chronology-temporal-distinctions>`), (ii) the entropy-weight coefficient in Section 2.11.3, and (iii) the temperature in some contrastive losses; use local definitions.
 - $\gamma$ appears as (i) discount factor, (ii) the World Model volatility scaling coefficient $\gamma$ ({ref}`Section 3.2 <sec-scaling-exponents-characterizing-the-agent>`), and (iii) friction coefficient in overdamped dynamics ({ref}`Section 22.4 <sec-the-geodesic-baoab-integrator>`).
 - $\lambda$ appears as (i) Lyapunov rate ($s^{-1}$), (ii) generic loss weights (dimensionless), and (iii) other Lagrange multipliers (units stated locally).
-
 

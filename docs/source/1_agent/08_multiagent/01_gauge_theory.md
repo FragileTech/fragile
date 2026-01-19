@@ -71,7 +71,7 @@ The **Game Tensor** $\mathcal{G}_{ij}$ (Definition {prf:ref}`def-the-game-tensor
 Set all interfaces $\mathcal{G}_{ij} = \emptyset$ (disconnect the sheaf). Each agent treats others as stationary noise.
 
 **The Special Case (Standard RL - IPPO):**
-Independent PPO {cite}`de2020independent` runs separate learners with shared reward:
+Independent PPO {cite}`de2020independent` runs separate learners with shared scalar reward (conservative case):
 
 $$
 \pi^{(i)} = \arg\max_{\pi} \mathbb{E}\left[ \sum_t r^{(i)}_t(\mathbf{s}, \mathbf{a}) \right], \quad \text{treating } \pi^{(-i)} \text{ as fixed}.
@@ -102,7 +102,10 @@ This is exactly like asking: where can two particles be? Well, particle 1 can be
 The important thing to notice is that right now the metric on this product space is block-diagonal. What does that mean? It means if I want to measure distances, agent $i$'s internal geometry does not care about agent $j$'s position. They are geometrically independent. Later we will see how strategic coupling breaks this independence, but let us start with the uncoupled case.
 :::
 
-Consider $N$ agents, each with an internal latent manifold $(\mathcal{Z}^{(i)}, G^{(i)})$ and a boundary interface $B^{(i)} = (x^{(i)}, a^{(i)}, r^{(i)})$. The agents may be spatially distributed, with finite information propagation time between them.
+Consider $N$ agents, each with an internal latent manifold $(\mathcal{Z}^{(i)}, G^{(i)})$ and a boundary interface
+$B^{(i)} = (x^{(i)}, a^{(i)}, r^{(i)})$, where $r^{(i)}$ is a boundary reward sample (evaluation of the reward 1-form/flux;
+scalar in the conservative case). The agents may be spatially distributed, with finite information propagation time
+between them.
 
 :::{prf:definition} N-Agent Product Manifold
 :label: def-n-agent-product-manifold
@@ -133,8 +136,11 @@ where each $G^{(i)}$ is the capacity-constrained metric from Theorem {prf:ref}`t
 Each agent $i$ possesses its own symplectic boundary $(\partial\mathcal{Z}^{(i)}, \omega^{(i)})$ with:
 - **Dirichlet component** (sensors): $\phi^{(i)}(x) = $ observation stream
 - **Neumann component** (motors): $j^{(i)}_{\text{motor}}(x) = $ action flux
+- **Reward component** (source): boundary reward flux $J_r^{(i)}$ (1-form); conservative case reduces to scalar charge
+  density $\sigma_r^{(i)}$ (Definition {prf:ref}`def-the-reward-flux`)
 
-The boundary conditions follow the structure of Definition {prf:ref}`def-dirichlet-boundary-condition-sensors`–23.1.3, applied per-agent.
+The boundary conditions follow the structure of Definition {prf:ref}`def-dirichlet-boundary-condition-sensors`–23.1.3,
+applied per-agent.
 
 *Cross-reference:* {ref}`Section 23.1 <sec-the-symplectic-interface-position-momentum-duality>` (Symplectic Boundary Manifold), Definition {prf:ref}`def-mass-tensor`.
 
@@ -159,7 +165,10 @@ Let $d_{\mathcal{E}}^{ij}$ denote the **environment distance** between agents $i
 :::{div} feynman-prose
 Here is where things get interesting. You know the standard story: the value function $V(z)$ satisfies some nice elliptic equation, the Bellman equation or the Helmholtz equation or whatever you want to call it. You solve it, you get your optimal policy, everyone is happy.
 
-But think about what that equation is really saying. If I change the reward at one point, the value function changes everywhere, instantly. The information about that reward change propagates at infinite speed across the whole manifold. That is what an elliptic equation does. It is like saying that if you poke the electric potential at one point, the whole field readjusts instantaneously everywhere.
+But think about what that equation is really saying. If I change the conservative reward source at one point, the value
+function changes everywhere, instantly. The information about that reward change propagates at infinite speed across the
+whole manifold. That is what an elliptic equation does. It is like saying that if you poke the electric potential at one
+point, the whole field readjusts instantaneously everywhere.
 
 Now, in electrostatics, we get away with this because we are looking at the steady state, where everything has had time to settle down. But what if the world is changing? What if agents are moving around? Then you cannot use the steady-state answer. You have to track how the information actually propagates.
 
@@ -168,7 +177,10 @@ And here is the key insight: information propagates at some finite speed $c_{\te
 Once you accept that information travels at finite speed, you immediately get a causal structure. Some events can influence other events; some cannot. You get past and future light cones. You get relativity. Not because we are doing fundamental physics, but because we are taking causality seriously.
 :::
 
-The standard HJB equation assumes the value $V(z)$ relaxes instantly across the manifold. This implies an infinite speed of information propagation, violating the causal constraints of distributed systems.
+The standard HJB equation assumes the value $V(z)$ relaxes instantly across the manifold. This implies an infinite speed
+of information propagation, violating the causal constraints of distributed systems. Here $V$ denotes the scalar
+potential associated with the **conservative component** of the reward 1-form; non-conservative (curl) components
+propagate as antisymmetric fields and appear as velocity-dependent forces rather than a scalar PDE.
 
 :::{prf:axiom} Information Speed Limit
 :label: ax-information-speed-limit
@@ -285,22 +297,27 @@ To recover a valid control problem under finite information speed, we must augme
 :::{prf:definition} Retarded Potential (Memory Screen)
 :label: def-retarded-potential
 
-Let $\rho^{(j)}(t, z)$ be the reward/action flux emitted by Agent $j$. The potential perceived by Agent $i$ at position $z$ and time $t$ is the **Retarded Potential**:
+Let $\rho^{(j)}_r(t, z)$ be the scalar source density associated with the conservative component of Agent $j$'s boundary
+reward flux. The potential perceived by Agent $i$ at position $z$ and time $t$ is the **Retarded Potential**:
 
 $$
-\Psi_{\text{ret}}^{(i)}(t, z) = \sum_{j \neq i} \int_{-\infty}^{t} \int_{\mathcal{Z}^{(j)}} G_{\text{ret}}(z, t; \zeta, \tau) \rho^{(j)}(\tau, \zeta) \, d\mu_G(\zeta) \, d\tau,
+\Psi_{\text{ret}}^{(i)}(t, z) = \sum_{j \neq i} \int_{-\infty}^{t} \int_{\mathcal{Z}^{(j)}} G_{\text{ret}}(z, t; \zeta, \tau) \rho^{(j)}_r(\tau, \zeta) \, d\mu_G(\zeta) \, d\tau,
 
 $$
 where $G_{\text{ret}}$ is the **Retarded Green's Function** for the wave operator on the manifold:
 
 $$
-G_{\text{ret}}(z, t; \zeta, \tau) \propto \frac{\delta\left((t-\tau) - d_{\mathcal{E}}(z, \zeta)/c_{\text{info}}\right)}{d_{\mathcal{E}}(z, \zeta)^{(D-2)/2}}.
+G_{\text{ret}}(z, t; \zeta, \tau) \quad \text{solves} \quad \left(\frac{1}{c_{\text{info}}^2}\partial_t^2 - \Delta_G + \kappa^2\right)G_{\text{ret}} = \delta(z-\zeta)\delta(t-\tau),
 
 $$
+with $G_{\text{ret}} = 0$ for $t < \tau$. In flat space and the massless limit ($\kappa = 0$), $G_{\text{ret}}$ reduces to a light-cone delta; for $\kappa > 0$ it develops an interior light-cone tail.
 
 *Interpretation:* Agent $i$ does not perceive Agent $j$'s current state. It perceives the "ghost" of Agent $j$ from time $\tau_{ij} = d_{\mathcal{E}}^{ij}/c_{\text{info}}$ ago.
 
-*Units:* $[\Psi_{\text{ret}}] = \text{nat}$, $[G_{\text{ret}}] = [z]^{-(D-2)/2}[\text{time}]^{-1}$.
+*Units:* $[\Psi_{\text{ret}}] = \text{nat}$, $[G_{\text{ret}}] = [\text{length}]^{2-D}[\text{time}]^{-1}$.
+
+*Remark (Strategic coupling).* When strategic relationships matter, weight each source by $\alpha_{ij}$; equivalently replace
+$\rho^{(j)}_r$ with $\rho^{\text{ret}}_{ij}$ from Definition {prf:ref}`def-retarded-interaction-potential`.
 
 :::
 
@@ -424,21 +441,47 @@ where $\mathcal{G}_{\kappa}$ is the screened Green's function (Proposition {prf:
 :::{prf:definition} Retarded Interaction Potential
 :label: def-retarded-interaction-potential
 
-The **Retarded Interaction Potential** from Agent $j$ to Agent $i$ at time $t$ is:
+The **Retarded Interaction Source Density** from Agent $j$ to Agent $i$ is:
 
 $$
-\Phi^{\text{ret}}_{ij}(z^{(i)}, t) := \alpha_{ij} \cdot \mathcal{G}_{\kappa}(z^{(i)}, \hat{z}^{(j)}_t) \cdot \sigma^{(j)}_r(\hat{z}^{(j)}_t),
+\rho^{\text{ret}}_{ij}(\zeta, \tau) := \alpha_{ij} \cdot \rho^{(j)}_r(\zeta, \tau),
 
 $$
 where:
-- $\hat{z}^{(j)}_t = z^{(j)}_{t - \tau_{ij}}$ is the ghost state
-- $\mathcal{G}_{\kappa}$ is the screened Green's function (Proposition {prf:ref}`prop-green-s-function-interpretation`)
+- $\rho^{(j)}_r$ is the conservative reward source density for Agent $j$ derived from boundary reward flux
+  (Definition {prf:ref}`def-the-reward-flux`)
 - $\alpha_{ij} \in \{-1, 0, +1\}$ encodes the strategic relationship:
   - $\alpha_{ij} = +1$: Cooperative
   - $\alpha_{ij} = 0$: Independent
   - $\alpha_{ij} = -1$: Adversarial
 
-*Remark:* The interaction depends on Agent $j$'s state at the retarded time, not the current time. This introduces **Strategic Hysteresis**: Agent $i$ may commit to a trajectory based on old information about $j$, only to encounter updated conditions later.
+We write $\rho^{\text{ret}}_{ij}$ on $\mathcal{Z}^{(j)}$ and pull it back to Agent $i$'s chart along the Ghost Interface;
+for notational simplicity, we suppress the pullback in what follows.
+
+The induced **Retarded Interaction Potential** is the retarded Green's function convolution:
+
+$$
+\Phi^{\text{ret}}_{ij}(z^{(i)}, t) = \int_{-\infty}^{t} \int_{\mathcal{Z}^{(j)}} G_{\text{ret}}(z^{(i)}, t; \zeta, \tau)\,
+\rho^{\text{ret}}_{ij}(\zeta, \tau)\, d\mu_G(\zeta)\, d\tau,
+
+$$
+where $G_{\text{ret}}$ is the retarded Green's function (Definition {prf:ref}`def-retarded-potential`).
+
+*Remark (Point-source / ghost limit).* If Agent $j$'s conservative source is concentrated along a trajectory,
+$\rho^{(j)}_r(\zeta, \tau) = \sigma^{(j)}_r(\tau)\,\delta(\zeta - z^{(j)}_\tau)$, then
+$$
+\Phi^{\text{ret}}_{ij}(z^{(i)}, t) = \alpha_{ij}\int_{-\infty}^{t} G_{\text{ret}}(z^{(i)}, t; z^{(j)}_\tau, \tau)\,
+\sigma^{(j)}_r(\tau)\, d\tau,
+$$
+which reduces to evaluation at the retarded time in the massless flat-space limit. This recovers the ghost-state
+interpretation.
+
+*Remark (Quasi-static kernel).* In the low-frequency limit, $G_{\text{ret}}$ reduces to the screened static kernel
+$\mathcal{G}_\kappa$ and the potential can be approximated by evaluating the instantaneous interaction at the ghost
+state. This is a computational shortcut, not the first-principles definition.
+
+*Remark (Non-conservative component).* Solenoidal reward components are not captured by the scalar source; they enter via
+the curl field in the dynamics.
 
 :::
 
@@ -485,17 +528,18 @@ $$
 
 **In Physics:** The electromagnetic potentials of a moving charge are evaluated at the retarded time $t_{\text{ret}} = t - r/c$, not the current time. The Liénard-Wiechert potentials encode causality in classical electrodynamics {cite}`jackson1999classical`.
 
-**In Implementation:** The Ghost Interface evaluates strategic potentials at the retarded time:
+**In Implementation:** In the quasi-static approximation, the Ghost Interface evaluates strategic potentials at the
+retarded time:
 
 $$
-\Phi^{\text{ret}}_{ij}(z^{(i)}, t) = \Phi_{ij}(z^{(i)}, z^{(j)}_{t-\tau_{ij}}).
+\Phi^{\text{ret}}_{ij}(z^{(i)}, t) \approx \Phi_{ij}(z^{(i)}, z^{(j)}_{t-\tau_{ij}}).
 
 $$
 
 **Correspondence Table:**
 | Electrodynamics | Relativistic Agent |
 |:----------------|:-------------------|
-| Field equation $\square A^\mu = J^\mu$ | Value equation $\square_G V = \rho_r$ |
+| Field equation $\square A^\mu = J^\mu$ | Value equation (conservative component) $\square_G V = \rho_r$ |
 | Light speed $c$ | Information speed $c_{\text{info}}$ |
 | Retarded time $t_{\text{ret}}$ | Ghost time $t - \tau_{ij}$ |
 | Liénard-Wiechert potential | Retarded interaction potential |
@@ -510,7 +554,9 @@ $$
 :::{div} feynman-prose
 Now comes one of the most beautiful results in this whole theory. We have been saying that value cannot propagate instantaneously. So what equation does it satisfy instead of the static Helmholtz equation?
 
-Think about it physically. If I create a reward at some point, the information about that reward has to propagate outward. It travels at speed $c_{\text{info}}$. This is a wave. The value function is not a static field anymore. It is a propagating wave field, rippling outward from sources of reward.
+Think about it physically. If I create a conservative reward source at some point, the information about that reward has
+to propagate outward. It travels at speed $c_{\text{info}}$. This is a wave. The value function is not a static field
+anymore. It is a propagating wave field, rippling outward from sources of reward.
 
 What is the wave equation that describes this? It turns out to be the Klein-Gordon equation. This is the relativistic version of the Helmholtz equation, exactly as you would hope. The Helmholtz equation has just the Laplacian $-\Delta_G$. The Klein-Gordon equation adds a second time derivative: $\frac{1}{c^2}\partial_t^2 - \Delta_G$.
 
@@ -519,7 +565,8 @@ The extra term $\frac{1}{c^2}\partial_t^2$ is what makes it a wave equation inst
 The screening term $\kappa^2$ is still there. Remember, $\kappa$ comes from the discount factor. It makes the value decay with distance, even in the wave equation. So what you get is a screened wave, a wave that decays exponentially as it propagates. Value wavefronts do not travel forever. They get weaker and weaker as they spread out and as they encounter the discounting.
 :::
 
-Under relativistic constraints, the elliptic Helmholtz equation for Value (Theorem {prf:ref}`thm-the-hjb-helmholtz-correspondence`) transforms into a hyperbolic wave equation.
+Under relativistic constraints, the elliptic Helmholtz equation for the **scalar value potential** (conservative
+component; Theorem {prf:ref}`thm-the-hjb-helmholtz-correspondence`) transforms into a hyperbolic wave equation.
 
 :::{prf:theorem} HJB-Klein-Gordon Correspondence
 :label: thm-hjb-klein-gordon
@@ -527,17 +574,21 @@ Under relativistic constraints, the elliptic Helmholtz equation for Value (Theor
 Let information propagate at speed $c_{\text{info}}$. The Value Function $V^{(i)}(z, t)$ for Agent $i$ satisfies the **Screened Wave Equation**:
 
 $$
-\boxed{\left( \frac{1}{c_{\text{info}}^2} \frac{\partial^2}{\partial t^2} + \gamma_{\text{damp}} \frac{\partial}{\partial t} - \Delta_{G^{(i)}} + \kappa_i^2 \right) V^{(i)}(z, t) = \rho^{(i)}_r(z, t) + \sum_{j \neq i} \Phi^{\text{ret}}_{ij}(z, t)}
+\boxed{\left( \frac{1}{c_{\text{info}}^2} \frac{\partial^2}{\partial t^2} - \Delta_{G^{(i)}} + \kappa_i^2 \right) V^{(i)}(z, t) = \rho^{(i)}_r(z, t) + \sum_{j \neq i} \rho^{\text{ret}}_{ij}(z, t)}
 
 $$
 where:
 - $\square_{G} = \frac{1}{c_{\text{info}}^2}\partial_t^2 - \Delta_G$ is the **D'Alembertian** on the manifold
-- $\gamma_{\text{damp}} \geq 0$ is the temporal damping rate (related to discount)
-- $\kappa_i$ is the **spatial screening mass** with $[\kappa_i] = 1/[\text{length}]$, related to the discount factor by:
-  $$\kappa_i = \frac{-\ln\gamma_i}{c_{\text{info}} \Delta t} = \frac{\kappa_{i,\text{temporal}}}{c_{\text{info}}}$$
-  where $\kappa_{i,\text{temporal}} = -\ln\gamma_i / \Delta t$ is the temporal discount rate with units $1/[\text{time}]$
-- $\rho^{(i)}_r$ is the local reward source (units: $[\text{nat}]/[\text{length}]^2$)
-- $\Phi^{\text{ret}}_{ij}$ is the retarded interaction potential (Definition {prf:ref}`def-retarded-interaction-potential`)
+- $\kappa_i$ is the **spatial screening mass** with $[\kappa_i] = 1/[\text{length}]$. Let the temporal discount rate be $\lambda_i := -\ln\gamma_i / \Delta t$ (units $1/[\text{time}]$). Using the relativistic conversion $\text{length} = c_{\text{info}} \cdot \text{time}$ gives $\kappa_i = \lambda_i / c_{\text{info}}$. In natural units ($\Delta t = 1$, $c_{\text{info}} = 1$) this reduces to $\kappa_i = -\ln\gamma_i$.
+- $\rho^{(i)}_r$ is the local **conservative** reward source density derived from boundary reward flux
+  (Definition {prf:ref}`def-the-reward-flux`) (units: $[\text{nat}]/[\text{length}]^2$)
+- $\rho^{\text{ret}}_{ij}$ is the retarded interaction source density (Definition {prf:ref}`def-retarded-interaction-potential`)
+
+*Optional damping.* A linear term $\gamma_{\text{damp}}\partial_t V$ may be added to model explicit non-stationary friction or learning lag. This is a modeling choice distinct from the discount-induced screening $\kappa$.
+
+*Scope.* This equation governs the scalar potential associated with the conservative component of the reward 1-form.
+Solenoidal/harmonic components induce velocity-dependent coupling and are handled by the curl field $\mathcal{F}$ in the
+dynamics.
 
 *Proof sketch.* Expand the Bellman recursion $V(z, t) = r \Delta t + \gamma \mathbb{E}[V(z', t+\Delta t)]$ to second order in both spatial and temporal increments. The finite propagation speed $c_{\text{info}}$ introduces the wave term $\partial_t^2 V$. The derivation parallels the passage from Poisson to wave equation in electrostatics vs. electrodynamics. See {ref}`Appendix E.12 <sec-appendix-e-rigorous-proof-sketches-for-ontological-and-metabolic-laws>`. $\square$
 
@@ -548,15 +599,18 @@ where:
 :::{prf:corollary} Value Wavefront Propagation
 :label: cor-value-wavefront
 
-A sudden change in reward at location $z_A$ and time $t_0$ propagates outward as a **Value Wavefront**:
+A sudden change in conservative reward source at location $z_A$ and time $t_0$ propagates outward as a **Value
+Wavefront**:
 
 $$
-V(z, t) \sim \frac{\Theta(t - t_0 - d_G(z, z_A)/c_{\text{info}})}{d_G(z, z_A)^{(D-2)/2}} \cdot e^{-\kappa d_G(z, z_A)} \cdot \rho_r(z_A, t_0),
+V(z, t) \sim \Theta\!\left(t - t_0 - \frac{d_G(z, z_A)}{c_{\text{info}}}\right)\, e^{-\kappa d_G(z, z_A)} \cdot \rho_r(z_A, t_0),
 
 $$
-where $\Theta$ is the Heaviside step function enforcing causality.
+where $\Theta$ is the Heaviside step function enforcing causality. This expression is schematic: the prefactor is dimension-dependent, and for $\kappa > 0$ the exact retarded Green's function has an interior light-cone tail (Bessel decay) rather than a pure delta on the cone.
 
-*Interpretation:* The Value surface is not a static potential but a dynamic "ocean" of interfering causal ripples. Reward shocks propagate at speed $c_{\text{info}}$, decaying exponentially with the screening length $1/\kappa$.
+*Interpretation:* The Value surface is not a static potential but a dynamic "ocean" of interfering causal ripples.
+Conservative reward shocks propagate at speed $c_{\text{info}}$, decaying exponentially with the screening length
+$1/\kappa$.
 
 :::
 
@@ -572,7 +626,7 @@ $$
 and the Klein-Gordon equation reduces to the **stationary Helmholtz equation**:
 
 $$
-(-\Delta_G + \kappa^2) V = \rho_r + \sum_{j \neq i} \Phi_{ij}.
+(-\Delta_G + \kappa^2) V = \rho_r + \sum_{j \neq i} \rho^{\text{ret}}_{ij}.
 
 $$
 This recovers Theorem {prf:ref}`thm-the-hjb-helmholtz-correspondence` as the instantaneous (Newtonian) limit.
@@ -585,7 +639,7 @@ This recovers Theorem {prf:ref}`thm-the-hjb-helmholtz-correspondence` as the ins
 The solution to the inhomogeneous Klein-Gordon equation is given by convolution with the **Retarded Green's Function**:
 
 $$
-V^{(i)}(z, t) = \int_{-\infty}^{t} \int_{\mathcal{Z}^{(i)}} G_{\text{ret}}(z, t; \zeta, \tau) \left[ \rho^{(i)}_r(\zeta, \tau) + \sum_{j} \Phi^{\text{ret}}_{ij}(\zeta, \tau) \right] d\mu_G(\zeta) \, d\tau,
+V^{(i)}(z, t) = \int_{-\infty}^{t} \int_{\mathcal{Z}^{(i)}} G_{\text{ret}}(z, t; \zeta, \tau) \left[ \rho^{(i)}_r(\zeta, \tau) + \sum_{j \neq i} \rho^{\text{ret}}_{ij}(\zeta, \tau) \right] d\mu_G(\zeta) \, d\tau,
 
 $$
 where $G_{\text{ret}}$ satisfies:
@@ -596,12 +650,13 @@ $$
 $$
 with the **causal boundary condition** $G_{\text{ret}} = 0$ for $t < \tau$.
 
-*Form in flat space:* For $\mathcal{Z} = \mathbb{R}^D$ with Euclidean metric:
+*Massless flat-space example (D = 3):* For $\mathcal{Z} = \mathbb{R}^3$ and $\kappa = 0$,
 
 $$
-G_{\text{ret}}(z, t; \zeta, \tau) = \frac{\Theta(t - \tau)}{4\pi |z - \zeta|} \delta\left(t - \tau - \frac{|z-\zeta|}{c_{\text{info}}}\right) \cdot e^{-\kappa|z-\zeta|}.
+G_{\text{ret}}(z, t; \zeta, \tau) = \frac{\Theta(t - \tau)}{4\pi |z - \zeta|} \delta\left(t - \tau - \frac{|z-\zeta|}{c_{\text{info}}}\right).
 
 $$
+For $\kappa > 0$, the retarded kernel acquires an interior light-cone tail with Bessel decay; we keep $G_{\text{ret}}$ abstract to avoid dimension-specific formulas.
 
 :::
 
@@ -611,7 +666,7 @@ $$
 
 **In Physics:** The Klein-Gordon equation $(\square + m^2)\phi = \rho$ describes a relativistic scalar field with mass $m$. It reduces to the Helmholtz equation in the static limit {cite}`jackson1999classical`.
 
-**In Implementation:** The Value function satisfies:
+**In Implementation:** The scalar Value potential (conservative component) satisfies:
 
 $$
 \left(\frac{1}{c_{\text{info}}^2}\partial_t^2 - \Delta_G + \kappa^2\right)V = \rho_r
@@ -623,7 +678,7 @@ $$
 |:-----------------------|:-----------------------|
 | Scalar field $\phi$ | Value function $V$ |
 | Mass parameter $m$ | Screening mass $\kappa$ |
-| Source $\rho$ | Reward density $\rho_r$ |
+| Source $\rho$ | Conservative reward density $\rho_r$ |
 | D'Alembertian $\square$ | Manifold wave operator $\square_G$ |
 | Static limit | Newtonian (Helmholtz) limit |
 | Propagating modes | Value wavefronts |
@@ -709,7 +764,7 @@ The trace $\operatorname{tr}(\mathcal{G}_{ij}) = \sum_k \mathcal{G}_{ij}^{kk}$ m
 
 *Cross-reference:* The Game Tensor generalizes the conformal factor $\Omega$ (Definition {prf:ref}`def-value-metric-conformal-coupling`) to the multi-agent setting. Where $\Omega$ captured self-induced value curvature, $\mathcal{G}_{ij}$ captures cross-agent value curvature.
 
-*Cross-reference (Gauge-Covariant Version):* When local gauge invariance is imposed ({ref}`Section 29.13 <sec-local-gauge-symmetry-nuisance-bundle>`), the Game Tensor acquires a gauge-covariant form $\tilde{\mathcal{G}}_{ij}^{kl} := D_k D_l V^{(i)}|_{z^{(j)}}$ using covariant derivatives. Under gauge transformation $U(z)$, the covariant Game Tensor transforms homogeneously: $\tilde{\mathcal{G}}'_{ij} = U \tilde{\mathcal{G}}_{ij} U^\dagger$. See Definition {prf:ref}`def-gauge-covariant-game-tensor`.
+*Cross-reference (Gauge-Consistent Version):* For scalar $V^{(i)}$, the correct covariant object is the Riemannian Hessian $\nabla_k\nabla_l V^{(i)}$ (Definition {prf:ref}`def-gauge-covariant-game-tensor`). Gauge covariance becomes relevant only if one defines cross-sensitivities of gauge-charged fields (e.g., $\psi$ or nuisance-frame vectors).
 
 :::
 :::{prf:theorem} Adversarial Mass Inflation
@@ -783,14 +838,14 @@ In the Newtonian limit, where $c_{\text{info}} \to \infty$, equilibrium is a sta
 
 But in the relativistic setting, things are more interesting. You see, the agents are constantly adjusting to each other's ghosts. By the time agent A responds to agent B, B has already moved. Then B responds to A's response, which was based on old information. The whole system is constantly in motion, constantly adjusting.
 
-So what is equilibrium? It is a standing wave. The agents are not frozen. They are oscillating, dancing around. But the oscillations are organized. On average, over a period that is long compared to all the delay times, nothing is drifting. The time-averaged gradients vanish. The time-averaged currents vanish.
+So what is equilibrium? It is a standing wave when the joint dynamics are effectively confined. The agents are not frozen. They are oscillating, dancing around. But the oscillations are organized. On average, over a period that is long compared to all the delay times, nothing is drifting. The time-averaged gradients vanish. The time-averaged currents vanish.
 
 This is beautiful. It is like a vibrating guitar string. The string is not stationary, it is moving up and down. But the pattern is stationary. The nodes stay at the nodes, the antinodes stay at the antinodes. The wave is standing, not traveling.
 
-Nash equilibrium in a relativistic multi-agent system is exactly this: a standing wave pattern in the joint value field. The agents pulsate at the characteristic causal frequency $\omega \sim c_{\text{info}}/\bar{d}$, where $\bar{d}$ is the typical distance between them. But the time-averaged configuration is stable.
+Nash equilibrium in a relativistic multi-agent system is exactly this when the causal domain is effectively finite: a standing wave pattern in the joint value field. Otherwise, the correct notion is time-averaged stationarity / NESS rather than a literal eigenmode.
 :::
 
-In a system with finite information propagation, what constitutes equilibrium? It is not a static configuration but a coherent spatiotemporal pattern—a **standing wave** in the joint causal field.
+In a system with finite information propagation, what constitutes equilibrium? It is not a static configuration but a coherent spatiotemporal pattern. A **standing wave** description is valid when the joint causal domain is effectively finite (e.g., bounded by an imposed boundary condition or a confining potential); otherwise the correct notion is time-averaged stationarity / NESS.
 
 :::{prf:definition} Joint WFR Action (Relativistic)
 :label: def-joint-wfr-action
@@ -814,7 +869,7 @@ where:
 :::{prf:theorem} Nash Equilibrium as Standing Wave
 :label: thm-nash-standing-wave
 
-In the relativistic formulation, a Nash equilibrium is a joint density $\boldsymbol{\rho}^*(\mathbf{z}, t)$ satisfying **time-averaged stationarity**:
+Assume the joint causal domain is effectively compact (finite volume under the induced metric), so the joint d'Alembertian admits a discrete mode expansion. In the relativistic formulation, a Nash equilibrium is a joint density $\boldsymbol{\rho}^*(\mathbf{z}, t)$ satisfying **time-averaged stationarity**:
 
 $$
 \left\langle \frac{\partial \boldsymbol{\rho}^*}{\partial t} \right\rangle_T := \frac{1}{T}\int_0^T \frac{\partial \boldsymbol{\rho}^*}{\partial t}(\mathbf{z}, t') \, dt' = 0,
@@ -839,15 +894,15 @@ where the averaging period $T \gg \max_{i,j} \tau_{ij}$ exceeds all causal delay
    $$
    where $\mathbf{J}^{(i)} = \rho^{(i)} \mathbf{v}^{(i)}$ is the probability current.
 
-3. **Resonance condition:** The system oscillates at the characteristic causal frequency:
+3. **Resonance condition:** The system oscillates at a characteristic causal frequency set by the effective cavity size:
 
    $$
-   \omega_{\text{Nash}} \sim \frac{c_{\text{info}}}{\bar{d}_{\mathcal{E}}},
+   \omega_{\text{Nash}} \sim \frac{c_{\text{info}}}{L_{\text{eff}}},
 
    $$
-   where $\bar{d}_{\mathcal{E}}$ is the mean environment distance between agents.
+   where $L_{\text{eff}}$ is the dominant spatial scale (e.g., boundary separation or imposed horizon).
 
-*Proof sketch.* The coupled Klein-Gordon system (Theorem {prf:ref}`thm-hjb-klein-gordon`) for $N$ agents forms a cavity resonator. Equilibrium states are the eigenmodes of the joint D'Alembertian operator. The ground state (lowest energy mode) corresponds to the stable Nash equilibrium; higher modes are metastable. See **{ref}`Appendix E.15 <sec-appendix-e-rigorous-proof-sketches-for-ontological-and-metabolic-laws>`** for the complete derivation with boundary conditions, eigenmode expansion, and connection to game-theoretic optimality. $\square$
+*Proof sketch.* The coupled Klein-Gordon system (Theorem {prf:ref}`thm-hjb-klein-gordon`) for $N$ agents forms a cavity resonator when the domain is effectively compact (finite horizon, reflecting boundary, or confining potential). Equilibrium states are the eigenmodes of the joint D'Alembertian operator. The ground state (lowest energy mode) corresponds to the stable Nash equilibrium; higher modes are metastable. Without effective compactness, interpret equilibrium as time-averaged stationarity rather than literal standing waves. See **{ref}`Appendix E.15 <sec-appendix-e-rigorous-proof-sketches-for-ontological-and-metabolic-laws>`** for the derivation under explicit boundary conditions. $\square$
 
 :::
 
@@ -996,11 +1051,11 @@ If $\epsilon_{\text{Nash}} > 0$ but below threshold, the system is in a **transi
 | Feature | Newtonian ($c_{\text{info}} \to \infty$) | Relativistic ($c_{\text{info}} < \infty$) |
 |:--------|:-----------------------------------------|:------------------------------------------|
 | **Information Speed** | $\infty$ (Instantaneous) | Finite $c_{\text{info}}$ |
-| **Value PDE** | Elliptic (Helmholtz) $-\Delta_G V + \kappa^2 V = \rho_r$ | Hyperbolic (Klein-Gordon) $\square_G V + \kappa^2 V = \rho_r$ |
+| **Value PDE (conservative component)** | Elliptic (Helmholtz) $-\Delta_G V + \kappa^2 V = \rho_r$ | Hyperbolic (Klein-Gordon) $\square_G V + \kappa^2 V = \rho_r$ |
 | **State** | $z^{(i)}_t$ (position only) | $(z^{(i)}_t, \Xi^{(i)}_{<t})$ (position + memory screen) |
 | **Markov Property** | On $\mathcal{Z}^{(N)}$ | On Causal Bundle $\mathcal{Z}^{(N)} \times \Xi_{<t}$ |
 | **Interaction** | Synchronous Bridge $\mathcal{B}_{ij}$ | Asynchronous Ghost Interface $\mathcal{G}_{ij}$ |
-| **Potential** | Instantaneous $\Phi_{ij}(z^{(i)}, z^{(j)}_t)$ | Retarded $\Phi^{\text{ret}}_{ij}(z^{(i)}, z^{(j)}_{t-\tau})$ |
+| **Potential** | Instantaneous $\Phi_{ij}(z^{(i)}, z^{(j)}_t)$ | Retarded $\Phi^{\text{ret}}_{ij}(z^{(i)}, t)$ (quasi-static: $\approx \Phi_{ij}(z^{(i)}, z^{(j)}_{t-\tau})$) |
 | **Game Tensor** | $\mathcal{G}_{ij}(z^{(j)}_t)$ | $\mathcal{G}_{ij}^{\text{ret}}(z^{(j)}_{t-\tau})$ |
 | **Equilibrium** | Fixed Point (Geometric Stasis) | Standing Wave (Time-Averaged Stasis) |
 | **Nash Condition** | $\nabla \Phi_{\text{eff}} = 0$ | $\langle \nabla \Phi_{\text{eff}} \rangle_T = 0$ |
@@ -1014,7 +1069,7 @@ If $\epsilon_{\text{Nash}} > 0$ but below threshold, the system is in a **transi
 | **State Space** | $\mathcal{Z}$ | $\mathcal{Z}_{\text{causal}} = \mathcal{Z}^{(N)} \times \Xi_{<t}$ |
 | **Boundary** | Fixed $\partial\mathcal{Z}$ | Ghost Interface $\mathcal{G}_{ij}(t)$ |
 | **Metric** | $G$ (Information Sensitivity) | $\tilde{G}^{(i)}(t) = G^{(i)} + \sum_j \beta_{ij}\mathcal{G}_{ij}^{\text{ret}}$ |
-| **Value PDE** | $(-\Delta_G + \kappa^2)V = \rho_r$ | $(\square_G + \kappa^2)V^{(i)} = \rho^{(i)}_r + \sum_j \Phi^{\text{ret}}_{ij}$ |
+| **Value PDE (conservative component)** | $(-\Delta_G + \kappa^2)V = \rho_r$ | $(\square_G + \kappa^2)V^{(i)} = \rho^{(i)}_r + \sum_{j \neq i} \rho^{\text{ret}}_{ij}$ |
 | **Flow** | Langevin / WFR | Coupled Klein-Gordon + WFR |
 | **Success** | Value Maxima | Standing Wave Nash |
 | **Diagnostics** | Nodes 1–45 | + Nodes 46–48, 62 |
@@ -1171,7 +1226,7 @@ And here is the wild thing: the same structure appears naturally in multi-agent 
 Once you demand this gauge invariance, everything else follows. You need a connection to compare things at different points. The curvature of the connection becomes a measure of strategic tension. The whole apparatus of Yang-Mills theory shows up. It is gorgeous.
 :::
 
-The relativistic framework of Sections 29.1–29.12 describes multi-agent dynamics on a curved Lorentzian manifold with retarded potentials. We now elevate this structure to a **gauge field theory** by recognizing that the nuisance variable $z_n$ (Definition 2.2.1) serves as an internal gauge degree of freedom. This identification transforms strategic interaction into the curvature of a **non-Abelian gauge connection**, placing multi-agent field theory on the same mathematical footing as the Standard Model of particle physics.
+The relativistic framework of Sections 29.1–29.12 describes multi-agent dynamics on a curved Lorentzian manifold with retarded potentials. We now elevate this structure to a **gauge field theory** by recognizing that the nuisance variable $z_n$ (Definition 2.2.1) serves as an internal gauge degree of freedom. This identification transforms strategic interaction into the curvature of a gauge connection (potentially non-Abelian), placing multi-agent field theory on the same mathematical footing as gauge field theory in physics.
 
 (sec-local-gauge-symmetry-nuisance-bundle)=
 ## Local Gauge Symmetry and the Nuisance Bundle
@@ -1190,19 +1245,19 @@ Now, when you demand local gauge invariance, you are saying: the physics cannot 
 The nuisance fiber is just the set of internal states that do not affect the world directly. You can rotate within this fiber, change your internal representation, without changing what the agent actually does. This freedom is exactly a gauge freedom. And demanding that the dynamics respect this freedom gives us gauge field theory for strategic systems.
 :::
 
-The key insight is that the **nuisance fiber** $\mathcal{Z}_n$ at each macro-state $K$ is not merely a noise variable to be marginalized—it is the **internal gauge degree of freedom** that agents are free to rotate without changing physical outcomes. This local freedom mandates a compensating gauge field.
+The key insight is that the **nuisance fiber** $\mathcal{Z}_n$ at each macro-state $K$ is not merely a noise variable to be marginalized—it is the **internal gauge degree of freedom** that agents are free to rotate without changing physical outcomes. This local freedom mandates a compensating gauge field when comparing nuisance frames across space/time or across agents.
 
 :::{prf:axiom} Local Gauge Invariance (Nuisance Invariance)
 :label: ax-local-gauge-invariance
 
-The physical dynamics of the multi-agent system are invariant under position-dependent rotations of the internal nuisance coordinates. Formally, let $G$ be a compact Lie group with Lie algebra $\mathfrak{g}$. For any smooth map $U: \mathcal{Z} \to G$, the transformation
+The physical dynamics of the multi-agent system are invariant under position-dependent rotations of the internal nuisance coordinates. Formally, let $G$ be a compact Lie group with Lie algebra $\mathfrak{g}$. For any smooth map $U: \mathcal{Z} \to G$, the nuisance-frame transformation
 
 $$
-\psi'(z, t) = U(z)\psi(z, t)
+\xi'(z) = U(z)\xi(z), \qquad \psi'(z, t) = U(z)\psi(z, t)
 
 $$
 
-leaves observable quantities (reward, policy output, Nash conditions) unchanged.
+leaves observable quantities (reward, policy output, Nash conditions) unchanged. The scalar fields $\rho$ and $V$ are gauge-invariant; only the internal orientation $\xi$ (and any vector-valued nuisance features) transform.
 
 *Units:* $[U] = \text{dimensionless}$ (group element).
 
@@ -1249,7 +1304,7 @@ $$
 
 where:
 - $\rho^{(i)}$ is the belief density
-- $V^{(i)}$ is the value function
+- $V^{(i)}$ is the value function (scalar, gauge-invariant)
 - $\sigma > 0$ is the **cognitive action scale**, $\sigma := T_c \cdot \tau_{\text{update}}$, the information-theoretic analog of Planck's constant (full definition: {prf:ref}`def-cognitive-action-scale` in {ref}`Section 29.21 <sec-the-belief-wave-function-schrodinger-representation>`)
 - $\xi^{(i)}(z) \in V$ is the **internal state vector** encoding nuisance orientation
 
@@ -1262,7 +1317,7 @@ $$
 
 $$
 
-where $\rho: G \to GL(V)$ is the representation.
+where $\rho: G \to GL(V)$ is the representation. The scalar observables are unchanged: $\rho' = \rho$ and $V' = V$.
 
 :::
 
@@ -1426,10 +1481,10 @@ $$
 :::{prf:theorem} Gauge-Covariant Klein-Gordon Equation
 :label: thm-gauge-covariant-klein-gordon
 
-The Klein-Gordon equation for Value (Theorem {prf:ref}`thm-hjb-klein-gordon`) generalizes to the gauge-covariant form:
+The scalar value $V^{(i)}$ is gauge-invariant, so its wave equation remains the Klein-Gordon equation of Theorem {prf:ref}`thm-hjb-klein-gordon` with ordinary derivatives. Gauge-covariant derivatives apply to fields that transform under $G$, such as the belief amplitude $\psi^{(i)}$ (Definition {prf:ref}`def-matter-field-belief-amplitude`). In that case the covariant wave operator is:
 
 $$
-\left(\frac{1}{c_{\text{info}}^2}D_t^2 - D^i D_i + \kappa^2\right)V^{(i)} = \rho_r^{(i)} + \sum_{j \neq i} \Phi_{ij}^{\text{ret}}
+\left(\frac{1}{c_{\text{info}}^2}D_t^2 - D^i D_i + \kappa^2\right)\psi^{(i)} = \mathcal{S}^{(i)},
 
 $$
 
@@ -1437,23 +1492,24 @@ where:
 - $D_t = \partial_t - igA_0$ is the temporal covariant derivative
 - $D_i = \partial_i - igA_i$ are spatial covariant derivatives
 - $D^i = \tilde{G}^{ij}D_j$ with raised index via the strategic metric
+- $\mathcal{S}^{(i)}$ is the source term determined by the chosen matter model
 
 *Proof sketch.*
-The minimal coupling principle replaces $\partial_\mu \to D_\mu$ in the Klein-Gordon equation while preserving the equation's structure. The gauge-covariant d'Alembertian is:
+The minimal coupling principle replaces $\partial_\mu \to D_\mu$ for gauge-charged fields while preserving the equation's structure. The gauge-covariant d'Alembertian is:
 
 $$
 \Box_A := \frac{1}{c_{\text{info}}^2}D_t^2 - \tilde{G}^{ij}D_i D_j = \frac{1}{\sqrt{|\tilde{G}|}}D_\mu\left(\sqrt{|\tilde{G}|}\tilde{G}^{\mu\nu}D_\nu\right)
 
 $$
 
-The screening term $\kappa^2 V$ and source terms are gauge-invariant scalars. $\square$
+For scalar $V^{(i)}$, $D_\mu V^{(i)} = \partial_\mu V^{(i)}$, so the equation reduces to the non-gauged Klein-Gordon form. $\square$
 
 :::
 
 :::{prf:proposition} Minimal Coupling Principle
 :label: prop-minimal-coupling
 
-To maintain gauge invariance, all derivatives in the dynamics must be replaced by covariant derivatives:
+To maintain gauge invariance, derivatives acting on gauge-charged fields must be replaced by covariant derivatives:
 
 $$
 \partial_\mu \longrightarrow D_\mu = \partial_\mu - igA_\mu
@@ -1461,11 +1517,11 @@ $$
 $$
 
 This **Minimal Coupling Principle** ensures that:
-1. The WFR continuity equation becomes gauge-covariant
-2. The HJB equation becomes gauge-covariant
-3. Learning gradients transform properly under internal rotations
+1. Transport of nuisance-frame vectors is covariant
+2. Matter-field dynamics (e.g., $\psi$) are gauge-covariant
+3. Learning gradients for gauge-charged features transform properly under internal rotations
 
-*Consequence for implementation:* Any gradient-based update rule $\theta \leftarrow \theta - \alpha \nabla_\theta \mathcal{L}$ must use the covariant gradient $D_\theta \mathcal{L}$ to maintain frame-independence.
+*Consequence for implementation:* Use covariant gradients for parameters that live in gauge bundles. Scalar objectives like $V$ remain invariant and use ordinary gradients.
 
 :::
 
@@ -1493,56 +1549,44 @@ This **Minimal Coupling Principle** ensures that:
 (sec-gauge-transformation-game-tensor)=
 ## Gauge Transformation of the Game Tensor
 
-The Game Tensor $\mathcal{G}_{ij}$ (Definition {prf:ref}`def-the-game-tensor`) measures cross-agent strategic sensitivity. Under gauge transformations, this tensor acquires additional structure that we now characterize.
+The Game Tensor $\mathcal{G}_{ij}$ (Definition {prf:ref}`def-the-game-tensor`) measures cross-agent strategic sensitivity. Since $V^{(i)}$ is a scalar, $\mathcal{G}_{ij}$ is gauge-invariant. Gauge structure enters when comparing nuisance-frame vectors across agents or when defining cross-sensitivities of gauge-charged fields.
 
 :::{prf:proposition} Game Tensor Gauge Transformation
 :label: prop-game-tensor-gauge-transformation
 
-Under a local gauge transformation $U(z)$, the Game Tensor transforms as:
+Under a local gauge transformation $U(z)$, the scalar value field is unchanged, so:
 
 $$
-\mathcal{G}'_{ij}(z) = U(z) \mathcal{G}_{ij}(z) U(z)^\dagger + \mathcal{C}_{ij}[A, U]
-
-$$
-
-where $\mathcal{C}_{ij}[A, U]$ is a **connection correction** involving commutators $[A_\mu, \mathcal{G}_{ij}]$.
-
-For **Abelian** gauge groups ($[T_a, T_b] = 0$), the correction vanishes:
-
-$$
-\mathcal{G}'_{ij} = \mathcal{G}_{ij} \quad \text{(Abelian)}
+\mathcal{G}'_{ij}(z) = \mathcal{G}_{ij}(z).
 
 $$
 
-For **non-Abelian** groups, the Game Tensor is not gauge-invariant but transforms covariantly.
+If one defines a cross-sensitivity of a gauge-charged field (e.g., $\psi$ or a nuisance-frame vector), then the corresponding tensor transforms covariantly by conjugation, and covariant derivatives must be used.
 
-*Interpretation:* In non-Abelian settings, strategic coupling itself depends on the choice of internal frame. The "strength" of conflict between agents cannot be measured without specifying a gauge.
+*Interpretation:* Strategic coupling in the scalar value landscape is gauge-invariant; only nuisance-frame comparisons require a connection.
 
 :::
 
-:::{prf:definition} Gauge-Covariant Game Tensor
+:::{prf:definition} Gauge-Consistent Game Tensor
 :label: def-gauge-covariant-game-tensor
 
-The **Gauge-Covariant Game Tensor** is defined using covariant derivatives:
+Because $V^{(i)}$ is a scalar, the gauge-consistent cross-sensitivity is the **Riemannian Hessian** (Levi-Civita covariant derivative) rather than a gauge-covariant derivative:
 
 $$
-\tilde{\mathcal{G}}_{ij}^{kl}(z) := D_k D_l V^{(i)}\big|_{z^{(j)}}
+\tilde{\mathcal{G}}_{ij}^{kl}(z) := \nabla_k \nabla_l V^{(i)}\big|_{z^{(j)}}
 
 $$
 
 Explicitly:
 
 $$
-\tilde{\mathcal{G}}_{ij}^{kl} = \partial_k\partial_l V^{(i)} - ig(\partial_k A_l + \partial_l A_k)V^{(i)} - g^2[A_k, A_l]V^{(i)} + \Gamma^m_{kl}\partial_m V^{(i)}
+\tilde{\mathcal{G}}_{ij}^{kl} = \partial_k\partial_l V^{(i)} - \Gamma^m_{kl}\partial_m V^{(i)},
 
 $$
 
 where $\Gamma^m_{kl}$ are the Christoffel symbols of the strategic metric.
 
-*Properties:*
-1. Transforms covariantly: $\tilde{\mathcal{G}}'_{ij} = U\tilde{\mathcal{G}}_{ij}U^\dagger$
-2. Reduces to ordinary Game Tensor when $A_\mu = 0$
-3. The trace $\text{Tr}(\tilde{\mathcal{G}}_{ij})$ is gauge-invariant
+*Remark (Gauge-charged variant).* If one defines cross-sensitivities of a gauge-charged field (e.g., $\psi$ or nuisance-frame vectors), then use gauge-covariant derivatives $D_k D_l(\cdot)$; the resulting tensor transforms by conjugation.
 
 :::
 
@@ -1552,14 +1596,14 @@ where $\Gamma^m_{kl}$ are the Christoffel symbols of the strategic metric.
 The effective metric (Theorem {prf:ref}`thm-adversarial-mass-inflation`) generalizes to:
 
 $$
-\tilde{G}^{(i)}_{kl}(z) = G^{(i)}_{kl}(z) + \sum_{j \neq i} \beta_{ij} \text{Tr}\left[\tilde{\mathcal{G}}_{ij,kl}\right]
+\tilde{G}^{(i)}_{kl}(z) = G^{(i)}_{kl}(z) + \sum_{j \neq i} \beta_{ij} \tilde{\mathcal{G}}_{ij,kl}
 
 $$
 
-where the trace projects onto the gauge-invariant component.
+For gauge-charged cross-sensitivities, use a gauge-invariant contraction (e.g., a trace) before adding to the metric.
 
 *Proof sketch.*
-The physical metric must be gauge-invariant. Since $\tilde{\mathcal{G}}_{ij}$ transforms as $U\tilde{\mathcal{G}}_{ij}U^\dagger$, the trace $\text{Tr}(\tilde{\mathcal{G}}_{ij})$ is invariant under $U \to UVU^\dagger$ for any $V$, hence gauge-invariant. The sum over $j$ with coupling constants $\beta_{ij}$ preserves this invariance. $\square$
+The physical metric must be gauge-invariant. For scalar $V^{(i)}$, $\tilde{\mathcal{G}}_{ij}$ is already invariant. For gauge-charged tensors, use invariant contractions. $\square$
 
 *Consequence:* The metric inflation experienced by agents is a **physical observable** independent of internal frame choice.
 
@@ -1716,7 +1760,7 @@ $$
 where indices are raised with the Lorentzian metric $\eta^{\mu\nu} = \text{diag}(-1, +1, \ldots, +1)$ or the strategic metric $\tilde{G}^{\mu\nu}$.
 
 *Properties:*
-- $\mathcal{R}_{\text{strat}} \geq 0$ for compact gauge groups
+- In Euclidean signature, $\mathcal{R}_{\text{strat}}$ is non-negative for compact gauge groups; in Lorentzian signature it is indefinite.
 - $\mathcal{R}_{\text{strat}} = 0$ if and only if $\mathcal{F}_{\mu\nu} = 0$ (flat connection)
 - Provides a measure of total strategic tension in a region
 
@@ -1782,7 +1826,7 @@ where:
 *Properties:*
 1. **Gauge-invariant:** $S_{\text{YM}}[A'] = S_{\text{YM}}[A]$ under $A \to A'$
 2. **Lorentz-invariant:** Covariant under coordinate transformations
-3. **Positive semi-definite:** $S_{\text{YM}} \geq 0$ for compact gauge groups
+3. **Positive in Euclidean signature:** After Wick rotation the action is positive semi-definite for compact gauge groups; in Lorentzian signature it is indefinite.
 
 :::
 
@@ -1796,14 +1840,21 @@ D_\mu \mathcal{F}^{\mu\nu} = J^\nu
 
 $$
 
-where the **strategic current** (source term) is:
+where the **strategic current** (source term) is defined by the matter sector:
 
 $$
-J^{\nu,a} = g\sum_{i=1}^N \bar{\psi}^{(i)}\gamma^\nu T^a \psi^{(i)}
+J^{\nu,a} := -g\,\frac{\delta \mathcal{L}_{\text{matter}}}{\delta A_\nu^a}.
 
 $$
 
-Here $\gamma^\nu$ are the Dirac matrices (or their appropriate generalization to curved space), and the sum is over all $N$ agents.
+For a complex multiplet $\psi$ (scalar belief amplitude), a standard choice is
+
+$$
+J^{\nu,a} = g\,\mathrm{Im}\left(\psi^\dagger T^a D^\nu \psi\right),
+
+$$
+
+while for a spinor multiplet one recovers $J^{\nu,a} = g\bar{\psi}\gamma^\nu T^a \psi$.
 
 *Expanded form:*
 
@@ -1929,13 +1980,13 @@ where each sector contributes:
 **(i) Yang-Mills Sector (Strategic Gauge Field):**
 
 $$
-\mathcal{L}_{\text{YM}} = -\frac{1}{4}\text{Tr}(\mathcal{F}_{\mu\nu}\mathcal{F}^{\mu\nu})
+\mathcal{L}_{\text{YM}} = -\frac{1}{4g^2}\text{Tr}(\mathcal{F}_{\mu\nu}\mathcal{F}^{\mu\nu})
 
 $$
 
 This governs the dynamics of the strategic connection $A_\mu$.
 
-**(ii) Dirac Sector (Belief Matter Field):**
+**(ii) Matter Sector (Belief Field):**
 
 $$
 \mathcal{L}_{\text{Dirac}} = \sum_{i=1}^N \bar{\psi}^{(i)}(i\gamma^\mu D_\mu - m_i)\psi^{(i)}
@@ -1943,10 +1994,15 @@ $$
 $$
 
 where:
-- $\psi^{(i)}$ is the belief spinor for agent $i$
+- $\psi^{(i)}$ is the belief multiplet for agent $i$
 - $\bar{\psi}^{(i)} = \psi^{(i)\dagger}\gamma^0$ is the Dirac adjoint
 - $D_\mu = \partial_\mu - igA_\mu$ is the covariant derivative
 - $m_i$ is the "bare mass" (intrinsic inertia) of agent $i$
+
+*Scalar option:* If the belief field is modeled as a complex scalar (the canonical single-agent choice), replace the Dirac term by
+$$
+\mathcal{L}_{\text{scalar}} = \sum_{i=1}^N (D_\mu \psi^{(i)})^\dagger (D^\mu \psi^{(i)}) - m_i^2\,\psi^{(i)\dagger}\psi^{(i)}.
+$$
 
 **(iii) Higgs Sector (Value Order Parameter):**
 
@@ -2066,7 +2122,7 @@ Now we come to something really deep. The mass gap problem is one of the great u
 
 First, let me explain what the mass gap is. In a field theory, you have a ground state, the vacuum. And you have excited states. The mass gap is the minimum energy you need to create the first excitation. If the gap is zero, you can create excitations with arbitrarily small energy. If the gap is positive, there is a threshold. You need at least $\Delta$ energy to excite the system.
 
-Why does this matter? Because if the gap is zero, correlations decay algebraically, like $1/r^{D-2}$. They are long-range. But if there is a mass gap, correlations decay exponentially, like $e^{-\kappa r}$. They are short-range, screened.
+Why does this matter? Because if the gap is zero, correlations decay algebraically (for $D>2$, like $1/r^{D-2}$; in $D=2$ they are only logarithmic). They are long-range. But if there is a mass gap, correlations decay exponentially, like $e^{-\kappa r}$. They are short-range, screened.
 
 Now here is the key insight. A system with zero mass gap has infinite correlation length. It takes infinite information to describe such correlations in a finite region. But we have this Causal Information Bound that says a bounded observer can only handle finite information. An area law, like the holographic bound.
 
@@ -2116,7 +2172,7 @@ where $E_0$ is the ground state energy.
 :::{prf:theorem} Mass Gap from Screening
 :label: thm-mass-gap-screening
 
-The screening mass $\kappa = -\ln\gamma$ from the Helmholtz equation (Theorem {prf:ref}`thm-the-hjb-helmholtz-correspondence`) provides a lower bound on the mass gap:
+The screening mass $\kappa = \lambda/c_{\text{info}}$ with $\lambda := -\ln\gamma / \Delta t$ from the Helmholtz equation (Theorem {prf:ref}`thm-the-hjb-helmholtz-correspondence`) provides a lower bound on the mass gap (in natural units, $\kappa = -\ln\gamma$):
 
 $$
 \Delta \geq \frac{\kappa^2}{2m_{\text{eff}}}
@@ -2136,7 +2192,7 @@ The Klein-Gordon operator $(-\Box + \kappa^2)$ has spectrum bounded below by $\k
 **Assumptions:**
 1. The system satisfies the **Causal Information Bound** (Theorem {prf:ref}`thm-causal-information-bound`): $I_{\text{bulk}}(V) \leq \nu_D \cdot \text{Area}(\partial V) / \ell_L^{D-1}$
 2. The system has finite spatial extent (bounded region $V$)
-3. Correlations follow the standard field-theoretic decay: massive $\sim e^{-\kappa r}$, massless $\sim 1/r^{D-2}$
+3. Correlations follow the standard field-theoretic decay: massive $\sim e^{-\kappa r}$, massless $\sim 1/r^{D-2}$ for $D>2$ (logarithmic in $D=2$)
 
 **Statement:** Under these assumptions, a system with $\Delta = 0$ enters Causal Stasis ($\|v\|_G = 0$).
 
@@ -2151,7 +2207,7 @@ The Klein-Gordon operator $(-\Box + \kappa^2)$ has spectrum bounded below by $\k
 
    $$
 
-3. **Divergent information volume:** For massless correlations decaying as $1/r^{D-2}$ (rather than $e^{-\kappa r}$ for massive), the integrated mutual information in a volume $V$ diverges:
+3. **Divergent information volume:** For massless correlations decaying as $1/r^{D-2}$ for $D>2$ (logarithmic in $D=2$, rather than $e^{-\kappa r}$ for massive), the integrated mutual information in a volume $V$ diverges:
 
    $$
    I_{\text{bulk}} \propto \int_V \text{Corr}(x, y)\,dV \to \infty
@@ -2455,7 +2511,7 @@ The framework is Yang-Mills theory applied to information systems. The mass gap 
 | Continuum limit $a \to 0$ | Causal Stasis (pathological) |
 | Asymptotic freedom | High-energy strategic independence |
 | Area law (holographic) | Causal Information Bound |
-| Screening mass $\kappa$ | Discount rate $-\ln\gamma$ |
+| Screening mass $\kappa$ | Temporal discount rate $\lambda = -\ln\gamma / \Delta t$ (so $\kappa = \lambda / c_{\text{info}}$) |
 
 ::::
 
@@ -3579,7 +3635,7 @@ class RelativisticMultiAgentInterface(nn.Module):
 | **Dynamics** | WFR Continuity + HJB | Coupled WFR + Retardation | + Yang-Mills equations | Schrödinger equation |
 | **Generator** | Fokker-Planck / WFR | Coupled continuity (Klein-Gordon) | + $D_\mu \mathcal{F}^{\mu\nu} = J^\nu$ | Hamiltonian $\hat{H}_{\text{strat}}$ |
 | **Kinetic Term** | $\nabla \cdot (\rho G^{-1}\nabla V)$ | $\frac{1}{c^2}\partial_t^2 - \Delta_G$ | $\frac{1}{c^2}D_t^2 - D^i D_i$ | $-\frac{\sigma^2}{2}\Delta_{\tilde{G}}$ |
-| **Potential** | $\Phi_{\text{eff}}(z)$ | $\Phi^{\text{ret}}_{ij}(z^{(i)}, z^{(j)}_{t-\tau})$ | + Higgs $\mu^2|\Phi|^2 + \lambda|\Phi|^4$ | Operator $\hat{\Phi}_{\text{eff}} + \sum \hat{V}_{ij}$ |
+| **Potential** | $\Phi_{\text{eff}}(z)$ | $\Phi^{\text{ret}}_{ij}(z^{(i)}, t)$ (quasi-static: $\approx \Phi_{ij}(z^{(i)}, z^{(j)}_{t-\tau})$) | + Higgs $\mu^2|\Phi|^2 + \lambda|\Phi|^4$ | Operator $\hat{\Phi}_{\text{eff}} + \sum \hat{V}_{ij}$ |
 | **Metric Effect** | $G$ | $\tilde{G}^{(i)}(t) = G^{(i)} + \sum_j \beta_{ij}\mathcal{G}^{\text{ret}}_{ij}$ | + Gauge-covariant $\tilde{\mathcal{G}}_{ij}$ | Game-Augmented Laplacian |
 | **Coupling Mechanism** | — | Ghost Interface $\mathcal{G}_{ij}(t)$ | + Gauge connection $A_\mu$ | + Strategic Entanglement |
 | **Resolution Limit** | — | Causal delay $\tau_{ij} = d_{\mathcal{E}}^{ij}/c_{\text{info}}$ | Mass gap $\Delta > 0$ | Bohm potential $Q_B$ |

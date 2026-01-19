@@ -3164,21 +3164,26 @@ $$
 
 ({prf:ref}`def-retarded-interaction-potential`) *definition* — **Retarded Interaction Potential**
 
-The **Retarded Interaction Potential** from Agent $j$ to Agent $i$ at time $t$ is:
+The **Retarded Interaction Source Density** from Agent $j$ to Agent $i$ is:
 
 $$
-\Phi^{\text{ret}}_{ij}(z^{(i)}, t) := \alpha_{ij} \cdot \mathcal{G}_{\kappa}(z^{(i)}, \hat{z}^{(j)}_t) \cdot \sigma^{(j)}_r(\hat{z}^{(j)}_t),
+\rho^{\text{ret}}_{ij}(\zeta, \tau) := \alpha_{ij} \cdot \rho^{(j)}_r(\zeta, \tau),
 
 $$
-where:
-- $\hat{z}^{(j)}_t = z^{(j)}_{t - \tau_{ij}}$ is the ghost state
-- $\mathcal{G}_{\kappa}$ is the screened Green's function (Proposition {prf:ref}`prop-green-s-function-interpretation`)
-- $\alpha_{ij} \in \{-1, 0, +1\}$ encodes the strategic relationship:
-  - $\alpha_{ij} = +1$: Cooperative
-  - $\alpha_{ij} = 0$: Independent
-  - $\alpha_{ij} = -1$: Adversarial
+where $\rho^{(j)}_r$ is the conservative reward source density for Agent $j$ and $\alpha_{ij} \in \{-1,0,+1\}$ encodes the
+strategic relationship (cooperative, independent, adversarial).
 
-*Remark:* The interaction depends on Agent $j$'s state at the retarded time, not the current time. This introduces **Strategic Hysteresis**: Agent $i$ may commit to a trajectory based on old information about $j$, only to encounter updated conditions later.
+The induced **Retarded Interaction Potential** is:
+
+$$
+\Phi^{\text{ret}}_{ij}(z^{(i)}, t) = \int_{-\infty}^{t} \int_{\mathcal{Z}^{(j)}} G_{\text{ret}}(z^{(i)}, t; \zeta, \tau)\,
+\rho^{\text{ret}}_{ij}(\zeta, \tau)\, d\mu_G(\zeta)\, d\tau,
+
+$$
+with $G_{\text{ret}}$ from Definition {prf:ref}`def-retarded-potential`.
+
+*Remark (Ghost limit).* For point sources, this reduces to evaluation at the retarded time (ghost state). The static
+ghost-kernel form is a quasi-static approximation of this retarded convolution.
 
 ({prf:ref}`def-the-game-tensor`) *definition* — **The Game Tensor**
 
@@ -3820,7 +3825,7 @@ D_\mu = \underbrace{\partial_\mu}_{\text{Change}} - \underbrace{ig_1 \frac{Y}{2}
 $$
 
 where $\lambda^a$ ($a = 1, \ldots, N_f^2 - 1$) are the generators of $SU(N_f)$, and:
-- **$B_\mu$ (Opportunity Field):** Adjusts the belief for local changes in Reward Baseline
+- **$B_\mu$ (Opportunity Field):** Adjusts the belief for local shifts in the value baseline and path-dependent opportunity
 - **$W_\mu$ (Error Field):** Adjusts the belief for the rotation between Prior and Posterior
 - **$G_\mu$ (Binding Field):** Adjusts the belief for the permutation of sub-symbolic features
 
@@ -3915,10 +3920,10 @@ where:
 
 **Derived Quantities:**
 
-Define the **Causal Horizon Length** $\ell_0 = c_{\text{info}} \cdot \tau_{\text{proc}}$ with dimension $[L]$. The **Temporal Screening Mass** is then:
+Define the **Causal Horizon Length** $\ell_0 = c_{\text{info}} \cdot \tau_{\text{proc}}$ with dimension $[L]$. Let the temporal discount rate be $\lambda := -\ln\gamma / \Delta t$ and identify the processing interval $\Delta t := \tau_{\text{proc}}$. The **Spatial Screening Mass** is then:
 
 $$
-\kappa = \frac{-\ln\gamma}{\ell_0}
+\kappa = \frac{\lambda}{c_{\text{info}}} = \frac{-\ln\gamma}{\ell_0}
 
 $$
 
@@ -5580,7 +5585,7 @@ where $\mathcal{G}_{\kappa}$ is the screened Green's function (Proposition {prf:
 The solution to the inhomogeneous Klein-Gordon equation is given by convolution with the **Retarded Green's Function**:
 
 $$
-V^{(i)}(z, t) = \int_{-\infty}^{t} \int_{\mathcal{Z}^{(i)}} G_{\text{ret}}(z, t; \zeta, \tau) \left[ \rho^{(i)}_r(\zeta, \tau) + \sum_{j} \Phi^{\text{ret}}_{ij}(\zeta, \tau) \right] d\mu_G(\zeta) \, d\tau,
+V^{(i)}(z, t) = \int_{-\infty}^{t} \int_{\mathcal{Z}^{(i)}} G_{\text{ret}}(z, t; \zeta, \tau) \left[ \rho^{(i)}_r(\zeta, \tau) + \sum_{j \neq i} \rho^{\text{ret}}_{ij}(\zeta, \tau) \right] d\mu_G(\zeta) \, d\tau,
 
 $$
 where $G_{\text{ret}}$ satisfies:
@@ -7293,7 +7298,7 @@ where $\mathcal{K}_{\text{delay}}(t-\tau) = \delta(t - \tau - \tau_{ij})$ is the
 Let information propagate at speed $c_{\text{info}}$. The Value Function $V^{(i)}(z, t)$ for Agent $i$ satisfies the **Screened Wave Equation**:
 
 $$
-\boxed{\left( \frac{1}{c_{\text{info}}^2} \frac{\partial^2}{\partial t^2} + \gamma_{\text{damp}} \frac{\partial}{\partial t} - \Delta_{G^{(i)}} + \kappa_i^2 \right) V^{(i)}(z, t) = \rho^{(i)}_r(z, t) + \sum_{j \neq i} \Phi^{\text{ret}}_{ij}(z, t)}
+\boxed{\left( \frac{1}{c_{\text{info}}^2} \frac{\partial^2}{\partial t^2} + \gamma_{\text{damp}} \frac{\partial}{\partial t} - \Delta_{G^{(i)}} + \kappa_i^2 \right) V^{(i)}(z, t) = \rho^{(i)}_r(z, t) + \sum_{j \neq i} \rho^{\text{ret}}_{ij}(z, t)}
 
 $$
 where:
@@ -7303,7 +7308,7 @@ where:
   $$\kappa_i = \frac{-\ln\gamma_i}{c_{\text{info}} \Delta t} = \frac{\kappa_{i,\text{temporal}}}{c_{\text{info}}}$$
   where $\kappa_{i,\text{temporal}} = -\ln\gamma_i / \Delta t$ is the temporal discount rate with units $1/[\text{time}]$
 - $\rho^{(i)}_r$ is the local reward source (units: $[\text{nat}]/[\text{length}]^2$)
-- $\Phi^{\text{ret}}_{ij}$ is the retarded interaction potential (Definition {prf:ref}`def-retarded-interaction-potential`)
+- $\rho^{\text{ret}}_{ij}$ is the retarded interaction source density (Definition {prf:ref}`def-retarded-interaction-potential`)
 
 
 *Character:* This is a hyperbolic PDE (wave equation with mass and damping), in contrast to the elliptic Helmholtz equation of {ref}`Section 24.2 <sec-the-bulk-potential-screened-poisson-equation>`.
@@ -7597,7 +7602,7 @@ The term $\frac{g^2v^2}{4}A_\mu A^\mu$ is a mass term for $A_\mu$ with $m_A^2 = 
 
 ({prf:ref}`thm-mass-gap-screening`) *theorem* — **Mass Gap from Screening**
 
-The screening mass $\kappa = -\ln\gamma$ from the Helmholtz equation (Theorem {prf:ref}`thm-the-hjb-helmholtz-correspondence`) provides a lower bound on the mass gap:
+The screening mass $\kappa = \lambda / c_{\text{info}}$ with $\lambda = -\ln\gamma / \Delta t$ from the Helmholtz equation (Theorem {prf:ref}`thm-the-hjb-helmholtz-correspondence`) provides a lower bound on the mass gap (natural units: $\kappa = -\ln\gamma$):
 
 $$
 \Delta \geq \frac{\kappa^2}{2m_{\text{eff}}}
@@ -7947,11 +7952,13 @@ $$
 
 **Step 4.** The gauge-invariant kinetic term is $(D_\mu\psi)^\dagger(D^\mu\psi) = |D_\mu\psi|^2$.
 
-**Identification:** The field $B_\mu$ compensates for the shifting baseline of utility:
-- The spatial components $\vec{B}$ correspond to the **Vector Potential** of value (the solenoidal component from Definition {prf:ref}`def-conservative-reward-field`)
-- The temporal component $B_0$ corresponds to the **Scalar Potential** offset
+**Identification:** The field $B_\mu$ is the $U(1)$ connection associated with the reward 1-form (the Opportunity Field).
+In the conservative case, $B_\mu = \partial_\mu \Phi$ is pure gauge. On each time slice, the spatial components $\vec{B}$
+admit a Hodge decomposition into gradient (conservative) plus solenoidal/harmonic parts (path-dependent opportunity).
 
-The field strength tensor $F_{\mu\nu} = \partial_\mu B_\nu - \partial_\nu B_\mu$ measures the non-conservative component of the reward field (Definition {prf:ref}`def-conservative-reward-field`). When $F_{\mu\nu} \neq 0$, no choice of baseline can make the reward landscape path-independent.
+The field strength tensor $B_{\mu\nu} = \partial_\mu B_\nu - \partial_\nu B_\mu$ measures the non-conservative component
+of the reward 1-form (Value Curl; Definition {prf:ref}`def-value-curl`). When $B_{\mu\nu} \neq 0$, no choice of baseline
+can make the reward landscape path-independent.
 
 $\square$
 
@@ -8408,20 +8415,22 @@ with $\gamma_{\text{min}} > 0$.
 **Step 1.** From the Helmholtz equation (Theorem {prf:ref}`thm-the-hjb-helmholtz-correspondence`), the Value function satisfies:
 
 $$
-(\kappa^2 - \nabla^2) V = r
+(\kappa^2 - \nabla^2) V = \rho_r
 
 $$
 
-where the screening mass $\kappa = (-\ln\gamma)/\ell_0$ has dimension $[L^{-1}]$, and $\ell_0 = c_{\text{info}} \cdot \tau_{\text{proc}}$ is the causal horizon length (Definition {prf:ref}`def-agent-parameter-vector`). This ensures dimensional consistency: $[\kappa^2] = [L^{-2}] = [\nabla^2]$.
+where the screening mass $\kappa = \lambda / c_{\text{info}} = (-\ln\gamma)/\ell_0$ has dimension $[L^{-1}]$, and $\ell_0 = c_{\text{info}} \cdot \tau_{\text{proc}}$ is the causal horizon length (Definition {prf:ref}`def-agent-parameter-vector`). This ensures dimensional consistency: $[\kappa^2] = [L^{-2}] = [\nabla^2]$.
 
 **Step 2.** For $\gamma = 1$, we have $\kappa = 0$. The equation becomes Poisson's equation:
 
 $$
--\nabla^2 V = r
+-\nabla^2 V = \rho_r
 
 $$
 
-The Green's function decays as $1/r^{D-2}$ (long-range).
+where $\rho_r$ is the conservative reward source density (Definition {prf:ref}`def-the-reward-flux`).
+
+For $D>2$, the Green's function decays as $1/r^{D-2}$ (long-range); for $D=2$ it grows logarithmically.
 
 **Step 3.** Long-range value propagation violates locality: distant rewards dominate nearby decisions. The agent cannot form local value gradients for navigation.
 
@@ -9206,19 +9215,22 @@ Each specifies:
 
 **Cross-references:** {ref}`Section 21.2 <sec-policy-control-field>` (Control Field), Theorem {prf:ref}`thm-unified-control-interpretation`, Definition {prf:ref}`def-effective-potential`.
 
-*Forward reference (Effective Potential Resolution).* {ref}`Section 24.2 <sec-the-bulk-potential-screened-poisson-equation>` resolves the meaning of $\Phi_{\text{eff}} = V_{\text{critic}}$: the Critic solves the **Screened Poisson Equation** to compute the potential from boundary reward charges. The discount factor $\gamma$ determines the screening length $\ell = -1/\ln\gamma$ (Corollary {prf:ref}`cor-discount-as-screening-length`), explaining why distant rewards are exponentially suppressed in policy.
+*Forward reference (Effective Potential Resolution).* {ref}`Section 24.2 <sec-the-bulk-potential-screened-poisson-equation>` resolves the meaning of $\Phi_{\text{eff}} = V_{\text{critic}}$: the Critic solves the **Screened Poisson Equation** to compute the potential from boundary reward charges. The discount factor $\gamma$ determines the screening length $\ell = c_{\text{info}} \Delta t / (-\ln\gamma)$ (natural units: $1/(-\ln\gamma)$) (Corollary {prf:ref}`cor-discount-as-screening-length`), explaining why distant rewards are exponentially suppressed in policy.
 
 ({prf:ref}`cor-discount-as-screening-length`) *corollary* — **Discount as Screening Length**
 
 The discount factor $\gamma$ determines a characteristic **screening length**:
 
 $$
-\ell_{\text{screen}} = \frac{1}{\kappa} = \frac{\Delta t}{-\ln\gamma}.
+\ell_{\text{screen}} = \frac{1}{\kappa} = \frac{c_{\text{info}} \Delta t}{-\ln\gamma} = \frac{c_{\text{info}}}{\lambda}.
 
 $$
-For $\gamma = 0.99$ and $\Delta t = 1$: $\ell_{\text{screen}} \approx 100$ steps.
+where $\lambda := -\ln\gamma / \Delta t$.
+For $\gamma = 0.99$ and $c_{\text{info}} \Delta t = 1$: $\ell_{\text{screen}} \approx 100$ steps.
 
 *Interpretation:* Rewards at geodesic distance $> \ell_{\text{screen}}$ from state $z$ are exponentially suppressed in their contribution to $V(z)$. This is the **temporal horizon** recast as a **spatial horizon** in latent space.
+
+*Note:* Numerical values below assume natural units ($c_{\text{info}} \Delta t = 1$).
 
 **Table 24.2.5 (Discount-Screening Correspondence).**
 
@@ -10074,27 +10086,18 @@ $[v] = \text{length}/\text{time}$, $[r] = 1/\text{time}$, and $[\lambda] = \text
 
 The screened Poisson equation $-\Delta_G V + \kappa^2 V = \rho_r$ requires careful dimensional analysis. The naive expression $\kappa = -\ln\gamma$ appears dimensionless, which would be inconsistent with $[\Delta_G] = [\text{length}]^{-2}$.
 
-The resolution lies in the proof derivation. The intermediate equation before normalization is:
+The resolution is to separate temporal and spatial scales. Define the temporal discount rate $\lambda := -\ln\gamma / \Delta t$ (units $1/[\text{time}]$), then convert to the spatial screening mass $\kappa := \lambda / c_{\text{info}}$ (units $1/[\text{length}]$). This makes $\kappa^2$ commensurate with $[\Delta_G] = [\text{length}]^{-2}$.
 
-$$
-\kappa V = r + \nabla V \cdot b + T_c \Delta_G V
-
-$$
-
-where $T_c$ is the **cognitive temperature** (Definition {prf:ref}`def-cognitive-temperature`), which acts as a diffusion coefficient with units $[T_c] = [\text{length}]^2/[\text{time}]$.
-
-**In natural units** (used throughout this document): We set $T_c = 1$ and $\Delta t = 1$, making $\kappa = -\ln\gamma$ numerically equal to the screening mass. The stated units $[\kappa] = 1/\text{length}$ are correct in this convention.
+**In natural units** (used throughout this document): We set $\Delta t = 1$ and $c_{\text{info}} = 1$, making $\kappa = -\ln\gamma$ numerically equal to the screening mass.
 
 **In SI units**: The proper relationship is:
 
 $$
-\kappa_{\text{phys}} = \frac{-\ln\gamma}{\sqrt{T_c \cdot \Delta t}}, \qquad [\kappa_{\text{phys}}] = \frac{1}{\text{length}}
+\kappa_{\text{phys}} = \frac{-\ln\gamma}{c_{\text{info}} \Delta t}, \qquad [\kappa_{\text{phys}}] = \frac{1}{\text{length}}
 
 $$
 
-The screening length $\ell_{\text{screen}} = 1/\kappa$ thus depends on both the temporal horizon ($\gamma$) and the diffusive spreading rate ($T_c$). This is physically sensible: slower diffusion (smaller $T_c$) increases the effective screening length because value information takes longer to propagate.
-
-**Consistency check**: In the proof, dividing $\kappa V = r + T_c \Delta_G V$ by $T_c$ yields $(\kappa/T_c) V = r/T_c + \Delta_G V$. Rearranging: $-\Delta_G V + (\kappa/T_c) V = -r/T_c$. The effective "mass squared" in the normalized equation is $\kappa^2_{\text{eff}} = \kappa/T_c$, which has the correct units $[\text{length}]^{-2}$ when $[\kappa] = [\text{time}]^{-1}$ and $[T_c] = [\text{length}]^2/[\text{time}]$.
+The screening length $\ell_{\text{screen}} = 1/\kappa$ thus depends on both the temporal horizon ($\gamma$) and the information propagation speed $c_{\text{info}}$. Slower propagation (smaller $c_{\text{info}}$) shortens the effective horizon in latent space.
 
 ({prf:ref}`rem-extension-not-replacement`) *remark* — **Extension, Not Replacement**
 

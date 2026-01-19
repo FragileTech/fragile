@@ -1,5 +1,7 @@
 # Single Agent Architecture as Field Theory: Technical TLDR
 
+Guillem Duran Ballester, Jan 2026
+
 ## 1. Latent Space Decomposition
 
 **Split-Latent Structure:**
@@ -127,7 +129,7 @@ The integration step is modeled as a **Covariant Cross-Attention** layer (Multi-
     -   Memory Context (Keys/Values from past trajectory).
 -   **Output:**
     -   Next State $z_{t+1}$ (Integrated position after Kick-Drift-Kick).
-    
+
 **C. Training Losses:**
 1.  **Geodesic Distance Loss:** $\mathcal{L}_{\text{geo}} \approx (z_{\text{pred}} - z_{\text{true}})^T G(z_t) (z_{\text{pred}} - z_{\text{true}})$. Minimizes local Riemannian distance. Using the diagonal approximation (Section 5), this becomes a **Weighted MSE**: $\sum_i G_{ii} (z_{\text{pred}}^{(i)} - z_{\text{true}}^{(i)})^2$. High-risk dimensions (large $G_{ii}$) are penalized more heavily.
 2.  **Thermodynamic Consistency:** $\mathcal{L}_{\text{NLL}} = -\log p(z_{t+1} | z_t, u_t)$. Ensures the model captures the stochastic thermal noise term ($\sqrt{2T_c} dW$) correctly.
@@ -161,5 +163,5 @@ Computing the full Riemannian metric $G_{ij}$ ($D \times D$ tensor) is expensive
 3.  **Low-Rank Updates (EMA):** We do not solve the Einstein Field Equations at every step. Instead, we update the metric using an **Exponential Moving Average (EMA)** of the Risk Tensor.
     -   *Update Rule:* `metric_diag.lerp_(risk_diag, 1 - momentum)`
     -   *Interpretation:* The geometry "flows" slowly towards the high-risk regions, smoothing out transient noise just like Adam smooths gradient variance.
-    
+
 **Result:** We get Riemannian Manifold Hamiltonian Monte Carlo (RMHMC) benefits for the cost of standard SGD+Momentum.

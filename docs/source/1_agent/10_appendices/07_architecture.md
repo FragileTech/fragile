@@ -3,12 +3,14 @@
 
 ## TLDR
 
-- Centralizes **~22 neural network modules** defined throughout Volume 1
+- Centralizes **~45 neural network modules** defined throughout Volume 1
 - Organized by domain:
   - **Disentangled VAE** ({ref}`Part III <sec-architecture-the-disentangled-vq-vae-rnn>`)
   - **Supervised Topology** ({ref}`Section 25 <sec-supervised-topology-semantic-potentials-and-metric-segmentation>`)
   - **Lorentzian Memory Attention** ({ref}`Part VII <sec-covariant-memory-attention-architecture>`)
-  - **Gauge-Covariant Attention** ({ref}`Part VIII <sec-covariant-cross-attention-architecture>`)
+  - **Gauge-Covariant Attention** ({ref}`Section 05 <sec-covariant-cross-attention-architecture>`)
+  - **Gauge-Covariant Primitives** ({ref}`Section 04 <sec-dnn-blocks>`)
+  - **Universal Geometric Network** ({ref}`Section 06 <sec-universal-geometric-network>`)
 - Each module includes: class signature, key parameters, input/output shapes, purpose, and source reference
 - Use as a single reference when implementing the Fragile Agent architecture
 - All modules follow the gauge-covariant paradigm with explicit unit tracking
@@ -592,7 +594,7 @@ class LorentzianMemoryAttention(nn.Module):
 
 ## G.4 Gauge-Covariant Attention Modules
 
-These modules implement the gauge-covariant world model from {ref}`Section 35 <sec-covariant-cross-attention-architecture>`, enforcing $G_{\text{Fragile}} = SU(N_f)_C \times SU(2)_L \times U(1)_Y$ symmetry.
+These modules implement the gauge-covariant world model from {ref}`Section 05 <sec-covariant-cross-attention-architecture>`, enforcing $G_{\text{Fragile}} = SU(N_f)_C \times SU(2)_L \times U(1)_Y$ symmetry.
 
 ### G.4.1 GeodesicConfig
 
@@ -941,7 +943,616 @@ $$c_1 = e^{-\gamma h}, \quad c_2 = \sqrt{(1-c_1^2)T_c}$$
 
 ---
 
-## G.5 Summary Table
+## G.5 Gauge-Covariant Primitives (Section 04)
+
+These modules implement the fundamental gauge-covariant building blocks from {ref}`Section 04 <sec-dnn-blocks>`, ensuring spectral normalization, rotational equivariance, and light cone preservation.
+
+### G.5.1 SpectralLinear
+
+:::{prf:definition} G.5.1 (SpectralLinear)
+:label: def-g-spectral-linear
+
+**Class signature:**
+```python
+class SpectralLinear(nn.Module):
+    def __init__(self, in_features: int, out_features: int, bias: bool = False):
+        ...
+```
+
+**Input/Output:**
+- Input: `x` shape `[B, in_features]` – Feature vectors
+- Output: `y` shape `[B, out_features]` – Transformed features
+
+**Purpose:** Linear layer with spectral normalization $\sigma_{\max}(W) \leq 1$. Ensures capacity bound and light cone preservation for causal structure.
+
+**Key parameters:**
+- `in_features` – Input dimension [nat]
+- `out_features` – Output dimension [nat]
+- `bias` – Typically `False` for gauge invariance (breaks tangent bundle structure)
+
+**Mathematical operation:**
+$$y = W_{\text{normalized}} \cdot x \quad \text{where} \quad \sigma_{\max}(W_{\text{normalized}}) \leq 1$$
+
+**Key properties:**
+- Contraction: $\|y\| \leq \|x\|$ (no unbounded amplification)
+- Light cone preservation: $d(Wz_1, Wz_2) \leq c_{\text{info}} \Delta t$ whenever inputs are causally connected
+- No bias term (gauge invariance requirement)
+
+**Diagnostic node:** Node 62 (CausalityViolationCheck) verifies $\sigma_{\max}(W) \leq 1 + \epsilon$ during training.
+
+**Source:** {ref}`Section 04 <sec-dnn-blocks>`, Definition {prf:ref}`def-spectral-linear`, line 569.
+:::
+
+### G.5.2 NormGatedActivation
+
+:::{prf:definition} G.5.2 (NormGatedActivation)
+:label: def-g-norm-gated-activation
+
+**Function signature:**
+```python
+def norm_gated_activation(v: torch.Tensor, b: torch.Tensor) -> torch.Tensor:
+    """
+    Args:
+        v: Bundle vectors [B, n_bundles, bundle_dim]
+        b: Bias scalars [n_bundles]
+    Returns:
+        Gated vectors [B, n_bundles, bundle_dim]
+    """
+    norms = torch.norm(v, dim=-1, keepdim=True)  # [B, n_bundles, 1]
+    gates = F.gelu(norms.squeeze(-1) + b)        # [B, n_bundles]
+    return v * gates.unsqueeze(-1) / (norms + 1e-8)
+```
+
+**Input/Output:**
+- Input: `v` shape `[B, n_bundles, d_b]` – Bundle vectors
+- Output: Gated vectors shape `[B, n_bundles, d_b]` – Energy-filtered output
+
+**Purpose:** $SO(d_b)$-equivariant activation using radial symmetry. Gates signal based on energy $\|v\|$ exceeding threshold $-b$.
+
+**Mathematical operation:**
+$$f(v_i) = v_i \cdot g(\|v_i\| + b_i)$$
+
+where:
+- $\|v_i\| = \sqrt{v_i^T v_i}$ is the Euclidean norm (rotation-invariant)
+- $g: \mathbb{R} \to \mathbb{R}$ is GELU or another smooth scalar function
+- $b_i$ is the learnable activation potential (energy barrier)
+
+**Key properties:**
+- **$SO(d_b)$ equivariance:** $f(Rv) = R f(v)$ for all $R \in SO(d_b)$
+- **Physical interpretation:** Energy barrier—gate opens when $\|v\| > -b$
+- **Direction independence:** Gate decision depends only on magnitude, not orientation
+
+**GELU rationale:**
+- $C^\infty$ smoothness (compatible with WFR metric)
+- Linear growth at large arguments: $g(x) \approx x$ for $x \gg 1$
+- Controlled Lipschitz constant $L_g \approx 1.129$
+- Empirically effective (validated in transformers)
+
+**Alternative activations:** Softplus ($C^\infty$, always positive), Sigmoid/Tanh (saturate, reduced dynamic range).
+
+**Source:** {ref}`Section 04 <sec-dnn-blocks>`, Definition {prf:ref}`def-norm-gated-activation`, line 714.
+:::
+
+### G.5.3 IsotropicBlock
+
+:::{prf:definition} G.5.3 (IsotropicBlock)
+:label: def-g-isotropic-block
+
+**Class signature:**
+```python
+class IsotropicBlock(nn.Module):
+    def __init__(
+        self,
+        in_dim: int,
+        out_dim: int,
+        bundle_size: int = 16,
+        exact: bool = False
+    ):
+        ...
+```
+
+**Input/Output:**
+- Input: `z` shape `[B, in_dim]` – Input features
+- Output: `z_out` shape `[B, out_dim]` – Transformed features
+
+**Purpose:** Atomic gauge-covariant building block combining SpectralLinear, Reshape, and NormGate in sequence.
+
+**Architecture:**
+$$\text{IsotropicBlock}(z) = \text{NormGate}(\text{Reshape}(\text{SpectralLinear}(z)))$$
+
+**Key parameters:**
+- `in_dim` – Input dimension [nat]
+- `out_dim` – Output dimension (must be divisible by `bundle_size`) [nat]
+- `bundle_size` – Dimension of each bundle $d_b$ [nat]
+- `exact` – If `True`, uses scalar blocks $W_i = \lambda_i I_{d_b}$ for exact equivariance; if `False` (default), uses block-diagonal for approximate equivariance
+
+**Equivariance modes:**
+- **Exact mode** (`exact=True`): Strictly $\prod_{i=1}^{n_b} SO(d_b)$ equivariant via scalar blocks
+  - Weight matrix: $W = \text{diag}(\lambda_1 I, \ldots, \lambda_{n_b} I)$
+  - Limited expressiveness (can only scale bundles)
+  - Zero equivariance violation
+
+- **Approximate mode** (`exact=False`): Bounded equivariance violation, greater expressiveness
+  - Weight matrix: Block-diagonal with general $d_b \times d_b$ blocks
+  - Each block spectrally normalized: $\sigma_{\max}(W_i) \leq 1$
+  - Can learn within-bundle transformations
+
+**Mathematical constraint (exact mode):**
+By Schur's lemma, any linear map commuting with all $g \in SO(d_b)$ must be a scalar multiple of identity:
+$$W_i \cdot g_i = g_i \cdot W_i \quad \forall g_i \in SO(d_b) \quad \Rightarrow \quad W_i = \lambda_i I_{d_b}$$
+
+**Diagnostic nodes:** Node 67 (GaugeInvarianceCheck), Node 62 (CausalityViolationCheck), Node 40 (PurityCheck).
+
+**Source:** {ref}`Section 04 <sec-dnn-blocks>`, Definition {prf:ref}`def-isotropic-block`, line 803.
+:::
+
+### G.5.4 GaugeInvarianceCheck
+
+:::{prf:definition} G.5.4 (GaugeInvarianceCheck)
+:label: def-g-gauge-invariance-check
+
+**Class signature:**
+```python
+class GaugeInvarianceCheck(DiagnosticNode):
+    def __init__(self, layer: nn.Module, group: str = "SO(d)"):
+        ...
+
+    def check(self, z: torch.Tensor) -> Dict[str, float]:
+        ...
+```
+
+**Input/Output:**
+- Input: `z` shape `[B, d]` – Latent state
+- Output: Dictionary with `gauge_violation`, `threshold`, `passed` keys
+
+**Purpose:** Diagnostic node (Node 67) that verifies $G$-equivariance by sampling random group transformations and measuring violation.
+
+**Mathematical test:**
+$$\delta_{\text{gauge}} = \|f(g \cdot z) - g \cdot f(z)\| < \epsilon_{\text{gauge}}$$
+
+where $g$ is a randomly sampled group element (e.g., rotation matrix for $SO(d)$).
+
+**Key parameters:**
+- `layer` – The module to test
+- `group` – Symmetry group ("SO(d)" for rotations)
+- Threshold: $\epsilon_{\text{gauge}} = 10^{-4}$ (exact equivariance) or $\epsilon_{\text{gauge}} \approx 0.1$ (soft equivariance)
+
+**Failure modes:**
+- Large violation ($\delta > 0.1$): Symmetry breaking without L1 regularization
+- Asymmetric violation: Equivariant under some $g$ but not others (indicates partial symmetry)
+
+**Source:** {ref}`Section 04 <sec-dnn-blocks>`, line 2908.
+:::
+
+### G.5.5 CovariantRetina
+
+:::{prf:definition} G.5.5 (CovariantRetina)
+:label: def-g-covariant-retina
+
+**Class signature:**
+```python
+class CovariantRetina(nn.Module):
+    def __init__(
+        self,
+        in_channels: int = 3,
+        out_dim: int = 512,
+        num_rotations: int = 8,
+        kernel_size: int = 5
+    ):
+        ...
+```
+
+**Input/Output:**
+- Input: `x` shape `[B, C, H, W]` – RGB images
+- Output: `z` shape `[B, out_dim]` – Latent features
+
+**Purpose:** $SO(2)$-equivariant vision encoder using steerable convolutions (via E2CNN library). Ensures rotation equivariance for visual inputs.
+
+**Architecture:**
+1. **Lifting layer:** Maps trivial representation (standard image) to regular representation on $SE(2)$
+2. **Steerable convolutions:** 3 layers with expanding channels (32 → 64 → 64)
+3. **Group pooling:** Max over rotation group to extract rotation-invariant features
+4. **Spatial pooling:** Adaptive average pooling to fixed size
+5. **Linear projection:** Spectral-normalized fully connected layer to latent dimension
+
+**Key parameters:**
+- `in_channels` – Input channels (3 for RGB)
+- `out_dim` – Output latent dimension [nat]
+- `num_rotations` – Discretization of $SO(2)$ (typically 8 or 16)
+- `kernel_size` – Convolutional kernel size [pixels]
+
+**Equivariance guarantee:**
+$$\text{Conv}(R_\theta \cdot I) = D^{(\ell)}(\theta) \cdot \text{Conv}(I)$$
+
+where $R_\theta$ is a rotation by angle $\theta$ and $D^{(\ell)}$ is the representation matrix.
+
+**Diagnostic node:** Node 68 (RotationEquivarianceCheck) verifies $\|f(R \cdot I) - R \cdot f(I)\| < \epsilon$ for random rotations.
+
+**Source:** {ref}`Section 04 <sec-dnn-blocks>`, line 1464.
+:::
+
+---
+
+## G.6 Universal Geometric Network (Section 06)
+
+These modules implement the Universal Geometric Network from {ref}`Section 06 <sec-universal-geometric-network>`, achieving universal approximation while maintaining geometric consistency through soft equivariance.
+
+### G.6.1 UGNConfig / BundleConfig
+
+:::{prf:definition} G.6.1 (UGNConfig / BundleConfig)
+:label: def-g-ugn-config
+
+**Class signatures:**
+```python
+@dataclass
+class BundleConfig:
+    name: str              # Semantic label (e.g., "charge", "lepton")
+    dim: int               # Bundle dimension d_b [dimensionless]
+    semantic_role: str = ""  # Physical interpretation
+
+@dataclass
+class UGNConfig:
+    input_dim: int         # Input dimension [dimensionless]
+    output_dim: int        # Output dimension [dimensionless]
+    bundles: List[BundleConfig]  # Bundle specifications
+    n_latent_layers: int = 4     # Number of soft equivariant layers
+    encoder_hidden_dim: int = 256
+    decoder_hidden_dim: int = 256
+    lambda_l1: float = 0.01      # L1 regularization strength
+    lambda_equiv: float = 0.0    # Equivariance penalty
+    use_spectral_norm: bool = True
+```
+
+**Purpose:** Configuration dataclasses for the three-stage Universal Geometric Network architecture.
+
+**Key properties:**
+- `n_bundles` – Number of gauge bundles (computed from `bundles` list)
+- `total_latent_dim` – $\sum_{i=1}^{n_b} d_i$
+- `bundle_dims` – List of bundle dimensions $[d_1, \ldots, d_{n_b}]$
+
+**Typical bundle structure:**
+```python
+bundles = [
+    BundleConfig(name="color", dim=64, semantic_role="Binding/texture confinement"),
+    BundleConfig(name="isospin", dim=8, semantic_role="Error field/chirality"),
+    BundleConfig(name="hypercharge", dim=4, semantic_role="Opportunity field/capacity"),
+]
+```
+
+**Units:** All dimensions [nat] or [dimensionless], loss weights [dimensionless].
+
+**Source:** {ref}`Section 06 <sec-universal-geometric-network>`, lines 1180, 1873.
+:::
+
+### G.6.2 SoftEquivariantLayer
+
+:::{prf:definition} G.6.2 (SoftEquivariantLayer)
+:label: def-g-soft-equivariant-layer
+
+**Class signature:**
+```python
+class SoftEquivariantLayer(nn.Module):
+    def __init__(
+        self,
+        bundle_dims: List[int],
+        hidden_dim: int = 64,
+        use_spectral_norm: bool = True
+    ):
+        ...
+```
+
+**Input/Output:**
+- Input: `z` shape `[B, sum(bundle_dims)]` – Latent state
+- Output: `z_out` shape `[B, sum(bundle_dims)]` – Updated latent state
+
+**Purpose:** Core latent dynamics layer combining equivariant and mixing pathways with L1 regularization for emergent structure discovery.
+
+**Architecture:**
+$$z_{\text{out}} = z + f_{\text{equiv}}(z) + g \cdot f_{\text{mix}}(z)$$
+
+where:
+- **Equivariant pathway:** $f_{\text{equiv}}(z) = v_i \cdot \phi_i(\|v_1\|, \ldots, \|v_{n_b}\|)$
+  - Uses only bundle norms → strictly $\prod_i SO(d_i)$ equivariant
+  - Implemented via norm MLP: $\mathbb{R}^{n_b} \to \mathbb{R}^{n_b}$
+
+- **Mixing pathway:** $f_{\text{mix}}(z) = \sum_{i,j} W_{ij} v_j$
+  - Cross-bundle interactions with learnable weights
+  - L1 penalized: $\mathcal{L}_{\text{L1}} = \sum_{i,j} \|W_{ij}\|_1$
+  - Encouraged to be sparse (emergent texture zeros)
+
+**Key parameters:**
+- `bundle_dims` – List $[d_1, \ldots, d_{n_b}]$ of bundle dimensions
+- `hidden_dim` – Hidden dimension for norm MLP
+- `use_spectral_norm` – Apply spectral normalization to all linear layers
+
+**Learnable parameters:**
+- Norm MLP weights: $O(n_b \cdot h + h^2)$ parameters
+- Mixing weights $W_{ij}$: $O(n_b^2 d_{\max}^2)$ parameters (largest memory consumer)
+- Gate biases: $n_b$ scalars
+
+**L1 loss:**
+```python
+def l1_loss(self) -> torch.Tensor:
+    return sum(
+        torch.sum(torch.abs(self.mixing_weights[i][j]))
+        for i in range(n_b) for j in range(n_b)
+    )
+```
+
+**Diagnostic methods:**
+- `mixing_strength()` – Total Frobenius norm of mixing weights (measures symmetry breaking)
+
+**Source:** {ref}`Section 06 <sec-universal-geometric-network>`, lines 1219 (simplified), 1970 (production).
+:::
+
+### G.6.3 UniversalGeometricNetwork
+
+:::{prf:definition} G.6.3 (UniversalGeometricNetwork)
+:label: def-g-universal-geometric-network
+
+**Class signature:**
+```python
+class UniversalGeometricNetwork(nn.Module):
+    def __init__(self, config: UGNConfig):
+        ...
+```
+
+**Input/Output:**
+- Input: `x` shape `[B, input_dim]` – Raw observations
+- Output: `y` shape `[B, output_dim]` – Predictions/actions
+
+**Purpose:** Three-stage architecture achieving both universal approximation and geometric consistency.
+
+**Architecture:**
+1. **Encoder** (unconstrained, universal):
+   - $E: \mathbb{R}^{d_{\text{in}}} \to \bigoplus_i V_i$
+   - 2-3 spectral-normalized linear layers with GELU
+   - **Chooses gauge** for latent representation
+
+2. **Latent Dynamics** (soft equivariant):
+   - $D_1, \ldots, D_L: \bigoplus_i V_i \to \bigoplus_i V_i$
+   - Stack of `SoftEquivariantLayer` modules
+   - **Respects bundle structure** via equivariant pathway + L1-regularized mixing
+
+3. **Decoder** (unconstrained, universal):
+   - $P: \bigoplus_i V_i \to \mathbb{R}^{d_{\text{out}}}$
+   - 2-3 spectral-normalized linear layers with GELU
+   - **Interprets gauge** to extract observables
+
+**Key methods:**
+```python
+def forward(self, x: torch.Tensor) -> torch.Tensor:
+    z = self.encode(x)      # Encoder
+    z = self.dynamics(z)    # Latent layers
+    y = self.decode(z)      # Decoder
+    return y
+
+def regularization_loss(self) -> torch.Tensor:
+    # L1 penalty on all mixing weights
+    return sum(layer.l1_loss() for layer in self.latent_layers)
+
+def equivariance_violation(self, z=None, n_samples=16) -> torch.Tensor:
+    # Measure ||D(Rz) - RD(z)||² for random rotations
+    ...
+```
+
+**Total loss:**
+$$\mathcal{L}_{\text{total}} = \mathcal{L}_{\text{task}} + \lambda_{\text{L1}} \mathcal{L}_{\text{L1}} + \lambda_{\text{equiv}} \mathcal{L}_{\text{equiv}}$$
+
+**Key theorems:**
+- Universal approximation (encoder/decoder handle arbitrary functions)
+- Geometric consistency (latent dynamics respect bundle structure)
+- Emergent gauge structure (L1 discovers texture zeros)
+
+**Source:** {ref}`Section 06 <sec-universal-geometric-network>`, lines 1335 (simplified), 2154 (production).
+:::
+
+### G.6.4 FactoredTensorLayer
+
+:::{prf:definition} G.6.4 (FactoredTensorLayer)
+:label: def-g-factored-tensor-layer
+
+**Class signature:**
+```python
+class FactoredTensorLayer(nn.Module):
+    def __init__(
+        self,
+        d_C: int,
+        d_L: int,
+        d_Y: int,
+        rank: int,
+        d_out: int
+    ):
+        ...
+```
+
+**Input/Output:**
+- Input: `(z_C, z_L, z_Y)` shapes `[B, d_C]`, `[B, d_L]`, `[B, d_Y]`
+- Output: `y` shape `[B, d_out]`
+
+**Purpose:** Low-rank factorization of tensor product interaction for cross-gauge coupling.
+
+**Mathematical operation:**
+$$W = \sum_{k=1}^r U_C^{(k)} \otimes U_L^{(k)} \otimes U_Y^{(k)}$$
+
+instead of full tensor $W \in \mathbb{R}^{(d_C d_L d_Y) \times d_{\text{out}}}$.
+
+**Parameter count:**
+- Factored: $r(d_C + d_L + d_Y + d_{\text{out}})$
+- Full tensor: $(d_C \times d_L \times d_Y) \times d_{\text{out}}$
+
+**Example reduction:**
+For $d_C=64, d_L=8, d_Y=4, d_{\text{out}}=64, r=16$:
+- Factored: 2,240 parameters
+- Full: 131,072 parameters
+- **58.5× reduction**
+
+**Use case:** Specific cross-gauge interactions when low-rank structure is empirically justified. Not used in default UGN (uses direct sum instead).
+
+**Source:** {ref}`Section 06 <sec-universal-geometric-network>`, line 381.
+:::
+
+### G.6.5 NormInteractionLayer
+
+:::{prf:definition} G.6.5 (NormInteractionLayer)
+:label: def-g-norm-interaction-layer
+
+**Class signature:**
+```python
+class NormInteractionLayer(nn.Module):
+    def __init__(self, n_bundles: int, hidden_dim: int = 64):
+        ...
+```
+
+**Input/Output:**
+- Input: `z` shape `[B, n_bundles, bundle_dim]` – Bundle representation
+- Output: `z_out` shape `[B, n_bundles, bundle_dim]` – Scaled bundles
+
+**Purpose:** Level 1 cross-bundle interaction using only bundle norms (strictly equivariant).
+
+**Mathematical operation:**
+$$f_i(v_1, \ldots, v_{n_b}) = v_i \cdot \phi_i(\|v_1\|, \ldots, \|v_{n_b}\|)$$
+
+where $\phi: \mathbb{R}^{n_b} \to \mathbb{R}_+$ is an MLP with Softplus output.
+
+**Equivariance:** Strictly $\prod_{i=1}^{n_b} SO(d_b)_i$ equivariant (per-bundle rotations).
+
+**Expressiveness:** Limited—can only scale bundles based on energy, cannot represent direction-dependent interactions.
+
+**Computational cost:** $O(n_b d_b + h^2)$ where $h$ is MLP hidden dimension.
+
+**Source:** {ref}`Section 06 <sec-universal-geometric-network>`, line 446.
+:::
+
+### G.6.6 GramInteractionLayer
+
+:::{prf:definition} G.6.6 (GramInteractionLayer)
+:label: def-g-gram-interaction-layer
+
+**Class signature:**
+```python
+class GramInteractionLayer(nn.Module):
+    def __init__(self, n_bundles: int, hidden_dim: int = 64):
+        ...
+```
+
+**Input/Output:**
+- Input: `z` shape `[B, n_bundles, bundle_dim]` – Bundle representation
+- Output: `z_out` shape `[B, n_bundles, bundle_dim]` – Scaled bundles
+
+**Purpose:** Level 2 cross-bundle interaction using Gram matrix $G_{ij} = \langle v_i, v_j \rangle$ (encodes relative orientations).
+
+**Mathematical operation:**
+$$G = z \cdot z^T \quad \text{(Gram matrix)}$$
+$$\text{scales} = \phi(G_{\text{flat}}) \quad \text{(MLP)}$$
+$$z_{\text{out}} = z \cdot \text{scales}$$
+
+**Equivariance:** Equivariant under **global** $SO(d_b)$ (same rotation applied to all bundles), **not** under per-bundle rotations.
+
+**Expressiveness:** High—can encode relative orientations between bundles.
+
+**Computational cost:** $O(n_b^2 d_b + h^2)$.
+
+**Source:** {ref}`Section 06 <sec-universal-geometric-network>`, line 494.
+:::
+
+### G.6.7 L1Scheduler / AdaptiveL1Scheduler
+
+:::{prf:definition} G.6.7 (L1Scheduler / AdaptiveL1Scheduler)
+:label: def-g-l1-scheduler
+
+**Class signature:**
+```python
+class AdaptiveL1Scheduler:
+    def __init__(
+        self,
+        initial_lambda: float = 0.01,
+        target_violation: float = 0.22,
+        learning_rate: float = 0.05,
+        min_lambda: float = 1e-4,
+        max_lambda: float = 1.0
+    ):
+        ...
+
+    def step(self, current_violation: float) -> float:
+        ...
+```
+
+**Purpose:** Adaptive scheduler for L1 regularization strength $\lambda_{\text{L1}}$ that targets a specific equivariance violation level.
+
+**Update rule:**
+$$\lambda_{\text{L1}}(t+1) = \lambda_{\text{L1}}(t) \cdot \left(1 + \alpha \cdot (\epsilon(t) - \epsilon_{\text{target}})\right)$$
+
+where:
+- $\epsilon(t) = \mathcal{L}_{\text{equiv}}(t)$ is current equivariance violation
+- $\epsilon_{\text{target}} \approx 0.22$ nat/step (proposed target)
+- $\alpha$ is adaptation rate (typically 0.01-0.1)
+
+**Strategy:**
+- If $\epsilon(t) > \epsilon_{\text{target}}$: Increase $\lambda_{\text{L1}}$ (more sparsity, less mixing)
+- If $\epsilon(t) < \epsilon_{\text{target}}$: Decrease $\lambda_{\text{L1}}$ (more expressiveness, more mixing)
+
+**Key parameters:**
+- `initial_lambda` – Starting $\lambda_{\text{L1}}$ value
+- `target_violation` – Desired equivariance violation $\epsilon_{\text{target}}$ [nat/step]
+- `learning_rate` – Adaptation rate $\alpha$
+- `min_lambda` / `max_lambda` – Clamping bounds to prevent collapse or over-sparsity
+
+**Training protocol:**
+1. **Warmup (epochs 1-10):** Low $\lambda_{\text{L1}} = 0.001$, let network explore
+2. **Ramp up (epochs 10-50):** Gradually increase $\lambda_{\text{L1}}$
+3. **Adaptive (epochs 50+):** Use `AdaptiveL1Scheduler` to maintain target violation
+4. **Fine-tune:** Fix $\lambda_{\text{L1}}$, early stopping on validation
+
+**Source:** {ref}`Section 06 <sec-universal-geometric-network>`, lines 955, 2577.
+:::
+
+### G.6.8 CovariantAttentionLayer
+
+:::{prf:definition} G.6.8 (CovariantAttentionLayer)
+:label: def-g-covariant-attention-layer
+
+**Class signature:**
+```python
+class CovariantAttentionLayer(nn.Module):
+    def __init__(
+        self,
+        bundle_dims: List[int],
+        n_heads: int = 4,
+        use_wilson_lines: bool = True
+    ):
+        ...
+```
+
+**Input/Output:**
+- Input: `z` shape `[B, sum(bundle_dims)]`, optional `context` shape `[B, T, sum(bundle_dims)]`
+- Output: `z_out` shape `[B, sum(bundle_dims)]`
+
+**Purpose:** Covariant cross-attention for explicit world modeling and trajectory prediction. Alternative to `SoftEquivariantLayer` when planning is required.
+
+**Architecture:**
+- Multi-head attention per bundle
+- Wilson lines for gauge-covariant Q/K/V projections
+- Position-dependent temperature $\tau(z) = \sqrt{d_k}/\lambda(z)$
+- Geometric Query terms with Christoffel symbols
+
+**Use cases:**
+- **SoftEquivariantLayer:** Default latent dynamics, implicit world model
+- **CovariantAttentionLayer:** Explicit trajectory prediction, planning, memory retrieval
+
+**Multi-stage pipeline example:**
+1. Encoder → latent $Z$
+2. SoftEquivariantLayer (×2) for geometric regularization
+3. CovariantAttentionLayer for trajectory rollout
+4. SoftEquivariantLayer (×2) for policy extraction
+5. Decoder → action $Y$
+
+**Source:** {ref}`Section 06 <sec-universal-geometric-network>`, line 2445. See also {ref}`Section 05 <sec-covariant-cross-attention-architecture>` for full derivation.
+:::
+
+---
+
+## G.7 Summary Table
 
 | Module | Section | Domain | Key Dependencies | Purpose |
 |:-------|:--------|:-------|:-----------------|:--------|
@@ -959,18 +1570,32 @@ $$c_1 = e^{-\gamma h}, \quad c_2 = \sqrt{(1-c_1^2)T_c}$$
 | `CausalMask` | 33 | Memory | LorentzianMetric | Light cone causality |
 | `TemporalChristoffelQuery` | 33 | Memory | — | Temporal geodesic Query |
 | `LorentzianMemoryAttention` | 33 | Memory | All above | Full causal memory attention |
-| `GeodesicConfig` | 35 | Gauge | — | Configuration for covariant attention |
-| `WilsonLineApprox` | 35 | Gauge | — | Linearized parallel transport |
-| `ConformalMetric` | 35 | Gauge | — | Poincaré disk metric |
-| `ChristoffelQuery` | 35 | Gauge | — | Geodesic Query with Christoffel |
-| `ChiralProjector` | 35 | Gauge | — | $SU(2)_L$ chiral projection |
-| `AreaLawScreening` | 35 | Gauge | ConformalMetric | $SU(N_f)_C$ texture firewall |
-| `CovariantAttention` | 35 | Gauge | Wilson, Metric, Query, Chiral, Screening | Single gauge-covariant head |
-| `GeodesicCrossAttention` | 35 | Gauge | CovariantAttention | Full BAOAB integrator |
+| `GeodesicConfig` | 05 | Gauge | — | Configuration for covariant attention |
+| `WilsonLineApprox` | 05 | Gauge | — | Linearized parallel transport |
+| `ConformalMetric` | 05 | Gauge | — | Poincaré disk metric |
+| `ChristoffelQuery` | 05 | Gauge | — | Geodesic Query with Christoffel |
+| `ChiralProjector` | 05 | Gauge | — | $SU(2)_L$ chiral projection |
+| `AreaLawScreening` | 05 | Gauge | ConformalMetric | $SU(N_f)_C$ texture firewall |
+| `CovariantAttention` | 05 | Gauge | Wilson, Metric, Query, Chiral, Screening | Single gauge-covariant head |
+| `GeodesicCrossAttention` | 05 | Gauge | CovariantAttention | Full BAOAB integrator |
+| `SpectralLinear` | 04 | Primitives | — | Spectrally normalized linear layer |
+| `NormGatedActivation` | 04 | Primitives | — | $SO(d_b)$-equivariant activation |
+| `IsotropicBlock` | 04 | Primitives | SpectralLinear, NormGate | Atomic gauge-covariant block |
+| `GaugeInvarianceCheck` | 04 | Primitives | — | Diagnostic for equivariance testing |
+| `CovariantRetina` | 04 | Primitives | — | $SO(2)$-equivariant vision encoder |
+| `BundleConfig` | 06 | UGN | — | Bundle specification for UGN |
+| `UGNConfig` | 06 | UGN | BundleConfig | Configuration for Universal Geometric Network |
+| `SoftEquivariantLayer` | 06 | UGN | SpectralLinear | Soft equivariant latent dynamics |
+| `UniversalGeometricNetwork` | 06 | UGN | SoftEquivariantLayer | Three-stage universal approximator |
+| `FactoredTensorLayer` | 06 | UGN | — | Low-rank tensor product interaction |
+| `NormInteractionLayer` | 06 | UGN | — | Level 1 norms-only interaction |
+| `GramInteractionLayer` | 06 | UGN | — | Level 2 Gram matrix interaction |
+| `AdaptiveL1Scheduler` | 06 | UGN | — | Adaptive L1 regularization schedule |
+| `CovariantAttentionLayer` | 06 | UGN | CovariantAttention | Alternative to soft equivariance for planning |
 
 ---
 
-## G.6 Implementation Dependencies
+## G.8 Implementation Dependencies
 
 The architecture modules have the following dependency structure:
 
@@ -998,6 +1623,40 @@ LorentzianMemoryAttention
 
 SupervisedTopologyLoss
 └── class_modulated_jump_rate
+
+IsotropicBlock (Section 04)
+├── SpectralLinear
+├── Reshape (bundle partition)
+└── NormGatedActivation
+
+CovariantRetina (Section 04)
+├── E2CNN library (steerable convolutions)
+├── SpectralLinear (final projection)
+└── Group pooling (SO(2) → R²)
+
+UniversalGeometricNetwork (Section 06)
+├── Encoder (unconstrained)
+│   └── SpectralLinear (×2-3 layers)
+├── Latent Dynamics (soft equivariant)
+│   └── SoftEquivariantLayer (×L layers)
+│       ├── Norm MLP (equivariant pathway)
+│       └── Mixing weights W_ij (L1 regularized)
+└── Decoder (unconstrained)
+    └── SpectralLinear (×2-3 layers)
+
+SoftEquivariantLayer (Section 06)
+├── Equivariant pathway
+│   └── Norm MLP: R^{n_b} → R^{n_b}
+├── Mixing pathway
+│   └── W_{ij}: V_j → V_i (L1 penalized)
+└── Gate biases (per bundle)
+
+CovariantAttentionLayer (Section 06)
+├── Per-bundle attention heads
+│   ├── WilsonLineApprox (from Section 05)
+│   ├── ConformalMetric (from Section 05)
+│   └── ChristoffelQuery (from Section 05)
+└── Bundle splitting/concatenation utilities
 ```
 
 **Cross-references:**

@@ -64,6 +64,7 @@ parts:
     - file: source/1_agent/08_multiagent/03_parameter_sieve
     - file: source/1_agent/08_multiagent/04_dnn_blocks
     - file: source/1_agent/08_multiagent/05_architecture
+    - file: source/1_agent/08_multiagent/06_full_net
 
   - caption: Appendices
     chapters:

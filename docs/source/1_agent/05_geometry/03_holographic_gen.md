@@ -686,6 +686,8 @@ $$
 
 $$
 This is equivalent to the information stopping criterion $I_{\text{bulk}}(z) \ge C_\partial$ (Theorem {prf:ref}`thm-capacity-constrained-metric-law`).
+In practice, choose $R_{\text{cutoff}} = 1 - \varepsilon$ with $\varepsilon$ tied to Levin length/resolution. This is a
+computational cutoff, not a terminal task boundary.
 
 **Algorithm 21.3.7 (Boundary Texture Sampling).**
 

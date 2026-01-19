@@ -1,10 +1,13 @@
 from __future__ import annotations
 
-from typing import Dict, Tuple
+from typing import Dict, Iterable, Tuple
 
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+
+from fragile.core.layers.gauge import ConformalMetric
+from fragile.core.layers.primitives import IsotropicBlock, SpectralLinear
 
 
 def class_modulated_jump_rate(
@@ -40,6 +43,7 @@ class SupervisedTopologyLoss(nn.Module):
         lambda_metric: float = 0.01,
         margin: float = 1.0,
         temperature: float = 1.0,
+        metric: ConformalMetric | None = None,
     ) -> None:
         super().__init__()
         self.num_charts = num_charts
@@ -49,6 +53,7 @@ class SupervisedTopologyLoss(nn.Module):
         self.lambda_metric = lambda_metric
         self.margin = margin
         self.temperature = temperature
+        self.metric = metric
 
         self.chart_to_class = nn.Parameter(torch.randn(num_charts, num_classes) * 0.01)
 
@@ -92,6 +97,10 @@ class SupervisedTopologyLoss(nn.Module):
 
         if self.lambda_metric > 0 and embeddings.shape[0] > 1:
             dists = torch.cdist(embeddings, embeddings)  # [B, B]
+            if self.metric is not None:
+                lambda_vec = self.metric.conformal_factor(embeddings).squeeze(-1)  # [B]
+                lambda_ij = 0.5 * (lambda_vec.unsqueeze(0) + lambda_vec.unsqueeze(1))  # [B, B]
+                dists = dists * lambda_ij
             match = (class_labels.unsqueeze(1) == class_labels.unsqueeze(0)).float()  # [B, B]
             diff = 1.0 - match  # [B, B]
             pos_loss = (match * dists).sum() / (match.sum() + 1e-8)  # []
@@ -119,27 +128,77 @@ class SupervisedTopologyLoss(nn.Module):
 class FactorizedJumpOperator(nn.Module):
     """Factorized jump operator between charts."""
 
-    def __init__(self, num_charts: int, latent_dim: int, global_rank: int = 0) -> None:
+    def __init__(
+        self,
+        num_charts: int,
+        latent_dim: int,
+        global_rank: int | None = None,
+        use_spectral: bool = True,
+    ) -> None:
         super().__init__()
         self.num_charts = num_charts
         self.latent_dim = latent_dim
-        self.rank = global_rank if global_rank > 0 else latent_dim
+        self.rank = global_rank if global_rank is not None else latent_dim
+        self.use_spectral = use_spectral
 
-        self.B = nn.Parameter(torch.randn(num_charts, self.rank, latent_dim))
+        if use_spectral:
+            self.encoders = nn.ModuleList(
+                [SpectralLinear(latent_dim, self.rank, bias=False) for _ in range(num_charts)]
+            )
+            self.decoders = nn.ModuleList(
+                [SpectralLinear(self.rank, latent_dim, bias=False) for _ in range(num_charts)]
+            )
+        else:
+            self.encoders = nn.ModuleList(
+                [nn.Linear(latent_dim, self.rank, bias=False) for _ in range(num_charts)]
+            )
+            self.decoders = nn.ModuleList(
+                [nn.Linear(self.rank, latent_dim, bias=False) for _ in range(num_charts)]
+            )
+
         self.c = nn.Parameter(torch.zeros(num_charts, self.rank))
-        self.A = nn.Parameter(torch.randn(num_charts, latent_dim, self.rank))
         self.d = nn.Parameter(torch.zeros(num_charts, latent_dim))
 
         self._init_weights()
 
     def _init_weights(self) -> None:
         """Initialize parameters near identity."""
-        eye_b = torch.eye(self.rank, self.latent_dim)  # [R, D]
-        eye_a = torch.eye(self.latent_dim, self.rank)  # [D, R]
-        self.B.data = eye_b.unsqueeze(0).repeat(self.num_charts, 1, 1)
-        self.A.data = eye_a.unsqueeze(0).repeat(self.num_charts, 1, 1)
-        self.B.data = self.B.data + torch.randn_like(self.B) * 0.01
-        self.A.data = self.A.data + torch.randn_like(self.A) * 0.01
+        for idx in range(self.num_charts):
+            if isinstance(self.encoders[idx], (nn.Linear, SpectralLinear)):
+                nn.init.eye_(self.encoders[idx].weight[: self.rank, : self.latent_dim])
+                self.encoders[idx].weight.data += torch.randn_like(self.encoders[idx].weight) * 0.01
+            if isinstance(self.decoders[idx], (nn.Linear, SpectralLinear)):
+                nn.init.eye_(self.decoders[idx].weight[: self.latent_dim, : self.rank])
+                self.decoders[idx].weight.data += torch.randn_like(self.decoders[idx].weight) * 0.01
+
+    def _apply_per_chart(
+        self,
+        x: torch.Tensor,
+        chart_idx: torch.Tensor,
+        modules: nn.ModuleList,
+    ) -> torch.Tensor:
+        out = torch.zeros(
+            x.shape[0],
+            modules[0].out_features,
+            device=x.device,
+            dtype=x.dtype,
+        )
+        for idx in torch.unique(chart_idx):
+            idx_int = int(idx.item())
+            mask = chart_idx == idx_int
+            if mask.any():
+                out[mask] = modules[idx_int](x[mask])
+        return out
+
+    def lift_to_global(self, z_n: torch.Tensor, chart_idx: torch.Tensor) -> torch.Tensor:
+        """Lift local coordinates to global tangent space."""
+        h = self._apply_per_chart(z_n, chart_idx, self.encoders)
+        return h + self.c[chart_idx]
+
+    def project_from_global(self, h: torch.Tensor, chart_idx: torch.Tensor) -> torch.Tensor:
+        """Project global tangent coordinates to local chart coordinates."""
+        z = self._apply_per_chart(h, chart_idx, self.decoders)
+        return z + self.d[chart_idx]
 
     def forward(
         self,
@@ -157,13 +216,8 @@ class FactorizedJumpOperator(nn.Module):
         Returns:
             z_out: [B, D] target nuisance coordinates
         """
-        B_src = self.B[source_idx]  # [B, R, D]
-        c_src = self.c[source_idx]  # [B, R]
-        z_global = torch.bmm(B_src, z_n.unsqueeze(-1)).squeeze(-1) + c_src  # [B, R]
-
-        A_tgt = self.A[target_idx]  # [B, D, R]
-        d_tgt = self.d[target_idx]  # [B, D]
-        z_out = torch.bmm(A_tgt, z_global.unsqueeze(-1)).squeeze(-1) + d_tgt  # [B, D]
+        z_global = self.lift_to_global(z_n, source_idx)
+        z_out = self.project_from_global(z_global, target_idx)
 
         return z_out
 
@@ -174,6 +228,176 @@ class FactorizedJumpOperator(nn.Module):
             M: [D, D] linear map
             b: [D] bias
         """
-        M = self.A[target] @ self.B[source]  # [D, D]
-        b = self.A[target] @ self.c[source] + self.d[target]  # [D]
+        if isinstance(self.encoders[source], SpectralLinear):
+            b_src = self.encoders[source]._spectral_normalized_weight(update_u=False)
+        else:
+            b_src = self.encoders[source].weight
+
+        if isinstance(self.decoders[target], SpectralLinear):
+            a_tgt = self.decoders[target]._spectral_normalized_weight(update_u=False)
+        else:
+            a_tgt = self.decoders[target].weight
+
+        M = a_tgt @ b_src  # [D, D]
+        b = a_tgt @ self.c[source] + self.d[target]  # [D]
         return M, b
+
+
+def compute_topology_loss(
+    weights: torch.Tensor,
+    num_charts: int,
+    eps: float = 1e-6,
+) -> Tuple[torch.Tensor, torch.Tensor]:
+    """Topology loss: sharp routing + balanced chart usage."""
+    entropy = -(weights * torch.log(weights + eps)).sum(dim=1)
+    loss_entropy = entropy.mean()
+
+    mean_usage = weights.mean(dim=0)
+    target_usage = torch.full_like(mean_usage, 1.0 / num_charts)
+    loss_balance = torch.norm(mean_usage - target_usage) ** 2
+
+    return loss_entropy, loss_balance
+
+
+def compute_separation_loss(
+    chart_outputs: Iterable[torch.Tensor],
+    weights: torch.Tensor,
+    margin: float = 4.0,
+    metric: ConformalMetric | None = None,
+    eps: float = 1e-6,
+) -> torch.Tensor:
+    """Separation loss: enforce margins between chart centers."""
+    centers = []
+    for idx, z_i in enumerate(chart_outputs):
+        w_i = weights[:, idx : idx + 1]
+        if w_i.sum() <= eps:
+            continue
+        center = (z_i * w_i).sum(dim=0) / (w_i.sum() + eps)
+        centers.append(center)
+
+    if len(centers) < 2:
+        return torch.tensor(0.0, device=weights.device)
+
+    loss_sep = torch.tensor(0.0, device=weights.device)
+    for i in range(len(centers)):
+        for j in range(i + 1, len(centers)):
+            dist = torch.norm(centers[i] - centers[j])
+            if metric is not None:
+                lambda_i = metric.conformal_factor(centers[i].unsqueeze(0)).squeeze()
+                lambda_j = metric.conformal_factor(centers[j].unsqueeze(0)).squeeze()
+                dist = dist * 0.5 * (lambda_i + lambda_j)
+            loss_sep = loss_sep + torch.relu(margin - dist)
+
+    return loss_sep
+
+
+def compute_jump_consistency_loss(
+    z_n_by_chart: torch.Tensor,
+    router_weights: torch.Tensor,
+    jump_operator: FactorizedJumpOperator,
+    overlap_threshold: float = 0.1,
+    max_pairs_per_batch: int = 1024,
+    metric: ConformalMetric | None = None,
+) -> Tuple[torch.Tensor, Dict[str, float]]:
+    """Overlap consistency loss for jump operators."""
+    device = z_n_by_chart.device
+
+    in_chart = router_weights > overlap_threshold
+    overlap_mask = in_chart.sum(dim=1) >= 2
+
+    if not overlap_mask.any():
+        return torch.tensor(0.0, device=device), {"num_overlaps": 0}
+
+    overlap_indices = overlap_mask.nonzero(as_tuple=True)[0]
+    losses = []
+    total_pairs = 0
+
+    for b_idx in overlap_indices[:max_pairs_per_batch]:
+        active = in_chart[b_idx].nonzero(as_tuple=True)[0]
+        if active.numel() < 2:
+            continue
+        for i_idx, chart_i in enumerate(active[:-1]):
+            for chart_j in active[i_idx + 1 :]:
+                i = chart_i.item()
+                j = chart_j.item()
+                z_i = z_n_by_chart[b_idx, i]
+                z_j = z_n_by_chart[b_idx, j]
+
+                z_pred = jump_operator(
+                    z_i.unsqueeze(0),
+                    torch.tensor([i], device=device),
+                    torch.tensor([j], device=device),
+                ).squeeze(0)
+
+                delta = z_j - z_pred
+                if metric is not None:
+                    lambda_i = metric.conformal_factor(z_i.unsqueeze(0)).squeeze()
+                    lambda_j = metric.conformal_factor(z_j.unsqueeze(0)).squeeze()
+                    weight = 0.5 * (lambda_i + lambda_j)
+                    loss_ij = weight * (delta**2).sum()
+                else:
+                    loss_ij = (delta**2).mean()
+
+                losses.append(loss_ij)
+                total_pairs += 1
+
+                if total_pairs >= max_pairs_per_batch:
+                    break
+            if total_pairs >= max_pairs_per_batch:
+                break
+        if total_pairs >= max_pairs_per_batch:
+            break
+
+    if not losses:
+        return torch.tensor(0.0, device=device), {"num_overlaps": 0}
+
+    loss = torch.stack(losses).mean()
+    return loss, {
+        "num_overlaps": float(total_pairs),
+        "mean_error": loss.item(),
+        "points_in_overlap": float(overlap_mask.sum().item()),
+    }
+
+
+def compute_orthogonality_loss(
+    modules: Iterable[nn.Module],
+    eps: float = 1e-6,
+) -> torch.Tensor:
+    """Compute orthogonality defect for SpectralLinear/IsotropicBlock modules."""
+    device = None
+    dtype = None
+    for module in modules:
+        for param in module.parameters(recurse=True):
+            device = param.device
+            dtype = param.dtype
+            break
+        if device is not None:
+            break
+
+    loss = torch.tensor(0.0, device=device, dtype=dtype)
+    count = 0
+
+    def orth_defect(weight: torch.Tensor) -> torch.Tensor:
+        eye = torch.eye(weight.shape[1], device=weight.device, dtype=weight.dtype)
+        prod = weight.t() @ weight
+        return ((prod - eye) ** 2).sum()
+
+    for module in modules:
+        for sub in module.modules():
+            if isinstance(sub, SpectralLinear):
+                w = sub._spectral_normalized_weight(update_u=False)
+                loss = loss + orth_defect(w)
+                count += 1
+            elif isinstance(sub, IsotropicBlock) and not sub.exact:
+                if sub.input_proj is not None:
+                    w = sub.input_proj._spectral_normalized_weight(update_u=False)
+                    loss = loss + orth_defect(w)
+                    count += 1
+                for idx, block in enumerate(sub.block_weights):
+                    w = sub._spectral_normalize_block(block, idx)
+                    loss = loss + orth_defect(w)
+                    count += 1
+
+    if count == 0:
+        return torch.tensor(0.0)
+    return loss / (count + eps)

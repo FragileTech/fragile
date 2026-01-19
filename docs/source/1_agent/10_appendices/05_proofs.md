@@ -1509,7 +1509,7 @@ for all $0 < r < s$, which characterizes Markov processes. $\square$
 Consider the coupled Klein-Gordon system for $N$ agents:
 
 $$
-\left(\frac{1}{c^2}\partial_t^2 - \Delta_{G^{(i)}} + \kappa^2\right)V^{(i)} = \rho_r^{(i)} + \sum_{j \neq i} \Phi^{\text{ret}}_{ij}
+\left(\frac{1}{c^2}\partial_t^2 - \Delta_{G^{(i)}} + \kappa^2\right)V^{(i)} = \rho_r^{(i)} + \sum_{j \neq i} \rho^{\text{ret}}_{ij}
 
 $$
 

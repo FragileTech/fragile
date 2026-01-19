@@ -206,7 +206,10 @@ A(r) = \left( 1 - \frac{2\mu(r)}{(n-2)r^{n-2}} - \frac{\Lambda_{\text{eff}} r^2}
 $$
 where $\mu(r) := \frac{\kappa}{n-2} \int_0^r \sigma_{\max} r'^{n-1} dr'$ is the integrated **information mass** (with $\kappa$ the coupling constant from the Metric Law) and $\Lambda_{\text{eff}} = \Lambda + \kappa\sigma_{\max}$.
 
-*Remark ($n=2$ case).* For $n=2$ (the Poincare disk), the $(n-2)$ factor vanishes and the solution requires separate treatment. The Poincare metric $G_{ij} = 4\delta_{ij}/(1-|z|^2)^2$ is the correctly regularized saturation geometry, with the horizon at $|z|=1$.
+*Remark ($n=2$ case).* For $n=2$ (the Poincare disk), the $(n-2)$ factor vanishes and the solution requires separate
+treatment. The Poincare metric $G_{ij} = 4\delta_{ij}/(1-|z|^2)^2$ is the correctly regularized saturation geometry,
+with the horizon at $|z|=1$. In computation we truncate at $\lvert z\rvert = 1-\varepsilon$ with $\varepsilon$ tied to
+Levin length/resolution; this is a numerical cutoff distinct from any terminal subset $\Gamma_{\text{term}}$.
 
 *Proof sketch.* Substitute the uniform density into the Metric Law. The spherically symmetric solution follows from standard analysis of Einstein-like field equations {cite}`wald1984general`. Full derivation in {ref}`Appendix A.6 <sec-appendix-a-full-derivations>`. $\square$
 
@@ -494,7 +497,7 @@ This section provides a consolidated reference for the key symbols introduced ac
 | $C_\partial$                   | Boundary capacity               | Area-law capacity of interface                                                                                     | nat               | 18.1.3         |
 | $\nu_{\text{cap}}$             | Capacity saturation             | $I_{\text{bulk}}/C_\partial$                                                                                       | dimensionless     | 18.3.1         |
 | $\lambda$                      | WFR length-scale                | Transport-vs-reaction crossover                                                                                    | $[z]$             | 20.2.1, 20.3.1 |
-| $\kappa$                       | Screening mass                  | $-\ln\gamma/\Delta t$                                                                                              | $[z]^{-1}$        | 24.2.4         |
+| $\kappa$                       | Screening mass                  | $-\ln\gamma/(c_{\text{info}} \Delta t)$                                                                             | $[z]^{-1}$        | 24.2.4         |
 | $\ell_{\text{screen}}$         | Screening length                | $1/\kappa$; reward correlation length                                                                              | $[z]$             | 24.2.4         |
 | $U(z)$                         | Hyperbolic potential            | $-2\operatorname{artanh}(\lvert z\rvert)$                                                                          | nat               | 21.1.4         |
 | $V(z)$                         | Value/Critic                    | Solution to Helmholtz equation (conservative case)                                                                 | nat               | 2.7, 24.3      |

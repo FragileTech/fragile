@@ -452,7 +452,10 @@ This perspective resolves a lot of puzzles in RL. Why do agents often seem "risk
 (sec-the-fading-metric-energy-dependent-geometry)=
 ## The Fading Metric: Energy-Dependent Geometry
 
-The battery $B(t)$ is not merely a scalar reward modifier—it is a **constraint on the geometry itself**. Without energy, the agent cannot maintain the precise neural representations required for a high-resolution metric ({ref}`Section 18 <sec-capacity-constrained-metric-law-geometry-from-interface-limits>`). We derive this from Fisher Information principles.
+The battery $B(t)$ is not merely a scalar reward modifier (conservative case)—it is a **constraint on the geometry
+itself**. Without energy, the agent cannot maintain the precise neural representations required for a high-resolution
+metric ({ref}`Section 18 <sec-capacity-constrained-metric-law-geometry-from-interface-limits>`). We derive this from
+Fisher Information principles.
 
 :::{div} feynman-prose
 Now we arrive at what I consider the most striking result in this chapter. We have been treating the latent geometry—the metric tensor $G$—as if it were a fixed property of the agent's architecture. But it is not fixed. It costs energy to maintain.

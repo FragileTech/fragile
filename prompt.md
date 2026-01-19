@@ -297,7 +297,7 @@ This framework introduces a unified nomenclature. While these terms may seem nov
 4. **Geometry-aware regulation.** A state-space sensitivity metric $G$ is used as a runtime trust-region / conditioning signal ({ref}`Section 2.5 <sec-second-order-sensitivity-value-defines-a-local-metric>`, {ref}`Section 18.2 <sec-main-result>`), complementing standard natural-gradient methods {cite}`amari1998natural,schulman2015trpo,martens2015kfac`.
 5. **Safety as a first-class interface contract.** "Safety" is not a single scalar constraint: it decomposes into 60 explicit checks (switching limits, capacity limits, saturation, grounding, mixing, multi-agent coupling, ontological stress, capacity horizon) with known compute cost ({ref}`Sections 3–6 <sec-diagnostics-stability-checks>`).
 6. **Unified treatment of discrete and continuous dynamics.** The Wasserstein-Fisher-Rao (WFR) metric ({ref}`Section 20 <sec-wasserstein-fisher-rao-geometry-unified-transport-on-hybrid-state-spaces>`) provides a single variational principle for belief evolution that seamlessly handles both continuous flow within charts and discrete jumps between charts ({ref}`Section 20 <sec-wasserstein-fisher-rao-geometry-unified-transport-on-hybrid-state-spaces>`).
-7. **Geometric field-theoretic formulation.** The critic is a PDE solver propagating reward boundary conditions via the screened Poisson (Helmholtz) equation; the discount factor $\gamma$ determines the screening length $\ell = 1/\kappa$ where $\kappa = -\ln\gamma$ ({ref}`Section 24 <sec-the-reward-field-value-forms-and-hodge-geometry>`).
+7. **Geometric field-theoretic formulation.** The critic is a PDE solver propagating reward boundary conditions via the screened Poisson (Helmholtz) equation; the discount factor $\gamma$ determines the screening length $\ell = 1/\kappa$ where $\kappa = \lambda / c_{\text{info}}$ with $\lambda = -\ln\gamma / \Delta t$ (natural units: $\kappa = -\ln\gamma$) ({ref}`Section 24 <sec-the-reward-field-value-forms-and-hodge-geometry>`).
 8. **Holographic interface symmetry.** Sensors and motors are dual boundary conditions on the same symplectic manifold—perception imposes Dirichlet (position) BCs, action imposes Neumann (flux) BCs, and reward injects scalar charges ({ref}`Section 23 <sec-the-boundary-interface-symplectic-structure>`, {ref}`Section 24 <sec-the-reward-field-value-forms-and-hodge-geometry>`).
 9. **Multi-agent geometric coupling.** Strategic interaction is encoded in the Game Tensor $\mathcal{G}_{ij}$ ({prf:ref}`def-the-game-tensor`), which modulates the effective metric; adversarial coupling increases the effective metric tensor eigenvalues ({ref}`Section 29 <sec-symplectic-multi-agent-field-theory>`).
 10. **Principled ontology expansion.** When texture becomes predictable (violating Axiom {prf:ref}`ax-bulk-boundary-decoupling`), the framework prescribes chart fission via pitchfork bifurcation ({ref}`Section 30 <sec-ontological-expansion-topological-fission-and-the-semantic-vacuum>`).
@@ -326,7 +326,7 @@ This framework introduces a unified nomenclature. While these terms may seem nov
 *Geometric Contributions (Mathematical Framework):*
 
 6. **WFR geometry for hybrid state spaces.** The Wasserstein-Fisher-Rao metric is the canonical geometry for agent belief states, seamlessly interpolating between continuous Wasserstein transport and discrete Fisher-Rao jumps via the teleportation length $\lambda$ ({ref}`Section 20 <sec-wasserstein-fisher-rao-geometry-unified-transport-on-hybrid-state-spaces>`).
-7. **Critic as Helmholtz solver with screening.** The value function is recast as a solution to the screened Poisson equation $-\Delta_G V + \kappa^2 V = \rho_r$ with rewards as sources and discount as screening mass $\kappa = -\ln\gamma$ ({ref}`Section 24.2 <sec-the-bulk-potential-screened-poisson-equation>`).
+7. **Critic as Helmholtz solver with screening.** The value function is recast as a solution to the screened Poisson equation $-\Delta_G V + \kappa^2 V = \rho_r$ with rewards as sources and discount as screening mass $\kappa = \lambda / c_{\text{info}}$ with $\lambda = -\ln\gamma / \Delta t$ (natural units: $\kappa = -\ln\gamma$) ({ref}`Section 24.2 <sec-the-bulk-potential-screened-poisson-equation>`).
 8. **Conformal back-reaction of value on metric.** High-curvature value regions modulate the metric via $\Omega = 1 + \alpha\|\nabla^2 V\|$, creating a feedback loop where high-curvature regions have increased metric coefficients ({ref}`Section 24.4 <sec-geometric-back-reaction-the-conformal-coupling>`).
 9. **Policy as symmetry-breaking kick.** Generation and control are unified as perturbations breaking $SO(D)$ symmetry at the origin; the framework exhibits a supercritical pitchfork bifurcation with critical temperature ({ref}`Section 21.2 <sec-policy-control-field>`, Theorem {prf:ref}`thm-pitchfork-bifurcation-structure`).
 10. **Non-local memory as self-interaction.** Trajectory history induces a memory potential $\Psi_{\text{mem}}$ via heat-kernel convolution, creating conservative forces that stabilize learned attractors ({ref}`Section 27 <sec-section-non-local-memory-as-self-interaction-functional>`).
@@ -1976,7 +1976,7 @@ The Lie derivative $\mathcal{L}_f V = dV(f)$ is a **pairing**, not an inner prod
 - $\mathfrak{D}(z,a)$ is an explicit control-effort / regularization term (e.g., KL control, action penalties).
 - At optimality, the relation enforces a local consistency between value change, immediate cost, and control effort.
 
-*Forward reference (Helmholtz Continuum Limit).* {ref}`Section 24.2 <sec-the-bulk-potential-screened-poisson-equation>` shows that in the continuum limit on the manifold $(\mathcal{Z}, G)$, the Bellman/HJB equation becomes the **Screened Poisson (Helmholtz) Equation**: $-\Delta_G V + \kappa^2 V = \rho_r$, where $\kappa = -\ln\gamma$ is the screening mass derived from the discount factor. This reveals the Critic as a **Field Solver** computing the Green's function of the screened Laplacian.
+*Forward reference (Helmholtz Continuum Limit).* {ref}`Section 24.2 <sec-the-bulk-potential-screened-poisson-equation>` shows that in the continuum limit on the manifold $(\mathcal{Z}, G)$, the Bellman/HJB equation becomes the **Screened Poisson (Helmholtz) Equation**: $-\Delta_G V + \kappa^2 V = \rho_r$, where $\kappa = \lambda / c_{\text{info}}$ with $\lambda = -\ln\gamma / \Delta t$ (natural units: $\kappa = -\ln\gamma$) is the screening mass derived from the discount factor. This reveals the Critic as a **Field Solver** computing the Green's function of the screened Laplacian.
 
 (sec-conditional-independence-and-sufficiency)=
 ## Conditional Independence and Sufficiency (Causal Enclosure)
@@ -13296,7 +13296,7 @@ Each specifies:
 
 **Cross-references:** {ref}`Section 21.2 <sec-policy-control-field>` (Control Field), Theorem {prf:ref}`thm-unified-control-interpretation`, Definition {prf:ref}`def-effective-potential`.
 
-*Forward reference (Effective Potential Resolution).* {ref}`Section 24.2 <sec-the-bulk-potential-screened-poisson-equation>` resolves the meaning of $\Phi_{\text{eff}} = V_{\text{critic}}$: the Critic solves the **Screened Poisson Equation** to compute the potential from boundary reward charges. The discount factor $\gamma$ determines the screening length $\ell = -1/\ln\gamma$ (Corollary {prf:ref}`cor-discount-as-screening-length`), explaining why distant rewards are exponentially suppressed in policy.
+*Forward reference (Effective Potential Resolution).* {ref}`Section 24.2 <sec-the-bulk-potential-screened-poisson-equation>` resolves the meaning of $\Phi_{\text{eff}} = V_{\text{critic}}$: the Critic solves the **Screened Poisson Equation** to compute the potential from boundary reward charges. The discount factor $\gamma$ determines the screening length $\ell = c_{\text{info}} \Delta t / (-\ln\gamma)$ (natural units: $1/(-\ln\gamma)$) (Corollary {prf:ref}`cor-discount-as-screening-length`), explaining why distant rewards are exponentially suppressed in policy.
 
 :::
 (sec-implementation-the-holographicinterface-module)=
@@ -14014,10 +14014,10 @@ $$-\Delta_G V + \kappa^2 V = \rho_r$$
 
 Let me parse that for you:
 - $\Delta_G$ is the Laplace-Beltrami operator---the generalization of the Laplacian to curved manifolds. It measures how $V$ differs from its local average.
-- $\kappa^2$ is the "screening mass," which turns out to be $\kappa = -\ln\gamma$ where $\gamma$ is the discount factor. This is the deep connection: the discount rate isn't just an arbitrary weighting---it's a *mass* for the value field.
+- $\kappa^2$ is the "screening mass." The discount factor sets a temporal rate $\lambda := -\ln\gamma / \Delta t$; the spatial screening mass is $\kappa := \lambda / c_{\text{info}}$. In natural units ($\Delta t = 1$, $c_{\text{info}} = 1$), $\kappa = -\ln\gamma$. This is the deep connection: the discount rate isn't just an arbitrary weighting---it's a *mass* for the value field.
 - $\rho_r$ is the reward density---where rewards are being deposited.
 
-What does this equation mean physically? It says value *propagates* from reward sources, but the propagation is screened. Distant rewards contribute less, and the screening length is $\ell = 1/\kappa = -1/\ln\gamma$. For $\gamma = 0.99$, this is about 100 time steps. Beyond that distance, rewards are exponentially suppressed.
+What does this equation mean physically? It says value *propagates* from reward sources, but the propagation is screened. Distant rewards contribute less, and the screening length is $\ell = 1/\kappa = c_{\text{info}} \Delta t / (-\ln\gamma)$. For $\gamma = 0.99$ with $c_{\text{info}} \Delta t = 1$, this is about 100 time steps. Beyond that distance, rewards are exponentially suppressed.
 
 This gives the discount factor a *spatial* meaning, not just a temporal one. In latent space, $\gamma$ controls how far reward "reaches."
 :::
@@ -14027,7 +14027,7 @@ When the Value Curl vanishes ($\mathcal{F} = 0$), the reward field is conservati
 :::{prf:theorem} The HJB-Helmholtz Correspondence {cite}`bellman1957dynamic,evans2010pde`
 :label: thm-the-hjb-helmholtz-correspondence
 
-Let the discount factor be $\gamma = e^{-\kappa \Delta t}$ where $\kappa > 0$ is the **screening mass**. The Bellman condition
+Let the temporal discount rate be $\lambda := -\ln\gamma / \Delta t$ and define the **spatial screening mass** $\kappa := \lambda / c_{\text{info}}$ (so $\gamma = e^{-\lambda \Delta t}$). The Bellman condition
 
 $$
 V(z) = \mathbb{E}[r + \gamma V(z')]
@@ -14067,25 +14067,17 @@ Units: $[\kappa] = 1/\text{length}$, $[\Delta_G V] = \mathrm{nat}/\text{length}^
 
 The screened Poisson equation $-\Delta_G V + \kappa^2 V = \rho_r$ requires careful dimensional analysis. The naive expression $\kappa = -\ln\gamma$ appears dimensionless, which would be inconsistent with $[\Delta_G] = [\text{length}]^{-2}$.
 
-The resolution lies in the proof derivation. The intermediate equation before normalization is:
+The resolution is to separate temporal and spatial scales. Define the temporal discount rate $\lambda := -\ln\gamma / \Delta t$ (units $1/[\text{time}]$), then convert to the spatial screening mass $\kappa := \lambda / c_{\text{info}}$ (units $1/[\text{length}]$). This makes $\kappa^2$ commensurate with $[\Delta_G] = [\text{length}]^{-2}$.
 
-$$
-\kappa V = r + \nabla V \cdot b + T_c \Delta_G V
-$$
-
-where $T_c$ is the **cognitive temperature** (Definition {prf:ref}`def-cognitive-temperature`), which acts as a diffusion coefficient with units $[T_c] = [\text{length}]^2/[\text{time}]$.
-
-**In natural units** (used throughout this document): We set $T_c = 1$ and $\Delta t = 1$, making $\kappa = -\ln\gamma$ numerically equal to the screening mass. The stated units $[\kappa] = 1/\text{length}$ are correct in this convention.
+**In natural units** (used throughout this document): We set $\Delta t = 1$ and $c_{\text{info}} = 1$, making $\kappa = -\ln\gamma$ numerically equal to the screening mass.
 
 **In SI units**: The proper relationship is:
 
 $$
-\kappa_{\text{phys}} = \frac{-\ln\gamma}{\sqrt{T_c \cdot \Delta t}}, \qquad [\kappa_{\text{phys}}] = \frac{1}{\text{length}}
+\kappa_{\text{phys}} = \frac{-\ln\gamma}{c_{\text{info}} \Delta t}, \qquad [\kappa_{\text{phys}}] = \frac{1}{\text{length}}
 $$
 
-The screening length $\ell_{\text{screen}} = 1/\kappa$ thus depends on both the temporal horizon ($\gamma$) and the diffusive spreading rate ($T_c$). This is physically sensible: slower diffusion (smaller $T_c$) increases the effective screening length because value information takes longer to propagate.
-
-**Consistency check**: In the proof, dividing $\kappa V = r + T_c \Delta_G V$ by $T_c$ yields $(\kappa/T_c) V = r/T_c + \Delta_G V$. Rearranging: $-\Delta_G V + (\kappa/T_c) V = -r/T_c$. The effective "mass squared" in the normalized equation is $\kappa^2_{\text{eff}} = \kappa/T_c$, which has the correct units $[\text{length}]^{-2}$ when $[\kappa] = [\text{time}]^{-1}$ and $[T_c] = [\text{length}]^2/[\text{time}]$.
+The screening length $\ell_{\text{screen}} = 1/\kappa$ thus depends on both the temporal horizon ($\gamma$) and the information propagation speed $c_{\text{info}}$. Slower propagation (smaller $c_{\text{info}}$) shortens the effective horizon in latent space.
 
 :::
 
@@ -14095,7 +14087,7 @@ The screening length $\ell_{\text{screen}} = 1/\kappa$ thus depends on both the 
 
 **In Physics:** The Yukawa (screened Coulomb) potential satisfies $(-\nabla^2 + m^2)\phi = \rho$ where $m$ is the mediating boson mass. The screening length $\ell = 1/m$ determines the range of the force {cite}`yukawa1935interaction`.
 
-**In Implementation:** The value function satisfies $(-\Delta_G + \kappa^2)V = \rho_r$ where (in natural units with $T_c = \Delta t = 1$):
+**In Implementation:** The value function satisfies $(-\Delta_G + \kappa^2)V = \rho_r$ where (in natural units with $\Delta t = c_{\text{info}} = 1$):
 
 $$
 \kappa = -\ln\gamma, \quad \ell_\gamma = 1/\kappa
@@ -14105,7 +14097,7 @@ $$
 | Physics (Yukawa) | Agent (Bellman-Helmholtz) |
 |:-----------------|:--------------------------|
 | Scalar field $\phi$ | Value function $V(z)$ |
-| Mass $m$ | Discount rate $\kappa = -\ln\gamma$ |
+| Mass $m$ | Screening mass $\kappa = \lambda / c_{\text{info}}$ (natural units: $-\ln\gamma$) |
 | Screening length $1/m$ | Reward horizon $\ell_\gamma = 1/\kappa$ |
 | Charge density $\rho$ | Reward density $\rho_r$ |
 | Laplacian $\nabla^2$ | Laplace-Beltrami $\Delta_G$ |
@@ -14122,7 +14114,7 @@ The Value Function $V(z)$ satisfies the **Screened Poisson (Helmholtz) Equation*
 $$
 (-\Delta_G + \kappa^2) V(z) = \rho_r(z)
 $$
-where $\Delta_G$ is the Laplace-Beltrami operator on the Riemannian manifold and $\kappa$ is the screening mass (see Remark {prf:ref}`rem-helmholtz-dimensions` for the precise dimensional relationship with the discount factor $\gamma$ and diffusivity $T_c$).
+where $\Delta_G$ is the Laplace-Beltrami operator on the Riemannian manifold and $\kappa$ is the screening mass (see Remark {prf:ref}`rem-helmholtz-dimensions` for the precise dimensional relationship with the discount factor $\gamma$ and information speed $c_{\text{info}}$).
 
 **The Degenerate Limit:**
 Discretize space on a lattice. Replace $\Delta_G$ with the graph Laplacian $\mathcal{L}_{\text{graph}}$.
@@ -14135,7 +14127,7 @@ V(s) = \sum_{t=0}^\infty \gamma^t \mathbb{E}[r_t | s_0 = s] = (I - \gamma P)^{-1
 $$
 This recovers the **Bellman equation** $V = r + \gamma P V$.
 
-**Result:** The "screening mass" $\kappa$ encodes the discount factor $\gamma$ (in natural units where diffusivity $T_c = 1$; see Remark {prf:ref}`rem-helmholtz-dimensions`). Standard RL is Field Theory on a discrete lattice with flat metric. The Fragile Agent solves the PDE on a learned Riemannian manifold.
+**Result:** The "screening mass" $\kappa$ encodes the discount factor $\gamma$ (in natural units where $\Delta t = c_{\text{info}} = 1$; see Remark {prf:ref}`rem-helmholtz-dimensions`). Standard RL is Field Theory on a discrete lattice with flat metric. The Fragile Agent solves the PDE on a learned Riemannian manifold.
 
 **What the generalization offers:**
 - Geometric propagation: rewards propagate as sources in a scalar field, respecting manifold curvature
@@ -14200,11 +14192,14 @@ where $d_G$ is the geodesic distance and $d$ is the dimension.
 The discount factor $\gamma$ determines a characteristic **screening length**:
 
 $$
-\ell_{\text{screen}} = \frac{1}{\kappa} = \frac{\Delta t}{-\ln\gamma}.
+\ell_{\text{screen}} = \frac{1}{\kappa} = \frac{c_{\text{info}} \Delta t}{-\ln\gamma} = \frac{c_{\text{info}}}{\lambda}.
 $$
-For $\gamma = 0.99$ and $\Delta t = 1$: $\ell_{\text{screen}} \approx 100$ steps.
+where $\lambda := -\ln\gamma / \Delta t$.
+For $\gamma = 0.99$ and $c_{\text{info}} \Delta t = 1$: $\ell_{\text{screen}} \approx 100$ steps.
 
 *Interpretation:* Rewards at geodesic distance $> \ell_{\text{screen}}$ from state $z$ are exponentially suppressed in their contribution to $V(z)$. This is the **temporal horizon** recast as a **spatial horizon** in latent space.
+
+*Note:* Numerical values below assume natural units ($c_{\text{info}} \Delta t = 1$).
 
 **Table 24.2.5 (Discount-Screening Correspondence).**
 
@@ -14226,7 +14221,7 @@ For $\gamma = 0.99$ and $\Delta t = 1$: $\ell_{\text{screen}} \approx 100$ steps
 The discount factor $\gamma$ defines a **Screening Length** with geometric meaning:
 
 $$
-\kappa = -\ln\gamma, \quad \ell_{\text{screen}} = \frac{1}{\kappa}
+\kappa = \lambda / c_{\text{info}}, \quad \ell_{\text{screen}} = \frac{1}{\kappa}
 $$
 Value correlations decay exponentially with **geodesic distance**:
 
@@ -15511,7 +15506,7 @@ This section provides a consolidated reference for the key symbols introduced ac
 | $C_\partial$                   | Boundary capacity               | Area-law capacity of interface                                                                                     | nat               | 18.1.3         |
 | $\nu_{\text{cap}}$             | Capacity saturation             | $I_{\text{bulk}}/C_\partial$                                                                                       | dimensionless     | 18.3.1         |
 | $\lambda$                      | WFR length-scale                | Transport-vs-reaction crossover                                                                                    | $[z]$             | 20.2.1, 20.3.1 |
-| $\kappa$                       | Screening mass                  | $-\ln\gamma/\Delta t$                                                                                              | $[z]^{-1}$        | 24.2.4         |
+| $\kappa$                       | Screening mass                  | $-\ln\gamma/(c_{\text{info}} \Delta t)$                                                                             | $[z]^{-1}$        | 24.2.4         |
 | $\ell_{\text{screen}}$         | Screening length                | $1/\kappa$; reward correlation length                                                                              | $[z]$             | 24.2.4         |
 | $U(z)$                         | Hyperbolic potential            | $-2\operatorname{artanh}(\lvert z\rvert)$                                                                          | nat               | 21.1.4         |
 | $V(z)$                         | Value/Critic                    | Solution to Helmholtz equation (conservative case)                                                                 | nat               | 2.7, 24.3      |
@@ -25863,7 +25858,7 @@ where $E_0$ is the ground state energy.
 :::{prf:theorem} Mass Gap from Screening
 :label: thm-mass-gap-screening
 
-The screening mass $\kappa = -\ln\gamma$ from the Helmholtz equation (Theorem {prf:ref}`thm-the-hjb-helmholtz-correspondence`) provides a lower bound on the mass gap:
+The screening mass $\kappa = \lambda / c_{\text{info}}$ with $\lambda = -\ln\gamma / \Delta t$ from the Helmholtz equation (Theorem {prf:ref}`thm-the-hjb-helmholtz-correspondence`) provides a lower bound on the mass gap (natural units: $\kappa = -\ln\gamma$):
 
 $$
 \Delta \geq \frac{\kappa^2}{2m_{\text{eff}}}
@@ -26174,7 +26169,7 @@ The framework is Yang-Mills theory applied to information systems. The mass gap 
 | Continuum limit $a \to 0$ | Causal Stasis (pathological) |
 | Asymptotic freedom | High-energy strategic independence |
 | Area law (holographic) | Causal Information Bound |
-| Screening mass $\kappa$ | Discount rate $-\ln\gamma$ |
+| Screening mass $\kappa$ | Temporal discount rate $\lambda = -\ln\gamma / \Delta t$ (so $\kappa = \lambda / c_{\text{info}}$) |
 
 ::::
 
@@ -28680,10 +28675,10 @@ where:
 
 **Derived Quantities:**
 
-Define the **Causal Horizon Length** $\ell_0 = c_{\text{info}} \cdot \tau_{\text{proc}}$ with dimension $[L]$. The **Temporal Screening Mass** is then:
+Define the **Causal Horizon Length** $\ell_0 = c_{\text{info}} \cdot \tau_{\text{proc}}$ with dimension $[L]$. Let the temporal discount rate be $\lambda := -\ln\gamma / \Delta t$ and identify the processing interval $\Delta t := \tau_{\text{proc}}$. The **Spatial Screening Mass** is then:
 
 $$
-\kappa = \frac{-\ln\gamma}{\ell_0}
+\kappa = \frac{\lambda}{c_{\text{info}}} = \frac{-\ln\gamma}{\ell_0}
 $$
 
 with dimension $[L^{-1}]$ (Corollary {prf:ref}`cor-discount-as-screening-length`).
@@ -29413,7 +29408,7 @@ $$
 (\kappa^2 - \nabla^2) V = r
 $$
 
-where the screening mass $\kappa = (-\ln\gamma)/\ell_0$ has dimension $[L^{-1}]$, and $\ell_0 = c_{\text{info}} \cdot \tau_{\text{proc}}$ is the causal horizon length (Definition {prf:ref}`def-agent-parameter-vector`). This ensures dimensional consistency: $[\kappa^2] = [L^{-2}] = [\nabla^2]$.
+where the screening mass $\kappa = \lambda / c_{\text{info}} = (-\ln\gamma)/\ell_0$ has dimension $[L^{-1}]$, and $\ell_0 = c_{\text{info}} \cdot \tau_{\text{proc}}$ is the causal horizon length (Definition {prf:ref}`def-agent-parameter-vector`). This ensures dimensional consistency: $[\kappa^2] = [L^{-2}] = [\nabla^2]$.
 
 **Step 2.** For $\gamma = 1$, we have $\kappa = 0$. The equation becomes Poisson's equation:
 
@@ -30582,7 +30577,7 @@ $$0 < \gamma < 1$$
 **Physical interpretation:**
 - $\gamma = 0$: Completely myopic (only immediate rewards matter)
 - $\gamma = 1$: Infinite horizon (all futures equally weighted - non-local)
-- The screening length $\ell_\gamma = c \tau_{\text{proc}} / (-\ln\gamma)$ must be finite
+- The screening length $\ell_\gamma = c_{\text{info}} \tau_{\text{proc}} / (-\ln\gamma)$ must be finite
 
 At cosmological scales: $\gamma \approx 1 - 10^{-61}$ (nearly 1, but strictly less)
 
@@ -38243,7 +38238,7 @@ The framework makes specific, counter-intuitive predictions.
 
 2. **Prediction 2: Texture immunity.** The Texture Firewall (Node 29) decouples high-frequency residuals from control. *Falsification:* Apply an adversarial patch (high-frequency noise) that does not alter the macro-state $K$. If the policy $\pi(a|z)$ changes significantly despite $z_n$ remaining constant, the Firewall is refuted.
 
-3. **Prediction 3: Screening-length decay.** Value propagation decays exponentially with geodesic distance at rate $\kappa = -\ln\gamma / \Delta t$ (Proposition {prf:ref}`prop-green-s-function-decay`, Corollary {prf:ref}`cor-discount-as-screening-length`). *Falsification:* Measure empirical value correlation as a function of latent distance. If decay does not match $\exp(-\kappa \cdot d_G(z, z'))$, the Helmholtz-Bellman correspondence is false.
+3. **Prediction 3: Screening-length decay.** Value propagation decays exponentially with geodesic distance at rate $\kappa = \lambda / c_{\text{info}}$ with $\lambda = -\ln\gamma / \Delta t$ (natural units: $\kappa = -\ln\gamma$) (Proposition {prf:ref}`prop-green-s-function-decay`, Corollary {prf:ref}`cor-discount-as-screening-length`). *Falsification:* Measure empirical value correlation as a function of latent distance. If decay does not match $\exp(-\kappa \cdot d_G(z, z'))$, the Helmholtz-Bellman correspondence is false.
 
 (sec-appendix-d-philosophical-naming-premise)=
 ## D.6 The Philosophical and Naming Premise

@@ -93,10 +93,10 @@ where:
 
 **Derived Quantities:**
 
-Define the **Causal Horizon Length** $\ell_0 = c_{\text{info}} \cdot \tau_{\text{proc}}$ with dimension $[L]$. The **Temporal Screening Mass** is then:
+Define the **Causal Horizon Length** $\ell_0 = c_{\text{info}} \cdot \tau_{\text{proc}}$ with dimension $[L]$. Let the temporal discount rate be $\lambda := -\ln\gamma / \Delta t$ and identify the processing interval $\Delta t := \tau_{\text{proc}}$. The **Spatial Screening Mass** is then:
 
 $$
-\kappa = \frac{-\ln\gamma}{\ell_0}
+\kappa = \frac{\lambda}{c_{\text{info}}} = \frac{-\ln\gamma}{\ell_0}
 
 $$
 
@@ -853,22 +853,25 @@ with $\gamma_{\text{min}} > 0$.
 **Step 1.** From the Helmholtz equation (Theorem {prf:ref}`thm-the-hjb-helmholtz-correspondence`), the Value function satisfies:
 
 $$
-(\kappa^2 - \nabla^2) V = r
+(\kappa^2 - \nabla^2) V = \rho_r
 
 $$
 
-where the screening mass $\kappa = (-\ln\gamma)/\ell_0$ has dimension $[L^{-1}]$, and $\ell_0 = c_{\text{info}} \cdot \tau_{\text{proc}}$ is the causal horizon length (Definition {prf:ref}`def-agent-parameter-vector`). This ensures dimensional consistency: $[\kappa^2] = [L^{-2}] = [\nabla^2]$.
+where the screening mass $\kappa = \lambda / c_{\text{info}} = (-\ln\gamma)/\ell_0$ has dimension $[L^{-1}]$, and $\ell_0 = c_{\text{info}} \cdot \tau_{\text{proc}}$ is the causal horizon length (Definition {prf:ref}`def-agent-parameter-vector`). This ensures dimensional consistency: $[\kappa^2] = [L^{-2}] = [\nabla^2]$.
 
-**Step 2.** For $\gamma = 1$, we have $\kappa = 0$. The equation becomes Poisson's equation:
-
-$$
--\nabla^2 V = r
+**Step 2.** For $\gamma = 1$, we have $\kappa = 0$. The equation becomes Poisson's equation for the conservative
+component:
 
 $$
+-\nabla^2 V = \rho_r
 
-The Green's function decays as $1/r^{D-2}$ (long-range).
+$$
+where $\rho_r$ is the conservative reward source density (Definition {prf:ref}`def-the-reward-flux`).
 
-**Step 3.** Long-range value propagation violates locality: distant rewards dominate nearby decisions. The agent cannot form local value gradients for navigation.
+For $D>2$, the Green's function decays as $1/r^{D-2}$ (long-range); for $D=2$ it grows logarithmically.
+
+**Step 3.** Long-range value propagation violates locality: distant conservative reward sources dominate nearby
+decisions. The agent cannot form local value gradients for navigation.
 
 **Step 4.** From Corollary {prf:ref}`cor-discount-as-screening-length`, finite screening $\kappa > 0$ (i.e., $\gamma < 1$) is required for local goal-directedness.
 
@@ -881,7 +884,8 @@ $$
 
 $$
 
-**Step 6.** Zero screening length means the agent responds only to immediate rewards—it has no planning horizon.
+**Step 6.** Zero screening length means the agent responds only to immediate conservative rewards—it has no planning
+horizon.
 
 **Step 7.** This violates the Causal Buffer requirement (Axiom {prf:ref}`ax-causal-buffer-architecture`): the agent must anticipate beyond its current timestep.
 
@@ -894,9 +898,11 @@ The physics here is beautiful. The discount factor $\gamma$ creates a "screening
 
 In electrostatics, the Coulomb potential is $V(r) \sim 1/r$---long range. In a superconductor, the photon gains a mass $m_\gamma$, and the potential becomes $V(r) \sim e^{-m_\gamma r}/r$---short range, decaying exponentially beyond the screening length $\ell = 1/m_\gamma$.
 
-Same here. With $\gamma = 1$ (no discounting), rewards propagate like Coulomb potentials---a reward at distance $r$ contributes $1/r^{D-2}$ to the value function. Distant rewards dominate. The agent cannot focus.
+Same here. With $\gamma = 1$ (no discounting), conservative reward sources propagate like Coulomb potentials---a source at
+distance $r$ contributes $1/r^{D-2}$ for $D>2$ (logarithmic in $D=2$) to the value function. Distant rewards dominate. The agent cannot focus.
 
-With $\gamma < 1$, there is screening. Rewards beyond the screening length $\ell_\gamma$ are exponentially suppressed. The agent can focus on local goals.
+With $\gamma < 1$, there is screening. Conservative rewards beyond the screening length $\ell_\gamma$ are exponentially
+suppressed. The agent can focus on local goals.
 
 But if $\gamma$ is too small, the screening length is too short. The agent becomes myopic, unable to see past its nose. A deer with $\gamma = 0.1$ would walk into the lion's mouth because it only cares about the next few meters.
 :::
@@ -904,11 +910,14 @@ But if $\gamma$ is too small, the screening length is too short. The agent becom
 :::{admonition} Intuition: Discounting as Screening
 :class: feynman-added tip
 
-Think of rewards as electric charges distributed in spacetime. The value function $V(z)$ is like the electrostatic potential---it tells you how much "pull" you feel toward different states.
+Think of conservative reward sources as electric charges distributed in spacetime. The value function $V(z)$ is like the
+electrostatic potential---it tells you how much "pull" you feel toward different states.
 
-With no discounting ($\gamma = 1$), all charges contribute equally regardless of distance. A reward a million steps away pulls just as hard as one next step away. You cannot prioritize.
+With no discounting ($\gamma = 1$), all charges contribute equally regardless of distance. A conservative reward source a
+million steps away pulls just as hard as one next step away. You cannot prioritize.
 
-With discounting ($\gamma < 1$), distant charges are screened. Their contribution decays exponentially with distance. You feel mostly the nearby rewards.
+With discounting ($\gamma < 1$), distant charges are screened. Their contribution decays exponentially with distance. You
+feel mostly the nearby conservative rewards.
 
 The screening length $\ell_\gamma \approx c_{\text{info}} \tau_{\text{proc}} / |\ln\gamma|$ sets the planning horizon. For $\gamma = 0.99$, $|\ln\gamma| \approx 0.01$, so $\ell_\gamma \approx 100 \ell_0$---you plan about 100 steps ahead. For $\gamma = 0.5$, $|\ln\gamma| \approx 0.7$, so $\ell_\gamma \approx 1.4 \ell_0$---you barely look ahead at all.
 :::

@@ -491,7 +491,13 @@ The "Euclidean vs Riemannian" distinction below is important. Euclidean loss car
 
 The Critic does not just predict reward; it defines a **stability-oriented potential** over latent state. We impose Lyapunov-style constraints as *sufficient conditions* for local stability, enforced approximately via sampled penalties {cite}`chang2019neural,chow2018lyapunov,kolter2019safe`.
 
-*Forward reference (Field Solver Interpretation).* {ref}`Section 24 <sec-the-reward-field-value-forms-and-hodge-geometry>` provides a deeper interpretation: the Critic is a **Field Solver** that propagates boundary reward charges into the bulk via the **Screened Poisson Equation** (Theorem {prf:ref}`thm-the-hjb-helmholtz-correspondence`). The Value function $V(z)$ is the Green's function of the screened Laplacian (Proposition {prf:ref}`prop-green-s-function-interpretation`), with the discount factor determining the screening length. This Helmholtz PDE perspective unifies the Lyapunov constraints below with the geometric regularization in Section 24.5.
+*Forward reference (Field Solver Interpretation).* {ref}`Section 24 <sec-the-reward-field-value-forms-and-hodge-geometry>`
+provides a deeper interpretation: the Critic is a **Field Solver** that propagates boundary reward flux (scalar charges in
+the conservative case) into the bulk via the **Screened Poisson Equation** (Theorem
+{prf:ref}`thm-the-hjb-helmholtz-correspondence`). The Value function $V(z)$ is the Green's function of the screened
+Laplacian (Proposition {prf:ref}`prop-green-s-function-interpretation`), with the discount factor determining the
+screening length. This Helmholtz PDE perspective unifies the Lyapunov constraints below with the geometric
+regularization in Section 24.5.
 
 **Euclidean vs Riemannian Critic Losses:**
 

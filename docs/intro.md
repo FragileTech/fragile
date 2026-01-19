@@ -145,7 +145,7 @@ The three volumes develop three complementary aspects of this thesis:
 | III | Algorithms | **Darwinian Ratchet**: Parallel exploration + selection = efficient search |
 
 **The Gauge Principle** unifies all three: local invariance under coordinate changes forces the existence of connection fields. In cognition, these become:
-- **Opportunity field** $B_\mu$ (value gradient transport)
+- **Opportunity field** $B_\mu$ (reward 1-form connection: gradient + circulation)
 - **Error field** $W_\mu$ (prediction-error correction)
 - **Binding field** $G_\mu$ (feature coordination)
 

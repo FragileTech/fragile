@@ -148,7 +148,8 @@ This is why the mathematics uses the gradient (the $\nabla_n \rho \cdot \mathbf{
 **In Implementation:** The agent's interface imposes dual boundary conditions:
 - **Perception (Dirichlet):** Observations fix position $z|_{\partial\mathcal{Z}} = z_{\text{obs}}$
 - **Action (Neumann):** Motors fix momentum flux $\partial_n z|_{\partial\mathcal{Z}} = u_\pi$
-- **Reward (Source):** Scalar charge injection $\sigma_r|_{\partial\mathcal{Z}}$
+- **Reward (Source):** Boundary reward flux $J_r|_{\partial\mathcal{Z}}$ (scalar charge density
+  $\sigma_r$ in the conservative case)
 
 **Correspondence Table:**
 
@@ -710,7 +711,12 @@ Each specifies:
 
 **Cross-references:** {ref}`Section 21.2 <sec-policy-control-field>` (Control Field), Theorem {prf:ref}`thm-unified-control-interpretation`, Definition {prf:ref}`def-effective-potential`.
 
-*Forward reference (Effective Potential Resolution).* {ref}`Section 24.2 <sec-the-bulk-potential-screened-poisson-equation>` resolves the meaning of $\Phi_{\text{eff}} = V_{\text{critic}}$: the Critic solves the **Screened Poisson Equation** to compute the potential from boundary reward charges. The discount factor $\gamma$ determines the screening length $\ell = -1/\ln\gamma$ (Corollary {prf:ref}`cor-discount-as-screening-length`), explaining why distant rewards are exponentially suppressed in policy.
+*Forward reference (Effective Potential Resolution).* {ref}`Section 24.2 <sec-the-bulk-potential-screened-poisson-equation>`
+resolves the meaning of $\Phi_{\text{eff}} = V_{\text{critic}}$: the Critic solves the **Screened Poisson Equation** to
+compute the potential from boundary reward flux (scalar charges in the conservative case). The discount factor $\gamma$
+determines the screening length $\ell = c_{\text{info}} \Delta t / (-\ln\gamma)$ (natural units: $1/(-\ln\gamma)$)
+(Corollary {prf:ref}`cor-discount-as-screening-length`),
+explaining why distant rewards are exponentially suppressed in policy.
 
 :::
 (sec-implementation-the-holographicinterface-module)=

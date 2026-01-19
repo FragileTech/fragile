@@ -19,7 +19,7 @@ If you are coming from a standard RL/Deep Learning background, use this mapping 
 |:----------------------------------|:------------------------------------|
 | **Adam / K-FAC**                  | Geodesic Flow on $(\mathcal{Z}, G)$ |
 | **Trust Region (PPO/TRPO)**       | Metric Sensitivity $G_{ij}$         |
-| **Reward Shaping**                | Scalar Potential / Helmholtz Solver |
+| **Reward Shaping**                | Reward 1-form / scalar potential (conservative case) |
 | **AutoML / Grid Search**          | Universal Governor (Homeostasis)    |
 | **Intrinsic Motivation**          | Causal Information Potential        |
 | **State Abstraction**             | Causal Enclosure / Partitioning     |
@@ -349,7 +349,7 @@ The framework makes specific, counter-intuitive predictions.
 
 2. **Prediction 2: Texture immunity.** The Texture Firewall (Node 29) decouples high-frequency residuals from control. *Falsification:* Apply an adversarial patch (high-frequency noise) that does not alter the macro-state $K$. If the policy $\pi(a|z)$ changes significantly despite $z_n$ remaining constant, the Firewall is refuted.
 
-3. **Prediction 3: Screening-length decay.** Value propagation decays exponentially with geodesic distance at rate $\kappa = -\ln\gamma / \Delta t$ (Proposition {prf:ref}`prop-green-s-function-decay`, Corollary {prf:ref}`cor-discount-as-screening-length`). *Falsification:* Measure empirical value correlation as a function of latent distance. If decay does not match $\exp(-\kappa \cdot d_G(z, z'))$, the Helmholtz-Bellman correspondence is false.
+3. **Prediction 3: Screening-length decay.** Value propagation decays exponentially with geodesic distance at rate $\kappa = \lambda / c_{\text{info}}$ with $\lambda = -\ln\gamma / \Delta t$ (natural units: $\kappa = -\ln\gamma$) (Proposition {prf:ref}`prop-green-s-function-decay`, Corollary {prf:ref}`cor-discount-as-screening-length`). *Falsification:* Measure empirical value correlation as a function of latent distance. If decay does not match $\exp(-\kappa \cdot d_G(z, z'))$, the Helmholtz-Bellman correspondence is false.
 
 (sec-appendix-d-philosophical-naming-premise)=
 ## D.6 The Philosophical and Naming Premise
@@ -400,7 +400,8 @@ The claim is not rhetorical—it is a precise mathematical statement proven by e
 (sec-appendix-d-the-agency-problem)=
 ### D.6.3 The Agency Problem
 
-**Objection:** *If the agent's actions are determined by a PDE solver propagating boundary charges, is there any room for genuine "agency," or is the agent just a sophisticated physical resistor?*
+**Objection:** *If the agent's actions are determined by a PDE solver propagating boundary reward flux (conservative
+charges), is there any room for genuine "agency," or is the agent just a sophisticated physical resistor?*
 
 **Response:**
 
@@ -616,17 +617,27 @@ Inertia slows *reckless* movement, not *purposeful* movement.
 (sec-appendix-d-mapping-human-values-charges)=
 ### D.10.1 Mapping Human Values to Charges
 
-**Objection:** *Rewards are treated as boundary scalar charges. How do we translate fuzzy human ethics into a precise point-source charge density without creating "singularities" of unintended behavior?*
+**Objection:** *Rewards are treated as boundary reward flux (1-forms), with scalar charges in the conservative case. How
+do we translate fuzzy human ethics into a precise field without creating "singularities" of unintended behavior?*
 
 **Response:**
 
 The framework provides smoothing and decomposition mechanisms.
 
-1. **Scalar charge density, not point charges.** Definition {prf:ref}`def-reward-1-form` defines $\rho_r(z)$ as a *density* over the latent manifold, not a delta function. Human values are represented as smooth fields: "avoid harm" becomes a negative charge cloud around dangerous states; "seek goals" becomes a positive charge cloud around target states ({ref}`Section 24.1 <sec-the-reward-1-form>`).
+1. **Smooth reward flux, not point charges.** Definition {prf:ref}`def-reward-1-form` defines reward as a 1-form. Its
+   conservative component can be represented by a smooth source density $\rho_r(z)$ rather than a delta function.
+   Human values are encoded as smooth fields: "avoid harm" becomes a negative flux cloud around dangerous states; "seek
+   goals" becomes a positive flux cloud around target states ({ref}`Section 24.1 <sec-the-reward-1-form>`).
 
-2. **Helmholtz screening.** The screened Poisson equation $-\Delta_G V + \kappa^2 V = \rho_r$ ({ref}`Section 24.2 <sec-the-bulk-potential-screened-poisson-equation>`) automatically smooths sharp reward boundaries. The screening length $\ell = 1/\kappa$ sets the characteristic scale over which values propagate and blend. Singularities are geometrically impossible.
+2. **Helmholtz screening (conservative component).** The screened Poisson equation
+   $-\Delta_G V + \kappa^2 V = \rho_r$ ({ref}`Section 24.2 <sec-the-bulk-potential-screened-poisson-equation>`)
+   automatically smooths sharp reward boundaries. The screening length $\ell = 1/\kappa$ sets the characteristic scale
+   over which values propagate and blend. Singularities are geometrically impossible.
 
-3. **Hierarchical value decomposition.** Complex values can be decomposed into multiple charge sources: primary reward (task), auxiliary rewards (subgoals), penalties (constraints). Each source has its own density; the total potential is the superposition. The Sieve monitors each component separately.
+3. **Hierarchical value decomposition.** Complex values can be decomposed into conservative and cyclic components
+   (Hodge decomposition), with multiple smooth sources for the scalar part: primary reward (task), auxiliary rewards
+   (subgoals), penalties (constraints). Each source has its own density; the total potential is the superposition. The
+   Sieve monitors each component separately.
 
 4. **Conformal coupling increases deliberation.** High-curvature value regions increase the effective mass via conformal coupling ({ref}`Section 24.4 <sec-geometric-back-reaction-the-conformal-coupling>`). The agent slows down near regions of high value gradient, automatically allocating more computation to decisions with larger consequences.
 
@@ -940,5 +951,3 @@ Yes. Saturation ($\rho = 1$) creates a metric singularity in Fisher-Rao geometry
 3. **Computational enforcement.** Node 62 (CausalityViolationCheck) enforces this constraint: any predicted transition that would violate the metric bound triggers a halt rather than an unphysical state. The singularity is not pathological; it is a prediction boundary that the framework respects ({ref}`sec-saturation-limit`).
 
 4. **Physical interpretation.** Just as a black hole's event horizon represents the boundary of causal influence in general relativity, the saturation boundary represents the limit of the agent's predictive reach. Beyond $\rho = 1$, no further probability mass can be concentrated—the belief has become certain, and no additional information can modify it.
-
-

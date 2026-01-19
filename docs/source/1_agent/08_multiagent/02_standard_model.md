@@ -87,7 +87,9 @@ Think about it. If I tell you "state A has value 100 and state B has value 80," 
 This is the utility gauge freedom. And it's not just a philosophical nicety---it has profound implications.
 :::
 
-The fundamental observable in Reinforcement Learning is the **Preference**, defined by the gradient of the Value function, not its absolute magnitude. The policy is invariant under certain reward transformations, including constant shifts and potential-based shaping {cite}`ng1999policy`.
+The fundamental observable in Reinforcement Learning is the **Preference**, defined by the gradient of the scalar value
+potential (the conservative component of the reward 1-form), not its absolute magnitude. The policy is invariant under
+certain potential transformations, including constant shifts and potential-based shaping {cite}`ng1999policy`.
 
 :::{prf:definition} Utility Gauge Freedom
 :label: def-utility-gauge-freedom
@@ -101,7 +103,7 @@ $$
 
 where:
 - $\rho(z)$ is the belief density (Definition {prf:ref}`def-belief-density`)
-- $V(z)$ is the Value function (Theorem {prf:ref}`thm-the-hjb-helmholtz-correspondence`)
+- $V(z)$ is the scalar Value potential for the conservative component (Theorem {prf:ref}`thm-the-hjb-helmholtz-correspondence`)
 - $\sigma = T_c \cdot \tau_{\text{update}}$ is the Cognitive Action Scale (Definition {prf:ref}`def-cognitive-action-scale`)
 
 The system's observables are:
@@ -200,11 +202,13 @@ $$
 
 **Step 4.** The gauge-invariant kinetic term is $(D_\mu\psi)^\dagger(D^\mu\psi) = |D_\mu\psi|^2$.
 
-**Identification:** The field $B_\mu$ compensates for the shifting baseline of utility:
-- The spatial components $\vec{B}$ correspond to the **Vector Potential** of value (the solenoidal component from Definition {prf:ref}`def-conservative-reward-field`)
-- The temporal component $B_0$ corresponds to the **Scalar Potential** offset
+**Identification:** The field $B_\mu$ is the $U(1)$ connection associated with the reward 1-form (the Opportunity Field).
+In the conservative case, $B_\mu = \partial_\mu \Phi$ is pure gauge. On each time slice, the spatial components $\vec{B}$
+admit a Hodge decomposition into gradient (conservative) plus solenoidal/harmonic parts (path-dependent opportunity).
 
-The field strength tensor $F_{\mu\nu} = \partial_\mu B_\nu - \partial_\nu B_\mu$ measures the non-conservative component of the reward field (Definition {prf:ref}`def-conservative-reward-field`). When $F_{\mu\nu} \neq 0$, no choice of baseline can make the reward landscape path-independent.
+The field strength tensor $B_{\mu\nu} = \partial_\mu B_\nu - \partial_\nu B_\mu$ measures the non-conservative
+component of the reward 1-form (Value Curl; Definition {prf:ref}`def-value-curl`). When $B_{\mu\nu} \neq 0$, no choice
+of baseline can make the reward 1-form path-independent.
 
 $\square$
 
@@ -217,7 +221,10 @@ The problem is this: if you take a derivative of $\psi$, and then someone comes 
 
 The solution is to introduce a "correction factor"---the field $B_\mu$---that transforms in exactly the way needed to cancel those extra terms. When you compute the covariant derivative $D_\mu$, it doesn't care about local phase choices because the gauge field absorbs all that ambiguity.
 
-What's remarkable is that this $B_\mu$ field has physical meaning. It's not just a mathematical trick. The field $B_\mu$ represents the *opportunity landscape*---the gradient of potential reward that drives the agent's behavior. And the field strength $F_{\mu\nu}$ tells you when the reward landscape has "curl"---when there are closed loops where you can gain reward just by going around in circles.
+What's remarkable is that this $B_\mu$ field has physical meaning. It's not just a mathematical trick. The field $B_\mu$
+represents the *opportunity landscape* encoded by the reward 1-form. In the conservative limit it reduces to a gradient
+field; when not, it carries circulation. The field strength $B_{\mu\nu}$ tells you when the reward 1-form has "curl"---when
+there are closed loops where you can gain reward just by going around in circles.
 
 In economics, this would be an arbitrage opportunity. In physics, it's like a magnetic field. In cognition, it's a source of persistent, cyclic behavior patterns.
 :::
@@ -227,7 +234,10 @@ In economics, this would be an arbitrage opportunity. In physics, it's like a ma
 
 The name "Opportunity Field" captures the cognitive meaning of $B_\mu$. In physics, this would be called the electromagnetic potential. But for an agent, what does it represent?
 
-Think of $B_\mu$ as encoding "where the good stuff is" in the agent's representational space. The spatial components $\vec{B}$ point toward regions of higher value, while the temporal component $B_0$ encodes how fast value is changing. The agent's decisions are shaped by this field---it wants to move in directions where $B_\mu$ is favorable.
+Think of $B_\mu$ as encoding "where the good stuff is" in the agent's representational space. The gradient part of the
+spatial components points toward higher value, while the solenoidal part encodes circulations that sustain cycles. The
+temporal component $B_0$ is the time component of the same 1-form (equal to $\partial_t \Phi$ in the conservative case).
+The agent's decisions are shaped by this field---it wants to move in directions where $B_\mu$ is favorable.
 
 The key insight is that this field emerges *necessarily* from the requirement of local utility invariance. We didn't put it in by hand; it forced itself into existence.
 :::
@@ -331,7 +341,8 @@ $$
 
 $$
 
-where $\vec{\tau} = (\tau_1, \tau_2, \tau_3)$ are the Pauli matrices (generators of $\mathfrak{su}(2)$), and $V(x)$ is the Value function (Theorem {prf:ref}`thm-the-hjb-helmholtz-correspondence`).
+where $\vec{\tau} = (\tau_1, \tau_2, \tau_3)$ are the Pauli matrices (generators of $\mathfrak{su}(2)$), and $V(x)$ is
+the scalar Value potential for the conservative component (Theorem {prf:ref}`thm-the-hjb-helmholtz-correspondence`).
 
 The **Committed Action** amplitude is then the gauge-covariant projection:
 
@@ -360,7 +371,8 @@ To make action commitment physically meaningful, we need an intrinsic criterion.
 
 When the value landscape is steep (large $\|\nabla V\|$), the order parameter $\vec{n}$ is well-defined, and the agent commits decisively. When the landscape is flat (small $\|\nabla V\|$), $\vec{n}$ becomes ambiguous, reflecting genuine decision uncertainty.
 
-This is the gauge-theoretic formalization of "value induces action" while keeping reward/value as a scalar field (not promoted to the doublet structure).
+This is the gauge-theoretic formalization of "value induces action" while keeping the conservative scalar potential as a
+scalar field (not promoted to the doublet structure).
 :::
 
 :::{prf:theorem} Emergence of the Error Field ($W_\mu^a$)
@@ -639,7 +651,7 @@ $$
 where:
 - **$SU(N_f)_C$:** Required for **Object Permanence** (binding $N_f$-dimensional features into stable concepts)
 - **$SU(2)_L$:** Required for **Predictive Processing** (asymmetric update of beliefs between prior and likelihood)
-- **$U(1)_Y$:** Required for **Value Maximization** (invariance of reward baseline)
+- **$U(1)_Y$:** Required for **Value Maximization** (invariance of the conservative scalar baseline)
 
 **Special Case (Physics Standard Model):** When $N_f = 3$, we recover $G_{\text{SM}} = SU(3)_C \times SU(2)_L \times U(1)_Y$.
 
@@ -651,7 +663,7 @@ where:
 And there it is. The symmetry group of the Standard Model emerges from the requirements of bounded, distributed, reward-seeking agency.
 
 Let me summarize what we've done:
-- **$U(1)_Y$** comes from the freedom to shift utility baselines locally
+- **$U(1)_Y$** comes from the freedom to shift the conservative utility baseline locally
 - **$SU(2)_L$** comes from the asymmetry between perception and action (chirality)
 - **$SU(N_f)_C$** comes from the freedom to relabel feature channels locally
 
@@ -768,7 +780,7 @@ D_\mu = \underbrace{\partial_\mu}_{\text{Change}} - \underbrace{ig_1 \frac{Y}{2}
 $$
 
 where $\lambda^a$ ($a = 1, \ldots, N_f^2 - 1$) are the generators of $SU(N_f)$, and:
-- **$B_\mu$ (Opportunity Field):** Adjusts the belief for local changes in Reward Baseline
+- **$B_\mu$ (Opportunity Field):** Adjusts the belief for local shifts in the value baseline and path-dependent opportunity
 - **$W_\mu$ (Error Field):** Adjusts the belief for the rotation between Prior and Posterior
 - **$G_\mu$ (Binding Field):** Adjusts the belief for the permutation of sub-symbolic features
 
@@ -781,7 +793,7 @@ This is the master equation for how beliefs move through representational space.
 
 The covariant derivative has four terms:
 1. **$\partial_\mu$**: The ordinary derivative, measuring how much $\Psi$ changes as you move
-2. **$-ig_1(Y/2)B_\mu$**: Correction for local utility baseline shifts
+2. **$-ig_1(Y/2)B_\mu$**: Correction for local utility baseline shifts and path-dependent opportunity
 3. **$-ig_2(\tau^a/2)W^a_\mu$**: Correction for local prediction/observation rotations
 4. **$-ig_s(\lambda^a/2)G^a_\mu$**: Correction for local feature relabelings
 
@@ -815,7 +827,8 @@ The commutator of the covariant derivatives $[D_\mu, D_\nu]$ generates three dis
    B_{\mu\nu} = \partial_\mu B_\nu - \partial_\nu B_\mu
 
    $$
-   When $B_{\mu\nu} \neq 0$, the reward field is non-conservative (Definition {prf:ref}`def-conservative-reward-field`). The resulting Lorentz-type force generates cyclic dynamics.
+   When $B_{\mu\nu} \neq 0$, the reward 1-form is non-conservative (Value Curl; Definition
+   {prf:ref}`def-value-curl`). The resulting Lorentz-type force generates cyclic dynamics.
 
 2. **$SU(2)_L$ Curvature:**
 
@@ -840,7 +853,9 @@ $\square$
 :::{div} feynman-prose
 Each field strength tensor tells you something important about the agent's cognitive state:
 
-**$B_{\mu\nu}$ (Opportunity Curvature):** This is non-zero when the reward landscape has "curl"---when there are cycles where you can accumulate reward just by going around. In game theory, this is like a Rock-Paper-Scissors dynamic where no pure strategy is optimal. The agent gets driven in circles.
+**$B_{\mu\nu}$ (Opportunity Curvature):** This is non-zero when the reward 1-form has "curl" (Value Curl)---when there are
+cycles where you can accumulate reward just by going around. In game theory, this is like a Rock-Paper-Scissors dynamic
+where no pure strategy is optimal. The agent gets driven in circles.
 
 **$W_{\mu\nu}$ (Error Curvature):** This is non-zero when belief updating is path-dependent. If you see evidence A then B, versus B then A, you end up with different beliefs even though you saw the same evidence. This happens in situations with complex conditional dependencies.
 
@@ -871,7 +886,9 @@ $$
 
 $$
 
-The stationary points of this action satisfy the Yang-Mills equations. A **flat connection** ($B_{\mu\nu} = W_{\mu\nu} = G_{\mu\nu} = 0$) corresponds to a representation where all curvatures vanish: the reward field is conservative, belief updates are path-independent, and concepts are stable.
+The stationary points of this action satisfy the Yang-Mills equations. A **flat connection** ($B_{\mu\nu} = W_{\mu\nu} =
+G_{\mu\nu} = 0$) corresponds to a representation where all curvatures vanish: the reward 1-form is conservative, belief
+updates are path-independent, and concepts are stable.
 
 :::
 
@@ -879,13 +896,15 @@ The stationary points of this action satisfy the Yang-Mills equations. A **flat 
 This Lagrangian says that the gauge fields "prefer" to be flat---zero curvature costs zero energy. Any non-zero curvature comes with an energy cost proportional to the square of the field strength.
 
 A "flat connection" is the cognitive equivalent of being in a well-understood, stable situation:
-- The reward landscape is conservative (no arbitrage opportunities)
+- The reward 1-form is conservative (no arbitrage opportunities)
 - Belief updates don't depend on the order of evidence
 - Concepts are cleanly defined and stable
 
 Curvature represents deviation from this ideal. It takes "cognitive energy" to maintain non-flat configurations.
 
-But here's the thing: the agent can't always achieve a flat connection. The environment might genuinely have cyclic reward structures, or complex evidence dependencies, or ambiguous object boundaries. In those cases, the agent has to carry non-zero curvature, and that shows up as ongoing cognitive effort.
+But here's the thing: the agent can't always achieve a flat connection. The environment might genuinely have cyclic reward
+structures (non-zero curl), or complex evidence dependencies, or ambiguous object boundaries. In those cases, the agent
+has to carry non-zero curvature, and that shows up as ongoing cognitive effort.
 :::
 
 
@@ -1340,7 +1359,9 @@ $\square$
 :::{div} feynman-prose
 This theorem closes the circle. We started the whole framework with the WFR equation describing belief flow toward high-value regions. Now we see that this emerges from the non-relativistic limit of a gauge theory.
 
-The velocity $\vec{v} = -\nabla \Phi_{\text{eff}}$ says: beliefs flow downhill on the effective potential landscape. Since $\Phi_{\text{eff}}$ includes both immediate rewards and discounted future values, this flow moves beliefs toward states with high long-term value.
+The velocity $\vec{v} = -\nabla \Phi_{\text{eff}}$ says: beliefs flow downhill on the effective potential landscape.
+Since $\Phi_{\text{eff}}$ includes both immediate reward flux (conservative component) and discounted future values, this
+flow moves beliefs toward states with high long-term value.
 
 The "relativistic" framework we've built is more general---it handles finite information speed, gauge covariance, spinor structure. But in the limit where we can ignore these complications, we recover the simple gradient-descent dynamics we started with.
 

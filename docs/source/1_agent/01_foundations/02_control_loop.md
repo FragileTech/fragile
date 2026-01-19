@@ -961,9 +961,11 @@ The idea is beautiful: there's a consistency condition that any optimal value fu
 We replace the heuristic Bellman equation {cite}`bellman1957dynamic` with the rigorous **Hamilton-Jacobi-Bellman (HJB) Equation**:
 
 $$
-\underbrace{\mathcal{L}_f V}_{\text{Lie Derivative}} + \underbrace{\mathfrak{D}(z, a)}_{\text{Control Effort / Regularizer}} = \underbrace{-\mathcal{R}(z, a)}_{\text{Instantaneous cost rate}}
+\underbrace{\mathcal{L}_f V}_{\text{Lie Derivative}} + \underbrace{\mathfrak{D}(z, a)}_{\text{Control Effort / Regularizer}} = \underbrace{-\mathcal{R}(f)}_{\text{Instantaneous cost rate}}
 
 $$
+
+Here $\mathcal{R}$ is the reward 1-form; the scalar reward case corresponds to $\mathcal{R}=d\Phi$.
 
 :::{div} feynman-prose
 Let me explain these terms.
@@ -1009,11 +1011,12 @@ The Lie derivative $\mathcal{L}_f V = dV(f)$ is a **pairing**, not an inner prod
 **Interpretation:**
 
 - The critic $V$ is a value/cost-to-go function that should decrease along controlled trajectories.
-- $\mathcal{R}(z,a)$ is an instantaneous cost rate (negative of reward rate, depending on sign convention).
+- $\mathcal{R}(f)=\mathcal{R}_i(z)f^i(z,a)$ is the instantaneous cost rate (reward 1-form evaluated on the
+  action-induced dynamics; negative of reward rate depending on sign convention).
 - $\mathfrak{D}(z,a)$ is an explicit control-effort / regularization term (e.g., KL control, action penalties).
 - At optimality, the relation enforces a local consistency between value change, immediate cost, and control effort.
 
-*Forward reference (Helmholtz Continuum Limit).* {ref}`Section 24.2 <sec-the-bulk-potential-screened-poisson-equation>` shows that in the continuum limit on the manifold $(\mathcal{Z}, G)$, the Bellman/HJB equation becomes the **Screened Poisson (Helmholtz) Equation**: $-\Delta_G V + \kappa^2 V = \rho_r$, where $\kappa = -\ln\gamma$ is the screening mass derived from the discount factor. This reveals the Critic as a **Field Solver** computing the Green's function of the screened Laplacian.
+*Forward reference (Helmholtz Continuum Limit).* {ref}`Section 24.2 <sec-the-bulk-potential-screened-poisson-equation>` shows that in the continuum limit on the manifold $(\mathcal{Z}, G)$, the Bellman/HJB equation becomes the **Screened Poisson (Helmholtz) Equation**: $-\Delta_G V + \kappa^2 V = \rho_r$, where $\kappa = \lambda / c_{\text{info}}$ with $\lambda = -\ln\gamma / \Delta t$ (natural units: $\kappa = -\ln\gamma$). This reveals the Critic as a **Field Solver** computing the Green's function of the screened Laplacian.
 
 (sec-conditional-independence-and-sufficiency)=
 ## Conditional Independence and Sufficiency (Causal Enclosure)

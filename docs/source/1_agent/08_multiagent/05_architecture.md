@@ -3,9 +3,9 @@
 
 ## TLDR
 
-- Standard world models (GRU, Transformer) ignore geometric structure; we replace them with **Covariant Cross-Attention**
-- Attention between observation and action latents uses **Wilson lines** for parallel transport, ensuring gauge invariance
-- The softmax temperature encodes the **inverse metric scale** (inverse conformal factor): $\tau(z) = \sqrt{d_k}/\lambda(z)$ (Mass = Metric)
+- Standard world models (GRU, Transformer) do not enforce the manifold/gauge structure; we replace them with **Covariant Cross-Attention**
+- Wilson-line parallel transport makes attention comparisons gauge-covariant (exact in the idealized construction; approximate in practice)
+- Softmax temperature is position-dependent: $\tau(z) = \sqrt{d_k}/\lambda(z)$ (for a conformal metric $G(z)=\lambda(z)^2 I$, this encodes the scale via $G(z)=\tfrac{d_k}{\tau(z)^2}I$)
 - **Christoffel symbols** are parameterized via linear + quadratic Query terms in $z$ ($z, z \otimes z$), with optional $z \odot v$ coupling
 - The $SU(2)_L$ chirality (sensor-motor asymmetry) is preserved via **chiral projectors**
 - The $SU(N_f)_C$ texture firewall is enforced via **area law screening**
@@ -29,29 +29,29 @@
 :::{div} feynman-prose
 Now we come to the practical question that should have been nagging at you since we derived all this beautiful gauge structure: How do you actually *implement* it? You have the Lorentz-Langevin equation, you have the gauge fields, you have the Wilson lines---but what goes into the neural network? What does the forward pass look like?
 
-This chapter answers that question. We are going to take the abstract machinery of gauge-covariant dynamics and translate it into the language of attention mechanisms. The result is a world model that is not just approximately geometric, but *exactly* gauge-covariant by construction.
+This chapter answers that question. We are going to take the abstract machinery of gauge-covariant dynamics and translate it into the language of attention mechanisms. In the idealized construction (exact Wilson lines, exact transport), the resulting attention weights are gauge-invariant; in practice, approximations introduce controlled deviations that can be monitored.
 
-Here is the key insight: a Transformer attention head is secretly a parallel transport operation. When you compute attention between queries and keys, you are asking "how related are these two representations?" But "related" depends on how you measure distance. And measuring distance on a gauge bundle requires parallel transport along connecting paths.
+Here is the key insight: a Transformer attention head can be viewed as a comparison operation that implicitly assumes a global frame. When you compute attention between queries and keys, you are asking "how related are these two representations?" But "related" depends on how you measure distance. And measuring distance on a gauge bundle requires parallel transport along connecting paths.
 
 The standard Transformer ignores this completely. It computes $\text{softmax}(QK^T/\sqrt{d_k})$ as if the latent space were flat Euclidean space with a global coordinate system. But we know that is wrong. The latent space is curved, with curvature determined by the metric law. And different parts of the space may be using different local frames, related by gauge transformations.
 
-The fix is Wilson lines. Instead of directly comparing $Q$ at position $z$ with $K$ at position $z'$, you parallel-transport both to a common reference frame (often the origin), or equivalently transport $K$ from $z'$ to $z$ along a connecting path, and then compare. This is gauge-covariant by construction: if you change the local frame at either endpoint, the Wilson line absorbs the transformation.
+The fix is Wilson lines. Instead of directly comparing $Q$ at position $z$ with $K$ at position $z'$, you parallel-transport to a common reference frame (often the origin), or equivalently transport $K$ from $z'$ to $z$ along a connecting path, and then compare. In the exact Wilson-line construction, this is gauge-covariant: if you change the local frame at either endpoint, the Wilson line absorbs the transformation.
 
-But there is more. The softmax temperature $\sqrt{d_k}$ in standard attention is a fixed constant. We are going to show that it should be the *inverse conformal factor* of the metric: $\tau(z) = \sqrt{d_k}/\lambda(z)$. This means the attention becomes sharper in high-curvature regions and softer in low-curvature regions---exactly what you want for safe exploration.
+But there is more. The softmax temperature $\sqrt{d_k}$ in standard attention is a fixed constant. We will use a *position-dependent* temperature tied to the local conformal factor: $\tau(z) = \sqrt{d_k}/\lambda(z)$. This makes attention sharper in high-curvature regions and softer in low-curvature regions.
 
 And the geodesic correction? The Christoffel symbols? Those come from geometric terms in the Query projection. The standard linear $Q = W_Q x$ (with $x$ encoding $z$) becomes $Q = W_Q x + W_{Qz} z + W_{Qv} x_v + W_{Q,\Gamma}(z \otimes z)$, optionally with a velocity-conditioned $W_{Qzv}(z \odot v)$ term. The geometric coefficients encode the connection.
 
-The result is a single module that performs one complete step of the Boris-BAOAB integrator. Four heads handle B-A-A-B, while the O-step is a closed-form OU update by default (or a fifth, learned thermostat head when you want non-Gaussian noise). It is gauge-covariant, symplectic, and thermodynamically consistent---all from attention plus a physically grounded noise model.
+The result is a single module that performs one complete step of the Boris-BAOAB integrator. Four heads handle B-A-A-B, while the O-step is a closed-form OU update by default (or a fifth, learned thermostat head when you want non-Gaussian noise). In the idealized setting, it is gauge-covariant by construction; it inherits the symplectic/time-reversible structure of the BAOAB splitting for the deterministic substeps and the thermodynamic consistency of the OU thermostat.
 :::
 
-*Abstract.* This chapter derives the **Covariant Cross-Attention** architecture for the world model, replacing standard sequence models (GRU, Transformer) with a mechanism that respects the gauge structure $G_{\text{Fragile}} = SU(N_f)_C \times SU(2)_L \times U(1)_Y$ derived in {ref}`Section 34 <sec-standard-model-cognition>`. The architecture implements a single-step integrator for the Lorentz-Langevin geodesic equations ({ref}`Section 22 <sec-the-equations-of-motion-geodesic-jump-diffusion>`) using Wilson lines for parallel transport, position-dependent temperature for metric encoding, and linear + quadratic Query projections for Christoffel symbols. The result is a world model that is gauge-invariant by construction rather than by regularization.
+*Abstract.* This chapter derives the **Covariant Cross-Attention** architecture for the world model, replacing standard sequence models (GRU, Transformer) with a mechanism that respects the gauge structure $G_{\text{Fragile}} = SU(N_f)_C \times SU(2)_L \times U(1)_Y$ derived in {ref}`the Standard Model of cognition <sec-standard-model-cognition>`. The architecture implements a single-step integrator for the Lorentz-Langevin geodesic equations ({ref}`the equations of motion <sec-the-equations-of-motion-geodesic-jump-diffusion>`) using Wilson lines for parallel transport, position-dependent temperature for metric encoding, and linear + quadratic Query projections for Christoffel symbols. In the idealized mathematical construction, the attention weights are gauge-invariant by design; in practical implementations, approximations (e.g., linearized Wilson lines) introduce controlled deviations that can be monitored diagnostically.
 
 *Cross-references:* This chapter synthesizes:
-- {ref}`Section 22 <sec-the-equations-of-motion-geodesic-jump-diffusion>` (Lorentz-Langevin SDE, Boris-BAOAB integrator)
-- {ref}`Section 34 <sec-standard-model-cognition>` (Gauge-theoretic formulation, covariant derivatives)
-- {ref}`Section 18 <sec-capacity-constrained-metric-law-geometry-from-interface-limits>` (Capacity-constrained metric)
-- {ref}`Section 23 <sec-the-boundary-interface-symplectic-structure>` (Dirichlet/Neumann boundary conditions)
-- {ref}`Section 33 <sec-symplectic-multi-agent-field-theory>` (Ghost Interface, retarded potentials)
+- {ref}`Lorentz-Langevin SDE and Boris-BAOAB <sec-the-equations-of-motion-geodesic-jump-diffusion>`
+- {ref}`Gauge-theoretic formulation <sec-standard-model-cognition>`
+- {ref}`Capacity-constrained metric law <sec-capacity-constrained-metric-law-geometry-from-interface-limits>`
+- {ref}`Boundary symplectic structure <sec-the-boundary-interface-symplectic-structure>`
+- {ref}`Symplectic multi-agent field theory <sec-symplectic-multi-agent-field-theory>`
 
 
 
@@ -81,7 +81,7 @@ The standard approach to world modeling treats the latent space $\mathcal{Z}$ as
 :::{prf:proposition} Failure Modes of Flat World Models
 :label: prop-failure-modes-flat-world-models
 
-A world model $f: \mathcal{Z} \times \mathcal{A} \to \mathcal{Z}$ implemented as a standard neural network (GRU, MLP, Transformer) with flat-space operations fails to preserve:
+A world model $f: \mathcal{Z} \times \mathcal{A} \to \mathcal{Z}$ implemented as a standard neural network (GRU, MLP, Transformer) built from flat-space operations does not, in general, *guarantee* preservation of:
 
 1. **Metric structure**: The capacity-constrained metric $G(z)$ from Theorem {prf:ref}`thm-capacity-constrained-metric-law` implies position-dependent step sizes. Flat operations use constant step sizes.
 
@@ -89,7 +89,7 @@ A world model $f: \mathcal{Z} \times \mathcal{A} \to \mathcal{Z}$ implemented as
 
 3. **Symplectic structure**: The phase space $(\mathcal{Z} \times T^*\mathcal{Z}, \omega)$ has a conserved 2-form. Flat operations generically break symplectic conservation.
 
-4. **Boundary constraints**: The Poincare disk metric diverges as $|z| \to 1$, preventing boundary crossing. Flat operations can predict invalid states.
+4. **Boundary constraints**: In the Poincare ball/disk model ($|z|<1$), the metric diverges as $|z| \to 1$, enforcing vanishing physical step size near the boundary. Flat operations can produce invalid states unless constrained explicitly.
 
 *Consequence*: Flat world models require extensive regularization to approximately enforce these constraints, with no guarantee of exact satisfaction.
 
@@ -100,7 +100,7 @@ You might object: "Can't we just add regularization terms to encourage these pro
 
 When you regularize, you are saying "please try to satisfy this constraint, here is a penalty if you do not." The optimizer finds approximate solutions that balance the penalty against other objectives. Sometimes it works, sometimes it does not. You never get exact constraint satisfaction.
 
-The right approach is to build the constraints into the architecture itself, so violations are *impossible* rather than merely *discouraged*. This is what gauge-covariant architectures achieve.
+The right approach is to build the constraints into the architecture itself, so violations are structurally prevented in the idealized construction (and tightly controlled/diagnosable in practical approximations), rather than merely *discouraged* by regularization.
 :::
 
 (rb-world-model-as-integrator)=
@@ -119,9 +119,9 @@ Before we build the architecture, let me collect the key mathematical ingredient
 
 The dynamics are governed by the Lorentz-Langevin equation. The agent moves on the latent manifold $(\mathcal{Z}, G)$, pulled by gradients, pushed by noise, and deflected by the Lorentz force from the value curl. The Christoffel symbols keep the motion on the manifold---they are the "geodesic correction" that accounts for curvature.
 
-The gauge structure comes from three symmetries: $U(1)_Y$ for utility baseline, $SU(2)_L$ for observation-action mixing, and $SU(N_f)_C$ for feature binding. Each symmetry has an associated gauge field: the Opportunity field $B_\mu$, the Error field $W_\mu^a$, and the Binding field $G_\mu^a$. To compare quantities at different locations, we need parallel transport via Wilson lines.
+The gauge structure comes from three symmetries: $U(1)_Y$ for utility baseline, $SU(2)_L$ for observation-action mixing, and $SU(N_f)_C$ for feature binding. Each symmetry has an associated gauge field: the Opportunity field $B_\mu$, the Error field $W_\mu^b$, and the Binding field $G_\mu^a$. To compare quantities at different locations, we need parallel transport via Wilson lines.
 
-The metric encodes capacity and risk. In the Poincare disk model, the conformal factor $\lambda(z) = 2/(1-|z|^2)$ diverges at the boundary. High-curvature regions have high effective mass---the agent moves slowly there.
+The metric encodes capacity and risk. In the Poincare ball/disk model, the conformal factor $\lambda(z) = 2/(1-|z|^2)$ diverges at the boundary. High-curvature regions have high effective mass---the agent moves slowly there.
 
 These ingredients will map onto attention components as follows:
 - Wilson lines $\to$ Key/Query preprocessing
@@ -156,14 +156,14 @@ where:
 From Theorem {prf:ref}`thm-emergence-opportunity-field`, the gauge-covariant derivative for the full gauge group $G_{\text{Fragile}} = SU(N_f)_C \times SU(2)_L \times U(1)_Y$ is:
 
 $$
-D_\mu = \partial_\mu - i g_s \frac{\lambda^a}{2} G_\mu^a - i g_2 \frac{\tau^b}{2} W_\mu^b - i g_1 \frac{Y}{2} B_\mu
+D_\mu = \partial_\mu - i g_s \frac{\lambda^a}{2} G_\mu^a - i g_2 \frac{\sigma^b}{2} W_\mu^b - i g_1 \frac{Y}{2} B_\mu
 $$
 
 where:
 - $G_\mu^a$ ($a = 1, \ldots, N_f^2-1$) is the Binding field (Theorem {prf:ref}`thm-emergence-binding-field`)
 - $W_\mu^b$ ($b = 1, 2, 3$) is the Error field (Theorem {prf:ref}`thm-emergence-error-field`)
 - $B_\mu$ is the Opportunity field (Theorem {prf:ref}`thm-emergence-opportunity-field`)
-- $\lambda^a, \tau^b$ are generators of $SU(N_f)$ and $SU(2)$ respectively
+- $\lambda^a, \sigma^b$ are generators of $SU(N_f)$ and $SU(2)$ respectively (we use $\sigma$ to avoid clashing with the softmax temperature $\tau(z)$ below)
 - $g_s, g_2, g_1$ are coupling constants
 - $Y$ is the hypercharge
 
@@ -180,7 +180,7 @@ $$
 
 where:
 - $\mathcal{P}$ denotes path ordering
-- $A_\mu = g_s \frac{\lambda^a}{2} G_\mu^a + g_2 \frac{\tau^b}{2} W_\mu^b + g_1 \frac{Y}{2} B_\mu$ is the total gauge connection
+- $A_\mu = g_s \frac{\lambda^a}{2} G_\mu^a + g_2 \frac{\sigma^b}{2} W_\mu^b + g_1 \frac{Y}{2} B_\mu$ is the total gauge connection
 
 For infinitesimal paths $\gamma: z_0 \to z_0 + \delta z$:
 
@@ -201,13 +201,13 @@ This ensures that $U_\gamma(z, z_0) \psi(z_0)$ transforms correctly at $z$.
 :::{div} feynman-prose
 The Wilson line is the key to gauge-covariant comparison. If you want to compare a vector at $z$ with a vector at $z_0$, you cannot just subtract them---that is not gauge-invariant. Instead, you parallel-transport the vector at $z_0$ to $z$ using the Wilson line, then compare. The result is independent of which gauge you choose at each point.
 
-In our attention mechanism, we will use Wilson lines to preprocess Keys and Queries before comparison. The Query at position $z$ is compared with Keys that have been parallel-transported to a common reference frame (often the origin). Equivalently, you can transport each Key to the Query point. This ensures the attention scores are gauge-invariant.
+In our attention mechanism, we will use Wilson lines to preprocess Keys and Queries before comparison. The Query at position $z$ is compared with Keys that have been parallel-transported to a common reference frame (often the origin). Equivalently, you can transport each Key to the Query point. In the exact Wilson-line construction, this makes the resulting scores gauge-invariant.
 :::
 
-:::{prf:definition} Poincare Disk Metric (Recap)
+:::{prf:definition} Poincare Ball/Disk Metric (Recap)
 :label: def-poincare-metric-recap
 
-The capacity-constrained metric on the Poincare disk $\mathbb{D}^d = \{z \in \mathbb{R}^d : |z| < 1\}$ is:
+The capacity-constrained metric on the Poincare ball (disk when $d=2$) $\mathbb{D}^d = \{z \in \mathbb{R}^d : |z| < 1\}$ is:
 
 $$
 G_{ij}(z) = \lambda(z)^2 \delta_{ij} = \frac{4}{(1-|z|^2)^2} \delta_{ij}
@@ -249,13 +249,13 @@ We fix all three. The gauge covariance comes from Wilson line preprocessing. The
 
 Let me walk you through each component.
 
-For gauge covariance, consider what happens when you compute $Q(z) \cdot K(z')$. The Query is defined at position $z$, the Key at position $z'$. If we are in different gauges at these two positions, the dot product is meaningless. We need to parallel-transport the Key from $z'$ to $z$ before comparing:
+For gauge covariance, consider what happens when you compute $Q(z) \cdot K(z')$. The Query is defined at position $z$, the Key at position $z'$. If we are in different gauges at these two positions, the dot product is meaningless. We need to parallel-transport the Key from $z'$ to $z$ before comparing with an invariant inner product:
 
 $$
-Q(z) \cdot [U(z, z') K(z')]
+\operatorname{Re}\left(Q(z)^\dagger U(z, z') K(z')\right)
 $$
 
-This is gauge-invariant: if we transform the gauge at $z'$, the Key transforms, but so does the Wilson line, and they cancel.
+This is gauge-invariant (for unitary gauge representations): if we transform the gauge at $z'$ and $z$, the Key and Query transform, but so does the Wilson line, and the invariant inner product cancels the change. (In purely real implementations, replace $^\dagger$ with transpose.)
 
 For the temperature, remember that the metric encodes how "heavy" different regions are. In high-curvature regions, the agent should move cautiously, which means sharp attention (low temperature). In low-curvature regions, the agent can explore freely, which means soft attention (high temperature). The natural choice is $\tau(z) = \sqrt{d_k}/\lambda(z)$: temperature inversely proportional to the conformal factor.
 
@@ -278,19 +278,19 @@ Let $\psi_{\text{obs}}(z)$ be the observation latent and $\psi_{\text{act}}(z')$
 
 $$
 \begin{aligned}
-Q(z) &= \Pi_Q \cdot U_{0 \to z} \cdot D_\mu \psi_{\text{obs}}(z) \\
-K(z') &= \Pi_K \cdot U_{0 \to z'} \cdot D_\nu \psi_{\text{act}}(z') \\
-V(z') &= \Pi_V \cdot U_{0 \to z'} \cdot \psi_{\text{act}}(z')
+Q(z) &= \Pi_Q \cdot U_{z \to 0} \cdot D_\mu \psi_{\text{obs}}(z) \\
+K(z') &= \Pi_K \cdot U_{z' \to 0} \cdot D_\nu \psi_{\text{act}}(z') \\
+V(z') &= \Pi_V \cdot U_{z' \to 0} \cdot \psi_{\text{act}}(z')
 \end{aligned}
 $$
 
 where:
-- $U_{0 \to z}$ is the Wilson line from origin to position $z$ (Definition {prf:ref}`def-wilson-line`)
+- $U_{z \to 0} := U_\gamma(0, z)$ is the Wilson line transporting from $z$ to the origin (Definition {prf:ref}`def-wilson-line`)
 - $D_\mu$ is the covariant derivative (Definition {prf:ref}`def-covariant-derivative-recap`)
-- $\Pi_Q, \Pi_K, \Pi_V$ are learnable projection matrices
+- $\Pi_Q, \Pi_K, \Pi_V$ are learnable projection maps that act on feature indices (equivariantly on gauge indices) so they commute with gauge transformations at the reference point
 
 **Interpretation**:
-- The Wilson line $U_{0 \to z}$ parallel-transports the field to a common reference frame at the origin
+- The Wilson line $U_{z \to 0}$ parallel-transports the field to a common reference frame at the origin
 - The covariant derivative $D_\mu$ ensures the derivative is gauge-covariant
 - Queries use the derivative $D_\mu \psi$ (sensitivity to position change)
 - Values use the field $\psi$ directly (the actual content to retrieve)
@@ -303,10 +303,10 @@ where:
 Let the attention score be computed as:
 
 $$
-\alpha(z, z') = \text{softmax}_{z'}\left(\frac{Q(z)^T K(z')}{\tau(z)}\right)
+\alpha(z, z') = \text{softmax}_{z'}\left(\frac{\operatorname{Re}\left(Q(z)^\dagger K(z')\right)}{\tau(z)}\right)
 $$
 
-where $Q$ and $K$ are defined with Wilson line preprocessing (Definition {prf:ref}`def-covariant-qkv-projections`), transporting both to a common reference point (the origin).
+where $Q$ and $K$ are defined with Wilson line preprocessing (Definition {prf:ref}`def-covariant-qkv-projections`), transporting both to a common reference point (the origin). (If the representation is purely real/orthogonal, replace $^\dagger$ with transpose and drop $\operatorname{Re}(\cdot)$.)
 
 Then $\alpha(z, z')$ is **gauge-invariant**: under local gauge transformation $\psi \to \Omega(x)\psi$, the attention score is unchanged.
 
@@ -315,7 +315,7 @@ Then $\alpha(z, z')$ is **gauge-invariant**: under local gauge transformation $\
 **Step 1.** Under gauge transformation $\psi(x) \to \Omega(x)\psi(x)$, the Wilson line transforms as (Definition {prf:ref}`def-wilson-line`):
 
 $$
-U_{0 \to z} \to \Omega(0) U_{0 \to z} \Omega^\dagger(z)
+U_{z \to 0} \to \Omega(0) U_{z \to 0} \Omega^\dagger(z)
 $$
 
 **Step 2.** The covariant derivative transforms covariantly:
@@ -327,13 +327,13 @@ $$
 **Step 3.** The Query at $z$ transforms as:
 
 $$
-Q(z) = \Pi_Q U_{0 \to z} D_\mu \psi(z) \to \Pi_Q \cdot \Omega(0) U_{0 \to z} \Omega^\dagger(z) \cdot \Omega(z) D_\mu \psi(z)
+Q(z) = \Pi_Q U_{z \to 0} D_\mu \psi(z) \to \Pi_Q \cdot \Omega(0) U_{z \to 0} \Omega^\dagger(z) \cdot \Omega(z) D_\mu \psi(z)
 $$
 
 The $\Omega^\dagger(z) \Omega(z) = I$ factors cancel:
 
 $$
-Q(z) \to \Pi_Q \Omega(0) U_{0 \to z} D_\mu \psi(z) = \Omega(0) Q(z)
+Q(z) \to \Pi_Q \Omega(0) U_{z \to 0} D_\mu \psi(z) = \Omega(0) Q(z)
 $$
 
 where the last equality holds because $\Pi_Q$ acts on feature indices while $\Omega(0)$ acts on gauge indices (they commute).
@@ -347,7 +347,7 @@ $$
 **Step 5.** The attention score is the inner product at the origin:
 
 $$
-Q(z)^T K(z') \to [\Omega(0) Q]^T [\Omega(0) K] = Q^T \Omega(0)^\dagger \Omega(0) K = Q^T K
+\operatorname{Re}\left(Q(z)^\dagger K(z')\right) \to \operatorname{Re}\left((\Omega(0)Q)^\dagger (\Omega(0)K)\right) = \operatorname{Re}\left(Q^\dagger \Omega(0)^\dagger \Omega(0) K\right) = \operatorname{Re}\left(Q^\dagger K\right)
 $$
 
 The $\Omega(0)^\dagger \Omega(0) = I$ cancellation occurs because both Q and K have been transported to the same reference point.
@@ -359,12 +359,12 @@ $\square$
 :::
 
 :::{div} feynman-prose
-This theorem is the foundation of the architecture. It says that no matter how you choose your local coordinate frames---no matter what gauge you work in---the attention scores come out the same. The Wilson lines act as "gauge correctors" that absorb all the arbitrary choices.
+This theorem is the foundation of the architecture. In the idealized construction, it says that no matter how you choose your local coordinate frames---no matter what gauge you work in---the attention scores come out the same. The Wilson lines act as "gauge correctors" that absorb all the arbitrary choices.
 
 In practice, we approximate the Wilson line for nearby points. For short paths, the path-ordered exponential simplifies to:
 
 $$
-U(z, z') \approx I - i A_\mu(z)(z - z')^\mu + O(|z - z'|^2)
+U(z, z') \approx I - i A_\mu(\bar{z})(z - z')^\mu + O(|z - z'|^2)
 $$
 
 This is a linear correction that can be implemented efficiently.
@@ -376,15 +376,16 @@ This is a linear correction that can be implemented efficiently.
 For attention between positions $z$ and $z'$ with $|z - z'| \ll 1$, the Wilson line can be approximated as:
 
 $$
-U(z, z') \approx I - i A_\mu(z) (z - z')^\mu
+U(z, z') \approx I - i A_\mu(\bar{z}) (z - z')^\mu
 $$
 
-where $A_\mu$ is the total gauge connection from Definition {prf:ref}`def-wilson-line`, and the contraction $A_\mu(z) (z - z')^\mu$ is the path-directional connection.
+where $A_\mu$ is the total gauge connection from Definition {prf:ref}`def-wilson-line`, $\bar{z}$ is any point along the path (choices differ only at $O(|z-z'|^2)$), and the contraction $A_\mu(\bar{z}) (z - z')^\mu$ is the path-directional connection.
 
 In the attention mechanism, this becomes a **relative position encoding**:
 
 $$
-\text{score}(z, z') = Q(z)^T K(z') - i Q(z)^T \left[A_\mu(z) (z - z')^\mu\right] K(z')
+\text{score}(z, z') := \operatorname{Re}\left(Q(z)^\dagger U(z, z') K(z')\right)
+\approx \operatorname{Re}\left(Q(z)^\dagger K(z')\right) + \operatorname{Re}\left(-i\,Q(z)^\dagger \left[A_\mu(\bar{z}) (z - z')^\mu\right] K(z')\right)
 $$
 
 The second term is the **gauge correction** to the attention score.
@@ -402,7 +403,7 @@ $$
 \hat{z}_{t+1} = \sum_{z' \in \text{context}} \alpha(z_t, z') \cdot V(z')
 $$
 
-where $\alpha = \text{softmax}(Q^T K / \tau(z_t))$ and Q, K, V include Wilson line transport to a common origin (Definition {prf:ref}`def-covariant-qkv-projections`).
+where $\alpha = \text{softmax}(\operatorname{Re}(Q^\dagger K) / \tau(z_t))$ and Q, K, V include Wilson line transport to a common origin (Definition {prf:ref}`def-covariant-qkv-projections`).
 
 **The Degenerate Limit:**
 Set all gauge fields to zero ($G_\mu = W_\mu = B_\mu = 0$). Wilson lines become identity.
@@ -417,7 +418,7 @@ $$
 No gauge structure, no parallel transport, no position-dependent temperature.
 
 **What the generalization offers:**
-- Gauge-invariant predictions regardless of local coordinate choice
+- Gauge-invariant attention weights (and gauge-covariant outputs) regardless of local gauge choice
 - Metric-aware temperature scaling for safe exploration
 - Automatic geodesic correction via geometric (linear + quadratic) Query terms
 
@@ -429,7 +430,7 @@ No gauge structure, no parallel transport, no position-dependent temperature.
 ## The Metric in Temperature: Softmax Temperature = Inverse Conformal Factor
 
 :::{div} feynman-prose
-Here is one of the most elegant correspondences in this whole construction. The softmax temperature in attention---that innocuous $\sqrt{d_k}$ in the denominator---is the *inverse metric scale* (the inverse conformal factor).
+Here is one of the most elegant correspondences in this whole construction. The softmax temperature in attention---that innocuous $\sqrt{d_k}$ in the denominator---can be made *position-dependent* and tied directly to the local metric scale.
 
 Think about what temperature does in a softmax. High temperature means soft attention: all positions get similar weight, the distribution is spread out. Low temperature means sharp attention: one position dominates, the distribution is peaked.
 
@@ -437,9 +438,9 @@ Now think about what the metric does in curved space. In high-curvature regions 
 
 In low-curvature regions (small metric), distances are "compressed"---large coordinate changes correspond to small proper distances. Motion is easy. The agent can explore freely, considering many options. This is high temperature: soft attention.
 
-The natural identification is: temperature = inverse conformal factor. Where the metric is large, temperature is small. Where the metric is small, temperature is large.
+In a conformal metric $G(z)=\lambda(z)^2 I$, the conformal factor $\lambda(z)$ is the local *length* scale. The simplest monotone choice is therefore: temperature $\propto 1/\lambda(z)$.
 
-For the Poincare disk, this gives $\tau(z) = \sqrt{d_k}/\lambda(z) = \sqrt{d_k}(1-|z|^2)/2$. At the origin (where $|z|=0$), temperature is $\sqrt{d_k}/2$---soft attention with exploration. Near the boundary (as $|z| \to 1$), temperature goes to zero---attention becomes infinitely sharp, focusing on a single state. This prevents the agent from making predictions outside the representable region.
+For the Poincare ball/disk, this gives $\tau(z) = \sqrt{d_k}/\lambda(z) = \sqrt{d_k}(1-|z|^2)/2$. At the origin (where $|z|=0$), temperature is $\sqrt{d_k}/2$ (comparatively soft attention). Near the boundary (as $|z| \to 1$), $\tau(z) \to 0$ and the softmax concentrates on the highest-scoring key.
 :::
 
 We derive the position-dependent temperature that encodes the capacity-constrained metric.
@@ -450,8 +451,10 @@ We derive the position-dependent temperature that encodes the capacity-constrain
 Let the attention mechanism use position-dependent temperature $\tau(z)$:
 
 $$
-\alpha(z, z') = \text{softmax}_{z'}\left(\frac{Q(z)^T K(z')}{\tau(z)}\right)
+\alpha(z, z') = \text{softmax}_{z'}\left(\frac{s(z, z')}{\tau(z)}\right)
 $$
+
+where $s(z,z')$ is any real-valued score (for example $s(z,z')=\operatorname{Re}(Q(z)^\dagger K(z'))$).
 
 The choice
 
@@ -459,44 +462,32 @@ $$
 \tau(z) = \frac{\sqrt{d_k}}{\lambda(z)} = \sqrt{d_k} \cdot \frac{1-|z|^2}{2}
 $$
 
-where $\lambda(z) = 2/(1-|z|^2)$ is the conformal factor, ensures:
+where $\lambda(z) = 2/(1-|z|^2)$ is the conformal factor, implies:
 
-1. **Metric encoding**: Temperature is inversely proportional to the local metric scale
-2. **Boundary regularization**: $\tau(z) \to 0$ as $|z| \to 1$, preventing boundary crossing
-3. **Boltzmann consistency**: The attention distribution approximates $\exp(-E/T_c)$ where $E$ is the geodesic distance
+1. **Metric encoding (conformal case)**: for $G(z)=\lambda(z)^2 I$, the metric scale is recovered exactly as $G(z)=\tfrac{d_k}{\tau(z)^2}I$
+2. **Boundary sharpening**: $\tau(z) \to 0$ as $|z| \to 1$, so $\text{softmax}(s/\tau)$ concentrates on the argmax for fixed scores $s(z,\cdot)$
 
 *Proof.*
 
-**Step 1 (Metric encoding).** The attention score $s = Q^T K / \tau$ has units of inverse temperature. For the Boltzmann interpretation, this should be energy divided by temperature. The "energy" of comparing $z$ to $z'$ is proportional to the geodesic distance, which scales with $\lambda$. Setting $\tau \propto 1/\lambda$ ensures the ratio is scale-invariant.
+**Step 1 (Metric encoding).** For a conformal metric $G(z)=\lambda(z)^2 I$ and the stated choice of $\tau(z)$,
+$$
+\frac{d_k}{\tau(z)^2} = \frac{d_k}{(\sqrt{d_k}/\lambda(z))^2} = \lambda(z)^2,
+$$
+so $G(z)=\tfrac{d_k}{\tau(z)^2}I$ holds identically.
 
-**Step 2 (Boundary regularization).** As $|z| \to 1$:
+**Step 2 (Boundary sharpening).** As $|z| \to 1$:
 
 $$
 \tau(z) = \sqrt{d_k} \cdot \frac{1-|z|^2}{2} \to 0
 $$
 
-The attention becomes infinitely sharp: $\text{softmax}(s/\tau) \to \delta_{z' = z^*}$ where $z^*$ is the argmax. This prevents the weighted average of Values from producing states outside the boundary.
-
-**Step 3 (Boltzmann consistency).** The geodesic distance from $z$ to $z'$ in the Poincare disk can be written as:
-
-$$
-d_G(z, z') = \operatorname{arcosh}\left(1 + \frac{2\|z - z'\|^2}{(1-\|z\|^2)(1-\|z'\|^2)}\right)
-\approx \lambda(z) \|z - z'\| + O(\|z-z'\|^2)
-$$
-
-for nearby points. If $Q^T K$ encodes negative squared coordinate distance $-\|z-z'\|^2$, then:
-
-$$
-\frac{Q^T K}{\tau} \propto \frac{-\|z-z'\|^2}{\sqrt{d_k}/\lambda} = -\frac{\lambda \|z-z'\|^2}{\sqrt{d_k}}
-$$
-
-This gives $\alpha \propto \exp(-\lambda \|z-z'\|^2 / \sqrt{d_k})$, which concentrates attention on nearby points with effective width $\propto 1/\sqrt{\lambda}$. Near the boundary where $\lambda \to \infty$, attention becomes infinitely localized.
+For any fixed score vector $s(z,\cdot)$ with a unique maximizer, $\text{softmax}(s/\tau)$ converges to a point mass on the maximizer as $\tau\to 0$.
 
 $\square$
 
 :::
 
-:::{prf:proposition} Mass = Metric = Inverse Temperature
+:::{prf:proposition} Mass–Metric–Temperature Identity
 :label: prop-mass-metric-inverse-temperature
 
 The Mass = Metric principle (Definition {prf:ref}`def-mass-tensor`) extends to attention:
@@ -505,23 +496,17 @@ $$
 \mathbf{M}(z) = G(z) = \lambda(z)^2 I = \frac{d_k}{\tau(z)^2} I
 $$
 
-**Implication**: High mass $\Leftrightarrow$ Large metric $\Leftrightarrow$ Low temperature $\Leftrightarrow$ Sharp attention.
-
-The attention mechanism becomes a position-dependent softmax where the effective inverse temperature is the metric:
-
-$$
-\alpha(z, z') \propto \exp\left(-\mathbf{M}(z) \cdot \text{dist}^2(z, z') / d_k\right)
-$$
+**Implication (conformal case)**: Large $\lambda(z)$ (large metric/mass scale) corresponds to small $\tau(z)$ (sharper softmax scaling).
 
 :::
 
 :::{div} feynman-prose
 This gives us a unified picture. The metric, which encodes capacity and risk, determines three things simultaneously:
 1. How heavy the agent feels (inertial mass)
-2. How cautious the attention is (inverse temperature)
+2. How sharp the attention is (via $\tau(z)=\sqrt{d_k}/\lambda(z)$)
 3. How localized the predictions are (attention sharpness)
 
-All from the same geometric quantity. This is not a coincidence---it is forced by consistency. If you want the world model to respect the geometry, the temperature must track the inverse metric scale.
+All from the same geometric quantity. In the conformal case, the identity $G(z)=\tfrac{d_k}{\tau(z)^2}I$ makes this relationship explicit: temperature is the inverse square root of the metric scale.
 :::
 
 (pi-temperature-metric)=
@@ -533,7 +518,7 @@ All from the same geometric quantity. This is not a coincidence---it is forced b
 **In Implementation:** The attention mechanism implements:
 
 $$
-\alpha \propto \exp\left(-\frac{d_G^2(z, z')}{2\tau(z)}\right)
+\alpha(z, z') \propto \exp\left(\frac{s(z, z')}{\tau(z)}\right)\quad\text{with energy }E(z,z') := -s(z,z')
 $$
 
 **Correspondence Table:**
@@ -541,7 +526,7 @@ $$
 | Statistical Mechanics | Covariant Attention |
 |:---------------------|:---------------------|
 | Temperature $T$ | Softmax temperature $\tau(z)$ |
-| Energy $E$ | Attention score $-Q^T K$ |
+| Energy $E$ | Negative similarity $-s(z,z')$ (e.g., $-\operatorname{Re}(Q^\dagger K)$) |
 | Partition function $Z$ | Softmax normalizer |
 | Boltzmann weight $e^{-E/T}$ | Attention weight $\alpha$ |
 | Metric factor $\sqrt{g}$ | Conformal factor $\lambda(z)^d$ (local scale) |
@@ -567,7 +552,7 @@ $$
 Q_{\text{geodesic}}(x, z, v) = W_Q x + W_{Qz} z + W_{Qv} x_v + W_{Q,\Gamma}(z \otimes z) + W_{Qzv}(z \odot v)
 $$
 
-where $x_v = \phi_v(v)$ is a feature embedding of the current velocity (or momentum). The $W_{Qz} z$ term captures the linear-in-$z$ structure of $\Gamma(z)$ for the Poincare disk, while the $z \otimes z$ term provides a flexible basis for nonlinear corrections on more general manifolds. The optional $z \odot v$ term (Hadamard product) provides a simple velocity-conditioned correction when the effective connection departs from the pure Levi-Civita form.
+where $x_v = \phi_v(v)$ is a feature embedding of the current velocity (or momentum). The $W_{Qz} z$ term captures the linear-in-$z$ structure of $\Gamma(z)$ for the Poincare ball/disk, while the $z \otimes z$ term provides a flexible basis for nonlinear corrections on more general manifolds. The optional $z \odot v$ term (Hadamard product) provides a simple velocity-conditioned correction when the effective connection departs from the pure Levi-Civita form.
 
 This looks complicated, but the core $W_{Qz}$ and $W_{Q,\Gamma}$ terms are the minimum structure needed to encode the geodesic equation; the velocity-conditioned terms are optional corrections. The Christoffel symbols $\Gamma^k_{ij}$ are symmetric in $i, j$, and the symmetric outer product $z \otimes z$ provides a natural basis for that symmetry. The velocity dependence $\dot{z}^i \dot{z}^j$ comes from the Keys/Values, which encode the action/velocity information.
 :::
@@ -622,24 +607,25 @@ $$
 
 can represent the geodesic correction term $-\Gamma^k_{ij}(z) v^i v^j$ when:
 
-1. The Keys and Values encode velocity components (e.g., $K = W_{Kv} v'$, $V = W_V v'$)
-2. The Query provides a learned parameterization of $\Gamma(z)$ via $W_{Q,\Gamma}$
-3. The context includes local velocities $v' \approx v$ so the bilinear form is sampled in a neighborhood
+1. The Values include quadratic velocity features (e.g., $V(z',v') = W_V\,\text{vec}(v' \otimes v')$ or a low-rank factorization)
+2. The Query provides a learned parameterization of the (symmetric) coefficients $\Gamma(z)$ via the geometric terms ($W_{Qz}$, $W_{Q,\Gamma}$)
+3. The context provides velocities in a neighborhood of the current velocity so the quadratic form is sampled/approximated locally
 
 *Proof sketch.* The attention score is:
 
 $$
-s(z, z') = Q(x, z, v)^T K(z', v') = [W_Q x + W_{Qz} z + W_{Qv} x_v + W_{Q,\Gamma}(z,z)]^T [W_K z' + W_{Kv} v']
+s(z, z') := \operatorname{Re}\left(Q(x, z, v)^\dagger K(z', v')\right)
+\quad(\text{for real features, } s = Q(x,z,v)^T K(z',v'))
 $$
 
-The cross-term $W_{Q,\Gamma}(z,z)^T W_{Kv} v'$ is linear in $v'$ with coefficients set by $\Gamma(z)$. With Values also linear in $v'$, the weighted sum yields a learned bilinear form in $v'$ whose coefficients can be matched to $\Gamma(z)$, recovering the geodesic correction up to the approximation induced by softmax and context discretization. $\square$
+With Values containing (symmetrized) quadratic features of $v'$, an attention-weighted sum can form a linear combination of $v'^i v'^j$ terms. The geometric Query terms supply position-dependent coefficients, so the module can approximate the contraction $\Gamma^k_{ij}(z)\,v^i v^j$ up to the approximation induced by softmax and context discretization. $\square$
 
 :::
 
-:::{prf:proposition} Explicit Christoffel Encoding for Poincare Disk
+:::{prf:proposition} Explicit Christoffel Encoding for Poincare Ball/Disk
 :label: prop-christoffel-encoding-poincare
 
-For the Poincare disk with Christoffel symbols (Proposition {prf:ref}`prop-a-explicit-christoffel-symbols-for-poincar-disk`):
+For the Poincare ball/disk with Christoffel symbols (Proposition {prf:ref}`prop-a-explicit-christoffel-symbols-for-poincar-disk`):
 
 $$
 \Gamma^k_{ij}(z) = \frac{2}{1-|z|^2}\left(\delta^k_i z_j + \delta^k_j z_i - \delta_{ij} z^k\right)
@@ -673,7 +659,7 @@ The nice thing is that this is all learnable. We initialize $W_{Q,\Gamma}$ with 
 :::{div} feynman-prose
 Now we implement the chiral structure---the fundamental asymmetry between observation and action.
 
-Recall from Section 34 that the left-handed field is a doublet:
+Recall from {ref}`the Standard Model of cognition <sec-standard-model-cognition>` that the left-handed field is a doublet:
 
 $$
 \Psi_L = \begin{pmatrix} \psi_{\text{obs}} \\ \psi_{\text{act}}^{\text{pre}} \end{pmatrix}
@@ -689,10 +675,10 @@ $$
 \hat{n}(z) = \frac{P \nabla V}{\|P \nabla V\|}
 $$
 
-where $\vec{\tau}$ are the Pauli matrices. The projection operator is:
+where $\vec{\sigma}$ are the Pauli matrices. The projection operator is:
 
 $$
-\Pi_{\text{chirality}} = \frac{1}{2}(I + \hat{n} \cdot \vec{\tau})
+\Pi_{\text{chirality}} = \frac{1}{2}(I + \hat{n} \cdot \vec{\sigma})
 $$
 
 This projects the doublet onto the component aligned with the value gradient---the direction of improvement.
@@ -715,15 +701,15 @@ The **Query** extracts observation information, the **Key** encodes action infor
 
 $$
 \begin{aligned}
-Q_{\text{obs}}(z) &= \Pi_{\text{obs}} \cdot U_{0 \to z} \cdot D_\mu \Psi_L(z) = \begin{pmatrix} 1 & 0 \end{pmatrix} U_{0 \to z} D_\mu \Psi_L \\
-K_{\text{act}}(z') &= \Pi_{\text{act}} \cdot U_{0 \to z'} \cdot D_\nu \Psi_L(z') = \begin{pmatrix} 0 & 1 \end{pmatrix} U_{0 \to z'} D_\nu \Psi_L
+Q_{\text{obs}}(z) &= \Pi_{\text{obs}} \cdot U_{z \to 0} \cdot D_\mu \Psi_L(z) = \begin{pmatrix} 1 & 0 \end{pmatrix} U_{z \to 0} D_\mu \Psi_L \\
+K_{\text{act}}(z') &= \Pi_{\text{act}} \cdot U_{z' \to 0} \cdot D_\nu \Psi_L(z') = \begin{pmatrix} 0 & 1 \end{pmatrix} U_{z' \to 0} D_\nu \Psi_L
 \end{aligned}
 $$
 
 The **cross-attention** score between observation and action is (gauge-invariant by Theorem {prf:ref}`thm-gauge-invariance-cross-attention`):
 
 $$
-\alpha_{\text{cross}}(z, z') = \text{softmax}\left(\frac{Q_{\text{obs}}(z)^T K_{\text{act}}(z')}{\tau(z)}\right)
+\alpha_{\text{cross}}(z, z') = \text{softmax}\left(\frac{\operatorname{Re}\left(Q_{\text{obs}}(z)^\dagger K_{\text{act}}(z')\right)}{\tau(z)}\right)
 $$
 
 *Interpretation*: The observation at $z$ attends to actions at $z'$. Both are transported to a common reference point, ensuring gauge-invariant comparison.
@@ -739,12 +725,12 @@ $$
 \hat{n}(z) = \frac{P \nabla V(z)}{\|P \nabla V(z)\|}
 $$
 
-where $P: \mathbb{R}^d \to \mathbb{R}^3$ is a learned projection and $\vec{\tau} = (\tau_1, \tau_2, \tau_3)$ are Pauli matrices (generators of $SU(2)$).
+where $P: \mathbb{R}^d \to \mathbb{R}^3$ is a learned projection and $\vec{\sigma} = (\sigma_1, \sigma_2, \sigma_3)$ are Pauli matrices (generators of $SU(2)$).
 
 The **projection operator** is:
 
 $$
-\Pi_{\text{chirality}}(z) = \frac{1}{2}\left(I_2 + \hat{n}(z) \cdot \vec{\tau}\right)
+\Pi_{\text{chirality}}(z) = \frac{1}{2}\left(I_2 + \hat{n}(z) \cdot \vec{\sigma}\right)
 $$
 
 The **committed action** is:
@@ -829,13 +815,13 @@ In QCD, quarks are confined by the strong force. If you try to pull a quark out 
 
 We want the same behavior for texture. The agent should only observe *concepts* (bound states of features), not raw features. If attention tries to access texture directly, the attention score should be suppressed---screened by an area-law factor.
 
-The implementation uses the string tension $\sigma$ from the binding field. The attention score between positions $z$ and $z'$ is modified by:
+The implementation uses the string tension $\sigma$ from the binding field (not to be confused with the Pauli matrices $\sigma^b$ used as $SU(2)$ generators above). The attention score between positions $z$ and $z'$ is modified by:
 
 $$
 \alpha_{\text{screened}} = \alpha \cdot \exp(-\sigma \cdot A_{\text{string}})
 $$
 
-where $A_{\text{string}}$ is the area of the minimal surface bounded by the path from $z$ to $z'$. For nearby points, this is approximately the squared distance times the string tension.
+where $A_{\text{string}}$ is an area-law-inspired *proxy* for the cost of coupling distant texture degrees of freedom. In lattice gauge theory, the area law is a statement about **closed Wilson loops**; here we use a distance-dependent surrogate (typically quadratic in separation) to implement exponential screening in attention.
 
 At the macro level (coarse features), the string tension is large, so screening is strong. At the texture level (fine features), the string tension is small (asymptotic freedom), so features can interact freely within the texture layer---they just cannot propagate to the macro level.
 :::
@@ -854,7 +840,9 @@ $$
 where:
 - $\alpha_{\text{bare}}$ is the gauge-covariant attention score from Theorem {prf:ref}`thm-gauge-invariance-cross-attention`
 - $\sigma(\ell)$ is the **string tension** at level $\ell$, with $\sigma(\ell) \propto g_s^2(\ell)$ (binding coupling squared)
-- $A_{\text{string}}(z, z')$ is the **minimal string area** connecting $z$ and $z'$
+- $A_{\text{string}}(z, z')$ is an **area proxy** used for screening (often quadratic in separation)
+
+In practice, after applying screening one renormalizes $\alpha_{\text{screened}}(z,\cdot;\ell)$ over $z'$ so the weights sum to 1.
 
 **Area approximation**: For nearby points in flat metric:
 
@@ -862,7 +850,7 @@ $$
 A_{\text{string}}(z, z') \approx \frac{1}{2}|z - z'|^2
 $$
 
-For the Poincare disk with conformal factor $\lambda$:
+For the Poincare ball/disk with conformal factor $\lambda$:
 
 $$
 A_{\text{string}}(z, z') \approx \frac{\lambda(z)^2}{2}|z - z'|^2
@@ -889,7 +877,7 @@ Then:
 
 2. **Macro-to-texture attention** ($\ell = 0$ attending to $\ell = L$): $\sigma(0) > \sigma_{\text{crit}}$, strong screening. Texture is inaccessible from macro level.
 
-3. **Bound state access**: Color-neutral bound states (concepts) have zero net string charge. Their attention is not screened.
+3. **Gauge-singlet access**: Channels transforming in the trivial (color-neutral) representation of $SU(N_f)$ can be exempted from screening, allowing macro-level access to bound-state (concept) features while suppressing color-charged texture.
 
 *Proof.*
 
@@ -899,7 +887,7 @@ Then:
 
 **Step 3.** At macro level, infrared confinement gives $g_s(0) > g_s^{\text{crit}}$, hence $\sigma(0) > \sigma_{\text{crit}}$. For any non-trivial area $A > 0$, the screening factor $\exp(-\sigma_{\text{crit}} A) \ll 1$.
 
-**Step 4.** Color-neutral states have canceling string charges. The total area contribution vanishes: $A_{\text{total}} = 0$. No screening for bound states.
+**Step 4.** Gauge-singlet channels do not couple to the binding connection (their generators vanish), so they do not source color flux; equivalently, their effective string tension is zero (or screening is simply not applied on the singlet subspace). Hence the screening factor is 1 on those channels.
 
 $\square$
 
@@ -908,24 +896,24 @@ $\square$
 :::{prf:proposition} Confinement Radius from String Tension
 :label: prop-confinement-radius-string-tension
 
-The **confinement radius** $r_{\text{conf}}$ is the scale at which screening suppresses attention by factor $e^{-1}$:
+Assuming the local proxy $A_{\text{string}}(z,z') \approx d_G(z,z')^2/2$, the **confinement radius** $r_{\text{conf}}$ (in geodesic distance) is the scale at which screening suppresses attention by a factor $e^{-1}$:
 
 $$
 r_{\text{conf}}(\ell) = \sqrt{\frac{2}{\sigma(\ell)}}
 $$
 
-At macro level with $\sigma(0) \approx 1$: $r_{\text{conf}}(0) \approx \sqrt{2}$ (order-unity in latent units).
+At macro level with $\sigma(0) \approx 1$: $r_{\text{conf}}(0) \approx \sqrt{2}$ (order-unity in geodesic units).
 
 At texture level with $\sigma(L) \approx 0.01$: $r_{\text{conf}}(L) \approx 14$ (large, allowing texture-to-texture interaction).
 
-*Interpretation*: Features at the texture level can "see" far across the texture manifold. But they cannot "see" into the macro level, because the string tension at the interface is high.
+*Interpretation*: Weak screening at texture allows long-range texture-to-texture interaction, while strong screening suppresses macro access to color-charged texture channels.
 
 :::
 
 :::{div} feynman-prose
-This area law screening is exactly what we need for the texture firewall. The architecture automatically prevents macro-level attention from accessing texture details. You do not need to manually mask out texture channels---the screening factor does it for you.
+This area-law-inspired screening is a natural architectural proxy for the texture firewall: it implements an exponential suppression of macro-level attention into texture features without requiring hard masks.
 
-And notice that this is not a hard cutoff. The screening is exponential in area, so nearby texture *can* influence macro attention, but only weakly. Long-range texture correlations are completely blocked. This matches the physics intuition: you can sometimes see texture details if you look closely, but the overall macro prediction does not depend on texture noise.
+And notice that this is not a hard cutoff. The screening is exponential in the area proxy, so nearby texture *can* influence macro attention weakly, while long-range texture correlations are exponentially suppressed. This matches the physics intuition: you can sometimes see texture details if you look closely, but the overall macro prediction does not depend on texture noise.
 :::
 
 (pi-area-law)=
@@ -991,13 +979,13 @@ We implement the Boris-BAOAB integrator (Definition {prf:ref}`def-baoab-splittin
 
 The **GeodesicCrossAttention** module implements B-A-O-A-B with attention heads for B/A and a closed-form OU step in the middle (or an optional learned O-head):
 
-**Step 1 (Head 1): B-step (First half-kick)**
+**Step 1 (B-head 1): B-step (First half-kick)**
 - **Query**: Current position $z$ with quadratic geodesic terms
 - **Key**: Gradient bank $\{\nabla\Phi(z')\}_{z' \in \text{context}}$
 - **Value**: Gradient vectors $\{\nabla\Phi(z')\}$
 - **Output**: Momentum update $\Delta p_1 = -\frac{h}{2}\nabla\Phi(z)$
 
-**Step 2 (Head 2): A-step (First half-drift)**
+**Step 2 (A-head 1): A-step (First half-drift)**
 - **Query**: Current position and momentum $(z, p)$
 - **Key**: Exponential map or transport bank $\{\exp_{z'}(v)\}$
 - **Value**: Displacement corrections
@@ -1011,12 +999,12 @@ The **GeodesicCrossAttention** module implements B-A-O-A-B with attention heads 
   - **Value**: Noise vectors $\{\xi\}$
   - **Output**: Residual correction added to the OU update
 
-**Step 4 (Head 4): A-step (Second half-drift)**
-- Same structure as Head 2
+**Step 4 (A-head 2): A-step (Second half-drift)**
+- Same structure as Step 2
 - **Output**: Drift correction $\Delta z_2$ added to the explicit drift $\frac{h}{2}G^{-1}(z)p$
 
-**Step 5 (Head 5): B-step (Second half-kick)**
-- Same structure as Head 1
+**Step 5 (B-head 2): B-step (Second half-kick)**
+- Same structure as Step 1
 - **Output**: Momentum update $\Delta p_2 = -\frac{h}{2}\nabla\Phi(z)$
 
 **Composition**: The full update is:
@@ -1029,16 +1017,16 @@ Here $\text{Step}_3$ denotes the OU operator unless a learned thermostat head is
 
 :::
 
-:::{prf:theorem} BAOAB Attention Preserves Boltzmann Distribution
+:::{prf:theorem} BAOAB Attention Targets Boltzmann Distribution (Idealized)
 :label: thm-baoab-attention-boltzmann
 
-The GeodesicCrossAttention module with BAOAB steps (four attention heads plus an OU thermostat) preserves the Boltzmann distribution
+In the idealized setting where the attention heads recover the BAOAB substeps (kick/drift) and the O-step is the exact OU update, the GeodesicCrossAttention module reduces to the standard BAOAB integrator (Definition {prf:ref}`def-baoab-splitting`). In that limit, it targets the Gibbs/Boltzmann density
 
 $$
 \rho(z, p) \propto \exp\left(-\frac{\Phi_{\text{eff}}(z)}{T_c} - \frac{\|p\|_G^2}{2T_c}\right)
 $$
 
-to second order in the timestep $h$, provided:
+as the intended stationary distribution (cf. Proposition {prf:ref}`prop-baoab-preserves-boltzmann`), provided:
 
 1. Each head uses position-dependent temperature $\tau(z) = \sqrt{d_k}/\lambda(z)$
 2. The O-step uses thermalization coefficients $c_1 = e^{-\gamma h}$, $c_2 = \sqrt{(1-c_1^2)T_c}$
@@ -1049,11 +1037,11 @@ to second order in the timestep $h$, provided:
 
 1. The symmetric splitting B-A-O-A-B ensures time-reversibility of deterministic steps.
 2. The A-steps include the explicit drift $G^{-1}p$, with attention providing higher-order corrections.
-3. The O-step exactly samples the Maxwell-Boltzmann momentum distribution when implemented as a closed-form OU update.
+3. The O-step is an exact OU transition, which leaves the Maxwell-Boltzmann conditional momentum distribution invariant (for fixed $z$ and the chosen mass tensor).
 4. Position-dependent temperature correctly weights attention by the metric.
 5. Wilson lines preserve gauge covariance without affecting thermodynamic properties.
 
-If a learned thermostat head is enabled, the O-step becomes a data-driven approximation that may deviate from exact Maxwell-Boltzmann sampling; treat this as a controlled modeling choice and monitor with diagnostic checks. The attention-based implementation is equivalent to the original BAOAB up to discretization of the gradient and exponential map, which introduces $O(h^2)$ errors consistent with the original scheme. $\square$
+If a learned thermostat head is enabled, the O-step becomes a data-driven approximation that may deviate from exact OU sampling; treat this as a controlled modeling choice and monitor with diagnostic checks. Likewise, attention-based interpolation of gradients, drift corrections, and Wilson lines introduces additional approximation error beyond the baseline BAOAB discretization. $\square$
 
 :::
 
@@ -1072,7 +1060,7 @@ $$
 K^{(\text{grad})}_{z'} = W_K \cdot \nabla\Phi_{\text{eff}}(z')
 $$
 
-The attention score $Q(z)^T K(z')$ measures how aligned the current position is with the gradient at $z'$. The weighted sum of Values retrieves the local gradient estimate:
+The attention score $s(z, z') := \operatorname{Re}\left(Q(z)^\dagger K(z')\right)$ measures how aligned the current position is with the gradient at $z'$. The weighted sum of Values retrieves the local gradient estimate:
 
 $$
 \widehat{\nabla\Phi}(z) = \sum_{z' \in \text{context}} \alpha(z, z') \cdot V^{(\text{grad})}(z') = \nabla\Phi_{\text{eff}}(z) + O(\text{interpolation error})
@@ -1111,7 +1099,7 @@ The main class `GeodesicCrossAttention` has four attention heads for the B and A
 
 The `forward` method takes the current state $(z, p)$ along with context banks (forces for B-steps, drift corrections for A-steps) and produces the next state $(z', p')$ in one pass. Inside, it sequences through the five BAOAB steps: kick, drift, thermostat, drift, kick, using four attention heads by default and a closed-form OU step for the thermostat. Because attention operates in $d_{\text{model}}$, the head outputs are projected back to $d_{\text{latent}}$ before applying updates when the dimensions differ.
 
-Pay attention to the metric computation. We use the Poincare disk formula, but this is modular---you can swap in any other metric by changing the `conformal_factor` method.
+Pay attention to the metric computation. We use the Poincare ball/disk formula, but this is modular---you can swap in any other metric by changing the `conformal_factor` method.
 
 The Wilson line approximation uses the linearized form for nearby points. For long-range attention, you would need to accumulate the path-ordered product, which is more expensive.
 
@@ -1133,7 +1121,7 @@ The code below is a **prototype implementation** intended to illustrate the arch
 6. **Thermostat choice**: The default OU step is exact. If you enable a learned thermostat head, treat it as a residual correction and monitor distributional drift.
 7. **State updates**: If $d_{\text{model}} \neq d_{\text{latent}}$, project attention outputs back to latent coordinates before applying updates.
 
-**Implementation vs. Theory**: The mathematical formulation (Definition {prf:ref}`def-covariant-qkv-projections`) has Wilson lines embedded in Q, K, V definitions. The code uses an equivalent approach: Wilson line correction is applied at attention-time via `K_transported = U @ K`. Both achieve gauge invariance; the code approach is more modular for experimentation.
+**Implementation vs. Theory**: The mathematical formulation (Definition {prf:ref}`def-covariant-qkv-projections`) has Wilson lines embedded in Q, K, V definitions. The code uses an equivalent decomposition in the idealized setting: Wilson line correction is applied at attention-time via `K_transported = U @ K`. With approximate Wilson lines, gauge invariance becomes approximate and should be monitored (Node 67).
 
 The essential mathematical structure is preserved: Wilson line preprocessing, position-dependent temperature, geometric Query, and BAOAB splitting.
 :::
@@ -1191,32 +1179,31 @@ class WilsonLineApprox(nn.Module):
     """
     Approximate Wilson line for parallel transport.
 
-    Implements the linear approximation:
-        U(z, z') ≈ I - i * Θ(z) · (z - z')
+    Real/orthogonal proxy for the first-order Wilson line:
+        U(z, z') ≈ I + H(Δz)
 
-    where Θ encodes the gauge connection coefficients.
+    where H(Δz) is skew-symmetric and represents (-i A·Δz) in a real-valued
+    implementation.
 
     Cross-reference: Proposition {prf:ref}`prop-wilson-line-approximation`
     """
 
-    def __init__(self, config: GeodesicConfig, d_k: int):
+    def __init__(self, config: GeodesicConfig, d_k: int, d_conn: int = 8):
         super().__init__()
         self.d_k = d_k
+        self.d_conn = min(d_conn, config.d_latent)
 
-        # Project latent displacements into gauge feature space
-        self.delta_proj = nn.Linear(config.d_latent, d_k, bias=False)
+        # Project latent displacements into a low-dimensional coefficient vector
+        self.delta_proj = nn.Linear(config.d_latent, self.d_conn, bias=False)
 
-        # Connection coefficients (learnable, initialized to small values)
-        # Shape: [d_k, d_k] - encodes Θ^a_μ contracted indices
-        self.theta_binding = nn.Parameter(
-            config.g_s * 0.1 * torch.randn(d_k, d_k)
-        )  # SU(N_f) contribution
-        self.theta_error = nn.Parameter(
-            config.g_2 * 0.1 * torch.randn(d_k, d_k)
-        )  # SU(2) contribution
-        self.theta_opportunity = nn.Parameter(
-            config.g_1 * 0.1 * torch.randn(d_k)
-        )  # U(1) contribution
+        # Skew-symmetric basis matrices for each gauge factor (proxy)
+        self.basis_binding = nn.Parameter(0.01 * torch.randn(self.d_conn, d_k, d_k))
+        self.basis_error = nn.Parameter(0.01 * torch.randn(self.d_conn, d_k, d_k))
+        self.basis_opportunity = nn.Parameter(0.01 * torch.randn(self.d_conn, d_k, d_k))
+
+        self.g_s = config.g_s
+        self.g_2 = config.g_2
+        self.g_1 = config.g_1
 
     def forward(
         self,
@@ -1232,36 +1219,27 @@ class WilsonLineApprox(nn.Module):
 
         # Displacement z - z'
         delta_z = z_query.unsqueeze(1) - z_key  # [B, N, d_latent]
-        delta_feat = self.delta_proj(delta_z)  # [B, N, d_k]
+        coeff = self.delta_proj(delta_z)  # [B, N, d_conn]
 
-        # Total connection: Θ · δz
-        # SU(N_f) contribution (non-Abelian, matrix-valued)
-        theta_nf = torch.einsum('ij,bnj->bni', self.theta_binding, delta_feat)
+        def skew(basis: torch.Tensor) -> torch.Tensor:
+            return basis - basis.transpose(-1, -2)
 
-        # SU(2) contribution (non-Abelian)
-        theta_su2 = torch.einsum('ij,bnj->bni', self.theta_error, delta_feat)
+        H = (
+            self.g_s * torch.einsum('bnr,rij->bnij', coeff, skew(self.basis_binding))
+            + self.g_2 * torch.einsum('bnr,rij->bnij', coeff, skew(self.basis_error))
+            + self.g_1 * torch.einsum('bnr,rij->bnij', coeff, skew(self.basis_opportunity))
+        )  # [B, N, d_k, d_k]
 
-        # U(1) contribution (Abelian, scalar)
-        theta_u1 = torch.einsum('j,bnj->bn', self.theta_opportunity, delta_feat)
-
-        # Build approximate Wilson line: U ≈ I - i*Θ
-        # For real implementation, use exp(-i*Θ) via matrix exponential
-        # Here we use linear approximation for efficiency
+        # First-order approximation: U ≈ I + H.
+        # For a group element, use torch.matrix_exp(H) (more expensive).
         d_k = self.d_k
         identity = torch.eye(d_k, device=z_key.device, dtype=z_key.dtype).expand(B, N, d_k, d_k)
-
-        # Combine into correction matrix (simplified: additive corrections)
-        correction = identity.clone()
-        correction = correction - 0.1 * theta_nf.unsqueeze(-1) * identity
-        correction = correction - 0.1 * theta_su2.unsqueeze(-1) * identity
-        correction = correction - 0.1 * theta_u1.unsqueeze(-1).unsqueeze(-1) * identity
-
-        return correction  # [B, N, d_k, d_k]
+        return identity + H  # [B, N, d_k, d_k]
 
 
 class ConformalMetric(nn.Module):
     """
-    Poincare disk metric computations.
+    Poincare ball/disk metric computations.
 
     λ(z) = 2 / (1 - |z|²)
     G_ij = λ² δ_ij
@@ -1278,7 +1256,7 @@ class ConformalMetric(nn.Module):
         Compute conformal factor λ(z) = 2 / (1 - |z|²).
 
         Args:
-            z: [B, d] positions in Poincare disk
+            z: [B, d] positions in Poincare ball/disk
 
         Returns: [B, 1] conformal factors
         """
@@ -1399,7 +1377,7 @@ class ChiralProjector(nn.Module):
     """
     SU(2)_L chiral projector from value gradient.
 
-    Π = (1/2)(I + n·τ) where n = proj(∇V) / ||proj(∇V)||
+    Π = (1/2)(I + n·σ) where n = proj(∇V) / ||proj(∇V)||
 
     Cross-reference: Definition {prf:ref}`def-chiral-projector-value-gradient`
     """
@@ -1412,11 +1390,12 @@ class ChiralProjector(nn.Module):
         self.grad_proj = nn.Linear(d_latent, 3, bias=False)
 
         # Pauli matrices (real-valued proxy for 2x2 case)
-        # Note: τ_2 is purely imaginary in SU(2); we use a real proxy here.
+        # Note: σ_2 is purely imaginary in the standard complex representation;
+        # we use (-i σ_2) as a real proxy here.
         self.register_buffer('identity', torch.eye(2))
-        self.register_buffer('tau_1', torch.tensor([[0., 1.], [1., 0.]]))
-        self.register_buffer('tau_2', torch.tensor([[0., -1.], [1., 0.]]))  # Real part of rotation
-        self.register_buffer('tau_3', torch.tensor([[1., 0.], [0., -1.]]))
+        self.register_buffer('sigma_1', torch.tensor([[0., 1.], [1., 0.]]))
+        self.register_buffer('sigma_2', torch.tensor([[0., -1.], [1., 0.]]))
+        self.register_buffer('sigma_3', torch.tensor([[1., 0.], [0., -1.]]))
 
     def forward(
         self,
@@ -1433,17 +1412,17 @@ class ChiralProjector(nn.Module):
         n = n / (torch.norm(n, dim=-1, keepdim=True) + 1e-8)
         n_x, n_y, n_z = n.unbind(dim=-1)
 
-        # Build projector Π = (1/2)(I + n·τ)
+        # Build projector Π = (1/2)(I + n·σ)
         proj = 0.5 * (
             self.identity
-            + n_x[:, None, None] * self.tau_1
-            + n_y[:, None, None] * self.tau_2
-            + n_z[:, None, None] * self.tau_3
+            + n_x[:, None, None] * self.sigma_1
+            + n_y[:, None, None] * self.sigma_2
+            + n_z[:, None, None] * self.sigma_3
         )
 
         # Apply projector and compute gauge-invariant commitment strength
         psi_proj = torch.einsum('bij,bjd->bid', proj, psi_doublet)  # [B, 2, d]
-        # For complex fields, replace with (psi_doublet.conj() * psi_proj)
+        # For complex fields, replace with (psi_doublet.conj() * psi_proj).sum(...)
         commit_strength = (psi_doublet * psi_proj).sum(dim=1, keepdim=True)  # [B, 1, d]
         psi_proj = psi_proj * commit_strength
         return psi_proj.reshape(psi_proj.shape[0], -1)  # [B, 2*d]
@@ -1479,7 +1458,7 @@ class AreaLawScreening(nn.Module):
         lambda_z: torch.Tensor,  # [B, 1] conformal factor at query
     ) -> torch.Tensor:
         """
-        Compute minimal string area between positions.
+        Compute string-area proxy between positions.
 
         A ≈ (λ²/2) |z - z'|²
 
@@ -1781,7 +1760,7 @@ class GeodesicCrossAttention(nn.Module):
         return z, p
 
     def _project_to_disk(self, z: torch.Tensor, max_norm: float = 0.999) -> torch.Tensor:
-        """Project z to interior of Poincare disk."""
+        """Project z to interior of Poincare ball/disk."""
         norm = torch.norm(z, dim=-1, keepdim=True)
         return torch.where(norm > max_norm, z * max_norm / norm, z)
 ```
@@ -1848,27 +1827,21 @@ All of these effects conspire to make the attention matrix *effectively sparse*.
 We can exploit this effective sparsity to achieve linear complexity.
 :::
 
-:::{prf:theorem} Gauge-Locality Correspondence
+:::{prf:proposition} Gauge-Locality Correspondence (Practical Bound)
 :label: thm-gauge-locality-correspondence
 
-Let $\epsilon > 0$ be a tolerance and $r_{\epsilon}(z)$ be the **effective interaction radius** at position $z$:
+Assume area-law screening is applied as a multiplicative factor $\exp(-\sigma A_{\text{string}}(z,z'))$ and use the local approximation
+$A_{\text{string}}(z,z') \approx d_G(z,z')^2/2$ (cf. Definition {prf:ref}`def-area-law-screening-attention` and the small-distance relation $d_G(z,z')\approx \lambda(z)\|z-z'\|$).
+
+Then for any tolerance $\epsilon \in (0,1)$, the screening factor satisfies:
 
 $$
-r_{\epsilon}(z) := \min\left( \frac{1}{\sqrt{\sigma}}, \frac{1}{\lambda(z)}, r_{\text{Wilson}} \right)
+\exp\left(-\sigma A_{\text{string}}(z,z')\right) \le \epsilon
+\quad\text{whenever}\quad
+d_G(z,z') \ge r_{\epsilon} := \sqrt{\frac{2\log(1/\epsilon)}{\sigma}}.
 $$
 
-where:
-- $1/\sqrt{\sigma}$ is the confinement radius from string tension
-- $1/\lambda(z)$ is the metric length scale (small near boundary)
-- $r_{\text{Wilson}}$ is the radius where Wilson line approximation holds to accuracy $\epsilon$
-
-Then the attention weight $\alpha(z, z')$ satisfies:
-
-$$
-\alpha(z, z') < \epsilon \quad \text{whenever} \quad d_G(z, z') > r_{\epsilon}(z)
-$$
-
-*Consequence*: Only $O(k)$ keys per query contribute significantly, where $k \sim \text{Vol}(B_{r_\epsilon}(z)) / \text{Vol}(\mathcal{Z})$ is the fraction of space within the interaction radius.
+*Consequence*: Beyond $r_\epsilon$, the screened (unnormalized) weights are exponentially small, motivating sparse neighborhoods. Separately, the Wilson-line linearization is accurate only up to a radius $r_{\text{Wilson}}$, so practical sparse neighborhoods should also enforce $d_G(z,z') \lesssim r_{\text{Wilson}}$.
 
 :::
 
@@ -1881,23 +1854,25 @@ Replace full attention with **geodesic-local sparse attention**:
 
 $$
 \alpha_{\text{sparse}}(z, z') = \begin{cases}
-\alpha_{\text{full}}(z, z') & \text{if } d_G(z, z') \leq r_{\epsilon}(z) \\
+\alpha_{\text{full}}(z, z') & \text{if } d_G(z, z') \leq r_{\epsilon} \\
 0 & \text{otherwise}
 \end{cases}
 $$
+
+In practice, renormalize $\alpha_{\text{sparse}}(z,\cdot)$ over the retained neighbors so the weights sum to 1.
 
 **Implementation**: Use a spatial data structure (k-d tree, ball tree, or locality-sensitive hashing) to find the $k$-nearest neighbors in geodesic distance.
 
 **Complexity**: $O(N k d)$ where $k$ is the neighborhood size, typically $k \sim 32$-$128$.
 
-**Gauge-faithfulness**: Exact for interactions within radius $r_\epsilon$. Error bounded by $\epsilon \cdot N$ for truncated interactions.
+**Gauge-faithfulness**: Exact within the retained neighborhood (up to any Wilson-line approximation used there). If $m_{\text{drop}}(z) := \sum_{d_G(z,z')>r_\epsilon} \alpha_{\text{full}}(z,z')$, then truncating and renormalizing changes the attention distribution by total variation distance at most $m_{\text{drop}}(z)$.
 
 :::
 
 :::{admonition} Implementation: Efficient Neighbor Finding
 :class: feynman-added tip
 
-For the Poincare disk, geodesic distance can be written as:
+For the Poincare ball/disk, geodesic distance can be written as:
 
 $$
 d_G(z, z') = \operatorname{arcosh}\left(1 + \frac{2\|z - z'\|^2}{(1-\|z\|^2)(1-\|z'\|^2)}\right)
@@ -1917,19 +1892,22 @@ This gives $O(N \log N)$ preprocessing and $O(k \log N)$ per query.
 :::{prf:definition} Linearized Covariant Attention
 :label: def-linearized-covariant-attention
 
-Approximate the softmax attention kernel using random Fourier features:
+Approximate the softmax attention kernel using a positive random feature map (a Monte Carlo approximation):
 
 $$
-\exp\left(\frac{Q^T K}{\tau}\right) \approx \phi(Q/\sqrt{\tau})^T \phi(K/\sqrt{\tau})
+\exp\left(\frac{s}{\tau}\right)
+\quad\text{with}\quad
+s := \operatorname{Re}\left(Q^\dagger K\right)
+\approx \phi(Q/\tau)^T \phi(K)
 $$
 
-where $\phi: \mathbb{R}^d \to \mathbb{R}^D$ is a random feature map with $D \ll N$:
+where $\phi: \mathbb{R}^{d_k} \to \mathbb{R}^D$ is a random feature map with $D \ll N$:
 
 $$
-\phi(x) = \frac{1}{\sqrt{D}} \begin{pmatrix} \cos(\omega_1^T x + b_1) \\ \vdots \\ \cos(\omega_D^T x + b_D) \end{pmatrix}
+\phi(x) = \frac{e^{-\|x\|^2/2}}{\sqrt{D}} \begin{pmatrix} \exp(\omega_1^T x) \\ \vdots \\ \exp(\omega_D^T x) \end{pmatrix}
 $$
 
-with $\omega_i \sim \mathcal{N}(0, I)$ and $b_i \sim \text{Uniform}(0, 2\pi)$.
+with $\omega_i \sim \mathcal{N}(0, I)$. (In expectation, $\mathbb{E}[\phi(q)^T\phi(k)] = \exp(q^T k)$.)
 
 **Linearized attention**:
 
@@ -1937,37 +1915,26 @@ $$
 \text{Attn}_{\text{linear}}(Q, K, V) = \frac{\phi(Q)^T \left(\sum_j \phi(K_j) V_j^T\right)}{\phi(Q)^T \left(\sum_j \phi(K_j)\right)}
 $$
 
-**Complexity**: $O(N D d)$ where $D \sim 64$-$256$.
+**Complexity**: $O(N D d_k)$ where $D \sim 64$-$256$.
 
-**Gauge-faithfulness**: The position-dependent temperature $\tau(z)$ is preserved in the feature map scaling. Wilson line corrections enter through modified $Q, K$ before feature mapping.
-
-:::
-
-:::{prf:proposition} Linear Attention Preserves Metric Structure
-:label: prop-linear-attention-metric
-
-The linearized attention with position-dependent temperature $\tau(z) = \sqrt{d_k}/\lambda(z)$ preserves the metric structure to leading order:
-
-$$
-\text{Attn}_{\text{linear}}(z, z') \propto \exp\left(-\frac{\lambda(z)^2 |z - z'|^2}{2d_k}\right) + O(|z-z'|^4)
-$$
-
-This is a Gaussian kernel with width inversely proportional to the metric scale---the same effective behavior as the full attention.
+**Gauge-faithfulness**: Query-dependent temperature enters through the rescaling $Q \mapsto Q/\tau(z)$ before feature mapping. Wilson line corrections enter through the gauge-covariant construction of $Q$ and $K$ before feature mapping.
 
 :::
+
+**Remark (realification)**: If Q/K are complex (unitary representations), apply the feature map to the realified vectors $\tilde{Q}=[\operatorname{Re}Q;\operatorname{Im}Q]$ and $\tilde{K}=[\operatorname{Re}K;\operatorname{Im}K]$, so that $s=\tilde{Q}^T\tilde{K}$.
 
 ### Engineering Proxy 3: Hierarchical Wilson Lines
 
 :::{div} feynman-prose
 The Wilson line is the most expensive component because it requires integrating the gauge connection along a path. But here is a trick: Wilson lines compose.
 
-If you have precomputed $U_{0 \to z}$ (origin to $z$) and $U_{0 \to z'}$ (origin to $z'$), then:
+If you have precomputed transport-to-origin operators $U_{z \to 0}$ and $U_{z' \to 0}$ (as in Definition {prf:ref}`def-covariant-qkv-projections`), then:
 
 $$
-U(z, z') = U_{0 \to z}^\dagger U_{0 \to z'}
+U(z, z') = U_{z \to 0}^\dagger U_{z' \to 0}
 $$
 
-So instead of computing $O(N^2)$ Wilson lines, you compute $O(N)$ lines from the origin and compose them. This is exactly what the definition in Section 35.3 already uses---it is not just mathematically convenient, it is computationally efficient.
+So instead of computing $O(N^2)$ Wilson lines, you compute $O(N)$ lines to the reference point and compose them. This is exactly what the transported-to-origin construction uses: it is not just mathematically convenient, it is computationally efficient.
 
 But we can do even better with a hierarchical approach. Divide the latent space into a tree of regions. Precompute Wilson lines between region centers. For fine-grained transport, use the linear approximation within each region.
 :::
@@ -1982,19 +1949,19 @@ Construct a **hierarchical decomposition** of the latent space $\mathcal{Z}$:
 - **Maximum level $L$**: Cells of diameter $\sim r_{\text{Wilson}}$
 
 **Precomputation** ($O(2^{Ld})$ storage):
-- For each cell center $c_i$: Store $U_{0 \to c_i}$
+- For each cell center $c_i$: Store $U_{c_i \to 0}$
 - For each cell: Store local connection coefficients $\Theta_i = A_\mu(c_i)$
 
 **Query** ($O(L + d)$ per pair):
 
 $$
-U(z, z') \approx U_{0 \to c(z)}^\dagger \cdot U_{\text{local}}(c(z), z)^\dagger \cdot U_{\text{local}}(c(z'), z') \cdot U_{0 \to c(z')}
+U(z, z') \approx U_{\text{local}}(z, c(z))^\dagger \cdot U_{c(z) \to 0}^\dagger \cdot U_{c(z') \to 0} \cdot U_{\text{local}}(z', c(z'))
 $$
 
-where $c(z)$ is the center of $z$'s cell and $U_{\text{local}}$ uses the linear approximation:
+where $c(z)$ is the center of $z$'s cell and $U_{\text{local}}(z, c)$ approximates transport from $z$ to $c$ within a cell using the linear approximation:
 
 $$
-U_{\text{local}}(c, z) \approx I - i \Theta(c) \cdot (z - c)
+U_{\text{local}}(z, c) \approx I - i \Theta(c) \cdot (c - z)
 $$
 
 **Complexity**: $O(N \cdot L \cdot d)$ where $L \sim \log(1/r_{\text{Wilson}})$.
@@ -2014,11 +1981,11 @@ $$
 
 where $U_r, V_r \in \mathbb{R}^{d_k \times d}$ are low-rank factors with $R \ll d$.
 
-**For the Poincare disk**: The Christoffel structure $\Gamma^k_{ij} \propto \delta^k_i z_j + \delta^k_j z_i - \delta_{ij} z^k$ has rank 3. We can capture it exactly with $R = 3$:
-
+**For the Poincare ball/disk**: the contracted Christoffel correction has a closed form. Using Proposition {prf:ref}`prop-a-explicit-christoffel-symbols-for-poincar-disk`,
 $$
-W_{Q,\Gamma}(z, z) = \alpha_1 (z \cdot z) \mathbf{e}_z + \alpha_2 |z|^2 z + \alpha_3 \text{diag}(z) z
+\Gamma^k_{ij}(z) v^i v^j = \frac{2}{1-|z|^2}\left(2(z\cdot v)\,v^k - \|v\|^2 z^k\right),
 $$
+so one can compute $\Gamma(z)[v,v]$ in $O(d)$ time without explicitly forming any $d\times d$ tensors. The factorized parameterization above is most useful when learning departures from (or alternatives to) the closed-form geometry.
 
 **Complexity**: $O(N R d)$ instead of $O(N d^2)$.
 
@@ -2090,17 +2057,17 @@ This is a general principle: when you understand the structure of your problem, 
 
 For production deployment:
 
-1. **Start with sparse attention** ($k \approx 64$ neighbors). This preserves exact gauge structure within the neighborhood.
+1. **Start with sparse attention** ($k \approx 64$ neighbors). This leverages locality from screening/Wilson-line accuracy; monitor the dropped mass of attention if you prune aggressively.
 
 2. **Use hierarchical Wilson lines** with $L \approx 8$ levels. Precompute once per batch.
 
-3. **Factorize Christoffel tensor** with $R = 3$ (exact for Poincare). Learn corrections during training.
+3. **Use closed-form Poincare geometry when applicable** (cf. Proposition {prf:ref}`prop-a-explicit-christoffel-symbols-for-poincar-disk`) and factorize only when learning departures from (or alternatives to) the closed form.
 
 4. **Combine area law with sparse mask**. No additional cost.
 
 5. **Monitor diagnostic nodes** (67-70). If gauge invariance degrades, increase $k$ or $L$.
 
-The resulting architecture runs in **O(N)** time with controlled, bounded approximation error that can be verified at runtime.
+The resulting architecture runs in **O(N)** time with approximation error that can be monitored at runtime.
 :::
 
 
@@ -2108,14 +2075,14 @@ The resulting architecture runs in **O(N)** time with controlled, bounded approx
 (sec-diagnostic-nodes-architecture)=
 ## Diagnostic Nodes 67-70: Gauge, Temperature, Chirality, Confinement
 
-Following the diagnostic node convention ({ref}`Section 3.1 <sec-theory-thin-interfaces>`), we define monitors for the covariant attention architecture.
+Following the diagnostic node convention ({ref}`thin interfaces <sec-theory-thin-interfaces>`), we define monitors for the covariant attention architecture.
 
 (node-67)=
 **Node 67: GaugeInvarianceCheck**
 
 | **#** | **Name** | **Component** | **Type** | **Interpretation** | **Proxy** | **Cost** |
 |-------|----------|---------------|----------|---------------------|-----------|----------|
-| **67** | **GaugeInvarianceCheck** | Architecture | Invariance | Are attention scores gauge-invariant? | $\Delta_{\text{gauge}} := \max_{\Omega \in G} \|Q(z)^T K(z') - Q_\Omega(z)^T K_\Omega(z')\|$ | $O(Nd^2)$ |
+| **67** | **GaugeInvarianceCheck** | Architecture | Invariance | Are attention scores gauge-invariant? | $\Delta_{\text{gauge}} := \max_{\Omega \in G} \left\|\operatorname{Re}\left(Q(z)^\dagger K(z')\right) - \operatorname{Re}\left(Q_\Omega(z)^\dagger K_\Omega(z')\right)\right\|$ | $O(Nd^2)$ |
 
 **Interpretation:** Measures the deviation of attention scores when Q/K are recomputed under random gauge transformations of the latent fields (or equivalently rotated at the common reference frame). For a perfectly gauge-invariant implementation, $\Delta_{\text{gauge}} = 0$. Non-zero values indicate Wilson line approximation errors.
 
@@ -2129,7 +2096,7 @@ Following the diagnostic node convention ({ref}`Section 3.1 <sec-theory-thin-int
 
 | **#** | **Name** | **Component** | **Type** | **Interpretation** | **Proxy** | **Cost** |
 |-------|----------|---------------|----------|---------------------|-----------|----------|
-| **68** | **MetricTemperatureConsistencyCheck** | Architecture | Thermodynamic | Is temperature consistent with metric? | $\Delta_{\tau} := \|\tau(z) \cdot \lambda(z) - \sqrt{d_k}\|$ | $O(d)$ |
+| **68** | **MetricTemperatureConsistencyCheck** | Architecture | Thermodynamic | Is temperature consistent with metric? | $\Delta_{\tau} := \left|\tau(z) \cdot \lambda(z) - \sqrt{d_k}\right|$ | $O(d)$ |
 
 **Interpretation:** Verifies that the position-dependent temperature $\tau(z)$ correctly encodes the inverse conformal factor. Discrepancy indicates miscalibration of the temperature module.
 
@@ -2221,9 +2188,9 @@ We summarize the correspondence between the covariant attention architecture and
 :::{div} feynman-prose
 Let me step back and tell you what we have accomplished in this chapter.
 
-We took the abstract gauge-theoretic structure derived in previous chapters---the $SU(N_f) \times SU(2) \times U(1)$ symmetry, the Wilson lines, the Christoffel symbols, the chiral projectors---and translated it into neural network architecture. Every piece of the mathematics has a corresponding piece of the code.
+We took the abstract gauge-theoretic structure derived in previous chapters---the $SU(N_f) \times SU(2) \times U(1)$ symmetry, the Wilson lines, the Christoffel symbols, the chiral projectors---and translated it into neural network architecture. Every piece of the mathematics has a corresponding architectural component.
 
-The result is a world model that is gauge-invariant by construction. It does not need to learn gauge invariance; it has it baked in. It does not need regularization to respect the geometry; the geometry is the architecture.
+The result is a world model whose attention weights are gauge-invariant in the idealized construction. It does not need to *learn* gauge invariance as an emergent property; it is built into the design. In practice, approximations can be detected and bounded with diagnostics.
 
 This is a different philosophy from the usual "train a big neural network and hope it learns the right structure." We are saying: there is a right structure, we know what it is, and we should build it in explicitly.
 
@@ -2233,19 +2200,19 @@ Will this work in practice? That is an empirical question. But the theoretical f
 
 The diagnostic nodes let you monitor the gauge structure at runtime. If something goes wrong---if the Wilson lines are not accurate enough, if the temperature is miscalibrated, if texture is leaking---you will see it in the diagnostics and can take corrective action.
 
-This is the power of building in structure rather than learning it from scratch. You get guarantees, you get interpretability, and you get diagnostic hooks. The cost is complexity in the architecture. But for applications where gauge covariance matters, that cost is worth paying.
+This is the power of building in structure rather than learning it from scratch: you get principled invariances, interpretability, and diagnostic hooks. The cost is architectural complexity.
 :::
 
 This chapter has derived the **Covariant Cross-Attention** architecture that implements:
 
-1. **Gauge-covariant attention** via Wilson line preprocessing (Section 35.3)
-2. **Metric-encoded temperature** via $\tau(z) = \sqrt{d_k}/\lambda(z)$ (Section 35.4)
-3. **Geodesic correction** via geometric Query projections (Section 35.5)
-4. **$SU(2)_L$ chirality** via observation-action doublet and chiral projector (Section 35.6)
-5. **$SU(N_f)_C$ confinement** via area law screening (Section 35.7)
-6. **Boris-BAOAB integration** via attention heads + OU thermostat (Section 35.8)
-7. **O(N) complexity** via sparse attention, hierarchical Wilson lines, and factorized Christoffel (Section 35.9)
+1. **Gauge-covariant attention** via Wilson line preprocessing ({ref}`sec-covariant-cross-attention-definition`)
+2. **Metric-encoded temperature** via $\tau(z) = \sqrt{d_k}/\lambda(z)$ ({ref}`sec-metric-in-temperature`)
+3. **Geodesic correction** via geometric Query projections ({ref}`sec-christoffel-in-query`)
+4. **$SU(2)_L$ chirality** via observation-action doublet and chiral projector ({ref}`sec-su2-chirality-architecture`)
+5. **$SU(N_f)_C$ confinement** via area law screening ({ref}`sec-sunf-firewall-architecture`)
+6. **Boris-BAOAB integration** via attention heads + OU thermostat ({ref}`sec-baoab-integration-architecture`)
+7. **O(N) complexity** via sparse attention, hierarchical Wilson lines, and factorized Christoffel ({ref}`sec-computational-complexity-proxies`)
 
-The architecture is a **gauge-invariant world model** that acts as a one-step integrator for the Lorentz-Langevin geodesic equations. Diagnostic nodes 67-70 monitor gauge invariance, metric-temperature consistency, chirality preservation, and texture confinement.
+The architecture is a **gauge-covariant world model** that acts as a one-step integrator for the Lorentz-Langevin geodesic equations. Diagnostic nodes 67-70 monitor gauge invariance, metric-temperature consistency, chirality preservation, and texture confinement.
 
-**Key Result:** The standard Transformer attention mechanism is a degenerate limit of covariant cross-attention with all gauge fields set to zero, constant temperature, linear Query, and no screening. The full architecture respects the gauge structure $G_{\text{Fragile}} = SU(N_f)_C \times SU(2)_L \times U(1)_Y$ by construction.
+**Key Result:** The standard Transformer attention mechanism is a degenerate limit of covariant cross-attention with all gauge fields set to zero, constant temperature, linear Query, and no screening. In the idealized formulation, the full architecture respects the gauge structure $G_{\text{Fragile}} = SU(N_f)_C \times SU(2)_L \times U(1)_Y$ by construction.

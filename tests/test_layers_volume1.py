@@ -1,4 +1,5 @@
 import torch
+import torch.nn as nn
 
 from fragile.core.layers import (
     AreaLawScreening,
@@ -9,6 +10,7 @@ from fragile.core.layers import (
     DisentangledAgent,
     DisentangledConfig,
     Encoder,
+    FactorizedJumpOperator,
     GeodesicConfig,
     GeodesicCrossAttention,
     HierarchicalDisentangled,
@@ -18,9 +20,15 @@ from fragile.core.layers import (
     MacroDynamicsModel,
     SupervisedTopologyLoss,
     TemporalChristoffelQuery,
+    IsotropicBlock,
+    SpectralLinear,
     VectorQuantizer,
     WilsonLineApprox,
     class_modulated_jump_rate,
+    compute_jump_consistency_loss,
+    compute_orthogonality_loss,
+    compute_separation_loss,
+    compute_topology_loss,
 )
 
 
@@ -123,6 +131,42 @@ def test_supervised_topology_loss_and_jump_rate() -> None:
     }
 
 
+def test_topology_helpers_and_jump_consistency() -> None:
+    torch.manual_seed(4)
+    batch = 6
+    num_charts = 3
+    dim = 4
+
+    weights = torch.softmax(torch.randn(batch, num_charts), dim=-1)
+    loss_entropy, loss_balance = compute_topology_loss(weights, num_charts)
+    assert loss_entropy.ndim == 0
+    assert loss_balance.ndim == 0
+
+    chart_outputs = [torch.randn(batch, dim) for _ in range(num_charts)]
+    loss_sep = compute_separation_loss(chart_outputs, weights, margin=0.5)
+    assert loss_sep.ndim == 0
+
+    jump_op = FactorizedJumpOperator(num_charts=num_charts, latent_dim=dim, global_rank=2)
+    z_n_by_chart = torch.randn(batch, num_charts, dim)
+    loss_jump, info = compute_jump_consistency_loss(
+        z_n_by_chart,
+        weights,
+        jump_op,
+        overlap_threshold=0.0,
+        max_pairs_per_batch=8,
+    )
+
+    assert loss_jump.ndim == 0
+    assert "num_overlaps" in info
+
+    dummy = nn.Sequential(
+        SpectralLinear(dim, dim, bias=False),
+        IsotropicBlock(dim, dim, bundle_size=1),
+    )
+    orth_loss = compute_orthogonality_loss([dummy])
+    assert orth_loss.ndim == 0
+
+
 def test_lorentzian_modules() -> None:
     torch.manual_seed(4)
     config = LorentzianConfig(d_model=8, d_latent=4)
@@ -151,10 +195,32 @@ def test_lorentzian_modules() -> None:
     assert torch.allclose(weights.sum(dim=-1), torch.ones(2), atol=1e-5)
 
 
+def test_wilson_line_and_metric_temperature() -> None:
+    torch.manual_seed(6)
+    config = GeodesicConfig(d_model=8, d_latent=4)
+    wilson = WilsonLineApprox(config, d_k=6)
+    metric = ConformalMetric()
+
+    z_query = torch.zeros(2, 4)
+    z_key = torch.randn(2, 3, 4)
+    u_mat = wilson(z_query, z_key)
+
+    identity = torch.eye(6, device=u_mat.device, dtype=u_mat.dtype)
+    identity = identity.expand(2, 3, 6, 6)
+    h_mat = u_mat - identity
+    skew_sym = h_mat + h_mat.transpose(-1, -2)
+
+    assert torch.allclose(skew_sym, torch.zeros_like(skew_sym), atol=1e-5)
+
+    tau = metric.temperature(torch.zeros(2, 4), d_k=6)
+    expected = torch.full_like(tau, fill_value=(6**0.5) / 2.0)
+    assert torch.allclose(tau, expected, atol=1e-6)
+
+
 def test_gauge_modules() -> None:
     torch.manual_seed(5)
-    config = GeodesicConfig(d_model=8, d_latent=4)
-    wilson = WilsonLineApprox(config, d_k=8)
+    config = GeodesicConfig(d_model=8, d_latent=4, n_heads=2)
+    wilson = WilsonLineApprox(config, d_k=4)
     metric = ConformalMetric()
     query = ChristoffelQuery(d_in=8, d_out=8, d_latent=4)
     chiral = ChiralProjector(d_latent=4)
@@ -178,6 +244,7 @@ def test_gauge_modules() -> None:
     attention = torch.softmax(torch.randn(2, 3), dim=-1)  # [B, N]
     lambda_z = metric.conformal_factor(z_query)  # [B, 1]
     screened = screening(attention, z_query, z_key, lambda_z, level=0)  # [B, N]
+    screened_lo = screening(attention, z_query, z_key, lambda_z, level=5)  # [B, N]
 
     out, attn_weights = head(
         z_query,
@@ -194,15 +261,17 @@ def test_gauge_modules() -> None:
     context_force = torch.randn(2, 3, 4)  # [B, N, d_latent]
     z_next, p_next = cross(z, p, z_key, x_key, context_force)
 
-    assert U.shape == (2, 3, 8, 8)
-    assert torch.allclose(U[:, :, torch.arange(8), torch.arange(8)], torch.ones(2, 3, 8))
+    assert U.shape == (2, 3, 4, 4)
+    assert torch.allclose(U[:, :, torch.arange(4), torch.arange(4)], torch.ones(2, 3, 4))
     assert g.shape == (2, 4, 4)
     assert q.shape == (2, 8)
     assert psi_proj.shape == (2, 16)
     assert screened.shape == (2, 3)
     assert (screened <= attention + 1e-6).all()
+    assert (screened_lo >= screened - 1e-6).all()
     assert out.shape == (2, 8)
     assert attn_weights.shape == (2, 3)
     assert torch.allclose(attn_weights.sum(dim=-1), torch.ones(2), atol=1e-5)
     assert z_next.shape == (2, 4)
     assert p_next.shape == (2, 4)
+    assert torch.all(torch.norm(z_next, dim=-1) <= 0.999 + 1e-6)

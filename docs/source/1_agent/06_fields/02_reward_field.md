@@ -8,14 +8,14 @@
   manifold).
 - Use Hodge-style decomposition to separate conservative (gradient) structure from cyclic/value-curl structure (games,
   non-equilibrium tasks).
-- This chapter gives a principled way to detect when “maximize scalar reward” is the wrong model (curl ≠ 0) and what to
+- This chapter gives a principled way to detect when the conservative scalar-reward model fails (curl ≠ 0) and what to
   do about it.
 - Outputs are implementable diagnostics (value curl, conformal backreaction, mass/value correlation) that tie value to
   geometry.
 
 ## Roadmap
 
-1. Reward as a 1-form and why scalar rewards are insufficient.
+1. Reward as a 1-form; scalar reward as the conservative special case.
 2. Value/critic as a PDE object and its geometric interpretation.
 3. Hodge decomposition + diagnostics for cyclic/non-conservative structure.
 
@@ -91,17 +91,43 @@ $$
 :::{prf:definition} The Reward Flux (Boundary Form)
 :label: def-the-reward-flux
 
-The environment provides reward via a flux form $J_r$ on the boundary $\partial\Omega$:
+The environment provides reward via a boundary 1-form $J_r$ on $\partial\Omega$. Let
+$\iota:\partial\Omega\hookrightarrow\Omega$ be the inclusion. The boundary condition is the pullback
+$\iota^*\mathcal{R} = J_r$, and the cumulative boundary reward along a boundary trajectory
+$\gamma_\partial$ is:
 
 $$
-\int_{\partial\Omega} J_r = \text{Cumulative Boundary Reward}.
+\int_{\gamma_\partial} J_r = \text{Cumulative Boundary Reward}.
 
 $$
-In the discrete limit, this manifests as point charges $r_t$ deposited at the boundary coordinates $(t, z_{\text{boundary}})$.
+In the discrete limit, this manifests as samples $r_t = J_r(\partial_t)$ deposited at the boundary
+coordinates $(t, z_{\text{boundary}})$.
 
-*Units:* $[J_r] = \mathrm{nat}/\mathrm{area}$, $[r_t] = \mathrm{nat}$.
+*Units:* $[J_r] = \mathrm{nat}/[\text{length}]$, $[r_t] = \mathrm{nat}$.
 
-*Relation to 1-form:* The boundary reward flux $J_r$ and the bulk 1-form $\mathcal{R}$ are related by Stokes' theorem: the boundary integral of $J_r$ equals the bulk integral of $d\mathcal{R}$ plus boundary terms.
+*Relation to 1-form:* For any surface $\Sigma$ with boundary $\partial\Sigma$, Stokes' theorem gives
+$\oint_{\partial\Sigma}\mathcal{R}=\int_\Sigma d\mathcal{R}$. In the conservative case
+($\mathcal{R}=d\Phi$), boundary reward reduces to Dirichlet/Neumann data for $\Phi$ (equivalently a
+boundary source density $\sigma_r$).
+
+:::
+
+:::{prf:definition} Terminal Boundary (End/Death Flags)
+:label: def-terminal-boundary
+
+Let $\Gamma_{\text{term}} \subset \mathcal{Z}$ denote the terminal subset representing end/death flags.
+Define the stopping time $\tau_{\text{term}} := \inf\{t \ge 0 : z_t \in \Gamma_{\text{term}}\}$ and
+kill the process upon hitting $\Gamma_{\text{term}}$. For the conservative value PDE, impose a
+Dirichlet condition $V|_{\Gamma_{\text{term}}} = V_{\text{term}}$ (often $0$ or a terminal payoff).
+In WFR form, include a killing rate $\kappa_{\text{term}}(z) \ge 0$ or a reaction term $r<0$
+concentrated on $\Gamma_{\text{term}}$.
+
+*Terminal vs holographic boundary.* $\Gamma_{\text{term}}$ is a task boundary and is separate from the
+holographic boundary of the hyperbolic space.
+
+*Computational cutoff.* For numerics we truncate the hyperbolic disk at $\lvert z\rvert = 1-\varepsilon$,
+with $\varepsilon$ tied to the Levin length/resolution. This is a computational boundary for stability,
+not a physical terminal set.
 
 :::
 
@@ -153,7 +179,8 @@ The central theorem of this section decomposes any reward 1-form into three orth
 :::{prf:theorem} Hodge Decomposition of the Reward Field
 :label: thm-hodge-decomposition
 
-On the compact latent Riemannian manifold $(\mathcal{Z}, G)$, the Reward 1-form $\mathcal{R}$ uniquely decomposes into:
+On a compact latent Riemannian manifold $(\mathcal{Z}, G)$ with boundary (or on a complete manifold
+with suitable decay and boundary conditions), the Reward 1-form $\mathcal{R}$ decomposes into:
 
 $$
 \mathcal{R} = \underbrace{d\Phi}_{\text{Gradient}} + \underbrace{\delta \Psi}_{\text{Solenoidal}} + \underbrace{\eta}_{\text{Harmonic}}
@@ -164,9 +191,15 @@ where:
 2. **$\Psi \in \Omega^2(\mathcal{Z})$** (Vector Potential): The rotational/cyclic component. $\delta\Psi$ is a coexact form (divergence-free).
 3. **$\eta \in \mathcal{H}^1(\mathcal{Z})$** (Harmonic Flux): Topological cycles from manifold holes. Satisfies $d\eta = 0$ and $\delta\eta = 0$.
 
-*Units:* $[\Phi] = \mathrm{nat}$, $[\Psi] = \mathrm{nat} \cdot [\text{length}]^2$, $[\eta] = \mathrm{nat}/[\text{length}]$.
+*Units:* $[\Phi] = \mathrm{nat}$, $[\Psi] = \mathrm{nat}$, $[\eta] = \mathrm{nat}/[\text{length}]$.
 
-*Proof sketch.* The Hodge decomposition follows from the orthogonal decomposition of $L^2(\Omega^1)$ into exact, coexact, and harmonic forms. The Hodge Laplacian $\Delta_H = d\delta + \delta d$ has kernel equal to the harmonic forms. The explicit solution uses the Green's operator $G = (\Delta_H)^{-1}$ on the orthogonal complement of harmonic forms: $\Phi = \delta G \mathcal{R}$, $\Psi = d G \mathcal{R}$, $\eta = \mathcal{R} - d\Phi - \delta\Psi$. $\square$
+*Proof sketch.* The Hodge decomposition follows from the orthogonal decomposition of $L^2(\Omega^1)$
+into exact, coexact, and harmonic forms (with absolute/relative boundary conditions fixed when
+$\partial\mathcal{Z}\neq\varnothing$). The Hodge Laplacian $\Delta_H = d\delta + \delta d$ has kernel
+equal to the harmonic forms. The explicit solution uses the Green's operator
+$G = (\Delta_H)^{-1}$ on the orthogonal complement of harmonic forms:
+$\Phi = \delta G \mathcal{R}$, $\Psi = d G \mathcal{R}$,
+$\eta = \mathcal{R} - d\Phi - \delta\Psi$. $\square$
 
 :::
 
@@ -221,7 +254,9 @@ $$
 \oint_\gamma \mathcal{R} = \int_\Sigma \mathcal{F} \, d\Sigma \neq 0 \implies \text{Non-conservative rewards.}
 
 $$
-**Diagnostic:** If the TD-error accumulated around closed loops in latent space has non-zero mean, the value field is non-conservative.
+**Diagnostic:** Non-zero circulation $\oint_\gamma \mathcal{R}$ indicates non-conservative structure.
+Using accumulated TD-error around closed loops is a heuristic that requires approximate loop closure
+and a consistent reward estimator.
 
 :::
 
@@ -267,20 +302,24 @@ $$-\Delta_G V + \kappa^2 V = \rho_r$$
 
 Let me parse that for you:
 - $\Delta_G$ is the Laplace-Beltrami operator---the generalization of the Laplacian to curved manifolds. It measures how $V$ differs from its local average.
-- $\kappa^2$ is the "screening mass," which turns out to be $\kappa = -\ln\gamma$ where $\gamma$ is the discount factor. This is the deep connection: the discount rate isn't just an arbitrary weighting---it's a *mass* for the value field.
+- $\kappa^2$ is the "screening mass." The discount factor sets a temporal rate $\lambda := -\ln\gamma / \Delta t$; the spatial screening mass is $\kappa := \lambda / c_{\text{info}}$. In natural units ($\Delta t = 1$, $c_{\text{info}} = 1$), $\kappa = -\ln\gamma$. This is the deep connection: the discount rate isn't just an arbitrary weighting---it's a *mass* for the value field.
 - $\rho_r$ is the reward density---where rewards are being deposited.
 
-What does this equation mean physically? It says value *propagates* from reward sources, but the propagation is screened. Distant rewards contribute less, and the screening length is $\ell = 1/\kappa = -1/\ln\gamma$. For $\gamma = 0.99$, this is about 100 time steps. Beyond that distance, rewards are exponentially suppressed.
+What does this equation mean physically? It says value *propagates* from reward sources, but the propagation is screened. Distant rewards contribute less, and the screening length is $\ell = 1/\kappa = c_{\text{info}} \Delta t / (-\ln\gamma)$. For $\gamma = 0.99$ with $c_{\text{info}} \Delta t = 1$, this is about 100 time steps. Beyond that distance, rewards are exponentially suppressed.
 
 This gives the discount factor a *spatial* meaning, not just a temporal one. In latent space, $\gamma$ controls how far reward "reaches."
 :::
 
-When the Value Curl vanishes ($\mathcal{F} = 0$), the reward field is conservative and we recover the standard scalar value function framework. In this regime, the Value function $V(z) = \Phi(z)$ obeys the Bellman Equation, which in the continuum limit becomes the **Screened Poisson (Helmholtz) Equation**.
+When the Value Curl vanishes ($\mathcal{F} = 0$), the reward field is conservative and we recover the
+standard scalar value function framework. In this regime, the Value function $V(z) = \Phi(z)$ obeys the
+Bellman Equation, which in the continuum limit becomes the **Screened Poisson (Helmholtz) Equation**.
+In the general case, this PDE governs only the gradient component $d\Phi$ of the reward 1-form; the
+solenoidal/harmonic parts appear as circulation and are not captured by a scalar potential.
 
 :::{prf:theorem} The HJB-Helmholtz Correspondence {cite}`bellman1957dynamic,evans2010pde`
 :label: thm-the-hjb-helmholtz-correspondence
 
-Let the discount factor be $\gamma = e^{-\kappa \Delta t}$ where $\kappa > 0$ is the **screening mass**. The Bellman condition
+Let the temporal discount rate be $\lambda := -\ln\gamma / \Delta t$ and define the **spatial screening mass** $\kappa := \lambda / c_{\text{info}}$ (so $\gamma = e^{-\lambda \Delta t}$). The Bellman condition
 
 $$
 V(z) = \mathbb{E}[r + \gamma V(z')]
@@ -295,9 +334,13 @@ $$
 where:
 - $\Delta_G = \frac{1}{\sqrt{|G|}} \partial_i \left( \sqrt{|G|} G^{ij} \partial_j \right)$ is the **Laplace-Beltrami operator** on the manifold $(\mathcal{Z}, G)$
 - $\kappa^2$ is the "mass" of the scalar field, causing the influence of distant rewards to decay exponentially
-- $\rho_r(z)$ is the internal reward density plus propagated boundary conditions
+- $\rho_r(z)$ is the scalar source density associated with the conservative component of $\mathcal{R}$
+  (bulk density plus boundary flux data; see Definition {prf:ref}`def-the-reward-flux`)
 
-*Proof sketch.* Consider the continuous-time limit of the Bellman equation for a diffusion process $dz = b(z) dt + \sigma(z) dW$ with $\sigma\sigma^T = 2T_c G^{-1}$. Expanding $V(z') = V(z + dz)$ to second order and taking expectations:
+*Proof sketch.* Consider the continuous-time limit of the Bellman equation for a diffusion process
+$dz = b(z) dt + \sigma(z) dW$ with $\sigma\sigma^T = 2T_c G^{-1}$. Expanding
+$V(z') = V(z + dz)$ to second order and taking expectations, with instantaneous reward rate
+$r := \mathcal{R}_i(z) b^i(z,a)$:
 
 $$
 V(z) = r \Delta t + \gamma \mathbb{E}[V(z')] \approx r \Delta t + (1 - \kappa \Delta t)\left(V + \nabla V \cdot b \Delta t + T_c \Delta_G V \Delta t\right).
@@ -315,7 +358,11 @@ Units: $[\kappa] = 1/\text{length}$, $[\Delta_G V] = \mathrm{nat}/\text{length}^
 
 *Cross-reference (Relativistic Extension):* This **elliptic** Helmholtz equation assumes instantaneous value propagation. When agents interact across spatial or computational separation with finite information speed $c_{\text{info}}$, the equation generalizes to the **hyperbolic Klein-Gordon equation**: $(\frac{1}{c^2}\partial_t^2 - \Delta_G + \kappa^2)V = \rho_r$. See Theorem {prf:ref}`thm-hjb-klein-gordon` in {ref}`Section 29.5 <sec-the-hyperbolic-value-equation>`.
 
-*Cross-reference (Gauge-Covariant Generalization):* When the dynamics must be invariant under local nuisance transformations ({ref}`Section 29.13 <sec-local-gauge-symmetry-nuisance-bundle>`), all partial derivatives $\partial_\mu$ are promoted to covariant derivatives $D_\mu = \partial_\mu - igA_\mu$, where $A_\mu$ is the Strategic Connection (Definition {prf:ref}`def-strategic-connection`). The Helmholtz operator becomes $-D_\mu D^\mu + \kappa^2$.
+*Cross-reference (Gauge-Covariant Generalization):* When dynamics must be invariant under local nuisance
+transformations ({ref}`Section 29.13 <sec-local-gauge-symmetry-nuisance-bundle>`), covariant derivatives
+act on vector-valued belief fields (or nuisance orientation multiplets) rather than on the scalar
+value $V$. Only if $V$ is chosen to transform in a non-trivial representation does the Helmholtz
+operator become $-D_\mu D^\mu + \kappa^2$.
 
 :::
 
@@ -324,27 +371,18 @@ Units: $[\kappa] = 1/\text{length}$, $[\Delta_G V] = \mathrm{nat}/\text{length}^
 
 The screened Poisson equation $-\Delta_G V + \kappa^2 V = \rho_r$ requires careful dimensional analysis. The naive expression $\kappa = -\ln\gamma$ appears dimensionless, which would be inconsistent with $[\Delta_G] = [\text{length}]^{-2}$.
 
-The resolution lies in the proof derivation. The intermediate equation before normalization is:
+The resolution is to separate temporal and spatial scales. Define the temporal discount rate $\lambda := -\ln\gamma / \Delta t$ (units $1/[\text{time}]$), then convert to the spatial screening mass $\kappa := \lambda / c_{\text{info}}$ (units $1/[\text{length}]$). This makes $\kappa^2$ commensurate with $[\Delta_G] = [\text{length}]^{-2}$.
 
-$$
-\kappa V = r + \nabla V \cdot b + T_c \Delta_G V
-
-$$
-
-where $T_c$ is the **cognitive temperature** (Definition {prf:ref}`def-cognitive-temperature`), which acts as a diffusion coefficient with units $[T_c] = [\text{length}]^2/[\text{time}]$.
-
-**In natural units** (used throughout this document): We set $T_c = 1$ and $\Delta t = 1$, making $\kappa = -\ln\gamma$ numerically equal to the screening mass. The stated units $[\kappa] = 1/\text{length}$ are correct in this convention.
+**In natural units** (used throughout this document): We set $\Delta t = 1$ and $c_{\text{info}} = 1$, making $\kappa = -\ln\gamma$ numerically equal to the screening mass.
 
 **In SI units**: The proper relationship is:
 
 $$
-\kappa_{\text{phys}} = \frac{-\ln\gamma}{\sqrt{T_c \cdot \Delta t}}, \qquad [\kappa_{\text{phys}}] = \frac{1}{\text{length}}
+\kappa_{\text{phys}} = \frac{-\ln\gamma}{c_{\text{info}} \Delta t}, \qquad [\kappa_{\text{phys}}] = \frac{1}{\text{length}}
 
 $$
 
-The screening length $\ell_{\text{screen}} = 1/\kappa$ thus depends on both the temporal horizon ($\gamma$) and the diffusive spreading rate ($T_c$). This is physically sensible: slower diffusion (smaller $T_c$) increases the effective screening length because value information takes longer to propagate.
-
-**Consistency check**: In the proof, dividing $\kappa V = r + T_c \Delta_G V$ by $T_c$ yields $(\kappa/T_c) V = r/T_c + \Delta_G V$. Rearranging: $-\Delta_G V + (\kappa/T_c) V = -r/T_c$. The effective "mass squared" in the normalized equation is $\kappa^2_{\text{eff}} = \kappa/T_c$, which has the correct units $[\text{length}]^{-2}$ when $[\kappa] = [\text{time}]^{-1}$ and $[T_c] = [\text{length}]^2/[\text{time}]$.
+The screening length $\ell_{\text{screen}} = 1/\kappa$ thus depends on both the temporal horizon ($\gamma$) and the information propagation speed $c_{\text{info}}$. Slower propagation (smaller $c_{\text{info}}$) shortens the effective horizon in latent space.
 
 :::
 
@@ -354,7 +392,7 @@ The screening length $\ell_{\text{screen}} = 1/\kappa$ thus depends on both the 
 
 **In Physics:** The Yukawa (screened Coulomb) potential satisfies $(-\nabla^2 + m^2)\phi = \rho$ where $m$ is the mediating boson mass. The screening length $\ell = 1/m$ determines the range of the force {cite}`yukawa1935interaction`.
 
-**In Implementation:** The value function satisfies $(-\Delta_G + \kappa^2)V = \rho_r$ where (in natural units with $T_c = \Delta t = 1$):
+**In Implementation:** The value function satisfies $(-\Delta_G + \kappa^2)V = \rho_r$ where (in natural units with $\Delta t = c_{\text{info}} = 1$):
 
 $$
 \kappa = -\ln\gamma, \quad \ell_\gamma = 1/\kappa
@@ -365,7 +403,7 @@ $$
 | Physics (Yukawa) | Agent (Bellman-Helmholtz) |
 |:-----------------|:--------------------------|
 | Scalar field $\phi$ | Value function $V(z)$ |
-| Mass $m$ | Discount rate $\kappa = -\ln\gamma$ |
+| Mass $m$ | Screening mass $\kappa = \lambda / c_{\text{info}}$ (natural units: $-\ln\gamma$) |
 | Screening length $1/m$ | Reward horizon $\ell_\gamma = 1/\kappa$ |
 | Charge density $\rho$ | Reward density $\rho_r$ |
 | Laplacian $\nabla^2$ | Laplace-Beltrami $\Delta_G$ |
@@ -383,7 +421,7 @@ $$
 (-\Delta_G + \kappa^2) V(z) = \rho_r(z)
 
 $$
-where $\Delta_G$ is the Laplace-Beltrami operator on the Riemannian manifold and $\kappa$ is the screening mass (see Remark {prf:ref}`rem-helmholtz-dimensions` for the precise dimensional relationship with the discount factor $\gamma$ and diffusivity $T_c$).
+where $\Delta_G$ is the Laplace-Beltrami operator on the Riemannian manifold and $\kappa$ is the screening mass (see Remark {prf:ref}`rem-helmholtz-dimensions` for the precise dimensional relationship with the discount factor $\gamma$ and information speed $c_{\text{info}}$).
 
 **The Degenerate Limit:**
 Discretize space on a lattice. Replace $\Delta_G$ with the graph Laplacian $\mathcal{L}_{\text{graph}}$.
@@ -397,7 +435,7 @@ V(s) = \sum_{t=0}^\infty \gamma^t \mathbb{E}[r_t | s_0 = s] = (I - \gamma P)^{-1
 $$
 This recovers the **Bellman equation** $V = r + \gamma P V$.
 
-**Result:** The "screening mass" $\kappa$ encodes the discount factor $\gamma$ (in natural units where diffusivity $T_c = 1$; see Remark {prf:ref}`rem-helmholtz-dimensions`). Standard RL is Field Theory on a discrete lattice with flat metric. The Fragile Agent solves the PDE on a learned Riemannian manifold.
+**Result:** The "screening mass" $\kappa$ encodes the discount factor $\gamma$ (in natural units where $\Delta t = c_{\text{info}} = 1$; see Remark {prf:ref}`rem-helmholtz-dimensions`). Standard RL is Field Theory on a discrete lattice with flat metric. The Fragile Agent solves the PDE on a learned Riemannian manifold.
 
 **What the generalization offers:**
 - Geometric propagation: rewards propagate as sources in a scalar field, respecting manifold curvature
@@ -412,12 +450,21 @@ This recovers the **Bellman equation** $V = r + \gamma P V$.
 The Critic computes the **Green's function** of the screened Laplacian on the latent geometry:
 
 $$
-V(z) = \int_{\partial\Omega} G_\kappa(z, z') \sigma_r(z') \, d\Sigma(z'),
+V(z) = \int_{\Omega} G_\kappa(z, z') \rho_r(z') \, d\mu_G(z') + \mathcal{B}_{\partial\Omega}[G_\kappa, V],
 
 $$
-where $G_\kappa(z, z')$ is the Green's function satisfying $(-\Delta_G + \kappa^2) G_\kappa(z, \cdot) = \delta_z$.
+where $G_\kappa(z, z')$ is the Green's function satisfying
+$(-\Delta_G + \kappa^2) G_\kappa(z, \cdot) = \delta_z$, and $\mathcal{B}_{\partial\Omega}$ encodes the
+chosen boundary condition (Dirichlet/Neumann). In the pure boundary-source case with density
+$\sigma_r$:
 
-*Remark.* The value at $z$ is a weighted integral of boundary rewards, with weights given by the Green's function. This is a superposition principle: the Helmholtz equation is linear.
+$$
+V(z) = \int_{\partial\Omega} G_\kappa(z, z') \sigma_r(z') \, d\Sigma(z').
+
+$$
+
+*Remark.* The value at $z$ is a weighted integral of bulk sources plus boundary flux, with weights
+given by the Green's function. This is a superposition principle: the Helmholtz equation is linear.
 
 :::
 
@@ -425,12 +472,17 @@ where $G_\kappa(z, z')$ is the Green's function satisfying $(-\Delta_G + \kappa^
 ::::{admonition} Physics Isomorphism: Green's Function
 :class: note
 
-**In Physics:** The Green's function $G(x, x')$ is the fundamental solution satisfying $\mathcal{L}G(x, \cdot) = \delta(x - \cdot)$ for a linear operator $\mathcal{L}$. In electrostatics, $G$ is the potential at $x$ due to a unit charge at $x'$. For the screened Laplacian, $G_\kappa \sim e^{-\kappa r}/r^{(d-2)/2}$ {cite}`jackson1999classical`.
+**In Physics:** The Green's function $G(x, x')$ is the fundamental solution satisfying
+$\mathcal{L}G(x, \cdot) = \delta(x - \cdot)$ for a linear operator $\mathcal{L}$. In electrostatics,
+$G$ is the potential at $x$ due to a unit charge at $x'$. For the screened Laplacian,
+$G_\kappa(r)$ decays as $r^{-(d-1)/2} e^{-\kappa r}$ at large $r$ (Bessel $K$ form)
+{cite}`jackson1999classical`.
 
-**In Implementation:** The Critic computes the Green's function of the screened Laplacian (Proposition {prf:ref}`prop-green-s-function-interpretation`):
+**In Implementation:** The Critic computes the Green's function of the screened Laplacian
+(Proposition {prf:ref}`prop-green-s-function-interpretation`):
 
 $$
-V(z) = \int_{\partial\Omega} G_\kappa(z, z') \sigma_r(z') \, d\Sigma(z')
+V(z) = \int_{\Omega} G_\kappa(z, z') \rho_r(z') \, d\mu_G(z') + \mathcal{B}_{\partial\Omega}[G_\kappa, V]
 
 $$
 where $(-\Delta_G + \kappa^2) G_\kappa(z, \cdot) = \delta_z$.
@@ -439,12 +491,13 @@ where $(-\Delta_G + \kappa^2) G_\kappa(z, \cdot) = \delta_z$.
 | Electrostatics | Agent (Critic) |
 |:---------------|:---------------|
 | Green's function $G(x, x')$ | Value kernel $G_\kappa(z, z')$ |
-| Charge density $\rho$ | Reward density $\sigma_r$ |
+| Charge density $\rho$ | Reward density $\rho_r$ (bulk) / $\sigma_r$ (boundary) |
 | Electrostatic potential $\phi$ | Value function $V$ |
 | Screening length $1/m$ | Reward horizon $\ell_\gamma = 1/\kappa$ |
 | Superposition principle | Linearity of Helmholtz equation |
 
-**Loss Function:** TD-error $\|(-\Delta_G + \kappa^2)V - \rho_r\|^2$ trains the critic as an implicit Green's function solver.
+**Loss Function:** TD-error $\|(-\Delta_G + \kappa^2)V - \rho_r\|^2$ trains the critic as an implicit
+Green's function solver (for the conservative component).
 ::::
 
 :::{prf:proposition} Green's Function Decay
@@ -453,7 +506,7 @@ where $(-\Delta_G + \kappa^2) G_\kappa(z, \cdot) = \delta_z$.
 On a manifold with bounded curvature, the Green's function decays exponentially:
 
 $$
-G_\kappa(z, z') \sim \frac{1}{d_G(z, z')^{(d-2)/2}} \exp\left(-\kappa \cdot d_G(z, z')\right),
+G_\kappa(z, z') \sim \frac{1}{d_G(z, z')^{(d-1)/2}} \exp\left(-\kappa \cdot d_G(z, z')\right),
 
 $$
 where $d_G$ is the geodesic distance and $d$ is the dimension.
@@ -465,12 +518,15 @@ where $d_G$ is the geodesic distance and $d$ is the dimension.
 The discount factor $\gamma$ determines a characteristic **screening length**:
 
 $$
-\ell_{\text{screen}} = \frac{1}{\kappa} = \frac{\Delta t}{-\ln\gamma}.
+\ell_{\text{screen}} = \frac{1}{\kappa} = \frac{c_{\text{info}} \Delta t}{-\ln\gamma} = \frac{c_{\text{info}}}{\lambda}.
 
 $$
-For $\gamma = 0.99$ and $\Delta t = 1$: $\ell_{\text{screen}} \approx 100$ steps.
+where $\lambda := -\ln\gamma / \Delta t$.
+For $\gamma = 0.99$ and $c_{\text{info}} \Delta t = 1$: $\ell_{\text{screen}} \approx 100$ steps.
 
 *Interpretation:* Rewards at geodesic distance $> \ell_{\text{screen}}$ from state $z$ are exponentially suppressed in their contribution to $V(z)$. This is the **temporal horizon** recast as a **spatial horizon** in latent space.
+
+*Note:* Numerical values below assume natural units ($c_{\text{info}} \Delta t = 1$).
 
 **Table 24.2.5 (Discount-Screening Correspondence).**
 
@@ -492,13 +548,13 @@ For $\gamma = 0.99$ and $\Delta t = 1$: $\ell_{\text{screen}} \approx 100$ steps
 The discount factor $\gamma$ defines a **Screening Length** with geometric meaning:
 
 $$
-\kappa = -\ln\gamma, \quad \ell_{\text{screen}} = \frac{1}{\kappa}
+\kappa = \lambda / c_{\text{info}}, \quad \ell_{\text{screen}} = \frac{1}{\kappa}
 
 $$
 Value correlations decay exponentially with **geodesic distance**:
 
 $$
-G_\kappa(z, z') \sim \frac{1}{d_G(z,z')^{(d-2)/2}} \exp\!\left(-\kappa \cdot d_G(z, z')\right)
+G_\kappa(z, z') \sim \frac{1}{d_G(z,z')^{(d-1)/2}} \exp\!\left(-\kappa \cdot d_G(z, z')\right)
 
 $$
 The Critic computes the Green's function of the screened Laplacian $(-\Delta_G + \kappa^2)^{-1}$.
@@ -887,7 +943,9 @@ The conformal coupling adds another layer: the critic also computes the Hessian 
 Notice how the implementation computes both the TD error (PDE consistency) and the geometric gradient regularization (smoothness on the manifold). Both are necessary for a well-behaved solution.
 :::
 
-We update the architecture to include the Critic as the third pillar of the Holographic Interface. The Critic is not merely a value predictor---it is the **Field Solver** that computes the potential landscape from boundary charges.
+We update the architecture to include the Critic as the third pillar of the Holographic Interface. The Critic is not
+merely a value predictor---it is the **Field Solver** that computes the potential landscape from boundary reward flux
+(scalar charges in the conservative case).
 
 ```python
 import torch

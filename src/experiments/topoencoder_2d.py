@@ -2,12 +2,7 @@
 TopoEncoder Benchmark: Attentive Atlas vs Standard VQ-VAE
 
 This script benchmarks the Attentive Atlas architecture (from fragile-index.md Section 7.8)
-against a standard VQ-VAE on the "Manifold Mixture" problem.
-
-The Manifold Mixture consists of three distinct geometric shapes:
-1. Swiss Roll (flat curvature, rolled up)
-2. Circles (topological loop)
-3. Moons (discontinuous clusters)
+against a standard VQ-VAE on MNIST or CIFAR-10 (MNIST default).
 
 Key architectural components (from mermaid diagram):
 - Cross-attention router with learnable chart query bank
@@ -21,7 +16,7 @@ Metrics reported:
 - Codebook usage (perplexity)
 
 Usage:
-    python topoencoder.py [--epochs 1000] [--n_samples 3000]
+    python src/experiments/topoencoder_2d.py --dataset mnist --epochs 1000
 
 Reference: fragile-index.md Sections 7.8, 7.10
 """
@@ -29,7 +24,7 @@ Reference: fragile-index.md Sections 7.8, 7.10
 import argparse
 import math
 import os
-from dataclasses import dataclass, field
+from dataclasses import asdict, dataclass, field
 import numpy as np
 import torch
 import torch.nn as nn
@@ -39,13 +34,13 @@ from sklearn.cluster import KMeans
 from sklearn.metrics import adjusted_mutual_info_score
 from tqdm import tqdm
 
-from dataviz import visualize_latent, visualize_results
-from fragile.datasets import (
-    compute_chart_colors,
-    find_boundary_pairs,
-    get_nightmare_data,
+from fragile.datasets import CIFAR10_CLASSES, get_cifar10_data, get_mnist_data
+from fragile.core.layers import (
+    FactorizedJumpOperator,
+    StandardVQ,
+    TopoEncoderPrimitives,
+    VanillaAE,
 )
-from fragile.core.layers import FactorizedJumpOperator, StandardVQ, TopoEncoder, VanillaAE
 from fragile.core.losses import (
     compute_code_entropy_loss,
     compute_disentangle_loss,
@@ -72,14 +67,15 @@ from fragile.core.losses import (
 class TopoEncoderConfig:
     """Configuration for the TopoEncoder benchmark."""
 
-    # Data (using 3D nightmare dataset: Swiss Roll + Sphere + Moons)
-    n_samples: int = 3000  # Total samples (divided by 3 per manifold)
-    input_dim: int = 3  # 3D input for nightmare dataset
+    # Data
+    dataset: str = "mnist"
+    n_samples: int = 3000  # Subsample size
+    input_dim: int = 784  # MNIST default (overridden for CIFAR-10)
 
     # Model architecture
     hidden_dim: int = 32
     latent_dim: int = 2  # For 2D visualization
-    num_charts: int = 3  # Match number of manifolds
+    num_charts: int = 10  # Match number of classes
     codes_per_chart: int = 32  # Better coverage (was 21)
     num_codes_standard: int = 64
 
@@ -122,7 +118,7 @@ class TopoEncoderConfig:
 
     # Supervised topology loss (Section 7.12)
     enable_supervised: bool = True
-    num_classes: int = 3
+    num_classes: int = 10
     sup_weight: float = 1.0
     sup_purity_weight: float = 0.1
     sup_balance_weight: float = 0.01
@@ -146,8 +142,9 @@ class TopoEncoderConfig:
 
     # Logging and output
     log_every: int = 100
-    save_every: int = 100  # Save visualization every N epochs (0 to disable)
+    save_every: int = 100  # Save checkpoint every N epochs (0 to disable)
     output_dir: str = "outputs/topoencoder"
+    resume_checkpoint: str = ""
 
     # Device (CUDA if available, else CPU)
     device: str = field(
@@ -188,6 +185,69 @@ def compute_matching_hidden_dim(
 
 
 # ==========================================
+# 6. CHECKPOINTING
+# ==========================================
+def _state_dict_cpu(module: nn.Module | None) -> dict[str, torch.Tensor] | None:
+    if module is None:
+        return None
+    return {k: v.detach().cpu() for k, v in module.state_dict().items()}
+
+
+def save_checkpoint(
+    path: str,
+    config: TopoEncoderConfig,
+    model_atlas: nn.Module,
+    jump_op: nn.Module,
+    metrics: dict,
+    data_snapshot: dict,
+    epoch: int,
+    model_std: nn.Module | None = None,
+    model_ae: nn.Module | None = None,
+    supervised_loss: nn.Module | None = None,
+    optimizer_atlas: optim.Optimizer | None = None,
+    optimizer_std: optim.Optimizer | None = None,
+    optimizer_ae: optim.Optimizer | None = None,
+    scheduler: optim.lr_scheduler._LRScheduler | None = None,
+) -> None:
+    """Save training checkpoint for later analysis/plotting."""
+    checkpoint = {
+        "epoch": epoch,
+        "config": asdict(config),
+        "state": {
+            "atlas": _state_dict_cpu(model_atlas),
+            "jump": _state_dict_cpu(jump_op),
+            "std": _state_dict_cpu(model_std),
+            "ae": _state_dict_cpu(model_ae),
+            "supervised": _state_dict_cpu(supervised_loss),
+        },
+        "optim": {
+            "atlas": optimizer_atlas.state_dict() if optimizer_atlas is not None else None,
+            "std": optimizer_std.state_dict() if optimizer_std is not None else None,
+            "ae": optimizer_ae.state_dict() if optimizer_ae is not None else None,
+            "scheduler": scheduler.state_dict() if scheduler is not None else None,
+        },
+        "metrics": metrics,
+        "data": data_snapshot,
+    }
+    torch.save(checkpoint, path)
+
+
+def load_checkpoint(path: str) -> dict:
+    """Load checkpoint with unsafe deserialization allowed for trusted outputs."""
+    try:
+        return torch.load(path, map_location="cpu", weights_only=False)
+    except TypeError:
+        return torch.load(path, map_location="cpu")
+
+
+def _move_optimizer_state(optimizer: optim.Optimizer, device: torch.device) -> None:
+    for state in optimizer.state.values():
+        for key, value in state.items():
+            if torch.is_tensor(value):
+                state[key] = value.to(device)
+
+
+# ==========================================
 # 7. METRICS
 # ==========================================
 def compute_ami(labels_true: np.ndarray, labels_pred: np.ndarray) -> float:
@@ -195,45 +255,66 @@ def compute_ami(labels_true: np.ndarray, labels_pred: np.ndarray) -> float:
     return float(adjusted_mutual_info_score(labels_true, labels_pred))
 
 
+def _init_loss_components() -> dict[str, list[float]]:
+    return {
+        "recon": [],
+        "vq": [],
+        "entropy": [],
+        "consistency": [],
+        # Tier 1 losses
+        "variance": [],
+        "diversity": [],
+        "separation": [],
+        # Tier 2 losses
+        "window": [],
+        "disentangle": [],
+        # Tier 3 losses
+        "orthogonality": [],
+        "code_entropy": [],
+        "per_chart_code_entropy": [],
+        # Tier 4 losses (conditional)
+        "kl_prior": [],
+        "orbit": [],
+        "vicreg_inv": [],
+        # Tier 5: Jump Operator
+        "jump": [],
+        # Supervised topology
+        "sup_total": [],
+        "sup_route": [],
+        "sup_purity": [],
+        "sup_balance": [],
+        "sup_metric": [],
+        "sup_acc": [],
+    }
+
+
+def _init_info_metrics() -> dict[str, list[float]]:
+    return {"I_XK": [], "H_K": []}
+
+
 # ==========================================
 # 8. AUGMENTATION (for invariance losses)
 # ==========================================
-def augment_nightmare(
+def augment_inputs(
     x: torch.Tensor,
+    dataset: str,
     noise_std: float = 0.1,
-    rotation_max: float = 0.3,
+    _rotation_max: float = 0.3,
 ) -> torch.Tensor:
-    """Apply random rotation + noise to 3D nightmare data.
-
-    Augmentations preserve manifold identity but change local position.
-    Used for orbit invariance and VICReg invariance losses.
+    """Apply dataset-aware augmentation.
 
     Args:
-        x: Input tensor [B, 3] (3D points)
+        x: Input tensor [B, D]
+        dataset: Dataset name
         noise_std: Standard deviation of additive noise
-        rotation_max: Maximum rotation angle in radians (±)
+        _rotation_max: Maximum rotation angle in radians (unused for images)
 
     Returns:
-        Augmented tensor [B, 3]
+        Augmented tensor [B, D]
     """
-    B = x.shape[0]
-    device = x.device
-
-    # Random rotation around Z-axis (preserves manifold structure)
-    theta = torch.rand(B, device=device) * 2 * rotation_max - rotation_max
-    cos_t = torch.cos(theta)
-    sin_t = torch.sin(theta)
-
-    # Apply rotation (Z-axis): only affects X and Y
-    x_rot = x.clone()
-    x_rot[:, 0] = cos_t * x[:, 0] - sin_t * x[:, 1]
-    x_rot[:, 1] = sin_t * x[:, 0] + cos_t * x[:, 1]
-    # x_rot[:, 2] unchanged (Z-axis)
-
-    # Add small noise
-    x_aug = x_rot + torch.randn_like(x) * noise_std
-
-    return x_aug
+    if dataset not in {"mnist", "cifar10"}:
+        raise ValueError(f"Unsupported dataset: {dataset}")
+    return x + torch.randn_like(x) * noise_std
 
 
 # ==========================================
@@ -243,66 +324,128 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
     """Train both models and return results.
 
     Returns dictionary with:
-        - std_losses: List of StandardVQ losses per epoch
-        - atlas_losses: List of TopoEncoder losses per epoch
-        - ami_score: Final AMI for TopoEncoder
-        - std_perplexity: Final perplexity for StandardVQ
-        - atlas_perplexity: Final perplexity for TopoEncoder
-        - X: Evaluation data
-        - labels: Ground truth labels for eval
-        - chart_assignments: Learned chart assignments
+        - ami_ae / ami_std / ami_atlas: Final AMI scores
+        - mse_ae / mse_std / mse_atlas: Final MSE scores
+        - std_perplexity / atlas_perplexity: Final perplexities
+        - sup_acc: Final supervised accuracy (if enabled)
+        - checkpoint_path: Path to final checkpoint
     """
     # Create output directory
-    if config.save_every > 0:
-        os.makedirs(config.output_dir, exist_ok=True)
-        print(f"Saving training progress to: {config.output_dir}/")
+    os.makedirs(config.output_dir, exist_ok=True)
+    print(f"Saving checkpoints to: {config.output_dir}/")
 
-    # Generate data (3D nightmare dataset with rainbow colors)
-    X, labels, colors = get_nightmare_data(config.n_samples)
-    dataset_ids = {
-        "swiss_roll": 0,
-        "sphere": 1,
-        "moons": 2,
-    }
-    labels = labels.astype(np.int64)
-    print(f"Generated {len(X)} points from 3 manifolds (Swiss Roll, Sphere, Moons)")
-    print(
-        "Dataset IDs: swiss_roll=0, sphere=1, moons=2"
-    )
-    if not (0.0 <= config.test_split < 1.0):
-        raise ValueError("test_split must be in [0.0, 1.0).")
+    resume_state = None
+    resume_metrics: dict = {}
+    resume_optim: dict = {}
+    start_epoch = 0
 
-    n_total = X.shape[0]
-    test_size = max(1, int(n_total * config.test_split)) if config.test_split > 0 else 0
-    if test_size >= n_total:
-        test_size = max(1, n_total - 1)
-    train_size = n_total - test_size
-    perm = torch.randperm(n_total)
-    train_idx = perm[:train_size]
-    test_idx = perm[train_size:]
-    train_idx_np = train_idx.numpy()
-    test_idx_np = test_idx.numpy()
+    if config.resume_checkpoint:
+        checkpoint = load_checkpoint(config.resume_checkpoint)
+        resume_state = checkpoint.get("state", {})
+        resume_metrics = checkpoint.get("metrics", {})
+        resume_optim = checkpoint.get("optim", {})
+        data_snapshot = checkpoint.get("data", {})
+        start_epoch = int(checkpoint.get("epoch", 0)) + 1
 
-    X_train = X[train_idx]
-    X_test = X[test_idx] if test_size > 0 else X
-    labels_train = labels[train_idx_np]
-    labels_test = labels[test_idx_np] if test_size > 0 else labels
-    colors_train = colors[train_idx_np]
-    colors_test = colors[test_idx_np] if test_size > 0 else colors
+        X_train = data_snapshot["X_train"]
+        X_test = data_snapshot["X_test"]
+        labels_train = data_snapshot["labels_train"]
+        labels_test = data_snapshot["labels_test"]
+        colors_train = data_snapshot["colors_train"]
+        colors_test = data_snapshot["colors_test"]
+        dataset_ids = data_snapshot.get("dataset_ids", {})
+        dataset_name = data_snapshot.get("dataset_name", config.dataset)
 
-    print(
-        f"Train/test split: {len(X_train)}/{len(X_test)} "
-        f"(test={config.test_split:.2f})"
-    )
+        labels_full = np.concatenate([labels_train, labels_test]) if len(labels_test) else labels_train
+        config.input_dim = X_train.shape[1]
+
+        print(f"Resuming from checkpoint: {config.resume_checkpoint}")
+        print(f"Loaded {len(X_train) + len(X_test)} samples from {dataset_name}")
+        print(f"Input dim: {config.input_dim}")
+        if start_epoch > config.epochs:
+            print(
+                f"Checkpoint at epoch {start_epoch - 1} exceeds configured epochs "
+                f"({config.epochs}). Nothing to do."
+            )
+            return {
+                "ami_ae": resume_metrics.get("ami_ae", 0.0),
+                "ami_std": resume_metrics.get("ami_std", 0.0),
+                "ami_atlas": resume_metrics.get("ami_atlas", 0.0),
+                "mse_ae": resume_metrics.get("mse_ae", 0.0),
+                "mse_std": resume_metrics.get("mse_std", 0.0),
+                "mse_atlas": resume_metrics.get("mse_atlas", 0.0),
+                "sup_acc": resume_metrics.get("sup_acc", 0.0),
+                "atlas_perplexity": resume_metrics.get("atlas_perplexity", 0.0),
+                "std_perplexity": resume_metrics.get("std_perplexity", 0.0),
+                "checkpoint_path": config.resume_checkpoint,
+            }
+    else:
+        # Generate data (MNIST or CIFAR-10)
+        if config.dataset == "mnist":
+            X, labels, colors = get_mnist_data(config.n_samples)
+            dataset_ids = {str(i): i for i in range(10)}
+            dataset_name = "MNIST"
+        elif config.dataset == "cifar10":
+            X, labels, colors = get_cifar10_data(config.n_samples)
+            dataset_ids = {name: idx for idx, name in enumerate(CIFAR10_CLASSES)}
+            dataset_name = "CIFAR-10"
+        else:
+            raise ValueError(f"Unsupported dataset: {config.dataset}")
+
+        config.input_dim = X.shape[1]
+        labels = labels.astype(np.int64)
+        labels_full = labels
+        print(f"Loaded {len(X)} samples from {dataset_name}")
+        print(f"Input dim: {config.input_dim}")
+        if not (0.0 <= config.test_split < 1.0):
+            raise ValueError("test_split must be in [0.0, 1.0).")
+
+        n_total = X.shape[0]
+        test_size = max(1, int(n_total * config.test_split)) if config.test_split > 0 else 0
+        if test_size >= n_total:
+            test_size = max(1, n_total - 1)
+        train_size = n_total - test_size
+        perm = torch.randperm(n_total)
+        train_idx = perm[:train_size]
+        test_idx = perm[train_size:]
+        train_idx_np = train_idx.numpy()
+        test_idx_np = test_idx.numpy()
+
+        X_train = X[train_idx]
+        X_test = X[test_idx] if test_size > 0 else X
+        labels_train = labels[train_idx_np]
+        labels_test = labels[test_idx_np] if test_size > 0 else labels
+        colors_train = colors[train_idx_np]
+        colors_test = colors[test_idx_np] if test_size > 0 else colors
+
+        print(
+            f"Train/test split: {len(X_train)}/{len(X_test)} "
+            f"(test={config.test_split:.2f})"
+        )
+
+        X_train_cpu = X_train.clone()
+        X_test_cpu = X_test.clone()
+        data_snapshot = {
+            "X_train": X_train_cpu,
+            "X_test": X_test_cpu,
+            "labels_train": labels_train,
+            "labels_test": labels_test,
+            "colors_train": colors_train,
+            "colors_test": colors_test,
+            "dataset_ids": dataset_ids,
+            "dataset_name": dataset_name,
+        }
 
     # Create TopoEncoder first to get its parameter count
-    model_atlas = TopoEncoder(
+    model_atlas = TopoEncoderPrimitives(
         input_dim=config.input_dim,
         hidden_dim=config.hidden_dim,
         latent_dim=config.latent_dim,
         num_charts=config.num_charts,
         codes_per_chart=config.codes_per_chart,
     )
+    if resume_state is not None and resume_state.get("atlas") is not None:
+        model_atlas.load_state_dict(resume_state["atlas"])
     topo_params = count_parameters(model_atlas)
 
     # Create StandardVQ with matching parameter count (fair comparison)
@@ -311,18 +454,23 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
     std_params = 0
     std_hidden_dim = 0
     if not config.disable_vq:
-        std_hidden_dim = compute_matching_hidden_dim(
-            target_params=topo_params,
-            input_dim=config.input_dim,
-            latent_dim=config.latent_dim,
-            num_codes=config.num_codes_standard,
-        )
+        if resume_metrics.get("std_hidden_dim"):
+            std_hidden_dim = int(resume_metrics["std_hidden_dim"])
+        else:
+            std_hidden_dim = compute_matching_hidden_dim(
+                target_params=topo_params,
+                input_dim=config.input_dim,
+                latent_dim=config.latent_dim,
+                num_codes=config.num_codes_standard,
+            )
         model_std = StandardVQ(
             input_dim=config.input_dim,
             hidden_dim=std_hidden_dim,
             latent_dim=config.latent_dim,
             num_codes=config.num_codes_standard,
         )
+        if resume_state is not None and resume_state.get("std") is not None:
+            model_std.load_state_dict(resume_state["std"])
         std_params = count_parameters(model_std)
 
     # Create VanillaAE with similar parameter count (reconstruction baseline)
@@ -331,17 +479,22 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
     ae_params = 0
     ae_hidden_dim = 0
     if not config.disable_ae:
-        ae_hidden_dim = compute_matching_hidden_dim(
-            target_params=topo_params,
-            input_dim=config.input_dim,
-            latent_dim=config.latent_dim,
-            num_codes=0,  # No codebook in AE
-        )
+        if resume_metrics.get("ae_hidden_dim"):
+            ae_hidden_dim = int(resume_metrics["ae_hidden_dim"])
+        else:
+            ae_hidden_dim = compute_matching_hidden_dim(
+                target_params=topo_params,
+                input_dim=config.input_dim,
+                latent_dim=config.latent_dim,
+                num_codes=0,  # No codebook in AE
+            )
         model_ae = VanillaAE(
             input_dim=config.input_dim,
             hidden_dim=ae_hidden_dim,
             latent_dim=config.latent_dim,
         )
+        if resume_state is not None and resume_state.get("ae") is not None:
+            model_ae.load_state_dict(resume_state["ae"])
         ae_params = count_parameters(model_ae)
 
     print(f"\nModel Parameters (fair comparison):")
@@ -372,11 +525,13 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
         latent_dim=config.latent_dim,
         global_rank=config.jump_global_rank,
     ).to(device)
+    if resume_state is not None and resume_state.get("jump") is not None:
+        jump_op.load_state_dict(resume_state["jump"])
     print(f"  Jump Operator: {count_parameters(jump_op):,} params")
 
     # Supervised topology loss (chart-to-class mapping)
     supervised_loss = None
-    num_classes = int(labels.max()) + 1 if labels.size else config.num_classes
+    num_classes = int(labels_full.max()) + 1 if labels_full.size else config.num_classes
     if config.enable_supervised:
         supervised_loss = SupervisedTopologyLoss(
             num_charts=config.num_charts,
@@ -387,6 +542,8 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
             margin=config.sup_metric_margin,
             temperature=config.sup_temperature,
         ).to(device)
+        if resume_state is not None and resume_state.get("supervised") is not None:
+            supervised_loss.load_state_dict(resume_state["supervised"])
         print(
             "  Supervised Topology: "
             f"classes={num_classes}, "
@@ -412,6 +569,19 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
             opt_atlas, T_max=config.epochs, eta_min=config.min_lr
         )
 
+    if resume_optim:
+        if opt_atlas is not None and resume_optim.get("atlas") is not None:
+            opt_atlas.load_state_dict(resume_optim["atlas"])
+            _move_optimizer_state(opt_atlas, device)
+        if opt_std is not None and resume_optim.get("std") is not None:
+            opt_std.load_state_dict(resume_optim["std"])
+            _move_optimizer_state(opt_std, device)
+        if opt_ae is not None and resume_optim.get("ae") is not None:
+            opt_ae.load_state_dict(resume_optim["ae"])
+            _move_optimizer_state(opt_ae, device)
+        if scheduler is not None and resume_optim.get("scheduler") is not None:
+            scheduler.load_state_dict(resume_optim["scheduler"])
+
     # Create data loader for minibatching (data already on device)
     from torch.utils.data import DataLoader, TensorDataset
     labels_train_t = torch.from_numpy(labels_train).long().to(device)
@@ -423,52 +593,30 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
     dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
 
     # Training history
-    std_losses = []
-    atlas_losses = []
-    ae_losses = []  # VanillaAE baseline
-    loss_components: dict[str, list[float]] = {
-        "recon": [],
-        "vq": [],
-        "entropy": [],
-        "consistency": [],
-        # Tier 1 losses
-        "variance": [],
-        "diversity": [],
-        "separation": [],
-        # Tier 2 losses
-        "window": [],
-        "disentangle": [],
-        # Tier 3 losses
-        "orthogonality": [],
-        "code_entropy": [],
-        "per_chart_code_entropy": [],
-        # Tier 4 losses (conditional)
-        "kl_prior": [],
-        "orbit": [],
-        "vicreg_inv": [],
-        # Tier 5: Jump Operator
-        "jump": [],
-        # Supervised topology
-        "sup_total": [],
-        "sup_route": [],
-        "sup_purity": [],
-        "sup_balance": [],
-        "sup_metric": [],
-        "sup_acc": [],
-    }
-    info_metrics: dict[str, list[float]] = {
-        "I_XK": [],
-        "H_K": [],
-    }
+    std_losses = list(resume_metrics.get("std_losses", []))
+    atlas_losses = list(resume_metrics.get("atlas_losses", []))
+    ae_losses = list(resume_metrics.get("ae_losses", []))  # VanillaAE baseline
+    loss_components = _init_loss_components()
+    if resume_metrics.get("loss_components"):
+        for key, values in resume_metrics["loss_components"].items():
+            loss_components.setdefault(key, [])
+            loss_components[key] = list(values)
+    info_metrics = _init_info_metrics()
+    if resume_metrics.get("info_metrics"):
+        for key, values in resume_metrics["info_metrics"].items():
+            info_metrics.setdefault(key, [])
+            info_metrics[key] = list(values)
 
     print("=" * 60)
     print("Training TopoEncoder (Attentive Atlas)")
     print(f"  Epochs: {config.epochs}, LR: {config.lr}, Batch size: {batch_size}")
     print(f"  Charts: {config.num_charts}, Codes/chart: {config.codes_per_chart}")
     print(f"  λ: entropy={config.entropy_weight}, consistency={config.consistency_weight}")
+    if start_epoch > 0:
+        print(f"  Resuming at epoch {start_epoch}")
     print("=" * 60)
 
-    for epoch in tqdm(range(config.epochs + 1), desc="Training", unit="epoch"):
+    for epoch in tqdm(range(start_epoch, config.epochs + 1), desc="Training", unit="epoch"):
         # Accumulate batch losses for epoch average
         epoch_std_loss = 0.0
         epoch_atlas_loss = 0.0
@@ -543,8 +691,11 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
 
             if config.orbit_weight > 0 or config.vicreg_inv_weight > 0:
                 # Single augmented forward pass (shared between both losses)
-                x_aug = augment_nightmare(
-                    batch_X, config.augment_noise_std, config.augment_rotation_max
+                x_aug = augment_inputs(
+                    batch_X,
+                    config.dataset,
+                    config.augment_noise_std,
+                    config.augment_rotation_max,
                 )
                 _, _, _, _, enc_w_aug, z_geo_aug, _, _, _ = model_atlas.encoder(x_aug)
 
@@ -658,7 +809,7 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
         if scheduler is not None:
             scheduler.step()
 
-        # Logging and visualization (matching embed_fragile.py style)
+        # Logging and checkpointing (matching embed_fragile.py style)
         should_log = epoch % config.log_every == 0 or epoch == config.epochs
         should_save = config.save_every > 0 and (
             epoch % config.save_every == 0 or epoch == config.epochs
@@ -770,18 +921,38 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
             print(f"  Metrics: AMI={ami:.4f} perplexity={perplexity:.2f}/{config.num_charts}")
             print("-" * 60)
 
-            # Save visualization
+            # Save checkpoint
             if should_save:
-                save_path = f"{config.output_dir}/topo_epoch_{epoch:05d}.png"
-                visualize_latent(
-                    model_atlas,
-                    X_test,
-                    colors_test,
-                    labels_test,
+                save_path = f"{config.output_dir}/topo_epoch_{epoch:05d}.pt"
+                checkpoint_metrics = {
+                    "std_losses": std_losses,
+                    "atlas_losses": atlas_losses,
+                    "ae_losses": ae_losses,
+                    "loss_components": loss_components,
+                    "info_metrics": info_metrics,
+                    "ami_atlas": ami,
+                    "atlas_perplexity": perplexity,
+                    "chart_assignments": chart_assignments,
+                    "std_hidden_dim": std_hidden_dim,
+                    "ae_hidden_dim": ae_hidden_dim,
+                }
+                save_checkpoint(
                     save_path,
+                    config,
+                    model_atlas,
+                    jump_op,
+                    checkpoint_metrics,
+                    data_snapshot,
                     epoch,
-                    jump_op=jump_op,
+                    model_std=model_std,
+                    model_ae=model_ae,
+                    supervised_loss=supervised_loss,
+                    optimizer_atlas=opt_atlas,
+                    optimizer_std=opt_std,
+                    optimizer_ae=opt_ae,
+                    scheduler=scheduler,
                 )
+                print(f"Checkpoint saved: {save_path}")
 
     # Final evaluation
     print("\n" + "=" * 50)
@@ -847,7 +1018,7 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
             print("  AE has best reconstruction (expected - no bottleneck)")
             print("  TopoEncoder beats VQ on reconstruction (atlas routing helps)")
         if ami_atlas > ami_ae and ami_atlas > ami_std:
-            print("  TopoEncoder has best topology discovery (charts match manifolds)")
+            print("  TopoEncoder has best topology discovery (charts match labels)")
         if ami_ae < ami_atlas:
             print("  AE fails at topology despite good reconstruction (entangled latent)")
 
@@ -855,26 +1026,13 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
     if supervised_loss is not None:
         print(f"Supervised Accuracy: {sup_acc:.4f}")
 
-    # Save final visualization
-    if config.save_every > 0:
-        final_path = f"{config.output_dir}/topo_final.png"
-        visualize_latent(
-            model_atlas,
-            X_test,
-            colors_test,
-            labels_test,
-            final_path,
-            epoch=None,
-            jump_op=jump_op,
-        )
-        print(f"\nFinal visualization saved to: {final_path}")
-
-    # Results dict uses already-computed reconstructions from final evaluation
-    return {
+    final_checkpoint = f"{config.output_dir}/topo_final.pt"
+    final_metrics = {
         "std_losses": std_losses,
         "atlas_losses": atlas_losses,
         "ae_losses": ae_losses,
         "loss_components": loss_components,
+        "info_metrics": info_metrics,
         # AMI scores
         "ami_ae": ami_ae,
         "ami_std": ami_std,
@@ -887,27 +1045,39 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
         "std_perplexity": std_perplexity,
         "atlas_perplexity": atlas_perplexity,
         "sup_acc": sup_acc,
-        # Data
-        "X": X_test,
-        "labels": labels_test,
-        "colors": colors_test,
-        "X_train": X_train,
-        "X_test": X_test,
-        "labels_train": labels_train,
-        "labels_test": labels_test,
-        "colors_train": colors_train,
-        "colors_test": colors_test,
         "chart_assignments": chart_assignments,
-        "dataset_ids": dataset_ids,
-        # For reconstruction comparison
-        "recon_ae": recon_ae_final,
-        "recon_std": recon_std_final,
-        "recon_atlas": recon_atlas_final,
-        # Models (for further analysis)
-        "model_ae": model_ae,
-        "model_std": model_std,
-        "model_atlas": model_atlas,
-        "config": config,
+        "std_hidden_dim": std_hidden_dim,
+        "ae_hidden_dim": ae_hidden_dim,
+    }
+    save_checkpoint(
+        final_checkpoint,
+        config,
+        model_atlas,
+        jump_op,
+        final_metrics,
+        data_snapshot,
+        config.epochs,
+        model_std=model_std,
+        model_ae=model_ae,
+        supervised_loss=supervised_loss,
+        optimizer_atlas=opt_atlas,
+        optimizer_std=opt_std,
+        optimizer_ae=opt_ae,
+        scheduler=scheduler,
+    )
+    print(f"\nFinal checkpoint saved to: {final_checkpoint}")
+
+    return {
+        "ami_ae": ami_ae,
+        "ami_std": ami_std,
+        "ami_atlas": ami_atlas,
+        "mse_ae": mse_ae,
+        "mse_std": mse_std,
+        "mse_atlas": mse_atlas,
+        "sup_acc": sup_acc,
+        "atlas_perplexity": atlas_perplexity,
+        "std_perplexity": std_perplexity,
+        "checkpoint_path": final_checkpoint,
     }
 
 
@@ -923,6 +1093,13 @@ def main():
         "--epochs", type=int, default=1000, help="Number of training epochs"
     )
     parser.add_argument(
+        "--dataset",
+        type=str,
+        default="mnist",
+        choices=["mnist", "cifar10"],
+        help="Dataset to use (mnist or cifar10)",
+    )
+    parser.add_argument(
         "--lr", type=float, default=1e-3, help="Learning rate (default: 1e-3)"
     )
     parser.add_argument(
@@ -935,7 +1112,7 @@ def main():
         "--n_samples",
         type=int,
         default=3000,
-        help="Total samples (divided by 3 per manifold)",
+        help="Number of samples to use",
     )
     parser.add_argument(
         "--test_split",
@@ -946,8 +1123,8 @@ def main():
     parser.add_argument(
         "--num_charts",
         type=int,
-        default=3,
-        help="Number of atlas charts",
+        default=10,
+        help="Number of atlas charts (default: 10 for MNIST/CIFAR-10)",
     )
     parser.add_argument(
         "--codes_per_chart",
@@ -971,13 +1148,19 @@ def main():
         "--save_every",
         type=int,
         default=100,
-        help="Save visualization every N epochs (0 to disable)",
+        help="Save checkpoint every N epochs (0 to disable)",
     )
     parser.add_argument(
         "--output_dir",
         type=str,
-        default="outputs/topoencoder",
-        help="Output directory for visualizations",
+        default=None,
+        help="Output directory for checkpoints",
+    )
+    parser.add_argument(
+        "--resume",
+        type=str,
+        default="",
+        help="Path to checkpoint to resume training",
     )
     parser.add_argument("--seed", type=int, default=42, help="Random seed")
     parser.add_argument(
@@ -1140,56 +1323,71 @@ def main():
     torch.manual_seed(args.seed)
     np.random.seed(args.seed)
 
-    # Create config
-    config = TopoEncoderConfig(
-        epochs=args.epochs,
-        lr=args.lr,
-        batch_size=args.batch_size,
-        n_samples=args.n_samples,
-        test_split=args.test_split,
-        num_charts=args.num_charts,
-        codes_per_chart=args.codes_per_chart,
-        hidden_dim=args.hidden_dim,
-        log_every=args.log_every,
-        save_every=args.save_every,
-        output_dir=args.output_dir,
-        device=args.device,
-        # Tier 3 losses
-        per_chart_code_entropy_weight=args.per_chart_code_entropy_weight,
-        code_entropy_weight=args.code_entropy_weight,
-        # Tier 4 losses
-        kl_prior_weight=args.kl_prior_weight,
-        orbit_weight=args.orbit_weight,
-        vicreg_inv_weight=args.vicreg_inv_weight,
-        augment_noise_std=args.augment_noise_std,
-        augment_rotation_max=args.augment_rotation_max,
-        # Training dynamics
-        use_scheduler=args.use_scheduler,
-        min_lr=args.min_lr,
-        grad_clip=args.grad_clip,
-        # Tier 5: Jump Operator
-        jump_weight=args.jump_weight,
-        jump_warmup=args.jump_warmup,
-        jump_ramp_end=args.jump_ramp_end,
-        jump_global_rank=args.jump_global_rank,
-        # Supervised topology loss
-        enable_supervised=not args.disable_supervised,
-        sup_weight=args.sup_weight,
-        sup_purity_weight=args.sup_purity_weight,
-        sup_balance_weight=args.sup_balance_weight,
-        sup_metric_weight=args.sup_metric_weight,
-        sup_metric_margin=args.sup_metric_margin,
-        sup_temperature=args.sup_temperature,
-        # Benchmark control
-        disable_ae=args.disable_ae,
-        disable_vq=args.disable_vq,
-    )
+    if args.resume:
+        checkpoint = load_checkpoint(args.resume)
+        config = TopoEncoderConfig(**checkpoint["config"])
+        config.resume_checkpoint = args.resume
+        config.epochs = max(config.epochs, args.epochs)
+        config.log_every = args.log_every
+        config.save_every = args.save_every
+        if args.output_dir is not None:
+            config.output_dir = args.output_dir
+        config.device = args.device
+    else:
+        output_dir = args.output_dir or "outputs/topoencoder"
+        config = TopoEncoderConfig(
+            dataset=args.dataset,
+            epochs=args.epochs,
+            lr=args.lr,
+            batch_size=args.batch_size,
+            n_samples=args.n_samples,
+            test_split=args.test_split,
+            num_charts=args.num_charts,
+            codes_per_chart=args.codes_per_chart,
+            hidden_dim=args.hidden_dim,
+            log_every=args.log_every,
+            save_every=args.save_every,
+            output_dir=output_dir,
+            device=args.device,
+            # Tier 3 losses
+            per_chart_code_entropy_weight=args.per_chart_code_entropy_weight,
+            code_entropy_weight=args.code_entropy_weight,
+            # Tier 4 losses
+            kl_prior_weight=args.kl_prior_weight,
+            orbit_weight=args.orbit_weight,
+            vicreg_inv_weight=args.vicreg_inv_weight,
+            augment_noise_std=args.augment_noise_std,
+            augment_rotation_max=args.augment_rotation_max,
+            # Training dynamics
+            use_scheduler=args.use_scheduler,
+            min_lr=args.min_lr,
+            grad_clip=args.grad_clip,
+            # Tier 5: Jump Operator
+            jump_weight=args.jump_weight,
+            jump_warmup=args.jump_warmup,
+            jump_ramp_end=args.jump_ramp_end,
+            jump_global_rank=args.jump_global_rank,
+            # Supervised topology loss
+            enable_supervised=not args.disable_supervised,
+            sup_weight=args.sup_weight,
+            sup_purity_weight=args.sup_purity_weight,
+            sup_balance_weight=args.sup_balance_weight,
+            sup_metric_weight=args.sup_metric_weight,
+            sup_metric_margin=args.sup_metric_margin,
+            sup_temperature=args.sup_temperature,
+            # Benchmark control
+            disable_ae=args.disable_ae,
+            disable_vq=args.disable_vq,
+        )
 
     print("=" * 50)
     print("TopoEncoder Benchmark")
     print("Attentive Atlas vs Standard VQ-VAE")
     print("=" * 50)
     print(f"\nConfiguration:")
+    print(f"  Dataset: {config.dataset}")
+    if config.resume_checkpoint:
+        print(f"  Resume: {config.resume_checkpoint}")
     print(f"  Epochs: {config.epochs}, Batch size: {config.batch_size}")
     print(f"  Total samples: {config.n_samples}")
     print(f"  Test split: {config.test_split}")
@@ -1202,11 +1400,6 @@ def main():
 
     # Run benchmark
     results = train_benchmark(config)
-
-    # Save final comparison visualization
-    os.makedirs(config.output_dir, exist_ok=True)
-    final_path = f"{config.output_dir}/benchmark_result.png"
-    visualize_results(results, save_path=final_path)
 
     # Summary
     print("\n" + "=" * 50)
@@ -1225,7 +1418,8 @@ def main():
         print(f"TopoEncoder beats VanillaAE ({ami_atlas:.3f} > {ami_ae:.3f}) - better topology!")
     else:
         print(f"VanillaAE beats TopoEncoder ({ami_ae:.3f} > {ami_atlas:.3f}) - K-Means works well here")
-    print(f"\nOutput saved to: {config.output_dir}/")
+    print(f"\nFinal checkpoint saved to: {results['checkpoint_path']}")
+    print(f"Output directory: {config.output_dir}/")
 
 
 if __name__ == "__main__":

@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Optional, Tuple
 
+import math
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -10,7 +11,7 @@ import torch.nn.functional as F
 
 @dataclass
 class GeodesicConfig:
-    """Configuration for gauge-covariant attention."""
+    """Configuration for GeodesicCrossAttention."""
 
     d_model: int = 256
     d_latent: int = 64
@@ -26,116 +27,132 @@ class GeodesicConfig:
 
 
 class WilsonLineApprox(nn.Module):
-    """Linearized Wilson line approximation."""
+    """Approximate Wilson line for parallel transport."""
 
-    def __init__(self, config: GeodesicConfig, d_k: int) -> None:
+    def __init__(self, config: GeodesicConfig, d_k: int, d_conn: int = 8) -> None:
         super().__init__()
-        self.config = config
         self.d_k = d_k
+        self.d_conn = min(d_conn, config.d_latent)
 
-        self.theta_binding = nn.Parameter(torch.randn(d_k, d_k, config.d_latent) * 0.01)
-        self.theta_error = nn.Parameter(torch.randn(d_k, d_k, config.d_latent) * 0.01)
-        self.theta_opportunity = nn.Parameter(torch.randn(d_k, d_k, config.d_latent) * 0.01)
+        self.delta_proj = nn.Linear(config.d_latent, self.d_conn, bias=False)
 
-        eye = torch.eye(d_k)
-        self.register_buffer("identity", eye)
+        self.basis_binding = nn.Parameter(0.01 * torch.randn(self.d_conn, d_k, d_k))
+        self.basis_error = nn.Parameter(0.01 * torch.randn(self.d_conn, d_k, d_k))
+        self.basis_opportunity = nn.Parameter(0.01 * torch.randn(self.d_conn, d_k, d_k))
+
+        self.g_s = config.g_s
+        self.g_2 = config.g_2
+        self.g_1 = config.g_1
 
     def forward(self, z_query: torch.Tensor, z_key: torch.Tensor) -> torch.Tensor:
-        """Compute Wilson line transport matrices.
+        """Compute Wilson line correction factors.
 
         Args:
             z_query: [B, d_latent] query positions
             z_key: [B, N, d_latent] key positions
 
         Returns:
-            U: [B, N, d_k, d_k] transport matrices
+            U: [B, N, d_k, d_k] approximate transport matrices
         """
-        delta = z_query.unsqueeze(1) - z_key  # [B, N, d_latent]
-        theta = (
-            self.config.g_s * self.theta_binding
-            + self.config.g_2 * self.theta_error
-            + self.config.g_1 * self.theta_opportunity
-        )  # [d_k, d_k, d_latent]
+        _, n, _ = z_key.shape
 
-        A = torch.einsum("bnd,ijd->bnij", delta, theta)  # [B, N, d_k, d_k]
-        U = self.identity.unsqueeze(0).unsqueeze(0) - A  # [B, N, d_k, d_k]
-        return U
+        delta_z = z_query.unsqueeze(1) - z_key  # [B, N, d_latent]
+        coeff = self.delta_proj(delta_z)  # [B, N, d_conn]
+
+        def skew(basis: torch.Tensor) -> torch.Tensor:
+            return basis - basis.transpose(-1, -2)
+
+        h_mat = (
+            self.g_s * torch.einsum("bnr,rij->bnij", coeff, skew(self.basis_binding))
+            + self.g_2 * torch.einsum("bnr,rij->bnij", coeff, skew(self.basis_error))
+            + self.g_1 * torch.einsum("bnr,rij->bnij", coeff, skew(self.basis_opportunity))
+        )
+
+        identity = torch.eye(self.d_k, device=z_key.device, dtype=z_key.dtype)
+        identity = identity.expand(z_query.shape[0], n, self.d_k, self.d_k)
+        return identity + h_mat
 
 
 class ConformalMetric(nn.Module):
-    """Poincare disk conformal metric utilities."""
+    """Poincare ball/disk conformal metric utilities."""
 
     def __init__(self, epsilon: float = 1e-6) -> None:
         super().__init__()
         self.epsilon = epsilon
 
     def conformal_factor(self, z: torch.Tensor) -> torch.Tensor:
-        """Compute conformal factor.
+        """Compute conformal factor lambda(z).
 
         Args:
             z: [B, d] positions
 
         Returns:
-            lambda_z: [B, 1] conformal factor
+            lambda_z: [B, 1] conformal factors
         """
-        norm_sq = (z**2).sum(dim=-1, keepdim=True)  # [B, 1]
-        lambda_z = 2.0 / (1.0 - norm_sq + self.epsilon)  # [B, 1]
+        r_sq = (z**2).sum(dim=-1, keepdim=True)
+        r_sq = torch.clamp(r_sq, max=1.0 - self.epsilon)
+        lambda_z = 2.0 / (1.0 - r_sq + self.epsilon)
         return lambda_z
 
     def metric(self, z: torch.Tensor) -> torch.Tensor:
-        """Compute metric tensor.
-
-        Args:
-            z: [B, d] positions
+        """Compute metric tensor G_ij(z).
 
         Returns:
-            g: [B, d, d] metric tensor
+            g: [B, d, d] metric tensors
         """
-        lambda_z = self.conformal_factor(z)  # [B, 1]
-        eye = torch.eye(z.shape[-1], device=z.device, dtype=z.dtype)  # [d, d]
-        g = (lambda_z**2).unsqueeze(-1) * eye  # [B, d, d]
-        return g
+        _, d = z.shape
+        lambda_sq = self.conformal_factor(z) ** 2
+        eye = torch.eye(d, device=z.device, dtype=z.dtype)
+        return lambda_sq.unsqueeze(-1) * eye
 
     def metric_inv(self, z: torch.Tensor) -> torch.Tensor:
-        """Compute inverse metric tensor.
-
-        Args:
-            z: [B, d] positions
+        """Compute inverse metric tensor G^{ij}(z).
 
         Returns:
-            g_inv: [B, d, d] inverse metric
+            g_inv: [B, d, d] inverse metric tensors
         """
-        lambda_z = self.conformal_factor(z)  # [B, 1]
-        eye = torch.eye(z.shape[-1], device=z.device, dtype=z.dtype)  # [d, d]
-        g_inv = (lambda_z**-2).unsqueeze(-1) * eye  # [B, d, d]
-        return g_inv
+        _, d = z.shape
+        lambda_sq_inv = 1.0 / (self.conformal_factor(z) ** 2 + self.epsilon)
+        eye = torch.eye(d, device=z.device, dtype=z.dtype)
+        return lambda_sq_inv.unsqueeze(-1) * eye
 
     def temperature(self, z: torch.Tensor, d_k: int) -> torch.Tensor:
-        """Compute position-dependent temperature.
+        """Compute position-dependent attention temperature.
 
         Args:
             z: [B, d] positions
             d_k: key dimension
 
         Returns:
-            tau: [B, 1] temperature
+            tau: [B, 1] temperature values
         """
-        lambda_z = self.conformal_factor(z)  # [B, 1]
-        tau = (d_k**0.5) / lambda_z  # [B, 1]
-        return tau
+        lambda_z = self.conformal_factor(z)
+        return math.sqrt(d_k) / lambda_z
 
 
 class ChristoffelQuery(nn.Module):
-    """Geodesic query projection with Christoffel terms."""
+    """Geometric query projection encoding Christoffel symbols."""
 
     def __init__(self, d_in: int, d_out: int, d_latent: int) -> None:
         super().__init__()
-        self.w_x = nn.Linear(d_in, d_out)
-        self.w_z = nn.Linear(d_latent, d_out)
-        self.w_v = nn.Linear(d_in, d_out)
+        self.W_Q = nn.Linear(d_in, d_out, bias=False)
+        self.W_Qz = nn.Linear(d_latent, d_out, bias=False)
+        self.W_Qv = nn.Linear(d_in, d_out, bias=False)
 
-        self.w_gamma = nn.Parameter(torch.randn(d_out, d_latent, d_latent) * 0.01)
-        self.w_zv = nn.Parameter(torch.randn(d_out, d_latent, d_latent) * 0.01)
+        self.W_Q_gamma = nn.Parameter(torch.zeros(d_out, d_latent, d_latent))
+        self._init_christoffel(d_latent)
+        self.W_Qzv = nn.Parameter(torch.zeros(d_out, d_latent, d_latent))
+
+    def _init_christoffel(self, d_latent: int) -> None:
+        """Initialize W_Q_gamma with a Poincare-inspired pattern."""
+        with torch.no_grad():
+            for k in range(min(d_latent, self.W_Q_gamma.shape[0])):
+                for i in range(d_latent):
+                    for j in range(d_latent):
+                        if i == k or j == k:
+                            self.W_Q_gamma[k, i, j] = 0.01
+                        if i == j:
+                            self.W_Q_gamma[k, i, j] -= 0.01
 
     def forward(
         self,
@@ -148,41 +165,44 @@ class ChristoffelQuery(nn.Module):
 
         Args:
             x: [B, d_in] features
-            z_geom: [B, d_latent] position
+            z_geom: [B, d_latent] positions
             v_feat: [B, d_in] optional velocity features
             v_geom: [B, d_latent] optional velocity
 
         Returns:
-            q: [B, d_out] query vector
+            q: [B, d_out] query vectors
         """
-        q_x = self.w_x(x)  # [B, d_out]
-        q_z = self.w_z(z_geom)  # [B, d_out]
-        q_v = self.w_v(v_feat) if v_feat is not None else torch.zeros_like(q_x)  # [B, d_out]
+        q = self.W_Q(x) + self.W_Qz(z_geom)
+        if v_feat is not None:
+            q = q + self.W_Qv(v_feat)
 
-        q_gamma = torch.einsum("bi,oij,bj->bo", z_geom, self.w_gamma, z_geom)  # [B, d_out]
+        d_latent = min(z_geom.shape[-1], self.W_Q_gamma.shape[-1])
+        z_trunc = z_geom[..., :d_latent]
+        q_gamma = torch.einsum("aij,bi,bj->ba", self.W_Q_gamma[:, :d_latent, :d_latent], z_trunc, z_trunc)
+        q = q + q_gamma
+
         if v_geom is not None:
-            q_zv = torch.einsum("bi,oij,bj->bo", z_geom, self.w_zv, v_geom)  # [B, d_out]
-        else:
-            q_zv = torch.zeros_like(q_x)  # [B, d_out]
+            v_trunc = v_geom[..., :d_latent]
+            q_zv = torch.einsum("aij,bi,bj->ba", self.W_Qzv[:, :d_latent, :d_latent], z_trunc, v_trunc)
+            q = q + q_zv
 
-        q = q_x + q_z + q_v + q_gamma + q_zv  # [B, d_out]
         return q
 
 
 class ChiralProjector(nn.Module):
-    """SU(2) chiral projector using value gradients."""
+    """SU(2)_L chiral projector from value gradient."""
 
     def __init__(self, d_latent: int) -> None:
         super().__init__()
-        self.n_proj = nn.Linear(d_latent, 3)
+        self.grad_proj = nn.Linear(d_latent, 3, bias=False)
 
-        tau1 = torch.tensor([[0.0, 1.0], [1.0, 0.0]])
-        tau2 = torch.tensor([[0.0, -1.0], [1.0, 0.0]])
-        tau3 = torch.tensor([[1.0, 0.0], [0.0, -1.0]])
-        self.register_buffer("pauli", torch.stack([tau1, tau2, tau3], dim=0))  # [3, 2, 2]
+        self.register_buffer("identity", torch.eye(2))
+        self.register_buffer("sigma_1", torch.tensor([[0.0, 1.0], [1.0, 0.0]]))
+        self.register_buffer("sigma_2", torch.tensor([[0.0, -1.0], [1.0, 0.0]]))
+        self.register_buffer("sigma_3", torch.tensor([[1.0, 0.0], [0.0, -1.0]]))
 
     def forward(self, psi_doublet: torch.Tensor, grad_V: torch.Tensor) -> torch.Tensor:
-        """Project doublet along value gradient.
+        """Apply chiral projection and compute commitment strength.
 
         Args:
             psi_doublet: [B, 2, d] observation-action doublet
@@ -191,16 +211,21 @@ class ChiralProjector(nn.Module):
         Returns:
             psi_proj: [B, 2*d] projected doublet (flattened)
         """
-        n_vec = self.n_proj(grad_V)  # [B, 3]
-        n_hat = n_vec / (n_vec.norm(dim=-1, keepdim=True) + 1e-6)  # [B, 3]
+        n_vec = self.grad_proj(grad_V)
+        n_hat = n_vec / (torch.norm(n_vec, dim=-1, keepdim=True) + 1e-8)
+        n_x, n_y, n_z = n_hat.unbind(dim=-1)
 
-        n_tau = (n_hat.view(-1, 3, 1, 1) * self.pauli.unsqueeze(0)).sum(dim=1)  # [B, 2, 2]
-        eye = torch.eye(2, device=psi_doublet.device, dtype=psi_doublet.dtype)  # [2, 2]
-        proj = 0.5 * (eye + n_tau)  # [B, 2, 2]
+        proj = 0.5 * (
+            self.identity
+            + n_x[:, None, None] * self.sigma_1
+            + n_y[:, None, None] * self.sigma_2
+            + n_z[:, None, None] * self.sigma_3
+        )
 
-        psi_proj = torch.einsum("bij,bjd->bid", proj, psi_doublet)  # [B, 2, d]
-        psi_flat = psi_proj.reshape(psi_proj.shape[0], -1)  # [B, 2*d]
-        return psi_flat
+        psi_proj = torch.einsum("bij,bjd->bid", proj, psi_doublet)
+        commit_strength = (psi_doublet * psi_proj).sum(dim=1, keepdim=True)
+        psi_proj = psi_proj * commit_strength
+        return psi_proj.reshape(psi_proj.shape[0], -1)
 
 
 class AreaLawScreening(nn.Module):
@@ -208,13 +233,19 @@ class AreaLawScreening(nn.Module):
 
     def __init__(self, config: GeodesicConfig) -> None:
         super().__init__()
-        self.sigma0 = config.g_s
-        self.level_scale = 1.0
+        self.log_sigma = nn.Parameter(torch.log(torch.tensor(config.g_s ** 2)))
+
+    @property
+    def sigma(self) -> torch.Tensor:
+        return torch.exp(self.log_sigma)
 
     def string_area(
-        self, z_query: torch.Tensor, z_key: torch.Tensor, lambda_z: torch.Tensor
+        self,
+        z_query: torch.Tensor,
+        z_key: torch.Tensor,
+        lambda_z: torch.Tensor,
     ) -> torch.Tensor:
-        """Approximate string area.
+        """Compute string-area proxy between positions.
 
         Args:
             z_query: [B, d] query positions
@@ -224,10 +255,9 @@ class AreaLawScreening(nn.Module):
         Returns:
             area: [B, N] string areas
         """
-        delta = z_query.unsqueeze(1) - z_key  # [B, N, d]
-        dist_sq = (delta**2).sum(dim=-1)  # [B, N]
-        area = 0.5 * (lambda_z**2) * dist_sq  # [B, N]
-        return area
+        delta = z_query.unsqueeze(1) - z_key
+        dist_sq = (delta**2).sum(dim=-1)
+        return 0.5 * (lambda_z**2) * dist_sq
 
     def forward(
         self,
@@ -244,20 +274,20 @@ class AreaLawScreening(nn.Module):
             z_query: [B, d] query positions
             z_key: [B, N, d] key positions
             lambda_z: [B, 1] conformal factor
-            level: hierarchy level
+            level: hierarchy level (0=macro, L=texture)
 
         Returns:
-            screened: [B, N] screened attention
+            screened: [B, N] screened attention weights
         """
-        level_t = torch.tensor(level, device=attention.device, dtype=attention.dtype)  # []
-        sigma = self.sigma0 * torch.exp(-level_t / self.level_scale)  # []
-        area = self.string_area(z_query, z_key, lambda_z)  # [B, N]
-        screened = attention * torch.exp(-sigma * area)  # [B, N]
-        return screened
+        area = self.string_area(z_query, z_key, lambda_z)
+        l_max = 10
+        sigma_eff = self.sigma * math.exp(-level / l_max)
+        screening = torch.exp(-sigma_eff * area)
+        return attention * screening
 
 
 class CovariantAttention(nn.Module):
-    """Single gauge-covariant attention head."""
+    """Single covariant attention head with gauge structures."""
 
     def __init__(
         self,
@@ -272,14 +302,26 @@ class CovariantAttention(nn.Module):
         self.use_screening = use_screening
         self.head_type = head_type
 
-        self.query = ChristoffelQuery(config.d_model, config.d_model, config.d_latent)
-        self.key_proj = nn.Linear(config.d_model, config.d_model)
-        self.value_proj = nn.Linear(config.d_model, config.d_model)
+        if config.d_model % config.n_heads != 0:
+            raise ValueError("d_model must be divisible by n_heads.")
 
-        self.wilson = WilsonLineApprox(config, config.d_model)
+        d_k = config.d_model // config.n_heads
+
+        self.query = ChristoffelQuery(config.d_model, d_k, config.d_latent)
+        self.key = nn.Linear(config.d_model, d_k, bias=False)
+        self.value = nn.Linear(config.d_model, d_k, bias=False)
+        self.output = nn.Linear(d_k, config.d_model, bias=False)
+
+        self.wilson = WilsonLineApprox(config, d_k)
         self.metric = ConformalMetric()
-        self.chiral = ChiralProjector(config.d_latent)
-        self.screening = AreaLawScreening(config)
+
+        if use_chirality:
+            self.chiral = ChiralProjector(config.d_latent)
+
+        if use_screening:
+            self.screening = AreaLawScreening(config)
+
+        self.d_k = d_k
 
     def forward(
         self,
@@ -310,65 +352,73 @@ class CovariantAttention(nn.Module):
             output: [B, d_model] attention output
             attention: [B, N] attention weights
         """
-        q = self.query(x_query, z_query, v_feat=v_query, v_geom=v_query_geom)  # [B, d_model]
-        k = self.key_proj(x_key)  # [B, N, d_model]
-        v = self.value_proj(x_value)  # [B, N, d_model]
+        q = self.query(x_query, z_query, v_query, v_query_geom)
+        k = self.key(x_key)
+        v = self.value(x_value)
 
-        U = self.wilson(z_query, z_key)  # [B, N, d_model, d_model]
-        k_trans = torch.einsum("bnij,bnj->bni", U, k)  # [B, N, d_model]
+        u = self.wilson(z_query, z_key)
+        k_transported = torch.einsum("bnij,bnj->bni", u, k)
 
-        tau = self.metric.temperature(z_query, k.shape[-1])  # [B, 1]
-        scores = (q.unsqueeze(1) * k_trans).sum(dim=-1)  # [B, N]
-        scores = scores / (tau + 1e-6)  # [B, N]
+        scores = torch.einsum("bi,bni->bn", q, k_transported)
+        tau = self.metric.temperature(z_query, self.d_k)
+        scores = scores / (tau + 1e-8)
 
-        attention = F.softmax(scores, dim=-1)  # [B, N]
+        attention = F.softmax(scores, dim=-1)
 
         if self.use_screening:
-            lambda_z = self.metric.conformal_factor(z_query)  # [B, 1]
-            attention = self.screening(  # [B, N]
-                attention, z_query, z_key, lambda_z, level=level
-            )
-            attention = attention / (attention.sum(dim=-1, keepdim=True) + 1e-8)  # [B, N]
+            lambda_z = self.metric.conformal_factor(z_query)
+            attention = self.screening(attention, z_query, z_key, lambda_z, level)
+            attention = attention / (attention.sum(dim=-1, keepdim=True) + 1e-8)
 
-        output = (attention.unsqueeze(-1) * v).sum(dim=1)  # [B, d_model]
+        output = torch.einsum("bn,bni->bi", attention, v)
 
         if self.use_chirality and grad_V is not None:
-            psi = torch.stack([x_query, output], dim=1)  # [B, 2, d_model]
-            psi_proj = self.chiral(psi, grad_V)  # [B, 2*d_model]
-            output = psi_proj.view(psi_proj.shape[0], 2, -1)[:, 1, :]  # [B, d_model]
+            if output.shape[-1] % 2 != 0:
+                raise ValueError("Chiral projection requires an even d_k.")
+            output_doublet = output.reshape(output.shape[0], 2, -1)
+            output = self.chiral(output_doublet, grad_V)
+            output = output.reshape(output.shape[0], -1)
 
+        output = self.output(output)
         return output, attention
 
 
 class GeodesicCrossAttention(nn.Module):
-    """BAOAB-style geodesic cross-attention integrator."""
+    """Full geodesic world model implementing BAOAB integration."""
 
     def __init__(self, config: GeodesicConfig) -> None:
         super().__init__()
         self.config = config
 
-        self.query_feat = nn.Linear(2 * config.d_latent, config.d_model)
-        self.force_value = nn.Linear(config.d_latent, config.d_model)
-        self.force_out = nn.Linear(config.d_model, config.d_latent)
-        self.drift_out = nn.Linear(config.d_model, config.d_latent)
+        self.dt = config.dt
+        self.gamma = config.gamma_friction
+        self.T_c = config.T_c
+        self.c1 = math.exp(-self.gamma * self.dt)
+        self.c2 = math.sqrt((1.0 - self.c1**2) * self.T_c) if self.T_c > 0 else 0.0
 
-        self.head_b1 = CovariantAttention(
-            config, use_chirality=False, use_screening=True, head_type="B"
-        )
-        self.head_a1 = CovariantAttention(
-            config, use_chirality=False, use_screening=False, head_type="A"
-        )
-        self.head_a2 = CovariantAttention(
-            config, use_chirality=False, use_screening=False, head_type="A"
-        )
-        self.head_b2 = CovariantAttention(
-            config, use_chirality=False, use_screening=True, head_type="B"
-        )
+        self.metric = ConformalMetric()
 
-        if config.use_learned_thermostat:
-            self.thermostat_residual = nn.Linear(2 * config.d_latent, config.d_latent)
+        self.head_B1 = CovariantAttention(config, head_type="B")
+        self.head_A1 = CovariantAttention(config, head_type="A")
+        self.use_learned_thermostat = config.use_learned_thermostat
+        self.thermostat_residual_scale = config.thermostat_residual_scale
+        if self.use_learned_thermostat:
+            self.head_O = CovariantAttention(config, head_type="O")
         else:
-            self.thermostat_residual = None
+            self.head_O = None
+        self.head_A2 = CovariantAttention(config, head_type="A")
+        self.head_B2 = CovariantAttention(config, head_type="B")
+
+        self.pos_encoder = nn.Linear(config.d_latent, config.d_model)
+        self.grad_encoder = nn.Linear(config.d_latent, config.d_model)
+        self.velocity_encoder = nn.Linear(config.d_latent, config.d_model)
+
+        self.state_proj = nn.Linear(config.d_model, config.d_latent)
+
+        if self.use_learned_thermostat:
+            self.noise_proj = nn.Linear(config.d_latent, config.d_model)
+        else:
+            self.noise_proj = None
 
     def forward(
         self,
@@ -378,51 +428,95 @@ class GeodesicCrossAttention(nn.Module):
         context_x: torch.Tensor,
         context_force: torch.Tensor,
     ) -> Tuple[torch.Tensor, torch.Tensor]:
-        """Advance position and momentum with covariant attention.
+        """One step of geodesic BAOAB integration.
 
         Args:
-            z: [B, d_latent] current positions
+            z: [B, d_latent] current position
             p: [B, d_latent] current momentum
             context_z: [B, N, d_latent] context positions
             context_x: [B, N, d_model] context features
-            context_force: [B, N, d_latent] context force bank
+            context_force: [B, N, d_latent] force bank
 
         Returns:
             z_next: [B, d_latent] updated positions
             p_next: [B, d_latent] updated momentum
         """
-        dt = torch.tensor(self.config.dt, device=z.device, dtype=z.dtype)  # []
-        gamma = torch.tensor(self.config.gamma_friction, device=z.device, dtype=z.dtype)  # []
-        temp = torch.tensor(self.config.T_c, device=z.device, dtype=z.dtype)  # []
+        h = self.dt
 
-        zp = torch.cat([z, p], dim=-1)  # [B, 2*d_latent]
-        q_feat = self.query_feat(zp)  # [B, d_model]
+        force_features = self.grad_encoder(context_force)
 
-        force_value = self.force_value(context_force)  # [B, N, d_model]
+        delta_p1, _ = self.head_B1(
+            z_query=z,
+            z_key=context_z,
+            x_query=self.pos_encoder(z),
+            x_key=force_features,
+            x_value=force_features,
+        )
+        delta_p1_latent = self.state_proj(delta_p1)
+        p = p - (h / 2.0) * delta_p1_latent
 
-        out_b1, _ = self.head_b1(z, context_z, q_feat, context_x, force_value)  # [B, d_model]
-        force1 = self.force_out(out_b1)  # [B, d_latent]
-        p_half = p + 0.5 * dt * force1  # [B, d_latent]
+        g_inv = self.metric.metric_inv(z)
+        v = torch.einsum("bij,bj->bi", g_inv, p)
 
-        out_a1, _ = self.head_a1(z, context_z, q_feat, context_x, context_x)  # [B, d_model]
-        drift1 = self.drift_out(out_a1)  # [B, d_latent]
-        z_half = z + 0.5 * dt * (p_half + drift1)  # [B, d_latent]
+        delta_z1, _ = self.head_A1(
+            z_query=z,
+            z_key=context_z,
+            x_query=self.pos_encoder(z) + self.velocity_encoder(v),
+            x_key=context_x,
+            x_value=context_x,
+            v_query=self.velocity_encoder(v),
+            v_query_geom=v,
+        )
+        delta_z1_latent = self.state_proj(delta_z1)
+        z = z + (h / 2.0) * (v + delta_z1_latent)
+        z = self._project_to_disk(z)
 
-        c1 = torch.exp(-gamma * dt)  # []
-        c2 = torch.sqrt((1.0 - c1**2) * temp)  # []
-        noise = torch.randn_like(p_half)  # [B, d_latent]
-        p_ou = c1 * p_half + c2 * noise  # [B, d_latent]
+        g_sqrt = self.metric.conformal_factor(z)
+        xi = torch.randn_like(p)
+        p = self.c1 * p + self.c2 * g_sqrt * xi
 
-        if self.thermostat_residual is not None:
-            thermo = self.thermostat_residual(zp)  # [B, d_latent]
-            p_ou = p_ou + self.config.thermostat_residual_scale * thermo  # [B, d_latent]
+        if self.use_learned_thermostat:
+            noise_bank = torch.randn_like(context_z)
+            noise_features = self.noise_proj(noise_bank)
+            delta_p_noise, _ = self.head_O(
+                z_query=z,
+                z_key=context_z,
+                x_query=self.velocity_encoder(p),
+                x_key=noise_features,
+                x_value=noise_features,
+            )
+            delta_p_noise_latent = self.state_proj(delta_p_noise)
+            p = p + self.thermostat_residual_scale * delta_p_noise_latent
 
-        out_a2, _ = self.head_a2(z_half, context_z, q_feat, context_x, context_x)  # [B, d_model]
-        drift2 = self.drift_out(out_a2)  # [B, d_latent]
-        z_next = z_half + 0.5 * dt * (p_ou + drift2)  # [B, d_latent]
+        g_inv = self.metric.metric_inv(z)
+        v = torch.einsum("bij,bj->bi", g_inv, p)
 
-        out_b2, _ = self.head_b2(z_next, context_z, q_feat, context_x, force_value)  # [B, d_model]
-        force2 = self.force_out(out_b2)  # [B, d_latent]
-        p_next = p_ou + 0.5 * dt * force2  # [B, d_latent]
+        delta_z2, _ = self.head_A2(
+            z_query=z,
+            z_key=context_z,
+            x_query=self.pos_encoder(z) + self.velocity_encoder(v),
+            x_key=context_x,
+            x_value=context_x,
+            v_query=self.velocity_encoder(v),
+            v_query_geom=v,
+        )
+        delta_z2_latent = self.state_proj(delta_z2)
+        z = z + (h / 2.0) * (v + delta_z2_latent)
+        z = self._project_to_disk(z)
 
-        return z_next, p_next
+        delta_p2, _ = self.head_B2(
+            z_query=z,
+            z_key=context_z,
+            x_query=self.pos_encoder(z),
+            x_key=force_features,
+            x_value=force_features,
+        )
+        delta_p2_latent = self.state_proj(delta_p2)
+        p = p - (h / 2.0) * delta_p2_latent
+
+        return z, p
+
+    def _project_to_disk(self, z: torch.Tensor, max_norm: float = 0.999) -> torch.Tensor:
+        """Project positions to interior of the Poincare ball/disk."""
+        norm = torch.norm(z, dim=-1, keepdim=True)
+        return torch.where(norm > max_norm, z * max_norm / norm, z)

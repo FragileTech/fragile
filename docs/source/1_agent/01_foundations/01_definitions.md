@@ -25,8 +25,8 @@
 |---|---|
 | $x_t$ | Observation at time $t$ (incoming boundary signal) |
 | $a_t$ | Action at time $t$ (outgoing boundary signal) |
-| $r_t$ | Scalar reward / utility feedback |
-| $d_t$ | Termination / absorbing event indicator |
+| $r_t$ | Reward sample (boundary flux; scalar in conservative case) |
+| $d_t$ | Termination / absorbing event indicator (terminal subset $\Gamma_{\text{term}}$) |
 | $\iota_t$ | Auxiliary side channels (costs, constraint reasons, privileged signals) |
 | $B_t=(x_t,r_t,d_t,\iota_t,a_t)$ | Boundary / Markov blanket interface tuple |
 | $Z_t=(K_t,z_{n,t},z_{\mathrm{tex},t})$ | Internal state split (macro / nuisance / texture) |
@@ -118,8 +118,8 @@ B_t := (x_t,\ r_t,\ d_t,\ \iota_t,\ a_t),
 $$
 where:
 - $x_t\in\mathcal{X}$ is the observation (input sample),
-- $r_t\in\mathbb{R}$ is reward/utility (scalar feedback; equivalently negative instantaneous cost),
-- $d_t\in\{0,1\}$ is termination (absorbing event / task boundary),
+- $r_t\in\mathbb{R}$ is the boundary reward sample (evaluation of the reward 1-form/flux; scalar in the conservative case),
+- $d_t\in\{0,1\}$ is termination (absorbing event / task boundary; corresponds to $\Gamma_{\text{term}}$ and $\tau_{\text{term}}$ in Definition {prf:ref}`def-terminal-boundary`),
 - $\iota_t$ denotes any additional side channels (costs, constraints, termination reasons, privileged signals),
 - $a_t\in\mathcal{A}$ is action (control signal sent outward).
 
@@ -243,17 +243,27 @@ Now let's go through the standard RL vocabulary and see how each term looks from
 
 4. **Reward $r_t$ (Utility / Negative Cost Signal).**
    - *Standard:* a scalar to maximize.
-   - *Fragile:* a scalar feedback signal used to define the control objective. In continuous-time derivations it appears as an instantaneous **cost rate**; in discrete time it appears as an incremental term in the Bellman/HJB consistency relation ({ref}`Section 2.7 <sec-the-hjb-correspondence>`).
+   - *Fragile:* boundary reward flux (a 1-form) evaluated along the trajectory. In continuous time it appears as an
+     instantaneous **cost rate** $r_t=\langle\mathcal{R},\dot{z}\rangle$; in discrete time it appears as an
+     incremental term in the Bellman/HJB consistency relation ({ref}`Section 2.7 <sec-the-hjb-correspondence>`).
    - *Mechanism:* the critic's $V$ is the internal value/cost-to-go; reward provides the task-aligned signal shaping $V$.
-   - *Boundary interpretation ({ref}`Section 24.1 <sec-the-reward-1-form>`):* Reward is a **Scalar Charge Density** $\sigma_r$ on the boundary. The Critic solves the **Screened Poisson Equation** (Theorem {prf:ref}`thm-the-hjb-helmholtz-correspondence`) to propagate this boundary condition into the bulk, generating the potential field $V(z)$.
+   - *Boundary interpretation ({ref}`Section 24.1 <sec-the-reward-1-form>`):* Reward is a boundary reward flux
+     1-form $J_r$; in the conservative case this reduces to a scalar charge density $\sigma_r$. The Critic solves the
+     **Screened Poisson Equation** (Theorem {prf:ref}`thm-the-hjb-helmholtz-correspondence`) to propagate this boundary
+     condition into the bulk, generating the scalar potential $V(z)$.
 
 :::{div} feynman-prose
-   I want you to really think about this one. Reward isn't a magical signal from God telling you what's good. It's just another input---a scalar that comes in through the boundary. The agent has to figure out what to do with it. And the beautiful thing is that this "figuring out" corresponds to solving a boundary value problem: the reward at the edge propagates inward to create a potential landscape that guides decisions.
+   I want you to really think about this one. Reward isn't a magical signal from God telling you what's good. It's just
+   another input---a boundary flux sampled as a scalar $r_t$. The agent has to figure out what to do with it. And the
+   beautiful thing is that this "figuring out" corresponds to solving a boundary value problem: the reward at the edge
+   propagates inward to create a potential landscape that guides decisions.
 :::
 
 5. **Termination $d_t$ (Absorbing Boundary Event).**
    - *Standard:* end-of-episode flag.
-   - *Fragile:* an absorbing event: the trajectory has entered a terminal region (failure/success) or exited the modeled domain. It is part of the task specification, not a training artifact.
+   - *Fragile:* an absorbing event: the trajectory has entered a terminal region (failure/success) or exited the modeled
+     domain. Formally this is a terminal subset $\Gamma_{\text{term}}$ with stopping time $\tau_{\text{term}}$ and
+     Dirichlet data $V|_{\Gamma_{\text{term}}}=V_{\text{term}}$ (Definition {prf:ref}`def-terminal-boundary`).
 
 6. **Episode / Rollout (Finite-Horizon Segment).**
    - *Standard:* a finite trajectory segment.
