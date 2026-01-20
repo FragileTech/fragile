@@ -3,7 +3,7 @@
 
 ## 0. TLDR
 
-**Macroscopic Structure of the QSD**: Building upon the derivation of the Mean-Field PDE (`07_mean_field.md`) and the rigorous proof of its existence via propagation of chaos (`08_propagation_chaos.md`), this document characterizes the physical structure of the unique stationary density $\rho_{\text{QSD}}(x, v)$.
+**Macroscopic Structure of the QSD**: Building upon the derivation of the Mean-Field PDE ({doc}`08_mean_field`) and the rigorous proof of its existence via propagation of chaos ({doc}`09_propagation_chaos`), this document characterizes the physical structure of the unique stationary density $\rho_{\text{QSD}}(x, v)$.
 
 **The Thermodynamics of Optimization**: We show that the Mean-Field QSD arises from the competition between two distinct thermodynamic potentials:
 1.  **The Cloning Potential**: Driven by the reward landscape $R(x)$, pushing the density toward a distribution $\rho \propto R(x)^{\alpha d / \beta}$.
@@ -15,11 +15,13 @@
 
 **Velocity Thermalization**: Unlike the discrete system where cloning induces non-Gaussian velocity correlations, the Mean-Field QSD perfectly thermalizes the velocity marginal to a Maxwell-Boltzmann distribution, validating the use of standard kinetic temperature definitions in the continuum limit.
 
+**Dependencies**: {doc}`06_convergence`, {doc}`08_mean_field`, {doc}`09_propagation_chaos`
+
 ## 1. Introduction
 
 ### 1.1. Goal and Scope
 
-In `07_mean_field.md`, we derived the McKean-Vlasov Fokker-Planck equation governing the time evolution of the swarm probability density $f(t, x, v)$. In `08_propagation_chaos.md`, we proved that the discrete Euclidean Gas converges to this continuous model as $N \to \infty$ and established the existence and uniqueness of a stationary solution $\rho_{\text{QSD}}$.
+In {doc}`08_mean_field`, we derived the McKean-Vlasov Fokker-Planck equation governing the time evolution of the swarm probability density $f(t, x, v)$. In {doc}`09_propagation_chaos`, we proved that the discrete Euclidean Gas converges to this continuous model as $N \to \infty$ and established the existence and uniqueness of a stationary solution $\rho_{\text{QSD}}$.
 
 The goal of this document is to **solve for and characterize the shape** of this stationary solution. We move beyond existence proofs to answer physical questions about the equilibrium state:
 *   How does the probability mass distribute itself over the optimization landscape?
@@ -30,7 +32,7 @@ This analysis is crucial for understanding the **optimization performance** of t
 
 ### 1.2. The Governing Stationary Equation
 
-The object of our study is the time-independent probability density $\rho(x, v)$ that solves the stationary Mean-Field equation (derived in `07_mean_field.md` and validated in `08_propagation_chaos.md`):
+The object of our study is the time-independent probability density $\rho(x, v)$ that solves the stationary Mean-Field equation (derived in {doc}`08_mean_field` and validated in {doc}`09_propagation_chaos`):
 
 $$
 \underbrace{L^\dagger \rho}_{\text{Kinetic Transport}} + \underbrace{S[\rho]}_{\text{Internal Cloning}} + \underbrace{B[\rho, m_d] - c(x)\rho}_{\text{Boundary Reaction}} = 0
@@ -88,7 +90,7 @@ This relationship is intuitive: regions of **high density** correspond to **low 
 
 ### 2.3. The Iso-Fitness Principle
 
-The cloning operator $S[\rho]$ defined in `07_mean_field.md` acts as a non-linear growth term. It increases density in regions where the local fitness potential $V[f](z)$ is higher than the swarm average, and depletes density where it is lower.
+The cloning operator $S[\rho]$ defined in {doc}`08_mean_field` acts as a non-linear growth term. It increases density in regions where the local fitness potential $V[f](z)$ is higher than the swarm average, and depletes density where it is lower.
 
 $$
 \frac{\partial \rho}{\partial t} \propto (V(z) - \bar{V}) \rho(z)
@@ -108,7 +110,7 @@ $$
 
 We can now solve for the specific density profile $\rho_{\text{clone}}(z)$ that satisfies the Iso-Fitness Principle.
 
-Recall the definition of the fitness potential from `07_mean_field.md`:
+Recall the definition of the fitness potential from {doc}`08_mean_field`:
 
 $$
 V(z) \approx (d(z))^\beta \cdot (R(z))^\alpha
@@ -189,7 +191,7 @@ While this looks like a standard thermal distribution, its physical origin is di
 *   **Standard Annealing:** To find the minimum of $U(x)$, one lowers $T_{kin} \to 0$. This often leads to trapping in local minima because the probability mass collapses.
 *   **Fragile Gas Optimization:** To find the minimum, we can increase $\alpha$ or decrease $\beta$. However, the $\beta$ term ensures that even if we "cool" the system, the swarm maintains volume in phase space. It fills the basin of attraction like a liquid rather than collapsing to a point like a dust.
 
-This **"Decorated Gibbs Measure"** structure implies that the macroscopic density profile follows the reward landscape, but the local microstructure (governed by $\beta$) resists infinite compression. This provides the **Fundamental Signal Variance** required for the Keystone Principle (`03_cloning.md`) to operate: the swarm never becomes degenerate, so it can always detect gradients.
+This **"Decorated Gibbs Measure"** structure implies that the macroscopic density profile follows the reward landscape, but the local microstructure (governed by $\beta$) resists infinite compression. This provides the **Fundamental Signal Variance** required for the Keystone Principle ({doc}`03_cloning`) to operate: the swarm never becomes degenerate, so it can always detect gradients.
 
 ### 2.6. Connection to the Kinetic Operator
 
@@ -264,13 +266,13 @@ $$
 This forces the density to zero at the edges, preventing the "stacking" of walkers against the walls that would occur with purely reflective boundaries.
 :::
 
-This "Halo" effect is a critical safety feature. It ensures that the "Safe Harbor" mechanism (from `03_cloning.md`) has a physical manifestation: the swarm naturally depletes from dangerous regions, reducing the risk of total extinction.
+This "Halo" effect is a critical safety feature. It ensures that the "Safe Harbor" mechanism (from {doc}`03_cloning`) has a physical manifestation: the swarm naturally depletes from dangerous regions, reducing the risk of total extinction.
 
 ### 3.4. Velocity Structure: Thermalization
 
 A unique feature of the Fragile Gas is the tension between the two operators in velocity space.
 
-*   **Cloning Perturbs Velocity:** As detailed in `03_cloning.md`, the inelastic collision model used in cloning ($v_{new} \leftarrow v_{c} + \dots$) creates non-Gaussian correlations. It tends to "clump" velocities and, if unchecked, could lead to a collapse of kinetic energy ($T \to 0$).
+*   **Cloning Perturbs Velocity:** As detailed in {doc}`03_cloning`, the inelastic collision model used in cloning ($v_{new} \leftarrow v_{c} + \dots$) creates non-Gaussian correlations. It tends to "clump" velocities and, if unchecked, could lead to a collapse of kinetic energy ($T \to 0$).
 *   **Kinetics Restores Gaussianity:** The Langevin operator is ergodic with respect to the Maxwell-Boltzmann distribution. The friction term $-\gamma v$ dissipates excess energy, while the diffusion term $\sigma_v^2 \Delta_v$ injects heat.
 
 #### 3.4.1. The Maxwell-Boltzmann Limit
@@ -402,7 +404,7 @@ where:
 
 ### 4.4. The Safe Harbor in the Continuum
 
-The "Safe Harbor" axiom (`01_fragile_gas_framework.md`, Axiom 4.3) guarantees that the swarm avoids boundaries. In the discrete analysis (`03_cloning.md`), this was proven via probability bounds. In the mean-field QSD, this emerges as a deformation of the effective potential.
+The "Safe Harbor" axiom ({doc}`01_fragile_gas_framework`, Axiom 4.3) guarantees that the swarm avoids boundaries. In the discrete analysis ({doc}`03_cloning`), this was proven via probability bounds. In the mean-field QSD, this emerges as a deformation of the effective potential.
 
 Near the boundary $\partial \mathcal{X}_{\text{valid}}$, the barrier function $\varphi_{barrier}(x)$ becomes dominant in the reward $R(x)$. The effective potential shoots to infinity:
 

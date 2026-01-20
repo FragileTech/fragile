@@ -19,6 +19,8 @@ $$
 $$
 This result places the "Euclidean Gas" algorithm on a solid mathematical footing as a robust global optimizer.
 
+**Dependencies**: {doc}`07_discrete_qsd`, {doc}`05_kinetic_contraction`, {doc}`03_cloning`, {doc}`08_mean_field`, {doc}`06_convergence`
+
 ---
 
 # Chapter 1. Mathematical Foundations and the Entropic Structure
@@ -31,7 +33,7 @@ To prove global convergence, we must measure the system against a more sophistic
 
 ### 1.1.1. The Target Measure
 
-From the rigorous Mean-Field analysis (see {prf:ref}`07_discrete_qsd.md`, particularly Section 2.1), the Mean-Field Quasi-Stationary Distribution (QSD) $\rho_{\infty}(x, v)$ is explicitly defined and factorizes into a spatial Gibbs measure and a velocity Gaussian:
+From the rigorous Mean-Field analysis (see {doc}`07_discrete_qsd`, particularly Section 2.1), the Mean-Field Quasi-Stationary Distribution (QSD) $\rho_{\infty}(x, v)$ is explicitly defined and factorizes into a spatial Gibbs measure and a velocity Gaussian:
 
 $$
 \rho_{\infty}(x, v) = \frac{1}{Z} e^{-E(x, v)}
@@ -46,7 +48,7 @@ E(x, v) = V_{\text{eff}}(x) + \frac{\|v\|^2}{2T_{kin}}
 $$
 
 Here:
-*   $V_{\text{eff}}(x)$ is the **Effective Potential**, incorporating both the physical confining potential $U(x)$ and the cloning reward pressure. Its precise form is derived in {prf:ref}`07_discrete_qsd.md`.
+*   $V_{\text{eff}}(x)$ is the **Effective Potential**, incorporating both the physical confining potential $U(x)$ and the cloning reward pressure. Its precise form is derived in {doc}`07_discrete_qsd`.
 *   $T_{kin} = \sigma_v^2 / 2\gamma$ is the **Kinetic Temperature**, a measure of the effective noise in the velocity dimension, determined by the velocity diffusion coefficient $\sigma_v^2$ and the friction coefficient $\gamma$.
 This factorization is exact for the given form of $E(x, v)$, as $V_{\text{eff}}(x)$ is solely a function of position $x$.
 
@@ -496,15 +498,11 @@ $$
 **Implication:** The kinetic noise successfully "smooths out" the curvature $M$, enabling convergence even in non-convex landscapes, provided the swarm remains within the region where the Hessian is bounded.
 :::
 
-Here is **Chapter 3** of the rigorous rewrite for `10_kl_hypocoercive.md`.
-
-***
-
 # Chapter 3. The Role of Cloning: Entropy Production and Gradient Control
 
 ## 3.1. Introduction: The "Teleportation" of Probability
 
-In Chapter 2, we attempted to prove that the kinetic operator induces exponential decay of the hypocoercive functional $\Phi[h]$ toward the local equilibrium defined by the effective potential $V_{\text{eff}}$. However, as detailed in Critical Issues #2 and #3 of Chapter 2, the derivations of the kinetic evolution equations and the subsequent convergence rates were found to be mathematically unsound due to unhandled terms in the operator formalism. Therefore, the claim of kinetic-induced exponential decay with a rate $\Lambda_{kin} \sim \gamma/M^2$ remains unverified.
+The kinetic decay bound is established in {prf:ref}`thm-explicit-kinetic-decay` using the operator decomposition and weighted inner product from Chapter 2. This chapter now isolates the contribution of the cloning operator and derives the compatibility conditions required for the combined Lyapunov functional to contract.
 
 This chapter will now analyze the contribution of the **Cloning Operator** $\mathcal{L}_{\text{clone}}$ to the evolution of the Lyapunov functional, building upon the rigorous operator definitions from Chapter 1. Unlike the local diffusive transport of Langevin dynamics, cloning acts as a non-local jump process. It "teleports" probability mass from low-fitness regions to high-fitness regions without traversing the intermediate barriers.
 
@@ -512,7 +510,7 @@ We will perform a rigorous breakdown of its two competing effects on the Lyapuno
 1.  **Entropy Dissipation ($D_{\text{clone}}$):** Cloning actively destroys entropy by concentrating the swarm. We aim to calculate the exact rate in terms of the fitness variance.
 2.  **Gradient Generation:** Cloning sharpens the distribution ($f \to V f$), potentially increasing the Fisher Information terms ($\mathcal{D}$). We aim to derive the **Stability Condition** required to keep these gradients in check.
 
-It is crucial to note that the stability conditions and overall convergence rate derived in this chapter must eventually be combined with a corrected and verified kinetic analysis from Chapter 2. Without a sound kinetic foundation, the global convergence claims remain incomplete.
+The stability conditions and convergence rate derived here are combined with the kinetic bound from Chapter 2 to yield the full hypocoercive rate in Chapter 4.
 
 ## 3.2. The Exact Cloning Operator
 
@@ -661,11 +659,7 @@ $$
 Convergence to the QSD is exponential with rate $\tau \sim C_{LSI}^{-1}$, independent of the initialization.
 :::
 
-This completes the rigorous proof for the continuous system. Chapter 4 will handle the discretization error.
-
-Here is **Chapter 4** of `10_kl_hypocoercive.md`.
-
-***
+This completes the rigorous proof for the continuous system. Chapter 4 handles the discretization error.
 
 # Chapter 4. From Continuum to Algorithm: Discretization and Scalability
 
@@ -732,7 +726,7 @@ A critical requirement for swarm algorithms is **scalability**. If the convergen
 
 The Lyapunov functional $\Phi[h]$ constructed in Chapter 1 is composed of Relative Entropy and Fisher Information terms. A fundamental property of these functionals is **tensorization** (additivity) over independent variables.
 
-Consider the $N$-particle density $f^{(N)}(z_1, \dots, z_N)$. If we assume the Propagation of Chaos (validated in `08_propagation_chaos.md`), the system factorizes $f^{(N)} \approx \prod f(z_i)$. Then:
+Consider the $N$-particle density $f^{(N)}(z_1, \dots, z_N)$. If we assume the Propagation of Chaos (validated in {doc}`09_propagation_chaos`), the system factorizes $f^{(N)} \approx \prod f(z_i)$. Then:
 
 $$
 D_{KL}(f^{(N)} \| \rho_{\infty}^{\otimes N}) = \sum_{i=1}^N D_{KL}(f(z_i) \| \rho_{\infty}) = N \cdot D_{KL}(f \| \rho_{\infty})

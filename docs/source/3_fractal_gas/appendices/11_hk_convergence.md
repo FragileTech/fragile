@@ -10,6 +10,8 @@
 
 **Foundation for Advanced Analysis**: This HK convergence provides the rigorous foundation for quantitative propagation of chaos, finite-N error bounds, and large deviation analysis. The explicit dependence of $\kappa_{HK}$ on primitive parameters (friction $\gamma$, cloning noise $\delta$, potential coercivity $\alpha_U$, density bound $M$) enables systematic parameter optimization and validates the Fragile Gas as a hybrid continuous-discrete dynamical system with provable exponential stability.
 
+**Dependencies**: {doc}`06_convergence`, {doc}`04_wasserstein_contraction`, {doc}`05_kinetic_contraction`, {doc}`10_kl_hypocoercive`, {doc}`08_mean_field`
+
 ## 1. Introduction
 
 ### 1.1. Goal and Scope
@@ -17,17 +19,17 @@
 
 The goal of this chapter is to establish a complete convergence theory for the Fragile Gas in the **Hellinger-Kantorovich (HK) metric**, which is the natural distance for analyzing stochastic processes that combine continuous diffusion with discrete mass changes through birth and death events. The central object of study is the composed operator $\Psi_{\text{total}} = \Psi_{\text{kin}} \circ \Psi_{\text{clone}}$ acting on the space of sub-probability measures that represent the empirical distribution of alive walkers.
 
-The main result of this analysis is a **strict contraction theorem** in the HK metric: we prove that $\Psi_{\text{total}}$ contracts the distance to the quasi-stationary distribution (QSD) with explicit rate constant $\kappa_{HK} > 0$, giving exponential convergence $d_{HK}(\mu_t, \pi_{\text{QSD}}) = O(e^{-\kappa_{HK} t})$. This result synthesizes and extends the Wasserstein convergence theory from Chapter 6 ([06_convergence](06_convergence)) by adding rigorous control of the Hellinger distance, which measures the discrepancy in both total mass and probability density shape between the empirical measure and the QSD.
+The main result of this analysis is a **strict contraction theorem** in the HK metric: we prove that $\Psi_{\text{total}}$ contracts the distance to the quasi-stationary distribution (QSD) with explicit rate constant $\kappa_{HK} > 0$, giving exponential convergence $d_{HK}(\mu_t, \pi_{\text{QSD}}) = O(e^{-\kappa_{HK} t})$. This result synthesizes and extends the Wasserstein convergence theory from Chapter 6 ({doc}`06_convergence`) by adding rigorous control of the Hellinger distance, which measures the discrepancy in both total mass and probability density shape between the empirical measure and the QSD.
 
 The scope of this chapter includes three main contributions:
 
-1. **Mass Contraction Lemma ({prf:ref}`lem-mass-contraction-revival-death`)**: A complete proof that the revival mechanism ({prf:ref}`def-axiom-guaranteed-revival`) combined with boundary death creates exponential contraction of mass fluctuations $\mathbb{E}[(k_t - k_*)^2]$, where $k_t = \|\mu_t\|$ is the number of alive walkers. This extends the discrete-time analysis from Chapter 3 to the continuous-time limit using the mean-field theory from Chapter 7 ([07_mean_field](07_mean_field)).
+1. **Mass Contraction Lemma ({prf:ref}`lem-mass-contraction-revival-death`)**: A complete proof that the revival mechanism ({prf:ref}`def-axiom-guaranteed-revival`) combined with boundary death creates exponential contraction of mass fluctuations $\mathbb{E}[(k_t - k_*)^2]$, where $k_t = \|\mu_t\|$ is the number of alive walkers. This extends the discrete-time analysis from Chapter 3 to the continuous-time limit using the mean-field theory from Chapter 7 ({doc}`08_mean_field`).
 
 2. **Structural Variance Contraction ({prf:ref}`lem-structural-variance-contraction`)**: An application of the realization-level Wasserstein contraction theorems from Chapters 4 and 6 to prove exponential decay of the centered Wasserstein distance $W_2^2(\tilde{\mu}_t, \tilde{\pi}_{\text{QSD}})$, where $\tilde{\mu}_t$ is the normalized empirical measure.
 
 3. **Hellinger Contraction via Hypocoercivity ({prf:ref}`lem-kinetic-hellinger-contraction`)**: The first rigorous proof that the kinetic operator $\Psi_{\text{kin}}$ contracts the Hellinger distance through a combination of (a) hypocoercive entropy dissipation from the Langevin dynamics and (b) algebraic Pinsker inequalities that bridge KL-divergence and Hellinger distance under a bounded density ratio assumption.
 
-The assembly of these three lemmas into the final HK contraction theorem is provided in Chapter 6, which completes the quantitative characterization of finite-N convergence rates. This chapter assumes results from companion documents: the cloning operator Wasserstein analysis ([04_wasserstein_contraction](04_wasserstein_contraction)), the hypocoercive convergence theory ([06_convergence](06_convergence)), and the mean-field PDE derivation ([07_mean_field](07_mean_field)).
+The assembly of these three lemmas into the final HK contraction theorem is provided in Chapter 6, which completes the quantitative characterization of finite-N convergence rates. This chapter assumes results from companion documents: the cloning operator Wasserstein analysis ({doc}`04_wasserstein_contraction`), the hypocoercive convergence theory ({doc}`06_convergence`), and the mean-field PDE derivation ({doc}`08_mean_field`).
 
 ### 1.2. Why the Hellinger-Kantorovich Metric?
 
@@ -69,7 +71,7 @@ This decomposition is well-suited to the Fragile Gas dynamics because the two op
 By proving contraction in the HK metric, we establish that **both** the spatial configuration and the total alive mass converge simultaneously to their QSD equilibrium values. This is a strictly stronger result than Wasserstein convergence alone, which (by normalizing measures) discards information about mass fluctuations. The HK framework provides a natural mathematical structure for analyzing hybrid continuous-discrete processes like the Fragile Gas, as it captures both transport and reaction dynamics in a unified metric.
 
 :::{important} Connection to Quasi-Stationary Distributions
-The target measure $\pi_{\text{QSD}}$ in this analysis is a **quasi-stationary distribution** rather than a true stationary distribution. This is necessary because the Fragile Gas, like all processes with unbounded Gaussian noise and boundary killing, has a positive probability of total extinction from any state. The QSD describes the long-term statistical behavior *conditioned on survival*, and convergence in the HK metric establishes that the empirical measure $\mu_t$ approaches this conditional equilibrium exponentially fast. The mean extinction time is exponentially long in the swarm size $N$, making the QSD the appropriate and meaningful characterization of the system's operational regime. See Chapter 6 ([06_convergence](06_convergence)) for a complete discussion of the QSD framework.
+The target measure $\pi_{\text{QSD}}$ in this analysis is a **quasi-stationary distribution** rather than a true stationary distribution. This is necessary because the Fragile Gas, like all processes with unbounded Gaussian noise and boundary killing, has a positive probability of total extinction from any state. The QSD describes the long-term statistical behavior *conditioned on survival*, and convergence in the HK metric establishes that the empirical measure $\mu_t$ approaches this conditional equilibrium exponentially fast. The mean extinction time is exponentially long in the swarm size $N$, making the QSD the appropriate and meaningful characterization of the system's operational regime. See Chapter 6 ({doc}`06_convergence`) for a complete discussion of the QSD framework.
 :::
 
 ### 1.3. Overview of the Proof Strategy and Document Structure
@@ -81,10 +83,10 @@ The diagram below illustrates the logical flow of the proof and the dependency s
 ```{mermaid}
 graph TD
     subgraph "Prerequisites from Framework Chapters"
-        A["<b>03_cloning.md: Cloning Operator</b><br>✓ Keystone Principle<br>✓ Safe Harbor Mechanism<br>✓ Inelastic collision model"]:::stateStyle
-        B["<b>04_wasserstein_contraction.md</b><br>✓ Realization-level W₂ contraction<br>✓ N-uniform rate κ_W > 0"]:::stateStyle
-        C["<b>06_convergence.md: QSD Convergence</b><br>✓ Foster-Lyapunov analysis<br>✓ Hypocoercive entropy dissipation"]:::stateStyle
-        D["<b>07_mean_field.md: McKean-Vlasov PDE</b><br>✓ BAOAB discretization error O(τ²)<br>✓ Continuous-time killing rate c(x,v)"]:::stateStyle
+        A["<b>03_cloning: Cloning Operator</b><br>✓ Keystone Principle<br>✓ Safe Harbor Mechanism<br>✓ Inelastic collision model"]:::stateStyle
+        B["<b>04_wasserstein_contraction</b><br>✓ Realization-level W₂ contraction<br>✓ N-uniform rate κ_W > 0"]:::stateStyle
+        C["<b>06_convergence: QSD Convergence</b><br>✓ Foster-Lyapunov analysis<br>✓ Hypocoercive entropy dissipation"]:::stateStyle
+        D["<b>08_mean_field: McKean-Vlasov PDE</b><br>✓ BAOAB discretization error O(τ²)<br>✓ Continuous-time killing rate c(x,v)"]:::stateStyle
     end
 
     subgraph "Chapter 2: Lemma A - Mass Contraction"
@@ -1002,7 +1004,7 @@ $$
 
 where $\tilde{\mu}_i$ are the **centered empirical measures** (empirical measures with their centers of mass translated to the origin).
 
-**Mathematical Foundation:** This lemma uses the Wasserstein contraction results established in the framework. The cloning operator ({prf:ref}`thm-main-contraction-full` from [04_wasserstein_contraction](04_wasserstein_contraction)) and the kinetic operator ({prf:ref}`thm-foster-lyapunov-main` from [06_convergence](06_convergence)) each provide contraction of the Wasserstein distance **in expectation** after one step of the dynamics.
+**Mathematical Foundation:** This lemma uses the Wasserstein contraction results established in the framework. The cloning operator ({prf:ref}`thm-main-contraction-full` from {doc}`04_wasserstein_contraction`) and the kinetic operator ({prf:ref}`thm-foster-lyapunov-main` from {doc}`06_convergence`) each provide contraction of the Wasserstein distance **in expectation** after one step of the dynamics.
 
 :::{prf:lemma} Exponential Contraction of Structural Variance
 :label: lem-structural-variance-contraction
@@ -1034,7 +1036,7 @@ The proof uses direct application of the Wasserstein contraction results from th
 
 **Step 1: Expected Wasserstein Contraction from Cloning Operator**
 
-From Theorem {prf:ref}`thm-main-contraction-full` in [04_wasserstein_contraction](04_wasserstein_contraction), the cloning operator $\Psi_{\text{clone}}$ satisfies:
+From Theorem {prf:ref}`thm-main-contraction-full` in {doc}`04_wasserstein_contraction`, the cloning operator $\Psi_{\text{clone}}$ satisfies:
 
 $$
 \mathbb{E}[W_2^2(\Psi_{\text{clone}}(\mu_1), \Psi_{\text{clone}}(\mu_2))] \leq (1 - \kappa_W) W_2^2(\mu_1, \mu_2) + C_W
@@ -1050,7 +1052,7 @@ where:
 
 **Step 2: Wasserstein Contraction from Kinetic Operator**
 
-From Theorem {prf:ref}`thm-foster-lyapunov-main` in [06_convergence](06_convergence), the composed operator's Foster-Lyapunov function includes a Wasserstein component $V_W = W_2^2(\mu, \pi_{\text{QSD}})$ that satisfies:
+From Theorem {prf:ref}`thm-foster-lyapunov-main` in {doc}`06_convergence`, the composed operator's Foster-Lyapunov function includes a Wasserstein component $V_W = W_2^2(\mu, \pi_{\text{QSD}})$ that satisfies:
 
 $$
 \mathbb{E}[V_W(\Psi_{\text{kin}}(\mu))] \leq (1 - \kappa_{\text{kin}}\tau) V_W(\mu) + C_{\text{kin}}\tau^2
@@ -1166,7 +1168,7 @@ This lemma proves that the kinetic operator—which combines Langevin diffusion 
 1. **BAOAB integrator:** Langevin dynamics with friction $\gamma$, potential force $\nabla R$, and Gaussian noise (see {prf:ref}`def-baoab-update-rule`)
 2. **Boundary killing:** Walkers that exit the valid domain $\mathcal{X}_{\text{valid}}$ are marked as dead
 
-The QSD $\pi_{\text{QSD}}$ is the quasi-stationary distribution—the unique invariant measure conditioned on survival (see [06_convergence](06_convergence)).
+The QSD $\pi_{\text{QSD}}$ is the quasi-stationary distribution—the unique invariant measure conditioned on survival (see {doc}`06_convergence`).
 
 :::{prf:lemma} Kinetic Operator Hellinger Contraction
 :label: lem-kinetic-hellinger-contraction
@@ -1197,7 +1199,7 @@ where $\tau$ is the time step size.
 
 1. **Bounded initial density:** If the empirical measure at $t=0$ has a bounded density ratio $d\mu_0/d\pi_{\text{QSD}} \leq M_0 < \infty$, which holds for any finite particle system initialized within the valid domain.
 
-2. **Gaussian regularization from cloning:** The cloning operator applies Gaussian perturbations with variance $\delta^2 > 0$ to all walkers (Axiom {prf:ref}`def-axiom-local-perturbation` from [01_fragile_gas_framework](01_fragile_gas_framework)). This acts as a convolution with a Gaussian kernel:
+2. **Gaussian regularization from cloning:** The cloning operator applies Gaussian perturbations with variance $\delta^2 > 0$ to all walkers (Axiom {prf:ref}`def-axiom-local-perturbation` from {doc}`01_fragile_gas_framework`). This acts as a convolution with a Gaussian kernel:
 
    $$
    \tilde{\mu}_{t+} = \tilde{\mu}_t * G_{\delta}
@@ -1301,11 +1303,11 @@ For the proof, we will track the $\sqrt{k_t k_*}$ term exactly and show that dev
 
 **Step 2: Mass Contraction via Boundary Killing (Connection to Mean-Field Limit)**
 
-The boundary killing mechanism in the discrete algorithm is approximated in continuous time by the killing rate $c(x,v)$ derived in the mean-field analysis. We connect the discrete {prf:ref}`lem-mass-contraction-revival-death` to the continuous kinetic operator using the mean-field limit established in [07_mean_field](07_mean_field) and [08_propagation_chaos](08_propagation_chaos).
+The boundary killing mechanism in the discrete algorithm is approximated in continuous time by the killing rate $c(x,v)$ derived in the mean-field analysis. We connect the discrete {prf:ref}`lem-mass-contraction-revival-death` to the continuous kinetic operator using the mean-field limit established in {doc}`08_mean_field` and {doc}`09_propagation_chaos`.
 
 **Step 2a: Discrete-to-Continuous Bridge via Mean-Field Theory**
 
-From [07_mean_field](07_mean_field), Section 4.4, the discrete BAOAB integrator with time step $\tau$ approximates the continuous Langevin SDE with **weak error** $O(\tau^2)$ (Theorem 4.4.3). Specifically, for the killing rate:
+From {doc}`08_mean_field`, Section 4.4, the discrete BAOAB integrator with time step $\tau$ approximates the continuous Langevin SDE with **weak error** $O(\tau^2)$ (Theorem 4.4.3). Specifically, for the killing rate:
 
 :::{prf:proposition} Continuous-Time Killing Rate from BAOAB
 :label: prop-killing-rate-continuous
@@ -1328,7 +1330,7 @@ $$
 
 where the $O(\tau^{3/2})$ error comes from the Gaussian position noise in the BAOAB O-step.
 
-**Proof**: See [07_mean_field](07_mean_field), Lemma 4.4.2 and Theorem 4.4.3. The key insight is that the BAOAB position update is $x^+ = x + v\tau + O(\tau^{3/2})$ (ballistic motion plus Gaussian noise). The exit probability is dominated by the ballistic crossing time $\tau_* = d(x)/v$, giving $p_{\text{exit}} \approx \tau/\tau_* = \tau v/d(x)$ for $\tau < \tau_*$.
+**Proof**: See {doc}`08_mean_field`, Lemma 4.4.2 and Theorem 4.4.3. The key insight is that the BAOAB position update is $x^+ = x + v\tau + O(\tau^{3/2})$ (ballistic motion plus Gaussian noise). The exit probability is dominated by the ballistic crossing time $\tau_* = d(x)/v$, giving $p_{\text{exit}} \approx \tau/\tau_* = \tau v/d(x)$ for $\tau < \tau_*$.
 :::
 
 **Step 2b: Expected Deaths in Continuous Time**
@@ -1509,7 +1511,7 @@ This tells us Hellinger is non-increasing, but we need a **strict contraction** 
 
 **Key ingredient: Entropy production under Langevin dynamics**
 
-From the hypocoercivity theory (see [06_convergence](06_convergence)), the underdamped Langevin dynamics contracts the **relative entropy** $H(\rho \| \pi_{\text{QSD}})$ exponentially:
+From the hypocoercivity theory (see {doc}`06_convergence`), the underdamped Langevin dynamics contracts the **relative entropy** $H(\rho \| \pi_{\text{QSD}})$ exponentially:
 
 $$
 \frac{d}{dt} H(\rho_t \| \pi_{\text{QSD}}) \leq -\alpha_{\text{eff}} H(\rho_t \| \pi_{\text{QSD}})
@@ -1567,7 +1569,7 @@ $$
 
 The right-hand side is the **Hellinger Fisher information** (also called the de Bruijn identity for the Hellinger distance).
 
-**Key observation:** Under the bounded density ratio (Theorem {prf:ref}`thm-uniform-density-bound-hk`) $\rho_t/\pi_{\text{QSD}} \leq M$, we can relate this to the Hellinger distance via a weighted Poincaré inequality. Specifically, for the underdamped Langevin dynamics on the confined domain $\mathcal{X}_{\text{valid}}$ with measure $\pi_{\text{QSD}}$, hypocoercivity theory establishes (see {prf:ref}`thm-foster-lyapunov-main` in [06_convergence](06_convergence)):
+**Key observation:** Under the bounded density ratio (Theorem {prf:ref}`thm-uniform-density-bound-hk`) $\rho_t/\pi_{\text{QSD}} \leq M$, we can relate this to the Hellinger distance via a weighted Poincaré inequality. Specifically, for the underdamped Langevin dynamics on the confined domain $\mathcal{X}_{\text{valid}}$ with measure $\pi_{\text{QSD}}$, hypocoercivity theory establishes (see {prf:ref}`thm-foster-lyapunov-main` in {doc}`06_convergence`):
 
 $$
 \int_{\mathcal{X} \times \mathcal{V}} \frac{|\nabla_{x,v} \sqrt{\rho_t/\pi_{\text{QSD}}}|^2}{\rho_t/\pi_{\text{QSD}}} d\pi_{\text{QSD}} \geq \lambda_{\text{Poin}}(M) \cdot d_H^2(\rho_t, \pi_{\text{QSD}})
@@ -1624,7 +1626,7 @@ This provides a **strict contraction** for the Hellinger distance with explicit 
 
 **Step 4: BAOAB Discretization Error**
 
-The BAOAB integrator approximates the continuous Langevin flow with $O(\tau^2)$ weak error (see [07_mean_field](07_mean_field)). Specifically, for the Hellinger distance:
+The BAOAB integrator approximates the continuous Langevin flow with $O(\tau^2)$ weak error (see {doc}`08_mean_field`). Specifically, for the Hellinger distance:
 
 $$
 \left| \mathbb{E}[d_H^2(\mu_\tau^{\text{BAOAB}}, \pi_{\text{QSD}})] - \mathbb{E}[d_H^2(\mu_\tau^{\text{exact}}, \pi_{\text{QSD}})] \right| \leq K_H \tau^2 (1 + d_H^2(\mu_0, \pi_{\text{QSD}}))
@@ -1885,7 +1887,7 @@ The overall rate is limited by the slower of these two mechanisms: $\kappa_{\tex
 
 **Remark on the Role of Hypocoercivity:**
 
-The proof crucially relies on **hypocoercivity** (Villani, 2009; see [06_convergence](06_convergence)) to show that even though the Langevin noise acts only on velocities (not positions), the coupling between $v \cdot \nabla_x$ and the velocity diffusion creates effective dissipation in both $(x, v)$ coordinates.
+The proof crucially relies on **hypocoercivity** (Villani, 2009; see {doc}`06_convergence`) to show that even though the Langevin noise acts only on velocities (not positions), the coupling between $v \cdot \nabla_x$ and the velocity diffusion creates effective dissipation in both $(x, v)$ coordinates.
 
 **Key insight:** Without hypocoercivity, we would only have contraction in velocity space but not in position space. Hypocoercivity is what allows the kinetic operator to contract the **full phase space distance**, which is essential for Hellinger convergence.
 
@@ -1972,7 +1974,7 @@ This section establishes rigorous $L^\infty$ bounds on the time-evolved density 
 
 #### 2.1. The McKean-Vlasov-Fokker-Planck Equation
 
-From `07_mean_field.md`, the phase-space density $f(t, x, v)$ evolves according to:
+From {doc}`08_mean_field`, the phase-space density $f(t, x, v)$ evolves according to:
 
 $$
 \frac{\partial f}{\partial t} = \mathcal{L}_{\text{kin}}^* f + \mathcal{L}_{\text{clone}}^* f - c(z) f + B[f, m_d]
@@ -1986,8 +1988,8 @@ where:
 - $B[f, m_d](t, z) = \lambda_{\text{revive}} \cdot m_d(t) \cdot \frac{f(t,z)}{m_a(t)}$ is the **revival source term** (additive), where $m_a(t) = \|f(t, \cdot)\|_{L^1}$ is the alive mass and $m_d(t) = \int c(z')f(t,z')dz'$ is the death rate
 
 **Key Structure**:
-- $\mathcal{L}_{\text{kin}}^*$ is **hypoelliptic** (Hörmander's theorem, `06_convergence.md` Section 4.4.1)
-- $\mathcal{L}_{\text{clone}}^*$ provides **Gaussian regularization** (σ_x > 0, `03_cloning.md` line 6022)
+- $\mathcal{L}_{\text{kin}}^*$ is **hypoelliptic** (Hörmander's theorem, {doc}`06_convergence` Section 4.4.1)
+- $\mathcal{L}_{\text{clone}}^*$ provides **Gaussian regularization** (σ_x > 0, {doc}`03_cloning` line 6022)
 - Killing is bounded: $\|c\|_\infty < \infty$
 - Revival source $B[f, m_d]$ couples the alive and dead populations
 
@@ -1996,7 +1998,7 @@ where:
 :::{prf:lemma} Hörmander's Bracket Condition
 :label: lem-hormander-bracket
 
-**Reference**: `06_convergence.md` Section 4.4.1, lines 892-950
+**Reference**: {doc}`06_convergence` Section 4.4.1, lines 892-950
 
 The kinetic generator $\mathcal{L}_{\text{kin}}$ has the form:
 
@@ -2124,7 +2126,7 @@ where $C_0, C_1$ depend only on the bracket depth and dimension.
 
 **Step 2: Cloning Operator **
 
-The cloning operator with Gaussian position jitter has the form (from `03_cloning.md` line 6022):
+The cloning operator with Gaussian position jitter has the form (from {doc}`03_cloning` line 6022):
 
 $$
 \mathcal{L}_{\text{clone}}^* f = \int_\Omega K_{\text{clone}}(z, z') V[f](z, z') [f(z') - f(z)] dz'
@@ -2142,7 +2144,7 @@ $$
 
 $$
 
-**Revised $L^\infty$ Bound**: The fitness functional satisfies (from `03_cloning.md`):
+**Revised $L^\infty$ Bound**: The fitness functional satisfies (from {doc}`03_cloning`):
 
 $$
 0 \leq V[f](z, z') \leq V_{\max} := \max\left(1, \frac{1}{\eta}\right)
@@ -2183,7 +2185,7 @@ $$
 
 **Step 4: Revival Term (Mass-Dependent Source)**
 
-The revival operator re-injects mass into the safe region. From `07_mean_field.md`, the revival source has the form
+The revival operator re-injects mass into the safe region. From {doc}`08_mean_field`, the revival source has the form
 
 $$
 r_{\text{revival}}(z) = \lambda_{\text{rev}} \frac{m_d(t)}{m_a(t)} f_{\text{safe}}(z),
@@ -2373,7 +2375,7 @@ $$
 
 where $c_{\sigma_x, R}$ is defined in Lemma {prf:ref}`lem-gaussian-kernel-lower-bound`.
 
-**Proof**: From `03_cloning.md` (line 6022), the position update is:
+**Proof**: From {doc}`03_cloning` (line 6022), the position update is:
 
 $$
 x_i' = x_j + \sigma_x \zeta_i^x \quad \text{where } \zeta_i^x \sim \mathcal{N}(0, I_d)
@@ -2387,7 +2389,7 @@ $$
 
 $$
 
-where $w(y)$ is the fitness weighting (always positive). Since $w(y) \geq \eta > 0$ (floor from rescale transformation, `01_fragile_gas_framework.md`), we have:
+where $w(y)$ is the fitness weighting (always positive). Since $w(y) \geq \eta > 0$ (floor from rescale transformation, {doc}`01_fragile_gas_framework`), we have:
 
 $$
 \rho_{\text{post-clone}}(x) \geq \eta \int_{\mathcal{X}_{\text{valid}}} G_{\sigma_x}(x - y) \rho_{\text{pre-clone}}(y) dy
@@ -2545,7 +2547,7 @@ We leverage the theory of quasi-stationary distributions for absorbed Markov pro
 
 **References**:
 - Champagnat & Villemonais (2016, *Ann. Appl. Probab.* 26:3547-3569)
-- `06_convergence.md` Theorem 4.5 (lines 906-947)
+- {doc}`06_convergence` Theorem 4.5 (lines 906-947)
 
 For the Euclidean Gas initialized from the quasi-stationary distribution $\pi_{\text{QSD}}$, the absorption time $\tau_\dagger$ (first time when all walkers are dead) satisfies:
 
@@ -2563,7 +2565,7 @@ $$
 
 **Interpretation**: The probability of survival up to time $T$ approaches 1 exponentially fast in $N$. Total extinction is exponentially rare for large swarms.
 
-**Proof Sketch**: The key mechanism is the **revival operator**. From `07_mean_field.md`, dead walkers are revived by cloning from the alive population. The revival rate is proportional to the alive mass:
+**Proof Sketch**: The key mechanism is the **revival operator**. From {doc}`08_mean_field`, dead walkers are revived by cloning from the alive population. The revival rate is proportional to the alive mass:
 
 $$
 \frac{dm_a}{dt} \geq -C_{\text{death}} m_a + C_{\text{revival}} m_d = -C_{\text{death}} m_a + C_{\text{revival}}(1 - m_a)
@@ -2606,7 +2608,7 @@ $$
 We split the argument into an **early-time deterministic floor** and a **late-time concentration regime**. Throughout we denote $k_t = k_t(\omega)$ the number of alive walkers and $m_a(t) = \|\rho_t\|_{L^1}$ the PDE mass.
 
 **Step 0: Deterministic floor on $[0, t_{\text{eq}}]$ via logistic ODE**  
-The mass equation derived in `07_mean_field.md` reads
+The mass equation derived in {doc}`08_mean_field` reads
 
 $$
 \frac{d}{dt} m_a(t) = -\int_\Omega c(z) \rho_t(z) dz + \lambda_{\text{rev}} \big( 1 - m_a(t) \big).
@@ -2654,7 +2656,7 @@ $$
 This establishes the desired floor on $[0, t_{\text{eq}}]$.
 
 **Step 1: Spectral gap for configuration observables (removing the Markov assumption on $k_t$)**  
-The $N$-particle process $Z_t = (z_t^{(1)}, \ldots, z_t^{(N)})$ is geometrically ergodic with spectral gap $\kappa_{\text{full}} > 0$ in $L^2(\Pi_{\text{QSD}}^{(N)})$ (Theorem 4.5 of `06_convergence.md`). For any observable $F : \Omega^N \to \mathbb{R}$,
+The $N$-particle process $Z_t = (z_t^{(1)}, \ldots, z_t^{(N)})$ is geometrically ergodic with spectral gap $\kappa_{\text{full}} > 0$ in $L^2(\Pi_{\text{QSD}}^{(N)})$ (Theorem 4.5 of {doc}`06_convergence`). For any observable $F : \Omega^N \to \mathbb{R}$,
 
 $$
 \text{Var}_{\Pi_{\text{QSD}}^{(N)}}(F) \leq \frac{1}{\kappa_{\text{full}}} \langle -\mathcal{L}^{(N)} F, F \rangle.
@@ -2675,7 +2677,7 @@ where we set $\beta_{\text{gap}} := \kappa_{\text{full}} / 2$ (the second inequa
 This argument works directly on the full configuration process $Z_t$; no Markov property for the projected count $k_t$ is required, thereby correcting the earlier (invalid) reduction to a standalone birth-death chain.
 
 **Step 2: Finite-time concentration after equilibration**  
-Let $\mathcal{L}_t$ be the law of $Z_t$ starting from any initial configuration with alive mass at least $c_{\text{early}}$. By Theorem 4.5 of `06_convergence.md`,
+Let $\mathcal{L}_t$ be the law of $Z_t$ starting from any initial configuration with alive mass at least $c_{\text{early}}$. By Theorem 4.5 of {doc}`06_convergence`,
 
 $$
 \|\mathcal{L}_t - \Pi_{\text{QSD}}^{(N)}\|_{\text{TV}}
@@ -2761,7 +2763,7 @@ $$
 deterministically (with probability 1).
 :::
 
-**Proof**: On $\{\tau_\dagger = \infty\}$, the system has positive alive mass for all time. By geometric ergodicity (`06_convergence.md` Theorem 4.5), the empirical measure converges exponentially to the QSD, which has mass $m_{\text{eq}}$. For $t \geq t_{\text{eq}}$ large enough, the mass is within $m_{\text{eq}} / 2$ of equilibrium, and since $c_{\text{mass}} \leq m_{\text{eq}} / 2$ by definition, we obtain $\|\rho_t\|_{L^1} \geq c_{\text{mass}}$. $\square$
+**Proof**: On $\{\tau_\dagger = \infty\}$, the system has positive alive mass for all time. By geometric ergodicity ({doc}`06_convergence` Theorem 4.5), the empirical measure converges exponentially to the QSD, which has mass $m_{\text{eq}}$. For $t \geq t_{\text{eq}}$ large enough, the mass is within $m_{\text{eq}} / 2$ of equilibrium, and since $c_{\text{mass}} \leq m_{\text{eq}} / 2$ by definition, we obtain $\|\rho_t\|_{L^1} \geq c_{\text{mass}}$. $\square$
 
 **Which Formulation to Use?**
 
@@ -2792,7 +2794,7 @@ $$
 Write $k_s := N \|\mu_s^N\|_{L^1}$ for the number of alive walkers. The proof has two components.
 
 **Step 1: Mean-field bias control**  
-Section 3 of `07_mean_field.md` (see Theorem {prf:ref}`thm-mean-field-limit-informal` and the quantitative estimates in its proof) yields
+Section 3 of {doc}`08_mean_field` (see Theorem {prf:ref}`thm-mean-field-limit-informal` and the quantitative estimates in its proof) yields
 
 $$
 \left| \mathbb{E}\left[\frac{k_s}{N}\right] - \|\rho_s\|_{L^1} \right| \leq \frac{C_{\text{bias}}(t)}{N}
@@ -2861,8 +2863,8 @@ We now assemble the results from Sections 2-4 into the main theorem.
 :label: thm-bounded-density-ratio-main
 
 **Assumptions**:
-- Euclidean Gas dynamics with parameters $(\gamma, \sigma_v, \sigma_x, U, R)$ from `02_euclidean_gas.md`
-- Cloning position jitter $\sigma_x > 0$ (`03_cloning.md` line 6022)
+- Euclidean Gas dynamics with parameters $(\gamma, \sigma_v, \sigma_x, U, R)$ from {doc}`02_euclidean_gas`
+- Cloning position jitter $\sigma_x > 0$ ({doc}`03_cloning` line 6022)
 - Initial density $\|f_0\|_\infty \leq M_0 < \infty$
 - Number of walkers $N \geq N_0$ sufficiently large
 
@@ -2977,7 +2979,7 @@ $$
 
 For late times, we use the exponential convergence to QSD combined with local stability analysis to obtain a uniform bound that does not depend on time.
 
-**Strategy Overview**: The key insight is that once the system is close to the QSD in total variation distance (exponentially fast by `06_convergence.md`), we can use *local regularity theory* to upgrade this weak convergence to $L^\infty$ estimates. The argument proceeds in three steps:
+**Strategy Overview**: The key insight is that once the system is close to the QSD in total variation distance (exponentially fast by {doc}`06_convergence`), we can use *local regularity theory* to upgrade this weak convergence to $L^\infty$ estimates. The argument proceeds in three steps:
 
 1. **Linearization**: Show that near the QSD, the nonlinear McKean-Vlasov-Fokker-Planck equation can be analyzed via its linearization
 2. **L¹-to-L∞ Parabolic Estimate**: Use hypoelliptic regularity to bound the $L^\infty$ norm of perturbations in terms of their $L^1$ norm
@@ -3019,7 +3021,7 @@ $$
 
 $$
 
-**Cloning Operator**: The cloning operator has the form (from `03_cloning.md`):
+**Cloning Operator**: The cloning operator has the form (from {doc}`03_cloning`):
 
 $$
 \mathcal{L}_{\text{clone}}^* f = \int K_{\text{clone}}(z, z') V[f](z, z') [f(z') - f(z)] dz'
@@ -3098,7 +3100,7 @@ for all $t \geq 0$, provided $\delta < \delta_0$ for some threshold $\delta_0$ d
 
 This follows from standard perturbation theory for nonlinear parabolic equations:
 
-1. **Spectral Gap**: The operator $\mathbb{L}^*$ is the linearization of a hypoelliptic kinetic operator with compact perturbations (cloning, killing, revival). By the results in `06_convergence.md` (geometric ergodicity with rate $\kappa_{\text{QSD}}$), the linearized operator has a spectral gap $\kappa_{\text{lin}} \approx \kappa_{\text{QSD}}$.
+1. **Spectral Gap**: The operator $\mathbb{L}^*$ is the linearization of a hypoelliptic kinetic operator with compact perturbations (cloning, killing, revival). By the results in {doc}`06_convergence` (geometric ergodicity with rate $\kappa_{\text{QSD}}$), the linearized operator has a spectral gap $\kappa_{\text{lin}} \approx \kappa_{\text{QSD}}$.
 
 2. **Nonlinear Stability**: For the nonlinear equation $\partial_t \eta = \mathbb{L}^* \eta + \mathcal{N}[\eta]$, we use a Grönwall-type argument. The $L^1$ norm evolves as:
 
@@ -3163,7 +3165,7 @@ $$
 This is a convolution with the Gaussian kernel $K_{\text{clone}}(z, z') = G_{\sigma_x}(x - x') \delta(v - v')$ plus multiplication by the fitness functional $V[\pi]$ and its derivative $V'[\pi]$.
 
 - The Gaussian kernel $G_{\sigma_x}$ is $C^\infty$ (analytic).
-- The fitness functional $V[\pi]$ depends on the potential $U$ and the virtual reward mechanism. From the Fragile framework (`02_euclidean_gas.md`, Axiom of Smooth Potential), the potential $U \in C^\infty(\mathcal{X})$. The virtual reward is a functional of integrals of $\pi$, which are smooth.
+- The fitness functional $V[\pi]$ depends on the potential $U$ and the virtual reward mechanism. From the Fragile framework ({doc}`02_euclidean_gas`, Axiom of Smooth Potential), the potential $U \in C^\infty(\mathcal{X})$. The virtual reward is a functional of integrals of $\pi$, which are smooth.
 - **Conclusion**: Convolution with a $C^\infty$ kernel preserves regularity. If $\eta \in C^k$, then $\mathbb{L}_{\text{clone}}^* \eta \in C^k$.
 
 **Killing term**: $-c(z) \eta$ where $c(z) \geq 0$ is the killing rate. From the framework, $c(z)$ is smooth (defined by the domain boundaries with smooth indicator functions). If $\eta \in C^k$, then $c(z) \eta \in C^k$.
@@ -3204,7 +3206,7 @@ $\square$
 
 **Remark**: A critical question is whether the nonlocal cloning/revival operators destroy hypoellipticity. The answer is **no** – they act as smooth source terms that are regularized by the kinetic operator's hypoelliptic smoothing. The key framework ingredients are:
 - Hörmander's condition for $\mathcal{L}_{\text{kin}}$ (Lemma {prf:ref}`lem-hormander-bracket`)
-- Smoothness of the potential $U$ (Axiom of Smooth Potential, `02_euclidean_gas.md`)
+- Smoothness of the potential $U$ (Axiom of Smooth Potential, {doc}`02_euclidean_gas`)
 - Gaussian mollification from cloning noise (Lemma {prf:ref}`lem-gaussian-kernel-lower-bound`)
 
 **Step 2B'': Relative Boundedness and Dirichlet Form Coercivity**
@@ -3300,7 +3302,7 @@ Therefore, $C_2 = \lambda_{\text{rev}} C_{\text{safe}} (\|c\|_\infty + \|1\|_{L^
 
 **Part 3: Kato-Rellich Perturbation Theory**
 
-From `06_convergence.md`, the pure kinetic operator $\mathcal{L}_{\text{kin}}^*$ has spectral gap $\kappa_{\text{kin}} > 0$. By **Kato-Rellich perturbation theory** for sectorial operators (Kato 1995, *Perturbation Theory for Linear Operators*, Springer, Theorem IV.3.17):
+From {doc}`06_convergence`, the pure kinetic operator $\mathcal{L}_{\text{kin}}^*$ has spectral gap $\kappa_{\text{kin}} > 0$. By **Kato-Rellich perturbation theory** for sectorial operators (Kato 1995, *Perturbation Theory for Linear Operators*, Springer, Theorem IV.3.17):
 
 If the perturbation operators $\mathbb{L}_{\text{clone}}^*$, $\mathbb{L}_{\text{revival}}^*$, and $-c(z)$ satisfy $\|B g\|_{L^2} \leq \beta \|g\|_{L^2}$ with $\beta < \kappa_{\text{kin}}$, then the perturbed operator retains a spectral gap:
 
@@ -3802,7 +3804,7 @@ Theorem {prf:ref}`thm-hk-convergence-main-assembly` holds with the following sco
 :::{prf:theorem} Exponential HK-Convergence of the Fragile Gas (CONDITIONAL ON SURVIVAL)
 :label: thm-hk-convergence-conditional
 
-Under the foundational axioms of the Euclidean Gas (`01_fragile_gas_framework.md`, `02_euclidean_gas.md`, `03_cloning.md`), the empirical measure $\mu_t$ converges exponentially to the quasi-stationary distribution $\pi_{\text{QSD}}$ in the Hellinger-Kantorovich metric:
+Under the foundational axioms of the Euclidean Gas ({doc}`01_fragile_gas_framework`, {doc}`02_euclidean_gas`, {doc}`03_cloning`), the empirical measure $\mu_t$ converges exponentially to the quasi-stationary distribution $\pi_{\text{QSD}}$ in the Hellinger-Kantorovich metric:
 
 $$
 \text{HK}(\mu_t, \pi_{\text{QSD}}) \leq C_{\text{HK}} e^{-\kappa_{\text{HK}} t}
@@ -3845,11 +3847,11 @@ The remaining tasks for extending the HK convergence theory are:
 - Meyn, S. & Tweedie, R. (2009). *Markov Chains and Stochastic Stability* (2nd ed.). Cambridge University Press.
 
 **Fragile Framework Documents**:
-- `01_fragile_gas_framework.md` - Foundational axioms
-- `02_euclidean_gas.md` - Euclidean Gas specification
-- `03_cloning.md` - Cloning operator with Gaussian noise
-- `06_convergence.md` - Geometric ergodicity and QSD theory
-- `07_mean_field.md` - McKean-Vlasov-Fokker-Planck equation
+- {doc}`01_fragile_gas_framework` - Foundational axioms
+- {doc}`02_euclidean_gas` - Euclidean Gas specification
+- {doc}`03_cloning` - Cloning operator with Gaussian noise
+- {doc}`06_convergence` - Geometric ergodicity and QSD theory
+- {doc}`08_mean_field` - McKean-Vlasov-Fokker-Planck equation
 - this document - Hellinger-Kantorovich convergence (this proof completes Chapter 5)
 
 

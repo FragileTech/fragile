@@ -732,14 +732,28 @@ where $w_{ee'} = d_g(x_e, x_{e'})^{-2}$ are distance-weighted edge weights encod
 
 **Kernel scaling**: For rigorous convergence {cite}`belkin2008foundation`, one typically uses localized kernel weights with bandwidth $\varepsilon_N \to 0$ and $N \varepsilon_N^{D/2} \to \infty$ (often with density normalization). The $d_g^{-2}$ form here is a shorthand for such localized scaling on the Fractal Set.
 
-**Convergence** (requires proof): Under appropriate regularity conditions on the QSD sampling:
+**Convergence (Fractal Set)**: Under QSD sampling and the emergent-continuum permits, the graph Laplacian converges:
 
 $$
 \mathbb{E}[(\Delta_{\mathcal{F}} \phi)(e_i)] \xrightarrow{N \to \infty} (\Delta_g \phi)(x_i)
 $$
 where $\Delta_g = \frac{1}{\sqrt{\det g}} \partial_i (\sqrt{\det g} \, g^{ij} \partial_j)$ is the Laplace-Beltrami operator.
 
-**Status**: Convergence rate depends on dimension and kernel regularity; detailed bounds require further analysis.
+:::{prf:proof}
+**Step 1 (Empirical measure convergence).**
+By propagation of chaos ({prf:ref}`thm-propagation-chaos-qsd`), the empirical measure of Fractal Set nodes converges to
+the QSD limit $\mu_\infty$, so graph averages converge to continuum integrals for bounded continuous test functions.
+
+**Step 2 (Dirichlet-form convergence).**
+The emergent-continuum metatheorem ({prf:ref}`mt:emergent-continuum`) and continuum injection
+({prf:ref}`mt:continuum-injection`) identify the graph Dirichlet forms with the continuum Dirichlet form on $(M,g)$.
+The required permits $C_\mu$, $\mathrm{Cap}_H$, $\mathrm{LS}_\sigma$, and $\mathrm{Rep}_K$ are certified in
+{doc}`../1_the_algorithm/02_fractal_gas_latent`, so the hypotheses are discharged inside Volume 3.
+
+**Step 3 (Cheeger gradient).**
+The Cheeger-gradient isomorphism ({prf:ref}`mt:cheeger-gradient`) upgrades energy convergence to gradient convergence,
+yielding $\Delta_{\mathcal{F}} \to \Delta_g$ in the continuum limit. $\square$
+:::
 :::
 
 ---

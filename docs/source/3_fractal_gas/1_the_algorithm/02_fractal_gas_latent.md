@@ -569,12 +569,28 @@ The "Boris" part handles the curl of the reward field {cite}`boris1970relativist
 Each walker evolves in latent space using the Fragile-Agent kinetic operator (Definitions {prf:ref}`def-bulk-drift-continuous-flow` and {prf:ref}`def-baoab-splitting` in `docs/source/1_agent/05_geometry/04_equations_motion.md`) with the additional state-dependent viscous drift from Definition {prf:ref}`def-latent-fractal-gas-viscous-force`. Let $S$ denote the current (post-cloning) swarm state, let $p_i = G(z_i) v_i$ be the metric momentum, and let $\Phi_{\text{eff}}$ be the effective potential. The Boris-BAOAB step with time step $h$ (written for a generic walker $i$, suppressing the index in $(z,p)$) is:
 
 1. **B (half kick + viscous kick + Boris rotation):** $p \leftarrow p - \frac{h}{2}\nabla\Phi_{\text{eff}}(z) + \frac{h}{2}G(z)\mathbf{F}_{\mathrm{viscous},i}(S)$; if $\mathcal{F}=d\mathcal{R}\neq 0$, apply Boris rotation with $\beta_{\text{curl}} G^{-1}\mathcal{F}$; then $p \leftarrow p - \frac{h}{2}\nabla\Phi_{\text{eff}}(z) + \frac{h}{2}G(z)\mathbf{F}_{\mathrm{viscous},i}(S)$.
-2. **A (half drift):** $z \leftarrow \mathrm{Exp}_z\!\left(\frac{h}{2}G^{-1}(z)\,p\right)$.
+2. **A (half drift):** $z \leftarrow \mathrm{Exp}_z\!\left(\frac{h}{2}\psi_v(G^{-1}(z)\,p)\right)$.
 3. **O (thermostat):** $p \leftarrow c_1 p + c_2\,G^{1/2}(z)\,\Sigma_{\text{reg}}(z)\,\xi$, with $\xi\sim\mathcal{N}(0,I)$, $c_1=e^{-\gamma h}$, $c_2=\sqrt{(1-c_1^2)T_c}$ (take $\Sigma_{\text{reg}}=I$ if anisotropic diffusion is disabled).
 4. **A (half drift):** repeat step 2.
 5. **B (half kick + viscous kick + Boris rotation):** repeat step 1.
+6. **Velocity squashing (speed cap):** set $v \leftarrow \psi_v(G^{-1}(z)\,p)$ for storage, with $\psi_v$ defined below.
 
 In the conservative case $\mathcal{F}=0$, the Boris rotation is identity and the scheme reduces to standard BAOAB.
+
+:::{prf:definition} Smooth Velocity Squashing Map
+:label: def-latent-velocity-squashing
+
+Fix a maximum speed $V_{\mathrm{alg}} > 0$ (in the metric norm $\|\cdot\|_G$). The smooth radial
+velocity cap is
+
+$$
+\psi_v(v) := V_{\mathrm{alg}} \, \frac{v}{V_{\mathrm{alg}} + \|v\|_G}, \qquad \psi_v(0)=0.
+$$
+
+Then $\|\psi_v(v)\|_G \le V_{\mathrm{alg}}$, the map preserves direction, and it is smooth away from
+the origin. This is the latent-space analogue of the Euclidean squashing map in
+{prf:ref}`lem-squashing-properties-generic`.
+:::
 
 :::{note}
 :class: feynman-added
@@ -593,7 +609,7 @@ Let $S$ denote the current swarm state.
 3. Companion draw for fitness distances: sample $c^{\mathrm{dist}}$ from the phase-space softmax kernel $P_i(\cdot)$ (uniform for dead walkers).
 4. Fitness: compute $V(S;c^{\mathrm{dist}})$ (dead walkers get fitness $0$).
 5. Companion draw for cloning: sample $c^{\mathrm{clone}}$ from $P_i$ for alive walkers (uniform for dead), and apply cloning using $V(S;c^{\mathrm{dist}})$.
-6. Kinetic: apply the latent Boris-BAOAB step for the Lorentz-Langevin dynamics, including the viscous coupling term $\mathbf{F}_{\mathrm{viscous}}$.
+6. Kinetic: apply the latent Boris-BAOAB step for the Lorentz-Langevin dynamics (including $\mathbf{F}_{\mathrm{viscous}}$), using $\psi_v$-squashed drift velocities, and then squash velocities via $\psi_v$.
 
 The output is the next swarm state $(z, v)$ and diagnostics (fitness, companions, cloning stats).
 
@@ -631,6 +647,7 @@ The output is the next swarm state $(z, v)$ and diagnostics (fitness, companions
 | Kinetic | $\ell_{\mathrm{visc}}$ | 1.0 | Viscous coupling length scale | `KineticOperator.viscous_length_scale` | [distance] |
 | Kinetic | $T_c$ | $>0$ | Cognitive temperature | {prf:ref}`def-cognitive-temperature` | [dimensionless] |
 | Kinetic | $\beta_{\text{curl}}$ | $\ge 0$ | Curl coupling strength | {prf:ref}`def-bulk-drift-continuous-flow` | [dimensionless] |
+| Kinetic | $V_{\mathrm{alg}}$ | problem-dependent | Velocity cap for $\psi_v$ | {prf:ref}`def-latent-velocity-squashing` | [distance/time] |
 | Kinetic | $\Phi_{\text{eff}}$ | field | Effective potential | {prf:ref}`def-effective-potential` | [dimensionless] |
 | Kinetic | $\mathcal{R}$ | field | Reward 1-form | {prf:ref}`def-reward-1-form` | [dimensionless] |
 | Kinetic | $u_\pi$ | policy field | Control drift | {prf:ref}`def-bulk-drift-continuous-flow` | [dimensionless] |

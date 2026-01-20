@@ -4,6 +4,8 @@
 
 **Purpose**: Establish the rigorous structure of the Quasi-Stationary Distribution (QSD) for the Euclidean Gas algorithm
 
+**Dependencies**: {doc}`03_cloning`, {doc}`05_kinetic_contraction`, {doc}`06_convergence`, {doc}`08_mean_field`, {doc}`09_propagation_chaos`, {doc}`15_kl_convergence`
+
 ---
 
 ## A1.1 QSD Structure: Exchangeability
@@ -250,11 +252,11 @@ where the generator $\mathcal{L}[\rho]$ depends nonlinearly on $\rho$ through me
 
 :::{prf:proof}
 
-This result is established in detail in **Chapter 08: Propagation of Chaos** (`08_propagation_chaos.md`). We provide a brief outline of the three-step proof strategy:
+This result is established in detail in **Chapter 08: Propagation of Chaos** ({doc}`09_propagation_chaos`). We provide a brief outline of the three-step proof strategy:
 
 **Step 1: Tightness of $\{\mu_N\}_{N \geq 1}$**
 
-From the Foster-Lyapunov analysis in `06_convergence.md`, the N-particle QSD $\pi_N$ satisfies uniform moment bounds:
+From the Foster-Lyapunov analysis in {doc}`06_convergence`, the N-particle QSD $\pi_N$ satisfies uniform moment bounds:
 
 $$
 \sup_{N \geq 1} \mathbb{E}_{\pi_N}[\|w_1\|^p] < \infty
@@ -265,7 +267,7 @@ for any $p \geq 1$, where $w_1$ is the state of a single walker. These N-uniform
 
 **Step 2: Identification of Limit Points**
 
-Let $\mu_\infty$ be any weak limit point of $\{\mu_N\}$. The mean-field analysis in `07_mean_field.md` establishes that the limiting measure must satisfy the stationary McKean-Vlasov equation:
+Let $\mu_\infty$ be any weak limit point of $\{\mu_N\}$. The mean-field analysis in {doc}`08_mean_field` establishes that the limiting measure must satisfy the stationary McKean-Vlasov equation:
 
 $$
 \mathcal{L}[\mu_\infty] \mu_\infty = 0
@@ -276,7 +278,7 @@ in the weak (distributional) sense, where $\mathcal{L}[\rho]$ is the generator o
 
 **Step 3: Uniqueness of the Stationary Solution**
 
-The stationary McKean-Vlasov equation has a **unique** solution $\mu_\infty = \rho_0 dx$ (where $\rho_0$ is the mean-field QSD density). Uniqueness is established in `08_propagation_chaos.md` via:
+The stationary McKean-Vlasov equation has a **unique** solution $\mu_\infty = \rho_0 dx$ (where $\rho_0$ is the mean-field QSD density). Uniqueness is established in {doc}`09_propagation_chaos` via:
 
 1. **Hypoelliptic regularity** (Villani 2009, Hörmander theory) ensuring smoothness of $\rho_0$
 2. **Contraction mapping** for the McKean-Vlasov fixed-point equation
@@ -284,7 +286,7 @@ The stationary McKean-Vlasov equation has a **unique** solution $\mu_\infty = \r
 
 Since every limit point equals the unique $\mu_\infty$, the entire sequence converges: $\mu_N \Rightarrow \mu_\infty$ as $N \to \infty$.
 
-**Conclusion**: The complete rigorous proof with all technical details is provided in `08_propagation_chaos.md`. This theorem is a fundamental result of the Fragile Gas framework, establishing that the discrete N-particle system converges to the continuum mean-field description in the large-N limit. $\square$
+**Conclusion**: The complete rigorous proof with all technical details is provided in {doc}`09_propagation_chaos`. This theorem is a fundamental result of the Fragile Gas framework, establishing that the discrete N-particle system converges to the continuum mean-field description in the large-N limit. $\square$
 :::
 
 ### A1.2.2 Correlation Decay
@@ -402,7 +404,7 @@ For $\|g\|_\infty \leq 1$, this gives $|\text{Cov}| \leq 5/N$, establishing the 
 :::{prf:theorem} Variance of Mixing Measure
 :label: thm-mixing-variance-corrected
 
-Let $\pi_N = \int \mu^{\otimes N} d\mathcal{Q}_N(\mu)$ be the de Finetti representation of the QSD, and let $\rho_0$ be the mean-field limit. Assume the quantitative KL bound from {prf:ref}`lem-quantitative-kl-bound` (document `12_quantitative_error_bounds.md`):
+Let $\pi_N = \int \mu^{\otimes N} d\mathcal{Q}_N(\mu)$ be the de Finetti representation of the QSD, and let $\rho_0$ be the mean-field limit. Assume the quantitative KL bound from {prf:ref}`lem-quantitative-kl-bound` (document {doc}`13_quantitative_error_bounds`):
 
 $$
 D_{KL}(\pi_N \| \rho_0^{\otimes N}) \leq \frac{C_{\text{int}}}{N}
@@ -587,7 +589,7 @@ where the LSI constant $C_{\text{LSI}}$ is **independent of $N$** for all $N \ge
 
 :::{prf:proof}
 
-The proof of N-uniform LSI for the Euclidean Gas QSD is developed in detail in **Chapter 9: KL Convergence** (`15_kl_convergence.md`). We outline the key steps:
+The proof of N-uniform LSI for the Euclidean Gas QSD is developed in detail in **Chapter 9: KL Convergence** ({doc}`15_kl_convergence`). We outline the key steps:
 
 **Main Observation**: The proof does NOT use tensorization (Bakry-Émery), which would require product structure $\pi_N = \mu^{\otimes N}$. Since the QSD is exchangeable but not a product measure (due to cloning-induced correlations), tensorization fails. Instead, we use **hypocoercivity theory** combined with perturbation analysis.
 
@@ -603,7 +605,7 @@ These combine to yield an LSI for the kinetic component with constant $C_{\text{
 
 **Step 2: Cloning Component - Wasserstein Contraction**
 
-The cloning operator $\mathcal{L}_{\text{clone}}$ contracts the Wasserstein distance (established in `03_cloning.md`, Keystone Principle). This contraction property, combined with the Otto calculus and Wasserstein gradient flow structure, implies that cloning **preserves** or **improves** LSI constants (Diaconis-Saloff-Coste 1996, Markov chain spectral gap theory).
+The cloning operator $\mathcal{L}_{\text{clone}}$ contracts the Wasserstein distance (established in {doc}`03_cloning`, Keystone Principle). This contraction property, combined with the Otto calculus and Wasserstein gradient flow structure, implies that cloning **preserves** or **improves** LSI constants (Diaconis-Saloff-Coste 1996, Markov chain spectral gap theory).
 
 **Step 3: Perturbation Theory (Holley-Stroock)**
 
@@ -613,7 +615,7 @@ If $\nu$ satisfies LSI with constant $C_1$ under generator $\mathcal{L}_1$, and 
 
 Since cloning preserves LSI and the kinetic LSI constant is N-uniform, the combined LSI constant $C_{\text{LSI}}$ is also N-uniform.
 
-**Conclusion**: The complete technical proof, including precise definitions of "controlled perturbation" and verification of all hypotheses, is provided in `15_kl_convergence.md`. The N-uniformity of $C_{\text{LSI}}$ is the key technical achievement enabling quantitative propagation of chaos bounds in Chapter 12. $\square$
+**Conclusion**: The complete technical proof, including precise definitions of "controlled perturbation" and verification of all hypotheses, is provided in {doc}`15_kl_convergence`. The N-uniformity of $C_{\text{LSI}}$ is the key technical achievement enabling quantitative propagation of chaos bounds in Chapter 12. $\square$
 :::
 
 **Key technical lemma**:
@@ -771,15 +773,15 @@ Therefore, the mean-field density $\rho_\infty$ satisfies the LSI with constant 
 ### A1.4.2 Framework References
 
 **QSD existence and uniqueness**:
-- [06_convergence](06_convergence) - Foster-Lyapunov drift conditions
-- [02_euclidean_gas](02_euclidean_gas) - Euclidean Gas specification
+- {doc}`06_convergence` - Foster-Lyapunov drift conditions
+- {doc}`02_euclidean_gas` - Euclidean Gas specification
 
 **Mean-field limit**:
-- [07_mean_field](07_mean_field) - McKean-Vlasov PDE derivation
-- [08_propagation_chaos](08_propagation_chaos) - Wasserstein convergence
+- {doc}`08_mean_field` - McKean-Vlasov PDE derivation
+- {doc}`09_propagation_chaos` - Wasserstein convergence
 
 **Functional inequalities**:
-- [15_kl_convergence](15_kl_convergence) - Finite-N LSI
+- {doc}`15_kl_convergence` - Finite-N LSI
 - Chapter 2 (Geometric Gas) - Extended LSI analysis with viscous coupling
 
 ### A1.4.3 Practical Implications
@@ -817,8 +819,8 @@ Therefore, the mean-field density $\rho_\infty$ satisfies the LSI with constant 
 - Holley, R., & Stroock, D. (1987). "Logarithmic Sobolev inequalities and stochastic Ising models." *Journal of Statistical Physics*, 46(5-6), 1159-1194.
 
 **Framework documents**:
-- [02_euclidean_gas](02_euclidean_gas) - Euclidean Gas specification
-- [06_convergence](06_convergence) - QSD existence
-- [07_mean_field](07_mean_field) - McKean-Vlasov derivation
-- [08_propagation_chaos](08_propagation_chaos) - Mean-field limit
-- [15_kl_convergence](15_kl_convergence) - KL-convergence analysis
+- {doc}`02_euclidean_gas` - Euclidean Gas specification
+- {doc}`06_convergence` - QSD existence
+- {doc}`08_mean_field` - McKean-Vlasov derivation
+- {doc}`09_propagation_chaos` - Mean-field limit
+- {doc}`15_kl_convergence` - KL-convergence analysis

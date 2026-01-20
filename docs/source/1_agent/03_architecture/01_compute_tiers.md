@@ -1593,22 +1593,27 @@ from geometry alone during dreaming, or accept a discrete chart index during pla
 ```{mermaid}
 %%{init: {"themeVariables": {"edgeLabelBackground":"#ffffff","textColor":"#1a1a1a","lineColor":"#666666"}}}%%
 flowchart TD
-    subgraph DEC["Inverse atlas decoder (autonomous)"]
-        Zgeo["Geometry (input)"] -- "z_geo = e_k + z_n [B, D]" --> Pbank["Chart projectors (nn.ModuleList)"]
-        Zgeo -- "z_geo [B, D]" --> LatentRouter["Inverse router (nn.Linear)"]
+    subgraph DEC["Inverse atlas decoder (autonomous, gauge-covariant)"]
+        Zgeo["Geometry (input)"] -- "z_geo = e_k + z_n [B, D]" --> TanhGeo["tanh (module)"]
+        TanhGeo -- "z_geo [B, D]" --> ChartBank["Chart bank (W_k, b_k)"]
+        TanhGeo -- "z_geo [B, D]" --> LatentRouter["Inverse router (SpectralLinear)"]
         ChartIdx["Chart index (optional)"] -- "K_chart [B]" --> OneHot["One-hot (module)"]
         LatentRouter -- "w_soft [B, N_c]" --> Mix["Chart blend (module)"]
         OneHot -- "w_hard [B, N_c]" --> Mix
-        Ztex["Texture (input)"] -- "z_tex [B, D]" --> Texproj["Texture projector (nn.Linear)"]
 
-        Pbank -- "h_i [B, N_c, D]" --> Mix
-        Mix -- "h_global [B, D]" --> Add["Add texture (module)"]
-        Texproj -- "h_tex [B, D]" --> Add
+        ChartBank -- "h_stack [B, N_c, H]" --> Mix
+        Mix -- "h_global [B, H]" --> Render["Renderer (SpectralLinear + NormGatedGELU)"]
+        Mix -- "h_global [B, H]" --> Skip["Render skip (SpectralLinear)"]
+        Render --> AddSkip["Add skip (module)"]
+        Skip --> AddSkip
 
-        Add -- "h_total [B, D]" --> Render["Shared renderer (nn.Sequential)"]
+        Ztex["Texture (input)"] -- "z_tex [B, D]" --> TanhTex["tanh (module)"]
+        TanhTex -- "z_tex [B, D]" --> TexRes["Texture residual (SpectralLinear)"]
+        TexRes -- "alpha * h_tex" --> AddTex["Add texture (module)"]
+        AddSkip -- "x_hat_base [B, D_out]" --> AddTex
     end
 
-    Render -- "x_hat [B, D_out]" --> Out["Reconstruction (nn.Identity)"]
+    AddTex -- "x_hat [B, D_out]" --> Out["Reconstruction (nn.Identity)"]
 
     classDef decoder fill:#e6f2ff,stroke:#1f4e79,stroke-width:1px,color:#1a1a1a;
     classDef router fill:#fff2cc,stroke:#7f6000,stroke-width:1px,color:#1a1a1a;
@@ -1617,8 +1622,8 @@ flowchart TD
     classDef io fill:#f3f3f3,stroke:#666666,stroke-width:1px,color:#1a1a1a;
 
     class LatentRouter,OneHot,Mix router;
-    class ChartIdx,Zgeo,Ztex residual;
-    class Pbank,Texproj,Render,Add decoder;
+    class ChartIdx,Zgeo,Ztex,TanhGeo,TanhTex,TexRes residual;
+    class ChartBank,Render,Skip,AddSkip,AddTex decoder;
     class Out io;
 
     style DEC fill:#eef5ff,stroke:#1f4e79,stroke-width:1px,color:#1a1a1a;
@@ -1628,34 +1633,57 @@ flowchart TD
 ### Topological Decoder Module
 
 ```python
-class TopologicalDecoder(nn.Module):
+import math
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+
+from fragile.core.layers.atlas import _resolve_bundle_params
+from fragile.core.layers.primitives import NormGatedGELU, SpectralLinear
+
+
+class PrimitiveTopologicalDecoder(nn.Module):
     """
-    The inverse atlas.
+    The inverse atlas (gauge-covariant primitives).
     Decodes chart-local geometry back to the global observation space.
     Can infer routing from geometry when chart indices are absent.
     """
-    def __init__(self, latent_dim: int, num_charts: int, output_dim: int):
+
+    def __init__(
+        self,
+        latent_dim: int,
+        hidden_dim: int,
+        num_charts: int,
+        output_dim: int,
+        bundle_size: int | None = None,
+    ) -> None:
         super().__init__()
         self.num_charts = num_charts
 
-        # Chart-specific projectors (one per chart)
-        self.chart_projectors = nn.ModuleList([
-            nn.Linear(latent_dim, latent_dim)
-            for _ in range(num_charts)
-        ])
+        # Chart bank (W_k, b_k): h_stack = W_k z_geo + b_k
+        weight = torch.empty(num_charts, hidden_dim, latent_dim)
+        nn.init.uniform_(weight, -1.0 / math.sqrt(latent_dim), 1.0 / math.sqrt(latent_dim))
+        self.chart_weight = nn.Parameter(weight)
+        self.chart_bias = nn.Parameter(torch.zeros(num_charts, hidden_dim))
+
+        bundle_size, n_bundles = _resolve_bundle_params(hidden_dim, latent_dim, bundle_size)
 
         # Inverse router (dreaming mode)
-        self.latent_router = nn.Linear(latent_dim, num_charts)
+        self.latent_router = SpectralLinear(latent_dim, num_charts, bias=True)
 
-        # Texture projector (global)
-        self.tex_projector = nn.Linear(latent_dim, latent_dim)
+        # Texture residual head (added at output)
+        self.tex_residual = SpectralLinear(latent_dim, output_dim, bias=True)
+        self.tex_residual_scale = nn.Parameter(torch.tensor(0.1))
 
         # Shared renderer
         self.renderer = nn.Sequential(
-            nn.LayerNorm(latent_dim),
-            nn.GELU(),
-            nn.Linear(latent_dim, output_dim)
+            SpectralLinear(hidden_dim, hidden_dim, bias=True),
+            NormGatedGELU(bundle_size=bundle_size, n_bundles=n_bundles),
+            SpectralLinear(hidden_dim, hidden_dim, bias=True),
+            NormGatedGELU(bundle_size=bundle_size, n_bundles=n_bundles),
+            SpectralLinear(hidden_dim, output_dim, bias=True),
         )
+        self.render_skip = SpectralLinear(hidden_dim, output_dim, bias=True)
 
     def forward(
         self,
@@ -1669,23 +1697,23 @@ class TopologicalDecoder(nn.Module):
             z_tex: [B, D] texture residual
             chart_index: [B] optional chart IDs (hard routing)
         """
+        z_geo = torch.tanh(z_geo)
         if chart_index is not None:
             router_weights = F.one_hot(chart_index, num_classes=self.num_charts).float()
         else:
             logits = self.latent_router(z_geo)
             router_weights = F.softmax(logits, dim=-1)
 
-        projected = []
-        for proj in self.chart_projectors:
-            projected.append(proj(z_geo))
+        h_stack = torch.einsum("bl,chl->bch", z_geo, self.chart_weight)  # [B, N_c, H]
+        h_stack = h_stack + self.chart_bias.unsqueeze(0)  # [B, N_c, H]
+        h_global = (h_stack * router_weights.unsqueeze(-1)).sum(dim=1)  # [B, H]
 
-        h_stack = torch.stack(projected, dim=1)  # [B, N_c, D]
-        h_global = (h_stack * router_weights.unsqueeze(-1)).sum(dim=1)  # [B, D]
+        x_hat = self.renderer(h_global) + self.render_skip(h_global)
+        if z_tex is not None:
+            z_tex = torch.tanh(z_tex)
+            x_hat = x_hat + self.tex_residual_scale * self.tex_residual(z_tex)
 
-        h_tex = self.tex_projector(z_tex)
-        h_total = h_global + h_tex
-
-        return self.renderer(h_total)
+        return x_hat
 ```
 
 **Routing modes:**

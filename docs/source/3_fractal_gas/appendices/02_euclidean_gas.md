@@ -10,6 +10,8 @@
 
 **Momentum-Conserving Cloning**: The cloning operator implements inelastic collisions with center-of-mass momentum conservation, random rotation, and restitution coefficient $\alpha_{\text{restitution}}$, providing controlled energy dissipation while maintaining physical plausibility.
 
+**Dependencies**: {doc}`01_fragile_gas_framework`, {doc}`04_single_particle`, {doc}`03_cloning`
+
 ## 1. Introduction
 
 ### 1.1. Goal and Scope
@@ -28,7 +30,7 @@ The main results of this document are:
 
 4. **Operator Kernel** (§5): Construction of the one-step update operator $\Psi_{\mathcal{F}_{\text{EG}}}$ as a well-defined Markov kernel on the swarm state space ({prf:ref}`def-swarm-and-state-space`).
 
-This document focuses exclusively on the **geometric and analytical foundations** of the Euclidean Gas. The convergence analysis (exponential approach to quasi-stationary distribution), mean-field limit (McKean-Vlasov PDE), and propagation of chaos are treated in subsequent documents (06_convergence.md, 06_mean_field.md, 08_propagation_chaos.md).
+This document focuses exclusively on the **geometric and analytical foundations** of the Euclidean Gas. The convergence analysis (exponential approach to quasi-stationary distribution), mean-field limit (McKean-Vlasov PDE), and propagation of chaos are treated in subsequent documents ({doc}`06_convergence`, {doc}`08_mean_field`, {doc}`09_propagation_chaos`).
 
 ### 1.2. Physical Motivation and the Langevin Paradigm
 
@@ -36,7 +38,7 @@ The Euclidean Gas bridges stochastic optimization and statistical physics by enc
 
 The BAOAB integrator ({prf:ref}`alg-euclidean-gas`) implements a symmetric, second-order accurate splitting of the Langevin operator into deterministic drift (B-steps: position update), force application (A-steps: velocity kick), and stochastic thermostat (O-step: Ornstein-Uhlenbeck friction+noise). The deterministic substeps preserve symplectic structure, while the full stochastic integrator maintains numerical stability for finite time steps $\tau$.
 
-The **inelastic collision model** for cloning (Definition 5.7.4 in 03_cloning.md) reflects physical intuition: when walkers clone toward a fitter companion, they undergo a momentum-conserving collision that dissipates kinetic energy (via restitution coefficient $\alpha_{\text{restitution}} \in [0,1]$) while randomizing relative orientations. This mechanism prevents kinetic energy buildup during cloning events and ensures the velocity distribution remains well-behaved.
+The **inelastic collision model** for cloning (Definition 5.7.4 in {doc}`03_cloning`) reflects physical intuition: when walkers clone toward a fitter companion, they undergo a momentum-conserving collision that dissipates kinetic energy (via restitution coefficient $\alpha_{\text{restitution}} \in [0,1]$) while randomizing relative orientations. This mechanism prevents kinetic energy buildup during cloning events and ensures the velocity distribution remains well-behaved.
 
 :::{note} Connection to Statistical Mechanics
 The Euclidean Gas can be viewed as a **driven-dissipative many-particle system** far from equilibrium:
@@ -131,7 +133,7 @@ The document is structured as follows:
 
 ## 2. Framework alignment with velocity states
 
-The canonical Fragile framework (`01_fractal_gas_framework.md`) phrases every axiom in terms of
+The canonical Fragile framework ({doc}`01_fragile_gas_framework`) phrases every axiom in terms of
 an **algorithmic state** $y \in \mathcal Y$ and a binary status. To accommodate walkers of the
 form $w=(x,v,s)$ we first make explicit how each framework object lifts to the product space
 $\mathcal X \times \mathcal V$. Write $\pi_x(x,v,s)=(x,s)$ and $\pi_{\mathcal Y}(x,v,s)=(x,v)$.
@@ -161,7 +163,7 @@ Given a swarm state $\mathcal S_t=(w_1,\dots,w_N)$ with walkers $w_i=(x_i,v_i,s_
 2.  **Measurement stage.** For every alive walker $i\in\mathcal A_t$ sample a companion $c_{\mathrm{pot}}(i)$ from the algorithmic distance-weighted kernel $\mathbb C_\epsilon(\mathcal S_t,i)$, then compute raw reward $r_i:=R(x_i,v_i)$ and algorithmic distance $d_i:=d_{\text{alg}}(i,c_{\mathrm{pot}}(i))$ as defined in Section 3.3 and detailed in {ref}`Stage 2 <sec-eg-stage2>`.
 3.  **Patched standardisation.** Aggregate the raw reward and distance vectors with the empirical operator and apply the regularized standard deviation from {prf:ref}`def-statistical-properties-measurement` to obtain standardized scores with floor $\sigma'_{\min,\mathrm{patch}} = \sqrt{\kappa_{\mathrm{var,min}}+\varepsilon_{\mathrm{std}}^2}$.
 4.  **Logistic rescale.** Apply the Canonical Logistic Rescale Function ({prf:ref}`def-canonical-logistic-rescale-function-example`) to the standardized reward and distance components, producing positive outputs $r'_i$ and $d'_i$. Combine them with the canonical exponents to freeze the potential vector $V_{\text{fit},i}=(d'_i)^\beta (r'_i)^\alpha$ with floor $\eta^{\alpha+\beta}$.
-5.  **Clone/Persist gate.** For each walker draw a clone companion $c_{\mathrm{clone}}(i)$ from the same algorithmic distance-weighted kernel ({prf:ref}`def-alg-distance`) and threshold $T_i\sim\mathrm{Unif}(0,p_{\max})$, compute the canonical score $S_i:=\big(V_{\text{fit},c_{\mathrm{clone}}(i)}-V_{\text{fit},i}\big)/(V_{\text{fit},i}+\varepsilon_{\mathrm{clone}})$, and clone when $S_i>T_i$. Cloned walkers are grouped by companion and undergo a momentum-conserving inelastic collision: positions reset to the companion's position plus Gaussian jitter ($\sigma_x$), while velocities are updated via center-of-mass calculation with random rotation and restitution coefficient $\alpha_{\text{restitution}}$, as detailed in {ref}`Stage 3 <sec-eg-stage3>` and Definition 5.7.4 of `03_cloning.md`. Otherwise the walker persists unchanged. The intermediate swarm sets every status to alive before the kinetic step.
+5.  **Clone/Persist gate.** For each walker draw a clone companion $c_{\mathrm{clone}}(i)$ from the same algorithmic distance-weighted kernel ({prf:ref}`def-alg-distance`) and threshold $T_i\sim\mathrm{Unif}(0,p_{\max})$, compute the canonical score $S_i:=\big(V_{\text{fit},c_{\mathrm{clone}}(i)}-V_{\text{fit},i}\big)/(V_{\text{fit},i}+\varepsilon_{\mathrm{clone}})$, and clone when $S_i>T_i$. Cloned walkers are grouped by companion and undergo a momentum-conserving inelastic collision: positions reset to the companion's position plus Gaussian jitter ($\sigma_x$), while velocities are updated via center-of-mass calculation with random rotation and restitution coefficient $\alpha_{\text{restitution}}$, as detailed in {ref}`Stage 3 <sec-eg-stage3>` and Definition 5.7.4 of {doc}`03_cloning`. Otherwise the walker persists unchanged. The intermediate swarm sets every status to alive before the kinetic step.
 6.  **Kinetic perturbation.** Update each alive clone or survivor by applying the **BAOAB splitting integrator** for one step of underdamped Langevin dynamics with force $F(x)=\nabla R_{\mathrm{pos}}(x)$ and noise scales $(\sigma_v,\sigma_x)$.
 7.  **Status refresh ({prf:ref}`def-status-update-operator`).** Set the new status $s_i^{(t+1)}=\mathbf 1_{\mathcal X_{\mathrm{valid}}}(x_i^+)$ and output the updated swarm $\mathcal S_{t+1}$.
 
@@ -209,7 +211,7 @@ def psi_v(v: np.ndarray, V_alg: float) -> np.ndarray:
     """
     Applies the smooth velocity squashing map to a set of velocity vectors.
 
-    This function implements the formula from Section 3.3 of 02_euclidean_gas.md:
+    This function implements the formula from Section 3.3 of this document:
     ψ_v(v) = V_alg * (v / (V_alg + ||v||))
 
     It ensures that the returned velocity vectors have a magnitude strictly less
@@ -301,7 +303,7 @@ def run_euclidean_gas_step(S_t, params):
 
     Note: This implementation uses uniform companion selection (infinite ε limit).
     For spatially-aware companion selection using algorithmic distance d_alg(i,j),
-    see the full implementation in 03_cloning.md.
+    see the full implementation in {doc}`03_cloning`.
     """
     x_t, v_t, s_t = S_t['x'], S_t['v'], S_t['s']
     N, D = x_t.shape
@@ -407,7 +409,7 @@ def run_euclidean_gas_step(S_t, params):
 
   $$
 
-  where $\lambda_{\text{alg}} \geq 0$ controls the relative importance of velocity similarity in companion selection. For the Euclidean Gas, we set $\lambda_{\text{alg}} = \lambda_v$ to match the Sasaki metric weight, ensuring consistency between the algorithmic behavior and the analytical geometry. See Definition 5.0 in `03_cloning.md` for the full framework specification. This metric defines the algorithm's "perception" of proximity and is distinct from the Sasaki metric used in the analysis (see Section 3.4).
+  where $\lambda_{\text{alg}} \geq 0$ controls the relative importance of velocity similarity in companion selection. For the Euclidean Gas, we set $\lambda_{\text{alg}} = \lambda_v$ to match the Sasaki metric weight, ensuring consistency between the algorithmic behavior and the analytical geometry. See Definition 5.0 in {doc}`03_cloning` for the full framework specification. This metric defines the algorithm's "perception" of proximity and is distinct from the Sasaki metric used in the analysis (see Section 3.4).
 
 - **Reward** $R:\mathcal X_{\mathrm{valid}}\times\mathcal V_{\mathrm{alg}}\to\mathbb R$ couples the position potential with a kinetic regularizer:
 
@@ -528,7 +530,7 @@ We measure dispersion in the Sasaki metric and retain the canonical aggregation 
 
   $$
   The **kinetic perturbation kernel ({prf:ref}`def-perturbation-measure`)** $\mathcal P_{\mathrm{kin}}$ therefore injects independent Gaussian noise into both velocities and positions. The cap ensures $\|v^+\|\le V_{\mathrm{alg}}$; when capping is inactive the drift component coincides with an underdamped Langevin Euler step. If one sets $\sigma_x=0$, the same reachability conclusions follow whenever $\operatorname{diam}(\mathcal X_{\mathrm{comp}})<\tau V_{\mathrm{alg}}$, because $\psi_v(\mathbb R^d)=B(0,V_{\mathrm{alg}})$ makes every point of $\mathcal X_{\mathrm{comp}}$ one-step reachable.
-- **Clone jitter distribution.** When the Clone action fires in {ref}`Stage 3 <sec-eg-stage3>`, positions are reset with Gaussian jitter $x_c + \sigma_x\zeta_x$ where $\zeta_x\sim\mathcal N(0,I_d)$ and $\sigma_x > 0$ is the positional jitter scale. Velocities are updated via the momentum-conserving inelastic collision (see Definition 5.7.4 in `03_cloning.md`) model: for each companion $c$ with cloners $I_c$, the center-of-mass velocity $V_{\text{COM},c} = (v_c + \sum_{j \in I_c} v_j)/(M_c+1)$ is computed, then each walker $k$ in the system receives velocity $\tilde v_k = V_{\text{COM},c} + \alpha_{\text{restitution}} \cdot R_k(v_k - V_{\text{COM},c})$ where $R_k$ is a random rotation and $\alpha_{\text{restitution}} \in [0,1]$ controls energy dissipation. See Definition 5.7.4 in `03_cloning.md` for the complete specification.
+- **Clone jitter distribution.** When the Clone action fires in {ref}`Stage 3 <sec-eg-stage3>`, positions are reset with Gaussian jitter $x_c + \sigma_x\zeta_x$ where $\zeta_x\sim\mathcal N(0,I_d)$ and $\sigma_x > 0$ is the positional jitter scale. Velocities are updated via the momentum-conserving inelastic collision (see Definition 5.7.4 in {doc}`03_cloning`) model: for each companion $c$ with cloners $I_c$, the center-of-mass velocity $V_{\text{COM},c} = (v_c + \sum_{j \in I_c} v_j)/(M_c+1)$ is computed, then each walker $k$ in the system receives velocity $\tilde v_k = V_{\text{COM},c} + \alpha_{\text{restitution}} \cdot R_k(v_k - V_{\text{COM},c})$ where $R_k$ is a random rotation and $\alpha_{\text{restitution}} \in [0,1]$ controls energy dissipation. See Definition 5.7.4 in {doc}`03_cloning` for the complete specification.
 - **Pipeline ordering.** {ref}`Section 4 <sec-eg-kernel>` executes the canonical measurement → standardize → rescale pipeline first, freezes the potential vector, and then applies the Clone/Persist rule to produce an all-alive intermediate swarm. The kinetic update above acts on that intermediate state, and the deterministic status operator sets $s_i^{(t+1)}=\mathbf 1_{\mathcal X_{\mathrm{valid}}}(x_i^+)$ afterward—no cloning occurs after the status check.
 - **In-step independence.** The random draws $(\xi_i^v,\xi_i^x,\zeta_i^x,R_i)$ used in the cloning and kinetic stages are independent across walkers given the current swarm, as required by Assumption A ({prf:ref}`def-assumption-instep-independence`). Here $R_i$ denotes the random rotation applied in the inelastic collision model.
 
@@ -1062,14 +1064,14 @@ The analysis in the remainder of this chapter is performed for the **canonical E
 **Key Simplifications in the Canonical Model:**
 - **Companion Selection:** Uniform random selection from alive walkers (infinite ε limit)
 - **Algorithmic Distance ({prf:ref}`def-alg-distance`):** While formally defined in Section 3.3 as `d_alg(i,j)² = ||x_i - x_j||² + λ_alg ||v_i - v_j||²`, the uniform selection means this distance only affects the raw distance measurement `d_i`, not the companion selection probabilities.
-- **Cloning Operator:** Momentum-conserving inelastic collision model with position jitter (as defined in Definition 5.7.4 of `03_cloning.md`)
+- **Cloning Operator:** Momentum-conserving inelastic collision model with position jitter (as defined in Definition 5.7.4 of {doc}`03_cloning`)
 
-This simplified, non-local model serves as a valuable and tractable baseline. The main convergence proof, presented in the `03_cloning.md` document, builds upon this foundation by analyzing the full model with:
+This simplified, non-local model serves as a valuable and tractable baseline. The main convergence proof, presented in the {doc}`03_cloning` document, builds upon this foundation by analyzing the full model with:
 - **Finite ε:** Companion selection weighted by `exp(-d_alg(i,j)² / 2ε²)`
 - **Spatially-Aware Pairing:** Full sequential stochastic greedy pairing operator
 - **Phase-Space Geometry:** Complete treatment of position-velocity coupling
 
-The proofs in `03_cloning.md` generalize the calculations presented here to be `ε`-dependent, allowing for a full analysis of the local-interaction regime and the transition from position-only (`λ_alg = 0`) to full phase-space geometry (`λ_alg > 0`).
+The proofs in {doc}`03_cloning` generalize the calculations presented here to be `ε`-dependent, allowing for a full analysis of the local-interaction regime and the transition from position-only (`λ_alg = 0`) to full phase-space geometry (`λ_alg > 0`).
 :::
 
 Let $\mathcal S_1,\mathcal S_2$ be two swarm states and denote their alive sets by $\mathcal A_r:=\mathcal A(\mathcal S_r)$. Write $k_r:=|\mathcal A_r|$ and assume $k_1\ge 2$. Define the set of walkers that remain alive in both swarms by $\mathcal A_{\mathrm{stable}}:=\mathcal A_1\cap\mathcal A_2$ and the number of status changes by $n_c(\mathcal S_1,\mathcal S_2):=\sum_{i=1}^N (s_{1,i}-s_{2,i})^2$. The positional displacement of the capped states is
@@ -2187,7 +2189,7 @@ These constants feed the composition bound in Section 4.4 and the axiom checklis
 
 ### 2.6 Axiom for Convergence: Non-Deceptive Landscape
 
-For the geometric ergodicity proof in `convergence.md` to hold, the Euclidean Gas must satisfy an additional environmental axiom that strengthens the Axiom of Environmental Richness. This axiom prevents pathological scenarios where positional diversity and reward signals become decoupled.
+For the geometric ergodicity proof in {doc}`06_convergence` to hold, the Euclidean Gas must satisfy an additional environmental axiom that strengthens the Axiom of Environmental Richness. This axiom prevents pathological scenarios where positional diversity and reward signals become decoupled.
 
 :::{prf:axiom} Axiom of Non-Deceptive Landscapes
 :label: axiom-non-deceptive
@@ -2285,7 +2287,7 @@ For each index $i\in\{1,\dots,N\}$ independently:
    Set $a_i=\textsf{Clone}$ if $S_i>T_i$, else $a_i=\textsf{Persist}$. (Note: For a dead walker `i`, this condition is guaranteed to be met by the Axiom of Guaranteed Revival.)
 3.  **Intermediate state (Inelastic Collision Model).**
 
-   The state update uses the momentum-conserving inelastic collision model from Definition 5.7.4 of `03_cloning.md`. Let $C_{\text{set}} := \{i \mid a_i = \textsf{Clone}\}$ be the set of all walkers marked for cloning.
+   The state update uses the momentum-conserving inelastic collision model from Definition 5.7.4 of {doc}`03_cloning`. Let $C_{\text{set}} := \{i \mid a_i = \textsf{Clone}\}$ be the set of all walkers marked for cloning.
 
    - **Walkers that persist:** If $a_i=\textsf{Persist}$, take $(\tilde x_i,\tilde v_i):=(x_i,v_i)$.
 
@@ -2343,7 +2345,7 @@ For each index $i\in\{1,\dots,N\}$ independently:
 
    - **Uninvolved walkers:** Any walker that is neither a cloner nor selected as a companion has its state unchanged: $(\tilde x_i, \tilde v_i) := (x_i, v_i)$.
 
-   **Physical interpretation:** This multi-body inelastic collision model ensures total momentum conservation while allowing tunable energy dissipation. When $\alpha_{\text{restitution}} = 0$ (perfectly inelastic), all walkers in a cloning group collapse to the center-of-mass velocity. When $\alpha_{\text{restitution}} = 1$ (perfectly elastic), kinetic energy is conserved but redistributed via random rotations. See Definition 5.7.4 in `03_cloning.md` for detailed analysis.
+   **Physical interpretation:** This multi-body inelastic collision model ensures total momentum conservation while allowing tunable energy dissipation. When $\alpha_{\text{restitution}} = 0$ (perfectly inelastic), all walkers in a cloning group collapse to the center-of-mass velocity. When $\alpha_{\text{restitution}} = 1$ (perfectly elastic), kinetic energy is conserved but redistributed via random rotations. See Definition 5.7.4 in {doc}`03_cloning` for detailed analysis.
 
 Collect the intermediate swarm $\mathcal S_{t+1/2}=((\tilde x_i,\tilde v_i,1))_{i=1}^N$, i.e. every walker is set to alive before the kinetic step.
 

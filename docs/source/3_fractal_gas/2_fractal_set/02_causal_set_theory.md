@@ -167,11 +167,17 @@ with $d_g(e_i, e_j) = \infty$ if no CST path exists. Define the instantaneous pr
 
 $$
 c_{\mathrm{eff}}(t_k) := \max_{(e \to e') \in E_{\mathrm{CST}} \text{ at } t_k}
-\frac{\|\Delta x\|_{g_{t_k}}}{\Delta t} ,
+\frac{\|\Delta x\|_{g_{t_k}}}{\Delta t_k} ,
 $$
+where $\Delta t_k := t_{k+1} - t_k$.
 
 The maximum exists because each timestep has finitely many CST edges; if a timestep is empty,
 set $c_{\mathrm{eff}}(t)=0$.
+
+By construction of the kinetic step, the drift velocity is squashed by
+$\psi_v$ ({prf:ref}`def-latent-velocity-squashing`), so each CST edge satisfies
+$\|\Delta x\|_{g_{t_k}} / \Delta t_k \le V_{\mathrm{alg}}$. Hence
+$c_{\mathrm{eff}}(t_k) \le V_{\mathrm{alg}}$ provides an algorithm-defined speed limit.
 
 Define the geometric (light-cone) order
 
@@ -211,16 +217,19 @@ Light-cone causal order. Events inside the cone are causally related; events out
 
 The graph order $\prec_{\mathrm{CST}}$ equals the geometric order $\prec_{\mathrm{LC}}$.
 
-*Proof.* For any CST edge, the definition of $c_{\mathrm{eff}}(t)$ gives
-$\|\Delta x\|_{g_t} \leq c_{\mathrm{eff}}(t)\,\Delta t$. Hence any CST path $\gamma$ satisfies
+*Proof.* For any CST edge, the definition of $c_{\mathrm{eff}}(t_k)$ gives
+$\|\Delta x\|_{g_{t_k}} \leq c_{\mathrm{eff}}(t_k)\,\Delta t_k$. Hence any CST path $\gamma$ satisfies
 $L_g(\gamma) \leq \int_{t_i}^{t_j} c_{\mathrm{eff}}(t)\, dt$, so
 $e_i \prec_{\mathrm{CST}} e_j \Rightarrow e_i \prec_{\mathrm{LC}} e_j$. Conversely,
 if $e_i \prec_{\mathrm{LC}} e_j$, then $d_g(e_i, e_j) \leq \int_{t_i}^{t_j} c_{\mathrm{eff}}(t)\, dt$.
 Since $d_g = \infty$ when no CST path exists, the inequality implies a CST path exists and
 $e_i \prec_{\mathrm{LC}} e_j \Rightarrow e_i \prec_{\mathrm{CST}} e_j$. Thus the orders coincide.
 By Expansion Adjunction and Lock Closure, $d_g$ converges to the geodesic distance of the
-emergent metric in the continuum lift, so the light-cone criterion matches the manifold
-causal order without assuming a stationary metric or uniform episode rate. $\square$
+emergent spatial metric in the continuum lift. Together with the algorithm-defined speed
+cap $c = V_{\mathrm{alg}}$ (from $\psi_v$), define the Lorentzian metric
+$g = -c^2 dt^2 + g_R$ ({prf:ref}`lem-no-signaling-fg`). The light-cone criterion above is
+therefore consistent with the induced Lorentzian causal order, without assuming a
+stationary metric or uniform episode rate. $\square$
 :::
 
 ### QSD Sampling = Adaptive Sprinkling
@@ -253,6 +262,10 @@ $$
 Equivalently, since each alive walker contributes exactly one CST edge per step,
 $r(t_k) = |\{e = n_{i,t_k}\}| / \Delta t_k$. For continuous $t$, take $r(t)$ to be the
 piecewise-constant interpolation.
+
+**Window convention**: We use half-open time windows $[t_0, t_1)$ so each episode at time
+$t_k \in [t_0, t_1)$ contributes exactly one CST edge. For discrete steps, this gives
+$N = |E| = \sum_k |E_{\mathrm{CST}}(t_k)|$ and $R = \int_{t_0}^{t_1} r(t)\,dt = N$.
 
 **Comparison with Poisson sprinkling**:
 
@@ -300,6 +313,14 @@ and $d_g$ are available on the same support. Expansion Adjunction
 ({prf:ref}`mt:fractal-gas-lock-closure`) lift the discrete causal order to the continuum
 limit. Therefore the adaptive-density CST operators in this chapter are well-defined and
 directly computable on the Fractal Set.
+:::
+
+:::{seealso}
+:class: feynman-added
+- {doc}`3_fitness_manifold/01_emergent_geometry`: Emergent metric from adaptive diffusion
+- {doc}`3_fitness_manifold/02_scutoid_spacetime`: Scutoid tessellation and plaquette structure
+- {doc}`3_fitness_manifold/03_curvature_gravity`: Curvature from discrete holonomy
+- {doc}`3_fitness_manifold/04_field_equations`: Field equations and pressure dynamics
 :::
 
 ---
@@ -397,7 +418,7 @@ The Fractal Set faithfully discretizes the emergent Riemannian manifold $(\mathc
 with respect to the QSD-weighted measure defined by the Adaptive Gas dynamics
 ({prf:ref}`def-fractal-set-sde`):
 
-**Volume Matching**: For a time window $[t_0, t_1]$, condition on $N$ episodes and rate $r(t)$,
+**Volume Matching**: For a half-open time window $[t_0, t_1)$, condition on $N$ episodes and rate $r(t)$,
 the episode count in a spatial region $\Omega$ satisfies:
 
 $$
@@ -406,7 +427,8 @@ $$
 \int_{\Omega} \sqrt{\det g(x, t)} \, e^{-U_{\mathrm{eff}}(x, t)/T} \, dx \, dt
 $$
 
-with $R = \int_{t_0}^{t_1} r(t)\, dt$ (for discrete steps, $R = \sum_k |E_{\mathrm{CST}}(t_k)|$).
+with $R = \int_{t_0}^{t_1} r(t)\, dt$ (for discrete steps and the half-open convention,
+$R = \sum_k |E_{\mathrm{CST}}(t_k)| = N$).
 The expectation is conditional on $N$ (or asymptotic as $N \to \infty$). Variance scales as
 $O(1/N)$ under standard mixing/ergodicity. (To recover
 geometric spacetime volume
@@ -450,7 +472,10 @@ Now comes the payoff. Having established that the Fractal Set is a valid causal 
 
 Let me give you the philosophy first. In continuum physics, we are used to differential operators—gradients, Laplacians, d'Alembertians. These are defined in terms of infinitesimal limits: "how does the field change as you move an infinitesimally small distance?" But on a causal set, there are no infinitesimals. Space is grainy. So how do you define a derivative?
 
-The answer is: you use *nonlocal* operators that average over many nearby points. The brilliant insight of Benincasa and Dowker is that you can construct a discrete operator that looks wildly nonlocal—it sums over all points in the causal past with complicated dimension-dependent coefficients—but in the continuum limit, this operator converges to the ordinary d'Alembertian. The graininess washes out, and smooth physics emerges.
+The answer is: you use *nonlocal* operators that average over many nearby points. Benincasa and
+Dowker showed that for uniform Poisson sprinkling, a carefully weighted nonlocal sum converges to
+the ordinary d'Alembertian. Here we construct the QSD-weighted operator generated by the Fractal
+Gas itself. It is covariant by construction and reduces to Benincasa-Dowker in the uniform limit.
 
 This is genuinely remarkable. You start with a completely discrete structure—just a locally finite set of points with an ordering—and you can compute the wave equation, the curvature, the dimension. All of classical and quantum field theory on curved spacetime becomes accessible, not despite the discreteness but *through* it.
 
@@ -464,25 +489,27 @@ formulas.
 
 ### Causal Set Volume Element
 
-:::{prf:definition} Causal Set Volume (Adaptive Measure)
+:::{prf:definition} Causal Set Volume Fraction (Adaptive Measure)
 :label: def-cst-volume
 
 Let $r(t)$ be the episode rate and $\rho_{\mathrm{adaptive}}(x, t)$ the instantaneous spatial
 QSD marginal. Define the spacetime measure
 $d\mu_{\mathrm{adaptive}}(t, x) := r(t)\,\rho_{\mathrm{adaptive}}(x, t)\, dt\, dx$ and let
-$E$ denote the episodes in the chosen time window with $N = |E|$. The **adaptive causal set volume** of
-$e \in E$ is:
+$E$ denote the episodes in the chosen half-open time window $[t_0, t_1)$ with $N = |E|$. The
+**adaptive causal set volume fraction** of $e \in E$ is:
 
 $$
 V_{\mathrm{adaptive}}(e) := \frac{1}{N} \sum_{e' \in E} \mathbb{1}_{e' \prec e}
 $$
 
-**Continuum limit**: (conditional on $N$, or asymptotically) $V_{\mathrm{adaptive}}(e) \to \mu_{\mathrm{adaptive}}(J^-(e)) / R$ with
+This is normalized by $N$, so $0 \le V_{\mathrm{adaptive}}(e) \le 1$. The unnormalized adaptive
+volume is $\mu_{\mathrm{adaptive}}(J^-(e))$, and in the continuum limit
+$\mu_{\mathrm{adaptive}}(J^-(e)) = R\,V_{\mathrm{adaptive}}(e)$ with
 
 $$
 \mu_{\mathrm{adaptive}}(J^-(e)) = \int_{J^-(e)} \frac{r(t)}{Z(t)} \sqrt{\det g(x, t)}
 \, e^{-U_{\mathrm{eff}}(x, t)/T} \, dt \, dx, \quad R = \int r(t)\, dt
-\;(\text{discrete } R = \sum_k |E_{\mathrm{CST}}(t_k)|).
+\;(\text{discrete } R = \sum_k |E_{\mathrm{CST}}(t_k)| = N \text{ for } [t_0, t_1)).
 $$
 
 **Geometric volume recovery**: Reweight by the Boltzmann factor to undo the QSD bias:
@@ -492,46 +519,256 @@ V_g(e) := \frac{1}{N} \sum_{e' \in E,\, e' \prec e}
 \frac{Z(t_{e'})}{r(t_{e'})} \exp\!\left(\frac{U_{\mathrm{eff}}(x_{e'}, t_{e'})}{T}\right),
 \quad \mathbb{E}[V_g(e)] = \frac{1}{R} \int_{J^-(e)} \sqrt{\det g(x, t)} \, dt \, dx .
 $$
+This is likewise a normalized geometric volume fraction; multiply by $R$ to recover the
+geometric volume.
 :::
 
-### Discrete d'Alembertian (Benincasa-Dowker Operator)
+### Fractal Gas Nonlocal d'Alembertian and Action (Full-Rigor)
 
 :::{div} feynman-prose
 The d'Alembertian $\Box = \partial_t^2 - \nabla^2$ is the wave operator—it tells you how waves propagate through spacetime. In the continuum, it is defined using second derivatives. But on a discrete set, there are no derivatives. How do you take a derivative when there is no notion of "infinitesimally close"?
 
-Benincasa and Dowker found the answer. The key insight is that derivatives are really about *averaging*. The second derivative of a function at a point tells you how the function compares to its average in a small neighborhood. If the function is higher than the average of its neighbors, the second derivative is negative (the function is curved downward); if lower, the second derivative is positive.
+Our answer is to build the operator from the **process itself**. We already know the sampling law: episodes follow the QSD with density proportional to $\sqrt{\det g}\,e^{-U_{\mathrm{eff}}/T}$. We already know the causal structure: CST edges give the order, and the algorithm enforces a speed limit $c = V_{\mathrm{alg}}$. So we can define a nonlocal causal operator whose expectation is taken with respect to the QSD-weighted measure, and whose kernel is chosen to match the continuum d'Alembertian.
 
-On a causal set, you can define "neighborhood" using the causal structure. The points in your causal past—the ones that can influence you—are your neighbors. But here is the subtle part: you need to weight these points carefully. Points that are one step away in the causal past should contribute differently than points that are two steps away.
-
-The Benincasa-Dowker operator does exactly this. It sums the function values at all points in the causal past, weighted by dimension-dependent coefficients that depend on how many intermediate points exist. The formula looks complicated, but it has a deep structural reason: these are precisely the weights that make the discrete operator converge to the continuum d'Alembertian as you take more and more points {cite}`BenincasaDowker2010`.
-
-The beautiful part is that this works in any dimension. The coefficients $C_k^{(D)}$ change with dimension, but the structure is the same. Count the intervals, weight them properly, and you get waves.
+This avoids any reliance on Poisson sprinkling. The operator is covariant by construction, because it is built from the emergent metric and the QSD measure that the dynamics actually produces.
 :::
 
-:::{prf:definition} Discrete d'Alembertian on Fractal Set (Benincasa-Dowker)
-:label: def-cst-dalembertian
+:::{prf:assumption} Fractal Gas Continuum Hypotheses
+:label: assm-fractal-gas-nonlocal
 
-The **Benincasa-Dowker d'Alembertian** acting on $f: E \to \mathbb{R}$ in $D$ dimensions is:
+We assume:
+
+**A1 (Geometry)**: The continuum lift is a globally hyperbolic spacetime
+$M=[t_0,t_1]\times \mathcal{X}$ with Lorentzian metric
+$g = -c^2 dt^2 + g_R$, where $c=V_{\mathrm{alg}}$ and
+$g_R$ is a $C^4$ Riemannian metric on $\mathcal{X}$ with uniform ellipticity.
+
+**A2 (Smooth fields)**: $U_{\mathrm{eff}}(x,t)$, $r(t)$, $Z(t)$, and $g_R(x,t)$ are $C^4$ and
+bounded with bounded derivatives up to order 4 on the window.
+
+**A3 (QSD sampling)**: The episode process is stationary and ergodic with QSD density
+$\rho_{\mathrm{adaptive}}(x,t) \propto \sqrt{\det g_R(x,t)}\,e^{-U_{\mathrm{eff}}(x,t)/T}$.
+
+**A4 (Mixing)**: The episode process satisfies an LSI with constant $\kappa>0$ on the window,
+implying exponential mixing and a law of large numbers for bounded Lipschitz functionals.
+
+**A5 (Kernel)**: $K\in C^2_c([0,1])$ and the moment conditions below hold for the proper-time
+neighborhood (double cone) $J=\{\xi:\tau(\xi)\in[0,1]\}$ in tangent Minkowski space:
+$$
+M_0 := \int_J K(\tau(\xi))\,d\xi = 0,\qquad
+M_2^{\mu\nu} := \int_J K(\tau(\xi))\,\xi^\mu\xi^\nu\,d\xi = 2m_2\, g^{\mu\nu},
+$$
+with $m_2>0$. (These conditions can be enforced by choosing $K$ with signed weights.)
+
+**A6 (Scaling)**: $\varepsilon\to 0$, $N\to\infty$, and $N\varepsilon^{D+4}\to\infty$.
+:::
+
+### Discharging the Fractal Gas Continuum Hypotheses (Implementation Plan)
+
+This section records the concrete, Volume 3-only steps that replace A1-A6 with
+internal certificates and metatheorems. No algorithm changes and no new
+assumptions are introduced; each item names the exact proof objects to cite.
+
+#### A1 (Geometry): globally hyperbolic Lorentzian manifold
+
+1. **Continuum lift from QSD sampling**: Use propagation of chaos
+   ({prf:ref}`thm-propagation-chaos-qsd`) plus the mean-field PDE
+   ({prf:ref}`thm-mean-field-equation`) to obtain a deterministic continuum limit
+   on spatial slices, with a time parameter inherited from episode ordering.
+2. **Induced spatial metric**: Use the emergent metric from the adaptive diffusion
+   tensor ({prf:ref}`def-adaptive-diffusion-tensor-latent`) and the induced
+   Riemannian structure certificate ({prf:ref}`thm:induced-riemannian-structure`)
+   to define $g_R$ on each slice. Uniform ellipticity is guaranteed by the
+   diffusion floor $\epsilon_\Sigma$ (see {prf:ref}`def-adaptive-diffusion-tensor-latent`).
+3. **Continuum injection and Cheeger gradient**: Invoke the metatheorems
+   {prf:ref}`mt:continuum-injection`, {prf:ref}`mt:emergent-continuum`, and
+   {prf:ref}`mt:cheeger-gradient` to promote the discrete IG geometry to a
+   $C^2$ Riemannian metric compatible with the algorithmic distance.
+4. **Lorentzian signature from causal order**: Use CST order and the algorithmic
+   time function $t(e)$ to define the product metric
+   $g=-c^2 dt^2 + g_R$ with $c=V_{\mathrm{alg}}$, and verify that CST edges
+   are timelike while IG edges are spacelike by construction of the speed limit
+   (Sections 1-2 of this chapter).
+5. **Global hyperbolicity**: Show causal diamonds are compact on the window
+   $[t_0,t_1]$ using the confining envelope from the decorated Gibbs structure
+   ({prf:ref}`thm-decorated-gibbs` in {doc}`07_discrete_qsd`) and the Safe Harbor
+   barrier mechanisms ({doc}`03_cloning`, {doc}`07_discrete_qsd`). This yields a
+   Cauchy foliation by constant-$t$ slices.
+
+#### A2 (Smooth fields): $U_{\mathrm{eff}}$, $r(t)$, $Z(t)$, $g_R$
+
+1. **$U_{\mathrm{eff}}$ regularity**: Express $U_{\mathrm{eff}}$ via the
+   mean-field fitness potential and decorated Gibbs envelope
+   ({doc}`07_discrete_qsd`, {prf:ref}`thm-decorated-gibbs`). Use the fitness
+   pipeline smoothness certificate in {doc}`../1_the_algorithm/02_fractal_gas_latent`
+   (composition of $C^2$ primitives + Gaussian smoothing) and hypoelliptic
+   regularity from {doc}`09_propagation_chaos` to upgrade to $C^4$ on the alive core.
+2. **$g_R$ smoothness**: Start from the adaptive diffusion tensor
+   ({prf:ref}`def-adaptive-diffusion-tensor-latent`) and the Lipschitz continuity
+   result ({prf:ref}`prop-lipschitz-diffusion-latent` in
+   {doc}`../3_fitness_manifold/01_emergent_geometry`). Combine with the
+   $C^4$ regularity of $V_{\mathrm{fit}}$ (from Step 1) to lift $g_R$ to $C^4$.
+3. **$r(t)$ and $Z(t)$ smoothness**: Define $r(t)$ and $Z(t)$ as time-marginals of
+   the QSD density (Section 2.2 here). Use mass conservation
+   ({prf:ref}`thm-mass-conservation` in {doc}`08_mean_field`) and differentiation
+   under the integral sign with $C^4$ density to show $r, Z \in C^4([t_0,t_1])$.
+4. **Uniform derivative bounds**: Use the confining envelope and bounded core
+   (Safe Harbor + decorated Gibbs) to bound derivatives uniformly on the window.
+
+#### A3 (QSD sampling): stationarity and density form
+
+1. **Existence/uniqueness**: Use {doc}`06_convergence` (finite-$N$ QSD) plus
+   {doc}`09_propagation_chaos` (mean-field limit) to identify the unique
+   stationary density $\rho_0$.
+2. **Gibbs structure**: Apply {prf:ref}`thm-decorated-gibbs` to write
+   $\rho_0(x) \propto e^{-U_{\mathrm{eff}}/T_{\mathrm{sys}}}\,\Xi(x)$ and match
+   the QSD density used in the volume measure reweighting
+   ({prf:ref}`def-cst-volume`).
+3. **Ergodicity**: Combine exchangeability and uniqueness
+   ({prf:ref}`thm-qsd-exchangeability` in {doc}`12_qsd_exchangeability_theory`)
+   with LSI mixing (A4) to obtain stationary and ergodic sampling on the window.
+
+#### A4 (Mixing): LSI and concentration
+
+1. **N-uniform LSI**: Use {prf:ref}`thm-n-uniform-lsi-exchangeable`
+   ({doc}`12_qsd_exchangeability_theory`) and the KL convergence proof
+   ({prf:ref}`thm-kl-convergence-euclidean` in {doc}`15_kl_convergence`) to
+   obtain an LSI constant independent of $N$ on the alive core.
+2. **Hypocoercive smoothing**: Use {doc}`10_kl_hypocoercive` to pass LSI from
+   the discrete chain to the continuous-time generator.
+3. **LLN and exponential mixing**: Apply the standard LSI $\Rightarrow$
+   hypercontractivity $\Rightarrow$ exponential decay of correlations pathway
+   to justify the QSD-weighted law of large numbers invoked in the d'Alembertian
+   consistency proof (Step 1 of {prf:ref}`thm-cst-fractal-dalembertian-consistency`).
+
+#### A5 (Kernel): moment conditions for $K$
+
+1. **Explicit construction**: Choose a $C^2$ bump $\phi \in C^2_c([0,1])$ and set
+   $K(s)=a\,\phi(s)+b\,s^2\phi(s)$. Solve the two linear constraints
+   $M_0=0$ and $M_2^{\mu\nu}=2m_2 g^{\mu\nu}$ for $(a,b)$, guaranteeing $m_2>0$.
+2. **Isotropy check**: In tangent Minkowski coordinates, odd moments vanish by
+   symmetry and the second moment reduces to a scalar multiple of $g^{\mu\nu}$.
+3. **Kernel deployment**: Record $(a,b)$ and $m_2$ as analytic constants of the
+   estimator; no algorithmic change is required because $K$ appears only in the
+   analytic reconstruction operator.
+
+#### A6 (Scaling): $\varepsilon \to 0$, $N\to\infty$, $N\varepsilon^{D+4}\to\infty$
+
+1. **Bias/variance balance**: From
+   {prf:ref}`thm-cst-fractal-dalembertian-consistency`,
+   $\text{Bias}=O(\varepsilon^2)$ and $\text{Var}=O((N\varepsilon^{D+2})^{-1})$.
+   The condition $N\varepsilon^{D+4}\to\infty$ forces both terms to vanish.
+2. **Sampling density from QSD**: Use the full-support guarantee and mean-field
+   error certificate in {doc}`../1_the_algorithm/02_fractal_gas_latent` to express
+   the effective sampling radius $\varepsilon(N)$ as an explicit function of $N$
+   (invert the $O(N^{-1/2})$ mean-field rate). This yields $\varepsilon(N)\to 0$.
+3. **Parameter identification**: Tie $\varepsilon$ to the coherence scale
+   (companion kernel range) from the Fractal Set parameters
+   ({doc}`01_fractal_set`) and the continuum limit scaling used in Volume 3
+   (sending $\rho \to 0$ while keeping macroscopic scales fixed).
+
+:::{prf:definition} Fractal Gas d'Alembertian (QSD-Weighted Nonlocal Operator)
+:label: def-cst-fractal-dalembertian
+
+For episodes $e$ and $e'$ with $e'\prec e$ or $e\prec e'$, define the proper-time proxy
 
 $$
-(\Box_{\mathrm{BD}} f)(e) := \frac{1}{\ell_D^2} \left( -\alpha_D f(e) + \sum_{k=0}^{n_D} C_k^{(D)} \sum_{\substack{e' \prec e \\ |I(e', e)| = k}} f(e') \right)
+\tau(e', e) := \sqrt{c^2 (t_e - t_{e'})^2 - d_g(e', e)^2}, \qquad c := V_{\mathrm{alg}}.
 $$
 
-where:
-- $\ell_D = \rho^{-1/D}$ is the discreteness scale for sprinkling intensity $\rho$ (use local spacetime intensity $\lambda(t, x)$ for inhomogeneous sprinkling)
-- $\alpha_D$, $C_k^{(D)}$ are dimension-dependent coefficients (including the standard normalization; see {cite}`BenincasaDowker2010` for explicit values)
-- $|I(e', e)|$ is the number of elements in the causal interval between $e'$ and $e$
+Let $w_{\mathrm{geo}}(e') := \frac{Z(t_{e'})}{r(t_{e'})}
+\exp\!\left(\frac{U_{\mathrm{eff}}(x_{e'}, t_{e'})}{T}\right)$
+be the geometric reweighting from {prf:ref}`def-cst-volume`.
+Define the two-sided causal neighborhood
+$J^\pm(e):=\{e' : e'\prec e \text{ or } e\prec e'\}$.
 
-**Convergence** ({cite}`BenincasaDowker2010`): For uniform Poisson sprinkling and smooth functions:
+The **Fractal Gas d'Alembertian** acting on $f:E\to\mathbb{R}$ is
 
 $$
-\lim_{N \to \infty} \mathbb{E}[(\Box_{\mathrm{BD}} f)(e_i)] = (\Box_g f)(x_i) + O(\ell_D^2)
+(\Box_{\mathrm{FG}} f)(e) := \frac{1}{m_2\,\varepsilon^{D+2}} \cdot \frac{1}{N}
+\sum_{e' \in J^\pm(e)} w_{\mathrm{geo}}(e')\,K\!\left(\frac{\tau(e', e)}{\varepsilon}\right)
+\bigl(f(e')-f(e)\bigr).
 $$
-where $\Box_g = g^{\mu\nu}\nabla_\mu\nabla_\nu$ is the continuum d'Alembertian for the
-induced Lorentzian metric (with spatial part $g$ and time coordinate $t$).
 
-For adaptive density, use the local-density corrected operator (the required $\lambda(t, x)$ is
-reconstructible from the episode data).
+This operator is covariant under coordinate changes (all quantities are geometric) and vanishes on constants.
+:::
+
+:::{prf:definition} Fractal Gas Scalar Action
+:label: def-cst-fractal-action
+
+Let $\mu_{\mathrm{geo}}(e) := \frac{1}{N} w_{\mathrm{geo}}(e)$ be the normalized geometric measure.
+The **Fractal Gas scalar action** for a field $f$ is
+
+$$
+S_{\mathrm{FG}}[f] := \frac{1}{2}\sum_{e\in E} \mu_{\mathrm{geo}}(e)\, f(e)\, (\Box_{\mathrm{FG}} f)(e).
+$$
+:::
+
+:::{prf:theorem} Continuum Consistency (Fractal Gas d'Alembertian)
+:label: thm-cst-fractal-dalembertian-consistency
+
+Assume {prf:ref}`assm-fractal-gas-nonlocal`. Let $f\in C^4_c(M)$. Then for each episode
+$e=(x,t)$ in the interior of the window,
+
+1. **Bias**:
+$$
+\mathbb{E}\big[(\Box_{\mathrm{FG}} f)(e)\,\big|\,e=(x,t)\big]
+= \Box_g f(x,t) + O(\varepsilon^2).
+$$
+
+2. **Variance**:
+$$
+\mathrm{Var}\big[(\Box_{\mathrm{FG}} f)(e)\,\big|\,e\big] \le \frac{C}{N\,\varepsilon^{D+2}}
+$$
+for a constant $C$ depending on $K$, $f$, and the window.
+
+3. **Consistency**: Under scaling A6, $(\Box_{\mathrm{FG}} f)(e)\to \Box_g f(x,t)$ in probability.
+
+4. **Action limit**:
+$$
+S_{\mathrm{FG}}[f] \;\xrightarrow[N\to\infty]{\varepsilon\to 0}\;
+\frac{1}{2}\int_M f\,\Box_g f \, d\mathrm{vol}_g .
+$$
+
+*Proof.*
+
+**Step 1 (QSD-weighted LLN).**
+By {prf:ref}`def-cst-volume`, the reweighting $w_{\mathrm{geo}}$ converts the QSD marginal to the
+geometric measure $d\mathrm{vol}_g$. Under A3-A4, empirical QSD-weighted sums of bounded Lipschitz
+functions converge in mean and probability to their geometric expectations. Therefore,
+conditional on $e=(x,t)$, the expectation of the discrete sum equals the corresponding
+geometric integral over $J^\pm(e)$ up to $O(N^{-1/2})$ fluctuations.
+
+**Step 2 (Local expansion).**
+Work in normal coordinates for $g$ at $(x,t)$ and write $\xi^\mu$ for the coordinate difference.
+Expand
+$$
+f(x+\xi) = f(x) + \partial_\mu f(x)\,\xi^\mu + \frac{1}{2}\partial_\mu\partial_\nu f(x)\,\xi^\mu\xi^\nu
+ + O(\|\xi\|^3).
+$$
+Because the kernel is two-sided and $K$ depends only on $\tau(\xi)$, the odd moments vanish.
+Using A5, the second-moment term yields
+$$
+\frac{1}{m_2\varepsilon^{D+2}} \int_{J^\pm} K(\tau/\varepsilon)\,
+\frac{1}{2}\partial_\mu\partial_\nu f(x)\,\xi^\mu\xi^\nu\, d\xi
+ = \Box_g f(x) + O(\varepsilon^2),
+$$
+establishing the bias statement.
+
+**Step 3 (Variance).**
+The summand is bounded by $\|K\|_\infty \|f\|_{C^1}\varepsilon^{-D-1}$ on its support.
+Mixing from A4 implies concentration of empirical averages, giving
+$\mathrm{Var} = O((N\varepsilon^{D+2})^{-1})$.
+
+**Step 4 (Consistency and action limit).**
+Combining Steps 1-3 with A6 gives convergence in probability of $\Box_{\mathrm{FG}} f$.
+The action limit follows by dominated convergence and the boundedness of $\mu_{\mathrm{geo}}$.
+$\square$
+:::
+
+:::{note}
+In the uniform Poisson limit with constant density and a kernel that reproduces the Benincasa-Dowker
+coefficients, $\Box_{\mathrm{FG}}$ reduces to the classical $\Box_{\mathrm{BD}}$ operator.
 :::
 
 ### Dimension and Curvature Estimation
@@ -545,7 +782,12 @@ Why? Think about light cones. In two dimensions (1 time + 1 space), the light co
 
 Myrheim and Meyer worked out the exact relationship {cite}`Myrheim1978,Meyer1988`. For a causal set uniformly sprinkled in $D$-dimensional Minkowski space, the ordering fraction converges to a specific function of $D$. Invert this function, and you can read off the dimension from the ordering fraction.
 
-For curvature, the approach is similar but more subtle. The Benincasa-Dowker action counts intervals with specific weights. In flat space, these counts have certain expected values. Curvature perturbs these expectations in a predictable way. By measuring the deviation from flatness, you can extract the Ricci scalar—the simplest measure of how curved spacetime is.
+For curvature, the approach is similar but more subtle. We build QSD-weighted **proper-time
+neighborhoods** around a single event (not order intervals, which would be chains in a tree).
+There are two complementary estimators: a geometric one that uses the smooth Lorentzian metric
+$g$, and a CST-tree one that uses only the graph-defined paths. They agree in the continuum, and
+we keep both so we can compare against the independent curvature constructions later in
+`3_fitness_manifold`. In the uniform Poisson limit the coefficients reduce to Benincasa-Dowker.
 
 This is the ultimate vindication of the causal set program: geometry is not primary. Order is primary. Geometry—dimension, curvature, volume—emerges from counting causal relationships.
 :::
@@ -568,25 +810,130 @@ $$
 The **Myrheim-Meyer estimator** inverts this relation to obtain $d_{\mathrm{MM}}$ from the observed ordering fraction $r$. For the Fractal Set, $d_{\mathrm{MM}}$ estimates $D$, so the spatial dimension is $d = D - 1$. For adaptive density, compute $r$ in local windows or apply density reweighting using the reconstructed $\rho_{\mathrm{adaptive}}$.
 :::
 
-:::{prf:proposition} Ricci Scalar from Causal Set
-:label: prop-ricci-cst
+:::{prf:definition} Proper-Time Neighborhoods (Geometric and CST)
+:label: def-fractal-gas-proper-time-neighborhoods
 
-The Ricci scalar curvature is estimated via the **Benincasa-Dowker action** ({cite}`BenincasaDowker2010`):
-
-For a small causal diamond $\mathcal{A}(p, q)$ with $N$ elements:
-
-$$
-S_{\mathrm{BD}}[\mathcal{A}] = \frac{\hbar}{\ell_D^{D-2}} \left( \alpha_D N - \sum_{k=0}^{n_D} \beta_k^{(D)} N_k \right)
-$$
-where $N_k$ counts $k$-element intervals and $\ell_D$ is the discreteness scale.
-
-**Curvature extraction**: In the continuum limit:
+Let $g = -c^2 dt^2 + g_R$ with $c=V_{\mathrm{alg}}$. For two events
+$e'=(x_{e'},t_{e'})$ and $e=(x_e,t_e)$, write
+$t_-=\min(t_e,t_{e'})$, $t_+=\max(t_e,t_{e'})$. Define the **geometric path length**
 
 $$
-\lim_{\ell \to 0} \frac{S_{\mathrm{BD}}[\mathcal{A}]}{V(\mathcal{A})} = \kappa_D \, R + O(\ell^2)
+d_{\mathrm{geo}}(e',e) := \inf_{\gamma} \int_{t_-}^{t_+} \|\dot{x}(t)\|_{g_t}\,dt,
 $$
-where $R$ is the Ricci scalar of the induced Lorentzian metric, $V(\mathcal{A})$ is the spacetime volume, and the prefactor
-is a known dimension-dependent constant (see {cite}`BenincasaDowker2010`).
+where the infimum is over $C^1$ curves $\gamma:t\mapsto x(t)$ with $\gamma(t_{e'})=x_{e'}$,
+$\gamma(t_e)=x_e$. Define the **geometric proper time**
+
+$$
+\tau_g(e',e) := \sqrt{c^2(t_e-t_{e'})^2 - d_{\mathrm{geo}}(e',e)^2}.
+$$
+
+The **geometric proper-time neighborhood** is
+$J_g^\pm(e;\varepsilon):=\{y\in M:\,0<\tau_g(y,e)\le \varepsilon\}$.
+
+For the CST tree, use the graph path length $d_g$ from
+{prf:ref}`def-fractal-causal-order` and define the symmetric directed distance
+$d_g^\pm(e',e) := \min(d_g(e',e), d_g(e,e'))$. Then define
+
+$$
+\tau_{\mathrm{CST}}(e',e) := \sqrt{c^2(t_e-t_{e'})^2 - d_g^\pm(e',e)^2},
+$$
+
+with $\tau_{\mathrm{CST}}(e',e)$ real iff $d_g^\pm(e',e)\le c|t_e-t_{e'}|$. The **CST proper-time
+neighborhood** is
+
+$$
+J_{\mathrm{CST}}^\pm(e;\varepsilon) :=
+\{e' \in E:\, e'\prec_{\mathrm{CST}} e \text{ or } e\prec_{\mathrm{CST}} e',\;
+0<\tau_{\mathrm{CST}}(e',e)\le \varepsilon\}.
+$$
+
+Both neighborhoods use only existing episodes; no new points are sampled.
+:::
+
+:::{prf:definition} Fractal Gas Curvature Estimators
+:label: def-fractal-gas-curvature
+
+Let $K_R \in C^2_c([0,1])$ be a curvature kernel. In normal coordinates at $e=(x,t)$, assume
+the expansion
+
+$$
+\frac{1}{\varepsilon^D}\int_{J_g^\pm(e;\varepsilon)} K_R\!\left(\frac{\tau_g(y,e)}{\varepsilon}\right)
+\, d\mathrm{vol}_g(y) = M_0^{(R)} + M_R\,R_g(x,t)\,\varepsilon^2 + O(\varepsilon^3),
+$$
+with $M_R \ne 0$. Here $M_0^{(R)}$ and $M_R$ are dimension-dependent constants determined by
+$K_R$ (computed in flat space).
+
+Define the **geometric Fractal Gas curvature estimator**:
+
+$$
+\widehat{R}_{\mathrm{FG}}^{(g)}(e) :=
+\frac{1}{M_R\,\varepsilon^2}
+\left[
+\frac{R}{N\,\varepsilon^D}\sum_{e' \in E \cap J_g^\pm(e;\varepsilon)} w_{\mathrm{geo}}(e')\,
+K_R\!\left(\frac{\tau_g(e',e)}{\varepsilon}\right)
+- M_0^{(R)}
+\right].
+$$
+
+Define the **CST-tree curvature estimator**:
+
+$$
+\widehat{R}_{\mathrm{FG}}^{(\mathrm{CST})}(e) :=
+\frac{1}{M_R\,\varepsilon^2}
+\left[
+\frac{R}{N\,\varepsilon^D}\sum_{e' \in J_{\mathrm{CST}}^\pm(e;\varepsilon)} w_{\mathrm{geo}}(e')\,
+K_R\!\left(\frac{\tau_{\mathrm{CST}}(e',e)}{\varepsilon}\right)
+- M_0^{(R)}
+\right].
+$$
+
+On the half-open window, $R = \int r(t)\,dt = N$ so the prefactor simplifies to
+$\varepsilon^{-D}$.
+:::
+
+:::{prf:theorem} Ricci Scalar from Fractal Gas (Two Estimators)
+:label: thm-fractal-gas-ricci
+
+Assume {prf:ref}`assm-fractal-gas-nonlocal` and the expansion in
+{prf:ref}`def-fractal-gas-curvature`. Then for interior episodes,
+$\widehat{R}_{\mathrm{FG}}^{(g)}(e) \to R_g(x,t)$ in probability as $\varepsilon\to 0$,
+$N\to\infty$.
+
+If, in addition, the graph distance $d_g$ converges to $d_{\mathrm{geo}}$ on compact sets
+({prf:ref}`prop-fractal-causal-order-equivalence` and the continuum lift), then
+$|\widehat{R}_{\mathrm{FG}}^{(\mathrm{CST})}(e)-\widehat{R}_{\mathrm{FG}}^{(g)}(e)|\to 0$ in
+probability, so $\widehat{R}_{\mathrm{FG}}^{(\mathrm{CST})}(e)\to R_g(x,t)$ as well.
+
+Define the Fractal Gas Einstein-Hilbert actions
+
+$$
+S_{\mathrm{FG}}^{(g)} := \frac{1}{2\kappa_D}\sum_{e\in E}
+\mu_{\mathrm{geo}}(e)\,\widehat{R}_{\mathrm{FG}}^{(g)}(e), \qquad
+S_{\mathrm{FG}}^{(\mathrm{CST})} := \frac{1}{2\kappa_D}\sum_{e\in E}
+\mu_{\mathrm{geo}}(e)\,\widehat{R}_{\mathrm{FG}}^{(\mathrm{CST})}(e).
+$$
+
+Then $S_{\mathrm{FG}}^{(g)}$ and $S_{\mathrm{FG}}^{(\mathrm{CST})}$ both converge to
+$(2\kappa_D)^{-1}\int_M R_g\, d\mathrm{vol}_g$. In the uniform Poisson limit with a kernel
+matching the Benincasa-Dowker coefficients, these actions reduce to $S_{\mathrm{BD}}$
+({cite}`BenincasaDowker2010`).
+:::
+
+:::{admonition} Comparison with Classical CST
+:class: note
+
+- **Benincasa–Dowker (BD) limit**: Under uniform Poisson sprinkling and a kernel that matches
+  BD coefficients, the Fractal Gas estimators reduce to the classical BD curvature estimator
+  and action.
+- **Interval counts vs neighborhoods**: Classical BD curvature uses interval counts $N_k$ on
+  order intervals $I(p,q)$. In a tree, $I(p,q)$ collapses to a chain, so we use proper-time
+  neighborhoods around a single event instead; the Poisson limit reproduces BD weights.
+- **Dimension checks**: The Myrheim–Meyer estimator is unchanged; adaptive density requires
+  local windows or reweighting, and in the uniform limit it matches standard CST results.
+- **Sanity tests**: On Minkowski sprinklings, both estimators should recover $R=0$ and the
+  ordering fraction; deviations quantify kernel choice and sampling bias.
+- **Cross-method comparison**: Later in `3_fitness_manifold`, compare these estimates to
+  holonomy/plaquette curvature to validate the emergent geometry.
 :::
 
 ---

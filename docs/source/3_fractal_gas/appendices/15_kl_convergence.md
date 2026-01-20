@@ -10,6 +10,8 @@
 
 **N-Uniformity and Scalability**: All LSI constants are N-uniform (independent of swarm size), establishing the Euclidean Gas as a valid mean-field model. Combined with propagation of chaos results, this provides a rigorous continuum limit theory connecting the discrete N-particle algorithm to the McKean-Vlasov PDE.
 
+**Dependencies**: {doc}`03_cloning`, {doc}`05_kinetic_contraction`, {doc}`06_convergence`, {doc}`08_mean_field`, {doc}`09_propagation_chaos`, {doc}`10_kl_hypocoercive`, {doc}`12_qsd_exchangeability_theory`
+
 ## 1. Introduction
 
 ### 1.1. Goal and Scope
@@ -22,16 +24,10 @@ Sections 3-4 provide supplementary material: alternative proof approaches via me
 
 This document consolidates all KL-convergence results for the Euclidean Gas framework. While we focus on the Euclidean Gas as the primary example, the techniques extend naturally to the broader class of Fragile Gas systems. Extensions to the Adaptive Gas with viscous coupling and adaptive forces are discussed in Section 7.
 
-**Scope boundaries**: This document assumes the Foster-Lyapunov drift conditions established in the convergence analysis (document `06_convergence`) and the mean-field limit theory from documents `07_mean_field` and `08_propagation_chaos`. The primary proof (Section 2) assumes log-concavity of the quasi-stationary distribution ({prf:ref}`axiom-qsd-log-concave`), which is verified for specific physical systems (Yang-Mills vacuum, harmonic confinement). Section 4 outlines approaches to remove this assumption using weighted hypocoercivity.
+**Scope boundaries**: This document assumes the Foster-Lyapunov drift conditions established in the convergence analysis (document {doc}`06_convergence`) and the mean-field limit theory from {doc}`08_mean_field` and {doc}`09_propagation_chaos`. The displacement-convexity proof (Section 2) uses the historical log-concavity axiom ({prf:ref}`axiom-qsd-log-concave`) as a geometric route to LSI. The unconditional route is the hypocoercive entropy proof in {doc}`10_kl_hypocoercive`.
 
 :::{important} Axiom Status Update (October 2025)
-**Axiom {prf:ref}`axiom-qsd-log-concave` is no longer an axiom**—it is now a **proven theorem** via the hypocoercivity method in [../2_geometric_gas/15_geometric_gas_lsi_proof.md](../2_geometric_gas/15_geometric_gas_lsi_proof.md), which **does NOT require log-concavity**.
-
-**Key Achievement**: The LSI is derived from geometric first principles (uniform ellipticity + C³ regularity + Gaussian velocity structure) without assuming log-concavity of the full QSD.
-
-**Documentation**: See [../3_brascamp_lieb/geometric_foundations_lsi.md](../3_brascamp_lieb/geometric_foundations_lsi.md) for complete analysis, dependency verification, and comparison of both proof methods.
-
-**This document's status**: The displacement convexity proof below remains valid and provides valuable geometric intuition via optimal transport theory. However, the axiom it assumes is now a proven theorem.
+The log-concavity axiom in the displacement-convexity route is now optional: the unconditional LSI is proven via hypocoercive entropy in {doc}`10_kl_hypocoercive`, which does not assume log-concavity of the full QSD. The displacement-convexity proof below is retained as an alternative geometric argument and intuition.
 :::
 
 ### 1.2. Why KL-Convergence Matters
@@ -122,7 +118,7 @@ graph TD
     end
 
     subgraph "Framework Connections"
-        S["<b>08_propagation_chaos</b><br>Mean-field limit<br>Continuum theory"]:::externalStyle
+        S["<b>09_propagation_chaos</b><br>Mean-field limit<br>Continuum theory"]:::externalStyle
         T["<b>06_convergence</b><br>Foster-Lyapunov drift<br>TV-convergence"]:::externalStyle
     end
 
@@ -168,7 +164,7 @@ The central theorem of this document is:
 :::{prf:theorem} Exponential KL-Convergence for the Euclidean Gas
 :label: thm-main-kl-convergence
 
-Under Axiom {prf:ref}`axiom-qsd-log-concave` (log-concavity of the quasi-stationary distribution), for the N-particle Euclidean Gas with parameters satisfying the Foster-Lyapunov conditions of Theorem 8.1 in [06_convergence](06_convergence), and with cloning noise variance $\delta^2$ satisfying:
+Under Axiom {prf:ref}`axiom-qsd-log-concave` (log-concavity of the quasi-stationary distribution), for the N-particle Euclidean Gas with parameters satisfying the Foster-Lyapunov conditions of Theorem 8.1 in {doc}`06_convergence`, and with cloning noise variance $\delta^2$ satisfying:
 
 $$
 \delta > \delta_* = e^{-\alpha\tau/(2C_0)} \cdot C_{\text{HWI}} \sqrt{\frac{2(1 - \kappa_W)}{\kappa_{\text{conf}}}}
@@ -541,7 +537,7 @@ This establishes the logarithmic Sobolev inequality with constant $C_{\text{LSI}
 
 ### 2.1. Generator and Invariant Measure
 
-Recall the kinetic SDE from Definition 1.2 in [06_convergence](06_convergence):
+Recall the kinetic SDE from Definition 1.2 in {doc}`06_convergence`:
 
 $$
 \begin{aligned}
@@ -749,7 +745,7 @@ $$
 
 :::{prf:proof}
 :label: proof-kinetic-lsi
-This proof bridges the continuous-time hypocoercive dissipation with the discrete-time integrator using Theorem 1.7.2 from Section 1.7 of [06_convergence](06_convergence).
+This proof bridges the continuous-time hypocoercive dissipation with the discrete-time integrator using Theorem 1.7.2 from Section 1.7 of {doc}`06_convergence`.
 
 **Step 1: Continuous-time generator bound for entropy**
 
@@ -769,7 +765,7 @@ where $C_0 = O(1/\min(\gamma, \kappa))$ is the continuous-time LSI constant and 
 
 **Step 2: Verification of Theorem 1.7.2 conditions**
 
-The relative entropy functional $H(\rho) := D_{\text{KL}}(\rho \| \pi_{\text{kin}})$ satisfies the conditions of Theorem 1.7.2 in [06_convergence](06_convergence):
+The relative entropy functional $H(\rho) := D_{\text{KL}}(\rho \| \pi_{\text{kin}})$ satisfies the conditions of Theorem 1.7.2 in {doc}`06_convergence`:
 
 1. **Smoothness:** $H$ is $C^2$ on the space of probability densities
 2. **Generator bound:** $\mathcal{L}_{\text{kin}} H(\rho) \le -\frac{\alpha}{C_0} H(\rho)$
@@ -901,13 +897,11 @@ This section presents the **historical axiom** that was a foundational assumptio
 
 **Current Status**: ✅ **PROVEN THEOREM** - No longer an axiom
 
-**Proof**: [../2_geometric_gas/15_geometric_gas_lsi_proof.md](../2_geometric_gas/15_geometric_gas_lsi_proof.md) via hypocoercivity
+**Proof**: {doc}`10_kl_hypocoercive` via hypocoercive entropy (no log-concavity required)
 
-**Method**: Uses uniform ellipticity + C³ regularity + Gaussian velocity structure
+**Key Achievement**: Derives LSI from the kinetic-cloning composition without assuming global log-concavity
 
-**Key Achievement**: Does **NOT assume log-concavity**—derives LSI from geometric first principles
-
-**For complete analysis**: See [../3_brascamp_lieb/geometric_foundations_lsi.md](../3_brascamp_lieb/geometric_foundations_lsi.md) §2 (proof comparison) and §6 (formal supersession)
+**For complete analysis**: See {doc}`10_kl_hypocoercive` for the unconditional proof and constants
 
 The axiom statement below is retained for backward compatibility and to preserve the context for the displacement convexity proof that follows.
 :::
@@ -921,7 +915,7 @@ Before proceeding to analyze the cloning operator using optimal transport techni
 
 **Historical Status (Pre-October 2025)**: Axiom (foundational assumption)
 
-**Current Status (October 2025)**: ✅ **PROVEN THEOREM** - See [../2_geometric_gas/15_geometric_gas_lsi_proof.md](../2_geometric_gas/15_geometric_gas_lsi_proof.md)
+**Current Status (October 2025)**: ✅ **PROVEN THEOREM** - See {doc}`10_kl_hypocoercive`
 
 **Proof Method**: Hypocoercivity with state-dependent diffusion (does NOT require log-concavity assumption)
 
@@ -1186,7 +1180,7 @@ The Fragile Framework has **two complementary paths** to proving the LSI:
 
 ### 4.1. Structure of the Cloning Operator
 
-Recall from Definition 3.1 in [03_cloning](03_cloning) that $\Psi_{\text{clone}}$ consists of:
+Recall from Definition 3.1 in {doc}`03_cloning` that $\Psi_{\text{clone}}$ consists of:
 
 1. **Virtual reward update:** $r_i^{\text{virt}} = (1 - \eta) r_i^{\text{virt}} + \eta g(x_i, v_i, S)$
 2. **Cloning probabilities:** $p_i^{\text{clone}} \propto \exp(\alpha r_i^{\text{virt}})$
@@ -1250,13 +1244,13 @@ $$
 \mathbb{E}[W_2^2(\mu_{S_1'}, \mu_{S_2'})] \le (1 - \kappa_W) W_2^2(\mu_{S_1}, \mu_{S_2}) + C_W
 $$
 
-where $S_i' = \Psi_{\text{clone}}(S_i)$, $\mu_S$ is the empirical measure of swarm $S$, and $\kappa_W > 0$ is the Wasserstein contraction rate from Theorem 8.1.1 in [04_wasserstein_contraction](04_wasserstein_contraction).
+where $S_i' = \Psi_{\text{clone}}(S_i)$, $\mu_S$ is the empirical measure of swarm $S$, and $\kappa_W > 0$ is the Wasserstein contraction rate from Theorem 8.1.1 in {doc}`04_wasserstein_contraction`.
 :::
 
 :::{prf:proof}
 :label: proof-cloning-wasserstein-contraction
 
-The complete proof is provided in [04_wasserstein_contraction](04_wasserstein_contraction). The proof establishes:
+The complete proof is provided in {doc}`04_wasserstein_contraction`. The proof establishes:
 
 1. **Synchronous coupling:** Walkers from two swarms are paired using a shared matching $M$, shared cloning thresholds, and shared jitter noise to maximize correlation
 
@@ -1270,7 +1264,7 @@ The complete proof is provided in [04_wasserstein_contraction](04_wasserstein_co
 
 The explicit constants are:
 - $\kappa_W = \frac{p_u \eta}{2} > 0$: Wasserstein contraction rate (N-uniform)
-  - $p_u > 0$: uniform cloning probability for unfit walkers (Lemma 8.3.2, [03_cloning](03_cloning))
+  - $p_u > 0$: uniform cloning probability for unfit walkers (Lemma 8.3.2, {doc}`03_cloning`)
   - $\eta > 0$: Outlier Alignment constant
 - $C_W < \infty$: Additive constant (state-independent)
 
@@ -1451,7 +1445,7 @@ The crucial technical result is that cloning dissipates entropy proportional to 
 :::{prf:lemma} Entropy-Transport Dissipation Inequality
 :label: lem-entropy-transport-dissipation
 
-For the cloning operator $\Psi_{\text{clone}}$ with parameters satisfying the Keystone Principle (Theorem 8.1 in [03_cloning](03_cloning)), there exists $\alpha > 0$ such that:
+For the cloning operator $\Psi_{\text{clone}}$ with parameters satisfying the Keystone Principle (Theorem 8.1 in {doc}`03_cloning`), there exists $\alpha > 0$ such that:
 
 $$
 D_{\text{KL}}(\mu' \| \pi) \le D_{\text{KL}}(\mu \| \pi) - \alpha \cdot W_2^2(\mu, \pi) + C_{\text{clone}}
@@ -1573,7 +1567,7 @@ with $\alpha = \frac{\tau_{\text{conv}} \kappa_W}{2} = O(\kappa_{\text{conf}} \k
 :::{prf:remark}
 :label: rem-note-entropy-transport-innovation
 
-This lemma is the **key technical innovation**. It shows that the geometric contraction in Wasserstein space (already proven in [06_convergence](06_convergence)) drives entropy dissipation. The constant $\alpha$ depends on:
+This lemma is the **key technical innovation**. It shows that the geometric contraction in Wasserstein space (already proven in {doc}`06_convergence`) drives entropy dissipation. The constant $\alpha$ depends on:
 - $\kappa_{\text{conf}}$: convexity of confining potential (controls displacement convexity)
 - $\kappa_x$: position contraction from cloning (controls transport strength)
 :::
@@ -1902,7 +1896,7 @@ Combining Theorem {prf:ref}`thm-main-lsi-composition` and Theorem {prf:ref}`thm-
 :::{prf:theorem} KL-Convergence of the Euclidean Gas (Main Result)
 :label: thm-main-kl-final
 
-For the N-particle Euclidean Gas with parameters satisfying the Foster-Lyapunov conditions of Theorem 8.1 in [06_convergence](06_convergence), the Markov chain
+For the N-particle Euclidean Gas with parameters satisfying the Foster-Lyapunov conditions of Theorem 8.1 in {doc}`06_convergence`, the Markov chain
 
 $$
 S_{t+1} = \Psi_{\text{total}}(S_t) = (\Psi_{\text{kin}}(\tau) \circ \Psi_{\text{clone}})(S_t)
@@ -1928,7 +1922,7 @@ where $\gamma$ is the friction coefficient, $\kappa_{\text{conf}}$ is the confin
 Direct application of:
 1. Corollary {prf:ref}`cor-quantitative-lsi-final` (explicit LSI constant)
 2. Theorem {prf:ref}`thm-lsi-implies-kl-convergence` (LSI implies KL-convergence)
-3. The existence and uniqueness of $\pi_{\text{QSD}}$ from Theorem 8.1 in [06_convergence](06_convergence)
+3. The existence and uniqueness of $\pi_{\text{QSD}}$ from Theorem 8.1 in {doc}`06_convergence`
 :::
 
 ### 6.3. Comparison with Foster-Lyapunov Result
@@ -1958,7 +1952,7 @@ $$
 
 ### 7.1. Perturbation of the LSI Constant
 
-For the adaptive model in [11_geometric_gas](../2_geometric_gas/11_geometric_gas)(../2_geometric_gas/11_geometric_gas), the generator includes:
+For the adaptive/latent Fractal Gas ({doc}`../1_the_algorithm/02_fractal_gas_latent`), the generator includes:
 - Adaptive force $\epsilon_F \nabla V_{\text{fit}}[f_k, \rho]$
 - Viscous coupling with rate $\nu$
 - Anisotropic diffusion $\Sigma_{\text{reg}}(x, S)$
@@ -1982,7 +1976,7 @@ $$
 
 :::{prf:proof}
 :label: proof-lsi-perturbation
-Standard perturbation theory for functional inequalities. The key is that the adaptive terms are **bounded** (see Axiom 3.5 in [11_geometric_gas](../2_geometric_gas/11_geometric_gas)(../2_geometric_gas/11_geometric_gas)):
+Standard perturbation theory for functional inequalities. The key is that the adaptive terms are **bounded** (see the boundedness certificates in {doc}`../1_the_algorithm/02_fractal_gas_latent`):
 
 $$
 \|\mathbf{F}_{\text{adapt}}\| \le F_{\text{adapt,max}}(\rho)
@@ -2012,7 +2006,7 @@ $$
 
 :::
 
-This matches the critical threshold derived via perturbation analysis in Chapter 7 of [11_geometric_gas](../2_geometric_gas/11_geometric_gas)(../2_geometric_gas/11_geometric_gas), providing an **independent verification** of the stability condition.
+This matches the critical threshold derived in the adaptive/latent model analysis in {doc}`../1_the_algorithm/02_fractal_gas_latent`, providing an **independent verification** of the stability condition.
 
 
 ## 8. Discussion and Open Problems
@@ -2077,7 +2071,7 @@ This document has provided a **complete, rigorous proof** that the N-particle Eu
 The proof synthesizes several advanced techniques:
 
 1. **Hypocoercivity theory** (Villani 2009) for the kinetic operator with explicit matrix calculations
-2. **Discrete-time weak error analysis** (Theorem 1.7.2 in [06_convergence](06_convergence)) to bridge continuous and discrete time
+2. **Discrete-time weak error analysis** (Theorem 1.7.2 in {doc}`06_convergence`) to bridge continuous and discrete time
 3. **Optimal transport methods** via the HWI inequality (Otto-Villani 2000) to analyze the cloning operator
 4. **Fisher information control** via Gaussian smoothing and de Bruijn identity
 5. **Composition via iterative HWI** to establish LSI for the full algorithm
@@ -2111,7 +2105,7 @@ yielding KL-convergence rate $\lambda = \Theta(\gamma \kappa_{\text{conf}} \kapp
 
 ### 9.4. Comparison with Foster-Lyapunov Result
 
-| Property | Foster-Lyapunov ([06_convergence](06_convergence)) | LSI (this document) |
+| Property | Foster-Lyapunov ({doc}`06_convergence`) | LSI (this document) |
 |:---------|:----------|:---------|
 | **Metric** | Total variation | KL-divergence (stronger) |
 | **Rate** | $O(\gamma \kappa_{\text{conf}})$ | $O(\gamma \kappa_{\text{conf}} \kappa_W \delta^2)$ |
@@ -2129,7 +2123,7 @@ This establishes the Euclidean Gas as a **provably convergent** information-geom
 - Information-geometric structure compatible with natural gradient methods
 - Robustness to adaptive perturbations (Section 7)
 
-The framework extends to the adaptive model in [11_geometric_gas](../2_geometric_gas/11_geometric_gas)(../2_geometric_gas/11_geometric_gas) via perturbation theory, with ρ-dependent critical thresholds.
+The framework extends to the adaptive/latent Fractal Gas in {doc}`../1_the_algorithm/02_fractal_gas_latent` via perturbation theory, with ρ-dependent critical thresholds.
 
 ### 9.6. N-Uniform LSI: Scalability to Large Swarms
 
@@ -2148,7 +2142,7 @@ $$
 C_{\text{LSI}}^{\max} = O\left(\frac{1}{\min(\gamma, \kappa_{\text{conf}}) \cdot \kappa_{W,\min} \cdot \delta^2}\right)
 $$
 
-where $\kappa_{W,\min} > 0$ is the N-uniform lower bound on the Wasserstein contraction rate from [06_convergence](06_convergence).
+where $\kappa_{W,\min} > 0$ is the N-uniform lower bound on the Wasserstein contraction rate from {doc}`06_convergence`.
 :::
 
 :::{prf:proof}
@@ -2162,7 +2156,7 @@ where $\kappa_{W,\min} > 0$ is the N-uniform lower bound on the Wasserstein cont
 
 2. The parameters $\gamma$ (friction coefficient) and $\kappa_{\text{conf}}$ (confining potential convexity) are N-independent by definition (algorithm parameters).
 
-3. From **Theorem 2.3.1** of [06_convergence](06_convergence) (Inter-Swarm Error Contraction Under Kinetic Operator), the Wasserstein contraction rate $\kappa_W(N)$ is proven to be **N-uniform**. Specifically, the theorem states:
+3. From **Theorem 2.3.1** of {doc}`06_convergence` (Inter-Swarm Error Contraction Under Kinetic Operator), the Wasserstein contraction rate $\kappa_W(N)$ is proven to be **N-uniform**. Specifically, the theorem states:
 
    > **Key Properties:**
    > 3. **N-uniformity:** All constants are independent of swarm size N.
@@ -2182,10 +2176,10 @@ where $\kappa_{W,\min} > 0$ is the N-uniform lower bound on the Wasserstein cont
 **Implications**:
 
 1. **Scalability**: Convergence rate does not degrade as swarm size increases
-2. **Mean-field foundation**: Enables propagation of chaos results (see [08_propagation_chaos](../06_propagation_chaos.md))
+2. **Mean-field foundation**: Enables propagation of chaos results (see {doc}`09_propagation_chaos`)
 3. **Curvature unification**: Provides the N-uniform bound required for spectral convergence analysis in emergent geometry theory
 
-This result, combined with the propagation of chaos theorem from [08_propagation_chaos](../06_propagation_chaos.md), establishes that the empirical measure of walkers converges to a smooth quasi-stationary density as $N \to \infty$, with convergence rate independent of $N$.
+This result, combined with the propagation of chaos theorem from {doc}`09_propagation_chaos`, establishes that the empirical measure of walkers converges to a smooth quasi-stationary density as $N \to \infty$, with convergence rate independent of $N$.
 
 ### 9.7. Canonical N-Uniform LSI Statement
 
@@ -2225,7 +2219,7 @@ with:
 Direct consequence of {prf:ref}`thm-main-kl-final` and {prf:ref}`cor-n-uniform-lsi`. The explicit formula for $\lambda_{\text{LSI}}$ follows from tracing the constants through:
 1. Hypocoercive LSI for kinetic operator ({prf:ref}`thm-kinetic-lsi`)
 2. Entropy-transport Lyapunov contraction ({prf:ref}`thm-entropy-transport-contraction`)
-3. N-uniform Wasserstein contraction from [06_convergence](06_convergence)
+3. N-uniform Wasserstein contraction from {doc}`06_convergence`
 
 See the proof of {prf:ref}`cor-n-uniform-lsi` for the detailed N-uniformity argument. $\square$
 :::
@@ -2322,7 +2316,7 @@ All three gaps are now **completely resolved** with rigorous proofs.
 
 ## Section 9. Mean-Field Generator Framework
 
-[Content from 10_M_meanfield_sketch.md - Part 0 and main lemma]
+[Content from the mean-field sketch draft - Part 0 and main lemma]
 
 ## Lemma 5.2: Mean-Field Proof (Essentially Complete)
 
@@ -2506,7 +2500,7 @@ $$
 I_1 = \frac{\lambda_{\text{clone}}}{2m_a} \int_{\Omega_1} \rho_\mu(z_d) \rho_\mu(z_c) e^{-\lambda_{\text{corr}} \Delta V} \Delta V \, \mathrm{d}z_d \mathrm{d}z_c
 $$
 
-**Key insight**: Use **Theorem 2.1 (Permutation Invariance)** from [12_symmetries_geometric_gas](../2_geometric_gas/12_symmetries_geometric_gas)(../2_geometric_gas/12_symmetries_geometric_gas): The system is invariant under $S_N$, so the integral is symmetric under swapping $z_d \leftrightarrow z_c$.
+**Key insight**: Exchangeability of the QSD ({prf:ref}`thm-qsd-exchangeability` in {doc}`12_qsd_exchangeability_theory`) implies $S_N$ invariance, so the integral is symmetric under swapping $z_d \leftrightarrow z_c$.
 
 **Symmetrization** (swap $z_d \leftrightarrow z_c$):
 
@@ -2775,12 +2769,12 @@ The main document (Section 5.2, lines 920-1040) provides an **alternative comple
 | **Main result** | $\Delta D_{\text{KL}} \leq -\tau\beta D_{\text{KL}} + C_{\text{ent}}$ | $D_{\text{KL}}(\mu') \leq D_{\text{KL}}(\mu) - \alpha W_2^2$ |
 | **Nature** | Infinitesimal/analytic | Global/geometric |
 
-Both proofs rely fundamentally on **log-concavity** ({prf:ref}`axiom-qsd-log-concave`) but exploit it through different mathematical structures.
+Both geometric proofs rely on **log-concavity** ({prf:ref}`axiom-qsd-log-concave`) but exploit it through different mathematical structures. The hypocoercive proof in {doc}`10_kl_hypocoercive` removes this requirement.
 
 
 ## Key Insights from Resolution
 
-**Theorem 2.1 (Permutation Invariance)** from [12_symmetries_geometric_gas](../2_geometric_gas/12_symmetries_geometric_gas)(../2_geometric_gas/12_symmetries_geometric_gas) enabled the crucial symmetrization argument that transforms $(e^{-x} - 1)x$ into a tractable sinh expression.
+**Exchangeability of the QSD** ({prf:ref}`thm-qsd-exchangeability` in {doc}`12_qsd_exchangeability_theory`) enabled the symmetrization argument that transforms $(e^{-x} - 1)x$ into a tractable sinh expression.
 
 **Lesson**: Discrete symmetries ($S_N$ permutations) can provide global constraints that enable proofs where pointwise inequalities fail.
 
@@ -2788,13 +2782,13 @@ Both proofs rely fundamentally on **log-concavity** ({prf:ref}`axiom-qsd-log-con
 
 **Lesson**: PDE/heat flow methods are powerful for diffusion processes, complementing purely functional-analytic approaches.
 
-### 3. Log-Concavity is Essential
+### 3. Log-Concavity (Geometric Route)
 
 {prf:ref}`axiom-qsd-log-concave` (log-concavity of $\pi_{\text{QSD}}$) appears in both proofs:
 - **Displacement convexity**: Provides geodesic convexity of entropy
 - **Mean-field generator**: Provides LSI via Bakry-Émery theory
 
-**Lesson**: Log-concavity is the fundamental property enabling exponential convergence in both frameworks.
+**Lesson**: Log-concavity is sufficient for these two geometric routes, but it is not necessary once the hypocoercive route is used.
 
 
 **Problem:** How to bound the cloning generator integral involving $(e^{-\lambda_{\text{corr}} \Delta V} - 1) \Delta V$ without pointwise inequalities?
@@ -2831,7 +2825,7 @@ where $\Delta V = V_{\text{QSD}}(z_c) - V_{\text{QSD}}(z_d)$.
 
 ### Step 1: Recognize Permutation Symmetry
 
-**Theorem 2.1 from `../2_geometric_gas/12_symmetries_geometric_gas`** (Permutation Invariance):
+**Exchangeability of the QSD** (Theorem {prf:ref}`thm-qsd-exchangeability`):
 
 The transition operator is **exactly invariant** under the symmetric group $S_N$. This means the integral $I_1$ is **symmetric** under swapping integration variables $z_d \leftrightarrow z_c$.
 
@@ -2932,13 +2926,13 @@ $$
 
 ## Why This Works: Connection to Symmetry Framework
 
-### Theorem 2.1: Permutation Invariance
+### Exchangeability: Permutation Invariance
 
-From **`../2_geometric_gas/12_symmetries_geometric_gas`**, Theorem 2.1 establishes:
+From {doc}`12_qsd_exchangeability_theory`, Theorem {prf:ref}`thm-qsd-exchangeability` establishes:
 
-> The Geometric Gas transition operator $\Psi$ is **exactly invariant** under the action of the symmetric group $S_N$. For any permutation $\sigma \in S_N$:
+> The QSD $\pi_N$ is **exchangeable** under the action of the symmetric group $S_N$. For any permutation $\sigma \in S_N$:
 >
-> $$\Psi(\sigma(\mathcal{S}), \cdot) = \sigma \circ \Psi(\mathcal{S}, \cdot)$$
+> $$\pi_N(\sigma A) = \pi_N(A)$$
 
 **Implication for our proof**: The integral $I_1$ involves the distribution $\rho_\mu(z_d) \rho_\mu(z_c)$ which is the **two-particle marginal** of an $S_N$-invariant measure. This exchangeability is what allows us to swap $z_d \leftrightarrow z_c$ freely.
 
@@ -2962,7 +2956,7 @@ From **`../2_geometric_gas/12_symmetries_geometric_gas`**, Theorem 2.1 establish
 
 ### Original Sketch (Incorrect)
 
-The mean-field sketch document (10_M_meanfield_sketch.md) attempted:
+The mean-field sketch document (mean-field sketch draft) attempted:
 
 $$
 I_1 = -\frac{\lambda_{\text{clone}}}{m_a} \int_{\Omega_1} \rho_\mu(z_d) \rho_\mu(z_c) \Delta V \sinh(\lambda_{\text{corr}} \Delta V) \, \mathrm{d}z_d \mathrm{d}z_c
@@ -3010,7 +3004,7 @@ This is still unresolved. Shannon's Entropy Power Inequality gives $H(\rho_{\tex
 ## Acknowledgments
 
 This resolution was achieved through:
-1. **Symmetry framework** (../2_geometric_gas/12_symmetries_geometric_gas) providing the permutation invariance theorem
+1. **Symmetry framework** ({doc}`12_qsd_exchangeability_theory`) providing exchangeability/permutation invariance
 2. **Gemini AI** identifying the correct symmetrization argument
 3. **Classical statistical mechanics** techniques (symmetrization is standard in equilibrium stat mech)
 
@@ -3434,7 +3428,7 @@ All three critical gaps in the mean-field LSI proof have been resolved using a c
 
 **Problem**: Need to bound $(e^{-x} - 1)x$ without a pointwise inequality.
 
-**Resolution**: **Permutation Symmetry** (Theorem 2.1 from `../2_geometric_gas/12_symmetries_geometric_gas`)
+**Resolution**: **Permutation Symmetry** (exchangeability, {prf:ref}`thm-qsd-exchangeability`)
 
 **Method**:
 1. Use $S_N$ invariance to write the integral two ways (swap $z_d \leftrightarrow z_c$)
@@ -3550,7 +3544,7 @@ where:
 
 ## Mathematical Tools Used
 
-**Source**: Theorem 2.1 from [12_symmetries_geometric_gas](../2_geometric_gas/12_symmetries_geometric_gas)(../2_geometric_gas/12_symmetries_geometric_gas)
+**Source**: Exchangeability of the QSD ({prf:ref}`thm-qsd-exchangeability` in {doc}`12_qsd_exchangeability_theory`)
 
 **Theorem**: The system is exactly invariant under $S_N$ permutations.
 
@@ -3653,7 +3647,7 @@ $$
 **Framework**: PDE/heat flow + symmetry
 
 **Key ingredients**:
-1. Permutation symmetry (Theorem 2.1)
+1. Permutation symmetry (Theorem {prf:ref}`thm-qsd-exchangeability`)
 2. De Bruijn identity (heat flow)
 3. Log-Sobolev inequality (Bakry-Émery)
 4. Sinh inequality (elementary analysis)
@@ -3733,7 +3727,7 @@ $$
 
 **Theorem**: All mathematical steps are justified with:
 - References to established results (McCann, Bakry-Émery, de Bruijn)
-- References to project theorems (Theorem 2.1 permutation invariance)
+- References to project theorems (exchangeability, {prf:ref}`thm-qsd-exchangeability`)
 - Elementary inequalities (sinh inequality)
 
 **No hand-waving or "clearly" statements without proof.**
@@ -3851,7 +3845,7 @@ $$
 3. **Existing composition theorem** (main document Section 6)
 
 **Relationship to other proofs**:
-- This proof is **complementary** to the displacement convexity proof in Section 5.2 of [15_kl_convergence](15_kl_convergence)
+- This proof is **complementary** to the displacement convexity proof in Section 5.2 of {doc}`15_kl_convergence`
 - It provides **explicit constants** from generator parameters
 - Both proofs rely on log-concavity ({prf:ref}`axiom-qsd-log-concave`) but through different machinery
 
@@ -3861,7 +3855,7 @@ $$
 :::{prf:theorem} Exponential KL-Convergence via Mean-Field Analysis
 :label: thm-meanfield-kl-convergence-hybrid
 
-**Hypotheses**: Same as Theorem {prf:ref}`thm-main-kl-convergence` in [15_kl_convergence](15_kl_convergence):
+**Hypotheses**: Same as Theorem {prf:ref}`thm-main-kl-convergence` in {doc}`15_kl_convergence`:
 
 1. $\pi_{\text{QSD}}$ is log-concave ({prf:ref}`axiom-qsd-log-concave`)
 2. Parameters satisfy Foster-Lyapunov conditions
@@ -3993,7 +3987,7 @@ where $\Delta V = V_{\text{QSD}}(z_c) - V_{\text{QSD}}(z_d)$ and $P_{\text{clone
 
 **A.3: Key technique - Permutation symmetry**:
 
-By **Theorem 2.1 (Permutation Invariance)** from [12_symmetries_geometric_gas](../2_geometric_gas/12_symmetries_geometric_gas)(../2_geometric_gas/12_symmetries_geometric_gas), the integral is symmetric under swapping $z_d \leftrightarrow z_c$.
+By exchangeability of the QSD ({prf:ref}`thm-qsd-exchangeability`), the integral is symmetric under swapping $z_d \leftrightarrow z_c$.
 
 Using the symmetrization argument (see internal gap resolution notes for full details):
 
@@ -4307,7 +4301,7 @@ This proof is **complementary** to the displacement convexity approach, providin
 **Key feature**: Unlike the hybrid proof (mean-field LSI hybrid proof), this document is **fully standalone** - all components are proven from first principles using generator analysis.
 
 **Relationship to other proofs**:
-- **Alternative to**: Displacement convexity proof (Section 5.2 of [15_kl_convergence](15_kl_convergence))
+- **Alternative to**: Displacement convexity proof (Section 5.2 of {doc}`15_kl_convergence`)
 - **Complementary perspective**: Infinitesimal/analytic vs. global/geometric
 - **Unique value**: Complete mean-field PDE treatment with explicit constants
 
@@ -4522,7 +4516,7 @@ $\square$
 
 :::
 
-**Remark**: This is a condensed version of the full hypocoercivity argument. The complete proof with explicit matrix calculations is in Section 2-3 of [15_kl_convergence](15_kl_convergence).
+**Remark**: This is a condensed version of the full hypocoercivity argument. The complete proof with explicit matrix calculations is in Section 2-3 of {doc}`15_kl_convergence`.
 
 
 ## Section 2: Cloning Operator LSI (Mean-Field Generator Analysis)
@@ -5039,7 +5033,7 @@ This document provides a **complete, self-contained proof** of exponential KL-di
 | Tool | Source | Application |
 |------|--------|-------------|
 | **Hypocoercivity** | Villani 2009 | Kinetic operator LSI |
-| **Permutation symmetry** | Theorem 2.1, [12_symmetries_geometric_gas](../2_geometric_gas/12_symmetries_geometric_gas)(../2_geometric_gas/12_symmetries_geometric_gas) | Potential energy contraction |
+| **Permutation symmetry** | {prf:ref}`thm-qsd-exchangeability` ({doc}`12_qsd_exchangeability_theory`) | Potential energy contraction |
 | **De Bruijn identity** | De Bruijn 1959 | KL divergence under heat flow |
 | **Log-Sobolev inequality** | Bakry-Émery 1985 | Exponential contraction from log-concavity |
 | **Shannon EPI** | Shannon 1948 | Entropy increase under Gaussian convolution |
@@ -5131,9 +5125,7 @@ The QSD has the form $\pi_{\text{QSD}}(S) = \exp(-V_{\text{QSD}}(S))$ where $V_{
 :::
 
 :::{important} Axiom Status Update (October 2025)
-This axiom is **no longer required**. It has been proven as a theorem via the hypocoercivity method in [../2_geometric_gas/15_geometric_gas_lsi_proof.md](../2_geometric_gas/15_geometric_gas_lsi_proof.md), which derives the LSI from geometric first principles without assuming log-concavity. See [../3_brascamp_lieb/geometric_foundations_lsi.md](../3_brascamp_lieb/geometric_foundations_lsi.md) for complete analysis.
-
-The limitations discussed below (regarding multimodal landscapes) were the motivation for developing the hypocoercivity approach, which successfully bypasses the log-concavity assumption.
+This axiom is **no longer required**. The hypocoercive entropy proof in {doc}`10_kl_hypocoercive` derives the LSI for the Euclidean Gas without assuming global log-concavity, so the limitations discussed below are historical motivation rather than a current restriction.
 :::
 
 **Consequence** (historical motivation): This axiom **excludes multimodal fitness landscapes**, which are ubiquitous in:
@@ -5146,7 +5138,7 @@ The limitations discussed below (regarding multimodal landscapes) were the motiv
 
 This document establishes exponential KL-convergence using a **strictly weaker assumption** that we **already have**:
 
-:::{prf:axiom} Confining Potential (from 04_convergence.md, Axiom 1.3.1)
+:::{prf:axiom} Confining Potential (from {doc}`06_convergence`, Axiom 1.3.1)
 :label: axiom-confining-recap
 
 The potential $U: \mathcal{X} \to \mathbb{R}$ satisfies:
@@ -5230,9 +5222,9 @@ depends on friction $\gamma$, confinement strength $\alpha_U$, kinetic noise $\s
 
 ### 1.1. What We Already Have
 
-### 1.1.1. The Confining Potential (from 04_convergence.md)
+### 1.1.1. The Confining Potential (from {doc}`06_convergence`)
 
-Axiom 1.3.1 in [06_convergence](06_convergence) establishes:
+Axiom 1.3.1 in {doc}`06_convergence` establishes:
 
 :::{prf:axiom} Confining Potential (Complete Statement)
 :label: axiom-confining-complete
@@ -5261,7 +5253,7 @@ $$
 
 **Key fact**: Axiom {prf:ref}`axiom-confining-complete` **does not require** $U$ to be convex.
 
-### 1.1.2. The Kinetic Operator (from 04_convergence.md)
+### 1.1.2. The Kinetic Operator (from {doc}`06_convergence`)
 
 The Langevin dynamics for a single walker are:
 
@@ -5299,7 +5291,7 @@ $$
 
 where $\theta = \sigma_v^2 / \gamma$ is the temperature.
 
-### 1.1.3. The Cloning Operator (from 03_cloning.md)
+### 1.1.3. The Cloning Operator (from {doc}`03_cloning`)
 
 The cloning step selects walkers based on fitness $g(x, v, S)$ and replaces low-fitness walkers with noisy copies of high-fitness walkers:
 
@@ -5323,7 +5315,7 @@ $$
 
 ### 1.2.1. Dropping the Convexity Assumption
 
-**Old assumption** (from 10_kl_convergence_unification.md):
+**Old assumption** (from the KL convergence unification draft):
 
 $$
 \pi_{\text{QSD}}(S) = \exp(-V_{\text{QSD}}(S)) \quad \text{where} \quad V_{\text{QSD}} \text{ is convex}
@@ -5737,7 +5729,7 @@ $$
 \Psi_{\text{kin}}(\tau): (x, v) \mapsto (x', v')
 $$
 
-From Section 1.7.3 of [06_convergence](06_convergence), the discrete-time weak error analysis gives:
+From Section 1.7.3 of {doc}`06_convergence`, the discrete-time weak error analysis gives:
 
 :::{prf:lemma} Hypocoercive LSI for Discrete-Time Kinetic Operator
 :label: lem-kinetic-lsi-hypocoercive
@@ -5772,7 +5764,7 @@ $$
 \frac{d}{dt} D_{\text{KL}}(\rho_t \| \pi_{\text{kin}}) \leq -\lambda_{\text{hypo}} D_{\text{KL}}(\rho_t \| \pi_{\text{kin}})
 $$
 
-**Step 2**: The BAOAB integrator is a second-order weak approximation to the Langevin SDE. By Proposition 1.7.3.1 in [06_convergence](06_convergence), the weak error is:
+**Step 2**: The BAOAB integrator is a second-order weak approximation to the Langevin SDE. By Proposition 1.7.3.1 in {doc}`06_convergence`, the weak error is:
 
 $$
 \left|\mathbb{E}[H(\rho_\tau^{\text{BAOAB}})] - \mathbb{E}[H(\rho_\tau^{\text{exact}})]\right| \leq K_H \tau^2 (1 + H(\rho_0))
@@ -5934,13 +5926,13 @@ This N-uniformity is **essential** for the mean-field limit analysis in Part 3.
 
 **Initial approach (failed)**: We attempted to use Feynman-Kac / Sequential Monte Carlo (SMC) theory for interacting particle systems (Jabin-Wang 2016, Guillin-Liu-Wu 2019). This requires proving the fitness function is **Lipschitz continuous in Wasserstein distance**: $|g(z,\mu) - g(z,\nu)| \leq L_g \cdot W_1(\mu, \nu)$.
 
-**Why it failed**: The Sequential Stochastic Greedy Pairing Operator (Definition {prf:ref}`def-greedy-pairing-algorithm` in [03_cloning](../03_cloning.md)) for companion selection is:
+**Why it failed**: The Sequential Stochastic Greedy Pairing Operator (Definition {prf:ref}`def-greedy-pairing-algorithm` in {doc}`03_cloning`) for companion selection is:
 **The solution**: Instead of forcing the problem into a Wasserstein framework, we use **Dobrushin-style contraction arguments** with the metric where our algorithm is naturally well-behaved: the discrete status-change metric.
 
 :::{admonition} 🎯 Key Insight: Use the Right Metric
 :class: important
 
-The framework already proves (Theorem 7.2.3 in `01_fragile_gas_framework.md`) that companion selection is Lipschitz continuous in $d_{\text{status}}$. Instead of abandoning this powerful result to chase Wasserstein bounds, we embrace it and build the convergence proof directly in the $d_{\text{status}}$ metric.
+The framework already proves (Theorem 7.2.3 in {doc}`01_fragile_gas_framework`) that companion selection is Lipschitz continuous in $d_{\text{status}}$. Instead of abandoning this powerful result to chase Wasserstein bounds, we embrace it and build the convergence proof directly in the $d_{\text{status}}$ metric.
 
 This is analogous to proving convergence of gradient descent: you don't need the objective to be convex in Euclidean distance if you can find a different metric (like the Bregman divergence) where it IS well-behaved.
 :::
@@ -5974,15 +5966,15 @@ $$
 :::{note}
 **Physical interpretation**: $d_{\text{status}}$ counts how many walkers would need to "flip" their alive/dead status to make the two swarms have identical structure. This is the natural metric for the Euclidean Gas because:
 1. Cloning decisions depend on alive/dead status
-2. The framework's continuity results (Chapter 7 in `01_fragile_gas_framework.md`) are all stated in terms of $n_c$
+2. The framework's continuity results (Chapter 7 in {doc}`01_fragile_gas_framework`) are all stated in terms of $n_c$
 3. The Keystone Principle operates on status changes
 :::
 
 ### 3.3. Lipschitz Continuity of Sequential Stochastic Greedy Pairing
 
-Before proving the Dobrushin contraction, we need to establish that the **Sequential Stochastic Greedy Pairing Operator** (Definition {prf:ref}`def-greedy-pairing-algorithm` in [03_cloning](../03_cloning.md)) is Lipschitz continuous in the $d_{\text{status}}$ metric.
+Before proving the Dobrushin contraction, we need to establish that the **Sequential Stochastic Greedy Pairing Operator** (Definition {prf:ref}`def-greedy-pairing-algorithm` in {doc}`03_cloning`) is Lipschitz continuous in the $d_{\text{status}}$ metric.
 
-The framework's Theorem {prf:ref}`thm-total-error-status-bound` in [01_fragile_gas_framework](../01_fragile_gas_framework.md) proves Lipschitz continuity for **uniform random companion selection**. However, the greedy pairing uses **softmax-weighted selection** based on algorithmic distance, so we must extend the proof to this case.
+The framework's Theorem {prf:ref}`thm-total-error-status-bound` in {doc}`01_fragile_gas_framework` proves Lipschitz continuity for **uniform random companion selection**. However, the greedy pairing uses **softmax-weighted selection** based on algorithmic distance, so we must extend the proof to this case.
 
 :::{prf:lemma} Lipschitz Continuity of Softmax-Weighted Companion Selection
 :label: lem-softmax-lipschitz-status
@@ -6259,7 +6251,7 @@ For contraction, we need $1 + \epsilon_{\text{clone}} < 1$, which requires **clo
 - Fit walkers (high fitness) are more likely to clone
 - The fitness landscape provides directional pressure toward convergence
 
-By the Keystone Principle (Lemma {prf:ref}`lem-quantitative-keystone` in [03_cloning](../03_cloning.md)), cloning creates a **contractive force** with strength proportional to the fitness variance. When fitness variance is non-zero (guaranteed by the non-degeneracy axioms):
+By the Keystone Principle (Lemma {prf:ref}`lem-quantitative-keystone` in {doc}`03_cloning`), cloning creates a **contractive force** with strength proportional to the fitness variance. When fitness variance is non-zero (guaranteed by the non-degeneracy axioms):
 
 $$
 \epsilon_{\text{clone}} = -\lambda_{\text{clone}} \cdot \tau + O(\tau^2)
@@ -6364,7 +6356,7 @@ We now combine the hypocoercivity result (Part 2) with the Feynman-Kac result (P
 Let the N-particle Euclidean Gas satisfy:
 
 **Axioms**:
-1. **Confining potential** (Axiom 1.3.1 in [06_convergence](06_convergence)): $U(x) \to \infty$ as $|x| \to \infty$ with coercivity $\langle \nabla U, x \rangle \geq \alpha_U |x|^2$
+1. **Confining potential** (Axiom 1.3.1 in {doc}`06_convergence`): $U(x) \to \infty$ as $|x| \to \infty$ with coercivity $\langle \nabla U, x \rangle \geq \alpha_U |x|^2$
 2. **Positive friction** (Axiom 1.2.2): $\gamma > 0$
 3. **Positive kinetic noise** (Axiom 1.2.3): $\sigma_v^2 > 0$
 4. **Bounded fitness** (Axiom 3.1): $|g(x, v, S)| \leq G_{\max}(1 + V_{\text{total}}(S))$
@@ -6857,7 +6849,7 @@ $$
 2. Showing that cloning doesn't introduce **N-dependent degradation**
 
 **Possible approach**:
-- Use **propagation of chaos** techniques (see Chapter 6 of [07_mean_field](../05_mean_field.md))
+- Use **propagation of chaos** techniques (see {doc}`09_propagation_chaos` and {doc}`08_mean_field`)
 - Prove that the **mean-field PDE** for the N-particle system satisfies hypocoercivity
 - Apply **quantitative mean-field convergence** estimates (Jabin-Wang 2016, Bresch-Jabin 2018)
 
@@ -6932,7 +6924,7 @@ where $\pi_{\text{coarse}}$ is the coarse-grained equilibrium on basins.
 
 ### 6.4. Adaptive Mechanisms and Multimodality
 
-**Question**: Does the **Geometric Gas** (Chapter 7 of [11_geometric_gas](../2_geometric_gas/11_geometric_gas)(../07_geometric_gas.md)) with viscous coupling and adaptive forces **improve** convergence in non-convex settings?
+**Question**: Does the adaptive/latent Fractal Gas ({doc}`../1_the_algorithm/02_fractal_gas_latent`) with viscous coupling and adaptive forces **improve** convergence in non-convex settings?
 
 **Hypothesis**: **Yes**, because:
 1. **Viscous coupling** helps particles **collectively traverse barriers** (swarm effect)
@@ -6943,11 +6935,11 @@ where $\pi_{\text{coarse}}$ is the coarse-grained equilibrium on basins.
 - **State-dependent diffusion** ($\Sigma_{\text{reg}}(x, S)$)
 
 **Possible approach**:
-- Treat adaptive terms as **bounded perturbations** of the backbone (as in [11_geometric_gas](../2_geometric_gas/11_geometric_gas)(../07_geometric_gas.md), Chapter 6)
+- Treat adaptive terms as **bounded perturbations** of the backbone (see the boundedness certificates in {doc}`../1_the_algorithm/02_fractal_gas_latent`)
 - Use **perturbation theory for hypocoercivity** (Saloff-Coste 1992, Holley-Stroock 1987)
 - Show the perturbed system retains exponential convergence with **ρ-dependent constants**
 
-**Expected result**: For the Geometric Gas:
+**Expected result**: For the adaptive/latent Fractal Gas:
 
 $$
 \lambda_{\text{adaptive}} = \lambda_{\text{hypo}} \cdot (1 - O(\epsilon_F \cdot \rho))
@@ -6971,8 +6963,8 @@ For small $\epsilon_F$ or large $\rho$, the adaptive mechanisms provide **no deg
    - Measure inter-mode transition time $t_{\text{global}}$
    - Verify Eyring-Kramers prediction: $t_{\text{global}} \sim \exp(\Delta V / \theta)$
 
-3. **Adaptive vs. Euclidean**: Compare Geometric Gas and Euclidean Gas on the same multimodal landscape
-   - Hypothesis: Geometric Gas has faster $t_{\text{global}}$ (better barrier crossing)
+3. **Adaptive vs. Euclidean**: Compare adaptive/latent Fractal Gas and Euclidean Gas on the same multimodal landscape
+   - Hypothesis: adaptive/latent gas has faster $t_{\text{global}}$ (better barrier crossing)
    - Measure $\lambda_{\text{adaptive}} / \lambda_{\text{euclidean}}$
 
 4. **Dimension scaling**: Test on $d = 2, 5, 10, 20$ dimensional problems
@@ -7012,7 +7004,7 @@ expressed directly in terms of physical parameters (hypocoercive mixing minus me
 |:---|:---|:---|:---|:---|
 | **Theorem 10** (unified doc) | Log-concave | Unimodal | $O(\gamma \kappa W)$ | Displacement convexity |
 | **Theorem {prf:ref}`thm-nonconvex-main`** (this doc) | Confining | **Multimodal** | $O(\min(\gamma, \alpha_U/\sigma_v^2))$ | Hypocoercivity + Feynman-Kac |
-| Chapter 7 (Geometric Gas) | Perturbation of log-concave | Small non-convex bumps | $O(\gamma) \cdot (1 - O(\epsilon_F))$ | Perturbation theory |
+| Adaptive/latent extension ({doc}`../1_the_algorithm/02_fractal_gas_latent`) | Perturbation of log-concave | Small non-convex bumps | $O(\gamma) \cdot (1 - O(\epsilon_F))$ | Perturbation theory |
 
 **All three results are rigorous and complementary.**
 
@@ -7027,7 +7019,7 @@ expressed directly in terms of physical parameters (hypocoercive mixing minus me
 - Develop two-tiered convergence theory (local + global rates)
 
 **Long-term** (1-2 years):
-- Extend to Geometric Gas with viscous coupling
+- Extend to adaptive/latent gas with viscous coupling
 - Develop adaptive tempering strategies for high-barrier landscapes
 - Apply to real-world multimodal optimization problems (neural networks, molecular dynamics)
 
@@ -7055,9 +7047,9 @@ expressed directly in terms of physical parameters (hypocoercive mixing minus me
 - Aida, S. & Shigekawa, I. (1994). "Logarithmic Sobolev inequalities and spectral gaps: perturbation theory." *J. Funct. Anal.*, 126(2), 448-475.
 
 **Fragile Framework:**
-- [03_cloning](../03_cloning.md): The Keystone Principle
-- [06_convergence](06_convergence): Hypocoercivity and Convergence of the Euclidean Gas
-- [11_geometric_gas](../2_geometric_gas/11_geometric_gas)(../07_geometric_gas.md): The Geometric Viscous Fluid Model
+- {doc}`03_cloning`: The Keystone Principle
+- {doc}`06_convergence`: Hypocoercivity and Convergence of the Euclidean Gas
+- {doc}`../1_the_algorithm/02_fractal_gas_latent`: Adaptive/latent viscous model
 - KL-convergence unification analysis: Unified KL-Convergence Proof
 
 ---
@@ -7126,7 +7118,7 @@ expressed directly in terms of physical parameters (hypocoercive mixing minus me
 
 ### What We Have (Unconditional)
 
-From [06_convergence](06_convergence), Theorem `thm-foster-lyapunov-main`:
+From {doc}`06_convergence`, Theorem `thm-foster-lyapunov-main`:
 
 :::{prf:theorem} Foster-Lyapunov Drift (Unconditional)
 :label: thm-fl-recap
@@ -7293,7 +7285,7 @@ for some $\rho_{\text{hypo}} > 0$.
 
 ## 1.1 Foster-Lyapunov Drift Condition
 
-From [06_convergence](06_convergence), we have proven:
+From {doc}`06_convergence`, we have proven:
 
 :::{prf:theorem} Synergistic Foster-Lyapunov (Established)
 :label: thm-fl-established
@@ -7788,7 +7780,7 @@ $$
 \gamma > \gamma_* := \frac{c_2 M^2}{\lambda c_1} + \frac{C_{\text{Dob}} \nu_{\text{clone}}}{c_1 \kappa_W}
 $$
 
-This is precisely the **Acoustic Limit condition** from [10_kl_hypocoercive](10_kl_hypocoercive).
+This is precisely the **Acoustic Limit condition** from {doc}`10_kl_hypocoercive`.
 :::
 
 :::{prf:proof}
@@ -8060,7 +8052,7 @@ $$
 
 The first term requires sufficient friction to overcome the destabilizing effect of non-convex potential regions. The second term requires friction to dominate the perturbation from cloning dynamics.
 
-This matches the Acoustic Limit condition derived in [10_kl_hypocoercive](10_kl_hypocoercive) via the entropy-transport Lyapunov approach.
+This matches the Acoustic Limit condition derived in {doc}`10_kl_hypocoercive` via the entropy-transport Lyapunov approach.
 :::
 
 :::{prf:remark} Consistency Check
@@ -8073,7 +8065,7 @@ The unconditional proof via hypocoercive Bakry-Émery gives the **same stability
 
 ## A.1 What Changes
 
-| Aspect | Conditional Proof (10_kl_convergence_unification.md) | Unconditional Proof (This Document) |
+| Aspect | Conditional Proof (KL convergence unification draft) | Unconditional Proof (This Document) |
 |--------|------------------------------------------------------|-------------------------------------|
 | **Assumption** | Axiom axiom-qsd-log-concave | None (proven from dynamics) |
 | **Method** | Otto-Villani HWI + displacement convexity | Hypocoercive Bakry-Émery |
@@ -8324,7 +8316,7 @@ For the chosen approach, rigorously verify:
 
 ### Step 5.3: Write the Proof
 
-Create `10_U_unconditional_lsi_via_hypocoercivity.md` with:
+Create the unconditional LSI via hypocoercivity draft with:
 
 - [ ] Section 1: Statement of unconditional LSI theorem
 - [ ] Section 2: Review of hypocoercive Bakry-Émery framework (cite paper)
@@ -8336,8 +8328,8 @@ Create `10_U_unconditional_lsi_via_hypocoercivity.md` with:
 ### Step 5.4: Update All Documents
 
 - [ ] Update the KL-convergence unification document to reference unconditional proof
-- [ ] Update `hydrodynamics.md` Yang-Mills section
-- [ ] Update `15_millennium_problem_completion.md`
+- [ ] Update the hydrodynamics Yang-Mills section
+- [ ] Update the millennium problem completion notes
 - [ ] Remove all "conditional on log-concavity" warnings
 - [ ] Add citation to hypocoercive LSI paper(s)
 
@@ -8464,11 +8456,11 @@ This document builds on results from:
    - `06_convergence` - Foster-Lyapunov convergence, TV bounds
 
 3. **Mean-Field Theory:**
-   - `07_mean_field` - Mean-field limits, McKean-Vlasov PDE
-   - `08_propagation_chaos` - Propagation of chaos results
+   - `08_mean_field` - Mean-field limits, McKean-Vlasov PDE
+   - `09_propagation_chaos` - Propagation of chaos results
 
 4. **Advanced Topics:**
-   - `../2_geometric_gas/12_symmetries_geometric_gas` - Permutation symmetry (Theorem 2.1)
+   - `12_qsd_exchangeability_theory` - Exchangeability (permutation symmetry)
    - gauge theory formulation - Gauge theory formulation
 
 ### External Mathematical References
@@ -8575,7 +8567,7 @@ This document builds on results from:
 - Used synergistic Lyapunov function
 - **Limitation:** Total variation doesn't imply concentration
 
-**Phase 2: Displacement Convexity (15_kl_convergence.md - Part II of this document)**
+**Phase 2: Displacement Convexity (Part II of this document)**
 - First KL-convergence proof
 - Used optimal transport + HWI inequality
 - **Achievement:** Exponential KL-convergence under log-concavity
@@ -8653,10 +8645,10 @@ This document builds on results from:
    - Can we get explicit $C_{\text{LSI}}$ formula?
    - Optimize parameter dependence
 
-4. **Extend to Geometric Gas**
+4. **Extend to adaptive/latent gas**
    - Does LSI hold for viscous coupling + adaptive force?
    - How do mean-field interactions affect constants?
-   - See `../2_geometric_gas/11_geometric_gas` for operator specification
+   - See {doc}`../1_the_algorithm/02_fractal_gas_latent` for operator specification
 
 5. **Wasserstein-1 vs. Wasserstein-2**
    - Part II uses W_2, but W_1 might be more natural for discrete states
@@ -8685,4 +8677,3 @@ This document builds on results from:
 ---
 
 **END OF CONSOLIDATED DOCUMENT**
-

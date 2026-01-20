@@ -158,7 +158,7 @@ def _collect_checkpoints(checkpoint: str | None, checkpoint_dir: str | None) -> 
         candidates = [
             os.path.join(checkpoint_dir, fname)
             for fname in os.listdir(checkpoint_dir)
-            if fname.endswith(".pt")
+            if fname.endswith(".pt") and fname != "benchmarks.pt"
         ]
         if not candidates:
             raise FileNotFoundError(f"No .pt checkpoints found in: {checkpoint_dir}")
@@ -190,6 +190,9 @@ def _analyze_checkpoint(
             return
 
     checkpoint = _load_checkpoint(checkpoint_path)
+    if "data" not in checkpoint:
+        print(f"Skipping {os.path.basename(checkpoint_path)} (no data in checkpoint)")
+        return
     config = checkpoint["config"]
     data = checkpoint["data"]
     metrics = checkpoint.get("metrics", {})
@@ -266,6 +269,9 @@ def _analyze_checkpoint(
             "std_perplexity": metrics.get("std_perplexity", 0.0),
             "atlas_perplexity": metrics.get("atlas_perplexity", 0.0),
             "sup_acc": metrics.get("sup_acc", 0.0),
+            "cls_acc": metrics.get("cls_acc", None),
+            "std_cls_acc": metrics.get("std_cls_acc", None),
+            "ae_cls_acc": metrics.get("ae_cls_acc", None),
             "model_atlas": model_atlas,
         }
         visualize_results_images(results, class_names, save_path=results_path, image_shape=image_shape)

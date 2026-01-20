@@ -10,11 +10,13 @@
 
 **Practical Impact**: This document provides the first rigorous proof that physics-inspired swarm algorithms can achieve provable convergence with explicit rates. Every parameter's effect on convergence is quantified, enabling principled design choices. The N-uniform analysis validates the mean-field limit, establishing the Fragile Gas as a continuum physics model with rigorous mathematical foundations.
 
+**Dependencies**: {doc}`03_cloning`, {doc}`05_kinetic_contraction`, {doc}`02_euclidean_gas`
+
 ## 1. Introduction
 
 ### 1.1. Goal and Scope
 
-The goal of this document is to establish the **complete convergence theory** for the Euclidean Gas algorithm, synthesizing operator-level analyses from companion documents into a unified proof of geometric ergodicity. The central object of study is the **composed operator** $\Psi_{\text{total}} = \Psi_{\text{kin}} \circ \Psi_{\text{clone}}$, which combines the cloning operator (analyzed in `03_cloning.md`) and the kinetic Langevin operator (analyzed in `05_kinetic_contraction.md`).
+The goal of this document is to establish the **complete convergence theory** for the Euclidean Gas algorithm, synthesizing operator-level analyses from companion documents into a unified proof of geometric ergodicity. The central object of study is the **composed operator** $\Psi_{\text{total}} = \Psi_{\text{kin}} \circ \Psi_{\text{clone}}$, which combines the cloning operator (analyzed in {doc}`03_cloning`) and the kinetic Langevin operator (analyzed in {doc}`05_kinetic_contraction`).
 
 We prove four main results:
 
@@ -23,15 +25,15 @@ We prove four main results:
 3. **Explicit Parameter Dependence**: Complete formulas expressing all convergence rates in terms of primitive algorithmic parameters
 4. **Spectral Optimization Framework**: Systematic methods for parameter selection via sensitivity analysis and multi-objective optimization
 
-The scope includes rigorous proofs of φ-irreducibility and aperiodicity, physical interpretation of the QSD structure, explicit convergence time estimates, worked numerical examples with diagnostic plots, and robustness analysis via condition numbers. This document assumes results from `03_cloning.md` (Keystone Principle, Safe Harbor mechanism) and `05_kinetic_contraction.md` (hypocoercive contraction, velocity dissipation), which provide the operator-level drift inequalities that are synthesized here.
+The scope includes rigorous proofs of φ-irreducibility and aperiodicity, physical interpretation of the QSD structure, explicit convergence time estimates, worked numerical examples with diagnostic plots, and robustness analysis via condition numbers. This document assumes results from {doc}`03_cloning` (Keystone Principle, Safe Harbor mechanism) and {doc}`05_kinetic_contraction` (hypocoercive contraction, velocity dissipation), which provide the operator-level drift inequalities that are synthesized here.
 
 ### 1.2. The Synergistic Dissipation Paradigm
 
 The convergence of the Euclidean Gas emerges from a profound principle: **neither operator alone is sufficient, but their composition is**. This "synergistic dissipation" paradigm represents a departure from traditional algorithm design, where a single mechanism (e.g., gradient descent, Metropolis acceptance) provides all stability.
 
-The cloning operator embodies evolutionary selection. Through the Keystone Principle (Theorem 5.1 of `03_cloning.md`), it identifies and eliminates high-error configurations, contracting positional variance with rate $\kappa_x > 0$. However, this selective pressure introduces momentum perturbations through inelastic collisions, causing bounded expansion of velocity variance. The cloning operator cannot achieve full convergence alone—it trades positional stability for velocity disorder.
+The cloning operator embodies evolutionary selection. Through the Keystone Principle (Theorem 5.1 of {doc}`03_cloning`), it identifies and eliminates high-error configurations, contracting positional variance with rate $\kappa_x > 0$. However, this selective pressure introduces momentum perturbations through inelastic collisions, causing bounded expansion of velocity variance. The cloning operator cannot achieve full convergence alone—it trades positional stability for velocity disorder.
 
-The kinetic operator embodies thermalization. Through Langevin dynamics with friction $\gamma$, it dissipates velocity variance exponentially fast. Through hypocoercive coupling ({prf:ref}`thm-inter-swarm-contraction-kinetic` from `05_kinetic_contraction.md`), it contracts the Wasserstein distance between swarms. Through the confining potential $U(x)$, it prevents boundary escape. However, the Langevin noise $\sigma_v$ causes bounded expansion of positional variance. The kinetic operator cannot achieve full convergence alone—it trades velocity stability for positional diffusion.
+The kinetic operator embodies thermalization. Through Langevin dynamics with friction $\gamma$, it dissipates velocity variance exponentially fast. Through hypocoercive coupling ({prf:ref}`thm-inter-swarm-contraction-kinetic` from {doc}`05_kinetic_contraction`), it contracts the Wasserstein distance between swarms. Through the confining potential $U(x)$, it prevents boundary escape. However, the Langevin noise $\sigma_v$ causes bounded expansion of positional variance. The kinetic operator cannot achieve full convergence alone—it trades velocity stability for positional diffusion.
 
 **The magic occurs when these operators compose**. Each contracts precisely what the other expands. By carefully weighting the Lyapunov components ($V_{\text{total}} = V_W + c_V V_{\text{Var}} + c_B W_b$, where $V_W$ is the inter-swarm Wasserstein distance, $V_{\text{Var}}$ is the total intra-swarm variance, and $W_b$ is the boundary-avoidance potential), we achieve a **balancing act** where contraction forces dominate expansion forces across all components simultaneously. This synthesis is non-trivial: the coupling constants $(c_V, c_B)$ must satisfy explicit inequalities that depend on primitive parameters through complicated expressions involving multiple operator interactions.
 
@@ -46,8 +48,8 @@ The proof synthesizes results from two companion documents to establish full con
 ```{mermaid}
 graph TD
     subgraph "Prerequisites: Operator-Level Analysis"
-        A["<b>03_cloning.md: Cloning Operator</b><br>✓ Keystone Principle: V_Var,x contracts<br>✓ Safe Harbor: W_b contracts<br>⚠ V_Var,v expands boundedly"]:::axiomStyle
-        B["<b>05_kinetic_contraction.md: Kinetic Operator</b><br>✓ Hypocoercivity: V_W contracts<br>✓ Friction: V_Var,v contracts<br>⚠ V_Var,x expands boundedly"]:::axiomStyle
+        A["<b>03_cloning: Cloning Operator</b><br>✓ Keystone Principle: V_Var,x contracts<br>✓ Safe Harbor: W_b contracts<br>⚠ V_Var,v expands boundedly"]:::axiomStyle
+        B["<b>05_kinetic_contraction: Kinetic Operator</b><br>✓ Hypocoercivity: V_W contracts<br>✓ Friction: V_Var,v contracts<br>⚠ V_Var,x expands boundedly"]:::axiomStyle
     end
 
     subgraph "Chapter 3: Synergistic Composition"
@@ -152,13 +154,13 @@ This document contains five main technical chapters (Chapters 3-7):
 
 This document requires results from two companion documents:
 
-**From 03_cloning.md** (The Keystone Principle and the Contractive Nature of Cloning):
+**From {doc}`03_cloning`** (The Keystone Principle and the Contractive Nature of Cloning):
 - Definition 3.3.1: Synergistic Lyapunov function $V_{\text{total}}$
 - Theorem 12.3.1: Cloning operator drift inequalities for all components
 - Theorem 5.1: Keystone Principle (fitness-variance anti-correlation)
 - Chapter 11: Safe Harbor mechanism for boundary contraction
 
-**From 05_kinetic_contraction.md** (Hypocoercivity and Kinetic Operator Analysis):
+**From {doc}`05_kinetic_contraction`** (Hypocoercivity and Kinetic Operator Analysis):
 - {prf:ref}`thm-inter-swarm-contraction-kinetic` (Section 05:2.3): Hypocoercive contraction of inter-swarm error $V_W$
 - {prf:ref}`thm-velocity-variance-contraction-kinetic` (Section 05:3.3): Velocity variance dissipation via Langevin friction
 - {prf:ref}`thm-positional-variance-bounded-expansion` (Section 05:4.3): Bounded positional expansion
@@ -169,7 +171,7 @@ This document requires results from two companion documents:
 
 The following drift inequalities are established in the prerequisite documents and used throughout:
 
-| Component          | Cloning Drift (03_cloning.md)           | Kinetic Drift (05_kinetic_contraction.md)                   |
+| Component          | Cloning Drift ({doc}`03_cloning`)           | Kinetic Drift ({doc}`05_kinetic_contraction`)                   |
 |:-------------------|:----------------------------------------|:------------------------------------------------------------|
 | $V_W$              | $\leq C_W$                              | $\leq -\kappa_W V_W \tau + C_W'\tau$                        |
 | $V_{\text{Var},x}$ | $\leq -\kappa_x V_{\text{Var},x} + C_x$ | $\leq C_{\text{kin},x}\tau$                                 |
@@ -196,11 +198,11 @@ The following drift inequalities are established in the prerequisite documents a
 ### 2.5. Notation and Conventions
 
 Throughout this document:
-- $\Psi_{\text{clone}}$: Cloning operator (analyzed in 03_cloning.md)
-- $\Psi_{\text{kin}}$: Kinetic operator (analyzed in 05_kinetic_contraction.md)
+- $\Psi_{\text{clone}}$: Cloning operator (analyzed in {doc}`03_cloning`)
+- $\Psi_{\text{kin}}$: Kinetic operator (analyzed in {doc}`05_kinetic_contraction`)
 - $\Psi_{\text{total}} = \Psi_{\text{kin}} \circ \Psi_{\text{clone}}$: Composed operator
 - $V_{\text{total}} = V_W + c_V V_{\text{Var}} + c_B W_b$: Full Lyapunov function
-- Cross-document references use notation: "Theorem 05:X.Y.Z" for 05_kinetic_contraction.md
+- Cross-document references use notation: "Theorem 05:X.Y.Z" for {doc}`05_kinetic_contraction`
 
 ---
 
@@ -214,11 +216,11 @@ This chapter synthesizes the operator-level drift results established in compani
 
 Each operator has been analyzed individually:
 
-**From 03_cloning.md:**
+**From {doc}`03_cloning`:**
 - $\Psi_{\text{clone}}$ contracts $V_{\text{Var},x}$ and $W_b$ (Keystone Principle, Safe Harbor)
 - $\Psi_{\text{clone}}$ boundedly expands $V_{\text{Var},v}$ and $V_W$ (momentum injection, structural perturbation)
 
-**From 05_kinetic_contraction.md:**
+**From {doc}`05_kinetic_contraction`:**
 - $\Psi_{\text{kin}}$ contracts $V_W$, $V_{\text{Var},v}$, and $W_b$ (hypocoercivity, friction, confining potential)
 - $\Psi_{\text{kin}}$ boundedly expands $V_{\text{Var},x}$ (thermal diffusion)
 
@@ -229,7 +231,7 @@ Each operator has been analyzed individually:
 :::{prf:definition} Synergistic Lyapunov Function (Recall)
 :label: def-full-lyapunov-recall
 
-From 03_cloning.md Definition 3.3.1:
+From {doc}`03_cloning` Definition 3.3.1:
 
 $$
 V_{\text{total}}(S_1, S_2) = V_W(S_1, S_2) + c_V V_{\text{Var}}(S_1, S_2) + c_B W_b(S_1, S_2)
@@ -258,8 +260,8 @@ We summarize all drift results:
 | $W_b$ | $\leq -\kappa_b W_b + C_b$ | $\leq -\kappa_{\text{pot}} W_b \tau + C_{\text{pot}}\tau$ |
 
 **Sources:**
-- Cloning drifts: 03_cloning.md Theorem 12.3.1
-- Kinetic drifts: See theorems in 05_kinetic_contraction.md Sections 2.3, 3.3, 4.3, 5.3 (referenced above)
+- Cloning drifts: {doc}`03_cloning` Theorem 12.3.1
+- Kinetic drifts: See theorems in {doc}`05_kinetic_contraction` Sections 2.3, 3.3, 4.3, 5.3 (referenced above)
 :::
 
 ### 3.4. Main Theorem: Synergistic Foster-Lyapunov Condition
@@ -331,7 +333,7 @@ $$
 
 From previous chapters, we have the following drift bounds:
 
-**From Cloning (03_cloning.md):**
+**From Cloning ({doc}`03_cloning`):**
 - $\mathbb{E}_{\text{clone}}[\Delta V_W] \leq C_W$ (bounded expansion)
 - $\mathbb{E}_{\text{clone}}[\Delta V_{\text{Var},x}] \leq -\kappa_x V_{\text{Var},x} + C_x$ (contraction)
 - $\mathbb{E}_{\text{clone}}[\Delta V_{\text{Var},v}] \leq C_v$ (bounded expansion)
@@ -454,7 +456,7 @@ c_V^* = \frac{\kappa_W\tau}{2\kappa_x}
 
 $$
 
-**Verification that $c_V^* < \infty$:** By Theorem 03_cloning.md (Ch 10), $\kappa_x > 0$ is bounded below by a constant independent of $N$, so $c_V^* < \infty$. ✓
+**Verification that $c_V^* < \infty$:** By Theorem {doc}`03_cloning` (Ch 10), $\kappa_x > 0$ is bounded below by a constant independent of $N$, so $c_V^* < \infty$. ✓
 
 **For $V_{\text{Var},v}$:** Require $c_V^* \cdot 2\gamma\tau = \frac{\kappa_W\tau}{2}$:
 
@@ -486,7 +488,7 @@ c_B^* = \frac{\kappa_W\tau}{2(\kappa_b + \kappa_{\text{pot}}\tau)}
 
 $$
 
-**Verification that $c_B^* < \infty$:** By Theorem 03_cloning.md (Ch 11), $\kappa_b > 0$, so $c_B^* < \infty$. ✓
+**Verification that $c_B^* < \infty$:** By Theorem {doc}`03_cloning` (Ch 11), $\kappa_b > 0$, so $c_B^* < \infty$. ✓
 
 **PART VI: Verify Foster-Lyapunov Form**
 
@@ -963,7 +965,7 @@ This is a fundamental design principle that makes the Euclidean Gas a **provably
 :::{prf:theorem} Geometric Ergodicity and Convergence to QSD
 :label: thm-main-convergence
 
-Under the foundational axioms (03_cloning.md Ch 4, this document Ch 1), the Euclidean Gas Markov chain satisfies:
+Under the foundational axioms ({doc}`03_cloning` Ch 4, this document Ch 1), the Euclidean Gas Markov chain satisfies:
 
 **1. Existence and Uniqueness of QSD:**
 
@@ -1195,7 +1197,7 @@ The equilibrium variance bounds follow immediately from the drift inequalities b
 
 **Positional Variance:**
 
-From the positional variance drift inequality (Theorem 10.3.1 in 03_cloning.md):
+From the positional variance drift inequality (Theorem 10.3.1 in {doc}`03_cloning`):
 
 $$
 \mathbb{E}_{\text{clone}}[\Delta V_{\text{Var},x}] \leq -\kappa_x V_{\text{Var},x} + C_x
@@ -1245,7 +1247,7 @@ $$
 
 **Boundary Potential:**
 
-From Theorem 11.3.1 in 03_cloning.md:
+From Theorem 11.3.1 in {doc}`03_cloning`:
 
 $$
 \mathbb{E}_{\text{clone}}[\Delta W_b] \leq -\kappa_b W_b + C_b
@@ -1408,7 +1410,7 @@ This is the **Gibbs thermal variance** at effective temperature $\sigma_v^2/\gam
 
 ### 5.2. Positional Variance Contraction: Explicit Constants
 
-From 03_cloning.md, the positional variance satisfies:
+From {doc}`03_cloning`, the positional variance satisfies:
 
 $$
 \mathbb{E}[\Delta V_{\text{Var},x}] \leq -\kappa_x V_{\text{Var},x} + C_x
@@ -1438,7 +1440,7 @@ where $\sigma_x^2 \sim \sigma_v^2 \tau^2$ is the effective positional diffusion.
 
 **Proof:**
 
-From the Keystone Principle (03_cloning.md, Theorem 5.1), the cloning operator contracts positional variance via the fitness-variance anti-correlation:
+From the Keystone Principle ({doc}`03_cloning`, Theorem 5.1), the cloning operator contracts positional variance via the fitness-variance anti-correlation:
 
 $$
 \mathbb{E}[\Delta V_{\text{Var},x}^{\text{clone}}] = -\lambda \cdot \frac{\sum_{i=1}^N f_i \|x_i - \bar{x}\|^2}{\sum_{j=1}^N f_j} + \lambda \cdot \frac{(\sum_{i=1}^N f_i \|x_i - \bar{x}\|)^2}{(\sum_{j=1}^N f_j)^2}
@@ -1627,7 +1629,7 @@ The $N^{-1/d}$ comes from the Wasserstein-to-variance scaling in dimension $d$.
 
 ### 5.4. Boundary Potential Contraction: Explicit Constants
 
-From Section 5 and 03_cloning.md, the boundary potential satisfies:
+From Section 5 and {doc}`03_cloning`, the boundary potential satisfies:
 
 $$
 \mathbb{E}[\Delta W_b] \leq -\kappa_b W_b + C_b
@@ -1659,7 +1661,7 @@ $$
 
 **Proof:**
 
-From the Safe Harbor Theorem (03_cloning.md, Section 7), the cloning operator removes walkers near the boundary at rate:
+From the Safe Harbor Theorem ({doc}`03_cloning`, Section 7), the cloning operator removes walkers near the boundary at rate:
 
 $$
 \kappa_b^{\text{clone}} = \lambda \cdot P(\text{walker is near boundary}) \cdot \frac{\Delta f_{\text{boundary}}}{\mathbb{E}[f]}
@@ -2367,7 +2369,7 @@ This chapter performs a comprehensive **spectral analysis** of the coupling betw
 
 ### 6.1. The Complete Parameter Space
 
-From the analysis in Chapter 7 and the cloning operator specification in 03_cloning.md, the **complete tunable parameter space** consists of:
+From the analysis in Chapter 7 and the cloning operator specification in {doc}`03_cloning`, the **complete tunable parameter space** consists of:
 
 :::{prf:definition} Complete Parameter Space
 :label: def-complete-parameter-space
@@ -4084,11 +4086,11 @@ This spectral analysis provides:
 
 ### 7.1. Summary of Main Results
 
-This document, together with its companions *"Hypocoercivity and Kinetic Operator Analysis"* (05_kinetic_contraction.md) and *"The Keystone Principle and the Contractive Nature of Cloning"* (03_cloning.md), has established a **complete convergence theory** for the Euclidean Gas algorithm, culminating in Chapter 6's spectral analysis that transforms parameter selection into rigorous optimization.
+This document, together with its companions *"Hypocoercivity and Kinetic Operator Analysis"* ({doc}`05_kinetic_contraction`) and *"The Keystone Principle and the Contractive Nature of Cloning"* ({doc}`03_cloning`), has established a **complete convergence theory** for the Euclidean Gas algorithm, culminating in Chapter 6's spectral analysis that transforms parameter selection into rigorous optimization.
 
 **Main Achievements:**
 
-**From 03_cloning.md:**
+**From {doc}`03_cloning`:**
 1. ✅ The Keystone Principle: variance → geometry → fitness → contraction
 2. ✅ Positional variance contraction: $\mathbb{E}[\Delta V_{\text{Var},x}] \leq -\kappa_x V_{\text{Var},x} + C_x$
 3. ✅ Boundary potential contraction via Safe Harbor: $\mathbb{E}[\Delta W_b] \leq -\kappa_b W_b + C_b$
@@ -4210,7 +4212,7 @@ Most QSD literature assumes **passive dynamics** or simple boundary-conditioned 
 
 ### 7.6. Concluding Remarks
 
-This document, together with 03_cloning.md, provides a **rigorous mathematical foundation** for the Euclidean Gas algorithm. The main achievements are:
+This document, together with {doc}`03_cloning`, provides a **rigorous mathematical foundation** for the Euclidean Gas algorithm. The main achievements are:
 
 **Theoretical:**
 - ✅ **Complete convergence proof** via Foster-Lyapunov theory
@@ -4245,9 +4247,9 @@ The synergistic dissipation framework provides a **template** for designing and 
 **End of Document: Convergence Theory and Parameter Optimization for the Euclidean Gas**
 
 **Companion Documents:**
-- **05_kinetic_contraction.md:** Hypocoercivity and Kinetic Operator Analysis
-- **03_cloning.md:** The Keystone Principle and the Contractive Nature of Cloning
-- **01_fragile_gas_framework.md:** Mathematical Foundations of Fragile Gas Systems
+- **{doc}`05_kinetic_contraction`:** Hypocoercivity and Kinetic Operator Analysis
+- **{doc}`03_cloning`:** The Keystone Principle and the Contractive Nature of Cloning
+- **{doc}`01_fragile_gas_framework`:** Mathematical Foundations of Fragile Gas Systems
 
 ---
 

@@ -4,12 +4,13 @@ This document establishes explicit quantitative convergence rates for the Euclid
 
 **Status:** Advanced convergence theory with explicit error bounds
 
+**Dependencies**: {doc}`06_convergence`, {doc}`08_mean_field`, {doc}`09_propagation_chaos`, {doc}`15_kl_convergence`
 
 ## Part I: Mean-Field Convergence via Relative Entropy
 
 This section establishes the quantitative $O(1/\sqrt{N})$ rate for the convergence of the N-particle system to the mean-field limit.
 
-**Strategy:** Use the Relative Entropy Method, leveraging the existing N-uniform LSI ({prf:ref}`thm-kl-convergence-euclidean` from [15_kl_convergence](15_kl_convergence)).
+**Strategy:** Use the Relative Entropy Method, leveraging the existing N-uniform LSI ({prf:ref}`thm-kl-convergence-euclidean` from {doc}`15_kl_convergence`).
 
 **Proof chain:**
 1. ~~Wasserstein-entropy inequality: $W_2^2 \leq \frac{2}{\lambda_{\text{LSI}}} D_{KL}$~~ (Not used in final proof - see note below)
@@ -37,7 +38,7 @@ For our purposes (observable approximation), the Fournier-Guillin approach is mo
 :::{prf:lemma} Wasserstein-Entropy Inequality
 :label: lem-wasserstein-entropy
 
-Under the N-uniform LSI ({prf:ref}`thm-kl-convergence-euclidean` from [15_kl_convergence](15_kl_convergence)), the 2-Wasserstein distance between $\nu_N^{QSD}$ (the N-particle quasi-stationary distribution) and $\rho_0^{\otimes N}$ (the product of mean-field invariant measures) satisfies:
+Under the N-uniform LSI ({prf:ref}`thm-kl-convergence-euclidean` from {doc}`15_kl_convergence`), the 2-Wasserstein distance between $\nu_N^{QSD}$ (the N-particle quasi-stationary distribution) and $\rho_0^{\otimes N}$ (the product of mean-field invariant measures) satisfies:
 
 $$
 W_2^2(\nu_N^{QSD}, \rho_0^{\otimes N}) \leq \frac{2}{\lambda_{\text{LSI}}} \cdot D_{KL}(\nu_N^{QSD} \| \rho_0^{\otimes N})
@@ -586,7 +587,7 @@ $$
 
 $$
 
-For the mean-field McKean-Vlasov PDE (see [07_mean_field](07_mean_field)), the energy satisfies a dissipation inequality. Following standard Langevin dynamics analysis, the invariant measure $\rho_0$ satisfies:
+For the mean-field McKean-Vlasov PDE (see {doc}`08_mean_field`), the energy satisfies a dissipation inequality. Following standard Langevin dynamics analysis, the invariant measure $\rho_0$ satisfies:
 
 $$
 \int_\Omega \left[ \frac{1}{2}|v|^2 + U(x) \right] \rho_0(z) dz < \infty
@@ -2718,7 +2719,7 @@ Both constants are independent of $N$ and $\Delta t$:
 **Mean-field constant** $C_{\text{MF}}$:
 - Depends on: $\gamma, \sigma, \lambda, \delta, \beta, \kappa_{\text{conf}}, \kappa_W, C_0$
 - Established in Part I using N-uniform LSI ({prf:ref}`thm-kl-convergence-euclidean`)
-- Uniformity proven in [11_mean_field_convergence](11_mean_field_convergence/00_full.md)
+- Uniformity proven in {doc}`12_qsd_exchangeability_theory` (Theorem {prf:ref}`thm-n-uniform-lsi-exchangeable`) and {doc}`15_kl_convergence` (Corollary {prf:ref}`cor-n-uniform-lsi`)
 
 **Discretization constant** $C_{\text{discrete}}$:
 - Depends on: $C_{\text{split}}$ (commutator bound), $C_{\text{poisson}}$ (Poisson equation regularity), $\kappa_{\text{mix}}^{\text{cont}}$ (spectral gap)

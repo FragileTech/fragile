@@ -7,6 +7,8 @@
 - Use it when something feels implausible: most answers point to a specific definition, theorem, or constraint that resolves the concern.
 - It is intentionally blunt: if the responses are unconvincing, the framework should be treated skeptically.
 
+**Dependencies**: {doc}`01_fragile_gas_framework`, {doc}`02_euclidean_gas`, {doc}`03_cloning`, {doc}`06_convergence`, {doc}`07_discrete_qsd`, {doc}`08_mean_field`, {doc}`09_propagation_chaos`, {doc}`13_quantitative_error_bounds`, {doc}`../2_fractal_set/02_causal_set_theory`, {doc}`../2_fractal_set/03_lattice_qft`
+
 This appendix addresses forty rigorous objections that a skeptical reviewer might raise about the Fractal Gas algorithm and its connection to gauge field theory. Each question is stated in its strongest form; the answers point to specific mechanisms and sections. If the responses are unconvincing, the framework deserves skepticism.
 
 (rb-fg-mapping)=

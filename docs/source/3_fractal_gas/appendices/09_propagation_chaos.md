@@ -12,20 +12,22 @@ This document proves that the continuum mean-field model rigorously emerges as t
 
 **Hypoelliptic Regularity**: The contraction argument requires that the kinetic resolvent operator maps the weighted $L^2$ space into a weighted $H^1$ Sobolev space. This non-standard regularity follows from Hörmander's hypoellipticity theorem once we verify that the kinetic operator's Lie bracket structure satisfies the bracket-generating condition—a verification carried out explicitly in Section 5.
 
+**Dependencies**: {doc}`06_convergence`, {doc}`08_mean_field`
+
 ## 1. Introduction
 
 ### 1.1. Goal and Scope
 
-The goal of this document is to prove the **existence, uniqueness, and regularity** of the Quasi-Stationary Distribution (QSD) for the mean-field Fokker-Planck-McKean-Vlasov PDE derived in `06_mean_field.md`. The central object of study is the stationary probability density $\rho_0: \Omega \to \mathbb{R}_+$ satisfying a highly non-linear, non-local integro-differential equation with interior killing and revival mechanisms.
+The goal of this document is to prove the **existence, uniqueness, and regularity** of the Quasi-Stationary Distribution (QSD) for the mean-field Fokker-Planck-McKean-Vlasov PDE derived in {doc}`08_mean_field`. The central object of study is the stationary probability density $\rho_0: \Omega \to \mathbb{R}_+$ satisfying a highly non-linear, non-local integro-differential equation with interior killing and revival mechanisms.
 
-We will establish this result not through direct PDE analysis—which is intractable due to the quadratic non-locality of the cloning operator—but via a **propagation of chaos** argument. This constructive approach leverages the existence of well-behaved finite-N equilibria (proven in `06_convergence.md`) to build the continuum solution as the limit $N \to \infty$ of single-particle marginals extracted from the N-particle Quasi-Stationary Distributions.
+We will establish this result not through direct PDE analysis—which is intractable due to the quadratic non-locality of the cloning operator—but via a **propagation of chaos** argument. This constructive approach leverages the existence of well-behaved finite-N equilibria (proven in {doc}`06_convergence`) to build the continuum solution as the limit $N \to \infty$ of single-particle marginals extracted from the N-particle Quasi-Stationary Distributions.
 
 The proof follows the classical three-step program:
 1. **Tightness** (Section 3): Uniform moment bounds from the N-uniform Foster-Lyapunov analysis guarantee that the sequence $\{\mu_N\}$ is tight, ensuring the existence of weakly convergent subsequences.
 2. **Identification** (Section 4): Any limit point of a convergent subsequence is a weak solution to the stationary mean-field PDE. This is proven by showing that empirical measures from N-particle systems converge (via Law of Large Numbers) to the deterministic mean-field functionals.
 3. **Uniqueness** (Section 5): The weak solution is unique, established via a contraction mapping argument in a weighted Sobolev space $H^1_w(\Omega)$. The key technical tool is **hypoelliptic regularity**: Hörmander's theorem guarantees that the kinetic resolvent operator gains one derivative despite the degenerate diffusion structure.
 
-This document focuses exclusively on the stationary state. The companion documents `10_kl_convergence.md` (KL-divergence entropy methods) and `11_convergence_mean_field.md` (semigroup convergence) address the dynamical convergence to $\rho_0$ and the rate of relaxation.
+This document focuses exclusively on the stationary state. The companion documents {doc}`15_kl_convergence` (KL-divergence entropy methods) and {doc}`06_convergence` (semigroup/QSD convergence) address the dynamical convergence to $\rho_0$ and the rate of relaxation.
 
 ### 1.2. The Propagation of Chaos Framework
 
@@ -48,8 +50,8 @@ The diagram below illustrates the logical flow:
 ```{mermaid}
 graph TD
     subgraph "Prerequisites (External)"
-        A["<b>06_convergence.md</b><br>Finite-N QSD ν_N exists & unique<br>Foster-Lyapunov: uniform moment bounds"]:::externalStyle
-        B["<b>06_mean_field.md</b><br>Mean-field PDE derived<br>McKean-Vlasov structure"]:::externalStyle
+        A["<b>06_convergence</b><br>Finite-N QSD ν_N exists & unique<br>Foster-Lyapunov: uniform moment bounds"]:::externalStyle
+        B["<b>08_mean_field</b><br>Mean-field PDE derived<br>McKean-Vlasov structure"]:::externalStyle
     end
 
     subgraph "Part I: Formal Setup (§2)"
@@ -107,7 +109,7 @@ The document is structured as follows:
 
 * **Section 2 (Formal Setup):** We formally define the sequence of N-particle Quasi-Stationary Distributions $\{\nu_N^{QSD}\}$ and their single-particle marginals $\{\mu_N\}$. We establish the exchangeability property, which is crucial for the mean-field limit.
 
-* **Section 3 (Tightness):** We prove that the sequence of marginals $\{\mu_N\}$ is tight using Prokhorov's theorem. The Foster-Lyapunov analysis from `06_convergence.md` provides N-uniform bounds on second moments, which translate to uniform moment bounds for the marginals via exchangeability. Markov's inequality then guarantees uniform containment in compact sets.
+* **Section 3 (Tightness):** We prove that the sequence of marginals $\{\mu_N\}$ is tight using Prokhorov's theorem. The Foster-Lyapunov analysis from {doc}`06_convergence` provides N-uniform bounds on second moments, which translate to uniform moment bounds for the marginals via exchangeability. Markov's inequality then guarantees uniform containment in compact sets.
 
 * **Section 4 (Identification):** This is the technical heart of the propagation of chaos argument. We establish that any limit point $\mu_\infty$ of a weakly convergent subsequence satisfies the stationary mean-field PDE in the weak sense. The proof has three parts:
   - **Part A** establishes convergence of empirical measures to their mean-field counterparts via the Law of Large Numbers for exchangeable particles.
@@ -120,14 +122,14 @@ The document is structured as follows:
 
 ## 2. Formal Setup: The Sequence of N-Particle Stationary Measures
 
-The bedrock of our constructive proof is the sequence of well-behaved equilibria that exist for any finite number of walkers, N. In this section, we formally define the objects of our analysis, beginning with the unique Quasi-Stationary Distribution (QSD) for the N-particle system, the existence of which was the main result of `06_convergence.md`. From this high-dimensional measure, we will extract a sequence of single-particle distributions. It is the convergence of this sequence that will ultimately yield the mean-field QSD. This section establishes the precise definitions and notation required for the three-part proof that follows.
+The bedrock of our constructive proof is the sequence of well-behaved equilibria that exist for any finite number of walkers, N. In this section, we formally define the objects of our analysis, beginning with the unique Quasi-Stationary Distribution (QSD) for the N-particle system, the existence of which was the main result of {doc}`06_convergence`. From this high-dimensional measure, we will extract a sequence of single-particle distributions. It is the convergence of this sequence that will ultimately yield the mean-field QSD. This section establishes the precise definitions and notation required for the three-part proof that follows.
 
-The analysis in `06_convergence.md` established, via a Foster-Lyapunov drift condition, that for any fixed, finite number of walkers $N \ge 2$, the Euclidean Gas Markov process converges exponentially fast to a unique statistical equilibrium, conditioned on survival. This foundational result provides us with a countably infinite sequence of well-defined N-particle stationary measures. Our strategy is to leverage this sequence to construct the stationary state of the continuous mean-field model. We begin by formally defining these measures.
+The analysis in {doc}`06_convergence` established, via a Foster-Lyapunov drift condition, that for any fixed, finite number of walkers $N \ge 2$, the Euclidean Gas Markov process converges exponentially fast to a unique statistical equilibrium, conditioned on survival. This foundational result provides us with a countably infinite sequence of well-defined N-particle stationary measures. Our strategy is to leverage this sequence to construct the stationary state of the continuous mean-field model. We begin by formally defining these measures.
 
 :::{prf:definition} Sequence of N-Particle QSDs and their Marginals
 :label: def-sequence-of-qsds
 
-1.  **The N-Particle Quasi-Stationary Distribution.** For each integer $N \ge 2$, let $\nu_N^{QSD} \in \mathcal{P}(\Sigma_N)$ be the **unique Quasi-Stationary Distribution** for the N-particle Euclidean Gas, whose existence and uniqueness were established in `06_convergence.md`. This is a probability measure on the full N-particle state space $\Sigma_N = (\mathbb{R}^d \times \mathbb{R}^d \times \{0,1\})^N$, describing the long-term statistical behavior of surviving swarm trajectories.
+1.  **The N-Particle Quasi-Stationary Distribution.** For each integer $N \ge 2$, let $\nu_N^{QSD} \in \mathcal{P}(\Sigma_N)$ be the **unique Quasi-Stationary Distribution** for the N-particle Euclidean Gas, whose existence and uniqueness were established in {doc}`06_convergence`. This is a probability measure on the full N-particle state space $\Sigma_N = (\mathbb{R}^d \times \mathbb{R}^d \times \{0,1\})^N$, describing the long-term statistical behavior of surviving swarm trajectories.
 
 2.  **The First Marginal Measure.** Let $\mu_N \in \mathcal{P}(\Omega)$ be the **first marginal** of the N-particle measure $\nu_N^{QSD}$. This measure represents the probability distribution of a single, typical particle (e.g., walker $i=1$) when the entire N-particle swarm is in its quasi-stationary equilibrium state. Formally, for any measurable set $A \subseteq \Omega$:
 
@@ -139,7 +141,7 @@ The analysis in `06_convergence.md` established, via a Foster-Lyapunov drift con
 
 A cornerstone of the mean-field approach is the assumption of **exchangeability**. The rules of the Euclidean Gas algorithm—from kinetic perturbation to companion selection—are symmetric; they are invariant under any permutation of the walker indices. Consequently, the unique N-particle QSD, $\nu_N^{QSD}$, must also be a symmetric measure. A direct and critical consequence of this symmetry is that the marginal distribution $\mu_N$ is the same regardless of which walker index $i \in \{1, \dots, N\}$ is chosen for the projection. This property allows us to study the behavior of a single "typical" particle as being representative of the entire swarm's macroscopic state, making the sequence $\{\mu_N\}_{N=2}^\infty$ the central object of our analysis.
 
-Our central goal in this chapter is to prove that this sequence of single-particle measures converges in the weak sense to a unique limit as the number of particles approaches infinity. We will show that this limit, $\mu_\infty$, is an absolutely continuous measure whose density, $\rho_0$, is the unique and regular Quasi-Stationary Distribution for the mean-field PDE derived in `06_mean_field.md`. This will be achieved by a three-step proof establishing the tightness of the sequence, the identification of any limit point as a weak solution to the PDE, and the uniqueness of that solution.
+Our central goal in this chapter is to prove that this sequence of single-particle measures converges in the weak sense to a unique limit as the number of particles approaches infinity. We will show that this limit, $\mu_\infty$, is an absolutely continuous measure whose density, $\rho_0$, is the unique and regular Quasi-Stationary Distribution for the mean-field PDE derived in {doc}`08_mean_field`. This will be achieved by a three-step proof establishing the tightness of the sequence, the identification of any limit point as a weak solution to the PDE, and the uniqueness of that solution.
 
 ## **3. Tightness of the Marginal Sequence**
 
@@ -149,7 +151,7 @@ The first step in proving the convergence of the sequence of marginals $\{\mu_N\
 
 Our proof will be built upon a cornerstone result in measure theory, **Prokhorov's theorem**, which provides a necessary and sufficient condition for tightness. The theorem states that a sequence of probability measures on a Polish space is tight if we can find, for any tolerance $\epsilon > 0$, a single compact set $K_\epsilon$ that contains at least $1-\epsilon$ of the probability mass of *every single measure in the sequence*.
 
-The core of our strategy is to satisfy this condition by leveraging the powerful results of the Foster-Lyapunov drift analysis performed in `06_convergence.md`. That analysis, which proved the stability of the N-particle system, provides us with uniform bounds on the moments of the stationary measures $\nu_N^{QSD}$. By exploiting the linearity of expectation and the exchangeability of the walkers, we will show that these N-particle bounds directly imply uniform moment bounds for our single-particle marginals, $\mu_N$. A final application of Markov's inequality will demonstrate that this uniform moment control is sufficient to guarantee the uniform containment required by Prokhorov's theorem, thereby completing the proof of tightness.
+The core of our strategy is to satisfy this condition by leveraging the powerful results of the Foster-Lyapunov drift analysis performed in {doc}`06_convergence`. That analysis, which proved the stability of the N-particle system, provides us with uniform bounds on the moments of the stationary measures $\nu_N^{QSD}$. By exploiting the linearity of expectation and the exchangeability of the walkers, we will show that these N-particle bounds directly imply uniform moment bounds for our single-particle marginals, $\mu_N$. A final application of Markov's inequality will demonstrate that this uniform moment control is sufficient to guarantee the uniform containment required by Prokhorov's theorem, thereby completing the proof of tightness.
 
 ---
 
@@ -161,10 +163,10 @@ The sequence of single-particle marginal measures $\{\mu_N\}_{N=2}^\infty$ is ti
 :::{prf:proof}
 **Proof.**
 
-The proof proceeds by verifying the conditions of Prokhorov's theorem. On the Polish space $\Omega$, this is equivalent to showing that for any $\epsilon > 0$, there exists a compact set $K_\epsilon \subset \Omega$ such that the containment condition $\mu_N(K_\epsilon) \ge 1 - \epsilon$ holds uniformly for all $N \ge 2$. We establish this uniform containment by leveraging the moment bounds provided by the Lyapunov function analysis from `06_convergence.md`.
+The proof proceeds by verifying the conditions of Prokhorov's theorem. On the Polish space $\Omega$, this is equivalent to showing that for any $\epsilon > 0$, there exists a compact set $K_\epsilon \subset \Omega$ such that the containment condition $\mu_N(K_\epsilon) \ge 1 - \epsilon$ holds uniformly for all $N \ge 2$. We establish this uniform containment by leveraging the moment bounds provided by the Lyapunov function analysis from {doc}`06_convergence`.
 
 1.  **Uniform Moment Bound from the N-Particle System:**
-    The geometric ergodicity of the N-particle system, established in `06_convergence.md`, relies on a Foster-Lyapunov drift condition for a Lyapunov function $V_{\text{total}}(S)$. A standard result from the theory of Markov chains (see Meyn & Tweedie) is that such a geometric drift condition implies the existence of uniform moment bounds for the corresponding stationary measure. Specifically, there exists a constant $C < \infty$, which is independent of the number of walkers $N$, such that the expectation of the Lyapunov function with respect to the N-particle QSD is uniformly bounded:
+    The geometric ergodicity of the N-particle system, established in {doc}`06_convergence`, relies on a Foster-Lyapunov drift condition for a Lyapunov function $V_{\text{total}}(S)$. A standard result from the theory of Markov chains (see Meyn & Tweedie) is that such a geometric drift condition implies the existence of uniform moment bounds for the corresponding stationary measure. Specifically, there exists a constant $C < \infty$, which is independent of the number of walkers $N$, such that the expectation of the Lyapunov function with respect to the N-particle QSD is uniformly bounded:
 
     $$
     \mathbb{E}_{\nu_N^{QSD}}[V_{\text{total}}] = \int_{\Sigma_N} V_{\text{total}}(S) \, d\nu_N^{QSD}(S) \le C
@@ -205,7 +207,7 @@ The proof proceeds by verifying the conditions of Prokhorov's theorem. On the Po
 
 #### **Introduction**
 
-The tightness of the sequence $\{\mu_N\}$, established in the previous section, guarantees that at least one convergent subsequence exists. However, this does not tell us the nature of the limit point. The purpose of this section is to complete the second, and most critical, step of our three-part proof: **identification**. We will rigorously prove that any such limit point is not an arbitrary measure but is, in fact, a **weak solution** to the stationary mean-field PDE derived in `06_mean_field.md`.
+The tightness of the sequence $\{\mu_N\}$, established in the previous section, guarantees that at least one convergent subsequence exists. However, this does not tell us the nature of the limit point. The purpose of this section is to complete the second, and most critical, step of our three-part proof: **identification**. We will rigorously prove that any such limit point is not an arbitrary measure but is, in fact, a **weak solution** to the stationary mean-field PDE derived in {doc}`08_mean_field`.
 
 This proof lies at the very heart of the "propagation of chaos" argument. It is the mathematical bridge that explicitly connects the microscopic, N-particle dynamics to their macroscopic, mean-field counterparts. The challenge lies entirely within the non-local cloning operator. We must show that the complex, state-dependent empirical averages in the N-particle system converge to the deterministic, integral-based functionals of the mean-field equation.
 
@@ -425,7 +427,7 @@ $$
 
 $$
 
-where $c(z)$ is the interior killing rate and $B[\rho_0, m_{d,\infty}]$ is the revival operator defined in `06_mean_field.md`.
+where $c(z)$ is the interior killing rate and $B[\rho_0, m_{d,\infty}]$ is the revival operator defined in {doc}`08_mean_field`.
 :::
 
 :::{prf:proof}
@@ -435,7 +437,7 @@ This convergence is established in two steps, corresponding to the two physical 
 
 In the discrete N-particle algorithm, a walker dies (status becomes 0) when its position leaves the valid domain $X_{\text{valid}}$. This is a hard boundary condition: the walker is killed instantaneously upon crossing $\partial X_{\text{valid}}$.
 
-In the continuous limit, Theorem 4.4.2 of `06_mean_field.md` (Consistency of the Interior Killing Rate Approximation) rigorously proves that as the timestep $\tau \to 0$, the discrete exit probability per timestep converges to a smooth interior killing rate:
+In the continuous limit, Theorem 4.4.2 of {doc}`08_mean_field` (Consistency of the Interior Killing Rate Approximation) rigorously proves that as the timestep $\tau \to 0$, the discrete exit probability per timestep converges to a smooth interior killing rate:
 
 $$
 \lim_{\tau \to 0} \frac{1}{\tau} p_{\text{exit}}(z, \tau) = c(z)
@@ -516,7 +518,7 @@ $$
 
 $$
 
-This is precisely the boundary contribution in the mean-field PDE derived in `06_mean_field.md`.
+This is precisely the boundary contribution in the mean-field PDE derived in {doc}`08_mean_field`.
 
 **Q.E.D.**
 :::
@@ -560,7 +562,7 @@ Consequently, in the limit $N \to \infty$, the QSD stationarity condition conver
 :::
 
 :::{prf:proof}
-The proof uses the N-uniform Foster-Lyapunov condition established in `06_convergence.md` to bound the extinction rate.
+The proof uses the N-uniform Foster-Lyapunov condition established in {doc}`06_convergence` to bound the extinction rate.
 
 **Step 1: Relation Between Extinction Rate and Expected Hitting Time**
 
@@ -575,7 +577,7 @@ where $\tau_{\text{ext}}$ is the **expected time to extinction** (hitting time o
 
 **Step 2: N-Uniform Foster-Lyapunov Condition**
 
-The Foster-Lyapunov drift condition from `06_convergence.md` establishes that there exists a Lyapunov function $V: \Sigma_N \to \mathbb{R}_{\geq 0}$ and N-uniform constants $\kappa > 0$ and $C < \infty$ such that:
+The Foster-Lyapunov drift condition from {doc}`06_convergence` establishes that there exists a Lyapunov function $V: \Sigma_N \to \mathbb{R}_{\geq 0}$ and N-uniform constants $\kappa > 0$ and $C < \infty$ such that:
 
 $$
 \mathcal{L}_N V(S) \leq -\kappa V(S) + C
@@ -590,7 +592,7 @@ for all states $S \in \Sigma_N$ (the alive states). This drift condition holds *
 
 The key insight is that as $N$ increases, the **number of alive walkers** becomes increasingly concentrated around its mean due to the law of large numbers. Let $k_N(t)$ denote the number of alive walkers at time $t$.
 
-From the coupled dynamics in `06_mean_field.md`, the alive mass fraction $m_{a,N} = k_N/N$ satisfies a balance equation at stationarity:
+From the coupled dynamics in {doc}`08_mean_field`, the alive mass fraction $m_{a,N} = k_N/N$ satisfies a balance equation at stationarity:
 
 $$
 \lambda_{\text{rev}} m_{d,N} = k_{\text{killed}}[f_N]
@@ -629,7 +631,7 @@ $$
 
 $$
 
-**Formal justification via QSD theory**: The above heuristic argument can be made rigorous using the theory of quasi-stationary distributions for processes with state-dependent killing. More formally, the N-uniform Foster-Lyapunov condition from `06_convergence.md` implies a **uniform geometric ergodicity** for the process conditioned on non-extinction. By Theorem 2.1 in Champagnat & Villemonais, *"General criteria for the study of quasi-stationarity"*, Annals of Probability 40(4), 2012, pp. 1427-1497, such a uniform Lyapunov drift condition combined with the concentration of the empirical measure (law of large numbers) implies that the expected hitting time of the absorbing state grows **exponentially in N**:
+**Formal justification via QSD theory**: The above heuristic argument can be made rigorous using the theory of quasi-stationary distributions for processes with state-dependent killing. More formally, the N-uniform Foster-Lyapunov condition from {doc}`06_convergence` implies a **uniform geometric ergodicity** for the process conditioned on non-extinction. By Theorem 2.1 in Champagnat & Villemonais, *"General criteria for the study of quasi-stationarity"*, Annals of Probability 40(4), 2012, pp. 1427-1497, such a uniform Lyapunov drift condition combined with the concentration of the empirical measure (law of large numbers) implies that the expected hitting time of the absorbing state grows **exponentially in N**:
 
 $$
 \mathbb{E}_{\nu_N^{QSD}}[\tau_{\text{ext}}] \geq C e^{\beta N}
@@ -803,7 +805,7 @@ $$
 
 $$
 
-where $S[\rho_0]$ is the mean-field internal cloning operator defined in `06_mean_field.md`.
+where $S[\rho_0]$ is the mean-field internal cloning operator defined in {doc}`08_mean_field`.
 
 **Step 4: Limit of the Boundary Death and Revival Mechanism**
 
@@ -958,7 +960,7 @@ For $C$ sufficiently large, the operator $-L^\dagger + C \cdot I$ satisfies a **
 
 **Rigorous justification**: The kinetic Fokker-Planck operator $L^\dagger$ with reflecting boundaries generates a Feller semigroup that is positivity-preserving (see Villani, *Hypocoercivity*, Theorem 24 for the general framework). By the **Hille-Yosida theorem** (Pazy, *Semigroups of Linear Operators*, Theorem 3.5), for any $C > 0$ such that $C \cdot I - L^\dagger$ is invertible, the resolvent $(C \cdot I - L^\dagger)^{-1}$ is also positivity-preserving: if $f \geq 0$, then $(C \cdot I - L^\dagger)^{-1} f \geq 0$.
 
-**Detailed analysis of the source term**: The source term $f = S[\rho] + B[\rho, m_d[\rho]] - c(\cdot)\rho + C\rho$ requires careful decomposition. Using the structure of $S[\rho]$ from `06_mean_field.md` (Definition 2.3.3):
+**Detailed analysis of the source term**: The source term $f = S[\rho] + B[\rho, m_d[\rho]] - c(\cdot)\rho + C\rho$ requires careful decomposition. Using the structure of $S[\rho]$ from {doc}`08_mean_field` (Definition 2.3.3):
 
 $$
 S[\rho](z) = S_{\text{src}}[\rho](z) - S_{\text{sink}}[\rho](z)
@@ -1033,11 +1035,11 @@ $$
 
 $$
 
-Using the mass conservation properties from `06_mean_field.md`:
-- $\int_{\Omega} L^\dagger \mathcal{T}[\rho] \, dz = 0$ (reflecting boundaries, Lemma 3.1 of `06_mean_field.md`)
-- $\int_{\Omega} S[\rho] \, dz = 0$ (mass-neutral internal cloning, Definition 2.3.3 of `06_mean_field.md`)
-- $\int_{\Omega} B[\rho, m_d] \, dz = \lambda_{\text{rev}} m_d$ (total revival rate, Definition 2.3.2 of `06_mean_field.md`)
-- $\int_{\Omega} c(z)\rho \, dz = k_{\text{killed}}[\rho]$ (total killing rate, Definition 2.3.1 of `06_mean_field.md`)
+Using the mass conservation properties from {doc}`08_mean_field`:
+- $\int_{\Omega} L^\dagger \mathcal{T}[\rho] \, dz = 0$ (reflecting boundaries, Lemma 3.1 of {doc}`08_mean_field`)
+- $\int_{\Omega} S[\rho] \, dz = 0$ (mass-neutral internal cloning, Definition 2.3.3 of {doc}`08_mean_field`)
+- $\int_{\Omega} B[\rho, m_d] \, dz = \lambda_{\text{rev}} m_d$ (total revival rate, Definition 2.3.2 of {doc}`08_mean_field`)
+- $\int_{\Omega} c(z)\rho \, dz = k_{\text{killed}}[\rho]$ (total killing rate, Definition 2.3.1 of {doc}`08_mean_field`)
 
 This gives:
 
@@ -1945,7 +1947,7 @@ The foundation of our constructive proof is the sequence of well-behaved equilib
 :::{prf:definition} Sequence of N-Particle QSDs and their Marginals (Summary)
 :label: def-sequence-of-qsds-summary
 
-1.  **The N-Particle Quasi-Stationary Distribution.** For each integer $N \ge 2$, let $\nu_N^{QSD} \in \mathcal{P}(\Sigma_N)$ be the **unique Quasi-Stationary Distribution** for the N-particle Euclidean Gas, whose existence and uniqueness were established in `06_convergence.md`. This is a probability measure on the full N-particle state space $\Sigma_N = (\Omega \times \{0,1\})^N$, describing the long-term statistical behavior of surviving swarm trajectories.
+1.  **The N-Particle Quasi-Stationary Distribution.** For each integer $N \ge 2$, let $\nu_N^{QSD} \in \mathcal{P}(\Sigma_N)$ be the **unique Quasi-Stationary Distribution** for the N-particle Euclidean Gas, whose existence and uniqueness were established in {doc}`06_convergence`. This is a probability measure on the full N-particle state space $\Sigma_N = (\Omega \times \{0,1\})^N$, describing the long-term statistical behavior of surviving swarm trajectories.
 
 2.  **The First Marginal Measure.** Let $\mu_N \in \mathcal{P}(\Omega)$ be the **first marginal** of the N-particle measure $\nu_N^{QSD}$. This measure represents the probability distribution of a single, typical particle (e.g., walker $i=1$) when the entire N-particle swarm is in its quasi-stationary equilibrium state. Formally, for any measurable set $A \subseteq \Omega$:
 
@@ -1972,7 +1974,7 @@ The sequence of single-particle marginal measures $\{\mu_N\}_{N=2}^\infty$ is ti
 The proof proceeds by verifying the conditions of **Prokhorov's theorem**. On the Polish space $\Omega$, a sequence of measures is tight if and only if for every $\epsilon > 0$, there exists a single compact set $K_\epsilon \subset \Omega$ such that $\mu_N(K_\epsilon) \ge 1 - \epsilon$ uniformly for all $N \ge 2$. We establish this uniform containment by leveraging the moment bounds from the N-particle Lyapunov analysis.
 
 1.  **Uniform Moment Bound from the N-Particle System:**
-    The geometric ergodicity of the N-particle system, established in `06_convergence.md`, is a consequence of a Foster-Lyapunov drift condition for a Lyapunov function $V_{\text{total}}(S)$. A standard result from the theory of Markov chains (e.g., Meyn & Tweedie, *Markov Chains and Stochastic Stability*) is that such a geometric drift condition implies the existence of uniform moment bounds for the corresponding stationary measure. Critically, because all constants in the drift inequality (`κ_total`, `C_total`) were proven to be **N-uniform**, the resulting moment bound is also independent of $N$. Specifically, there exists a finite constant $C < \infty$ such that:
+    The geometric ergodicity of the N-particle system, established in {doc}`06_convergence`, is a consequence of a Foster-Lyapunov drift condition for a Lyapunov function $V_{\text{total}}(S)$. A standard result from the theory of Markov chains (e.g., Meyn & Tweedie, *Markov Chains and Stochastic Stability*) is that such a geometric drift condition implies the existence of uniform moment bounds for the corresponding stationary measure. Critically, because all constants in the drift inequality (`κ_total`, `C_total`) were proven to be **N-uniform**, the resulting moment bound is also independent of $N$. Specifically, there exists a finite constant $C < \infty$ such that:
 
     $$
     \mathbb{E}_{\nu_N^{QSD}}[V_{\text{total}}] = \int_{\Sigma_N} V_{\text{total}}(S) \, d\nu_N^{QSD}(S) \le C \quad \text{for all } N \ge 2.
@@ -2221,7 +2223,7 @@ $$
 
 $$
 
-This uniform bound on second moments is a direct consequence of the N-uniform Foster-Lyapunov analysis in `06_convergence.md`.
+This uniform bound on second moments is a direct consequence of the N-uniform Foster-Lyapunov analysis in {doc}`06_convergence`.
 
 **Step 2: Weak Convergence**
 

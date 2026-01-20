@@ -14,6 +14,8 @@ Our derivation is structured to build this equation from first principles, ensur
 *   **Section 3** assembles these components into the final, mass-conserving forward equation. We will pay special attention to the boundary conditions, deriving a novel boundary revival operator that exactly compensates for the probability flux leaving the valid domain, thereby ensuring the total population is conserved.
 *   **Section 4** will conclude by analyzing the key mathematical properties of the derived PDE and discussing its role as the foundation for future analyses of the system's long-term behavior and convergence properties.
 
+**Dependencies**: {doc}`02_euclidean_gas`, {doc}`03_cloning`, {doc}`04_single_particle`
+
 ## 1. Foundations of the Mean-Field Model
 
 Having established the concrete N-particle dynamics of the Euclidean Gas, we now build the theoretical bridge to its macroscopic, collective behavior. To leverage the powerful analytical tools of mathematical physics and functional analysis, we transition from the discrete, agent-based description to a continuous, macroscopic model. This is achieved by taking the mean-field limit, where the number of walkers N approaches infinity. This section lays the groundwork for this transition by translating the foundational objects of the N-particle system—the walker, the swarm, and the measurement pipeline—into their continuous analogues. Our primary objective is to establish the essential mathematical vocabulary required to derive the continuous forward equation, ensuring that each component of the final PDE is a faithful and verifiable representation of its discrete counterpart.
@@ -1475,12 +1477,12 @@ where $f$ solves the mean-field PDE (see {prf:ref}`thm-mean-field-equation`, Equ
 :::
 
 :::{note}
-**Rigorous Proof**: A complete, publication-ready proof of this theorem with full operator-theoretic and functional-analytic details is developed in [08_propagation_chaos.md](08_propagation_chaos.md). The proof uses a constructive tightness-identification-uniqueness argument with hypoelliptic regularity theory. The proof sketch below provides intuition for the key steps.
+**Rigorous Proof**: A complete, publication-ready proof of this theorem with full operator-theoretic and functional-analytic details is developed in {doc}`09_propagation_chaos`. The proof uses a constructive tightness-identification-uniqueness argument with hypoelliptic regularity theory. The proof sketch below provides intuition for the key steps.
 :::
 
 **Informal Proof Sketch** (Propagation of Chaos Methodology):
 
-The rigorous proof (see [08_propagation_chaos.md](08_propagation_chaos.md)) follows the standard propagation of chaos methodology for exchangeable particle systems, adapted to the Fragile Gas structure with cloning/killing operators. The key steps are:
+The rigorous proof (see {doc}`09_propagation_chaos`) follows the standard propagation of chaos methodology for exchangeable particle systems, adapted to the Fragile Gas structure with cloning/killing operators. The key steps are:
 
 **Step 1 (Chaoticity of Initial Data):**
 
@@ -1583,7 +1585,7 @@ with the coupling condition $\tau = O(N^{-\alpha})$ for $\alpha > 0$ ensuring bo
 - Uniqueness via hypoelliptic regularity and contraction mapping
 - Explicit constants and all technical details
 
-see the dedicated proof in [08_propagation_chaos.md](08_propagation_chaos.md), which provides an Annals of Mathematics-level treatment suitable for publication.
+see the dedicated proof in {doc}`09_propagation_chaos`, which provides an Annals of Mathematics-level treatment suitable for publication.
 :::
 
 This completes the informal foundation for the mean-field model. The rigorous justification follows in the next chapter.

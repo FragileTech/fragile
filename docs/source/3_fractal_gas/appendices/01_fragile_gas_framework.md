@@ -10,6 +10,8 @@
 
 **Canonical Instantiation as Existence Proof**: The framework's rigor is validated by proving that a Canonical Fragile Swarm (Euclidean space, Gaussian noise, empirical aggregators) satisfies all foundational axioms (one structural assumption and sixteen parametric axioms). This existence proof demonstrates that the axiomatic constraints are neither vacuous nor contradictory, providing a concrete, verifiable baseline for implementers.
 
+**Dependencies**: None (foundational).
+
 ## 1. Introduction
 
 ### 1.1. Goal and Scope
@@ -26,7 +28,7 @@ The main analytical achievements of this work are threefold:
 
 3. **Guaranteed Revival Mechanism**: We prove the **Theorem of Almost-Sure Revival** {prf:ref}`thm-revival-guarantee`, establishing that under the Axiom of Guaranteed Revival, any swarm with at least one surviving walker will resurrect all dead walkers with probability 1. This prevents gradual extinction through attrition, confining the system's failure modes to catastrophic events only.
 
-**Scope and Limitations**: This document focuses exclusively on defining the framework and proving operator-level stability properties. It does *not* prove convergence to quasi-stationary distributions—that analysis requires the Keystone Principle and hypocoercive Lyapunov analysis, which are developed in the companion document *"The Keystone Principle and the Contractive Nature of Cloning"* {prf:ref}`03_cloning.md`. This document establishes the *tools* (metrics, axioms, continuity bounds); the companion document establishes the *dynamics* (drift inequalities, convergence rates).
+**Scope and Limitations**: This document focuses exclusively on defining the framework and proving operator-level stability properties. It does *not* prove convergence to quasi-stationary distributions—that analysis requires the Keystone Principle and hypocoercive Lyapunov analysis, which are developed in the companion document *"The Keystone Principle and the Contractive Nature of Cloning"* {doc}`03_cloning`. This document establishes the *tools* (metrics, axioms, continuity bounds); the companion document establishes the *dynamics* (drift inequalities, convergence rates).
 
 ### 1.2. The Fragile Gas as a Parametric Debugging Framework
 
@@ -280,7 +282,7 @@ This axiomatic definition provides flexibility while maintaining rigor. The fram
 :class: note
 
 *   **Canonical Example (Euclidean Space):** A bounded subset of $\mathbb{R}^d$ with the Euclidean metric and Lebesgue measure. This is the simplest instantiation.
-*   **Generalization (Riemannian Manifold):** A compact, smooth Riemannian manifold $(\mathcal{M}, g)$. This space is Polish, has a natural volume measure, and its heat kernel provides a valid noise measure ({prf:ref}`def-valid-noise-measure`) satisfying the axioms. **This is the setting assumed by the neural network framework in `02_neural_nets.md`**.
+*   **Generalization (Riemannian Manifold):** A compact, smooth Riemannian manifold $(\mathcal{M}, g)$. This space is Polish, has a natural volume measure, and its heat kernel provides a valid noise measure ({prf:ref}`def-valid-noise-measure`) satisfying the axioms. **This is the setting assumed by the neural network framework (Volume 2)**.
 *   **Discrete Example (Graphs):** A finite or countably infinite graph with a graph metric. A random walk on the graph could serve as the noise measure, provided its properties can be shown to satisfy the required axioms.
 :::
 
@@ -1647,7 +1649,7 @@ E \le \frac{2 M_f}{|S_1|} \cdot n_c
 
 $$
 
-This general error bound is applied in {prf:ref}`02_euclidean_gas` for distance operator analysis and in [15_kl_convergence](15_kl_convergence) for KL-divergence convergence proofs.
+This general error bound is applied in {prf:ref}`02_euclidean_gas` for distance operator analysis and in {doc}`15_kl_convergence` for KL-divergence convergence proofs.
 :::
 :::{prf:proof}
 **Proof.**
@@ -2167,7 +2169,7 @@ The **Canonical Logistic Rescale Function ({prf:ref}`def-axiom-rescale-function`
 :::
 :::{prf:proof}
 **Proof.**
-The proof consists of verifying each of the four axiomatic condiSmooth ({prf:ref}`axiom-boundary-smoothness`) was previously done in $02_relativistic_gas.md$ and is consolidated here.
+The proof consists of verifying each of the four axiomatic condiSmooth ({prf:ref}`axiom-boundary-smoothness`) was previously done in the relativistic gas appendix (Volume 2) and is consolidated here.
 1.  **$C^1$ Smoothness:** The function is a composition of the exponential function, addition, and division. As the denominator is always non-zero, the function is infinitely differentiable ($C^\infty$) and therefore $C^1$.
 2.  **Monotonicity:** The first derivative is $g'_A(z) = 2e^{-z} / (1+e^{-z})^2$. Since $e^{-z} > 0$ and the denominator is a squared real number, $g'_A(z) > 0$ for all $z$. The function is strictly increasing, which satisfies the axiom.
 3.  **Uniform Boundedness:** We analyze the limits:
@@ -4160,7 +4162,7 @@ The terms on the right are precisely the mean-square error bounds for the standa
 :::
 ### 12.3 Deterministic Continuity of the Fitness Potential Operator
 While mean-square continuity is sufficient for analyzing the system's average behavior and proving ergodicity, certain powerful convergence theorems (such as those from Feynman-Kac theory) require a stronger, deterministic, worst-case guarantee on the system's interaction potential. This section establishes this stronger property.
-By leveraging the deterministic Lipschitz-Hölder continuity of the patched standardization operator ({prf:ref}`def-standardization-operator-n-dimensional`) (proven in Section 11.3), we prove that the composite **Fitness Potential Operator** is also deterministically continuous. This result is a non-negotiable prerequisite for the Feynman-Kac convergence analysis presented in the `04_convergence.md` document.
+By leveraging the deterministic Lipschitz-Hölder continuity of the patched standardization operator ({prf:ref}`def-standardization-operator-n-dimensional`) (proven in Section 11.3), we prove that the composite **Fitness Potential Operator** is also deterministically continuous. This result is a non-negotiable prerequisite for the Feynman-Kac convergence analysis presented in the {doc}`06_convergence` document.
 #### 12.3.1 Theorem: Deterministic Continuity of the Fitness Potential Operator
 
 :::{prf:theorem} Deterministic Continuity of the Fitness Potential Operator

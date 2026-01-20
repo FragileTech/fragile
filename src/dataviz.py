@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import gc
+import math
 from typing import TYPE_CHECKING
 
 import os
@@ -1082,25 +1083,63 @@ def visualize_results_images(
     ax3.grid(True, alpha=0.3)
     ax3.set_yscale("log")
 
-    # --- Panel 4: AMI Comparison ---
+    # --- Panel 4: AMI vs Readout Accuracy ---
     ax4 = fig.add_subplot(2, 4, 4)
     ami_ae = results.get("ami_ae", 0)
     ami_std = results.get("ami_std", 0)
     ami_atlas = results["ami_atlas"]
     sup_acc = results.get("sup_acc", 0)
+    ae_cls_acc = results.get("ae_cls_acc")
+    std_cls_acc = results.get("std_cls_acc")
+    cls_acc = results.get("cls_acc")
 
-    bars = ax4.bar(["AE", "VQ", "Topo", "Sup Acc"],
-                   [ami_ae, ami_std, ami_atlas, sup_acc],
-                   color=["C2", "C0", "C1", "C3"])
+    ami_vals = [ami_ae, ami_std, ami_atlas]
+    acc_vals = [ae_cls_acc, std_cls_acc, cls_acc]
+    acc_vals = [
+        float(val) if val is not None else float("nan")
+        for val in acc_vals
+    ]
+    has_acc = any(math.isfinite(val) for val in acc_vals)
+    x = np.arange(3)
+    width = 0.36
+    bars_ami = ax4.bar(
+        x - width / 2, ami_vals, width, label="AMI", color="C1", alpha=0.8
+    )
+    if has_acc:
+        bars_acc = ax4.bar(
+            x + width / 2, acc_vals, width, label="Test Acc", color="C0", alpha=0.8
+        )
+    ax4.set_xticks(x)
+    ax4.set_xticklabels(["AE", "VQ", "Topo"])
     ax4.set_ylim(0, 1)
     ax4.set_ylabel("Score")
-    ax4.set_title("AMI & Accuracy", fontsize=12)
+    ax4.set_title("AMI vs Readout Accuracy", fontsize=12)
     ax4.grid(True, alpha=0.3, axis="y")
+    ax4.legend()
 
-    # Add value labels
-    for bar, val in zip(bars, [ami_ae, ami_std, ami_atlas, sup_acc]):
-        ax4.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.02,
-                 f"{val:.3f}", ha="center", fontsize=9)
+    for bar, val in zip(bars_ami, ami_vals):
+        ax4.text(
+            bar.get_x() + bar.get_width() / 2,
+            bar.get_height() + 0.02,
+            f"{val:.3f}",
+            ha="center",
+            fontsize=9,
+        )
+    if has_acc:
+        for bar, val in zip(bars_acc, acc_vals):
+            if not math.isfinite(val):
+                label = "N/A"
+                height = 0.0
+            else:
+                label = f"{val:.3f}"
+                height = bar.get_height()
+            ax4.text(
+                bar.get_x() + bar.get_width() / 2,
+                height + 0.02,
+                label,
+                ha="center",
+                fontsize=9,
+            )
 
     # --- Panel 5: AE Reconstruction ---
     ax5 = fig.add_subplot(2, 4, 5)

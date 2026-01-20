@@ -207,14 +207,18 @@ class TopoEncoderConfig:
 
 
 class BaselineClassifier(nn.Module):
-    """Linear probe for baseline latent spaces."""
+    """Small MLP probe for baseline latent spaces."""
 
-    def __init__(self, latent_dim: int, num_classes: int) -> None:
+    def __init__(self, latent_dim: int, num_classes: int, hidden_dim: int = 32) -> None:
         super().__init__()
-        self.linear = nn.Linear(latent_dim, num_classes)
+        self.net = nn.Sequential(
+            nn.Linear(latent_dim, hidden_dim),
+            nn.GELU(),
+            nn.Linear(hidden_dim, num_classes),
+        )
 
     def forward(self, z: torch.Tensor) -> torch.Tensor:
-        return self.linear(z)
+        return self.net(z)
 
 
 def count_parameters(model: nn.Module) -> int:
@@ -540,7 +544,9 @@ def save_checkpoint(
                 else None
             ),
             "classifier_ae": (
-                optimizer_classifier_ae.state_dict() if optimizer_classifier_ae is not None else None
+                optimizer_classifier_ae.state_dict()
+                if optimizer_classifier_ae is not None
+                else None
             ),
             "scheduler": scheduler.state_dict() if scheduler is not None else None,
         },
@@ -970,10 +976,6 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
         model_std = model_std.to(device)
     if model_ae is not None:
         model_ae = model_ae.to(device)
-    if std_classifier_head is not None:
-        std_classifier_head = std_classifier_head.to(device)
-    if ae_classifier_head is not None:
-        ae_classifier_head = ae_classifier_head.to(device)
     X_train = X_train.to(device)
     X_test = X_test.to(device)
     print(f"  Device: {device}")
@@ -1077,14 +1079,16 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
             std_classifier_head = BaselineClassifier(
                 latent_dim=config.latent_dim,
                 num_classes=num_classes,
-            )
+                hidden_dim=config.hidden_dim,
+            ).to(device)
             if resume_state is not None and resume_state.get("classifier_std") is not None:
                 std_classifier_head.load_state_dict(resume_state["classifier_std"])
         if model_ae is not None:
             ae_classifier_head = BaselineClassifier(
                 latent_dim=config.latent_dim,
                 num_classes=num_classes,
-            )
+                hidden_dim=config.hidden_dim,
+            ).to(device)
             if resume_state is not None and resume_state.get("classifier_ae") is not None:
                 ae_classifier_head.load_state_dict(resume_state["classifier_ae"])
         if std_classifier_head is not None or ae_classifier_head is not None:
@@ -1243,6 +1247,9 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
             "update_ratio": 0.0,
             "lr": 0.0,
         }
+        epoch_lr_loss_signal = 0.0
+        epoch_lr_grad_norm = 0.0
+        epoch_lr_param_norm = 0.0
         n_batches = 0
 
         for batch_X, batch_labels, _batch_colors in dataloader:
@@ -1280,7 +1287,11 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
             # --- Baseline classifier readouts (detached) ---
             std_cls_loss = torch.tensor(0.0, device=device)
             std_cls_acc = torch.tensor(0.0, device=device)
-            if std_classifier_head is not None and opt_classifier_std is not None and model_std is not None:
+            if (
+                std_classifier_head is not None
+                and opt_classifier_std is not None
+                and model_std is not None
+            ):
                 with torch.no_grad():
                     z_std = model_std.encoder(batch_X)
                 logits_std = std_classifier_head(z_std)
@@ -1294,7 +1305,11 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
 
             ae_cls_loss = torch.tensor(0.0, device=device)
             ae_cls_acc = torch.tensor(0.0, device=device)
-            if ae_classifier_head is not None and opt_classifier_ae is not None and z_ae is not None:
+            if (
+                ae_classifier_head is not None
+                and opt_classifier_ae is not None
+                and z_ae is not None
+            ):
                 logits_ae = ae_classifier_head(z_ae.detach())
                 ae_cls_loss = F.cross_entropy(logits_ae, batch_labels)
                 opt_classifier_ae.zero_grad()
@@ -1467,50 +1482,9 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
             if config.adaptive_lr:
                 grad_norm = _compute_grad_norm(atlas_params)
                 param_norm = _compute_param_norm(atlas_params)
-                loss_val_raw = lr_loss_signal.item()
-                loss_ema_raw = adaptive_lr_state.loss_ema or loss_val_raw
-                loss_val = math.log1p(loss_val_raw)
-                loss_ema = math.log1p(loss_ema_raw)
-                grounding_active = epoch >= config.lr_grounding_warmup_epochs
-                ixk_for_check = (
-                    adaptive_lr_state.ixk_ema
-                    if adaptive_lr_state.ixk_ema > 0.0
-                    else window_info["I_XK"]
-                )
-                grounding_violation = ixk_for_check < config.window_eps_ground
-                unstable = loss_val > loss_ema * (1.0 + config.lr_loss_increase_tol)
-                if grounding_active and grounding_violation:
-                    unstable = True
-                if not math.isfinite(loss_val_raw) or not math.isfinite(grad_norm):
-                    unstable = True
-                if unstable:
-                    adaptive_lr_state.unstable_steps += 1
-                    adaptive_lr_state.stable_steps = 0
-                else:
-                    adaptive_lr_state.stable_steps += 1
-                    adaptive_lr_state.unstable_steps = 0
-                lr_cap = lr_max
-                if grad_norm > 0.0 and param_norm > 0.0:
-                    lr_cap = min(
-                        lr_max,
-                        config.lr_max_update_ratio * param_norm / (grad_norm + 1e-12),
-                    )
-                increase_factor = config.lr_increase_factor
-                if lr_current < lr_max * config.lr_recovery_threshold:
-                    increase_factor = max(increase_factor, config.lr_recovery_factor)
-                if adaptive_lr_state.unstable_steps >= config.lr_unstable_patience:
-                    lr_current = max(config.lr_min, lr_current * config.lr_decrease_factor)
-                    adaptive_lr_state.unstable_steps = 0
-                elif adaptive_lr_state.stable_steps >= config.lr_stable_patience:
-                    lr_current = min(lr_cap, lr_current * increase_factor)
-                    adaptive_lr_state.stable_steps = 0
-                lr_current = min(lr_current, lr_cap)
-                adaptive_lr_state.lr = lr_current
-                adaptive_lr_state.loss_ema = (
-                    config.lr_ema_decay * loss_ema_raw
-                    + (1.0 - config.lr_ema_decay) * loss_val_raw
-                )
-                _set_optimizer_lr(opt_atlas, lr_current)
+                epoch_lr_loss_signal += lr_loss_signal.item()
+                epoch_lr_grad_norm += grad_norm
+                epoch_lr_param_norm += param_norm
                 grad_norm_val = grad_norm
                 param_norm_val = param_norm
                 update_ratio = (
@@ -1905,6 +1879,57 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
         info_metrics["update_ratio"].append(epoch_info["update_ratio"] / n_batches)
         info_metrics["lr"].append(epoch_info["lr"] / n_batches)
 
+        if config.adaptive_lr and n_batches > 0:
+            loss_val_raw = epoch_lr_loss_signal / n_batches
+            grad_norm_avg = epoch_lr_grad_norm / n_batches
+            param_norm_avg = epoch_lr_param_norm / n_batches
+            loss_ema_raw = adaptive_lr_state.loss_ema or loss_val_raw
+            loss_val = math.log1p(loss_val_raw)
+            loss_ema = math.log1p(loss_ema_raw)
+            grounding_active = epoch >= config.lr_grounding_warmup_epochs
+            ixk_for_check = (
+                adaptive_lr_state.ixk_ema
+                if adaptive_lr_state.ixk_ema > 0.0
+                else info_metrics["I_XK"][-1]
+            )
+            grounding_violation = ixk_for_check < config.window_eps_ground
+            unstable = loss_val > loss_ema * (1.0 + config.lr_loss_increase_tol)
+            if grounding_active and grounding_violation:
+                unstable = True
+            if not math.isfinite(loss_val_raw) or not math.isfinite(grad_norm_avg):
+                unstable = True
+            if not grounding_active and unstable:
+                unstable = False
+            if unstable:
+                adaptive_lr_state.unstable_steps += 1
+                adaptive_lr_state.stable_steps = 0
+            else:
+                adaptive_lr_state.stable_steps += 1
+                adaptive_lr_state.unstable_steps = 0
+            lr_cap = lr_max
+            if grad_norm_avg > 0.0 and param_norm_avg > 0.0:
+                lr_cap = min(
+                    lr_max,
+                    config.lr_max_update_ratio * param_norm_avg / (grad_norm_avg + 1e-12),
+                )
+            increase_factor = config.lr_increase_factor
+            if lr_current < lr_max * config.lr_recovery_threshold:
+                increase_factor = max(increase_factor, config.lr_recovery_factor)
+            if adaptive_lr_state.unstable_steps >= config.lr_unstable_patience:
+                if grounding_active:
+                    lr_current = max(config.lr_min, lr_current * config.lr_decrease_factor)
+                adaptive_lr_state.unstable_steps = 0
+            elif adaptive_lr_state.stable_steps >= config.lr_stable_patience:
+                lr_current = min(lr_cap, lr_current * increase_factor)
+                adaptive_lr_state.stable_steps = 0
+            lr_current = min(lr_current, lr_cap)
+            adaptive_lr_state.lr = lr_current
+            adaptive_lr_state.loss_ema = (
+                config.lr_ema_decay * loss_ema_raw
+                + (1.0 - config.lr_ema_decay) * loss_val_raw
+            )
+            _set_optimizer_lr(opt_atlas, lr_current)
+
         # Step LR scheduler at end of each epoch
         if scheduler is not None:
             scheduler.step()
@@ -2059,6 +2084,32 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
                     f"train_acc={avg_cls_acc:.3f} "
                     f"test_acc={test_cls_acc:.3f}"
                 )
+            std_test_acc = None
+            ae_test_acc = None
+            if std_classifier_head is not None and model_std is not None:
+                with torch.no_grad():
+                    z_std_test = model_std.encoder(X_test)
+                    std_logits_test = std_classifier_head(z_std_test)
+                    std_test_acc = (
+                        std_logits_test.argmax(dim=1) == labels_test_t
+                    ).float().mean().item()
+                print(
+                    f"  Std Readout: train_loss={avg_std_cls_loss:.3f} "
+                    f"train_acc={avg_std_cls_acc:.3f} "
+                    f"test_acc={std_test_acc:.3f}"
+                )
+            if ae_classifier_head is not None and model_ae is not None:
+                with torch.no_grad():
+                    _, z_ae_test = model_ae(X_test)
+                    ae_logits_test = ae_classifier_head(z_ae_test)
+                    ae_test_acc = (
+                        ae_logits_test.argmax(dim=1) == labels_test_t
+                    ).float().mean().item()
+                print(
+                    f"  AE Readout: train_loss={avg_ae_cls_loss:.3f} "
+                    f"train_acc={avg_ae_cls_acc:.3f} "
+                    f"test_acc={ae_test_acc:.3f}"
+                )
             print(
                 f"  Info: I(X;K)={avg_ixk:.3f} "
                 f"H(K)={avg_hk:.3f} "
@@ -2104,10 +2155,14 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
                     "loss/sup_balance": avg_sup_balance,
                     "loss/sup_metric": avg_sup_metric,
                     "loss/cls": avg_cls_loss,
+                    "loss/std_cls": avg_std_cls_loss,
+                    "loss/ae_cls": avg_ae_cls_loss,
                     "metric/ami": ami,
                     "metric/perplexity": perplexity,
                     "metric/sup_acc": avg_sup_acc,
                     "metric/cls_acc": avg_cls_acc,
+                    "metric/std_cls_acc": avg_std_cls_acc,
+                    "metric/ae_cls_acc": avg_ae_cls_acc,
                     "metric/I_XK": avg_ixk,
                     "metric/H_K": avg_hk,
                     "metric/H_K_given_X": avg_hk_given_x,
@@ -2132,6 +2187,10 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
                     mlflow_metrics["metric/test_sup_route"] = test_sup_route
                 if test_cls_acc is not None:
                     mlflow_metrics["metric/test_cls_acc"] = test_cls_acc
+                if std_test_acc is not None:
+                    mlflow_metrics["metric/test_std_cls_acc"] = std_test_acc
+                if ae_test_acc is not None:
+                    mlflow_metrics["metric/test_ae_cls_acc"] = ae_test_acc
                 for idx, value in enumerate(usage):
                     mlflow_metrics[f"usage/chart_{idx}"] = float(value)
                 for name, state in adaptive_weight_state.items():
@@ -2178,11 +2237,15 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
                     model_ae=model_ae,
                     supervised_loss=supervised_loss,
                     classifier_head=classifier_head,
+                    classifier_std=std_classifier_head,
+                    classifier_ae=ae_classifier_head,
                     precision_module=precision_module,
                     optimizer_atlas=opt_atlas,
                     optimizer_std=opt_std,
                     optimizer_ae=opt_ae,
                     optimizer_classifier=opt_classifier,
+                    optimizer_classifier_std=opt_classifier_std,
+                    optimizer_classifier_ae=opt_classifier_ae,
                     scheduler=scheduler,
                 )
                 print(f"Checkpoint saved: {save_path}")
@@ -2260,6 +2323,16 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
             _, _, _, _, enc_w_cls, z_geo_cls, _, _, _ = model_atlas.encoder(X_test)
             cls_logits = classifier_head(enc_w_cls, z_geo_cls)
             cls_acc = (cls_logits.argmax(dim=1) == labels_test_t).float().mean().item()
+        std_cls_acc = 0.0
+        if std_classifier_head is not None and model_std is not None:
+            z_std_final = model_std.encoder(X_test)
+            std_logits = std_classifier_head(z_std_final)
+            std_cls_acc = (std_logits.argmax(dim=1) == labels_test_t).float().mean().item()
+        ae_cls_acc = 0.0
+        if ae_classifier_head is not None and model_ae is not None:
+            _, z_ae_final = model_ae(X_test)
+            ae_logits = ae_classifier_head(z_ae_final)
+            ae_cls_acc = (ae_logits.argmax(dim=1) == labels_test_t).float().mean().item()
 
     if mlflow_active:
         final_mlflow_metrics = {
@@ -2274,6 +2347,8 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
             "final/consistency": final_consistency,
             "final/sup_acc": sup_acc,
             "final/cls_acc": cls_acc,
+            "final/std_cls_acc": std_cls_acc,
+            "final/ae_cls_acc": ae_cls_acc,
         }
         _log_mlflow_metrics(final_mlflow_metrics, step=config.epochs, enabled=mlflow_active)
 
@@ -2304,6 +2379,10 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
         print(f"Supervised Accuracy: {sup_acc:.4f}")
     if classifier_head is not None:
         print(f"Readout Accuracy: {cls_acc:.4f}")
+    if std_classifier_head is not None and model_std is not None:
+        print(f"StandardVQ Readout Accuracy: {std_cls_acc:.4f}")
+    if ae_classifier_head is not None and model_ae is not None:
+        print(f"VanillaAE Readout Accuracy: {ae_cls_acc:.4f}")
 
     final_checkpoint = f"{config.output_dir}/topo_final.pt"
     final_metrics = {
@@ -2334,6 +2413,8 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
         "atlas_perplexity": atlas_perplexity,
         "sup_acc": sup_acc,
         "cls_acc": cls_acc,
+        "std_cls_acc": std_cls_acc,
+        "ae_cls_acc": ae_cls_acc,
         "chart_assignments": chart_assignments,
         "std_hidden_dim": std_hidden_dim,
         "ae_hidden_dim": ae_hidden_dim,
@@ -2350,11 +2431,15 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
         model_ae=model_ae,
         supervised_loss=supervised_loss,
         classifier_head=classifier_head,
+        classifier_std=std_classifier_head,
+        classifier_ae=ae_classifier_head,
         precision_module=precision_module,
         optimizer_atlas=opt_atlas,
         optimizer_std=opt_std,
         optimizer_ae=opt_ae,
         optimizer_classifier=opt_classifier,
+        optimizer_classifier_std=opt_classifier_std,
+        optimizer_classifier_ae=opt_classifier_ae,
         scheduler=scheduler,
     )
     print(f"\nFinal checkpoint saved to: {final_checkpoint}")
@@ -2394,6 +2479,8 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
         "mse_atlas": mse_atlas,
         "sup_acc": sup_acc,
         "cls_acc": cls_acc,
+        "std_cls_acc": std_cls_acc,
+        "ae_cls_acc": ae_cls_acc,
         "atlas_perplexity": atlas_perplexity,
         "std_perplexity": std_perplexity,
         "checkpoint_path": final_checkpoint,

@@ -7,6 +7,12 @@
 - `docs/` is the Jupyter Book/Sphinx site.
 - `examples/`, `media/`, and `outputs/` hold sample notebooks, assets, and generated artifacts.
 
+## Volume 3 Proof Standards
+- When editing `docs/source/3_fractal_gas`, ground claims in Volume 3 metatheorems and appendices; cite internal theorems/permits explicitly.
+- Avoid generic textbook lattice arguments or external documents unless the user requests them; prefer Fractal Set/QSD constructions.
+- Do not introduce new assumptions or change the algorithm; if a claim relies on a permit/certificate, point to where it is certified (for example `docs/source/3_fractal_gas/1_the_algorithm/02_fractal_gas_latent.md`).
+- For unbounded spaces, use the established confining envelope or Safe Harbor results instead of adding compactness assumptions.
+
 ## Build, Test, and Development Commands
 Use Rye scripts (they wrap Hatch environments):
 - `rye run test` runs the pytest suite.

@@ -280,3 +280,45 @@ python src/experiments/topoencoder_2d.py \
   --lr_grounding_warmup_epochs 10 \
   --use_scheduler false
 ```
+
+```bash
+uv run python src/experiments/topoencoder_2d.py \
+  --dataset cifar10 \
+  --epochs 3000 \
+  --save_every 50 \
+  --log_every 25 \
+  --device cpu \
+  --adaptive_lr true \
+  --use_scheduler false \
+  --lr 0.0001 \
+  --lr_max 0.0001 \
+  --kl_prior_weight 0.001 \
+  --lr_grounding_warmup_epochs 200 \
+  --lr_unstable_patience 10 \
+  --output_dir outputs/topoencoder_cifar10_cpu_3k \
+  --mlflow true \
+  --mlflow_tracking_uri http://127.0.0.1:5000 \
+  --mlflow_experiment topoencoder \
+  --mlflow_run_name cifar_adaptive_lr
+```
+
+```bash
+uv run python src/experiments/topoencoder_2d.py \
+  --dataset mnist \
+  --epochs 3000 \
+  --save_every 50 \
+  --log_every 25 \
+  --device cpu \
+  --adaptive_lr true \
+  --use_scheduler false \
+  --lr 0.0001 \
+  --lr_max 0.0001 \
+  --kl_prior_weight 0.001 \
+  --lr_grounding_warmup_epochs 200 \
+  --lr_unstable_patience 10 \
+  --output_dir outputs/topoencoder_mnist_cpu_3k \
+  --mlflow true \
+  --mlflow_tracking_uri http://127.0.0.1:5000 \
+  --mlflow_experiment topoencoder \
+  --mlflow_run_name mnist_adaptive_lr
+```

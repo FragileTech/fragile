@@ -12,11 +12,13 @@
 
 **Synergistic Convergence Architecture**: The kinetic operator's contractions of $W_h^2$ and $W_b$ are precisely complementary to the cloning operator's contractions of $V_{\text{Var},x}$, enabling the composed operator $\Psi_{\text{total}} = \Psi_{\text{kin}} \circ \Psi_{\text{clone}}$ to achieve full convergence to a quasi-stationary distribution.
 
+**Dependencies**: {doc}`02_euclidean_gas`, {doc}`04_single_particle`, {doc}`03_cloning`
+
 ## 1. Introduction
 
 ### 1.1. Goal and Scope
 
-The goal of this document is to provide a complete, rigorous analysis of the **kinetic operator** $\Psi_{\text{kin}}$ and prove that it provides the complementary dissipation mechanisms necessary for the Euclidean Gas to achieve full convergence to a quasi-stationary distribution (QSD). While the companion document *"The Keystone Principle and the Contractive Nature of Cloning"* (03_cloning.md) proved that the cloning operator $\Psi_{\text{clone}}$ achieves contraction of positional variance $V_{\text{Var},x}$ and boundary potential $W_b$, this document establishes the corresponding contraction properties of the kinetic operator.
+The goal of this document is to provide a complete, rigorous analysis of the **kinetic operator** $\Psi_{\text{kin}}$ and prove that it provides the complementary dissipation mechanisms necessary for the Euclidean Gas to achieve full convergence to a quasi-stationary distribution (QSD). While the companion document *"The Keystone Principle and the Contractive Nature of Cloning"* ({doc}`03_cloning`) proved that the cloning operator $\Psi_{\text{clone}}$ achieves contraction of positional variance $V_{\text{Var},x}$ and boundary potential $W_b$, this document establishes the corresponding contraction properties of the kinetic operator.
 
 The central mathematical object of study is the **underdamped Langevin dynamics** that governs walker evolution between cloning events. This dynamics combines deterministic drift from a confining potential, friction that dissipates kinetic energy, and thermal noise that maintains ergodicity. We prove that this operator achieves:
 
@@ -27,7 +29,7 @@ The central mathematical object of study is the **underdamped Langevin dynamics*
 
 A critical contribution of this document is the proof that hypocoercive contraction **does not require convexity** of the potential $U(x)$. We establish contraction using only **coercivity** (confinement at infinity), **Lipschitz continuity** of forces, and **non-degenerate friction-diffusion coupling**. This extends classical hypocoercivity theory to the non-convex multi-well landscapes characteristic of complex optimization problems.
 
-The scope of this document is the analysis of $\Psi_{\text{kin}}$ in isolation. The composition $\Psi_{\text{total}} = \Psi_{\text{kin}} \circ \Psi_{\text{clone}}$, parameter optimization, and the main convergence theorem are deferred to the companion document *06_convergence.md*.
+The scope of this document is the analysis of $\Psi_{\text{kin}}$ in isolation. The composition $\Psi_{\text{total}} = \Psi_{\text{kin}} \circ \Psi_{\text{clone}}$, parameter optimization, and the main convergence theorem are deferred to the companion document *{doc}`06_convergence`*.
 
 ### 1.2. The Synergistic Dissipation Framework
 
@@ -75,9 +77,9 @@ graph TD
     end
 
     subgraph "Integration with Cloning Operator"
-        J["<b>From 03_cloning.md</b><br>Cloning provides:<br>ΔV_Var,x ≤ -κ_x V_Var,x τ + C_x τ<br>ΔW_b ≤ -κ_b W_b τ + C_b τ"]:::axiomStyle
+        J["<b>From 03_cloning</b><br>Cloning provides:<br>ΔV_Var,x ≤ -κ_x V_Var,x τ + C_x τ<br>ΔW_b ≤ -κ_b W_b τ + C_b τ"]:::axiomStyle
         K["<b>Synergistic Composition</b><br>Balance weights c_V, c_B in<br>V_total = W_h² + c_V V_Var + c_B W_b"]:::stateStyle
-        L["<b>Result (in 06_convergence.md)</b><br>Full Foster-Lyapunov Drift:<br>ΔV_total ≤ -κV_total + C"]:::theoremStyle
+        L["<b>Result (in 06_convergence)</b><br>Full Foster-Lyapunov Drift:<br>ΔV_total ≤ -κV_total + C"]:::theoremStyle
     end
 
     A --> B
@@ -117,28 +119,28 @@ graph TD
 
 - **Chapter 7 (Boundary Safety):** Proves that the confining potential provides independent boundary protection through the drift inequality $\Delta W_b \leq -\kappa_{\text{pot}} W_b + C_{\text{pot}}$, creating a layered safety architecture with the cloning-based Safe Harbor mechanism.
 
-The drift inequalities proven in this document, combined with those from 03_cloning.md, provide the complete set of components needed for the main convergence theorem in 06_convergence.md.
+The drift inequalities proven in this document, combined with those from {doc}`03_cloning`, provide the complete set of components needed for the main convergence theorem in {doc}`06_convergence`.
 
 
 
-## 2. Document Overview and Relation to 03_cloning.md
+## 2. Document Overview and Relation to {doc}`03_cloning`
 
 **Purpose of This Document:**
 
-This document provides the second half of the convergence proof for the Euclidean Gas algorithm. While the companion document *"The Keystone Principle and the Contractive Nature of Cloning"* (03_cloning.md) analyzed the cloning operator $\Psi_{\text{clone}}$, this document analyzes the **kinetic operator** $\Psi_{\text{kin}}$ and proves that the **composed operator** $\Psi_{\text{total}} = \Psi_{\text{kin}} \circ \Psi_{\text{clone}}$ achieves full convergence to a quasi-stationary distribution (QSD).
+This document provides the second half of the convergence proof for the Euclidean Gas algorithm. While the companion document *"The Keystone Principle and the Contractive Nature of Cloning"* ({doc}`03_cloning`) analyzed the cloning operator $\Psi_{\text{clone}}$, this document analyzes the **kinetic operator** $\Psi_{\text{kin}}$ and proves that the **composed operator** $\Psi_{\text{total}} = \Psi_{\text{kin}} \circ \Psi_{\text{clone}}$ achieves full convergence to a quasi-stationary distribution (QSD).
 
 **The Synergistic Dissipation Framework:**
 
 The Euclidean Gas achieves stability through the complementary action of two operators:
 
-| Component | $\Psi_{\text{clone}}$ (03_cloning.md) | $\Psi_{\text{kin}}$ (this document) | Net Effect |
+| Component | $\Psi_{\text{clone}}$ ({doc}`03_cloning`) | $\Psi_{\text{kin}}$ (this document) | Net Effect |
 |:----------|:--------------------------------------|:-------------------------------------|:-----------|
 | $V_W$ (inter-swarm) | $+C_W$ (expansion) | $-\kappa_W V_W$ (contraction) | **Contraction** |
 | $V_{\text{Var},x}$ (position) | $-\kappa_x V_{\text{Var},x}$ (contraction) | $+C_{\text{kin},x}$ (expansion) | **Contraction** |
 | $V_{\text{Var},v}$ (velocity) | $+C_v$ (expansion) | $-\kappa_v V_{\text{Var},v}$ (contraction) | **Contraction** |
 | $W_b$ (boundary) | $-\kappa_b W_b$ (contraction) | $-\kappa_{\text{pot}} W_b$ (contraction) | **Strong contraction** |
 
-This document proves the drift inequalities in the "$\Psi_{\text{kin}}$" column and combines them with results from 03_cloning.md to establish the main convergence theorem.
+This document proves the drift inequalities in the "$\Psi_{\text{kin}}$" column and combines them with results from {doc}`03_cloning` to establish the main convergence theorem.
 
 **Document Structure:**
 
@@ -148,7 +150,7 @@ This document proves the drift inequalities in the "$\Psi_{\text{kin}}$" column 
 - **Chapter 6:** Positional diffusion and bounded expansion
 - **Chapter 7:** Boundary potential contraction via confining potential
 
-**Note:** The synergistic composition, main convergence theorem, and parameter optimization are covered in the companion document *06_convergence.md*.
+**Note:** The synergistic composition, main convergence theorem, and parameter optimization are covered in the companion document *{doc}`06_convergence`*.
 
 ## 3. The Kinetic Operator with Stratonovich Formulation
 
@@ -473,7 +475,7 @@ $$
 
 This is the **canonical Gibbs distribution** for position and velocity.
 
-**However:** The boundary condition (walkers die when exiting $\mathcal{X}_{\text{valid}}$) makes this measure invalid. Instead, the system converges to a **quasi-stationary distribution** (QSD) - a distribution conditioned on survival. This is analyzed in the companion document 06_convergence.md.
+**However:** The boundary condition (walkers die when exiting $\mathcal{X}_{\text{valid}}$) makes this measure invalid. Instead, the system converges to a **quasi-stationary distribution** (QSD) - a distribution conditioned on survival. This is analyzed in the companion document {doc}`06_convergence`.
 :::
 
 ### 3.5. Numerical Integration
@@ -574,7 +576,7 @@ This chapter has established:
 - **Chapter 6:** Bound positional variance expansion from **diffusion**
 - **Chapter 7:** Prove boundary potential contraction from **confining potential**
 
-These drift inequalities will then be combined with the cloning results (03_cloning.md) to establish the main convergence theorem.
+These drift inequalities will then be combined with the cloning results ({doc}`03_cloning`) to establish the main convergence theorem.
 
 ### 3.7. From Continuous-Time Generators to Discrete-Time Drift
 
@@ -800,7 +802,7 @@ Near the boundary, $\|\nabla^k \varphi\| \to \infty$ as $x \to \partial\mathcal{
 
 **PART II: Key Insight - The Process Avoids the Boundary**
 
-From the Foster-Lyapunov theorem established in the companion document 06_convergence.md (Theorem 06:1.4), the total Lyapunov function satisfies:
+From the Foster-Lyapunov theorem established in the companion document {doc}`06_convergence` (Theorem 06:1.4), the total Lyapunov function satisfies:
 
 $$
 \mathbb{E}[V_{\text{total}}(S_t)] \leq e^{-\kappa_{\text{total}} t} V_{\text{total}}(S_0) + \frac{C_{\text{total}}}{\kappa_{\text{total}}}
@@ -1389,7 +1391,7 @@ $$
 
 where $W_h$ is the Wasserstein-2 distance with cost $\|\!(\Delta x, \Delta v)\!\|_h^2$.
 
-**Decomposition (from 03_cloning.md):**
+**Decomposition (from {doc}`03_cloning`):**
 
 $$
 V_W = V_{\text{loc}} + V_{\text{struct}}
@@ -1972,7 +1974,7 @@ While Chapter 4 showed hypocoercive contraction of inter-swarm error, this chapt
 
 **The Challenge from Cloning:**
 
-Recall from 03_cloning.md that the cloning operator causes **bounded velocity variance expansion** $\Delta V_{\text{Var},v} \leq C_v$ due to inelastic collisions. This chapter proves that the Langevin friction provides **linear contraction** that overcomes this expansion.
+Recall from {doc}`03_cloning` that the cloning operator causes **bounded velocity variance expansion** $\Delta V_{\text{Var},v} \leq C_v$ due to inelastic collisions. This chapter proves that the Langevin friction provides **linear contraction** that overcomes this expansion.
 
 **Physical Intuition:**
 
@@ -1983,7 +1985,7 @@ The friction term $-\gamma v$ acts like a "drag force" that pulls all velocities
 :::{prf:definition} Velocity Variance Component (Recall)
 :label: def-velocity-variance-recall
 
-From 03_cloning.md Definition 3.3.1, the velocity variance component of the Lyapunov function is:
+From {doc}`03_cloning` Definition 3.3.1, the velocity variance component of the Lyapunov function is:
 
 $$
 V_{\text{Var},v}(S_1, S_2) = \frac{1}{N}\sum_{k=1,2} \sum_{i \in \mathcal{A}(S_k)} \|\delta_{v,k,i}\|^2
@@ -2290,7 +2292,7 @@ This result shows:
 :::{prf:corollary} Net Velocity Variance Contraction for Composed Operator
 :label: cor-net-velocity-contraction
 
-From 03_cloning.md, the cloning operator satisfies:
+From {doc}`03_cloning`, the cloning operator satisfies:
 
 $$
 \mathbb{E}_{\text{clone}}[\Delta V_{\text{Var},v}] \leq C_v
@@ -2364,7 +2366,7 @@ This chapter has proven:
 **Key Mechanism:** The friction term $-\gamma v$ provides direct dissipation that overcomes both thermal noise and cloning-induced perturbations.
 
 **Synergy with Cloning:**
-- Cloning contracts position variance (03_cloning.md, Ch 10)
+- Cloning contracts position variance ({doc}`03_cloning`, Ch 10)
 - Kinetics contracts velocity variance (this chapter)
 - Together: full phase-space contraction
 
@@ -2381,14 +2383,14 @@ The Langevin equation includes thermal noise in velocity: $dv = \ldots + \Sigma 
 - **Benefit:** Noise enables exploration and prevents kinetic collapse
 - **Cost:** Noise causes random walk in position, expanding positional variance
 
-This chapter proves that this expansion is **bounded** - it doesn't grow with the system size or state. The strong positional contraction from cloning (03_cloning.md, Ch 10) overcomes this bounded expansion.
+This chapter proves that this expansion is **bounded** - it doesn't grow with the system size or state. The strong positional contraction from cloning ({doc}`03_cloning`, Ch 10) overcomes this bounded expansion.
 
 ### 6.2. Positional Variance (Recall)
 
 :::{prf:definition} Positional Variance Component (Recall)
 :label: def-positional-variance-recall
 
-From 03_cloning.md Definition 3.3.1:
+From {doc}`03_cloning` Definition 3.3.1:
 
 $$
 V_{\text{Var},x}(S_1, S_2) = \frac{1}{N}\sum_{k=1,2} \sum_{i \in \mathcal{A}(S_k)} \|\delta_{x,k,i}\|^2
@@ -2528,7 +2530,7 @@ d\delta_v = [F(x) - F(\mu_x) - \gamma \delta_v] \, dt + \Sigma \circ dW
 
 $$
 
-While $\delta_v$ is not an exact Ornstein-Uhlenbeck (OU) process for general non-quadratic potentials $U$ (due to the nonlinear force term $F(x) - F(\mu_x)$), the friction term $-\gamma \delta_v$ governs exponential decay of velocity correlations. Under the Lipschitz condition on $F$ (Axiom {prf:ref}`axiom-bounded-displacement` from 01_fragile_gas_framework.md) and constant friction $\gamma > 0$, the velocity autocovariance satisfies the upper bound:
+While $\delta_v$ is not an exact Ornstein-Uhlenbeck (OU) process for general non-quadratic potentials $U$ (due to the nonlinear force term $F(x) - F(\mu_x)$), the friction term $-\gamma \delta_v$ governs exponential decay of velocity correlations. Under the Lipschitz condition on $F$ (Axiom {prf:ref}`axiom-bounded-displacement` from {doc}`01_fragile_gas_framework`) and constant friction $\gamma > 0$, the velocity autocovariance satisfies the upper bound:
 
 $$
 \mathbb{E}[\langle \delta_{v}(s_1), \delta_{v}(s_2) \rangle] \leq V_{\text{Var},v}^{\text{eq}} e^{-\gamma |s_1 - s_2|}
@@ -2639,7 +2641,7 @@ These bounds are ensured by:
 
 1. **Velocity variance:** {prf:ref}`thm-velocity-variance-contraction-kinetic` establishes that velocity variance equilibrates to $V_{\text{Var},v}^{\text{eq}} = \frac{d\sigma_{\max}^2}{2\gamma}$ with exponential convergence. Thus $M_v = \frac{d\sigma_{\max}^2}{2\gamma}$.
 
-2. **Positional variance:** {prf:ref}`thm-positional-variance-contraction` (from 03_cloning.md, Chapter 10) establishes the Foster-Lyapunov drift inequality:
+2. **Positional variance:** {prf:ref}`thm-positional-variance-contraction` (from {doc}`03_cloning`, Chapter 10) establishes the Foster-Lyapunov drift inequality:
 
    $$
    \mathbb{E}_{\text{clone}}[\Delta V_{\text{Var},x}] \leq -\kappa_x V_{\text{Var},x} + C_x
@@ -2698,7 +2700,7 @@ $$
 :::{prf:corollary} Net Positional Variance Contraction for Composed Operator
 :label: cor-net-positional-contraction
 
-From 03_cloning.md Theorem 10.3.1, the cloning operator satisfies:
+From {doc}`03_cloning` Theorem 10.3.1, the cloning operator satisfies:
 
 $$
 \mathbb{E}_{\text{clone}}[\Delta V_{\text{Var},x}] \leq -\kappa_x V_{\text{Var},x} + C_x
@@ -2749,7 +2751,7 @@ This chapter has proven:
 
 The Euclidean Gas has **two independent mechanisms** that prevent boundary extinction:
 
-1. **Safe Harbor via Cloning** (03_cloning.md, Ch 11): Boundary-proximate walkers have low fitness and are replaced by interior clones
+1. **Safe Harbor via Cloning** ({doc}`03_cloning`, Ch 11): Boundary-proximate walkers have low fitness and are replaced by interior clones
 2. **Confining Potential via Kinetics** (this chapter): The force $F(x) = -\nabla U(x)$ pushes walkers away from the boundary
 
 This chapter proves the second mechanism, showing that the kinetic operator provides **additional** boundary safety beyond the cloning mechanism.
@@ -2759,7 +2761,7 @@ This chapter proves the second mechanism, showing that the kinetic operator prov
 :::{prf:definition} Boundary Potential (Recall)
 :label: def-boundary-potential-recall
 
-From 03_cloning.md Definition 3.3.1:
+From {doc}`03_cloning` Definition 3.3.1:
 
 $$
 W_b(S_1, S_2) = \frac{1}{N}\sum_{k=1,2} \sum_{i \in \mathcal{A}(S_k)} \varphi_{\text{barrier}}(x_{k,i})
@@ -3162,7 +3164,7 @@ This result demonstrates:
 
 3. **Hessian competition:** The Hessian term $v^T(\nabla^2\varphi)v$ represents curvature effects that can add positive drift. For small $c$ (weak barrier strength), this is dominated by the negative alignment term.
 
-4. **Independent safety mechanism:** This contraction is **independent** of cloning — it's a fundamental property of the confining potential $U$. Combined with the Safe Harbor mechanism (03_cloning.md, Ch 11), this provides **layered defense** against extinction.
+4. **Independent safety mechanism:** This contraction is **independent** of cloning — it's a fundamental property of the confining potential $U$. Combined with the Safe Harbor mechanism ({doc}`03_cloning`, Ch 11), this provides **layered defense** against extinction.
 
 5. **Parameter tradeoff:** Smaller $c$ gives stronger contraction (larger $\kappa_{\text{pot}}$) but weaker barrier strength. The choice balances safety (keep $\varphi$ finite) with convergence speed.
 
@@ -3174,7 +3176,7 @@ This result demonstrates:
 :::{prf:corollary} Total Boundary Safety from Dual Mechanisms
 :label: cor-total-boundary-safety
 
-Combining the Safe Harbor mechanism from cloning (03_cloning.md, Ch 11) with the confining potential:
+Combining the Safe Harbor mechanism from cloning ({doc}`03_cloning`, Ch 11) with the confining potential:
 
 **From cloning:**
 
@@ -3231,4 +3233,4 @@ This chapter has proven:
 - **Cloning:** Removes boundary-proximate walkers (fast, discrete)
 - **Kinetics:** Pushes walkers inward continuously (smooth, deterministic)
 
-**Next:** The companion document *06_convergence.md* combines ALL drift results from this chapter and from *03_cloning.md* to prove the synergistic Foster-Lyapunov condition and establish the main convergence theorem.
+**Next:** The companion document *{doc}`06_convergence`* combines ALL drift results from this chapter and from *{doc}`03_cloning`* to prove the synergistic Foster-Lyapunov condition and establish the main convergence theorem.

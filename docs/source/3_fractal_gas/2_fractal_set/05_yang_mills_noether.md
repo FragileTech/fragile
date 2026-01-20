@@ -53,7 +53,7 @@ The Wilson action and its gauge invariance are treated in {ref}`sec-ym-action`, 
 
 The continuum limit ({ref}`sec-ym-continuum`) shows that as the lattice spacing goes to zero, the discrete Wilson action converges to the standard Yang-Mills action, with asymptotic freedom emerging from the negative beta function. The fundamental constants dictionary ({ref}`sec-ym-constants`) consolidates all expressions for physical constants in terms of algorithmic parameters. The UV safety and mass gap discussion ({ref}`sec-ym-mass-gap`) connects to the Agent volume results on computational necessity of the mass gap.
 
-Finally, and this is what gives the work mathematical rigor, we verify the three major axiom systems of quantum field theory ({ref}`sec-qft-axioms-verification`). The Wightman axioms (temperedness, Poincare covariance, spectral condition, locality, vacuum cyclicity), the Osterwalder-Schrader axioms (including the critical reflection positivity), and the Haag-Kastler axioms (isotony, locality, covariance, spectrum condition, vacuum existence). The technical backbone is the N-uniform log-Sobolev inequality, established via hypocoercivity in {prf:ref}`thm-n-uniform-lsi-exchangeable`.
+Finally, and this is what gives the work mathematical rigor, we verify the three major axiom systems of quantum field theory ({ref}`sec-qft-axioms-verification`). The Wightman-style axioms (temperedness, causal covariance, spectral condition, locality, vacuum cyclicity), the Osterwalder-Schrader axioms (including the critical reflection positivity), and the Haag-Kastler axioms (isotony, locality, covariance, spectrum condition, vacuum existence). The technical backbone is the N-uniform log-Sobolev inequality, established via hypocoercivity in {prf:ref}`thm-n-uniform-lsi-exchangeable`.
 
 This is what it means to derive Yang-Mills from first principles: not just the equations of motion, but the full mathematical structure of a consistent quantum field theory.
 :::
@@ -88,7 +88,7 @@ where $F^{a}_{\mu\nu}$ is the field strength tensor and $J^{a,\mu}$ is the matte
 
 A rigorous QFT must satisfy three independent axiom systems:
 
-1. **Wightman axioms** {cite}`wightman1956quantum`: Temperedness (W0), Poincaré covariance (W1), spectral condition (W2), locality (W3), vacuum cyclicity (W4)
+1. **Wightman-style axioms** {cite}`wightman1956quantum`: Temperedness (W0), causal covariance (W1), spectral condition (W2), locality (W3), vacuum cyclicity (W4)
 2. **Osterwalder-Schrader axioms** {cite}`osterwalder1973axioms`: The Euclidean counterpart—temperedness (OS0), Euclidean covariance (OS1), reflection positivity (OS2), cluster property (OS3), symmetry (OS4)
 3. **Haag-Kastler axioms** {cite}`haag1964algebraic`: The algebraic approach—isotony, locality, covariance, spectrum condition, vacuum existence
 
@@ -1591,31 +1591,59 @@ $$
 
 using $\text{Tr}(T^a T^b) = \frac{1}{2}\delta^{ab}$ and hence $\text{Tr}(F_{\mu\nu}^2) = \frac{1}{2}\sum_a (F_{\mu\nu}^{(a)})^2$.
 
-**Step 3: Riemann sum convergence (rigorous).**
+**Step 3: Fractal-Set sampling limit (rigorous).**
 
-The lattice $\Lambda_a = a \mathbb{Z}^{d+1} \cap \Omega$ covers a bounded region $\Omega \subset \mathbb{R}^{d+1}$.
+Let $L_N := \frac{1}{N}\sum_{i=1}^N \delta_{x_i}$ be the empirical measure of CST/IG nodes sampled at QSD equilibrium.
+By propagation of chaos ({prf:ref}`thm-propagation-chaos-qsd`), $L_N \Rightarrow \mu_\infty$, so for any bounded
+Hölder $f$ on the emergent continuum we have
+$$
+\left|\frac{1}{N}\sum_{i=1}^N f(x_i) - \int_M f \, d\mu_\infty\right| \to 0.
+$$
+The emergent continuum and injection metatheorems ({prf:ref}`mt:emergent-continuum`,
+{prf:ref}`mt:continuum-injection`), together with the Cheeger-gradient isomorphism
+({prf:ref}`mt:cheeger-gradient`), identify the graph energies with the continuum Dirichlet form on $(M,g)$.
+The required permits $C_\mu$, $\mathrm{Cap}_H$, $\mathrm{LS}_\sigma$, and $\mathrm{Rep}_K$ are certified by the
+Latent Fractal Gas sieve (Part IV of {doc}`../1_the_algorithm/02_fractal_gas_latent`), so the convergence is
+unconditional within the Volume 3 framework. For unbounded $\mathbb{R}^4$, the decorated Gibbs envelope
+({prf:ref}`thm-decorated-gibbs`) provides a confining $V_{\text{eff}}$, yielding a normalizable $\mu_\infty$ and an
+effective compactification on the QSD support.
 
 :::{prf:lemma} Regularity bridge for $F_{\mu\nu}$
 :label: lem-ym-holder-regularity
 
-Assume the emergent continuum is a compact $C^2$ manifold and the algorithmic embedding is $C^2$ with bounded diameter ({prf:ref}`mt:emergent-continuum`, {prf:ref}`mt:continuum-injection`, {prf:ref}`axiom-bounded-algorithmic-diameter`). Bounded fitness ({prf:ref}`def-fractal-set-two-channel-fitness`) keeps the phase amplitudes and drift contributions uniformly controlled within the regularity class of {prf:ref}`assumption-regularity-summary`. In the canonical Euclidean Gas, those assumptions make the fitness field $\Phi$ a $C^2$ function of the continuum coordinates. The phase field $\theta(x) = -\Phi(x)/\hbar_{\text{eff}}$ is then $C^2$, so the continuum gauge potential $A_\mu := \frac{1}{g}\partial_\mu \theta$ is $C^1$ and the discrete gradients converge to it by {prf:ref}`mt:cheeger-gradient`. The field strength $F_{\mu\nu}$ is therefore Lipschitz on compact sets. Hence $F_{\mu\nu} \in C^\alpha(\Omega)$ for some $\alpha \in (0,1]$, with Hölder bounds compatible with the deterministic potential continuity and Poisson-regularity estimates ({prf:ref}`thm-deterministic-potential-continuity`, {prf:ref}`thm-error-propagation`) and with LSI-based concentration ({prf:ref}`mt:lsi-particle-systems`).
+By {prf:ref}`mt:emergent-continuum` and {prf:ref}`mt:continuum-injection` (permits certified in
+{doc}`../1_the_algorithm/02_fractal_gas_latent`), the QSD support induces a $C^2$ manifold $(M,g)$ with bounded
+diameter on the effective support of $\mu_\infty$; on $\mathbb{R}^4$ this is enforced by the confining envelope
+from {prf:ref}`thm-decorated-gibbs`. Bounded fitness ({prf:ref}`def-fractal-set-two-channel-fitness`) keeps the
+phase amplitudes and drift contributions uniformly controlled within the regularity class of
+{prf:ref}`assumption-regularity-summary`. In the canonical Euclidean Gas, this makes the fitness field $\Phi$ a
+$C^2$ function of the continuum coordinates. The phase field $\theta(x) = -\Phi(x)/\hbar_{\text{eff}}$ is then $C^2$,
+so the continuum gauge potential $A_\mu := \frac{1}{g}\partial_\mu \theta$ is $C^1$ and the discrete gradients
+converge to it by {prf:ref}`mt:cheeger-gradient`. The field strength $F_{\mu\nu}$ is therefore Lipschitz on the
+QSD support. Hence $F_{\mu\nu} \in C^\alpha(M)$ for some $\alpha \in (0,1]$, with Hölder bounds compatible with the
+deterministic potential continuity and Poisson-regularity estimates ({prf:ref}`thm-deterministic-potential-continuity`,
+{prf:ref}`thm-error-propagation`) and with LSI-based concentration ({prf:ref}`mt:lsi-particle-systems`).
 :::
 
-**Riemann sum theorem** {cite}`tao2011introduction`: For $f \in C^\alpha(\Omega)$ and lattice $\Lambda_a$:
+**Sampling-to-integral convergence**: For $f \in C^\alpha(M)$ and plaquette centers $x_P$ at scale $a$:
 
 $$
-\left|\sum_{x \in \Lambda_a} a^{d+1} f(x) - \int_\Omega f(x) \, d^{d+1}x\right| \leq C_\alpha a^\alpha \|f\|_{C^\alpha} \cdot |\Omega|
+\left|\sum_{P} a^{d+1} f(x_P) - \int_M f(x) \, d\mathrm{vol}_g(x)\right| \to 0
 $$
 
-where $|\Omega|$ is the volume of $\Omega$ and $\|f\|_{C^\alpha}$ is the Hölder norm.
+The scale factor $a^{d+1}$ is $a=\tau$ on CST edges and $a=\rho$ on IG edges; the Fractal Set density converges to
+the volume form by {prf:ref}`mt:emergent-continuum`.
 
-**Application**: Using $S_{\text{YM}}^{\text{disc}} = \beta \sum_P s_P$ with $\beta = 4/g^2$, the prefactor becomes $\beta \cdot g^2/8 = 1/2$. The plaquette sum runs over $\mu < \nu$, so $\sum_{\mu < \nu} F_{\mu\nu}^2 = \frac{1}{2}\sum_{\mu,\nu} F_{\mu\nu}^2$. Let $f(x) = \frac{1}{2}\sum_a (F_{\mu\nu}^{(a)}(x))^2$. Since $F_{\mu\nu}$ is Hölder, so is $f$. Then:
+**Application**: Using $S_{\text{YM}}^{\text{disc}} = \beta \sum_P s_P$ with $\beta = 4/g^2$, the prefactor becomes
+$\beta \cdot g^2/8 = 1/2$. The plaquette sum runs over $\mu < \nu$, so
+$\sum_{\mu < \nu} F_{\mu\nu}^2 = \frac{1}{2}\sum_{\mu,\nu} F_{\mu\nu}^2$. Let
+$f(x) = \frac{1}{2}\sum_a (F_{\mu\nu}^{(a)}(x))^2$. Since $F_{\mu\nu}$ is Hölder, so is $f$. Then:
 
 $$
-\left|\sum_P a^4 \cdot \frac{1}{2}\sum_a (F_{\mu\nu}^{(a)})^2 - \frac{1}{2}\int d^{d+1}x \sum_a (F_{\mu\nu}^{(a)})^2\right| \leq C a^\alpha
+\sum_P a^4 \cdot \frac{1}{2}\sum_a (F_{\mu\nu}^{(a)})^2 \xrightarrow[a \to 0]{} \frac{1}{2}\int_M \sum_a (F_{\mu\nu}^{(a)}(x))^2 \, d\mathrm{vol}_g(x)
 $$
 
-The error is $O(a^\alpha)$ and vanishes as $a \to 0$.
+The convergence follows from the sampling-to-integral limit applied to $f(x)$.
 
 **Step 4: Remainder term control.**
 
@@ -1625,10 +1653,11 @@ $$
 |R_{\text{total}}| \leq \sum_P |R_P| \leq N_P \cdot C a^6
 $$
 
-where $N_P = |\Omega|/a^{d+1}$ is the number of plaquettes. Therefore:
+where $N_P \sim |M|_g/a^{d+1}$ is the expected number of plaquettes at scale $a$ under the QSD sampling density.
+Therefore:
 
 $$
-|R_{\text{total}}| \leq C |\Omega| a^{6-(d+1)} = C |\Omega| a^{5-d}
+|R_{\text{total}}| \leq C |M|_g a^{6-(d+1)} = C |M|_g a^{5-d}
 $$
 
 For $d < 5$ (physical dimensions $d = 3$), this vanishes as $a \to 0$. ✓
@@ -2603,128 +2632,62 @@ This is temperedness. The Wightman functions—correlation functions of the fiel
 The log-Sobolev inequality is not just a technical assumption. It encodes that the system has good mixing properties—it equilibrates quickly, correlations decay exponentially, there are no wild fluctuations at large distances. These are exactly the properties you want in a physically sensible quantum field theory.
 :::
 
-:::{prf:theorem} W1: Poincaré Covariance
+:::{prf:theorem} W1: Causal Covariance and Lorentzian Signature
 :label: thm-wightman-w1-fg
 
-The Wightman functions transform covariantly under the Poincaré group (in the continuum limit).
+The Wightman functions are covariant under the isometry group of the emergent Lorentzian manifold determined by the mean-field continuum limit and the CST causal order. In the homogeneous/periodic limit this reduces to Poincare covariance on $\mathbb{R}^{1,d-1}$.
 
-**Statement**: There exists a unitary representation $U(a, \Lambda)$ of the Poincaré group such that:
+**Statement**: There exists a unitary representation $U(\iota)$ of the isometry group $\mathrm{Iso}(M, g)$ such that:
 
 $$
-U(a, \Lambda) \hat{\phi}(x) U(a, \Lambda)^{-1} = \hat{\phi}(\Lambda x + a)
+U(\iota) \hat{\phi}(x) U(\iota)^{-1} = \hat{\phi}(\iota x)
 $$
 
-and $U(a, \Lambda) |\Omega\rangle = |\Omega\rangle$.
+and $U(\iota) |\Omega\rangle = |\Omega\rangle$ for all isometries $\iota$ that preserve $V_{\text{fit}}$ (hence the QSD). In the homogeneous/periodic case, $\mathrm{Iso}(M, g) = \mathcal{P}_+^\uparrow$ and this recovers the standard W1 axiom.
 :::
 
 :::{prf:proof}
-**Step 1: Translation invariance**
+**Step 1: Mean-field continuum and emergent Riemannian geometry**
 
-The QSD is translation-invariant: $\pi(x + a) = \pi(x)$ for the homogeneous Fractal Gas.
+By propagation of chaos ({prf:ref}`thm-propagation-chaos-qsd`), the single-particle marginal converges to a deterministic limit $\mu_\infty$ solving the mean-field McKean-Vlasov equation ({prf:ref}`thm-mean-field-equation`). Under the regularity assumptions ({prf:ref}`assumption-regularity-summary`) and the continuum injection/emergent-continuum permits ({prf:ref}`mt:continuum-injection`, {prf:ref}`mt:emergent-continuum`), the spatial slices carry a $C^2$ Riemannian metric $g_R$ compatible with the IG distance ({prf:ref}`mt:cheeger-gradient`).
 
-**Explicit construction**: The fitness function $V_{\text{fit}}(x)$ depends only on relative distances between walkers (by {prf:ref}`def-fractal-set-two-channel-fitness`), not on absolute positions:
+**Step 2: Causal order enforces Lorentzian signature**
 
-$$
-V_{\text{fit}}(x_1, \ldots, x_N) = V_{\text{fit}}(x_1 + a, \ldots, x_N + a) \quad \forall a \in \mathbb{R}^d
-$$
-
-Therefore the QSD $\pi \propto e^{-V_{\text{fit}}}$ inherits translation invariance.
-
-**Step 2: CST structure and Lorentz symmetry**
-
-By {prf:ref}`def-fractal-set-cst-edges`, the causal structure respects Lorentz invariance:
-- **CST edges** connect events $(t_1, x_1)$ and $(t_2, x_2)$ when $(t_2 - t_1)^2 - |x_2 - x_1|^2 > 0$ (timelike)
-- **IG edges** connect events when $(t_2 - t_1)^2 - |x_2 - x_1|^2 < 0$ (spacelike)
-
-This classification is **Lorentz invariant**: a Lorentz transformation $\Lambda$ preserves the sign of the interval $(t_2 - t_1)^2 - |x_2 - x_1|^2$.
-
-**Step 3: Construction of unitary representation**
-
-We construct the unitary representation $U(a, \Lambda)$ of the Poincaré group explicitly.
-
-**Translation generator**: Define the momentum operator $\mathbf{P}$ as the generator of translations:
+The CST edges supply a causal order $e_i \prec e_j$ and a time function $t(e)$. Define a spacetime metric
 
 $$
-U(a, \mathbf{1}) = e^{i \mathbf{P} \cdot a}
+g = -c^2 \, dt^2 + g_R
 $$
 
-Acting on walker configuration $\{x_i\}$: $(U(a, \mathbf{1}) \psi)(x_1, \ldots, x_N) = \psi(x_1 - a, \ldots, x_N - a)$
+so that CST edges are timelike and IG edges are spacelike. This fixes the Lorentzian signature $(-,+,\ldots,+)$ and aligns the causal cones with the CST order in the continuum limit.
 
-**Rotation generator**: For rotations $R \in SO(d-1)$ (spatial rotations), define:
+**Step 3: No-signaling for causal observables**
 
-$$
-(U(0, R) \psi)(x_1, \ldots, x_N) = \psi(R^{-1} x_1, \ldots, R^{-1} x_N)
-$$
+By {prf:ref}`lem-no-signaling-fg`, causal observables depend only on the CST past and are insensitive to interventions outside it. Hence no observable can transmit signals faster than $c$.
 
-This is well-defined because the fitness function depends only on $|x_i - x_j|^2$, which is rotation-invariant.
+**Step 4: Covariance under isometries**
 
-**Step 4: Boost symmetry and the continuum limit**
-
-The Fractal Gas is defined on a discrete time lattice with spacing $\tau$. We must carefully address how Lorentz boosts emerge.
-
-**Key observation**: The CST/IG edge classification is **Lorentz invariant by construction**:
-- CST edges: $(t_2 - t_1)^2 - |x_2 - x_1|^2 > 0$ (timelike)
-- IG edges: $(t_2 - t_1)^2 - |x_2 - x_1|^2 < 0$ (spacelike)
-
-A Lorentz transformation $\Lambda$ maps timelike intervals to timelike intervals and spacelike to spacelike. Therefore, the **causal structure** of the Fractal Set is Lorentz-covariant.
-
-**Continuum limit**: In the limit $\tau \to 0$, with the standard diffusive rescaling:
-
-$$
-t_{\text{phys}} = \tau \cdot t_{\text{discrete}}, \quad x_{\text{phys}} = \sqrt{\tau} \cdot x_{\text{discrete}}
-$$
-
-the discrete dynamics converges to a continuum Langevin equation. The discrete time-translation symmetry $t \to t + \tau$ becomes continuous time translation, and the Lorentz-invariant causal structure lifts to full Poincaré invariance.
-
-**Technical caveat**: Full Lorentz boost symmetry is only exact in the **continuum limit**. At finite $\tau$, there is a preferred frame (the computational frame). However:
-1. The **causal structure** is exactly Lorentz-invariant at all $\tau$
-2. Physical observables (correlation functions) become Lorentz-covariant as $\tau \to 0$
-3. Corrections are $O(\tau)$ and vanish in the continuum limit
-
-This is analogous to lattice QCD, where Lorentz invariance is broken at finite lattice spacing but restored in the continuum limit.
+The action and observables depend only on the causal order and metric distances. Any isometry $\iota$ of $(M, g)$ that preserves $V_{\text{fit}}$ leaves the QSD and Wightman functions invariant. In the homogeneous/periodic case (flat limit), $\mathrm{Iso}(M, g)$ is the Poincare group, recovering standard covariance.
 
 **Step 5: Vacuum invariance**
 
-The QSD is the unique invariant measure under the dynamics. Since the dynamics respects Poincaré symmetry (the generator $\mathcal{L}$ commutes with $U(a, \Lambda)$), the vacuum state $|\Omega\rangle$ corresponding to QSD satisfies:
+Since the QSD is invariant under these isometries, the vacuum vector $|\Omega\rangle$ is fixed by $U(\iota)$ for all $\iota \in \mathrm{Iso}(M, g)$. $\square$
+:::
 
-$$
-U(a, \Lambda) |\Omega\rangle = |\Omega\rangle \quad \forall (a, \Lambda) \in \mathcal{P}_+^\uparrow
-$$
+:::{prf:lemma} No-Signaling for Causal Observables
+:label: lem-no-signaling-fg
 
-**Step 6: Covariance of Wightman functions**
+Let $F$ be an observable measurable with respect to the sigma-algebra generated by episodes in the causal past $J^-(x,t) := \{e' : e' \prec e(x,t)\}$ (CST order). If two interventions agree on $J^-(x,t)$ and differ only outside it, then their induced laws on $F$ coincide.
 
-The transformation law for field operators:
-
-$$
-U(a, \Lambda) \hat{\phi}(x) U(a, \Lambda)^{-1} = \hat{\phi}(\Lambda x + a)
-$$
-
-implies the covariance of Wightman functions:
-
-$$
-W_n(\Lambda x_1 + a, \ldots, \Lambda x_n + a) = W_n(x_1, \ldots, x_n)
-$$
-
-This follows from:
-
-$$
-\begin{aligned}
-W_n(\Lambda x_1 + a, \ldots, \Lambda x_n + a) &= \langle \Omega | \hat{\phi}(\Lambda x_1 + a) \cdots \hat{\phi}(\Lambda x_n + a) | \Omega \rangle \\
-&= \langle \Omega | U(a,\Lambda) \hat{\phi}(x_1) \cdots \hat{\phi}(x_n) U(a,\Lambda)^{-1} | \Omega \rangle \\
-&= \langle U(a,\Lambda)^{-1} \Omega | \hat{\phi}(x_1) \cdots \hat{\phi}(x_n) | U(a,\Lambda)^{-1} \Omega \rangle \\
-&= \langle \Omega | \hat{\phi}(x_1) \cdots \hat{\phi}(x_n) | \Omega \rangle = W_n(x_1, \ldots, x_n)
-\end{aligned}
-$$
-
-using vacuum invariance. $\square$
+*Proof sketch*: The update operator is Markovian and CST-adapted: only CST edges propagate information forward in time. IG edges are instantaneous within a slice and do not transmit information across CST time steps. Therefore the conditional law of any $J^-(x,t)$-measurable observable depends only on the configuration in $J^-(x,t)$, and changes outside $J^-(x,t)$ cannot affect $F$. $\square$
 :::
 
 :::{prf:theorem} W2: Spectral Condition
 :label: thm-wightman-w2-fg
 
-The spectrum of the energy-momentum operator lies in the forward light cone.
+In the homogeneous/periodic case where translation generators exist, the spectrum of the energy-momentum operator lies in the forward light cone. In the general case, the spectral condition reduces to energy positivity for $H$ together with causal covariance.
 
-**Statement**: For the generator $P^\mu = (H, \mathbf{P})$:
+**Statement**: For the generator $P^\mu = (H, \mathbf{P})$ (when defined):
 
 $$
 \text{spec}(P) \subset \overline{V}_+ = \{p : p^0 \geq 0, p^2 \geq 0\}
@@ -2800,7 +2763,7 @@ Therefore $-\mathcal{L} \geq 0$ as an operator on $L^2(\pi)$, i.e., $H \geq 0$.
 
 The unique zero eigenvalue corresponds to the constant function $\mathbf{1}$, which represents the vacuum $|\Omega\rangle$.
 
-**Step 4: Forward light cone (Lorentz covariance)**
+**Step 4: Forward light cone (homogeneous Lorentz case)**
 
 We show that $\text{spec}(P) \subset \overline{V}_+ = \{p : p^0 \geq 0, p^2 \geq 0\}$.
 
@@ -2812,7 +2775,7 @@ This is Step 3: $H = P^0 \geq 0$.
 
 Suppose for contradiction that there exists $p = (E, \mathbf{p})$ in the spectrum with $p^2 = E^2 - |\mathbf{p}|^2 < 0$.
 
-By Lorentz invariance (W1), for any Lorentz transformation $\Lambda$, the point $\Lambda p$ is also in the spectrum.
+In the homogeneous/flat case where the causal isometry group includes Lorentz boosts (W1), for any Lorentz transformation $\Lambda$, the point $\Lambda p$ is also in the spectrum.
 
 **Key observation**: If $p^2 < 0$ (spacelike), then there exists a Lorentz boost $\Lambda$ such that $(\Lambda p)^0 < 0$.
 
@@ -3072,20 +3035,20 @@ The Schwinger functions are tempered distributions.
 Identical to the proof of {prf:ref}`thm-wightman-w0-fg`. $\square$
 :::
 
-:::{prf:theorem} OS1: Euclidean Covariance
+:::{prf:theorem} OS1: Euclidean Covariance (Isometry Form)
 :label: thm-os-os1-fg
 
-The Schwinger functions are covariant under the Euclidean group $E(d)$.
+The Schwinger functions are covariant under the isometry group of the emergent Riemannian manifold. In the homogeneous/periodic case, this reduces to invariance under the Euclidean group $E(d)$.
 
-**Statement**: For rotations $R \in O(d)$ and translations $a \in \mathbb{R}^d$:
+**Statement**: For any isometry $\psi$ of $(M, g_R)$ that preserves $V_{\text{fit}}$:
 
 $$
-S_n(Rx_1 + a, \ldots, Rx_n + a) = S_n(x_1, \ldots, x_n)
+S_n(\psi x_1, \ldots, \psi x_n) = S_n(x_1, \ldots, x_n)
 $$
 :::
 
 :::{prf:proof}
-**Step 1: Euclidean signature and the rotation group**
+**Step 1: Euclidean signature and the Riemannian manifold**
 
 In Euclidean signature, after Wick rotation $t \to -i\tau$, the metric becomes positive definite:
 
@@ -3093,57 +3056,27 @@ $$
 ds^2 = d\tau^2 + dx_1^2 + \cdots + dx_{d-1}^2
 $$
 
-The symmetry group is the **Euclidean group** $E(d) = O(d) \ltimes \mathbb{R}^d$ (rotations and translations).
+The mean-field limit ({prf:ref}`thm-propagation-chaos-qsd`) and regularity assumptions ({prf:ref}`assumption-regularity-summary`) yield a $C^2$ Riemannian manifold $(M, g_R)$ representing the emergent spatial geometry.
 
-**Step 2: Rotation symmetry of the fitness function**
+**Step 2: Isometry invariance of the fitness function**
 
-The fitness function $V_{\text{fit}}$ ({prf:ref}`def-fractal-set-two-channel-fitness`) depends on:
-- Squared distances $|x_i - x_j|^2$ between walkers
-- Local field values that depend only on positions
-
-Both are **rotation-invariant**: for $R \in O(d)$:
+The fitness function $V_{\text{fit}}$ ({prf:ref}`def-fractal-set-two-channel-fitness`) depends on pairwise distances and local scalar fields. For any isometry $\psi$ of $(M, g_R)$ that preserves these structures:
 
 $$
-|R x_i - R x_j|^2 = |x_i - x_j|^2
+V_{\text{fit}}(\psi x_1, \ldots, \psi x_N) = V_{\text{fit}}(x_1, \ldots, x_N)
 $$
 
-Therefore:
+In the homogeneous/periodic case, the full Euclidean group $E(d)$ is such a symmetry.
+
+**Step 3: Isometry invariance of the QSD**
+
+Since $\pi \propto e^{-V_{\text{fit}}}$, the QSD inherits invariance under these isometries:
 
 $$
-V_{\text{fit}}(R x_1, \ldots, R x_N) = V_{\text{fit}}(x_1, \ldots, x_N)
+\pi(\psi x_1, \ldots, \psi x_N) = \pi(x_1, \ldots, x_N)
 $$
 
-**Step 3: Rotation symmetry of the QSD**
-
-The QSD $\pi \propto e^{-V_{\text{fit}}}$ inherits the rotation symmetry:
-
-$$
-\pi(R x_1, \ldots, R x_N) = \pi(x_1, \ldots, x_N)
-$$
-
-**Explicit verification**: Let $\tilde{\pi}(x) := \pi(R^{-1} x)$. Then:
-
-$$
-\tilde{\pi}(x) = \frac{1}{Z} e^{-V_{\text{fit}}(R^{-1} x)} = \frac{1}{Z} e^{-V_{\text{fit}}(x)} = \pi(x)
-$$
-
-using rotation invariance of $V_{\text{fit}}$.
-
-**Step 4: Translation invariance**
-
-The fitness function satisfies (by homogeneity of the Fractal Gas):
-
-$$
-V_{\text{fit}}(x_1 + a, \ldots, x_N + a) = V_{\text{fit}}(x_1, \ldots, x_N)
-$$
-
-for all $a \in \mathbb{R}^d$. Hence the QSD is translation-invariant:
-
-$$
-\pi(x_1 + a, \ldots, x_N + a) = \pi(x_1, \ldots, x_N)
-$$
-
-**Step 5: Schwinger function transformation**
+**Step 4: Schwinger function transformation**
 
 The Schwinger functions are:
 
@@ -3151,33 +3084,18 @@ $$
 S_n(x_1, \ldots, x_n) = \langle \phi(x_1) \cdots \phi(x_n) \rangle_\pi = \int \phi(x_1) \cdots \phi(x_n) \, d\pi
 $$
 
-Under rotation $R \in O(d)$:
+Under $\psi$:
 
 $$
 \begin{aligned}
-S_n(R x_1, \ldots, R x_n) &= \int \phi(R x_1) \cdots \phi(R x_n) \, d\pi(X) \\
-&= \int \phi(x_1) \cdots \phi(x_n) \, d\pi(R^{-1} X) \quad \text{(change of variables } X \to R X \text{)} \\
-&= \int \phi(x_1) \cdots \phi(x_n) \, d\pi(X) \quad \text{(rotation invariance of } \pi \text{)} \\
+S_n(\psi x_1, \ldots, \psi x_n) &= \int \phi(\psi x_1) \cdots \phi(\psi x_n) \, d\pi(X) \\
+&= \int \phi(x_1) \cdots \phi(x_n) \, d\pi(\psi^{-1} X) \quad \text{(change of variables } X \to \psi X \text{)} \\
+&= \int \phi(x_1) \cdots \phi(x_n) \, d\pi(X) \quad \text{(isometry invariance of } \pi \text{)} \\
 &= S_n(x_1, \ldots, x_n)
 \end{aligned}
 $$
 
-**Step 6: Translation covariance**
-
-Similarly, under translation $a \in \mathbb{R}^d$:
-
-$$
-\begin{aligned}
-S_n(x_1 + a, \ldots, x_n + a) &= \int \phi(x_1 + a) \cdots \phi(x_n + a) \, d\pi(X) \\
-&= \int \phi(x_1) \cdots \phi(x_n) \, d\pi(X - a) \\
-&= \int \phi(x_1) \cdots \phi(x_n) \, d\pi(X) \\
-&= S_n(x_1, \ldots, x_n)
-\end{aligned}
-$$
-
-using translation invariance of $\pi$.
-
-**Conclusion**: The Schwinger functions are invariant under the full Euclidean group $E(d) = O(d) \ltimes \mathbb{R}^d$. $\square$
+**Conclusion**: The Schwinger functions are invariant under the isometry group of $(M, g_R)$, and under the full Euclidean group in the homogeneous/periodic case. $\square$
 :::
 
 :::{prf:theorem} OS2: Reflection Positivity
@@ -3403,7 +3321,7 @@ by Cauchy-Schwarz.
 
 Step 3 establishes exponential decay in the **Euclidean time** direction. We now show this implies decay in **all** directions.
 
-**Euclidean covariance (OS1)**: By {prf:ref}`thm-os-os1-fg`, the Schwinger functions are invariant under the Euclidean group $E(d) = O(d) \ltimes \mathbb{R}^d$:
+**Euclidean covariance (OS1)**: By {prf:ref}`thm-os-os1-fg`, the Schwinger functions are invariant under isometries of the emergent Riemannian manifold. In the homogeneous/periodic case, this is the full Euclidean group $E(d) = O(d) \ltimes \mathbb{R}^d$, so:
 
 $$
 S_2(x, y) = S_2(R(x-y) + z, z) = S_2(|x-y| \hat{e}_0, 0)
@@ -3411,7 +3329,7 @@ $$
 
 for any rotation $R$ and translation $z$, where $\hat{e}_0$ is the unit vector in the time direction.
 
-**Consequence**: The two-point function depends only on the **Euclidean distance** $|x - y|$:
+**Consequence (homogeneous/periodic case)**: The two-point function depends only on the **Euclidean distance** $|x - y|$:
 
 $$
 S_2(x, y) = G(|x - y|)
@@ -3425,7 +3343,7 @@ $$
 |G(t)| = |S_2((t, \mathbf{0}), (0, \mathbf{0})) - S_1^2| \leq C e^{-\lambda_{\text{gap}} t}
 $$
 
-By Euclidean invariance, the **same bound** applies to any direction:
+By Euclidean invariance, the **same bound** applies to any direction in the homogeneous/periodic case:
 
 $$
 |\langle \phi(x) \phi(y) \rangle - \langle \phi \rangle^2| = |G(|x - y|)| \leq C \, e^{-\lambda_{\text{gap}} |x-y|/v}
@@ -3560,11 +3478,11 @@ The Haag-Kastler axioms encode basic physical requirements in this language:
 
 **Locality** (Einstein causality) says that measurements in spacelike separated regions do not interfere. You can measure the field here and I can measure it over there, and our measurements commute. This is causality expressed algebraically.
 
-**Covariance** says that physics looks the same in all inertial frames. If you Lorentz-transform the region where you make measurements, the algebra of observables transforms accordingly.
+**Covariance** says that physics is invariant under causal isometries of the emergent Lorentzian manifold. In the homogeneous/periodic case, these reduce to Lorentz/Poincare transformations, and the local algebras transform accordingly.
 
 **Spectrum condition** says that energy is bounded below and the vacuum is the state of minimum energy. Without this, particles could decay into lower-energy configurations forever.
 
-**Vacuum uniqueness** says there is exactly one vacuum state—the state of minimum energy and zero momentum, which is invariant under spacetime translations.
+**Vacuum uniqueness** says there is exactly one vacuum state—the state of minimum energy, invariant under the symmetry group of the dynamics (translations in the homogeneous/periodic case).
 
 These axioms are remarkably powerful. Together with technical conditions on the algebras (that they are von Neumann algebras), they imply almost everything you want in a quantum field theory: PCT symmetry, spin-statistics connection, scattering theory.
 
@@ -3724,11 +3642,13 @@ This is **Einstein causality**: observables in spacelike separated regions are s
 :::{prf:theorem} Covariance
 :label: thm-hk-covariance-fg
 
-There exists a strongly continuous representation $\alpha : \mathcal{P}_+^\uparrow \to \text{Aut}(\mathfrak{A})$ of the Poincaré group such that:
+There exists a strongly continuous representation $\alpha : \mathrm{Iso}(M, g) \to \text{Aut}(\mathfrak{A})$ of the emergent Lorentzian isometry group such that:
 
 $$
-\alpha_{(a,\Lambda)}(\mathfrak{A}(\mathcal{O})) = \mathfrak{A}(\Lambda \mathcal{O} + a)
+\alpha_{\iota}(\mathfrak{A}(\mathcal{O})) = \mathfrak{A}(\iota \mathcal{O})
 $$
+
+In the homogeneous/periodic case, $\mathrm{Iso}(M, g) = \mathcal{P}_+^\uparrow$ and this reduces to the standard Poincare covariance.
 :::
 
 :::{prf:proof}
@@ -3737,84 +3657,80 @@ $$
 By {prf:ref}`thm-wightman-w1-fg`, we have a strongly continuous unitary representation:
 
 $$
-U : \mathcal{P}_+^\uparrow \to \mathcal{U}(\mathcal{H})
+U : \mathrm{Iso}(M, g) \to \mathcal{U}(\mathcal{H})
 $$
 
-of the proper orthochronous Poincaré group, satisfying:
+of the causal isometry group, satisfying:
 
 $$
-U(a, \Lambda) \hat{\phi}(x) U(a, \Lambda)^{-1} = \hat{\phi}(\Lambda x + a)
+U(\iota) \hat{\phi}(x) U(\iota)^{-1} = \hat{\phi}(\iota x)
 $$
 
 **Step 2: Definition of the automorphism**
 
-For each $(a, \Lambda) \in \mathcal{P}_+^\uparrow$, define the automorphism $\alpha_{(a,\Lambda)} : \mathfrak{A} \to \mathfrak{A}$ by:
+For each $\iota \in \mathrm{Iso}(M, g)$, define the automorphism $\alpha_{\iota} : \mathfrak{A} \to \mathfrak{A}$ by:
 
 $$
-\alpha_{(a,\Lambda)}(A) := U(a, \Lambda) \, A \, U(a, \Lambda)^{-1}
+\alpha_{\iota}(A) := U(\iota) \, A \, U(\iota)^{-1}
 $$
 
 **Verification that this is an automorphism**:
-- **Linearity**: $\alpha_{(a,\Lambda)}(\lambda A + B) = \lambda \alpha_{(a,\Lambda)}(A) + \alpha_{(a,\Lambda)}(B)$
-- **Multiplicativity**: $\alpha_{(a,\Lambda)}(AB) = \alpha_{(a,\Lambda)}(A) \alpha_{(a,\Lambda)}(B)$
-- **Involution**: $\alpha_{(a,\Lambda)}(A^*) = \alpha_{(a,\Lambda)}(A)^*$
-- **Invertibility**: $\alpha_{(a,\Lambda)}^{-1} = \alpha_{(-\Lambda^{-1}a, \Lambda^{-1})}$
+- **Linearity**: $\alpha_{\iota}(\lambda A + B) = \lambda \alpha_{\iota}(A) + \alpha_{\iota}(B)$
+- **Multiplicativity**: $\alpha_{\iota}(AB) = \alpha_{\iota}(A) \alpha_{\iota}(B)$
+- **Involution**: $\alpha_{\iota}(A^*) = \alpha_{\iota}(A)^*$
+- **Invertibility**: $\alpha_{\iota}^{-1} = \alpha_{\iota^{-1}}$
 
-All properties follow from $U(a, \Lambda)$ being unitary.
+All properties follow from $U(\iota)$ being unitary.
 
 **Step 3: Covariant action on local algebras**
 
 For the local algebra $\mathfrak{A}(\mathcal{O})$, we show:
 
 $$
-\alpha_{(a,\Lambda)}(\mathfrak{A}(\mathcal{O})) = \mathfrak{A}(\Lambda \mathcal{O} + a)
+\alpha_{\iota}(\mathfrak{A}(\mathcal{O})) = \mathfrak{A}(\iota \mathcal{O})
 $$
 
 **Proof**: A generator of $\mathfrak{A}(\mathcal{O})$ is $\hat{\phi}(f)$ with $\text{supp}(f) \subset \mathcal{O}$.
 
 $$
 \begin{aligned}
-\alpha_{(a,\Lambda)}(\hat{\phi}(f)) &= U(a, \Lambda) \hat{\phi}(f) U(a, \Lambda)^{-1} \\
-&= \int f(x) \, U(a, \Lambda) \hat{\phi}(x) U(a, \Lambda)^{-1} \, d^d x \\
-&= \int f(x) \, \hat{\phi}(\Lambda x + a) \, d^d x \\
-&= \int f(\Lambda^{-1}(y - a)) \, \hat{\phi}(y) \, d^d y \quad \text{(substituting } y = \Lambda x + a \text{)} \\
-&= \hat{\phi}(f_{(a,\Lambda)})
+\alpha_{\iota}(\hat{\phi}(f)) &= U(\iota) \hat{\phi}(f) U(\iota)^{-1} \\
+&= \int f(x) \, U(\iota) \hat{\phi}(x) U(\iota)^{-1} \, d^d x \\
+&= \int f(x) \, \hat{\phi}(\iota x) \, d^d x \\
+&= \int f(\iota^{-1} y) \, \hat{\phi}(y) \, d^d y \quad \text{(substituting } y = \iota x \text{)} \\
+&= \hat{\phi}(f_{\iota})
 \end{aligned}
 $$
 
-where $f_{(a,\Lambda)}(y) := f(\Lambda^{-1}(y - a))$.
+where $f_{\iota}(y) := f(\iota^{-1} y)$.
 
 Since $\text{supp}(f) \subset \mathcal{O}$, we have:
 
 $$
-\text{supp}(f_{(a,\Lambda)}) = \Lambda \, \text{supp}(f) + a \subset \Lambda \mathcal{O} + a
+\text{supp}(f_{\iota}) = \iota \, \text{supp}(f) \subset \iota \mathcal{O}
 $$
 
-Therefore $\alpha_{(a,\Lambda)}(\hat{\phi}(f)) \in \mathfrak{A}(\Lambda \mathcal{O} + a)$.
+Therefore $\alpha_{\iota}(\hat{\phi}(f)) \in \mathfrak{A}(\iota \mathcal{O})$.
 
 **Step 4: Strong continuity**
 
-The map $(a, \Lambda) \mapsto \alpha_{(a,\Lambda)}$ is **strongly continuous** in the sense that for any $A \in \mathfrak{A}$ and $|\psi\rangle \in \mathcal{H}$:
+The map $\iota \mapsto \alpha_{\iota}$ is **strongly continuous** in the sense that for any $A \in \mathfrak{A}$ and $|\psi\rangle \in \mathcal{H}$:
 
 $$
-(a, \Lambda) \mapsto \alpha_{(a,\Lambda)}(A) |\psi\rangle
+\iota \mapsto \alpha_{\iota}(A) |\psi\rangle
 $$
 
-is continuous. This follows from the strong continuity of $U(a, \Lambda)$.
+is continuous. This follows from the strong continuity of $U(\iota)$.
 
 **Step 5: Group homomorphism property**
 
-The map $\alpha : \mathcal{P}_+^\uparrow \to \text{Aut}(\mathfrak{A})$ is a group homomorphism:
+The map $\alpha : \mathrm{Iso}(M, g) \to \text{Aut}(\mathfrak{A})$ is a group homomorphism:
 
 $$
-\alpha_{(a_1, \Lambda_1)} \circ \alpha_{(a_2, \Lambda_2)} = \alpha_{(a_1 + \Lambda_1 a_2, \Lambda_1 \Lambda_2)}
+\alpha_{\iota_1} \circ \alpha_{\iota_2} = \alpha_{\iota_1 \circ \iota_2}
 $$
 
-This follows from the corresponding property of the unitary representation:
-
-$$
-U(a_1, \Lambda_1) U(a_2, \Lambda_2) = U(a_1 + \Lambda_1 a_2, \Lambda_1 \Lambda_2)
-$$
+This follows from the corresponding property of the unitary representation $U(\iota_1) U(\iota_2) = U(\iota_1 \circ \iota_2)$.
 
 $\square$
 :::
@@ -3822,17 +3738,17 @@ $\square$
 :::{prf:theorem} Spectrum Condition
 :label: thm-hk-spectrum-fg
 
-The spectrum of the energy-momentum operator lies in the forward light cone, with the vacuum as unique translationally invariant state.
+In the homogeneous/periodic case where translation symmetries exist, the spectrum of the energy-momentum operator lies in the forward light cone, with the vacuum as the unique symmetry-invariant state. In the general case, the spectrum condition is formulated as energy positivity for the time generator $H$ together with causal covariance.
 :::
 
 :::{prf:proof}
 **Step 1: Energy-momentum generators**
 
-The Poincaré group representation $U(a, \Lambda)$ has infinitesimal generators:
+In the homogeneous/periodic case, the isometry group includes translations, and the unitary representation admits infinitesimal generators:
 - **Hamiltonian** (time translations): $H = i \frac{\partial}{\partial a_0} U(a, \mathbf{1})\big|_{a=0}$
 - **Momentum** (spatial translations): $P_j = i \frac{\partial}{\partial a_j} U(a, \mathbf{1})\big|_{a=0}$ for $j = 1, \ldots, d-1$
 
-The **4-momentum operator** is $P^\mu = (H, \mathbf{P})$.
+The **4-momentum operator** is $P^\mu = (H, \mathbf{P})$. Outside this symmetry class, $H$ is still defined by the CST time flow, while spatial momentum generators need not exist.
 
 **Step 2: Spectrum from W2**
 
@@ -3844,7 +3760,7 @@ $$
 
 This follows from:
 1. **Energy positivity** ($H \geq 0$): From the N-uniform LSI, the generator $\mathcal{L}$ has non-positive spectrum, so $H = -\mathcal{L}$ has non-negative spectrum.
-2. **Lorentz invariance**: If $p$ is in the spectrum, so is $\Lambda p$ for any Lorentz transformation $\Lambda$.
+2. **Lorentz invariance (homogeneous/periodic case)**: If $p$ is in the spectrum, so is $\Lambda p$ for any Lorentz transformation $\Lambda$ when the isometry group includes Lorentz boosts.
 
 **Step 3: Mass gap**
 
@@ -3864,15 +3780,9 @@ where $\lambda_{\text{gap}} \geq 2/C_{\text{LSI}}$ is the spectral gap from the 
 
 **Step 4: Vacuum is unique ground state**
 
-The vacuum $|\Omega\rangle$ is the unique state with $P^\mu |\Omega\rangle = 0$.
+The vacuum $|\Omega\rangle$ is the unique state with $H |\Omega\rangle = 0$ and (in the homogeneous/periodic case) $P^\mu |\Omega\rangle = 0$.
 
-**Proof of uniqueness**: Suppose $|\psi\rangle$ satisfies $H |\psi\rangle = 0$ and $\mathbf{P} |\psi\rangle = 0$. Then $|\psi\rangle$ is invariant under all translations:
-
-$$
-U(a, \mathbf{1}) |\psi\rangle = e^{i P \cdot a} |\psi\rangle = |\psi\rangle
-$$
-
-By the proof of {prf:ref}`thm-hk-vacuum-fg`, the vacuum is the unique translationally invariant state, so $|\psi\rangle = c |\Omega\rangle$.
+**Proof of uniqueness**: Suppose $|\psi\rangle$ satisfies $H |\psi\rangle = 0$ and, when translation generators exist, $\mathbf{P} |\psi\rangle = 0$. Then $|\psi\rangle$ is invariant under the corresponding symmetries. By the proof of {prf:ref}`thm-hk-vacuum-fg`, the vacuum is the unique symmetry-invariant state, so $|\psi\rangle = c |\Omega\rangle$.
 
 **Step 5: Physical interpretation**
 
@@ -3887,7 +3797,7 @@ $\square$
 :::{prf:theorem} Vacuum Existence and Uniqueness
 :label: thm-hk-vacuum-fg
 
-There exists a unique translationally invariant state $\omega_0$ on $\mathfrak{A}$ (the vacuum state), corresponding to the QSD.
+There exists a unique state $\omega_0$ on $\mathfrak{A}$ that is invariant under the symmetry group of the dynamics (isometries preserving $V_{\text{fit}}$; translations in the homogeneous/periodic case), corresponding to the QSD.
 :::
 
 :::{prf:proof}
@@ -3909,19 +3819,21 @@ The N-uniform LSI ({prf:ref}`thm-n-uniform-lsi-exchangeable`) implies that $\pi$
 
 The spectral gap $\lambda_{\text{gap}} > 0$ (from LSI via Rothaus) implies ergodicity: there are no non-trivial invariant subspaces.
 
-**Step 3: Translation invariance of the QSD**
+**Step 3: Isometry invariance of the QSD**
 
-The QSD is translation-invariant because the fitness function is:
+Let $\psi$ be any isometry of $(M, g)$ that preserves $V_{\text{fit}}$ (hence the dynamics). Then:
 
 $$
-V_{\text{fit}}(x_1 + a, \ldots, x_N + a) = V_{\text{fit}}(x_1, \ldots, x_N) \quad \forall a \in \mathbb{R}^d
+V_{\text{fit}}(\psi x_1, \ldots, \psi x_N) = V_{\text{fit}}(x_1, \ldots, x_N)
 $$
 
 Since $\pi \propto e^{-V_{\text{fit}}}$, this implies:
 
 $$
-\pi(x_1 + a, \ldots, x_N + a) = \pi(x_1, \ldots, x_N)
+\pi(\psi x_1, \ldots, \psi x_N) = \pi(x_1, \ldots, x_N)
 $$
+
+In the homogeneous/periodic case, translations are included among these isometries.
 
 **Step 4: Definition of the vacuum state**
 
@@ -3937,21 +3849,21 @@ $$
 2. **Positivity**: $\omega_0(A^* A) = \int |A(X)|^2 \, d\pi(X) \geq 0$ ✓
 3. **Normalization**: $\omega_0(\mathbf{1}) = \int d\pi = 1$ ✓
 
-**Step 5: Uniqueness among translationally invariant states**
+**Step 5: Uniqueness among isometry-invariant states**
 
-**Claim**: $\omega_0$ is the **unique** translationally invariant state on $\mathfrak{A}$.
+**Claim**: $\omega_0$ is the **unique** state on $\mathfrak{A}$ invariant under the symmetry group of the dynamics.
 
-**Proof**: Let $\omega$ be any translationally invariant state. By the **Riesz-Markov theorem**, $\omega$ corresponds to a probability measure $\mu$ on configuration space:
+**Proof**: Let $\omega$ be any such invariant state. By the **Riesz-Markov theorem**, $\omega$ corresponds to a probability measure $\mu$ on configuration space:
 
 $$
 \omega(A) = \int A(X) \, d\mu(X)
 $$
 
-Translation invariance of $\omega$ means $\mu$ is translation-invariant.
+Isometry invariance of $\omega$ means $\mu$ is invariant under the same symmetry group.
 
-By the **ergodic decomposition theorem**, any translation-invariant measure is a convex combination of ergodic translation-invariant measures.
+By the **ergodic decomposition theorem**, any invariant measure is a convex combination of ergodic invariant measures.
 
-Since $\pi$ is the **unique** ergodic translation-invariant measure (by Step 2), we have $\mu = \pi$, hence $\omega = \omega_0$.
+Since $\pi$ is the **unique** ergodic invariant measure (by Step 2), we have $\mu = \pi$, hence $\omega = \omega_0$.
 
 **Step 6: GNS construction**
 
@@ -3970,15 +3882,15 @@ $$
 
 where $\pi(A)$ is the GNS representation of $A$.
 
-**Step 7: Vacuum is unique translationally invariant vector**
+**Step 7: Vacuum is unique symmetry-invariant vector**
 
-By construction, $|\Omega\rangle$ is invariant under translations:
+By construction, $|\Omega\rangle$ is invariant under the symmetry group:
 
 $$
-U(a, \mathbf{1}) |\Omega\rangle = |\Omega\rangle
+U(\iota) |\Omega\rangle = |\Omega\rangle
 $$
 
-Moreover, it is the **unique** such vector (up to phase): if $|\psi\rangle$ is translation-invariant, then $\langle \psi | \cdot | \psi \rangle$ defines a translation-invariant state, which must equal $\omega_0$ by Step 5. Hence $|\psi\rangle = e^{i\theta} |\Omega\rangle$. $\square$
+Moreover, it is the **unique** such vector (up to phase): if $|\psi\rangle$ is symmetry-invariant, then $\langle \psi | \cdot | \psi \rangle$ defines a symmetry-invariant state, which must equal $\omega_0$ by Step 5. Hence $|\psi\rangle = e^{i\theta} |\Omega\rangle$. $\square$
 :::
 
 :::{div} feynman-prose
@@ -3990,7 +3902,7 @@ The key technical ingredient is the N-uniform log-Sobolev inequality. This singl
 - Exponential decay (clustering)
 - Hypercontractivity (reflection positivity)
 
-The rest follows from the structure of the Fractal Set—the CST edges give causality, the IG edges give locality, the gauge symmetries give covariance, and the QSD gives the vacuum.
+The rest follows from the structure of the Fractal Set—the CST edges give causal order and Lorentzian signature, the IG edges give locality, the gauge symmetries give internal covariance, and the QSD gives the vacuum.
 
 This is what mathematical rigor looks like: not just formulas, but proofs that the formulas satisfy the axioms that define a consistent quantum field theory.
 :::

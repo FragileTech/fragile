@@ -10,6 +10,8 @@
 
 **Synergistic Stability**: The cloning operator provides partial contraction—it stabilizes position but perturbs velocity. The companion document proves that the kinetic operator $\Psi_{\text{kin}}$ ({prf:ref}`def-kinetic-operator`) provides complementary dynamics (stabilizes velocity, perturbs position). Together, they form a synergistic Foster-Lyapunov condition guaranteeing exponential convergence to a unique Quasi-Stationary Distribution (QSD) ({prf:ref}`def-qsd`).
 
+**Dependencies**: {doc}`01_fragile_gas_framework`, {doc}`04_single_particle`, {doc}`02_euclidean_gas`
+
 ## 1. Introduction
 
 ### 1.1. Goal and Scope
@@ -1018,7 +1020,7 @@ The two stochastic operators act on fundamentally different error components:
 
 Neither operator can contract the full hypocoercive norm $\|\!(\delta x, \delta v)\!\|_h^2 = \|\delta x\|^2 + \lambda_v \|\delta v\|^2$ in both position and velocity simultaneously:
 
-- **Velocity Desynchronization from Cloning**: When the cloning operator duplicates a walker, it adds Gaussian jitter to the velocity: $v_{\text{new}} = v_{\text{parent}} + \mathcal{N}(0, \delta^2 I_d)$. This randomization **breaks velocity correlations** between swarms, causing the velocity component of the structural error to increase (expansion of the velocity-related parts of $W_h^2$). Additionally, the cloning mechanism creates a distribution of velocities within each swarm that may increase $V_{\text{Var},v}$.
+- **Velocity Desynchronization from Cloning**: In the inelastic collision model, cloned walkers' velocities are updated by random rotations in the center-of-mass frame, $u'_k = \alpha_{\text{restitution}} R_k(u_k)$, with no additive Gaussian term. This randomization **breaks velocity correlations** between swarms, causing the velocity component of the structural error to increase (expansion of the velocity-related parts of $W_h^2$). Additionally, the collision reset redistributes velocities within each swarm and can increase $V_{\text{Var},v}$.
 
 - **Positional Diffusion from Kinetic Noise**: The Langevin equation for the kinetic step includes a diffusion term: $dx = (\text{drift terms}) \, dt + \sigma \, dW$. This stochastic noise **desynchronizes positions** between the two swarms' trajectories, causing positional components to expand. It also contributes to an increase in $V_{\text{Var},x}$ within each swarm.
 
@@ -1342,9 +1344,9 @@ where `c_{v\_reg}` is a strictly positive constant `c_{v\_reg} > 0`.
 
 **Rationale:**
 
-This axiom is a critical safety mechanism within the synergistic dissipation framework. While the cloning operator ({prf:ref}`def-cloning-operator`) contracts positional variance $V_{\text{Var},x}$ but causes bounded expansion of velocity variance $V_{\text{Var},v}$, the velocity regularization term ensures this expansion remains controlled and bounded.
+This axiom is a critical safety mechanism within the synergistic dissipation framework. While the cloning operator ({prf:ref}`def-cloning-operator`) contracts positional variance $V_{\text{Var},x}$ but causes bounded expansion of velocity variance $V_{\text{Var},v}$, the velocity regularization term biases selection away from high velocities; the hard state-independent cap is supplied by $\psi_v$.
 
-1.  **Bounding Velocity Variance Expansion During Cloning:** A walker ({prf:ref}`def-walker`) `i` that acquires an anomalously large velocity `v_i` contributes significantly to the $V_{\text{Var},v}$ component of the Lyapunov function. The `-c_{v\_reg} ||v_i||^{2}` term gives this walker an extremely low raw reward, making it "unfit" regardless of its position. It thus becomes a prime target for cloning. When cloned, its high velocity is reset to that of a companion, which is overwhelmingly likely to be much smaller. This mechanism ensures that while cloning may increase $V_{\text{Var},v}$ through velocity resets, walkers with dangerously high velocities are preferentially removed, providing an upper bound on the expansion.
+1.  **Limiting Velocity Variance Expansion During Cloning:** A walker ({prf:ref}`def-walker`) `i` that acquires an anomalously large velocity `v_i` contributes significantly to the $V_{\text{Var},v}$ component of the Lyapunov function. The `-c_{v\_reg} ||v_i||^{2}` term gives this walker an extremely low raw reward, making it "unfit" regardless of its position. It thus becomes a prime target for cloning. When cloned, its high velocity is reset to that of a companion, which is overwhelmingly likely to be much smaller. This mechanism biases the selection pressure away from high velocities; the hard state-independent cap remains the squashing map $\psi_v$.
 
 2.  **Enabling Kinetic Stage Dissipation:** This mechanism acts as a robust safety net, preventing the kinetic energy of the swarm from growing to levels where the kinetic stage's Langevin friction term cannot overcome the expansion caused by cloning. It ensures that the velocity variance remains within a regime where the kinetic operator ({prf:ref}`def-kinetic-operator`)'s dissipation can dominate, enabling the synergistic framework to achieve net contraction of the total Lyapunov function.
 
@@ -1358,19 +1360,19 @@ The inclusion of this term modifies the optimization objective. The algorithm no
 
 **If this axiom is violated (`c_{v_reg} = 0`):**
 
-The system loses its critical mechanism for bounding the velocity variance expansion caused by cloning, breaking the synergistic dissipation framework and leading to potential kinetic instability.
+The system loses its critical mechanism for steering velocity variance away from the hard cap imposed by $\psi_v$, weakening the synergistic dissipation framework and leading to potential kinetic instability.
 
-1.  **Unbounded Velocity Variance Expansion:** Without the velocity regularizer, the reward `R = R_pos(x)` becomes independent of velocity. The fitness potential `V_fit` of a walker depends only on its position and geometric arrangement. A walker with an extremely high velocity will not be identified as "unfit" by the reward channel as long as its position is favorable. This means the cloning operator has no mechanism to preferentially remove high-velocity walkers.
+1.  **Uncontrolled Velocity Variance Expansion (toward the cap):** Without the velocity regularizer, the reward `R = R_pos(x)` becomes independent of velocity. The fitness potential `V_fit` of a walker depends only on its position and geometric arrangement. A walker with an extremely high velocity will not be identified as "unfit" by the reward channel as long as its position is favorable. This means the cloning operator has no mechanism to preferentially remove high-velocity walkers, so velocity variance can drift toward the hard cap imposed by $\psi_v$.
 
 2.  **Breakdown of the Synergistic Framework:** The cloning operator naturally causes bounded expansion of $V_{\text{Var},v}$ through velocity resets. The kinetic operator's Langevin friction is designed to provide contraction that overcomes this expansion. However, if high-velocity walkers are not preferentially cloned, the expansion can accumulate:
     *   **With the axiom:** High-velocity walkers have low fitness and are quickly removed by cloning. The expansion of $V_{\text{Var},v}$ remains bounded, and the kinetic stage's friction can dominate.
-    *   **Without the axiom:** High-velocity walkers persist and can even be cloned as "companions" if they occupy good positions. The velocity variance can grow without bound, potentially exceeding the capacity of the kinetic stage's friction to dissipate it.
+    *   **Without the axiom:** High-velocity walkers persist and can even be cloned as "companions" if they occupy good positions. The velocity variance can drift toward the cap, potentially exceeding the capacity of the kinetic stage's friction to dissipate it on each step.
 
-3.  **Risk of Kinetic Instability:** The system can enter a state of unbounded "kinetic heating" where $V_{\text{Var},v}$ grows indefinitely. This leads to:
+3.  **Risk of Kinetic Instability:** The system can enter a state of sustained "kinetic heating" where $V_{\text{Var},v}$ remains near its cap. This leads to:
     *   **Breakdown of Convergence:** The velocity component of the Lyapunov function may not contract, preventing the system from converging to a quasi-stationary distribution.
     *   **Increased Risk of Extinction:** High-velocity walkers are more likely to overshoot the valid domain `X_valid`, dramatically increasing the probability of swarm extinction.
 
-In summary, setting `c_{v_reg} = 0` breaks the bounding mechanism that keeps velocity variance expansion in check, making the synergistic dissipation framework fail and potentially causing kinetic instability.
+In summary, setting `c_{v_reg} = 0` removes the fitness-based control that keeps velocity variance away from the cap imposed by $\psi_v$, weakening the synergistic dissipation framework and increasing kinetic instability risk.
 :::
 
 :::{prf:axiom} **(Axiom EG-5): Active Diversity Signal**
@@ -1936,7 +1938,7 @@ where $P(V)$ is a unique cubic polynomial that ensures a $C^1$ smooth transition
 
 :::{prf:lemma} Properties of the Patching Function
 :label: lem-patching-properties
-By its construction in the framework document (`01_fractal_gas_framework.md`, Definition 11.1.2), the function $\sigma'_{\text{patch}}(V)$ is continuously differentiable, strictly positive, and globally Lipschitz continuous. It is uniformly bounded below by $\sigma'_{\min,\text{patch}} = \sqrt{\kappa_{\text{var,min}} + \varepsilon_{\mathrm{std}}^2}$.
+By its construction in the framework document ({doc}`01_fragile_gas_framework`, Definition 11.1.2), the function $\sigma'_{\text{patch}}(V)$ is continuously differentiable, strictly positive, and globally Lipschitz continuous. It is uniformly bounded below by $\sigma'_{\min,\text{patch}} = \sqrt{\kappa_{\text{var,min}} + \varepsilon_{\mathrm{std}}^2}$.
 :::
 
 ### 5.4. Stage 4: The N-Dimensional Standardization Operator
@@ -2243,24 +2245,20 @@ where $V_{\max,\text{KE}}$ is a uniform bound on the maximum possible kinetic en
 :::{prf:proof}
 **Proof:**
 
-We will prove that the one-step change in the velocity variance component $V_{Var,v}$ due to cloning is bounded by a state-independent constant. The proof proceeds in four parts: (1) establish the domain of possible velocities, (2) bound the per-walker variance change from velocity reset, (3) bound the total variance change across all cloned walkers, and (4) verify that all bounds are state-independent through the velocity regularization mechanism.
+We will prove that the one-step change in the velocity variance component $V_{Var,v}$ due to cloning is bounded by a state-independent constant. The proof proceeds in four parts: (1) establish the domain of possible velocities, (2) bound the per-walker variance change from velocity reset, (3) bound the total variance change across all cloned walkers, and (4) verify that all bounds are state-independent via the velocity squashing map that caps algorithmic velocities (Section 3.3 of {doc}`02_euclidean_gas`).
 
 **Part 1: The Velocity Domain and Its Diameter**
 
-By the compactness of the valid position domain $\mathcal{X}_{\text{valid}}$ and the Lipschitz continuity of the drift field (see {prf:ref}`axiom-lipschitz-fields`), the velocity domain is implicitly bounded. Specifically:
-
-1. The kinetic operator includes a friction term $-\gamma v$ and a bounded drift field $F(x)$ with $\|F(x)\| \leq F_{\max}$ for all $x \in \mathcal{X}_{\text{valid}}$.
-
-2. The velocity regularization term in {prf:ref}`axiom-velocity-regularization` ensures walkers with $\|v\|^2 > V_{\text{thresh}}^2$ have extremely low fitness and are preferentially cloned, where $V_{\text{thresh}}$ is determined by the balance between the positional reward scale and the regularization coefficient $c_{v\_reg}$.
-
-3. These mechanisms ensure that in any viable swarm state (where extinction probability is negligible), all walker velocities satisfy $\|v_i\| \leq V_{\max}$ for a finite constant:
+By construction of the Euclidean Gas, algorithmic velocities are squashed by the smooth map
+$\psi_v(v) = V_{\mathrm{alg}}\,v/(V_{\mathrm{alg}}+\|v\|)$ (Section 3.3 of {doc}`02_euclidean_gas`). Hence every algorithmic velocity used in the cloning analysis satisfies the uniform bound
+$\|v_i\| \leq V_{\max}$ with
 
 $$
-V_{\max}^2 := \max\left\{ \frac{2F_{\max}}{\gamma}, V_{\text{thresh}}^2 \right\}
+V_{\max} := V_{\mathrm{alg}}.
 
 $$
 
-This bound is **state-independent**, depending only on the domain geometry ($F_{\max}$), algorithmic parameters ($\gamma$, $c_{v\_reg}$), and the reward scale.
+The squashing map is $1$-Lipschitz and smooth away from the origin; the dynamics operate in this smooth regime. The velocity regularization term still influences fitness, but the **hard** state-independent bound comes from $\psi_v$.
 
 **Part 2: Bounding the Per-Walker Variance Change**
 
@@ -2308,14 +2306,14 @@ $$
 where $u_i = v_i^{\text{old}} - V_{\text{COM}}$ is the old relative velocity and $R$ is a random rotation. The magnitude change is bounded by:
 
 $$
-\|v_i^{\text{new}} - v_i^{\text{old}}\|^2 \leq \|v_i^{\text{new}} - V_{\text{COM}}\|^2 + \|V_{\text{COM}} - v_i^{\text{old}}\|^2
+\|v_i^{\text{new}} - v_i^{\text{old}}\| = \|\alpha_{\text{restitution}} R(u_i) - u_i\| \leq (1+\alpha_{\text{restitution}})\,\|u_i\|
 
 $$
 
 Since $\|v_i^{\text{new}} - V_{\text{COM}}\| = \alpha_{\text{restitution}} \|u_i\|$ and $\|V_{\text{COM}} - v_i^{\text{old}}\| = \|u_i\|$:
 
 $$
-\|v_i^{\text{new}} - v_i^{\text{old}}\|^2 \leq (\alpha_{\text{restitution}}^2 + 1) \|u_i\|^2
+\|v_i^{\text{new}} - v_i^{\text{old}}\|^2 \leq (1+\alpha_{\text{restitution}})^2 \|u_i\|^2
 
 $$
 
@@ -2329,7 +2327,7 @@ $$
 Therefore:
 
 $$
-\|v_i^{\text{new}} - v_i^{\text{old}}\|^2 \leq 4(\alpha_{\text{restitution}}^2 + 1) V_{\max}^2
+\|v_i^{\text{new}} - v_i^{\text{old}}\|^2 \leq 4(1+\alpha_{\text{restitution}})^2 V_{\max}^2
 
 $$
 
@@ -2360,12 +2358,12 @@ $$
 
 $$
 
-This can be bounded using the fact that $\|v_i^{\text{new}} - v_i^{\text{old}}\|^2 \leq 4(\alpha_{\text{restitution}}^2 + 1) V_{\max}^2$ and $\|\mu_v^{\text{new}} - \mu_v^{\text{old}}\|^2$ is also bounded by a similar expression (since the barycentre is an average of velocities, all bounded by $V_{\max}$).
+This can be bounded using the fact that $\|v_i^{\text{new}} - v_i^{\text{old}}\|^2 \leq 4(1+\alpha_{\text{restitution}})^2 V_{\max}^2$ and $\|\mu_v^{\text{new}} - \mu_v^{\text{old}}\|^2$ is also bounded by a similar expression (since the barycentre is an average of velocities, all bounded by $V_{\max}$).
 
 Through careful algebraic expansion (using $\|a - b\|^2 = \|a\|^2 - 2\langle a, b\rangle + \|b\|^2$) and the triangle inequality:
 
 $$
-\left|\|v_i^{\text{new}} - \mu_v^{\text{new}}\|^2 - \|v_i^{\text{old}} - \mu_v^{\text{old}}\|^2\right| \leq 8(\alpha_{\text{restitution}}^2 + 1) V_{\max}^2 + 8V_{\max}^2 = 8(\alpha_{\text{restitution}}^2 + 2) V_{\max}^2
+\left|\|v_i^{\text{new}} - \mu_v^{\text{new}}\|^2 - \|v_i^{\text{old}} - \mu_v^{\text{old}}\|^2\right| \leq 8(1+\alpha_{\text{restitution}})^2 V_{\max}^2 + 8V_{\max}^2 = 8\big((1+\alpha_{\text{restitution}})^2 + 1\big) V_{\max}^2
 
 $$
 
@@ -2389,9 +2387,8 @@ $$
 
 $$
 \begin{aligned}
-|\Delta V_{Var,v}| &\leq \frac{n_{\text{clone}}}{N} \cdot 8(\alpha_{\text{restitution}}^2 + 2) V_{\max}^2 + \frac{8n_{\text{clone}}V_{\max}^2}{N} + \frac{4n_{\text{clone}}V_{\max}^2}{N} \\
-&= \frac{n_{\text{clone}}}{N} \cdot \left[8(\alpha_{\text{restitution}}^2 + 2) + 8 + 4\right] V_{\max}^2 \\
-&= \frac{n_{\text{clone}}}{N} \cdot 8(\alpha_{\text{restitution}}^2 + 4) V_{\max}^2
+|\Delta V_{Var,v}| &\leq \frac{n_{\text{clone}}}{N} \cdot 8\big((1+\alpha_{\text{restitution}})^2 + 1\big) V_{\max}^2 + \frac{8n_{\text{clone}}V_{\max}^2}{N} + \frac{4n_{\text{clone}}V_{\max}^2}{N} \\
+&= \frac{n_{\text{clone}}}{N} \cdot \left[8(1+\alpha_{\text{restitution}})^2 + 20\right] V_{\max}^2
 \end{aligned}
 
 $$
@@ -2399,7 +2396,7 @@ $$
 Since $n_{\text{clone}} = f_{\text{clone}} \cdot N$ by definition:
 
 $$
-|\Delta V_{Var,v}| \leq f_{\text{clone}} \cdot 8(\alpha_{\text{restitution}}^2 + 4) V_{\max}^2
+|\Delta V_{Var,v}| \leq f_{\text{clone}} \cdot \left[8(1+\alpha_{\text{restitution}})^2 + 20\right] V_{\max}^2
 
 $$
 
@@ -2410,19 +2407,12 @@ The bound depends only on:
 - $\alpha_{\text{restitution}}$: the restitution coefficient (algorithmic parameter)
 - $V_{\max}^2$: the velocity domain bound
 
-The critical claim is that $V_{\max}$ is state-independent. This is guaranteed by {prf:ref}`axiom-velocity-regularization`. Any walker with $\|v_i\|^2 \gg V_{\text{thresh}}^2$ has reward:
-
-$$
-R(x_i, v_i) = R_{\text{pos}}(x_i) - c_{v\_reg} \|v_i\|^2 \ll R_{\text{pos}}(x_i) - c_{v\_reg} V_{\text{thresh}}^2
-
-$$
-
-making it extremely unfit and a prime target for cloning. This feedback mechanism prevents velocity runaway, ensuring $V_{\max}$ remains a true constant.
+The critical claim is that $V_{\max}$ is state-independent. This follows directly from the squashing map $\psi_v$, which caps algorithmic velocities at $V_{\mathrm{alg}}$ regardless of the underlying uncapped dynamics. The velocity regularization term still shapes the fitness landscape, but the hard uniform bound is supplied by $\psi_v$.
 
 **Conclusion:** Setting:
 
 $$
-C_{\text{reset}} := 8(\alpha_{\text{restitution}}^2 + 4), \quad V_{\max,\text{KE}} := V_{\max}^2
+C_{\text{reset}} := 8(1+\alpha_{\text{restitution}})^2 + 20, \quad V_{\max,\text{KE}} := V_{\max}^2
 
 $$
 
@@ -4711,7 +4701,7 @@ This provides a uniform upper bound on the magnitude of the adversarial signal u
 
 The bound derived above is mathematically correct, but it is a catastrophic overestimation of the threat. It implicitly assumes a scenario where the environment is maximally deceptive: every walker in the geometrically "good" `L_k` set receives the highest possible reward, while every walker in the geometrically "bad" `H_k` set receives the lowest possible reward.
 
-A well-posed system for a learning algorithm cannot be this adversarial. The very purpose of the environmental axioms defined in the framework document (`01_fractal_gas_framework.md`) is to outlaw such pathological landscapes. In the next section, we will derive a much tighter and more realistic bound by correctly applying the axiom that governs the reward landscape's regularity.
+A well-posed system for a learning algorithm cannot be this adversarial. The very purpose of the environmental axioms defined in the framework document ({doc}`01_fragile_gas_framework`) is to outlaw such pathological landscapes. In the next section, we will derive a much tighter and more realistic bound by correctly applying the axiom that governs the reward landscape's regularity.
 :::
 
 ##### 7.5.2.3. A Tighter, Axiom-Based Bound for the Adversarial Signal
@@ -4725,7 +4715,7 @@ It is crucial to distinguish between two types of "deception" in a reward landsc
 1.  **Deceptive Plateaus:** Large regions where geometry changes but reward does not. Our {prf:ref}`axiom-non-deceptive-landscape` from this document's Chapter 4 is designed to prevent this by guaranteeing a minimal reward difference for sufficiently separated points.
 2.  **Deceptive Traps:** Regions where the reward landscape is anti-correlated with a desired geometric property (e.g., isolated points having systematically lower rewards).  does *not* prevent this.
 
-To bound the strength of a deceptive trap, we must use an axiom that limits how quickly the reward can change with position. The correct tool is the **Axiom of Reward Regularity (2.2.2 from `01_fractal_gas_framework.md`)**, which guarantees the reward function is Lipschitz continuous.
+To bound the strength of a deceptive trap, we must use an axiom that limits how quickly the reward can change with position. The correct tool is the **Axiom of Reward Regularity (2.2.2 from {doc}`01_fragile_gas_framework`)**, which guarantees the reward function is Lipschitz continuous.
 :::
 
 The following propositions build a chain of reasoning from the Lipschitz continuity of the raw reward function to a final, tight bound on the expected logarithmic gap.
@@ -5792,7 +5782,7 @@ This completes the rigorous, constructive proof of the N-Uniform Quantitative Ke
 
 The proof of the N-Uniform Quantitative Keystone Lemma ({prf:ref}`lem-quantitative-keystone`) culminates in the derivation of two critical, N-uniform constants that govern the stability of the cloning operator: the feedback coefficient $\chi(\epsilon)$ and the offset $g_{\max}(\epsilon)$. The existence of these constants is what guarantees a robust, corrective feedback loop.
 
-This section provides a complete deconstruction of these constants, tracing their dependencies back to the primitive axiomatic and algorithmic parameters defined in the framework document (`01_fractal_gas_framework.md`). This analysis serves two crucial purposes:
+This section provides a complete deconstruction of these constants, tracing their dependencies back to the primitive axiomatic and algorithmic parameters defined in the framework document ({doc}`01_fragile_gas_framework`). This analysis serves two crucial purposes:
 1.  It provides a final, explicit verification of the **N-uniformity** of the result by showing that the swarm size $N$ cancels out or is absent from all final expressions.
 2.  It offers a quantitative, practical guide for the user, revealing exactly how the choice of environmental and algorithmic parameters impacts the strength and nature of the system's core stabilizing mechanism.
 
@@ -7286,14 +7276,14 @@ The proof analyzes how the inelastic collision model affects velocity variance.
 
 **Step 1: Velocity domain boundedness**
 
-By Axiom EG-4 (velocity regularization), all walker velocities in viable swarms satisfy:
+By construction, algorithmic velocities are squashed by $\psi_v$, so
 
 $$
-\|v_i\| \leq V_{\max} := \sqrt{\max\left\{\frac{2F_{\max}}{\gamma}, V_{\text{thresh}}^2\right\}}
+\|v_i\| \leq V_{\max} := V_{\mathrm{alg}}.
 
 $$
 
-This bound is state-independent, depending only on physical parameters.
+This bound is state-independent and follows directly from the velocity cap.
 
 **Step 2: Per-walker velocity change**
 
@@ -7332,17 +7322,10 @@ Each contribution is bounded by constants depending only on $V_{\max}$, $\alpha_
 
 **Step 4: Total bounded expansion**
 
-Summing over all walkers and using $N$-normalization:
+By Proposition {prf:ref}`prop-bounded-velocity-expansion`, summing the direct reset, barycenter shift, and status-change contributions yields $\Delta V_{\text{Var},v} \le f_{\text{clone}} \cdot \left(8(1+\alpha_{\text{restitution}})^2 + 20\right) V_{\max}^2$. Since $f_{\text{clone}} \le 1$, we obtain the explicit uniform bound:
 
 $$
-\mathbb{E}[\Delta V_{\text{Var},v}] \leq \frac{1}{N} \sum_{i=1}^N p_i \cdot 4(\alpha_{\text{restitution}} + 1)^2 V_{\max}^2 + C_{\text{bary}}
-
-$$
-
-Since $p_i \in [0,1]$ and $\sum_i p_i \leq N$ (at most all walkers clone):
-
-$$
-\mathbb{E}[\Delta V_{\text{Var},v}] \leq 4(\alpha_{\text{restitution}} + 1)^2 V_{\max}^2 + C_{\text{bary}} =: C_v
+\mathbb{E}[\Delta V_{\text{Var},v}] \leq \left(8(1+\alpha_{\text{restitution}})^2 + 20\right) V_{\max}^2 =: C_v
 
 $$
 
@@ -7515,9 +7498,10 @@ The drift constants have the following dependencies:
 - Independent of $N$ (N-uniformity from Keystone)
 
 **Expansion bound $C_v$:**
+- $C_v = \left(8(1+\alpha_{\text{restitution}})^2 + 20\right) V_{\max}^2$
 - Increases with $V_{\max}^2$ (larger velocity domain)
 - Increases with $\alpha_{\text{restitution}}$ (more elastic collisions)
-- Decreases toward zero as $\alpha_{\text{restitution}} \to 0$ (perfectly inelastic)
+- Lower bounded by the non-rotation terms; as $\alpha_{\text{restitution}} \to 0$, $C_v \to 28 V_{\max}^2$
 - Independent of $N$
 
 These dependencies provide guidance for parameter tuning to optimize convergence rates.
@@ -9079,7 +9063,7 @@ For the full publication-ready proof with detailed verification, see:
 - Complete verification of Keystone Principle causal chain (variance → structure → fitness → pressure)
 - Detailed consolidation of all five summary items with N-uniformity tracking
 - Framework dependency verification (Axioms EG-0, EG-2, EG-3, EG-4)
-- Explicit constant formulas: $\kappa_x = \frac{\chi(\epsilon)}{4}c_{\text{struct}}$, $\kappa_b = c_{\text{fit}}c_{\text{barrier}}$, $C_v = 4(1+\alpha_{\text{restitution}})^2 V_{\max}^2$
+- Explicit constant formulas: $\kappa_x = \frac{\chi(\epsilon)}{4}c_{\text{struct}}$, $\kappa_b = c_{\text{fit}}c_{\text{barrier}}$, $C_v = \left(8(1+\alpha_{\text{restitution}})^2 + 20\right) V_{\max}^2$
 - No circular reasoning verification (summary after all components proven)
 - Complete scoping of synergistic Foster-Lyapunov foundation
 :::
@@ -9093,7 +9077,7 @@ This theorem is proven by systematic consolidation and verification. The complet
 
 **Step 2 - Positional Variance Contraction**: {prf:ref}`thm-positional-variance-contraction` (Lines 6291-6293) rigorously proves the drift inequality using the Keystone Lemma as primary engine. Contraction rate $\kappa_x = \frac{\chi(\epsilon)}{4} c_{\text{struct}} > 0$ verified as N-uniform via variance decomposition.
 
-**Step 3 - Velocity Variance Bounded Expansion**: {prf:ref}`thm-velocity-variance-bounded-expansion` (Lines 6671-6673) establishes state-independent bound $C_v = 4(1 + \alpha_{\text{restitution}})^2 V_{\max}^2$ via inelastic collision analysis and {prf:ref}`axiom-velocity-regularization`.
+**Step 3 - Velocity Variance Bounded Expansion**: {prf:ref}`thm-velocity-variance-bounded-expansion` (Lines 6671-6673) establishes the state-independent bound $C_v = \left(8(1 + \alpha_{\text{restitution}})^2 + 20\right) V_{\max}^2$ via inelastic collision analysis and the velocity squashing map $\psi_v$ (so $V_{\max}=V_{\mathrm{alg}}$).
 
 **Step 4 - Boundary Potential Contraction**: Chapter 11 (Lines 7212, 7232) proves contraction via {prf:ref}`axiom-safe-harbor`. Fitness deficit for boundary walkers creates systematic replacement, yielding $\kappa_b = c_{\text{fit}} c_{\text{barrier}} > 0$ (N-uniform).
 
@@ -9192,7 +9176,7 @@ Connect the mathematical QSD to physical properties:
 
 The **handoff** from this document to the companion document is clean:
 
-**From this document (03_cloning.md):**
+**From this document ({doc}`03_cloning`):**
 ```
 Drift inequalities for \Psi_clone:
   - \DeltaV_Var,x: contraction with rate \kappa_x
