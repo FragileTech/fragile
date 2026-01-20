@@ -362,23 +362,23 @@ The error floor is standard; what matters is **how quickly you reach it**:
 ---
 
 (sec-fg-faq-hypocoercive)=
-### N.4.4 Conjectured vs. Proven: The Hypocoercive Rate
+### N.4.4 Hypocoercive Rate: Proven Baseline and Constant Refinements
 
-**Objection:** *You admit the hypocoercive rate $\Lambda_{\text{hypo}} \approx \gamma \rho_{\text{LSI}}/M^2$ is "conjectured, not proven." How can a rigorous framework rely on unproven claims?*
+**Objection:** *You use a heuristic rate formula $\Lambda_{\text{hypo}} \approx \gamma \rho_{\text{LSI}}/M^2$. Is the convergence proof still rigorous?*
 
 **Response:**
 
-We maintain explicit epistemic status for all results:
+We separate **proven convergence** from **constant refinement**:
 
-1. **Rigor classification.** Every theorem in Volume 3 is tagged with its status: **P** (proven), **F** (framework—follows from definitions), **C** (conjectured), **N** (numerical evidence only). The hypocoercive rate is tagged **C** because the proof requires technical lemmas currently under review.
+1. **LSI is proven.** The hypocoercive entropy route establishes an LSI and exponential convergence (Appendices {doc}`../appendices/10_kl_hypocoercive`, {doc}`../appendices/15_kl_convergence`). This gives a rigorous baseline rate without invoking curvature or log-concavity.
 
-2. **Conservative fallback.** When the hypocoercive rate is needed, we use a **proven lower bound** $\Lambda_{\text{hypo}} \geq \gamma / (1 + M^2/\rho_{\text{LSI}})$ that is weaker but rigorous. The conjecture sharpens the bound but is not required for convergence guarantees.
+2. **Rigorous lower bound.** When an explicit rate is needed, we use a **proven lower bound** $\Lambda_{\text{hypo}} \geq \gamma / (1 + M^2/\rho_{\text{LSI}})$. This is conservative but fully rigorous.
 
-3. **Numerical validation.** The conjectured rate matches numerical experiments across 47 benchmark problems (Appendix {doc}`../appendices/13_quantitative_error_bounds`). While not a proof, this provides strong evidence.
+3. **Optional sharpening.** The heuristic formula improves constants; it is not required for any qualitative conclusion. Curvature-based routes (Bakry-Emery) can further sharpen constants when uniform Hessian control is available.
 
-4. **Modular architecture.** The Fractal Gas results are structured so that improving the hypocoercive bound improves quantitative rates without changing qualitative conclusions. If the conjecture is false, we lose a factor of 2 in the rate, not correctness.
+4. **Modular architecture.** Improvements in constants only tighten quantitative rates; the existence of convergence and LSI does not depend on those refinements.
 
-Honest epistemic status is a feature, not a bug.
+The framework is rigorous at the baseline level, and constant refinements are optional.
 
 ---
 

@@ -545,6 +545,9 @@ class TopoEncoder(nn.Module):
         torch.Tensor,  # enc_router_weights (from encoder)
         torch.Tensor,  # dec_router_weights (from decoder)
         torch.Tensor,  # K_chart
+        torch.Tensor,  # z_geo
+        torch.Tensor,  # z_n
+        torch.Tensor,  # c_bar
     ]:
         """Full forward pass.
 
@@ -559,8 +562,22 @@ class TopoEncoder(nn.Module):
             enc_router_weights: Encoder routing weights (for entropy loss)
             dec_router_weights: Decoder routing weights (for consistency loss)
             K_chart: Hard chart assignments from encoder
+            z_geo: Geometric latent (macro + gauge residual)
+            z_n: Nuisance latent (continuous gauge vector)
+            c_bar: Chart center mixture
         """
-        K_chart, _K_code, _z_n, z_tex, enc_router_weights, z_geo, vq_loss, _indices, _ = (
+        (
+            K_chart,
+            _K_code,
+            z_n,
+            z_tex,
+            enc_router_weights,
+            z_geo,
+            vq_loss,
+            _indices,
+            _z_n_all,
+            c_bar,
+        ) = (
             self.encoder(x)
         )
 
@@ -568,7 +585,7 @@ class TopoEncoder(nn.Module):
         chart_index = K_chart if use_hard_routing else None
         x_recon, dec_router_weights = self.decoder(z_geo, z_tex, chart_index)
 
-        return x_recon, vq_loss, enc_router_weights, dec_router_weights, K_chart
+        return x_recon, vq_loss, enc_router_weights, dec_router_weights, K_chart, z_geo, z_n, c_bar
 
     def compute_consistency_loss(
         self,

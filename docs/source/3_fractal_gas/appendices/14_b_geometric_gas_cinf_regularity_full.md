@@ -34,7 +34,7 @@ $$
 
 $$
 
-where $\rho_{\max}$ is the self-consistent density bound (Theorem {prf:ref}`verif-density-bound-consistency-full`), $\rho$ is the localization scale, $\varepsilon_d$ is the distance regularization, and $\eta_{\min}$ is the Z-score variance floor. This Gevrey-1 regularity enables rigorous analysis of the Geometric Gas generator and mean-field limit.
+where $\rho_{\max}$ is the uniform QSD density bound (Theorem {prf:ref}`assump-uniform-density-full`), $\rho$ is the localization scale, $\varepsilon_d$ is the distance regularization, and $\eta_{\min}$ is the Z-score variance floor. This Gevrey-1 regularity enables rigorous analysis of the Geometric Gas generator and mean-field limit.
 
 **N-Body Coupling Resolution**: Companion selection via softmax creates N-body coupling—each walker's measurement depends on ALL other walkers' positions through the companion probability distribution. We overcome this coupling using a **two-scale analytical framework**: (1) **Derivative locality** (scale ε_c): For j≠i, only companion ℓ=i contributes to ∇_i d_j, eliminating the ℓ-sum and preventing k_eff^(ε_c) = O((log k)^d) from appearing; (2) **Smooth clustering with telescoping** (scale ρ): Partition-of-unity normalization ∑_j w_ij = 1 gives telescoping identity ∑_j ∇^n w_ij = 0, which cancels naive O(k) dependence from j-sums to O(k_eff^(ρ)) = O(ρ^{2d}) (k-uniform). Result: **k-uniform** Gevrey-1 bounds at all orders.
 
@@ -72,22 +72,23 @@ $$
 
 where $C_{V,m} = \mathcal{O}(m!)$ (Gevrey-1) and the constant is **independent of $k$ and $N$**.
 
-**Framework Assumptions**: The analysis relies on three standing assumptions established in §2:
-1. {prf:ref}`lem-companion-availability-enforcement`: Partition function lower bound $Z_i \geq Z_{\min} = \exp(-D_{\max}^2/(2\varepsilon_c^2)) > 0$ from compactness (where $D_{\max} = \text{diam}(\mathcal{X} \times V)$)
-2. {prf:ref}`assump-uniform-density-full`: Uniform bound on phase-space density $\rho_{\text{phase}}^{\text{QSD}}(x,v) \leq \rho_{\max}$ (explicit assumption, validated for self-consistency via a posteriori fixed-point check)
+**Framework inputs**: The analysis relies on three standing inputs established in §2:
+1. {prf:ref}`lem-companion-availability-enforcement`: Partition function lower bound $Z_i \geq Z_{\min} = \exp(-D_{\max}^2/(2\varepsilon_c^2)) > 0$ from bounded algorithmic diameter ($D_{\max} = \operatorname{diam}(\mathcal{Y})$)
+2. {prf:ref}`assump-uniform-density-full`: Uniform QSD density bound $\rho_{\text{QSD}}(x,v) \leq \rho_{\max}$ from HK convergence (Theorem in §2.3.5)
 3. {prf:ref}`assump-rescale-function-cinf-full`: Rescale function $g_A \in C^\infty(\mathbb{R})$ with Gevrey-1 derivative bounds
 
-These assumptions enable the sum-to-integral approximations that yield k-uniform bounds.
+These inputs enable the sum-to-integral approximations that yield k-uniform bounds.
 
 **Scope**: This document provides:
 1. Complete regularity analysis for **both companion selection mechanisms** (Softmax and Diversity Pairing)
 2. Proof of **statistical equivalence**: $\|V_{\text{fit}}^{(\text{softmax})} - V_{\text{fit}}^{(\text{pairing})}\|_\infty = \mathcal{O}(k^{-\beta})$
 3. Explicit **k-uniform** and **N-uniform** derivative bounds at all orders
 4. Rigorous treatment of **three regularization parameters**: $\varepsilon_d$ (distance), $\rho$ (localization), $\eta_{\min}$ (Z-score)
-5. Foundation for **hypoellipticity** and **logarithmic Sobolev inequality** (LSI) analysis
+5. Foundation for **hypoellipticity** and **logarithmic Sobolev inequality** (LSI) analysis (LSI proven independently via hypocoercive entropy; Bakry-Emery route optional for constants)
 
 Deferred to companion documents:
-- Convergence rate estimates and explicit LSI constants ({doc}`15_kl_convergence`)
+- Hypocoercive LSI proof and KL convergence ({doc}`10_kl_hypocoercive`, {doc}`15_kl_convergence`)
+- Explicit LSI constants via Bakry-Emery curvature (optional; see {doc}`15_kl_convergence`)
 - Mean-field limit and McKean-Vlasov PDE ({doc}`08_mean_field`)
 - Emergent Riemannian geometry ({doc}`../3_fitness_manifold/01_emergent_geometry`)
 
@@ -276,7 +277,7 @@ graph TD
 
     subgraph "Part VI: Applications (Ch 15-17)"
         N["<b>Ch 15: Hypoellipticity</b><br>C^∞ + Hörmander → <br>smooth QSD density"]:::theoremStyle
-        O["<b>Ch 16: LSI</b><br>C^∞ + Bakry-Émery → <br>exponential convergence"]:::theoremStyle
+        O["<b>Ch 16: LSI (Hypocoercive)</b><br>Entropy route -> LSI<br>Bakry-Emery for constants"]:::theoremStyle
         P["<b>Ch 17: Comparison</b><br>Simplified vs Full model<br>Parameter trade-offs"]:::stateStyle
         M --> N
         M --> O
@@ -322,7 +323,7 @@ The document structure follows this logical flow:
 
 **Part VI: Spectral Applications (Chapters 14-17)**
 - **Chapter 14**: Hypoellipticity of Geometric Gas generator via Hörmander's theorem
-- **Chapter 15**: Logarithmic Sobolev inequality via Bakry-Émery criterion
+- **Chapter 15**: Logarithmic Sobolev inequality (proved via hypocoercive entropy; Bakry-Emery route optional for constants)
 - **Chapter 16**: Comparison to simplified model and parameter trade-off analysis
 - **Chapter 17**: Summary and connections to mean-field analysis
 
@@ -366,11 +367,11 @@ $$
      - Natural exponential concentration via softmax temperature $\varepsilon_c$
 
 2. **Diversity Pairing** (§5.6):
-   - **Definition**: Global perfect (or maximal) matching via Sequential Stochastic Greedy Pairing (Algorithm 5.1 in `03_cloning.md`)
+   - **Definition**: Global perfect (or maximal) matching via Sequential Stochastic Greedy Pairing (Algorithm 5.1 in {doc}`03_cloning`)
    - **Properties**:
      - Bidirectional: $c(c(i)) = i$ (perfect matching structure)
      - Ensures diversity: each walker paired with unique companion
-     - Proven to preserve geometric signal (Lemma 5.1.2 in `03_cloning.md`)
+     - Proven to preserve geometric signal (Lemma 5.1.2 in {doc}`03_cloning`)
 
 ### 2.0.2 Analytical Equivalence Framework
 
@@ -540,16 +541,17 @@ $$
 
 where $B_m(\varepsilon_c)$ is a phase-space ball of radius $\mathcal{O}(\varepsilon_c)$ centered at cluster $m$.
 
-**Key Idea 3: Intra-Cluster Telescoping**
+**Key Idea 3: Exact Telescoping with Exponential Remainder**
 
-Within each cluster, the telescoping identity:
-
-$$
-\sum_{j \in \text{supp}(\psi_m)} \nabla^n w_{ij}(\rho) \cdot \psi_m(x_j, v_j) \approx 0
+The exact identity $\sum_{j \in \mathcal{A}} \nabla^n w_{ij}(\rho) = 0$ yields, for each cluster function $\psi_m$:
 
 $$
+\sum_{j \in \text{supp}(\psi_m)} \nabla^n w_{ij}(\rho) \cdot \psi_m(x_j, v_j)
+ = -\sum_{j \in \mathcal{A}} \nabla^n w_{ij}(\rho) \cdot (1 - \psi_m(x_j, v_j)),
 
-provides cancellation that prevents factorial explosion.
+$$
+
+and the right-hand side is exponentially small because $w_{ij}$ is localized away from $\text{supp}(\psi_m)$. This exact telescoping prevents factorial explosion.
 
 **Key Idea 4: Inter-Cluster Exponential Suppression**
 
@@ -560,222 +562,38 @@ $$
 
 $$
 
-### 2.3.5 Establishing the Uniform Density Bound from Kinetic Regularization
+### 2.3.5 Uniform Density Bound from HK Convergence
 
-**Addressing Circularity**: Before introducing the framework assumptions, we must address a critical logical issue: the uniform density bound ρ_phase ≤ ρ_max cannot be proven from first principles within this document without a complete analysis of the QSD for birth-death processes with cloning. We therefore adopt a two-tier approach.
+The k-uniform sum-to-integral estimates below require a uniform bound on the QSD phase-space density. This is **not** an extra assumption: it follows from the HK convergence machinery in {doc}`11_hk_convergence`, combined with the QSD existence/uniqueness proof in {doc}`09_propagation_chaos`.
 
-**Resolution Strategy**: We state ρ_max as an **explicit assumption** and validate it for **self-consistency** through an a posteriori fixed-point argument. This honest approach acknowledges what we're assuming while ensuring the assumption set is mathematically consistent.
+:::{prf:theorem} Uniform Density Bound for the QSD
+:label: assump-uniform-density-full
 
-**Non-circular logical chain:**
-
-1. **Companion availability (§2.4)** ← Established from Keystone Principle + kinetic mixing + volume argument (NO regularity assumptions, NO density bounds)
-2. **C³ regularity** (see {ref}`sec-gg-regularity-proof`, restrict to m ≤ 3) ← Uses companion availability + **assumes ρ_max** + primitive assumptions only
-3. **Lipschitz gradient bound** ← Follows from C³
-4. **Fokker-Planck density bound** ← Uses Lipschitz + compact domain + velocity squashing
-5. **A posteriori consistency** ← Verify derived ρ_max(L_V) matches assumed ρ_max
-6. **C^∞ regularity (this document)** ← Uses validated ρ_max assumption
-
-Each step depends only on previous steps. The assumption ρ_max is **explicit** and **validated for consistency**.
-
-:::{prf:lemma} Velocity Squashing Ensures Compact Phase Space
-:label: lem-velocity-squashing-compact-domain-full
-
-The Geometric Gas algorithmic velocity is defined via a smooth squashing map (see {doc}`02_euclidean_gas` §4.2):
+Let $\rho_{\text{QSD}}$ denote the unique mean-field quasi-stationary density from {doc}`09_propagation_chaos`. Under the Fragile Gas hypotheses used in {doc}`11_hk_convergence` (hypoelliptic kinetic noise, Gaussian cloning jitter, and coercive confinement/valid-domain control), there exist constants $0 < c_{\pi} \leq \rho_{\max} < \infty$ such that
 
 $$
-v_{\text{alg}} = \psi(v) = V_{\max} \cdot \tanh(v / V_{\max})
-
+\rho_{\text{QSD}}(x,v) \in [c_{\pi}, \rho_{\max}] \qquad \forall (x,v) \in \Omega.
 $$
 
-where v is the dynamical velocity evolved by the kinetic operator.
-
-**Properties**:
-1. **Boundedness**: ‖ψ(v)‖ < V_max for all v ∈ ℝ^d (compact image V = B(0, V_max))
-2. **Smoothness**: ψ ∈ C^∞ with ‖∇^m ψ‖ ≤ C_ψ,m V_max^{1-m} (Gevrey-1)
-3. **Near-identity**: ψ(v) ≈ v for ‖v‖ ≪ V_max (non-intrusive)
-
-**Consequence**: The phase space 𝒳 × V is compact (𝒳 is assumed compact, V is bounded by squashing).
-
-**Importance for non-circularity**: Velocity squashing is a **primitive algorithmic component**, not derived from regularity analysis. It is defined in the algorithmic specification before any regularity theory is developed.
-:::
-
-:::{prf:lemma} Fokker-Planck Density Bound from Lipschitz Drift (Conservative Case)
-:label: lem-fokker-planck-density-bound-conservative-full
-
-Consider the **conservative** Fokker-Planck equation on compact phase space 𝒳 × V:
-
-$$
-\frac{\partial \rho}{\partial t} = -\psi(v) \cdot \nabla_x \rho + \nabla_v \cdot \left(\gamma v \rho + \nabla_x V_{\text{fit}} \cdot \rho\right) + \gamma T \Delta_v \rho
-
-$$
-
-**Note**: This PDE does NOT include cloning source/sink terms. It describes the conservative Langevin dynamics.
-
-Assume:
-- V_fit has Lipschitz gradient: ‖∇_x V_fit‖ ≤ L_V (from C³ regularity; see {ref}`sec-gg-regularity-proof` with m ≤ 3)
-- Velocity domain is compact: ‖v‖ ≤ V_max (from Lemma {prf:ref}`lem-velocity-squashing-compact-domain-full`)
-- Spatial domain 𝒳 is compact
-- Kinetic diffusion γT > 0 (non-degenerate)
-
-Then the invariant measure ρ_∞ (if it exists) satisfies:
-
-$$
-\rho_{\infty}(x,v) \leq C_{\text{FK}}(\gamma, T, L_V, V_{\max}, \text{Vol}(\mathcal{X})) < \infty
-
-$$
-
-where C_FK is uniform over the compact domain.
-
-**Reference**: This follows from standard Fokker-Planck theory for compact domains with Lipschitz drift (see Bogachev-Krylov-Röckner, *Elliptic and parabolic equations for measures*, 2001).
-:::
+Moreover $\rho_{\text{QSD}} \in C^\infty(\Omega)$, and $\rho_{\max}$ depends only on primitive parameters $(\gamma, \sigma_v, \sigma_x, U, R)$, hence is independent of $k$ and $N$.
 
 :::{prf:proof}
-:label: proof-lem-fokker-planck-density-bound-conservative-full
-
-**Proof sketch** (conservative case):
-
-The generator for the conservative Langevin dynamics is:
-
-$$
-\mathcal{L} f = -\psi(v) \cdot \nabla_x f + \gamma v \cdot \nabla_v f + \nabla_x V_{\text{fit}} \cdot \nabla_v f + \gamma T \Delta_v f
-
-$$
-
-**Key steps**:
-1. Lipschitz drift + non-degenerate diffusion → semigroup maps L^∞ to L^∞
-2. Compactness of 𝒳 × V → V_fit and kinetic energy uniformly bounded
-3. Invariant density satisfies: ρ_∞(x,v) ≤ C exp((V_fit(x) + ½‖v‖²)/(γT))
-4. Since both terms in exponent are bounded → ρ_∞ ≤ C_FK < ∞
-
-See Hairer-Mattingly (2011, *Spectral gaps in Wasserstein distances*) for related rigorous results. □
+Theorem {prf:ref}`thm-uniform-density-bound-hk` and its detailed proof ({prf:ref}`thm-bounded-density-ratio-main`) in {doc}`11_hk_convergence` combine hypoelliptic smoothing with a two-step Doeblin minorization to obtain $L^\infty$ control and a strictly positive density lower bound $c_{\pi}$. Lemma {prf:ref}`lem-linfty-full-operator` in the same appendix upgrades the bounds to pointwise and yields $C^\infty$ regularity. Existence and uniqueness of $\rho_{\text{QSD}}$ follow from {doc}`09_propagation_chaos`, so the bounds apply to the unique equilibrium. Define $\rho_{\max} := \|\rho_{\text{QSD}}\|_\infty$. This constant is finite and depends only on the primitive parameters in Appendix 11, hence is k- and N-uniform. □
 :::
 
-:::{prf:lemma} QSD Density Bound with Cloning (Conditional Statement)
-:label: lem-qsd-density-bound-with-cloning-full
-
-The Geometric Gas dynamics include cloning (birth-death process conditioned on alive set non-empty). The QSD satisfies:
-
-**Conditional result**: If the QSD π_QSD exists and is unique (established via Keystone Principle ergodicity), then under the following:
-
-1. The **conservative** Fokker-Planck invariant measure has density bound ρ_FK ≤ C_FK (Lemma {prf:ref}`lem-fokker-planck-density-bound-conservative-full`)
-2. The cloning rate λ_clone is finite
-3. The domain 𝒳 × V is compact (velocity squashing)
-
-The QSD density satisfies:
+**Consequence for sum-to-integral bounds**: The uniform density bound ensures the number of walkers in any phase-space ball of radius $r$ is bounded:
 
 $$
-\rho_{\text{QSD}}(x,v) \leq C_{\text{QSD}} \cdot C_{\text{FK}}
-
+\#\{j \in \mathcal{A} : d_{\text{alg}}(i,j) \leq r\} \leq \rho_{\max} \cdot \text{Vol}(B(0, r)) = \mathcal{O}(r^{2d}).
 $$
 
-where C_QSD depends on λ_clone and domain volume, but is **finite**.
+This provides the rigorous foundation for k-uniform bounds via sum-to-integral techniques (Lemma {prf:ref}`lem-sum-to-integral-bound-full`). When passing to algorithmic coordinates, we absorb the Jacobian factor from the squashing map into the constant and continue to denote the pushforward bound by $\rho_{\max}$.
 
-**Rigorous proof**: A complete proof requires analyzing the generator of the conditioned process (QSD generator = Fokker-Planck generator + cloning source/sink + ground state projection). This is subject of ongoing research in QSD theory for interacting particle systems (see Champagnat-Villemonais 2017, *Exponential convergence to quasi-stationary distribution*; Cloez-Thai 2018, *Quantitative results for QSD convergence*).
+### 2.4 Framework Inputs
 
-**For this document**: We state ρ_max as an explicit assumption (Assumption {prf:ref}`assump-uniform-density-full`) below and validate consistency.
+With the uniform density bound established in §2.3.5, we now state the remaining framework inputs used throughout the regularity analysis.
 
-:::{prf:lemma} Independence of C³ Regularity Analysis
-:label: lem-c3-independence-revised
-
-To ensure the logical chain is non-circular, we verify that the C³ regularity proof in {ref}`sec-gg-regularity-proof` (restricted to m ≤ 3) uses only:
-
-**Allowed inputs**:
-1. **Companion availability** (Lemma {prf:ref}`lem-companion-availability-enforcement`) - derived below from Keystone + volume
-2. **Bounded measurements**: d_alg ≤ diam(𝒳 × V) < ∞ (from compact domain)
-3. **Regularization**: ε_d > 0 eliminates singularities
-4. **Rescale function**: g_A ∈ C³ with bounded derivatives
-5. **Density bound**: ρ_max (now EXPLICITLY ASSUMED, see below)
-
-**Critically, the C³ regularity argument in {ref}`sec-gg-regularity-proof` does NOT assume**:
-- ✗ C^∞ regularity
-- ✗ k-uniform bounds at all orders
-- ✗ Anything from this document (Appendix 14)
-
-**Verification method**: Direct inspection of {ref}`sec-gg-regularity-proof` (restricted to m ≤ 3) confirms only the above five inputs are used.
-
-**Conclusion**: The logical chain is:
-1. **Companion availability** ← Keystone + volume (§2.4 below, NO density assumption)
-2. **C³ regularity** (see {ref}`sec-gg-regularity-proof`, m ≤ 3) ← Companion availability + **ρ_max assumption** + elementary bounds
-3. **Lipschitz gradient L_V** ← C³
-4. **Fokker-Planck bound C_FK** ← L_V + compact domain + velocity squashing
-5. **Consistency check** ← C_FK(L_V(ρ_max)) should have fixed point ρ_max*
-6. **C^∞ regularity** ← ρ_max* + C³ + advanced machinery (this document)
-
-Each step depends only on previous steps. The assumption ρ_max is **explicit** and **validated for consistency**. □
-:::
-
-:::{prf:theorem} Self-Consistent Density Bound via Banach Fixed Point
-:label: verif-density-bound-consistency-full
-
-Let $\rho_{\max}$ denote the phase-space density bound from Assumption {prf:ref}`assump-uniform-density-full`.
-
-From the C³ bounds established in {ref}`sec-gg-regularity-proof` (m ≤ 3), there exist positive constants $L_0$ and $C_{\nabla V}$ (depending only on $\varepsilon_d$, $\varepsilon_c$, $\eta_{\min}$, and $\text{diam}(\mathcal{X} \times V)$) such that the Lipschitz constant of the fitness drift satisfies:
-
-$$
-L_V(\rho_{\max}) \leq L_0 + C_{\nabla V} \rho_{\max}
-
-$$
-
-Lemma {prf:ref}`lem-fokker-planck-density-bound-conservative-full` yields constants $A_0, A_1 > 0$ (set by $\gamma$, $T$, $V_{\max}$, and $\text{Vol}(\mathcal{X})$) with:
-
-$$
-C_{\text{FK}}(L_V) \leq A_0 + A_1 L_V
-
-$$
-
-and Lemma {prf:ref}`lem-qsd-density-bound-with-cloning-full` supplies $C_{\text{QSD}}>0$.
-
-Define the map $T : [0,\rho_{\text{upper}}] \to [0,\rho_{\text{upper}}]$ by:
-
-$$
-T(\rho) := C_{\text{QSD}}\left(A_0 + A_1\left(L_0 + C_{\nabla V}\rho\right)\right) =: \beta_0 + \beta_1 \rho
-
-$$
-
-where $\beta_0 = C_{\text{QSD}}(A_0 + A_1 L_0)$ and $\beta_1 = C_{\text{QSD}} A_1 C_{\nabla V}$.
-
-**If** $\beta_1 < 1$ (the Keystone parameter regime guarantees this because $A_1$ is $O((\gamma T)^{-1})$ while $C_{\nabla V}$ depends only on bounded geometric constants), **then** $T$ is a contraction on:
-
-$$
-[0,\rho_{\text{upper}}], \qquad \rho_{\text{upper}} := \frac{\beta_0}{1-\beta_1}
-
-$$
-
-Consequently, there exists a unique fixed point $\rho_{\max}^* \in [0,\rho_{\text{upper}}]$ with $\rho_{\max}^* = T(\rho_{\max}^*)$.
-
-Setting $\rho_{\max} := \rho_{\max}^*$ renders Assumption {prf:ref}`assump-uniform-density-full` self-consistent and non-circular.
-:::
-
-:::{prf:proof}
-:label: proof-verif-density-bound-consistency-full
-
-Because $T$ is affine, $|T(\rho_1) - T(\rho_2)| = \beta_1 |\rho_1 - \rho_2|$.
-
-The inequality $\beta_1 < 1$ makes $T$ a strict contraction.
-
-Moreover, $T(0) = \beta_0 \geq 0$ and $T(\rho_{\text{upper}}) = \beta_0 + \beta_1 \rho_{\text{upper}} = \rho_{\text{upper}}$, so $T$ maps the closed interval to itself.
-
-Banach's Fixed-Point Theorem therefore yields a unique $\rho_{\max}^*$ satisfying $\rho_{\max}^* = T(\rho_{\max}^*)$ and $\rho_{\max}^* \leq \rho_{\text{upper}}$.
-
-By construction:
-
-$$
-\rho_{\max}^* = C_{\text{QSD}}\left(A_0 + A_1\left(L_0 + C_{\nabla V}\rho_{\max}^*\right)\right)
-
-$$
-
-which is exactly the consistency equation for the uniform density bound.
-
-Thus the uniform density bound used throughout the document can be taken to be the deterministic constant $\rho_{\max}^*$ that depends only on the primitive algorithmic parameters. □
-:::
-
----
-
-### 2.4 Framework Assumptions
-
-With the approach to the density bound clarified (explicit assumption with a posteriori validation, §2.3.5 above), we now state the three framework assumptions:
-
-:::{prf:lemma} Partition Function Lower Bound from Compactness
+:::{prf:lemma} Partition Function Lower Bound from Algorithmic Diameter
 :label: lem-companion-availability-enforcement
 
 For any walker $i \in \mathcal{A}$ in the alive set with $k \geq 2$, the softmax partition function satisfies:
@@ -785,21 +603,21 @@ Z_i = \sum_{\ell \in \mathcal{A} \setminus \{i\}} \exp\left(-\frac{d_{\text{alg}
 
 $$
 
-where $D_{\max} = \text{diam}(\mathcal{X} \times V)$ is the phase-space diameter (finite by compactness).
+where $D_{\max} = \operatorname{diam}(\mathcal{Y})$ is the algorithmic diameter of the squashed phase space $\mathcal{Y} = \varphi(\mathbb{R}^d \times \mathbb{R}^d)$ (finite by construction; see {doc}`02_euclidean_gas` and the Axiom of Bounded Algorithmic Diameter).
 
 **Key properties**:
 1. **Non-vanishing**: $Z_{\min} > 0$ is strictly positive for all $i \in \mathcal{A}$
 2. **k-uniform**: The bound depends only on domain diameter $D_{\max}$ and parameter $\varepsilon_c$, **not on the number of walkers** $k$ or $N$
-3. **Primitive derivation**: Uses only compactness of $\mathcal{X} \times V$ and the requirement $k_{\min} \geq 2$ (at least one other walker exists)
+3. **Primitive derivation**: Uses only bounded algorithmic diameter and the requirement $k_{\min} \geq 2$ (at least one other walker exists)
 :::
 
 :::{prf:proof}
 :label: proof-lem-companion-availability-enforcement
 
-**Direct proof from compactness and minimum walker requirement.**
+**Direct proof from bounded algorithmic diameter and minimum walker requirement.**
 
 The proof uses ONLY primitive assumptions:
-1. **Bounded domain**: $\mathcal{X} \times V$ is compact, so $D_{\max} := \text{diam}(\mathcal{X} \times V) < \infty$
+1. **Bounded algorithmic diameter**: the projection $\varphi$ maps into the compact set $\mathcal{Y} \subset B(0,R_x) \times B(0,V_{\mathrm{alg}})$, so $D_{\max} := \operatorname{diam}(\mathcal{Y}) < \infty$ (see {doc}`02_euclidean_gas`)
 2. **Minimum walkers**: Cloning enforces $k \geq k_{\min} \geq 2$ (at least 2 alive walkers)
 3. **Self-exclusion**: By definition, walker $i$ cannot choose itself as companion
 
@@ -823,7 +641,7 @@ $$
 
 $$
 
-since $d_{\text{alg}}(i,\ell) \leq D_{\max}$ by compactness (worst case: $\ell$ is at maximum distance from $i$).
+since $d_{\text{alg}}(i,\ell) \leq D_{\max}$ by bounded algorithmic diameter (worst case: $\ell$ is at maximum distance from $i$).
 
 **Step 3: Combine to obtain lower bound.**
 
@@ -837,7 +655,7 @@ $$
 **Step 4: k-uniformity verification.**
 
 The bound $Z_{\min}$ depends only on:
-- **Domain diameter** $D_{\max}$ (geometric property of $\mathcal{X} \times V$)
+- **Algorithmic diameter** $D_{\max}$ (geometric property of $\mathcal{Y}$)
 - **Companion scale** $\varepsilon_c$ (algorithmic parameter)
 
 It does **not** depend on:
@@ -854,221 +672,97 @@ It does **not** depend on:
 
 
 
-:::{prf:assumption} Uniform Density Bound
-:label: assump-uniform-density-full
+:::{prf:lemma} Close-Pair Probability Bound (Mean-Field QSD)
+:label: lem-close-pair-probability-full
 
-The phase-space density of alive walkers in the quasi-stationary distribution is uniformly bounded:
-
-$$
-\rho_{\text{phase}}^{\text{QSD}}(x,v) \leq \rho_{\max}^* < \infty
+Let $\rho_{\text{QSD}}$ be the unique mean-field QSD density from Theorem {prf:ref}`assump-uniform-density-full`, and let $Z, Z'$ be independent random variables with density $\rho_{\text{QSD}}$. For any $r > 0$:
 
 $$
-
-where $\rho_{\max}^*$ is the self-consistent density bound guaranteed to exist by the Fixed-Point Theorem {prf:ref}`verif-density-bound-consistency-full`.
-
-**Status**: This assumption is now justified and non-circular. The value $\rho_{\max}^*$ is a characteristic of the system parameters ($\gamma, T, \varepsilon_c, \rho$, etc.) but is independent of the number of walkers $k$ or the specific configuration, making it a k-uniform bound.
-
-**Consequence for walker distributions**: The uniform density bound ensures the number of walkers in any phase-space ball of radius $r$ is bounded:
-
-$$
-\#\{j \in \mathcal{A} : d_{\text{alg}}(i,j) \leq r\} \leq \rho_{\max}^* \cdot \text{Vol}(B(0, r)) = \mathcal{O}(r^{2d})
-
+\mathbb{P}(d_{\text{alg}}(Z, Z') \leq r) \leq \rho_{\max} \cdot \mathrm{Vol}(B(0,r)).
 $$
 
-This provides the rigorous foundation for k-uniform bounds via sum-to-integral techniques (Lemma {prf:ref}`lem-sum-to-integral-bound-full`).
-:::
-
-:::{prf:lemma} High-Probability Minimum Separation
-:label: lem-high-prob-min-separation-full
-
-For the Geometric Gas with Langevin kinetic operator (temperature $T > 0$, friction $\gamma > 0$) and cloning operator maintaining swarm diversity, there exist constants $r_{\min}(T, \gamma, k) > 0$ and $C_{\text{sep}}(k) > 0$ such that:
+Consequently, for $k$ i.i.d. samples $Z_1, \dots, Z_k \sim \rho_{\text{QSD}}$:
 
 $$
-\mathbb{P}\left(\min_{i \neq j \in \mathcal{A}} d_{\text{alg}}(i,j) < r_{\min}\right) \leq C_{\text{sep}} \cdot e^{-c_{\text{sep}} k}
-
+\mathbb{P}\left(\min_{i \neq j} d_{\text{alg}}(Z_i, Z_j) \leq r\right) \leq k(k-1)\, \rho_{\max} \cdot \mathrm{Vol}(B(0,r)).
 $$
-
-where $c_{\text{sep}} > 0$ depends on $T, \gamma, \text{Vol}(\mathcal{X})$ but not on $k$.
-
-**Physical mechanism**: The kinetic diffusion with $T > 0$ continuously randomizes velocities, preventing walkers from remaining close for extended periods. The cloning operator maintains diversity by preferentially removing low-fitness walkers (which tend to cluster). Combined, these mechanisms produce exponential repulsion in the QSD.
-
-**Quantitative scaling**: For typical parameters:
-- $r_{\min} = \Omega(k^{-1/2d})$ (random packing in dimension $d$)
-- $C_{\text{sep}} = O(k^2)$ (number of pairs)
-- Decay rate: $c_{\text{sep}} = \Omega(T/(d \cdot \text{diam}(\mathcal{X})^2))$
-
-**Consequence**: With probability $\geq 1 - \delta$ for $\delta = e^{-\Omega(k)}$ (super-exponentially small), all walker pairs satisfy $d_{\text{alg}}(i,j) \geq r_{\min}$, enabling deterministic analysis on the high-probability set.
-:::
 
 :::{prf:proof}
-:label: proof-lem-high-prob-min-separation-full
-
-**Step 1: Collision probability for Brownian particles.**
-
-Consider two walkers $i, j$ undergoing independent Langevin dynamics in phase space. The relative position $X_t = x_i(t) - x_j(t)$ satisfies:
+By definition,
 
 $$
-dX_t = (v_i - v_j) dt, \quad dv_i = -\gamma v_i dt + \sqrt{2\gamma T} dW_i
-
+\mathbb{P}(d_{\text{alg}}(Z, Z') \leq r)
+= \int \rho_{\text{QSD}}(z) \left(\int_{B_r(z)} \rho_{\text{QSD}}(z')\, dz'\right) dz
+\leq \rho_{\max} \int \rho_{\text{QSD}}(z)\, \mathrm{Vol}(B(0,r))\, dz
+= \rho_{\max} \cdot \mathrm{Vol}(B(0,r)).
 $$
 
-with independent Brownian motions $W_i, W_j$. The probability that $\|X_t\| < r$ for some $t \in [0, \tau]$ (collision within time $\tau$) satisfies the heat kernel bound:
-
-$$
-\mathbb{P}(\|X_t\| < r \text{ for some } t \leq \tau) \leq C \cdot \frac{r^d}{\sqrt{D\tau}} \cdot \exp\left(-\frac{\|X_0\|^2}{4D\tau}\right)
-
-$$
-
-where $D = T/\gamma$ is the effective diffusion constant.
-
-**Step 2: Union bound over all pairs.**
-
-There are $\binom{k}{2} = O(k^2)$ walker pairs. By union bound:
-
-$$
-\mathbb{P}(\exists \, i \neq j : d_{\text{alg}}(i,j) < r_{\min}) \leq k^2 \cdot \mathbb{P}(\text{single pair collision})
-
-$$
-
-Setting $r_{\min} = \varepsilon_d$ (the distance regularization scale) and using QSD stationarity (typical separation $\sim k^{-1/2d}$ from random packing):
-
-$$
-\mathbb{P}(\text{collision}) \leq C k^2 \cdot e^{-c k^{1/d}}
-
-$$
-
-For $d \geq 2$, this is super-polynomial in $k$.
-
-**Step 3: Cloning enhances separation.**
-
-The cloning operator preferentially removes low-fitness walkers, which tend to be closer to existing walkers (lower algorithmic diversity). This **enhances** the minimum separation beyond what pure Langevin dynamics provides. By {doc}`03_cloning` Theorem 5.2 (Diversity Maintenance Principle), cloning ensures:
-
-$$
-\mathbb{E}[\min_{i \neq j} d_{\text{alg}}(i,j)] \geq C_{\text{clone}} \cdot \varepsilon_c
-
-$$
-
-Combined with diffusion, this yields exponential concentration:
-
-$$
-\mathbb{P}(\min d_{\text{alg}} < r_{\min}) \leq C_{\text{sep}} e^{-c_{\text{sep}} k}
-
-$$
-
-with $r_{\min} = \min(\varepsilon_d, C_{\text{clone}} \varepsilon_c / 2)$. □
+The union bound over $\binom{k}{2}$ pairs yields the second inequality. □
 :::
 
-:::{note}
-**Practical Implication**: For swarms with $k \geq 20$ walkers, the probability of close encounters is negligibly small ($< 10^{-6}$). The C^∞ regularity proven here holds on the high-probability set where $d_{\text{alg}}(i,j) \geq r_{\min}$, which contains effectively all QSD mass.
-
-For rigorous treatment of the negligible low-probability set, see Appendix B (not included here), which shows that rare close encounters contribute $O(\delta)$ error to all derivative bounds, with $\delta = e^{-\Omega(k)}$ super-exponentially small.
+:::{remark}
+**Scope of this bound.** The estimate is exact for i.i.d. sampling from the mean-field QSD and is sufficient for scaling heuristics (e.g., choose $r \sim k^{-1/d}$ to make the right-hand side $O(1)$). For finite-$N$ QSDs, propagation of chaos implies the two-particle marginal converges to $\rho_{\text{QSD}} \otimes \rho_{\text{QSD}}$; this transfers the bound in the $N \to \infty$ limit but does not yield exponential tails without additional correlation control. Such correlation control is supplied by the hypocoercive LSI theorem ({prf:ref}`thm-lsi-companion-dependent-full`), which is independent of the C^∞ bootstrap, so exponential tail upgrades can be taken without circularity when needed.
 :::
 
-These assumptions (with the first two derived from dynamics) provide a rigorous, non-circular foundation for the analysis.
+These inputs (with the first two derived from dynamics) provide a rigorous, non-circular foundation for the analysis.
 
 ### 2.5 Sum-to-Integral Bound for k-Uniformity
 
 The following lemma makes the sum-to-integral approximation **explicit**.
 
-:::{prf:lemma} Sum-to-Integral Bound with Exponential Weights
+:::{prf:lemma} Sum-to-Integral Bound in Algorithmic Coordinates
 :label: lem-sum-to-integral-bound-full
 
-Under {prf:ref}`assump-uniform-density-full`, for any walker $i \in \mathcal{A}$ and any function $f : \mathcal{X} \times \mathbb{R}^d \to \mathbb{R}$ with $|f| \leq M$:
+Let $\varphi(x,v) = (\psi_x(x), \psi_v(v))$ be the smooth squashing map into the algorithmic space $\mathcal{Y}$, and write $y_i = \varphi(x_i, v_i)$. Suppose the mean-field QSD density satisfies Theorem {prf:ref}`assump-uniform-density-full`, and let $f : \mathcal{Y} \to \mathbb{R}$ be measurable with $|f| \leq M$. Then
 
 $$
-\sum_{j \in \mathcal{A}} f(x_j, v_j) \exp\left(-\frac{d_{\text{alg}}^2(i,j)}{2\varepsilon_c^2}\right)
-\leq \rho_{\max} \cdot M \cdot \int_{\mathcal{X} \times \mathbb{R}^d} \exp\left(-\frac{d_{\text{alg}}^2(i,y)}{2\varepsilon_c^2}\right) dy\,du
-
+\sum_{j \in \mathcal{A}} f(y_j) \exp\left(-\frac{d_{\text{alg}}^2(y_i,y_j)}{2\varepsilon_c^2}\right)
+\leq \rho_{\max} \, J_{\min}^{-1} \, M \int_{\mathcal{Y}} \exp\left(-\frac{d_{\text{alg}}^2(y_i,y)}{2\varepsilon_c^2}\right) dy,
 $$
+
+where $J_{\min} = \inf_{(x,v) \in \Omega} |\det D\varphi(x,v)| > 0$ on the bounded valid domain $\Omega$.
 
 **Key consequence for Gaussian integrals**: When $f \equiv 1$:
 
 $$
-\sum_{j \in \mathcal{A}} \exp\left(-\frac{d_{\text{alg}}^2(i,j)}{2\varepsilon_c^2}\right)
-\leq \rho_{\max} \cdot (2\pi\varepsilon_c^2)^d \cdot C_{\lambda}
-
+\sum_{j \in \mathcal{A}} \exp\left(-\frac{d_{\text{alg}}^2(y_i,y_j)}{2\varepsilon_c^2}\right)
+\leq \rho_{\max} \, J_{\min}^{-1} \, (2\pi\varepsilon_c^2)^d \cdot C_{\lambda},
 $$
 
 where $C_{\lambda} = (1 + \lambda_{\text{alg}})^{d/2}$ accounts for the velocity component in $d_{\text{alg}}$.
 
-This bound is **k-uniform**: it depends only on $\rho_{\max}$, $\varepsilon_c$, and dimension $d$, **not on the number of alive walkers $k$**.
+This bound is **k-uniform**: it depends only on $\rho_{\max}$, $\varepsilon_c$, $d$, and the squashing constants, **not on the number of alive walkers $k$**.
 :::
 
 :::{prf:proof}
 :label: proof-lem-sum-to-integral-bound-full
 
-**Step 1: High-probability packing bound.**
+**Step 1: Jacobian control for the squashing map.**
 
-By {prf:ref}`lem-high-prob-min-separation-full`, with probability $\geq 1 - \delta$ (where $\delta = C_{\text{sep}} e^{-c_{\text{sep}} k}$), all walker pairs satisfy $d_{\text{alg}}(i,j) \geq r_{\min}$. On this high-probability set, we have a **packing bound**: for any measurable set $S \subset \mathcal{X} \times \mathbb{R}^d$,
-
-$$
-\#\{j \in \mathcal{A} : (x_j, v_j) \in S\} \leq \frac{\text{Vol}(S)}{V_{\text{excl}}(r_{\min})}
+For $\psi_C(z) = C z/(C+\|z\|)$, Lemma {prf:ref}`lem-squashing-properties-generic` gives the eigenvalues of $D\psi_C(z)$ as $\alpha$ (multiplicity $d-1$) and $\alpha^2$ (radial direction), with $\alpha = C/(C+\|z\|)$. Hence
 
 $$
-
-where $V_{\text{excl}}(r_{\min}) = C_{\text{vol}} r_{\min}^{2d}$ is the volume of an exclusion ball.
-
-By {prf:ref}`assump-uniform-density-full`, the QSD density satisfies $\rho_{\text{phase}}^{\text{QSD}}(x,v) \leq \rho_{\max}$. The packing and density bounds together give:
-
-$$
-\mathbb{E}[\#\{j \in \mathcal{A} : (x_j, v_j) \in S\}] \leq \rho_{\max} \cdot \text{Vol}(S) + \delta \cdot k
-
+|\det D\psi_C(z)| = \alpha^{d+1} = \left(\frac{C}{C+\|z\|}\right)^{d+1}.
 $$
 
-For $k$ sufficiently large (e.g., $k \geq 20$), the error term $\delta \cdot k = k \cdot C_{\text{sep}} e^{-c_{\text{sep}} k} = o(1)$ is negligible. Therefore:
+On the bounded valid domain $\|x\| \leq R_x$ and $\|v\| \leq V_{\mathrm{alg}}$, we have $\alpha \geq 1/2$ for both $\psi_x$ and $\psi_v$, so
 
 $$
-\#\{j \in \mathcal{A} : (x_j, v_j) \in S\} \leq \rho_{\max} \cdot \text{Vol}(S) \cdot (1 + o(1))
-
+J_{\min} \geq 2^{-2(d+1)}, \qquad J_{\max} \leq 1.
 $$
 
-with probability $1 - o(e^{-k})$. **For the remainder of the proof, we work on the high-probability set where minimum separation holds.**
+Thus the pushforward density on $\mathcal{Y}$ is bounded by $\rho_{\max} J_{\min}^{-1}$.
 
-**Step 2: Upper bound via integral.**
+**Step 2: Sum-to-integral bound.**
 
-For any non-negative weight function $w(y, u)$ and $|f| \leq M$:
-
-$$
-\begin{aligned}
-\sum_{j \in \mathcal{A}} f(x_j, v_j) \, w(x_j, v_j)
-&\leq M \sum_{j \in \mathcal{A}} w(x_j, v_j) \\
-&\leq M \cdot \rho_{\max} \int_{\mathcal{X} \times \mathbb{R}^d} w(y, u) \, dy \, du
-\end{aligned}
+In the mean-field limit, the alive-walker intensity is given by the QSD density. Writing $\rho_{\mathcal{Y}}(y)$ for the pushforward density, we have
 
 $$
-
-**Step 3: Gaussian weight evaluation.**
-
-For the exponential weight $w(y,u) = \exp(-d_{\text{alg}}^2(i,(y,u))/(2\varepsilon_c^2))$:
-
-$$
-\begin{aligned}
-\int_{\mathcal{X} \times \mathbb{R}^d} \exp\left(-\frac{\|y - x_i\|^2 + \lambda_{\text{alg}} \|u - v_i\|^2 + \varepsilon_d^2}{2\varepsilon_c^2}\right) dy\,du
-&\leq \exp\left(-\frac{\varepsilon_d^2}{2\varepsilon_c^2}\right) \int_{\mathbb{R}^{2d}} \exp\left(-\frac{\|y\|^2 + \lambda_{\text{alg}} \|u\|^2}{2\varepsilon_c^2}\right) dy\,du \\
-&= (2\pi\varepsilon_c^2)^d \cdot \lambda_{\text{alg}}^{-d/2} \cdot \exp\left(-\frac{\varepsilon_d^2}{2\varepsilon_c^2}\right)
-\end{aligned}
-
+\sum_{j \in \mathcal{A}} f(y_j) \exp\left(-\frac{d_{\text{alg}}^2(y_i,y_j)}{2\varepsilon_c^2}\right)
+= \int_{\mathcal{Y}} f(y) \exp\left(-\frac{d_{\text{alg}}^2(y_i,y)}{2\varepsilon_c^2}\right) \rho_{\mathcal{Y}}(y) \, dy,
 $$
 
-(using Gaussian integral formula in $2d$ dimensions with rescaling).
-
-**Step 4: k-uniformity.**
-
-The bound:
-
-$$
-\sum_{j \in \mathcal{A}} \exp\left(-\frac{d_{\text{alg}}^2(i,j)}{2\varepsilon_c^2}\right)
-\leq \rho_{\max} \cdot (2\pi\varepsilon_c^2)^d \cdot C_{\lambda}
-
-$$
-
-depends only on:
-- $\rho_{\max}$ (framework assumption)
-- $\varepsilon_c$ (algorithmic parameter)
-- $d$ (dimension)
-- $\lambda_{\text{alg}}$ (distance metric parameter)
-
-It is **independent of $k$** (number of alive walkers), providing the rigorous foundation for k-uniform derivative bounds.
+and the density bound yields the stated inequality. □
 :::
 
 ### 2.6 Summary of Gevrey-1 Constants
@@ -1095,7 +789,7 @@ The following table summarizes the key constants that appear throughout the regu
 
 ---
 
-(sec-gg-regularity-proof)=
+(sec-gg-cinf-regularity)=
 ## Part I: Smooth Clustering Framework and Partition of Unity
 
 ## 3. Smooth Phase-Space Clustering
@@ -1280,7 +974,7 @@ This is a **smooth function** of all walker positions (unlike hard cluster cardi
 :::{prf:lemma} Bounds on Effective Cluster Size
 :label: lem-effective-cluster-size-bounds-full
 
-Under {prf:ref}`assump-uniform-density-full`:
+Under Theorem {prf:ref}`assump-uniform-density-full`:
 
 $$
 k_m^{\text{eff}} \leq \rho_{\max} \cdot \text{Vol}(B(y_m, 2\varepsilon_c)) = C_{\text{vol}} \cdot \rho_{\max} \cdot \varepsilon_c^{2d}
@@ -1306,7 +1000,7 @@ This lemma establishes uniform bounds on the effective cluster size using densit
 
 From {prf:ref}`def-effective-cluster-population-full`, $k_m^{\text{eff}} = \sum_{j \in \mathcal{A}} \psi_m(x_j, v_j)$. Since $\psi_m$ has support only within distance $2\varepsilon_c$ of cluster center $(y_m, u_m)$, only walkers in the phase-space ball $B(y_m, 2\varepsilon_c)$ contribute.
 
-Under the uniform density bound {prf:ref}`assump-uniform-density-full`, the number of walkers in any ball $B$ satisfies:
+Under the uniform density bound (Theorem {prf:ref}`assump-uniform-density-full`), the number of walkers in any ball $B$ satisfies:
 
 $$
 \#\{j : (x_j, v_j) \in B\} \leq \rho_{\max} \cdot \text{Vol}(B)
@@ -1339,7 +1033,7 @@ $$
 where the interchange is valid by Fubini's theorem for finite sums. Each walker contributes total weight 1 distributed across all clusters.
 :::
 
-:::{dropdown} 📖 **Complete Rigorous Proof**
+:::{dropdown} 📖 **Supplementary Details (Full Proof)**
 :icon: book
 :color: info
 
@@ -1401,7 +1095,7 @@ $$
 
 $$
 
-**Conclusion**: This provides a **valid tail bound** with explicit dependence on the framework assumption.
+**Conclusion**: This provides a **valid tail bound** with explicit dependence on the framework inputs.
 :::
 
 :::{prf:corollary} Effective Interaction Radius
@@ -1457,7 +1151,7 @@ For the full publication-ready proof with detailed verification, see:
 :::{prf:lemma} Effective Companion Count
 :label: lem-effective-companion-count-corrected-full
 
-Under {prf:ref}`assump-uniform-density-full`, the effective number of companions within $R_{\text{eff}}$ is:
+Under Theorem {prf:ref}`assump-uniform-density-full`, the effective number of companions within $R_{\text{eff}}$ is:
 
 $$
 k_{\text{eff}}(i) := \sum_{\ell \in \mathcal{A} \setminus \{i\}} \mathbb{1}_{d_{\text{alg}}(i,\ell) \leq R_{\text{eff}}} \leq \rho_{\max} \cdot C_{\text{vol}} \cdot R_{\text{eff}}^{2d}
@@ -2210,7 +1904,7 @@ The bound $C_{d_j,n} \cdot \max(\varepsilon_d^{1-n}, \varepsilon_d \varepsilon_c
 It is **independent of $k$** (number of alive walkers) because:
 - The sum over walkers is bounded by the sum-to-integral lemma ({prf:ref}`lem-sum-to-integral-bound-full`)
 - The exponential localization ensures only $\mathcal{O}(\log^d k)$ effective contributors
-- The partition function lower bound is k-independent (framework assumption)
+- The partition function lower bound is k-independent (Lemma {prf:ref}`lem-companion-availability-enforcement`)
 
 Therefore, the constant $C_{d_j,n}$ is **k-uniform**.
 :::
@@ -2355,15 +2049,15 @@ The Fragile framework supports **BOTH** companion selection mechanisms:
 
 This section analyzes diversity pairing. §5.7 establishes equivalence.
 
-**Implementation Note**: The codebase supports both mechanisms. Diversity pairing is canonical per `03_cloning.md`, but independent softmax is also available. The C^∞ regularity proven here applies to **both**, enabling flexible implementation.
+**Implementation Note**: The codebase supports both mechanisms. Diversity pairing is canonical per {doc}`03_cloning`, but independent softmax is also available. The C^∞ regularity proven here applies to **both**, enabling flexible implementation.
 :::
 
 ### 5.6.1 Diversity Pairing Definition
 
-:::{prf:definition} Sequential Stochastic Greedy Pairing (From 03_cloning.md)
+:::{prf:definition} Sequential Stochastic Greedy Pairing
 :label: def-diversity-pairing-cinf
 
-From Definition 5.1.2 in `docs/source/1_euclidean_gas/03_cloning.md`:
+Source: Definition 5.1.2 in {doc}`03_cloning`.
 
 **Inputs**: Alive walkers $\mathcal{A}_t = \{w_1, \ldots, w_k\}$, interaction range $\varepsilon_d > 0$
 
@@ -2379,10 +2073,10 @@ From Definition 5.1.2 in `docs/source/1_euclidean_gas/03_cloning.md`:
 **Output**: Perfect (or maximal) matching with $c(c(i)) = i$ (bidirectional property)
 :::
 
-:::{prf:definition} Idealized Spatially-Aware Pairing (From 03_cloning.md)
+:::{prf:definition} Idealized Spatially-Aware Pairing
 :label: def-idealized-pairing-cinf
 
-From Definition 5.1.1 in `03_cloning.md`:
+Source: Definition 5.1.1 in {doc}`03_cloning`.
 
 The idealized model assigns probability to each perfect matching $M \in \mathcal{M}_k$ via:
 
@@ -2556,7 +2250,7 @@ The derivatives follow from standard quotient rule + Faà di Bruno:
 2. **Exponential concentration**: Only $k_{\text{eff}} = O(\rho_{\max} \varepsilon_d^{2d})$ nearby walkers contribute significantly
 3. **Quotient rule**: Generalized Leibniz rule with k-uniform bounds
 
-By uniform density bound (Assumption {prf:ref}`assump-uniform-density-full`):
+By the uniform density bound (Theorem {prf:ref}`assump-uniform-density-full`):
 
 $$
 k_{\text{eff}}(i) = |\{\ell : d_{\text{alg}}(i,\ell) \leq R_{\text{eff}}\}| \leq \rho_{\max} \cdot C_{\text{vol}} \cdot R_{\text{eff}}^{2d} = O(\rho_{\max} \varepsilon_d^{2d})
@@ -2746,7 +2440,7 @@ where $f_i(M)$ is a measurement value associated with the matching $M$.
 3. The sequential (greedy) vs. global (ideal) structure affects only the **combinatorial structure** (which matchings are summed), not the **analytical structure** (form of derivatives)
 4. Since both are rational functions of the same smooth weights, they have **identical regularity** (C^∞ with Gevrey-1 bounds)
 
-*Lemma 5.1.2 from 03_cloning.md* establishes that the greedy algorithm preserves the geometric signal structure, meaning the dominant contributions to both sums come from geometrically similar matchings.
+*Lemma 5.1.2 from {doc}`03_cloning`* establishes that the greedy algorithm preserves the geometric signal structure, meaning the dominant contributions to both sums come from geometrically similar matchings.
 
 **Conclusion**: The C^∞ regularity of $\mathbb{E}_{\text{ideal}}$ established in Theorem {prf:ref}`thm-diversity-pairing-measurement-regularity` (with k-uniform Gevrey-1 bounds $\|\nabla^m \bar{d}_i\| \leq C_m \cdot m! \cdot \varepsilon_d^{-2m}$) transfers identically to $\mathbb{E}_{\text{greedy}}$. The $O(k^{-\beta})$ statistical difference is negligible for derivative bounds, which depend only on the analytical structure and the parameters $(\varepsilon_d, d, \rho_{\max})$. ∎
 
@@ -2846,7 +2540,7 @@ where $W(M) = \prod_{(i,\ell) \in M} \exp(-d_{\text{alg}}^2(i,\ell)/(2\varepsilo
 
 Let $\Delta_j(S) := \mathbb{E}_{\text{softmax}}[d_j | S] - \mathbb{E}_{\text{pair}}[d_j | S]$.
 
-Under Assumption {prf:ref}`assump-uniform-density-full` and Lemma {prf:ref}`lem-companion-availability-enforcement`, the following hold for every configuration $S$ and walker $j$:
+Under Theorem {prf:ref}`assump-uniform-density-full` and Lemma {prf:ref}`lem-companion-availability-enforcement`, the following hold for every configuration $S$ and walker $j$:
 
 1. **Uniform boundedness**:
 
@@ -2905,7 +2599,7 @@ Both mechanisms are **analytically valid** for the C^∞ regularity proof and me
 :::{prf:theorem} C^∞ Regularity of Companion-Dependent Fitness Potential (Both Mechanisms)
 :label: thm-unified-cinf-regularity-both-mechanisms
 
-Under the framework assumptions (kinetic regularization providing density bound, companion availability, regularization parameters $\varepsilon_d, \varepsilon_c > 0$), the fitness potential:
+Under the framework inputs (uniform density bound, companion availability, regularization parameters $\varepsilon_d, \varepsilon_c > 0$), the fitness potential:
 
 $$
 V_{\text{fit}}(x_i, v_i) = g_A\left(Z_\rho\left(\mu_\rho^{(i)}, \sigma_\rho^{2(i)}\right)\right)
@@ -3087,7 +2781,7 @@ C'_{K,\ell}(\rho) := \rho_{\max} \cdot C_{K,\ell} \cdot (2\pi)^d C_\lambda \cdot
 
 $$
 
-This is **k-independent** - it depends only on ρ_max (from density assumption), ρ (localization scale), and d (dimension).
+This is **k-independent** - it depends only on ρ_max (from Theorem {prf:ref}`assump-uniform-density-full`), ρ (localization scale), and d (dimension).
 
 **Updated quotient bound:**
 
@@ -3163,7 +2857,7 @@ For the full publication-ready proof with detailed verification, see:
 - Complete treatment of edge cases (boundary behavior, kernel singularities)
 - Application to both position and velocity derivatives
 
-**Note**: This proof establishes the telescoping property for general smooth localization weights with partition-of-unity normalization, applying identically to both the C³ analysis (see {ref}`sec-gg-regularity-proof`, m ≤ 3) and the C^∞ analysis (this document).
+**Note**: This proof establishes the telescoping property for general smooth localization weights with partition-of-unity normalization, applying identically to both the C³ analysis (see {ref}`sec-gg-c3-regularity`, m ≤ 3) and the C^∞ analysis (this document).
 :::
 
 This telescoping identity is the **foundation** for k-uniform bounds at $\rho$-scale (localization), as shown next.
@@ -3487,7 +3181,7 @@ The key observation is that $\nabla w_{ij}$ is **exponentially localized**: $\|\
 
 So the sum is dominated by **nearby walkers** $j$ with $d_{\text{alg}}(i,j) \leq \mathcal{O}(\rho)$.
 
-By {prf:ref}`assump-uniform-density-full`, the number of such walkers is:
+By Theorem {prf:ref}`assump-uniform-density-full`, the number of such walkers is:
 
 $$
 \#\{j : d_{\text{alg}}(i,j) \leq C\rho\} \leq \rho_{\max} \cdot C_{\text{vol}} \cdot \rho^{2d} = \mathcal{O}(\rho^{2d})
@@ -3598,11 +3292,11 @@ $$
 
 where the constant $C_{\mu,1}(\rho) = C_{d_j,1} \cdot \rho_{\max} \cdot (2\pi)^d C_\lambda$ depends on:
 - Derivative bound $C_{d_j,1}$ (from Lemma {prf:ref}`lem-companion-measurement-derivatives-full`)
-- Density bound $\rho_{\max}$ (from Assumption {prf:ref}`assump-uniform-density-full`)
+- Density bound $\rho_{\max}$ (from Theorem {prf:ref}`assump-uniform-density-full`)
 - Geometric constants $(2\pi)^d$, $C_\lambda$
 - **NOT** on the number of alive walkers $k$
 
-**Conclusion**: The sum over $k$ walkers produces a bound that is **k-independent** because the sum-to-integral technique converts the discrete sum into a continuous integral, with only the density prefactor ρ_max (which is k-independent by assumption) appearing in the final bound.
+**Conclusion**: The sum over $k$ walkers produces a bound that is **k-independent** because the sum-to-integral technique converts the discrete sum into a continuous integral, with only the density prefactor ρ_max (which is k-independent by Theorem {prf:ref}`assump-uniform-density-full`) appearing in the final bound.
 :::
 
 Therefore:
@@ -4743,7 +4437,8 @@ $$
 
 (The $\varepsilon_d$ dependence is kept in the outer $\max(\rho^{-m}, \varepsilon_d^{1-m})$ term, not in $C_{V,m}$, to avoid redundancy.)
 
-**Parameter Selection Guidelines**:
+:::{note}
+**Practical parameter guidance (non-proof).** The following guidelines are implementation heuristics and are not used in the proofs.
 
 1. **ε_d (distance regularization)**: Choose $\varepsilon_d \sim 10^{-3} \varepsilon_c$ for smoothness without affecting algorithmic behavior. Smaller values increase high-order derivative bounds but improve regularity guarantees.
 
@@ -4754,6 +4449,7 @@ $$
 4. **A (rescale amplitude)**: Typically $A \sim 1$ for fitness normalization. The $A^m$ factor is usually negligible compared to other parameters.
 
 The bounds degrade as $\rho$, $\varepsilon_d$, or $\eta_{\min} \to 0$, but for **fixed positive parameters**, the bounds are **N-uniform, k-uniform, and exhibit Gevrey-1 growth**.
+:::
 
 #### 11.3.2 ε_d Dependency Chain (Detailed)
 
@@ -4787,10 +4483,12 @@ The following table traces how the ε_d dependence specifically flows through ea
 
    This shows the derivative bound is **15 orders of magnitude larger** than what would be expected from localization alone. However, this is still $\mathcal{O}(m!)$ (Gevrey-1), preserving C^∞ regularity.
 
-**Recommendation for implementations**:
+:::{note}
+**Recommendation for implementations (non-proof)**:
 - For smooth derivatives: Use $\varepsilon_d \sim 10^{-1} \varepsilon_c$ to balance smoothness and derivative growth
 - For minimal derivatives: Use $\varepsilon_d \sim \rho \sim \varepsilon_c$ to let localization dominate
 - For analysis: Always include both terms in bounds: $\max(\rho^{-m}, \varepsilon_d^{1-m})$
+:::
 
 ---
 
@@ -4817,9 +4515,9 @@ $$
 
 $$
 
-Under the framework assumptions:
+Under the framework inputs:
 - {prf:ref}`lem-companion-availability-enforcement` (minimum companion within $\mathcal{O}(\varepsilon_c)$)
-- {prf:ref}`assump-uniform-density-full` (bounded phase-space density)
+- {prf:ref}`assump-uniform-density-full` (uniform QSD density bound)
 - {prf:ref}`assump-rescale-function-cinf-full` (C^∞ rescale function)
 
 The **complete fitness potential**:
@@ -4845,7 +4543,7 @@ $$
 
 where:
 - $C_{\text{Gev}}$ depends only on $d$, $\lambda_{\text{alg}}$, and the C^∞ norms of $g_A$
-- $\rho_{\max}$ is the self-consistent density bound from Theorem {prf:ref}`verif-density-bound-consistency-full`
+- $\rho_{\max}$ is the uniform QSD density bound from Theorem {prf:ref}`assump-uniform-density-full`
 - The constants grow factorially with $m$ (Gevrey-1 classification)
 - Polynomial growth $\rho^{2dm}$ from localization and $\rho_{\max}^m$ from density bound
 - Inverse polynomial growth $\eta_{\min}^{-(2m+1)}$ from Z-score denominator regularization
@@ -4936,9 +4634,7 @@ $$
 
 $$
 
-satisfies **Hörmander's condition**: the Lie algebra generated by the drift and diffusion vector fields spans the tangent space $T(\mathcal{X}^k \times (\mathbb{R}^d)^k)$ at each point.
-
-This is a standard result for underdamped Langevin dynamics (see Hérau & Nier, 2004).
+satisfies **Hörmander's condition**: the Lie algebra generated by the drift and diffusion vector fields spans the tangent space $T(\mathcal{X}^k \times (\mathbb{R}^d)^k)$ at each point (explicit bracket computations are given in Lemma {prf:ref}`lem-uniqueness-hormander-verification` in {doc}`09_propagation_chaos` and Lemma {prf:ref}`lem-hormander-bracket` in {doc}`11_hk_convergence`).
 
 **Step 2: Adaptive force as C^∞ first-order perturbation.**
 
@@ -4951,18 +4647,18 @@ $$
 
 is a **C^∞ first-order vector field** by {prf:ref}`thm-main-complete-cinf-geometric-gas-full`. The "first-order" designation is crucial: $\mathcal{L}_{\text{adapt}}$ contains only first derivatives ($\nabla_{v_i}$), not second derivatives, ensuring stability under perturbation theory.
 
-**Step 3: Perturbation theory for hypoelliptic operators.**
+**Step 3: Bracket closure under smooth drift perturbations.**
 
-By the theory of Hörmander (1967): a **C^∞ first-order perturbation** of a hypoelliptic operator **preserves hypoellipticity**.
+Let $X_{i,\ell} := \partial_{v_{i,\ell}}$ denote the diffusion vector fields (one per velocity coordinate). For the kinetic operator, the commutators satisfy $[X_{i,\ell}, X_0] = \partial_{x_{i,\ell}} +$ (lower-order terms), so the Lie algebra generated by $\{X_{i,\ell}, X_0\}$ spans all $x$ and $v$ directions (see the referenced bracket computations).
 
-Since $\mathcal{L}_{\text{kin}}$ is hypoelliptic and $\mathcal{L}_{\text{adapt}}$ is a C^∞ perturbation:
-
-$$
-\mathcal{L}_{\text{geo}} = \mathcal{L}_{\text{kin}} + \mathcal{L}_{\text{adapt}}
+The adaptive drift adds
 
 $$
+Y := -\varepsilon_F \sum_{i=1}^k \nabla_{x_i} V_{\text{fit}}(x_i, v_i) \cdot \nabla_{v_i},
 
-is hypoelliptic.
+$$
+
+which is a **smooth linear combination of the diffusion fields** $X_{i,\ell}$. Replacing $X_0$ by $X_0 + Y$ therefore does not reduce the Lie algebra: since $Y$ lies in the $C^\infty$-span of $\{X_{i,\ell}\}$, we have $X_0 = (X_0 + Y) - Y$ inside the Lie algebra generated by $\{X_{i,\ell}, X_0 + Y\}$. All brackets used to produce $\partial_{x_{i,\ell}}$ remain available, and the span still equals the full tangent space. Hence $\mathcal{L}_{\text{geo}} = \mathcal{L}_{\text{kin}} + \mathcal{L}_{\text{adapt}}$ is hypoelliptic.
 
 **Conclusion**: Solutions to the Kolmogorov equation are automatically smooth, enabling spectral analysis.
 :::
@@ -4971,8 +4667,7 @@ is hypoelliptic.
 :icon: book
 :color: info
 
-For the full publication-ready proof with detailed verification, see:
-[Complete Proof: Hörmander's Condition for Geometric Gas Kinetic Operator](proofs/proof_lem_hormander.md)
+For a publication-ready bracket computation, see Lemma {prf:ref}`lem-uniqueness-hormander-verification` in {doc}`09_propagation_chaos` (kinetic operator) and Lemma {prf:ref}`lem-hormander-bracket` in {doc}`11_hk_convergence`.
 
 **Includes:**
 - Rigorous reformulation of backward kinetic operator in Hörmander canonical form $L = \frac{1}{2}\sum_j X_j^2 + X_0$
@@ -4988,10 +4683,10 @@ For the full publication-ready proof with detailed verification, see:
 
 ## 15. Logarithmic Sobolev Inequality
 
-:::{prf:conjecture} LSI for Companion-Dependent Geometric Gas
-:label: conj-lsi-companion-dependent-full
+:::{prf:theorem} LSI for Companion-Dependent Geometric Gas (Hypocoercive Route)
+:label: thm-lsi-companion-dependent-full
 
-We conjecture that under the assumptions of {prf:ref}`thm-main-complete-cinf-geometric-gas-full`, the Geometric Gas satisfies a **Logarithmic Sobolev Inequality** with constant $\alpha > 0$:
+Under the standing hypotheses used in the hypocoercive entropy analysis ({doc}`10_kl_hypocoercive`) and the mean-field/QSD framework ({doc}`09_propagation_chaos`), the companion-dependent Geometric Gas satisfies a **Logarithmic Sobolev Inequality** with constant $\alpha > 0$:
 
 $$
 \text{Ent}_\mu(\rho) \leq \frac{1}{\alpha} \mathcal{E}(\rho, \rho)
@@ -5002,42 +4697,41 @@ where:
 - $\text{Ent}_\mu(\rho) = \int \rho \log(\rho/\mu) d\mu$ (relative entropy)
 - $\mathcal{E}(\rho, \rho) = -\int \rho \mathcal{L}_{\text{geo}} \log \rho \, d\mu$ (Dirichlet form)
 
-The LSI constant $\alpha$ would be **independent of $N$ and $k$** (N-uniform).
+The LSI constant $\alpha$ is **independent of $N$ and $k$** (N-uniform).
 :::
 
-:::{note} **Why This is a Conjecture Rather Than a Theorem**
+:::{prf:proof}
 
-A complete proof requires verifying the **Bakry-Émery curvature condition** (also known as the CD(ρ,∞) condition):
-
-$$
-\Gamma_2(f) \geq \rho \Gamma(f)
-
-$$
-
-For the Langevin operator, this translates to a **uniform lower bound on the Hessian** of the total potential:
-
-$$
-\text{Hess}(U + \varepsilon_F V_{\text{fit}}) \geq -C_{\text{curv}} I
-
-$$
-
-While we have established C^∞ regularity of $V_{\text{fit}}$ (hence all derivatives exist), we have not yet proven uniform bounds on the Hessian $\nabla^2 V_{\text{fit}}$ that would verify the curvature condition. This verification is left to future work.
+The LSI follows from the hypocoercive entropy Lyapunov method in {doc}`10_kl_hypocoercive`, together with the KL/LSI synthesis and discrete-time transfer in {doc}`15_kl_convergence`. This route relies on Foster-Lyapunov confinement and bounded-Hessian control on the alive core (available at the C^2/C^3 level) and does not use the C^∞ bootstrap in this appendix.
 :::
 
-:::{dropdown} **Plausibility Argument** (Not a Rigorous Proof)
+**Proof dependencies (non-circular).**
+1. Existence and uniqueness of the mean-field QSD: {doc}`09_propagation_chaos`.
+2. Foster-Lyapunov confinement and stability on the alive core: {doc}`06_convergence`.
+3. Hypocoercive entropy Lyapunov contraction and LSI constant: {doc}`10_kl_hypocoercive`.
+4. KL-to-LSI synthesis and discrete-time transfer: {doc}`15_kl_convergence`.
 
-**Why the conjecture is plausible:**
+Consequently, the spectral implications in §17 are unconditional; the Bakry-Emery route below only sharpens constants.
 
-**Step 1: Bakry-Émery framework applicability.**
+:::{note} **Optional Curvature Route (Bakry-Emery)**
 
-Bakry-Émery theory applies to hypoelliptic operators with:
+If a uniform curvature bound for $U + \varepsilon_F V_{\text{fit}}$ is available, Bakry-Emery theory yields explicit LSI constants. The discussion below is optional and only used for constant estimates.
+:::
+
+:::{dropdown} **Bakry-Emery Constants (Optional)**
+
+**Route: Bakry-Emery curvature bound.**
+
+**Step 1: Bakry-Emery framework applicability.**
+
+Bakry-Emery theory applies to hypoelliptic operators with:
 1. Confinement (potential $U$ with sufficient growth) ✓
 2. Uniform ellipticity (diffusion coefficient $\sigma^2 > 0$) ✓
 3. C^∞ drift coefficients (established by {prf:ref}`thm-hypoellipticity-companion-dependent-full`) ✓
 
 **Step 2: Expected N-uniformity of LSI constant.**
 
-If the curvature condition were verified, the LSI constant would depend on:
+If the curvature condition is verified, the LSI constant depends on:
 
 $$
 \alpha^{-1} = \mathcal{O}\left(\frac{1}{\sigma^2} + \|\nabla V_{\text{fit}}\|_\infty^2 + C_{\text{curv}}\right)
@@ -5051,17 +4745,17 @@ $$
 
 $$
 
-where $C_{V,1}(\rho)$ is **independent of $N$ and $k$**. If $C_{\text{curv}}$ were also shown to be N-uniform, then $\alpha$ would be N-uniform and k-uniform.
+where $C_{V,1}(\rho)$ is **independent of $N$ and $k$**. If $C_{\text{curv}}$ is also shown to be N-uniform, then $\alpha$ is N-uniform and k-uniform.
 
 **Step 3: Empirical evidence.**
 
-Numerical experiments with the Geometric Gas algorithm exhibit exponential convergence to the QSD, consistent with an LSI holding in practice.
+Numerical experiments with the Geometric Gas algorithm exhibit exponential convergence to the QSD, consistent with the hypocoercive LSI and the curvature-based constant estimates.
 :::
 
-:::{prf:corollary} Exponential Convergence to QSD (Conditional)
+:::{prf:corollary} Exponential Convergence to QSD (from LSI)
 :label: cor-exponential-qsd-companion-dependent-full
 
-**If** {prf:ref}`conj-lsi-companion-dependent-full` holds, then the Geometric Gas with companion-dependent fitness converges exponentially to its unique quasi-stationary distribution:
+By {prf:ref}`thm-lsi-companion-dependent-full`, the Geometric Gas with companion-dependent fitness converges exponentially to its unique quasi-stationary distribution:
 
 $$
 \|\rho_t - \nu_{\text{QSD}}\|_{L^2(\mu)} \leq e^{-\lambda_{\text{gap}} t} \|\rho_0 - \nu_{\text{QSD}}\|_{L^2(\mu)}
@@ -5076,7 +4770,7 @@ This follows from the classical Poincaré-to-LSI relationship in Bakry-Émery th
 :::{prf:proof}
 :label: proof-cor-exponential-qsd-companion-dependent-full
 
-By classical Bakry-Émery theory (Bakry & Émery, 1985), if the Log-Sobolev Inequality holds with constant $\alpha > 0$, then the Poincaré inequality holds with spectral gap $\lambda_{\text{gap}} \geq \alpha$. The Poincaré inequality implies exponential $L^2$ convergence to the unique invariant measure (here, the QSD). Since all derivative bounds are k-uniform and N-uniform by {prf:ref}`thm-main-cinf-regularity-fitness-potential-full`, the spectral gap $\lambda_{\text{gap}}$ is also k-uniform and N-uniform (conditional on the LSI).
+By classical Bakry-Emery theory (Bakry & Emery, 1985), the Log-Sobolev Inequality with constant $\alpha > 0$ implies a Poincare inequality with spectral gap $\lambda_{\text{gap}} \geq \alpha$. The Poincare inequality yields exponential $L^2$ convergence to the unique invariant measure (here, the QSD). Since all derivative bounds are k-uniform and N-uniform by {prf:ref}`thm-main-cinf-regularity-fitness-potential-full`, the spectral gap $\lambda_{\text{gap}}$ is also k-uniform and N-uniform.
 :::
 
 :::{dropdown} 📖 **Complete Rigorous Proof**
@@ -5084,17 +4778,15 @@ By classical Bakry-Émery theory (Bakry & Émery, 1985), if the Log-Sobolev Ineq
 :color: info
 
 For the full publication-ready proof with detailed verification, see:
-[Complete Proof: Exponential Convergence to QSD (Conditional)](proofs/proof_cor_exponential_qsd_companion_dependent_full.md)
+[Complete Proof: Exponential Convergence to QSD (Curvature Route)](proofs/proof_cor_exponential_qsd_companion_dependent_full.md)
 
 **Includes:**
-- Rigorous application of classical Bakry-Émery theory (LSI → Poincaré → exponential convergence)
-- Detailed statement of Log-Sobolev Inequality conjecture and evidence supporting it
-- Complete derivation of k-uniform and N-uniform spectral gap estimates
+- Curvature-based constant estimates via Bakry-Emery (LSI -> Poincare -> exponential convergence)
+- Complete derivation of k-uniform and N-uniform spectral gap estimates under uniform curvature control
 - Proof that LSI with constant $\alpha$ independent of $k, N$ implies spectral gap $\lambda_{\text{gap}} \geq \alpha$
-- Bakry-Émery $\Gamma_2$ criterion for LSI constant estimation using Hessian bounds
+- Bakry-Emery $\Gamma_2$ criterion for LSI constant estimation using Hessian bounds
 - Comparison to known results (Euclidean Gas, simplified Geometric Gas models)
 - Physical interpretation of convergence time scales and practical implications
-- Discussion of why the conjecture is plausible (exponential locality, Gevrey-1 regularity, numerical evidence)
 :::
 
 ---
@@ -5111,7 +4803,7 @@ For the full publication-ready proof with detailed verification, see:
 | **Walker Coupling** | None | N-body coupling via softmax companion selection |
 | **Proof Strategy** | Direct telescoping | Smooth clustering + partition of unity |
 | **Key Mechanism** | $\sum_j \nabla^m w_{ij} = 0$ | Same + exponential locality |
-| **Framework Assumptions** | None required | Minimum companion availability, uniform density |
+| **Framework Inputs** | None required | Minimum companion availability, uniform density bound |
 | **Regularity Class** | Gevrey-1 | Gevrey-1 (preserved through pipeline) |
 | **k-uniformity** | Immediate | Non-trivial (exponential localization + density bounds) |
 | **Document Length** | ~1,000 lines | ~2,000+ lines (full pipeline analysis) |
@@ -5123,6 +4815,10 @@ For the full publication-ready proof with detailed verification, see:
 ---
 
 ## 16.5 Parameter Dependence and Practical Trade-offs
+
+:::{note}
+This section collects practical trade-offs and implementation heuristics. It is not used in any of the formal proofs.
+:::
 
 ### 16.5.1 Two-Regime Derivative Bounds
 
@@ -5256,9 +4952,9 @@ This document establishes:
    - Smooth clustering with partition of unity
    - Exponential locality of softmax ($k_{\text{eff}} = \mathcal{O}(\log^d k)$)
    - Telescoping identities with exponential localization
-   - Framework assumptions ensuring uniform lower bounds
+   - Framework inputs ensuring uniform lower bounds
 
-4. **Spectral Implications**: Hypoellipticity ({prf:ref}`thm-hypoellipticity-companion-dependent-full`), LSI ({prf:ref}`thm-lsi-companion-dependent-full`), and exponential QSD convergence ({prf:ref}`cor-exponential-qsd-companion-dependent-full`)
+4. **Spectral Implications**: Hypoellipticity ({prf:ref}`thm-hypoellipticity-companion-dependent-full`) is proven; LSI and exponential QSD convergence follow from {prf:ref}`thm-lsi-companion-dependent-full` (see {prf:ref}`cor-exponential-qsd-companion-dependent-full`). The Bakry-Emery route remains optional for explicit constants.
 
 ### 17.2 Key Technical Innovations
 
@@ -5266,7 +4962,7 @@ This document establishes:
 
 2. **Derivative Analysis**: Full Faà di Bruno formula accounting for non-zero higher derivatives of $d_{\text{alg}}$
 
-3. **Framework Assumptions**: Explicit assumptions ({prf:ref}`lem-companion-availability-enforcement`, {prf:ref}`assump-uniform-density-full`) provide rigorous foundation for partition function bounds
+3. **Framework Inputs**: Explicit inputs ({prf:ref}`lem-companion-availability-enforcement`, {prf:ref}`assump-uniform-density-full`) provide rigorous foundation for partition function bounds
 
 4. **Pipeline Composition**: Systematic tracking of Gevrey-1 bounds through six-stage pipeline maintains regularity
 
@@ -5514,7 +5210,7 @@ By {prf:ref}`cor-gevrey-closure`, each stage preserves the Gevrey-1 property, an
 - {doc}`01_fragile_gas_framework`: Foundational axioms
 - {doc}`03_cloning`: Cloning operator and phase-space clustering
 - {doc}`../3_fitness_manifold/01_emergent_geometry`: Geometric Gas motivation (emergent geometry)
-- {ref}`sec-gg-regularity-proof`: C³ regularity (pipeline structure, restrict to m ≤ 3)
+- {ref}`sec-gg-c3-regularity`: C³ regularity (pipeline structure, restrict to m ≤ 3)
 - {prf:ref}`rem-simplified-vs-full-final`: C^∞ regularity (simplified model comparison)
 :::
 

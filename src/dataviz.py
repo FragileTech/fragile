@@ -61,7 +61,7 @@ def visualize_latent(
 
     with torch.no_grad():
         # Get encoder outputs
-        K_chart, K_code, _, _z_tex, enc_w, z_geo, _, indices_out, z_n_all_charts = (
+        K_chart, K_code, _, _z_tex, enc_w, z_geo, _, indices_out, z_n_all_charts, _c_bar = (
             model.encoder(X)
         )
 
@@ -77,7 +77,7 @@ def visualize_latent(
         indices_np = indices_stack.cpu().numpy()
 
         # Get reconstruction
-        recon, _, _, _, _ = model(X, use_hard_routing=False)
+        recon, _, _, _, _, _, _, _ = model(X, use_hard_routing=False)
         recon_np = recon.cpu().numpy()
 
     fig = plt.figure(figsize=(20, 13))
@@ -874,12 +874,12 @@ def visualize_latent_images(
 
     with torch.no_grad():
         # Get encoder outputs
-        K_chart, K_code, _, _z_tex, enc_w, z_geo, _, indices_out, z_n_all_charts = (
+        K_chart, K_code, _, _z_tex, enc_w, z_geo, _, indices_out, z_n_all_charts, _c_bar = (
             model.encoder(X)
         )
 
         # Get reconstruction
-        recon, _, _, _, _ = model(X, use_hard_routing=False)
+        recon, _, _, _, _, _, _, _ = model(X, use_hard_routing=False)
 
         # Convert to numpy
         z = z_geo.cpu().numpy()
@@ -1042,7 +1042,9 @@ def visualize_results_images(
         else:
             X_tensor = torch.from_numpy(X).float()
 
-        _, _, _, _, _, z_geo, _, _, _ = model_atlas.encoder(X_tensor.to(next(model_atlas.parameters()).device))
+        _, _, _, _, _, z_geo, _, _, _, _c_bar = model_atlas.encoder(
+            X_tensor.to(next(model_atlas.parameters()).device)
+        )
         z = z_geo.cpu().numpy()
 
     # Select representatives

@@ -1584,6 +1584,77 @@ Expected qualitative outcomes from this synthesis:
 - Higher reconstruction fidelity by preserving continuous geometric residuals in $z_n$.
 
 (sec-decoder-architecture-overview-topological-decoder)=
+## TopoEncoder Architecture Overview (Current Implementation)
+
+This diagram shows the **full TopoEncoder** pipeline used in the current
+implementation: the gauge-covariant Attentive Atlas encoder feeding the
+gauge-covariant inverse decoder. The chart projections and router live on
+the **geometry path** ($z_{\text{geo}} = z_{\text{macro}} + z_n$), while the **texture**
+path remains a residual added at the output.
+
+```{mermaid}
+%%{init: {"themeVariables": {"edgeLabelBackground":"#ffffff","textColor":"#1a1a1a","lineColor":"#666666"}}}%%
+flowchart TD
+    subgraph TOP["TopoEncoder (Attentive Atlas + Inverse Decoder)"]
+        subgraph ENC["Encoder (Attentive Atlas, gauge-covariant)"]
+            X["Input x [B, D_in]"] --> FE["Feature extractor (SpectralLinear + NormGatedGELU)"]
+            FE --> Key["Key proj (SpectralLinear)"]
+            FE --> Val["Value proj (SpectralLinear)"]
+            Qbank["Chart queries q_k [N_c, H]"] --> Scores["Scores k·q / sqrt(H)"]
+            Key --> Scores
+            Scores --> Wenc["Router weights w_enc [B, N_c]"]
+            Wenc --> Kchart["K_chart = argmax(w_enc)"]
+            Val --> Codebook["Codebook bank [N_c, K, D]"]
+            Codebook --> VQ["Local VQ + soft blend"]
+            Val --> VQ
+            VQ --> Zmacro["z_macro = e_k [B, D]"]
+            VQ --> Kcode["K_code (from active chart)"]
+            Val --> Delta["delta = v - z_macro"]
+            Delta --> Struct["Structure filter (IsotropicBlock + SpectralLinear)"]
+            Struct --> Zn["z_n [B, D]"]
+            Delta --> Ztex["z_tex = delta - z_n"]
+            Zmacro --> Zgeo["z_geo = z_macro + z_n"]
+            Zn --> Zgeo
+        end
+
+        subgraph DEC["Decoder (Inverse Atlas, gauge-covariant)"]
+            Zgeo --> TanhGeo["tanh (module)"]
+            TanhGeo --> ChartProj["Chart projectors (SpectralLinear x N_c)"]
+            ChartProj --> ChartGate["NormGatedGELU (bundle gating)"]
+            TanhGeo --> DecRouter["Inverse router (SpectralLinear)"]
+            ChartIdx["Chart index (optional)"] --> OneHot["One-hot (module)"]
+            DecRouter --> Wdec["w_dec [B, N_c]"]
+            OneHot --> Wdec
+            ChartGate --> Mix["Chart blend (module)"]
+            Wdec --> Mix
+            Mix --> Hglobal["h_global [B, H]"]
+            Hglobal --> Render["Renderer (SpectralLinear + NormGatedGELU)"]
+            Hglobal --> Skip["Render skip (SpectralLinear)"]
+            Render --> AddSkip["Add skip (module)"]
+            Skip --> AddSkip
+            Ztex --> TanhTex["tanh (module)"]
+            TanhTex --> TexRes["Texture residual (SpectralLinear)"]
+            TexRes --> AddTex["Add texture (scaled)"]
+            AddSkip --> AddTex
+            AddTex --> Xhat["x_hat [B, D_out]"]
+        end
+    end
+
+    classDef encoder fill:#eef5ff,stroke:#1f4e79,stroke-width:1px,color:#1a1a1a;
+    classDef decoder fill:#e6f2ff,stroke:#1f4e79,stroke-width:1px,color:#1a1a1a;
+    classDef router fill:#fff2cc,stroke:#7f6000,stroke-width:1px,color:#1a1a1a;
+    classDef vq fill:#e2f0d9,stroke:#38761d,stroke-width:1px,color:#1a1a1a;
+    classDef residual fill:#fce5cd,stroke:#b45f06,stroke-width:1px,color:#1a1a1a;
+    classDef io fill:#f3f3f3,stroke:#666666,stroke-width:1px,color:#1a1a1a;
+
+    class X,FE,Key,Val,Struct,Zn encoder;
+    class Qbank,Scores,Wenc,DecRouter,Wdec,OneHot router;
+    class Codebook,VQ,Zmacro vq;
+    class Ztex,Zgeo,Delta,TanhGeo,TanhTex,TexRes residual;
+    class ChartProj,ChartGate,Mix,Hglobal,Render,Skip,AddSkip,AddTex decoder;
+    class Kchart,Kcode,Xhat io;
+```
+
 ## Decoder Architecture Overview: Topological Decoder (Inverse Atlas)
 
 To preserve chart structure on the way back to observations, the decoder mirrors the atlas by using
@@ -1594,14 +1665,15 @@ from geometry alone during dreaming, or accept a discrete chart index during pla
 %%{init: {"themeVariables": {"edgeLabelBackground":"#ffffff","textColor":"#1a1a1a","lineColor":"#666666"}}}%%
 flowchart TD
     subgraph DEC["Inverse atlas decoder (autonomous, gauge-covariant)"]
-        Zgeo["Geometry (input)"] -- "z_geo = e_k + z_n [B, D]" --> TanhGeo["tanh (module)"]
-        TanhGeo -- "z_geo [B, D]" --> ChartBank["Chart bank (W_k, b_k)"]
+        Zgeo["Geometry (input)"] -- "z_geo = z_macro + z_n [B, D]" --> TanhGeo["tanh (module)"]
+        TanhGeo -- "z_geo [B, D]" --> ChartProj["Chart projectors (SpectralLinear x N_c)"]
+        ChartProj -- "h_i [B, N_c, H]" --> ChartGate["NormGatedGELU (bundle gating)"]
         TanhGeo -- "z_geo [B, D]" --> LatentRouter["Inverse router (SpectralLinear)"]
         ChartIdx["Chart index (optional)"] -- "K_chart [B]" --> OneHot["One-hot (module)"]
         LatentRouter -- "w_soft [B, N_c]" --> Mix["Chart blend (module)"]
         OneHot -- "w_hard [B, N_c]" --> Mix
 
-        ChartBank -- "h_stack [B, N_c, H]" --> Mix
+        ChartGate -- "h_stack [B, N_c, H]" --> Mix
         Mix -- "h_global [B, H]" --> Render["Renderer (SpectralLinear + NormGatedGELU)"]
         Mix -- "h_global [B, H]" --> Skip["Render skip (SpectralLinear)"]
         Render --> AddSkip["Add skip (module)"]
@@ -1623,7 +1695,7 @@ flowchart TD
 
     class LatentRouter,OneHot,Mix router;
     class ChartIdx,Zgeo,Ztex,TanhGeo,TanhTex,TexRes residual;
-    class ChartBank,Render,Skip,AddSkip,AddTex decoder;
+    class ChartProj,ChartGate,Render,Skip,AddSkip,AddTex decoder;
     class Out io;
 
     style DEC fill:#eef5ff,stroke:#1f4e79,stroke-width:1px,color:#1a1a1a;
@@ -1659,14 +1731,15 @@ class PrimitiveTopologicalDecoder(nn.Module):
     ) -> None:
         super().__init__()
         self.num_charts = num_charts
-
-        # Chart bank (W_k, b_k): h_stack = W_k z_geo + b_k
-        weight = torch.empty(num_charts, hidden_dim, latent_dim)
-        nn.init.uniform_(weight, -1.0 / math.sqrt(latent_dim), 1.0 / math.sqrt(latent_dim))
-        self.chart_weight = nn.Parameter(weight)
-        self.chart_bias = nn.Parameter(torch.zeros(num_charts, hidden_dim))
+        self.hidden_dim = hidden_dim
 
         bundle_size, n_bundles = _resolve_bundle_params(hidden_dim, latent_dim, bundle_size)
+
+        # Chart projectors (gauge-covariant per chart)
+        self.chart_projectors = nn.ModuleList(
+            [SpectralLinear(latent_dim, hidden_dim, bias=False) for _ in range(num_charts)]
+        )
+        self.chart_gate = NormGatedGELU(bundle_size=bundle_size, n_bundles=n_bundles)
 
         # Inverse router (dreaming mode)
         self.latent_router = SpectralLinear(latent_dim, num_charts, bias=True)
@@ -1704,8 +1777,11 @@ class PrimitiveTopologicalDecoder(nn.Module):
             logits = self.latent_router(z_geo)
             router_weights = F.softmax(logits, dim=-1)
 
-        h_stack = torch.einsum("bl,chl->bch", z_geo, self.chart_weight)  # [B, N_c, H]
-        h_stack = h_stack + self.chart_bias.unsqueeze(0)  # [B, N_c, H]
+        batch = z_geo.shape[0]
+        h_stack = torch.stack([proj(z_geo) for proj in self.chart_projectors], dim=1)  # [B, N_c, H]
+        h_stack = self.chart_gate(h_stack.view(-1, self.hidden_dim)).view(
+            batch, self.num_charts, self.hidden_dim
+        )
         h_global = (h_stack * router_weights.unsqueeze(-1)).sum(dim=1)  # [B, H]
 
         x_hat = self.renderer(h_global) + self.render_skip(h_global)

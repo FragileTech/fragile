@@ -222,7 +222,9 @@ def _analyze_checkpoint(
     recon_ae_cpu = None
     if do_results:
         with torch.no_grad():
-            recon_atlas, _, _, _, K_chart = model_atlas(X_test_device, use_hard_routing=False)
+            recon_atlas, _, _, _, K_chart, _z_geo, _z_n, _c_bar = model_atlas(
+                X_test_device, use_hard_routing=False
+            )
             chart_assignments = K_chart.cpu().numpy()
             recon_atlas_cpu = recon_atlas.cpu()
 

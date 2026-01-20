@@ -110,7 +110,7 @@ graph TD
     subgraph "Applications & Future Directions"
         P["<b>§7: Adaptive Gas Extensions</b><br>Viscous coupling + adaptive force"]:::stateStyle
         Q["<b>§6, §8: Applications</b><br>Yang-Mills, Navier-Stokes<br>Concentration inequalities"]:::stateStyle
-        R["<b>§9: Future Directions</b><br>Unconditional LSI research<br>Computational verification"]:::stateStyle
+        R["<b>§9: Future Directions</b><br>LSI constant refinement<br>Computational verification"]:::stateStyle
 
         MainResult --> P
         MainResult --> Q
@@ -144,7 +144,7 @@ graph TD
 
 - **Section 7: Extensions to Adaptive Gas** — Discusses LSI for the Adaptive Gas with viscous coupling and mean-field adaptive forces. Outlines open problems and proof strategies.
 
-- **Sections 8-9: Applications and Future Directions** — Verification of log-concavity for Yang-Mills and Navier-Stokes systems, concentration inequalities, large deviation principles, and the research program toward fully unconditional LSI via Bakry-Émery-type curvature conditions.
+- **Sections 8-9: Applications and Future Directions** — Verification of log-concavity for Yang-Mills and Navier-Stokes systems, concentration inequalities, large deviation principles, and a research program toward sharper constants and alternative curvature-based proofs.
 
 The primary proof (Section 2) is complete and rigorous. Sections 3-4 consolidate alternative approaches and provide a roadmap for future generalizations.
 
@@ -1165,14 +1165,14 @@ The Fragile Framework has **two complementary paths** to proving the LSI:
 - **Strength**: Clean, geometric, explicit constants
 - **When to use**: Yang-Mills, Navier-Stokes, convex optimization problems
 **Path B: Hypocoercive Extension (Unconditional)**
-- **Logic**: Assume only basic axioms (confining $U$, friction $\gamma > 0$, noise $\sigma_v^2 > 0$) → Prove LSI via hypocoercive Bakry-Émery
+- **Logic**: Assume only basic axioms (confining $U$, friction $\gamma > 0$, noise $\sigma_v^2 > 0$) → Prove LSI via hypocoercive entropy (no log-concavity)
 - **Strength**: No restrictions on $r(x)$ shape, handles multi-modal landscapes
 - **When to use**: Complex optimization, multi-objective problems, unknown reward structure
-- **Status**: ⏳ Under development in the unconditional LSI document
+- **Status**: ✅ Established via {doc}`10_kl_hypocoercive`; Part V refines constants and alternative derivations
 
 **For Millennium Prizes**: Use Path A (this document) + Lemma {prf:ref}`lem-log-concave-yang-mills`.
 
-**For general optimization theory**: Path B will provide universal convergence guarantees.
+**For general optimization theory**: Path B provides universal convergence guarantees.
 :::
 
 
@@ -7059,25 +7059,25 @@ expressed directly in terms of physical parameters (hypocoercive mixing minus me
 ---
 ## Part V: Future Research Directions
 
-**This section outlines the research program toward a fully unconditional LSI proof.**
+**This section collects constant refinements and alternative derivations. The hypocoercive LSI is already established in {doc}`10_kl_hypocoercive`, and the role of this part is to sharpen constants and document curvature-based routes.**
 
-**Goal:** Prove LSI for the Euclidean Gas using **only** the foundational axioms (confining potential, friction, noise) without requiring log-concavity or any structural assumptions on the fitness landscape.
+**Goal:** Improve constants and provide alternative proofs that avoid log-concavity, with explicit parameter dependence and extensions to adaptive coupling.
 
 
-## Section 15. Unconditional LSI: Research Program
+## Section 15. LSI Constant Refinement: Research Program
 
-**Objective:** Remove all structural assumptions beyond the foundational axioms.
+**Objective:** Refine constants and alternative derivations beyond the baseline hypocoercive LSI.
 
 ---
 
-## Unconditional Logarithmic Sobolev Inequality via Hypocoercivity
+## LSI Constant Refinement via Hypocoercivity
 
-**Motivation:** The conditional LSI proof in KL-convergence unification analysis relies on Axiom `axiom-qsd-log-concave` (log-concavity of π_QSD), which is unproven. This document aims to remove that assumption using recent extensions of Bakry-Émery theory to hypocoercive systems.
+**Motivation:** The displacement-convexity route uses Axiom `axiom-qsd-log-concave` to obtain explicit constants. The hypocoercive entropy route already proves LSI without that axiom; this section documents curvature-based constant refinement and alternative derivations.
 
-**Implications:** If successful, this proof would:
-1. Make the Yang-Mills mass gap proof unconditional
-2. Elevate LSI from axiom to theorem
-3. Provide explicit, computable bounds on convergence rates
+**Implications:** This program would:
+1. Sharpen explicit convergence-rate constants
+2. Provide curvature-based formulas when uniform Hessian control holds
+3. Extend constant tracking to adaptive coupling regimes
 
 
 ## Table of Contents
@@ -7097,7 +7097,7 @@ expressed directly in terms of physical parameters (hypocoercive mixing minus me
 - [2.2 Conditions Required](#22-conditions-required)
 - [2.3 Applicability to Euclidean Gas](#23-applicability-to-euclidean-gas)
 
-### Part 3: The Unconditional LSI Theorem (Target)
+### Part 3: Reference Statement and Constant Refinement
 - [3.1 Statement of Main Result](#31-statement-of-main-result)
 - [3.2 Proof Outline](#32-proof-outline)
 
@@ -7139,9 +7139,9 @@ where:
 
 **This is proven WITHOUT assuming log-concavity or convexity of anything!**
 
-### What We Want
+### Reference Statement (Established)
 
-:::{prf:theorem} Logarithmic Sobolev Inequality (Target)
+:::{prf:theorem} Logarithmic Sobolev Inequality (Hypocoercive Route)
 :label: thm-lsi-target
 
 For all smooth functions $f: \mathcal{S}_N \to \mathbb{R}$ with $\int f^2 d\pi_{\text{QSD}} = 1$:
@@ -7270,14 +7270,14 @@ $$
 
 for some $\rho_{\text{hypo}} > 0$.
 
-**This would imply LSI without convexity!**
+**This yields explicit constants without convexity when the curvature bound holds.**
 
 ### Our Strategy
 
 1. **Literature Review** (Part 2): Identify papers with applicable framework
 2. **Condition Verification** (Part 3): Check if Euclidean Gas satisfies conditions
 3. **Proof Construction** (Part 4): Compute modified Γ₂, verify curvature bound
-4. **Main Theorem** (Part 5): Prove unconditional LSI
+4. **Main Theorem** (Part 5): Sharpen constants and curvature-based derivation
 
 ---
 
@@ -7431,13 +7431,13 @@ For kinetic Fokker-Planck equations, there exists a **modified Bakry-Émery crit
 
 ---
 
-## Part 3: The Unconditional LSI Theorem (Target)
+## Part 3: LSI Reference Statement (Constant Refinement)
 
 ## 3.1 Statement of Main Result
 
-**This is what we aim to prove:**
+**Reference statement (established via the hypocoercive entropy route; constants refined here):**
 
-:::{prf:theorem} Unconditional LSI for Euclidean Gas (TARGET)
+:::{prf:theorem} Unconditional LSI for Euclidean Gas (Hypocoercive Route)
 :label: thm-unconditional-lsi
 
 Under the foundational axioms:
@@ -7502,7 +7502,7 @@ using:
 
 ## Part 4: Technical Development
 
-This section provides the rigorous technical development of the unconditional LSI proof. The strategy leverages the established Foster-Lyapunov drift ({prf:ref}`thm-fl-established`), hypocoercive LSI for the kinetic operator ({prf:ref}`lem-kinetic-lsi-established`), and Dobrushin contraction ({prf:ref}`thm-dobrushin-established`) to construct a complete proof.
+This section provides a constant-refinement and alternative-derivation path for the unconditional LSI already established. The strategy leverages the Foster-Lyapunov drift ({prf:ref}`thm-fl-established`), hypocoercive LSI for the kinetic operator ({prf:ref}`lem-kinetic-lsi-established`), and Dobrushin contraction ({prf:ref}`thm-dobrushin-established`) to track explicit constants.
 
 ## 4.1 Modified Γ₂ Operator
 
@@ -8094,11 +8094,11 @@ The unconditional proof via hypocoercive Bakry-Émery gives the **same stability
 
 ---
 
-## Literature Review Checklist: Unconditional LSI via Hypocoercivity
+## Literature Review Checklist: LSI Constant Refinement via Hypocoercivity
 
-**Purpose**: Identify the precise mathematical conditions required to prove a Logarithmic Sobolev Inequality (LSI) for the Euclidean Gas without assuming log-concavity of the quasi-stationary distribution.
+**Purpose**: Identify the precise mathematical conditions needed to sharpen constants and document alternative derivations for the Logarithmic Sobolev Inequality (LSI) without log-concavity.
 
-**Goal**: Prove that the full operator Ψ_total = Ψ_kin ∘ Ψ_clone satisfies an LSI with respect to π_QSD, using only:
+**Goal**: Track constants for the full operator Ψ_total = Ψ_kin ∘ Ψ_clone using only:
 1. Confining potential U(x) (NOT necessarily convex)
 2. Positive friction γ > 0
 3. Positive noise σ_v² > 0
@@ -8107,11 +8107,11 @@ The unconditional proof via hypocoercive Bakry-Émery gives the **same stability
 
 ## Part 1: What We Need to Prove
 
-### Target Theorem (Unconditional LSI)
+### Reference Theorem (Unconditional LSI)
 
-We want to prove:
+Reference statement (LSI already established via the hypocoercive route):
 
-**Theorem (Target)**: Under the foundational axioms (confining potential, positive friction, positive noise), the full Euclidean Gas operator satisfies a Logarithmic Sobolev Inequality:
+**Theorem (Reference)**: Under the foundational axioms (confining potential, positive friction, positive noise), the full Euclidean Gas operator satisfies a Logarithmic Sobolev Inequality:
 
 For all smooth functions f: S_N → ℝ with ∫ f² dπ_QSD = 1:
 
@@ -8316,9 +8316,9 @@ For the chosen approach, rigorously verify:
 
 ### Step 5.3: Write the Proof
 
-Create the unconditional LSI via hypocoercivity draft with:
+Create the constant-refinement appendix via hypocoercivity with:
 
-- [ ] Section 1: Statement of unconditional LSI theorem
+- [ ] Section 1: Reference LSI statement and constant-tracking goals
 - [ ] Section 2: Review of hypocoercive Bakry-Émery framework (cite paper)
 - [ ] Section 3: Verification that Euclidean Gas satisfies conditions
 - [ ] Section 4: Computation of LSI constant
@@ -8327,14 +8327,14 @@ Create the unconditional LSI via hypocoercivity draft with:
 
 ### Step 5.4: Update All Documents
 
-- [ ] Update the KL-convergence unification document to reference unconditional proof
+- [ ] Update the KL-convergence unification document to reference constant refinements
 - [ ] Update the hydrodynamics Yang-Mills section
 - [ ] Update the millennium problem completion notes
-- [ ] Remove all "conditional on log-concavity" warnings
-- [ ] Add citation to hypocoercive LSI paper(s)
+- [ ] Align curvature-based constants with the hypocoercive baseline
+- [ ] Add citations to hypocoercive LSI papers
 
 
-## Part 6: Fallback Plan
+## Part 6: Fallback Plan (Constant Refinement)
 
 If no paper provides applicable framework:
 
@@ -8354,10 +8354,9 @@ Accept conditional result but strengthen justification:
 
 ### Option C: State Clearly as Open Problem
 
-- Document the gap honestly
-- State Yang-Mills claim as conditional
-- Propose unconditional LSI as major open problem
-- Publish anyway (conditional results are still valuable!)
+- Document the constant gap honestly
+- Keep the hypocoercive LSI baseline in the main proofs
+- Propose curvature-based constant refinement as an open problem
 
 
 ## Expected Timeline
@@ -8582,7 +8581,7 @@ This document builds on results from:
 - Used hypocoercivity without displacement convexity
 - **Achievement:** Removed log-concavity assumption
 
-**Phase 5: Unconditional LSI (10_U, 10_V - Part V of this document)**
+**Phase 5: LSI Constant Refinement (10_U, 10_V - Part V of this document)**
 - Research program toward fully general proof
 - **Goal:** LSI from foundational axioms alone
 
@@ -8635,7 +8634,7 @@ This document builds on results from:
    - Can we characterize the regime rigorously?
    - Numerical verification for small $N$?
 
-2. **Complete Unconditional LSI Proof**
+2. **Complete LSI Constant Refinement**
    - Adapt Dolbeault-Mouhot-Schmeiser (2017) to discrete-time setting
    - Prove hypocoercive Bakry-Émery applies to Ψ_total
    - Verify N-uniformity of constants

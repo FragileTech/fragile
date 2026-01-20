@@ -76,3 +76,6 @@ docs/source/4_economics/
 # Mypy Cache
 .mypy_cache/
 outputs/
+
+# MLflow tracking
+mlruns/

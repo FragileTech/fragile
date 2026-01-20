@@ -120,7 +120,7 @@ The algorithm exhibits self-similar behavior across scales: the same selection-m
 - *Want the Fractal Set and causal structure?* → {doc}`2_fractal_set/01_fractal_set`, {doc}`2_fractal_set/02_causal_set_theory`
 - *Want lattice QFT, Standard Model, or Yang-Mills?* → {doc}`2_fractal_set/03_lattice_qft`, {doc}`2_fractal_set/04_standard_model`, {doc}`2_fractal_set/05_yang_mills_noether`
 - *Want emergent geometry and fitness-manifold physics?* → {doc}`3_fitness_manifold/01_emergent_geometry`
-- *Want classical proofs, bounds, or FAQ?* → {doc}`appendices/02_euclidean_gas`, {doc}`appendices/13_quantitative_error_bounds`, {doc}`appendices/14_faq`
+- *Want classical proofs, bounds, or FAQ?* → {doc}`appendices/02_euclidean_gas`, {doc}`appendices/13_quantitative_error_bounds`, {doc}`appendices/00_faq`
 :::
 
 (sec-fg-how-to-read)=
@@ -157,7 +157,7 @@ This volume is designed to be **modular**. Each chapter is self-contained:
 | Standard Model and Yang-Mills | {doc}`2_fractal_set/04_standard_model`, {doc}`2_fractal_set/05_yang_mills_noether` | QFT familiarity |
 | Emergent geometry and fitness manifold | {doc}`3_fitness_manifold/01_emergent_geometry` | Part 1 + {doc}`2_fractal_set/01_fractal_set` |
 | Classical proofs and bounds | {doc}`appendices/02_euclidean_gas`, {doc}`appendices/06_convergence`, {doc}`appendices/13_quantitative_error_bounds` | Minimal |
-| FAQ and objections | {doc}`appendices/14_faq` | None |
+| FAQ and objections | {doc}`appendices/00_faq` | None |
 
 ### LLM-Assisted Exploration
 
@@ -206,7 +206,7 @@ A recommended approach for understanding this framework:
 - {doc}`appendices/07_discrete_qsd`: QSD structure
 - {doc}`appendices/08_mean_field`: Mean-field limit and propagation of chaos
 - {doc}`appendices/13_quantitative_error_bounds`: Quantitative error bounds
-- {doc}`appendices/14_faq`: FAQ and reviewer objections
+- {doc}`appendices/00_faq`: FAQ and reviewer objections
 
 (sec-fg-positioning)=
 ## Positioning: Connections to Prior Work, Differences, and Advantages

@@ -13,12 +13,13 @@ where measurements $d_j = d_{\text{alg}}(j, c(j))$ depend on **companion selecti
 - **C³ regularity**: $V_{\text{fit}} \in C^3(\mathcal{X} \times \mathbb{R}^d)$
 - **Bounded third derivatives**: $\|\nabla^3 V_{\text{fit}}\| \leq K_{V,3}(\rho, \varepsilon_c, \varepsilon_d, \eta_{\min})$
 - **k-uniformity**: Constants independent of swarm size $k$ or $N$
-- **Foundation for C^∞**: This C³ analysis serves as the base case for Document 20's inductive proof of C^∞ regularity with Gevrey-1 bounds
+- **Foundation for C^∞**: This C³ analysis serves as the base case for Appendix 14B ({doc}`14_b_geometric_gas_cinf_regularity_full`), which proves C^∞ regularity with Gevrey-1 bounds
 
 The proof uses a **two-scale analytical framework** operating at distinct spatial scales (companion selection ε_c, localization ρ) to handle the N-body coupling introduced by companion selection, establishing **N-uniform** and **k-uniform** third-derivative bounds.
 
 ---
 
+(sec-gg-c3-regularity)=
 ## 0. TLDR
 
 **C³ Regularity with k-Uniform Bounds**: The fitness potential $V_{\text{fit}}(x_i, v_i)$ of the Geometric Gas with companion-dependent measurements is three times continuously differentiable with bounded third derivatives:
@@ -26,7 +27,7 @@ $$
 \|\nabla^3 V_{\text{fit}}\| \leq K_{V,3}(\rho, \varepsilon_c, \varepsilon_d, \eta_{\min})
 $$
 
-where $K_{V,3}$ is a **k-uniform** constant (independent of swarm size), $\rho$ is the localization scale, $\varepsilon_c$ is the companion selection temperature, $\varepsilon_d$ is the distance regularization, and $\eta_{\min}$ is the Z-score variance floor. This C³ regularity is sufficient for BAOAB discretization validity and provides the foundation for Document 20's C^∞ extension.
+where $K_{V,3}$ is a **k-uniform** constant (independent of swarm size), $\rho$ is the localization scale, $\varepsilon_c$ is the companion selection temperature, $\varepsilon_d$ is the distance regularization, and $\eta_{\min}$ is the Z-score variance floor. This C³ regularity is sufficient for BAOAB discretization validity and provides the foundation for Appendix 14B's C^∞ extension ({doc}`14_b_geometric_gas_cinf_regularity_full`).
 
 **N-Body Coupling Resolution**: Companion selection via softmax creates N-body coupling—each walker's measurement depends on ALL other walkers' positions through the companion probability distribution. We overcome this coupling using a **two-scale analytical framework**:
 1. **Derivative locality** (scale ε_c): For j≠i, only companion ℓ=i contributes to ∇_i d_j, eliminating the ℓ-sum and preventing $k_{\text{eff}}^{(\varepsilon_c)} = O((\log k)^d)$ from appearing
@@ -34,7 +35,7 @@ where $K_{V,3}$ is a **k-uniform** constant (independent of swarm size), $\rho$ 
 
 Result: **k-uniform** third-derivative bounds for the full companion-dependent model.
 
-**BAOAB Discretization Validity**: The C³ regularity with bounded third derivatives validates the smoothness requirements for the BAOAB splitting integrator, ensuring the $O(\Delta t^2)$ weak error bound holds for the adaptive algorithm. This connects the regularity analysis to the stability framework in [06_convergence.md](../1_euclidean_gas/06_convergence.md).
+**BAOAB Discretization Validity**: The C³ regularity with bounded third derivatives validates the smoothness requirements for the BAOAB splitting integrator, ensuring the $O(\Delta t^2)$ weak error bound holds for the adaptive algorithm. This connects the regularity analysis to the stability framework in {doc}`06_convergence`.
 
 **Proof Architecture**: The proof proceeds through a six-stage computational pipeline: localization weights → localized moments → regularized standard deviation → Z-score → fitness potential. At each stage, we apply the third derivative operators using Leibniz rule, quotient rule, and chain rule, establishing k-uniform bounds via the two-scale framework (derivative locality + telescoping cancellation).
 
@@ -64,26 +65,26 @@ $$
 
 where $K_{V,3}$ is **k-uniform** (independent of $k$ and $N$).
 
-**Framework Assumptions**: The C³ analysis requires:
-1. **Companion availability**: Partition function $Z_i \geq Z_{\min} = \exp(-D_{\max}^2/(2\varepsilon_c^2)) > 0$ (derived from compactness)
-2. **Uniform density bound**: Phase-space density satisfies $\rho_{\text{phase}}^{\text{QSD}}(x,v) \leq \rho_{\max}$ for some constant $\rho_{\max} < \infty$ (explicit assumption enabling sum-to-integral bounds; Document 14 §2.3.5 provides a self-consistency proof via a posteriori fixed-point validation)
+**Framework inputs**: The C³ analysis uses:
+1. **Companion availability**: Partition function $Z_i \geq Z_{\min} = \exp(-D_{\max}^2/(2\varepsilon_c^2)) > 0$ from bounded algorithmic diameter (see {doc}`02_euclidean_gas`)
+2. **Uniform density bound**: QSD phase-space density satisfies $\rho_{\text{QSD}}(x,v) \leq \rho_{\max}$ (Theorem {prf:ref}`assump-uniform-density-full`, summarized in {doc}`14_b_geometric_gas_cinf_regularity_full` §2.3.5)
 3. **Rescale function**: $g_A \in C^3(\mathbb{R})$ with bounded third derivative $|g_A'''| \leq L_{g'''}$
 4. **Distance regularization**: $\varepsilon_d > 0$ eliminates collision singularities in $d_{\text{alg}}$
 
 **Scope**: This document provides:
 1. **C³ regularity** for the full companion-dependent model
 2. **k-uniform third-derivative bounds** using the two-scale framework
-3. **Foundation for C^∞**: Document 20 extends this C³ analysis to all derivative orders via induction, establishing Gevrey-1 bounds and enabling hypoellipticity/LSI analysis
+3. **Foundation for C^∞**: Appendix 14B ({doc}`14_b_geometric_gas_cinf_regularity_full`) extends this C³ analysis to all derivative orders via induction, establishing Gevrey-1 bounds and enabling hypoellipticity; LSI is proven independently via the hypocoercive entropy route ({doc}`10_kl_hypocoercive`, {doc}`15_kl_convergence`)
 
-**Connection to Document 20**: This document proves the **base case (m=3)** for Document 20's inductive proof structure. While C³ regularity suffices for BAOAB discretization and Foster-Lyapunov stability, Document 20 bootstraps from this foundation to prove C^∞ regularity with factorial-growth bounds, enabling more powerful spectral analysis tools.
+**Connection to Appendix 14B**: This document proves the **base case (m=3)** for Appendix 14B's inductive proof structure ({doc}`14_b_geometric_gas_cinf_regularity_full`). While C³ regularity suffices for BAOAB discretization and Foster-Lyapunov stability, Appendix 14B bootstraps from this foundation to prove C^∞ regularity with factorial-growth bounds, enabling more powerful spectral analysis tools.
 
-The broader implications for Foster-Lyapunov stability, geometric ergodicity, and mean-field limits are addressed in companion documents including [06_convergence.md](../1_euclidean_gas/06_convergence.md), [07_mean_field.md](../1_euclidean_gas/07_mean_field.md), and [16_convergence_mean_field.md](16_convergence_mean_field.md).
+The broader implications for Foster-Lyapunov stability, geometric ergodicity, and mean-field limits are addressed in companion documents including {doc}`06_convergence`, {doc}`08_mean_field`, and {doc}`09_propagation_chaos`.
 
 ### 1.2. Why C³ Regularity Is Sufficient for Core Results
 
 The C³ regularity of the fitness potential with bounded third derivatives is not merely a technical milestone—it provides the **minimal smoothness** required for the core numerical and stability results in the Fragile framework:
 
-**1. BAOAB Discretization Validity**: The discretization analysis in [06_convergence.md](../1_euclidean_gas/06_convergence.md) (Theorem 1.7.2) requires the Lyapunov function to satisfy $V \in C^3$ with bounded second and third derivatives on compact sets. This condition ensures:
+**1. BAOAB Discretization Validity**: The discretization analysis in {doc}`06_convergence` (Theorem 1.7.2) requires the Lyapunov function to satisfy $V \in C^3$ with bounded second and third derivatives on compact sets. This condition ensures:
    - The BAOAB splitting integrator maintains its $O(\Delta t^2)$ weak error bound
    - Numerical stability for underdamped Langevin dynamics
    - Explicit time step constraints based on $\|\nabla^3 V_{\text{fit}}\|$
@@ -92,7 +93,7 @@ The C³ regularity of the fitness potential with bounded third derivatives is no
    - Lipschitz continuity of the gradient $\nabla V_{\text{fit}}$ (via bounded $\nabla^2 V_{\text{fit}}$)
    - Bounded curvature (via bounded $\nabla^3 V_{\text{fit}}$) for stability analysis
    - Smooth perturbations of the swarm state produce controlled perturbations of the Lyapunov drift
-   - Preserves geometric ergodicity structure from [03_cloning.md](../1_euclidean_gas/03_cloning.md) and [06_convergence.md](../1_euclidean_gas/06_convergence.md)
+   - Preserves geometric ergodicity structure from {doc}`03_cloning` and {doc}`06_convergence`
 
 **3. Numerical Time Step Selection**: Bounded third derivatives provide quantitative control over the curvature and its rate of change for the fitness landscape. This directly informs practical parameter selection:
    - BAOAB stability requires $\Delta t \lesssim 1/\sqrt{\|\nabla^3 V\|}$
@@ -100,25 +101,25 @@ The C³ regularity of the fitness potential with bounded third derivatives is no
    - Parameter trade-offs ($\rho$, $\varepsilon_c$, $\varepsilon_d$) can be analyzed quantitatively
 
 **4. Foundation for Higher Regularity**: While C³ suffices for the above results, it also serves as the **base case** for more advanced analysis:
-   - Document 20 extends to C^∞ via induction, establishing Gevrey-1 bounds
+   - Appendix 14B ({doc}`14_b_geometric_gas_cinf_regularity_full`) extends to C^∞ via induction, establishing Gevrey-1 bounds
    - C^∞ regularity enables hypoellipticity (Hörmander's theorem)
-   - C^∞ regularity enables LSI (Bakry-Émery criterion) for exponential convergence rates
+   - C^∞ regularity supports the Bakry-Emery route to explicit LSI constants; the LSI itself is proven independently via hypocoercive entropy ({doc}`10_kl_hypocoercive`, {doc}`15_kl_convergence`)
    - C^∞ regularity enables spectral gap analysis and mixing time estimates
 
 **5. Completeness of Regularity Hierarchy**: This document completes the progression:
    - **C¹ regularity**: Continuous differentiability (Lipschitz gradients)
    - **C² regularity**: Bounded Hessian (curvature control)
    - **C³ regularity** (this document): Bounded third derivatives (BAOAB validity)
-   - **C^∞ regularity** (Document 20): All derivatives bounded (spectral analysis)
+   - **C^∞ regularity** (Appendix 14B, {doc}`14_b_geometric_gas_cinf_regularity_full`): All derivatives bounded (spectral analysis)
 
 Together, these results provide the complete smoothness structure for the convergence theory.
 
 :::{note} The ρ-Localized Framework: Global Backbone to Hyper-Local Adaptation
 The adaptive model uses **radius-based local statistics** controlled by the localization scale ρ. This unified framework interpolates between two extremes:
-- **Global backbone regime** ($\rho \to \infty$): Recovers the proven stable Euclidean Gas dynamics from [02_euclidean_gas.md](../1_euclidean_gas/02_euclidean_gas.md) with parameter-independent bounds
+- **Global backbone regime** ($\rho \to \infty$): Recovers the proven stable Euclidean Gas dynamics from {doc}`02_euclidean_gas` with parameter-independent bounds
 - **Hyper-local regime** ($\rho \to 0$): Enables Hessian-based geometric adaptation with explicit $K_{V,3}(\rho) \sim O(\rho^{6d-3})$ scaling (accounting for the $k_{\text{eff}}^{(\rho)} = O(\rho^{2d})$ effective neighborhood factor)
 
-The C³ analysis tracks how third-derivative bounds vary across this entire continuum, providing both theoretical understanding and practical guidance for parameter selection. Document 14 extends this analysis to all derivative orders.
+The C³ analysis tracks how third-derivative bounds vary across this entire continuum, providing both theoretical understanding and practical guidance for parameter selection. Appendix 14B extends this analysis to all derivative orders ({doc}`14_b_geometric_gas_cinf_regularity_full`).
 :::
 
 ### 1.3. The N-Body Coupling Challenge and Its Resolution
@@ -272,13 +273,13 @@ graph TD
 
     subgraph "Part III: Main Result (Ch 8-9)"
         G["<b>Ch 8: C³ Regularity Theorem</b><br>∇³ V_fit = ∇³(g_A ∘ Z_ρ)<br>K_{V,3}(ρ, ε_c, ε_d, η_min) bound"]:::theoremStyle
-        H["<b>Ch 9: Stability Implications</b><br>BAOAB validity<br>Foster-Lyapunov preservation<br>Foundation for C^∞ (Document 20)"]:::theoremStyle
+        H["<b>Ch 9: Stability Implications</b><br>BAOAB validity<br>Foster-Lyapunov preservation<br>Foundation for C^∞ (Appendix 14B)"]:::theoremStyle
     end
 
     subgraph "Part IV: Analysis (Ch 10-12)"
         I["<b>Ch 10: Parameter Scaling</b><br>K_{V,3}(ρ) ~ O(ρ⁻³)<br>ε_c vs ε_d trade-offs"]:::lemmaStyle
         J["<b>Ch 11: Continuity</b><br>Third derivatives continuous<br>in (x_i, S, ρ)"]:::theoremStyle
-        K["<b>Ch 12: Conclusion</b><br>Summary of C³ results<br>Connection to Document 20"]:::stateStyle
+        K["<b>Ch 12: Conclusion</b><br>Summary of C³ results<br>Connection to Appendix 14B"]:::stateStyle
     end
 
     A --> B
@@ -315,12 +316,12 @@ The document is organized into four main parts:
 
 **Part III: Main Result (Chapters 8-9)** completes the proof and explores implications:
 - **Chapter 8** proves the main C³ regularity theorem by composing the rescale function with the Z-score: $V_{\text{fit}} = g_A(Z_\rho)$. The bound $K_{V,3}(\rho, \varepsilon_c, \varepsilon_d, \eta_{\min})$ is expressed explicitly, with **k-uniformity** achieved via the two-scale framework.
-- **Chapter 9** derives corollaries: BAOAB discretization validity, C³ regularity of the total Lyapunov function, smooth perturbation structure, and **connection to Document 20** (this C³ result serves as the base case for inductive C^∞ proof).
+- **Chapter 9** derives corollaries: BAOAB discretization validity, C³ regularity of the total Lyapunov function, smooth perturbation structure, and **connection to Appendix 14B** (this C³ result serves as the base case for inductive C^∞ proof).
 
 **Part IV: Analysis (Chapters 10-12)** analyzes parameter dependence and concludes:
 - **Chapter 10** performs asymptotic scaling analysis: $K_{V,3}(\rho) \sim O(\rho^{6d-3})$ as $\rho \to 0$ (accounting for the $k_{\text{eff}}^{(\rho)} = O(\rho^{2d})$ factor from localization), and analyzes $\varepsilon_c$ vs $\varepsilon_d$ trade-offs for practical parameter selection.
 - **Chapter 11** proves that all third derivatives are jointly continuous in $(x_i, S, \rho)$, where $S$ represents the swarm state.
-- **Chapter 12** concludes with summary, significance for convergence theory, and **explicit connection to Document 14's C^∞ extension**.
+- **Chapter 12** concludes with summary, significance for convergence theory, and **explicit connection to Appendix 14B's C^∞ extension** ({doc}`14_b_geometric_gas_cinf_regularity_full`).
 
 The proof is constructive throughout: all third-derivative bounds are expressed explicitly in terms of algorithmic parameters ($\rho$, $\varepsilon_d$, $\varepsilon_c$, $\eta_{\min}$), making the results directly applicable to numerical implementation.
 
@@ -331,7 +332,7 @@ The proof is constructive throughout: all third-derivative bounds are expressed 
 
 2. **Scale $\rho$ (localization)**: **Telescoping identity** $\sum_j \nabla^3 w_{ij} = 0$ (from $\sum_j w_{ij} = 1$) cancels naive $O(k)$ dependence in $j$-sums, yielding $O(k_{\text{eff}}^{(\rho)}) = O(\rho^{2d})$ (k-uniform).
 
-**Result**: k-uniform third-derivative bounds despite N-body coupling. Document 20 extends this framework to all derivative orders $m \geq 1$ via induction.
+**Result**: k-uniform third-derivative bounds despite N-body coupling. Appendix 14B extends this framework to all derivative orders $m \geq 1$ via induction.
 :::
 
 ## 2. Mathematical Framework and Notation
@@ -418,7 +419,7 @@ The full Geometric Gas model uses **companion-dependent measurements** where eac
 :::{note} Companion Selection Mechanisms
 The Fragile framework supports **two companion selection mechanisms**: (1) **Independent Softmax Selection** (detailed in this document), where each walker independently samples a companion via softmax over phase-space distances, and (2) **Diversity Pairing** (global perfect matching via Sequential Stochastic Greedy Pairing).
 
-**Analytical Equivalence**: Both mechanisms achieve **identical regularity properties**: C³ regularity with k-uniform bounds and the same parameter dependencies ($\rho$, $\varepsilon_c$, $\varepsilon_d$, $\eta_{\min}$). While this document focuses on the Softmax mechanism for concreteness, all C³ regularity results and k-uniform bounds established here **also hold for Diversity Pairing**. Document 14 provides the comprehensive proof of statistical equivalence between both mechanisms and extends the analysis to C^∞ regularity.
+**Analytical Equivalence**: Both mechanisms achieve **identical regularity properties**: C³ regularity with k-uniform bounds and the same parameter dependencies ($\rho$, $\varepsilon_c$, $\varepsilon_d$, $\eta_{\min}$). While this document focuses on the Softmax mechanism for concreteness, all C³ regularity results and k-uniform bounds established here **also hold for Diversity Pairing**. Appendix 14B provides the comprehensive proof of statistical equivalence between both mechanisms and extends the analysis to C^∞ regularity ({doc}`14_b_geometric_gas_cinf_regularity_full`).
 :::
 
 #### 2.5.1. Algorithmic Distance with Regularization
@@ -1162,7 +1163,7 @@ $$
 K_{\mu,3}(\rho, \varepsilon_d, \varepsilon_c) := C_{d,3} \varepsilon_d^{-2} + \frac{6 C_{d,2} \varepsilon_d^{-1} C_{\nabla K}(\rho)}{\rho} k_{\text{eff}}^{(\rho)} + \frac{6 C_{d,1} C_{\nabla^2 K}(\rho)}{\rho^2} k_{\text{eff}}^{(\rho)} + 2 D_{\max} C_{w,3}(\rho) k_{\text{eff}}^{(\rho)}
 $$
 
-**Note on $k_{\text{eff}}^{(\rho)}$ dependence**: The last three terms (those involving weight derivatives) scale with $k_{\text{eff}}^{(\rho)} \leq C_{\text{vol}} \rho_{\max} \rho^{2d}$. When $C_{w,3}(\rho) = O(\rho^{-3})$, the bound scales as $K_{\mu,3} = O(\varepsilon_d^{-2}) + O(\rho^{2d-1}) + O(\rho^{2d-2}) + O(\rho^{2d-3})$, matching Document 20's $m=3$ formula.
+**Note on $k_{\text{eff}}^{(\rho)}$ dependence**: The last three terms (those involving weight derivatives) scale with $k_{\text{eff}}^{(\rho)} \leq C_{\text{vol}} \rho_{\max} \rho^{2d}$. When $C_{w,3}(\rho) = O(\rho^{-3})$, the bound scales as $K_{\mu,3} = O(\varepsilon_d^{-2}) + O(\rho^{2d-1}) + O(\rho^{2d-2}) + O(\rho^{2d-3})$, matching Appendix 14B's $m=3$ formula.
 
 This bound is **k-uniform** and **N-uniform** due to the two-scale framework (derivative locality + telescoping).
 :::
@@ -1256,7 +1257,7 @@ $$
 K_{\mu,3}(\rho, \varepsilon_d, \varepsilon_c) = C_{d,3} \varepsilon_d^{-2} + 6 C_{d,2} \varepsilon_d^{-1} \frac{C_{\nabla K}(\rho)}{\rho} C_{\text{vol}} \rho_{\max} \rho^{2d} + \cdots
 $$
 
-This gives $K_{\mu,3} = O(\varepsilon_d^{-2}) + O(\rho^{2d-1}) + O(\rho^{2d-2}) + O(\rho^{2d-3})$, which matches Document 20's $m=3$ scaling.
+This gives $K_{\mu,3} = O(\varepsilon_d^{-2}) + O(\rho^{2d-1}) + O(\rho^{2d-2}) + O(\rho^{2d-3})$, which matches Appendix 14B's $m=3$ scaling.
 $$
 
 **Step 5: Verify k-uniformity.**
@@ -1422,15 +1423,19 @@ $$
 
 where $K_{\mu,1}$, $K_{\mu,2}$, and $K_{\mu,3}$ are the k-uniform bounds for the derivatives of the localized mean from Lemma {prf:ref}`lem-mean-third-derivative`. The coefficient of the $D_{\max}^2 C_{w,3}(\rho)$ term is 2, based on the bound $|d_j^2 - d_i^2| \leq 2D_{\max}^2$ used in the telescoping sum for Term 4.
 
-**Note on $\rho$-scaling (matching Document 20):** The constant $K_{V,3}$ contains terms with explicit dependence on $\rho$ and implicit dependence through the $k_{\text{eff}}^{(\rho)}$ factor, which contributes $\rho^{2d}$. The dominant terms for small $\rho$ come from the highest-order weight derivatives. Given that $C_{w,3}(\rho) = O(\rho^{-3})$, $C_{\nabla^2 K}(\rho) = O(1)$, and $C_{\nabla K}(\rho) = O(1)$, the overall scaling is:
+**Note on $\rho$-scaling (matching Appendix 14B):** The constant $K_{V,3}$ contains terms with explicit dependence on $\rho$ and implicit dependence through the $k_{\text{eff}}^{(\rho)}$ factor, which contributes $\rho^{2d}$. The dominant terms for small $\rho$ come from the highest-order weight derivatives. Given that $C_{w,3}(\rho) = O(\rho^{-3})$, $C_{\nabla^2 K}(\rho) = O(1)$, and $C_{\nabla K}(\rho) = O(1)$, the overall scaling is:
 
 $$
 K_{V,3}(\rho) = O(\varepsilon_d^{-2}) + O(\rho^{2d-1}) + O(\rho^{2d-2}) + O(\rho^{2d-3}) + K_{\mu,3}
 $$
 
-Since $K_{\mu,3}$ has the same scaling, the final bound $K_{V,3}$ is consistent with the Gevrey-1 estimate for the $m=3$ case presented in Document 20, where the highest-order derivative of the localization kernel dominates the scaling behavior.
+Since $K_{\mu,3}$ has the same scaling, the final bound $K_{V,3}$ is consistent with the Gevrey-1 estimate for the $m=3$ case presented in Appendix 14B, where the highest-order derivative of the localization kernel dominates the scaling behavior.
 
-**Step 7: Verify k-uniformity.**
+**Step 7: Verify k-uniformity.** All bounds are k-uniform by construction (telescoping eliminates $\sum \nabla^m w = 0$, and $k_{\text{eff}}^{(\rho)}$ bounds all sums uniformly).
+
+$\square$
+:::
+
 ## 6. Third Derivatives of Regularized Standard Deviation
 
 The Z-score denominator involves the regularized standard deviation $\sigma\'_{\text{reg}}(V_\rho^{(i)})$, which is a composition requiring the chain rule.
@@ -1697,7 +1702,7 @@ Here:
 - $L_{g'_A}, L_{g''_A}, L_{g'''_A}$ are the derivative bounds on the rescale function $g_A$ (Assumption {prf:ref}`assump-c3-rescale`)
 
 
-**Connection to Full Model**: This theorem establishes C³ regularity for the **full companion-dependent model** where measurements $d_j = \mathbb{E}[d_{\text{alg}}(j, c(j))]$ involve softmax companion selection (§2.5). The k-uniform bound is achieved via the two-scale framework (derivative locality at scale $\varepsilon_c$ + telescoping at scale $\rho$). Document 20 extends this result to C^∞ regularity with Gevrey-1 bounds via induction.
+**Connection to Full Model**: This theorem establishes C³ regularity for the **full companion-dependent model** where measurements $d_j = \mathbb{E}[d_{\text{alg}}(j, c(j))]$ involve softmax companion selection (§2.5). The k-uniform bound is achieved via the two-scale framework (derivative locality at scale $\varepsilon_c$ + telescoping at scale $\rho$). Appendix 14B extends this result to C^∞ regularity with Gevrey-1 bounds via induction.
 **Moreover**, the third derivatives $\nabla^3 V_{\text{fit}}[f_k, \rho](x_i)$ are continuous functions of:
 1. Walker position $x_i \in \mathcal{X}$
 2. Swarm configuration $S = (x_1, \ldots, x_N, v_1, \ldots, v_N) \in (\mathcal{X} \times \mathbb{R}^d)^N$
@@ -1874,7 +1879,7 @@ $$
 2. **Stability:** The discrete-time Markov chain remains ergodic with invariant measure approximating $\pi_{\text{QSD}}$
 3. **Foster-Lyapunov preservation:** The drift inequality $\mathcal{L}V \le -\lambda V + b$ for the continuous SDE translates to the discrete chain with error $O(\Delta t^3)$
 
-**Proof sketch:** The C³ regularity ensures the BAOAB discretization theorem (Theorem 1.7.2 in [04_convergence.md](../1_euclidean_gas/06_convergence.md)) applies with $K_V(\rho) = \max(H_{\max}(\rho), K_{V,3}(\rho)) < \infty$. The time step bound ensures numerical stability: $\Delta t < 1/(2\gamma)$ prevents friction instability, and $\Delta t \lesssim \rho^{3/2}/\sqrt{K_{V,3}(\rho)} \sim \rho^{3/2}/\rho^{-3/2} = \rho^3$ controls potential gradient growth.
+**Proof sketch:** The C³ regularity ensures the BAOAB discretization theorem (Theorem 1.7.2 in {doc}`06_convergence`) applies with $K_V(\rho) = \max(H_{\max}(\rho), K_{V,3}(\rho)) < \infty$. The time step bound ensures numerical stability: $\Delta t < 1/(2\gamma)$ prevents friction instability, and $\Delta t \lesssim \rho^{3/2}/\sqrt{K_{V,3}(\rho)} \sim \rho^{3/2}/\rho^{-3/2} = \rho^3$ controls potential gradient growth.
 :::
 
 :::{prf:proof}
@@ -2133,7 +2138,7 @@ Thus, **smaller ρ requires smaller time steps** for numerical stability.
 :::{prf:proof}
 :label: proof-prop-timestep-constraint
 
-The BAOAB weak error analysis (Theorem 1.7.2 in [04_convergence.md](../1_euclidean_gas/06_convergence.md)) involves truncating the Itρ-Taylor expansion at second order. The truncation error depends on:
+The BAOAB weak error analysis (Theorem 1.7.2 in {doc}`06_convergence`) involves truncating the Itρ-Taylor expansion at second order. The truncation error depends on:
 $$
 \Delta t^2 \cdot \|\nabla^3 V\|
 $$
@@ -2317,9 +2322,9 @@ The fitness potential $V_{\text{fit}}[f_k, \rho](x_i)$ is three times continuous
 
 The $C^3$ regularity theorem completes the mathematical foundation required for the full convergence proof of the Geometric Gas:
 
-1. **Foundation**: Axioms and state space structure ([01_fragile_gas_framework.md](../1_euclidean_gas/01_fragile_gas_framework.md))
-2. **Cloning stability**: Keystone Principle and Wasserstein-2 contraction ([03_cloning.md](../1_euclidean_gas/03_cloning.md))
-3. **Kinetic convergence**: Hypocoercivity and Foster-Lyapunov for backbone ([04_convergence.md](../1_euclidean_gas/06_convergence.md))
+1. **Foundation**: Axioms and state space structure ({doc}`01_fragile_gas_framework`)
+2. **Cloning stability**: Keystone Principle and Wasserstein-2 contraction ({doc}`03_cloning`)
+3. **Kinetic convergence**: Hypocoercivity and Foster-Lyapunov for backbone ({doc}`06_convergence`)
 4. **$C^3$ regularity**: Bounded gradients (Appendix A of [11_geometric_gas.md](11_geometric_gas.md))
 5. **$C^3$ regularity**: Bounded Hessians (Appendix A of [11_geometric_gas.md](11_geometric_gas.md))
 6. **$C^3$ regularity**: **This document** ρ Validates discretization theorem
@@ -2352,29 +2357,29 @@ Several natural extensions of this companion-dependent C³ analysis remain:
 
 **5. Diversity Pairing vs. Softmax Companion Selection**
 - Question: Does diversity pairing (alternative to softmax) achieve the same C³ bounds?
-- Motivation: Document 20 shows both mechanisms are equivalent for C^∞; what about C³?
+- Motivation: Appendix 14B shows both mechanisms are equivalent for C^∞; what about C³?
 - Note: Likely yes (same derivative locality property), but formal proof deferred
 
 ### 12.5. Practical Recommendations
-### 12.3. Extension to C^∞ Regularity (Document 20)
+### 12.3. Extension to C^∞ Regularity (Appendix 14B)
 
-**Document 20** extends this C³ analysis to **C^∞ regularity with Gevrey-1 bounds** for the full companion-dependent model:
+**Appendix 14B** extends this C³ analysis to **C^∞ regularity with Gevrey-1 bounds** for the full companion-dependent model:
 
-**Bootstrap Strategy**: Document 20 uses this C³ result as the **base case (m=3)** for an inductive proof structure:
+**Bootstrap Strategy**: Appendix 14B uses this C³ result as the **base case (m=3)** for an inductive proof structure:
 1. **Base case**: C³ regularity (this document) with k-uniform third-derivative bounds
 2. **Inductive step**: Assume bounds for orders $1, \ldots, m-1$; prove for order $m$
 3. **Gevrey-1 classification**: Show $\|\nabla^m V_{\text{fit}}\| \leq C^m m! \cdot (\text{parameters})$
 
-**Key Results from Document 20**:
+**Key Results from Appendix 14B**:
 - **C^∞ regularity**: $V_{\text{fit}} \in C^\infty(\mathcal{X} \times \mathbb{R}^d)$ at all derivative orders
 - **Gevrey-1 bounds**: Factorial growth (not exponential blow-up)
 - **Hypoellipticity**: C^∞ enables Hörmander's theorem → smooth QSD density
-- **LSI**: C^∞ enables Bakry-Émery criterion → exponential convergence rates
+- **LSI**: Proven independently via hypocoercive entropy ({doc}`10_kl_hypocoercive`, {doc}`15_kl_convergence`); Bakry-Emery is optional for constants
 - **Mean-field analysis**: k-uniform Gevrey-1 bounds enable rigorous $N \to \infty$ limit
 
 **Why Separate Documents?**:
 - **This document (C³)**: Provides minimal smoothness for BAOAB and Foster-Lyapunov (sufficient for numerical implementation)
-- **Document 20 (C^∞)**: Provides maximal smoothness for spectral theory and mean-field analysis (sufficient for theoretical analysis)
+- **Appendix 14B (C^∞)**: Provides maximal smoothness for spectral theory and mean-field analysis (sufficient for theoretical analysis)
 
 The C³/C^∞ split follows standard PDE literature: establish basic regularity first, then bootstrap to higher orders.
 
@@ -2467,9 +2472,9 @@ The result is a **provably stable, numerically sound, and theoretically complete
 **Document Status:** COMPLETE
 
 **Cross-references:**
-- [01_fragile_gas_framework.md](../1_euclidean_gas/01_fragile_gas_framework.md) - Foundational axioms and state space
-- [03_cloning.md](../1_euclidean_gas/03_cloning.md) - Keystone Principle and cloning stability
-- [04_convergence.md](../1_euclidean_gas/06_convergence.md) - Hypocoercivity and BAOAB discretization
+- {doc}`01_fragile_gas_framework` - Foundational axioms and state space
+- {doc}`03_cloning` - Keystone Principle and cloning stability
+- {doc}`06_convergence` - Hypocoercivity and BAOAB discretization
 - [11_geometric_gas.md](11_geometric_gas.md) - Adaptive model definition and $C^3$/$C^3$ regularity
 
 **Next Steps:** Submit for dual MCP review (Gemini 2.5 Pro + Codex) to verify mathematical rigor and completeness.

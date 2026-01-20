@@ -86,6 +86,13 @@ class TopoEncoderConfig:
     num_charts: int = 10  # Match number of classes
     codes_per_chart: int = 32  # Better coverage (was 21)
     num_codes_standard: int = 64
+    covariant_attn: bool = True
+    covariant_attn_tensorization: str = "sum"
+    covariant_attn_rank: int = 8
+    covariant_attn_tau_min: float = 1e-2
+    covariant_attn_denom_min: float = 1e-3
+    covariant_attn_use_transport: bool = True
+    covariant_attn_transport_eps: float = 1e-3
 
     # Training
     epochs: int = 1000
@@ -886,6 +893,13 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
         latent_dim=config.latent_dim,
         num_charts=config.num_charts,
         codes_per_chart=config.codes_per_chart,
+        covariant_attn=config.covariant_attn,
+        covariant_attn_tensorization=config.covariant_attn_tensorization,
+        covariant_attn_rank=config.covariant_attn_rank,
+        covariant_attn_tau_min=config.covariant_attn_tau_min,
+        covariant_attn_denom_min=config.covariant_attn_denom_min,
+        covariant_attn_use_transport=config.covariant_attn_use_transport,
+        covariant_attn_transport_eps=config.covariant_attn_transport_eps,
     )
     if resume_state is not None and resume_state.get("atlas") is not None:
         model_atlas.load_state_dict(resume_state["atlas"])
@@ -1321,7 +1335,7 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
 
             # --- Atlas Step (dreaming mode: decoder infers routing from z_geo) ---
             # Get encoder outputs (need z_geo for regularization losses, z_n_all_charts for jump)
-            K_chart, _, z_n, z_tex, enc_w, z_geo, vq_loss_a, indices_stack, z_n_all_charts = model_atlas.encoder(batch_X)
+            K_chart, _, z_n, z_tex, enc_w, z_geo, vq_loss_a, indices_stack, z_n_all_charts, _c_bar = model_atlas.encoder(batch_X)
 
             # Decoder forward (dreaming mode - infers routing from z_geo)
             recon_a, dec_w = model_atlas.decoder(z_geo, z_tex, chart_index=None)
@@ -1390,7 +1404,7 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
                     config.augment_noise_std,
                     config.augment_rotation_max,
                 )
-                _, _, _, _, enc_w_aug, z_geo_aug, _, _, _ = model_atlas.encoder(x_aug)
+                _, _, _, _, enc_w_aug, z_geo_aug, _, _, _, _c_bar_aug = model_atlas.encoder(x_aug)
 
                 if config.orbit_weight > 0:
                     orbit_loss = compute_orbit_loss(enc_w, enc_w_aug)
@@ -1944,7 +1958,7 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
             was_training = model_atlas.training
             model_atlas.eval()
             with torch.no_grad():
-                K_chart_full, _, _, _, enc_w_full, _, _, _, _ = model_atlas.encoder(X_test)
+                K_chart_full, _, _, _, enc_w_full, _, _, _, _, _c_bar_full = model_atlas.encoder(X_test)
                 usage = enc_w_full.mean(dim=0).cpu().numpy()
                 chart_assignments = K_chart_full.cpu().numpy()
                 ami = compute_ami(labels_test, chart_assignments)
@@ -2042,7 +2056,7 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
                 was_training = model_atlas.training
                 model_atlas.eval()
                 with torch.no_grad():
-                    _, _, _, _, enc_w_test, z_geo_test, _, _, _ = model_atlas.encoder(
+                    _, _, _, _, enc_w_test, z_geo_test, _, _, _, _c_bar_test = model_atlas.encoder(
                         X_test
                     )
                 if was_training:
@@ -2306,7 +2320,7 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
 
         # Atlas metrics (use dreaming mode to test autonomous routing)
         model_atlas.eval()
-        recon_atlas_final, _, enc_w, dec_w, K_chart = model_atlas(
+        recon_atlas_final, _, enc_w, dec_w, K_chart, _z_geo, _z_n, _c_bar = model_atlas(
             X_test, use_hard_routing=False
         )
         chart_assignments = K_chart.cpu().numpy()
@@ -2320,7 +2334,7 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
             sup_acc = (p_y_x.argmax(dim=1) == labels_test_t).float().mean().item()
         cls_acc = 0.0
         if classifier_head is not None:
-            _, _, _, _, enc_w_cls, z_geo_cls, _, _, _ = model_atlas.encoder(X_test)
+            _, _, _, _, enc_w_cls, z_geo_cls, _, _, _, _c_bar_cls = model_atlas.encoder(X_test)
             cls_logits = classifier_head(enc_w_cls, z_geo_cls)
             cls_acc = (cls_logits.argmax(dim=1) == labels_test_t).float().mean().item()
         std_cls_acc = 0.0
@@ -2543,6 +2557,49 @@ def main():
         type=int,
         default=32,
         help="Hidden dimension for TopoEncoder",
+    )
+    parser.add_argument(
+        "--covariant_attn",
+        type=lambda x: x.lower() == "true",
+        default=True,
+        help="Use covariant chart routing attention (default: True)",
+    )
+    parser.add_argument(
+        "--covariant_attn_tensorization",
+        type=str,
+        default="sum",
+        choices=["sum", "full"],
+        help="Christoffel tensorization: sum (low-rank) or full (default: sum)",
+    )
+    parser.add_argument(
+        "--covariant_attn_rank",
+        type=int,
+        default=8,
+        help="Rank for tensor-sum Christoffel term (default: 8)",
+    )
+    parser.add_argument(
+        "--covariant_attn_tau_min",
+        type=float,
+        default=1e-2,
+        help="Minimum covariant attention temperature (default: 1e-2)",
+    )
+    parser.add_argument(
+        "--covariant_attn_denom_min",
+        type=float,
+        default=1e-3,
+        help="Minimum 1-||z||^2 denom for temperature (default: 1e-3)",
+    )
+    parser.add_argument(
+        "--covariant_attn_use_transport",
+        type=lambda x: x.lower() == "true",
+        default=True,
+        help="Use Wilson-line transport in covariant attention (default: True)",
+    )
+    parser.add_argument(
+        "--covariant_attn_transport_eps",
+        type=float,
+        default=1e-3,
+        help="Diagonal stabilizer for transport (default: 1e-3)",
     )
     parser.add_argument(
         "--window_eps_ground",
@@ -3011,6 +3068,13 @@ def main():
         config.consistency_target = args.consistency_target
         config.use_learned_precisions = args.use_learned_precisions
         config.window_eps_ground = args.window_eps_ground
+        config.covariant_attn = args.covariant_attn
+        config.covariant_attn_tensorization = args.covariant_attn_tensorization
+        config.covariant_attn_rank = args.covariant_attn_rank
+        config.covariant_attn_tau_min = args.covariant_attn_tau_min
+        config.covariant_attn_denom_min = args.covariant_attn_denom_min
+        config.covariant_attn_use_transport = args.covariant_attn_use_transport
+        config.covariant_attn_transport_eps = args.covariant_attn_transport_eps
         config.mlflow = args.mlflow
         config.mlflow_tracking_uri = args.mlflow_tracking_uri
         config.mlflow_experiment = args.mlflow_experiment
@@ -3027,6 +3091,13 @@ def main():
             num_charts=args.num_charts,
             codes_per_chart=args.codes_per_chart,
             hidden_dim=args.hidden_dim,
+            covariant_attn=args.covariant_attn,
+            covariant_attn_tensorization=args.covariant_attn_tensorization,
+            covariant_attn_rank=args.covariant_attn_rank,
+            covariant_attn_tau_min=args.covariant_attn_tau_min,
+            covariant_attn_denom_min=args.covariant_attn_denom_min,
+            covariant_attn_use_transport=args.covariant_attn_use_transport,
+            covariant_attn_transport_eps=args.covariant_attn_transport_eps,
             log_every=args.log_every,
             save_every=args.save_every,
             output_dir=output_dir,

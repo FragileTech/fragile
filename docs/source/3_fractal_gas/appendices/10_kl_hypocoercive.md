@@ -467,7 +467,7 @@ $$
 
 ### 2.5.1. Closing the Loop via LSI
 Finally, we must relate $\mathcal{B} + \mathcal{D}$ back to $\Phi$.
-Assuming the stationary measure $\rho_{\infty}$ satisfies a Log-Sobolev Inequality with constant $\rho_{LSI}$:
+By Theorem {prf:ref}`thm-unconditional-lsi-explicit`, the stationary measure $\rho_{\infty}$ satisfies a Log-Sobolev Inequality with constant $\rho_{LSI}$:
 
 $$
 \rho_{LSI} \mathcal{A}[h] \le \mathcal{B}[h] + \mathcal{D}[h]

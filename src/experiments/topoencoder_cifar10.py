@@ -465,7 +465,7 @@ def train_benchmark(config: TopoEncoderCIFAR10Config) -> dict:
                 opt_ae.step()
 
             # --- Atlas Step ---
-            K_chart, _, z_n, z_tex, enc_w, z_geo, vq_loss_a, indices_stack, z_n_all_charts = model_atlas.encoder(batch_X)
+            K_chart, _, z_n, z_tex, enc_w, z_geo, vq_loss_a, indices_stack, z_n_all_charts, _c_bar = model_atlas.encoder(batch_X)
             recon_a, dec_w = model_atlas.decoder(z_geo, z_tex, chart_index=None)
 
             # Core losses
@@ -512,7 +512,7 @@ def train_benchmark(config: TopoEncoderCIFAR10Config) -> dict:
 
             if config.orbit_weight > 0 or config.vicreg_inv_weight > 0:
                 x_aug = augment_cifar10(batch_X, config.augment_noise_std)
-                _, _, _, _, enc_w_aug, z_geo_aug, _, _, _ = model_atlas.encoder(x_aug)
+                _, _, _, _, enc_w_aug, z_geo_aug, _, _, _, _c_bar_aug = model_atlas.encoder(x_aug)
                 del x_aug  # Free memory immediately
 
                 if config.orbit_weight > 0:
@@ -642,7 +642,7 @@ def train_benchmark(config: TopoEncoderCIFAR10Config) -> dict:
             was_training = model_atlas.training
             model_atlas.eval()
             with torch.no_grad():
-                K_chart_full, _, _, _, enc_w_full, _, _, _, _ = model_atlas.encoder(X_test)
+                K_chart_full, _, _, _, enc_w_full, _, _, _, _, _c_bar_full = model_atlas.encoder(X_test)
                 usage = enc_w_full.mean(dim=0).cpu().numpy()
                 chart_assignments = K_chart_full.cpu().numpy()
                 ami = compute_ami(labels_test, chart_assignments)
@@ -685,7 +685,7 @@ def train_benchmark(config: TopoEncoderCIFAR10Config) -> dict:
                 was_training = model_atlas.training
                 model_atlas.eval()
                 with torch.no_grad():
-                    _, _, _, _, enc_w_test, z_geo_test, _, _, _ = model_atlas.encoder(X_test)
+                    _, _, _, _, enc_w_test, z_geo_test, _, _, _, _c_bar_test = model_atlas.encoder(X_test)
                 if was_training:
                     model_atlas.train()
 
@@ -778,7 +778,7 @@ def train_benchmark(config: TopoEncoderCIFAR10Config) -> dict:
             ami_std = compute_ami(labels_test, vq_clusters)
 
         # Atlas metrics
-        recon_atlas_final, _, enc_w, dec_w, K_chart = model_atlas(
+        recon_atlas_final, _, enc_w, dec_w, K_chart, _z_geo, _z_n, _c_bar = model_atlas(
             X_test, use_hard_routing=False
         )
         chart_assignments = K_chart.cpu().numpy()
@@ -792,7 +792,7 @@ def train_benchmark(config: TopoEncoderCIFAR10Config) -> dict:
             sup_acc = (p_y_x.argmax(dim=1) == labels_test_t).float().mean().item()
         cls_acc = 0.0
         if classifier_head is not None:
-            _, _, _, _, enc_w_cls, z_geo_cls, _, _, _ = model_atlas.encoder(X_test)
+            _, _, _, _, enc_w_cls, z_geo_cls, _, _, _, _c_bar_cls = model_atlas.encoder(X_test)
             cls_logits = classifier_head(enc_w_cls, z_geo_cls)
             cls_acc = (cls_logits.argmax(dim=1) == labels_test_t).float().mean().item()
 

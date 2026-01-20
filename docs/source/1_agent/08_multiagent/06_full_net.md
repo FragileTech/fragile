@@ -1160,7 +1160,7 @@ where:
 **Implementation note:** When $\lambda_{\text{equiv}} = 0$, equivariance is encouraged only through L1 (which drives mixing weights to zero, making layers effectively equivariant). When $\lambda_{\text{equiv}} > 0$, we explicitly penalize equivariance violations, providing a stronger geometric prior.
 :::
 
-### Complete Implementation
+### Simplified Implementation Example
 
 :::{note}
 :class: feynman-added

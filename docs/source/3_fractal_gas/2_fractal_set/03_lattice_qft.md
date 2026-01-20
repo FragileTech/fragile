@@ -2,7 +2,6 @@
 
 **Prerequisites**: {doc}`01_fractal_set`, {doc}`02_causal_set_theory`
 
----
 
 ## TLDR
 
@@ -24,7 +23,6 @@ In the real velocity basis the redundancy is $O(N)$ (or $SO(N)$ if orientation-p
 
 **Quantum Dynamics from Equilibrium Structure**: At QSD equilibrium, the Fractal Set supports a Euclidean path measure whose Wick rotation yields the temporal operator $D_t$ via OS reconstruction. Grassmann variables model the exclusion structure, yielding a discrete fermionic action that converges to the Dirac equation in the continuum limit. The algorithm discovers quantum field theory.
 
----
 
 (sec-lqft-intro)=
 ## 1. Introduction
@@ -52,7 +50,6 @@ This chapter establishes:
 2. Fermionic structure from cloning antisymmetry
 3. Scalar field actions and graph Laplacian convergence
 
----
 
 (sec-gauge-theory)=
 ## 2. Lattice Gauge Theory Structure
@@ -242,7 +239,6 @@ $$
 (Yang-Mills action).
 :::
 
----
 
 (sec-wilson-loops)=
 ## 3. Wilson Loops and Holonomy
@@ -329,7 +325,6 @@ where $\sigma$ is the string tension.
 **Fractal Set prediction**: If the Adaptive Gas exhibits confinement-like behavior (walkers trapped in fitness basins), we expect area law scaling.
 :::
 
----
 
 (sec-fermions)=
 ## 4. Fermionic Structure from Cloning Antisymmetry
@@ -650,7 +645,6 @@ Throughout this chapter, $D$ denotes the emergent spacetime dimension, while $d$
 
 See {doc}`04_standard_model` for the complete $D = 4$ specialization.
 
----
 
 (sec-scalar-fields)=
 ## 5. Scalar Fields and Graph Laplacian
@@ -756,7 +750,6 @@ yielding $\Delta_{\mathcal{F}} \to \Delta_g$ in the continuum limit. $\square$
 :::
 :::
 
----
 
 (sec-complete-framework)=
 ## 6. Complete QFT Framework
@@ -802,7 +795,6 @@ The Fractal Set $\mathcal{F} = (\mathcal{E}, E_{\mathrm{CST}} \cup E_{\mathrm{IG
 - Enables **non-perturbative QFT** calculations on emergent spacetime
 :::
 
----
 
 ## 7. Summary
 
@@ -839,7 +831,6 @@ This is either a very remarkable coincidence, or we have stumbled onto something
 
 **Key Innovation**: The Fractal Set provides a **physically motivated, dynamics-generated lattice** where gauge fields and fermionic matter emerge naturally from the optimization algorithm.
 
----
 
 ## References
 

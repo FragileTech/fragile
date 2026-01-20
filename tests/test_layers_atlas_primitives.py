@@ -27,6 +27,7 @@ def test_primitive_attentive_atlas_encoder_shapes() -> None:
         vq_loss,
         indices_stack,
         z_n_all_charts,
+        c_bar,
     ) = encoder(x)
 
     assert K_chart.shape == (4,)
@@ -38,6 +39,7 @@ def test_primitive_attentive_atlas_encoder_shapes() -> None:
     assert vq_loss.ndim == 0
     assert indices_stack.shape == (4, 3)
     assert z_n_all_charts.shape == (4, 3, 2)
+    assert c_bar.shape == (4, 2)
 
 
 def test_primitive_topological_decoder_shapes() -> None:
@@ -67,13 +69,16 @@ def test_topoencoder_primitives_forward_and_losses() -> None:
         codes_per_chart=5,
     )
     x = torch.randn(5, 3)
-    x_recon, vq_loss, enc_weights, dec_weights, K_chart = model(x)
+    x_recon, vq_loss, enc_weights, dec_weights, K_chart, z_geo, z_n, c_bar = model(x)
 
     assert x_recon.shape == (5, 3)
     assert vq_loss.ndim == 0
     assert enc_weights.shape == (5, 3)
     assert dec_weights.shape == (5, 3)
     assert K_chart.shape == (5,)
+    assert z_geo.shape == (5, 2)
+    assert z_n.shape == (5, 2)
+    assert c_bar.shape == (5, 2)
 
     consistency = model.compute_consistency_loss(enc_weights, dec_weights)
     assert consistency.ndim == 0
