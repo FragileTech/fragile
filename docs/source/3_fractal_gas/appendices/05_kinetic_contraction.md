@@ -2,15 +2,15 @@
 
 ## 0. TLDR
 
-*Notation: $W_h^2 \equiv V_W$ = inter-swarm hypocoercive Wasserstein distance (we use both notations interchangeably); $V_{\text{Var},x}$, $V_{\text{Var},v}$ = positional and velocity variance; $W_b$ = boundary potential; $\Psi_{\text{kin}}$, $\Psi_{\text{clone}}$ = kinetic and cloning operators.*
+*Notation: $V_{\text{Var},x}$, $V_{\text{Var},v}$ = positional and velocity variance; $\mu_v$ = velocity barycenter; $W_b$ = boundary potential; $\Psi_{\text{kin}}$, $\Psi_{\text{clone}}$ = kinetic and cloning operators. The TV-focused Lyapunov is $V_{\text{TV}} = V_{\text{Var},x} + V_{\text{Var},v} + c_\mu \|\mu_v\|^2 + c_B W_b$.*
 
-**Hypocoercive Contraction Without Convexity**: The kinetic operator $\Psi_{\text{kin}}$ achieves exponential contraction of the inter-swarm Wasserstein distance $W_h^2$ through hypocoercive coupling, even for non-convex potentials, using only coercivity (confinement at infinity) and friction-transport coupling.
+**TV-Ready Kinetic Drift**: Langevin friction contracts $V_{\text{Var},v}$ and $\|\mu_v\|^2$; positional diffusion produces a cross-term bounded by $V_{\text{Var},v}$; the confining potential contracts $W_b$. These are the only kinetic ingredients used in the total-variation (TV) convergence proof.
 
-**Velocity Dissipation via Langevin Friction**: The friction term $-\gamma v$ provides direct linear contraction of velocity variance $V_{\text{Var},v}$, balancing the bounded expansion from cloning collisions to maintain thermal equilibrium.
+**Velocity Squashing (Always On)**: A smooth squashing map is applied after each kinetic step so $\|v\| \leq v_{\max}$ holds deterministically. This makes boundary and weak-error bounds uniform and avoids hidden moment assumptions.
 
-**Confining Potential as Dual Safety**: The force field $F(x) = -\nabla U(x)$ provides independent boundary protection $W_b \to 0$, complementing the cloning-based Safe Harbor mechanism to create layered safety against extinction.
+**Minorization for TV**: Uniform ellipticity of $\Sigma$ plus the BAOAB O-step yields a smooth transition density with a positive lower bound on compact interior sets, giving a rigorous small-set/minorization condition for Harris/Meyn–Tweedie theory.
 
-**Synergistic Convergence Architecture**: The kinetic operator's contractions of $W_h^2$ and $W_b$ are precisely complementary to the cloning operator's contractions of $V_{\text{Var},x}$, enabling the composed operator $\Psi_{\text{total}} = \Psi_{\text{kin}} \circ \Psi_{\text{clone}}$ to achieve full convergence to a quasi-stationary distribution.
+**W2/Hypocoercive Material Deferred**: Hypocoercive/Wasserstein claims are quarantined into dedicated sections and are **not used** in the TV proof. They will be repaired and tightened later.
 
 **Dependencies**: {doc}`02_euclidean_gas`, {doc}`04_single_particle`, {doc}`03_cloning`
 
@@ -18,39 +18,39 @@
 
 ### 1.1. Goal and Scope
 
-The goal of this document is to provide a complete, rigorous analysis of the **kinetic operator** $\Psi_{\text{kin}}$ and prove that it provides the complementary dissipation mechanisms necessary for the Euclidean Gas to achieve full convergence to a quasi-stationary distribution (QSD). While the companion document *"The Keystone Principle and the Contractive Nature of Cloning"* ({doc}`03_cloning`) proved that the cloning operator $\Psi_{\text{clone}}$ achieves contraction of positional variance $V_{\text{Var},x}$ and boundary potential $W_b$, this document establishes the corresponding contraction properties of the kinetic operator.
+The goal of this document is to provide a complete, rigorous analysis of the **kinetic operator** $\Psi_{\text{kin}}$ and prove the drift properties required for **total-variation convergence** of the composed Euclidean Gas chain. While the companion document *"The Keystone Principle and the Contractive Nature of Cloning"* ({doc}`03_cloning`) proved that the cloning operator $\Psi_{\text{clone}}$ achieves contraction of positional variance $V_{\text{Var},x}$ and boundary potential $W_b$, this document establishes the corresponding kinetic drift and minorization properties used in the TV proof.
 
-The central mathematical object of study is the **underdamped Langevin dynamics** that governs walker evolution between cloning events. This dynamics combines deterministic drift from a confining potential, friction that dissipates kinetic energy, and thermal noise that maintains ergodicity. We prove that this operator achieves:
+The central mathematical object of study is the **underdamped Langevin dynamics** that governs walker evolution between cloning events. This dynamics combines deterministic drift from a confining potential, friction that dissipates kinetic energy, and thermal noise that maintains ergodicity. We prove that this operator achieves (TV-focused):
 
-1. **Hypocoercive contraction** of inter-swarm Wasserstein distance $W_h^2$ (Chapter 4)
-2. **Velocity dissipation** through Langevin friction for $V_{\text{Var},v}$ (Chapter 5)
-3. **Bounded positional expansion** from thermal diffusion for $V_{\text{Var},x}$ (Chapter 6)
-4. **Confining potential protection** for boundary safety $W_b$ (Chapter 7)
+1. **Velocity dissipation** for $V_{\text{Var},v}$ and $\|\mu_v\|^2$ (Chapter 5)
+2. **Bounded positional expansion** with explicit cross-term control for $V_{\text{Var},x}$ (Chapter 6)
+3. **Confining potential protection** for boundary safety $W_b$ (Chapter 7)
+4. **Small-set/minorization** for the kinetic step on compact interior sets (Chapter 7.6)
 
-A critical contribution of this document is the proof that hypocoercive contraction **does not require convexity** of the potential $U(x)$. We establish contraction using only **coercivity** (confinement at infinity), **Lipschitz continuity** of forces, and **non-degenerate friction-diffusion coupling**. This extends classical hypocoercivity theory to the non-convex multi-well landscapes characteristic of complex optimization problems.
+Hypocoercive/Wasserstein claims remain in this document but are **quarantined** and **not used** in the TV proof; they will be repaired later with additional assumptions.
 
-The scope of this document is the analysis of $\Psi_{\text{kin}}$ in isolation. The composition $\Psi_{\text{total}} = \Psi_{\text{kin}} \circ \Psi_{\text{clone}}$, parameter optimization, and the main convergence theorem are deferred to the companion document *{doc}`06_convergence`*.
+The scope of this document is the analysis of $\Psi_{\text{kin}}$ in isolation. The composition $\Psi_{\text{total}} = \Psi_{\text{kin}} \circ \Psi_{\text{clone}}$, parameter optimization, and the main TV convergence theorem are deferred to the companion document *{doc}`06_convergence`*.
 
-### 1.2. The Synergistic Dissipation Framework
+### 1.2. The Synergistic Dissipation Framework (TV Track)
 
 The Euclidean Gas achieves stability through a carefully orchestrated interplay between two operators that provide **complementary dissipation**. Neither operator alone is sufficient for convergence; each contracts the error components that the other expands:
 
 | **Lyapunov Component** | **Cloning $\Psi_{\text{clone}}$** | **Kinetics $\Psi_{\text{kin}}$** | **Net Effect** |
 |:-----------------------|:-----------------------------------|:----------------------------------|:---------------|
-| $W_h^2$ (inter-swarm)  | $\leq C_W \tau$ (bounded expansion) | $-\kappa_W W_h^2 \tau + C_W' \tau$ (contraction) | **Contraction** |
-| $V_{\text{Var},x}$ (position) | $-\kappa_x V_{\text{Var},x} \tau + C_x \tau$ (contraction) | $\leq C_{\text{kin},x} \tau$ (bounded expansion) | **Contraction** |
-| $V_{\text{Var},v}$ (velocity) | $\leq C_v \tau$ (bounded expansion) | $-2\gamma V_{\text{Var},v} \tau + \sigma_{\max}^2 d \tau$ (contraction) | **Contraction** |
-| $W_b$ (boundary)       | $-\kappa_b W_b \tau + C_b \tau$ (contraction) | $-\kappa_{\text{pot}} W_b \tau + C_{\text{pot}} \tau$ (contraction) | **Strong contraction** |
+| $V_{\text{Var},x}$ (position) | $-\kappa_x V_{\text{Var},x} \tau + C_x \tau$ | $\leq C_{\text{kin},x}\tau$ | **Contraction** |
+| $V_{\text{Var},v}$ (velocity) | $\leq C_v \tau$ | $-(2\gamma-\eta_v) V_{\text{Var},v}\tau + c_v V_{\text{Var},x}\tau + C_v'\tau$ | **Contraction (after weighting)** |
+| $\|\mu_v\|^2$ (velocity barycenter) | $\leq C_{\mu}^{\text{clone}}$ | $-2\gamma \|\mu_v\|^2\tau + C_{\mu}^{\text{kin}}\tau$ | **Contraction** |
+| $W_b$ (boundary)       | $-\kappa_b W_b \tau + C_b \tau$ | $-\kappa_{\text{pot}} W_b \tau + C_{\text{pot}} \tau$ | **Strong contraction** |
 
 **The Physical Intuition:**
 
-- **Cloning** is a *positional* mechanism: it resamples walker positions based on fitness, causing positional variance $V_{\text{Var},x}$ to contract as clones concentrate in high-reward regions. However, inelastic collisions during cloning inject momentum noise, causing velocity variance $V_{\text{Var},v}$ to expand. The resampling also creates inter-swarm divergence, expanding $W_h^2$.
+- **Cloning** is a *positional* mechanism: it resamples walker positions based on fitness, causing positional variance $V_{\text{Var},x}$ to contract as clones concentrate in high-reward regions. Inelastic collisions inject momentum noise, causing bounded expansion of $V_{\text{Var},v}$ and the velocity barycenter.
 
-- **Kinetics** is a *velocity* mechanism: the friction term $-\gamma v$ directly dissipates velocity variance, while thermal noise $\Sigma \circ dW$ injects positional diffusion. The hypocoercive coupling between transport ($\dot{x} = v$) and friction creates effective contraction of inter-swarm error $W_h^2$ in phase space.
+- **Kinetics** is a *velocity* mechanism: the friction term $-\gamma v$ directly dissipates velocity variance and $\|\mu_v\|^2$, while thermal noise injects bounded positional diffusion. These effects offset the cloning-induced velocity perturbations.
 
 - **Boundary safety** benefits from **dual independent mechanisms**: cloning eliminates boundary-proximate walkers (Safe Harbor), while the confining potential actively pushes walkers away from the boundary.
 
-This synergistic architecture is fundamental to the Fragile Gas framework. The decomposition into complementary operators enables each mechanism to be analyzed independently using specialized techniques (Foster-Lyapunov for cloning, hypocoercivity for kinetics), while the composition achieves full ergodic convergence.
+This synergistic architecture is fundamental to the Fragile Gas framework. The decomposition into complementary operators enables each mechanism to be analyzed independently using Foster-Lyapunov techniques, while the composition achieves full TV convergence.
 
 ### 1.3. Overview of the Proof Strategy and Document Structure
 
@@ -63,17 +63,18 @@ graph TD
         B["<b>Ch 3.7: Discretization Theory</b><br>Continuous → Discrete Drift<br>Weak Error Bounds"]:::lemmaStyle
     end
 
-    subgraph "Chapter 4: Hypocoercive Contraction of W_h²"
+    subgraph "Chapter 4 (Deferred): W2/Hypocoercive Track"
         C["<b>Ch 4.2: Hypocoercive Norm</b><br>Coupled (x,v) metric with<br>cross-term b⟨Δx, Δv⟩"]:::stateStyle
         D["<b>Ch 4.5: Location Error Drift</b><br>Barycenter separation contracts<br>via friction-transport coupling"]:::lemmaStyle
         E["<b>Ch 4.6: Structural Error Drift</b><br>Shape dissimilarity contracts<br>via diffusion and confinement"]:::lemmaStyle
-        F["<b>Theorem 4.3: W_h² Contraction</b><br>ΔW_h² ≤ -κ_W W_h² τ + C_W' τ<br><b>No convexity required!</b>"]:::theoremStyle
+        F["<b>Theorem 4.3: W_h² Contraction</b><br>(Deferred; not used in TV proof)"]:::theoremStyle
     end
 
-    subgraph "Chapters 5-7: Variance and Boundary Components"
-        G["<b>Theorem 5.3: V_Var,v Dissipation</b><br>Friction provides<br>ΔV_Var,v ≤ -2γV_Var,v τ + σ_max² d τ"]:::theoremStyle
+    subgraph "Chapters 5-7: TV Components"
+        G["<b>Theorem 5.3/5.4.1: Velocity Dissipation</b><br>V_Var,v and ||mu_v||^2 contract"]:::theoremStyle
         H["<b>Theorem 6.3: V_Var,x Expansion</b><br>Bounded thermal diffusion<br>ΔV_Var,x ≤ C_kin,x τ"]:::theoremStyle
         I["<b>Theorem 7.3: W_b Contraction</b><br>Confining potential creates<br>ΔW_b ≤ -κ_pot W_b τ + C_pot τ"]:::theoremStyle
+        I2["<b>Lemma 7.6: Minorization</b><br>Small set for kinetic kernel"]:::lemmaStyle
     end
 
     subgraph "Integration with Cloning Operator"
@@ -93,11 +94,13 @@ graph TD
     A --> G
     A --> H
     A --> I
+    A --> I2
 
     F --> K
     G --> K
     H --> K
     I --> K
+    I2 --> K
     J -- "Provides complementary<br>contractions" --> K
     K --> L
 
@@ -111,13 +114,13 @@ graph TD
 
 - **Chapter 3 (Foundations):** Defines the kinetic operator using Stratonovich stochastic differential equations, states the axioms for the confining potential $U$, diffusion tensor $\Sigma$, and friction coefficient $\gamma$, derives the Fokker-Planck equation, and establishes the discretization theory connecting continuous-time generators to discrete-time drift inequalities.
 
-- **Chapter 4 (Hypocoercive Contraction):** The technical core of this document. We introduce the hypocoercive norm coupling position and velocity, prove separate drift lemmas for location error (barycenter separation) and structural error (shape dissimilarity), and combine them to establish contraction of $W_h^2$ **without assuming convexity**. This result generalizes classical hypocoercivity theory.
+- **Chapter 4 (Hypocoercive Contraction, Deferred):** Records the W2/hypocoercive analysis for future use. It is **not used** in the TV convergence proof.
 
-- **Chapter 5 (Velocity Dissipation):** Proves that Langevin friction provides direct linear dissipation of velocity variance $V_{\text{Var},v}$, with expansion bounded by thermal noise. This balances the velocity expansion from cloning collisions.
+- **Chapter 5 (Velocity Dissipation):** Proves that Langevin friction provides direct linear dissipation of velocity variance $V_{\text{Var},v}$ and barycenter energy $\|\mu_v\|^2$.
 
 - **Chapter 6 (Positional Expansion):** Establishes that thermal noise causes bounded positional expansion $\Delta V_{\text{Var},x} \leq C_{\text{kin},x}$, which is overcome by the strong positional contraction from cloning.
 
-- **Chapter 7 (Boundary Safety):** Proves that the confining potential provides independent boundary protection through the drift inequality $\Delta W_b \leq -\kappa_{\text{pot}} W_b + C_{\text{pot}}$, creating a layered safety architecture with the cloning-based Safe Harbor mechanism.
+- **Chapter 7 (Boundary Safety + Minorization):** Proves boundary protection and establishes a small-set/minorization condition for the kinetic kernel on compact interior sets.
 
 The drift inequalities proven in this document, combined with those from {doc}`03_cloning`, provide the complete set of components needed for the main convergence theorem in {doc}`06_convergence`.
 
@@ -127,28 +130,30 @@ The drift inequalities proven in this document, combined with those from {doc}`0
 
 **Purpose of This Document:**
 
-This document provides the second half of the convergence proof for the Euclidean Gas algorithm. While the companion document *"The Keystone Principle and the Contractive Nature of Cloning"* ({doc}`03_cloning`) analyzed the cloning operator $\Psi_{\text{clone}}$, this document analyzes the **kinetic operator** $\Psi_{\text{kin}}$ and proves that the **composed operator** $\Psi_{\text{total}} = \Psi_{\text{kin}} \circ \Psi_{\text{clone}}$ achieves full convergence to a quasi-stationary distribution (QSD).
+This document provides the kinetic half of the TV convergence proof for the Euclidean Gas algorithm. While the companion document *"The Keystone Principle and the Contractive Nature of Cloning"* ({doc}`03_cloning`) analyzed the cloning operator $\Psi_{\text{clone}}$, this document analyzes the **kinetic operator** $\Psi_{\text{kin}}$ and provides the drift and minorization ingredients used by the composed operator $\Psi_{\text{total}} = \Psi_{\text{kin}} \circ \Psi_{\text{clone}}$.
 
 **The Synergistic Dissipation Framework:**
 
 The Euclidean Gas achieves stability through the complementary action of two operators:
 
-| Component | $\Psi_{\text{clone}}$ ({doc}`03_cloning`) | $\Psi_{\text{kin}}$ (this document) | Net Effect |
-|:----------|:--------------------------------------|:-------------------------------------|:-----------|
-| $V_W$ (inter-swarm) | $+C_W$ (expansion) | $-\kappa_W V_W$ (contraction) | **Contraction** |
-| $V_{\text{Var},x}$ (position) | $-\kappa_x V_{\text{Var},x}$ (contraction) | $+C_{\text{kin},x}$ (expansion) | **Contraction** |
-| $V_{\text{Var},v}$ (velocity) | $+C_v$ (expansion) | $-\kappa_v V_{\text{Var},v}$ (contraction) | **Contraction** |
-| $W_b$ (boundary) | $-\kappa_b W_b$ (contraction) | $-\kappa_{\text{pot}} W_b$ (contraction) | **Strong contraction** |
+| Component (TV Track) | $\Psi_{\text{clone}}$ ({doc}`03_cloning`) | $\Psi_{\text{kin}}$ (this document) | Net Effect |
+|:---------------------|:------------------------------------------|:-------------------------------------|:-----------|
+| $V_{\text{Var},x}$ (position) | $-\kappa_x V_{\text{Var},x}$ | $+C_{\text{kin},x}$ | **Contraction** |
+| $V_{\text{Var},v}$ (velocity) | $+C_v$ | $-(2\gamma-\epsilon)V_{\text{Var},v} + C_v'$ | **Contraction** |
+| $\|\mu_v\|^2$ | $+C_{\mu}^{\text{clone}}$ | $-\gamma\|\mu_v\|^2 + C_{\mu}^{\text{kin}}$ | **Contraction** |
+| $W_b$ (boundary) | $-\kappa_b W_b$ | $-\kappa_{\text{pot}} W_b + C_{\text{pot}}$ | **Strong contraction** |
+
+**Deferred:** $V_W$ (inter-swarm/W2) belongs to the W2 track and is not used in the TV proof.
 
 This document proves the drift inequalities in the "$\Psi_{\text{kin}}$" column and combines them with results from {doc}`03_cloning` to establish the main convergence theorem.
 
 **Document Structure:**
 
 - **Chapter 3:** The kinetic operator with Stratonovich formulation
-- **Chapter 4:** Hypocoercive contraction of inter-swarm error $V_W$
-- **Chapter 5:** Velocity variance dissipation via Langevin friction
+- **Chapter 4:** Hypocoercive contraction of inter-swarm error $V_W$ (deferred W2 track)
+- **Chapter 5:** Velocity variance and barycenter dissipation via Langevin friction
 - **Chapter 6:** Positional diffusion and bounded expansion
-- **Chapter 7:** Boundary potential contraction via confining potential
+- **Chapter 7:** Boundary potential contraction and kinetic minorization
 
 **Note:** The synergistic composition, main convergence theorem, and parameter optimization are covered in the companion document *{doc}`06_convergence`*.
 
@@ -202,15 +207,15 @@ where:
 - $W_t$: Standard $d$-dimensional Brownian motion
 - $\circ$: **Stratonovich product**
 
-**Boundary Condition:**
-After evolving for time $\tau$, the walker status is updated:
+**Boundary Condition and Velocity Squashing:**
+After evolving for time $\tau$, the walker status is updated and a smooth velocity squashing map is applied:
 
 $$
-s_i^{(t+1)} = \mathbf{1}_{\mathcal{X}_{\text{valid}}}(x_i(t+\tau))
+s_i^{(t+1)} = \mathbf{1}_{\mathcal{X}_{\text{valid}}}(x_i(t+\tau)), \quad v_i^{(t+1)} = S(v_i(t+\tau))
 
 $$
 
-Walkers exiting the valid domain are marked as dead.
+Walkers exiting the valid domain are marked as dead. The squashing map $S$ enforces $\|v\| \leq v_{\max}$ deterministically.
 :::
 
 :::{prf:remark} Relationship to Itô Formulation
@@ -223,9 +228,12 @@ dv_t = \left[F(x_t) - \gamma(v_t - u(x_t)) + \underbrace{\frac{1}{2}\sum_{j=1}^d
 
 $$
 
-where $\Sigma_j$ is the $j$-th column of $\Sigma$.
+where $\Sigma_j$ is the $j$-th column of $\Sigma$. We denote the effective Itô drift by
+$
+b_v(x,v) := F(x) - \gamma(v - u(x)) + \frac{1}{2}\sum_{j=1}^d \Sigma_j(x,v) \cdot \nabla_v \Sigma_j(x,v).
+$
 
-**For isotropic diffusion** ($\Sigma = \sigma_v I_d$), the correction term vanishes since $\nabla_v(\sigma_v I_d) = 0$. Thus **Stratonovich = Itô** in this case, which is the primary setting analyzed in this document.
+**For isotropic diffusion** ($\Sigma = \sigma_v I_d$), the correction term vanishes since $\nabla_v(\sigma_v I_d) = 0$. Thus **Stratonovich = Itô** in this case. Throughout the TV analysis we take $u \equiv 0$ to avoid unnecessary drift terms; extensions to nonzero $u$ are straightforward.
 :::
 
 ### 3.3. Axioms for the Kinetic Operator
@@ -256,11 +264,11 @@ $$
 
 This ensures the force field $F(x) = -\nabla U(x)$ drives walkers back toward the origin when $\|x\|$ is large.
 
-**3. Bounded Force Near Interior:**
-For some constants $F_{\max} < \infty$ and interior ball $B(0, r_{\text{interior}}) \subset \mathcal{X}_{\text{valid}}$:
+**3. Bounded Force on the Valid Domain:**
+There exists a constant $F_{\max} < \infty$ such that:
 
 $$
-\|F(x)\| = \|\nabla U(x)\| \leq F_{\max} \quad \forall x \in B(0, r_{\text{interior}})
+\|F(x)\| = \|\nabla U(x)\| \leq F_{\max} \quad \forall x \in \mathcal{X}_{\text{valid}}
 
 $$
 
@@ -274,30 +282,40 @@ $$
 
 where $\vec{n}(x)$ is the outward unit normal at the closest boundary point.
 
+**5. Lipschitz Continuity (Global on $\mathcal{X}_{\text{valid}}$):**
+There exists $L_F < \infty$ such that:
+
+$$
+\|F(x) - F(y)\| \leq L_F \|x - y\| \quad \forall x,y \in \mathcal{X}_{\text{valid}}
+
+$$
+
 **Physical Interpretation:** The potential creates a "bowl" that confines walkers to the valid domain while allowing free movement in the interior. The parameter $\alpha_{\text{boundary}}$ quantifies the minimum inward force strength near the boundary, which is critical for proving the boundary potential contraction rate in Chapter 7.
 :::
 
 :::{prf:example} Canonical Confining Potential
 :label: ex-canonical-confining-potential
 
-A standard choice is the **smoothly regularized harmonic potential**:
+A standard choice is a **smoothly capped harmonic potential**. Let $\phi:\mathbb{R}\to\mathbb{R}_{\ge 0}$ be $C^2$, non-decreasing, and satisfy:
+
+- $\phi(s)=0$ for $s \le 0$
+- $\phi(s)=s$ for $0 \le s \le r_{\text{gap}}/2$
+- $\phi$ saturates smoothly on $[r_{\text{gap}}/2, r_{\text{gap}}]$
+
+where $r_{\text{gap}} := r_{\text{boundary}} - r_{\text{interior}}$. Define:
 
 $$
-U(x) = \begin{cases}
-0 & \text{if } \|x\| \leq r_{\text{interior}} \\
-\frac{\kappa}{2}(\|x\| - r_{\text{interior}})^2 & \text{if } r_{\text{interior}} < \|x\| < r_{\text{boundary}} \\
-+\infty & \text{if } \|x\| \geq r_{\text{boundary}}
-\end{cases}
+U(x) = \frac{\kappa}{2}\,\phi(\|x\| - r_{\text{interior}})^2
 
 $$
 
-where $r_{\text{interior}} < r_{\text{boundary}} = \text{radius of } \mathcal{X}_{\text{valid}}$.
+with $r_{\text{interior}} < r_{\text{boundary}} = \text{radius of } \mathcal{X}_{\text{valid}}$.
 
 This potential satisfies all axiom requirements:
 - **Coercivity**: $\alpha_U = \kappa$ (from quadratic growth)
 - **Interior safety**: $F = 0$ for $\|x\| \leq r_{\text{interior}}$
-- **Inward force**: $F(x) = -\kappa(\|x\| - r_{\text{interior}})\frac{x}{\|x\|}$ for $r_{\text{interior}} < \|x\| < r_{\text{boundary}}$
-- **Boundary compatibility**: $\alpha_{\text{boundary}} = \kappa \cdot \delta_{\text{boundary}}$ where $\delta_{\text{boundary}} = r_{\text{boundary}} - r_{\text{interior}}$
+- **Inward force**: $F(x)$ points inward in the boundary layer by construction of $\phi$
+- **Boundary compatibility**: $\alpha_{\text{boundary}}$ follows from the slope of $\phi$ on the boundary layer
 :::
 
 #### 3.3.2. The Diffusion Tensor
@@ -413,12 +431,22 @@ $$
 
 This ensures numerical stability and prevents walkers from crossing the domain in a single step.
 
-**3. Fluctuation-Dissipation Balance (Optional):**
+**3. Velocity Squashing (Always On):**
+
+There exists a smooth map $S:\mathbb{R}^d \to \mathbb{R}^d$ and a constant $v_{\max} < \infty$ such that:
+
+$$
+\|S(v)\| \leq v_{\max} \quad \text{and} \quad S(v) = v \text{ for } \|v\| \leq v_{\text{soft}}
+$$
+
+for some $v_{\text{soft}} < v_{\max}$. The map $S$ is applied after each kinetic step (Definition {prf:ref}`def-kinetic-operator-stratonovich`), making all velocity moments uniformly bounded without additional assumptions.
+
+**4. Fluctuation-Dissipation Balance (Optional):**
 
 For physical systems at temperature $T$:
 
 $$
-\sigma_v^2 = 2\gamma k_B T / m
+\Sigma\Sigma^T = 2\gamma (k_B T / m) I_d
 
 $$
 
@@ -437,14 +465,14 @@ The kinetic operator induces evolution of the swarm's probability density.
 Let $\rho(x,v,t)$ be the probability density of a single walker at time $t$. Under the kinetic SDE ({prf:ref}`def-kinetic-operator-stratonovich`), $\rho$ evolves according to:
 
 $$
-\partial_t \rho = -v \cdot \nabla_x \rho - \nabla_v \cdot [(F(x) - \gamma v) \rho] + \frac{1}{2}\sum_{i,j} \partial_{v_i}\partial_{v_j}[(\Sigma\Sigma^T)_{ij} \rho]
+\partial_t \rho = -\nabla_x \cdot (v \rho) - \nabla_v \cdot \left(\left[F(x) - \gamma\bigl(v - u(x)\bigr) + \frac{1}{2}\sum_{j=1}^d \Sigma_j \cdot \nabla_v \Sigma_j\right]\rho\right) + \frac{1}{2}\sum_{i,j} \partial_{v_i}\partial_{v_j}[(\Sigma\Sigma^T)_{ij} \rho]
 
 $$
 
 **Key Terms:**
 
 1. **Transport:** $-v \cdot \nabla_x \rho$ (position advection by velocity)
-2. **Drift:** $-\nabla_v \cdot [(F(x) - \gamma v)\rho]$ (force and friction)
+2. **Drift:** $-\nabla_v \cdot ([F(x) - \gamma(v-u(x)) + \text{Stratonovich correction}]\rho)$
 3. **Diffusion:** $\frac{1}{2}\text{Tr}(\Sigma\Sigma^T \nabla_v^2 \rho)$ (thermal noise)
 
 This is the **generator** of the kinetic operator on the density space.
@@ -469,11 +497,11 @@ For our isotropic case where Stratonovich = Itô, the derivation is immediate fr
 On the **unbounded domain** $\mathbb{R}^d \times \mathbb{R}^d$ without the boundary condition, the Fokker-Planck equation admits the formal invariant density:
 
 $$
-\rho_{\infty}(x,v) \propto e^{-U(x) - \frac{1}{2\sigma_v^2/\gamma}\|v\|^2}
+\rho_{\infty}(x,v) \propto \exp\left(-U(x) - \gamma\, v^T(\Sigma\Sigma^T)^{-1} v\right)
 
 $$
 
-This is the **canonical Gibbs distribution** for position and velocity.
+For isotropic $\Sigma = \sigma_v I_d$, this becomes $\rho_{\infty}(x,v) \propto \exp\left(-U(x) - \frac{\gamma}{\sigma_v^2}\|v\|^2\right)$, i.e., the standard Gaussian with variance $\sigma_v^2/(2\gamma)$ in each velocity coordinate.
 
 **However:** The boundary condition (walkers die when exiting $\mathcal{X}_{\text{valid}}$) makes this measure invalid. Instead, the system converges to a **quasi-stationary distribution** (QSD) - a distribution conditioned on survival. This is analyzed in the companion document {doc}`06_convergence`.
 :::
@@ -504,11 +532,11 @@ $$
 **O-step (Ornstein-Uhlenbeck for friction + noise):**
 
 $$
-v^{(2)} = e^{-\gamma \tau} v^{(1)} + \sqrt{\frac{\sigma_v^2}{\gamma}(1 - e^{-2\gamma\tau})} \, \xi
+v^{(2)} = e^{-\gamma \tau} v^{(1)} + \sqrt{\frac{1 - e^{-2\gamma\tau}}{2\gamma}} \, \Sigma \xi
 
 $$
 
-where $\xi \sim \mathcal{N}(0, I_d)$.
+where $\xi \sim \mathcal{N}(0, I_d)$. For isotropic $\Sigma = \sigma_v I_d$, this reduces to $\sqrt{\sigma_v^2/(2\gamma)(1 - e^{-2\gamma\tau})}\,\xi$.
 
 **A-step (position update, continued):**
 
@@ -527,7 +555,6 @@ $$
 **Output:** $(x^{(2)}, v^{(3)})$
 
 **Advantages:**
-- Symplectic (preserves phase space volume)
 - Second-order accurate in $\tau$
 - Correct invariant distribution in the $\tau \to 0$ limit
 - Separates deterministic and stochastic dynamics cleanly
@@ -538,22 +565,23 @@ In the Euclidean Gas implementation, the BAOAB map is applied to the total force
 $
 F_{\text{tot}}(x, v) = -\nabla U(x) - \epsilon_F \nabla V_{\text{fit}}(x, v) + \nu F_{\text{viscous}}(x, v),
 $
-with optional anisotropic diffusion and an optional velocity squashing map after the final B-step. The resulting one-step transition kernel is the pushforward of the Gaussian noise through this full BAOAB map, so it is not generally Gaussian when the force field is nonlinear.
+with optional anisotropic diffusion and a **mandatory** velocity squashing map after the final B-step. The resulting one-step transition kernel is the pushforward of the Gaussian noise through this full BAOAB map, so it is not generally Gaussian when the force field is nonlinear.
 :::
 
 :::{prf:remark} Stratonovich Correction for Anisotropic Case
 :label: rem-baoab-anisotropic
 
-For general $\Sigma(x,v)$, the O-step must be modified to use the **midpoint evaluation** of $\Sigma$:
+For general $\Sigma(x,v)$, the O-step must be modified to use the **midpoint evaluation** of $\Sigma$ with the OU variance factor $(1 - e^{-2\gamma\tau})/(2\gamma)$:
 
 **Modified O-step:**
 ```python
 # Predictor
-v_pred = exp(-gamma*tau)*v + Sigma(x, v) * sqrt(noise_variance) * xi
+noise_var = (1.0 - exp(-2.0*gamma*tau)) / (2.0*gamma)
+v_pred = exp(-gamma*tau)*v + Sigma(x, v) * sqrt(noise_var) * xi
 
 # Corrector (Stratonovich midpoint)
 Sigma_mid = 0.5*(Sigma(x, v) + Sigma(x, v_pred))
-v_new = exp(-gamma*tau)*v + Sigma_mid * sqrt(noise_variance) * xi
+v_new = exp(-gamma*tau)*v + Sigma_mid * sqrt(noise_var) * xi
 ```
 
 For the isotropic case, this simplifies to the standard BAOAB.
@@ -609,7 +637,7 @@ For the SDE system:
 $$
 \begin{aligned}
 dx_i &= v_i \, dt \\
-dv_i &= \left[F(x_i) - \gamma v_i\right] dt + \Sigma(x_i, v_i) \, dW_i
+dv_i &= b_v(x_i,v_i)\, dt + \Sigma(x_i, v_i) \, dW_i
 \end{aligned}
 
 $$
@@ -617,14 +645,13 @@ $$
 The generator is:
 
 $$
-\mathcal{L}V = \sum_{i=1}^N \left[ v_i \cdot \nabla_{x_i} V + (F(x_i) - \gamma v_i) \cdot \nabla_{v_i} V + \frac{1}{2} \text{Tr}(A_i \nabla_{v_i}^2 V) \right]
+\mathcal{L}V = \sum_{i=1}^N \left[ v_i \cdot \nabla_{x_i} V + b_v(x_i,v_i) \cdot \nabla_{v_i} V + \frac{1}{2} \text{Tr}(A_i \nabla_{v_i}^2 V) \right]
 
 $$
 
 where $A_i = \Sigma(x_i, v_i) \Sigma^T(x_i, v_i)$ is the diffusion matrix.
 
-**For Stratonovich SDEs:**
-The generator differs by the Stratonovich-to-Itô correction term (see Proposition 1.4.1). For **isotropic diffusion** $\Sigma = \sigma_v I_d$, the two formulations coincide.
+**For Stratonovich SDEs:** the generator uses the Itô drift $b_v$ defined in {prf:ref}`rem-stratonovich-ito-equivalence`. For **isotropic diffusion** $\Sigma = \sigma_v I_d$, the correction term vanishes and $b_v(x,v) = F(x) - \gamma(v-u(x))$.
 :::
 
 :::{prf:remark} Why We Work with Generators
@@ -700,7 +727,7 @@ which is the **discrete-time drift inequality** with effective contraction rate 
 This section provides **complete rigorous proofs** that {prf:ref}`thm-discretization` applies to each component of the synergistic Lyapunov function $V_{\text{total}} = V_W + c_V V_{\text{Var}} + c_B W_b$, despite the significant technical challenges posed by the non-standard nature of these components.
 
 :::{important}
-**On proof completeness**: The proofs in §3.7.3.1-3.7.3.4 are complete and rigorous, relying on established theorems from the numerical analysis and optimal transport literature (Leimkuhler & Matthews 2015 for BAOAB weak error theory, Ambrosio et al. 2008 for JKO schemes, Villani 2009 for Wasserstein gradient flows). Each proof provides detailed derivations showing how these general results apply to our specific Lyapunov components, including handling of technical obstacles (unbounded derivatives, implicit definitions via optimal transport).
+**On proof completeness**: The TV-relevant components in §3.7.3.1-3.7.3.2 use standard BAOAB weak error theory for smooth bounded test functions (Leimkuhler & Matthews, 2015). The Wasserstein component in §3.7.3.3 is **deferred** and not used in the TV proof.
 :::
 
 **Challenge:** The standard weak error theory for BAOAB requires test functions with globally bounded derivatives. Our Lyapunov components violate this:
@@ -735,11 +762,11 @@ The variance $V_{\text{Var}} = \frac{1}{N}\sum_i \|z_i - \mu\|^2$ where $\mu = \
 **First derivative:**
 
 $$
-\frac{\partial V_{\text{Var}}}{\partial z_i} = \frac{2}{N}(z_i - \mu) - \frac{2}{N^2}\sum_j (z_j - \mu) = \frac{2}{N}(z_i - \mu) \cdot \left(1 - \frac{1}{N}\right)
+\frac{\partial V_{\text{Var}}}{\partial z_i} = \frac{2}{N}(z_i - \mu)
 
 $$
 
-Bounded: $\|\nabla V_{\text{Var}}\| \leq 2\sqrt{V_{\text{Var}}}$.
+Bounded on the squashed state space: since $\|z_i\|$ is uniformly bounded (velocity squashing and bounded $\mathcal{X}_{\text{valid}}$), $\|\nabla V_{\text{Var}}\|$ is uniformly bounded.
 
 **Second derivative:** The Hessian has both diagonal and off-diagonal blocks:
 
@@ -757,7 +784,7 @@ Bounded: $\|\nabla^2 V_{\text{Var}}\| \leq \frac{2}{N} \cdot N = 2$ (independent
 
 **PART II: Standard Weak Error Bound**
 
-Since all derivatives of $V_{\text{Var}}$ are **globally bounded** (independent of the state), the standard BAOAB weak error theory applies directly:
+Since all derivatives of $V_{\text{Var}}$ are **uniformly bounded on the squashed state space** (bounded velocities and compact $\mathcal{X}_{\text{valid}}$), the standard BAOAB weak error theory applies directly:
 
 By Leimkuhler & Matthews (2015), Theorem 7.5:
 
@@ -778,111 +805,32 @@ For practical purposes, this is absorbed into $K_{\text{Var}}$.
 **Q.E.D.**
 :::
 
-##### 3.7.3.2. Weak Error for Boundary Component ($W_b$) - Self-Referential Argument
+##### 3.7.3.2. Weak Error for Boundary Component ($W_b$)
 
 :::{prf:proposition} BAOAB Weak Error for Boundary Lyapunov Function
 :label: prop-weak-error-boundary
 
-For $W_b = \frac{1}{N}\sum_{k,i} \varphi_{\text{barrier}}(x_{k,i})$ where $\varphi$ has unbounded derivatives near $\partial\mathcal{X}_{\text{valid}}$:
+For $W_b = \frac{1}{N}\sum_i \varphi_{\text{barrier}}(x_i)$ with $\varphi_{\text{barrier}} \in C^3(\mathcal{X}_{\text{valid}})$ and bounded derivatives (as in Section 7.4), the BAOAB weak error satisfies:
 
 $$
-\left|\mathbb{E}[W_b(S_\tau^{\text{BAOAB}})] - \mathbb{E}[W_b(S_\tau^{\text{exact}})]\right| \leq K_b \tau^2 (1 + V_{\text{total}}(S_0))
+\left|\mathbb{E}[W_b(S_\tau^{\text{BAOAB}})] - \mathbb{E}[W_b(S_\tau^{\text{exact}})]\right| \leq K_b \tau^2
 
 $$
 
-where $K_b = K_b(\kappa_{\text{total}}, C_{\text{total}}, \gamma, \sigma_{\max})$ and **the bound depends on the total Lyapunov function**, not just $W_b$.
+with $K_b$ depending only on $(\gamma, \sigma_{\max}, \|\varphi_{\text{barrier}}\|_{C^3}, d, N)$.
 :::
 
 :::{prf:proof}
-**Proof (Self-Referential Probability Truncation).**
-
-**PART I: The Challenge**
-
-Near the boundary, $\|\nabla^k \varphi\| \to \infty$ as $x \to \partial\mathcal{X}_{\text{valid}}$. Standard weak error theory fails.
-
-**PART II: Key Insight - The Process Avoids the Boundary**
-
-From the Foster-Lyapunov theorem established in the companion document {doc}`06_convergence` (Theorem 06:1.4), the total Lyapunov function satisfies:
-
-$$
-\mathbb{E}[V_{\text{total}}(S_t)] \leq e^{-\kappa_{\text{total}} t} V_{\text{total}}(S_0) + \frac{C_{\text{total}}}{\kappa_{\text{total}}}
-
-$$
-
-Since $W_b$ is part of $V_{\text{total}}$:
-
-$$
-\mathbb{E}[W_b(S_t)] \leq \mathbb{E}[V_{\text{total}}(S_t)] \leq M_{\infty} := \frac{C_{\text{total}}}{\kappa_{\text{total}}} + V_{\text{total}}(S_0)
-
-$$
-
-**PART III: Probability of Large Barrier Values**
-
-By Markov's inequality:
-
-$$
-\mathbb{P}[W_b(S_t) > M] \leq \frac{\mathbb{E}[W_b(S_t)]}{M} \leq \frac{M_{\infty}}{M}
-
-$$
-
-For any large threshold $M$, the probability of being in the high-barrier region (near boundary) is **exponentially small**.
-
-**PART IV: Truncated Weak Error Expansion**
-
-Split the expectation:
-
-$$
-\mathbb{E}[W_b(S_\tau)] = \mathbb{E}[W_b(S_\tau) \cdot \mathbb{1}_{\{W_b \leq M\}}] + \mathbb{E}[W_b(S_\tau) \cdot \mathbb{1}_{\{W_b > M\}}]
-
-$$
-
-**Term 1 (Safe region):** On $\{W_b \leq M\}$, the barrier function has bounded derivatives:
-
-$$
-\|\nabla^k \varphi(x)\| \leq K_\varphi(M) < \infty \quad \text{for all } x \text{ with } \varphi(x) \leq M
-
-$$
-
-Apply standard BAOAB weak error on this region:
-
-$$
-\left|\mathbb{E}[W_b(S_\tau^{\text{BAOAB}}) \cdot \mathbb{1}_{\{W_b \leq M\}}] - \mathbb{E}[W_b(S_\tau^{\text{exact}}) \cdot \mathbb{1}_{\{W_b \leq M\}}]\right| \leq K_\varphi(M) \tau^2
-
-$$
-
-**Term 2 (High-barrier region):** By Markov:
-
-$$
-\left|\mathbb{E}[W_b(S_\tau) \cdot \mathbb{1}_{\{W_b > M\}}]\right| \leq \mathbb{E}[V_{\text{total}}(S_\tau)] \cdot \mathbb{P}[W_b > M] \leq M_{\infty} \cdot \frac{M_{\infty}}{M}
-
-$$
-
-**Choose $M = M_{\infty}/\tau$:** Then Term 2 contributes $O(\tau M_{\infty})$, which is $O(\tau)$ and negligible compared to the $O(\tau^2)$ error from Term 1.
-
-**PART V: Final Bound**
-
-Combining:
-
-$$
-\left|\mathbb{E}[W_b(S_\tau^{\text{BAOAB}})] - \mathbb{E}[W_b(S_\tau^{\text{exact}})]\right| \leq K_\varphi(M_{\infty}/\tau) \tau^2 + \tau M_{\infty}
-
-$$
-
-For sufficiently small $\tau$, the $\tau^2$ term dominates, giving:
-
-$$
-\leq K_b \tau^2 (1 + V_{\text{total}}(S_0))
-
-$$
-
-where $K_b$ depends on $\kappa_{\text{total}}$, $C_{\text{total}}$, and the barrier function structure.
-
-**Key Achievement:** The **self-referential nature** of the Lyapunov function (its own contraction) controls the probability of entering regions where the weak error analysis would fail.
+Because $\varphi_{\text{barrier}}$ is supported on a bounded boundary layer and has bounded derivatives (Section 7.4), $W_b$ is a smooth function with globally bounded first three derivatives on the velocity-squashed state space. The standard BAOAB weak error estimate (Leimkuhler & Matthews, 2015, Theorem 7.5) applies directly, giving an $O(\tau^2)$ bound with constant $K_b$ depending on the stated parameters.
 
 **Q.E.D.**
 :::
 
 ##### 3.7.3.3. Weak Error for Wasserstein Component ($V_W$) - Synchronous Coupling
+
+:::{important}
+This subsection is part of the **deferred W2 track** and is **not used** in the TV convergence proof. It remains provisional and will be repaired with a coupling-stability argument in a later revision.
+:::
 
 :::{prf:proposition} BAOAB Weak Error for Wasserstein Distance
 :label: prop-weak-error-wasserstein
@@ -1029,40 +977,31 @@ Define $C_\sigma(S) := \frac{1}{N}\sum_{i=1}^N \|\Delta z_{\sigma(i)}\|_h^2$ for
 **Key inequality:** For any states $S^A$, $S^E$:
 
 $$
-\left|\min_\sigma C_\sigma(S^A) - \min_\sigma C_\sigma(S^E)\right| \leq \max_\sigma \left|C_\sigma(S^A) - C_\sigma(S^E)\right| \leq \left|C_{\text{id}}(S^A) - C_{\text{id}}(S^E)\right|
+\left|\min_\sigma C_\sigma(S^A) - \min_\sigma C_\sigma(S^E)\right| \leq \max_\sigma \left|C_\sigma(S^A) - C_\sigma(S^E)\right|
 
 $$
 
-Applying to BAOAB vs exact:
+Controlling the right-hand side **uniformly in $\sigma$** requires stability of optimal matchings under the BAOAB perturbation. This step is deferred; the bound above remains the correct reduction but is not closed here.
 
-$$
-\begin{aligned}
-\left|\mathbb{E}[V_W(S_\tau)^{\text{BAOAB}}] - \mathbb{E}[V_W(S_\tau)^{\text{exact}}]\right|
-&\leq \mathbb{E}\left[\left|V_W(S_\tau^{\text{BAOAB}}) - V_W(S_\tau^{\text{exact}})\right|\right] \\
-&\leq \mathbb{E}\left[\left|C_{\text{id}}(S_\tau^{\text{BAOAB}}) - C_{\text{id}}(S_\tau^{\text{exact}})\right|\right] \\
-&\leq C_{\text{pair}} \tau^2 (1 + V_W(S_0))
-\end{aligned}
-
-$$
+**Deferred conclusion:** The fixed-matching weak error bound holds for each $\sigma$, but transferring it to $\min_\sigma$ requires additional coupling stability arguments.
 
 **PART V: N-Uniformity**
 
 Define $K_W := C_{\text{pair}} = C_{\text{LM}}(d, \gamma, L_F, L_\Sigma, \sigma_{\max}) \cdot \|Q(\lambda_v, b)\|$.
 
-The constant $K_W$ is **independent of $N$** because:
+The constant $K_W$ is **independent of $N$** at the fixed-matching level because:
 1. Each walker pair contributes $O(\tau^2)$ error
 2. Summing $N$ terms and dividing by $N$ cancels the $N$-dependence
 3. No mean-field approximation is used
 
-**Why This Approach Works:**
+**Why This Approach Works (Deferred):**
 
 Unlike the kinetic Fokker-Planck PDE (which is NOT a $W_2$-gradient flow), this proof:
 - Works at particle level with finite-$N$ systems
 - Uses synchronous coupling for noise cancellation
 - Applies standard weak error theory to an explicit quadratic test function
-- Rigorously propagates from index-matching to Wasserstein via min-max inequality
-
-**Q.E.D.**
+- Reduces the Wasserstein weak error to stability of optimal matchings (deferred)
+**Deferred.**
 :::
 
 :::{prf:remark} Comparison to Gradient Flow Approach
@@ -1085,6 +1024,8 @@ The correct approach uses **synchronous coupling at the particle level** - a sta
 
 :::{prf:proof}
 **Proof of {prf:ref}`thm-discretization` for the Synergistic Lyapunov Function.**
+
+**Note:** This assembly uses $V_W$ and belongs to the deferred W2 track. It is not used in the TV convergence proof.
 
 **PART I: Decompose by Components**
 
@@ -1193,14 +1134,7 @@ $$
 :::{admonition} Key Achievement
 :class: important
 
-This multi-part proof is a **significant mathematical contribution** because:
-
-1. **Wasserstein component:** Uses advanced gradient flow theory instead of standard Taylor expansions
-2. **Boundary component:** Employs a self-referential argument where the Lyapunov function's own contraction controls error probabilities
-3. **Variance component:** Explicit verification that many-body derivatives remain bounded
-4. **Assembly:** Rigorous combination respecting the different nature of each component
-
-**This goes beyond standard textbook results and would be suitable for publication in a top-tier numerical analysis or applied mathematics journal.**
+This multi-part proof is structured so that the **TV-relevant components** (variance, barycenter, boundary) rely only on standard weak-error estimates for smooth bounded test functions. The Wasserstein component is **deferred** and not used in the TV proof.
 :::
 
 ---
@@ -1221,7 +1155,7 @@ Under the axioms of Chapter 3, with:
 The integrator constant satisfies:
 
 $$
-K_{\text{integ}} \leq C_d \cdot \max(\kappa^2, L_F^2, \sigma_{\max}^2/\tau, \gamma^2) \cdot K_V
+K_{\text{integ}} \leq C_d \cdot \max(\kappa^2, L_F^2, \sigma_{\max}^2, \gamma^2) \cdot K_V
 
 $$
 
@@ -1237,21 +1171,8 @@ $$
 For typical parameters $(\gamma = 1, \sigma_v = 1, \kappa \sim 0.1)$, taking $\tau = 0.01$ is safe.
 :::
 
-:::{dropdown} 📖 **Complete Rigorous Proof**
-:icon: book
-:color: info
-
-For the full publication-ready proof with detailed verification, see:
-[Complete Proof: Explicit Discretization Constants](proofs/proof_20251024_2348_prop_explicit_constants.md)
-
-**Includes:**
-- Rigorous Taylor expansion analysis for BAOAB integrator up to 3rd order
-- Complete Itô calculus justifications for stochastic terms
-- Explicit constant derivation $K_{\text{integ}} \leq C_d \cdot \max(\kappa^2, L_F^2, \sigma_{\max}^2/\tau, \gamma^2) \cdot K_V$
-- Dimension-dependent polynomial bounds on $C_d$
-- Practical timestep selection guidelines $\tau_* \sim 1/\max(\kappa, L_F, \sigma_{\max}, \gamma)$
-- Verification of all regularity assumptions (Lipschitz force, bounded growth, diffusion bounds)
-- Application to specific Lyapunov components with component-specific timestep bounds
+:::{note}
+A full derivation of $K_{\text{integ}}$ follows standard BAOAB weak-error expansions for smooth test functions (Leimkuhler & Matthews, 2015). The constants above are stated explicitly to keep the TV proof constructive.
 :::
 
 ---
@@ -1260,12 +1181,14 @@ For the full publication-ready proof with detailed verification, see:
 
 In the subsequent chapters, we prove generator bounds for each component:
 
-| Chapter | Component | Generator Bound |
-|:--------|:----------|:---------------|
-| 2 | $V_W$ (inter-swarm) | $\mathcal{L}V_W \leq -\kappa_W V_W + C_W'$ |
-| 3 | $V_{\text{Var},v}$ (velocity var) | $\mathcal{L}V_{\text{Var},v} \leq -\kappa_v V_{\text{Var},v} + C_v'$ |
-| 4 | $V_{\text{Var},x}$ (position var) | $\mathcal{L}V_{\text{Var},x} \leq -\kappa_x V_{\text{Var},x} + C_x'$ |
-| 5 | $W_b$ (boundary) | $\mathcal{L}W_b \leq -\kappa_b W_b + C_b'$ |
+| Chapter | Component (TV Track) | Generator Bound |
+|:--------|:----------------------|:---------------|
+| 5 | $V_{\text{Var},v}$ (velocity var) | $\mathcal{L}V_{\text{Var},v} \leq -(2\gamma-\epsilon) V_{\text{Var},v} + C_v'$ |
+| 5.4.1 | $\|\mu_v\|^2$ | $\mathcal{L}\|\mu_v\|^2 \leq -\gamma \|\mu_v\|^2 + C_{\mu}'$ |
+| 6 | $V_{\text{Var},x}$ (position var) | $\mathcal{L}V_{\text{Var},x} \leq C_x'$ |
+| 7 | $W_b$ (boundary) | $\mathcal{L}W_b \leq -\kappa_b W_b + C_b'$ |
+
+**Deferred:** The inter-swarm $V_W$ bounds in Chapter 4 belong to the W2 track and are not used here.
 
 **By {prf:ref}`thm-discretization`:** Each of these immediately implies a discrete-time inequality:
 
@@ -1313,6 +1236,10 @@ From now on:
 ---
 
 **End of Section 3.7**
+
+## Part II (Deferred): W2/Hypocoercive Track
+
+The remainder of Part II records the hypocoercive/Wasserstein analysis. It is **not used** in the TV convergence proof and will be tightened in a later revision.
 
 ## 4. Hypocoercive Contraction of Inter-Swarm Error
 
@@ -1985,16 +1912,31 @@ The friction term $-\gamma v$ acts like a "drag force" that pulls all velocities
 :::{prf:definition} Velocity Variance Component (Recall)
 :label: def-velocity-variance-recall
 
-From {doc}`03_cloning` Definition 3.3.1, the velocity variance component of the Lyapunov function is:
+For a single swarm $S$, the velocity variance is:
 
 $$
-V_{\text{Var},v}(S_1, S_2) = \frac{1}{N}\sum_{k=1,2} \sum_{i \in \mathcal{A}(S_k)} \|\delta_{v,k,i}\|^2
+V_{\text{Var},v}(S) = \frac{1}{N}\sum_{i \in \mathcal{A}(S)} \|v_i - \mu_v\|^2
 
 $$
 
-where $\delta_{v,k,i} = v_{k,i} - \mu_{v,k}$ is the centered velocity of walker $i$ in swarm $k$.
+where $\mu_v = \frac{1}{N}\sum_{i \in \mathcal{A}(S)} v_i$. In the coupled two-swarm setting of {doc}`03_cloning`, the corresponding component is the average over the two swarms. The TV proof uses the single-swarm form.
 
-**Physical interpretation:** Measures the spread of velocities within each swarm around their respective velocity barycenters.
+**Physical interpretation:** Measures the spread of velocities around the swarm velocity barycenter.
+:::
+
+### 5.2.1. Velocity Barycenter Term
+
+:::{prf:definition} Velocity Barycenter Energy
+:label: def-velocity-barycenter-energy
+
+For a single swarm $S$, define the barycenter energy:
+
+$$
+V_{\mu_v}(S) := \|\mu_v\|^2
+
+$$
+
+This term is added to the TV Lyapunov function to control global velocity drift and to avoid hidden moment assumptions.
 :::
 
 ### 5.3. Main Theorem: Velocity Dissipation
@@ -2002,26 +1944,34 @@ where $\delta_{v,k,i} = v_{k,i} - \mu_{v,k}$ is the centered velocity of walker 
 :::{prf:theorem} Velocity Variance Contraction Under Kinetic Operator
 :label: thm-velocity-variance-contraction-kinetic
 
-Under the axioms of Chapter 3, the velocity variance satisfies:
+Under the axioms of Chapter 3, for any $\epsilon \in (0, 2\gamma)$ the velocity variance satisfies:
 
 $$
-\mathbb{E}_{\text{kin}}[\Delta V_{\text{Var},v}] \leq -2\gamma V_{\text{Var},v} \tau + \sigma_{\max}^2 d \tau
+\mathbb{E}_{\text{kin}}[\Delta V_{\text{Var},v}] \leq -(2\gamma-\epsilon) V_{\text{Var},v} \tau + \left(\frac{F_{\max}^2}{\epsilon} + \sigma_{\max}^2 d\right)\tau
 
 $$
 
 where:
 - $\gamma > 0$ is the friction coefficient
+- $F_{\max}$ bounds $\|F(x)\|$ on $\mathcal{X}_{\text{valid}}$
 - $\sigma_{\max}^2$ is the maximum eigenvalue of $\Sigma\Sigma^T$
 - $d$ is the spatial dimension
+
+Define the equilibrium upper bound:
+
+$$
+V_{\text{Var},v}^{\text{eq}} := \frac{F_{\max}^2/\epsilon + d\sigma_{\max}^2}{2\gamma - \epsilon}
+
+$$
 
 **Equivalently:**
 
 $$
-\mathbb{E}_{\text{kin}}[V_{\text{Var},v}(S')] \leq (1 - 2\gamma\tau) V_{\text{Var},v}(S) + \sigma_{\max}^2 d \tau
+\mathbb{E}_{\text{kin}}[V_{\text{Var},v}(S')] \leq (1 - (2\gamma-\epsilon)\tau) V_{\text{Var},v}(S) + \left(\frac{F_{\max}^2}{\epsilon} + \sigma_{\max}^2 d\right)\tau
 
 $$
 
-**Critical Property:** When $V_{\text{Var},v} > \frac{\sigma_{\max}^2 d}{2\gamma}$, the drift is strictly negative.
+**Critical Property:** When $V_{\text{Var},v} > \frac{F_{\max}^2}{\epsilon(2\gamma-\epsilon)} + \frac{\sigma_{\max}^2 d}{2\gamma-\epsilon}$, the drift is strictly negative.
 :::
 
 ### 5.4. Proof
@@ -2131,7 +2081,7 @@ $$
 
 $$
 
-(✓ sympy-verified: `src/proofs/05_kinetic_contraction/test_parallel_axis_theorem.py::test_parallel_axis_theorem`)
+(Direct algebraic identity.)
 
 **PART IV: Variance Evolution for Single Swarm**
 
@@ -2182,51 +2132,28 @@ $$
 
 $$
 
-**Quantitative bound via Cauchy-Schwarz:**
+**Quantitative bound via Young's inequality:**
 
 $$
 |\Delta_{\text{force}}| \leq \frac{2}{N_k}\sum_i \mathbb{E}[\|v_{k,i} - \mu_{v,k}\| \cdot \|F(x_{k,i})\|]
 
 $$
 
-By {prf:ref}`axiom-friction-timestep` (bounded forces): $\|F(x)\| \leq F_{\max}$ for $x$ in the interior. Thus:
+Using $2ab \leq \epsilon a^2 + \epsilon^{-1} b^2$ and $\|F(x)\| \leq F_{\max}$ on $\mathcal{X}_{\text{valid}}$:
 
 $$
-\leq \frac{2F_{\max}}{N_k}\sum_i \mathbb{E}[\|v_{k,i} - \mu_{v,k}\|]
-
-$$
-
-By **Jensen's inequality**: $\mathbb{E}[\|v - \mu_v\|] \leq \sqrt{\mathbb{E}[\|v - \mu_v\|^2]}$. Therefore:
-
-$$
-\leq 2F_{\max} \sqrt{\text{Var}_k(v)}
+|\Delta_{\text{force}}| \leq \epsilon \text{Var}_k(v) + \frac{F_{\max}^2}{\epsilon}
 
 $$
 
-**Sub-leading verification:** Compared to the friction term $-2\gamma \text{Var}_k(v)$, the force-work term has ratio:
+for any $\epsilon > 0$. This yields a **linear** drift bound without asymptotic arguments.
+
+**Resulting bound:**
 
 $$
-\frac{|\Delta_{\text{force}}|}{2\gamma \text{Var}_k(v)} \leq \frac{2F_{\max} \sqrt{\text{Var}_k(v)}}{2\gamma \text{Var}_k(v)} = \frac{F_{\max}}{\gamma \sqrt{\text{Var}_k(v)}} \to 0 \quad \text{as } \text{Var}_k(v) \to \infty
+\frac{d}{dt}\mathbb{E}[\text{Var}_k(v)] \leq -(2\gamma - \epsilon)\text{Var}_k(v) + \frac{F_{\max}^2}{\epsilon} + d\sigma_{\max}^2
 
 $$
-
-Thus, for large velocity variance (which is when contraction is needed), the force-work term is **negligible** compared to friction dissipation.
-
-**Dominant contribution (neglecting sub-leading force-work term):**
-
-$$
-\frac{d}{dt}\mathbb{E}[\text{Var}_k(v)] \leq -2\gamma \text{Var}_k(v) + 2F_{\max}\sqrt{\text{Var}_k(v)} + d\sigma_{\max}^2
-
-$$
-
-For practical bounds, absorb the $\sqrt{\text{Var}}$ term into the constant:
-
-$$
-\approx -2\gamma \text{Var}_k(v) + d\sigma_{\max}^2 + C_{\text{force}}
-
-$$
-
-where $C_{\text{force}} = O(F_{\max})$ accounts for the residual force-work contribution at equilibrium.
 
 **PART V: Aggregate Over Both Swarms**
 
@@ -2245,12 +2172,12 @@ $$
 $$
 
 $$
-\leq \frac{1}{2}\sum_{k=1,2} [-2\gamma \text{Var}_k(v) + d\sigma_{\max}^2]
+\leq \frac{1}{2}\sum_{k=1,2} \left[-(2\gamma - \epsilon)\text{Var}_k(v) + \frac{F_{\max}^2}{\epsilon} + d\sigma_{\max}^2\right]
 
 $$
 
 $$
-= -2\gamma V_{\text{Var},v} + d\sigma_{\max}^2
+= -(2\gamma - \epsilon) V_{\text{Var},v} + \frac{F_{\max}^2}{\epsilon} + d\sigma_{\max}^2
 
 $$
 
@@ -2264,25 +2191,58 @@ $$
 $$
 
 $$
-\leq -2\gamma V_{\text{Var},v}(t) \tau + d\sigma_{\max}^2 \tau + O(\tau^2)
+\leq -(2\gamma-\epsilon) V_{\text{Var},v}(t) \tau + \left(\frac{F_{\max}^2}{\epsilon} + d\sigma_{\max}^2\right)\tau + O(\tau^2)
 
 $$
 
 For sufficiently small $\tau$, absorb $O(\tau^2)$ into the constant term:
 
 $$
-\mathbb{E}[\Delta V_{\text{Var},v}] \leq -2\gamma V_{\text{Var},v} \tau + d\sigma_{\max}^2 \tau
+\mathbb{E}[\Delta V_{\text{Var},v}] \leq -(2\gamma-\epsilon) V_{\text{Var},v} \tau + \left(\frac{F_{\max}^2}{\epsilon} + d\sigma_{\max}^2\right)\tau
 
 $$
 
 **PART VII: Physical Interpretation**
 
 This result shows:
-1. **Contraction:** Friction dissipates velocity variance at rate $2\gamma$ (twice the friction coefficient due to quadratic dependence)
-2. **Expansion:** Thermal noise adds variance at rate $d\sigma_{\max}^2$ (proportional to dimension and noise strength)
-3. **Equilibrium:** When $V_{\text{Var},v} \to V_{\text{Var},v}^{\text{eq}} = \frac{d\sigma_{\max}^2}{2\gamma}$, the two terms balance (equipartition)
+1. **Contraction:** Friction dissipates velocity variance at rate $(2\gamma-\epsilon)$
+2. **Expansion:** Thermal noise adds variance at rate $d\sigma_{\max}^2$ and the force term contributes $\frac{F_{\max}^2}{\epsilon}$
+3. **Equilibrium:** When $V_{\text{Var},v} \to V_{\text{Var},v}^{\text{eq}}$, the drift balances
 
-**Key property:** The contraction rate $-2\gamma$ is **independent of system size** $N$ or state - it's a fundamental property of Langevin dynamics.
+**Key property:** The contraction rate $(2\gamma-\epsilon)$ is **independent of swarm size** $N$.
+
+**Q.E.D.**
+:::
+
+### 5.4.1. Velocity Barycenter Dissipation
+
+:::{prf:theorem} Velocity Barycenter Drift Under Kinetics
+:label: thm-velocity-barycenter-dissipation
+
+Under the axioms of Chapter 3 and with velocity squashing, the barycenter energy satisfies:
+
+$$
+\mathbb{E}_{\text{kin}}[\Delta \|\mu_v\|^2] \leq -\gamma \|\mu_v\|^2 \tau + \left(\frac{F_{\max}^2}{\gamma} + \frac{\sigma_{\max}^2 d}{N}\right)\tau
+
+$$
+
+where $F_{\max}$ is the uniform bound on $\|F(x)\|$ over $\mathcal{X}_{\text{valid}}$.
+:::
+
+:::{prf:proof}
+For a single swarm,
+$
+d\mu_v = F_{\text{avg}}\,dt - \gamma \mu_v\,dt + \frac{1}{N}\sum_{i \in \mathcal{A}(S)} \Sigma_i\, dW_i,
+$
+with $F_{\text{avg}} = \frac{1}{N}\sum_i F(x_i)$. Itô's lemma gives
+$
+d\|\mu_v\|^2 = 2\langle \mu_v, F_{\text{avg}} - \gamma \mu_v\rangle dt + \frac{1}{N^2}\sum_i \text{Tr}(\Sigma_i\Sigma_i^T)\,dt + dM_t,
+$
+for a martingale $M_t$. Using $2\langle \mu_v, F_{\text{avg}}\rangle \leq \gamma\|\mu_v\|^2 + \frac{1}{\gamma}\|F_{\text{avg}}\|^2$ and $\|F_{\text{avg}}\|\leq F_{\max}$ yields
+$
+\frac{d}{dt}\mathbb{E}\|\mu_v\|^2 \leq -\gamma \mathbb{E}\|\mu_v\|^2 + \frac{F_{\max}^2}{\gamma} + \frac{\sigma_{\max}^2 d}{N}.
+$
+This implies the discrete-time bound for timestep $\tau$.
 
 **Q.E.D.**
 :::
@@ -2302,21 +2262,21 @@ $$
 Combining with the kinetic dissipation:
 
 $$
-\mathbb{E}_{\text{clone} \circ \text{kin}}[\Delta V_{\text{Var},v}] \leq -2\gamma V_{\text{Var},v} \tau + (d\sigma_{\max}^2 \tau + C_v)
+\mathbb{E}_{\text{clone} \circ \text{kin}}[\Delta V_{\text{Var},v}] \leq -(2\gamma-\epsilon) V_{\text{Var},v} \tau + \left(\left(\frac{F_{\max}^2}{\epsilon} + d\sigma_{\max}^2\right)\tau + C_v\right)
 
 $$
 
 **For net contraction, we need:**
 
 $$
-2\gamma V_{\text{Var},v} \tau > d\sigma_{\max}^2 \tau + C_v
+(2\gamma-\epsilon) V_{\text{Var},v} \tau > \left(\frac{F_{\max}^2}{\epsilon} + d\sigma_{\max}^2\right)\tau + C_v
 
 $$
 
 **This holds when:**
 
 $$
-V_{\text{Var},v} > \frac{d\sigma_{\max}^2}{2\gamma} + \frac{C_v}{2\gamma\tau}
+V_{\text{Var},v} > V_{\text{Var},v}^{\text{eq}} + \frac{C_v}{(2\gamma-\epsilon)\tau}
 
 $$
 
@@ -2324,7 +2284,7 @@ $$
 At equilibrium where $\mathbb{E}[\Delta V_{\text{Var},v}] = 0$:
 
 $$
-V_{\text{Var},v}^{\text{eq}} \approx \frac{d\sigma_{\max}^2}{2\gamma} + \frac{C_v}{2\gamma\tau}
+V_{\text{Var},v}^{\text{eq}} \approx \frac{F_{\max}^2/\epsilon + d\sigma_{\max}^2}{2\gamma-\epsilon} + \frac{C_v}{(2\gamma-\epsilon)\tau}
 
 $$
 
@@ -2334,28 +2294,35 @@ $$
 - Cloning perturbations ($C_v$)
 :::
 
-:::{dropdown} 📖 **Complete Rigorous Proof**
-:icon: book
-:color: info
+:::{prf:corollary} Barycenter Drift Under the Composed Operator
+:label: cor-net-barycenter-drift
 
-For the full publication-ready proof with detailed verification, see:
-[Complete Proof: Net Velocity Variance Contraction](proofs/proof_20251025_093103_cor_net_velocity_contraction.md)
+With velocity squashing, the cloning step satisfies:
 
-**Includes:**
-- Rigorous composition of kinetic and cloning operator drift inequalities
-- Detailed equilibrium analysis via drift-zero condition
-- Explicit threshold derivation $V_{\text{Var},v} > \frac{d\sigma_{\max}^2}{2\gamma} + \frac{C_v}{2\gamma\tau}$ for net contraction
-- Physical interpretation of three-way balance: friction dissipation vs thermal noise vs cloning perturbations
-- N-uniformity verification (all constants independent of swarm size)
-- Synergistic composition analysis with positional variance contraction
-- Practical parameter regime identification for guaranteed contraction
+$$
+\mathbb{E}_{\text{clone}}[\|\mu_v'\|^2] \leq v_{\max}^2,
+
+$$
+
+so $\mathbb{E}_{\text{clone}}[\Delta \|\mu_v\|^2] \leq v_{\max}^2$. Combining with Theorem {prf:ref}`thm-velocity-barycenter-dissipation` yields:
+
+$$
+\mathbb{E}_{\text{clone}\circ\text{kin}}[\Delta \|\mu_v\|^2] \leq -\gamma \|\mu_v\|^2 \tau + \left(\frac{F_{\max}^2}{\gamma} + \frac{\sigma_{\max}^2 d}{N}\right)\tau + v_{\max}^2.
+
+$$
+:::
+
+:::{note}
+The composition argument is a direct application of the drift bounds in Theorem {prf:ref}`thm-velocity-variance-contraction-kinetic` and the cloning expansion bound from {doc}`03_cloning`.
 :::
 
 ### 5.6. Summary
 
 This chapter has proven:
 
-✅ **Linear contraction** of velocity variance with rate $2\gamma$
+✅ **Linear contraction** of velocity variance with rate $(2\gamma-\epsilon)$
+
+✅ **Barycenter dissipation** for $\|\mu_v\|^2$ with rate $\gamma$
 
 ✅ **Overcomes cloning expansion** when $V_{\text{Var},v}$ is large enough
 
@@ -2363,11 +2330,11 @@ This chapter has proven:
 
 ✅ **N-uniform** - all constants independent of swarm size
 
-**Key Mechanism:** The friction term $-\gamma v$ provides direct dissipation that overcomes both thermal noise and cloning-induced perturbations.
+**Key Mechanism:** The friction term $-\gamma v$ provides direct dissipation that overcomes both thermal noise and cloning-induced perturbations in velocities and their barycenter.
 
 **Synergy with Cloning:**
 - Cloning contracts position variance ({doc}`03_cloning`, Ch 10)
-- Kinetics contracts velocity variance (this chapter)
+- Kinetics contracts velocity variance and barycenter energy (this chapter)
 - Together: full phase-space contraction
 
 **Next:** Chapter 6 analyzes the positional diffusion that causes bounded expansion of $V_{\text{Var},x}$.
@@ -2412,12 +2379,7 @@ $$
 
 $$
 
-where:
-
-$$
-C_{\text{kin},x} = \mathbb{E}[\|v\|^2] + \frac{1}{2}\sigma_{\max}^2 \tau + O(\tau^2)
-
-$$
+where $C_{\text{kin},x} = C_1 + C_2$ is a state-independent constant defined in the proof.
 
 The constant $C_{\text{kin},x}$ is **state-independent** when velocity variance is bounded (which is ensured by Chapter 5).
 
@@ -2530,14 +2492,14 @@ d\delta_v = [F(x) - F(\mu_x) - \gamma \delta_v] \, dt + \Sigma \circ dW
 
 $$
 
-While $\delta_v$ is not an exact Ornstein-Uhlenbeck (OU) process for general non-quadratic potentials $U$ (due to the nonlinear force term $F(x) - F(\mu_x)$), the friction term $-\gamma \delta_v$ governs exponential decay of velocity correlations. Under the Lipschitz condition on $F$ (Axiom {prf:ref}`axiom-bounded-displacement` from {doc}`01_fragile_gas_framework`) and constant friction $\gamma > 0$, the velocity autocovariance satisfies the upper bound:
+While $\delta_v$ is not an exact Ornstein-Uhlenbeck (OU) process for general non-quadratic potentials $U$ (due to the nonlinear force term $F(x) - F(\mu_x)$), the friction term $-\gamma \delta_v$ governs exponential decay of velocity correlations. Under the Lipschitz condition on $F$ (Axiom {prf:ref}`axiom-confining-potential`, part 5) and constant friction $\gamma > 0$, the velocity autocovariance satisfies the upper bound:
 
 $$
 \mathbb{E}[\langle \delta_{v}(s_1), \delta_{v}(s_2) \rangle] \leq V_{\text{Var},v}^{\text{eq}} e^{-\gamma |s_1 - s_2|}
 
 $$
 
-where $V_{\text{Var},v}^{\text{eq}} = \frac{d\sigma_{\max}^2}{2\gamma}$ is the equilibrium velocity variance from {prf:ref}`thm-velocity-variance-contraction-kinetic`.
+where $V_{\text{Var},v}^{\text{eq}}$ is the equilibrium velocity variance bound from {prf:ref}`thm-velocity-variance-contraction-kinetic`.
 
 **Double integral evaluation:**
 
@@ -2580,10 +2542,10 @@ $$
 
 $$
 
-Multiplying by $V_{\text{Var},v}^{\text{eq}} = \frac{d\sigma_{\max}^2}{2\gamma}$:
+Multiplying by $V_{\text{Var},v}^{\text{eq}}$:
 
 $$
-\mathbb{E}\left[\left\|\int_0^\tau \delta_{v}(s) \, ds\right\|^2\right] \leq \frac{d\sigma_{\max}^2}{2\gamma} \cdot \tau^2 + O(\tau^3)
+\mathbb{E}\left[\left\|\int_0^\tau \delta_{v}(s) \, ds\right\|^2\right] \leq V_{\text{Var},v}^{\text{eq}} \tau^2 + O(\tau^3)
 
 $$
 
@@ -2596,10 +2558,10 @@ $$
 
 $$
 
-Multiplying by $V_{\text{Var},v}^{\text{eq}} = \frac{d\sigma_{\max}^2}{2\gamma}$:
+Multiplying by $V_{\text{Var},v}^{\text{eq}}$:
 
 $$
-\mathbb{E}\left[\left\|\int_0^\tau \delta_{v}(s) \, ds\right\|^2\right] \leq \frac{d\sigma_{\max}^2}{2\gamma} \cdot \frac{2\tau}{\gamma} = \frac{d\sigma_{\max}^2}{\gamma^2} \tau
+\mathbb{E}\left[\left\|\int_0^\tau \delta_{v}(s) \, ds\right\|^2\right] \leq \frac{2 V_{\text{Var},v}^{\text{eq}}}{\gamma} \tau
 
 $$
 
@@ -2608,7 +2570,7 @@ $$
 Define:
 
 $$
-C_2 := \frac{d\sigma_{\max}^2}{\gamma^2}
+C_2 := \frac{2 V_{\text{Var},v}^{\text{eq}}}{\gamma}
 
 $$
 
@@ -2639,7 +2601,7 @@ $$
 
 These bounds are ensured by:
 
-1. **Velocity variance:** {prf:ref}`thm-velocity-variance-contraction-kinetic` establishes that velocity variance equilibrates to $V_{\text{Var},v}^{\text{eq}} = \frac{d\sigma_{\max}^2}{2\gamma}$ with exponential convergence. Thus $M_v = \frac{d\sigma_{\max}^2}{2\gamma}$.
+1. **Velocity variance:** {prf:ref}`thm-velocity-variance-contraction-kinetic` establishes that velocity variance equilibrates to $V_{\text{Var},v}^{\text{eq}}$ with exponential convergence. Thus $M_v = V_{\text{Var},v}^{\text{eq}}$.
 
 2. **Positional variance:** {prf:ref}`thm-positional-variance-contraction` (from {doc}`03_cloning`, Chapter 10) establishes the Foster-Lyapunov drift inequality:
 
@@ -2679,7 +2641,7 @@ $$
 Define:
 
 $$
-C_{\text{kin},x} = C_1 + C_2 = 2\sqrt{M_x \cdot M_v} + \frac{d\sigma_{\max}^2}{\gamma^2}
+C_{\text{kin},x} = C_1 + C_2 = 2\sqrt{M_x \cdot M_v} + \frac{2 V_{\text{Var},v}^{\text{eq}}}{\gamma}
 
 $$
 
@@ -3042,14 +3004,7 @@ $$
 
 $$
 
-**Velocity moment bound from Chapter 5:** By {prf:ref}`thm-velocity-variance-contraction-kinetic`, the kinetic operator maintains:
-
-$$
-\mathbb{E}[\|v_i\|^2] \leq V_{\text{Var},v}^{\text{eq}} := \frac{d\sigma_{\max}^2}{2\gamma}
-
-$$
-
-for all $i$ in equilibrium (or near-equilibrium during drift analysis).
+**Velocity moment bound:** By velocity squashing, $\|v_i\| \leq v_{\max}$ deterministically, hence $\mathbb{E}[\|v_i\|^2] \leq v_{\max}^2$. Using {prf:ref}`thm-velocity-variance-contraction-kinetic` yields a (potentially tighter) bound $\mathbb{E}[\|v_i\|^2] \leq V_{\text{Var},v}^{\text{eq}}$.
 
 **Taking expectation:**
 
@@ -3070,30 +3025,30 @@ $$
 Substituting definitions:
 
 $$
-\left[\left(\frac{c}{\delta}\right)^2 + \frac{c}{\delta} K_{\text{curv}}\right] \frac{d\sigma_{\max}^2}{2\gamma} < \frac{c}{\delta} \alpha_{\text{boundary}}
+\left[\left(\frac{c}{\delta}\right)^2 + \frac{c}{\delta} K_{\text{curv}}\right] V_{\text{Var},v}^{\text{eq}} < \frac{c}{\delta} \alpha_{\text{boundary}}
 
 $$
 
 Multiply both sides by $\frac{\delta}{c}$ (assuming $c > 0$):
 
 $$
-\left[\frac{c}{\delta} + K_{\text{curv}}\right] \frac{d\sigma_{\max}^2}{2\gamma} < \alpha_{\text{boundary}}
+\left[\frac{c}{\delta} + K_{\text{curv}}\right] V_{\text{Var},v}^{\text{eq}} < \alpha_{\text{boundary}}
 
 $$
 
 **Sufficient condition:** Choose $c$ small enough:
 
 $$
-c < \delta \left[\frac{2\gamma \alpha_{\text{boundary}}}{d\sigma_{\max}^2} - K_{\text{curv}}\right]
+c < \delta \left[\frac{\alpha_{\text{boundary}}}{V_{\text{Var},v}^{\text{eq}}} - K_{\text{curv}}\right]
 
 $$
 
-This is **always achievable** provided $\alpha_{\text{boundary}} > \frac{K_{\text{curv}} d\sigma_{\max}^2}{2\gamma}$, which is guaranteed by {prf:ref}`axiom-confining-potential` part 4 for sufficiently strong confining potential.
+This is **achievable** provided $\alpha_{\text{boundary}} > K_{\text{curv}} V_{\text{Var},v}^{\text{eq}}$, which is an explicit strength requirement on the confining potential near the boundary.
 
 **Resulting contraction rate:**
 
 $$
-\kappa_{\text{pot}} := \frac{1}{\gamma}\left[\alpha_{\text{align}} - K_{\varphi} V_{\text{Var},v}^{\text{eq}}\right] = \frac{1}{\gamma}\left[\frac{c}{\delta}\alpha_{\text{boundary}} - \left(\left(\frac{c}{\delta}\right)^2 + \frac{c}{\delta}K_{\text{curv}}\right)\frac{d\sigma_{\max}^2}{2\gamma}\right] > 0
+\kappa_{\text{pot}} := \frac{1}{\gamma}\left[\alpha_{\text{align}} - K_{\varphi} V_{\text{Var},v}^{\text{eq}}\right] > 0
 
 $$
 
@@ -3145,7 +3100,7 @@ $$
 **Explicit constants:**
 
 $$
-\kappa_{\text{pot}} = \frac{1}{\gamma}\left[\frac{c}{\delta}\alpha_{\text{boundary}} - \left(\left(\frac{c}{\delta}\right)^2 + \frac{c}{\delta}K_{\text{curv}}\right)\frac{d\sigma_{\max}^2}{2\gamma}\right]
+\kappa_{\text{pot}} = \frac{1}{\gamma}\left[\frac{c}{\delta}\alpha_{\text{boundary}} - \left(\left(\frac{c}{\delta}\right)^2 + \frac{c}{\delta}K_{\text{curv}}\right)V_{\text{Var},v}^{\text{eq}}\right]
 
 $$
 
@@ -3202,28 +3157,43 @@ $$
 **Result:** **Layered defense** - even if one mechanism temporarily fails, the other provides safety.
 :::
 
-:::{dropdown} 📖 **Complete Rigorous Proof**
-:icon: book
-:color: info
+### 7.6. Small-Set Minorization for the Kinetic Kernel
 
-For the full publication-ready proof with detailed verification, see:
-[Complete Proof: Total Boundary Safety from Dual Mechanisms](proofs/proof_20251025_093110_cor_total_boundary_safety.md)
+:::{prf:lemma} Minorization on Compact Interior Sets
+:label: lem-kinetic-minorization
 
-**Includes:**
-- Rigorous composition of Safe Harbor (cloning) and confining potential (kinetics) mechanisms
-- Complete drift inequality synthesis: $\mathbb{E}_{\text{total}}[\Delta W_b] \leq -(\kappa_b + \kappa_{\text{pot}}\tau) W_b + (C_b + C_{\text{pot}}\tau)$
-- Explicit contraction rate formulas for both mechanisms
-- Layered defense analysis: failure resilience when one mechanism is temporarily weak
-- Physical interpretation of dual protection (discrete cloning removal + continuous potential pushing)
-- N-uniformity verification for combined system
-- Parameter regime identification for optimal safety balance
+Fix $\delta_{\text{core}} > 0$ and define the compact interior set:
+
+$$
+\mathcal{K}_{\text{core}} := \{(x,v) : \text{dist}(x,\partial\mathcal{X}_{\text{valid}}) \geq \delta_{\text{core}},\ \|v\| \leq v_{\max}\}.
+
+$$
+
+Under uniform ellipticity of $\Sigma$ and velocity squashing, there exist $\epsilon_{\text{kin}} > 0$ and a probability measure $\nu_{\text{kin}}$ with compact support such that for all $(x,v) \in \mathcal{K}_{\text{core}}$ and all measurable sets $A$:
+
+$$
+P_{\text{kin}}((x,v), A) \geq \epsilon_{\text{kin}}\, \nu_{\text{kin}}(A).
+
+$$
 :::
 
-### 7.6. Summary
+:::{prf:proof}
+During the O-step, the velocity update is Gaussian with covariance
+$
+Q(x,v) = \frac{1 - e^{-2\gamma\tau}}{2\gamma}\Sigma(x,v)\Sigma(x,v)^T,
+$
+and uniform ellipticity implies $Q(x,v) \succeq q_{\min} I_d$ on $\mathcal{K}_{\text{core}}$. The A/B steps and the squashing map are smooth with uniformly bounded Jacobian on $\mathcal{K}_{\text{core}}$, so the pushforward of the Gaussian has a smooth density bounded below on a fixed ball inside the image of $\mathcal{K}_{\text{core}}$. Choosing $\nu_{\text{kin}}$ as normalized Lebesgue on that ball yields the stated minorization. See Meyn & Tweedie (2009, Ch. 5) and Hairer & Mattingly (2011) for the standard construction.
+
+**Q.E.D.**
+:::
+
+### 7.7. Summary
 
 This chapter has proven:
 
 ✅ **Independent boundary contraction** from confining potential
+
+✅ **Minorization on compact interior sets** for the kinetic kernel
 
 ✅ **Layered safety** - two mechanisms prevent extinction
 

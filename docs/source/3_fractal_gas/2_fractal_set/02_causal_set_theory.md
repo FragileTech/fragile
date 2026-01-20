@@ -6,7 +6,7 @@
 
 ## TLDR
 
-*Notation: $(E, \prec_{\mathrm{CST}})$ = Fractal Set with CST causal order; BLMS = Bombelli-Lee-Meyer-Sorkin axioms; $d = \dim \mathcal{X}$, $D = d + 1$ (spacetime dimension for CST formulas); $\rho_{\mathrm{adaptive}}$ = QSD sampling density; $\sqrt{\det g}$ = Riemannian volume element.*
+*Notation: $(E, \prec_{\mathrm{CST}})$ = Fractal Set with CST causal order; $\prec_{\mathrm{LC}}$ = geometric light-cone order; BLMS = Bombelli-Lee-Meyer-Sorkin axioms; $d = \dim \mathcal{X}$, $D = d + 1$ (spacetime dimension for CST formulas); $\rho_{\mathrm{adaptive}}$ = QSD sampling density; $\sqrt{\det g}$ = Riemannian volume element.*
 
 **The Fractal Set is a Valid Causal Set**: The episode set $E$ with CST ordering $\prec_{\mathrm{CST}}$ satisfies all three BLMS axioms (irreflexivity, transitivity, local finiteness), making the Fractal Set a rigorous causal set in the sense of quantum gravity research.
 
@@ -290,6 +290,19 @@ $N = |E| = \sum_k |E_{\mathrm{CST}}(t_k)|$ and $R = \int_{t_0}^{t_1} r(t)\,dt = 
 | Density $\rho = \mathrm{const}$ | Density $\rho(x, t) \propto \sqrt{\det g(x, t)} \, e^{-U_{\mathrm{eff}}(x, t)/T}$ |
 | Uniform sampling | Adaptive sampling |
 | Ad-hoc choice of $\rho$ | Automatic from QSD |
+:::
+
+:::{admonition} Conformal vs. General Geometry
+:class: note
+
+Standard CST order+counting fixes only the conformal class, so the usual "Minkowski trick" applies only when
+$g$ is conformally flat. In that case, a uniform sprinkling in $(M,g)$ appears as a non-uniform density
+$\rho \propto \Omega^D$ in flat coordinates, consistent with the adaptive density above. The
+density-corrected Laplacian (see {prf:ref}`def-density-corrected-laplacian`) removes this coordinate bias.
+For general geometries with nonzero Weyl curvature, there is no global flattening; instead we use the
+emergent metric $g_R$ (from {prf:ref}`def-adaptive-diffusion-tensor-latent`) and the QSD density
+({prf:ref}`thm-fractal-adaptive-sprinkling`) together with LSI mixing
+({prf:ref}`thm-n-uniform-lsi-exchangeable`) to keep the continuum limits coordinate-invariant.
 :::
 
 :::{figure} figures/adaptive-sprinkling.svg
@@ -593,18 +606,24 @@ for bounded Lipschitz functionals uniformly over the window.
 **A5 (Kernel + algorithmic cutoff)**: $K\in C^2_c([0,1])$. Let $\rho$ be the localization
 scale and $\varepsilon_c$ the coherence scale ({doc}`01_fractal_set`). Define the algorithmic
 locality radius $R_{\mathrm{loc}} := \min(\rho,\varepsilon_c)$ and the light-crossing time
-$T_{\mathrm{loc}} := \min(t_1-t_0, R_{\mathrm{loc}}/c)$. Let
+$T_{\mathrm{loc}} := \min(t_1-t_0, R_{\mathrm{loc}}/c)$. For $\varepsilon>0$, let
 $$
-J_{\mathrm{alg}} := \{\xi:\tau(\xi)\in[0,1],\; |\xi^0|\le T_{\mathrm{loc}},\; \|\xi\|\le R_{\mathrm{loc}}\}
+J_{\mathrm{alg}}^{(\varepsilon)} := \{\xi:\tau(\xi)\in[0,\varepsilon],\; |\xi^0|\le T_{\mathrm{loc}},\; \|\xi\|\le R_{\mathrm{loc}}\}
 $$
-be the algorithmic double cone in tangent Minkowski space. With the identification
-$\varepsilon := R_{\mathrm{loc}}$ (A6), the rescaled cone is fixed; the moment conditions
-below are imposed on this rescaled domain (equivalently on $J_{\mathrm{alg}}$ after scaling).
-Here $\tau(\xi):=\sqrt{c^2(\xi^0)^2-\|\xi\|^2}$ with $c=V_{\mathrm{alg}}$.
-The moment conditions hold on $J_{\mathrm{alg}}$:
+be the algorithmic double cone in tangent Minkowski space, with
+$\tau(\xi):=\sqrt{c^2(\xi^0)^2-\|\xi\|^2}$ and $c=V_{\mathrm{alg}}$. Under the rescaling
+$\xi=\varepsilon \zeta$, the unit cone
 $$
-M_0 := \int_{J_{\mathrm{alg}}} K(\tau(\xi))\,d\xi = 0,\qquad
-M_2^{\mu\nu} := \int_{J_{\mathrm{alg}}} K(\tau(\xi))\,\xi^\mu\xi^\nu\,d\xi = 2m_2\, g^{\mu\nu},
+\widehat{J}_{\mathrm{alg}} := \{\zeta:\tau(\zeta)\in[0,1],\; |\zeta^0|\le T_{\mathrm{loc}}/\varepsilon,\; \|\zeta\|\le R_{\mathrm{loc}}/\varepsilon\}
+$$
+is fixed once we identify $\varepsilon := R_{\mathrm{loc}}$ (A6), so the moment conditions are
+imposed on $\widehat{J}_{\mathrm{alg}}$ with the scaled kernel $K(\tau(\zeta))$.
+For $\varepsilon$ small enough that $R_{\mathrm{loc}}/c \le t_1-t_0$, we have
+$T_{\mathrm{loc}}=R_{\mathrm{loc}}/c$ and thus $|\zeta^0|\le 1/c$, $\|\zeta\|\le 1$.
+The moment conditions are:
+$$
+M_0 := \int_{\widehat{J}_{\mathrm{alg}}} K(\tau(\zeta))\,d\zeta = 0,\qquad
+M_2^{\mu\nu} := \int_{\widehat{J}_{\mathrm{alg}}} K(\tau(\zeta))\,\zeta^\mu\zeta^\nu\,d\zeta = 2m_2\, g^{\mu\nu},
 $$
 with $m_2>0$. The cutoff is symmetric, so odd moments vanish. (These conditions can be enforced
 by choosing $K$ with signed weights.)
@@ -829,10 +848,10 @@ $$
 f(x+\xi) = f(x) + \partial_\mu f(x)\,\xi^\mu + \frac{1}{2}\partial_\mu\partial_\nu f(x)\,\xi^\mu\xi^\nu
  + O(\|\xi\|^3).
 $$
-Because the kernel is two-sided and $K$ depends only on $\tau(\xi)$, the odd moments vanish.
-Using A5, the second-moment term yields
+Because the kernel is two-sided and $K$ depends only on $\tau(\xi)/\varepsilon$, the odd moments vanish.
+Using A5 and the change of variables $\xi=\varepsilon\zeta$, the second-moment term yields
 $$
-\frac{1}{m_2\varepsilon^{D+2}} \int_{J_{\mathrm{alg}}} K(\tau/\varepsilon)\,
+\frac{1}{m_2\varepsilon^{D+2}} \int_{J_{\mathrm{alg}}^{(\varepsilon)}} K(\tau(\xi)/\varepsilon)\,
 \frac{1}{2}\partial_\mu\partial_\nu f(x)\,\xi^\mu\xi^\nu\, d\xi
  = \Box_g f(x) + O(\varepsilon^2),
 $$
@@ -918,7 +937,8 @@ $$
 r_e:=\frac{|\{(e_i,e_j)\in W(e)^2:\,e_i\prec_{\mathrm{LC}} e_j\}|}{\binom{|W(e)|}{2}}.
 $$
 With $R_{\mathrm{loc}},T_{\mathrm{loc}}\to 0$ and $|W(e)|\to\infty$ under the scaling in A6,
-$r_e\to r$ and the same inversion yields $d_{\mathrm{MM}}$.
+$r_e\to r$ and the same inversion yields $d_{\mathrm{MM}}$; this uses the local flatness of
+$g$ on windows whose diameter shrinks with $R_{\mathrm{loc}}$.
 :::
 
 :::{prf:definition} Proper-Time Neighborhoods (Geometric and CST)

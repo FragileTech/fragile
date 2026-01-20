@@ -17,7 +17,7 @@ Thus cloning gives N-uniform **control** of the centered positional $W_2$ compon
 
 **Explicit constants**: $\kappa_x = \frac{\chi(\varepsilon)}{4} c_{\text{struct}}$ with
 $\chi(\varepsilon)=p_u(\varepsilon)c_{\text{err}}(\varepsilon)$ and
-$g_{\max}(\varepsilon)=\max(p_u g_{\text{err}}, \chi R_{\text{spread}}^2)$ (Section 8). All constants are N-uniform.
+$g_{\max}(\varepsilon)=\max(p_u(\varepsilon) g_{\text{err}}(\varepsilon), \chi(\varepsilon) R_{\text{spread}}^2)$ (Section 8). All constants are N-uniform.
 
 **Dependencies**: {doc}`03_cloning`, {doc}`02_euclidean_gas`
 
@@ -25,7 +25,7 @@ $g_{\max}(\varepsilon)=\max(p_u g_{\text{err}}, \chi R_{\text{spread}}^2)$ (Sect
 
 ### 1.1. Goal and Scope
 
-The goal of this document is to prove that the **cloning operator** $\Psi_{\text{clone}}$ of the Fragile Gas framework induces a **drift bound on the centered/structural component** of the Wasserstein-2 distance with a **positive, N-uniform structural coefficient**. This result is the essential bridge connecting the finite-particle dynamics to the mean-field limit and serves as a foundation for the propagation of chaos analysis.
+The goal of this document is to prove that the **cloning operator** $\Psi_{\text{clone}}$ of the Fragile Gas framework induces an **N-uniform drift bound on a variance proxy** that controls the centered/structural component of the Wasserstein-2 distance. A closed drift inequality for the centered positional term is obtained under an explicit structural-dominance assumption. These results bridge the finite-particle dynamics to the mean-field limit and support propagation of chaos.
 
 The central mathematical object is the Wasserstein-2 distance $W_2(\mu_1, \mu_2)$ between two empirical swarm distributions $\mu_1, \mu_2$ on **phase space** $z := (x, v)$, supported on $N$ walkers. We decompose it into barycenter and centered components and control the centered **positional** part under cloning. Let $\bar{z}_k := \int z \, d\mu_k = (\bar{x}_k, \bar{v}_k)$ and $\tilde{\mu}_k := (z - \bar{z}_k)_\# \mu_k$, so that:
 
@@ -62,11 +62,11 @@ $V_{\text{struct}} \geq \lambda_2 W_2^2(\tilde{\mu}_1, \tilde{\mu}_2) \geq \lamb
 
 The critical challenge is establishing **N-uniformity** of the drift coefficient. Previous attempts using single-walker coupling failed because they required a minimum matching probability $q_{\min} > 0$ independent of $N$, which is impossible for $N!$ permutations. This document resolves this obstruction by importing the Keystone Lemma's N-uniform constants and working with variance-level quantities that are invariant under relabeling.
 
-The scope of this document is strictly focused on the cloning operator's structural/centered Wasserstein drift control. The complementary analysis of the kinetic operator $\Psi_{\text{kin}}$, which provides contraction in the velocity and barycenter/location components, and the full convergence analysis combining both operators are addressed in companion documents. We use the framework axioms and proven results from {doc}`03_cloning` (particularly Chapters 6-8 on the Keystone Principle) as foundational building blocks.
+The scope of this document is strictly focused on the cloning operator's centered/structural Wasserstein control via a variance proxy (and the conditional closed drift under structural dominance). The complementary analysis of the kinetic operator $\Psi_{\text{kin}}$, which provides contraction in the velocity and barycenter/location components, and the full convergence analysis combining both operators are addressed in companion documents. We use the framework axioms and proven results from {doc}`03_cloning` (particularly Chapters 6-8 on the Keystone Principle) as foundational building blocks.
 
 ### 1.2. Why Wasserstein-2 Contraction Matters
 
-Wasserstein-2 drift control for the **structural component** under the cloning operator is not merely a technical result—it is the **rigorous justification** for treating the Fragile Gas as a continuum physics model and for deriving its mean-field limit.
+Centered Wasserstein-2 control via the variance proxy under the cloning operator is not merely a technical result—it is the **rigorous justification** for treating the Fragile Gas as a continuum physics model and for deriving its mean-field limit.
 
 **Connection to Mean-Field Theory**: The propagation of chaos framework (documented in {doc}`09_propagation_chaos`) establishes that an N-particle system converges to a mean-field limit if its dynamics contract in Wasserstein distance with **N-uniform constants**. Without this property, the limiting behavior could degenerate as $N \to \infty$, invalidating the mean-field PDE. Our result shows that the cloning operator supplies an N-uniform drift on a **variance proxy** that controls the centered positional $W_2$ component; full phase-space $W_2$ contraction follows once the kinetic operator controls the barycenter and velocity components.
 
@@ -74,7 +74,7 @@ Wasserstein-2 drift control for the **structural component** under the cloning o
 - **Cloning operator**: Contracts the positional variance proxy $V_{\text{x,proxy}}$ that bounds $V_{\text{x,struct}}$
 - **Kinetic operator**: Contracts barycenter and velocity components
 
-The Foster-Lyapunov drift analysis (Chapter 12 of {doc}`03_cloning`) combines these partial contractions to prove exponential convergence to a unique quasi-stationary distribution (QSD). Our structural/centered Wasserstein-2 result provides the geometric foundation for this convergence.
+The Foster-Lyapunov drift analysis (Chapter 12 of {doc}`03_cloning`) combines these partial contractions to prove exponential convergence to a unique quasi-stationary distribution (QSD). Our centered Wasserstein-2 **proxy control** provides the geometric foundation for this convergence.
 
 **Complementary to KL-Convergence**: An alternative convergence analysis using Kullback-Leibler (KL) divergence and log-Sobolev inequalities (LSI) is developed in {doc}`15_kl_convergence`. The KL approach may yield faster convergence rates via entropy methods, while the Wasserstein-2 approach provides geometric intuition and explicit N-uniform constants. Both frameworks are valid and mutually reinforcing—the existence of multiple independent proofs strengthens confidence in the Fragile Gas's stability.
 
@@ -91,7 +91,7 @@ Our Keystone-based proof establishes that $\kappa_x$ is built from the N-uniform
 
 ### 1.3. Overview of the Proof Strategy and Document Structure
 
-The proof constructs the structural/centered drift bound through five main stages, illustrated in the diagram below:
+The proof constructs the centered-control argument through five main stages, illustrated in the diagram below:
 
 ```{mermaid}
 graph TD
@@ -163,7 +163,7 @@ graph TD
 3. **No cross-swarm alignment**: Avoid brittle alignment assumptions and $q_{\min}$ arguments
 4. **Framework consistency**: Use exact definitions from the Keystone Lemma proof
 
-The result is a rigorous, self-contained proof of **structural/centered** Wasserstein-2 drift control with explicit N-uniform constants, providing the foundation for mean-field analysis of the Fragile Gas framework.
+The result is a rigorous, self-contained proof of centered Wasserstein-2 **control via a variance proxy** (with a closed drift bound under structural dominance), with explicit N-uniform constants.
 
 ---
 
@@ -242,7 +242,7 @@ $V_{\text{x,proxy}} := \text{Var}_x(S_1) + \text{Var}_x(S_2)$. $\text{Var}_x(S_k
 **Relationship to Continuum Limit**: The fitness function $F(x)$ and its valley structure are properties of the continuum state space $\mathcal{X}$, while the clusters $I_k, J_k$ are finite-sample objects constructed from the empirical distribution. The proofs in this document use properties of the limiting landscape (e.g., Confining Potential axiom, fitness valleys) to reason about finite-sample cluster behavior.
 
 **Approximation Errors**: For finite $N$, there are approximation errors $O(1/\sqrt{N})$ when estimating continuum properties (like the potential $F(x)$) from empirical measures. These errors are absorbed into:
-1. The noise term $C_x = \frac{g_{\max}}{4} + 4d\delta^2$ in the variance-proxy drift inequality
+1. The noise term $C_x = \frac{g_{\max}(\varepsilon)}{4} + 4d\delta^2$ in the variance-proxy drift inequality
 2. The clustering threshold $\varepsilon$, which depends on $N$ implicitly through the error tolerance
 
 **N-Uniformity Justification**: The key result is that these finite-sample approximation errors do not affect the *sign* or *N-independence* of the drift coefficient $\kappa_x > 0$. This is because:
@@ -335,10 +335,6 @@ $$
 $$
 
 Dividing by $N$ gives the result. □
-:::
-
-:::{note}
-**Algebraic Validation**: The factorization $|I_k| f_J^2 + |J_k| f_I^2 = N f_I f_J$ in this proof has been symbolically verified using sympy. See validation script: `src/proofs/04_wasserstein_contraction/test_variance_decomposition.py` (✅ PASSED).
 :::
 
 
@@ -456,7 +452,7 @@ with N-uniform
 $\kappa_x = \frac{\chi(\varepsilon)}{4} c_{\text{struct}}$
 and
 $C_x = \frac{g_{\max}(\varepsilon)}{4} + C_{\text{jitter}}$.
-Here $c_{\text{struct}} > 0$ is the structural-variance link constant from {doc}`03_cloning` (Section 10.3.6), and $C_{\text{jitter}} = 4 d \delta^2$ under the shared-jitter coupling used in this document.
+Here $c_{\text{struct}} > 0$ is the structural-variance link constant from {doc}`03_cloning` (Section 10.3.6), and $C_{\text{jitter}} = 4 d \delta^2$ is a conservative bound from the positional cloning jitter.
 
 **Reference**: This is a direct restatement of {doc}`03_cloning`, Theorem 10.3.1 ({prf:ref}`thm-positional-variance-contraction`), specialized to the all-alive regime.
 :::
@@ -464,7 +460,7 @@ Here $c_{\text{struct}} > 0$ is the structural-variance link constant from {doc}
 :::{prf:remark} Jitter Scale Convention
 :label: rem-jitter-scale
 
-$\delta$ is the positional jitter scale used in the coupling for drift analysis. In the Euclidean Gas implementation, one typically sets $\delta = \sigma_x$ (or $\delta = \sqrt{\tau}\,\sigma_x$ for a discretized step), but the analysis keeps $\delta$ explicit.
+$\delta$ is the positional jitter scale in the cloning update. In the Euclidean Gas implementation, one typically sets $\delta = \sigma_x$ (or $\delta = \sqrt{\tau}\,\sigma_x$ for a discretized step), but the analysis keeps $\delta$ explicit.
 :::
 
 ---
@@ -490,21 +486,34 @@ By Lemma {prf:ref}`lem-centered-w2-variance-bound`, $V_{\text{x,struct}} \le V_{
 :::{prf:remark} Closed Drift for $V_{\text{x,struct}}$
 :label: rem-closed-drift-vxstruct
 
-Without additional alignment structure, the bound above is **one-sided**: it controls $V_{\text{x,struct}}$ by a contractive proxy but does not produce a closed drift inequality in $V_{\text{x,struct}}$ alone. If a regime-specific lower bound $V_{\text{x,proxy}} \leq c_{\text{proxy}} V_{\text{x,struct}}$ holds (for example, when the centered measures are sufficiently separated), then the inequality closes to
-$\mathbb{E}[\Delta V_{\text{x,struct}}] \le -\kappa_x c_{\text{proxy}} V_{\text{x,struct}} + C_x$.
+Without additional alignment structure, the bound above is **one-sided**: it controls $V_{\text{x,struct}}$ by a contractive proxy but does not produce a closed drift inequality in $V_{\text{x,struct}}$ alone. A regime-specific dominance assumption (Assumption {prf:ref}`ass-structural-dominance`) yields a closed drift bound (Corollary {prf:ref}`cor-closed-drift-vxstruct`).
 This additional assumption is **not** required for the main control result.
 :::
 
 :::{prf:assumption} Structural-Dominance Regime (Positional)
 :label: ass-structural-dominance
 
-There exists a constant $c_{\text{proxy}} \ge 1$ such that, at the times of interest,
+There exists an N-uniform constant $c_{\text{proxy}} \ge 1$ such that, at the times of interest,
 
 $$
 V_{\text{x,proxy}} \le c_{\text{proxy}} V_{\text{x,struct}}.
 $$
 
 **Interpretation**: the centered shape mismatch dominates the internal variance. This is a high-mismatch regime; it typically fails when the swarms are already nearly aligned.
+:::
+
+:::{prf:remark} Sufficient Geometric Condition
+:label: rem-structural-dominance-sufficient
+
+If the centered supports satisfy a separation condition, the dominance constant can be made explicit. Suppose both centered supports are contained in a ball of radius $R$ (e.g., $R \le D_{\text{valid}}$) and have minimal separation
+$\operatorname{dist}(\operatorname{supp}\tilde{\mu}_{x,1}, \operatorname{supp}\tilde{\mu}_{x,2}) \ge D > 0$.
+Then $\text{Var}_x(S_k) \le R^2$ and $V_{\text{x,struct}} \ge D^2$, so
+
+$$
+V_{\text{x,proxy}} \le 2 R^2 \le \frac{2 R^2}{D^2} V_{\text{x,struct}}.
+$$
+
+Thus the assumption holds with $c_{\text{proxy}} = 2 (R/D)^2$. This illustrates that the dominance regime corresponds to **strong shape mismatch** (large $D$ relative to $R$).
 :::
 
 :::{prf:corollary} Closed Drift Under Structural Dominance
@@ -515,7 +524,7 @@ Assume {prf:ref}`ass-structural-dominance` and Theorem {prf:ref}`thm-positional-
 $$
 \mathbb{E}[\Delta V_{\text{x,struct}}] \le -\kappa_{\text{eff}} V_{\text{x,struct}} + C_x,
 \qquad
-\kappa_{\text{eff}} := \kappa_x - \left(1 - \frac{1}{c_{\text{proxy}}}\right).
+\kappa_{\text{eff}} := 1 - (1-\kappa_x) c_{\text{proxy}}.
 $$
 
 In particular, if $c_{\text{proxy}} < 1/(1-\kappa_x)$, then $\kappa_{\text{eff}} > 0$ and the centered positional error contracts geometrically. The correction term is linear in $V_{\text{x,struct}}$, so larger mismatch yields stronger expected correction. When the mismatch is small and the dominance condition fails, the kinetic step provides the remaining contraction.
@@ -637,6 +646,7 @@ p_u(\varepsilon) = \min\left(1,\; \frac{1}{p_{\max}} \cdot
 $$
 
 The N-uniform lower bound implied by Theorem 8.7.1 in {doc}`03_cloning` is used throughout this document.
+In the all-alive regime used here, $k = N$.
 
 6. **High-error concentration constant** (Lemma 8.4.1 in {doc}`03_cloning`):
 

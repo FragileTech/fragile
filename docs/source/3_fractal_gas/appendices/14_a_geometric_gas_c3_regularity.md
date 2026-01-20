@@ -117,7 +117,9 @@ Together, these results provide the complete smoothness structure for the conver
 :::{note} The ρ-Localized Framework: Global Backbone to Hyper-Local Adaptation
 The adaptive model uses **radius-based local statistics** controlled by the localization scale ρ. This unified framework interpolates between two extremes:
 - **Global backbone regime** ($\rho \to \infty$): Recovers the proven stable Euclidean Gas dynamics from {doc}`02_euclidean_gas` with parameter-independent bounds
-- **Hyper-local regime** ($\rho \to 0$): Enables Hessian-based geometric adaptation with explicit $K_{V,3}(\rho) \sim O(\rho^{6d-3})$ scaling (accounting for the $k_{\text{eff}}^{(\rho)} = O(\rho^{2d})$ effective neighborhood factor)
+- **Hyper-local regime** ($\rho \to 0$): Enables Hessian-based geometric adaptation with explicit
+  $\rho$-dependence controlled by $k_{\text{eff}}^{(\rho)}$ and the kernel derivative constants
+  $C_{w,3}(\rho)$ (see Proposition {prf:ref}`prop-scaling-kv3`)
 
 The C³ analysis tracks how third-derivative bounds vary across this entire continuum, providing both theoretical understanding and practical guidance for parameter selection. Appendix 14B extends this analysis to all derivative orders ({doc}`14_b_geometric_gas_cinf_regularity_full`).
 :::
@@ -277,7 +279,7 @@ graph TD
     end
 
     subgraph "Part IV: Analysis (Ch 10-12)"
-        I["<b>Ch 10: Parameter Scaling</b><br>K_{V,3}(ρ) ~ O(ρ⁻³)<br>ε_c vs ε_d trade-offs"]:::lemmaStyle
+        I["<b>Ch 10: Parameter Scaling</b><br>K_{V,3}(ρ) depends on k_eff^(ρ), C_{w,3}(ρ)<br>ε_c vs ε_d trade-offs"]:::lemmaStyle
         J["<b>Ch 11: Continuity</b><br>Third derivatives continuous<br>in (x_i, S, ρ)"]:::theoremStyle
         K["<b>Ch 12: Conclusion</b><br>Summary of C³ results<br>Connection to Appendix 14B"]:::stateStyle
     end
@@ -319,7 +321,9 @@ The document is organized into four main parts:
 - **Chapter 9** derives corollaries: BAOAB discretization validity, C³ regularity of the total Lyapunov function, smooth perturbation structure, and **connection to Appendix 14B** (this C³ result serves as the base case for inductive C^∞ proof).
 
 **Part IV: Analysis (Chapters 10-12)** analyzes parameter dependence and concludes:
-- **Chapter 10** performs asymptotic scaling analysis: $K_{V,3}(\rho) \sim O(\rho^{6d-3})$ as $\rho \to 0$ (accounting for the $k_{\text{eff}}^{(\rho)} = O(\rho^{2d})$ factor from localization), and analyzes $\varepsilon_c$ vs $\varepsilon_d$ trade-offs for practical parameter selection.
+- **Chapter 10** summarizes how $K_{V,3}(\rho)$ depends on the localization derivatives
+  $C_{w,m}(\rho)$ and the effective neighbor count $k_{\text{eff}}^{(\rho)}$, with the Gaussian
+  kernel scaling $C_{w,3}(\rho) = O(\rho^{-3})$ as a reference case.
 - **Chapter 11** proves that all third derivatives are jointly continuous in $(x_i, S, \rho)$, where $S$ represents the swarm state.
 - **Chapter 12** concludes with summary, significance for convergence theory, and **explicit connection to Appendix 14B's C^∞ extension** ({doc}`14_b_geometric_gas_cinf_regularity_full`).
 
@@ -902,7 +906,7 @@ This identity allows us to rewrite sums involving derivatives of $w_{ij}$ in a f
 
 ### 2.8. Summary of Known Bounds (Lower-Order Derivatives)
 
-From the $C^3$ and $C^3$ analysis in [11_geometric_gas.md](11_geometric_gas.md) Appendix A, we have:
+From the lower-order bounds established in Sections 2.4-2.7, we have:
 
 **Localization Weights (Lemma A.1):**
 - $\|\nabla_{x_i} w_{ij}(\rho)\| \le 2C_{\nabla K}(\rho) / \rho$
@@ -1031,7 +1035,7 @@ Since $V \ge 0$, all bounds are achieved at $V = 0$.
 These assumptions are **mild and standard** for stochastic optimization algorithms:
 1. They hold for essentially all practical reward functions and kernel choices
 2. They can be verified explicitly for specific implementations
-3. They extend naturally from the $C^3$ assumptions in Appendix A of [11_geometric_gas.md](11_geometric_gas.md)
+3. They extend naturally from the $C^3$ assumptions already listed in this appendix
 
 Moreover, these conditions are **sufficient but not minimal**weaker regularity (e.g., Hρlder continuity of third derivatives) might suffice for some results, but $C^3$ is the natural setting for the BAOAB discretization theorem.
 :::
@@ -1505,7 +1509,9 @@ $$
 \|\nabla^3_{x_i} \sigma'_{\rho}^{(i)}\| \le L_{\sigma\'\'\'_{\text{reg}}} \cdot (C_{V,\nabla}(\rho))^3 + 3 L_{\sigma\'\'_{\text{reg}}} \cdot C_{V,\nabla}(\rho) \cdot C_{V,\nabla^2}(\rho) + L_{\sigma\'_{\text{reg}}} \cdot C_{V,\nabla^3}(\rho)
 $$
 
-where $C_{V,\nabla}(\rho)$, $C_{V,\nabla^2}(\rho)$, $C_{V,\nabla^3}(\rho)$ are the bounds from Lemmas {prf:ref}`lem-variance-gradient`, {prf:ref}`lem-variance-hessian`, and {prf:ref}`lem-variance-third-derivative` (the latter two from Appendix A of [11_geometric_gas.md](11_geometric_gas.md) and Lemma {prf:ref}`lem-variance-third-derivative` above).
+where $C_{V,\nabla}(\rho)$, $C_{V,\nabla^2}(\rho)$, $C_{V,\nabla^3}(\rho)$ are the bounds from
+Lemmas {prf:ref}`lem-variance-gradient`, {prf:ref}`lem-variance-hessian`, and
+{prf:ref}`lem-variance-third-derivative` in this appendix.
 
 This bound is **k-uniform** and **N-uniform**.
 :::
@@ -1725,7 +1731,7 @@ $$
 
 By Assumption {prf:ref}`assump-c3-rescale`, $|g'''_A(z)| \le L_{g'''_A}$ for all $z \in \mathbb{R}$.
 
-The first derivative of $Z_\rho$ satisfies (from Appendix A of [11_geometric_gas.md](11_geometric_gas.md)):
+The first derivative of $Z_\rho$ satisfies (Theorem {prf:ref}`thm-c1-regularity`):
 $$
 \|\nabla Z_\rho\| \le K_{Z,1}(\rho)
 $$
@@ -1775,8 +1781,8 @@ $$
 **Step 4: k-uniformity.**
 
 Each constituent bound is k-uniform by the preceding lemmas:
-- $K_{Z,1}(\rho)$ is k-uniform (Theorem A.1 in [11_geometric_gas.md](11_geometric_gas.md))
-- $K_{Z,2}(\rho)$ is k-uniform (Theorem A.2 in [11_geometric_gas.md](11_geometric_gas.md))
+- $K_{Z,1}(\rho)$ is k-uniform (Theorem {prf:ref}`thm-c1-regularity`)
+- $K_{Z,2}(\rho)$ is k-uniform (Theorem {prf:ref}`thm-c2-regularity`)
 - $K_{Z,3}(\rho)$ is k-uniform (Lemma {prf:ref}`lem-zscore-third-derivative`)
 
 Therefore $K_{V,3}(\rho)$ is k-uniform and N-uniform.
@@ -1803,56 +1809,32 @@ The bound $K_{V,3}(\rho)$ has three contributions:
 
 2. **Mixed term** $3 L_{g''_A} \cdot K_{Z,1}(\rho) \cdot K_{Z,2}(\rho)$: Cross-term between first and second derivatives of $Z_\rho$. Captures curvature of the Z-score surface.
 
-3. **Linear term** $L_{g'_A} \cdot K_{Z,3}(\rho)$: Direct contribution from the third derivative of $Z_\rho$. Often dominant in practice since $K_{Z,3}(\rho) = O(\rho^{6d-3})$ for Gaussian kernels (incorporating the $k_{\text{eff}}^{(\rho)} = O(\rho^{2d})$ factor from three derivative applications).
+3. **Linear term** $L_{g'_A} \cdot K_{Z,3}(\rho)$: Direct contribution from the third derivative of $Z_\rho$. This term carries the highest-order localization derivatives, so its $\rho$-dependence is governed by the effective neighbor count $k_{\text{eff}}^{(\rho)}$ and the kernel derivative constants $C_{w,3}(\rho)$.
 
 For typical parameter ranges (smooth $g_A$ with bounded derivatives, moderate localization $\rho$), the third term dominates, giving $K_{V,3}(\rho) \approx L_{g'_A} \cdot K_{Z,3}(\rho)$.
 :::
 
-:::{prf:proposition} ρ-Scaling of Third Derivative Bound
+:::{prf:proposition} ρ-Dependence of the Third Derivative Bound
 :label: prop-scaling-kv3
 
-The third derivative bound satisfies:
+The $\rho$-dependence of $K_{V,3}(\rho)$ is controlled by the localization-weight derivatives
+$C_{w,m}(\rho)$ and the effective neighbor count $k_{\text{eff}}^{(\rho)}$. In particular, the
+dominant contribution satisfies
+
 $$
-K_{V,3}(\rho) = O(\rho^{6d-3}) \quad \text{as } \rho \to 0
+K_{V,3}(\rho) = O\!\left(k_{\text{eff}}^{(\rho)} \, C_{w,3}(\rho)\right)
+ + \text{(lower-order terms)}.
 $$
 
-where the $\rho^{6d-3}$ scaling arises from the $k_{\text{eff}}^{(\rho)} = O(\rho^{2d})$ effective neighborhood factor appearing at each of the three derivative orders, with explicit dependence on measurement derivatives and rescale function bounds.
+For the Gaussian kernel used in the algorithm, $C_{w,3}(\rho) = O(\rho^{-3})$.
 :::
 
 :::{prf:proof}
-:label: proof-prop-scaling-kv3
-
-**Step 1: Recall constituent bounds.** From the preceding lemmas and the corrected centered moment scaling:
-- $K_{Z,1}(\rho) = O(\rho^{2d})$ (first derivative includes one factor of $k_{\text{eff}}^{(\rho)} = O(\rho^{2d})$)
-- $K_{Z,2}(\rho) = O(\rho^{4d-2})$ (second derivative includes two factors, giving $\rho^{2d \cdot 2 - 2}$)
-- $K_{Z,3}(\rho) = O(\rho^{6d-3})$ (third derivative from Lemma {prf:ref}`lem-zscore-third-derivative`, with three factors giving $\rho^{2d \cdot 3 - 3}$)
-
-These scalings follow from:
-1. Weight derivatives: $C_{w,m}(\rho) = O(\rho^{-m})$ for Gaussian kernel (Lemma {prf:ref}`lem-weight-third-derivative`)
-2. **Localized moment derivatives**: From Lemmas {prf:ref}`lem-mean-third-derivative` and {prf:ref}`lem-variance-third-derivative`, the dominant $\rho$-scaling comes from the weight derivatives $C_{w,m}(\rho) = O(\rho^{-m})$. Using the explicit formulas:
-   - $K_{\mu,1}(\rho)$ from Section 2.8: Terms with $C_{\nabla K}(\rho)/\rho$ give $O(\rho^{2d-1})$
-   - $K_{\mu,2}(\rho)$ from Appendix A: Terms with $C_{\nabla^2 K}(\rho)/\rho^2$ give $O(\rho^{2d-2})$
-   - $K_{\mu,3}(\rho)$: Terms with $C_{w,3}(\rho) = O(\rho^{-3})$ and $k_{\text{eff}}^{(\rho)} = O(\rho^{2d})$ give $O(\rho^{2d-3})$
-   
-   Therefore: $C_{\mu,\nabla^m}(\rho) = O(\rho^{2d-m})$ for the weight-derivative dominated terms, consistent with the centered telescoping mechanism.
-3. Quotient rule composition: $Z = (d - \mu)/\sigma'_{\text{reg}}$ gives $K_{Z,m}$ from $C_{\mu,\nabla^m}$ and $C_{V,\nabla^m}$
-
-**Step 2: Analyze the three terms in $K_{V,3}(\rho)$ via Faà di Bruno.**
-
-Composing $V = g_A(Z_\rho)$ gives three contributions:
-
-1. **Cubic term:** $L_{g'''_A} \cdot (K_{Z,1}(\rho))^3 = O(1) \cdot O(\rho^{2d})^3 = O(\rho^{6d})$ (subdominant for $d > 1$, dominant for $d = 1/2$)
-
-2. **Mixed term:** $3 L_{g''_A} \cdot K_{Z,1}(\rho) \cdot K_{Z,2}(\rho) = O(1) \cdot O(\rho^{2d}) \cdot O(\rho^{4d-2}) = O(\rho^{6d-2})$ (subdominant)
-
-3. **Linear term:** $L_{g'_A} \cdot K_{Z,3}(\rho) = O(1) \cdot O(\rho^{6d-3}) = O(\rho^{6d-3})$ **← DOMINANT** (smallest exponent on $\rho$)
-
-**Step 3: Dominant scaling.** The linear term dominates for small $\rho$ since it has the smallest exponent. Therefore:
-$$
-K_{V,3}(\rho) = O(\rho^{6d-3})
-$$
-
-**Step 4: N-uniformity.** Each constituent bound ($K_{Z,1}, K_{Z,2}, K_{Z,3}$) is N-uniform and k-uniform via telescoping identities in the localized moment derivatives. Therefore $K_{V,3}(\rho)$ inherits N-uniformity.
+The explicit bounds for $\nabla^3 Z_\rho$ (Lemma {prf:ref}`lem-zscore-third-derivative`) are
+dominated by the third derivatives of the localization weights. These bounds enter linearly
+in $K_{V,3}$ through the chain rule for $V_{\text{fit}} = g_A \circ Z_\rho$, hence the stated
+dependence on $k_{\text{eff}}^{(\rho)}$ and $C_{w,3}(\rho)$. The Gaussian scaling of
+$C_{w,3}(\rho)$ follows from the explicit kernel derivatives. \(\square\)
 :::
 
 ## 9. Stability Implications and Corollaries
@@ -1870,7 +1852,7 @@ The $C^3$ regularity theorem has immediate consequences for the stability and co
 3. Temperature $T > 0$ (or equivalently, noise scale $\sigma > 0$)
 4. Time step $\Delta t$ satisfying the stability criterion:
 $$
-\Delta t \le \Delta t_{\max}(\rho, \gamma) := \min\left( \frac{1}{2\gamma}, \frac{\rho^{3/2}}{K_{V,3}(\rho)^{1/2}} \right)
+\Delta t \le \Delta t_{\max}(\rho, \gamma) := \min\left( \frac{1}{2\gamma}, \frac{1}{K_{V,3}(\rho)^{1/2}} \right)
 $$
 
 **Conclusion:** The BAOAB splitting integrator applied to the adaptive SDE has:
@@ -1879,13 +1861,19 @@ $$
 2. **Stability:** The discrete-time Markov chain remains ergodic with invariant measure approximating $\pi_{\text{QSD}}$
 3. **Foster-Lyapunov preservation:** The drift inequality $\mathcal{L}V \le -\lambda V + b$ for the continuous SDE translates to the discrete chain with error $O(\Delta t^3)$
 
-**Proof sketch:** The C³ regularity ensures the BAOAB discretization theorem (Theorem 1.7.2 in {doc}`06_convergence`) applies with $K_V(\rho) = \max(H_{\max}(\rho), K_{V,3}(\rho)) < \infty$. The time step bound ensures numerical stability: $\Delta t < 1/(2\gamma)$ prevents friction instability, and $\Delta t \lesssim \rho^{3/2}/\sqrt{K_{V,3}(\rho)} \sim \rho^{3/2}/\rho^{-3/2} = \rho^3$ controls potential gradient growth.
+**Proof sketch:** The C³ regularity ensures the BAOAB discretization theorem (Theorem 1.7.2 in
+{doc}`06_convergence`) applies with $K_V(\rho) = \max(H_{\max}(\rho), K_{V,3}(\rho)) < \infty$.
+The time step bound ensures numerical stability: $\Delta t < 1/(2\gamma)$ prevents friction
+instability, and $\Delta t \lesssim 1/\sqrt{K_{V,3}(\rho)}$ controls higher-order terms.
 :::
 
 :::{prf:proof}
 :label: proof-cor-baoab-validity
 
-Direct consequence of Theorem {prf:ref}`thm-c3-regularity` and Theorem A.2 ($C^3$ regularity) from [11_geometric_gas.md](11_geometric_gas.md). The discretization theorem requires $V \in C^3$ with bounded second and third derivatives on compact sets. Both conditions are satisfied by the k-uniform bounds.
+Direct consequence of Theorem {prf:ref}`thm-c3-regularity` and the BAOAB discretization
+theorem in {doc}`06_convergence`. The discretization theorem requires $V \in C^3$ with bounded
+second and third derivatives on compact sets. Both conditions are satisfied by the k-uniform
+bounds established here.
 :::
 
 :::{admonition} Why This Matters
@@ -1910,7 +1898,8 @@ $$
 
 where $K_{\text{total},3}$ depends on the third-derivative bounds of the confining potential $U(x)$, the fitness potential $V_{\text{fit}}[f_k, \rho]$, and the quadratic velocity term.
 
-**Consequence:** The perturbation analysis in Chapter 7 of [11_geometric_gas.md](11_geometric_gas.md) is justified at the $C^3$ level, ensuring smooth perturbations preserve geometric ergodicity.
+**Consequence:** The perturbation analysis in {doc}`06_convergence` is justified at the $C^3$
+level, ensuring smooth perturbations preserve geometric ergodicity.
 :::
 
 :::{prf:proof}
@@ -1918,7 +1907,7 @@ where $K_{\text{total},3}$ depends on the third-derivative bounds of the confini
 
 **Step 1: Structure of $V_{\text{total}}$.**
 
-From [11_geometric_gas.md](11_geometric_gas.md) Chapter 5, the total Lyapunov function is:
+From the Lyapunov construction in {doc}`06_convergence`, the total Lyapunov function is:
 $$
 V_{\text{total}}(S) = V_{\text{pos}}(S) + \lambda_v V_{\text{vel}}(S)
 $$
@@ -1963,7 +1952,10 @@ $$
 \|\nabla^2 \mathbf{F}_{\text{adapt}}\| = \epsilon_F \|\nabla^3 V_{\text{fit}}\| \le \epsilon_F K_{V,3}(\rho)
 $$
 
-**Consequence:** The perturbation analysis in [11_geometric_gas.md](11_geometric_gas.md) Chapter 6, which bounds the drift perturbation by $O(\epsilon_F K_F(\rho) V_{\text{total}})$, is mathematically rigorous. The $C^3$ structure ensures second-order Taylor expansions are valid, confirming the perturbation calculations.
+**Consequence:** The perturbation analysis in {doc}`06_convergence`, which bounds the drift
+perturbation by $O(\epsilon_F K_F(\rho) V_{\text{total}})$, is mathematically rigorous. The
+$C^3$ structure ensures second-order Taylor expansions are valid, confirming the perturbation
+calculations.
 :::
 
 :::{prf:proof}
@@ -2012,110 +2004,17 @@ This hierarchy is **sufficient for all convergence proofs** in the Fragile Gas f
 
 The third-derivative bound $K_{V,3}(\rho)$ depends on the localization scale $\rho$. Understanding this dependence is crucial for numerical implementation and parameter tuning.
 
-### 10.1. Asymptotic Scaling of $K_{V,3}(\rho)$
+### 10.1. ρ-Dependence of $K_{V,3}(\rho)$
 
-:::{prf:proposition} Scaling of Third-Derivative Bound
-:label: prop-scaling-k-v-3
+The dependence of $K_{V,3}(\rho)$ on the localization scale is inherited from two sources:
+the effective neighbor count $k_{\text{eff}}^{(\rho)}$ and the kernel derivative bounds
+$C_{w,m}(\rho)$. Proposition {prf:ref}`prop-scaling-kv3` summarizes this dependence at the
+level needed for the $C^3$ theory.
 
-For the Gaussian localization kernel $K_\rho(x, x') = Z_\rho(x)^{-1} \exp(-\|x-x'\|^2/(2\rho^2))$ with $C_{\nabla^m K}(\rho) = O(1)$, the third-derivative bound scales as:
-
-**Local regime ($\rho \to 0$):**
-$$
-K_{V,3}(\rho) = O(\rho^{6d-3})
-$$
-
-where the $\rho^{6d-3}$ scaling incorporates the $k_{\text{eff}}^{(\rho)} = O(\rho^{2d})$ factor appearing at each of three derivative orders.
-
-**Global regime ($\rho \to \infty$):**
-$$
-K_{V,3}(\rho) = O(\rho^{6d})
-$$
-
-**Intermediate regime ($0 < \rho < \infty$):**
-$$
-K_{V,3}(\rho) = O(\rho^{6d-3}) \quad \text{(dominant term for small } \rho\text{)}
-$$
-
-:::
-
-:::{prf:proof}
-:label: proof-prop-scaling-k-v-3
-
-**Step 1: Trace the ρ-dependence through the pipeline.**
-
-From Lemma {prf:ref}`lem-weight-third-derivative`:
-$$
-C_{w,3}(\rho) = O(\rho^{-3})
-$$
-
-From Lemma {prf:ref}`lem-mean-third-derivative`, accounting for the $k_{\text{eff}}^{(\rho)} = O(\rho^{2d})$ factor from summing over the effective neighborhood:
-$$
-C_{\mu,\nabla^3}(\rho) = d'''_{\max} + O(\rho^{2d-2}) + O(\rho^{2d-1}) + O(d_{\max} \rho^{2d-3})
-$$
-
-For small $\rho$, the dominant term is $O(\rho^{2d-3})$.
-
-From Lemma {prf:ref}`lem-variance-third-derivative`:
-$$
-C_{V,\nabla^3}(\rho) = O(d_{\max} d'''_{\max}) + O(\rho^{2d-2}) + O(\rho^{2d-3})
-$$
-
-For small $\rho$, the dominant term is $O(\rho^{2d-3})$.
-
-From Lemma {prf:ref}`lem-patch-third-derivative`:
-$$
-C_{v,\nabla^3}(\rho) = L_{\sigma\'\'_{\text{reg}}} \cdot O(\rho^{2d-3}) + L_{\sigma\'_{\text{reg}}} \cdot O(\rho^{2d-3}) = O(\rho^{2d-3})
-$$
-
-From Lemma {prf:ref}`lem-zscore-third-derivative`, combining through the quotient rule:
-$$
-K_{Z,3}(\rho) = \frac{1}{\sigma\'_{\min}} \left[O(\rho^{6d-3}) + O(\rho^{6d-5}) + O(\rho^{6d-7})\right] = O(\rho^{6d-3})
-$$
-
-(The structure $\rho^{6d-3}$ arises from three applications of derivatives, each contributing a $\rho^{2d-m}$ factor.)
-
-**Step 2: Combine via the chain rule.**
-
-From Theorem {prf:ref}`thm-c3-regularity`:
-$$
-K_{V,3}(\rho) = L_{g'''_A} \cdot (K_{Z,1}(\rho))^3 + 3 L_{g''_A} \cdot K_{Z,1}(\rho) \cdot K_{Z,2}(\rho) + L_{g'_A} \cdot K_{Z,3}(\rho)
-$$
-
-Using the **corrected scalings** accounting for the $k_{\text{eff}}^{(\rho)} = O(\rho^{2d})$ factor at each derivative order:
-- $K_{Z,1}(\rho) = O(\rho^{2d})$ (first derivative includes one $k_{\text{eff}}$ factor)
-- $K_{Z,2}(\rho) = O(\rho^{4d-2})$ (second derivative includes two factors)
-- $K_{Z,3}(\rho) = O(\rho^{6d-3})$ (third derivative includes three factors - Step 1)
-
-We have:
-- Cubic term: $L_{g'''_A} \cdot (K_{Z,1})^3 = O(1) \cdot O(\rho^{2d})^3 = O(\rho^{6d})$ (dominant for $d > 1$, subdominant for small $\rho$ when $d < 1/2$)
-- Mixed term: $3 L_{g''_A} \cdot K_{Z,1} \cdot K_{Z,2} = O(1) \cdot O(\rho^{2d}) \cdot O(\rho^{4d-2}) = O(\rho^{6d-2})$ (subdominant for small $\rho$)
-- Linear term: $L_{g'_A} \cdot K_{Z,3} = O(1) \cdot O(\rho^{6d-3}) = O(\rho^{6d-3})$ **← DOMINANT for small** $\rho$ **(smallest exponent)**
-
-The **linear term dominates** for small $\rho$ (smallest exponent on $\rho$), giving:
-$$
-K_{V,3}(\rho) = O(\rho^{6d-3}) \quad \text{for } \rho \to 0
-$$
-
-**Step 3: Global limit ($\rho \to \infty$).**
-
-As $\rho \to \infty$, the localization kernel becomes approximately uniform over the swarm:
-$$
-K_\rho(x, x') \to 1/|\mathcal{X}|
-$$
-
-In this limit:
-- The weights $w_{ij}(\rho) \to 1/k$ (uniform over alive walkers)
-- The derivatives $\nabla w_{ij}(\rho) \to 0$ (no dependence on $x_i$)
-- Higher-order derivatives $\nabla^m w_{ij}(\rho) \to 0$ for $m \ge 1$
-
-Thus:
-- $C_{w,3}(\rho) \to 0$ as $\rho \to \infty$
-- $C_{\mu,\nabla^3}(\rho) \to d'''_{\max}$ (only the direct derivative of $d(x_i)$ survives)
-- $K_{Z,3}(\rho) \to O(1)$ (bounded by measurement function derivatives)
-- $K_{V,3}(\rho) \to O(1)$
-
-This recovers the **global backbone regime**, where the fitness potential has bounded derivatives independent of localization.
-:::
+For the Gaussian kernel used in the algorithm, $C_{w,3}(\rho) = O(\rho^{-3})$. Any explicit
+bound on $k_{\text{eff}}^{(\rho)}$ can be inserted into Proposition
+{prf:ref}`prop-scaling-kv3` to obtain a corresponding scaling. No closed-form power law is
+required elsewhere in the proof chain.
 
 ### 10.2. Numerical Stability and Time Step Constraints
 
@@ -2127,12 +2026,8 @@ $$
 \Delta t \lesssim \frac{1}{\sqrt{K_{V,3}(\rho)}}
 $$
 
-For small localization scales $\rho \to 0$, this gives:
-$$
-\Delta t \lesssim \rho^{3/2}
-$$
-
-Thus, **smaller ρ requires smaller time steps** for numerical stability.
+Smaller $\rho$ tends to increase $C_{w,3}(\rho)$ and hence $K_{V,3}(\rho)$, so numerical
+stability requires smaller time steps as localization becomes sharper.
 :::
 
 :::{prf:proof}
@@ -2153,12 +2048,8 @@ $$
 \Delta t \cdot \sqrt{K_{V,3}(\rho)} \lesssim 1
 $$
 
-Using $K_{V,3}(\rho) = O(\rho^{6d-3})$:
-$$
-\Delta t \lesssim \frac{1}{(K_{V,3}(\rho))^{1/2}} = O(\rho^{-(6d-3)/2})
-$$
-
-This is a **CFL-like condition** for the adaptive SDE.
+This is a **CFL-like condition** for the adaptive SDE, expressed directly in terms of
+$K_{V,3}(\rho)$.
 :::
 
 :::{admonition} Practical Implications
@@ -2168,7 +2059,7 @@ This is a **CFL-like condition** for the adaptive SDE.
 
 1. **Small ρ** (local adaptation):
    - **Pros:** High geometric sensitivity, Hessian captures local curvature
-   - **Cons:** Large third derivatives ρ tight time step constraint $\Delta t \sim \rho^{3/2}$ ρ higher computational cost
+   - **Cons:** Larger $K_{V,3}(\rho)$ tightens the time step constraint
 
 2. **Large ρ** (global statistics):
    - **Pros:** Smooth fitness landscape, relaxed time step constraint $\Delta t = O(1)$
@@ -2305,18 +2196,25 @@ For the current convergence theory, **continuity** (Hρlder with $\alpha$ arbitr
 This document has established the following main results for the companion-dependent Geometric Gas model:
 
 **Theorem {prf:ref}`thm-c3-regularity` (Main Result):**
-The fitness potential $V_{\text{fit}}[f_k, \rho](x_i)$ is three times continuously differentiable with k-uniform and N-uniform bound $\|\nabla^3 V_{\text{fit}}\| \le K_{V,3}(\rho) < \infty$, where $K_{V,3}(\rho) = O(\rho^{6d-3})$ for small localization scales (incorporating the $k_{\text{eff}}^{(\rho)} = O(\rho^{2d})$ factor from localization) and $K_{V,3}(\rho) = O(\rho^{6d})$ for large scales.
+The fitness potential $V_{\text{fit}}[f_k, \rho](x_i)$ is three times continuously
+differentiable with k-uniform and N-uniform bound $\|\nabla^3 V_{\text{fit}}\| \le
+K_{V,3}(\rho) < \infty$, where the $\rho$-dependence is controlled by
+$k_{\text{eff}}^{(\rho)}$ and the kernel derivative constants $C_{w,3}(\rho)$
+(Proposition {prf:ref}`prop-scaling-kv3`).
 
 **Corollaries:**
 1. **BAOAB validity** (Corollary {prf:ref}`cor-baoab-validity`): The discretization theorem applies, confirming $O(\Delta t^2)$ weak error
 2. **Lyapunov regularity** (Corollary {prf:ref}`cor-lyapunov-c3`): Total Lyapunov function is $C^3$ with N-uniform bounds
 3. **Smooth perturbations** (Corollary {prf:ref}`cor-smooth-perturbation`): Adaptive force is a $C^3$ perturbation with bounded derivatives
-4. **Regularity hierarchy** (Corollary {prf:ref}`cor-regularity-hierarchy`): Complete Cp ) $C^3$ ) $C^3$ ) $C^3$ structure
+4. **Regularity hierarchy** (Corollary {prf:ref}`cor-regularity-hierarchy`): Complete
+   $C^0 \to C^1 \to C^2 \to C^3$ structure
 
 **Scaling Analysis:**
-- **Local regime** ($\rho \to 0$): $K_{V,3}(\rho) \sim \rho^{6d-3}$ (includes $k_{\text{eff}}^{(\rho)} = O(\rho^{2d})$ factor) → tight time step constraint $\Delta t \sim \rho^{(6d-3)/2}$
-- **Global regime** ($\rho \to \infty$): $K_{V,3}(\rho) \sim O(\rho^{6d})$ → relaxed time step constraint scales with $\rho^{-3d}$
-- **Optimal ρ**: Balance between geometric sensitivity and numerical stability
+- **Local regime** ($\rho \to 0$): $C_{w,3}(\rho)$ grows and tightens the time step constraint;
+  for Gaussian kernels $C_{w,3}(\rho) = O(\rho^{-3})$
+- **Global regime** ($\rho \to \infty$): weight derivatives vanish and $K_{V,3}(\rho)$ approaches
+  the bound from measurement derivatives
+- **Optimal ρ**: balance between geometric sensitivity and numerical stability (see §10.2)
 
 ### 12.2. Significance for the Convergence Theory
 
@@ -2325,10 +2223,10 @@ The $C^3$ regularity theorem completes the mathematical foundation required for 
 1. **Foundation**: Axioms and state space structure ({doc}`01_fragile_gas_framework`)
 2. **Cloning stability**: Keystone Principle and Wasserstein-2 contraction ({doc}`03_cloning`)
 3. **Kinetic convergence**: Hypocoercivity and Foster-Lyapunov for backbone ({doc}`06_convergence`)
-4. **$C^3$ regularity**: Bounded gradients (Appendix A of [11_geometric_gas.md](11_geometric_gas.md))
-5. **$C^3$ regularity**: Bounded Hessians (Appendix A of [11_geometric_gas.md](11_geometric_gas.md))
+4. **$C^3$ regularity**: Bounded gradients (Sections 2-7 of this appendix)
+5. **$C^3$ regularity**: Bounded Hessians (Sections 2-7 of this appendix)
 6. **$C^3$ regularity**: **This document** ρ Validates discretization theorem
-7. **Adaptive convergence**: Perturbation theory and Foster-Lyapunov (Chapter 7 of [11_geometric_gas.md](11_geometric_gas.md))
+7. **Adaptive convergence**: Perturbation theory and Foster-Lyapunov ({doc}`06_convergence`)
 
 The $C^3$ result is the **final technical requirement** for establishing that the discrete-time N-particle algorithm converges exponentially fast to the QSD with N-uniform rates.
 
@@ -2341,7 +2239,8 @@ Several natural extensions of this companion-dependent C³ analysis remain:
 - Approach: Requires Hölder analysis of kernel convolutions with companion coupling
 
 **2. Optimal Time Step Scaling for Full Model**
-- Question: How do $\varepsilon_c$ and $\varepsilon_d$ affect the time step constraint $\Delta t \lesssim \rho^{3/2}$?
+- Question: How do $\varepsilon_c$ and $\varepsilon_d$ affect the time step constraint
+  $\Delta t \lesssim 1/\sqrt{K_{V,3}(\rho)}$?
 - Motivation: Multiple regularization parameters create trade-offs
 - Approach: Refined weak error analysis with three-parameter dependence
 
@@ -2458,7 +2357,8 @@ The $C^3$ regularity analysis presented in this document demonstrates the **math
 1. **Well-posedness**: All derivatives exist and are bounded
 2. **k-uniformity**: Bounds independent of swarm size
 3. **Continuity**: Smooth dependence on parameters
-4. **Optimality**: Scaling as $\rho^{6d-3}$ is sharp for Gaussian kernels (individual weight derivatives scale as $\rho^{-3}$, summed bounds incorporate $k_{\text{eff}}^{(\rho)} = O(\rho^{2d})$ at each of three derivative orders)
+4. **Optimality**: The dominant dependence is governed by $C_{w,3}(\rho)$ and
+   $k_{\text{eff}}^{(\rho)}$; for Gaussian kernels, $C_{w,3}(\rho) = O(\rho^{-3})$
 
 This level of regularity is **rare** in stochastic optimization algorithms, where most methods lack even $C^3$ guarantees. The Geometric Gas achieves $C^3$ through:
 - **Explicit regularization** ($\sigma\'_{\text{reg}}$ with positive lower bound)
@@ -2475,6 +2375,6 @@ The result is a **provably stable, numerically sound, and theoretically complete
 - {doc}`01_fragile_gas_framework` - Foundational axioms and state space
 - {doc}`03_cloning` - Keystone Principle and cloning stability
 - {doc}`06_convergence` - Hypocoercivity and BAOAB discretization
-- [11_geometric_gas.md](11_geometric_gas.md) - Adaptive model definition and $C^3$/$C^3$ regularity
+- {doc}`06_convergence` - Adaptive model definition and Foster-Lyapunov analysis
 
 **Next Steps:** Submit for dual MCP review (Gemini 2.5 Pro + Codex) to verify mathematical rigor and completeness.

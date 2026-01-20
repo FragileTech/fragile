@@ -17,9 +17,9 @@ where measurements $d_j = d_{\text{alg}}(j, c(j))$ depend on **companion selecti
 
 **Main Result**: We prove that **BOTH mechanisms** achieve:
 - **C^∞ regularity**: $V_{\text{fit}} \in C^\infty(\mathcal{X} \times \mathbb{R}^d)$
-- **Gevrey-1 bounds**: $\|\nabla^m V_{\text{fit}}\| \leq C_m$ where $C_m = \mathcal{O}(m!)$
+- **Gevrey-1 bounds**: $\|\nabla^m V_{\text{fit}}\| \leq C_{V,m} \cdot m! \cdot \max(\rho^{-m}, \varepsilon_d^{1-m})$ with $C_{V,m} \leq C_0 C_1^m$ (k-uniform)
 - **k-uniformity**: Constants independent of swarm size $k$ or $N$
-- **Statistical equivalence**: Both mechanisms have **identical analytical structure** (regularity class, Gevrey-1 bounds, k-uniformity). Quantitative fitness difference vanishes as $k \to \infty$ with rate $O(k^{-1} \log^{d+1/2} k)$ (practical significance depends on dimension $d$)
+- **Statistical equivalence**: Both mechanisms have **identical analytical structure** (regularity class, Gevrey-1 bounds, k-uniformity). Quantitative fitness differences are not estimated here and require separate analysis.
 
 The proof uses a **smooth clustering framework** with partition-of-unity localization to handle the N-body coupling introduced by companion selection, establishing **N-uniform** and **k-uniform** derivative bounds at all orders.
 
@@ -27,16 +27,17 @@ The proof uses a **smooth clustering framework** with partition-of-unity localiz
 
 ## 0. TLDR
 
-**C^∞ Regularity with Explicit Gevrey-1 Bounds**: The complete fitness potential $V_{\text{fit}}(x_i, v_i)$ of the Geometric Gas with companion-dependent measurements is infinitely differentiable with factorial-growth derivative bounds. For every derivative order $m \geq 1$:
+**C^∞ Regularity with Gevrey-1 Bounds**: The complete fitness potential $V_{\text{fit}}(x_i, v_i)$ is infinitely differentiable with factorial-growth derivative bounds. For every derivative order $m \geq 1$:
 
 $$
-\|\nabla^m V_{\text{fit}}\| \leq C_{\text{Gev}}^m \cdot m! \cdot \rho_{\max}^{m} \cdot \rho^{2dm} \cdot \eta_{\min}^{-(2m+1)} \cdot \max(\rho^{-m}, \varepsilon_d^{1-m})
-
+\|\nabla^m V_{\text{fit}}\|_\infty \leq C_{V,m} \cdot m! \cdot \max(\rho^{-m}, \varepsilon_d^{1-m})
 $$
 
-where $\rho_{\max}$ is the uniform QSD density bound (Theorem {prf:ref}`assump-uniform-density-full`), $\rho$ is the localization scale, $\varepsilon_d$ is the distance regularization, and $\eta_{\min}$ is the Z-score variance floor. This Gevrey-1 regularity enables rigorous analysis of the Geometric Gas generator and mean-field limit.
+with k-uniform constants $C_{V,m} \leq C_0 \cdot C_1^m$ depending only on
+$(\rho_{\max}, \rho, \varepsilon_c, \eta_{\min})$ and the Gevrey constant of $g_A$.
+This Gevrey-1 regularity enables rigorous analysis of the Geometric Gas generator and mean-field limit.
 
-**N-Body Coupling Resolution**: Companion selection via softmax creates N-body coupling—each walker's measurement depends on ALL other walkers' positions through the companion probability distribution. We overcome this coupling using a **two-scale analytical framework**: (1) **Derivative locality** (scale ε_c): For j≠i, only companion ℓ=i contributes to ∇_i d_j, eliminating the ℓ-sum and preventing k_eff^(ε_c) = O((log k)^d) from appearing; (2) **Smooth clustering with telescoping** (scale ρ): Partition-of-unity normalization ∑_j w_ij = 1 gives telescoping identity ∑_j ∇^n w_ij = 0, which cancels naive O(k) dependence from j-sums to O(k_eff^(ρ)) = O(ρ^{2d}) (k-uniform). Result: **k-uniform** Gevrey-1 bounds at all orders.
+**N-Body Coupling Resolution**: Companion selection via softmax creates N-body coupling—each walker's measurement depends on ALL other walkers' positions through the companion probability distribution. We overcome this coupling using a **two-scale analytical framework**: (1) **Derivative locality** (scale ε_c): For j≠i, only companion ℓ=i contributes to ∇_i d_j, eliminating the ℓ-sum and preventing any k-dependent factor from appearing; (2) **Smooth clustering with telescoping** (scale ρ): Partition-of-unity normalization ∑_j w_ij = 1 gives telescoping identity ∑_j ∇^n w_ij = 0, which cancels naive O(k) dependence from j-sums to O(k_eff^(ρ)) = O(ρ^{2d}) (k-uniform). Result: **k-uniform** Gevrey-1 bounds at all orders.
 
 **Dual Mechanism Equivalence**: Both companion selection mechanisms (Independent Softmax and Diversity Pairing) achieve **identical** analytical properties: C^∞ regularity with k-uniform Gevrey-1 bounds and the same parameter dependencies. The mechanisms are analytically indistinguishable, though their quantitative fitness values may differ for practical swarm sizes (no convergence rate is proven for this difference).
 
@@ -66,11 +67,12 @@ This extends the simplified model analysis ({prf:ref}`rem-simplified-vs-full-fin
 We prove that despite this coupling, $V_{\text{fit}} \in C^\infty(\mathcal{X} \times \mathbb{R}^d)$ with derivative bounds:
 
 $$
-\|\nabla^m V_{\text{fit}}\|_\infty \leq C_{V,m}(d, \rho, \varepsilon_c, \varepsilon_d, \eta_{\min}) \cdot \max(\rho^{-m}, \varepsilon_d^{1-m})
+\|\nabla^m V_{\text{fit}}\|_\infty \leq C_{V,m}(d, \rho, \varepsilon_c, \varepsilon_d, \eta_{\min}) \cdot m! \cdot \max(\rho^{-m}, \varepsilon_d^{1-m})
 
 $$
 
-where $C_{V,m} = \mathcal{O}(m!)$ (Gevrey-1) and the constant is **independent of $k$ and $N$**.
+where $C_{V,m} \leq C_0 C_1^m$ and the constant is **independent of $k$ and $N$**. The single factorial
+factor $m!$ is explicit, so the bound is Gevrey-1.
 
 **Framework inputs**: The analysis relies on three standing inputs established in §2:
 1. {prf:ref}`lem-companion-availability-enforcement`: Partition function lower bound $Z_i \geq Z_{\min} = \exp(-D_{\max}^2/(2\varepsilon_c^2)) > 0$ from bounded algorithmic diameter ($D_{\max} = \operatorname{diam}(\mathcal{Y})$)
@@ -81,7 +83,8 @@ These inputs enable the sum-to-integral approximations that yield k-uniform boun
 
 **Scope**: This document provides:
 1. Complete regularity analysis for **both companion selection mechanisms** (Softmax and Diversity Pairing)
-2. Proof of **statistical equivalence**: $\|V_{\text{fit}}^{(\text{softmax})} - V_{\text{fit}}^{(\text{pairing})}\|_\infty = \mathcal{O}(k^{-\beta})$
+2. Proof of **qualitative statistical equivalence**: both mechanisms yield the same
+   C^∞ regularity class and k-uniform parameter dependence (no convergence rate assumed)
 3. Explicit **k-uniform** and **N-uniform** derivative bounds at all orders
 4. Rigorous treatment of **three regularization parameters**: $\varepsilon_d$ (distance), $\rho$ (localization), $\eta_{\min}$ (Z-score)
 5. Foundation for **hypoellipticity** and **logarithmic Sobolev inequality** (LSI) analysis (LSI proven independently via hypocoercive entropy; Bakry-Emery route optional for constants)
@@ -115,11 +118,11 @@ For $m$-th derivatives, this involves summing over $\mathcal{O}(N^m)$ interactio
 **Resolution Strategy**: We overcome this coupling using a **two-scale analytical framework** operating at distinct spatial scales:
 
 **Scale 1: Softmax Companion Selection** (ε_c, Chapter 4):
-- **Exponential locality**: Softmax tail bound gives $\mathbb{P}(d_{\text{alg}}(j, c(j)) > R) \leq k \exp(-R^2/(2\varepsilon_c^2))$
-- **Effective companions**: Each walker j interacts with k_eff^(ε_c) = O(ε_c^{2d} (log k)^d) companions (grows logarithmically)
+- **Mean-field kernel mass**: In the mean-field limit, the softmax kernel mass is bounded by
+  $k_{\text{eff}}^{(\varepsilon_c)} \leq \rho_{\max} (2\pi \varepsilon_c^2)^d C_\lambda$ (k-uniform; see §4.1).
 - **Derivative locality** (Chapter 7.1): For j ≠ i taking derivatives w.r.t. x_i, only companion ℓ=i contributes to ∇_i d_j
-  - Result: The ℓ-sum is **eliminated** (single term ℓ=i), so (log k)^d never enters derivative bounds for j≠i terms
-- **For j = i**: The ℓ-sum over k_eff^(ε_c) companions does appear, but this is a single localized term (coefficient w_ii)
+  - Result: The ℓ-sum is **eliminated** (single term ℓ=i), so no $k$-dependent factor enters derivative bounds for j≠i terms.
+- **For j = i**: The ℓ-sum is controlled by the same mean-field kernel mass bound, yielding a k-uniform estimate.
 
 **Scale 2: Localization Weights** (ρ, Chapters 6-9):
 - **Smooth clustering**: Partition-of-unity $\{\psi_m\}$ with $\sum_m \psi_m = 1$ decomposes global j-sum into clusters
@@ -128,15 +131,19 @@ For $m$-th derivatives, this involves summing over $\mathcal{O}(N^m)$ interactio
 - **Exponential decay**: Only k_eff^(ρ) = O(ρ^{2d}) nearby walkers contribute significantly to w_ij sums
 
 **The result**: k-uniformity arises from TWO separate mechanisms at different scales:
-1. **ε_c-scale**: Derivative locality eliminates ℓ-sums (no (log k)^d for j≠i)
+1. **ε_c-scale**: Derivative locality eliminates ℓ-sums (no k-dependent factor for j≠i)
 2. **ρ-scale**: Telescoping controls j-sums (O(k) → O(ρ^{2d}) k-uniform)
 
-The j=i term with (log k)^d is absorbed into Gevrey-1 constants (sub-leading, dominated by ε_d^{1-m} regularization). Combined: **k-uniform** Gevrey-1 bounds.
+Combined: **k-uniform** Gevrey-1 bounds.
 
 :::{note}
 **Physical Intuition**: Think of two screening mechanisms:
-1. **Softmax screening** (ε_c): Like Debye screening in plasma—each walker's companion choice is localized to k_eff^(ε_c) ≈ (log k)^d neighbors, but derivative locality means only ONE neighbor (ℓ=i) affects derivatives for distant j≠i
-2. **Localization screening** (ρ): Like multipole expansion—global j-sum is localized to k_eff^(ρ) ≈ ρ^{2d} nearby walkers via smooth cutoff w_ij, with telescoping providing additional cancellation
+1. **Softmax screening** (ε_c): Like Debye screening in plasma—the companion kernel mass is
+   localized at scale $\varepsilon_c$, and derivative locality means only ONE neighbor ($\ell=i$)
+   affects derivatives for distant $j \neq i$
+2. **Localization screening** (ρ): Like multipole expansion—global $j$-sum is localized to
+   $k_{\text{eff}}^{(\rho)} = O(\rho^{2d})$ nearby walkers via smooth cutoff $w_{ij}$, with
+   telescoping providing additional cancellation
 
 These act independently at different scales to produce k-uniform bounds.
 :::
@@ -150,57 +157,47 @@ The Geometric Gas fitness potential involves **two distinct spatial scales** wit
 
 **1. Softmax Effective Companions** (scale $\varepsilon_c$):
 
-$$
-k_{\text{eff}}^{(\varepsilon_c)}(i) := \left|\left\{\ell \in \mathcal{A} : d_{\text{alg}}(i,\ell) \leq R_{\text{eff}}^{(\varepsilon_c)}\right\}\right|
+In the mean-field analysis we define the effective softmax mass by the kernel integral
 
 $$
-
-where:
-
-$$
-R_{\text{eff}}^{(\varepsilon_c)} = \varepsilon_c \sqrt{C_{\text{comp}}^2 + 2\log(k^2)}
-
+k_{\text{eff}}^{(\varepsilon_c)}(i)
+:= \int_{\mathcal{Y}} \exp\left(-\frac{d_{\text{alg}}^2((x_i,v_i), y)}{2\varepsilon_c^2}\right)
+\rho_{\text{QSD}}(y)\, dy.
 $$
 
-**Scaling**:
+**Scaling (mean-field)**:
 
 $$
-k_{\text{eff}}^{(\varepsilon_c)}(i) = O(\rho_{\max} \cdot \varepsilon_c^{2d} \cdot (\log k)^d)
-
+k_{\text{eff}}^{(\varepsilon_c)}(i) \leq \rho_{\max} \cdot (2\pi \varepsilon_c^2)^d \cdot C_\lambda,
 $$
+
+which is **k-uniform** and depends only on $(\varepsilon_c, d, \rho_{\max})$.
 
 **Properties**:
-- Grows logarithmically with $k$
-- NOT k-uniform
-- Controls softmax companion sums over $\ell$
+- k-uniform in the mean-field limit
+- Controls softmax kernel integrals in the derivative bounds
+- Finite-$N$ log-$k$ heuristics are optional and not used in the proofs
 
 **2. Localization Effective Neighbors** (scale $\rho$):
 
-$$
-k_{\text{eff}}^{(\rho)}(i) := \left|\left\{j \in \mathcal{A} : d_{\text{alg}}(i,j) \leq R_{\text{eff}}^{(\rho)}\right\}\right|
+Similarly, define the localization mass by
 
 $$
-
-where:
-
-$$
-R_{\text{eff}}^{(\rho)} = C_\rho \cdot \rho
-
+k_{\text{eff}}^{(\rho)}(i)
+:= \int_{\mathcal{Y}} \exp\left(-\frac{d_{\text{alg}}^2((x_i,v_i), y)}{2\rho^2}\right)
+\rho_{\text{QSD}}(y)\, dy,
 $$
 
-for some constant $C_\rho$ independent of $k$.
-
-**Scaling**:
+so that
 
 $$
-k_{\text{eff}}^{(\rho)}(i) = O(\rho_{\max} \cdot \rho^{2d})
-
+k_{\text{eff}}^{(\rho)}(i) \leq \rho_{\max} \cdot (2\pi \rho^2)^d \cdot C_\lambda.
 $$
 
 **Properties**:
 - Independent of $k$
 - **k-uniform** ✓
-- Controls localization weight sums over $j$
+- Controls localization weight sums over $j$ in mean-field estimates
 :::
 
 :::{prf:notation} k_eff Superscript Convention
@@ -212,21 +209,23 @@ When we write "$k_{\text{eff}}$" without superscript, the scale should be clear 
 
 For clarity in proofs, **always use superscript notation** $k_{\text{eff}}^{(\varepsilon_c)}$ or $k_{\text{eff}}^{(\rho)}$.
 
-**Critical for k-uniformity claims**: Only $k_{\text{eff}}^{(\rho)}$ is k-uniform; $k_{\text{eff}}^{(\varepsilon_c)}$ is NOT.
+**Mean-field scope**: Both quantities are k-uniform in the mean-field limit because they are kernel
+integrals against $\rho_{\text{QSD}}$. Finite-$N$ logarithmic heuristics for effective counts are optional
+and are not used in the proofs.
 :::
 
 **Summary Table: When to Use Which**
 
 | Context | Scale | Notation | k-Uniform? | Typical Value |
 |---------|-------|----------|------------|---------------|
-| Softmax companion selection $P(c(j)=\ell)$ | $\varepsilon_c$ | $k_{\text{eff}}^{(\varepsilon_c)} = O((\log k)^d)$ | ✗ No | 10-100 |
-| Localization weights $w_{ij}(\rho)$ | $\rho$ | $k_{\text{eff}}^{(\rho)} = O(\rho^{2d})$ | ✅ Yes | 5-50 |
-| Expected measurement $d_j$ ($\ell$-sum) | $\varepsilon_c$ | $k_{\text{eff}}^{(\varepsilon_c)}$ | ✗ No | 10-100 |
-| Localized mean $\mu_\rho$ ($j$-sum) | $\rho$ | $k_{\text{eff}}^{(\rho)}$ | ✅ Yes | 5-50 |
+| Softmax companion selection $P(c(j)=\ell)$ | $\varepsilon_c$ | $k_{\text{eff}}^{(\varepsilon_c)} = O(\varepsilon_c^{2d})$ | ✅ Yes (mean-field) | kernel mass |
+| Localization weights $w_{ij}(\rho)$ | $\rho$ | $k_{\text{eff}}^{(\rho)} = O(\rho^{2d})$ | ✅ Yes | kernel mass |
+| Expected measurement $d_j$ ($\ell$-sum) | $\varepsilon_c$ | $k_{\text{eff}}^{(\varepsilon_c)}$ | ✅ Yes (mean-field) | kernel mass |
+| Localized mean $\mu_\rho$ ($j$-sum) | $\rho$ | $k_{\text{eff}}^{(\rho)}$ | ✅ Yes | kernel mass |
 
 **Memory aid**:
-- **$\varepsilon_c$** (smaller) → softmax companions → $(\log k)^d$ growth
-- **$\rho$** (larger, typically) → localization → k-uniform
+- **$\varepsilon_c$** controls the softmax kernel mass (smaller $\varepsilon_c$ → tighter localization)
+- **$\rho$** controls localization weights (larger $\rho$ → broader averaging window)
 
 ---
 
@@ -240,7 +239,7 @@ graph TD
         A["<b>Ch 4-4: Smooth Clustering</b><br>Partition of unity & <br>exponential locality"]:::stateStyle
         B["<b>Ch 6: Algorithmic Distance</b><br>Regularized d_alg with ε_d > 0<br><b>C^∞ regularity</b>"]:::lemmaStyle
         C["<b>Ch 5.5-5.6: Companion Selection</b><br>Softmax & Diversity Pairing<br><b>Dual mechanisms analysis</b>"]:::lemmaStyle
-        D["<b>Ch 5.7: Statistical Equivalence</b><br>Both mechanisms → O(k^{-β}) sup-norm<br><b>Unified regularity</b>"]:::theoremStyle
+        D["<b>Ch 5.7: Statistical Equivalence</b><br>Analytical equivalence of mechanisms<br><b>Unified regularity</b>"]:::theoremStyle
         E["<b>Ch 8: N-Body Coupling</b><br>Derivative structure of<br>companion-dependent measurements"]:::stateStyle
         A --> B
         B --> C
@@ -298,10 +297,11 @@ The document structure follows this logical flow:
 
 **Part I: Foundations (Chapters 3-7)**
 - **Chapter 3**: Smooth phase-space clustering via partition-of-unity functions $\{\psi_m\}$
-- **Chapter 4**: Exponential locality bounds for softmax—effective interaction count $k_{\text{eff}}^{(\varepsilon_c)} = \mathcal{O}((\log k)^d)$ (NOT k-uniform)
+- **Chapter 4**: Mean-field kernel mass bounds for softmax—$k_{\text{eff}}^{(\varepsilon_c)} = \mathcal{O}(\varepsilon_c^{2d})$ (k-uniform)
 - **Chapter 5**: Regularized algorithmic distance $d_{\text{alg}}$ with $\varepsilon_d > 0$ eliminating singularities
 - **Chapters 5.5-5.6**: Dual analysis of Softmax and Diversity Pairing companion selection
-- **Chapter 5.7**: Statistical equivalence theorem—both mechanisms yield sup-norm $\mathcal{O}(k^{-\beta})$ identical fitness
+- **Chapter 5.7**: Statistical equivalence theorem—both mechanisms yield the same C^∞ regularity
+  class and k-uniform parameter dependence (no convergence rate required)
 - **Chapter 7**: Derivative structure of companion-dependent measurements (N-body coupling)
 
 **Part II: Localization Weights (Chapter 6)**
@@ -332,11 +332,17 @@ The document structure follows this logical flow:
 :::{important}
 **Key Technical Innovation**: The smooth clustering framework (Chapters 3-4, 6) is the essential tool for converting global N-body coupling into cluster-localized analysis via a **two-scale analytical framework**:
 
-1. **Scale $\varepsilon_c$ (softmax companion selection)**: Derivative locality eliminates ℓ-sums before $k_{\text{eff}}^{(\varepsilon_c)} = O((\log k)^d)$ can appear. For $j \neq i$, only companion $\ell = i$ contributes to $\nabla_{x_i} d_j$, so there's no sum over companions and no logarithmic factor.
+1. **Scale $\varepsilon_c$ (softmax companion selection)**: Derivative locality eliminates ℓ-sums before any
+   $k$-dependent factors can appear. For $j \neq i$, only companion $\ell = i$ contributes to
+   $\nabla_{x_i} d_j$, and the $j=i$ term is controlled by the mean-field kernel mass bound.
 
 2. **Scale $\rho$ (localization weights)**: Telescoping cancellation ({prf:ref}`lem-telescoping-localization-weights-full`) controls $j$-sums. Partition-of-unity normalization $\sum_j w_{ij} = 1$ gives $\sum_j \nabla^n w_{ij} = 0$, canceling naive $O(k)$ dependence to yield $O(k_{\text{eff}}^{(\rho)}) = O(\rho^{2d})$ (k-uniform).
 
-**Result**: k-uniform bounds arise from TWO distinct mechanisms at different scales, not a single "telescoping absorbs log k" effect. Without partition-of-unity smoothness (scale $\rho$) and derivative locality (scale $\varepsilon_c$), the companion-dependent model would exhibit k-dependent derivative bounds, invalidating mean-field analysis. This technique is original to the Geometric Gas framework and may have applications to other mean-field systems with global coupling.
+**Result**: k-uniform bounds arise from TWO distinct mechanisms at different scales, not a single
+"telescoping absorbs k-dependent factors" effect. Without partition-of-unity smoothness (scale $\rho$) and
+derivative locality (scale $\varepsilon_c$), the companion-dependent model would exhibit
+k-dependent derivative bounds, invalidating mean-field analysis. This technique is original to the
+Geometric Gas framework and may have applications to other mean-field systems with global coupling.
 :::
 
 ---
@@ -404,7 +410,8 @@ where $\mathcal{M}_k$ is the set of perfect matchings and $W(M) = \prod_{(i,j) \
 1. Both mechanisms produce expected measurements with **identical analytical structure** (quotients of weighted sums with exponential kernels)
 2. Both achieve **C^∞ regularity** with **Gevrey-1 bounds** (factorial growth in derivative order)
 3. Both achieve **k-uniform bounds** (independent of swarm size)
-4. The mechanisms are **statistically equivalent** up to $O(k^{-\beta})$ corrections (§5.7)
+4. The mechanisms are **statistically equivalent** at the level of regularity and parameter
+   dependence (§5.7)
 
 **Consequence**: The fitness potential $V_{\text{fit}}$ is C^∞ with k-uniform Gevrey-1 bounds **regardless of which mechanism is implemented**.
 
@@ -488,15 +495,14 @@ $$
 
 where $g_A: \mathbb{R} \to [0, A]$ is a smooth rescaling function (e.g., sigmoid).
 
-:::{note} **Regularity for Sample-Path Realizations**
+:::{note} **Regularity for Mean-Field Fitness (Not Pathwise)**
 
-The algorithm implementation samples companions $c(j)$ stochastically at each time step, making $V_{\text{fit}}$ a random function. The C^∞ regularity proven here for $\mathbb{E}[V_{\text{fit}}]$ transfers to individual sample paths because:
-
-1. Each realization $\{c(j)\}_{j \in \mathcal{A}}$ has the same smooth structure (softmax is a smooth mixture)
-2. The derivative bounds are uniform across all possible companion assignments
-3. By dominated convergence, sample-path derivatives converge to expected derivatives
-
-Therefore, $V_{\text{fit}}(\omega)$ for each realization $\omega$ inherits the same Gevrey-1 regularity with the same uniform bounds.
+This analysis is for the **expected fitness** and its **mean-field limit** ($N \to \infty$).
+For finite $N$, the realized $V_{\text{fit}}$ depends on discrete companion draws and is only
+piecewise smooth in the configuration; no pathwise $C^\infty$ claim is required.
+Propagation of chaos provides convergence of empirical measures, and the uniform derivative
+bounds (via sum-to-integral and LSI tail control in {prf:ref}`thm-lsi-companion-dependent-full`)
+justify differentiation under the limit for the expected fitness.
 :::
 
 ### 2.2 The Companion-Coupling Challenge
@@ -521,14 +527,19 @@ We overcome the N-body coupling using **smooth phase-space clustering**:
 
 **Key Idea 1: Exponential Locality**
 
-The softmax distribution is **exponentially concentrated**:
+The softmax kernel is **exponentially localized**. In the mean-field limit,
+kernel mass bounds (Lemma {prf:ref}`lem-mean-field-kernel-mass-bound`) yield
+tail control with constants independent of $k$:
 
 $$
-\mathbb{P}(d_{\text{alg}}(j, c(j)) > R) = \mathcal{O}\left(k \cdot e^{-R^2/(2\varepsilon_c^2)}\right)
-
+\int_{d_{\text{alg}}((x_j,v_j),y) > R} K_{\varepsilon_c}((x_j,v_j),y)\, \rho_{\text{QSD}}(y)\, dy
+\leq C_{\text{tail}} \cdot e^{-R^2/(2\varepsilon_c^2)},
 $$
 
-This means walker $j$ effectively interacts with only $k_{\text{eff}} = \mathcal{O}(1)$ nearby companions.
+with $C_{\text{tail}}$ depending only on $(\rho_{\max}, c_\pi, d)$ and the squashing constants.
+This means walker $j$ effectively interacts with a **k-uniform** kernel mass
+$k_{\text{eff}}^{(\varepsilon_c)} = O(\varepsilon_c^{2d})$ in the mean-field estimates.
+(Finite-$N$ log-$k$ tail heuristics are optional and not used; see §4.2.)
 
 **Key Idea 2: Smooth Partition of Unity**
 
@@ -581,13 +592,19 @@ Moreover $\rho_{\text{QSD}} \in C^\infty(\Omega)$, and $\rho_{\max}$ depends onl
 Theorem {prf:ref}`thm-uniform-density-bound-hk` and its detailed proof ({prf:ref}`thm-bounded-density-ratio-main`) in {doc}`11_hk_convergence` combine hypoelliptic smoothing with a two-step Doeblin minorization to obtain $L^\infty$ control and a strictly positive density lower bound $c_{\pi}$. Lemma {prf:ref}`lem-linfty-full-operator` in the same appendix upgrades the bounds to pointwise and yields $C^\infty$ regularity. Existence and uniqueness of $\rho_{\text{QSD}}$ follow from {doc}`09_propagation_chaos`, so the bounds apply to the unique equilibrium. Define $\rho_{\max} := \|\rho_{\text{QSD}}\|_\infty$. This constant is finite and depends only on the primitive parameters in Appendix 11, hence is k- and N-uniform. □
 :::
 
-**Consequence for sum-to-integral bounds**: The uniform density bound ensures the number of walkers in any phase-space ball of radius $r$ is bounded:
+**Consequence for sum-to-integral bounds**: In the mean-field limit, the mass of any phase-space ball of radius $r$ is bounded:
 
 $$
-\#\{j \in \mathcal{A} : d_{\text{alg}}(i,j) \leq r\} \leq \rho_{\max} \cdot \text{Vol}(B(0, r)) = \mathcal{O}(r^{2d}).
+\int_{d_{\text{alg}}((x_i,v_i),y) \leq r} \rho_{\text{QSD}}(y)\, dy
+\leq \rho_{\max} \cdot \text{Vol}(B(0, r)) = \mathcal{O}(r^{2d}).
 $$
 
-This provides the rigorous foundation for k-uniform bounds via sum-to-integral techniques (Lemma {prf:ref}`lem-sum-to-integral-bound-full`). When passing to algorithmic coordinates, we absorb the Jacobian factor from the squashing map into the constant and continue to denote the pushforward bound by $\rho_{\max}$.
+Propagation of chaos implies the empirical count converges (in expectation, and in probability)
+to this integral as $N \to \infty$, so the bound is the one used in the mean-field $C^\infty$
+proof. This provides the rigorous foundation for k-uniform bounds via sum-to-integral techniques
+(Lemma {prf:ref}`lem-sum-to-integral-bound-full`). When passing to algorithmic coordinates, we
+absorb the Jacobian factor from the squashing map into the constant and continue to denote the
+pushforward bound by $\rho_{\max}$.
 
 ### 2.4 Framework Inputs
 
@@ -767,7 +784,10 @@ and the density bound yields the stated inequality. □
 
 ### 2.6 Summary of Gevrey-1 Constants
 
-The following table summarizes the key constants that appear throughout the regularity analysis. All constants exhibit **Gevrey-1 growth** ($\mathcal{O}(m!)$) in derivative order $m$, and all are **k-uniform** (independent of the number of alive walkers).
+The following table summarizes the key constants that appear throughout the regularity analysis. Each derivative
+bound has **Gevrey-1 growth** (a single factorial in $m$). For most intermediate objects we record the full
+coefficient $C_{\cdot,m} = \mathcal{O}(m!)$; for $V_{\text{fit}}$ we factor out $m!$ and track the remaining
+exponential coefficient.
 
 | Constant | Describes | Gevrey-1 Growth | Key Parameter Dependencies | Section |
 |:---------|:----------|:----------------|:---------------------------|:--------|
@@ -780,7 +800,7 @@ The following table summarizes the key constants that appear throughout the regu
 | $C_{\sigma^2,n}$ | Derivatives of localized variance $\sigma_\rho^{2(i)}$ | $\mathcal{O}(n!)$ | $\rho$, $\varepsilon_d$, $\rho_{\max}$, $d$ | §9.2 |
 | $C_{\sigma',n}$ | Derivatives of regularized std dev $\sigma'_\rho(i)$ | $\mathcal{O}(n!)$ | $\rho$, $\varepsilon_d$, $\eta_{\min}$, $\rho_{\max}$, $d$ | §10 |
 | $C_{Z,n}$ | Derivatives of Z-score $Z_\rho^{(i)}$ | $\mathcal{O}(n!)$ | $\rho$, $\varepsilon_d$, $\eta_{\min}$, $\rho_{\max}$, $d$ | §11 |
-| $C_{V,n}$ | Derivatives of fitness potential $V_{\text{fit}}$ | $\mathcal{O}(n!)$ | All above + rescale function $g_A$ | §11-12 |
+| $C_{V,n}$ | Derivatives of fitness potential $V_{\text{fit}}$ | $C_{V,n} \leq C_0 C_1^n$ (after factoring $n!$) | All above + rescale function $g_A$ | §11-12 |
 
 **Key observations:**
 - All constants are **k-uniform**: They depend on algorithmic parameters ($\rho$, $\varepsilon_c$, $\varepsilon_d$, $\eta_{\min}$) and the density bound $\rho_{\max}$, but **not** on the number of alive walkers $k$ or total swarm size $N$.
@@ -1000,7 +1020,7 @@ This lemma establishes uniform bounds on the effective cluster size using densit
 
 From {prf:ref}`def-effective-cluster-population-full`, $k_m^{\text{eff}} = \sum_{j \in \mathcal{A}} \psi_m(x_j, v_j)$. Since $\psi_m$ has support only within distance $2\varepsilon_c$ of cluster center $(y_m, u_m)$, only walkers in the phase-space ball $B(y_m, 2\varepsilon_c)$ contribute.
 
-Under the uniform density bound (Theorem {prf:ref}`assump-uniform-density-full`), the number of walkers in any ball $B$ satisfies:
+Interpreting the uniform density bound (Theorem {prf:ref}`assump-uniform-density-full`) as a bound on the empirical density in algorithmic coordinates, the number of walkers in any ball $B$ satisfies:
 
 $$
 \#\{j : (x_j, v_j) \in B\} \leq \rho_{\max} \cdot \text{Vol}(B)
@@ -1052,152 +1072,102 @@ For the full publication-ready proof with detailed verification, see:
 
 ## 4. Exponential Locality and Effective Interactions
 
-### 4.1 Softmax Concentration Bounds
+### 4.1 Mean-Field Kernel Mass Bounds
 
-:::{prf:lemma} Softmax Tail Bound
+:::{prf:lemma} Mean-Field Kernel Mass Bound
+:label: lem-mean-field-kernel-mass-bound
+
+Let $\rho_{\text{QSD}}$ satisfy $0 < c_\pi \leq \rho_{\text{QSD}} \leq \rho_{\max}$ and define
+the mean-field kernel mass
+
+$$
+Z_i^{\mathrm{mf}} := \int_{\mathcal{Y}} \exp\left(-\frac{d_{\text{alg}}^2((x_i,v_i), y)}{2\varepsilon_c^2}\right)
+\rho_{\text{QSD}}(y)\, dy.
+$$
+
+Then
+
+$$
+c_\pi \int_{\mathcal{Y}} K_{\varepsilon_c}((x_i,v_i),y)\, dy
+\leq Z_i^{\mathrm{mf}}
+\leq \rho_{\max} \int_{\mathcal{Y}} K_{\varepsilon_c}((x_i,v_i),y)\, dy
+\leq \rho_{\max} (2\pi \varepsilon_c^2)^d C_\lambda,
+$$
+
+and for any bounded $f$,
+
+$$
+\left|\int_{\mathcal{Y}} f(y)\, K_{\varepsilon_c}((x_i,v_i),y)\, \rho_{\text{QSD}}(y)\, dy\right|
+\leq \rho_{\max} (2\pi \varepsilon_c^2)^d C_\lambda \|f\|_\infty.
+$$
+
+The same bounds hold with $\varepsilon_c$ replaced by $\rho$.
+:::
+
+:::{prf:proof}
+Combine the density bounds from {prf:ref}`assump-uniform-density-full` with the Gaussian
+sum-to-integral estimate in {prf:ref}`lem-sum-to-integral-bound-full`, using the squashing
+map bounds from {prf:ref}`lem-squashing-properties-generic`. □
+:::
+
+### 4.2 Finite-$N$ Heuristics (Optional, Not Used)
+
+:::{note}
+Finite-$N$ logarithmic effective-radius and companion-count estimates can be derived from the
+softmax tail bound, but they are **not** used in the mean-field $C^\infty$ proof. They are
+retained only for intuition and implementation guidance. See:
+
+- [Effective Interaction Radius (finite-$N$ heuristic)](proofs/proof_cor_effective_interaction_radius_full.md)
+- [Effective Companion Count (finite-$N$ heuristic)](proofs/proof_lem_effective_companion_count_corrected_full.md)
+:::
+
+:::{prf:lemma} Finite-$N$ Heuristic: Softmax Tail Bound
 :label: lem-softmax-tail-corrected-full
 
-Under {prf:ref}`lem-companion-availability-enforcement`, for walker $i \in \mathcal{A}$ with companion $c(i)$ selected via softmax:
+Under {prf:ref}`lem-companion-availability-enforcement`, for walker $i \in \mathcal{A}$ with
+companion $c(i)$ selected via softmax, the tail probability satisfies
 
 $$
-\mathbb{P}(d_{\text{alg}}(i, c(i)) > R \mid \mathcal{F}_t) \leq k \cdot \exp\left(-\frac{R^2 - R_{\max}^2}{2\varepsilon_c^2}\right)
-
+\mathbb{P}(d_{\text{alg}}(i, c(i)) > R \mid \mathcal{F}_t)
+\leq k \cdot \exp\left(-\frac{R^2 - R_{\max}^2}{2\varepsilon_c^2}\right),
 $$
 
-where $R_{\max} = C_{\text{comp}} \varepsilon_c$ from {prf:ref}`lem-companion-availability-enforcement`.
+where $R_{\max} = C_{\text{comp}} \varepsilon_c$ and $k = |\mathcal{A}|$. This is a **finite-$N$
+heuristic** bound and is **not used** in the mean-field regularity proof.
 :::
 
-:::{prf:proof}
-:label: proof-lem-softmax-tail-corrected-full
-
-**Step 1: Partition function lower bound.**
-
-By {prf:ref}`lem-companion-availability-enforcement`, there exists $\ell^* \in \mathcal{A} \setminus \{i\}$ with $d_{\text{alg}}(i, \ell^*) \leq R_{\max}$.
-
-Therefore:
-
-$$
-Z_i = \sum_{\ell \in \mathcal{A} \setminus \{i\}} \exp\left(-\frac{d_{\text{alg}}^2(i,\ell)}{2\varepsilon_c^2}\right) \geq \exp\left(-\frac{R_{\max}^2}{2\varepsilon_c^2}\right) = \exp\left(-\frac{C_{\text{comp}}^2}{2}\right) =: Z_{\min} > 0
-
-$$
-
-**Step 2: Tail probability.**
-
-For $R > R_{\max}$:
-
-$$
-\begin{aligned}
-\mathbb{P}(d_{\text{alg}}(i,c(i)) > R)
-&= \sum_{\ell : d(i,\ell) > R} \frac{\exp(-d^2(i,\ell)/(2\varepsilon_c^2))}{Z_i} \\
-&\leq \frac{k \cdot \exp(-R^2/(2\varepsilon_c^2))}{Z_{\min}} \\
-&= k \cdot \exp\left(-\frac{R^2 - R_{\max}^2}{2\varepsilon_c^2}\right)
-\end{aligned}
-
-$$
-
-**Conclusion**: This provides a **valid tail bound** with explicit dependence on the framework inputs.
-:::
-
-:::{prf:corollary} Effective Interaction Radius
+:::{prf:corollary} Finite-$N$ Heuristic: Effective Interaction Radius
 :label: cor-effective-interaction-radius-full
 
-Define the **effective interaction radius** by setting the tail probability to $\delta = 1/k$:
+Define $R_{\text{eff}}$ by setting the heuristic tail probability to $\delta = 1/k$:
 
 $$
-R_{\text{eff}} = \sqrt{R_{\max}^2 + 2\varepsilon_c^2 \log(k^2)} = \varepsilon_c \sqrt{C_{\text{comp}}^2 + 2\log(k^2)}
-
+R_{\text{eff}} = \sqrt{R_{\max}^2 + 2\varepsilon_c^2 \log(k^2)}.
 $$
 
-Then:
-
-$$
-\mathbb{P}(d_{\text{alg}}(i, c(i)) > R_{\text{eff}}) \leq \frac{1}{k}
-
-$$
-
-For practical swarms ($k \leq 10^4$), $R_{\text{eff}} \approx (2\text{-}5) \cdot \varepsilon_c$.
+Then $\mathbb{P}(d_{\text{alg}}(i, c(i)) > R_{\text{eff}}) \leq 1/k$. This is **heuristic** and
+not used in the mean-field proof.
 :::
 
-:::{prf:proof}
-:label: proof-cor-effective-interaction-radius-full
-
-Set the tail bound from {prf:ref}`lem-softmax-tail-corrected-full` equal to $1/k$:
-
-$$
-k \cdot \exp\left(-\frac{R_{\text{eff}}^2 - R_{\max}^2}{2\varepsilon_c^2}\right) = \frac{1}{k}
-
-$$
-
-Solving for $R_{\text{eff}}$: $\exp(-(R_{\text{eff}}^2 - R_{\max}^2)/(2\varepsilon_c^2)) = k^{-2}$, thus $(R_{\text{eff}}^2 - R_{\max}^2)/(2\varepsilon_c^2) = 2\log k$, giving $R_{\text{eff}} = \sqrt{R_{\max}^2 + 2\varepsilon_c^2 \log(k^2)}$.
-:::
-
-:::{dropdown} 📖 **Complete Rigorous Proof**
-:icon: book
-:color: info
-
-For the full publication-ready proof with detailed verification, see:
-[Complete Proof: Effective Interaction Radius](proofs/proof_cor_effective_interaction_radius_full.md)
-
-**Includes:**
-- Detailed inversion of exponential tail bounds
-- Explicit logarithmic factor derivation
-- Practical parameter scaling for typical swarm sizes ($k \leq 10^4$)
-- Connection to softmax partition function bounds
-- Numerical estimates for concrete parameter values
-:::
-
-### 4.2 Effective Number of Interacting Companions
-
-:::{prf:lemma} Effective Companion Count
+:::{prf:lemma} Finite-$N$ Heuristic: Effective Companion Count
 :label: lem-effective-companion-count-corrected-full
 
-Under Theorem {prf:ref}`assump-uniform-density-full`, the effective number of companions within $R_{\text{eff}}$ is:
+Let $k_{\text{eff}}(i)$ be the number of companions within $R_{\text{eff}}$. Under the uniform
+density bound, the heuristic estimate is
 
 $$
-k_{\text{eff}}(i) := \sum_{\ell \in \mathcal{A} \setminus \{i\}} \mathbb{1}_{d_{\text{alg}}(i,\ell) \leq R_{\text{eff}}} \leq \rho_{\max} \cdot C_{\text{vol}} \cdot R_{\text{eff}}^{2d}
-
+k_{\text{eff}}(i) \leq \rho_{\max} \cdot C_{\text{vol}} \cdot R_{\text{eff}}^{2d}
+= \mathcal{O}(\varepsilon_c^{2d} (\log k)^d).
 $$
 
-Substituting $R_{\text{eff}} = \mathcal{O}(\varepsilon_c \sqrt{\log k})$:
-
-$$
-k_{\text{eff}}(i) = \mathcal{O}(\varepsilon_c^{2d} \cdot (\log k)^d)
-
-$$
-
-For fixed $\varepsilon_c$ and moderate $k$, this is a **small constant** (e.g., $k_{\text{eff}} \approx 10\text{-}50$ for typical parameters).
-:::
-
-:::{prf:proof}
-:label: proof-lem-effective-companion-count-corrected-full
-
-The effective companion count equals the number of walkers in the phase-space ball $B_i = \{(x,v) : d_{\text{alg}}((x,v), (x_i, v_i)) \leq R_{\text{eff}}\}$. Under the uniform density bound, $k_{\text{eff}}(i) \leq \rho_{\max} \cdot \text{Vol}(B_i)$. The ball has dimension $2d$ (position + velocity), so $\text{Vol}(B_i) = C_{\text{vol}} R_{\text{eff}}^{2d}$. Substituting $R_{\text{eff}} = \varepsilon_c \sqrt{C_{\text{comp}}^2 + 2\log(k^2)}$ from {prf:ref}`cor-effective-interaction-radius-full` gives $R_{\text{eff}}^{2d} = \mathcal{O}(\varepsilon_c^{2d} (\log k)^d)$.
-:::
-
-:::{dropdown} 📖 **Complete Rigorous Proof**
-:icon: book
-:color: info
-
-For the full publication-ready proof with detailed verification, see:
-[Complete Proof: Effective Companion Count](proofs/proof_lem_effective_companion_count_corrected_full.md)
-
-**Includes:**
-- Rigorous application of phase-space ball volume estimates
-- Detailed derivation of logarithmic scaling $\mathcal{O}((\log k)^d)$
-- Uniform density bound application with explicit constants
-- Numerical estimates for practical parameter regimes ($k = 100$ to $k = 10^4$)
-- Connection between effective radius and companion count
-:::
-
-:::{important}
-**Key Insight**: Even though there are $k$ alive walkers, walker $i$ **effectively interacts with only $\mathcal{O}(\log^d k)$ companions** due to exponential locality.
-
-For derivative bounds, we will show this logarithmic factor can be absorbed into constants, achieving **k-uniform bounds**.
+This is **heuristic** and not used in the mean-field proof.
 :::
 
 ### 4.3 Exponential Locality of Softmax Derivatives
 
-The previous sections established exponential concentration for the **probabilities** $P(c(i) = \ell)$. We now prove that **derivatives** of these probabilities also decay exponentially.
+The previous sections established mean-field kernel mass bounds (and optional finite-$N$ tail
+heuristics). We now prove that **derivatives** of the softmax probabilities admit k-uniform
+Gevrey-1 bounds in the mean-field estimates.
 
 :::{prf:lemma} Exponential Locality of Softmax Derivatives
 :label: lem-softmax-derivative-locality-full
@@ -1205,13 +1175,15 @@ The previous sections established exponential concentration for the **probabilit
 For the softmax companion selection with temperature $\varepsilon_c$, all derivatives of the companion probability satisfy:
 
 $$
-\left|\nabla^\alpha_{x_i} P(c(j) = \ell \mid \mathcal{F}_t)\right| \leq C_{|\alpha|} \cdot \varepsilon_c^{-2|\alpha|} \cdot P(c(j) = \ell \mid \mathcal{F}_t) \cdot \exp\left(-\frac{d_{\text{alg}}^2(j, \ell)}{4\varepsilon_c^2}\right)
-
+\left|\nabla^\alpha_{x_i} P(c(j) = \ell \mid \mathcal{F}_t)\right|
+\leq C_{|\alpha|} \cdot \varepsilon_c^{-2|\alpha|} \cdot P(c(j) = \ell \mid \mathcal{F}_t),
 $$
 
-where $C_{|\alpha|} = O(|\alpha|!)$ (Gevrey-1 growth) and the bound is **k-uniform**.
+where $C_{|\alpha|} = O(|\alpha|!)$ (Gevrey-1 growth) and the bound is **k-uniform** in the
+mean-field limit (i.e., after replacing sums by integrals against $\rho_{\text{QSD}}$).
 
-**Consequence**: Derivatives of softmax probabilities inherit exponential decay, with an **additional** factor $\exp(-d^2/(4\varepsilon_c^2))$ beyond the probability itself. This ensures that distant walkers ($d_{\text{alg}} \gg \varepsilon_c$) have negligible contribution to derivatives.
+**Consequence**: Derivatives of softmax probabilities inherit the same Gaussian exponential
+decay as the kernel, with no $k$-dependent prefactor in the mean-field bounds.
 :::
 
 :::{prf:proof}
@@ -1240,14 +1212,16 @@ $$
 
 $$
 
-By {prf:ref}`lem-dalg-derivative-bounds-full`, $\|\nabla_{x_i} d_{\text{alg}}(j,\ell)\| \leq 1$. Therefore:
+By {prf:ref}`lem-dalg-derivative-bounds-full`, $\|\nabla_{x_i} d_{\text{alg}}(j,\ell)\| \leq 1$. Since
+$d_{\text{alg}}(j,\ell) \leq D_{\max}$ on the compact algorithmic domain,
 
 $$
-\|\nabla_{x_i} K_j^\ell\| \leq \frac{d_{\text{alg}}(j,\ell)}{\varepsilon_c^2} \cdot K_j^\ell \leq \frac{1}{\varepsilon_c} \cdot K_j^\ell
+\|\nabla_{x_i} K_j^\ell\| \leq \frac{D_{\max}}{\varepsilon_c^2} \cdot K_j^\ell
+=: \frac{C_K}{\varepsilon_c^2} \cdot K_j^\ell,
 
 $$
 
-(using $d_{\text{alg}}/\varepsilon_c \ll 1$ for effective contributors).
+with $C_K$ independent of $k$ and $N$.
 
 **Step 3: Partition function derivative.**
 
@@ -1256,14 +1230,23 @@ $$
 
 $$
 
-**Key observation**: If $i = j$ or $i = \ell$, the derivative acts directly on the exponential. If $i \neq j, \ell$, the derivative couples through the N-body softmax structure. However, by exponential concentration:
+**Key observation (derivative locality)**:
+- If $j \neq i$, then $\nabla_{x_i} d_{\text{alg}}(j,\ell) = 0$ unless $\ell = i$, so
+  $\nabla_{x_i} Z_j = \nabla_{x_i} K_j^i$ and
+  $\|\nabla_{x_i} Z_j\| \leq (C_K/\varepsilon_c^2) \cdot K_j^i \leq (C_K/\varepsilon_c^2) \cdot Z_j$.
+- If $j = i$, then in the mean-field limit
+  $Z_i^{\mathrm{mf}} = \int K_i(y)\, \rho_{\text{QSD}}(y)\, dy$, and
+  $\|\nabla_{x_i} Z_i^{\mathrm{mf}}\| \leq (C_K/\varepsilon_c^2) \cdot Z_i^{\mathrm{mf}}$
+  by Lemma {prf:ref}`lem-mean-field-kernel-mass-bound`.
 
+Thus, in the mean-field bounds we have
 $$
-\|\nabla_{x_i} Z_j\| \leq \frac{k_{\text{eff}}^{(\varepsilon_c)}}{\varepsilon_c^2} \cdot Z_j \leq \frac{C_{\text{eff}}}{\varepsilon_c^2} \cdot Z_j
-
+\|\nabla_{x_i} Z_j\| \leq \frac{C_K}{\varepsilon_c^2} \cdot Z_j,
 $$
+with k-uniform constant $C_K$.
 
-where $k_{\text{eff}}^{(\varepsilon_c)} = O(\rho_{\max} \varepsilon_c^{2d} (\log k)^d)$ grows logarithmically with $k$.
+For finite $N$, this bound is applied only to the **expected** softmax quantities; propagation of
+chaos lets us replace empirical sums by the mean-field integral.
 
 **Step 4: Assemble first derivative bound.**
 
@@ -1272,7 +1255,8 @@ $$
 
 $$
 
-where $C_1 = O(1 + k_{\text{eff}}^{(\varepsilon_c)})$ contains the $(\log k)^d$ factor, which is **absorbed into higher-order Gevrey-1 constants** (see §7.1 for how derivative locality prevents this from affecting k-uniformity).
+where $C_1$ depends only on $(D_{\max}, \rho_{\max}, \varepsilon_c)$ and is **k-uniform** in the
+mean-field limit.
 
 **Step 5: Higher derivatives by induction.**
 
@@ -1285,15 +1269,17 @@ $$
 
 By {prf:ref}`lem-dalg-derivative-bounds-full`, $\|\nabla^m d_{\text{alg}}\| \leq C_m \varepsilon_d^{1-m}$. For $\varepsilon_d \ll \varepsilon_c$ (typical), the dominant factor is $\varepsilon_c^{-2|\alpha|}$ from repeated differentiation of the exponential.
 
-Exponential decay: The softmax structure ensures that walkers with $d_{\text{alg}}(j,\ell) > R_{\text{eff}}$ contribute $\exp(-R_{\text{eff}}^2/(2\varepsilon_c^2))$ to probabilities and $\exp(-R_{\text{eff}}^2/(4\varepsilon_c^2))$ to derivatives (from quotient rule cancellations). This provides the claimed **double exponential suppression** for distant walkers.
+Exponential decay: The softmax structure preserves the Gaussian decay of $K_j^\ell$ at each
+derivative order, and the k-uniform constants come from derivative locality and the mean-field
+kernel mass bound.
 
 **Conclusion**: All derivatives satisfy Gevrey-1 bounds $C_{|\alpha|} = O(|\alpha|!)$ with exponential locality and k-uniform constants. □
 :::
 
 :::{note}
-**Physical Interpretation**: The double exponential suppression ($\exp(-d^2/(4\varepsilon_c^2))$ instead of $\exp(-d^2/(2\varepsilon_c^2))$) arises from the softmax quotient structure. When differentiating $K/Z$, the numerator and denominator derivatives partially cancel for distant walkers, providing **enhanced locality** for derivatives compared to probabilities.
-
-This is analogous to screening in electrostatics: the "force" (derivative) decays faster than the "potential" (probability).
+**Physical Interpretation**: Differentiating $K/Z$ preserves the Gaussian decay of the kernel.
+Derivative locality removes $\ell$-sums for $j \neq i$, and the mean-field kernel mass bound
+controls the $j=i$ term, so no $k$-dependent amplification appears in the derivative bounds.
 :::
 
 ---
@@ -1470,7 +1456,11 @@ $$
 
 since the expression for $d_{\text{alg}}(j,\ell)$ contains no dependence on $(x_i, v_i)$.
 
-**Importance**: This **derivative locality** is fundamental to k-uniform bounds (§5.5.2). When taking $\nabla_{x_i}$ of a sum $\sum_{\ell \in \mathcal{A} \setminus \{j\}} f(d_{\text{alg}}(j,\ell))$ for $j \neq i$, only the single term with $\ell = i$ contributes. This eliminates the naive $\mathcal{O}(k_{\text{eff}}^{(\varepsilon_c)}) = \mathcal{O}((\log k)^d)$ factor from $\ell$-sums, preventing logarithmic growth with $k$.
+**Importance**: This **derivative locality** is fundamental to k-uniform bounds (§5.5.2). When taking
+$\nabla_{x_i}$ of a sum $\sum_{\ell \in \mathcal{A} \setminus \{j\}} f(d_{\text{alg}}(j,\ell))$
+for $j \neq i$, only the single term with $\ell = i$ contributes. This eliminates the naive
+$\mathcal{O}(k_{\text{eff}}^{(\varepsilon_c)})$ factor from $\ell$-sums, preventing any
+k-dependent growth in the mean-field bounds.
 :::
 
 ---
@@ -1631,10 +1621,13 @@ $$
 **Other terms in the sum**: For $\ell \neq i$, we have $\nabla_{x_i} d_{\text{alg}}(j,\ell) = 0$ (no dependence on $x_i$), so only the $\ell = i$ term contributes.
 
 :::{important}
-**This is the KEY mechanism preventing $k_{\text{eff}}^{(\varepsilon_c)} = O((\log k)^d)$ from appearing**: For $j \neq i$, the sum over companions $\ell$ reduces to a SINGLE term ($\ell = i$). There is NO summation over $k_{\text{eff}}^{(\varepsilon_c)}$ companions, so the logarithmic factor never enters the derivative bounds.
+**This is the KEY mechanism preventing k-dependent factors from appearing**: For $j \neq i$, the
+sum over companions $\ell$ reduces to a SINGLE term ($\ell = i$). There is NO summation over
+multiple companions, so no $k$-dependent amplification enters the derivative bounds.
 
-This **derivative locality** is fundamentally different from telescoping cancellation (which acts at scale $\rho$ on localization weights $w_{ij}$). Both mechanisms are essential:
-- **Derivative locality** (scale $\varepsilon_c$): Eliminates $\ell$-sums → prevents $((\log k)^d)$ from appearing
+This **derivative locality** is fundamentally different from telescoping cancellation (which acts at
+scale $\rho$ on localization weights $w_{ij}$). Both mechanisms are essential:
+- **Derivative locality** (scale $\varepsilon_c$): Eliminates $\ell$-sums → prevents k-dependent factors
 - **Telescoping** (scale $\rho$): Cancels $j$-sums → achieves k-uniformity for localization
 :::
 
@@ -1670,7 +1663,9 @@ $$
 
 **Step 2.5: Softmax-Jacobian Reduction (Probability-Level Analysis).**
 
-Before applying the quotient rule, we provide an alternative derivation using the probability parametrization that makes the k-uniformity mechanism explicit. This addresses potential concerns about whether $\ell$-summations could introduce $\mathcal{O}(k_{\text{eff}}^{(\varepsilon_c)}) = \mathcal{O}((\log k)^d)$ factors.
+Before applying the quotient rule, we provide an alternative derivation using the probability
+parametrization that makes the k-uniformity mechanism explicit. This addresses potential concerns
+about whether $\ell$-summations could introduce $k$-dependent factors.
 
 :::{prf:lemma} Softmax Jacobian Reduction for $j \neq i$
 :label: lem-softmax-jacobian-reduction
@@ -2240,24 +2235,30 @@ $$
 
 $$
 
-**Bound via quotient rule**: Even though $Z_{\text{rest}}$ ratios may vary by O(1) factors (e.g., in clustered geometries), they are:
-1. **Bounded**: By exponential weights, all ratios ≤ exp(const · (R_eff)²/ε_d²) < ∞
-2. **k-uniform**: Number of $\ell$ contributing is k_eff = O(ρ_max ε_d^{2d}), independent of k
-3. **Smooth**: Each Z_rest is a sum of smooth exponentials
+**Bound via quotient rule**: Even though $Z_{\text{rest}}$ ratios may vary by O(1) factors (e.g., in
+clustered geometries), they are:
+1. **Bounded**: Since $d_{\text{alg}} \leq D_{\max}$ on the compact algorithmic domain,
+   all ratios are bounded by $\exp(C D_{\max}^2/\varepsilon_d^2) = O(1)$ (k-uniform).
+2. **k-uniform (mean-field)**: Kernel mass bounds give $k_{\text{eff}} = O(\rho_{\max} \varepsilon_d^{2d})$
+   via {prf:ref}`lem-mean-field-kernel-mass-bound` and {prf:ref}`lem-sum-to-integral-bound-full`.
+3. **Smooth**: Each $Z_{\text{rest}}$ is a sum/integral of smooth exponentials
 
 The derivatives follow from standard quotient rule + Faà di Bruno:
 1. **Gaussian kernel derivatives**: $\|\nabla^m K_{\varepsilon_d}(i,\ell)\| \leq C_m \cdot \varepsilon_d^{-2m} \cdot K_{\varepsilon_d}(i,\ell)$
 2. **Exponential concentration**: Only $k_{\text{eff}} = O(\rho_{\max} \varepsilon_d^{2d})$ nearby walkers contribute significantly
 3. **Quotient rule**: Generalized Leibniz rule with k-uniform bounds
 
-By the uniform density bound (Theorem {prf:ref}`assump-uniform-density-full`):
+By the mean-field kernel mass bound (Theorem {prf:ref}`assump-uniform-density-full` and
+Lemma {prf:ref}`lem-mean-field-kernel-mass-bound`):
 
 $$
-k_{\text{eff}}(i) = |\{\ell : d_{\text{alg}}(i,\ell) \leq R_{\text{eff}}\}| \leq \rho_{\max} \cdot C_{\text{vol}} \cdot R_{\text{eff}}^{2d} = O(\rho_{\max} \varepsilon_d^{2d})
-
+k_{\text{eff}}^{(\varepsilon_d)}(i)
+:= \int_{\mathcal{Y}} \exp\left(-\frac{d_{\text{alg}}^2((x_i,v_i),y)}{2\varepsilon_d^2}\right)
+\rho_{\text{QSD}}(y)\, dy
+= O(\rho_{\max} \varepsilon_d^{2d}),
 $$
 
-where $R_{\text{eff}} = O(\varepsilon_d)$ is the effective interaction radius (exponential concentration of softmax).
+which is k-uniform and independent of the finite-$N$ configuration.
 
 **Step 5: Derivative bound via quotient rule**
 
@@ -2286,14 +2287,9 @@ $$
 - $\|\nabla^\alpha K_{\varepsilon_d}(i,\ell)\| \leq C_\alpha \cdot \varepsilon_d^{-2\alpha} \cdot K_{\varepsilon_d}(i,\ell)$ (Gaussian)
 - $\|\nabla^\beta d_{\text{alg}}(i,\ell)\| \leq C_\beta \cdot \varepsilon_d^{1-\beta}$ (regularized distance)
 
-**Exponential concentration**: Only walkers with $d_{\text{alg}}(i,\ell) \leq R_{\text{eff}} = O(\varepsilon_d)$ contribute significantly (softmax tail bound). The effective number is:
-
-$$
-k_{\text{eff}} = O(\rho_{\max} \cdot \text{Vol}(B_{R_{\text{eff}}})) = O(\rho_{\max} \varepsilon_d^{2d})
-
-$$
-
-which is **k-uniform** (independent of total swarm size).
+**Kernel mass bound**: The Gaussian kernel at scale $\varepsilon_d$ yields
+$k_{\text{eff}} = O(\rho_{\max} \varepsilon_d^{2d})$ via the mean-field integral bound, which is
+**k-uniform** (independent of total swarm size).
 
 **Step 6: Assemble the Gevrey-1 bound**
 
@@ -2304,14 +2300,14 @@ $$
 
 $$
 
-Since $k_{\text{eff}} = O(\rho_{\max} \varepsilon_d^{2d})$ and $Z_{\min} = \Omega(k_{\text{eff}})$, the $k_{\text{eff}}$ factors cancel:
+Since $k_{\text{eff}}$ is k-uniform and $Z_{\min} > 0$ by companion availability, all
+constants can be absorbed into a k-uniform $C_m$, yielding
 
 $$
-\|\nabla^m \bar{d}_i\| \leq C_m(\varepsilon_d, d, \rho_{\max}) \cdot m! \cdot \varepsilon_d^{-2m}
-
+\|\nabla^m \bar{d}_i\| \leq C_m(\varepsilon_d, d, \rho_{\max}) \cdot m! \cdot \varepsilon_d^{-2m},
 $$
 
-where $C_m = O(m!)$ (Gevrey-1) and is **k-uniform**.
+with $C_m \leq C_0 C_1^m$ (single-factorial Gevrey-1 after factoring $m!$).
 
 **Result**: The **direct proof via derivative locality** (∇_i Z_rest = 0) eliminates combinatorial explosion and establishes k-uniform Gevrey-1 bounds without assuming Z_rest(i,ℓ) is constant. The diversity pairing achieves C^∞ regularity with k-uniform bounds in **all geometries** (clustered or dispersed). □
 :::
@@ -2328,22 +2324,12 @@ where $C_m = O(m!)$ (Gevrey-1) and is **k-uniform**.
 **Conclusion**: Approximate factorization **fails in clustered geometries**. However, the **direct proof via ∇_i Z_rest = 0** works regardless of clustering, proving regularity without the approximation. The mechanisms have identical **regularity class** (C^∞, k-uniform, Gevrey-1) even if quantitative values differ by O(1) factors in clustered cases.
 :::
 
-:::{important} Scaling: Gevrey-1 with K-Uniform Constants
-The bound has the form:
-
-$$
-C_m(\varepsilon_d, d, \rho_{\max}) = m! \cdot C_{\text{Faa}}^m \cdot (\rho_{\max} \varepsilon_d^{2d})^m / Z_{\min}^m
-
-$$
-
-**Scaling properties:**
-- **Gevrey-1**: $m!$ growth in derivative order
-- **K-uniform**: No dependence on total swarm size k or N
-- **Parameter dependence**: $(\rho_{\max} \varepsilon_d^{2d})^m$ reflects local density and pairing scale
-
-**Gevrey radius**: $R_{\text{Gevrey}} \geq \varepsilon_d^{2d} / (\rho_{\max} e)$
-
-This confirms the diversity pairing mechanism is C^∞ with k-uniform Gevrey-1 bounds, consistent with the rest of the framework.
+:::{important} Scaling: Gevrey-1 with k-Uniform Constants
+The diversity pairing bounds take the Gevrey-1 form
+$\|\nabla^m \bar{d}_i\| \leq C_m \cdot m! \cdot \varepsilon_d^{-2m}$ with k-uniform
+constants $C_m$ depending only on $(\varepsilon_d, d, \rho_{\max})$ and the companion
+availability lower bound. No quantitative convergence rate between mechanisms is required
+for these derivative estimates.
 :::
 
 
@@ -2352,97 +2338,24 @@ This confirms the diversity pairing mechanism is C^∞ with k-uniform Gevrey-1 b
 :::{prf:lemma} Statistical Equivalence Preserves C^∞ Regularity
 :label: lem-greedy-ideal-equivalence
 
-The Sequential Stochastic Greedy Pairing and the Idealized Spatially-Aware Pairing produce statistically equivalent measurements:
+Let $P_{\text{greedy}}(M|S)$ be the sequential stochastic greedy pairing distribution (Definition {prf:ref}`def-greedy-pairing-algorithm` in {doc}`03_cloning`). The expected measurement
 
 $$
-\mathbb{E}_{\text{greedy}}[d_i | S] = \mathbb{E}_{\text{ideal}}[d_i | S] + O(k^{-\beta})
-
+\bar d_i^{\text{greedy}}(S) := \mathbb{E}_{M \sim P_{\text{greedy}}(\cdot|S)}[d_{\text{alg}}(i, M(i))]
 $$
 
-for some $\beta > 0$. Since both have the same analytical structure (sums over matchings with exponential weights), the C^∞ regularity of $\mathbb{E}_{\text{ideal}}$ established in Theorem {prf:ref}`thm-diversity-pairing-measurement-regularity` transfers to $\mathbb{E}_{\text{greedy}}$ with the same derivative bounds.
+is a $C^\infty$ function of the swarm state and inherits the same k-uniform Gevrey-1 derivative bounds as the idealized pairing expectation from Theorem {prf:ref}`thm-diversity-pairing-measurement-regularity`.
 :::
 
 :::{prf:proof}
 :label: proof-lem-greedy-ideal-equivalence
 
-The proof consists of two main parts:
+Each greedy pairing probability is a finite product of smooth softmax weights defined from the regularized distance $d_{\text{alg}}$ and has a denominator bounded below by companion availability (Lemma {prf:ref}`lem-companion-availability-enforcement`). Therefore the greedy expectation is a finite sum of smooth terms, and repeated product/quotient differentiation yields $C^\infty$ regularity. The same locality and telescoping estimates used in the idealized pairing analysis control the derivative bounds, so the Gevrey-1 constants are k- and N-uniform.
+:::
 
-**Part I: Statistical Equivalence** - Prove $\mathbb{E}_{\text{greedy}}[d_i | S] = \mathbb{E}_{\text{ideal}}[d_i | S] + O(k^{-\beta})$ using exponential locality.
-
-**Part II: Regularity Transfer** - Show that both expectations have identical analytical structure as rational functions of smooth exponential weights.
-
-**Part I: Statistical Equivalence via Exponential Locality**
-
-Define the truncation radius $R_k := \varepsilon_d \sqrt{2(\beta + d) \log k}$ for some $\beta > 0$ to be determined.
-
-*Lemma A (Exponential Tail Bound)*: For the total weight contribution from walkers outside $B(i,R_k)$:
-
-$$
-\sum_{j \notin B(i,R_k)} \exp\left(-\frac{d_{\text{alg}}^2(i,j)}{2\varepsilon_d^2}\right) \leq C_{\text{tail}}(\rho_{\max}, \varepsilon_d, d) \exp\left(-\frac{R_k^2}{2\varepsilon_d^2}\right) \leq C_{\text{tail}} \cdot k^{-(\beta + d)}
-
-$$
-
-**Proof**: Partition the exterior into shells and use the uniform density bound $|\mathcal{S}(i, r, dr)| \leq \rho_{\max} \cdot \text{vol}(S^{d-1}) \cdot r^{d-1} \, dr$. The total exterior weight is:
-
-$$
-W_{\text{exterior}}(R_k) \leq \int_{R_k}^{\infty} \rho_{\max} \cdot \text{vol}(S^{d-1}) \cdot r^{d-1} \cdot \exp\left(-\frac{r^2}{2\varepsilon_d^2}\right) \, dr
-
-$$
-
-Substituting $u = r^2/(2\varepsilon_d^2)$ and applying the incomplete gamma function tail bound:
-
-$$
-\int_{R_k^2/(2\varepsilon_d^2)}^{\infty} u^{(d-2)/2} e^{-u} \, du \leq \Gamma(d/2) \cdot \exp\left(-\frac{R_k^2}{2\varepsilon_d^2}\right)
-
-$$
-
-For $R_k = \varepsilon_d \sqrt{2(\beta + d) \log k}$, this yields $W_{\text{exterior}}(R_k) \leq C_{\text{tail}} \cdot k^{-(\beta + d)}$. ∎
-
-*Lemma B (Coupling on Good Event)*: Define the good event:
-
-$$
-G_R := \{\text{No walker outside } B(i, R_k) \text{ is paired with any walker in } B(i, R_k) \text{ before walker } i \text{ is paired}\}
-
-$$
-
-On the event $G_R$, the greedy and ideal marginals coincide on the local neighborhood $B(i, R_k)$, with exponentially small correction from external walkers.
-
-**Proof**: By Lemma A, external walkers contribute weight $O(k^{-(\beta + d)})$. The probability of the bad event $\bar{G}_R$ (external pre-emption) is bounded by:
-
-$$
-P(\bar{G}_R) \leq k \cdot W_{\text{exterior}}(R_k) \leq C_{\text{tail}} \cdot k^{1-(\beta + d)}
-
-$$
-
-For $\beta > 1 - d$, this vanishes as $k \to \infty$. Conditioning on $G_R$, the greedy and localized ideal mechanisms select from the same effective neighborhood with the same exponential weights, yielding:
-
-$$
-|\mathbb{E}_{\text{greedy}}[d_i | S] - \mathbb{E}_{\text{ideal}}[d_i | S]| \leq C \cdot k^{-\beta}
-
-$$
-
-for some constant $C$ depending on $(\varepsilon_d, d, \rho_{\max}, d_{\max})$ but independent of $k$. ∎
-
-**Part II: Regularity Transfer**
-
-Both $\mathbb{E}_{\text{greedy}}$ and $\mathbb{E}_{\text{ideal}}$ are rational functions of exponential weights:
-
-$$
-\mathbb{E}_{\bullet}[d_i | S] = \frac{\sum_{\text{matchings } M} \left(\prod_{(j,j') \in M} \exp(-d^2/(2\varepsilon_d^2))\right) \cdot f_i(M)}{\sum_{\text{matchings } M'} \prod_{(j,j') \in M'} \exp(-d^2/(2\varepsilon_d^2))}
-
-$$
-
-where $f_i(M)$ is a measurement value associated with the matching $M$.
-
-**Key observations**:
-1. Both expressions involve the **same exponential kernel** $\exp(-d^2/(2\varepsilon_d^2))$, which is C^∞ in walker positions
-2. Derivatives are computed via Faà di Bruno's formula and quotient rule
-3. The sequential (greedy) vs. global (ideal) structure affects only the **combinatorial structure** (which matchings are summed), not the **analytical structure** (form of derivatives)
-4. Since both are rational functions of the same smooth weights, they have **identical regularity** (C^∞ with Gevrey-1 bounds)
-
-*Lemma 5.1.2 from {doc}`03_cloning`* establishes that the greedy algorithm preserves the geometric signal structure, meaning the dominant contributions to both sums come from geometrically similar matchings.
-
-**Conclusion**: The C^∞ regularity of $\mathbb{E}_{\text{ideal}}$ established in Theorem {prf:ref}`thm-diversity-pairing-measurement-regularity` (with k-uniform Gevrey-1 bounds $\|\nabla^m \bar{d}_i\| \leq C_m \cdot m! \cdot \varepsilon_d^{-2m}$) transfers identically to $\mathbb{E}_{\text{greedy}}$. The $O(k^{-\beta})$ statistical difference is negligible for derivative bounds, which depend only on the analytical structure and the parameters $(\varepsilon_d, d, \rho_{\max})$. ∎
+:::{note}
+If a separate statistical equivalence rate $\\|\mathbb{E}_{\\text{greedy}}[d_i|S] - \\mathbb{E}_{\\text{ideal}}[d_i|S]\\| \\le C k^{-\\beta}$ is established, it can be used as an additional quantitative comparison. The regularity transfer does not require that rate.
+:::
 
 :::
 
@@ -2454,14 +2367,11 @@ For the full publication-ready proof with detailed verification, see:
 [Complete Proof: Statistical Equivalence Preserves C^∞ Regularity](proofs/proof_lem_greedy_ideal_equivalence.md)
 
 **Includes:**
-- Rigorous exponential tail bounds for exterior walker contributions
-- Detailed coupling argument on good events ($\mathbb{P}(\bar{G}_R) = O(k^{-\beta})$)
-- Complete derivation of statistical equivalence rate $O(k^{-\beta})$
-- Proof that analytical structure is identical (rational functions of exponential weights)
-- Regularity transfer theorem showing derivative bounds are preserved
-- Convergence rate estimates for practical swarm sizes
-- Explicit computation of $\beta$ dependence on dimension $d$
-- Connection to sequential stochastic greedy pairing algorithm implementation
+- Finite-sum representation of greedy expectations in terms of softmax weights
+- Companion-availability lower bounds for denominators
+- Product/quotient differentiation yielding $C^\\infty$ regularity
+- k-uniform Gevrey-1 bounds via the same locality/telescoping estimates
+- Connection to the sequential greedy pairing implementation
 :::
 
 :::{admonition} Practical Consequence
@@ -2529,9 +2439,9 @@ where $W(M) = \prod_{(i,\ell) \in M} \exp(-d_{\text{alg}}^2(i,\ell)/(2\varepsilo
    - Quotients with non-vanishing denominator → C^∞ via Faà di Bruno formula
 
 2. Both achieve k-uniformity via:
-   - Exponential localization → effective interaction radius $R_{\text{eff}} = O(\sigma \sqrt{\log k})$
+   - Exponential localization → kernel mass bound $k_{\text{eff}}^{(\sigma)} = O(\sigma^{2d})$ (mean-field)
    - Uniform density bound → sum-to-integral approximation (Lemma {prf:ref}`lem-sum-to-integral-bound-full`)
-   - Result: $\mathcal{O}(\log^d k)$ effective contributors, absorbed into k-uniform constants
+   - Result: k-uniform constants without any $k$-dependent factors
 
 ### 5.7.2 Qualitative Statistical Equivalence
 
@@ -2611,20 +2521,19 @@ computed with **either** companion selection mechanism (independent softmax or d
 **Derivative Bounds** (k-uniform Gevrey-1): For all $m \geq 0$:
 
 $$
-\|\nabla^m_{x_i, v_i} V_{\text{fit}}\|_\infty \leq C_{V,m} \cdot \max(\rho^{-m}, \varepsilon_d^{1-m}, \eta_{\min}^{1-m})
+\|\nabla^m_{x_i, v_i} V_{\text{fit}}\|_\infty \leq C_{V,m} \cdot m! \cdot \max(\rho^{-m}, \varepsilon_d^{1-m})
 
 $$
 
-where $C_{V,m} = \mathcal{O}(m!)$ (Gevrey-1) is **k-uniform** (independent of swarm size $k$ or $N$) and depends only on:
-- Algorithmic parameters: $\rho$ (localization scale), $\varepsilon_c$ (companion selection temperature), $\varepsilon_d$ (distance regularization), $\eta_{\min}$ (variance regularization—see §12.3 for derivation from quotient rule in $\sigma'_\rho = \sqrt{\sigma_\rho^2 + \eta^2}$)
+where $C_{V,m} \leq C_0 C_1^m$ is **k-uniform** (independent of swarm size $k$ or $N$) and depends only on:
+- Algorithmic parameters: $\rho$ (localization scale), $\varepsilon_c$ (companion selection temperature),
+  $\varepsilon_d$ (distance regularization), $\eta_{\min}$ (variance regularization)
 - Dimension: $d$
 - Density bound: $\rho_{\max}$ (derived from kinetic dynamics)
 
 **Mechanism Equivalence**:
 - **Regularity class**: IDENTICAL - Both mechanisms achieve C^∞ with k-uniform Gevrey-1 bounds
-- **Quantitative difference**: $\|V_{\text{fit}}^{\text{soft}} - V_{\text{fit}}^{\text{pair}}\| = O(k^{-1} \log^{d+1/2} k)$
-  - **Practical significance**: Depends on dimension $d$ (see §5.7.2 for dimension-dependent assessment)
-  - **Asymptotic**: Vanishes as $k \to \infty$
+- **Quantitative difference**: Not estimated here; any convergence rate requires separate analysis
 :::
 
 :::{prf:proof}
@@ -2634,8 +2543,10 @@ where $C_{V,m} = \mathcal{O}(m!)$ (Gevrey-1) is **k-uniform** (independent of sw
 
 1. **Softmax mechanism** (§5.5): Proven in Lemma {prf:ref}`lem-companion-measurement-derivatives-full` + propagation through stages 2-6
 2. **Diversity pairing** (§5.6): Proven in Theorem {prf:ref}`thm-diversity-pairing-measurement-regularity` + same propagation
-3. **Statistical equivalence** (§5.7.2): Theorem {prf:ref}`thm-statistical-equivalence-companion-mechanisms` establishes mechanisms differ by $O(k^{-1} \log^{d+1/2} k)$ (worst-case)
-4. **Unified conclusion**: Both achieve C^∞ with k-uniform Gevrey-1 bounds. Analytical structure is IDENTICAL. Quantitative fitness values converge as $k \to \infty$ (rate depends on $d$). $\square$
+3. **Statistical equivalence** (§5.7.2): Theorem {prf:ref}`thm-statistical-equivalence-companion-mechanisms`
+   establishes analytical equivalence without assuming a convergence rate
+4. **Unified conclusion**: Both achieve C^∞ with k-uniform Gevrey-1 bounds and identical
+   parameter dependence. $\square$
 :::
 
 :::{important} Main Takeaway
@@ -2648,8 +2559,8 @@ This enables:
 
 **Implementation considerations**:
 - **Analytical properties**: Mechanism choice does NOT affect regularity, mean-field limit, or spectral theory
-- **Quantitative fitness**: For low-dimensional problems ($d \leq 5$), mechanisms produce similar fitness for $k \geq 50$. For high-dimensional problems ($d > 10$), quantitative similarity requires empirical evaluation.
-- **Recommendation**: Choose based on algorithmic needs (simplicity vs diversity) for low-d; empirically evaluate for high-d.
+- **Quantitative fitness**: Compare empirically for the target dimension and swarm size
+- **Recommendation**: Choose based on algorithmic needs (simplicity vs diversity)
 :::
 
 ---
@@ -2880,7 +2791,11 @@ where $C_m$ is **independent of $k$** (the number of alive walkers).
 
 **Key mechanism**: Although the sum contains $k$ terms, the telescoping identity ensures that the $k$ dependence cancels in the derivative.
 
-**IMPORTANT - Scope of Telescoping**: This theorem addresses how telescoping controls the **$j$-sum** (localization weights $w_{ij}$ at scale $\rho$). It does NOT address the $\ell$-sum from softmax companion selection (scale $\varepsilon_c$). That is handled by **derivative locality** (§7.1), which eliminates $\ell$-sums before $k_{\text{eff}}^{(\varepsilon_c)} = O((\log k)^d)$ can appear. The two mechanisms operate at different scales and are both essential for k-uniformity.
+**IMPORTANT - Scope of Telescoping**: This theorem addresses how telescoping controls the **$j$-sum**
+(localization weights $w_{ij}$ at scale $\rho$). It does NOT address the $\ell$-sum from softmax
+companion selection (scale $\varepsilon_c$). That is handled by **derivative locality** (§7.1),
+which eliminates $\ell$-sums before any $k$-dependent factor can appear. The two mechanisms operate
+at different scales and are both essential for k-uniformity.
 :::
 
 :::{prf:proof}
@@ -4256,32 +4171,37 @@ is **C^∞** with respect to $(x_i, v_i)$ for all walkers $i \in \mathcal{A}$.
 Moreover, for all derivative orders $m \geq 1$:
 
 $$
-\|\nabla^m V_{\text{fit}}\|_\infty \leq C_{V,m}(d, \rho, \varepsilon_c, \eta_{\min}) \cdot \max(\rho^{-m}, \varepsilon_d^{1-m})
+\|\nabla^m V_{\text{fit}}\|_\infty \leq C_{V,m}(d, \rho, \varepsilon_c, \eta_{\min}) \cdot m! \cdot \max(\rho^{-m}, \varepsilon_d^{1-m})
 
 $$
 
-where:
+where $C_{V,m}$ is **independent of $k$, $N$, and walker index $i$** (k-uniform, N-uniform),
+and satisfies a Gevrey-1 growth bound
 
 $$
-C_{V,m}(d, \rho, \varepsilon_c, \eta_{\min}) = \mathcal{O}(m! \cdot d^m \cdot \rho^{2dm} \cdot \eta_{\min}^{-(2m+1)} \cdot L_{g,m})
-
+C_{V,m} \leq C_0 \cdot C_1^m,
 $$
 
-is **independent of $k$, $N$, and walker index $i$** (k-uniform, N-uniform).
+with $C_1$ depending only on $(d, \rho, \varepsilon_c, \eta_{\min}, \rho_{\max})$ and the
+Gevrey constant of $g_A$.
 
-**Note on parameter separation**: The $\varepsilon_d$ dependence appears exclusively in the outer $\max(\rho^{-m}, \varepsilon_d^{1-m})$ term, not in $C_{V,m}$, to avoid redundancy. This clean separation reflects that $\varepsilon_d$ controls the dominant scaling regime while $C_{V,m}$ captures combinatorial and geometric factors.
+**Note on parameter separation**: The $\varepsilon_d$ dependence appears exclusively in the
+outer $\max(\rho^{-m}, \varepsilon_d^{1-m})$ term, not in $C_{V,m}$, to avoid redundancy. This
+clean separation reflects that $\varepsilon_d$ controls the dominant scaling regime while
+$C_{V,m}$ captures combinatorial and geometric factors.
 
 For typical parameters where $\varepsilon_d \ll \varepsilon_c$ and $m \geq 2$, the $\varepsilon_d^{1-m}$ term dominates, giving:
 
 $$
-\|\nabla^m V_{\text{fit}}\|_\infty \leq C_{V,m} \cdot \varepsilon_d^{1-m}
+\|\nabla^m V_{\text{fit}}\|_\infty \leq C_{V,m} \cdot m! \cdot \varepsilon_d^{1-m}
 
 $$
 
-The constant exhibits **Gevrey-1 growth**: $C_{V,m} = \mathcal{O}(m!)$ with explicit dependence on:
-- Dimension $d$ (polynomial)
-- Regularization parameters $\varepsilon_d$, $\eta_{\min}$ (inverse scaling for uniform bounds)
-- Localization scale $\rho$ (exponential locality)
+The constant exhibits **Gevrey-1 growth**: $C_{V,m} \leq C_0 \cdot C_1^m$ with dependence on:
+- Dimension $d$
+- Regularization parameter $\eta_{\min}$ (inverse scaling for uniform bounds)
+- Localization scale $\rho$ and density bound $\rho_{\max}$
+- The Gevrey constant of $g_A$
 
 The $\varepsilon_d^{1-m}$ factor enters through companion derivatives ({prf:ref}`lem-companion-measurement-derivatives-full`), making distance regularization the bottleneck for high-order derivative bounds.
 
@@ -4326,7 +4246,7 @@ For the $k$-th term:
 3. **Localized variance**: $\|\nabla^j \sigma_\rho^2\| \leq C_{\sigma^2}(\rho, \varepsilon_d) \max(\rho^{-j}, \varepsilon_d^{1-j})$ (inherits from $\mu_\rho$ and $d_i$)
 4. **Regularized std dev**: $\|\nabla^j \sigma'_\rho\| \leq C_{\sigma'}(\rho, \varepsilon_d, \eta) \max(\rho^{-j}, \varepsilon_d^{1-j})$ (inherits from $\sigma_\rho^2$)
 5. **Z-score**: $\|\nabla^j Z_\rho\| \leq C_Z(\rho, \varepsilon_d, \eta) \max(\rho^{-j}, \varepsilon_d^{1-j})$ (quotient of functions with ε_d dependence)
-6. **Fitness potential**: $\|\nabla^m V_{\text{fit}}\| \leq C_V \max(\rho^{-m}, \varepsilon_d^{1-m})$ (composition with $g_A$)
+6. **Fitness potential**: $\|\nabla^m V_{\text{fit}}\| \leq C_{V,m} \cdot m! \cdot \max(\rho^{-m}, \varepsilon_d^{1-m})$ (composition with $g_A$)
 
 For typical parameters $\varepsilon_d \ll \rho \sim \varepsilon_c$, the $\varepsilon_d^{1-m}$ term dominates for $m \geq 2$.
 
@@ -4341,19 +4261,21 @@ The sum over partitions of $m$ into $k$ parts gives combinatorial factors of at 
 
 **Step 4: Factorial accounting.**
 
-Combining all factors:
+Combining all factors and using $L_{g,k} \leq C_g^k k!$ (Gevrey-1 for $g_A$) gives
 
 $$
 \begin{aligned}
 \|\nabla^m V_{\text{fit}}\|
 &\leq \sum_{k=1}^m L_{g,k} \cdot \|B_{m,k}\| \\
-&\leq \sum_{k=1}^m \mathcal{O}(k!) \cdot \mathcal{O}(m! \cdot \rho^{-m} \cdot \text{(other factors)}) \\
-&= \mathcal{O}(m! \cdot \rho^{-m} \cdot \rho^{2dm} \cdot \eta_{\min}^{-(2m+1)} \cdot L_{g,m})
+&\leq \sum_{k=1}^m C_g^k k! \cdot (C_Z^m m!) \cdot \max(\rho^{-m}, \varepsilon_d^{1-m}) \\
+&\leq C_0 \cdot (C_g C_Z)^m \cdot m! \cdot \max(\rho^{-m}, \varepsilon_d^{1-m}),
 \end{aligned}
-
 $$
 
-The key observation is that summing $k!$ over $k=1$ to $m$ gives $\mathcal{O}(m!)$ (dominated by the largest term), preserving **single-factorial growth**.
+where $C_Z$ collects the k-uniform constants from the $Z_\rho$ derivative bounds (including
+the $\rho$, $\rho_{\max}$, and $\eta_{\min}$ dependencies) but **not** the outer
+$\max(\rho^{-m}, \varepsilon_d^{1-m})$ factor, and $C_0$ is an absolute constant.
+The sum over $k$ is absorbed into the exponential factor, preserving **single-factorial growth**.
 
 **Step 5: k-uniformity and N-uniformity.**
 
@@ -4381,13 +4303,23 @@ $$
 
 $$
 
-where $A = C_{V,1}(\rho)$ and $B = \rho^{-1}$ depend on $\rho$ but are **independent of $k$ and $N$**.
+where $A = C_0 \cdot \max(1,\varepsilon_d)$ and
+$B = C_1 \cdot \max(\rho^{-1}, \varepsilon_d^{-1})$ depend on $(\rho, \varepsilon_d)$
+but are **independent of $k$ and $N$**.
 :::
 
 :::{prf:proof}
 :label: proof-cor-gevrey-1-fitness-potential-full
 
-From {prf:ref}`thm-main-cinf-regularity-fitness-potential-full`, $\|\nabla^m V_{\text{fit}}\| \leq C_{V,m}(\rho) \cdot m!$ where $C_{V,m} = \mathcal{O}(\rho^{-m})$. Define $A = C_{V,1}$ and $B = \max(\rho^{-1}, \varepsilon_d^{-1})$. Then $\|\nabla^m V_{\text{fit}}\| \leq A \cdot B^m \cdot m!$, which is the Gevrey-1 bound. Constants $A, B$ are k-uniform and N-uniform by the main theorem.
+From {prf:ref}`thm-main-cinf-regularity-fitness-potential-full`,
+$$
+\|\nabla^m V_{\text{fit}}\| \leq C_{V,m} \cdot m! \cdot \max(\rho^{-m}, \varepsilon_d^{1-m})
+$$
+with $C_{V,m} \leq C_0 C_1^m$. Define
+$A = C_0 \cdot \max(1,\varepsilon_d)$ and
+$B = C_1 \cdot \max(\rho^{-1}, \varepsilon_d^{-1})$. Then
+$\|\nabla^m V_{\text{fit}}\| \leq A \cdot B^m \cdot m!$, which is the Gevrey-1 bound.
+Constants $A, B$ are k-uniform and N-uniform by the main theorem.
 :::
 
 :::{dropdown} 📖 **Complete Rigorous Proof**
@@ -4424,18 +4356,23 @@ The m-th derivative bound for the fitness potential assembles contributions from
 | 4 | $\sigma_\rho^2$ (variance) | $C_{\sigma^2,m} \rho^{2dm-m}$ | **ρ** (inherited from mean + weights) |
 | 5 | $\sigma'_\rho$ (regularized std) | $C_{\sigma',m} \rho^{2dm-m} \eta_{\min}^{-(2m-1)}$ | **η_min** regularization (quotient rule) |
 | 6 | $Z_\rho$ (Z-score) | $C_{Z,m} \rho^{2dm-m} \eta_{\min}^{-(2m+1)}$ | **η_min** (quotient accumulation) |
-| 7 | $V_{\text{fit}}$ (final) | $C_{V,m} \rho^{2dm-m} \eta_{\min}^{-(2m+1)} A^m$ | **A** rescale amplitude (composition) |
+| 7 | $V_{\text{fit}}$ (final) | $C_{V,m} \cdot m! \cdot \max(\rho^{-m}, \varepsilon_d^{1-m})$ | **g_A** composition + pipeline constants |
 
-where all constants $C_{\cdot,m} = \mathcal{O}(m!)$ exhibit **Gevrey-1 growth**.
+where each derivative bound exhibits Gevrey-1 growth (a single factorial in $m$). For
+intermediate objects we often record the full coefficient $C_{\cdot,m} = \mathcal{O}(m!)$,
+while for $V_{\text{fit}}$ we factor out $m!$ and track $C_{V,m} \leq C_0 C_1^m$.
 
 **Final Constant Assembly**:
 
-$$
-C_{V,m} = \mathcal{O}\left(m! \cdot d^m \cdot \rho^{2dm} \cdot \eta_{\min}^{-(2m+1)} \cdot A^m\right)
+There exist k-uniform constants $C_0, C_1$ (depending on $d$, $\rho$, $\eta_{\min}$,
+$\rho_{\max}$, and the Gevrey constant of $g_A$) such that
 
 $$
+C_{V,m} \leq C_0 \cdot C_1^m.
+$$
 
-(The $\varepsilon_d$ dependence is kept in the outer $\max(\rho^{-m}, \varepsilon_d^{1-m})$ term, not in $C_{V,m}$, to avoid redundancy.)
+(The $\varepsilon_d$ dependence is kept in the outer $\max(\rho^{-m}, \varepsilon_d^{1-m})$
+term, not in $C_{V,m}$, to avoid redundancy.)
 
 :::{note}
 **Practical parameter guidance (non-proof).** The following guidelines are implementation heuristics and are not used in the proofs.
@@ -4537,17 +4474,12 @@ is **infinitely differentiable** (C^∞) with respect to $(x_i, v_i)$ for all wa
 **Derivative Bounds**: For all $m \geq 1$:
 
 $$
-\|\nabla^m V_{\text{fit}}\|_\infty \leq C_{\text{Gev}}^m \cdot m! \cdot \rho_{\max}^{m} \cdot \rho^{2dm} \cdot \eta_{\min}^{-(2m+1)} \cdot \max(\rho^{-m}, \varepsilon_d^{1-m})
-
+\|\nabla^m V_{\text{fit}}\|_\infty \leq C_{V,m} \cdot m! \cdot \max(\rho^{-m}, \varepsilon_d^{1-m}),
 $$
 
-where:
-- $C_{\text{Gev}}$ depends only on $d$, $\lambda_{\text{alg}}$, and the C^∞ norms of $g_A$
-- $\rho_{\max}$ is the uniform QSD density bound from Theorem {prf:ref}`assump-uniform-density-full`
-- The constants grow factorially with $m$ (Gevrey-1 classification)
-- Polynomial growth $\rho^{2dm}$ from localization and $\rho_{\max}^m$ from density bound
-- Inverse polynomial growth $\eta_{\min}^{-(2m+1)}$ from Z-score denominator regularization
-- The $\max(\rho^{-m}, \varepsilon_d^{1-m})$ term: for $m \geq 2$, typically $\varepsilon_d^{1-m}$ dominates (distance regularization bottleneck)
+with k-uniform constants $C_{V,m} \leq C_0 \cdot C_1^m$ depending only on
+$(d, \rho, \varepsilon_c, \eta_{\min}, \rho_{\max})$ and the Gevrey constant of $g_A$.
+These bounds yield Gevrey-1 (real-analytic) regularity.
 
 **Parameter dependencies exhibit**:
 - **Factorial growth** in derivative order $m$ (Gevrey-1)
@@ -4571,8 +4503,7 @@ The constant is **independent of** (uniformity properties):
 
 1. **Part I (§2-4)**: Smooth clustering framework
    - Partition of unity construction ({prf:ref}`const-mollified-partition-full`)
-   - Exponential locality ({prf:ref}`lem-softmax-tail-corrected-full`)
-   - Effective interactions ({prf:ref}`lem-effective-companion-count-corrected-full`)
+   - Mean-field kernel mass bounds ({prf:ref}`lem-mean-field-kernel-mass-bound`)
    - Derivative bounds for $d_{\text{alg}}$ ({prf:ref}`lem-dalg-derivative-bounds-full`)
 
 2. **Part II (§5-6)**: Localization weights
@@ -4689,13 +4620,13 @@ For a publication-ready bracket computation, see Lemma {prf:ref}`lem-uniqueness-
 Under the standing hypotheses used in the hypocoercive entropy analysis ({doc}`10_kl_hypocoercive`) and the mean-field/QSD framework ({doc}`09_propagation_chaos`), the companion-dependent Geometric Gas satisfies a **Logarithmic Sobolev Inequality** with constant $\alpha > 0$:
 
 $$
-\text{Ent}_\mu(\rho) \leq \frac{1}{\alpha} \mathcal{E}(\rho, \rho)
+\text{Ent}_\mu(f^2) \leq \frac{1}{\alpha} \mathcal{E}(f, f)
 
 $$
 
-where:
-- $\text{Ent}_\mu(\rho) = \int \rho \log(\rho/\mu) d\mu$ (relative entropy)
-- $\mathcal{E}(\rho, \rho) = -\int \rho \mathcal{L}_{\text{geo}} \log \rho \, d\mu$ (Dirichlet form)
+for all smooth $f$ with $\int f^2 d\mu = 1$, where:
+- $\text{Ent}_\mu(f^2) = \int f^2 \log f^2 \, d\mu$ (relative entropy)
+- $\mathcal{E}(f, f) = -\int f \mathcal{L}_{\text{geo}} f \, d\mu$ (Dirichlet form)
 
 The LSI constant $\alpha$ is **independent of $N$ and $k$** (N-uniform).
 :::
@@ -4946,7 +4877,9 @@ This document establishes:
 
 1. **C^∞ Regularity**: The complete fitness potential $V_{\text{fit}} = g_A(Z_\rho(\mu_\rho, \sigma^2_\rho))$ with companion-dependent measurements is infinitely differentiable ({prf:ref}`thm-main-complete-cinf-geometric-gas-full`)
 
-2. **Gevrey-1 Bounds**: Derivative bounds scale as $C_{V,m} \cdot m! \cdot \rho^{-m}$ (real-analytic, {prf:ref}`cor-gevrey-1-fitness-potential-full`)
+2. **Gevrey-1 Bounds**: Derivative bounds scale as
+   $C_{V,m} \cdot m! \cdot \max(\rho^{-m}, \varepsilon_d^{1-m})$ with k-uniform
+   $C_{V,m} \leq C_0 C_1^m$ (real-analytic, {prf:ref}`cor-gevrey-1-fitness-potential-full`)
 
 3. **N-Uniformity**: All bounds independent of total swarm size $N$ and alive count $k$ through:
    - Smooth clustering with partition of unity

@@ -124,13 +124,21 @@ $$
 
 where $\mathbf{A}$ is the spatial gauge potential.
 
+**IA edges (attribution):**
+
+$$
+U_{\mathrm{IA}}(e_i \to e_j) = \exp\left(i \phi_{\mathrm{IA}}(e_i \to e_j)\right) \in U(1)
+$$
+
+where $\phi_{\mathrm{IA}}$ is the attribution phase stored on IA edges (see {prf:ref}`def-fractal-set-gauge-connection`).
+
 **Gauge transformation:** Under $\Omega : \mathcal{E} \to U(1)$:
 
 $$
 U(e_i, e_j) \mapsto \Omega(e_i) \, U(e_i, e_j) \, \Omega(e_j)^{-1}
 $$
 
-Equivalently, $U(e) = \exp\left(i q \int_e A_\mu \, dx^\mu\right)$ with sign conventions absorbed into $A_\mu$.
+Equivalently, $U(e) = \exp\left(i q \int_e A_\mu \, dx^\mu\right)$ with sign conventions absorbed into $A_\mu$; for IA edges we use the stored attribution phase $\phi_{\mathrm{IA}}$.
 :::
 
 :::{prf:definition} SU(N) Gauge Field (Yang-Mills)
@@ -155,7 +163,7 @@ where:
 
 The smallest closed loop in the Fractal Set is a triangle (IG + CST + IA). The figure below
 makes the three edge types and their transport operators explicit; this is the atomic Wilson loop
-that larger loops factorize into.
+that larger loops factorize into (see {prf:ref}`def-fractal-set-wilson-loop`).
 
 :::{figure} figures/interaction-triangle-transport.svg
 :alt: Interaction triangle with CST, IG, and IA edges and Wilson loop.
@@ -175,7 +183,7 @@ Now we come to the question: how do you know if there is a "real" gauge field pr
 
 Here is the key insight. Parallel transport around a closed loop should bring you back to where you started. If I carry my compass from point A to B to C and back to A, the needle should still point the same direction it started. If it does not—if the needle has rotated by some angle $\Phi$—then there is real physics happening inside that loop. There is a magnetic field (or its generalization) threading through the loop.
 
-This is what the **plaquette holonomy** measures. A plaquette is the smallest closed loop in our discrete structure—think of it as a tiny square (or in our case, a small region bounded by CST and IG edges). You multiply together all the parallel transport operators around the loop. For $U(1)$, you get a phase $e^{i q \Phi}$. That phase is the discrete analog of the magnetic flux through the plaquette (weighted by charge). It is the field strength tensor encoded in discrete form.
+This is what the **plaquette holonomy** measures. A plaquette is the smallest **4-cycle** in the Fractal Set, obtained by gluing two interaction triangles along their IG edge. The boundary runs along CST and IA edges; the shared IG edge is internal and cancels. You multiply together all the parallel transport operators around this hourglass boundary. For $U(1)$, you get a phase $e^{i q \Phi}$. That phase is the discrete analog of the magnetic flux through the plaquette (weighted by charge). It is the field strength tensor encoded in discrete form.
 
 The wonderful thing is that this is gauge-invariant. You can change your reference directions at each node (a gauge transformation), and the phases on individual edges will change—but the product around any closed loop stays the same. The physics is in the loops, not in the individual edges.
 :::
@@ -183,7 +191,7 @@ The wonderful thing is that this is gauge-invariant. You can change your referen
 :::{prf:definition} Plaquette Holonomy (Field Strength)
 :label: def-plaquette-holonomy
 
-For a plaquette $P = (e_0, e_1, e_2, e_3)$ with alternating CST/IG edges (see {prf:ref}`def-fractal-set-plaquette`), the **discrete field strength** is the ordered product around the loop:
+For a plaquette $P = (e_0, e_1, e_2, e_3)$ with two CST and two IA edges on the boundary (see {prf:ref}`def-fractal-set-plaquette`), the **discrete field strength** is the ordered product around the loop:
 
 $$
 U[P] = U(e_0, e_1) \, U(e_1, e_2) \, U(e_2, e_3) \, U(e_3, e_0)
@@ -705,49 +713,99 @@ Here is a question that should bother you: how do we know that the discrete Lapl
 
 This is not a trivial question. You could imagine a graph that looks locally like a lattice but has some global pathology that makes its Laplacian behave completely differently from the continuum version. The Fractal Set is not a regular lattice—it is generated dynamically by the algorithm, with edge densities and geometries that vary across the structure.
 
-The reassuring answer is that there is a well-developed mathematical theory of graph Laplacian convergence {cite}`belkin2008foundation`. Under suitable regularity conditions (the graph samples a manifold densely and uniformly enough, the edge weights encode distances correctly), the graph Laplacian provably converges to the Laplace-Beltrami operator.
+The reassuring answer is that there is a well-developed mathematical theory of graph Laplacian convergence {cite}`belkin2008foundation`. Under suitable regularity conditions (manifold sampling, reach, bandwidth scaling; see the permits cited in {prf:ref}`thm-laplacian-convergence`), the unnormalized Laplacian converges to a density-weighted operator, and a density-corrected Laplacian converges to the Laplace-Beltrami operator.
 
 The Laplace-Beltrami operator $\Delta_g = \frac{1}{\sqrt{g}}\partial_i(\sqrt{g}g^{ij}\partial_j)$ is the natural generalization of the Laplacian to curved Riemannian manifolds. It encodes how the geometry affects diffusion and wave propagation. The fact that the graph Laplacian converges to it means that our discrete structure correctly captures the curvature of the emergent spacetime.
 
 This is the mathematical foundation that lets us trust lattice field theory. The discrete operators are not just approximations—they are faithful representatives of the continuum physics.
 :::
 
-:::{prf:theorem} Graph Laplacian Converges to Continuum
+:::{prf:theorem} Graph Laplacian Convergence (Density-Aware)
 :label: thm-laplacian-convergence
 
-The discrete Laplacian on the Fractal Set converges to the continuum Laplace-Beltrami operator.
+Let the empirical measure of Fractal Set nodes converge to $\mu_\infty = \rho \, d\mathrm{vol}_g$, where
+$\rho$ is the sampling density with respect to the Riemannian volume form $d\mathrm{vol}_g$.
+In the Fractal Set, $\rho$ is the adaptive QSD density from {prf:ref}`thm-fractal-adaptive-sprinkling`
+(see {prf:ref}`thm-decorated-gibbs` for the QSD shape).
 
-**Definition**: The unnormalized graph Laplacian is:
+**Definition (unnormalized Laplacian)**:
 
 $$
 (\Delta_{\mathcal{F}} \phi)(e) := \sum_{e' \sim e} w_{ee'} (\phi(e') - \phi(e))
 $$
-where $w_{ee'} = d_g(x_e, x_{e'})^{-2}$ are distance-weighted edge weights encoding local geometry.
+where $w_{ee'} := K_\varepsilon(d_g(x_e, x_{e'})^2)$ are kernel weights encoding local geometry (e.g.,
+compactly supported $C^2$ kernels). The $d_g^{-2}$ form is a shorthand for this localized scaling.
 
-**Kernel scaling**: For rigorous convergence {cite}`belkin2008foundation`, one typically uses localized kernel weights with bandwidth $\varepsilon_N \to 0$ and $N \varepsilon_N^{D/2} \to \infty$ (often with density normalization). The $d_g^{-2}$ form here is a shorthand for such localized scaling on the Fractal Set.
+**Kernel scaling**: For rigorous convergence {cite}`belkin2008foundation`, one typically uses localized kernel weights
+with bandwidth $\varepsilon_N \to 0$ and $N \varepsilon_N^{D/2} \to \infty$. The $d_g^{-2}$ form here is a shorthand
+for such localized scaling on the Fractal Set.
 
-**Convergence (Fractal Set)**: Under QSD sampling and the emergent-continuum permits, the graph Laplacian converges:
+**Convergence (density-weighted)**: Under QSD sampling and the emergent-continuum permits, the unnormalized
+graph Laplacian converges in expectation to the weighted Laplacian
 
 $$
-\mathbb{E}[(\Delta_{\mathcal{F}} \phi)(e_i)] \xrightarrow{N \to \infty} (\Delta_g \phi)(x_i)
+\mathcal{L}_\rho \phi := \frac{1}{\rho} \nabla \cdot (\rho \nabla \phi)
+= \Delta_g \phi + \langle \nabla \log \rho, \nabla \phi \rangle_g.
 $$
-where $\Delta_g = \frac{1}{\sqrt{\det g}} \partial_i (\sqrt{\det g} \, g^{ij} \partial_j)$ is the Laplace-Beltrami operator.
+
+**Uniform case**: If $\rho$ is locally constant (uniform sprinkling), then $\mathcal{L}_\rho = \Delta_g$.
 
 :::{prf:proof}
 **Step 1 (Empirical measure convergence).**
-By propagation of chaos ({prf:ref}`thm-propagation-chaos-qsd`), the empirical measure of Fractal Set nodes converges to
-the QSD limit $\mu_\infty$, so graph averages converge to continuum integrals for bounded continuous test functions.
+By propagation of chaos ({prf:ref}`thm-propagation-chaos-qsd`) and the N-uniform LSI
+({prf:ref}`thm-n-uniform-lsi-exchangeable`), the empirical measure of Fractal Set nodes converges to
+the QSD limit $\mu_\infty$ with concentration, so graph averages converge to continuum integrals for bounded
+continuous test functions.
 
 **Step 2 (Dirichlet-form convergence).**
 The emergent-continuum metatheorem ({prf:ref}`mt:emergent-continuum`) and continuum injection
-({prf:ref}`mt:continuum-injection`) identify the graph Dirichlet forms with the continuum Dirichlet form on $(M,g)$.
+({prf:ref}`mt:continuum-injection`) identify the graph Dirichlet forms with the continuum weighted Dirichlet form on
+$(M,g,\rho)$.
 The required permits $C_\mu$, $\mathrm{Cap}_H$, $\mathrm{LS}_\sigma$, and $\mathrm{Rep}_K$ are certified in
-{doc}`../1_the_algorithm/02_fractal_gas_latent`, so the hypotheses are discharged inside Volume 3.
+{doc}`../1_the_algorithm/02_fractal_gas_latent`; in particular, $\mathrm{LS}_\sigma$ follows from the LSI
+thin-permit lift ({prf:ref}`thm-lsi-thin-permit`) using the N-uniform LSI.
 
 **Step 3 (Cheeger gradient).**
 The Cheeger-gradient isomorphism ({prf:ref}`mt:cheeger-gradient`) upgrades energy convergence to gradient convergence,
-yielding $\Delta_{\mathcal{F}} \to \Delta_g$ in the continuum limit. $\square$
+yielding $\Delta_{\mathcal{F}} \to \mathcal{L}_\rho$ in the continuum limit. $\square$
 :::
+:::
+
+:::{prf:definition} Density-Corrected Graph Laplacian
+:label: def-density-corrected-laplacian
+
+Define the local density estimator and normalized weights:
+
+$$
+q_e := \sum_{e' \sim e} w_{ee'}, \quad \tilde{w}_{ee'} := \frac{w_{ee'}}{q_e \, q_{e'}}.
+$$
+
+The **density-corrected Laplacian** is
+
+$$
+(\Delta_{\mathcal{F}}^{\mathrm{corr}} \phi)(e) := \sum_{e' \sim e} \tilde{w}_{ee'} (\phi(e') - \phi(e)).
+$$
+:::
+
+:::{prf:proposition} Density-Corrected Continuum Limit
+:label: prop-density-corrected-limit
+
+Under the same sampling and bandwidth assumptions as above, the corrected operator satisfies
+
+$$
+\mathbb{E}[(\Delta_{\mathcal{F}}^{\mathrm{corr}} \phi)(e_i)] \xrightarrow{N \to \infty} c_\varepsilon \, (\Delta_g \phi)(x_i),
+$$
+
+where $c_\varepsilon$ is a scalar normalization depending on the kernel bandwidth that can be absorbed by rescaling
+time in the continuum PDE.
+:::
+
+:::{admonition} Geometry Note
+:class: note
+
+The density correction removes sampling bias without assuming conformal flatness. The geometry enters through
+$d_g$ and the QSD density $\rho$ (from {prf:ref}`thm-fractal-adaptive-sprinkling`), so the corrected operator
+targets $\Delta_g$ even when the Weyl tensor is nonzero.
 :::
 
 
@@ -827,7 +885,7 @@ This is either a very remarkable coincidence, or we have stumbled onto something
 | Fermionic structure | Derived | From cloning antisymmetry (exact when $V_i \approx V_j$) |
 | Temporal operator $D_t$ | Proven | Via QSD Euclidean measure + OS reconstruction (reflection positivity) |
 | Dirac limit | Proven | Via Clifford algebra isomorphism ({prf:ref}`thm-sm-dirac-isomorphism`) |
-| Scalar fields | Defined | Graph Laplacian (convergence requires proof) |
+| Scalar fields | Defined | Graph Laplacian (density-aware limit proven here) |
 
 **Key Innovation**: The Fractal Set provides a **physically motivated, dynamics-generated lattice** where gauge fields and fermionic matter emerge naturally from the optimization algorithm.
 
