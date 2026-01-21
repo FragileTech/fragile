@@ -101,7 +101,10 @@ class TopoEncoderConfig:
     soft_equiv_hidden_dim: int = 64
     soft_equiv_use_spectral_norm: bool = True
     soft_equiv_zero_self_mixing: bool = False
+    soft_equiv_soft_assign: bool = True
+    soft_equiv_temperature: float = 1.0
     soft_equiv_l1_weight: float = 0.0
+    soft_equiv_log_ratio_weight: float = 0.0
     vision_preproc: bool = False
     vision_in_channels: int = 0
     vision_height: int = 0
@@ -217,6 +220,7 @@ class TopoEncoderConfig:
     # Benchmark control
     disable_ae: bool = False  # Skip VanillaAE baseline
     disable_vq: bool = False  # Skip StandardVQ baseline
+    baseline_vision_preproc: bool = False
     baseline_attn: bool = False
     baseline_attn_tokens: int = 4
     baseline_attn_dim: int = 32
@@ -272,6 +276,10 @@ def compute_matching_hidden_dim(
     attn_dim: int = 32,
     attn_heads: int = 4,
     attn_dropout: float = 0.0,
+    vision_preproc: bool = False,
+    vision_in_channels: int = 0,
+    vision_height: int = 0,
+    vision_width: int = 0,
 ) -> int:
     """Compute hidden_dim for StandardVQ to match target parameter count.
 
@@ -280,7 +288,7 @@ def compute_matching_hidden_dim(
 
     Using quadratic formula: h = (-12 + sqrt(144 + 8*(target - offset))) / 4
     """
-    if not use_attention:
+    if not use_attention and not vision_preproc:
         offset = 5 + num_codes * latent_dim
         # Adjust for input_dim: encoder.0 has input_dim*h, decoder.4 has h*input_dim
         # Full formula: 2h² + (input_dim + 2 + 2 + input_dim + 2 + 2)h + ...
@@ -301,22 +309,30 @@ def compute_matching_hidden_dim(
                 hidden_dim=hidden_dim,
                 latent_dim=latent_dim,
                 num_codes=num_codes,
-                use_attention=True,
+                use_attention=use_attention,
                 attn_tokens=attn_tokens,
                 attn_dim=attn_dim,
                 attn_heads=attn_heads,
                 attn_dropout=attn_dropout,
+                vision_preproc=vision_preproc,
+                vision_in_channels=vision_in_channels,
+                vision_height=vision_height,
+                vision_width=vision_width,
             )
         else:
             model = VanillaAE(
                 input_dim=input_dim,
                 hidden_dim=hidden_dim,
                 latent_dim=latent_dim,
-                use_attention=True,
+                use_attention=use_attention,
                 attn_tokens=attn_tokens,
                 attn_dim=attn_dim,
                 attn_heads=attn_heads,
                 attn_dropout=attn_dropout,
+                vision_preproc=vision_preproc,
+                vision_in_channels=vision_in_channels,
+                vision_height=vision_height,
+                vision_width=vision_width,
             )
         return count_parameters(model)
 
@@ -686,11 +702,15 @@ def save_benchmarks(
             "input_dim": config.input_dim,
             "latent_dim": config.latent_dim,
             "num_codes_standard": config.num_codes_standard,
+            "baseline_vision_preproc": config.baseline_vision_preproc,
             "baseline_attn": config.baseline_attn,
             "baseline_attn_tokens": config.baseline_attn_tokens,
             "baseline_attn_dim": config.baseline_attn_dim,
             "baseline_attn_heads": config.baseline_attn_heads,
             "baseline_attn_dropout": config.baseline_attn_dropout,
+            "vision_in_channels": config.vision_in_channels,
+            "vision_height": config.vision_height,
+            "vision_width": config.vision_width,
         },
         "state": {
             "std": _state_dict_cpu(model_std),
@@ -720,10 +740,22 @@ def load_benchmarks(path: str) -> dict:
 def _benchmarks_compatible(bench_config: dict, config: TopoEncoderConfig) -> bool:
     if not bench_config:
         return False
+    baseline_vision_preproc = bool(bench_config.get("baseline_vision_preproc", False))
+    if baseline_vision_preproc != bool(config.baseline_vision_preproc):
+        return False
+    if baseline_vision_preproc:
+        if int(bench_config.get("vision_in_channels", -1)) != int(config.vision_in_channels):
+            return False
+        if int(bench_config.get("vision_height", -1)) != int(config.vision_height):
+            return False
+        if int(bench_config.get("vision_width", -1)) != int(config.vision_width):
+            return False
     return (
         int(bench_config.get("input_dim", -1)) == int(config.input_dim)
         and int(bench_config.get("latent_dim", -1)) == int(config.latent_dim)
         and int(bench_config.get("num_codes_standard", -1)) == int(config.num_codes_standard)
+        and bool(bench_config.get("baseline_vision_preproc", False))
+        == bool(config.baseline_vision_preproc)
         and bool(bench_config.get("baseline_attn", False)) == bool(config.baseline_attn)
         and int(bench_config.get("baseline_attn_tokens", -1))
         == int(config.baseline_attn_tokens)
@@ -764,6 +796,7 @@ def _init_loss_components() -> dict[str, list[float]]:
         "chart_center_sep": [],
         "residual_scale": [],
         "soft_equiv_l1": [],
+        "soft_equiv_log_ratio": [],
         # Tier 2 losses
         "window": [],
         "disentangle": [],
@@ -810,7 +843,7 @@ def _init_info_metrics() -> dict[str, list[float]]:
 
 
 def _maybe_init_vision_shape(config: TopoEncoderConfig, dataset_name: str) -> None:
-    if not config.vision_preproc:
+    if not (config.vision_preproc or config.baseline_vision_preproc):
         return
     if config.vision_in_channels <= 0 or config.vision_height <= 0 or config.vision_width <= 0:
         if config.dataset == "cifar10" or dataset_name == "CIFAR-10":
@@ -1048,6 +1081,8 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
         soft_equiv_hidden_dim=config.soft_equiv_hidden_dim,
         soft_equiv_use_spectral_norm=config.soft_equiv_use_spectral_norm,
         soft_equiv_zero_self_mixing=config.soft_equiv_zero_self_mixing,
+        soft_equiv_soft_assign=config.soft_equiv_soft_assign,
+        soft_equiv_temperature=config.soft_equiv_temperature,
     )
     if resume_state is not None and resume_state.get("atlas") is not None:
         model_atlas.load_state_dict(resume_state["atlas"])
@@ -1080,6 +1115,10 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
                 attn_dim=config.baseline_attn_dim,
                 attn_heads=config.baseline_attn_heads,
                 attn_dropout=config.baseline_attn_dropout,
+                vision_preproc=config.baseline_vision_preproc,
+                vision_in_channels=config.vision_in_channels,
+                vision_height=config.vision_height,
+                vision_width=config.vision_width,
             )
         model_std = StandardVQ(
             input_dim=config.input_dim,
@@ -1091,6 +1130,10 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
             attn_dim=config.baseline_attn_dim,
             attn_heads=config.baseline_attn_heads,
             attn_dropout=config.baseline_attn_dropout,
+            vision_preproc=config.baseline_vision_preproc,
+            vision_in_channels=config.vision_in_channels,
+            vision_height=config.vision_height,
+            vision_width=config.vision_width,
         )
         if benchmarks_std_state is not None:
             model_std.load_state_dict(benchmarks_std_state)
@@ -1122,6 +1165,10 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
                 attn_dim=config.baseline_attn_dim,
                 attn_heads=config.baseline_attn_heads,
                 attn_dropout=config.baseline_attn_dropout,
+                vision_preproc=config.baseline_vision_preproc,
+                vision_in_channels=config.vision_in_channels,
+                vision_height=config.vision_height,
+                vision_width=config.vision_width,
             )
         model_ae = VanillaAE(
             input_dim=config.input_dim,
@@ -1132,6 +1179,10 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
             attn_dim=config.baseline_attn_dim,
             attn_heads=config.baseline_attn_heads,
             attn_dropout=config.baseline_attn_dropout,
+            vision_preproc=config.baseline_vision_preproc,
+            vision_in_channels=config.vision_in_channels,
+            vision_height=config.vision_height,
+            vision_width=config.vision_width,
         )
         if benchmarks_ae_state is not None:
             model_ae.load_state_dict(benchmarks_ae_state)
@@ -1546,6 +1597,9 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
             soft_equiv_l1 = torch.tensor(0.0, device=device)
             if config.soft_equiv_metric:
                 soft_equiv_l1 = model_atlas.encoder.soft_equiv_l1_loss()
+            soft_equiv_log_ratio = torch.tensor(0.0, device=device)
+            if config.soft_equiv_metric and config.soft_equiv_log_ratio_weight > 0:
+                soft_equiv_log_ratio = model_atlas.encoder.soft_equiv_log_ratio_loss()
 
             # Tier 2 losses (medium overhead)
             window_loss, window_info = compute_window_loss(
@@ -1657,6 +1711,7 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
                 + config.chart_center_sep_weight * chart_center_sep_loss
                 + config.residual_scale_weight * residual_scale_loss
                 + config.soft_equiv_l1_weight * soft_equiv_l1
+                + config.soft_equiv_log_ratio_weight * soft_equiv_log_ratio
                 # Tier 2
                 + config.window_weight * window_loss
                 + config.disentangle_weight * dis_loss
@@ -2115,6 +2170,7 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
             epoch_losses["chart_center_sep"] += chart_center_sep_loss.item()
             epoch_losses["residual_scale"] += residual_scale_loss.item()
             epoch_losses["soft_equiv_l1"] += soft_equiv_l1.item()
+            epoch_losses["soft_equiv_log_ratio"] += soft_equiv_log_ratio.item()
             epoch_losses["window"] += window_loss.item()
             epoch_losses["disentangle"] += dis_loss.item()
             epoch_losses["orthogonality"] += orth_loss.item()
@@ -2318,6 +2374,7 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
             avg_chart_center_sep = loss_components["chart_center_sep"][-1]
             avg_residual_scale = loss_components["residual_scale"][-1]
             avg_soft_equiv_l1 = loss_components["soft_equiv_l1"][-1]
+            avg_soft_equiv_log_ratio = loss_components["soft_equiv_log_ratio"][-1]
             avg_window = loss_components["window"][-1]
             avg_disent = loss_components["disentangle"][-1]
             avg_orth = loss_components["orthogonality"][-1]
@@ -2374,7 +2431,8 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
                 f"center={avg_codebook_center:.3f} "
                 f"chart_sep={avg_chart_center_sep:.3f} "
                 f"res_scale={avg_residual_scale:.3f} "
-                f"soft_eq={avg_soft_equiv_l1:.3f}"
+                f"soft_eq_l1={avg_soft_equiv_l1:.3f} "
+                f"soft_eq_ratio={avg_soft_equiv_log_ratio:.3f}"
             )
             print(
                 f"  Tier2: window={avg_window:.3f} "
@@ -2505,6 +2563,7 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
                     "loss/chart_center_sep": avg_chart_center_sep,
                     "loss/residual_scale": avg_residual_scale,
                     "loss/soft_equiv_l1": avg_soft_equiv_l1,
+                    "loss/soft_equiv_log_ratio": avg_soft_equiv_log_ratio,
                     "loss/window": avg_window,
                     "loss/disentangle": avg_disent,
                     "loss/orthogonality": avg_orth,
@@ -3057,10 +3116,31 @@ def main():
         help="Zero self-mixing in soft equivariant layer (default: False)",
     )
     parser.add_argument(
+        "--soft_equiv_soft_assign",
+        type=lambda x: x.lower() == "true",
+        default=True,
+        help=(
+            "Use straight-through soft assignment for soft equivariant metric "
+            "(default: True)"
+        ),
+    )
+    parser.add_argument(
+        "--soft_equiv_temperature",
+        type=float,
+        default=1.0,
+        help="Soft assignment temperature for soft equivariant metric (default: 1.0)",
+    )
+    parser.add_argument(
         "--soft_equiv_l1_weight",
         type=float,
         default=0.0,
         help="L1 weight for soft equivariant mixing (default: 0.0)",
+    )
+    parser.add_argument(
+        "--soft_equiv_log_ratio_weight",
+        type=float,
+        default=0.0,
+        help="Log-ratio weight for soft equivariant metric (default: 0.0)",
     )
     parser.add_argument(
         "--window_eps_ground",
@@ -3517,6 +3597,11 @@ def main():
         help="Disable StandardVQ baseline (faster training)",
     )
     parser.add_argument(
+        "--baseline_vision_preproc",
+        action="store_true",
+        help="Enable standard vision backbone in baselines",
+    )
+    parser.add_argument(
         "--baseline_attn",
         action="store_true",
         help="Enable attention blocks in StandardVQ/VanillaAE baselines",
@@ -3628,7 +3713,11 @@ def main():
         config.soft_equiv_hidden_dim = args.soft_equiv_hidden_dim
         config.soft_equiv_use_spectral_norm = args.soft_equiv_use_spectral_norm
         config.soft_equiv_zero_self_mixing = args.soft_equiv_zero_self_mixing
+        config.soft_equiv_soft_assign = args.soft_equiv_soft_assign
+        config.soft_equiv_temperature = args.soft_equiv_temperature
         config.soft_equiv_l1_weight = args.soft_equiv_l1_weight
+        config.soft_equiv_log_ratio_weight = args.soft_equiv_log_ratio_weight
+        config.baseline_vision_preproc = args.baseline_vision_preproc
         config.baseline_attn = args.baseline_attn
         config.baseline_attn_tokens = args.baseline_attn_tokens
         config.baseline_attn_dim = args.baseline_attn_dim
@@ -3672,7 +3761,11 @@ def main():
             soft_equiv_hidden_dim=args.soft_equiv_hidden_dim,
             soft_equiv_use_spectral_norm=args.soft_equiv_use_spectral_norm,
             soft_equiv_zero_self_mixing=args.soft_equiv_zero_self_mixing,
+            soft_equiv_soft_assign=args.soft_equiv_soft_assign,
+            soft_equiv_temperature=args.soft_equiv_temperature,
             soft_equiv_l1_weight=args.soft_equiv_l1_weight,
+            soft_equiv_log_ratio_weight=args.soft_equiv_log_ratio_weight,
+            baseline_vision_preproc=args.baseline_vision_preproc,
             baseline_attn=args.baseline_attn,
             baseline_attn_tokens=args.baseline_attn_tokens,
             baseline_attn_dim=args.baseline_attn_dim,

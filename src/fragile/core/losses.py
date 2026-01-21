@@ -336,9 +336,11 @@ def compute_orthogonality_loss(
                 continue
             if not torch.isfinite(svals).all():
                 continue
+            if svals.numel() < 2:
+                continue
             svals = svals.clamp(min=eps)
             log_s = torch.log(svals)
-            loss = loss + log_s.var()
+            loss = loss + log_s.var(unbiased=False)
             n_layers += 1
 
     return loss / max(n_layers, 1)

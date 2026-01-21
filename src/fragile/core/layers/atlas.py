@@ -8,7 +8,7 @@ import torch.nn.functional as F
 
 from fragile.core.layers.primitives import IsotropicBlock, NormGatedGELU, SpectralLinear
 from fragile.core.layers.ugn import SoftEquivariantLayer
-from fragile.core.layers.vision import CovariantRetina
+from fragile.core.layers.vision import CovariantRetina, StandardResNetBackbone
 
 
 class TokenSelfAttentionBlock(nn.Module):
@@ -48,28 +48,43 @@ class TokenSelfAttentionBlock(nn.Module):
         return self.out_proj(flat) + x
 
 
-class StandardVQ(nn.Module):
-    """Standard Vector-Quantized VAE baseline."""
+class _BaselineEncoder(nn.Module):
+    """Baseline encoder with optional vision backbone."""
 
     def __init__(
         self,
-        input_dim: int = 2,
-        hidden_dim: int = 32,
-        latent_dim: int = 2,
-        num_codes: int = 64,
-        use_attention: bool = False,
-        attn_tokens: int = 4,
-        attn_dim: int = 32,
-        attn_heads: int = 4,
-        attn_dropout: float = 0.0,
+        input_dim: int,
+        hidden_dim: int,
+        latent_dim: int,
+        use_attention: bool,
+        attn_tokens: int,
+        attn_dim: int,
+        attn_heads: int,
+        attn_dropout: float,
+        vision_preproc: bool,
+        vision_in_channels: int,
+        vision_height: int,
+        vision_width: int,
     ) -> None:
         super().__init__()
-        self.num_codes = num_codes
+        self.vision_shape = None
+        self.vision_preproc = None
+        if vision_preproc:
+            if vision_in_channels <= 0 or vision_height <= 0 or vision_width <= 0:
+                raise ValueError("vision_preproc requires positive vision_* dimensions.")
+            self.vision_shape = (vision_in_channels, vision_height, vision_width)
+            self.vision_preproc = StandardResNetBackbone(
+                in_channels=vision_in_channels,
+                out_dim=hidden_dim,
+            )
+            self.feature_extractor = None
+        else:
+            self.feature_extractor = nn.Sequential(
+                nn.Linear(input_dim, hidden_dim),
+                nn.GELU(),
+            )
 
-        encoder_layers: list[nn.Module] = [
-            nn.Linear(input_dim, hidden_dim),
-            nn.GELU(),
-        ]
+        encoder_layers: list[nn.Module] = []
         if use_attention:
             encoder_layers.append(
                 TokenSelfAttentionBlock(
@@ -87,7 +102,71 @@ class StandardVQ(nn.Module):
                 nn.Linear(hidden_dim, latent_dim),
             ]
         )
-        self.encoder = nn.Sequential(*encoder_layers)
+        self.head = nn.Sequential(*encoder_layers)
+
+    def _encode_features(self, x: torch.Tensor) -> torch.Tensor:
+        if self.vision_preproc is None:
+            return self.feature_extractor(x)
+        if self.vision_shape is None:
+            raise RuntimeError("vision_preproc is enabled but vision_shape is unset.")
+        channels, height, width = self.vision_shape
+        if x.dim() == 2:
+            expected = channels * height * width
+            if x.shape[1] != expected:
+                raise ValueError(
+                    f"Expected flattened input dim {expected}, got {x.shape[1]}."
+                )
+            x = x.view(x.shape[0], channels, height, width)
+        elif x.dim() == 4:
+            if x.shape[1] != channels or x.shape[2] != height or x.shape[3] != width:
+                raise ValueError(
+                    "Input tensor shape does not match vision_preproc configuration."
+                )
+        else:
+            raise ValueError("vision_preproc expects input shape [B, D] or [B, C, H, W].")
+        return self.vision_preproc(x)
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        features = self._encode_features(x)
+        return self.head(features)
+
+
+class StandardVQ(nn.Module):
+    """Standard Vector-Quantized VAE baseline."""
+
+    def __init__(
+        self,
+        input_dim: int = 2,
+        hidden_dim: int = 32,
+        latent_dim: int = 2,
+        num_codes: int = 64,
+        use_attention: bool = False,
+        attn_tokens: int = 4,
+        attn_dim: int = 32,
+        attn_heads: int = 4,
+        attn_dropout: float = 0.0,
+        vision_preproc: bool = False,
+        vision_in_channels: int = 0,
+        vision_height: int = 0,
+        vision_width: int = 0,
+    ) -> None:
+        super().__init__()
+        self.num_codes = num_codes
+
+        self.encoder = _BaselineEncoder(
+            input_dim=input_dim,
+            hidden_dim=hidden_dim,
+            latent_dim=latent_dim,
+            use_attention=use_attention,
+            attn_tokens=attn_tokens,
+            attn_dim=attn_dim,
+            attn_heads=attn_heads,
+            attn_dropout=attn_dropout,
+            vision_preproc=vision_preproc,
+            vision_in_channels=vision_in_channels,
+            vision_height=vision_height,
+            vision_width=vision_width,
+        )
 
         self.embeddings = nn.Embedding(num_codes, latent_dim)
         nn.init.uniform_(self.embeddings.weight, -1.0 / num_codes, 1.0 / num_codes)
@@ -174,30 +253,26 @@ class VanillaAE(nn.Module):
         attn_dim: int = 32,
         attn_heads: int = 4,
         attn_dropout: float = 0.0,
+        vision_preproc: bool = False,
+        vision_in_channels: int = 0,
+        vision_height: int = 0,
+        vision_width: int = 0,
     ) -> None:
         super().__init__()
-        encoder_layers: list[nn.Module] = [
-            nn.Linear(input_dim, hidden_dim),
-            nn.GELU(),
-        ]
-        if use_attention:
-            encoder_layers.append(
-                TokenSelfAttentionBlock(
-                    hidden_dim=hidden_dim,
-                    num_tokens=attn_tokens,
-                    attn_dim=attn_dim,
-                    num_heads=attn_heads,
-                    dropout=attn_dropout,
-                )
-            )
-        encoder_layers.extend(
-            [
-                nn.Linear(hidden_dim, hidden_dim),
-                nn.GELU(),
-                nn.Linear(hidden_dim, latent_dim),
-            ]
+        self.encoder = _BaselineEncoder(
+            input_dim=input_dim,
+            hidden_dim=hidden_dim,
+            latent_dim=latent_dim,
+            use_attention=use_attention,
+            attn_tokens=attn_tokens,
+            attn_dim=attn_dim,
+            attn_heads=attn_heads,
+            attn_dropout=attn_dropout,
+            vision_preproc=vision_preproc,
+            vision_in_channels=vision_in_channels,
+            vision_height=vision_height,
+            vision_width=vision_width,
         )
-        self.encoder = nn.Sequential(*encoder_layers)
 
         decoder_layers: list[nn.Module] = [
             nn.Linear(latent_dim, hidden_dim),
@@ -261,6 +336,8 @@ class AttentiveAtlasEncoder(nn.Module):
         soft_equiv_hidden_dim: int = 64,
         soft_equiv_use_spectral_norm: bool = True,
         soft_equiv_zero_self_mixing: bool = False,
+        soft_equiv_soft_assign: bool = True,
+        soft_equiv_temperature: float = 1.0,
     ) -> None:
         super().__init__()
         self.num_charts = num_charts
@@ -319,6 +396,19 @@ class AttentiveAtlasEncoder(nn.Module):
             )
             _init_soft_equiv_layers(self.soft_equiv_layers)
 
+        self.soft_equiv_soft_assign = soft_equiv_soft_assign
+        self.soft_equiv_temperature = soft_equiv_temperature
+        if (
+            soft_equiv_metric
+            and self.soft_equiv_soft_assign
+            and self.soft_equiv_temperature <= 0
+        ):
+            raise ValueError(
+                "soft_equiv_temperature must be positive when soft_equiv_soft_assign is enabled."
+            )
+        self._last_soft_equiv_log_ratio: torch.Tensor | None = None
+        self._last_soft_equiv_log_ratio: torch.Tensor | None = None
+
         self.structure_filter = nn.Sequential(
             nn.Linear(latent_dim, latent_dim // 2 if latent_dim > 2 else latent_dim),
             nn.GELU(),
@@ -349,11 +439,13 @@ class AttentiveAtlasEncoder(nn.Module):
 
     def _apply_soft_equiv_metric(self, diff: torch.Tensor) -> torch.Tensor:
         if self.soft_equiv_layers is None:
+            self._last_soft_equiv_log_ratio = None
             return (diff**2).sum(dim=-1)
         batch_size, num_charts, num_codes, latent_dim = diff.shape
         ratio_max = 50.0
         eps = 1e-6
         transformed = []
+        log_ratio_losses = []
         for chart_idx, layer in enumerate(self.soft_equiv_layers):
             diff_chart = diff[:, chart_idx].reshape(-1, latent_dim)
             diff_chart = torch.nan_to_num(diff_chart, nan=0.0, posinf=0.0, neginf=0.0)
@@ -365,8 +457,14 @@ class AttentiveAtlasEncoder(nn.Module):
             ratio_clamped = ratio.clamp(max=ratio_max)
             scale = torch.where(ratio > 0, ratio_clamped / ratio, torch.ones_like(ratio))
             diff_out = diff_out * scale
+            log_ratio = torch.log(ratio.clamp(min=eps, max=ratio_max))
+            log_ratio_losses.append((log_ratio**2).mean())
             transformed.append(diff_out.view(batch_size, num_codes, latent_dim))
         diff_out = torch.stack(transformed, dim=1)
+        if log_ratio_losses:
+            self._last_soft_equiv_log_ratio = torch.stack(log_ratio_losses).mean()
+        else:
+            self._last_soft_equiv_log_ratio = torch.tensor(0.0, device=diff.device)
         return (diff_out**2).sum(dim=-1)
 
     def soft_equiv_l1_loss(self) -> torch.Tensor:
@@ -376,6 +474,11 @@ class AttentiveAtlasEncoder(nn.Module):
         for layer in self.soft_equiv_layers:
             total = total + layer.l1_loss()
         return total / len(self.soft_equiv_layers)
+
+    def soft_equiv_log_ratio_loss(self) -> torch.Tensor:
+        if self.soft_equiv_layers is None or self._last_soft_equiv_log_ratio is None:
+            return torch.tensor(0.0, device=self.codebook.device)
+        return self._last_soft_equiv_log_ratio
 
     def forward(
         self, x: torch.Tensor
@@ -426,6 +529,12 @@ class AttentiveAtlasEncoder(nn.Module):
         indices_exp = indices_exp.expand(-1, -1, 1, self.latent_dim)  # [B, N_c, 1, D]
         z_q_all = torch.gather(codebook.expand(v.shape[0], -1, -1, -1), 2, indices_exp)
         z_q_all = z_q_all.squeeze(2)  # [B, N_c, D]
+        if self.soft_equiv_layers is not None and self.soft_equiv_soft_assign:
+            temperature = max(self.soft_equiv_temperature, 1e-6)
+            weights = F.softmax(-dist / temperature, dim=-1)
+            z_q_soft = (weights.unsqueeze(-1) * codebook).sum(dim=2)
+            # Straight-through soft assignment so gradients reach the metric network.
+            z_q_all = z_q_all + (z_q_soft - z_q_soft.detach())
 
         w = router_weights.unsqueeze(-1).detach()  # [B, N_c, 1]
         v_bc = v_local.unsqueeze(1)  # [B, 1, D]
@@ -551,6 +660,8 @@ class TopoEncoder(nn.Module):
         soft_equiv_hidden_dim: int = 64,
         soft_equiv_use_spectral_norm: bool = True,
         soft_equiv_zero_self_mixing: bool = False,
+        soft_equiv_soft_assign: bool = True,
+        soft_equiv_temperature: float = 1.0,
     ) -> None:
         super().__init__()
         self.num_charts = num_charts
@@ -575,6 +686,8 @@ class TopoEncoder(nn.Module):
             soft_equiv_hidden_dim=soft_equiv_hidden_dim,
             soft_equiv_use_spectral_norm=soft_equiv_use_spectral_norm,
             soft_equiv_zero_self_mixing=soft_equiv_zero_self_mixing,
+            soft_equiv_soft_assign=soft_equiv_soft_assign,
+            soft_equiv_temperature=soft_equiv_temperature,
         )
         self.decoder = TopologicalDecoder(
             latent_dim=latent_dim,
@@ -839,6 +952,8 @@ class PrimitiveAttentiveAtlasEncoder(nn.Module):
         soft_equiv_hidden_dim: int = 64,
         soft_equiv_use_spectral_norm: bool = True,
         soft_equiv_zero_self_mixing: bool = False,
+        soft_equiv_soft_assign: bool = True,
+        soft_equiv_temperature: float = 1.0,
     ) -> None:
         super().__init__()
         self.num_charts = num_charts
@@ -920,6 +1035,17 @@ class PrimitiveAttentiveAtlasEncoder(nn.Module):
             )
             _init_soft_equiv_layers(self.soft_equiv_layers)
 
+        self.soft_equiv_soft_assign = soft_equiv_soft_assign
+        self.soft_equiv_temperature = soft_equiv_temperature
+        if (
+            soft_equiv_metric
+            and self.soft_equiv_soft_assign
+            and self.soft_equiv_temperature <= 0
+        ):
+            raise ValueError(
+                "soft_equiv_temperature must be positive when soft_equiv_soft_assign is enabled."
+            )
+
         self.structure_filter = nn.Sequential(
             IsotropicBlock(latent_dim, latent_dim, bundle_size=latent_dim),
             SpectralLinear(latent_dim, latent_dim, bias=True),
@@ -949,11 +1075,13 @@ class PrimitiveAttentiveAtlasEncoder(nn.Module):
 
     def _apply_soft_equiv_metric(self, diff: torch.Tensor) -> torch.Tensor:
         if self.soft_equiv_layers is None:
+            self._last_soft_equiv_log_ratio = None
             return (diff**2).sum(dim=-1)
         batch_size, num_charts, num_codes, latent_dim = diff.shape
         ratio_max = 50.0
         eps = 1e-6
         transformed = []
+        log_ratio_losses = []
         for chart_idx, layer in enumerate(self.soft_equiv_layers):
             diff_chart = diff[:, chart_idx].reshape(-1, latent_dim)
             diff_chart = torch.nan_to_num(diff_chart, nan=0.0, posinf=0.0, neginf=0.0)
@@ -965,8 +1093,14 @@ class PrimitiveAttentiveAtlasEncoder(nn.Module):
             ratio_clamped = ratio.clamp(max=ratio_max)
             scale = torch.where(ratio > 0, ratio_clamped / ratio, torch.ones_like(ratio))
             diff_out = diff_out * scale
+            log_ratio = torch.log(ratio.clamp(min=eps, max=ratio_max))
+            log_ratio_losses.append((log_ratio**2).mean())
             transformed.append(diff_out.view(batch_size, num_codes, latent_dim))
         diff_out = torch.stack(transformed, dim=1)
+        if log_ratio_losses:
+            self._last_soft_equiv_log_ratio = torch.stack(log_ratio_losses).mean()
+        else:
+            self._last_soft_equiv_log_ratio = torch.tensor(0.0, device=diff.device)
         return (diff_out**2).sum(dim=-1)
 
     def soft_equiv_l1_loss(self) -> torch.Tensor:
@@ -976,6 +1110,11 @@ class PrimitiveAttentiveAtlasEncoder(nn.Module):
         for layer in self.soft_equiv_layers:
             total = total + layer.l1_loss()
         return total / len(self.soft_equiv_layers)
+
+    def soft_equiv_log_ratio_loss(self) -> torch.Tensor:
+        if self.soft_equiv_layers is None or self._last_soft_equiv_log_ratio is None:
+            return torch.tensor(0.0, device=self.codebook.device)
+        return self._last_soft_equiv_log_ratio
 
     def forward(
         self, x: torch.Tensor
@@ -1018,6 +1157,12 @@ class PrimitiveAttentiveAtlasEncoder(nn.Module):
         indices_exp = indices_exp.expand(-1, -1, 1, self.latent_dim)  # [B, N_c, 1, D]
         z_q_all = torch.gather(codebook.expand(v.shape[0], -1, -1, -1), 2, indices_exp)
         z_q_all = z_q_all.squeeze(2)  # [B, N_c, D]
+        if self.soft_equiv_layers is not None and self.soft_equiv_soft_assign:
+            temperature = max(self.soft_equiv_temperature, 1e-6)
+            weights = F.softmax(-dist / temperature, dim=-1)
+            z_q_soft = (weights.unsqueeze(-1) * codebook).sum(dim=2)
+            # Straight-through soft assignment so gradients reach the metric network.
+            z_q_all = z_q_all + (z_q_soft - z_q_soft.detach())
 
         w = router_weights.unsqueeze(-1).detach()  # [B, N_c, 1]
         v_bc = v_local.unsqueeze(1)  # [B, 1, D]
@@ -1173,6 +1318,8 @@ class TopoEncoderPrimitives(nn.Module):
         soft_equiv_hidden_dim: int = 64,
         soft_equiv_use_spectral_norm: bool = True,
         soft_equiv_zero_self_mixing: bool = False,
+        soft_equiv_soft_assign: bool = True,
+        soft_equiv_temperature: float = 1.0,
     ) -> None:
         super().__init__()
         self.num_charts = num_charts
@@ -1205,6 +1352,8 @@ class TopoEncoderPrimitives(nn.Module):
             soft_equiv_hidden_dim=soft_equiv_hidden_dim,
             soft_equiv_use_spectral_norm=soft_equiv_use_spectral_norm,
             soft_equiv_zero_self_mixing=soft_equiv_zero_self_mixing,
+            soft_equiv_soft_assign=soft_equiv_soft_assign,
+            soft_equiv_temperature=soft_equiv_temperature,
         )
         self.decoder = PrimitiveTopologicalDecoder(
             latent_dim=latent_dim,

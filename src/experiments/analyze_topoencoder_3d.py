@@ -72,14 +72,59 @@ def _prepare_models(
     baseline_attn_dim = int(config.get("baseline_attn_dim", 32))
     baseline_attn_heads = int(config.get("baseline_attn_heads", 4))
     baseline_attn_dropout = float(config.get("baseline_attn_dropout", 0.0))
+    baseline_vision_preproc = bool(config.get("baseline_vision_preproc", False))
+    vision_in_channels = int(config.get("vision_in_channels", 0))
+    vision_height = int(config.get("vision_height", 0))
+    vision_width = int(config.get("vision_width", 0))
 
-    model_atlas = TopoEncoderPrimitives(
-        input_dim=config["input_dim"],
-        hidden_dim=config["hidden_dim"],
-        latent_dim=config["latent_dim"],
-        num_charts=config["num_charts"],
-        codes_per_chart=config["codes_per_chart"],
-    ).to(device)
+    bundle_size = config.get("bundle_size")
+    if isinstance(bundle_size, int) and bundle_size <= 0:
+        bundle_size = None
+    soft_equiv_bundle_size = config.get("soft_equiv_bundle_size")
+    if isinstance(soft_equiv_bundle_size, int) and soft_equiv_bundle_size <= 0:
+        soft_equiv_bundle_size = None
+    soft_equiv_soft_assign = config.get("soft_equiv_soft_assign")
+    if soft_equiv_soft_assign is None:
+        soft_equiv_soft_assign = True
+    soft_equiv_temperature = config.get("soft_equiv_temperature")
+    if soft_equiv_temperature is None:
+        soft_equiv_temperature = 1.0
+    covariant_attn = config.get("covariant_attn")
+    if covariant_attn is None:
+        covariant_attn = True
+
+    model_kwargs = {
+        "input_dim": config["input_dim"],
+        "hidden_dim": config["hidden_dim"],
+        "latent_dim": config["latent_dim"],
+        "num_charts": config["num_charts"],
+        "codes_per_chart": config["codes_per_chart"],
+        "bundle_size": bundle_size,
+        "covariant_attn": covariant_attn,
+        "covariant_attn_tensorization": config.get("covariant_attn_tensorization", "sum"),
+        "covariant_attn_rank": config.get("covariant_attn_rank", 8),
+        "covariant_attn_tau_min": config.get("covariant_attn_tau_min", 1e-2),
+        "covariant_attn_denom_min": config.get("covariant_attn_denom_min", 1e-3),
+        "covariant_attn_use_transport": config.get("covariant_attn_use_transport", True),
+        "covariant_attn_transport_eps": config.get("covariant_attn_transport_eps", 1e-3),
+        "vision_preproc": config.get("vision_preproc", False),
+        "vision_in_channels": config.get("vision_in_channels", 0),
+        "vision_height": config.get("vision_height", 0),
+        "vision_width": config.get("vision_width", 0),
+        "vision_num_rotations": config.get("vision_num_rotations", 8),
+        "vision_kernel_size": config.get("vision_kernel_size", 5),
+        "vision_use_reflections": config.get("vision_use_reflections", False),
+        "vision_norm_nonlinearity": config.get("vision_norm_nonlinearity", "n_sigmoid"),
+        "vision_norm_bias": config.get("vision_norm_bias", True),
+        "soft_equiv_metric": config.get("soft_equiv_metric", False),
+        "soft_equiv_bundle_size": soft_equiv_bundle_size,
+        "soft_equiv_hidden_dim": config.get("soft_equiv_hidden_dim", 64),
+        "soft_equiv_use_spectral_norm": config.get("soft_equiv_use_spectral_norm", True),
+        "soft_equiv_zero_self_mixing": config.get("soft_equiv_zero_self_mixing", False),
+        "soft_equiv_soft_assign": soft_equiv_soft_assign,
+        "soft_equiv_temperature": soft_equiv_temperature,
+    }
+    model_atlas = TopoEncoderPrimitives(**model_kwargs).to(device)
     model_atlas.load_state_dict(state["atlas"])
     model_atlas.eval()
 
@@ -96,6 +141,10 @@ def _prepare_models(
             attn_dim=baseline_attn_dim,
             attn_heads=baseline_attn_heads,
             attn_dropout=baseline_attn_dropout,
+            vision_preproc=baseline_vision_preproc,
+            vision_in_channels=vision_in_channels,
+            vision_height=vision_height,
+            vision_width=vision_width,
         ).to(device)
         model_std.load_state_dict(state["std"])
         model_std.eval()
@@ -115,6 +164,10 @@ def _prepare_models(
             attn_dim=baseline_attn_dim,
             attn_heads=baseline_attn_heads,
             attn_dropout=baseline_attn_dropout,
+            vision_preproc=baseline_vision_preproc,
+            vision_in_channels=vision_in_channels,
+            vision_height=vision_height,
+            vision_width=vision_width,
         ).to(device)
         model_std.load_state_dict(bench_state["std"])
         model_std.eval()
@@ -131,6 +184,10 @@ def _prepare_models(
             attn_dim=baseline_attn_dim,
             attn_heads=baseline_attn_heads,
             attn_dropout=baseline_attn_dropout,
+            vision_preproc=baseline_vision_preproc,
+            vision_in_channels=vision_in_channels,
+            vision_height=vision_height,
+            vision_width=vision_width,
         ).to(device)
         model_ae.load_state_dict(state["ae"])
         model_ae.eval()
@@ -149,6 +206,10 @@ def _prepare_models(
             attn_dim=baseline_attn_dim,
             attn_heads=baseline_attn_heads,
             attn_dropout=baseline_attn_dropout,
+            vision_preproc=baseline_vision_preproc,
+            vision_in_channels=vision_in_channels,
+            vision_height=vision_height,
+            vision_width=vision_width,
         ).to(device)
         model_ae.load_state_dict(bench_state["ae"])
         model_ae.eval()
