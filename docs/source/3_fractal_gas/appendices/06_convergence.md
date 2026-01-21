@@ -2,13 +2,15 @@
 
 ## 0. TLDR
 
-**Synergistic Foster-Lyapunov Condition**: The Euclidean Gas achieves full convergence through **complementary dissipation**. The cloning operator contracts positional variance but perturbs velocities; the kinetic operator contracts velocities but perturbs positions. When properly weighted, these opposing dynamics combine to produce **net contraction** of a unified Lyapunov function, establishing geometric ergodicity with explicit, N-uniform rates.
+**Synergistic Foster-Lyapunov Condition (TV Track)**: The Euclidean Gas achieves full convergence through **complementary dissipation**. The cloning operator contracts positional variance but perturbs velocities; the kinetic operator contracts velocity variance and the velocity barycenter but perturbs positions. When properly weighted, these opposing dynamics combine to produce **net contraction** of a TV-focused Lyapunov function $V_{\text{TV}} = c_V(V_{\text{Var},x}+V_{\text{Var},v}) + c_\mu\|\mu_v\|^2 + c_B W_b$, establishing geometric ergodicity with explicit, N-uniform rates.
 
-**Geometric Ergodicity and QSD Convergence**: We prove the Euclidean Gas converges exponentially fast to a unique quasi-stationary distribution (QSD) with continuous-time rate $\kappa_{\text{QSD}} = \Theta(\kappa_{\text{total}})$, where $\kappa_{\text{total}}$ is the minimum of all component contraction rates. The survival time grows exponentially with swarm size ($\mathbb{E}[\tau_\dagger] = e^{\Theta(N)}$), a consequence of the collective energy barrier to extinction scaling linearly with $N$, making extinction negligible on all practical timescales. The QSD exhibits Gibbs-like structure with walkers concentrated in low-potential regions.
+**Geometric Ergodicity and QSD Convergence**: We prove the Euclidean Gas converges exponentially fast to a unique quasi-stationary distribution (QSD) in total variation, with rate $\kappa_{\text{QSD}} = \Theta(\kappa_{\text{total}})$. The survival time grows exponentially with swarm size ($\mathbb{E}[\tau_\dagger] = e^{\Theta(N)}$), a consequence of the collective energy barrier to extinction scaling linearly with $N$, making extinction negligible on practical timescales.
 
 **Spectral Parameter Optimization**: We develop a complete spectral analysis framework that transforms parameter tuning from heuristic art to systematic optimization. Through singular value decomposition of sensitivity matrices, we identify principal coupling modes, compute optimal parameters via closed-form solutions, construct Pareto frontiers for multi-objective trade-offs, and provide explicit condition numbers for robustness analysis.
 
-**Practical Impact**: This document provides the first rigorous proof that physics-inspired swarm algorithms can achieve provable convergence with explicit rates. Every parameter's effect on convergence is quantified, enabling principled design choices. The N-uniform analysis validates the mean-field limit, establishing the Fragile Gas as a continuum physics model with rigorous mathematical foundations.
+**Practical Impact**: This document provides a rigorous TV convergence proof with explicit rates. Every parameter's effect on convergence is quantified, enabling principled design choices. The N-uniform analysis validates the mean-field limit, establishing the Fragile Gas as a continuum physics model with rigorous mathematical foundations.
+
+**Deferred W2 Track**: Wasserstein/hypocoercive claims are quarantined to dedicated subsections and are **not used** in the TV proof.
 
 **Dependencies**: {doc}`03_cloning`, {doc}`05_kinetic_contraction`, {doc}`02_euclidean_gas`
 
@@ -16,16 +18,16 @@
 
 ### 1.1. Goal and Scope
 
-The goal of this document is to establish the **complete convergence theory** for the Euclidean Gas algorithm, synthesizing operator-level analyses from companion documents into a unified proof of geometric ergodicity. The central object of study is the **composed operator** $\Psi_{\text{total}} = \Psi_{\text{kin}} \circ \Psi_{\text{clone}}$, which combines the cloning operator (analyzed in {doc}`03_cloning`) and the kinetic Langevin operator (analyzed in {doc}`05_kinetic_contraction`).
+The goal of this document is to establish the **complete TV convergence theory** for the Euclidean Gas algorithm, synthesizing operator-level analyses from companion documents into a unified proof of geometric ergodicity. The central object of study is the **composed operator** $\Psi_{\text{total}} = \Psi_{\text{kin}} \circ \Psi_{\text{clone}}$, which combines the cloning operator (analyzed in {doc}`03_cloning`) and the kinetic Langevin operator (analyzed in {doc}`05_kinetic_contraction`).
 
-We prove four main results:
+We prove four main results (TV track):
 
-1. **Foster-Lyapunov Drift Condition**: The composed operator satisfies $\mathbb{E}[\Delta V_{\text{total}}] \leq -\kappa_{\text{total}}\tau \cdot V_{\text{total}} + C_{\text{total}}$ with explicit, N-uniform constants
-2. **Geometric Ergodicity**: Exponential convergence to a unique quasi-stationary distribution at continuous-time rate $\kappa_{\text{QSD}} = \Theta(\kappa_{\text{total}})$
-3. **Explicit Parameter Dependence**: Complete formulas expressing all convergence rates in terms of primitive algorithmic parameters
+1. **Foster-Lyapunov Drift Condition**: The composed operator satisfies $\mathbb{E}[\Delta V_{\text{TV}}] \leq -\kappa_{\text{total}} \cdot V_{\text{TV}} + C_{\text{total}}$ with explicit, N-uniform constants
+2. **Geometric Ergodicity (TV)**: Exponential convergence to a unique quasi-stationary distribution at rate $\kappa_{\text{QSD}} = \Theta(\kappa_{\text{total}})$
+3. **Explicit Parameter Dependence**: Formulas expressing all convergence rates in terms of primitive algorithmic parameters
 4. **Spectral Optimization Framework**: Systematic methods for parameter selection via sensitivity analysis and multi-objective optimization
 
-The scope includes rigorous proofs of φ-irreducibility and aperiodicity, physical interpretation of the QSD structure, explicit convergence time estimates, worked numerical examples with diagnostic plots, and robustness analysis via condition numbers. This document assumes results from {doc}`03_cloning` (Keystone Principle, Safe Harbor mechanism) and {doc}`05_kinetic_contraction` (hypocoercive contraction, velocity dissipation), which provide the operator-level drift inequalities that are synthesized here.
+The scope includes rigorous proofs of φ-irreducibility and aperiodicity, explicit convergence time estimates, and robustness analysis via condition numbers. This document assumes results from {doc}`03_cloning` (Keystone Principle, Safe Harbor mechanism) and {doc}`05_kinetic_contraction` (velocity dissipation, boundary drift, minorization), which provide the operator-level drift inequalities that are synthesized here.
 
 ### 1.2. The Synergistic Dissipation Paradigm
 
@@ -33,9 +35,13 @@ The convergence of the Euclidean Gas emerges from a profound principle: **neithe
 
 The cloning operator embodies evolutionary selection. Through the Keystone Principle (Theorem 5.1 of {doc}`03_cloning`), it identifies and eliminates high-error configurations, contracting positional variance with rate $\kappa_x > 0$. However, this selective pressure introduces momentum perturbations through inelastic collisions, causing bounded expansion of velocity variance. The cloning operator cannot achieve full convergence alone—it trades positional stability for velocity disorder.
 
-The kinetic operator embodies thermalization. Through Langevin dynamics with friction $\gamma$, it dissipates velocity variance exponentially fast. Through hypocoercive coupling ({prf:ref}`thm-inter-swarm-contraction-kinetic` from {doc}`05_kinetic_contraction`), it contracts the Wasserstein distance between swarms. Through the confining potential $U(x)$, it prevents boundary escape. However, the Langevin noise $\sigma_v$ causes bounded expansion of positional variance. The kinetic operator cannot achieve full convergence alone—it trades velocity stability for positional diffusion.
+The kinetic operator embodies thermalization. Through Langevin dynamics with friction $\gamma$, it dissipates velocity variance and the velocity barycenter exponentially fast. Through the confining potential $U(x)$, it prevents boundary escape. However, the Langevin noise $\sigma_v$ causes bounded expansion of positional variance. The kinetic operator cannot achieve full convergence alone—it trades velocity stability for positional diffusion.
 
-**The magic occurs when these operators compose**. Each contracts precisely what the other expands. By carefully weighting the Lyapunov components ($V_{\text{total}} = V_W + c_V V_{\text{Var}} + c_B W_b$, where $V_W$ is the inter-swarm Wasserstein distance, $V_{\text{Var}}$ is the total intra-swarm variance, and $W_b$ is the boundary-avoidance potential), we achieve a **balancing act** where contraction forces dominate expansion forces across all components simultaneously. This synthesis is non-trivial: the coupling constants $(c_V, c_B)$ must satisfy explicit inequalities that depend on primitive parameters through complicated expressions involving multiple operator interactions.
+**The magic occurs when these operators compose**. Each contracts precisely what the other expands. By carefully weighting the TV Lyapunov components
+$V_{\text{TV}} = c_V(V_{\text{Var},x} + V_{\text{Var},v}) + c_\mu \|\mu_v\|^2 + c_B W_b$,
+we achieve a **balancing act** where contraction forces dominate expansion forces across all components simultaneously. This synthesis is non-trivial: the coupling constants $(c_\mu, c_B)$ must satisfy explicit inequalities that depend on primitive parameters through multiple operator interactions.
+
+**Deferred W2 note:** The inter-swarm Wasserstein term $V_W$ is treated separately in a deferred section and is not used in the TV proof.
 
 :::{important} Synergy as Design Principle
 The synergistic dissipation paradigm suggests a general principle for designing stable stochastic algorithms: **use multiple operators with complementary dissipation profiles**. Rather than seeking a single "perfect" operator, compose operators that correct each other's instabilities. This approach may apply beyond the Fragile Gas to broader classes of particle-based optimization algorithms.
@@ -49,12 +55,12 @@ The proof synthesizes results from two companion documents to establish full con
 graph TD
     subgraph "Prerequisites: Operator-Level Analysis"
         A["<b>03_cloning: Cloning Operator</b><br>✓ Keystone Principle: V_Var,x contracts<br>✓ Safe Harbor: W_b contracts<br>⚠ V_Var,v expands boundedly"]:::axiomStyle
-        B["<b>05_kinetic_contraction: Kinetic Operator</b><br>✓ Hypocoercivity: V_W contracts<br>✓ Friction: V_Var,v contracts<br>⚠ V_Var,x expands boundedly"]:::axiomStyle
+        B["<b>05_kinetic_contraction: Kinetic Operator</b><br>✓ Friction: V_Var,v and ||μ_v||² contract<br>✓ Boundary drift + minorization<br>⚠ V_Var,x expands boundedly"]:::axiomStyle
     end
 
     subgraph "Chapter 3: Synergistic Composition"
         C["<b>3.2: Component Drift Summary</b><br>Catalog all operator drifts from prerequisites"]:::stateStyle
-        D["<b>3.4-3.5: Foster-Lyapunov Condition</b><br>Balance coupling constants to achieve<br><b>net contraction of V_total</b>"]:::theoremStyle
+        D["<b>3.4-3.5: Foster-Lyapunov Condition</b><br>Balance coupling constants to achieve<br><b>net contraction of V_TV</b>"]:::theoremStyle
         E["<b>3.6: Synergy Interpretation</b><br>Each operator corrects the other's expansion"]:::lemmaStyle
     end
 
@@ -62,13 +68,13 @@ graph TD
         F["<b>4.2-4.3: QSD Framework</b><br>Cemetery state & quasi-stationarity"]:::stateStyle
         G["<b>4.4.1: φ-Irreducibility Proof</b><br>Two-stage construction via non-degenerate noise"]:::lemmaStyle
         H["<b>4.4.2: Aperiodicity Proof</b><br>Non-degenerate noise ensures aperiodicity"]:::lemmaStyle
-        I["<b>4.5: Main Theorem</b><br><b>Geometric Ergodicity</b><br>Exponential convergence to unique QSD<br>with rate κ_QSD = Θ(κ_total τ)"]:::theoremStyle
+        I["<b>4.5: Main Theorem</b><br><b>Geometric Ergodicity</b><br>Exponential convergence to unique QSD<br>with rate κ_QSD = Θ(κ_total)"]:::theoremStyle
         J["<b>4.6: QSD Physical Structure</b><br>Gibbs-like position distribution,<br>OU-like velocity profile"]:::stateStyle
     end
 
     subgraph "Chapter 5: Explicit Parameter Dependence"
-        K["<b>5.1-5.4: Component Rates</b><br>Explicit formulas for κ_v, κ_x, κ_W, κ_b<br>in terms of primitive parameters"]:::lemmaStyle
-        L["<b>5.5: Total Rate Formula</b><br>κ_total = min(κ_v, κ_x, κ_W, κ_b)<br>with full parameter dependence"]:::theoremStyle
+        K["<b>5.1-5.4: Component Rates</b><br>Explicit formulas for κ_v, κ_x, κ_b<br>in terms of primitive parameters"]:::lemmaStyle
+        L["<b>5.5: Total Rate Formula</b><br>κ_total = min(κ_v, κ_x, κ_μ, κ_b)<br>with full parameter dependence"]:::theoremStyle
         M["<b>5.6: Convergence Time Estimates</b><br>T_mix = O(1/(κ_total τ))"]:::stateStyle
         N["<b>5.7-5.9: Optimization Strategy</b><br>Parameter selection guidelines,<br>trade-off analysis, sensitivity"]:::stateStyle
     end
@@ -117,11 +123,11 @@ graph TD
     classDef theoremStyle fill:#8c3d5f,stroke:#d47fa4,stroke-width:3px,color:#f4d8e8
 ```
 
-**Chapter 3** synthesizes operator-level drift inequalities from prerequisite documents. By solving a system of inequalities for coupling constants $(c_V, c_B)$, we prove the composed operator satisfies a Foster-Lyapunov condition with explicit rate $\kappa_{\text{total}}$ and bias $C_{\text{total}}$.
+**Chapter 3** synthesizes operator-level drift inequalities from prerequisite documents. By selecting coupling constants $(c_V, c_\mu, c_B)$, we prove the composed operator satisfies a Foster-Lyapunov condition for $V_{\text{TV}}$ with explicit rate $\kappa_{\text{total}}$ and bias $C_{\text{total}}$.
 
-**Chapter 4** establishes the main convergence theorem using the Foster-Lyapunov drift from Chapter 3. We rigorously prove φ-irreducibility through a two-stage construction (perturbation to interior, then non-degenerate kinetic accessibility) and prove aperiodicity via non-degenerate noise. The Meyn-Tweedie theory then guarantees exponential convergence to a unique QSD. We analyze the QSD's physical structure, showing it exhibits Gibbs-like position concentration and an OU-like velocity profile (Gaussian in the isotropic limit).
+**Chapter 4** establishes the main convergence theorem using the Foster-Lyapunov drift from Chapter 3. We prove φ-irreducibility by combining a positive-probability cloning-to-core event with the kinetic minorization on that core set, and aperiodicity follows directly from the minorization. The Meyn-Tweedie theory then guarantees exponential convergence to a unique QSD. We analyze the QSD's physical structure, showing it exhibits Gibbs-like position concentration and an OU-like velocity profile (Gaussian in the isotropic limit).
 
-**Chapter 5** derives explicit formulas for all convergence rates in terms of primitive parameters ($\alpha_{\text{rest}}$, $\gamma$, $\sigma_v$, $\sigma_x$, $\lambda$, etc.). This transforms abstract convergence guarantees into quantitative predictions. We provide convergence time estimates, parameter selection guidelines, trade-off analysis, and diagnostic plots for worked examples.
+**Chapter 5** derives explicit formulas for TV-track convergence rates in terms of primitive parameters ($\gamma$, $\sigma_v$, $\lambda$, etc.), with W2/jitter-dependent variants quarantined to deferred subsections. This transforms abstract convergence guarantees into quantitative predictions. We provide convergence time estimates, parameter selection guidelines, trade-off analysis, and diagnostic plots for worked examples.
 
 **Chapter 6** develops a spectral optimization framework. Through singular value decomposition of sensitivity matrices, we identify principal parameter coupling modes and dominant interactions. We derive closed-form solutions for balanced optimization, algorithms for constrained optimization with arbitrary objectives, Pareto frontier computation for multi-objective trade-offs, and robustness analysis via condition numbers.
 
@@ -144,10 +150,10 @@ This document establishes the **complete convergence theory** for the Euclidean 
 
 This document contains five main technical chapters (Chapters 3-7):
 
-- **Chapter 7:** Synergistic composition and Foster-Lyapunov condition
-- **Chapter 6:** Main convergence theorem and quasi-stationary distribution
-- **Chapter 7:** Explicit parameter dependence and convergence rates
-- **Chapter 6:** Spectral analysis of parameter coupling
+- **Chapter 3:** Synergistic composition and Foster-Lyapunov condition (TV track)
+- **Chapter 4:** Main convergence theorem and quasi-stationary distribution (TV track)
+- **Chapter 5:** Explicit parameter dependence and convergence rates (TV track; W2 deferred subsections)
+- **Chapter 6:** Spectral analysis of parameter coupling (TV track; W2-dependent diagnostics deferred)
 - **Chapter 7:** Conclusion and future directions
 
 ### 2.3. Prerequisites
@@ -155,16 +161,17 @@ This document contains five main technical chapters (Chapters 3-7):
 This document requires results from two companion documents:
 
 **From {doc}`03_cloning`** (The Keystone Principle and the Contractive Nature of Cloning):
-- Definition 3.3.1: Synergistic Lyapunov function $V_{\text{total}}$
-- Theorem 12.3.1: Cloning operator drift inequalities for all components
+- Definition 3.3.1: Cloning operator and variance/boundary Lyapunov components
+- Theorem 12.3.1: Cloning operator drift inequalities for $V_{\text{Var},x}$, $V_{\text{Var},v}$, and $W_b$
 - Theorem 5.1: Keystone Principle (fitness-variance anti-correlation)
 - Chapter 11: Safe Harbor mechanism for boundary contraction
 
-**From {doc}`05_kinetic_contraction`** (Hypocoercivity and Kinetic Operator Analysis):
-- {prf:ref}`thm-inter-swarm-contraction-kinetic` (Section 05:2.3): Hypocoercive contraction of inter-swarm error $V_W$
-- {prf:ref}`thm-velocity-variance-contraction-kinetic` (Section 05:3.3): Velocity variance dissipation via Langevin friction
-- {prf:ref}`thm-positional-variance-bounded-expansion` (Section 05:4.3): Bounded positional expansion
-- {prf:ref}`thm-boundary-potential-contraction-kinetic` (Section 05:5.3): Boundary potential contraction via confining potential
+**From {doc}`05_kinetic_contraction`** (Kinetic Operator Analysis, TV Track):
+- {prf:ref}`thm-velocity-variance-contraction-kinetic` (Chapter 5): Velocity variance dissipation via Langevin friction
+- {prf:ref}`thm-velocity-barycenter-dissipation` (Chapter 5): Velocity barycenter dissipation
+- {prf:ref}`thm-positional-variance-bounded-expansion` (Chapter 6): Bounded positional expansion
+- {prf:ref}`thm-boundary-potential-contraction-kinetic` (Chapter 7): Boundary potential contraction via confining potential
+- {prf:ref}`lem-kinetic-minorization` (Chapter 7.6): Small-set/minorization for the kinetic kernel
 
 :::{prf:remark} Summary of Required Operator Drifts
 :label: rem-prerequisite-drifts
@@ -173,9 +180,9 @@ The following drift inequalities are established in the prerequisite documents a
 
 | Component          | Cloning Drift ({doc}`03_cloning`)           | Kinetic Drift ({doc}`05_kinetic_contraction`)                   |
 |:-------------------|:----------------------------------------|:------------------------------------------------------------|
-| $V_W$              | $\leq C_W$                              | $\leq -\kappa_W V_W \tau + C_W'\tau$                        |
 | $V_{\text{Var},x}$ | $\leq -\kappa_x V_{\text{Var},x} + C_x$ | $\leq C_{\text{kin},x}\tau$                                 |
-| $V_{\text{Var},v}$ | $\leq C_v$                              | $\leq -2\gamma V_{\text{Var},v}\tau + d\sigma_{\max}^2\tau$ |
+| $V_{\text{Var},v}$ | $\leq C_v$                              | $\leq -(2\gamma-\epsilon) V_{\text{Var},v}\tau + \left(\frac{F_{\max}^2}{\epsilon} + d\sigma_{\max}^2\right)\tau$ |
+| $\|\mu_v\|^2$      | $\leq v_{\max}^2$                       | $\leq -\gamma \|\mu_v\|^2\tau + \left(\frac{F_{\max}^2}{\gamma} + \frac{\sigma_{\max}^2 d}{N}\right)\tau$ |
 | $W_b$              | $\leq -\kappa_b W_b + C_b$              | $\leq -\kappa_{\text{pot}} W_b \tau + C_{\text{pot}}\tau$   |
 
 **Key observation:** Each operator contracts what the other expands, enabling synergistic composition.
@@ -201,7 +208,8 @@ Throughout this document:
 - $\Psi_{\text{clone}}$: Cloning operator (analyzed in {doc}`03_cloning`)
 - $\Psi_{\text{kin}}$: Kinetic operator (analyzed in {doc}`05_kinetic_contraction`)
 - $\Psi_{\text{total}} = \Psi_{\text{kin}} \circ \Psi_{\text{clone}}$: Composed operator
-- $V_{\text{total}} = V_W + c_V V_{\text{Var}} + c_B W_b$: Full Lyapunov function
+- $V_{\text{TV}} = c_V(V_{\text{Var},x} + V_{\text{Var},v}) + c_\mu \|\mu_v\|^2 + c_B W_b$: TV Lyapunov function
+- $V_W$: inter-swarm Wasserstein term (deferred W2 track)
 - Cross-document references use notation: "Theorem 05:X.Y.Z" for {doc}`05_kinetic_contraction`
 
 ---
@@ -218,31 +226,33 @@ Each operator has been analyzed individually:
 
 **From {doc}`03_cloning`:**
 - $\Psi_{\text{clone}}$ contracts $V_{\text{Var},x}$ and $W_b$ (Keystone Principle, Safe Harbor)
-- $\Psi_{\text{clone}}$ boundedly expands $V_{\text{Var},v}$ and $V_W$ (momentum injection, structural perturbation)
+- $\Psi_{\text{clone}}$ boundedly expands $V_{\text{Var},v}$ and $\|\mu_v\|^2$ (inelastic collisions, random rotations)
 
 **From {doc}`05_kinetic_contraction`:**
-- $\Psi_{\text{kin}}$ contracts $V_W$, $V_{\text{Var},v}$, and $W_b$ (hypocoercivity, friction, confining potential)
+- $\Psi_{\text{kin}}$ contracts $V_{\text{Var},v}$, $\|\mu_v\|^2$, and $W_b$ (friction, confining potential)
 - $\Psi_{\text{kin}}$ boundedly expands $V_{\text{Var},x}$ (thermal diffusion)
 
 **Key insight:** The operators have **complementary dissipation profiles**. Each contracts what the other expands. This chapter proves that when properly weighted, these complementary properties combine to give **net contraction** of the full Lyapunov function.
 
 ### 3.2. The Full Lyapunov Function (Recall)
 
-:::{prf:definition} Synergistic Lyapunov Function (Recall)
-:label: def-full-lyapunov-recall
+:::{prf:definition} TV Lyapunov Function
+:label: def-tv-lyapunov
 
-From {doc}`03_cloning` Definition 3.3.1:
+For a single swarm $S$, define the TV Lyapunov function:
 
 $$
-V_{\text{total}}(S_1, S_2) = V_W(S_1, S_2) + c_V V_{\text{Var}}(S_1, S_2) + c_B W_b(S_1, S_2)
+V_{\text{TV}}(S) = c_V\!\left(V_{\text{Var},x}(S) + V_{\text{Var},v}(S)\right) + c_\mu \|\mu_v(S)\|^2 + c_B W_b(S)
 
 $$
 
 where:
-- $V_W = V_{\text{loc}} + V_{\text{struct}}$: Inter-swarm error
-- $V_{\text{Var}} = V_{\text{Var},x} + V_{\text{Var},v}$: Intra-swarm variance
-- $W_b$: Boundary potential
-- $c_V, c_B > 0$: Coupling constants (to be chosen)
+- $V_{\text{Var},x}$ and $V_{\text{Var},v}$ are intra-swarm variances
+- $\mu_v$ is the velocity barycenter
+- $W_b$ is the boundary potential
+- $c_\mu, c_B > 0$ are coupling constants
+
+**Deferred:** The two-swarm Wasserstein Lyapunov $V_W$ from {doc}`03_cloning` is part of the W2 track and not used here.
 :::
 
 ### 3.3. Component Drift Summary
@@ -254,303 +264,119 @@ We summarize all drift results:
 
 | Component | $\mathbb{E}_{\text{clone}}[\Delta \cdot]$ | $\mathbb{E}_{\text{kin}}[\Delta \cdot]$ |
 |:----------|:------------------------------------------|:----------------------------------------|
-| $V_W$ | $\leq C_W$ | $\leq -\kappa_W V_W \tau + C_W'\tau$ |
 | $V_{\text{Var},x}$ | $\leq -\kappa_x V_{\text{Var},x} + C_x$ | $\leq C_{\text{kin},x}\tau$ |
-| $V_{\text{Var},v}$ | $\leq C_v$ | $\leq -2\gamma V_{\text{Var},v}\tau + d\sigma_{\max}^2\tau$ |
+| $V_{\text{Var},v}$ | $\leq C_v$ | $\leq -(2\gamma-\epsilon) V_{\text{Var},v}\tau + \left(\frac{F_{\max}^2}{\epsilon} + d\sigma_{\max}^2\right)\tau$ |
+| $\|\mu_v\|^2$ | $\leq v_{\max}^2$ | $\leq -\gamma \|\mu_v\|^2\tau + \left(\frac{F_{\max}^2}{\gamma} + \frac{\sigma_{\max}^2 d}{N}\right)\tau$ |
 | $W_b$ | $\leq -\kappa_b W_b + C_b$ | $\leq -\kappa_{\text{pot}} W_b \tau + C_{\text{pot}}\tau$ |
 
 **Sources:**
 - Cloning drifts: {doc}`03_cloning` Theorem 12.3.1
-- Kinetic drifts: See theorems in {doc}`05_kinetic_contraction` Sections 2.3, 3.3, 4.3, 5.3 (referenced above)
+- Kinetic drifts: See {doc}`05_kinetic_contraction` Chapters 5-7 (TV track)
 :::
 
 ### 3.4. Main Theorem: Synergistic Foster-Lyapunov Condition
 
-:::{prf:theorem} Foster-Lyapunov Drift for the Composed Operator
+:::{prf:theorem} Foster-Lyapunov Drift for the Composed Operator (TV Track)
 :label: thm-foster-lyapunov-main
 
-Under the foundational axioms, there exist coupling constants $c_V^*, c_B^* > 0$ such that the composed operator $\Psi_{\text{total}} = \Psi_{\text{kin}} \circ \Psi_{\text{clone}}$ satisfies:
+Under the foundational axioms, for any fixed weights $c_V, c_\mu, c_B > 0$ and any $\epsilon \in (0, 2\gamma)$, the composed operator $\Psi_{\text{total}} = \Psi_{\text{kin}} \circ \Psi_{\text{clone}}$ satisfies:
 
 $$
-\mathbb{E}_{\text{total}}[V_{\text{total}}(S') \mid S] \leq (1 - \kappa_{\text{total}}\tau) V_{\text{total}}(S) + C_{\text{total}}
-
-$$
-
-where:
-
-$$
-\kappa_{\text{total}} := \min\left(\frac{\kappa_W}{2}, \frac{c_V^* \kappa_x}{2}, \frac{c_V^* \gamma}{2}, \frac{c_B^*(\kappa_b + \kappa_{\text{pot}}\tau)}{2}\right) > 0
+\mathbb{E}_{\text{total}}[V_{\text{TV}}(S') \mid S] \leq (1 - \kappa_{\text{total}})\, V_{\text{TV}}(S) + C_{\text{total}}
 
 $$
 
-$$
-C_{\text{total}} := C_W + C_W'\tau + c_V^*(C_x + C_v + C_{\text{kin},x}\tau) + c_B^*(C_b + C_{\text{pot}}\tau) < \infty
+with
 
 $$
+\kappa_{\text{total}} := \min\left(\kappa_x,\ (2\gamma-\epsilon)\tau,\ \gamma\tau,\ \kappa_b + \kappa_{\text{pot}}\tau\right) > 0
+$$
 
-**Both constants are independent of $N$.**
+and
 
-**Consequence:** This is a **Foster-Lyapunov drift condition**, which implies:
-1. Geometric ergodicity
-2. Exponential convergence to equilibrium
+$$
+\begin{aligned}
+C_{\text{total}} :=\;& c_V\!\left(C_x + C_{\text{kin},x}\tau + C_v + \left(\frac{F_{\max}^2}{\epsilon} + d\sigma_{\max}^2\right)\tau\right) \\
+&+ c_\mu\!\left(v_{\max}^2 + \left(\frac{F_{\max}^2}{\gamma} + \frac{\sigma_{\max}^2 d}{N}\right)\tau\right) + c_B(C_b + C_{\text{pot}}\tau).
+\end{aligned}
+$$
+
+All constants are finite and N-uniform (the $\sigma_{\max}^2 d/N$ term decreases with $N$).
+
+**Consequence:** This is a **Foster-Lyapunov drift condition** for the TV Lyapunov function, which implies:
+1. Geometric ergodicity (TV)
+2. Exponential convergence to the QSD
 3. Concentration around the QSD
 :::
 
-### 3.5. Proof: Choosing the Coupling Constants
+### 3.5. Proof: Assembling the Drift
 
 :::{prf:proof}
+**Proof (Direct Component Aggregation).**
 
-**Proof (Rigorous Verification of Coupling Constants).**
-
-This proof verifies that there exist finite coupling constants $c_V^*, c_B^* > 0$ such that the Foster-Lyapunov condition holds with explicit $\kappa_{\text{total}}$ and $C_{\text{total}}$.
-
-**PART I: Decomposition of the Composed Operator**
-
-The total Lyapunov function is:
+**PART I: Decompose the Lyapunov function**
 
 $$
-V_{\text{total}} = V_W + c_V V_{\text{Var}} + c_B W_b
-
+V_{\text{TV}} = c_V(V_{\text{Var},x} + V_{\text{Var},v}) + c_\mu \|\mu_v\|^2 + c_B W_b.
 $$
 
-where $V_{\text{Var}} = V_{\text{Var},x} + V_{\text{Var},v}$.
-
-The composed operator $\Psi_{\text{total}} = \Psi_{\text{kin}} \circ \Psi_{\text{clone}}$ acts as:
+By the tower property for the composed operator $\Psi_{\text{total}} = \Psi_{\text{kin}}\circ\Psi_{\text{clone}}$:
 
 $$
-S \xrightarrow{\Psi_{\text{clone}}} S^{\text{clone}} \xrightarrow{\Psi_{\text{kin}}} S'
-
+\mathbb{E}_{\text{total}}[\Delta V_{\text{TV}}]
+= \mathbb{E}_{\text{clone}}[\Delta V_{\text{TV}}] + \mathbb{E}_{\text{clone}}\!\left[\mathbb{E}_{\text{kin}}[\Delta V_{\text{TV}} \mid S^{\text{clone}}]\right].
 $$
 
-**By the tower property of expectation:**
+**PART II: Component drift bounds**
+
+From {doc}`03_cloning` and {doc}`05_kinetic_contraction` (TV track):
 
 $$
-\mathbb{E}_{\text{total}}[\Delta V_{\text{total}}] = \mathbb{E}_{\text{clone}}[\Delta V_{\text{total}}] + \mathbb{E}_{\text{clone}}[\mathbb{E}_{\text{kin}}[\Delta V_{\text{total}} \mid S^{\text{clone}}]]
-
-$$
-
-**PART II: Collect All Drift Inequalities**
-
-From previous chapters, we have the following drift bounds:
-
-**From Cloning ({doc}`03_cloning`):**
-- $\mathbb{E}_{\text{clone}}[\Delta V_W] \leq C_W$ (bounded expansion)
-- $\mathbb{E}_{\text{clone}}[\Delta V_{\text{Var},x}] \leq -\kappa_x V_{\text{Var},x} + C_x$ (contraction)
-- $\mathbb{E}_{\text{clone}}[\Delta V_{\text{Var},v}] \leq C_v$ (bounded expansion)
-- $\mathbb{E}_{\text{clone}}[\Delta W_b] \leq -\kappa_b W_b + C_b$ (contraction)
-
-**From Kinetics (this document):**
-- $\mathbb{E}_{\text{kin}}[\Delta V_W] \leq -\kappa_W V_W \tau + C_W'\tau$ (Theorem 2.3.1)
-- $\mathbb{E}_{\text{kin}}[\Delta V_{\text{Var},x}] \leq C_{\text{kin},x}\tau$ (Theorem 4.3.1, bounded expansion)
-- $\mathbb{E}_{\text{kin}}[\Delta V_{\text{Var},v}] \leq -2\gamma V_{\text{Var},v}\tau + d\sigma_{\max}^2\tau$ (Theorem 3.3.1)
-- $\mathbb{E}_{\text{kin}}[\Delta W_b] \leq -\kappa_{\text{pot}} W_b \tau + C_{\text{pot}}\tau$ (Theorem 5.3.1)
-
-**PART III: Aggregate Drifts for Each Component**
-
-**Component 1: Inter-swarm error $V_W$**
-
-$$
-\mathbb{E}_{\text{total}}[\Delta V_W] = \mathbb{E}_{\text{clone}}[\Delta V_W] + \mathbb{E}_{\text{kin}}[\Delta V_W]
-
+\mathbb{E}_{\text{total}}[\Delta V_{\text{Var},x}] \leq -\kappa_x V_{\text{Var},x} + (C_x + C_{\text{kin},x}\tau),
 $$
 
 $$
-\leq C_W + (-\kappa_W V_W \tau + C_W'\tau) = -\kappa_W V_W \tau + (C_W + C_W'\tau)
-
-$$
-
-**Component 2: Positional variance $V_{\text{Var},x}$**
-
-$$
-\mathbb{E}_{\text{total}}[\Delta V_{\text{Var},x}] = \mathbb{E}_{\text{clone}}[\Delta V_{\text{Var},x}] + \mathbb{E}_{\text{kin}}[\Delta V_{\text{Var},x}]
-
+\mathbb{E}_{\text{total}}[\Delta V_{\text{Var},v}] \leq -(2\gamma-\epsilon) V_{\text{Var},v}\tau + \left(C_v + \left(\frac{F_{\max}^2}{\epsilon} + d\sigma_{\max}^2\right)\tau\right),
 $$
 
 $$
-\leq (-\kappa_x V_{\text{Var},x} + C_x) + C_{\text{kin},x}\tau = -\kappa_x V_{\text{Var},x} + (C_x + C_{\text{kin},x}\tau)
-
-$$
-
-**Component 3: Velocity variance $V_{\text{Var},v}$**
-
-$$
-\mathbb{E}_{\text{total}}[\Delta V_{\text{Var},v}] = \mathbb{E}_{\text{clone}}[\Delta V_{\text{Var},v}] + \mathbb{E}_{\text{kin}}[\Delta V_{\text{Var},v}]
-
+\mathbb{E}_{\text{total}}[\Delta \|\mu_v\|^2] \leq -\gamma \|\mu_v\|^2\tau + \left(v_{\max}^2 + \left(\frac{F_{\max}^2}{\gamma} + \frac{\sigma_{\max}^2 d}{N}\right)\tau\right),
 $$
 
 $$
-\leq C_v + (-2\gamma V_{\text{Var},v}\tau + d\sigma_{\max}^2\tau) = -2\gamma V_{\text{Var},v}\tau + (C_v + d\sigma_{\max}^2\tau)
-
+\mathbb{E}_{\text{total}}[\Delta W_b] \leq -(\kappa_b + \kappa_{\text{pot}}\tau) W_b + (C_b + C_{\text{pot}}\tau).
 $$
 
-**Component 4: Boundary potential $W_b$**
+**PART III: Sum with weights**
+
+Multiplying by $c_V$, $c_\mu$, $c_B$ and adding yields:
 
 $$
-\mathbb{E}_{\text{total}}[\Delta W_b] = \mathbb{E}_{\text{clone}}[\Delta W_b] + \mathbb{E}_{\text{kin}}[\Delta W_b]
-
+\mathbb{E}_{\text{total}}[\Delta V_{\text{TV}}] \leq -\left[c_V\kappa_x V_{\text{Var},x} + c_V(2\gamma-\epsilon)\tau V_{\text{Var},v} + c_\mu \gamma\tau \|\mu_v\|^2 + c_B(\kappa_b+\kappa_{\text{pot}}\tau) W_b\right] + C_{\text{total}}.
 $$
 
-$$
-\leq (-\kappa_b W_b + C_b) + (-\kappa_{\text{pot}} W_b\tau + C_{\text{pot}}\tau)
+Define
 
 $$
-
-$$
-= -(\kappa_b + \kappa_{\text{pot}}\tau) W_b + (C_b + C_{\text{pot}}\tau)
-
+\kappa_{\text{total}} := \min\left(\kappa_x,\ (2\gamma-\epsilon)\tau,\ \gamma\tau,\ \kappa_b+\kappa_{\text{pot}}\tau\right),
 $$
 
-**PART IV: Combine with Coupling Constants**
+so each bracketed coefficient is at least $\kappa_{\text{total}}$ times its corresponding weighted component. Therefore,
 
 $$
-\mathbb{E}_{\text{total}}[\Delta V_{\text{total}}] = \mathbb{E}_{\text{total}}[\Delta V_W] + c_V \mathbb{E}_{\text{total}}[\Delta V_{\text{Var},x}] + c_V \mathbb{E}_{\text{total}}[\Delta V_{\text{Var},v}] + c_B \mathbb{E}_{\text{total}}[\Delta W_b]
-
+\mathbb{E}_{\text{total}}[\Delta V_{\text{TV}}] \leq -\kappa_{\text{total}} V_{\text{TV}} + C_{\text{total}},
 $$
 
-Substituting the bounds:
+with
 
 $$
-\leq -\kappa_W V_W \tau + (C_W + C_W'\tau)
-
+\begin{aligned}
+C_{\text{total}} :=\;& c_V\!\left(C_x + C_{\text{kin},x}\tau + C_v + \left(\frac{F_{\max}^2}{\epsilon} + d\sigma_{\max}^2\right)\tau\right) \\
+&+ c_\mu\!\left(v_{\max}^2 + \left(\frac{F_{\max}^2}{\gamma} + \frac{\sigma_{\max}^2 d}{N}\right)\tau\right) + c_B(C_b + C_{\text{pot}}\tau).
+\end{aligned}
 $$
 
-$$
-+ c_V[-\kappa_x V_{\text{Var},x} + (C_x + C_{\text{kin},x}\tau)]
-
-$$
-
-$$
-+ c_V[-2\gamma V_{\text{Var},v}\tau + (C_v + d\sigma_{\max}^2\tau)]
-
-$$
-
-$$
-+ c_B[-(\kappa_b + \kappa_{\text{pot}}\tau) W_b + (C_b + C_{\text{pot}}\tau)]
-
-$$
-
-**Factor out the Lyapunov components:**
-
-$$
-= -[\kappa_W\tau \cdot V_W + c_V\kappa_x \cdot V_{\text{Var},x} + c_V 2\gamma\tau \cdot V_{\text{Var},v} + c_B(\kappa_b + \kappa_{\text{pot}}\tau) \cdot W_b]
-
-$$
-
-$$
-+ [C_W + C_W'\tau + c_V(C_x + C_{\text{kin},x}\tau) + c_V(C_v + d\sigma_{\max}^2\tau) + c_B(C_b + C_{\text{pot}}\tau)]
-
-$$
-
-**PART V: Design Coupling Constants for Balanced Contraction**
-
-We need to find $c_V^*, c_B^* > 0$ such that all components contract at a common rate.
-
-**Target:** Make all contraction coefficients equal to $\frac{\kappa_W\tau}{2}$.
-
-**For $V_W$:** Already has coefficient $\kappa_W\tau$.
-
-**For $V_{\text{Var},x}$:** Require $c_V\kappa_x = \frac{\kappa_W\tau}{2}$, so:
-
-$$
-c_V^* = \frac{\kappa_W\tau}{2\kappa_x}
-
-$$
-
-**Verification that $c_V^* < \infty$:** By Theorem {doc}`03_cloning` (Ch 10), $\kappa_x > 0$ is bounded below by a constant independent of $N$, so $c_V^* < \infty$. ✓
-
-**For $V_{\text{Var},v}$:** Require $c_V^* \cdot 2\gamma\tau = \frac{\kappa_W\tau}{2}$:
-
-$$
-\frac{\kappa_W\tau}{2\kappa_x} \cdot 2\gamma\tau = \frac{\kappa_W\tau}{2}
-
-$$
-
-$$
-\implies \frac{\gamma\tau}{\kappa_x} = \frac{1}{2}
-
-$$
-
-**This is NOT automatically satisfied!** We have a constraint: we must choose $\tau$ such that $\gamma\tau \leq \kappa_x/2$.
-
-**Resolution:** Redefine the target rates. Instead, set:
-
-$$
-\kappa_{\text{total}} := \min\left(\frac{\kappa_W\tau}{2}, \frac{c_V^*\kappa_x}{2}, \frac{c_V^* 2\gamma\tau}{2}, \frac{c_B^*(\kappa_b + \kappa_{\text{pot}}\tau)}{2}\right)
-
-$$
-
-This ensures $\kappa_{\text{total}} > 0$ is the **minimum** contraction rate across all components.
-
-**For $W_b$:** Require $c_B^*(\kappa_b + \kappa_{\text{pot}}\tau) = \frac{\kappa_W\tau}{2}$:
-
-$$
-c_B^* = \frac{\kappa_W\tau}{2(\kappa_b + \kappa_{\text{pot}}\tau)}
-
-$$
-
-**Verification that $c_B^* < \infty$:** By Theorem {doc}`03_cloning` (Ch 11), $\kappa_b > 0$, so $c_B^* < \infty$. ✓
-
-**PART VI: Verify Foster-Lyapunov Form**
-
-With the chosen coupling constants:
-
-$$
-\mathbb{E}_{\text{total}}[\Delta V_{\text{total}}] \leq -2\kappa_{\text{total}} V_{\text{total}} + C_{\text{total}}
-
-$$
-
-where:
-
-$$
-\kappa_{\text{total}} = \min\left(\frac{\kappa_W\tau}{2}, \frac{c_V^*\kappa_x}{2}, \frac{c_V^* 2\gamma\tau}{2}, \frac{c_B^*(\kappa_b + \kappa_{\text{pot}}\tau)}{2}\right) > 0
-
-$$
-
-$$
-C_{\text{total}} = C_W + C_W'\tau + c_V^*(C_x + C_{\text{kin},x}\tau + C_v + d\sigma_{\max}^2\tau) + c_B^*(C_b + C_{\text{pot}}\tau) < \infty
-
-$$
-
-**Rewrite in standard Foster-Lyapunov form:**
-
-$$
-\mathbb{E}_{\text{total}}[V_{\text{total}}(S')] \leq (1 - 2\kappa_{\text{total}}) V_{\text{total}}(S) + C_{\text{total}}
-
-$$
-
-**For small $\tau$:** $(1 - 2\kappa_{\text{total}}) \approx (1 - \kappa_{\text{total}}\tau)$, giving:
-
-$$
-\mathbb{E}_{\text{total}}[V_{\text{total}}(S')] \leq (1 - \kappa_{\text{total}}\tau) V_{\text{total}}(S) + C_{\text{total}}
-
-$$
-
-**PART VII: Verify N-Independence**
-
-**Key verification:** Both $c_V^*$ and $c_B^*$ are **independent of $N$** because:
-- $\kappa_W$, $\kappa_x$, $\kappa_b$ are all $O(1)$ independent of $N$ (proven in previous chapters)
-- $\tau$ is fixed
-- All constants in $C_{\text{total}}$ are $O(1)$ or $O(d)$ but independent of $N$
-
-**This is crucial for scalability!**
-
-**PART VIII: Consequence - Foster-Lyapunov Condition**
-
-The inequality:
-
-$$
-\mathbb{E}[V_{\text{total}}(S')] \leq (1 - \kappa_{\text{total}}\tau) V_{\text{total}}(S) + C_{\text{total}}
-
-$$
-
-is the **Foster-Lyapunov drift condition** with:
-- Contraction rate: $\kappa_{\text{total}} > 0$
-- Drift constant: $C_{\text{total}} < \infty$
-
-**By Foster-Lyapunov theory (Meyn & Tweedie, 2009, Theorem 14.0.1), this implies:**
-1. **Geometric ergodicity**: The Markov chain converges to equilibrium at exponential rate $e^{-\kappa_{\text{total}} t}$
-2. **Existence of unique QSD**: The quasi-stationary distribution exists and is unique
-3. **Concentration**: The system spends most time in a compact set $\{V_{\text{total}} \leq C_{\text{total}}/\kappa_{\text{total}}\}$
+This is exactly the Foster-Lyapunov drift condition in Theorem {prf:ref}`thm-foster-lyapunov-main`.
 
 **Q.E.D.**
 :::
@@ -564,19 +390,18 @@ This theorem proves the core design principle of the Euclidean Gas:
 
 **What each operator does:**
 - **Cloning:** Contracts internal positional disorder + boundary proximity
-- **Kinetics:** Contracts inter-swarm alignment + velocity dispersion + boundary proximity
+- **Kinetics:** Contracts velocity dispersion, velocity barycenter, + boundary proximity
 
 **What each operator cannot do alone:**
-- **Cloning alone:** Cannot contract $V_W$ or $V_{\text{Var},v}$ (causes bounded expansion)
+- **Cloning alone:** Cannot contract $V_{\text{Var},v}$ or $\|\mu_v\|^2$ (causes bounded expansion)
 - **Kinetics alone:** Cannot contract $V_{\text{Var},x}$ strongly (only bounded diffusion)
 
 **Together:**
 - Cloning's positional contraction $> $ Kinetic diffusion
 - Kinetic velocity dissipation $>$ Cloning collision expansion
-- Kinetic hypocoercivity $>$ Cloning desynchronization
 - **Result:** All components contract simultaneously
 
-**The coupling constants $c_V, c_B$** balance the different contraction rates to ensure no component dominates or lags behind.
+**The coupling constants $c_V, c_\mu, c_B$** balance the different component scales in $V_{\text{TV}}$ and the final drift bound.
 :::
 
 ### 3.7. Summary
@@ -589,19 +414,19 @@ This chapter has proven:
 
 ✅ **N-uniform constants** - scalable to large swarms
 
-✅ **Constructive coupling constants** - explicit formulas for $c_V^*, c_B^*$
+✅ **Explicit TV drift constants** - closed-form $\kappa_{\text{total}}$ and $C_{\text{total}}$
 
 **Achievement:** This is the **main analytical result** of the document - the foundation for all convergence guarantees.
 
-**Next:** Chapter 6 applies Foster-Lyapunov theory to prove geometric ergodicity and convergence to the quasi-stationary distribution.
+**Next:** Chapter 4 applies Foster-Lyapunov theory to prove geometric ergodicity and convergence to the quasi-stationary distribution.
 
 ## 4. Main Convergence Theorem and Quasi-Stationary Distribution
 
 ### 4.1. Introduction: From Drift to Convergence
 
-Chapter 1 established the Foster-Lyapunov drift condition:
+Chapter 3 established the Foster-Lyapunov drift condition:
 
-$$\mathbb{E}[V_{\text{total}}(S_{t+1}) \mid S_t] \leq (1 - \kappa_{\text{total}}\tau) V_{\text{total}}(S_t) + C_{\text{total}}$$
+$$\mathbb{E}[V_{\text{TV}}(S_{t+1}) \mid S_t] \leq (1 - \kappa_{\text{total}}) V_{\text{TV}}(S_t) + C_{\text{total}}$$
 
 This chapter applies **Foster-Lyapunov theory** (Meyn-Tweedie) to convert this drift inequality into:
 
@@ -686,202 +511,37 @@ $$
 
 :::{prf:proof}
 
-**Proof (Two-Stage Construction: Gathering + Spreading).**
+**Proof (Cloning-to-Core + Minorization).**
 
-The proof constructs an explicit path showing how to get from any starting state to any target neighborhood by combining the distinct powers of cloning (global reset) and kinetics (local steering).
-
-**PART I: Define the "Core" Set**
-
-Define the **core set** $\mathcal{C} \subset \Sigma_N^{\text{alive}}$ as the set of configurations where:
-
-1. **All walkers alive:** $|\mathcal{A}(S)| = N$
-2. **Interior concentration:** All walkers within a small ball $B_r(x_*)$ where $x_* \in \text{interior}(\mathcal{X}_{\text{valid}})$ and $\varphi_{\text{barrier}}(x) < \epsilon$ for all $x \in B_r(x_*)$
-3. **Low velocities:** $\|v_i\| < v_{\max}$ for all $i$
-4. **Positive measure:** $\mathcal{C}$ is an open set with positive Lebesgue measure
-
-**Key property:** $\mathcal{C}$ is "favorable" - far from boundary, all alive, low kinetic energy.
-
-**PART II: Stage 1 - Gathering to Core (Cloning as Global Reset)**
-
-**Claim:** For any $S_A \in \Sigma_N^{\text{alive}}$:
+Fix $\delta_{\text{core}} > 0$ and choose a ball $B_{\text{core}} \subset \mathcal{X}_{\text{valid}}$ with $\text{dist}(B_{\text{core}}, \partial\mathcal{X}_{\text{valid}}) \geq \delta_{\text{core}}$. Assume $\mathcal{X}_{\text{valid}}$ is path-connected (otherwise irreducibility holds on each connected component). Define the core set
 
 $$
-P(S_1 \in \mathcal{C} \mid S_0 = S_A) > 0
-
+\mathcal{K}_{\text{core}} := \{S : x_i \in B_{\text{core}} \ \forall i,\ \|v_i\| \leq v_{\max},\ |\mathcal{A}(S)|=N\}.
 $$
 
-**Proof of Claim:**
+This set has positive Lebesgue measure and is compact because velocities are squashed.
 
-**Step 1: Identify the "Alpha" Walker**
-
-In state $S_A$, at least one walker is alive. Among alive walkers, identify the one with minimum barrier value:
+**Step 1: Reach the core with positive probability.** From any $S_A \in \Sigma_N^{\text{alive}}$, select two alive walkers $i_1, i_2$. By uniform ellipticity and standard support/positivity results for underdamped Langevin dynamics (e.g., Hörmander hypoellipticity or the Stroock–Varadhan support theorem), there exists a finite horizon $M_1$ such that both walkers have positive probability to enter $B_{\text{core}}$ while remaining alive (independent noise). Conditioning on this event, the next cloning step has a positive-probability event in which every walker selects either $i_1$ or $i_2$ as companion, and (if self-pairing is disallowed) $i_1$ and $i_2$ select each other. Since companions lie in $B_{\text{core}}$, all positions remain in $B_{\text{core}}$, and velocities are bounded by the squashing map. Hence,
 
 $$
-i_* = \arg\min_{i \in \mathcal{A}(S_A)} \varphi_{\text{barrier}}(x_i)
-
+P^{M_1+1}(S_A, \mathcal{K}_{\text{core}}) > 0.
 $$
 
-This "alpha" walker $i_*$ is in a favorable position.
-
-**Step 2: Lucky Cloning Sequence**
-
-The cloning operator proceeds through $N$ walkers sequentially. For each dead or poorly-positioned walker $j$:
+**Step 2: Minorization from the core.** For any $S \in \mathcal{K}_{\text{core}}$, all companion choices stay inside $B_{\text{core}}$, so the cloning step keeps positions in $B_{\text{core}}$. The kinetic kernel then satisfies the minorization from {prf:ref}`lem-kinetic-minorization`, giving $\epsilon_{\text{kin}} > 0$ and a measure $\nu_{\text{kin}}$ such that
 
 $$
-P(c_j = i_* \mid j \in \mathcal{A}(S_A)) = \frac{\exp\left(-\frac{d_{\text{alg}}(j, i_*)^2}{2\epsilon_c^2}\right)}{\sum_{k \in \mathcal{A}(S_A) \setminus \{j\}} \exp\left(-\frac{d_{\text{alg}}(j, k)^2}{2\epsilon_c^2}\right)} =: p_{\alpha}(j) > 0
-
+P_{\text{total}}(S, A) \geq \epsilon_{\text{kin}}\, \nu_{\text{kin}}(A)
 $$
 
-For dead walkers, the companion selection is uniform, so $P(c_j = i_*) = 1/|\mathcal{A}(S_A)|$. Let $p_{\alpha} := \min_j p_{\alpha}(j) > 0$.
+for all measurable $A$.
 
-**Consider the "lucky" event** $E_{\text{lucky}}$ where:
-- All dead walkers select $i_*$ as companion
-- All alive walkers with $\varphi(x_j) > 2\varphi(x_{i_*})$ select $i_*$ as companion
-
-The probability of this event is:
+**Step 3: Irreducibility.** Given any open $O_B \subseteq \Sigma_N^{\text{alive}}$, choose $M := M_1+1$. Then
 
 $$
-P(E_{\text{lucky}}) \geq p_{\alpha}^{N-1} > 0
-
+P^{M+1}(S_A, O_B) \geq P^{M}(S_A, \mathcal{K}_{\text{core}})\cdot \epsilon_{\text{kin}} \nu_{\text{kin}}(O_B) > 0.
 $$
 
-**Step 3: Post-Cloning Configuration**
-
-After cloning under $E_{\text{lucky}}$:
-- All $N$ walkers are alive
-- Position barycenter $\mu_x \approx x_{i_*}$ (all clones near alpha)
-- Positional scatter is set by the Gaussian cloning jitter with scale $\sigma_x$
-
-**Step 4: Perturbation and Kinetic Step**
-
-The BAOAB kinetic step injects Gaussian noise in the O-step:
-$v_i^{(2)} = c_1 v_i^{(1)} + c_2 \xi_i$ with $\xi_i \sim \mathcal{N}(0, I_d)$, followed by A-steps that update positions. The resulting one-step kernel is the pushforward of the Gaussian noise through the BAOAB map and therefore has a continuous density with full support on phase space.
-
-Let $\mathcal{K}_{\text{kin}}(x, v \mid x_i, v_i)$ denote this one-step density. Then:
-
-$$
-P(\text{all } N \text{ walkers land in } B_r(x_*) \text{ with } \|v_i\| < v_{\max}) = \prod_{i=1}^N \int_{B_r(x_*)} \int_{\|v\| < v_{\max}} \mathcal{K}_{\text{kin}}(x, v \mid x_i, v_i) \, dv \, dx > 0
-
-$$
-
-**Combining all steps:**
-
-$$
-P(S_1 \in \mathcal{C} \mid S_0 = S_A) \geq P(E_{\text{lucky}}) \cdot P(\text{perturbation lands in } \mathcal{C}) > 0
-
-$$
-
-✓ **Stage 1 Complete**
-
-**PART III: Stage 2 - Spreading from Core (Kinetics as Local Steering)**
-
-**Claim:** For any $S_C \in \mathcal{C}$ and any open set $O_B \subseteq \Sigma_N^{\text{alive}}$, there exists $M \in \mathbb{N}$ such that:
-
-$$
-P^M(S_C, O_B) > 0
-
-$$
-
-**Proof of Claim via Hörmander's Theorem:**
-
-**Step 1: Single-Particle Controllability**
-
-Each walker evolves according to the underdamped Langevin SDE:
-
-$$
-\begin{aligned}
-dx_i &= v_i \, dt \\
-dv_i &= [F(x_i) - \gamma v_i] \, dt + \Sigma(x_i, v_i) \circ dW_i
-\end{aligned}
-
-$$
-
-This is a **hypoelliptic system**. By **Hörmander's Theorem** (Hörmander, 1967, "Hypoelliptic second order differential equations," *Acta Math.* 119:147-171):
-
-**Theorem (Hörmander):** If the Lie algebra generated by the drift vector fields and diffusion vector fields spans the entire tangent space at every point, then the transition probability density $p_t(z_0, z)$ is smooth and **strictly positive** for all $t > 0$ and all $z_0, z \in \mathbb{R}^{2d}$.
-
-**Verification for our SDE:**
-- Drift vector field: $b(x,v) = (v, F(x) - \gamma v)$
-- Diffusion vector fields: $\sigma_j(x,v) = (0, \Sigma e_j)$ for $j = 1, \ldots, d$
-
-The Lie bracket $[b, \sigma_j]$ introduces terms in the position component, and iterated brackets span $\mathbb{R}^{2d}$ (standard verification, see Hairer & Mattingly, 2006).
-
-**Conclusion:** From any $(x_i, v_i)$, the single-particle process has positive probability of reaching any open neighborhood in phase space after time $\tau > 0$.
-
-**Step 2: N-Particle Controllability**
-
-Now consider all $N$ particles. We want to show that from $S_C$, we can reach any target configuration in $O_B$ with positive probability.
-
-**Target configuration:** Let $S_B^* = ((x_1^*, v_1^*), \ldots, (x_N^*, v_N^*)) \in O_B$ be any point in the target set.
-
-**Sequential driving argument:**
-
-- **Phase 1 (Steps 1 to $\tau_1$):** Apply kinetic evolution. By Hörmander, walker 1 has positive probability $p_1 > 0$ of reaching a neighborhood $U_1(x_1^*, v_1^*)$ of its target.
-- **Phase 2 (Steps $\tau_1+1$ to $\tau_2$):** Continue evolution. Walker 2 has positive probability $p_2 > 0$ of reaching $U_2(x_2^*, v_2^*)$, *while walker 1 remains in* $U_1$ with probability bounded below by $1 - \delta_1$ (continuity of the SDE).
-- **Phase $k$:** Walker $k$ reaches $U_k$ with probability $p_k > 0$, and all previous walkers remain in their neighborhoods with probability $\prod_{j<k}(1 - \delta_j)$.
-
-**Independence of noise:** Since $W_i$ are independent Brownian motions:
-
-$$
-P(\text{all } N \text{ walkers reach their targets}) \geq \prod_{i=1}^N p_i \cdot \prod_{j=1}^{N-1} (1 - \delta_j) > 0
-
-$$
-
-**Step 3: Avoiding Absorption**
-
-During the $M$ steps of kinetic evolution from $\mathcal{C}$ to $O_B$, walkers must not cross the boundary.
-
-**Safe interior property:** Since $S_C \in \mathcal{C}$ starts in a region with $\varphi_{\text{barrier}} < \epsilon$ (deep interior), and the target $S_B^* \in O_B$ is also in the alive space, we can choose trajectories that remain in the interior.
-
-**Probability of staying alive:** By the boundary potential contraction (Chapter 7, Theorem 5.3.1), walkers starting in the interior with low $W_b$ have exponentially small probability of reaching the boundary in finite time:
-
-$$
-P(\text{any walker exits during } M \text{ steps} \mid S_C) \leq M \cdot N \cdot e^{-c/\tau} \ll 1
-
-$$
-
-for appropriate choice of $M$ and $\tau$.
-
-**Taking $M$ large enough:** We can make the exit probability arbitrarily small while maintaining positive probability of reaching $O_B$:
-
-$$
-P^M(S_C, O_B) \geq P(\text{reach } O_B) \cdot P(\text{no exit}) > 0
-
-$$
-
-✓ **Stage 2 Complete**
-
-**PART IV: Final Assembly - Two-Stage Path**
-
-Combining Stage 1 and Stage 2 via the **Chapman-Kolmogorov equation**:
-
-$$
-P^{1+M}(S_A, O_B) = \int_{\Sigma_N^{\text{alive}}} P^1(S_A, dS') P^M(S', O_B)
-
-$$
-
-$$
-\geq \int_{\mathcal{C}} P^1(S_A, dS') P^M(S', O_B)
-
-$$
-
-$$
-\geq P^1(S_A, \mathcal{C}) \cdot \inf_{S' \in \mathcal{C}} P^M(S', O_B)
-
-$$
-
-From Stage 1: $P^1(S_A, \mathcal{C}) > 0$
-
-From Stage 2: $\inf_{S' \in \mathcal{C}} P^M(S', O_B) > 0$ (by compactness of $\mathcal{C}$ and continuity)
-
-Therefore:
-
-$$
-P^{1+M}(S_A, O_B) > 0
-
-$$
-
-**This proves φ-irreducibility.** ✓
+This proves φ-irreducibility.
 
 **Q.E.D.**
 :::
@@ -903,41 +563,21 @@ $$
 
 :::{prf:proof}
 
-**Proof (Non-Degenerate Noise Prevents Periodicity).**
+**Proof (Minorization Implies Aperiodicity).**
 
-**Method 1: Direct Argument via Continuous Noise**
-
-The kinetic operator injects non-degenerate Gaussian noise in the BAOAB O-step. The resulting transition kernel has a continuous density, so the probability of returning to the **exact** same state is zero:
+From {prf:ref}`lem-kinetic-minorization` and the proof of Theorem {prf:ref}`thm-phi-irreducibility`, there exists a small set $\mathcal{K}_{\text{core}}$ and constants $\epsilon_{\text{kin}} > 0$, $\nu_{\text{kin}}$ such that for all $S \in \mathcal{K}_{\text{core}}$:
 
 $$
-P(S_1 = S_0 \mid S_0) = 0
-
+P_{\text{total}}(S, A) \geq \epsilon_{\text{kin}}\, \nu_{\text{kin}}(A).
 $$
 
-because the noise has a density with respect to Lebesgue measure and the BAOAB map is smooth.
-
-**Implication:** The chain cannot have any deterministic cycles $S \to S \to S \to \cdots$ of period $d$.
-
-**Method 2: Contradiction Argument**
-
-Suppose, for contradiction, that the chain has period $d > 1$. Then the state space decomposes into $d$ disjoint subsets $\mathcal{S}_0, \ldots, \mathcal{S}_{d-1}$ such that:
+Since $\nu_{\text{kin}}$ has support in the interior, $\nu_{\text{kin}}(\mathcal{K}_{\text{core}}) > 0$, so
 
 $$
-P(S_1 \in \mathcal{S}_{(k+1) \mod d} \mid S_0 \in \mathcal{S}_k) = 1
-
+P_{\text{total}}(S, \mathcal{K}_{\text{core}}) \geq \epsilon_{\text{kin}}\, \nu_{\text{kin}}(\mathcal{K}_{\text{core}}) > 0.
 $$
 
-But from the irreducibility proof (Theorem {prf:ref}`thm-phi-irreducibility` in Section 6.4.1), we showed that from any state in $\mathcal{S}_0$, we can reach the core set $\mathcal{C}$ in **one** step with positive probability.
-
-Similarly, from any state in $\mathcal{S}_1$, we can reach $\mathcal{C}$ in **one** step.
-
-This means $\mathcal{C} \cap \mathcal{S}_0 \neq \emptyset$ and $\mathcal{C} \cap \mathcal{S}_1 \neq \emptyset$.
-
-But if $d > 1$, we must have $\mathcal{S}_0 \cap \mathcal{S}_1 = \emptyset$ (disjoint decomposition).
-
-**Contradiction.** ✓
-
-Therefore, $d = 1$, and the chain is aperiodic.
+This gives a one-step return probability to the same small set, which rules out periodicity (Meyn & Tweedie, 2009, Proposition 5.4.4). Hence the chain is aperiodic.
 
 **Q.E.D.**
 :::
@@ -949,7 +589,7 @@ The irreducibility proof showcases the **perfect synergy** between the two opera
 
 - **Cloning:** Acts as a **global teleportation mechanism**, capable of making arbitrarily large jumps in state space by resetting all walkers to cluster around a single favorable location. It breaks ergodic barriers that would trap a purely local dynamics.
 
-- **Kinetics:** Acts as a **precise local navigation tool**, leveraging hypoelliptic controllability (Hörmander) to steer the swarm from the favorable "core" region to any desired target configuration.
+- **Kinetics:** Acts as a **local smoothing mechanism**, providing a minorization on the interior core set via the BAOAB O-step noise.
 
 **Neither operator alone would be irreducible:**
 - Kinetics alone (no cloning): Could get trapped in local minima or boundary regions with insufficient noise to escape.
@@ -965,7 +605,7 @@ This is a fundamental design principle that makes the Euclidean Gas a **provably
 :::{prf:theorem} Geometric Ergodicity and Convergence to QSD
 :label: thm-main-convergence
 
-Under the foundational axioms ({doc}`03_cloning` Ch 4, this document Ch 1), the Euclidean Gas Markov chain satisfies:
+Under the foundational axioms ({doc}`03_cloning` Ch 4, this document Ch 3), the Euclidean Gas Markov chain satisfies:
 
 **1. Existence and Uniqueness of QSD:**
 
@@ -973,17 +613,17 @@ There exists a unique quasi-stationary distribution $\nu_{\text{QSD}}$ on $\Sigm
 
 **2. Exponential Convergence to QSD:**
 
-For any initial distribution $\mu_0$ on $\Sigma_N^{\text{alive}}$ and for all $t \geq 0$:
+For any initial distribution $\mu_0$ on $\Sigma_N^{\text{alive}}$ and for all $n \geq 0$ (discrete steps):
 
 $$
-\|\mu_t - \nu_{\text{QSD}}\|_{\text{TV}} \leq C_{\text{conv}} e^{-\kappa_{\text{QSD}} t}
+\|\mu_n - \nu_{\text{QSD}}\|_{\text{TV}} \leq C_{\text{conv}} (1-\kappa_{\text{total}})^n
 
 $$
 
 where:
 - $\|\cdot\|_{\text{TV}}$ is the total variation distance
-- $\kappa_{\text{QSD}} = \Theta(\kappa_{\text{total}}\tau) > 0$ is the convergence rate
-- $C_{\text{conv}}$ depends on $\mu_0$ and $V_{\text{total}}(S_0)$
+- $\kappa_{\text{total}} > 0$ is the per-step contraction rate from Theorem {prf:ref}`thm-foster-lyapunov-main`
+- $C_{\text{conv}}$ depends on $\mu_0$ and $V_{\text{TV}}(S_0)$
 
 **3. Exponentially Long Survival Time:**
 
@@ -1001,11 +641,11 @@ The survival time grows **exponentially with $N$**.
 For any $\epsilon > 0$, there exists $N_0(\epsilon)$ such that for $N > N_0$:
 
 $$
-P(V_{\text{total}}(S_t) > (1+\epsilon) V_{\text{total}}^{\text{QSD}} \mid \text{survived to time } t) \leq e^{-\Theta(N)}
+P(V_{\text{TV}}(S_n) > (1+\epsilon) V_{\text{TV}}^{\text{QSD}} \mid \text{survived to time } n) \leq e^{-\Theta(N)}
 
 $$
 
-where $V_{\text{total}}^{\text{QSD}} = \mathbb{E}_{\nu_{\text{QSD}}}[V_{\text{total}}]$ is the equilibrium Lyapunov value.
+where $V_{\text{TV}}^{\text{QSD}} = \mathbb{E}_{\nu_{\text{QSD}}}[V_{\text{TV}}]$ is the equilibrium Lyapunov value.
 :::
 
 ### 4.5.1. Proof Sketch
@@ -1018,15 +658,15 @@ We apply standard Foster-Lyapunov theory, adapted to the quasi-stationary settin
 
 **Part 1: Existence and Uniqueness**
 
-The Foster-Lyapunov drift condition ({prf:ref}`thm-foster-lyapunov-main` from Chapter 7) implies:
+The Foster-Lyapunov drift condition ({prf:ref}`thm-foster-lyapunov-main` from Chapter 3) implies:
 
-$$\mathbb{E}[V_{\text{total}}(S_{t+1}) \mid S_t] \leq (1-\kappa_{\text{total}}\tau) V_{\text{total}}(S_t) + C_{\text{total}}$$
+$$\mathbb{E}[V_{\text{TV}}(S_{t+1}) \mid S_t] \leq (1-\kappa_{\text{total}}) V_{\text{TV}}(S_t) + C_{\text{total}}$$
 
 By the Meyn-Tweedie theorem (Meyn & Tweedie, 2009, Theorem 14.0.1), this drift condition with:
-- $V_{\text{total}}$ as a Lyapunov function
+- $V_{\text{TV}}$ as a Lyapunov function
 - Compact level sets (ensured by the boundary potential $W_b$ and confining potential)
-- **φ-Irreducibility** ({prf:ref}`thm-phi-irreducibility` in Section 6.4.1) - rigorously proven via two-stage construction
-- **Aperiodicity** ({prf:ref}`thm-aperiodicity` in Section 6.4.2) - proven via non-degenerate kinetic noise
+- **φ-Irreducibility** ({prf:ref}`thm-phi-irreducibility` in Section 4.4.1) - proven via cloning-to-core + kinetic minorization
+- **Aperiodicity** ({prf:ref}`thm-aperiodicity` in Section 4.4.2) - proven via minorization
 
 implies existence of a unique invariant measure. In the absorbing case, this becomes a unique QSD (Champagnat & Villemonais, 2016).
 
@@ -1037,7 +677,7 @@ The drift condition implies geometric ergodicity via the **Lyapunov drift method
 From any initial state:
 
 $$
-\mathbb{E}[V_{\text{total}}(S_t)] \leq (1-\kappa_{\text{total}}\tau)^t V_{\text{total}}(S_0) + \frac{C_{\text{total}}}{\kappa_{\text{total}}\tau}
+\mathbb{E}[V_{\text{TV}}(S_t)] \leq (1-\kappa_{\text{total}})^t V_{\text{TV}}(S_0) + \frac{C_{\text{total}}}{\kappa_{\text{total}}}
 
 $$
 
@@ -1069,7 +709,7 @@ For $T = e^{\Theta(N)}$, this remains close to 1.
 **Part 4: Concentration**
 
 This follows from combining:
-- The Foster-Lyapunov drift (concentrates $V_{\text{total}}$ around its equilibrium)
+- The Foster-Lyapunov drift (concentrates $V_{\text{TV}}$ around its equilibrium)
 - McDiarmid's inequality (exponential tails for bounded differences)
 - The N-uniformity of all constants
 
@@ -1099,11 +739,11 @@ Walkers are concentrated in low-potential regions, avoiding the boundary.
 In the isotropic base case (no adaptive forces, $\Sigma = \sigma_v I_d$), the marginal velocity distribution approaches:
 
 $$
-\rho_{\text{vel}}(v) \propto e^{-\frac{\|v\|^2}{2\sigma_v^2/\gamma}}
+\rho_{\text{vel}}(v) \propto e^{-\gamma \|v\|^2/\sigma_v^2} = e^{-\frac{\|v\|^2}{2\sigma_v^2/(2\gamma)}}
 
 $$
 
-The Gibbs distribution at effective temperature $\sigma_v^2/\gamma$. With adaptive forces or anisotropic diffusion enabled, the stationary velocity law is the pushforward of the BAOAB O-step noise and need not be exactly Gaussian.
+The Gibbs distribution at effective temperature $\sigma_v^2/(2\gamma)$. With adaptive forces or anisotropic diffusion enabled, the stationary velocity law is the pushforward of the BAOAB O-step noise and need not be exactly Gaussian.
 
 **3. Correlations:**
 
@@ -1118,14 +758,16 @@ over time separation $\Delta t$.
 
 **4. Internal Variance:**
 
-The equilibrium variances satisfy:
+The equilibrium variances satisfy explicit bounds:
 
 $$
-V_{\text{Var},x}^{\text{QSD}} = O(C_x/\kappa_x), \quad V_{\text{Var},v}^{\text{QSD}} = O(\sigma_v^2/\gamma)
+V_{\text{Var},x}^{\text{QSD}} \leq \frac{C_x}{\kappa_x}, \quad
+V_{\text{Var},v}^{\text{QSD}} \leq \frac{F_{\max}^2/\epsilon + d\sigma_{\max}^2}{2\gamma-\epsilon} + \frac{C_v}{(2\gamma-\epsilon)\tau}, \quad
+\|\mu_v\|_{\text{QSD}}^2 \leq v_{\max}^2,
 
 $$
 
-Both are finite and N-independent in the mean-field limit.
+all finite and N-uniform.
 :::
 
 :::{prf:theorem} Equilibrium Variance Bounds from Drift Inequalities
@@ -1151,16 +793,17 @@ where:
 From {prf:ref}`thm-bounded-velocity-expansion-cloning` (cloning expansion) and {prf:ref}`thm-velocity-variance-contraction-kinetic` (Langevin friction), setting $\mathbb{E}[\Delta V_{\text{Var},v}] = 0$ yields:
 
 $$
-V_{\text{Var},v}^{\text{QSD}} \leq \frac{C_v + \sigma_{\max}^2 d \tau}{2\gamma\tau}
+V_{\text{Var},v}^{\text{QSD}} \leq \frac{F_{\max}^2/\epsilon + d\sigma_{\max}^2}{2\gamma-\epsilon} + \frac{C_v}{(2\gamma-\epsilon)\tau}
 
 $$
 
 where:
 - $C_v$ is the state-independent velocity expansion from inelastic collisions
-- $\sigma_{\max}^2 d \tau$ is the noise injection from Langevin dynamics
-- $2\gamma\tau$ is the friction dissipation rate
+- $F_{\max}$ is the uniform force bound (Axiom 3.3.2)
+- $\sigma_{\max}^2 d$ is the noise injection from Langevin dynamics
+- $2\gamma-\epsilon$ is the friction dissipation rate (with $\epsilon \in (0,2\gamma)$)
 
-**Simplified form** (when $C_v \ll \sigma_{\max}^2 d \tau$):
+**Simplified form** (when $C_v$ is negligible and $F_{\max}$ is small):
 
 $$
 V_{\text{Var},v}^{\text{QSD}} \approx \frac{d\sigma_{\max}^2}{2\gamma}
@@ -1168,6 +811,16 @@ V_{\text{Var},v}^{\text{QSD}} \approx \frac{d\sigma_{\max}^2}{2\gamma}
 $$
 
 recovering the classical equipartition result.
+
+**Velocity Barycenter Equilibrium:**
+
+From {prf:ref}`thm-velocity-barycenter-dissipation`, setting $\mathbb{E}[\Delta \|\mu_v\|^2] = 0$ yields:
+
+$$
+\|\mu_v\|_{\text{QSD}}^2 \leq \frac{v_{\max}^2}{\gamma\tau} + \frac{F_{\max}^2}{\gamma^2} + \frac{\sigma_{\max}^2 d}{\gamma N}.
+$$
+
+By velocity squashing we also have the deterministic bound $\|\mu_v\|^2 \leq v_{\max}^2$.
 
 **Boundary Potential Equilibrium:**
 
@@ -1222,28 +875,38 @@ $$
 
 The velocity variance experiences:
 - Expansion from cloning: $\mathbb{E}_{\text{clone}}[\Delta V_{\text{Var},v}] \leq C_v$ (Theorem 10.4.1)
-- Dissipation from friction: $\mathbb{E}_{\text{kin}}[\Delta V_{\text{Var},v}] \leq -2\gamma V_{\text{Var},v} \tau + \sigma_{\max}^2 d \tau$ (Theorem 3.3.1)
+- Dissipation from friction: $\mathbb{E}_{\text{kin}}[\Delta V_{\text{Var},v}] \leq -(2\gamma-\epsilon) V_{\text{Var},v} \tau + \left(\frac{F_{\max}^2}{\epsilon} + \sigma_{\max}^2 d\right)\tau$ (Theorem {prf:ref}`thm-velocity-variance-contraction-kinetic`)
 
 Combined per-step drift:
 
 $$
-\mathbb{E}_{\text{total}}[\Delta V_{\text{Var},v}] \leq -2\gamma V_{\text{Var},v} \tau + (C_v + \sigma_{\max}^2 d \tau)
+\mathbb{E}_{\text{total}}[\Delta V_{\text{Var},v}] \leq -(2\gamma-\epsilon) V_{\text{Var},v} \tau + \left(C_v + \left(\frac{F_{\max}^2}{\epsilon} + \sigma_{\max}^2 d\right)\tau\right)
 
 $$
 
 At equilibrium, $\mathbb{E}[\Delta V_{\text{Var},v}] = 0$:
 
 $$
-0 = -2\gamma V_{\text{Var},v}^{\text{QSD}} \tau + (C_v + \sigma_{\max}^2 d \tau)
+0 = -(2\gamma-\epsilon) V_{\text{Var},v}^{\text{QSD}} \tau + \left(C_v + \left(\frac{F_{\max}^2}{\epsilon} + \sigma_{\max}^2 d\right)\tau\right)
 
 $$
 
 Solving:
 
 $$
-V_{\text{Var},v}^{\text{QSD}} = \frac{C_v + \sigma_{\max}^2 d \tau}{2\gamma\tau}
+V_{\text{Var},v}^{\text{QSD}} = \frac{F_{\max}^2/\epsilon + \sigma_{\max}^2 d}{2\gamma-\epsilon} + \frac{C_v}{(2\gamma-\epsilon)\tau}
 
 $$
+
+**Velocity Barycenter:**
+
+From Theorem {prf:ref}`thm-velocity-barycenter-dissipation`:
+
+$$
+\mathbb{E}_{\text{total}}[\Delta \|\mu_v\|^2] \leq -\gamma \|\mu_v\|^2\tau + \left(v_{\max}^2 + \left(\frac{F_{\max}^2}{\gamma} + \frac{\sigma_{\max}^2 d}{N}\right)\tau\right).
+$$
+
+Setting $\mathbb{E}[\Delta \|\mu_v\|^2] = 0$ yields the stated bound, with the deterministic cap $\|\mu_v\|^2 \leq v_{\max}^2$ from velocity squashing.
 
 **Boundary Potential:**
 
@@ -1286,7 +949,7 @@ This chapter has proven:
 
 **Achievement:** This completes the main convergence proof for the Euclidean Gas algorithm.
 
-**Next:** Chapter 7 expands all convergence conditions to show explicit parameter dependence.
+**Next:** Chapter 5 expands convergence conditions to show explicit parameter dependence (with W2 subsections deferred).
 
 ## 5. Explicit Parameter Dependence and Convergence Rates
 
@@ -1309,104 +972,74 @@ The goal is to derive **explicit formulas** for the total convergence rate $\kap
 3. **Scaling laws** - predict performance for different problem sizes
 4. **Theoretical guarantees** - prove convergence for specific settings
 
+:::{important}
+Sections 5.3 and 5.5+ use the W2-based total rate and are **deferred**. The TV-track constants used in the main proof are in Sections 5.1, 5.1.1, 5.2, and 5.4.
+:::
+
 ### 5.1. Velocity Variance Dissipation: Explicit Constants
 
-From Section 3, the velocity variance satisfies:
+From {prf:ref}`thm-velocity-variance-contraction-kinetic` ({doc}`05_kinetic_contraction`), for any $\epsilon \in (0,2\gamma)$:
 
 $$
-\mathbb{E}[\Delta V_{\text{Var},v}] \leq -2\gamma V_{\text{Var},v} + C_v'
-
+\mathbb{E}[\Delta V_{\text{Var},v}] \leq -(2\gamma-\epsilon) V_{\text{Var},v}\tau + \left(\frac{F_{\max}^2}{\epsilon} + d\sigma_{\max}^2\right)\tau.
 $$
-
-**Explicit expansion:**
 
 :::{prf:proposition} Velocity Dissipation Rate (Parameter-Explicit)
 :label: prop-velocity-rate-explicit
-
-The velocity variance dissipation rate and equilibrium constant are:
-
+With the notation above,
 $$
-\kappa_v = 2\gamma - O(\tau)
-
+\kappa_v := (2\gamma-\epsilon)\tau, \quad C_v^{\text{kin}} := \left(\frac{F_{\max}^2}{\epsilon} + d\sigma_{\max}^2\right)\tau,
 $$
-
+and the composed step satisfies
 $$
-C_v' = \frac{d \sigma_v^2}{\gamma} + O(\tau \sigma_v^2)
-
+\mathbb{E}_{\text{total}}[\Delta V_{\text{Var},v}] \leq -\kappa_v V_{\text{Var},v} + (C_v + C_v^{\text{kin}}).
 $$
-
-**Proof:**
-
-From the BAOAB scheme (Eq. 1.15), the O-step gives:
-
-$$
-v_{n+1/2} = e^{-\gamma \tau} v_n + \sqrt{\frac{\sigma_v^2}{\gamma}(1 - e^{-2\gamma\tau})} \xi_n
-
-$$
-
-The expected variance after this step is:
-
-$$
-\mathbb{E}[\|v_{n+1/2}\|^2] = e^{-2\gamma\tau} \mathbb{E}[\|v_n\|^2] + d \frac{\sigma_v^2}{\gamma}(1 - e^{-2\gamma\tau})
-
-$$
-
-Expanding $e^{-2\gamma\tau} = 1 - 2\gamma\tau + 2\gamma^2\tau^2 + O(\tau^3)$:
-
-$$
-\mathbb{E}[\|v_{n+1/2}\|^2] = (1 - 2\gamma\tau + 2\gamma^2\tau^2) \mathbb{E}[\|v_n\|^2] + d \sigma_v^2 (2\tau - 2\gamma\tau^2 + O(\tau^3))
-
-$$
-
-$$
-= \mathbb{E}[\|v_n\|^2] - 2\gamma\tau \mathbb{E}[\|v_n\|^2] + 2d\sigma_v^2 \tau + O(\tau^2)
-
-$$
-
-The swarm-averaged variance is:
-
-$$
-V_{\text{Var},v} = \frac{1}{N}\sum_{i=1}^N \|v_i - \bar{v}\|^2 = \frac{1}{N}\sum_{i=1}^N \|v_i\|^2 - \|\bar{v}\|^2
-
-$$
-
-The expected drift is:
-
-$$
-\mathbb{E}[\Delta V_{\text{Var},v}] = -2\gamma\tau V_{\text{Var},v} + 2d\sigma_v^2 \tau + O(\tau^2 V_{\text{Var},v} + \tau^2 \sigma_v^2)
-
-$$
-
-Dividing by $\tau$ and taking the continuous limit:
-
-$$
-\frac{d}{dt}\mathbb{E}[V_{\text{Var},v}] = -2\gamma V_{\text{Var},v} + 2d\sigma_v^2 + O(\tau)
-
-$$
-
-Thus:
-- **Rate**: $\kappa_v = 2\gamma - O(\tau)$
-- **Constant**: $C_v' = 2d\sigma_v^2 + O(\tau \sigma_v^2) = \frac{d\sigma_v^2}{\gamma} \cdot 2\gamma + O(\tau\sigma_v^2)$
-
-**Equilibrium**: Setting the drift to zero gives:
-
-$$
-V_{\text{Var},v}^{\text{eq}} = \frac{C_v'}{\kappa_v} = \frac{d\sigma_v^2}{\gamma}(1 + O(\tau))
-
-$$
-
-This is the **Gibbs thermal variance** at effective temperature $\sigma_v^2/\gamma$.
 :::
+
+**Equilibrium bound:**
+
+$$
+V_{\text{Var},v}^{\text{QSD}} \leq \frac{F_{\max}^2/\epsilon + d\sigma_{\max}^2}{2\gamma-\epsilon} + \frac{C_v}{(2\gamma-\epsilon)\tau}.
+$$
+
+Define the kinetic equilibrium term:
+
+$$
+V_{\text{Var},v}^{\text{eq}} := \frac{F_{\max}^2/\epsilon + d\sigma_{\max}^2}{2\gamma-\epsilon}.
+$$
 
 **Parameter effects:**
 
-| Parameter | Effect on $\kappa_v$ | Effect on $C_v'$ | Effect on equilibrium |
-|-----------|---------------------|------------------|----------------------|
-| $\gamma \uparrow$ | ✅ Faster ($\propto \gamma$) | ❌ Smaller ($\propto 1/\gamma$) | ✅ Tighter ($\propto 1/\gamma$) |
-| $\sigma_v \uparrow$ | ➖ No effect | ❌ Larger ($\propto \sigma_v^2$) | ❌ Wider ($\propto \sigma_v^2$) |
-| $\tau \uparrow$ | ❌ Slower ($-O(\tau)$) | ❌ Larger ($+O(\tau\sigma_v^2)$) | ❌ Wider |
+| Parameter | Effect on $\kappa_v$ | Effect on $C_v^{\text{kin}}$ | Effect on equilibrium |
+|-----------|---------------------|------------------------------|----------------------|
+| $\gamma \uparrow$ | ✅ Faster ($\propto \gamma$) | ➖ No direct effect | ✅ Tighter (via $2\gamma-\epsilon$) |
+| $F_{\max} \uparrow$ | ➖ No effect | ❌ Larger ($\propto F_{\max}^2$) | ❌ Wider |
+| $\sigma_{\max} \uparrow$ | ➖ No effect | ❌ Larger ($\propto \sigma_{\max}^2$) | ❌ Wider |
+| $\tau \uparrow$ | ✅ Larger $\kappa_v$ (per step) | ✅ Larger $C_v^{\text{kin}}$ (per step) | ❌ Larger $C_v/((2\gamma-\epsilon)\tau)$ term |
 
-**Optimal choice:** High friction $\gamma \gg 1$ for fast velocity thermalization, but not so high that $\gamma \tau \to 1$ (violates small-timestep assumption).
+**Choice of $\epsilon$:** $\epsilon$ is a Young-inequality tuning parameter; taking $\epsilon$ small tightens the dissipation rate but increases the $F_{\max}^2/\epsilon$ source term.
+
+#### 5.1.1. Velocity Barycenter Dissipation
+
+From {prf:ref}`thm-velocity-barycenter-dissipation` ({doc}`05_kinetic_contraction`), the kinetic step satisfies:
+
+$$
+\mathbb{E}_{\text{kin}}[\Delta \|\mu_v\|^2] \leq -\gamma \|\mu_v\|^2 \tau + \left(\frac{F_{\max}^2}{\gamma} + \frac{\sigma_{\max}^2 d}{N}\right)\tau.
+$$
+
+Cloning adds a bounded expansion $\mathbb{E}_{\text{clone}}[\|\mu_v'\|^2] \leq v_{\max}^2$, so the composed step satisfies:
+
+$$
+\mathbb{E}_{\text{total}}[\Delta \|\mu_v\|^2] \leq -\gamma \|\mu_v\|^2 \tau + \left(v_{\max}^2 + \frac{F_{\max}^2}{\gamma}\tau + \frac{\sigma_{\max}^2 d}{N}\tau\right).
+$$
+
+**Equilibrium bound:**
+
+$$
+\|\mu_v\|_{\text{QSD}}^2 \leq \frac{v_{\max}^2}{\gamma\tau} + \frac{F_{\max}^2}{\gamma^2} + \frac{\sigma_{\max}^2 d}{\gamma N},
+$$
+
+with the deterministic cap $\|\mu_v\|^2 \leq v_{\max}^2$ from velocity squashing.
 
 ### 5.2. Positional Variance Contraction: Explicit Constants
 
@@ -1417,108 +1050,43 @@ $$
 
 $$
 
-**Explicit expansion:**
-
 :::{prf:proposition} Positional Contraction Rate (Parameter-Explicit)
 :label: prop-position-rate-explicit
-
-The positional variance contraction rate depends on the cloning rate $\lambda$ and the fitness-variance correlation:
-
+The composed drift satisfies
 $$
-\kappa_x = \lambda \cdot \mathbb{E}\left[\frac{\text{Cov}(f_i, \|x_i - \bar{x}\|^2)}{\mathbb{E}[\|x_i - \bar{x}\|^2]}\right] + O(\tau)
-
+\mathbb{E}_{\text{total}}[\Delta V_{\text{Var},x}] \leq -\kappa_x V_{\text{Var},x} + (C_x + C_{\text{kin},x}\tau),
 $$
+where $\kappa_x$ and $C_x$ come from the Keystone Principle ({doc}`03_cloning`) and $C_{\text{kin},x}$ is the bounded expansion constant from {prf:ref}`thm-positional-variance-bounded-expansion` ({doc}`05_kinetic_contraction`).
 
-The equilibrium constant is:
-
+An explicit (N-uniform) choice from {doc}`05_kinetic_contraction` is
 $$
-C_x = O\left(\frac{\sigma_v^2 \tau^3}{\gamma}\right) + O(\tau \sigma_x^2)
-
+C_{\text{kin},x} = 2\sqrt{M_x M_v} + \frac{2 V_{\text{Var},v}^{\text{eq}}}{\gamma},
 $$
+with $M_v = V_{\text{Var},v}^{\text{eq}}$ and $V_{\text{Var},v}^{\text{eq}} = \frac{F_{\max}^2/\epsilon + d\sigma_{\max}^2}{2\gamma-\epsilon}$.
 
-where $\sigma_x^2 \sim \sigma_v^2 \tau^2$ is the effective positional diffusion.
-
-**Proof:**
-
-From the Keystone Principle ({doc}`03_cloning`, Theorem 5.1), the cloning operator contracts positional variance via the fitness-variance anti-correlation:
-
+The equilibrium bound is
 $$
-\mathbb{E}[\Delta V_{\text{Var},x}^{\text{clone}}] = -\lambda \cdot \frac{\sum_{i=1}^N f_i \|x_i - \bar{x}\|^2}{\sum_{j=1}^N f_j} + \lambda \cdot \frac{(\sum_{i=1}^N f_i \|x_i - \bar{x}\|)^2}{(\sum_{j=1}^N f_j)^2}
-
+V_{\text{Var},x}^{\text{QSD}} \leq \frac{C_x + C_{\text{kin},x}\tau}{\kappa_x}.
 $$
-
-For large $N$ and centered distribution:
-
-$$
-\mathbb{E}[\Delta V_{\text{Var},x}^{\text{clone}}] \approx -\lambda \cdot \text{Cov}(f_i, \|x_i - \bar{x}\|^2) + O(1/N)
-
-$$
-
-Normalizing by $V_{\text{Var},x} = \mathbb{E}[\|x_i - \bar{x}\|^2]$:
-
-$$
-\kappa_x = \lambda \cdot \frac{\text{Cov}(f_i, \|x_i - \bar{x}\|^2)}{V_{\text{Var},x}}
-
-$$
-
-The kinetic operator expands positional variance via:
-
-$$
-\mathbb{E}[\Delta V_{\text{Var},x}^{\text{kin}}] = \mathbb{E}\left[\frac{1}{N}\sum_{i=1}^N (v_i - \bar{v}) \cdot (x_i - \bar{x})\right] \tau + O(\tau^2)
-
-$$
-
-For thermalized velocities ($\mathbb{E}[v \mid x]$ weakly correlated):
-
-$$
-\mathbb{E}[\Delta V_{\text{Var},x}^{\text{kin}}] \lesssim \sqrt{V_{\text{Var},x} V_{\text{Var},v}} \tau
-
-$$
-
-Using $V_{\text{Var},v} \sim \sigma_v^2/\gamma$:
-
-$$
-C_x \sim \sqrt{V_{\text{Var},x}} \cdot \frac{\sigma_v}{\sqrt{\gamma}} \tau + O(\tau^2)
-
-$$
-
-For equilibrium $V_{\text{Var},x}^{\text{eq}} = C_x/\kappa_x$, we get:
-
-$$
-C_x \sim \frac{\sigma_v^2 \tau^2}{\gamma \kappa_x} + O(\tau^2)
-
-$$
-
-Assuming $\kappa_x \sim \lambda$:
-
-$$
-C_x \sim \frac{\sigma_v^2 \tau^2}{\gamma \lambda}
-
-$$
-
-**Higher-order correction:** The $O(\tau)$ in $\kappa_x$ comes from positional diffusion during BAB steps:
-
-$$
-\Delta x = v \tau + O(\tau^2), \quad \Delta V_{\text{Var},x} \sim 2\langle v, x - \bar{x}\rangle \tau + O(\tau^2)
-
-$$
-
-This adds $O(\tau)$ to the rate.
 :::
 
 **Parameter effects:**
 
-| Parameter | Effect on $\kappa_x$ | Effect on $C_x$ | Effect on equilibrium |
-|-----------|---------------------|-----------------|----------------------|
-| $\lambda \uparrow$ | ✅ Faster ($\propto \lambda$) | ✅ Smaller ($\propto 1/\lambda$) | ✅ Tighter ($\propto 1/\lambda$) |
-| $\gamma \uparrow$ | ➖ Indirect (via fitness) | ✅ Smaller ($\propto 1/\gamma$) | ✅ Tighter |
-| $\sigma_v \uparrow$ | ➖ Indirect | ❌ Larger ($\propto \sigma_v^2$) | ❌ Wider |
-| $\tau \uparrow$ | ❌ Slower ($-O(\tau)$) | ❌ Larger ($\propto \tau^2$) | ❌ Much wider |
-| $N \uparrow$ | ✅ Tighter estimate ($+O(1/N)$) | ➖ Minimal | ✅ Slightly tighter |
+| Parameter | Effect on $\kappa_x$ | Effect on $C_{\text{kin},x}$ | Effect on equilibrium |
+|-----------|---------------------|------------------------------|----------------------|
+| $\lambda \uparrow$ | ✅ Faster ($\propto \lambda$) | ➖ No direct effect | ✅ Tighter |
+| $\gamma \uparrow$ | ➖ Indirect | ✅ Smaller via $V_{\text{Var},v}^{\text{eq}}$ | ✅ Tighter |
+| $\sigma_{\max} \uparrow$ | ➖ Indirect | ❌ Larger ($\propto \sigma_{\max}^2$) | ❌ Wider |
+| $F_{\max} \uparrow$ | ➖ Indirect | ❌ Larger ($\propto F_{\max}^2$) | ❌ Wider |
+| $\tau \uparrow$ | ➖ No effect on $\kappa_x$ | ✅ Larger (per step) | ❌ Wider |
 
-**Optimal choice:** High cloning rate $\lambda \sim 0.1 - 1$ for fast variance contraction, small timestep $\tau \ll 1$ to minimize diffusive expansion.
+**Optimal choice:** Larger $\lambda$ improves positional contraction; smaller $\tau$ limits kinetic diffusion.
 
-### 5.3. Wasserstein Contraction: Explicit Constants
+### 5.3. Wasserstein Contraction: Explicit Constants (Deferred)
+
+:::{important}
+This subsection belongs to the deferred W2 track and is **not used** in the TV proof.
+:::
 
 From Section 2, the inter-swarm Wasserstein error satisfies:
 
@@ -1740,7 +1308,11 @@ $$
 
 **Optimal choice:** High boundary stiffness $\kappa_{\text{wall}} \gg 1$ and high cloning rate $\lambda$ for safety. Large Safe Harbor distance $d_{\text{safe}}$ prevents thermal escapes.
 
-### 5.5. Synergistic Composition: Total Convergence Rate
+### 5.5. Synergistic Composition: Total Convergence Rate (Deferred W2/Optimization Track)
+
+:::{important}
+This section (and subsequent optimization sections) uses the W2-based Lyapunov and cross-coupling analysis. It is **deferred** and not required for the TV proof. The TV-track total rate is given in Chapter 3.
+:::
 
 From Section 6, the total Lyapunov function is:
 
@@ -2345,6 +1917,10 @@ These explicit formulas enable:
 ## 6. Spectral Analysis of Parameter Coupling
 
 ### 6.0. Chapter Overview
+
+:::{important}
+This chapter assumes the W2-based total rate formulas (including $\kappa_W$) and is **deferred**. It is not required for the TV convergence proof.
+:::
 
 The previous chapter derived explicit formulas showing how algorithmic parameters affect convergence rates. However, a critical question remains: **What is the structure of the parameter space itself?**
 

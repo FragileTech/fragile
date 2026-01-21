@@ -12,7 +12,7 @@
 
 **Adaptive Sprinkling Innovation**: Unlike standard Poisson sprinkling with constant spacetime density, QSD sampling yields an inhomogeneous density $\rho_{\mathrm{adaptive}}(x, t) \propto \sqrt{\det g(x, t)} \, e^{-U_{\mathrm{eff}}(x, t)/T}$, adapting resolution to the learned geometry (higher-weight regions get more episodes).
 
-**Causal Set Machinery Applies**: With causal set status established, CST tools (d'Alembertian, dimension estimators, curvature measures) apply in full, using the adaptive-density formulas given here.
+**Causal Set Machinery Applies**: With causal set status established, CST tools (d'Alembertian, dimension estimators, curvature measures) apply in full, using the geometric light-cone order and adaptive-density formulas given here.
 
 ---
 
@@ -202,11 +202,19 @@ distance with edge lengths induced by $g_R$ (which converges to $d_{\mathrm{geo}
 **Physical meaning**: $e_i \prec_{\mathrm{LC}} e_j$ iff information from $e_i$ can causally
 influence $e_j$.
 
-**Equivalence**: Proposition {prf:ref}`prop-fractal-causal-order-equivalence` shows
+**Compatibility**: Proposition {prf:ref}`prop-fractal-causal-order-equivalence` shows
 that $\prec_{\mathrm{CST}}$ is an order-embedding into $\prec_{\mathrm{LC}}$ and, on
-CST-connected pairs, the two agree in the continuum limit.
+CST-connected pairs, $d_g$ converges to the realized trajectory length and upper-bounds
+$d_{\mathrm{geo}}$.
 Geometric estimators below (volume and dimension) use $\prec_{\mathrm{LC}}$ to match the
 continuum causal structure; $\prec_{\mathrm{CST}}$ remains the algorithmic ancestry order.
+:::
+
+:::{note}
+CST edges encode continuous timelike evolution only. When a walker clones
+($c(n_{i,t})\neq\bot$), the new node $n_{i,t}$ starts a **new** CST path; clone ancestry is
+recorded in $E_{\mathrm{clone}}$ ({prf:ref}`def-fractal-set-clone-ancestry`) and IA edges, and is
+excluded from $d_g$ and $\prec_{\mathrm{CST}}$.
 :::
 
 :::{div} feynman-prose
@@ -227,12 +235,13 @@ Here is the physical picture. Draw a diagram with time going up and space going 
 Light-cone causal order. Events inside the cone are causally related; events outside are spacelike.
 :::
 
-:::{prf:proposition} Graph-Light-Cone Equivalence
+:::{prf:proposition} Graph-Light-Cone Compatibility
 :label: prop-fractal-causal-order-equivalence
 
 The CST order $\prec_{\mathrm{CST}}$ is an order-embedding into the geometric light-cone order
 $\prec_{\mathrm{LC}}$. Moreover, on CST-connected pairs the graph distance converges to the
-geometric path length, so the two orders coincide in the continuum limit.
+length of the realized trajectory and upper-bounds $d_{\mathrm{geo}}$; thus the orders are
+compatible on realized ancestry but no new relations between distinct lineages are inferred.
 
 *Proof.* For any CST edge, $\|\Delta x\|_{g_{t_k}} / \Delta t_k \le c$ by the velocity squashing
 map $\psi_v$ ({prf:ref}`def-latent-velocity-squashing`), so the piecewise-geodesic interpolation
@@ -241,11 +250,12 @@ $e_i \prec_{\mathrm{CST}} e_j \Rightarrow e_i \prec_{\mathrm{LC}} e_j$.
 
 For CST-connected pairs, let $h:=\max_k \Delta t_k$ and interpolate the CST path by a $C^1$
 curve in the continuum lift. Expansion Adjunction and the continuum injection
-({prf:ref}`thm-expansion-adjunction`, {prf:ref}`mt:continuum-injection`) give
-$|d_g(e_i,e_j)-d_{\mathrm{geo}}(e_i,e_j)|\le C h$ on compact subsets, so $d_g\to d_{\mathrm{geo}}$
-as $h\to 0$ (equivalently a bi-Lipschitz bound with factor $1+O(h)$). Thus the Lorentzian order
-induced by $g=-c^2 dt^2+g_R$ agrees with $\prec_{\mathrm{CST}}$ on the realized episode set in the
-continuum limit; no additional relations are inferred between distinct lineages. $\square$
+({prf:ref}`thm-expansion-adjunction`, {prf:ref}`mt:continuum-injection`) imply the discrete
+length $d_g(e_i,e_j)$ converges to the length of that realized trajectory as $h\to 0$.
+Since $d_{\mathrm{geo}}$ is the infimum over all $C^1$ curves, we have
+$d_{\mathrm{geo}}(e_i,e_j) \le \lim_{h\to 0} d_g(e_i,e_j)$ on CST-connected pairs. Thus the
+Lorentzian order induced by $g=-c^2 dt^2+g_R$ is compatible with $\prec_{\mathrm{CST}}$ on the
+realized episode set; no additional relations are inferred between distinct lineages. $\square$
 :::
 
 ### QSD Sampling = Adaptive Sprinkling
@@ -337,7 +347,8 @@ reconstruction target set ({prf:ref}`def-fractal-set-reconstruction-targets`) ar
 at episode locations, including trajectories and the adaptive diffusion tensor
 $\Sigma_{\mathrm{reg}}$ from the SDE ({prf:ref}`def-fractal-set-sde`). The emergent metric is
 defined by $\Sigma_{\mathrm{reg}}$ via {prf:ref}`def-adaptive-diffusion-tensor-latent`, so $g$
-and $d_g$ are available on the same support. Expansion Adjunction
+and the spatial geodesic distance $d_{g_R}$ (hence the spacetime proxy $d_{\mathrm{geo}}$) are
+available on the same support. Expansion Adjunction
 ({prf:ref}`thm-expansion-adjunction`) and Lock Closure
 ({prf:ref}`mt:fractal-gas-lock-closure`) lift the discrete causal order to the continuum
 limit. Therefore the adaptive-density CST operators in this chapter are well-defined and
@@ -763,12 +774,11 @@ All localized sums and estimators below are defined for $e\in E_{\mathrm{int}}$.
 :label: def-cst-fractal-dalembertian
 
 Let $E_{\mathrm{int}}$ be the interior episodes from {prf:ref}`def-fractal-gas-interior-episodes`.
-For $e\in E_{\mathrm{int}}$ and episodes $e'$ with $e'\prec_{\mathrm{CST}} e$ or
-$e\prec_{\mathrm{CST}} e'$, define the
-symmetric directed distance $d_g^\pm(e',e):=\min(d_g(e',e), d_g(e,e'))$ and the proper-time proxy
+For $e\in E_{\mathrm{int}}$ and episodes $e'$ with $e'\prec_{\mathrm{LC}} e$ or
+$e\prec_{\mathrm{LC}} e'$, define the proper-time proxy
 
 $$
-\tau(e', e) := \sqrt{c^2 (t_e - t_{e'})^2 - d_g^\pm(e', e)^2}, \qquad c := V_{\mathrm{alg}}.
+\tau(e', e) := \sqrt{c^2 (t_e - t_{e'})^2 - d_{\mathrm{geo}}(e', e)^2}, \qquad c := V_{\mathrm{alg}}.
 $$
 
 Let $w_{\mathrm{geo}}(e') := \frac{Z(t_{e'})}{r(t_{e'})}
@@ -776,11 +786,13 @@ Let $w_{\mathrm{geo}}(e') := \frac{Z(t_{e'})}{r(t_{e'})}
 be the geometric reweighting from {prf:ref}`def-cst-volume`.
 Define the **localized** two-sided causal neighborhood
 $$
-J_{\mathrm{loc}}^\pm(e):=\{e' : e'\prec_{\mathrm{CST}} e \text{ or } e\prec_{\mathrm{CST}} e',\;
-|t_e-t_{e'}|\le T_{\mathrm{loc}},\; d_g^\pm(e',e)\le R_{\mathrm{loc}}\},
+J_{\mathrm{loc}}^\pm(e):=\{e' \in E:\, e'\prec_{\mathrm{LC}} e \text{ or } e\prec_{\mathrm{LC}} e',\;
+|t_e-t_{e'}|\le T_{\mathrm{loc}},\; d_{\mathrm{geo}}(e',e)\le R_{\mathrm{loc}}\},
 $$
 using the algorithmic cutoffs $T_{\mathrm{loc}}, R_{\mathrm{loc}}$ from A5. This removes
-far light-cone contributions and makes the kernel moments finite by construction.
+far light-cone contributions and makes the kernel moments finite by construction. In practice,
+$d_{\mathrm{geo}}$ is computed from the reconstructed $g_R$ or via IG-graph shortest paths
+with edge lengths induced by $g_R$.
 
 The **Fractal Gas d'Alembertian** acting on $f:E\to\mathbb{R}$ is
 
@@ -887,11 +899,12 @@ Myrheim and Meyer worked out the exact relationship {cite}`Myrheim1978,Meyer1988
 For curvature, the approach is similar but more subtle. We build QSD-weighted **proper-time
 neighborhoods** around a single event (not order intervals, which would be chains in a tree),
 and we **localize** them using the algorithmic scales $\rho$ and $\varepsilon_c$ so the
-neighborhoods are compact and first-principles. There are two complementary estimators: a
-geometric one that uses the smooth Lorentzian metric $g$, and a CST-tree one that uses only the
-graph-defined paths. They agree in the continuum, and we keep both so we can compare against the
-independent curvature constructions later in `3_fitness_manifold`. In the uniform Poisson limit
-the coefficients reduce to Benincasa-Dowker.
+neighborhoods are compact and first-principles. The primary estimator uses the geometric
+light-cone order and $d_{\mathrm{geo}}$ from the reconstructed $g_R$. We also record a
+trajectory-only diagnostic along each CST lineage based on realized path length; it is useful
+for comparisons but is not claimed to converge to $R_g$ without additional geodesicity or
+augmented-order assumptions. In the uniform Poisson limit the coefficients reduce to
+Benincasa-Dowker.
 
 This is the ultimate vindication of the causal set program: once the causal order of the
 emergent manifold is fixed, geometry—dimension, curvature, volume—can be recovered from
@@ -941,7 +954,7 @@ $r_e\to r$ and the same inversion yields $d_{\mathrm{MM}}$; this uses the local 
 $g$ on windows whose diameter shrinks with $R_{\mathrm{loc}}$.
 :::
 
-:::{prf:definition} Proper-Time Neighborhoods (Geometric and CST)
+:::{prf:definition} Proper-Time Neighborhoods (Geometric and Trajectory)
 :label: def-fractal-gas-proper-time-neighborhoods
 
 Let $g = -c^2 dt^2 + g_R$ with $c=V_{\mathrm{alg}}$. For $e\in E_{\mathrm{int}}$ and two events
@@ -967,24 +980,27 @@ J_{g,\mathrm{loc}}^\pm(e;\varepsilon):=\{y\in M:\,0<\tau_g(y,e)\le \varepsilon,\
 |t(y)-t_e|\le T_{\mathrm{loc}},\; d_{\mathrm{geo}}(y,e)\le R_{\mathrm{loc}}\}.
 $$
 
-For the CST tree, use the graph path length $d_g$ from
+For a trajectory-only diagnostic, use the graph path length $d_g$ from
 {prf:ref}`def-fractal-causal-order` and define the symmetric directed distance
-$d_g^\pm(e',e) := \min(d_g(e',e), d_g(e,e'))$. Then define
+$d_g^\pm(e',e) := \min(d_g(e',e), d_g(e,e'))$ (finite only for CST-comparable pairs). Then
+define the **trajectory proper-time proxy**
 
 $$
-\tau_{\mathrm{CST}}(e',e) := \sqrt{c^2(t_e-t_{e'})^2 - d_g^\pm(e',e)^2},
+\tau_{\mathrm{traj}}(e',e) := \sqrt{c^2(t_e-t_{e'})^2 - d_g^\pm(e',e)^2},
 $$
 
-with $\tau_{\mathrm{CST}}(e',e)$ real iff $d_g^\pm(e',e)\le c|t_e-t_{e'}|$. The **CST proper-time
-neighborhood** is
+with $\tau_{\mathrm{traj}}(e',e)$ real iff $d_g^\pm(e',e)\le c|t_e-t_{e'}|$. The
+**trajectory proper-time neighborhood** is
 
 $$
-J_{\mathrm{CST,loc}}^\pm(e;\varepsilon) :=
+J_{\mathrm{traj,loc}}^\pm(e;\varepsilon) :=
 \{e' \in E:\, e'\prec_{\mathrm{CST}} e \text{ or } e\prec_{\mathrm{CST}} e',\;
-0<\tau_{\mathrm{CST}}(e',e)\le \varepsilon,\;
+0<\tau_{\mathrm{traj}}(e',e)\le \varepsilon,\;
 |t_e-t_{e'}|\le T_{\mathrm{loc}},\; d_g^\pm(e',e)\le R_{\mathrm{loc}}\}.
 $$
 
+The geometric neighborhood is used for curvature estimation; the trajectory neighborhood is a
+lineage-only diagnostic and does not approximate light-cone neighborhoods across lineages.
 Both neighborhoods use only existing episodes; no new points are sampled.
 :::
 
@@ -1015,23 +1031,25 @@ K_R\!\left(\frac{\tau_g(e',e)}{\varepsilon}\right)
 \right].
 $$
 
-Define the **CST-tree curvature estimator**:
+Define the **trajectory curvature diagnostic**:
 
 $$
-\widehat{R}_{\mathrm{FG}}^{(\mathrm{CST})}(e) :=
+\widehat{R}_{\mathrm{FG}}^{(\mathrm{traj})}(e) :=
 \frac{1}{M_R\,\varepsilon^2}
 \left[
-\frac{R}{N\,\varepsilon^D}\sum_{e' \in J_{\mathrm{CST,loc}}^\pm(e;\varepsilon)} w_{\mathrm{geo}}(e')\,
-K_R\!\left(\frac{\tau_{\mathrm{CST}}(e',e)}{\varepsilon}\right)
+\frac{R}{N\,\varepsilon^D}\sum_{e' \in J_{\mathrm{traj,loc}}^\pm(e;\varepsilon)} w_{\mathrm{geo}}(e')\,
+K_R\!\left(\frac{\tau_{\mathrm{traj}}(e',e)}{\varepsilon}\right)
 - M_0^{(R)}
 \right].
 $$
 
-On the half-open window, $R = \int r(t)\,dt = N$ so the prefactor simplifies to
+This diagnostic uses only realized CST worldlines and is intended for comparison against the
+geometric estimator; it is not claimed to converge to $R_g$ without additional geodesicity
+assumptions. On the half-open window, $R = \int r(t)\,dt = N$ so the prefactor simplifies to
 $\varepsilon^{-D}$.
 :::
 
-:::{prf:theorem} Ricci Scalar from Fractal Gas (Two Estimators)
+:::{prf:theorem} Ricci Scalar from Fractal Gas (Geometric Estimator)
 :label: thm-fractal-gas-ricci
 
 Assume {prf:ref}`assm-fractal-gas-nonlocal` and the expansion in
@@ -1039,23 +1057,16 @@ Assume {prf:ref}`assm-fractal-gas-nonlocal` and the expansion in
 $\widehat{R}_{\mathrm{FG}}^{(g)}(e) \to R_g(x,t)$ in probability as $\varepsilon\to 0$,
 $N\to\infty$.
 
-If, in addition, the graph distance $d_g$ converges to $d_{\mathrm{geo}}$ on compact sets
-({prf:ref}`prop-fractal-causal-order-equivalence` and the continuum lift), then
-$|\widehat{R}_{\mathrm{FG}}^{(\mathrm{CST})}(e)-\widehat{R}_{\mathrm{FG}}^{(g)}(e)|\to 0$ in
-probability, so $\widehat{R}_{\mathrm{FG}}^{(\mathrm{CST})}(e)\to R_g(x,t)$ as well.
-
-Define the Fractal Gas Einstein-Hilbert actions
+Define the Fractal Gas Einstein-Hilbert action
 
 $$
 S_{\mathrm{FG}}^{(g)} := \frac{1}{2\kappa_D}\sum_{e\in E_{\mathrm{int}}}
-\mu_{\mathrm{geo}}(e)\,\widehat{R}_{\mathrm{FG}}^{(g)}(e), \qquad
-S_{\mathrm{FG}}^{(\mathrm{CST})} := \frac{1}{2\kappa_D}\sum_{e\in E_{\mathrm{int}}}
-\mu_{\mathrm{geo}}(e)\,\widehat{R}_{\mathrm{FG}}^{(\mathrm{CST})}(e).
+\mu_{\mathrm{geo}}(e)\,\widehat{R}_{\mathrm{FG}}^{(g)}(e).
 $$
 
-Then $S_{\mathrm{FG}}^{(g)}$ and $S_{\mathrm{FG}}^{(\mathrm{CST})}$ both converge to
+Then $S_{\mathrm{FG}}^{(g)}$ converges to
 $(2\kappa_D)^{-1}\int_M R_g\, d\mathrm{vol}_g$. In the uniform Poisson limit with a kernel
-matching the Benincasa-Dowker coefficients, these actions reduce to $S_{\mathrm{BD}}$
+matching the Benincasa-Dowker coefficients, this action reduces to $S_{\mathrm{BD}}$
 ({cite}`BenincasaDowker2010`).
 :::
 
@@ -1067,11 +1078,12 @@ matching the Benincasa-Dowker coefficients, these actions reduce to $S_{\mathrm{
   and action.
 - **Interval counts vs neighborhoods**: Classical BD curvature uses interval counts $N_k$ on
   order intervals $I(p,q)$. In a tree, $I(p,q)$ collapses to a chain, so we use proper-time
-  neighborhoods around a single event instead; the Poisson limit reproduces BD weights.
+  neighborhoods around a single event instead; the Poisson limit reproduces BD weights for the
+  geometric estimator.
 - **Dimension checks**: The Myrheim–Meyer estimator is unchanged; adaptive density requires
   local windows or reweighting, and in the uniform limit it matches standard CST results.
-- **Sanity tests**: On Minkowski sprinklings, both estimators should recover $R=0$ and the
-  ordering fraction; deviations quantify kernel choice and sampling bias.
+- **Sanity tests**: On Minkowski sprinklings, the geometric estimator should recover $R=0$ and
+  the ordering fraction; deviations quantify kernel choice and sampling bias.
 - **Cross-method comparison**: Later in `3_fitness_manifold`, compare these estimates to
   holonomy/plaquette curvature to validate the emergent geometry.
 :::

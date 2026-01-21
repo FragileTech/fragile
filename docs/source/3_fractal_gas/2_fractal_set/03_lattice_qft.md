@@ -62,9 +62,18 @@ The Standard Model gauge group $SU(N) \times SU(2) \times U(1)$ does not emerge 
 
 The three gauge symmetries emerge from:
 
-**$U(1)$ — Fitness Phase Invariance**: The diversity companion selection mechanism measures fitness differences, not absolute values. Define the fitness phase $\theta_i := -\Phi_i/\hbar_{\text{eff}}$; a global shift $\Phi \to \Phi + c$ shifts all $\theta_i$ by the same constant and leaves $\theta_{ij}$ invariant. This $U(1)$ redundancy is the algorithmic origin of electromagnetism.
+**$U(1)$ — Fitness Phase Gauge**: The diversity companion selection mechanism measures fitness differences, not absolute values. Define the fitness phase $\theta_i := -\Phi_i/\hbar_{\text{eff}}$; only phase differences $\theta_{ij} = \theta_j-\theta_i$ enter IG amplitudes and edge holonomies ({prf:ref}`def-fractal-set-phase-potential`). This makes the local choice of phase reference $\theta_i \mapsto \theta_i + \alpha_i$ a gauge redundancy: edge phases transform as $\theta_{ij} \mapsto \theta_{ij} + \alpha_j - \alpha_i$, while loop holonomies are invariant. A global shift is the special case $\alpha_i \equiv c$. This local $U(1)$ redundancy is the algorithmic origin of electromagnetism.
 
-**$SU(2)$ — Cloning Companion Doublet**: For each walker pair $(i, j)$ with $V_i \neq V_j$, exactly one can clone from the other ({prf:ref}`cor-fractal-set-selection-asymmetry`). This creates a natural $(+, -)$ doublet structure under local fitness comparison. Since different regions make independent fitness comparisons (locality), maintaining consistency across the CST requires a compensating $SU(2)$ gauge field. The SU(2) phase on an oriented pair is $\theta_{ij}^{(SU(2))} := S_i(j)/\hbar_{\text{eff}}$, while the cloning companion kernel supplies the amplitude. This is the algorithmic origin of the weak force.
+**$SU(2)$ — Cloning Companion Doublet**: For each walker pair $(i, j)$ with $V_i \neq V_j$, exactly one can clone from the other ({prf:ref}`cor-fractal-set-selection-asymmetry`). This defines a two-component cloning space. A normalized doublet can be written as
+$$
+\Psi_{ij} := \frac{1}{\sqrt{P_i^{\mathrm{clone}}(j) + P_j^{\mathrm{clone}}(i)}}
+\begin{pmatrix}
+\sqrt{P_i^{\mathrm{clone}}(j)}\,e^{i\theta_{ij}^{(SU(2))}} \\
+\sqrt{P_j^{\mathrm{clone}}(i)}\,e^{i\theta_{ji}^{(SU(2))}}
+\end{pmatrix},
+\quad \theta_{ij}^{(SU(2))} := \frac{S_i(j)}{\hbar_{\text{eff}}},
+$$
+with $P_i^{\mathrm{clone}}(j)$ from the cloning companion kernel ({prf:ref}`def-fractal-set-companion-kernel`). Fixing the overall $U(1)$ phase leaves a local $SU(2)$ basis freedom for each interacting pair. The resulting $SU(2)$ connection transports these doublets between local interaction bases; see {prf:ref}`thm-sm-su2-emergence` for the full construction and gauge-covariant form. This is the algorithmic origin of the weak force.
 
 **$SU(N)$ — Viscous Force Index Symmetry**: The viscous force couples an $N$-component **real** internal velocity vector. If the dynamics depends only on inner products (no preferred basis), it is invariant under orthogonal rotations $O(N)$ (or $SO(N)$ for orientation-preserving changes). Complexify the force components with momentum phases,
 $\tilde{c}_i^{(\alpha)} := F_\alpha^{(\text{visc})}(i)\exp(i p_i^{(\alpha)}\ell_0/\hbar_{\text{eff}})$ and $c_i^{(\alpha)} := \tilde{c}_i^{(\alpha)}/\|\tilde{c}_i\|$, with $p_i^{(\alpha)} = m v_i^{(\alpha)}$ and $\ell_0$ a characteristic IG length, and this redundancy lifts to unitary $U(N)$ basis changes; factoring out the overall $U(1)$ phase leaves $SU(N)$ (with permutations as a discrete subgroup). This is the algorithmic origin of the strong force (with $N = d$ for $d$-dimensional latent space). See {prf:ref}`thm-sm-su3-emergence`.
@@ -100,7 +109,7 @@ Imagine you are standing at one node of the Fractal Set and you want to compare 
 
 The parallel transport operator $U(e_i, e_j)$ is that rule. It tells you: if you have a phase $\psi_i$ at node $e_i$, the equivalent phase at node $e_j$—the phase that represents "the same direction"—is $U(e_i, e_j)\psi_i$. For $U(1)$ gauge theory, this is just multiplication by a complex number of unit magnitude: $e^{i\theta}$. The angle $\theta$ encodes how much the "reference direction" has to rotate as you move from one node to the next.
 
-The beautiful thing about the Fractal Set is that it gives us two different kinds of parallel transport: one for moving forward in time (along CST edges) and one for moving sideways in space (along IG edges). The physics that determines these transport rules is different in each case—and that difference is what makes the whole structure interesting.
+The beautiful thing about the Fractal Set is that it gives us two dynamical kinds of parallel transport—one for moving forward in time (along CST edges) and one for moving sideways in space (along IG edges)—plus IA attribution phases that close the interaction loops. The physics that determines these transport rules is different in each case—and that difference is what makes the whole structure interesting.
 :::
 
 :::{prf:definition} U(1) Gauge Field on Fractal Set
@@ -114,7 +123,7 @@ $$
 U_{\mathrm{time}}(e_i \to e_j) = \exp\left(i q \int_{t_i}^{t_j} A_0 \, dt\right) \in U(1)
 $$
 
-where $A_0$ is the temporal gauge potential and $\tau_{ij}$ is proper time (for slowly varying $A_0$, this reduces to $e^{i q A_0 \tau_{ij}}$).
+where $A_0$ is the temporal gauge potential in algorithmic time and $\tau_{ij} = \kappa_\tau \Delta t_{ij}$ is the proper-time proxy from {prf:ref}`thm-fractal-faithful-embedding` (for slowly varying $A_0$, this reduces to $e^{i q A_0 \tau_{ij}}$).
 
 **IG edges (spacelike):**
 
@@ -139,6 +148,17 @@ U(e_i, e_j) \mapsto \Omega(e_i) \, U(e_i, e_j) \, \Omega(e_j)^{-1}
 $$
 
 Equivalently, $U(e) = \exp\left(i q \int_e A_\mu \, dx^\mu\right)$ with sign conventions absorbed into $A_\mu$; for IA edges we use the stored attribution phase $\phi_{\mathrm{IA}}$.
+:::
+
+:::{prf:definition} SU(2) Cloning Doublet Transport
+:label: def-su2-clone-transport
+
+Let $\Psi_{ij}$ be the cloning doublet defined above. An $SU(2)$ gauge field assigns link
+matrices $U_{ij\to i'j'} \in SU(2)$ that transport doublets between adjacent interaction bases
+(e.g., along CST updates for the same ordered pair or along IG adjacencies at fixed time).
+Under local basis changes $\Psi_{ij} \mapsto G_{ij}\Psi_{ij}$ with $G_{ij}\in SU(2)$,
+the links transform as $U_{ij\to i'j'} \mapsto G_{ij}\,U_{ij\to i'j'}\,G_{i'j'}^{-1}$.
+This is the discrete $SU(2)$ parallel transport used in Wilson loops on the interaction complex.
 :::
 
 :::{prf:definition} SU(N) Gauge Field (Yang-Mills)
@@ -333,6 +353,51 @@ where $\sigma$ is the string tension.
 **Fractal Set prediction**: If the Adaptive Gas exhibits confinement-like behavior (walkers trapped in fitness basins), we expect area law scaling.
 :::
 
+### 3.3. Fractal-Set Feynman Diagrams
+
+:::{prf:definition} Fractal-Set Feynman Diagram
+:label: def-fractal-set-feynman-diagram
+
+A **Fractal-Set Feynman diagram** is a finite, connected, oriented sub-2-complex
+$\mathcal{D} = (E_{\mathcal{D}}, \mathcal{T}_{\mathcal{D}})$ of $\mathcal{F}$ such that:
+
+1. $E_{\mathcal{D}} \subset E_{\mathrm{CST}} \cup E_{\mathrm{IG}} \cup E_{\mathrm{IA}}$ and
+   $\mathcal{T}_{\mathcal{D}} \subset \mathcal{T}$.
+2. Every triangle in $\mathcal{T}_{\mathcal{D}}$ has exactly one CST edge, one IG edge,
+   and one IA edge on its boundary.
+3. All CST edges in $E_{\mathcal{D}}$ are future-directed (causal orientation).
+
+**External legs** are CST edges in $E_{\mathcal{D}}$ incident to exactly one triangle in
+$\mathcal{T}_{\mathcal{D}}$; **internal legs** are CST edges incident to two triangles.
+Triangles with $\chi_{\mathrm{clone}}=1$ on their IA edge encode branching events via
+$E_{\mathrm{clone}}$ ({prf:ref}`def-fractal-set-clone-ancestry`) without altering the CST
+worldline forest.
+:::
+
+:::{prf:definition} Diagram Weight
+:label: def-fractal-set-diagram-weight
+
+Given edge weights $G_{\mathrm{CST}}, G_{\mathrm{IG}}, G_{\mathrm{IA}}$ and a triangle weight
+$W(\triangle)$, the **diagram amplitude** is
+
+$$
+\mathcal{A}(\mathcal{D}) := \prod_{e \in E_{\mathcal{D}} \cap E_{\mathrm{CST}}} G_{\mathrm{CST}}(e)
+\cdot \prod_{e \in E_{\mathcal{D}} \cap E_{\mathrm{IG}}} G_{\mathrm{IG}}(e)
+\cdot \prod_{e \in E_{\mathcal{D}} \cap E_{\mathrm{IA}}} G_{\mathrm{IA}}(e)
+\cdot \prod_{\triangle \in \mathcal{T}_{\mathcal{D}}} W(\triangle).
+$$
+
+For gauge phases, one may take $G_{\mathrm{CST}} = U_{\mathrm{CST}}$, $G_{\mathrm{IG}} = U_{\mathrm{IG}}$,
+$G_{\mathrm{IA}} = U_{\mathrm{IA}}$ and $W(\triangle)=W(\triangle_{ij,t})$ from
+{prf:ref}`def-fractal-set-wilson-loop`. For fermionic amplitudes, a natural choice is
+$G_{\mathrm{IG}}=\tilde{K}_{ij}$ and $G_{\mathrm{CST}}=U_{ij}$ (Section 4).
+:::
+
+:::{note}
+Summing $\mathcal{A}(\mathcal{D})$ over diagram subcomplexes provides a path-integral-style
+expansion of interaction histories, while preserving the geometric CST order for causal structure.
+:::
+
 
 (sec-fermions)=
 ## 4. Fermionic Structure from Cloning Antisymmetry
@@ -366,7 +431,7 @@ $$
 S_i(j) := \frac{V_j - V_i}{V_i + \varepsilon_{\mathrm{clone}}}
 $$
 
-By construction the fitness is bounded below, $V_i \ge V_{\min} > -\varepsilon_{\mathrm{clone}}$ (see {doc}`1_the_algorithm/02_fractal_gas_latent`), so $V_i + \varepsilon_{\mathrm{clone}} > 0$ and the sign of $S_i(j)$ matches $\operatorname{sign}(V_j - V_i)$.
+By construction the fitness is bounded below, $V_i \ge V_{\min} > -\varepsilon_{\mathrm{clone}}$ (see {doc}`../1_the_algorithm/02_fractal_gas_latent`), so $V_i + \varepsilon_{\mathrm{clone}} > 0$ and the sign of $S_i(j)$ matches $\operatorname{sign}(V_j - V_i)$.
 
 **Antisymmetry relation:**
 
@@ -700,7 +765,7 @@ $$
 **Spacelike (IG):** Average over neighbors:
 
 $$
-(\nabla \phi)(e) \cdot \hat{n}_{ee'} \approx \frac{\phi(e') - \phi(e)}{d_g(x_e, x_{e'})}
+(\nabla \phi)(e) \cdot \hat{n}_{ee'} \approx \frac{\phi(e') - \phi(e)}{\ell_{ee'}}
 $$
 :::
 
@@ -715,7 +780,7 @@ This is not a trivial question. You could imagine a graph that looks locally lik
 
 The reassuring answer is that there is a well-developed mathematical theory of graph Laplacian convergence {cite}`belkin2008foundation`. Under suitable regularity conditions (manifold sampling, reach, bandwidth scaling; see the permits cited in {prf:ref}`thm-laplacian-convergence`), the unnormalized Laplacian converges to a density-weighted operator, and a density-corrected Laplacian converges to the Laplace-Beltrami operator.
 
-The Laplace-Beltrami operator $\Delta_g = \frac{1}{\sqrt{g}}\partial_i(\sqrt{g}g^{ij}\partial_j)$ is the natural generalization of the Laplacian to curved Riemannian manifolds. It encodes how the geometry affects diffusion and wave propagation. The fact that the graph Laplacian converges to it means that our discrete structure correctly captures the curvature of the emergent spacetime.
+The Laplace-Beltrami operator $\Delta_{g_R} = \frac{1}{\sqrt{g_R}}\partial_i(\sqrt{g_R}\,g_R^{ij}\partial_j)$ is the natural generalization of the Laplacian to curved Riemannian manifolds. It encodes how the geometry affects diffusion and wave propagation. The fact that the graph Laplacian converges to it means that our discrete structure correctly captures the curvature of the emergent spatial geometry.
 
 This is the mathematical foundation that lets us trust lattice field theory. The discrete operators are not just approximations—they are faithful representatives of the continuum physics.
 :::
@@ -723,8 +788,8 @@ This is the mathematical foundation that lets us trust lattice field theory. The
 :::{prf:theorem} Graph Laplacian Convergence (Density-Aware)
 :label: thm-laplacian-convergence
 
-Let the empirical measure of Fractal Set nodes converge to $\mu_\infty = \rho \, d\mathrm{vol}_g$, where
-$\rho$ is the sampling density with respect to the Riemannian volume form $d\mathrm{vol}_g$.
+Let the empirical measure of Fractal Set nodes converge to $\mu_\infty = \rho \, d\mathrm{vol}_{g_R}$, where
+$\rho$ is the sampling density with respect to the Riemannian volume form $d\mathrm{vol}_{g_R}$.
 In the Fractal Set, $\rho$ is the adaptive QSD density from {prf:ref}`thm-fractal-adaptive-sprinkling`
 (see {prf:ref}`thm-decorated-gibbs` for the QSD shape).
 
@@ -733,22 +798,23 @@ In the Fractal Set, $\rho$ is the adaptive QSD density from {prf:ref}`thm-fracta
 $$
 (\Delta_{\mathcal{F}} \phi)(e) := \sum_{e' \sim e} w_{ee'} (\phi(e') - \phi(e))
 $$
-where $w_{ee'} := K_\varepsilon(d_g(x_e, x_{e'})^2)$ are kernel weights encoding local geometry (e.g.,
-compactly supported $C^2$ kernels). The $d_g^{-2}$ form is a shorthand for this localized scaling.
+where $e'\sim e$ denotes IG neighbors on the same time slice and
+$w_{ee'} := K_\varepsilon(d_{g_R}(x_e, x_{e'})^2)$ are kernel weights encoding local geometry (e.g.,
+compactly supported $C^2$ kernels). The $d_{g_R}^{-2}$ form is a shorthand for this localized scaling.
 
 **Kernel scaling**: For rigorous convergence {cite}`belkin2008foundation`, one typically uses localized kernel weights
-with bandwidth $\varepsilon_N \to 0$ and $N \varepsilon_N^{D/2} \to \infty$. The $d_g^{-2}$ form here is a shorthand
+with bandwidth $\varepsilon_N \to 0$ and $N \varepsilon_N^{d/2} \to \infty$. The $d_{g_R}^{-2}$ form here is a shorthand
 for such localized scaling on the Fractal Set.
 
 **Convergence (density-weighted)**: Under QSD sampling and the emergent-continuum permits, the unnormalized
 graph Laplacian converges in expectation to the weighted Laplacian
 
 $$
-\mathcal{L}_\rho \phi := \frac{1}{\rho} \nabla \cdot (\rho \nabla \phi)
-= \Delta_g \phi + \langle \nabla \log \rho, \nabla \phi \rangle_g.
+\mathcal{L}_\rho \phi := \frac{1}{\rho} \nabla_{g_R} \cdot (\rho \nabla_{g_R} \phi)
+= \Delta_{g_R} \phi + \langle \nabla_{g_R} \log \rho, \nabla_{g_R} \phi \rangle_{g_R}.
 $$
 
-**Uniform case**: If $\rho$ is locally constant (uniform sprinkling), then $\mathcal{L}_\rho = \Delta_g$.
+**Uniform case**: If $\rho$ is locally constant (uniform sprinkling), then $\mathcal{L}_\rho = \Delta_{g_R}$.
 
 :::{prf:proof}
 **Step 1 (Empirical measure convergence).**
@@ -793,7 +859,7 @@ $$
 Under the same sampling and bandwidth assumptions as above, the corrected operator satisfies
 
 $$
-\mathbb{E}[(\Delta_{\mathcal{F}}^{\mathrm{corr}} \phi)(e_i)] \xrightarrow{N \to \infty} c_\varepsilon \, (\Delta_g \phi)(x_i),
+\mathbb{E}[(\Delta_{\mathcal{F}}^{\mathrm{corr}} \phi)(e_i)] \xrightarrow{N \to \infty} c_\varepsilon \, (\Delta_{g_R} \phi)(x_i),
 $$
 
 where $c_\varepsilon$ is a scalar normalization depending on the kernel bandwidth that can be absorbed by rescaling
@@ -804,8 +870,8 @@ time in the continuum PDE.
 :class: note
 
 The density correction removes sampling bias without assuming conformal flatness. The geometry enters through
-$d_g$ and the QSD density $\rho$ (from {prf:ref}`thm-fractal-adaptive-sprinkling`), so the corrected operator
-targets $\Delta_g$ even when the Weyl tensor is nonzero.
+$d_{g_R}$ and the QSD density $\rho$ (from {prf:ref}`thm-fractal-adaptive-sprinkling`), so the corrected operator
+targets $\Delta_{g_R}$ even when the Weyl tensor is nonzero.
 :::
 
 

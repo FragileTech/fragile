@@ -31,3 +31,8 @@ $$
 
 This holds for any $m \ge 1$. \(\square\)
 :::
+
+:::{note}
+This identity is exact for any finite $k$. In the mean-field analysis, it is combined with the
+sum-to-integral bound to obtain k-uniform estimates for expected quantities.
+:::

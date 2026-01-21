@@ -5,6 +5,43 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 
+class TokenSelfAttentionBlock(nn.Module):
+    """Tokenized self-attention block for MLP baselines."""
+
+    def __init__(
+        self,
+        hidden_dim: int,
+        num_tokens: int,
+        attn_dim: int,
+        num_heads: int,
+        dropout: float = 0.0,
+    ):
+        super().__init__()
+        if num_tokens <= 0:
+            raise ValueError("num_tokens must be positive.")
+        if attn_dim <= 0:
+            raise ValueError("attn_dim must be positive.")
+        if num_heads <= 0:
+            raise ValueError("num_heads must be positive.")
+        if attn_dim % num_heads != 0:
+            raise ValueError("attn_dim must be divisible by num_heads.")
+        self.num_tokens = num_tokens
+        self.attn_dim = attn_dim
+        self.to_tokens = nn.Linear(hidden_dim, num_tokens * attn_dim)
+        self.attn = nn.MultiheadAttention(
+            attn_dim, num_heads, dropout=dropout, batch_first=True
+        )
+        self.norm = nn.LayerNorm(attn_dim)
+        self.out_proj = nn.Linear(num_tokens * attn_dim, hidden_dim)
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        tokens = self.to_tokens(x).reshape(x.shape[0], self.num_tokens, self.attn_dim)
+        attn_out, _ = self.attn(tokens, tokens, tokens, need_weights=False)
+        attn_out = self.norm(attn_out + tokens)
+        flat = attn_out.reshape(x.shape[0], self.num_tokens * self.attn_dim)
+        return self.out_proj(flat) + x
+
+
 class StandardVQ(nn.Module):
     """Standard Vector-Quantized VAE baseline.
 
@@ -18,17 +55,37 @@ class StandardVQ(nn.Module):
         hidden_dim: int = 32,
         latent_dim: int = 2,
         num_codes: int = 64,
+        use_attention: bool = False,
+        attn_tokens: int = 4,
+        attn_dim: int = 32,
+        attn_heads: int = 4,
+        attn_dropout: float = 0.0,
     ):
         super().__init__()
 
         # Encoder: x → z_e
-        self.encoder = nn.Sequential(
+        encoder_layers = [
             nn.Linear(input_dim, hidden_dim),
             nn.GELU(),
-            nn.Linear(hidden_dim, hidden_dim),
-            nn.GELU(),
-            nn.Linear(hidden_dim, latent_dim),
+        ]
+        if use_attention:
+            encoder_layers.append(
+                TokenSelfAttentionBlock(
+                    hidden_dim=hidden_dim,
+                    num_tokens=attn_tokens,
+                    attn_dim=attn_dim,
+                    num_heads=attn_heads,
+                    dropout=attn_dropout,
+                )
+            )
+        encoder_layers.extend(
+            [
+                nn.Linear(hidden_dim, hidden_dim),
+                nn.GELU(),
+                nn.Linear(hidden_dim, latent_dim),
+            ]
         )
+        self.encoder = nn.Sequential(*encoder_layers)
 
         # Codebook: learnable embeddings
         self.embeddings = nn.Embedding(num_codes, latent_dim)
@@ -36,13 +93,28 @@ class StandardVQ(nn.Module):
         self.embeddings.weight.data.uniform_(-1.0 / num_codes, 1.0 / num_codes)
 
         # Decoder: z_q → x_recon
-        self.decoder = nn.Sequential(
+        decoder_layers = [
             nn.Linear(latent_dim, hidden_dim),
             nn.GELU(),
-            nn.Linear(hidden_dim, hidden_dim),
-            nn.GELU(),
-            nn.Linear(hidden_dim, input_dim),
+        ]
+        if use_attention:
+            decoder_layers.append(
+                TokenSelfAttentionBlock(
+                    hidden_dim=hidden_dim,
+                    num_tokens=attn_tokens,
+                    attn_dim=attn_dim,
+                    num_heads=attn_heads,
+                    dropout=attn_dropout,
+                )
+            )
+        decoder_layers.extend(
+            [
+                nn.Linear(hidden_dim, hidden_dim),
+                nn.GELU(),
+                nn.Linear(hidden_dim, input_dim),
+            ]
         )
+        self.decoder = nn.Sequential(*decoder_layers)
 
     def forward(
         self, x: torch.Tensor
@@ -99,24 +171,59 @@ class VanillaAE(nn.Module):
         input_dim: int = 3,
         hidden_dim: int = 32,
         latent_dim: int = 2,
+        use_attention: bool = False,
+        attn_tokens: int = 4,
+        attn_dim: int = 32,
+        attn_heads: int = 4,
+        attn_dropout: float = 0.0,
     ):
         super().__init__()
 
-        self.encoder = nn.Sequential(
+        encoder_layers = [
             nn.Linear(input_dim, hidden_dim),
             nn.GELU(),
-            nn.Linear(hidden_dim, hidden_dim),
-            nn.GELU(),
-            nn.Linear(hidden_dim, latent_dim),
+        ]
+        if use_attention:
+            encoder_layers.append(
+                TokenSelfAttentionBlock(
+                    hidden_dim=hidden_dim,
+                    num_tokens=attn_tokens,
+                    attn_dim=attn_dim,
+                    num_heads=attn_heads,
+                    dropout=attn_dropout,
+                )
+            )
+        encoder_layers.extend(
+            [
+                nn.Linear(hidden_dim, hidden_dim),
+                nn.GELU(),
+                nn.Linear(hidden_dim, latent_dim),
+            ]
         )
+        self.encoder = nn.Sequential(*encoder_layers)
 
-        self.decoder = nn.Sequential(
+        decoder_layers = [
             nn.Linear(latent_dim, hidden_dim),
             nn.GELU(),
-            nn.Linear(hidden_dim, hidden_dim),
-            nn.GELU(),
-            nn.Linear(hidden_dim, input_dim),
+        ]
+        if use_attention:
+            decoder_layers.append(
+                TokenSelfAttentionBlock(
+                    hidden_dim=hidden_dim,
+                    num_tokens=attn_tokens,
+                    attn_dim=attn_dim,
+                    num_heads=attn_heads,
+                    dropout=attn_dropout,
+                )
+            )
+        decoder_layers.extend(
+            [
+                nn.Linear(hidden_dim, hidden_dim),
+                nn.GELU(),
+                nn.Linear(hidden_dim, input_dim),
+            ]
         )
+        self.decoder = nn.Sequential(*decoder_layers)
 
     def forward(self, x: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
         """Forward pass.

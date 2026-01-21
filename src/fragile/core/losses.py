@@ -206,6 +206,40 @@ def compute_separation_loss(
     return loss_sep / max(n_pairs, 1)
 
 
+def compute_chart_center_separation_loss(
+    chart_centers: torch.Tensor,
+    margin: float = 2.0,
+) -> torch.Tensor:
+    """Force chart center tokens apart in latent space.
+
+    Uses hinge loss on pairwise distances between chart centers.
+    """
+    device = chart_centers.device
+    loss_sep = torch.tensor(0.0, device=device)
+    n_pairs = 0
+    for i in range(chart_centers.shape[0]):
+        for j in range(i + 1, chart_centers.shape[0]):
+            dist = torch.norm(chart_centers[i] - chart_centers[j])
+            loss_sep = loss_sep + F.relu(margin - dist)
+            n_pairs += 1
+    return loss_sep / max(n_pairs, 1)
+
+
+def compute_codebook_centering_loss(codebook: torch.Tensor) -> torch.Tensor:
+    """Encourage per-chart codebook deltas to be zero-mean.
+
+    Args:
+        codebook: [N_c, K, D] codebook deltas
+    """
+    centers = codebook.mean(dim=1)  # [N_c, D]
+    return (centers**2).sum(dim=1).mean()
+
+
+def compute_residual_scale_loss(z_n: torch.Tensor) -> torch.Tensor:
+    """Penalize residual gauge scale to preserve macro/meso hierarchy."""
+    return (z_n**2).sum(dim=1).mean()
+
+
 def compute_window_loss(
     router_weights: torch.Tensor,
     num_charts: int,

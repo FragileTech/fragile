@@ -1,14 +1,14 @@
 """
-Analyze TopoEncoder checkpoints and generate plots.
+Analyze TopoEncoder checkpoints and generate plots with 3D latent views.
 
-This script loads saved checkpoints from topoencoder_2d.py and produces
-the latent visualization and benchmark summary figures without re-running
-training. It supports a single checkpoint or a directory of checkpoints.
+This mirrors analyze_topoencoder_2d.py but renders the latent space in 3D
+for more rigorous inspection of 3D latent spaces.
 """
 
 from __future__ import annotations
 
 import argparse
+import gc
 import os
 import re
 from typing import Any
@@ -16,7 +16,21 @@ from typing import Any
 import numpy as np
 import torch
 
-from dataviz import visualize_latent_images, visualize_results_images
+import matplotlib
+
+if os.environ.get("MPLBACKEND") is None:
+    matplotlib.use("Agg")
+
+import matplotlib.pyplot as plt
+
+from dataviz import (
+    _compute_chart_code_colors,
+    _create_image_grid,
+    _plot_hyperbolic_tree,
+    _select_class_representatives,
+    _tensor_to_image,
+    visualize_results_images,
+)
 from fragile.core.layers import (
     FactorizedJumpOperator,
     StandardVQ,
@@ -33,6 +47,7 @@ def _load_checkpoint(path: str) -> dict[str, Any]:
         return torch.load(path, map_location="cpu", weights_only=False)
     except TypeError:
         return torch.load(path, map_location="cpu")
+
 
 def _load_benchmarks(checkpoint_path: str) -> dict[str, Any] | None:
     bench_path = os.path.join(os.path.dirname(checkpoint_path), "benchmarks.pt")
@@ -192,6 +207,152 @@ def _collect_checkpoints(checkpoint: str | None, checkpoint_dir: str | None) -> 
     raise ValueError("Provide --checkpoint or --checkpoint_dir.")
 
 
+def _visualize_latent_images_3d(
+    model: TopoEncoderPrimitives,
+    X: torch.Tensor,
+    labels: np.ndarray,
+    class_names: list[str],
+    save_path: str,
+    epoch: int | None = None,
+    jump_op: FactorizedJumpOperator | None = None,
+    image_shape: tuple = (32, 32, 3),
+) -> None:
+    plt.close("all")
+    gc.collect()
+
+    model.eval()
+    device = X.device
+    num_classes = len(class_names)
+
+    with torch.no_grad():
+        K_chart, K_code, _, _z_tex, _enc_w, z_geo, _, indices_out, _z_n_all, _c_bar = (
+            model.encoder(X)
+        )
+        recon, _, _, _, _, _, _, _ = model(X, use_hard_routing=False)
+
+        z = z_geo.cpu().numpy()
+        if z.shape[1] < 3:
+            raise ValueError(
+                f"Latent dimension is {z.shape[1]} (<3). Use analyze_topoencoder_2d.py."
+            )
+        z3 = z[:, :3]
+        hard_assign = K_chart.cpu().numpy()
+        code_assign = K_code.cpu().numpy()
+        indices_np = indices_out.cpu().numpy()
+
+    num_charts = model.encoder.num_charts
+    codes_per_chart = model.encoder.codes_per_chart
+    chart_cmap = plt.get_cmap("tab10")
+    chart_palettes = [
+        "Blues",
+        "Oranges",
+        "Greens",
+        "Purples",
+        "Reds",
+        "Grays",
+        "YlOrBr",
+        "PuRd",
+        "BuGn",
+        "RdPu",
+    ]
+
+    sample_indices = _select_class_representatives(labels, num_classes)
+    sample_images = [_tensor_to_image(X[idx], image_shape) for idx in sample_indices]
+    recon_images = [_tensor_to_image(recon[idx], image_shape) for idx in sample_indices]
+
+    fig = plt.figure(figsize=(20, 13))
+    title_suffix = f" (Epoch {epoch})" if epoch is not None else " (Final)"
+
+    ax1 = fig.add_subplot(2, 3, 1)
+    _create_image_grid(ax1, sample_images, class_names, f"Input Samples{title_suffix}")
+
+    ax2 = fig.add_subplot(2, 3, 2, projection="3d")
+    ax2.scatter(
+        z3[:, 0],
+        z3[:, 1],
+        z3[:, 2],
+        c=labels,
+        cmap="tab10",
+        vmin=0,
+        vmax=max(9, num_classes - 1),
+        s=3,
+        alpha=0.7,
+    )
+    cmap = plt.get_cmap("tab10")
+    handles = [
+        plt.Line2D(
+            [0],
+            [0],
+            marker="o",
+            color="w",
+            markerfacecolor=cmap(i / max(9, num_classes - 1)),
+            markersize=8,
+            label=class_names[i],
+        )
+        for i in range(num_classes)
+    ]
+    ax2.legend(handles=handles, loc="upper right", fontsize=6, ncol=2)
+    ax2.set_title(f"Latent Space (3D){title_suffix}", fontsize=12)
+    ax2.set_xlabel("z₁")
+    ax2.set_ylabel("z₂")
+    ax2.set_zlabel("z₃")
+
+    ax3 = fig.add_subplot(2, 3, 3)
+    mse = ((X - recon) ** 2).mean().item()
+    _create_image_grid(ax3, recon_images, class_names, f"Reconstructions (MSE: {mse:.5f})")
+
+    ax4 = fig.add_subplot(2, 3, 4, projection="3d")
+    chart_colors = [chart_cmap(k / max(1, num_charts - 1)) for k in hard_assign]
+    ax4.scatter(z3[:, 0], z3[:, 1], z3[:, 2], c=chart_colors, s=3, alpha=0.7)
+    handles4 = [
+        plt.Line2D(
+            [0],
+            [0],
+            marker="o",
+            color="w",
+            markerfacecolor=chart_cmap(k / max(1, num_charts - 1)),
+            markersize=8,
+            label=f"Chart {k}",
+        )
+        for k in range(num_charts)
+    ]
+    ax4.legend(handles=handles4, loc="upper right", fontsize=6, ncol=2)
+    ax4.set_title("Chart Assignments (3D)", fontsize=12)
+    ax4.set_xlabel("z₁")
+    ax4.set_ylabel("z₂")
+    ax4.set_zlabel("z₃")
+
+    ax5 = fig.add_subplot(2, 3, 5, projection="3d")
+    symbol_colors = _compute_chart_code_colors(
+        hard_assign, code_assign, num_charts, codes_per_chart, chart_palettes
+    )
+    ax5.scatter(z3[:, 0], z3[:, 1], z3[:, 2], c=symbol_colors, s=3, alpha=0.7)
+    ax5.set_title("Code Usage per Chart (3D)", fontsize=12)
+    ax5.set_xlabel("z₁")
+    ax5.set_ylabel("z₂")
+    ax5.set_zlabel("z₃")
+
+    ax6 = fig.add_subplot(2, 3, 6, projection="3d")
+    _plot_hyperbolic_tree(
+        ax6,
+        z[:, :2],
+        hard_assign,
+        code_assign,
+        indices_np,
+        num_charts,
+        codes_per_chart,
+        chart_cmap,
+        chart_palettes,
+    )
+
+    plt.tight_layout()
+    plt.savefig(save_path, dpi=150, bbox_inches="tight")
+    plt.close(fig)
+    plt.close("all")
+    gc.collect()
+    print(f"Saved: {save_path}")
+
+
 def _analyze_checkpoint(
     checkpoint_path: str,
     output_dir: str,
@@ -201,7 +362,7 @@ def _analyze_checkpoint(
     only_missing: bool,
 ) -> None:
     stem = os.path.splitext(os.path.basename(checkpoint_path))[0]
-    latent_path = os.path.join(output_dir, f"{stem}_latent.png")
+    latent_path = os.path.join(output_dir, f"{stem}_latent_3d.png")
     results_path = os.path.join(output_dir, f"{stem}_results.png")
 
     do_latent = not skip_latent
@@ -266,7 +427,7 @@ def _analyze_checkpoint(
     class_names, image_shape = _dataset_specs(dataset)
 
     if do_latent:
-        visualize_latent_images(
+        _visualize_latent_images_3d(
             model_atlas,
             X_test_device,
             labels_test,
@@ -302,11 +463,16 @@ def _analyze_checkpoint(
             "ae_cls_acc": metrics.get("ae_cls_acc", None),
             "model_atlas": model_atlas,
         }
-        visualize_results_images(results, class_names, save_path=results_path, image_shape=image_shape)
+        visualize_results_images(
+            results,
+            class_names,
+            save_path=results_path,
+            image_shape=image_shape,
+        )
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Analyze TopoEncoder 2D checkpoints")
+    parser = argparse.ArgumentParser(description="Analyze TopoEncoder 3D checkpoints")
     parser.add_argument(
         "--checkpoint",
         type=str,

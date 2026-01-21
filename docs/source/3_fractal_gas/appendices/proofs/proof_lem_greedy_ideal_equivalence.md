@@ -9,7 +9,10 @@ $$
 \bar d_i^{\mathrm{greedy}}(S) := \mathbb{E}_{M \sim P_{\mathrm{greedy}}(\cdot\mid S)}[d_{\mathrm{alg}}(i, M(i))].
 $$
 
-Then $\bar d_i^{\mathrm{greedy}}(S)$ is a $C^\infty$ function of the swarm state with the same k-uniform Gevrey-1 derivative bounds as the idealized pairing expectation from Theorem {prf:ref}`thm-diversity-pairing-measurement-regularity`.
+Then $\bar d_i^{\mathrm{greedy}}(S)$ is a $C^\infty$ function of the swarm state with the same
+k-uniform Gevrey-1 derivative bounds as the idealized pairing expectation from
+Theorem {prf:ref}`thm-diversity-pairing-measurement-regularity`. These bounds are interpreted in
+the mean-field expected sense (i.e., after replacing sums by integrals via propagation of chaos).
 :::
 
 :::{prf:proof}

@@ -1,15 +1,18 @@
 # Proof: Gevrey-1 Classification of the Fitness Potential
 
-:::{prf:corollary} Gevrey-1 Classification
+:::{prf:corollary} Gevrey-1 Classification (Mean-Field Expected Fitness)
 :label: proof-cor-gevrey-1-fitness-potential-full
 
-Assume the C^\infty bound from Theorem {prf:ref}`thm-main-cinf-regularity-fitness-potential-full`:
+Assume the C^\infty bound from Theorem {prf:ref}`thm-main-cinf-regularity-fitness-potential-full`
+for the **mean-field expected** fitness potential:
 
 $$
 \|\nabla^m V_{\mathrm{fit}}\|_\infty \le C_{V,m} \cdot m! \cdot \max(\rho^{-m}, \varepsilon_d^{1-m})
 $$
 
-with $C_{V,m} \le C_0 C_1^m$ for some constants $C_0, C_1$ independent of $k$ and $N$. Then $V_{\mathrm{fit}}$ is Gevrey-1 on every compact set, i.e., there exist $A,B>0$ such that
+with $C_{V,m} \le C_0 C_1^m$ for some constants $C_0, C_1$ independent of $k$ and $N$. Then the
+**mean-field expected** $V_{\mathrm{fit}}$ is Gevrey-1 on every compact set, i.e., there exist
+$A,B>0$ such that
 
 $$
 \sup_{(x,v) \in K} \|\nabla^m V_{\mathrm{fit}}(x,v)\| \le A B^m m!\quad \text{for all } m\ge 0.

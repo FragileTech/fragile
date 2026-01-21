@@ -7,6 +7,45 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 from fragile.core.layers.primitives import IsotropicBlock, NormGatedGELU, SpectralLinear
+from fragile.core.layers.ugn import SoftEquivariantLayer
+from fragile.core.layers.vision import CovariantRetina
+
+
+class TokenSelfAttentionBlock(nn.Module):
+    """Tokenized self-attention block for MLP baselines."""
+
+    def __init__(
+        self,
+        hidden_dim: int,
+        num_tokens: int,
+        attn_dim: int,
+        num_heads: int,
+        dropout: float = 0.0,
+    ) -> None:
+        super().__init__()
+        if num_tokens <= 0:
+            raise ValueError("num_tokens must be positive.")
+        if attn_dim <= 0:
+            raise ValueError("attn_dim must be positive.")
+        if num_heads <= 0:
+            raise ValueError("num_heads must be positive.")
+        if attn_dim % num_heads != 0:
+            raise ValueError("attn_dim must be divisible by num_heads.")
+        self.num_tokens = num_tokens
+        self.attn_dim = attn_dim
+        self.to_tokens = nn.Linear(hidden_dim, num_tokens * attn_dim)
+        self.attn = nn.MultiheadAttention(
+            attn_dim, num_heads, dropout=dropout, batch_first=True
+        )
+        self.norm = nn.LayerNorm(attn_dim)
+        self.out_proj = nn.Linear(num_tokens * attn_dim, hidden_dim)
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        tokens = self.to_tokens(x).reshape(x.shape[0], self.num_tokens, self.attn_dim)
+        attn_out, _ = self.attn(tokens, tokens, tokens, need_weights=False)
+        attn_out = self.norm(attn_out + tokens)
+        flat = attn_out.reshape(x.shape[0], self.num_tokens * self.attn_dim)
+        return self.out_proj(flat) + x
 
 
 class StandardVQ(nn.Module):
@@ -18,28 +57,63 @@ class StandardVQ(nn.Module):
         hidden_dim: int = 32,
         latent_dim: int = 2,
         num_codes: int = 64,
+        use_attention: bool = False,
+        attn_tokens: int = 4,
+        attn_dim: int = 32,
+        attn_heads: int = 4,
+        attn_dropout: float = 0.0,
     ) -> None:
         super().__init__()
         self.num_codes = num_codes
 
-        self.encoder = nn.Sequential(
+        encoder_layers: list[nn.Module] = [
             nn.Linear(input_dim, hidden_dim),
             nn.GELU(),
-            nn.Linear(hidden_dim, hidden_dim),
-            nn.GELU(),
-            nn.Linear(hidden_dim, latent_dim),
+        ]
+        if use_attention:
+            encoder_layers.append(
+                TokenSelfAttentionBlock(
+                    hidden_dim=hidden_dim,
+                    num_tokens=attn_tokens,
+                    attn_dim=attn_dim,
+                    num_heads=attn_heads,
+                    dropout=attn_dropout,
+                )
+            )
+        encoder_layers.extend(
+            [
+                nn.Linear(hidden_dim, hidden_dim),
+                nn.GELU(),
+                nn.Linear(hidden_dim, latent_dim),
+            ]
         )
+        self.encoder = nn.Sequential(*encoder_layers)
 
         self.embeddings = nn.Embedding(num_codes, latent_dim)
         nn.init.uniform_(self.embeddings.weight, -1.0 / num_codes, 1.0 / num_codes)
 
-        self.decoder = nn.Sequential(
+        decoder_layers: list[nn.Module] = [
             nn.Linear(latent_dim, hidden_dim),
             nn.GELU(),
-            nn.Linear(hidden_dim, hidden_dim),
-            nn.GELU(),
-            nn.Linear(hidden_dim, input_dim),
+        ]
+        if use_attention:
+            decoder_layers.append(
+                TokenSelfAttentionBlock(
+                    hidden_dim=hidden_dim,
+                    num_tokens=attn_tokens,
+                    attn_dim=attn_dim,
+                    num_heads=attn_heads,
+                    dropout=attn_dropout,
+                )
+            )
+        decoder_layers.extend(
+            [
+                nn.Linear(hidden_dim, hidden_dim),
+                nn.GELU(),
+                nn.Linear(hidden_dim, input_dim),
+            ]
         )
+        self.decoder = nn.Sequential(*decoder_layers)
 
     def forward(self, x: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
         """Encode, quantize, and decode.
@@ -90,22 +164,63 @@ class StandardVQ(nn.Module):
 class VanillaAE(nn.Module):
     """Continuous autoencoder baseline."""
 
-    def __init__(self, input_dim: int = 3, hidden_dim: int = 32, latent_dim: int = 2) -> None:
+    def __init__(
+        self,
+        input_dim: int = 3,
+        hidden_dim: int = 32,
+        latent_dim: int = 2,
+        use_attention: bool = False,
+        attn_tokens: int = 4,
+        attn_dim: int = 32,
+        attn_heads: int = 4,
+        attn_dropout: float = 0.0,
+    ) -> None:
         super().__init__()
-        self.encoder = nn.Sequential(
+        encoder_layers: list[nn.Module] = [
             nn.Linear(input_dim, hidden_dim),
             nn.GELU(),
-            nn.Linear(hidden_dim, hidden_dim),
-            nn.GELU(),
-            nn.Linear(hidden_dim, latent_dim),
+        ]
+        if use_attention:
+            encoder_layers.append(
+                TokenSelfAttentionBlock(
+                    hidden_dim=hidden_dim,
+                    num_tokens=attn_tokens,
+                    attn_dim=attn_dim,
+                    num_heads=attn_heads,
+                    dropout=attn_dropout,
+                )
+            )
+        encoder_layers.extend(
+            [
+                nn.Linear(hidden_dim, hidden_dim),
+                nn.GELU(),
+                nn.Linear(hidden_dim, latent_dim),
+            ]
         )
-        self.decoder = nn.Sequential(
+        self.encoder = nn.Sequential(*encoder_layers)
+
+        decoder_layers: list[nn.Module] = [
             nn.Linear(latent_dim, hidden_dim),
             nn.GELU(),
-            nn.Linear(hidden_dim, hidden_dim),
-            nn.GELU(),
-            nn.Linear(hidden_dim, input_dim),
+        ]
+        if use_attention:
+            decoder_layers.append(
+                TokenSelfAttentionBlock(
+                    hidden_dim=hidden_dim,
+                    num_tokens=attn_tokens,
+                    attn_dim=attn_dim,
+                    num_heads=attn_heads,
+                    dropout=attn_dropout,
+                )
+            )
+        decoder_layers.extend(
+            [
+                nn.Linear(hidden_dim, hidden_dim),
+                nn.GELU(),
+                nn.Linear(hidden_dim, input_dim),
+            ]
         )
+        self.decoder = nn.Sequential(*decoder_layers)
 
     def forward(self, x: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
         """Encode and decode.
@@ -132,18 +247,49 @@ class AttentiveAtlasEncoder(nn.Module):
         latent_dim: int = 2,
         num_charts: int = 3,
         codes_per_chart: int = 21,
+        vision_preproc: bool = False,
+        vision_in_channels: int = 0,
+        vision_height: int = 0,
+        vision_width: int = 0,
+        vision_num_rotations: int = 8,
+        vision_kernel_size: int = 5,
+        vision_use_reflections: bool = False,
+        vision_norm_nonlinearity: str = "n_sigmoid",
+        vision_norm_bias: bool = True,
+        soft_equiv_metric: bool = False,
+        soft_equiv_bundle_size: int | None = None,
+        soft_equiv_hidden_dim: int = 64,
+        soft_equiv_use_spectral_norm: bool = True,
+        soft_equiv_zero_self_mixing: bool = False,
     ) -> None:
         super().__init__()
         self.num_charts = num_charts
         self.latent_dim = latent_dim
         self.codes_per_chart = codes_per_chart
 
-        self.feature_extractor = nn.Sequential(
-            nn.Linear(input_dim, hidden_dim),
-            nn.GELU(),
-            nn.Linear(hidden_dim, hidden_dim),
-            nn.GELU(),
-        )
+        self.vision_shape = None
+        self.vision_preproc = None
+        if vision_preproc:
+            if vision_in_channels <= 0 or vision_height <= 0 or vision_width <= 0:
+                raise ValueError("vision_preproc requires positive vision_* dimensions.")
+            self.vision_shape = (vision_in_channels, vision_height, vision_width)
+            self.vision_preproc = CovariantRetina(
+                in_channels=vision_in_channels,
+                out_dim=hidden_dim,
+                num_rotations=vision_num_rotations,
+                kernel_size=vision_kernel_size,
+                use_reflections=vision_use_reflections,
+                norm_nonlinearity=vision_norm_nonlinearity,
+                norm_bias=vision_norm_bias,
+            )
+            self.feature_extractor = None
+        else:
+            self.feature_extractor = nn.Sequential(
+                nn.Linear(input_dim, hidden_dim),
+                nn.GELU(),
+                nn.Linear(hidden_dim, hidden_dim),
+                nn.GELU(),
+            )
 
         self.val_proj = nn.Linear(hidden_dim, latent_dim)
 
@@ -151,11 +297,85 @@ class AttentiveAtlasEncoder(nn.Module):
 
         self.codebook = nn.Parameter(torch.randn(num_charts, codes_per_chart, latent_dim) * 0.02)
 
+        self.soft_equiv_layers: nn.ModuleList | None = None
+        if soft_equiv_metric:
+            bundle_size = soft_equiv_bundle_size or latent_dim
+            if bundle_size <= 0:
+                raise ValueError("soft_equiv_bundle_size must be positive.")
+            if latent_dim % bundle_size != 0:
+                raise ValueError("latent_dim must be divisible by soft_equiv_bundle_size.")
+            n_bundles = latent_dim // bundle_size
+            self.soft_equiv_layers = nn.ModuleList(
+                [
+                    SoftEquivariantLayer(
+                        n_bundles=n_bundles,
+                        bundle_dim=bundle_size,
+                        hidden_dim=soft_equiv_hidden_dim,
+                        use_spectral_norm=soft_equiv_use_spectral_norm,
+                        zero_self_mixing=soft_equiv_zero_self_mixing,
+                    )
+                    for _ in range(num_charts)
+                ]
+            )
+            _init_soft_equiv_layers(self.soft_equiv_layers)
+
         self.structure_filter = nn.Sequential(
             nn.Linear(latent_dim, latent_dim // 2 if latent_dim > 2 else latent_dim),
             nn.GELU(),
             nn.Linear(latent_dim // 2 if latent_dim > 2 else latent_dim, latent_dim),
         )
+
+    def _encode_features(self, x: torch.Tensor) -> torch.Tensor:
+        if self.vision_preproc is None:
+            return self.feature_extractor(x)
+        if self.vision_shape is None:
+            raise RuntimeError("vision_preproc is enabled but vision_shape is unset.")
+        channels, height, width = self.vision_shape
+        if x.dim() == 2:
+            expected = channels * height * width
+            if x.shape[1] != expected:
+                raise ValueError(
+                    f"Expected flattened input dim {expected}, got {x.shape[1]}."
+                )
+            x = x.view(x.shape[0], channels, height, width)
+        elif x.dim() == 4:
+            if x.shape[1] != channels or x.shape[2] != height or x.shape[3] != width:
+                raise ValueError(
+                    "Input tensor shape does not match vision_preproc configuration."
+                )
+        else:
+            raise ValueError("vision_preproc expects input shape [B, D] or [B, C, H, W].")
+        return self.vision_preproc(x)
+
+    def _apply_soft_equiv_metric(self, diff: torch.Tensor) -> torch.Tensor:
+        if self.soft_equiv_layers is None:
+            return (diff**2).sum(dim=-1)
+        batch_size, num_charts, num_codes, latent_dim = diff.shape
+        ratio_max = 50.0
+        eps = 1e-6
+        transformed = []
+        for chart_idx, layer in enumerate(self.soft_equiv_layers):
+            diff_chart = diff[:, chart_idx].reshape(-1, latent_dim)
+            diff_chart = torch.nan_to_num(diff_chart, nan=0.0, posinf=0.0, neginf=0.0)
+            diff_out = layer(diff_chart)
+            diff_out = torch.nan_to_num(diff_out, nan=0.0, posinf=0.0, neginf=0.0)
+            in_norm = diff_chart.norm(dim=-1, keepdim=True).clamp(min=eps)
+            out_norm = diff_out.norm(dim=-1, keepdim=True)
+            ratio = out_norm / in_norm
+            ratio_clamped = ratio.clamp(max=ratio_max)
+            scale = torch.where(ratio > 0, ratio_clamped / ratio, torch.ones_like(ratio))
+            diff_out = diff_out * scale
+            transformed.append(diff_out.view(batch_size, num_codes, latent_dim))
+        diff_out = torch.stack(transformed, dim=1)
+        return (diff_out**2).sum(dim=-1)
+
+    def soft_equiv_l1_loss(self) -> torch.Tensor:
+        if self.soft_equiv_layers is None:
+            return torch.tensor(0.0, device=self.codebook.device)
+        total = torch.zeros((), device=self.codebook.device)
+        for layer in self.soft_equiv_layers:
+            total = total + layer.l1_loss()
+        return total / len(self.soft_equiv_layers)
 
     def forward(
         self, x: torch.Tensor
@@ -185,7 +405,7 @@ class AttentiveAtlasEncoder(nn.Module):
             z_n_all_charts: [B, N_c, D] per-chart nuisance
             c_bar: [B, D] chart center mixture
         """
-        features = self.feature_extractor(x)  # [B, H]
+        features = self._encode_features(x)  # [B, H]
 
         v = self.val_proj(features)  # [B, D]
         scores = torch.matmul(v, self.chart_centers.t()) / math.sqrt(self.latent_dim)  # [B, N_c]
@@ -198,7 +418,7 @@ class AttentiveAtlasEncoder(nn.Module):
         codebook = self.codebook.unsqueeze(0)  # [1, N_c, K, D]
         v_exp = v_local.unsqueeze(1).unsqueeze(2)  # [B, 1, 1, D]
         diff = v_exp - codebook  # [B, N_c, K, D]
-        dist = (diff**2).sum(dim=-1)  # [B, N_c, K]
+        dist = self._apply_soft_equiv_metric(diff)  # [B, N_c, K]
         indices = torch.argmin(dist, dim=-1)  # [B, N_c]
         indices_stack = indices  # [B, N_c]
 
@@ -317,6 +537,20 @@ class TopoEncoder(nn.Module):
         latent_dim: int = 2,
         num_charts: int = 3,
         codes_per_chart: int = 21,
+        vision_preproc: bool = False,
+        vision_in_channels: int = 0,
+        vision_height: int = 0,
+        vision_width: int = 0,
+        vision_num_rotations: int = 8,
+        vision_kernel_size: int = 5,
+        vision_use_reflections: bool = False,
+        vision_norm_nonlinearity: str = "n_sigmoid",
+        vision_norm_bias: bool = True,
+        soft_equiv_metric: bool = False,
+        soft_equiv_bundle_size: int | None = None,
+        soft_equiv_hidden_dim: int = 64,
+        soft_equiv_use_spectral_norm: bool = True,
+        soft_equiv_zero_self_mixing: bool = False,
     ) -> None:
         super().__init__()
         self.num_charts = num_charts
@@ -327,6 +561,20 @@ class TopoEncoder(nn.Module):
             latent_dim=latent_dim,
             num_charts=num_charts,
             codes_per_chart=codes_per_chart,
+            vision_preproc=vision_preproc,
+            vision_in_channels=vision_in_channels,
+            vision_height=vision_height,
+            vision_width=vision_width,
+            vision_num_rotations=vision_num_rotations,
+            vision_kernel_size=vision_kernel_size,
+            vision_use_reflections=vision_use_reflections,
+            vision_norm_nonlinearity=vision_norm_nonlinearity,
+            vision_norm_bias=vision_norm_bias,
+            soft_equiv_metric=soft_equiv_metric,
+            soft_equiv_bundle_size=soft_equiv_bundle_size,
+            soft_equiv_hidden_dim=soft_equiv_hidden_dim,
+            soft_equiv_use_spectral_norm=soft_equiv_use_spectral_norm,
+            soft_equiv_zero_self_mixing=soft_equiv_zero_self_mixing,
         )
         self.decoder = TopologicalDecoder(
             latent_dim=latent_dim,
@@ -429,6 +677,15 @@ def _resolve_bundle_params(
     if hidden_dim % bundle_size != 0:
         raise ValueError("hidden_dim must be divisible by bundle_size.")
     return bundle_size, hidden_dim // bundle_size
+
+
+def _init_soft_equiv_layers(layers: nn.ModuleList) -> None:
+    """Initialize soft-equivariant layers to be purely equivariant (no mixing)."""
+    with torch.no_grad():
+        for layer in layers:
+            for row in layer.mixing_weights:
+                for weight in row:
+                    weight.zero_()
 
 
 class CovariantChartRouter(nn.Module):
@@ -568,6 +825,20 @@ class PrimitiveAttentiveAtlasEncoder(nn.Module):
         covariant_attn_denom_min: float = 1e-3,
         covariant_attn_use_transport: bool = True,
         covariant_attn_transport_eps: float = 1e-3,
+        vision_preproc: bool = False,
+        vision_in_channels: int = 0,
+        vision_height: int = 0,
+        vision_width: int = 0,
+        vision_num_rotations: int = 8,
+        vision_kernel_size: int = 5,
+        vision_use_reflections: bool = False,
+        vision_norm_nonlinearity: str = "n_sigmoid",
+        vision_norm_bias: bool = True,
+        soft_equiv_metric: bool = False,
+        soft_equiv_bundle_size: int | None = None,
+        soft_equiv_hidden_dim: int = 64,
+        soft_equiv_use_spectral_norm: bool = True,
+        soft_equiv_zero_self_mixing: bool = False,
     ) -> None:
         super().__init__()
         self.num_charts = num_charts
@@ -577,12 +848,29 @@ class PrimitiveAttentiveAtlasEncoder(nn.Module):
 
         bundle_size, n_bundles = _resolve_bundle_params(hidden_dim, latent_dim, bundle_size)
 
-        self.feature_extractor = nn.Sequential(
-            SpectralLinear(input_dim, hidden_dim, bias=True),
-            NormGatedGELU(bundle_size=bundle_size, n_bundles=n_bundles),
-            SpectralLinear(hidden_dim, hidden_dim, bias=True),
-            NormGatedGELU(bundle_size=bundle_size, n_bundles=n_bundles),
-        )
+        self.vision_shape = None
+        self.vision_preproc = None
+        if vision_preproc:
+            if vision_in_channels <= 0 or vision_height <= 0 or vision_width <= 0:
+                raise ValueError("vision_preproc requires positive vision_* dimensions.")
+            self.vision_shape = (vision_in_channels, vision_height, vision_width)
+            self.vision_preproc = CovariantRetina(
+                in_channels=vision_in_channels,
+                out_dim=hidden_dim,
+                num_rotations=vision_num_rotations,
+                kernel_size=vision_kernel_size,
+                use_reflections=vision_use_reflections,
+                norm_nonlinearity=vision_norm_nonlinearity,
+                norm_bias=vision_norm_bias,
+            )
+            self.feature_extractor = None
+        else:
+            self.feature_extractor = nn.Sequential(
+                SpectralLinear(input_dim, hidden_dim, bias=True),
+                NormGatedGELU(bundle_size=bundle_size, n_bundles=n_bundles),
+                SpectralLinear(hidden_dim, hidden_dim, bias=True),
+                NormGatedGELU(bundle_size=bundle_size, n_bundles=n_bundles),
+            )
         if covariant_attn:
             self.cov_router = CovariantChartRouter(
                 latent_dim=latent_dim,
@@ -610,10 +898,84 @@ class PrimitiveAttentiveAtlasEncoder(nn.Module):
 
         self.codebook = nn.Parameter(torch.randn(num_charts, codes_per_chart, latent_dim) * 0.02)
 
+        self.soft_equiv_layers: nn.ModuleList | None = None
+        if soft_equiv_metric:
+            bundle_size = soft_equiv_bundle_size or latent_dim
+            if bundle_size <= 0:
+                raise ValueError("soft_equiv_bundle_size must be positive.")
+            if latent_dim % bundle_size != 0:
+                raise ValueError("latent_dim must be divisible by soft_equiv_bundle_size.")
+            n_bundles = latent_dim // bundle_size
+            self.soft_equiv_layers = nn.ModuleList(
+                [
+                    SoftEquivariantLayer(
+                        n_bundles=n_bundles,
+                        bundle_dim=bundle_size,
+                        hidden_dim=soft_equiv_hidden_dim,
+                        use_spectral_norm=soft_equiv_use_spectral_norm,
+                        zero_self_mixing=soft_equiv_zero_self_mixing,
+                    )
+                    for _ in range(num_charts)
+                ]
+            )
+            _init_soft_equiv_layers(self.soft_equiv_layers)
+
         self.structure_filter = nn.Sequential(
             IsotropicBlock(latent_dim, latent_dim, bundle_size=latent_dim),
             SpectralLinear(latent_dim, latent_dim, bias=True),
         )
+
+    def _encode_features(self, x: torch.Tensor) -> torch.Tensor:
+        if self.vision_preproc is None:
+            return self.feature_extractor(x)
+        if self.vision_shape is None:
+            raise RuntimeError("vision_preproc is enabled but vision_shape is unset.")
+        channels, height, width = self.vision_shape
+        if x.dim() == 2:
+            expected = channels * height * width
+            if x.shape[1] != expected:
+                raise ValueError(
+                    f"Expected flattened input dim {expected}, got {x.shape[1]}."
+                )
+            x = x.view(x.shape[0], channels, height, width)
+        elif x.dim() == 4:
+            if x.shape[1] != channels or x.shape[2] != height or x.shape[3] != width:
+                raise ValueError(
+                    "Input tensor shape does not match vision_preproc configuration."
+                )
+        else:
+            raise ValueError("vision_preproc expects input shape [B, D] or [B, C, H, W].")
+        return self.vision_preproc(x)
+
+    def _apply_soft_equiv_metric(self, diff: torch.Tensor) -> torch.Tensor:
+        if self.soft_equiv_layers is None:
+            return (diff**2).sum(dim=-1)
+        batch_size, num_charts, num_codes, latent_dim = diff.shape
+        ratio_max = 50.0
+        eps = 1e-6
+        transformed = []
+        for chart_idx, layer in enumerate(self.soft_equiv_layers):
+            diff_chart = diff[:, chart_idx].reshape(-1, latent_dim)
+            diff_chart = torch.nan_to_num(diff_chart, nan=0.0, posinf=0.0, neginf=0.0)
+            diff_out = layer(diff_chart)
+            diff_out = torch.nan_to_num(diff_out, nan=0.0, posinf=0.0, neginf=0.0)
+            in_norm = diff_chart.norm(dim=-1, keepdim=True).clamp(min=eps)
+            out_norm = diff_out.norm(dim=-1, keepdim=True)
+            ratio = out_norm / in_norm
+            ratio_clamped = ratio.clamp(max=ratio_max)
+            scale = torch.where(ratio > 0, ratio_clamped / ratio, torch.ones_like(ratio))
+            diff_out = diff_out * scale
+            transformed.append(diff_out.view(batch_size, num_codes, latent_dim))
+        diff_out = torch.stack(transformed, dim=1)
+        return (diff_out**2).sum(dim=-1)
+
+    def soft_equiv_l1_loss(self) -> torch.Tensor:
+        if self.soft_equiv_layers is None:
+            return torch.tensor(0.0, device=self.codebook.device)
+        total = torch.zeros((), device=self.codebook.device)
+        for layer in self.soft_equiv_layers:
+            total = total + layer.l1_loss()
+        return total / len(self.soft_equiv_layers)
 
     def forward(
         self, x: torch.Tensor
@@ -630,7 +992,7 @@ class PrimitiveAttentiveAtlasEncoder(nn.Module):
         torch.Tensor,
     ]:
         """Forward pass through the attentive atlas."""
-        features = self.feature_extractor(x)  # [B, H]
+        features = self._encode_features(x)  # [B, H]
         v = self.val_proj(features)  # [B, D]
 
         if self.covariant_attn:
@@ -648,7 +1010,7 @@ class PrimitiveAttentiveAtlasEncoder(nn.Module):
         codebook = self.codebook.unsqueeze(0)  # [1, N_c, K, D]
         v_exp = v_local.unsqueeze(1).unsqueeze(2)  # [B, 1, 1, D]
         diff = v_exp - codebook  # [B, N_c, K, D]
-        dist = (diff**2).sum(dim=-1)  # [B, N_c, K]
+        dist = self._apply_soft_equiv_metric(diff)  # [B, N_c, K]
         indices = torch.argmin(dist, dim=-1)  # [B, N_c]
         indices_stack = indices  # [B, N_c]
 
@@ -797,6 +1159,20 @@ class TopoEncoderPrimitives(nn.Module):
         covariant_attn_denom_min: float = 1e-3,
         covariant_attn_use_transport: bool = True,
         covariant_attn_transport_eps: float = 1e-3,
+        vision_preproc: bool = False,
+        vision_in_channels: int = 0,
+        vision_height: int = 0,
+        vision_width: int = 0,
+        vision_num_rotations: int = 8,
+        vision_kernel_size: int = 5,
+        vision_use_reflections: bool = False,
+        vision_norm_nonlinearity: str = "n_sigmoid",
+        vision_norm_bias: bool = True,
+        soft_equiv_metric: bool = False,
+        soft_equiv_bundle_size: int | None = None,
+        soft_equiv_hidden_dim: int = 64,
+        soft_equiv_use_spectral_norm: bool = True,
+        soft_equiv_zero_self_mixing: bool = False,
     ) -> None:
         super().__init__()
         self.num_charts = num_charts
@@ -815,6 +1191,20 @@ class TopoEncoderPrimitives(nn.Module):
             covariant_attn_denom_min=covariant_attn_denom_min,
             covariant_attn_use_transport=covariant_attn_use_transport,
             covariant_attn_transport_eps=covariant_attn_transport_eps,
+            vision_preproc=vision_preproc,
+            vision_in_channels=vision_in_channels,
+            vision_height=vision_height,
+            vision_width=vision_width,
+            vision_num_rotations=vision_num_rotations,
+            vision_kernel_size=vision_kernel_size,
+            vision_use_reflections=vision_use_reflections,
+            vision_norm_nonlinearity=vision_norm_nonlinearity,
+            vision_norm_bias=vision_norm_bias,
+            soft_equiv_metric=soft_equiv_metric,
+            soft_equiv_bundle_size=soft_equiv_bundle_size,
+            soft_equiv_hidden_dim=soft_equiv_hidden_dim,
+            soft_equiv_use_spectral_norm=soft_equiv_use_spectral_norm,
+            soft_equiv_zero_self_mixing=soft_equiv_zero_self_mixing,
         )
         self.decoder = PrimitiveTopologicalDecoder(
             latent_dim=latent_dim,

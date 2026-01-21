@@ -43,6 +43,8 @@ from fragile.core.layers import (
     VanillaAE,
 )
 from fragile.core.losses import (
+    compute_chart_center_separation_loss,
+    compute_codebook_centering_loss,
     compute_code_entropy_loss,
     compute_disentangle_loss,
     compute_diversity_loss,
@@ -51,6 +53,7 @@ from fragile.core.losses import (
     compute_orthogonality_loss,
     compute_orbit_loss,
     compute_per_chart_code_entropy_loss,
+    compute_residual_scale_loss,
     compute_routing_entropy,
     compute_separation_loss,
     compute_variance_loss,
@@ -79,6 +82,21 @@ class TopoEncoderCIFAR10Config:
     num_charts: int = 10  # One per CIFAR-10 class
     codes_per_chart: int = 64  # More codes for image complexity
     num_codes_standard: int = 256
+    soft_equiv_metric: bool = False
+    soft_equiv_bundle_size: int | None = None
+    soft_equiv_hidden_dim: int = 64
+    soft_equiv_use_spectral_norm: bool = True
+    soft_equiv_zero_self_mixing: bool = False
+    soft_equiv_l1_weight: float = 0.0
+    vision_preproc: bool = False
+    vision_in_channels: int = 3
+    vision_height: int = 32
+    vision_width: int = 32
+    vision_num_rotations: int = 8
+    vision_kernel_size: int = 5
+    vision_use_reflections: bool = False
+    vision_norm_nonlinearity: str = "n_sigmoid"
+    vision_norm_bias: bool = True
 
     # Training
     epochs: int = 500
@@ -93,6 +111,10 @@ class TopoEncoderCIFAR10Config:
     diversity_weight: float = 0.1
     separation_weight: float = 0.1
     separation_margin: float = 2.0
+    codebook_center_weight: float = 0.05
+    chart_center_sep_weight: float = 0.05
+    chart_center_sep_margin: float = 2.0
+    residual_scale_weight: float = 0.01
 
     # Tier 2 losses (medium overhead)
     window_weight: float = 0.5
@@ -141,6 +163,11 @@ class TopoEncoderCIFAR10Config:
     # Benchmark control
     disable_ae: bool = False
     disable_vq: bool = False
+    baseline_attn: bool = False
+    baseline_attn_tokens: int = 4
+    baseline_attn_dim: int = 32
+    baseline_attn_heads: int = 4
+    baseline_attn_dropout: float = 0.0
 
     # Train/test split
     test_split: float = 0.2
@@ -166,15 +193,73 @@ def compute_matching_hidden_dim(
     input_dim: int = 3072,
     latent_dim: int = 2,
     num_codes: int = 256,
+    use_attention: bool = False,
+    attn_tokens: int = 4,
+    attn_dim: int = 32,
+    attn_heads: int = 4,
+    attn_dropout: float = 0.0,
 ) -> int:
     """Compute hidden_dim for StandardVQ to match target parameter count."""
-    offset = 5 + num_codes * latent_dim
-    coef_h = 2 * input_dim + 8
-    discriminant = coef_h**2 + 8 * (target_params - offset)
-    if discriminant < 0:
-        return 128
-    h = (-coef_h + math.sqrt(discriminant)) / 4
-    return max(64, int(h))
+    if not use_attention:
+        offset = 5 + num_codes * latent_dim
+        coef_h = 2 * input_dim + 8
+        discriminant = coef_h**2 + 8 * (target_params - offset)
+        if discriminant < 0:
+            return 128
+        h = (-coef_h + math.sqrt(discriminant)) / 4
+        return max(64, int(h))
+
+    def params_for_hidden(hidden_dim: int) -> int:
+        if num_codes > 0:
+            model = StandardVQ(
+                input_dim=input_dim,
+                hidden_dim=hidden_dim,
+                latent_dim=latent_dim,
+                num_codes=num_codes,
+                use_attention=True,
+                attn_tokens=attn_tokens,
+                attn_dim=attn_dim,
+                attn_heads=attn_heads,
+                attn_dropout=attn_dropout,
+            )
+        else:
+            model = VanillaAE(
+                input_dim=input_dim,
+                hidden_dim=hidden_dim,
+                latent_dim=latent_dim,
+                use_attention=True,
+                attn_tokens=attn_tokens,
+                attn_dim=attn_dim,
+                attn_heads=attn_heads,
+                attn_dropout=attn_dropout,
+            )
+        return count_parameters(model)
+
+    min_hidden = 64
+    max_hidden = 4096
+    low = min_hidden
+    low_params = params_for_hidden(low)
+    if low_params >= target_params:
+        return low
+    high = min_hidden * 2
+    while high < max_hidden and params_for_hidden(high) < target_params:
+        low = high
+        high = min(high * 2, max_hidden)
+
+    best_hidden = low
+    best_diff = abs(params_for_hidden(low) - target_params)
+    while low <= high:
+        mid = (low + high) // 2
+        params = params_for_hidden(mid)
+        diff = abs(params - target_params)
+        if diff < best_diff:
+            best_hidden = mid
+            best_diff = diff
+        if params < target_params:
+            low = mid + 1
+        else:
+            high = mid - 1
+    return max(min_hidden, int(best_hidden))
 
 
 # ==========================================
@@ -253,6 +338,20 @@ def train_benchmark(config: TopoEncoderCIFAR10Config) -> dict:
         latent_dim=config.latent_dim,
         num_charts=config.num_charts,
         codes_per_chart=config.codes_per_chart,
+        vision_preproc=config.vision_preproc,
+        vision_in_channels=config.vision_in_channels,
+        vision_height=config.vision_height,
+        vision_width=config.vision_width,
+        vision_num_rotations=config.vision_num_rotations,
+        vision_kernel_size=config.vision_kernel_size,
+        vision_use_reflections=config.vision_use_reflections,
+        vision_norm_nonlinearity=config.vision_norm_nonlinearity,
+        vision_norm_bias=config.vision_norm_bias,
+        soft_equiv_metric=config.soft_equiv_metric,
+        soft_equiv_bundle_size=config.soft_equiv_bundle_size,
+        soft_equiv_hidden_dim=config.soft_equiv_hidden_dim,
+        soft_equiv_use_spectral_norm=config.soft_equiv_use_spectral_norm,
+        soft_equiv_zero_self_mixing=config.soft_equiv_zero_self_mixing,
     )
     topo_params = count_parameters(model_atlas)
 
@@ -267,12 +366,22 @@ def train_benchmark(config: TopoEncoderCIFAR10Config) -> dict:
             input_dim=config.input_dim,
             latent_dim=config.latent_dim,
             num_codes=config.num_codes_standard,
+            use_attention=config.baseline_attn,
+            attn_tokens=config.baseline_attn_tokens,
+            attn_dim=config.baseline_attn_dim,
+            attn_heads=config.baseline_attn_heads,
+            attn_dropout=config.baseline_attn_dropout,
         )
         model_std = StandardVQ(
             input_dim=config.input_dim,
             hidden_dim=std_hidden_dim,
             latent_dim=config.latent_dim,
             num_codes=config.num_codes_standard,
+            use_attention=config.baseline_attn,
+            attn_tokens=config.baseline_attn_tokens,
+            attn_dim=config.baseline_attn_dim,
+            attn_heads=config.baseline_attn_heads,
+            attn_dropout=config.baseline_attn_dropout,
         )
         std_params = count_parameters(model_std)
 
@@ -287,11 +396,21 @@ def train_benchmark(config: TopoEncoderCIFAR10Config) -> dict:
             input_dim=config.input_dim,
             latent_dim=config.latent_dim,
             num_codes=0,
+            use_attention=config.baseline_attn,
+            attn_tokens=config.baseline_attn_tokens,
+            attn_dim=config.baseline_attn_dim,
+            attn_heads=config.baseline_attn_heads,
+            attn_dropout=config.baseline_attn_dropout,
         )
         model_ae = VanillaAE(
             input_dim=config.input_dim,
             hidden_dim=ae_hidden_dim,
             latent_dim=config.latent_dim,
+            use_attention=config.baseline_attn,
+            attn_tokens=config.baseline_attn_tokens,
+            attn_dim=config.baseline_attn_dim,
+            attn_heads=config.baseline_attn_heads,
+            attn_dropout=config.baseline_attn_dropout,
         )
         ae_params = count_parameters(model_ae)
 
@@ -405,6 +524,10 @@ def train_benchmark(config: TopoEncoderCIFAR10Config) -> dict:
         "variance": [],
         "diversity": [],
         "separation": [],
+        "codebook_center": [],
+        "chart_center_sep": [],
+        "residual_scale": [],
+        "soft_equiv_l1": [],
         "window": [],
         "disentangle": [],
         "orthogonality": [],
@@ -479,6 +602,22 @@ def train_benchmark(config: TopoEncoderCIFAR10Config) -> dict:
             sep_loss = compute_separation_loss(
                 z_geo, enc_w, config.num_charts, config.separation_margin
             )
+            codebook_center_loss = torch.tensor(0.0, device=device)
+            if config.codebook_center_weight > 0:
+                codebook_center_loss = compute_codebook_centering_loss(
+                    model_atlas.encoder.codebook
+                )
+            chart_center_sep_loss = torch.tensor(0.0, device=device)
+            if config.chart_center_sep_weight > 0:
+                chart_center_sep_loss = compute_chart_center_separation_loss(
+                    model_atlas.encoder.chart_centers, config.chart_center_sep_margin
+                )
+            residual_scale_loss = torch.tensor(0.0, device=device)
+            if config.residual_scale_weight > 0:
+                residual_scale_loss = compute_residual_scale_loss(z_n)
+            soft_equiv_l1 = torch.tensor(0.0, device=device)
+            if config.soft_equiv_metric:
+                soft_equiv_l1 = model_atlas.encoder.soft_equiv_l1_loss()
 
             # Tier 2 losses
             window_loss, window_info = compute_window_loss(
@@ -557,6 +696,10 @@ def train_benchmark(config: TopoEncoderCIFAR10Config) -> dict:
                 + config.variance_weight * var_loss
                 + config.diversity_weight * div_loss
                 + config.separation_weight * sep_loss
+                + config.codebook_center_weight * codebook_center_loss
+                + config.chart_center_sep_weight * chart_center_sep_loss
+                + config.residual_scale_weight * residual_scale_loss
+                + config.soft_equiv_l1_weight * soft_equiv_l1
                 + config.window_weight * window_loss
                 + config.disentangle_weight * dis_loss
                 + config.orthogonality_weight * orth_loss
@@ -600,6 +743,10 @@ def train_benchmark(config: TopoEncoderCIFAR10Config) -> dict:
             epoch_losses["variance"] += var_loss.item()
             epoch_losses["diversity"] += div_loss.item()
             epoch_losses["separation"] += sep_loss.item()
+            epoch_losses["codebook_center"] += codebook_center_loss.item()
+            epoch_losses["chart_center_sep"] += chart_center_sep_loss.item()
+            epoch_losses["residual_scale"] += residual_scale_loss.item()
+            epoch_losses["soft_equiv_l1"] += soft_equiv_l1.item()
             epoch_losses["window"] += window_loss.item()
             epoch_losses["disentangle"] += dis_loss.item()
             epoch_losses["orthogonality"] += orth_loss.item()
@@ -896,6 +1043,78 @@ def main():
         "--hidden_dim", type=int, default=256, help="Hidden dimension"
     )
     parser.add_argument(
+        "--vision_preproc",
+        type=lambda x: x.lower() == "true",
+        default=False,
+        help="Use covariant vision preprocessor (default: False)",
+    )
+    parser.add_argument(
+        "--vision_num_rotations",
+        type=int,
+        default=8,
+        help="Vision preproc rotation count (default: 8)",
+    )
+    parser.add_argument(
+        "--vision_kernel_size",
+        type=int,
+        default=5,
+        help="Vision preproc kernel size (default: 5)",
+    )
+    parser.add_argument(
+        "--vision_use_reflections",
+        type=lambda x: x.lower() == "true",
+        default=False,
+        help="Use reflections in vision preproc (default: False)",
+    )
+    parser.add_argument(
+        "--vision_norm_nonlinearity",
+        type=str,
+        default="n_sigmoid",
+        help="Vision preproc norm nonlinearity (default: n_sigmoid)",
+    )
+    parser.add_argument(
+        "--vision_norm_bias",
+        type=lambda x: x.lower() == "true",
+        default=True,
+        help="Vision preproc norm bias (default: True)",
+    )
+    parser.add_argument(
+        "--soft_equiv_metric",
+        type=lambda x: x.lower() == "true",
+        default=False,
+        help="Enable soft equivariant metric for VQ distances (default: False)",
+    )
+    parser.add_argument(
+        "--soft_equiv_bundle_size",
+        type=int,
+        default=0,
+        help="Bundle size for soft equivariant metric (0 = latent_dim)",
+    )
+    parser.add_argument(
+        "--soft_equiv_hidden_dim",
+        type=int,
+        default=64,
+        help="Hidden dim for soft equivariant metric (default: 64)",
+    )
+    parser.add_argument(
+        "--soft_equiv_use_spectral_norm",
+        type=lambda x: x.lower() == "true",
+        default=True,
+        help="Use spectral norm in soft equivariant layer (default: True)",
+    )
+    parser.add_argument(
+        "--soft_equiv_zero_self_mixing",
+        type=lambda x: x.lower() == "true",
+        default=False,
+        help="Zero self-mixing in soft equivariant layer (default: False)",
+    )
+    parser.add_argument(
+        "--soft_equiv_l1_weight",
+        type=float,
+        default=0.0,
+        help="L1 weight for soft equivariant mixing (default: 0.0)",
+    )
+    parser.add_argument(
         "--log_every", type=int, default=50, help="Log every N epochs"
     )
     parser.add_argument(
@@ -909,6 +1128,24 @@ def main():
         "--device", type=str,
         default="cuda" if torch.cuda.is_available() else "cpu",
         help="Device"
+    )
+
+    # Tier 1 losses (residual hierarchy)
+    parser.add_argument(
+        "--codebook_center_weight", type=float, default=0.05,
+        help="Codebook centering weight (default: 0.05)"
+    )
+    parser.add_argument(
+        "--chart_center_sep_weight", type=float, default=0.05,
+        help="Chart center separation weight (default: 0.05)"
+    )
+    parser.add_argument(
+        "--chart_center_sep_margin", type=float, default=2.0,
+        help="Chart center separation margin (default: 2.0)"
+    )
+    parser.add_argument(
+        "--residual_scale_weight", type=float, default=0.01,
+        help="Residual scale penalty weight (default: 0.01)"
     )
 
     # Tier 3 losses (codebook health)
@@ -1011,6 +1248,35 @@ def main():
     parser.add_argument(
         "--disable_vq", action="store_true", help="Disable StandardVQ baseline"
     )
+    parser.add_argument(
+        "--baseline_attn",
+        action="store_true",
+        help="Enable attention blocks in StandardVQ/VanillaAE baselines",
+    )
+    parser.add_argument(
+        "--baseline_attn_tokens",
+        type=int,
+        default=4,
+        help="Number of tokens for baseline attention blocks",
+    )
+    parser.add_argument(
+        "--baseline_attn_dim",
+        type=int,
+        default=32,
+        help="Per-token attention dimension for baselines",
+    )
+    parser.add_argument(
+        "--baseline_attn_heads",
+        type=int,
+        default=4,
+        help="Number of attention heads for baselines",
+    )
+    parser.add_argument(
+        "--baseline_attn_dropout",
+        type=float,
+        default=0.0,
+        help="Attention dropout for baselines",
+    )
 
     # Training dynamics
     parser.add_argument(
@@ -1041,10 +1307,27 @@ def main():
         num_charts=args.num_charts,
         codes_per_chart=args.codes_per_chart,
         hidden_dim=args.hidden_dim,
+        vision_preproc=args.vision_preproc,
+        vision_num_rotations=args.vision_num_rotations,
+        vision_kernel_size=args.vision_kernel_size,
+        vision_use_reflections=args.vision_use_reflections,
+        vision_norm_nonlinearity=args.vision_norm_nonlinearity,
+        vision_norm_bias=args.vision_norm_bias,
+        soft_equiv_metric=args.soft_equiv_metric,
+        soft_equiv_bundle_size=args.soft_equiv_bundle_size or None,
+        soft_equiv_hidden_dim=args.soft_equiv_hidden_dim,
+        soft_equiv_use_spectral_norm=args.soft_equiv_use_spectral_norm,
+        soft_equiv_zero_self_mixing=args.soft_equiv_zero_self_mixing,
+        soft_equiv_l1_weight=args.soft_equiv_l1_weight,
         log_every=args.log_every,
         save_every=args.save_every,
         output_dir=args.output_dir,
         device=args.device,
+        # Tier 1 losses
+        codebook_center_weight=args.codebook_center_weight,
+        chart_center_sep_weight=args.chart_center_sep_weight,
+        chart_center_sep_margin=args.chart_center_sep_margin,
+        residual_scale_weight=args.residual_scale_weight,
         # Tier 3 losses
         per_chart_code_entropy_weight=args.per_chart_code_entropy_weight,
         code_entropy_weight=args.code_entropy_weight,
@@ -1072,6 +1355,11 @@ def main():
         # Benchmark control
         disable_ae=args.disable_ae,
         disable_vq=args.disable_vq,
+        baseline_attn=args.baseline_attn,
+        baseline_attn_tokens=args.baseline_attn_tokens,
+        baseline_attn_dim=args.baseline_attn_dim,
+        baseline_attn_heads=args.baseline_attn_heads,
+        baseline_attn_dropout=args.baseline_attn_dropout,
         # Training dynamics
         use_scheduler=args.use_scheduler,
         min_lr=args.min_lr,

@@ -290,8 +290,8 @@ uv run python src/experiments/topoencoder_2d.py \
   --device cpu \
   --adaptive_lr true \
   --use_scheduler false \
-  --lr 0.0001 \
-  --lr_max 0.0001 \
+  --lr 0.005 \
+  --lr_max 0.005 \
   --kl_prior_weight 0.001 \
   --lr_grounding_warmup_epochs 200 \
   --lr_unstable_patience 10 \
@@ -299,7 +299,7 @@ uv run python src/experiments/topoencoder_2d.py \
   --mlflow true \
   --mlflow_tracking_uri http://127.0.0.1:5000 \
   --mlflow_experiment topoencoder \
-  --mlflow_run_name cifar_adaptive_lr
+  --mlflow_run_name cifar10_adaptive_lr
 ```
 
 ```bash
@@ -321,4 +321,55 @@ uv run python src/experiments/topoencoder_2d.py \
   --mlflow_tracking_uri http://127.0.0.1:5000 \
   --mlflow_experiment topoencoder \
   --mlflow_run_name mnist_adaptive_lr
+```
+
+```bash
+PYTHONUNBUFFERED=1 uv run src/experiments/topoencoder_2d.py \
+  --dataset mnist \
+  --epochs 1250 \
+  --save_every 50 \
+  --log_every 25 \
+  --device cpu \
+  --adaptive_lr true \
+  --use_scheduler false \
+  --lr 0.001 \
+  --lr_max 0.05 \
+  --lr_grounding_warmup_epochs 50 \
+  --lr_increase_factor 1.05 \
+  --lr_decrease_factor 0.8 \
+  --lr_unstable_patience 5 \
+  --lr_stable_patience 5 \
+  --lr_loss_increase_tol 0.1 \
+  --output_dir outputs/topoencoder_mnist_cpu_adapt_lr7 \
+  --disable_ae \
+  --disable_vq \
+  --hidden_dim 64 \
+  --codes_per_chart 8
+```
+
+Resume the MNIST adaptive LR run to 2k epochs (replace `--resume` with the latest checkpoint):
+
+```bash
+uv run src/experiments/topoencoder_2d.py \
+  --dataset mnist \
+  --epochs 2000 \
+  --save_every 50 \
+  --log_every 25 \
+  --device cpu \
+  --adaptive_lr true \
+  --use_scheduler false \
+  --lr 0.001 \
+  --lr_max 0.05 \
+  --lr_grounding_warmup_epochs 50 \
+  --lr_increase_factor 1.05 \
+  --lr_decrease_factor 0.8 \
+  --lr_unstable_patience 5 \
+  --lr_stable_patience 5 \
+  --lr_loss_increase_tol 0.1 \
+  --output_dir outputs/topoencoder_mnist_cpu_adapt_lr7 \
+  --disable_ae \
+  --disable_vq \
+  --hidden_dim 64 \
+  --codes_per_chart 8 \
+  --resume outputs/topoencoder_mnist_cpu_adapt_lr7/topo_epoch_01200.pt
 ```

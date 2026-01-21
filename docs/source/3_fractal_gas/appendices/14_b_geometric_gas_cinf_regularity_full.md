@@ -2,7 +2,7 @@
 
 ## Abstract
 
-This document establishes **C^∞ regularity** (infinite differentiability) with **Gevrey-1 bounds** for the **complete fitness potential** of the Geometric Gas algorithm with companion-dependent measurements. We prove regularity for the full algorithmic fitness potential:
+This document establishes **C^∞ regularity** (infinite differentiability) with **Gevrey-1 bounds** for the **mean-field expected fitness potential** of the Geometric Gas algorithm with companion-dependent measurements. We prove regularity for the full algorithmic fitness potential in the mean-field sense:
 
 $$
 V_{\text{fit}}(x_i, v_i) = g_A\left(Z_\rho\left(\mu_\rho^{(i)}, \sigma_\rho^{2(i)}\right)\right)
@@ -27,7 +27,7 @@ The proof uses a **smooth clustering framework** with partition-of-unity localiz
 
 ## 0. TLDR
 
-**C^∞ Regularity with Gevrey-1 Bounds**: The complete fitness potential $V_{\text{fit}}(x_i, v_i)$ is infinitely differentiable with factorial-growth derivative bounds. For every derivative order $m \geq 1$:
+**C^∞ Regularity with Gevrey-1 Bounds**: The **mean-field expected** fitness potential $V_{\text{fit}}(x_i, v_i)$ is infinitely differentiable with factorial-growth derivative bounds. For every derivative order $m \geq 1$:
 
 $$
 \|\nabla^m V_{\text{fit}}\|_\infty \leq C_{V,m} \cdot m! \cdot \max(\rho^{-m}, \varepsilon_d^{1-m})
@@ -49,7 +49,7 @@ This Gevrey-1 regularity enables rigorous analysis of the Geometric Gas generato
 
 ### 1.1. Goal and Scope
 
-The goal of this document is to establish the **complete C^∞ regularity** of the Geometric Gas fitness potential with companion-dependent measurements and to provide explicit **Gevrey-1 bounds** (factorial-growth derivative estimates) that are **k-uniform** and **N-uniform**. The central object of study is the full algorithmic fitness potential:
+The goal of this document is to establish the **complete C^∞ regularity** of the **mean-field expected** Geometric Gas fitness potential with companion-dependent measurements and to provide explicit **Gevrey-1 bounds** (factorial-growth derivative estimates) that are **k-uniform** and **N-uniform**. The central object of study is the full algorithmic fitness potential:
 
 $$
 V_{\text{fit}}(x_i, v_i) = g_A\left(Z_\rho\left(\mu_\rho^{(i)}, \sigma_\rho^{2(i)}\right)\right)
@@ -413,7 +413,7 @@ where $\mathcal{M}_k$ is the set of perfect matchings and $W(M) = \prod_{(i,j) \
 4. The mechanisms are **statistically equivalent** at the level of regularity and parameter
    dependence (§5.7)
 
-**Consequence**: The fitness potential $V_{\text{fit}}$ is C^∞ with k-uniform Gevrey-1 bounds **regardless of which mechanism is implemented**.
+**Consequence**: The **mean-field expected** fitness potential $V_{\text{fit}}$ is C^∞ with k-uniform Gevrey-1 bounds **regardless of which mechanism is implemented**.
 
 ---
 
@@ -519,7 +519,7 @@ This introduces:
 2. **Higher-order coupling**: Higher derivatives involve increasingly complex interaction patterns
 3. **Factorial explosion risk**: Naive expansion gives $\mathcal{O}(N^m)$ terms in $m$-th derivative
 
-**The Challenge**: Prove that despite this N-body coupling, the fitness potential $V_{\text{fit}}$ remains C^∞ with **N-uniform** derivative bounds.
+**The Challenge**: Prove that despite this N-body coupling, the **mean-field expected** fitness potential $V_{\text{fit}}$ remains C^∞ with **N-uniform** derivative bounds.
 
 ### 2.3 Proof Strategy: Smooth Clustering with Partition of Unity
 
@@ -730,10 +730,16 @@ The following lemma makes the sum-to-integral approximation **explicit**.
 :::{prf:lemma} Sum-to-Integral Bound in Algorithmic Coordinates
 :label: lem-sum-to-integral-bound-full
 
-Let $\varphi(x,v) = (\psi_x(x), \psi_v(v))$ be the smooth squashing map into the algorithmic space $\mathcal{Y}$, and write $y_i = \varphi(x_i, v_i)$. Suppose the mean-field QSD density satisfies Theorem {prf:ref}`assump-uniform-density-full`, and let $f : \mathcal{Y} \to \mathbb{R}$ be measurable with $|f| \leq M$. Then
+Let $\varphi(x,v) = (\psi_x(x), \psi_v(v))$ be the smooth squashing map into the algorithmic space $\mathcal{Y}$, and write $y_i = \varphi(x_i, v_i)$. Suppose the mean-field QSD density satisfies Theorem {prf:ref}`assump-uniform-density-full`, and let $f : \mathcal{Y} \to \mathbb{R}$ be measurable with $|f| \leq M$. Define the mean-field weighted integral
 
 $$
-\sum_{j \in \mathcal{A}} f(y_j) \exp\left(-\frac{d_{\text{alg}}^2(y_i,y_j)}{2\varepsilon_c^2}\right)
+I_f(y_i) := \int_{\mathcal{Y}} f(y) \exp\left(-\frac{d_{\text{alg}}^2(y_i,y)}{2\varepsilon_c^2}\right) \rho_{\mathcal{Y}}(y)\, dy.
+$$
+
+Then
+
+$$
+|I_f(y_i)|
 \leq \rho_{\max} \, J_{\min}^{-1} \, M \int_{\mathcal{Y}} \exp\left(-\frac{d_{\text{alg}}^2(y_i,y)}{2\varepsilon_c^2}\right) dy,
 $$
 
@@ -742,13 +748,23 @@ where $J_{\min} = \inf_{(x,v) \in \Omega} |\det D\varphi(x,v)| > 0$ on the bound
 **Key consequence for Gaussian integrals**: When $f \equiv 1$:
 
 $$
-\sum_{j \in \mathcal{A}} \exp\left(-\frac{d_{\text{alg}}^2(y_i,y_j)}{2\varepsilon_c^2}\right)
+I_1(y_i)
 \leq \rho_{\max} \, J_{\min}^{-1} \, (2\pi\varepsilon_c^2)^d \cdot C_{\lambda},
 $$
 
 where $C_{\lambda} = (1 + \lambda_{\text{alg}})^{d/2}$ accounts for the velocity component in $d_{\text{alg}}$.
 
-This bound is **k-uniform**: it depends only on $\rho_{\max}$, $\varepsilon_c$, $d$, and the squashing constants, **not on the number of alive walkers $k$**.
+In the mean-field limit (and for finite $N$ in expectation via propagation of chaos),
+the empirical weighted sum converges to $I_f(y_i)$, so this bound is the one used in the $C^\infty$
+analysis. The bound is **k-uniform**: it depends only on $\rho_{\max}$, $\varepsilon_c$, $d$, and the
+squashing constants, **not on the number of alive walkers $k$**.
+:::
+
+:::{note}
+**Notation for mean-field bounds.** In subsequent sections, whenever we invoke
+{prf:ref}`lem-sum-to-integral-bound-full`, sums such as $\sum_j e^{-d^2/(2\rho^2)}$ are interpreted
+as their mean-field limits (or expectations) via propagation of chaos. We keep the sum notation
+for readability.
 :::
 
 :::{prf:proof}
@@ -772,10 +788,12 @@ Thus the pushforward density on $\mathcal{Y}$ is bounded by $\rho_{\max} J_{\min
 
 **Step 2: Sum-to-integral bound.**
 
-In the mean-field limit, the alive-walker intensity is given by the QSD density. Writing $\rho_{\mathcal{Y}}(y)$ for the pushforward density, we have
+In the mean-field limit, the alive-walker intensity is given by the QSD density. Writing
+$\rho_{\mathcal{Y}}(y)$ for the pushforward density, the empirical weighted sum converges to
+the mean-field integral $I_f(y_i)$:
 
 $$
-\sum_{j \in \mathcal{A}} f(y_j) \exp\left(-\frac{d_{\text{alg}}^2(y_i,y_j)}{2\varepsilon_c^2}\right)
+I_f(y_i)
 = \int_{\mathcal{Y}} f(y) \exp\left(-\frac{d_{\text{alg}}^2(y_i,y)}{2\varepsilon_c^2}\right) \rho_{\mathcal{Y}}(y) \, dy,
 $$
 
@@ -994,14 +1012,21 @@ This is a **smooth function** of all walker positions (unlike hard cluster cardi
 :::{prf:lemma} Bounds on Effective Cluster Size
 :label: lem-effective-cluster-size-bounds-full
 
-Under Theorem {prf:ref}`assump-uniform-density-full`:
+Under Theorem {prf:ref}`assump-uniform-density-full`, the **mean-field cluster mass**
 
 $$
-k_m^{\text{eff}} \leq \rho_{\max} \cdot \text{Vol}(B(y_m, 2\varepsilon_c)) = C_{\text{vol}} \cdot \rho_{\max} \cdot \varepsilon_c^{2d}
-
+k_{m,\mathrm{mf}}^{\text{eff}} := \int_{\mathcal{Y}} \psi_m(y)\, \rho_{\text{QSD}}(y)\, dy
 $$
 
-where $C_{\text{vol}}$ is the volume constant for phase-space balls.
+satisfies
+
+$$
+k_{m,\mathrm{mf}}^{\text{eff}} \leq \rho_{\max} \cdot \text{Vol}(B(y_m, 2\varepsilon_c))
+= C_{\text{vol}} \cdot \rho_{\max} \cdot \varepsilon_c^{2d}.
+$$
+
+For finite $N$, $\mathbb{E}[k_m^{\text{eff}}] \to k \, k_{m,\mathrm{mf}}^{\text{eff}}$ by propagation
+of chaos, so the same bound holds in expectation.
 
 Moreover, the total effective population sums to $k$:
 
@@ -1020,12 +1045,19 @@ This lemma establishes uniform bounds on the effective cluster size using densit
 
 From {prf:ref}`def-effective-cluster-population-full`, $k_m^{\text{eff}} = \sum_{j \in \mathcal{A}} \psi_m(x_j, v_j)$. Since $\psi_m$ has support only within distance $2\varepsilon_c$ of cluster center $(y_m, u_m)$, only walkers in the phase-space ball $B(y_m, 2\varepsilon_c)$ contribute.
 
-Interpreting the uniform density bound (Theorem {prf:ref}`assump-uniform-density-full`) as a bound on the empirical density in algorithmic coordinates, the number of walkers in any ball $B$ satisfies:
+In the mean-field estimates, replace the empirical sum by an integral against
+$\rho_{\text{QSD}}$ (propagation of chaos), so the cluster mass satisfies
 
 $$
-\#\{j : (x_j, v_j) \in B\} \leq \rho_{\max} \cdot \text{Vol}(B)
+\sum_{j \in \mathcal{A}} \psi_m(x_j, v_j)
+\;\;\longrightarrow\;\;
+\int_{\mathcal{Y}} \psi_m(y)\, \rho_{\text{QSD}}(y)\, dy
+\leq \rho_{\max} \cdot \text{Vol}(B).
 
 $$
+
+For finite $N$, this bound holds in expectation (and in probability) by propagation of chaos,
+and the mean-field limit is what is used in the $C^\infty$ proof.
 
 The phase-space has dimension $2d$ (position + velocity), so:
 
@@ -1034,10 +1066,10 @@ $$
 
 $$
 
-where $C_{\text{vol}} = 2^{2d} \pi^d / d!$. Therefore:
+where $C_{\text{vol}} = 2^{2d} \pi^d / d!$. Therefore, the mean-field cluster mass satisfies:
 
 $$
-k_m^{\text{eff}} \leq \rho_{\max} \cdot C_{\text{vol}} \cdot \varepsilon_c^{2d}
+k_{m,\mathrm{mf}}^{\text{eff}} \leq \rho_{\max} \cdot C_{\text{vol}} \cdot \varepsilon_c^{2d}.
 
 $$
 
@@ -1050,7 +1082,7 @@ $$
 
 $$
 
-where the interchange is valid by Fubini's theorem for finite sums. Each walker contributes total weight 1 distributed across all clusters.
+where the interchange is valid by Fubini's theorem for finite sums. Each walker contributes total weight 1 distributed across all clusters. In the mean-field limit, $\sum_m k_{m,\mathrm{mf}}^{\text{eff}} = 1$ since $\sum_m \psi_m \equiv 1$ and $\rho_{\text{QSD}}$ is normalized.
 :::
 
 :::{dropdown} 📖 **Supplementary Details (Full Proof)**
@@ -2450,16 +2482,17 @@ where $W(M) = \prod_{(i,\ell) \in M} \exp(-d_{\text{alg}}^2(i,\ell)/(2\varepsilo
 
 Let $\Delta_j(S) := \mathbb{E}_{\text{softmax}}[d_j | S] - \mathbb{E}_{\text{pair}}[d_j | S]$.
 
-Under Theorem {prf:ref}`assump-uniform-density-full` and Lemma {prf:ref}`lem-companion-availability-enforcement`, the following hold for every configuration $S$ and walker $j$:
+Under Theorem {prf:ref}`assump-uniform-density-full` and Lemma {prf:ref}`lem-companion-availability-enforcement`,
+the following hold for the **mean-field expected measurements** (and for finite $N$ in expectation via propagation of chaos):
 
-1. **Uniform boundedness**:
+1. **Uniform boundedness** (deterministic, any configuration):
 
 $$
 |\Delta_j(S)| \leq D_{\max} := \text{diam}(\mathcal{X} \times V)
 
 $$
 
-2. **Gevrey-1 regularity with identical parameter dependence**:
+2. **Gevrey-1 regularity with identical parameter dependence** (mean-field bounds):
 
 $$
 \|\nabla^m \Delta_j\| \leq \left(C_{d,m}^{(\text{soft})} + C_{d,m}^{(\text{pair})}\right) m! \max(\rho^{-m}, \varepsilon_d^{1-m})
@@ -2516,7 +2549,7 @@ V_{\text{fit}}(x_i, v_i) = g_A\left(Z_\rho\left(\mu_\rho^{(i)}, \sigma_\rho^{2(i
 
 $$
 
-computed with **either** companion selection mechanism (independent softmax or diversity pairing) is **C^∞** for all $(x_i, v_i) \in \mathcal{X} \times \mathbb{R}^d$.
+computed with **either** companion selection mechanism (independent softmax or diversity pairing) has a **mean-field expected** fitness potential that is **C^∞** for all $(x_i, v_i) \in \mathcal{X} \times \mathbb{R}^d$.
 
 **Derivative Bounds** (k-uniform Gevrey-1): For all $m \geq 0$:
 
@@ -2550,7 +2583,7 @@ where $C_{V,m} \leq C_0 C_1^m$ is **k-uniform** (independent of swarm size $k$ o
 :::
 
 :::{important} Main Takeaway
-**The Geometric Gas fitness potential is C^∞ with k-uniform Gevrey-1 bounds regardless of which companion selection mechanism is implemented.**
+**The mean-field expected Geometric Gas fitness potential is C^∞ with k-uniform Gevrey-1 bounds regardless of which companion selection mechanism is implemented.**
 
 This enables:
 - **Mean-field analysis**: Smooth potential allows rigorous mean-field limit ({doc}`08_mean_field`)
@@ -3095,13 +3128,16 @@ $$
 The key observation is that $\nabla w_{ij}$ is **exponentially localized**: $\|\nabla w_{ij}\| \sim e^{-d^2(i,j)/(2\rho^2)} / \rho$.
 
 So the sum is dominated by **nearby walkers** $j$ with $d_{\text{alg}}(i,j) \leq \mathcal{O}(\rho)$.
-
-By Theorem {prf:ref}`assump-uniform-density-full`, the number of such walkers is:
-
-$$
-\#\{j : d_{\text{alg}}(i,j) \leq C\rho\} \leq \rho_{\max} \cdot C_{\text{vol}} \cdot \rho^{2d} = \mathcal{O}(\rho^{2d})
+In the mean-field estimates, apply the sum-to-integral bound:
 
 $$
+\sum_j e^{-d^2(i,j)/(2\rho^2)}
+\;\;\longrightarrow\;\;
+\int_{\mathcal{Y}} e^{-d_{\text{alg}}^2((x_i,v_i),y)/(2\rho^2)}\, \rho_{\text{QSD}}(y)\, dy
+\leq \rho_{\max} (2\pi\rho^2)^d C_\lambda = \mathcal{O}(\rho^{2d}),
+$$
+
+which is k-uniform in the mean-field limit.
 
 Therefore:
 
@@ -3336,11 +3372,13 @@ $$
 
 $$
 
-The sum $\sum_j e^{-d^2(i,j)/(2\rho^2)}$ is dominated by walkers within $\mathcal{O}(\rho)$, giving:
+By the mean-field sum-to-integral bound,
 
 $$
-\sum_j e^{-d^2(i,j)/(2\rho^2)} \leq \rho_{\max} \cdot C_{\text{vol}} \cdot \rho^{2d} = \mathcal{O}(\rho^{2d})
-
+\sum_j e^{-d^2(i,j)/(2\rho^2)}
+\;\;\longrightarrow\;\;
+\int_{\mathcal{Y}} e^{-d_{\text{alg}}^2((x_i,v_i),y)/(2\rho^2)}\, \rho_{\text{QSD}}(y)\, dy
+\leq \rho_{\max} (2\pi\rho^2)^d C_\lambda = \mathcal{O}(\rho^{2d}).
 $$
 
 Therefore:
@@ -4159,7 +4197,7 @@ where $L_{g,m} = \mathcal{O}(m!)$ (Gevrey-1 growth).
 :::{prf:theorem} C^∞ Regularity of Fitness Potential (Main Result)
 :label: thm-main-cinf-regularity-fitness-potential-full
 
-The fitness potential:
+The **mean-field expected** fitness potential:
 
 $$
 V_{\text{fit}}(x_i, v_i) = g_A(Z_\rho^{(i)})
@@ -4288,7 +4326,7 @@ All constants in the bound trace back to:
 
 Therefore $C_{V,m}(\rho)$ is **independent of $k$ and $N$**.
 
-**Conclusion**: The fitness potential $V_{\text{fit}}$ is C^∞ with N-uniform, k-uniform Gevrey-1 bounds.
+**Conclusion**: The **mean-field expected** fitness potential $V_{\text{fit}}$ is C^∞ with N-uniform, k-uniform Gevrey-1 bounds.
 :::
 
 :::{prf:corollary} Gevrey-1 Classification
@@ -4469,7 +4507,8 @@ where:
 - $\sigma'_\rho(i) = \sqrt{\sum_j w_{ij}(\rho)(d_j - \mu_\rho)^2 + \eta_{\min}^2}$ (regularized std dev)
 - $w_{ij}(\rho) = \exp(-d_{\text{alg}}^2(i,j)/(2\rho^2)) / Z_i(\rho)$ (localization weights)
 
-is **infinitely differentiable** (C^∞) with respect to $(x_i, v_i)$ for all walkers $i \in \mathcal{A}$.
+is **infinitely differentiable** (C^∞) in the **mean-field expected** sense with respect to
+$(x_i, v_i)$ for all walkers $i \in \mathcal{A}$.
 
 **Derivative Bounds**: For all $m \geq 1$:
 
@@ -4527,7 +4566,7 @@ The constant is **independent of** (uniformity properties):
    - Gevrey-1 classification ({prf:ref}`cor-gevrey-1-fitness-potential-full`)
    - N-uniform and k-uniform bounds established
 
-**Conclusion**: By systematic composition through the six-stage pipeline, maintaining Gevrey-1 bounds and k-uniform constants at each stage, we establish C^∞ regularity for the complete fitness potential.
+**Conclusion**: By systematic composition through the six-stage pipeline, maintaining Gevrey-1 bounds and k-uniform constants at each stage, we establish C^∞ regularity for the **mean-field expected** fitness potential.
 :::
 
 ---
@@ -4875,7 +4914,9 @@ $$
 
 This document establishes:
 
-1. **C^∞ Regularity**: The complete fitness potential $V_{\text{fit}} = g_A(Z_\rho(\mu_\rho, \sigma^2_\rho))$ with companion-dependent measurements is infinitely differentiable ({prf:ref}`thm-main-complete-cinf-geometric-gas-full`)
+1. **C^∞ Regularity**: The **mean-field expected** fitness potential
+   $V_{\text{fit}} = g_A(Z_\rho(\mu_\rho, \sigma^2_\rho))$ with companion-dependent measurements
+   is infinitely differentiable ({prf:ref}`thm-main-complete-cinf-geometric-gas-full`)
 
 2. **Gevrey-1 Bounds**: Derivative bounds scale as
    $C_{V,m} \cdot m! \cdot \max(\rho^{-m}, \varepsilon_d^{1-m})$ with k-uniform

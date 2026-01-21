@@ -2,7 +2,7 @@
 
 ## 0. TLDR
 
-*Notation: $V_{\text{Var},x}$, $V_{\text{Var},v}$ = positional and velocity variance; $\mu_v$ = velocity barycenter; $W_b$ = boundary potential; $\Psi_{\text{kin}}$, $\Psi_{\text{clone}}$ = kinetic and cloning operators. The TV-focused Lyapunov is $V_{\text{TV}} = V_{\text{Var},x} + V_{\text{Var},v} + c_\mu \|\mu_v\|^2 + c_B W_b$.*
+*Notation: $V_{\text{Var},x}$, $V_{\text{Var},v}$ = positional and velocity variance; $\mu_v$ = velocity barycenter; $W_b$ = boundary potential; $\Psi_{\text{kin}}$, $\Psi_{\text{clone}}$ = kinetic and cloning operators. The TV-focused Lyapunov is $V_{\text{TV}} = c_V\!\left(V_{\text{Var},x} + V_{\text{Var},v}\right) + c_\mu \|\mu_v\|^2 + c_B W_b$.*
 
 **TV-Ready Kinetic Drift**: Langevin friction contracts $V_{\text{Var},v}$ and $\|\mu_v\|^2$; positional diffusion produces a cross-term bounded by $V_{\text{Var},v}$; the confining potential contracts $W_b$. These are the only kinetic ingredients used in the total-variation (TV) convergence proof.
 
@@ -38,7 +38,7 @@ The Euclidean Gas achieves stability through a carefully orchestrated interplay 
 | **Lyapunov Component** | **Cloning $\Psi_{\text{clone}}$** | **Kinetics $\Psi_{\text{kin}}$** | **Net Effect** |
 |:-----------------------|:-----------------------------------|:----------------------------------|:---------------|
 | $V_{\text{Var},x}$ (position) | $-\kappa_x V_{\text{Var},x} \tau + C_x \tau$ | $\leq C_{\text{kin},x}\tau$ | **Contraction** |
-| $V_{\text{Var},v}$ (velocity) | $\leq C_v \tau$ | $-(2\gamma-\eta_v) V_{\text{Var},v}\tau + c_v V_{\text{Var},x}\tau + C_v'\tau$ | **Contraction (after weighting)** |
+| $V_{\text{Var},v}$ (velocity) | $\leq C_v$ | $-(2\gamma-\epsilon) V_{\text{Var},v}\tau + \left(\frac{F_{\max}^2}{\epsilon} + d\sigma_{\max}^2\right)\tau$ | **Contraction** |
 | $\|\mu_v\|^2$ (velocity barycenter) | $\leq C_{\mu}^{\text{clone}}$ | $-2\gamma \|\mu_v\|^2\tau + C_{\mu}^{\text{kin}}\tau$ | **Contraction** |
 | $W_b$ (boundary)       | $-\kappa_b W_b \tau + C_b \tau$ | $-\kappa_{\text{pot}} W_b \tau + C_{\text{pot}} \tau$ | **Strong contraction** |
 
@@ -79,8 +79,8 @@ graph TD
 
     subgraph "Integration with Cloning Operator"
         J["<b>From 03_cloning</b><br>Cloning provides:<br>ΔV_Var,x ≤ -κ_x V_Var,x τ + C_x τ<br>ΔW_b ≤ -κ_b W_b τ + C_b τ"]:::axiomStyle
-        K["<b>Synergistic Composition</b><br>Balance weights c_V, c_B in<br>V_total = W_h² + c_V V_Var + c_B W_b"]:::stateStyle
-        L["<b>Result (in 06_convergence)</b><br>Full Foster-Lyapunov Drift:<br>ΔV_total ≤ -κV_total + C"]:::theoremStyle
+        K["<b>Synergistic Composition</b><br>Balance weights c_V, c_μ, c_B in<br>V_TV = c_V(V_Var,x+V_Var,v)+c_μ||μ_v||²+c_B W_b"]:::stateStyle
+        L["<b>Result (in 06_convergence)</b><br>Full Foster-Lyapunov Drift:<br>ΔV_TV ≤ -κV_TV + C"]:::theoremStyle
     end
 
     A --> B
@@ -724,16 +724,21 @@ which is the **discrete-time drift inequality** with effective contraction rate 
 
 #### 3.7.3. Rigorous Component-Wise Weak Error Analysis
 
-This section provides **complete rigorous proofs** that {prf:ref}`thm-discretization` applies to each component of the synergistic Lyapunov function $V_{\text{total}} = V_W + c_V V_{\text{Var}} + c_B W_b$, despite the significant technical challenges posed by the non-standard nature of these components.
+This section provides **complete rigorous proofs** that {prf:ref}`thm-discretization` applies to each **TV component** of
+$
+V_{\text{TV}} = c_V(V_{\text{Var},x} + V_{\text{Var},v}) + c_\mu \|\mu_v\|^2 + c_B W_b.
+$
+The Wasserstein component $V_W$ belongs to the deferred W2 track and is treated separately below.
 
 :::{important}
 **On proof completeness**: The TV-relevant components in §3.7.3.1-3.7.3.2 use standard BAOAB weak error theory for smooth bounded test functions (Leimkuhler & Matthews, 2015). The Wasserstein component in §3.7.3.3 is **deferred** and not used in the TV proof.
 :::
 
-**Challenge:** The standard weak error theory for BAOAB requires test functions with globally bounded derivatives. Our Lyapunov components violate this:
-- $V_W$ (Wasserstein): Not an explicit function, defined via optimal transport
+**Challenge:** The standard weak error theory for BAOAB requires test functions with globally bounded derivatives. Our Lyapunov components require special handling:
+- $V_W$ (Wasserstein): Not an explicit function, defined via optimal transport (deferred W2 track)
 - $V_{\text{Var}}$ (Variance): Many-body term with combinatorial derivative structure
 - $W_b$ (Boundary): Derivatives explode near $\partial\mathcal{X}_{\text{valid}}$
+- $\|\mu_v\|^2$ (Barycenter): Quadratic but still requires bounded-derivative justification on the squashed state space
 
 **Solution:** We prove weak error bounds component-by-component using specialized techniques.
 
@@ -803,6 +808,10 @@ The constant $C(d,N)$ grows at most polynomially in $N$ because:
 For practical purposes, this is absorbed into $K_{\text{Var}}$.
 
 **Q.E.D.**
+:::
+
+:::{prf:remark}
+The same weak-error bound applies to $V_{\mu_v}(S) := \|\mu_v\|^2$. This is a quadratic function of the particle velocities with uniformly bounded derivatives on the squashed state space, so the BAOAB weak error theory applies verbatim with a constant $K_{\mu}$ of the same form as $K_{\text{Var}}$.
 :::
 
 ##### 3.7.3.2. Weak Error for Boundary Component ($W_b$)
@@ -1020,7 +1029,7 @@ The correct approach uses **synchronous coupling at the particle level** - a sta
 **Note on Isotropic Diffusion:** For the primary case $\Sigma(x,v) = \sigma_v I_d$ (isotropic, constant diffusion), the Stratonovich and Itô formulations coincide (see {prf:ref}`rem-stratonovich-ito-equivalence`). For general state-dependent $\Sigma$, the BAOAB scheme requires midpoint evaluation for Stratonovich noise, and $L_\Sigma$ appears explicitly in $K_W$.
 :::
 
-##### 3.7.3.4. Assembly: Proof of {prf:ref}`thm-discretization` for $V_{\text{total}}$
+##### 3.7.3.4. Assembly: Proof of {prf:ref}`thm-discretization` for $V_{\text{total}}^{W2}$ (Deferred)
 
 :::{prf:proof}
 **Proof of {prf:ref}`thm-discretization` for the Synergistic Lyapunov Function.**
@@ -1030,7 +1039,7 @@ The correct approach uses **synchronous coupling at the particle level** - a sta
 **PART I: Decompose by Components**
 
 $$
-V_{\text{total}} = V_W + c_V(V_{\text{Var},x} + V_{\text{Var},v}) + c_B W_b
+V_{\text{total}}^{W2} = V_W + c_V(V_{\text{Var},x} + V_{\text{Var},v}) + c_B W_b
 
 $$
 
@@ -1049,14 +1058,14 @@ $$
 $$
 
 $$
-\left|\mathbb{E}[W_b^{\text{BAOAB}}] - \mathbb{E}[W_b^{\text{exact}}]\right| \leq K_b \tau^2 (1 + V_{\text{total}}(S_0))
+\left|\mathbb{E}[W_b^{\text{BAOAB}}] - \mathbb{E}[W_b^{\text{exact}}]\right| \leq K_b \tau^2 (1 + V_{\text{total}}^{W2}(S_0))
 
 $$
 
 **PART III: Combine with Triangle Inequality**
 
 $$
-\left|\mathbb{E}[V_{\text{total}}^{\text{BAOAB}}] - \mathbb{E}[V_{\text{total}}^{\text{exact}}]\right|
+\left|\mathbb{E}[V_{\text{total}}^{W2,\text{BAOAB}}] - \mathbb{E}[V_{\text{total}}^{W2,\text{exact}}]\right|
 
 $$
 
@@ -1066,12 +1075,12 @@ $$
 $$
 
 $$
-\leq [K_W (1 + V_W) + c_V K_{\text{Var}}(1 + V_{\text{Var}}) + c_B K_b(1 + V_{\text{total}})] \tau^2
+\leq [K_W (1 + V_W) + c_V K_{\text{Var}}(1 + V_{\text{Var}}) + c_B K_b(1 + V_{\text{total}}^{W2})] \tau^2
 
 $$
 
 $$
-\leq K_{\text{integ}} \tau^2 (1 + V_{\text{total}}(S_0))
+\leq K_{\text{integ}} \tau^2 (1 + V_{\text{total}}^{W2}(S_0))
 
 $$
 

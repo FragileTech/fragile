@@ -50,6 +50,8 @@ from fragile.core.layers import (
     VanillaAE,
 )
 from fragile.core.losses import (
+    compute_chart_center_separation_loss,
+    compute_codebook_centering_loss,
     compute_code_entropy_loss,
     compute_disentangle_loss,
     compute_diversity_loss,
@@ -58,6 +60,7 @@ from fragile.core.losses import (
     compute_orthogonality_loss,
     compute_orbit_loss,
     compute_per_chart_code_entropy_loss,
+    compute_residual_scale_loss,
     compute_routing_entropy,
     compute_separation_loss,
     compute_variance_loss,
@@ -93,6 +96,21 @@ class TopoEncoderConfig:
     covariant_attn_denom_min: float = 1e-3
     covariant_attn_use_transport: bool = True
     covariant_attn_transport_eps: float = 1e-3
+    soft_equiv_metric: bool = False
+    soft_equiv_bundle_size: int | None = None
+    soft_equiv_hidden_dim: int = 64
+    soft_equiv_use_spectral_norm: bool = True
+    soft_equiv_zero_self_mixing: bool = False
+    soft_equiv_l1_weight: float = 0.0
+    vision_preproc: bool = False
+    vision_in_channels: int = 0
+    vision_height: int = 0
+    vision_width: int = 0
+    vision_num_rotations: int = 8
+    vision_kernel_size: int = 5
+    vision_use_reflections: bool = False
+    vision_norm_nonlinearity: str = "n_sigmoid"
+    vision_norm_bias: bool = True
 
     # Training
     epochs: int = 1000
@@ -107,6 +125,10 @@ class TopoEncoderConfig:
     diversity_weight: float = 0.1  # Prevent chart collapse (was 1.0)
     separation_weight: float = 0.1  # Force chart centers apart (was 0.5)
     separation_margin: float = 2.0  # Minimum distance between chart centers
+    codebook_center_weight: float = 0.05  # Zero-mean codebook deltas per chart
+    chart_center_sep_weight: float = 0.05  # Separate chart center tokens
+    chart_center_sep_margin: float = 2.0  # Minimum distance between chart centers (token space)
+    residual_scale_weight: float = 0.01  # Keep z_n small vs macro/meso scales
 
     # Tier 2 losses (medium overhead ~5%)
     window_weight: float = 0.5  # Information-stability (Theorem 15.1.3)
@@ -168,6 +190,8 @@ class TopoEncoderConfig:
     lr_grounding_ema_decay: float = 0.98
     lr_recovery_factor: float = 1.1
     lr_recovery_threshold: float = 0.1
+    lr_plateau_patience: int = 10
+    lr_plateau_tol: float = 1e-3
 
     # Adaptive loss weights (primal-dual + PI controllers)
     adaptive_weights: bool = True
@@ -193,6 +217,11 @@ class TopoEncoderConfig:
     # Benchmark control
     disable_ae: bool = False  # Skip VanillaAE baseline
     disable_vq: bool = False  # Skip StandardVQ baseline
+    baseline_attn: bool = False
+    baseline_attn_tokens: int = 4
+    baseline_attn_dim: int = 32
+    baseline_attn_heads: int = 4
+    baseline_attn_dropout: float = 0.0
 
     # Train/test split
     test_split: float = 0.2
@@ -238,6 +267,11 @@ def compute_matching_hidden_dim(
     input_dim: int = 3,
     latent_dim: int = 2,
     num_codes: int = 64,
+    use_attention: bool = False,
+    attn_tokens: int = 4,
+    attn_dim: int = 32,
+    attn_heads: int = 4,
+    attn_dropout: float = 0.0,
 ) -> int:
     """Compute hidden_dim for StandardVQ to match target parameter count.
 
@@ -246,18 +280,71 @@ def compute_matching_hidden_dim(
 
     Using quadratic formula: h = (-12 + sqrt(144 + 8*(target - offset))) / 4
     """
-    offset = 5 + num_codes * latent_dim
-    # Adjust for input_dim: encoder.0 has input_dim*h, decoder.4 has h*input_dim
-    # Full formula: 2h² + (input_dim + 2 + 2 + input_dim + 2 + 2)h + ...
-    #             = 2h² + (2*input_dim + 8)h + offset
-    coef_h = 2 * input_dim + 8
-    # 2h² + coef_h*h + offset = target
-    # h = (-coef_h + sqrt(coef_h² + 8*(target - offset))) / 4
-    discriminant = coef_h**2 + 8 * (target_params - offset)
-    if discriminant < 0:
-        return 32  # fallback
-    h = (-coef_h + math.sqrt(discriminant)) / 4
-    return max(16, int(h))
+    if not use_attention:
+        offset = 5 + num_codes * latent_dim
+        # Adjust for input_dim: encoder.0 has input_dim*h, decoder.4 has h*input_dim
+        # Full formula: 2h² + (input_dim + 2 + 2 + input_dim + 2 + 2)h + ...
+        #             = 2h² + (2*input_dim + 8)h + offset
+        coef_h = 2 * input_dim + 8
+        # 2h² + coef_h*h + offset = target
+        # h = (-coef_h + sqrt(coef_h² + 8*(target - offset))) / 4
+        discriminant = coef_h**2 + 8 * (target_params - offset)
+        if discriminant < 0:
+            return 32  # fallback
+        h = (-coef_h + math.sqrt(discriminant)) / 4
+        return max(16, int(h))
+
+    def params_for_hidden(hidden_dim: int) -> int:
+        if num_codes > 0:
+            model = StandardVQ(
+                input_dim=input_dim,
+                hidden_dim=hidden_dim,
+                latent_dim=latent_dim,
+                num_codes=num_codes,
+                use_attention=True,
+                attn_tokens=attn_tokens,
+                attn_dim=attn_dim,
+                attn_heads=attn_heads,
+                attn_dropout=attn_dropout,
+            )
+        else:
+            model = VanillaAE(
+                input_dim=input_dim,
+                hidden_dim=hidden_dim,
+                latent_dim=latent_dim,
+                use_attention=True,
+                attn_tokens=attn_tokens,
+                attn_dim=attn_dim,
+                attn_heads=attn_heads,
+                attn_dropout=attn_dropout,
+            )
+        return count_parameters(model)
+
+    min_hidden = 16
+    max_hidden = 2048
+    low = min_hidden
+    low_params = params_for_hidden(low)
+    if low_params >= target_params:
+        return low
+    high = min_hidden * 2
+    while high < max_hidden and params_for_hidden(high) < target_params:
+        low = high
+        high = min(high * 2, max_hidden)
+
+    best_hidden = low
+    best_diff = abs(params_for_hidden(low) - target_params)
+    while low <= high:
+        mid = (low + high) // 2
+        params = params_for_hidden(mid)
+        diff = abs(params - target_params)
+        if diff < best_diff:
+            best_hidden = mid
+            best_diff = diff
+        if params < target_params:
+            low = mid + 1
+        else:
+            high = mid - 1
+    return max(min_hidden, int(best_hidden))
 
 
 # ==========================================
@@ -274,9 +361,11 @@ class AdaptiveWeightState:
 class AdaptiveLRState:
     lr: float
     loss_ema: float = 0.0
+    best_loss_ema: float = 0.0
     ixk_ema: float = 0.0
     unstable_steps: int = 0
     stable_steps: int = 0
+    plateau_steps: int = 0
 
 
 def _set_optimizer_lr(optimizer: optim.Optimizer, lr: float) -> None:
@@ -410,15 +499,19 @@ def _restore_lr_state(config: TopoEncoderConfig, resume_metrics: dict) -> Adapti
     raw_state = resume_metrics.get("adaptive_lr_state", {})
     lr = float(raw_state.get("lr", config.lr))
     loss_ema = float(raw_state.get("loss_ema", 0.0))
+    best_loss_ema = float(raw_state.get("best_loss_ema", 0.0))
     ixk_ema = float(raw_state.get("ixk_ema", 0.0))
     unstable_steps = int(raw_state.get("unstable_steps", 0))
     stable_steps = int(raw_state.get("stable_steps", 0))
+    plateau_steps = int(raw_state.get("plateau_steps", 0))
     return AdaptiveLRState(
         lr=lr,
         loss_ema=loss_ema,
+        best_loss_ema=best_loss_ema,
         ixk_ema=ixk_ema,
         unstable_steps=unstable_steps,
         stable_steps=stable_steps,
+        plateau_steps=plateau_steps,
     )
 
 
@@ -593,6 +686,11 @@ def save_benchmarks(
             "input_dim": config.input_dim,
             "latent_dim": config.latent_dim,
             "num_codes_standard": config.num_codes_standard,
+            "baseline_attn": config.baseline_attn,
+            "baseline_attn_tokens": config.baseline_attn_tokens,
+            "baseline_attn_dim": config.baseline_attn_dim,
+            "baseline_attn_heads": config.baseline_attn_heads,
+            "baseline_attn_dropout": config.baseline_attn_dropout,
         },
         "state": {
             "std": _state_dict_cpu(model_std),
@@ -626,6 +724,14 @@ def _benchmarks_compatible(bench_config: dict, config: TopoEncoderConfig) -> boo
         int(bench_config.get("input_dim", -1)) == int(config.input_dim)
         and int(bench_config.get("latent_dim", -1)) == int(config.latent_dim)
         and int(bench_config.get("num_codes_standard", -1)) == int(config.num_codes_standard)
+        and bool(bench_config.get("baseline_attn", False)) == bool(config.baseline_attn)
+        and int(bench_config.get("baseline_attn_tokens", -1))
+        == int(config.baseline_attn_tokens)
+        and int(bench_config.get("baseline_attn_dim", -1)) == int(config.baseline_attn_dim)
+        and int(bench_config.get("baseline_attn_heads", -1))
+        == int(config.baseline_attn_heads)
+        and float(bench_config.get("baseline_attn_dropout", -1.0))
+        == float(config.baseline_attn_dropout)
     )
 
 
@@ -654,6 +760,10 @@ def _init_loss_components() -> dict[str, list[float]]:
         "variance": [],
         "diversity": [],
         "separation": [],
+        "codebook_center": [],
+        "chart_center_sep": [],
+        "residual_scale": [],
+        "soft_equiv_l1": [],
         # Tier 2 losses
         "window": [],
         "disentangle": [],
@@ -697,6 +807,28 @@ def _init_info_metrics() -> dict[str, list[float]]:
         "update_ratio": [],
         "lr": [],
     }
+
+
+def _maybe_init_vision_shape(config: TopoEncoderConfig, dataset_name: str) -> None:
+    if not config.vision_preproc:
+        return
+    if config.vision_in_channels <= 0 or config.vision_height <= 0 or config.vision_width <= 0:
+        if config.dataset == "cifar10" or dataset_name == "CIFAR-10":
+            config.vision_in_channels = 3
+            config.vision_height = 32
+            config.vision_width = 32
+        elif config.dataset == "mnist" or dataset_name == "MNIST":
+            config.vision_in_channels = 1
+            config.vision_height = 28
+            config.vision_width = 28
+    expected = config.vision_in_channels * config.vision_height * config.vision_width
+    if expected <= 0:
+        raise ValueError("vision_preproc requires valid vision_* dimensions.")
+    if config.input_dim != expected:
+        raise ValueError(
+            "vision_preproc shape does not match input_dim "
+            f"({config.input_dim} vs {expected})."
+        )
 
 
 # ==========================================
@@ -776,6 +908,7 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
 
         labels_full = np.concatenate([labels_train, labels_test]) if len(labels_test) else labels_train
         config.input_dim = X_train.shape[1]
+        _maybe_init_vision_shape(config, dataset_name)
 
         print(f"Resuming from checkpoint: {config.resume_checkpoint}")
         print(f"Loaded {len(X_train) + len(X_test)} samples from {dataset_name}")
@@ -814,6 +947,7 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
         config.input_dim = X.shape[1]
         labels = labels.astype(np.int64)
         labels_full = labels
+        _maybe_init_vision_shape(config, dataset_name)
         print(f"Loaded {len(X)} samples from {dataset_name}")
         print(f"Input dim: {config.input_dim}")
         if not (0.0 <= config.test_split < 1.0):
@@ -900,6 +1034,20 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
         covariant_attn_denom_min=config.covariant_attn_denom_min,
         covariant_attn_use_transport=config.covariant_attn_use_transport,
         covariant_attn_transport_eps=config.covariant_attn_transport_eps,
+        vision_preproc=config.vision_preproc,
+        vision_in_channels=config.vision_in_channels,
+        vision_height=config.vision_height,
+        vision_width=config.vision_width,
+        vision_num_rotations=config.vision_num_rotations,
+        vision_kernel_size=config.vision_kernel_size,
+        vision_use_reflections=config.vision_use_reflections,
+        vision_norm_nonlinearity=config.vision_norm_nonlinearity,
+        vision_norm_bias=config.vision_norm_bias,
+        soft_equiv_metric=config.soft_equiv_metric,
+        soft_equiv_bundle_size=config.soft_equiv_bundle_size,
+        soft_equiv_hidden_dim=config.soft_equiv_hidden_dim,
+        soft_equiv_use_spectral_norm=config.soft_equiv_use_spectral_norm,
+        soft_equiv_zero_self_mixing=config.soft_equiv_zero_self_mixing,
     )
     if resume_state is not None and resume_state.get("atlas") is not None:
         model_atlas.load_state_dict(resume_state["atlas"])
@@ -927,12 +1075,22 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
                 input_dim=config.input_dim,
                 latent_dim=config.latent_dim,
                 num_codes=config.num_codes_standard,
+                use_attention=config.baseline_attn,
+                attn_tokens=config.baseline_attn_tokens,
+                attn_dim=config.baseline_attn_dim,
+                attn_heads=config.baseline_attn_heads,
+                attn_dropout=config.baseline_attn_dropout,
             )
         model_std = StandardVQ(
             input_dim=config.input_dim,
             hidden_dim=std_hidden_dim,
             latent_dim=config.latent_dim,
             num_codes=config.num_codes_standard,
+            use_attention=config.baseline_attn,
+            attn_tokens=config.baseline_attn_tokens,
+            attn_dim=config.baseline_attn_dim,
+            attn_heads=config.baseline_attn_heads,
+            attn_dropout=config.baseline_attn_dropout,
         )
         if benchmarks_std_state is not None:
             model_std.load_state_dict(benchmarks_std_state)
@@ -959,11 +1117,21 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
                 input_dim=config.input_dim,
                 latent_dim=config.latent_dim,
                 num_codes=0,  # No codebook in AE
+                use_attention=config.baseline_attn,
+                attn_tokens=config.baseline_attn_tokens,
+                attn_dim=config.baseline_attn_dim,
+                attn_heads=config.baseline_attn_heads,
+                attn_dropout=config.baseline_attn_dropout,
             )
         model_ae = VanillaAE(
             input_dim=config.input_dim,
             hidden_dim=ae_hidden_dim,
             latent_dim=config.latent_dim,
+            use_attention=config.baseline_attn,
+            attn_tokens=config.baseline_attn_tokens,
+            attn_dim=config.baseline_attn_dim,
+            attn_heads=config.baseline_attn_heads,
+            attn_dropout=config.baseline_attn_dropout,
         )
         if benchmarks_ae_state is not None:
             model_ae.load_state_dict(benchmarks_ae_state)
@@ -1016,6 +1184,11 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
                 "benchmarks_loaded_ae": benchmarks_loaded_ae,
                 "train_std": train_std,
                 "train_ae": train_ae,
+                "baseline_attn": config.baseline_attn,
+                "baseline_attn_tokens": config.baseline_attn_tokens,
+                "baseline_attn_dim": config.baseline_attn_dim,
+                "baseline_attn_heads": config.baseline_attn_heads,
+                "baseline_attn_dropout": config.baseline_attn_dropout,
             }
         )
 
@@ -1195,6 +1368,9 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
         "variance_weight",
         "diversity_weight",
         "separation_weight",
+        "codebook_center_weight",
+        "chart_center_sep_weight",
+        "residual_scale_weight",
         "window_weight",
         "disentangle_weight",
         "orthogonality_weight",
@@ -1217,6 +1393,9 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
     adaptive_target_names = [
         "variance",
         "separation",
+        "codebook_center",
+        "chart_center_sep",
+        "residual_scale",
         "disentangle",
         "orthogonality",
         "kl_prior",
@@ -1351,6 +1530,22 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
             sep_loss = compute_separation_loss(
                 z_geo, enc_w, config.num_charts, config.separation_margin
             )
+            codebook_center_loss = torch.tensor(0.0, device=device)
+            if config.codebook_center_weight > 0 or config.adaptive_weights:
+                codebook_center_loss = compute_codebook_centering_loss(
+                    model_atlas.encoder.codebook
+                )
+            chart_center_sep_loss = torch.tensor(0.0, device=device)
+            if config.chart_center_sep_weight > 0 or config.adaptive_weights:
+                chart_center_sep_loss = compute_chart_center_separation_loss(
+                    model_atlas.encoder.chart_centers, config.chart_center_sep_margin
+                )
+            residual_scale_loss = torch.tensor(0.0, device=device)
+            if config.residual_scale_weight > 0 or config.adaptive_weights:
+                residual_scale_loss = compute_residual_scale_loss(z_n)
+            soft_equiv_l1 = torch.tensor(0.0, device=device)
+            if config.soft_equiv_metric:
+                soft_equiv_l1 = model_atlas.encoder.soft_equiv_l1_loss()
 
             # Tier 2 losses (medium overhead)
             window_loss, window_info = compute_window_loss(
@@ -1458,6 +1653,10 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
                 + config.variance_weight * var_loss
                 + config.diversity_weight * div_loss
                 + config.separation_weight * sep_loss
+                + config.codebook_center_weight * codebook_center_loss
+                + config.chart_center_sep_weight * chart_center_sep_loss
+                + config.residual_scale_weight * residual_scale_loss
+                + config.soft_equiv_l1_weight * soft_equiv_l1
                 # Tier 2
                 + config.window_weight * window_loss
                 + config.disentangle_weight * dis_loss
@@ -1516,6 +1715,24 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
                     )
                     _update_target_state(
                         adaptive_target_state, "separation", sep_loss.item(), target_decay
+                    )
+                    _update_target_state(
+                        adaptive_target_state,
+                        "codebook_center",
+                        codebook_center_loss.item(),
+                        target_decay,
+                    )
+                    _update_target_state(
+                        adaptive_target_state,
+                        "chart_center_sep",
+                        chart_center_sep_loss.item(),
+                        target_decay,
+                    )
+                    _update_target_state(
+                        adaptive_target_state,
+                        "residual_scale",
+                        residual_scale_loss.item(),
+                        target_decay,
                     )
                     _update_target_state(
                         adaptive_target_state, "disentangle", dis_loss.item(), target_decay
@@ -1670,6 +1887,54 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
                         min_val,
                         max_val,
                     )
+                    config.codebook_center_weight = _update_primal_dual(
+                        adaptive_weight_state["codebook_center_weight"],
+                        _clip_violation(
+                            _compute_target_error(
+                                adaptive_target_state,
+                                "codebook_center",
+                                codebook_center_loss.item(),
+                                target_ratio,
+                                target_min,
+                            ),
+                            clip,
+                        ),
+                        dual_eta,
+                        min_val,
+                        max_val,
+                    )
+                    config.chart_center_sep_weight = _update_primal_dual(
+                        adaptive_weight_state["chart_center_sep_weight"],
+                        _clip_violation(
+                            _compute_target_error(
+                                adaptive_target_state,
+                                "chart_center_sep",
+                                chart_center_sep_loss.item(),
+                                target_ratio,
+                                target_min,
+                            ),
+                            clip,
+                        ),
+                        dual_eta,
+                        min_val,
+                        max_val,
+                    )
+                    config.residual_scale_weight = _update_primal_dual(
+                        adaptive_weight_state["residual_scale_weight"],
+                        _clip_violation(
+                            _compute_target_error(
+                                adaptive_target_state,
+                                "residual_scale",
+                                residual_scale_loss.item(),
+                                target_ratio,
+                                target_min,
+                            ),
+                            clip,
+                        ),
+                        dual_eta,
+                        min_val,
+                        max_val,
+                    )
                     config.disentangle_weight = _update_primal_dual(
                         adaptive_weight_state["disentangle_weight"],
                         _clip_violation(
@@ -1718,38 +1983,40 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
                         min_val,
                         max_val,
                     )
-                    config.orbit_weight = _update_primal_dual(
-                        adaptive_weight_state["orbit_weight"],
-                        _clip_violation(
-                            _compute_target_error(
-                                adaptive_target_state,
-                                "orbit",
-                                orbit_loss.item(),
-                                target_ratio,
-                                target_min,
+                    if config.orbit_weight > 0:
+                        config.orbit_weight = _update_primal_dual(
+                            adaptive_weight_state["orbit_weight"],
+                            _clip_violation(
+                                _compute_target_error(
+                                    adaptive_target_state,
+                                    "orbit",
+                                    orbit_loss.item(),
+                                    target_ratio,
+                                    target_min,
+                                ),
+                                clip,
                             ),
-                            clip,
-                        ),
-                        dual_eta,
-                        min_val,
-                        max_val,
-                    )
-                    config.vicreg_inv_weight = _update_primal_dual(
-                        adaptive_weight_state["vicreg_inv_weight"],
-                        _clip_violation(
-                            _compute_target_error(
-                                adaptive_target_state,
-                                "vicreg_inv",
-                                vicreg_loss.item(),
-                                target_ratio,
-                                target_min,
+                            dual_eta,
+                            min_val,
+                            max_val,
+                        )
+                    if config.vicreg_inv_weight > 0:
+                        config.vicreg_inv_weight = _update_primal_dual(
+                            adaptive_weight_state["vicreg_inv_weight"],
+                            _clip_violation(
+                                _compute_target_error(
+                                    adaptive_target_state,
+                                    "vicreg_inv",
+                                    vicreg_loss.item(),
+                                    target_ratio,
+                                    target_min,
+                                ),
+                                clip,
                             ),
-                            clip,
-                        ),
-                        dual_eta,
-                        min_val,
-                        max_val,
-                    )
+                            dual_eta,
+                            min_val,
+                            max_val,
+                        )
                     if epoch >= config.jump_warmup:
                         config.jump_weight = _update_primal_dual(
                             adaptive_weight_state["jump_weight"],
@@ -1844,6 +2111,10 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
             epoch_losses["variance"] += var_loss.item()
             epoch_losses["diversity"] += div_loss.item()
             epoch_losses["separation"] += sep_loss.item()
+            epoch_losses["codebook_center"] += codebook_center_loss.item()
+            epoch_losses["chart_center_sep"] += chart_center_sep_loss.item()
+            epoch_losses["residual_scale"] += residual_scale_loss.item()
+            epoch_losses["soft_equiv_l1"] += soft_equiv_l1.item()
             epoch_losses["window"] += window_loss.item()
             epoch_losses["disentangle"] += dis_loss.item()
             epoch_losses["orthogonality"] += orth_loss.item()
@@ -1898,51 +2169,119 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
             grad_norm_avg = epoch_lr_grad_norm / n_batches
             param_norm_avg = epoch_lr_param_norm / n_batches
             loss_ema_raw = adaptive_lr_state.loss_ema or loss_val_raw
-            loss_val = math.log1p(loss_val_raw)
-            loss_ema = math.log1p(loss_ema_raw)
-            grounding_active = epoch >= config.lr_grounding_warmup_epochs
-            ixk_for_check = (
-                adaptive_lr_state.ixk_ema
-                if adaptive_lr_state.ixk_ema > 0.0
-                else info_metrics["I_XK"][-1]
-            )
-            grounding_violation = ixk_for_check < config.window_eps_ground
-            unstable = loss_val > loss_ema * (1.0 + config.lr_loss_increase_tol)
-            if grounding_active and grounding_violation:
-                unstable = True
-            if not math.isfinite(loss_val_raw) or not math.isfinite(grad_norm_avg):
-                unstable = True
-            if not grounding_active and unstable:
-                unstable = False
-            if unstable:
-                adaptive_lr_state.unstable_steps += 1
-                adaptive_lr_state.stable_steps = 0
-            else:
-                adaptive_lr_state.stable_steps += 1
-                adaptive_lr_state.unstable_steps = 0
-            lr_cap = lr_max
-            if grad_norm_avg > 0.0 and param_norm_avg > 0.0:
-                lr_cap = min(
-                    lr_max,
-                    config.lr_max_update_ratio * param_norm_avg / (grad_norm_avg + 1e-12),
-                )
-            increase_factor = config.lr_increase_factor
-            if lr_current < lr_max * config.lr_recovery_threshold:
-                increase_factor = max(increase_factor, config.lr_recovery_factor)
-            if adaptive_lr_state.unstable_steps >= config.lr_unstable_patience:
-                if grounding_active:
-                    lr_current = max(config.lr_min, lr_current * config.lr_decrease_factor)
-                adaptive_lr_state.unstable_steps = 0
-            elif adaptive_lr_state.stable_steps >= config.lr_stable_patience:
-                lr_current = min(lr_cap, lr_current * increase_factor)
-                adaptive_lr_state.stable_steps = 0
-            lr_current = min(lr_current, lr_cap)
-            adaptive_lr_state.lr = lr_current
-            adaptive_lr_state.loss_ema = (
+            loss_ema_next = (
                 config.lr_ema_decay * loss_ema_raw
                 + (1.0 - config.lr_ema_decay) * loss_val_raw
             )
-            _set_optimizer_lr(opt_atlas, lr_current)
+            loss_val = math.log1p(loss_val_raw)
+            loss_ema = math.log1p(loss_ema_raw)
+            grounding_active = epoch >= config.lr_grounding_warmup_epochs
+            if not grounding_active:
+                adaptive_lr_state.unstable_steps = 0
+                adaptive_lr_state.stable_steps = 0
+                adaptive_lr_state.lr = lr_current
+                adaptive_lr_state.loss_ema = loss_ema_next
+                if adaptive_lr_state.best_loss_ema <= 0.0:
+                    adaptive_lr_state.best_loss_ema = loss_ema_next
+                adaptive_lr_state.plateau_steps = 0
+                _set_optimizer_lr(opt_atlas, lr_current)
+                ixk_val = info_metrics["I_XK"][-1]
+                if adaptive_lr_state.ixk_ema <= 0.0:
+                    ixk_for_check = ixk_val
+                else:
+                    ixk_for_check = max(ixk_val, adaptive_lr_state.ixk_ema)
+                grounding_violation = ixk_for_check < config.window_eps_ground
+                if grounding_violation:
+                    adaptive_lr_state.unstable_steps += 1
+            else:
+                ixk_val = info_metrics["I_XK"][-1]
+                if adaptive_lr_state.ixk_ema <= 0.0:
+                    ixk_for_check = ixk_val
+                else:
+                    ixk_for_check = max(ixk_val, adaptive_lr_state.ixk_ema)
+                grounding_violation = ixk_for_check < config.window_eps_ground
+                if grounding_violation:
+                    lr_current = max(lr_current, config.lr)
+                    adaptive_lr_state.unstable_steps = 0
+                    adaptive_lr_state.stable_steps = 0
+                    adaptive_lr_state.lr = lr_current
+                    adaptive_lr_state.loss_ema = loss_ema_next
+                    if adaptive_lr_state.best_loss_ema <= 0.0:
+                        adaptive_lr_state.best_loss_ema = loss_ema_next
+                    adaptive_lr_state.plateau_steps = 0
+                    _set_optimizer_lr(opt_atlas, lr_current)
+                else:
+                    unstable = loss_val > loss_ema * (1.0 + config.lr_loss_increase_tol)
+                    if not math.isfinite(loss_val_raw) or not math.isfinite(grad_norm_avg):
+                        unstable = True
+                    if not grounding_active and unstable:
+                        unstable = False
+                    if unstable:
+                        adaptive_lr_state.unstable_steps += 1
+                        adaptive_lr_state.stable_steps = 0
+                        adaptive_lr_state.plateau_steps = 0
+                    else:
+                        adaptive_lr_state.stable_steps += 1
+                        adaptive_lr_state.unstable_steps = 0
+                    plateau_triggered = False
+                    if math.isfinite(loss_ema_next):
+                        if adaptive_lr_state.best_loss_ema <= 0.0 or not math.isfinite(
+                            adaptive_lr_state.best_loss_ema
+                        ):
+                            adaptive_lr_state.best_loss_ema = loss_ema_next
+                            adaptive_lr_state.plateau_steps = 0
+                        elif config.lr_plateau_patience > 0:
+                            if unstable:
+                                adaptive_lr_state.plateau_steps = 0
+                            else:
+                                denom = max(abs(adaptive_lr_state.best_loss_ema), 1e-8)
+                                improvement = (
+                                    adaptive_lr_state.best_loss_ema - loss_ema_next
+                                ) / denom
+                                if improvement > config.lr_plateau_tol:
+                                    adaptive_lr_state.best_loss_ema = loss_ema_next
+                                    adaptive_lr_state.plateau_steps = 0
+                                else:
+                                    adaptive_lr_state.plateau_steps += 1
+                                    if (
+                                        adaptive_lr_state.plateau_steps
+                                        >= config.lr_plateau_patience
+                                    ):
+                                        plateau_triggered = True
+                                        adaptive_lr_state.plateau_steps = 0
+                    lr_cap = lr_max
+                    if grad_norm_avg > 0.0 and param_norm_avg > 0.0:
+                        lr_cap = min(
+                            lr_max,
+                            config.lr_max_update_ratio
+                            * param_norm_avg
+                            / (grad_norm_avg + 1e-12),
+                        )
+                    increase_factor = config.lr_increase_factor
+                    if lr_current < lr_max * config.lr_recovery_threshold:
+                        increase_factor = max(increase_factor, config.lr_recovery_factor)
+                    min_lr_bound = max(config.lr_min, 1e-12)
+                    if (
+                        adaptive_lr_state.unstable_steps
+                        >= config.lr_unstable_patience
+                        or plateau_triggered
+                    ):
+                        if grounding_active:
+                            lr_current = max(
+                                min_lr_bound, lr_current * config.lr_decrease_factor
+                            )
+                        adaptive_lr_state.unstable_steps = 0
+                        adaptive_lr_state.stable_steps = 0
+                        adaptive_lr_state.plateau_steps = 0
+                    elif adaptive_lr_state.stable_steps >= config.lr_stable_patience:
+                        lr_current = min(lr_cap, lr_current * increase_factor)
+                        adaptive_lr_state.stable_steps = 0
+                        adaptive_lr_state.plateau_steps = 0
+                    lr_current = min(lr_current, lr_cap)
+                    lr_current = max(lr_current, min_lr_bound)
+                    adaptive_lr_state.lr = lr_current
+                    adaptive_lr_state.loss_ema = loss_ema_next
+                    _set_optimizer_lr(opt_atlas, lr_current)
 
         # Step LR scheduler at end of each epoch
         if scheduler is not None:
@@ -1975,6 +2314,10 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
             avg_var = loss_components["variance"][-1]
             avg_div = loss_components["diversity"][-1]
             avg_sep = loss_components["separation"][-1]
+            avg_codebook_center = loss_components["codebook_center"][-1]
+            avg_chart_center_sep = loss_components["chart_center_sep"][-1]
+            avg_residual_scale = loss_components["residual_scale"][-1]
+            avg_soft_equiv_l1 = loss_components["soft_equiv_l1"][-1]
             avg_window = loss_components["window"][-1]
             avg_disent = loss_components["disentangle"][-1]
             avg_orth = loss_components["orthogonality"][-1]
@@ -2027,7 +2370,11 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
             print(
                 f"  Tier1: var={avg_var:.3f} "
                 f"div={avg_div:.3f} "
-                f"sep={avg_sep:.3f}"
+                f"sep={avg_sep:.3f} "
+                f"center={avg_codebook_center:.3f} "
+                f"chart_sep={avg_chart_center_sep:.3f} "
+                f"res_scale={avg_residual_scale:.3f} "
+                f"soft_eq={avg_soft_equiv_l1:.3f}"
             )
             print(
                 f"  Tier2: window={avg_window:.3f} "
@@ -2154,6 +2501,10 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
                     "loss/variance": avg_var,
                     "loss/diversity": avg_div,
                     "loss/separation": avg_sep,
+                    "loss/codebook_center": avg_codebook_center,
+                    "loss/chart_center_sep": avg_chart_center_sep,
+                    "loss/residual_scale": avg_residual_scale,
+                    "loss/soft_equiv_l1": avg_soft_equiv_l1,
                     "loss/window": avg_window,
                     "loss/disentangle": avg_disent,
                     "loss/orthogonality": avg_orth,
@@ -2188,9 +2539,11 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
                     "control/lr": avg_lr,
                     "control/lr_max": lr_max,
                     "control/lr_loss_ema": adaptive_lr_state.loss_ema,
+                    "control/lr_best_loss_ema": adaptive_lr_state.best_loss_ema,
                     "control/ixk_ema": adaptive_lr_state.ixk_ema,
                     "control/unstable_steps": adaptive_lr_state.unstable_steps,
                     "control/stable_steps": adaptive_lr_state.stable_steps,
+                    "control/lr_plateau_steps": adaptive_lr_state.plateau_steps,
                     "control/jump_weight": log_jump_weight,
                     "control/jump_weight_base": config.jump_weight,
                     "control/sup_weight": config.sup_weight,
@@ -2229,9 +2582,11 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
                     "adaptive_lr_state": {
                         "lr": adaptive_lr_state.lr,
                         "loss_ema": adaptive_lr_state.loss_ema,
+                        "best_loss_ema": adaptive_lr_state.best_loss_ema,
                         "ixk_ema": adaptive_lr_state.ixk_ema,
                         "unstable_steps": adaptive_lr_state.unstable_steps,
                         "stable_steps": adaptive_lr_state.stable_steps,
+                        "plateau_steps": adaptive_lr_state.plateau_steps,
                     },
                     "ami_atlas": ami,
                     "atlas_perplexity": perplexity,
@@ -2410,9 +2765,11 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
         "adaptive_lr_state": {
             "lr": adaptive_lr_state.lr,
             "loss_ema": adaptive_lr_state.loss_ema,
+            "best_loss_ema": adaptive_lr_state.best_loss_ema,
             "ixk_ema": adaptive_lr_state.ixk_ema,
             "unstable_steps": adaptive_lr_state.unstable_steps,
             "stable_steps": adaptive_lr_state.stable_steps,
+            "plateau_steps": adaptive_lr_state.plateau_steps,
         },
         # AMI scores
         "ami_ae": ami_ae,
@@ -2553,6 +2910,12 @@ def main():
         help="VQ codes per chart",
     )
     parser.add_argument(
+        "--latent_dim",
+        type=int,
+        default=2,
+        help="Latent dimension for TopoEncoder (default: 2)",
+    )
+    parser.add_argument(
         "--hidden_dim",
         type=int,
         default=32,
@@ -2600,6 +2963,104 @@ def main():
         type=float,
         default=1e-3,
         help="Diagonal stabilizer for transport (default: 1e-3)",
+    )
+    parser.add_argument(
+        "--vision_preproc",
+        type=lambda x: x.lower() == "true",
+        default=False,
+        help="Use covariant vision preprocessor (default: False)",
+    )
+    parser.add_argument(
+        "--vision_in_channels",
+        type=int,
+        default=0,
+        help="Vision preproc input channels (0 = infer from dataset)",
+    )
+    parser.add_argument(
+        "--vision_height",
+        type=int,
+        default=0,
+        help="Vision preproc input height (0 = infer from dataset)",
+    )
+    parser.add_argument(
+        "--vision_width",
+        type=int,
+        default=0,
+        help="Vision preproc input width (0 = infer from dataset)",
+    )
+    parser.add_argument(
+        "--vision_num_rotations",
+        type=int,
+        default=8,
+        help="Vision preproc rotation count (default: 8)",
+    )
+    parser.add_argument(
+        "--vision_kernel_size",
+        type=int,
+        default=5,
+        help="Vision preproc kernel size (default: 5)",
+    )
+    parser.add_argument(
+        "--vision_use_reflections",
+        type=lambda x: x.lower() == "true",
+        default=False,
+        help="Use reflections in vision preproc (default: False)",
+    )
+    parser.add_argument(
+        "--vision_norm_nonlinearity",
+        type=str,
+        default="n_sigmoid",
+        help="Vision preproc norm nonlinearity (default: n_sigmoid)",
+    )
+    parser.add_argument(
+        "--vision_norm_bias",
+        type=lambda x: x.lower() == "true",
+        default=True,
+        help="Vision preproc norm bias (default: True)",
+    )
+    parser.add_argument(
+        "--soft_equiv",
+        action="store_true",
+        help=(
+            "Enable soft equivariant metric with defaults "
+            "(sets --soft_equiv_metric true and --soft_equiv_l1_weight 0.01)"
+        ),
+    )
+    parser.add_argument(
+        "--soft_equiv_metric",
+        type=lambda x: x.lower() == "true",
+        default=False,
+        help="Enable soft equivariant metric for VQ distances (default: False)",
+    )
+    parser.add_argument(
+        "--soft_equiv_bundle_size",
+        type=int,
+        default=0,
+        help="Bundle size for soft equivariant metric (0 = latent_dim)",
+    )
+    parser.add_argument(
+        "--soft_equiv_hidden_dim",
+        type=int,
+        default=64,
+        help="Hidden dim for soft equivariant metric (default: 64)",
+    )
+    parser.add_argument(
+        "--soft_equiv_use_spectral_norm",
+        type=lambda x: x.lower() == "true",
+        default=True,
+        help="Use spectral norm in soft equivariant layer (default: True)",
+    )
+    parser.add_argument(
+        "--soft_equiv_zero_self_mixing",
+        type=lambda x: x.lower() == "true",
+        default=False,
+        help="Zero self-mixing in soft equivariant layer (default: False)",
+    )
+    parser.add_argument(
+        "--soft_equiv_l1_weight",
+        type=float,
+        default=0.0,
+        help="L1 weight for soft equivariant mixing (default: 0.0)",
     )
     parser.add_argument(
         "--window_eps_ground",
@@ -2661,6 +3122,32 @@ def main():
         type=str,
         default="cuda" if torch.cuda.is_available() else "cpu",
         help="Device to use (cuda/cpu)",
+    )
+
+    # Tier 1 losses (residual hierarchy)
+    parser.add_argument(
+        "--codebook_center_weight",
+        type=float,
+        default=0.05,
+        help="Codebook centering weight (default: 0.05)",
+    )
+    parser.add_argument(
+        "--chart_center_sep_weight",
+        type=float,
+        default=0.05,
+        help="Chart center separation weight (default: 0.05)",
+    )
+    parser.add_argument(
+        "--chart_center_sep_margin",
+        type=float,
+        default=2.0,
+        help="Chart center separation margin (default: 2.0)",
+    )
+    parser.add_argument(
+        "--residual_scale_weight",
+        type=float,
+        default=0.01,
+        help="Residual scale penalty weight (default: 0.01)",
     )
 
     # Tier 3 losses (codebook health)
@@ -2789,6 +3276,18 @@ def main():
         type=int,
         default=5,
         help="Batches before LR increase after stability (default: 5)",
+    )
+    parser.add_argument(
+        "--lr_plateau_patience",
+        type=int,
+        default=10,
+        help="Batches of plateau before LR decrease (default: 10)",
+    )
+    parser.add_argument(
+        "--lr_plateau_tol",
+        type=float,
+        default=1e-3,
+        help="Relative loss improvement to reset plateau (default: 1e-3)",
     )
     parser.add_argument(
         "--lr_grounding_ema_decay",
@@ -3017,8 +3516,42 @@ def main():
         action="store_true",
         help="Disable StandardVQ baseline (faster training)",
     )
+    parser.add_argument(
+        "--baseline_attn",
+        action="store_true",
+        help="Enable attention blocks in StandardVQ/VanillaAE baselines",
+    )
+    parser.add_argument(
+        "--baseline_attn_tokens",
+        type=int,
+        default=4,
+        help="Number of tokens for baseline attention blocks",
+    )
+    parser.add_argument(
+        "--baseline_attn_dim",
+        type=int,
+        default=32,
+        help="Per-token attention dimension for baselines",
+    )
+    parser.add_argument(
+        "--baseline_attn_heads",
+        type=int,
+        default=4,
+        help="Number of attention heads for baselines",
+    )
+    parser.add_argument(
+        "--baseline_attn_dropout",
+        type=float,
+        default=0.0,
+        help="Attention dropout for baselines",
+    )
 
     args = parser.parse_args()
+
+    if args.soft_equiv:
+        args.soft_equiv_metric = True
+        if args.soft_equiv_l1_weight == 0.0:
+            args.soft_equiv_l1_weight = 0.01
 
     # Set seeds
     torch.manual_seed(args.seed)
@@ -3034,6 +3567,15 @@ def main():
         if args.output_dir is not None:
             config.output_dir = args.output_dir
         config.device = args.device
+        config.vision_preproc = args.vision_preproc
+        config.vision_in_channels = args.vision_in_channels
+        config.vision_height = args.vision_height
+        config.vision_width = args.vision_width
+        config.vision_num_rotations = args.vision_num_rotations
+        config.vision_kernel_size = args.vision_kernel_size
+        config.vision_use_reflections = args.vision_use_reflections
+        config.vision_norm_nonlinearity = args.vision_norm_nonlinearity
+        config.vision_norm_bias = args.vision_norm_bias
         config.use_scheduler = args.use_scheduler
         config.min_lr = args.min_lr
         config.adaptive_lr = args.adaptive_lr
@@ -3047,6 +3589,8 @@ def main():
         config.lr_grounding_warmup_epochs = args.lr_grounding_warmup_epochs
         config.lr_unstable_patience = args.lr_unstable_patience
         config.lr_stable_patience = args.lr_stable_patience
+        config.lr_plateau_patience = args.lr_plateau_patience
+        config.lr_plateau_tol = args.lr_plateau_tol
         config.lr_grounding_ema_decay = args.lr_grounding_ema_decay
         config.lr_recovery_factor = args.lr_recovery_factor
         config.lr_recovery_threshold = args.lr_recovery_threshold
@@ -3068,6 +3612,10 @@ def main():
         config.consistency_target = args.consistency_target
         config.use_learned_precisions = args.use_learned_precisions
         config.window_eps_ground = args.window_eps_ground
+        config.codebook_center_weight = args.codebook_center_weight
+        config.chart_center_sep_weight = args.chart_center_sep_weight
+        config.chart_center_sep_margin = args.chart_center_sep_margin
+        config.residual_scale_weight = args.residual_scale_weight
         config.covariant_attn = args.covariant_attn
         config.covariant_attn_tensorization = args.covariant_attn_tensorization
         config.covariant_attn_rank = args.covariant_attn_rank
@@ -3075,6 +3623,17 @@ def main():
         config.covariant_attn_denom_min = args.covariant_attn_denom_min
         config.covariant_attn_use_transport = args.covariant_attn_use_transport
         config.covariant_attn_transport_eps = args.covariant_attn_transport_eps
+        config.soft_equiv_metric = args.soft_equiv_metric
+        config.soft_equiv_bundle_size = args.soft_equiv_bundle_size or None
+        config.soft_equiv_hidden_dim = args.soft_equiv_hidden_dim
+        config.soft_equiv_use_spectral_norm = args.soft_equiv_use_spectral_norm
+        config.soft_equiv_zero_self_mixing = args.soft_equiv_zero_self_mixing
+        config.soft_equiv_l1_weight = args.soft_equiv_l1_weight
+        config.baseline_attn = args.baseline_attn
+        config.baseline_attn_tokens = args.baseline_attn_tokens
+        config.baseline_attn_dim = args.baseline_attn_dim
+        config.baseline_attn_heads = args.baseline_attn_heads
+        config.baseline_attn_dropout = args.baseline_attn_dropout
         config.mlflow = args.mlflow
         config.mlflow_tracking_uri = args.mlflow_tracking_uri
         config.mlflow_experiment = args.mlflow_experiment
@@ -3091,6 +3650,7 @@ def main():
             num_charts=args.num_charts,
             codes_per_chart=args.codes_per_chart,
             hidden_dim=args.hidden_dim,
+            latent_dim=args.latent_dim,
             covariant_attn=args.covariant_attn,
             covariant_attn_tensorization=args.covariant_attn_tensorization,
             covariant_attn_rank=args.covariant_attn_rank,
@@ -3098,6 +3658,26 @@ def main():
             covariant_attn_denom_min=args.covariant_attn_denom_min,
             covariant_attn_use_transport=args.covariant_attn_use_transport,
             covariant_attn_transport_eps=args.covariant_attn_transport_eps,
+            vision_preproc=args.vision_preproc,
+            vision_in_channels=args.vision_in_channels,
+            vision_height=args.vision_height,
+            vision_width=args.vision_width,
+            vision_num_rotations=args.vision_num_rotations,
+            vision_kernel_size=args.vision_kernel_size,
+            vision_use_reflections=args.vision_use_reflections,
+            vision_norm_nonlinearity=args.vision_norm_nonlinearity,
+            vision_norm_bias=args.vision_norm_bias,
+            soft_equiv_metric=args.soft_equiv_metric,
+            soft_equiv_bundle_size=args.soft_equiv_bundle_size or None,
+            soft_equiv_hidden_dim=args.soft_equiv_hidden_dim,
+            soft_equiv_use_spectral_norm=args.soft_equiv_use_spectral_norm,
+            soft_equiv_zero_self_mixing=args.soft_equiv_zero_self_mixing,
+            soft_equiv_l1_weight=args.soft_equiv_l1_weight,
+            baseline_attn=args.baseline_attn,
+            baseline_attn_tokens=args.baseline_attn_tokens,
+            baseline_attn_dim=args.baseline_attn_dim,
+            baseline_attn_heads=args.baseline_attn_heads,
+            baseline_attn_dropout=args.baseline_attn_dropout,
             log_every=args.log_every,
             save_every=args.save_every,
             output_dir=output_dir,
@@ -3106,6 +3686,11 @@ def main():
             mlflow_tracking_uri=args.mlflow_tracking_uri,
             mlflow_experiment=args.mlflow_experiment,
             mlflow_run_name=args.mlflow_run_name,
+            # Tier 1 losses
+            codebook_center_weight=args.codebook_center_weight,
+            chart_center_sep_weight=args.chart_center_sep_weight,
+            chart_center_sep_margin=args.chart_center_sep_margin,
+            residual_scale_weight=args.residual_scale_weight,
             # Tier 3 losses
             per_chart_code_entropy_weight=args.per_chart_code_entropy_weight,
             code_entropy_weight=args.code_entropy_weight,
@@ -3130,6 +3715,8 @@ def main():
             lr_grounding_warmup_epochs=args.lr_grounding_warmup_epochs,
             lr_unstable_patience=args.lr_unstable_patience,
             lr_stable_patience=args.lr_stable_patience,
+            lr_plateau_patience=args.lr_plateau_patience,
+            lr_plateau_tol=args.lr_plateau_tol,
             lr_grounding_ema_decay=args.lr_grounding_ema_decay,
             lr_recovery_factor=args.lr_recovery_factor,
             lr_recovery_threshold=args.lr_recovery_threshold,

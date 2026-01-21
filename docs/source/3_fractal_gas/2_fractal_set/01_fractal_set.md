@@ -84,6 +84,8 @@ The Fractal Set captures the Fractal Gas algorithm as a **2-dimensional directed
 
 - **IA Edges $E_{\mathrm{IA}}$** (1-simplices): Directed edges $(n_{i,t+1}, n_{j,t})$ connecting the effect (walker $i$ at $t+1$) to the cause (walker $j$ at $t$). These **close the causal triangles**, attributing each walker's evolution to its influencers. There are $k_t(k_t-1)$ IA edges per **update** timestep $t \in \{0,\ldots,T-1\}$ (with $k_t = N$ in Fractal Gas).
 
+- **Clone ancestry graph $E_{\mathrm{clone}}$** (derived): A directed relation from parent to child defined by the clone source attribute; these edges encode branching history but are **not** part of the CST order (see {prf:ref}`def-fractal-set-clone-ancestry`).
+
 - **Interaction Triangles $\mathcal{T}$** (2-simplices): Each triangle $\triangle_{ij,t}$ has vertices $\{n_{j,t}, n_{i,t}, n_{i,t+1}\}$ and boundary edges (IG, CST, IA). These are the **fundamental closed loops** of the structure.
 
 - **Weight functions**: $\omega_{\mathrm{CST}}: E_{\mathrm{CST}} \to \mathbb{R}_{>0}$ assigns temporal weights (typically $\Delta t$), $\omega_{\mathrm{IG}}: E_{\mathrm{IG}} \to \mathbb{R}$ assigns selection coupling weights (the antisymmetric cloning potential), and $\omega_{\mathrm{IA}}: E_{\mathrm{IA}} \to [0,1]$ assigns influence attribution weights.
@@ -409,6 +411,20 @@ Each node $n_{i,t} \in \mathcal{N}$ carries the following scalar attributes:
 | Diffusion floor | $\epsilon_\Sigma$ | $\mathbb{R}_{>0}$ | [dimensionless] | Regularization for diffusion tensor |
 :::
 
+:::{prf:definition} Clone Ancestry Relation
+:label: def-fractal-set-clone-ancestry
+
+The **clone ancestry graph** is the derived directed relation
+
+$$
+E_{\mathrm{clone}} := \{(n_{j,t-1}, n_{i,t}) : c(n_{i,t}) = j \neq \bot\}.
+$$
+
+This encodes genealogical branching (parent $j$ to child $i$) and can be read directly from the
+clone source attribute or from IA edges with $\chi_{\mathrm{clone}}=1$. These edges are **not**
+part of the CST order or distance; they are interaction/genealogy data only.
+:::
+
 ### 2.3 Frame-Invariance of Node Data
 
 :::{prf:proposition} Node Scalars are Frame-Invariant
@@ -453,7 +469,7 @@ $$E_{\mathrm{CST}} := \{(n_{i,t}, n_{i,t+1}) : i \in \{1, \ldots, N\}, \; t \in 
 Each CST edge connects a walker to its immediate temporal successor, provided the walker is alive. The edges are **directed** from earlier to later time.
 :::
 
-CST edges form a **forest** structure: each walker's trajectory is a directed path (a tree with no forward branching), and the union over all walkers is a forest. Genealogical branching from cloning is recorded separately (via clone sources/IA edges), not in the CST itself.
+CST edges form a **forest** of worldlines: each walker's trajectory is a directed path with no forward branching, and the union over all walkers is a forest. Cloning does **not** add CST edges; when $c(n_{i,t}) \neq \bot$, the prior CST path ends and a new CST path begins at $n_{i,t}$. Genealogical branching is recorded separately via $E_{\mathrm{clone}}$ (or IA edges with $\chi_{\mathrm{clone}}=1$), not in the CST itself.
 
 :::{prf:definition} Alive Walker Set
 :label: def-fractal-set-alive-set

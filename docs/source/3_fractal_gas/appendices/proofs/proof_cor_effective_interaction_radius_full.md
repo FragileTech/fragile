@@ -1,9 +1,11 @@
-# Proof: Effective Interaction Radius
+# Proof: Effective Interaction Radius (Finite-$N$ Heuristic)
 
-:::{prf:corollary} Effective Interaction Radius
+:::{prf:corollary} Effective Interaction Radius (Finite-$N$ Heuristic)
 :label: proof-cor-effective-interaction-radius-full
 
-Assume the softmax tail bound from {prf:ref}`lem-softmax-tail-corrected-full` and let $k = |\mathcal{A}| \ge 2$. Define
+This corollary is a **finite-$N$ heuristic** and is **not used** in the mean-field $C^\infty$
+proof (which uses kernel-mass bounds instead). Assume the softmax tail bound from
+{prf:ref}`lem-softmax-tail-corrected-full` and let $k = |\mathcal{A}| \ge 2$. Define
 
 $$
 R_{\mathrm{eff}} := \sqrt{R_{\max}^2 + 2\varepsilon_c^2 \log(k^2)} = \varepsilon_c \sqrt{C_{\mathrm{comp}}^2 + 2\log(k^2)},
@@ -39,5 +41,6 @@ Substituting this into the tail bound gives the claimed inequality. \(\square\)
 :::
 
 :::{note}
-For fixed $\varepsilon_c$, the growth is $R_{\mathrm{eff}} = O(\varepsilon_c \sqrt{\log k})$. Practical numeric estimates can be added as a separate implementation note if desired.
+For fixed $\varepsilon_c$, the growth is $R_{\mathrm{eff}} = O(\varepsilon_c \sqrt{\log k})$.
+Practical numeric estimates can be added as a separate implementation note if desired.
 :::
