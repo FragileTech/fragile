@@ -22,26 +22,27 @@ Reference: fragile-index.md Sections 7.8, 7.10
 """
 
 import argparse
+from dataclasses import asdict, dataclass, field
 import math
 import os
-from dataclasses import asdict, dataclass, field
+
 import numpy as np
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
-import torch.optim as optim
 from sklearn.cluster import KMeans
 from sklearn.metrics import adjusted_mutual_info_score
+import torch
+from torch import nn, optim
+import torch.nn.functional as F
 from tqdm import tqdm
+
 
 try:
     import mlflow
+
     _MLFLOW_AVAILABLE = True
 except ImportError:
     mlflow = None
     _MLFLOW_AVAILABLE = False
 
-from fragile.datasets import CIFAR10_CLASSES, get_cifar10_data, get_mnist_data
 from fragile.core.layers import (
     FactorizedJumpOperator,
     InvariantChartClassifier,
@@ -51,14 +52,14 @@ from fragile.core.layers import (
 )
 from fragile.core.losses import (
     compute_chart_center_separation_loss,
-    compute_codebook_centering_loss,
     compute_code_entropy_loss,
+    compute_codebook_centering_loss,
     compute_disentangle_loss,
     compute_diversity_loss,
     compute_jump_consistency_loss,
     compute_kl_prior_loss,
-    compute_orthogonality_loss,
     compute_orbit_loss,
+    compute_orthogonality_loss,
     compute_per_chart_code_entropy_loss,
     compute_residual_scale_loss,
     compute_routing_entropy,
@@ -69,6 +70,7 @@ from fragile.core.losses import (
     get_jump_weight_schedule,
     SupervisedTopologyLoss,
 )
+from fragile.datasets import CIFAR10_CLASSES, get_cifar10_data, get_mnist_data
 
 
 # ==========================================
@@ -241,9 +243,7 @@ class TopoEncoderConfig:
     mlflow_run_name: str = ""
 
     # Device (CUDA if available, else CPU)
-    device: str = field(
-        default_factory=lambda: "cuda" if torch.cuda.is_available() else "cpu"
-    )
+    device: str = field(default_factory=lambda: "cuda" if torch.cuda.is_available() else "cpu")
 
 
 class BaselineClassifier(nn.Module):
@@ -569,7 +569,7 @@ def _start_mlflow_run(
         params.update(extra_params)
     safe_params: dict[str, object] = {}
     for key, value in params.items():
-        if isinstance(value, (int, float, str, bool)):
+        if isinstance(value, int | float | str | bool):
             safe_params[key] = value
         else:
             safe_params[key] = str(value)
@@ -757,11 +757,9 @@ def _benchmarks_compatible(bench_config: dict, config: TopoEncoderConfig) -> boo
         and bool(bench_config.get("baseline_vision_preproc", False))
         == bool(config.baseline_vision_preproc)
         and bool(bench_config.get("baseline_attn", False)) == bool(config.baseline_attn)
-        and int(bench_config.get("baseline_attn_tokens", -1))
-        == int(config.baseline_attn_tokens)
+        and int(bench_config.get("baseline_attn_tokens", -1)) == int(config.baseline_attn_tokens)
         and int(bench_config.get("baseline_attn_dim", -1)) == int(config.baseline_attn_dim)
-        and int(bench_config.get("baseline_attn_heads", -1))
-        == int(config.baseline_attn_heads)
+        and int(bench_config.get("baseline_attn_heads", -1)) == int(config.baseline_attn_heads)
         and float(bench_config.get("baseline_attn_dropout", -1.0))
         == float(config.baseline_attn_dropout)
     )
@@ -856,11 +854,11 @@ def _maybe_init_vision_shape(config: TopoEncoderConfig, dataset_name: str) -> No
             config.vision_width = 28
     expected = config.vision_in_channels * config.vision_height * config.vision_width
     if expected <= 0:
-        raise ValueError("vision_preproc requires valid vision_* dimensions.")
+        msg = "vision_preproc requires valid vision_* dimensions."
+        raise ValueError(msg)
     if config.input_dim != expected:
         raise ValueError(
-            "vision_preproc shape does not match input_dim "
-            f"({config.input_dim} vs {expected})."
+            "vision_preproc shape does not match input_dim " f"({config.input_dim} vs {expected})."
         )
 
 
@@ -939,7 +937,9 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
         dataset_ids = data_snapshot.get("dataset_ids", {})
         dataset_name = data_snapshot.get("dataset_name", config.dataset)
 
-        labels_full = np.concatenate([labels_train, labels_test]) if len(labels_test) else labels_train
+        labels_full = (
+            np.concatenate([labels_train, labels_test]) if len(labels_test) else labels_train
+        )
         config.input_dim = X_train.shape[1]
         _maybe_init_vision_shape(config, dataset_name)
 
@@ -984,7 +984,8 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
         print(f"Loaded {len(X)} samples from {dataset_name}")
         print(f"Input dim: {config.input_dim}")
         if not (0.0 <= config.test_split < 1.0):
-            raise ValueError("test_split must be in [0.0, 1.0).")
+            msg = "test_split must be in [0.0, 1.0)."
+            raise ValueError(msg)
 
         n_total = X.shape[0]
         test_size = max(1, int(n_total * config.test_split)) if config.test_split > 0 else 0
@@ -1004,10 +1005,7 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
         colors_train = colors[train_idx_np]
         colors_test = colors[test_idx_np] if test_size > 0 else colors
 
-        print(
-            f"Train/test split: {len(X_train)}/{len(X_test)} "
-            f"(test={config.test_split:.2f})"
-        )
+        print(f"Train/test split: {len(X_train)}/{len(X_test)} " f"(test={config.test_split:.2f})")
 
         X_train_cpu = X_train.clone()
         X_test_cpu = X_test.clone()
@@ -1191,16 +1189,16 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
             model_ae.load_state_dict(resume_state["ae"])
         ae_params = count_parameters(model_ae)
 
-    print(f"\nModel Parameters (fair comparison):")
+    print("\nModel Parameters (fair comparison):")
     print(f"  TopoEncoder: {topo_params:,} params (hidden_dim={config.hidden_dim})")
     if not config.disable_vq:
         print(f"  StandardVQ:  {std_params:,} params (hidden_dim={std_hidden_dim})")
     else:
-        print(f"  StandardVQ:  DISABLED")
+        print("  StandardVQ:  DISABLED")
     if not config.disable_ae:
         print(f"  VanillaAE:   {ae_params:,} params (hidden_dim={ae_hidden_dim})")
     else:
-        print(f"  VanillaAE:   DISABLED")
+        print("  VanillaAE:   DISABLED")
 
     # Move models and data to device
     device = torch.device(config.device)
@@ -1224,24 +1222,22 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
         print("  VanillaAE: loaded from benchmarks (frozen)")
 
     if mlflow_active:
-        mlflow.log_params(
-            {
-                "topo_params": topo_params,
-                "std_params": std_params,
-                "ae_params": ae_params,
-                "std_hidden_dim": std_hidden_dim,
-                "ae_hidden_dim": ae_hidden_dim,
-                "benchmarks_loaded_std": benchmarks_loaded_std,
-                "benchmarks_loaded_ae": benchmarks_loaded_ae,
-                "train_std": train_std,
-                "train_ae": train_ae,
-                "baseline_attn": config.baseline_attn,
-                "baseline_attn_tokens": config.baseline_attn_tokens,
-                "baseline_attn_dim": config.baseline_attn_dim,
-                "baseline_attn_heads": config.baseline_attn_heads,
-                "baseline_attn_dropout": config.baseline_attn_dropout,
-            }
-        )
+        mlflow.log_params({
+            "topo_params": topo_params,
+            "std_params": std_params,
+            "ae_params": ae_params,
+            "std_hidden_dim": std_hidden_dim,
+            "ae_hidden_dim": ae_hidden_dim,
+            "benchmarks_loaded_std": benchmarks_loaded_std,
+            "benchmarks_loaded_ae": benchmarks_loaded_ae,
+            "train_std": train_std,
+            "train_ae": train_ae,
+            "baseline_attn": config.baseline_attn,
+            "baseline_attn_tokens": config.baseline_attn_tokens,
+            "baseline_attn_dim": config.baseline_attn_dim,
+            "baseline_attn_heads": config.baseline_attn_heads,
+            "baseline_attn_dropout": config.baseline_attn_dropout,
+        })
 
     # Initialize Jump Operator for chart gluing
     jump_op = FactorizedJumpOperator(
@@ -1386,10 +1382,11 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
 
     # Create data loader for minibatching (data already on device)
     from torch.utils.data import DataLoader, TensorDataset
+
     labels_train_t = torch.from_numpy(labels_train).long().to(device)
     labels_test_t = torch.from_numpy(labels_test).long().to(device)
     colors_train_t = torch.from_numpy(colors_train).float().to(device)
-    colors_test_t = torch.from_numpy(colors_test).float().to(device)
+    torch.from_numpy(colors_test).float().to(device)
     dataset = TensorDataset(X_train, labels_train_t, colors_train_t)
     batch_size = config.batch_size if config.batch_size > 0 else len(X_train)
     dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
@@ -1435,9 +1432,7 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
         "sup_balance_weight",
         "sup_metric_weight",
     ]
-    adaptive_weight_state = _restore_weight_state(
-        config, resume_metrics, adaptive_weight_names
-    )
+    adaptive_weight_state = _restore_weight_state(config, resume_metrics, adaptive_weight_names)
     for name, state in adaptive_weight_state.items():
         setattr(config, name, state.value)
 
@@ -1479,7 +1474,7 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
         epoch_std_loss = 0.0
         epoch_atlas_loss = 0.0
         epoch_ae_loss = 0.0
-        epoch_losses = {k: 0.0 for k in loss_components.keys()}
+        epoch_losses = dict.fromkeys(loss_components.keys(), 0.0)
         epoch_info = {
             "I_XK": 0.0,
             "H_K": 0.0,
@@ -1543,9 +1538,7 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
                 opt_classifier_std.zero_grad()
                 std_cls_loss.backward()
                 opt_classifier_std.step()
-                std_cls_acc = (
-                    logits_std.detach().argmax(dim=1) == batch_labels
-                ).float().mean()
+                std_cls_acc = (logits_std.detach().argmax(dim=1) == batch_labels).float().mean()
 
             ae_cls_loss = torch.tensor(0.0, device=device)
             ae_cls_acc = torch.tensor(0.0, device=device)
@@ -1559,13 +1552,22 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
                 opt_classifier_ae.zero_grad()
                 ae_cls_loss.backward()
                 opt_classifier_ae.step()
-                ae_cls_acc = (
-                    logits_ae.detach().argmax(dim=1) == batch_labels
-                ).float().mean()
+                ae_cls_acc = (logits_ae.detach().argmax(dim=1) == batch_labels).float().mean()
 
             # --- Atlas Step (dreaming mode: decoder infers routing from z_geo) ---
             # Get encoder outputs (need z_geo for regularization losses, z_n_all_charts for jump)
-            K_chart, _, z_n, z_tex, enc_w, z_geo, vq_loss_a, indices_stack, z_n_all_charts, _c_bar = model_atlas.encoder(batch_X)
+            (
+                K_chart,
+                _,
+                z_n,
+                z_tex,
+                enc_w,
+                z_geo,
+                vq_loss_a,
+                indices_stack,
+                z_n_all_charts,
+                _c_bar,
+            ) = model_atlas.encoder(batch_X)
 
             # Decoder forward (dreaming mode - infers routing from z_geo)
             recon_a, dec_w = model_atlas.decoder(z_geo, z_tex, chart_index=None)
@@ -1736,7 +1738,7 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
                 + config.consistency_weight * consistency
             )
             if supervised_loss is not None:
-                lr_loss_signal = lr_loss_signal + config.sup_weight * sup_term
+                lr_loss_signal += config.sup_weight * sup_term
 
             opt_atlas.zero_grad()
             loss_a.backward()
@@ -1756,9 +1758,7 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
                 grad_norm_val = grad_norm
                 param_norm_val = param_norm
                 update_ratio = (
-                    lr_current * grad_norm / (param_norm + 1e-12)
-                    if param_norm > 0.0
-                    else 0.0
+                    lr_current * grad_norm / (param_norm + 1e-12) if param_norm > 0.0 else 0.0
                 )
             opt_atlas.step()
 
@@ -2151,9 +2151,7 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
                 opt_classifier.zero_grad()
                 cls_loss.backward()
                 opt_classifier.step()
-                cls_acc = (
-                    logits.detach().argmax(dim=1) == batch_labels
-                ).float().mean()
+                cls_acc = (logits.detach().argmax(dim=1) == batch_labels).float().mean()
 
             # Accumulate batch losses
             epoch_std_loss += loss_s.item()
@@ -2226,8 +2224,7 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
             param_norm_avg = epoch_lr_param_norm / n_batches
             loss_ema_raw = adaptive_lr_state.loss_ema or loss_val_raw
             loss_ema_next = (
-                config.lr_ema_decay * loss_ema_raw
-                + (1.0 - config.lr_ema_decay) * loss_val_raw
+                config.lr_ema_decay * loss_ema_raw + (1.0 - config.lr_ema_decay) * loss_val_raw
             )
             loss_val = math.log1p(loss_val_raw)
             loss_ema = math.log1p(loss_ema_raw)
@@ -2309,23 +2306,18 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
                     if grad_norm_avg > 0.0 and param_norm_avg > 0.0:
                         lr_cap = min(
                             lr_max,
-                            config.lr_max_update_ratio
-                            * param_norm_avg
-                            / (grad_norm_avg + 1e-12),
+                            config.lr_max_update_ratio * param_norm_avg / (grad_norm_avg + 1e-12),
                         )
                     increase_factor = config.lr_increase_factor
                     if lr_current < lr_max * config.lr_recovery_threshold:
                         increase_factor = max(increase_factor, config.lr_recovery_factor)
                     min_lr_bound = max(config.lr_min, 1e-12)
                     if (
-                        adaptive_lr_state.unstable_steps
-                        >= config.lr_unstable_patience
+                        adaptive_lr_state.unstable_steps >= config.lr_unstable_patience
                         or plateau_triggered
                     ):
                         if grounding_active:
-                            lr_current = max(
-                                min_lr_bound, lr_current * config.lr_decrease_factor
-                            )
+                            lr_current = max(min_lr_bound, lr_current * config.lr_decrease_factor)
                         adaptive_lr_state.unstable_steps = 0
                         adaptive_lr_state.stable_steps = 0
                         adaptive_lr_state.plateau_steps = 0
@@ -2353,7 +2345,9 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
             was_training = model_atlas.training
             model_atlas.eval()
             with torch.no_grad():
-                K_chart_full, _, _, _, enc_w_full, _, _, _, _, _c_bar_full = model_atlas.encoder(X_test)
+                K_chart_full, _, _, _, enc_w_full, _, _, _, _, _c_bar_full = model_atlas.encoder(
+                    X_test
+                )
                 usage = enc_w_full.mean(dim=0).cpu().numpy()
                 chart_assignments = K_chart_full.cpu().numpy()
                 ami = compute_ami(labels_test, chart_assignments)
@@ -2434,24 +2428,16 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
                 f"soft_eq_l1={avg_soft_equiv_l1:.3f} "
                 f"soft_eq_ratio={avg_soft_equiv_log_ratio:.3f}"
             )
-            print(
-                f"  Tier2: window={avg_window:.3f} "
-                f"disent={avg_disent:.3f}"
-            )
+            print(f"  Tier2: window={avg_window:.3f} " f"disent={avg_disent:.3f}")
             print(
                 f"  Tier3: orth={avg_orth:.3f} "
                 f"code_ent={avg_code_ent:.3f} "
                 f"pc_code_ent={avg_pc_code_ent:.3f}"
             )
             print(
-                f"  Tier4: kl={avg_kl:.3f} "
-                f"orbit={avg_orbit:.3f} "
-                f"vicreg={avg_vicreg:.3f}"
+                f"  Tier4: kl={avg_kl:.3f} " f"orbit={avg_orbit:.3f} " f"vicreg={avg_vicreg:.3f}"
             )
-            print(
-                f"  Tier5: jump={avg_jump:.3f} "
-                f"(λ={log_jump_weight:.3f})"
-            )
+            print(f"  Tier5: jump={avg_jump:.3f} " f"(λ={log_jump_weight:.3f})")
             enc_w_test = None
             z_geo_test = None
             test_sup_acc = None
@@ -2472,8 +2458,8 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
                     sup_test = supervised_loss(enc_w_test, labels_test_t, z_geo_test)
                     p_y_x_test = torch.matmul(enc_w_test, supervised_loss.p_y_given_k)
                     test_sup_acc = (
-                        p_y_x_test.argmax(dim=1) == labels_test_t
-                    ).float().mean().item()
+                        (p_y_x_test.argmax(dim=1) == labels_test_t).float().mean().item()
+                    )
                     test_sup_route = sup_test["loss_route"].item()
 
                 print(
@@ -2495,8 +2481,8 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
                 with torch.no_grad():
                     cls_logits_test = classifier_head(enc_w_test, z_geo_test)
                     test_cls_acc = (
-                        cls_logits_test.argmax(dim=1) == labels_test_t
-                    ).float().mean().item()
+                        (cls_logits_test.argmax(dim=1) == labels_test_t).float().mean().item()
+                    )
 
                 print(
                     f"  Readout: train_loss={avg_cls_loss:.3f} "
@@ -2510,8 +2496,8 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
                     z_std_test = model_std.encoder(X_test)
                     std_logits_test = std_classifier_head(z_std_test)
                     std_test_acc = (
-                        std_logits_test.argmax(dim=1) == labels_test_t
-                    ).float().mean().item()
+                        (std_logits_test.argmax(dim=1) == labels_test_t).float().mean().item()
+                    )
                 print(
                     f"  Std Readout: train_loss={avg_std_cls_loss:.3f} "
                     f"train_acc={avg_std_cls_acc:.3f} "
@@ -2522,8 +2508,8 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
                     _, z_ae_test = model_ae(X_test)
                     ae_logits_test = ae_classifier_head(z_ae_test)
                     ae_test_acc = (
-                        ae_logits_test.argmax(dim=1) == labels_test_t
-                    ).float().mean().item()
+                        (ae_logits_test.argmax(dim=1) == labels_test_t).float().mean().item()
+                    )
                 print(
                     f"  AE Readout: train_loss={avg_ae_cls_loss:.3f} "
                     f"train_acc={avg_ae_cls_acc:.3f} "
@@ -2535,8 +2521,7 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
                 f"H(K|X)={avg_hk_given_x:.3f}"
             )
             print(
-                f"  Code: H(code)={avg_code_entropy:.3f} "
-                f"H(pc_code)={avg_pc_code_entropy:.3f}"
+                f"  Code: H(code)={avg_code_entropy:.3f} " f"H(pc_code)={avg_pc_code_entropy:.3f}"
             )
             if config.adaptive_lr:
                 print(
@@ -2787,8 +2772,12 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
     if model_ae is not None:
         print(f"{'Vanilla AE':<20} {mse_ae:>10.5f} {ami_ae:>10.4f} {'N/A (K-Means)':<15}")
     if model_std is not None:
-        print(f"{'Standard VQ':<20} {mse_std:>10.5f} {ami_std:>10.4f} {std_perplexity:>6.1f}/{config.num_codes_standard:<8}")
-    print(f"{'TopoEncoder':<20} {mse_atlas:>10.5f} {ami_atlas:>10.4f} {atlas_perplexity:>6.1f}/{config.num_charts:<8}")
+        print(
+            f"{'Standard VQ':<20} {mse_std:>10.5f} {ami_std:>10.4f} {std_perplexity:>6.1f}/{config.num_codes_standard:<8}"
+        )
+    print(
+        f"{'TopoEncoder':<20} {mse_atlas:>10.5f} {ami_atlas:>10.4f} {atlas_perplexity:>6.1f}/{config.num_charts:<8}"
+    )
     print("-" * 70)
 
     # Interpretation (only if baselines enabled)
@@ -2925,9 +2914,7 @@ def main():
     parser = argparse.ArgumentParser(
         description="TopoEncoder Benchmark: Attentive Atlas vs Standard VQ-VAE"
     )
-    parser.add_argument(
-        "--epochs", type=int, default=1000, help="Number of training epochs"
-    )
+    parser.add_argument("--epochs", type=int, default=1000, help="Number of training epochs")
     parser.add_argument(
         "--dataset",
         type=str,
@@ -2935,9 +2922,7 @@ def main():
         choices=["mnist", "cifar10"],
         help="Dataset to use (mnist or cifar10)",
     )
-    parser.add_argument(
-        "--lr", type=float, default=1e-3, help="Learning rate (default: 1e-3)"
-    )
+    parser.add_argument("--lr", type=float, default=1e-3, help="Learning rate (default: 1e-3)")
     parser.add_argument(
         "--batch_size",
         type=int,
@@ -3120,8 +3105,7 @@ def main():
         type=lambda x: x.lower() == "true",
         default=True,
         help=(
-            "Use straight-through soft assignment for soft equivariant metric "
-            "(default: True)"
+            "Use straight-through soft assignment for soft equivariant metric " "(default: True)"
         ),
     )
     parser.add_argument(
@@ -3341,9 +3325,7 @@ def main():
         "--lr_grounding_warmup_epochs",
         type=int,
         default=0,
-        help=(
-            "Epochs to skip coupling-window grounding checks for adaptive LR (default: 0)"
-        ),
+        help=("Epochs to skip coupling-window grounding checks for adaptive LR (default: 0)"),
     )
     parser.add_argument(
         "--lr_unstable_patience",
@@ -3856,7 +3838,7 @@ def main():
     print("TopoEncoder Benchmark")
     print("Attentive Atlas vs Standard VQ-VAE")
     print("=" * 50)
-    print(f"\nConfiguration:")
+    print("\nConfiguration:")
     print(f"  Dataset: {config.dataset}")
     if config.resume_checkpoint:
         print(f"  Resume: {config.resume_checkpoint}")
@@ -3889,7 +3871,9 @@ def main():
     if ami_atlas > ami_ae:
         print(f"TopoEncoder beats VanillaAE ({ami_atlas:.3f} > {ami_ae:.3f}) - better topology!")
     else:
-        print(f"VanillaAE beats TopoEncoder ({ami_ae:.3f} > {ami_atlas:.3f}) - K-Means works well here")
+        print(
+            f"VanillaAE beats TopoEncoder ({ami_ae:.3f} > {ami_atlas:.3f}) - K-Means works well here"
+        )
     print(f"\nFinal checkpoint saved to: {results['checkpoint_path']}")
     print(f"Output directory: {config.output_dir}/")
 

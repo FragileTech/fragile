@@ -495,9 +495,7 @@ class CompanionSelection(PanelModel):
         >>> companions = selector(x, v, alive_mask)
         >>>
         >>> # Diversity measurement pairing
-        >>> pairing = CompanionSelection(
-        ...     method="greedy_pairing", epsilon=0.05, lambda_alg=0.5
-        ... )
+        >>> pairing = CompanionSelection(method="greedy_pairing", epsilon=0.05, lambda_alg=0.5)
         >>> pairs = pairing(x, v, alive_mask)
         >>>
         >>> # Fast uniform baseline

@@ -1250,33 +1250,33 @@ When you have multiple charts and an MLP router, the router learns to output "us
 
 This is called *permutation sensitivity*, and it's ugly for a few reasons. First, it means the learning depends on arbitrary initialization. Second, it makes it hard to add or remove charts dynamically. Third, it violates a philosophical principle: the identity of a concept (a chart, a symbol, a category) shouldn't depend on where it happens to be stored in memory.
 
-The solution is cross-attention routing. Instead of having the router output "use index 3," we have each chart be represented by a *learnable query vector*. The router computes the similarity between the input and each chart's query vector, then routes based on which chart is most similar.
+The solution is attention-based routing. Instead of having the router output "use index 3," we have each chart be represented by a *learnable chart token (center)*. The router computes the similarity between the input and each chart token, then routes based on which chart is most similar.
 
-Now the charts are identified by *what they represent*, not by *where they're stored*. You can shuffle the memory indices around and the routing behavior doesn't change. You can add a new chart by adding a new query vector. The system is permutation-invariant.
+Now the charts are identified by *what they represent*, not by *where they're stored*. You can shuffle the memory indices around and the routing behavior doesn't change. You can add a new chart by adding a new chart center and codebook slice. The system is permutation-invariant.
 
 This is the same idea behind transformers and slot attention: let similarity determine routing, not fixed indices.
 :::
 
 The Atlas architecture described in {ref}`Section 7.7 <sec-tier-atlas-based-fragile-agent>` uses a fixed MLP router to assign input regions to charts. While functional, this approach is **permutation sensitive**: the network assigns fixed semantics to output indices. This breaks the **Symbol-Permutation Symmetry** ($S_{|\mathcal{K}|}$) requirement of Section 1.1.4, which posits that the identity of a manifold chart should not depend on its memory index.
 
-To resolve this, we introduce the **Attentive Atlas**. By replacing the MLP router with a **Cross-Attention / Slot-Based** mechanism, we treat charts as an *unordered set of learnable prototypes*.
+To resolve this, we introduce the **Attentive Atlas**. In the current implementation (`PrimitiveAttentiveAtlasEncoder` in `src/fragile/core/layers/atlas.py`), routing is handled by `CovariantChartRouter`, which compares chart tokens (the learnable `chart_centers`) against a covariant query built from the latent value and features. When `covariant_attn` is disabled, the router falls back to a dot-product $v \cdot c_k / \sqrt{D}$ over chart centers.
 
 (sec-theoretical-motivation-charts-as-query-vectors)=
-### Theoretical Motivation: Charts as Query Vectors
+### Theoretical Motivation: Charts as Tokens (Centers)
 
-We reframe the routing problem as a **Query-Key Matching** problem.
-1.  **Charts as Queries ($Q$):** Each chart $k \in \{1, \dots, N_c\}$ is represented by a learnable vector $q_k \in \mathbb{R}^d$. This vector represents the centroid of the manifold region (e.g., sphere chart vs. torus chart).
-2.  **Observation as Key ($K_{\text{dat}}$):** The observation $x$ is projected into a key vector $k(x)$.
-3.  **Routing as Attention:** The probability of assigning observation $x$ to chart $i$ is determined by the alignment between the data key and the chart query.
+We reframe the routing problem as a **covariant query-key match**.
+1.  **Charts as tokens ($C$):** Each chart $k \in \{1, \dots, N_c\}$ is represented by a learnable center $c_k \in \mathbb{R}^D$. These centers anchor routing and form the mixture $c_{\mathrm{bar}}$.
+2.  **Observation as covariant query:** The observation induces a query $q(z, f) = q_z(z) + q_{\mathrm{feat}}(f) + \gamma(z)$, mixing latent geometry and features.
+3.  **Routing as covariant attention:** The probability of assigning observation $x$ to chart $i$ is determined by the alignment between the transported chart token and the query, with a metric-aware temperature.
 
 :::{prf:definition} Attentive Routing Law
 :label: def-attentive-routing-law
 
 $$
-w_i(x) := \frac{\exp\left(\frac{\langle q_i, k(x) \rangle}{\sqrt{d}}\right)}{\sum_{j=1}^{N_c} \exp\left(\frac{\langle q_j, k(x) \rangle}{\sqrt{d}}\right)}
+w_i(x) := \frac{\exp\left(\frac{\langle k_i(z), q(z,f) \rangle}{\tau(z)}\right)}{\sum_{j=1}^{N_c} \exp\left(\frac{\langle k_j(z), q(z,f) \rangle}{\tau(z)}\right)}
 
 $$
-This mechanism is **permutation invariant**: shuffling the memory order of the queries $\{q_i\}$ merely shuffles the output indices without changing the underlying topology or geometry.
+where $k_i(z) = U(z)\,\text{base\_query}_i$ and $\tau(z)$ is the metric-aware temperature. With `covariant_attn=False`, $U(z)=I$ and $\text{base\_query}_i = c_i$, reducing to dot-product routing on chart centers. This mechanism is **permutation invariant**: shuffling the memory order of the chart tokens merely shuffles the output indices without changing the underlying topology or geometry.
 
 :::
 (sec-the-hierarchical-state-tuple)=
@@ -1288,7 +1288,7 @@ $$
 K_t = (K_{\text{chart}}, K_{\text{code}})
 
 $$
-1.  **$K_{\text{chart}} \in \{1, \dots, N_c\}$:** The Topological ID (Which manifold are we on?). Determined by the **Slot Attention** (Router).
+1.  **$K_{\text{chart}} \in \{1, \dots, N_c\}$:** The Topological ID (Which manifold are we on?). Determined by `CovariantChartRouter` (or dot-product fallback).
 2.  **$K_{\text{code}} \in \{1, \dots, N_v\}$:** The Geometric ID (Where are we locally?). Determined by the **Local VQ** of the active chart.
 
 The full latent state is:
@@ -1306,128 +1306,46 @@ $$
 where $z_n$ is a filtered residual (structured, predictable) and $z_{\text{tex}}$ is the residual of that residual (stochastic detail).
 
 (sec-architecture-specification)=
-### Architecture Specification: `AttentiveAtlasEncoder`
+### Architecture Specification: `PrimitiveAttentiveAtlasEncoder` (current implementation)
 
-This module replaces the MLP router used in the Tier 5 atlas ({ref}`Section 7.7.5 <sec-hypouniversal-complete-atlas-architecture>`) for high-end implementations.
+The production implementation lives in `src/fragile/core/layers/atlas.py` and is wired through
+`TopoEncoderPrimitives`. The forward pass returns the typed latents and routing diagnostics:
 
 ```python
-import math
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
+from fragile.core.layers.atlas import PrimitiveAttentiveAtlasEncoder
 
-class AttentiveAtlasEncoder(nn.Module):
-    """Attentive Atlas encoder with cross-attention routing.
+encoder = PrimitiveAttentiveAtlasEncoder(
+    input_dim=...,
+    hidden_dim=...,
+    latent_dim=...,
+    num_charts=...,
+    codes_per_chart=...,
+    covariant_attn=True,
+)
 
-    Architecture:
-    - Feature extractor: x -> features [B, H]
-    - Key/Value projections: features -> k(x), v(x)
-    - Chart Query Bank: learnable q_i [N_c, H]
-    - Cross-attention router: softmax(k @ q.T / sqrt(H)) -> w_i(x)
-    - Local VQ codebooks: per-chart quantization
-    - Recursive decomposition: delta -> (z_n, z_tex)
-    """
-
-    def __init__(
-        self,
-        input_dim: int = 2,
-        hidden_dim: int = 32,
-        latent_dim: int = 2,
-        num_charts: int = 3,
-        codes_per_chart: int = 21,
-    ):
-        super().__init__()
-        self.num_charts = num_charts
-        self.latent_dim = latent_dim
-        self.codes_per_chart = codes_per_chart
-
-        # --- Shared Backbone (Feature Extractor) ---
-        self.feature_extractor = nn.Sequential(
-            nn.Linear(input_dim, hidden_dim),
-            nn.LayerNorm(hidden_dim),
-            nn.GELU(),
-            nn.Linear(hidden_dim, hidden_dim),
-            nn.GELU(),
-        )
-
-        # --- Routing (Topology) ---
-        self.key_proj = nn.Linear(hidden_dim, hidden_dim)
-        self.chart_queries = nn.Parameter(torch.randn(num_charts, hidden_dim))
-        self.scale = math.sqrt(hidden_dim)
-
-        # --- Value (Geometry) ---
-        self.val_proj = nn.Linear(hidden_dim, latent_dim)
-
-        # --- Local VQ Codebooks (one per chart) ---
-        self.codebooks = nn.ModuleList([
-            nn.Embedding(codes_per_chart, latent_dim)
-            for _ in range(num_charts)
-        ])
-        for cb in self.codebooks:
-            cb.weight.data.uniform_(-1.0 / codes_per_chart, 1.0 / codes_per_chart)
-
-        # --- Recursive Decomposition ---
-        self.structure_filter = nn.Sequential(
-            nn.Linear(latent_dim, latent_dim // 2 if latent_dim > 2 else latent_dim),
-            nn.GELU(),
-            nn.Linear(latent_dim // 2 if latent_dim > 2 else latent_dim, latent_dim),
-        )
-
-    def forward(self, x: torch.Tensor):
-        B = x.shape[0]
-        device = x.device
-
-        # 1. Feature extraction
-        features = self.feature_extractor(x)  # [B, hidden_dim]
-
-        # 2. Cross-attention routing
-        k = self.key_proj(features)  # [B, hidden_dim]
-        scores = torch.matmul(k, self.chart_queries.T) / self.scale  # [B, N_c]
-        router_weights = F.softmax(scores, dim=-1)  # [B, N_c]
-        K_chart = torch.argmax(router_weights, dim=1)  # [B]
-
-        # 3. Value projection
-        v = self.val_proj(features)  # [B, latent_dim]
-
-        # 4. Local VQ per chart
-        z_q_list = []
-        indices_list = []
-        vq_loss = torch.tensor(0.0, device=device)
-
-        for i in range(self.num_charts):
-            codebook_i = self.codebooks[i]
-            dists = torch.cdist(v, codebook_i.weight)  # [B, codes_per_chart]
-            inds = torch.argmin(dists, dim=1)  # [B]
-            z_q_local = codebook_i(inds)  # [B, latent_dim]
-
-            z_q_list.append(z_q_local)
-            indices_list.append(inds)
-
-            w = router_weights[:, i].unsqueeze(1).detach()  # [B, 1]
-            commitment = ((v - z_q_local.detach()) ** 2 * w).mean()
-            codebook = ((z_q_local - v.detach()) ** 2 * w).mean()
-            vq_loss = vq_loss + codebook + 0.25 * commitment
-
-        z_stack = torch.stack(z_q_list, dim=1)  # [B, N_c, latent_dim]
-        indices_stack = torch.stack(indices_list, dim=1)  # [B, N_c]
-
-        # 5. Soft blending for differentiability
-        z_q_blended = (z_stack * router_weights.unsqueeze(-1)).sum(dim=1)  # [B, D]
-
-        # Get hard K_code from selected chart
-        K_code = indices_stack[torch.arange(B, device=device), K_chart]  # [B]
-
-        # 6. Recursive decomposition
-        delta_total = v - z_q_blended.detach()
-        z_n = self.structure_filter(delta_total)
-        z_tex = delta_total - z_n
-
-        # 7. Geometric latent for decoder
-        z_q_st = v + (z_q_blended - v).detach()
-        z_geo = z_q_st + z_n
-
-        return K_chart, K_code, z_n, z_tex, router_weights, z_geo, vq_loss, indices_stack
+(
+    K_chart,
+    K_code,
+    z_n,
+    z_tex,
+    router_weights,
+    z_geo,
+    vq_loss,
+    indices_stack,
+    z_n_all_charts,
+    c_bar,
+) = encoder(x)
 ```
+
+Core steps (mirroring `PrimitiveAttentiveAtlasEncoder.forward`):
+
+1. `features = feature_extractor(x)` using `SpectralLinear + NormGatedGELU` or `CovariantRetina`.
+2. `v = val_proj(features)` and `router_weights` from `CovariantChartRouter(v, features, chart_centers)`
+   (or dot-product `v @ chart_centers.T` when `covariant_attn=False`).
+3. `c_bar = router_weights @ chart_centers`, `v_local = v - c_bar`, then per-chart VQ with the
+   shared `codebook` parameter and optional `SoftEquivariantLayer`.
+4. `z_n` from `structure_filter` on per-chart residuals; `z_tex` is the remaining residual.
+5. `z_geo = c_bar + z_q_st + z_n` with straight-through quantization.
 
 **Training constraints for the residual split:**
 - **Structured nuisance $z_n$:** encourage predictability (e.g., world-model prediction loss or low-rank bottleneck) so it captures coherent geometry rather than noise.
@@ -1438,7 +1356,7 @@ class AttentiveAtlasEncoder(nn.Module):
 
 The Attentive Atlas offers unique geometric diagnostics unavailable to standard VQ-VAEs or MLP Routers.
 
-1.  **Manifold Centroids:** The parameter `self.chart_queries` ($N_c \times D$) encodes the relative positions of the manifolds. By applying PCA/t-SNE to these query vectors, one can visualize the topological structure of the agent's world model.
+1.  **Manifold Centroids:** The `chart_centers` parameter ($N_c \times D$) in `PrimitiveAttentiveAtlasEncoder` anchors routing and defines $c_{\mathrm{bar}}$. PCA/t-SNE on these centers visualizes the atlas structure. When the decoder routes without `chart_tokens`, `CovariantChartRouter.chart_queries` provides the fallback token bank.
 2.  **Attention Entropy (Node 3 Upgrade):**
 
     $$
@@ -1453,11 +1371,11 @@ The Attentive Atlas offers unique geometric diagnostics unavailable to standard 
 
 | Feature | Tier 5 (Standard Atlas) | Tier 6 (Attentive Atlas) |
 | :--- | :--- | :--- |
-| **Routing Mechanism** | MLP ($x \to$ Logits) | Cross-Attention ($x \leftrightarrow Q_{\text{chart}}$) |
-| **Symmetry** | Fixed Index (Permutation Sensitive) | **Gauge Invariant** (Permutation Invariant) |
-| **Parameters** | Weights per chart index | Learnable Query Vectors |
-| **Capacity Scaling** | Fixed output head size | Can dynamically add new Query Vectors |
-| **Interpretability** | Opaque weights | Query vectors represent manifold centroids |
+| **Routing Mechanism** | MLP ($x \to$ logits) | Covariant attention (`CovariantChartRouter`; dot-product fallback) |
+| **Symmetry** | Fixed index (permutation sensitive) | Permutation-equivariant chart tokens |
+| **Parameters** | Weights per chart index | Chart centers + covariant router projections |
+| **Capacity Scaling** | Fixed output head size | Add charts by adding centers + codebook slices (manual today) |
+| **Interpretability** | Opaque weights | Chart centers + routing entropy diagnostics |
 
 (sec-integration-with-jump-operators)=
 ### Integration with Jump Operators
@@ -1472,9 +1390,9 @@ In the Attentive Atlas, a **Jump** ({ref}`Section 7.13 <sec-factorized-jump-oper
 (sec-elastic-atlas-dynamic-chart-count)=
 ### Elastic Atlas: Dynamic Chart Count (Implementation Note)
 
-Attentive routing treats charts as a query bank, so the number of charts can be a runtime variable rather than a fixed hyperparameter. This is the implementation counterpart of the Ontological Heartbeat ({ref}`Section 30.14 <sec-summary-the-topological-heartbeat>`): fission adds a query, fusion removes one.
+Attentive routing treats charts as a token bank (chart centers + codebook slices), so the number of charts can be a runtime variable rather than a fixed hyperparameter. Current code keeps `num_charts` fixed; dynamic resizing would require masked buffers for `chart_centers`, `codebook`, and router tokens. This is the implementation counterpart of the Ontological Heartbeat ({ref}`Section 30.14 <sec-summary-the-topological-heartbeat>`): fission adds a chart, fusion removes one.
 
-**Design principle:** avoid fixed-size routing heads. Maintain a query bank $Q \in \mathbb{R}^{N_c(t) \times d}$ and compute routing by dot-product attention ({ref}`Section 7.8.1 <sec-theoretical-motivation-charts-as-query-vectors>`). Adding a chart appends a new query; removing a chart deletes or masks one.
+**Design principle:** avoid fixed-size routing heads. Maintain a chart center bank $C \in \mathbb{R}^{N_c(t) \times D}$ and compute routing by dot-product attention (or by masking `chart_tokens` in `CovariantChartRouter`). Adding a chart appends a new center; removing a chart deletes or masks one.
 
 **Buffer and mask pattern (stable optimizer state):**
 1. Pre-allocate a maximum capacity `max_charts`.
@@ -1482,7 +1400,7 @@ Attentive routing treats charts as a query bank, so the number of charts can be 
 3. Mask inactive logits to a large negative value before softmax.
 
 ```python
-logits = k_x @ Q.T                      # [B, max_charts]
+logits = v @ chart_centers.T            # [B, max_charts]
 logits = logits.masked_fill(~active_mask, -1e9)
 w = softmax(logits, dim=-1)
 ```
@@ -1495,14 +1413,14 @@ w = softmax(logits, dim=-1)
   \mathcal{L}_k > \tau_{\text{expand}}
 
   $$
-  Spawn a child query $q_{\text{new}} = q_k + \epsilon$, duplicate its local codebook, and reset its usage stats.
+  Spawn a child center $c_{\text{new}} = c_k + \epsilon$, duplicate its local codebook slice, and reset its usage stats.
 - **Fusion trigger (redundancy or death):**
 
   $$
   P(k) = \frac{1}{T} \sum_t w_k(x_t), \quad P(k) < \epsilon_{\text{dead}}
 
   $$
-  or $\Upsilon_{ij} > \Upsilon_{\text{crit}}$ ({ref}`Section 30.8 <sec-ontological-fusion-concept-consolidation>`). Merge $q_i, q_j$ or deactivate the redundant chart.
+  or $\Upsilon_{ij} > \Upsilon_{\text{crit}}$ ({ref}`Section 30.8 <sec-ontological-fusion-concept-consolidation>`). Merge $c_i, c_j$ or deactivate the redundant chart.
 
 **Symbol metabolism:** dynamic $N_v$ per chart uses the intra-symbol fission/fusion rules in {ref}`Section 30.12 <sec-symbolic-metabolism-intra-chart-fission-and-fusion>` (same buffer-and-mask pattern).
 
@@ -1521,38 +1439,60 @@ From this point onward, atlas references assume the Attentive Atlas (Tier 6) unl
 ## Encoder Architecture Overview: Attentive Atlas Latent Hierarchy
 
 The diagram below summarizes the encoder-side hierarchy that constructs the latent state
-$Z_t = (K_{\text{chart}}, K_{\text{code}}, z_n, z_{\text{tex}})$ under the Attentive Atlas routing.
+$Z_t = (K_{\text{chart}}, K_{\text{code}}, z_n, z_{\text{tex}})$ under the Attentive Atlas routing,
+as implemented by `PrimitiveAttentiveAtlasEncoder` in `src/fragile/core/layers/atlas.py`.
 
 ```{mermaid}
 %%{init: {"themeVariables": {"edgeLabelBackground":"#ffffff","textColor":"#1a1a1a","lineColor":"#666666"}}}%%
 flowchart TD
-    subgraph ENC["Embedding block (encoder)"]
-        Input["nn.Identity (input)"] -- "x_t [B, D_in]" --> FE["Feature extractor (nn.Sequential)"]
+    subgraph ENC["PrimitiveAttentiveAtlasEncoder"]
+        X["Input x [B, D_in]"] --> FE["Feature extractor\nSpectralLinear + NormGatedGELU\n(or CovariantRetina)"]
+        FE --> F["features [B, H]"]
+        F --> Vproj["val_proj -> v [B, D]"]
+        ChartCenters["chart_centers c_k [N_c, D]"] --> RouterEnc["Chart router\nCovariantChartRouter or dot-product"]
+        F --> RouterEnc
+        Vproj --> RouterEnc
+        RouterEnc --> Wenc["w_enc [B, N_c]"]
+        RouterEnc --> Kchart["K_chart [B]"]
 
-        FE -- "features [B, H]" --> Kproj["Key projection (nn.Linear)"]
-        FE -- "features [B, H]" --> Vproj["Value projection (nn.Linear)"]
+        Wenc --> Cbar["c_bar = sum(w_enc * c_k) [B, D]"]
+        ChartCenters --> Cbar
+        Vproj --> Vlocal["v_local = v - c_bar [B, D]"]
+        Cbar --> Vlocal
 
-        Qbank["Chart query bank (nn.Parameter)"] -- "q_i [N_c, H]" --> Router["Cross-attention router (module)"]
-        Kproj -- "k(x) [B, H]" --> Router
+        Codebook["Codebook (deltas) [N_c, K, D]"] --> Diff["diff = v_local - codebook [B, N_c, K, D]"]
+        Vlocal --> Diff
+        Diff --> SoftEq["SoftEquivariantLayer per chart\n(optional)"]
+        SoftEq --> Dist["dist = ||diff'||^2 [B, N_c, K]"]
+        Diff -.-> Dist
+        Dist --> Indices["indices per chart [B, N_c]"]
+        Indices --> ZqAll["z_q_all [B, N_c, D]\n(+ soft-ST if soft_equiv_soft_assign)"]
+        ZqAll --> ZqBlend["z_q_blended = sum(w_enc * z_q_all)"]
+        Indices --> Kcode["K_code [B]"]
+        Kchart -.-> Kcode
 
-        Vproj -- "v(x) [B, D]" --> VQ["Local VQ codebooks (nn.ModuleList)"]
-        Router -- "w_i(x) [B, N_c]" --> VQ
+        ZqAll --> VQLoss["vq_loss = codebook + 0.25 * commitment"]
+        Vlocal --> VQLoss
 
-        subgraph RDEC["Recursive Decomposition (modules)"]
-            Vproj -- "v(x) [B, D]" --> Sub1["Residual subtract (module)"]
-        VQ -- "z_q_blended [B, D]" --> Sub1
-            Sub1 -- "delta_total [B, D]" --> Filter["Structure filter (nn.Sequential)"]
-            Sub1 -- "delta_total [B, D]" --> Sub2["Residual subtract (module)"]
-            Filter -- "z_n [B, D]" --> Sub2
-            Sub2 -- "z_tex [B, D]" --> Pack["Latent tuple pack (module)"]
-            Filter -- "z_n [B, D]" --> Pack
-        end
+        ZqAll --> DeltaAll["delta_all = v_local - z_q_all (detach)"]
+        DeltaAll --> Struct["structure_filter\nIsotropicBlock + SpectralLinear"]
+        Struct --> ZnAll["z_n_all_charts [B, N_c, D]"]
+        ZnAll --> Zn["z_n = sum(w_enc * z_n_all_charts) [B, D]"]
+        ZqBlend --> DeltaBlend["delta_blended = v_local - z_q_blended (detach)"]
+        DeltaBlend --> Ztex["z_tex = delta_blended - z_n"]
 
-        Router -- "K_chart [B]" --> Pack
-        VQ -- "K_code [B]" --> Pack
+        ZqBlend --> ZqSt["z_q_st = v_local + (z_q_blended - v_local).detach"]
+        ZqSt --> Zgeo["z_geo = c_bar + z_q_st + z_n"]
+        Zn --> Zgeo
+        Cbar --> Zgeo
+
+        Kchart --> Pack["Z_t = (K_chart, K_code, z_n, z_tex)"]
+        Kcode --> Pack
+        Zn --> Pack
+        Ztex --> Pack
     end
 
-    Pack -- "Z_t = (K_chart [B], K_code [B], z_n [B, D], z_tex [B, D])" --> Output["Latent state (nn.Identity)"]
+    Pack --> Output["Latent state (nn.Identity)"]
 
     classDef encoder fill:#e6f2ff,stroke:#1f4e79,stroke-width:1px,color:#1a1a1a;
     classDef router fill:#fff2cc,stroke:#7f6000,stroke-width:1px,color:#1a1a1a;
@@ -1560,22 +1500,21 @@ flowchart TD
     classDef residual fill:#fce5cd,stroke:#b45f06,stroke-width:1px,color:#1a1a1a;
     classDef io fill:#f3f3f3,stroke:#666666,stroke-width:1px,color:#1a1a1a;
 
-    class Input,FE,Kproj,Vproj encoder;
-    class Qbank,Router router;
-    class VQ vq;
-    class Sub1,Sub2,Filter,Pack residual;
-    class Output io;
+    class X,FE,F,Vproj,Vlocal,Cbar encoder;
+    class ChartCenters,RouterEnc,Wenc,Kchart router;
+    class Codebook,Diff,SoftEq,Dist,Indices,ZqAll,ZqBlend,VQLoss,Kcode vq;
+    class DeltaAll,Struct,ZnAll,Zn,DeltaBlend,Ztex,ZqSt,Zgeo residual;
+    class Pack,Output io;
 
     style ENC fill:#eef5ff,stroke:#1f4e79,stroke-width:1px,color:#1a1a1a;
-    style RDEC fill:#fff7e6,stroke:#b45f06,stroke-width:1px,color:#1a1a1a;
 ```
 
 (sec-literature-parallels-and-distinctions)=
 ### Literature Parallels and Distinctions
 
 Related work suggests three nearby lineages, with clear differences in intent:
-- Slot-attention and object-centric VQ models use cross-attention to produce object slots, while this design uses slot-like queries to represent manifold charts and keeps an explicit structured residual.
-- VQ-MoE and Switch-style routing use MLP gating for load balancing, while this design uses similarity-based cross-attention for permutation-invariant chart selection and routing entropy diagnostics.
+- Slot-attention and object-centric VQ models use cross-attention to produce object slots, while this design uses chart tokens (chart centers) to represent manifold charts and keeps an explicit structured residual.
+- VQ-MoE and Switch-style routing use MLP gating for load balancing, while this design uses covariant attention (metric-aware temperature + optional transport) for permutation-equivariant chart selection and routing entropy diagnostics.
 - Residual VQ stacks quantizers over successive residuals, while this design stops quantization after the macro code and keeps $z_n$ continuous, separating $z_{\text{tex}}$ as the residual of the residual.
 
 Expected qualitative outcomes from this synthesis:
@@ -1588,53 +1527,62 @@ Expected qualitative outcomes from this synthesis:
 
 This diagram shows the **full TopoEncoder** pipeline used in the current
 implementation: the gauge-covariant Attentive Atlas encoder feeding the
-gauge-covariant inverse decoder. The chart projections and router live on
-the **geometry path** ($z_{\text{geo}} = z_{\text{macro}} + z_n$), while the **texture**
+gauge-covariant inverse decoder. The production wiring is `TopoEncoderPrimitives`
+in `src/fragile/core/layers/atlas.py`. The chart projections and router live on
+the **geometry path** ($z_{\text{geo}} = c_{\mathrm{bar}} + z_{q,\mathrm{st}} + z_n$), while the **texture**
 path remains a residual added at the output.
 
 ```{mermaid}
 %%{init: {"themeVariables": {"edgeLabelBackground":"#ffffff","textColor":"#1a1a1a","lineColor":"#666666"}}}%%
 flowchart TD
-    subgraph TOP["TopoEncoder (Attentive Atlas + Inverse Decoder)"]
-        subgraph ENC["Encoder (Attentive Atlas, gauge-covariant)"]
-            X["Input x [B, D_in]"] --> FE["Feature extractor (SpectralLinear + NormGatedGELU)"]
-            FE --> Key["Key proj (SpectralLinear)"]
-            FE --> Val["Value proj (SpectralLinear)"]
-            Qbank["Chart queries q_k [N_c, H]"] --> Scores["Scores k·q / sqrt(H)"]
-            Key --> Scores
-            Scores --> Wenc["Router weights w_enc [B, N_c]"]
-            Wenc --> Kchart["K_chart = argmax(w_enc)"]
-            Val --> Codebook["Codebook bank [N_c, K, D]"]
-            Codebook --> VQ["Local VQ + soft blend"]
-            Val --> VQ
-            VQ --> Zmacro["z_macro = e_k [B, D]"]
-            VQ --> Kcode["K_code (from active chart)"]
-            Val --> Delta["delta = v - z_macro"]
-            Delta --> Struct["Structure filter (IsotropicBlock + SpectralLinear)"]
-            Struct --> Zn["z_n [B, D]"]
-            Delta --> Ztex["z_tex = delta - z_n"]
-            Zmacro --> Zgeo["z_geo = z_macro + z_n"]
+    subgraph TOP["TopoEncoderPrimitives (Attentive Atlas + Inverse Decoder)"]
+        subgraph ENC["Encoder (PrimitiveAttentiveAtlasEncoder)"]
+            X["Input x [B, D_in]"] --> FE["Feature extractor\nSpectralLinear + NormGatedGELU\n(or CovariantRetina)"]
+            FE --> F["features [B, H]"]
+            F --> Vproj["val_proj -> v [B, D]"]
+            ChartCenters["chart_centers c_k [N_c, D]"] --> RouterEnc["Chart router\nCovariantChartRouter or dot-product"]
+            F --> RouterEnc
+            Vproj --> RouterEnc
+            RouterEnc --> Wenc["w_enc [B, N_c]"]
+            RouterEnc --> Kchart["K_chart [B]"]
+
+            Wenc --> Cbar["c_bar = sum(w_enc * c_k) [B, D]"]
+            ChartCenters --> Cbar
+            Vproj --> Vlocal["v_local = v - c_bar [B, D]"]
+            Cbar --> Vlocal
+
+            Vlocal --> VQ["Per-chart VQ + soft blend"]
+            Codebook["Codebook [N_c, K, D]"] --> VQ
+            VQ --> ZqBlend["z_q_blended [B, D]"]
+            VQ --> Kcode["K_code [B]"]
+            Vlocal --> DeltaBlend["delta_blended = v_local - z_q_blended"]
+            DeltaBlend --> Zn["z_n (structure filter)"]
+            DeltaBlend --> Ztex["z_tex = delta_blended - z_n"]
+            ZqBlend --> ZqSt["z_q_st (straight-through)"]
+            Cbar --> Zgeo["z_geo = c_bar + z_q_st + z_n"]
+            ZqSt --> Zgeo
             Zn --> Zgeo
         end
 
-        subgraph DEC["Decoder (Inverse Atlas, gauge-covariant)"]
-            Zgeo --> TanhGeo["tanh (module)"]
+        subgraph DEC["Decoder (PrimitiveTopologicalDecoder)"]
+            Zgeo --> TanhGeo["tanh(z_geo)"]
+            TanhGeo --> RouterDec["Chart router\nCovariantChartRouter or latent_router"]
+            RouterDec --> Wdec["w_dec [B, N_c]"]
+            ChartIdx["Chart index (optional)"] --> OneHot["one-hot -> w_hard"]
+            OneHot --> Wdec
+
             TanhGeo --> ChartProj["Chart projectors (SpectralLinear x N_c)"]
             ChartProj --> ChartGate["NormGatedGELU (bundle gating)"]
-            TanhGeo --> DecRouter["Inverse router (SpectralLinear)"]
-            ChartIdx["Chart index (optional)"] --> OneHot["One-hot (module)"]
-            DecRouter --> Wdec["w_dec [B, N_c]"]
-            OneHot --> Wdec
-            ChartGate --> Mix["Chart blend (module)"]
+            ChartGate --> Mix["h_global = sum(w_dec * h_stack)"]
             Wdec --> Mix
-            Mix --> Hglobal["h_global [B, H]"]
-            Hglobal --> Render["Renderer (SpectralLinear + NormGatedGELU)"]
-            Hglobal --> Skip["Render skip (SpectralLinear)"]
-            Render --> AddSkip["Add skip (module)"]
+            Mix --> Renderer["renderer: SpectralLinear + NormGatedGELU"]
+            Mix --> Skip["render_skip: SpectralLinear"]
+            Renderer --> AddSkip["x_hat_base = renderer + skip"]
             Skip --> AddSkip
-            Ztex --> TanhTex["tanh (module)"]
-            TanhTex --> TexRes["Texture residual (SpectralLinear)"]
-            TexRes --> AddTex["Add texture (scaled)"]
+
+            Ztex --> TanhTex["tanh(z_tex)"]
+            TanhTex --> TexRes["tex_residual: SpectralLinear"]
+            TexRes --> AddTex["x_hat = x_hat_base + tex_residual_scale * tex_residual"]
             AddSkip --> AddTex
             AddTex --> Xhat["x_hat [B, D_out]"]
         end
@@ -1647,12 +1595,12 @@ flowchart TD
     classDef residual fill:#fce5cd,stroke:#b45f06,stroke-width:1px,color:#1a1a1a;
     classDef io fill:#f3f3f3,stroke:#666666,stroke-width:1px,color:#1a1a1a;
 
-    class X,FE,Key,Val,Struct,Zn encoder;
-    class Qbank,Scores,Wenc,DecRouter,Wdec,OneHot router;
-    class Codebook,VQ,Zmacro vq;
-    class Ztex,Zgeo,Delta,TanhGeo,TanhTex,TexRes residual;
-    class ChartProj,ChartGate,Mix,Hglobal,Render,Skip,AddSkip,AddTex decoder;
-    class Kchart,Kcode,Xhat io;
+    class X,FE,F,Vproj,Vlocal,Cbar,Zgeo,Zn encoder;
+    class ChartCenters,RouterEnc,Wenc,Kchart,RouterDec,Wdec,OneHot router;
+    class Codebook,VQ,ZqBlend,ZqSt,Kcode vq;
+    class DeltaBlend,Ztex,TanhGeo,TanhTex,TexRes residual;
+    class ChartProj,ChartGate,Mix,Renderer,Skip,AddSkip,AddTex decoder;
+    class Xhat io;
 ```
 
 ## Decoder Architecture Overview: Topological Decoder (Inverse Atlas)
@@ -1665,12 +1613,12 @@ from geometry alone during dreaming, or accept a discrete chart index during pla
 %%{init: {"themeVariables": {"edgeLabelBackground":"#ffffff","textColor":"#1a1a1a","lineColor":"#666666"}}}%%
 flowchart TD
     subgraph DEC["Inverse atlas decoder (autonomous, gauge-covariant)"]
-        Zgeo["Geometry (input)"] -- "z_geo = z_macro + z_n [B, D]" --> TanhGeo["tanh (module)"]
+        Zgeo["Geometry (input)"] -- "z_geo = c_bar + z_q_st + z_n [B, D]" --> TanhGeo["tanh (module)"]
         TanhGeo -- "z_geo [B, D]" --> ChartProj["Chart projectors (SpectralLinear x N_c)"]
         ChartProj -- "h_i [B, N_c, H]" --> ChartGate["NormGatedGELU (bundle gating)"]
-        TanhGeo -- "z_geo [B, D]" --> LatentRouter["Inverse router (SpectralLinear)"]
+        TanhGeo -- "z_geo [B, D]" --> Router["Chart router\nCovariantChartRouter or latent_router"]
         ChartIdx["Chart index (optional)"] -- "K_chart [B]" --> OneHot["One-hot (module)"]
-        LatentRouter -- "w_soft [B, N_c]" --> Mix["Chart blend (module)"]
+        Router -- "w_dec [B, N_c]" --> Mix["Chart blend (module)"]
         OneHot -- "w_hard [B, N_c]" --> Mix
 
         ChartGate -- "h_stack [B, N_c, H]" --> Mix
@@ -1693,7 +1641,7 @@ flowchart TD
     classDef residual fill:#fce5cd,stroke:#b45f06,stroke-width:1px,color:#1a1a1a;
     classDef io fill:#f3f3f3,stroke:#666666,stroke-width:1px,color:#1a1a1a;
 
-    class LatentRouter,OneHot,Mix router;
+    class Router,OneHot,Mix router;
     class ChartIdx,Zgeo,Ztex,TanhGeo,TanhTex,TexRes residual;
     class ChartProj,ChartGate,Render,Skip,AddSkip,AddTex decoder;
     class Out io;
@@ -1710,45 +1658,60 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from fragile.core.layers.atlas import _resolve_bundle_params
+from fragile.core.layers.atlas import CovariantChartRouter, _resolve_bundle_params
 from fragile.core.layers.primitives import NormGatedGELU, SpectralLinear
 
 
 class PrimitiveTopologicalDecoder(nn.Module):
-    """
-    The inverse atlas (gauge-covariant primitives).
-    Decodes chart-local geometry back to the global observation space.
-    Can infer routing from geometry when chart indices are absent.
-    """
+    """Topological decoder using gauge-covariant primitives."""
 
     def __init__(
         self,
-        latent_dim: int,
-        hidden_dim: int,
-        num_charts: int,
-        output_dim: int,
+        latent_dim: int = 2,
+        hidden_dim: int = 32,
+        num_charts: int = 3,
+        output_dim: int = 2,
         bundle_size: int | None = None,
+        covariant_attn: bool = True,
+        covariant_attn_tensorization: str = "sum",
+        covariant_attn_rank: int = 8,
+        covariant_attn_tau_min: float = 1e-2,
+        covariant_attn_denom_min: float = 1e-3,
+        covariant_attn_use_transport: bool = True,
+        covariant_attn_transport_eps: float = 1e-3,
     ) -> None:
         super().__init__()
         self.num_charts = num_charts
         self.hidden_dim = hidden_dim
+        self.covariant_attn = covariant_attn
 
         bundle_size, n_bundles = _resolve_bundle_params(hidden_dim, latent_dim, bundle_size)
 
-        # Chart projectors (gauge-covariant per chart)
-        self.chart_projectors = nn.ModuleList(
-            [SpectralLinear(latent_dim, hidden_dim, bias=False) for _ in range(num_charts)]
-        )
+        self.chart_projectors = nn.ModuleList([
+            SpectralLinear(latent_dim, hidden_dim, bias=False) for _ in range(num_charts)
+        ])
         self.chart_gate = NormGatedGELU(bundle_size=bundle_size, n_bundles=n_bundles)
 
-        # Inverse router (dreaming mode)
-        self.latent_router = SpectralLinear(latent_dim, num_charts, bias=True)
+        if covariant_attn:
+            self.cov_router = CovariantChartRouter(
+                latent_dim=latent_dim,
+                key_dim=hidden_dim,
+                num_charts=num_charts,
+                feature_dim=None,
+                tensorization=covariant_attn_tensorization,
+                rank=covariant_attn_rank,
+                tau_min=covariant_attn_tau_min,
+                tau_denom_min=covariant_attn_denom_min,
+                use_transport=covariant_attn_use_transport,
+                transport_eps=covariant_attn_transport_eps,
+            )
+            self.latent_router = None
+        else:
+            self.latent_router = SpectralLinear(latent_dim, num_charts, bias=True)
 
-        # Texture residual head (added at output)
         self.tex_residual = SpectralLinear(latent_dim, output_dim, bias=True)
         self.tex_residual_scale = nn.Parameter(torch.tensor(0.1))
 
-        # Shared renderer
         self.renderer = nn.Sequential(
             SpectralLinear(hidden_dim, hidden_dim, bias=True),
             NormGatedGELU(bundle_size=bundle_size, n_bundles=n_bundles),
@@ -1761,40 +1724,39 @@ class PrimitiveTopologicalDecoder(nn.Module):
     def forward(
         self,
         z_geo: torch.Tensor,
-        z_tex: torch.Tensor,
+        z_tex: torch.Tensor | None = None,
         chart_index: torch.Tensor | None = None,
-    ) -> torch.Tensor:
-        """
-        Args:
-            z_geo: [B, D] geometric content (e_k + z_n)
-            z_tex: [B, D] texture residual
-            chart_index: [B] optional chart IDs (hard routing)
-        """
+    ) -> tuple[torch.Tensor, torch.Tensor]:
+        """Decode from latent geometry."""
         z_geo = torch.tanh(z_geo)
         if chart_index is not None:
-            router_weights = F.one_hot(chart_index, num_classes=self.num_charts).float()
+            router_weights = F.one_hot(
+                chart_index, num_classes=self.num_charts
+            ).float()  # [B, N_c]
+        elif self.covariant_attn:
+            router_weights, _ = self.cov_router(z_geo)
         else:
             logits = self.latent_router(z_geo)
             router_weights = F.softmax(logits, dim=-1)
 
-        batch = z_geo.shape[0]
-        h_stack = torch.stack([proj(z_geo) for proj in self.chart_projectors], dim=1)  # [B, N_c, H]
+        h_stack = torch.stack(
+            [proj(z_geo) for proj in self.chart_projectors], dim=1
+        )  # [B, N_c, H]
         h_stack = self.chart_gate(h_stack.view(-1, self.hidden_dim)).view(
-            batch, self.num_charts, self.hidden_dim
+            z_geo.shape[0], self.num_charts, self.hidden_dim
         )
         h_global = (h_stack * router_weights.unsqueeze(-1)).sum(dim=1)  # [B, H]
 
         x_hat = self.renderer(h_global) + self.render_skip(h_global)
         if z_tex is not None:
             z_tex = torch.tanh(z_tex)
-            x_hat = x_hat + self.tex_residual_scale * self.tex_residual(z_tex)
-
-        return x_hat
+            x_hat += self.tex_residual_scale * self.tex_residual(z_tex)
+        return x_hat, router_weights
 ```
 
 **Routing modes:**
 - **Discrete planning:** provide `chart_index`, use one-hot hard routing.
-- **Continuous generation:** omit `chart_index`, infer weights from `z_geo` via the inverse router.
+- **Continuous generation:** omit `chart_index`, infer weights from `z_geo` via `CovariantChartRouter` (or `latent_router` when `covariant_attn=False`).
 
 **Consistency constraint (optional):**
 
@@ -1959,7 +1921,7 @@ The hyperbolic geometry captures this naturally. Moving between rooms (changing 
 (sec-summary-the-manifold-construction)=
 ### Summary: The Manifold Construction
 
-The Attentive Atlas ({ref}`Section 7.8 <sec-tier-the-attentive-atlas>`) and the Disentangled VQ-VAE ({ref}`Section 9 <sec-the-disentangled-variational-architecture-hierarchical-latent-separation>`) jointly construct a latent manifold $\mathcal{Z}$ with the following geometric properties:
+The Attentive Atlas ({ref}`Section 7.8 <sec-tier-the-attentive-atlas>`) and the TopoEncoder ({ref}`Section 9 <sec-the-disentangled-variational-architecture-hierarchical-latent-separation>`) jointly construct a latent manifold $\mathcal{Z}$ with the following geometric properties:
 
 1. **Global Topology:** A tubular neighborhood of a simplicial tree.
 2. **Global Geometry:** Coarsely hyperbolic ($0$-hyperbolic at the discrete level), corresponding to hierarchical information structure.
@@ -2199,6 +2161,8 @@ import torch
 import torch.nn as nn
 from typing import List, Tuple
 
+from fragile.core.layers.atlas import PrimitiveAttentiveAtlasEncoder, PrimitiveTopologicalDecoder
+
 class StackedTopoEncoder(nn.Module):
     """Deep TopoEncoder stack implementing RG flow.
 
@@ -2221,9 +2185,9 @@ class StackedTopoEncoder(nn.Module):
         self.num_blocks = num_blocks
         self.eps = eps
 
-        # Each block is an AttentiveAtlasEncoder ({ref}`Section 7.8 <sec-tier-the-attentive-atlas>`)
+        # Each block is a PrimitiveAttentiveAtlasEncoder ({ref}`Section 7.8 <sec-tier-the-attentive-atlas>`)
         self.encoders = nn.ModuleList([
-            AttentiveAtlasEncoder(
+            PrimitiveAttentiveAtlasEncoder(
                 input_dim=input_dim if i == 0 else latent_dim,
                 hidden_dim=hidden_dim,
                 latent_dim=latent_dim,
@@ -2235,7 +2199,7 @@ class StackedTopoEncoder(nn.Module):
 
         # Corresponding decoders ({ref}`Section 7.10 <sec-decoder-architecture-overview-topological-decoder>`)
         self.decoders = nn.ModuleList([
-            TopologicalDecoder(
+            PrimitiveTopologicalDecoder(
                 latent_dim=latent_dim,
                 num_charts=num_charts,
                 output_dim=input_dim if i == 0 else latent_dim,
@@ -2261,11 +2225,21 @@ class StackedTopoEncoder(nn.Module):
 
         for ell in range(self.num_blocks):
             # 1. Encode: extract structure at this scale
-            K_chart, K_code, z_n, z_tex, router_weights, z_geo, vq_loss, _ = \
-                self.encoders[ell](x_current)
+            (
+                K_chart,
+                K_code,
+                z_n,
+                z_tex,
+                router_weights,
+                z_geo,
+                vq_loss,
+                _indices_stack,
+                _z_n_all_charts,
+                _c_bar,
+            ) = self.encoders[ell](x_current)
 
             # 2. Decode: reconstruct explained signal
-            x_hat = self.decoders[ell](z_geo, z_tex, K_chart)
+            x_hat, _ = self.decoders[ell](z_geo, z_tex, K_chart)
 
             # 3. Compute residual (texture at this scale)
             residual = x_current - x_hat
@@ -2743,45 +2717,51 @@ def compute_jump_consistency_loss(
 ```
 
 (sec-integration-with-attentiveatlasencoder)=
-### Integration with AttentiveAtlasEncoder
+### Integration with PrimitiveAttentiveAtlasEncoder
 
 The `FactorizedJumpOperator` integrates with the encoder ({ref}`Section 7.8 <sec-tier-the-attentive-atlas>`) as follows:
 
 ```python
-class AttentiveAtlasEncoderWithJumps(nn.Module):
-    """AttentiveAtlasEncoder extended with learnable chart transitions."""
+class PrimitiveAtlasEncoderWithJumps(nn.Module):
+    """PrimitiveAttentiveAtlasEncoder extended with learnable chart transitions."""
 
     def __init__(self, ..., global_rank: int = 8):
         super().__init__()
-        self.encoder = AttentiveAtlasEncoder(...)
+        self.encoder = PrimitiveAttentiveAtlasEncoder(...)
         self.jump_op = FactorizedJumpOperator(
             num_charts=self.encoder.num_charts,
-            nuisance_dim=self.encoder.nuisance_dim,
+            latent_dim=self.encoder.latent_dim,
             global_rank=global_rank,
         )
 
     def forward(self, x):
         # Standard encoding
-        K_chart, K_code, z_n, z_tex, router_weights, z_geo, vq_loss, _ = \
-            self.encoder(x)
+        (
+            K_chart,
+            K_code,
+            z_n,
+            z_tex,
+            router_weights,
+            z_geo,
+            vq_loss,
+            _indices_stack,
+            z_n_all_charts,
+            _c_bar,
+        ) = self.encoder(x)
 
-        # Compute per-chart nuisance coordinates for overlap loss
-        z_n_by_chart = self.encoder.compute_all_chart_encodings(x)
+        return K_chart, K_code, z_n, z_tex, router_weights, z_geo, vq_loss, z_n_all_charts
 
-        return K_chart, K_code, z_n, z_tex, router_weights, z_geo, vq_loss, z_n_by_chart
-
-    def compute_losses(self, x, x_recon, z_n_by_chart, router_weights):
+    def compute_losses(self, x, x_recon, z_n_all_charts, router_weights):
         # ... standard losses ...
 
         # Jump consistency loss
-        jump_loss, jump_info = compute_jump_consistency_loss(
-            z_n_by_chart, router_weights, self.jump_op
+        jump_loss = compute_jump_consistency_loss(
+            self.jump_op, z_n_all_charts, router_weights
         )
 
         return {
             # ... other losses ...
             'jump_consistency': jump_loss,
-            'jump_info': jump_info,
         }
 ```
 

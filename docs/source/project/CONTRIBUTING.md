@@ -49,7 +49,7 @@ To set up `fragile` for local development:
 4. When you're done making changes run all the checks and docs builder with one command:
 
     ```bash
-    rye run all
+    uv run hatch run lint:all && uv run hatch run docs:build && uv run hatch run test:test
     ```
 
 5. Commit your changes and push your branch to GitHub:
@@ -68,8 +68,7 @@ If you need some code review or feedback while you're developing the code just m
 
 For merging, you should:
 
-1. Include passing tests (run `hatch test`).
+1. Include passing tests (run `uv run hatch run test:test`).
 2. Update documentation when there's new API, functionality etc.
 3. Add a note to `CHANGELOG.md` about the changes.
 4. Add yourself to `AUTHORS.md`.
-

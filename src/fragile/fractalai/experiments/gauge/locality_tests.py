@@ -92,9 +92,7 @@ def test_spatial_correlation(
             - "verdict": "local" or "mean-field"
 
     Example:
-        >>> results = test_spatial_correlation(
-        ...     positions, velocities, rewards, companions, alive, rho=0.05
-        ... )
+        >>> results = test_spatial_correlation(positions, velocities, rewards, companions, alive, rho=0.05)
         >>> print(f"Correlation length: ξ = {results['xi']:.4f}")
         >>> print(f"Expected: ξ ≈ ρ = {0.05:.4f}")
     """
@@ -177,9 +175,7 @@ def test_field_gradients(
             - "verdict": "local" or "mean-field"
 
     Example:
-        >>> results = test_field_gradients(
-        ...     positions, velocities, rewards, companions, alive, rho=0.05
-        ... )
+        >>> results = test_field_gradients(positions, velocities, rewards, companions, alive, rho=0.05)
         >>> print(f"|∇d'|_avg = {results['mean']:.4f}")
         >>> print(f"Expected: ~ {results['expected_scale']:.4f}")
     """
@@ -363,9 +359,7 @@ def run_all_locality_tests(
         Dictionary with keys "test_1a", "test_1b", "test_1c", "summary"
 
     Example:
-        >>> results = run_all_locality_tests(
-        ...     positions, velocities, rewards, companions, alive, rho=0.05
-        ... )
+        >>> results = run_all_locality_tests(positions, velocities, rewards, companions, alive, rho=0.05)
         >>> print(f"Test 1A: {results['test_1a']['verdict']}")
         >>> print(f"Test 1B: {results['test_1b']['verdict']}")
         >>> print(f"Test 1C: {results['test_1c']['verdict']}")

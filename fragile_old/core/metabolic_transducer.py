@@ -15,14 +15,13 @@ References:
     - Friston (2010): "The free-energy principle: a unified brain theory?"
 """
 
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
-from torch import Tensor
-from dataclasses import dataclass, field
-from typing import Tuple, Dict, Optional, Callable
+from dataclasses import dataclass
 from enum import Enum
 import math
+from typing import Callable
+
+import torch
+from torch import nn, Tensor
 
 
 # =============================================================================
@@ -40,6 +39,7 @@ LN2 = math.log(2)
 # Section 36.1: The Thermodynamics of Information Harvesting
 # =============================================================================
 
+
 @dataclass
 class ThermodynamicConfig:
     """
@@ -47,6 +47,7 @@ class ThermodynamicConfig:
 
     All parameters have physical units as specified in Section 36.
     """
+
     # Environmental temperature (Kelvin) - T_env
     T_env: float = 300.0
 
@@ -87,8 +88,8 @@ class ThermodynamicConfig:
 
 def reward_flux(
     reward_1form: Tensor,  # R(z): reward 1-form at current state
-    velocity: Tensor,       # v_t = dz/dt: velocity in latent space
-    metric: Tensor          # G: metric tensor
+    velocity: Tensor,  # v_t = dz/dt: velocity in latent space
+    metric: Tensor,  # G: metric tensor
 ) -> Tensor:
     """
     Definition 36.1.1: The Reward Flux
@@ -110,18 +111,18 @@ def reward_flux(
     # Inner product ⟨R, v⟩_G = R^T G v
     if metric.dim() == 2:
         # Shared metric across batch
-        Gv = torch.einsum('ij,bj->bi', metric, velocity)
+        Gv = torch.einsum("ij,bj->bi", metric, velocity)
     else:
         # Per-sample metric
-        Gv = torch.einsum('bij,bj->bi', metric, velocity)
+        Gv = torch.einsum("bij,bj->bi", metric, velocity)
 
-    return torch.einsum('bi,bi->b', reward_1form, Gv)
+    return torch.einsum("bi,bi->b", reward_1form, Gv)
 
 
 def information_utility(
     reward: Tensor,
-    entropy_reward: Optional[Tensor] = None,
-    entropy_reward_given_state: Optional[Tensor] = None
+    entropy_reward: Tensor | None = None,
+    entropy_reward_given_state: Tensor | None = None,
 ) -> Tensor:
     """
     Definition 36.1.2: Information Utility
@@ -146,14 +147,13 @@ def information_utility(
     if entropy_reward is not None and entropy_reward_given_state is not None:
         # Full mutual information computation
         return entropy_reward - entropy_reward_given_state
-    else:
-        # Simplified approximation: I_util ≈ |r_t|
-        return torch.abs(reward)
+    # Simplified approximation: I_util ≈ |r_t|
+    return torch.abs(reward)
 
 
 def szilard_work_bound(
     mutual_information: Tensor,  # I: mutual information in nats
-    T_env: float                  # T_env: environmental temperature (K)
+    T_env: float,  # T_env: environmental temperature (K)
 ) -> Tensor:
     """
     Axiom 36.1.3: The Szilard Correspondence (Information-Work Duality)
@@ -177,9 +177,9 @@ def szilard_work_bound(
 
 
 def transducer_bound(
-    I_util: Tensor,    # I_util(r_t): information utility
-    T_env: float,      # T_env: environmental temperature
-    k_B: float = K_BOLTZMANN
+    I_util: Tensor,  # I_util(r_t): information utility
+    T_env: float,  # T_env: environmental temperature
+    k_B: float = K_BOLTZMANN,
 ) -> Tensor:
     """
     Theorem 36.1.4: The Transducer Bound
@@ -218,14 +218,10 @@ class MetabolicTransducer(nn.Module):
         self.config = config
 
         # Store as buffers for device compatibility
-        self.register_buffer('k_B_T_env', torch.tensor(config.k_B_T_env))
-        self.register_buffer('eta', torch.tensor(config.eta))
+        self.register_buffer("k_B_T_env", torch.tensor(config.k_B_T_env))
+        self.register_buffer("eta", torch.tensor(config.eta))
 
-    def forward(
-        self,
-        reward: Tensor,
-        I_util: Optional[Tensor] = None
-    ) -> Tensor:
+    def forward(self, reward: Tensor, I_util: Tensor | None = None) -> Tensor:
         """
         Compute transduced energy from reward.
 
@@ -266,6 +262,7 @@ class MetabolicTransducer(nn.Module):
 # Section 36.2: The Internal Battery and Autopoietic Dynamics
 # =============================================================================
 
+
 class InternalBattery(nn.Module):
     """
     Definition 36.2.1: The Internal Battery
@@ -286,10 +283,10 @@ class InternalBattery(nn.Module):
         self.config = config
 
         # Battery state B(t)
-        self.register_buffer('B', torch.tensor(config.B_0))
+        self.register_buffer("B", torch.tensor(config.B_0))
 
         # Death flag
-        self.register_buffer('is_dead', torch.tensor(False))
+        self.register_buffer("is_dead", torch.tensor(False))
 
         # History for integral computations
         self.B_history: list = []
@@ -306,12 +303,12 @@ class InternalBattery(nn.Module):
 
 
 def battery_dynamics(
-    B: Tensor,           # B(t): current battery level
-    E_harvest: Tensor,   # T_harvest(r_t): transduced energy (income)
-    M_dot: Tensor,       # Ṁ(t): metabolic cost
-    gamma_leak: float    # γ_leak: passive dissipation rate
+    B: Tensor,  # B(t): current battery level
+    E_harvest: Tensor,  # T_harvest(r_t): transduced energy (income)
+    M_dot: Tensor,  # Ṁ(t): metabolic cost
+    gamma_leak: float,  # γ_leak: passive dissipation rate
 ) -> Tensor:
-    """
+    r"""
     Axiom 36.2.2: Energy Conservation (First Law)
 
     dB/dt = T_harvest(r_t) - Ṁ(t) - γ_leak · B(t)
@@ -334,10 +331,10 @@ def battery_dynamics(
 
 def autopoietic_inequality(
     harvest_integral: Tensor,  # ∫₀^τ T_harvest(r_t) dt
-    cost_integral: Tensor,     # ∫₀^τ Ṁ(t) dt
-    B_integral: Tensor,        # ∫₀^τ B(t) dt
-    B_0: float,                # Initial battery
-    gamma_leak: float          # Passive leak rate
+    cost_integral: Tensor,  # ∫₀^τ Ṁ(t) dt
+    B_integral: Tensor,  # ∫₀^τ B(t) dt
+    B_0: float,  # Initial battery
+    gamma_leak: float,  # Passive leak rate
 ) -> Tensor:
     """
     Theorem 36.2.3: The Autopoietic Inequality
@@ -365,12 +362,12 @@ def autopoietic_inequality(
 
 
 def net_harvest_rate_condition(
-    harvest_mean: Tensor,   # ⟨T⟩_τ: time-averaged harvest
-    cost_mean: Tensor,      # ⟨Ṁ⟩_τ: time-averaged cost
-    B_mean: Tensor,         # ⟨B⟩_τ: time-averaged battery
-    B_0: float,             # Initial battery
-    tau: float,             # Time horizon
-    gamma_leak: float       # Passive leak rate
+    harvest_mean: Tensor,  # ⟨T⟩_τ: time-averaged harvest
+    cost_mean: Tensor,  # ⟨Ṁ⟩_τ: time-averaged cost
+    B_mean: Tensor,  # ⟨B⟩_τ: time-averaged battery
+    B_0: float,  # Initial battery
+    tau: float,  # Time horizon
+    gamma_leak: float,  # Passive leak rate
 ) -> Tensor:
     """
     Equivalent form of Theorem 36.2.3:
@@ -384,9 +381,9 @@ def net_harvest_rate_condition(
 
 def survival_objective(
     harvest_sequence: Tensor,  # T_harvest(r_t) for t = 0, 1, ..., T
-    cost_sequence: Tensor,     # Ṁ(t) for t = 0, 1, ..., T
-    gamma_leak: float,         # Passive leak rate
-    dt: float = 1.0            # Time step
+    cost_sequence: Tensor,  # Ṁ(t) for t = 0, 1, ..., T
+    gamma_leak: float,  # Passive leak rate
+    dt: float = 1.0,  # Time step
 ) -> Tensor:
     """
     Corollary 36.2.4: The Survival Objective
@@ -426,9 +423,10 @@ def survival_objective(
 # Section 36.3: The Fading Metric - Energy-Dependent Geometry
 # =============================================================================
 
+
 def information_maintenance_cost(
-    T_c: float,        # T_c: cognitive temperature
-    I_F: Tensor        # I_F: Fisher Information
+    T_c: float,  # T_c: cognitive temperature
+    I_F: Tensor,  # I_F: Fisher Information
 ) -> Tensor:
     """
     Theorem 36.3.1: The Information-Maintenance Cost
@@ -505,8 +503,8 @@ class FadingMetric(nn.Module):
 
     def forward(
         self,
-        G: Tensor,   # Full-capacity metric G_ij(z)
-        B: Tensor    # Current battery level B(t)
+        G: Tensor,  # Full-capacity metric G_ij(z)
+        B: Tensor,  # Current battery level B(t)
     ) -> Tensor:
         """
         Compute effective (faded) metric.
@@ -529,11 +527,10 @@ class FadingMetric(nn.Module):
         # Scale metric
         if f.dim() == 0:
             return f * G
-        else:
-            # Broadcast f over metric dimensions
-            while f.dim() < G.dim():
-                f = f.unsqueeze(-1)
-            return f * G
+        # Broadcast f over metric dimensions
+        while f.dim() < G.dim():
+            f = f.unsqueeze(-1)
+        return f * G
 
     def get_scaling(self, B: Tensor) -> Tensor:
         """Get the current metric scaling factor f(B/B_crit)."""
@@ -541,9 +538,9 @@ class FadingMetric(nn.Module):
 
 
 def effective_geodesic_distance(
-    d_G: Tensor,      # d_G(z, z'): geodesic distance in full metric
-    B: Tensor,        # B(t): battery level
-    B_crit: float     # B_crit: critical energy
+    d_G: Tensor,  # d_G(z, z'): geodesic distance in full metric
+    B: Tensor,  # B(t): battery level
+    B_crit: float,  # B_crit: critical energy
 ) -> Tensor:
     """
     Corollary 36.3.3, Item 1: Resolution Loss
@@ -565,9 +562,9 @@ def effective_geodesic_distance(
 
 
 def effective_causal_information_bound(
-    I_max_full: Tensor,   # I_max = Area/(4 ℓ_L²): full capacity
-    B: Tensor,            # B(t): battery level
-    B_crit: float         # B_crit: critical energy
+    I_max_full: Tensor,  # I_max = Area/(4 ℓ_L²): full capacity
+    B: Tensor,  # B(t): battery level
+    B_crit: float,  # B_crit: critical energy
 ) -> Tensor:
     """
     Corollary 36.3.3, Item 3: Causal Dissolution
@@ -591,9 +588,9 @@ def effective_causal_information_bound(
 
 
 def dynamics_snr(
-    velocity: Tensor,     # v: velocity in latent space
-    G_eff: Tensor,        # G_eff: effective metric
-    T_c: float            # T_c: cognitive temperature
+    velocity: Tensor,  # v: velocity in latent space
+    G_eff: Tensor,  # G_eff: effective metric
+    T_c: float,  # T_c: cognitive temperature
 ) -> Tensor:
     """
     Corollary 36.3.4: SNR of Internal Dynamics
@@ -614,20 +611,16 @@ def dynamics_snr(
     """
     # ||v||²_{G_eff} = v^T G_eff v
     if G_eff.dim() == 2:
-        Gv = torch.einsum('ij,bj->bi', G_eff, velocity)
+        Gv = torch.einsum("ij,bj->bi", G_eff, velocity)
     else:
-        Gv = torch.einsum('bij,bj->bi', G_eff, velocity)
+        Gv = torch.einsum("bij,bj->bi", G_eff, velocity)
 
-    norm_sq = torch.einsum('bi,bi->b', velocity, Gv)
+    norm_sq = torch.einsum("bi,bi->b", velocity, Gv)
 
     return norm_sq / (2 * T_c)
 
 
-def is_hallucinating(
-    B: Tensor,
-    B_crit: float,
-    threshold: float = 0.1
-) -> Tensor:
+def is_hallucinating(B: Tensor, B_crit: float, threshold: float = 0.1) -> Tensor:
     """
     Check if agent is in starvation-hallucination regime.
 
@@ -650,12 +643,13 @@ def is_hallucinating(
 # Section 36.4: Homeostatic Control - The Battery Potential
 # =============================================================================
 
+
 def homeostatic_potential(
-    z: Tensor,                    # z: current state in latent space
-    B: Tensor,                    # B(t): battery level
-    food_region_mask: Tensor,     # 1[z ∈ Z_food]: indicator for food region
-    lambda_surv: float,           # λ_surv: survival weight
-    epsilon: float = 1e-3         # ε: regularization
+    z: Tensor,  # z: current state in latent space
+    B: Tensor,  # B(t): battery level
+    food_region_mask: Tensor,  # 1[z ∈ Z_food]: indicator for food region
+    lambda_surv: float,  # λ_surv: survival weight
+    epsilon: float = 1e-3,  # ε: regularization
 ) -> Tensor:
     """
     Definition 36.4.1: The Homeostatic Potential
@@ -684,8 +678,8 @@ def homeostatic_potential(
 
 
 def total_potential(
-    Phi_task: Tensor,    # Φ_task(z): task potential
-    Phi_homeo: Tensor    # Φ_homeo(z, B): homeostatic potential
+    Phi_task: Tensor,  # Φ_task(z): task potential
+    Phi_homeo: Tensor,  # Φ_homeo(z, B): homeostatic potential
 ) -> Tensor:
     """
     Theorem 36.4.2: The Augmented Value Equation
@@ -713,8 +707,8 @@ def total_potential(
 
 
 def priority_inversion_ratio(
-    Phi_task: Tensor,    # Φ_task: task potential
-    Phi_homeo: Tensor    # Φ_homeo: homeostatic potential
+    Phi_task: Tensor,  # Φ_task: task potential
+    Phi_homeo: Tensor,  # Φ_homeo: homeostatic potential
 ) -> Tensor:
     """
     Corollary 36.4.3: Priority Inversion at Low Battery
@@ -742,6 +736,7 @@ def priority_inversion_ratio(
 # Section 36.5: Thermal Management and the Carnot Bound
 # =============================================================================
 
+
 def carnot_efficiency(T_c: Tensor, T_env: float) -> Tensor:
     """
     Theorem 36.5.1: The Carnot Bound on Transduction
@@ -766,8 +761,8 @@ def carnot_efficiency(T_c: Tensor, T_env: float) -> Tensor:
 
 def waste_heat_flux(
     E_harvest_gross: Tensor,  # T_gross(r_t): gross transduction
-    M_dot: Tensor,            # Ṁ(t): metabolic cost
-    eta: Tensor               # η: transduction efficiency
+    M_dot: Tensor,  # Ṁ(t): metabolic cost
+    eta: Tensor,  # η: transduction efficiency
 ) -> Tensor:
     """
     Definition 36.5.2: The Waste Heat Flux
@@ -791,8 +786,8 @@ def waste_heat_flux(
 
 
 def check_thermal_runaway(
-    Q_waste: Tensor,       # Q̇_waste: waste heat flux
-    Q_radiate_max: float   # Q̇_radiate: maximum dissipation rate
+    Q_waste: Tensor,  # Q̇_waste: waste heat flux
+    Q_radiate_max: float,  # Q̇_radiate: maximum dissipation rate
 ) -> Tensor:
     """
     Corollary 36.5.3: The Thermal Runaway Condition
@@ -843,7 +838,7 @@ class ThermalDynamics(nn.Module):
         T_c_init: float,
         Q_radiate_max: float,
         thermal_mass: float = 1.0,  # Thermal inertia
-        cooling_coefficient: float = 0.1  # Heat transfer coefficient
+        cooling_coefficient: float = 0.1,  # Heat transfer coefficient
     ):
         super().__init__()
         self.T_env = T_env
@@ -851,7 +846,7 @@ class ThermalDynamics(nn.Module):
         self.thermal_mass = thermal_mass
         self.cooling_coefficient = cooling_coefficient
 
-        self.register_buffer('T_c', torch.tensor(T_c_init))
+        self.register_buffer("T_c", torch.tensor(T_c_init))
 
     def compute_radiation(self, T_c: Tensor) -> Tensor:
         """
@@ -898,8 +893,10 @@ class ThermalDynamics(nn.Module):
 # Section 36.6 & 36.7: Complete Implementation with Diagnostics
 # =============================================================================
 
+
 class DiagnosticResult(Enum):
     """Diagnostic node status."""
+
     HEALTHY = "healthy"
     WARNING = "warning"
     CRITICAL = "critical"
@@ -913,12 +910,13 @@ class AutopoiesisDiagnostics:
 
     Monitoring autopoietic viability.
     """
+
     # Node 67: AutopoiesisCheck
     alive: bool = True
     battery_level: float = 0.0
 
     # Node 68: HarvestEfficiencyCheck
-    harvest_efficiency: float = float('inf')  # ⟨T⟩/⟨Ṁ⟩
+    harvest_efficiency: float = float("inf")  # ⟨T⟩/⟨Ṁ⟩
     is_sustainable: bool = True
 
     # Node 69: ThermalRunawayCheck
@@ -964,35 +962,30 @@ class MetabolicSystem(nn.Module):
         self.transducer = MetabolicTransducer(config)
         self.fading_metric = FadingMetric(config.B_crit)
         self.thermal = ThermalDynamics(
-            T_env=config.T_env,
-            T_c_init=config.T_c,
-            Q_radiate_max=config.Q_radiate_max
+            T_env=config.T_env, T_c_init=config.T_c, Q_radiate_max=config.Q_radiate_max
         )
 
         # State variables
-        self.register_buffer('battery', torch.tensor(config.B_0))
-        self.register_buffer('is_dead', torch.tensor(False))
+        self.register_buffer("battery", torch.tensor(config.B_0))
+        self.register_buffer("is_dead", torch.tensor(False))
 
         # Running statistics for diagnostics
-        self.register_buffer('harvest_ema', torch.tensor(0.0))
-        self.register_buffer('cost_ema', torch.tensor(0.0))
+        self.register_buffer("harvest_ema", torch.tensor(0.0))
+        self.register_buffer("cost_ema", torch.tensor(0.0))
         self.ema_decay = 0.99
 
         # History for analysis
-        self.history: Dict[str, list] = {
-            'battery': [],
-            'harvest': [],
-            'cost': [],
-            'T_c': [],
-            'metric_scaling': []
+        self.history: dict[str, list] = {
+            "battery": [],
+            "harvest": [],
+            "cost": [],
+            "T_c": [],
+            "metric_scaling": [],
         }
 
     def step(
-        self,
-        reward: Tensor,
-        metabolic_cost: Tensor,
-        food_region_mask: Optional[Tensor] = None
-    ) -> Tuple[Tensor, AutopoiesisDiagnostics]:
+        self, reward: Tensor, metabolic_cost: Tensor, food_region_mask: Tensor | None = None
+    ) -> tuple[Tensor, AutopoiesisDiagnostics]:
         """
         Execute one step of the thermodynamic loop.
 
@@ -1012,9 +1005,7 @@ class MetabolicSystem(nn.Module):
             diagnostics: AutopoiesisDiagnostics with all node values
         """
         if self.is_dead:
-            return torch.tensor(0.0), AutopoiesisDiagnostics(
-                alive=False, battery_level=0.0
-            )
+            return torch.tensor(0.0), AutopoiesisDiagnostics(alive=False, battery_level=0.0)
 
         # Ensure tensor types
         if not isinstance(reward, Tensor):
@@ -1042,19 +1033,10 @@ class MetabolicSystem(nn.Module):
 
         # === Section 36.2: Battery Dynamics ===
         # dB/dt = T_harvest - Ṁ - γ_leak · B
-        dB_dt = battery_dynamics(
-            self.battery,
-            E_harvest,
-            metabolic_cost,
-            self.config.gamma_leak
-        )
+        dB_dt = battery_dynamics(self.battery, E_harvest, metabolic_cost, self.config.gamma_leak)
 
         # Update battery with Euler integration
-        new_battery = torch.clamp(
-            self.battery + dB_dt,
-            min=0.0,
-            max=self.config.B_max
-        )
+        new_battery = torch.clamp(self.battery + dB_dt, min=0.0, max=self.config.B_max)
         self.battery.copy_(new_battery)
 
         # === Check death condition ===
@@ -1063,13 +1045,9 @@ class MetabolicSystem(nn.Module):
 
         # === Update EMAs for diagnostics ===
         self.harvest_ema.copy_(
-            self.ema_decay * self.harvest_ema +
-            (1 - self.ema_decay) * E_harvest
+            self.ema_decay * self.harvest_ema + (1 - self.ema_decay) * E_harvest
         )
-        self.cost_ema.copy_(
-            self.ema_decay * self.cost_ema +
-            (1 - self.ema_decay) * metabolic_cost
-        )
+        self.cost_ema.copy_(self.ema_decay * self.cost_ema + (1 - self.ema_decay) * metabolic_cost)
 
         # === Section 36.3: Metric Scaling ===
         metric_scaling = self.fading_metric.get_scaling(self.battery)
@@ -1083,9 +1061,7 @@ class MetabolicSystem(nn.Module):
         return dB_dt, diagnostics
 
     def _compute_diagnostics(
-        self,
-        metric_scaling: Tensor,
-        Q_waste: Tensor
+        self, metric_scaling: Tensor, Q_waste: Tensor
     ) -> AutopoiesisDiagnostics:
         """Compute all diagnostic nodes (67-70)."""
 
@@ -1096,14 +1072,12 @@ class MetabolicSystem(nn.Module):
         if self.cost_ema > 1e-6:
             efficiency = (self.harvest_ema / self.cost_ema).item()
         else:
-            efficiency = float('inf')
+            efficiency = float("inf")
         is_sustainable = efficiency > 1.0
 
         # Node 69: ThermalRunawayCheck - T_c < T_env
         t_margin = thermal_margin(self.thermal.T_c, self.config.T_env).item()
-        thermal_ok = not check_thermal_runaway(
-            Q_waste, self.config.Q_radiate_max
-        ).item()
+        thermal_ok = not check_thermal_runaway(Q_waste, self.config.Q_radiate_max).item()
 
         # Node 70: MetricFadingCheck - f(B/B_crit) > ε_fade
         scaling = metric_scaling.item() if isinstance(metric_scaling, Tensor) else metric_scaling
@@ -1117,21 +1091,20 @@ class MetabolicSystem(nn.Module):
             thermal_margin=t_margin,
             thermal_stable=thermal_ok,
             metric_scaling=scaling,
-            is_hallucinating=hallucinating
+            is_hallucinating=hallucinating,
         )
 
-    def _update_history(
-        self,
-        E_harvest: Tensor,
-        metabolic_cost: Tensor,
-        metric_scaling: Tensor
-    ):
+    def _update_history(self, E_harvest: Tensor, metabolic_cost: Tensor, metric_scaling: Tensor):
         """Update history buffers."""
-        self.history['battery'].append(self.battery.item())
-        self.history['harvest'].append(E_harvest.item() if isinstance(E_harvest, Tensor) else E_harvest)
-        self.history['cost'].append(metabolic_cost.item() if isinstance(metabolic_cost, Tensor) else metabolic_cost)
-        self.history['T_c'].append(self.thermal.T_c.item())
-        self.history['metric_scaling'].append(
+        self.history["battery"].append(self.battery.item())
+        self.history["harvest"].append(
+            E_harvest.item() if isinstance(E_harvest, Tensor) else E_harvest
+        )
+        self.history["cost"].append(
+            metabolic_cost.item() if isinstance(metabolic_cost, Tensor) else metabolic_cost
+        )
+        self.history["T_c"].append(self.thermal.T_c.item())
+        self.history["metric_scaling"].append(
             metric_scaling.item() if isinstance(metric_scaling, Tensor) else metric_scaling
         )
 
@@ -1143,20 +1116,14 @@ class MetabolicSystem(nn.Module):
         """
         return self.fading_metric(G, self.battery)
 
-    def get_homeostatic_potential(
-        self,
-        z: Tensor,
-        food_mask: Tensor
-    ) -> Tensor:
+    def get_homeostatic_potential(self, z: Tensor, food_mask: Tensor) -> Tensor:
         """
         Get current homeostatic potential.
 
         Φ_homeo(z, B) = λ_surv / (B + ε) · 1[z ∈ Z_food]
         """
         return homeostatic_potential(
-            z, self.battery, food_mask,
-            self.config.lambda_surv,
-            self.config.epsilon
+            z, self.battery, food_mask, self.config.lambda_surv, self.config.epsilon
         )
 
     def check_autopoietic_inequality(self, tau: int) -> bool:
@@ -1165,19 +1132,19 @@ class MetabolicSystem(nn.Module):
 
         ∫(T - Ṁ) dt > γ_leak ∫B dt - B_0
         """
-        if len(self.history['harvest']) < tau:
+        if len(self.history["harvest"]) < tau:
             return True  # Not enough data
 
-        recent_harvest = sum(self.history['harvest'][-tau:])
-        recent_cost = sum(self.history['cost'][-tau:])
-        recent_B = sum(self.history['battery'][-tau:])
+        recent_harvest = sum(self.history["harvest"][-tau:])
+        recent_cost = sum(self.history["cost"][-tau:])
+        recent_B = sum(self.history["battery"][-tau:])
 
         return autopoietic_inequality(
             torch.tensor(recent_harvest),
             torch.tensor(recent_cost),
             torch.tensor(recent_B),
             self.config.B_0,
-            self.config.gamma_leak
+            self.config.gamma_leak,
         ).item()
 
     def reset(self):
@@ -1194,12 +1161,13 @@ class MetabolicSystem(nn.Module):
 # Utility Functions for Analysis
 # =============================================================================
 
+
 def compute_survival_probability(
     system: MetabolicSystem,
     reward_distribution: Callable[[], Tensor],
     cost_distribution: Callable[[], Tensor],
     horizon: int,
-    n_simulations: int = 1000
+    n_simulations: int = 1000,
 ) -> float:
     """
     Monte Carlo estimation of survival probability.
@@ -1237,10 +1205,10 @@ def compute_survival_probability(
 
 def analyze_phase_diagram(
     config: ThermodynamicConfig,
-    eta_range: Tuple[float, float] = (0.1, 0.9),
-    harvest_rate_range: Tuple[float, float] = (0.5, 2.0),
-    n_points: int = 20
-) -> Dict[str, Tensor]:
+    eta_range: tuple[float, float] = (0.1, 0.9),
+    harvest_rate_range: tuple[float, float] = (0.5, 2.0),
+    n_points: int = 20,
+) -> dict[str, Tensor]:
     """
     Compute phase diagram of autopoietic viability.
 
@@ -1274,11 +1242,11 @@ def analyze_phase_diagram(
             thermal_map[i, j] = 1.0 if Q_waste < config.Q_radiate_max else 0.0
 
     return {
-        'etas': etas,
-        'rates': rates,
-        'survival': survival_map,
-        'thermal': thermal_map,
-        'viable': survival_map * thermal_map  # Both conditions
+        "etas": etas,
+        "rates": rates,
+        "survival": survival_map,
+        "thermal": thermal_map,
+        "viable": survival_map * thermal_map,  # Both conditions
     }
 
 
@@ -1341,9 +1309,9 @@ if __name__ == "__main__":
     config = ThermodynamicConfig()
     system = MetabolicSystem(config)
 
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("Example Simulation")
-    print("="*60)
+    print("=" * 60)
 
     # Simulate 100 steps
     for t in range(100):
@@ -1364,9 +1332,9 @@ if __name__ == "__main__":
             print(f"\nAgent died at step {t}")
             break
 
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("Final State")
-    print("="*60)
+    print("=" * 60)
     print(f"Battery: {system.battery.item():.2f}")
     print(f"Cognitive Temperature: {system.thermal.T_c.item():.1f} K")
     print(f"Autopoietic Inequality (τ=50): {system.check_autopoietic_inequality(50)}")

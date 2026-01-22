@@ -3,26 +3,28 @@
 This script runs key experiments using the existing GasConfig infrastructure.
 """
 
-import torch
-import numpy as np
 import holoviews as hv
+import numpy as np
+import torch
+
 
 # Initialize holoviews extension (required for benchmarks)
-hv.extension('bokeh')
+hv.extension("bokeh")
 
-from fragile.fractalai.experiments.gas_config_panel import GasConfigPanel
-from fragile.fractalai.experiments.gauge.gauge_covariance import (
-    test_gauge_covariance,
-    generate_gauge_covariance_report,
-)
-from fragile.fractalai.experiments.gauge.locality_tests import (
-    test_spatial_correlation,
-    test_field_gradients,
-)
 from fragile.fractalai.convergence_bounds import (
     validate_ellipticity,
     validate_hypocoercivity,
 )
+from fragile.fractalai.experiments.gas_config_panel import GasConfigPanel
+from fragile.fractalai.experiments.gauge.gauge_covariance import (
+    generate_gauge_covariance_report,
+    test_gauge_covariance,
+)
+from fragile.fractalai.experiments.gauge.locality_tests import (
+    test_field_gradients,
+    test_spatial_correlation,
+)
+
 
 print("=" * 80)
 print("FRAGILE GAS EXPERIMENTS - COMPREHENSIVE TEST SUITE")
@@ -91,7 +93,11 @@ for rho in rho_values:
 
     try:
         results = test_gauge_covariance(
-            positions, velocities, rewards, companions, alive,
+            positions,
+            velocities,
+            rewards,
+            companions,
+            alive,
             rho=rho,
             num_trials=10,
         )
@@ -101,12 +107,12 @@ for rho in rho_values:
         print(f"  Verdict: {results['verdict'].upper()}")
         print(f"  Δd' inside:  {results['delta_inside']:.6f}")
         print(f"  Δd' outside: {results['delta_outside']:.6f}")
-        ratio = results['delta_inside'] / (results['delta_outside'] + 1e-10)
+        ratio = results["delta_inside"] / (results["delta_outside"] + 1e-10)
         print(f"  Response ratio (in/out): {ratio:.2f}")
 
-        if results['verdict'] == 'covariant':
+        if results["verdict"] == "covariant":
             print("  ✓ GAUGE COVARIANT - Local gauge theory viable!")
-        elif results['verdict'] == 'invariant':
+        elif results["verdict"] == "invariant":
             print("  ✗ GAUGE INVARIANT - Mean-field interpretation")
         else:
             print("  ? INCONCLUSIVE - Need more data or different parameters")
@@ -147,22 +153,26 @@ for rho_test in rho_test_values:
 
     try:
         corr_results = test_spatial_correlation(
-            positions, velocities, rewards, companions, alive,
+            positions,
+            velocities,
+            rewards,
+            companions,
+            alive,
             rho=rho_test,
         )
 
-        xi = corr_results.get('xi', 0)
-        C0 = corr_results.get('C0', 0)
-        verdict = corr_results.get('verdict', 'unknown')
+        xi = corr_results.get("xi", 0)
+        C0 = corr_results.get("C0", 0)
+        verdict = corr_results.get("verdict", "unknown")
 
         print(f"  Correlation length ξ: {xi:.4f}")
         if rho_test is not None:
             print(f"  Expected ξ ≈ ρ:      {rho_test:.4f}")
-            print(f"  Ratio ξ/ρ:          {xi/rho_test:.2f}")
+            print(f"  Ratio ξ/ρ:          {xi / rho_test:.2f}")
         print(f"  Amplitude C₀:        {C0:.4f}")
         print(f"  Verdict: {verdict.upper()}")
 
-        if verdict == 'local':
+        if verdict == "local":
             print("  ✓ LOCAL FIELDS confirmed")
         else:
             print("  ✗ MEAN-FIELD behavior")
@@ -180,20 +190,24 @@ print()
 
 try:
     grad_results = test_field_gradients(
-        positions, velocities, rewards, companions, alive,
+        positions,
+        velocities,
+        rewards,
+        companions,
+        alive,
         rho=0.15,
     )
 
-    mean_grad = grad_results.get('mean_gradient', 0)
-    max_grad = grad_results.get('max_gradient', 0)
-    verdict = grad_results.get('verdict', 'unknown')
+    mean_grad = grad_results.get("mean_gradient", 0)
+    max_grad = grad_results.get("max_gradient", 0)
+    verdict = grad_results.get("verdict", "unknown")
 
     print(f"  Mean gradient: {mean_grad:.4f}")
     print(f"  Max gradient:  {max_grad:.4f}")
-    print(f"  Expected ~1/ρ: {1/0.15:.4f}")
+    print(f"  Expected ~1/ρ: {1 / 0.15:.4f}")
     print(f"  Verdict: {verdict.upper()}")
 
-    if verdict == 'local':
+    if verdict == "local":
         print("  ✓ SHARP GRADIENTS - Local fields confirmed")
     else:
         print("  → SMOOTH FIELDS - Mean-field behavior")
@@ -215,7 +229,7 @@ print("This condition is CRITICAL for convergence guarantees.")
 print()
 
 # Rastrigin Hessian max eigenvalue
-H_max_rastrigin = 4.0 * (2 * np.pi)**2  # ≈ 157.91
+H_max_rastrigin = 4.0 * (2 * np.pi) ** 2  # ≈ 157.91
 print(f"Rastrigin H_max (estimated): {H_max_rastrigin:.2f}")
 print()
 
@@ -236,7 +250,7 @@ for eps_Sigma in epsilon_Sigma_values:
         if eps_Sigma < 2 * H_max_rastrigin:
             status += " (but close to boundary!)"
     else:
-        c_min_val = c_max_val = float('nan')
+        c_min_val = c_max_val = float("nan")
         status = "✗ DEGENERATE (violates ε_Σ > H_max)"
 
     print(f"  ε_Σ = {eps_Sigma:6.1f}: {status}")
@@ -300,13 +314,13 @@ for step_idx in range(n_recorded):
 best_rewards = np.array(best_rewards)
 mean_rewards = np.array(mean_rewards)
 
-print(f"Convergence Metrics (100 steps):")
+print("Convergence Metrics (100 steps):")
 print("-" * 80)
 print(f"  Initial best reward:  {best_rewards[0]:.6f}")
 print(f"  Final best reward:    {best_rewards[-1]:.6f}")
 print(f"  Improvement:          {best_rewards[-1] - best_rewards[0]:.6f}")
 print()
-print(f"  Global optimum (Rastrigin): 0.0")
+print("  Global optimum (Rastrigin): 0.0")
 print(f"  Gap to optimum:       {abs(best_rewards[-1]):.6f}")
 print()
 
@@ -322,7 +336,9 @@ else:
 
 print(f"  Status: {convergence_status}")
 print()
-print(f"  Walker survival: {alive_counts[-1]}/{alive_counts[0]} ({100*alive_counts[-1]/alive_counts[0]:.1f}%)")
+print(
+    f"  Walker survival: {alive_counts[-1]}/{alive_counts[0]} ({100 * alive_counts[-1] / alive_counts[0]:.1f}%)"
+)
 print()
 
 # ============================================================================
@@ -340,11 +356,11 @@ print("   - INVARIANT → Mean-field theory (Hartree-Fock-like)")
 print()
 
 # Determine overall gauge verdict
-gauge_verdicts = [r['verdict'] for r in results_by_rho.values()]
-if 'covariant' in gauge_verdicts:
+gauge_verdicts = [r["verdict"] for r in results_by_rho.values()]
+if "covariant" in gauge_verdicts:
     print("   Result: GAUGE COVARIANT behavior detected in at least one regime")
     print("   → Local gauge theory interpretation is VIABLE")
-elif all(v == 'invariant' for v in gauge_verdicts):
+elif all(v == "invariant" for v in gauge_verdicts):
     print("   Result: GAUGE INVARIANT across all tested regimes")
     print("   → Mean-field interpretation applies")
 else:
@@ -364,11 +380,13 @@ print("3. ELLIPTICITY (Experiment 3):")
 print("   CRITICAL for convergence: ε_Σ > H_max MUST be satisfied")
 print(f"   - Rastrigin H_max ≈ {H_max_rastrigin:.0f}")
 # Get epsilon_Sigma from kinetic op
-epsilon_Sigma_used = config.kinetic_op.epsilon_Sigma if hasattr(config.kinetic_op, 'epsilon_Sigma') else "unknown"
+epsilon_Sigma_used = (
+    config.kinetic_op.epsilon_Sigma if hasattr(config.kinetic_op, "epsilon_Sigma") else "unknown"
+)
 print(f"   - Current ε_Σ = {epsilon_Sigma_used}")
-if isinstance(epsilon_Sigma_used, (int, float)) and epsilon_Sigma_used > H_max_rastrigin:
+if isinstance(epsilon_Sigma_used, int | float) and epsilon_Sigma_used > H_max_rastrigin:
     print("   → ✓ CONDITION SATISFIED - Convergence guaranteed")
-elif isinstance(epsilon_Sigma_used, (int, float)):
+elif isinstance(epsilon_Sigma_used, int | float):
     print("   → ✗ WARNING: Degenerate diffusion - convergence NOT guaranteed")
 else:
     print("   → Check kinetic operator parameters for actual ε_Σ value")

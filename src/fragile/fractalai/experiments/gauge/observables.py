@@ -97,9 +97,7 @@ def compute_collective_fields(
         >>> companions = torch.randint(0, 100, (100,))
         >>>
         >>> # Mean-field regime
-        >>> fields_mf = compute_collective_fields(
-        ...     positions, velocities, rewards, alive, companions, rho=None
-        ... )
+        >>> fields_mf = compute_collective_fields(positions, velocities, rewards, alive, companions, rho=None)
         >>>
         >>> # Local regime
         >>> fields_local = compute_collective_fields(

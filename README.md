@@ -22,19 +22,20 @@ and experiments.
 
 ## Install
 
-- `rye sync` (recommended)
-- `pip install -e .`
+- `uv sync --all-extras` (recommended)
+- `uv pip install -e .`
+- Tooling: `uv tool install hatch` (one-time, for `uv run hatch ...` commands)
 
 ## Documentation (Jupyter Book)
 
-- Build: `rye run build-docs`
-- Build and serve: `rye run docs`
+- Build: `uv run hatch run docs:build`
+- Build and serve: `uv run hatch run docs:docs`
 
 ## Development
 
-- Tests: `rye run test`
-- Doctests: `rye run doctest`
-- Lint/format: `rye run lint`
+- Tests: `uv run hatch run test:test`
+- Doctests: `uv run hatch run test:doctest`
+- Lint/format: `uv run hatch run lint:all`
 
 ## License
 

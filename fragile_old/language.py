@@ -20,20 +20,19 @@ References:
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 import math
-from dataclasses import dataclass, field
-from typing import Tuple, Optional, List, Callable
-from enum import Enum
+from typing import Callable
 
 import torch
-import torch.nn as nn
+from torch import nn, Tensor
 import torch.nn.functional as F
-from torch import Tensor
 
 
 # =============================================================================
 # Configuration
 # =============================================================================
+
 
 @dataclass
 class LockingConfig:
@@ -41,37 +40,37 @@ class LockingConfig:
 
     Parameters correspond to the theoretical constants defined in Chapter 37.
     """
+
     # Dimensions
-    latent_dim: int = 64          # D: dimension of latent manifold Z
-    gauge_dim: int = 8            # dim(g): dimension of gauge algebra
-    spacetime_dim: int = 4        # D in d^D z integration
+    latent_dim: int = 64  # D: dimension of latent manifold Z
+    gauge_dim: int = 8  # dim(g): dimension of gauge algebra
+    spacetime_dim: int = 4  # D in d^D z integration
 
     # Coupling constants
-    g_lock: float = 1.0           # g_lock: inter-agent coupling constant
-    lambda_lock: float = 1.0      # λ_lock: locking strength
-    beta: float = 1.0             # β: interaction coupling strength
+    g_lock: float = 1.0  # g_lock: inter-agent coupling constant
+    lambda_lock: float = 1.0  # λ_lock: locking strength
+    beta: float = 1.0  # β: interaction coupling strength
 
     # Capacity parameters
-    sigma: float = 0.1            # σ: cognitive action scale (Def 29.21)
-    ell_L: float = 1.0            # ℓ_L: Planck-like length scale
-    nu_D: float = 0.25            # ν_D: area law coefficient
+    sigma: float = 0.1  # σ: cognitive action scale (Def 29.21)
+    ell_L: float = 1.0  # ℓ_L: Planck-like length scale
+    nu_D: float = 0.25  # ν_D: area law coefficient
 
     # Friction parameters
-    friction_scale: float = 1.0   # F_0: characteristic friction scale
+    friction_scale: float = 1.0  # F_0: characteristic friction scale
     friction_thresh: float = 0.1  # F_thresh: friction threshold for diagnostics
 
     # Training parameters
-    use_procrustes: bool = True   # Use efficient Procrustes alignment
+    use_procrustes: bool = True  # Use efficient Procrustes alignment
 
 
 # =============================================================================
 # Section 37.1: Metric Friction
 # =============================================================================
 
+
 def metric_friction(
-    G_A: Tensor,
-    G_B: Tensor,
-    phi: Optional[Callable[[Tensor], Tensor]] = None
+    G_A: Tensor, G_B: Tensor, phi: Callable[[Tensor], Tensor] | None = None
 ) -> Tensor:
     """
     Definition 37.1: Metric Friction
@@ -103,16 +102,13 @@ def metric_friction(
 
     if diff.dim() == 2:
         # Single metric tensors
-        return torch.sum(diff ** 2)
-    else:
-        # Batch of metric tensors [B, D, D]
-        return torch.sum(diff ** 2, dim=(-2, -1))
+        return torch.sum(diff**2)
+    # Batch of metric tensors [B, D, D]
+    return torch.sum(diff**2, dim=(-2, -1))
 
 
 def metric_friction_from_embeddings(
-    z_A: Tensor,
-    z_B: Tensor,
-    use_procrustes: bool = True
+    z_A: Tensor, z_B: Tensor, use_procrustes: bool = True
 ) -> Tensor:
     """
     Definition 37.1 (Computational Form): Metric Friction from Embeddings
@@ -135,7 +131,7 @@ def metric_friction_from_embeddings(
     if use_procrustes:
         # Procrustes alignment: min_R ||z_A - z_B @ R||_F^2 s.t. R^T R = I
         # Solution: R = V @ U^T where z_A^T @ z_B = U @ S @ V^T
-        U, S, Vt = torch.linalg.svd(z_A.T @ z_B)
+        U, _S, Vt = torch.linalg.svd(z_A.T @ z_B)
         R = U @ Vt
         z_B_aligned = z_B @ R
         friction = F.mse_loss(z_A, z_B_aligned)
@@ -146,8 +142,8 @@ def metric_friction_from_embeddings(
         dist_B = torch.cdist(z_B, z_B)
 
         # Normalize to scale-invariant
-        dist_A = dist_A / (dist_A.mean() + 1e-8)
-        dist_B = dist_B / (dist_B.mean() + 1e-8)
+        dist_A /= dist_A.mean() + 1e-08
+        dist_B /= dist_B.mean() + 1e-08
 
         friction = F.mse_loss(dist_A, dist_B)
 
@@ -155,9 +151,7 @@ def metric_friction_from_embeddings(
 
 
 def friction_bounds_utility(
-    V_max: Tensor,
-    friction: Tensor,
-    friction_scale: float = 1.0
+    V_max: Tensor, friction: Tensor, friction_scale: float = 1.0
 ) -> Tensor:
     """
     Lemma 37.1: Metric Friction Bounds Cooperative Utility
@@ -178,6 +172,7 @@ def friction_bounds_utility(
 # =============================================================================
 # Section 37.2: The Locking Operator
 # =============================================================================
+
 
 class GaugeConnection(nn.Module):
     """
@@ -204,7 +199,7 @@ class GaugeConnection(nn.Module):
         self.connection_net = nn.Sequential(
             nn.Linear(latent_dim, latent_dim * 2),
             nn.Tanh(),
-            nn.Linear(latent_dim * 2, spacetime_dim * gauge_dim)
+            nn.Linear(latent_dim * 2, spacetime_dim * gauge_dim),
         )
 
     def forward(self, z: Tensor) -> Tensor:
@@ -223,10 +218,7 @@ class GaugeConnection(nn.Module):
 
 
 def inter_agent_connection(
-    A_mu_A: Tensor,
-    A_mu_B: Tensor,
-    lambda_lock: float,
-    C_AB_mu: Optional[Tensor] = None
+    A_mu_A: Tensor, A_mu_B: Tensor, lambda_lock: float, C_AB_mu: Tensor | None = None
 ) -> Tensor:
     """
     Definition 37.2: The Inter-Agent Connection
@@ -243,7 +235,7 @@ def inter_agent_connection(
         A_AB: [B, spacetime_dim, gauge_dim, 2] - Inter-agent connection
               Last dim: [A contribution, B contribution]
     """
-    B, S, G = A_mu_A.shape
+    _B, _S, _G = A_mu_A.shape
 
     # A_μ^(A) ⊗ 1_B: Agent A's connection extended to product space
     A_term = A_mu_A.unsqueeze(-1)  # [B, S, G, 1]
@@ -257,16 +249,12 @@ def inter_agent_connection(
     # Add coupling term if provided
     if C_AB_mu is not None:
         coupling = lambda_lock * C_AB_mu.unsqueeze(-1)
-        A_AB = A_AB + coupling
+        A_AB += coupling
 
     return A_AB.squeeze(-1)
 
 
-def locking_curvature(
-    A_AB: Tensor,
-    g_lock: float = 1.0,
-    eps: float = 1e-6
-) -> Tensor:
+def locking_curvature(A_AB: Tensor, g_lock: float = 1.0, eps: float = 1e-6) -> Tensor:
     """
     Definition 37.3: The Locking Curvature
 
@@ -304,10 +292,7 @@ def locking_curvature(
     return F_AB
 
 
-def integrated_friction(
-    F_AB: Tensor,
-    G_shared: Optional[Tensor] = None
-) -> Tensor:
+def integrated_friction(F_AB: Tensor, G_shared: Tensor | None = None) -> Tensor:
     """
     Definition 37.3 (cont.): Integrated Friction (gauge-invariant scalar)
 
@@ -322,23 +307,19 @@ def integrated_friction(
     """
     # Tr(F^μν F_μν) = sum over μ,ν,a of (F^μν_a)^2
     # Contract: F^μν F_μν (sum over repeated indices)
-    F_squared = torch.einsum('bmna,bmna->b', F_AB, F_AB)
+    F_squared = torch.einsum("bmna,bmna->b", F_AB, F_AB)
 
     # Volume element √|G|
     if G_shared is not None:
         # det(G) and sqrt
         det_G = torch.linalg.det(G_shared)
         sqrt_det_G = torch.sqrt(torch.abs(det_G) + 1e-8)
-        F_squared = F_squared * sqrt_det_G
+        F_squared *= sqrt_det_G
 
     return F_squared
 
 
-def locking_operator(
-    F_AB: Tensor,
-    g_lock: float = 1.0,
-    G_shared: Optional[Tensor] = None
-) -> Tensor:
+def locking_operator(F_AB: Tensor, g_lock: float = 1.0, G_shared: Tensor | None = None) -> Tensor:
     """
     Theorem 37.1: The Locking Operator (Yang-Mills Energy)
 
@@ -355,7 +336,7 @@ def locking_operator(
     Psi_sync = integrated_friction(F_AB, G_shared)
 
     # Yang-Mills normalization
-    normalization = -1.0 / (4.0 * g_lock ** 2)
+    normalization = -1.0 / (4.0 * g_lock**2)
 
     return normalization * Psi_sync
 
@@ -391,10 +372,8 @@ class FiniteCommunicationBandwidth:
 # Section 37.3: Spontaneous Gauge Locking
 # =============================================================================
 
-def gauge_alignment_order_parameter(
-    U_A: Tensor,
-    U_B: Tensor
-) -> Tensor:
+
+def gauge_alignment_order_parameter(U_A: Tensor, U_B: Tensor) -> Tensor:
     """
     Definition 37.4: Gauge Alignment Order Parameter
 
@@ -414,16 +393,10 @@ def gauge_alignment_order_parameter(
 
     # Tr(U_A @ U_B†)
     product = torch.bmm(U_A, U_B_dag)
-    phi_AB = torch.diagonal(product, dim1=-2, dim2=-1).sum(dim=-1)
-
-    return phi_AB
+    return torch.diagonal(product, dim1=-2, dim2=-1).sum(dim=-1)
 
 
-def locking_potential(
-    phi_AB: Tensor,
-    mu_lock_sq: float,
-    lambda_lock: float
-) -> Tensor:
+def locking_potential(phi_AB: Tensor, mu_lock_sq: float, lambda_lock: float) -> Tensor:
     """
     Definition 37.4 (cont.): Locking Potential
 
@@ -441,15 +414,11 @@ def locking_potential(
     """
     phi_sq = torch.abs(phi_AB) ** 2
 
-    return -mu_lock_sq * phi_sq + lambda_lock * phi_sq ** 2
+    return -mu_lock_sq * phi_sq + lambda_lock * phi_sq**2
 
 
 def joint_prediction_loss(
-    x_pred_A: Tensor,
-    x_pred_B: Tensor,
-    x_true: Tensor,
-    Psi_sync: Tensor,
-    beta: float
+    x_pred_A: Tensor, x_pred_B: Tensor, x_true: Tensor, Psi_sync: Tensor, beta: float
 ) -> Tensor:
     """
     Theorem 37.2: Joint Prediction Error (for Spontaneous Gauge Locking)
@@ -469,8 +438,8 @@ def joint_prediction_loss(
         L_joint: scalar - Joint loss
     """
     # Prediction errors
-    loss_A = F.mse_loss(x_pred_A, x_true, reduction='none')
-    loss_B = F.mse_loss(x_pred_B, x_true, reduction='none')
+    loss_A = F.mse_loss(x_pred_A, x_true, reduction="none")
+    loss_B = F.mse_loss(x_pred_B, x_true, reduction="none")
 
     # Sum over all dimensions except batch
     while loss_A.dim() > 1:
@@ -483,11 +452,7 @@ def joint_prediction_loss(
     return L_joint.mean()
 
 
-def critical_coupling(
-    sigma: float,
-    volume: Tensor,
-    g_lock: float
-) -> Tensor:
+def critical_coupling(sigma: float, volume: Tensor, g_lock: float) -> Tensor:
     """
     Corollary 37.1: Critical Coupling for Locking
 
@@ -501,7 +466,7 @@ def critical_coupling(
     Returns:
         beta_c: Critical coupling strength
     """
-    return (sigma ** 2) * volume / (2.0 * g_lock ** 2)
+    return (sigma**2) * volume / (2.0 * g_lock**2)
 
 
 def relative_gauge(U_A: Tensor, U_B: Tensor) -> Tensor:
@@ -521,11 +486,7 @@ def relative_gauge(U_A: Tensor, U_B: Tensor) -> Tensor:
     return torch.bmm(U_A, U_B_inv)
 
 
-def phase_transition_order_parameter(
-    beta: float,
-    beta_c: float,
-    lambda_lock: float
-) -> float:
+def phase_transition_order_parameter(beta: float, beta_c: float, lambda_lock: float) -> float:
     """
     Step 11 of Theorem 37.2: Phase Transition Order Parameter
 
@@ -542,13 +503,13 @@ def phase_transition_order_parameter(
     """
     if beta < beta_c:
         return 0.0
-    else:
-        return math.sqrt((beta - beta_c) / lambda_lock)
+    return math.sqrt((beta - beta_c) / lambda_lock)
 
 
 # =============================================================================
 # Section 37.4: Language as Gauge-Covariant Transport
 # =============================================================================
+
 
 class LieAlgebraMessage(nn.Module):
     """
@@ -569,10 +530,7 @@ class LieAlgebraMessage(nn.Module):
 
         # Generators T_a (for SU(n), these are generalized Gell-Mann matrices)
         # Here we use a simplified real representation
-        self.register_buffer(
-            'generators',
-            self._init_generators(gauge_dim)
-        )
+        self.register_buffer("generators", self._init_generators(gauge_dim))
 
     def _init_generators(self, dim: int) -> Tensor:
         """Initialize Lie algebra generators."""
@@ -612,7 +570,7 @@ class LieAlgebraMessage(nn.Module):
         """
         # m = sum_a m^a T_a
         # Einstein summation: m_ij = m^a T_a_ij
-        return torch.einsum('ba,aij->bij', coefficients, self.generators)
+        return torch.einsum("ba,aij->bij", coefficients, self.generators)
 
     def decode(self, m: Tensor) -> Tensor:
         """
@@ -628,7 +586,7 @@ class LieAlgebraMessage(nn.Module):
         """
         # Project onto each generator
         # m^a ∝ Tr(T_a @ m)
-        return torch.einsum('aij,bij->ba', self.generators, m)
+        return torch.einsum("aij,bij->ba", self.generators, m)
 
 
 class LanguageChannel(nn.Module):
@@ -694,12 +652,7 @@ class LanguageChannel(nn.Module):
         return self.lift(self.project(m))
 
 
-def translation_operator(
-    m: Tensor,
-    A_mu: Tensor,
-    path: Tensor,
-    g: float = 1.0
-) -> Tensor:
+def translation_operator(m: Tensor, A_mu: Tensor, path: Tensor, g: float = 1.0) -> Tensor:
     """
     Definition 37.7: Gauge-Covariant Translation Operator
 
@@ -719,7 +672,7 @@ def translation_operator(
     Returns:
         T: [B, gauge_dim, gauge_dim] - Translation operator (matrix)
     """
-    B, L, S, G = A_mu.shape
+    _B, _L, _S, _G = A_mu.shape
 
     # Compute path differentials dz^μ
     dz = torch.diff(path, dim=1)  # [B, L-1, S]
@@ -729,14 +682,14 @@ def translation_operator(
     A_mu_mid = (A_mu[:, :-1] + A_mu[:, 1:]) / 2  # Midpoint rule
 
     # m^a A_μ^a
-    m_A = torch.einsum('bg,blsg->bls', m, A_mu_mid)  # [B, L-1, S]
+    m_A = torch.einsum("bg,blsg->bls", m, A_mu_mid)  # [B, L-1, S]
 
     # Integrate: sum over path segments
-    integral_m = torch.einsum('bls,bls->b', m_A, dz)  # [B]
+    integral_m = torch.einsum("bls,bls->b", m_A, dz)  # [B]
 
     # Wilson line: P exp(-ig ∫ A_μ dz^μ)
     # For simplicity, use product of exponentials (valid for small segments)
-    wilson_phases = -g * torch.einsum('blsg,bls->blg', A_mu_mid, dz)  # [B, L-1, G]
+    wilson_phases = -g * torch.einsum("blsg,bls->blg", A_mu_mid, dz)  # [B, L-1, G]
 
     # Exponentiate (simplified: diagonal approximation)
     # Full implementation would use path-ordered product
@@ -750,15 +703,10 @@ def translation_operator(
     T_diag = torch.exp(1j * (total_phase + message_phase.unsqueeze(-1)))
 
     # Return as diagonal matrix
-    T = torch.diag_embed(T_diag.real)  # [B, G, G]
-
-    return T
+    return torch.diag_embed(T_diag.real)  # [B, G, G]
 
 
-def semantic_alignment(
-    friction_before: Tensor,
-    friction_after: Tensor
-) -> Tensor:
+def semantic_alignment(friction_before: Tensor, friction_after: Tensor) -> Tensor:
     """
     Definition 37.8: Semantic Alignment
 
@@ -774,11 +722,7 @@ def semantic_alignment(
     return friction_after < friction_before
 
 
-def untranslatability_bound(
-    m_norm: Tensor,
-    F_AB: Tensor,
-    surface_area: Tensor
-) -> Tensor:
+def untranslatability_bound(m_norm: Tensor, F_AB: Tensor, surface_area: Tensor) -> Tensor:
     """
     Theorem 37.3: The Untranslatability Bound
 
@@ -793,7 +737,7 @@ def untranslatability_bound(
         U_bound: [B] - Upper bound on untranslatability
     """
     # ||F_AB||_F = sqrt(sum of squares)
-    F_norm = torch.sqrt(torch.sum(F_AB ** 2, dim=(-3, -2, -1)))
+    F_norm = torch.sqrt(torch.sum(F_AB**2, dim=(-3, -2, -1)))
 
     # Surface integral (simplified: F_norm * area)
     integral = F_norm * surface_area
@@ -801,11 +745,7 @@ def untranslatability_bound(
     return m_norm * integral
 
 
-def holonomy(
-    A_mu: Tensor,
-    path: Tensor,
-    g: float = 1.0
-) -> Tensor:
+def holonomy(A_mu: Tensor, path: Tensor, g: float = 1.0) -> Tensor:
     """
     Step 1 of Theorem 37.3: Holonomy
 
@@ -821,7 +761,7 @@ def holonomy(
     Returns:
         H: [B, gauge_dim, gauge_dim] - Holonomy matrix
     """
-    B, L, S, G = A_mu.shape
+    B, L, _S, G = A_mu.shape
 
     # Initialize holonomy as identity
     H = torch.eye(G, device=A_mu.device, dtype=A_mu.dtype).unsqueeze(0).expand(B, -1, -1)
@@ -833,16 +773,16 @@ def holonomy(
     # Product of exponentials along path (path-ordered)
     for i in range(L - 1):
         A_segment = A_mu[:, i]  # [B, S, G]
-        dz_segment = dz[:, i]   # [B, S]
+        dz_segment = dz[:, i]  # [B, S]
 
         # Phase: A_μ dz^μ (contract over spacetime)
-        phase = torch.einsum('bsg,bs->bg', A_segment, dz_segment)  # [B, G]
+        phase = torch.einsum("bsg,bs->bg", A_segment, dz_segment)  # [B, G]
 
         # Exponentiate (diagonal approximation)
         exp_phase = torch.exp(-1j * g * phase)
 
         # Multiply into holonomy (simplified: element-wise for diagonal)
-        H = H * exp_phase.unsqueeze(-1).real
+        H *= exp_phase.unsqueeze(-1).real
 
     return H
 
@@ -851,11 +791,10 @@ def holonomy(
 # Section 37.5: The Babel Limit
 # =============================================================================
 
+
 def babel_limit_satisfied(
-    gauge_dim: int,
-    metric_entropy: Tensor,
-    channel_capacity: Tensor
-) -> Tuple[Tensor, Tensor]:
+    gauge_dim: int, metric_entropy: Tensor, channel_capacity: Tensor
+) -> tuple[Tensor, Tensor]:
     """
     Theorem 37.4: The Babel Limit
 
@@ -878,11 +817,7 @@ def babel_limit_satisfied(
     return satisfied, I_required
 
 
-def unlocked_dimension(
-    gauge_dim: int,
-    metric_entropy: Tensor,
-    channel_capacity: Tensor
-) -> Tensor:
+def unlocked_dimension(gauge_dim: int, metric_entropy: Tensor, channel_capacity: Tensor) -> Tensor:
     """
     Theorem 37.4 (cont.): Unlocked Subspace Dimension
 
@@ -903,9 +838,7 @@ def unlocked_dimension(
 
 
 def private_qualia_dimension(
-    gauge_dim: int,
-    metric_entropy: Tensor,
-    channel_capacity: Tensor
+    gauge_dim: int, metric_entropy: Tensor, channel_capacity: Tensor
 ) -> Tensor:
     """
     Corollary 37.2: The Ineffability Theorem
@@ -930,7 +863,8 @@ def private_qualia_dimension(
 # Section 37.6: Spectral Analysis
 # =============================================================================
 
-def metric_eigendecomposition(G: Tensor) -> Tuple[Tensor, Tensor]:
+
+def metric_eigendecomposition(G: Tensor) -> tuple[Tensor, Tensor]:
     """
     Definition 37.9: Metric Eigendecomposition
 
@@ -965,11 +899,7 @@ def metric_eigendecomposition(G: Tensor) -> Tuple[Tensor, Tensor]:
     return eigenvalues, eigenvectors
 
 
-def spectral_locking_order(
-    eigenvalues: Tensor,
-    channel_capacity: Tensor,
-    time: float
-) -> int:
+def spectral_locking_order(eigenvalues: Tensor, channel_capacity: Tensor, time: float) -> int:
     """
     Theorem 37.5: Spectral Locking Order
 
@@ -1001,9 +931,8 @@ def spectral_locking_order(
 
 
 def core_vs_nuance_split(
-    eigenvalues: Tensor,
-    threshold: Optional[float] = None
-) -> Tuple[Tensor, Tensor, int]:
+    eigenvalues: Tensor, threshold: float | None = None
+) -> tuple[Tensor, Tensor, int]:
     """
     Definition 37.9 (cont.): Core Concepts vs Nuance
 
@@ -1032,13 +961,10 @@ def core_vs_nuance_split(
 # Section 37.7: Emergence of Objective Reality
 # =============================================================================
 
+
 def objective_reality_quotient(
-    z_A: Tensor,
-    z_B: Tensor,
-    G_A: Tensor,
-    G_B: Tensor,
-    friction_threshold: float = 1e-6
-) -> Tuple[Tensor, Tensor]:
+    z_A: Tensor, z_B: Tensor, G_A: Tensor, G_B: Tensor, friction_threshold: float = 1e-6
+) -> tuple[Tensor, Tensor]:
     """
     Theorem 37.6: Emergence of Objective Reality
 
@@ -1067,7 +993,7 @@ def objective_reality_quotient(
     z_shared = torch.where(
         equivalence_mask.unsqueeze(-1),
         (z_A + z_B) / 2,
-        z_A  # For non-equivalent, keep A's representation
+        z_A,  # For non-equivalent, keep A's representation
     )
 
     return z_shared, equivalence_mask
@@ -1078,7 +1004,7 @@ def echo_chamber_loss(
     friction_AE: Tensor,
     friction_BE: Tensor,
     lambda_lock: float,
-    lambda_ground: float
+    lambda_ground: float,
 ) -> Tensor:
     """
     Remark 37.1: Echo Chamber Effect (Corrected Loss)
@@ -1101,11 +1027,7 @@ def echo_chamber_loss(
     return lambda_lock * friction_AB + lambda_ground * (friction_AE + friction_BE)
 
 
-def critical_mass_for_consensus(
-    sigma: float,
-    lambda_lock: float,
-    avg_friction: Tensor
-) -> Tensor:
+def critical_mass_for_consensus(sigma: float, lambda_lock: float, avg_friction: Tensor) -> Tensor:
     """
     Corollary 37.3: Critical Mass for Consensus
 
@@ -1119,17 +1041,15 @@ def critical_mass_for_consensus(
     Returns:
         N_c: Critical number of agents for consensus emergence
     """
-    return (sigma ** 2) / (lambda_lock * avg_friction + 1e-8)
+    return (sigma**2) / (lambda_lock * avg_friction + 1e-8)
 
 
 # =============================================================================
 # Section 37.8: Multi-Agent Scaling
 # =============================================================================
 
-def institutional_friction(
-    G_agents: Tensor,
-    G_inst: Tensor
-) -> Tensor:
+
+def institutional_friction(G_agents: Tensor, G_inst: Tensor) -> Tensor:
     """
     Definition 37.10: The Institutional Manifold
 
@@ -1156,10 +1076,7 @@ def institutional_friction(
 
 
 def money_distance(
-    z1: Tensor,
-    z2: Tensor,
-    price_fn: Callable[[Tensor], Tensor],
-    n_steps: int = 100
+    z1: Tensor, z2: Tensor, price_fn: Callable[[Tensor], Tensor], n_steps: int = 100
 ) -> Tensor:
     """
     Remark 37.2: Money as Universal Metric
@@ -1188,14 +1105,13 @@ def money_distance(
     prices = price_fn(velocities)  # [B, n_steps-1]
 
     # Integrate
-    d_money = prices.sum(dim=-1) / n_steps
-
-    return d_money
+    return prices.sum(dim=-1) / n_steps
 
 
 # =============================================================================
 # Section 37.9: Physics Isomorphisms — Kuramoto Model
 # =============================================================================
+
 
 class KuramotoAgents(nn.Module):
     """
@@ -1233,7 +1149,7 @@ class KuramotoAgents(nn.Module):
         Returns:
             grad_F: [N, N, D] - Gradient of friction w.r.t. θ
         """
-        N, D = self.theta.shape
+        _N, _D = self.theta.shape
 
         # Compute pairwise differences
         theta_i = self.theta.unsqueeze(1)  # [N, 1, D]
@@ -1242,9 +1158,7 @@ class KuramotoAgents(nn.Module):
         # Simplified friction gradient: sin(θ_j - θ_i)
         # Full version would use actual metric friction
         diff = theta_j - theta_i  # [N, N, D]
-        grad_F = torch.sin(diff)  # [N, N, D]
-
-        return grad_F
+        return torch.sin(diff)  # [N, N, D]
 
     def dynamics(self) -> Tensor:
         """
@@ -1265,14 +1179,12 @@ class KuramotoAgents(nn.Module):
 
         # Zero out diagonal (j ≠ i)
         mask = ~torch.eye(N, dtype=torch.bool, device=self.theta.device)
-        grad_F = grad_F * mask.unsqueeze(-1)
+        grad_F *= mask.unsqueeze(-1)
 
         # Sum over j
         coupling = self.beta * grad_F.sum(dim=1) / N  # [N, D]
 
-        d_theta = d_theta + coupling
-
-        return d_theta
+        return d_theta + coupling
 
     def step(self, dt: float = 0.01):
         """
@@ -1285,7 +1197,7 @@ class KuramotoAgents(nn.Module):
             d_theta = self.dynamics()
             self.theta.add_(dt * d_theta)
 
-    def order_parameter(self) -> Tuple[Tensor, Tensor]:
+    def order_parameter(self) -> tuple[Tensor, Tensor]:
         """
         Compute Kuramoto order parameter r e^{iψ}.
 
@@ -1326,6 +1238,7 @@ class KuramotoAgents(nn.Module):
 # Complete Module: GaugeCovariantMetricSynchronizer (Enhanced)
 # =============================================================================
 
+
 class GaugeCovariantMetricSynchronizer(nn.Module):
     """
     Complete implementation of Chapter 37: Inter-Subjective Metric.
@@ -1351,54 +1264,35 @@ class GaugeCovariantMetricSynchronizer(nn.Module):
 
         # Gauge connections for each agent
         self.connection_A = GaugeConnection(
-            config.latent_dim,
-            config.gauge_dim,
-            config.spacetime_dim
+            config.latent_dim, config.gauge_dim, config.spacetime_dim
         )
         self.connection_B = GaugeConnection(
-            config.latent_dim,
-            config.gauge_dim,
-            config.spacetime_dim
+            config.latent_dim, config.gauge_dim, config.spacetime_dim
         )
 
         # Language channel
         self.language = LanguageChannel(
             config.gauge_dim,
-            config.gauge_dim // 2  # 50% compression
+            config.gauge_dim // 2,  # 50% compression
         )
 
         # Lie algebra message encoding
         self.message_algebra = LieAlgebraMessage(config.gauge_dim)
 
         # Learnable gauge transform (for Procrustes alignment)
-        self.gauge_transform = nn.Linear(
-            config.latent_dim,
-            config.latent_dim,
-            bias=False
-        )
+        self.gauge_transform = nn.Linear(config.latent_dim, config.latent_dim, bias=False)
         nn.init.orthogonal_(self.gauge_transform.weight)
 
         # Bandwidth tracking
         self.bandwidth = FiniteCommunicationBandwidth(config)
 
-    def compute_metric_friction(
-        self,
-        z_A: Tensor,
-        z_B: Tensor
-    ) -> Tensor:
+    def compute_metric_friction(self, z_A: Tensor, z_B: Tensor) -> Tensor:
         """
         Definition 37.1: Metric Friction (computational form).
         """
-        return metric_friction_from_embeddings(
-            z_A, z_B,
-            self.config.use_procrustes
-        )
+        return metric_friction_from_embeddings(z_A, z_B, self.config.use_procrustes)
 
-    def compute_locking_curvature(
-        self,
-        z_A: Tensor,
-        z_B: Tensor
-    ) -> Tensor:
+    def compute_locking_curvature(self, z_A: Tensor, z_B: Tensor) -> Tensor:
         """
         Definition 37.3: Locking Curvature.
         """
@@ -1407,24 +1301,19 @@ class GaugeCovariantMetricSynchronizer(nn.Module):
         A_mu_B = self.connection_B(z_B)
 
         # Inter-agent connection
-        A_AB = inter_agent_connection(
-            A_mu_A, A_mu_B,
-            self.config.lambda_lock
-        )
+        A_AB = inter_agent_connection(A_mu_A, A_mu_B, self.config.lambda_lock)
 
         # Curvature
-        F_AB = locking_curvature(A_AB, self.config.g_lock)
-
-        return F_AB
+        return locking_curvature(A_AB, self.config.g_lock)
 
     def compute_locking_loss(
         self,
         z_A: Tensor,
         z_B: Tensor,
-        x_pred_A: Optional[Tensor] = None,
-        x_pred_B: Optional[Tensor] = None,
-        x_true: Optional[Tensor] = None
-    ) -> Tuple[Tensor, dict]:
+        x_pred_A: Tensor | None = None,
+        x_pred_B: Tensor | None = None,
+        x_true: Tensor | None = None,
+    ) -> tuple[Tensor, dict]:
         """
         Theorem 37.1 & 37.2: Locking Operator and Joint Loss.
 
@@ -1448,27 +1337,21 @@ class GaugeCovariantMetricSynchronizer(nn.Module):
         Psi_sync = integrated_friction(F_AB)
 
         metrics = {
-            'friction': friction.mean().item(),
-            'L_sync': L_sync.mean().item(),
-            'Psi_sync': Psi_sync.mean().item()
+            "friction": friction.mean().item(),
+            "L_sync": L_sync.mean().item(),
+            "Psi_sync": Psi_sync.mean().item(),
         }
 
         # Joint prediction loss if predictions provided
         if x_pred_A is not None and x_pred_B is not None and x_true is not None:
-            loss = joint_prediction_loss(
-                x_pred_A, x_pred_B, x_true,
-                Psi_sync, self.config.beta
-            )
-            metrics['joint_loss'] = loss.item()
+            loss = joint_prediction_loss(x_pred_A, x_pred_B, x_true, Psi_sync, self.config.beta)
+            metrics["joint_loss"] = loss.item()
         else:
             loss = self.config.lambda_lock * friction + L_sync.mean()
 
         return loss, metrics
 
-    def send_message(
-        self,
-        m_full: Tensor
-    ) -> Tensor:
+    def send_message(self, m_full: Tensor) -> Tensor:
         """
         Definition 37.6: Send message through language channel.
 
@@ -1480,11 +1363,7 @@ class GaugeCovariantMetricSynchronizer(nn.Module):
         """
         return self.language(m_full)
 
-    def check_babel_limit(
-        self,
-        G_A: Tensor,
-        boundary_area: Tensor
-    ) -> Tuple[bool, dict]:
+    def check_babel_limit(self, G_A: Tensor, boundary_area: Tensor) -> tuple[bool, dict]:
         """
         Theorem 37.4: Check Babel Limit.
 
@@ -1503,31 +1382,26 @@ class GaugeCovariantMetricSynchronizer(nn.Module):
         H_G = 0.5 * torch.logdet(G_A + 1e-6 * torch.eye(G_A.shape[-1], device=G_A.device))
 
         # Check limit
-        satisfied, I_required = babel_limit_satisfied(
-            self.config.gauge_dim, H_G, C_L
-        )
+        satisfied, I_required = babel_limit_satisfied(self.config.gauge_dim, H_G, C_L)
 
         # Unlocked dimension
         d_unlocked = unlocked_dimension(self.config.gauge_dim, H_G, C_L)
 
         info = {
-            'channel_capacity': C_L.item() if isinstance(C_L, Tensor) else C_L,
-            'metric_entropy': H_G.item() if isinstance(H_G, Tensor) else H_G,
-            'I_required': I_required.item() if isinstance(I_required, Tensor) else I_required,
-            'd_unlocked': d_unlocked.item() if isinstance(d_unlocked, Tensor) else d_unlocked,
-            'private_qualia_dim': d_unlocked.item() if isinstance(d_unlocked, Tensor) else d_unlocked
+            "channel_capacity": C_L.item() if isinstance(C_L, Tensor) else C_L,
+            "metric_entropy": H_G.item() if isinstance(H_G, Tensor) else H_G,
+            "I_required": I_required.item() if isinstance(I_required, Tensor) else I_required,
+            "d_unlocked": d_unlocked.item() if isinstance(d_unlocked, Tensor) else d_unlocked,
+            "private_qualia_dim": d_unlocked.item()
+            if isinstance(d_unlocked, Tensor)
+            else d_unlocked,
         }
 
         achievable = satisfied.item() if isinstance(satisfied, Tensor) else satisfied
 
         return achievable, info
 
-    def spectral_analysis(
-        self,
-        G: Tensor,
-        channel_capacity: float,
-        time: float
-    ) -> dict:
+    def spectral_analysis(self, G: Tensor, channel_capacity: float, time: float) -> dict:
         """
         Theorem 37.5: Spectral Locking Analysis.
 
@@ -1541,28 +1415,20 @@ class GaugeCovariantMetricSynchronizer(nn.Module):
         """
         eigenvalues, eigenvectors = metric_eigendecomposition(G)
 
-        k_max = spectral_locking_order(
-            eigenvalues,
-            torch.tensor(channel_capacity),
-            time
-        )
+        k_max = spectral_locking_order(eigenvalues, torch.tensor(channel_capacity), time)
 
         core, nuance, split_idx = core_vs_nuance_split(eigenvalues)
 
         return {
-            'eigenvalues': eigenvalues,
-            'eigenvectors': eigenvectors,
-            'k_max': k_max,
-            'core_eigenvalues': core,
-            'nuance_eigenvalues': nuance,
-            'core_nuance_split': split_idx
+            "eigenvalues": eigenvalues,
+            "eigenvectors": eigenvectors,
+            "k_max": k_max,
+            "core_eigenvalues": core,
+            "nuance_eigenvalues": nuance,
+            "core_nuance_split": split_idx,
         }
 
-    def forward(
-        self,
-        z_A: Tensor,
-        z_B: Tensor
-    ) -> Tuple[Tensor, Tensor, dict]:
+    def forward(self, z_A: Tensor, z_B: Tensor) -> tuple[Tensor, Tensor, dict]:
         """
         Full forward pass: align agents and compute loss.
 
@@ -1586,8 +1452,8 @@ class GaugeCovariantMetricSynchronizer(nn.Module):
         friction_after = self.compute_metric_friction(z_A, z_B_aligned)
 
         understanding = semantic_alignment(friction_before, friction_after)
-        metrics['understanding_rate'] = understanding.float().mean().item()
-        metrics['friction_reduction'] = (friction_before - friction_after).mean().item()
+        metrics["understanding_rate"] = understanding.float().mean().item()
+        metrics["friction_reduction"] = (friction_before - friction_after).mean().item()
 
         return loss, z_B_aligned, metrics
 
@@ -1596,10 +1462,8 @@ class GaugeCovariantMetricSynchronizer(nn.Module):
 # Diagnostic Functions (Nodes 69-70)
 # =============================================================================
 
-def metric_alignment_check(
-    friction: Tensor,
-    threshold: float
-) -> Tuple[bool, str]:
+
+def metric_alignment_check(friction: Tensor, threshold: float) -> tuple[bool, str]:
     """
     Node 69: MetricAlignmentCheck
 
@@ -1618,8 +1482,10 @@ def metric_alignment_check(
     if passed:
         message = f"MetricAlignmentCheck PASSED: F_AB = {friction.mean():.4f} < {threshold}"
     else:
-        message = f"MetricAlignmentCheck FAILED: F_AB = {friction.mean():.4f} > {threshold}. " \
-                  f"Agents talking past each other. Remediation: increase bandwidth or trigger sync."
+        message = (
+            f"MetricAlignmentCheck FAILED: F_AB = {friction.mean():.4f} > {threshold}. "
+            f"Agents talking past each other. Remediation: increase bandwidth or trigger sync."
+        )
 
     return passed, message
 
@@ -1627,9 +1493,9 @@ def metric_alignment_check(
 def babel_check(
     friction_current: Tensor,
     friction_previous: Tensor,
-    friction_env_A: Optional[Tensor] = None,
-    friction_env_B: Optional[Tensor] = None
-) -> Tuple[bool, str]:
+    friction_env_A: Tensor | None = None,
+    friction_env_B: Tensor | None = None,
+) -> tuple[bool, str]:
     """
     Node 70: BabelCheck
 
@@ -1659,12 +1525,16 @@ def babel_check(
 
     if echo_chamber:
         passed = False
-        message = "BabelCheck WARNING: Echo Chamber detected. " \
-                  "Agents aligning with each other but drifting from environment."
+        message = (
+            "BabelCheck WARNING: Echo Chamber detected. "
+            "Agents aligning with each other but drifting from environment."
+        )
     elif diverging:
         passed = False
-        message = f"BabelCheck FAILED: ∂F_AB/∂t = {d_friction.mean():.4f} > 0. " \
-                  f"Language losing grounding. Force ostensive definitions."
+        message = (
+            f"BabelCheck FAILED: ∂F_AB/∂t = {d_friction.mean():.4f} > 0. "
+            f"Language losing grounding. Force ostensive definitions."
+        )
     else:
         passed = True
         message = f"BabelCheck PASSED: ∂F_AB/∂t = {d_friction.mean():.4f} ≤ 0"
@@ -1676,10 +1546,8 @@ def babel_check(
 # Utility Functions
 # =============================================================================
 
-def estimate_metric_from_samples(
-    z: Tensor,
-    eps: float = 1e-4
-) -> Tensor:
+
+def estimate_metric_from_samples(z: Tensor, eps: float = 1e-4) -> Tensor:
     """
     Estimate metric tensor G from samples via local covariance.
 
@@ -1700,17 +1568,10 @@ def estimate_metric_from_samples(
     cov = (z_centered.T @ z_centered) / (z.shape[0] - 1)
 
     # Metric is inverse covariance (Fisher information)
-    G = torch.linalg.inv(cov + eps * torch.eye(z.shape[1], device=z.device))
-
-    return G
+    return torch.linalg.inv(cov + eps * torch.eye(z.shape[1], device=z.device))
 
 
-def gromov_wasserstein_distance(
-    z_A: Tensor,
-    z_B: Tensor,
-    p: int = 2,
-    n_iter: int = 100
-) -> Tensor:
+def gromov_wasserstein_distance(z_A: Tensor, z_B: Tensor, p: int = 2, n_iter: int = 100) -> Tensor:
     """
     Compute Gromov-Wasserstein distance between two point clouds.
 
@@ -1726,7 +1587,7 @@ def gromov_wasserstein_distance(
     Returns:
         gw_dist: Gromov-Wasserstein distance
     """
-    N, D = z_A.shape
+    N, _D = z_A.shape
     M = z_B.shape[0]
 
     # Intra-manifold distance matrices
@@ -1734,8 +1595,8 @@ def gromov_wasserstein_distance(
     C_B = torch.cdist(z_B, z_B) ** p  # [M, M]
 
     # Normalize
-    C_A = C_A / C_A.max()
-    C_B = C_B / C_B.max()
+    C_A /= C_A.max()
+    C_B /= C_B.max()
 
     # Initialize transport plan (uniform)
     T = torch.ones(N, M, device=z_A.device) / (N * M)
@@ -1745,26 +1606,34 @@ def gromov_wasserstein_distance(
         # GW cost matrix
         # L(C_A, C_B, T) = sum_{i,j,k,l} |C_A[i,k] - C_B[j,l]|^2 T[i,j] T[k,l]
         # Simplified: use tensor contraction
-        cost = torch.einsum('ik,jl,ij,kl->', C_A, C_B, T, T)
+        torch.einsum("ik,jl,ij,kl->", C_A, C_B, T, T)
 
         # Update T (simplified Sinkhorn step)
         row_sum = T.sum(dim=1, keepdim=True)
-        T = T / (row_sum + 1e-8)
+        T /= row_sum + 1e-08
         col_sum = T.sum(dim=0, keepdim=True)
-        T = T / (col_sum + 1e-8)
-        T = T / T.sum()
+        T /= col_sum + 1e-08
+        T /= T.sum()
 
     # Final GW distance
-    gw_dist = torch.einsum('ik,jl,ij,kl->', (C_A.unsqueeze(1) - C_B.unsqueeze(0)) ** 2,
-                           torch.ones_like(C_A).unsqueeze(1).unsqueeze(-1),
-                           T.unsqueeze(-1).unsqueeze(-1),
-                           T.unsqueeze(0).unsqueeze(0)).sqrt()
+    torch.einsum(
+        "ik,jl,ij,kl->",
+        (C_A.unsqueeze(1) - C_B.unsqueeze(0)) ** 2,
+        torch.ones_like(C_A).unsqueeze(1).unsqueeze(-1),
+        T.unsqueeze(-1).unsqueeze(-1),
+        T.unsqueeze(0).unsqueeze(0),
+    ).sqrt()
 
     # Simplified computation
-    gw_dist = ((C_A.unsqueeze(1).unsqueeze(-1) - C_B.unsqueeze(0).unsqueeze(2)) ** 2 *
-               T.unsqueeze(-1).unsqueeze(-1) * T.unsqueeze(0).unsqueeze(2)).sum().sqrt()
-
-    return gw_dist
+    return (
+        (
+            (C_A.unsqueeze(1).unsqueeze(-1) - C_B.unsqueeze(0).unsqueeze(2)) ** 2
+            * T.unsqueeze(-1).unsqueeze(-1)
+            * T.unsqueeze(0).unsqueeze(2)
+        )
+        .sum()
+        .sqrt()
+    )
 
 
 # =============================================================================
@@ -1773,13 +1642,7 @@ def gromov_wasserstein_distance(
 
 if __name__ == "__main__":
     # Configuration
-    config = LockingConfig(
-        latent_dim=32,
-        gauge_dim=8,
-        spacetime_dim=4,
-        beta=2.0,
-        lambda_lock=1.0
-    )
+    config = LockingConfig(latent_dim=32, gauge_dim=8, spacetime_dim=4, beta=2.0, lambda_lock=1.0)
 
     # Create synchronizer
     sync = GaugeCovariantMetricSynchronizer(config)
@@ -1807,7 +1670,7 @@ if __name__ == "__main__":
     G_A = estimate_metric_from_samples(z_A)
     boundary_area = torch.tensor(100.0)  # Example area
     achievable, info = sync.check_babel_limit(G_A, boundary_area)
-    print(f"\nBabel Limit Check:")
+    print("\nBabel Limit Check:")
     print(f"  Complete locking achievable: {achievable}")
     print(f"  Private qualia dimension: {info['private_qualia_dim']}")
 

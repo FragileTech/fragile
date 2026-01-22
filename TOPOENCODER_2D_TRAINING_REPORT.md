@@ -373,3 +373,11 @@ uv run src/experiments/topoencoder_2d.py \
   --codes_per_chart 8 \
   --resume outputs/topoencoder_mnist_cpu_adapt_lr7/topo_epoch_01200.pt
 ```
+
+uv run src/experiments/topoencoder_2d.py   --dataset cifar10   --epochs 3000   --save_every 50   --log_every 25   --device cuda   --adaptive_lr true   --use_scheduler false   --lr 0.001   --lr_max 0.005   --lr_grounding_warmup_epochs 50   --lr_increase_factor 1.05   --lr_decrease_factor 0.8   --lr_unstable_patience 5   --lr_stable_patience 5   --lr_loss_increase_tol 0.1   --output_dir outputs/3d_vision_topoencoder_cifar10   --hidden_dim 32   --codes_per_chart 4  --latent_dim 3 --lr_plateau_patience 6  --lr_plateau_tol 0.001   --covariant_attn_tensorization full   --lr_min 1e-6 --soft_equiv_log_ratio_weight 0.01  --vision_preproc true  --disable_ae --disable_vq
+
+
+uv run src/experiments/topoencoder_2d_thermo.py   --dataset mnist   --epochs 3000   --save_every 50   --log_every 25   --device cpu   --adaptive_lr true   --use_scheduler false   --lr 0.001   --lr_max 0.005   --lr_grounding_warmup_epochs 50   --lr_increase_factor 1.05   --lr_decrease_factor 0.8   --lr_unstable_patience 5   --lr_stable_patience 5   --lr_loss_increase_tol 0.1   --output_dir outputs/3d_vision_topoencoder_cifar10   --hidden_dim 32   --codes_per_chart 4  --latent_dim 3 --lr_plateau_patience 6  --lr_plateau_tol 0.001   --covariant_attn_tensorization full   --lr_min 1e-6 --soft_equiv_log_ratio_weight 0.01   --disable_ae --disable_vq
+
+
+uv run src/experiments/analyze_topoencoder_3d.py --checkpoint_dir outputs/3d_vision_topoencoder_cifar10_64_8dim --device cuda:1 --only_missing

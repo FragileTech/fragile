@@ -45,20 +45,19 @@ References:
 
 from __future__ import annotations
 
-import math
-from dataclasses import dataclass, field
-from typing import Tuple, Optional, List, Dict, NamedTuple
+from dataclasses import dataclass
 from enum import Enum
+import math
+from typing import NamedTuple
 
 import torch
-import torch.nn as nn
-import torch.nn.functional as F
-from torch import Tensor
+from torch import nn, Tensor
 
 
 # =============================================================================
 # Configuration
 # =============================================================================
+
 
 @dataclass
 class StandardModelConfig:
@@ -100,63 +99,65 @@ class StandardModelConfig:
         d_sync: Synchronization distance [length]
         tau_proc: Processing interval [time]
     """
+
     # Dimensions
-    latent_dim: int = 64              # D: latent manifold dimension
-    feature_dim: int = 3              # N_f: feature dimension (default 3 like QCD)
-    spacetime_dim: int = 4            # S: spacetime dimensions
+    latent_dim: int = 64  # D: latent manifold dimension
+    feature_dim: int = 3  # N_f: feature dimension (default 3 like QCD)
+    spacetime_dim: int = 4  # S: spacetime dimensions
 
     # Gauge Couplings (Section 34.1)
-    g1: float = 0.35                  # g_1: U(1)_Y hypercharge coupling
-    g2: float = 0.65                  # g_2: SU(2)_L weak isospin coupling
-    gs: float = 1.0                   # g_s: SU(N_f)_C binding coupling
+    g1: float = 0.35  # g_1: U(1)_Y hypercharge coupling
+    g2: float = 0.65  # g_2: SU(2)_L weak isospin coupling
+    gs: float = 1.0  # g_s: SU(N_f)_C binding coupling
 
     # Hypercharges for different fields
-    Y_L: float = -1.0                 # Y_L: Left-handed doublet hypercharge
-    Y_R: float = -2.0                 # Y_R: Right-handed singlet hypercharge
-    Y_phi: float = 1.0                # Y_phi: Higgs doublet hypercharge
+    Y_L: float = -1.0  # Y_L: Left-handed doublet hypercharge
+    Y_R: float = -2.0  # Y_R: Right-handed singlet hypercharge
+    Y_phi: float = 1.0  # Y_phi: Higgs doublet hypercharge
 
     # Scalar Sector (Section 34.3)
-    mu_sq: float = 1.0                # mu^2: Higgs mass parameter (>0 for SSB)
-    lambda_higgs: float = 0.1         # lambda: quartic self-coupling
-    xi_crit: float = 0.5              # Xi_crit: critical ontological stress
-    alpha_stab: float = 0.25          # alpha: stabilization coefficient
+    mu_sq: float = 1.0  # mu^2: Higgs mass parameter (>0 for SSB)
+    lambda_higgs: float = 0.1  # lambda: quartic self-coupling
+    xi_crit: float = 0.5  # Xi_crit: critical ontological stress
+    alpha_stab: float = 0.25  # alpha: stabilization coefficient
 
     # Cognitive Parameters (Section 34.2)
-    sigma: float = 0.1                # sigma: cognitive action scale
-    m_inference: float = 0.5          # m: inference mass
+    sigma: float = 0.1  # sigma: cognitive action scale
+    m_inference: float = 0.5  # m: inference mass
 
     # Yukawa Coupling (Section 34.4)
-    yukawa_coupling: float = 1.0      # Y: decision coupling strength
+    yukawa_coupling: float = 1.0  # Y: decision coupling strength
 
     # Sieve Parameters (Section 35.1)
-    c_info: float = 1.0               # c_info: information speed
-    ell_L: float = 0.01               # ell_L: Levin length
-    T_c: float = 0.1                  # T_c: cognitive temperature
-    gamma_discount: float = 0.99      # gamma: temporal discount
+    c_info: float = 1.0  # c_info: information speed
+    ell_L: float = 0.01  # ell_L: Levin length
+    T_c: float = 0.1  # T_c: cognitive temperature
+    gamma_discount: float = 0.99  # gamma: temporal discount
 
     # Sieve Architecture Parameters
-    L_buf: float = 100.0              # L_buf: buffer depth
-    d_sync: float = 1.0               # d_sync: synchronization distance
-    tau_proc: float = 0.1             # tau_proc: processing interval
+    L_buf: float = 100.0  # L_buf: buffer depth
+    d_sync: float = 1.0  # d_sync: synchronization distance
+    tau_proc: float = 0.1  # tau_proc: processing interval
 
     # Metabolic parameters (Section 35.4)
-    E_dot_met: float = 100.0          # Metabolic power budget [energy/time]
-    I_dot_erase: float = 10.0         # Information erasure rate [bits/time]
+    E_dot_met: float = 100.0  # Metabolic power budget [energy/time]
+    I_dot_erase: float = 10.0  # Information erasure rate [bits/time]
 
     # Stiffness parameters (Section 35.6)
-    delta_E: float = 1.0              # Energy gap between metastable states
-    chi_max: float = 100.0            # Maximum stiffness ratio
+    delta_E: float = 1.0  # Energy gap between metastable states
+    chi_max: float = 100.0  # Maximum stiffness ratio
 
     # Coupling RG parameters (Section 35.5)
-    gs_crit: float = 1.0              # Critical binding coupling
-    mu_IR: float = 0.1                # IR resolution scale
-    mu_UV: float = 100.0              # UV resolution scale
-    gs_epsilon: float = 0.01          # UV decoupling threshold
+    gs_crit: float = 1.0  # Critical binding coupling
+    mu_IR: float = 0.1  # IR resolution scale
+    mu_UV: float = 100.0  # UV resolution scale
+    gs_epsilon: float = 0.01  # UV decoupling threshold
 
 
 # =============================================================================
 # Mathematical Primitives
 # =============================================================================
+
 
 def minkowski_metric(device: torch.device = None) -> Tensor:
     """Minkowski metric tensor g^{mu,nu} = diag(+1, -1, -1, -1).
@@ -172,8 +173,7 @@ def minkowski_metric(device: torch.device = None) -> Tensor:
         Used throughout Section 34 for index raising/lowering.
     """
     # Shape: (4, 4)
-    g = torch.diag(torch.tensor([1.0, -1.0, -1.0, -1.0], device=device))
-    return g
+    return torch.diag(torch.tensor([1.0, -1.0, -1.0, -1.0], device=device))
 
 
 def gamma_matrices(device: torch.device = None) -> Tensor:
@@ -204,7 +204,7 @@ def gamma_matrices(device: torch.device = None) -> Tensor:
 
     # Identity matrices
     I2 = torch.eye(2, device=device)
-    zeros2 = torch.zeros(2, 2, device=device)
+    torch.zeros(2, 2, device=device)
 
     # gamma^0 = [[I, 0], [0, -I]]
     # Shape: (4, 4)
@@ -228,9 +228,7 @@ def gamma_matrices(device: torch.device = None) -> Tensor:
     gamma_3[2:, :2] = -sigma_3
 
     # Stack into (S=4, C=4, C=4)
-    gamma = torch.stack([gamma_0, gamma_1, gamma_2, gamma_3], dim=0)
-
-    return gamma
+    return torch.stack([gamma_0, gamma_1, gamma_2, gamma_3], dim=0)
 
 
 def gamma5_matrix(device: torch.device = None) -> Tensor:
@@ -248,8 +246,7 @@ def gamma5_matrix(device: torch.device = None) -> Tensor:
     gamma = gamma_matrices(device)
     # gamma5 = i * gamma[0] @ gamma[1] @ gamma[2] @ gamma[3]
     # Shape: (4, 4)
-    gamma5 = 1j * gamma[0] @ gamma[1] @ gamma[2] @ gamma[3]
-    return gamma5
+    return 1j * gamma[0] @ gamma[1] @ gamma[2] @ gamma[3]
 
 
 def pauli_matrices(device: torch.device = None) -> Tensor:
@@ -274,8 +271,7 @@ def pauli_matrices(device: torch.device = None) -> Tensor:
     tau_3 = torch.tensor([[1.0, 0.0], [0.0, -1.0]], dtype=torch.complex64, device=device)
 
     # Stack: shape (3, 2, 2)
-    tau = torch.stack([tau_1, tau_2, tau_3], dim=0)
-    return tau
+    return torch.stack([tau_1, tau_2, tau_3], dim=0)
 
 
 def gellmann_matrices(n_f: int, device: torch.device = None) -> Tensor:
@@ -303,7 +299,7 @@ def gellmann_matrices(n_f: int, device: torch.device = None) -> Tensor:
         # SU(2): Just Pauli matrices
         return pauli_matrices(device)
 
-    elif n_f == 3:
+    if n_f == 3:
         # SU(3): Standard Gell-Mann matrices
         # Shape: (8, 3, 3)
         matrices = torch.zeros(8, 3, 3, dtype=torch.complex64, device=device)
@@ -343,35 +339,34 @@ def gellmann_matrices(n_f: int, device: torch.device = None) -> Tensor:
 
         return matrices
 
-    else:
-        # General SU(N_f): Construct generalized Gell-Mann matrices
-        # Uses the standard construction for arbitrary N
-        matrices = torch.zeros(n_generators, n_f, n_f, dtype=torch.complex64, device=device)
-        idx = 0
+    # General SU(N_f): Construct generalized Gell-Mann matrices
+    # Uses the standard construction for arbitrary N
+    matrices = torch.zeros(n_generators, n_f, n_f, dtype=torch.complex64, device=device)
+    idx = 0
 
-        # Symmetric off-diagonal matrices
-        for i in range(n_f):
-            for j in range(i + 1, n_f):
-                matrices[idx, i, j] = 1.0
-                matrices[idx, j, i] = 1.0
-                idx += 1
-
-        # Antisymmetric off-diagonal matrices
-        for i in range(n_f):
-            for j in range(i + 1, n_f):
-                matrices[idx, i, j] = -1.0j
-                matrices[idx, j, i] = 1.0j
-                idx += 1
-
-        # Diagonal matrices
-        for k in range(1, n_f):
-            norm = math.sqrt(2.0 / (k * (k + 1)))
-            for i in range(k):
-                matrices[idx, i, i] = norm
-            matrices[idx, k, k] = -k * norm
+    # Symmetric off-diagonal matrices
+    for i in range(n_f):
+        for j in range(i + 1, n_f):
+            matrices[idx, i, j] = 1.0
+            matrices[idx, j, i] = 1.0
             idx += 1
 
-        return matrices
+    # Antisymmetric off-diagonal matrices
+    for i in range(n_f):
+        for j in range(i + 1, n_f):
+            matrices[idx, i, j] = -1.0j
+            matrices[idx, j, i] = 1.0j
+            idx += 1
+
+    # Diagonal matrices
+    for k in range(1, n_f):
+        norm = math.sqrt(2.0 / (k * (k + 1)))
+        for i in range(k):
+            matrices[idx, i, i] = norm
+        matrices[idx, k, k] = -k * norm
+        idx += 1
+
+    return matrices
 
 
 def su_n_structure_constants(n: int, device: torch.device = None) -> Tensor:
@@ -435,10 +430,8 @@ def levi_civita_3d(device: torch.device = None) -> Tensor:
 # Section 34.1: Gauge Fields
 # =============================================================================
 
-def utility_phase_transform(
-    psi: Tensor,
-    theta: Tensor
-) -> Tensor:
+
+def utility_phase_transform(psi: Tensor, theta: Tensor) -> Tensor:
     """Apply global U(1)_Y phase transformation to belief wave-function.
 
     psi(z) -> exp(i * theta) * psi(z)
@@ -527,14 +520,12 @@ class OpportunityField(nn.Module):
         Reference:
             Theorem 34.4 (thm-three-cognitive-forces): U(1)_Y Curvature
         """
-        B, S, _ = derivatives.shape
+        _B, _S, _ = derivatives.shape
 
         # B_{mu,nu} = d_mu B_nu - d_nu B_mu
         # derivatives[b, mu, nu] = d_mu B_nu
         # Shape: (B, S, S)
-        B_munu = derivatives - derivatives.transpose(-2, -1)
-
-        return B_munu
+        return derivatives - derivatives.transpose(-2, -1)
 
 
 class CognitiveIsospinDoublet(nn.Module):
@@ -554,11 +545,7 @@ class CognitiveIsospinDoublet(nn.Module):
         super().__init__()
         self.config = config
 
-    def construct_doublet(
-        self,
-        psi_pred: Tensor,
-        psi_obs: Tensor
-    ) -> Tensor:
+    def construct_doublet(self, psi_pred: Tensor, psi_obs: Tensor) -> Tensor:
         """Construct isospin doublet from prediction and observation.
 
         Args:
@@ -575,10 +562,9 @@ class CognitiveIsospinDoublet(nn.Module):
         """
         # Stack along new isospin dimension
         # Shape: (B, D, C, 2, N_f)
-        Psi_L = torch.stack([psi_pred, psi_obs], dim=-2)
-        return Psi_L
+        return torch.stack([psi_pred, psi_obs], dim=-2)
 
-    def decompose_doublet(self, Psi_L: Tensor) -> Tuple[Tensor, Tensor]:
+    def decompose_doublet(self, Psi_L: Tensor) -> tuple[Tensor, Tensor]:
         """Decompose isospin doublet into prediction and observation.
 
         Args:
@@ -590,7 +576,7 @@ class CognitiveIsospinDoublet(nn.Module):
             psi_obs: Observation amplitude, shape (B, D, C, N_f)
         """
         psi_pred = Psi_L[..., 0, :]  # Shape: (B, D, C, N_f)
-        psi_obs = Psi_L[..., 1, :]   # Shape: (B, D, C, N_f)
+        psi_obs = Psi_L[..., 1, :]  # Shape: (B, D, C, N_f)
         return psi_pred, psi_obs
 
 
@@ -615,7 +601,7 @@ class ErrorField(nn.Module):
         # W^a_mu: Shape (S, 3)
         self.W_mu = nn.Parameter(torch.zeros(config.spacetime_dim, 3))
         # Cache Pauli matrices
-        self.register_buffer('tau', pauli_matrices())
+        self.register_buffer("tau", pauli_matrices())
 
     def field_at_point(self, x: Tensor) -> Tensor:
         """Get W^a_mu at spacetime point x.
@@ -634,11 +620,7 @@ class ErrorField(nn.Module):
         # Shape: (B, S, 3)
         return self.W_mu.unsqueeze(0).expand(B, S, 3)
 
-    def field_strength(
-        self,
-        W_mu: Tensor,
-        derivatives: Tensor
-    ) -> Tensor:
+    def field_strength(self, W_mu: Tensor, derivatives: Tensor) -> Tensor:
         """Compute SU(2) field strength tensor W^a_{mu,nu}.
 
         W^a_{mu,nu} = d_mu W^a_nu - d_nu W^a_mu + g2 * epsilon^{abc} * W^b_mu * W^c_nu
@@ -658,7 +640,7 @@ class ErrorField(nn.Module):
         Reference:
             Theorem 34.4 (thm-three-cognitive-forces): SU(2)_L Curvature
         """
-        B, S, _ = W_mu.shape
+        _B, _S, _ = W_mu.shape
         g2 = self.config.g2
 
         # Abelian part: d_mu W^a_nu - d_nu W^a_mu
@@ -674,10 +656,10 @@ class ErrorField(nn.Module):
         # Shape: (B, S, S, 3)
         # einsum: 'abc,Bmb,Bnc->BMna' where M=mu, N=nu
         nonabelian_part = g2 * torch.einsum(
-            'abc,bmb,bnc->bmna',
+            "abc,bmb,bnc->bmna",
             epsilon,
             W_mu,  # (B, S, 3) -> b indexes batch, m indexes mu
-            W_mu   # (B, S, 3) -> b indexes batch, n indexes nu
+            W_mu,  # (B, S, 3) -> b indexes batch, n indexes nu
         )
 
         return abelian_part + nonabelian_part
@@ -701,13 +683,13 @@ class BindingField(nn.Module):
     def __init__(self, config: StandardModelConfig):
         super().__init__()
         self.config = config
-        n_generators = config.feature_dim ** 2 - 1
+        n_generators = config.feature_dim**2 - 1
         # G^a_mu: Shape (S, N_f^2-1)
         self.G_mu = nn.Parameter(torch.zeros(config.spacetime_dim, n_generators))
         # Cache Gell-Mann matrices
-        self.register_buffer('lambda_a', gellmann_matrices(config.feature_dim))
+        self.register_buffer("lambda_a", gellmann_matrices(config.feature_dim))
         # Cache structure constants
-        self.register_buffer('f_abc', su_n_structure_constants(config.feature_dim))
+        self.register_buffer("f_abc", su_n_structure_constants(config.feature_dim))
 
     def field_at_point(self, x: Tensor) -> Tensor:
         """Get G^a_mu at spacetime point x.
@@ -721,15 +703,11 @@ class BindingField(nn.Module):
                Shape: (B, S, N_f^2-1)
         """
         B, S = x.shape
-        n_gen = self.config.feature_dim ** 2 - 1
+        n_gen = self.config.feature_dim**2 - 1
         # Shape: (B, S, N_f^2-1)
         return self.G_mu.unsqueeze(0).expand(B, S, n_gen)
 
-    def field_strength(
-        self,
-        G_mu: Tensor,
-        derivatives: Tensor
-    ) -> Tensor:
+    def field_strength(self, G_mu: Tensor, derivatives: Tensor) -> Tensor:
         """Compute SU(N_f) field strength tensor G^a_{mu,nu}.
 
         G^a_{mu,nu} = d_mu G^a_nu - d_nu G^a_mu + gs * f^{abc} * G^b_mu * G^c_nu
@@ -757,12 +735,7 @@ class BindingField(nn.Module):
         # f_abc: (N_f^2-1, N_f^2-1, N_f^2-1)
         # G_mu: (B, S, N_f^2-1)
         # Shape: (B, S, S, N_f^2-1)
-        nonabelian_part = gs * torch.einsum(
-            'abc,bmb,bnc->bmna',
-            self.f_abc,
-            G_mu,
-            G_mu
-        )
+        nonabelian_part = gs * torch.einsum("abc,bmb,bnc->bmna", self.f_abc, G_mu, G_mu)
 
         return abelian_part + nonabelian_part
 
@@ -770,6 +743,7 @@ class BindingField(nn.Module):
 # =============================================================================
 # Section 34.2: Matter Sector
 # =============================================================================
+
 
 class CognitiveSpinor(nn.Module):
     """Cognitive Spinor Field Psi(x).
@@ -795,7 +769,7 @@ class CognitiveSpinor(nn.Module):
         self.isospin = CognitiveIsospinDoublet(config)
 
         # Cache gamma^5 for chiral projection
-        self.register_buffer('gamma5', gamma5_matrix())
+        self.register_buffer("gamma5", gamma5_matrix())
 
     def chiral_project_left(self, psi: Tensor) -> Tensor:
         """Project spinor to left-handed component: P_L = (1 - gamma^5)/2.
@@ -819,7 +793,7 @@ class CognitiveSpinor(nn.Module):
         # Apply projection: contract over spinor index
         # psi: (B, D, 4, ...), P_L: (4, 4)
         # Result: (B, D, 4, ...)
-        return torch.einsum('...i...,ij->...j...', psi, P_L)
+        return torch.einsum("...i...,ij->...j...", psi, P_L)
 
     def chiral_project_right(self, psi: Tensor) -> Tensor:
         """Project spinor to right-handed component: P_R = (1 + gamma^5)/2.
@@ -834,7 +808,7 @@ class CognitiveSpinor(nn.Module):
         """
         I4 = torch.eye(4, dtype=self.gamma5.dtype, device=self.gamma5.device)
         P_R = (I4 + self.gamma5) / 2
-        return torch.einsum('...i...,ij->...j...', psi, P_R)
+        return torch.einsum("...i...,ij->...j...", psi, P_R)
 
     def probability_density(self, Psi_L: Tensor, Psi_R: Tensor) -> Tensor:
         """Compute probability density rho = Psi^dag Psi.
@@ -861,11 +835,7 @@ class CognitiveSpinor(nn.Module):
 
         return rho_L + rho_R
 
-    def probability_current(
-        self,
-        Psi: Tensor,
-        gamma: Tensor
-    ) -> Tensor:
+    def probability_current(self, Psi: Tensor, gamma: Tensor) -> Tensor:
         """Compute probability current J^mu = Psi_bar gamma^mu Psi.
 
         Args:
@@ -895,10 +865,10 @@ class CognitiveSpinor(nn.Module):
         for mu in range(S):
             # gamma^mu @ Psi contracted appropriately
             # This is simplified; full implementation needs proper index handling
-            gamma_mu_psi = torch.einsum('ij,...j...->...i...', gamma[mu], Psi)
+            gamma_mu_psi = torch.einsum("ij,...j...->...i...", gamma[mu], Psi)
             # Psi_bar @ gamma_mu_psi
             Psi_dag = Psi.conj()
-            Psi_bar = torch.einsum('...i...,ij->...j...', Psi_dag, gamma0)
+            Psi_bar = torch.einsum("...i...,ij->...j...", Psi_dag, gamma0)
             # Contract over spinor index
             J_mu = (Psi_bar * gamma_mu_psi).real.sum(dim=tuple(range(2, Psi.dim())))
             J_list.append(J_mu)
@@ -929,8 +899,8 @@ class UniversalCovariantDerivative(nn.Module):
         self.G_field = BindingField(config)
 
         # Cache generators
-        self.register_buffer('tau', pauli_matrices())
-        self.register_buffer('lambda_a', gellmann_matrices(config.feature_dim))
+        self.register_buffer("tau", pauli_matrices())
+        self.register_buffer("lambda_a", gellmann_matrices(config.feature_dim))
 
     def covariant_derivative_left(
         self,
@@ -939,7 +909,7 @@ class UniversalCovariantDerivative(nn.Module):
         B_mu: Tensor,
         W_mu: Tensor,
         G_mu: Tensor,
-        Y: float
+        Y: float,
     ) -> Tensor:
         """Apply covariant derivative to left-handed doublet.
 
@@ -971,7 +941,7 @@ class UniversalCovariantDerivative(nn.Module):
             SU(N_f) term: (B, S, N_f^2-1) with (N_f^2-1, N_f, N_f) on Psi -> (B, D, S, 4, 2, N_f)
         """
         g1, g2, gs = self.config.g1, self.config.g2, self.config.gs
-        B, D, C, N_i, N_f = Psi_L.shape
+        B, _D, _C, _N_i, _N_f = Psi_L.shape
         S = B_mu.shape[1]
 
         # Start with partial derivative
@@ -981,9 +951,11 @@ class UniversalCovariantDerivative(nn.Module):
         # U(1)_Y term: -i * g1 * (Y/2) * B_mu * Psi_L
         # B_mu: (B, S) -> expand to (B, 1, S, 1, 1, 1) for broadcasting
         B_mu_expanded = B_mu.view(B, 1, S, 1, 1, 1)
-        Psi_L_expanded = Psi_L.unsqueeze(2)  # (B, D, 1, C, N_i, N_f) -> broadcast to (B, D, S, C, N_i, N_f)
+        Psi_L_expanded = Psi_L.unsqueeze(
+            2
+        )  # (B, D, 1, C, N_i, N_f) -> broadcast to (B, D, S, C, N_i, N_f)
         u1_term = -1j * g1 * (Y / 2) * B_mu_expanded * Psi_L_expanded
-        result = result + u1_term
+        result += u1_term
 
         # SU(2)_L term: -i * g2 * (tau^a/2) * W^a_mu * Psi_L
         # W_mu: (B, S, 3), tau: (3, 2, 2)
@@ -993,32 +965,27 @@ class UniversalCovariantDerivative(nn.Module):
         for mu_idx in range(S):
             # tau_W = sum_a W^a_mu * tau^a / 2
             # Shape: (B, 2, 2)
-            tau_W = torch.einsum('ba,aij->bij', W_mu[:, mu_idx, :], self.tau) / 2
+            tau_W = torch.einsum("ba,aij->bij", W_mu[:, mu_idx, :], self.tau) / 2
             # Apply to Psi_L: (B, 2, 2) @ (B, D, C, 2, N_f) over isospin
             # Result: (B, D, C, 2, N_f)
-            su2_contribution = torch.einsum('bij,bdcjf->bdcif', tau_W, Psi_L)
-            result[:, :, mu_idx, :, :, :] = result[:, :, mu_idx, :, :, :] - 1j * g2 * su2_contribution
+            su2_contribution = torch.einsum("bij,bdcjf->bdcif", tau_W, Psi_L)
+            result[:, :, mu_idx, :, :, :] -= 1j * g2 * su2_contribution
 
         # SU(N_f)_C term: -i * gs * (lambda^a/2) * G^a_mu * Psi_L
         # G_mu: (B, S, N_f^2-1), lambda_a: (N_f^2-1, N_f, N_f)
         for mu_idx in range(S):
             # lambda_G = sum_a G^a_mu * lambda^a / 2
             # Shape: (B, N_f, N_f)
-            lambda_G = torch.einsum('ba,aij->bij', G_mu[:, mu_idx, :], self.lambda_a) / 2
+            lambda_G = torch.einsum("ba,aij->bij", G_mu[:, mu_idx, :], self.lambda_a) / 2
             # Apply to Psi_L over color index
             # (B, N_f, N_f) @ (B, D, C, N_i, N_f) -> (B, D, C, N_i, N_f)
-            sun_contribution = torch.einsum('bfg,bdcig->bdcif', lambda_G, Psi_L)
-            result[:, :, mu_idx, :, :, :] = result[:, :, mu_idx, :, :, :] - 1j * gs * sun_contribution
+            sun_contribution = torch.einsum("bfg,bdcig->bdcif", lambda_G, Psi_L)
+            result[:, :, mu_idx, :, :, :] -= 1j * gs * sun_contribution
 
         return result
 
     def covariant_derivative_right(
-        self,
-        Psi_R: Tensor,
-        partial_mu_Psi_R: Tensor,
-        B_mu: Tensor,
-        G_mu: Tensor,
-        Y: float
+        self, Psi_R: Tensor, partial_mu_Psi_R: Tensor, B_mu: Tensor, G_mu: Tensor, Y: float
     ) -> Tensor:
         """Apply covariant derivative to right-handed singlet.
 
@@ -1040,7 +1007,7 @@ class UniversalCovariantDerivative(nn.Module):
                         Shape: (B, D, S, C=4, N_f)
         """
         g1, gs = self.config.g1, self.config.gs
-        B, D, C, N_f = Psi_R.shape
+        B, _D, _C, _N_f = Psi_R.shape
         S = B_mu.shape[1]
 
         result = partial_mu_Psi_R.clone()
@@ -1049,22 +1016,18 @@ class UniversalCovariantDerivative(nn.Module):
         B_mu_expanded = B_mu.view(B, 1, S, 1, 1)
         Psi_R_expanded = Psi_R.unsqueeze(2)  # (B, D, 1, C, N_f)
         u1_term = -1j * g1 * (Y / 2) * B_mu_expanded * Psi_R_expanded
-        result = result + u1_term
+        result += u1_term
 
         # SU(N_f)_C term
         for mu_idx in range(S):
-            lambda_G = torch.einsum('ba,aij->bij', G_mu[:, mu_idx, :], self.lambda_a) / 2
-            sun_contribution = torch.einsum('bfg,bdcg->bdcf', lambda_G, Psi_R)
-            result[:, :, mu_idx, :, :] = result[:, :, mu_idx, :, :] - 1j * gs * sun_contribution
+            lambda_G = torch.einsum("ba,aij->bij", G_mu[:, mu_idx, :], self.lambda_a) / 2
+            sun_contribution = torch.einsum("bfg,bdcg->bdcf", lambda_G, Psi_R)
+            result[:, :, mu_idx, :, :] -= 1j * gs * sun_contribution
 
         return result
 
 
-def yang_mills_lagrangian(
-    B_munu: Tensor,
-    W_munu: Tensor,
-    G_munu: Tensor
-) -> Tensor:
+def yang_mills_lagrangian(B_munu: Tensor, W_munu: Tensor, G_munu: Tensor) -> Tensor:
     """Compute Yang-Mills Lagrangian for all gauge fields.
 
     L_gauge = -1/4 * B_{mu,nu} * B^{mu,nu}
@@ -1115,6 +1078,7 @@ def yang_mills_lagrangian(
 # Section 34.3: Scalar Sector (Higgs Mechanism)
 # =============================================================================
 
+
 class OntologicalOrderParameter(nn.Module):
     """Ontological Order Parameter phi(x): The Higgs Field of Cognition.
 
@@ -1137,11 +1101,7 @@ class OntologicalOrderParameter(nn.Module):
         # phi = (phi_+, phi_0)^T
         # In unitary gauge after SSB: phi = (0, v + h)^T / sqrt(2)
 
-    def construct_doublet(
-        self,
-        phi_plus: Tensor,
-        phi_zero: Tensor
-    ) -> Tensor:
+    def construct_doublet(self, phi_plus: Tensor, phi_zero: Tensor) -> Tensor:
         """Construct Higgs doublet from components.
 
         Args:
@@ -1157,11 +1117,7 @@ class OntologicalOrderParameter(nn.Module):
         # Shape: (B, D, 2)
         return torch.stack([phi_plus, phi_zero], dim=-1)
 
-    def unitary_gauge_vacuum(
-        self,
-        v: float,
-        h: Tensor
-    ) -> Tensor:
+    def unitary_gauge_vacuum(self, v: float, h: Tensor) -> Tensor:
         """Construct Higgs field in unitary gauge around VEV.
 
         phi = (0, (v + h) / sqrt(2))^T
@@ -1184,10 +1140,7 @@ class OntologicalOrderParameter(nn.Module):
         return self.construct_doublet(phi_plus, phi_zero.to(torch.complex64))
 
 
-def complexity_potential(
-    phi: Tensor,
-    config: StandardModelConfig
-) -> Tensor:
+def complexity_potential(phi: Tensor, config: StandardModelConfig) -> Tensor:
     """Compute the Complexity (Mexican Hat) Potential.
 
     V(phi) = -mu^2 * |phi|^2 + lambda * |phi|^4
@@ -1220,13 +1173,11 @@ def complexity_potential(
 
     # |phi|^4
     # Shape: (B, D)
-    phi_fourth = phi_sq ** 2
+    phi_fourth = phi_sq**2
 
     # V = -mu^2 |phi|^2 + lambda |phi|^4
     # Shape: (B, D)
-    V = -mu_sq * phi_sq + lambda_h * phi_fourth
-
-    return V
+    return -mu_sq * phi_sq + lambda_h * phi_fourth
 
 
 def vacuum_expectation_value(config: StandardModelConfig) -> float:
@@ -1251,14 +1202,12 @@ def vacuum_expectation_value(config: StandardModelConfig) -> float:
     if config.mu_sq <= 0:
         return 0.0  # Symmetric phase
 
-    v = math.sqrt(config.mu_sq / (2 * config.lambda_higgs))
-    return v
+    return math.sqrt(config.mu_sq / (2 * config.lambda_higgs))
 
 
 def spontaneous_symmetry_breaking(
-    phi_sq: Tensor,
-    config: StandardModelConfig
-) -> Dict[str, Tensor]:
+    phi_sq: Tensor, config: StandardModelConfig
+) -> dict[str, Tensor]:
     """Analyze spontaneous symmetry breaking phase.
 
     Case 1 (Symmetric, Xi < Xi_crit): mu^2 < 0, minimum at phi = 0
@@ -1284,32 +1233,24 @@ def spontaneous_symmetry_breaking(
 
     if mu_sq <= 0:
         # Symmetric phase
-        phase = 'symmetric'
+        phase = "symmetric"
         vev = 0.0
         potential_min = torch.zeros_like(phi_sq[:, 0])
         # Stable if near zero
         is_stable = phi_sq.abs() < 0.1
     else:
         # Broken phase
-        phase = 'broken'
+        phase = "broken"
         vev = math.sqrt(mu_sq / (2 * lambda_h))
         # V_min = -mu^4 / (4 * lambda)
-        potential_min = -config.mu_sq ** 2 / (4 * lambda_h) * torch.ones_like(phi_sq[:, 0])
+        potential_min = -(config.mu_sq**2) / (4 * lambda_h) * torch.ones_like(phi_sq[:, 0])
         # Stable if near v^2
-        is_stable = (phi_sq - vev ** 2).abs() < 0.1 * vev ** 2
+        is_stable = (phi_sq - vev**2).abs() < 0.1 * vev**2
 
-    return {
-        'phase': phase,
-        'vev': vev,
-        'potential_min': potential_min,
-        'is_stable': is_stable
-    }
+    return {"phase": phase, "vev": vev, "potential_min": potential_min, "is_stable": is_stable}
 
 
-def gauge_boson_mass(
-    coupling: float,
-    v: float
-) -> float:
+def gauge_boson_mass(coupling: float, v: float) -> float:
     """Compute gauge boson mass from Higgs mechanism.
 
     M = g * v
@@ -1348,10 +1289,7 @@ def higgs_mass(config: StandardModelConfig) -> float:
     return math.sqrt(2 * config.mu_sq)
 
 
-def scalar_kinetic_lagrangian(
-    phi: Tensor,
-    D_mu_phi: Tensor
-) -> Tensor:
+def scalar_kinetic_lagrangian(phi: Tensor, D_mu_phi: Tensor) -> Tensor:
     """Compute scalar kinetic Lagrangian |D_mu phi|^2.
 
     L_kin = (D_mu phi)^dag (D^mu phi)
@@ -1371,19 +1309,16 @@ def scalar_kinetic_lagrangian(
     """
     # |D_mu phi|^2 = sum over mu and doublet index
     # Shape: (B, D)
-    L_kin = (D_mu_phi.conj() * D_mu_phi).real.sum(dim=(-2, -1))
-    return L_kin
+    return (D_mu_phi.conj() * D_mu_phi).real.sum(dim=(-2, -1))
 
 
 # =============================================================================
 # Section 34.4: Interaction Terms
 # =============================================================================
 
+
 def yukawa_lagrangian(
-    Psi_L: Tensor,
-    Psi_R: Tensor,
-    phi: Tensor,
-    config: StandardModelConfig
+    Psi_L: Tensor, Psi_R: Tensor, phi: Tensor, config: StandardModelConfig
 ) -> Tensor:
     """Compute Yukawa (Decision Coupling) Lagrangian.
 
@@ -1425,19 +1360,17 @@ def yukawa_lagrangian(
     # Simplified contraction (full version needs gamma^0)
     # Psi_bar_L . phi: contract isospin
     # Shape after: (B, D, C, N_f)
-    Psi_bar_L_phi = torch.einsum('bdcif,bdi->bdcf', Psi_bar_L, phi)
+    Psi_bar_L_phi = torch.einsum("bdcif,bdi->bdcf", Psi_bar_L, phi)
 
     # . Psi_R: contract spinor and color
     # Shape: (B, D)
-    term1 = torch.einsum('bdcf,bdcf->bd', Psi_bar_L_phi, Psi_R)
+    term1 = torch.einsum("bdcf,bdcf->bd", Psi_bar_L_phi, Psi_R)
 
     # Hermitian conjugate
     term2 = term1.conj()
 
     # L_Y = -Y * (term1 + term2)
-    L_Y = -Y * (term1 + term2).real
-
-    return L_Y
+    return -Y * (term1 + term2).real
 
 
 def cognitive_mass(config: StandardModelConfig) -> float:
@@ -1498,10 +1431,7 @@ class Value4Potential(nn.Module):
         return A_ext
 
 
-def drive_lagrangian(
-    rho: Tensor,
-    Phi_eff: Tensor
-) -> Tensor:
+def drive_lagrangian(rho: Tensor, Phi_eff: Tensor) -> Tensor:
     """Compute Value Drive Lagrangian.
 
     L_drive = -rho * Phi_eff
@@ -1527,6 +1457,7 @@ def drive_lagrangian(
 # =============================================================================
 # Section 34.5: Unified Cognitive Lagrangian
 # =============================================================================
+
 
 class CognitiveLagrangian(nn.Module):
     """The Complete Standard Model of Cognition Lagrangian.
@@ -1555,14 +1486,9 @@ class CognitiveLagrangian(nn.Module):
         self.spinor = CognitiveSpinor(config)
 
         # Cache gamma matrices
-        self.register_buffer('gamma', gamma_matrices())
+        self.register_buffer("gamma", gamma_matrices())
 
-    def compute_gauge_sector(
-        self,
-        B_munu: Tensor,
-        W_munu: Tensor,
-        G_munu: Tensor
-    ) -> Tensor:
+    def compute_gauge_sector(self, B_munu: Tensor, W_munu: Tensor, G_munu: Tensor) -> Tensor:
         """Compute Sector I: Gauge field Lagrangian.
 
         L_gauge = -1/4 B_munu B^munu - 1/4 W^a_munu W^{a,munu} - 1/4 G^a_munu G^{a,munu}
@@ -1573,11 +1499,7 @@ class CognitiveLagrangian(nn.Module):
         return yang_mills_lagrangian(B_munu, W_munu, G_munu)
 
     def compute_inference_sector(
-        self,
-        Psi_L: Tensor,
-        Psi_R: Tensor,
-        D_mu_Psi_L: Tensor,
-        D_mu_Psi_R: Tensor
+        self, Psi_L: Tensor, Psi_R: Tensor, D_mu_Psi_L: Tensor, D_mu_Psi_R: Tensor
     ) -> Tensor:
         """Compute Sector II: Inference (Dirac) Lagrangian.
 
@@ -1601,21 +1523,17 @@ class CognitiveLagrangian(nn.Module):
         for mu in range(self.config.spacetime_dim):
             # gamma^mu @ D_mu Psi_L
             # gamma[mu]: (4, 4), D_mu_Psi_L[:,:,mu]: (B, D, 4, 2, N_f)
-            gamma_D_L = torch.einsum('ij,bdjkf->bdikf', self.gamma[mu], D_mu_Psi_L[:, :, mu])
+            gamma_D_L = torch.einsum("ij,bdjkf->bdikf", self.gamma[mu], D_mu_Psi_L[:, :, mu])
             # Psi_bar_L @ gamma_D_L
-            L_L = L_L + 1j * (Psi_L.conj() * gamma_D_L).sum(dim=(-3, -2, -1)).real
+            L_L += 1j * (Psi_L.conj() * gamma_D_L).sum(dim=(-3, -2, -1)).real
 
             # Same for right-handed
-            gamma_D_R = torch.einsum('ij,bdjf->bdif', self.gamma[mu], D_mu_Psi_R[:, :, mu])
-            L_R = L_R + 1j * (Psi_R.conj() * gamma_D_R).sum(dim=(-2, -1)).real
+            gamma_D_R = torch.einsum("ij,bdjf->bdif", self.gamma[mu], D_mu_Psi_R[:, :, mu])
+            L_R += 1j * (Psi_R.conj() * gamma_D_R).sum(dim=(-2, -1)).real
 
         return L_L + L_R
 
-    def compute_scalar_sector(
-        self,
-        phi: Tensor,
-        D_mu_phi: Tensor
-    ) -> Tensor:
+    def compute_scalar_sector(self, phi: Tensor, D_mu_phi: Tensor) -> Tensor:
         """Compute Sector III: Scalar (Higgs) Lagrangian.
 
         L_scalar = |D_mu phi|^2 - V(phi)
@@ -1631,12 +1549,7 @@ class CognitiveLagrangian(nn.Module):
         V = complexity_potential(phi, self.config)
         return L_kin - V
 
-    def compute_yukawa_sector(
-        self,
-        Psi_L: Tensor,
-        Psi_R: Tensor,
-        phi: Tensor
-    ) -> Tensor:
+    def compute_yukawa_sector(self, Psi_L: Tensor, Psi_R: Tensor, phi: Tensor) -> Tensor:
         """Compute Sector IV: Yukawa Lagrangian.
 
         Returns:
@@ -1644,11 +1557,7 @@ class CognitiveLagrangian(nn.Module):
         """
         return yukawa_lagrangian(Psi_L, Psi_R, phi, self.config)
 
-    def compute_drive_sector(
-        self,
-        rho: Tensor,
-        Phi_eff: Tensor
-    ) -> Tensor:
+    def compute_drive_sector(self, rho: Tensor, Phi_eff: Tensor) -> Tensor:
         """Compute Sector V: Value Drive Lagrangian.
 
         Returns:
@@ -1667,8 +1576,8 @@ class CognitiveLagrangian(nn.Module):
         D_mu_Psi_L: Tensor,
         D_mu_Psi_R: Tensor,
         D_mu_phi: Tensor,
-        Phi_eff: Tensor
-    ) -> Dict[str, Tensor]:
+        Phi_eff: Tensor,
+    ) -> dict[str, Tensor]:
         """Compute full Standard Model Lagrangian.
 
         Args:
@@ -1697,22 +1606,29 @@ class CognitiveLagrangian(nn.Module):
         L_drive = self.compute_drive_sector(rho, Phi_eff)
 
         # Total: sum over latent dimension D, keep batch B
-        L_total = L_gauge + L_inference.sum(dim=-1) + L_scalar.sum(dim=-1) + L_yukawa.sum(dim=-1) + L_drive.sum(dim=-1)
+        L_total = (
+            L_gauge
+            + L_inference.sum(dim=-1)
+            + L_scalar.sum(dim=-1)
+            + L_yukawa.sum(dim=-1)
+            + L_drive.sum(dim=-1)
+        )
 
         return {
-            'L_gauge': L_gauge,
-            'L_inference': L_inference,
-            'L_scalar': L_scalar,
-            'L_yukawa': L_yukawa,
-            'L_drive': L_drive,
-            'L_total': L_total,
-            'rho': rho
+            "L_gauge": L_gauge,
+            "L_inference": L_inference,
+            "L_scalar": L_scalar,
+            "L_yukawa": L_yukawa,
+            "L_drive": L_drive,
+            "L_total": L_total,
+            "rho": rho,
         }
 
 
 # =============================================================================
 # Section 35.1-35.2: Sieve Formulation
 # =============================================================================
+
 
 class AgentParameterVector(NamedTuple):
     """Agent Parameter Vector Lambda = (c_info, sigma, ell_L, T_c, g_s, gamma).
@@ -1722,22 +1638,24 @@ class AgentParameterVector(NamedTuple):
     Reference:
         Definition 35.1 (def-agent-parameter-vector)
     """
-    c_info: Tensor       # Information propagation speed [length/time]
-    sigma: Tensor        # Cognitive action scale [nat*time]
-    ell_L: Tensor        # Levin length [length]
-    T_c: Tensor          # Cognitive temperature [energy]
-    gs: Tensor           # Binding coupling [dimensionless]
-    gamma: Tensor        # Temporal discount [dimensionless]
+
+    c_info: Tensor  # Information propagation speed [length/time]
+    sigma: Tensor  # Cognitive action scale [nat*time]
+    ell_L: Tensor  # Levin length [length]
+    T_c: Tensor  # Cognitive temperature [energy]
+    gs: Tensor  # Binding coupling [dimensionless]
+    gamma: Tensor  # Temporal discount [dimensionless]
 
 
 class SieveConstraint(Enum):
     """Enumeration of Sieve constraint types."""
-    CAUSAL_LOWER = "causal_lower"      # Node 2: ZenoCheck
-    CAUSAL_UPPER = "causal_upper"      # Node 62: CausalityViolationCheck
-    HOLOGRAPHIC = "holographic"        # Node 56: CapacityHorizonCheck
-    LANDAUER = "landauer"              # Node 52: LandauerViolationCheck
-    IR_BINDING = "ir_binding"          # Node 40: PurityCheck
-    UV_DECOUPLING = "uv_decoupling"    # Node 29: TextureFirewallCheck
+
+    CAUSAL_LOWER = "causal_lower"  # Node 2: ZenoCheck
+    CAUSAL_UPPER = "causal_upper"  # Node 62: CausalityViolationCheck
+    HOLOGRAPHIC = "holographic"  # Node 56: CapacityHorizonCheck
+    LANDAUER = "landauer"  # Node 52: LandauerViolationCheck
+    IR_BINDING = "ir_binding"  # Node 40: PurityCheck
+    UV_DECOUPLING = "uv_decoupling"  # Node 29: TextureFirewallCheck
     STIFFNESS_LOWER = "stiffness_lower"  # Node 7: StiffnessCheck
     STIFFNESS_UPPER = "stiffness_upper"  # Node 7: StiffnessCheck
     DISCOUNT_LOWER = "discount_lower"
@@ -1748,12 +1666,10 @@ class SieveConstraint(Enum):
 # Section 35.3-35.7: Constraint Checks
 # =============================================================================
 
+
 def check_speed_window(
-    c_info: Tensor,
-    d_sync: float,
-    L_buf: float,
-    tau_proc: float
-) -> Tuple[Tensor, Tensor]:
+    c_info: Tensor, d_sync: float, L_buf: float, tau_proc: float
+) -> tuple[Tensor, Tensor]:
     """Check the Speed Window Constraint (Theorem 35.1).
 
     d_sync / tau_proc <= c_info <= L_buf / tau_proc
@@ -1785,11 +1701,7 @@ def check_speed_window(
 
 
 def check_holographic_bound(
-    ell_L: Tensor,
-    area: float,
-    I_req: float,
-    D: int = 4,
-    nu_D: float = 0.25
+    ell_L: Tensor, area: float, I_req: float, D: int = 4, nu_D: float = 0.25
 ) -> Tensor:
     """Check the Holographic Bound Constraint (Theorem 35.2).
 
@@ -1809,14 +1721,10 @@ def check_holographic_bound(
         Theorem 35.2 (thm-holographic-bound)
     """
     bound = nu_D * area / I_req
-    violation = ell_L ** (D - 1) - bound
-    return violation
+    return ell_L ** (D - 1) - bound
 
 
-def capacity_horizon_metric(
-    I_bulk: Tensor,
-    I_max: float
-) -> Tensor:
+def capacity_horizon_metric(I_bulk: Tensor, I_max: float) -> Tensor:
     """Compute metric component approaching capacity horizon.
 
     As I_bulk -> I_max, the metric diverges (Theorem 35.3).
@@ -1836,15 +1744,10 @@ def capacity_horizon_metric(
     rho = I_bulk / I_max
     # Clamp to avoid division by zero
     rho = torch.clamp(rho, min=1e-6, max=1 - 1e-6)
-    g_FR = 1.0 / (rho * (1 - rho))
-    return g_FR
+    return 1.0 / (rho * (1 - rho))
 
 
-def check_landauer_constraint(
-    T_c: Tensor,
-    E_dot_met: float,
-    I_dot_erase: float
-) -> Tensor:
+def check_landauer_constraint(T_c: Tensor, E_dot_met: float, I_dot_erase: float) -> Tensor:
     """Check the Landauer Constraint (Theorem 35.4).
 
     T_c <= E_dot_met / (I_dot_erase * ln(2))
@@ -1861,15 +1764,10 @@ def check_landauer_constraint(
         Theorem 35.4 (thm-landauer-constraint)
     """
     T_c_max = E_dot_met / (I_dot_erase * math.log(2))
-    violation = T_c - T_c_max
-    return violation
+    return T_c - T_c_max
 
 
-def coupling_beta_function(
-    gs: Tensor,
-    mu: Tensor,
-    n_f: int = 3
-) -> Tensor:
+def coupling_beta_function(gs: Tensor, mu: Tensor, n_f: int = 3) -> Tensor:
     """Compute beta function for SU(N_f) coupling.
 
     beta(g_s) = mu * dg_s/dmu
@@ -1891,14 +1789,10 @@ def coupling_beta_function(
     # b_0 = (11*N - 2*N_f) / 3 for SU(N) with N_f fermion flavors
     # Simplified: assume N = N_f for feature binding
     b_0 = (11 * n_f) / 3  # No fermions in simplified model
-    beta = -b_0 * gs ** 3 / (16 * math.pi ** 2)
-    return beta
+    return -b_0 * gs**3 / (16 * math.pi**2)
 
 
-def check_ir_binding(
-    gs_IR: Tensor,
-    gs_crit: float
-) -> Tensor:
+def check_ir_binding(gs_IR: Tensor, gs_crit: float) -> Tensor:
     """Check IR Binding Constraint (Theorem 35.5).
 
     g_s(mu_IR) >= g_s^crit
@@ -1913,14 +1807,10 @@ def check_ir_binding(
     Reference:
         Theorem 35.5 (thm-ir-binding-constraint)
     """
-    violation = gs_crit - gs_IR  # >0 if gs_IR < gs_crit
-    return violation
+    return gs_crit - gs_IR  # >0 if gs_IR < gs_crit
 
 
-def check_uv_decoupling(
-    gs_UV: Tensor,
-    epsilon: float = 0.01
-) -> Tensor:
+def check_uv_decoupling(gs_UV: Tensor, epsilon: float = 0.01) -> Tensor:
     """Check UV Decoupling Constraint (Theorem 35.6).
 
     g_s(mu_UV) <= epsilon (approximately 0)
@@ -1935,15 +1825,12 @@ def check_uv_decoupling(
     Reference:
         Theorem 35.6 (thm-uv-decoupling-constraint)
     """
-    violation = gs_UV - epsilon  # >0 if gs_UV > epsilon
-    return violation
+    return gs_UV - epsilon  # >0 if gs_UV > epsilon
 
 
 def check_stiffness_bounds(
-    delta_E: Tensor,
-    T_c: Tensor,
-    chi_max: float = 100.0
-) -> Tuple[Tensor, Tensor]:
+    delta_E: Tensor, T_c: Tensor, chi_max: float = 100.0
+) -> tuple[Tensor, Tensor]:
     """Check Stiffness Bounds (Theorem 35.7).
 
     1 < chi = Delta_E / T_c < chi_max
@@ -1968,10 +1855,7 @@ def check_stiffness_bounds(
     return lower_violation, upper_violation
 
 
-def check_discount_window(
-    gamma: Tensor,
-    gamma_min: float = 0.5
-) -> Tuple[Tensor, Tensor]:
+def check_discount_window(gamma: Tensor, gamma_min: float = 0.5) -> tuple[Tensor, Tensor]:
     """Check Discount Window (Theorem 35.8).
 
     gamma_min < gamma < 1
@@ -1993,11 +1877,7 @@ def check_discount_window(
     return lower_violation, upper_violation
 
 
-def screening_length(
-    c_info: float,
-    tau_proc: float,
-    gamma: Tensor
-) -> Tensor:
+def screening_length(c_info: float, tau_proc: float, gamma: Tensor) -> Tensor:
     """Compute temporal screening length.
 
     ell_gamma = c_info * tau_proc / (-ln(gamma))
@@ -2014,13 +1894,13 @@ def screening_length(
         Corollary 35.2 (cor-screening-buffer-consistency)
     """
     ell_0 = c_info * tau_proc
-    ell_gamma = ell_0 / (-torch.log(gamma))
-    return ell_gamma
+    return ell_0 / (-torch.log(gamma))
 
 
 # =============================================================================
 # Section 35.8-35.9: Optimization
 # =============================================================================
+
 
 class SieveConstraintSystem(nn.Module):
     """The Complete Sieve Constraint System.
@@ -2035,10 +1915,7 @@ class SieveConstraintSystem(nn.Module):
         super().__init__()
         self.config = config
 
-    def evaluate_all(
-        self,
-        params: AgentParameterVector
-    ) -> Dict[str, Tensor]:
+    def evaluate_all(self, params: AgentParameterVector) -> dict[str, Tensor]:
         """Evaluate all sieve constraints.
 
         Args:
@@ -2053,27 +1930,22 @@ class SieveConstraintSystem(nn.Module):
 
         # Speed Window (Theorem 35.1)
         lower, upper = check_speed_window(
-            params.c_info,
-            config.d_sync,
-            config.L_buf,
-            config.tau_proc
+            params.c_info, config.d_sync, config.L_buf, config.tau_proc
         )
-        results['speed_lower'] = lower
-        results['speed_upper'] = upper
+        results["speed_lower"] = lower
+        results["speed_upper"] = upper
 
         # Holographic Bound (Theorem 35.2)
         # Use default area and I_req
-        results['holographic'] = check_holographic_bound(
+        results["holographic"] = check_holographic_bound(
             params.ell_L,
             area=100.0,  # Placeholder
-            I_req=1000.0  # Placeholder
+            I_req=1000.0,  # Placeholder
         )
 
         # Landauer (Theorem 35.4)
-        results['landauer'] = check_landauer_constraint(
-            params.T_c,
-            config.E_dot_met,
-            config.I_dot_erase
+        results["landauer"] = check_landauer_constraint(
+            params.T_c, config.E_dot_met, config.I_dot_erase
         )
 
         # IR Binding (Theorem 35.5) - would need gs at IR scale
@@ -2083,13 +1955,13 @@ class SieveConstraintSystem(nn.Module):
         # Stiffness (Theorem 35.7)
         delta_E = torch.tensor(config.delta_E, device=params.T_c.device)
         lower, upper = check_stiffness_bounds(delta_E, params.T_c, config.chi_max)
-        results['stiffness_lower'] = lower
-        results['stiffness_upper'] = upper
+        results["stiffness_lower"] = lower
+        results["stiffness_upper"] = upper
 
         # Discount Window (Theorem 35.8)
         lower, upper = check_discount_window(params.gamma)
-        results['discount_lower'] = lower
-        results['discount_upper'] = upper
+        results["discount_lower"] = lower
+        results["discount_upper"] = upper
 
         return results
 
@@ -2108,11 +1980,7 @@ class SieveConstraintSystem(nn.Module):
         return max_violation <= 0
 
 
-def dual_objective(
-    I_bulk: Tensor,
-    V_metabolic: Tensor,
-    beta: float = 1.0
-) -> Tensor:
+def dual_objective(I_bulk: Tensor, V_metabolic: Tensor, beta: float = 1.0) -> Tensor:
     """Compute dual objective for parameter optimization.
 
     J(Lambda) = I_bulk - beta * V_metabolic
@@ -2131,10 +1999,7 @@ def dual_objective(
     return I_bulk - beta * V_metabolic
 
 
-def compute_feasible_region(
-    param_grid: Dict[str, Tensor],
-    config: StandardModelConfig
-) -> Tensor:
+def compute_feasible_region(param_grid: dict[str, Tensor], config: StandardModelConfig) -> Tensor:
     """Compute feasibility mask over parameter grid.
 
     Args:
@@ -2151,12 +2016,12 @@ def compute_feasible_region(
 
     # Create parameter vector from grid
     params = AgentParameterVector(
-        c_info=param_grid['c_info'],
-        sigma=param_grid['sigma'],
-        ell_L=param_grid['ell_L'],
-        T_c=param_grid['T_c'],
-        gs=param_grid['gs'],
-        gamma=param_grid['gamma']
+        c_info=param_grid["c_info"],
+        sigma=param_grid["sigma"],
+        ell_L=param_grid["ell_L"],
+        T_c=param_grid["T_c"],
+        gs=param_grid["gs"],
+        gamma=param_grid["gamma"],
     )
 
     return sieve.is_feasible(params)
@@ -2165,6 +2030,7 @@ def compute_feasible_region(
 # =============================================================================
 # Diagnostic Nodes
 # =============================================================================
+
 
 class ZenoCheck(nn.Module):
     """Node 2: Check for Zeno freeze (speed too low).
@@ -2176,16 +2042,16 @@ class ZenoCheck(nn.Module):
         super().__init__()
         self.config = config
 
-    def forward(self, c_info: Tensor) -> Dict[str, Tensor]:
+    def forward(self, c_info: Tensor) -> dict[str, Tensor]:
         c_min = self.config.d_sync / self.config.tau_proc
         violation = c_min - c_info
         passed = violation <= 0
         return {
-            'node': 'ZenoCheck',
-            'passed': passed,
-            'violation': violation,
-            'c_min': torch.tensor(c_min),
-            'c_info': c_info
+            "node": "ZenoCheck",
+            "passed": passed,
+            "violation": violation,
+            "c_min": torch.tensor(c_min),
+            "c_info": c_info,
         }
 
 
@@ -2199,16 +2065,16 @@ class StiffnessCheck(nn.Module):
         super().__init__()
         self.config = config
 
-    def forward(self, delta_E: Tensor, T_c: Tensor) -> Dict[str, Tensor]:
+    def forward(self, delta_E: Tensor, T_c: Tensor) -> dict[str, Tensor]:
         lower, upper = check_stiffness_bounds(delta_E, T_c, self.config.chi_max)
         chi = delta_E / T_c
         passed = (lower <= 0) & (upper <= 0)
         return {
-            'node': 'StiffnessCheck',
-            'passed': passed,
-            'chi': chi,
-            'lower_violation': lower,
-            'upper_violation': upper
+            "node": "StiffnessCheck",
+            "passed": passed,
+            "chi": chi,
+            "lower_violation": lower,
+            "upper_violation": upper,
         }
 
 
@@ -2222,14 +2088,14 @@ class TextureFirewallCheck(nn.Module):
         super().__init__()
         self.config = config
 
-    def forward(self, gs_UV: Tensor) -> Dict[str, Tensor]:
+    def forward(self, gs_UV: Tensor) -> dict[str, Tensor]:
         violation = check_uv_decoupling(gs_UV, self.config.gs_epsilon)
         passed = violation <= 0
         return {
-            'node': 'TextureFirewallCheck',
-            'passed': passed,
-            'violation': violation,
-            'gs_UV': gs_UV
+            "node": "TextureFirewallCheck",
+            "passed": passed,
+            "violation": violation,
+            "gs_UV": gs_UV,
         }
 
 
@@ -2243,15 +2109,10 @@ class PurityCheck(nn.Module):
         super().__init__()
         self.config = config
 
-    def forward(self, gs_IR: Tensor) -> Dict[str, Tensor]:
+    def forward(self, gs_IR: Tensor) -> dict[str, Tensor]:
         violation = check_ir_binding(gs_IR, self.config.gs_crit)
         passed = violation <= 0
-        return {
-            'node': 'PurityCheck',
-            'passed': passed,
-            'violation': violation,
-            'gs_IR': gs_IR
-        }
+        return {"node": "PurityCheck", "passed": passed, "violation": violation, "gs_IR": gs_IR}
 
 
 class LandauerViolationCheck(nn.Module):
@@ -2264,20 +2125,16 @@ class LandauerViolationCheck(nn.Module):
         super().__init__()
         self.config = config
 
-    def forward(self, T_c: Tensor) -> Dict[str, Tensor]:
-        violation = check_landauer_constraint(
-            T_c,
-            self.config.E_dot_met,
-            self.config.I_dot_erase
-        )
+    def forward(self, T_c: Tensor) -> dict[str, Tensor]:
+        violation = check_landauer_constraint(T_c, self.config.E_dot_met, self.config.I_dot_erase)
         T_c_max = self.config.E_dot_met / (self.config.I_dot_erase * math.log(2))
         passed = violation <= 0
         return {
-            'node': 'LandauerViolationCheck',
-            'passed': passed,
-            'violation': violation,
-            'T_c': T_c,
-            'T_c_max': torch.tensor(T_c_max)
+            "node": "LandauerViolationCheck",
+            "passed": passed,
+            "violation": violation,
+            "T_c": T_c,
+            "T_c_max": torch.tensor(T_c_max),
         }
 
 
@@ -2291,19 +2148,14 @@ class CapacityHorizonCheck(nn.Module):
         super().__init__()
         self.config = config
 
-    def forward(
-        self,
-        ell_L: Tensor,
-        area: float,
-        I_req: float
-    ) -> Dict[str, Tensor]:
+    def forward(self, ell_L: Tensor, area: float, I_req: float) -> dict[str, Tensor]:
         violation = check_holographic_bound(ell_L, area, I_req)
         passed = violation <= 0
         return {
-            'node': 'CapacityHorizonCheck',
-            'passed': passed,
-            'violation': violation,
-            'ell_L': ell_L
+            "node": "CapacityHorizonCheck",
+            "passed": passed,
+            "violation": violation,
+            "ell_L": ell_L,
         }
 
 
@@ -2317,16 +2169,16 @@ class CausalityViolationCheck(nn.Module):
         super().__init__()
         self.config = config
 
-    def forward(self, c_info: Tensor) -> Dict[str, Tensor]:
+    def forward(self, c_info: Tensor) -> dict[str, Tensor]:
         c_max = self.config.L_buf / self.config.tau_proc
         violation = c_info - c_max
         passed = violation <= 0
         return {
-            'node': 'CausalityViolationCheck',
-            'passed': passed,
-            'violation': violation,
-            'c_max': torch.tensor(c_max),
-            'c_info': c_info
+            "node": "CausalityViolationCheck",
+            "passed": passed,
+            "violation": violation,
+            "c_max": torch.tensor(c_max),
+            "c_info": c_info,
         }
 
 
@@ -2357,8 +2209,8 @@ class SieveNodeRunner(nn.Module):
         gs_UV: Tensor,
         ell_L: Tensor,
         area: float = 100.0,
-        I_req: float = 1000.0
-    ) -> Dict[str, Dict]:
+        I_req: float = 1000.0,
+    ) -> dict[str, dict]:
         """Run all sieve nodes.
 
         Returns:
@@ -2366,17 +2218,17 @@ class SieveNodeRunner(nn.Module):
         """
         results = {}
 
-        results['node_2'] = self.node_2(c_info)
-        results['node_7'] = self.node_7(delta_E, T_c)
-        results['node_29'] = self.node_29(gs_UV)
-        results['node_40'] = self.node_40(gs_IR)
-        results['node_52'] = self.node_52(T_c)
-        results['node_56'] = self.node_56(ell_L, area, I_req)
-        results['node_62'] = self.node_62(c_info)
+        results["node_2"] = self.node_2(c_info)
+        results["node_7"] = self.node_7(delta_E, T_c)
+        results["node_29"] = self.node_29(gs_UV)
+        results["node_40"] = self.node_40(gs_IR)
+        results["node_52"] = self.node_52(T_c)
+        results["node_56"] = self.node_56(ell_L, area, I_req)
+        results["node_62"] = self.node_62(c_info)
 
         # Aggregate: all passed?
-        all_passed = all(r['passed'].all() for r in results.values())
-        results['all_passed'] = torch.tensor(all_passed)
+        all_passed = all(r["passed"].all() for r in results.values())
+        results["all_passed"] = torch.tensor(all_passed)
 
         return results
 
@@ -2384,6 +2236,7 @@ class SieveNodeRunner(nn.Module):
 # =============================================================================
 # Integration: StandardModelOfCognition
 # =============================================================================
+
 
 class StandardModelOfCognition(nn.Module):
     """Main interface for the Standard Model of Cognition.
@@ -2419,16 +2272,16 @@ class StandardModelOfCognition(nn.Module):
         """Compute vacuum expectation value."""
         return vacuum_expectation_value(self.config)
 
-    def compute_masses(self) -> Dict[str, float]:
+    def compute_masses(self) -> dict[str, float]:
         """Compute all masses from Higgs mechanism."""
         v = self.compute_vev()
         return {
-            'higgs': higgs_mass(self.config),
-            'W_boson': gauge_boson_mass(self.config.g2, v),
-            'cognitive': cognitive_mass(self.config)
+            "higgs": higgs_mass(self.config),
+            "W_boson": gauge_boson_mass(self.config.g2, v),
+            "cognitive": cognitive_mass(self.config),
         }
 
-    def check_sieve(self, params: AgentParameterVector) -> Dict[str, Tensor]:
+    def check_sieve(self, params: AgentParameterVector) -> dict[str, Tensor]:
         """Check all sieve constraints."""
         return self.sieve_system.evaluate_all(params)
 
@@ -2440,6 +2293,7 @@ class StandardModelOfCognition(nn.Module):
 # =============================================================================
 # Tests
 # =============================================================================
+
 
 def test_gamma_matrices():
     """Test gamma matrix anticommutation relation."""
@@ -2511,8 +2365,10 @@ def test_complexity_potential():
     # Set |phi| = v (not v/sqrt(2) which is physics convention)
     phi_vev[0, 0, 1] = v
     V_vev = complexity_potential(phi_vev, config)
-    V_min_expected = -config.mu_sq ** 2 / (4 * config.lambda_higgs)
-    assert abs(V_vev.item() - V_min_expected) < 1e-5, f"V_vev={V_vev.item()}, expected={V_min_expected}"
+    V_min_expected = -(config.mu_sq**2) / (4 * config.lambda_higgs)
+    assert (
+        abs(V_vev.item() - V_min_expected) < 1e-5
+    ), f"V_vev={V_vev.item()}, expected={V_min_expected}"
 
     print("  Complexity potential: PASSED")
 
@@ -2573,9 +2429,9 @@ def test_sieve_nodes():
     results = runner(c_info, T_c, delta_E, gs_IR, gs_UV, ell_L)
 
     print(f"  All nodes passed: {results['all_passed'].item()}")
-    for name, res in results.items():
-        if isinstance(res, dict) and 'passed' in res:
-            status = "PASS" if res['passed'].item() else "FAIL"
+    for res in results.values():
+        if isinstance(res, dict) and "passed" in res:
+            status = "PASS" if res["passed"].item() else "FAIL"
             print(f"    {res['node']}: {status}")
 
     print("  Sieve nodes: PASSED")
@@ -2607,14 +2463,11 @@ def test_full_lagrangian():
     Phi_eff = torch.randn(B, D)
 
     result = lagrangian(
-        Psi_L, Psi_R, phi,
-        B_munu, W_munu, G_munu,
-        D_mu_Psi_L, D_mu_Psi_R, D_mu_phi,
-        Phi_eff
+        Psi_L, Psi_R, phi, B_munu, W_munu, G_munu, D_mu_Psi_L, D_mu_Psi_R, D_mu_phi, Phi_eff
     )
 
-    assert 'L_total' in result
-    assert result['L_total'].shape == (B,)
+    assert "L_total" in result
+    assert result["L_total"].shape == (B,)
     print(f"  L_total shape: {result['L_total'].shape}")
     print(f"  L_gauge: {result['L_gauge'].mean():.4f}")
     print(f"  L_scalar: {result['L_scalar'].mean():.4f}")

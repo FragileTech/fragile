@@ -579,6 +579,7 @@ $$
 **Properties**:
 
 1. **Gauge covariance**: Under $\Psi \to (U \otimes I)\Psi$:
+
    $$
    D_\mu \Psi \to (U \otimes I) D_\mu \Psi
    $$
@@ -586,6 +587,7 @@ $$
 2. **Non-Abelian structure**: $[D_\mu, D_\nu] \neq 0$ in general
 
 3. **Field strength from commutator**:
+
    $$
    [D_\mu, D_\nu] = -ig F_{\mu\nu}^{(a)} (T^a \otimes I)
    $$
@@ -685,6 +687,7 @@ with $Q_{\text{fitness}}(t) := \sum_{i \in A_t} V_{\text{fit}}(z_i)$. Thus $Q_{\
 Total fitness charge: $Q(t) = \sum_{i \in A_t} V_{\text{fit}}(z_i(t))$
 
 Change over one timestep:
+
 $$
 \Delta Q = \sum_{i \in A_{t+\tau}} V_{\text{fit}}(z_i(t+\tau)) - \sum_{i \in A_t} V_{\text{fit}}(z_i(t))
 $$
@@ -692,6 +695,7 @@ $$
 **Step 2. Transport + evaluation source (no cloning).**
 
 For a surviving walker, $z_i(t+\tau) = z_i(t) + v_i \tau + O(\tau^2)$. Taylor expansion gives the convective change:
+
 $$
 V_{\text{fit}}(z_i(t+\tau)) - V_{\text{fit}}(z_i(t)) = \left(\partial_t + v_i \cdot \nabla\right)V_{\text{fit}} \,\tau + O(\tau^2)
 $$
@@ -707,6 +711,7 @@ Define source: $\mathcal{S}_{\text{cloning}} \cdot \tau = \Delta Q_{\text{clonin
 **Step 4. Continuity equation.**
 
 Combining Steps 2-3:
+
 $$
 \partial_0 J^0 + \nabla \cdot \mathbf{J} = \mathcal{S}_{\text{eval}} + \mathcal{S}_{\text{cloning}}
 $$
@@ -748,11 +753,13 @@ $$
 **Explicit forms**:
 
 For $a=3$ (diagonal):
+
 $$
 J_\mu^{(3)}(i,j) = \frac{1}{2} \bar{\psi}_i \gamma_\mu \psi_i - \frac{1}{2} \bar{\psi}_j \gamma_\mu \psi_j
 $$
 
 For $a=1,2$ (off-diagonal):
+
 $$
 J_\mu^{(1,2)}(i,j) \propto \bar{\psi}_i \gamma_\mu \psi_j + \bar{\psi}_j \gamma_\mu \psi_i
 $$
@@ -794,6 +801,7 @@ $$
 $$
 
 Using equations of motion:
+
 $$
 = \bar{\Psi} [m_{\text{eff}}, T^a \otimes I] \Psi
 $$
@@ -928,11 +936,13 @@ with $a_e$ the length of edge $e$.
 2. **Inverse**: $U_{ji} = U_{ij}^\dagger$
 
 3. **Gauge transformation**: Under local $U_i, U_j \in \text{SU}(2)$:
+
    $$
    U_{ij} \to U_i U_{ij} U_j^\dagger
    $$
 
 4. **Composition**: For path $\gamma = (n_1, n_2, \ldots, n_k)$:
+
    $$
    U[\gamma] = U_{12} U_{23} \cdots U_{(k-1)k}
    $$
@@ -944,6 +954,7 @@ U_{ij} = \exp\left(i \theta_{ij}^{(SU(2))} \cdot \hat{\sigma}\right)
 $$
 
 where $\hat{\sigma}$ is the direction in isospin space, so that
+
 $$
 A_e^{(a)} T^a = \frac{1}{g a_e} \theta_{ij}^{(SU(2))} \, \hat{\sigma}.
 $$
@@ -1059,6 +1070,7 @@ $$
 **Step 1. Link transformation.**
 
 Under gauge transformation at nodes:
+
 $$
 U_{ij} \to U'_{ij} = V_i U_{ij} V_j^\dagger
 $$
@@ -1066,11 +1078,13 @@ $$
 **Step 2. Plaquette transformation.**
 
 For plaquette $P = (1,2,3,4)$:
+
 $$
 U'_P = U'_{12} U'_{23} U'_{34} U'_{41} = (V_1 U_{12} V_2^\dagger)(V_2 U_{23} V_3^\dagger)(V_3 U_{34} V_4^\dagger)(V_4 U_{41} V_1^\dagger)
 $$
 
 Adjacent factors cancel:
+
 $$
 U'_P = V_1 U_{12} U_{23} U_{34} U_{41} V_1^\dagger = V_1 U_P V_1^\dagger
 $$
@@ -1086,6 +1100,7 @@ $$
 **Step 4. Action invariance.**
 
 Since each $S_P = 1 - \frac{1}{2}\text{Re Tr}(U_P)$ is unchanged:
+
 $$
 S'_{\text{YM}} = \sum_P S'_P = \sum_P S_P = S_{\text{YM}}
 $$
@@ -1596,6 +1611,7 @@ using $\text{Tr}(T^a T^b) = \frac{1}{2}\delta^{ab}$ and hence $\text{Tr}(F_{\mu\
 Let $L_N := \frac{1}{N}\sum_{i=1}^N \delta_{x_i}$ be the empirical measure of CST/IG nodes sampled at QSD equilibrium.
 By propagation of chaos ({prf:ref}`thm-propagation-chaos-qsd`), $L_N \Rightarrow \mu_\infty$, so for any bounded
 Hölder $f$ on the emergent continuum we have
+
 $$
 \left|\frac{1}{N}\sum_{i=1}^N f(x_i) - \int_M f \, d\mu_\infty\right| \to 0.
 $$
@@ -1833,6 +1849,7 @@ $$
 **Step 1. Action scale.**
 
 For traversing algorithmic distance $d_{\text{alg}}$ in time $\tau$:
+
 $$
 S = \frac{m d_{\text{alg}}^2}{2\tau}
 $$
@@ -1840,6 +1857,7 @@ $$
 **Step 2. Characteristic action phase.**
 
 Kinetic action phase unity at cloning scale $\epsilon_c$:
+
 $$
 \theta = \frac{S}{\hbar_{\text{eff}}} \sim 1 \quad \text{at } d_{\text{alg}} = \epsilon_c
 $$
@@ -1873,6 +1891,7 @@ In four dimensions the SU(2) coupling is dimensionless. From the unit table, the
 **Step 2. Phase and timestep scaling.**
 
 The link phase is $g a_e A$ (with $a_e$ the link length), while the cloning phase is
+
 $$
 \theta_{ij}^{(SU(2))} = \frac{S_i(j)}{\hbar_{\text{eff}}}.
 $$
@@ -1881,6 +1900,7 @@ Companion selection restricts interactions to $d_{\text{alg}} \lesssim \epsilon_
 **Step 3. Identification.**
 
 We therefore choose the leading-order normalization:
+
 $$
 g_{\text{weak}}^2 = \frac{m\tau\rho^2}{\epsilon_c^2}
 $$
@@ -1888,6 +1908,7 @@ $$
 **Step 4. Alternative form.**
 
 Using $\sigma_{\text{sep}} = \epsilon_c/\rho$ ({prf:ref}`thm-dimensionless-ratios`):
+
 $$
 g_{\text{weak}}^2 = (m\tau)\,\sigma_{\text{sep}}^{-2}
 $$
@@ -1909,11 +1930,13 @@ $$
 **Derivation**:
 
 Matching adaptive force to gauge force at characteristic scale:
+
 $$
 \epsilon_F \nabla V_{\text{fit}} \sim e^2 E
 $$
 
 Dimensional analysis gives:
+
 $$
 e^2 \sim \frac{m}{\epsilon_F}
 $$
@@ -2011,18 +2034,21 @@ All algorithmic parameters have physical dimensions:
 Three key dimensionless ratios:
 
 **1. Scale separation**:
+
 $$
 \sigma_{\text{sep}} := \frac{\epsilon_c}{\rho}
 $$
 Large $\sigma_{\text{sep}}$: Clear hierarchy between cloning and localization.
 
 **2. Timescale ratio**:
+
 $$
 \eta_{\text{time}} := \tau \lambda_{\text{gap}}
 $$
 Small $\eta_{\text{time}}$: Fast relaxation relative to timestep.
 
 **3. Correlation-to-interaction**:
+
 $$
 \kappa := \frac{\xi}{\rho} = \frac{1}{\rho \hbar_{\text{eff}} \lambda_{\text{gap}}}
 $$
@@ -2037,6 +2063,7 @@ Large $\kappa$: Long-range correlations extend beyond interaction range.
 Under coarse-graining (increasing $\mu$):
 
 **SU(2) coupling**:
+
 $$
 \frac{d g_{\text{weak}}^2}{d \ln \mu} = -\beta_0 g_{\text{weak}}^4
 $$
@@ -2044,6 +2071,7 @@ $$
 with $\beta_0 = b_0/(8\pi^2) = 22/(24\pi^2)$ for SU(2) (where $b_0 = 22/3$ is the one-loop coefficient).
 
 **Algorithmic parameter flow (scale separation)**:
+
 $$
 \frac{d}{d \ln \mu}\left(\frac{m\tau\rho^2}{\epsilon_c^2}\right) = -\beta_0 \left(\frac{m\tau\rho^2}{\epsilon_c^2}\right)^2
 $$
@@ -2063,23 +2091,27 @@ $$
 Four measurable predictions:
 
 **1. Correlation length scaling**:
+
 $$
 \langle z_i(t) z_j(t) \rangle - \langle z_i \rangle \langle z_j \rangle \sim e^{-|i-j|/\xi}
 $$
 
 **2. Critical slowing down**:
+
 $$
 \tau_{\text{relax}}(\epsilon) \sim \tau_{\text{relax}}(0) \left(\frac{\epsilon}{\epsilon_0}\right)^{-z}
 $$
 with dynamical exponent $z = T_{\text{clone}} \rho^4/(\epsilon_c^2 \epsilon_F)$.
 
 **3. Wilson loop area law**:
+
 $$
 \langle W_{L \times T} \rangle \sim \exp(-\sigma L T)
 $$
 with string tension $\sigma = T_{\text{clone}}/a^2$ (using the gauge lattice spacing $a$).
 
 **4. Asymptotic freedom signature**:
+
 $$
 g_{\text{weak}}^2(\tau') = \frac{g_{\text{weak}}^2(\tau)}{1 + \beta_0 g_{\text{weak}}^2(\tau) \ln(\tau/\tau')}
 $$
@@ -2174,16 +2206,19 @@ where $(\epsilon_c^{(0)}, \rho^{(0)}, \gamma, \tau_0)$ are reference values. The
 **Step 2. Rescaling derivation from fixed physics.**
 
 **Constraint 1**: Fix $\hbar_{\text{eff}} = m\epsilon_c^2/(2\tau) = \text{const}$:
+
 $$
 \epsilon_c^2 \sim \tau \implies \boxed{\epsilon_c = \epsilon_c^{(0)}\sqrt{\tau/\tau_0}}
 $$
 
 **Constraint 2**: The spectral gap $\lambda_{\text{gap}}^{\text{cont}}$ of the **continuous-time** generator $\mathcal{L}$ is determined by the friction $\gamma$ and potential landscape:
+
 $$
 \lambda_{\text{gap}}^{\text{cont}} \sim \gamma \quad \text{(for overdamped Langevin)}
 $$
 
 The **physical** mass gap is set by the continuous generator, not the discretization:
+
 $$
 m_{\text{gap}} := \hbar_{\text{eff}} \lambda_{\text{gap}}^{\text{cont}} \quad (= \lambda_{\text{gap}}^{\text{cont}} \text{ if } \hbar_{\text{eff}}=1)
 $$
@@ -2191,6 +2226,7 @@ $$
 **Key insight**: The friction $\gamma$ is held **fixed** as $\tau \to 0$. The discretization timestep $\tau$ is a numerical parameter, not a physical one. The spectral gap of the continuous dynamics is independent of how finely we discretize.
 
 **Constraint 3**: For the localization scale, we require $\rho/\epsilon_c$ to remain $O(1)$ so that gauge interactions occur at the cloning scale:
+
 $$
 \boxed{\rho = \rho^{(0)}\sqrt{\tau/\tau_0}}
 $$
@@ -2268,6 +2304,7 @@ In algorithmic parameters, $\tilde{g}^2 = m_{\text{gap}}^2 \cdot \frac{m \tau \r
 **Step 2. RG flow equation for $\tilde{g}^2$.**
 
 The running coupling satisfies the beta function equation ({prf:ref}`def-beta-function-ym`):
+
 $$
 \mu \frac{dg}{d\mu} = \beta(g) = -\frac{b_0}{16\pi^2} g^3 + O(g^5), \quad b_0 = \frac{22}{3} \text{ for SU(2)}
 $$
@@ -2275,6 +2312,7 @@ $$
 Equivalently: $\beta(g) = -\frac{22}{48\pi^2} g^3 + O(g^5)$.
 
 For the product $\tilde{g}^2 = g^2 \cdot m_{\text{gap}}^2$, with $m_{\text{gap}}$ fixed:
+
 $$
 \mu \frac{d\tilde{g}^2}{d\mu} = m_{\text{gap}}^2 \cdot 2g \cdot \mu\frac{dg}{d\mu} = 2m_{\text{gap}}^2 g \beta(g) = -\frac{b_0}{8\pi^2} m_{\text{gap}}^2 g^4 + O(g^6)
 $$
@@ -2282,6 +2320,7 @@ $$
 **Step 3. UV fixed point analysis.**
 
 From {prf:ref}`thm-asymptotic-freedom`, as $\mu \to \infty$:
+
 $$
 g^2(\mu) = \frac{g^2(\mu_0)}{1 + \frac{b_0}{8\pi^2} g^2(\mu_0) \ln(\mu/\mu_0)} = \frac{g^2(\mu_0)}{1 + \frac{22}{24\pi^2} g^2(\mu_0) \ln(\mu/\mu_0)} \xrightarrow{\mu \to \infty} 0
 $$
@@ -2291,6 +2330,7 @@ Therefore $\tilde{g}^2(\mu) = g^2(\mu) \cdot m_{\text{gap}}^2 \to 0$ as $\mu \to
 **Step 4. Boundedness throughout the flow.**
 
 For any finite $\mu$, the coupling $g^2(\mu) < \infty$ (since asymptotic freedom prevents Landau poles). Thus:
+
 $$
 \tilde{g}^2(\mu) = g^2(\mu) \cdot m_{\text{gap}}^2 \leq g^2(\mu_{\text{IR}}) \cdot m_{\text{gap}}^2 < \infty
 $$
@@ -2304,6 +2344,7 @@ Under the rescaling of {prf:ref}`thm-correct-continuum-limit`:
 - The ratio $\rho^2/\epsilon_c^2 \sim \tau/\tau = O(1)$ remains fixed
 
 Therefore:
+
 $$
 \tilde{g}^2 = m_{\text{gap}}^2 \, g_{\text{bare}}^2 = m_{\text{gap}}^2 \cdot \frac{m \tau \rho^2}{\epsilon_c^2} \xrightarrow{\tau \to 0} 0
 $$
@@ -2732,6 +2773,7 @@ $$
 In the normalization $\hbar_{\text{eff}} = 1$, this reduces to $m_{\text{gap}} = \lambda_{\text{gap}}$.
 
 **Discrete-time relation**: The $\tau$-step kernel is $P_\tau = e^{\tau\mathcal{L}}$, whose spectral gap is
+
 $$
 \lambda_{\text{gap}}^{(\tau)} = 1 - e^{-\lambda_{\text{gap}}\tau} \approx \lambda_{\text{gap}}\tau
 $$

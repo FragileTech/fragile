@@ -115,6 +115,7 @@ The economic layer introduces a novel consensus mechanism where the cryptographi
 **Quick Navigation:**
 - *Want the math?* → {ref}`Sections 20–24 <sec-wasserstein-fisher-rao-geometry-unified-transport-on-hybrid-state-spaces>`
 - *Want implementation?* → {ref}`Sections 3–8 <sec-diagnostics-stability-checks>`
+- *Want the architecture overview?* → {ref}`Architecture at a glance <sec-architecture-at-a-glance>`
 - *Want multi-agent?* → {ref}`Section 29 <sec-symplectic-multi-agent-field-theory>`
 - *Want ontology expansion?* → {ref}`Section 30 <sec-ontological-expansion-topological-fission-and-the-semantic-vacuum>`
 - *Want causality?* → {ref}`Section 32 <sec-causal-discovery-interventional-geometry-and-the-singularity-of-action>`
@@ -460,7 +461,7 @@ The document is organized into nine parts plus appendices:
 | Layer              | Parts    | Purpose                                                                                                                        |
 |--------------------|----------|--------------------------------------------------------------------------------------------------------------------------------|
 | **Foundations**    | I–II     | Positioning, definitions, control loop architecture, the Sieve (60+ runtime diagnostics)                                       |
-| **Implementation** | III      | Computational tiers, hyperbolic geometry, disentangled architecture                                                            |
+| **Implementation** | III      | Computational tiers, hyperbolic geometry, TopoEncoder architecture                                                             |
 | **Control Theory** | IV       | Exploration, belief dynamics, capacity constraints                                                                             |
 | **Geometry**       | V–VI     | WFR metric, holographic generation, boundary interface, reward field, information bounds                                       |
 | **Cognition**      | VII      | Supervised topology, meta-stability, memory, retrieval, ontology, metabolism, causality                                        |
@@ -484,7 +485,7 @@ The document is organized into nine parts plus appendices:
 **Part III: Implementation ({ref}`Sections 7–9 <sec-computational-considerations>`)**
 - **{ref}`Section 7 <sec-computational-considerations>`**: Computational tiers from fast inference to slow audit; hyperbolic geometry; stacked TopoEncoders
 - **{ref}`Section 8 <sec-infeasible-implementation-replacements>`**: When exact solutions are infeasible—practical replacements
-- **{ref}`Section 9 <sec-the-disentangled-variational-architecture-hierarchical-latent-separation>`**: The disentangled variational architecture—hierarchical latent separation
+- **{ref}`Section 9 <sec-the-disentangled-variational-architecture-hierarchical-latent-separation>`**: The TopoEncoder architecture—typed latent separation
 
 **Part IV: Control Theory ({ref}`Sections 11–18 <sec-intrinsic-motivation-maximum-entropy-exploration>`)**
 - **{ref}`Section 11 <sec-intrinsic-motivation-maximum-entropy-exploration>`**: Maximum-entropy exploration and intrinsic motivation

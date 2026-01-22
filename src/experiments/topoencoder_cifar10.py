@@ -20,21 +20,19 @@ Reference: fragile-index.md Sections 7.8, 7.10
 """
 
 import argparse
+from dataclasses import dataclass, field
 import math
 import os
-from dataclasses import dataclass, field
 
 import numpy as np
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
-import torch.optim as optim
 from sklearn.cluster import KMeans
 from sklearn.metrics import adjusted_mutual_info_score
+import torch
+from torch import nn, optim
+import torch.nn.functional as F
 from tqdm import tqdm
 
 from dataviz import visualize_latent_images, visualize_results_images
-from fragile.datasets import CIFAR10_CLASSES, get_cifar10_data
 from fragile.core.layers import (
     FactorizedJumpOperator,
     InvariantChartClassifier,
@@ -44,14 +42,14 @@ from fragile.core.layers import (
 )
 from fragile.core.losses import (
     compute_chart_center_separation_loss,
-    compute_codebook_centering_loss,
     compute_code_entropy_loss,
+    compute_codebook_centering_loss,
     compute_disentangle_loss,
     compute_diversity_loss,
     compute_jump_consistency_loss,
     compute_kl_prior_loss,
-    compute_orthogonality_loss,
     compute_orbit_loss,
+    compute_orthogonality_loss,
     compute_per_chart_code_entropy_loss,
     compute_residual_scale_loss,
     compute_routing_entropy,
@@ -62,6 +60,7 @@ from fragile.core.losses import (
     get_jump_weight_schedule,
     SupervisedTopologyLoss,
 )
+from fragile.datasets import CIFAR10_CLASSES, get_cifar10_data
 
 
 # ==========================================
@@ -182,9 +181,7 @@ class TopoEncoderCIFAR10Config:
     output_dir: str = "outputs/topoencoder_cifar10"
 
     # Device
-    device: str = field(
-        default_factory=lambda: "cuda" if torch.cuda.is_available() else "cpu"
-    )
+    device: str = field(default_factory=lambda: "cuda" if torch.cuda.is_available() else "cpu")
 
 
 def count_parameters(model: nn.Module) -> int:
@@ -322,7 +319,8 @@ def train_benchmark(config: TopoEncoderCIFAR10Config) -> dict:
     print(f"Classes: {CIFAR10_CLASSES}")
 
     if not (0.0 <= config.test_split < 1.0):
-        raise ValueError("test_split must be in [0.0, 1.0).")
+        msg = "test_split must be in [0.0, 1.0)."
+        raise ValueError(msg)
 
     n_total = X.shape[0]
     test_size = max(1, int(n_total * config.test_split)) if config.test_split > 0 else 0
@@ -342,10 +340,7 @@ def train_benchmark(config: TopoEncoderCIFAR10Config) -> dict:
     colors_train = colors[train_idx_np]
     colors_test = colors[test_idx_np] if test_size > 0 else colors
 
-    print(
-        f"Train/test split: {len(X_train)}/{len(X_test)} "
-        f"(test={config.test_split:.2f})"
-    )
+    print(f"Train/test split: {len(X_train)}/{len(X_test)} " f"(test={config.test_split:.2f})")
 
     # Create TopoEncoder
     model_atlas = TopoEncoder(
@@ -448,16 +443,16 @@ def train_benchmark(config: TopoEncoderCIFAR10Config) -> dict:
         )
         ae_params = count_parameters(model_ae)
 
-    print(f"\nModel Parameters (fair comparison):")
+    print("\nModel Parameters (fair comparison):")
     print(f"  TopoEncoder: {topo_params:,} params (hidden_dim={config.hidden_dim})")
     if not config.disable_vq:
         print(f"  StandardVQ:  {std_params:,} params (hidden_dim={std_hidden_dim})")
     else:
-        print(f"  StandardVQ:  DISABLED")
+        print("  StandardVQ:  DISABLED")
     if not config.disable_ae:
         print(f"  VanillaAE:   {ae_params:,} params (hidden_dim={ae_hidden_dim})")
     else:
-        print(f"  VanillaAE:   DISABLED")
+        print("  VanillaAE:   DISABLED")
 
     # Move to device
     device = torch.device(config.device)
@@ -597,7 +592,7 @@ def train_benchmark(config: TopoEncoderCIFAR10Config) -> dict:
         epoch_std_loss = 0.0
         epoch_atlas_loss = 0.0
         epoch_ae_loss = 0.0
-        epoch_losses = {k: 0.0 for k in loss_components.keys()}
+        epoch_losses = dict.fromkeys(loss_components.keys(), 0.0)
         epoch_info = {"I_XK": 0.0, "H_K": 0.0}
         n_batches = 0
 
@@ -623,7 +618,18 @@ def train_benchmark(config: TopoEncoderCIFAR10Config) -> dict:
                 opt_ae.step()
 
             # --- Atlas Step ---
-            K_chart, _, z_n, z_tex, enc_w, z_geo, vq_loss_a, indices_stack, z_n_all_charts, _c_bar = model_atlas.encoder(batch_X)
+            (
+                K_chart,
+                _,
+                z_n,
+                z_tex,
+                enc_w,
+                z_geo,
+                vq_loss_a,
+                indices_stack,
+                z_n_all_charts,
+                _c_bar,
+            ) = model_atlas.encoder(batch_X)
             recon_a, dec_w = model_atlas.decoder(z_geo, z_tex, chart_index=None)
 
             # Core losses
@@ -767,9 +773,7 @@ def train_benchmark(config: TopoEncoderCIFAR10Config) -> dict:
                 opt_classifier.zero_grad()
                 cls_loss.backward()
                 opt_classifier.step()
-                cls_acc = (
-                    logits.detach().argmax(dim=1) == batch_labels
-                ).float().mean()
+                cls_acc = (logits.detach().argmax(dim=1) == batch_labels).float().mean()
 
             # Accumulate batch losses
             epoch_std_loss += loss_s.item()
@@ -829,7 +833,9 @@ def train_benchmark(config: TopoEncoderCIFAR10Config) -> dict:
             was_training = model_atlas.training
             model_atlas.eval()
             with torch.no_grad():
-                K_chart_full, _, _, _, enc_w_full, _, _, _, _, _c_bar_full = model_atlas.encoder(X_test)
+                K_chart_full, _, _, _, enc_w_full, _, _, _, _, _c_bar_full = model_atlas.encoder(
+                    X_test
+                )
                 usage = enc_w_full.mean(dim=0).cpu().numpy()
                 chart_assignments = K_chart_full.cpu().numpy()
                 ami = compute_ami(labels_test, chart_assignments)
@@ -872,7 +878,9 @@ def train_benchmark(config: TopoEncoderCIFAR10Config) -> dict:
                 was_training = model_atlas.training
                 model_atlas.eval()
                 with torch.no_grad():
-                    _, _, _, _, enc_w_test, z_geo_test, _, _, _, _c_bar_test = model_atlas.encoder(X_test)
+                    _, _, _, _, enc_w_test, z_geo_test, _, _, _, _c_bar_test = model_atlas.encoder(
+                        X_test
+                    )
                 if was_training:
                     model_atlas.train()
 
@@ -881,9 +889,9 @@ def train_benchmark(config: TopoEncoderCIFAR10Config) -> dict:
                     sup_test = supervised_loss(enc_w_test, labels_test_t, z_geo_test)
                     p_y_x_test = torch.matmul(enc_w_test, supervised_loss.p_y_given_k)
                     test_sup_acc = (
-                        p_y_x_test.argmax(dim=1) == labels_test_t
-                    ).float().mean().item()
-                    test_sup_route = sup_test["loss_route"].item()
+                        (p_y_x_test.argmax(dim=1) == labels_test_t).float().mean().item()
+                    )
+                    sup_test["loss_route"].item()
 
                 # Clear GPU cache after supervised test inference
                 if torch.cuda.is_available():
@@ -899,8 +907,8 @@ def train_benchmark(config: TopoEncoderCIFAR10Config) -> dict:
                 with torch.no_grad():
                     cls_logits_test = classifier_head(enc_w_test, z_geo_test)
                     test_cls_acc = (
-                        cls_logits_test.argmax(dim=1) == labels_test_t
-                    ).float().mean().item()
+                        (cls_logits_test.argmax(dim=1) == labels_test_t).float().mean().item()
+                    )
 
                 print(
                     f"  Readout: train_loss={avg_cls_loss:.4f} "
@@ -908,8 +916,7 @@ def train_benchmark(config: TopoEncoderCIFAR10Config) -> dict:
                     f"test_acc={test_cls_acc:.4f}"
                 )
             print(
-                f"  Info: I(X;K)={avg_ixk:.3f} H(K)={avg_hk:.3f} "
-                f"jump_w={log_jump_weight:.3f}"
+                f"  Info: I(X;K)={avg_ixk:.3f} H(K)={avg_hk:.3f} " f"jump_w={log_jump_weight:.3f}"
             )
             print(f"  Metrics: AMI={ami:.4f} perplexity={perplexity:.2f}/{config.num_charts}")
             print("-" * 60)
@@ -990,8 +997,12 @@ def train_benchmark(config: TopoEncoderCIFAR10Config) -> dict:
     if model_ae is not None:
         print(f"{'Vanilla AE':<20} {mse_ae:>10.5f} {ami_ae:>10.4f} {'N/A (K-Means)':<15}")
     if model_std is not None:
-        print(f"{'Standard VQ':<20} {mse_std:>10.5f} {ami_std:>10.4f} {std_perplexity:>6.1f}/{config.num_codes_standard:<8}")
-    print(f"{'TopoEncoder':<20} {mse_atlas:>10.5f} {ami_atlas:>10.4f} {atlas_perplexity:>6.1f}/{config.num_charts:<8}")
+        print(
+            f"{'Standard VQ':<20} {mse_std:>10.5f} {ami_std:>10.4f} {std_perplexity:>6.1f}/{config.num_codes_standard:<8}"
+        )
+    print(
+        f"{'TopoEncoder':<20} {mse_atlas:>10.5f} {ami_atlas:>10.4f} {atlas_perplexity:>6.1f}/{config.num_charts:<8}"
+    )
     print("-" * 70)
 
     print(f"\nRouting Consistency (KL): {final_consistency:.4f}")
@@ -1058,30 +1069,14 @@ def main():
     parser = argparse.ArgumentParser(
         description="TopoEncoder Benchmark: CIFAR-10 Image Classification"
     )
-    parser.add_argument(
-        "--epochs", type=int, default=500, help="Number of training epochs"
-    )
-    parser.add_argument(
-        "--lr", type=float, default=1e-3, help="Learning rate"
-    )
-    parser.add_argument(
-        "--batch_size", type=int, default=256, help="Batch size"
-    )
-    parser.add_argument(
-        "--n_samples", type=int, default=50000, help="Number of samples"
-    )
-    parser.add_argument(
-        "--test_split", type=float, default=0.2, help="Test split fraction"
-    )
-    parser.add_argument(
-        "--num_charts", type=int, default=10, help="Number of atlas charts"
-    )
-    parser.add_argument(
-        "--codes_per_chart", type=int, default=64, help="VQ codes per chart"
-    )
-    parser.add_argument(
-        "--hidden_dim", type=int, default=256, help="Hidden dimension"
-    )
+    parser.add_argument("--epochs", type=int, default=500, help="Number of training epochs")
+    parser.add_argument("--lr", type=float, default=1e-3, help="Learning rate")
+    parser.add_argument("--batch_size", type=int, default=256, help="Batch size")
+    parser.add_argument("--n_samples", type=int, default=50000, help="Number of samples")
+    parser.add_argument("--test_split", type=float, default=0.2, help="Test split fraction")
+    parser.add_argument("--num_charts", type=int, default=10, help="Number of atlas charts")
+    parser.add_argument("--codes_per_chart", type=int, default=64, help="VQ codes per chart")
+    parser.add_argument("--hidden_dim", type=int, default=256, help="Hidden dimension")
     parser.add_argument(
         "--vision_preproc",
         type=lambda x: x.lower() == "true",
@@ -1153,8 +1148,7 @@ def main():
         type=lambda x: x.lower() == "true",
         default=True,
         help=(
-            "Use straight-through soft assignment for soft equivariant metric "
-            "(default: True)"
+            "Use straight-through soft assignment for soft equivariant metric " "(default: True)"
         ),
     )
     parser.add_argument(
@@ -1181,9 +1175,7 @@ def main():
         default=False,
         help="Enable standard vision backbone in baselines (default: False)",
     )
-    parser.add_argument(
-        "--log_every", type=int, default=50, help="Log every N epochs"
-    )
+    parser.add_argument("--log_every", type=int, default=50, help="Log every N epochs")
     parser.add_argument(
         "--save_every", type=int, default=50, help="Save visualization every N epochs"
     )
@@ -1192,101 +1184,129 @@ def main():
     )
     parser.add_argument("--seed", type=int, default=42, help="Random seed")
     parser.add_argument(
-        "--device", type=str,
-        default="cuda" if torch.cuda.is_available() else "cpu",
-        help="Device"
+        "--device", type=str, default="cuda" if torch.cuda.is_available() else "cpu", help="Device"
     )
 
     # Tier 1 losses (residual hierarchy)
     parser.add_argument(
-        "--codebook_center_weight", type=float, default=0.05,
-        help="Codebook centering weight (default: 0.05)"
+        "--codebook_center_weight",
+        type=float,
+        default=0.05,
+        help="Codebook centering weight (default: 0.05)",
     )
     parser.add_argument(
-        "--chart_center_sep_weight", type=float, default=0.05,
-        help="Chart center separation weight (default: 0.05)"
+        "--chart_center_sep_weight",
+        type=float,
+        default=0.05,
+        help="Chart center separation weight (default: 0.05)",
     )
     parser.add_argument(
-        "--chart_center_sep_margin", type=float, default=2.0,
-        help="Chart center separation margin (default: 2.0)"
+        "--chart_center_sep_margin",
+        type=float,
+        default=2.0,
+        help="Chart center separation margin (default: 2.0)",
     )
     parser.add_argument(
-        "--residual_scale_weight", type=float, default=0.01,
-        help="Residual scale penalty weight (default: 0.01)"
+        "--residual_scale_weight",
+        type=float,
+        default=0.01,
+        help="Residual scale penalty weight (default: 0.01)",
     )
 
     # Tier 3 losses (codebook health)
     parser.add_argument(
-        "--per_chart_code_entropy_weight", type=float, default=0.1,
-        help="Per-chart code entropy weight (default: 0.1)"
+        "--per_chart_code_entropy_weight",
+        type=float,
+        default=0.1,
+        help="Per-chart code entropy weight (default: 0.1)",
     )
     parser.add_argument(
-        "--code_entropy_weight", type=float, default=0.0,
-        help="Global code entropy weight (default: 0.0)"
+        "--code_entropy_weight",
+        type=float,
+        default=0.0,
+        help="Global code entropy weight (default: 0.0)",
     )
 
     # Tier 4 losses (invariance)
     parser.add_argument(
-        "--kl_prior_weight", type=float, default=0.01,
-        help="KL prior weight on z_n, z_tex (default: 0.01)"
+        "--kl_prior_weight",
+        type=float,
+        default=0.01,
+        help="KL prior weight on z_n, z_tex (default: 0.01)",
     )
     parser.add_argument(
-        "--orbit_weight", type=float, default=0.0,
-        help="Orbit invariance weight (default: 0.0)"
+        "--orbit_weight", type=float, default=0.0, help="Orbit invariance weight (default: 0.0)"
     )
     parser.add_argument(
-        "--vicreg_inv_weight", type=float, default=0.0,
-        help="VICReg invariance weight (default: 0.0)"
+        "--vicreg_inv_weight",
+        type=float,
+        default=0.0,
+        help="VICReg invariance weight (default: 0.0)",
     )
     parser.add_argument(
-        "--augment_noise_std", type=float, default=0.1,
-        help="Augmentation noise std (default: 0.1)"
+        "--augment_noise_std",
+        type=float,
+        default=0.1,
+        help="Augmentation noise std (default: 0.1)",
     )
 
     # Tier 5: Jump Operator
     parser.add_argument(
-        "--jump_weight", type=float, default=0.1,
-        help="Jump consistency weight after warmup (default: 0.1)"
+        "--jump_weight",
+        type=float,
+        default=0.1,
+        help="Jump consistency weight after warmup (default: 0.1)",
     )
     parser.add_argument(
-        "--jump_warmup", type=int, default=50,
-        help="Epochs before jump loss starts (default: 50)"
+        "--jump_warmup", type=int, default=50, help="Epochs before jump loss starts (default: 50)"
     )
     parser.add_argument(
-        "--jump_ramp_end", type=int, default=100,
-        help="Epoch when jump weight reaches final value (default: 100)"
+        "--jump_ramp_end",
+        type=int,
+        default=100,
+        help="Epoch when jump weight reaches final value (default: 100)",
     )
     parser.add_argument(
-        "--jump_global_rank", type=int, default=0,
-        help="Rank of global tangent space (0 = use latent_dim, default: 0)"
+        "--jump_global_rank",
+        type=int,
+        default=0,
+        help="Rank of global tangent space (0 = use latent_dim, default: 0)",
     )
 
     # Supervised topology loss
     parser.add_argument(
         "--disable_supervised", action="store_true", help="Disable supervised losses"
     )
+    parser.add_argument("--sup_weight", type=float, default=1.0, help="Supervised loss weight")
     parser.add_argument(
-        "--sup_weight", type=float, default=1.0, help="Supervised loss weight"
+        "--sup_purity_weight",
+        type=float,
+        default=0.1,
+        help="Supervised purity loss weight (default: 0.1)",
     )
     parser.add_argument(
-        "--sup_purity_weight", type=float, default=0.1,
-        help="Supervised purity loss weight (default: 0.1)"
+        "--sup_balance_weight",
+        type=float,
+        default=0.01,
+        help="Supervised balance loss weight (default: 0.01)",
     )
     parser.add_argument(
-        "--sup_balance_weight", type=float, default=0.01,
-        help="Supervised balance loss weight (default: 0.01)"
+        "--sup_metric_weight",
+        type=float,
+        default=0.01,
+        help="Supervised metric loss weight (default: 0.01)",
     )
     parser.add_argument(
-        "--sup_metric_weight", type=float, default=0.01,
-        help="Supervised metric loss weight (default: 0.01)"
+        "--sup_metric_margin",
+        type=float,
+        default=1.0,
+        help="Supervised metric loss margin (default: 1.0)",
     )
     parser.add_argument(
-        "--sup_metric_margin", type=float, default=1.0,
-        help="Supervised metric loss margin (default: 1.0)"
-    )
-    parser.add_argument(
-        "--sup_temperature", type=float, default=1.0,
-        help="Temperature for chart-to-class mapping (default: 1.0)"
+        "--sup_temperature",
+        type=float,
+        default=1.0,
+        help="Temperature for chart-to-class mapping (default: 1.0)",
     )
 
     # Classifier readout (detached)
@@ -1309,12 +1329,8 @@ def main():
     )
 
     # Benchmark control
-    parser.add_argument(
-        "--disable_ae", action="store_true", help="Disable VanillaAE baseline"
-    )
-    parser.add_argument(
-        "--disable_vq", action="store_true", help="Disable StandardVQ baseline"
-    )
+    parser.add_argument("--disable_ae", action="store_true", help="Disable VanillaAE baseline")
+    parser.add_argument("--disable_vq", action="store_true", help="Disable StandardVQ baseline")
     parser.add_argument(
         "--baseline_attn",
         action="store_true",
@@ -1347,16 +1363,15 @@ def main():
 
     # Training dynamics
     parser.add_argument(
-        "--use_scheduler", type=lambda x: x.lower() == "true", default=True,
-        help="Use cosine annealing LR scheduler"
+        "--use_scheduler",
+        type=lambda x: x.lower() == "true",
+        default=True,
+        help="Use cosine annealing LR scheduler",
     )
     parser.add_argument(
-        "--min_lr", type=float, default=1e-5,
-        help="Minimum LR for scheduler (default: 1e-5)"
+        "--min_lr", type=float, default=1e-5, help="Minimum LR for scheduler (default: 1e-5)"
     )
-    parser.add_argument(
-        "--grad_clip", type=float, default=1.0, help="Gradient clipping max norm"
-    )
+    parser.add_argument("--grad_clip", type=float, default=1.0, help="Gradient clipping max norm")
 
     args = parser.parse_args()
 
@@ -1440,7 +1455,7 @@ def main():
     print("=" * 50)
     print("TopoEncoder CIFAR-10 Benchmark")
     print("=" * 50)
-    print(f"\nConfiguration:")
+    print("\nConfiguration:")
     print(f"  Epochs: {config.epochs}, Batch size: {config.batch_size}")
     print(f"  Total samples: {config.n_samples}")
     print(f"  Test split: {config.test_split}")

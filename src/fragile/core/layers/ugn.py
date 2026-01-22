@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Callable, List, Optional, Sequence
+from typing import Callable, Sequence
 
 import torch
-import torch.nn as nn
+from torch import nn
 import torch.nn.functional as F
 
 from fragile.core.layers.gauge import CovariantAttention, GeodesicConfig
@@ -17,7 +17,8 @@ class FactoredTensorLayer(nn.Module):
     def __init__(self, d_C: int, d_L: int, d_Y: int, rank: int, d_out: int) -> None:
         super().__init__()
         if min(d_C, d_L, d_Y, rank, d_out) <= 0:
-            raise ValueError("All dimensions must be positive.")
+            msg = "All dimensions must be positive."
+            raise ValueError(msg)
         self.rank = rank
 
         self.U_C = nn.Linear(d_C, rank, bias=False)
@@ -27,9 +28,11 @@ class FactoredTensorLayer(nn.Module):
 
     def forward(self, z_C: torch.Tensor, z_L: torch.Tensor, z_Y: torch.Tensor) -> torch.Tensor:
         if z_C.dim() != 2 or z_L.dim() != 2 or z_Y.dim() != 2:
-            raise ValueError("Inputs must have shape [B, d].")
+            msg = "Inputs must have shape [B, d]."
+            raise ValueError(msg)
         if z_C.shape[0] != z_L.shape[0] or z_C.shape[0] != z_Y.shape[0]:
-            raise ValueError("Input batch sizes must match.")
+            msg = "Input batch sizes must match."
+            raise ValueError(msg)
         interaction = self.U_C(z_C) * self.U_L(z_L) * self.U_Y(z_Y)
         return self.U_out(interaction)
 
@@ -40,9 +43,11 @@ class NormInteractionLayer(nn.Module):
     def __init__(self, n_bundles: int, hidden_dim: int = 64) -> None:
         super().__init__()
         if n_bundles <= 0:
-            raise ValueError("n_bundles must be positive.")
+            msg = "n_bundles must be positive."
+            raise ValueError(msg)
         if hidden_dim <= 0:
-            raise ValueError("hidden_dim must be positive.")
+            msg = "hidden_dim must be positive."
+            raise ValueError(msg)
         self.n_bundles = n_bundles
 
         self.norm_mlp = nn.Sequential(
@@ -55,7 +60,8 @@ class NormInteractionLayer(nn.Module):
 
     def forward(self, z: torch.Tensor) -> torch.Tensor:
         if z.dim() != 3 or z.shape[1] != self.n_bundles:
-            raise ValueError("Expected input shape [B, n_bundles, bundle_dim].")
+            msg = "Expected input shape [B, n_bundles, bundle_dim]."
+            raise ValueError(msg)
         norms = torch.norm(z, dim=-1)
         scales = F.softplus(self.norm_mlp(norms))
         return z * scales.unsqueeze(-1)
@@ -67,9 +73,11 @@ class GramInteractionLayer(nn.Module):
     def __init__(self, n_bundles: int, hidden_dim: int = 64) -> None:
         super().__init__()
         if n_bundles <= 0:
-            raise ValueError("n_bundles must be positive.")
+            msg = "n_bundles must be positive."
+            raise ValueError(msg)
         if hidden_dim <= 0:
-            raise ValueError("hidden_dim must be positive.")
+            msg = "hidden_dim must be positive."
+            raise ValueError(msg)
         self.n_bundles = n_bundles
         gram_dim = n_bundles * n_bundles
 
@@ -83,7 +91,8 @@ class GramInteractionLayer(nn.Module):
 
     def forward(self, z: torch.Tensor) -> torch.Tensor:
         if z.dim() != 3 or z.shape[1] != self.n_bundles:
-            raise ValueError("Expected input shape [B, n_bundles, bundle_dim].")
+            msg = "Expected input shape [B, n_bundles, bundle_dim]."
+            raise ValueError(msg)
         gram = torch.bmm(z, z.transpose(-1, -2))
         gram_flat = gram.view(z.shape[0], -1)
         scales = F.softplus(self.mlp(gram_flat))
@@ -105,7 +114,7 @@ class L1Scheduler:
 
     def step(self, current_violation: float) -> float:
         error = current_violation - self.target
-        self.lambda_L1 *= (1 + self.alpha * error)
+        self.lambda_L1 *= 1 + self.alpha * error
         self.lambda_L1 = max(1e-6, min(1.0, self.lambda_L1))
         return self.lambda_L1
 
@@ -134,7 +143,7 @@ class AdaptiveL1Scheduler:
 
     def step(self, current_violation: float) -> float:
         error = current_violation - self.target_violation
-        self.lambda_l1 *= (1 + self.alpha * error)
+        self.lambda_l1 *= 1 + self.alpha * error
         self.lambda_l1 = max(self.min_lambda, min(self.max_lambda, self.lambda_l1))
 
         self.history["lambda_l1"].append(self.lambda_l1)
@@ -157,12 +166,12 @@ class UGNConfig:
 
     input_dim: int
     output_dim: int
-    bundles: Optional[List[BundleConfig]] = None
-    n_bundles: Optional[int] = None
-    bundle_dim: Optional[int] = None
+    bundles: list[BundleConfig] | None = None
+    n_bundles: int | None = None
+    bundle_dim: int | None = None
     n_latent_layers: int = 4
-    encoder_hidden_dim: Optional[int] = None
-    decoder_hidden_dim: Optional[int] = None
+    encoder_hidden_dim: int | None = None
+    decoder_hidden_dim: int | None = None
     lambda_l1: float = 0.01
     lambda_equiv: float = 0.0
     use_spectral_norm: bool = True
@@ -170,24 +179,30 @@ class UGNConfig:
     def __post_init__(self) -> None:
         if self.bundles is None:
             if self.n_bundles is None or self.bundle_dim is None:
-                raise ValueError("Provide bundles or (n_bundles, bundle_dim).")
+                msg = "Provide bundles or (n_bundles, bundle_dim)."
+                raise ValueError(msg)
             if self.n_bundles <= 0 or self.bundle_dim <= 0:
-                raise ValueError("n_bundles and bundle_dim must be positive.")
+                msg = "n_bundles and bundle_dim must be positive."
+                raise ValueError(msg)
             self.bundles = [
                 BundleConfig(name=f"bundle_{i}", dim=self.bundle_dim)
                 for i in range(self.n_bundles)
             ]
         else:
             if len(self.bundles) == 0:
-                raise ValueError("bundles must be non-empty.")
+                msg = "bundles must be non-empty."
+                raise ValueError(msg)
             for bundle in self.bundles:
                 if bundle.dim <= 0:
-                    raise ValueError("bundle dimensions must be positive.")
+                    msg = "bundle dimensions must be positive."
+                    raise ValueError(msg)
             if self.n_bundles is not None and self.n_bundles != len(self.bundles):
-                raise ValueError("n_bundles does not match bundles length.")
+                msg = "n_bundles does not match bundles length."
+                raise ValueError(msg)
             if self.bundle_dim is not None:
                 if any(bundle.dim != self.bundle_dim for bundle in self.bundles):
-                    raise ValueError("bundle_dim provided but bundles are heterogeneous.")
+                    msg = "bundle_dim provided but bundles are heterogeneous."
+                    raise ValueError(msg)
             self.n_bundles = len(self.bundles)
             if self.bundle_dim is None:
                 dims = {bundle.dim for bundle in self.bundles}
@@ -206,7 +221,7 @@ class UGNConfig:
         return sum(bundle.dim for bundle in self.bundles)
 
     @property
-    def bundle_dims(self) -> List[int]:
+    def bundle_dims(self) -> list[int]:
         if self.bundles is None:
             return []
         return [bundle.dim for bundle in self.bundles]
@@ -217,9 +232,9 @@ class SoftEquivariantLayer(nn.Module):
 
     def __init__(
         self,
-        n_bundles: Optional[int] = None,
-        bundle_dim: Optional[int] = None,
-        bundle_dims: Optional[Sequence[int]] = None,
+        n_bundles: int | None = None,
+        bundle_dim: int | None = None,
+        bundle_dims: Sequence[int] | None = None,
         hidden_dim: int = 64,
         use_spectral_norm: bool = True,
         zero_self_mixing: bool = False,
@@ -227,25 +242,32 @@ class SoftEquivariantLayer(nn.Module):
         super().__init__()
         if bundle_dims is None:
             if n_bundles is None or bundle_dim is None:
-                raise ValueError("Provide bundle_dims or (n_bundles, bundle_dim).")
+                msg = "Provide bundle_dims or (n_bundles, bundle_dim)."
+                raise ValueError(msg)
             bundle_dims = [bundle_dim] * n_bundles
         else:
             bundle_dims = list(bundle_dims)
             if n_bundles is not None and n_bundles != len(bundle_dims):
-                raise ValueError("n_bundles does not match bundle_dims length.")
+                msg = "n_bundles does not match bundle_dims length."
+                raise ValueError(msg)
             if bundle_dim is not None and any(dim != bundle_dim for dim in bundle_dims):
-                raise ValueError("bundle_dim provided but bundle_dims are heterogeneous.")
+                msg = "bundle_dim provided but bundle_dims are heterogeneous."
+                raise ValueError(msg)
 
         if len(bundle_dims) == 0 or any(dim <= 0 for dim in bundle_dims):
-            raise ValueError("bundle_dims must contain positive dimensions.")
+            msg = "bundle_dims must contain positive dimensions."
+            raise ValueError(msg)
         if hidden_dim <= 0:
-            raise ValueError("hidden_dim must be positive.")
+            msg = "hidden_dim must be positive."
+            raise ValueError(msg)
 
         self.bundle_dims = list(bundle_dims)
         self.n_bundles = len(self.bundle_dims)
         self.total_dim = sum(self.bundle_dims)
         self.hidden_dim = hidden_dim
         self.zero_self_mixing = zero_self_mixing
+        dims = set(self.bundle_dims)
+        self.bundle_dim = self.bundle_dims[0] if len(dims) == 1 else None
 
         LinearLayer = SpectralLinear if use_spectral_norm else nn.Linear
         self.norm_mlp = nn.Sequential(
@@ -256,58 +278,102 @@ class SoftEquivariantLayer(nn.Module):
             LinearLayer(hidden_dim, self.n_bundles, bias=False),
         )
 
-        self.mixing_weights = nn.ParameterList(
-            [
-                nn.ParameterList(
-                    [
-                        nn.Parameter(torch.randn(self.bundle_dims[i], self.bundle_dims[j]) * 0.01)
-                        for j in range(self.n_bundles)
-                    ]
-                )
+        if self.bundle_dim is not None:
+            self.mixing_weights = nn.Parameter(
+                torch.randn(self.n_bundles, self.n_bundles, self.bundle_dim, self.bundle_dim)
+                * 0.01
+            )
+        else:
+            self.mixing_weights = nn.ParameterList([
+                nn.ParameterList([
+                    nn.Parameter(torch.randn(self.bundle_dims[i], self.bundle_dims[j]) * 0.01)
+                    for j in range(self.n_bundles)
+                ])
                 for i in range(self.n_bundles)
-            ]
-        )
+            ])
+        if self.zero_self_mixing and self.bundle_dim is not None:
+            mask = torch.ones(self.n_bundles, self.n_bundles)
+            mask.fill_diagonal_(0.0)
+            self.register_buffer("_mixing_mask", mask)
+        else:
+            self.register_buffer("_mixing_mask", None)
 
         self.gate_bias = nn.Parameter(torch.zeros(self.n_bundles))
 
-    def _split_bundles(self, z: torch.Tensor) -> tuple[List[torch.Tensor], bool]:
+    def _split_bundles(self, z: torch.Tensor) -> tuple[list[torch.Tensor], bool]:
         if z.dim() == 3:
             if z.shape[1] != self.n_bundles:
-                raise ValueError("Expected input shape [B, n_bundles, bundle_dim].")
+                msg = "Expected input shape [B, n_bundles, bundle_dim]."
+                raise ValueError(msg)
             if any(dim != z.shape[2] for dim in self.bundle_dims):
-                raise ValueError("Bundle dimensions are heterogeneous; expected flattened input.")
+                msg = "Bundle dimensions are heterogeneous; expected flattened input."
+                raise ValueError(msg)
             return [z[:, i, :] for i in range(self.n_bundles)], True
         if z.dim() == 2:
             if z.shape[1] != self.total_dim:
-                raise ValueError("Expected input shape [B, sum(bundle_dims)].")
+                msg = "Expected input shape [B, sum(bundle_dims)]."
+                raise ValueError(msg)
             bundles = []
             offset = 0
             for dim in self.bundle_dims:
                 bundles.append(z[:, offset : offset + dim])
                 offset += dim
             return bundles, False
-        raise ValueError("Expected input with shape [B, D] or [B, n_bundles, d_b].")
+        msg = "Expected input with shape [B, D] or [B, n_bundles, d_b]."
+        raise ValueError(msg)
 
-    def split_bundles(self, z: torch.Tensor) -> List[torch.Tensor]:
+    def _bundle_view(self, z: torch.Tensor) -> tuple[torch.Tensor, bool]:
+        if self.bundle_dim is None:
+            msg = "Bundle dimensions are heterogeneous; expected list-based access."
+            raise ValueError(msg)
+        if z.dim() == 3:
+            if z.shape[1] != self.n_bundles or z.shape[2] != self.bundle_dim:
+                msg = "Expected input shape [B, n_bundles, bundle_dim]."
+                raise ValueError(msg)
+            return z, True
+        if z.dim() == 2:
+            if z.shape[1] != self.total_dim:
+                msg = "Expected input shape [B, sum(bundle_dims)]."
+                raise ValueError(msg)
+            return z.view(z.shape[0], self.n_bundles, self.bundle_dim), False
+        msg = "Expected input with shape [B, D] or [B, n_bundles, d_b]."
+        raise ValueError(msg)
+
+    def split_bundles(self, z: torch.Tensor) -> list[torch.Tensor]:
         bundles, _ = self._split_bundles(z)
         return bundles
 
-    def cat_bundles(self, bundles: List[torch.Tensor]) -> torch.Tensor:
+    def cat_bundles(self, bundles: list[torch.Tensor]) -> torch.Tensor:
         return torch.cat(bundles, dim=-1)
 
-    def _cat_bundles(self, bundles: List[torch.Tensor], stacked: bool) -> torch.Tensor:
+    def _cat_bundles(self, bundles: list[torch.Tensor], stacked: bool) -> torch.Tensor:
         if stacked:
             return torch.stack(bundles, dim=1)
         return torch.cat(bundles, dim=-1)
 
     def forward(self, z: torch.Tensor) -> torch.Tensor:
+        if self.bundle_dim is not None:
+            bundled, was_stacked = self._bundle_view(z)
+            norms = torch.norm(bundled, dim=-1) + 1e-8
+            scales = F.softplus(self.norm_mlp(norms))
+            equivariant = bundled * scales.unsqueeze(-1)
+
+            weights = self.mixing_weights
+            if self.zero_self_mixing:
+                weights = weights * self._mixing_mask[:, :, None, None]
+            mixing = torch.einsum("bjd,ijkd->bik", bundled, weights)
+            gates = torch.sigmoid(self.gate_bias).view(1, -1, 1)
+            combined = equivariant + gates * mixing
+            z_out = bundled + combined
+            if was_stacked:
+                return z_out
+            return z_out.reshape(z.shape[0], -1)
+
         bundles, stacked = self._split_bundles(z)
 
         norms = torch.stack([torch.norm(v, dim=-1) + 1e-8 for v in bundles], dim=-1)
         scales = F.softplus(self.norm_mlp(norms))
-        equivariant_outputs = [
-            bundles[i] * scales[:, i : i + 1] for i in range(self.n_bundles)
-        ]
+        equivariant_outputs = [bundles[i] * scales[:, i : i + 1] for i in range(self.n_bundles)]
 
         mixing_outputs = []
         for i in range(self.n_bundles):
@@ -329,6 +395,8 @@ class SoftEquivariantLayer(nn.Module):
         return z + z_out
 
     def l1_loss(self) -> torch.Tensor:
+        if isinstance(self.mixing_weights, torch.Tensor):
+            return torch.sum(torch.abs(self.mixing_weights))
         return sum(
             torch.sum(torch.abs(self.mixing_weights[i][j]))
             for i in range(self.n_bundles)
@@ -336,6 +404,9 @@ class SoftEquivariantLayer(nn.Module):
         )
 
     def mixing_strength(self) -> float:
+        if isinstance(self.mixing_weights, torch.Tensor):
+            total_norm_sq = torch.sum(self.mixing_weights**2)
+            return torch.sqrt(total_norm_sq).item()
         total_norm_sq = sum(
             torch.sum(self.mixing_weights[i][j] ** 2)
             for i in range(self.n_bundles)
@@ -366,9 +437,11 @@ class CovariantAttentionLayer(nn.Module):
     ) -> None:
         super().__init__()
         if len(bundle_dims) == 0 or any(dim <= 0 for dim in bundle_dims):
-            raise ValueError("bundle_dims must contain positive dimensions.")
+            msg = "bundle_dims must contain positive dimensions."
+            raise ValueError(msg)
         if n_heads <= 0:
-            raise ValueError("n_heads must be positive.")
+            msg = "n_heads must be positive."
+            raise ValueError(msg)
         self.bundle_dims = list(bundle_dims)
         self.n_heads = n_heads
         self.use_wilson_lines = use_wilson_lines
@@ -376,19 +449,22 @@ class CovariantAttentionLayer(nn.Module):
         self.attention_heads = nn.ModuleList([])
         for dim in self.bundle_dims:
             if dim % n_heads != 0:
-                raise ValueError("bundle_dim must be divisible by n_heads.")
+                msg = "bundle_dim must be divisible by n_heads."
+                raise ValueError(msg)
             config = GeodesicConfig(d_model=dim, d_latent=dim, n_heads=n_heads)
             head = CovariantAttention(config)
             if not use_wilson_lines:
                 head.wilson = _IdentityWilson(head.d_k)
             self.attention_heads.append(head)
 
-    def _split_bundles(self, z: torch.Tensor) -> List[torch.Tensor]:
+    def _split_bundles(self, z: torch.Tensor) -> list[torch.Tensor]:
         if z.dim() != 2:
-            raise ValueError("Expected latent input shape [B, sum(bundle_dims)].")
+            msg = "Expected latent input shape [B, sum(bundle_dims)]."
+            raise ValueError(msg)
         expected = sum(self.bundle_dims)
         if z.shape[1] != expected:
-            raise ValueError("Expected latent input shape [B, sum(bundle_dims)].")
+            msg = "Expected latent input shape [B, sum(bundle_dims)]."
+            raise ValueError(msg)
         bundles = []
         offset = 0
         for dim in self.bundle_dims:
@@ -396,14 +472,16 @@ class CovariantAttentionLayer(nn.Module):
             offset += dim
         return bundles
 
-    def _split_context(self, context: torch.Tensor) -> List[torch.Tensor]:
+    def _split_context(self, context: torch.Tensor) -> list[torch.Tensor]:
         if context.dim() == 2:
             context = context.unsqueeze(1)
         if context.dim() != 3:
-            raise ValueError("Expected context shape [B, T, sum(bundle_dims)].")
+            msg = "Expected context shape [B, T, sum(bundle_dims)]."
+            raise ValueError(msg)
         expected = sum(self.bundle_dims)
         if context.shape[2] != expected:
-            raise ValueError("Expected context shape [B, T, sum(bundle_dims)].")
+            msg = "Expected context shape [B, T, sum(bundle_dims)]."
+            raise ValueError(msg)
         bundles = []
         offset = 0
         for dim in self.bundle_dims:
@@ -411,7 +489,7 @@ class CovariantAttentionLayer(nn.Module):
             offset += dim
         return bundles
 
-    def forward(self, z: torch.Tensor, context: Optional[torch.Tensor] = None) -> torch.Tensor:
+    def forward(self, z: torch.Tensor, context: torch.Tensor | None = None) -> torch.Tensor:
         bundles = self._split_bundles(z)
         if context is None:
             context_bundles = [v.unsqueeze(1) for v in bundles]
@@ -442,16 +520,14 @@ class UniversalGeometricNetwork(nn.Module):
             LinearLayer(config.encoder_hidden_dim, config.total_latent_dim),
         )
 
-        self.latent_layers = nn.ModuleList(
-            [
-                SoftEquivariantLayer(
-                    bundle_dims=config.bundle_dims,
-                    hidden_dim=64,
-                    use_spectral_norm=config.use_spectral_norm,
-                )
-                for _ in range(config.n_latent_layers)
-            ]
-        )
+        self.latent_layers = nn.ModuleList([
+            SoftEquivariantLayer(
+                bundle_dims=config.bundle_dims,
+                hidden_dim=64,
+                use_spectral_norm=config.use_spectral_norm,
+            )
+            for _ in range(config.n_latent_layers)
+        ])
 
         self.decoder = nn.Sequential(
             LinearLayer(config.total_latent_dim, config.decoder_hidden_dim),
@@ -480,7 +556,7 @@ class UniversalGeometricNetwork(nn.Module):
     def regularization_loss(self) -> torch.Tensor:
         return sum(layer.l1_loss() for layer in self.latent_layers)
 
-    def _split_latent(self, z: torch.Tensor) -> List[torch.Tensor]:
+    def _split_latent(self, z: torch.Tensor) -> list[torch.Tensor]:
         bundles = []
         offset = 0
         for dim in self.config.bundle_dims:
@@ -489,12 +565,10 @@ class UniversalGeometricNetwork(nn.Module):
         return bundles
 
     def equivariance_violation(
-        self, z: Optional[torch.Tensor] = None, n_samples: int = 16
+        self, z: torch.Tensor | None = None, n_samples: int = 16
     ) -> torch.Tensor:
         if z is None:
-            z = torch.randn(
-                1, self.config.total_latent_dim, device=next(self.parameters()).device
-            )
+            z = torch.randn(1, self.config.total_latent_dim, device=next(self.parameters()).device)
 
         violations = []
         for _ in range(n_samples):
@@ -513,9 +587,7 @@ class UniversalGeometricNetwork(nn.Module):
             z_out_1 = self.dynamics(z_rot)
             z_out_2 = self.dynamics(z)
             z_out_2_bundles = self._split_latent(z_out_2)
-            z_out_2_rot = torch.cat(
-                [b @ R.T for b, R in zip(z_out_2_bundles, rotations)], dim=-1
-            )
+            z_out_2_rot = torch.cat([b @ R.T for b, R in zip(z_out_2_bundles, rotations)], dim=-1)
 
             violations.append(F.mse_loss(z_out_1, z_out_2_rot))
 
@@ -560,7 +632,7 @@ class UniversalGeometricNetwork(nn.Module):
 def log_sparsity_diagnostics(
     model: UniversalGeometricNetwork,
     step: int,
-    logger: Optional[Callable[[dict], None]] = None,
+    logger: Callable[[dict], None] | None = None,
 ) -> dict:
     """Compute and optionally log sparsity statistics for mixing weights."""
     if logger is None:
@@ -569,7 +641,9 @@ def log_sparsity_diagnostics(
         except ModuleNotFoundError:
             wandb = None
         if wandb is not None:
-            logger = lambda data: wandb.log(data, step=step)
+
+            def logger(data):
+                return wandb.log(data, step=step)
 
     logs: dict = {}
     for i, layer in enumerate(model.latent_layers):
@@ -578,23 +652,38 @@ def log_sparsity_diagnostics(
         near_zero = 0
         magnitudes = []
 
-        for bi in range(layer.n_bundles):
-            for bj in range(layer.n_bundles):
-                block = layer.mixing_weights[bi][bj]
-                total += block.numel()
-                near_zero += (block.abs() < epsilon).sum().item()
-                magnitudes.append(block.abs().flatten())
+        if isinstance(layer.mixing_weights, torch.Tensor):
+            weights = layer.mixing_weights
+            total = weights.numel()
+            near_zero = (weights.abs() < epsilon).sum().item()
+            magnitudes.append(weights.abs().flatten())
+
+            block_norms = torch.norm(weights, p="fro", dim=(2, 3))
+            texture_zeros = []
+            for bi in range(layer.n_bundles):
+                for bj in range(layer.n_bundles):
+                    if bi == bj:
+                        continue
+                    if block_norms[bi, bj].item() < epsilon:
+                        texture_zeros.append((bi, bj))
+        else:
+            for bi in range(layer.n_bundles):
+                for bj in range(layer.n_bundles):
+                    block = layer.mixing_weights[bi][bj]
+                    total += block.numel()
+                    near_zero += (block.abs() < epsilon).sum().item()
+                    magnitudes.append(block.abs().flatten())
+
+            texture_zeros = []
+            for bi in range(layer.n_bundles):
+                for bj in range(layer.n_bundles):
+                    if bi == bj:
+                        continue
+                    block_norm = torch.norm(layer.mixing_weights[bi][bj], p="fro").item()
+                    if block_norm < epsilon:
+                        texture_zeros.append((bi, bj))
 
         sparsity = near_zero / total if total > 0 else 0.0
-
-        texture_zeros = []
-        for bi in range(layer.n_bundles):
-            for bj in range(layer.n_bundles):
-                if bi == bj:
-                    continue
-                block_norm = torch.norm(layer.mixing_weights[bi][bj], p="fro").item()
-                if block_norm < epsilon:
-                    texture_zeros.append((bi, bj))
 
         if magnitudes:
             all_magnitudes = torch.cat(magnitudes)
@@ -603,13 +692,11 @@ def log_sparsity_diagnostics(
         else:
             top_10 = []
 
-        logs.update(
-            {
-                f"layer_{i}/sparsity": sparsity,
-                f"layer_{i}/texture_zeros": len(texture_zeros),
-                f"layer_{i}/top_10_magnitudes": top_10,
-            }
-        )
+        logs.update({
+            f"layer_{i}/sparsity": sparsity,
+            f"layer_{i}/texture_zeros": len(texture_zeros),
+            f"layer_{i}/top_10_magnitudes": top_10,
+        })
 
     if logger is not None:
         logger(logs)
@@ -626,6 +713,8 @@ def train_ugn(
     task_loss_fn: Callable = nn.MSELoss(),
     use_adaptive_l1: bool = True,
     device: str = "cuda",
+    equivariance_eval_batches: int = 1,
+    equivariance_eval_samples: int = 4,
 ) -> dict:
     """Train a Universal Geometric Network with optional adaptive L1 scheduling."""
     model = model.to(device)
@@ -668,24 +757,30 @@ def train_ugn(
         model.eval()
         val_loss = 0.0
         val_equiv_violation = 0.0
+        equiv_batches = 0
         with torch.no_grad():
-            for x, y_target in val_loader:
+            for batch_idx, (x, y_target) in enumerate(val_loader):
                 x = x.to(device)
                 y_target = y_target.to(device)
 
                 y_pred = model(x)
                 val_loss += task_loss_fn(y_pred, y_target).item()
 
-                z = model.encode(x)
-                val_equiv_violation += model.equivariance_violation(z).item()
+                if batch_idx < equivariance_eval_batches and equivariance_eval_samples > 0:
+                    z = model.encode(x)
+                    val_equiv_violation += model.equivariance_violation(
+                        z, n_samples=equivariance_eval_samples
+                    ).item()
+                    equiv_batches += 1
 
         val_batches = max(len(val_loader), 1)
         val_loss /= val_batches
-        val_equiv_violation /= val_batches
+        if equiv_batches > 0:
+            val_equiv_violation /= equiv_batches
 
         scheduler.step()
 
-        if l1_scheduler is not None:
+        if l1_scheduler is not None and equiv_batches > 0:
             model.config.lambda_l1 = l1_scheduler.step(val_equiv_violation)
 
         diagnostics = model.get_diagnostics()
@@ -754,11 +849,16 @@ def compute_diagnostics(model: UniversalGeometricNetwork, x_sample: torch.Tensor
         n_zeros = 0
         n_total = 0
         for layer in model.latent_layers:
-            for i in range(layer.n_bundles):
-                for j in range(layer.n_bundles):
-                    weights = layer.mixing_weights[i][j]
-                    n_total += weights.numel()
-                    n_zeros += (weights.abs() < threshold).sum().item()
+            if isinstance(layer.mixing_weights, torch.Tensor):
+                weights = layer.mixing_weights
+                n_total += weights.numel()
+                n_zeros += (weights.abs() < threshold).sum().item()
+            else:
+                for i in range(layer.n_bundles):
+                    for j in range(layer.n_bundles):
+                        weights = layer.mixing_weights[i][j]
+                        n_total += weights.numel()
+                        n_zeros += (weights.abs() < threshold).sum().item()
         diagnostics["texture_zeros_count"] = n_zeros
         diagnostics["texture_zeros_fraction"] = (n_zeros / n_total) if n_total > 0 else 0.0
 

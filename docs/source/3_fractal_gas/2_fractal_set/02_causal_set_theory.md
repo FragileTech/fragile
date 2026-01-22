@@ -181,6 +181,7 @@ $c_{\mathrm{eff}}(t_k) \le V_{\mathrm{alg}}$ provides an algorithm-defined speed
 Let $c:=V_{\mathrm{alg}}$.
 
 Define the **geometric path length**
+
 $$
 d_{\mathrm{geo}}(e_i, e_j) := \inf_{\gamma} \int_{t_i}^{t_j} \|\dot{x}(t)\|_{g_t}\,dt,
 $$
@@ -188,6 +189,7 @@ where the infimum is over $C^1$ curves $\gamma:t\mapsto x(t)$ with $\gamma(t_i)=
 $\gamma(t_j)=x_j$; if no such curve exists, set $d_{\mathrm{geo}}=\infty$.
 
 Define the geometric (light-cone) order
+
 $$
 e_i \prec_{\mathrm{LC}} e_j \quad \iff \quad t_i < t_j
 \;\wedge\; d_{\mathrm{geo}}(e_i, e_j) \leq \int_{t_i}^{t_j} c\, dt = c\,(t_j-t_i) .
@@ -278,10 +280,12 @@ Poisson process. For a time window, the spacetime intensity is
 $\lambda(t, x) = r(t)\, \rho_{\mathrm{adaptive}}(x, t)$, where $r(t)$ is the episode rate
 reconstructed from CST edges. For discrete timesteps $\{t_k\}$ with step sizes
 $\Delta t_k = t_{k+1} - t_k$, define
+
 $$
 E_{\mathrm{CST}}(t_k) := \{(e \to e') \in E_{\mathrm{CST}} : t(e) = t_k\}
 $$
 and
+
 $$
 r(t_k) := |E_{\mathrm{CST}}(t_k)| / \Delta t_k .
 $$
@@ -618,12 +622,14 @@ for bounded Lipschitz functionals uniformly over the window.
 scale and $\varepsilon_c$ the coherence scale ({doc}`01_fractal_set`). Define the algorithmic
 locality radius $R_{\mathrm{loc}} := \min(\rho,\varepsilon_c)$ and the light-crossing time
 $T_{\mathrm{loc}} := \min(t_1-t_0, R_{\mathrm{loc}}/c)$. For $\varepsilon>0$, let
+
 $$
 J_{\mathrm{alg}}^{(\varepsilon)} := \{\xi:\tau(\xi)\in[0,\varepsilon],\; |\xi^0|\le T_{\mathrm{loc}},\; \|\xi\|\le R_{\mathrm{loc}}\}
 $$
 be the algorithmic double cone in tangent Minkowski space, with
 $\tau(\xi):=\sqrt{c^2(\xi^0)^2-\|\xi\|^2}$ and $c=V_{\mathrm{alg}}$. Under the rescaling
 $\xi=\varepsilon \zeta$, the unit cone
+
 $$
 \widehat{J}_{\mathrm{alg}} := \{\zeta:\tau(\zeta)\in[0,1],\; |\zeta^0|\le T_{\mathrm{loc}}/\varepsilon,\; \|\zeta\|\le R_{\mathrm{loc}}/\varepsilon\}
 $$
@@ -632,6 +638,7 @@ imposed on $\widehat{J}_{\mathrm{alg}}$ with the scaled kernel $K(\tau(\zeta))$.
 For $\varepsilon$ small enough that $R_{\mathrm{loc}}/c \le t_1-t_0$, we have
 $T_{\mathrm{loc}}=R_{\mathrm{loc}}/c$ and thus $|\zeta^0|\le 1/c$, $\|\zeta\|\le 1$.
 The moment conditions are:
+
 $$
 M_0 := \int_{\widehat{J}_{\mathrm{alg}}} K(\tau(\zeta))\,d\zeta = 0,\qquad
 M_2^{\mu\nu} := \int_{\widehat{J}_{\mathrm{alg}}} K(\tau(\zeta))\,\zeta^\mu\zeta^\nu\,d\zeta = 2m_2\, g^{\mu\nu},
@@ -762,6 +769,7 @@ E_{\mathrm{int}} := \{e=(x_e,t_e)\in E:\; t_e\in[t_0+T_{\mathrm{loc}},\,t_1-T_{\
 $$
 
 and $E_{\mathrm{bdy}}:=E\setminus E_{\mathrm{int}}$. For Lipschitz boundaries,
+
 $$
 \frac{|E_{\mathrm{bdy}}|}{N}=O\!\left(\frac{T_{\mathrm{loc}}}{t_1-t_0}+\frac{R_{\mathrm{loc}}}{L_{\mathrm{core}}}\right),
 \quad L_{\mathrm{core}}:=\sup_{t\in[t_0,t_1]}\mathrm{diam}_{g_{R,t}}(\mathcal{X}_{\mathrm{core}}),
@@ -785,6 +793,7 @@ Let $w_{\mathrm{geo}}(e') := \frac{Z(t_{e'})}{r(t_{e'})}
 \exp\!\left(\frac{U_{\mathrm{eff}}(x_{e'}, t_{e'})}{T}\right)$
 be the geometric reweighting from {prf:ref}`def-cst-volume`.
 Define the **localized** two-sided causal neighborhood
+
 $$
 J_{\mathrm{loc}}^\pm(e):=\{e' \in E:\, e'\prec_{\mathrm{LC}} e \text{ or } e\prec_{\mathrm{LC}} e',\;
 |t_e-t_{e'}|\le T_{\mathrm{loc}},\; d_{\mathrm{geo}}(e',e)\le R_{\mathrm{loc}}\},
@@ -823,12 +832,14 @@ Assume {prf:ref}`assm-fractal-gas-nonlocal`. Let $f\in C^4_c(M)$. Then for each 
 $e=(x,t)\in E_{\mathrm{int}}$,
 
 1. **Bias**:
+
 $$
 \mathbb{E}\big[(\Box_{\mathrm{FG}} f)(e)\,\big|\,e=(x,t)\big]
 = \Box_g f(x,t) + O(\varepsilon^2).
 $$
 
 2. **Variance**:
+
 $$
 \mathrm{Var}\big[(\Box_{\mathrm{FG}} f)(e)\,\big|\,e\big] \le \frac{C}{N\,\varepsilon^{D+2}}
 $$
@@ -837,6 +848,7 @@ for a constant $C$ depending on $K$, $f$, and the window.
 3. **Consistency**: Under scaling A6, $(\Box_{\mathrm{FG}} f)(e)\to \Box_g f(x,t)$ in probability.
 
 4. **Action limit**:
+
 $$
 S_{\mathrm{FG}}[f] \;\xrightarrow[N\to\infty]{\varepsilon\to 0}\;
 \frac{1}{2}\int_M f\,\Box_g f \, d\mathrm{vol}_g .
@@ -856,12 +868,14 @@ $O(\varepsilon)$ by {prf:ref}`def-fractal-gas-interior-episodes`.
 **Step 2 (Local expansion).**
 Work in normal coordinates for $g$ at $(x,t)$ and write $\xi^\mu$ for the coordinate difference.
 Expand
+
 $$
 f(x+\xi) = f(x) + \partial_\mu f(x)\,\xi^\mu + \frac{1}{2}\partial_\mu\partial_\nu f(x)\,\xi^\mu\xi^\nu
  + O(\|\xi\|^3).
 $$
 Because the kernel is two-sided and $K$ depends only on $\tau(\xi)/\varepsilon$, the odd moments vanish.
 Using A5 and the change of variables $\xi=\varepsilon\zeta$, the second-moment term yields
+
 $$
 \frac{1}{m_2\varepsilon^{D+2}} \int_{J_{\mathrm{alg}}^{(\varepsilon)}} K(\tau(\xi)/\varepsilon)\,
 \frac{1}{2}\partial_\mu\partial_\nu f(x)\,\xi^\mu\xi^\nu\, d\xi
@@ -932,9 +946,11 @@ observed ordering fraction $r$. For the Fractal Set, $d_{\mathrm{MM}}$ estimates
 spatial dimension is $d = D - 1$.
 
 For adaptive density, an explicit correction is:
+
 $$
 w_{\mathrm{geo}}(e) := \frac{Z(t_e)}{r(t_e)} \exp\!\left(\frac{U_{\mathrm{eff}}(x_e,t_e)}{T}\right),
 $$
+
 $$
 r_w := \frac{\sum_{i<j} w_{\mathrm{geo}}(e_i) w_{\mathrm{geo}}(e_j)\,\mathbb{1}_{e_i\prec_{\mathrm{LC}} e_j}}
 {\sum_{i<j} w_{\mathrm{geo}}(e_i) w_{\mathrm{geo}}(e_j)}.
@@ -946,6 +962,7 @@ $e\in E_{\mathrm{int}}$,
 let $W(e):=\{e'\in E:\,|t_e-t_{e'}|\le T_{\mathrm{loc}},\; d_{\mathrm{geo}}(e',e)\le R_{\mathrm{loc}}\}$
 using the reconstructed $d_{\mathrm{geo}}$ (via spinor-stored trajectories and $g_R$, or the
 IG-graph shortest-path approximation noted above), and set
+
 $$
 r_e:=\frac{|\{(e_i,e_j)\in W(e)^2:\,e_i\prec_{\mathrm{LC}} e_j\}|}{\binom{|W(e)|}{2}}.
 $$
@@ -975,6 +992,7 @@ $g_R$ we use it as a local proxy in the small-$\varepsilon$ regime.
 
 Let $R_{\mathrm{loc}}$ and $T_{\mathrm{loc}}$ be the algorithmic cutoffs from A5. The
 **geometric proper-time neighborhood** is
+
 $$
 J_{g,\mathrm{loc}}^\pm(e;\varepsilon):=\{y\in M:\,0<\tau_g(y,e)\le \varepsilon,\;
 |t(y)-t_e|\le T_{\mathrm{loc}},\; d_{\mathrm{geo}}(y,e)\le R_{\mathrm{loc}}\}.

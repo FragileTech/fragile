@@ -4,7 +4,19 @@ from fragile.fractalai.core.cloning import CloneOperator
 from fragile.fractalai.core.companion_selection import CompanionSelection
 from fragile.fractalai.core.euclidean_gas import EuclideanGas, SwarmState
 from fragile.fractalai.core.fitness import FitnessOperator
-from fragile.fractalai.core.fractal_set import FractalSet
+try:
+    from fragile.fractalai.core.fractal_set import FractalSet
+except ModuleNotFoundError as exc:
+    if exc.name != "networkx":
+        raise
+
+    class FractalSet:  # type: ignore[no-redef]
+        """Placeholder when optional dependency is missing."""
+
+        def __init__(self, *args, **kwargs):
+            raise ModuleNotFoundError(
+                "FractalSet requires the 'networkx' package. Install it to use this feature."
+            ) from exc
 from fragile.fractalai.core.history import RunHistory
 from fragile.fractalai.core.kinetic_operator import KineticOperator
 from fragile.fractalai.core.scutoids import (

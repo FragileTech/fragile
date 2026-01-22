@@ -65,6 +65,7 @@ The three gauge symmetries emerge from:
 **$U(1)$ — Fitness Phase Gauge**: The diversity companion selection mechanism measures fitness differences, not absolute values. Define the fitness phase $\theta_i := -\Phi_i/\hbar_{\text{eff}}$; only phase differences $\theta_{ij} = \theta_j-\theta_i$ enter IG amplitudes and edge holonomies ({prf:ref}`def-fractal-set-phase-potential`). This makes the local choice of phase reference $\theta_i \mapsto \theta_i + \alpha_i$ a gauge redundancy: edge phases transform as $\theta_{ij} \mapsto \theta_{ij} + \alpha_j - \alpha_i$, while loop holonomies are invariant. A global shift is the special case $\alpha_i \equiv c$. This local $U(1)$ redundancy is the algorithmic origin of electromagnetism.
 
 **$SU(2)$ — Cloning Companion Doublet**: For each walker pair $(i, j)$ with $V_i \neq V_j$, exactly one can clone from the other ({prf:ref}`cor-fractal-set-selection-asymmetry`). This defines a two-component cloning space. A normalized doublet can be written as
+
 $$
 \Psi_{ij} := \frac{1}{\sqrt{P_i^{\mathrm{clone}}(j) + P_j^{\mathrm{clone}}(i)}}
 \begin{pmatrix}

@@ -1,10 +1,9 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Dict, Tuple
 
 import torch
-import torch.nn as nn
+from torch import nn
 import torch.nn.functional as F
 
 
@@ -61,8 +60,7 @@ class Encoder(nn.Module):
         """
         h_conv = self.conv(x)  # [B, 256, 4, 4]
         h_flat = self.flatten(h_conv)  # [B, 4096]
-        h = self.proj(h_flat)  # [B, hidden_dim]
-        return h
+        return self.proj(h_flat)  # [B, hidden_dim]
 
 
 class VectorQuantizer(nn.Module):
@@ -77,9 +75,7 @@ class VectorQuantizer(nn.Module):
         self.embedding = nn.Embedding(codebook_size, embed_dim)
         nn.init.uniform_(self.embedding.weight, -1.0 / codebook_size, 1.0 / codebook_size)
 
-    def forward(
-        self, z_e: torch.Tensor
-    ) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+    def forward(self, z_e: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
         """Quantize encoder outputs.
 
         Args:
@@ -151,8 +147,7 @@ class Decoder(nn.Module):
         z = torch.cat([z_macro, z_nuis, z_tex], dim=-1)  # [B, D_total]
         h = self.fc(z)  # [B, 4096]
         h = h.view(z.shape[0], 256, 4, 4)  # [B, 256, 4, 4]
-        x_recon = self.deconv(h)  # [B, C, 64, 64]
-        return x_recon
+        return self.deconv(h)  # [B, C, 64, 64]
 
 
 class MacroDynamicsModel(nn.Module):
@@ -183,7 +178,7 @@ class MacroDynamicsModel(nn.Module):
         z_macro: torch.Tensor,
         action: torch.Tensor,
         hidden: torch.Tensor,
-    ) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+    ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
         """Predict next macro embedding and logits.
 
         Args:
@@ -229,7 +224,7 @@ class DisentangledAgent(nn.Module):
             config.codebook_size,
         )
 
-    def _encode_stats(self, obs: torch.Tensor) -> Dict[str, torch.Tensor]:
+    def _encode_stats(self, obs: torch.Tensor) -> dict[str, torch.Tensor]:
         """Encode observations and return latent statistics.
 
         Args:
@@ -259,7 +254,7 @@ class DisentangledAgent(nn.Module):
 
     def encode(
         self, obs: torch.Tensor
-    ) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
+    ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
         """Encode observations into macro, nuisance, and texture latents.
 
         Args:
@@ -285,10 +280,9 @@ class DisentangledAgent(nn.Module):
 
         if self.training and self.config.tex_dropout_prob > 0.0:
             keep = (
-                torch.rand(z_tex.shape[0], 1, device=z_tex.device)
-                > self.config.tex_dropout_prob
+                torch.rand(z_tex.shape[0], 1, device=z_tex.device) > self.config.tex_dropout_prob
             ).float()  # [B, 1]
-            z_tex = z_tex * keep  # [B, Dt]
+            z_tex *= keep  # [B, Dt]
 
         return stats["z_macro_q"], z_nuis, z_tex, stats["indices"], stats["vq_loss"]
 
@@ -309,7 +303,7 @@ class DisentangledAgent(nn.Module):
 
     def forward(
         self, obs: torch.Tensor, action: torch.Tensor, hidden: torch.Tensor
-    ) -> Dict[str, torch.Tensor]:
+    ) -> dict[str, torch.Tensor]:
         """Full forward pass with reconstruction and dynamics prediction.
 
         Args:
@@ -333,10 +327,9 @@ class DisentangledAgent(nn.Module):
 
         if self.training and self.config.tex_dropout_prob > 0.0:
             keep = (
-                torch.rand(z_tex.shape[0], 1, device=z_tex.device)
-                > self.config.tex_dropout_prob
+                torch.rand(z_tex.shape[0], 1, device=z_tex.device) > self.config.tex_dropout_prob
             ).float()  # [B, 1]
-            z_tex = z_tex * keep  # [B, Dt]
+            z_tex *= keep  # [B, Dt]
 
         recon = self.decoder(stats["z_macro_q"], z_nuis, z_tex)  # [B, C, H, W]
 
@@ -345,12 +338,12 @@ class DisentangledAgent(nn.Module):
         )  # [B, K], [B, Dh], [B, Dm]
 
         recon_loss = F.mse_loss(recon, obs)  # []
-        nuis_kl = -0.5 * (1.0 + nuis_logvar - nuis_mu.pow(2) - nuis_logvar.exp()).sum(
-            dim=1
-        ).mean()  # []
-        tex_kl = -0.5 * (1.0 + tex_logvar - tex_mu.pow(2) - tex_logvar.exp()).sum(
-            dim=1
-        ).mean()  # []
+        nuis_kl = (
+            -0.5 * (1.0 + nuis_logvar - nuis_mu.pow(2) - nuis_logvar.exp()).sum(dim=1).mean()
+        )  # []
+        tex_kl = (
+            -0.5 * (1.0 + tex_logvar - tex_mu.pow(2) - tex_logvar.exp()).sum(dim=1).mean()
+        )  # []
 
         closure_loss = torch.tensor(0.0, device=obs.device)  # []
         slowness_loss = torch.tensor(0.0, device=obs.device)  # []
@@ -440,7 +433,7 @@ class HierarchicalDisentangled(nn.Module):
         obs: torch.Tensor,
         step: int | torch.Tensor | None = None,
         prev_z_macro: torch.Tensor | None = None,
-    ) -> Dict[str, torch.Tensor]:
+    ) -> dict[str, torch.Tensor]:
         """Encode observations into hierarchical macro latents.
 
         Args:
@@ -453,10 +446,10 @@ class HierarchicalDisentangled(nn.Module):
         """
         h = self.encoder(obs)  # [B, H]
         z_macro_e = torch.einsum("bh,lhd->bld", h, self.macro_proj_weight)  # [B, L, Dmax]
-        z_macro_e = z_macro_e + self.macro_proj_bias.unsqueeze(0)  # [B, L, Dmax]
+        z_macro_e += self.macro_proj_bias.unsqueeze(0)  # [B, L, Dmax]
 
         dim_mask = self.level_dim_mask.unsqueeze(0)  # [1, L, Dmax]
-        z_macro_e = z_macro_e * dim_mask  # [B, L, Dmax]
+        z_macro_e *= dim_mask  # [B, L, Dmax]
 
         codebook = self.codebook.unsqueeze(0)  # [1, L, Kmax, Dmax]
         z_exp = z_macro_e.unsqueeze(2)  # [B, L, 1, Dmax]
@@ -464,7 +457,7 @@ class HierarchicalDisentangled(nn.Module):
         dist = (diff**2).sum(dim=-1)  # [B, L, Kmax]
 
         code_mask = self.level_code_mask.unsqueeze(0)  # [1, L, Kmax]
-        dist = dist + (1.0 - code_mask) * 1e9  # [B, L, Kmax]
+        dist += (1.0 - code_mask) * 1000000000.0  # [B, L, Kmax]
 
         indices = torch.argmin(dist, dim=-1)  # [B, L]
         indices_exp = indices.unsqueeze(-1).unsqueeze(-1)  # [B, L, 1, 1]

@@ -1,7 +1,7 @@
 import math
 
 import torch
-import torch.nn as nn
+from torch import nn
 import torch.nn.functional as F
 
 
@@ -18,19 +18,21 @@ class TokenSelfAttentionBlock(nn.Module):
     ):
         super().__init__()
         if num_tokens <= 0:
-            raise ValueError("num_tokens must be positive.")
+            msg = "num_tokens must be positive."
+            raise ValueError(msg)
         if attn_dim <= 0:
-            raise ValueError("attn_dim must be positive.")
+            msg = "attn_dim must be positive."
+            raise ValueError(msg)
         if num_heads <= 0:
-            raise ValueError("num_heads must be positive.")
+            msg = "num_heads must be positive."
+            raise ValueError(msg)
         if attn_dim % num_heads != 0:
-            raise ValueError("attn_dim must be divisible by num_heads.")
+            msg = "attn_dim must be divisible by num_heads."
+            raise ValueError(msg)
         self.num_tokens = num_tokens
         self.attn_dim = attn_dim
         self.to_tokens = nn.Linear(hidden_dim, num_tokens * attn_dim)
-        self.attn = nn.MultiheadAttention(
-            attn_dim, num_heads, dropout=dropout, batch_first=True
-        )
+        self.attn = nn.MultiheadAttention(attn_dim, num_heads, dropout=dropout, batch_first=True)
         self.norm = nn.LayerNorm(attn_dim)
         self.out_proj = nn.Linear(num_tokens * attn_dim, hidden_dim)
 
@@ -78,13 +80,11 @@ class StandardVQ(nn.Module):
                     dropout=attn_dropout,
                 )
             )
-        encoder_layers.extend(
-            [
-                nn.Linear(hidden_dim, hidden_dim),
-                nn.GELU(),
-                nn.Linear(hidden_dim, latent_dim),
-            ]
-        )
+        encoder_layers.extend([
+            nn.Linear(hidden_dim, hidden_dim),
+            nn.GELU(),
+            nn.Linear(hidden_dim, latent_dim),
+        ])
         self.encoder = nn.Sequential(*encoder_layers)
 
         # Codebook: learnable embeddings
@@ -107,18 +107,14 @@ class StandardVQ(nn.Module):
                     dropout=attn_dropout,
                 )
             )
-        decoder_layers.extend(
-            [
-                nn.Linear(hidden_dim, hidden_dim),
-                nn.GELU(),
-                nn.Linear(hidden_dim, input_dim),
-            ]
-        )
+        decoder_layers.extend([
+            nn.Linear(hidden_dim, hidden_dim),
+            nn.GELU(),
+            nn.Linear(hidden_dim, input_dim),
+        ])
         self.decoder = nn.Sequential(*decoder_layers)
 
-    def forward(
-        self, x: torch.Tensor
-    ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+    def forward(self, x: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
         """Forward pass with VQ.
 
         Returns:
@@ -193,13 +189,11 @@ class VanillaAE(nn.Module):
                     dropout=attn_dropout,
                 )
             )
-        encoder_layers.extend(
-            [
-                nn.Linear(hidden_dim, hidden_dim),
-                nn.GELU(),
-                nn.Linear(hidden_dim, latent_dim),
-            ]
-        )
+        encoder_layers.extend([
+            nn.Linear(hidden_dim, hidden_dim),
+            nn.GELU(),
+            nn.Linear(hidden_dim, latent_dim),
+        ])
         self.encoder = nn.Sequential(*encoder_layers)
 
         decoder_layers = [
@@ -216,13 +210,11 @@ class VanillaAE(nn.Module):
                     dropout=attn_dropout,
                 )
             )
-        decoder_layers.extend(
-            [
-                nn.Linear(hidden_dim, hidden_dim),
-                nn.GELU(),
-                nn.Linear(hidden_dim, input_dim),
-            ]
-        )
+        decoder_layers.extend([
+            nn.Linear(hidden_dim, hidden_dim),
+            nn.GELU(),
+            nn.Linear(hidden_dim, input_dim),
+        ])
         self.decoder = nn.Sequential(*decoder_layers)
 
     def forward(self, x: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
@@ -284,9 +276,9 @@ class AttentiveAtlasEncoder(nn.Module):
         self.val_proj = nn.Linear(hidden_dim, latent_dim)
 
         # --- Local VQ Codebooks (one per chart) ---
-        self.codebooks = nn.ModuleList(
-            [nn.Embedding(codes_per_chart, latent_dim) for _ in range(num_charts)]
-        )
+        self.codebooks = nn.ModuleList([
+            nn.Embedding(codes_per_chart, latent_dim) for _ in range(num_charts)
+        ])
         # Initialize codebooks
         for cb in self.codebooks:
             if hasattr(cb, "weight"):
@@ -390,7 +382,17 @@ class AttentiveAtlasEncoder(nn.Module):
         z_q_st = v + (z_q_blended - v).detach()
         z_geo = z_q_st + z_n  # [B, latent_dim]
 
-        return K_chart, K_code, z_n, z_tex, router_weights, z_geo, vq_loss, indices_stack, z_n_all_charts
+        return (
+            K_chart,
+            K_code,
+            z_n,
+            z_tex,
+            router_weights,
+            z_geo,
+            vq_loss,
+            indices_stack,
+            z_n_all_charts,
+        )
 
 
 class FactorizedJumpOperator(nn.Module):
@@ -444,14 +446,14 @@ class FactorizedJumpOperator(nn.Module):
                 if self.rank <= self.latent_dim:
                     self.B.data[i] = torch.eye(self.rank, self.latent_dim)
                 else:
-                    self.B.data[i, :self.latent_dim, :] = torch.eye(self.latent_dim)
+                    self.B.data[i, : self.latent_dim, :] = torch.eye(self.latent_dim)
 
             # Init A matrices to approximate identity
             for i in range(self.num_charts):
                 if self.latent_dim <= self.rank:
                     self.A.data[i] = torch.eye(self.latent_dim, self.rank)
                 else:
-                    self.A.data[i, :, :self.latent_dim] = torch.eye(self.latent_dim)
+                    self.A.data[i, :, : self.latent_dim] = torch.eye(self.latent_dim)
 
             # Add small noise for symmetry breaking
             self.B.data += torch.randn_like(self.B) * 0.01
@@ -481,9 +483,7 @@ class FactorizedJumpOperator(nn.Module):
         # 2. Project Global -> Target: z_out = A_tgt @ z_global + d_tgt
         A_tgt = self.A[target_idx]  # [B, D, rank]
         d_tgt = self.d[target_idx]  # [B, D]
-        z_out = torch.bmm(A_tgt, z_global.unsqueeze(-1)).squeeze(-1) + d_tgt  # [B, D]
-
-        return z_out
+        return torch.bmm(A_tgt, z_global.unsqueeze(-1)).squeeze(-1) + d_tgt  # [B, D]
 
     def get_transition_matrix(self, source: int, target: int) -> tuple[torch.Tensor, torch.Tensor]:
         """Get the full affine transition matrix from source to target.
@@ -530,9 +530,9 @@ class TopologicalDecoder(nn.Module):
         self.hidden_dim = hidden_dim
 
         # Chart-specific projectors (one per chart)
-        self.chart_projectors = nn.ModuleList(
-            [nn.Linear(latent_dim, hidden_dim) for _ in range(num_charts)]
-        )
+        self.chart_projectors = nn.ModuleList([
+            nn.Linear(latent_dim, hidden_dim) for _ in range(num_charts)
+        ])
 
         # Inverse router (dreaming mode) - infers routing from geometry alone
         self.latent_router = nn.Linear(latent_dim, num_charts)
@@ -570,9 +570,7 @@ class TopologicalDecoder(nn.Module):
         # Determine routing weights
         if chart_index is not None:
             # Discrete planning mode: hard one-hot routing
-            router_weights = F.one_hot(
-                chart_index, num_classes=self.num_charts
-            ).float()
+            router_weights = F.one_hot(chart_index, num_classes=self.num_charts).float()
         else:
             # Continuous generation / dreaming mode: infer from geometry
             logits = self.latent_router(z_geo)
@@ -585,8 +583,8 @@ class TopologicalDecoder(nn.Module):
         biases = torch.stack([proj.bias for proj in self.chart_projectors], dim=0)
         # einsum: 'bl,clh->bch' means z_geo[b,l] @ weights[c,l,h] -> h_stack[b,c,h]
         # But weights is [C, hidden, latent], so we need to transpose
-        h_stack = torch.einsum('bl,chl->bch', z_geo, weights)
-        h_stack = h_stack + biases.unsqueeze(0)  # [B, N_c, hidden_dim]
+        h_stack = torch.einsum("bl,chl->bch", z_geo, weights)
+        h_stack += biases.unsqueeze(0)  # [B, N_c, hidden_dim]
 
         # Blend using router weights
         h_global = (h_stack * router_weights.unsqueeze(-1)).sum(dim=1)  # [B, hidden]
@@ -684,9 +682,7 @@ class TopoEncoder(nn.Module):
             _indices,
             _z_n_all,
             c_bar,
-        ) = (
-            self.encoder(x)
-        )
+        ) = self.encoder(x)
 
         # Decoder can use hard routing (planning) or infer from geometry (dreaming)
         chart_index = K_chart if use_hard_routing else None
@@ -706,9 +702,7 @@ class TopoEncoder(nn.Module):
         L_consistency = KL(w_enc || w_dec)
         """
         # KL(P || Q) = sum(P * log(P/Q))
-        kl = (enc_weights * torch.log((enc_weights + eps) / (dec_weights + eps))).sum(
-            dim=-1
-        )
+        kl = (enc_weights * torch.log((enc_weights + eps) / (dec_weights + eps))).sum(dim=-1)
         return kl.mean()
 
     def compute_perplexity(self, K_chart: torch.Tensor) -> float:

@@ -3,15 +3,14 @@ from typing import Protocol
 
 import numpy as np
 import torch
-import torch.nn as nn
+from torch import nn
 import torch.nn.functional as F
 
 from .layers import FactorizedJumpOperator
 
 
 class _ConformalMetricLike(Protocol):
-    def conformal_factor(self, z: torch.Tensor) -> torch.Tensor:
-        ...
+    def conformal_factor(self, z: torch.Tensor) -> torch.Tensor: ...
 
 
 class SupervisedTopologyLoss(nn.Module):
@@ -43,9 +42,7 @@ class SupervisedTopologyLoss(nn.Module):
         self.temperature = temperature
 
         # Learnable chart-to-class mapping (Definition 25.2.1)
-        self.chart_to_class = nn.Parameter(
-            torch.randn(num_charts, num_classes) * 0.01
-        )
+        self.chart_to_class = nn.Parameter(torch.randn(num_charts, num_classes) * 0.01)
 
     @property
     def p_y_given_k(self) -> torch.Tensor:
@@ -200,7 +197,7 @@ def compute_separation_loss(
                 lambda_i = metric.conformal_factor(centers_tensor[i].unsqueeze(0)).squeeze()
                 lambda_j = metric.conformal_factor(centers_tensor[j].unsqueeze(0)).squeeze()
                 dist = dist * 0.5 * (lambda_i + lambda_j)
-            loss_sep = loss_sep + F.relu(margin - dist)
+            loss_sep += F.relu(margin - dist)
             n_pairs += 1
 
     return loss_sep / max(n_pairs, 1)
@@ -220,7 +217,7 @@ def compute_chart_center_separation_loss(
     for i in range(chart_centers.shape[0]):
         for j in range(i + 1, chart_centers.shape[0]):
             dist = torch.norm(chart_centers[i] - chart_centers[j])
-            loss_sep = loss_sep + F.relu(margin - dist)
+            loss_sep += F.relu(margin - dist)
             n_pairs += 1
     return loss_sep / max(n_pairs, 1)
 
@@ -340,7 +337,7 @@ def compute_orthogonality_loss(
                 continue
             svals = svals.clamp(min=eps)
             log_s = torch.log(svals)
-            loss = loss + log_s.var(unbiased=False)
+            loss += log_s.var(unbiased=False)
             n_layers += 1
 
     return loss / max(n_layers, 1)
@@ -429,7 +426,7 @@ def compute_per_chart_code_entropy_loss(
         probs_nonzero = probs[probs > 0]
         entropy = -torch.sum(probs_nonzero * torch.log(probs_nonzero + 1e-6))
 
-        total_loss += (max_entropy - entropy)
+        total_loss += max_entropy - entropy
         active_charts += 1
 
     if active_charts == 0:
@@ -459,7 +456,7 @@ def compute_jump_consistency_loss(
     Returns:
         loss: Mean weighted MSE across all chart pairs
     """
-    B, N_c, D = z_n_all_charts.shape
+    B, N_c, _D = z_n_all_charts.shape
     device = z_n_all_charts.device
     total_loss = torch.tensor(0.0, device=device)
     num_pairs = 0
@@ -490,7 +487,7 @@ def compute_jump_consistency_loss(
             error = (z_j_pred - z_j_target).pow(2).sum(dim=-1)  # [B]
             pair_loss = (error * weights).sum() / (weights.sum() + 1e-6)
 
-            total_loss = total_loss + pair_loss
+            total_loss += pair_loss
             num_pairs += 1
 
     if num_pairs == 0:
@@ -523,11 +520,10 @@ def get_jump_weight_schedule(
     """
     if epoch < warmup_end:
         return 0.0
-    elif epoch < ramp_end:
+    if epoch < ramp_end:
         progress = (epoch - warmup_end) / (ramp_end - warmup_end)
         return 0.01 + progress * (final_weight - 0.01)
-    else:
-        return final_weight
+    return final_weight
 
 
 def compute_kl_prior_loss(
@@ -543,9 +539,11 @@ def compute_kl_prior_loss(
 
     def energy_loss(z: torch.Tensor) -> torch.Tensor:
         if center:
-            z = z - z.mean(dim=0, keepdim=True)
-        dim = z.shape[1]
-        mean_energy = (z**2).sum(dim=1).mean()
+            z_centered = z - z.mean(dim=0, keepdim=True)
+        else:
+            z_centered = z
+        dim = z_centered.shape[1]
+        mean_energy = (z_centered**2).sum(dim=1).mean()
         target = (target_std**2) * dim
         return (mean_energy - target).pow(2)
 
@@ -589,8 +587,10 @@ def compute_vicreg_invariance_loss(
 
     def gram(z: torch.Tensor) -> torch.Tensor:
         if center:
-            z = z - z.mean(dim=0, keepdim=True)
-        scale = max(z.shape[1], 1)
-        return (z @ z.t()) / scale
+            z_centered = z - z.mean(dim=0, keepdim=True)
+        else:
+            z_centered = z
+        scale = max(z_centered.shape[1], 1)
+        return (z_centered @ z_centered.t()) / scale
 
     return F.mse_loss(gram(z_geo), gram(z_geo_aug))

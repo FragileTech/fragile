@@ -1,11 +1,10 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Optional, Tuple
-
 import math
+
 import torch
-import torch.nn as nn
+from torch import nn
 import torch.nn.functional as F
 
 
@@ -91,8 +90,7 @@ class ConformalMetric(nn.Module):
         """
         r_sq = (z**2).sum(dim=-1, keepdim=True)
         r_sq = torch.clamp(r_sq, max=1.0 - self.epsilon)
-        lambda_z = 2.0 / (1.0 - r_sq + self.epsilon)
-        return lambda_z
+        return 2.0 / (1.0 - r_sq + self.epsilon)
 
     def metric(self, z: torch.Tensor) -> torch.Tensor:
         """Compute metric tensor G_ij(z).
@@ -149,7 +147,7 @@ class ChristoffelQuery(nn.Module):
             for k in range(min(d_latent, self.W_Q_gamma.shape[0])):
                 for i in range(d_latent):
                     for j in range(d_latent):
-                        if i == k or j == k:
+                        if k in {i, j}:
                             self.W_Q_gamma[k, i, j] = 0.01
                         if i == j:
                             self.W_Q_gamma[k, i, j] -= 0.01
@@ -158,8 +156,8 @@ class ChristoffelQuery(nn.Module):
         self,
         x: torch.Tensor,
         z_geom: torch.Tensor,
-        v_feat: Optional[torch.Tensor] = None,
-        v_geom: Optional[torch.Tensor] = None,
+        v_feat: torch.Tensor | None = None,
+        v_geom: torch.Tensor | None = None,
     ) -> torch.Tensor:
         """Compute geodesic query.
 
@@ -174,17 +172,21 @@ class ChristoffelQuery(nn.Module):
         """
         q = self.W_Q(x) + self.W_Qz(z_geom)
         if v_feat is not None:
-            q = q + self.W_Qv(v_feat)
+            q += self.W_Qv(v_feat)
 
         d_latent = min(z_geom.shape[-1], self.W_Q_gamma.shape[-1])
         z_trunc = z_geom[..., :d_latent]
-        q_gamma = torch.einsum("aij,bi,bj->ba", self.W_Q_gamma[:, :d_latent, :d_latent], z_trunc, z_trunc)
-        q = q + q_gamma
+        q_gamma = torch.einsum(
+            "aij,bi,bj->ba", self.W_Q_gamma[:, :d_latent, :d_latent], z_trunc, z_trunc
+        )
+        q += q_gamma
 
         if v_geom is not None:
             v_trunc = v_geom[..., :d_latent]
-            q_zv = torch.einsum("aij,bi,bj->ba", self.W_Qzv[:, :d_latent, :d_latent], z_trunc, v_trunc)
-            q = q + q_zv
+            q_zv = torch.einsum(
+                "aij,bi,bj->ba", self.W_Qzv[:, :d_latent, :d_latent], z_trunc, v_trunc
+            )
+            q += q_zv
 
         return q
 
@@ -224,7 +226,7 @@ class ChiralProjector(nn.Module):
 
         psi_proj = torch.einsum("bij,bjd->bid", proj, psi_doublet)
         commit_strength = (psi_doublet * psi_proj).sum(dim=1, keepdim=True)
-        psi_proj = psi_proj * commit_strength
+        psi_proj *= commit_strength
         return psi_proj.reshape(psi_proj.shape[0], -1)
 
 
@@ -233,7 +235,7 @@ class AreaLawScreening(nn.Module):
 
     def __init__(self, config: GeodesicConfig) -> None:
         super().__init__()
-        self.log_sigma = nn.Parameter(torch.log(torch.tensor(config.g_s ** 2)))
+        self.log_sigma = nn.Parameter(torch.log(torch.tensor(config.g_s**2)))
 
     @property
     def sigma(self) -> torch.Tensor:
@@ -303,7 +305,8 @@ class CovariantAttention(nn.Module):
         self.head_type = head_type
 
         if config.d_model % config.n_heads != 0:
-            raise ValueError("d_model must be divisible by n_heads.")
+            msg = "d_model must be divisible by n_heads."
+            raise ValueError(msg)
 
         d_k = config.d_model // config.n_heads
 
@@ -330,11 +333,11 @@ class CovariantAttention(nn.Module):
         x_query: torch.Tensor,
         x_key: torch.Tensor,
         x_value: torch.Tensor,
-        v_query: Optional[torch.Tensor] = None,
-        v_query_geom: Optional[torch.Tensor] = None,
-        grad_V: Optional[torch.Tensor] = None,
+        v_query: torch.Tensor | None = None,
+        v_query_geom: torch.Tensor | None = None,
+        grad_V: torch.Tensor | None = None,
         level: int = 0,
-    ) -> Tuple[torch.Tensor, torch.Tensor]:
+    ) -> tuple[torch.Tensor, torch.Tensor]:
         """Compute covariant attention output.
 
         Args:
@@ -361,20 +364,21 @@ class CovariantAttention(nn.Module):
 
         scores = torch.einsum("bi,bni->bn", q, k_transported)
         tau = self.metric.temperature(z_query, self.d_k)
-        scores = scores / (tau + 1e-8)
+        scores /= tau + 1e-08
 
         attention = F.softmax(scores, dim=-1)
 
         if self.use_screening:
             lambda_z = self.metric.conformal_factor(z_query)
             attention = self.screening(attention, z_query, z_key, lambda_z, level)
-            attention = attention / (attention.sum(dim=-1, keepdim=True) + 1e-8)
+            attention /= attention.sum(dim=-1, keepdim=True) + 1e-08
 
         output = torch.einsum("bn,bni->bi", attention, v)
 
         if self.use_chirality and grad_V is not None:
             if output.shape[-1] % 2 != 0:
-                raise ValueError("Chiral projection requires an even d_k.")
+                msg = "Chiral projection requires an even d_k."
+                raise ValueError(msg)
             output_doublet = output.reshape(output.shape[0], 2, -1)
             output = self.chiral(output_doublet, grad_V)
             output = output.reshape(output.shape[0], -1)
@@ -427,7 +431,7 @@ class GeodesicCrossAttention(nn.Module):
         context_z: torch.Tensor,
         context_x: torch.Tensor,
         context_force: torch.Tensor,
-    ) -> Tuple[torch.Tensor, torch.Tensor]:
+    ) -> tuple[torch.Tensor, torch.Tensor]:
         """One step of geodesic BAOAB integration.
 
         Args:
@@ -453,7 +457,7 @@ class GeodesicCrossAttention(nn.Module):
             x_value=force_features,
         )
         delta_p1_latent = self.state_proj(delta_p1)
-        p = p - (h / 2.0) * delta_p1_latent
+        p -= h / 2.0 * delta_p1_latent
 
         g_inv = self.metric.metric_inv(z)
         v = torch.einsum("bij,bj->bi", g_inv, p)
@@ -468,7 +472,7 @@ class GeodesicCrossAttention(nn.Module):
             v_query_geom=v,
         )
         delta_z1_latent = self.state_proj(delta_z1)
-        z = z + (h / 2.0) * (v + delta_z1_latent)
+        z += h / 2.0 * (v + delta_z1_latent)
         z = self._project_to_disk(z)
 
         g_sqrt = self.metric.conformal_factor(z)
@@ -486,7 +490,7 @@ class GeodesicCrossAttention(nn.Module):
                 x_value=noise_features,
             )
             delta_p_noise_latent = self.state_proj(delta_p_noise)
-            p = p + self.thermostat_residual_scale * delta_p_noise_latent
+            p += self.thermostat_residual_scale * delta_p_noise_latent
 
         g_inv = self.metric.metric_inv(z)
         v = torch.einsum("bij,bj->bi", g_inv, p)
@@ -501,7 +505,7 @@ class GeodesicCrossAttention(nn.Module):
             v_query_geom=v,
         )
         delta_z2_latent = self.state_proj(delta_z2)
-        z = z + (h / 2.0) * (v + delta_z2_latent)
+        z += h / 2.0 * (v + delta_z2_latent)
         z = self._project_to_disk(z)
 
         delta_p2, _ = self.head_B2(
@@ -512,7 +516,7 @@ class GeodesicCrossAttention(nn.Module):
             x_value=force_features,
         )
         delta_p2_latent = self.state_proj(delta_p2)
-        p = p - (h / 2.0) * delta_p2_latent
+        p -= h / 2.0 * delta_p2_latent
 
         return z, p
 

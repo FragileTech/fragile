@@ -5,14 +5,14 @@
 
 - Centralizes **37 loss functions and objectives** defined throughout Volume 1 for quick engineering reference.
 - **Curved formulations**: All distance-based losses use the Riemannian metric $G_{ij}$ from the capacity-constrained geometry ({ref}`Section 18 <sec-capacity-constrained-metric-law-geometry-from-interface-limits>`). Each entry includes a "Flat limit" showing the standard ML formula recovered when $G_{ij} \to \delta_{ij}$.
-- Organized by domain: VAE losses, supervised topology, control objectives, reward fields, multi-agent, barriers, belief dynamics, self-supervised, imitation, geometric consistency, and meta-learning.
+- Organized by domain: TopoEncoder losses, supervised topology, control objectives, reward fields, multi-agent, barriers, belief dynamics, self-supervised, imitation, geometric consistency, and meta-learning.
 - Each loss includes: formula, parameters, units, purpose, and source section cross-reference.
 - Use this as a single reference when implementing the Fragile Agent training pipeline.
 
 (sec-appendix-f-disentangled-vae-losses)=
-## F.1 Disentangled VAE Losses
+## F.1 TopoEncoder Losses
 
-These losses train the split-latent VQ-VAE architecture ({ref}`Section 3.2 <sec-the-disentangled-variational-architecture-hierarchical-latent-separation>`).
+These losses train the Attentive Atlas representation stack ({ref}`Section 3.2 <sec-the-disentangled-variational-architecture-hierarchical-latent-separation>`).
 
 :::{prf:definition} F.1.1 (Reconstruction Loss)
 :label: def-f-reconstruction-loss
@@ -25,13 +25,16 @@ $$
 - $x, \hat{x}$ – original and reconstructed observations
 - $G_{ij}^{\text{obs}}(x)$ – metric tensor on observation space (learned or fixed)
 
-**Purpose:** Ensures all three latent channels (macro, nuisance, texture) collectively preserve information for reconstruction, with distances measured under the observation-space metric.
+**Purpose:** Ensures charted latents collectively preserve information for reconstruction, with
+metric-weighted distances.
 
 **Units:** $[\mathrm{nat}]$ (when scaled appropriately) or metric-weighted MSE.
 
-**Flat limit:** When $G_{ij}^{\text{obs}} = \delta_{ij}$ (identity), recovers standard MSE: $\|x - \hat{x}\|^2$.
+**Flat limit:** When $G_{ij}^{\text{obs}} = \delta_{ij}$ (identity), recovers standard MSE:
+$\|x - \hat{x}\|^2$.
 
-**Source:** {ref}`Section 3.2 <sec-loss-function-enforcing-macro-micro-separation>`, Definition {prf:ref}`def-total-disentangled-loss`
+**Source:** {ref}`Section 3.2 <sec-loss-function-enforcing-macro-micro-separation>`,
+Definition {prf:ref}`def-total-disentangled-loss`
 
 :::
 
@@ -39,154 +42,143 @@ $$
 :label: def-f-vq-loss
 
 $$
-\mathcal{L}_{\text{vq}} = \underbrace{(z_q - z_e)^i \, G_{ij}(z_e) \, (z_q - z_e)^j}_{\text{codebook loss}} + \beta \cdot \underbrace{(z_e - z_q)^i \, G_{ij}(z_q) \, (z_e - z_q)^j}_{\text{commitment loss}}
+\mathcal{L}_{\text{vq}} = (z_q - z_e)^i \, G_{ij}(z_e) \, (z_q - z_e)^j + \beta \, (z_e - z_q)^i \, G_{ij}(z_q) \, (z_e - z_q)^j
 $$
 
 **Parameters:**
 - $z_e$ – encoder output (pre-quantization)
-- $z_q$ – quantized code embedding $e_K$
-- $G_{ij}(z)$ – metric tensor on latent space at point $z$
-- $\operatorname{sg}[\cdot]$ – stop-gradient operator (applied to second argument in each term)
-- $\beta = 0.25$ (typical) – commitment weight
+- $z_q$ – quantized code embedding $e_{K}$ (per-chart)
+- $G_{ij}(z)$ – metric tensor on latent space
+- $\beta$ – commitment weight (default 0.25)
 
-**Purpose:** Stabilizes the discrete macro symbol $K$ via VQ-VAE. The codebook loss moves codebook vectors toward encoder outputs; the commitment loss encourages the encoder to commit to nearby codebook vectors. Distances are measured under the learned latent metric.
+**Purpose:** Stabilizes per-chart codebooks. The first term updates code vectors; the second term
+encourages the encoder to commit to nearby codes.
 
-**Units:** Dimensionless (metric-weighted embedding distance).
+**Flat limit:** When $G_{ij} = \delta_{ij}$, recovers standard VQ:
+$\|z_q - z_e\|^2 + \beta\|z_e - z_q\|^2$.
 
-**Flat limit:** When $G_{ij} = \delta_{ij}$, recovers standard VQ-VAE: $\|z_q - z_e\|^2 + \beta\|z_e - z_q\|^2$.
-
-**Source:** {ref}`Section 3.2 <sec-architecture-the-disentangled-vq-vae-rnn>`, Definition {prf:ref}`def-total-disentangled-loss`
+**Source:** {ref}`Section 3.2 <sec-architecture-the-disentangled-vq-vae-rnn>`,
+Definition {prf:ref}`def-total-disentangled-loss`
 
 :::
 
-:::{prf:definition} F.1.3 (Closure Loss / Causal Enclosure)
+:::{prf:definition} F.1.3 (Routing Entropy Loss)
 :label: def-f-closure-loss
 
 $$
-\mathcal{L}_{\text{closure}} = -\log p_\psi(K_{t+1} \mid K_t, a_t)
+\mathcal{L}_{\text{entropy}} = -\frac{1}{B}\sum_{b=1}^{B}\sum_{k=1}^{N_c} w_{bk}\,\log(w_{bk} + \epsilon)
 $$
 
 **Parameters:**
-- $K_t, K_{t+1}$ – current and next macro symbols
-- $a_t$ – action taken
-- $p_\psi$ – learned macro dynamics model (micro-blind)
+- $w_{bk}$ – router weights over charts
+- $N_c$ – number of charts
 
-**Purpose:** Enforces **causal enclosure**: the next macro symbol $K_{t+1}$ must be predictable from $(K_t, a_t)$ alone, without requiring micro-residuals. When averaged over the training distribution, this estimates the conditional entropy $H(K_{t+1} \mid K_t, a_t)$.
+**Purpose:** Penalizes diffuse routing. Lower entropy corresponds to sharper chart assignments.
 
 **Units:** $[\mathrm{nat}]$
 
-**Source:** {ref}`Section 3.2 <sec-loss-function-enforcing-macro-micro-separation>`, Definition {prf:ref}`def-total-disentangled-loss`, Definition {prf:ref}`def-causal-enclosure`
+**Source:** {ref}`Section 3.2 <sec-loss-function-enforcing-macro-micro-separation>`
 
 :::
 
-:::{prf:definition} F.1.4 (Slowness Loss / Anti-Churn)
+:::{prf:definition} F.1.4 (Consistency Loss)
 :label: def-f-slowness-loss
 
 $$
-\mathcal{L}_{\text{slowness}} = d_G(e_{K_t}, e_{K_{t-1}})^2 = (e_{K_t} - e_{K_{t-1}})^i \, G_{ij}(\bar{e}) \, (e_{K_t} - e_{K_{t-1}})^j
+\mathcal{L}_{\text{consistency}} = \frac{1}{B}\sum_{b=1}^{B} \sum_{k=1}^{N_c} w^{\text{enc}}_{bk}\,\log\left(\frac{w^{\text{enc}}_{bk}+\epsilon}{w^{\text{dec}}_{bk}+\epsilon}\right)
 $$
 
 **Parameters:**
-- $e_{K_t}, e_{K_{t-1}}$ – macro embeddings at consecutive timesteps
-- $G_{ij}(\bar{e})$ – metric tensor evaluated at midpoint $\bar{e} = \frac{1}{2}(e_{K_t} + e_{K_{t-1}})$
-- $d_G$ – geodesic distance on the macro embedding manifold
+- $w^{\text{enc}}$ – encoder router weights
+- $w^{\text{dec}}$ – decoder router weights
 
-**Purpose:** Penalizes rapid changes in the macro embedding, preventing "symbol churn" where the macro symbol flickers rapidly between states even when nothing meaningful is changing. The metric weighting ensures high-curvature regions (near decision boundaries) are more sensitive.
+**Purpose:** Aligns encoder and decoder chart usage.
 
-**Units:** Dimensionless (metric-weighted embedding distance).
+**Units:** $[\mathrm{nat}]$
 
-**Flat limit:** When $G_{ij} = \delta_{ij}$, recovers $\|e_{K_t} - e_{K_{t-1}}\|^2$.
-
-**Source:** {ref}`Section 3.2 <sec-loss-function-enforcing-macro-micro-separation>`, Definition {prf:ref}`def-total-disentangled-loss`
+**Source:** {ref}`Section 3.2 <sec-loss-function-enforcing-macro-micro-separation>`
 
 :::
 
-:::{prf:definition} F.1.5 (Nuisance KL Loss)
+:::{prf:definition} F.1.5 (Window Loss / Grounding)
 :label: def-f-nuisance-kl-loss
 
 $$
-\mathcal{L}_{\text{nuis-KL}} = D_{\mathrm{KL}}(q(z_n \mid x) \| \mathcal{N}(0, I)) = -\frac{1}{2} \sum_d \left(1 + \log \sigma_d^2 - \mu_d^2 - \sigma_d^2\right)
+\mathcal{L}_{\text{window}} = \max\left(0, \epsilon_{\text{ground}} - I(X;K)\right)^2
 $$
 
 **Parameters:**
-- $q(z_n \mid x) = \mathcal{N}(\mu, \operatorname{diag}(\sigma^2))$ – encoder's nuisance posterior
-- $\mathcal{N}(0, I)$ – standard normal prior
+- $I(X;K) = H(K) - H(K|X)$ – mutual information between input and chart assignment
+- $\epsilon_{\text{ground}}$ – grounding threshold
 
-**Purpose:** Regularizes the structured nuisance residual toward a simple prior. Implements Occam's razor: use nuisance capacity only when necessary. Nuisance is *not* trash---it captures pose/basis/disturbance coordinates that may be needed for actuation.
+**Purpose:** Enforces the stable learning window by requiring chart assignments to carry
+information about inputs.
 
 **Units:** $[\mathrm{nat}]$
 
-**Source:** {ref}`Section 3.2 <sec-loss-function-enforcing-macro-micro-separation>`, Definition {prf:ref}`def-total-disentangled-loss`
+**Source:** {ref}`Section 3.2 <sec-loss-function-enforcing-macro-micro-separation>`
 
 :::
 
-:::{prf:definition} F.1.6 (Texture KL Loss)
+:::{prf:definition} F.1.6 (Per-Chart Code Entropy Loss)
 :label: def-f-texture-kl-loss
 
 $$
-\mathcal{L}_{\text{tex-KL}} = D_{\mathrm{KL}}(q(z_{\text{tex}} \mid x) \| \mathcal{N}(0, I))
+\mathcal{L}_{\text{code}} = \frac{1}{N_c}\sum_{k=1}^{N_c} \left(\log K - H(C\mid K=k)\right)
 $$
 
 **Parameters:**
-- $q(z_{\text{tex}} \mid x)$ – encoder's texture posterior
-- $\mathcal{N}(0, I)$ – standard normal prior
+- $C$ – code index within each chart
+- $K$ – number of codes per chart
 
-**Purpose:** Regularizes the reconstruction-only texture residual toward a simple prior. Texture is for reconstruction fidelity but must not influence macro closure or control.
+**Purpose:** Encourages each chart to use its codebook uniformly rather than collapsing to a
+subset.
 
 **Units:** $[\mathrm{nat}]$
 
-**Source:** {ref}`Section 3.2 <sec-loss-function-enforcing-macro-micro-separation>`, Definition {prf:ref}`def-total-disentangled-loss`
+**Source:** {ref}`Section 3.2 <sec-loss-function-enforcing-macro-micro-separation>`
 
 :::
 
-:::{prf:definition} F.1.7 (Total Disentangled Loss)
+:::{prf:definition} F.1.7 (Total TopoEncoder Loss)
 :label: def-f-total-disentangled-loss
 
 $$
-\mathcal{L}_{\text{total}} = \lambda_{\text{recon}}\mathcal{L}_{\text{recon}} + \lambda_{\text{vq}}\mathcal{L}_{\text{vq}} + \lambda_{\text{closure}}\mathcal{L}_{\text{closure}} + \lambda_{\text{slowness}}\mathcal{L}_{\text{slowness}} + \lambda_{\text{nuis}}\mathcal{L}_{\text{nuis-KL}} + \lambda_{\text{tex}}\mathcal{L}_{\text{tex-KL}}
+\mathcal{L}_{\text{total}} = \mathcal{L}_{\text{recon}} + \mathcal{L}_{\text{vq}} +
+\lambda_{\text{ent}}\,\mathcal{L}_{\text{entropy}} +
+\lambda_{\text{cons}}\,\mathcal{L}_{\text{consistency}} +
+\sum_{i \in \text{tiers}} \lambda_i \mathcal{L}_i +
+\lambda_{\text{jump}}\,\mathcal{L}_{\text{jump}} +
+\lambda_{\text{sup}}\,\mathcal{L}_{\text{sup}}
 $$
 
-**Typical hyperparameters:**
-| Weight | Typical Value | Role |
-|--------|---------------|------|
-| $\lambda_{\text{recon}}$ | 1.0 | Information preservation |
-| $\lambda_{\text{vq}}$ | 1.0 | Codebook stability |
-| $\lambda_{\text{closure}}$ | 1.0 | Causal enclosure (warmed up) |
-| $\lambda_{\text{slowness}}$ | 0.1 | Anti-symbol-churn |
-| $\lambda_{\text{nuis}}$ | 0.01 | Nuisance regularization |
-| $\lambda_{\text{tex}}$ | 0.05 | Texture regularization |
+**Purpose:** Compound loss enforcing sharp routing, charted quantization, and stable geometry.
 
-**Purpose:** Compound loss enforcing macro/micro separation, causal enclosure, and reconstruction fidelity.
-
-**Source:** {ref}`Section 3.2 <sec-loss-function-enforcing-macro-micro-separation>`, Definition {prf:ref}`def-total-disentangled-loss`
+**Source:** {ref}`Section 3.2 <sec-loss-function-enforcing-macro-micro-separation>`,
+Definition {prf:ref}`def-total-disentangled-loss`
 
 :::
 
-:::{prf:definition} F.1.8 (Overlap Consistency Loss)
+:::{prf:definition} F.1.8 (Jump Consistency Loss)
 :label: def-f-overlap-consistency
 
 $$
-\mathcal{L}_{\text{jump}} = \sum_{i < j} \mathbb{E}_{x : w_i(x) > \tau, \, w_j(x) > \tau} \left[ \left( z_n^{(j)} - L_{i \to j}(z_n^{(i)}) \right)^k G^{(j)}_{k\ell}(z_n^{(j)}) \left( z_n^{(j)} - L_{i \to j}(z_n^{(i)}) \right)^\ell \right]
+\mathcal{L}_{\text{jump}} = \mathbb{E}_{i \ne j}\left[\|\,z_n^{(j)} - \mathcal{J}_{i \to j}(z_n^{(i)})\,\|^2\right]
 $$
 
 **Parameters:**
-- $z_n^{(i)}, z_n^{(j)}$ – nuisance coordinates from chart $i$ and $j$
-- $L_{i \to j}$ – learned transition function from chart $i$ to chart $j$
-- $G^{(j)}_{k\ell}$ – metric tensor in chart $j$'s coordinate system
-- $w_i(x), w_j(x)$ – soft router weights
-- $\tau$ – overlap threshold
+- $z_n^{(i)}$ – nuisance coordinate from chart $i$
+- $\mathcal{J}_{i \to j}$ – learned jump operator from chart $i$ to chart $j$
 
-**Purpose:** Enforces cycle consistency for chart transitions. When a point is in the overlap of two charts, applying the transition function should correctly map between chart coordinates. The chart-specific metric $G^{(j)}$ ensures distances are measured consistently with chart $j$'s geometry.
+**Purpose:** Enforces consistency in chart overlaps by learning transitions between chart-local
+nuisance coordinates.
 
 **Units:** Dimensionless (metric-weighted embedding distance).
 
-**Flat limit:** When $G^{(j)}_{k\ell} = \delta_{k\ell}$, recovers $\|z_n^{(j)} - L_{i \to j}(z_n^{(i)})\|^2$.
-
-**Source:** {ref}`Section 7 <sec-the-overlap-consistency-loss>`, Definition {prf:ref}`def-overlap-consistency-loss`
+**Source:** {ref}`Section 7 <sec-the-overlap-consistency-loss>`
 
 :::
 
-(sec-appendix-f-supervised-topology-losses)=
 ## F.2 Supervised Topology Losses
 
 These losses enforce geometric coherence of classification ({ref}`Section 25 <sec-supervised-topology-semantic-potentials-and-metric-segmentation>`).

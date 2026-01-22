@@ -24,8 +24,8 @@ class principle_node(nodes.Admonition, nodes.Element):
 
 def setup(app: Sphinx):
     try:
-        from sphinx_proof.directive import ElementDirective
         from sphinx_proof import nodes as proof_nodes
+        from sphinx_proof.directive import ElementDirective
     except Exception:
         return {"version": "builtin", "parallel_read_safe": True, "parallel_write_safe": True}
 

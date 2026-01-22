@@ -35,20 +35,19 @@ References:
 
 from __future__ import annotations
 
-import math
-from dataclasses import dataclass, field
-from typing import Tuple, Optional, List, Callable, Dict
+from dataclasses import dataclass
 from enum import Enum
+import math
+from typing import Callable
 
 import torch
-import torch.nn as nn
-import torch.nn.functional as F
-from torch import Tensor
+from torch import nn, Tensor
 
 
 # =============================================================================
 # Configuration
 # =============================================================================
+
 
 @dataclass
 class MultiAgentConfig:
@@ -62,52 +61,53 @@ class MultiAgentConfig:
         spacetime_dim (S): Spacetime dimensions for gauge theory (typically D+1)
         gauge_dim (G): Dimension of gauge Lie algebra g
     """
+
     # Dimensions
-    n_agents: int = 2                 # N: number of agents
-    latent_dim: int = 64              # D: dimension of each agent's latent manifold
-    spacetime_dim: int = 4            # S: spacetime dimensions for gauge theory
-    gauge_dim: int = 8                # G: dimension of gauge algebra
+    n_agents: int = 2  # N: number of agents
+    latent_dim: int = 64  # D: dimension of each agent's latent manifold
+    spacetime_dim: int = 4  # S: spacetime dimensions for gauge theory
+    gauge_dim: int = 8  # G: dimension of gauge algebra
 
     # Causal Structure (Section 29.2)
-    c_info: float = 1.0               # c_info: information propagation speed [length/time]
-    max_latency: int = 100            # Maximum buffer size for causal history [steps]
+    c_info: float = 1.0  # c_info: information propagation speed [length/time]
+    max_latency: int = 100  # Maximum buffer size for causal history [steps]
 
     # Screening and Discount (Section 29.5)
-    kappa: float = 0.1                # kappa: screening mass [1/length]
-    gamma_discount: float = 0.99      # gamma: temporal discount factor [dimensionless]
-    gamma_damp: float = 0.01          # gamma_damp: temporal damping rate [1/time]
+    kappa: float = 0.1  # kappa: screening mass [1/length]
+    gamma_discount: float = 0.99  # gamma: temporal discount factor [dimensionless]
+    gamma_damp: float = 0.01  # gamma_damp: temporal damping rate [1/time]
 
     # Strategic Coupling (Section 29.6)
-    beta_adversarial: float = 1.0     # beta_ij: adversarial coupling strength [dimensionless]
-    gamma_game: float = 1.0           # gamma_game: risk amplification factor [dimensionless]
+    beta_adversarial: float = 1.0  # beta_ij: adversarial coupling strength [dimensionless]
+    gamma_game: float = 1.0  # gamma_game: risk amplification factor [dimensionless]
 
     # Gauge Theory (Section 29.13-29.18)
-    g_coupling: float = 1.0           # g: gauge coupling constant [dimensionless]
-    mu_higgs_sq: float = -1.0         # mu^2: Higgs mass parameter [energy^2], negative for SSB
-    lambda_higgs: float = 0.1         # lambda: Higgs quartic coupling [dimensionless]
+    g_coupling: float = 1.0  # g: gauge coupling constant [dimensionless]
+    mu_higgs_sq: float = -1.0  # mu^2: Higgs mass parameter [energy^2], negative for SSB
+    lambda_higgs: float = 0.1  # lambda: Higgs quartic coupling [dimensionless]
 
     # Quantum Layer (Section 29.21)
-    sigma: float = 0.1                # sigma: cognitive action scale [nat*time], analog of hbar
-    T_c: float = 1.0                  # T_c: cognitive temperature [nat]
+    sigma: float = 0.1  # sigma: cognitive action scale [nat*time], analog of hbar
+    T_c: float = 1.0  # T_c: cognitive temperature [nat]
 
     # Mean-Field (Section 29.10)
-    alpha_adversarial: float = 1.0    # alpha_adv: adversarial interaction strength [dimensionless]
+    alpha_adversarial: float = 1.0  # alpha_adv: adversarial interaction strength [dimensionless]
 
 
 class StrategicRelation(Enum):
     """Strategic relationship types for the Game Tensor."""
-    COOPERATIVE = -1   # alpha_ij = -1: aligned gradients
-    INDEPENDENT = 0    # alpha_ij =  0: no interaction
-    ADVERSARIAL = 1    # alpha_ij = +1: opposing gradients
+
+    COOPERATIVE = -1  # alpha_ij = -1: aligned gradients
+    INDEPENDENT = 0  # alpha_ij =  0: no interaction
+    ADVERSARIAL = 1  # alpha_ij = +1: opposing gradients
 
 
 # =============================================================================
 # Section 29.1: The Product Configuration Space
 # =============================================================================
 
-def product_metric(
-    G_agents: List[Tensor]
-) -> Tensor:
+
+def product_metric(G_agents: list[Tensor]) -> Tensor:
     """
     Definition 29.1: N-Agent Product Manifold Metric
 
@@ -136,16 +136,15 @@ def product_metric(
     for G_i in G_agents:
         d_i = G_i.shape[0]  # D_i: dimension of agent i's manifold
         # Place G_i on the diagonal block
-        G_N[offset:offset+d_i, offset:offset+d_i] = G_i  # [D_i, D_i] -> block in [D_total, D_total]
+        G_N[offset : offset + d_i, offset : offset + d_i] = (
+            G_i  # [D_i, D_i] -> block in [D_total, D_total]
+        )
         offset += d_i
 
     return G_N  # [D_total, D_total]
 
 
-def environment_distance(
-    positions: Tensor,
-    topology: str = "euclidean"
-) -> Tensor:
+def environment_distance(positions: Tensor, topology: str = "euclidean") -> Tensor:
     """
     Definition 29.3: Environment Distance
 
@@ -169,18 +168,16 @@ def environment_distance(
         # cdist computes pairwise Euclidean distances
         # positions: [N, D_env] -> d_E: [N, N]
         return torch.cdist(positions, positions)  # [N, N]
-    else:
-        raise NotImplementedError("Network topology not yet implemented")
+    msg = "Network topology not yet implemented"
+    raise NotImplementedError(msg)
 
 
 # =============================================================================
 # Section 29.2: The Failure of Simultaneity
 # =============================================================================
 
-def causal_delay(
-    d_E: Tensor,
-    c_info: float
-) -> Tensor:
+
+def causal_delay(d_E: Tensor, c_info: float) -> Tensor:
     """
     Axiom 29.1: Information Speed Limit - Causal Delay
 
@@ -202,12 +199,7 @@ def causal_delay(
     return d_E / c_info  # [N, N]
 
 
-def causal_interval(
-    t_i: Tensor,
-    t_j: Tensor,
-    d_E_ij: Tensor,
-    c_info: float
-) -> Tensor:
+def causal_interval(t_i: Tensor, t_j: Tensor, d_E_ij: Tensor, c_info: float) -> Tensor:
     """
     Definition 29.4: Causal Interval
 
@@ -233,15 +225,12 @@ def causal_interval(
     """
     dt = t_j - t_i  # Time difference: same shape as inputs
     # Minkowski-like metric: -c^2 dt^2 + dx^2
-    return -c_info**2 * dt**2 + d_E_ij**2  # Same shape as inputs
+    return -(c_info**2) * dt**2 + d_E_ij**2  # Same shape as inputs
 
 
 def past_light_cone(
-    agent_id: int,
-    t: float,
-    tau: Tensor,
-    n_agents: int
-) -> List[Tuple[int, float]]:
+    agent_id: int, t: float, tau: Tensor, n_agents: int
+) -> list[tuple[int, float]]:
     """
     Definition 29.5: Past Light Cone
 
@@ -274,14 +263,9 @@ def past_light_cone(
 # Section 29.3: The Relativistic State
 # =============================================================================
 
+
 def retarded_green_function(
-    z: Tensor,
-    zeta: Tensor,
-    t: float,
-    tau_val: float,
-    c_info: float,
-    kappa: float,
-    D: int
+    z: Tensor, zeta: Tensor, t: float, tau_val: float, c_info: float, kappa: float, D: int
 ) -> Tensor:
     """
     Proposition 29.8: Retarded Green's Function
@@ -314,10 +298,10 @@ def retarded_green_function(
 
     # Approximate delta function as narrow Gaussian
     delta_width = 0.1  # Width of approximate delta
-    delta_factor = torch.exp(-retard_error**2 / (2 * delta_width**2))  # [B]
+    delta_factor = torch.exp(-(retard_error**2) / (2 * delta_width**2))  # [B]
 
     # Geometric decay factor: 1/d^{(D-2)/2}
-    geom_factor = 1.0 / (d + 1e-8)**((D - 2) / 2)  # [B]
+    geom_factor = 1.0 / (d + 1e-8) ** ((D - 2) / 2)  # [B]
 
     # Yukawa screening: exp(-kappa * d)
     screen_factor = torch.exp(-kappa * d)  # [B]
@@ -345,7 +329,7 @@ class CausalBundle(nn.Module):
         super().__init__()
         self.config = config
         # Memory screen for each agent: agent_id -> [(t, state[D]), ...]
-        self.memory_screens: Dict[int, List[Tuple[float, Tensor]]] = {
+        self.memory_screens: dict[int, list[tuple[float, Tensor]]] = {
             i: [] for i in range(config.n_agents)
         }
 
@@ -364,16 +348,12 @@ class CausalBundle(nn.Module):
         # Prune old entries beyond causal horizon
         tau_horizon = self.config.max_latency / self.config.c_info
         self.memory_screens[agent_id] = [
-            (t_old, s) for t_old, s in self.memory_screens[agent_id]
-            if t - t_old < tau_horizon
+            (t_old, s) for t_old, s in self.memory_screens[agent_id] if t - t_old < tau_horizon
         ]
 
     def get_relativistic_state(
-        self,
-        agent_id: int,
-        z_current: Tensor,
-        t: float
-    ) -> Tuple[Tensor, List[Tensor]]:
+        self, agent_id: int, z_current: Tensor, t: float
+    ) -> tuple[Tensor, list[Tensor]]:
         """
         Get the Relativistic State S^(i)_t := (z^(i)_t, Xi^(i)_{<t}).
 
@@ -394,6 +374,7 @@ class CausalBundle(nn.Module):
 # Section 29.4: The Ghost Interface
 # =============================================================================
 
+
 class GhostInterface(nn.Module):
     """
     Definition 29.9: Ghost Interface
@@ -409,11 +390,8 @@ class GhostInterface(nn.Module):
         self.config = config
 
     def get_ghost_state(
-        self,
-        agent_j_states: List[Tuple[float, Tensor]],
-        t_now: float,
-        tau_ij: float
-    ) -> Optional[Tensor]:
+        self, agent_j_states: list[tuple[float, Tensor]], t_now: float, tau_ij: float
+    ) -> Tensor | None:
         """
         Get ghost state: z^(j) at retarded time t - tau_ij.
 
@@ -436,7 +414,7 @@ class GhostInterface(nn.Module):
 
         # Find state closest to retarded time
         closest_state = None
-        closest_diff = float('inf')
+        closest_diff = float("inf")
 
         for t_emit, state in agent_j_states:
             diff = abs(t_emit - t_retarded)
@@ -448,10 +426,7 @@ class GhostInterface(nn.Module):
 
 
 def retarded_interaction_potential(
-    z_i: Tensor,
-    z_j_ghost: Tensor,
-    alpha_ij: float,
-    kappa: float
+    z_i: Tensor, z_j_ghost: Tensor, alpha_ij: float, kappa: float
 ) -> Tensor:
     """
     Definition 29.10: Retarded Interaction Potential
@@ -495,13 +470,9 @@ def retarded_interaction_potential(
 # Section 29.5: The Hyperbolic Value Equation (Klein-Gordon)
 # =============================================================================
 
+
 def klein_gordon_operator(
-    V: Tensor,
-    G_inv: Tensor,
-    c_info: float,
-    kappa: float,
-    gamma_damp: float,
-    dt: float = 0.01
+    V: Tensor, G_inv: Tensor, c_info: float, kappa: float, gamma_damp: float, dt: float = 0.01
 ) -> Callable[[Tensor, Tensor], Tensor]:
     """
     Theorem 29.5: HJB-Klein-Gordon Correspondence
@@ -526,6 +497,7 @@ def klein_gordon_operator(
         G_inv: [D, D]
         Returned function operates on [B] tensors
     """
+
     def kg_operator(V_current: Tensor, V_prev: Tensor) -> Tensor:
         """
         Apply Klein-Gordon operator (screening term only in this simplified version).
@@ -543,9 +515,7 @@ def klein_gordon_operator(
         # - Screening: kappa^2 * V
 
         # Screening term: scalar * [B] -> [B]
-        screening = kappa**2 * V_current  # [B]
-
-        return screening  # [B]
+        return kappa**2 * V_current  # [B]
 
     return kg_operator
 
@@ -558,7 +528,7 @@ def value_wavefront_propagation(
     c_info: float,
     kappa: float,
     rho_source: float,
-    D: int
+    D: int,
 ) -> Tensor:
     """
     Corollary 29.6: Value Wavefront Propagation
@@ -594,7 +564,7 @@ def value_wavefront_propagation(
     theta = (t >= arrival_time).float()  # [B], values in {0, 1}
 
     # Geometric decay: 1/d^{(D-2)/2}
-    geom = 1.0 / (d + 1e-8)**((D - 2) / 2)  # [B]
+    geom = 1.0 / (d + 1e-8) ** ((D - 2) / 2)  # [B]
 
     # Yukawa screening
     screening = torch.exp(-kappa * d)  # [B]
@@ -607,11 +577,8 @@ def value_wavefront_propagation(
 # Section 29.6: The Game Tensor
 # =============================================================================
 
-def game_tensor(
-    V_i: Tensor,
-    z_j: Tensor,
-    create_graph: bool = True
-) -> Tensor:
+
+def game_tensor(V_i: Tensor, z_j: Tensor, create_graph: bool = True) -> Tensor:
     """
     Definition 29.11: The Game Tensor
 
@@ -637,10 +604,10 @@ def game_tensor(
     # First derivative: dV_i/dz_j
     # V_i.sum() creates scalar for autograd; grad returns [B, D]
     grad_V = torch.autograd.grad(
-        V_i.sum(),           # scalar
-        z_j,                 # [B, D]
+        V_i.sum(),  # scalar
+        z_j,  # [B, D]
         create_graph=create_graph,
-        retain_graph=True
+        retain_graph=True,
     )[0]  # [B, D]
 
     # Second derivative (Hessian): d^2V_i / dz_j^k dz_j^l
@@ -651,9 +618,9 @@ def game_tensor(
         # Gradient of k-th component of grad_V w.r.t. z_j
         grad_k = torch.autograd.grad(
             grad_V[:, k].sum(),  # scalar (sum over batch of k-th component)
-            z_j,                  # [B, D]
+            z_j,  # [B, D]
             create_graph=False,
-            retain_graph=True
+            retain_graph=True,
         )[0]  # [B, D]
         hessian[:, k, :] = grad_k  # [B, D] -> row k of [B, D, D]
 
@@ -661,8 +628,7 @@ def game_tensor(
 
 
 def effective_metric_with_game_tensor(
-    G_i: Tensor,
-    game_tensors: List[Tuple[Tensor, float]]
+    G_i: Tensor, game_tensors: list[tuple[Tensor, float]]
 ) -> Tensor:
     """
     Definition 29.11 (cont.): Effective Metric with Game Tensor
@@ -689,16 +655,12 @@ def effective_metric_with_game_tensor(
 
     for G_ij, beta_ij in game_tensors:
         # beta_ij * G_ij: scalar * [B, D, D] -> [B, D, D]
-        G_tilde = G_tilde + beta_ij * G_ij  # [B, D, D] + [B, D, D] -> [B, D, D]
+        G_tilde += beta_ij * G_ij  # [B, D, D] + [B, D, D] -> [B, D, D]
 
     return G_tilde  # Same shape as G_i
 
 
-def strategic_jacobian(
-    z_j: Tensor,
-    z_i: Tensor,
-    policy_j: nn.Module
-) -> Tensor:
+def strategic_jacobian(z_j: Tensor, z_i: Tensor, policy_j: nn.Module) -> Tensor:
     """
     Strategic Jacobian (for Game Tensor derivation)
 
@@ -747,19 +709,13 @@ class GameTensor(nn.Module):
         self.value_nets = nn.ModuleList([
             nn.Sequential(
                 nn.Linear(config.latent_dim, config.latent_dim * 2),  # [B, D] -> [B, 2D]
-                nn.Tanh(),                                             # [B, 2D] -> [B, 2D]
-                nn.Linear(config.latent_dim * 2, 1)                    # [B, 2D] -> [B, 1]
+                nn.Tanh(),  # [B, 2D] -> [B, 2D]
+                nn.Linear(config.latent_dim * 2, 1),  # [B, 2D] -> [B, 1]
             )
             for _ in range(config.n_agents)
         ])
 
-    def compute_game_tensor(
-        self,
-        agent_i: int,
-        agent_j: int,
-        z_i: Tensor,
-        z_j: Tensor
-    ) -> Tensor:
+    def compute_game_tensor(self, agent_i: int, agent_j: int, z_i: Tensor, z_j: Tensor) -> Tensor:
         """
         Compute G_ij: cross-Hessian of V^(i) w.r.t. z^(j).
 
@@ -787,11 +743,7 @@ class GameTensor(nn.Module):
         return game_tensor(V_i, z_j)  # [B, D, D]
 
     def compute_retarded_game_tensor(
-        self,
-        agent_i: int,
-        agent_j: int,
-        z_i: Tensor,
-        z_j_ghost: Tensor
+        self, agent_i: int, agent_j: int, z_i: Tensor, z_j_ghost: Tensor
     ) -> Tensor:
         """
         Definition 29.13: Retarded Game Tensor
@@ -814,10 +766,7 @@ class GameTensor(nn.Module):
         """
         return self.compute_game_tensor(agent_i, agent_j, z_i, z_j_ghost)  # [B, D, D]
 
-    def forward(
-        self,
-        z_all: Tensor
-    ) -> Tensor:
+    def forward(self, z_all: Tensor) -> Tensor:
         """
         Compute all pairwise game tensors.
 
@@ -855,15 +804,16 @@ class GameTensor(nn.Module):
 # Section 29.7: Nash Equilibrium as Standing Wave
 # =============================================================================
 
+
 def joint_wfr_action(
-    rho: List[Tensor],
-    v: List[Tensor],
-    r: List[Tensor],
-    G_tilde: List[Tensor],
+    rho: list[Tensor],
+    v: list[Tensor],
+    r: list[Tensor],
+    G_tilde: list[Tensor],
     V_int_ret: Tensor,
     lambda_sq: float,
     T: float,
-    dt: float
+    dt: float,
 ) -> Tensor:
     """
     Definition 29.14: Joint WFR Action (Relativistic)
@@ -898,28 +848,23 @@ def joint_wfr_action(
         # Kinetic term: ||v||^2_G = v^T G v
         # v[i]: [B, D], G_tilde[i]: [D, D]
         # einsum 'bd,de,be->b' computes v^T G v for each batch: [B]
-        v_G_norm_sq = torch.einsum('bd,de,be->b', v[i], G_tilde[i], v[i])  # [B]
+        v_G_norm_sq = torch.einsum("bd,de,be->b", v[i], G_tilde[i], v[i])  # [B]
 
         # Weight by density and average: [B] * [B] -> [B] -> scalar
         kinetic = (v_G_norm_sq * rho[i]).mean()  # scalar
 
         # Reaction term: lambda^2 * |r|^2 * rho
         # r[i]: [B], rho[i]: [B]
-        reaction = lambda_sq * (r[i]**2 * rho[i]).mean()  # scalar
+        reaction = lambda_sq * (r[i] ** 2 * rho[i]).mean()  # scalar
 
         # Accumulate with time step
-        action = action + (kinetic + reaction) * dt  # scalar
+        action += (kinetic + reaction) * dt  # scalar
 
     # Interaction energy: [B] -> mean -> scalar
-    action = action + V_int_ret.mean() * dt  # scalar
-
-    return action  # scalar
+    return action + V_int_ret.mean() * dt  # scalar
 
 
-def nash_residual(
-    grad_Phi_eff: List[Tensor],
-    G_inv: List[Tensor]
-) -> Tensor:
+def nash_residual(grad_Phi_eff: list[Tensor], G_inv: list[Tensor]) -> Tensor:
     """
     Theorem 29.15: Nash Equilibrium as Geometric Stasis
 
@@ -943,14 +888,14 @@ def nash_residual(
         # Flow velocity: G^{-1} nabla Phi
         # G_inv[i]: [D, D], grad_Phi_eff[i]: [B, D]
         # einsum 'de,bd->be' applies G^{-1} to gradient: [B, D]
-        flow = torch.einsum('de,bd->be', G_inv[i], grad_Phi_eff[i])  # [B, D]
+        flow = torch.einsum("de,bd->be", G_inv[i], grad_Phi_eff[i])  # [B, D]
 
         # Norm w.r.t. G (not G^{-1}): ||flow||_G^2 = flow^T G flow
         # Need G from G_inv: [D, D]
         G_i = torch.linalg.inv(G_inv[i])  # [D, D]
 
         # einsum 'bd,de,be->b' computes norm squared: [B]
-        norm_sq = torch.einsum('bd,de,be->b', flow, G_i, flow)  # [B]
+        norm_sq = torch.einsum("bd,de,be->b", flow, G_i, flow)  # [B]
 
         # Maximum over batch: scalar
         residuals.append(torch.sqrt(norm_sq).max())
@@ -959,11 +904,7 @@ def nash_residual(
     return max(residuals)  # scalar
 
 
-def standing_wave_nash_condition(
-    J: List[Tensor],
-    T: float,
-    dt: float
-) -> Tensor:
+def standing_wave_nash_condition(J: list[Tensor], T: float, dt: float) -> Tensor:
     """
     Theorem 29.15: Standing Wave Nash (Time-Averaged Stasis)
 
@@ -993,7 +934,7 @@ def standing_wave_nash_condition(
 
         # Norm over D dimension, then mean over batch
         # [B, D] -> norm over D -> [B] -> mean -> scalar
-        total_norm = total_norm + torch.norm(J_avg, dim=-1).mean()  # scalar
+        total_norm += torch.norm(J_avg, dim=-1).mean()  # scalar
 
     # Average over agents: scalar / N -> scalar
     return total_norm / len(J)  # scalar
@@ -1003,13 +944,14 @@ def standing_wave_nash_condition(
 # Section 29.10: Mean-Field Metric Law
 # =============================================================================
 
+
 def mean_field_metric(
     G_intrinsic: Tensor,
     alpha_adv: float,
     Phi_int: Callable[[Tensor, Tensor], Tensor],
     rho: Callable[[Tensor], Tensor],
     z: Tensor,
-    n_samples: int = 100
+    n_samples: int = 100,
 ) -> Tensor:
     """
     Theorem 29.16: Mean-Field Metric Law
@@ -1056,16 +998,13 @@ def mean_field_metric(
         Phi = Phi_int(z_req, zeta_expanded)  # [B]
 
         # Gradient w.r.t. z: [B] -> [B, D]
-        grad_Phi = torch.autograd.grad(
-            Phi.sum(), z_req, create_graph=True
-        )[0]  # [B, D]
+        grad_Phi = torch.autograd.grad(Phi.sum(), z_req, create_graph=True)[0]  # [B, D]
 
         # Hessian via second gradients
         for k in range(D):
             # Gradient of k-th component: [B, D]
             grad_k = torch.autograd.grad(
-                grad_Phi[:, k].sum(), z_req,
-                create_graph=False, retain_graph=True
+                grad_Phi[:, k].sum(), z_req, create_graph=False, retain_graph=True
             )[0]  # [B, D]
             hess_sum[:, k, :] += grad_k  # [B, D] added to [B, D, D][:, k, :]
 
@@ -1074,21 +1013,17 @@ def mean_field_metric(
 
     # Effective metric: G + alpha * Hessian
     # G_intrinsic: [D, D] -> unsqueeze -> [1, D, D] -> expand -> [B, D, D]
-    G_tilde = G_intrinsic.unsqueeze(0).expand(B, -1, -1) + alpha_adv * hess_avg  # [B, D, D]
-
-    return G_tilde  # [B, D, D]
+    return G_intrinsic.unsqueeze(0).expand(B, -1, -1) + alpha_adv * hess_avg  # [B, D, D]
 
 
 # =============================================================================
 # Section 29.11: Metabolic Tracking Bound
 # =============================================================================
 
+
 def metabolic_tracking_bound(
-    z_dot_star: Tensor,
-    G_tilde: Tensor,
-    M_dot_max: float,
-    sigma_met: float
-) -> Tuple[bool, Tensor]:
+    z_dot_star: Tensor, G_tilde: Tensor, M_dot_max: float, sigma_met: float
+) -> tuple[bool, Tensor]:
     """
     Theorem 29.17: Metabolic Tracking Bound
 
@@ -1113,7 +1048,7 @@ def metabolic_tracking_bound(
     # ||v||^2_G = v^T G v via einsum
     # z_dot_star: [B, D], G_tilde: [D, D]
     # 'bd,de,be->b' computes [B, D] @ [D, D] @ [B, D]^T -> [B]
-    norm_sq = torch.einsum('bd,de,be->b', z_dot_star, G_tilde, z_dot_star)  # [B]
+    norm_sq = torch.einsum("bd,de,be->b", z_dot_star, G_tilde, z_dot_star)  # [B]
 
     # Required metabolic flux: (1/2) sigma_met ||v||^2
     required_flux = 0.5 * sigma_met * norm_sq  # [B]
@@ -1131,11 +1066,8 @@ def metabolic_tracking_bound(
 # Section 29.12: Geometric Locking Principle
 # =============================================================================
 
-def geometric_locking_energy(
-    v: Tensor,
-    G_tilde: Tensor,
-    rho: Tensor
-) -> Tensor:
+
+def geometric_locking_energy(v: Tensor, G_tilde: Tensor, rho: Tensor) -> Tensor:
     """
     Theorem 29.18: Geometric Locking Principle
 
@@ -1164,7 +1096,7 @@ def geometric_locking_energy(
     # ||v||^2_G = v^T G v for each batch element
     # v: [B, D], G_tilde: [B, D, D]
     # 'bd,bde,be->b' handles batched matrix multiplication: [B]
-    v_norm_sq = torch.einsum('bd,bde,be->b', v, G_tilde, v)  # [B]
+    v_norm_sq = torch.einsum("bd,bde,be->b", v, G_tilde, v)  # [B]
 
     # Weighted by density and averaged: [B] * [B] -> [B] -> scalar
     return (v_norm_sq * rho).mean()  # scalar
@@ -1173,6 +1105,7 @@ def geometric_locking_energy(
 # =============================================================================
 # Section 29.13-29.18: Gauge Theory Layer
 # =============================================================================
+
 
 class StrategicConnection(nn.Module):
     """
@@ -1197,8 +1130,8 @@ class StrategicConnection(nn.Module):
         # Input: [B, D], Output: [B, S * G]
         self.connection_net = nn.Sequential(
             nn.Linear(config.latent_dim, config.latent_dim * 2),  # [B, D] -> [B, 2D]
-            nn.Tanh(),                                             # [B, 2D] -> [B, 2D]
-            nn.Linear(config.latent_dim * 2, config.spacetime_dim * config.gauge_dim)
+            nn.Tanh(),  # [B, 2D] -> [B, 2D]
+            nn.Linear(config.latent_dim * 2, config.spacetime_dim * config.gauge_dim),
             # [B, 2D] -> [B, S*G]
         )
 
@@ -1224,12 +1157,7 @@ class StrategicConnection(nn.Module):
         return A_flat.view(B, self.config.spacetime_dim, self.config.gauge_dim)  # [B, S, G]
 
 
-def covariant_derivative(
-    psi: Tensor,
-    A_mu: Tensor,
-    g: float,
-    direction: int
-) -> Tensor:
+def covariant_derivative(psi: Tensor, A_mu: Tensor, g: float, direction: int) -> Tensor:
     """
     Definition 29.21: Covariant Derivative
 
@@ -1260,10 +1188,7 @@ def covariant_derivative(
     return -1j * g * A_mu.unsqueeze(-1) * psi.unsqueeze(1)  # [B, G, D]
 
 
-def field_strength_tensor(
-    A: Tensor,
-    g: float
-) -> Tensor:
+def field_strength_tensor(A: Tensor, g: float) -> Tensor:
     """
     Definition 29.22: Field Strength Tensor (Yang-Mills Curvature)
 
@@ -1303,11 +1228,7 @@ def field_strength_tensor(
     return F  # [B, S, S, G]
 
 
-def yang_mills_action(
-    F: Tensor,
-    G_det: Tensor,
-    g: float
-) -> Tensor:
+def yang_mills_action(F: Tensor, G_det: Tensor, g: float) -> Tensor:
     """
     Definition 29.24: Yang-Mills Action
 
@@ -1328,24 +1249,17 @@ def yang_mills_action(
     """
     # Tr(F_mu_nu F^mu_nu) = sum over all indices
     # F: [B, S, S, G], contract all: 'bmna,bmna->b' gives [B]
-    F_sq = torch.einsum('bmna,bmna->b', F, F)  # [B]
+    F_sq = torch.einsum("bmna,bmna->b", F, F)  # [B]
 
     # Volume element: sqrt(|det G|)
     sqrt_G = torch.sqrt(torch.abs(G_det) + 1e-8)  # [B]
 
     # Action: -1/(4g^2) * integral
     # [B] * [B] -> [B] -> mean -> scalar
-    S_YM = -1.0 / (4.0 * g**2) * (F_sq * sqrt_G).mean()  # scalar
-
-    return S_YM  # scalar
+    return -1.0 / (4.0 * g**2) * (F_sq * sqrt_G).mean()  # scalar
 
 
-def yang_mills_field_equation(
-    F: Tensor,
-    A: Tensor,
-    J: Tensor,
-    g: float
-) -> Tensor:
+def yang_mills_field_equation(F: Tensor, A: Tensor, J: Tensor, g: float) -> Tensor:
     """
     Theorem 29.25: Yang-Mills Field Equations
 
@@ -1368,7 +1282,7 @@ def yang_mills_field_equation(
         J: [B, S, G]
         Output: [B, S, G]
     """
-    B, S, _, G_dim = F.shape
+    _B, _S, _, _G_dim = F.shape
 
     # Full implementation would compute D_mu F^{mu nu}
     # Simplified: return J (field equation residual = J - D_mu F)
@@ -1395,7 +1309,7 @@ class HiggsField(nn.Module):
         # Higgs field: [G]
         self.phi = nn.Parameter(torch.randn(config.gauge_dim))  # [G]
 
-    def potential(self, phi: Optional[Tensor] = None) -> Tensor:
+    def potential(self, phi: Tensor | None = None) -> Tensor:
         """
         Higgs potential V(Phi) = mu^2 |Phi|^2 + lambda |Phi|^4
 
@@ -1455,7 +1369,7 @@ class HiggsField(nn.Module):
         v = vev * math.sqrt(2)  # scalar
         return torch.tensor(self.config.g_coupling, device=self.phi.device) * v / 2  # scalar
 
-    def forward(self) -> Tuple[Tensor, Tensor]:
+    def forward(self) -> tuple[Tensor, Tensor]:
         """
         Returns:
             (potential, vev): (scalar, scalar) - Potential energy and VEV
@@ -1483,15 +1397,9 @@ class CompleteLagrangian(nn.Module):
         self.higgs = HiggsField(config)
 
         # Yukawa couplings: [N, N]
-        self.yukawa = nn.Parameter(
-            torch.randn(config.n_agents, config.n_agents) * 0.1
-        )  # [N, N]
+        self.yukawa = nn.Parameter(torch.randn(config.n_agents, config.n_agents) * 0.1)  # [N, N]
 
-    def compute_lagrangian(
-        self,
-        z: Tensor,
-        psi: List[Tensor]
-    ) -> Dict[str, Tensor]:
+    def compute_lagrangian(self, z: Tensor, psi: list[Tensor]) -> dict[str, Tensor]:
         """
         Compute all Lagrangian components.
 
@@ -1518,7 +1426,7 @@ class CompleteLagrangian(nn.Module):
 
         # L_YM = -1/4 Tr(F^2)
         # 'bmna,bmna->' contracts all to scalar
-        L_YM = -0.25 * torch.einsum('bmna,bmna->', F, F)  # scalar
+        L_YM = -0.25 * torch.einsum("bmna,bmna->", F, F)  # scalar
 
         # Higgs
         V_higgs, vev = self.higgs()  # (scalar, scalar)
@@ -1532,14 +1440,14 @@ class CompleteLagrangian(nn.Module):
                     # psi[i]: [B], psi[j]: [B]
                     # y[i,j]: scalar
                     # sum over batch: [B] * [B] -> [B] -> sum -> scalar
-                    L_Yukawa = L_Yukawa - self.yukawa[i, j] * (psi[i] * psi[j]).sum()
+                    L_Yukawa -= self.yukawa[i, j] * (psi[i] * psi[j]).sum()
 
         return {
-            'L_YM': L_YM,           # scalar
-            'L_Higgs': L_Higgs,     # scalar
-            'L_Yukawa': L_Yukawa,   # scalar
-            'vev': vev,             # scalar
-            'total': L_YM + L_Higgs + L_Yukawa  # scalar
+            "L_YM": L_YM,  # scalar
+            "L_Higgs": L_Higgs,  # scalar
+            "L_Yukawa": L_Yukawa,  # scalar
+            "vev": vev,  # scalar
+            "total": L_YM + L_Higgs + L_Yukawa,  # scalar
         }
 
 
@@ -1547,10 +1455,8 @@ class CompleteLagrangian(nn.Module):
 # Section 29.19: Mass Gap
 # =============================================================================
 
-def mass_gap_lower_bound(
-    kappa: float,
-    m_eff: float
-) -> float:
+
+def mass_gap_lower_bound(kappa: float, m_eff: float) -> float:
     """
     Theorem 29.30: Mass Gap from Screening
 
@@ -1569,12 +1475,8 @@ def mass_gap_lower_bound(
 
 
 def check_causal_information_bound(
-    I_bulk: float,
-    area: float,
-    ell_L: float,
-    nu_D: float = 0.25,
-    D: int = 2
-) -> Tuple[bool, float]:
+    I_bulk: float, area: float, ell_L: float, nu_D: float = 0.25, D: int = 2
+) -> tuple[bool, float]:
     """
     Theorem 29.31: Computational Necessity of Mass Gap
 
@@ -1606,11 +1508,8 @@ def check_causal_information_bound(
 # Section 29.21-29.25: Quantum Layer
 # =============================================================================
 
-def belief_wave_function(
-    rho: Tensor,
-    V: Tensor,
-    sigma: float
-) -> Tensor:
+
+def belief_wave_function(rho: Tensor, V: Tensor, sigma: float) -> Tensor:
     """
     Definition 29.35: Belief Wave-Function
 
@@ -1640,12 +1539,7 @@ def belief_wave_function(
     return amplitude * torch.exp(1j * phase)  # Same shape, complex dtype
 
 
-def bohm_quantum_potential(
-    rho: Tensor,
-    G_inv: Tensor,
-    sigma: float,
-    eps: float = 1e-6
-) -> Tensor:
+def bohm_quantum_potential(rho: Tensor, G_inv: Tensor, sigma: float, eps: float = 1e-6) -> Tensor:
     """
     Definition 29.38: Bohm Quantum Potential (Information Resolution Limit)
 
@@ -1673,7 +1567,7 @@ def bohm_quantum_potential(
     rho_variation = torch.var(rho)  # scalar
 
     # Q_B ~ -sigma^2/2 * (variation measure) / (mean amplitude)
-    return -sigma**2 / 2 * rho_variation / (sqrt_rho.mean() + eps)  # scalar
+    return -(sigma**2) / 2 * rho_variation / (sqrt_rho.mean() + eps)  # scalar
 
 
 class InferenceHamiltonian(nn.Module):
@@ -1696,17 +1590,11 @@ class InferenceHamiltonian(nn.Module):
         # Input: [B, D], Output: [B, 1]
         self.Phi_eff = nn.Sequential(
             nn.Linear(config.latent_dim, config.latent_dim),  # [B, D] -> [B, D]
-            nn.Tanh(),                                         # [B, D] -> [B, D]
-            nn.Linear(config.latent_dim, 1)                    # [B, D] -> [B, 1]
+            nn.Tanh(),  # [B, D] -> [B, D]
+            nn.Linear(config.latent_dim, 1),  # [B, D] -> [B, 1]
         )
 
-    def forward(
-        self,
-        psi: Tensor,
-        z: Tensor,
-        G: Tensor,
-        r: Optional[Tensor] = None
-    ) -> Tensor:
+    def forward(self, psi: Tensor, z: Tensor, G: Tensor, r: Tensor | None = None) -> Tensor:
         """
         Apply H_inf to wave function.
 
@@ -1734,7 +1622,7 @@ class InferenceHamiltonian(nn.Module):
 
         # Kinetic term: -sigma^2/2 * Delta_G psi
         # Simplified: zero (would need spatial discretization for proper Laplacian)
-        kinetic = -sigma**2 / 2 * torch.zeros_like(psi)  # [B]
+        kinetic = -(sigma**2) / 2 * torch.zeros_like(psi)  # [B]
 
         # Reaction (non-Hermitian dissipation): -i * sigma/2 * r
         if r is not None:
@@ -1743,9 +1631,7 @@ class InferenceHamiltonian(nn.Module):
             dissipation = 0  # scalar
 
         # H psi = (kinetic + potential + dissipation) * psi
-        H_psi = kinetic + Phi * psi + dissipation * psi  # [B]
-
-        return H_psi  # [B]
+        return kinetic + Phi * psi + dissipation * psi  # [B]
 
 
 class StrategicHamiltonian(nn.Module):
@@ -1771,15 +1657,9 @@ class StrategicHamiltonian(nn.Module):
         ])
 
         # Interaction potentials: [N, N]
-        self.V_int = nn.Parameter(
-            torch.randn(config.n_agents, config.n_agents) * 0.1
-        )  # [N, N]
+        self.V_int = nn.Parameter(torch.randn(config.n_agents, config.n_agents) * 0.1)  # [N, N]
 
-    def forward(
-        self,
-        Psi: Tensor,
-        z_all: Tensor
-    ) -> Tensor:
+    def forward(self, Psi: Tensor, z_all: Tensor) -> Tensor:
         """
         Apply H_strat to joint wave function.
 
@@ -1807,16 +1687,12 @@ class StrategicHamiltonian(nn.Module):
                 # V_int[i,j]: scalar
                 V_ij = self.V_int[i, j]  # scalar
                 # Add interaction: scalar * [B] -> [B]
-                H_Psi = H_Psi + V_ij * Psi
+                H_Psi += V_ij * Psi
 
         return H_Psi  # [B]
 
 
-def strategic_entanglement_entropy(
-    Psi: Tensor,
-    agent_id: int,
-    all_dims: List[int]
-) -> Tensor:
+def strategic_entanglement_entropy(Psi: Tensor, agent_id: int, all_dims: list[int]) -> Tensor:
     """
     Definition 29.40: Strategic Entanglement Entropy
 
@@ -1841,16 +1717,13 @@ def strategic_entanglement_entropy(
     """
     # Simplified: von Neumann entropy of |Psi|^2 distribution
     # [total_dim] -> scalar
-    prob = torch.abs(Psi)**2  # [total_dim]
-    prob = prob / (prob.sum() + 1e-8)  # Normalize
+    prob = torch.abs(Psi) ** 2  # [total_dim]
+    prob /= prob.sum() + 1e-08  # Normalize
     return -torch.sum(prob * torch.log(prob + 1e-8))  # scalar
 
 
 def tunneling_probability(
-    Phi_barrier: Tensor,
-    E_0: Tensor,
-    sigma: float,
-    path_length: float
+    Phi_barrier: Tensor, E_0: Tensor, sigma: float, path_length: float
 ) -> Tensor:
     """
     Theorem 29.47: Strategic Tunneling Probability (WKB Approximation)
@@ -1892,11 +1765,7 @@ def tunneling_probability(
 
 
 def imaginary_time_evolution(
-    Psi_0: Tensor,
-    H_strat: StrategicHamiltonian,
-    z_all: Tensor,
-    tau: float,
-    n_steps: int = 100
+    Psi_0: Tensor, H_strat: StrategicHamiltonian, z_all: Tensor, tau: float, n_steps: int = 100
 ) -> Tensor:
     """
     Proposition 29.48: Imaginary Time Evolution for Nash Finding
@@ -1926,10 +1795,10 @@ def imaginary_time_evolution(
     for _ in range(n_steps):
         # Euler step: Psi' = Psi - (H Psi / sigma) * d_tau
         H_Psi = H_strat(Psi, z_all)  # [B]
-        Psi = Psi - d_tau * H_Psi  # [B]
+        Psi -= d_tau * H_Psi  # [B]
 
         # Renormalize to maintain unit norm
-        Psi = Psi / (torch.norm(Psi) + 1e-8)  # [B]
+        Psi /= torch.norm(Psi) + 1e-08  # [B]
 
     return Psi  # [B]
 
@@ -1938,11 +1807,8 @@ def imaginary_time_evolution(
 # Section 29.27-29.28: Diagnostic Nodes and Causal Buffer
 # =============================================================================
 
-def game_tensor_check(
-    G_ij: Tensor,
-    G_i: Tensor,
-    G_max_factor: float = 10.0
-) -> Tuple[bool, float]:
+
+def game_tensor_check(G_ij: Tensor, G_i: Tensor, G_max_factor: float = 10.0) -> tuple[bool, float]:
     """
     Node 46: GameTensorCheck
 
@@ -1964,18 +1830,15 @@ def game_tensor_check(
         Output: (bool, float)
     """
     # Frobenius norm: sqrt(sum of squared elements)
-    norm_G_ij = torch.norm(G_ij, p='fro')  # scalar
-    norm_G_i = torch.norm(G_i, p='fro')    # scalar
-    threshold = G_max_factor * norm_G_i    # scalar
+    norm_G_ij = torch.norm(G_ij, p="fro")  # scalar
+    norm_G_i = torch.norm(G_i, p="fro")  # scalar
+    threshold = G_max_factor * norm_G_i  # scalar
 
     passed = norm_G_ij < threshold  # bool tensor
     return passed.item(), norm_G_ij.item()  # (bool, float)
 
 
-def nash_residual_check(
-    epsilon_Nash: float,
-    tolerance: float = 1e-3
-) -> Tuple[bool, str]:
+def nash_residual_check(epsilon_Nash: float, tolerance: float = 1e-3) -> tuple[bool, str]:
     """
     Node 47: NashResidualCheck
 
@@ -2000,12 +1863,8 @@ def nash_residual_check(
 
 
 def relativistic_symplectic_check(
-    Phi_out: Tensor,
-    Phi_in: Tensor,
-    tau_ij: float,
-    dt: float,
-    tolerance: float = 1e-4
-) -> Tuple[bool, float]:
+    Phi_out: Tensor, Phi_in: Tensor, tau_ij: float, dt: float, tolerance: float = 1e-4
+) -> tuple[bool, float]:
     """
     Node 48: RelativisticSymplecticCheck
 
@@ -2034,7 +1893,7 @@ def relativistic_symplectic_check(
         # Phi_in shifted: [T - shift]
         Phi_in_shifted = Phi_in[shift:]
         # Trim Phi_out to match: [T - shift]
-        Phi_out_trimmed = Phi_out[:len(Phi_in_shifted)]
+        Phi_out_trimmed = Phi_out[: len(Phi_in_shifted)]
         # Imbalance: integral of |difference|
         # [T-shift] -> abs -> sum -> * dt -> scalar
         imbalance = torch.abs(Phi_out_trimmed - Phi_in_shifted).sum() * dt
@@ -2046,11 +1905,8 @@ def relativistic_symplectic_check(
 
 
 def causality_violation_check(
-    mutual_info: Tensor,
-    t_i: float,
-    t_j: float,
-    tau_ij: float
-) -> Tuple[bool, str]:
+    mutual_info: Tensor, t_i: float, t_j: float, tau_ij: float
+) -> tuple[bool, str]:
     """
     Node 62: CausalityViolationCheck
 
@@ -2079,15 +1935,12 @@ def causality_violation_check(
 
     if violation:
         return False, "CausalityViolation DETECTED: Info from future light cone"
-    else:
-        return True, "CausalityViolationCheck PASSED"
+    return True, "CausalityViolationCheck PASSED"
 
 
 def gauge_invariance_check(
-    L_A: Tensor,
-    L_A_prime: Tensor,
-    tolerance: float = 1e-6
-) -> Tuple[bool, float]:
+    L_A: Tensor, L_A_prime: Tensor, tolerance: float = 1e-6
+) -> tuple[bool, float]:
     """
     Node 63: GaugeInvarianceCheck
 
@@ -2112,10 +1965,7 @@ def gauge_invariance_check(
     return passed.item(), deviation.item()  # (bool, float)
 
 
-def field_strength_bound_check(
-    F: Tensor,
-    F_max: float = 100.0
-) -> Tuple[bool, float]:
+def field_strength_bound_check(F: Tensor, F_max: float = 100.0) -> tuple[bool, float]:
     """
     Node 64: FieldStrengthBoundCheck
 
@@ -2140,10 +1990,7 @@ def field_strength_bound_check(
     return passed.item(), norm_F.item()  # (bool, float)
 
 
-def bianchi_violation_check(
-    D_F: Tensor,
-    tolerance: float = 1e-8
-) -> Tuple[bool, float]:
+def bianchi_violation_check(D_F: Tensor, tolerance: float = 1e-8) -> tuple[bool, float]:
     """
     Node 65: BianchiViolationCheck
 
@@ -2168,11 +2015,7 @@ def bianchi_violation_check(
     return passed.item(), violation.item()  # (bool, float)
 
 
-def mass_gap_check(
-    E_0: float,
-    E_1: float,
-    Delta_min: float = 0.0
-) -> Tuple[bool, str]:
+def mass_gap_check(E_0: float, E_1: float, Delta_min: float = 0.0) -> tuple[bool, str]:
     """
     Node 66: MassGapCheck
 
@@ -2192,17 +2035,14 @@ def mass_gap_check(
 
     if Delta < 0:
         return False, f"MassGapCheck FAILED: Delta = {Delta:.6f} < 0 (tachyonic mode)"
-    elif Delta < Delta_min:
+    if Delta < Delta_min:
         return False, f"MassGapCheck WARNING: Delta = {Delta:.6f} approaching critical point"
-    else:
-        return True, f"MassGapCheck PASSED: Delta = {Delta:.6f}"
+    return True, f"MassGapCheck PASSED: Delta = {Delta:.6f}"
 
 
 def coherence_check(
-    Psi_new: Tensor,
-    Psi_old: Tensor,
-    tolerance: float = 1e-6
-) -> Tuple[bool, float]:
+    Psi_new: Tensor, Psi_old: Tensor, tolerance: float = 1e-6
+) -> tuple[bool, float]:
     """
     Node 57: CoherenceCheck
 
@@ -2223,19 +2063,17 @@ def coherence_check(
         Output: (bool, float)
     """
     # ||Psi||^2 = sum |psi_i|^2
-    norm_new = torch.sum(torch.abs(Psi_new)**2)  # scalar
-    norm_old = torch.sum(torch.abs(Psi_old)**2)  # scalar
-    deviation = torch.abs(norm_new - norm_old)   # scalar
+    norm_new = torch.sum(torch.abs(Psi_new) ** 2)  # scalar
+    norm_old = torch.sum(torch.abs(Psi_old) ** 2)  # scalar
+    deviation = torch.abs(norm_new - norm_old)  # scalar
 
     passed = deviation < tolerance  # bool tensor
     return passed.item(), deviation.item()  # (bool, float)
 
 
 def uncertainty_principle_check(
-    sigma_z: Tensor,
-    sigma_p: Tensor,
-    sigma: float
-) -> Tuple[bool, float]:
+    sigma_z: Tensor, sigma_p: Tensor, sigma: float
+) -> tuple[bool, float]:
     """
     Node 59: UncertaintyPrincipleCheck
 
@@ -2273,6 +2111,7 @@ def uncertainty_principle_check(
 # Section 29.28: Implementation - Causal Buffer
 # =============================================================================
 
+
 class CausalContextBuffer(nn.Module):
     """
     Algorithm 29.20.1: Causal Context Buffer
@@ -2290,8 +2129,8 @@ class CausalContextBuffer(nn.Module):
 
     def __init__(self, context_dim: int, max_latency: int = 100, c_info: float = 1.0):
         super().__init__()
-        self.buffer: List[Tuple[float, Tensor]] = []  # [(t, signal[context_dim]), ...]
-        self.c_info = c_info      # Information speed
+        self.buffer: list[tuple[float, Tensor]] = []  # [(t, signal[context_dim]), ...]
+        self.c_info = c_info  # Information speed
         self.max_latency = max_latency  # Max buffer entries
         self.context_dim = context_dim  # Signal dimension
 
@@ -2351,7 +2190,7 @@ class CausalContextBuffer(nn.Module):
 
         # Find bracketing entries
         for i in range(len(self.buffer) - 1):
-            t_lo, s_lo = self.buffer[i]      # (float, [context_dim])
+            t_lo, s_lo = self.buffer[i]  # (float, [context_dim])
             t_hi, s_hi = self.buffer[i + 1]  # (float, [context_dim])
 
             if t_lo <= t_target <= t_hi:
@@ -2362,8 +2201,8 @@ class CausalContextBuffer(nn.Module):
 
         # Extrapolate if t_target outside range
         if t_target < self.buffer[0][0]:
-            return self.buffer[0][1]   # [context_dim]
-        return self.buffer[-1][1]      # [context_dim]
+            return self.buffer[0][1]  # [context_dim]
+        return self.buffer[-1][1]  # [context_dim]
 
     def clear(self):
         """Clear the buffer."""
@@ -2391,7 +2230,7 @@ class RelativisticMultiAgentInterface(nn.Module):
         context_dim: int,
         env_distances: Tensor,
         c_info: float = 1.0,
-        max_latency: int = 100
+        max_latency: int = 100,
     ):
         """
         Args:
@@ -2409,13 +2248,15 @@ class RelativisticMultiAgentInterface(nn.Module):
         # Key format: "{i}_{j}" where i writes and j reads
         self.buffers = nn.ModuleDict({
             f"{i}_{j}": CausalContextBuffer(context_dim, max_latency, c_info)
-            for i in range(n_agents) for j in range(n_agents) if i != j
+            for i in range(n_agents)
+            for j in range(n_agents)
+            if i != j
         })
 
         # Precompute causal delays: tau[i,j] = d[i,j] / c_info
         # env_distances: [N, N] -> tau: [N, N]
-        self.register_buffer('tau', env_distances / c_info)
-        self.register_buffer('env_distances', env_distances)
+        self.register_buffer("tau", env_distances / c_info)
+        self.register_buffer("env_distances", env_distances)
 
     def broadcast(self, agent_id: int, t: float, state: Tensor):
         """
@@ -2458,11 +2299,7 @@ class RelativisticMultiAgentInterface(nn.Module):
             return torch.cat(contexts, dim=-1)
         return torch.zeros(0)  # Empty tensor if no other agents
 
-    def get_past_light_cone(
-        self,
-        agent_id: int,
-        t: float
-    ) -> List[Tuple[int, float, Tensor]]:
+    def get_past_light_cone(self, agent_id: int, t: float) -> list[tuple[int, float, Tensor]]:
         """
         Get all causally accessible states for agent_id at time t.
 
@@ -2486,6 +2323,7 @@ class RelativisticMultiAgentInterface(nn.Module):
 # =============================================================================
 # Complete Module: RelativisticMultiAgentSystem
 # =============================================================================
+
 
 class RelativisticMultiAgentSystem(nn.Module):
     """
@@ -2529,7 +2367,7 @@ class RelativisticMultiAgentSystem(nn.Module):
         # [N, N] with zeros on diagonal
         dist = torch.ones(config.n_agents, config.n_agents)
         dist.fill_diagonal_(0)
-        self.register_buffer('env_distances', dist)
+        self.register_buffer("env_distances", dist)
 
     def set_environment_distances(self, distances: Tensor):
         """
@@ -2561,11 +2399,7 @@ class RelativisticMultiAgentSystem(nn.Module):
         """
         return self.game_tensor_module(z_all)  # [N, N, B, D, D]
 
-    def compute_effective_metrics(
-        self,
-        z_all: Tensor,
-        G_base: List[Tensor]
-    ) -> List[Tensor]:
+    def compute_effective_metrics(self, z_all: Tensor, G_base: list[Tensor]) -> list[Tensor]:
         """
         Compute game-augmented metrics for all agents.
 
@@ -2597,17 +2431,14 @@ class RelativisticMultiAgentSystem(nn.Module):
             # Compute effective metric: [D, D] -> [B, D, D]
             G_tilde_i = effective_metric_with_game_tensor(
                 G_base[i].unsqueeze(0).expand(z_all.shape[1], -1, -1),  # [B, D, D]
-                game_pairs
+                game_pairs,
             )
             G_tilde.append(G_tilde_i)  # [B, D, D]
 
         return G_tilde  # List of [B, D, D]
 
     def compute_klein_gordon_rhs(
-        self,
-        V_i: Tensor,
-        rho_r_i: Tensor,
-        Phi_ret: List[Tensor]
+        self, V_i: Tensor, rho_r_i: Tensor, Phi_ret: list[Tensor]
     ) -> Tensor:
         """
         Compute RHS of Klein-Gordon equation:
@@ -2625,11 +2456,8 @@ class RelativisticMultiAgentSystem(nn.Module):
         return rho_r_i + sum(Phi_ret)  # [B]
 
     def run_diagnostics(
-        self,
-        z_all: Tensor,
-        G_tensors: Tensor,
-        F: Tensor
-    ) -> Dict[str, Tuple[bool, float]]:
+        self, z_all: Tensor, G_tensors: Tensor, F: Tensor
+    ) -> dict[str, tuple[bool, float]]:
         """
         Run all diagnostic nodes (46-48, 57-60, 62-66).
 
@@ -2651,19 +2479,15 @@ class RelativisticMultiAgentSystem(nn.Module):
                     G_ij = G_tensors[i, j, 0]  # [D, D]
                     G_i = torch.eye(self.config.latent_dim, device=z_all.device)  # [D, D]
                     passed, norm = game_tensor_check(G_ij, G_i)
-                    diagnostics[f'node46_G_{i}{j}'] = (passed, norm)
+                    diagnostics[f"node46_G_{i}{j}"] = (passed, norm)
 
         # Node 64: FieldStrengthBoundCheck
         passed, norm = field_strength_bound_check(F)  # F: [B, S, S, G]
-        diagnostics['node64_field_strength'] = (passed, norm)
+        diagnostics["node64_field_strength"] = (passed, norm)
 
         return diagnostics
 
-    def forward(
-        self,
-        z_all: Tensor,
-        t: float
-    ) -> Dict[str, Tensor]:
+    def forward(self, z_all: Tensor, t: float) -> dict[str, Tensor]:
         """
         Forward pass computing all multi-agent dynamics.
 
@@ -2694,19 +2518,20 @@ class RelativisticMultiAgentSystem(nn.Module):
         F = field_strength_tensor(A, self.config.g_coupling)
 
         # Lagrangian components
-        psi_dummy = [torch.randn(z_all.shape[1], device=z_all.device)
-                     for _ in range(self.config.n_agents)]  # List of [B]
+        psi_dummy = [
+            torch.randn(z_all.shape[1], device=z_all.device) for _ in range(self.config.n_agents)
+        ]  # List of [B]
         lagrangian_components = self.lagrangian.compute_lagrangian(z_mean, psi_dummy)
 
         # Causal delays: [N, N]
         tau = self.compute_causal_delays()
 
         return {
-            'game_tensors': game_tensors,       # [N, N, B, D, D]
-            'connection': A,                     # [B, S, G]
-            'field_strength': F,                 # [B, S, S, G]
-            'lagrangian': lagrangian_components, # Dict of scalars
-            'causal_delays': tau                 # [N, N]
+            "game_tensors": game_tensors,  # [N, N, B, D, D]
+            "connection": A,  # [B, S, G]
+            "field_strength": F,  # [B, S, S, G]
+            "lagrangian": lagrangian_components,  # Dict of scalars
+            "causal_delays": tau,  # [N, N]
         }
 
 
@@ -2721,16 +2546,16 @@ if __name__ == "__main__":
 
     # Configuration with explicit dimensions
     config = MultiAgentConfig(
-        n_agents=3,        # N = 3 agents
-        latent_dim=32,     # D = 32 dimensional latent space
-        gauge_dim=4,       # G = 4 dimensional gauge algebra
-        spacetime_dim=4,   # S = 4 spacetime dimensions
-        c_info=1.0,        # Information speed
+        n_agents=3,  # N = 3 agents
+        latent_dim=32,  # D = 32 dimensional latent space
+        gauge_dim=4,  # G = 4 dimensional gauge algebra
+        spacetime_dim=4,  # S = 4 spacetime dimensions
+        c_info=1.0,  # Information speed
         beta_adversarial=0.5,
-        sigma=0.1
+        sigma=0.1,
     )
 
-    print(f"\nConfiguration:")
+    print("\nConfiguration:")
     print(f"  N (agents)     = {config.n_agents}")
     print(f"  D (latent_dim) = {config.latent_dim}")
     print(f"  G (gauge_dim)  = {config.gauge_dim}")
@@ -2745,37 +2570,33 @@ if __name__ == "__main__":
     print(f"\nInput z_all shape: [{config.n_agents}, {batch_size}, {config.latent_dim}]")
 
     # Set environment distances: [N, N] = [3, 3]
-    distances = torch.tensor([
-        [0.0, 1.0, 2.0],
-        [1.0, 0.0, 1.5],
-        [2.0, 1.5, 0.0]
-    ])
+    distances = torch.tensor([[0.0, 1.0, 2.0], [1.0, 0.0, 1.5], [2.0, 1.5, 0.0]])
     system.set_environment_distances(distances)
     print(f"Environment distances shape: {list(distances.shape)}")
 
     # Forward pass
     results = system(z_all, t=10.0)
 
-    print(f"\n--- Output Tensor Shapes ---")
+    print("\n--- Output Tensor Shapes ---")
     print(f"game_tensors:   {list(results['game_tensors'].shape)}")
     print(f"connection:     {list(results['connection'].shape)}")
     print(f"field_strength: {list(results['field_strength'].shape)}")
     print(f"causal_delays:  {list(results['causal_delays'].shape)}")
 
-    print(f"\nCausal delays (tau_ij = d_ij / c_info):")
-    print(results['causal_delays'])
+    print("\nCausal delays (tau_ij = d_ij / c_info):")
+    print(results["causal_delays"])
 
-    print(f"\nGame Tensor norms ||G_ij||_F:")
+    print("\nGame Tensor norms ||G_ij||_F:")
     for i in range(config.n_agents):
         for j in range(config.n_agents):
             if i != j:
-                norm = torch.norm(results['game_tensors'][i, j]).item()
+                norm = torch.norm(results["game_tensors"][i, j]).item()
                 print(f"  ||G_{i}{j}||_F = {norm:.4f}")
 
     print(f"\nField strength ||F||_F = {torch.norm(results['field_strength']):.4f}")
 
-    print(f"\nLagrangian components:")
-    for key, val in results['lagrangian'].items():
+    print("\nLagrangian components:")
+    for key, val in results["lagrangian"].items():
         if isinstance(val, Tensor):
             print(f"  {key}: {val.item():.4f}")
 
@@ -2795,12 +2616,12 @@ if __name__ == "__main__":
     # Test quantum layer
     print("\n--- Quantum Layer Test ---")
     rho = torch.rand(batch_size) + 0.1  # [B]
-    rho = rho / rho.sum()  # Normalize to probability
+    rho /= rho.sum()  # Normalize to probability
     V = torch.randn(batch_size)  # [B]
 
     psi = belief_wave_function(rho, V, config.sigma)  # [B], complex
     print(f"Belief wave function shape: {list(psi.shape)}, dtype: {psi.dtype}")
-    print(f"|psi|^2 sums to: {torch.sum(torch.abs(psi)**2).item():.4f}")
+    print(f"|psi|^2 sums to: {torch.sum(torch.abs(psi) ** 2).item():.4f}")
 
     # Test tunneling probability
     Phi_barrier = torch.tensor([0.0, 0.5, 1.0, 1.5, 1.0, 0.5, 0.0])  # [7]
@@ -2818,11 +2639,13 @@ if __name__ == "__main__":
     # Causal information bound
     I_bulk, area, ell_L = 10.0, 100.0, 1.0
     satisfied, C_partial = check_causal_information_bound(I_bulk, area, ell_L)
-    print(f"Causal Information Bound: I_bulk={I_bulk}, C_partial={C_partial:.2f}, satisfied={satisfied}")
+    print(
+        f"Causal Information Bound: I_bulk={I_bulk}, C_partial={C_partial:.2f}, satisfied={satisfied}"
+    )
 
     # Run diagnostics
     print("\n--- Diagnostic Nodes ---")
-    diagnostics = system.run_diagnostics(z_all, results['game_tensors'], results['field_strength'])
+    diagnostics = system.run_diagnostics(z_all, results["game_tensors"], results["field_strength"])
     for node, (passed, value) in diagnostics.items():
         status = "PASSED" if passed else "FAILED"
         print(f"  {node}: {status} (value={value:.4f})")

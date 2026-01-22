@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 import math
-from typing import Callable, Optional
+from typing import Callable
 
 import torch
-import torch.nn as nn
+from torch import nn
 import torch.nn.functional as F
 
 
@@ -25,7 +25,8 @@ class SpectralLinear(nn.Module):
     ) -> None:
         super().__init__()
         if n_power_iterations < 1:
-            raise ValueError("n_power_iterations must be >= 1.")
+            msg = "n_power_iterations must be >= 1."
+            raise ValueError(msg)
         self.in_features = in_features
         self.out_features = out_features
         self.n_power_iterations = n_power_iterations
@@ -77,16 +78,19 @@ class NormGate(nn.Module):
         self,
         bundle_size: int,
         n_bundles: int,
-        gate_fn: Optional[Callable[[torch.Tensor], torch.Tensor]] = None,
+        gate_fn: Callable[[torch.Tensor], torch.Tensor] | None = None,
         smooth_norm_eps: float = 1e-6,
     ) -> None:
         super().__init__()
         if bundle_size <= 0:
-            raise ValueError("bundle_size must be positive.")
+            msg = "bundle_size must be positive."
+            raise ValueError(msg)
         if n_bundles <= 0:
-            raise ValueError("n_bundles must be positive.")
+            msg = "n_bundles must be positive."
+            raise ValueError(msg)
         if smooth_norm_eps < 0.0:
-            raise ValueError("smooth_norm_eps must be >= 0.")
+            msg = "smooth_norm_eps must be >= 0."
+            raise ValueError(msg)
 
         self.bundle_size = bundle_size
         self.n_bundles = n_bundles
@@ -109,7 +113,8 @@ class NormGate(nn.Module):
                     f"[B, {self.n_bundles}, {self.bundle_size}], got {tuple(x.shape)}."
                 )
             return x, False
-        raise ValueError("NormGate expects input with shape [B, D] or [B, n_bundles, d_b].")
+        msg = "NormGate expects input with shape [B, D] or [B, n_bundles, d_b]."
+        raise ValueError(msg)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         bundled, flatten = self._bundle_view(x)
@@ -156,11 +161,14 @@ class IsotropicBlock(nn.Module):
     ) -> None:
         super().__init__()
         if out_dim % bundle_size != 0:
-            raise ValueError("out_dim must be divisible by bundle_size.")
+            msg = "out_dim must be divisible by bundle_size."
+            raise ValueError(msg)
         if exact and in_dim != out_dim:
-            raise ValueError("Exact mode requires in_dim == out_dim.")
+            msg = "Exact mode requires in_dim == out_dim."
+            raise ValueError(msg)
         if exact and in_dim % bundle_size != 0:
-            raise ValueError("Exact mode requires in_dim divisible by bundle_size.")
+            msg = "Exact mode requires in_dim divisible by bundle_size."
+            raise ValueError(msg)
 
         self.in_dim = in_dim
         self.out_dim = out_dim
@@ -174,11 +182,8 @@ class IsotropicBlock(nn.Module):
             self.bundle_scales = nn.Parameter(torch.ones(self.n_bundles))
             self.input_proj = None
         else:
-            self.block_weights = nn.ParameterList(
-                [
-                    nn.Parameter(torch.randn(bundle_size, bundle_size) / math.sqrt(bundle_size))
-                    for _ in range(self.n_bundles)
-                ]
+            self.block_weights = nn.Parameter(
+                torch.randn(self.n_bundles, bundle_size, bundle_size) / math.sqrt(bundle_size)
             )
             self.input_proj = None
             if in_dim != out_dim:
@@ -213,21 +218,32 @@ class IsotropicBlock(nn.Module):
         sigma = torch.dot(u, torch.mv(weight, v)).abs()
         return weight / sigma.clamp(min=1.0)
 
+    def _spectral_normalize_block_bank(self, weight: torch.Tensor) -> torch.Tensor:
+        u = self._block_u
+        with torch.no_grad():
+            for _ in range(self.n_power_iterations):
+                v = torch.bmm(weight.transpose(1, 2), u.unsqueeze(-1)).squeeze(-1)
+                v = F.normalize(v, dim=-1, eps=self.eps)
+                u = torch.bmm(weight, v.unsqueeze(-1)).squeeze(-1)
+                u = F.normalize(u, dim=-1, eps=self.eps)
+            if self.training:
+                self._block_u.copy_(u)
+        sigma = torch.einsum("bi,bij,bj->b", u, weight, v).abs()
+        sigma = sigma.clamp(min=1.0).view(-1, 1, 1)
+        return weight / sigma
+
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         batch = x.shape[0]
         if self.exact:
             scales = self.bundle_scales.clamp(-1.0, 1.0)
             bundled = x.reshape(batch, self.n_bundles, self.bundle_size)
-            bundled = bundled * scales.view(1, -1, 1)
+            bundled *= scales.view(1, -1, 1)
         else:
             if self.input_proj is not None:
                 x = self.input_proj(x)
             bundled = x.reshape(batch, self.n_bundles, self.bundle_size)
-            block_out = []
-            for i in range(self.n_bundles):
-                weight = self._spectral_normalize_block(self.block_weights[i], i)
-                block_out.append(bundled[:, i, :] @ weight)
-            bundled = torch.stack(block_out, dim=1)
+            weight = self._spectral_normalize_block_bank(self.block_weights)
+            bundled = torch.einsum("bnd,ndk->bnk", bundled, weight)
 
         gated = self.norm_gate(bundled)
         return gated.reshape(batch, self.n_bundles * self.bundle_size)

@@ -67,15 +67,14 @@ def compute_u1_phase(
         Phases [N] where phase[i] = θ_i(c_div(i))
 
     Example:
-        >>> phases = compute_u1_phase(
-        ...     positions, velocities, rewards, companions, alive, rho=0.05
-        ... )
+        >>> phases = compute_u1_phase(positions, velocities, rewards, companions, alive, rho=0.05)
     """
     if u1_config is None:
         u1_config = U1Config()
     if fitness is None:
         if rewards is None:
-            raise ValueError("rewards or fitness must be provided to compute U(1) phases.")
+            msg = "rewards or fitness must be provided to compute U(1) phases."
+            raise ValueError(msg)
         if obs_config is None:
             obs_config = ObservablesConfig()
         fields = compute_collective_fields(
@@ -220,9 +219,7 @@ def compare_u1_phases(
             - "proposed_std": Std phase (scalar)
 
     Example:
-        >>> comparison = compare_u1_phases(
-        ...     positions, velocities, rewards, companions, alive, rho=0.05
-        ... )
+        >>> comparison = compare_u1_phases(positions, velocities, rewards, companions, alive, rho=0.05)
         >>> print(f"Correlation: {comparison['correlation']:.4f}")
         >>> print(f"Mean difference: {comparison['difference'].mean():.4f}")
     """

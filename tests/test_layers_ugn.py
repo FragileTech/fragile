@@ -3,17 +3,17 @@ import torch
 from fragile.core.layers import (
     AdaptiveL1Scheduler,
     BundleConfig,
+    compute_diagnostics,
     CovariantAttentionLayer,
     FactoredTensorLayer,
     GramInteractionLayer,
     L1Scheduler,
+    log_sparsity_diagnostics,
     NormInteractionLayer,
     SoftEquivariantLayer,
+    train_ugn,
     UGNConfig,
     UniversalGeometricNetwork,
-    compute_diagnostics,
-    log_sparsity_diagnostics,
-    train_ugn,
 )
 
 

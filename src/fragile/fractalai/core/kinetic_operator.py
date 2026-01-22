@@ -589,8 +589,7 @@ class KineticOperator(PanelModel):
             A = 0.5 * self.beta_curl * self.dt * curl
             eye = torch.eye(d, device=v.device, dtype=v.dtype).expand(N, d, d)
             rhs = torch.bmm(eye + A, v.unsqueeze(-1))
-            v_rot = torch.linalg.solve(eye - A, rhs).squeeze(-1)
-            return v_rot
+            return torch.linalg.solve(eye - A, rhs).squeeze(-1)
 
         msg = f"curl_field returned {curl.dim()}-D tensor; expected [N, 3] or [N, d, d]"
         raise ValueError(msg)
@@ -605,9 +604,7 @@ class KineticOperator(PanelModel):
         force = self._compute_force(x, v, grad_fitness)
 
         viscous = (
-            self._compute_viscous_force(x, v)
-            if self.use_viscous_coupling
-            else torch.zeros_like(v)
+            self._compute_viscous_force(x, v) if self.use_viscous_coupling else torch.zeros_like(v)
         )
         v_minus = v + (self.dt / 2) * (force + viscous)
 
@@ -622,9 +619,7 @@ class KineticOperator(PanelModel):
             if self.use_viscous_coupling
             else torch.zeros_like(v)
         )
-        v_plus = v_rot + (self.dt / 2) * (force + viscous_rot)
-
-        return v_plus
+        return v_rot + (self.dt / 2) * (force + viscous_rot)
 
     def _compute_diffusion_tensor(
         self,

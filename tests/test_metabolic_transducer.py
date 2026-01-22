@@ -5,34 +5,56 @@ These tests verify that the PyTorch implementation correctly implements
 all equations from Section 36 of the Fragile Agent monograph.
 """
 
-import torch
 import math
-import pytest
 import sys
-sys.path.insert(0, '.')
+
+import pytest
+import torch
+
+
+sys.path.insert(0, ".")
 
 from fragile.core.metabolic_transducer import (
+    AutopoiesisDiagnostics,
+    autopoietic_inequality,
+    battery_dynamics,
+    # Section 36.5
+    carnot_efficiency,
+    check_thermal_runaway,
+    DiagnosticResult,
+    dynamics_snr,
+    effective_causal_information_bound,
+    effective_geodesic_distance,
+    fading_function,
+    fading_function_derivative,
+    FadingMetric,
+    # Section 36.4
+    homeostatic_potential,
+    # Section 36.3
+    information_maintenance_cost,
+    information_utility,
+    # Section 36.2
+    InternalBattery,
+    is_hallucinating,
     # Constants
-    K_BOLTZMANN, LN2,
+    K_BOLTZMANN,
+    LN2,
+    # Complete system
+    MetabolicSystem,
+    MetabolicTransducer,
+    net_harvest_rate_condition,
+    priority_inversion_ratio,
+    # Section 36.1
+    reward_flux,
+    survival_objective,
+    szilard_work_bound,
+    thermal_margin,
+    ThermalDynamics,
     # Config
     ThermodynamicConfig,
-    # Section 36.1
-    reward_flux, information_utility, szilard_work_bound,
-    transducer_bound, MetabolicTransducer,
-    # Section 36.2
-    InternalBattery, battery_dynamics, autopoietic_inequality,
-    net_harvest_rate_condition, survival_objective,
-    # Section 36.3
-    information_maintenance_cost, fading_function, fading_function_derivative,
-    FadingMetric, effective_geodesic_distance, effective_causal_information_bound,
-    dynamics_snr, is_hallucinating,
-    # Section 36.4
-    homeostatic_potential, total_potential, priority_inversion_ratio,
-    # Section 36.5
-    carnot_efficiency, waste_heat_flux, check_thermal_runaway,
-    thermal_margin, ThermalDynamics,
-    # Complete system
-    MetabolicSystem, DiagnosticResult, AutopoiesisDiagnostics,
+    total_potential,
+    transducer_bound,
+    waste_heat_flux,
 )
 
 
@@ -162,7 +184,7 @@ class TestSection362_BatteryDynamics:
         survives = autopoietic_inequality(
             harvest_integral, cost_integral, B_integral, B_0, gamma_leak
         )
-        assert survives.item() == True
+        assert survives.item() is True
 
     def test_survival_objective(self):
         """Test Corollary 36.2.4: J = E[∫(T - Ṁ)e^{-γt} dt]"""
@@ -351,7 +373,7 @@ class TestCompleteSystem:
         reward = torch.tensor(1.0)
         cost = torch.tensor(0.5)
 
-        delta, diag = system.step(reward, cost)
+        _delta, diag = system.step(reward, cost)
 
         assert diag.alive
         assert diag.battery_level > 0
@@ -408,7 +430,7 @@ class TestCompleteSystem:
 
         assert system.battery.item() == config.B_0
         assert not system.is_dead.item()
-        assert len(system.history['battery']) == 0
+        assert len(system.history["battery"]) == 0
 
 
 class TestEquationMapping:

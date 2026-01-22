@@ -364,9 +364,7 @@ class CloneOperator(PanelModel):
 
     Example:
         >>> operator = CloneOperator(p_max=0.75, sigma_x=0.1)
-        >>> pos_new, vel_new, alive_new, info = operator(
-        ...     positions, velocities, fitness, companions, alive
-        ... )
+        >>> pos_new, vel_new, alive_new, info = operator(positions, velocities, fitness, companions, alive)
     """
 
     _n_widget_columns = param.Integer(default=2, bounds=(1, None), doc="Number of widget columns")

@@ -11,8 +11,13 @@ The diagrams include the covariant chart routing upgrades:
 
 Implementation toggles wired in `src/experiments/topoencoder_2d.py`:
 - `covariant_attn`: CovariantChartRouter vs dot-product (encoder) / latent_router (decoder).
-- `vision_preproc`: CovariantRetina replaces the MLP feature extractor.
-- `soft_equiv_metric`: per-chart SoftEquivariantLayer metric on codebook distances (+ optional L1 regularizer).
+- `covariant_attn_tensorization`, `covariant_attn_rank`, `covariant_attn_use_transport`,
+  `covariant_attn_transport_eps`, `covariant_attn_tau_min`, `covariant_attn_denom_min`:
+  configure gamma tensorization, transport, and temperature clamps.
+- `vision_preproc` + `vision_*`: CovariantRetina replaces the MLP feature extractor.
+- `soft_equiv_metric`, `soft_equiv_soft_assign`, `soft_equiv_temperature`:
+  per-chart SoftEquivariantLayer metric with optional straight-through soft VQ assignments.
+- `soft_equiv_l1_weight`, `soft_equiv_log_ratio_weight`: optional metric regularizers (loss terms).
 
 ---
 
@@ -29,13 +34,13 @@ flowchart TD
         Qfeat -- "q_feat [B, K]" --> Qsum
         Gamma -- "gamma [B, K]" --> Qsum
 
-        Z -- "z [B, D]" --> Transport["transport_proj(z) -> skew [B, K, K]"]
+        Z -- "z [B, D]" --> Transport["transport_proj(z) -> skew [B, K, K]\n(if use_transport)"]
         Transport -- "skew [B, K, K]" --> Cayley["Cayley: U(z) = (I+0.5S)^-1 (I-0.5S)"]
-        ChartTokens["chart_tokens c_k [N_c, D or K]\n(encoder uses chart_centers)"] -- "c_k [N_c, D]" --> KeyProj["chart_key_proj [N_c, K]"]
+        ChartTokens["chart_tokens c_k [N_c, D or K]\n(encoder: chart_centers)"] -- "c_k [N_c, D]" --> KeyProj["chart_key_proj [N_c, K]"]
         ChartTokens -.->|if K| KeyMerge
-        ChartQ["chart_queries [N_c, K]\n(fallback)"] -- "chart_queries [N_c, K]" --> KeyMerge["base_queries [N_c, K]"]
+        ChartQ["chart_queries [N_c, K]\n(decoder default)"] -- "chart_queries [N_c, K]" --> KeyMerge["base_queries [N_c, K]"]
         KeyProj -- "projected [N_c, K]" --> KeyMerge
-        KeyMerge -- "base_queries [N_c, K]" --> Keys["keys = U(z) * base_queries [B, N_c, K]"]
+        KeyMerge -- "base_queries [N_c, K]" --> Keys["keys = U(z) * base_queries [B, N_c, K]\n(or base_queries if transport disabled)"]
         Cayley -- "U(z) [B, K, K]" --> Keys
 
         Keys -- "keys [B, N_c, K]" --> Scores["scores = sum(keys * q) [B, N_c]"]
@@ -92,7 +97,7 @@ flowchart TD
             SoftEq -- "diff' [B, N_c, K, D]" --> Dist["dist = ||diff'||^2 [B, N_c, K]"]
             Diff -.-> Dist
             Dist -- "dist [B, N_c, K]" --> Indices["indices per chart [B, N_c]"]
-            Indices -- "indices [B, N_c]" --> ZqAll["z_q_all [B, N_c, D] (gather)"]
+            Indices -- "indices [B, N_c]" --> ZqAll["z_q_all [B, N_c, D]\n(gather; + soft-ST if soft_equiv_soft_assign)"]
             ZqAll -- "z_q_all [B, N_c, D]" --> ZqBlend["z_q_blended = sum(w_enc * z_q_all)"]
 
             Indices -- "indices [B, N_c]" --> Kcode["K_code (from K_chart)"]
@@ -206,21 +211,38 @@ flowchart TD
 
 ---
 
-## Experiment Wiring (Supervised + Classifier Readout)
+## Experiment Wiring (Supervised + Jump + Learned Precisions)
 
-Supervised topology loss and the invariant classifier readout are optional in
-`src/experiments/topoencoder_2d.py`. The classifier head is detached from atlas
-gradients and trained with its own optimizer.
+Supervised topology loss, jump consistency, learned precisions, and the invariant
+classifier readout are optional in `src/experiments/topoencoder_2d.py`. The classifier
+head is detached from atlas gradients and trained with its own optimizer.
 
 ```mermaid
 %%{init: {"themeVariables": {"background":"#0b111b","edgeLabelBackground":"#111827","textColor":"#e5e7eb","lineColor":"#9ca3af","primaryColor":"#1f2937","primaryTextColor":"#e5e7eb","clusterBkg":"#0f172a","clusterBorder":"#334155"}}}%%
 flowchart TD
     X["batch_X"] --> Enc["TopoEncoderPrimitives.encoder"]
+    Enc -- "z_geo [B, D]" --> Dec["TopoEncoderPrimitives.decoder"]
+    Enc -- "z_tex [B, D]" --> Dec
+    Dec -- "recon_a [B, D_in]" --> ReconLoss["recon_loss = mse(recon_a, batch_X)"]
+    X --> ReconLoss
+
+    Enc -- "vq_loss" --> VQLoss["vq_loss (codebook + commitment)"]
+
+    ReconLoss --> ReconTerm["recon_term\n(optional learned precision)"]
+    VQLoss --> VQTerm["vq_term\n(optional learned precision)"]
+
     Enc -- "enc_w [B, N_c]" --> Sup["SupervisedTopologyLoss (optional)"]
     Enc -- "z_geo [B, D]" --> Sup
     Y["batch_labels [B]"] --> Sup
     Sup -- "sup_total + components" --> SupTerm["sup_term\n(optional learned precision)"]
-    SupTerm -- "sup_weight * sup_term" --> LossA["atlas loss\n(recon + vq + regs + sup)"]
+
+    Enc -- "z_n_all_charts [B, N_c, D]" --> Jump["FactorizedJumpOperator (optional)"]
+    Enc -- "enc_w [B, N_c]" --> Jump
+    Jump -- "jump_loss (schedule weight)" --> LossA["atlas loss\n(recon + vq + regs + jump + sup)"]
+
+    ReconTerm --> LossA
+    VQTerm --> LossA
+    SupTerm -- "sup_weight * sup_term" --> LossA
 
     Enc -- "enc_w (detach)" --> Cls["InvariantChartClassifier (optional)"]
     Enc -- "z_geo (detach)" --> Cls
@@ -229,5 +251,8 @@ flowchart TD
     CE --> OptCls["opt_classifier.step()"]
 ```
 
-Metric-only logging:
+Notes:
 - `sup_acc` is computed from `enc_w @ p_y_given_k` and does not backpropagate.
+- Jump weighting follows `get_jump_weight_schedule(jump_warmup, jump_ramp_end, jump_weight)`.
+- Learned precisions apply to recon/vq/sup via `_apply_precision` when enabled.
+- Other regularizers (entropy, consistency, tiered losses) are omitted from the diagram.

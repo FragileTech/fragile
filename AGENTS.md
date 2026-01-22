@@ -14,14 +14,14 @@
 - For unbounded spaces, use the established confining envelope or Safe Harbor results instead of adding compactness assumptions.
 
 ## Build, Test, and Development Commands
-Use Rye scripts (they wrap Hatch environments):
-- `rye run test` runs the pytest suite.
-- `rye run doctest` runs doctests in `src/` and Markdown.
-- `rye run cov` runs coverage with `pytest-cov`.
-- `rye run lint` runs ruff check + format.
-- `rye run check` runs lint + format diff only.
-- `rye run build-docs` / `rye run docs` builds or builds+serves docs.
-- `rye run all` runs lint + docs build + tests.
+Use uv to run Hatch environments:
+- `uv run hatch run test:test` runs the pytest suite.
+- `uv run hatch run test:doctest` runs doctests in `src/` and Markdown.
+- `uv run hatch run test:cov` runs coverage with `pytest-cov`.
+- `uv run hatch run lint:all` runs ruff check + format.
+- `uv run hatch run lint:check` runs lint + format diff only.
+- `uv run hatch run docs:build` / `uv run hatch run docs:docs` builds or builds+serves docs.
+- `uv run hatch run lint:all && uv run hatch run docs:build && uv run hatch run test:test` runs lint + docs build + tests.
 
 Equivalent Hatch commands live under `hatch run lint:*`, `hatch run test:*`, and `hatch run docs:*`.
 
@@ -34,10 +34,10 @@ Equivalent Hatch commands live under `hatch run lint:*`, `hatch run test:*`, and
 ## Testing Guidelines
 - Framework: pytest with files named `test_*.py`.
 - Unit tests live in `tests/`; prefer small, deterministic tests.
-- Coverage uses `pytest-cov` via `rye run cov`.
-- Doctests run via `rye run doctest` (Markdown and modules).
+- Coverage uses `pytest-cov` via `uv run hatch run test:cov`.
+- Doctests run via `uv run hatch run test:doctest` (Markdown and modules).
 
 ## Commit & Pull Request Guidelines
 - Commit history uses short, imperative, sentence-case messages (for example "Update docs", "Fix docs deploy"); no conventional prefixes.
-- PRs should include passing tests (`rye run test` or `hatch test`), updated docs when APIs change, a `CHANGELOG.md` entry, and your name in `AUTHORS.md`.
+- PRs should include passing tests (`uv run hatch run test:test` or `hatch run test:test`), updated docs when APIs change, a `CHANGELOG.md` entry, and your name in `AUTHORS.md`.
 - Link issues for bug fixes or features when available.

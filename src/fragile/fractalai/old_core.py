@@ -1,7 +1,7 @@
 import torch
 
-from fragile.fractalai.core.benchmarks import Rastrigin
 from fragile.fractalai import clone_tensor, fai_iteration
+from fragile.fractalai.core.benchmarks import Rastrigin
 
 
 def compute(args):

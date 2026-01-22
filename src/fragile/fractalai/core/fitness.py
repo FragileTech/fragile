@@ -1037,6 +1037,7 @@ class FitnessOperator(PanelModel):
         hess_blocks = []
 
         for i in range(N):
+
             def fitness_i_fn(pos: Tensor, idx: int = i) -> Tensor:
                 fitness, _ = compute_fitness(
                     positions=pos,

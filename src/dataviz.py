@@ -2,18 +2,19 @@ from __future__ import annotations
 
 import gc
 import math
-from typing import TYPE_CHECKING
-
 import os
+from typing import TYPE_CHECKING
 
 import matplotlib
 import numpy as np
 import torch
 
+
 if os.environ.get("MPLBACKEND") is None:
     matplotlib.use("Agg")
 
 import matplotlib.pyplot as plt
+
 
 if TYPE_CHECKING:
     from fragile.core.layers import FactorizedJumpOperator, TopoEncoder
@@ -71,7 +72,7 @@ def visualize_latent(
 
         z = z_geo.cpu().numpy()
         X_np = X.cpu().numpy()
-        enc_w_np = enc_w.cpu().numpy()
+        enc_w.cpu().numpy()
         hard_assign = K_chart.cpu().numpy()
         code_assign = K_code.cpu().numpy()  # Code assignment for each point
         indices_np = indices_stack.cpu().numpy()
@@ -134,9 +135,7 @@ def visualize_latent(
         ax3.set_zlabel("Z")
     else:
         ax3 = fig.add_subplot(2, 3, 3)
-        ax3.scatter(
-            recon_np[:, 0], recon_np[:, 1], c=colors, cmap="rainbow", s=2, alpha=0.7
-        )
+        ax3.scatter(recon_np[:, 0], recon_np[:, 1], c=colors, cmap="rainbow", s=2, alpha=0.7)
         ax3.set_title(f"Reconstruction\nMSE: {mse:.5f}")
         ax3.set_xlabel("X")
         ax3.set_ylabel("Y")
@@ -145,9 +144,7 @@ def visualize_latent(
 
     # Panel 4: Latent by chart assignment with jump transitions
     ax4 = fig.add_subplot(2, 3, 4)
-    scatter4 = ax4.scatter(
-        z[:, 0], z[:, 1], c=hard_assign, cmap="tab10", s=3, alpha=0.7
-    )
+    scatter4 = ax4.scatter(z[:, 0], z[:, 1], c=hard_assign, cmap="tab10", s=3, alpha=0.7)
 
     # Visualize jump operator transitions if available
     num_jumps = 0
@@ -204,9 +201,7 @@ def visualize_latent(
         chart_palettes,
     )
 
-    plt.subplots_adjust(
-        left=0.05, right=0.95, top=0.93, bottom=0.05, wspace=0.3, hspace=0.25
-    )
+    plt.subplots_adjust(left=0.05, right=0.95, top=0.93, bottom=0.05, wspace=0.3, hspace=0.25)
     plt.savefig(save_path, dpi=150, bbox_inches="tight")
     plt.close(fig)
     plt.close("all")  # Extra safety for nested GridSpec objects
@@ -311,15 +306,15 @@ def _plot_jump_transitions(
                     "",
                     xy=(src_pos[0] + dx, src_pos[1] + dy),
                     xytext=(src_pos[0], src_pos[1]),
-                    arrowprops=dict(
-                        arrowstyle="-|>",
-                        color=color,
-                        alpha=0.7,
-                        linewidth=1.5,
-                        mutation_scale=8,
-                        shrinkA=0,
-                        shrinkB=0,
-                    ),
+                    arrowprops={
+                        "arrowstyle": "-|>",
+                        "color": color,
+                        "alpha": 0.7,
+                        "linewidth": 1.5,
+                        "mutation_scale": 8,
+                        "shrinkA": 0,
+                        "shrinkB": 0,
+                    },
                 )
                 arrows_drawn += 1
 
@@ -368,8 +363,7 @@ def _compute_chart_code_colors(
         # Create mapping from code index to color intensity
         if num_used > 1:
             code_to_intensity = {
-                code: 0.3 + 0.6 * i / (num_used - 1)
-                for i, code in enumerate(sorted(unique_codes))
+                code: 0.3 + 0.6 * i / (num_used - 1) for i, code in enumerate(sorted(unique_codes))
             }
         else:
             code_to_intensity = {unique_codes[0]: 0.6}
@@ -416,9 +410,7 @@ def _plot_hyperbolic_tree(
     )
 
     # Level 0: Data points on the X-Y plane at Z=0, colored by chart+code
-    ax.scatter(
-        z_geo[:, 0], z_geo[:, 1], np.zeros(N), c=symbol_colors, s=2, alpha=0.5
-    )
+    ax.scatter(z_geo[:, 0], z_geo[:, 1], np.zeros(N), c=symbol_colors, s=2, alpha=0.5)
 
     # Compute chart centers (mean of points assigned to each chart)
     chart_centers = []
@@ -481,9 +473,7 @@ def _plot_hyperbolic_tree(
                 code_center = chart_points[code_mask].mean(axis=0)
 
                 # Map code to intensity within chart's palette
-                intensity = (
-                    0.3 + 0.6 * i / max(num_used - 1, 1) if num_used > 1 else 0.6
-                )
+                intensity = 0.3 + 0.6 * i / max(num_used - 1, 1) if num_used > 1 else 0.6
                 code_color = code_cmap(intensity)
 
                 # Draw small marker at Z=1 with chart-specific color
@@ -537,9 +527,7 @@ def visualize_results(results: dict, save_path: str = "benchmark_result.png") ->
     colors = results["colors"]
     chart_assignments = results["chart_assignments"]
     recon_ae = results["recon_ae"].cpu().numpy() if results["recon_ae"] is not None else None
-    recon_std = (
-        results["recon_std"].cpu().numpy() if results["recon_std"] is not None else None
-    )
+    recon_std = results["recon_std"].cpu().numpy() if results["recon_std"] is not None else None
     recon_atlas = results["recon_atlas"].cpu().numpy()
 
     fig = plt.figure(figsize=(24, 10))
@@ -621,12 +609,8 @@ def visualize_results(results: dict, save_path: str = "benchmark_result.png") ->
     ax4.set_ylabel("AMI Score")
     ax4.set_title("Topology Discovery\n(Adjusted Mutual Information)", fontsize=12)
     ax4.set_ylim(0, 1)
-    ax4.axhline(
-        y=0.8, color="green", linestyle="--", alpha=0.5, label="Excellent threshold"
-    )
-    ax4.axhline(
-        y=0.5, color="orange", linestyle="--", alpha=0.5, label="Good threshold"
-    )
+    ax4.axhline(y=0.8, color="green", linestyle="--", alpha=0.5, label="Excellent threshold")
+    ax4.axhline(y=0.5, color="orange", linestyle="--", alpha=0.5, label="Good threshold")
     # Add value labels on bars
     for bar, score in zip(bars, ami_scores):
         ax4.text(
@@ -798,8 +782,7 @@ def _tensor_to_image(x: torch.Tensor, image_shape: tuple = (32, 32, 3)) -> np.nd
     H, W, C = image_shape
     img = x.cpu().numpy().reshape(H, W, C)
     # Clip to valid range
-    img = np.clip(img, 0, 1)
-    return img
+    return np.clip(img, 0, 1)
 
 
 def _create_image_grid(
@@ -869,12 +852,11 @@ def visualize_latent_images(
     gc.collect()
 
     model.eval()
-    device = X.device
     num_classes = len(class_names)
 
     with torch.no_grad():
         # Get encoder outputs
-        K_chart, K_code, _, _z_tex, enc_w, z_geo, _, indices_out, z_n_all_charts, _c_bar = (
+        K_chart, K_code, _, _z_tex, _enc_w, z_geo, _, indices_out, _z_n_all_charts, _c_bar = (
             model.encoder(X)
         )
 
@@ -893,8 +875,18 @@ def visualize_latent_images(
 
     # Chart visualization setup
     chart_cmap = plt.get_cmap("tab10")
-    chart_palettes = ["Blues", "Oranges", "Greens", "Purples", "Reds", "Grays",
-                      "YlOrBr", "PuRd", "BuGn", "RdPu"]
+    chart_palettes = [
+        "Blues",
+        "Oranges",
+        "Greens",
+        "Purples",
+        "Reds",
+        "Grays",
+        "YlOrBr",
+        "PuRd",
+        "BuGn",
+        "RdPu",
+    ]
 
     # Select one sample per class
     sample_indices = _select_class_representatives(labels, num_classes)
@@ -910,25 +902,35 @@ def visualize_latent_images(
 
     # --- Panel 1: Sample Images (2x5 grid) ---
     ax1 = fig.add_subplot(2, 3, 1)
-    _create_image_grid(ax1, sample_images, class_names,
-                       f"Input Samples{title_suffix}")
+    _create_image_grid(ax1, sample_images, class_names, f"Input Samples{title_suffix}")
 
     # --- Panel 2: Latent Space (colored by CLASS) ---
     ax2 = fig.add_subplot(2, 3, 2)
-    scatter = ax2.scatter(
-        z[:, 0], z[:, 1],
+    ax2.scatter(
+        z[:, 0],
+        z[:, 1],
         c=labels,
         cmap="tab10",
-        vmin=0, vmax=max(9, num_classes - 1),
-        s=3, alpha=0.7
+        vmin=0,
+        vmax=max(9, num_classes - 1),
+        s=3,
+        alpha=0.7,
     )
 
     # Add class legend
     cmap = plt.get_cmap("tab10")
-    handles = [plt.Line2D([0], [0], marker="o", color="w",
-               markerfacecolor=cmap(i / max(9, num_classes - 1)),
-               markersize=8, label=class_names[i])
-               for i in range(num_classes)]
+    handles = [
+        plt.Line2D(
+            [0],
+            [0],
+            marker="o",
+            color="w",
+            markerfacecolor=cmap(i / max(9, num_classes - 1)),
+            markersize=8,
+            label=class_names[i],
+        )
+        for i in range(num_classes)
+    ]
     ax2.legend(handles=handles, loc="upper right", fontsize=6, ncol=2)
 
     ax2.set_title(f"Latent Space (by Class){title_suffix}", fontsize=12)
@@ -939,8 +941,7 @@ def visualize_latent_images(
     # --- Panel 3: Reconstruction Grid ---
     ax3 = fig.add_subplot(2, 3, 3)
     mse = ((X - recon) ** 2).mean().item()
-    _create_image_grid(ax3, recon_images, class_names,
-                       f"Reconstructions (MSE: {mse:.5f})")
+    _create_image_grid(ax3, recon_images, class_names, f"Reconstructions (MSE: {mse:.5f})")
 
     # --- Panel 4: Chart Assignments ---
     ax4 = fig.add_subplot(2, 3, 4)
@@ -948,10 +949,18 @@ def visualize_latent_images(
     ax4.scatter(z[:, 0], z[:, 1], c=chart_colors, s=3, alpha=0.7)
 
     # Add chart legend
-    handles4 = [plt.Line2D([0], [0], marker="o", color="w",
-                markerfacecolor=chart_cmap(k / max(1, num_charts - 1)),
-                markersize=8, label=f"Chart {k}")
-                for k in range(num_charts)]
+    handles4 = [
+        plt.Line2D(
+            [0],
+            [0],
+            marker="o",
+            color="w",
+            markerfacecolor=chart_cmap(k / max(1, num_charts - 1)),
+            markersize=8,
+            label=f"Chart {k}",
+        )
+        for k in range(num_charts)
+    ]
     ax4.legend(handles=handles4, loc="upper right", fontsize=6, ncol=2)
 
     ax4.set_title("Chart Assignments", fontsize=12)
@@ -963,12 +972,15 @@ def visualize_latent_images(
     if jump_op is not None:
         from fragile.datasets import find_boundary_pairs
 
-        boundary_pairs = find_boundary_pairs(z, hard_assign, X.cpu().numpy(),
-                                             k=5, max_latent_dist=2.0)
+        boundary_pairs = find_boundary_pairs(
+            z, hard_assign, X.cpu().numpy(), k=5, max_latent_dist=2.0
+        )
         for i, j in boundary_pairs[:50]:
             ax4.annotate(
-                "", xy=(z[j, 0], z[j, 1]), xytext=(z[i, 0], z[i, 1]),
-                arrowprops=dict(arrowstyle="->", color="black", alpha=0.3, lw=0.5)
+                "",
+                xy=(z[j, 0], z[j, 1]),
+                xytext=(z[i, 0], z[i, 1]),
+                arrowprops={"arrowstyle": "->", "color": "black", "alpha": 0.3, "lw": 0.5},
             )
 
     # --- Panel 5: Code Usage per Chart ---
@@ -985,8 +997,15 @@ def visualize_latent_images(
     # --- Panel 6: Hyperbolic Tree ---
     ax6 = fig.add_subplot(2, 3, 6, projection="3d")
     _plot_hyperbolic_tree(
-        ax6, z, hard_assign, code_assign, indices_np,
-        num_charts, codes_per_chart, chart_cmap, chart_palettes
+        ax6,
+        z,
+        hard_assign,
+        code_assign,
+        indices_np,
+        num_charts,
+        codes_per_chart,
+        chart_cmap,
+        chart_palettes,
     )
 
     plt.tight_layout()
@@ -1021,7 +1040,7 @@ def visualize_results_images(
 
     X = results["X"]
     labels = results["labels"]
-    chart_assignments = results["chart_assignments"]
+    results["chart_assignments"]
     recon_ae = results.get("recon_ae")
     recon_std = results.get("recon_std")
     recon_atlas = results["recon_atlas"]
@@ -1033,19 +1052,26 @@ def visualize_results_images(
     else:
         X_np = X
 
-    # Get model for latent computation
-    model_atlas = results["model_atlas"]
-
-    with torch.no_grad():
-        if isinstance(X, torch.Tensor):
-            X_tensor = X
+    z_geo = results.get("z_geo")
+    if z_geo is not None:
+        if isinstance(z_geo, torch.Tensor):
+            z = z_geo.cpu().numpy()
         else:
-            X_tensor = torch.from_numpy(X).float()
+            z = z_geo
+    else:
+        # Get model for latent computation
+        model_atlas = results["model_atlas"]
 
-        _, _, _, _, _, z_geo, _, _, _, _c_bar = model_atlas.encoder(
-            X_tensor.to(next(model_atlas.parameters()).device)
-        )
-        z = z_geo.cpu().numpy()
+        with torch.no_grad():
+            if isinstance(X, torch.Tensor):
+                X_tensor = X
+            else:
+                X_tensor = torch.from_numpy(X).float()
+
+            _, _, _, _, _, z_geo, _, _, _, _c_bar = model_atlas.encoder(
+                X_tensor.to(next(model_atlas.parameters()).device)
+            )
+            z = z_geo.cpu().numpy()
 
     # Select representatives
     sample_indices = _select_class_representatives(labels, num_classes)
@@ -1054,14 +1080,23 @@ def visualize_results_images(
 
     # --- Panel 1: Sample Images ---
     ax1 = fig.add_subplot(2, 4, 1)
-    sample_images = [_tensor_to_image(torch.from_numpy(X_np[idx]), image_shape)
-                     for idx in sample_indices]
+    sample_images = [
+        _tensor_to_image(torch.from_numpy(X_np[idx]), image_shape) for idx in sample_indices
+    ]
     _create_image_grid(ax1, sample_images, class_names, "Input Samples")
 
     # --- Panel 2: Latent Space by Class ---
     ax2 = fig.add_subplot(2, 4, 2)
-    ax2.scatter(z[:, 0], z[:, 1], c=labels, cmap="tab10",
-                vmin=0, vmax=max(9, num_classes - 1), s=3, alpha=0.7)
+    ax2.scatter(
+        z[:, 0],
+        z[:, 1],
+        c=labels,
+        cmap="tab10",
+        vmin=0,
+        vmax=max(9, num_classes - 1),
+        s=3,
+        alpha=0.7,
+    )
     ax2.set_title("Latent Space (by Class)", fontsize=12)
     ax2.set_xlabel("z₁")
     ax2.set_ylabel("z₂")
@@ -1097,20 +1132,13 @@ def visualize_results_images(
 
     ami_vals = [ami_ae, ami_std, ami_atlas]
     acc_vals = [ae_cls_acc, std_cls_acc, cls_acc]
-    acc_vals = [
-        float(val) if val is not None else float("nan")
-        for val in acc_vals
-    ]
+    acc_vals = [float(val) if val is not None else float("nan") for val in acc_vals]
     has_acc = any(math.isfinite(val) for val in acc_vals)
     x = np.arange(3)
     width = 0.36
-    bars_ami = ax4.bar(
-        x - width / 2, ami_vals, width, label="AMI", color="C1", alpha=0.8
-    )
+    bars_ami = ax4.bar(x - width / 2, ami_vals, width, label="AMI", color="C1", alpha=0.8)
     if has_acc:
-        bars_acc = ax4.bar(
-            x + width / 2, acc_vals, width, label="Test Acc", color="C0", alpha=0.8
-        )
+        bars_acc = ax4.bar(x + width / 2, acc_vals, width, label="Test Acc", color="C0", alpha=0.8)
     ax4.set_xticks(x)
     ax4.set_xticklabels(["AE", "VQ", "Topo"])
     ax4.set_ylim(0, 1)
@@ -1150,8 +1178,10 @@ def visualize_results_images(
             recon_ae_np = recon_ae.cpu().numpy()
         else:
             recon_ae_np = recon_ae
-        ae_images = [_tensor_to_image(torch.from_numpy(recon_ae_np[idx]), image_shape)
-                     for idx in sample_indices]
+        ae_images = [
+            _tensor_to_image(torch.from_numpy(recon_ae_np[idx]), image_shape)
+            for idx in sample_indices
+        ]
         mse_ae = results.get("mse_ae", 0)
         _create_image_grid(ax5, ae_images, class_names, f"AE Recon (MSE: {mse_ae:.5f})")
     else:
@@ -1165,8 +1195,10 @@ def visualize_results_images(
             recon_std_np = recon_std.cpu().numpy()
         else:
             recon_std_np = recon_std
-        vq_images = [_tensor_to_image(torch.from_numpy(recon_std_np[idx]), image_shape)
-                     for idx in sample_indices]
+        vq_images = [
+            _tensor_to_image(torch.from_numpy(recon_std_np[idx]), image_shape)
+            for idx in sample_indices
+        ]
         mse_std = results.get("mse_std", 0)
         _create_image_grid(ax6, vq_images, class_names, f"VQ Recon (MSE: {mse_std:.5f})")
     else:
@@ -1179,8 +1211,10 @@ def visualize_results_images(
         recon_atlas_np = recon_atlas.cpu().numpy()
     else:
         recon_atlas_np = recon_atlas
-    topo_images = [_tensor_to_image(torch.from_numpy(recon_atlas_np[idx]), image_shape)
-                   for idx in sample_indices]
+    topo_images = [
+        _tensor_to_image(torch.from_numpy(recon_atlas_np[idx]), image_shape)
+        for idx in sample_indices
+    ]
     mse_atlas = results.get("mse_atlas", 0)
     _create_image_grid(ax7, topo_images, class_names, f"Topo Recon (MSE: {mse_atlas:.5f})")
 
@@ -1189,14 +1223,13 @@ def visualize_results_images(
     error_atlas = np.linalg.norm(X_np - recon_atlas_np, axis=1)
     if recon_ae is not None:
         error_ae = np.linalg.norm(X_np - recon_ae_np, axis=1)
-        ax8.hist(error_ae, bins=50, alpha=0.5,
-                 label=f"AE (μ={error_ae.mean():.3f})", color="C2")
+        ax8.hist(error_ae, bins=50, alpha=0.5, label=f"AE (μ={error_ae.mean():.3f})", color="C2")
     if recon_std is not None:
         error_std = np.linalg.norm(X_np - recon_std_np, axis=1)
-        ax8.hist(error_std, bins=50, alpha=0.5,
-                 label=f"VQ (μ={error_std.mean():.3f})", color="C0")
-    ax8.hist(error_atlas, bins=50, alpha=0.5,
-             label=f"Topo (μ={error_atlas.mean():.3f})", color="C1")
+        ax8.hist(error_std, bins=50, alpha=0.5, label=f"VQ (μ={error_std.mean():.3f})", color="C0")
+    ax8.hist(
+        error_atlas, bins=50, alpha=0.5, label=f"Topo (μ={error_atlas.mean():.3f})", color="C1"
+    )
     ax8.set_xlabel("Reconstruction Error (L2)")
     ax8.set_ylabel("Count")
     ax8.set_title("Error Distribution", fontsize=12)
@@ -1209,7 +1242,8 @@ def visualize_results_images(
     fig.suptitle(
         f"CIFAR-10 Benchmark | AMI: {ami_atlas:.3f} | "
         f"Sup Acc: {sup_acc:.3f} | Perplexity: {perp_atlas:.1f}",
-        fontsize=14, y=0.98
+        fontsize=14,
+        y=0.98,
     )
 
     plt.tight_layout(rect=(0, 0, 1, 0.96))

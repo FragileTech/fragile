@@ -16,12 +16,11 @@ Reference: docs/source/3_fractal_gas/2_fractal_set/01_fractal_set.md
 
 from __future__ import annotations
 
+import math
 from typing import Any
 
-import math
-import numpy as np
-
 import networkx as nx
+import numpy as np
 import torch
 from torch import Tensor
 
@@ -150,9 +149,7 @@ class FractalSet:
         v_alive = self.history.v_final[t_idx, alive_indices, :]
         delta_x = x_alive[:, None, :] - x_alive[None, :, :]
         delta_v = v_alive[:, None, :] - v_alive[None, :, :]
-        d_alg_sq = torch.sum(delta_x**2, dim=2) + self.lambda_alg * torch.sum(
-            delta_v**2, dim=2
-        )
+        d_alg_sq = torch.sum(delta_x**2, dim=2) + self.lambda_alg * torch.sum(delta_v**2, dim=2)
         epsilon_d = self.epsilon_d if self.epsilon_d is not None else self.epsilon_c
         if epsilon_d is None:
             epsilon_d = 1.0
@@ -224,50 +221,42 @@ class FractalSet:
                         if will_clone
                         else None
                     )
-                    attrs.update(
-                        {
-                            "fitness": self.history.fitness[info_idx, walker_id].item(),
-                            "V_fit": self.history.fitness[info_idx, walker_id].item(),
-                            "reward": self.history.rewards[info_idx, walker_id].item(),
-                            "cloning_score": self.history.cloning_scores[
-                                info_idx, walker_id
-                            ].item(),
-                            "cloning_prob": self.history.cloning_probs[
-                                info_idx, walker_id
-                            ].item(),
-                            "will_clone": will_clone,
-                            "clone_source": clone_source,
-                            "companion_distance_id": self.history.companions_distance[
-                                info_idx, walker_id
-                            ].item(),
-                            "companion_clone_id": self.history.companions_clone[
-                                info_idx, walker_id
-                            ].item(),
-                            # Intermediate fitness computation scalars (from RunHistory)
-                            "z_rewards": self.history.z_rewards[info_idx, walker_id].item(),
-                            "z_distances": self.history.z_distances[info_idx, walker_id].item(),
-                            "rescaled_rewards": self.history.rescaled_rewards[
-                                info_idx, walker_id
-                            ].item(),
-                            "rescaled_distances": self.history.rescaled_distances[
-                                info_idx, walker_id
-                            ].item(),
-                            "pos_squared_diff": self.history.pos_squared_differences[
-                                info_idx, walker_id
-                            ].item(),
-                            "vel_squared_diff": self.history.vel_squared_differences[
-                                info_idx, walker_id
-                            ].item(),
-                            "algorithmic_distance": self.history.distances[
-                                info_idx, walker_id
-                            ].item(),
-                            # Localized statistics (per-step, global case rho → ∞)
-                            "mu_rewards": self.history.mu_rewards[info_idx].item(),
-                            "sigma_rewards": self.history.sigma_rewards[info_idx].item(),
-                            "mu_distances": self.history.mu_distances[info_idx].item(),
-                            "sigma_distances": self.history.sigma_distances[info_idx].item(),
-                        }
-                    )
+                    attrs.update({
+                        "fitness": self.history.fitness[info_idx, walker_id].item(),
+                        "V_fit": self.history.fitness[info_idx, walker_id].item(),
+                        "reward": self.history.rewards[info_idx, walker_id].item(),
+                        "cloning_score": self.history.cloning_scores[info_idx, walker_id].item(),
+                        "cloning_prob": self.history.cloning_probs[info_idx, walker_id].item(),
+                        "will_clone": will_clone,
+                        "clone_source": clone_source,
+                        "companion_distance_id": self.history.companions_distance[
+                            info_idx, walker_id
+                        ].item(),
+                        "companion_clone_id": self.history.companions_clone[
+                            info_idx, walker_id
+                        ].item(),
+                        # Intermediate fitness computation scalars (from RunHistory)
+                        "z_rewards": self.history.z_rewards[info_idx, walker_id].item(),
+                        "z_distances": self.history.z_distances[info_idx, walker_id].item(),
+                        "rescaled_rewards": self.history.rescaled_rewards[
+                            info_idx, walker_id
+                        ].item(),
+                        "rescaled_distances": self.history.rescaled_distances[
+                            info_idx, walker_id
+                        ].item(),
+                        "pos_squared_diff": self.history.pos_squared_differences[
+                            info_idx, walker_id
+                        ].item(),
+                        "vel_squared_diff": self.history.vel_squared_differences[
+                            info_idx, walker_id
+                        ].item(),
+                        "algorithmic_distance": self.history.distances[info_idx, walker_id].item(),
+                        # Localized statistics (per-step, global case rho → ∞)
+                        "mu_rewards": self.history.mu_rewards[info_idx].item(),
+                        "sigma_rewards": self.history.sigma_rewards[info_idx].item(),
+                        "mu_distances": self.history.mu_distances[info_idx].item(),
+                        "sigma_distances": self.history.sigma_distances[info_idx].item(),
+                    })
 
                 self.graph.add_node(node_id, **attrs)
 
@@ -482,52 +471,50 @@ class FractalSet:
                         psi_amp = math.sqrt(w_ij) if w_ij > 0.0 else 0.0
                         psi_ij = psi_amp * np.exp(1j * theta_ij)
 
-                        attrs.update(
-                            {
-                                "V_clone": V_clone,
-                                "fitness_i": fitness_i,
-                                "fitness_j": fitness_j,
-                                "Phi_i": fitness_i,
-                                "Phi_j": fitness_j,
-                                "is_distance_companion": j == companion_distance[i].item(),
-                                "is_clone_companion": j == companion_clone[i].item(),
-                                "d_alg_i": self.history.distances[info_idx, i].item(),
-                                "d_alg_j": self.history.distances[info_idx, j].item(),
-                                "theta_ij": theta_ij,
-                                "psi_ij_real": float(psi_ij.real),
-                                "psi_ij_imag": float(psi_ij.imag),
-                                "psi_ij_amp": float(psi_amp),
-                                "p_comp_ij": w_ij,
-                                "z_rewards_i": self.history.z_rewards[info_idx, i].item(),
-                                "z_rewards_j": self.history.z_rewards[info_idx, j].item(),
-                                "z_distances_i": self.history.z_distances[info_idx, i].item(),
-                                "z_distances_j": self.history.z_distances[info_idx, j].item(),
-                                "rescaled_rewards_i": self.history.rescaled_rewards[
-                                    info_idx, i
-                                ].item(),
-                                "rescaled_rewards_j": self.history.rescaled_rewards[
-                                    info_idx, j
-                                ].item(),
-                                "rescaled_distances_i": self.history.rescaled_distances[
-                                    info_idx, i
-                                ].item(),
-                                "rescaled_distances_j": self.history.rescaled_distances[
-                                    info_idx, j
-                                ].item(),
-                                "pos_sq_diff_i": self.history.pos_squared_differences[
-                                    info_idx, i
-                                ].item(),
-                                "pos_sq_diff_j": self.history.pos_squared_differences[
-                                    info_idx, j
-                                ].item(),
-                                "vel_sq_diff_i": self.history.vel_squared_differences[
-                                    info_idx, i
-                                ].item(),
-                                "vel_sq_diff_j": self.history.vel_squared_differences[
-                                    info_idx, j
-                                ].item(),
-                            }
-                        )
+                        attrs.update({
+                            "V_clone": V_clone,
+                            "fitness_i": fitness_i,
+                            "fitness_j": fitness_j,
+                            "Phi_i": fitness_i,
+                            "Phi_j": fitness_j,
+                            "is_distance_companion": j == companion_distance[i].item(),
+                            "is_clone_companion": j == companion_clone[i].item(),
+                            "d_alg_i": self.history.distances[info_idx, i].item(),
+                            "d_alg_j": self.history.distances[info_idx, j].item(),
+                            "theta_ij": theta_ij,
+                            "psi_ij_real": float(psi_ij.real),
+                            "psi_ij_imag": float(psi_ij.imag),
+                            "psi_ij_amp": float(psi_amp),
+                            "p_comp_ij": w_ij,
+                            "z_rewards_i": self.history.z_rewards[info_idx, i].item(),
+                            "z_rewards_j": self.history.z_rewards[info_idx, j].item(),
+                            "z_distances_i": self.history.z_distances[info_idx, i].item(),
+                            "z_distances_j": self.history.z_distances[info_idx, j].item(),
+                            "rescaled_rewards_i": self.history.rescaled_rewards[
+                                info_idx, i
+                            ].item(),
+                            "rescaled_rewards_j": self.history.rescaled_rewards[
+                                info_idx, j
+                            ].item(),
+                            "rescaled_distances_i": self.history.rescaled_distances[
+                                info_idx, i
+                            ].item(),
+                            "rescaled_distances_j": self.history.rescaled_distances[
+                                info_idx, j
+                            ].item(),
+                            "pos_sq_diff_i": self.history.pos_squared_differences[
+                                info_idx, i
+                            ].item(),
+                            "pos_sq_diff_j": self.history.pos_squared_differences[
+                                info_idx, j
+                            ].item(),
+                            "vel_sq_diff_i": self.history.vel_squared_differences[
+                                info_idx, i
+                            ].item(),
+                            "vel_sq_diff_j": self.history.vel_squared_differences[
+                                info_idx, j
+                            ].item(),
+                        })
 
                     self.graph.add_edge(source, target, **attrs)
                     edge_id += 1
@@ -620,20 +607,18 @@ class FractalSet:
                     ):
                         continue
 
-                    triangles.append(
-                        {
-                            "triangle_id": triangle_id,
-                            "timestep": t_idx,
-                            "source_walker": i,
-                            "influencer_walker": j,
-                            "nodes": {
-                                "influencer": (j, t_idx),
-                                "influenced": (i, t_idx),
-                                "effect": (i, t_idx + 1),
-                            },
-                            "edges": {"ig": ig_edge, "cst": cst_edge, "ia": ia_edge},
-                        }
-                    )
+                    triangles.append({
+                        "triangle_id": triangle_id,
+                        "timestep": t_idx,
+                        "source_walker": i,
+                        "influencer_walker": j,
+                        "nodes": {
+                            "influencer": (j, t_idx),
+                            "influenced": (i, t_idx),
+                            "effect": (i, t_idx + 1),
+                        },
+                        "edges": {"ig": ig_edge, "cst": cst_edge, "ia": ia_edge},
+                    })
                     triangle_id += 1
 
         self.triangles = triangles

@@ -10,9 +10,9 @@ Also includes visualization utilities for boundary detection.
 """
 
 import numpy as np
-import torch
 from sklearn.datasets import make_circles, make_moons, make_swiss_roll
 from sklearn.neighbors import NearestNeighbors
+import torch
 
 
 # ==========================================

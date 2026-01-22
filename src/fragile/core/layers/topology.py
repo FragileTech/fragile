@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from typing import Dict, Iterable, Tuple
+from typing import Iterable
 
 import torch
-import torch.nn as nn
+from torch import nn
 import torch.nn.functional as F
 
 from fragile.core.layers.gauge import ConformalMetric
@@ -27,8 +27,7 @@ def class_modulated_jump_rate(
     """
     dominant = torch.argmax(chart_to_class, dim=1)  # [N_c]
     diff = dominant.unsqueeze(1) != dominant.unsqueeze(0)  # [N_c, N_c]
-    lambda_sup = lambda_base * torch.exp(-gamma_sep * diff.float())  # [N_c, N_c]
-    return lambda_sup
+    return lambda_base * torch.exp(-gamma_sep * diff.float())  # [N_c, N_c]
 
 
 class InvariantChartClassifier(nn.Module):
@@ -46,15 +45,20 @@ class InvariantChartClassifier(nn.Module):
     ) -> None:
         super().__init__()
         if not use_router_logits and not use_radial_logits:
-            raise ValueError("At least one of use_router_logits or use_radial_logits must be True.")
+            msg = "At least one of use_router_logits or use_radial_logits must be True."
+            raise ValueError(msg)
         if latent_dim <= 0:
-            raise ValueError("latent_dim must be positive.")
+            msg = "latent_dim must be positive."
+            raise ValueError(msg)
         if bundle_size is not None and bundle_size <= 0:
-            raise ValueError("bundle_size must be positive.")
+            msg = "bundle_size must be positive."
+            raise ValueError(msg)
         if bundle_size is not None and latent_dim % bundle_size != 0:
-            raise ValueError("latent_dim must be divisible by bundle_size.")
+            msg = "latent_dim must be divisible by bundle_size."
+            raise ValueError(msg)
         if smooth_norm_eps < 0.0:
-            raise ValueError("smooth_norm_eps must be >= 0.")
+            msg = "smooth_norm_eps must be >= 0."
+            raise ValueError(msg)
 
         self.num_charts = num_charts
         self.num_classes = num_classes
@@ -100,8 +104,8 @@ class InvariantChartClassifier(nn.Module):
             radial_logits = torch.einsum(
                 "bk,bm,kmc->bc", router_weights, radial, self.radial_weight
             )
-            radial_logits = radial_logits + router_weights @ self.radial_bias
-            logits = logits + radial_logits
+            radial_logits += router_weights @ self.radial_bias
+            logits += radial_logits
         return logits
 
     def extra_repr(self) -> str:
@@ -152,7 +156,7 @@ class SupervisedTopologyLoss(nn.Module):
         chart_assignments: torch.Tensor,
         class_labels: torch.Tensor,
         embeddings: torch.Tensor,
-    ) -> Tuple[torch.Tensor, Dict[str, torch.Tensor]]:
+    ) -> tuple[torch.Tensor, dict[str, torch.Tensor]]:
         """Compute supervised topology losses.
 
         Args:
@@ -181,7 +185,7 @@ class SupervisedTopologyLoss(nn.Module):
             if self.metric is not None:
                 lambda_vec = self.metric.conformal_factor(embeddings).squeeze(-1)  # [B]
                 lambda_ij = 0.5 * (lambda_vec.unsqueeze(0) + lambda_vec.unsqueeze(1))  # [B, B]
-                dists = dists * lambda_ij
+                dists *= lambda_ij
             match = (class_labels.unsqueeze(1) == class_labels.unsqueeze(0)).float()  # [B, B]
             diff = 1.0 - match  # [B, B]
             pos_loss = (match * dists).sum() / (match.sum() + 1e-8)  # []
@@ -223,19 +227,19 @@ class FactorizedJumpOperator(nn.Module):
         self.use_spectral = use_spectral
 
         if use_spectral:
-            self.encoders = nn.ModuleList(
-                [SpectralLinear(latent_dim, self.rank, bias=False) for _ in range(num_charts)]
-            )
-            self.decoders = nn.ModuleList(
-                [SpectralLinear(self.rank, latent_dim, bias=False) for _ in range(num_charts)]
-            )
+            self.encoders = nn.ModuleList([
+                SpectralLinear(latent_dim, self.rank, bias=False) for _ in range(num_charts)
+            ])
+            self.decoders = nn.ModuleList([
+                SpectralLinear(self.rank, latent_dim, bias=False) for _ in range(num_charts)
+            ])
         else:
-            self.encoders = nn.ModuleList(
-                [nn.Linear(latent_dim, self.rank, bias=False) for _ in range(num_charts)]
-            )
-            self.decoders = nn.ModuleList(
-                [nn.Linear(self.rank, latent_dim, bias=False) for _ in range(num_charts)]
-            )
+            self.encoders = nn.ModuleList([
+                nn.Linear(latent_dim, self.rank, bias=False) for _ in range(num_charts)
+            ])
+            self.decoders = nn.ModuleList([
+                nn.Linear(self.rank, latent_dim, bias=False) for _ in range(num_charts)
+            ])
 
         self.c = nn.Parameter(torch.zeros(num_charts, self.rank))
         self.d = nn.Parameter(torch.zeros(num_charts, latent_dim))
@@ -245,12 +249,16 @@ class FactorizedJumpOperator(nn.Module):
     def _init_weights(self) -> None:
         """Initialize parameters near identity."""
         for idx in range(self.num_charts):
-            if isinstance(self.encoders[idx], (nn.Linear, SpectralLinear)):
+            if isinstance(self.encoders[idx], nn.Linear | SpectralLinear):
                 nn.init.eye_(self.encoders[idx].weight[: self.rank, : self.latent_dim])
-                self.encoders[idx].weight.data += torch.randn_like(self.encoders[idx].weight) * 0.01
-            if isinstance(self.decoders[idx], (nn.Linear, SpectralLinear)):
+                self.encoders[idx].weight.data += (
+                    torch.randn_like(self.encoders[idx].weight) * 0.01
+                )
+            if isinstance(self.decoders[idx], nn.Linear | SpectralLinear):
                 nn.init.eye_(self.decoders[idx].weight[: self.latent_dim, : self.rank])
-                self.decoders[idx].weight.data += torch.randn_like(self.decoders[idx].weight) * 0.01
+                self.decoders[idx].weight.data += (
+                    torch.randn_like(self.decoders[idx].weight) * 0.01
+                )
 
     def _apply_per_chart(
         self,
@@ -258,17 +266,25 @@ class FactorizedJumpOperator(nn.Module):
         chart_idx: torch.Tensor,
         modules: nn.ModuleList,
     ) -> torch.Tensor:
-        out = torch.zeros(
-            x.shape[0],
-            modules[0].out_features,
-            device=x.device,
-            dtype=x.dtype,
-        )
-        for idx in torch.unique(chart_idx):
-            idx_int = int(idx.item())
-            mask = chart_idx == idx_int
-            if mask.any():
-                out[mask] = modules[idx_int](x[mask])
+        chart_idx = chart_idx.to(device=x.device, dtype=torch.long)
+        if isinstance(modules[0], SpectralLinear):
+            weights = torch.stack(
+                [module._spectral_normalized_weight(update_u=self.training) for module in modules],
+                dim=0,
+            )
+            bias = None
+            if modules[0].bias is not None:
+                bias = torch.stack([module.bias for module in modules], dim=0)
+        else:
+            weights = torch.stack([module.weight for module in modules], dim=0)
+            bias = None
+            if modules[0].bias is not None:
+                bias = torch.stack([module.bias for module in modules], dim=0)
+
+        weight_per_sample = weights[chart_idx]
+        out = torch.einsum("boi,bi->bo", weight_per_sample, x)
+        if bias is not None:
+            out += bias[chart_idx]
         return out
 
     def lift_to_global(self, z_n: torch.Tensor, chart_idx: torch.Tensor) -> torch.Tensor:
@@ -298,11 +314,9 @@ class FactorizedJumpOperator(nn.Module):
             z_out: [B, D] target nuisance coordinates
         """
         z_global = self.lift_to_global(z_n, source_idx)
-        z_out = self.project_from_global(z_global, target_idx)
+        return self.project_from_global(z_global, target_idx)
 
-        return z_out
-
-    def get_transition_matrix(self, source: int, target: int) -> Tuple[torch.Tensor, torch.Tensor]:
+    def get_transition_matrix(self, source: int, target: int) -> tuple[torch.Tensor, torch.Tensor]:
         """Return affine map (M, b) for chart transition.
 
         Returns:
@@ -328,7 +342,7 @@ def compute_topology_loss(
     weights: torch.Tensor,
     num_charts: int,
     eps: float = 1e-6,
-) -> Tuple[torch.Tensor, torch.Tensor]:
+) -> tuple[torch.Tensor, torch.Tensor]:
     """Topology loss: sharp routing + balanced chart usage."""
     entropy = -(weights * torch.log(weights + eps)).sum(dim=1)
     loss_entropy = entropy.mean()
@@ -367,7 +381,7 @@ def compute_separation_loss(
                 lambda_i = metric.conformal_factor(centers[i].unsqueeze(0)).squeeze()
                 lambda_j = metric.conformal_factor(centers[j].unsqueeze(0)).squeeze()
                 dist = dist * 0.5 * (lambda_i + lambda_j)
-            loss_sep = loss_sep + torch.relu(margin - dist)
+            loss_sep += torch.relu(margin - dist)
 
     return loss_sep
 
@@ -379,7 +393,7 @@ def compute_jump_consistency_loss(
     overlap_threshold: float = 0.1,
     max_pairs_per_batch: int = 1024,
     metric: ConformalMetric | None = None,
-) -> Tuple[torch.Tensor, Dict[str, float]]:
+) -> tuple[torch.Tensor, dict[str, float]]:
     """Overlap consistency loss for jump operators."""
     device = z_n_by_chart.device
 
@@ -467,17 +481,28 @@ def compute_orthogonality_loss(
         for sub in module.modules():
             if isinstance(sub, SpectralLinear):
                 w = sub._spectral_normalized_weight(update_u=False)
-                loss = loss + orth_defect(w)
+                loss += orth_defect(w)
                 count += 1
             elif isinstance(sub, IsotropicBlock) and not sub.exact:
                 if sub.input_proj is not None:
                     w = sub.input_proj._spectral_normalized_weight(update_u=False)
-                    loss = loss + orth_defect(w)
+                    loss += orth_defect(w)
                     count += 1
-                for idx, block in enumerate(sub.block_weights):
-                    w = sub._spectral_normalize_block(block, idx)
-                    loss = loss + orth_defect(w)
-                    count += 1
+                if isinstance(sub.block_weights, torch.Tensor):
+                    weights = sub._spectral_normalize_block_bank(sub.block_weights)
+                    eye = torch.eye(
+                        weights.shape[1],
+                        device=weights.device,
+                        dtype=weights.dtype,
+                    )
+                    prod = weights.transpose(1, 2) @ weights
+                    loss += ((prod - eye) ** 2).sum()
+                    count += weights.shape[0]
+                else:
+                    for idx, block in enumerate(sub.block_weights):
+                        w = sub._spectral_normalize_block(block, idx)
+                        loss += orth_defect(w)
+                        count += 1
 
     if count == 0:
         return torch.tensor(0.0)

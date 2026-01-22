@@ -298,6 +298,7 @@ enable = """,
 filterwarnings = ["ignore::UserWarning", 'ignore::DeprecationWarning']
 addopts = "--ignore=scripts --doctest-continue-on-failure"
 python_files = ["test_*.py", "tests.py", "test.py"]
+testpaths = ["tests"]
 # Code coverage config
 [tool.coverage.run]
 branch = true

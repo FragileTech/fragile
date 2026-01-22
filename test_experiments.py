@@ -3,30 +3,32 @@
 This script runs all key experiments and reports findings.
 """
 
-import torch
-import numpy as np
 import holoviews as hv
+import numpy as np
+import torch
+
 
 # Initialize holoviews extension (required for benchmarks)
-hv.extension('bokeh')
+hv.extension("bokeh")
 
-from fragile.fractalai.core.benchmarks import prepare_benchmark_for_explorer
 from fragile.fractalai.bounds import TorchBounds
-from fragile.fractalai.core.euclidean_gas import EuclideanGas
-from fragile.fractalai.experiments.gauge.gauge_covariance import (
-    test_gauge_covariance,
-    generate_gauge_covariance_report,
-)
-from fragile.fractalai.experiments.gauge.locality_tests import (
-    test_spatial_correlation,
-    test_field_gradients,
-    test_perturbation_response,
-)
+
 # Note: AdaptiveGasValidator is used internally, we'll use the convergence_bounds module directly
 from fragile.fractalai.convergence_bounds import (
     validate_ellipticity,
     validate_hypocoercivity,
 )
+from fragile.fractalai.core.benchmarks import prepare_benchmark_for_explorer
+from fragile.fractalai.core.euclidean_gas import EuclideanGas
+from fragile.fractalai.experiments.gauge.gauge_covariance import (
+    generate_gauge_covariance_report,
+    test_gauge_covariance,
+)
+from fragile.fractalai.experiments.gauge.locality_tests import (
+    test_field_gradients,
+    test_spatial_correlation,
+)
+
 
 print("=" * 80)
 print("FRAGILE GAS EXPERIMENTS - COMPREHENSIVE TEST SUITE")
@@ -50,13 +52,18 @@ print()
 # Create a simple test scenario with a Gas run
 print("Setting up EuclideanGas simulation...")
 potential, mode_points, background = prepare_benchmark_for_explorer("Rastrigin", dims=2)
-bounds = potential.bounds if hasattr(potential, 'bounds') else TorchBounds.from_tuples([(-5.12, 5.12)] * 2)
+bounds = (
+    potential.bounds
+    if hasattr(potential, "bounds")
+    else TorchBounds.from_tuples([(-5.12, 5.12)] * 2)
+)
 
 # Create required operators
+from fragile.fractalai.core.cloning import CloneOperator
 from fragile.fractalai.core.companion_selection import CompanionSelection
 from fragile.fractalai.core.fitness import FitnessOperator
 from fragile.fractalai.core.kinetic_operator import KineticOperator
-from fragile.fractalai.core.cloning import CloneOperator
+
 
 companion_selection = CompanionSelection(epsilon_d=0.15, lambda_alg=0.0)
 fitness_op = FitnessOperator(epsilon_F=0.2)
@@ -105,7 +112,11 @@ for rho in rho_values:
     print(f"ρ = {rho_str}")
 
     results = test_gauge_covariance(
-        positions, velocities, rewards, companions, alive,
+        positions,
+        velocities,
+        rewards,
+        companions,
+        alive,
         rho=rho,
         num_trials=10,
     )
@@ -119,7 +130,11 @@ for rho in rho_values:
 # Generate detailed report for intermediate regime
 print("Detailed report for ρ = 0.15:")
 results_detailed = test_gauge_covariance(
-    positions, velocities, rewards, companions, alive,
+    positions,
+    velocities,
+    rewards,
+    companions,
+    alive,
     rho=0.15,
     num_trials=20,
 )
@@ -146,17 +161,21 @@ for rho_test in rho_test_values:
 
     try:
         corr_results = test_spatial_correlation(
-            positions, velocities, rewards, companions, alive,
+            positions,
+            velocities,
+            rewards,
+            companions,
+            alive,
             rho=rho_test,
         )
 
-        xi = corr_results.get('xi', 0)
-        verdict = corr_results.get('verdict', 'unknown')
+        xi = corr_results.get("xi", 0)
+        verdict = corr_results.get("verdict", "unknown")
 
         print(f"  Correlation length ξ: {xi:.4f}")
         if rho_test is not None:
             print(f"  Expected ξ ≈ ρ:      {rho_test:.4f}")
-            print(f"  Ratio ξ/ρ:          {xi/rho_test:.2f}")
+            print(f"  Ratio ξ/ρ:          {xi / rho_test:.2f}")
         print(f"  Verdict: {verdict.upper()}")
         print()
 
@@ -169,13 +188,17 @@ print()
 
 try:
     grad_results = test_field_gradients(
-        positions, velocities, rewards, companions, alive,
+        positions,
+        velocities,
+        rewards,
+        companions,
+        alive,
         rho=0.15,
     )
 
-    mean_grad = grad_results.get('mean_gradient', 0)
-    max_grad = grad_results.get('max_gradient', 0)
-    verdict = grad_results.get('verdict', 'unknown')
+    mean_grad = grad_results.get("mean_gradient", 0)
+    max_grad = grad_results.get("max_gradient", 0)
+    verdict = grad_results.get("verdict", "unknown")
 
     print(f"  Mean gradient: {mean_grad:.4f}")
     print(f"  Max gradient:  {max_grad:.4f}")
@@ -198,7 +221,7 @@ print()
 
 # Create adaptive gas with Hessian information
 benchmark_with_hessian = prepare_benchmark_for_explorer("Rastrigin", dims=2)
-H_max_estimate = 4.0 * (2 * np.pi)**2  # Rastrigin Hessian max eigenvalue ~ 4π²
+H_max_estimate = 4.0 * (2 * np.pi) ** 2  # Rastrigin Hessian max eigenvalue ~ 4π²
 
 print(f"Estimated H_max for Rastrigin: {H_max_estimate:.2f}")
 print()
@@ -215,8 +238,12 @@ for eps_Sigma in epsilon_Sigma_values:
 
     if is_elliptic:
         c_min_val = 1.0 / (H_max_estimate + eps_Sigma)
-        c_max_val = 1.0 / (eps_Sigma - H_max_estimate) if eps_Sigma > H_max_estimate else float('inf')
-        print(f"  ε_Σ = {eps_Sigma:6.1f}: ✓ ELLIPTIC  (c_min={c_min_val:.6f}, c_max={c_max_val:.6f})")
+        c_max_val = (
+            1.0 / (eps_Sigma - H_max_estimate) if eps_Sigma > H_max_estimate else float("inf")
+        )
+        print(
+            f"  ε_Σ = {eps_Sigma:6.1f}: ✓ ELLIPTIC  (c_min={c_min_val:.6f}, c_max={c_max_val:.6f})"
+        )
     else:
         print(f"  ε_Σ = {eps_Sigma:6.1f}: ✗ DEGENERATE (violates ε_Σ > H_max)")
 
@@ -295,10 +322,10 @@ for step_idx in range(len(history_extended)):
 best_rewards = np.array(best_rewards)
 mean_rewards = np.array(mean_rewards)
 
-print(f"Convergence metrics:")
+print("Convergence metrics:")
 print(f"  Final best reward: {best_rewards[-1]:.6f}")
 print(f"  Final mean reward: {mean_rewards[-1]:.6f}")
-print(f"  Global optimum (Rastrigin): 0.0")
+print("  Global optimum (Rastrigin): 0.0")
 print(f"  Gap to optimum: {abs(best_rewards[-1]):.6f}")
 print()
 

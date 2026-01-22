@@ -4,6 +4,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+
 ROOT = Path(__file__).resolve().parent
 DOCS_DIR = ROOT / "docs"
 TOC_FILE = DOCS_DIR / "_toc.yml"
@@ -22,7 +23,7 @@ def parse_toc(toc_path: Path) -> list[str]:
             if value:
                 entries.append(value)
             continue
-        if stripped.startswith("- file:") or stripped.startswith("file:"):
+        if stripped.startswith(("- file:", "file:")):
             value = stripped.split(":", 1)[1].strip()
             if value:
                 entries.append(value)

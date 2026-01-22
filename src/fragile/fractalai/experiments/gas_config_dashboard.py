@@ -41,16 +41,7 @@ class GasConfig(param.Parameterized):
     uses operator.__panel__() methods for better maintainability and consistency.
     """
 
-    def __init__(self, *args, **kwargs):
-        """Initialize GasConfig with deprecation warning."""
-        warnings.warn(
-            "GasConfig is deprecated and will be removed in a future version. "
-            "Use gas_config_panel.GasConfigPanel instead, which uses operator "
-            "PanelModel interfaces for better maintainability.",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        super().__init__(*args, **kwargs)
+    # Note: __init__ defined below includes deprecation warning
 
     # Benchmark selection
     benchmark_name = param.ObjectSelector(
@@ -155,6 +146,13 @@ class GasConfig(param.Parameterized):
             dims: Spatial dimension (default: 2)
             **params: Override default parameter values
         """
+        warnings.warn(
+            "GasConfig is deprecated and will be removed in a future version. "
+            "Use gas_config_panel.GasConfigPanel instead, which uses operator "
+            "PanelModel interfaces for better maintainability.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         super().__init__(**params)
         self.dims = dims
         self.history: RunHistory | None = None

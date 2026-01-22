@@ -110,13 +110,15 @@ class PricingFitness:
         fitness = torch.where(alive, fitness, torch.zeros_like(fitness))
         return fitness, {"rewards": rewards}
 
-    def compute_gradient(self, *args, **kwargs) -> Tensor:  # noqa: D401
+    def compute_gradient(self, *args, **kwargs) -> Tensor:
         """Not implemented for pricing fitness."""
-        raise NotImplementedError("PricingFitness does not expose gradients.")
+        msg = "PricingFitness does not expose gradients."
+        raise NotImplementedError(msg)
 
-    def compute_hessian(self, *args, **kwargs) -> Tensor:  # noqa: D401
+    def compute_hessian(self, *args, **kwargs) -> Tensor:
         """Not implemented for pricing fitness."""
-        raise NotImplementedError("PricingFitness does not expose Hessians.")
+        msg = "PricingFitness does not expose Hessians."
+        raise NotImplementedError(msg)
 
 
 class PricingGas(EuclideanGas):
@@ -243,23 +245,24 @@ class PricingGas(EuclideanGas):
         return self.potential_scale * torch.abs(underlier - self.strike)
 
     def _weight_update(self, weights: Tensor, potential: Tensor) -> tuple[Tensor, float]:
-        weights = weights * torch.exp(-self.r * self.dt - potential * self.dt)
+        weights *= torch.exp(-self.r * self.dt - potential * self.dt)
         mean_w = float(torch.mean(weights))
         if mean_w <= 0.0:
             return weights, float("-inf")
         log_norm = math.log(mean_w)
-        weights = weights / mean_w
+        weights /= mean_w
         return weights, log_norm
 
     def step(
         self, state: PricingSwarmState, return_info: bool = False
-    ) -> tuple[PricingSwarmState, PricingSwarmState] | tuple[
-        PricingSwarmState, PricingSwarmState, dict
-    ]:
+    ) -> (
+        tuple[PricingSwarmState, PricingSwarmState]
+        | tuple[PricingSwarmState, PricingSwarmState, dict]
+    ):
         x_next = self._propagate(state)
         running_sum = state.running_sum
         if running_sum is not None:
-            running_sum = running_sum + x_next
+            running_sum += x_next
 
         breached = self._barrier_breached(x_next)
         alive_mask = state.alive & ~breached
@@ -393,8 +396,7 @@ class PricingGas(EuclideanGas):
         sample_count = state.step_index + 1
         underlier = self._underlier(state, state.x, sample_count=sample_count)
         payoff = self._payoff(underlier)
-        price = math.exp(state.log_norm) * float(torch.mean(state.weights * payoff))
-        return price
+        return math.exp(state.log_norm) * float(torch.mean(state.weights * payoff))
 
     def run_pricing(self, n_steps: int | None = None) -> tuple[float, PricingSwarmState]:
         if n_steps is None:

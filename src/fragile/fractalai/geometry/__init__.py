@@ -22,12 +22,12 @@ References:
 
 from __future__ import annotations
 
-from fragile.geometry.curvature import (
+from fragile.fractalai.geometry.curvature import (
     check_cheeger_consistency,
     compare_ricci_methods,
     compute_graph_laplacian_eigenvalues,
 )
-from fragile.geometry.test_surfaces import (
+from fragile.fractalai.geometry.test_surfaces import (
     analytical_ricci_flat,
     analytical_ricci_hyperbolic,
     analytical_ricci_sphere,

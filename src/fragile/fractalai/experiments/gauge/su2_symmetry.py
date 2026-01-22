@@ -78,7 +78,8 @@ def compute_su2_phase(
 
     if fitness is None:
         if rewards is None:
-            raise ValueError("rewards or fitness must be provided to compute SU(2) phases.")
+            msg = "rewards or fitness must be provided to compute SU(2) phases."
+            raise ValueError(msg)
         fields = compute_collective_fields(
             positions, velocities, rewards, alive, diversity_companions, rho, obs_config
         )

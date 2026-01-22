@@ -1213,7 +1213,9 @@ def create_interactive_manifold_explorer(
         """Update manifold visualization with new simulation results."""
         try:
             # Create FitnessOperator for on-the-fly Hessian computation if needed
-            from fragile.fractalai.core.companion_selection import CompanionSelection  # noqa: PLC0415
+            from fragile.fractalai.core.companion_selection import (
+                CompanionSelection,
+            )
 
             CompanionSelection(
                 method=config.companion_method,

@@ -4,11 +4,13 @@ Collect MyST prf directives into per-volume markdown files.
 
 By default, prf:proof blocks are excluded. Use --include-proofs to include them.
 """
+
 from __future__ import annotations
 
 import argparse
-import re
 from pathlib import Path
+import re
+
 
 DIRECTIVE_OPEN_RE = re.compile(r"^\s*:{2,}\s*\{(?P<name>[^}]+)\}.*$")
 DIRECTIVE_CLOSE_RE = re.compile(r"^\s*:{2,}\s*$")
@@ -138,9 +140,7 @@ def main() -> None:
         )
         out_path = out_dir / f"{volume_dir.name}.md"
         out_path.write_text(output, encoding="utf-8")
-        print(
-            f"{volume_dir.name}: {block_count} blocks from {file_count} files -> {out_path}"
-        )
+        print(f"{volume_dir.name}: {block_count} blocks from {file_count} files -> {out_path}")
 
 
 if __name__ == "__main__":

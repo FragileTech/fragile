@@ -29,8 +29,8 @@ from torch import Tensor
 
 
 if TYPE_CHECKING:
-    from fragile.fractalai.core.history import RunHistory
     from fragile.experiments.gas_config_dashboard import GasConfig
+    from fragile.fractalai.core.history import RunHistory
 
 
 @dataclass

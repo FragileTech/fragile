@@ -319,9 +319,7 @@ def compute_ricci_from_fractal_set_graph(
         >>> history = gas.run(n_steps=100, record_every=10)
         >>> fractal_set = FractalSet(history)
         >>> # Compute curvature at timestep 50
-        >>> curvature = compute_ricci_from_fractal_set_graph(
-        ...     fractal_set, timestep=5, method="laplacian"
-        ... )
+        >>> curvature = compute_ricci_from_fractal_set_graph(fractal_set, timestep=5, method="laplacian")
         >>> print(f"Spectral gap: {curvature['spectral_gap']:.4f}")
         >>> print(f"Mean Ricci estimate: {curvature['mean_ricci_estimate']:.4f}")
     """

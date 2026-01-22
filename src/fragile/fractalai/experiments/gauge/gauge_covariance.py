@@ -76,9 +76,7 @@ def define_gauge_transformation_region(
 
     Example:
         >>> positions = torch.rand(1000, 2)  # Unit square
-        >>> inside, boundary, outside = define_gauge_transformation_region(
-        ...     positions, (0.4, 0.6, 0.4, 0.6)
-        ... )
+        >>> inside, boundary, outside = define_gauge_transformation_region(positions, (0.4, 0.6, 0.4, 0.6))
         >>> print(f"Inside: {inside.sum()}, Outside: {outside.sum()}")
     """
     x_min, x_max, y_min, y_max = region_bounds
@@ -134,9 +132,7 @@ def apply_gauge_transformation_to_phases(
         Phase shifts [N] where α[i] = α_0 if in R, else 0
 
     Example:
-        >>> alpha = apply_gauge_transformation_to_phases(
-        ...     positions, alpha_0=1.0, region_mask=inside_mask
-        ... )
+        >>> alpha = apply_gauge_transformation_to_phases(positions, alpha_0=1.0, region_mask=inside_mask)
     """
     N = positions.shape[0]
     alpha = torch.zeros(N, device=positions.device, dtype=positions.dtype)
@@ -217,9 +213,7 @@ def sample_companions_from_modified_probabilities(
         Companion indices [N]
 
     Example:
-        >>> companions_transformed = sample_companions_from_modified_probabilities(
-        ...     probs_transformed, alive
-        ... )
+        >>> companions_transformed = sample_companions_from_modified_probabilities(probs_transformed, alive)
     """
     N = probs_transformed.shape[0]
     companions = torch.zeros(N, dtype=torch.long, device=probs_transformed.device)
@@ -276,9 +270,7 @@ def test_gauge_covariance(
             - "confidence": Statistical confidence measure
 
     Example:
-        >>> results = test_gauge_covariance(
-        ...     positions, velocities, rewards, companions, alive, rho=0.05
-        ... )
+        >>> results = test_gauge_covariance(positions, velocities, rewards, companions, alive, rho=0.05)
         >>> print(f"Verdict: {results['verdict']}")
         >>> print(f"Δd'_inside: {results['delta_inside']:.6f}")
         >>> if results["verdict"] == "covariant":

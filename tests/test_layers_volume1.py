@@ -1,10 +1,15 @@
 import torch
-import torch.nn as nn
+from torch import nn
 
 from fragile.core.layers import (
     AreaLawScreening,
     ChiralProjector,
     ChristoffelQuery,
+    class_modulated_jump_rate,
+    compute_jump_consistency_loss,
+    compute_orthogonality_loss,
+    compute_separation_loss,
+    compute_topology_loss,
     ConformalMetric,
     CovariantAttention,
     DisentangledAgent,
@@ -15,21 +20,16 @@ from fragile.core.layers import (
     GeodesicCrossAttention,
     HierarchicalDisentangled,
     InvariantChartClassifier,
+    IsotropicBlock,
     LorentzianConfig,
     LorentzianMemoryAttention,
     LorentzianMetric,
     MacroDynamicsModel,
+    SpectralLinear,
     SupervisedTopologyLoss,
     TemporalChristoffelQuery,
-    IsotropicBlock,
-    SpectralLinear,
     VectorQuantizer,
     WilsonLineApprox,
-    class_modulated_jump_rate,
-    compute_jump_consistency_loss,
-    compute_orthogonality_loss,
-    compute_separation_loss,
-    compute_topology_loss,
 )
 
 

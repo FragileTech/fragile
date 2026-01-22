@@ -10,6 +10,7 @@
 - The $SU(2)_L$ chirality (sensor-motor asymmetry) is preserved via **chiral projectors**
 - The $SU(N_f)_C$ texture firewall is enforced via **area law screening**
 - Five BAOAB steps are implemented in one forward pass (four attention heads + a closed-form OU step by default; optional learned thermostat for the O-step)
+- Representation stack details (TopoEncoder / Attentive Atlas) are in {ref}`Section 3.2 <sec-topoencoder-architecture>`
 
 ## Roadmap
 

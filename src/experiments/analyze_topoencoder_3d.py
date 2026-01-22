@@ -13,15 +13,16 @@ import os
 import re
 from typing import Any
 
+import matplotlib
 import numpy as np
 import torch
 
-import matplotlib
 
 if os.environ.get("MPLBACKEND") is None:
     matplotlib.use("Agg")
 
 import matplotlib.pyplot as plt
+from torch.utils.data import DataLoader, TensorDataset
 
 from dataviz import (
     _compute_chart_code_colors,
@@ -57,6 +58,15 @@ def _load_benchmarks(checkpoint_path: str) -> dict[str, Any] | None:
         return torch.load(bench_path, map_location="cpu", weights_only=False)
     except TypeError:
         return torch.load(bench_path, map_location="cpu")
+
+
+def _load_model_state(model: torch.nn.Module, state: dict, name: str) -> None:
+    result = model.load_state_dict(state, strict=False)
+    if result.missing_keys or result.unexpected_keys:
+        print(
+            f"  Warning: {name} load_state_dict missing={len(result.missing_keys)} "
+            f"unexpected={len(result.unexpected_keys)}"
+        )
 
 
 def _prepare_models(
@@ -125,7 +135,7 @@ def _prepare_models(
         "soft_equiv_temperature": soft_equiv_temperature,
     }
     model_atlas = TopoEncoderPrimitives(**model_kwargs).to(device)
-    model_atlas.load_state_dict(state["atlas"])
+    _load_model_state(model_atlas, state["atlas"], "atlas")
     model_atlas.eval()
 
     model_std = None
@@ -146,10 +156,12 @@ def _prepare_models(
             vision_height=vision_height,
             vision_width=vision_width,
         ).to(device)
-        model_std.load_state_dict(state["std"])
+        _load_model_state(model_std, state["std"], "std")
         model_std.eval()
-    elif bench_state is not None and bench_state.get("std") is not None and not config.get(
-        "disable_vq", False
+    elif (
+        bench_state is not None
+        and bench_state.get("std") is not None
+        and not config.get("disable_vq", False)
     ):
         std_hidden_dim = (
             (bench_dims or {}).get("std_hidden_dim") or metrics.get("std_hidden_dim")
@@ -169,7 +181,7 @@ def _prepare_models(
             vision_height=vision_height,
             vision_width=vision_width,
         ).to(device)
-        model_std.load_state_dict(bench_state["std"])
+        _load_model_state(model_std, bench_state["std"], "std")
         model_std.eval()
 
     model_ae = None
@@ -189,10 +201,12 @@ def _prepare_models(
             vision_height=vision_height,
             vision_width=vision_width,
         ).to(device)
-        model_ae.load_state_dict(state["ae"])
+        _load_model_state(model_ae, state["ae"], "ae")
         model_ae.eval()
-    elif bench_state is not None and bench_state.get("ae") is not None and not config.get(
-        "disable_ae", False
+    elif (
+        bench_state is not None
+        and bench_state.get("ae") is not None
+        and not config.get("disable_ae", False)
     ):
         ae_hidden_dim = (
             (bench_dims or {}).get("ae_hidden_dim") or metrics.get("ae_hidden_dim")
@@ -211,7 +225,7 @@ def _prepare_models(
             vision_height=vision_height,
             vision_width=vision_width,
         ).to(device)
-        model_ae.load_state_dict(bench_state["ae"])
+        _load_model_state(model_ae, bench_state["ae"], "ae")
         model_ae.eval()
 
     jump_op = None
@@ -221,7 +235,7 @@ def _prepare_models(
             latent_dim=config["latent_dim"],
             global_rank=config["jump_global_rank"],
         ).to(device)
-        jump_op.load_state_dict(state["jump"])
+        _load_model_state(jump_op, state["jump"], "jump")
         jump_op.eval()
 
     return {
@@ -265,7 +279,8 @@ def _collect_checkpoints(checkpoint: str | None, checkpoint_dir: str | None) -> 
         if not candidates:
             raise FileNotFoundError(f"No .pt checkpoints found in: {checkpoint_dir}")
         return sorted(candidates, key=_checkpoint_sort_key)
-    raise ValueError("Provide --checkpoint or --checkpoint_dir.")
+    msg = "Provide --checkpoint or --checkpoint_dir."
+    raise ValueError(msg)
 
 
 def _visualize_latent_images_3d(
@@ -277,19 +292,26 @@ def _visualize_latent_images_3d(
     epoch: int | None = None,
     jump_op: FactorizedJumpOperator | None = None,
     image_shape: tuple = (32, 32, 3),
+    precomputed: dict | None = None,
 ) -> None:
     plt.close("all")
     gc.collect()
 
     model.eval()
-    device = X.device
     num_classes = len(class_names)
 
     with torch.no_grad():
-        K_chart, K_code, _, _z_tex, _enc_w, z_geo, _, indices_out, _z_n_all, _c_bar = (
-            model.encoder(X)
-        )
-        recon, _, _, _, _, _, _, _ = model(X, use_hard_routing=False)
+        if precomputed is None:
+            K_chart, K_code, _, _z_tex, _enc_w, z_geo, _, indices_out, _z_n_all, _c_bar = (
+                model.encoder(X)
+            )
+            recon, _, _, _, _, _, _, _ = model(X, use_hard_routing=False)
+        else:
+            K_chart = precomputed["K_chart"]
+            K_code = precomputed["K_code"]
+            z_geo = precomputed["z_geo"]
+            indices_out = precomputed["indices_out"]
+            recon = precomputed["recon"]
 
         z = z_geo.cpu().numpy()
         if z.shape[1] < 3:
@@ -421,6 +443,7 @@ def _analyze_checkpoint(
     skip_latent: bool,
     skip_results: bool,
     only_missing: bool,
+    batch_size: int,
 ) -> None:
     stem = os.path.splitext(os.path.basename(checkpoint_path))[0]
     latent_path = os.path.join(output_dir, f"{stem}_latent_3d.png")
@@ -462,27 +485,86 @@ def _analyze_checkpoint(
     else:
         X_test_tensor = X_test.float()
 
-    X_test_device = X_test_tensor.to(device)
-
     chart_assignments = None
     recon_atlas_cpu = None
     recon_std_cpu = None
     recon_ae_cpu = None
-    if do_results:
+    z_geo_cpu = None
+    k_chart_cpu = None
+    k_code_cpu = None
+    indices_out_cpu = None
+    if do_results or do_latent:
+        model_atlas.eval()
+        if model_std is not None:
+            model_std.eval()
+        if model_ae is not None:
+            model_ae.eval()
+
+        if batch_size <= 0:
+            batch_size = 256
+        if batch_size > len(X_test_tensor):
+            batch_size = len(X_test_tensor)
+
+        test_dataset = TensorDataset(X_test_tensor)
+        pin_memory = torch.device(device).type == "cuda"
+        test_loader = DataLoader(
+            test_dataset,
+            batch_size=batch_size,
+            shuffle=False,
+            pin_memory=pin_memory,
+        )
+
+        recon_atlas_parts: list[torch.Tensor] = []
+        recon_std_parts: list[torch.Tensor] = []
+        recon_ae_parts: list[torch.Tensor] = []
+        k_chart_parts: list[torch.Tensor] = []
+        k_code_parts: list[torch.Tensor] = []
+        indices_out_parts: list[torch.Tensor] = []
+        z_geo_parts: list[torch.Tensor] = []
+
         with torch.no_grad():
-            recon_atlas, _, _, _, K_chart, _z_geo, _z_n, _c_bar = model_atlas(
-                X_test_device, use_hard_routing=False
-            )
-            chart_assignments = K_chart.cpu().numpy()
-            recon_atlas_cpu = recon_atlas.cpu()
+            for (batch_X,) in test_loader:
+                batch_X = batch_X.to(device, non_blocking=True)
+                (
+                    K_chart,
+                    K_code,
+                    _z_n,
+                    z_tex,
+                    _enc_w,
+                    z_geo,
+                    _vq_loss,
+                    indices_out,
+                    _z_n_all,
+                    _c_bar,
+                ) = model_atlas.encoder(batch_X)
+                recon_atlas, _ = model_atlas.decoder(z_geo, z_tex, chart_index=None)
 
-            if model_std is not None:
-                recon_std, _, _ = model_std(X_test_device)
-                recon_std_cpu = recon_std.cpu()
+                recon_atlas_parts.append(recon_atlas.cpu())
+                k_chart_parts.append(K_chart.cpu())
+                k_code_parts.append(K_code.cpu())
+                indices_out_parts.append(indices_out.cpu())
+                z_geo_parts.append(z_geo.cpu())
 
-            if model_ae is not None:
-                recon_ae, _ = model_ae(X_test_device)
-                recon_ae_cpu = recon_ae.cpu()
+                if model_std is not None and do_results:
+                    recon_std, _, _ = model_std(batch_X)
+                    recon_std_parts.append(recon_std.cpu())
+                if model_ae is not None and do_results:
+                    recon_ae, _ = model_ae(batch_X)
+                    recon_ae_parts.append(recon_ae.cpu())
+
+        recon_atlas_cpu = torch.cat(recon_atlas_parts) if recon_atlas_parts else None
+        k_chart_cpu = torch.cat(k_chart_parts) if k_chart_parts else None
+        k_code_cpu = torch.cat(k_code_parts) if k_code_parts else None
+        indices_out_cpu = torch.cat(indices_out_parts) if indices_out_parts else None
+        z_geo_cpu = torch.cat(z_geo_parts) if z_geo_parts else None
+
+        if recon_std_parts:
+            recon_std_cpu = torch.cat(recon_std_parts)
+        if recon_ae_parts:
+            recon_ae_cpu = torch.cat(recon_ae_parts)
+
+        if k_chart_cpu is not None:
+            chart_assignments = k_chart_cpu.numpy()
 
     dataset = config.get("dataset", "mnist")
     class_names, image_shape = _dataset_specs(dataset)
@@ -490,13 +572,20 @@ def _analyze_checkpoint(
     if do_latent:
         _visualize_latent_images_3d(
             model_atlas,
-            X_test_device,
+            X_test_tensor,
             labels_test,
             class_names,
             save_path=latent_path,
             epoch=checkpoint.get("epoch"),
             jump_op=jump_op,
             image_shape=image_shape,
+            precomputed={
+                "K_chart": k_chart_cpu,
+                "K_code": k_code_cpu,
+                "z_geo": z_geo_cpu,
+                "indices_out": indices_out_cpu,
+                "recon": recon_atlas_cpu,
+            },
         )
 
     if do_results:
@@ -507,6 +596,7 @@ def _analyze_checkpoint(
             "recon_ae": recon_ae_cpu,
             "recon_std": recon_std_cpu,
             "recon_atlas": recon_atlas_cpu,
+            "z_geo": z_geo_cpu,
             "atlas_losses": metrics.get("atlas_losses", []),
             "std_losses": metrics.get("std_losses", []),
             "ae_losses": metrics.get("ae_losses", []),
@@ -559,6 +649,12 @@ def main() -> None:
         help="Device to use for analysis (cuda/cpu)",
     )
     parser.add_argument(
+        "--batch_size",
+        type=int,
+        default=256,
+        help="Batch size for analysis passes",
+    )
+    parser.add_argument(
         "--skip_latent",
         action="store_true",
         help="Skip latent visualization",
@@ -577,8 +673,8 @@ def main() -> None:
     args = parser.parse_args()
 
     checkpoints = _collect_checkpoints(
-        args.checkpoint if args.checkpoint else None,
-        args.checkpoint_dir if args.checkpoint_dir else None,
+        args.checkpoint or None,
+        args.checkpoint_dir or None,
     )
     output_dir = args.output_dir or os.path.dirname(checkpoints[0]) or "."
     os.makedirs(output_dir, exist_ok=True)
@@ -592,6 +688,7 @@ def main() -> None:
             args.skip_latent,
             args.skip_results,
             args.only_missing,
+            args.batch_size,
         )
 
 

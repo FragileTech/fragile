@@ -20,8 +20,9 @@ Usage:
 """
 
 from dataclasses import dataclass
-from math import sqrt, pi, log, exp
-from typing import Tuple
+from math import log, pi, sqrt
+import sys
+
 
 # ==============================================================================
 # SECTION 1: FUNDAMENTAL CONSTANTS (CODATA 2018/2022 values)
@@ -119,9 +120,11 @@ M_P_GeV = m_P * c**2 / GeV  # ~1.22×10^19 GeV
 # SECTION 2: CONSTRAINT RESULT DATA STRUCTURE
 # ==============================================================================
 
+
 @dataclass
 class ConstraintResult:
     """Result of checking a single Sieve constraint."""
+
     name: str
     node: str  # Sieve node that enforces this
     satisfied: bool
@@ -137,13 +140,14 @@ def format_scientific(x: float, precision: int = 3) -> str:
     if x == 0:
         return "0"
     exp_val = int(log(abs(x)) / log(10))
-    mantissa = x / (10 ** exp_val)
+    mantissa = x / (10**exp_val)
     return f"{mantissa:.{precision}f}e{exp_val:+d}"
 
 
 @dataclass
 class DerivationResult:
     """Result of deriving a parameter from Sieve constraints."""
+
     name: str
     predicted: float  # Value predicted from Sieve
     measured: float  # Measured value from experiments
@@ -157,7 +161,8 @@ class DerivationResult:
 # SECTION 3: CONSTRAINT CHECK FUNCTIONS
 # ==============================================================================
 
-def check_speed_window() -> Tuple[ConstraintResult, ConstraintResult]:
+
+def check_speed_window() -> tuple[ConstraintResult, ConstraintResult]:
     """
     Check the Speed Window constraint (Theorem 35.1 / thm-speed-window).
 
@@ -185,11 +190,11 @@ def check_speed_window() -> Tuple[ConstraintResult, ConstraintResult]:
 
     # Check lower bound: c >= c_min
     lower_satisfied = c_info >= c_min
-    lower_margin = log(c_info / c_min) / log(10) if c_min > 0 else float('inf')
+    lower_margin = log(c_info / c_min) / log(10) if c_min > 0 else float("inf")
 
     # Check upper bound: c <= c_max
     upper_satisfied = c_info <= c_max
-    upper_margin = log(c_max / c_info) / log(10) if c_info > 0 else float('inf')
+    upper_margin = log(c_max / c_info) / log(10) if c_info > 0 else float("inf")
 
     lower_result = ConstraintResult(
         name="Speed Window (Lower)",
@@ -203,7 +208,7 @@ def check_speed_window() -> Tuple[ConstraintResult, ConstraintResult]:
             f"At Planck scale: l_P/t_P = {format_scientific(c_min)} m/s.\n"
             f"This equals c exactly! The speed of light IS the Planck velocity.\n"
             f"Margin: 10^{lower_margin:.1f} (factor of ~1, saturated at Planck scale)"
-        )
+        ),
     )
 
     upper_result = ConstraintResult(
@@ -218,7 +223,7 @@ def check_speed_window() -> Tuple[ConstraintResult, ConstraintResult]:
             f"Upper bound: Hubble radius / Planck time = {format_scientific(c_max)} m/s.\n"
             f"This is ~10^61 times larger than c.\n"
             f"Margin: 10^{upper_margin:.1f} orders of magnitude of causal headroom."
-        )
+        ),
     )
 
     return lower_result, upper_result
@@ -238,7 +243,7 @@ def check_holographic_bound() -> ConstraintResult:
     for observable universe scales?
     """
     D = 4  # spacetime dimensions
-    nu_D = 1/4  # Holographic coefficient (derived in the text)
+    nu_D = 1 / 4  # Holographic coefficient (derived in the text)
 
     # Observable universe as the "agent"
     R_universe = R_Hubble
@@ -256,7 +261,7 @@ def check_holographic_bound() -> ConstraintResult:
     # The bound becomes: l_P^2 <= (1/4) * Area / I
     # This is exactly the area law! The bound is saturated.
 
-    lhs = l_P**(D-1)  # l_L^2 for D=4
+    lhs = l_P ** (D - 1)  # l_L^2 for D=4
     rhs = nu_D * Area_boundary / I_max_BH  # = l_P^2 (by construction)
 
     # Actually, let's check this more carefully
@@ -264,7 +269,7 @@ def check_holographic_bound() -> ConstraintResult:
     # So lhs = rhs when we're at the Bekenstein bound
 
     satisfied = lhs <= rhs * 1.001  # Allow tiny numerical error
-    margin = log(rhs / lhs) / log(10) if lhs > 0 else float('inf')
+    margin = log(rhs / lhs) / log(10) if lhs > 0 else float("inf")
 
     return ConstraintResult(
         name="Holographic Bound",
@@ -283,7 +288,7 @@ def check_holographic_bound() -> ConstraintResult:
             f"Max info content: I_BH = {format_scientific(I_max_BH)} nats\n"
             f"This is the Bekenstein-Hawking entropy: S = A/(4 l_P^2).\n"
             f"The bound is saturated—we're at the edge of the feasible region!"
-        )
+        ),
     )
 
 
@@ -321,7 +326,7 @@ def check_landauer_constraint() -> ConstraintResult:
 
     # Check satisfaction at biological scale
     satisfied_bio = T_c_bio <= landauer_limit_bio
-    margin_bio = log(landauer_limit_bio / T_c_bio) / log(10) if T_c_bio > 0 else float('inf')
+    margin_bio = log(landauer_limit_bio / T_c_bio) / log(10) if T_c_bio > 0 else float("inf")
 
     # Also check at Planck scale for completeness
     E_dot_Planck = E_P / t_P  # Planck power ~3.6e52 W
@@ -348,7 +353,7 @@ def check_landauer_constraint() -> ConstraintResult:
             f"  Thermal energy: {format_scientific(T_c_bio)} J\n"
             f"Margin: 10^{margin_bio:.1f} - biology operates far above Landauer limit.\n"
             f"At Planck scale, limit = {format_scientific(landauer_limit_Planck)} J = E_P/ln2."
-        )
+        ),
     )
 
 
@@ -366,7 +371,7 @@ def check_ir_binding() -> ConstraintResult:
         g_s^crit ~ 1 (or alpha_s^crit ~ 0.3-0.5)
     """
     # QCD confinement scale
-    mu_IR = Lambda_QCD / e  # ~200 MeV in natural units
+    Lambda_QCD / e  # ~200 MeV in natural units
 
     # At the confinement scale, alpha_s is large
     # Using 1-loop running: alpha_s(mu) ~ 1 / (b0 * ln(mu/Lambda_QCD))
@@ -381,7 +386,7 @@ def check_ir_binding() -> ConstraintResult:
     alpha_s_crit = 0.3
 
     satisfied = alpha_s_IR >= alpha_s_crit
-    margin = log(alpha_s_IR / alpha_s_crit) / log(10) if alpha_s_crit > 0 else float('inf')
+    margin = log(alpha_s_IR / alpha_s_crit) / log(10) if alpha_s_crit > 0 else float("inf")
 
     return ConstraintResult(
         name="IR Binding (Confinement)",
@@ -398,7 +403,7 @@ def check_ir_binding() -> ConstraintResult:
             f"  Lambda_QCD ~ 200 MeV\n"
             f"Strong coupling ensures quarks confine into hadrons.\n"
             f"Margin: 10^{margin:.2f} above critical - confinement is robust."
-        )
+        ),
     )
 
 
@@ -412,7 +417,7 @@ def check_uv_decoupling() -> ConstraintResult:
     This is asymptotic freedom in QCD: alpha_s -> 0 as mu -> infinity.
     """
     # High-energy scale: M_Z ~ 91 GeV
-    mu_UV = 91e9 * e  # Z boson mass in Joules
+    91e9 * e  # Z boson mass in Joules
     alpha_s_UV = alpha_s_MZ  # ~0.118
 
     # Even higher scale: running to higher energies
@@ -421,13 +426,12 @@ def check_uv_decoupling() -> ConstraintResult:
 
     # The constraint: alpha_s should be decreasing with mu (asymptotic freedom)
     # Check: alpha_s(M_Z) < alpha_s(1 GeV)
-    asymptotic_freedom = alpha_s_UV < alpha_s_1GeV
 
     # Effective "decoupling" threshold: alpha_s < 0.2 is perturbative
     epsilon_threshold = 0.2
     satisfied = alpha_s_UV < epsilon_threshold
 
-    margin = log(epsilon_threshold / alpha_s_UV) / log(10) if alpha_s_UV > 0 else float('inf')
+    margin = log(epsilon_threshold / alpha_s_UV) / log(10) if alpha_s_UV > 0 else float("inf")
 
     return ConstraintResult(
         name="UV Decoupling (Asymptotic Freedom)",
@@ -444,11 +448,11 @@ def check_uv_decoupling() -> ConstraintResult:
             f"  alpha_s(GUT) ~ {alpha_s_GUT:.2f} (high energy)\n"
             f"Coupling decreases with energy -> texture decouples.\n"
             f"This is the beta function: beta(g) < 0 for SU(3) with Nf < 16.5."
-        )
+        ),
     )
 
 
-def check_stiffness_bounds() -> Tuple[ConstraintResult, ConstraintResult]:
+def check_stiffness_bounds() -> tuple[ConstraintResult, ConstraintResult]:
     """
     Check the Stiffness Bounds (Theorem 35.6 / thm-stiffness-bounds).
 
@@ -497,7 +501,7 @@ def check_stiffness_bounds() -> Tuple[ConstraintResult, ConstraintResult]:
             f"  chi = Delta_E / T = {chi:.1f}\n"
             f"Since chi >> 1, thermal fluctuations rarely flip states.\n"
             f"P_flip ~ exp(-chi) ~ exp(-500) ~ 10^(-217) - memory is stable!"
-        )
+        ),
     )
 
     upper_result = ConstraintResult(
@@ -509,18 +513,18 @@ def check_stiffness_bounds() -> Tuple[ConstraintResult, ConstraintResult]:
         margin_log10=upper_margin,
         details=f"chi = {chi:.1f} < chi_max = {chi_max:.0e}",
         interpretation=(
-            f"Adaptability requirement:\n"
-            f"Transition rate Gamma ~ exp(-chi) must be non-zero.\n"
-            f"At chi ~ 500, catalyzed reactions can still occur.\n"
-            f"Enzymes lower effective barriers, enabling biological dynamics.\n"
-            f"If chi -> infinity, no adaptation - the agent freezes."
-        )
+            "Adaptability requirement:\n"
+            "Transition rate Gamma ~ exp(-chi) must be non-zero.\n"
+            "At chi ~ 500, catalyzed reactions can still occur.\n"
+            "Enzymes lower effective barriers, enabling biological dynamics.\n"
+            "If chi -> infinity, no adaptation - the agent freezes."
+        ),
     )
 
     return lower_result, upper_result
 
 
-def check_discount_window() -> Tuple[ConstraintResult, ConstraintResult]:
+def check_discount_window() -> tuple[ConstraintResult, ConstraintResult]:
     """
     Check the Discount Window (Theorem 35.7 / thm-discount-window).
 
@@ -585,7 +589,7 @@ def check_discount_window() -> Tuple[ConstraintResult, ConstraintResult]:
             f"Physical gamma ~ 1 - {format_scientific(one_minus_gamma)}\n"
             f"This is essentially 1 - meaning nearly infinite planning horizon.\n"
             f"Margin: gamma is ~10^{lower_margin:.0f} away from zero."
-        )
+        ),
     )
 
     upper_result = ConstraintResult(
@@ -603,8 +607,8 @@ def check_discount_window() -> Tuple[ConstraintResult, ConstraintResult]:
             f"Value would have long-range (1/r) decay - non-local planning.\n"
             f"Physical gamma is strictly < 1 by {format_scientific(one_minus_gamma)}.\n"
             f"Screening mass kappa = -ln(gamma)/l_0 = {format_scientific(kappa)} m^-1\n"
-            f"Screening length l_gamma = 1/kappa = {format_scientific(1/kappa)} m = R_Hubble"
-        )
+            f"Screening length l_gamma = 1/kappa = {format_scientific(1 / kappa)} m = R_Hubble"
+        ),
     )
 
     return lower_result, upper_result
@@ -613,6 +617,7 @@ def check_discount_window() -> Tuple[ConstraintResult, ConstraintResult]:
 # ==============================================================================
 # SECTION 5: EXTENDED PARAMETER DERIVATIONS
 # ==============================================================================
+
 
 def derive_alpha_from_stiffness() -> DerivationResult:
     """
@@ -625,7 +630,7 @@ def derive_alpha_from_stiffness() -> DerivationResult:
     """
     # Observed stiffness at biological temperature
     # χ = Rydberg / (k_B T_bio) = 13.6 eV / 0.027 eV ≈ 509
-    chi_observed = Rydberg_J / kT_bio
+    Rydberg_J / kT_bio
 
     # Invert the relation: χ = m_e c² α² / (2 k_B T)
     # α² = 2 χ k_B T / (m_e c²)
@@ -660,11 +665,11 @@ def derive_alpha_from_stiffness() -> DerivationResult:
         interpretation=(
             f"Stiffness constraint requires χ = ΔE/(k_B T) ~ 500 for viable agents.\n"
             f"With ΔE = Rydberg = m_e c² α² / 2, this gives:\n"
-            f"  α_predicted = {alpha_predicted:.6f} = 1/{1/alpha_predicted:.1f}\n"
-            f"  α_measured  = {alpha_measured:.6f} = 1/{1/alpha_measured:.1f}\n"
+            f"  α_predicted = {alpha_predicted:.6f} = 1/{1 / alpha_predicted:.1f}\n"
+            f"  α_measured  = {alpha_measured:.6f} = 1/{1 / alpha_measured:.1f}\n"
             f"  Deviation: {deviation:.1f}%\n"
             f"The fine structure constant is constrained by biological viability!"
-        )
+        ),
     )
 
 
@@ -684,7 +689,7 @@ def compute_qed_running_alpha(mu_GeV: float) -> float:
     denominator = 1 - (alpha_0 / (3 * pi)) * ln_ratio
 
     if denominator <= 0:
-        return float('inf')  # Landau pole
+        return float("inf")  # Landau pole
 
     return alpha_0 / denominator
 
@@ -705,7 +710,7 @@ def compute_qcd_running_alpha_s(mu_GeV: float, N_f: int = 5) -> float:
     denominator = 1 + (b_0 * alpha_s_0 / (2 * pi)) * ln_ratio
 
     if denominator <= 0:
-        return float('inf')  # Non-perturbative
+        return float("inf")  # Non-perturbative
 
     return alpha_s_0 / denominator
 
@@ -718,18 +723,22 @@ def check_running_couplings() -> list:
 
     # QED running: α(μ)
     qed_scales = [
-        ("m_e", m_e_GeV, 1/137.036),
-        ("m_μ", m_mu_GeV, 1/135.9),
-        ("m_τ", m_tau_GeV, 1/133.5),
-        ("M_Z", M_Z_GeV, 1/127.95),
+        ("m_e", m_e_GeV, 1 / 137.036),
+        ("m_μ", m_mu_GeV, 1 / 135.9),
+        ("m_τ", m_tau_GeV, 1 / 133.5),
+        ("M_Z", M_Z_GeV, 1 / 127.95),
     ]
 
     print("\n>>> QED RUNNING COUPLING α(μ) <<<")
-    print(f"{'Scale':<10} {'μ (GeV)':<12} {'α_calc':<12} {'α_meas':<12} {'1/α_calc':<10} {'1/α_meas':<10}")
+    print(
+        f"{'Scale':<10} {'μ (GeV)':<12} {'α_calc':<12} {'α_meas':<12} {'1/α_calc':<10} {'1/α_meas':<10}"
+    )
     print("-" * 70)
     for name, mu, alpha_meas in qed_scales:
         alpha_calc = compute_qed_running_alpha(mu)
-        print(f"{name:<10} {mu:<12.4g} {alpha_calc:<12.6f} {alpha_meas:<12.6f} {1/alpha_calc:<10.1f} {1/alpha_meas:<10.1f}")
+        print(
+            f"{name:<10} {mu:<12.4g} {alpha_calc:<12.6f} {alpha_meas:<12.6f} {1 / alpha_calc:<10.1f} {1 / alpha_meas:<10.1f}"
+        )
 
     # QCD running: α_s(μ)
     qcd_scales = [
@@ -763,7 +772,7 @@ def check_electroweak_scale() -> DerivationResult:
 
     # Using measured masses
     cos_theta_W = M_W_GeV / M_Z_GeV
-    sin2_theta_W_calc = 1 - cos_theta_W**2
+    1 - cos_theta_W**2
 
     # The weak coupling g from sin²θ_W = e²/(e² + g²) gives
     # g = e / sin(θ_W)
@@ -771,11 +780,10 @@ def check_electroweak_scale() -> DerivationResult:
 
     # Simpler: v is defined such that M_W = g v / 2
     # With measured M_W and the relation v = 246.22 GeV (defined)
-    v_predicted = v_higgs_GeV  # This is actually input, not derived
 
     # What we CAN check: consistency of M_W, M_Z, sin²θ_W
     sin2_measured = sin2_theta_W
-    sin2_from_masses = 1 - (M_W_GeV / M_Z_GeV)**2
+    sin2_from_masses = 1 - (M_W_GeV / M_Z_GeV) ** 2
 
     deviation = abs(sin2_from_masses - sin2_measured) / sin2_measured * 100
 
@@ -795,7 +803,7 @@ def check_electroweak_scale() -> DerivationResult:
             f"  sin²θ_W (measured)    = {sin2_measured:.5f}\n"
             f"  Higgs VEV v = {v_higgs_GeV:.2f} GeV\n"
             f"  Deviation: {deviation:.2f}%"
-        )
+        ),
     )
 
 
@@ -889,13 +897,14 @@ def check_mass_scale_hierarchy() -> DerivationResult:
             f"  - Stable atoms (m_e << m_p)\n"
             f"  - Chemistry at accessible temperatures (v sets bond strengths)\n"
             f"  - Gravity being weak (M_P >> v ensures macroscopic stability)"
-        )
+        ),
     )
 
 
 # ==============================================================================
 # SECTION 6: REPORT GENERATION
 # ==============================================================================
+
 
 def print_separator(char: str = "=", width: int = 80) -> None:
     """Print a separator line."""
@@ -912,8 +921,8 @@ def print_result(result: ConstraintResult) -> None:
     print(f"  Node: {result.node}")
     print(f"  Check: {result.details}")
     print(f"  Margin: 10^{result.margin_log10:.1f}")
-    print(f"  Interpretation:")
-    for line in result.interpretation.split('\n'):
+    print("  Interpretation:")
+    for line in result.interpretation.split("\n"):
         print(f"    {line}")
 
 
@@ -929,7 +938,7 @@ def print_report(results: list) -> None:
     print(f"  hbar (Planck const)    = {format_scientific(hbar)} J·s")
     print(f"  G (gravitational)      = {format_scientific(G)} m³/(kg·s²)")
     print(f"  k_B (Boltzmann)        = {format_scientific(k_B)} J/K")
-    print(f"  alpha (fine structure) = 1/{1/alpha:.3f}")
+    print(f"  alpha (fine structure) = 1/{1 / alpha:.3f}")
     print(f"  alpha_s(M_Z)           = {alpha_s_MZ}")
 
     print("\n>>> DERIVED PLANCK UNITS <<<")
@@ -986,8 +995,8 @@ def print_derivation_result(result: DerivationResult) -> None:
     print(f"  Predicted: {result.predicted:.6g}")
     print(f"  Measured:  {result.measured:.6g}")
     print(f"  Deviation: {result.deviation_percent:.1f}%")
-    print(f"  Interpretation:")
-    for line in result.interpretation.split('\n'):
+    print("  Interpretation:")
+    for line in result.interpretation.split("\n"):
         print(f"    {line}")
 
 
@@ -1076,7 +1085,7 @@ def main() -> bool:
     print(f"Parameter Derivations: {n_consistent}/{n_derivations} CONSISTENT")
 
     if n_satisfied == n_constraints and n_consistent == n_derivations:
-        print(f"\n\033[92m>>> ALL CHECKS PASSED <<<\033[0m")
+        print("\n\033[92m>>> ALL CHECKS PASSED <<<\033[0m")
         print("\nConclusion: Our universe satisfies all Sieve constraints")
         print("AND the derived parameters match observations!")
         print("\nThis strongly supports the thesis that:")
@@ -1084,7 +1093,7 @@ def main() -> bool:
         print("  2. They are constrained by cybernetic viability")
         print("  3. The isomorphism between agent theory and physics is real")
     else:
-        print(f"\n\033[93m>>> SOME DEVIATIONS FOUND <<<\033[0m")
+        print("\n\033[93m>>> SOME DEVIATIONS FOUND <<<\033[0m")
         print("This may indicate areas for theoretical refinement.")
 
     print_separator()
@@ -1094,4 +1103,4 @@ def main() -> bool:
 
 if __name__ == "__main__":
     success = main()
-    exit(0 if success else 1)
+    sys.exit(0 if success else 1)

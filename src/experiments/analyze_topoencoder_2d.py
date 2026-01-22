@@ -34,6 +34,7 @@ def _load_checkpoint(path: str) -> dict[str, Any]:
     except TypeError:
         return torch.load(path, map_location="cpu")
 
+
 def _load_benchmarks(checkpoint_path: str) -> dict[str, Any] | None:
     bench_path = os.path.join(os.path.dirname(checkpoint_path), "benchmarks.pt")
     if not os.path.exists(bench_path):
@@ -42,6 +43,15 @@ def _load_benchmarks(checkpoint_path: str) -> dict[str, Any] | None:
         return torch.load(bench_path, map_location="cpu", weights_only=False)
     except TypeError:
         return torch.load(bench_path, map_location="cpu")
+
+
+def _load_model_state(model: torch.nn.Module, state: dict, name: str) -> None:
+    result = model.load_state_dict(state, strict=False)
+    if result.missing_keys or result.unexpected_keys:
+        print(
+            f"  Warning: {name} load_state_dict missing={len(result.missing_keys)} "
+            f"unexpected={len(result.unexpected_keys)}"
+        )
 
 
 def _prepare_models(
@@ -110,7 +120,7 @@ def _prepare_models(
         "soft_equiv_temperature": soft_equiv_temperature,
     }
     model_atlas = TopoEncoderPrimitives(**model_kwargs).to(device)
-    model_atlas.load_state_dict(state["atlas"])
+    _load_model_state(model_atlas, state["atlas"], "atlas")
     model_atlas.eval()
 
     model_std = None
@@ -131,10 +141,12 @@ def _prepare_models(
             vision_height=vision_height,
             vision_width=vision_width,
         ).to(device)
-        model_std.load_state_dict(state["std"])
+        _load_model_state(model_std, state["std"], "std")
         model_std.eval()
-    elif bench_state is not None and bench_state.get("std") is not None and not config.get(
-        "disable_vq", False
+    elif (
+        bench_state is not None
+        and bench_state.get("std") is not None
+        and not config.get("disable_vq", False)
     ):
         std_hidden_dim = (
             (bench_dims or {}).get("std_hidden_dim") or metrics.get("std_hidden_dim")
@@ -154,7 +166,7 @@ def _prepare_models(
             vision_height=vision_height,
             vision_width=vision_width,
         ).to(device)
-        model_std.load_state_dict(bench_state["std"])
+        _load_model_state(model_std, bench_state["std"], "std")
         model_std.eval()
 
     model_ae = None
@@ -174,10 +186,12 @@ def _prepare_models(
             vision_height=vision_height,
             vision_width=vision_width,
         ).to(device)
-        model_ae.load_state_dict(state["ae"])
+        _load_model_state(model_ae, state["ae"], "ae")
         model_ae.eval()
-    elif bench_state is not None and bench_state.get("ae") is not None and not config.get(
-        "disable_ae", False
+    elif (
+        bench_state is not None
+        and bench_state.get("ae") is not None
+        and not config.get("disable_ae", False)
     ):
         ae_hidden_dim = (
             (bench_dims or {}).get("ae_hidden_dim") or metrics.get("ae_hidden_dim")
@@ -196,7 +210,7 @@ def _prepare_models(
             vision_height=vision_height,
             vision_width=vision_width,
         ).to(device)
-        model_ae.load_state_dict(bench_state["ae"])
+        _load_model_state(model_ae, bench_state["ae"], "ae")
         model_ae.eval()
 
     jump_op = None
@@ -206,7 +220,7 @@ def _prepare_models(
             latent_dim=config["latent_dim"],
             global_rank=config["jump_global_rank"],
         ).to(device)
-        jump_op.load_state_dict(state["jump"])
+        _load_model_state(jump_op, state["jump"], "jump")
         jump_op.eval()
 
     return {
@@ -250,7 +264,8 @@ def _collect_checkpoints(checkpoint: str | None, checkpoint_dir: str | None) -> 
         if not candidates:
             raise FileNotFoundError(f"No .pt checkpoints found in: {checkpoint_dir}")
         return sorted(candidates, key=_checkpoint_sort_key)
-    raise ValueError("Provide --checkpoint or --checkpoint_dir.")
+    msg = "Provide --checkpoint or --checkpoint_dir."
+    raise ValueError(msg)
 
 
 def _analyze_checkpoint(
@@ -363,7 +378,9 @@ def _analyze_checkpoint(
             "ae_cls_acc": metrics.get("ae_cls_acc", None),
             "model_atlas": model_atlas,
         }
-        visualize_results_images(results, class_names, save_path=results_path, image_shape=image_shape)
+        visualize_results_images(
+            results, class_names, save_path=results_path, image_shape=image_shape
+        )
 
 
 def main() -> None:
@@ -411,8 +428,8 @@ def main() -> None:
     args = parser.parse_args()
 
     checkpoints = _collect_checkpoints(
-        args.checkpoint if args.checkpoint else None,
-        args.checkpoint_dir if args.checkpoint_dir else None,
+        args.checkpoint or None,
+        args.checkpoint_dir or None,
     )
     output_dir = args.output_dir or os.path.dirname(checkpoints[0]) or "."
     os.makedirs(output_dir, exist_ok=True)

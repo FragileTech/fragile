@@ -67,7 +67,7 @@ Together, the three edge types form a **directed 1-skeleton**: CST encodes timel
 :name: fig-fractal-set-growth-tree
 :width: 100%
 
-**CST growth tree with IG and IA edges.** CST edges build the forward-time tree, IG edges link contemporaneous walkers in directed pairs, and IA edges attribute influence back across timesteps.
+**CST growth tree with IG and IA edges.** CST edges build the forward-time tree, IG edges link contemporaneous walkers in sampled directed pairs, and IA edges attribute influence back across timesteps.
 :::
 
 ---
@@ -76,17 +76,21 @@ Together, the three edge types form a **directed 1-skeleton**: CST encodes timel
 
 The Fractal Set captures the Fractal Gas algorithm as a **2-dimensional directed 2-complex** with the following components:
 
+Let $\mathcal{P}_t$ denote the set of **ordered companion pairs** realized at timestep $t$ by the
+companion selection operators (distance and cloning; {prf:ref}`def-fractal-set-companion-kernel`).
+Define $m_t := |\mathcal{P}_t|$.
+
 - **Nodes $\mathcal{N}$** (0-simplices): One node $n_{i,t}$ for each walker $i \in \{1, \ldots, N\}$ at each timestep $t \in \{0, 1, \ldots, T\}$. Total: $|\mathcal{N}| = N(T+1)$ nodes.
 
 - **CST Edges $E_{\mathrm{CST}}$** (1-simplices): Directed edges $(n_{i,t}, n_{i,t+1})$ connecting consecutive timesteps of the same walker, provided the walker is alive at time $t$. These form a forest of directed paths (one per persistent walker ID); genealogical links from cloning are recorded separately.
 
-- **IG Edges $E_{\mathrm{IG}}$** (1-simplices): Directed edges $(n_{i,t}, n_{j,t})$ connecting all ordered pairs of distinct alive walkers at the same timestep, for each $t \in \{0, \ldots, T\}$. At timestep $t$ with $k_t$ alive walkers, there are $k_t(k_t-1)$ directed IG edges forming a complete directed graph (all ordered pairs).
+- **IG Edges $E_{\mathrm{IG}}$** (1-simplices): Directed edges $(n_{i,t}, n_{j,t})$ for each sampled companion pair $(i, j) \in \mathcal{P}_t$ at the same timestep. At timestep $t$ with $k_t$ alive walkers, there are $m_t$ directed IG edges (one per sampled ordered pair).
 
-- **IA Edges $E_{\mathrm{IA}}$** (1-simplices): Directed edges $(n_{i,t+1}, n_{j,t})$ connecting the effect (walker $i$ at $t+1$) to the cause (walker $j$ at $t$). These **close the causal triangles**, attributing each walker's evolution to its influencers. There are $k_t(k_t-1)$ IA edges per **update** timestep $t \in \{0,\ldots,T-1\}$ (with $k_t = N$ in Fractal Gas).
+- **IA Edges $E_{\mathrm{IA}}$** (1-simplices): Directed edges $(n_{i,t+1}, n_{j,t})$ connecting the effect (walker $i$ at $t+1$) to the cause (walker $j$ at $t$) for each $(i, j) \in \mathcal{P}_t$ with $t \in \{0,\ldots,T-1\}$. These **close the causal triangles**, attributing each walker's evolution to its sampled influencers. There are $m_t$ IA edges per **update** timestep.
 
 - **Clone ancestry graph $E_{\mathrm{clone}}$** (derived): A directed relation from parent to child defined by the clone source attribute; these edges encode branching history but are **not** part of the CST order (see {prf:ref}`def-fractal-set-clone-ancestry`).
 
-- **Interaction Triangles $\mathcal{T}$** (2-simplices): Each triangle $\triangle_{ij,t}$ has vertices $\{n_{j,t}, n_{i,t}, n_{i,t+1}\}$ and boundary edges (IG, CST, IA). These are the **fundamental closed loops** of the structure.
+- **Interaction Triangles $\mathcal{T}$** (2-simplices): Each triangle $\triangle_{ij,t}$ has vertices $\{n_{j,t}, n_{i,t}, n_{i,t+1}\}$ and boundary edges (IG, CST, IA), for each $(i, j) \in \mathcal{P}_t$ and $t \in \{0,\ldots,T-1\}$. These are the **fundamental closed loops** of the structure.
 
 - **Weight functions**: $\omega_{\mathrm{CST}}: E_{\mathrm{CST}} \to \mathbb{R}_{>0}$ assigns temporal weights (typically $\Delta t$), $\omega_{\mathrm{IG}}: E_{\mathrm{IG}} \to \mathbb{R}$ assigns selection coupling weights (the antisymmetric cloning potential), and $\omega_{\mathrm{IA}}: E_{\mathrm{IA}} \to [0,1]$ assigns influence attribution weights.
 
@@ -97,7 +101,7 @@ Why do we need *three* types of edges? Because causality has three components: e
 
 **CST edges** (timelike) connect the same walker at different times. When walker $i$ moves from position $x$ to $x + \Delta x$, that transition is stored on a CST edge. The velocity, the forces, the diffusion—everything about *how* the walker evolved—lives on that edge.
 
-**IG edges** (spacelike) connect different walkers at the same time. When walker $i$ considers cloning from walker $j$, that comparison is stored on an IG edge. The fitness difference, the relative position, the viscous coupling—everything about *how* walkers influence each other—lives on these edges.
+**IG edges** (spacelike) connect sampled companion pairs at the same time. When walker $i$ draws a distance or cloning companion $j$, that comparison is stored on an IG edge. The fitness difference, the relative position, the viscous coupling—everything about *how* walkers influence each other in that sampled interaction—lives on these edges.
 
 **IA edges** (diagonal) connect effects to causes across time. When walker $i$'s state at $t+1$ was influenced by walker $j$ at time $t$, that causal link is stored on an IA edge. These edges complete the triangle—they close the causal loop.
 
@@ -111,13 +115,15 @@ The triangle is the atom of interaction. A single influence event involves three
 **The interaction triangle.** One IG edge (influence), one CST edge (evolution), and one IA edge (attribution) close a single causal loop.
 :::
 
+Let $m_t := |\mathcal{P}_t|$ be the number of sampled companion pairs at time $t$.
+
 The following table summarizes the structural properties:
 
 | Property | CST Edges | IG Edges | IA Edges |
 |----------|-----------|----------|----------|
 | **Direction** | Timelike ($t \to t+1$) | Spacelike (same $t$) | Diagonal ($t+1 \to t$) |
-| **Cardinality** | $\sum_{t=0}^{T-1} |\mathcal{A}(t)|$ | $\sum_{t=0}^{T} k_t(k_t - 1)$ | $\sum_{t=0}^{T-1} k_t(k_t - 1)$ |
-| **Topology** | Forest (acyclic) | Complete directed graph per $t$ | Bipartite per $(t, t+1)$ |
+| **Cardinality** | $\sum_{t=0}^{T-1} |\mathcal{A}(t)|$ | $\sum_{t=0}^{T} m_t$ | $\sum_{t=0}^{T-1} m_t$ |
+| **Topology** | Forest (acyclic) | Directed companion graph per $t$ | Bipartite per $(t, t+1)$ on sampled pairs |
 | **Key weight** | Timestep $\Delta t$ | Cloning potential $V_{\mathrm{clone}}$ | Influence weight $w_{ij}$ |
 | **Role in triangle** | Evolution edge | Influence edge | Attribution edge |
 
@@ -669,23 +675,32 @@ For $d \leq 4$, conversions are constant-time with fixed arithmetic operations. 
 :::{prf:definition} IG Edge Set
 :label: def-fractal-set-ig-edges
 
+Let $\mathcal{P}_t$ be the set of **ordered companion pairs** realized at timestep $t$ by the
+companion selection operators (distance and cloning; {prf:ref}`def-fractal-set-companion-kernel`).
 The **Information Graph (IG) edge set** is:
 
-$$E_{\mathrm{IG}} := \{(n_{i,t}, n_{j,t}) : i, j \in \mathcal{A}(t), \; i \neq j, \; t \in \{0, \ldots, T\}\}.$$
-Each IG edge connects an **ordered pair** of distinct alive walkers at the same timestep. The edges are **directed**: by convention, $(n_{i,t}, n_{j,t})$ is oriented from the influenced walker $i$ toward the influencer $j$. Edges at $t = T$ are terminal-time snapshots and do not participate in IA edges or triangles.
+$$E_{\mathrm{IG}} := \{(n_{i,t}, n_{j,t}) : (i, j) \in \mathcal{P}_t, \; t \in \{0, \ldots, T\}\}.$$
+Each IG edge connects an **ordered** sampled pair of distinct alive walkers at the same timestep.
+The edges are **directed**: by convention, $(n_{i,t}, n_{j,t})$ is oriented from the influenced
+walker $i$ toward the influencer $j$. Edges at $t = T$ are terminal-time snapshots and do not
+participate in IA edges or triangles.
 :::
 
 :::{prf:proposition} IG Edge Cardinality
 :label: prop-fractal-set-ig-cardinality
 
-At timestep $t$ with $k_t = |\mathcal{A}(t)|$ alive walkers, the number of IG edges is $k_t(k_t - 1)$. The total across all timesteps is:
+At timestep $t$ with $k_t = |\mathcal{A}(t)|$ alive walkers, the number of IG edges is
+$m_t := |\mathcal{P}_t|$. The total across all timesteps is:
 
-$$|E_{\mathrm{IG}}| = \sum_{t=0}^{T} k_t(k_t - 1).$$
+$$|E_{\mathrm{IG}}| = \sum_{t=0}^{T} m_t.$$
 
-*Proof.* Each ordered pair $(i, j)$ with $i \neq j$ and both $i, j \in \mathcal{A}(t)$ contributes one edge. The number of such pairs is $k_t(k_t - 1)$. $\square$
+*Proof.* Each sampled ordered pair $(i, j) \in \mathcal{P}_t$ contributes one edge. $\square$
 :::
 
-The IG edges at each timestep form a **complete directed graph** (all ordered pairs) on the alive walkers. Every walker "sees" every other walker, and the influence is asymmetric—the influence of $j$ on $i$ differs from the influence of $i$ on $j$.
+For the sequential greedy pairing operator ({prf:ref}`def-greedy-pairing-algorithm`),
+$m_t = k_t - f_t$ with $f_t \in \{0,1\}$ fixed points. In general, the IG edges at each timestep
+form a **directed companion graph** on the alive walkers, restricted to the sampled pairs; the
+influence is asymmetric, so the edge $(i, j)$ need not imply $(j, i)$ unless the pairing is mutual.
 
 ### 4.2 Directionality and Antisymmetry
 
@@ -821,11 +836,18 @@ $$\mathbf{F}_{\mathrm{viscous}}(x_i, S) = \sum_{j \in \mathcal{A}(t) \setminus \
 :::{prf:proposition} Viscous Force Reconstruction from IG Edges
 :label: prop-fractal-set-viscous-reconstruction
 
-The total viscous force on any walker $i$ at any timestep $t$ can be reconstructed from IG edge data:
+Define the IG-restricted viscous interaction for walker $i$ at timestep $t$:
 
-$$\mathbf{F}_{\mathrm{viscous}}(x_i, S, t) = \sum_{e \in E_{\mathrm{IG}}: i(e) = i, t(e) = t} \pi(\psi_{\mathrm{viscous}, ij}(e)).$$
+$$\mathbf{F}_{\mathrm{viscous}}^{\mathrm{IG}}(x_i, S, t) = \sum_{e \in E_{\mathrm{IG}}: i(e) = i, t(e) = t} \pi(\psi_{\mathrm{viscous}, ij}(e)).$$
 
-*Proof.* Each IG edge $(n_{i,t}, n_{j,t})$ stores the spinor $\psi_{\mathrm{viscous}, ij}$ of the pairwise force. Summing over all edges with source $i$ at time $t$ and applying the spinor-to-vector map gives the total viscous force. $\square$
+If the viscous coupling is evaluated on the sampled companion graph, then
+$\mathbf{F}_{\mathrm{viscous}}^{\mathrm{IG}} = \mathbf{F}_{\mathrm{viscous}}$. In the full-kernel
+variant of {prf:ref}`def-fractal-set-viscous-force`, the total force is recomputed directly from
+node data using the kernel definition, and the applied total is stored on the CST edge.
+
+*Proof.* Each IG edge $(n_{i,t}, n_{j,t})$ stores the spinor $\psi_{\mathrm{viscous}, ij}$ of the
+pairwise force for that sampled pair. Summing over IG edges with source $i$ yields the interaction
+recorded on the sampled graph. $\square$
 :::
 
 ### 4.5 Algorithmic Distance and Fitness Phase
@@ -956,8 +978,10 @@ The direction is deliberately "retrocausal"—from later to earlier time. We are
 
 The **Influence Attribution (IA) edge set** is:
 
-$$E_{\mathrm{IA}} := \{(n_{i,t+1}, n_{j,t}) : i, j \in \mathcal{A}(t), \; i \neq j, \; t \in \{0, \ldots, T-1\}\}.$$
-Each IA edge connects the **effect** (walker $i$ at time $t+1$) to a **cause** (walker $j$ at time $t$). The direction is **retrocausal**: from later to earlier time, attributing the outcome to its source.
+$$E_{\mathrm{IA}} := \{(n_{i,t+1}, n_{j,t}) : (i, j) \in \mathcal{P}_t, \; t \in \{0, \ldots, T-1\}\}.$$
+Each IA edge connects the **effect** (walker $i$ at time $t+1$) to a **cause** (walker $j$ at
+time $t$) for a sampled pair. The direction is **retrocausal**: from later to earlier time,
+attributing the outcome to its source.
 :::
 
 :::{prf:definition} IA Edge Attributes
@@ -981,9 +1005,10 @@ For **cloning**, $w_{\mathrm{IA}}(e) = 1$ if $\chi_{\mathrm{clone}}(e) = 1$, els
 
 Let $E_{\mathrm{IG}}^{<T} := \{(n_{i,t}, n_{j,t}) \in E_{\mathrm{IG}} : t \in \{0, \ldots, T-1\}\}$. The IA edge cardinality equals the IG edge cardinality on update timesteps:
 
-$$|E_{\mathrm{IA}}| = |E_{\mathrm{IG}}^{<T}| = \sum_{t=0}^{T-1} k_t(k_t - 1).$$
+$$|E_{\mathrm{IA}}| = |E_{\mathrm{IG}}^{<T}| = \sum_{t=0}^{T-1} m_t.$$
 
-*Proof.* At each $t \in \{0, \ldots, T-1\}$, IA edges are all ordered pairs $(i, j)$ with $i \neq j$ and $i, j \in \mathcal{A}(t)$. The count is $k_t(k_t - 1)$, matching the IG edges at the same timestep; IG edges at $t = T$ are terminal snapshots and are excluded. $\square$
+*Proof.* At each $t \in \{0, \ldots, T-1\}$, there is one IA edge for each sampled ordered pair
+$(i, j) \in \mathcal{P}_t$, matching the IG edges at the same timestep. $\square$
 :::
 
 ### 5.4 Interaction Triangles: The Fundamental 2-Simplices
@@ -1010,7 +1035,7 @@ Equivalently, the boundary path is $n_{i,t} \to n_{i,t+1}$ (CST), $n_{i,t+1} \to
 
 The **triangle set** is:
 
-$$\mathcal{T} := \{\triangle_{ij,t} : i, j \in \mathcal{A}(t), \; i \neq j, \; t \in \{0, \ldots, T-1\}\}.$$
+$$\mathcal{T} := \{\triangle_{ij,t} : (i, j) \in \mathcal{P}_t, \; t \in \{0, \ldots, T-1\}\}.$$
 :::
 
 :::{prf:proposition} Triangle Cardinality
@@ -1018,11 +1043,13 @@ $$\mathcal{T} := \{\triangle_{ij,t} : i, j \in \mathcal{A}(t), \; i \neq j, \; t
 
 The number of interaction triangles equals the number of IG edges at each update:
 
-$$|\mathcal{T}| = |E_{\mathrm{IG}}^{<T}| = |E_{\mathrm{IA}}| = \sum_{t=0}^{T-1} k_t(k_t - 1).$$
+$$|\mathcal{T}| = |E_{\mathrm{IG}}^{<T}| = |E_{\mathrm{IA}}| = \sum_{t=0}^{T-1} m_t.$$
 
-At each update timestep $t \in \{0, \ldots, T-1\}$, there is one triangle for each ordered pair of distinct alive walkers.
+At each update timestep $t \in \{0, \ldots, T-1\}$, there is one triangle for each sampled
+ordered pair $(i, j) \in \mathcal{P}_t$.
 
-*Proof.* Each triangle $\triangle_{ij,t}$ is uniquely determined by the ordered pair $(i, j)$ and timestep $t$, in bijection with IG edges at the same timestep. $\square$
+*Proof.* Each triangle $\triangle_{ij,t}$ is uniquely determined by the ordered pair $(i, j)$ and
+timestep $t$, in bijection with IG edges at the same timestep. $\square$
 :::
 
 :::{div} feynman-prose
@@ -1040,7 +1067,9 @@ The triangle is irreducible. It's the smallest closed loop in the structure. And
 :::{prf:definition} Plaquette
 :label: def-fractal-set-plaquette
 
-A **plaquette** $P_{ij,t}$ is the simplicial 2-chain formed by two adjacent interaction triangles:
+A **plaquette** $P_{ij,t}$ is the simplicial 2-chain formed by two adjacent interaction triangles,
+defined when **both orientations** are present (i.e., $(i, j) \in \mathcal{P}_t$ and
+$(j, i) \in \mathcal{P}_t$):
 
 $$P_{ij,t} = \triangle_{ij,t} \cup \triangle_{ji,t}$$
 where:
@@ -1114,30 +1143,34 @@ $$\partial_2 \triangle_{ij,t} = e_{\mathrm{CST}} + e_{\mathrm{IA}} - e_{\mathrm{
 :::{prf:corollary} Euler Characteristic
 :label: cor-fractal-set-euler
 
-For a single timestep $t$ with $k = k_t$ alive walkers, the local Euler characteristic of the $(t, t+1)$ simplicial slice is:
+For a single timestep $t$ with $k = k_t$ alive walkers, let $\mathcal{P}_t$ be the sampled ordered
+pairs and let $\overline{\mathcal{P}}_t$ be their undirected support (unordered pairs). The local
+Euler characteristic of the $(t, t+1)$ simplicial slice is:
 
-$$\chi_t = |V_t| - |E_t| + |F_t| = 2k - \left(k + \frac{k(k-1)}{2} + k(k-1)\right) + k(k-1) = \frac{1}{2}k(3 - k).$$
+$$\chi_t = |V_t| - |E_t| + |F_t| = 2k - \left(k + |\overline{\mathcal{P}}_t| + |\mathcal{P}_t|\right) + |\mathcal{P}_t| = k - |\overline{\mathcal{P}}_t|.$$
 
-For $k \geq 4$, this is negative, indicating nontrivial topology.
+For the sequential greedy pairing operator ({prf:ref}`def-greedy-pairing-algorithm`),
+$|\overline{\mathcal{P}}_t| = (k - f_t)/2$ with $f_t \in \{0,1\}$ fixed points, so
+$\chi_t = (k + f_t)/2$.
 
-*Proof.* Vertices: $2k$ (walkers at $t$ and $t+1$). Edges: $k$ (CST) + $\frac{k(k-1)}{2}$ (undirected IG at $t$) + $k(k-1)$ (IA) = $k + \frac{3}{2}k(k-1)$. Faces: $k(k-1)$ triangles.
-
-Calculation:
-
-$$\chi_t = 2k - \left(k + \frac{3}{2}k(k-1)\right) + k(k-1) = k - \frac{1}{2}k(k-1) = \frac{1}{2}k(3-k).$$
-$\square$
+*Proof.* Vertices: $2k$ (walkers at $t$ and $t+1$). Edges: $k$ (CST) + $|\overline{\mathcal{P}}_t|$
+(undirected IG at $t$) + $|\mathcal{P}_t|$ (IA). Faces: $|\mathcal{P}_t|$ triangles. The formula
+follows by substitution. $\square$
 :::
 
 :::{div} feynman-prose
-What does the negative Euler characteristic tell us? It tells us the interaction structure is *rich*—more connected than a simple surface would allow.
+What does the Euler characteristic tell us? It summarizes how densely the sampled companion pairs
+stitch each $(t, t+1)$ slice together.
 
-For two walkers ($k = 2$), we get $\chi = 1$, the same as a disk. Each walker can only interact with one other, so the structure is relatively simple.
+With sampled companion pairs, the slice topology depends on how many unordered pairs are realized.
+For pairing-based companions, each timestep slice decomposes into disjoint hourglasses (one per
+matched pair), so $\chi_t$ stays positive; the complexity of the Fractal Set then comes from how
+pairings change over time and how CST worldlines weave these triangles together.
 
-For three walkers ($k = 3$), we get $\chi = 0$, the same as a cylinder. The triangles start overlapping and sharing edges, and the topology becomes nontrivial but still low-genus.
-
-For $k \geq 4$, the Euler characteristic becomes negative: $\chi \approx -\tfrac{1}{2}k^2$ for large $k$. The interaction structure becomes a high-genus surface—a "sphere with many handles," topologically speaking. This is not a bug; it is a feature. The rich connectivity is what allows information to flow between all pairs of walkers, which is what makes the algorithm work.
-
-The fact that the Fractal Set forms a genuine 2-dimensional 2-complex with simplicial support—not just a graph—means we can apply the entire machinery of algebraic topology: homology groups, Betti numbers, and cohomological field theories. The triangles are not decorations; they are load-bearing mathematical structure.
+The fact that the Fractal Set forms a genuine 2-dimensional 2-complex with simplicial support—not
+just a graph—means we can apply the entire machinery of algebraic topology: homology groups, Betti
+numbers, and cohomological field theories. The triangles are not decorations; they are load-bearing
+mathematical structure.
 :::
 
 ### 5.7 Wilson Loops on Interaction Triangles
@@ -1207,26 +1240,34 @@ Plaquettes appear when you ask: "What happens when two walkers mutually influenc
 :::{prf:proposition} Fractal Set Memory Complexity
 :label: prop-fractal-set-memory
 
-For $N$ walkers, $T$ timesteps, $k$ average alive walkers per timestep, and state dimension $d$ (with $s_d = \dim_{\mathbb{C}}\mathbb{S}_d$):
+For $N$ walkers, $T$ timesteps, average alive walkers $k$, sampled-pair counts
+$m_t := |\mathcal{P}_t|$, and state dimension $d$ (with $s_d = \dim_{\mathbb{C}}\mathbb{S}_d$):
+let $M := \sum_{t=0}^{T} m_t$.
 
 | Component | Count | Size per Element | Total Size |
 |-----------|-------|------------------|------------|
 | Nodes | $N(T+1)$ | $O(1)$ scalars | $O(NT)$ |
 | CST edges | $O(NT)$ | $O(s_d)$ spinors + $O(1)$ scalars | $O(NT \cdot s_d)$ |
-| IG edges | $O(Tk^2)$ | $O(s_d)$ spinors + $O(1)$ scalars | $O(Tk^2 \cdot s_d)$ |
-| IA edges | $O(Tk^2)$ | $O(1)$ scalars | $O(Tk^2)$ |
-| Triangles | $O(Tk^2)$ | $O(1)$ pointers | $O(Tk^2)$ |
+| IG edges | $O(M)$ | $O(s_d)$ spinors + $O(1)$ scalars | $O(M \cdot s_d)$ |
+| IA edges | $O(M)$ | $O(1)$ scalars | $O(M)$ |
+| Triangles | $O(M)$ | $O(1)$ pointers | $O(M)$ |
 
-Total memory: $O(NT \cdot s_d + Tk^2 \cdot s_d)$.
+Total memory: $O(NT \cdot s_d + M \cdot s_d)$.
 
-Note: IA edges and triangles add only $O(Tk^2)$ scalar storage—negligible compared to the spinor-heavy IG edges.
+Note: IA edges and triangles add only $O(M)$ scalar storage—negligible compared to the spinor-heavy
+IG edges.
 
-For $k \approx N$ (all walkers alive), this simplifies to $O(TN^2 \cdot s_d)$.
+For two-companion sampling, $M = O(Tk)$; if all pairs are materialized, $M = O(Tk^2)$ and the
+dense bound is recovered.
 
 *Proof.* Direct counting from the definitions. IA edges store only scalar weights (no spinors), and triangles store only pointers to their three boundary edges. $\square$
 :::
 
-The IG and IA edges dominate memory for large $N$. Sparse storage (storing only edges with $K_\rho(e) > \epsilon$ for some threshold $\epsilon$) can reduce this to $O(TNk_{\mathrm{eff}})$ where $k_{\mathrm{eff}}$ is the effective number of neighbors within the kernel bandwidth. When sparsifying, triangles are also pruned: only triangles whose IG edge survives the threshold are retained.
+The IG and IA edges dominate memory for large $N$. If you materialize additional IG edges (for
+example, all pairs above a kernel threshold), sparsification can reduce storage to
+$O(TNk_{\mathrm{eff}})$ where $k_{\mathrm{eff}}$ is the effective number of neighbors within the
+kernel bandwidth. When sparsifying, triangles are also pruned: only triangles whose IG edge
+survives the threshold are retained.
 
 ---
 
@@ -1673,7 +1714,7 @@ The answer is: the costs are modest, and the benefits are substantial. Let me gi
 
 **Accuracy**: Reconstruction is exact for scalars and machine-precision for spinor-encoded vectors. You lose nothing to rounding in the spinor conversion.
 
-**Speed**: Common queries (position at time $t$, force at time $t$, neighbors of walker $i$) are $O(1)$ with simple indexing. Full reconstruction is $O(NT + Tk^2)$—linear in the size of the data structure.
+**Speed**: Common queries (position at time $t$, force at time $t$, neighbors of walker $i$) are $O(1)$ with simple indexing. Full reconstruction is $O(NT + |E_{\mathrm{IG}}|)$—linear in the size of the data structure.
 
 The Fractal Set is not a theoretical curiosity. It is a practical data structure for storing and analyzing optimization algorithm executions, with costs comparable to naive logging and benefits that naive logging cannot provide.
 :::
@@ -1729,10 +1770,12 @@ Common queries on the Fractal Set have the following time complexity:
 |-------|------------|--------|
 | Position/velocity at $(i, t)$ | $O(1)$ | Direct edge lookup + spinor conversion |
 | Force at $(i, t)$ | $O(1)$ | CST edge lookup + spinor conversion |
-| All neighbors of $i$ at $t$ | $O(k_t)$ | IG edge enumeration |
+| All neighbors of $i$ at $t$ | $O(\deg_t(i))$ | IG edge enumeration |
 | Full trajectory of walker $i$ | $O(T)$ | CST edge chain |
-| Full reconstruction | $O(NT + Tk^2)$ | All edges |
+| Full reconstruction | $O(NT + |E_{\mathrm{IG}}|)$ | All edges |
 | Alive walkers at $t$ | $O(N)$ | Node status scan |
+
+Here $\deg_t(i)$ is the number of sampled IG edges incident to walker $i$ at time $t$.
 
 With indexing (hash tables on $(i, t)$ pairs), lookups become $O(1)$ expected time. $\square$
 :::
