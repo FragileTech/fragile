@@ -23,6 +23,7 @@ parts:
 
   - caption: Part III - Implementation Architecture
     chapters:
+    - file: source/1_agent/03_architecture/00_architecture_at_a_glance
     - file: source/1_agent/03_architecture/01_compute_tiers
     - file: source/1_agent/03_architecture/02_disentangled_vae
 
@@ -74,6 +75,7 @@ parts:
     - file: source/1_agent/10_appendices/04_faq
     - file: source/1_agent/10_appendices/05_proofs
     - file: source/1_agent/10_appendices/06_losses
+    - file: source/1_agent/10_appendices/07_architecture
 
   # ══════════════════════════════════════════════════════════════════════════════
   # VOLUME 2: THE HYPOSTRUCTURE FORMALISM

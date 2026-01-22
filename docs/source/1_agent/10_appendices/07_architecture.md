@@ -5,7 +5,7 @@
 
 - Centralizes **~45 neural network modules** defined throughout Volume 1
 - Organized by domain:
-  - **Disentangled VAE** ({ref}`Part III <sec-architecture-the-disentangled-vq-vae-rnn>`)
+  - **TopoEncoder (Attentive Atlas)** ({ref}`Part III <sec-architecture-the-disentangled-vq-vae-rnn>`)
   - **Supervised Topology** ({ref}`Section 25 <sec-supervised-topology-semantic-potentials-and-metric-segmentation>`)
   - **Lorentzian Memory Attention** ({ref}`Part VII <sec-covariant-memory-attention-architecture>`)
   - **Gauge-Covariant Attention** ({ref}`Section 05 <sec-covariant-cross-attention-architecture>`)
@@ -17,286 +17,421 @@
 
 ---
 
-## G.1 Disentangled VAE Modules
+## G.1 TopoEncoder Modules
 
-These modules implement the split-latent VQ-VAE architecture from {ref}`Section 3.2 <sec-architecture-the-disentangled-vq-vae-rnn>`, separating observations into macro state $K$, nuisance $Z_n$, and texture $Z_{\mathrm{tex}}$.
+These modules implement the Attentive Atlas (TopoEncoder) representation stack from
+{ref}`Section 3.2 <sec-architecture-the-disentangled-vq-vae-rnn>`. They provide chart routing,
+per-chart codebooks, and typed latents.
 
-### G.1.1 DisentangledConfig
+### G.1.1 TopoEncoderConfig
 
-:::{prf:definition} G.1.1 (DisentangledConfig)
+:::{prf:definition} G.1.1 (TopoEncoderConfig)
 :label: def-g-disentangled-config
 
 **Class signature:**
 ```python
 @dataclass
-class DisentangledConfig:
-    obs_dim: int = 64 * 64 * 3        # Observation dimension [pixels]
-    hidden_dim: int = 256              # Encoder hidden dimension
-    macro_embed_dim: int = 32          # Macro embedding dim (code vectors e_k)
-    codebook_size: int = 512           # Number of discrete macrostates |K|
-    nuisance_dim: int = 32             # Structured nuisance latent dimension
-    tex_dim: int = 96                  # Texture latent dimension
-    action_dim: int = 4                # Action dimension
-    rnn_hidden_dim: int = 256          # Dynamics model RNN hidden
-    lambda_closure: float = 1.0        # Causal enclosure weight
-    lambda_slowness: float = 0.1       # Temporal smoothness weight
-    lambda_nuis_kl: float = 0.01       # Nuisance KL weight
-    lambda_tex_kl: float = 0.05        # Texture KL weight
-    lambda_vq: float = 1.0             # VQ codebook + commitment weight
-    lambda_recon: float = 1.0          # Reconstruction weight
-    tex_dropout_prob: float = 0.5      # Texture dropout probability
+class TopoEncoderConfig:
+    input_dim: int = 784
+    hidden_dim: int = 32
+    latent_dim: int = 2
+    num_charts: int = 10
+    codes_per_chart: int = 32
+    covariant_attn: bool = True
+    covariant_attn_tensorization: str = "sum"
+    covariant_attn_rank: int = 8
+    covariant_attn_tau_min: float = 1e-2
+    covariant_attn_denom_min: float = 1e-3
+    covariant_attn_use_transport: bool = True
+    covariant_attn_transport_eps: float = 1e-3
+    vision_preproc: bool = False
+    soft_equiv_metric: bool = False
+    soft_equiv_temperature: float = 1.0
 ```
 
-**Purpose:** Configuration dataclass for the split-latent (macro + nuisance + texture) agent. Controls the latent decomposition dimensions and loss weights for training.
+**Purpose:** Configuration dataclass for the TopoEncoder benchmark in
+`src/experiments/topoencoder_2d.py`. Controls chart routing, codebook sizes, and optional
+covariant/soft-equivariant components.
 
 **Key parameters:**
-- `codebook_size` – Number of discrete macro symbols $|K|$ (typically 512 or 1024)
-- `macro_embed_dim` – Dimension of each codebook vector $e_k$ [nat]
-- `tex_dropout_prob` – Probability of dropping texture during training (forces macro+nuisance decoding)
+- `num_charts`, `codes_per_chart` – atlas resolution
+- `covariant_attn_*` – routing tensorization and transport
+- `vision_preproc` – CovariantRetina feature extractor toggle
+- `soft_equiv_metric`, `soft_equiv_temperature` – per-chart metric control
 
-**Units:** `obs_dim` in [pixels], latent dimensions in [nat], loss weights dimensionless.
-
-**Source:** {ref}`Section 3.2 <sec-architecture-the-disentangled-vq-vae-rnn>`, line 187.
+**Source:** {ref}`Section 3.2 <sec-architecture-the-disentangled-vq-vae-rnn>`, `topoencoder_2d.py`.
 :::
 
-### G.1.2 Encoder
+### G.1.2 PrimitiveAttentiveAtlasEncoder
 
-:::{prf:definition} G.1.2 (Encoder)
+:::{prf:definition} G.1.2 (PrimitiveAttentiveAtlasEncoder)
 :label: def-g-encoder
 
 **Class signature:**
 ```python
-class Encoder(nn.Module):
-    def __init__(self, obs_dim: int, hidden_dim: int):
+class PrimitiveAttentiveAtlasEncoder(nn.Module):
+    def __init__(self, input_dim: int, hidden_dim: int, latent_dim: int, num_charts: int, codes_per_chart: int, ...):
         ...
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
+    def forward(self, x: torch.Tensor) -> Tuple[torch.Tensor, ...]:
         ...
 ```
 
 **Input/Output:**
-- Input: `x` shape `[B, C, H, W]` – RGB image observations
-- Output: `h` shape `[B, hidden_dim]` – Encoded features
+- Input: `x` shape `[B, D_in]` or `[B, C, H, W]`
+- Output (ordered): `K_chart`, `K_code`, `z_n`, `z_tex`, `router_weights`, `z_geo`,
+  `vq_loss`, `indices_stack`, `z_n_all_charts`, `c_bar`
 
-**Purpose:** Shared convolutional encoder backbone that maps observations to a latent representation. Uses a 4-layer CNN with GELU activations and a final linear projection.
+**Purpose:** Encodes inputs into charted VQ latents with typed residuals. Uses chart routing to
+select per-chart codebooks and produces geometry `z_geo` and texture `z_tex`.
 
-**Architecture:**
-```
-Conv2d(3→32, 4×4, stride=2) → GELU
-Conv2d(32→64, 4×4, stride=2) → GELU
-Conv2d(64→128, 4×4, stride=2) → GELU
-Conv2d(128→256, 4×4, stride=2) → GELU
-Flatten → Linear(4096→hidden_dim)
-```
+**Key parameters:** `num_charts`, `codes_per_chart`, `covariant_attn_*`, `vision_preproc`,
+`soft_equiv_metric`.
 
-**Key parameters:**
-- `obs_dim` – Input observation dimension (for 64×64 RGB: 64×64×3)
-- `hidden_dim` – Output feature dimension [nat]
-
-**Source:** {ref}`Section 3.2 <sec-architecture-the-disentangled-vq-vae-rnn>`, line 216.
+**Source:** {ref}`Section 3.2 <sec-architecture-the-disentangled-vq-vae-rnn>`, `atlas.py`.
 :::
 
-### G.1.3 VectorQuantizer
+### G.1.3 CovariantChartRouter
 
-:::{prf:definition} G.1.3 (VectorQuantizer)
+:::{prf:definition} G.1.3 (CovariantChartRouter)
 :label: def-g-vector-quantizer
 
 **Class signature:**
 ```python
-class VectorQuantizer(nn.Module):
-    def __init__(self, codebook_size: int, embed_dim: int, beta: float = 0.25):
+class CovariantChartRouter(nn.Module):
+    def __init__(self, latent_dim: int, key_dim: int, num_charts: int, feature_dim: int | None = None, ...):
         ...
 
-    def forward(self, z_e: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+    def forward(self, z: torch.Tensor, features: torch.Tensor | None = None, chart_tokens: torch.Tensor | None = None) -> Tuple[torch.Tensor, torch.Tensor]:
         ...
 ```
 
 **Input/Output:**
-- Input: `z_e` shape `[B, D]` – Continuous encoder output
-- Output: `(z_q, indices, vq_loss)` where:
-  - `z_q` shape `[B, D]` – Quantized embedding (with straight-through gradient)
-  - `indices` shape `[B]` – Discrete code indices $K_t \in \{0, \ldots, |K|-1\}$
-  - `vq_loss` shape `[]` – VQ loss (commitment + codebook)
+- Input: `z` shape `[B, D]`, optional `features` shape `[B, H]`
+- Output: `(router_weights, K_chart)` where `router_weights` is `[B, N_c]`
 
-**Purpose:** Maps continuous encoder outputs to discrete codes using nearest-neighbor lookup and straight-through estimator for gradient flow.
+**Purpose:** Gauge-covariant chart routing with Wilson-line transport and metric-aware temperature.
 
-**Key parameters:**
-- `codebook_size` – Number of discrete symbols $|K|$
-- `embed_dim` – Dimension of each codebook vector $e_k$ [nat]
-- `beta` – Commitment loss weight (default 0.25)
+**Key parameters:** `tensorization`, `rank`, `tau_min`, `tau_denom_min`, `use_transport`,
+`transport_eps`.
 
-**Mathematical operation:**
-$$K_t = \arg\min_{k \in \{1,\ldots,|K|\}} \|z_e - e_k\|^2$$
-$$z_q = e_{K_t} + \operatorname{sg}[z_e - e_{K_t}]$$
-
-where $\operatorname{sg}[\cdot]$ is the stop-gradient operator.
-
-**Source:** {ref}`Section 3.2 <sec-architecture-the-disentangled-vq-vae-rnn>`, line 267.
+**Source:** {ref}`Section 3.2 <sec-architecture-the-disentangled-vq-vae-rnn>`, `atlas.py`.
 :::
 
-### G.1.4 Decoder
+### G.1.4 PrimitiveTopologicalDecoder
 
-:::{prf:definition} G.1.4 (Decoder)
+:::{prf:definition} G.1.4 (PrimitiveTopologicalDecoder)
 :label: def-g-decoder
 
 **Class signature:**
 ```python
-class Decoder(nn.Module):
-    def __init__(self, macro_dim: int, nuisance_dim: int, tex_dim: int, obs_channels: int = 3):
+class PrimitiveTopologicalDecoder(nn.Module):
+    def __init__(self, latent_dim: int, hidden_dim: int, num_charts: int, output_dim: int, ...):
         ...
 
-    def forward(self, z_macro: torch.Tensor, z_nuis: torch.Tensor, z_tex: torch.Tensor) -> torch.Tensor:
+    def forward(self, z_geo: torch.Tensor, z_tex: torch.Tensor | None = None, chart_index: torch.Tensor | None = None) -> Tuple[torch.Tensor, torch.Tensor]:
         ...
 ```
 
 **Input/Output:**
-- Input:
-  - `z_macro` shape `[B, macro_dim]` – Macro latent (quantized)
-  - `z_nuis` shape `[B, nuisance_dim]` – Nuisance latent
-  - `z_tex` shape `[B, tex_dim]` – Texture latent
-- Output: `x_recon` shape `[B, C, H, W]` – Reconstructed observation
+- Input: `z_geo` shape `[B, D]`, optional `z_tex` shape `[B, D]`
+- Output: `(x_hat, router_weights)` where `x_hat` is `[B, D_out]`
 
-**Purpose:** Reconstructs observations from the concatenated latent triple $(K_t, Z_{n,t}, Z_{\mathrm{tex},t})$. Uses transposed convolutions to upsample.
+**Purpose:** Decodes charted geometry latents into reconstructions using chart projectors, a shared
+renderer, and an optional texture residual path.
 
-**Architecture:**
-```
-Linear(macro+nuis+tex → 4096) → GELU → Reshape(256×4×4)
-ConvTranspose2d(256→128, 4×4, stride=2) → GELU
-ConvTranspose2d(128→64, 4×4, stride=2) → GELU
-ConvTranspose2d(64→32, 4×4, stride=2) → GELU
-ConvTranspose2d(32→3, 4×4, stride=2) → Sigmoid
-```
-
-**Source:** {ref}`Section 3.2 <sec-architecture-the-disentangled-vq-vae-rnn>`, line 309.
+**Source:** {ref}`Section 3.2 <sec-architecture-the-disentangled-vq-vae-rnn>`, `atlas.py`.
 :::
 
-### G.1.5 MacroDynamicsModel
+### G.1.5 TopoEncoderPrimitives
 
-:::{prf:definition} G.1.5 (MacroDynamicsModel)
+:::{prf:definition} G.1.5 (TopoEncoderPrimitives)
 :label: def-g-macro-dynamics-model
 
 **Class signature:**
 ```python
-class MacroDynamicsModel(nn.Module):
-    def __init__(self, macro_embed_dim: int, action_dim: int, hidden_dim: int, codebook_size: int):
+class TopoEncoderPrimitives(nn.Module):
+    def __init__(self, input_dim: int, hidden_dim: int, latent_dim: int, num_charts: int, codes_per_chart: int, ...):
         ...
 
-    def forward(self, z_macro: torch.Tensor, action: torch.Tensor, hidden: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+    def forward(self, x: torch.Tensor, use_hard_routing: bool = False) -> Tuple[torch.Tensor, ...]:
         ...
 ```
 
 **Input/Output:**
-- Input:
-  - `z_macro` shape `[B, macro_embed_dim]` – Current macro embedding
-  - `action` shape `[B, action_dim]` – Action taken
-  - `hidden` shape `[B, hidden_dim]` – GRU hidden state
-- Output: `(logits, hidden_next, z_pred)` where:
-  - `logits` shape `[B, codebook_size]` – Logits over next macro state
-  - `hidden_next` shape `[B, hidden_dim]` – Updated hidden state
-  - `z_pred` shape `[B, macro_embed_dim]` – Predicted next embedding
+- Input: `x` shape `[B, D_in]`
+- Output: `(x_recon, vq_loss, enc_weights, dec_weights, K_chart, z_geo, z_n, c_bar)`
 
-**Purpose:** Micro-blind world model that predicts next macro state from current macro state and action. Crucially, this module never sees $Z_n$ or $Z_{\mathrm{tex}}$, enforcing the causal enclosure property.
+**Purpose:** Wrapper that couples encoder and decoder; exposes consistency loss and chart usage
+perplexity helpers.
 
-**Key insight:** By being blind to nuisance and texture, the model forces all predictively relevant information into the macro channel, implementing Definition {prf:ref}`def-causal-enclosure`.
-
-**Architecture:**
-```
-GRUCell(macro_embed + action → hidden)
-MLP(hidden → codebook_size logits)
-MLP(hidden → macro_embed prediction)
-```
-
-**Source:** {ref}`Section 3.2 <sec-architecture-the-disentangled-vq-vae-rnn>`, Definition {prf:ref}`def-causal-enclosure`, line 352.
+**Source:** {ref}`Section 3.2 <sec-architecture-the-disentangled-vq-vae-rnn>`, `atlas.py`.
 :::
 
-### G.1.6 DisentangledAgent
+### G.1.6 Hierarchical Atlas Stack (Optional)
 
-:::{prf:definition} G.1.6 (DisentangledAgent)
+:::{prf:definition} G.1.6 (HierarchicalAtlasStack)
 :label: def-g-disentangled-agent
 
-**Class signature:**
-```python
-class DisentangledAgent(nn.Module):
-    def __init__(self, config: DisentangledConfig):
-        ...
+**Purpose:** Multi-scale atlas stack that extends the TopoEncoder with multiple charted codebooks,
+as defined in {ref}`Section 3.2 <sec-advanced-hierarchical-multi-scale-latents>` and Definition
+{prf:ref}`def-hierarchical-latent`.
 
-    def encode(self, obs: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
-        ...
-
-    def decode(self, z_macro: torch.Tensor, z_nuis: torch.Tensor, z_tex: torch.Tensor) -> torch.Tensor:
-        ...
-
-    def forward(self, obs: torch.Tensor, action: torch.Tensor, hidden: torch.Tensor) -> Dict[str, torch.Tensor]:
-        ...
-```
-
-**Input/Output:**
-- Input:
-  - `obs` shape `[B, C, H, W]` – Observation
-  - `action` shape `[B, action_dim]` – Action
-  - `hidden` shape `[B, hidden_dim]` – Dynamics hidden state
-- Output: Dictionary containing:
-  - `z_macro` shape `[B, macro_embed_dim]` – Quantized macro latent
-  - `z_nuis` shape `[B, nuisance_dim]` – Nuisance latent (mean)
-  - `z_tex` shape `[B, tex_dim]` – Texture latent (mean)
-  - `indices` shape `[B]` – Discrete macro indices
-  - `recon` shape `[B, C, H, W]` – Reconstruction
-  - `next_logits` shape `[B, codebook_size]` – Next-state prediction
-  - `hidden_next` shape `[B, hidden_dim]` – Updated hidden state
-  - `losses` – Dictionary of individual loss terms
-
-**Purpose:** Full split-latent VQ-VAE agent combining encoder, vector quantizer, nuisance/texture heads, decoder, and macro dynamics model. Implements the complete latent decomposition $Z_t = (K_t, Z_{n,t}, Z_{\mathrm{tex},t})$.
-
-**Components:**
-- `encoder` – Shared CNN backbone
-- `vq` – VectorQuantizer for macro discretization
-- `head_macro` – Linear projection to macro embedding
-- `head_nuis_mu/logvar` – Nuisance VAE heads
-- `head_tex_mu/logvar` – Texture VAE heads
-- `decoder` – Reconstruction decoder
-- `dynamics` – MacroDynamicsModel (micro-blind)
-
-**Source:** {ref}`Section 3.2 <sec-architecture-the-disentangled-vq-vae-rnn>`, line 412.
+**Implementation sketch:**
+- Shared feature extractor, multiple chart routers and codebooks
+- Coarser levels update more slowly than fine levels
+- Jump operator links charts across levels when enabled
 :::
 
-### G.1.7 HierarchicalDisentangled
+### G.1.7 Optional Attachments
 
-:::{prf:definition} G.1.7 (HierarchicalDisentangled)
+:::{prf:definition} G.1.7 (TopoEncoderAttachments)
 :label: def-g-hierarchical-disentangled
 
-**Class signature:**
-```python
-class HierarchicalDisentangled(nn.Module):
-    def __init__(
-        self,
-        config: DisentangledConfig,
-        n_levels: int = 3,
-        level_dims: List[int] = [8, 16, 32],
-        level_codebook_sizes: List[int] = [64, 128, 256],
-        level_update_freqs: List[int] = [8, 4, 1],
-    ):
-        ...
-```
+Optional modules frequently attached to the TopoEncoder stack:
 
-**Purpose:** Multi-scale split-latent architecture where each level operates at a different timescale. Inspired by Clockwork VAE and Hierarchical World Models.
-
-**Key parameters:**
-- `n_levels` – Number of hierarchy levels (default 3)
-- `level_dims` – Latent dimension at each level [nat]
-- `level_codebook_sizes` – Number of discrete codes per level
-- `level_update_freqs` – Update frequency (e.g., [8, 4, 1] means level 1 updates every 8 steps)
-
-**Hierarchy structure:**
-- **Level 1 (Slowest):** Global game state, long-term goals
-- **Level 2 (Medium):** Object positions, velocities
-- **Level 3 (Fast):** Fine motor control, reactions
-- **Micro:** Noise (textures, particles)
-
-**Source:** {ref}`Section 3.2 <sec-advanced-hierarchical-multi-scale-latents>`, Definition {prf:ref}`def-hierarchical-latent`, line 1052.
+- `CovariantRetina` (feature extractor) – {prf:ref}`def-g-covariant-retina`
+- `SoftEquivariantLayer` (metric) – {prf:ref}`def-g-soft-equivariant-layer`
+- `FactorizedJumpOperator` (chart transitions)
+- `InvariantChartClassifier` (detached readout)
 :::
 
----
+### G.1.8 Architecture Diagrams
 
+The following diagrams illustrate the current TopoEncoder implementation in
+`src/fragile/core/layers/atlas.py` and `src/experiments/topoencoder_2d.py`.
+
+#### CovariantChartRouter (Standalone)
+
+```{mermaid}
+%%{init: {"themeVariables": {"background":"#0b111b","edgeLabelBackground":"#111827","textColor":"#e5e7eb","lineColor":"#9ca3af","primaryColor":"#1f2937","primaryTextColor":"#e5e7eb","clusterBkg":"#0f172a","clusterBorder":"#334155"}}}%%
+flowchart TD
+    subgraph ROUTER["CovariantChartRouter (shared by encoder + decoder)"]
+        Z["z [B, D]"] -- "z [B, D]" --> Qz["q_z_proj(z) [B, K]"]
+        F["features [B, H]\n(encoder only)"] -- "features [B, H]" --> Qfeat["q_feat_proj(features) [B, K]"]
+        Z -- "z [B, D]" --> Gamma["Christoffel term (z ⊗ z)\n-> gamma [B, K]"]
+        Qz -- "q_z [B, K]" --> Qsum["q = q_z + gamma (+ q_feat) [B, K]"]
+        Qfeat -- "q_feat [B, K]" --> Qsum
+        Gamma -- "gamma [B, K]" --> Qsum
+
+        Z -- "z [B, D]" --> Transport["transport_proj(z) -> skew [B, K, K]\n(if use_transport)"]
+        Transport -- "skew [B, K, K]" --> Cayley["Cayley: U(z) = (I+0.5S)^-1 (I-0.5S)"]
+        ChartTokens["chart_tokens c_k [N_c, D or K]\n(encoder: chart_centers)"] -- "c_k [N_c, D]" --> KeyProj["chart_key_proj [N_c, K]"]
+        ChartTokens -.->|if K| KeyMerge
+        ChartQ["chart_queries [N_c, K]\n(decoder default)"] -- "chart_queries [N_c, K]" --> KeyMerge["base_queries [N_c, K]"]
+        KeyProj -- "projected [N_c, K]" --> KeyMerge
+        KeyMerge -- "base_queries [N_c, K]" --> Keys["keys = U(z) * base_queries [B, N_c, K]\n(or base_queries if transport disabled)"]
+        Cayley -- "U(z) [B, K, K]" --> Keys
+
+        Keys -- "keys [B, N_c, K]" --> Scores["scores = sum(keys * q) [B, N_c]"]
+        Z -- "z [B, D]" --> Tau["tau(z) = sqrt(K) * (1 - ||z||^2)/2\nclamp denom + tau_min"]
+        Scores -- "scores [B, N_c]" --> Scale["scores / tau"]
+        Tau -- "tau [B]" --> Scale
+        Scale -- "scores/tau [B, N_c]" --> W["w = softmax(scores/tau) [B, N_c]"]
+        W -- "argmax [B]" --> Kchart["K_chart [B]"]
+    end
+
+    subgraph TENS["Christoffel tensorization options"]
+        Full["full: gamma = einsum(z_i z_j, W_q_gamma[k,i,j])"]
+        Sum["sum: low-rank (U_k x V_k) with rank R"]
+    end
+
+    classDef io fill:#0b1320,stroke:#93c5fd,stroke-width:1px,color:#e5e7eb;
+    classDef feat fill:#111827,stroke:#22d3ee,stroke-width:1px,color:#e5e7eb;
+    classDef router fill:#2b1f1f,stroke:#f59e0b,stroke-width:1px,color:#e5e7eb;
+    classDef geom fill:#1f2937,stroke:#a78bfa,stroke-width:1px,color:#e5e7eb;
+    classDef util fill:#262626,stroke:#a3a3a3,stroke-width:1px,color:#e5e7eb;
+
+    class Z,Kchart geom;
+    class F,Qfeat feat;
+    class Qz,Gamma,Qsum,Transport,Cayley,ChartTokens,KeyProj,ChartQ,KeyMerge,Keys,Scores,Tau,Scale,W router;
+    class Full,Sum util;
+```
+
+#### Full TopoEncoder (Encoder + Decoder)
+
+```{mermaid}
+%%{init: {"themeVariables": {"background":"#0b111b","edgeLabelBackground":"#111827","textColor":"#e5e7eb","lineColor":"#9ca3af","primaryColor":"#1f2937","primaryTextColor":"#e5e7eb","clusterBkg":"#0f172a","clusterBorder":"#334155"}}}%%
+flowchart TD
+    subgraph TOP["TopoEncoderPrimitives (current code)"]
+        subgraph ENC["PrimitiveAttentiveAtlasEncoder"]
+            X["Input x [B, D_in]"] -- "x [B, D_in]" --> FE["Feature extractor\nMLP: SpectralLinear -> NormGatedGELU x2\nor CovariantRetina (vision_preproc)"]
+            FE -- "features [B, H]" --> F["features [B, H]"]
+            F -- "features [B, H]" --> Vproj["val_proj: SpectralLinear\nv [B, D]"]
+            ChartCenters["chart_centers c_k [N_c, D]"] -- "c_k [N_c, D]" --> RouterEnc["Chart router\nCovariantChartRouter (covariant_attn)\nelse dot-product w/ chart_centers"]
+            F -- "features [B, H]" --> RouterEnc
+            Vproj -- "z = v [B, D]" --> RouterEnc
+            RouterEnc -- "w_enc [B, N_c]" --> Wenc["w_enc [B, N_c]"]
+            RouterEnc -- "K_chart [B]" --> Kchart["K_chart [B]"]
+
+            Wenc -- "w_enc [B, N_c]" --> Cbar["c_bar = sum(w_enc * c_k) [B, D]"]
+            ChartCenters -- "c_k [N_c, D]" --> Cbar
+            Vproj -- "v [B, D]" --> Vlocal["v_local = v - c_bar [B, D]"]
+            Cbar -- "c_bar [B, D]" --> Vlocal
+
+            Codebook["Codebook (deltas) [N_c, K, D]"] -- "codebook [N_c, K, D]" --> Diff["diff = v_local - codebook [B, N_c, K, D]"]
+            Vlocal -- "v_local [B, D]" --> Diff
+            Diff -- "diff [B, N_c, K, D]" --> SoftEq["SoftEquivariantLayer per chart\n(optional when soft_equiv_metric)"]
+            SoftEq -- "diff' [B, N_c, K, D]" --> Dist["dist = ||diff'||^2 [B, N_c, K]"]
+            Diff -.-> Dist
+            Dist -- "dist [B, N_c, K]" --> Indices["indices per chart [B, N_c]"]
+            Indices -- "indices [B, N_c]" --> ZqAll["z_q_all [B, N_c, D]\n(gather; + soft-ST if soft_equiv_soft_assign)"]
+            ZqAll -- "z_q_all [B, N_c, D]" --> ZqBlend["z_q_blended = sum(w_enc * z_q_all)"]
+
+            Indices -- "indices [B, N_c]" --> Kcode["K_code (from K_chart)"]
+            Kchart -- "K_chart [B]" --> Kcode
+
+            ZqAll -- "z_q_all [B, N_c, D]" --> VQLoss["vq_loss = codebook + 0.25 * commitment"]
+            Vlocal -- "v_local [B, D]" --> VQLoss
+
+            ZqAll -- "z_q_all [B, N_c, D]" --> DeltaAll["delta_all = v_local - z_q_all (detach)"]
+            DeltaAll -- "delta_all [B, N_c, D]" --> Struct["structure_filter\nIsotropicBlock + SpectralLinear"]
+            Struct -- "z_n_all_charts [B, N_c, D]" --> ZnAll["z_n_all_charts [B, N_c, D]"]
+            ZnAll -- "z_n_all_charts [B, N_c, D]" --> Zn["z_n = sum(w_enc * z_n_all_charts) [B, D]"]
+            ZqBlend -- "z_q_blended [B, D]" --> DeltaBlend["delta_blended = v_local - z_q_blended (detach)"]
+            DeltaBlend -- "delta_blended [B, D]" --> Ztex["z_tex = delta_blended - z_n"]
+
+            ZqBlend -- "z_q_blended [B, D]" --> ZqSt["z_q_st = v_local + (z_q_blended - v_local).detach"]
+            ZqSt -- "z_q_st [B, D]" --> Zgeo["z_geo = c_bar + z_q_st + z_n"]
+            Zn -- "z_n [B, D]" --> Zgeo
+            Cbar -- "c_bar [B, D]" --> Zgeo
+
+            ZnAll -- "z_n_all_charts [B, N_c, D]" --> Jump["FactorizedJumpOperator (optional)"]
+        end
+
+        subgraph DEC["PrimitiveTopologicalDecoder"]
+            Zgeo -- "z_geo [B, D]" --> TanhG["tanh(z_geo)"]
+            TanhG -- "tanh(z_geo) [B, D]" --> RouterDec["Chart router\nCovariantChartRouter (covariant_attn)\nelse latent_router + softmax"]
+            RouterDec -- "w_dec [B, N_c]" --> Wdec["w_dec [B, N_c]"]
+            ChartIdx["chart_index (optional)"] -- "K_chart [B]" --> OneHot["one-hot -> w_hard"]
+            OneHot -- "w_dec_hard [B, N_c]" --> Wdec
+
+            TanhG -- "tanh(z_geo) [B, D]" --> ChartProj["chart_projectors: SpectralLinear x N_c"]
+            ChartProj -- "h_i [B, N_c, H]" --> Gate["NormGatedGELU on h_stack"]
+            Gate -- "h_stack [B, N_c, H]" --> Mix["h_global = sum(w_dec * h_stack)"]
+            Wdec -- "w_dec [B, N_c]" --> Mix
+
+            Mix -- "h_global [B, H]" --> Renderer["renderer: SpectralLinear + NormGatedGELU x2 + SpectralLinear"]
+            Mix -- "h_global [B, H]" --> Skip["render_skip: SpectralLinear"]
+            Renderer -- "h_render [B, D_out]" --> AddSkip["x_hat_base = renderer + skip"]
+            Skip -- "h_skip [B, D_out]" --> AddSkip
+
+            Ztex -- "z_tex [B, D]" --> TanhT["tanh(z_tex)"]
+            TanhT -- "tanh(z_tex) [B, D]" --> TexRes["tex_residual: SpectralLinear"]
+            TexRes -- "tex_resid [B, D_out]" --> AddTex["x_hat = x_hat_base + tex_residual_scale * tex_residual"]
+            AddSkip -- "x_hat_base [B, D_out]" --> AddTex
+            AddTex -- "x_hat [B, D_out]" --> Xhat["x_hat [B, D_out]"]
+        end
+    end
+
+    classDef io fill:#0b1320,stroke:#93c5fd,stroke-width:1px,color:#e5e7eb;
+    classDef feat fill:#111827,stroke:#22d3ee,stroke-width:1px,color:#e5e7eb;
+    classDef router fill:#2b1f1f,stroke:#f59e0b,stroke-width:1px,color:#e5e7eb;
+    classDef vq fill:#1f2f2a,stroke:#34d399,stroke-width:1px,color:#e5e7eb;
+    classDef geom fill:#1f2937,stroke:#a78bfa,stroke-width:1px,color:#e5e7eb;
+    classDef residual fill:#3b1f2b,stroke:#f472b6,stroke-width:1px,color:#e5e7eb;
+    classDef decoder fill:#1f2b3b,stroke:#60a5fa,stroke-width:1px,color:#e5e7eb;
+    classDef util fill:#262626,stroke:#a3a3a3,stroke-width:1px,color:#e5e7eb;
+
+    class X,Xhat,ChartIdx,Kchart io;
+    class FE,F,Vproj,Struct feat;
+    class RouterEnc,RouterDec,Wenc,Wdec,OneHot router;
+    class Codebook,Diff,SoftEq,Dist,Indices,ZqAll,ZqBlend,VQLoss,Kcode vq;
+    class ChartCenters,Cbar,Vlocal,Zgeo,ZqSt,ZnAll,Zn geom;
+    class DeltaAll,DeltaBlend,Ztex,TanhT,TexRes residual;
+    class TanhG,ChartProj,Gate,Mix,Renderer,Skip,AddSkip,AddTex decoder;
+    class Jump util;
+```
+
+#### Decoder Detail (Inverse Atlas, Router External)
+
+```{mermaid}
+%%{init: {"themeVariables": {"background":"#0b111b","edgeLabelBackground":"#111827","textColor":"#e5e7eb","lineColor":"#9ca3af","primaryColor":"#1f2937","primaryTextColor":"#e5e7eb","clusterBkg":"#0f172a","clusterBorder":"#334155"}}}%%
+flowchart TD
+    subgraph DEC["PrimitiveTopologicalDecoder (current code)"]
+        Zgeo["z_geo = c_bar + z_q_st + z_n [B, D]"] -- "z_geo [B, D]" --> TanhG["tanh(z_geo)"]
+        TanhG -- "tanh(z_geo) [B, D]" --> RouterDec["Chart router\nCovariantChartRouter (covariant_attn)\nelse latent_router + softmax"]
+        RouterDec -- "w_dec [B, N_c]" --> Wdec["w_dec [B, N_c]"]
+        ChartIdx["chart_index (optional)"] -- "K_chart [B]" --> OneHot["one-hot -> w_hard"]
+        OneHot -- "w_dec_hard [B, N_c]" --> Wdec
+
+        TanhG -- "tanh(z_geo) [B, D]" --> ChartProj["chart_projectors: SpectralLinear x N_c"]
+        ChartProj -- "h_i [B, N_c, H]" --> Gate["NormGatedGELU on h_stack"]
+        Gate -- "h_stack [B, N_c, H]" --> Mix["h_global = sum(w_dec * h_stack)"]
+        Wdec -- "w_dec [B, N_c]" --> Mix
+
+        Mix -- "h_global [B, H]" --> Renderer["renderer: SpectralLinear + NormGatedGELU x2 + SpectralLinear"]
+        Mix -- "h_global [B, H]" --> Skip["render_skip: SpectralLinear"]
+        Renderer -- "h_render [B, D_out]" --> AddSkip["x_hat_base = renderer + skip"]
+        Skip -- "h_skip [B, D_out]" --> AddSkip
+
+        Ztex["z_tex [B, D]"] -- "z_tex [B, D]" --> TanhT["tanh(z_tex)"]
+        TanhT -- "tanh(z_tex) [B, D]" --> TexRes["tex_residual: SpectralLinear"]
+        TexRes -- "tex_resid [B, D_out]" --> AddTex["x_hat = x_hat_base + tex_residual_scale * tex_residual"]
+        AddSkip -- "x_hat_base [B, D_out]" --> AddTex
+        AddTex -- "x_hat [B, D_out]" --> Xhat["x_hat [B, D_out]"]
+    end
+
+    classDef io fill:#0b1320,stroke:#93c5fd,stroke-width:1px,color:#e5e7eb;
+    classDef router fill:#2b1f1f,stroke:#f59e0b,stroke-width:1px,color:#e5e7eb;
+    classDef geom fill:#1f2937,stroke:#a78bfa,stroke-width:1px,color:#e5e7eb;
+    classDef residual fill:#3b1f2b,stroke:#f472b6,stroke-width:1px,color:#e5e7eb;
+    classDef decoder fill:#1f2b3b,stroke:#60a5fa,stroke-width:1px,color:#e5e7eb;
+
+    class Zgeo geom;
+    class RouterDec,Wdec,OneHot router;
+    class ChartIdx,Xhat io;
+    class TanhG,ChartProj,Gate,Mix,Renderer,Skip,AddSkip,AddTex decoder;
+    class Ztex,TanhT,TexRes residual;
+```
+
+#### Experiment Wiring (Supervised + Jump + Learned Precisions)
+
+Supervised topology loss, jump consistency, learned precisions, and the invariant
+classifier readout are optional in `src/experiments/topoencoder_2d.py`. The classifier
+head is detached from atlas gradients and trained with its own optimizer.
+
+```{mermaid}
+%%{init: {"themeVariables": {"background":"#0b111b","edgeLabelBackground":"#111827","textColor":"#e5e7eb","lineColor":"#9ca3af","primaryColor":"#1f2937","primaryTextColor":"#e5e7eb","clusterBkg":"#0f172a","clusterBorder":"#334155"}}}%%
+flowchart TD
+    X["batch_X"] --> Enc["TopoEncoderPrimitives.encoder"]
+    Enc -- "z_geo [B, D]" --> Dec["TopoEncoderPrimitives.decoder"]
+    Enc -- "z_tex [B, D]" --> Dec
+    Dec -- "recon_a [B, D_in]" --> ReconLoss["recon_loss = mse(recon_a, batch_X)"]
+    X --> ReconLoss
+
+    Enc -- "vq_loss" --> VQLoss["vq_loss (codebook + commitment)"]
+
+    ReconLoss --> ReconTerm["recon_term\n(optional learned precision)"]
+    VQLoss --> VQTerm["vq_term\n(optional learned precision)"]
+
+    Enc -- "enc_w [B, N_c]" --> Sup["SupervisedTopologyLoss (optional)"]
+    Enc -- "z_geo [B, D]" --> Sup
+    Y["batch_labels [B]"] --> Sup
+    Sup -- "sup_total + components" --> SupTerm["sup_term\n(optional learned precision)"]
+
+    Enc -- "z_n_all_charts [B, N_c, D]" --> Jump["FactorizedJumpOperator (optional)"]
+    Enc -- "enc_w [B, N_c]" --> Jump
+    Jump -- "jump_loss (schedule weight)" --> LossA["atlas loss\n(recon + vq + regs + jump + sup)"]
+
+    ReconTerm --> LossA
+    VQTerm --> LossA
+    SupTerm -- "sup_weight * sup_term" --> LossA
+
+    Enc -- "enc_w (detach)" --> Cls["InvariantChartClassifier (optional)"]
+    Enc -- "z_geo (detach)" --> Cls
+    Y --> CE["cross_entropy"]
+    Cls -- "logits [B, C]" --> CE
+    CE --> OptCls["opt_classifier.step()"]
+```
+
+**Notes:**
+- `sup_acc` is computed from `enc_w @ p_y_given_k` and does not backpropagate.
+- Jump weighting follows `get_jump_weight_schedule(jump_warmup, jump_ramp_end, jump_weight)`.
+- Learned precisions apply to recon/vq/sup via `_apply_precision` when enabled.
+- Other regularizers (entropy, consistency, tiered losses) are omitted from the diagram.
+
+---
 ## G.2 Supervised Topology Modules
 
 These modules implement the supervised topology framework from {ref}`Section 25 <sec-supervised-topology-semantic-potentials-and-metric-segmentation>`, ensuring chart purity and class-consistent transitions.
@@ -1556,13 +1691,12 @@ class CovariantAttentionLayer(nn.Module):
 
 | Module | Section | Domain | Key Dependencies | Purpose |
 |:-------|:--------|:-------|:-----------------|:--------|
-| `DisentangledConfig` | 3.2 | VAE | — | Configuration for split-latent agent |
-| `Encoder` | 3.2 | VAE | — | CNN backbone for observations |
-| `VectorQuantizer` | 3.2 | VAE | — | Discrete macro symbol via straight-through |
-| `Decoder` | 3.2 | VAE | — | Reconstruction from $(K, Z_n, Z_{\text{tex}})$ |
-| `MacroDynamicsModel` | 3.2 | VAE | — | Micro-blind world model |
-| `DisentangledAgent` | 3.2 | VAE | Encoder, VQ, Decoder, MacroDynamics | Full split-latent VQ-VAE |
-| `HierarchicalDisentangled` | 3.2 | VAE | DisentangledAgent | Multi-scale temporal hierarchy |
+| `TopoEncoderConfig` | 3.2 | Atlas | — | Configuration for TopoEncoder benchmark |
+| `PrimitiveAttentiveAtlasEncoder` | 3.2 | Atlas | CovariantChartRouter | Charted encoder with per-chart VQ |
+| `CovariantChartRouter` | 3.2 | Atlas | — | Routing with transport and temperature |
+| `PrimitiveTopologicalDecoder` | 3.2 | Atlas | CovariantChartRouter | Charted decoder with router |
+| `TopoEncoderPrimitives` | 3.2 | Atlas | Encoder, Decoder | Full Attentive Atlas stack |
+| `HierarchicalAtlasStack` | 3.2 | Atlas | TopoEncoderPrimitives | Multi-scale atlas stack |
 | `SupervisedTopologyLoss` | 25 | Topology | — | Chart purity, balance, separation losses |
 | `class_modulated_jump_rate` | 25 | Topology | — | Class-consistent transition rates |
 | `LorentzianConfig` | 33 | Memory | — | Configuration for causal memory |
@@ -1600,11 +1734,13 @@ class CovariantAttentionLayer(nn.Module):
 The architecture modules have the following dependency structure:
 
 ```
-DisentangledAgent
-├── Encoder
-├── VectorQuantizer
-├── Decoder
-└── MacroDynamicsModel
+TopoEncoderPrimitives
+├── PrimitiveAttentiveAtlasEncoder
+│   ├── CovariantChartRouter (optional)
+│   ├── SoftEquivariantLayer (optional)
+│   └── CovariantRetina (optional)
+└── PrimitiveTopologicalDecoder
+    └── CovariantChartRouter (optional)
 
 GeodesicCrossAttention
 ├── CovariantAttention (×4-5 heads)

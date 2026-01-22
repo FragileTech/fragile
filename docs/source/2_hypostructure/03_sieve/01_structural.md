@@ -195,7 +195,7 @@ This diagram is large. For better viewing:
 - **Download**: In Mermaid Live Editor, use the export button to download as SVG or PNG
 :::
 
-```mermaid
+```{mermaid}
 graph TD
     Start(["<b>START DIAGNOSTIC</b>"]) --> EnergyCheck{"<b>1. D_E:</b> Is Energy Finite?<br>E[Φ] < ∞"}
 

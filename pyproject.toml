@@ -46,9 +46,9 @@ dependencies = [
     "flogging",
     "pre-commit",
     "click",
-    "torch",
+    "torch>=1.13.1,<2.0",
     "numba",
-    "numpy",
+    "numpy<2.0",
     "einops",
     "hydraclick",
     "panel",
@@ -71,6 +71,10 @@ dependencies = [
     "e2cnn>=0.2.3",
     "mlflow>=3.8.1",
     "plotly>=6.5.2",
+    "torchvision>=0.14.1,<0.15",
+    "pytest>=9.0.2",
+    # "plangym>=0.1.30",  # Disabled: causes dependency conflicts
+    "gymnasium>=1.2.3",
 ]  # ToDo: Modify according to your needs!
 [project.urls]
 # important URLs for this project
@@ -105,10 +109,6 @@ docs = [
     "sphinx-tippy",
     "sphinx-proof",
 ]
-[tool.rye]
-managed = true
-universal = true
-dev-dependencies = ["hatch"]
 [tool.hatch.metadata]
 # direct dependency references, e.g `pip @ git+https://github.com/pypa/pip.git@master`
 allow-direct-references = true
@@ -123,21 +123,6 @@ packages = ["src/fragile"]
 exclude = [
     "/.github",
 ]
-
-[tool.rye.scripts]
-lint = { cmd = "hatch run lint:all" }
-style = { cmd = "hatch run lint:style" }
-check = { cmd = "hatch run lint:check" }
-test = { cmd = "hatch run test:test" }
-doctest = { cmd = "hatch run test:doctest" }
-cov = { cmd = "hatch run test:cov" }
-no-cov = { cmd = "hatch run test:no-cov" }
-debug = { cmd = "hatch run test:debug" }
-docs = { cmd = "hatch run docs:docs" }
-build-docs = { cmd = "hatch run docs:build"}
-sphinx = { cmd = "hatch run docs:sphinx" }
-serve-docs = { cmd = "hatch run docs:serve" }
-all = {chain= ["lint", "build-docs", "test"]}
 
 [tool.ruff]
 # Assume Python 3.10
@@ -196,7 +181,39 @@ ignore = [
     "PTH123", "PLR6301", "PLR0917", "S311", "S403", "PLR0914", "PLR0915", "S608",
     "EM102", "PTH111", "FIX004", "UP035", "PLW2901", "S318", "S404",
     "S408", 'S405', 'S607', 'S603',
-    'E902', "TD001", "TD002", "FIX001", "T201", "PLW3201", "RUF052",
+    'E902', "TD001", "TD002", "FIX001", "T201", "PLW3201",
+    "RUF001", "RUF002", "RUF003",  # Allow Greek/unicode in strings, docstrings, comments
+    "N806",  # Allow uppercase variable names (physics notation: T, G, B, etc.)
+    "N816",  # Allow mixedCase in global scope (physics notation: eps_F, k_B, etc.)
+    "N803",  # Allow uppercase argument names (physics notation: G, T, B, etc.)
+    "N802",  # Allow uppercase function names (physics notation)
+    "N815",  # Allow mixedCase in class scope (physics notation: k_B_T, etc.)
+    "N801",  # Allow non-CapWords class names (custom sphinx nodes, etc.)
+    "N812",  # Allow lowercase imported as non-lowercase (physics constants)
+    "PERF203",  # Allow try-except in loops (acceptable for validation code)
+    "PLR2004",  # Allow magic values in comparisons (physics constants, tests)
+    "ARG001", "ARG002", "ARG004",  # Allow unused arguments (interface conformance)
+    "NPY002",  # Allow legacy numpy.random (existing codebase)
+    "PLR0912",  # Allow many branches (complex physics logic)
+    "FBT003",  # Allow boolean positional values
+    "PLC0415",  # Allow imports not at top (conditional imports)
+    "E402",  # Allow module imports not at top
+    "PERF401",  # Allow manual list construction
+    "PTH118", "PTH110", "PTH119", "PTH120", "PTH103", "PTH122", "PTH112",  # Allow os.path usage
+    "PLR1702",  # Allow many nested blocks
+    "PLC2701",  # Allow private imports
+    "INP001",  # Allow implicit namespace packages
+    "S110", "S112", "S108",  # Allow try-except-pass patterns
+    "E741",  # Allow ambiguous variable names (l, O, I - common in math)
+    "PLR0911",  # Allow many return statements
+    "PLR0904",  # Allow many public methods
+    "PLC2401", "PLC0206",  # Allow non-ASCII identifiers
+    "ISC003",  # Allow implicit string concat
+    "FURB113", "FURB101", "FURB103",  # Allow open/read/write patterns
+    "RUF100",  # Allow unused noqa directives (transitional)
+    "E501",  # Allow long lines (physics formulas, etc.)
+    "S301",  # Allow pickle (trusted data)
+    "PLR6104",  # Allow non-augmented assignment
 ]
 # Allow autofix for all enabled rules (when `--fix`) is provided.
 fixable = ["ALL"]
