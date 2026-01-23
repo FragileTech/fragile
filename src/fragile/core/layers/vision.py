@@ -130,11 +130,13 @@ class CovariantRetina(nn.Module):
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         e2nn = self._e2nn
+        # Lift input into a steerable (equivariant) field.
         x = e2nn.GeometricTensor(
             x,
             e2nn.FieldType(self.r2_act, x.shape[1] * [self.r2_act.trivial_repr]),
         )
 
+        # Equivariant feature extraction in the SO(2)/O(2) field space.
         x = self.lift(x)
         x = self.relu1(x)
         x = self.conv1(x)
@@ -142,6 +144,7 @@ class CovariantRetina(nn.Module):
         x = self.conv2(x)
         x = self.relu3(x)
 
+        # Pool over the group to obtain rotation-invariant features.
         x = self.group_pool(x)
         x = x.tensor
         x = self.spatial_pool(x)
@@ -272,10 +275,12 @@ class CovariantRetinaDecoder(nn.Module):
 
     def forward(self, z: torch.Tensor) -> torch.Tensor:
         e2nn = self._e2nn
+        # Expand latent code into an equivariant feature field.
         h = self.fc(z)
         h = h.view(z.shape[0], self.feature_type_64.size, self.base_size, self.base_size)
         x = e2nn.GeometricTensor(h, self.feature_type_64)
 
+        # Progressive equivariant upsampling to target resolution.
         x = self.conv1(x)
         x = self.relu1(x)
         x = self.up1(x)

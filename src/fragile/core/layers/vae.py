@@ -87,6 +87,7 @@ class VectorQuantizer(nn.Module):
             vq_loss: [] codebook + commitment loss
         """
         embed = self.embedding.weight  # [K, D]
+        # Nearest-code lookup in macro latent space.
         z_sq = (z_e**2).sum(dim=1, keepdim=True)  # [B, 1]
         e_sq = (embed**2).sum(dim=1).unsqueeze(0)  # [1, K]
         dot = torch.matmul(z_e, embed.t())  # [B, K]
@@ -99,6 +100,7 @@ class VectorQuantizer(nn.Module):
         codebook = F.mse_loss(z_q, z_e.detach())  # []
         vq_loss = codebook + self.beta * commitment  # []
 
+        # Straight-through estimator preserves encoder gradients.
         z_q_st = z_e + (z_q - z_e).detach()  # [B, D]
         return z_q_st, indices, vq_loss
 
@@ -191,6 +193,7 @@ class MacroDynamicsModel(nn.Module):
             hidden_next: [B, Dh] updated hidden state
             z_pred: [B, Dm] predicted next embedding
         """
+        # Macro dynamics ignore micro texture; action drives macro transitions.
         x = torch.cat([z_macro, action], dim=-1)  # [B, Dm+Da]
         hidden_next = self.gru(x, hidden)  # [B, Dh]
         logits = self.logits_head(hidden_next)  # [B, K]
@@ -234,9 +237,11 @@ class DisentangledAgent(nn.Module):
             stats: dict of latent tensors with shapes annotated in comments
         """
         h = self.encoder(obs)  # [B, H]
+        # Macro code represents discrete world-state ("chart") summary.
         z_macro_e = self.head_macro(h)  # [B, Dm]
         z_macro_q, indices, vq_loss = self.vq(z_macro_e)  # [B, Dm], [B], []
 
+        # Nuisance/texture are modeled as Gaussian latents.
         nuis_mu = self.head_nuis_mu(h)  # [B, Dn]
         nuis_logvar = self.head_nuis_logvar(h)  # [B, Dn]
         tex_mu = self.head_tex_mu(h)  # [B, Dt]
@@ -273,12 +278,14 @@ class DisentangledAgent(nn.Module):
         tex_mu = stats["tex_mu"]  # [B, Dt]
         tex_logvar = stats["tex_logvar"]  # [B, Dt]
 
+        # Reparameterize continuous latents (nuisance, texture).
         eps_n = torch.randn_like(nuis_mu)  # [B, Dn]
         eps_t = torch.randn_like(tex_mu)  # [B, Dt]
         z_nuis = nuis_mu + eps_n * torch.exp(0.5 * nuis_logvar)  # [B, Dn]
         z_tex = tex_mu + eps_t * torch.exp(0.5 * tex_logvar)  # [B, Dt]
 
         if self.training and self.config.tex_dropout_prob > 0.0:
+            # Texture dropout encourages robustness to micro-variations.
             keep = (
                 torch.rand(z_tex.shape[0], 1, device=z_tex.device) > self.config.tex_dropout_prob
             ).float()  # [B, 1]
@@ -320,12 +327,14 @@ class DisentangledAgent(nn.Module):
         tex_mu = stats["tex_mu"]  # [B, Dt]
         tex_logvar = stats["tex_logvar"]  # [B, Dt]
 
+        # Reparameterize continuous latents (nuisance, texture).
         eps_n = torch.randn_like(nuis_mu)  # [B, Dn]
         eps_t = torch.randn_like(tex_mu)  # [B, Dt]
         z_nuis = nuis_mu + eps_n * torch.exp(0.5 * nuis_logvar)  # [B, Dn]
         z_tex = tex_mu + eps_t * torch.exp(0.5 * tex_logvar)  # [B, Dt]
 
         if self.training and self.config.tex_dropout_prob > 0.0:
+            # Texture dropout encourages robustness to micro-variations.
             keep = (
                 torch.rand(z_tex.shape[0], 1, device=z_tex.device) > self.config.tex_dropout_prob
             ).float()  # [B, 1]
@@ -338,6 +347,7 @@ class DisentangledAgent(nn.Module):
         )  # [B, K], [B, Dh], [B, Dm]
 
         recon_loss = F.mse_loss(recon, obs)  # []
+        # KL terms regularize nuisance/texture to Gaussian priors.
         nuis_kl = (
             -0.5 * (1.0 + nuis_logvar - nuis_mu.pow(2) - nuis_logvar.exp()).sum(dim=1).mean()
         )  # []

@@ -165,6 +165,7 @@ class TemporalChristoffelQuery(nn.Module):
         q_t = self.w_t(t)  # [B, d_out]
         q_v = self.w_v(v_feat) if v_feat is not None else torch.zeros_like(q_x)  # [B, d_out]
 
+        # Quadratic and mixed terms approximate temporal Christoffel-symbol corrections.
         q_zz = torch.einsum("bi,oij,bj->bo", z, self.w_zz, z)  # [B, d_out]
         q_tt = (t.squeeze(-1) ** 2).unsqueeze(-1) * self.w_tt  # [B, d_out]
         q_zt = t * torch.matmul(z, self.w_zt.t())  # [B, d_out]
@@ -215,13 +216,16 @@ class LorentzianMemoryAttention(nn.Module):
         k = self.key_proj(x_mem)  # [B, N, d_model]
         v = self.value_proj(x_mem)  # [B, N, d_model]
 
+        # Geodesic distance sets Wilson-style attenuation in memory.
         d_g = self.metric.geodesic_distance(z, z_mem)  # [B, N]
         wilson = torch.exp(-self.wilson_scale * d_g)  # [B, N]
 
+        # Metric temperature rescales logits in curved space.
         tau = self.metric.temperature(z, k.shape[-1])  # [B, 1]
         scores = (q.unsqueeze(1) * k).sum(dim=-1)  # [B, N]
         scores = scores * wilson / (tau + 1e-6)  # [B, N]
 
+        # Light-cone mask enforces Lorentzian causality.
         mask = self.causal_mask(z, t, z_mem, t_mem)  # [B, N]
         scores = scores.masked_fill(mask == 0.0, -1e9)  # [B, N]
 
@@ -229,5 +233,6 @@ class LorentzianMemoryAttention(nn.Module):
         weights *= mask  # [B, N]
         weights /= weights.sum(dim=-1, keepdim=True) + 1e-08  # [B, N]
 
+        # Aggregate values from causal, geodesically-weighted memory.
         output = (weights.unsqueeze(-1) * v).sum(dim=1)  # [B, d_model]
         return output, weights

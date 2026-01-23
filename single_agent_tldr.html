@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Single Agent Architecture as Field Theory: Technical TLDR</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+  </style>
+  <link rel="stylesheet" href="/tmp/tldr_style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" type="text/javascript"></script>
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({ startOnLoad: true, theme: 'dark' });
+  </script>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Single Agent Architecture as Field Theory: Technical TLDR</h1>
+</header>
+<h1 id="single-agent-architecture-as-field-theory-technical-tldr">Single Agent Architecture as Field Theory: Technical TLDR</h1>
+<p>Guillem Duran Ballester, Jan 2026</p>
+<h2 id="architecture">0. Architecture</h2>
+<p>The following diagrams illustrate the current implementation architecture of the TopoEncoder system, showing how observations are encoded into the split-latent space <span class="math inline">\((K, z_n, z_{tex})\)</span> and decoded back to reconstructions. These diagrams mirror the code in <code>src/fragile/core/layers/atlas.py</code> and <code>src/experiments/topoencoder_2d.py</code>.</p>
+<h3 id="covariantchartrouter">0.1 CovariantChartRouter</h3>
+<p>The chart router is shared by both encoder and decoder. It performs metric-aware, covariant chart assignment using: - Geodesic query terms (linear + quadratic Christoffel correction) - Wilson-line transport via Cayley transform for gauge invariance - Position-dependent temperature scaled by local metric (conformal factor)</p>
+<pre class="mermaid"><code>%%{init: {&quot;themeVariables&quot;: {&quot;background&quot;:&quot;#0b111b&quot;,&quot;edgeLabelBackground&quot;:&quot;#111827&quot;,&quot;textColor&quot;:&quot;#e5e7eb&quot;,&quot;lineColor&quot;:&quot;#9ca3af&quot;,&quot;primaryColor&quot;:&quot;#1f2937&quot;,&quot;primaryTextColor&quot;:&quot;#e5e7eb&quot;,&quot;clusterBkg&quot;:&quot;#0f172a&quot;,&quot;clusterBorder&quot;:&quot;#334155&quot;}}}%%
+flowchart TD
+    subgraph ROUTER[&quot;CovariantChartRouter (shared by encoder + decoder)&quot;]
+        Z[&quot;z [B, D]&quot;] -- &quot;z [B, D]&quot; --&gt; Qz[&quot;q_z_proj(z) [B, K]&quot;]
+        F[&quot;features [B, H]\n(encoder only)&quot;] -- &quot;features [B, H]&quot; --&gt; Qfeat[&quot;q_feat_proj(features) [B, K]&quot;]
+        Z -- &quot;z [B, D]&quot; --&gt; Gamma[&quot;Christoffel term (z ⊗ z)\n-&gt; gamma [B, K]&quot;]
+        Qz -- &quot;q_z [B, K]&quot; --&gt; Qsum[&quot;q = q_z + gamma (+ q_feat) [B, K]&quot;]
+        Qfeat -- &quot;q_feat [B, K]&quot; --&gt; Qsum
+        Gamma -- &quot;gamma [B, K]&quot; --&gt; Qsum
+
+        Z -- &quot;z [B, D]&quot; --&gt; Transport[&quot;transport_proj(z) -&gt; skew [B, K, K]\n(if use_transport)&quot;]
+        Transport -- &quot;skew [B, K, K]&quot; --&gt; Cayley[&quot;Cayley: U(z) = (I+0.5S)^-1 (I-0.5S)&quot;]
+        ChartTokens[&quot;chart_tokens c_k [N_c, D or K]\n(encoder: chart_centers)&quot;] -- &quot;c_k [N_c, D]&quot; --&gt; KeyProj[&quot;chart_key_proj [N_c, K]&quot;]
+        ChartTokens -.-&gt;|if K| KeyMerge
+        ChartQ[&quot;chart_queries [N_c, K]\n(decoder default)&quot;] -- &quot;chart_queries [N_c, K]&quot; --&gt; KeyMerge[&quot;base_queries [N_c, K]&quot;]
+        KeyProj -- &quot;projected [N_c, K]&quot; --&gt; KeyMerge
+        KeyMerge -- &quot;base_queries [N_c, K]&quot; --&gt; Keys[&quot;keys = U(z) * base_queries [B, N_c, K]\n(or base_queries if transport disabled)&quot;]
+        Cayley -- &quot;U(z) [B, K, K]&quot; --&gt; Keys
+
+        Keys -- &quot;keys [B, N_c, K]&quot; --&gt; Scores[&quot;scores = sum(keys * q) [B, N_c]&quot;]
+        Z -- &quot;z [B, D]&quot; --&gt; Tau[&quot;tau(z) = sqrt(K) * (1 - ||z||^2)/2\nclamp denom + tau_min&quot;]
+        Scores -- &quot;scores [B, N_c]&quot; --&gt; Scale[&quot;scores / tau&quot;]
+        Tau -- &quot;tau [B]&quot; --&gt; Scale
+        Scale -- &quot;scores/tau [B, N_c]&quot; --&gt; W[&quot;w = softmax(scores/tau) [B, N_c]&quot;]
+        W -- &quot;argmax [B]&quot; --&gt; Kchart[&quot;K_chart [B]&quot;]
+    end
+
+    subgraph TENS[&quot;Christoffel tensorization options&quot;]
+        Full[&quot;full: gamma = einsum(z_i z_j, W_q_gamma[k,i,j])&quot;]
+        Sum[&quot;sum: low-rank (U_k x V_k) with rank R&quot;]
+    end
+
+    classDef io fill:#0b1320,stroke:#93c5fd,stroke-width:1px,color:#e5e7eb;
+    classDef feat fill:#111827,stroke:#22d3ee,stroke-width:1px,color:#e5e7eb;
+    classDef router fill:#2b1f1f,stroke:#f59e0b,stroke-width:1px,color:#e5e7eb;
+    classDef geom fill:#1f2937,stroke:#a78bfa,stroke-width:1px,color:#e5e7eb;
+    classDef util fill:#262626,stroke:#a3a3a3,stroke-width:1px,color:#e5e7eb;
+
+    class Z,Kchart geom;
+    class F,Qfeat feat;
+    class Qz,Gamma,Qsum,Transport,Cayley,ChartTokens,KeyProj,ChartQ,KeyMerge,Keys,Scores,Tau,Scale,W router;
+    class Full,Sum util;</code></pre>
+<h3 id="full-topoencoder-encoder-decoder">0.2 Full TopoEncoder (Encoder + Decoder)</h3>
+<p>Complete end-to-end architecture showing: - <strong>Encoder</strong>: Feature extraction → Chart routing → VQ per chart → Split into <span class="math inline">\((z_{geo}, z_n, z_{tex})\)</span> - <strong>Decoder</strong>: Chart-weighted reconstruction → Geometric base + Texture residual</p>
+<pre class="mermaid"><code>%%{init: {&quot;themeVariables&quot;: {&quot;background&quot;:&quot;#0b111b&quot;,&quot;edgeLabelBackground&quot;:&quot;#111827&quot;,&quot;textColor&quot;:&quot;#e5e7eb&quot;,&quot;lineColor&quot;:&quot;#9ca3af&quot;,&quot;primaryColor&quot;:&quot;#1f2937&quot;,&quot;primaryTextColor&quot;:&quot;#e5e7eb&quot;,&quot;clusterBkg&quot;:&quot;#0f172a&quot;,&quot;clusterBorder&quot;:&quot;#334155&quot;}}}%%
+flowchart TD
+    subgraph TOP[&quot;TopoEncoderPrimitives (current code)&quot;]
+        subgraph ENC[&quot;PrimitiveAttentiveAtlasEncoder&quot;]
+            X[&quot;Input x [B, D_in]&quot;] -- &quot;x [B, D_in]&quot; --&gt; FE[&quot;Feature extractor\nMLP: SpectralLinear -&gt; NormGatedGELU x2\nor CovariantRetina (vision_preproc)&quot;]
+            FE -- &quot;features [B, H]&quot; --&gt; F[&quot;features [B, H]&quot;]
+            F -- &quot;features [B, H]&quot; --&gt; Vproj[&quot;val_proj: SpectralLinear\nv [B, D]&quot;]
+            ChartCenters[&quot;chart_centers c_k [N_c, D]&quot;] -- &quot;c_k [N_c, D]&quot; --&gt; RouterEnc[&quot;Chart router\nCovariantChartRouter (covariant_attn)\nelse dot-product w/ chart_centers&quot;]
+            F -- &quot;features [B, H]&quot; --&gt; RouterEnc
+            Vproj -- &quot;z = v [B, D]&quot; --&gt; RouterEnc
+            RouterEnc -- &quot;w_enc [B, N_c]&quot; --&gt; Wenc[&quot;w_enc [B, N_c]&quot;]
+            RouterEnc -- &quot;K_chart [B]&quot; --&gt; Kchart[&quot;K_chart [B]&quot;]
+
+            Wenc -- &quot;w_enc [B, N_c]&quot; --&gt; Cbar[&quot;c_bar = sum(w_enc * c_k) [B, D]&quot;]
+            ChartCenters -- &quot;c_k [N_c, D]&quot; --&gt; Cbar
+            Vproj -- &quot;v [B, D]&quot; --&gt; Vlocal[&quot;v_local = v - c_bar [B, D]&quot;]
+            Cbar -- &quot;c_bar [B, D]&quot; --&gt; Vlocal
+
+            Codebook[&quot;Codebook (deltas) [N_c, K, D]&quot;] -- &quot;codebook [N_c, K, D]&quot; --&gt; Diff[&quot;diff = v_local - codebook [B, N_c, K, D]&quot;]
+            Vlocal -- &quot;v_local [B, D]&quot; --&gt; Diff
+            Diff -- &quot;diff [B, N_c, K, D]&quot; --&gt; SoftEq[&quot;SoftEquivariantLayer per chart\n(optional when soft_equiv_metric)&quot;]
+            SoftEq -- &quot;diff&#39; [B, N_c, K, D]&quot; --&gt; Dist[&quot;dist = ||diff&#39;||^2 [B, N_c, K]&quot;]
+            Diff -.-&gt; Dist
+            Dist -- &quot;dist [B, N_c, K]&quot; --&gt; Indices[&quot;indices per chart [B, N_c]&quot;]
+            Indices -- &quot;indices [B, N_c]&quot; --&gt; ZqAll[&quot;z_q_all [B, N_c, D]\n(gather; + soft-ST if soft_equiv_soft_assign)&quot;]
+            ZqAll -- &quot;z_q_all [B, N_c, D]&quot; --&gt; ZqBlend[&quot;z_q_blended = sum(w_enc * z_q_all)&quot;]
+
+            Indices -- &quot;indices [B, N_c]&quot; --&gt; Kcode[&quot;K_code (from K_chart)&quot;]
+            Kchart -- &quot;K_chart [B]&quot; --&gt; Kcode
+
+            ZqAll -- &quot;z_q_all [B, N_c, D]&quot; --&gt; VQLoss[&quot;vq_loss = codebook + 0.25 * commitment&quot;]
+            Vlocal -- &quot;v_local [B, D]&quot; --&gt; VQLoss
+
+            ZqAll -- &quot;z_q_all [B, N_c, D]&quot; --&gt; DeltaAll[&quot;delta_all = v_local - z_q_all (detach)&quot;]
+            DeltaAll -- &quot;delta_all [B, N_c, D]&quot; --&gt; Struct[&quot;structure_filter\nIsotropicBlock + SpectralLinear&quot;]
+            Struct -- &quot;z_n_all_charts [B, N_c, D]&quot; --&gt; ZnAll[&quot;z_n_all_charts [B, N_c, D]&quot;]
+            ZnAll -- &quot;z_n_all_charts [B, N_c, D]&quot; --&gt; Zn[&quot;z_n = sum(w_enc * z_n_all_charts) [B, D]&quot;]
+            ZqBlend -- &quot;z_q_blended [B, D]&quot; --&gt; DeltaBlend[&quot;delta_blended = v_local - z_q_blended (detach)&quot;]
+            DeltaBlend -- &quot;delta_blended [B, D]&quot; --&gt; Ztex[&quot;z_tex = delta_blended - z_n&quot;]
+
+            ZqBlend -- &quot;z_q_blended [B, D]&quot; --&gt; ZqSt[&quot;z_q_st = v_local + (z_q_blended - v_local).detach&quot;]
+            ZqSt -- &quot;z_q_st [B, D]&quot; --&gt; Zgeo[&quot;z_geo = c_bar + z_q_st + z_n&quot;]
+            Zn -- &quot;z_n [B, D]&quot; --&gt; Zgeo
+            Cbar -- &quot;c_bar [B, D]&quot; --&gt; Zgeo
+
+            ZnAll -- &quot;z_n_all_charts [B, N_c, D]&quot; --&gt; Jump[&quot;FactorizedJumpOperator (optional)&quot;]
+        end
+
+        subgraph DEC[&quot;PrimitiveTopologicalDecoder&quot;]
+            Zgeo -- &quot;z_geo [B, D]&quot; --&gt; TanhG[&quot;tanh(z_geo)&quot;]
+            TanhG -- &quot;tanh(z_geo) [B, D]&quot; --&gt; RouterDec[&quot;Chart router\nCovariantChartRouter (covariant_attn)\nelse latent_router + softmax&quot;]
+            RouterDec -- &quot;w_dec [B, N_c]&quot; --&gt; Wdec[&quot;w_dec [B, N_c]&quot;]
+            ChartIdx[&quot;chart_index (optional)&quot;] -- &quot;K_chart [B]&quot; --&gt; OneHot[&quot;one-hot -&gt; w_hard&quot;]
+            OneHot -- &quot;w_dec_hard [B, N_c]&quot; --&gt; Wdec
+
+            TanhG -- &quot;tanh(z_geo) [B, D]&quot; --&gt; ChartProj[&quot;chart_projectors: SpectralLinear x N_c&quot;]
+            ChartProj -- &quot;h_i [B, N_c, H]&quot; --&gt; Gate[&quot;NormGatedGELU on h_stack&quot;]
+            Gate -- &quot;h_stack [B, N_c, H]&quot; --&gt; Mix[&quot;h_global = sum(w_dec * h_stack)&quot;]
+            Wdec -- &quot;w_dec [B, N_c]&quot; --&gt; Mix
+
+            Mix -- &quot;h_global [B, H]&quot; --&gt; Renderer[&quot;renderer: SpectralLinear + NormGatedGELU x2 + SpectralLinear&quot;]
+            Mix -- &quot;h_global [B, H]&quot; --&gt; Skip[&quot;render_skip: SpectralLinear&quot;]
+            Renderer -- &quot;h_render [B, D_out]&quot; --&gt; AddSkip[&quot;x_hat_base = renderer + skip&quot;]
+            Skip -- &quot;h_skip [B, D_out]&quot; --&gt; AddSkip
+
+            Ztex -- &quot;z_tex [B, D]&quot; --&gt; TanhT[&quot;tanh(z_tex)&quot;]
+            TanhT -- &quot;tanh(z_tex) [B, D]&quot; --&gt; TexRes[&quot;tex_residual: SpectralLinear&quot;]
+            TexRes -- &quot;tex_resid [B, D_out]&quot; --&gt; AddTex[&quot;x_hat = x_hat_base + tex_residual_scale * tex_residual&quot;]
+            AddSkip -- &quot;x_hat_base [B, D_out]&quot; --&gt; AddTex
+            AddTex -- &quot;x_hat [B, D_out]&quot; --&gt; Xhat[&quot;x_hat [B, D_out]&quot;]
+        end
+    end
+
+    classDef io fill:#0b1320,stroke:#93c5fd,stroke-width:1px,color:#e5e7eb;
+    classDef feat fill:#111827,stroke:#22d3ee,stroke-width:1px,color:#e5e7eb;
+    classDef router fill:#2b1f1f,stroke:#f59e0b,stroke-width:1px,color:#e5e7eb;
+    classDef vq fill:#1f2f2a,stroke:#34d399,stroke-width:1px,color:#e5e7eb;
+    classDef geom fill:#1f2937,stroke:#a78bfa,stroke-width:1px,color:#e5e7eb;
+    classDef residual fill:#3b1f2b,stroke:#f472b6,stroke-width:1px,color:#e5e7eb;
+    classDef decoder fill:#1f2b3b,stroke:#60a5fa,stroke-width:1px,color:#e5e7eb;
+    classDef util fill:#262626,stroke:#a3a3a3,stroke-width:1px,color:#e5e7eb;
+
+    class X,Xhat,ChartIdx,Kchart io;
+    class FE,F,Vproj,Struct feat;
+    class RouterEnc,RouterDec,Wenc,Wdec,OneHot router;
+    classs Codebook,Diff,SoftEq,Dist,Indices,ZqAll,ZqBlend,VQLoss,Kcode vq;
+    class ChartCenters,Cbar,Vlocal,Zgeo,ZqSt,ZnAll,Zn geom;
+    class DeltaAll,DeltaBlend,Ztex,TanhT,TexRes residual;
+    class TanhG,ChartProj,Gate,Mix,Renderer,Skip,AddSkip,AddTex decoder;
+    class Jump util;</code></pre>
+<h3 id="decoder-detail-inverse-atlas">0.3 Decoder Detail (Inverse Atlas)</h3>
+<p>Focused view of the decoder showing how the geometric latent <span class="math inline">\(z_{geo}\)</span> and texture residual <span class="math inline">\(z_{tex}\)</span> are independently processed and combined: - Geometric path: Chart projectors → Chart-weighted mixing → Renderer - Texture path: Independent residual network - Final output: Base reconstruction + scaled texture residual</p>
+<pre class="mermaid"><code>%%{init: {&quot;themeVariables&quot;: {&quot;background&quot;:&quot;#0b111b&quot;,&quot;edgeLabelBackground&quot;:&quot;#111827&quot;,&quot;textColor&quot;:&quot;#e5e7eb&quot;,&quot;lineColor&quot;:&quot;#9ca3af&quot;,&quot;primaryColor&quot;:&quot;#1f2937&quot;,&quot;primaryTextColor&quot;:&quot;#e5e7eb&quot;,&quot;clusterBkg&quot;:&quot;#0f172a&quot;,&quot;clusterBorder&quot;:&quot;#334155&quot;}}}%%
+flowchart TD
+    subgraph DEC[&quot;PrimitiveTopologicalDecoder (current code)&quot;]
+        Zgeo[&quot;z_geo = c_bar + z_q_st + z_n [B, D]&quot;] -- &quot;z_geo [B, D]&quot; --&gt; TanhG[&quot;tanh(z_geo)&quot;]
+        TanhG -- &quot;tanh(z_geo) [B, D]&quot; --&gt; RouterDec[&quot;Chart router\nCovariantChartRouter (covariant_attn)\nelse latent_router + softmax&quot;]
+        RouterDec -- &quot;w_dec [B, N_c]&quot; --&gt; Wdec[&quot;w_dec [B, N_c]&quot;]
+        ChartIdx[&quot;chart_index (optional)&quot;] -- &quot;K_chart [B]&quot; --&gt; OneHot[&quot;one-hot -&gt; w_hard&quot;]
+        OneHot -- &quot;w_dec_hard [B, N_c]&quot; --&gt; Wdec
+
+        TanhG -- &quot;tanh(z_geo) [B, D]&quot; --&gt; ChartProj[&quot;chart_projectors: SpectralLinear x N_c&quot;]
+        ChartProj -- &quot;h_i [B, N_c, H]&quot; --&gt; Gate[&quot;NormGatedGELU on h_stack&quot;]
+        Gate -- &quot;h_stack [B, N_c, H]&quot; --&gt; Mix[&quot;h_global = sum(w_dec * h_stack)&quot;]
+        Wdec -- &quot;w_dec [B, N_c]&quot; --&gt; Mix
+
+        Mix -- &quot;h_global [B, H]&quot; --&gt; Renderer[&quot;renderer: SpectralLinear + NormGatedGELU x2 + SpectralLinear&quot;]
+        Mix -- &quot;h_global [B, H]&quot; --&gt; Skip[&quot;render_skip: SpectralLinear&quot;]
+        Renderer -- &quot;h_render [B, D_out]&quot; --&gt; AddSkip[&quot;x_hat_base = renderer + skip&quot;]
+        Skip -- &quot;h_skip [B, D_out]&quot; --&gt; AddSkip
+
+        Ztex[&quot;z_tex [B, D]&quot;] -- &quot;z_tex [B, D]&quot; --&gt; TanhT[&quot;tanh(z_tex)&quot;]
+        TanhT -- &quot;tanh(z_tex) [B, D]&quot; --&gt; TexRes[&quot;tex_residual: SpectralLinear&quot;]
+        TexRes -- &quot;tex_resid [B, D_out]&quot; --&gt; AddTex[&quot;x_hat = x_hat_base + tex_residual_scale * tex_residual&quot;]
+        AddSkip -- &quot;x_hat_base [B, D_out]&quot; --&gt; AddTex
+        AddTex -- &quot;x_hat [B, D_out]&quot; --&gt; Xhat[&quot;x_hat [B, D_out]&quot;]
+    end
+
+    classDef io fill:#0b1320,stroke:#93c5fd,stroke-width:1px,color:#e5e7eb;
+    classDef router fill:#2b1f1f,stroke:#f59e0b,stroke-width:1px,color:#e5e7eb;
+    classDef geom fill:#1f2937,stroke:#a78bfa,stroke-width:1px,color:#e5e7eb;
+    classDef residual fill:#3b1f2b,stroke:#f472b6,stroke-width:1px,color:#e5e7eb;
+    classDef decoder fill:#1f2b3b,stroke:#60a5fa,stroke-width:1px,color:#e5e7eb;
+
+    class Zgeo geom;
+    class RouterDec,Wdec,OneHot router;
+    class ChartIdx,Xhat io;
+    class TanhG,ChartProj,Gate,Mix,Renderer,Skip,AddSkip,AddTex decoder;
+    class Ztex,TanhT,TexRes residual;</code></pre>
+<h3 id="experiment-wiring-training-losses">0.4 Experiment Wiring (Training Losses)</h3>
+<p>Optional training components available in the experiment configuration: - Learned precisions for automatic loss balancing (reconstruction, VQ, supervised) - SupervisedTopologyLoss for semantic topology learning - FactorizedJumpOperator for chart transition consistency - InvariantChartClassifier (detached readout head with separate optimizer)</p>
+<pre class="mermaid"><code>%%{init: {&quot;themeVariables&quot;: {&quot;background&quot;:&quot;#0b111b&quot;,&quot;edgeLabelBackground&quot;:&quot;#111827&quot;,&quot;textColor&quot;:&quot;#e5e7eb&quot;,&quot;lineColor&quot;:&quot;#9ca3af&quot;,&quot;primaryColor&quot;:&quot;#1f2937&quot;,&quot;primaryTextColor&quot;:&quot;#e5e7eb&quot;,&quot;clusterBkg&quot;:&quot;#0f172a&quot;,&quot;clusterBorder&quot;:&quot;#334155&quot;}}}%%
+flowchart TD
+    X[&quot;batch_X&quot;] --&gt; Enc[&quot;TopoEncoderPrimitives.encoder&quot;]
+    Enc -- &quot;z_geo [B, D]&quot; --&gt; Dec[&quot;TopoEncoderPrimitives.decoder&quot;]
+    Enc -- &quot;z_tex [B, D]&quot; --&gt; Dec
+    Dec -- &quot;recon_a [B, D_in]&quot; --&gt; ReconLoss[&quot;recon_loss = mse(recon_a, batch_X)&quot;]
+    X --&gt; ReconLoss
+
+    Enc -- &quot;vq_loss&quot; --&gt; VQLoss[&quot;vq_loss (codebook + commitment)&quot;]
+
+    ReconLoss --&gt; ReconTerm[&quot;recon_term\n(optional learned precision)&quot;]
+    VQLoss --&gt; VQTerm[&quot;vq_term\n(optional learned precision)&quot;]
+
+    Enc -- &quot;enc_w [B, N_c]&quot; --&gt; Sup[&quot;SupervisedTopologyLoss (optional)&quot;]
+    Enc -- &quot;z_geo [B, D]&quot; --&gt; Sup
+    Y[&quot;batch_labels [B]&quot;] --&gt; Sup
+    Sup -- &quot;sup_total + components&quot; --&gt; SupTerm[&quot;sup_term\n(optional learned precision)&quot;]
+
+    Enc -- &quot;z_n_all_charts [B, N_c, D]&quot; --&gt; Jump[&quot;FactorizedJumpOperator (optional)&quot;]
+    Enc -- &quot;enc_w [B, N_c]&quot; --&gt; Jump
+    Jump -- &quot;jump_loss (schedule weight)&quot; --&gt; LossA[&quot;atlas loss\n(recon + vq + regs + jump + sup)&quot;]
+
+    ReconTerm --&gt; LossA
+    VQTerm --&gt; LossA
+    SupTerm -- &quot;sup_weight * sup_term&quot; --&gt; LossA
+
+    Enc -- &quot;enc_w (detach)&quot; --&gt; Cls[&quot;InvariantChartClassifier (optional)&quot;]
+    Enc -- &quot;z_geo (detach)&quot; --&gt; Cls
+    Y --&gt; CE[&quot;cross_entropy&quot;]
+    Cls -- &quot;logits [B, C]&quot; --&gt; CE
+    CE --&gt; OptCls[&quot;opt_classifier.step()&quot;]</code></pre>
+<h2 id="latent-space-decomposition">1. Latent Space Decomposition</h2>
+<p><strong>Split-Latent Structure:</strong></p>
+<ul>
+<li>Total latent: <span class="math inline">\(Z = (K, z_n, z_{\text{tex}})\)</span> where each component has distinct geometric/physical role</li>
+<li><span class="math inline">\(K \in \{1,\ldots,N_c\}\)</span>: Discrete macro state (VQ codebook index) - chart assignment on topological atlas</li>
+<li><span class="math inline">\(z_n \in \mathbb{R}^{D_n}\)</span>: Continuous nuisance latent - local coordinates within chart (gauge-invariant position)</li>
+<li><span class="math inline">\(z_{\text{tex}} \in \mathbb{R}^{D_t}\)</span>: Texture residual - holographic boundary degrees of freedom</li>
+<li>Decomposition satisfies <span class="math inline">\(z_e = z_q + z_n + z_{\text{tex}}\)</span> where <span class="math inline">\(z_e\)</span> is raw encoder output, <span class="math inline">\(z_q\)</span> is VQ-quantized macro</li>
+</ul>
+<p><strong>Encoder Architecture (AttentiveAtlasEncoder):</strong></p>
+<ul>
+<li>Feature extraction: Conv layers (64→128→256 channels) → hidden_dim projection</li>
+<li>Cross-attention routing: <span class="math inline">\(w_k = \text{softmax}(\langle K_k, Q(x) \rangle / \sqrt{D})\)</span> where <span class="math inline">\(K_k\)</span> are learnable chart queries</li>
+<li>Query projection: <span class="math inline">\(Q(x) = \text{key\_proj}(\text{features}(x))\)</span> with LayerNorm stabilization</li>
+<li>Chart assignment: <span class="math inline">\(K = \arg\max_k w_k(x)\)</span></li>
+<li>VQ per chart: <span class="math inline">\(N_c\)</span> independent codebooks, each with <span class="math inline">\(K_c\)</span> codes, vectorized quantization</li>
+<li>Nuisance extraction: Structure filter <span class="math inline">\(z_n = f_{\text{struct}}(z_e - z_q)\)</span> removes VQ-residual structure</li>
+<li>Texture: Holographic residual <span class="math inline">\(z_{\text{tex}} = (z_e - z_q) - z_n\)</span> orthogonal to both macro and nuisance.</li>
+<li><strong>Texture Firewall:</strong> Dynamics depend on <span class="math inline">\(z_{\text{macro}}\)</span> and <span class="math inline">\(z_n\)</span>, screening out only <span class="math inline">\(z_{\text{tex}}\)</span>.</li>
+</ul>
+<p><strong>Training Objectives for Coarse-Graining:</strong> To enforce this split-latent structure and ensure valid coarse-graining, we minimize: <span class="math display">\[ \mathcal{L}_{\text{latent}} = \mathcal{L}_{\text{VQ}} + \mathcal{L}_{\text{closure}} + \mathcal{L}_{\text{slowness}} + \mathcal{L}_{\text{disentangle}} \]</span></p>
+<ol type="1">
+<li><strong>VQ Loss:</strong> <span class="math inline">\(\|z_e - z_q\|^2 + \beta \|z_q - \operatorname{sg}[z_e]\|^2\)</span>. Stabilizes the discrete macro state <span class="math inline">\(K\)</span>.</li>
+<li><strong>Causal Enclosure:</strong> <span class="math inline">\(-\log p(K_{t+1} | K_t, a_t)\)</span>. Ensures macro dynamics are self-contained (predictable without micro details).</li>
+<li><strong>Slowness (Anti-Churn):</strong> <span class="math inline">\(\|e_{K_t} - e_{K_{t-1}}\|_G^2\)</span>. Penalizes rapid flickering of the macro state to ensure temporal stability.</li>
+<li><strong>Disentanglement:</strong>
+<ul>
+<li><em>Nuisance KL:</em> <span class="math inline">\(D_{\mathrm{KL}}(q(z_n|x) \| \mathcal{N}(0,I))\)</span>. Minimal sufficient nuisance.</li>
+<li><em>Texture KL:</em> <span class="math inline">\(D_{\mathrm{KL}}(q(z_{\text{tex}}|x) \| \mathcal{N}(0,I))\)</span>. Texture should contain no macro info.</li>
+</ul></li>
+</ol>
+<p><strong>Geometric Regularization (Quality Control):</strong> To ensure the latent space is well-conditioned (high-fidelity, isometric charts), we add: <span class="math display">\[ \mathcal{L}_{\text{reg}} = \mathcal{L}_{\text{VICReg}} + \mathcal{L}_{\text{ortho}} \]</span></p>
+<ol start="5" type="1">
+<li><p><strong>VICReg (Self-Supervision):</strong> Prevents collapse without negative pairs.</p>
+<ul>
+<li><em>Invariance:</em> <span class="math inline">\(\|z - z&#39;\|_G^2\)</span>. Robustness to view augmentation.</li>
+<li><em>Variance:</em> <span class="math inline">\(\max(0, \gamma - \sqrt{\text{Var}(z)})\)</span>. Forces code utilization.</li>
+<li><em>Covariance:</em> <span class="math inline">\(C(z) \approx I\)</span>. Decorrelates latent dimensions (whitening).</li>
+</ul></li>
+<li><p><strong>Orthogonality (Chart Isometry):</strong> <span class="math inline">\(\|W^T W - I\|_F^2\)</span> on encoder weights. Ensures the mapping from observation to latent space is locally isometric (preserves distances), crucial for meaningful geodesic calculations.</p></li>
+</ol>
+<h2 id="the-reward-field-hodge-decomposition">2. The Reward Field &amp; Hodge Decomposition</h2>
+<p><strong>Physical Context:</strong> We model the agent as a particle with <strong>Position and Momentum</strong> performing a <strong>Geodesic Random Walk</strong> on the latent manifold. Because utility is harvested via trajectory traversal, the Reward is naturally defined as a differential <strong>1-form</strong> coupled to velocity, rather than a static scalar field.</p>
+<p><strong>Constraint:</strong> Reward is not a scalar <span class="math inline">\(r(z)\)</span>, but a <strong>1-form</strong> <span class="math inline">\(\mathcal{R}\)</span> that depends on direction (<span class="math inline">\(\mathcal{R}_i \dot{z}^i\)</span>). This requires a field-theoretic treatment of value.</p>
+<p><strong>Hodge Decomposition:</strong> The reward 1-form uniquely decomposes into three orthogonal components: <span class="math display">\[ \mathcal{R} = \underbrace{d\Phi}_{\text{Gradient}} + \underbrace{\delta\Psi}_{\text{Solenoidal}} + \underbrace{\eta}_{\text{Harmonic}} \]</span></p>
+<ul>
+<li><strong>Gradient (<span class="math inline">\(\Phi\)</span>):</strong> Optimizable scalar potential (Conservative Value).</li>
+<li><strong>Solenoidal (<span class="math inline">\(\Psi\)</span>):</strong> Vector potential generating the <strong>Value Curl</strong> (Magnetic Field) <span class="math inline">\(\mathcal{F} = d\mathcal{R} = d\delta\Psi\)</span>.
+<ul>
+<li><em>Physics:</em> Just as a magnetic field <span class="math inline">\(B\)</span> exerts a <strong>Lorentz Force</strong> <span class="math inline">\(v \times B\)</span>, the Value Curl <span class="math inline">\(\mathcal{F}\)</span> exerts a velocity-dependent force <span class="math inline">\(\mathcal{F}_{ij}\dot{z}^j\)</span> that steers the agent to <strong>orbit</strong> value cycles rather than converge.</li>
+</ul></li>
+<li><strong>Harmonic (<span class="math inline">\(\eta\)</span>):</strong> Topological cycles (manifold holes).</li>
+</ul>
+<p><strong>The Screened Poisson Equation (Conservative Case):</strong> When the <strong>Value Curl</strong> vanishes (<span class="math inline">\(\mathcal{F} = 0\)</span>), the scalar value function <span class="math inline">\(V(z)\)</span> satisfies the <strong>Helmholtz Equation</strong> on the manifold: <span class="math display">\[ (-\Delta_G + \kappa^2)V(z) = \rho_r(z) \]</span> where <span class="math inline">\(\Delta_G\)</span> is the Laplace-Beltrami operator, <span class="math inline">\(\kappa\)</span> is the screening mass, and <span class="math inline">\(\rho_r\)</span> is the reward source density.</p>
+<p><strong>The Composite Navigation Potential (Runtime):</strong> The agent navigates a <strong>Composite Potential</strong> <span class="math inline">\(\Phi_{\text{eff}}\)</span> constructed at runtime by summing learned and intrinsic signals: <span class="math display">\[ \Phi_{\text{eff}}(z) = \underbrace{V(z)}_{\text{Learned}} + \underbrace{U(z)}_{\text{Intrinsic}} + \underbrace{\mathcal{B}_{\text{safety}}(z)}_{\text{Fixed}} \]</span></p>
+<ol type="1">
+<li><strong>Control (<span class="math inline">\(V\)</span>):</strong> <strong>Learned</strong> scalar value. Drives the agent towards high-reward regions.
+<ul>
+<li><em>Loss:</em> Helmholtz Residual (see below).</li>
+</ul></li>
+<li><strong>Generation (<span class="math inline">\(U\)</span>):</strong> <strong>Intrinsic</strong> entropy potential (e.g., Hyperbolic expansion <span class="math inline">\(-\log \text{vol}(z)\)</span>). Drives exploration away from the origin.
+<ul>
+<li><em>Loss:</em> None (Fixed geometric prior).</li>
+</ul></li>
+<li><strong>Safety (<span class="math inline">\(\mathcal{B}_{\text{safety}}\)</span>):</strong> <strong>Fixed</strong> safety barrier. Hard constraints (e.g., capacity limits) modeled as high-energy walls.
+<ul>
+<li><em>Loss:</em> None (Fixed constraint).</li>
+</ul></li>
+</ol>
+<p><strong>Neural Hodge Decomposition (Implementation):</strong> We approximate the Hodge components using a <strong>Multi-Head Network</strong> sharing a common feature backbone:</p>
+<ol type="1">
+<li><strong>Scalar Head (<span class="math inline">\(\Phi\)</span>):</strong> Outputs scalar <span class="math inline">\(V(z)\)</span>.
+<ul>
+<li><em>Loss:</em> Helmholtz Residual on the symmetric part of the reward.</li>
+<li><span class="math inline">\(\mathcal{L}_{\Phi} = \|V(z) - (r_{\text{sym}} + \gamma V(z&#39;))\|^2\)</span>.</li>
+</ul></li>
+<li><strong>Solenoidal Head (<span class="math inline">\(\Psi\)</span>):</strong> Outputs vector potential <span class="math inline">\(A(z) \in \mathbb{R}^D\)</span> (where <span class="math inline">\(\mathcal{F} = dA\)</span>).
+<ul>
+<li><em>Loss:</em> Residual reconstruction on the antisymmetric part.</li>
+<li><span class="math inline">\(\mathcal{L}_{\Psi} = \| \langle \mathcal{R}, v \rangle - (\langle \nabla\Phi, v \rangle + \langle \nabla \times A, v \rangle) \|^2\)</span>. The curl absorbs the non-integrable reward residual.</li>
+</ul></li>
+<li><strong>Harmonic Head (<span class="math inline">\(\eta\)</span>):</strong> A set of <strong>learnable constant 1-forms</strong> <span class="math inline">\(\eta_k\)</span> per chart <span class="math inline">\(k\)</span>.
+<ul>
+<li><em>Mechanism:</em> Captures global topological currents (net flux through manifold holes) that are locally constant.</li>
+<li><em>Loss:</em> Projected residual after removing Gradient and Curl components.</li>
+</ul></li>
+</ol>
+<p><strong>Value Function Objectives:</strong> To define the value field <span class="math inline">\(V(z)\)</span> as the solution to the Screened Poisson Equation, we minimize: <span class="math display">\[ \mathcal{L}_{\text{critic}} = \underbrace{\|V(z) - (r + \gamma V(z&#39;))\|^2}_{\text{Helmholtz Residual (TD)}} + \lambda_{\text{geo}} \underbrace{\|\nabla_G V\|^2}_{\text{Smoothness}} \]</span></p>
+<ol type="1">
+<li><strong>Helmholtz Residual:</strong> Enforces the PDE source term (approx. Bellman error).</li>
+<li><strong>Geometric Regularization:</strong> Enforces field smoothness with respect to the manifold metric (<span class="math inline">\(\|\nabla_G V\|^2 = G^{ij}\partial_i V \partial_j V\)</span>).</li>
+</ol>
+<h2 id="the-policy-network-latent-action">3. The Policy Network (Latent Action)</h2>
+<p>The Policy acts as an <strong>External Force Field</strong> <span class="math inline">\(u_\pi(z)\)</span> pushing the agent through the latent manifold. It operates in a <strong>Latent Action Space</strong> (the Tangent Bundle <span class="math inline">\(T\mathcal{Z}\)</span>), decoupling low-level motor commands from high-level intent.</p>
+<p><strong>A. The Policy Model (<span class="math inline">\(\pi_\phi\)</span>):</strong></p>
+<ul>
+<li><strong>Role:</strong> Symmetry-breaking control field. Converts potential energy into kinetic motion.</li>
+<li><strong>Input:</strong> Latent State <span class="math inline">\(z_t \in \mathcal{Z}\)</span> (Position).</li>
+<li><strong>Output:</strong> Latent Force/Action <span class="math inline">\(u_t \in T_{z_t}\mathcal{Z}\)</span> (Tangent Vector).
+<ul>
+<li><em>Note:</em> This latent force is subsequently decoded into boundary motor torques action <span class="math inline">\(a_t\)</span> by the Motor/Action Decoder (Neumann Condition).</li>
+</ul></li>
+<li><strong>Latent Action Space:</strong> The Tangent Bundle <span class="math inline">\(T\mathcal{Z}\)</span>. Actions are vectors “pushing” the state along geodesics.</li>
+</ul>
+<p><strong>B. Training Losses (Tier 1):</strong></p>
+<ol type="1">
+<li><strong>Task Loss (<span class="math inline">\(\mathcal{L}_{\text{task}}\)</span>):</strong> Standard Policy Gradient / Reinforce objective to maximize expected returns.</li>
+<li><strong>Entropy Bonus (Ergodicity):</strong> <span class="math inline">\(\mathcal{L}_{\text{ent}} = -H(\pi)\)</span>. Penalizes low entropy distributions to prevent premature mode collapse and ensure thermodynamic equilibrium.</li>
+<li><strong>Zeno Penalty (Temporal Smoothness):</strong> <span class="math inline">\(\mathcal{L}_{\text{zeno}} = D_{\mathrm{KL}}(\pi_t \| \pi_{t-1})\)</span>. Penalizes infinite-frequency oscillations (Zeno behavior) to ensure physically realizable trajectories.</li>
+</ol>
+<h2 id="the-world-model-covariant-integrator">4. The World Model (Covariant Integrator)</h2>
+<p>We define the World Model not as a generic RNN, but as a <strong>Neural Integrator</strong> that approximates the <strong>Lorentz-Langevin SDE</strong>:</p>
+<p><span class="math display">\[ dz^k = \underbrace{\left( -G^{kj}\partial_j \Phi + u_\pi^k \right) ds}_{\text{Gradient + Policy}} + \underbrace{\beta G^{km} \mathcal{F}_{mj} \dot{z}^j ds}_{\text{Lorentz Force}} - \underbrace{\Gamma^k_{ij}\dot{z}^i \dot{z}^j ds}_{\text{Geodesic Drift}} + \underbrace{\sqrt{2T_c} (G^{-1/2})^{jk} dW^j}_{\text{Thermal Noise}} \]</span></p>
+<p>This equation unifies:</p>
+<ol type="1">
+<li><strong>Gradient Descent</strong> (on the Value Landscape)</li>
+<li><strong>Magnetic Steering</strong> (from Value Curl)</li>
+<li><strong>Geodesic Motion</strong> (on the curved Manifold)</li>
+<li><strong>Stochastic Exploration</strong> (Langevin Dynamics)</li>
+</ol>
+<p>The integration step is modeled as a <strong>Covariant Cross-Attention</strong> layer (Multi-Head Transformer).</p>
+<p><strong>A. Architecture: Covariant Cross-Attention</strong></p>
+<ul>
+<li><strong>Mechanism:</strong> Attention heads act as <strong>Wilson Lines</strong> (Parallel Transport operators), comparing queries and keys only after transporting them to a common reference frame (Gauge Invariance).</li>
+<li><strong>Metric-Temperature:</strong> The softmax temperature is position-dependent: <span class="math inline">\(\tau(z) \propto 1/\lambda(z)\)</span>. High-curvature regions (large metric <span class="math inline">\(\lambda\)</span>) force low temperature (sharp attention), while flat regions allow high temperature (broad exploration).</li>
+<li><strong>Geodesic Correction:</strong> Christoffel symbols are encoded via linear and quadratic terms in the Query projection.</li>
+</ul>
+<p><strong>B. Inputs &amp; Outputs (Integration Step):</strong></p>
+<ul>
+<li><strong>Input:</strong>
+<ul>
+<li>Current State <span class="math inline">\(z_t\)</span> (Query position).</li>
+<li>Action <span class="math inline">\(u_t\)</span> (Latent Force/Momentum).</li>
+<li>Memory Context (Keys/Values from past trajectory).</li>
+</ul></li>
+<li><strong>Output:</strong>
+<ul>
+<li>Next State <span class="math inline">\(z_{t+1}\)</span> (Integrated position after Kick-Drift-Kick).</li>
+</ul></li>
+</ul>
+<p><strong>C. Training Losses:</strong></p>
+<ol type="1">
+<li><strong>Geodesic Distance Loss:</strong> <span class="math inline">\(\mathcal{L}_{\text{geo}} \approx (z_{\text{pred}} - z_{\text{true}})^T G(z_t) (z_{\text{pred}} - z_{\text{true}})\)</span>. Minimizes local Riemannian distance. Using the diagonal approximation (Section 5), this becomes a <strong>Weighted MSE</strong>: <span class="math inline">\(\sum_i G_{ii} (z_{\text{pred}}^{(i)} - z_{\text{true}}^{(i)})^2\)</span>. High-risk dimensions (large <span class="math inline">\(G_{ii}\)</span>) are penalized more heavily.</li>
+<li><strong>Thermodynamic Consistency:</strong> <span class="math inline">\(\mathcal{L}_{\text{NLL}} = -\log p(z_{t+1} | z_t, u_t)\)</span>. Ensures the model captures the stochastic thermal noise term (<span class="math inline">\(\sqrt{2T_c} dW\)</span>) correctly.</li>
+</ol>
+<p><strong>D. Structural Inductive Bias (Why it acts as an Integrator):</strong> We do not simply train a generic MLP to output <span class="math inline">\(z_{t+1}\)</span>. Instead, we bake the <strong>Boris-BAOAB</strong> integration scheme directly into the attention mechanism, ensuring the model cannot violate the symplectic structure:</p>
+<ol type="1">
+<li><strong>Metric as Temperature:</strong> The attention temperature <span class="math inline">\(\tau(z) \propto \sqrt{d_k} / \lambda(z)\)</span> forces the update step size to scale inversely with curvature (conformal factor). High-curvature regions (large metric) automatically induce small, cautious steps (sharp attention).</li>
+<li><strong>Geodesic Query Terms:</strong> We explicitly feed geometric terms (<span class="math inline">\(z, z \otimes z\)</span>) into the Query projection <span class="math inline">\(Q(z)\)</span>. This forces the attention scores to learn the <strong>Christoffel Symbols</strong> <span class="math inline">\(\Gamma^k_{ij}\)</span> needed to correct for manifold curvature, rather than making up arbitrary dynamics.</li>
+<li><strong>Operator Splitting:</strong> We use <strong>multiple attention heads</strong> to implement the split operators of the BAOAB scheme:
+<ul>
+<li><em>Kick Head (B):</em> Updates momentum using force (Gradient + Curl).</li>
+<li><em>Drift Head (A):</em> Updates position using momentum (Geodesic flow).</li>
+<li><em>Thermostat Head (O):</em> Applies friction and noise (OU process).</li>
+<li><em>Result:</em> The network is forced to learn a decomposable, reversible integrator rather than a “black box” transition.</li>
+</ul></li>
+</ol>
+<h2 id="efficient-metric-computation-adam-style">5. Efficient Metric Computation (Adam-Style)</h2>
+<p>Computing the full Riemannian metric <span class="math inline">\(G_{ij}\)</span> (<span class="math inline">\(D \times D\)</span> tensor) is expensive (<span class="math inline">\(O(D^3)\)</span> inversion). We use the same engineering tricks as the <strong>Adam Optimizer</strong> to approximate it efficiently (<span class="math inline">\(O(D)\)</span>).</p>
+<p><strong>A. The “Adam” Isomorphism:</strong></p>
+<ul>
+<li><strong>Adam Optimizer:</strong> Maintains a diagonal approximation of the Hessian (via squared gradients) to precondition updates.
+<ul>
+<li><span class="math inline">\(v_t = \beta_2 v_{t-1} + (1-\beta_2) g_t^2\)</span> (Second Moment Estimate).</li>
+<li>Preconditioner: <span class="math inline">\(P = \text{diag}(1/\sqrt{v_t})\)</span>.</li>
+</ul></li>
+<li><strong>Fragile Agent:</strong> Maintains a diagonal approximation of the Metric Tensor (via Risk Tensor) to curve the space.
+<ul>
+<li><span class="math inline">\(\text{Metric}_t = \beta \text{Metric}_{t-1} + (1-\beta) \text{Risk}_t\)</span> (Metric Evolution).</li>
+<li>Geometry: <span class="math inline">\(G_{ij} \approx \text{diag}(\text{Metric}_t)\)</span>.</li>
+</ul></li>
+</ul>
+<p><strong>B. Implementation Details:</strong></p>
+<ol type="1">
+<li><strong>Diagonal Approximation:</strong> We assume <span class="math inline">\(G_{ij}\)</span> is diagonal (independent curvature per dimension). This reduces storage from <span class="math inline">\(O(D^2)\)</span> to <span class="math inline">\(O(D)\)</span> and inversion to element-wise division.</li>
+<li><strong>Risk as Squared Gradient:</strong> The Risk Tensor <span class="math inline">\(T_{ij}\)</span> is dominated by the gradient of the potential: <span class="math inline">\(T_{ij} \approx \partial_i \Phi \partial_j \Phi\)</span>. Its diagonal is simply <span class="math inline">\((\nabla \Phi)^2\)</span>.</li>
+<li><strong>Low-Rank Updates (EMA):</strong> We do not solve the Einstein Field Equations at every step. Instead, we update the metric using an <strong>Exponential Moving Average (EMA)</strong> of the Risk Tensor.
+<ul>
+<li><em>Update Rule:</em> <code>metric_diag.lerp_(risk_diag, 1 - momentum)</code></li>
+<li><em>Interpretation:</em> The geometry “flows” slowly towards the high-risk regions, smoothing out transient noise just like Adam smooths gradient variance.</li>
+</ul></li>
+</ol>
+<p><strong>Result:</strong> We get Riemannian Manifold Hamiltonian Monte Carlo (RMHMC) benefits for the cost of standard SGD+Momentum.</p>
+</body>
+</html>

@@ -98,8 +98,10 @@ class InvariantChartClassifier(nn.Module):
     def forward(self, router_weights: torch.Tensor, z_geo: torch.Tensor) -> torch.Tensor:
         logits = 0.0
         if self.use_router_logits:
+            # Chart routing provides a topological prior over classes.
             logits = router_weights @ self.chart_logits
         if self.use_radial_logits:
+            # Radial energy features are gauge-invariant signals per chart.
             radial = self._radial_features(z_geo)
             radial_logits = torch.einsum(
                 "bk,bm,kmc->bc", router_weights, radial, self.radial_weight
@@ -172,15 +174,19 @@ class SupervisedTopologyLoss(nn.Module):
         p_k = chart_assignments.mean(dim=0)  # [N_c]
 
         p_y_x = torch.matmul(chart_assignments, p_y_k)  # [B, C]
+        # Routing loss encourages charts to specialize by class.
         loss_route = F.nll_loss(torch.log(p_y_x + 1e-8), class_labels)  # []
 
+        # Purity loss penalizes high per-chart label entropy.
         entropy_per_chart = -(p_y_k * torch.log(p_y_k + 1e-8)).sum(dim=1)  # [N_c]
         loss_purity = (p_k * entropy_per_chart).sum()  # []
 
+        # Balance loss encourages uniform chart usage.
         uniform = torch.ones_like(p_k) / self.num_charts  # [N_c]
         loss_balance = (p_k * (torch.log(p_k + 1e-8) - torch.log(uniform))).sum()  # []
 
         if self.lambda_metric > 0 and embeddings.shape[0] > 1:
+            # Metric separation enforces class margins in the latent geometry.
             dists = torch.cdist(embeddings, embeddings)  # [B, B]
             if self.metric is not None:
                 lambda_vec = self.metric.conformal_factor(embeddings).squeeze(-1)  # [B]
@@ -289,11 +295,13 @@ class FactorizedJumpOperator(nn.Module):
 
     def lift_to_global(self, z_n: torch.Tensor, chart_idx: torch.Tensor) -> torch.Tensor:
         """Lift local coordinates to global tangent space."""
+        # Chart-specific encoder lifts local nuisance to a shared tangent space.
         h = self._apply_per_chart(z_n, chart_idx, self.encoders)
         return h + self.c[chart_idx]
 
     def project_from_global(self, h: torch.Tensor, chart_idx: torch.Tensor) -> torch.Tensor:
         """Project global tangent coordinates to local chart coordinates."""
+        # Chart-specific decoder projects global tangent back to local coordinates.
         z = self._apply_per_chart(h, chart_idx, self.decoders)
         return z + self.d[chart_idx]
 
@@ -313,6 +321,7 @@ class FactorizedJumpOperator(nn.Module):
         Returns:
             z_out: [B, D] target nuisance coordinates
         """
+        # Compose lift and projection to enforce chart-to-chart consistency.
         z_global = self.lift_to_global(z_n, source_idx)
         return self.project_from_global(z_global, target_idx)
 
@@ -424,6 +433,7 @@ def compute_jump_consistency_loss(
                     torch.tensor([j], device=device),
                 ).squeeze(0)
 
+                # Penalize mismatch between predicted and observed overlap coordinates.
                 delta = z_j - z_pred
                 if metric is not None:
                     lambda_i = metric.conformal_factor(z_i.unsqueeze(0)).squeeze()
@@ -480,6 +490,7 @@ def compute_orthogonality_loss(
     for module in modules:
         for sub in module.modules():
             if isinstance(sub, SpectralLinear):
+                # Measure orthogonality after spectral normalization.
                 w = sub._spectral_normalized_weight(update_u=False)
                 loss += orth_defect(w)
                 count += 1

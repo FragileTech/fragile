@@ -44,6 +44,7 @@ pip-log.txt
 .coverage.*
 .pytest
 .pytest_cache/
+.hypothesis/
 .tox
 coverage.xml
 htmlcov
@@ -80,3 +81,8 @@ outputs/
 # MLflow tracking
 mlruns/
 examples/
+
+# TLDR rendering temp files
+temp_diagrams/
+single_agent_tldr_temp.md
+*.md.backup

@@ -33,6 +33,7 @@ class FactoredTensorLayer(nn.Module):
         if z_C.shape[0] != z_L.shape[0] or z_C.shape[0] != z_Y.shape[0]:
             msg = "Input batch sizes must match."
             raise ValueError(msg)
+        # Low-rank tensor interaction via elementwise product in factor space.
         interaction = self.U_C(z_C) * self.U_L(z_L) * self.U_Y(z_Y)
         return self.U_out(interaction)
 
@@ -62,6 +63,7 @@ class NormInteractionLayer(nn.Module):
         if z.dim() != 3 or z.shape[1] != self.n_bundles:
             msg = "Expected input shape [B, n_bundles, bundle_dim]."
             raise ValueError(msg)
+        # Use bundle norms (gauge-invariant energy) to scale each bundle.
         norms = torch.norm(z, dim=-1)
         scales = F.softplus(self.norm_mlp(norms))
         return z * scales.unsqueeze(-1)
@@ -93,6 +95,7 @@ class GramInteractionLayer(nn.Module):
         if z.dim() != 3 or z.shape[1] != self.n_bundles:
             msg = "Expected input shape [B, n_bundles, bundle_dim]."
             raise ValueError(msg)
+        # Gram matrix captures inter-bundle angles for texture-level mixing.
         gram = torch.bmm(z, z.transpose(-1, -2))
         gram_flat = gram.view(z.shape[0], -1)
         scales = F.softplus(self.mlp(gram_flat))
@@ -354,27 +357,31 @@ class SoftEquivariantLayer(nn.Module):
     def forward(self, z: torch.Tensor) -> torch.Tensor:
         if self.bundle_dim is not None:
             bundled, was_stacked = self._bundle_view(z)
+            # Norm-based scaling is SO(d_b)-equivariant within each bundle.
             norms = torch.norm(bundled, dim=-1) + 1e-8
             scales = F.softplus(self.norm_mlp(norms))
             equivariant = bundled * scales.unsqueeze(-1)
 
+            # Mixing injects cross-bundle texture interactions.
             weights = self.mixing_weights
             if self.zero_self_mixing:
                 weights = weights * self._mixing_mask[:, :, None, None]
             mixing = torch.einsum("bjd,ijkd->bik", bundled, weights)
             gates = torch.sigmoid(self.gate_bias).view(1, -1, 1)
             combined = equivariant + gates * mixing
-            z_out = bundled + combined
+            z_out = bundled + combined  # Residual keeps dynamics near identity.
             if was_stacked:
                 return z_out
             return z_out.reshape(z.shape[0], -1)
 
         bundles, stacked = self._split_bundles(z)
 
+        # Per-bundle norms drive equivariant scaling for heterogeneous bundles.
         norms = torch.stack([torch.norm(v, dim=-1) + 1e-8 for v in bundles], dim=-1)
         scales = F.softplus(self.norm_mlp(norms))
         equivariant_outputs = [bundles[i] * scales[:, i : i + 1] for i in range(self.n_bundles)]
 
+        # Cross-bundle mixing models texture coupling across gauge fibers.
         mixing_outputs = []
         for i in range(self.n_bundles):
             mixed = None
@@ -388,7 +395,7 @@ class SoftEquivariantLayer(nn.Module):
             mixing_outputs.append(mixed)
 
         gates = torch.sigmoid(self.gate_bias)
-        combined = [
+        combined = [  # Gate controls how much mixing leaks into each bundle.
             equivariant_outputs[i] + gates[i] * mixing_outputs[i] for i in range(self.n_bundles)
         ]
         z_out = self._cat_bundles(combined, stacked)
@@ -498,6 +505,7 @@ class CovariantAttentionLayer(nn.Module):
 
         attended = []
         for v, ctx, attn in zip(bundles, context_bundles, self.attention_heads):
+            # Bundle-wise covariant attention preserves gauge structure per fiber.
             v_out, _ = attn(z_query=v, z_key=ctx, x_query=v, x_key=ctx, x_value=ctx)
             attended.append(v_out)
 
@@ -549,6 +557,7 @@ class UniversalGeometricNetwork(nn.Module):
         return self.decoder(z)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
+        # Encode -> equivariant latent dynamics -> decode back to outputs.
         z = self.encode(x)
         z = self.dynamics(z)
         return self.decode(z)

@@ -61,6 +61,7 @@ class SpectralLinear(nn.Module):
         return weight / sigma.clamp(min=1.0)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
+        # Enforce non-expansive linear map (Lipschitz <= 1) for stability/causality.
         weight = self._spectral_normalized_weight(update_u=self.training)
         return F.linear(x, weight, self.bias)
 
@@ -118,10 +119,12 @@ class NormGate(nn.Module):
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         bundled, flatten = self._bundle_view(x)
+        # Bundle energy acts as a gauge-invariant radial coordinate.
         if self.smooth_norm_eps > 0.0:
             energy = torch.sqrt((bundled**2).sum(dim=-1, keepdim=True) + self.smooth_norm_eps**2)
         else:
             energy = torch.norm(bundled, dim=-1, keepdim=True)
+        # Gate depends on energy, not direction, preserving bundle isotropy.
         gate = self.gate_fn(energy + self.norm_bias)
         out = bundled * gate
         if flatten:
@@ -235,16 +238,20 @@ class IsotropicBlock(nn.Module):
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         batch = x.shape[0]
         if self.exact:
+            # Exact isotropy: per-bundle radial scaling without cross-bundle mixing.
             scales = self.bundle_scales.clamp(-1.0, 1.0)
             bundled = x.reshape(batch, self.n_bundles, self.bundle_size)
             bundled *= scales.view(1, -1, 1)
         else:
             if self.input_proj is not None:
+                # Non-expansive projection to match bundle geometry.
                 x = self.input_proj(x)
             bundled = x.reshape(batch, self.n_bundles, self.bundle_size)
+            # Block-diagonal mixing within each bundle, spectrally normalized.
             weight = self._spectral_normalize_block_bank(self.block_weights)
             bundled = torch.einsum("bnd,ndk->bnk", bundled, weight)
 
+        # Norm-gated activation keeps the nonlinearity gauge-covariant.
         gated = self.norm_gate(bundled)
         return gated.reshape(batch, self.n_bundles * self.bundle_size)
 

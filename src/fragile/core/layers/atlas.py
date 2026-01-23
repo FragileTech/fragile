@@ -242,6 +242,7 @@ class StandardVQ(nn.Module):
         z_e = self.encoder(x)  # [B, D_latent]
         embed = self.embeddings.weight  # [K, D_latent]
 
+        # Nearest-code lookup in latent space.
         z_sq = (z_e**2).sum(dim=1, keepdim=True)  # [B, 1]
         e_sq = (embed**2).sum(dim=1).unsqueeze(0)  # [1, K]
         dot = torch.matmul(z_e, embed.t())  # [B, K]
@@ -254,6 +255,7 @@ class StandardVQ(nn.Module):
         codebook = F.mse_loss(z_q, z_e.detach())  # []
         vq_loss = codebook + 0.25 * commitment  # []
 
+        # Straight-through estimator to keep encoder gradients.
         z_st = z_e + (z_q - z_e).detach()  # [B, D_latent]
         if self.vision_decoder is not None:
             h = self.decoder_head(z_st)
@@ -573,16 +575,21 @@ class AttentiveAtlasEncoder(nn.Module):
             z_n_all_charts: [B, N_c, D] per-chart nuisance
             c_bar: [B, D] chart center mixture
         """
+        # Extract features (optionally equivariant vision front-end).
         features = self._encode_features(x)  # [B, H]
 
+        # Map features into chart-space coordinates.
         v = self.val_proj(features)  # [B, D]
         scores = torch.matmul(v, self.chart_centers.t()) / math.sqrt(self.latent_dim)  # [B, N_c]
+        # Chart routing distributes mass across atlas charts.
         router_weights = F.softmax(scores, dim=-1)  # [B, N_c]
         K_chart = torch.argmax(router_weights, dim=1)  # [B]
 
+        # Chart-center mixture is the macro coordinate; local residual is per-chart.
         c_bar = torch.matmul(router_weights, self.chart_centers)  # [B, D]
         v_local = v - c_bar  # [B, D]
 
+        # Per-chart codebook lookup under the (optional) soft-equivariant metric.
         codebook = self.codebook.unsqueeze(0)  # [1, N_c, K, D]
         v_exp = v_local.unsqueeze(1).unsqueeze(2)  # [B, 1, 1, D]
         diff = v_exp - codebook  # [B, N_c, K, D]
@@ -601,23 +608,28 @@ class AttentiveAtlasEncoder(nn.Module):
             # Straight-through soft assignment so gradients reach the metric network.
             z_q_all += z_q_soft - z_q_soft.detach()
 
+        # VQ loss is weighted by chart routing to align codes with chart usage.
         w = router_weights.unsqueeze(-1).detach()  # [B, N_c, 1]
         v_bc = v_local.unsqueeze(1)  # [B, 1, D]
         commitment = ((v_bc - z_q_all.detach()) ** 2 * w).mean(dim=(0, 2)).sum()  # []
         codebook_loss = ((z_q_all - v_bc.detach()) ** 2 * w).mean(dim=(0, 2)).sum()  # []
         vq_loss = codebook_loss + 0.25 * commitment  # []
 
+        # Blend codes across charts to form the macro latent per sample.
         z_q_blended = (z_q_all * router_weights.unsqueeze(-1)).sum(dim=1)  # [B, D]
         K_code = indices_stack.gather(1, K_chart.unsqueeze(1)).squeeze(1)  # [B]
 
+        # Structure filter extracts the gauge nuisance from per-chart residuals.
         delta = v_bc - z_q_all.detach()  # [B, N_c, D]
         z_n_all = self.structure_filter(delta.reshape(-1, self.latent_dim))  # [B*N_c, D]
         z_n_all_charts = z_n_all.view(v.shape[0], self.num_charts, self.latent_dim)  # [B, N_c, D]
 
+        # Texture residual is what's left after nuisance subtraction.
         z_n = (z_n_all_charts * router_weights.unsqueeze(-1)).sum(dim=1)  # [B, D]
         delta_blended = v_local - z_q_blended.detach()  # [B, D]
         z_tex = delta_blended - z_n  # [B, D]
 
+        # Geometric latent = chart center + macro code + nuisance.
         z_q_st = v_local + (z_q_blended - v_local).detach()  # [B, D]
         z_geo = c_bar + z_q_st + z_n  # [B, D]
 
@@ -708,15 +720,18 @@ class TopologicalDecoder(nn.Module):
             x_hat: [B, D_out] reconstruction
             router_weights: [B, N_c] routing weights
         """
+        # Clamp geometry inside atlas chart range.
         z_geo = torch.tanh(z_geo)
         if chart_index is not None:
             router_weights = F.one_hot(
                 chart_index, num_classes=self.num_charts
             ).float()  # [B, N_c]
         else:
+            # Autonomous routing predicts chart membership from geometry.
             logits = self.latent_router(z_geo)  # [B, N_c]
             router_weights = F.softmax(logits, dim=-1)  # [B, N_c]
 
+        # Chart-specific linear maps reconstruct local observations.
         h_stack = torch.einsum("bl,chl->bch", z_geo, self.chart_weight)  # [B, N_c, H]
         h_stack += self.chart_bias.unsqueeze(0)  # [B, N_c, H]
         h_global = (h_stack * router_weights.unsqueeze(-1)).sum(dim=1)  # [B, H]
@@ -726,6 +741,7 @@ class TopologicalDecoder(nn.Module):
         else:
             x_hat = self.renderer(h_global) + self.render_skip(h_global)  # [B, D_out]
         if z_tex is not None:
+            # Texture residual injects high-frequency details.
             z_tex = torch.tanh(z_tex)
             x_hat += self.tex_residual_scale * self.tex_residual(z_tex)
         return x_hat, router_weights
@@ -968,8 +984,10 @@ class CovariantChartRouter(nn.Module):
 
     def _gamma_term(self, z: torch.Tensor) -> torch.Tensor:
         if self.tensorization == "full":
+            # Quadratic term captures Christoffel-symbol curvature corrections.
             z_outer = z.unsqueeze(2) * z.unsqueeze(1)  # [B, D, D]
             return torch.einsum("bij,kij->bk", z_outer, self.q_gamma)
+        # Low-rank quadratic term for efficiency.
         z_u = z @ self.q_gamma_u.t()  # [B, R]
         z_v = z @ self.q_gamma_v.t()  # [B, R]
         return (z_u * z_v) @ self.q_gamma_out  # [B, K]
@@ -995,6 +1013,7 @@ class CovariantChartRouter(nn.Module):
         if self.transport_proj is None:
             return base_queries.unsqueeze(0).expand(batch_size, -1, -1)
 
+        # Cayley transform of skew matrix approximates parallel transport.
         skew = self.transport_proj(z).view(batch_size, self.key_dim, self.key_dim)
         skew = 0.5 * (skew - skew.transpose(1, 2))
         eye = torch.eye(self.key_dim, device=z.device, dtype=z.dtype).expand(batch_size, -1, -1)
@@ -1003,6 +1022,7 @@ class CovariantChartRouter(nn.Module):
         return torch.einsum("bij,nj->bni", u, base_queries)
 
     def _temperature(self, z: torch.Tensor) -> torch.Tensor:
+        # Poincare conformal factor scales attention temperature by radius.
         r2 = (z**2).sum(dim=-1)
         denom = (1.0 - r2).clamp(min=self.tau_denom_min)
         tau = math.sqrt(self.key_dim) * denom / 2.0
@@ -1014,6 +1034,7 @@ class CovariantChartRouter(nn.Module):
         features: torch.Tensor | None = None,
         chart_tokens: torch.Tensor | None = None,
     ) -> tuple[torch.Tensor, torch.Tensor]:
+        # Query mixes feature and geometry terms with curvature corrections.
         q = self.q_z_proj(z)
         if self.q_feat_proj is not None:
             if features is None:
@@ -1022,6 +1043,7 @@ class CovariantChartRouter(nn.Module):
             q += self.q_feat_proj(features)
         q += self._gamma_term(z)
 
+        # Transport chart keys into the local frame and score by dot product.
         keys = self._transport_queries(z, chart_tokens=chart_tokens)  # [B, N_c, K]
         scores = (keys * q.unsqueeze(1)).sum(dim=-1)
         tau = self._temperature(z)
@@ -1265,10 +1287,12 @@ class PrimitiveAttentiveAtlasEncoder(nn.Module):
         torch.Tensor,
     ]:
         """Forward pass through the attentive atlas."""
+        # Extract features and map into chart coordinates.
         features = self._encode_features(x)  # [B, H]
         v = self.val_proj(features)  # [B, D]
 
         if self.covariant_attn:
+            # Covariant router performs gauge-aware chart assignment.
             router_weights, K_chart = self.cov_router(
                 v, features=features, chart_tokens=self.chart_centers
             )
@@ -1279,9 +1303,11 @@ class PrimitiveAttentiveAtlasEncoder(nn.Module):
             router_weights = F.softmax(scores, dim=-1)  # [B, N_c]
             K_chart = torch.argmax(router_weights, dim=1)  # [B]
 
+        # Chart-center mixture defines the macro coordinate.
         c_bar = torch.matmul(router_weights, self.chart_centers)  # [B, D]
         v_local = v - c_bar  # [B, D]
 
+        # Per-chart codebook lookup under optional equivariant metric.
         codebook = self.codebook.unsqueeze(0)  # [1, N_c, K, D]
         v_exp = v_local.unsqueeze(1).unsqueeze(2)  # [B, 1, 1, D]
         diff = v_exp - codebook  # [B, N_c, K, D]
@@ -1300,15 +1326,18 @@ class PrimitiveAttentiveAtlasEncoder(nn.Module):
             # Straight-through soft assignment so gradients reach the metric network.
             z_q_all += z_q_soft - z_q_soft.detach()
 
+        # VQ objective weighted by routing.
         w = router_weights.unsqueeze(-1).detach()  # [B, N_c, 1]
         v_bc = v_local.unsqueeze(1)  # [B, 1, D]
         commitment = ((v_bc - z_q_all.detach()) ** 2 * w).mean(dim=(0, 2)).sum()  # []
         codebook_loss = ((z_q_all - v_bc.detach()) ** 2 * w).mean(dim=(0, 2)).sum()  # []
         vq_loss = codebook_loss + 0.25 * commitment  # []
 
+        # Blend chart codes to form macro latent.
         z_q_blended = (z_q_all * router_weights.unsqueeze(-1)).sum(dim=1)  # [B, D]
         K_code = indices_stack.gather(1, K_chart.unsqueeze(1)).squeeze(1)  # [B]
 
+        # Structure filter extracts nuisance; remainder is texture.
         delta = v_bc - z_q_all.detach()  # [B, N_c, D]
         z_n_all = self.structure_filter(delta.reshape(-1, self.latent_dim))  # [B*N_c, D]
         z_n_all_charts = z_n_all.view(v.shape[0], self.num_charts, self.latent_dim)  # [B, N_c, D]
@@ -1317,6 +1346,7 @@ class PrimitiveAttentiveAtlasEncoder(nn.Module):
         delta_blended = v_local - z_q_blended.detach()  # [B, D]
         z_tex = delta_blended - z_n  # [B, D]
 
+        # Geometric latent = chart center + macro code + nuisance.
         z_q_st = v_local + (z_q_blended - v_local).detach()  # [B, D]
         z_geo = c_bar + z_q_st + z_n  # [B, D]
 
@@ -1436,17 +1466,20 @@ class PrimitiveTopologicalDecoder(nn.Module):
         chart_index: torch.Tensor | None = None,
     ) -> tuple[torch.Tensor, torch.Tensor]:
         """Decode from latent geometry."""
+        # Clamp geometry to chart range.
         z_geo = torch.tanh(z_geo)
         if chart_index is not None:
             router_weights = F.one_hot(
                 chart_index, num_classes=self.num_charts
             ).float()  # [B, N_c]
         elif self.covariant_attn:
+            # Covariant router predicts chart membership from geometry.
             router_weights, _ = self.cov_router(z_geo)
         else:
             logits = self.latent_router(z_geo)  # [B, N_c]
             router_weights = F.softmax(logits, dim=-1)  # [B, N_c]
 
+        # Chart-specific projections + gauge-covariant gating.
         h_stack = torch.stack(
             [proj(z_geo) for proj in self.chart_projectors], dim=1
         )  # [B, N_c, H]
@@ -1460,6 +1493,7 @@ class PrimitiveTopologicalDecoder(nn.Module):
         else:
             x_hat = self.renderer(h_global) + self.render_skip(h_global)  # [B, D_out]
         if z_tex is not None:
+            # Texture residual injects fine-scale details.
             z_tex = torch.tanh(z_tex)
             x_hat += self.tex_residual_scale * self.tex_residual(z_tex)
         return x_hat, router_weights
@@ -1869,9 +1903,11 @@ class _AtlasEncoderLevel(nn.Module):
         torch.Tensor,
         torch.Tensor,
     ]:
+        # Map shared features into chart coordinates.
         v = self.val_proj(features)  # [B, D]
 
         if self.covariant_attn:
+            # Covariant router assigns charts with gauge-aware transport.
             router_weights, K_chart = self.cov_router(
                 v, features=features, chart_tokens=self.chart_centers
             )
@@ -1880,9 +1916,11 @@ class _AtlasEncoderLevel(nn.Module):
             router_weights = F.softmax(scores, dim=-1)
             K_chart = torch.argmax(router_weights, dim=1)
 
+        # Chart-center mixture defines the macro coordinate.
         c_bar = torch.matmul(router_weights, self.chart_centers)
         v_local = v - c_bar
 
+        # Per-chart codebook match under optional equivariant metric.
         codebook = self.codebook.unsqueeze(0)
         v_exp = v_local.unsqueeze(1).unsqueeze(2)
         diff = v_exp - codebook
@@ -1900,15 +1938,18 @@ class _AtlasEncoderLevel(nn.Module):
             z_q_soft = (weights.unsqueeze(-1) * codebook).sum(dim=2)
             z_q_all += z_q_soft - z_q_soft.detach()
 
+        # VQ objective weighted by routing.
         w = router_weights.unsqueeze(-1).detach()
         v_bc = v_local.unsqueeze(1)
         commitment = ((v_bc - z_q_all.detach()) ** 2 * w).mean(dim=(0, 2)).sum()
         codebook_loss = ((z_q_all - v_bc.detach()) ** 2 * w).mean(dim=(0, 2)).sum()
         vq_loss = codebook_loss + 0.25 * commitment
 
+        # Blend chart codes to form macro latent.
         z_q_blended = (z_q_all * router_weights.unsqueeze(-1)).sum(dim=1)
         K_code = indices_stack.gather(1, K_chart.unsqueeze(1)).squeeze(1)
 
+        # Structure filter extracts nuisance; remainder is texture.
         delta = v_bc - z_q_all.detach()
         z_n_all = self.structure_filter(delta.reshape(-1, self.latent_dim))
         z_n_all_charts = z_n_all.view(v.shape[0], self.num_charts, self.latent_dim)
@@ -1917,6 +1958,7 @@ class _AtlasEncoderLevel(nn.Module):
         delta_blended = v_local - z_q_blended.detach()
         z_tex = delta_blended - z_n
 
+        # Geometric latent = chart center + macro code + nuisance.
         z_q_st = v_local + (z_q_blended - v_local).detach()
         z_geo = c_bar + z_q_st + z_n
 
@@ -2133,6 +2175,7 @@ class HierarchicalAtlasStack(nn.Module):
         else:
             step_value = None
 
+        # Shared feature extractor yields a common view for all levels.
         if self.share_feature_extractor:
             features = self.feature_extractor(x)
         else:
@@ -2149,6 +2192,7 @@ class HierarchicalAtlasStack(nn.Module):
                 outputs.append(prev_state[idx])
                 continue
 
+            # Optionally reuse cached features; otherwise compute per-level.
             if self.share_feature_extractor:
                 level_features = features
             else:
@@ -2187,6 +2231,7 @@ class HierarchicalAtlasStack(nn.Module):
                 "c_bar": c_bar,
             })
 
+        # Optional cross-level jump operators align nuisance coordinates across scales.
         if self.jump_operators is not None:
             for idx, jump_op in enumerate(self.jump_operators):
                 src = outputs[idx]

@@ -55,12 +55,14 @@ class WilsonLineApprox(nn.Module):
         """
         _, n, _ = z_key.shape
 
+        # Relative displacement parameterizes the transport path in latent space.
         delta_z = z_query.unsqueeze(1) - z_key  # [B, N, d_latent]
         coeff = self.delta_proj(delta_z)  # [B, N, d_conn]
 
         def skew(basis: torch.Tensor) -> torch.Tensor:
             return basis - basis.transpose(-1, -2)
 
+        # Skew-symmetric generators approximate the connection in the Lie algebra.
         h_mat = (
             self.g_s * torch.einsum("bnr,rij->bnij", coeff, skew(self.basis_binding))
             + self.g_2 * torch.einsum("bnr,rij->bnij", coeff, skew(self.basis_error))
@@ -69,6 +71,7 @@ class WilsonLineApprox(nn.Module):
 
         identity = torch.eye(self.d_k, device=z_key.device, dtype=z_key.dtype)
         identity = identity.expand(z_query.shape[0], n, self.d_k, self.d_k)
+        # Linearized Wilson line: U ≈ I + ∫A, used for parallel transport.
         return identity + h_mat
 
 
@@ -170,10 +173,12 @@ class ChristoffelQuery(nn.Module):
         Returns:
             q: [B, d_out] query vectors
         """
+        # Base query from features and position (local chart coordinates).
         q = self.W_Q(x) + self.W_Qz(z_geom)
         if v_feat is not None:
             q += self.W_Qv(v_feat)
 
+        # Quadratic term encodes Christoffel-symbol corrections from curvature.
         d_latent = min(z_geom.shape[-1], self.W_Q_gamma.shape[-1])
         z_trunc = z_geom[..., :d_latent]
         q_gamma = torch.einsum(
@@ -182,6 +187,7 @@ class ChristoffelQuery(nn.Module):
         q += q_gamma
 
         if v_geom is not None:
+            # Velocity coupling approximates connection terms along the geodesic.
             v_trunc = v_geom[..., :d_latent]
             q_zv = torch.einsum(
                 "aij,bi,bj->ba", self.W_Qzv[:, :d_latent, :d_latent], z_trunc, v_trunc
@@ -213,6 +219,7 @@ class ChiralProjector(nn.Module):
         Returns:
             psi_proj: [B, 2*d] projected doublet (flattened)
         """
+        # Use value-gradient direction to define the chiral projection axis.
         n_vec = self.grad_proj(grad_V)
         n_hat = n_vec / (torch.norm(n_vec, dim=-1, keepdim=True) + 1e-8)
         n_x, n_y, n_z = n_hat.unbind(dim=-1)
@@ -224,6 +231,7 @@ class ChiralProjector(nn.Module):
             + n_z[:, None, None] * self.sigma_3
         )
 
+        # Apply SU(2) projector, then weight by commitment strength.
         psi_proj = torch.einsum("bij,bjd->bid", proj, psi_doublet)
         commit_strength = (psi_doublet * psi_proj).sum(dim=1, keepdim=True)
         psi_proj *= commit_strength
@@ -359,9 +367,11 @@ class CovariantAttention(nn.Module):
         k = self.key(x_key)
         v = self.value(x_value)
 
+        # Parallel transport keys into the query frame (Wilson line).
         u = self.wilson(z_query, z_key)
         k_transported = torch.einsum("bnij,bnj->bni", u, k)
 
+        # Metric-aware similarity with conformal temperature scaling.
         scores = torch.einsum("bi,bni->bn", q, k_transported)
         tau = self.metric.temperature(z_query, self.d_k)
         scores /= tau + 1e-08
@@ -369,10 +379,12 @@ class CovariantAttention(nn.Module):
         attention = F.softmax(scores, dim=-1)
 
         if self.use_screening:
+            # Area-law screening suppresses long strings in the latent geometry.
             lambda_z = self.metric.conformal_factor(z_query)
             attention = self.screening(attention, z_query, z_key, lambda_z, level)
             attention /= attention.sum(dim=-1, keepdim=True) + 1e-08
 
+        # Aggregate transported values; optional chirality post-processes the bundle.
         output = torch.einsum("bn,bni->bi", attention, v)
 
         if self.use_chirality and grad_V is not None:
@@ -449,6 +461,7 @@ class GeodesicCrossAttention(nn.Module):
 
         force_features = self.grad_encoder(context_force)
 
+        # B step: momentum kick from forces (geodesic acceleration).
         delta_p1, _ = self.head_B1(
             z_query=z,
             z_key=context_z,
@@ -459,6 +472,7 @@ class GeodesicCrossAttention(nn.Module):
         delta_p1_latent = self.state_proj(delta_p1)
         p -= h / 2.0 * delta_p1_latent
 
+        # A step: drift along metric velocity with learned correction.
         g_inv = self.metric.metric_inv(z)
         v = torch.einsum("bij,bj->bi", g_inv, p)
 
@@ -473,8 +487,10 @@ class GeodesicCrossAttention(nn.Module):
         )
         delta_z1_latent = self.state_proj(delta_z1)
         z += h / 2.0 * (v + delta_z1_latent)
+        # Keep positions inside the Poincare ball (safe harbor).
         z = self._project_to_disk(z)
 
+        # O step: thermostat (Ornstein-Uhlenbeck) in the conformal metric.
         g_sqrt = self.metric.conformal_factor(z)
         xi = torch.randn_like(p)
         p = self.c1 * p + self.c2 * g_sqrt * xi
@@ -492,6 +508,7 @@ class GeodesicCrossAttention(nn.Module):
             delta_p_noise_latent = self.state_proj(delta_p_noise)
             p += self.thermostat_residual_scale * delta_p_noise_latent
 
+        # A step: second drift with updated momentum.
         g_inv = self.metric.metric_inv(z)
         v = torch.einsum("bij,bj->bi", g_inv, p)
 
@@ -506,8 +523,10 @@ class GeodesicCrossAttention(nn.Module):
         )
         delta_z2_latent = self.state_proj(delta_z2)
         z += h / 2.0 * (v + delta_z2_latent)
+        # Keep positions inside the Poincare ball (safe harbor).
         z = self._project_to_disk(z)
 
+        # B step: final momentum kick from forces.
         delta_p2, _ = self.head_B2(
             z_query=z,
             z_key=context_z,
