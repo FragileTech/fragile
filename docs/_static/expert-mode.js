@@ -157,6 +157,28 @@
         });
     }
 
+    /**
+     * Disable tippy tooltips in navigation sidebars.
+     */
+    function disableNavTooltips() {
+        const containers = document.querySelectorAll(
+            '.bd-sidebar-primary, .bd-sidebar-secondary'
+        );
+
+        containers.forEach(function(container) {
+            const links = container.querySelectorAll('a.reference.internal, a.nav-link');
+            links.forEach(function(link) {
+                const tippyInstance = link._tippy;
+                if (tippyInstance && !tippyInstance.state.isDestroyed) {
+                    tippyInstance.destroy();
+                }
+                if (link.hasAttribute('aria-describedby')) {
+                    link.removeAttribute('aria-describedby');
+                }
+            });
+        });
+    }
+
     // Initialize immediately (before DOM ready) to prevent flash
     const isExpert = initExpertMode();
 
@@ -165,9 +187,16 @@
         document.addEventListener('DOMContentLoaded', function() {
             insertToggle(createToggleSwitch(isExpert));
             applyVolumeHeaderStyles();
+            disableNavTooltips();
         });
     } else {
         insertToggle(createToggleSwitch(isExpert));
         applyVolumeHeaderStyles();
+        disableNavTooltips();
     }
+
+    // Run after full load to catch tippy initialization (window.onload).
+    window.addEventListener('load', function() {
+        setTimeout(disableNavTooltips, 0);
+    });
 })();

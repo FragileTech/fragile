@@ -38,7 +38,7 @@ class TopoEncoderConfig:
     num_charts: int = 10
     codes_per_chart: int = 32
     covariant_attn: bool = True
-    covariant_attn_tensorization: str = "sum"
+    covariant_attn_tensorization: str = "full"
     covariant_attn_rank: int = 8
     covariant_attn_tau_min: float = 1e-2
     covariant_attn_denom_min: float = 1e-3
