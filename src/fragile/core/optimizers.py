@@ -38,6 +38,10 @@ class ThermodynamicAdam(Optimizer):
             raise ValueError(f"Invalid lr: {lr}")
         if eps <= 0.0:
             raise ValueError(f"Invalid eps: {eps}")
+        if len(betas) != 2 or not 0.0 <= betas[0] < 1.0 or not 0.0 <= betas[1] < 1.0:
+            raise ValueError(f"Invalid betas: {betas}")
+        if weight_decay < 0.0:
+            raise ValueError(f"Invalid weight_decay: {weight_decay}")
         if not 0.0 <= oscillation_brake <= 1.0:
             raise ValueError(f"Invalid oscillation_brake: {oscillation_brake}")
         if history_window < 1:
@@ -78,6 +82,9 @@ class ThermodynamicAdam(Optimizer):
         self.last_lrs: list[float] = []
         self.last_base_lr: float = lr
         self.last_base_lrs: list[float] = []
+        self.last_metric_value: float | None = None
+        self.last_varentropy: float | None = None
+        self.last_alignment_dot: float | None = None
         self._global_step: int = 0
 
     @torch.no_grad()
@@ -106,16 +113,19 @@ class ThermodynamicAdam(Optimizer):
                 loss_value = float(loss_tensor)
             loss_out = loss_tensor
 
+        # Metric drives the "thermodynamic governor": loss or grad RMS.
         metric_value = None
         if self._use_loss_varentropy and loss_value is not None:
             metric_value = loss_value
         else:
             metric_value = self._compute_grad_rms()
+        self.last_metric_value = metric_value
 
         lr_scale = 1.0
         if metric_value is not None:
             self._stat_history.append(metric_value)
             if len(self._stat_history) >= self._varentropy_min_history:
+                # Varentropy acts like a temperature proxy for adaptive step scaling.
                 mean = math.fsum(self._stat_history) / len(self._stat_history)
                 variance = math.fsum((val - mean) ** 2 for val in self._stat_history) / len(
                     self._stat_history
@@ -126,8 +136,15 @@ class ThermodynamicAdam(Optimizer):
                 lr_scale = math.exp(group0["governor_sensitivity"] * varentropy)
                 lr_scale = min(lr_scale, group0["max_lr_scale"])
                 lr_scale = max(lr_scale, group0["min_lr_scale"])
+                self.last_varentropy = varentropy
+            else:
+                self.last_varentropy = None
+        else:
+            self.last_varentropy = None
 
         alignment_dot = None
+        alignment_sum = 0.0
+        alignment_count = 0
         for group in self.param_groups:
             for param in group["params"]:
                 if param.grad is None:
@@ -139,11 +156,13 @@ class ThermodynamicAdam(Optimizer):
                 state = self.state[param]
                 if "exp_avg" not in state:
                     continue
-                alignment_dot = torch.sum(grad * state["exp_avg"]).item()
-                break
-            if alignment_dot is not None:
-                break
+                alignment_sum += torch.sum(grad * state["exp_avg"]).item()
+                alignment_count += 1
+        if alignment_count > 0:
+            alignment_dot = alignment_sum
+        self.last_alignment_dot = alignment_dot
 
+        # Oscillation brake: reduce step if gradients oppose momentum.
         if alignment_dot is not None and alignment_dot < 0.0:
             lr_scale = self.param_groups[0]["oscillation_brake"]
 
@@ -178,6 +197,7 @@ class ThermodynamicAdam(Optimizer):
                     raise RuntimeError(msg)
 
                 if group["weight_decay"] != 0.0:
+                    # Decoupled weight decay (dissipation term).
                     param.add_(param, alpha=-lr * group["weight_decay"])
 
                 state = self.state[param]
@@ -189,6 +209,7 @@ class ThermodynamicAdam(Optimizer):
                 exp_avg, exp_avg_sq = state["exp_avg"], state["exp_avg_sq"]
                 state["step"] += 1
 
+                # Adam moment updates.
                 exp_avg.mul_(beta1).add_(grad, alpha=1 - beta1)
                 exp_avg_sq.mul_(beta2).addcmul_(grad, grad, value=1 - beta2)
 

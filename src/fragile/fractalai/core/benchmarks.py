@@ -574,11 +574,11 @@ class StochasticGaussian(OptimBenchmark):
             **kwargs: Additional parameters passed to OptimBenchmark
         """
         # Capture std in closure for stochastic function
-        _std = std
+        std_ = std
 
         def stochastic_gaussian(x: torch.Tensor) -> torch.Tensor:
             """Sample N(0, σ²) independently for each walker on each call."""
-            return torch.randn(x.shape[0], dtype=x.dtype, device=x.device) * _std
+            return torch.randn(x.shape[0], dtype=x.dtype, device=x.device) * std_
 
         super().__init__(dims=dims, function=stochastic_gaussian, std=std, **kwargs)
 

@@ -37,6 +37,7 @@ class TokenSelfAttentionBlock(nn.Module):
         self.out_proj = nn.Linear(num_tokens * attn_dim, hidden_dim)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
+        # Project into token space, then self-attend for global interactions.
         tokens = self.to_tokens(x).reshape(x.shape[0], self.num_tokens, self.attn_dim)
         attn_out, _ = self.attn(tokens, tokens, tokens, need_weights=False)
         attn_out = self.norm(attn_out + tokens)
@@ -125,7 +126,7 @@ class StandardVQ(nn.Module):
         # Encode
         z_e = self.encoder(x)  # [B, latent_dim]
 
-        # Vector quantization (Euclidean distance)
+        # Vector quantization (nearest codebook entry).
         dists = torch.cdist(z_e, self.embeddings.weight)  # [B, num_codes]
         indices = torch.argmin(dists, dim=1)  # [B]
         z_q = self.embeddings(indices)  # [B, latent_dim]
@@ -135,7 +136,7 @@ class StandardVQ(nn.Module):
         codebook_loss = F.mse_loss(z_q, z_e.detach())
         vq_loss = codebook_loss + 0.25 * commitment_loss
 
-        # Straight-through estimator
+        # Straight-through estimator keeps encoder gradients.
         z_out = z_e + (z_q - z_e).detach()
 
         # Decode
@@ -328,6 +329,7 @@ class AttentiveAtlasEncoder(nn.Module):
         k = self.key_proj(features)  # [B, hidden_dim]
         # Attention: k @ q.T / sqrt(d)
         scores = torch.matmul(k, self.chart_queries.T) / self.scale  # [B, N_c]
+        # Router weights define atlas chart responsibilities.
         router_weights = F.softmax(scores, dim=-1)  # [B, N_c]
 
         # Hard chart assignment
@@ -336,7 +338,7 @@ class AttentiveAtlasEncoder(nn.Module):
         # 3. Value projection
         v = self.val_proj(features)  # [B, latent_dim]
 
-        # 4. Local VQ per chart
+        # 4. Local VQ per chart (chart-specific macro codes).
         codebook_weights = torch.stack(
             [cb.weight for cb in self.codebooks], dim=0
         )  # [N_c, codes_per_chart, latent_dim]
@@ -357,7 +359,7 @@ class AttentiveAtlasEncoder(nn.Module):
         codebook = ((z_q_all - v_bc.detach()) ** 2 * w).mean(dim=(0, 2)).sum()
         vq_loss = codebook + 0.25 * commitment
 
-        # 5. Soft blending for differentiability
+        # 5. Soft blending for differentiability across charts.
         z_q_blended = (z_q_all * router_weights.unsqueeze(-1)).sum(dim=1)  # [B, D]
 
         # Get hard K_code from selected chart
@@ -370,7 +372,7 @@ class AttentiveAtlasEncoder(nn.Module):
             delta.reshape(B * self.num_charts, self.latent_dim)
         ).view(B, self.num_charts, self.latent_dim)
 
-        # Blend z_n weighted by router (for backward compatibility)
+        # Blend z_n weighted by router (gauge residual).
         z_n = (z_n_all_charts * router_weights.unsqueeze(-1)).sum(dim=1)  # [B, latent_dim]
 
         # Texture residual: z_tex = delta_blended - z_n

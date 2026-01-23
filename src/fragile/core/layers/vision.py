@@ -291,8 +291,7 @@ class CovariantRetinaDecoder(nn.Module):
         x = self.relu3(x)
         x = self.up3(x)
 
-        x = self.out_conv(x).tensor
-        return x
+        return self.out_conv(x).tensor
 
 
 # =============================================================================
@@ -371,8 +370,7 @@ class SpectralConv2d(nn.Module):
 
         sigma = (u @ weight_mat @ v).abs()
         # Only normalize if σ > 1 (non-expansive, not contractive)
-        weight_normalized = self.weight / sigma.clamp(min=1.0)
-        return weight_normalized
+        return self.weight / sigma.clamp(min=1.0)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         weight = self._spectral_normalized_weight(update_u=self.training)
@@ -417,7 +415,9 @@ class NormGatedConv2d(nn.Module):
     ) -> None:
         super().__init__()
         if out_channels % bundle_size != 0:
-            msg = f"out_channels ({out_channels}) must be divisible by bundle_size ({bundle_size})."
+            msg = (
+                f"out_channels ({out_channels}) must be divisible by bundle_size ({bundle_size})."
+            )
             raise ValueError(msg)
 
         self.conv = SpectralConv2d(
@@ -500,7 +500,7 @@ class CovariantCIFARBackbone(nn.Module):
             msg = f"base_channels ({base_channels}) must be divisible by bundle_size ({bundle_size})."
             raise ValueError(msg)
 
-        c1 = base_channels      # Stage 1: 32x32 → 16x16
+        c1 = base_channels  # Stage 1: 32x32 → 16x16
         c2 = base_channels * 2  # Stage 2: 16x16 → 8x8
         c3 = base_channels * 4  # Stage 3: 8x8 → 4x4
 

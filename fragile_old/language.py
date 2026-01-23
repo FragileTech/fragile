@@ -538,7 +538,7 @@ class LieAlgebraMessage(nn.Module):
         # Full SU(n) would use Gell-Mann matrices
         generators = []
         idx = 0
-        n = int(math.ceil(math.sqrt(dim)))
+        n = math.ceil(math.sqrt(dim))
 
         for i in range(n):
             for j in range(i + 1, n):

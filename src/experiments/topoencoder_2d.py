@@ -740,7 +740,7 @@ def load_benchmarks(path: str) -> dict:
 def _benchmarks_compatible(bench_config: dict, config: TopoEncoderConfig) -> bool:
     if not bench_config:
         return False
-    baseline_vision_preproc = bool(bench_config.get("baseline_vision_preproc", False))
+    baseline_vision_preproc = bool(bench_config.get("baseline_vision_preproc"))
     if baseline_vision_preproc != bool(config.baseline_vision_preproc):
         return False
     if baseline_vision_preproc:
@@ -754,9 +754,9 @@ def _benchmarks_compatible(bench_config: dict, config: TopoEncoderConfig) -> boo
         int(bench_config.get("input_dim", -1)) == int(config.input_dim)
         and int(bench_config.get("latent_dim", -1)) == int(config.latent_dim)
         and int(bench_config.get("num_codes_standard", -1)) == int(config.num_codes_standard)
-        and bool(bench_config.get("baseline_vision_preproc", False))
+        and bool(bench_config.get("baseline_vision_preproc"))
         == bool(config.baseline_vision_preproc)
-        and bool(bench_config.get("baseline_attn", False)) == bool(config.baseline_attn)
+        and bool(bench_config.get("baseline_attn")) == bool(config.baseline_attn)
         and int(bench_config.get("baseline_attn_tokens", -1)) == int(config.baseline_attn_tokens)
         and int(bench_config.get("baseline_attn_dim", -1)) == int(config.baseline_attn_dim)
         and int(bench_config.get("baseline_attn_heads", -1)) == int(config.baseline_attn_heads)
@@ -858,7 +858,7 @@ def _maybe_init_vision_shape(config: TopoEncoderConfig, dataset_name: str) -> No
         raise ValueError(msg)
     if config.input_dim != expected:
         raise ValueError(
-            "vision_preproc shape does not match input_dim " f"({config.input_dim} vs {expected})."
+            f"vision_preproc shape does not match input_dim ({config.input_dim} vs {expected})."
         )
 
 
@@ -1005,7 +1005,7 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
         colors_train = colors[train_idx_np]
         colors_test = colors[test_idx_np] if test_size > 0 else colors
 
-        print(f"Train/test split: {len(X_train)}/{len(X_test)} " f"(test={config.test_split:.2f})")
+        print(f"Train/test split: {len(X_train)}/{len(X_test)} (test={config.test_split:.2f})")
 
         X_train_cpu = X_train.clone()
         X_test_cpu = X_test.clone()
@@ -2428,16 +2428,14 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
                 f"soft_eq_l1={avg_soft_equiv_l1:.3f} "
                 f"soft_eq_ratio={avg_soft_equiv_log_ratio:.3f}"
             )
-            print(f"  Tier2: window={avg_window:.3f} " f"disent={avg_disent:.3f}")
+            print(f"  Tier2: window={avg_window:.3f} disent={avg_disent:.3f}")
             print(
                 f"  Tier3: orth={avg_orth:.3f} "
                 f"code_ent={avg_code_ent:.3f} "
                 f"pc_code_ent={avg_pc_code_ent:.3f}"
             )
-            print(
-                f"  Tier4: kl={avg_kl:.3f} " f"orbit={avg_orbit:.3f} " f"vicreg={avg_vicreg:.3f}"
-            )
-            print(f"  Tier5: jump={avg_jump:.3f} " f"(λ={log_jump_weight:.3f})")
+            print(f"  Tier4: kl={avg_kl:.3f} orbit={avg_orbit:.3f} vicreg={avg_vicreg:.3f}")
+            print(f"  Tier5: jump={avg_jump:.3f} (λ={log_jump_weight:.3f})")
             enc_w_test = None
             z_geo_test = None
             test_sup_acc = None
@@ -2515,14 +2513,8 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
                     f"train_acc={avg_ae_cls_acc:.3f} "
                     f"test_acc={ae_test_acc:.3f}"
                 )
-            print(
-                f"  Info: I(X;K)={avg_ixk:.3f} "
-                f"H(K)={avg_hk:.3f} "
-                f"H(K|X)={avg_hk_given_x:.3f}"
-            )
-            print(
-                f"  Code: H(code)={avg_code_entropy:.3f} " f"H(pc_code)={avg_pc_code_entropy:.3f}"
-            )
+            print(f"  Info: I(X;K)={avg_ixk:.3f} H(K)={avg_hk:.3f} H(K|X)={avg_hk_given_x:.3f}")
+            print(f"  Code: H(code)={avg_code_entropy:.3f} H(pc_code)={avg_pc_code_entropy:.3f}")
             if config.adaptive_lr:
                 print(
                     f"  LR ctl: grad_norm={avg_grad_norm:.2e} "
@@ -3104,9 +3096,7 @@ def main():
         "--soft_equiv_soft_assign",
         type=lambda x: x.lower() == "true",
         default=True,
-        help=(
-            "Use straight-through soft assignment for soft equivariant metric " "(default: True)"
-        ),
+        help=("Use straight-through soft assignment for soft equivariant metric (default: True)"),
     )
     parser.add_argument(
         "--soft_equiv_temperature",

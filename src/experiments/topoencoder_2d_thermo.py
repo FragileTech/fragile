@@ -952,7 +952,7 @@ def load_benchmarks(path: str) -> dict:
 def _benchmarks_compatible(bench_config: dict, config: TopoEncoderConfig) -> bool:
     if not bench_config:
         return False
-    baseline_vision_preproc = bool(bench_config.get("baseline_vision_preproc", False))
+    baseline_vision_preproc = bool(bench_config.get("baseline_vision_preproc"))
     if baseline_vision_preproc != bool(config.baseline_vision_preproc):
         return False
     if baseline_vision_preproc:
@@ -966,9 +966,9 @@ def _benchmarks_compatible(bench_config: dict, config: TopoEncoderConfig) -> boo
         int(bench_config.get("input_dim", -1)) == int(config.input_dim)
         and int(bench_config.get("latent_dim", -1)) == int(config.latent_dim)
         and int(bench_config.get("num_codes_standard", -1)) == int(config.num_codes_standard)
-        and bool(bench_config.get("baseline_vision_preproc", False))
+        and bool(bench_config.get("baseline_vision_preproc"))
         == bool(config.baseline_vision_preproc)
-        and bool(bench_config.get("baseline_attn", False)) == bool(config.baseline_attn)
+        and bool(bench_config.get("baseline_attn")) == bool(config.baseline_attn)
         and int(bench_config.get("baseline_attn_tokens", -1)) == int(config.baseline_attn_tokens)
         and int(bench_config.get("baseline_attn_dim", -1)) == int(config.baseline_attn_dim)
         and int(bench_config.get("baseline_attn_heads", -1)) == int(config.baseline_attn_heads)
@@ -1151,7 +1151,7 @@ def _maybe_init_vision_shape(config: TopoEncoderConfig, dataset_name: str) -> No
         raise ValueError(msg)
     if config.input_dim != expected:
         raise ValueError(
-            "vision_preproc shape does not match input_dim " f"({config.input_dim} vs {expected})."
+            f"vision_preproc shape does not match input_dim ({config.input_dim} vs {expected})."
         )
 
 
@@ -1298,7 +1298,7 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
         colors_train = colors[train_idx_np]
         colors_test = colors[test_idx_np] if test_size > 0 else colors
 
-        print(f"Train/test split: {len(X_train)}/{len(X_test)} " f"(test={config.test_split:.2f})")
+        print(f"Train/test split: {len(X_train)}/{len(X_test)} (test={config.test_split:.2f})")
 
         X_train_cpu = X_train.clone()
         X_test_cpu = X_test.clone()
@@ -1492,7 +1492,7 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
     cifar_std_params = 0
     if config.enable_cifar_backbone and config.dataset == "cifar10":
         num_classes = 10
-        if config.cifar_backbone_type in ("covariant", "both"):
+        if config.cifar_backbone_type in {"covariant", "both"}:
             model_cifar_covariant = CovariantCIFARBackbone(
                 in_channels=config.vision_in_channels,
                 num_classes=num_classes,
@@ -1503,7 +1503,7 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
                 model_cifar_covariant.load_state_dict(resume_state["cifar_cov"])
             cifar_cov_params = count_parameters(model_cifar_covariant)
 
-        if config.cifar_backbone_type in ("standard", "both"):
+        if config.cifar_backbone_type in {"standard", "both"}:
             model_cifar_standard = StandardCIFARBackbone(
                 in_channels=config.vision_in_channels,
                 num_classes=num_classes,
@@ -1778,11 +1778,10 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
     dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True, pin_memory=pin_memory)
     if config.eval_batch_size > 0:
         eval_batch_size = config.eval_batch_size
+    elif 0 < batch_size < len(X_test):
+        eval_batch_size = batch_size
     else:
-        if 0 < batch_size < len(X_test):
-            eval_batch_size = batch_size
-        else:
-            eval_batch_size = min(256, len(X_test)) if len(X_test) else 1
+        eval_batch_size = min(256, len(X_test)) if len(X_test) else 1
     eval_batch_size = min(eval_batch_size, len(X_test)) if len(X_test) else eval_batch_size
     test_dataset = TensorDataset(X_test, labels_test_t, colors_test_t)
     test_dataloader = DataLoader(
@@ -1993,7 +1992,9 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
             acc_cifar_cov = torch.tensor(0.0, device=device)
             if model_cifar_covariant is not None:
                 # Need image tensor for CIFAR backbone
-                batch_img = batch_X.view(-1, config.vision_in_channels, config.vision_height, config.vision_width)
+                batch_img = batch_X.view(
+                    -1, config.vision_in_channels, config.vision_height, config.vision_width
+                )
                 if train_cifar_cov and opt_cifar_cov:
                     logits_cov = model_cifar_covariant(batch_img)
                     loss_cifar_cov = F.cross_entropy(logits_cov, batch_labels)
@@ -2003,7 +2004,9 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
                         opt_cifar_cov,
                         loss_cifar_cov if config.thermo_use_loss_varentropy else None,
                     )
-                    acc_cifar_cov = (logits_cov.detach().argmax(dim=1) == batch_labels).float().mean()
+                    acc_cifar_cov = (
+                        (logits_cov.detach().argmax(dim=1) == batch_labels).float().mean()
+                    )
                 else:
                     with torch.no_grad():
                         logits_cov = model_cifar_covariant(batch_img)
@@ -2013,7 +2016,9 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
             loss_cifar_std = torch.tensor(0.0, device=device)
             acc_cifar_std = torch.tensor(0.0, device=device)
             if model_cifar_standard is not None:
-                batch_img = batch_X.view(-1, config.vision_in_channels, config.vision_height, config.vision_width)
+                batch_img = batch_X.view(
+                    -1, config.vision_in_channels, config.vision_height, config.vision_width
+                )
                 if train_cifar_std and opt_cifar_std:
                     logits_std_cifar = model_cifar_standard(batch_img)
                     loss_cifar_std = F.cross_entropy(logits_std_cifar, batch_labels)
@@ -2023,12 +2028,16 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
                         opt_cifar_std,
                         loss_cifar_std if config.thermo_use_loss_varentropy else None,
                     )
-                    acc_cifar_std = (logits_std_cifar.detach().argmax(dim=1) == batch_labels).float().mean()
+                    acc_cifar_std = (
+                        (logits_std_cifar.detach().argmax(dim=1) == batch_labels).float().mean()
+                    )
                 else:
                     with torch.no_grad():
                         logits_std_cifar = model_cifar_standard(batch_img)
                         loss_cifar_std = F.cross_entropy(logits_std_cifar, batch_labels)
-                        acc_cifar_std = (logits_std_cifar.argmax(dim=1) == batch_labels).float().mean()
+                        acc_cifar_std = (
+                            (logits_std_cifar.argmax(dim=1) == batch_labels).float().mean()
+                        )
 
             # --- Baseline classifier readouts (detached) ---
             std_cls_loss = torch.tensor(0.0, device=device)
@@ -2907,7 +2916,9 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
                     if std_classifier_head is not None and model_std is not None:
                         z_std_test = model_std.encoder(batch_X)
                         std_logits_test = std_classifier_head(z_std_test)
-                        std_test_hits += (std_logits_test.argmax(dim=1) == batch_labels).sum().item()
+                        std_test_hits += (
+                            (std_logits_test.argmax(dim=1) == batch_labels).sum().item()
+                        )
                     if ae_classifier_head is not None and model_ae is not None:
                         _, z_ae_test = model_ae(batch_X)
                         ae_logits_test = ae_classifier_head(z_ae_test)
@@ -2923,7 +2934,9 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
             )
             chart_assignments = chart_assignments_t.cpu().numpy()
             ami = compute_ami(labels_test, chart_assignments) if chart_assignments.size else 0.0
-            perplexity = _compute_perplexity_from_assignments(chart_assignments_t, config.num_charts)
+            perplexity = _compute_perplexity_from_assignments(
+                chart_assignments_t, config.num_charts
+            )
             test_sup_acc = test_sup_hits / total if supervised_loss is not None else None
             test_sup_route = test_sup_route_sum / total if supervised_loss is not None else None
             test_cls_acc = test_cls_hits / total if classifier_head is not None else None
@@ -3013,16 +3026,14 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
                 f"soft_eq_l1={avg_soft_equiv_l1:.3f} "
                 f"soft_eq_ratio={avg_soft_equiv_log_ratio:.3f}"
             )
-            print(f"  Tier2: window={avg_window:.3f} " f"disent={avg_disent:.3f}")
+            print(f"  Tier2: window={avg_window:.3f} disent={avg_disent:.3f}")
             print(
                 f"  Tier3: orth={avg_orth:.3f} "
                 f"code_ent={avg_code_ent:.3f} "
                 f"pc_code_ent={avg_pc_code_ent:.3f}"
             )
-            print(
-                f"  Tier4: kl={avg_kl:.3f} " f"orbit={avg_orbit:.3f} " f"vicreg={avg_vicreg:.3f}"
-            )
-            print(f"  Tier5: jump={avg_jump:.3f} " f"(λ={log_jump_weight:.3f})")
+            print(f"  Tier4: kl={avg_kl:.3f} orbit={avg_orbit:.3f} vicreg={avg_vicreg:.3f}")
+            print(f"  Tier5: jump={avg_jump:.3f} (λ={log_jump_weight:.3f})")
             if supervised_loss is not None:
                 print(
                     f"  Sup: train_acc={avg_sup_acc:.3f} "
@@ -3045,7 +3056,11 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
                     f"train_acc={avg_cls_acc:.3f} "
                     f"test_acc={test_cls_acc:.3f}"
                 )
-            if std_classifier_head is not None and model_std is not None and std_test_acc is not None:
+            if (
+                std_classifier_head is not None
+                and model_std is not None
+                and std_test_acc is not None
+            ):
                 print(
                     f"  Std Readout: train_loss={avg_std_cls_loss:.3f} "
                     f"train_acc={avg_std_cls_acc:.3f} "
@@ -3057,14 +3072,8 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
                     f"train_acc={avg_ae_cls_acc:.3f} "
                     f"test_acc={ae_test_acc:.3f}"
                 )
-            print(
-                f"  Info: I(X;K)={avg_ixk:.3f} "
-                f"H(K)={avg_hk:.3f} "
-                f"H(K|X)={avg_hk_given_x:.3f}"
-            )
-            print(
-                f"  Code: H(code)={avg_code_entropy:.3f} " f"H(pc_code)={avg_pc_code_entropy:.3f}"
-            )
+            print(f"  Info: I(X;K)={avg_ixk:.3f} H(K)={avg_hk:.3f} H(K|X)={avg_hk_given_x:.3f}")
+            print(f"  Code: H(code)={avg_code_entropy:.3f} H(pc_code)={avg_pc_code_entropy:.3f}")
             print(
                 f"  LR ctl: grad_norm={avg_grad_norm:.2e} "
                 f"upd_ratio={avg_update_ratio:.2e} "
@@ -3346,14 +3355,10 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
         mse_atlas = sse_atlas / total_elements if total_samples > 0 else 0.0
         final_consistency = consistency_sum / total_samples if total_samples > 0 else 0.0
         sup_acc = (
-            sup_hits / total_samples
-            if supervised_loss is not None and total_samples > 0
-            else 0.0
+            sup_hits / total_samples if supervised_loss is not None and total_samples > 0 else 0.0
         )
         cls_acc = (
-            cls_hits / total_samples
-            if classifier_head is not None and total_samples > 0
-            else 0.0
+            cls_hits / total_samples if classifier_head is not None and total_samples > 0 else 0.0
         )
 
     if mlflow_active:
@@ -3418,7 +3423,12 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
     if model_cifar_standard is not None and cifar_std_accs:
         print(f"  StandardCIFARBackbone Accuracy: {cifar_std_accs[-1]:.4f}")
         print(f"  StandardCIFARBackbone Final Loss: {cifar_std_losses[-1]:.4f}")
-    if model_cifar_covariant is not None and model_cifar_standard is not None and cifar_cov_accs and cifar_std_accs:
+    if (
+        model_cifar_covariant is not None
+        and model_cifar_standard is not None
+        and cifar_cov_accs
+        and cifar_std_accs
+    ):
         diff = cifar_cov_accs[-1] - cifar_std_accs[-1]
         if diff > 0:
             print(f"  ✓ Covariant backbone wins by {diff:.4f}")
@@ -3767,9 +3777,7 @@ def main():
         "--soft_equiv_soft_assign",
         type=lambda x: x.lower() == "true",
         default=True,
-        help=(
-            "Use straight-through soft assignment for soft equivariant metric " "(default: True)"
-        ),
+        help=("Use straight-through soft assignment for soft equivariant metric (default: True)"),
     )
     parser.add_argument(
         "--soft_equiv_temperature",

@@ -3,6 +3,7 @@ import pytest
 
 import fragile
 
+
 # plangym is optional - only import if available
 try:
     import plangym

@@ -1,4 +1,3 @@
-from itertools import starmap
 import tempfile
 
 import einops
@@ -260,7 +259,7 @@ def values_are_equal(value_1: Value, value_2: Value) -> bool:
     if not isinstance(value_1, type(value_2)):
         return False
     if isinstance(value_1, list):
-        return all(starmap(values_are_equal, zip(value_1, value_2)))
+        return all(map(values_are_equal, value_1, value_2))
     if isinstance(value_1, numpy.ndarray):
         try:
             return numpy.allclose(value_1, value_2, equal_nan=True)

@@ -299,10 +299,10 @@ class MontezumaDisplay:
                 self.rooms[ix] = process_frame(fai.rgb[batch_ix][50:], mode="L").copy()
         best_room_ix = room_ix[best_ix]
         self.room_grey.send(self.rooms[best_room_ix])
-        _visits = fai.visits[best_room_ix][None]
-        _visits = aggregate_visits(_visits, block_size=fai.agg_block_size, upsample=True)[0]
-        _visits[_visits == 0] = np.nan
-        self.visits_image.send(_visits)
+        visits = fai.visits[best_room_ix][None]
+        visits = aggregate_visits(visits, block_size=fai.agg_block_size, upsample=True)[0]
+        visits[visits == 0] = np.nan
+        self.visits_image.send(visits)
         self.pipe_tree.send(fai)
 
     def __panel__(self):

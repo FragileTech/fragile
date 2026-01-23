@@ -2366,9 +2366,9 @@ def test_complexity_potential():
     phi_vev[0, 0, 1] = v
     V_vev = complexity_potential(phi_vev, config)
     V_min_expected = -(config.mu_sq**2) / (4 * config.lambda_higgs)
-    assert (
-        abs(V_vev.item() - V_min_expected) < 1e-5
-    ), f"V_vev={V_vev.item()}, expected={V_min_expected}"
+    assert abs(V_vev.item() - V_min_expected) < 1e-5, (
+        f"V_vev={V_vev.item()}, expected={V_min_expected}"
+    )
 
     print("  Complexity potential: PASSED")
 

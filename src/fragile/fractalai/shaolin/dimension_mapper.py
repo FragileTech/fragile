@@ -325,8 +325,6 @@ class ColorDim(DimensionMapper):
                 np.nan: np.nan,
                 0.0: 0.0,
                 1.0: 1.0,
-                False: 0.0,
-                True: 1.0,
                 "False": 0.0,
                 "True": 1.0,
             })
@@ -389,8 +387,7 @@ def add_to_streams(streams: dict, dim):
         streams[name] = dim.param.value
     else:
         streams[name] = dim.param.value
-        if name.endswith("color"):
-            name = name[: -len("color")]
+        name = name.removesuffix("color")
         name = name.removesuffix("_")
         cmap_name = f"{name}_cmap" if name else "cmap"
         streams[cmap_name] = dim.param.cmap

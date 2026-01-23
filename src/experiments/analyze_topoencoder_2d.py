@@ -62,12 +62,12 @@ def _prepare_models(
     bench_dims: dict | None,
     device: str,
 ) -> dict[str, Any]:
-    baseline_attn = bool(config.get("baseline_attn", False))
+    baseline_attn = bool(config.get("baseline_attn"))
     baseline_attn_tokens = int(config.get("baseline_attn_tokens", 4))
     baseline_attn_dim = int(config.get("baseline_attn_dim", 32))
     baseline_attn_heads = int(config.get("baseline_attn_heads", 4))
     baseline_attn_dropout = float(config.get("baseline_attn_dropout", 0.0))
-    baseline_vision_preproc = bool(config.get("baseline_vision_preproc", False))
+    baseline_vision_preproc = bool(config.get("baseline_vision_preproc"))
     vision_in_channels = int(config.get("vision_in_channels", 0))
     vision_height = int(config.get("vision_height", 0))
     vision_width = int(config.get("vision_width", 0))
@@ -124,7 +124,7 @@ def _prepare_models(
     model_atlas.eval()
 
     model_std = None
-    if state.get("std") is not None and not config.get("disable_vq", False):
+    if state.get("std") is not None and not config.get("disable_vq"):
         std_hidden_dim = metrics.get("std_hidden_dim", config["hidden_dim"])
         model_std = StandardVQ(
             input_dim=config["input_dim"],
@@ -146,7 +146,7 @@ def _prepare_models(
     elif (
         bench_state is not None
         and bench_state.get("std") is not None
-        and not config.get("disable_vq", False)
+        and not config.get("disable_vq")
     ):
         std_hidden_dim = (
             (bench_dims or {}).get("std_hidden_dim") or metrics.get("std_hidden_dim")
@@ -170,7 +170,7 @@ def _prepare_models(
         model_std.eval()
 
     model_ae = None
-    if state.get("ae") is not None and not config.get("disable_ae", False):
+    if state.get("ae") is not None and not config.get("disable_ae"):
         ae_hidden_dim = metrics.get("ae_hidden_dim", config["hidden_dim"])
         model_ae = VanillaAE(
             input_dim=config["input_dim"],
@@ -191,7 +191,7 @@ def _prepare_models(
     elif (
         bench_state is not None
         and bench_state.get("ae") is not None
-        and not config.get("disable_ae", False)
+        and not config.get("disable_ae")
     ):
         ae_hidden_dim = (
             (bench_dims or {}).get("ae_hidden_dim") or metrics.get("ae_hidden_dim")

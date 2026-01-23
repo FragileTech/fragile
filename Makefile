@@ -1,4 +1,4 @@
-.PHONY: style check test tldr tldr-html
+.PHONY: style check test tldr tldr-html tldr-debug tldr-fallback check-tldr-deps
 
 style:
 	uv run ruff check --fix-only --unsafe-fixes .
@@ -12,13 +12,29 @@ test:
 	uv run pytest tests/
 
 tldr:
-	@echo "Generating PDF... Note: Mermaid diagrams will show as code."
-	@echo "For rendered diagrams, run 'make tldr-html' or view single_agent_tldr.md in GitHub/VS Code"
-	pandoc single_agent_tldr.md -o single_agent_tldr.pdf \
+	@echo "Generating PDF with rendered Mermaid diagrams..."
+	@python3 generate_pdf_with_mermaid.py
+	@echo "✓ PDF generated: single_agent_tldr.pdf"
+
+tldr-debug:
+	@echo "Generating PDF (debug mode - keeping temp files)..."
+	@python3 generate_pdf_with_mermaid.py --debug
+	@echo "✓ PDF generated: single_agent_tldr.pdf"
+	@echo "  Temp files retained in /tmp/tldr_build_*/"
+
+tldr-fallback:
+	@echo "Generating PDF without Mermaid rendering (fallback)..."
+	@pandoc single_agent_tldr.md -o single_agent_tldr.pdf \
 		--pdf-engine=xelatex \
 		-V geometry:margin=1in \
 		-V fontsize=11pt
 	@echo "✓ PDF generated: single_agent_tldr.pdf"
+
+check-tldr-deps:
+	@echo "Checking dependencies for PDF generation..."
+	@which mmdc > /dev/null 2>&1 || (echo "✗ mmdc not found. Install: npm install -g @mermaid-js/mermaid-cli" && exit 1)
+	@which pandoc > /dev/null 2>&1 || (echo "✗ pandoc not found. Install: apt-get install pandoc" && exit 1)
+	@echo "✓ All dependencies available"
 
 tldr-html:
 	@chmod +x generate_html.sh

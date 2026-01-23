@@ -146,9 +146,7 @@ def test_spectral_conv2d_shapes_and_norm() -> None:
 def test_spectral_conv2d_stride() -> None:
     """Test SpectralConv2d with stride for downsampling."""
     torch.manual_seed(11)
-    conv = SpectralConv2d(
-        in_channels=8, out_channels=16, kernel_size=3, stride=2, padding=1
-    )
+    conv = SpectralConv2d(in_channels=8, out_channels=16, kernel_size=3, stride=2, padding=1)
     x = torch.randn(2, 8, 16, 16)
     out = conv(x)
 

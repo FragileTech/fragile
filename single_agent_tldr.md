@@ -150,7 +150,7 @@ flowchart TD
     class X,Xhat,ChartIdx,Kchart io;
     class FE,F,Vproj,Struct feat;
     class RouterEnc,RouterDec,Wenc,Wdec,OneHot router;
-    classs Codebook,Diff,SoftEq,Dist,Indices,ZqAll,ZqBlend,VQLoss,Kcode vq;
+    class Codebook,Diff,SoftEq,Dist,Indices,ZqAll,ZqBlend,VQLoss,Kcode vq;
     class ChartCenters,Cbar,Vlocal,Zgeo,ZqSt,ZnAll,Zn geom;
     class DeltaAll,DeltaBlend,Ztex,TanhT,TexRes residual;
     class TanhG,ChartProj,Gate,Mix,Renderer,Skip,AddSkip,AddTex decoder;

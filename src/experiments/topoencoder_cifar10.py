@@ -340,7 +340,7 @@ def train_benchmark(config: TopoEncoderCIFAR10Config) -> dict:
     colors_train = colors[train_idx_np]
     colors_test = colors[test_idx_np] if test_size > 0 else colors
 
-    print(f"Train/test split: {len(X_train)}/{len(X_test)} " f"(test={config.test_split:.2f})")
+    print(f"Train/test split: {len(X_train)}/{len(X_test)} (test={config.test_split:.2f})")
 
     # Create TopoEncoder
     model_atlas = TopoEncoder(
@@ -915,9 +915,7 @@ def train_benchmark(config: TopoEncoderCIFAR10Config) -> dict:
                     f"train_acc={avg_cls_acc:.4f} "
                     f"test_acc={test_cls_acc:.4f}"
                 )
-            print(
-                f"  Info: I(X;K)={avg_ixk:.3f} H(K)={avg_hk:.3f} " f"jump_w={log_jump_weight:.3f}"
-            )
+            print(f"  Info: I(X;K)={avg_ixk:.3f} H(K)={avg_hk:.3f} jump_w={log_jump_weight:.3f}")
             print(f"  Metrics: AMI={ami:.4f} perplexity={perplexity:.2f}/{config.num_charts}")
             print("-" * 60)
 
@@ -1147,9 +1145,7 @@ def main():
         "--soft_equiv_soft_assign",
         type=lambda x: x.lower() == "true",
         default=True,
-        help=(
-            "Use straight-through soft assignment for soft equivariant metric " "(default: True)"
-        ),
+        help=("Use straight-through soft assignment for soft equivariant metric (default: True)"),
     )
     parser.add_argument(
         "--soft_equiv_temperature",

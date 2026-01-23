@@ -134,6 +134,7 @@ def compute_variance_loss(
 
     if bundle_size is not None and bundle_size > 0 and dim % bundle_size == 0:
         n_bundles = dim // bundle_size
+        # Bundle energy is a gauge-invariant proxy for variance.
         bundled = z_centered.reshape(batch, n_bundles, bundle_size)
         energy = (bundled**2).sum(dim=-1).mean(dim=0)
         target = (target_std**2) * bundle_size
@@ -155,6 +156,7 @@ def compute_diversity_loss(
 
     Overhead: ~1% (simple statistics).
     """
+    # Encourage uniform chart usage by maximizing entropy of mean routing.
     mean_usage = router_weights.mean(dim=0)
     H_K = -(mean_usage * torch.log(mean_usage + eps)).sum()
     log_K = float(np.log(num_charts))
@@ -299,6 +301,7 @@ def compute_disentangle_loss(
     norms_centered = torch.clamp(norms_centered, -100, 100)
     w_centered = torch.clamp(w_centered, -1, 1)
 
+    # Cross-covariance couples routing weights to radial energy (gauge coherence).
     cross_cov = (w_centered.T @ norms_centered) / max(batch - 1, 1)
     result = (cross_cov**2).sum()
 
@@ -337,6 +340,7 @@ def compute_orthogonality_loss(
                 continue
             svals = svals.clamp(min=eps)
             log_s = torch.log(svals)
+            # Log-variance of singular values penalizes anisotropy.
             loss += log_s.var(unbiased=False)
             n_layers += 1
 
@@ -468,6 +472,7 @@ def compute_jump_consistency_loss(
 
             # Weight: how much is each point in BOTH chart i and j?
             # High weight = point is in overlap region
+            # Overlap weights restrict supervision to shared chart regions.
             weights = router_weights[:, i] * router_weights[:, j]  # [B]
 
             # Skip if no meaningful overlap in this batch

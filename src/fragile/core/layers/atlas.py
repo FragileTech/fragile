@@ -1109,6 +1109,7 @@ class PrimitiveAttentiveAtlasEncoder(nn.Module):
             self.vision_shape = (vision_in_channels, vision_height, vision_width)
             if vision_backbone_type == "covariant_cifar":
                 from fragile.core.layers.vision import CovariantCIFARBackbone
+
                 backbone = CovariantCIFARBackbone(
                     in_channels=vision_in_channels,
                     num_classes=1,  # Dummy, not used for features
@@ -1220,7 +1221,7 @@ class PrimitiveAttentiveAtlasEncoder(nn.Module):
             msg = "vision_preproc expects input shape [B, D] or [B, C, H, W]."
             raise ValueError(msg)
         # Use forward_features if available (for CovariantCIFARBackbone)
-        if hasattr(self.vision_preproc, 'forward_features'):
+        if hasattr(self.vision_preproc, "forward_features"):
             h = self.vision_preproc.forward_features(x)
         else:
             h = self.vision_preproc(x)
@@ -1430,6 +1431,7 @@ class PrimitiveTopologicalDecoder(nn.Module):
         if vision_preproc:
             if vision_backbone_type == "covariant_cifar":
                 from fragile.core.layers.vision import StandardResNetDecoder
+
                 self.vision_decoder = StandardResNetDecoder(
                     in_dim=hidden_dim,
                     out_channels=vision_in_channels,
@@ -1697,6 +1699,7 @@ class _SharedFeatureExtractor(nn.Module):
             self.vision_shape = (vision_in_channels, vision_height, vision_width)
             if vision_backbone_type == "covariant_cifar":
                 from fragile.core.layers.vision import CovariantCIFARBackbone
+
                 backbone = CovariantCIFARBackbone(
                     in_channels=vision_in_channels,
                     num_classes=1,  # Dummy, not used for features
@@ -1747,7 +1750,7 @@ class _SharedFeatureExtractor(nn.Module):
             msg = "vision_preproc expects input shape [B, D] or [B, C, H, W]."
             raise ValueError(msg)
         # Use forward_features if available (for CovariantCIFARBackbone)
-        if hasattr(self.vision_preproc, 'forward_features'):
+        if hasattr(self.vision_preproc, "forward_features"):
             h = self.vision_preproc.forward_features(x)
         else:
             h = self.vision_preproc(x)

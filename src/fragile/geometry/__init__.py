@@ -13,6 +13,7 @@ from fragile.fractalai.geometry import (
     get_analytical_ricci,
 )
 
+
 __all__ = [
     "analytical_ricci_flat",
     "analytical_ricci_hyperbolic",

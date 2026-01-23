@@ -90,8 +90,8 @@ class StreamingPlot:
         """
 
         def plot_func(data, **kwargs):
-            _plot = plot(data, **kwargs)
-            return self.opts(plot=_plot)
+            plot_ = plot(data, **kwargs)
+            return self.opts(plot=plot_)
 
         if self.widgets_mapping is not None:
             streams = {k: v.param.value for k, v in self.widgets_mapping.items()}

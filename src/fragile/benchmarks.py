@@ -2,22 +2,23 @@
 
 from fragile.fractalai.core.benchmarks import (
     Easom,
-    EggHolder,
-    HolderTable,
-    LennardJones,
-    Rastrigin,
-    Rosenbrock,
-    Sphere,
-    StyblinskiTang,
     easom,
+    EggHolder,
     eggholder,
     holder_table,
+    HolderTable,
     lennard_jones,
+    LennardJones,
+    Rastrigin,
     rastrigin,
+    Rosenbrock,
     rosenbrock,
+    Sphere,
     sphere,
     styblinski_tang,
+    StyblinskiTang,
 )
+
 
 __all__ = [
     "Easom",
