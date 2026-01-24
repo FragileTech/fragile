@@ -14,192 +14,248 @@ The chart router is shared by both encoder and decoder. It performs metric-aware
 - Position-dependent temperature scaled by local metric (conformal factor)
 
 ```mermaid
-%%{init: {"themeVariables": {"background":"#0b111b","edgeLabelBackground":"#111827","textColor":"#e5e7eb","lineColor":"#9ca3af","primaryColor":"#1f2937","primaryTextColor":"#e5e7eb","clusterBkg":"#0f172a","clusterBorder":"#334155"}}}%%
-flowchart TD
-    subgraph ROUTER["CovariantChartRouter (shared by encoder + decoder)"]
-        Z["z [B, D]"] -- "z [B, D]" --> Qz["q_z_proj(z) [B, K]"]
-        F["features [B, H]\n(encoder only)"] -- "features [B, H]" --> Qfeat["q_feat_proj(features) [B, K]"]
-        Z -- "z [B, D]" --> Gamma["Christoffel term (z ⊗ z)\n-> gamma [B, K]"]
-        Qz -- "q_z [B, K]" --> Qsum["q = q_z + gamma (+ q_feat) [B, K]"]
-        Qfeat -- "q_feat [B, K]" --> Qsum
-        Gamma -- "gamma [B, K]" --> Qsum
+%%{init: {"themeVariables": {"background":"#1e293b","edgeLabelBackground":"#334155","textColor":"#ffffff","lineColor":"#cbd5e1","primaryColor":"#334155","primaryTextColor":"#ffffff","secondaryTextColor":"#ffffff","tertiaryTextColor":"#ffffff","titleColor":"#ffffff","nodeTextColor":"#ffffff","clusterBkg":"#334155","clusterBorder":"#64748b","fontSize":"18px"},"flowchart":{"nodeSpacing":60,"rankSpacing":70,"useMaxWidth":true}}}%%
+flowchart TB
+    subgraph ROUTER["CovariantChartRouter"]
+        direction TB
 
-        Z -- "z [B, D]" --> Transport["transport_proj(z) -> skew [B, K, K]\n(if use_transport)"]
-        Transport -- "skew [B, K, K]" --> Cayley["Cayley: U(z) = (I+0.5S)^-1 (I-0.5S)"]
-        ChartTokens["chart_tokens c_k [N_c, D or K]\n(encoder: chart_centers)"] -- "c_k [N_c, D]" --> KeyProj["chart_key_proj [N_c, K]"]
-        ChartTokens -.->|if K| KeyMerge
-        ChartQ["chart_queries [N_c, K]\n(decoder default)"] -- "chart_queries [N_c, K]" --> KeyMerge["base_queries [N_c, K]"]
-        KeyProj -- "projected [N_c, K]" --> KeyMerge
-        KeyMerge -- "base_queries [N_c, K]" --> Keys["keys = U(z) * base_queries [B, N_c, K]\n(or base_queries if transport disabled)"]
-        Cayley -- "U(z) [B, K, K]" --> Keys
+        subgraph INPUT["Inputs"]
+            direction TB
+            Z["z [B, D]"]
+            F["features [B, H]<br/>(encoder only)"]
+            ChartTokens["chart_tokens c_k [N_c, D]"]
+        end
 
-        Keys -- "keys [B, N_c, K]" --> Scores["scores = sum(keys * q) [B, N_c]"]
-        Z -- "z [B, D]" --> Tau["tau(z) = sqrt(K) * (1 - ||z||^2)/2\nclamp denom + tau_min"]
-        Scores -- "scores [B, N_c]" --> Scale["scores / tau"]
-        Tau -- "tau [B]" --> Scale
-        Scale -- "scores/tau [B, N_c]" --> W["w = softmax(scores/tau) [B, N_c]"]
-        W -- "argmax [B]" --> Kchart["K_chart [B]"]
+        subgraph QUERY["Query Path"]
+            direction TB
+            Qz["q_z_proj(z) [B, K]"]
+            Gamma["Christoffel: z⊗z → γ [B, K]"]
+            Qfeat["q_feat_proj(features) [B, K]"]
+            Qsum["q = q_z + γ + q_feat [B, K]"]
+        end
+
+        subgraph TRANSPORT["Transport Path"]
+            direction TB
+            Transport["transport_proj → skew [B, K, K]"]
+            Cayley["Cayley: U=(I+½S)⁻¹(I-½S)"]
+            KeyProj["chart_key_proj [N_c, K]"]
+            Keys["keys = U(z) · base_queries"]
+        end
+
+        subgraph SCORING["Scoring"]
+            direction TB
+            Scores["scores = Σ(keys · q) [B, N_c]"]
+            Tau["τ(z) = √K·(1-‖z‖²)/2"]
+            Scale["scores / τ"]
+            W["w = softmax [B, N_c]"]
+            Kchart["K_chart = argmax(w)"]
+        end
     end
 
-    subgraph TENS["Christoffel tensorization options"]
-        Full["full: gamma = einsum(z_i z_j, W_q_gamma[k,i,j])"]
-        Sum["sum: low-rank (U_k x V_k) with rank R"]
-    end
+    Z --> Qz
+    Z --> Gamma
+    F --> Qfeat
+    Qz --> Qsum
+    Gamma --> Qsum
+    Qfeat --> Qsum
 
-    classDef io fill:#0b1320,stroke:#93c5fd,stroke-width:1px,color:#e5e7eb;
-    classDef feat fill:#111827,stroke:#22d3ee,stroke-width:1px,color:#e5e7eb;
-    classDef router fill:#2b1f1f,stroke:#f59e0b,stroke-width:1px,color:#e5e7eb;
-    classDef geom fill:#1f2937,stroke:#a78bfa,stroke-width:1px,color:#e5e7eb;
-    classDef util fill:#262626,stroke:#a3a3a3,stroke-width:1px,color:#e5e7eb;
+    Z --> Transport
+    Transport --> Cayley
+    ChartTokens --> KeyProj
+    Cayley --> Keys
+    KeyProj --> Keys
+
+    Qsum --> Scores
+    Keys --> Scores
+    Z --> Tau
+    Scores --> Scale
+    Tau --> Scale
+    Scale --> W
+    W --> Kchart
+
+    classDef io fill:#0b1320,stroke:#93c5fd,stroke-width:1px,color:#ffffff;
+    classDef feat fill:#111827,stroke:#22d3ee,stroke-width:1px,color:#ffffff;
+    classDef router fill:#2b1f1f,stroke:#f59e0b,stroke-width:1px,color:#ffffff;
+    classDef geom fill:#1f2937,stroke:#a78bfa,stroke-width:1px,color:#ffffff;
 
     class Z,Kchart geom;
     class F,Qfeat feat;
-    class Qz,Gamma,Qsum,Transport,Cayley,ChartTokens,KeyProj,ChartQ,KeyMerge,Keys,Scores,Tau,Scale,W router;
-    class Full,Sum util;
+    class Qz,Gamma,Qsum,Transport,Cayley,ChartTokens,KeyProj,Keys,Scores,Tau,Scale,W router;
 ```
 
-### 0.2 Full TopoEncoder (Encoder + Decoder)
+### 0.2 Encoder (PrimitiveAttentiveAtlasEncoder)
 
-Complete end-to-end architecture showing:
-- **Encoder**: Feature extraction → Chart routing → VQ per chart → Split into $(z_{geo}, z_n, z_{tex})$
-- **Decoder**: Chart-weighted reconstruction → Geometric base + Texture residual
+The encoder performs feature extraction, chart routing, VQ quantization per chart, and splits the latent into $(z_{geo}, z_n, z_{tex})$:
 
 ```mermaid
-%%{init: {"themeVariables": {"background":"#0b111b","edgeLabelBackground":"#111827","textColor":"#e5e7eb","lineColor":"#9ca3af","primaryColor":"#1f2937","primaryTextColor":"#e5e7eb","clusterBkg":"#0f172a","clusterBorder":"#334155"}}}%%
-flowchart TD
-    subgraph TOP["TopoEncoderPrimitives (current code)"]
-        subgraph ENC["PrimitiveAttentiveAtlasEncoder"]
-            X["Input x [B, D_in]"] -- "x [B, D_in]" --> FE["Feature extractor\nMLP: SpectralLinear -> NormGatedGELU x2\nor CovariantRetina (vision_preproc)"]
-            FE -- "features [B, H]" --> F["features [B, H]"]
-            F -- "features [B, H]" --> Vproj["val_proj: SpectralLinear\nv [B, D]"]
-            ChartCenters["chart_centers c_k [N_c, D]"] -- "c_k [N_c, D]" --> RouterEnc["Chart router\nCovariantChartRouter (covariant_attn)\nelse dot-product w/ chart_centers"]
-            F -- "features [B, H]" --> RouterEnc
-            Vproj -- "z = v [B, D]" --> RouterEnc
-            RouterEnc -- "w_enc [B, N_c]" --> Wenc["w_enc [B, N_c]"]
-            RouterEnc -- "K_chart [B]" --> Kchart["K_chart [B]"]
+%%{init: {"themeVariables": {"background":"#1e293b","edgeLabelBackground":"#334155","textColor":"#ffffff","lineColor":"#cbd5e1","primaryColor":"#334155","primaryTextColor":"#ffffff","secondaryTextColor":"#ffffff","tertiaryTextColor":"#ffffff","titleColor":"#ffffff","nodeTextColor":"#ffffff","clusterBkg":"#334155","clusterBorder":"#64748b","fontSize":"18px"},"flowchart":{"nodeSpacing":60,"rankSpacing":70,"useMaxWidth":true}}}%%
+flowchart TB
+    subgraph ENC["PrimitiveAttentiveAtlasEncoder"]
+        direction TB
 
-            Wenc -- "w_enc [B, N_c]" --> Cbar["c_bar = sum(w_enc * c_k) [B, D]"]
-            ChartCenters -- "c_k [N_c, D]" --> Cbar
-            Vproj -- "v [B, D]" --> Vlocal["v_local = v - c_bar [B, D]"]
-            Cbar -- "c_bar [B, D]" --> Vlocal
-
-            Codebook["Codebook (deltas) [N_c, K, D]"] -- "codebook [N_c, K, D]" --> Diff["diff = v_local - codebook [B, N_c, K, D]"]
-            Vlocal -- "v_local [B, D]" --> Diff
-            Diff -- "diff [B, N_c, K, D]" --> SoftEq["SoftEquivariantLayer per chart\n(optional when soft_equiv_metric)"]
-            SoftEq -- "diff' [B, N_c, K, D]" --> Dist["dist = ||diff'||^2 [B, N_c, K]"]
-            Diff -.-> Dist
-            Dist -- "dist [B, N_c, K]" --> Indices["indices per chart [B, N_c]"]
-            Indices -- "indices [B, N_c]" --> ZqAll["z_q_all [B, N_c, D]\n(gather; + soft-ST if soft_equiv_soft_assign)"]
-            ZqAll -- "z_q_all [B, N_c, D]" --> ZqBlend["z_q_blended = sum(w_enc * z_q_all)"]
-
-            Indices -- "indices [B, N_c]" --> Kcode["K_code (from K_chart)"]
-            Kchart -- "K_chart [B]" --> Kcode
-
-            ZqAll -- "z_q_all [B, N_c, D]" --> VQLoss["vq_loss = codebook + 0.25 * commitment"]
-            Vlocal -- "v_local [B, D]" --> VQLoss
-
-            ZqAll -- "z_q_all [B, N_c, D]" --> DeltaAll["delta_all = v_local - z_q_all (detach)"]
-            DeltaAll -- "delta_all [B, N_c, D]" --> Struct["structure_filter\nIsotropicBlock + SpectralLinear"]
-            Struct -- "z_n_all_charts [B, N_c, D]" --> ZnAll["z_n_all_charts [B, N_c, D]"]
-            ZnAll -- "z_n_all_charts [B, N_c, D]" --> Zn["z_n = sum(w_enc * z_n_all_charts) [B, D]"]
-            ZqBlend -- "z_q_blended [B, D]" --> DeltaBlend["delta_blended = v_local - z_q_blended (detach)"]
-            DeltaBlend -- "delta_blended [B, D]" --> Ztex["z_tex = delta_blended - z_n"]
-
-            ZqBlend -- "z_q_blended [B, D]" --> ZqSt["z_q_st = v_local + (z_q_blended - v_local).detach"]
-            ZqSt -- "z_q_st [B, D]" --> Zgeo["z_geo = c_bar + z_q_st + z_n"]
-            Zn -- "z_n [B, D]" --> Zgeo
-            Cbar -- "c_bar [B, D]" --> Zgeo
-
-            ZnAll -- "z_n_all_charts [B, N_c, D]" --> Jump["FactorizedJumpOperator (optional)"]
+        subgraph S1["Stage 1: Feature Extraction"]
+            direction TB
+            X["Input x [B, D_in]"]
+            FE["Feature extractor<br/>MLP or CovariantRetina"]
+            F["features [B, H]"]
+            Vproj["val_proj → v [B, D]"]
         end
 
-        subgraph DEC["PrimitiveTopologicalDecoder"]
-            Zgeo -- "z_geo [B, D]" --> TanhG["tanh(z_geo)"]
-            TanhG -- "tanh(z_geo) [B, D]" --> RouterDec["Chart router\nCovariantChartRouter (covariant_attn)\nelse latent_router + softmax"]
-            RouterDec -- "w_dec [B, N_c]" --> Wdec["w_dec [B, N_c]"]
-            ChartIdx["chart_index (optional)"] -- "K_chart [B]" --> OneHot["one-hot -> w_hard"]
-            OneHot -- "w_dec_hard [B, N_c]" --> Wdec
+        subgraph S2["Stage 2: Chart Routing"]
+            direction TB
+            ChartCenters["chart_centers c_k"]
+            RouterEnc["CovariantChartRouter"]
+            Wenc["w_enc [B, N_c]"]
+            Kchart["K_chart [B]"]
+        end
 
-            TanhG -- "tanh(z_geo) [B, D]" --> ChartProj["chart_projectors: SpectralLinear x N_c"]
-            ChartProj -- "h_i [B, N_c, H]" --> Gate["NormGatedGELU on h_stack"]
-            Gate -- "h_stack [B, N_c, H]" --> Mix["h_global = sum(w_dec * h_stack)"]
-            Wdec -- "w_dec [B, N_c]" --> Mix
+        subgraph S3["Stage 3: Local Coordinates"]
+            direction TB
+            Cbar["c̄ = Σ(w·c_k) [B, D]"]
+            Vlocal["v_local = v - c̄"]
+        end
 
-            Mix -- "h_global [B, H]" --> Renderer["renderer: SpectralLinear + NormGatedGELU x2 + SpectralLinear"]
-            Mix -- "h_global [B, H]" --> Skip["render_skip: SpectralLinear"]
-            Renderer -- "h_render [B, D_out]" --> AddSkip["x_hat_base = renderer + skip"]
-            Skip -- "h_skip [B, D_out]" --> AddSkip
+        subgraph S4["Stage 4: VQ Quantization"]
+            direction TB
+            Codebook["Codebook [N_c, K, D]"]
+            Diff["diff = v_local - codebook"]
+            Dist["dist = ‖diff‖² [B, N_c, K]"]
+            Indices["indices per chart"]
+            ZqAll["z_q_all [B, N_c, D]"]
+            ZqBlend["z_q_blended = Σ(w·z_q)"]
+        end
 
-            Ztex -- "z_tex [B, D]" --> TanhT["tanh(z_tex)"]
-            TanhT -- "tanh(z_tex) [B, D]" --> TexRes["tex_residual: SpectralLinear"]
-            TexRes -- "tex_resid [B, D_out]" --> AddTex["x_hat = x_hat_base + tex_residual_scale * tex_residual"]
-            AddSkip -- "x_hat_base [B, D_out]" --> AddTex
-            AddTex -- "x_hat [B, D_out]" --> Xhat["x_hat [B, D_out]"]
+        subgraph S5["Stage 5: Nuisance Extraction"]
+            direction TB
+            DeltaAll["δ_all = v_local - z_q_all"]
+            Struct["structure_filter"]
+            ZnAll["z_n_all [B, N_c, D]"]
+            Zn["z_n = Σ(w·z_n_all)"]
+        end
+
+        subgraph S6["Stage 6: Output Assembly"]
+            direction TB
+            ZqSt["z_q_st (straight-through)"]
+            Zgeo["z_geo = c̄ + z_q_st + z_n"]
+            DeltaBlend["δ_blended = v_local - z_q"]
+            Ztex["z_tex = δ_blended - z_n"]
         end
     end
 
-    classDef io fill:#0b1320,stroke:#93c5fd,stroke-width:1px,color:#e5e7eb;
-    classDef feat fill:#111827,stroke:#22d3ee,stroke-width:1px,color:#e5e7eb;
-    classDef router fill:#2b1f1f,stroke:#f59e0b,stroke-width:1px,color:#e5e7eb;
-    classDef vq fill:#1f2f2a,stroke:#34d399,stroke-width:1px,color:#e5e7eb;
-    classDef geom fill:#1f2937,stroke:#a78bfa,stroke-width:1px,color:#e5e7eb;
-    classDef residual fill:#3b1f2b,stroke:#f472b6,stroke-width:1px,color:#e5e7eb;
-    classDef decoder fill:#1f2b3b,stroke:#60a5fa,stroke-width:1px,color:#e5e7eb;
-    classDef util fill:#262626,stroke:#a3a3a3,stroke-width:1px,color:#e5e7eb;
+    X --> FE --> F --> Vproj
 
-    class X,Xhat,ChartIdx,Kchart io;
+    F --> RouterEnc
+    Vproj --> RouterEnc
+    ChartCenters --> RouterEnc
+    RouterEnc --> Wenc
+    RouterEnc --> Kchart
+
+    Wenc --> Cbar
+    ChartCenters --> Cbar
+    Vproj --> Vlocal
+    Cbar --> Vlocal
+
+    Vlocal --> Diff
+    Codebook --> Diff
+    Diff --> Dist --> Indices --> ZqAll
+    Wenc --> ZqBlend
+    ZqAll --> ZqBlend
+
+    ZqAll --> DeltaAll
+    DeltaAll --> Struct --> ZnAll
+    Wenc --> Zn
+    ZnAll --> Zn
+
+    ZqBlend --> ZqSt
+    ZqSt --> Zgeo
+    Zn --> Zgeo
+    Cbar --> Zgeo
+    ZqBlend --> DeltaBlend
+    Zn --> Ztex
+    DeltaBlend --> Ztex
+
+    classDef io fill:#0b1320,stroke:#93c5fd,stroke-width:1px,color:#ffffff;
+    classDef feat fill:#111827,stroke:#22d3ee,stroke-width:1px,color:#ffffff;
+    classDef router fill:#2b1f1f,stroke:#f59e0b,stroke-width:1px,color:#ffffff;
+    classDef vq fill:#1f2f2a,stroke:#34d399,stroke-width:1px,color:#ffffff;
+    classDef geom fill:#1f2937,stroke:#a78bfa,stroke-width:1px,color:#ffffff;
+    classDef residual fill:#3b1f2b,stroke:#f472b6,stroke-width:1px,color:#ffffff;
+
+    class X,Kchart io;
     class FE,F,Vproj,Struct feat;
-    class RouterEnc,RouterDec,Wenc,Wdec,OneHot router;
-    class Codebook,Diff,SoftEq,Dist,Indices,ZqAll,ZqBlend,VQLoss,Kcode vq;
+    class RouterEnc,Wenc router;
+    class Codebook,Diff,Dist,Indices,ZqAll,ZqBlend vq;
     class ChartCenters,Cbar,Vlocal,Zgeo,ZqSt,ZnAll,Zn geom;
-    class DeltaAll,DeltaBlend,Ztex,TanhT,TexRes residual;
-    class TanhG,ChartProj,Gate,Mix,Renderer,Skip,AddSkip,AddTex decoder;
-    class Jump util;
+    class DeltaAll,DeltaBlend,Ztex residual;
 ```
 
-### 0.3 Decoder Detail (Inverse Atlas)
+### 0.3 Decoder (PrimitiveTopologicalDecoder)
 
-Focused view of the decoder showing how the geometric latent $z_{geo}$ and texture residual $z_{tex}$ are independently processed and combined:
+The decoder performs chart-weighted reconstruction from the geometric latent $z_{geo}$ and adds the texture residual $z_{tex}$:
 - Geometric path: Chart projectors → Chart-weighted mixing → Renderer
 - Texture path: Independent residual network
 - Final output: Base reconstruction + scaled texture residual
 
 ```mermaid
-%%{init: {"themeVariables": {"background":"#0b111b","edgeLabelBackground":"#111827","textColor":"#e5e7eb","lineColor":"#9ca3af","primaryColor":"#1f2937","primaryTextColor":"#e5e7eb","clusterBkg":"#0f172a","clusterBorder":"#334155"}}}%%
-flowchart TD
-    subgraph DEC["PrimitiveTopologicalDecoder (current code)"]
-        Zgeo["z_geo = c_bar + z_q_st + z_n [B, D]"] -- "z_geo [B, D]" --> TanhG["tanh(z_geo)"]
-        TanhG -- "tanh(z_geo) [B, D]" --> RouterDec["Chart router\nCovariantChartRouter (covariant_attn)\nelse latent_router + softmax"]
-        RouterDec -- "w_dec [B, N_c]" --> Wdec["w_dec [B, N_c]"]
-        ChartIdx["chart_index (optional)"] -- "K_chart [B]" --> OneHot["one-hot -> w_hard"]
-        OneHot -- "w_dec_hard [B, N_c]" --> Wdec
+%%{init: {"themeVariables": {"background":"#1e293b","edgeLabelBackground":"#334155","textColor":"#ffffff","lineColor":"#cbd5e1","primaryColor":"#334155","primaryTextColor":"#ffffff","secondaryTextColor":"#ffffff","tertiaryTextColor":"#ffffff","titleColor":"#ffffff","nodeTextColor":"#ffffff","clusterBkg":"#334155","clusterBorder":"#64748b","fontSize":"18px"},"flowchart":{"nodeSpacing":60,"rankSpacing":70,"useMaxWidth":true}}}%%
+flowchart TB
+    subgraph DEC["PrimitiveTopologicalDecoder"]
+        direction TB
 
-        TanhG -- "tanh(z_geo) [B, D]" --> ChartProj["chart_projectors: SpectralLinear x N_c"]
-        ChartProj -- "h_i [B, N_c, H]" --> Gate["NormGatedGELU on h_stack"]
-        Gate -- "h_stack [B, N_c, H]" --> Mix["h_global = sum(w_dec * h_stack)"]
-        Wdec -- "w_dec [B, N_c]" --> Mix
+        subgraph INPUTS["Inputs"]
+            direction TB
+            Zgeo["z_geo [B, D]"]
+            Ztex["z_tex [B, D]"]
+        end
 
-        Mix -- "h_global [B, H]" --> Renderer["renderer: SpectralLinear + NormGatedGELU x2 + SpectralLinear"]
-        Mix -- "h_global [B, H]" --> Skip["render_skip: SpectralLinear"]
-        Renderer -- "h_render [B, D_out]" --> AddSkip["x_hat_base = renderer + skip"]
-        Skip -- "h_skip [B, D_out]" --> AddSkip
+        subgraph GEO["Geometric Path"]
+            direction TB
+            TanhG["tanh(z_geo)"]
+            RouterDec["CovariantChartRouter"]
+            Wdec["w_dec [B, N_c]"]
+            ChartProj["chart_projectors × N_c"]
+            Gate["NormGatedGELU"]
+            Mix["h_global = Σ(w·h_stack)"]
+            Renderer["renderer MLP"]
+            Skip["render_skip"]
+            AddSkip["x̂_base = render + skip"]
+        end
 
-        Ztex["z_tex [B, D]"] -- "z_tex [B, D]" --> TanhT["tanh(z_tex)"]
-        TanhT -- "tanh(z_tex) [B, D]" --> TexRes["tex_residual: SpectralLinear"]
-        TexRes -- "tex_resid [B, D_out]" --> AddTex["x_hat = x_hat_base + tex_residual_scale * tex_residual"]
-        AddSkip -- "x_hat_base [B, D_out]" --> AddTex
-        AddTex -- "x_hat [B, D_out]" --> Xhat["x_hat [B, D_out]"]
+        subgraph TEX["Texture Path"]
+            direction TB
+            TanhT["tanh(z_tex)"]
+            TexRes["tex_residual: Linear"]
+        end
+
+        subgraph OUTPUT["Output"]
+            direction TB
+            AddTex["x̂ = x̂_base + α·tex_res"]
+            Xhat["x̂ [B, D_out]"]
+        end
     end
 
-    classDef io fill:#0b1320,stroke:#93c5fd,stroke-width:1px,color:#e5e7eb;
-    classDef router fill:#2b1f1f,stroke:#f59e0b,stroke-width:1px,color:#e5e7eb;
-    classDef geom fill:#1f2937,stroke:#a78bfa,stroke-width:1px,color:#e5e7eb;
-    classDef residual fill:#3b1f2b,stroke:#f472b6,stroke-width:1px,color:#e5e7eb;
-    classDef decoder fill:#1f2b3b,stroke:#60a5fa,stroke-width:1px,color:#e5e7eb;
+    Zgeo --> TanhG
+    TanhG --> RouterDec --> Wdec
+    TanhG --> ChartProj --> Gate --> Mix
+    Wdec --> Mix
+    Mix --> Renderer --> AddSkip
+    Mix --> Skip --> AddSkip
+
+    Ztex --> TanhT --> TexRes
+
+    AddSkip --> AddTex
+    TexRes --> AddTex
+    AddTex --> Xhat
+
+    classDef io fill:#0b1320,stroke:#93c5fd,stroke-width:1px,color:#ffffff;
+    classDef router fill:#2b1f1f,stroke:#f59e0b,stroke-width:1px,color:#ffffff;
+    classDef geom fill:#1f2937,stroke:#a78bfa,stroke-width:1px,color:#ffffff;
+    classDef residual fill:#3b1f2b,stroke:#f472b6,stroke-width:1px,color:#ffffff;
+    classDef decoder fill:#1f2b3b,stroke:#60a5fa,stroke-width:1px,color:#ffffff;
 
     class Zgeo geom;
-    class RouterDec,Wdec,OneHot router;
-    class ChartIdx,Xhat io;
+    class RouterDec,Wdec router;
+    class Xhat io;
     class TanhG,ChartProj,Gate,Mix,Renderer,Skip,AddSkip,AddTex decoder;
     class Ztex,TanhT,TexRes residual;
 ```
@@ -213,37 +269,99 @@ Optional training components available in the experiment configuration:
 - InvariantChartClassifier (detached readout head with separate optimizer)
 
 ```mermaid
-%%{init: {"themeVariables": {"background":"#0b111b","edgeLabelBackground":"#111827","textColor":"#e5e7eb","lineColor":"#9ca3af","primaryColor":"#1f2937","primaryTextColor":"#e5e7eb","clusterBkg":"#0f172a","clusterBorder":"#334155"}}}%%
-flowchart TD
-    X["batch_X"] --> Enc["TopoEncoderPrimitives.encoder"]
-    Enc -- "z_geo [B, D]" --> Dec["TopoEncoderPrimitives.decoder"]
-    Enc -- "z_tex [B, D]" --> Dec
-    Dec -- "recon_a [B, D_in]" --> ReconLoss["recon_loss = mse(recon_a, batch_X)"]
+%%{init: {"themeVariables": {"background":"#1e293b","edgeLabelBackground":"#334155","textColor":"#ffffff","lineColor":"#cbd5e1","primaryColor":"#334155","primaryTextColor":"#ffffff","secondaryTextColor":"#ffffff","tertiaryTextColor":"#ffffff","titleColor":"#ffffff","nodeTextColor":"#ffffff","clusterBkg":"#334155","clusterBorder":"#64748b","fontSize":"18px"},"flowchart":{"nodeSpacing":60,"rankSpacing":70,"useMaxWidth":true}}}%%
+flowchart TB
+    subgraph TRAIN["Training Pipeline"]
+        direction TB
+
+        subgraph DATA["Data"]
+            direction TB
+            X["batch_X"]
+            Y["batch_labels"]
+        end
+
+        subgraph FORWARD["Forward Pass"]
+            direction TB
+            Enc["Encoder"]
+            EncOut["z_geo, z_tex, w_enc, vq_loss"]
+            Dec["Decoder"]
+            Recon["recon_a"]
+        end
+
+        subgraph LOSSES["Loss Terms"]
+            direction TB
+
+            subgraph L1["Reconstruction"]
+                direction TB
+                ReconLoss["MSE(recon, x)"]
+                ReconTerm["recon_term"]
+            end
+
+            subgraph L2["VQ"]
+                direction TB
+                VQLoss["codebook + commit"]
+                VQTerm["vq_term"]
+            end
+
+            subgraph L3["Supervised"]
+                direction TB
+                Sup["SupervisedTopologyLoss"]
+                SupTerm["sup_term"]
+            end
+
+            subgraph L4["Jump"]
+                direction TB
+                Jump["FactorizedJumpOperator"]
+            end
+        end
+
+        subgraph AGGREGATE["Atlas Loss"]
+            direction TB
+            LossA["Σ losses"]
+        end
+
+        subgraph CLASSIFIER["Classifier (detached)"]
+            direction TB
+            Cls["InvariantChartClassifier"]
+            CE["cross_entropy"]
+            OptCls["opt_classifier.step()"]
+        end
+    end
+
+    X --> Enc --> EncOut --> Dec --> Recon
+
+    Recon --> ReconLoss
     X --> ReconLoss
+    ReconLoss --> ReconTerm --> LossA
 
-    Enc -- "vq_loss" --> VQLoss["vq_loss (codebook + commitment)"]
+    EncOut --> VQLoss --> VQTerm --> LossA
 
-    ReconLoss --> ReconTerm["recon_term\n(optional learned precision)"]
-    VQLoss --> VQTerm["vq_term\n(optional learned precision)"]
+    EncOut --> Sup
+    Y --> Sup
+    Sup --> SupTerm --> LossA
 
-    Enc -- "enc_w [B, N_c]" --> Sup["SupervisedTopologyLoss (optional)"]
-    Enc -- "z_geo [B, D]" --> Sup
-    Y["batch_labels [B]"] --> Sup
-    Sup -- "sup_total + components" --> SupTerm["sup_term\n(optional learned precision)"]
+    EncOut --> Jump --> LossA
 
-    Enc -- "z_n_all_charts [B, N_c, D]" --> Jump["FactorizedJumpOperator (optional)"]
-    Enc -- "enc_w [B, N_c]" --> Jump
-    Jump -- "jump_loss (schedule weight)" --> LossA["atlas loss\n(recon + vq + regs + jump + sup)"]
+    EncOut -.-> Cls
+    Y --> CE
+    Cls --> CE --> OptCls
 
-    ReconTerm --> LossA
-    VQTerm --> LossA
-    SupTerm -- "sup_weight * sup_term" --> LossA
+    classDef io fill:#0b1320,stroke:#93c5fd,stroke-width:1px,color:#ffffff;
+    classDef encoder fill:#111827,stroke:#22d3ee,stroke-width:1px,color:#ffffff;
+    classDef decoder fill:#1f2b3b,stroke:#60a5fa,stroke-width:1px,color:#ffffff;
+    classDef loss fill:#2b1f1f,stroke:#f59e0b,stroke-width:1px,color:#ffffff;
+    classDef vq fill:#1f2f2a,stroke:#34d399,stroke-width:1px,color:#ffffff;
+    classDef sup fill:#1f2937,stroke:#a78bfa,stroke-width:1px,color:#ffffff;
+    classDef opt fill:#3b1f2b,stroke:#f472b6,stroke-width:1px,color:#ffffff;
 
-    Enc -- "enc_w (detach)" --> Cls["InvariantChartClassifier (optional)"]
-    Enc -- "z_geo (detach)" --> Cls
-    Y --> CE["cross_entropy"]
-    Cls -- "logits [B, C]" --> CE
-    CE --> OptCls["opt_classifier.step()"]
+    class X,Y io;
+    class Enc,EncOut encoder;
+    class Dec,Recon decoder;
+    class ReconLoss,ReconTerm,LossA loss;
+    class VQLoss,VQTerm vq;
+    class Sup,SupTerm sup;
+    class Jump loss;
+    class Cls,CE,OptCls opt;
 ```
 
 ## 1. Latent Space Decomposition

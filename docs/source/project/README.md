@@ -37,6 +37,16 @@ and experiments.
 - Doctests: `uv run hatch run test:doctest`
 - Lint/format: `uv run hatch run lint:all`
 
+## QFT Calibration
+
+```bash
+python src/experiments/calibrate_fractal_gas_qft.py \
+  --history-path outputs/fractal_gas_potential_well/20260123_164153_history.pt \
+  --m-gev 91.1876 \
+  --hbar-eff 1.0 \
+  --d 3
+```
+
 ## License
 
 MIT

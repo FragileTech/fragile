@@ -5,6 +5,17 @@ computing the learning rate and the regularization weights used by
 `src/experiments/topoencoder_2d.py`. The goal is to replace ad-hoc constants with
 constraint-driven, measurable quantities.
 
+  | Improvement | Impact | Pros | Cons / Risks | Overhead |
+  |---|---|---|---|---|
+  | Mach limit (relative update cap) | Prevents unstable large steps; enables higher base lr | Strong safety net; stabilizes early “kick” | Coordinate-dependent; can stall tiny‑norm params; may mask bad lr | Moderate (extra norm reductions; ~1.1–1.3× in Python) |
+  | Varentropy brake on cooling | Slows anneal near critical points; avoids quenching | Directly aligned with varentropy‑brake theory; better basin settling | Needs reliable proxy; can prolong training | Low (small window stats) |
+  | SNR‑based annealing (transport/energy) | Auto‑cools when signal is weak | Simple, adaptive damping | Heuristic; may freeze too early on non‑stationary data | Low (sums during step) |
+  | Gradient‑alignment damping | Suppresses oscillations / PIO | Matches oscillation‑damping remedies; stable updates | Can slow progress at saddles or near minima | Low (dot products) |
+  | Thermal conduction across param_groups (log‑LR diffusion) | Prevents layer “freeze” shear | Keeps stack coherent; reduces bottlenecks | Heuristic; requires correct group order; may erase useful layer‑wise timescales | Negligible (O(groups)) |
+  | Sequential param‑group wiring for TopoEncoder | Enables conduction across Encoder→Latent→Decoder | Respects “single physical system” rule | Wiring complexity; must keep baselines isolated | None (runtime) |
+  | LR‑ratio tether (cap max/min group lr) | Prevents extreme LR disparities | Extra safety against shear | Extra hyperparameter; can block fine‑tuning | Negligible (O(groups)) |
+  | Remove external cosine schedule (governor‑only) | Fully autonomous schedule | Simpler control loop; fewer knobs | Less predictable dynamics; thresholds need tuning | None |
+
 ## 1) Learning rate (eta) as a controlled variable
 
 Theory links step size to stability, information grounding, and geometry:
@@ -381,3 +392,61 @@ uv run src/experiments/topoencoder_2d_thermo.py   --dataset mnist   --epochs 300
 
 
 uv run src/experiments/analyze_topoencoder_3d.py --checkpoint_dir outputs/3d_vision_topoencoder_cifar10_64_8dim --device cuda:1 --only_missing
+
+Updated topoencoder_2d_thermo CIFAR10 command:
+
+```bash
+uv run src/experiments/topoencoder_2d_thermo.py \
+  --dataset cifar10 \
+  --epochs 3000 \
+  --save_every 5 \
+  --log_every 1 \
+  --device cuda:1 \
+  --adaptive_lr true \
+  --use_scheduler false \
+  --lr 0.01 \
+  --lr_max 0.1 \
+  --lr_grounding_warmup_epochs 50 \
+  --lr_increase_factor 1.05 \
+  --lr_decrease_factor 0.8 \
+  --lr_unstable_patience 5 \
+  --lr_stable_patience 5 \
+  --lr_loss_increase_tol 0.1 \
+  --output_dir outputs/3d_vision_topoencoder_cifar10_64_8dim \
+  --hidden_dim 32 \
+  --codes_per_chart 16 \
+  --latent_dim 8 \
+  --lr_plateau_patience 6 \
+  --lr_plateau_tol 0.001 \
+  --covariant_attn_tensorization full \
+  --baseline_attn \
+  --baseline_attn_tokens 4 \
+  --baseline_attn_dim 32 \
+  --baseline_attn_heads 4 \
+  --baseline_attn_dropout 0.0 \
+  --lr_min 1e-6 \
+  --soft_equiv_metric true \
+  --soft_equiv_log_ratio_weight 0.01 \
+  --baseline_vision_preproc \
+  --vision_preproc true \
+  --disable_ae \
+  --disable_vq \
+  --enable_cifar_backbone \
+  --cifar_backbone_type covariant \
+  --cifar_base_channels 16 \
+  --batch_size 128 \
+  --vision_num_rotations 2 \
+  --vision_backbone_type covariant_cifar \
+  --vision_cifar_base_channels 32 \
+  --eval_batch_size 64
+```
+
+Minimal fast MNIST GPU run (no vision backbone):
+
+```bash
+uv run src/experiments/topoencoder_2d_thermo.py \
+  --device cuda \
+  --epochs 2000 \
+  --disable_ae \
+  --disable_vq
+```

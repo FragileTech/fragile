@@ -92,7 +92,7 @@ class TopoEncoderConfig:
     codes_per_chart: int = 32  # Better coverage (was 21)
     num_codes_standard: int = 64
     covariant_attn: bool = True
-    covariant_attn_tensorization: str = "sum"
+    covariant_attn_tensorization: str = "full"
     covariant_attn_rank: int = 8
     covariant_attn_tau_min: float = 1e-2
     covariant_attn_denom_min: float = 1e-3
@@ -2966,9 +2966,9 @@ def main():
     parser.add_argument(
         "--covariant_attn_tensorization",
         type=str,
-        default="sum",
+        default="full",
         choices=["sum", "full"],
-        help="Christoffel tensorization: sum (low-rank) or full (default: sum)",
+        help="Christoffel tensorization: sum (low-rank) or full (default: full)",
     )
     parser.add_argument(
         "--covariant_attn_rank",

@@ -324,7 +324,13 @@ def clone_walkers(
             "alive_new": alive_new,
             "num_cloned": will_clone.sum().item(),
             "companions": companions,
+            "clone_delta_x": positions_new - positions,
+            "clone_delta_v": velocities_new - velocities,
         }
+        companion_positions = positions[companions]
+        clone_jitter = torch.zeros_like(positions)
+        clone_jitter[will_clone] = positions_new[will_clone] - companion_positions[will_clone]
+        info["clone_jitter"] = clone_jitter
         other_cloned = {
             k: clone_tensor(x, companions, will_clone) for k, x in clone_tensor_kwargs.items()
         }

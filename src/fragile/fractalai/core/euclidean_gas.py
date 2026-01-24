@@ -95,7 +95,10 @@ class EuclideanGas(PanelModel):
     N = param.Integer(default=50, bounds=(1, None), softbounds=(50, 500), doc="Number of walkers")
     d = param.Integer(default=2, bounds=(1, None), doc="Spatial dimension")
     companion_selection = param.Parameter(
-        default=None, doc="Companion selection strategy for cloning"
+        default=None, doc="Companion selection strategy for diversity/fitness"
+    )
+    companion_selection_clone = param.Parameter(
+        default=None, doc="Companion selection strategy for cloning (optional override)"
     )
     potential = param.Parameter(
         default=None,
@@ -227,6 +230,9 @@ class EuclideanGas(PanelModel):
             msg = f"reward_1form must be callable, got {type(self.reward_1form)}"
             raise TypeError(msg)
 
+        if self.companion_selection_clone is None:
+            self.companion_selection_clone = self.companion_selection
+
     @property
     def torch_dtype(self) -> torch.dtype:
         """Convert dtype string to torch dtype."""
@@ -321,6 +327,7 @@ class EuclideanGas(PanelModel):
 
         # Step 1: Compute rewards from reward 1-form or potential
         rewards = self._compute_rewards(state)  # [N]
+        U_before = self.potential(state.x) if self.potential is not None else None
 
         # Step 2: Determine alive status from bounds
         if self.pbc:
@@ -359,8 +366,13 @@ class EuclideanGas(PanelModel):
 
         # Step 5: Execute cloning using cloning.py (if enabled)
         if self.enable_cloning:
-            # Step 3: Select companions using the companion selection strategy
-            companions_clone = self.companion_selection(
+            # Step 3: Select companions using the cloning companion selection strategy
+            clone_selector = (
+                self.companion_selection_clone
+                if self.companion_selection_clone is not None
+                else self.companion_selection
+            )
+            companions_clone = clone_selector(
                 x=state.x,
                 v=state.v,
                 alive_mask=alive_mask,
@@ -384,6 +396,9 @@ class EuclideanGas(PanelModel):
                 "will_clone": torch.zeros(state.N, dtype=torch.bool, device=self.device),
                 "num_cloned": 0,
                 "companions": torch.zeros_like(companions_distance),
+                "clone_jitter": torch.zeros_like(state.x),
+                "clone_delta_x": torch.zeros_like(state.x),
+                "clone_delta_v": torch.zeros_like(state.v),
             }
 
         # # Apply freeze mask if needed
@@ -413,16 +428,35 @@ class EuclideanGas(PanelModel):
                 )
 
             # Step 6: Kinetic update with optional fitness derivatives (if enabled)
-            state_final = self.kinetic_op.apply(state_cloned, grad_fitness, hess_fitness)
+            state_final, kinetic_info = self.kinetic_op.apply(
+                state_cloned,
+                grad_fitness,
+                hess_fitness,
+                return_info=True,
+            )
             if freeze_mask is not None and freeze_mask.any():
                 state_final.copy_from(reference_state, freeze_mask)
         else:
             # Skip kinetic update, use cloned state as final
             state_final = state_cloned.clone()
+            kinetic_info = {
+                "force_stable": torch.zeros_like(state.v),
+                "force_adapt": torch.zeros_like(state.v),
+                "force_viscous": torch.zeros_like(state.v),
+                "force_friction": torch.zeros_like(state.v),
+                "force_total": torch.zeros_like(state.v),
+                "noise": torch.zeros_like(state.v),
+                "sigma_reg_diag": None,
+                "sigma_reg_full": None,
+            }
+
+        U_after_clone = self.potential(state_cloned.x) if self.potential is not None else None
 
         # Apply PBC after kinetic update (wraps final positions back into bounds)
         if self.pbc and self.bounds is not None:
             state_final.x = self.bounds.apply_pbc_to_out_of_bounds(state_final.x)
+
+        U_final = self.potential(state_final.x) if self.potential is not None else None
 
         if return_info:
             # Combine all computed data into info dict
@@ -434,6 +468,12 @@ class EuclideanGas(PanelModel):
                 "alive_mask": alive_mask,
                 **clone_info,  # Adds: cloning_scores, cloning_probs, will_clone, num_cloned
                 **fitness_info,
+                "U_before": U_before if U_before is not None else torch.zeros_like(rewards),
+                "U_after_clone": U_after_clone
+                if U_after_clone is not None
+                else torch.zeros_like(rewards),
+                "U_final": U_final if U_final is not None else torch.zeros_like(rewards),
+                "kinetic_info": kinetic_info,
             }
             return state_cloned, state_final, info
         return state_cloned, state_final
@@ -444,6 +484,9 @@ class EuclideanGas(PanelModel):
         x_init: Tensor | None = None,
         v_init: Tensor | None = None,
         record_every: int = 1,
+        seed: int | None = None,
+        record_rng_state: bool = False,
+        show_progress: bool = False,
     ):
         """
         Run Euclidean Gas for multiple steps and return complete history.
@@ -454,6 +497,7 @@ class EuclideanGas(PanelModel):
             v_init: Initial velocities (optional)
             record_every: Record every k-th step (1=all steps, 10=every 10th step).
                          Step 0 (initial) and final step are always recorded.
+            show_progress: Show tqdm progress bar during simulation.
 
         Returns:
             RunHistory object with complete execution trace including:
@@ -476,6 +520,14 @@ class EuclideanGas(PanelModel):
 
         # Initialize state with timing
         init_start = time.time()
+        if seed is not None:
+            torch.manual_seed(seed)
+            try:
+                import numpy as np
+
+                np.random.seed(seed)
+            except ImportError:
+                pass
         state = self.initialize_state(x_init, v_init)
 
         # Apply PBC to initial state if enabled
@@ -494,6 +546,100 @@ class EuclideanGas(PanelModel):
             recorded_steps.append(n_steps)
         n_recorded = len(recorded_steps)
 
+        def _capture_rng_state() -> dict[str, object] | None:
+            if not record_rng_state:
+                return None
+            rng_state: dict[str, object] = {"torch": torch.get_rng_state()}
+            if torch.cuda.is_available():
+                rng_state["cuda"] = torch.cuda.get_rng_state_all()
+            try:
+                import numpy as np
+
+                rng_state["numpy"] = np.random.get_state()
+            except ImportError:
+                pass
+            return rng_state
+
+        def _build_params() -> dict[str, dict[str, object]]:
+            return {
+                "gas": {
+                    "N": self.N,
+                    "d": self.d,
+                    "dtype": self.dtype,
+                    "freeze_best": self.freeze_best,
+                    "enable_cloning": self.enable_cloning,
+                    "enable_kinetic": self.enable_kinetic,
+                    "pbc": self.pbc,
+                },
+                "companion_selection": {
+                    "method": self.companion_selection.method if self.companion_selection else None,
+                    "epsilon": self.companion_selection.epsilon
+                    if self.companion_selection
+                    else None,
+                    "lambda_alg": self.companion_selection.lambda_alg
+                    if self.companion_selection
+                    else None,
+                    "exclude_self": self.companion_selection.exclude_self
+                    if self.companion_selection
+                    else None,
+                },
+                "companion_selection_clone": {
+                    "method": self.companion_selection_clone.method
+                    if self.companion_selection_clone
+                    else None,
+                    "epsilon": self.companion_selection_clone.epsilon
+                    if self.companion_selection_clone
+                    else None,
+                    "lambda_alg": self.companion_selection_clone.lambda_alg
+                    if self.companion_selection_clone
+                    else None,
+                    "exclude_self": self.companion_selection_clone.exclude_self
+                    if self.companion_selection_clone
+                    else None,
+                },
+                "cloning": {
+                    "p_max": self.cloning.p_max if self.cloning else None,
+                    "epsilon_clone": self.cloning.epsilon_clone if self.cloning else None,
+                    "sigma_x": self.cloning.sigma_x if self.cloning else None,
+                    "alpha_restitution": self.cloning.alpha_restitution if self.cloning else None,
+                },
+                "kinetic": {
+                    "gamma": self.kinetic_op.gamma,
+                    "beta": self.kinetic_op.beta,
+                    "delta_t": self.kinetic_op.delta_t,
+                    "epsilon_F": self.kinetic_op.epsilon_F,
+                    "use_fitness_force": self.kinetic_op.use_fitness_force,
+                    "use_potential_force": self.kinetic_op.use_potential_force,
+                    "use_anisotropic_diffusion": self.kinetic_op.use_anisotropic_diffusion,
+                    "diagonal_diffusion": self.kinetic_op.diagonal_diffusion,
+                    "epsilon_Sigma": self.kinetic_op.epsilon_Sigma,
+                    "nu": self.kinetic_op.nu,
+                    "use_viscous_coupling": self.kinetic_op.use_viscous_coupling,
+                    "viscous_length_scale": self.kinetic_op.viscous_length_scale,
+                    "beta_curl": self.kinetic_op.beta_curl,
+                    "use_velocity_squashing": self.kinetic_op.use_velocity_squashing,
+                    "V_alg": self.kinetic_op.V_alg,
+                },
+                "fitness": {
+                    "alpha": self.fitness_op.alpha if self.fitness_op else None,
+                    "beta": self.fitness_op.beta if self.fitness_op else None,
+                    "eta": self.fitness_op.eta if self.fitness_op else None,
+                    "lambda_alg": self.fitness_op.lambda_alg if self.fitness_op else None,
+                    "sigma_min": self.fitness_op.sigma_min if self.fitness_op else None,
+                    "epsilon_dist": self.fitness_op.epsilon_dist if self.fitness_op else None,
+                    "A": self.fitness_op.A if self.fitness_op else None,
+                    "rho": self.fitness_op.rho if self.fitness_op else None,
+                },
+                "potential": {
+                    "name": type(self.potential).__name__ if self.potential is not None else None
+                },
+                "reward_1form": {
+                    "name": type(self.reward_1form).__name__
+                    if self.reward_1form is not None
+                    else None
+                },
+            }
+
         # Initialize vectorized history recorder with pre-allocated arrays
         from fragile.fractalai.core.vec_history import VectorizedHistoryRecorder
 
@@ -507,6 +653,12 @@ class EuclideanGas(PanelModel):
                 record_hessians_diag = self.kinetic_op.diagonal_diffusion
                 record_hessians_full = not self.kinetic_op.diagonal_diffusion
 
+        record_sigma_reg_diag = False
+        record_sigma_reg_full = False
+        if self.kinetic_op.use_anisotropic_diffusion:
+            record_sigma_reg_diag = self.kinetic_op.diagonal_diffusion
+            record_sigma_reg_full = not self.kinetic_op.diagonal_diffusion
+
         recorder = VectorizedHistoryRecorder(
             N=N,
             d=d,
@@ -516,6 +668,8 @@ class EuclideanGas(PanelModel):
             record_gradients=record_gradients,
             record_hessians_diag=record_hessians_diag,
             record_hessians_full=record_hessians_full,
+            record_sigma_reg_diag=record_sigma_reg_diag,
+            record_sigma_reg_full=record_sigma_reg_full,
         )
 
         # Check initial alive status
@@ -531,10 +685,12 @@ class EuclideanGas(PanelModel):
             n_alive = N
 
         # Record initial state (t=0)
-        recorder.record_initial_state(state, n_alive)
+        U_initial = self.potential(state.x) if self.potential is not None else None
+        recorder.record_initial_state(state, n_alive, U_before=U_initial, U_final=U_initial)
 
         # Check if initially all dead
         if n_alive == 0:
+            recorded_steps = recorded_steps[: recorder.recorded_idx]
             return recorder.build(
                 n_steps=0,
                 record_every=record_every,
@@ -543,6 +699,12 @@ class EuclideanGas(PanelModel):
                 total_time=0.0,
                 init_time=init_time,
                 bounds=self.bounds,
+                recorded_steps=recorded_steps,
+                delta_t=self.kinetic_op.delta_t,
+                pbc=self.pbc,
+                params=_build_params(),
+                rng_seed=seed,
+                rng_state=_capture_rng_state(),
             )
 
         # Run steps with timing
@@ -550,7 +712,17 @@ class EuclideanGas(PanelModel):
         final_step = n_steps
         total_start = time.time()
 
-        for t in range(1, n_steps + 1):
+        # Set up progress bar if requested
+        step_iterator = range(1, n_steps + 1)
+        if show_progress:
+            try:
+                from tqdm import tqdm
+
+                step_iterator = tqdm(step_iterator, desc="Running simulation", unit="step")
+            except ImportError:
+                pass  # tqdm not available, run without progress bar
+
+        for t in step_iterator:
             step_start = time.time()
 
             # Check if all walkers are currently dead BEFORE stepping (skip in PBC mode)
@@ -603,6 +775,7 @@ class EuclideanGas(PanelModel):
                     grad_fitness=grad_fitness,
                     hess_fitness=hess_fitness,
                     is_diagonal_hessian=is_diagonal_hessian,
+                    kinetic_info=info.get("kinetic_info"),
                 )
 
             # Update state for next iteration
@@ -611,6 +784,10 @@ class EuclideanGas(PanelModel):
         total_time = time.time() - total_start
 
         # Build final RunHistory with automatic trimming to actual recorded size
+        recorded_steps = recorded_steps[: recorder.recorded_idx]
+        rng_state = _capture_rng_state()
+        params = _build_params()
+
         return recorder.build(
             n_steps=final_step,
             record_every=record_every,
@@ -619,4 +796,10 @@ class EuclideanGas(PanelModel):
             total_time=total_time,
             init_time=init_time,
             bounds=self.bounds,
+            recorded_steps=recorded_steps,
+            delta_t=self.kinetic_op.delta_t,
+            pbc=self.pbc,
+            params=params,
+            rng_seed=seed,
+            rng_state=rng_state,
         )

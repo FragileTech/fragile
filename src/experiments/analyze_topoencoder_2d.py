@@ -96,7 +96,7 @@ def _prepare_models(
         "codes_per_chart": config["codes_per_chart"],
         "bundle_size": bundle_size,
         "covariant_attn": covariant_attn,
-        "covariant_attn_tensorization": config.get("covariant_attn_tensorization", "sum"),
+        "covariant_attn_tensorization": config.get("covariant_attn_tensorization", "full"),
         "covariant_attn_rank": config.get("covariant_attn_rank", 8),
         "covariant_attn_tau_min": config.get("covariant_attn_tau_min", 1e-2),
         "covariant_attn_denom_min": config.get("covariant_attn_denom_min", 1e-3),

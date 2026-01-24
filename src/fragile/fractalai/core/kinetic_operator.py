@@ -457,25 +457,32 @@ class KineticOperator(PanelModel):
         Note:
             Both forces use negative gradients to drift toward lower potential/higher fitness.
         """
-        _N, _d = x.shape
-        force = torch.zeros_like(x)
+        force_stable, force_adapt = self._compute_force_components(x, grad_fitness)
+        return force_stable + force_adapt
 
-        # Potential force: -∇U(x)
+    def _compute_force_components(
+        self,
+        x: Tensor,
+        grad_fitness: Tensor | None = None,
+    ) -> tuple[Tensor, Tensor]:
+        """Compute stable and adaptive force components separately."""
+        force_stable = torch.zeros_like(x)
+        force_adapt = torch.zeros_like(x)
+
         if self.use_potential_force:
             x.requires_grad_(True)  # noqa: FBT003
             U = self.potential(x)  # [N]
             grad_U = torch.autograd.grad(U.sum(), x, create_graph=False)[0]  # [N, d]
-            force -= grad_U
+            force_stable = -grad_U
             x.requires_grad_(False)  # noqa: FBT003
 
-        # Fitness force: -ε_F · ∇V_fit,i(x)
         if self.use_fitness_force:
             if grad_fitness is None:
                 msg = "grad_fitness required when use_fitness_force=True"
                 raise ValueError(msg)
-            force -= self.epsilon_F * grad_fitness
+            force_adapt = -self.epsilon_F * grad_fitness
 
-        return force
+        return force_stable, force_adapt
 
     def _compute_viscous_force(
         self,
@@ -706,6 +713,7 @@ class KineticOperator(PanelModel):
         state,
         grad_fitness: Tensor | None = None,
         hess_fitness: Tensor | None = None,
+        return_info: bool = False,
     ):
         """Apply BAOAB integrator for one time step with optional adaptive features.
 
@@ -743,6 +751,24 @@ class KineticOperator(PanelModel):
         """
         x, v = state.x.clone(), state.v.clone()
         N, d = state.N, state.d
+        info = {}
+
+        if return_info:
+            force_stable, force_adapt = self._compute_force_components(x, grad_fitness)
+            force_viscous = (
+                self._compute_viscous_force(x, v)
+                if self.use_viscous_coupling
+                else torch.zeros_like(v)
+            )
+            force_friction = -self.gamma * v
+            force_total = force_stable + force_adapt + force_viscous + force_friction
+            info.update({
+                "force_stable": force_stable,
+                "force_adapt": force_adapt,
+                "force_viscous": force_viscous,
+                "force_friction": force_friction,
+                "force_total": force_total,
+            })
 
         # === FIRST B STEP: Apply forces + optional Boris rotation ===
         v = self._apply_boris_kick(x, v, grad_fitness)
@@ -769,6 +795,21 @@ class KineticOperator(PanelModel):
         else:
             # Isotropic: standard BAOAB with constant noise amplitude
             v = self.c1 * v + self.c2 * ξ
+            sigma = None
+            noise = self.c2 * ξ
+
+        if return_info:
+            info["noise"] = noise
+            if sigma is not None:
+                if self.diagonal_diffusion:
+                    info["sigma_reg_diag"] = sigma
+                    info["sigma_reg_full"] = None
+                else:
+                    info["sigma_reg_diag"] = None
+                    info["sigma_reg_full"] = sigma
+            else:
+                info["sigma_reg_diag"] = None
+                info["sigma_reg_full"] = None
 
         # === SECOND A STEP: Update positions ===
         x += (self.dt / 2) * v
@@ -782,4 +823,7 @@ class KineticOperator(PanelModel):
 
         # Return state with same type as input
         # Create new state object using the same class as input
-        return type(state)(x, v)
+        new_state = type(state)(x, v)
+        if return_info:
+            return new_state, info
+        return new_state

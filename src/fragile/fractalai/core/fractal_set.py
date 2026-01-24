@@ -1,1245 +1,1042 @@
 """Fractal Set data structure for representing Fractal Gas execution traces.
 
-This module implements the Fractal Set as a directed 2-complex with simplicial support,
-providing a complete graph-based representation of algorithm dynamics with three edge types:
+This implementation stores an array-backed directed 2-complex with three edge types:
+- CST edges: temporal evolution per recorded step
+- IG edges: companion-selected spatial coupling per recorded step
+- IA edges: influence attribution edges closing IG/CST triangles
 
-- **CST (Causal Spacetime Tree)**: Temporal edges connecting walker states across timesteps.
-- **IG (Information Graph)**: Directed spatial edges representing selection coupling.
-- **IA (Influence Attribution)**: Retrocausal edges attributing effects to causes.
-
-Interaction triangles are stored as explicit 2-simplices that close CST/IG/IA loops.
-The Fractal Set is constructed from a RunHistory object and stores the execution trace
-as a NetworkX directed graph with rich node and edge attributes plus a triangle list.
+Auxiliary clone edges are stored separately to represent cloning jitter at t+0.5.
+Vector data is stored as raw psi_* tensors for later spinor construction; node
+attributes remain scalar-only per the Volume 3 specification.
 
 Reference: docs/source/3_fractal_gas/2_fractal_set/01_fractal_set.md
 """
 
 from __future__ import annotations
 
-import math
 from typing import Any
 
+import math
 import networkx as nx
-import numpy as np
 import torch
 from torch import Tensor
 
+from fragile.fractalai.core.companion_selection import compute_algorithmic_distance_matrix
+from fragile.fractalai.core.distance import compute_periodic_distance_matrix
 from fragile.fractalai.core.history import RunHistory
 
 
+STAGE_PRE = 0
+STAGE_CLONE = 1
+STAGE_FINAL = 2
+STAGE_NAMES = {STAGE_PRE: "pre", STAGE_CLONE: "clone", STAGE_FINAL: "final"}
+STAGE_BY_NAME = {"pre": STAGE_PRE, "clone": STAGE_CLONE, "final": STAGE_FINAL}
+
+
 class FractalSet:
-    """Complete graph representation of a Fractal Gas run with CST/IG/IA structure.
+    """Complete data structure for a Fractal Gas run.
 
-    The Fractal Set encodes the full execution trace of a Fractal Gas run as a directed
-    2-complex where:
-
-    - **Nodes** represent individual walkers at specific timesteps (spacetime points)
-    - **CST edges** connect the same walker across consecutive timesteps (temporal evolution)
-    - **IG edges** connect different walkers at the same timestep (selection coupling)
-    - **IA edges** connect effects to causes across time (influence attribution)
-    - **Interaction triangles** close each IG/CST/IA causal loop
-
-    Nodes store scalar quantities like fitness, energy, and status. Edge attributes
-    record directional quantities in a doc-aligned schema; vector data is stored with
-    spinor-style keys for downstream reconstruction experiments.
-
-    Attributes:
-        history: The RunHistory object containing the execution trace data
-        graph: NetworkX directed graph storing nodes and edges
-        triangles: List of interaction triangle records (2-simplices)
-        N: Number of walkers
-        d: Spatial dimension
-        n_steps: Total number of steps executed
-        n_recorded: Number of recorded timesteps
-        record_every: Recording interval
-
-    Example:
-        >>> history = gas.run(n_steps=100, record_every=10)
-        >>> fractal_set = FractalSet(history)
-        >>> print(f"Nodes: {fractal_set.graph.number_of_nodes()}")
-        >>> print(f"CST edges: {fractal_set.num_cst_edges}")
-        >>> print(f"IG edges: {fractal_set.num_ig_edges}")
-        >>> print(f"IA edges: {fractal_set.num_ia_edges}")
-        >>> triangle = fractal_set.triangles[0]
-
-    Reference: docs/source/3_fractal_gas/2_fractal_set/01_fractal_set.md
+    Nodes are stage-aware spacetime points (pre, clone, final). CST/IG/IA edges
+    encode evolution, coupling, and attribution. Clone edges are auxiliary.
     """
 
     def __init__(
         self,
         history: RunHistory,
         epsilon_c: float | None = None,
-        hbar_eff: float = 1.0,
         epsilon_d: float | None = None,
-        lambda_alg: float = 0.0,
+        lambda_alg: float | None = None,
+        hbar_eff: float = 1.0,
     ):
-        """Initialize FractalSet from a RunHistory object.
-
-        Args:
-            history: RunHistory object from EuclideanGas.run()
-            epsilon_c: Cloning interaction range (kept for backward compatibility).
-            hbar_eff: Effective Planck constant for fitness-phase encoding (default: 1.0)
-            epsilon_d: Diversity interaction range for companion amplitude computation.
-                If None, falls back to epsilon_c or defaults to 1.0.
-            lambda_alg: Velocity weight in algorithmic distance (default: 0.0)
-
-        The constructor immediately builds the complete graph structure by:
-        1. Creating nodes for all (walker, timestep) pairs
-        2. Adding CST edges for temporal evolution
-        3. Adding IG edges for selection coupling with fitness phase potentials
-        4. Adding IA edges for influence attribution
-        5. Building interaction triangles that close IG/CST/IA loops
-        """
         self.history = history
-        self.graph = nx.DiGraph()
-
-        # Store metadata for convenience
         self.N = history.N
         self.d = history.d
         self.n_steps = history.n_steps
         self.n_recorded = history.n_recorded
         self.record_every = history.record_every
-        self.delta_t = float(self.record_every)
-        self.recorded_steps = self._compute_recorded_steps()
+        self.recorded_steps = history.recorded_steps
+        self.delta_t = history.delta_t
+        self.pbc = history.pbc
+        self.bounds = history.bounds
+        self.params = history.params or {}
 
-        # Store parameters for IG edge phase/amplitude computation
-        self.epsilon_c = epsilon_c
-        self.epsilon_d = epsilon_d
-        self.lambda_alg = lambda_alg
+        selection_params = self.params.get("companion_selection", {})
+        self.epsilon_c = epsilon_c if epsilon_c is not None else selection_params.get("epsilon")
+        self.epsilon_d = epsilon_d if epsilon_d is not None else self.epsilon_c
+        self.lambda_alg = (
+            lambda_alg if lambda_alg is not None else selection_params.get("lambda_alg", 0.0)
+        )
         self.hbar_eff = hbar_eff
 
-        # Build graph structure
+        kinetic_params = self.params.get("kinetic", {})
+        self.nu = kinetic_params.get("nu", 0.0)
+        self.viscous_length_scale = kinetic_params.get("viscous_length_scale", 1.0)
+        self.use_viscous_coupling = kinetic_params.get("use_viscous_coupling", False)
+
+        self._graph_cache: nx.DiGraph | None = None
+        self._graph_cache_aux: nx.DiGraph | None = None
+
         self._build_nodes()
+        self._build_edges()
+        self._build_triangles()
+
+    # =====================================================================
+    # Node Construction
+    # =====================================================================
+
+    def _compute_pre_step(self, time_idx: int) -> float:
+        if time_idx == 0:
+            return 0.0
+        return float(self.recorded_steps[time_idx] - 1)
+
+    def _compute_delta(self, x_from: Tensor, x_to: Tensor) -> Tensor:
+        delta = x_to - x_from
+        if not self.pbc or self.bounds is None:
+            return delta
+        high = self.bounds.high.to(x_to)
+        low = self.bounds.low.to(x_to)
+        span = high - low
+        return delta - span * torch.round(delta / span)
+
+    def _build_nodes(self) -> None:
+        device = self.history.x_final.device
+        dtype = self.history.x_final.dtype
+        n_pre = self.n_recorded
+        n_clone = max(self.n_recorded - 1, 0)
+        n_final = self.n_recorded
+        total_nodes = self.N * (n_pre + n_clone + n_final)
+
+        node_id = torch.arange(total_nodes, device=device, dtype=torch.long)
+        node_stage = torch.empty(total_nodes, device=device, dtype=torch.int8)
+        node_time_index = torch.empty(total_nodes, device=device, dtype=torch.long)
+        node_walker = torch.empty(total_nodes, device=device, dtype=torch.long)
+        node_abs_step = torch.empty(total_nodes, device=device, dtype=dtype)
+        node_tau = torch.empty(total_nodes, device=device, dtype=dtype)
+        node_alive = torch.empty(total_nodes, device=device, dtype=torch.bool)
+        node_clone_source = torch.full(
+            (total_nodes,), -1, device=device, dtype=torch.long
+        )
+
+        node_E_kin = torch.empty(total_nodes, device=device, dtype=dtype)
+        node_U = torch.empty(total_nodes, device=device, dtype=dtype)
+        node_E_total = torch.empty(total_nodes, device=device, dtype=dtype)
+        node_fitness = torch.full((total_nodes,), float("nan"), device=device, dtype=dtype)
+        node_V_fit = torch.full((total_nodes,), float("nan"), device=device, dtype=dtype)
+        node_reward = torch.full((total_nodes,), float("nan"), device=device, dtype=dtype)
+        node_cloning_score = torch.full((total_nodes,), float("nan"), device=device, dtype=dtype)
+        node_cloning_prob = torch.full((total_nodes,), float("nan"), device=device, dtype=dtype)
+        node_will_clone = torch.zeros(total_nodes, device=device, dtype=torch.bool)
+        node_d_alg = torch.full((total_nodes,), float("nan"), device=device, dtype=dtype)
+        node_z_rewards = torch.full((total_nodes,), float("nan"), device=device, dtype=dtype)
+        node_z_distances = torch.full((total_nodes,), float("nan"), device=device, dtype=dtype)
+        node_rescaled_rewards = torch.full((total_nodes,), float("nan"), device=device, dtype=dtype)
+        node_rescaled_distances = torch.full((total_nodes,), float("nan"), device=device, dtype=dtype)
+        node_pos_sq = torch.full((total_nodes,), float("nan"), device=device, dtype=dtype)
+        node_vel_sq = torch.full((total_nodes,), float("nan"), device=device, dtype=dtype)
+        node_mu_rewards = torch.full((total_nodes,), float("nan"), device=device, dtype=dtype)
+        node_sigma_rewards = torch.full((total_nodes,), float("nan"), device=device, dtype=dtype)
+        node_mu_distances = torch.full((total_nodes,), float("nan"), device=device, dtype=dtype)
+        node_sigma_distances = torch.full((total_nodes,), float("nan"), device=device, dtype=dtype)
+        node_companion_distance = torch.full(
+            (total_nodes,), -1, device=device, dtype=torch.long
+        )
+        node_companion_clone = torch.full((total_nodes,), -1, device=device, dtype=torch.long)
+
+        pre_offset = 0
+        clone_offset = pre_offset + n_pre * self.N
+        final_offset = clone_offset + n_clone * self.N
+
+        pre_ids = (
+            torch.arange(n_pre * self.N, device=device, dtype=torch.long)
+            .reshape(n_pre, self.N)
+            + pre_offset
+        )
+        final_ids = (
+            torch.arange(n_final * self.N, device=device, dtype=torch.long)
+            .reshape(n_final, self.N)
+            + final_offset
+        )
+        if n_clone > 0:
+            clone_ids = (
+                torch.arange(n_clone * self.N, device=device, dtype=torch.long)
+                .reshape(n_clone, self.N)
+                + clone_offset
+            )
+        else:
+            clone_ids = torch.empty((0, self.N), device=device, dtype=torch.long)
+
+        clone_ids_full = torch.full(
+            (n_pre, self.N), -1, device=device, dtype=torch.long
+        )
+        if n_clone > 0:
+            clone_ids_full[1:] = clone_ids
+
+        self.node_index = {"pre": pre_ids, "clone": clone_ids_full, "final": final_ids}
+
+        # Pre nodes
+        for t_idx in range(n_pre):
+            abs_step = self._compute_pre_step(t_idx)
+            row_ids = pre_ids[t_idx]
+            node_stage[row_ids] = STAGE_PRE
+            node_time_index[row_ids] = t_idx
+            node_walker[row_ids] = torch.arange(self.N, device=device)
+            node_abs_step[row_ids] = abs_step
+            node_tau[row_ids] = abs_step * self.delta_t
+
+            x_pre = self.history.x_before_clone[t_idx]
+            v_pre = self.history.v_before_clone[t_idx]
+            node_E_kin[row_ids] = 0.5 * torch.sum(v_pre**2, dim=-1)
+            node_U[row_ids] = self.history.U_before[t_idx]
+            node_E_total[row_ids] = node_E_kin[row_ids] + node_U[row_ids]
+
+            if t_idx == 0:
+                if self.bounds is not None:
+                    node_alive[row_ids] = self.bounds.contains(x_pre)
+                else:
+                    node_alive[row_ids] = torch.ones(self.N, device=device, dtype=torch.bool)
+            else:
+                node_alive[row_ids] = self.history.alive_mask[t_idx - 1]
+
+            if t_idx > 0:
+                info_idx = t_idx - 1
+                node_fitness[row_ids] = self.history.fitness[info_idx]
+                node_V_fit[row_ids] = self.history.fitness[info_idx]
+                node_reward[row_ids] = self.history.rewards[info_idx]
+                node_cloning_score[row_ids] = self.history.cloning_scores[info_idx]
+                node_cloning_prob[row_ids] = self.history.cloning_probs[info_idx]
+                node_will_clone[row_ids] = self.history.will_clone[info_idx]
+                node_d_alg[row_ids] = self.history.distances[info_idx]
+                node_z_rewards[row_ids] = self.history.z_rewards[info_idx]
+                node_z_distances[row_ids] = self.history.z_distances[info_idx]
+                node_rescaled_rewards[row_ids] = self.history.rescaled_rewards[info_idx]
+                node_rescaled_distances[row_ids] = self.history.rescaled_distances[info_idx]
+                node_pos_sq[row_ids] = self.history.pos_squared_differences[info_idx]
+                node_vel_sq[row_ids] = self.history.vel_squared_differences[info_idx]
+                node_mu_rewards[row_ids] = self.history.mu_rewards[info_idx]
+                node_sigma_rewards[row_ids] = self.history.sigma_rewards[info_idx]
+                node_mu_distances[row_ids] = self.history.mu_distances[info_idx]
+                node_sigma_distances[row_ids] = self.history.sigma_distances[info_idx]
+                node_companion_distance[row_ids] = self.history.companions_distance[info_idx]
+                node_companion_clone[row_ids] = self.history.companions_clone[info_idx]
+
+        # Clone nodes (auxiliary)
+        for t_idx in range(1, n_pre):
+            clone_idx = t_idx - 1
+            row_ids = clone_ids_full[t_idx]
+            abs_step = self._compute_pre_step(t_idx) + 0.5
+            node_stage[row_ids] = STAGE_CLONE
+            node_time_index[row_ids] = t_idx
+            node_walker[row_ids] = torch.arange(self.N, device=device)
+            node_abs_step[row_ids] = abs_step
+            node_tau[row_ids] = abs_step * self.delta_t
+
+            x_clone = self.history.x_after_clone[clone_idx]
+            v_clone = self.history.v_after_clone[clone_idx]
+            node_E_kin[row_ids] = 0.5 * torch.sum(v_clone**2, dim=-1)
+            node_U[row_ids] = self.history.U_after_clone[clone_idx]
+            node_E_total[row_ids] = node_E_kin[row_ids] + node_U[row_ids]
+            node_alive[row_ids] = torch.ones(self.N, device=device, dtype=torch.bool)
+
+            clone_sources = self.history.companions_clone[clone_idx]
+            cloned_mask = self.history.will_clone[clone_idx]
+            if cloned_mask.any():
+                node_clone_source[row_ids[cloned_mask]] = clone_sources[cloned_mask]
+
+        # Final nodes
+        for t_idx in range(n_final):
+            row_ids = final_ids[t_idx]
+            abs_step = float(self.recorded_steps[t_idx])
+            node_stage[row_ids] = STAGE_FINAL
+            node_time_index[row_ids] = t_idx
+            node_walker[row_ids] = torch.arange(self.N, device=device)
+            node_abs_step[row_ids] = abs_step
+            node_tau[row_ids] = abs_step * self.delta_t
+
+            x_final = self.history.x_final[t_idx]
+            v_final = self.history.v_final[t_idx]
+            node_E_kin[row_ids] = 0.5 * torch.sum(v_final**2, dim=-1)
+            node_U[row_ids] = self.history.U_final[t_idx]
+            node_E_total[row_ids] = node_E_kin[row_ids] + node_U[row_ids]
+
+            if self.bounds is not None:
+                node_alive[row_ids] = self.bounds.contains(x_final)
+            else:
+                node_alive[row_ids] = torch.ones(self.N, device=device, dtype=torch.bool)
+
+            if t_idx > 0:
+                info_idx = t_idx - 1
+                clone_sources = self.history.companions_clone[info_idx]
+                cloned_mask = self.history.will_clone[info_idx]
+                if cloned_mask.any():
+                    node_clone_source[row_ids[cloned_mask]] = clone_sources[cloned_mask]
+
+        self.nodes = {
+            "id": node_id,
+            "stage": node_stage,
+            "time_index": node_time_index,
+            "walker": node_walker,
+            "abs_step": node_abs_step,
+            "tau": node_tau,
+            "alive": node_alive,
+            "clone_source": node_clone_source,
+            "E_kin": node_E_kin,
+            "U": node_U,
+            "E_total": node_E_total,
+            "fitness": node_fitness,
+            "V_fit": node_V_fit,
+            "reward": node_reward,
+            "cloning_score": node_cloning_score,
+            "cloning_prob": node_cloning_prob,
+            "will_clone": node_will_clone,
+            "algorithmic_distance": node_d_alg,
+            "z_rewards": node_z_rewards,
+            "z_distances": node_z_distances,
+            "rescaled_rewards": node_rescaled_rewards,
+            "rescaled_distances": node_rescaled_distances,
+            "pos_sq_diff": node_pos_sq,
+            "vel_sq_diff": node_vel_sq,
+            "mu_rewards": node_mu_rewards,
+            "sigma_rewards": node_sigma_rewards,
+            "mu_distances": node_mu_distances,
+            "sigma_distances": node_sigma_distances,
+            "companion_distance_id": node_companion_distance,
+            "companion_clone_id": node_companion_clone,
+        }
+
+    # =====================================================================
+    # Edge Construction
+    # =====================================================================
+
+    def _compute_companion_weights(self, x: Tensor, v: Tensor, alive: Tensor) -> dict[str, Tensor]:
+        if self.epsilon_d is None:
+            eps = 1.0
+        else:
+            eps = float(self.epsilon_d)
+
+        d_alg_sq = compute_algorithmic_distance_matrix(
+            x,
+            v,
+            lambda_alg=float(self.lambda_alg or 0.0),
+            bounds=self.bounds,
+            pbc=self.pbc,
+        )
+        kernel = torch.exp(-d_alg_sq / (2.0 * eps**2))
+        kernel.fill_diagonal_(0.0)
+        alive_2d = alive.unsqueeze(0) & alive.unsqueeze(1)
+        kernel = kernel * alive_2d.float()
+        row_sums = torch.clamp(kernel.sum(dim=1, keepdim=True), min=1e-12)
+        weights = kernel / row_sums
+
+        if self.pbc and self.bounds is not None:
+            dist_matrix = compute_periodic_distance_matrix(
+                x, y=None, bounds=self.bounds, pbc=True
+            )
+        else:
+            diff = x[:, None, :] - x[None, :, :]
+            dist_matrix = torch.linalg.vector_norm(diff, dim=-1)
+
+        return {
+            "d_alg_sq": d_alg_sq,
+            "kernel": kernel,
+            "weights": weights,
+            "distance": dist_matrix,
+        }
+
+    def _compute_viscous_weights(self, x: Tensor, alive: Tensor) -> dict[str, Tensor]:
+        if not self.use_viscous_coupling or self.nu == 0.0:
+            zero = torch.zeros(
+                (alive.shape[0], alive.shape[0]),
+                device=alive.device,
+                dtype=x.dtype,
+            )
+            return {
+                "kernel": zero,
+                "weights": zero,
+            }
+
+        if self.pbc and self.bounds is not None:
+            dist = compute_periodic_distance_matrix(x, y=None, bounds=self.bounds, pbc=True)
+        else:
+            diff = x[:, None, :] - x[None, :, :]
+            dist = torch.linalg.vector_norm(diff, dim=-1)
+
+        l_sq = float(self.viscous_length_scale) ** 2
+        kernel = torch.exp(-(dist**2) / (2.0 * l_sq))
+        kernel.fill_diagonal_(0.0)
+        alive_2d = alive.unsqueeze(0) & alive.unsqueeze(1)
+        kernel = kernel * alive_2d.float()
+        deg = torch.clamp(kernel.sum(dim=1, keepdim=True), min=1e-12)
+        weights = kernel / deg
+        return {"kernel": kernel, "weights": weights}
+
+    def _build_edges(self) -> None:
+        self.edges = {}
         self._build_cst_edges()
         self._build_ig_edges()
         self._build_ia_edges()
-        self._build_triangles()
+        self._build_clone_edges()
 
-    # ========================================================================
-    # Construction Methods
-    # ========================================================================
+    def _build_cst_edges(self) -> None:
+        cst = {k: [] for k in [
+            "source",
+            "target",
+            "walker",
+            "time_index",
+            "abs_step",
+            "delta_t",
+            "v_pre",
+            "v_final",
+            "delta_v",
+            "delta_x",
+            "x_clone",
+            "v_clone",
+            "force_stable",
+            "force_adapt",
+            "force_viscous",
+            "force_friction",
+            "force_total",
+            "noise",
+            "sigma_reg_diag",
+            "sigma_reg_full",
+            "phi_cst",
+            "norm_delta_v",
+            "norm_delta_x",
+        ]}
 
-    def _compute_recorded_steps(self) -> list[int]:
-        recorded_steps = list(range(0, self.n_steps + 1, self.record_every))
-        if self.n_steps not in recorded_steps:
-            recorded_steps.append(self.n_steps)
-        if len(recorded_steps) != self.n_recorded:
-            recorded_steps = [t_idx * self.record_every for t_idx in range(self.n_recorded)]
-            recorded_steps[-1] = self.n_steps
-        self.graph.graph["recorded_steps"] = recorded_steps
-        self.graph.graph["delta_t"] = self.delta_t
-        return recorded_steps
+        for t_idx in range(1, self.n_recorded):
+            info_idx = t_idx - 1
+            pre_ids = self.node_index["pre"][t_idx]
+            final_ids = self.node_index["final"][t_idx]
+            alive = self.nodes["alive"][pre_ids]
+            if not alive.any():
+                continue
 
-    def _info_index(self, t_idx: int) -> int | None:
-        if t_idx < self.n_recorded - 1:
-            return t_idx
-        return None
+            x_pre = self.history.x_before_clone[t_idx]
+            v_pre = self.history.v_before_clone[t_idx]
+            x_final = self.history.x_final[t_idx]
+            v_final = self.history.v_final[t_idx]
+            x_clone = self.history.x_after_clone[info_idx]
+            v_clone = self.history.v_after_clone[info_idx]
 
-    def _alive_mask_at(self, t_idx: int) -> Tensor:
-        if t_idx < self.n_recorded - 1:
-            return self.history.alive_mask[t_idx]
-        if self.history.bounds is not None:
-            return self.history.bounds.contains(self.history.x_final[t_idx])
-        return torch.ones(self.N, dtype=torch.bool, device=self.history.x_final.device)
+            delta_x = self._compute_delta(x_pre, x_final)
+            delta_v = v_final - v_pre
 
-    def _pairwise_weights(
-        self, t_idx: int, alive_indices: list[int]
-    ) -> dict[str, Tensor | dict[int, int]]:
-        x_alive = self.history.x_final[t_idx, alive_indices, :]
-        v_alive = self.history.v_final[t_idx, alive_indices, :]
-        delta_x = x_alive[:, None, :] - x_alive[None, :, :]
-        delta_v = v_alive[:, None, :] - v_alive[None, :, :]
-        d_alg_sq = torch.sum(delta_x**2, dim=2) + self.lambda_alg * torch.sum(delta_v**2, dim=2)
-        epsilon_d = self.epsilon_d if self.epsilon_d is not None else self.epsilon_c
-        if epsilon_d is None:
-            epsilon_d = 1.0
-        weights = torch.exp(-d_alg_sq / (2.0 * epsilon_d**2))
-        weights.fill_diagonal_(0.0)
-        weight_sums = torch.clamp(weights.sum(dim=1, keepdim=True), min=1e-12)
-        p_comp = weights / weight_sums
-        alive_index = {walker_id: idx for idx, walker_id in enumerate(alive_indices)}
-        return {
-            "x_alive": x_alive,
-            "v_alive": v_alive,
-            "delta_x": delta_x,
-            "delta_v": delta_v,
-            "d_alg_sq": d_alg_sq,
-            "weights": weights,
-            "p_comp": p_comp,
-            "alive_index": alive_index,
-        }
-
-    def _build_nodes(self):
-        """Construct all nodes in the Fractal Set.
-
-        Creates one node for each (walker_id, timestep) pair, storing scalar attributes:
-        - Identity: walker_id, timestep, node_id
-        - Temporal: continuous time t
-        - Status: alive flag
-        - Energy: kinetic energy, potential U
-        - Fitness: Φ, V_fit
-        - Per-step info data (from history.alive_mask indices)
-
-        Nodes are indexed by (walker_id, timestep) tuples where timestep is the
-        recorded index (not the absolute step number).
-
-        Reference: docs/source/3_fractal_gas/2_fractal_set/01_fractal_set.md § 2
-        """
-        for t_idx in range(self.n_recorded):
-            step = self.recorded_steps[t_idx] if t_idx < len(self.recorded_steps) else 0
-            info_idx = self._info_index(t_idx)
-            alive_mask = self._alive_mask_at(t_idx)
-
-            for walker_id in range(self.N):
-                node_id = (walker_id, t_idx)
-
-                # Extract position and velocity for energy computation
-                x = self.history.x_final[t_idx, walker_id, :]
-                v = self.history.v_final[t_idx, walker_id, :]
-
-                # Compute kinetic energy
-                E_kin = 0.5 * torch.sum(v**2).item()
-
-                # Base node attributes (always available)
-                attrs = {
-                    "node_id": t_idx * self.N + walker_id,
-                    "walker_id": walker_id,
-                    "timestep": t_idx,
-                    "absolute_step": step,
-                    "t": float(step),
-                    "delta_t": self.delta_t,
-                    "x": x.clone(),
-                    "v": v.clone(),
-                    "E_kin": E_kin,
-                    "alive": alive_mask[walker_id].item(),
-                }
-
-                if info_idx is not None:
-                    will_clone = self.history.will_clone[info_idx, walker_id].item()
-                    clone_source = (
-                        self.history.companions_clone[info_idx, walker_id].item()
-                        if will_clone
-                        else None
+            for walker_id in torch.where(alive)[0].tolist():
+                cst["source"].append(int(pre_ids[walker_id]))
+                cst["target"].append(int(final_ids[walker_id]))
+                cst["walker"].append(walker_id)
+                cst["time_index"].append(t_idx)
+                cst["abs_step"].append(self._compute_pre_step(t_idx))
+                cst["delta_t"].append(self.delta_t)
+                cst["v_pre"].append(v_pre[walker_id].clone())
+                cst["v_final"].append(v_final[walker_id].clone())
+                cst["delta_v"].append(delta_v[walker_id].clone())
+                cst["delta_x"].append(delta_x[walker_id].clone())
+                cst["x_clone"].append(x_clone[walker_id].clone())
+                cst["v_clone"].append(v_clone[walker_id].clone())
+                cst["force_stable"].append(self.history.force_stable[info_idx, walker_id])
+                cst["force_adapt"].append(self.history.force_adapt[info_idx, walker_id])
+                cst["force_viscous"].append(self.history.force_viscous[info_idx, walker_id])
+                cst["force_friction"].append(self.history.force_friction[info_idx, walker_id])
+                cst["force_total"].append(self.history.force_total[info_idx, walker_id])
+                cst["noise"].append(self.history.noise[info_idx, walker_id])
+                if self.history.sigma_reg_diag is not None:
+                    cst["sigma_reg_diag"].append(
+                        self.history.sigma_reg_diag[info_idx, walker_id]
                     )
-                    attrs.update({
-                        "fitness": self.history.fitness[info_idx, walker_id].item(),
-                        "V_fit": self.history.fitness[info_idx, walker_id].item(),
-                        "reward": self.history.rewards[info_idx, walker_id].item(),
-                        "cloning_score": self.history.cloning_scores[info_idx, walker_id].item(),
-                        "cloning_prob": self.history.cloning_probs[info_idx, walker_id].item(),
-                        "will_clone": will_clone,
-                        "clone_source": clone_source,
-                        "companion_distance_id": self.history.companions_distance[
-                            info_idx, walker_id
-                        ].item(),
-                        "companion_clone_id": self.history.companions_clone[
-                            info_idx, walker_id
-                        ].item(),
-                        # Intermediate fitness computation scalars (from RunHistory)
-                        "z_rewards": self.history.z_rewards[info_idx, walker_id].item(),
-                        "z_distances": self.history.z_distances[info_idx, walker_id].item(),
-                        "rescaled_rewards": self.history.rescaled_rewards[
-                            info_idx, walker_id
-                        ].item(),
-                        "rescaled_distances": self.history.rescaled_distances[
-                            info_idx, walker_id
-                        ].item(),
-                        "pos_squared_diff": self.history.pos_squared_differences[
-                            info_idx, walker_id
-                        ].item(),
-                        "vel_squared_diff": self.history.vel_squared_differences[
-                            info_idx, walker_id
-                        ].item(),
-                        "algorithmic_distance": self.history.distances[info_idx, walker_id].item(),
-                        # Localized statistics (per-step, global case rho → ∞)
-                        "mu_rewards": self.history.mu_rewards[info_idx].item(),
-                        "sigma_rewards": self.history.sigma_rewards[info_idx].item(),
-                        "mu_distances": self.history.mu_distances[info_idx].item(),
-                        "sigma_distances": self.history.sigma_distances[info_idx].item(),
-                    })
+                    cst["sigma_reg_full"].append(None)
+                elif self.history.sigma_reg_full is not None:
+                    cst["sigma_reg_diag"].append(None)
+                    cst["sigma_reg_full"].append(
+                        self.history.sigma_reg_full[info_idx, walker_id]
+                    )
+                else:
+                    cst["sigma_reg_diag"].append(None)
+                    cst["sigma_reg_full"].append(None)
+                cst["phi_cst"].append(0.0)
+                cst["norm_delta_v"].append(float(torch.linalg.vector_norm(delta_v[walker_id])))
+                cst["norm_delta_x"].append(float(torch.linalg.vector_norm(delta_x[walker_id])))
 
-                self.graph.add_node(node_id, **attrs)
+        self.edges["cst"] = cst
 
-    def _build_cst_edges(self):
-        """Construct CST (Causal Spacetime Tree) edges.
+    def _build_ig_edges(self) -> None:
+        ig = {k: [] for k in [
+            "source",
+            "target",
+            "source_walker",
+            "target_walker",
+            "time_index",
+            "abs_step",
+            "x_i",
+            "x_j",
+            "v_i",
+            "v_j",
+            "delta_x",
+            "delta_v",
+            "viscous_force",
+            "kernel_companion",
+            "weight_companion",
+            "kernel_viscous",
+            "weight_viscous",
+            "distance",
+            "d_alg",
+            "theta_ij",
+            "fitness_i",
+            "fitness_j",
+            "V_clone",
+            "psi_amp",
+            "psi_real",
+            "psi_imag",
+            "companion_kind",
+        ]}
 
-        Creates directed temporal edges (i, t) → (i, t+1) for each walker's evolution
-        across consecutive timesteps. Only creates edges for alive walkers.
-
-        Each CST edge stores:
-        - Velocity at source and target: v_t, v_{t+1}
-        - Velocity increment: Δv = v_{t+1} - v_t
-        - Position displacement: Δx = x_{t+1} - x_t
-        - Spinor-aligned aliases for the vector quantities
-        - Derived scalars: ||Δv||, ||Δx|| and Δt
-
-        Reference: docs/source/3_fractal_gas/2_fractal_set/01_fractal_set.md § 3
-        """
-        edge_id = 0
-        for t_idx in range(self.n_recorded - 1):
-            alive_mask = self._alive_mask_at(t_idx)
-            if t_idx + 1 < len(self.recorded_steps):
-                delta_t = float(self.recorded_steps[t_idx + 1] - self.recorded_steps[t_idx])
-            else:
-                delta_t = self.delta_t
-            for walker_id in range(self.N):
-                # Check if walker is alive at this timestep
-                if not alive_mask[walker_id].item():
-                    continue
-
-                source = (walker_id, t_idx)
-                target = (walker_id, t_idx + 1)
-
-                # Extract velocities and positions (final states after all operators)
-                v_t = self.history.v_final[t_idx, walker_id, :]
-                v_t1 = self.history.v_final[t_idx + 1, walker_id, :]
-                x_t = self.history.x_final[t_idx, walker_id, :]
-                x_t1 = self.history.x_final[t_idx + 1, walker_id, :]
-
-                # Compute increments
-                Delta_v = v_t1 - v_t
-                Delta_x = x_t1 - x_t
-                v_t_data = v_t.clone()
-                v_t1_data = v_t1.clone()
-                delta_v_data = Delta_v.clone()
-                delta_x_data = Delta_x.clone()
-
-                attrs = {
-                    "edge_type": "cst",
-                    "edge_id": edge_id,
-                    "walker_id": walker_id,
-                    "timestep": t_idx,
-                    "delta_t": delta_t,
-                    "omega_cst": delta_t,
-                    # Final states (after all operators)
-                    "v_t": v_t_data,
-                    "v_t1": v_t1_data,
-                    "Delta_v": delta_v_data,
-                    "Delta_x": delta_x_data,
-                    # Spinor-aligned aliases for vector data
-                    "psi_v_t": v_t_data,
-                    "psi_v_t1": v_t1_data,
-                    "psi_Delta_v": delta_v_data,
-                    "psi_Delta_x": delta_x_data,
-                    "norm_Delta_v": torch.norm(Delta_v).item(),
-                    "norm_Delta_x": torch.norm(Delta_x).item(),
-                }
-
-                # Add before/after cloning states (t_idx+1 has cloning data from step t_idx)
-                # before_clone: state before cloning operator at next timestep
-                # after_clone: state after cloning, before kinetic operator
-                attrs["x_before_clone"] = self.history.x_before_clone[
-                    t_idx + 1, walker_id, :
-                ].clone()
-                attrs["v_before_clone"] = self.history.v_before_clone[
-                    t_idx + 1, walker_id, :
-                ].clone()
-
-                # After cloning states (available for t_idx > 0, since t_idx+1 > 0)
-                if t_idx < self.n_recorded - 1:  # Ensure we don't go out of bounds
-                    attrs["x_after_clone"] = self.history.x_after_clone[
-                        t_idx, walker_id, :
-                    ].clone()
-                    attrs["v_after_clone"] = self.history.v_after_clone[
-                        t_idx, walker_id, :
-                    ].clone()
-
-                # Add gradient/Hessian data if available (from adaptive kinetics)
-                if self.history.fitness_gradients is not None:
-                    grad_V_fit = self.history.fitness_gradients[t_idx, walker_id, :]
-                    attrs["grad_V_fit"] = grad_V_fit.clone()
-                    attrs["psi_nabla_V_fit"] = grad_V_fit.clone()
-                    attrs["norm_grad_V_fit"] = torch.norm(grad_V_fit).item()
-
-                if self.history.fitness_hessians_diag is not None:
-                    attrs["hess_V_fit_diag"] = self.history.fitness_hessians_diag[
-                        t_idx, walker_id, :
-                    ].clone()
-                elif self.history.fitness_hessians_full is not None:
-                    attrs["hess_V_fit_full"] = self.history.fitness_hessians_full[
-                        t_idx, walker_id, :, :
-                    ].clone()
-
-                self.graph.add_edge(source, target, **attrs)
-                edge_id += 1
-
-    def _build_ig_edges(self):
-        """Construct IG (Information Graph) edges.
-
-        Creates directed spatial edges (i, t) → (j, t) representing selection coupling
-        between different walkers at the same timestep. These edges are DIRECTED and
-        encode the antisymmetric cloning potential.
-
-        For each pair of alive walkers (i, j) at timestep t, creates directed edge
-        i → j storing:
-        - Relative position: Δx_ij = x_j - x_i
-        - Relative velocity: Δv_ij = v_j - v_i
-        - Antisymmetric cloning potential: V_clone(i→j) = Φ_j - Φ_i
-        - Distance: ||x_i - x_j||
-        - Fitness phase: θ_ij = -(Φ_j - Φ_i)/ħ_eff
-        - Companion amplitude: √P_comp(i,j) from algorithmic distance
-        - Companion type flags: is_distance_companion, is_clone_companion
-
-        Note: Creates a complete directed graph (tournament) among alive walkers.
-        For k alive walkers, creates k(k-1) directed IG edges.
-
-        Reference: docs/source/3_fractal_gas/2_fractal_set/01_fractal_set.md § 4
-        """
-        edge_id = 0
-        for t_idx in range(self.n_recorded):
-            alive_mask = self._alive_mask_at(t_idx)
-            alive_indices = torch.where(alive_mask)[0].tolist()
-            if len(alive_indices) < 2:
+        for t_idx in range(1, self.n_recorded):
+            info_idx = t_idx - 1
+            pre_ids = self.node_index["pre"][t_idx]
+            alive = self.nodes["alive"][pre_ids]
+            if not alive.any():
                 continue
 
-            pairwise = self._pairwise_weights(t_idx, alive_indices)
-            x_alive = pairwise["x_alive"]
-            v_alive = pairwise["v_alive"]
-            delta_x = pairwise["delta_x"]
-            delta_v = pairwise["delta_v"]
+            x_pre = self.history.x_before_clone[t_idx]
+            v_pre = self.history.v_before_clone[t_idx]
+            fitness = self.history.fitness[info_idx]
+
+            pairwise = self._compute_companion_weights(x_pre, v_pre, alive)
             d_alg_sq = pairwise["d_alg_sq"]
+            kernel = pairwise["kernel"]
             weights = pairwise["weights"]
-            p_comp = pairwise["p_comp"]
-            alive_index = pairwise["alive_index"]
+            distances = pairwise["distance"]
 
-            info_idx = self._info_index(t_idx)
-            if info_idx is not None:
-                companion_distance = self.history.companions_distance[info_idx]
-                companion_clone = self.history.companions_clone[info_idx]
-                fitness = self.history.fitness[info_idx]
+            viscous = self._compute_viscous_weights(x_pre, alive)
+            kernel_visc = viscous["kernel"]
+            weights_visc = viscous["weights"]
 
-            for i in alive_indices:
-                i_idx = alive_index[i]
-                for j in alive_indices:
-                    if i == j:
+            comp_dist = self.history.companions_distance[info_idx]
+            comp_clone = self.history.companions_clone[info_idx]
+
+            for walker_id in torch.where(alive)[0].tolist():
+                companions = []
+                dist_comp = int(comp_dist[walker_id].item())
+                clone_comp = int(comp_clone[walker_id].item())
+                if dist_comp == clone_comp:
+                    companions.append((dist_comp, "both"))
+                else:
+                    companions.append((dist_comp, "distance"))
+                    companions.append((clone_comp, "clone"))
+
+                for target_id, kind in companions:
+                    if target_id == walker_id:
+                        continue
+                    if not bool(alive[target_id].item()):
                         continue
 
-                    j_idx = alive_index[j]
-                    source = (i, t_idx)
-                    target = (j, t_idx)
+                    source_node = int(pre_ids[walker_id])
+                    target_node = int(pre_ids[target_id])
+                    delta_x = self._compute_delta(x_pre[walker_id], x_pre[target_id])
+                    delta_v = v_pre[target_id] - v_pre[walker_id]
 
-                    x_i = x_alive[i_idx]
-                    x_j = x_alive[j_idx]
-                    v_i = v_alive[i_idx]
-                    v_j = v_alive[j_idx]
+                    d_alg = math.sqrt(float(d_alg_sq[walker_id, target_id].item()))
+                    dist = float(distances[walker_id, target_id].item())
+                    k_comp = float(kernel[walker_id, target_id].item())
+                    w_comp = float(weights[walker_id, target_id].item())
+                    k_visc = float(kernel_visc[walker_id, target_id].item())
+                    w_visc = float(weights_visc[walker_id, target_id].item())
 
-                    Delta_x_ij = delta_x[i_idx, j_idx]
-                    Delta_v_ij = delta_v[i_idx, j_idx]
-                    distance = torch.norm(Delta_x_ij).item()
+                    fitness_i = float(fitness[walker_id].item())
+                    fitness_j = float(fitness[target_id].item())
+                    V_clone = fitness_j - fitness_i
+                    theta_ij = -V_clone / self.hbar_eff
+                    psi_amp = math.sqrt(w_comp) if w_comp > 0.0 else 0.0
+                    psi_real = psi_amp * math.cos(theta_ij)
+                    psi_imag = psi_amp * math.sin(theta_ij)
 
-                    d_alg_ij = math.sqrt(d_alg_sq[i_idx, j_idx].item())
-                    kernel_weight = weights[i_idx, j_idx].item()
-                    w_ij = p_comp[i_idx, j_idx].item()
+                    nu_effective = self.nu if self.use_viscous_coupling else 0.0
+                    viscous_force = nu_effective * w_visc * delta_v
 
-                    x_i_data = x_i.clone()
-                    x_j_data = x_j.clone()
-                    v_i_data = v_i.clone()
-                    v_j_data = v_j.clone()
-                    delta_x_data = Delta_x_ij.clone()
-                    delta_v_data = Delta_v_ij.clone()
+                    ig["source"].append(source_node)
+                    ig["target"].append(target_node)
+                    ig["source_walker"].append(walker_id)
+                    ig["target_walker"].append(target_id)
+                    ig["time_index"].append(t_idx)
+                    ig["abs_step"].append(self._compute_pre_step(t_idx))
+                    ig["x_i"].append(x_pre[walker_id].clone())
+                    ig["x_j"].append(x_pre[target_id].clone())
+                    ig["v_i"].append(v_pre[walker_id].clone())
+                    ig["v_j"].append(v_pre[target_id].clone())
+                    ig["delta_x"].append(delta_x.clone())
+                    ig["delta_v"].append(delta_v.clone())
+                    ig["viscous_force"].append(viscous_force.clone())
+                    ig["kernel_companion"].append(k_comp)
+                    ig["weight_companion"].append(w_comp)
+                    ig["kernel_viscous"].append(k_visc)
+                    ig["weight_viscous"].append(w_visc)
+                    ig["distance"].append(dist)
+                    ig["d_alg"].append(d_alg)
+                    ig["theta_ij"].append(theta_ij)
+                    ig["fitness_i"].append(fitness_i)
+                    ig["fitness_j"].append(fitness_j)
+                    ig["V_clone"].append(V_clone)
+                    ig["psi_amp"].append(psi_amp)
+                    ig["psi_real"].append(psi_real)
+                    ig["psi_imag"].append(psi_imag)
+                    ig["companion_kind"].append(kind)
 
-                    attrs = {
-                        "edge_type": "ig",
-                        "edge_id": edge_id,
-                        "source_walker": i,
-                        "target_walker": j,
-                        "timestep": t_idx,
-                        "x_i": x_i_data,
-                        "x_j": x_j_data,
-                        "v_i": v_i_data,
-                        "v_j": v_j_data,
-                        "Delta_x_ij": delta_x_data,
-                        "Delta_v_ij": delta_v_data,
-                        # Spinor-aligned aliases for vector data
-                        "psi_x_i": x_i_data,
-                        "psi_x_j": x_j_data,
-                        "psi_Delta_x_ij": delta_x_data,
-                        "psi_v_i": v_i_data,
-                        "psi_v_j": v_j_data,
-                        "psi_Delta_v_ij": delta_v_data,
-                        "distance": distance,
-                        "kernel_weight": kernel_weight,
-                        "w_ij": w_ij,
-                        "d_alg_ij": d_alg_ij,
-                    }
+        self.edges["ig"] = ig
 
-                    if info_idx is not None:
-                        fitness_i = fitness[i].item()
-                        fitness_j = fitness[j].item()
-                        V_clone = fitness_j - fitness_i
-                        theta_ij = -V_clone / self.hbar_eff
-                        psi_amp = math.sqrt(w_ij) if w_ij > 0.0 else 0.0
-                        psi_ij = psi_amp * np.exp(1j * theta_ij)
+    def _build_ia_edges(self) -> None:
+        ia = {k: [] for k in [
+            "source",
+            "target",
+            "effect_walker",
+            "cause_walker",
+            "time_index",
+            "abs_step",
+            "kernel_viscous",
+            "weight_viscous",
+            "w_ia",
+            "clone_indicator",
+            "clone_source",
+            "phi_ia",
+        ]}
 
-                        attrs.update({
-                            "V_clone": V_clone,
-                            "fitness_i": fitness_i,
-                            "fitness_j": fitness_j,
-                            "Phi_i": fitness_i,
-                            "Phi_j": fitness_j,
-                            "is_distance_companion": j == companion_distance[i].item(),
-                            "is_clone_companion": j == companion_clone[i].item(),
-                            "d_alg_i": self.history.distances[info_idx, i].item(),
-                            "d_alg_j": self.history.distances[info_idx, j].item(),
-                            "theta_ij": theta_ij,
-                            "psi_ij_real": float(psi_ij.real),
-                            "psi_ij_imag": float(psi_ij.imag),
-                            "psi_ij_amp": float(psi_amp),
-                            "p_comp_ij": w_ij,
-                            "z_rewards_i": self.history.z_rewards[info_idx, i].item(),
-                            "z_rewards_j": self.history.z_rewards[info_idx, j].item(),
-                            "z_distances_i": self.history.z_distances[info_idx, i].item(),
-                            "z_distances_j": self.history.z_distances[info_idx, j].item(),
-                            "rescaled_rewards_i": self.history.rescaled_rewards[
-                                info_idx, i
-                            ].item(),
-                            "rescaled_rewards_j": self.history.rescaled_rewards[
-                                info_idx, j
-                            ].item(),
-                            "rescaled_distances_i": self.history.rescaled_distances[
-                                info_idx, i
-                            ].item(),
-                            "rescaled_distances_j": self.history.rescaled_distances[
-                                info_idx, j
-                            ].item(),
-                            "pos_sq_diff_i": self.history.pos_squared_differences[
-                                info_idx, i
-                            ].item(),
-                            "pos_sq_diff_j": self.history.pos_squared_differences[
-                                info_idx, j
-                            ].item(),
-                            "vel_sq_diff_i": self.history.vel_squared_differences[
-                                info_idx, i
-                            ].item(),
-                            "vel_sq_diff_j": self.history.vel_squared_differences[
-                                info_idx, j
-                            ].item(),
-                        })
-
-                    self.graph.add_edge(source, target, **attrs)
-                    edge_id += 1
-
-    def _build_ia_edges(self):
-        """Construct IA (Influence Attribution) edges.
-
-        Creates directed retrocausal edges (i, t+1) → (j, t) for each ordered
-        pair of distinct alive walkers at timestep t. These edges attribute
-        the update of walker i to walker j and close IG/CST/IA triangles.
-
-        Reference: docs/source/3_fractal_gas/2_fractal_set/01_fractal_set.md § 5.3
-        """
-        edge_id = 0
-        for t_idx in range(self.n_recorded - 1):
-            alive_mask = self._alive_mask_at(t_idx)
-            alive_indices = torch.where(alive_mask)[0].tolist()
-            if len(alive_indices) < 2:
+        for t_idx in range(1, self.n_recorded):
+            info_idx = t_idx - 1
+            pre_ids = self.node_index["pre"][t_idx]
+            final_ids = self.node_index["final"][t_idx]
+            alive = self.nodes["alive"][pre_ids]
+            if not alive.any():
                 continue
 
-            pairwise = self._pairwise_weights(t_idx, alive_indices)
-            weights = pairwise["weights"]
-            p_comp = pairwise["p_comp"]
-            alive_index = pairwise["alive_index"]
+            x_pre = self.history.x_before_clone[t_idx]
+            viscous = self._compute_viscous_weights(x_pre, alive)
+            kernel_visc = viscous["kernel"]
+            weights_visc = viscous["weights"]
 
-            will_clone = self.history.will_clone[t_idx]
-            companions_clone = self.history.companions_clone[t_idx]
+            comp_dist = self.history.companions_distance[info_idx]
+            comp_clone = self.history.companions_clone[info_idx]
+            will_clone = self.history.will_clone[info_idx]
 
-            for i in alive_indices:
-                i_idx = alive_index[i]
-                cloned = bool(will_clone[i].item())
-                clone_source = companions_clone[i].item() if cloned else None
+            for walker_id in torch.where(alive)[0].tolist():
+                companions = []
+                dist_comp = int(comp_dist[walker_id].item())
+                clone_comp = int(comp_clone[walker_id].item())
+                if dist_comp == clone_comp:
+                    companions.append(dist_comp)
+                else:
+                    companions.extend([dist_comp, clone_comp])
 
-                for j in alive_indices:
-                    if i == j:
+                for cause_id in companions:
+                    if cause_id == walker_id:
+                        continue
+                    if not bool(alive[cause_id].item()):
                         continue
 
-                    j_idx = alive_index[j]
-                    source = (i, t_idx + 1)
-                    target = (j, t_idx)
-                    w_viscous = float(p_comp[i_idx, j_idx].item())
-                    clone_indicator = 1 if cloned and j == clone_source else 0
-                    w_ia = float(clone_indicator) if cloned else w_viscous
+                    w_visc = float(weights_visc[walker_id, cause_id].item())
+                    k_visc = float(kernel_visc[walker_id, cause_id].item())
+                    cloned = bool(will_clone[walker_id].item())
+                    clone_source = int(comp_clone[walker_id].item()) if cloned else -1
+                    clone_indicator = 1 if cloned and cause_id == clone_source else 0
+                    w_ia = float(clone_indicator) if cloned else w_visc
 
-                    attrs = {
-                        "edge_type": "ia",
-                        "edge_id": edge_id,
-                        "effect_walker": i,
-                        "cause_walker": j,
-                        "timestep": t_idx,
-                        "kernel_weight": float(weights[i_idx, j_idx].item()),
-                        "w_ia": w_ia,
-                        "w_ia_viscous": w_viscous,
-                        "clone_indicator": clone_indicator,
-                        "clone_source": clone_source,
-                        "phi_ia": 0.0,
-                        "omega_ia": w_ia,
-                    }
+                    ia["source"].append(int(final_ids[walker_id]))
+                    ia["target"].append(int(pre_ids[cause_id]))
+                    ia["effect_walker"].append(walker_id)
+                    ia["cause_walker"].append(cause_id)
+                    ia["time_index"].append(t_idx)
+                    ia["abs_step"].append(self._compute_pre_step(t_idx))
+                    ia["kernel_viscous"].append(k_visc)
+                    ia["weight_viscous"].append(w_visc)
+                    ia["w_ia"].append(w_ia)
+                    ia["clone_indicator"].append(clone_indicator)
+                    ia["clone_source"].append(clone_source)
+                    ia["phi_ia"].append(0.0)
 
-                    self.graph.add_edge(source, target, **attrs)
-                    edge_id += 1
+        self.edges["ia"] = ia
 
-    def _build_triangles(self):
-        """Construct interaction triangles from IG/CST/IA edges.
+    def _build_clone_edges(self) -> None:
+        clone = {k: [] for k in [
+            "source",
+            "target",
+            "walker",
+            "time_index",
+            "abs_step",
+            "delta_x",
+            "delta_v",
+            "clone_jitter",
+        ]}
 
-        Each triangle stores its vertices and boundary edges, matching the
-        definition of the interaction 2-simplices in the Fractal Set.
-        """
-        triangles: list[dict[str, Any]] = []
-        triangle_id = 0
-        for t_idx in range(self.n_recorded - 1):
-            alive_mask = self._alive_mask_at(t_idx)
-            alive_indices = torch.where(alive_mask)[0].tolist()
-            if len(alive_indices) < 2:
+        if self.n_recorded <= 1:
+            self.edges["clone"] = clone
+            return
+
+        for t_idx in range(1, self.n_recorded):
+            info_idx = t_idx - 1
+            pre_ids = self.node_index["pre"][t_idx]
+            clone_ids = self.node_index["clone"][t_idx]
+            for walker_id in range(self.N):
+                clone["source"].append(int(pre_ids[walker_id]))
+                clone["target"].append(int(clone_ids[walker_id]))
+                clone["walker"].append(walker_id)
+                clone["time_index"].append(t_idx)
+                clone["abs_step"].append(self._compute_pre_step(t_idx) + 0.5)
+                clone["delta_x"].append(self.history.clone_delta_x[info_idx, walker_id])
+                clone["delta_v"].append(self.history.clone_delta_v[info_idx, walker_id])
+                clone["clone_jitter"].append(self.history.clone_jitter[info_idx, walker_id])
+
+        self.edges["clone"] = clone
+
+    # =====================================================================
+    # Triangles
+    # =====================================================================
+
+    def _build_triangles(self) -> None:
+        triangles = {k: [] for k in [
+            "time_index",
+            "source_walker",
+            "influencer_walker",
+            "node_pre",
+            "node_influencer",
+            "node_final",
+            "edge_cst",
+            "edge_ig",
+            "edge_ia",
+        ]}
+
+        ig_edges = self.edges["ig"]
+        ia_edges = self.edges["ia"]
+        cst_edges = self.edges["cst"]
+
+        cst_lookup = {}
+        for idx, (src, dst, t_idx, walker) in enumerate(
+            zip(
+                cst_edges["source"],
+                cst_edges["target"],
+                cst_edges["time_index"],
+                cst_edges["walker"],
+            )
+        ):
+            cst_lookup[(int(walker), int(t_idx))] = idx
+
+        ia_lookup = {}
+        for idx, (src, dst, t_idx, effect, cause) in enumerate(
+            zip(
+                ia_edges["source"],
+                ia_edges["target"],
+                ia_edges["time_index"],
+                ia_edges["effect_walker"],
+                ia_edges["cause_walker"],
+            )
+        ):
+            ia_lookup[(int(effect), int(cause), int(t_idx))] = idx
+
+        for idx, (src, dst, t_idx, source_walker, target_walker) in enumerate(
+            zip(
+                ig_edges["source"],
+                ig_edges["target"],
+                ig_edges["time_index"],
+                ig_edges["source_walker"],
+                ig_edges["target_walker"],
+            )
+        ):
+            cst_idx = cst_lookup.get((int(source_walker), int(t_idx)))
+            ia_idx = ia_lookup.get((int(source_walker), int(target_walker), int(t_idx)))
+            if cst_idx is None or ia_idx is None:
                 continue
+            pre_node = int(src)
+            influencer_node = int(dst)
+            final_node = int(self.node_index["final"][t_idx][source_walker])
 
-            for i in alive_indices:
-                for j in alive_indices:
-                    if i == j:
-                        continue
-
-                    ig_edge = ((i, t_idx), (j, t_idx))
-                    cst_edge = ((i, t_idx), (i, t_idx + 1))
-                    ia_edge = ((i, t_idx + 1), (j, t_idx))
-
-                    if not (
-                        self.graph.has_edge(*ig_edge)
-                        and self.graph.has_edge(*cst_edge)
-                        and self.graph.has_edge(*ia_edge)
-                    ):
-                        continue
-
-                    triangles.append({
-                        "triangle_id": triangle_id,
-                        "timestep": t_idx,
-                        "source_walker": i,
-                        "influencer_walker": j,
-                        "nodes": {
-                            "influencer": (j, t_idx),
-                            "influenced": (i, t_idx),
-                            "effect": (i, t_idx + 1),
-                        },
-                        "edges": {"ig": ig_edge, "cst": cst_edge, "ia": ia_edge},
-                    })
-                    triangle_id += 1
+            triangles["time_index"].append(int(t_idx))
+            triangles["source_walker"].append(int(source_walker))
+            triangles["influencer_walker"].append(int(target_walker))
+            triangles["node_pre"].append(pre_node)
+            triangles["node_influencer"].append(influencer_node)
+            triangles["node_final"].append(final_node)
+            triangles["edge_cst"].append(cst_idx)
+            triangles["edge_ig"].append(idx)
+            triangles["edge_ia"].append(ia_idx)
 
         self.triangles = triangles
-        self.graph.graph["triangles"] = triangles
 
-    # ========================================================================
+    # =====================================================================
+    # Graph View
+    # =====================================================================
+
+    def _build_graph(self, include_aux: bool = False) -> nx.DiGraph:
+        g = nx.DiGraph()
+        node_count = int(self.nodes["id"].numel())
+        for nid in range(node_count):
+            g.add_node(
+                nid,
+                node_id=nid,
+                stage=STAGE_NAMES[int(self.nodes["stage"][nid])],
+                walker_id=int(self.nodes["walker"][nid].item()),
+                time_index=int(self.nodes["time_index"][nid].item()),
+                absolute_step=float(self.nodes["abs_step"][nid].item()),
+                tau=float(self.nodes["tau"][nid].item()),
+                alive=bool(self.nodes["alive"][nid].item()),
+                clone_source=int(self.nodes["clone_source"][nid].item()),
+                E_kin=float(self.nodes["E_kin"][nid].item()),
+                U=float(self.nodes["U"][nid].item()),
+                E_total=float(self.nodes["E_total"][nid].item()),
+                fitness=float(self.nodes["fitness"][nid].item()),
+                V_fit=float(self.nodes["V_fit"][nid].item()),
+                reward=float(self.nodes["reward"][nid].item()),
+                cloning_score=float(self.nodes["cloning_score"][nid].item()),
+                cloning_prob=float(self.nodes["cloning_prob"][nid].item()),
+                will_clone=bool(self.nodes["will_clone"][nid].item()),
+                algorithmic_distance=float(self.nodes["algorithmic_distance"][nid].item()),
+                z_rewards=float(self.nodes["z_rewards"][nid].item()),
+                z_distances=float(self.nodes["z_distances"][nid].item()),
+                rescaled_rewards=float(self.nodes["rescaled_rewards"][nid].item()),
+                rescaled_distances=float(self.nodes["rescaled_distances"][nid].item()),
+                pos_sq_diff=float(self.nodes["pos_sq_diff"][nid].item()),
+                vel_sq_diff=float(self.nodes["vel_sq_diff"][nid].item()),
+                mu_rewards=float(self.nodes["mu_rewards"][nid].item()),
+                sigma_rewards=float(self.nodes["sigma_rewards"][nid].item()),
+                mu_distances=float(self.nodes["mu_distances"][nid].item()),
+                sigma_distances=float(self.nodes["sigma_distances"][nid].item()),
+                companion_distance_id=int(self.nodes["companion_distance_id"][nid].item()),
+                companion_clone_id=int(self.nodes["companion_clone_id"][nid].item()),
+            )
+
+        def add_edges(edge_type: str) -> None:
+            edges = self.edges[edge_type]
+            for edge_id, (src, dst) in enumerate(zip(edges["source"], edges["target"])):
+                attrs = {"edge_type": edge_type, "edge_id": edge_id}
+                for key, values in edges.items():
+                    if key in {"source", "target"}:
+                        continue
+                    attrs[key] = values[edge_id]
+                g.add_edge(int(src), int(dst), **attrs)
+
+        add_edges("cst")
+        add_edges("ig")
+        add_edges("ia")
+        if include_aux:
+            add_edges("clone")
+
+        g.graph["triangles"] = self.triangles
+        g.graph["recorded_steps"] = self.recorded_steps
+        g.graph["delta_t"] = self.delta_t
+        g.graph["schema_version"] = "fractal-set-v3"
+        return g
+
+    @property
+    def graph(self) -> nx.DiGraph:
+        if self._graph_cache is None:
+            self._graph_cache = self._build_graph(include_aux=False)
+        return self._graph_cache
+
+    def graph_with_aux(self) -> nx.DiGraph:
+        if self._graph_cache_aux is None:
+            self._graph_cache_aux = self._build_graph(include_aux=True)
+        return self._graph_cache_aux
+
+    # =====================================================================
     # Query Methods
-    # ========================================================================
+    # =====================================================================
 
-    def get_walker_trajectory(
-        self,
-        walker_id: int,
-        stage: str = "final",
-    ) -> dict[str, Tensor]:
-        """Extract trajectory for a single walker from node positions.
+    def get_walker_trajectory(self, walker_id: int, stage: str = "final") -> dict[str, Tensor]:
+        if stage == "pre":
+            return {
+                "x": self.history.x_before_clone[:, walker_id, :],
+                "v": self.history.v_before_clone[:, walker_id, :],
+            }
+        if stage == "clone":
+            return {
+                "x": self.history.x_after_clone[:, walker_id, :],
+                "v": self.history.v_after_clone[:, walker_id, :],
+            }
+        return self.history.get_walker_trajectory(walker_id, stage="final")
 
-        Args:
-            walker_id: Walker index (0 to N-1)
-            stage: Which state to extract - delegates to RunHistory
+    def get_node_id(self, walker_id: int, timestep: int, stage: str = "final") -> int:
+        stage_key = STAGE_BY_NAME[stage]
+        if stage_key == STAGE_PRE:
+            return int(self.node_index["pre"][timestep, walker_id])
+        if stage_key == STAGE_CLONE:
+            node_id = int(self.node_index["clone"][timestep, walker_id])
+            if node_id < 0:
+                msg = f"No clone node for timestep={timestep}"
+                raise ValueError(msg)
+            return node_id
+        return int(self.node_index["final"][timestep, walker_id])
 
-        Returns:
-            Dict with 'x' [n_recorded, d] and 'v' [n_recorded, d] tensors
+    def get_node_data(self, walker_id: int, timestep: int, stage: str = "final") -> dict[str, Any]:
+        node_id = self.get_node_id(walker_id, timestep, stage=stage)
+        return {key: self.nodes[key][node_id] for key in self.nodes}
 
-        Note: This delegates to RunHistory.get_walker_trajectory() for consistency.
-        """
-        return self.history.get_walker_trajectory(walker_id, stage=stage)
+    def get_alive_walkers(self, timestep: int, stage: str = "final") -> list[int]:
+        if stage == "clone" and timestep == 0:
+            return []
+        node_ids = self.node_index[stage][timestep]
+        alive = self.nodes["alive"][node_ids]
+        return torch.where(alive)[0].tolist()
 
     def get_cst_subgraph(self) -> nx.DiGraph:
-        """Extract CST (temporal evolution) subgraph.
-
-        Returns:
-            Directed graph containing only CST edges (temporal transitions)
-        """
-        edges = [(u, v) for u, v, d in self.graph.edges(data=True) if d["edge_type"] == "cst"]
+        edges = [
+            (u, v)
+            for u, v, d in self.graph.edges(data=True)
+            if d.get("edge_type") == "cst"
+        ]
         return self.graph.edge_subgraph(edges).copy()
 
     def get_ig_subgraph(
-        self,
-        timestep: int | None = None,
-        companion_type: str | None = None,
+        self, timestep: int | None = None, companion_type: str | None = None
     ) -> nx.DiGraph:
-        """Extract IG (selection coupling) subgraph.
-
-        Args:
-            timestep: If provided, only extract IG edges at this recorded timestep.
-                     If None, extract all IG edges.
-            companion_type: Filter by companion type:
-                - "distance": Only edges where j is i's distance companion
-                - "clone": Only edges where j is i's clone companion
-                - "both": Only edges where j is both distance and clone companion
-                - None: All IG edges (default)
-
-        Returns:
-            Directed graph containing only IG edges matching the criteria
-        """
-
-        def edge_filter(u, v, d):
-            # Must be IG edge
-            if d["edge_type"] != "ig":
-                return False
-
-            # Timestep filter
-            if timestep is not None and d["timestep"] != timestep:
-                return False
-
-            # Companion type filter
-            if companion_type == "distance":
-                return d.get("is_distance_companion", False)
-            if companion_type == "clone":
-                return d.get("is_clone_companion", False)
-            if companion_type == "both":
-                return d.get("is_distance_companion", False) and d.get("is_clone_companion", False)
-
-            # No companion filter (all IG edges)
-            return True
-
-        edges = [(u, v) for u, v, d in self.graph.edges(data=True) if edge_filter(u, v, d)]
+        edges = []
+        for u, v, d in self.graph.edges(data=True):
+            if d.get("edge_type") != "ig":
+                continue
+            if timestep is not None and int(d.get("time_index")) != timestep:
+                continue
+            kind = d.get("companion_kind")
+            if companion_type is not None:
+                if companion_type == "distance" and kind not in {"distance", "both"}:
+                    continue
+                if companion_type == "clone" and kind not in {"clone", "both"}:
+                    continue
+                if companion_type == "both" and kind != "both":
+                    continue
+            edges.append((u, v))
         return self.graph.edge_subgraph(edges).copy()
 
-    def get_ia_subgraph(
-        self,
-        timestep: int | None = None,
-        clone_only: bool | None = None,
-    ) -> nx.DiGraph:
-        """Extract IA (influence attribution) subgraph.
-
-        Args:
-            timestep: If provided, only extract IA edges at this recorded timestep.
-                     If None, extract all IA edges.
-            clone_only: If True, only include cloning attribution edges. If False,
-                        exclude cloning attribution edges. If None, include all.
-
-        Returns:
-            Directed graph containing only IA edges matching the criteria
-        """
-
-        def edge_filter(u, v, d):
-            if d["edge_type"] != "ia":
-                return False
-            if timestep is not None and d["timestep"] != timestep:
-                return False
-            if clone_only is True and not d.get("clone_indicator", 0):
-                return False
-            if clone_only is False and d.get("clone_indicator", 0):
-                return False
-            return True
-
-        edges = [(u, v) for u, v, d in self.graph.edges(data=True) if edge_filter(u, v, d)]
+    def get_ia_subgraph(self, timestep: int | None = None, clone_only: bool | None = None) -> nx.DiGraph:
+        edges = []
+        for u, v, d in self.graph.edges(data=True):
+            if d.get("edge_type") != "ia":
+                continue
+            if timestep is not None and int(d.get("time_index")) != timestep:
+                continue
+            clone_indicator = int(d.get("clone_indicator", 0))
+            if clone_only is True and clone_indicator == 0:
+                continue
+            if clone_only is False and clone_indicator != 0:
+                continue
+            edges.append((u, v))
         return self.graph.edge_subgraph(edges).copy()
 
     def get_triangles(self, timestep: int | None = None) -> list[dict[str, Any]]:
-        """Return interaction triangles, optionally filtered by timestep."""
-        triangles = getattr(self, "triangles", [])
-        if timestep is None:
-            return list(triangles)
-        return [triangle for triangle in triangles if triangle.get("timestep") == timestep]
+        triangles = []
+        for idx in range(len(self.triangles["time_index"])):
+            t_idx = int(self.triangles["time_index"][idx])
+            if timestep is not None and t_idx != timestep:
+                continue
+            triangles.append({
+                "triangle_id": idx,
+                "time_index": t_idx,
+                "source_walker": int(self.triangles["source_walker"][idx]),
+                "influencer_walker": int(self.triangles["influencer_walker"][idx]),
+                "nodes": {
+                    "pre": int(self.triangles["node_pre"][idx]),
+                    "influencer": int(self.triangles["node_influencer"][idx]),
+                    "final": int(self.triangles["node_final"][idx]),
+                },
+                "edges": {
+                    "cst": int(self.triangles["edge_cst"][idx]),
+                    "ig": int(self.triangles["edge_ig"][idx]),
+                    "ia": int(self.triangles["edge_ia"][idx]),
+                },
+            })
+        return triangles
 
     def get_cloning_events(self) -> list[tuple[int, int, int]]:
-        """Get list of all cloning events.
-
-        Returns:
-            List of (step, cloner_idx, companion_idx) tuples
-
-        Note: Delegates to RunHistory.get_clone_events() for consistency.
-        """
         return self.history.get_clone_events()
 
-    def get_node_data(self, walker_id: int, timestep: int) -> dict[str, Any]:
-        """Get all attributes for a specific node.
-
-        Args:
-            walker_id: Walker index
-            timestep: Recorded timestep index
-
-        Returns:
-            Dictionary of node attributes
-        """
-        node_id = (walker_id, timestep)
-        return dict(self.graph.nodes[node_id])
-
-    def get_alive_walkers(self, timestep: int) -> list[int]:
-        """Get list of alive walker IDs at a given timestep.
-
-        Args:
-            timestep: Recorded timestep index
-
-        Returns:
-            List of alive walker indices
-        """
-        alive = []
-        for walker_id in range(self.N):
-            node_data = self.get_node_data(walker_id, timestep)
-            if node_data.get("alive", False):
-                alive.append(walker_id)
-        return alive
-
-    # ========================================================================
-    # Phase 4: Analysis Query Methods
-    # ========================================================================
-
-    def get_energy_statistics(self, timestep: int) -> dict[str, float]:
-        """Compute energy statistics for alive walkers at a given timestep.
-
-        Args:
-            timestep: Recorded timestep index
-
-        Returns:
-            Dictionary with energy statistics:
-            - mean_potential: Mean potential energy U
-            - std_potential: Std of potential energy
-            - mean_kinetic: Mean kinetic energy (1/2 ||v||^2)
-            - std_kinetic: Std of kinetic energy
-            - mean_total: Mean total energy (U + KE)
-            - std_total: Std of total energy
-            - min_potential: Minimum potential energy
-            - max_potential: Maximum potential energy
-
-        Reference: docs/source/3_fractal_gas/2_fractal_set/01_fractal_set.md
-        """
-        alive_walkers = self.get_alive_walkers(timestep)
-
-        potentials = []
-        kinetics = []
-
-        for walker_id in alive_walkers:
-            node_data = self.get_node_data(walker_id, timestep)
-            U = node_data.get("U", 0.0)
-            if U is None:
-                U = 0.0
-            E_kin = node_data.get("E_kin", 0.0)
-
-            potentials.append(U)
-            kinetics.append(E_kin)
-
-        import numpy as np
-
-        potentials = np.array(potentials)
-        kinetics = np.array(kinetics) if kinetics else np.array([0.0])
-        totals = potentials + kinetics
-
-        return {
-            "mean_potential": float(np.mean(potentials)),
-            "std_potential": float(np.std(potentials)),
-            "mean_kinetic": float(np.mean(kinetics)),
-            "std_kinetic": float(np.std(kinetics)),
-            "mean_total": float(np.mean(totals)),
-            "std_total": float(np.std(totals)),
-            "min_potential": float(np.min(potentials)),
-            "max_potential": float(np.max(potentials)),
-        }
-
-    def get_fitness_statistics(self, timestep: int) -> dict[str, float]:
-        """Compute fitness-related statistics for alive walkers at a given timestep.
-
-        Args:
-            timestep: Recorded timestep index
-
-        Returns:
-            Dictionary with fitness statistics:
-            - mean_fitness: Mean fitness potential V_fit
-            - std_fitness: Std of fitness potential
-            - mean_cloning_score: Mean cloning score S_i
-            - std_cloning_score: Std of cloning score
-            - mean_cloning_prob: Mean cloning probability π(S_i)
-            - fraction_cloned: Fraction of walkers that cloned
-
-        Reference: docs/source/3_fractal_gas/2_fractal_set/01_fractal_set.md
-        """
-        alive_walkers = self.get_alive_walkers(timestep)
-
-        fitnesses = []
-        cloning_scores = []
-        cloning_probs = []
-        will_clone = []
-
-        for walker_id in alive_walkers:
-            node_data = self.get_node_data(walker_id, timestep)
-            fitnesses.append(node_data.get("fitness", 0.0))
-            cloning_scores.append(node_data.get("cloning_score", 0.0))
-            cloning_probs.append(node_data.get("cloning_prob", 0.0))
-            will_clone.append(1.0 if node_data.get("will_clone", False) else 0.0)
-
-        import numpy as np
-
-        fitnesses = np.array(fitnesses)
-        cloning_scores = np.array(cloning_scores)
-        cloning_probs = np.array(cloning_probs)
-        will_clone = np.array(will_clone)
-
-        return {
-            "mean_fitness": float(np.mean(fitnesses)),
-            "std_fitness": float(np.std(fitnesses)),
-            "mean_cloning_score": float(np.mean(cloning_scores)),
-            "std_cloning_score": float(np.std(cloning_scores)),
-            "mean_cloning_prob": float(np.mean(cloning_probs)),
-            "fraction_cloned": float(np.mean(will_clone)),
-        }
-
-    def get_distance_statistics(self, timestep: int) -> dict[str, float]:
-        """Compute distance-related statistics for alive walkers at a given timestep.
-
-        Args:
-            timestep: Recorded timestep index
-
-        Returns:
-            Dictionary with distance statistics:
-            - mean_algorithmic_distance: Mean d_alg to companion
-            - std_algorithmic_distance: Std of d_alg
-            - mean_z_distance: Mean Z-score of distances
-            - std_z_distance: Std of Z-scores
-            - mean_rescaled_distance: Mean rescaled distance d'_i
-            - mean_pos_sq_diff: Mean ||Δx||^2
-            - mean_vel_sq_diff: Mean ||Δv||^2
-
-        Reference: docs/source/3_fractal_gas/2_fractal_set/01_fractal_set.md
-        """
-        alive_walkers = self.get_alive_walkers(timestep)
-
-        d_algs = []
-        z_dists = []
-        rescaled_dists = []
-        pos_sqs = []
-        vel_sqs = []
-
-        for walker_id in alive_walkers:
-            node_data = self.get_node_data(walker_id, timestep)
-            d_algs.append(node_data.get("algorithmic_distance", 0.0))
-            z_dists.append(node_data.get("z_distances", 0.0))
-            rescaled_dists.append(node_data.get("rescaled_distances", 0.0))
-            pos_sqs.append(node_data.get("pos_squared_diff", 0.0))
-            vel_sqs.append(node_data.get("vel_squared_diff", 0.0))
-
-        import numpy as np
-
-        d_algs = np.array(d_algs)
-        z_dists = np.array(z_dists)
-        rescaled_dists = np.array(rescaled_dists)
-        pos_sqs = np.array(pos_sqs)
-        vel_sqs = np.array(vel_sqs)
-
-        return {
-            "mean_algorithmic_distance": float(np.mean(d_algs)),
-            "std_algorithmic_distance": float(np.std(d_algs)),
-            "mean_z_distance": float(np.mean(z_dists)),
-            "std_z_distance": float(np.std(z_dists)),
-            "mean_rescaled_distance": float(np.mean(rescaled_dists)),
-            "mean_pos_sq_diff": float(np.mean(pos_sqs)),
-            "mean_vel_sq_diff": float(np.mean(vel_sqs)),
-        }
-
-    def get_phase_potential_statistics(self, timestep: int) -> dict[str, float]:
-        """Compute phase potential statistics for IG edges at a given timestep.
-
-        Args:
-            timestep: Recorded timestep index
-
-        Returns:
-            Dictionary with phase potential statistics:
-            - mean_theta: Mean fitness phase θ_ij
-            - std_theta: Std of fitness phase
-            - mean_psi_real: Mean real part of ψ_ij
-            - mean_psi_imag: Mean imaginary part of ψ_ij
-            - mean_psi_magnitude: Mean |ψ_ij|
-            - coherence: Mean cos(θ_ij) (phase coherence measure)
-
-        Reference: docs/source/3_fractal_gas/2_fractal_set/01_fractal_set.md
-        """
-        ig_graph = self.get_ig_subgraph(timestep=timestep)
-
-        thetas = []
-        psi_reals = []
-        psi_imags = []
-
-        for _, _, edge_data in ig_graph.edges(data=True):
-            theta = edge_data.get("theta_ij", 0.0)
-            psi_real = edge_data.get("psi_ij_real", 1.0)
-            psi_imag = edge_data.get("psi_ij_imag", 0.0)
-
-            thetas.append(theta)
-            psi_reals.append(psi_real)
-            psi_imags.append(psi_imag)
-
-        import numpy as np
-
-        if not thetas:
-            # No IG edges at this timestep
-            return {
-                "mean_theta": 0.0,
-                "std_theta": 0.0,
-                "mean_psi_real": 1.0,
-                "mean_psi_imag": 0.0,
-                "mean_psi_magnitude": 1.0,
-                "coherence": 1.0,
-            }
-
-        thetas = np.array(thetas)
-        psi_reals = np.array(psi_reals)
-        psi_imags = np.array(psi_imags)
-        psi_magnitudes = np.sqrt(psi_reals**2 + psi_imags**2)
-
-        return {
-            "mean_theta": float(np.mean(thetas)),
-            "std_theta": float(np.std(thetas)),
-            "mean_psi_real": float(np.mean(psi_reals)),
-            "mean_psi_imag": float(np.mean(psi_imags)),
-            "mean_psi_magnitude": float(np.mean(psi_magnitudes)),
-            "coherence": float(np.mean(np.cos(thetas))),
-        }
-
-    def get_intermediate_fitness_data(self, walker_id: int, timestep: int) -> dict[str, float]:
-        """Get all intermediate fitness computation data for a specific walker.
-
-        Args:
-            walker_id: Walker index
-            timestep: Recorded timestep index
-
-        Returns:
-            Dictionary with intermediate fitness values:
-            - z_rewards: Z-score of raw reward
-            - z_distances: Z-score of algorithmic distance
-            - rescaled_rewards: Rescaled reward r'_i
-            - rescaled_distances: Rescaled distance d'_i
-            - pos_squared_diff: ||Δx||^2
-            - vel_squared_diff: ||Δv||^2
-            - algorithmic_distance: d_alg to companion
-            - fitness: Final fitness potential V_fit
-            - cloning_score: Final cloning score S_i
-
-        Reference: docs/source/3_fractal_gas/2_fractal_set/01_fractal_set.md
-        """
-        node_data = self.get_node_data(walker_id, timestep)
-
-        return {
-            "z_rewards": node_data.get("z_rewards", 0.0),
-            "z_distances": node_data.get("z_distances", 0.0),
-            "rescaled_rewards": node_data.get("rescaled_rewards", 0.0),
-            "rescaled_distances": node_data.get("rescaled_distances", 0.0),
-            "pos_squared_diff": node_data.get("pos_squared_diff", 0.0),
-            "vel_squared_diff": node_data.get("vel_squared_diff", 0.0),
-            "algorithmic_distance": node_data.get("algorithmic_distance", 0.0),
-            "fitness": node_data.get("fitness", 0.0),
-            "cloning_score": node_data.get("cloning_score", 0.0),
-        }
-
-    def get_gradient_statistics(self, timestep: int) -> dict[str, float] | None:
-        """Compute fitness gradient statistics for CST edges at a given timestep.
-
-        Args:
-            timestep: Recorded timestep index
-
-        Returns:
-            Dictionary with gradient statistics if available, None otherwise:
-            - mean_grad_norm: Mean ||∇V_fit||
-            - std_grad_norm: Std of ||∇V_fit||
-            - max_grad_norm: Maximum ||∇V_fit||
-            - min_grad_norm: Minimum ||∇V_fit||
-
-        Note: Only available if adaptive kinetics with fitness force was enabled.
-
-        Reference: docs/source/3_fractal_gas/2_fractal_set/01_fractal_set.md
-        """
-        if self.history.fitness_gradients is None:
-            return None
-
-        alive_walkers = self.get_alive_walkers(timestep)
-
-        grad_norms = []
-        for walker_id in alive_walkers:
-            # Get CST edge from (walker_id, timestep) → (walker_id, timestep+1)
-            source = (walker_id, timestep)
-            # Find target node (same walker, next timestep)
-            targets = [
-                (u, v)
-                for u, v, d in self.graph.edges(source, data=True)
-                if d["edge_type"] == "cst"
-            ]
-
-            if targets:
-                _, target = targets[0]
-                edge_data = self.graph.get_edge_data(source, target)
-                grad_norm = edge_data.get("norm_grad_V_fit")
-                if grad_norm is not None:
-                    grad_norms.append(grad_norm)
-
-        if not grad_norms:
-            return None
-
-        import numpy as np
-
-        grad_norms = np.array(grad_norms)
-
-        return {
-            "mean_grad_norm": float(np.mean(grad_norms)),
-            "std_grad_norm": float(np.std(grad_norms)),
-            "max_grad_norm": float(np.max(grad_norms)),
-            "min_grad_norm": float(np.min(grad_norms)),
-        }
-
-    # ========================================================================
+    # =====================================================================
     # Properties
-    # ========================================================================
+    # =====================================================================
 
     @property
     def num_cst_edges(self) -> int:
-        """Total number of CST (temporal) edges."""
-        return sum(1 for _, _, d in self.graph.edges(data=True) if d["edge_type"] == "cst")
+        return len(self.edges["cst"]["source"])
 
     @property
     def num_ig_edges(self) -> int:
-        """Total number of IG (spatial coupling) edges."""
-        return sum(1 for _, _, d in self.graph.edges(data=True) if d["edge_type"] == "ig")
+        return len(self.edges["ig"]["source"])
 
     @property
     def num_ia_edges(self) -> int:
-        """Total number of IA (influence attribution) edges."""
-        return sum(1 for _, _, d in self.graph.edges(data=True) if d["edge_type"] == "ia")
+        return len(self.edges["ia"]["source"])
 
     @property
-    def num_ig_distance_companion_edges(self) -> int:
-        """Number of IG edges representing distance companion selection."""
-        return sum(
-            1
-            for _, _, d in self.graph.edges(data=True)
-            if d["edge_type"] == "ig" and d.get("is_distance_companion", False)
-        )
-
-    @property
-    def num_ig_clone_companion_edges(self) -> int:
-        """Number of IG edges representing clone companion selection."""
-        return sum(
-            1
-            for _, _, d in self.graph.edges(data=True)
-            if d["edge_type"] == "ig" and d.get("is_clone_companion", False)
-        )
-
-    @property
-    def num_ig_both_companion_edges(self) -> int:
-        """Number of IG edges where walker is both distance and clone companion."""
-        return sum(
-            1
-            for _, _, d in self.graph.edges(data=True)
-            if d["edge_type"] == "ig"
-            and d.get("is_distance_companion", False)
-            and d.get("is_clone_companion", False)
-        )
+    def num_clone_edges(self) -> int:
+        return len(self.edges["clone"]["source"])
 
     @property
     def total_nodes(self) -> int:
-        """Total number of nodes (spacetime points)."""
-        return self.graph.number_of_nodes()
+        return int(self.nodes["id"].numel())
 
     @property
     def num_triangles(self) -> int:
-        """Total number of interaction triangles."""
-        return len(getattr(self, "triangles", []))
+        return len(self.triangles["time_index"])
 
-    # ========================================================================
+    # =====================================================================
     # Serialization
-    # ========================================================================
+    # =====================================================================
 
-    def save(self, path: str):
-        """Save FractalSet to disk.
-
-        Args:
-            path: File path for saving (should end in .pkl or .pickle)
-
-        The graph is saved using pickle format, which preserves
-        all node and edge attributes including torch.Tensors.
-
-        Example:
-            >>> fractal_set.save("fractal_set.pkl")
-        """
-        import pickle
-
-        with open(path, "wb") as f:
-            pickle.dump(self.graph, f)
+    def save(self, path: str) -> None:
+        data = {
+            "nodes": self.nodes,
+            "edges": self.edges,
+            "triangles": self.triangles,
+            "meta": {
+                "recorded_steps": self.recorded_steps,
+                "delta_t": self.delta_t,
+                "epsilon_c": self.epsilon_c,
+                "epsilon_d": self.epsilon_d,
+                "lambda_alg": self.lambda_alg,
+                "hbar_eff": self.hbar_eff,
+                "schema_version": "fractal-set-v3",
+            },
+        }
+        torch.save(data, path)
 
     @classmethod
-    def load(cls, path: str, history: RunHistory) -> FractalSet:
-        """Load FractalSet from disk.
-
-        Args:
-            path: File path to load from
-            history: RunHistory object (needed for delegation methods)
-
-        Returns:
-            FractalSet instance
-
-        Example:
-            >>> history = RunHistory.load("history.pt")
-            >>> fractal_set = FractalSet.load("fractal_set.pkl", history)
-        """
-        import pickle
-
+    def load(cls, path: str, history: RunHistory) -> "FractalSet":
+        data = torch.load(path, weights_only=False)
         fs = cls.__new__(cls)
         fs.history = history
-
-        with open(path, "rb") as f:
-            fs.graph = pickle.load(f)
-
-        # Restore metadata
         fs.N = history.N
         fs.d = history.d
         fs.n_steps = history.n_steps
         fs.n_recorded = history.n_recorded
         fs.record_every = history.record_every
-        fs.delta_t = float(fs.record_every)
-        fs.recorded_steps = fs.graph.graph.get("recorded_steps")
-        if fs.recorded_steps is None:
-            fs.recorded_steps = fs._compute_recorded_steps()
-        fs.triangles = fs.graph.graph.get("triangles", [])
-        fs.epsilon_c = None
-        fs.epsilon_d = None
-        fs.lambda_alg = 0.0
-        fs.hbar_eff = 1.0
+        fs.recorded_steps = history.recorded_steps
+        fs.delta_t = history.delta_t
+        fs.pbc = history.pbc
+        fs.bounds = history.bounds
+        fs.params = history.params or {}
 
+        meta = data.get("meta", {})
+        fs.epsilon_c = meta.get("epsilon_c")
+        fs.epsilon_d = meta.get("epsilon_d")
+        fs.lambda_alg = meta.get("lambda_alg")
+        fs.hbar_eff = meta.get("hbar_eff", 1.0)
+        fs.nu = fs.params.get("kinetic", {}).get("nu", 0.0)
+        fs.viscous_length_scale = fs.params.get("kinetic", {}).get(
+            "viscous_length_scale", 1.0
+        )
+
+        fs.nodes = data["nodes"]
+        fs.edges = data["edges"]
+        fs.triangles = data["triangles"]
+        fs.node_index = {
+            "pre": fs._rebuild_node_index(STAGE_PRE),
+            "clone": fs._rebuild_node_index(STAGE_CLONE),
+            "final": fs._rebuild_node_index(STAGE_FINAL),
+        }
+
+        fs._graph_cache = None
+        fs._graph_cache_aux = None
         return fs
 
-    # ========================================================================
-    # Summary and Representation
-    # ========================================================================
-
-    def summary(self) -> str:
-        """Generate human-readable summary of the Fractal Set.
-
-        Returns:
-            Multi-line summary string with graph statistics
-
-        Example:
-            >>> print(fractal_set.summary())
-            FractalSet: 100 steps, 50 walkers, 2D
-              Nodes: 550 spacetime points
-              CST edges: 500 (temporal evolution)
-              IG edges: 24500 (selection coupling)
-                Distance companions: 500
-                Clone companions: 500
-                Both companions: 250
-              Graph density: 0.162
-        """
-        density = nx.density(self.graph)
-
-        lines = [
-            f"FractalSet: {self.n_steps} steps, {self.N} walkers, {self.d}D",
-            f"  Nodes: {self.total_nodes} spacetime points",
-            f"  CST edges: {self.num_cst_edges} (temporal evolution)",
-            f"  IG edges: {self.num_ig_edges} (selection coupling)",
-            f"    Distance companions: {self.num_ig_distance_companion_edges}",
-            f"    Clone companions: {self.num_ig_clone_companion_edges}",
-            f"    Both companions: {self.num_ig_both_companion_edges}",
-            f"  IA edges: {self.num_ia_edges} (influence attribution)",
-            f"  Triangles: {self.num_triangles} (interaction simplices)",
-            f"  Graph density: {density:.3f}",
-            f"  Recorded: {self.n_recorded} timesteps (every {self.record_every} steps)",
-        ]
-
-        return "\n".join(lines)
-
-    def __repr__(self) -> str:
-        """String representation of FractalSet."""
-        return (
-            f"FractalSet(N={self.N}, d={self.d}, n_steps={self.n_steps}, "
-            f"nodes={self.total_nodes}, cst={self.num_cst_edges}, ig={self.num_ig_edges}, "
-            f"ia={self.num_ia_edges}, triangles={self.num_triangles})"
-        )
+    def _rebuild_node_index(self, stage: int) -> Tensor:
+        mask = self.nodes["stage"] == stage
+        node_ids = self.nodes["id"][mask]
+        time_idx = self.nodes["time_index"][mask]
+        walker = self.nodes["walker"][mask]
+        max_time = int(time_idx.max().item()) + 1 if node_ids.numel() else 0
+        index = torch.full((max_time, self.N), -1, dtype=torch.long, device=node_ids.device)
+        index[time_idx, walker] = node_ids
+        return index

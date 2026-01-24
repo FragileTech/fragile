@@ -353,12 +353,11 @@ def compute_ricci_from_fractal_set_graph(
     for walker_id in alive_walkers:
         neighbors = set()
         # Find all outgoing IG edges from this walker
-        source_node = (walker_id, timestep)
+        source_node = fractal_set.get_node_id(walker_id, timestep, stage="pre")
         if source_node in ig_graph:
             for target_node in ig_graph.successors(source_node):
-                target_walker, target_t = target_node
-                if target_t == timestep:  # Same timestep
-                    neighbors.add(target_walker)
+                target_walker = int(fractal_set.nodes["walker"][target_node].item())
+                neighbors.add(target_walker)
 
         neighbor_lists[walker_id] = list(neighbors)
 

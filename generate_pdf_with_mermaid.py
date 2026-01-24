@@ -49,7 +49,10 @@ class Config:
     temp_dir: Path | None = None
     pandoc_engine: str = "xelatex"
     pandoc_args: list[str] = field(
-        default_factory=lambda: ["-V", "geometry:margin=1in", "-V", "fontsize=11pt"]
+        default_factory=lambda: [
+            "-V", "geometry:margin=0.5in",  # Reduced margins for larger diagrams
+            "-V", "fontsize=11pt",
+        ]
     )
     mermaid_theme: str = "dark"
     keep_temp_files: bool = False
@@ -353,7 +356,7 @@ def convert_svg_to_png(
         "--disable-setuid-sandbox",
         "--disable-dev-shm-usage",
         f"--screenshot={png_file}",
-        f"--window-size={width},2000",
+        f"--window-size={width},4000",
         f"file://{html_file.absolute()}",
     ]
 
@@ -438,7 +441,9 @@ def replace_diagrams_with_images(
     image_files: list[Path],
 ) -> str:
     """
-    Replace Mermaid code blocks with image references.
+    Replace Mermaid code blocks with full-width image references.
+
+    Each diagram is placed on its own page with minimal margins for maximum size.
 
     Args:
         markdown_content: Original markdown content.
@@ -446,7 +451,7 @@ def replace_diagrams_with_images(
         image_files: List of paths to generated image files (PNG or SVG).
 
     Returns:
-        Modified markdown content with diagrams replaced by image references.
+        Modified markdown content with diagrams replaced by full-width image references.
     """
     # Sort by position (reverse order) to avoid invalidating positions
     replacements = sorted(
@@ -457,13 +462,19 @@ def replace_diagrams_with_images(
 
     modified = markdown_content
     for diagram, image_file in replacements:
-        # Create image reference (use just the filename for relative path)
-        image_ref = f"![Diagram {diagram.index}]({image_file.name})"
+        # Create LaTeX image reference with full width
+        # Text before diagram stays on same page, page break after ensures one diagram per page
+        image_ref = (
+            "\n\\vspace{0.5em}\n"
+            "\\centering\n"
+            f"\\includegraphics[width=\\textwidth,height=0.85\\textheight,keepaspectratio]{{{image_file.stem}}}\n"
+            "\\newpage\n"
+        )
 
         # Replace the code block
         modified = modified[: diagram.start_pos] + image_ref + modified[diagram.end_pos :]
 
-    logging.debug(f"Replaced {len(diagrams)} code blocks with image references")
+    logging.debug(f"Replaced {len(diagrams)} code blocks with full-width image references")
     return modified
 
 
@@ -580,6 +591,16 @@ def generate_pdf_with_mermaid(config: Config) -> bool:
         staging_file = temp_dir / config.source_file.name
         staging_file.write_text(modified_markdown)
         logging.debug(f"Wrote staging file: {staging_file}")
+
+        # Create LaTeX header for diagram pages with adjustable geometry
+        header_file = temp_dir / "landscape_header.tex"
+        header_file.write_text(
+            "\\usepackage{graphicx}\n"
+        )
+        logging.debug(f"Wrote LaTeX header: {header_file}")
+
+        # Add header to pandoc args
+        config.pandoc_args.extend(["--include-in-header", str(header_file)])
 
         # Run pandoc
         logging.info("Generating PDF...")

@@ -155,26 +155,31 @@ where $\xi = 1/m$ is the correlation length (inverse mass).
 The analysis computes five proper local fields from walker positions $x_i$, velocities $v_i$, and rewards $r_i$:
 
 **Density field** (kernel density estimate):
+
 $$
 \rho(x_i) = \frac{1}{\bar{\rho}} \sum_{j \neq i} K_\sigma(x_i, x_j), \quad K_\sigma(x, y) = \exp\left(-\frac{\|x-y\|^2}{2\sigma^2}\right)
 $$
 
 **Local diversity field** (inverse density):
+
 $$
 D_{\mathrm{local}}(x_i) = \frac{1}{\rho(x_i)}
 $$
 
 **Radial distance field**:
+
 $$
 R(x_i) = \|x_i\|
 $$
 
 **Kinetic energy field**:
+
 $$
 T(x_i) = \frac{1}{2}\|v_i\|^2
 $$
 
 **Raw reward field**:
+
 $$
 r(x_i) = -U(x_i)
 $$
@@ -475,11 +480,13 @@ The empirical distributions of these phases tell us whether the gauge structure 
 :label: def-gauge-phases-empirical
 
 **U(1) Phase** (fitness-based):
+
 $$
 \theta_i^{(U(1))} = -\frac{\Phi_{\mathrm{companion}(i)} - \Phi_i}{\hbar_{\mathrm{eff}}}
 $$
 
 **SU(2) Phase** (cloning-based):
+
 $$
 \theta_i^{(SU(2))} = \frac{S_i(j_{\mathrm{clone}})}{\hbar_{\mathrm{eff}}}
 $$
@@ -541,17 +548,20 @@ When these measures agree, we have confidence that the emergent geometry is well
 :label: def-curvature-empirical
 
 **Spectral gap** (from graph Laplacian):
+
 $$
 \lambda_1 = \text{smallest nonzero eigenvalue of } \Delta_{\mathcal{F}}
 $$
 
 **Mean Ricci estimate** (from spectral gap):
+
 $$
 R_{\mathrm{Ricci}} \approx \frac{\lambda_1 \cdot (d-1)}{d}
 $$
 where $d$ is the spatial dimension.
 
 **Cheeger consistency**:
+
 $$
 \frac{\lambda_1}{2} \leq h^2 \leq 2\lambda_1
 $$
@@ -611,6 +621,7 @@ The `d_prime` field depends on **stochastic** companion selection, even though t
 **Key insight**: The issue is not uniform vs softmax weighting. The issue is that **any stochastic selection** breaks determinism.
 
 **Solution**: Use density-based local diversity instead:
+
 $$
 D_{\mathrm{local}}(x_i) = \frac{1}{\rho(x_i)} = \frac{1}{\sum_{j \neq i} K_\sigma(x_i, x_j)}
 $$
@@ -635,7 +646,7 @@ Use connected when:
 The connected correlator can go negative at large $r$ (anti-correlation). Fit only the positive portion for correlation length extraction.
 :::
 
-### 9.3. Fitting Procedure
+### Fitting Procedure
 
 :::{prf:definition} Connected Correlator Fitting
 :label: def-fitting-procedure

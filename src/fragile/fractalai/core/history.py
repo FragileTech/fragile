@@ -7,6 +7,8 @@ events, and adaptive kinetics information.
 
 from __future__ import annotations
 
+from typing import Any
+
 from pydantic import BaseModel, Field
 import torch
 from torch import Tensor
@@ -49,6 +51,14 @@ class RunHistory(BaseModel):
     record_every: int = Field(description="Recording interval (every k-th step)")
     terminated_early: bool = Field(description="Whether run stopped early due to all dead")
     final_step: int = Field(description="Last step completed (may be < n_steps)")
+    recorded_steps: list[int] = Field(description="Absolute step numbers recorded")
+    delta_t: float = Field(description="Algorithmic time step size")
+    pbc: bool = Field(description="Whether periodic boundary conditions were used")
+    params: dict[str, Any] | None = Field(default=None, description="Run parameter snapshot")
+    rng_seed: int | None = Field(default=None, description="Seed used for RNG (if provided)")
+    rng_state: dict[str, Any] | None = Field(
+        default=None, description="Captured RNG states (optional)"
+    )
     bounds: TorchBounds | None = Field(
         None, description="Position bounds used during simulation (optional)"
     )
@@ -58,6 +68,7 @@ class RunHistory(BaseModel):
     # ========================================================================
     x_before_clone: Tensor = Field(description="Positions before cloning operator")
     v_before_clone: Tensor = Field(description="Velocities before cloning operator")
+    U_before: Tensor = Field(description="Potential energy before cloning")
 
     # ========================================================================
     # States: After Cloning [n_recorded-1, N, d]
@@ -65,12 +76,14 @@ class RunHistory(BaseModel):
     # ========================================================================
     x_after_clone: Tensor = Field(description="Positions after cloning, before kinetic")
     v_after_clone: Tensor = Field(description="Velocities after cloning, before kinetic")
+    U_after_clone: Tensor = Field(description="Potential energy after cloning")
 
     # ========================================================================
     # States: Final (After Kinetic) [n_recorded, N, d]
     # ========================================================================
     x_final: Tensor = Field(description="Final positions after kinetic update")
     v_final: Tensor = Field(description="Final velocities after kinetic update")
+    U_final: Tensor = Field(description="Potential energy after kinetic update")
 
     # ========================================================================
     # Per-Step Scalar Data [n_recorded]
@@ -99,6 +112,9 @@ class RunHistory(BaseModel):
     # Companion indices
     companions_distance: Tensor = Field(description="Companion indices for diversity (long)")
     companions_clone: Tensor = Field(description="Companion indices for cloning (long)")
+    clone_jitter: Tensor = Field(description="Cloning jitter noise (sigma_x * zeta)")
+    clone_delta_x: Tensor = Field(description="Position delta from cloning operator")
+    clone_delta_v: Tensor = Field(description="Velocity delta from cloning operator")
 
     # Fitness intermediate values
     distances: Tensor = Field(description="Algorithmic distances d_alg to companions")
@@ -135,6 +151,22 @@ class RunHistory(BaseModel):
     )
 
     # ========================================================================
+    # Kinetic Operator Data [n_recorded-1, N, d] or [n_recorded-1, N, d, d]
+    # ========================================================================
+    force_stable: Tensor = Field(description="Stable (potential) force -∇U")
+    force_adapt: Tensor = Field(description="Adaptive (fitness) force -ε_F ∇V_fit")
+    force_viscous: Tensor = Field(description="Viscous coupling force")
+    force_friction: Tensor = Field(description="Friction force -γ v")
+    force_total: Tensor = Field(description="Total force sum")
+    noise: Tensor = Field(description="Realized stochastic increment Σ_reg ∘ dW")
+    sigma_reg_diag: Tensor | None = Field(
+        default=None, description="Diagonal diffusion tensor Σ_reg (if diagonal or isotropic)"
+    )
+    sigma_reg_full: Tensor | None = Field(
+        default=None, description="Full diffusion tensor Σ_reg (if anisotropic)"
+    )
+
+    # ========================================================================
     # Timing Data
     # ========================================================================
     total_time: float = Field(description="Total execution time (seconds)")
@@ -156,10 +188,10 @@ class RunHistory(BaseModel):
         Raises:
             ValueError: If step was not recorded
         """
-        if step % self.record_every != 0:
-            msg = f"Step {step} was not recorded (record_every={self.record_every})"
+        if step not in self.recorded_steps:
+            msg = f"Step {step} was not recorded"
             raise ValueError(msg)
-        return step // self.record_every
+        return self.recorded_steps.index(step)
 
     def get_walker_trajectory(self, walker_idx: int, stage: str = "final") -> dict:
         """Extract trajectory for a single walker.
@@ -206,7 +238,7 @@ class RunHistory(BaseModel):
             cloners = torch.where(self.will_clone[t])[0]
             for i in cloners:
                 companion = self.companions_clone[t, i].item()
-                step = t * self.record_every
+                step = self.recorded_steps[t + 1]
                 events.append((step, i.item(), companion))
         return events
 
@@ -223,7 +255,13 @@ class RunHistory(BaseModel):
             ValueError: If step was not recorded
         """
         idx = self.get_step_index(step)
-        return torch.where(self.alive_mask[idx])[0]
+        if idx == 0:
+            if self.pbc:
+                return torch.arange(self.N, device=self.x_before_clone.device)
+            if self.bounds is not None:
+                return torch.where(self.bounds.contains(self.x_before_clone[0]))[0]
+            return torch.arange(self.N, device=self.x_before_clone.device)
+        return torch.where(self.alive_mask[idx - 1])[0]
 
     def to_dict(self) -> dict:
         """Convert to dictionary for saving.

@@ -19,7 +19,8 @@ Usage:
     python src/experiments/topoencoder_2d_thermo.py --dataset mnist --epochs 1000
 
 Notes:
-    Uses ThermodynamicAdam with one optimizer per module.
+    Uses a ThermodynamicAdam stack optimizer for the atlas core, plus per-module
+    optimizers for detached baselines and auxiliary heads.
 
 Reference: fragile-index.md Sections 7.8, 7.10
 """
@@ -98,7 +99,7 @@ class TopoEncoderConfig:
     codes_per_chart: int = 32  # Better coverage (was 21)
     num_codes_standard: int = 64
     covariant_attn: bool = True
-    covariant_attn_tensorization: str = "sum"
+    covariant_attn_tensorization: str = "full"
     covariant_attn_rank: int = 8
     covariant_attn_tau_min: float = 1e-2
     covariant_attn_denom_min: float = 1e-3
@@ -184,28 +185,26 @@ class TopoEncoderConfig:
     classifier_lr: float = 0.0  # 0 = use main lr
     classifier_bundle_size: int = 0  # 0 = global norm
 
-    # Learning rate scheduling
-    use_scheduler: bool = False  # Use cosine annealing LR scheduler
-    min_lr: float = 1e-5  # Minimum LR at end of schedule
-
     # Gradient clipping
     grad_clip: float = 1.0  # Max gradient norm (0 to disable)
 
     # Thermodynamic optimizer
-    thermo_governor_sensitivity: float = 1.0
-    thermo_oscillation_brake: float = 0.5
-    thermo_min_lr_scale: float = 0.5
-    thermo_max_lr_scale: float = 3.0
+    thermo_temperature_decay: float = 0.003
+    thermo_temperature_floor: float = 0.1
+    thermo_varentropy_gamma: float = 1.0
+    thermo_alignment_damping: float = 0.8
+    thermo_trust_region: float = 0.05
+    thermo_trust_region_eps: float = 0.0
+    thermo_snr_eps: float = 1e-8
+    thermo_snr_floor: float = 0.05
+    thermo_thermal_conductivity: float = 0.0
     thermo_history_window: int = 20
     thermo_varentropy_min_history: int = 5
+    thermo_varentropy_eps: float = 1e-8
     thermo_use_loss_varentropy: bool = False
-    thermo_cosine_anneal: bool = True
-    thermo_lr_min: float = 1e-6
-    thermo_lr_max: float = 1e-3
-    thermo_cosine_total_steps: int = 0
 
     # Adaptive learning rate (maximize LR under stability constraints)
-    adaptive_lr: bool = True
+    adaptive_lr: bool = False
     lr_min: float = 1e-6
     lr_max: float = 0.0  # 0 = use lr as max
     lr_increase_factor: float = 1.02
@@ -424,17 +423,6 @@ def _set_optimizers_lr(optimizers: dict[str, optim.Optimizer], lr: float) -> Non
         _set_optimizer_lr(optimizer, lr)
 
 
-def _set_optimizers_cosine_steps(
-    optimizers: dict[str, optim.Optimizer],
-    total_steps: int,
-    enabled: bool,
-) -> None:
-    for optimizer in optimizers.values():
-        for group in optimizer.param_groups:
-            group["cosine_total_steps"] = total_steps
-            group["cosine_anneal"] = enabled
-
-
 def _mean_optimizer_lr(optimizers: dict[str, optim.Optimizer]) -> float:
     lrs = []
     for optimizer in optimizers.values():
@@ -447,30 +435,42 @@ def _mean_optimizer_lr(optimizers: dict[str, optim.Optimizer]) -> float:
     return float(sum(lrs) / len(lrs))
 
 
-def _mean_scheduler_lr(
-    scheduler: optim.lr_scheduler._LRScheduler | dict[str, optim.lr_scheduler._LRScheduler] | None,
-) -> float:
-    if scheduler is None:
-        return 0.0
-    if isinstance(scheduler, dict):
-        lrs = [sched.get_last_lr()[0] for sched in scheduler.values()]
-    else:
-        lrs = scheduler.get_last_lr()
-    if not lrs:
-        return 0.0
-    return float(sum(lrs) / len(lrs))
-
-
 def _mean_last_lr_scale(optimizers: dict[str, ThermodynamicAdam]) -> float:
     if not optimizers:
         return 1.0
-    return float(sum(opt.last_lr_scale for opt in optimizers.values()) / len(optimizers))
+    scales = []
+    for optimizer in optimizers.values():
+        if hasattr(optimizer, "last_lrs") and hasattr(optimizer, "last_base_lrs"):
+            last_lrs = getattr(optimizer, "last_lrs")
+            base_lrs = getattr(optimizer, "last_base_lrs")
+            if last_lrs and base_lrs:
+                for lr, base_lr in zip(last_lrs, base_lrs):
+                    scales.append(lr / base_lr if base_lr > 0.0 else 0.0)
+                continue
+        if hasattr(optimizer, "last_lr_scale"):
+            scales.append(getattr(optimizer, "last_lr_scale"))
+    if not scales:
+        return 1.0
+    return float(sum(scales) / len(scales))
 
 
 def _mean_last_lr(optimizers: dict[str, ThermodynamicAdam]) -> float:
     if not optimizers:
         return 0.0
-    return float(sum(opt.last_lr for opt in optimizers.values()) / len(optimizers))
+    lrs = []
+    for optimizer in optimizers.values():
+        if hasattr(optimizer, "last_lrs"):
+            last_lrs = getattr(optimizer, "last_lrs")
+            if last_lrs:
+                lrs.extend(last_lrs)
+                continue
+        if hasattr(optimizer, "last_lr"):
+            lrs.append(getattr(optimizer, "last_lr"))
+        else:
+            lrs.extend(group["lr"] for group in optimizer.param_groups)
+    if not lrs:
+        return 0.0
+    return float(sum(lrs) / len(lrs))
 
 
 def _compute_perplexity_from_assignments(assignments: torch.Tensor, num_charts: int) -> float:
@@ -485,21 +485,20 @@ def _compute_perplexity_from_assignments(assignments: torch.Tensor, num_charts: 
 
 
 def _thermo_kwargs(config: TopoEncoderConfig) -> dict[str, float | int | bool]:
-    cosine_total_steps = (
-        config.thermo_cosine_total_steps if config.thermo_cosine_total_steps > 0 else None
-    )
     return {
-        "governor_sensitivity": config.thermo_governor_sensitivity,
-        "oscillation_brake": config.thermo_oscillation_brake,
-        "min_lr_scale": config.thermo_min_lr_scale,
-        "max_lr_scale": config.thermo_max_lr_scale,
+        "temperature_decay": config.thermo_temperature_decay,
+        "temperature_floor": config.thermo_temperature_floor,
+        "varentropy_gamma": config.thermo_varentropy_gamma,
+        "alignment_damping": config.thermo_alignment_damping,
+        "trust_region": config.thermo_trust_region,
+        "trust_region_eps": config.thermo_trust_region_eps,
+        "snr_eps": config.thermo_snr_eps,
+        "snr_floor": config.thermo_snr_floor,
+        "thermal_conductivity": config.thermo_thermal_conductivity,
         "history_window": config.thermo_history_window,
         "varentropy_min_history": config.thermo_varentropy_min_history,
+        "varentropy_eps": config.thermo_varentropy_eps,
         "use_loss_varentropy": config.thermo_use_loss_varentropy,
-        "cosine_anneal": config.thermo_cosine_anneal,
-        "cosine_lr_min": config.thermo_lr_min,
-        "cosine_lr_max": config.thermo_lr_max,
-        "cosine_total_steps": cosine_total_steps,
     }
 
 
@@ -508,15 +507,61 @@ def _print_optimizer_stats(name: str, optimizers: dict[str, ThermodynamicAdam]) 
         return
     print(f"  LR mods ({name}):")
     for opt_name, optimizer in optimizers.items():
-        if hasattr(optimizer, "last_base_lr"):
-            base_lr = optimizer.last_base_lr
-        else:
-            base_lr = optimizer.param_groups[0]["lr"] if optimizer.param_groups else 0.0
-        print(
-            f"    {opt_name}: lr={base_lr:.2e} "
-            f"scale={optimizer.last_lr_scale:.3f} "
-            f"last={optimizer.last_lr:.2e}"
+        base_lrs = []
+        last_lrs = []
+        if getattr(optimizer, "last_base_lrs", None):
+            base_lrs = list(getattr(optimizer, "last_base_lrs"))
+        if getattr(optimizer, "last_lrs", None):
+            last_lrs = list(getattr(optimizer, "last_lrs"))
+        if not base_lrs:
+            base_lrs = [group["lr"] for group in optimizer.param_groups]
+        if not last_lrs:
+            last_lrs = list(base_lrs)
+
+        scales = [
+            (last_lr / base_lr if base_lr > 0.0 else 0.0)
+            for last_lr, base_lr in zip(last_lrs, base_lrs)
+        ]
+        avg_base = sum(base_lrs) / len(base_lrs) if base_lrs else 0.0
+        avg_last = sum(last_lrs) / len(last_lrs) if last_lrs else 0.0
+        avg_scale = sum(scales) / len(scales) if scales else optimizer.last_lr_scale
+        last_snrs = None
+        snrs = []
+        if getattr(optimizer, "last_snrs", None):
+            last_snrs = list(getattr(optimizer, "last_snrs"))
+            snrs = [snr for snr in last_snrs if snr is not None]
+        elif getattr(optimizer, "last_snr", None) is not None:
+            last_snrs = [optimizer.last_snr]
+            snrs = [optimizer.last_snr]
+        avg_snr = sum(snrs) / len(snrs) if snrs else None
+
+        line = (
+            f"    {opt_name}: lr={avg_base:.2e} "
+            f"scale={avg_scale:.3f} "
+            f"last={avg_last:.2e}"
         )
+        if avg_snr is not None:
+            line = f"{line} snr={avg_snr:.3f}"
+        print(line)
+        if len(optimizer.param_groups) > 1:
+            for idx, group in enumerate(optimizer.param_groups):
+                group_name = group.get("name", f"group_{idx}")
+                base_lr = base_lrs[idx] if idx < len(base_lrs) else group["lr"]
+                last_lr = last_lrs[idx] if idx < len(last_lrs) else base_lr
+                scale = last_lr / base_lr if base_lr > 0.0 else 0.0
+                group_snr = None
+                if last_snrs is not None and idx < len(last_snrs):
+                    group_snr = last_snrs[idx]
+                elif idx == 0 and getattr(optimizer, "last_snr", None) is not None:
+                    group_snr = optimizer.last_snr
+                line = (
+                    f"      {group_name}: lr={base_lr:.2e} "
+                    f"scale={scale:.3f} "
+                    f"last={last_lr:.2e}"
+                )
+                if group_snr is not None:
+                    line = f"{line} snr={group_snr:.3f}"
+                print(line)
 
 
 def _zero_grad_optimizers(optimizers: dict[str, optim.Optimizer]) -> None:
@@ -533,6 +578,27 @@ def _step_optimizers(
             optimizer.step()
         else:
             optimizer.step(loss=loss)
+
+
+def _build_block_optimizer(
+    blocks: list[tuple[str, nn.Module]],
+    lr: float,
+    optimizer_kwargs: dict[str, float | int | bool] | None = None,
+    fallback_module: nn.Module | None = None,
+) -> ThermodynamicAdam | None:
+    param_groups: list[dict[str, object]] = []
+    for name, module in blocks:
+        params = list(module.parameters())
+        if params:
+            param_groups.append({"params": params, "name": name, "lr": lr})
+    if not param_groups and fallback_module is not None:
+        params = list(fallback_module.parameters())
+        if params:
+            param_groups.append({"params": params, "name": "fallback", "lr": lr})
+    if not param_groups:
+        return None
+    optimizer_kwargs = optimizer_kwargs or {}
+    return ThermodynamicAdam(param_groups, lr=lr, **optimizer_kwargs)
 
 
 def _build_child_optimizers(
@@ -587,16 +653,6 @@ def _optimizer_state(
     if isinstance(optimizer, dict):
         return {name: opt.state_dict() for name, opt in optimizer.items()}
     return optimizer.state_dict()
-
-
-def _scheduler_state(
-    scheduler: optim.lr_scheduler._LRScheduler | dict[str, optim.lr_scheduler._LRScheduler] | None,
-) -> dict | None:
-    if scheduler is None:
-        return None
-    if isinstance(scheduler, dict):
-        return {name: sched.state_dict() for name, sched in scheduler.items()}
-    return scheduler.state_dict()
 
 
 def _compute_param_norm(params: list[torch.Tensor]) -> float:
@@ -848,9 +904,6 @@ def save_checkpoint(
     optimizer_classifier: optim.Optimizer | dict[str, optim.Optimizer] | None = None,
     optimizer_classifier_std: optim.Optimizer | dict[str, optim.Optimizer] | None = None,
     optimizer_classifier_ae: optim.Optimizer | dict[str, optim.Optimizer] | None = None,
-    scheduler: optim.lr_scheduler._LRScheduler
-    | dict[str, optim.lr_scheduler._LRScheduler]
-    | None = None,
 ) -> None:
     """Save training checkpoint for later analysis/plotting."""
     checkpoint = {
@@ -876,7 +929,6 @@ def save_checkpoint(
             "classifier": _optimizer_state(optimizer_classifier),
             "classifier_std": _optimizer_state(optimizer_classifier_std),
             "classifier_ae": _optimizer_state(optimizer_classifier_ae),
-            "scheduler": _scheduler_state(scheduler),
         },
         "metrics": metrics,
         "data": data_snapshot,
@@ -1029,38 +1081,6 @@ def _load_optimizer_state(
             return
     optimizer.load_state_dict(state)
     _move_optimizer_state(optimizer, device)
-
-
-def _load_scheduler_state(
-    scheduler: optim.lr_scheduler._LRScheduler | dict[str, optim.lr_scheduler._LRScheduler] | None,
-    state: dict | None,
-) -> None:
-    if scheduler is None or state is None:
-        return
-    if isinstance(scheduler, dict):
-        if isinstance(state, dict) and "last_epoch" in state:
-            if len(scheduler) == 1:
-                sched = next(iter(scheduler.values()))
-                sched.load_state_dict(state)
-            else:
-                print(
-                    "  Scheduler state mismatch: single state for multiple schedulers; skipping."
-                )
-            return
-        if isinstance(state, dict):
-            for name, sched in scheduler.items():
-                sched_state = state.get(name)
-                if sched_state is not None:
-                    sched.load_state_dict(sched_state)
-        else:
-            print("  Scheduler state mismatch: single state for multiple schedulers; skipping.")
-        return
-    if isinstance(state, dict):
-        state = state.get("all")
-        if state is None:
-            print("  Scheduler state mismatch: multi-state for single scheduler; skipping.")
-            return
-    scheduler.load_state_dict(state)
 
 
 # ==========================================
@@ -1668,7 +1688,7 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
         if std_classifier_head is not None or ae_classifier_head is not None:
             print("  Benchmark Readout: enabled")
 
-    # Optimizers (one per module)
+    # Optimizers (thermo stacks + auxiliary heads)
     thermo_kwargs = _thermo_kwargs(config)
     opt_std: dict[str, ThermodynamicAdam] = {}
     if train_std and model_std is not None:
@@ -1678,8 +1698,19 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
         atlas_params.extend(list(supervised_loss.parameters()))
     if precision_module is not None:
         atlas_params.extend(list(precision_module.parameters()))
-    opt_atlas = _build_child_optimizers(model_atlas, config.lr, "atlas/", thermo_kwargs)
-    _add_module_optimizer(opt_atlas, "atlas/jump", jump_op, config.lr, thermo_kwargs)
+    opt_atlas: dict[str, ThermodynamicAdam] = {}
+    atlas_stack = _build_block_optimizer(
+        [
+            ("atlas/encoder", model_atlas.encoder),
+            ("atlas/jump", jump_op),
+            ("atlas/decoder", model_atlas.decoder),
+        ],
+        config.lr,
+        thermo_kwargs,
+        fallback_module=model_atlas,
+    )
+    if atlas_stack is not None:
+        opt_atlas["atlas/stack"] = atlas_stack
     if supervised_loss is not None:
         _add_module_optimizer(
             opt_atlas,
@@ -1740,20 +1771,6 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
             model_cifar_standard, config.lr, "cifar_std/", thermo_kwargs
         )
 
-    # Learning rate scheduler (cosine annealing)
-    scheduler = None
-    if config.use_scheduler and config.thermo_cosine_anneal:
-        print("  Scheduler disabled (thermo_cosine_anneal=True)")
-    elif config.use_scheduler and config.adaptive_lr:
-        print("  Scheduler disabled (adaptive_lr=True)")
-    elif config.use_scheduler:
-        scheduler = {
-            name: optim.lr_scheduler.CosineAnnealingLR(
-                optimizer, T_max=config.epochs, eta_min=config.min_lr
-            )
-            for name, optimizer in opt_atlas.items()
-        }
-
     if resume_optim:
         _load_optimizer_state(opt_atlas, resume_optim.get("atlas"), device)
         _load_optimizer_state(opt_std, resume_optim.get("std"), device)
@@ -1763,7 +1780,6 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
         _load_optimizer_state(opt_classifier, resume_optim.get("classifier"), device)
         _load_optimizer_state(opt_classifier_std, resume_optim.get("classifier_std"), device)
         _load_optimizer_state(opt_classifier_ae, resume_optim.get("classifier_ae"), device)
-        _load_scheduler_state(scheduler, resume_optim.get("scheduler"))
 
     # Create data loader for minibatching (data already on device)
     from torch.utils.data import DataLoader, TensorDataset
@@ -1792,52 +1808,6 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
     )
     batches_per_epoch = max(1, len(dataloader))
     adaptive_update_scale = 1.0 / batches_per_epoch
-    cosine_total_steps = config.thermo_cosine_total_steps
-    if cosine_total_steps <= 0:
-        cosine_total_steps = config.epochs * batches_per_epoch
-    cosine_total_steps = max(1, int(cosine_total_steps))
-    _set_optimizers_cosine_steps(
-        opt_atlas,
-        cosine_total_steps,
-        config.thermo_cosine_anneal,
-    )
-    _set_optimizers_cosine_steps(
-        opt_std,
-        cosine_total_steps,
-        config.thermo_cosine_anneal,
-    )
-    _set_optimizers_cosine_steps(
-        opt_ae,
-        cosine_total_steps,
-        config.thermo_cosine_anneal,
-    )
-    _set_optimizers_cosine_steps(
-        opt_classifier,
-        cosine_total_steps,
-        config.thermo_cosine_anneal,
-    )
-    _set_optimizers_cosine_steps(
-        opt_classifier_std,
-        cosine_total_steps,
-        config.thermo_cosine_anneal,
-    )
-    _set_optimizers_cosine_steps(
-        opt_classifier_ae,
-        cosine_total_steps,
-        config.thermo_cosine_anneal,
-    )
-    _set_optimizers_cosine_steps(
-        opt_cifar_cov,
-        cosine_total_steps,
-        config.thermo_cosine_anneal,
-    )
-    _set_optimizers_cosine_steps(
-        opt_cifar_std,
-        cosine_total_steps,
-        config.thermo_cosine_anneal,
-    )
-    if config.thermo_cosine_anneal and config.thermo_cosine_total_steps <= 0:
-        config.thermo_cosine_total_steps = cosine_total_steps
     if mlflow_active:
         mlflow.log_param("batches_per_epoch", batches_per_epoch)
 
@@ -2256,12 +2226,12 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
 
             _zero_grad_optimizers(opt_atlas)
             loss_a.backward()
-            # Gradient clipping (prevents instability from competing losses)
-            if config.grad_clip > 0:
-                all_params = list(model_atlas.parameters()) + list(jump_op.parameters())
-                torch.nn.utils.clip_grad_norm_(all_params, config.grad_clip)
+            # Capture pre-clip norms so adaptive LR sees the true gradient scale.
             grad_norm = _compute_grad_norm(atlas_params)
             param_norm = _compute_param_norm(atlas_params)
+            # Gradient clipping (prevents instability from competing losses).
+            if config.grad_clip > 0:
+                torch.nn.utils.clip_grad_norm_(atlas_params, config.grad_clip)
             grad_norm_val = grad_norm
             param_norm_val = param_norm
             lr_for_ratio = lr_current if config.adaptive_lr else _mean_optimizer_lr(opt_atlas)
@@ -2861,14 +2831,6 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
                     adaptive_lr_state.loss_ema = loss_ema_next
                     _set_optimizers_lr(opt_atlas, lr_current)
 
-        # Step LR scheduler at end of each epoch
-        if scheduler is not None:
-            if isinstance(scheduler, dict):
-                for sched in scheduler.values():
-                    sched.step()
-            else:
-                scheduler.step()
-
         # Logging and checkpointing (matching embed_fragile.py style)
         should_log = epoch % config.log_every == 0 or epoch == config.epochs
         should_save = config.save_every > 0 and (
@@ -3007,7 +2969,7 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
             if config.adaptive_lr:
                 current_lr = avg_lr
             else:
-                current_lr = _mean_scheduler_lr(scheduler) if scheduler else config.lr
+                current_lr = config.lr
             print(f"Epoch {epoch:5d} | Loss: {avg_loss:.4f} | LR: {current_lr:.2e}")
             print(f"  Usage: {np.array2string(usage, precision=2, separator=', ')}")
             print(
@@ -3227,7 +3189,6 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
                     optimizer_classifier=opt_classifier,
                     optimizer_classifier_std=opt_classifier_std,
                     optimizer_classifier_ae=opt_classifier_ae,
-                    scheduler=scheduler,
                 )
                 print(f"Checkpoint saved: {save_path}")
                 if train_std or train_ae:
@@ -3505,7 +3466,6 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
         optimizer_classifier=opt_classifier,
         optimizer_classifier_std=opt_classifier_std,
         optimizer_classifier_ae=opt_classifier_ae,
-        scheduler=scheduler,
     )
     print(f"\nFinal checkpoint saved to: {final_checkpoint}")
     if train_std or train_ae:
@@ -3628,9 +3588,9 @@ def main():
     parser.add_argument(
         "--covariant_attn_tensorization",
         type=str,
-        default="sum",
+        default="full",
         choices=["sum", "full"],
-        help="Christoffel tensorization: sum (low-rank) or full (default: sum)",
+        help="Christoffel tensorization: sum (low-rank) or full (default: full)",
     )
     parser.add_argument(
         "--covariant_attn_rank",
@@ -3931,44 +3891,59 @@ def main():
         help="Max rotation in radians for augmentation (default: 0.3)",
     )
 
-    # Training dynamics
     parser.add_argument(
-        "--use_scheduler",
-        type=lambda x: x.lower() == "true",
-        default=True,
-        help="Use cosine annealing LR scheduler (default: True)",
-    )
-    parser.add_argument(
-        "--min_lr",
+        "--thermo_temperature_decay",
         type=float,
-        default=1e-5,
-        help="Minimum LR for scheduler (default: 1e-5)",
+        default=0.003,
+        help="Thermodynamic temperature decay (default: 0.003)",
     )
     parser.add_argument(
-        "--thermo_governor_sensitivity",
+        "--thermo_temperature_floor",
+        type=float,
+        default=0.1,
+        help="Thermodynamic temperature floor (default: 0.1)",
+    )
+    parser.add_argument(
+        "--thermo_varentropy_gamma",
         type=float,
         default=1.0,
-        help="Thermodynamic governor sensitivity (default: 1.0)",
+        help="Thermodynamic varentropy gain (default: 1.0)",
     )
     parser.add_argument(
-        "--oscillation_brake",
-        "--oscilation_brake",
-        dest="thermo_oscillation_brake",
+        "--thermo_alignment_damping",
         type=float,
-        default=0.5,
-        help="Thermodynamic oscillation brake (default: 0.5)",
+        default=0.8,
+        help="Thermodynamic alignment damping (default: 0.8)",
     )
     parser.add_argument(
-        "--thermo_min_lr_scale",
+        "--thermo_trust_region",
         type=float,
-        default=0.5,
-        help="Minimum thermodynamic LR scale (default: 0.5)",
+        default=0.05,
+        help="Thermodynamic trust-region scale (default: 0.05)",
     )
     parser.add_argument(
-        "--thermo_max_lr_scale",
+        "--thermo_trust_region_eps",
         type=float,
-        default=3.0,
-        help="Max thermodynamic LR scale (default: 3.0)",
+        default=0.0,
+        help="Thermodynamic trust-region epsilon (default: 0.0)",
+    )
+    parser.add_argument(
+        "--thermo_snr_eps",
+        type=float,
+        default=1e-8,
+        help="Thermodynamic SNR epsilon (default: 1e-8)",
+    )
+    parser.add_argument(
+        "--thermo_snr_floor",
+        type=float,
+        default=0.05,
+        help="Thermodynamic SNR scale floor (default: 0.05)",
+    )
+    parser.add_argument(
+        "--thermo_thermal_conductivity",
+        type=float,
+        default=0.0,
+        help="Thermodynamic thermal conductivity (default: 0.0)",
     )
     parser.add_argument(
         "--thermo_history_window",
@@ -3983,40 +3958,22 @@ def main():
         help="Min samples for thermodynamic varentropy (default: 5)",
     )
     parser.add_argument(
+        "--thermo_varentropy_eps",
+        type=float,
+        default=1e-8,
+        help="Thermodynamic varentropy epsilon (default: 1e-8)",
+    )
+    parser.add_argument(
         "--thermo_use_loss_varentropy",
         type=lambda x: x.lower() == "true",
         default=False,
         help="Use loss varentropy instead of gradient RMS (default: False)",
     )
     parser.add_argument(
-        "--thermo_cosine_anneal",
-        type=lambda x: x.lower() == "true",
-        default=True,
-        help="Use cosine annealing inside ThermodynamicAdam (default: True)",
-    )
-    parser.add_argument(
-        "--thermo_lr_min",
-        type=float,
-        default=1e-6,
-        help="Thermodynamic cosine LR min (default: 1e-6)",
-    )
-    parser.add_argument(
-        "--thermo_lr_max",
-        type=float,
-        default=1e-3,
-        help="Thermodynamic cosine LR max (default: 1e-3)",
-    )
-    parser.add_argument(
-        "--thermo_cosine_total_steps",
-        type=int,
-        default=0,
-        help="Total steps for thermodynamic cosine anneal (0 = auto)",
-    )
-    parser.add_argument(
         "--adaptive_lr",
         type=lambda x: x.lower() == "true",
-        default=True,
-        help="Use adaptive LR controller (default: True)",
+        default=False,
+        help="Use adaptive LR controller (default: False)",
     )
     parser.add_argument(
         "--lr_min",
@@ -4391,7 +4348,10 @@ def main():
 
     if args.resume:
         checkpoint = load_checkpoint(args.resume)
-        config = TopoEncoderConfig(**checkpoint["config"])
+        config_data = dict(checkpoint["config"])
+        config_data.pop("use_scheduler", None)
+        config_data.pop("min_lr", None)
+        config = TopoEncoderConfig(**config_data)
         config.resume_checkpoint = args.resume
         config.epochs = max(config.epochs, args.epochs)
         config.log_every = args.log_every
@@ -4412,19 +4372,19 @@ def main():
         config.vision_backbone_type = args.vision_backbone_type
         config.vision_cifar_base_channels = args.vision_cifar_base_channels
         config.vision_cifar_bundle_size = args.vision_cifar_bundle_size
-        config.use_scheduler = args.use_scheduler
-        config.min_lr = args.min_lr
-        config.thermo_governor_sensitivity = args.thermo_governor_sensitivity
-        config.thermo_oscillation_brake = args.thermo_oscillation_brake
-        config.thermo_min_lr_scale = args.thermo_min_lr_scale
-        config.thermo_max_lr_scale = args.thermo_max_lr_scale
+        config.thermo_temperature_decay = args.thermo_temperature_decay
+        config.thermo_temperature_floor = args.thermo_temperature_floor
+        config.thermo_varentropy_gamma = args.thermo_varentropy_gamma
+        config.thermo_alignment_damping = args.thermo_alignment_damping
+        config.thermo_trust_region = args.thermo_trust_region
+        config.thermo_trust_region_eps = args.thermo_trust_region_eps
+        config.thermo_snr_eps = args.thermo_snr_eps
+        config.thermo_snr_floor = args.thermo_snr_floor
+        config.thermo_thermal_conductivity = args.thermo_thermal_conductivity
         config.thermo_history_window = args.thermo_history_window
         config.thermo_varentropy_min_history = args.thermo_varentropy_min_history
+        config.thermo_varentropy_eps = args.thermo_varentropy_eps
         config.thermo_use_loss_varentropy = args.thermo_use_loss_varentropy
-        config.thermo_cosine_anneal = args.thermo_cosine_anneal
-        config.thermo_lr_min = args.thermo_lr_min
-        config.thermo_lr_max = args.thermo_lr_max
-        config.thermo_cosine_total_steps = args.thermo_cosine_total_steps
         config.adaptive_lr = args.adaptive_lr
         config.lr_min = args.lr_min
         config.lr_max = args.lr_max
@@ -4565,20 +4525,20 @@ def main():
             augment_noise_std=args.augment_noise_std,
             augment_rotation_max=args.augment_rotation_max,
             # Training dynamics
-            use_scheduler=args.use_scheduler,
-            min_lr=args.min_lr,
             grad_clip=args.grad_clip,
-            thermo_governor_sensitivity=args.thermo_governor_sensitivity,
-            thermo_oscillation_brake=args.thermo_oscillation_brake,
-            thermo_min_lr_scale=args.thermo_min_lr_scale,
-            thermo_max_lr_scale=args.thermo_max_lr_scale,
+            thermo_temperature_decay=args.thermo_temperature_decay,
+            thermo_temperature_floor=args.thermo_temperature_floor,
+            thermo_varentropy_gamma=args.thermo_varentropy_gamma,
+            thermo_alignment_damping=args.thermo_alignment_damping,
+            thermo_trust_region=args.thermo_trust_region,
+            thermo_trust_region_eps=args.thermo_trust_region_eps,
+            thermo_snr_eps=args.thermo_snr_eps,
+            thermo_snr_floor=args.thermo_snr_floor,
+            thermo_thermal_conductivity=args.thermo_thermal_conductivity,
             thermo_history_window=args.thermo_history_window,
             thermo_varentropy_min_history=args.thermo_varentropy_min_history,
+            thermo_varentropy_eps=args.thermo_varentropy_eps,
             thermo_use_loss_varentropy=args.thermo_use_loss_varentropy,
-            thermo_cosine_anneal=args.thermo_cosine_anneal,
-            thermo_lr_min=args.thermo_lr_min,
-            thermo_lr_max=args.thermo_lr_max,
-            thermo_cosine_total_steps=args.thermo_cosine_total_steps,
             adaptive_lr=args.adaptive_lr,
             lr_min=args.lr_min,
             lr_max=args.lr_max,
