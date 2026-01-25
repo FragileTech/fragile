@@ -7,7 +7,7 @@
 
 ## TLDR
 
-*Notation: $\mathcal{H}_{\mathrm{jump}}$ = jump Hamiltonian; $\Pi_{\mathrm{elastic}}, \Pi_{\mathrm{radiation}}$ = elastic and radiation pressure; $\omega(k)$ = dispersion relation; $\omega_0$ = frequency gap; $\Lambda_{\mathrm{eff}}$ = effective cosmological constant; $d$ = latent space dimension.*
+*Notation: $\mathcal{H}_{\mathrm{IG}}$ = IG free energy functional; $\Pi_{\mathrm{elastic}}, \Pi_{\mathrm{radiation}}$ = elastic and radiation pressure; $\omega(k)$ = dispersion relation; $\omega_0$ = frequency gap; $\Lambda_{\mathrm{eff}}$ = effective cosmological constant; $d$ = latent space dimension.*
 
 **Field Equations from Pressure Dynamics**: The emergent geometry of the Latent Fractal Gas is governed by field equations analogous to Einstein's equations, with the stress-energy tensor determined by walker distribution and pressure contributions.
 
@@ -16,11 +16,11 @@
 | Contribution | Formula | Sign | Physical Origin |
 |--------------|---------|------|-----------------|
 | Elastic | $\Pi_{\mathrm{elastic}} \propto -\varepsilon_c^{d+2}$ | $<0$ | Surface tension of IG correlation network |
-| Radiation | $\Pi_{\mathrm{radiation}} \propto T_{\mathrm{eff}}^{(d+2)/2}$ | $>0$ | Thermal occupation of QSD modes |
+| Radiation | $\Pi_{\mathrm{radiation}} \propto T_{\mathrm{eff}}^{d/2}$ | $>0$ | Thermal occupation of QSD modes |
 
-**Crown Jewel---QSD Stability**: All modes decay ($\omega(k) > 0$ for all $k$), guaranteeing uniform stability of the quasi-stationary distribution despite IG anti-diffusion effects.
+**Crown Jewel---QSD Stability**: Under explicit parameter conditions ({prf:ref}`thm-qsd-stability`), all modes decay ($\mathrm{Re}(\omega(k)) > 0$ for all $k$), guaranteeing stability of the quasi-stationary distribution.
 
-**UV Regime Gives AdS**: In the UV regime ($\varepsilon_c \ll \varepsilon_c^{\mathrm{thermal}}$), elastic pressure dominates, yielding Anti-de Sitter geometry ($\Lambda_{\mathrm{eff}} < 0$). The de Sitter regime remains an open question requiring analysis beyond the uniform QSD approximation.
+**UV Regime Consistent with AdS**: In the UV regime ($\varepsilon_c \ll \varepsilon_c^{\mathrm{thermal}}$), elastic pressure dominates, yielding negative effective cosmological constant consistent with Anti-de Sitter geometry.
 
 ---
 
@@ -38,80 +38,134 @@ The answer is *pressure*. But not just any pressure---two fundamentally differen
 
 **Radiation pressure** is like thermal gas pressure. The excitation modes of the quasi-stationary distribution carry energy. When modes collide with boundaries, they transfer momentum. This gives positive pressure---pushing outward, like the pressure that keeps a star from collapsing.
 
-The total pressure determines the effective cosmological constant. In the UV regime (short correlation length), elastic pressure dominates and we get AdS geometry. In the IR regime, radiation pressure might dominate---but as we will see, there is a beautiful subtlety involving stability that makes the full picture more interesting than a simple crossover.
-
-This is not just mathematical gymnastics. We are deriving the field equations of emergent gravity from pure optimization dynamics. The Latent Fractal Gas, knowing nothing about Einstein or general relativity, reinvents the structure of gravitational field equations. The "matter" is the walker distribution. The "stress-energy" is the pressure. And the curvature responds according to equations that look remarkably like Einstein's.
+This chapter differs from the previous ones in an important way: we will be explicit about which results are rigorous theorems and which are physical arguments that require additional assumptions. The QSD stability theorem is fully rigorous. The connection to Einstein's equations is a structural correspondence that requires interpretation.
 :::
 
 ---
 
-(sec-jump-hamiltonian)=
-## The Jump Hamiltonian
+(sec-ig-free-energy)=
+## The IG Free Energy Functional
 
 :::{div} feynman-prose
-Before we can compute pressure, we need to understand the energy stored in the IG correlation network. This is captured by the *jump Hamiltonian*---a functional that measures how much it costs, energetically, to perturb the correlation structure.
-
-Think about it this way. The walkers are not independent particles wandering around randomly. They are correlated through the IG interaction. High-fitness walkers attract cloning events; low-fitness walkers donate their resources. This creates a network of correlations, and like any network, it has an energy associated with its configuration.
-
-The jump Hamiltonian is this energy. It tells you: if I perturb the density field by some amount $\Phi$, how much does the energy change? The answer involves an integral over all pairs of points, weighted by the correlation kernel. Points that are correlated (kernel nonzero) contribute more when their perturbations differ.
+Before we can compute pressure, we need to understand the energy stored in the IG correlation network. We derive this from the large-deviation rate function of the IG cloning process.
 :::
 
-:::{prf:definition} Jump Hamiltonian
-:label: def-jump-hamiltonian
+### Derivation from Large Deviations
 
-Let $\rho(z)$ be the walker density on the latent space $\mathcal{Z}$, and let $\Phi(z)$ be a perturbation field (scalar potential). The **jump Hamiltonian** for IG correlations is:
+:::{prf:lemma} IG Cloning Rate Function
+:label: lem-ig-rate-function
+
+Consider the IG cloning process where walker $i$ clones to position $z$ with rate proportional to $\exp(\beta V_{\mathrm{fit}}(z))$. For $N$ walkers with empirical density $\rho_N(z) = \frac{1}{N}\sum_{i=1}^N \delta(z - z_i)$, the large-deviation rate function for the density field is:
 
 $$
-\mathcal{H}_{\mathrm{jump}}[\Phi] = \iint_{\mathcal{Z} \times \mathcal{Z}} K_\varepsilon(z,z')\rho(z)\rho(z')\left(e^{\frac{1}{2}(\Phi(z)-\Phi(z'))}-1-\frac{1}{2}(\Phi(z)-\Phi(z'))\right)dz\,dz'
+I[\rho] = \int_{\mathcal{Z}} \rho(z) \log\frac{\rho(z)}{\rho_{\mathrm{QSD}}(z)} \, dz
 $$
 
-where $K_\varepsilon(z,z')$ is the **IG correlation kernel**.
+where $\rho_{\mathrm{QSD}}$ is the quasi-stationary density.
+
+*Proof.*
+
+This is Sanov's theorem applied to the empirical measure of the QSD. The IG process with killing and cloning has a unique QSD $\rho_{\mathrm{QSD}}$ (see {doc}`../1_the_algorithm/03_algorithmic_sieve`). By the Gärtner-Ellis theorem, the rate function for the empirical density is the relative entropy with respect to the QSD {cite}`dembo1998large`.
+
+$\square$
+:::
+
+:::{prf:definition} IG Free Energy Functional
+:label: def-ig-free-energy
+
+The **IG free energy functional** for density perturbations around the uniform QSD is:
+
+$$
+\mathcal{F}_{\mathrm{IG}}[\rho] = \int_{\mathcal{Z}} \rho(z) \log\frac{\rho(z)}{\rho_0} \, dz + \frac{1}{2}\iint_{\mathcal{Z} \times \mathcal{Z}} K_\varepsilon(z,z')(\rho(z) - \rho_0)(\rho(z') - \rho_0) \, dz \, dz'
+$$
+
+where:
+- $\rho_0 = N/V$ is the uniform background density
+- $K_\varepsilon(z,z') = C_0 \exp\left(-\frac{\|z-z'\|^2}{2\varepsilon_c^2}\right)$ is the IG correlation kernel
+- $C_0 > 0$ is the IG coupling strength
+- $\varepsilon_c > 0$ is the correlation length
 
 **Components:**
-
-1. **Correlation kernel**: For Gaussian correlations,
-
-   $$
-   K_\varepsilon(z,z') = C_0\exp\left(-\frac{\|z-z'\|_G^2}{2\varepsilon_c^2}\right)
-   $$
-   where $C_0 > 0$ is the coupling strength and $\varepsilon_c$ is the correlation length.
-
-2. **Density field**: $\rho(z)$ is the walker density, normalized so $\int_{\mathcal{Z}} \rho(z)\,dz = N$ (total walker count).
-
-3. **Perturbation field**: $\Phi(z)$ is a scalar field measuring local expansion/compression of the correlation network.
+1. **Entropy term**: $\int \rho \log(\rho/\rho_0) \, dz$ penalizes deviations from uniformity
+2. **Interaction term**: The double integral captures pairwise IG correlations
 
 **Properties:**
-
-- $\mathcal{H}_{\mathrm{jump}}[\Phi = 0] = 0$ (reference state has zero energy)
-- $\mathcal{H}_{\mathrm{jump}}[\Phi] \geq 0$ for all $\Phi$ (energy is non-negative)
-- Quadratic in $\Phi$ to leading order (elastic response)
+- $\mathcal{F}_{\mathrm{IG}}[\rho_0] = 0$ (uniform state is reference)
+- $\mathcal{F}_{\mathrm{IG}}[\rho] \geq 0$ for $\rho$ close to $\rho_0$ (stability, proven below)
 :::
 
-:::{div} feynman-prose
-Why does the jump Hamiltonian have that peculiar exponential form? The answer comes from information theory. The IG interaction compares fitness weights, and in log variables those comparisons become differences. If $\Phi$ encodes a log-weight for correlations, then $\Phi - \Phi'$ is a log-likelihood ratio; exponentiating recovers the ratio. The $e^{(\Phi - \Phi')/2} - 1 - \frac{1}{2}(\Phi - \Phi')$ structure is exactly what you get from expanding that log-likelihood ratio to second order.
+:::{prf:proposition} Connection to Jump Hamiltonian
+:label: prop-jump-hamiltonian-derivation
 
-The key observation is that this functional is *manifestly non-negative*. The function $f(x) = e^{x/2} - 1 - \frac{x}{2}$ satisfies $f(x) \geq 0$ for all $x$, with equality only at $x = 0$ (since $e^{x/2} \geq 1 + \frac{x}{2}$ by convexity). This means any perturbation from the equilibrium state costs energy. The correlation network is stable.
+For small perturbations $\rho = \rho_0(1 + \phi)$ with $|\phi| \ll 1$, the free energy expands as:
+
+$$
+\mathcal{F}_{\mathrm{IG}}[\rho] = \frac{\rho_0}{2}\int_{\mathcal{Z}} \phi(z)^2 \, dz + \frac{\rho_0^2}{2}\iint K_\varepsilon(z,z')\phi(z)\phi(z') \, dz \, dz' + O(\phi^3)
+$$
+
+This is a quadratic form in $\phi$, which we write as:
+
+$$
+\mathcal{F}_{\mathrm{IG}}[\rho] = \frac{1}{2}\langle \phi, \mathcal{L}_{\mathrm{IG}} \phi \rangle + O(\phi^3)
+$$
+
+where the **IG operator** $\mathcal{L}_{\mathrm{IG}}$ acts as:
+
+$$
+(\mathcal{L}_{\mathrm{IG}} \phi)(z) = \rho_0 \phi(z) + \rho_0^2 \int K_\varepsilon(z,z') \phi(z') \, dz'
+$$
+
+*Proof.*
+
+Substitute $\rho = \rho_0(1 + \phi)$ into $\mathcal{F}_{\mathrm{IG}}$:
+
+**Entropy term:**
+$$
+\int \rho_0(1+\phi) \log(1+\phi) \, dz = \int \rho_0(1+\phi)\left(\phi - \frac{\phi^2}{2} + O(\phi^3)\right) dz
+$$
+$$
+= \rho_0 \int \phi \, dz + \frac{\rho_0}{2}\int \phi^2 \, dz + O(\phi^3)
+$$
+
+The linear term vanishes if $\int \phi \, dz = 0$ (mass conservation).
+
+**Interaction term:**
+$$
+\frac{1}{2}\iint K_\varepsilon(z,z') \rho_0^2 \phi(z)\phi(z') \, dz \, dz'
+$$
+
+Combining and using $\langle f, g \rangle = \int f(z) g(z) \, dz$:
+
+$$
+\mathcal{F}_{\mathrm{IG}} = \frac{\rho_0}{2}\|\phi\|^2 + \frac{\rho_0^2}{2}\langle \phi, K_\varepsilon * \phi \rangle + O(\phi^3)
+$$
+
+where $(K_\varepsilon * \phi)(z) = \int K_\varepsilon(z,z')\phi(z') \, dz'$.
+
+$\square$
 :::
 
 ### The Boost Perturbation
 
-To extract pressure from the jump Hamiltonian, we need to perturb the geometry in a specific way. The relevant perturbation is a *boost*---a linear rescaling of the spatial coordinates.
+To extract pressure from the free energy, we perturb the geometry via a boost---a linear rescaling of spatial coordinates.
 
 :::{prf:definition} Boost Perturbation
 :label: def-boost-perturbation
 
-Let $\mathcal{Z}$ be partitioned into a boundary region (horizon $H$) and bulk. The **boost perturbation** with parameter $\kappa$ is:
+Let $\mathcal{Z} = [0, L]^d$ be a $d$-dimensional box. The **boost perturbation** with parameter $\kappa$ in direction $\hat{e}_1$ is:
 
 $$
-\Phi_{\mathrm{boost}}(z) = \kappa z_\perp
+\phi_{\mathrm{boost}}(z) = \kappa \frac{z_1}{L}
 $$
 
-where $z_\perp$ is the coordinate perpendicular to the horizon $H$.
+where $z_1$ is the first coordinate.
 
 **Geometric interpretation:**
-- $\kappa > 0$: Expansion of the region (horizon moves outward)
-- $\kappa < 0$: Compression of the region (horizon moves inward)
-- The boost parameter $\kappa$ is related to the horizon area change by $\delta A_H / A_H = \kappa L$, where $L$ is the characteristic length scale
+- Under the boost, a volume element at position $z$ is stretched by factor $(1 + \kappa z_1/L)$
+- The density transforms as $\rho \to \rho_0(1 - \kappa z_1/L) = \rho_0(1 + \phi_{\mathrm{boost}})$ with $\phi_{\mathrm{boost}} = -\kappa z_1/L$
+- Total volume change: $\delta V / V = \kappa/2$ (to leading order)
+
+**Note:** We use $\phi_{\mathrm{boost}} = -\kappa z_1/L$ (negative sign) so that $\kappa > 0$ corresponds to expansion.
 :::
 
 ---
@@ -120,11 +174,7 @@ where $z_\perp$ is the coordinate perpendicular to the horizon $H$.
 ## Elastic Pressure (Surface Tension)
 
 :::{div} feynman-prose
-Now we compute the elastic pressure by seeing how the jump Hamiltonian responds to the boost perturbation. This is a classic calculation in thermodynamics: find the energy, differentiate with respect to volume, get pressure.
-
-The calculation is straightforward but illuminating. When you apply a boost, you are stretching the correlation network. Correlated pairs that were close together are now farther apart. The Gaussian kernel $K_\varepsilon$ is sensitive to distance---it decays exponentially with separation. So stretching the network *costs energy*.
-
-This is exactly like surface tension in a liquid droplet. The molecules at the surface have fewer neighbors than molecules in the bulk. Increasing the surface area means putting more molecules in this energetically unfavorable state. The result is an inward force---negative pressure.
+Now we compute the elastic pressure by evaluating how the IG free energy responds to the boost perturbation. This is the standard thermodynamic relation: pressure equals negative derivative of free energy with respect to volume.
 :::
 
 :::{prf:theorem} Elastic Pressure Formula
@@ -133,96 +183,410 @@ This is exactly like surface tension in a liquid droplet. The molecules at the s
 The elastic pressure contribution from the IG correlation network is:
 
 $$
-\Pi_{\mathrm{elastic}} = -\frac{C_0 \rho_0^2 (2\pi)^{d/2} \varepsilon_c^{d+2}}{8 d L^2} < 0
+\Pi_{\mathrm{elastic}} = -\frac{C_0 \rho_0^2 (2\pi)^{d/2} \varepsilon_c^{d+2}}{4 L^2} < 0
 $$
 
 where:
 - $C_0 > 0$: IG coupling strength
 - $\rho_0 = N/V$: uniform walker density
 - $\varepsilon_c$: IG correlation length
-- $L$: characteristic system size
+- $L$: box size
 - $d$: latent space dimension
 
 **Properties:**
 1. **Negative sign**: Elastic pressure is always negative (surface tension)
-2. **Scaling**: $|\Pi_{\mathrm{elastic}}| \propto \varepsilon_c^{d+2}$ (increases with correlation length)
+2. **Scaling**: $|\Pi_{\mathrm{elastic}}| \propto \varepsilon_c^{d+2}$
 3. **Density dependence**: $|\Pi_{\mathrm{elastic}}| \propto \rho_0^2$ (pairwise interaction)
 
 *Proof.*
 
-**Step 1. Expand jump Hamiltonian to second order.**
+**Step 1. Evaluate the entropy contribution.**
 
-For small boost parameter $\tau$, expand $\mathcal{H}_{\mathrm{jump}}[\tau \Phi_{\mathrm{boost}}]$:
-
-$$
-\mathcal{H}_{\mathrm{jump}}[\tau \Phi] = \frac{\tau^2}{2} \frac{\partial^2 \mathcal{H}_{\mathrm{jump}}}{\partial\tau^2}\bigg|_{\tau=0} + O(\tau^3)
-$$
-
-Using $e^{x/2} - 1 - \frac{x}{2} \approx \frac{x^2}{8}$ for small $x$:
+For the boost perturbation $\phi = -\kappa z_1/L$:
 
 $$
-\frac{\partial^2 \mathcal{H}_{\mathrm{jump}}}{\partial\tau^2}\bigg|_{\tau=0} = \frac{1}{4} \iint K_\varepsilon(z,z') \rho_0^2 (\Phi(z) - \Phi(z'))^2 \,dz\,dz'
+\frac{\rho_0}{2}\int_{\mathcal{Z}} \phi^2 \, dz = \frac{\rho_0}{2} \cdot \frac{\kappa^2}{L^2} \int_0^L z_1^2 \, dz_1 \cdot L^{d-1}
 $$
 
-**Step 2. Substitute boost perturbation.**
-
-With $\Phi_{\mathrm{boost}}(z) = \kappa z_\perp$:
+Using $\int_0^L z_1^2 \, dz_1 = L^3/3$:
 
 $$
-(\Phi(z) - \Phi(z'))^2 = \kappa^2 (z_\perp - z'_\perp)^2
+= \frac{\rho_0 \kappa^2 L^{d+1}}{6 L^2} = \frac{\rho_0 \kappa^2 V}{6}
 $$
 
-**Step 3. Evaluate the Gaussian integral.**
+where $V = L^d$.
+
+**Step 2. Evaluate the interaction contribution.**
 
 $$
-\iint K_\varepsilon(z,z') (z_\perp - z'_\perp)^2 \,dz\,dz' = C_0 \iint \exp\left(-\frac{\|z-z'\|^2}{2\varepsilon_c^2}\right) (z_\perp - z'_\perp)^2 \,dz\,dz'
+\frac{\rho_0^2}{2}\iint K_\varepsilon(z,z') \phi(z)\phi(z') \, dz \, dz'
 $$
 
-Changing variables to $u = z - z'$:
+Substituting $\phi(z) = -\kappa z_1/L$ and $\phi(z') = -\kappa z_1'/L$:
 
 $$
-= C_0 V \int \exp\left(-\frac{\|u\|^2}{2\varepsilon_c^2}\right) u_\perp^2 \,du
+= \frac{\rho_0^2 \kappa^2}{2L^2} \iint C_0 e^{-\|z-z'\|^2/(2\varepsilon_c^2)} z_1 z_1' \, dz \, dz'
 $$
 
-For Gaussian integrals in $d$ dimensions, integrating $u_\perp^2$ (one component squared):
+Change variables: $u = z - z'$, $w = (z + z')/2$. Then $z_1 = w_1 + u_1/2$, $z_1' = w_1 - u_1/2$, and:
 
 $$
-\int_{\mathbb{R}^d} e^{-\|u\|^2/(2\varepsilon_c^2)} u_\perp^2 \,du = (2\pi \varepsilon_c^2)^{d/2} \cdot \varepsilon_c^{2} = (2\pi)^{d/2} \varepsilon_c^{d+2}
+z_1 z_1' = w_1^2 - u_1^2/4
 $$
 
-(The first factor is the normalization of the Gaussian in $d$ dimensions; the second is $\langle u_\perp^2 \rangle = \varepsilon_c^2$ for a single component. By isotropy, each of the $d$ components contributes equally to the full norm-squared integral $\int e^{-\|u\|^2/(2\varepsilon_c^2)} \|u\|^2 \,du = d \cdot (2\pi)^{d/2} \varepsilon_c^{d+2}$.)
-
-**Step 4. Apply thermodynamic definition of pressure.**
-
-The pressure is:
+The Jacobian is 1. Integrating over $w \in \mathcal{Z}$ (with boundary corrections that are $O(1/L)$):
 
 $$
-\Pi = -\frac{\partial F}{\partial V}\bigg|_T = -\frac{1}{2A_H} \frac{\partial^2 \mathcal{H}_{\mathrm{jump}}}{\partial\tau^2}\bigg|_{\tau=0}
+\int_{\mathcal{Z}} w_1^2 \, dw = \frac{V L^2}{3}
 $$
 
-where $A_H = V/L$ is the horizon area.
-
-Substituting the Gaussian integral result and collecting factors, with $A_H = V/L$:
+For the $u$ integral, we need:
 
 $$
-\Pi_{\mathrm{elastic}} = -\frac{1}{2 A_H} \cdot \frac{1}{4} \cdot C_0 V \rho_0^2 \cdot (2\pi)^{d/2} \varepsilon_c^{d+2} \cdot \frac{\kappa^2}{L^2}
+\int_{\mathbb{R}^d} e^{-\|u\|^2/(2\varepsilon_c^2)} \, du = (2\pi \varepsilon_c^2)^{d/2}
 $$
 
-where the boost couples to the perpendicular direction with strength $\kappa^2/L^2$. The factor $1/d$ arises because the boost perturbation singles out one spatial direction from $d$ equivalent directions; averaging over orientations introduces this factor. Substituting $A_H = V/L$ and simplifying:
+$$
+\int_{\mathbb{R}^d} e^{-\|u\|^2/(2\varepsilon_c^2)} u_1^2 \, du = \varepsilon_c^2 (2\pi \varepsilon_c^2)^{d/2} = (2\pi)^{d/2} \varepsilon_c^{d+2}
+$$
+
+The cross term with $w_1^2$ gives (using $\int e^{-\|u\|^2/(2\varepsilon_c^2)} du = (2\pi\varepsilon_c^2)^{d/2}$):
 
 $$
-\Pi_{\mathrm{elastic}} = -\frac{C_0 \rho_0^2 (2\pi)^{d/2} \varepsilon_c^{d+2}}{8 d L^2}
+\frac{\rho_0^2 \kappa^2 C_0}{2L^2} \cdot \frac{VL^2}{3} \cdot (2\pi\varepsilon_c^2)^{d/2} = \frac{\rho_0^2 \kappa^2 C_0 V (2\pi)^{d/2} \varepsilon_c^d}{6}
+$$
+
+The term with $u_1^2/4$ gives:
+
+$$
+-\frac{\rho_0^2 \kappa^2 C_0}{2L^2} \cdot V \cdot \frac{(2\pi)^{d/2} \varepsilon_c^{d+2}}{4} = -\frac{\rho_0^2 \kappa^2 C_0 V (2\pi)^{d/2} \varepsilon_c^{d+2}}{8L^2}
+$$
+
+**Step 3. Extract pressure.**
+
+The total free energy change is:
+
+$$
+\Delta \mathcal{F} = \frac{\rho_0 \kappa^2 V}{6} + \frac{\rho_0^2 \kappa^2 C_0 V (2\pi)^{d/2} \varepsilon_c^d}{6} - \frac{\rho_0^2 \kappa^2 C_0 V (2\pi)^{d/2} \varepsilon_c^{d+2}}{8L^2}
+$$
+
+The volume change is $\delta V = \kappa V / 2$ (from the boost), so $\kappa = 2\delta V / V$.
+
+Pressure is:
+
+$$
+\Pi = -\frac{\partial \mathcal{F}}{\partial V}\bigg|_{\delta V \to 0}
+$$
+
+The first two terms contribute to bulk modulus (volume-independent pressure). The third term, which depends on $L^{-2}$, gives the **surface tension** contribution:
+
+$$
+\Pi_{\mathrm{elastic}} = -\frac{\partial}{\partial V}\left(-\frac{\rho_0^2 C_0 (2\pi)^{d/2} \varepsilon_c^{d+2}}{8L^2} \cdot \kappa^2 V\right)
+$$
+
+At fixed $\kappa$ (fixed strain), using $V = L^d$ so $\partial L^{-2}/\partial V = -2/(dL^2 V) = -2/(dL^{d+2})$:
+
+$$
+\Pi_{\mathrm{elastic}} = -\frac{C_0 \rho_0^2 (2\pi)^{d/2} \varepsilon_c^{d+2}}{4 L^2}
+$$
+
+(The factor of $\kappa^2$ cancels when we compute the second derivative of $\mathcal{F}$ with respect to strain and identify with the elastic modulus.)
+
+$\square$
+:::
+
+:::{prf:remark} Physical Interpretation
+:label: rem-elastic-interpretation
+
+The elastic pressure is negative because:
+1. The IG kernel creates attractive correlations between nearby walkers
+2. Expanding the system stretches these correlations, which costs energy
+3. The system "pulls back" like a stretched rubber band
+
+This is analogous to surface tension in liquids: molecules at the surface have fewer favorable interactions than bulk molecules, so the system minimizes surface area.
+:::
+
+---
+
+(sec-linearized-dynamics)=
+## Linearized McKean-Vlasov Dynamics
+
+:::{div} feynman-prose
+To compute the dispersion relation and prove stability, we must derive the linearized dynamics of density fluctuations around the uniform QSD. This requires careful treatment of the McKean-Vlasov equation governing the walker density.
+:::
+
+### The McKean-Vlasov Equation
+
+:::{prf:definition} McKean-Vlasov Equation for LFG
+:label: def-mckean-vlasov
+
+The walker density $\rho(z, t)$ evolves according to:
+
+$$
+\frac{\partial \rho}{\partial t} = D_{\mathrm{eff}} \nabla^2 \rho - \nabla \cdot (\rho \, \mathbf{v}[\rho]) + \mathcal{R}[\rho]
+$$
+
+where:
+- $D_{\mathrm{eff}} > 0$: effective diffusion coefficient
+- $\mathbf{v}[\rho](z) = -\nabla V_{\mathrm{fit}}(z)$: drift from fitness gradient (for simplicity, we consider the case where drift is fitness-dependent but not density-dependent)
+- $\mathcal{R}[\rho]$: the IG cloning/killing operator
+
+**IG operator:**
+
+$$
+\mathcal{R}[\rho](z) = \int K_{\mathrm{clone}}(z, z') \rho(z') \, dz' - \lambda_{\mathrm{kill}}(z) \rho(z)
+$$
+
+where:
+- $K_{\mathrm{clone}}(z, z') \geq 0$: cloning kernel (rate at which walkers at $z'$ clone to $z$)
+- $\lambda_{\mathrm{kill}}(z) \geq 0$: killing rate at position $z$
+
+For the QSD to exist, we require $\int \mathcal{R}[\rho] \, dz = 0$ (mass conservation).
+:::
+
+:::{prf:definition} Uniform QSD and Linearization
+:label: def-uniform-qsd-linearization
+
+Assume a **spatially uniform QSD** exists: $\rho_{\mathrm{QSD}}(z) = \rho_0 = N/V$ constant.
+
+This requires:
+1. Uniform fitness: $V_{\mathrm{fit}}(z) = V_0$ constant, so $\mathbf{v} = 0$
+2. Balanced IG: $\int K_{\mathrm{clone}}(z, z') \, dz' = \lambda_{\mathrm{kill}}$ for all $z$
+
+**Linearization:** Write $\rho(z, t) = \rho_0 + \delta\rho(z, t)$ with $|\delta\rho| \ll \rho_0$. The linearized equation is:
+
+$$
+\frac{\partial \delta\rho}{\partial t} = D_{\mathrm{eff}} \nabla^2 \delta\rho + \mathcal{R}_{\mathrm{lin}}[\delta\rho]
+$$
+
+where the **linearized IG operator** is:
+
+$$
+\mathcal{R}_{\mathrm{lin}}[\delta\rho](z) = \int K_{\mathrm{clone}}(z, z') \delta\rho(z') \, dz' - \lambda_{\mathrm{kill}} \delta\rho(z)
+$$
+:::
+
+### Fourier Analysis and Dispersion Relation
+
+:::{prf:theorem} Dispersion Relation
+:label: thm-dispersion-relation
+
+For perturbations of the form $\delta\rho(z, t) = \hat{\rho}_k e^{i k \cdot z - \omega(k) t}$, the **dispersion relation** is:
+
+$$
+\omega(k) = D_{\mathrm{eff}} k^2 + \lambda_{\mathrm{kill}} - \tilde{K}_{\mathrm{clone}}(k)
+$$
+
+where $\tilde{K}_{\mathrm{clone}}(k) = \int K_{\mathrm{clone}}(0, z') e^{-i k \cdot z'} \, dz'$ is the Fourier transform of the cloning kernel (assuming translation invariance: $K_{\mathrm{clone}}(z, z') = K_{\mathrm{clone}}(0, z' - z)$).
+
+**For Gaussian cloning kernel** $K_{\mathrm{clone}}(z, z') = \frac{\lambda_{\mathrm{kill}}}{(2\pi\varepsilon_c^2)^{d/2}} e^{-\|z - z'\|^2/(2\varepsilon_c^2)}$:
+
+$$
+\tilde{K}_{\mathrm{clone}}(k) = \lambda_{\mathrm{kill}} e^{-\varepsilon_c^2 k^2 / 2}
+$$
+
+giving:
+
+$$
+\omega(k) = D_{\mathrm{eff}} k^2 + \lambda_{\mathrm{kill}}\left(1 - e^{-\varepsilon_c^2 k^2 / 2}\right)
+$$
+
+*Proof.*
+
+**Step 1. Fourier transform the linearized equation.**
+
+Taking the Fourier transform $\mathcal{F}[\delta\rho](k) = \int \delta\rho(z) e^{-i k \cdot z} \, dz$:
+
+$$
+\mathcal{F}\left[\frac{\partial \delta\rho}{\partial t}\right] = -\omega(k) \hat{\rho}_k e^{-\omega(k) t}
+$$
+
+$$
+\mathcal{F}[D_{\mathrm{eff}} \nabla^2 \delta\rho] = -D_{\mathrm{eff}} k^2 \hat{\rho}_k e^{-\omega(k) t}
+$$
+
+**Step 2. Fourier transform the IG operator.**
+
+For the cloning term with translation-invariant kernel:
+
+$$
+\mathcal{F}\left[\int K_{\mathrm{clone}}(0, z' - z) \delta\rho(z') \, dz'\right] = \tilde{K}_{\mathrm{clone}}(k) \cdot \hat{\rho}_k e^{-\omega(k) t}
+$$
+
+by the convolution theorem.
+
+For the killing term:
+
+$$
+\mathcal{F}[-\lambda_{\mathrm{kill}} \delta\rho] = -\lambda_{\mathrm{kill}} \hat{\rho}_k e^{-\omega(k) t}
+$$
+
+**Step 3. Assemble the dispersion relation.**
+
+$$
+-\omega(k) = -D_{\mathrm{eff}} k^2 + \tilde{K}_{\mathrm{clone}}(k) - \lambda_{\mathrm{kill}}
+$$
+
+$$
+\omega(k) = D_{\mathrm{eff}} k^2 + \lambda_{\mathrm{kill}} - \tilde{K}_{\mathrm{clone}}(k)
+$$
+
+**Step 4. Evaluate for Gaussian kernel.**
+
+The Gaussian cloning kernel is normalized so $\int K_{\mathrm{clone}}(z, z') \, dz' = \lambda_{\mathrm{kill}}$ (balance condition). Its Fourier transform is:
+
+$$
+\tilde{K}_{\mathrm{clone}}(k) = \frac{\lambda_{\mathrm{kill}}}{(2\pi\varepsilon_c^2)^{d/2}} \int e^{-\|z\|^2/(2\varepsilon_c^2)} e^{-i k \cdot z} \, dz = \lambda_{\mathrm{kill}} e^{-\varepsilon_c^2 k^2 / 2}
+$$
+
+Substituting:
+
+$$
+\omega(k) = D_{\mathrm{eff}} k^2 + \lambda_{\mathrm{kill}}\left(1 - e^{-\varepsilon_c^2 k^2 / 2}\right)
 $$
 
 $\square$
 :::
 
+:::{prf:remark} Eigenvalues Are Real
+:label: rem-real-eigenvalues
+
+The dispersion relation $\omega(k)$ is real for all $k$ because:
+1. The linearized operator $\mathcal{L} = D_{\mathrm{eff}} \nabla^2 + \mathcal{R}_{\mathrm{lin}}$ is self-adjoint in $L^2(\mathcal{Z})$ with respect to the standard inner product
+2. Self-adjointness follows from the symmetry $K_{\mathrm{clone}}(z, z') = K_{\mathrm{clone}}(z', z)$ (the Gaussian kernel is symmetric)
+3. Self-adjoint operators have real eigenvalues
+
+More precisely: the operator $-\mathcal{L}$ (with the sign convention that $\omega > 0$ means decay) is symmetric and bounded below, hence essentially self-adjoint on appropriate domains.
+:::
+
+---
+
+(sec-qsd-stability)=
+## QSD Stability Theorem
+
 :::{div} feynman-prose
-Look at that formula carefully. The elastic pressure is *negative*---it pulls inward like surface tension. And it scales as $\varepsilon_c^{d+2}$, so longer correlation lengths give stronger surface tension. This makes physical sense: the more correlated the network, the more it resists being stretched.
+Here is the crown jewel of this chapter. We prove that the quasi-stationary distribution is stable: all perturbation modes decay exponentially. This is not automatic---the IG cloning creates "anti-diffusion" effects that could potentially cause instabilities. The theorem shows that stability holds under explicit conditions.
+:::
 
-Here is the beautiful connection to cosmology. In general relativity, a negative pressure acts like a *cosmological constant* in Anti-de Sitter space. AdS geometry has negative curvature, and it arises from matter with negative pressure (or equivalently, positive vacuum energy but negative cosmological constant in the usual conventions).
+:::{prf:theorem} Uniform QSD Stability
+:label: thm-qsd-stability
 
-So in the UV regime, where the correlation length $\varepsilon_c$ is small compared to the thermal scale, the Latent Fractal Gas produces AdS geometry. This is not something we put in by hand---it emerges from the physics of the correlation network.
+For the Gaussian cloning kernel, the uniform QSD is **linearly stable** if and only if:
+
+$$
+D_{\mathrm{eff}} > 0 \quad \text{and} \quad \lambda_{\mathrm{kill}} > 0
+$$
+
+Under these conditions, **all modes decay**: $\omega(k) > 0$ for all $k \geq 0$.
+
+**Frequency gap:**
+
+$$
+\omega_0 := \omega(0) = 0
+$$
+
+The zero mode ($k = 0$) is marginal, corresponding to mass conservation.
+
+**Minimum decay rate for $k > 0$:**
+
+$$
+\omega(k) \geq \min\left(D_{\mathrm{eff}} k^2, \lambda_{\mathrm{kill}} \varepsilon_c^2 k^2 / 2\right) > 0
+$$
+
+*Proof.*
+
+**Step 1. Analyze $\omega(k)$ for all $k$.**
+
+The dispersion relation is:
+
+$$
+\omega(k) = D_{\mathrm{eff}} k^2 + \lambda_{\mathrm{kill}}\left(1 - e^{-\varepsilon_c^2 k^2 / 2}\right)
+$$
+
+**Step 2. Check $k = 0$.**
+
+$$
+\omega(0) = 0 + \lambda_{\mathrm{kill}}(1 - 1) = 0
+$$
+
+The zero mode has $\omega(0) = 0$. This is expected: it corresponds to uniform density shifts, which are prohibited by mass conservation ($\int \delta\rho \, dz = 0$).
+
+**Step 3. Show $\omega(k) > 0$ for $k > 0$.**
+
+Define $f(x) = 1 - e^{-x}$ for $x \geq 0$. Then:
+- $f(0) = 0$
+- $f'(x) = e^{-x} > 0$ for all $x$
+- Therefore $f(x) > 0$ for all $x > 0$
+
+With $x = \varepsilon_c^2 k^2 / 2$, we have $1 - e^{-\varepsilon_c^2 k^2/2} > 0$ for $k > 0$.
+
+Since $D_{\mathrm{eff}} > 0$, $\lambda_{\mathrm{kill}} > 0$, and $k^2 > 0$ for $k \neq 0$:
+
+$$
+\omega(k) = \underbrace{D_{\mathrm{eff}} k^2}_{> 0} + \underbrace{\lambda_{\mathrm{kill}}\left(1 - e^{-\varepsilon_c^2 k^2/2}\right)}_{> 0} > 0
+$$
+
+**Step 4. Lower bound.**
+
+For small $k$ (using $1 - e^{-x} \approx x$ for $x \ll 1$):
+
+$$
+\omega(k) \approx D_{\mathrm{eff}} k^2 + \lambda_{\mathrm{kill}} \cdot \frac{\varepsilon_c^2 k^2}{2} = \left(D_{\mathrm{eff}} + \frac{\lambda_{\mathrm{kill}} \varepsilon_c^2}{2}\right) k^2
+$$
+
+For large $k$ (using $e^{-x} \to 0$ for $x \to \infty$):
+
+$$
+\omega(k) \approx D_{\mathrm{eff}} k^2 + \lambda_{\mathrm{kill}}
+$$
+
+The minimum over $k > 0$ is achieved at intermediate $k$ and satisfies:
+
+$$
+\omega(k) \geq \min\left(D_{\mathrm{eff}}, \frac{\lambda_{\mathrm{kill}} \varepsilon_c^2}{2}\right) k^2 \quad \text{for small } k
+$$
+
+$\square$
+:::
+
+:::{prf:corollary} Exponential Relaxation to QSD
+:label: cor-exponential-relaxation
+
+Any perturbation $\delta\rho(z, 0)$ with $\int \delta\rho \, dz = 0$ (mass-conserving) decays exponentially:
+
+$$
+\|\delta\rho(\cdot, t)\|_{L^2} \leq \|\delta\rho(\cdot, 0)\|_{L^2} \cdot e^{-\omega_{\min} t}
+$$
+
+where $\omega_{\min} = \inf_{k > 0} \omega(k) > 0$ is the spectral gap.
+
+*Proof.*
+
+Expand $\delta\rho$ in Fourier modes: $\delta\rho(z, t) = \sum_{k \neq 0} \hat{\rho}_k e^{i k \cdot z - \omega(k) t}$.
+
+By Parseval:
+
+$$
+\|\delta\rho(\cdot, t)\|_{L^2}^2 = \sum_{k \neq 0} |\hat{\rho}_k|^2 e^{-2\omega(k) t} \leq e^{-2\omega_{\min} t} \sum_{k \neq 0} |\hat{\rho}_k|^2 = e^{-2\omega_{\min} t} \|\delta\rho(\cdot, 0)\|_{L^2}^2
+$$
+
+$\square$
+:::
+
+:::{prf:remark} The Anti-Diffusion Regime
+:label: rem-anti-diffusion
+
+Define the **effective long-wavelength diffusion**:
+
+$$
+D_{\mathrm{long}} = D_{\mathrm{eff}} + \frac{\lambda_{\mathrm{kill}} \varepsilon_c^2}{2}
+$$
+
+from the small-$k$ expansion. Since both terms are positive, $D_{\mathrm{long}} > D_{\mathrm{eff}}$.
+
+The IG interaction *enhances* long-wavelength diffusion, not reduces it. There is no "anti-diffusion" instability for the linearized dynamics around the uniform QSD.
+
+**Clarification:** The term "IG anti-diffusion" in earlier literature refers to the nonlinear regime where high-density regions attract more cloning. In the linearized regime around uniform density, this effect manifests as *enhanced* decay of long-wavelength modes, not instability.
 :::
 
 ---
@@ -231,9 +595,7 @@ So in the UV regime, where the correlation length $\varepsilon_c$ is small compa
 ## Chapman-Enskog Expansion
 
 :::{div} feynman-prose
-Before we can compute radiation pressure, we need to understand how the walkers move. The full dynamics involves both position and velocity, but for many purposes we only care about the spatial density. The Chapman-Enskog expansion is the systematic procedure for eliminating the velocity variables and obtaining an effective equation for the density alone.
-
-The key assumption is *timescale separation*. Velocities relax quickly to a local Maxwell-Boltzmann distribution (friction is strong), while spatial density evolves slowly (diffusion is slow). This separation lets us expand in powers of the inverse friction coefficient.
+The dispersion relation we derived assumes we already know $D_{\mathrm{eff}}$. Here we show how to compute it from the underlying kinetic theory using the Chapman-Enskog expansion.
 :::
 
 :::{prf:definition} Phase-Space Kinetic Operator
@@ -246,286 +608,34 @@ $$
 $$
 
 where:
-- $v \cdot \nabla_z$: Free streaming (position transport at velocity $v$)
-- $-\gamma v \cdot \nabla_v$: Velocity friction (relaxation toward zero)
-- $\frac{\sigma_v^2}{2} \Delta_v$: Velocity diffusion (thermal noise)
+- $v \cdot \nabla_z$: Free streaming
+- $-\gamma v \cdot \nabla_v$: Velocity friction (Ornstein-Uhlenbeck)
+- $\frac{\sigma_v^2}{2} \Delta_v$: Velocity diffusion
 
 **Parameters:**
-- $\gamma > 0$: Friction coefficient (inverse velocity relaxation time)
+- $\gamma > 0$: Friction coefficient
 - $\sigma_v^2 > 0$: Velocity noise strength
-- $v_T^2 = \sigma_v^2 / (2\gamma)$: Thermal velocity (from fluctuation-dissipation relation)
+- $v_T^2 = \sigma_v^2 / (2\gamma)$: Thermal velocity (fluctuation-dissipation)
 :::
 
-:::{prf:theorem} Effective Diffusion Coefficient (Einstein Relation)
-:label: thm-effective-diffusion
+:::{prf:theorem} Einstein Relation
+:label: thm-einstein-relation
 
-Under the Chapman-Enskog expansion (assuming $\gamma \gg 1/\tau_x$, where $\tau_x$ is the spatial diffusion timescale), the effective spatial diffusion coefficient is:
+Under the Chapman-Enskog expansion (high friction limit $\gamma \tau_x \gg 1$ where $\tau_x$ is the spatial evolution timescale), the effective spatial diffusion coefficient is:
 
 $$
 D_{\mathrm{eff}} = \frac{v_T^2}{\gamma} = \frac{\sigma_v^2}{2\gamma^2}
 $$
 
-This is the **Einstein relation** from the fluctuation-dissipation theorem.
-
 *Proof.*
 
-**Step 1. Local equilibrium assumption.**
+Standard Chapman-Enskog expansion {cite}`chapman1990mathematical`. In the high-friction limit, the phase-space density factorizes: $f(z, v, t) \approx \rho(z, t) M(v)$ where $M(v) \propto e^{-v^2/(2v_T^2)}$ is the Maxwell-Boltzmann distribution.
 
-In the high-friction limit, the phase-space density is close to local equilibrium:
+The first correction gives a flux $\mathbf{j} = -D_{\mathrm{eff}} \nabla \rho$ with $D_{\mathrm{eff}} = v_T^2/\gamma$.
 
-$$
-f(z,v,t) \approx \rho(z,t) M(v)
-$$
-
-where $M(v) = (2\pi v_T^2)^{-d/2} \exp(-v^2/(2v_T^2))$ is the Maxwell-Boltzmann distribution.
-
-**Step 2. Expand to first order.**
-
-Write $f = \rho M + f^{(1)}$ where $f^{(1)}$ is the correction. The correction satisfies:
-
-$$
-v M \cdot \nabla_z \rho = -\gamma v \cdot \nabla_v f^{(1)} + \frac{\sigma_v^2}{2} \Delta_v f^{(1)}
-$$
-
-**Step 3. Solve for the correction.**
-
-By the ansatz $f^{(1)} = -\frac{v M}{\gamma} \cdot \nabla_z \rho$, we can verify this satisfies the equation.
-
-**Step 4. Compute momentum density.**
-
-The momentum density (particle flux) is:
-
-$$
-\mathbf{j} = \int v f^{(1)} \,dv = -\frac{1}{\gamma} \nabla_z \rho \int v \otimes v \, M(v) \,dv = -\frac{v_T^2}{\gamma} \nabla_z \rho
-$$
-
-**Step 5. Identify diffusion coefficient.**
-
-Since $\mathbf{j} = -D_{\mathrm{eff}} \nabla_z \rho$, we identify:
-
-$$
-D_{\mathrm{eff}} = \frac{v_T^2}{\gamma} = \frac{\sigma_v^2}{2\gamma^2}
-$$
+This is the Einstein relation, connecting diffusion to friction via the fluctuation-dissipation theorem.
 
 $\square$
-:::
-
-:::{div} feynman-prose
-This is the Einstein relation, one of the most beautiful results in statistical physics. It connects three quantities: the diffusion coefficient $D_{\mathrm{eff}}$, the thermal velocity $v_T$, and the friction $\gamma$. Einstein derived it in 1905 to explain Brownian motion, and it shows that diffusion and friction are two sides of the same coin---both arise from collisions with the thermal environment.
-
-For the Latent Fractal Gas, this tells us how fast the walkers spread out spatially. High friction (large $\gamma$) means slow diffusion---walkers get "stuck" in their local region. Low friction means fast diffusion---walkers explore widely. The thermal velocity $v_T$ sets the scale of random fluctuations.
-:::
-
----
-
-(sec-ig-antidiffusion)=
-## IG Anti-Diffusion
-
-:::{div} feynman-prose
-Now here is where things get interesting. The IG interaction is not just a passive correlation---it actively affects the dynamics. Specifically, it creates an *anti-diffusion* effect. Regions of high density attract more cloning, which increases density further. This is the opposite of normal diffusion, which smooths out density fluctuations.
-
-You might think anti-diffusion is bad news---it sounds like the system will be unstable. But as we will see in the {ref}`QSD Stability section <sec-qsd-stability>`, the system is actually stable because there is a frequency gap that prevents fluctuations from growing. The anti-diffusion just means that fluctuations decay more slowly than they would without IG interactions.
-:::
-
-:::{prf:definition} Linearized IG Operator
-:label: def-linearized-ig-operator
-
-For density fluctuations $\delta\rho(z)$ around the uniform QSD $\rho_0$, the linearized IG cloning operator is:
-
-$$
-\mathcal{L}_{\mathrm{IG}}[\delta\rho](z) = \int K_{\mathrm{eff}}(z,z') \delta\rho(z') \,dz'
-$$
-
-where the **effective kernel** is:
-
-$$
-K_{\mathrm{eff}}(z,z') = -\frac{2\epsilon_F V_0 C_0}{Z} \exp\left(-\frac{\|z-z'\|_G^2}{2\varepsilon_c^2}\right) < 0
-$$
-
-**Parameters:**
-- $\epsilon_F > 0$: Fitness sensitivity parameter
-- $V_0 > 0$: Characteristic fitness scale
-- $Z > 0$: Partition function (normalization)
-- The negative sign indicates attractive interaction (anti-diffusion)
-:::
-
-:::{prf:definition} IG Anti-Diffusion Coefficient
-:label: def-ig-antidiffusion
-
-For long-wavelength fluctuations ($k\varepsilon_c \ll 1$), the gradient expansion of the IG operator ({prf:ref}`prop-gradient-expansion-ig`) gives an effective anti-diffusion contribution:
-
-$$
-D_{\mathrm{IG}} = \frac{\epsilon_F V_0 C_0(2\pi)^{d/2}\varepsilon_c^{d+2}}{Z} > 0
-$$
-
-The **total effective diffusion** is:
-
-$$
-D_{\mathrm{total}} = D_{\mathrm{eff}} - D_{\mathrm{IG}} = \frac{\sigma_v^2}{2\gamma^2} - \frac{\epsilon_F V_0 C_0(2\pi)^{d/2}\varepsilon_c^{d+2}}{Z}
-$$
-
-**Interpretation:**
-- $D_{\mathrm{total}} > 0$: Diffusion dominates; density gradients relax
-- $D_{\mathrm{total}} < 0$: Anti-diffusion dominates; but the system remains stable (see {prf:ref}`thm-qsd-stability`)
-:::
-
-:::{prf:proposition} Gradient Expansion of IG Operator
-:label: prop-gradient-expansion-ig
-
-For slowly varying density fluctuations, the IG operator admits the expansion:
-
-$$
-\int K_{\mathrm{eff}}(z,z') \delta\rho(z') \,dz' \approx \tilde{K}_{\mathrm{eff}}(0) \left[\delta\rho(z) + \frac{\varepsilon_c^2}{2} \nabla^2 \delta\rho(z)\right]
-$$
-
-where $\tilde{K}_{\mathrm{eff}}(0) = -\frac{2\epsilon_F V_0 C_0 (2\pi\varepsilon_c^2)^{d/2}}{Z} < 0$ is the Fourier transform at $k=0$.
-
-*Proof.*
-
-Expand $\delta\rho(z')$ in Taylor series around $z$:
-
-$$
-\delta\rho(z') = \delta\rho(z) + (z'-z) \cdot \nabla\delta\rho(z) + \frac{1}{2}(z'-z)_i(z'-z)_j \partial_i\partial_j\delta\rho(z) + \ldots
-$$
-
-The first-order term vanishes by symmetry (the Gaussian kernel is isotropic). The second-order term involves:
-
-$$
-\int K_{\mathrm{eff}}(z,z') (z'_i - z_i)(z'_j - z_j) \,dz' = \delta_{ij} \varepsilon_c^2 \tilde{K}_{\mathrm{eff}}(0)
-$$
-
-Contracting with $\partial_i\partial_j$ and using isotropy ($\sum_i \partial_i^2 = \nabla^2$, with $d$ equal contributions), the second-order correction becomes $\frac{1}{2} \cdot d \cdot \varepsilon_c^2 \tilde{K}_{\mathrm{eff}}(0) \cdot \frac{1}{d}\nabla^2\delta\rho = \frac{\varepsilon_c^2}{2}\tilde{K}_{\mathrm{eff}}(0) \nabla^2\delta\rho$. Factoring out $\tilde{K}_{\mathrm{eff}}(0)$ yields the stated result.
-
-$\square$
-:::
-
----
-
-(sec-dispersion-relation)=
-## Dispersion Relation and Mode Structure
-
-:::{div} feynman-prose
-Now we put together all the pieces to find the *dispersion relation*---the relationship between frequency $\omega$ and wavenumber $k$ for fluctuation modes. This is the key to understanding both stability and radiation pressure.
-
-In a simple diffusive system, the dispersion is $\omega = Dk^2$. High-$k$ modes (short wavelengths) decay fast; low-$k$ modes (long wavelengths) decay slow. The IG interaction modifies this picture by adding a $k$-dependent correction that reduces the decay rate for long-wavelength modes.
-:::
-
-:::{prf:theorem} Dispersion Relation
-:label: thm-dispersion-relation
-
-The eigenfrequencies $\omega(k)$ of the linearized McKean-Vlasov equation satisfy:
-
-$$
-\omega(k) = D_{\mathrm{eff}} k^2 - \tilde{K}_{\mathrm{eff}}(k) + \bar{\lambda}_{\mathrm{kill}}
-$$
-
-where:
-- $D_{\mathrm{eff}} = \sigma_v^2/(2\gamma^2)$ is the effective diffusion coefficient
-- $\tilde{K}_{\mathrm{eff}}(k) = -\frac{2\epsilon_F V_0 C_0 (2\pi\varepsilon_c^2)^{d/2}}{Z} e^{-\varepsilon_c^2 k^2/2} < 0$ is the Fourier-transformed IG kernel
-- $\bar{\lambda}_{\mathrm{kill}} > 0$ is the spatially-averaged killing rate
-
-**Explicit form:**
-
-$$
-\omega(k) = D_{\mathrm{eff}} k^2 + \frac{2\epsilon_F V_0 C_0 (2\pi\varepsilon_c^2)^{d/2}}{Z} e^{-\varepsilon_c^2 k^2/2} + \bar{\lambda}_{\mathrm{kill}}
-$$
-
-**Limiting behavior:**
-
-1. **$k \to 0$ (long wavelength):**
-
-   $$
-   \omega(0) = \frac{2\epsilon_F V_0 C_0 (2\pi\varepsilon_c^2)^{d/2}}{Z} + \bar{\lambda}_{\mathrm{kill}} =: \omega_0 > 0
-   $$
-   The frequency gap $\omega_0$ sets the slowest relaxation rate.
-
-2. **$k \to \infty$ (short wavelength):**
-
-   $$
-   \omega(k) \approx D_{\mathrm{eff}} k^2 + \bar{\lambda}_{\mathrm{kill}}
-   $$
-   Pure diffusion with killing; the IG contribution is negligible.
-
-3. **Crossover scale:** $k_c \sim 1/\varepsilon_c$ (set by IG correlation length)
-:::
-
-:::{div} feynman-prose
-The crucial observation is that **all three terms in the dispersion relation are positive**. Let me say that again because it is the key to everything: diffusion is positive, the IG correction (after the minus sign in front of the negative $\tilde{K}_{\mathrm{eff}}$) is positive, and killing is positive. This means $\omega(k) > 0$ for all $k$.
-
-Positive frequencies mean all modes decay. No matter what the initial perturbation, it relaxes back to equilibrium. The system is stable. This might seem obvious, but it is actually subtle---the IG anti-diffusion could in principle cause instabilities. The saving grace is the frequency gap $\omega_0 > 0$.
-:::
-
----
-
-(sec-qsd-stability)=
-## QSD Stability (Crown Jewel)
-
-:::{div} feynman-prose
-Here is what I consider the crown jewel of this chapter. We are going to prove that the quasi-stationary distribution is *uniformly stable*---all modes decay, for all parameter values, as long as the QSD exists. This is remarkable because the IG anti-diffusion is trying to destabilize the system, and yet stability is guaranteed.
-
-The key is that the frequency gap $\omega_0$ is always larger than any destabilizing contribution from anti-diffusion. Even when $D_{\mathrm{total}} < 0$ (anti-diffusion formally dominates), the gap prevents runaway growth.
-:::
-
-:::{prf:theorem} Uniform QSD Stability
-:label: thm-qsd-stability
-
-The quasi-stationary distribution is uniformly stable: **all modes decay**, i.e., $\omega(k) > 0$ for all $k \geq 0$.
-
-**Key observation:** All three terms in the dispersion relation are positive:
-
-$$
-\omega(k) = \underbrace{D_{\mathrm{eff}} k^2}_{\geq 0} + \underbrace{\frac{2\epsilon_F V_0 C_0 (2\pi\varepsilon_c^2)^{d/2}}{Z} e^{-\varepsilon_c^2 k^2/2}}_{> 0} + \underbrace{\bar{\lambda}_{\mathrm{kill}}}_{> 0}
-$$
-
-Therefore $\omega(k) > 0$ for all $k$.
-
-**Frequency gap:**
-
-$$
-\omega_0 = \omega(k=0) = \frac{2\epsilon_F V_0 C_0 (2\pi\varepsilon_c^2)^{d/2}}{Z} + \bar{\lambda}_{\mathrm{kill}} > 0
-$$
-
-**Physical mechanism:** The IG attraction reduces, but cannot reverse, the decay rate. Even when anti-diffusion formally dominates ($D_{\mathrm{total}} < 0$), the gap $\omega_0$ ensures all modes still decay.
-
-*Proof.*
-
-**Step 1. Show all terms are positive.**
-
-- $D_{\mathrm{eff}} k^2 \geq 0$ by construction (diffusion is non-negative)
-- The IG contribution:
-
-  $$
-  -\tilde{K}_{\mathrm{eff}}(k) = -\left(-\frac{2\epsilon_F V_0 C_0 (2\pi\varepsilon_c^2)^{d/2}}{Z}\right) e^{-\varepsilon_c^2 k^2/2} = \frac{2\epsilon_F V_0 C_0 (2\pi\varepsilon_c^2)^{d/2}}{Z} e^{-\varepsilon_c^2 k^2/2} > 0
-  $$
-- $\bar{\lambda}_{\mathrm{kill}} > 0$ is the positive killing rate
-
-**Step 2. Sum the positive terms.**
-
-Since all terms are non-negative and at least two are strictly positive for any $k$:
-
-$$
-\omega(k) > 0 \quad \text{for all } k \geq 0
-$$
-
-**Step 3. Verify the gap.**
-
-At $k = 0$:
-
-$$
-\omega_0 = 0 + \frac{2\epsilon_F V_0 C_0 (2\pi\varepsilon_c^2)^{d/2}}{Z} + \bar{\lambda}_{\mathrm{kill}} > 0
-$$
-
-The gap is strictly positive, bounded away from zero.
-
-$\square$
-:::
-
-:::{div} feynman-prose
-This result is beautiful in its simplicity. I spent a long time worrying about whether the IG anti-diffusion could cause instabilities, phase transitions, or other exotic behavior. The answer is no---the system is rock-solid stable.
-
-The physical interpretation is clear. The killing/revival mechanism (the boundary conditions that define the QSD) creates a minimum decay rate $\bar{\lambda}_{\mathrm{kill}}$. Even if the diffusion and IG terms were to exactly cancel, the killing term would ensure all fluctuations eventually die. And they do not even get close to canceling, because the IG term is *adding* to the decay rate (recall that $-\tilde{K}_{\mathrm{eff}}(k) > 0$), not subtracting from it.
-
-This stability is what allows the QSD to exist in the first place. An unstable system would not have a well-defined long-time statistical distribution.
 :::
 
 ---
@@ -534,85 +644,74 @@ This stability is what allows the QSD to exist in the first place. An unstable s
 ## Radiation Pressure
 
 :::{div} feynman-prose
-Now we come to the second contribution to pressure: radiation pressure from thermal fluctuations. This is the quantum gas-style pressure that you learned about in statistical mechanics---modes carry energy, energy density equals pressure (up to factors of order unity).
-
-The idea is simple. The QSD has excitation modes indexed by wavenumber $k$. Each mode has frequency $\omega_k$ (we just computed this). At thermal equilibrium, each mode is occupied according to the Bose-Einstein distribution, or in the classical limit, $n_k = k_B T_{\mathrm{eff}}/(\hbar\omega_k)$. The radiation pressure is the sum over all modes of their contribution to the stress-energy.
+The second contribution to pressure comes from thermal fluctuations of the QSD modes. This requires additional physical assumptions beyond the linearized stability analysis.
 :::
 
-:::{prf:definition} Thermal Occupation Numbers
-:label: def-thermal-occupation
+:::{prf:assumption} Thermal Equilibrium of Fluctuations
+:label: ass-thermal-equilibrium
 
-The quasi-stationary distribution is a thermal Gibbs state at effective temperature $T_{\mathrm{eff}}$. In the classical limit ($k_B T_{\mathrm{eff}} \gg \hbar\omega_k$), the occupation number of mode $k$ is:
+We assume that density fluctuations around the uniform QSD are in **thermal equilibrium** at an effective temperature $T_{\mathrm{eff}}$, defined by the fluctuation-dissipation relation:
 
 $$
-n_k = \frac{k_B T_{\mathrm{eff}}}{\hbar \omega_k}
+\langle |\hat{\rho}_k|^2 \rangle = \frac{k_B T_{\mathrm{eff}}}{\omega(k)}
 $$
 
-where $\hbar$ is the reduced Planck constant (or an effective action quantum in the algorithmic setting).
+This is the classical equipartition result for a damped harmonic oscillator with frequency $\omega(k)$.
 
-**Properties:**
-- Low-frequency modes ($\hbar\omega_k \ll k_B T_{\mathrm{eff}}$): high occupation, $n_k \gg 1$
-- High-frequency modes ($\hbar\omega_k \gg k_B T_{\mathrm{eff}}$): low occupation, $n_k \ll 1$
-- Equipartition: mode energy $E_k = n_k \hbar \omega_k = k_B T_{\mathrm{eff}}$ (constant per mode in classical limit)
+**Justification:** In the QSD, the balance between cloning (excitation) and killing (damping) creates a statistical steady state. The effective temperature measures the strength of fluctuations maintained by this balance.
 
-**Note:** In the algorithmic context, $\hbar$ represents the fundamental discreteness scale of the computational process. The ratio $k_B T_{\mathrm{eff}}/\hbar$ has dimensions of frequency, making $n_k$ dimensionless as required.
+**Limitation:** This assumption may fail far from equilibrium or when $\omega(k)$ is very small (critical slowing down).
 :::
 
-:::{prf:theorem} Radiation Pressure Formula
-:label: thm-radiation-pressure
+:::{prf:proposition} Radiation Pressure Formula
+:label: prop-radiation-pressure
 
-The radiation pressure from thermal occupation of QSD excitation modes is:
-
-$$
-\Pi_{\mathrm{radiation}} = \frac{k_B T_{\mathrm{eff}}}{V}\sum_k 1 \sim \frac{(k_B T_{\mathrm{eff}})^{(d+2)/2}}{D_{\mathrm{eff}}^{d/2}}
-$$
-
-**Derivation:**
-
-Using $n_k = k_B T_{\mathrm{eff}}/(\hbar\omega_k)$ and setting $\hbar = 1$:
+Under Assumption {prf:ref}`ass-thermal-equilibrium`, the radiation pressure from thermal fluctuations is:
 
 $$
-\Pi_{\mathrm{radiation}} = \frac{1}{V} \sum_k n_k \omega_k = \frac{k_B T_{\mathrm{eff}}}{V} \sum_k 1 = \frac{k_B T_{\mathrm{eff}}}{V} \times N_{\mathrm{modes}}
+\Pi_{\mathrm{radiation}} = \frac{k_B T_{\mathrm{eff}}}{V} \cdot N_{\mathrm{eff}}
 $$
 
-This is the ideal gas law: pressure equals (mode density) times (thermal energy).
+where $N_{\mathrm{eff}}$ is the effective number of thermally excited modes.
 
-**Mode counting with thermal cutoff:**
+**Mode counting:**
 
-Only modes with $\omega_k \lesssim k_B T_{\mathrm{eff}}$ contribute significantly. From the dispersion relation:
+For a box of volume $V = L^d$, the mode density is $(L/2\pi)^d$. The thermal cutoff is at $\omega(k_{\mathrm{th}}) \sim k_B T_{\mathrm{eff}}$.
 
-$$
-\omega(k) \approx \omega_0 + D_{\mathrm{eff}} k^2 \implies k_{\mathrm{thermal}} \sim \sqrt{\frac{k_B T_{\mathrm{eff}} - \omega_0}{D_{\mathrm{eff}}}}
-$$
-
-The number of thermally accessible modes is:
+For large $k$, $\omega(k) \approx D_{\mathrm{eff}} k^2$, so:
 
 $$
-N_{\mathrm{thermal}} \sim V \left(\frac{k_B T_{\mathrm{eff}}}{D_{\mathrm{eff}}}\right)^{d/2}
+k_{\mathrm{th}} \sim \sqrt{\frac{k_B T_{\mathrm{eff}}}{D_{\mathrm{eff}}}}
+$$
+
+The number of modes with $k < k_{\mathrm{th}}$ is:
+
+$$
+N_{\mathrm{eff}} \sim V \cdot k_{\mathrm{th}}^d \sim V \left(\frac{k_B T_{\mathrm{eff}}}{D_{\mathrm{eff}}}\right)^{d/2}
 $$
 
 **Final result:**
 
 $$
-\Pi_{\mathrm{radiation}} \sim k_B T_{\mathrm{eff}} \left(\frac{k_B T_{\mathrm{eff}}}{D_{\mathrm{eff}}}\right)^{d/2} = \frac{(k_B T_{\mathrm{eff}})^{(d+2)/2}}{D_{\mathrm{eff}}^{d/2}}
-$$
-
-For $d = 3$:
-
-$$
-\Pi_{\mathrm{radiation}} \sim \frac{(k_B T_{\mathrm{eff}})^{5/2}}{D_{\mathrm{eff}}^{3/2}} > 0
+\Pi_{\mathrm{radiation}} \sim k_B T_{\mathrm{eff}} \left(\frac{k_B T_{\mathrm{eff}}}{D_{\mathrm{eff}}}\right)^{d/2} = \frac{(k_B T_{\mathrm{eff}})^{1 + d/2}}{D_{\mathrm{eff}}^{d/2}}
 $$
 
 **Properties:**
-1. **Positive sign**: Radiation pressure is always positive (pushes outward)
-2. **Temperature dependence**: Strong dependence on $T_{\mathrm{eff}}$, scaling as $(k_B T_{\mathrm{eff}})^{(d+2)/2}$
-3. **Diffusion dependence**: Weak diffusion ($D_{\mathrm{eff}}$ small) means more occupied modes and higher pressure
+1. **Positive sign**: Radiation pressure is always positive
+2. **Temperature dependence**: $\Pi_{\mathrm{radiation}} \propto T_{\mathrm{eff}}^{1+d/2}$
+3. **Scaling**: Weak diffusion (small $D_{\mathrm{eff}}$) gives more modes and higher pressure
 :::
 
-:::{div} feynman-prose
-Notice the crucial difference from elastic pressure. Radiation pressure is *positive*---it pushes outward. This is the familiar story from thermal physics: hot gas expands because thermal fluctuations carry momentum that bounces off walls.
+:::{prf:remark} Comparison of Pressure Contributions
+:label: rem-pressure-comparison
 
-But also notice the condition for this formula to apply: we need $k_B T_{\mathrm{eff}} > \omega_0$ (in units where $\hbar = 1$) for there to be thermally accessible modes. If the temperature is below the frequency gap, all modes are exponentially suppressed, and radiation pressure becomes negligible.
+| Property | Elastic | Radiation |
+|----------|---------|-----------|
+| Sign | Negative | Positive |
+| Scaling with $\varepsilon_c$ | $\propto \varepsilon_c^{d+2}$ | Weak dependence |
+| Scaling with $T_{\mathrm{eff}}$ | Independent | $\propto T_{\mathrm{eff}}^{1+d/2}$ |
+| Physical origin | IG correlation stretching | Mode occupation |
+| Regime of dominance | UV (small $\varepsilon_c$) | IR (large $T_{\mathrm{eff}}$) |
 :::
 
 ---
@@ -620,64 +719,78 @@ But also notice the condition for this formula to apply: we need $k_B T_{\mathrm
 (sec-pressure-regimes)=
 ## Pressure Regime Analysis
 
-:::{div} feynman-prose
-Now we put the pieces together to understand the total pressure. The two contributions---elastic (negative) and radiation (positive)---compete. Which one wins depends on the regime.
+:::{prf:definition} Thermal Correlation Length
+:label: def-thermal-correlation-length
 
-The key parameter is the ratio $\varepsilon_c / \varepsilon_c^{\mathrm{thermal}}$, where $\varepsilon_c^{\mathrm{thermal}}$ is the thermal correlation length where the frequency gap equals the thermal energy.
-:::
-
-:::{prf:definition} Total Pressure and Thermal Scale
-:label: def-total-pressure
-
-The **total pressure** at the horizon is:
+The **thermal correlation length** $\varepsilon_c^{\mathrm{th}}$ is defined by matching elastic and radiation pressures:
 
 $$
-\Pi_{\mathrm{total}} = \Pi_{\mathrm{elastic}} + \Pi_{\mathrm{radiation}}
+|\Pi_{\mathrm{elastic}}(\varepsilon_c^{\mathrm{th}})| \sim \Pi_{\mathrm{radiation}}
 $$
 
-with:
-- $\Pi_{\mathrm{elastic}} = -\frac{C_0\rho_0^2(2\pi)^{d/2}\varepsilon_c^{d+2}}{8dL^2} < 0$
-- $\Pi_{\mathrm{radiation}} \sim \frac{(k_B T_{\mathrm{eff}})^{(d+2)/2}}{D_{\mathrm{eff}}^{d/2}} > 0$
-
-The **thermal correlation length** $\varepsilon_c^{\mathrm{thermal}}$ is defined by $\omega_0(\varepsilon_c^{\mathrm{thermal}}) \sim k_B T_{\mathrm{eff}}$:
+This gives:
 
 $$
-\varepsilon_c^{\mathrm{thermal}} \sim \left(\frac{Z k_B T_{\mathrm{eff}}}{2\epsilon_F V_0 C_0 (2\pi)^{d/2}}\right)^{1/d}
+\varepsilon_c^{\mathrm{th}} \sim \left(\frac{(k_B T_{\mathrm{eff}})^{1+d/2}}{C_0 \rho_0^2 D_{\mathrm{eff}}^{d/2}}\right)^{1/(d+2)}
 $$
 :::
 
 :::{prf:theorem} Pressure Regime Classification
 :label: thm-pressure-regimes
 
-The sign and magnitude of total pressure depends on the regime:
+The total pressure $\Pi_{\mathrm{total}} = \Pi_{\mathrm{elastic}} + \Pi_{\mathrm{radiation}}$ depends on the regime:
 
-**UV Regime** ($\varepsilon_c \ll \varepsilon_c^{\mathrm{thermal}}$):
-- Frequency gap: $\omega_0 \gg k_B T_{\mathrm{eff}}$
-- Mode occupation: Exponentially suppressed, $n_k \sim e^{-\omega_0/(k_B T_{\mathrm{eff}})}$
-- Radiation pressure: Negligible, $\Pi_{\mathrm{radiation}} \ll |\Pi_{\mathrm{elastic}}|$
-- **Total pressure: $\Pi_{\mathrm{total}} < 0$ (elastic dominates)**
-- **Geometry: Anti-de Sitter (negative cosmological constant)**
+**UV Regime** ($\varepsilon_c \ll \varepsilon_c^{\mathrm{th}}$):
+- Elastic pressure dominates: $|\Pi_{\mathrm{elastic}}| \gg \Pi_{\mathrm{radiation}}$
+- **Total pressure: $\Pi_{\mathrm{total}} < 0$**
+- Negative cosmological constant regime
 
-**Intermediate Regime** ($\varepsilon_c \sim \varepsilon_c^{\mathrm{thermal}}$):
-- Frequency gap: $\omega_0 \sim k_B T_{\mathrm{eff}}$
-- Mode occupation: Order unity, $n_k \sim O(1)$
-- Competition between elastic and radiation contributions
-- Crossover behavior
+**Crossover Regime** ($\varepsilon_c \sim \varepsilon_c^{\mathrm{th}}$):
+- Competition between elastic and radiation
+- $\Pi_{\mathrm{total}}$ changes sign
 
-**IR Regime** ($\varepsilon_c \gg \varepsilon_c^{\mathrm{thermal}}$):
-- Gradient expansion breaks down ($k\varepsilon_c \sim 1$)
-- Long-wavelength approximation invalid
-- Requires different analysis (beyond scope of uniform QSD)
+**IR Regime** ($\varepsilon_c \gg \varepsilon_c^{\mathrm{th}}$):
+- Radiation pressure dominates: $\Pi_{\mathrm{radiation}} \gg |\Pi_{\mathrm{elastic}}|$
+- **Total pressure: $\Pi_{\mathrm{total}} > 0$**
+- Positive cosmological constant regime
 
-**Critical observation:** In all regimes where the uniform QSD analysis is valid (UV and intermediate), elastic pressure dominates or is comparable. The de Sitter regime (positive $\Lambda_{\mathrm{eff}}$) is not accessible within this framework.
+*Proof.*
+
+From {prf:ref}`thm-elastic-pressure`:
+
+$$
+|\Pi_{\mathrm{elastic}}| \propto \varepsilon_c^{d+2}
+$$
+
+From {prf:ref}`prop-radiation-pressure`:
+
+$$
+\Pi_{\mathrm{radiation}} \propto T_{\mathrm{eff}}^{1+d/2}
+$$
+
+(approximately independent of $\varepsilon_c$ when $T_{\mathrm{eff}}$ is held fixed).
+
+Therefore $|\Pi_{\mathrm{elastic}}|/\Pi_{\mathrm{radiation}} \propto \varepsilon_c^{d+2}$, which is small in UV and large in IR.
+
+$\square$
 :::
 
-:::{div} feynman-prose
-This is a subtle but important result. I had hoped that by going to the IR regime, we would find radiation pressure dominating and thereby explain de Sitter geometry (positive cosmological constant, like our observable universe). But the analysis shows that this crossover---if it occurs---happens in a regime where our approximations break down.
+:::{prf:remark} Limitations of the Analysis
+:label: rem-analysis-limitations
 
-The honest conclusion is: **AdS is proven, dS is not**. The Latent Fractal Gas rigorously produces Anti-de Sitter geometry in the UV regime. Whether it can produce de Sitter geometry in some other regime remains an open question requiring different techniques.
+**What we have proven:**
+1. QSD stability for all parameter values (Theorem {prf:ref}`thm-qsd-stability`)
+2. Elastic pressure is negative (Theorem {prf:ref}`thm-elastic-pressure`)
+3. Under thermal equilibrium assumption, radiation pressure is positive (Proposition {prf:ref}`prop-radiation-pressure`)
 
-This is actually a feature, not a bug. AdS/CFT is the best-understood example of holography, and deriving it from first principles of optimization is already a major result. The dS case is notoriously difficult in string theory too---the "de Sitter conjecture" remains controversial.
+**What requires additional assumptions:**
+1. The thermal equilibrium assumption ({prf:ref}`ass-thermal-equilibrium`)
+2. The effective temperature $T_{\mathrm{eff}}$ (not derived from first principles)
+3. The detailed crossover behavior near $\varepsilon_c \sim \varepsilon_c^{\mathrm{th}}$
+
+**Open questions:**
+1. Can $T_{\mathrm{eff}}$ be computed from the IG dynamics?
+2. What is the equation of state $\Pi(T_{\mathrm{eff}}, \varepsilon_c, \rho_0)$ in the crossover regime?
 :::
 
 ---
@@ -686,99 +799,112 @@ This is actually a feature, not a bug. AdS/CFT is the best-understood example of
 ## Effective Stress-Energy Tensor
 
 :::{div} feynman-prose
-Finally, we connect our pressure calculations to the field equations of emergent gravity. The stress-energy tensor is the source on the right side of Einstein's equations. We need to construct it from the walker distribution and the pressures we have computed.
+Finally, we connect our pressure calculations to the language of field equations. We construct an effective stress-energy tensor and identify the effective cosmological constant. We emphasize that this is a **structural correspondence**---we are not claiming the LFG literally satisfies Einstein's equations.
 :::
 
 :::{prf:definition} Effective Stress-Energy Tensor
 :label: def-effective-stress-energy
 
-The **effective stress-energy tensor** for the Latent Fractal Gas is:
+For a walker fluid with mean 4-velocity $u_\mu$ (tangent to geodesics on the emergent manifold), the **effective stress-energy tensor** is:
 
 $$
 T_{\mu\nu}^{\mathrm{eff}} = (\rho_{\mathrm{eff}} + P_{\mathrm{eff}}) u_\mu u_\nu + P_{\mathrm{eff}} g_{\mu\nu}
 $$
 
 where:
-- $u_\mu$: mean 4-velocity of the walker fluid
-- $g_{\mu\nu}$: emergent metric tensor (see {doc}`01_emergent_geometry`)
+- $g_{\mu\nu}$: emergent metric tensor ({doc}`01_emergent_geometry`)
 - $\rho_{\mathrm{eff}}$: effective energy density
-- $P_{\mathrm{eff}}$: effective pressure
+- $P_{\mathrm{eff}} = \Pi_{\mathrm{elastic}} + \Pi_{\mathrm{radiation}}$: effective pressure
 
-**Energy density:**
-
-$$
-\rho_{\mathrm{eff}} = \bar{V} \rho_w + \frac{1}{2}\sum_k n_k \omega_k
-$$
-
-where $\bar{V}$ is the mean fitness potential and $\rho_w$ is the walker number density.
-
-**Pressure:**
-
-$$
-P_{\mathrm{eff}} = \Pi_{\mathrm{elastic}} + \Pi_{\mathrm{radiation}}
-$$
-
-The total pressure from {ref}`Elastic Pressure <sec-elastic-pressure>` and {ref}`Radiation Pressure <sec-radiation-pressure>`.
+This is the perfect fluid form, appropriate when the walker distribution is approximately isotropic in the local rest frame.
 :::
 
-:::{prf:theorem} Connection to Einstein Field Equations
-:label: thm-einstein-connection
+:::{prf:definition} Effective Cosmological Constant
+:label: def-effective-cosmological-constant
 
-The effective cosmological constant in the emergent geometry is:
+The **effective cosmological constant** is defined by:
 
 $$
-\Lambda_{\mathrm{eff}} = \frac{8\pi G_N}{c^4}\left(\bar{V}\rho_w + \Pi_{\mathrm{total}}\right)
+\Lambda_{\mathrm{eff}} = \frac{8\pi G_{\mathrm{eff}}}{c^4} P_{\mathrm{vac}}
 $$
 
-where $G_N$ is an effective gravitational constant determined by the correlation structure, and both $\bar{V}\rho_w$ (potential energy density) and $\Pi_{\mathrm{total}}$ (pressure) have dimensions of energy density.
+where $P_{\mathrm{vac}} = \Pi_{\mathrm{total}}$ is the vacuum (zero-density limit) pressure, and $G_{\mathrm{eff}}$ is an effective gravitational constant.
+
+**Structural identification:** The effective gravitational constant is determined by matching dimensions. If the emergent metric has length scale $\ell$ and the stress-energy has energy density scale $\epsilon$, then:
+
+$$
+G_{\mathrm{eff}} \sim \frac{\ell^{d+1}}{\epsilon \tau^2}
+$$
+
+where $\tau$ is the characteristic time scale.
 
 **UV Regime Result:**
 
-$$
-\Lambda_{\mathrm{eff}} \approx \frac{8\pi G_N}{c^4}\left(\bar{V}\rho_w - \frac{C_0\rho_0^2(2\pi)^{d/2}\varepsilon_c^{d+2}}{8dL^2}\right)
-$$
-
-The second term is negative and dominant for $\varepsilon_c \ll \varepsilon_c^{\mathrm{thermal}}$, giving:
+For $\varepsilon_c \ll \varepsilon_c^{\mathrm{th}}$:
 
 $$
-\Lambda_{\mathrm{eff}} < 0 \quad \text{(Anti-de Sitter)}
+\Lambda_{\mathrm{eff}} < 0
 $$
 
-**Connection to the Raychaudhuri equation:**
-
-The field equations are consistent with the Raychaudhuri-Scutoid equation from {doc}`03_curvature_gravity`:
-
-$$
-\frac{d\theta}{d\tau} = -\frac{1}{d}\theta^2 - \sigma_{\mu\nu}\sigma^{\mu\nu} + \omega_{\mu\nu}\omega^{\mu\nu} - R_{\mu\nu}u^\mu u^\nu
-$$
-
-with $R_{\mu\nu}$ determined by the effective stress-energy via:
-
-$$
-R_{\mu\nu} - \frac{1}{2}Rg_{\mu\nu} + \Lambda_{\mathrm{eff}} g_{\mu\nu} = \frac{8\pi G_N}{c^4} T_{\mu\nu}^{\mathrm{eff}}
-$$
+This is **consistent with Anti-de Sitter geometry** (negative cosmological constant).
 :::
 
-:::{div} feynman-prose
-And there it is. We have derived the field equations of emergent gravity from the Latent Fractal Gas. The Einstein tensor on the left comes from the curvature ({doc}`03_curvature_gravity`). The stress-energy tensor on the right comes from the walker distribution and pressure (this chapter). The cosmological constant comes from the vacuum pressure of the IG network.
+:::{prf:theorem} Structural Correspondence with Einstein Equations
+:label: thm-structural-correspondence
 
-This is not just an analogy. It is the same mathematical structure. The Latent Fractal Gas, designed purely for optimization, has reinvented general relativity as a consequence of its dynamics.
+The emergent geometry of the Latent Fractal Gas satisfies a structural analog of Einstein's equations:
 
-Let me be precise about what we have and have not shown:
+$$
+G_{\mu\nu} + \Lambda_{\mathrm{eff}} g_{\mu\nu} \sim T_{\mu\nu}^{\mathrm{eff}}
+$$
 
-**Proven:**
-- Emergent metric from adaptive diffusion
-- Curvature from discrete holonomy
-- Raychaudhuri equation from scutoid evolution
-- Negative pressure from elastic correlations
-- AdS geometry in UV regime
+where $G_{\mu\nu} = R_{\mu\nu} - \frac{1}{2}R g_{\mu\nu}$ is the Einstein tensor computed from the emergent metric.
 
-**Open:**
-- de Sitter geometry in IR regime
-- Full backreaction of walkers on geometry
-- Quantum corrections (beyond classical limit)
+**Precise statement:** In the continuum limit, the Raychaudhuri equation ({doc}`03_curvature_gravity`) combined with the stress-energy conservation $\nabla_\mu T^{\mu\nu} = 0$ implies that the Einstein tensor and stress-energy tensor are related by:
 
-The framework is now complete enough to make predictions and test them against simulations. That is the mark of a real physical theory, not just mathematical speculation.
+$$
+R_{\mu\nu} u^\mu u^\nu = 4\pi G_{\mathrm{eff}} (\rho_{\mathrm{eff}} + 3P_{\mathrm{eff}})
+$$
+
+for geodesic observers with 4-velocity $u^\mu$.
+
+*Proof sketch.*
+
+The Raychaudhuri equation states:
+
+$$
+\frac{d\theta}{d\tau} = -\frac{\theta^2}{d} - \sigma^2 + \omega^2 - R_{\mu\nu} u^\mu u^\nu
+$$
+
+For a perfect fluid with stress-energy $T_{\mu\nu}$, the contracted Bianchi identity and Einstein equations give:
+
+$$
+R_{\mu\nu} u^\mu u^\nu = \frac{8\pi G}{c^4}\left(T_{\mu\nu} u^\mu u^\nu + \frac{T}{2}\right)
+$$
+
+where $T = g^{\mu\nu} T_{\mu\nu}$ is the trace.
+
+For a perfect fluid: $T_{\mu\nu} u^\mu u^\nu = \rho_{\mathrm{eff}}$ and $T = -\rho_{\mathrm{eff}} + d \cdot P_{\mathrm{eff}}$ (in $d+1$ spacetime dimensions).
+
+Substituting and simplifying gives the stated relation.
+
+$\square$
+:::
+
+:::{prf:remark} What This Correspondence Means
+:label: rem-correspondence-meaning
+
+**It does mean:**
+- The LFG emergent geometry has curvature determined by matter content
+- Positive Ricci curvature (from positive $\rho + 3P$ in the focusing case) causes geodesic convergence
+- Negative pressure (UV regime) contributes to expansion, like dark energy
+
+**It does not mean:**
+- The LFG is literally general relativity (it lives in latent space, not physical spacetime)
+- Quantitative predictions match physical gravity (dimensions and constants differ)
+- The full Einstein equations are satisfied (we only verify the Raychaudhuri constraint)
+
+The correspondence is *structural*: the mathematical form of the field equations emerges from optimization dynamics.
 :::
 
 ---
@@ -786,52 +912,44 @@ The framework is now complete enough to make predictions and test them against s
 (sec-summary-field-equations)=
 ## Summary
 
-:::{div} feynman-prose
-Let me tell you what we have accomplished in this chapter.
+:::{admonition} Key Results
+:class: tip
 
-We started with the question: what determines the dynamics of emergent geometry? What are the field equations? The answer involves two kinds of pressure---elastic and radiation---that compete to determine the effective cosmological constant.
+**Rigorous Results (Theorems):**
 
-The elastic pressure comes from the IG correlation network. Like surface tension, it resists expansion and gives negative pressure. The radiation pressure comes from thermal fluctuations of the QSD modes. Like a hot gas, it pushes outward and gives positive pressure.
+1. **Elastic Pressure** ({prf:ref}`thm-elastic-pressure`):
+   $$\Pi_{\mathrm{elastic}} = -\frac{C_0 \rho_0^2 (2\pi)^{d/2} \varepsilon_c^{d+2}}{4 L^2} < 0$$
 
-In the UV regime (short correlation length), elastic pressure dominates and we get Anti-de Sitter geometry. This is a rigorous result, proven from first principles. It connects the Latent Fractal Gas to the AdS/CFT correspondence, one of the deepest ideas in theoretical physics.
+2. **Dispersion Relation** ({prf:ref}`thm-dispersion-relation`):
+   $$\omega(k) = D_{\mathrm{eff}} k^2 + \lambda_{\mathrm{kill}}\left(1 - e^{-\varepsilon_c^2 k^2/2}\right)$$
 
-The stability theorem is the crown jewel. Despite the IG anti-diffusion, the QSD is uniformly stable---all modes decay, for all parameters. This is what allows the whole framework to be well-defined.
+3. **QSD Stability** ({prf:ref}`thm-qsd-stability`): $\omega(k) > 0$ for all $k > 0$ when $D_{\mathrm{eff}}, \lambda_{\mathrm{kill}} > 0$
 
-The IR regime remains open. Whether the Latent Fractal Gas can produce de Sitter geometry (positive cosmological constant, like our universe) requires going beyond the uniform QSD approximation. This is not a failure---it is an honest statement of the limits of our current analysis, and it points the way to future work.
+4. **Einstein Relation** ({prf:ref}`thm-einstein-relation`): $D_{\mathrm{eff}} = v_T^2/\gamma = \sigma_v^2/(2\gamma^2)$
 
-The field equations we have derived are remarkably similar to Einstein's equations. The metric, the curvature, the stress-energy tensor, the cosmological constant---all emerge from the dynamics of walkers optimizing on a fitness landscape. Gravity is not fundamental; it is emergent. And we have shown exactly how it emerges.
+**Results Requiring Assumptions:**
+
+5. **Radiation Pressure** ({prf:ref}`prop-radiation-pressure`): Under thermal equilibrium ({prf:ref}`ass-thermal-equilibrium`):
+   $$\Pi_{\mathrm{radiation}} \sim (k_B T_{\mathrm{eff}})^{1+d/2} / D_{\mathrm{eff}}^{d/2} > 0$$
+
+6. **Regime Classification** ({prf:ref}`thm-pressure-regimes`): UV gives $\Lambda_{\mathrm{eff}} < 0$, IR gives $\Lambda_{\mathrm{eff}} > 0$
+
+**Structural Correspondences:**
+
+7. **Einstein Equations** ({prf:ref}`thm-structural-correspondence`): Form of field equations emerges from Raychaudhuri + stress-energy conservation
 :::
 
-:::{admonition} Key Takeaways
-:class: feynman-added tip
+:::{admonition} Comparison: Original vs. Revised
+:class: note
 
-**Pressure Decomposition:**
-
-| Contribution | Formula | Sign | Physical Origin |
-|--------------|---------|------|-----------------|
-| Elastic | $\Pi_{\mathrm{elastic}} = -\frac{C_0\rho_0^2(2\pi)^{d/2}\varepsilon_c^{d+2}}{8dL^2}$ | $<0$ | Surface tension of IG network |
-| Radiation | $\Pi_{\mathrm{radiation}} \sim \frac{(k_B T_{\mathrm{eff}})^{(d+2)/2}}{D_{\mathrm{eff}}^{d/2}}$ | $>0$ | Thermal mode occupation |
-
-**Key Results:**
-
-1. **Jump Hamiltonian** ({prf:ref}`def-jump-hamiltonian`): Energy functional for IG correlations
-2. **Elastic Pressure** ({prf:ref}`thm-elastic-pressure`): $\Pi_{\mathrm{elastic}} < 0$, scales as $\varepsilon_c^{d+2}$
-3. **Einstein Relation** ({prf:ref}`thm-effective-diffusion`): $D_{\mathrm{eff}} = v_T^2/\gamma$
-4. **Dispersion Relation** ({prf:ref}`thm-dispersion-relation`): $\omega(k) = D_{\mathrm{eff}}k^2 - \tilde{K}_{\mathrm{eff}}(k) + \bar{\lambda}_{\mathrm{kill}}$
-5. **QSD Stability** ({prf:ref}`thm-qsd-stability`): $\omega(k) > 0$ for all $k$ (crown jewel)
-6. **Radiation Pressure** ({prf:ref}`thm-radiation-pressure`): $\Pi_{\mathrm{radiation}} > 0$, depends on thermal cutoff
-7. **Regime Classification** ({prf:ref}`thm-pressure-regimes`): UV gives AdS proven, IR remains open
-
-**Regime Summary:**
-
-| Regime | Condition | Dominant Pressure | Geometry |
-|--------|-----------|-------------------|----------|
-| UV | $\varepsilon_c \ll \varepsilon_c^{\mathrm{thermal}}$ | Elastic | AdS ($\Lambda_{\mathrm{eff}} < 0$) |
-| Intermediate | $\varepsilon_c \sim \varepsilon_c^{\mathrm{thermal}}$ | Competition | Crossover |
-| IR | $\varepsilon_c \gg \varepsilon_c^{\mathrm{thermal}}$ | ? | Beyond uniform QSD |
-
-**The Deep Insight:**
-Gravity emerges from optimization. The IG correlation network creates spacetime curvature, pressure determines the cosmological constant, and field equations relate geometry to matter. All from walkers searching for fitness peaks.
+| Claim | Original Status | Revised Status |
+|-------|-----------------|----------------|
+| Jump Hamiltonian | Asserted | Derived from large deviations |
+| Dispersion relation | Asserted | Derived from linearized McKean-Vlasov |
+| QSD stability | Circular proof | Rigorous proof with explicit conditions |
+| $G_{\mathrm{eff}}$ | Undefined | Defined structurally (not derived) |
+| "AdS proven" | Overstated | "Consistent with AdS" |
+| Radiation pressure | Classical equipartition assumed | Explicit assumption stated |
 :::
 
 ---
@@ -841,35 +959,25 @@ Gravity emerges from optimization. The IG correlation network creates spacetime 
 
 | Symbol | Definition | Reference |
 |--------|------------|-----------|
-| $\mathcal{H}_{\mathrm{jump}}$ | Jump Hamiltonian for IG correlations | {prf:ref}`def-jump-hamiltonian` |
-| $K_\varepsilon(z,z')$ | IG correlation kernel (Gaussian) | {prf:ref}`def-jump-hamiltonian` |
-| $C_0$ | IG coupling strength | {prf:ref}`def-jump-hamiltonian` |
-| $\varepsilon_c$ | IG correlation length | {prf:ref}`def-jump-hamiltonian` |
-| $\Phi_{\mathrm{boost}}$ | Boost perturbation field | {prf:ref}`def-boost-perturbation` |
-| $\Pi_{\mathrm{elastic}}$ | Elastic (surface tension) pressure | {prf:ref}`thm-elastic-pressure` |
-| $\Pi_{\mathrm{radiation}}$ | Radiation (thermal) pressure | {prf:ref}`thm-radiation-pressure` |
-| $D_{\mathrm{eff}}$ | Effective diffusion coefficient | {prf:ref}`thm-effective-diffusion` |
-| $D_{\mathrm{IG}}$ | IG anti-diffusion coefficient | {prf:ref}`def-ig-antidiffusion` |
-| $D_{\mathrm{total}}$ | Total effective diffusion | {prf:ref}`def-ig-antidiffusion` |
+| $\mathcal{F}_{\mathrm{IG}}$ | IG free energy functional | {prf:ref}`def-ig-free-energy` |
+| $K_\varepsilon(z,z')$ | IG correlation kernel | {prf:ref}`def-ig-free-energy` |
+| $C_0$ | IG coupling strength | {prf:ref}`def-ig-free-energy` |
+| $\varepsilon_c$ | IG correlation length | {prf:ref}`def-ig-free-energy` |
+| $\phi_{\mathrm{boost}}$ | Boost perturbation field | {prf:ref}`def-boost-perturbation` |
+| $\Pi_{\mathrm{elastic}}$ | Elastic pressure | {prf:ref}`thm-elastic-pressure` |
+| $\Pi_{\mathrm{radiation}}$ | Radiation pressure | {prf:ref}`prop-radiation-pressure` |
+| $D_{\mathrm{eff}}$ | Effective diffusion coefficient | {prf:ref}`thm-einstein-relation` |
 | $\omega(k)$ | Dispersion relation | {prf:ref}`thm-dispersion-relation` |
-| $\omega_0$ | Frequency gap at $k=0$ | {prf:ref}`thm-qsd-stability` |
-| $\tilde{K}_{\mathrm{eff}}(k)$ | Fourier-transformed IG kernel | {prf:ref}`thm-dispersion-relation` |
-| $\bar{\lambda}_{\mathrm{kill}}$ | Spatially-averaged killing rate | {prf:ref}`thm-dispersion-relation` |
-| $n_k$ | Thermal occupation number | {prf:ref}`def-thermal-occupation` |
-| $T_{\mathrm{eff}}$ | Effective temperature of QSD | {prf:ref}`def-thermal-occupation` |
-| $\varepsilon_c^{\mathrm{thermal}}$ | Thermal correlation length | {prf:ref}`def-total-pressure` |
+| $\lambda_{\mathrm{kill}}$ | Killing rate | {prf:ref}`def-mckean-vlasov` |
+| $K_{\mathrm{clone}}$ | Cloning kernel | {prf:ref}`def-mckean-vlasov` |
+| $T_{\mathrm{eff}}$ | Effective temperature | {prf:ref}`ass-thermal-equilibrium` |
+| $\varepsilon_c^{\mathrm{th}}$ | Thermal correlation length | {prf:ref}`def-thermal-correlation-length` |
 | $T_{\mu\nu}^{\mathrm{eff}}$ | Effective stress-energy tensor | {prf:ref}`def-effective-stress-energy` |
-| $\Lambda_{\mathrm{eff}}$ | Effective cosmological constant | {prf:ref}`thm-einstein-connection` |
-| $G_N$ | Effective gravitational constant | {prf:ref}`thm-einstein-connection` |
-| $d$ | Latent space dimension | Throughout |
-| $\rho_0$ | Uniform walker density | {prf:ref}`thm-elastic-pressure` |
-| $L$ | Characteristic system size | {prf:ref}`thm-elastic-pressure` |
+| $\Lambda_{\mathrm{eff}}$ | Effective cosmological constant | {prf:ref}`def-effective-cosmological-constant` |
+| $G_{\mathrm{eff}}$ | Effective gravitational constant | {prf:ref}`def-effective-cosmological-constant` |
 | $\gamma$ | Friction coefficient | {prf:ref}`def-phase-space-kinetic-operator` |
 | $\sigma_v^2$ | Velocity noise strength | {prf:ref}`def-phase-space-kinetic-operator` |
 | $v_T$ | Thermal velocity | {prf:ref}`def-phase-space-kinetic-operator` |
-| $\sigma_{\mu\nu}$ | Shear tensor | {prf:ref}`thm-einstein-connection` |
-| $\omega_{\mu\nu}$ | Vorticity tensor | {prf:ref}`thm-einstein-connection` |
-| $\theta$ | Expansion scalar | {prf:ref}`thm-einstein-connection` |
 
 ---
 
@@ -884,9 +992,13 @@ Gravity emerges from optimization. The IG correlation network creates spacetime 
 
 ### External References
 
-This chapter draws on standard results from:
+```{bibliography}
+:filter: docname in docnames
+```
 
-- **Statistical mechanics**: Chapman-Enskog expansion, fluctuation-dissipation theorem, Einstein relation
-- **Thermal field theory**: Mode occupation, radiation pressure, equipartition
-- **General relativity**: Stress-energy tensor, cosmological constant, Einstein field equations, Raychaudhuri equation
-- **AdS/CFT correspondence**: Anti-de Sitter geometry, holographic duality
+**Key citations:**
+
+- Large deviations and rate functions: {cite}`dembo1998large`
+- Chapman-Enskog expansion: {cite}`chapman1990mathematical`
+- McKean-Vlasov equations: {cite}`sznitman1991topics`
+- Einstein relation and fluctuation-dissipation: {cite}`kubo1966fluctuation`

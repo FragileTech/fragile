@@ -21,7 +21,7 @@ The equipment here is a *cohesive infinity-topos*. Do not let the jargon scare y
 Why do we need this? Because gauge symmetries are not just symmetries---they are equivalences with structure. A rotation by 360 degrees is equivalent to doing nothing, but it matters that you went around the full circle. The cohesive topos remembers this.
 :::
 
-To ensure robustness against deformation and gauge redundancies, we work within **Higher Topos Theory** and **Homotopy Type Theory (HoTT)**. This framework is strictly more expressive than ZFC set theory and naturally encodes the homotopical structure of configuration spaces.
+To ensure robustness against deformation and gauge redundancies, we work within **Higher Topos Theory** and **Homotopy Type Theory (HoTT)**. This framework adds explicit homotopical structure beyond what ZFC encodes by default; classical reasoning is recovered via the ZFC bridge ({ref}`sec-zfc-classicality`).
 
 :::{prf:definition} Ambient $\infty$-Topos
 :label: def-ambient-topos
@@ -73,7 +73,7 @@ ensure these operations play nicely together.
 :::{div} feynman-prose
 Now we come to the central character of this theory: the Hypostructure. This is the mathematical object that captures everything we need to know about a dynamical system to determine whether it can develop singularities.
 
-Think of it as a blueprint with five essential components. First, the *State Stack*---not just a set of states, but an infinity-sheaf that remembers all the symmetries and gauge redundancies. The homotopy groups tell you about topological sectors, gauge symmetries, and higher coherences. Second, the *Semiflow/Connection*---your dynamics as a time action. Consistency means $S_{t+s} = S_t \circ S_s$ and $S_0 = \mathrm{id}$; reversibility (an extension to negative time) is an extra permit, not assumed. Third, the *Cohomological Height*---your energy or complexity measure, but promoted to a derived functor with all its higher coherence data. Fourth, the *Truncation Structure*---four functors that enforce the axioms (Compactness, Dissipation, Subcriticality, Lyapunov Stability) by truncating away forbidden behavior. Fifth, the *Boundary Morphism*---the holographic screen that interfaces bulk dynamics with the external environment.
+Think of it as a blueprint with five essential components. First, the *State Stack*---not just a set of states, but an infinity-sheaf that remembers all the symmetries and gauge redundancies. The homotopy groups tell you about topological sectors, gauge symmetries, and higher coherences. Second, the *Semiflow/Connection*---your dynamics as a time action. Consistency means $S_{t+s} = S_t \circ S_s$ and $S_0 = \mathrm{id}$; reversibility (an extension to negative time) is an extra permit, not assumed. Third, the *Cohomological Height*---your energy or complexity measure, but promoted to a derived functor with all its higher coherence data. Fourth, the *Truncation Structure*---four functors that enforce the axioms (Compactness, Dissipation, Subcriticality, Stiffness/Lojasiewicz-Simon) by truncating away forbidden behavior. Fifth, the *Boundary Morphism*---the holographic screen that interfaces bulk dynamics with the external environment.
 
 That boundary piece deserves special attention. It carries three constraints: Stokes' equation linking internal dissipation to boundary flux, the cobordism structure needed for surgery operations, and a two-level holographic bound. The bound has both a topological piece (a certified nonnegative boundary invariant, e.g., $|\chi|$, bounding singularity complexity) and an information-theoretic piece (data processing inequality). You need both because some obstructions are topological and others are geometric.
 
@@ -147,11 +147,11 @@ A **Hypostructure** is a tuple $\mathbb{H} = (\mathcal{X}, S, \Phi_\bullet, \tau
        interface $\mathrm{TB}_\pi$ is certified and a bound is available (via Tactic E2
        or imported literature), the Sieve may assert a bound of the form
 
-       $$S_{\text{coh}}(\mathcal{X}) \leq C \cdot T_{\partial}(\partial\mathcal{X}),$$
+       $$S_{\text{coh}}(\mathcal{X}) \leq C_{\partial} \cdot T_{\partial}(\partial\mathcal{X}),$$
 
-       where $T_{\partial}$ is a **nonnegative** boundary invariant provided by the
-       certificate (for example, $|\chi(\partial\mathcal{X})|$ or a sum of Betti
-       numbers; see {prf:ref}`def-e2`).
+       where $T_{\partial}$ is a **nonnegative** boundary invariant and $C_{\partial}$
+       is a bound constant provided by the certificate (for example, from
+       $|\chi(\partial\mathcal{X})|$ or a sum of Betti numbers; see {prf:ref}`def-e2`).
 
         If no such bound is certified, E2 returns INC and no exclusion is claimed.
 
@@ -174,8 +174,9 @@ local checks:
 
 - **Sieve/Certificate View (object-level):** The boundary is a subobject
   $\iota: \partial\mathcal{X} \hookrightarrow \mathcal{X}$ (and similarly the bad set
-  $\Sigma \hookrightarrow \mathcal{X}$). Gate predicates and certificates are evaluated
-  on these inclusions; all such certificates live in the discrete/flat fragment, so the
+  $\Sigma := \mathcal{X}_{\text{sing}} \hookrightarrow \mathcal{X}$ from
+  {prf:ref}`def-interface-recn`). Gate predicates and certificates are evaluated on
+  these inclusions; all such certificates live in the discrete/flat fragment, so the
   logic is Boolean (see {ref}`sec-zfc-classicality`).
 - **Topos View (functor-level):** The inclusion $\iota$ induces a restriction functor
   on sheaves,
@@ -213,7 +214,7 @@ The payoff comes when you have systems with gauge symmetry or non-trivial topolo
 :::{div} feynman-prose
 Here is the beautiful thing about all those axioms in the Hypostructure definition. You might think they were chosen arbitrarily, that someone sat down and listed properties that seemed useful. But they were not. They all come from a single requirement: *the system must be self-consistent*.
 
-What do I mean by self-consistent? I mean that if you let the system evolve, it should not contradict itself. Temporal coherence says the evolution preserves structural constraints. Asymptotic stability says either you run forever, or you approach a well-defined limit; when the non-strict dissipation permits are certified, this can be convergence to a compact invariant set instead of a single point.
+What do I mean by self-consistent? I mean that if you let the system evolve, it should not contradict itself. Temporal coherence says the evolution preserves structural constraints. Asymptotic stability says trajectories approach a well-defined limit; when the non-strict dissipation permits are certified, this can be convergence to a compact invariant set instead of a single point.
 
 This is not a metaphysical statement. It becomes a mathematical fact once the local
 checks are in place: strict dissipation plus compactness and stiffness/gradient
@@ -239,7 +240,11 @@ The hypostructure axioms are not independent postulates chosen for technical con
 
 A trajectory $u: [0, T) \to X$ is **self-consistent** if:
 1. **Temporal coherence:** The evolution $F_t: x \mapsto S_t x$ preserves the structural constraints defining $X$.
-2. **Asymptotic stability:** Either $T = \infty$, or the trajectory approaches a well-defined limit as $t \nearrow T$. If the Conley/Morse permit is certified ({prf:ref}`def-permit-morsedecomp`), this may be relaxed to convergence toward a compact invariant set $\mathcal{A}$ with $\mathrm{dist}(u(t), \mathcal{A}) \to 0$; in the strict dissipation case, $\mathcal{A}$ collapses to a single equilibrium.
+2. **Asymptotic stability:** The trajectory approaches a well-defined limit as $t \nearrow T$
+   (including $T = \infty$). If the Conley/Morse permit is certified
+   ({prf:ref}`def-permit-morsedecomp`), this may be relaxed to convergence toward a
+   compact invariant set $\mathcal{A}$ with $\mathrm{dist}(u(t), \mathcal{A}) \to 0$; in
+   the strict dissipation case, $\mathcal{A}$ collapses to a single equilibrium.
 :::
 
 :::{prf:definition} Structural Flow Datum
@@ -262,9 +267,10 @@ consistency are certified along the finite-energy trajectory under consideration
 implications hold:
 1. If the system $\mathcal{S}$ satisfies the hypostructure axioms on the trajectory,
    then the trajectory is asymptotically self-consistent.
-2. If a finite-energy trajectory is asymptotically self-consistent **and** the strict
-   dissipation permits are certified, then the only persistent states are fixed points
-   of the evolution operator $F_t = S_t$ satisfying $F_t(x) = x$.
+2. If a finite-energy trajectory is asymptotically self-consistent **and** the
+   dissipation permit is strict ($K_{D_E}^+$ with $C=0$; see {prf:ref}`mt-krnl-lyapunov`),
+   then the only persistent states are fixed points of the evolution operator
+   $F_t = S_t$ satisfying $F_t(x) = x$.
 3. Conversely, if only fixed points persist and the local gate predicates are
    certified along the trajectory, then the hypostructure axioms hold on that
    trajectory (in the Sieve sense).
@@ -287,13 +293,24 @@ does not claim the axioms hold without those certificates.
 :::{prf:proof} Proof Sketch (for strict dissipation)
 <!-- label: sketch-mt-krnl-consistency -->
 
-*Step 1 (1 ⇒ 2).* If $\mathcal{S}$ satisfies the axioms, then by Axiom D (Dissipation, {prf:ref}`ax-dissipation`), energy is non-increasing: $\Phi(S_t x) \leq \Phi(x)$. Combined with Axiom C (Compactness, {prf:ref}`ax-compactness`), bounded orbits are precompact. By Axiom LS (stiffness/Lojasiewicz-Simon, {prf:ref}`ax-stiffness`) and Axiom GC (gradient consistency, {prf:ref}`ax-gradient-consistency`), the flow is gradient-like near equilibria with no soft modes, so the $\omega$-limit set reduces to a single equilibrium. Hence the trajectory converges (not just subsequentially).
+*Step 1 (1).* If $\mathcal{S}$ satisfies the axioms, then by Axiom D (Dissipation,
+{prf:ref}`ax-dissipation`), energy is non-increasing: $\Phi(S_t x) \leq \Phi(x)$. Combined
+with Axiom C (Compactness, {prf:ref}`ax-compactness`), bounded orbits are precompact. By
+Axiom LS (stiffness/Lojasiewicz-Simon, {prf:ref}`ax-stiffness`) and Axiom GC (gradient
+consistency, {prf:ref}`ax-gradient-consistency`), the flow is gradient-like near
+equilibria with no soft modes, so the $\omega$-limit set collapses to a single
+equilibrium under strict dissipation. Hence the trajectory converges and is
+self-consistent.
 
-*Step 2 (2 ⇒ 3).* In the strict dissipation setting, self-consistency means
-$\lim_{t \to \infty} S_t x = x^*$ exists. Taking $t \to \infty$ in
-$S_{t+s} x = S_s(S_t x)$ yields $S_s x^* = x^*$ for all $s$.
+*Step 2 (2).* If a finite-energy trajectory is asymptotically self-consistent, it
+approaches either a limit point or a compact invariant set $\mathcal{A}$ (when the
+Conley/Morse permit is certified). Under strict dissipation
+($K_{D_E}^+$ with $C=0$; {prf:ref}`mt-krnl-lyapunov`), the Lyapunov function is strictly
+decreasing off equilibria, so any invariant set collapses to fixed points. Taking
+$t \to \infty$ along a convergent subsequence in $S_{t+s} x = S_s(S_t x)$ then yields
+$S_s x^* = x^*$ for any limit point $x^*$.
 
-*Step 3 (3 ⇒ 1).* Framework reading: the hypostructure axioms are exactly the local
+*Step 3 (3).* Framework reading: the hypostructure axioms are exactly the local
 gate predicates checked by the Sieve ({ref}`sec-gate-node-specs`). If only fixed points
 persist and the local predicates are certified along the trajectory (no gate produces a
 counter-witness), then the corresponding permits hold on that trajectory.
@@ -305,9 +322,9 @@ counter-witness), then the corresponding permits hold on that trajectory.
 :::{div} feynman-prose
 Now we come to the theorems that make the whole machinery work. I want to be clear about what these theorems actually do.
 
-The first one, KRNL-Exclusion, says: "If no bad pattern can map into your system, then your system is regular." This sounds almost tautological until you realize what it enables. It means we can prove regularity by proving the *absence* of something---that no morphism exists from the universal bad pattern to your system. The proof works by constructing a "Singularity Sheaf" that assigns to each hypostructure its set of singular embeddings, then using the internal logic of the topos to show that emptiness of this set implies regularity. The key piece is the Initiality Lemma, which proves that the universal bad pattern $\mathbb{H}_{\mathrm{bad}}^{(T)}$ exists as a colimit over singularity germs whenever the Germ Smallness Permit is certified (via profile classification or imported bounds). If the permit is inconclusive, the Sieve routes to Horizon instead of asserting exhaustiveness.
+The first one, KRNL-Exclusion, says: "If no bad pattern can map into your system *and the sieve prerequisites are certified*, then your system is regular." This sounds almost tautological until you realize what it enables. It means we can prove regularity by proving the *absence* of something---that no morphism exists from the universal bad pattern to your system. The proof works by constructing a "Singularity Sheaf" that assigns to each hypostructure its set of singular embeddings, then using the internal logic of the topos to show that emptiness of this set implies regularity. The key piece is the Initiality Lemma, which proves that the universal bad pattern $\mathbb{H}_{\mathrm{bad}}^{(T)}$ exists as a colimit over singularity germs whenever the Germ Smallness Permit is certified (via profile classification or imported bounds). If the permit is inconclusive, the Sieve routes to Horizon instead of asserting exhaustiveness.
 
-The second one, KRNL-Trichotomy, classifies every finite-time breakdown. The formal theorem identifies six modes: D.D (dispersion), S.E (scattering exit), C.D (compact descent), T.E (topological exit), S.D (structured descent), and C.E (concentration escape). But at a high level, these collapse into three outcomes: energy disperses (Mode D.D---everything is fine), energy concentrates but all permits are satisfied (Modes S.E, C.D, T.E, S.D---regularity is preserved), or there is a genuine singularity with permits violated (Mode C.E). This is the concentration-compactness dichotomy that underlies all modern PDE regularity theory, now stated in categorical language.
+The second one, KRNL-Trichotomy, classifies finite-time breakdowns when Reg/D/C permits are certified and the blow-up is profile-extractable. The formal theorem identifies six modes: D.D (dispersion), S.E (scattering exit), C.D (compact descent), T.E (topological exit), S.D (structured descent), and C.E (concentration escape). But at a high level, these collapse into three outcomes: energy disperses (Mode D.D---everything is fine), energy concentrates but all permits are satisfied (Modes S.E, C.D, T.E, S.D---regularity is preserved), or there is a genuine singularity with permits violated (Mode C.E). This is the concentration-compactness dichotomy that underlies all modern PDE regularity theory, now stated in categorical language.
 
 The third piece, the Analytic-to-Categorical Bridge, connects the PDE analysis to the category theory. When you do blow-up analysis and extract a limiting profile via concentration-compactness, that profile determines a "germ" in the germ set $\mathcal{G}_T$, which induces a morphism into the system's hypostructure. This is the handshake between the two worlds. But here is the honest part: this bridge only works for *profile-extractable* blow-ups. Wild oscillations, turbulent cascades, profiles with non-compact symmetry groups---these do not satisfy the bridge conditions and instead route to the Horizon mechanism with an "unclassifiable" verdict.
 
@@ -337,6 +354,19 @@ precision required by the Sieve. This is a modeling assumption; if it is not cer
 conclusions are conditional on the chosen family.
 :::
 
+:::{prf:definition} Classifiable Singularity
+:label: def-classifiable
+
+A singularity is **classifiable** for type $T$ if:
+1. It is profile-extractable by Node 3 (CompactCheck; {prf:ref}`def-node-compact`),
+   yielding a certified germ via {prf:ref}`mt-resolve-profile`, and
+2. The Germ Smallness Permit is certified ({prf:ref}`def-germ-smallness`), so the germ
+   index set $\mathcal{G}_T$ is small in the certified universe.
+
+Let $\mathbf{I}_{\text{cls}}$ denote the full subcategory of patterns whose germs are
+certified in this sense.
+:::
+
 ::::{prf:theorem} [KRNL-Exclusion] Principle of Structural Exclusion
 :label: mt-krnl-exclusion
 
@@ -349,6 +379,9 @@ conclusions are conditional on the chosen family.
 $$\mathrm{Hom}_{\mathbf{Hypo}_T}(\mathbb{H}_{\mathrm{bad}}^{(T)}, \mathbb{H}(Z)) = \emptyset$$
 
 then Interface Permit $\mathrm{Rep}_K(T, Z)$ holds, and hence the conjecture for $Z$ holds.
+Here $\mathrm{Hom}$ denotes the set of homotopy classes in the discrete/flat fragment
+(i.e., $\pi_0$ of the mapping space), which is exactly what the Lock obstruction
+tactics certify.
 
 **Hypotheses (N1–N11):**
 1. **(N1)** Category $\mathbf{Hypo}_T$ of admissible T-hypostructures satisfying core interface permits $C_\mu$, $D_E$, $\mathrm{SC}_\lambda$, $\mathrm{LS}_\sigma$, $\mathrm{Cap}_H$, $\mathrm{TB}_\pi$, $\mathrm{GC}_\nabla$
@@ -367,19 +400,6 @@ then Interface Permit $\mathrm{Rep}_K(T, Z)$ holds, and hence the conjecture for
    Lock routes to Horizon
 10. **(N10)** Admissibility of $\mathbb{H}(Z)$
 11. **(N11)** Obstruction condition: $\mathrm{Hom}(\mathbb{H}_{\mathrm{bad}}^{(T)}, \mathbb{H}(Z)) = \emptyset$
-
-:::{prf:definition} Classifiable Singularity
-:label: def-classifiable
-
-A singularity is **classifiable** for type $T$ if:
-1. It is profile-extractable by Node 3 (CompactCheck; {prf:ref}`def-node-compact`),
-   yielding a certified germ via {prf:ref}`mt-resolve-profile`, and
-2. The Germ Smallness Permit is certified ({prf:ref}`def-germ-smallness`), so the germ
-   index set $\mathcal{G}_T$ is small in the certified universe.
-
-Let $\mathbf{I}_{\text{cls}}$ denote the full subcategory of patterns whose germs are
-certified in this sense.
-:::
 
 :::{prf:theorem} Categorical Completeness of the Singularity Spectrum
 :label: thm-categorical-completeness
@@ -485,11 +505,13 @@ $$(\forall [P,\pi] \in \mathcal{G}_T.\, \mathbb{H}_{[P,\pi]} \to \mathbb{H}) \Ri
 
 *Step 1 (Ambient Setup).* Let $\mathcal{E}$ be the cohesive $(\infty,1)$-topos containing $\mathbf{Hypo}_T$ as a full subcategory. By {cite}`Lurie09` §6.1, $\mathcal{E}$ admits an **internal logic** given by its subobject classifier $\Omega$. Propositions in $\mathcal{E}$ correspond to morphisms $p: 1 \to \Omega$ where $1$ is the terminal object.
 
-*Step 2 (Construction: Singularity Sheaf).* Define the **Singularity Sheaf** $\mathcal{S}_{\mathrm{bad}}: \mathbf{Hypo}_T^{\mathrm{op}} \to \mathbf{Set}$ by:
+*Step 2 (Construction: Singularity Sheaf).* Define the **Singularity Sheaf**
+$\mathcal{S}_{\mathrm{bad}}: \mathbf{Hypo}_T^{\mathrm{op}} \to \mathbf{Set}$ by:
 
 $$\mathcal{S}_{\mathrm{bad}}(\mathbb{H}) := \mathrm{Hom}_{\mathbf{Hypo}_T}(\mathbb{H}_{\mathrm{bad}}^{(T)}, \mathbb{H})$$
 
-This is a presheaf assigning to each hypostructure its set of "singular embeddings."
+This is a presheaf assigning to each hypostructure its set of "singular embeddings,"
+with $\mathrm{Hom}$ computed in the discrete/flat fragment.
 
 *Step 3 (Internal Logic Translation).* In the internal logic of $\mathcal{E}$, the statement "$\mathbb{H}$ has no singularities" translates to:
 
@@ -499,7 +521,8 @@ where $\llbracket - \rrbracket$ denotes the truth value in the Heyting algebra $
 
 $$\neg\exists \phi.\, \phi: \mathbb{H}_{\mathrm{bad}} \to \mathbb{H}$$
 
-*Step 4 (Well-definedness via Yoneda).* The Singularity Sheaf is representable by $\mathbb{H}_{\mathrm{bad}}^{(T)}$ via Yoneda:
+*Step 4 (Well-definedness via Yoneda).* The Singularity Sheaf is representable by
+$\mathbb{H}_{\mathrm{bad}}^{(T)}$ via Yoneda in the discrete fragment:
 
 $$\mathcal{S}_{\mathrm{bad}} \cong y(\mathbb{H}_{\mathrm{bad}}^{(T)}) = \mathrm{Hom}(\mathbb{H}_{\mathrm{bad}}^{(T)}, -)$$
 
@@ -652,12 +675,22 @@ Then:
 *Step 3 (Defect Transfer).* By hypothesis (3), defects transform covariantly: $K_{A,g \cdot S}^{(g \cdot \Theta)}(g \cdot u) = K_{A,S}^{(\Theta)}(u)$. Symmetries of the input distribution transfer to learned parameters and their certificates.
 :::
 
+:::{prf:definition} Axiom R (Algorithmic Recovery)
+:label: ax-algorithmic-recovery
+
+A decision problem $L \subseteq \mathbb{N}$ satisfies **Axiom R** if there exists a
+total computable recovery operator (decider) $\mathcal{R}: \mathbb{N} \to \{0,1\}$ with
+$\mathcal{R}(n) = 1 \Leftrightarrow n \in L$. Equivalently, the characteristic function
+$\chi_L$ is total computable. The Sieve treats the existence of such an operator as a
+local certificate; if only an enumerator is known, Axiom R is not certified.
+:::
+
 :::{prf:theorem} Halting/AIT Sieve Thermodynamics (Phase Transition Witness)
 :label: thm-halting-ait-sieve-thermo
 
 In the algorithmic-thermodynamic translation, let $\mathcal{K} = \{e : \varphi_e(e)\downarrow\}$ be the halting set and let Kolmogorov complexity ({prf:ref}`def-kolmogorov-complexity`) act as energy. Then there is a phase separation between:
 
-- **Crystal Phase (Decidable):** Families with $L_n$ (the length-$n$ prefix of the characteristic sequence of $L$) satisfying $K(L_n) = O(\log n)$ and Axiom R holds → **REGULAR**
+- **Crystal Phase (Decidable):** Families with $L_n$ (the length-$n$ prefix of the characteristic sequence of $L$) satisfying $K(L_n) = O(\log n)$ and Axiom R holds ({prf:ref}`ax-algorithmic-recovery`) → **REGULAR**
 - **Liquid Phase (C.E./Undecidable):** C.e. families where Axiom R fails; enumerability alone implies no bound on $K(L_n)$ → **HORIZON**
 - **Gas Phase (Random):** Families with $K(L_n) \geq n - O(1)$ (Martin-Lof random), hence Axiom R fails → **HORIZON**
 
@@ -720,7 +753,9 @@ Let $\mathcal{S}$ be the Structural Sieve with finite memory $M_{\text{sieve}} \
 
 $$K(\mathcal{I}) > M_{\text{sieve}} \Rightarrow \text{Verdict}(\mathcal{S}, \mathcal{I}) = \texttt{HORIZON}$$
 
-where $K(\mathcal{I}) := \min\{|p| : U(p) = \text{characteristic function of } \mathcal{I}\}$ is the Kolmogorov complexity ({cite}`LiVitanyi19`).
+where $K(\mathcal{I}) := \min\{|p| : U(p) = \text{characteristic function of } \mathcal{I}\}$
+is the Kolmogorov complexity ({cite}`LiVitanyi19`), with the convention $K(\mathcal{I}) = \infty$
+when no total program computes $\chi_{\mathcal{I}}$.
 
 **What the Sieve CAN do**:
 - ✓ Classify decidable problems as **REGULAR** (Axiom R holds)

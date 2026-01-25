@@ -28,7 +28,7 @@
 | $B_t=(x_t,r_t,d_t,\iota_t,a_t)$ | Boundary/Markov-blanket stream (what the agent can actually see and do) |
 | $Z_t=(K_t,z_{n,t},z_{\mathrm{tex},t})$ | Internal state split (macro / nuisance / texture) |
 | $\bar{P}$ | Learned macro dynamics kernel (World Model) |
-| $V$ | Value potential (scalar field for the exact component of the reward 1-form) / critic object (task guidance + stability signal) |
+| $V$ | Value potential (scalar field for the exact component of the cost 1-form; reward convention via $\mathcal{C}=-\mathcal{R}$) / critic object (task guidance + stability signal) |
 | $G(z)$ | State-space metric (sensitivity “mass” / preconditioner), not a parameter-space metric |
 | $\pi(a\mid z)$ | Policy on actions given internal state (control field) |
 | $\mathcal{S}$ | Objective/action functional (task cost + control/regularization cost) |
@@ -142,7 +142,7 @@ This tuple directly instantiates the core objects of the Hypostructure $\mathbb{
 Throughout, the policy-driving signal is the **covariant value gradient**. Define the covariant 1-form
 $d_A V := dV - A$; its metric-raised vector is $\nabla_A V := G^{-1}(dV - A)$ (coordinates:
 $(\nabla_A V)^i = G^{ij}(\partial_j V - A_j)$), where $A := \delta\Psi + \eta$ is the non-conservative component of
-the reward 1-form $\mathcal{R} = dV + A$ (conservative case: $A=0$).
+the cost 1-form $\mathcal{C} = dV + A$ (reward convention: $\mathcal{R}=-\mathcal{C}=d(-V)+(-A)$; conservative case: $A=0$).
 
 :::{figure} ../../../svg_images/fragile_architecture.svg
 :name: fig-fragile-architecture
@@ -506,7 +506,7 @@ Restrict entropy regularization to action space only; ignore state-space geometr
 **The Special Case (Standard RL):**
 
 $$
-J_{\text{SAC}}(\pi) = \mathbb{E}\left[\sum_{t=0}^\infty \gamma_{\text{disc}}^t \big(r_t + \alpha H(\pi(\cdot|s_t))\big)\right]
+J_{\text{SAC}}(\pi) = \mathbb{E}\left[\sum_{t=0}^\infty \gamma^t \big(r_t + \alpha H(\pi(\cdot|s_t))\big)\right]
 
 $$
 This recovers **Soft Actor-Critic** (SAC) with action entropy bonus.
@@ -583,7 +583,7 @@ Here's the insight: **these perspectives align around the same mathematical obje
 | **Reinforcement Learning** | Improve value estimates/policy                                       | TD learning + policy gradients      |
 
 :::{div} feynman-prose
-The key insight is that these perspectives align around the same mathematical objects: a scalar value/cost-to-go function (for the exact component of the reward 1-form) and constraints on how fast it can improve without destabilizing the loop.
+The key insight is that these perspectives align around the same mathematical objects: a scalar value/cost-to-go function (for the exact component of the cost 1-form, with reward convention via $\mathcal{C}=-\mathcal{R}$) and constraints on how fast it can improve without destabilizing the loop.
 :::
 
 :::{admonition} Connection to RL #18: Lyapunov Stability as Implicit Hope
@@ -843,7 +843,7 @@ Units: the Fisher term has units $[z]^{-2}$; therefore $\lambda_G$ carries the s
 
 **Dimensional Verification:**
 
-- $V$ is a scalar potential (0-form) for the exact component of the reward 1-form on $\mathcal{Z}$
+- $V$ is a scalar potential (0-form) for the exact component of the cost 1-form on $\mathcal{Z}$ (reward convention via $\mathcal{C}=-\mathcal{R}$)
 - $\nabla_z V$ is a 1-form (covector): $dV = (\partial_i V) dz^i$
 - $\text{Hess}_z(V) = \partial_i \partial_j V$ is a $(0,2)$-tensor
 - The Fisher term is the covariance of the score function $\nabla_z \log \pi$, also a $(0,2)$-tensor
@@ -941,20 +941,42 @@ This measures the **Information Bottleneck** between the Shutter (Split VQ-VAE) 
 
 The Covariant Regulator uses the **State-Space Fisher Information** $G_\pi$ (or its diagonal) to scale update magnitudes. While standard RL uses Fisher in **Parameter Space** (TRPO/PPO), the Fragile Agent uses Fisher in **State Space** to stabilize **Causal Induction**.
 
-:::{admonition} Connection to RL #3: TRPO/PPO as Degenerate State-Space Metric
+:::{admonition} Connection to RL #3: TRPO/PPO as Degenerate WFR Trust Region
 :class: note
 :name: conn-rl-3
 **The General Law (Fragile Agent):**
-The trust region is defined by the **state-space sensitivity metric** $G(z)$:
+Define the **state-space sensitivity metric** $G(z)$:
 
 $$
 G_{ij}(z) = \lambda_G\,\mathbb{E}_{a \sim \pi}\left[\frac{\partial \log\pi(a|z)}{\partial z_i} \frac{\partial \log\pi(a|z)}{\partial z_j}\right] + \nabla^2_z V(z)
 
 $$
-Updates satisfy $\|\delta\pi\|_G^2 \le \epsilon$ in **state space**.
+The trust region is a **belief-space ball** under the Wasserstein-Fisher-Rao distance
+(Definition {prf:ref}`def-the-wfr-action`, {ref}`Section 20 <sec-wasserstein-fisher-rao-geometry-unified-transport-on-hybrid-state-spaces>`):
+
+$$
+d_{\mathrm{WFR}}(p_{\text{new}}, p_{\text{old}}) \le \epsilon
+
+$$
+
+Quadratic proxy (one-step WFR action): for a small update over $\Delta s$ with predicted transport/reaction
+$(v, r_{\text{WFR}})$ and baseline belief density $p_{\text{old}}$, approximate
+
+$$
+d_{\mathrm{WFR}}^2(p_{\text{new}}, p_{\text{old}})
+\approx
+\Delta s \int_{\mathcal{Z}} \left(\|v\|_G^2 + \lambda_{\text{WFR}}^2 |r_{\text{WFR}}|^2\right) p_{\text{old}}\, d\mu_G
+
+$$
+
+Here $\lambda_{\text{WFR}}$ is the WFR transport/reaction length scale (Definition {prf:ref}`def-the-wfr-action`), and
+$r_{\text{WFR}}$ is the WFR reaction rate from the unbalanced continuity equation. This approximation is written in
+the conservative/gauge-fixed case (otherwise include the $-2\langle A, v\rangle$ term from the WFR action). In
+practice, one can use cheaper proxies (diagonal/local quadratic WFR, or entropic/sliced approximations) that retain
+the transport+reaction structure while avoiding a full transport solve.
 
 **The Degenerate Limit:**
-Conflate state space with parameter space. Use the parameter-space Fisher $\mathcal{F}(\theta)$ instead of $G(z)$.
+Replace the belief-space WFR constraint with a parameter-space KL/Fisher trust region, discarding state geometry.
 
 **The Special Case (Standard RL):**
 
@@ -963,16 +985,17 @@ $$
 \text{PPO: } \text{clip}(\rho, 1-\epsilon, 1+\epsilon) \quad \text{(surrogate approximation)}
 
 $$
-**Result:** TRPO/PPO constrain updates in the wrong space. They measure "how much the policy changed" but not "how much the value landscape changed at this state."
+**Result:** TRPO/PPO constrain updates in the wrong space. They measure "how much the policy changed" but not the belief
+transport/reaction distance in state space.
 
 **What the generalization offers:**
 - Correct manifold: state-space metric $G(z)$ captures value sensitivity, not just policy sensitivity
 - Coordinate invariance: behavior independent of neural network parameterization
-- Semantic trust region: constraint based on how much the *value landscape* changes, not just the policy distribution
+- Semantic trust region: constraint based on belief transport/reaction distance, not just the policy distribution
 :::
 
 (sec-the-hjb-correspondence)=
-## The HJB Correspondence (Rewards as Value Updates)
+## The HJB Correspondence (Costs as Value Updates)
 
 :::{div} feynman-prose
 Now we come to the central equation of optimal control: the Hamilton-Jacobi-Bellman equation. This is the continuous-time, rigorous version of what you might know as the Bellman equation from RL textbooks.
@@ -1003,7 +1026,7 @@ $$
 \mathcal{L}_f V = dV(f) = \partial_i V \cdot f^i = \nabla V \cdot f
 
 $$
-When reward is non-conservative, the gauge-invariant driving signal is $\nabla_A V$; the Lie derivative itself remains the pairing $dV(f)$.
+When the cost 1-form is non-conservative (equivalently the reward 1-form), the gauge-invariant driving signal is $\nabla_A V$; the Lie derivative itself remains the pairing $dV(f)$.
 This is the natural pairing between the 1-form $dV$ and the vector field $f$---NO metric $G$ appears.
 
 :::{div} feynman-prose
@@ -1025,7 +1048,7 @@ All terms in the HJB equation have units of a **cost rate**. In discrete time th
 | **Lie Derivative**    | $\mathcal{L}_f V = dV(f) = \nabla V \cdot f$                     | NO                  |
 | **Natural Gradient**  | $\delta z = G^{-1} \nabla_z \mathcal{L}$                         | YES (index raising) |
 | **Geodesic Distance** | $d_G(z_1, z_2)^2 = (z_1-z_2)^T G (z_1-z_2)$                      | YES                 |
-| **Trust Region**      | $\lVert\delta \pi\rVert_G^2 \leq \epsilon$                       | YES                 |
+| **Trust Region**      | $d_{\mathrm{WFR}}(p_{\text{new}}, p_{\text{old}}) \le \epsilon$  | YES                 |
 | **Gradient Norm**     | $\lVert\nabla_A V\rVert_G^2 = G^{ij} (\partial_i V - A_i)(\partial_j V - A_j)$ | YES                 |
 
 :::{admonition} Anti-Mixing Rule no. 2
@@ -1041,7 +1064,7 @@ The Lie derivative $\mathcal{L}_f V = dV(f)$ is a **pairing**, not an inner prod
 - $\mathfrak{D}(z,a)$ is an explicit control-effort / regularization term (e.g., KL control, action penalties).
 - At optimality, the relation enforces a local consistency between value change, immediate cost, and control effort.
 
-*Forward reference (Helmholtz Continuum Limit).* {ref}`Section 24.2 <sec-the-bulk-potential-screened-poisson-equation>` shows that in the continuum limit on the manifold $(\mathcal{Z}, G)$, the Bellman/HJB equation becomes the **Screened Poisson (Helmholtz) Equation** for the exact component of the reward 1-form: $-\Delta_G V + \kappa^2 V = \rho_r$, where $\kappa = \lambda_{\text{disc}} / c_{\text{info}}$ with $\lambda_{\text{disc}} = -\ln\gamma_{\text{disc}} / \Delta t$ (natural units: $\kappa = -\ln\gamma_{\text{disc}}$). This reveals the Critic as a **Field Solver** computing the Green's function of the screened Laplacian.
+*Forward reference (Helmholtz Continuum Limit).* {ref}`Section 24.2 <sec-the-bulk-potential-screened-poisson-equation>` shows that in the continuum limit on the manifold $(\mathcal{Z}, G)$, the Bellman/HJB equation becomes the **Screened Poisson (Helmholtz) Equation** for the exact component of the cost 1-form (reward convention via $\mathcal{C}=-\mathcal{R}$): $-\Delta_G V + \kappa^2 V = \rho_c$ with $\rho_c := -\rho_r$, where $\kappa = \lambda / c_{\text{info}}$ with $\lambda = -\ln\gamma / \Delta t$ (natural units: $\kappa = -\ln\gamma$). This reveals the Critic as a **Field Solver** computing the Green's function of the screened Laplacian.
 
 (sec-conditional-independence-and-sufficiency)=
 ## Conditional Independence and Sufficiency (Causal Enclosure)

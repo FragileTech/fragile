@@ -81,6 +81,8 @@ $$
 
 1. **Partition**: $\bigcup_{i=1}^N \mathrm{Vor}_i(t) = \mathcal{Z}$ (up to boundaries)
 2. **Closure**: Each cell $\mathrm{Vor}_i(t)$ is closed. Under the assumption that the space is a **Hadamard manifold** (complete, simply connected, with **non-positive sectional curvature**) or satisfies CAT(0) geometry, each cell is **geodesically convex** (and hence star-shaped from the walker position $z_i$). For general Riemannian manifolds with arbitrary curvature, geodesic convexity may fail and cells can be non-convex or even disconnected.
+
+   **Note on curvature regime:** The emergent metric $g = H + \epsilon_\Sigma I$ from {doc}`01_emergent_geometry` has curvature determined by the fitness Hessian. In typical optimization landscapes with bounded curvature (ensured by the Gevrey-1 bounds in {doc}`/3_fractal_gas/appendices/14_b_geometric_gas_cinf_regularity_full`), the regularization $\epsilon_\Sigma$ can be chosen to control the sectional curvature. For practical implementations, the local geodesic distance can be approximated by Euclidean distance when $\epsilon_\Sigma \gg \|H\|_{\mathrm{op}}$.
 3. **Curved boundaries**: The boundary $\partial \mathrm{Vor}_i(t) \cap \partial \mathrm{Vor}_j(t)$ is the **equidistant hypersurface** (locus of points with $d_g(z, z_i) = d_g(z, z_j)$), which is generally curved when $g$ is non-flat.
 :::
 
@@ -269,15 +271,25 @@ Since $z_i$ and $z_j$ are generically at different locations (the parent is a hi
 $$
 \mathbb{P}(\mathcal{N}_i(t) = \mathcal{N}_{i'}(t + \Delta t)) \leq \exp\left(-c \cdot \frac{\|z_i - z_j\|^d}{\ell^d}\right)
 $$
-for some constant $c > 0$.
+for some constant $c > 0$ depending on dimension $d$ and the geometry of $\mathcal{Z}$.
 
-*Justification*: The expected number of walkers in the region between $z_i$ and $z_j$ scales as $\rho \cdot \|z_i - z_j\|^d = (\|z_i - z_j\|/\ell)^d$. For $z_i$ and $z_{i'}$ to share the same neighbor set, no intervening walkers can disrupt the Voronoi structure. By a Poisson-type argument, this probability decays exponentially with the expected number of intervening walkers.
+*Justification*: The expected number of walkers in the region between $z_i$ and $z_j$ scales as $\rho \cdot \|z_i - z_j\|^d = (\|z_i - z_j\|/\ell)^d$. For $z_i$ and $z_{i'}$ to share the same neighbor set, no intervening walkers can disrupt the Voronoi structure. By the spatial Poisson approximation (valid for well-mixed swarms approaching the QSD; see {doc}`/3_fractal_gas/appendices/09_propagation_chaos` for mean-field justification), this probability decays exponentially with the expected number of intervening walkers.
 
 **Part 3: Neighbor change forces scutoid geometry.**
 
 Suppose $\mathcal{N}_j(t) \neq \mathcal{N}_{i'}(t + \Delta t)$. Let:
 - $\mathcal{N}_{\mathrm{lost}} = \mathcal{N}_j(t) \setminus \mathcal{N}_{i'}(t + \Delta t)$ (neighbors at bottom only)
 - $\mathcal{N}_{\mathrm{gained}} = \mathcal{N}_{i'}(t + \Delta t) \setminus \mathcal{N}_j(t)$ (neighbors at top only)
+
+**Topological obstruction to prismatic geometry:**
+
+A prism $P = F_{\mathrm{bottom}} \times [0,1]$ requires a homeomorphism $h: \partial F_{\mathrm{bottom}} \to \partial F_{\mathrm{top}}$ mapping each boundary segment to a corresponding segment on the top face. This induces a bijection between neighbor sets: $h_*: \mathcal{N}_j(t) \xrightarrow{\sim} \mathcal{N}_{i'}(t + \Delta t)$.
+
+When $\mathcal{N}_{\mathrm{lost}} \neq \emptyset$ or $\mathcal{N}_{\mathrm{gained}} \neq \emptyset$, no such bijection exists. The boundary $\partial P$ cannot be assembled from:
+- Two non-homeomorphic faces $F_{\mathrm{bottom}}$ and $F_{\mathrm{top}}$ (with different numbers of edges if $|\mathcal{N}_{\mathrm{lost}}| \neq |\mathcal{N}_{\mathrm{gained}}|$)
+- Simple ruled lateral surfaces (which require matching edge counts)
+
+**Euler characteristic argument:** For a $(d+1)$-dimensional prism in $\mathbb{R}^{d+1}$, the Euler characteristic of the boundary satisfies $\chi(\partial P) = 1 + (-1)^d$. The number of $(d-1)$-faces on the boundary equals $|\mathcal{N}_{\mathrm{shared}}| + 2$ (top face, bottom face, plus shared laterals). When $|\mathcal{N}_{\mathrm{lost}}| + |\mathcal{N}_{\mathrm{gained}}| > 0$, we need additional faces to account for the lost/gained neighbors, which requires interior vertices (the mid-level vertices) to maintain a valid cell complex.
 
 For $\ell \in \mathcal{N}_{\mathrm{lost}}$, the boundary segment $\Gamma_{j,\ell}(t)$ has no corresponding segment on the top face. The geodesic ruling from this segment cannot continue to the top—it must terminate somewhere in between.
 
@@ -425,7 +437,7 @@ for walker_id in range(N):
         ClonedWalkers.append((walker_id, edge.z_new, edge.parent_id))
 ```
 
-**Step 2: Update Locally Moved Walkers** — Amortized $O(1)$ per walker
+**Step 2: Update Locally Moved Walkers** — Amortized $O(1)$ per walker (under small displacement condition)
 
 ```{code-block} python
 :caption: Update Delaunay structure for moved walkers
@@ -440,6 +452,8 @@ for (walker_id, z_old, z_new) in MovedWalkers:
     # Update corresponding Voronoi cell
     UpdateVoronoiCell(VT, vertex)
 ```
+
+**Small displacement condition:** The $O(1)$ amortized bound holds when the displacement $\|z_{\mathrm{new}} - z_{\mathrm{old}}\| \ll \ell_{\mathrm{local}}$, where $\ell_{\mathrm{local}}$ is the local feature size (distance to nearest neighbor). For the Langevin SDE with diffusion $\Sigma_{\mathrm{reg}}$ and timestep $\Delta t$, typical displacements scale as $O(\sqrt{\Delta t})$. The condition is satisfied when $\Delta t \ll \ell_{\mathrm{local}}^2 / \|\Sigma_{\mathrm{reg}}\|_{\mathrm{op}}^2$. In dense clusters where $\ell_{\mathrm{local}} \to 0$, the number of Lawson flips may exceed $O(1)$, but remains $O(\log N)$ in the worst case.
 
 **Step 3: Update Cloned Walkers** — $O(\log N)$ per walker
 
@@ -528,11 +542,13 @@ def LawsonFlip(DT, v):
 **Complexity Analysis:**
 
 - For vertex displacement $\delta$, affected simplices lie within distance $O(\delta)$
-- Number of affected simplices: $O(1)$ for small $\delta$
+- Number of affected simplices: $O(1)$ for small $\delta$ in fixed dimension $d$
 - Each flip may cascade to $O(1)$ neighbors
 - **Total flips: $O(1)$ amortized** for small displacements
 
-**Key Property:** Lawson flips preserve the Delaunay structure incrementally. The algorithm terminates because each flip reduces a potential function (total circumradius).
+**Theoretical justification:** The amortized $O(1)$ bound for small displacements follows from the local nature of Delaunay violations. In dimension $d$, each vertex has $O(1)$ incident simplices on average (bounded by the kissing number). For displacement $\delta \ll \ell$ (inter-walker spacing), only $O(1)$ simplices can violate the Delaunay criterion. See {cite}`guibas1992randomized` for analysis of randomized incremental Delaunay construction, which provides the theoretical foundation for incremental updates.
+
+**Key Property:** Lawson flips preserve the Delaunay structure incrementally. The algorithm terminates because each flip reduces a potential function (total circumradius); see {cite}`lawson1977software`.
 :::
 
 (sec-jump-and-walk)=
@@ -584,6 +600,8 @@ def locate(DT, z):
 - Jump phase: $O(1)$ using spatial hashing or parent simplex
 - Walk phase: $O(\sqrt[d]{N})$ expected for random points, $O(\log N)$ with good hint
 - **Total: $O(\log N)$ expected** when hint simplex is near target
+
+**Theoretical basis:** The expected walk length for uniformly random queries is $O(N^{1/d})$ in dimension $d$ {cite}`mucke1999fast`. With a good hint (e.g., the parent's simplex for cloning events), the walk length is $O(\mathrm{dist}/\ell)$ where $\mathrm{dist}$ is the distance from hint to target and $\ell$ is the typical edge length. For cloning events where the clone position has Gaussian jitter $\xi \sim \mathcal{N}(0, \sigma^2 I)$, the expected walk length is $O(\sigma/\ell) = O(1)$ when $\sigma \sim \ell$.
 :::
 
 (sec-complexity-analysis)=
@@ -649,20 +667,20 @@ Any algorithm that correctly updates a Voronoi/Delaunay tessellation of $N$ poin
 
 *Proof.*
 
-**Information-theoretic argument:**
+**Information-theoretic argument** (following {cite}`preparata1985computational`):
 
 The output is a complete geometric data structure representing:
 - $N$ vertex positions (walker coordinates)
 - $\Theta(N)$ simplices (in fixed dimension $d$)
 - Adjacency information for each simplex
 
-The **output size is $\Theta(N)$**.
+The **output size is $\Theta(N)$** (in fixed dimension $d$, the number of Delaunay simplices is $\Theta(N)$ by the Upper Bound Theorem for convex polytopes).
 
-Any algorithm producing $\Theta(N)$ output requires at least $\Omega(N)$ time—it is impossible to write $N$ pieces of information in fewer than $N$ operations.
+Any algorithm producing $\Theta(N)$ output requires at least $\Omega(N)$ time—it is impossible to write $N$ pieces of information in fewer than $N$ operations. This is a fundamental information-theoretic lower bound that applies to any computational model.
 
 **Worst-case construction:**
 
-Consider a global rotation: all $N$ walkers rotate by angle $\theta$ around a center. The combinatorial structure may be unchanged, but all vertex coordinates must be updated. The algorithm must touch all $\Theta(N)$ geometric objects.
+Consider a global rotation: all $N$ walkers rotate by angle $\theta$ around a center. The combinatorial structure may be unchanged, but all vertex coordinates must be updated. The algorithm must touch all $\Theta(N)$ geometric objects to produce correct output.
 
 **Conclusion:** Lower bound $\Omega(N)$, upper bound $O(N)$ amortized. The algorithm is optimal.
 
@@ -803,7 +821,14 @@ In the next chapter, we will see how the continuous limit of these discrete scut
 
 - **Voronoi tessellation**: Standard computational geometry construction; see {cite}`berg2008computational` for algorithms
 - **Delaunay triangulation**: Dual structure to Voronoi; Lawson flips for incremental updates {cite}`lawson1977software`
-- **Jump-and-walk point location**: Expected $O(\log N)$ complexity for typical point sets {cite}`mucke1999fast`
+- **Jump-and-walk point location**: Expected $O(N^{1/d})$ complexity for uniform random queries; $O(\log N)$ with good hints {cite}`mucke1999fast`
+- **Kinetic data structures**: Amortized analysis of geometric data structures under motion {cite}`guibas1992randomized`
+- **Lower bounds**: Information-theoretic lower bounds on geometric algorithms {cite}`preparata1985computational`
+
+### Stochastic Geometry
+
+- **Voronoi stability**: Sensitivity of Voronoi tessellations to point perturbations; see {cite}`chiu2013stochastic` for comprehensive treatment
+- **Poisson-Voronoi cells**: Statistical properties of Voronoi cells under Poisson point processes
 
 ### Scutoid Geometry
 
@@ -814,9 +839,12 @@ In the next chapter, we will see how the continuous limit of these discrete scut
 
 - {doc}`01_emergent_geometry` — Emergent Riemannian geometry from adaptive diffusion
 - {doc}`/3_fractal_gas/2_fractal_set/02_causal_set_theory` — Causal set structure of the Fractal Set
+- {doc}`/3_fractal_gas/appendices/09_propagation_chaos` — Mean-field justification for spatial statistics
+- {doc}`/3_fractal_gas/appendices/14_b_geometric_gas_cinf_regularity_full` — Regularity bounds for curvature control
 - {prf:ref}`def-adaptive-diffusion-tensor-latent` — Adaptive diffusion tensor and emergent metric
 - {prf:ref}`def-fractal-set-cst-edges` — CST edge definition
 - {prf:ref}`def-fractal-set-cloning-score` — Cloning score definition
+- {prf:ref}`def-fractal-set-sde` — SDE for walker evolution
 
 ```{bibliography}
 :filter: docname in docnames
