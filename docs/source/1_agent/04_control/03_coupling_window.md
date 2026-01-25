@@ -22,13 +22,13 @@ Before we get into the coupling window theorem, I want to give you a beautiful p
 
 Here's the setup. You have a reference dynamics---say, your learned macro kernel $\bar{P}$, or a diffusion on your latent space. You have two "boundary conditions": a prior belief (where you think you are) and a posterior belief (where the observations say you are). The question is: what's the most natural way to connect these two?
 
-The answer comes from optimal transport theory: find the path measure that's closest (in KL divergence) to your reference dynamics, subject to matching the boundary conditions. This is called a **Schrodinger bridge**, and it's the rigorous version of "most likely flow under entropy regularization."
+The answer comes from optimal transport theory: find the path measure that's closest (in KL divergence) to your reference dynamics, subject to matching the boundary conditions. This is called a **Schrödinger bridge**, and it's the rigorous version of "most likely flow under entropy regularization."
 
-Why should you care? Because this is exactly what KL-regularized control does, just stated in path space. When you do soft policy iteration, when you use SAC, when you add entropy bonuses to your objective---you're implicitly solving a Schrodinger bridge problem. The path-space view makes this crystal clear.
+Why should you care? Because this is exactly what KL-regularized control does, just stated in path space. When you do soft policy iteration, when you use SAC, when you add entropy bonuses to your objective---you're implicitly solving a Schrödinger bridge problem. The path-space view makes this crystal clear.
 :::
 
 (rb-kl-control-bridge)=
-:::{admonition} Researcher Bridge: KL Control as a Schrodinger Bridge
+:::{admonition} Researcher Bridge: KL Control as a Schrödinger Bridge
 :class: tip
 Entropy-regularized control can be read as an optimal transport problem on trajectories. This is the same math behind soft policy iteration, just framed as a path-measure bridge.
 :::
@@ -37,10 +37,10 @@ Entropy-regularized control can be read as an optimal transport problem on traje
 This is optional machinery, but it provides a clean path-space view of KL-regularized control and filtering.
 :::
 
-:::{admonition} The Schrodinger Bridge Picture
+:::{admonition} The Schrödinger Bridge Picture
 :class: feynman-added note
 
-**Entropic bridge (Schrodinger bridge) viewpoint.** Given a reference dynamics (e.g. the macro kernel $\bar{P}$, or a continuous diffusion on $\mathcal{Z}_\mu$) and two marginals (a prior belief and a boundary-conditioned posterior), the bridge problem finds the path measure closest in KL to the reference subject to matching the marginals. This is the rigorous "most likely flow under entropy regularization" principle (entropic optimal transport) {cite}`cuturi2013sinkhorn,leonard2014schrodinger`.
+**Entropic bridge (Schrödinger bridge) viewpoint.** Given a reference dynamics (e.g. the macro kernel $\bar{P}$, or a continuous diffusion on $\mathcal{Z}_\mu$) and two marginals (a prior belief and a boundary-conditioned posterior), the bridge problem finds the path measure closest in KL to the reference subject to matching the marginals. This is the rigorous "most likely flow under entropy regularization" principle (entropic optimal transport) {cite}`cuturi2013sinkhorn,leonard2014schrodinger`.
 
 In the Fragile Agent:
 - the reference process is the world model's internal rollout,
@@ -214,10 +214,10 @@ Let me step back and show you the big picture. We've been building up a framewor
 | Level | Formalism | Law |
 | :--- | :--- | :--- |
 | Geometry | Riemannian $(\mathcal{Z},G)$ | Distance measured by a sensitivity metric (Fisher/Hessian) |
-| Boundary | Markov blanket $B_t$ ({prf:ref}`def-boundary-markov-blanket`) | Environment = boundary law $P_{\partial}$ ({ref}`Section 1.1 <sec-definitions-interaction-under-partial-observability>`) |
-| Exploration | Causal entropy / MaxEnt RL | Reachability pressure via path entropy on $\mathcal{K}$ ({ref}`Section 11 <sec-intrinsic-motivation-maximum-entropy-exploration>`) |
-| Belief Dynamics | Filtering + projection | Predict - update - project ({ref}`Section 11 <sec-intrinsic-motivation-maximum-entropy-exploration>`) |
-| Optimality | Soft Bellman / log-normalizer | Soft value = log-normalizer; exploration gradient from path entropy ({ref}`Section 13 <sec-correspondence-table-filtering-control-template>`) |
+| Boundary | Markov blanket $B_t$ ({prf:ref}`def-boundary-markov-blanket`) | Environment = boundary law $P_{\partial}$ ({ref}`sec-definitions-interaction-under-partial-observability`) |
+| Exploration | Causal entropy / MaxEnt RL | Reachability pressure via path entropy on $\mathcal{K}$ ({ref}`sec-intrinsic-motivation-maximum-entropy-exploration`) |
+| Belief Dynamics | Filtering + projection | Predict - update - project ({ref}`sec-belief-dynamics-prediction-update-projection`) |
+| Optimality | Soft Bellman / log-normalizer | Soft value = log-normalizer; exploration gradient from path entropy ({ref}`sec-correspondence-table-filtering-control-template`) |
 :::
 
 :::{div} feynman-prose

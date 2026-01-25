@@ -39,7 +39,7 @@ Sections 2-9 describe geometry, metrics, and effective macro dynamics. What they
 :::
 
 :::{div} feynman-prose
-**Relation to prior work.** The predict-update recursion below is standard Bayesian filtering for discrete latent states (HMM/POMDP belief updates) {cite}`rabiner1989tutorial,kaelbling1998planning`. The additional ingredient emphasized here is the explicit **projection/reweighting layer** induced by safety and consistency checks ({ref}`Section 3 <sec-diagnostics-stability-checks>`): belief updates are not just "Bayes + dynamics", but "Bayes + dynamics + constraints".
+**Relation to prior work.** The predict-update recursion below is standard Bayesian filtering for discrete latent states (HMM/POMDP belief updates) {cite}`rabiner1989tutorial,kaelbling1998planning`. The additional ingredient emphasized here is the explicit **projection/reweighting layer** induced by safety and consistency checks ({ref}`sec-diagnostics-stability-checks`): belief updates are not just "Bayes + dynamics", but "Bayes + dynamics + constraints".
 :::
 
 (sec-why-purely-closed-simulators-are-insufficient)=
@@ -88,7 +88,7 @@ Let $p_t\in\Delta^{|\mathcal{K}|-1}$ be the macro belief over $K_t$.
 
 **What it is:** Use your learned dynamics model to forecast where you think you'll be next.
 
-Given the learned macro kernel $\bar{P}(k'\mid k,a_t)$ ({ref}`Section 2.8 <sec-conditional-independence-and-sufficiency>`), define the one-step predicted belief
+Given the learned macro kernel $\bar{P}(k'\mid k,a_t)$ ({ref}`sec-conditional-independence-and-sufficiency`), define the one-step predicted belief
 
 $$
 \tilde p_{t+1}(k') := \sum_{k\in\mathcal{K}} p_t(k)\,\bar{P}(k'\mid k,a_t).
@@ -286,7 +286,7 @@ where {math}`H=H^\dagger` is Hermitian, {math}`\gamma_j\ge 0` are rates, and {ma
 
 This is a modeling choice, not a claim about literal quantum physics: it is used here purely as a convenient, well-posed parametrization of CPTP belief updates.
 
-*Note (WFR Embedding).* The GKSL generator embeds naturally into the Wasserstein-Fisher-Rao framework ({prf:ref}`def-the-wfr-action`, {ref}`Section 20.5 <sec-connection-to-gksl-master-equation>`): the commutator $-i[H, \varrho]$ corresponds to **transport** (continuous belief flow), while the dissipator $\sum_j \gamma_j(\cdot)$ corresponds to **reaction** (discrete mass creation/destruction). This provides a geometric foundation for the otherwise algebraic GKSL construction.
+*Note (WFR Correspondence).* In the **classical limit** (diagonal density matrix $\varrho = \mathrm{diag}(p)$), the GKSL generator reduces to a Markov jump process on the diagonal probabilities $p_k$. This classical master equation is **rigorously equivalent** to a gradient flow in the Wasserstein-Fisher-Rao metric ({prf:ref}`def-the-wfr-action`, {ref}`sec-connection-to-gksl-master-equation`): transport corresponds to continuous probability flow, reaction corresponds to jump-induced mass redistribution {cite}`maas2011gradient,mielke2011gradient`. The commutator term vanishes for diagonal states (no coherences to rotate). For full quantum states, see {cite}`carlen2014wasserstein` for the quantum Wasserstein gradient flow theory.
 
 :::
 
@@ -297,7 +297,7 @@ Let me unpack that equation because it has a beautiful structure:
 
 **The dissipator term** is the "irreversible" part. The operators $L_j$ represent different kinds of "disturbances" or "jumps" that can happen. Each one has a rate $\gamma_j$. This is where boundary information enters---where reality pokes holes in your internal model and forces corrections.
 
-The magic is that this decomposition is *complete*: any Markovian, positive-preserving, trace-preserving evolution can be written this way. So you're not restricting what dynamics are possible; you're just organizing them into "reversible" and "irreversible" buckets.
+The magic is that this decomposition is *complete*: any Markovian, completely-positive, trace-preserving (CPTP) evolution can be written this way. So you're not restricting what dynamics are possible; you're just organizing them into "reversible" and "irreversible" buckets.
 :::
 
 (pi-lindblad)=
@@ -346,11 +346,11 @@ $$
 \right\|_F^2,
 
 $$
-where $\mathcal{L}_{\text{GKSL}}(\cdot)$ denotes the right-hand side of Definition 11.5.2. This is the quantity monitored by MECCheck (Node 22).
+where $\mathcal{L}_{\text{GKSL}}(\cdot)$ denotes the right-hand side of {prf:ref}`def-gksl-generator`. This is the quantity monitored by MECCheck (Node 22).
 :::
 
 (sec-residual-event-codebook)=
-### Residual-Event ("Jump") Codebook (Links to {ref}`Section 3.3 <sec-defect-functionals-implementing-regulation>`.B)
+### Residual-Event ("Jump") Codebook (Links to {ref}`sec-defect-functionals-implementing-regulation`.B)
 
 :::{div} feynman-prose
 Here's a practical question: if we want to use the GKSL form, we need to specify those $L_j$ operators---the different "types of disturbances" that can happen. Where do they come from?
@@ -361,13 +361,13 @@ The key insight is that we should attach this codebook to the **structured nuisa
 :::
 
 :::{div} feynman-prose
-The GKSL form becomes implementable if we can parameterize a *finite* family of disturbance/update types. With the nuisance/texture split ({ref}`Section 2.2b <sec-the-shutter-as-a-vq-vae>`), the disturbance library should attach to the **structured nuisance** channel, not to texture. A practical route is a discrete codebook over one-step nuisance residuals:
+The GKSL form becomes implementable if we can parameterize a *finite* family of disturbance/update types. With the nuisance/texture split ({ref}`sec-the-shutter-as-a-vq-vae`), the disturbance library should attach to the **structured nuisance** channel, not to texture. A practical route is a discrete codebook over one-step nuisance residuals:
 1. Compute a one-step prediction $(k_{t+1}^{\text{pred}}, z_{n,t+1}^{\text{pred}}):=S(K_t,z_{n,t},a_t)$ from the world model (macro + nuisance only).
-2. Encode the next observation to obtain $(K_{t+1}, z_{n,t+1}, z_{\mathrm{tex},t+1})$ via the shutter.
+2. Encode the next observation to obtain $(K_{t+1}, z_{n,t+1}, z_{\text{tex},t+1})$ via the shutter.
 3. Form the **nuisance residual** $\Delta z_{n,t}:=z_{n,t+1}-z_{n,t+1}^{\text{pred}}$.
 4. Quantize $\Delta z_{n,t}$ with a second VQ module to obtain $J_t\in\{1,\dots,|\mathcal{J}|\}$.
 
-Texture $z_{\mathrm{tex}}$ is treated as an emission/likelihood residual: it is used to model $p(x_t\mid K_t,z_{n,t},z_{\mathrm{tex},t})$ but is not used to define jump types. This is the formal reconciliation: "jumps" model **structured disturbances**, while "texture" models **measurement detail**.
+Texture $z_{\text{tex}}$ is treated as an emission/likelihood residual: it is used to model $p(x_t\mid K_t,z_{n,t},z_{\text{tex},t})$ but is not used to define jump types. This is the formal reconciliation: "jumps" model **structured disturbances**, while "texture" models **measurement detail**.
 :::
 
 :::{admonition} Two Uses for the Disturbance Codebook
@@ -451,10 +451,10 @@ $$
 This recovers standard **POMDP belief updates** {cite}`kaelbling1998planning` without safety constraints.
 
 **What the generalization offers:**
-- **Safety-aware beliefs**: Sieve projections ({ref}`Section 12.3 <sec-sieve-events-as-projections-reweightings>`) remove probability mass from unsafe states *before* action selection
+- **Safety-aware beliefs**: Sieve projections ({ref}`sec-sieve-events-as-projections-reweightings`) remove probability mass from unsafe states *before* action selection
 - **Discrete auditable symbols**: $H(K) \le \log|\mathcal{K}|$ provides hard capacity bound; standard POMDPs have unbounded continuous beliefs
 - **Constraint enforcement**: Gate Nodes trigger belief reweighting when diagnostics fail (NEPCheck, QSLCheck)
-- **Operator-valued updates**: {ref}`Section 12.5 <sec-optional-operator-valued-belief-updates>` extends to GKSL/Lindblad form for quantum-like belief decoherence
+- **Operator-valued updates**: {ref}`sec-optional-operator-valued-belief-updates` extends to GKSL/Lindblad form for quantum-like belief decoherence
 ::::
 
 
