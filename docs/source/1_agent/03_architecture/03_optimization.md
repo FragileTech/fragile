@@ -59,7 +59,7 @@ $$
 \eta_t = \eta_0\,\tau_t,
 $$
 
-where $\tau_t$ is a dimensionless temperature scale driven by the Governor (Section 26), and $\eta_0$ is the base
+where $\tau_t$ is a dimensionless temperature scale driven by the Governor ({ref}`sec-theory-of-meta-stability-the-universal-governor-as-homeostatic-controller`), and $\eta_0$ is the base
 step size.
 
 ### Assumptions (Explicit)
@@ -163,7 +163,7 @@ condition holds and the scaling is applied by $s \le 1$.
 
 ## 3. Varentropy Brake: Rigorous Annealing Control
 
-The Varentropy Brake is stated and proved in {ref}`cor-varentropy-brake` and
+The Varentropy Brake is stated and proved in {prf:ref}`cor-varentropy-brake` and
 {ref}`sec-appendix-e-proof-of-corollary-varentropy-brake`. We restate a discrete-time version.
 
 :::{prf:proposition} Discrete Varentropy Brake

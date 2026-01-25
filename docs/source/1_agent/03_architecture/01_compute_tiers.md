@@ -10,7 +10,7 @@
   budget compute explicitly.
 - Use the tiering to design a **fail-fast monitoring stack** that stays tractable in real training loops.
 - This chapter is the engineering bridge to the approximation chapter: anything infeasible here should map to a proxy in
-  {ref}`Section 8 <sec-infeasible-implementation-replacements>`.
+  {ref}`sec-infeasible-implementation-replacements`.
 
 ## Roadmap
 
@@ -70,7 +70,7 @@ Here's a wonderful fact: some of the most important barriers are *free*. They're
 
 The "Standard RL" barriers are things like entropy regularization and causal masking. If you're doing modern RL, you're probably already paying for these. They're not extra overhead---they're baseline good practice that happens to also provide safety.
 
-The "Specialized" barriers require auxiliary computation. Not free, but tractable. The "Infeasible" barriers---well, let's be honest. Checking frequency-domain stability exactly would require Fourier transforms on every timestep. That's ridiculous. So we use proxies. I'll tell you what those proxies are in Section 8.
+The "Specialized" barriers require auxiliary computation. Not free, but tractable. The "Infeasible" barriers---well, let's be honest. Checking frequency-domain stability exactly would require Fourier transforms on every timestep. That's ridiculous. So we use proxies. I'll tell you what those proxies are in {ref}`the Approximations chapter <sec-infeasible-implementation-replacements>`.
 :::
 
 | Tier              | Barriers                                           | Implementation       | Notes                           |
@@ -78,7 +78,7 @@ The "Specialized" barriers require auxiliary computation. Not free, but tractabl
 | **Architectural** | BarrierSat, BarrierVariety                         | Built-in (tanh, dim) | Zero runtime cost               |
 | **Standard RL**   | BarrierMix, BarrierCausal, BarrierScat, BarrierEpi | Standard losses      | Already in most implementations |
 | **Specialized**   | BarrierTypeII, BarrierOmin, BarrierGap             | Medium cost          | Requires auxiliary computation  |
-| **Infeasible**    | BarrierBode, BarrierFreq, BarrierVac               | See {ref}`Section 8 <sec-infeasible-implementation-replacements>`        | Need replacements               |
+| **Infeasible**    | BarrierBode, BarrierFreq, BarrierVac               | See {ref}`sec-infeasible-implementation-replacements`        | Need replacements               |
 
 (sec-synchronization-loss-costs)=
 ## Synchronization Loss Costs
@@ -211,13 +211,19 @@ $$
 $$
 **Additional Implementation (Diagnostics Only):**
 ```python
+import numpy as np
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+
+
 class ScalingExponentTracker:
     """
     Track α (curvature proxy) and β_π (policy-change proxy) for diagnostics.
 
     Note: this estimates parameter-space proxies for monitoring training health.
     It is not the state-space metric G; compute G via compute_state_space_fisher()
-    in state space ({ref}`Section 2.6 <sec-the-metric-hierarchy-fixing-the-category-error>`).
+    in state space ({ref}`sec-the-metric-hierarchy-fixing-the-category-error`).
     """
     def __init__(self, ema_decay: float = 0.99):
         self.alpha_ema = 2.0  # Default quadratic
@@ -295,7 +301,7 @@ $$
 \mathcal{L}_{\text{Fragile}}^{\text{full}} = \mathcal{L}_{\text{Fragile}}^{\text{std}} + \lambda_{\text{lip}} \mathcal{L}_{\text{Lipschitz}} + \lambda_{\text{geo}} \mathcal{L}_{\text{InfoNCE}} + \lambda_{\text{gain}} \mathcal{L}_{\text{gain}}
 
 $$
-See {ref}`Section 8 <sec-infeasible-implementation-replacements>` for efficient implementations of the expensive terms.
+See {ref}`sec-infeasible-implementation-replacements` for efficient implementations of the expensive terms.
 
 (sec-tier-riemannian-fragile-agent)=
 ### Tier 4: Riemannian Fragile Agent (Covariant Updates)
@@ -320,7 +326,7 @@ This distinction is subtle and important. The parameter-space Fisher gives you a
 
 This tier implements a **Riemannian / information-geometric** view, replacing Euclidean losses with geometry-aware equivalents. This approach is inspired by Natural Gradient methods {cite}`amari1998natural,martens2015kfac,martens2020natural` and Safe RL literature {cite}`chow2018lyapunov,kolter2019safe`.
 
-**Key Insight (State-Space Fisher Component):** The Covariant Regulator uses the **state-space sensitivity metric** $G$, typically estimated from its Fisher component $G_\pi$ (and optionally value curvature), to scale the Lie Derivative. This measures how sensitively the policy responds to changes in the latent state $z$---NOT how the parameters $\theta$ affect the policy (which is what TRPO/PPO use). See {ref}`Section 2.6 <sec-the-metric-hierarchy-fixing-the-category-error>` for the critical distinction between these geometries.
+**Key Insight (State-Space Fisher Component):** The Covariant Regulator uses the **state-space sensitivity metric** $G$, typically estimated from its Fisher component $G_\pi$ (and optionally value curvature), to scale the Lie Derivative. This measures how sensitively the policy responds to changes in the latent state $z$---NOT how the parameters $\theta$ affect the policy (which is what TRPO/PPO use). See {ref}`sec-the-metric-hierarchy-fixing-the-category-error` for the critical distinction between these geometries.
 
 **A. compute_natural_gradient_loss(): Geometry-Aware Value Decrease**
 
@@ -347,7 +353,7 @@ def compute_natural_gradient_loss(
 
     Important: the metric G here is a state-space sensitivity metric, typically
     estimated from the Fisher component (∂log π/∂z) and optionally value curvature,
-    not the parameter-space Fisher (∂log π/∂θ). See {ref}`Section 2.6 <sec-the-metric-hierarchy-fixing-the-category-error>` for the distinction.
+    not the parameter-space Fisher (∂log π/∂θ). See {ref}`sec-the-metric-hierarchy-fixing-the-category-error` for the distinction.
     """
     # 1. Compute a Fisher-based diagonal approximation to G
     # G_ii ≈ E[(∂log π/∂z_i)²] — measures control authority at each state dim
@@ -394,7 +400,7 @@ def compute_control_theory_loss(
     2. Lyapunov stability: critic enforces V_dot <= -alpha * V
 
     Important: the metric G is computed in state space (∂log π/∂z), not
-    parameter space. See {ref}`Section 2.6 <sec-the-metric-hierarchy-fixing-the-category-error>` for the distinction.
+    parameter space. See {ref}`sec-the-metric-hierarchy-fixing-the-category-error` for the distinction.
     """
     # 1. Compute state-space metric G (Fisher + optional value Hessian)
     if metric_mode == "state_fisher":
@@ -444,7 +450,7 @@ class GeometryAwareLearner:
     - Geometry-aware: Maximize value decrease <grad_V, velocity>_G (metric-weighted dot product)
 
     Important: the metric G is computed in state space (∂log π/∂z), not
-    parameter space. See {ref}`Section 2.6 <sec-the-metric-hierarchy-fixing-the-category-error>` for the distinction.
+    parameter space. See {ref}`sec-the-metric-hierarchy-fixing-the-category-error` for the distinction.
     """
 
     def __init__(self, actor, critic, world_model, config):
@@ -519,7 +525,7 @@ class GeometryAwareLearner:
 
         Important: this is the state-space Fisher component (how the policy changes with state),
         not the parameter-space Fisher (how the policy changes with weights).
-        See {ref}`Section 2.6 <sec-the-metric-hierarchy-fixing-the-category-error>` for the distinction.
+        See {ref}`sec-the-metric-hierarchy-fixing-the-category-error` for the distinction.
         """
         state_grad = state.detach().clone().requires_grad_(True)
         action_mean = self.actor(state_grad)
@@ -536,20 +542,23 @@ class GeometryAwareLearner:
 **D. RiemannianFragileAgent (Algorithm 3): The Complete Specification**
 
 ```python
+import torch
+import torch.nn as nn
+
 class RiemannianFragileAgent(nn.Module):
     """
     Algorithm 3: The Riemannian Fragile Agent
 
-	    Notation:
-	    - Z: Latent state space (statistical manifold)
-	    - G: State-space sensitivity metric (Fisher + optional value Hessian)
-	    - z_macro: Macro (predictive) coordinates (code embedding)
-	    - z_nuis: Structured nuisance residual (pose/basis/disturbance)
-	    - z_tex: Texture residual (reconstruction-only; excluded from closure/control)
-	    - Ω: Regime indicator (from monitors)
+    Notation:
+    - Z: Latent state space (statistical manifold)
+    - G: State-space sensitivity metric (Fisher + optional value Hessian)
+    - z_macro: Macro (predictive) coordinates (code embedding)
+    - z_nuis: Structured nuisance residual (pose/basis/disturbance)
+    - z_tex: Texture residual (reconstruction-only; excluded from closure/control)
+    - Ω: Regime indicator (from monitors)
 
-    This algorithm combines macro/micro separation ({ref}`Section 2.2b <sec-the-shutter-as-a-vq-vae>`), the Sieve
-    monitors (Sections 3–6), and Lyapunov-constrained control in a single loop.
+    This algorithm combines macro/micro separation ({ref}`sec-the-shutter-as-a-vq-vae`), the Sieve
+    monitors ({ref}`sec-diagnostics-stability-checks`, {ref}`sec-limits-barriers`, {ref}`sec-failure-modes`, {ref}`sec-infeasible-implementation-replacements`), and Lyapunov-constrained control in a single loop.
 
     Key differences from standard RL:
     1. Explicit objectives: auxiliary terms are tied to measurable constraints/regularizers
@@ -558,7 +567,7 @@ class RiemannianFragileAgent(nn.Module):
     4. Geometry-aware representation: latent space may be treated as a manifold
 
     Important: the metric G here is a state-space sensitivity metric (e.g. Fisher/Hessian in z),
-    not the parameter-space Fisher in θ. See {ref}`Section 2.6 <sec-the-metric-hierarchy-fixing-the-category-error>` for the distinction.
+    not the parameter-space Fisher in θ. See {ref}`sec-the-metric-hierarchy-fixing-the-category-error` for the distinction.
     """
 
     def train_step(self, batch, trackers):
@@ -582,14 +591,23 @@ class RiemannianFragileAgent(nn.Module):
             G_inv = 1.0 / (fisher_diag + 1e-8)
 
         # === PHASE III: SHUTTER UPDATE (VQ-VAE) ===
-	        # Enforce Causal Enclosure: discrete macro K carries the predictive signal.
-	        # Structured nuisance is typed; texture is reconstruction-only.
-	        K_t, z_macro, z_nuis, z_tex = self.shutter(batch.obs)  # z_macro := e_{K_t}
+        # Enforce Causal Enclosure: discrete macro K carries the predictive signal.
+        # Structured nuisance is typed; texture is reconstruction-only.
+        K_t, z_macro, z_nuis, z_tex = self.shutter(batch.obs)  # z_macro := e_{K_t}
+
+        # Encode next observation for closure loss
+        K_t_next, z_macro_next, _, _ = self.shutter(batch.next_obs)
+
+        # Store policy before update for Zeno constraint
+        with torch.no_grad():
+            policy_old = self.policy(z_macro).detach().clone()
 
         # SYMBOLIC: Closure is cross-entropy / conditional entropy on the macro symbols.
-        # (See {ref}`Section 2.8 <sec-conditional-independence-and-sufficiency>`: I(K_{t+1}; Z_t | K_t, K^{\text{act}}_t)=0 and H(K_{t+1}|K_t,K^{\text{act}}_t) small.)
-	        closure_loss = self._compute_closure_loss(K_t, z_nuis, z_tex)
-	        self.shutter_opt.step(self.shutter_loss + closure_loss)
+        # (See {ref}`sec-conditional-independence-and-sufficiency`: I(K_{t+1}; Z_t | K_t, K^act_t)=0 and H(K_{t+1}|K_t,K^act_t) small.)
+        closure_loss = self._compute_closure_loss(
+            K_t, z_nuis, z_tex, batch.action, batch.next_obs
+        )
+        self.shutter_opt.step(self.shutter_loss + closure_loss)
 
         # Phase IV: Lyapunov update (critic)
         # Enforce Exponential Stability constraint on V
@@ -616,8 +634,11 @@ class RiemannianFragileAgent(nn.Module):
             # EUCLIDEAN would be: L = -(grad_V * velocity).mean()
             L_nat = -torch.mean((grad_V * velocity) * G_inv)
 
+            # Get new policy for Zeno constraint
+            policy_new = self.policy(z_macro)
+
             # Geodesic Stiffness (Zeno Constraint)
-            L_zeno = self._geodesic_dist(self.policy_new, self.policy_old, G_inv)
+            L_zeno = self._geodesic_dist(policy_new, policy_old, G_inv)
 
             self.actor_opt.step(L_nat + L_zeno)
         else:
@@ -625,34 +646,34 @@ class RiemannianFragileAgent(nn.Module):
             # pause adaptation to let estimation catch up (wait state)
             pass
 
-	    def _compute_closure_loss(self, K_t, z_nuis, z_tex):
-	        """
-	        Causal Enclosure (symbolic form).
+    def _compute_closure_loss(self, K_t, z_nuis, z_tex, action, next_obs):
+        """
+        Causal Enclosure (symbolic form).
 
-	        With a discrete macro register K∈𝒦, enclosure is the pair of conditions:
-	        1) Predictability: H(K_{t+1} | K_t, a_t) is small (law-like macro dynamics).
-	        2) No leak: I(K_{t+1}; Z_tex,t | K_t, a_t)=0 (texture does not inform the law).
-	           (Optionally also I(K_{t+1}; Z_n,t | K_t, a_t)=0 once action is accounted for.)
+        With a discrete macro register K∈𝒦, enclosure is the pair of conditions:
+        1) Predictability: H(K_{t+1} | K_t, a_t) is small (law-like macro dynamics).
+        2) No leak: I(K_{t+1}; Z_tex,t | K_t, a_t)=0 (texture does not inform the law).
+           (Optionally also I(K_{t+1}; Z_n,t | K_t, a_t)=0 once action is accounted for.)
 
         Implementation sketch:
         - (1) is a cross-entropy loss over code indices (a Shannon quantity).
         - (2) is a conditional-independence penalty (HSIC/adversary/MINE), treated as
           a proxy for conditional mutual information.
         """
-        logits_next = self.world_model.predict_code_logits(K_t, self.action)  # [B, |𝒦|]
-        K_next = self.shutter.encode_code(self.next_obs)                      # [B]
+        logits_next = self.world_model.predict_code_logits(K_t, action)  # [B, |𝒦|]
+        K_next = self.shutter.encode_code(next_obs)                      # [B]
 
         predict_loss = nn.CrossEntropyLoss()(logits_next, K_next)
 
-	        # Choose one MI proxy for the independence term:
-	        #   - HSIC(z_tex, one_hot(K_next))
-	        #   - adversary with gradient reversal predicting K_next from z_tex / z_nuis
-	        #   - variational estimator of I(K_next; z_tex | K_t, a_t) and I(K_next; z_nuis | K_t, a_t)
-	        # In the strictest form, penalize both nuisance and texture leakage; texture is non-negotiable.
-	        independence_loss = (
-	            estimate_conditional_mi(K_next, z_tex, K_t, self.action)
-	            + estimate_conditional_mi(K_next, z_nuis, K_t, self.action)
-	        )
+        # Choose one MI proxy for the independence term:
+        #   - HSIC(z_tex, one_hot(K_next))
+        #   - adversary with gradient reversal predicting K_next from z_tex / z_nuis
+        #   - variational estimator of I(K_next; z_tex | K_t, a_t) and I(K_next; z_nuis | K_t, a_t)
+        # In the strictest form, penalize both nuisance and texture leakage; texture is non-negotiable.
+        independence_loss = (
+            estimate_conditional_mi(K_next, z_tex, K_t, action)
+            + estimate_conditional_mi(K_next, z_nuis, K_t, action)
+        )
 
         return predict_loss + self.lambda_ind * independence_loss
 
@@ -1258,7 +1279,7 @@ Now the charts are identified by *what they represent*, not by *where they're st
 This is the same idea behind transformers and slot attention: let similarity determine routing, not fixed indices.
 :::
 
-The Atlas architecture described in {ref}`Section 7.7 <sec-tier-atlas-based-fragile-agent>` uses a fixed MLP router to assign input regions to charts. While functional, this approach is **permutation sensitive**: the network assigns fixed semantics to output indices. This breaks the **Symbol-Permutation Symmetry** ($S_{|\mathcal{K}|}$) requirement of Section 1.1.4, which posits that the identity of a manifold chart should not depend on its memory index.
+The Atlas architecture described in {ref}`sec-tier-atlas-based-fragile-agent` uses a fixed MLP router to assign input regions to charts. While functional, this approach is **permutation sensitive**: the network assigns fixed semantics to output indices. This breaks the **Symbol-Permutation Symmetry** ($S_{|\mathcal{K}|}$) requirement of {prf:ref}`def-agent-symmetry-group-operational`, which posits that the identity of a manifold chart should not depend on its memory index.
 
 To resolve this, we introduce the **Attentive Atlas**. In the current implementation (`PrimitiveAttentiveAtlasEncoder` in `src/fragile/core/layers/atlas.py`), routing is handled by `CovariantChartRouter`, which compares chart tokens (the learnable `chart_centers`) against a covariant query built from the latent value and features. When `covariant_attn` is disabled, the router falls back to a dot-product $v \cdot c_k / \sqrt{D}$ over chart centers.
 
@@ -1381,7 +1402,7 @@ The Attentive Atlas offers unique geometric diagnostics unavailable to standard 
 (sec-integration-with-jump-operators)=
 ### Integration with Jump Operators
 
-In the Attentive Atlas, a **Jump** ({ref}`Section 7.13 <sec-factorized-jump-operators-efficient-chart-transitions>`) corresponds to a switch in the attention winner:
+In the Attentive Atlas, a **Jump** ({ref}`sec-factorized-jump-operators-efficient-chart-transitions`) corresponds to a switch in the attention winner:
 1.  At $t$, $K_{\text{chart}}^t = i$.
 2.  At $t+1$, the attention weight for chart $j$ exceeds chart $i$.
 3.  The transition triggers the application of the Jump Operator $L_{i \to j}$ (learned affine transform) to the local coordinates, handling the gauge transformation between the two charts.
@@ -1391,7 +1412,7 @@ In the Attentive Atlas, a **Jump** ({ref}`Section 7.13 <sec-factorized-jump-oper
 (sec-elastic-atlas-dynamic-chart-count)=
 ### Elastic Atlas: Dynamic Chart Count (Implementation Note)
 
-Attentive routing treats charts as a token bank (chart centers + codebook slices), so the number of charts can be a runtime variable rather than a fixed hyperparameter. Current code keeps `num_charts` fixed; dynamic resizing would require masked buffers for `chart_centers`, `codebook`, and router tokens. This is the implementation counterpart of the Ontological Heartbeat ({ref}`Section 30.14 <sec-summary-the-topological-heartbeat>`): fission adds a chart, fusion removes one.
+Attentive routing treats charts as a token bank (chart centers + codebook slices), so the number of charts can be a runtime variable rather than a fixed hyperparameter. Current code keeps `num_charts` fixed; dynamic resizing would require masked buffers for `chart_centers`, `codebook`, and router tokens. This is the implementation counterpart of the Ontological Heartbeat ({ref}`sec-summary-the-topological-heartbeat`): fission adds a chart, fusion removes one.
 
 **Design principle:** avoid fixed-size routing heads. Maintain a chart center bank $C \in \mathbb{R}^{N_c(t) \times D}$ and compute routing by dot-product attention (or by masking `chart_tokens` in `CovariantChartRouter`). Adding a chart appends a new center; removing a chart deletes or masks one.
 
@@ -1421,11 +1442,11 @@ w = softmax(logits, dim=-1)
   P(k) = \frac{1}{T} \sum_t w_k(x_t), \quad P(k) < \epsilon_{\text{dead}}
 
   $$
-  or $\Upsilon_{ij} > \Upsilon_{\text{crit}}$ ({ref}`Section 30.8 <sec-ontological-fusion-concept-consolidation>`). Merge $c_i, c_j$ or deactivate the redundant chart.
+  or $\Upsilon_{ij} > \Upsilon_{\text{crit}}$ ({ref}`sec-ontological-fusion-concept-consolidation`). Merge $c_i, c_j$ or deactivate the redundant chart.
 
-**Symbol metabolism:** dynamic $N_v$ per chart uses the intra-symbol fission/fusion rules in {ref}`Section 30.12 <sec-symbolic-metabolism-intra-chart-fission-and-fusion>` (same buffer-and-mask pattern).
+**Symbol metabolism:** dynamic $N_v$ per chart uses the intra-symbol fission/fusion rules in {ref}`sec-symbolic-metabolism-intra-chart-fission-and-fusion` (same buffer-and-mask pattern).
 
-**Stability notes:** use hysteresis ($\tau_{\text{expand}} > \tau_{\text{merge}}$), cooldown windows, and a minimum chart count to avoid churn. The Universal Governor ({ref}`Section 26 <sec-theory-of-meta-stability-the-universal-governor-as-homeostatic-controller>`) can schedule thresholds.
+**Stability notes:** use hysteresis ($\tau_{\text{expand}} > \tau_{\text{merge}}$), cooldown windows, and a minimum chart count to avoid churn. The Universal Governor ({ref}`sec-theory-of-meta-stability-the-universal-governor-as-homeostatic-controller`) can schedule thresholds.
 
 :::{admonition} Worth It? When to Use Elastic Charts
 :class: note
@@ -1798,7 +1819,7 @@ This isn't just a metaphor. It has practical consequences for how distances work
 Hyperbolic embeddings are a standard tool for hierarchical representation learning. Here the macro codebook forms the tree, the nuisance coordinates are local Euclidean fibers, and texture lives at the boundary. This is the geometric version of hierarchical state abstraction.
 :::
 
-The hierarchical decomposition of the latent state $Z_t = (K_t, z_n, z_{\mathrm{tex}})$ is not merely an engineering convenience; it implies a specific geometric structure. We argue that this hierarchy realizes a **discretized hyperbolic space** where the discrete macro-symbols form a tree-like structure (the bulk), the structured nuisance $z_n$ constitutes the local smooth manifold (tangent space), and the texture $z_{\mathrm{tex}}$ represents the asymptotic behavior at the ideal boundary (infinity).
+The hierarchical decomposition of the latent state $Z_t = (K_t, z_n, z_{\text{tex}})$ is not merely an engineering convenience; it implies a specific geometric structure. We argue that this hierarchy realizes a **discretized hyperbolic space** where the discrete macro-symbols form a tree-like structure (the bulk), the structured nuisance $z_n$ constitutes the local smooth manifold (tangent space), and the texture $z_{\text{tex}}$ represents the asymptotic behavior at the ideal boundary (infinity).
 
 (sec-the-latent-tree-as-a-hyperbolic-space)=
 ### The Latent Tree as a $\delta$-Hyperbolic Space
@@ -1846,7 +1867,7 @@ The bulk is where your agent *thinks*. The boundary is what your agent *sees but
 This isn't just a pretty analogy. It has practical consequences: texture must not leak into dynamics. If your control law depends on texture (boundary data), you're trying to control at infinite resolution with finite capacity. That's a recipe for instability.
 :::
 
-We now rigorously situate the continuous components $(z_n, z_{\mathrm{tex}})$ relative to this structure.
+We now rigorously situate the continuous components $(z_n, z_{\text{tex}})$ relative to this structure.
 
 :::{prf:definition} The Local Fibre Structure
 :label: def-the-local-fibre-structure
@@ -1859,31 +1880,31 @@ $$
 $$
 For each macro-symbol $k \in \mathcal{K}$, the fibre $\mathcal{Z}_n^{(k)}$ represents the **structured nuisance** space (local pose/basis coordinates).
 
-The interpolation of this discrete structure into a continuous manifold is achieved by the Attentive Atlas ({ref}`Section 7.8 <sec-tier-the-attentive-atlas>`), which provides soft transition functions (partitions of unity) $\{w_i(x)\}$ that interpolate between fibres in overlap regions.
+The interpolation of this discrete structure into a continuous manifold is achieved by the Attentive Atlas ({ref}`sec-tier-the-attentive-atlas`), which provides soft transition functions (partitions of unity) $\{w_i(x)\}$ that interpolate between fibres in overlap regions.
 
 :::
 :::{prf:proposition} Texture as the Ideal Boundary
 :label: prop-texture-as-the-ideal-boundary
 
-Let $\mathcal{M}$ be the Riemannian manifold constructed above. The **texture residual** $z_{\mathrm{tex}}$ corresponds to the behavior of the state at the **conformal boundary at infinity**, $\partial_\infty \mathbb{H}^n$.
+Let $\mathcal{M}$ be the Riemannian manifold constructed above. The **texture residual** $z_{\text{tex}}$ corresponds to the behavior of the state at the **conformal boundary at infinity**, $\partial_\infty \mathbb{H}^n$.
 
 *Proof (Construction).*
 
 1. Consider a sequence of refining codes $(K_{\text{chart}}^{(n)}, K_{\text{code}}^{(n)})$ representing a path $\gamma$ in the tree $\mathcal{T}$ extending to infinite depth.
 2. As the depth $n \to \infty$, the volume of the region covered by code $K^{(n)}$ in the observation space $\mathcal{X}$ shrinks to zero (assuming a non-degenerate shutter).
 3. In the hyperbolic metric of the latent space, the distance from the basepoint $d(o, \gamma(n)) \to \infty$.
-4. The residual $z_{\mathrm{tex}}$ is defined as the information remaining after finite truncation at level $n$. Specifically, $z_{\mathrm{tex}} = \Delta_{\text{total}} - z_n$.
-5. If we interpret the encoding process as a flow toward the boundary of $\mathbb{H}^n$, then $z_{\mathrm{tex}}$ represents the **transverse coordinates** at the cutoff surface $\Sigma_\epsilon$.
-6. Taking the limit $\epsilon \to 0$, $z_{\mathrm{tex}}$ maps to the **limit set** $\Lambda \subset \partial_\infty \mathbb{H}^n$. The mathematical structure parallels the AdS/CFT bulk-boundary correspondence: the fields $(K, z_n)$ reconstruct $(x)$ up to a cutoff; $z_{\mathrm{tex}}$ is the UV (high-frequency) data living strictly at the conformal boundary. $\square$
+4. The residual $z_{\text{tex}}$ is defined as the information remaining after finite truncation at level $n$. Specifically, $z_{\text{tex}} = \Delta_{\text{total}} - z_n$.
+5. If we interpret the encoding process as a flow toward the boundary of $\mathbb{H}^n$, then $z_{\text{tex}}$ represents the **transverse coordinates** at the cutoff surface $\Sigma_\epsilon$.
+6. Taking the limit $\epsilon \to 0$, $z_{\text{tex}}$ maps to the **limit set** $\Lambda \subset \partial_\infty \mathbb{H}^n$. The mathematical structure parallels the AdS/CFT bulk-boundary correspondence: the fields $(K, z_n)$ reconstruct $(x)$ up to a cutoff; $z_{\text{tex}}$ is the UV (high-frequency) data living strictly at the conformal boundary. $\square$
 
 **Operational Implication:**
-This formalizes why $z_{\mathrm{tex}}$ must be excluded from dynamics ($S_t$) and control ($\pi_\theta$). The dynamics $S_t$ operate on the **bulk** (finite-energy excitations inside the hyperbolic volume). The texture $z_{\mathrm{tex}}$ lives at the **boundary at infinity** (infinite energy / zero scale). Coupling the bulk dynamics to the boundary fluctuations violates the separation of scales and leads to the Labyrinthine failure mode (Mode T.C).
+This formalizes why $z_{\text{tex}}$ must be excluded from dynamics ($S_t$) and control ($\pi_\theta$). The dynamics $S_t$ operate on the **bulk** (finite-energy excitations inside the hyperbolic volume). The texture $z_{\text{tex}}$ lives at the **boundary at infinity** (infinite energy / zero scale). Coupling the bulk dynamics to the boundary fluctuations violates the separation of scales and leads to the Labyrinthine failure mode (Mode T.C).
 
 :::
 (sec-the-induced-riemannian-geometry)=
 ### The Induced Riemannian Geometry
 
-The separation of nuisance and texture implies a specific structure for the Riemannian metric $G$ ({ref}`Section 2.5 <sec-second-order-sensitivity-value-defines-a-local-metric>`) on the global latent manifold.
+The separation of nuisance and texture implies a specific structure for the Riemannian metric $G$ ({ref}`sec-second-order-sensitivity-value-defines-a-local-metric`) on the global latent manifold.
 
 :::{prf:definition} The Latent Metric Tensor
 :label: def-the-latent-metric-tensor
@@ -1922,17 +1943,17 @@ The hyperbolic geometry captures this naturally. Moving between rooms (changing 
 (sec-summary-the-manifold-construction)=
 ### Summary: The Manifold Construction
 
-The Attentive Atlas ({ref}`Section 7.8 <sec-tier-the-attentive-atlas>`) and the TopoEncoder ({ref}`Section 9 <sec-the-disentangled-variational-architecture-hierarchical-latent-separation>`) jointly construct a latent manifold $\mathcal{Z}$ with the following geometric properties:
+The Attentive Atlas ({ref}`sec-tier-the-attentive-atlas`) and the TopoEncoder ({ref}`sec-the-disentangled-variational-architecture-hierarchical-latent-separation`) jointly construct a latent manifold $\mathcal{Z}$ with the following geometric properties:
 
 1. **Global Topology:** A tubular neighborhood of a simplicial tree.
 2. **Global Geometry:** Coarsely hyperbolic ($0$-hyperbolic at the discrete level), corresponding to hierarchical information structure.
 3. **Local Geometry:** Euclidean fibres $\mathbb{R}^{d_n}$ (the nuisance $z_n$), enabling local linear control.
-4. **Ideal Boundary:** The texture $z_{\mathrm{tex}}$ lives at $\partial_\infty \mathcal{Z}$—the residual at infinite resolution that cannot be resolved into the bulk structure without infinite capacity.
+4. **Ideal Boundary:** The texture $z_{\text{tex}}$ lives at $\partial_\infty \mathcal{Z}$—the residual at infinite resolution that cannot be resolved into the bulk structure without infinite capacity.
 
 This geometric picture justifies the **Sieve architecture**:
 
 * **Gate Nodes** monitor the bulk (checking $K$ and $z_n$).
-* **Boundary checks** monitor the flux from $z_{\mathrm{tex}}$ into the bulk.
+* **Boundary checks** monitor the flux from $z_{\text{tex}}$ into the bulk.
 * **Texture is residual:** We do not control infinity; we only observe it.
 
 
@@ -1989,7 +2010,7 @@ $$
 3. **Residual Computation (Texture Extraction):** The unexplained signal is isolated:
 
 $$
-z_{\mathrm{tex}}^{(\ell)} = x^{(\ell)} - \hat{x}^{(\ell)}
+z_{\text{tex}}^{(\ell)} = x^{(\ell)} - \hat{x}^{(\ell)}
 
 $$
 :::
@@ -1999,7 +2020,7 @@ $$
 To prevent signal decay (vanishing activations) without using skip connections, we explicitly renormalize the residual to unit variance before passing it to the next scale:
 
 $$
-x^{(\ell+1)} = \frac{z_{\mathrm{tex}}^{(\ell)}}{\sigma^{(\ell)} + \epsilon}, \qquad \sigma^{(\ell)} = \sqrt{\mathrm{Var}(z_{\mathrm{tex}}^{(\ell)}) + \epsilon}
+x^{(\ell+1)} = \frac{z_{\text{tex}}^{(\ell)}}{\sigma^{(\ell)} + \epsilon}, \qquad \sigma^{(\ell)} = \sqrt{\mathrm{Var}(z_{\text{tex}}^{(\ell)}) + \epsilon}
 
 $$
 The scalar $\sigma^{(\ell)}$ is stored as a state variable (the **scale factor**) for the decoding pass.
@@ -2039,7 +2060,7 @@ Standard deep learning uses skip connections ($y = f(x) + x$) to allow gradients
 We achieve **Dynamical Isometry**---the condition that the input-output Jacobian has singular values concentrated near unity {cite}`saxe2014exact,pennington2017resurrecting`---through three complementary mechanisms already defined in the framework:
 
 (sec-mechanism-orthogonality-regularization)=
-#### Mechanism 1: Orthogonality Regularization ({ref}`Section 7.7.2 <sec-orthonormal-constraints-for-atlas-charts>`)
+#### Mechanism 1: Orthogonality Regularization ({ref}`sec-orthonormal-constraints-for-atlas-charts`)
 
 The **OrthogonalLinear** layers enforce approximate isometry via the loss:
 
@@ -2057,13 +2078,13 @@ Let $W$ be a weight matrix satisfying $W^T W = I$ (semi-orthogonality). Then:
 
 *Proof.* For semi-orthogonal $W$, the singular values are exactly 1. The Jacobian $\partial y / \partial x = W$ has $\|W\|_2 = 1$. By the chain rule, gradient norms are preserved. $\square$
 
-This is why the gradient flow table ({ref}`Section 7.7.2 <sec-orthonormal-constraints-for-atlas-charts>`) shows Preserved for orthogonal $W$ versus Explodes or vanishes for arbitrary $W$.
+This is why the gradient flow table ({ref}`sec-orthonormal-constraints-for-atlas-charts`) shows Preserved for orthogonal $W$ versus Explodes or vanishes for arbitrary $W$.
 
 :::
 (sec-mechanism-variance-rescaling)=
 #### Mechanism 2: Variance Rescaling (The Renormalization Step)
 
-The rescaling $x^{(\ell+1)} = z_{\mathrm{tex}}^{(\ell)} / \sigma^{(\ell)}$ ensures unit variance at each layer input.
+The rescaling $x^{(\ell+1)} = z_{\text{tex}}^{(\ell)} / \sigma^{(\ell)}$ ensures unit variance at each layer input.
 
 :::{prf:proposition} Forward Activation Stability
 :label: prop-forward-activation-stability
@@ -2076,7 +2097,7 @@ With variance rescaling:
 **Gradient Amplification Analysis:** Let the loss $\mathcal{L}$ depend on the output of block $\ell$. The gradient flowing back to block $\ell-1$ includes the factor:
 
 $$
-\frac{\partial x^{(\ell)}}{\partial z_{\mathrm{tex}}^{(\ell-1)}} = \frac{1}{\sigma^{(\ell-1)}}
+\frac{\partial x^{(\ell)}}{\partial z_{\text{tex}}^{(\ell-1)}} = \frac{1}{\sigma^{(\ell-1)}}
 
 $$
 Since each block successfully explains part of the signal, the residual standard deviation $\sigma^{(\ell)} < 1$ (the texture has less variance than the unit-normalized input). This implies:
@@ -2088,7 +2109,7 @@ This prevents the **Spectral Bias** where neural networks preferentially learn l
 
 :::
 (sec-mechanism-spectral-normalization)=
-#### Mechanism 3: Spectral Normalization ({ref}`Section 3.4 <sec-joint-optimization>`, Node 20)
+#### Mechanism 3: Spectral Normalization ({ref}`sec-joint-optimization`, Node 20)
 
 For additional stability, each layer can use **spectral normalization** {cite}`miyato2018spectral` to bound the operator norm:
 
@@ -2098,7 +2119,7 @@ W_{\text{SN}} = \frac{W}{\sigma_{\max}(W)}
 $$
 This ensures $\|W_{\text{SN}}\|_2 = 1$, making each layer 1-Lipschitz. Combined with 1-Lipschitz activations (e.g., GELU), this bounds the network Lipschitz constant by the product of per-layer spectral norms.
 
-The framework's **LipschitzCheck** (Node 20) monitors $\max_\ell \sigma(W_\ell)$ at runtime, and the spectral (Lipschitz) barrier ({ref}`Section 3.3 <sec-defect-functionals-implementing-regulation>`, Table; {cite}`miyato2018spectral`) enforces:
+The framework's **LipschitzCheck** (Node 20) monitors $\max_\ell \sigma(W_\ell)$ at runtime, and the spectral (Lipschitz) barrier ({ref}`sec-defect-functionals-implementing-regulation`, Table; {cite}`miyato2018spectral`) enforces:
 
 $$
 \mathcal{L}_{\text{Lip}} = \sum_\ell \max(0, \sigma_{\max}(W_\ell) - K)^2
@@ -2109,9 +2130,9 @@ $$
 
 | Mechanism                                     | Forward Effect                     | Backward Effect                       | Framework Reference                                              |
 |-----------------------------------------------|------------------------------------|---------------------------------------|------------------------------------------------------------------|
-| **Orthogonality** $\mathcal{L}_{\text{orth}}$ | $\lVert Wx\rVert = \lVert x\rVert$ | $\lVert W^T g\rVert = \lVert g\rVert$ | {ref}`Section 7.7.2 <sec-orthonormal-constraints-for-atlas-charts>`                                                    |
+| **Orthogonality** $\mathcal{L}_{\text{orth}}$ | $\lVert Wx\rVert = \lVert x\rVert$ | $\lVert W^T g\rVert = \lVert g\rVert$ | {ref}`sec-orthonormal-constraints-for-atlas-charts`                                                    |
 | **Variance Rescaling**                        | $\mathrm{Var}(x^{(\ell)}) = 1$     | Gradient amplified by $1/\sigma$      | Definition {prf:ref}`def-the-rescaling-operator-renormalization` |
-| **Spectral Norm**                             | $\lVert W\rVert_2 \leq K$          | Bounded gradient explosion            | {ref}`Section 3.4 <sec-joint-optimization>`, Node 20                                             |
+| **Spectral Norm**                             | $\lVert W\rVert_2 \leq K$          | Bounded gradient explosion            | {ref}`sec-joint-optimization`, Node 20                                             |
 
 :::{prf:theorem} Dynamical Isometry without Skip Connections
 :label: thm-dynamical-isometry-without-skip-connections
@@ -2136,10 +2157,10 @@ This architecture is a direct algorithmic implementation of Kadanoff's block-spi
 | **Hamiltonian $H[\phi]$** | The input distribution $p(x^{(\ell)})$ at layer $\ell$. |
 | **Coarse-Graining** | The Encoder $\mathcal{E}^{(\ell)}$ mapping continuous $x^{(\ell)}$ to discrete $K^{(\ell)}$. |
 | **Effective Action** | The Decoder $\mathcal{D}^{(\ell)}$ predicting the mean field $\hat{x}^{(\ell)}$. |
-| **Integrating Out** | Subtracting the mean field: $z_{\mathrm{tex}}^{(\ell)} = x^{(\ell)} - \hat{x}^{(\ell)}$. |
-| **Rescaling** | Mapping $z_{\mathrm{tex}}^{(\ell)} \mapsto x^{(\ell+1)}$ to restore the energy scale. |
+| **Integrating Out** | Subtracting the mean field: $z_{\text{tex}}^{(\ell)} = x^{(\ell)} - \hat{x}^{(\ell)}$. |
+| **Rescaling** | Mapping $z_{\text{tex}}^{(\ell)} \mapsto x^{(\ell+1)}$ to restore the energy scale. |
 | **Relevant Operators** | The macro-symbols $K^{(\ell)}$ (grow/stay constant under flow). |
-| **Irrelevant Operators** | The texture $z_{\mathrm{tex}}^{(\ell)}$ (suppressed/pushed to next scale). |
+| **Irrelevant Operators** | The texture $z_{\text{tex}}^{(\ell)}$ (suppressed/pushed to next scale). |
 | **Fixed Point** | The texture distribution $p(x^{(L)})$ at the deepest layer. |
 
 **The Hierarchy of Scales:**
@@ -2186,7 +2207,7 @@ class StackedTopoEncoder(nn.Module):
         self.num_blocks = num_blocks
         self.eps = eps
 
-        # Each block is a PrimitiveAttentiveAtlasEncoder ({ref}`Section 7.8 <sec-tier-the-attentive-atlas>`)
+        # Each block is a PrimitiveAttentiveAtlasEncoder ({ref}`sec-tier-the-attentive-atlas`)
         self.encoders = nn.ModuleList([
             PrimitiveAttentiveAtlasEncoder(
                 input_dim=input_dim if i == 0 else latent_dim,
@@ -2198,7 +2219,7 @@ class StackedTopoEncoder(nn.Module):
             for i in range(num_blocks)
         ])
 
-        # Corresponding decoders ({ref}`Section 7.10 <sec-decoder-architecture-overview-topological-decoder>`)
+        # Corresponding decoders ({ref}`sec-decoder-architecture-overview-topological-decoder`)
         self.decoders = nn.ModuleList([
             PrimitiveTopologicalDecoder(
                 latent_dim=latent_dim,
@@ -2272,7 +2293,7 @@ class StackedTopoEncoder(nn.Module):
         x_final: torch.Tensor,
         sigmas: List[float],
     ) -> torch.Tensor:
-        """Reconstruct input from multi-scale decomposition (Definition 7.12.3).
+        """Reconstruct input from multi-scale decomposition ({prf:ref}`def-total-reconstruction`).
 
         x_hat = sum_ell Pi^(ell) * x_hat^(ell) + Pi^(L) * x_final
         where Pi^(ell) = prod_{j=0}^{ell-1} sigma^(j), Pi^(0) = 1.
@@ -2295,7 +2316,7 @@ class StackedTopoEncoder(nn.Module):
         return x_recon
 
     def orthogonality_loss(self, device: torch.device = None) -> torch.Tensor:
-        """Total orthogonality defect across all blocks ({ref}`Section 7.7.2 <sec-orthonormal-constraints-for-atlas-charts>`)."""
+        """Total orthogonality defect across all blocks ({ref}`sec-orthonormal-constraints-for-atlas-charts`)."""
         if device is None:
             device = next(self.parameters()).device
         total = torch.tensor(0.0, device=device)
@@ -2355,7 +2376,7 @@ Think of it like currency exchange. Instead of having exchange rates for every p
 In the options framework, a jump operator corresponds to a transition function between charts. It encodes how to translate state coordinates when the agent changes macro regime, avoiding brittle hand-written state resets.
 :::
 
-The atlas structure ({ref}`Section 7.8 <sec-tier-the-attentive-atlas>`) decomposes the latent space into overlapping charts, but has not yet specified how coordinates transform between charts. This section introduces **Jump Operators**---the learnable transition functions $L_{i \to j}: \mathcal{U}_i \to \mathcal{U}_j$ that encode the topological structure of the manifold.
+The atlas structure ({ref}`sec-tier-the-attentive-atlas`) decomposes the latent space into overlapping charts, but has not yet specified how coordinates transform between charts. This section introduces **Jump Operators**---the learnable transition functions $L_{i \to j}: \mathcal{U}_i \to \mathcal{U}_j$ that encode the topological structure of the manifold.
 
 (sec-motivation-from-geometry-to-topology)=
 ### Motivation: From Geometry to Topology
@@ -2439,7 +2460,7 @@ For typical values ($K = 64$, $d_n = 16$, $r = 8$), this yields $64 \times (2 \t
 (sec-geometric-interpretation)=
 ### Geometric Interpretation
 
-The factorized structure admits an interpretation *analogous* to constructions in fibre bundle theory ({ref}`Section 7.11 <sec-the-geometry-of-the-latent-space-a-hyperbolic-hierarchy>`). We emphasize this is a structural analogy, not a rigorous identification:
+The factorized structure admits an interpretation *analogous* to constructions in fibre bundle theory ({ref}`sec-the-geometry-of-the-latent-space-a-hyperbolic-hierarchy`). We emphasize this is a structural analogy, not a rigorous identification:
 
 | Component                     | Analogous Geometric Role                                                                           |
 |-------------------------------|----------------------------------------------------------------------------------------------------|
@@ -2481,7 +2502,7 @@ $$
    \mathbf{1}[x \in U_i \cap U_j] \approx \mathbf{1}[w_i(x) > \tau] \cdot \mathbf{1}[w_j(x) > \tau]
 
    $$
-   With soft routers ({ref}`Section 7.8 <sec-tier-the-attentive-atlas>`), we use the product $w_i(x) \cdot w_j(x)$ as a soft indicator.
+   With soft routers ({ref}`sec-tier-the-attentive-atlas`), we use the product $w_i(x) \cdot w_j(x)$ as a soft indicator.
 
 2. **Sampling Overlaps:** Computing all $K^2$ pairs is expensive. We sample:
    - The top-2 charts per point (from router weights).
@@ -2720,7 +2741,7 @@ def compute_jump_consistency_loss(
 (sec-integration-with-attentiveatlasencoder)=
 ### Integration with PrimitiveAttentiveAtlasEncoder
 
-The `FactorizedJumpOperator` integrates with the encoder ({ref}`Section 7.8 <sec-tier-the-attentive-atlas>`) as follows:
+The `FactorizedJumpOperator` integrates with the encoder ({ref}`sec-tier-the-attentive-atlas`) as follows:
 
 ```python
 class PrimitiveAtlasEncoderWithJumps(nn.Module):
@@ -2757,7 +2778,7 @@ class PrimitiveAtlasEncoderWithJumps(nn.Module):
 
         # Jump consistency loss
         jump_loss = compute_jump_consistency_loss(
-            self.jump_op, z_n_all_charts, router_weights
+            z_n_all_charts, router_weights, self.jump_op
         )
 
         return {

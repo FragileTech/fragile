@@ -276,7 +276,7 @@ Where:
 Learned precisions can reweight reconstruction, VQ, and supervised terms when enabled.
 :::
 
-For exact definitions of each tiered loss, see {ref}`Appendix F <sec-appendix-f-loss-terms-reference>`.
+For exact definitions of each tiered loss, see {ref}`sec-appendix-f-loss-terms-reference`.
 
 (sec-the-complete-training-loop)=
 ## The Complete Training Loop
