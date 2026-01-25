@@ -24,7 +24,7 @@ parts:
         sections:
           - file: source/1_agent/03_architecture/01_compute_tiers
           - file: source/1_agent/03_architecture/02_disentangled_vae
-          - file: source/1_agent/03_architecture/03_optmization
+          - file: source/1_agent/03_architecture/03_optimization
       - file: source/1_agent/04_control/01_exploration
         title: "Part IV - Control & Belief"
         sections:
@@ -120,6 +120,7 @@ parts:
           - file: source/2_hypostructure/09_mathematical/04_taxonomy
           - file: source/2_hypostructure/09_mathematical/05_algorithmic
           - file: source/2_hypostructure/09_mathematical/06_complexity_bridge
+          - file: source/2_hypostructure/09_mathematical/07_contact_nambu
       - file: source/2_hypostructure/10_information_processing/01_metalearning
         title: "Part X - Information Processing"
         sections:

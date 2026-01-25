@@ -67,10 +67,10 @@ Each gate predicate $P_i^T$ belongs to one of three decidability classes:
 
 | Gate | Predicate | Decidability Class | Witness Type | Undecidability Source |
 |------|-----------|-------------------|--------------|----------------------|
-| 1 (Energy) | $\Phi(x) < M$ | $\Sigma_1^0$ (semi-decidable) | $(x, \Phi(x), M)$ | Infinite sup over time |
+| 1 (Energy) | $\Phi(x) < M$ | $\Pi_1^0$ (co-semi-decidable) | $(x, \Phi(x), M)$ | Infinite sup over time |
 | 3 (Compact) | $\exists V: \mu(B_\varepsilon(V)) > 0$ | $\Sigma_1^0$ | $(V, \varepsilon, \mu_{\mathrm{witness}})$ | Profile enumeration |
 | 4 (Scale) | $\alpha < \beta + \lambda_c$ | Decidable | $(\alpha, \beta, \lambda_c)$ | None (arithmetic) |
-| 7 (Stiff) | $\|\nabla\Phi\| \geq C|\Delta\Phi|^\theta$ | $\Pi_2^0$ | $(C, \theta, \mathrm{gradient\_bound})$ | Infimum over manifold |
+| 7 (Stiff) | $\|\nabla\Phi\| \geq C|\Delta\Phi|^\theta$ | $\Pi_1^0$ | $(C, \theta, \mathrm{gradient\_bound})$ | Infimum over manifold |
 | 17 (Lock) | $\operatorname{Hom}(\mathbb{H}_{\mathrm{bad}}, -) = \emptyset$ | Undecidable in general | Obstruction cocycle | Rice's Theorem |
 
 *Decidability Mechanisms:*
@@ -271,7 +271,7 @@ Notice the fallback: if a type does not admit surgery at all, the factory honest
 
 For any type $T$ admitting surgery, there exist default surgery operators matching diagram re-entry targets:
 
-**Input**: Type $T$ + canonical profile library + admissibility interface
+**Input**: Type $T$ + canonical profile library + admissibility interface + max surgery count $N_{\max}$
 
 **Output**: For each surgery $S$:
 - Surgery operator $\mathcal{O}_S^T$
