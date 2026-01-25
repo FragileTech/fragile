@@ -1350,7 +1350,14 @@ where $\tau: X \to \mathcal{T}$ is the sector label.
 
 **Semantics of NO**: "Protected" means the sector is *obstructed/inaccessible*, not "safe."
 
-**YES certificate** $K_{\mathrm{TB}_\pi}^+ = (\tau(x), \text{accessibility proof})$.
+**YES certificate** $K_{\mathrm{TB}_\pi}^+ = (\tau(x), \text{accessibility proof},
+\mathsf{I}_{\text{list}}, \text{boundary payload})$.
+
+The invariant list $\mathsf{I}_{\text{list}}$ records any certified topological
+invariants (Euler characteristic, Betti numbers, etc.) used by E2.
+The **boundary payload** is optional and supplies a certified nonnegative boundary
+invariant $T_{\partial}$ (with provenance), used by topological bound checks
+({prf:ref}`def-e2`). If absent, E2 returns INC for topological bounds.
 
 **NO certificate** $K_{\mathrm{TB}_\pi}^- = (\tau(x), \text{obstruction certificate})$.
 

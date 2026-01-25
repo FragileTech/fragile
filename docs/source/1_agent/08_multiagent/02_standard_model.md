@@ -67,7 +67,7 @@ This connection is a gauge field. And the requirement that the physics be indepe
 
 We're going to derive three different gauge fields from three different redundancies:
 1. **$U(1)_Y$**: The freedom to shift the baseline of utility
-2. **$SU(2)_L$**: The freedom to rotate between prediction and observation
+2. **$SU(2)_L$**: The freedom to rotate between observation and action-intent
 3. **$SU(N_f)_C$**: The freedom to relabel feature components
 
 Each one emerges from a genuine redundancy in how we describe the agent's state, and each one forces a compensating field into existence.
@@ -88,7 +88,7 @@ This is the utility gauge freedom. And it's not just a philosophical nicety---it
 :::
 
 The fundamental observable in Reinforcement Learning is the **Preference**, defined by the gradient of the scalar value
-potential (the conservative component of the reward 1-form), not its absolute magnitude. The policy is invariant under
+potential (the conservative component of the external reward 1-form), not its absolute magnitude. The policy is invariant under
 certain potential transformations, including constant shifts and potential-based shaping {cite}`ng1999policy`.
 
 :::{prf:definition} Utility Gauge Freedom
@@ -108,23 +108,29 @@ where:
 
 The system's observables are:
 1. **Probability density:** $\rho = |\psi|^2$
-2. **Probability current:** $J^\mu = \text{Im}(\psi^* D^\mu \psi) = \frac{\rho}{\sigma}(\partial^\mu V - A^\mu)$ (conservative case: $A^\mu=0$)
+2. **Probability current:** $J^\mu = \text{Im}(\psi^* D^\mu \psi) = \frac{\rho}{\sigma}(\partial^\mu V - A^{\text{ext}\,\mu})$
+   (conservative case: $A^{\text{ext}\,\mu}=0$).
+   Here $A^{\text{ext}}_\mu$ is the external reward 1-form; the internal $U(1)$ connection $B_\mu$ is introduced below.
+   The $D^\mu$ here is the WFR covariant derivative built from $A^{\text{ext}}_\mu$; later $D_\mu$
+   denotes the SMoC gauge covariant derivative including $B_\mu$, $W_\mu$, and $G_\mu$.
 
-Both are invariant under the global phase transformation:
+Both are invariant under the global phase transformation (constant gauge parameter $\alpha$):
 
 $$
-\psi(z) \to e^{i\theta} \psi(z), \quad \theta \in \mathbb{R}.
+\psi(z) \to e^{i(Y/2)\alpha} \psi(z), \quad \alpha \in \mathbb{R}.
 
 $$
 
-This corresponds to the global gauge invariance of the Value function: $V(z) \to V(z) + \sigma\theta$. The addition of a constant baseline does not alter the policy gradient $\nabla_A V$.
+This corresponds to the global gauge invariance of the Value function:
+$V(z) \to V(z) + \sigma \frac{Y}{2}\alpha$. The addition of a constant baseline does not alter the
+policy gradient $\nabla_{A^{\text{ext}}} V$.
 
 :::
 
 :::{div} feynman-prose
 Look at what this definition is saying. We've packaged the agent's belief (probability distribution) and value (utility function) into a single complex wave function $\psi$. The probability is encoded in the amplitude, and the value is encoded in the phase.
 
-Now, the phase of a complex number is only defined up to an overall constant---if you multiply every point by $e^{i\theta}$, you've just rotated the whole phase wheel, and nobody can tell the difference from looking at the amplitude or the current.
+Now, the phase of a complex number is only defined up to an overall constant---if you multiply every point by $e^{i\alpha}$, you've just rotated the whole phase wheel, and nobody can tell the difference from looking at the amplitude or the current.
 
 But here's where it gets interesting. What if you want to make *different* phase rotations at *different* locations?
 :::
@@ -135,7 +141,7 @@ But here's where it gets interesting. What if you want to make *different* phase
 In a distributed agent with finite information speed $c_{\text{info}}$ (Axiom {prf:ref}`ax-information-speed-limit`), there is no global clock to synchronize the Value baseline across the manifold simultaneously. The agent must possess **Local Gauge Invariance**:
 
 $$
-\psi(x) \to e^{i\theta(x)} \psi(x),
+\psi(x) \to e^{i(Y/2)\alpha(x)} \psi(x),
 
 $$
 
@@ -156,7 +162,9 @@ This isn't a bug in the design---it's a fundamental constraint imposed by causal
 :::{prf:theorem} Emergence of the Opportunity Field ($B_\mu$)
 :label: thm-emergence-opportunity-field
 
-To preserve the invariance of the kinetic term in the Inference Action under the local transformation $\psi \to e^{i\theta(x)}\psi$, we must replace the partial derivative $\partial_\mu$ with the **Covariant Derivative**:
+To preserve the invariance of the kinetic term in the Inference Action under the local transformation
+$\psi \to e^{i(Y/2)\alpha(x)}\psi$, we must replace the partial derivative $\partial_\mu$ with the
+**Covariant Derivative**:
 
 $$
 D_\mu = \partial_\mu - i g_1 \frac{Y}{2} B_\mu,
@@ -177,39 +185,42 @@ $$
 
 $$
 
-Under local transformation $\psi \to e^{i\theta(x)}\psi$:
+Under local transformation $\psi \to e^{i(Y/2)\alpha(x)}\psi$:
 
 $$
-\partial_\mu \psi \to e^{i\theta}(\partial_\mu \psi + i(\partial_\mu\theta)\psi).
+\partial_\mu \psi \to e^{i(Y/2)\alpha}\left(\partial_\mu \psi + i\frac{Y}{2}(\partial_\mu\alpha)\psi\right).
 
 $$
 
-The kinetic term acquires a spurious contribution $\sigma(\partial_\mu\theta)|\psi|^2$ that depends on the arbitrary function $\theta(x)$.
+The kinetic term acquires a spurious contribution $\sigma\frac{Y}{2}(\partial_\mu\alpha)|\psi|^2$
+that depends on the arbitrary function $\alpha(x)$.
 
-**Step 2.** Introduce the compensating field $B_\mu$ transforming as:
+**Step 2.** Introduce the compensating field $B_\mu$ and a universal gauge parameter $\alpha(x)$,
+with field phase $\psi \to e^{i(Y/2)\alpha(x)}\psi$, and transform:
 
 $$
-B_\mu \to B_\mu + \frac{2}{g_1 Y} \partial_\mu \theta(x).
+B_\mu \to B_\mu + \frac{1}{g_1} \partial_\mu \alpha(x).
 
 $$
 
 **Step 3.** The covariant derivative $D_\mu \psi = (\partial_\mu - ig_1(Y/2)B_\mu)\psi$ transforms homogeneously:
 
 $$
-D_\mu \psi \to e^{i\theta(x)} D_\mu \psi.
+D_\mu \psi \to e^{i(Y/2)\alpha(x)} D_\mu \psi.
 
 $$
 
 **Step 4.** The gauge-invariant kinetic term is $(D_\mu\psi)^\dagger(D^\mu\psi) = |D_\mu\psi|^2$.
 Equivalently, $\mathcal{L}_{\text{kin}} = \psi^*(i\sigma D_t)\psi - \frac{\sigma^2}{2}|D\psi|^2$ in the non-conservative case.
 
-**Identification:** The field $B_\mu$ is the $U(1)$ connection associated with the reward 1-form (the Opportunity Field).
-In the conservative case, $B_\mu = \partial_\mu \Phi$ is pure gauge. On each time slice, the spatial components $\vec{B}$
+**Identification:** The field $B_\mu$ is the internal $U(1)$ connection (the Opportunity Field), representing the agent's
+model of the external reward 1-form $A^{\text{ext}}_\mu$. In the conservative case, a gauge exists with
+$B_\mu = \partial_\mu \Phi$. On each time slice, the spatial components $\vec{B}$
 admit a Hodge decomposition into gradient (conservative) plus solenoidal/harmonic parts (path-dependent opportunity).
 
 The field strength tensor $B_{\mu\nu} = \partial_\mu B_\nu - \partial_\nu B_\mu$ measures the non-conservative
-component of the reward 1-form (Value Curl; Definition {prf:ref}`def-value-curl`). When $B_{\mu\nu} \neq 0$, no choice
-of baseline can make the reward 1-form path-independent.
+component of the internal opportunity 1-form (Value Curl; Definition {prf:ref}`def-value-curl`). When $B_{\mu\nu} \neq 0$,
+no choice of baseline can make the internal opportunity 1-form path-independent.
 
 $\square$
 
@@ -218,13 +229,14 @@ $\square$
 :::{div} feynman-prose
 Let me explain what just happened in plain language.
 
-The problem is this: if you take a derivative of $\psi$, and then someone comes along and changes the phase by a location-dependent amount $\theta(x)$, you get extra terms from the derivative acting on $\theta$. The derivative "notices" that the phase is changing from place to place.
+The problem is this: if you take a derivative of $\psi$, and then someone comes along and changes the phase by a location-dependent amount $\alpha(x)$, you get extra terms from the derivative acting on $\alpha$. The derivative "notices" that the phase is changing from place to place.
 
 The solution is to introduce a "correction factor"---the field $B_\mu$---that transforms in exactly the way needed to cancel those extra terms. When you compute the covariant derivative $D_\mu$, it doesn't care about local phase choices because the gauge field absorbs all that ambiguity.
 
 What's remarkable is that this $B_\mu$ field has physical meaning. It's not just a mathematical trick. The field $B_\mu$
-represents the *opportunity landscape* encoded by the reward 1-form. In the conservative limit it reduces to a gradient
-field; when not, it carries circulation. The field strength $B_{\mu\nu}$ tells you when the reward 1-form has "curl"---when
+represents the *opportunity landscape* encoded by the internal model of the external reward 1-form. In the conservative
+limit it reduces to a gradient field; when not, it carries circulation. The field strength $B_{\mu\nu}$ tells you when the
+internal opportunity 1-form has "curl"---when
 there are closed loops where you can gain reward just by going around in circles.
 
 In economics, this would be an arbitrage opportunity. In physics, it's like a magnetic field. In cognition, it's a source of persistent, cyclic behavior patterns.
@@ -234,6 +246,9 @@ In economics, this would be an arbitrage opportunity. In physics, it's like a ma
 :class: feynman-added note
 
 The name "Opportunity Field" captures the cognitive meaning of $B_\mu$. In physics, this would be called the electromagnetic potential. But for an agent, what does it represent?
+
+Notation: we reserve $A^{\text{ext}}_\mu$ for the external reward 1-form and $B_\mu$ for the internal
+opportunity field that models it; these need not coincide when the agent's model is imperfect.
 
 Think of $B_\mu$ as encoding "where the good stuff is" in the agent's representational space. The gradient part of the
 spatial components points toward higher value, while the solenoidal part encodes circulations that sustain cycles. The
@@ -281,24 +296,28 @@ On the motor side, the agent *chooses* what flux to emit. You decide how hard to
 
 These two boundary conditions are mathematically dual to each other. But they're not the same. And the claim here is that this asymmetry---this "chirality" of the cybernetic loop---is what gives rise to the $SU(2)_L$ symmetry.
 
-Why "Left-Handed"? In physics, the weak force only affects left-handed particles. Here, we're saying that the equivalent process (belief updating) only affects the "left-handed" component of the agent's state---the part involved in prediction and observation, not the part ready for action output.
+Why "Left-Handed"? In physics, the weak force only affects left-handed particles. Here, we're saying that the equivalent process (belief updating) only affects the "left-handed" component of the agent's state---the part involved in observation and pre-commitment action, not the part ready for committed output.
 :::
 
 :::{prf:definition} The Cognitive Isospin Doublet
 :label: def-cognitive-isospin-doublet
 
-We define the **Left-Handed Field** $\Psi_L$ as an isospin doublet residing in the fundamental representation of $SU(2)$:
+We define the **Left-Handed Weyl Field** $\Psi_L$ as an isospin doublet residing in the fundamental representation of $SU(2)_L$.
+It is a section of the left Weyl spin bundle $S_L$ (chirality $P_L$):
 
 $$
 \Psi_L(x) = \begin{pmatrix} \psi_{\text{obs}}(x) \\ \psi_{\text{act}}^{\text{pre}}(x) \end{pmatrix}
 
 $$
 
+Each entry is a left-handed Weyl spinor (spinor indices suppressed).
+
 where:
 - $\psi_{\text{obs}}$ is the **Observation** channel (the incoming sensory update from the Dirichlet boundary, Definition {prf:ref}`def-dirichlet-boundary-condition-sensors`)
 - $\psi_{\text{act}}^{\text{pre}}$ is the **Pre-commitment Action** channel (the outgoing motor intent from the Neumann boundary, Definition {prf:ref}`def-neumann-boundary-condition-motors`)
 
-We define the **Right-Handed Field** $\Psi_R$ as an isospin singlet (invariant under $SU(2)$):
+We define the **Right-Handed Weyl Field** $\Psi_R$ as an isospin singlet (invariant under $SU(2)_L$).
+It is a section of the right Weyl spin bundle $S_R$ (chirality $P_R$):
 
 $$
 \Psi_R(x) = \psi_{\text{act}}^{\text{commit}}(x)
@@ -306,6 +325,9 @@ $$
 $$
 
 representing the **Committed Action** plan after mixing and projection.
+
+Chirality is defined by the projectors $P_{L/R} = (1 \mp \gamma^5)/2$ on the Dirac spin bundle
+(Definition {prf:ref}`def-cognitive-spinor`).
 
 The **Prediction** is derived (not fundamental) via the forward model:
 
@@ -335,46 +357,47 @@ Note that prediction is *derived* from your committed action via your forward mo
 :::{prf:definition} Gauge-Covariant Action Commitment
 :label: def-gauge-covariant-action-commitment
 
-The selection of "which component is action" in the $\Psi_L$ doublet is a gauge choice (selecting a basis in the $\mathbb{C}^2_{\text{mode}}$ fiber). To make action commitment gauge-covariant, we introduce a unit vector **order parameter** $\vec{n}(x) \in \mathfrak{su}(2)$ derived from the value field:
+The selection of "which component is action" in the $\Psi_L$ doublet is a gauge choice (selecting a basis in the $\mathbb{C}^2_{\text{mode}}$ fiber). To make action commitment gauge-covariant, we use the ontological order parameter to define a unit doublet $n(x) \in \mathbb{C}^2$:
 
 $$
-\vec{n}(x) = \frac{\nabla_A V(x)}{\|\nabla_A V(x)\|} \cdot \vec{\tau}
+n(x) := \frac{\phi(x)}{\|\phi(x)\|}, \qquad n(x)^\dagger n(x) = 1
 
 $$
-Here $\nabla_A V := \nabla V - A$ with $A$ given by the spatial components of $B_\mu$ (conservative case: $A=0$).
+where $\phi$ is the ontological order parameter (Definition {prf:ref}`def-ontological-order-parameter`), and $n$ is
+defined only when $\phi \neq 0$.
 
-where $\vec{\tau} = (\tau_1, \tau_2, \tau_3)$ are the Pauli matrices (generators of $\mathfrak{su}(2)$), and $V(x)$ is
-the scalar Value potential for the conservative component (Theorem {prf:ref}`thm-the-hjb-helmholtz-correspondence`).
-
-The **Committed Action** amplitude is then the gauge-covariant projection:
+The gauge-covariant **Commitment Projection** is:
 
 $$
-\psi_{\text{act}}^{\text{commit}}(x) = \Psi_R(x) = \Pi_{\vec{n}(x)} \Psi_L(x)
+\psi_{\text{act}}^{\text{proj}}(x) := n(x)^\dagger \Psi_L(x)
 
 $$
 
 where the projection operator is:
 
 $$
-\Pi_{\vec{n}} = \frac{1}{2}\left(I + \vec{n} \cdot \vec{\tau}\right)
+\Pi_n = n n^\dagger, \qquad \Pi_n \Psi_L = n(n^\dagger \Psi_L)
 
 $$
 
-*Justification:* The covariant value gradient $\nabla_A V$ points in the "favorable direction" in state space. By using it to define $\vec{n}(x)$, we make the action commitment intrinsic to the local value landscape, not an arbitrary choice of basis. This projection is gauge-covariant: under local $SU(2)$ transformations $\Psi_L \to U(x)\Psi_L$, the order parameter transforms as $\vec{n} \to U \vec{n} U^\dagger$, ensuring the committed action remains well-defined.
+The committed action singlet $\Psi_R$ remains an independent right-handed field; the Yukawa term
+couples $\Psi_R$ to the projected amplitude $\psi_{\text{act}}^{\text{proj}}$ so that alignment
+occurs dynamically in the broken phase.
 
-*Remark:* In regions where $\nabla_A V \approx 0$ (flat value landscape), the order parameter becomes undefined, corresponding to decision ambiguity. The agent requires sufficient value gradient to commit to a definite action direction.
+*Justification:* The unit doublet $n$ encodes the local ontological split and makes the commitment projection intrinsic to the scalar sector, not an arbitrary choice of basis. Under local $SU(2)$ transformations $\Psi_L \to U(x)\Psi_L$ and $n \to U(x)n$, so $\psi_{\text{act}}^{\text{proj}} = n^\dagger \Psi_L$ is invariant and $\Pi_n \to U \Pi_n U^\dagger$, ensuring the projected component is $SU(2)$-covariant. Under $U(1)_Y$, $n$ carries charge $Y_\phi$, so $\psi_{\text{act}}^{\text{proj}}$ transforms with charge $Y_L - Y_\phi$, matching $\Psi_R$ by Definition {prf:ref}`def-rep-covariant-derivatives`.
+
+*Remark:* In regions where $\phi \approx 0$ (symmetric phase), the order parameter is undefined, corresponding to decision ambiguity. The agent requires a nonzero ontological split to define a preferred commitment projection.
 
 :::
 
 :::{div} feynman-prose
 This definition solves a subtle problem: if we just say "action is the second component of $\Psi_L$," we've made an arbitrary choice of basis in the mode fiber. Different parts of the agent's computational manifold might use different bases (that's what gauge freedom *means*).
 
-To make action commitment physically meaningful, we need an intrinsic criterion. The covariant value gradient provides exactly that: it points toward "where things get better." By projecting the doublet onto the direction defined by $\nabla_A V$, we extract the committed action in a way that's independent of arbitrary basis choices.
+To make action commitment physically meaningful, we need an intrinsic criterion. The ontological order parameter $\phi$ provides exactly that: its orientation defines the local "direction of differentiation" in the doublet space. The unit doublet $n = \phi / \|\phi\|$ points along this direction, and projecting $\Psi_L$ onto $n$ gives a **commitment projection** $\psi_{\text{act}}^{\text{proj}} = n^\dagger \Psi_L$ that is independent of arbitrary basis choices.
 
-When the value landscape is steep (large $\|\nabla_A V\|$), the order parameter $\vec{n}$ is well-defined, and the agent commits decisively. When the landscape is flat (small $\|\nabla_A V\|$), $\vec{n}$ becomes ambiguous, reflecting genuine decision uncertainty.
+When $\|\phi\|$ is large (deep in the broken phase), the direction $n$ is well-defined, and the agent has a clear commitment projection. But when $\phi \approx 0$ (near the symmetric vacuum), the ratio $n = \phi / \|\phi\|$ becomes ill-defined---any direction is equally valid. This is the gauge-theoretic formalization of decision ambiguity: without a clear ontological split, there is no preferred projection.
 
-This is the gauge-theoretic formalization of "value induces action" while keeping the conservative scalar potential as a
-scalar field (not promoted to the doublet structure).
+The committed action field $\Psi_R$ is independent, but the Yukawa coupling aligns it with the projection $\psi_{\text{act}}^{\text{proj}}$ in the broken phase. The agent must first differentiate its concepts (break the symmetry) before a preferred action direction can be selected.
 :::
 
 :::{prf:theorem} Emergence of the Error Field ($W_\mu^a$)
@@ -405,14 +428,20 @@ $$
 
 where $|0\rangle_{\text{anc}}$ is an ancilla (mode) system and $U_{a,y}$ is unitary.
 
-**Step 3.** The local $SU(2)$ structure acts on a 2D ancilla mode space $\mathbb{C}^2_{\text{mode}}$ spanned by $\{|\text{obs}\rangle, |\text{act}\rangle\}$:
+**Step 3.** The local update unitary acts on a 2D ancilla mode space
+$\mathbb{C}^2_{\text{mode}}$ spanned by $\{|\text{obs}\rangle, |\text{act}\rangle\}$:
 
 $$
-U_{a,y}(x) = \exp\left( i \frac{\vec{\tau} \cdot \vec{\theta}(x)}{2} \right) \in SU(2)
+U_{a,y}(x) \in U(2), \qquad
+U_{a,y}(x) = e^{i\beta(x)} \exp\left( i \frac{\vec{\tau} \cdot \vec{\theta}(x)}{2} \right)
 
 $$
 
-where $\vec{\tau} = (\tau_1, \tau_2, \tau_3)$ are the Pauli matrices acting on the mode fiber, and $\vec{\theta}(x)$ determines the mixing angle between observation and action channels (analogous to Kalman Gain in standard filtering).
+where $\vec{\tau} = (\tau_1, \tau_2, \tau_3)$ are the Pauli matrices acting on the mode fiber, and
+$\vec{\theta}(x)$ determines the mixing angle between observation and action channels (analogous to
+Kalman Gain in standard filtering). The overall phase $e^{i\beta(x)}$ is absorbed into the local
+utility phase and therefore into the $U(1)_Y$ sector, leaving a non-Abelian $SU(2)_L$ mixing acting
+on the relative mode coordinates.
 
 **Step 4.** For **Local Covariance** (the ability to perform updates locally without global synchronization), we introduce the non-Abelian gauge field $\vec{W}_\mu = (W^1_\mu, W^2_\mu, W^3_\mu)$ acting on the mode fiber.
 
@@ -652,12 +681,12 @@ $$
 
 where:
 - **$SU(N_f)_C$:** Required for **Object Permanence** (binding $N_f$-dimensional features into stable concepts)
-- **$SU(2)_L$:** Required for **Predictive Processing** (asymmetric update of beliefs between prior and likelihood)
+- **$SU(2)_L$:** Required for **Observation-Action Coordination** (boundary chirality between Dirichlet and Neumann updates)
 - **$U(1)_Y$:** Required for **Value Maximization** (local reward phase; conservative baseline shift as the special case)
 
 **Special Case (Physics Standard Model):** When $N_f = 3$, we recover $G_{\text{SM}} = SU(3)_C \times SU(2)_L \times U(1)_Y$.
 
-*Proof.* Each factor is derived above from independent cybernetic constraints. The product structure follows from the commutativity of the respective symmetry operations acting on different sectors of the agent's state space. The dimension $N_f$ is an environmental parameter (Definition {prf:ref}`def-feature-dimension-parameter`), while $SU(2)_L$ remains fixed because the prediction/observation asymmetry is fundamentally binary. $\square$
+*Proof.* Each factor is derived above from independent cybernetic constraints. The product structure follows from the commutativity of the respective symmetry operations acting on different sectors of the agent's state space. The dimension $N_f$ is an environmental parameter (Definition {prf:ref}`def-feature-dimension-parameter`), while $SU(2)_L$ remains fixed because the observation/action-intent asymmetry is fundamentally binary. $\square$
 
 :::
 
@@ -689,7 +718,7 @@ In particular, the chiral structure of the cybernetic loop (the asymmetry betwee
 If you haven't encountered spinors before, don't worry. The key idea is that spinors are the simplest objects that can "feel" the difference between left and right---they transform differently under left-handed and right-handed rotations. This is exactly what we need to capture the perception/action asymmetry.
 :::
 
-We define the "Matter" of cognition: the **Belief State**. In the Relativistic WFR limit ({ref}`Section 29 <sec-symplectic-multi-agent-field-theory>`), the belief state is a propagating amplitude. To satisfy the chiral constraints of the cybernetic loop (Axiom {prf:ref}`ax-cybernetic-parity-violation`), we lift the scalar belief $\psi$ to a **Spinor field** $\Psi$.
+We define the "Matter" of cognition: the **Belief State**. In the Relativistic WFR limit ({ref}`Section 29 <sec-symplectic-multi-agent-field-theory>`), the belief state is a propagating amplitude. To satisfy the chiral constraints of the cybernetic loop (Axiom {prf:ref}`ax-cybernetic-parity-violation`), we lift the scalar belief $\psi$ to a **chiral spinor pair** $(\Psi_L,\Psi_R)$, assembled into a Dirac spinor $\Psi = \Psi_L + \Psi_R$ when needed.
 
 ### A. The Inference Hilbert Space
 
@@ -698,17 +727,27 @@ The belief state lives on the **Causal Manifold** $\mathcal{M}$ (the product of 
 :::{prf:definition} The Cognitive Spinor
 :label: def-cognitive-spinor
 
-The belief state is a spinor field $\Psi(x)$ belonging to the **Inference Hilbert Space** (Definition {prf:ref}`def-inference-hilbert-space`):
+The belief state is a pair of chiral Weyl fields belonging to the **Inference Hilbert Space**
+(Definition {prf:ref}`def-inference-hilbert-space`), extended to bundle-valued $L^2$ sections:
 
 $$
-\Psi(x) = \begin{pmatrix} \Psi_L(x) \\ \Psi_R(x) \end{pmatrix} \in L^2(\mathcal{M}, \mathbb{C}^4 \otimes \mathbb{C}^{2} \otimes \mathbb{C}^{N_f})
+\Psi(x) = \begin{pmatrix} \Psi_L(x) \\ \Psi_R(x) \end{pmatrix}, \qquad
+\Psi_L(x) \in L^2(\mathcal{M}, S_L \otimes \mathbb{C}^{2} \otimes \mathbb{C}^{N_f}), \quad
+\Psi_R(x) \in L^2(\mathcal{M}, S_R \otimes \mathbb{C}^{N_f})
 
 $$
 
-where $\mathbb{C}^4$ is the Dirac spinor space, $\mathbb{C}^2$ is the $SU(2)_L$ isospin space, and $\mathbb{C}^{N_f}$ is the $SU(N_f)_C$ color space. The components are:
-1. **$\Psi_L$ (The Active Doublet):** The Left-handed component, transforming as a doublet under $SU(2)_L$. It contains the **Prediction** and **Observation** amplitudes (Definition {prf:ref}`def-cognitive-isospin-doublet`).
+where $S_L$ and $S_R$ are the left/right Weyl spin bundles (rank-2 complex),
+$\mathbb{C}^2$ is the $SU(2)_L$ isospin space acting on $\Psi_L$, and $\mathbb{C}^{N_f}$ is the
+$SU(N_f)_C$ color space. Equivalently, let $S = S_L \oplus S_R$ be the Dirac spin bundle with
+chirality operator $\gamma^5 := i\gamma^0\gamma^1\gamma^2\gamma^3$ and projectors
+$P_{L/R} = (1 \mp \gamma^5)/2$. Then $\Psi_L = P_L \Psi$ and $\Psi_R = P_R \Psi$, with the
+$SU(2)_L$ action reducible (doublet $\oplus$ singlet). The components are:
+1. **$\Psi_L$ (The Active Doublet):** The Left-handed component, transforming as a doublet under $SU(2)_L$. It contains the **Observation** and **Pre-commitment Action** amplitudes (Definition {prf:ref}`def-cognitive-isospin-doublet`).
 
-2. **$\Psi_R$ (The Passive Singlet):** The Right-handed component, invariant under $SU(2)_L$. It contains the **Action** intention.
+2. **$\Psi_R$ (The Passive Singlet):** The Right-handed component, invariant under $SU(2)_L$. It contains the **Committed Action**.
+
+The left-handed sector has $4N_f$ complex components; including the right-handed singlet gives a total of $6N_f$.
 
 **Probabilistic Interpretation:** The physical probability density (belief mass) is the vector current:
 
@@ -717,7 +756,10 @@ J^\mu = \bar{\Psi} \gamma^\mu \Psi
 
 $$
 
-where $J^0 = \Psi^\dagger \Psi = \rho$ is the probability density (WFR mass from Definition {prf:ref}`def-the-wfr-action`), and $\vec{J}$ is the probability flux. Conservation $\partial_\mu J^\mu = 0$ corresponds to unitarity.
+where $J^0 = \Psi^\dagger \Psi = \rho$ is the probability density (WFR mass from
+Definition {prf:ref}`def-the-wfr-action`), and $\vec{J}$ is the probability flux. Equivalently,
+$J^\mu = \bar{\Psi}_L \gamma^\mu \Psi_L + \bar{\Psi}_R \gamma^\mu \Psi_R$. Conservation
+$\partial_\mu J^\mu = 0$ corresponds to unitarity.
 
 :::
 
@@ -725,11 +767,15 @@ where $J^0 = \Psi^\dagger \Psi = \rho$ is the probability density (WFR mass from
 This definition packages everything we've discussed into a single mathematical object.
 
 The belief spinor $\Psi$ has multiple "indices" or "slots" that transform under different symmetry groups:
-- The Dirac spinor space ($\mathbb{C}^4$) handles the spacetime structure and the left/right decomposition
-- The isospin space ($\mathbb{C}^2$) handles the prediction/observation doublet structure
+- The Dirac spinor bundle $S = S_L \oplus S_R$ handles the spacetime structure; each Weyl sector has 2 complex components
+- The isospin space ($\mathbb{C}^2$) handles the observation/action-intent doublet structure (only for $\Psi_L$)
 - The color space ($\mathbb{C}^{N_f}$) handles the feature binding structure
 
-The total dimensionality is $4 \times 2 \times N_f = 8N_f$. That's a lot of components! But each component has a clear physical meaning in terms of how beliefs transform under the various symmetries.
+Let me count the components carefully. The left-handed sector $\Psi_L$ lives in
+$S_L \otimes \mathbb{C}^2 \otimes \mathbb{C}^{N_f}$, giving $2 \times 2 \times N_f = 4N_f$
+complex components. The right-handed sector $\Psi_R$ is an $SU(2)$ singlet, so it lives in
+$S_R \otimes \mathbb{C}^{N_f}$, giving $2 \times N_f = 2N_f$ complex components. The total is
+$4N_f + 2N_f = 6N_f$ complex components, as stated in the formal definition.
 
 The probability current $J^\mu$ is constructed to be a proper 4-vector that transforms correctly under all the symmetries. Its conservation ($\partial_\mu J^\mu = 0$) ensures that probability is conserved---beliefs can flow around, but total belief "mass" doesn't spontaneously appear or disappear.
 :::
@@ -744,10 +790,23 @@ $$
 
 $$
 
+Here $\Psi = \Psi_L + \Psi_R$ and $D_\mu$ acts chirally with representation-specific couplings
+(Definition {prf:ref}`def-rep-covariant-derivatives`).
+
 *Justification:* The WFR equation ({ref}`Section 20 <sec-wasserstein-fisher-rao-geometry-unified-transport-on-hybrid-state-spaces>`) is a second-order diffusion (Fokker-Planck). In the relativistic limit with finite information speed $c_{\text{info}}$ (Axiom {prf:ref}`ax-information-speed-limit`), this factorizes into two first-order wave equations coupled by mass. The Dirac equation is the unique first-order differential equation invariant under Lorentz transformations (causal structure) and the internal gauge group $G_{\text{Fragile}} = SU(N_f)_C \times SU(2)_L \times U(1)_Y$.
 
 - $\gamma^\mu$: The **Cognitive Gamma Matrices**, satisfying $\{\gamma^\mu, \gamma^\nu\} = 2g^{\mu\nu}$. They encode the local causal structure of the latent space.
 - $m$: The **Inference Mass** (inverse correlation length).
+
+:::
+
+:::{prf:remark} Curved-Space Dirac Operator
+:label: rem-curved-dirac-operator
+
+On a curved causal manifold, write $\gamma^\mu = e^\mu{}_a \gamma^a$ in an orthonormal frame and
+replace $\partial_\mu$ in $D_\mu$ by the spin-covariant derivative $\nabla_\mu^{\text{spin}}$.
+The operator $D_\mu$ then includes both the spin connection and the gauge connections. In the
+flat limit, this reduces to the standard Dirac operator used above.
 
 :::
 
@@ -766,7 +825,7 @@ Here, we're saying that the belief dynamics of a bounded agent, in the limit of 
 :::{div} feynman-prose
 Now we need to connect the matter sector (beliefs) to the gauge sector (forces). The key is the covariant derivative---the modification of the ordinary derivative that accounts for the gauge fields.
 
-Remember the problem: if you try to compare beliefs at two different points in the latent space, you have to account for the fact that the local "gauge" (reward phase/opportunity baseline, prediction/observation basis, feature labeling) might be different at each point. The covariant derivative does this bookkeeping automatically.
+Remember the problem: if you try to compare beliefs at two different points in the latent space, you have to account for the fact that the local "gauge" (reward phase/opportunity baseline, observation/action-intent basis, feature labeling) might be different at each point. The covariant derivative does this bookkeeping automatically.
 :::
 
 The agent cannot simply compare beliefs at $x$ and $x+\delta x$ because the "meaning" of the internal features and the "baseline" of value may twist locally. The **Covariant Derivative** $D_\mu$ corrects for this transport.
@@ -786,7 +845,30 @@ where $\lambda^a$ ($a = 1, \ldots, N_f^2 - 1$) are the generators of $SU(N_f)$, 
 - **$W_\mu$ (Error Field):** Adjusts the belief for the rotation between Prior and Posterior
 - **$G_\mu$ (Binding Field):** Adjusts the belief for the permutation of sub-symbolic features
 
+For the right-handed singlet $\Psi_R$, the $SU(2)_L$ generators act trivially, so the $W_\mu$ term drops.
+
 **Operational Interpretation:** The quantity $D_\mu \Psi$ measures the deviation from parallel transport. When $D_\mu \Psi = 0$, the belief state is covariantly constant along the direction $\mu$---all changes are accounted for by the gauge connection. When $D_\mu \Psi \neq 0$, there is a residual force acting on the belief.
+
+:::
+
+:::{prf:definition} Representation-Specific Covariant Derivatives
+:label: def-rep-covariant-derivatives
+
+Let $Y_L$, $Y_R$, and $Y_\phi$ denote the $U(1)_Y$ hypercharges of $\Psi_L$, $\Psi_R$, and $\phi$.
+Then the covariant derivatives used in {prf:ref}`def-cognitive-lagrangian` are:
+
+$$
+\begin{aligned}
+D_\mu \Psi_L &= \left(\partial_\mu - i g_1 \frac{Y_L}{2} B_\mu - i g_2 \frac{\tau^a}{2} W^a_\mu - i g_s \frac{\lambda^a}{2} G^a_\mu \right)\Psi_L, \\
+D_\mu \Psi_R &= \left(\partial_\mu - i g_1 \frac{Y_R}{2} B_\mu - i g_s \frac{\lambda^a}{2} G^a_\mu \right)\Psi_R, \\
+D_\mu \phi &= \left(\partial_\mu - i g_1 \frac{Y_\phi}{2} B_\mu - i g_2 \frac{\tau^a}{2} W^a_\mu \right)\phi.
+\end{aligned}
+$$
+
+Gauge invariance of the Yukawa term $\bar{\Psi}_L \phi \Psi_R$ requires
+$
+Y_R = Y_L - Y_\phi.
+$
 
 :::
 
@@ -796,12 +878,12 @@ This is the master equation for how beliefs move through representational space.
 The covariant derivative has four terms:
 1. **$\partial_\mu$**: The ordinary derivative, measuring how much $\Psi$ changes as you move
 2. **$-ig_1(Y/2)B_\mu$**: Correction for local utility baseline shifts and path-dependent opportunity
-3. **$-ig_2(\tau^a/2)W^a_\mu$**: Correction for local prediction/observation rotations
+3. **$-ig_2(\tau^a/2)W^a_\mu$**: Correction for local observation/action-intent rotations
 4. **$-ig_s(\lambda^a/2)G^a_\mu$**: Correction for local feature relabelings
 
 When you compute $D_\mu \Psi$ and it equals zero, that means all the change in $\Psi$ is "accounted for" by the gauge connections. The belief is being parallel transported---moved without any intrinsic change.
 
-When $D_\mu \Psi \neq 0$, there's genuine change happening. The gauge fields can't explain away the variation. This residual is what drives belief dynamics: predictions errors, value gradients, binding tensions.
+When $D_\mu \Psi \neq 0$, there's genuine change happening. The gauge fields can't explain away the variation. This residual is what drives belief dynamics: prediction errors, value gradients, binding tensions.
 :::
 
 ### C. The Yang-Mills Curvature
@@ -829,7 +911,7 @@ The commutator of the covariant derivatives $[D_\mu, D_\nu]$ generates three dis
    B_{\mu\nu} = \partial_\mu B_\nu - \partial_\nu B_\mu
 
    $$
-   When $B_{\mu\nu} \neq 0$, the reward 1-form is non-conservative (Value Curl; Definition
+When $B_{\mu\nu} \neq 0$, the internal opportunity 1-form is non-conservative (Value Curl; Definition
    {prf:ref}`def-value-curl`). The resulting Lorentz-type force generates cyclic dynamics.
 
 2. **$SU(2)_L$ Curvature:**
@@ -838,7 +920,7 @@ The commutator of the covariant derivatives $[D_\mu, D_\nu]$ generates three dis
    W_{\mu\nu}^a = \partial_\mu W_\nu^a - \partial_\nu W_\mu^a + g_2 \epsilon^{abc} W_\mu^b W_\nu^c
 
    $$
-   When $W_{\mu\nu} \neq 0$, the belief update depends on the path taken in the manifold: parallel transport around a closed loop yields a non-trivial rotation in the prediction-observation space.
+When $W_{\mu\nu} \neq 0$, the belief update depends on the path taken in the manifold: parallel transport around a closed loop yields a non-trivial rotation in the observation-action-intent space.
 
 3. **$SU(N_f)_C$ Curvature:**
 
@@ -855,7 +937,7 @@ $\square$
 :::{div} feynman-prose
 Each field strength tensor tells you something important about the agent's cognitive state:
 
-**$B_{\mu\nu}$ (Opportunity Curvature):** This is non-zero when the reward 1-form has "curl" (Value Curl)---when there are
+**$B_{\mu\nu}$ (Opportunity Curvature):** This is non-zero when the internal opportunity 1-form has "curl" (Value Curl)---when there are
 cycles where you can accumulate reward just by going around. In game theory, this is like a Rock-Paper-Scissors dynamic
 where no pure strategy is optimal. The agent gets driven in circles.
 
@@ -889,7 +971,7 @@ $$
 $$
 
 The stationary points of this action satisfy the Yang-Mills equations. A **flat connection** ($B_{\mu\nu} = W_{\mu\nu} =
-G_{\mu\nu} = 0$) corresponds to a representation where all curvatures vanish: the reward 1-form is conservative, belief
+G_{\mu\nu} = 0$) corresponds to a representation where all curvatures vanish: the internal opportunity 1-form is conservative, belief
 updates are path-independent, and concepts are stable.
 
 :::
@@ -898,7 +980,7 @@ updates are path-independent, and concepts are stable.
 This Lagrangian says that the gauge fields "prefer" to be flat---zero curvature costs zero energy. Any non-zero curvature comes with an energy cost proportional to the square of the field strength.
 
 A "flat connection" is the cognitive equivalent of being in a well-understood, stable situation:
-- The reward 1-form is conservative (no arbitrage opportunities)
+- The internal opportunity 1-form is conservative (no arbitrage opportunities)
 - Belief updates don't depend on the order of evidence
 - Concepts are cleanly defined and stable
 
@@ -933,10 +1015,10 @@ We derive the scalar sector by lifting the **Fission-Fusion dynamics** from {ref
 :::{prf:definition} The Ontological Order Parameter
 :label: def-ontological-order-parameter
 
-Let the local chart structure at spacetime point $x$ be described by a complex scalar field $\phi(x) \in \mathbb{C}$:
+Let the local chart structure at spacetime point $x$ be described by a complex $SU(2)_L$ doublet field $\phi(x) \in \mathbb{C}^2$:
 
 $$
-\phi(x) = r(x) e^{i\theta(x)}
+\phi(x) = r(x)\,n(x), \qquad r(x) := \|\phi(x)\|
 
 $$
 
@@ -945,9 +1027,17 @@ where:
    - $r=0$: Coalescence (Single Chart / Vacuum)
    - $r>0$: Fission (Distinct Concepts)
 
-2. **Phase $\theta(x)$:** Represents the **Orientation** of the split in the latent fiber (the specific feature axis along which differentiation occurs).
+2. **Unit doublet $n(x)$:** Encodes the **Orientation** of the split in the $SU(2)_L$ fiber (the specific feature axis along which differentiation occurs), with $n^\dagger n = 1$.
 
 The field $\phi$ transforms as a doublet under the gauge group $SU(2)_L$, coupling it to the inference spinor.
+
+:::
+
+:::{prf:remark} Gauge-fixed scalar form
+:label: rem-ontological-order-parameter-gauge
+
+Choosing a gauge that fixes the $SU(2)_L$ orientation to a constant unit doublet $n_0$ reduces the order parameter to
+$\phi(x) = r(x) e^{i\theta(x)} n_0$, which is the scalar parametrization used in the intuitive discussion.
 
 :::
 
@@ -956,7 +1046,7 @@ This definition is packaging the idea of "how split apart are my concepts" into 
 
 The modulus $r$ tells you how distinct two concepts are. When $r=0$, they're the same concept (merged, undifferentiated). When $r>0$, they're separate.
 
-The phase $\theta$ tells you along which axis the split happened. Did you differentiate "red vs. blue" or "big vs. small" or some other distinction? The phase encodes this choice.
+The unit doublet $n$ tells you the orientation of the split in the $SU(2)_L$ fiber---along which axis in the observation/action-intent space did the differentiation occur? In the gauge-fixed form (Remark {prf:ref}`rem-ontological-order-parameter-gauge`), we choose a constant reference orientation $n_0$ and parametrize the remaining freedom by a phase $\theta$: $\phi(x) = r(x) e^{i\theta(x)} n_0$. This phase then encodes how the local split orientation differs from the reference.
 
 The key insight is that the equations of motion for $\phi$ will determine when and how the agent's ontology splits. This isn't an arbitrary choice---it's governed by a potential energy function, just like in physics.
 :::
@@ -1114,33 +1204,51 @@ $$
 
 $$
 
-where $D_\mu = \partial_\mu - ig \mathcal{A}_\mu$ includes the Strategic Connection.
+where $D_\mu \phi$ is the representation-specific covariant derivative from
+Definition {prf:ref}`def-rep-covariant-derivatives`.
 
 *Proof.*
 
-**Step 1.** In the Broken Phase, expand around the vacuum expectation: $\phi(x) = v + h(x)$, where $h$ is the fluctuation (the physical Higgs mode).
+**Step 1.** In the Broken Phase, choose a gauge where the vacuum aligns with a constant unit doublet $n_0$ and expand
+around the expectation: $\phi(x) = (v + h(x))n_0$, where $h$ is the fluctuation (the physical Higgs mode).
 
-**Step 2.** The kinetic term generates a quadratic interaction:
-
-$$
-|D_\mu v|^2 = |(-ig \mathcal{A}_\mu) v|^2 = g^2 v^2 \mathcal{A}_\mu \mathcal{A}^\mu
+**Step 2.** The kinetic term generates quadratic gauge terms:
 
 $$
-
-**Step 3.** This is a **Mass Term** for the Gauge Field:
-
-$$
-M_{\mathcal{A}} = g v = g \sqrt{\frac{\Xi - \Xi_{\text{crit}}}{\alpha}}
+|D_\mu (v n_0)|^2
+= \frac{v^2}{4}\left[g_2^2\left(W_\mu^1 W^{1\mu} + W_\mu^2 W^{2\mu}\right)
++\left(g_2 W_\mu^3 - g_1 Y_\phi B_\mu\right)^2\right]
 
 $$
 
-**Step 4.** Connection to Theorem {prf:ref}`thm-capacity-constrained-metric-law`: The mass $M_{\mathcal{A}}$ corresponds to an increase in the effective metric eigenvalues. From the Capacity-Constrained Metric Law, higher information density (more distinct concepts, larger $v$) induces higher curvature, which manifests as increased "inertia" in the metric.
+**Step 3.** This defines a **mass matrix** for the $SU(2)_L \times U(1)_Y$ sector. Defining
+$W_\mu^\pm := (W_\mu^1 \mp i W_\mu^2)/\sqrt{2}$ gives
+
+$$
+M_W = \frac{g_2 v}{2}, \qquad
+M_Z = \frac{v}{2}\sqrt{g_2^2 + g_1^2 Y_\phi^2}
+
+$$
+
+with the orthogonal neutral combination
+$$
+A_\mu^{(0)} := \frac{g_1 Y_\phi W_\mu^3 + g_2 B_\mu}{\sqrt{g_2^2 + g_1^2 Y_\phi^2}}
+$$
+remaining massless. (Equivalently, $\tan\theta = g_1 Y_\phi / g_2$ and $Z_\mu = \cos\theta\, W_\mu^3 - \sin\theta\, B_\mu$.)
+
+**Step 4.** Connection to Theorem {prf:ref}`thm-capacity-constrained-metric-law`: The masses scale
+linearly with $v$, so larger ontological separation increases the effective metric eigenvalues.
+From the Capacity-Constrained Metric Law, higher information density (larger $v$) induces higher
+curvature, which manifests as increased "inertia" in the metric.
 
 **Physical Consequences:**
 
 1. **Massless Phase ($v=0$):** The gauge fields are massless. The interaction potential decays as $1/r$ (long-range). Frame transformations between charts have zero energy cost.
 
-2. **Massive Phase ($v > 0$):** The gauge fields acquire mass $M_{\mathcal{A}}$. The interaction potential becomes $e^{-M_{\mathcal{A}}r}/r$ (Yukawa, short-range). Gauge rotations---reinterpreting the meaning of signals---require energy proportional to $M_{\mathcal{A}}$. The ontological structure becomes stable against small perturbations.
+2. **Massive Phase ($v > 0$):** The charged modes $W^\pm$ and the neutral $Z$ acquire masses
+$M_W, M_Z$. The interaction potentials for these modes become $e^{-M r}/r$ (Yukawa, short-range),
+while the orthogonal neutral combination $A_\mu^{(0)}$ remains long-range. Gauge rotations in the
+massive sector require energy proportional to the corresponding mass scale.
 
 $\square$
 
@@ -1153,32 +1261,40 @@ Before symmetry breaking ($v = 0$), the gauge fields are massless. You can rotat
 
 After symmetry breaking ($v > 0$), the gauge fields acquire mass. Rotating between frames now costs energy. The ontological structure has "inertia"---it resists change.
 
-The formula $M = gv$ says that the mass is proportional to both:
-- The coupling strength $g$ (how strongly the gauge field couples to the scalar)
-- The vacuum expectation value $v$ (how differentiated the concepts are)
+Because $\phi$ is a doublet, the masses come in a pattern: the charged modes $W^\pm$ and the neutral $Z$ become massive, while one orthogonal neutral combination stays massless. The mass scales are proportional to $v$ and the couplings ($g_2$ and $g_1 Y_\phi$).
 
-More differentiated concepts (larger $v$) are harder to reinterpret (larger $M$). This makes intuitive sense: the more distinct two concepts become, the harder it is to confuse them or morph one into the other.
+More differentiated concepts (larger $v$) are harder to reinterpret (larger mass scales). This makes intuitive sense: the more distinct two concepts become, the harder it is to confuse them or morph one into the other.
 :::
 
 :::{prf:remark} The Goldstone Mode (Texture)
 :label: rem-goldstone-texture
 
-The symmetry breaking selects a radius $v$, but the phase $\theta$ (orientation in feature space) remains unconstrained by the potential $V(\phi)$ (which depends only on $|\phi|$). This corresponds to a **massless Goldstone boson**.
+The symmetry breaking selects a radius $v$, but the local orientation $\theta$ (in the $SU(2)_L$
+fiber) is a gauge degree of freedom because the symmetry is local. The would-be Goldstone mode is
+therefore gauge (absorbed by the gauge fields), so no physical massless scalar appears in the
+gauge-invariant sector.
 
-In the Fragile Agent, this massless mode is the **Texture** ($z_{\text{tex}}$). The agent remains free to rotate the definition of "noise" without energetic cost, provided the macro-separation $v$ is maintained. This recovers the **Texture Firewall** (Axiom {prf:ref}`ax-bulk-boundary-decoupling`): texture is the degree of freedom that remains gauge-invariant (unobservable to the macro-dynamics) even after symmetry breaking.
+In the Fragile Agent, this gauge-redundant orientation is the **Texture** ($z_{\text{tex}}$). The
+agent remains free to rotate the definition of "noise" without energetic cost, provided the
+macro-separation $v$ is maintained. This recovers the **Texture Firewall**
+(Axiom {prf:ref}`ax-bulk-boundary-decoupling`): texture lives in the gauge orbit and is unobservable
+to the macro-dynamics.
 
 :::
 
 :::{div} feynman-prose
 This is a beautiful connection to the texture variable we introduced way back in the beginning of the framework.
 
-Remember: when the agent breaks symmetry, it chooses both a radius $v$ (how separated concepts are) and a phase $\theta$ (along which axis). The radius is fixed by the potential minimum. But the phase is arbitrary---all points on the brim of the Mexican hat are equally good.
+Remember: when the agent breaks symmetry, it chooses both a radius $v$ (how separated concepts are)
+and a local orientation $\theta$ (along which axis). The radius is fixed by the potential minimum,
+but the orientation is a gauge choice---all points on the brim of the Mexican hat are equivalent.
 
-This means there's a "flat direction" in the potential---a direction you can move without changing energy. In field theory, this corresponds to a massless particle called a Goldstone boson.
+Because the symmetry is gauged, the would-be Goldstone direction is not a physical particle; it is
+absorbed into the gauge fields. In SMoC, texture labels this gauge orientation of the split. You
+can rotate it without changing any gauge-invariant observable.
 
-Here, that massless mode is texture. The agent can rotate its definition of "fine-grained detail" without affecting the coarse-grained concepts. Texture is the degree of freedom that "absorbs" the arbitrary phase choice, leaving the meaningful distinctions invariant.
-
-This is why texture is firewalled from the macro-dynamics. It's the Goldstone mode of ontological symmetry breaking---physically present, but decoupled from the observables that matter for decision-making.
+That is why texture is firewalled from the macro-dynamics: it is a gauge-redundant degree of
+freedom rather than an observable excitation.
 :::
 
 
@@ -1206,16 +1322,16 @@ The Gauge and Scalar sectors define the geometry and topology of the latent spac
 :::{prf:definition} The Decision Coupling
 :label: def-decision-coupling
 
-Let $\Psi_L = (\psi_{\text{obs}}, \psi_{\text{act}}^{\text{pre}})^T$ be the observation-action doublet and $\Psi_R = \psi_{\text{act}}^{\text{commit}}$ be the committed action singlet. The transfer of information from the active doublet to committed output is mediated by the **Ontological Order Parameter** $\phi$.
+Let $\Psi_L = (\psi_{\text{obs}}, \psi_{\text{act}}^{\text{pre}})^T$ be the observation-action doublet and $\Psi_R = \psi_{\text{act}}^{\text{commit}}$ be the committed action singlet. The gauge-covariant projection $\psi_{\text{act}}^{\text{proj}} := n^\dagger \Psi_L$ (Definition {prf:ref}`def-gauge-covariant-action-commitment`) is left-handed and defines the preferred commitment direction, and the **Ontological Order Parameter** $\phi$ mediates the dynamical coupling of $\Psi_R$ to this projection.
 
 The simplest $G_{\text{Fragile}}$-invariant coupling is:
 
 $$
-\mathcal{L}_{\text{Yukawa}} = -Y_{ij} \left( \bar{\Psi}_{L,i} \cdot \phi \cdot \Psi_{R,j} + \bar{\Psi}_{R,j} \cdot \phi^\dagger \cdot \Psi_{L,i} \right)
+\mathcal{L}_{\text{Yukawa}} = -Y_{ij} \left( \bar{\Psi}_{L,i}^a \phi_a \Psi_{R,j} + \bar{\Psi}_{R,j} \phi_a^\dagger \Psi_{L,i}^a \right)
 
 $$
 
-where $Y_{ij}$ is the **Affordance Matrix** (a learned weight matrix determining which concepts trigger which actions).
+where $a$ is the $SU(2)_L$ index and $Y_{ij}$ is the **Affordance Matrix** (a learned weight matrix determining which concepts trigger which actions).
 
 *Cross-reference:* This implements the TopologicalDecoder ({ref}`Section 7.10 <sec-decoder-architecture-overview-topological-decoder>`) which maps belief geometry to motor output.
 
@@ -1244,20 +1360,29 @@ In the **Broken Phase** ($\Xi > \Xi_{\text{crit}}$), the Yukawa coupling generat
 
 **Step 1.** The scalar field acquires VEV $\langle \phi \rangle = v$ (Corollary {prf:ref}`cor-ontological-ssb`).
 
-**Step 2.** Expanding the Lagrangian around the vacuum $\phi = v + h$:
+**Step 2.** Choose a gauge where the vacuum aligns with a constant unit doublet $n_0$ and write
+$\phi = (v + h)n_0$. Define the left-handed singlet projection $\psi_L := n_0^\dagger \Psi_L$. Then:
 
 $$
-\mathcal{L}_{\text{Yukawa}} = -\underbrace{(Y v)}_{\text{Mass}} \bar{\psi} \psi - \underbrace{Y h \bar{\psi} \psi}_{\text{Higgs Interaction}}
+\mathcal{L}_{\text{Yukawa}} = -\underbrace{(Y v)}_{\text{Mass}} \left(\bar{\psi}_L \Psi_R + \bar{\Psi}_R \psi_L\right)
+- \underbrace{Y h \left(\bar{\psi}_L \Psi_R + \bar{\Psi}_R \psi_L\right)}_{\text{Higgs Interaction}}
 
 $$
 
-**Step 3.** The belief spinor $\psi$ acquires effective mass $m_\psi = Y v$.
+**Step 3.** Define the Dirac spinor $\psi := \psi_L + \Psi_R$. Then $\psi$ acquires effective mass
+$m_\psi = Y v$.
 
 **Consequences:**
 
-1. **Symmetric Phase ($v=0$):** Mass is zero. Beliefs obey the massless equation $i\gamma^\mu \partial_\mu \psi = 0$ and propagate at speed $c_{\text{info}}$. The belief-action coupling vanishes; there is no stable commitment to action.
+1. **Symmetric Phase ($v=0$):** Mass is zero. Beliefs obey the massless equation
+$i\gamma^\mu D_\mu \psi = 0$ (with $D_\mu$ acting chirally on $\psi_L$ and $\Psi_R$ as in
+Definition {prf:ref}`def-rep-covariant-derivatives`) and propagate at speed $c_{\text{info}}$.
+The belief-action coupling vanishes; there is no stable commitment to action.
 
-2. **Broken Phase ($v > 0$):** Mass is non-zero. Beliefs obey $(i\gamma^\mu \partial_\mu - m_\psi)\psi = 0$. The mass term $m_\psi = Yv$ provides inertia: a finite force (prediction error) is required to change the belief state. Larger ontological separation $v$ implies larger mass.
+2. **Broken Phase ($v > 0$):** Mass is non-zero. Beliefs obey
+$(i\gamma^\mu D_\mu - m_\psi)\psi = 0$. The mass term $m_\psi = Yv$ provides inertia: a finite
+force (prediction error) is required to change the belief state. Larger ontological separation $v$
+implies larger mass.
 
 $\square$
 
@@ -1289,40 +1414,52 @@ Everything we've built so far is "internal"---the gauge fields, the matter field
 The external value field is what drives the agent to do anything at all. Without it, the agent would just sit in equilibrium, beliefs static, actions irrelevant. The value coupling is what makes the agent an agent.
 :::
 
-The agent is driven by the desire to maximize Value. We couple the Value Potential to the belief spinor.
+The agent is driven by the desire to maximize Value. We couple the external reward 1-form to the belief spinor.
 
-:::{prf:definition} The Value 4-Potential
-:label: def-value-4-potential
+:::{prf:definition} The Value 1-Form (External Drive)
+:label: def-value-1-form-external-drive
 
-We lift the effective potential $\Phi_{\text{eff}}(z)$ (Definition {prf:ref}`def-effective-potential`) to an external 4-potential:
+We model the external drive as a fixed background 1-form
+$A^{\text{ext}}_\mu(z) = (A^{\text{ext}}_0(z), A^{\text{ext}}_i(z))$, encoding both conservative
+and non-conservative components of the reward signal (Definition {prf:ref}`def-effective-potential`).
+Concretely, $A^{\text{ext}}_0 = -\Phi_{\text{eff}}$ is the conservative potential, while
+$A^{\text{ext}}_i$ captures the non-conservative (curl) component.
 
 $$
-A^{\text{ext}}_\mu(z) = (-\Phi_{\text{eff}}(z), \vec{0})
+A^{\text{ext}}_\mu(z) = (A^{\text{ext}}_0(z), A^{\text{ext}}_i(z))
 
 $$
 
 This is an **external background field**, distinct from the internal gauge field $B_\mu$.
+
+**Special case (scalar drive):** If the external reward 1-form is purely temporal, then
+$A^{\text{ext}}_\mu(z) = (-\Phi_{\text{eff}}(z), \vec{0})$.
 
 :::
 
 :::{prf:axiom} Minimal Value Coupling
 :label: ax-minimal-value-coupling
 
-The belief current $J^\mu = \bar{\Psi} \gamma^\mu \Psi$ couples to the Value potential via minimal coupling:
+The belief current $J^\mu = \bar{\Psi} \gamma^\mu \Psi$ couples to the external 1-form via minimal coupling:
 
 $$
-\mathcal{L}_{\text{Drive}} = J^\mu A^{\text{ext}}_\mu = -\rho(z) \Phi_{\text{eff}}(z)
+\mathcal{L}_{\text{Drive}} = J^\mu A^{\text{ext}}_\mu
 
 $$
 
 where $\rho = \Psi^\dagger \Psi = J^0$.
 
+**Special case (scalar drive):** If $A^{\text{ext}}_\mu = (-\Phi_{\text{eff}}, \vec{0})$, then
+$\mathcal{L}_{\text{Drive}} = -\rho\,\Phi_{\text{eff}}$.
+
 :::
 
 :::{div} feynman-prose
-This coupling term says: belief mass ($\rho$) times value potential ($\Phi_{\text{eff}}$) contributes to the action.
+This coupling term says: belief mass ($\rho$) times the external value drive contributes to the action.
 
-The negative sign means that being in high-value regions *lowers* the action. Since we minimize the action, this pushes probability mass toward high-value regions.
+In the scalar-drive case $A^{\text{ext}}_0 = -\Phi_{\text{eff}}$, the term is $-\rho\,\Phi_{\text{eff}}$,
+so being in high-value regions *lowers* the action. Since we minimize the action, this pushes probability
+mass toward high-value regions.
 
 It's the same principle as in physics, where charge couples to electrostatic potential. Here, "belief mass" plays the role of charge, and "value potential" plays the role of voltage.
 
@@ -1336,21 +1473,24 @@ Varying the total action yields the Dirac equation with potential. In the non-re
 
 *Proof.*
 
-**Step 1.** The Euler-Lagrange equation from $\mathcal{S} = \int (\bar{\Psi} i \gamma^\mu \partial_\mu \Psi - \mathcal{L}_{\text{Drive}}) d^4x$ yields:
+**Step 1.** The Euler-Lagrange equation from
+$\mathcal{S} = \int (\bar{\Psi} i \gamma^\mu D_\mu \Psi + \mathcal{L}_{\text{Drive}}) d^4x$ yields:
 
 $$
-(i \gamma^\mu \partial_\mu - \Phi_{\text{eff}})\Psi = 0
+(i \gamma^\mu D_\mu + \gamma^\mu A^{\text{ext}}_\mu)\Psi = 0
 
 $$
 
-**Step 2.** Apply the inverse Madelung transform (Theorem {prf:ref}`thm-madelung-transform`). In the non-relativistic limit ($c_{\text{info}} \to \infty$), the Schrödinger reduction recovers:
+**Step 2.** Apply the inverse Madelung transform (Theorem {prf:ref}`thm-madelung-transform`). In the non-relativistic limit ($c_{\text{info}} \to \infty$), the Schrödinger reduction recovers the WFR drift driven by the external 1-form. In the scalar-drive special case $A^{\text{ext}}_\mu = (-\Phi_{\text{eff}}, \vec{0})$:
 
 $$
-\vec{v} \approx -\nabla_A \Phi_{\text{eff}}
+\vec{v} \approx -\nabla_{A^{\text{ext}}} \Phi_{\text{eff}}
 
 $$
-Here $\nabla_A \Phi_{\text{eff}} := \nabla \Phi_{\text{eff}} - A$ with $A$ given by the spatial components of $B_\mu$
-(conservative case: $A=0$).
+Here $\nabla_{A^{\text{ext}}} \Phi_{\text{eff}} := \nabla \Phi_{\text{eff}} - A^{\text{ext}}$ with
+$A^{\text{ext}}$ given by the spatial components of the external reward 1-form (equivalently, the
+internal Opportunity Field $B_\mu$ when the internal model matches the environment). In the
+conservative case: $A^{\text{ext}}=0$.
 
 This is the WFR drift velocity from Definition {prf:ref}`def-bulk-drift-continuous-flow`.
 
@@ -1363,7 +1503,10 @@ $\square$
 :::{div} feynman-prose
 This theorem closes the circle. We started the whole framework with the WFR equation describing belief flow toward high-value regions. Now we see that this emerges from the non-relativistic limit of a gauge theory.
 
-The velocity $\vec{v} = -\nabla_A \Phi_{\text{eff}}$ (with $A$ from $B_\mu$) says: beliefs flow downhill on the effective potential landscape.
+The velocity $\vec{v} = -\nabla_{A^{\text{ext}}} \Phi_{\text{eff}}$ (with $A^{\text{ext}}$ the spatial part
+of the external reward 1-form, and $B_\mu$ its internal representation when the model matches the
+environment) says: beliefs
+flow downhill on the effective potential landscape.
 Since $\Phi_{\text{eff}}$ includes both immediate reward flux (conservative component) and discounted future values, this
 flow moves beliefs toward states with high long-term value.
 
@@ -1406,7 +1549,7 @@ $$
 & + \underbrace{\bar{\Psi}_L i \gamma^\mu D_\mu \Psi_L + \bar{\Psi}_R i \gamma^\mu D_\mu \Psi_R}_{\text{II. Inference Sector: Belief Dynamics}} \\
 & + \underbrace{|D_\mu \phi|^2 - \left(-\mu^2 |\phi|^2 + \lambda |\phi|^4\right)}_{\text{III. Scalar Sector: Ontological Stability}} \\
 & - \underbrace{Y_{ij} (\bar{\Psi}_L \phi \Psi_R + \text{h.c.})}_{\text{IV. Yukawa Sector: Decision Weight}} \\
-& - \underbrace{\bar{\Psi} \gamma^\mu A^{\text{ext}}_\mu \Psi}_{\text{V. External Sector: Value Drive}}
+& + \underbrace{\bar{\Psi} \gamma^\mu A^{\text{ext}}_\mu \Psi}_{\text{V. External Sector: Value Drive}}
 \end{aligned}
 }
 
@@ -1442,7 +1585,417 @@ The theory is rigid. Given the axioms (bounded, distributed, reward-seeking, cau
 | II. Inference | $\bar{\Psi}iD_\mu\gamma^\mu\Psi$ | Belief propagation cost | Axiom {prf:ref}`ax-cognitive-dirac-equation` |
 | III. Scalar | $|D_\mu\phi|^2 - V(\phi)$ | Complexity vs Information | Theorem {prf:ref}`thm-complexity-potential` |
 | IV. Yukawa | $Y\bar{\Psi}_L\phi\Psi_R$ | Belief-Action coupling | Theorem {prf:ref}`thm-cognitive-mass` |
-| V. External | $\bar{\Psi}A^{\text{ext}}\Psi$ | Value-seeking drive | Theorem {prf:ref}`thm-recovery-wfr-drift` |
+| V. External | $\bar{\Psi}\gamma^\mu A^{\text{ext}}_\mu\Psi$ | Value-seeking drive | Theorem {prf:ref}`thm-recovery-wfr-drift` |
+
+### A. Axiomatic QFT Compliance (Wightman + OS)
+
+:::{prf:definition} Axiomatic Field Theory (AFT)
+:label: def-aft
+
+An **Axiomatic Field Theory (AFT)** is a relativistic quantum field theory whose vacuum correlation
+functions satisfy the Wightman axioms (Definition {prf:ref}`def-wightman-axioms`) {cite}`wightman1956quantum`.
+Equivalently, if its Euclidean Schwinger functions satisfy the Osterwalder-Schrader axioms
+(Definition {prf:ref}`def-os-axioms`), then the OS reconstruction theorem yields a Wightman QFT
+{cite}`osterwalder1973axioms,osterwalder1975axioms`.
+
+:::
+
+:::{prf:definition} Wightman Axioms (W0-W4)
+:label: def-wightman-axioms
+
+Let $\Phi_A(x)$ denote the gauge-invariant SMoC observable multiplet (constructed from gauge,
+spinor, and scalar fields) as operator-valued tempered distributions on Minkowski space, and let
+$|\Omega\rangle$ be the vacuum. The Wightman functions are
+$W_n(x_1,\ldots,x_n) := \langle \Omega | \Phi_{A_1}(x_1)\cdots\Phi_{A_n}(x_n) | \Omega \rangle$.
+The axioms {cite}`wightman1956quantum` are:
+
+1. **W0 Temperedness:** Each $W_n$ is a tempered distribution in $\mathcal{S}'((\mathbb{R}^4)^n)$.
+2. **W1 Poincare Covariance:** There exists a unitary representation $U(a,\Lambda)$ of the proper
+   orthochronous Poincare group with
+   $U(a,\Lambda)\,\Phi_A(x)\,U(a,\Lambda)^{-1} = S_A{}^B(\Lambda)\,\Phi_B(\Lambda x + a)$ and
+   $U(a,\Lambda)|\Omega\rangle = |\Omega\rangle$.
+3. **W2 Spectral Condition:** The joint spectrum of translation generators $P^\mu$ lies in the closed
+   forward light cone, and $P^\mu|\Omega\rangle=0$.
+4. **W3 Locality (Microcausality):** For spacelike separation $(x-y)^2<0$,
+   $[\Phi_A(x),\Phi_B(y)]_\pm = 0$, with graded commutator chosen by spin-statistics.
+5. **W4 Vacuum Cyclicity:** The set of vectors generated by polynomials in smeared fields acting on
+   $|\Omega\rangle$ is dense in the Hilbert space.
+
+:::
+
+:::{prf:definition} Osterwalder-Schrader Axioms (OS0-OS4)
+:label: def-os-axioms
+
+Let $S_n$ be the Euclidean Schwinger functions of gauge-invariant SMoC observables obtained by Wick
+rotation of the SMoC action. The
+Osterwalder-Schrader axioms {cite}`osterwalder1973axioms,osterwalder1975axioms` are:
+
+1. **OS0 Temperedness:** Each $S_n$ is a tempered distribution in $\mathcal{S}'((\mathbb{R}^4)^n)$.
+2. **OS1 Euclidean Covariance:** $S_n$ is invariant under the Euclidean group $E(4)$.
+3. **OS2 Reflection Positivity:** For any polynomial $F$ of smeared fields with support in positive
+   Euclidean time, $\langle \Theta F \cdot F \rangle_E \ge 0$, where $\Theta$ is time reflection.
+4. **OS3 Cluster Property:** $S_{m+n}(x_1,\ldots,x_m,x_{m+1}+a,\ldots,x_{m+n}+a) \to
+   S_m(x_1,\ldots,x_m)\,S_n(x_{m+1},\ldots,x_{m+n})$ as $|a|\to\infty$.
+5. **OS4 Symmetry:** $S_n$ is symmetric under permutations (graded symmetry for fermions).
+
+:::
+
+(sec-smoc-generalized-aft)=
+#### A.0 Generalized AFT (Locally Covariant/Algebraic)
+
+:::{prf:definition} The Background Category $\mathrm{Loc}_{\mathrm{Spin},G}$
+:label: def-loc-spin-g
+
+Fix $G = G_{\text{Fragile}}$. The category $\mathrm{Loc}_{\mathrm{Spin},G}$ has objects
+$(\mathcal{M}, g, \mathfrak{o}, \mathfrak{t}, \mathcal{S}, P_G, A^{\text{ext}})$ where:
+1. $(\mathcal{M}, g)$ is a 4D globally hyperbolic Lorentzian manifold with orientation
+   $\mathfrak{o}$ and time orientation $\mathfrak{t}$.
+2. $\mathcal{S}$ is a spin structure on $(\mathcal{M}, g)$.
+3. $P_G$ is a principal $G$-bundle over $\mathcal{M}$ (fixed topology).
+4. $A^{\text{ext}}$ is a fixed background 1-form (the external drive).
+
+Morphisms $\chi:(\mathcal{M}, g, \mathfrak{o}, \mathfrak{t}, \mathcal{S}, P_G, A^{\text{ext}})
+\to (\mathcal{M}', g', \mathfrak{o}', \mathfrak{t}', \mathcal{S}', P_G', A^{\text{ext}\prime})$
+are smooth isometric embeddings with causally convex image that preserve $\mathfrak{o}$ and
+$\mathfrak{t}$, admit a lift to the spin bundles, and are covered by a bundle morphism
+$\tilde{\chi}:P_G \to P_G'$ with $\chi^*A^{\text{ext}\prime} = A^{\text{ext}}$.
+Internal gauge connections are dynamical fields; only the underlying bundle $P_G$ is background data.
+
+:::
+
+:::{prf:remark} Fixed Bundle, Dynamical Connection
+:label: rem-loc-spin-g-connection
+
+Fixing $P_G$ selects the topological sector for the gauge fields; the connection 1-forms are
+sections of the affine bundle of connections on $P_G$ and remain dynamical observables. The LC-AFT
+assignment is the functor $\mathcal{A}:\mathrm{Loc}_{\mathrm{Spin},G} \to *\mathrm{Alg}$,
+so morphisms act by pullback on background data and by *-homomorphisms on algebras.
+
+:::
+
+:::{prf:definition} Locally Covariant AFT (LC-AFT)
+:label: def-lc-aft
+
+A **Locally Covariant AFT** is a covariant functor
+$\mathcal{A}:\mathrm{Loc}_{\mathrm{Spin},G} \to *\mathrm{Alg}$ that assigns to each object
+$(\mathcal{M}, g, \mathfrak{o}, \mathfrak{t}, \mathcal{S}, P_G, A^{\text{ext}})$ a *-algebra
+$\mathcal{A}(\mathcal{M})$ of gauge-invariant observables, together with a net of subalgebras
+$\mathcal{A}_{\mathcal{M}}(O) \subset \mathcal{A}(\mathcal{M})$ for causally convex regions
+$O \subset \mathcal{M}$, such that {cite}`haag1992local,brunetti2003locally`:
+
+1. **Isotony:** If $O_1 \subset O_2$, then $\mathcal{A}_{\mathcal{M}}(O_1) \subset \mathcal{A}_{\mathcal{M}}(O_2)$.
+2. **Locality:** If $O_1$ and $O_2$ are spacelike separated, then
+   $[\mathcal{A}_{\mathcal{M}}(O_1),\mathcal{A}_{\mathcal{M}}(O_2)]_\pm = 0$.
+3. **Local Covariance:** For any morphism $\chi$ in $\mathrm{Loc}_{\mathrm{Spin},G}$, the induced
+   *-homomorphism $\alpha_\chi := \mathcal{A}(\chi)$ is injective and satisfies
+   $\alpha_\chi(\mathcal{A}_{\mathcal{M}}(O)) = \mathcal{A}_{\mathcal{M}'}(\chi(O))$, with
+   $\alpha_{\chi_2 \circ \chi_1} = \alpha_{\chi_2} \circ \alpha_{\chi_1}$ and
+   $\alpha_{\mathrm{id}} = \mathrm{id}$.
+4. **Time-Slice:** If $O$ contains a Cauchy surface of $\mathcal{M}$, then $\mathcal{A}_{\mathcal{M}}(O)$ generates
+   $\mathcal{A}(\mathcal{M})$.
+5. **Gauge Invariance:** The physical algebra is the subalgebra invariant under vertical
+   automorphisms of $P_G$; states vanish on first-class constraints.
+6. **State Regularity (Microlocal Spectrum):** Physical states are positive linear functionals
+   whose two-point distributions satisfy the Hadamard/microlocal spectrum condition
+   {cite}`radzikowski1996micro`.
+
+:::
+
+:::{prf:theorem} Wightman and OS as Special Cases of LC-AFT
+:label: thm-lc-aft-special-cases
+
+Assume the SMoC observables satisfy LC-AFT (Definition {prf:ref}`def-lc-aft`) on
+$\mathrm{Loc}_{\mathrm{Spin},G}$ (Definition {prf:ref}`def-loc-spin-g`).
+
+1. **Wightman Specialization:** If the background is flat Minkowski space, the drive is absent
+   (or time-translation invariant), and the LC-AFT net is generated by covariant fields
+   $\Phi_A(x)$ with a Poincare-invariant vacuum state satisfying the usual spectrum condition, then
+   the vacuum Wightman functions satisfy W0-W4 (Definition {prf:ref}`def-wightman-axioms`).
+
+2. **OS Specialization:** If the theory admits a Euclidean continuation with reflection symmetry
+   and a reflection-positive Schwinger functional on the gauge-invariant algebra, then the
+   Schwinger functions satisfy OS0-OS4 (Definition {prf:ref}`def-os-axioms`), and OS reconstruction
+   yields the Wightman theory {cite}`osterwalder1973axioms,osterwalder1975axioms`.
+
+*Proof.*
+
+**Step 1.** In the flat, drive-free sector (object $(\mathbb{R}^{1,3}, \eta, \mathfrak{o},
+\mathfrak{t}, \mathcal{S}_0, P_G^{\text{triv}}, A^{\text{ext}}=0)$), LC-AFT reduces to a
+Haag-Kastler net with a Poincare-invariant vacuum. With the stated regularity (field generation,
+spectrum), the standard construction recovers Wightman functions satisfying W0-W4
+{cite}`haag1992local`.
+
+**Step 2.** In the Euclidean, reflection-positive sector, the OS axioms apply to the Schwinger
+functions. By OS reconstruction, these yield Wightman functions obeying W0-W4
+{cite}`osterwalder1973axioms,osterwalder1975axioms`.
+
+$\square$
+
+:::
+
+:::{prf:corollary} AFT Validity of the Cognitive Yang-Mills Theory
+:label: cor-aft-validity-yang-mills
+
+Let the cognitive Yang-Mills sector be defined by the gauge part of
+{prf:ref}`def-cognitive-lagrangian`, with field multiplet $\Phi_A$ and gauge group
+$G_{\text{Fragile}} = SU(N_f)_C \times SU(2)_L \times U(1)_Y$. If the associated Euclidean Schwinger
+functions $S_n$ satisfy OS0-OS4 on the gauge-invariant observable algebra (Definition
+{prf:ref}`def-os-axioms`), then the OS reconstruction theorem yields Wightman functions $W_n$
+satisfying W0-W4 (Definition {prf:ref}`def-wightman-axioms`). Hence the cognitive Yang-Mills theory
+is an AFT.
+
+*Proof.*
+By the Osterwalder-Schrader reconstruction theorem {cite}`osterwalder1973axioms,osterwalder1975axioms`,
+OS0-OS4 imply the existence of a Hilbert space, a vacuum $|\Omega\rangle$, and field operators whose
+Wightman functions are analytic continuations of $S_n$. These Wightman functions satisfy W0-W4 by
+construction (Definition {prf:ref}`def-wightman-axioms`), so the theory is an AFT by
+Definition {prf:ref}`def-aft`. $\square$
+
+:::
+
+:::{prf:remark} Scope of AFT Compliance
+:label: rem-aft-scope
+
+The Wightman/OS formulation applies to the stationary flat-sector of SMoC (drive-free or
+time-translation invariant backgrounds on Minkowski space). In the presence of nontrivial drive or
+curved causal geometry, use the generalized LC-AFT formulation (Definition {prf:ref}`def-lc-aft`).
+
+:::
+
+:::{prf:remark} Wightman Verification Plan
+:label: rem-wightman-verification-plan
+
+The top-down verification splits into a Euclidean (OS) block and a Minkowski (Wightman) block. Each
+step below is a concrete proof obligation tied to the SMoC field content and Lagrangian:
+
+1. **W0 Temperedness**
+   - Define smeared fields $\Phi_A(f)$ with $f\in\mathcal{S}(\mathbb{R}^4)$.
+   - Prove continuity of $W_n(f_1,\ldots,f_n)$ on Schwartz space using polynomial bounds on the
+     Euclidean generating functional and Wick rotation.
+
+2. **W1 Covariance**
+   - Use Lorentz invariance of {prf:ref}`def-cognitive-lagrangian` to construct a unitary Poincare
+     representation acting on $\Phi_A$ and fixing the vacuum.
+
+3. **W2 Spectral Condition**
+   - Show the Hamiltonian derived from {prf:ref}`def-cognitive-lagrangian` is bounded below and
+     generates positive-energy time translations.
+   - In a translation-invariant sector, prove $\mathrm{spec}(P) \subset \overline{V}_+$.
+
+4. **W3 Locality (Microcausality)**
+   - Use the locality of the Lagrangian and the canonical equal-time (anti)commutation relations to
+     show graded commutativity at spacelike separation.
+
+5. **W4 Vacuum Cyclicity**
+   - Construct the Hilbert space as the completion of field polynomials acting on $|\Omega\rangle$.
+     In the OS route, cyclicity holds by construction after reconstruction.
+
+:::
+
+:::{prf:remark} Osterwalder-Schrader Verification Plan
+:label: rem-os-verification-plan
+
+The Euclidean sector verification proceeds as follows, following the OS axioms
+{cite}`osterwalder1973axioms,osterwalder1975axioms`:
+
+1. **OS0 Temperedness**
+   - Establish polynomial bounds on the Euclidean generating functional so that $S_n$ extends to
+     $\mathcal{S}'((\mathbb{R}^4)^n)$.
+
+2. **OS1 Euclidean Covariance**
+   - Wick rotate {prf:ref}`def-cognitive-lagrangian` and show $S_n$ is invariant under $E(4)$.
+
+3. **OS2 Reflection Positivity**
+   - Prove reflection positivity on the gauge-invariant observable algebra (e.g., Wilson operators),
+     which is the critical hypothesis for OS reconstruction.
+
+4. **OS3 Cluster Property**
+   - Show decay of connected correlators at large Euclidean separation, yielding factorization.
+
+5. **OS4 Symmetry**
+   - Use bosonic/fermionic grading of the SMoC field multiplet to establish (graded) symmetry.
+
+:::
+
+
+
+(sec-smoc-os2-os3-poincare)=
+#### A.1 Constructive OS2: Reflection Positivity
+
+:::{prf:theorem} OS2 Construction on the Gauge-Invariant Algebra
+:label: thm-smoc-os2-construction
+
+Let $S_E[\Phi]$ be the Euclidean action obtained from {prf:ref}`def-cognitive-lagrangian` by Wick
+rotation, and let $\Theta$ denote Euclidean time reflection. Define the positive-time algebra
+$\mathcal{A}_+$ as polynomials in smeared, gauge-invariant fields with support in $\tau > 0$.
+Assume:
+
+1. **Reflection invariance:** $S_E[\Theta\Phi] = S_E[\Phi]$.
+2. **Locality across the reflection plane:** $S_E[\Phi] = S_E[\Phi_+] + S_E[\Phi_-] + B[\Phi_0]$,
+   where $\Phi_\pm$ are fields supported in $\tau \gtrless 0$ and $B$ is a boundary term depending
+   only on the reflected hypersurface $\tau=0$.
+3. **Reflection-positive measure on $\mathcal{A}_+$:** The Euclidean measure restricted to the
+   gauge-invariant algebra $\mathcal{A}_+$ is reflection positive. Concretely, assume a
+   reflection-positive gauge choice or continuum functional-integral construction in which the
+   interaction splits as $V = V_+ + \Theta V_+$ with $V_+$ supported in $\tau>0$, so that the
+   Glimm-Jaffe reflection-positivity theorem for Euclidean functional integrals applies on
+   $\mathcal{A}_+$ {cite}`glimm1987quantum`.
+
+Fix Euclidean indices $\mu=1,2,3,4$ with $\tau := x_4$, Euclidean gamma matrices with
+$\{\gamma_\mu,\gamma_\nu\} = 2\delta_{\mu\nu}$, and a charge conjugation matrix $C$ satisfying
+$C\gamma_\mu C^{-1} = -\gamma_\mu^T$ {cite}`glimm1987quantum`.
+Define the field-by-field OS reflection $\Theta$ by:
+
+- **Gauge fields:** $(\Theta A_4)(\tau,x) = -A_4(-\tau,x)$ and $(\Theta A_i)(\tau,x) = A_i(-\tau,x)$
+  for each $A_\mu \in \{B_\mu, W_\mu^a, G_\mu^a\}$.
+- **Scalar:** $(\Theta \phi)(\tau,x) = \phi^\dagger(-\tau,x)$ and
+  $(\Theta \phi^\dagger)(\tau,x) = \phi(-\tau,x)$.
+- **Spinor:** $(\Theta \Psi)(\tau,x) = C\gamma_4 \bar{\Psi}(-\tau,x)^T$ and
+  $(\Theta \bar{\Psi})(\tau,x) = -\Psi(-\tau,x)^T C^{-1}\gamma_4$.
+
+The boundary term in Assumption 2 is the canonical surface term
+$$
+B[\Phi_0] = \int_{\tau=0} d^3x \left(\pi_\phi^a\,\phi_a + \pi_{\phi^\dagger,a}\,\phi^{\dagger a}
++\sum_{i=1}^3 \pi_{A_i}\,A_i\right),
+$$
+with canonical momenta $\pi_\Phi := \partial \mathcal{L}_E / \partial(\partial_\tau \Phi)$; for the
+SMoC fields this includes $\pi_{\phi}^a = (D_\tau \phi)^{\dagger a}$, $\pi_{\phi^\dagger,a} = (D_\tau \phi)_a$,
+and $\pi_{A_i} = F_{4i}$, while $A_4$ has no $\partial_\tau$ term and acts as a Lagrange multiplier.
+The fermionic action is first order and is treated directly by the OS inner product
+{cite}`glimm1987quantum,streater1964pct,haag1992local`.
+
+**Applicability check (SMoC action):**
+1. **Reflection-positive base (matter):** The free Euclidean action for scalar and spinor sectors
+   defines a reflection-positive Gaussian measure with covariance invariant under $\Theta$
+   {cite}`glimm1987quantum,streater1964pct`.
+2. **Locality and split form:** The interaction density is local and reflection invariant, so the
+   Euclidean interaction functional satisfies $V = V_+ + \Theta V_+$ with $V_+$ supported on
+   $\tau>0$. This uses the boundary decomposition in Assumption 2 and the explicit field parities.
+3. **Gauge-invariant observable algebra:** The reflection positivity is asserted on
+   $\mathcal{A}_+$ generated by gauge-invariant polynomials (e.g., Wilson loops), so the OS2
+   inequality is checked on the physical observable algebra.
+4. **Gauge-sector hypothesis:** Assume a reflection-positive gauge construction on
+   $\mathcal{A}_+$ (e.g., a reflection-positive gauge fixing or continuum functional-integral
+   framework satisfying (3)), so that the Glimm-Jaffe argument yields OS2 on $\mathcal{A}_+$
+   {cite}`glimm1987quantum`.
+
+Then for all $F \in \mathcal{A}_+$,
+$$
+\langle \Theta F \cdot F \rangle_E \ge 0,
+$$
+so OS2 holds on $\mathcal{A}_+$.
+
+*Proof.*
+
+**Step 1 (Reflection operator):** Define $\Theta$ by $\tau \mapsto -\tau$ together with the field
+conjugations above. This keeps $S_E$ invariant and makes $\Theta$ an antilinear involution
+{cite}`glimm1987quantum,streater1964pct,haag1992local`.
+
+**Step 2 (Factorization):** By locality across $\tau=0$, the action splits into independent positive
+and negative time parts plus a boundary term. This yields a factorized integrand of the form
+$e^{-S_E[\Phi_+]} e^{-S_E[\Phi_-]} e^{-B[\Phi_0]}$.
+
+**Step 3 (Positivity on $\mathcal{A}_+$):** For $F \in \mathcal{A}_+$, $\Theta F$ depends only on
+$\Phi_-$, so the Euclidean expectation $\langle \Theta F \cdot F \rangle_E$ is an $L^2$ norm with
+respect to a positive measure on $\Phi_+$, hence nonnegative.
+
+Therefore OS2 holds on the gauge-invariant algebra {cite}`osterwalder1973axioms,osterwalder1975axioms`.
+$\square$
+:::
+
+:::{prf:remark} Gauge Fixing and Wilson-Loop Positivity
+:label: rem-os2-gauge-fixing-wilson
+
+For the gauge sector, a concrete OS2 verification can be carried out on the gauge-invariant algebra
+generated by **Wilson loops**:
+$$
+W(C) := \operatorname{Tr}\,\mathcal{P}\exp\left(i\oint_C A_\mu\,dx^\mu\right),
+$$
+where $A_\mu \in \{B_\mu, W_\mu^a, G_\mu^a\}$ and $C$ is a closed Euclidean loop
+{cite}`wilson1974confinement,kogut1979introduction`.
+
+**Constructive route (sufficient conditions):**
+1. **Gauge-invariant observable algebra:** Restrict $\mathcal{A}_+$ to polynomials in Wilson loops
+   supported in $\tau>0$. This avoids gauge-fixing at the level of observables.
+2. **Reflection action on loops:** The OS reflection $\Theta$ maps $W(C)$ to $W(\Theta C)$ with
+   $\Theta C$ the reflected loop. This preserves gauge invariance.
+3. **Reflection-positive measure:** Verify that the Euclidean measure (either directly or via a
+   reflection-positive gauge choice) is positive on the Wilson-loop algebra so that
+   $\langle \Theta F \cdot F \rangle_E \ge 0$ for all $F \in \mathcal{A}_+$.
+
+If a gauge fixing is introduced, require a reflection-positive gauge so that the Faddeev-Popov
+determinant is $\Theta$-invariant and positivity is preserved
+{cite}`faddeev1967feynman,glimm1987quantum`. In the SMoC construction we do not invoke lattice
+regularization; OS2 is asserted on the gauge-invariant Wilson-loop algebra under the stated
+reflection-positivity hypotheses.
+
+:::
+
+#### A.2 Constructive OS3: Cluster Property
+
+For the explicit construction of the mass gap used here, see {ref}`Section <sec-mass-gap>`.
+
+:::{prf:theorem} OS3 from the Constructed Mass Gap
+:label: thm-smoc-os3-construction
+
+Let $S_n^c$ denote the connected Euclidean Schwinger functions for gauge-invariant observables.
+By Theorem {prf:ref}`thm-mass-gap-constructive` and Corollary {prf:ref}`cor-mass-gap-existence`, the
+SMoC dynamics has a strictly positive mass gap $\Delta > 0$. Consequently, the spectral measure for
+gauge-invariant observables has no support at zero mass and connected two-point functions decay at
+large Euclidean separation. Hence $S_n^c$ vanishes as any subset of arguments is translated to
+infinity, and the OS3 cluster property holds.
+
+*Proof.*
+
+**Step 1 (Connected/Disconnected split):** Write $S_{m+n} = S_m S_n + S_{m+n}^c$ by definition of
+connected correlators.
+
+**Step 2 (Spectral representation):** Assume the gauge-invariant two-point functions satisfy the
+Kallen-Lehmann representation with positive spectral measure
+{cite}`streater1964pct,haag1992local`. By {prf:ref}`thm-mass-gap-constructive` and
+{prf:ref}`cor-mass-gap-existence`, the spectral measure is supported on $[\Delta,\infty)$ with
+$\Delta>0$, which implies decay of the Euclidean two-point function as $|a| \to \infty$.
+
+**Step 3 (Decay of higher connected correlators):** Assume the Euclidean functional integral lies
+in a constructive regime where standard cluster-expansion bounds apply {cite}`glimm1987quantum`;
+then the two-point decay propagates to $S_n^c$, yielding
+$S_{m+n}^c(x_1,\ldots,x_m,x_{m+1}+a,\ldots,x_{m+n}+a) \to 0$.
+
+Therefore $S_{m+n} \to S_m S_n$, which is OS3 {cite}`osterwalder1973axioms,osterwalder1975axioms`.
+$\square$
+:::
+
+#### A.3 Poincare/Unitarity Setup (OS Reconstruction)
+
+:::{prf:theorem} Unitary Poincare Representation from OS Data
+:label: thm-smoc-poincare-reconstruction
+
+Assume the SMoC Schwinger functions satisfy OS0-OS4. Then OS reconstruction yields a Hilbert space
+$\mathcal{H}$, a vacuum $|\Omega\rangle$, field operators $\Phi_A$, and a unitary representation of
+the proper orthochronous Poincare group implementing W1.
+
+*Proof.*
+
+**Step 1 (Pre-Hilbert space):** Let $\mathcal{A}_+$ be the positive-time algebra. Define
+$(F,G)_E := \langle \Theta F \cdot G \rangle_E$. By OS2 this is positive semidefinite. Quotient by
+the null space and complete to obtain $\mathcal{H}$ with vacuum vector $|\Omega\rangle$.
+
+**Step 2 (Time translation and positivity):** Euclidean time translations act on $\mathcal{A}_+$ and
+descend to a strongly continuous contraction semigroup on $\mathcal{H}$. By OS reconstruction and
+reflection positivity, this semigroup is of the form $e^{-tH}$ with $H$ self-adjoint and $H \ge 0$,
+yielding the spectral condition W2.
+
+**Step 3 (Spatial symmetries):** OS1 yields a unitary representation of spatial rotations and
+translations on $\mathcal{H}$. Together with $H$, this gives a representation of the Euclidean group.
+
+**Step 4 (Analytic continuation):** The OS reconstruction theorem provides analytic continuation of
+Euclidean symmetries to Lorentz boosts, yielding a unitary representation of the proper
+orthochronous Poincare group that implements W1 on the reconstructed fields
+{cite}`osterwalder1973axioms,osterwalder1975axioms,haag1992local`.
+
+Thus the SMoC fields satisfy the Poincare covariance and unitarity requirements of the Wightman
+axioms {cite}`wightman1956quantum,osterwalder1973axioms,osterwalder1975axioms`. $\square$
+:::
 
 
 
@@ -1483,7 +2036,7 @@ This table provides the mapping between Standard Model entities and Cognitive en
 | Hadrons | Baryons/Mesons | Concepts $K$ | Axiom {prf:ref}`ax-feature-confinement` |
 | Confinement | Color Neutral | Observability Constraint | {ref}`Section 33 <sec-causal-information-bound>` (Area Law) |
 | Spontaneous Symmetry Breaking | Higgs Mechanism | Ontological Fission | Corollary {prf:ref}`cor-ontological-ssb` |
-| Goldstone Boson | Massless mode | Texture $z_{\text{tex}}$ | Axiom {prf:ref}`ax-bulk-boundary-decoupling` |
+| Goldstone Boson | Gauge-redundant mode | Texture $z_{\text{tex}}$ | Axiom {prf:ref}`ax-bulk-boundary-decoupling` |
 
 **Summary.** The gauge structure $G_{\text{Fragile}} = SU(N_f)_C \times SU(2)_L \times U(1)_Y$ arises from three independent redundancies in the agent's description:
 - $U(1)_Y$: Value baseline invariance (Theorem {prf:ref}`thm-emergence-opportunity-field`)

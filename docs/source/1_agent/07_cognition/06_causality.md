@@ -312,7 +312,8 @@ $$
 \dot{z} = \mathcal{M}_{\text{curl}}\!\left(-G^{-1}\nabla_A V + \beta_{\text{exp}} G^{-1}\nabla\Psi_{\text{causal}}\right),
 $$
 with $\mathcal{M}_{\text{curl}} := (I - \beta_{\text{curl}} G^{-1}\mathcal{F})^{-1}$.
-Here $\nabla_A V := \nabla V - A$ with $A$ the reward 1-form (conservative case: $A=0$).
+Here $\nabla_A V := \nabla V - A$ with $A := \delta\Psi + \eta$ the non-conservative component of the reward 1-form
+(conservative case: $A=0$).
 See {ref}`Appendix E.5 <sec-appendix-e-rigorous-proof-sketches-for-ontological-and-metabolic-laws>` for the full derivation. $\square$
 
 *Physical interpretation:* The curiosity force $\mathbf{f}_{\text{exp}}$ pulls the agent toward regions of high epistemic uncertainty about the transition dynamics. This is the geometric formulation of **intrinsic motivation** {cite}`schmidhuber2010formal,oudeyer2007intrinsic`: the agent is rewarded for reducing its causal ignorance, independent of external task reward. This connects to curiosity-driven exploration in reinforcement learning {cite}`pathak2017curiosity,houthooft2016vime`.
@@ -364,12 +365,12 @@ We refine the **Causal Enclosure** condition ({ref}`Section 2.8 <sec-conditional
 The macro-ontology $K$ is **Interventionally Closed** if and only if the predictability of the macro-state is invariant under $do$-operations:
 
 $$
-I(K_{t+1} ; Z_{\text{micro}, t} | K_t, do(A_t)) = 0.
+I(K_{t+1} ; Z_{\text{micro}, t} | K_t, do(K^{\text{act}}_t)) = 0.
 
 $$
 *Interpretation:* If an agent moves an object (intervention), and the resulting macro-state $K_{t+1}$ depends on micro-texture $z_{\text{tex}}$ that was previously labeled "noise," the ontology has failed. The intervention has **exposed a hidden variable**, triggering **Ontological Expansion** ({ref}`Section 30 <sec-ontological-expansion-topological-fission-and-the-semantic-vacuum>`).
 
-*Proof sketch.* We compare the mutual information $I(K_{t+1}; Z_{\text{micro}, t} | K_t)$ under the observational measure $P$ and the interventional measure $P_{do(A)}$. Causal enclosure ({ref}`Section 2.8 <sec-conditional-independence-and-sufficiency>`) guarantees the condition for $P$. Because the $do(A)$ operator is a surgery that only removes incoming edges to $A$ (Pearl's Causal Markov Condition {cite}`pearl2009causality`), it leaves the mechanism $P(K_{t+1} | K_t, A_t, Z_{\text{micro}, t})$ invariant.
+*Proof sketch.* We compare the mutual information $I(K_{t+1}; Z_{\text{micro}, t} | K_t)$ under the observational measure $P$ and the interventional measure $P_{do(K^{\text{act}})}$. Causal enclosure ({ref}`Section 2.8 <sec-conditional-independence-and-sufficiency>`) guarantees the condition for $P$. Because the $do(K^{\text{act}})$ operator is a surgery that only removes incoming edges to $K^{\text{act}}$ (Pearl's Causal Markov Condition {cite}`pearl2009causality`), it leaves the mechanism $P(K_{t+1} | K_t, K^{\text{act}}_t, Z_{\text{micro}, t})$ invariant.
 
 If the observational distribution is closed ($I = 0$), and the mechanism is invariant, the interventional distribution is necessarily closed. A violation ($I > 0$ under $do$) implies the existence of a back-door path through $Z_{\text{micro}}$ that was previously unobserved, necessitating a topological expansion of $K$ to include the confounding variable. See {ref}`Appendix E.6 <sec-appendix-e-rigorous-proof-sketches-for-ontological-and-metabolic-laws>` for the full proof. $\square$
 

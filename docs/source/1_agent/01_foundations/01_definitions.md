@@ -5,7 +5,7 @@
 - Treat the environment as an **input-output law** at an observation/action interface (a Markov blanket), not as a hidden
   state you can “recover”.
 - Define the agent as a **bounded-rationality controller** with an internal state split into macro / nuisance / texture:
-  $Z_t = (K_t, Z_{n,t}, Z_{\mathrm{tex},t})$.
+  $Z_t = (K_t, z_{n,t}, z_{\mathrm{tex},t})$.
 - Re-type standard RL objects (state, observation, action, reward) as **boundary signals and constraints**, so stability
   and capacity can be enforced explicitly later (Sieve diagnostics/barriers).
 - Make **symmetries and gauge freedoms** first-class: equivalence classes of representations matter more than raw
@@ -94,7 +94,7 @@ This might seem like a mere philosophical nicety, but it has profound practical 
 The agent is a controller with internal state
 
 $$
-Z_t := (K_t, Z_{n,t}, Z_{\mathrm{tex},t}) \in \mathcal{Z}=\mathcal{K}\times\mathcal{Z}_n\times\mathcal{Z}_{\mathrm{tex}},
+Z_t := (K_t, z_{n,t}, z_{\mathrm{tex},t}) \in \mathcal{Z}=\mathcal{K}\times\mathcal{Z}_n\times\mathcal{Z}_{\mathrm{tex}},
 
 $$
 and internal components (Encoder/Shutter, World Model, Critic, Policy). Its evolution is driven only by the observable interaction stream at the interface (observations/feedback) and by its own outgoing control signals (actions).
@@ -102,7 +102,7 @@ and internal components (Encoder/Shutter, World Model, Critic, Policy). Its evol
 :::
 
 :::{div} feynman-prose
-Notice what this definition *doesn't* say. It doesn't say the agent has access to the "true state of the world." It says the agent has an *internal state* $Z_t$---its own representation, built from what it has observed. And that internal state has structure: a discrete macro-state $K_t$ (think: "what kind of situation is this?"), a nuisance component $Z_{n,t}$ (think: "where exactly am I within this situation?"), and a texture component $Z_{\text{tex},t}$ (think: "fine details needed for reconstruction but not for decision-making").
+Notice what this definition *doesn't* say. It doesn't say the agent has access to the "true state of the world." It says the agent has an *internal state* $Z_t$---its own representation, built from what it has observed. And that internal state has structure: a discrete macro-state $K_t$ (think: "what kind of situation is this?"), a nuisance component $z_{n,t}$ (think: "where exactly am I within this situation?"), and a texture component $z_{\text{tex},t}$ (think: "fine details needed for reconstruction but not for decision-making").
 
 We'll unpack this decomposition thoroughly later. For now, the key point is that the agent's state is *its own construction*, not a window into some external truth.
 :::
@@ -136,16 +136,16 @@ For our agent, the boundary $B_t$ plays exactly this role. If you tell me the co
 :::{prf:definition} Environment as Generative Process
 :label: def-environment-as-generative-process
 
-The "environment" is the conditional law of future interface signals given past interface history. Concretely it is a (possibly history-dependent) kernel on incoming boundary signals conditional on outgoing control:
+The "environment" is the conditional law of future interface signals given past interface history. Concretely it is a (possibly history-dependent) kernel on incoming boundary signals conditional on the boundary history:
 
 $$
-P_{\partial}(x_{t+1}, r_t, d_t, \iota_{t+1}\mid x_{\le t}, a_{\le t}).
+P_{\partial}(x_{t+1}, r_{t+1}, d_{t+1}, \iota_{t+1}\mid B_{\le t}).
 
 $$
 In the Markov case this reduces to the familiar RL kernel
 
 $$
-P_{\partial}(x_{t+1}, r_t, d_t, \iota_{t+1}\mid x_t, a_t),
+P_{\partial}(x_{t+1}, r_{t+1}, d_{t+1}, \iota_{t+1}\mid B_t),
 
 $$
 but the **interpretation changes**: $P_{\partial}$ is not "a dataset generator"; it is the **input-output law** that the controller must cope with under partial observability and model mismatch.
@@ -184,7 +184,7 @@ Start from the standard POMDP objects $(s_t, o_t, a_t, r_t)$ (latent state, obse
 - **Boundary signals:** identify $x_t := o_t$ and form the boundary tuple $B_t := (x_t, r_t, d_t, \iota_t, a_t)$, where
   $d_t$ is termination and $\iota_t$ collects any extra side channels (costs, constraint reasons, privileged info).
 - **Environment as law:** instead of “learning $s_t$”, treat the environment as the conditional law
-  $P_{\partial}(x_{t+1}, r_t, d_t, \iota_{t+1}\mid x_{\le t}, a_{\le t})$.
+  $P_{\partial}(x_{t+1}, r_{t+1}, d_{t+1}, \iota_{t+1}\mid B_{\le t})$.
 - **Internal split:** choose/learn $Z_t=(K_t,z_{n,t},z_{\mathrm{tex},t})$ so that $K_t$ carries the *predictive,
   control-relevant* information, $z_{n,t}$ captures structured continuous variation (pose/disturbance), and
   $z_{\mathrm{tex},t}$ carries reconstruction-only detail.
@@ -216,10 +216,10 @@ Now let's go through the standard RL vocabulary and see how each term looks from
    - *Fragile:* the only exogenous input available to the controller. The encoder/shutter transduces it into internal coordinates:
 
      $$
-     x_t \mapsto (K_t, Z_{n,t}, Z_{\mathrm{tex},t}),
+     x_t \mapsto (K_t, z_{n,t}, z_{\mathrm{tex},t}),
 
      $$
-     where $K_t$ is the **discrete predictive signal** (bounded-rate latent statistic), $Z_{n,t}$ is a **structured nuisance / gauge residual** (pose/basis/disturbance coordinates), and $Z_{\mathrm{tex},t}$ is a **texture residual** (high-rate reconstruction detail).
+     where $K_t$ is the **discrete predictive signal** (bounded-rate latent statistic), $z_{n,t}$ is a **structured nuisance / gauge residual** (pose/basis/disturbance coordinates), and $z_{\mathrm{tex},t}$ is a **texture residual** (high-rate reconstruction detail).
    - *Boundary gate nodes ({ref}`Section 3 <sec-diagnostics-stability-checks>`):*
      - **Node 14 (InputSaturationCheck):** input saturation (sensor dynamic range exceeded).
      - **Node 15 (SNRCheck):** low signal-to-noise (SNR too low to support stable inference).
@@ -231,7 +231,7 @@ Now let's go through the standard RL vocabulary and see how each term looks from
 
 3. **Action $a_t$ (Control / Actuation).**
    - *Standard:* a vector sent to the environment.
-   - *Fragile:* a control signal chosen to minimize expected future cost under uncertainty and constraints. Like observations, actions decompose into structured components: $a_t = (A_t, z_{n,\text{motor}}, z_{\text{tex,motor}})$ where $A_t$ is the discrete motor macro, $z_{n,\text{motor}}$ is motor nuisance (compliance), and $z_{\text{tex,motor}}$ is motor texture (tremor). See {ref}`Section 23.3 <sec-motor-texture-the-action-residual>` for details.
+   - *Fragile:* a control signal chosen to minimize expected future cost under uncertainty and constraints. Like observations, actions decompose into structured components: $a_t = (K^{\text{act}}_t, z_{n,\text{motor}}, z_{\text{tex,motor}})$ where $K^{\text{act}}_t$ is the discrete motor macro, $z_{n,\text{motor}}$ is motor nuisance (compliance), and $z_{\text{tex,motor}}$ is motor texture (tremor). See {ref}`Section 23.3 <sec-motor-texture-the-action-residual>` for details.
    - *Cybernetic constraints:*
      - **Node 2 (ZenoCheck):** limits chattering (bounded variation in control outputs).
      - **BarrierSat:** actuator saturation (finite control authority).
@@ -249,10 +249,12 @@ Now let's go through the standard RL vocabulary and see how each term looks from
    - *Mechanism:* the critic's $V$ is the internal value/cost-to-go for the **exact (conservative) component**; the
      non-conservative component remains as a curl/connection term in the dynamics ({ref}`Section 24.1 <sec-the-reward-1-form>`).
    - *Boundary interpretation ({ref}`Section 24.1 <sec-the-reward-1-form>`):* Reward is a boundary reward flux
-     1-form $J_r$. By Hodge decomposition, $J_r = dV + \delta \Psi + \eta$; only the exact part $dV$ (often written
-     $d\Phi$) yields a scalar charge density $\sigma_r$ and a **Screened Poisson Equation**
-     (Theorem {prf:ref}`thm-the-hjb-helmholtz-correspondence`). The solenoidal/harmonic parts encode path-dependent reward
-     and are carried by the connection/field strength.
+     1-form $J_r$ defined by the pullback $J_r=\iota^*\mathcal{R}$ of the bulk reward 1-form $\mathcal{R}$.
+     By Hodge decomposition, $\mathcal{R} = d\Phi + \delta \Psi + \eta$; only the exact part $d\Phi$ (identified with
+     $dV$, the critic's exact component) yields a scalar charge density $\sigma_r$ and a **Screened Poisson Equation**
+     (Theorem {prf:ref}`thm-the-hjb-helmholtz-correspondence`). Define the non-exact component
+     $A := \delta\Psi + \eta$, so $\mathcal{R} = d\Phi + A$ and $dA = \mathcal{F}$. The solenoidal/harmonic parts
+     encode path-dependent reward and are carried by the connection/field strength.
 
 :::{div} feynman-prose
    I want you to really think about this one. Reward isn't a magical signal from God telling you what's good. It's just
@@ -375,7 +377,8 @@ Why nats? Because natural logarithms are easier to work with in calculus ($d/dx 
 
 **Regularization / precision coefficients.**
 - MaxEnt / entropy-regularized control introduces a trade-off coefficient (often written $T_c$ or $\alpha_{\text{ent}}$) multiplying an entropy term. Because entropy is in nats, this coefficient is dimensionless and simply sets relative weight in the objective.
-- Exponential-family (softmax/logit) policies use a precision parameter $\beta$ so that $\exp(\beta\,\cdot)$ is dimensionless. Here $\beta$ is dimensionless and interpretable as an inverse-variance / "sharpness" control knob.
+- Exponential-family (softmax/logit) policies use a dimensionless precision parameter $\beta_{\text{ent}}$ so that $\exp(\beta_{\text{ent}}\,\cdot)$ is dimensionless; $\beta_{\text{ent}}$ is an inverse-variance / "sharpness" control knob.
+- The metric coupling coefficient $\beta_{\text{cpl}}$ (Definition {prf:ref}`def-local-conditioning-scale`) carries units $\mathrm{nat}/[z]^2$, and the curl coefficient $\beta_{\text{curl}}$ appears in the dynamics.
 
 **Conventions for generic coefficients.**
 - Numerical stabilizers like $\epsilon$ always inherit the units of the quantity they are added to.
@@ -467,7 +470,7 @@ In our framework, this becomes a formal dimension. We use $\tau$ to parameterize
 :::
 
 This is the radial coordinate in the Poincare disk (Sections 21, 7.12). It corresponds to resolution depth.
-- **Dynamics:** $dr/d\tau = \operatorname{sech}^2(\tau/2)$ (the holographic law).
+- **Dynamics:** $dr/d\tau = \tfrac{1}{2}\operatorname{sech}^2(\tau/2)$ (the holographic law).
 - **Discretization:** in stacked TopoEncoders, layer $\ell$ corresponds to scale time $\tau_\ell$.
 - **Direction:** $\tau \to \infty$ (UV) is high energy, fine detail; $\tau \to 0$ (IR) is low energy, coarse structure.
 - **Process:** generation flows in $+\tau$ (root to boundary); inference flows in $-\tau$.

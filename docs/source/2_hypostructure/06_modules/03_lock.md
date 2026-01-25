@@ -102,7 +102,13 @@ E1 is the simplest obstruction: dimension counting. You cannot fit a three-dimen
 
 **Method**: Invariant extraction + comparison
 
-**Mechanism**: If morphisms must preserve invariant $I$ but $I(\mathbb{H}_{\mathrm{bad}}) \neq I(\mathcal{H})$, Hom is empty.
+**Mechanism**: If morphisms must preserve invariant $I$ but
+$I(\mathbb{H}_{\mathrm{bad}}) \neq I(\mathcal{H})$, Hom is empty. The permit
+$K_{\mathrm{TB}_\pi}^+$ supplies an invariant list $\mathsf{I}_{\text{list}}$
+(e.g., Euler characteristic, Betti numbers) and may also supply a **boundary payload**
+$(T_{\partial}, C_{\partial}, \text{proof}, \text{provenance})$ with $T_{\partial} \ge 0$.
+This payload is the source of the topological bound used in the holographic screen
+({prf:ref}`def-categorical-hypostructure`); if absent, E2 returns INC for that bound.
 
 **Certificate Logic:**
 
@@ -111,7 +117,8 @@ K_{\mathrm{TB}_\pi}^+ \wedge (I_{\mathrm{bad}} \neq I_{\mathcal{H}}) \Rightarrow
 
 $$
 
-**Certificate Payload**: $(I, I_{\text{bad}}, I_{\mathcal{H}}, I_{\text{bad}} \neq I_{\mathcal{H}} \text{ proof})$
+**Certificate Payload**: $(I, I_{\text{bad}}, I_{\mathcal{H}},
+I_{\text{bad}} \neq I_{\mathcal{H}} \text{ proof})$
 
 **Automation**: Automatable for extractable invariants (Euler char, homology, etc.)
 

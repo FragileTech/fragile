@@ -179,7 +179,7 @@ Why does this matter? Imagine a teacher (the critic) and a student (the policy).
 
 The four exponents capture these timescale relationships:
 - $\alpha$: How strongly does the critic signal? (Teacher's clarity)
-- $\beta$: How fast does the policy change? (Student's learning rate)
+- $\beta_{\pi}$: How fast does the policy change? (Student's learning rate)
 - $\gamma$: How volatile is the world model? (Textbook stability)
 - $\delta$: How much does the representation drift? (Are we speaking the same language?)
 
@@ -188,7 +188,7 @@ Stable training requires these in the right relationship. Representation should 
 
 We characterize the training dynamics of the Fragile Agent using four **scaling coefficients**. These are *diagnostic* summaries of state-space behavior, not optimizer statistics.
 
-The geometric metric $G$ is the **State-Space Fisher Information** (see {ref}`Section 2.6 <sec-the-metric-hierarchy-fixing-the-category-error>`), ensuring coordinate invariance. Common diagonal approximations include:
+The geometric metric $G$ is a **state-space sensitivity metric** combining value curvature and control sensitivity (see {ref}`Section 2.5 <sec-second-order-sensitivity-value-defines-a-local-metric>`). In practice we often approximate it with a Fisher-based diagonal; common diagonal approximations include:
 - `policy_fisher`: $G_{ii} = \mathbb{E}[(\partial \log \pi / \partial z_i)^2]$
 - `state_fisher`: $G_{ii} = \mathbb{E}[(\partial \log \pi / \partial z_i)^2] + \text{Hess}_z(V)_{ii}$ (Hessian + Fisher sensitivity)
 - `grad_rms`: $G_{ii} = \mathbb{E}[(\partial V / \partial z_i)^2]^{1/2}$
@@ -197,7 +197,7 @@ The geometric metric $G$ is the **State-Space Fisher Information** (see {ref}`Se
 | Component       | Exponent              | Symbol   | Units         | Interpretation                                               | Diagnostics                                                                                 |
 |:----------------|:----------------------|:---------|:--------------|:-------------------------------------------------------------|:--------------------------------------------------------------------------------------------|
 | **Critic**      | **Curvature scale**   | $\alpha$ | dimensionless | **Value curvature:** magnitude of value gradients/curvature. | High $\alpha$: strong supervision.<br>Low $\alpha$: flat value surface (BarrierGap).            |
-| **Policy**      | **Exploration scale** | $\beta$  | dimensionless | **Policy variance / update scale.**                          | High $\beta$: high noise/plasticity.<br>Low $\beta$: near-deterministic/frozen.             |
+| **Policy**      | **Exploration scale** | $\beta_{\pi}$  | dimensionless | **Policy variance / update scale.**                          | High $\beta_{\pi}$: high noise/plasticity.<br>Low $\beta_{\pi}$: near-deterministic/frozen.             |
 | **World Model** | **Volatility scale**  | $\gamma$ | dimensionless | **Dynamics non-stationarity / rollout volatility.**          | High $\gamma$: unstable/chaotic predictions.<br>Low $\gamma$: stable dynamics.              |
 | **VQ-VAE**      | **Drift scale**       | $\delta$ | dimensionless | **Representation drift:** codebook/encoder stability.        | High $\delta$: symbol churn (representation drift).<br>Low $\delta$: stable representation. |
 
@@ -205,12 +205,12 @@ The geometric metric $G$ is the **State-Space Fisher Information** (see {ref}`Se
 Stable training requires separation of timescales: the representation should change slowest, the world model should not drift faster than the critic can track, and the policy should not update faster than the critic’s usable signal. A practical regime is:
 
 $$
-\delta \ll \gamma \ll \alpha,\qquad \beta \le \alpha
+\delta \ll \gamma \ll \alpha,\qquad \beta_{\pi} \le \alpha
 
 $$
 1.  **$\delta \ll \gamma$ (Representation Stability):** the representation (encoder/codebook) drifts slower than the learned dynamics model.
 2.  **$\gamma \ll \alpha$ (Predictability / Trackability):** the learned dynamics do not drift faster than the value function can track.
-3.  **$\beta \le \alpha$ (Two-Time-Scale Actor–Critic):** policy updates stay within the critic's validity region. If $\beta>\alpha$, skip or shrink the policy update (BarrierTypeII; see {ref}`Section 4.1 <sec-barrier-implementation-details>`).
+3.  **$\beta_{\pi} \le \alpha$ (Two-Time-Scale Actor–Critic):** policy updates stay within the critic's validity region. If $\beta_{\pi}>\alpha$, skip or shrink the policy update (BarrierTypeII; see {ref}`Section 4.1 <sec-barrier-implementation-details>`).
 
 (sec-defect-functionals-implementing-regulation)=
 ## Defect Functionals: Implementing Regulation
@@ -646,7 +646,7 @@ A key design choice in the Fragile Agent is to make inter-component alignment ex
     *   The shutter is not merely compressing $x_t$; it is defining the **macro-effective ontology** $K_t\in\mathcal{K}$ on which the World Model claims to be Markov (Causal Enclosure; {ref}`Section 2.8 <sec-conditional-independence-and-sufficiency>`).
 
         $$
-        \mathcal{L}_{\text{Sync}_{K-W}} = \mathrm{CE}\!\left(K_{t+1},\ \hat{p}_\phi(K_{t+1}\mid K_t, A_t)\right)
+        \mathcal{L}_{\text{Sync}_{K-W}} = \mathrm{CE}\!\left(K_{t+1},\ \hat{p}_\phi(K_{t+1}\mid K_t, K^{\text{act}}_t)\right)
 
         $$
     *   *Meaning:* If the shutter emits macrostates that the WM cannot predict (large closure cross-entropy), then the ontology is inconsistent: either the symbol inventory is unstable (codebook churn) or the WM class is misspecified (Mode D.C / T.E).
@@ -986,23 +986,23 @@ A practical, implementable calibration procedure is:
 :::{div} feynman-prose
 Remember the four scaling exponents? Here is where they become operational. Instead of just monitoring, we use them to control training itself.
 
-The rule is simple: do not update a component faster than its dependencies can track. Representation drifting (high $\delta$)? Freeze downstream until it stabilizes. World model volatile (high $\gamma$)? Do not trust it for policy learning. Policy changing faster than critic can evaluate (high $\beta$ vs $\alpha$)? Slow policy updates.
+The rule is simple: do not update a component faster than its dependencies can track. Representation drifting (high $\delta$)? Freeze downstream until it stabilizes. World model volatile (high $\gamma$)? Do not trust it for policy learning. Policy changing faster than critic can evaluate (high $\beta_{\pi}$ vs $\alpha$)? Slow policy updates.
 
 This is not ad-hoc. It directly implements the timescale hierarchy needed for stability. The code below shows a simple version: check exponents, and if they violate hierarchy, adjust learning rates.
 
 The result: self-correcting training. Instead of manually tuning learning rates, the system slows when something is wrong and speeds up when healthy.
 :::
 
-The scaling exponents $(\alpha,\beta,\gamma,\delta)$ ({ref}`Section 3.2 <sec-scaling-exponents-characterizing-the-agent>`) become actionable when treated as **online diagnostics** driving a simple update scheduler {cite}`konda2000actor`:
+The scaling exponents $(\alpha,\beta_{\pi},\gamma,\delta)$ ({ref}`Section 3.2 <sec-scaling-exponents-characterizing-the-agent>`) become actionable when treated as **online diagnostics** driving a simple update scheduler {cite}`konda2000actor`:
 - If representation drift $\delta$ is high, freeze downstream learning (policy/critic/world) until the shutter stabilizes.
 - If world-model volatility $\gamma$ is high, avoid policy learning on shifting dynamics (freeze or reduce policy step size).
-- If the policy update scale $\beta$ exceeds critic signal strength $\alpha$ (BarrierTypeII), skip policy updates until the critic recovers.
+- If the policy update scale $\beta_{\pi}$ exceeds critic signal strength $\alpha$ (BarrierTypeII), skip policy updates until the critic recovers.
 
 One implementable pattern is a “gate + ratio” rule with EMA-smoothed exponents:
 ```python
 # Sketch: gate policy updates if actor outruns critic
-alpha = ema(alpha)          # critic signal / curvature proxy
-beta  = ema(beta_kl)        # mean KL(π_t || π_{t-1}) per update
+alpha = ema(alpha)              # critic signal / curvature proxy
+beta_pi = ema(beta_pi_kl)       # mean KL(π_t || π_{t-1}) per update
 gamma = ema(world_drift)    # WM parameter drift proxy
 delta = ema(code_drift)     # codebook/encoder drift proxy
 
@@ -1012,7 +1012,7 @@ if delta > delta_max:
     lr_critic *= 0.5
 elif gamma > gamma_max:
     lr_policy = 0.0
-elif beta > min(beta_max, alpha):
+elif beta_pi > min(beta_pi_max, alpha):
     lr_policy *= 0.98
     lr_critic *= 1.02
 ```

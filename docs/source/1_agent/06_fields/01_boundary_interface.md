@@ -349,11 +349,11 @@ Just as visual texture captures reconstruction-only detail ({ref}`Section 21.3 <
 The motor output decomposes as:
 
 $$
-a_t = (A_t, z_{n,\text{motor}}, z_{\text{tex,motor}}),
+a_t = (K^{\text{act}}_t, z_{n,\text{motor}}, z_{\text{tex,motor}}),
 
 $$
 where:
-- $A_t \in \mathcal{K}_{\text{act}}$ is the **discrete motor macro** (action primitive/chart index)
+- $K^{\text{act}}_t \in \mathcal{K}_{\text{act}}$ is the **discrete motor macro** (action primitive/chart index)
 - $z_{n,\text{motor}} \in \mathbb{R}^{d_{\text{motor},n}}$ is **motor nuisance** (impedance, compliance, force distribution)
 - $z_{\text{tex,motor}} \in \mathbb{R}^{d_{\text{motor,tex}}}$ is **motor texture** (tremor, fine-grained noise, micro-corrections)
 
@@ -361,7 +361,7 @@ where:
 
 | Component                 | Visual Domain                 | Motor Domain                              |
 |---------------------------|-------------------------------|-------------------------------------------|
-| **Macro (discrete)**      | Object/Scene chart $K$        | Action primitive $A$                      |
+| **Macro (discrete)**      | Object/Scene chart $K$        | Action primitive $K^{\text{act}}$         |
 | **Nuisance (continuous)** | Pose/viewpoint $z_n$          | Compliance/impedance $z_{n,\text{motor}}$ |
 | **Texture (residual)**    | Pixel detail $z_{\text{tex}}$ | Tremor/noise $z_{\text{tex,motor}}$       |
 
@@ -475,10 +475,10 @@ where $T_c$ is the cognitive temperature ({prf:ref}`def-cognitive-temperature`) 
 During action, the agent expands internal free energy into external control:
 
 $$
-W_{\text{expand}} = T_c \cdot I(A_t; K_t) \geq 0,
+W_{\text{expand}} = T_c \cdot I(K^{\text{act}}_t; K_t) \geq 0,
 
 $$
-where $I(A_t; K_t)$ is the mutual information injected from the intention into the motor output.
+where $I(K^{\text{act}}_t; K_t)$ is the mutual information injected from the intention into the motor output.
 
 *Mechanism:* The Action Decoder $D_A$ "expands" the low-entropy Intention $u_\pi$ into high-dimensional motor commands $a_{\text{raw}}$, injecting motor texture.
 
@@ -511,7 +511,7 @@ $$
 The agent's efficiency in converting sensory information to control information is bounded:
 
 $$
-\eta = \frac{I(A_t; K_t)}{I(X_t; K_t)} \leq 1 - \frac{T_{\text{motor}}}{T_{\text{sensor}}},
+\eta = \frac{I(K^{\text{act}}_t; K_t)}{I(X_t; K_t)} \leq 1 - \frac{T_{\text{motor}}}{T_{\text{sensor}}},
 
 $$
 where $T_{\text{sensor}}$ and $T_{\text{motor}}$ are the effective temperatures at the sensory and motor boundaries.
@@ -1124,7 +1124,7 @@ The RNN/GRU/Transformer architecture has no geometric constraints—it's a unive
 |------------------------|-------------------------------|---------------------------------|
 | **Boundary Condition** | Dirichlet (position clamp)    | Neumann (flux clamp)            |
 | **Atlas**              | $\mathcal{A}_{\text{vis}}$    | $\mathcal{A}_{\text{act}}$      |
-| **Macro**              | Chart index $K$               | Action primitive $A$            |
+| **Macro**              | Chart index $K$               | Action primitive $K^{\text{act}}$ |
 | **Nuisance**           | Pose/viewpoint $z_n$          | Compliance $z_{n,\text{motor}}$ |
 | **Texture**            | Pixel detail $z_{\text{tex}}$ | Tremor $z_{\text{tex,motor}}$   |
 | **Thermodynamics**     | Compression ($\Delta S < 0$)  | Expansion ($\Delta S > 0$)      |
@@ -1186,7 +1186,7 @@ The RNN/GRU/Transformer architecture has no geometric constraints—it's a unive
 
 | **#**  | **Name**                  | **Component** | **Type**             | **Interpretation**                          | **Proxy**                 | **Cost** |
 |--------|---------------------------|---------------|----------------------|---------------------------------------------|---------------------------|----------|
-| **34** | **ContextGroundingCheck** | **Policy**    | **Context Validity** | Is context properly grounding motor output? | $I(A_t; c) / I(X_t; K_t)$ | $O(B)$   |
+| **34** | **ContextGroundingCheck** | **Policy**    | **Context Validity** | Is context properly grounding motor output? | $I(K^{\text{act}}_t; c) / I(X_t; K_t)$ | $O(B)$   |
 
 **Trigger conditions:**
 - Low ContextGroundingCheck: Context is not influencing motor output (ungrounded generation).

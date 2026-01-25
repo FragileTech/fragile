@@ -148,7 +148,7 @@ Let $\mathcal{R}(k,a)$ be an instantaneous reward/cost-rate term ({ref}`Section 
 $$
 J_{T_c}(\pi)
 :=
-\mathbb{E}_\pi\left[\sum_{t\ge 0}\gamma^t\left(\mathcal{R}(K_t,A_t) + T_c\,\mathcal{H}(\pi(\cdot\mid K_t))\right)\right],
+\mathbb{E}_\pi\left[\sum_{t\ge 0}\gamma^t\left(\mathcal{R}(K_t,K^{\text{act}}_t) + T_c\,\mathcal{H}(\pi(\cdot\mid K_t))\right)\right],
 
 $$
 where $\mathcal{H}$ is Shannon entropy. This is the standard "utility + entropy regularization" objective.
@@ -163,7 +163,7 @@ where $\mathcal{H}$ is Shannon entropy. This is the standard "utility + entropy 
 :::{div} feynman-prose
 Let me make sure this is clear. The objective $J_{T_c}(\pi)$ has two terms at each timestep:
 
-1. **Reward**: $\mathcal{R}(K_t, A_t)$---how good is the immediate outcome?
+1. **Reward**: $\mathcal{R}(K_t, K^{\text{act}}_t)$---how good is the immediate outcome?
 2. **Policy entropy**: $T_c \cdot \mathcal{H}(\pi(\cdot | K_t))$---how spread out is your action distribution?
 
 The cognitive temperature $T_c$ trades off these two concerns. When $T_c$ is large, you care a lot about keeping your options open (high entropy policy). When $T_c$ is small, you care mostly about reward and your policy becomes more deterministic.
@@ -320,15 +320,15 @@ Then the following are equivalent characterizations of the same optimal control 
 2. **Exponentially tilted trajectory measure (KL-regularization).** Fix a reference (prior) policy $\pi_0(a\mid k)$ with full support (uniform when $\mathcal{A}$ is finite). For the finite-horizon trajectory
 
    $$
-   \omega := (A_t,\dots,A_{t+H-1},K_{t+1},\dots,K_{t+H}),
+   \omega := (K^{\text{act}}_t,\dots,K^{\text{act}}_{t+H-1},K_{t+1},\dots,K_{t+H}),
 
    $$
    the optimal controlled path law admits an exponential-family form relative to the reference measure induced by $\pi_0$ and $\bar{P}$:
 
    $$
    P^*(\omega\mid K_t=k)\ \propto\
-   \Big[\prod_{h=0}^{H-1}\pi_0(A_{t+h}\mid K_{t+h})\,\bar{P}(K_{t+h+1}\mid K_{t+h},A_{t+h})\Big]\,
-   \exp\!\left(\frac{1}{T_c}\sum_{h=0}^{H-1}\gamma^h\,\mathcal{R}(K_{t+h},A_{t+h})\right),
+   \Big[\prod_{h=0}^{H-1}\pi_0(K^{\text{act}}_{t+h}\mid K_{t+h})\,\bar{P}(K_{t+h+1}\mid K_{t+h},K^{\text{act}}_{t+h})\Big]\,
+   \exp\!\left(\frac{1}{T_c}\sum_{h=0}^{H-1}\gamma^h\,\mathcal{R}(K_{t+h},K^{\text{act}}_{t+h})\right),
 
    $$
    where the normalizer is the (state-dependent) path-space normalizing constant.
@@ -383,7 +383,7 @@ For practical algorithms, this means: if you can efficiently compute or estimate
 MaxEnt control is equivalent to an **Exponentially Tilted Trajectory Measure**:
 
 $$
-P^*(\omega|K_t=k) \propto P_0(\omega|k) \exp\!\left(\frac{1}{T_c}\sum_{h=0}^{H-1} \gamma^h \mathcal{R}(K_{t+h}, A_{t+h})\right)
+P^*(\omega|K_t=k) \propto P_0(\omega|k) \exp\!\left(\frac{1}{T_c}\sum_{h=0}^{H-1} \gamma^h \mathcal{R}(K_{t+h}, K^{\text{act}}_{t+h})\right)
 
 $$
 The path-space log-normalizer equals the soft value (Theorem {prf:ref}`thm-equivalence-of-entropy-regularized-control-forms-discrete-macro`). This is a **Schrodinger bridge** formulation.
@@ -401,7 +401,7 @@ This recovers **KL-Regularized Policy Gradient** and exponential family policies
 
 **What the generalization offers:**
 - **Path-space view**: The optimal policy is a Schrodinger bridge between prior and reward-weighted measures
-- **Trajectory entropy**: Explores future *macro-trajectories* $\omega = (A_t, \ldots, K_{t+H})$, not just single actions
+- **Trajectory entropy**: Explores future *macro-trajectories* $\omega = (K^{\text{act}}_t, \ldots, K_{t+H})$, not just single actions
 - **Variational principle**: Soft value = log-partition function of trajectory measure (eq. above)
 - **Causal entropy**: $S_c(k, H; \pi)$ measures future reachability under causal interventions
 ::::

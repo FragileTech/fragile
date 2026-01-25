@@ -6,7 +6,7 @@
 :::{div} feynman-prose
 Now here is the question that should bother you: if we are building a framework to resolve singularities, are we not just sneaking in the answer through our assumptions? Classical critiques of structural approaches point out exactly this circularity - you assume Compactness (bounded orbits stay bounded), which is precisely what you need to prove!
 
-The way out is to be scrupulously honest about what we actually need as inputs. The Thin Kernel is our answer: we demand only the data that any physicist would already have written down before even thinking about singularities. The arena where things happen. The energy that drives the system. The rate at which things dissipate. The symmetries that remain. The boundary where the system meets the world.
+The way out is to be scrupulously honest about what we actually need as inputs. The Thin Kernel is our answer: we demand only the data that any physicist would already have written down before even thinking about singularities. The arena where things happen - and crucially, this arena now carries both a metric (geometry) and a measure (thermodynamics) as a single unified object. The energy that drives the system. The rate at which things dissipate - which we now understand as the Cheeger Energy, connecting the metric to the measure in a rigorous way. The symmetries that remain. The boundary where the system meets the world.
 
 Everything else - whether orbits stay bounded, whether solutions blow up or scatter - that is what we compute, not what we assume. This is the constructive approach: you give us the physics, and we tell you whether it has singularities or not.
 :::
@@ -59,11 +59,15 @@ These are the **only** inputs. All other properties (compactness, stiffness, top
 :::{div} feynman-prose
 Let me make sure you understand what we have just done. We have five ingredients, and each one is something you could measure in a laboratory or write down from first principles:
 
-1. **The Arena** - where can the system be? This is just your state space with a notion of distance and "how big" different regions are.
+1. **The Arena** - where can the system be? This is a metric-measure space $(X, d, \mathfrak{m})$: the metric $d$ tells you distances between states, and the measure $\mathfrak{m}$ tells you "how much volume" each region has. The beautiful thing is that when you impose the RCD condition, this single structure encodes both geometry AND thermodynamics. The measure is not just for integration - it determines the equilibrium distribution, the entropy, the whole thermodynamic story.
+
 2. **The Potential** - what energy landscape is the system rolling around on?
-3. **The Cost** - when the system moves, how much is dissipated? (This is the Second Law made quantitative.)
+
+3. **The Cost** - when the system moves, how much is dissipated? Here is where the Cheeger Energy enters. It is the "minimal slope" of a function relative to the measure - the smallest possible $L^2$ norm of any gradient that could produce that function. This is not an arbitrary choice; it is the canonical way to connect geometry (the metric) to thermodynamics (the measure).
+
 4. **The Symmetries** - what transformations leave the physics unchanged?
-5. **The Boundary** - how does the system couple to the outside world?
+
+5. **The Boundary** - how does the system couple to the outside world? This is now a full functorial structure: a boundary object, a trace morphism, a flux morphism, and a reinjection kernel. Absorbing boundaries, reflecting boundaries, and Fleming-Viot reinjection are all special cases of this general structure.
 
 Notice what is conspicuously absent: we never said "the solutions exist for all time" or "bounded energy implies bounded derivatives" or any of the hard theorems that mathematicians fight about. Those are outputs, not inputs.
 :::
@@ -74,9 +78,11 @@ Notice what is conspicuously absent: we never said "the solutions exist for all 
 :::{div} feynman-prose
 Here is something beautiful that took mathematicians a century to figure out properly. Geometry and thermodynamics are not two separate subjects - they are the same subject viewed from different angles.
 
-Ricci curvature, which seems like a purely geometric notion (how much does a small ball's volume differ from flat space?), turns out to control how fast entropy increases. A space with positive Ricci curvature is one where probability distributions naturally concentrate rather than spread out. The theorems below make this precise.
+Think about what Ricci curvature means geometrically: it measures how much the volume of a small ball differs from what you would expect in flat space. Positive Ricci curvature means balls are smaller than expected - space is "pinched." Now here is the remarkable fact: this same quantity controls entropy production. A space with positive Ricci curvature is one where probability distributions naturally concentrate rather than spread out. The RCD condition $\mathrm{RCD}(K, N)$ makes this precise: $K$ is the lower bound on Ricci curvature, and $N$ is the upper bound on dimension.
 
-Why does this matter for singularities? Because singularities are places where something becomes infinite, and infinity is the enemy of both geometry (infinite curvature) and thermodynamics (infinite entropy production). If we can show that geometry and thermodynamics are mutually constraining, we have twice as many ways to detect when something is about to go wrong.
+The theorems below establish three key connections. First, the Evolution Variational Inequality (EVI) says that entropy decreases faster when curvature is more positive - the curvature bound $K$ directly appears in the rate. Second, the Log-Sobolev inequality connects entropy to Fisher information through the curvature constant. Third, the Cheeger Energy provides the computational tool: you can verify curvature bounds from the potential alone using the Bakry-Emery $\Gamma_2$ calculus.
+
+Why does this matter for singularities? Because singularities are places where something becomes infinite, and infinity is the enemy of both geometry (infinite curvature) and thermodynamics (infinite entropy production). If we can show that geometry and thermodynamics are mutually constraining through the RCD condition, we have twice as many ways to detect when something is about to go wrong. The measure $\mathfrak{m}$ is not just a technical device - it determines both the volume form (geometric) and the equilibrium distribution (thermodynamic). This closes what we call the "determinant is volume" gap.
 :::
 
 The following theorems establish the rigorous connection between geometric curvature and thermodynamic dissipation via the Metric-Measure Space formalism.
@@ -200,7 +206,7 @@ Per {prf:ref}`def-algorithmic-phases`, the Horizon verdict classifies problems i
 | Phase | $Kt$ Bound | Axiom R | Sieve Verdict |
 |-------|------------|---------|---------------|
 | Crystal | $Kt = O(\log n)$ | Holds | REGULAR |
-| Liquid | $Kt = O(\log n)$, R fails | Fails | HORIZON (logical) |
+| Liquid | No $Kt$ bound implied; R fails | Fails | HORIZON (logical) |
 | Gas | $Kt \geq n - O(1)$ | Fails | HORIZON (information) |
 
 The **Data Processing Inequality** provides the operational bound: information cannot be created through computation, only preserved or lost. Consequently, $M_{\text{sieve}} < \infty$ imposes fundamental limits on verification capacity.
@@ -223,9 +229,15 @@ $$K_{\text{Horizon}}^{\text{blk}} = (\text{"Levin Limit exceeded"}, Kt(\tau), M_
 :::{div} feynman-prose
 Now we come to the machine that actually does the work. We have defined what goes in (the Thin Kernel). What comes out?
 
-The Sieve is a systematic procedure that takes your minimal physical data and tries to build a complete mathematical structure around it. Think of it like a detective: it takes the evidence you provide and determines whether the system is well-behaved (REGULARITY), flies apart to infinity (DISPERSION), or genuinely breaks down (FAILURE).
+The Sieve is a systematic procedure that takes your minimal physical data and tries to build a complete mathematical structure around it. Think of it like a detective: it takes the evidence you provide and determines whether the system is well-behaved (REGULARITY), flies apart to infinity (DISPERSION), or genuinely breaks down (FAILURE with a specific failure mode $m$).
 
-The key insight is that the Sieve is not making arbitrary choices - it is computing the unique "freest" structure compatible with your data. Category theorists call this a "left adjoint," which sounds intimidating but just means: given the minimal constraints, build the most general thing that satisfies them.
+But here is something subtle that I want you to understand. The Sieve actually does two different jobs, and it is important not to confuse them:
+
+1. **Classification**: This is the diagnostic output - the labels REGULARITY, DISPERSION, or FAILURE(m). This is a simple function from thin data to verdicts. Useful for reporting what happened.
+
+2. **Categorical Expansion**: This is the deeper operation. It takes your thin data and builds a full Hypostructure - an object in the rich category $\mathbf{Hypo}_T$ with all its morphisms and structure. This is a genuine functor, and it is this functor that forms the left adjoint.
+
+The key insight is that the categorical expansion is not making arbitrary choices - it is computing the unique "freest" structure compatible with your data. Category theorists call this a "left adjoint," which sounds intimidating but just means: given the minimal constraints, build the most general thing that satisfies them. The classification just tells you what verdict to announce; the categorical expansion gives you the full mathematical structure to work with.
 :::
 
 The Structural Sieve is defined as a functor $F_{\text{Sieve}}: \mathbf{Thin} \to \mathbf{Result}$. It attempts to promote Thin Objects into a full Hypostructure via certificate saturation.
@@ -258,11 +270,13 @@ The adjunction principle applies to the categorical expansion, not the classific
 :::{div} feynman-prose
 Here is a concept from category theory that sounds abstract but captures something very concrete. An "adjunction" is a pair of processes that are optimal inverses of each other.
 
-Imagine you have two worlds: the world of simple inputs (Thin Kernels) and the world of rich structures (Hypostructures). There is an obvious map from rich to simple - just forget the extra structure. The adjunction says there is a best possible map going the other way: given simple data, construct the most general rich structure compatible with it.
+Imagine you have two worlds: the world of simple inputs (Thin Kernels, living in $\mathbf{Thin}_T$) and the world of rich structures (Hypostructures, living in $\mathbf{Hypo}_T$). There is an obvious map from rich to simple - the forgetful functor $U$ that just extracts the underlying thin data by forgetting all the derived structures and certificates. The adjunction says there is a best possible map going the other way: the expansion functor $\mathcal{F}$ that, given simple data, constructs the most general rich structure compatible with it.
 
-Why "most general"? Because we do not want to smuggle in extra assumptions. If you give me a potential energy function, I will build the structure that follows from that potential and nothing more. Any additional constraints would have to come from your data, not from my construction.
+The adjunction $\mathcal{F} \dashv U$ comes with two important pieces of data. The **unit** $\eta_\mathcal{T}: \mathcal{T} \to U(\mathcal{F}(\mathcal{T}))$ tells you how to embed thin data into its promoted hypostructure. The **counit** $\varepsilon_\mathbb{H}: \mathcal{F}(U(\mathbb{H})) \to \mathbb{H}$ tells you that re-running the Sieve on already-verified data is essentially a no-op - it is idempotent.
 
-This is the precise sense in which the Thin-to-Full transition is canonical. There is no freedom, no arbitrary choices - the Sieve computes the unique answer.
+Why "most general"? Because we do not want to smuggle in extra assumptions. If you give me a metric-measure space with a potential and dissipation, I will build the structure that follows from that data and nothing more. Any additional constraints - any tighter bounds, any special properties - would have to come from your data, not from my construction.
+
+This is the precise sense in which the Thin-to-Full transition is canonical. There is no freedom, no arbitrary choices - the Sieve computes the unique answer (unique up to isomorphism, as category theorists like to say).
 :::
 
 :::{prf:definition} Categories of Hypostructures
@@ -483,11 +497,25 @@ For each Rigor Class F theorem, explicitly verify:
 :::{div} feynman-prose
 This is the central theorem that makes everything rigorous. When a critic says "you have not proven that your categorical structure corresponds to the actual PDE," this theorem is the answer.
 
-The claim is strong: given analytical data (the $L^2$ spaces, the semiflow, the energy functional that analysts work with), there is a unique categorical structure that represents it. Not just "a" structure, but "the" structure - uniquely determined up to isomorphism.
+The claim is strong: given analytical data (the metric-measure space, the semiflow, the energy functional, the dissipation that analysts work with), there is a unique categorical structure that represents it. Not just "a" structure, but "the" structure - uniquely determined up to isomorphism. This is a Framework-Original result (Rigor Class F), meaning we prove it from first principles in the cohesive topos setting, not by importing it from existing literature.
 
-The proof is technical but the idea is natural. An $L^2$ space has a topology. That topology can be encoded as the "shape" of a categorical object. The semiflow generates a connection. The energy functional lifts to differential cohomology. Each step has a unique answer because we are solving a universal property problem: find the most general thing satisfying the constraints.
+The proof proceeds in seven steps, and I want you to see why each one has a unique answer:
 
-Once you believe this theorem, you believe that manipulating the categorical machinery is the same as manipulating the analytical objects. Nothing is lost in translation.
+1. **Embedding the space**: The metric topology of your $L^2$ space determines the "shape" of a stack $X_0$ in the cohesive topos. The Yoneda Lemma guarantees uniqueness.
+
+2. **Lifting the semiflow**: The semiflow $S_t$ on the analytical space lifts to a vector field $\nabla$ on the stack. The shape-flat adjunction $\Pi \dashv \flat$ ensures this lift is unique.
+
+3. **Verifying flatness**: The connection must be flat ($R_\nabla = 0$). We prove this by checking three cases: flow-flow (antisymmetry), gauge-gauge (Frobenius integrability), and flow-gauge (equivariance from the symmetry group).
+
+4. **Lifting energy to differential cohomology**: The energy functional $\Phi$ lifts to a differential cohomology class $\hat{\Phi}$ via the Cheeger-Simons construction, with $d\hat{\Phi} = \mathfrak{D}^{\text{thin}}$. When the thin kernel specifies a metric-measure space, this dissipation is the Cheeger Energy - ensuring the categorical structure preserves not just geometry but also the thermodynamic measure structure.
+
+5. **Verifying the adjunction**: We check the universal property $\text{Hom}_{\mathbf{Hypo}_T}(\mathcal{F}(\mathcal{T}), \mathbb{H}) \cong \text{Hom}_{\mathbf{Thin}_T}(\mathcal{T}, U(\mathbb{H}))$.
+
+6. **Triangle identities**: We verify that the unit and counit satisfy the zig-zag equations.
+
+7. **Higher coherences**: In the $(\infty,1)$-categorical setting, we verify that the mapping spaces are equivalences of $\infty$-groupoids.
+
+Once you believe this theorem, you believe that manipulating the categorical machinery is the same as manipulating the analytical objects. The Thin-to-Full transition is a logic-preserving isomorphism, not a loose translation. Nothing is lost, nothing is smuggled in.
 :::
 
 The following theorem establishes that the transition from analytic "Thin" data to categorical "Full" structures is a canonical functor induced by the internal logic of the cohesive $(\infty,1)$-topos. This closes the principal "gap" in the framework's rigor.
@@ -662,13 +690,15 @@ The "Thin-to-Full" transition is thus a **Logic-Preserving Isomorphism** rather 
 :::{div} feynman-prose
 And now we can answer the fundamental objection. "You assumed compactness," the critic says, "but proving compactness is the hard part!"
 
-Not so. Watch what actually happens at Node 3 of the Sieve. The system takes your thin kernel and asks: does energy concentrate or disperse?
+Not so. Watch what actually happens at Node 3 of the Sieve ({prf:ref}`def-node-compact`). The system takes your thin kernel and asks: does energy concentrate or disperse?
 
-If energy concentrates - piling up in some region - then we have compactness constructively. The concentration creates a canonical profile, and the mathematics of concentration-compactness (Lions, 1984) does the heavy lifting. The Sieve emits a certificate: "I found compactness because energy concentrated here."
+If energy concentrates - piling up in some region with $\mu(V) > 0$ for some profile $V$ - then we have compactness constructively. The concentration creates a canonical profile via scaling limits, and the mathematics of concentration-compactness (Lions, 1984) does the heavy lifting. The Sieve emits a certificate $K_{C_\mu}^+$: "I found compactness because energy concentrated here." This is Axiom C satisfied constructively - we do not assume it, we detect it.
 
-If energy disperses - spreading out to infinity - then compactness fails. But this is not a disaster! Dispersion means global existence. The solution scatters to infinity, which is a perfectly good behavior. No singularity occurs because there is nothing left to become singular.
+If energy disperses - spreading out to infinity with $\mu(V) = 0$ for all profiles - then compactness fails. But this is not a disaster! Dispersion triggers Mode D.D: DISPERSION with global existence. The solution scatters to infinity, which is a perfectly good behavior. No singularity occurs because there is nothing left to become singular. This is a success state, not a failure.
 
-The dichotomy is exhaustive. Energy either piles up or spreads out. Both cases are handled. Neither requires assuming what we wanted to prove.
+The dichotomy is exhaustive. At runtime, the Sieve checks which branch applies. Energy either piles up or spreads out. Both cases are handled, and crucially, neither requires assuming what we wanted to prove.
+
+This is the resolution of the Compactness Critique in its sharpest form: Regularity is decidable regardless of whether Compactness holds a priori. We do not need to know the answer in advance; the Sieve figures it out.
 :::
 
 The framework does **not** assume Axiom C (Compactness). Instead, **{prf:ref}`def-node-compact`** performs a runtime dichotomy check on the Thin Objects:

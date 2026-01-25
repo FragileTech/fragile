@@ -170,7 +170,7 @@ The existing chart structure may be insufficient to discriminate observations th
 Let $(K_t, z_{n,t}, z_{\text{tex},t})$ be the agent's state at time $t$ (Definition {prf:ref}`def-bounded-rationality-controller`). The **Ontological Stress** is the conditional mutual information:
 
 $$
-\Xi := I(z_{\text{tex},t}; z_{\text{tex},t+1} \mid K_t, z_{n,t}, A_t),
+\Xi := I(z_{\text{tex},t}; z_{\text{tex},t+1} \mid K_t, z_{n,t}, K^{\text{act}}_t),
 
 $$
 where $I(\cdot;\cdot|\cdot)$ denotes conditional mutual information in nats.
@@ -179,7 +179,7 @@ where $I(\cdot;\cdot|\cdot)$ denotes conditional mutual information in nats.
 
 *Interpretation.* By Axiom {prf:ref}`ax-bulk-boundary-decoupling` (Bulk-Boundary Decoupling), texture should be unpredictable -- a white-noise residual. If $\Xi > 0$, then texture at time $t$ predicts texture at time $t+1$, conditional on the macro-state and action. This violates the partition condition: the texture channel contains structure that should have been captured by $(K, z_n)$ but was not. The agent's ontology is **too coarse**.
 
-*Cross-reference.* Compare with the closure defect $I(K_{t+1}; Z_t \mid K_t, A_t)$ ({ref}`Section 2.8 <sec-conditional-independence-and-sufficiency>`). Ontological Stress is the dual: predictability *within* texture rather than *from* texture to macro.
+*Cross-reference.* Compare with the closure defect $I(K_{t+1}; Z_t \mid K_t, K^{\text{act}}_t)$ ({ref}`Section 2.8 <sec-conditional-independence-and-sufficiency>`). Ontological Stress is the dual: predictability *within* texture rather than *from* texture to macro.
 
 :::
 
@@ -235,7 +235,7 @@ What gives is the topology itself. When enough stress accumulates, the vacuum be
 **Ontological Stress** measures predictability in the texture channel:
 
 $$
-\Xi := I(z_{\text{tex},t}; z_{\text{tex},t+1} \mid K_t, z_{n,t}, A_t)
+\Xi := I(z_{\text{tex},t}; z_{\text{tex},t+1} \mid K_t, z_{n,t}, K^{\text{act}}_t)
 
 $$
 When $\Xi > \Xi_{\text{crit}}$, the system triggers **topological fission**: a pitchfork bifurcation that expands the chart structure ({ref}`Section 30.4 <sec-symmetry-breaking-and-chart-birth>`).
@@ -548,7 +548,7 @@ Following the diagnostic node convention ({ref}`Section 3.1 <sec-theory-thin-int
 
 | **#**  | **Name**                   | **Component** | **Type**                     | **Interpretation**        | **Proxy**                                                               | **Cost**                      |
 |--------|----------------------------|---------------|------------------------------|---------------------------|-------------------------------------------------------------------------|-------------------------------|
-| **49** | **OntologicalStressCheck** | Atlas         | Representational Sufficiency | Is texture unpredictable? | $\Xi := I(z_{\text{tex},t}; z_{\text{tex},t+1} \mid K_t, z_{n,t}, A_t)$ | $O(B \cdot d_{\text{tex}}^2)$ |
+| **49** | **OntologicalStressCheck** | Atlas         | Representational Sufficiency | Is texture unpredictable? | $\Xi := I(z_{\text{tex},t}; z_{\text{tex},t+1} \mid K_t, z_{n,t}, K^{\text{act}}_t)$ | $O(B \cdot d_{\text{tex}}^2)$ |
 
 **Interpretation:** Monitors the conditional mutual information between consecutive texture components. High $\Xi$ indicates the texture channel contains predictable structure that should be in the macro-state.
 
@@ -561,7 +561,7 @@ Following the diagnostic node convention ({ref}`Section 3.1 <sec-theory-thin-int
 **Computational Proxy:** Estimate $\Xi$ via a variational bound using a learned texture predictor:
 
 $$
-\hat{\Xi} = \mathbb{E}\left[\log p_\phi(z_{\text{tex},t+1} \mid z_{\text{tex},t}, K_t, z_{n,t}, A_t) - \log p_\phi(z_{\text{tex},t+1} \mid K_t, z_{n,t}, A_t)\right],
+\hat{\Xi} = \mathbb{E}\left[\log p_\phi(z_{\text{tex},t+1} \mid z_{\text{tex},t}, K_t, z_{n,t}, K^{\text{act}}_t) - \log p_\phi(z_{\text{tex},t+1} \mid K_t, z_{n,t}, K^{\text{act}}_t)\right],
 
 $$
 where $p_\phi$ is a small MLP. If $\hat{\Xi} \approx 0$, texture is unpredictable and the firewall holds.
@@ -615,7 +615,7 @@ This is the heartbeat of learning: equilibrium, stress, bifurcation, relaxation.
 | Concept                   | Definition/Reference                                                                                              | Units      | Diagnostic |
 |:--------------------------|:------------------------------------------------------------------------------------------------------------------|:-----------|:-----------|
 | **Semantic Vacuum**       | $\emptyset = \{z : \lVert z\rVert = 0\}$ (Def {prf:ref}`def-semantic-vacuum`)                                     | ---          | ---          |
-| **Ontological Stress**    | $\Xi = I(z_{\text{tex},t}; z_{\text{tex},t+1} \mid K_t, z_{n,t}, A_t)$ (Def {prf:ref}`def-ontological-stress`)    | nat        | Node 49    |
+| **Ontological Stress**    | $\Xi = I(z_{\text{tex},t}; z_{\text{tex},t+1} \mid K_t, z_{n,t}, K^{\text{act}}_t)$ (Def {prf:ref}`def-ontological-stress`)    | nat        | Node 49    |
 | **Fission Criterion**     | $\Xi > \Xi_{\text{crit}}$ AND $\Delta V > \mathcal{C}_{\text{complexity}}$ (Thm {prf:ref}`thm-fission-criterion`) | ---          | Node 50    |
 | **Query Fission**         | $q_i \mapsto \{q_i + \epsilon u, q_i - \epsilon u\}$ (Def {prf:ref}`def-query-fission`)                           | ---          | ---          |
 | **Bifurcation Parameter** | $\mu = \Xi - \Xi_{\text{crit}}$ (Thm {prf:ref}`thm-supercritical-pitchfork-bifurcation-for-charts`)               | nat        | ---          |

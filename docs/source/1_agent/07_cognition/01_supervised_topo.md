@@ -167,7 +167,7 @@ Let me unpack this formula piece by piece.
 
 The term $-\beta_{\text{class}} \log P(Y=y \mid K)$ is the semantic contribution. Remember that $-\log P$ is high when probability is low. So if chart $K$ strongly predicts class $y$ (high $P(Y=y|K)$), then $-\log P(Y=y|K)$ is low, which means $V_y$ is low there. Low potential means stable equilibrium---the system wants to stay there.
 
-The coefficient $\beta_{\text{class}}$ controls how strongly class labels influence the dynamics. High $\beta$ means strong semantic gravity---the system really wants to find the right class region. Low $\beta$ means the base potential dominates and class labels have less influence.
+The coefficient $\beta_{\text{class}}$ controls how strongly class labels influence the dynamics. High $\beta_{\text{class}}$ means strong semantic gravity---the system really wants to find the right class region. Low $\beta_{\text{class}}$ means the base potential dominates and class labels have less influence.
 
 Now, what's $P(Y=y|K)$? It's the probability of class $y$ given that we're in chart $K$. We have two ways to compute this:
 
@@ -189,7 +189,7 @@ The logarithm in $-\log P(Y=y|K)$ isn't arbitrary. There are deep reasons why it
 
 3. **Scale-appropriate gradients:** The gradient $\nabla(-\log P) = -\nabla P / P$ scales inversely with probability. This means rare classes get stronger gradient signal, which helps with class imbalance.
 
-4. **Connection to free energy:** In statistical physics, $-\log P$ at inverse temperature $\beta$ is exactly the free energy. The class temperature $\beta_{\text{class}}$ makes this connection explicit.
+4. **Connection to free energy:** In statistical physics, $-\log P$ at inverse temperature $\beta_{\text{ent}}$ is exactly the free energy. The class temperature $\beta_{\text{class}}$ makes this connection explicit.
 :::
 
 :::{prf:definition} Region of Attraction
@@ -206,7 +206,8 @@ $$
 \dot{z} = \mathcal{M}_{\text{curl}}\!\left(-G^{-1}(z)\nabla_A V_y(z)\right), \qquad \mathcal{M}_{\text{curl}} := (I - \beta_{\text{curl}} G^{-1}\mathcal{F})^{-1}
 $$
 (conservative case: $\mathcal{F}=0$).
-Here $\nabla_A V_y := \nabla V_y - A$ with $A$ the reward 1-form (conservative case: $A=0$).
+Here $\nabla_A V_y := \nabla V_y - A$ with $A := \delta\Psi + \eta$ the non-conservative component of the reward 1-form
+(conservative case: $A=0$).
 
 *Interpretation:* $\mathcal{B}_y$ is the set of initial conditions from which the deterministic gradient flow on $V_y$ converges to the class-$y$ region.
 
@@ -927,7 +928,7 @@ The class label breaks this symmetry. It adds a term to the potential that point
 
 This is exactly what classifier-free guidance does in diffusion models: you compute both conditioned and unconditioned scores, and use the conditioned one to bias the generation. Here we see why that works---the class label creates an asymmetry in the potential landscape that guides the generative flow.
 
-The strength of this guidance is controlled by $\beta_{\text{class}}$. High $\beta$ means strong guidance (stay very close to class $y$). Low $\beta$ means weak guidance (explore more, even into other class regions).
+The strength of this guidance is controlled by $\beta_{\text{class}}$. High $\beta_{\text{class}}$ means strong guidance (stay very close to class $y$). Low $\beta_{\text{class}}$ means weak guidance (explore more, even into other class regions).
 :::
 
 :::{prf:definition} Class Centroid in Poincare Disk

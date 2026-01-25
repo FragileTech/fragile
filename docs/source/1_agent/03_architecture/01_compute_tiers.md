@@ -95,7 +95,7 @@ Notice the cost scaling. The first two are cheap---$O(B)$ or $O(B|\mathcal{K}|)$
 
 | Sync Pair           | Formula                                                         | Time Complexity               | Implementation                       |
 |---------------------|-----------------------------------------------------------------|-------------------------------|--------------------------------------|
-| **Shutter ↔ WM**    | $\mathrm{CE}(K_{t+1},\hat{p}_\phi(K_{t+1}\mid K_t,A_t))$        | $O(B\lvert\mathcal{K}\rvert)$ | Easy - closure cross-entropy         |
+| **Shutter ↔ WM**    | $\mathrm{CE}(K_{t+1},\hat{p}_\phi(K_{t+1}\mid K_t,K^{\text{act}}_t))$        | $O(B\lvert\mathcal{K}\rvert)$ | Easy - closure cross-entropy         |
 | **Critic ↔ Policy** | TD-Error + $\Delta A = \lvert A^\pi - A^{\text{Buffer}} \rvert$ | $O(B)$                        | Easy - track advantage gap           |
 | **WM ↔ Policy**     | $\mathbb{E}_{z \sim \pi}[\mathcal{L}_{\text{pred}}(z)]$         | $O(HBZ)$                      | Medium - requires on-policy rollouts |
 
@@ -192,7 +192,7 @@ def compute_fragile_core_loss(
 :::{div} feynman-prose
 Now we step up to the research-grade version. Everything from Tier 1, plus three new ingredients.
 
-**The scale check** $\max(0, \beta - \alpha)$ is a fascinating one. It's monitoring the relationship between two different "scaling exponents" in your system. The $\alpha$ measures how sharply your loss landscape curves. The $\beta$ measures how aggressively your policy changes. If $\beta > \alpha$, your policy is changing faster than your value estimates can track---you're flying blind. This term penalizes that mismatch.
+**The scale check** $\max(0, \beta_{\pi} - \alpha)$ is a fascinating one. It's monitoring the relationship between two different "scaling exponents" in your system. The $\alpha$ measures how sharply your loss landscape curves. The $\beta_{\pi}$ measures how aggressively your policy changes. If $\beta_{\pi} > \alpha$, your policy is changing faster than your value estimates can track---you're flying blind. This term penalizes that mismatch.
 
 **The sync loss** $\mathcal{L}_{\text{Sync}_{K-W}}$ keeps your shutter (encoder) and world model aligned. Remember the jazz band analogy? This is making sure the drummer and bassist agree on the beat.
 
@@ -206,14 +206,14 @@ For research and safety-conscious applications.
 **Additional Terms:**
 
 $$
-\mathcal{L}_{\text{Fragile}}^{\text{std}} = \mathcal{L}_{\text{Fragile}}^{\text{core}} + \lambda_{\text{scale}} \max(0, \beta - \alpha) + \lambda_{\text{sync}}\,\mathcal{L}_{\text{Sync}_{K-W}} + \lambda_{\text{osc}} \Vert z_t - z_{t-2} \Vert
+\mathcal{L}_{\text{Fragile}}^{\text{std}} = \mathcal{L}_{\text{Fragile}}^{\text{core}} + \lambda_{\text{scale}} \max(0, \beta_{\pi} - \alpha) + \lambda_{\text{sync}}\,\mathcal{L}_{\text{Sync}_{K-W}} + \lambda_{\text{osc}} \Vert z_t - z_{t-2} \Vert
 
 $$
 **Additional Implementation (Diagnostics Only):**
 ```python
 class ScalingExponentTracker:
     """
-    Track α (curvature proxy) and β (policy-change proxy) for diagnostics.
+    Track α (curvature proxy) and β_π (policy-change proxy) for diagnostics.
 
     Note: this estimates parameter-space proxies for monitoring training health.
     It is not the state-space metric G; compute G via compute_state_space_fisher()
@@ -221,7 +221,7 @@ class ScalingExponentTracker:
     """
     def __init__(self, ema_decay: float = 0.99):
         self.alpha_ema = 2.0  # Default quadratic
-        self.beta_ema = 2.0
+        self.beta_pi_ema = 2.0
         self.ema_decay = ema_decay
         self.log_losses = []
         self.log_param_norms = []
@@ -243,14 +243,14 @@ class ScalingExponentTracker:
 
             # β from gradient scaling (if provided)
             if grad_norm is not None and grad_norm > 0:
-                beta_raw = 2.0  # Approximate, could refine
-                self.beta_ema = self.ema_decay * self.beta_ema + (1 - self.ema_decay) * beta_raw
+                beta_pi_raw = 2.0  # Approximate, could refine
+                self.beta_pi_ema = self.ema_decay * self.beta_pi_ema + (1 - self.ema_decay) * beta_pi_raw
 
-        return self.alpha_ema, self.beta_ema
+        return self.alpha_ema, self.beta_pi_ema
 
     def get_barrier_loss(self) -> float:
-        """BarrierTypeII: max(0, β - α)"""
-        return max(0.0, self.beta_ema - self.alpha_ema)
+        """BarrierTypeII: max(0, β_π - α)"""
+        return max(0.0, self.beta_pi_ema - self.alpha_ema)
 
 
 def compute_shutter_wm_sync_loss(
@@ -309,18 +309,18 @@ If you're doing standard gradient descent, you'd say "a small step is one where 
 
 But here's the problem: a small change in parameters might cause a *huge* change in behavior in some regions of state space, and almost no change in others. Parameter distance isn't the same as behavioral distance.
 
-The Riemannian approach says: "Let's measure distance in terms of how much the policy *actually changes*, not how much the parameters change." To do this, we use the **Fisher Information Matrix**, which tells you how sensitive the policy distribution is to each direction of parameter change.
+The Riemannian approach says: "Let's measure distance in terms of how much the policy *actually changes*, not how much the parameters change." To do this, we use a **state-space sensitivity metric** $G$, whose Fisher component measures how sensitive the policy distribution is to changes in the latent state.
 
-But wait---there's a subtlety here that trips up a lot of people. TRPO and PPO use the *parameter-space* Fisher: "How does the policy change when I change $\theta$?" What we're doing here is different. We're using the *state-space* Fisher: "How does the policy change when the *state* changes?"
+But wait---there's a subtlety here that trips up a lot of people. TRPO and PPO use the *parameter-space* Fisher: "How does the policy change when I change $\theta$?" What we're doing here is different. We're using the *state-space* Fisher component $G_\pi$: "How does the policy change when the *state* changes?"
 
-Why does this matter? Because the state-space Fisher tells you about the control authority at each location. In regions where small state changes cause big policy changes, you should be conservative. In regions where the policy is insensitive to state, you can be more aggressive. The state-space geometry is about the physics of your problem, not the parameterization of your neural network.
+Why does this matter? Because the state-space Fisher component tells you about the control authority at each location. In regions where small state changes cause big policy changes, you should be conservative. In regions where the policy is insensitive to state, you can be more aggressive. The state-space geometry is about the physics of your problem, not the parameterization of your neural network.
 
-This distinction is subtle and important. The parameter-space Fisher gives you a natural gradient for *learning*. The state-space Fisher gives you a natural gradient for *control*. They're not the same thing.
+This distinction is subtle and important. The parameter-space Fisher gives you a natural gradient for *learning*. The state-space Fisher component gives you a natural gradient for *control*. They're not the same thing.
 :::
 
 This tier implements a **Riemannian / information-geometric** view, replacing Euclidean losses with geometry-aware equivalents. This approach is inspired by Natural Gradient methods {cite}`amari1998natural,martens2015kfac,martens2020natural` and Safe RL literature {cite}`chow2018lyapunov,kolter2019safe`.
 
-**Key Insight (State-Space Fisher):** The Covariant Regulator uses the **State-Space Fisher Information** to scale the Lie Derivative. This measures how sensitively the policy responds to changes in the latent state $z$---NOT how the parameters $\theta$ affect the policy (which is what TRPO/PPO use). See {ref}`Section 2.6 <sec-the-metric-hierarchy-fixing-the-category-error>` for the critical distinction between these geometries.
+**Key Insight (State-Space Fisher Component):** The Covariant Regulator uses the **state-space sensitivity metric** $G$, typically estimated from its Fisher component $G_\pi$ (and optionally value curvature), to scale the Lie Derivative. This measures how sensitively the policy responds to changes in the latent state $z$---NOT how the parameters $\theta$ affect the policy (which is what TRPO/PPO use). See {ref}`Section 2.6 <sec-the-metric-hierarchy-fixing-the-category-error>` for the critical distinction between these geometries.
 
 **A. compute_natural_gradient_loss(): Geometry-Aware Value Decrease**
 
@@ -345,13 +345,14 @@ def compute_natural_gradient_loss(
     sensitivity/conditioning. In high-sensitivity regions (large G), steps shrink;
     in low-sensitivity regions, steps can be larger.
 
-    Important: the metric G here is a state-space sensitivity metric (∂log π/∂z),
+    Important: the metric G here is a state-space sensitivity metric, typically
+    estimated from the Fisher component (∂log π/∂z) and optionally value curvature,
     not the parameter-space Fisher (∂log π/∂θ). See {ref}`Section 2.6 <sec-the-metric-hierarchy-fixing-the-category-error>` for the distinction.
     """
-    # 1. Compute State-Space Fisher Metric G (Diagonal Approximation)
-    # G_ii = E[(∂log π/∂z_i)²] — measures control authority at each state dim
+    # 1. Compute a Fisher-based diagonal approximation to G
+    # G_ii ≈ E[(∂log π/∂z_i)²] — measures control authority at each state dim
     fisher_diag = compute_state_space_fisher(regulator, state, include_value_hessian=False)
-    metric_inv = 1.0 / (fisher_diag + epsilon)  # G^{-1}
+    metric_inv = 1.0 / (fisher_diag + epsilon)  # G^{-1} (approx)
 
     # 2. Compute the Value Gradient (nabla_z V)
     state_grad = state.detach().clone().requires_grad_(True)
@@ -435,7 +436,7 @@ class GeometryAwareLearner:
 
     Three-phase update:
     1. Critic update: learn the value / Lyapunov landscape
-    2. Metric estimate: compute state-space Fisher sensitivity
+    2. Metric estimate: compute state-space Fisher component (sensitivity)
     3. Actor update: maximize value decrease under the metric
 
     Difference from Standard RL:
@@ -479,7 +480,7 @@ class GeometryAwareLearner:
         critic_loss.backward()
         self.critic_opt.step()
 
-        # Phase 2: Metric estimation (state-space Fisher sensitivity)
+        # Phase 2: Metric estimation (state-space Fisher component)
         metric_g = self._compute_state_fisher(s)
 
         # Phase 3: Actor update (geometry-aware)
@@ -512,11 +513,11 @@ class GeometryAwareLearner:
 
     def _compute_state_fisher(self, state):
         """
-        Computes the State-Space Fisher Information G.
+        Computes the State-Space Fisher component G_π (diagonal).
 
         G_ii = E[(∂log π/∂z_i)²]
 
-        Important: this is the state-space Fisher (how the policy changes with state),
+        Important: this is the state-space Fisher component (how the policy changes with state),
         not the parameter-space Fisher (how the policy changes with weights).
         See {ref}`Section 2.6 <sec-the-metric-hierarchy-fixing-the-category-error>` for the distinction.
         """
@@ -574,7 +575,7 @@ class RiemannianFragileAgent(nn.Module):
             return "REJECT"
 
         # === PHASE II: METRIC EXTRACTION ===
-        # Compute state-space Fisher information (not optimizer statistics)
+        # Compute state-space Fisher component (not optimizer statistics)
         # G_inv acts as a trust-region / step-size limit for the update
         with torch.no_grad():
             fisher_diag = compute_state_space_fisher(self, batch.obs)
@@ -586,7 +587,7 @@ class RiemannianFragileAgent(nn.Module):
 	        K_t, z_macro, z_nuis, z_tex = self.shutter(batch.obs)  # z_macro := e_{K_t}
 
         # SYMBOLIC: Closure is cross-entropy / conditional entropy on the macro symbols.
-        # (See {ref}`Section 2.8 <sec-conditional-independence-and-sufficiency>`: I(K_{t+1}; Z_t | K_t, A_t)=0 and H(K_{t+1}|K_t,A_t) small.)
+        # (See {ref}`Section 2.8 <sec-conditional-independence-and-sufficiency>`: I(K_{t+1}; Z_t | K_t, K^{\text{act}}_t)=0 and H(K_{t+1}|K_t,K^{\text{act}}_t) small.)
 	        closure_loss = self._compute_closure_loss(K_t, z_nuis, z_tex)
 	        self.shutter_opt.step(self.shutter_loss + closure_loss)
 
@@ -604,9 +605,9 @@ class RiemannianFragileAgent(nn.Module):
         # === PHASE V: COVARIANT UPDATE (Policy) ===
         # Check Scaling Hierarchy (BarrierTypeII)
         alpha = trackers.get_scale('critic')  # Curvature scale (critic)
-        beta = trackers.get_scale('actor')    # Exploration/update scale (actor)
+        beta_pi = trackers.get_scale('actor')    # Exploration/update scale (actor)
 
-        if alpha > beta:  # Critic is steeper than policy update scale
+        if alpha > beta_pi:  # Critic is steeper than policy update scale
             # Calculate Natural Gradient Direction
             grad_V = torch.autograd.grad(V, z_macro)[0]
             velocity = self.world_model(z_macro, self.policy(z_macro)) - z_macro

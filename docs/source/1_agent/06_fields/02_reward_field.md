@@ -42,12 +42,12 @@ We rigorously frame Reward not as a scalar signal, but as a **Differential 1-For
 (rb-non-conservative-value)=
 :::{admonition} Researcher Bridge: Beyond Conservative Value Functions
 :class: tip
-Standard RL assumes a scalar Value function $V(z)$ exists such that the reward 1-form is exact: $\mathcal{R} = dV$ (equivalently $\mathcal{R} = \nabla_A V$ with $A=0$). This implies that the total reward around any closed loop is zero—no cyclic preference structures exist. But many real-world scenarios violate this:
+Standard RL assumes a scalar Value function $V(z)$ exists such that the reward 1-form is exact: $\mathcal{R} = dV$ (equivalently $A=0$ in the decomposition $\mathcal{R}=dV+A$). This implies that the total reward around any closed loop is zero—no cyclic preference structures exist. But many real-world scenarios violate this:
 - **Rock-Paper-Scissors**: Cyclic dominance creates non-zero reward loops
 - **Exploration-Exploitation Orbits**: Optimal behavior may involve sustained cycling
 - **Paradoxical Preferences**: Humans exhibit intransitive preferences
 
-We generalize by treating reward as a **1-form field** $\mathcal{R}$, with scalar value as the special case where $d\mathcal{R} = 0$ (curl vanishes). The **Hodge Decomposition** separates the optimizable (gradient) component from the cyclic (solenoidal) component.
+We generalize by treating reward as a **1-form field** $\mathcal{R}$, with scalar value as the special case where $\mathcal{R}$ is exact (curl vanishes and the harmonic component is fixed to zero by boundary conditions). The **Hodge Decomposition** separates the optimizable (gradient) component from the cyclic (solenoidal) component.
 :::
 
 (sec-the-reward-1-form)=
@@ -191,6 +191,10 @@ where:
 2. **$\Psi \in \Omega^2(\mathcal{Z})$** (Vector Potential): The rotational/cyclic component. $\delta\Psi$ is a coexact form (divergence-free).
 3. **$\eta \in \mathcal{H}^1(\mathcal{Z})$** (Harmonic Flux): Topological cycles from manifold holes. Satisfies $d\eta = 0$ and $\delta\eta = 0$.
 
+We identify $\Phi$ with the critic value $V$ (the exact component), so $d\Phi = dV$; the conservative case corresponds
+to $A=0$.
+Define the non-exact component $A := \delta\Psi + \eta$, so $\mathcal{R} = d\Phi + A$ and $\mathcal{F} = dA$.
+
 *Units:* $[\Phi] = \mathrm{nat}$, $[\Psi] = \mathrm{nat}$, $[\eta] = \mathrm{nat}/[\text{length}]$.
 
 *Proof sketch.* The Hodge decomposition follows from the orthogonal decomposition of $L^2(\Omega^1)$
@@ -209,7 +213,7 @@ $\eta = \mathcal{R} - d\Phi - \delta\Psi$. $\square$
 The **Value Curl** is the exterior derivative of the reward form:
 
 $$
-\mathcal{F} := d\mathcal{R} = d\delta\Psi.
+\mathcal{F} := d\mathcal{R} = dA = d\delta\Psi.
 
 $$
 In coordinates: $\mathcal{F}_{ij} = \partial_i \mathcal{R}_j - \partial_j \mathcal{R}_i$.
@@ -350,7 +354,8 @@ Rearranging and dividing by $\Delta t$, then taking $\Delta t \to 0$:
 
 $$
 \kappa V = r + \nabla_A V \cdot b + T_c \Delta_G V.
-Here $\nabla_A V := \nabla V - A$ with $A$ the reward 1-form (conservative case: $A=0$).
+Here $\nabla_A V := \nabla V - A$ with $A := \delta\Psi + \eta$ the non-conservative component of $\mathcal{R}$
+(conservative case: $A=0$).
 
 $$
 For the stationary case ($b = 0$) and absorbing the temperature into the source term, this yields the Helmholtz equation $-\Delta_G V + \kappa^2 V = \rho_r$. Details in {ref}`Appendix A.5 <sec-appendix-a-full-derivations>`. $\square$
@@ -763,10 +768,10 @@ $$
 Under the Boltzmann-Value Law (Axiom {prf:ref}`ax-the-boltzmann-value-law`), the Varentropy equals the **Heat Capacity** $C_v$ of the decision state:
 
 $$
-V_H(z) = \beta^2 \mathrm{Var}_\pi[Q] = C_v,
+V_H(z) = \beta_{\text{ent}}^2 \mathrm{Var}_\pi[Q] = C_v,
 
 $$
-where $\beta = 1/T_c$ is the inverse cognitive temperature. Equivalently:
+where $\beta_{\text{ent}} = 1/T_c$ is the inverse cognitive temperature. Equivalently:
 
 $$
 V_H(z) = T_c \frac{\partial H(\pi)}{\partial T_c}.

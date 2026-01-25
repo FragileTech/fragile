@@ -30,7 +30,7 @@ Now, you might think geometry is just "given"—the stage on which physics happe
 
 Here is the beautiful thing about the Latent Fractal Gas: it gives us a concrete, computable answer to this question. The walkers in the swarm do not know anything about "geometry" at the start. They just diffuse around, following fitness gradients, cloning when they find good spots. But the way they diffuse—anisotropically, adapting to the local curvature of the fitness landscape—*creates* a geometry. The metric tensor does not descend from Mount Sinai; it emerges from the algorithm itself.
 
-The key insight is that diffusion and metric are two sides of the same coin. If you tell me how noise spreads at every point in space, I can compute a metric. If you give me a metric, I can compute how noise should spread. The Latent Fractal Gas ties these together by making the diffusion tensor depend on the Hessian of the fitness function. The result is that the swarm effectively performs Riemannian Brownian motion on an emergent manifold whose geometry is determined by the fitness landscape.
+The key insight is that diffusion and metric are two sides of the same coin. If you tell me how noise spreads at every point in space, I can compute a metric. If you give me a metric, I can compute how noise should spread. The Latent Fractal Gas ties these together by making the diffusion tensor depend on the Hessian of the fitness function. The result is that the swarm effectively performs a diffusion process *analogous to* Riemannian Brownian motion on an emergent manifold whose geometry is determined by the fitness landscape. (The precise relationship to Laplace-Beltrami Brownian motion involves the geometric drift term; see {ref}`sec-geometric-drift`.)
 
 This is not just mathematically pretty—it is algorithmically powerful. The swarm automatically concentrates exploration where it matters (flat regions with low curvature) and exploits efficiently where the landscape is already well-characterized (peaked regions with high curvature). Geometry and optimization become the same thing.
 :::
@@ -51,7 +51,7 @@ The mathematical machinery looks intimidating—inverse matrix square roots and 
 :::{prf:definition} Adaptive Diffusion Tensor
 :label: def-adaptive-diffusion-tensor-latent
 
-For a walker at position $z \in \mathcal{Z}$ in the latent space with ambient metric $G$, within a swarm state $S$, the **adaptive diffusion tensor** is defined as:
+For a walker at position $z \in \mathcal{Z}$ in the latent space, within a swarm state $S$, the **adaptive diffusion tensor** is defined as:
 
 $$
 \Sigma_{\mathrm{reg}}(z, S) = \left( H(z, S) + \epsilon_\Sigma I \right)^{-1/2}
@@ -59,9 +59,9 @@ $$
 
 where:
 
-- $H(z, S) = \nabla_z^2 V_{\mathrm{fit}}(z; S)$ is the **local Hessian** of the fitness potential evaluated at position $z$. For mean-field fitness $V_{\mathrm{fit}}(S) = \frac{1}{N}\sum_{i,j}\phi(z_i, z_j)$, a walker at position $z$ experiences $H(z, S) = \frac{1}{N}\sum_{j \in S} \nabla_z^2 \phi(z, z_j)$
+- $H(z, S) = \nabla_z^2 V_{\mathrm{fit}}(z; S)$ is the **local Hessian** of the fitness potential evaluated at position $z$. Since $V_{\mathrm{fit}} \in C^\infty$ (see {doc}`/3_fractal_gas/appendices/14_b_geometric_gas_cinf_regularity_full`), the Hessian is symmetric by Schwarz's theorem. For mean-field fitness $V_{\mathrm{fit}}(S) = \frac{1}{N}\sum_{i,j}\phi(z_i, z_j)$, a walker at position $z$ experiences $H(z, S) = \frac{1}{N}\sum_{j \in S} \nabla_z^2 \phi(z, z_j)$
 - $\epsilon_\Sigma > 0$ is the **regularization parameter** (spectral floor)
-- $I$ is the identity matrix in the latent coordinate basis
+- $I$ is the identity matrix in the coordinate basis (we work in coordinates where the latent space is locally Euclidean; for curved ambient spaces, replace $I$ with the ambient metric $G$)
 - The matrix square root is the unique symmetric positive definite square root
 
 The induced **diffusion matrix** (covariance of the noise) is:
@@ -149,6 +149,8 @@ $$
 $$
 
 We fix $\epsilon_\Sigma > \Lambda_-$, which ensures that $g(z, S) = H(z, S) + \epsilon_\Sigma I$ is symmetric positive definite for all states. The upper bound $\Lambda_+$ ensures uniform ellipticity from below.
+
+**Verification:** These bounds follow from the Gevrey-1 derivative estimates in {doc}`/3_fractal_gas/appendices/14_b_geometric_gas_cinf_regularity_full`, which establish k-uniform bounds on all derivatives of $V_{\mathrm{fit}}$. The spectral bounds $\Lambda_\pm$ depend on the regularization parameters $(\rho, \varepsilon_d, \eta_{\min})$ and are independent of swarm size.
 :::
 
 :::{prf:theorem} Uniform Ellipticity by Construction
@@ -215,19 +217,25 @@ Uniform ellipticity is the **critical property** enabling convergence:
 :::{div} feynman-prose
 Uniform ellipticity tells us the diffusion tensor is always well-behaved at each point. But for the SDE to have unique solutions, we also need the diffusion to vary *smoothly* as we move through the space. This is Lipschitz continuity: the diffusion tensor cannot change too fast as a function of position.
 
-The proof goes in three steps. First, the Hessian of the fitness function is Lipschitz because we assume the fitness has bounded third derivatives. Second, the matrix inverse and square root operations are operator-Lipschitz on the space of positive definite matrices. Third, composing Lipschitz functions gives a Lipschitz function. Nothing deep, but the details matter.
+The proof goes in three steps. First, the Hessian of the fitness function is Lipschitz because the fitness is C∞ with Gevrey-1 bounds (proven in the appendices). Second, the matrix inverse and square root operations are operator-Lipschitz on the space of positive definite matrices. Third, composing Lipschitz functions gives a Lipschitz function. Nothing deep, but the details matter.
 :::
 
 :::{prf:proposition} Lipschitz Continuity of Adaptive Diffusion
 :label: prop-lipschitz-diffusion-latent
 
-If the fitness potential $V_{\mathrm{fit}}$ is $C^3$ with bounded third derivatives, then the adaptive diffusion tensor $\Sigma_{\mathrm{reg}}(z, S)$ is Lipschitz continuous:
+The fitness potential $V_{\mathrm{fit}}$ is $C^\infty$ with Gevrey-1 bounds on all derivatives (see {doc}`/3_fractal_gas/appendices/14_b_geometric_gas_cinf_regularity_full`); in particular, it is $C^3$ with bounded third derivatives. Therefore, the adaptive diffusion tensor $\Sigma_{\mathrm{reg}}(z, S)$ is Lipschitz continuous:
 
 $$
 \|\Sigma_{\mathrm{reg}}(z_1, S_1) - \Sigma_{\mathrm{reg}}(z_2, S_2)\|_F \leq L_\Sigma \cdot d_{\mathrm{alg}}((z_1, S_1), (z_2, S_2))
 $$
 
-where $L_\Sigma$ is independent of $N$.
+where $L_\Sigma$ is independent of $N$, and $d_{\mathrm{alg}}$ is the **algorithmic distance** on configuration space defined as:
+
+$$
+d_{\mathrm{alg}}((z_1, S_1), (z_2, S_2)) = \|z_1 - z_2\|_2 + W_1(S_1, S_2)
+$$
+
+with $W_1$ the 1-Wasserstein distance between swarm empirical measures (see {doc}`/3_fractal_gas/1_the_algorithm/02_fractal_gas_latent`).
 :::
 
 :::{prf:proof}
@@ -365,39 +373,49 @@ where:
 2. **Geometric invariance:** Results do not depend on coordinate choice
 3. **Physical consistency:** No spurious drift terms that obscure the physics
 
-(sec-ito-correction)=
-### The Ito Correction Term
+(sec-geometric-drift)=
+### The Geometric Drift Term
 
-For numerical simulation and Fokker-Planck analysis, we convert to Ito form.
+For the system to converge to the correct Riemannian equilibrium measure $\rho(z) \propto \sqrt{\det g(z)} e^{-\Phi_{\mathrm{eff}}(z)/T}$, we must include a **geometric drift** term in the dynamics.
 
-:::{prf:lemma} Ito Correction Term
-:label: lem-ito-correction-latent
+:::{admonition} Important Clarification
+:class: warning
 
-The SDE in Ito form is:
+In underdamped Langevin dynamics where noise acts only on velocity ($dz = v\,dt$ with no stochastic term), the Stratonovich and Ito interpretations **coincide** for the position variable. The diffusion tensor $\Sigma(z)$ depends only on $z$, and since $dz$ has bounded variation ($dz \cdot dz = 0$), there is no Stratonovich-to-Ito correction arising from stochastic calculus.
 
-$$
-dv_i = \left[ F(z_i) - \gamma v_i + b_{\mathrm{corr}}(z_i) \right] dt + \Sigma_{\mathrm{reg}}(z_i, S) \, dW_i
-$$
+However, to ensure the system relaxes to the correct **Riemannian measure** (with the $\sqrt{\det g}$ weighting), we must *add* a geometric drift term. This is not a calculus artifact—it is a physical requirement for sampling from the target distribution.
+:::
 
-where the **Stratonovich-to-Ito correction drift** is:
+:::{prf:lemma} Geometric Drift for Riemannian Measure
+:label: lem-geometric-drift-latent
 
-$$
-b_{\mathrm{corr}}^k(z) = \frac{1}{2} \sum_{j,l} \Sigma_{lj}(z) \frac{\partial \Sigma_{kj}(z)}{\partial z_l}
-$$
-
-**Bound on correction term:** Since $\Sigma_{\mathrm{reg}}$ has operator norm bounded by $\|\Sigma_{\mathrm{reg}}\|_{\mathrm{op}} \leq c_{\max}^{1/2}$ and entry-wise gradient bounded by $L_\Sigma$:
+To ensure convergence to the Riemannian equilibrium $\rho(z) \propto \sqrt{\det g(z)} e^{-\Phi_{\mathrm{eff}}(z)/T}$, we augment the velocity dynamics with a **geometric drift**:
 
 $$
-\|b_{\mathrm{corr}}(z)\|_2 \leq \frac{d^{5/2}}{2} \sqrt{c_{\max}} \cdot L_\Sigma
+dv_i = \left[ F(z_i) - \gamma v_i + b_{\mathrm{geo}}(z_i) \right] dt + \Sigma_{\mathrm{reg}}(z_i, S) \, dW_i
 $$
 
-The factor $d^{5/2}$ arises because the sum over $j, l$ contributes $d^2$ terms (each bounded by $c_{\max}^{1/2} L_\Sigma$), giving $|b^k_{\mathrm{corr}}| \leq \frac{d^2}{2} c_{\max}^{1/2} L_\Sigma$ per component, and the 2-norm over $d$ components adds an additional factor of $\sqrt{d}$.
+where the geometric drift is:
+
+$$
+b_{\mathrm{geo}}^k(z) = \frac{T}{2} \sum_{j,l} \Sigma_{lj}(z) \frac{\partial \Sigma_{kj}(z)}{\partial z_l} = \frac{T}{2} \nabla_z \cdot D_{\mathrm{reg}}(z)
+$$
+
+**Physical interpretation:** This drift compensates for the spatially-varying diffusion, ensuring that the equilibrium density includes the $\sqrt{\det g}$ Jacobian factor. Without it, the stationary distribution would be $\rho(z) \propto e^{-\Phi_{\mathrm{eff}}(z)/T}$ without geometric weighting.
+
+**Bound:** Under uniform ellipticity ($\|\Sigma_{\mathrm{reg}}\|_{\mathrm{op}} \leq c_{\max}^{1/2}$) and Lipschitz continuity ($\|\nabla \Sigma_{\mathrm{reg}}\|_{\mathrm{op}} \leq L_\Sigma$):
+
+$$
+\|b_{\mathrm{geo}}(z)\|_2 \leq \frac{T \cdot d^{3/2}}{2} \sqrt{c_{\max}} \cdot L_\Sigma
+$$
 :::
 
 :::{div} feynman-prose
-The Ito correction term has a beautiful physical interpretation. It is a "geometric force" that pushes walkers away from regions where the diffusion tensor changes rapidly. Intuitively: if noise is increasing in some direction, the walker tends to drift opposite to that direction, because it is more likely to have arrived from the quieter side.
+Let me explain why this drift term is necessary. Imagine you have a region where the diffusion tensor changes—say, noise is stronger on the left than on the right. Walkers diffusing from the left bring more randomness; walkers from the right bring less. This asymmetry creates a net drift toward the quieter side.
 
-This is not an artifact of our formalism—it is real physics. But for our purposes, the important point is that this correction is *bounded* and does not blow up anywhere, thanks to uniform ellipticity.
+If we want the equilibrium to reflect the *intrinsic* Riemannian geometry (where the $\sqrt{\det g}$ factor appears), we must counteract this effect. The geometric drift does exactly that: it pushes walkers *toward* regions of higher diffusion, balancing the natural accumulation in quiet regions.
+
+The key insight is that this is not a bug in our formalism—it is a feature. By choosing whether to include this drift, we can select which measure we want to sample: coordinate measure (no drift) or Riemannian measure (with drift). For geometric applications, we want the Riemannian measure.
 :::
 
 ---
@@ -430,9 +448,15 @@ where $dz = dz_1 \wedge \cdots \wedge dz_d$ is the coordinate (Lebesgue) volume 
 :::{div} feynman-prose
 Here is something that should make you sit up. The quasi-stationary distribution (QSD) of the swarm is not uniform in coordinate space—it is weighted by $\sqrt{\det g}$. This means episodes naturally sample from the Riemannian volume measure, not the coordinate measure.
 
-Why does this happen? Think about it from the diffusion perspective. In regions of high metric (large $\det g$), the diffusion is small, so walkers accumulate. In regions of low metric, diffusion is large, so walkers spread out. The equilibrium density balances these effects, and the result is sampling proportional to $\sqrt{\det g}$.
+Why does this happen? There are two complementary perspectives:
 
-This is extremely useful for Monte Carlo integration: if you want to compute Riemannian integrals, just average over episodes. The $\sqrt{\det g}$ weighting is automatic.
+**From diffusion:** In regions of high metric (large $\det g$), the diffusion is small, so walkers tend to accumulate. In regions of low metric, diffusion is large, so walkers spread out.
+
+**From geometric drift:** The geometric drift term $b_{\mathrm{geo}}$ (see {ref}`sec-geometric-drift`) actively compensates for diffusion gradients, ensuring the equilibrium includes the $\sqrt{\det g}$ Jacobian factor. Without this drift, the stationary distribution would lack the geometric weighting.
+
+The interplay of these effects produces sampling proportional to $\sqrt{\det g} \cdot e^{-\Phi_{\mathrm{eff}}/T}$—exactly the Riemannian measure we want.
+
+This is extremely useful for Monte Carlo integration: if you want to compute Riemannian integrals, just average over episodes. The $\sqrt{\det g}$ weighting is automatic (provided the geometric drift is included in the dynamics).
 :::
 
 (sec-fan-triangulation)=
@@ -623,7 +647,7 @@ The geometry is baked into the sampling—you do not need to compute determinant
 :::{prf:proposition} Monte Carlo Integration with Riemannian Measure
 :label: prop-monte-carlo-riemannian-latent
 
-Let $\{z_i\}_{i=1}^N$ be positions sampled from the QSD with density $\rho(z) \propto \sqrt{\det g(z)} e^{-\Phi_{\mathrm{eff}}(z)/T}$.
+Let $\{z_i\}_{i=1}^N$ be positions sampled from the QSD with density $\rho(z) \propto \sqrt{\det g(z)} e^{-\Phi_{\mathrm{eff}}(z)/T}$. (Existence and uniqueness of the QSD is established in {doc}`/3_fractal_gas/appendices/07_discrete_qsd`; convergence to QSD is proven in {doc}`/3_fractal_gas/appendices/06_convergence`.)
 
 **Method 1 (QSD sampling):** If episodes sample from QSD:
 
@@ -637,7 +661,7 @@ $$
 \int_{\mathcal{Z}} f(z) \, dV_g(z) \approx \frac{1}{N} \sum_{i=1}^N f(z_i) \cdot \frac{\sqrt{\det g(z_i)}}{\rho(z_i)}
 $$
 
-**Convergence rate:** $O(N^{-1/2})$ regardless of dimension.
+**Convergence rate:** $O(N^{-1/2})$ regardless of dimension (see {doc}`/3_fractal_gas/appendices/13_quantitative_error_bounds` for explicit error bounds).
 :::
 
 ---
@@ -686,12 +710,14 @@ $$
 where:
 - $\gamma$ is friction coefficient
 - $\tau$ is kinetic time step
-- $\kappa_z^{\mathrm{clone}}$ is cloning contraction rate
-- $c_{\min}$ is ellipticity lower bound
+- $\kappa_z^{\mathrm{clone}}$ is cloning contraction rate (see {doc}`/3_fractal_gas/appendices/03_cloning`)
+- $c_{\min}$ is ellipticity lower bound (Theorem {prf:ref}`thm-uniform-ellipticity-latent`)
 - $\underline{\lambda}$ is the coercivity constant of the hypocoercive quadratic form
 - $C_1$ is a geometry-dependent constant
 
 **Condition for convergence:** $c_{\min} \underline{\lambda} > C_1 L_\Sigma$
+
+**Full proof:** See {doc}`/3_fractal_gas/appendices/05_kinetic_contraction` for kinetic drift analysis and {doc}`/3_fractal_gas/appendices/06_convergence` for the complete convergence theorem.
 :::
 
 :::{prf:proof}
@@ -794,3 +820,13 @@ In the next section, we will see how the discrete events of cloning create a tes
 - {doc}`/3_fractal_gas/1_the_algorithm/02_fractal_gas_latent` — Latent Fractal Gas algorithm definition
 - {doc}`/3_fractal_gas/2_fractal_set/01_fractal_set` — Fractal Set data structure
 - {doc}`/3_fractal_gas/3_fitness_manifold/02_scutoid_spacetime` — Scutoid tessellation and discrete spacetime geometry
+
+### Regularity and Convergence Proofs
+
+- {doc}`/3_fractal_gas/appendices/14_b_geometric_gas_cinf_regularity_full` — C∞ regularity of fitness potential with Gevrey-1 bounds
+- {doc}`/3_fractal_gas/appendices/14_a_geometric_gas_c3_regularity` — C³ regularity (simplified model)
+- {doc}`/3_fractal_gas/appendices/03_cloning` — Cloning operator contraction analysis
+- {doc}`/3_fractal_gas/appendices/05_kinetic_contraction` — Hypocoercivity and kinetic drift
+- {doc}`/3_fractal_gas/appendices/06_convergence` — Full convergence theorem
+- {doc}`/3_fractal_gas/appendices/07_discrete_qsd` — Quasi-stationary distribution existence and uniqueness
+- {doc}`/3_fractal_gas/appendices/13_quantitative_error_bounds` — Quantitative error bounds for Monte Carlo estimates

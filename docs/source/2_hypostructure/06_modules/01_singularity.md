@@ -150,6 +150,36 @@ Proof Sketch
 The trichotomy is exhaustive since $V$ either belongs to a classifiable family or demonstrates classifiability failure.
 :::
 
+:::{prf:definition} Germ Smallness Permit
+:label: def-germ-smallness
+
+The **Germ Smallness Permit** certifies that the singularity germ set $\mathcal{G}_T$ is a
+**small** index set (a set in the ambient universe) for a fixed type $T$. The permit is a
+**local check** on thin objects: it is certified using only germ-level data (profiles,
+scaling, symmetries) extracted from the Thin Kernel ({prf:ref}`def-thin-objects`), and
+does not assume global compactness. External checks may be imported when available,
+provided they supply a smallness witness and provenance. The permit is discharged by any
+of the following:
+
+1. **Finite Library:** A profile classification certificate $K_{\text{lib}}^+$ from
+   {prf:ref}`mt-resolve-profile` with a finite canonical library $\mathcal{L}_T$.
+2. **Tame Stratification:** A profile classification certificate $K_{\text{strat}}^+$ from
+   {prf:ref}`mt-resolve-profile` with a definable family $\mathcal{F}_T$ parameterized
+   by a finite-dimensional definable set and a finite stratification bound.
+3. **External Check (Imported Bound):** A literature-backed or external certificate
+   $K_{\mathrm{Germ}}^{\mathrm{lit}}$ providing a finite-dimensional moduli/compactness
+   bound for the germ space (type-specific).
+
+**YES certificate:** $K_{\mathrm{Germ}}^+ = (\text{method}, \mathcal{G}_T,
+\mathbf{I}_{\text{small}}, \text{smallness witness})$. If the method is external, the
+witness includes provenance.
+
+**NO-inconclusive certificate:** If only $K_{\mathrm{prof}}^{\mathrm{inc}}$ or
+$K_{\mathrm{prof}}^{\mathrm{wild}}$ is available (or no literature bound applies), emit
+$K_{\mathrm{Germ}}^{\mathrm{inc}}$ and route the Lock to the Horizon mechanism.
+
+:::
+
 :::{prf:remark} Library examples by type
 :label: rem-library-examples
 

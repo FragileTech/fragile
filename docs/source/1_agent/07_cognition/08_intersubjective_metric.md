@@ -111,7 +111,7 @@ $$
 
 where $V_{\text{max}}$ is the optimal cooperative value under perfect alignment and $\mathcal{F}_0$ is a characteristic friction scale.
 
-*Proof sketch.* Cooperation requires coordinated gradients. When $\mathcal{F}_{AB} > 0$, the agents' covariant value gradients $\nabla_{A^{(A)}} V_A$ and $\nabla_{A^{(B)}} V_B$ (with $A^{(i)}$ the reward 1-form for agent $i$) misalign by an angle $\theta \propto \sqrt{\mathcal{F}_{AB}}$. The effective cooperative gradient is $|\nabla_{A^{(\text{coop})}} V_{\text{coop}}| = |\nabla_{A^{(A)}} V_A| \cos\theta$. Integrating the exponential decay of cosine near $\theta = \pi/2$ yields the bound. $\square$
+*Proof sketch.* Cooperation requires coordinated gradients. When $\mathcal{F}_{AB} > 0$, the agents' covariant value gradients $\nabla_{A^{(A)}} V_A$ and $\nabla_{A^{(B)}} V_B$ (with $A^{(i)}$ the non-conservative component of agent $i$'s reward 1-form) misalign by an angle $\theta \propto \sqrt{\mathcal{F}_{AB}}$. The effective cooperative gradient is $|\nabla_{A^{(\text{coop})}} V_{\text{coop}}| = |\nabla_{A^{(A)}} V_A| \cos\theta$. Integrating the exponential decay of cosine near $\theta = \pi/2$ yields the bound. $\square$
 
 :::
 

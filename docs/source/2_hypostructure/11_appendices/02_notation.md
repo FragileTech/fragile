@@ -287,7 +287,11 @@ The beautiful thing is that these phase transitions mirror thermodynamic phase t
 | Phase | Complexity | Axiom R | Decidability | Sieve Verdict |
 |-------|------------|---------|--------------|---------------|
 | Crystal | $K = O(\log n)$ | Holds | Decidable | REGULAR |
-| Liquid | $K = O(\log n)$ | Fails | C.E. not decidable | HORIZON |
+| Liquid | No $K(L_n)$ bound implied; c.e. but R fails | Fails | C.E. not decidable | HORIZON |
 | Gas | $K \geq n - O(1)$ | Fails | Random/Undecidable | HORIZON |
 
 See {prf:ref}`def-algorithmic-phases` for formal definitions and {prf:ref}`thm-sieve-thermo-correspondence` for the Sieve-Thermodynamic Correspondence.
+
+:::{prf:remark}
+Liquid phase classification uses enumerability plus Axiom R failure; it does not imply $K(L_n) = O(\log n)$ for initial segments (here $L_n$ is the length-$n$ prefix of the characteristic sequence of $L$).
+:::

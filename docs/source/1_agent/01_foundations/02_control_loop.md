@@ -32,6 +32,7 @@
 | $G(z)$ | State-space metric (sensitivity “mass” / preconditioner), not a parameter-space metric |
 | $\pi(a\mid z)$ | Policy on actions given internal state (control field) |
 | $\mathcal{S}$ | Objective/action functional (task cost + control/regularization cost) |
+| $\mathcal{C}$ | Instantaneous cost 1-form (negative of the reward 1-form) |
 | $T_c$ | “Cognitive temperature” / entropy-regularization strength (where relevant) |
 
 ## Minimal Pseudocode
@@ -40,7 +41,7 @@
 # Pseudocode: one training step (conceptual)
 # Inputs: boundary batch (x_t, a_t, r_t, d_t, iota_t) and next observations x_{t+1}
 #
-# 1) Shutter/Encoder: x_t -> (K_t, z_n,t, z_tex,t); compute reconstruction + commitment losses
+# 1) Shutter/Encoder: x_t -> (K_t, z_{n,t}, z_{\mathrm{tex},t}); compute reconstruction + commitment losses
 # 2) World Model: predict (K_{t+1}, z_{n,t+1}); compute closure/synchronization losses vs shutter outputs
 # 3) Critic: update V(z_t) using TD / PDE residual surrogates; compute value/geometry diagnostics
 # 4) Policy: update π(.|z_t) via MaxEnt/KL control objective; apply Sieve gating/projection when diagnostics fail
@@ -98,6 +99,9 @@ But $\mathcal{L}_{\text{control}}$---the control cost---that's the interesting o
 
 Operationally, {math}`\mathcal{L}_{\text{control}}` can be a KL control penalty (deviation from a prior policy), action magnitude cost, or any control-effort term; {math}`C` encodes task loss and constraints.
 
+**Sign convention.** This chapter uses a cost convention (lower is better). Reward-form statements are recovered by
+negating costs; in Section 2.7 we set $\mathcal{C} = -\mathcal{R}$.
+
 **Relation to prior work.** This objective family covers standard stochastic optimal control and entropy-/KL-regularized RL: KL-control and "soft" (entropy-regularized) Bellman objectives are special cases {cite}`todorov2009efficient,kappen2005path,haarnoja2018soft`.
 
 (sec-anatomy-the-fragile-agent)=
@@ -132,16 +136,19 @@ This tuple directly instantiates the core objects of the Hypostructure $\mathbb{
 |:-------------------------------|:---------------------------------------------|:------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:------------------------------------------------------------|
 | **Autoencoder (Split VQ-VAE)** | **State Space Construction ($\mathcal{X}$)** | **Information Bottleneck Encoder** {cite}`tishby2015ib`: maps $x \mapsto (K, z_{n}, z_{\mathrm{tex}})$ where $K$ is a *discrete predictive latent*, $z_{n}$ is a *structured nuisance residual*, and $z_{\mathrm{tex}}$ is a *reconstruction-only texture residual*. | Defines the representation used for prediction and control. |
 | **World Model**                | **Dynamics Model ($\nabla, S_t$)**           | **Predictive Model:** simulates/learns latent dynamics to support planning and counterfactual evaluation.                                                                                                                                       | Defines the learned transition structure within $Z$.        |
-| **Critic**                     | **Value/Cost Functional ($\Phi$)**           | **Value Function:** assigns a scalar cost-to-go/value to points in $Z$, representing risk/undesirability.                                                                                                                                       | Defines the gradient signal $\nabla_A V$.                     |
+| **Critic**                     | **Value/Cost Functional ($V$)**              | **Value Function:** assigns a scalar cost-to-go/value to points in $Z$, representing risk/undesirability (identify $V=\Phi$ for the exact component).                                                                                            | Defines the gradient signal $\nabla_A V$.                     |
 | **Policy**                     | **Control Regularization ($\mathfrak{D}$)**  | **Controller (Policy):** chooses actions that reduce expected future cost subject to constraints and regularization.                                                                                                                            | Implements the control law minimizing $\mathcal{S}$.        |
 
-Throughout, the policy-driving signal is the **covariant value gradient** $\nabla_A V := \nabla V - A$, where $A$ is the reward 1-form (conservative case: $A=0$).
+Throughout, the policy-driving signal is the **covariant value gradient**. Define the covariant 1-form
+$d_A V := dV - A$; its metric-raised vector is $\nabla_A V := G^{-1}(dV - A)$ (coordinates:
+$(\nabla_A V)^i = G^{ij}(\partial_j V - A_j)$), where $A := \delta\Psi + \eta$ is the non-conservative component of
+the reward 1-form $\mathcal{R} = dV + A$ (conservative case: $A=0$).
 
 :::{figure} ../../../svg_images/fragile_architecture.svg
 :name: fig-fragile-architecture
 :width: 100%
 
-**The Fragile Agent Core Architecture.** The agent tuple $\mathbb{A} = (\text{Shutter}, \text{World Model}, \text{Critic}, \text{Policy})$ showing data flow from observation $x_t$ through the three-tier latent state $(K, z_n, z_{\text{tex}})$ to action $a_t$, with environment feedback loop.
+**The Fragile Agent Core Architecture.** The agent tuple $\mathbb{A} = (\text{Shutter}, \text{World Model}, \text{Critic}, \text{Policy})$ showing data flow from observation $x_t$ through the three-tier latent state $(K, z_n, z_{\mathrm{tex}})$ to action $a_t$, with environment feedback loop.
 :::
 
 (sec-the-trinity-of-manifolds)=
@@ -156,7 +163,7 @@ Here are the three spaces:
 
 **The Physical/Data Space** ($\mathcal{X}$): This is the raw observation space. Pixels on a screen. Joint angles of a robot. It's high-dimensional, messy, and full of irrelevant detail. We use Euclidean geometry here because that's what the hardware gives us.
 
-**The Latent/Problem Space** ($\mathcal{Z}$): This is where the agent actually thinks. It's the compressed representation that captures what matters for decision-making. And crucially, it has structure---a discrete macro symbol $K$ for identity, a continuous nuisance coordinate $z_n$ for pose/position, and a texture channel $z_{\text{tex}}$ for reconstruction detail.
+**The Latent/Problem Space** ($\mathcal{Z}$): This is where the agent actually thinks. It's the compressed representation that captures what matters for decision-making. And crucially, it has structure---a discrete macro symbol $K$ for identity, a continuous nuisance coordinate $z_n$ for pose/position, and a texture channel $z_{\mathrm{tex}}$ for reconstruction detail.
 
 **The Parameter/Model Space** ($\Theta$): This is the space of neural network weights. It's where gradient descent lives. And it has its own geometry---the Fisher-Rao geometry that tells you how changing weights affects the distribution of outputs.
 :::
@@ -171,7 +178,7 @@ To prevent category errors, we formally distinguish three manifolds with distinc
 
 **Dimensional Verification:**
 
-- The shutter $E: \mathcal{X} \to \mathcal{K}\times \mathcal{Z}_n\times \mathcal{Z}_{\mathrm{tex}}$ is a **contraction** in structured continuous degrees of freedom ($d_n \ll D$) plus a **finite-rate quantization** in the macro channel ($\log|\mathcal{K}|$ bits); texture may remain high-rate but is firewall-restricted to reconstruction/likelihood.
+- The shutter $E: \mathcal{X} \to \mathcal{K}\times \mathcal{Z}_n\times \mathcal{Z}_{\mathrm{tex}}$ is a **contraction** in structured continuous degrees of freedom ($d_n \ll D$) plus a **finite-rate quantization** in the macro channel ($\log|\mathcal{K}|$ nats); texture may remain high-rate but is firewall-restricted to reconstruction/likelihood.
 - The policy $\pi_\theta$ is typically a map on macrostates (or their code embeddings) $\pi_\theta:\mathcal{K}\to\mathcal{A}$. If a structured nuisance coordinate $z_n$ is required for actuation, treat it as an explicit typed input (policy on $(K,z_n)$) and keep enclosure/closure defined at the macro layer ({ref}`Section 2.8 <sec-conditional-independence-and-sufficiency>`). By contrast, dependence on **texture** $z_{\mathrm{tex}}$ is a causal leak for control and should be prohibited by architecture and monitored (texture is reconstruction-only).
 - The metric $G_{n}$ is defined on the **structured nuisance coordinates** $\mathcal{Z}_n$ (and/or the induced geometry of the codebook embedding), not on $\Theta$; texture is excluded from the control metric.
 
@@ -207,7 +214,7 @@ The information-theoretic/control interpretation benefits from an explicit **dis
 (rb-adversarial-immunity)=
 :::{admonition} Researcher Bridge: Adversarial Immunity via Firewalling
 :class: info
-Standard Autoencoders mix all information into a single vector, making them vulnerable to "texture" attacks (adversarial noise). We split the latent space into three channels: **Discrete Symbols ($K$)**, **Nuisance ($z_n$)**, and **Texture ($z_{tex}$)**.
+Standard Autoencoders mix all information into a single vector, making them vulnerable to "texture" attacks (adversarial noise). We split the latent space into three channels: **Discrete Symbols ($K$)**, **Nuisance ($z_n$)**, and **Texture ($z_{\mathrm{tex}}$)**.
 By architectural design, the **Policy is blind to the Texture channel**. This creates a mathematical firewall: the agent uses texture for reconstruction, but is architecturally constrained from making decisions based on non-causal pixel noise.
 :::
 
@@ -220,19 +227,19 @@ First, there's the **identity**: it's a mug, not a bowl or a vase. That's a disc
 
 Second, there's the **pose and position**: where is the mug? What angle are we viewing it from? How far away is it? This is continuous and structured---you can parameterize it with a few numbers. This goes into the nuisance channel $z_n$.
 
-Third, there's the **texture and fine detail**: the exact pattern on the mug, the way the light reflects off the glaze, the grain of the wood table. This is needed to reconstruct the image, but it shouldn't affect your decision about whether to pick up the mug. This goes into the texture channel $z_{\text{tex}}$.
+Third, there's the **texture and fine detail**: the exact pattern on the mug, the way the light reflects off the glaze, the grain of the wood table. This is needed to reconstruct the image, but it shouldn't affect your decision about whether to pick up the mug. This goes into the texture channel $z_{\mathrm{tex}}$.
 :::
 
 We factor the latent as:
 
 $$
-Z_t := (K_t, Z_{n,t}, Z_{\mathrm{tex},t}),
+Z_t := (K_t, z_{n,t}, z_{\mathrm{tex},t}),
 \qquad
 K_t \in \mathcal{K}\ \text{(discrete; may be hierarchical)},
 \quad
-Z_{n,t}\in\mathbb{R}^{d_n}\ \text{(continuous nuisance; gauge fiber in Sec.\ 29.13)},
+z_{n,t}\in\mathbb{R}^{d_n}\ \text{(continuous nuisance; gauge fiber in Sec.\ 29.13)},
 \quad
-Z_{\mathrm{tex},t}\in\mathbb{R}^{d_{\mathrm{tex}}}\ \text{(continuous texture)}.
+z_{\mathrm{tex},t}\in\mathbb{R}^{d_{\mathrm{tex}}}\ \text{(continuous texture)}.
 
 $$
 For the Attentive Atlas shutter, the macro register is a two-level tuple:
@@ -337,7 +344,7 @@ $$
 \qquad
 z_n = \text{StructureFilter}(\Delta_{\text{total}}),
 \qquad
-z_{\text{tex}} = \Delta_{\text{total}} - z_n.
+z_{\mathrm{tex}} = \Delta_{\text{total}} - z_n.
 
 $$
 Finally, the geometric latent for the decoder is
@@ -379,7 +386,7 @@ Let me summarize what we're trying to achieve with this three-way split.
 
 This separation is enforced by orbit-invariance and (macro perpendicular to nuisance/texture) disentanglement losses in {ref}`Section 3.3 <sec-defect-functionals-implementing-regulation>`.A and monitored by SymmetryCheck/DisentanglementCheck ({ref}`Section 3 <sec-diagnostics-stability-checks>`). The jump/residual machinery ({ref}`Section 12.3 <sec-sieve-events-as-projections-reweightings>`) is attached to $z_n$ (structured disturbances), not to $z_{\mathrm{tex}}$.
 
-*Remark (Motor Texture Extension).* {ref}`Section 23.3 <sec-motor-texture-the-action-residual>` extends this decomposition to the **motor/action** side: $a_t = (A_t, z_{n,\text{motor}}, z_{\text{tex,motor}})$. The motor texture $z_{\text{tex,motor}}$ (tremor, fine motor noise) is dual to visual texture via the symplectic form (Theorem {prf:ref}`ax-motor-texture-firewall`). {ref}`Section 23.2 <sec-the-dual-atlas-architecture>` defines a **Dual Atlas Architecture** where $\mathcal{A}_{\text{vis}}$ (visual) and $\mathcal{A}_{\text{act}}$ (action) are related by Legendre transform.
+*Remark (Motor Texture Extension).* {ref}`Section 23.3 <sec-motor-texture-the-action-residual>` extends this decomposition to the **motor/action** side: $a_t = (K^{\text{act}}_t, z_{n,\text{motor}}, z_{\text{tex,motor}})$. The motor texture $z_{\text{tex,motor}}$ (tremor, fine motor noise) is dual to visual texture via the symplectic form (Theorem {prf:ref}`ax-motor-texture-firewall`). {ref}`Section 23.2 <sec-the-dual-atlas-architecture>` defines a **Dual Atlas Architecture** where $\mathcal{A}_{\text{vis}}$ (visual) and $\mathcal{A}_{\text{act}}$ (action) are related by Legendre transform.
 
 :::{admonition} Connection to RL #6: Options Framework as Read-Only Codebook
 :class: note
@@ -388,15 +395,15 @@ This separation is enforced by orbit-invariance and (macro perpendicular to nuis
 The agent's state is a **Split VQ-VAE** with learned hierarchy:
 
 $$
-Z_t = (K_t, z_{n,t}, z_{\text{tex},t}) \in \mathcal{K} \times \mathcal{Z}_n \times \mathcal{Z}_{\text{tex}}
+Z_t = (K_t, z_{n,t}, z_{\mathrm{tex},t}) \in \mathcal{K} \times \mathcal{Z}_n \times \mathcal{Z}_{\mathrm{tex}}
 
 $$
 where:
 - $K_t \in \mathcal{K}$: Discrete macro-symbol (learned via codebook)
 - $z_{n,t}$: Continuous structured nuisance
-- $z_{\text{tex},t}$: Texture residual (reconstruction-only)
+- $z_{\mathrm{tex},t}$: Texture residual (reconstruction-only)
 
-The **Shutter** forces temporal decoupling: $K$ evolves slowly, $(z_n, z_{\text{tex}})$ evolve fast.
+The **Shutter** forces temporal decoupling: $K$ evolves slowly, $(z_n, z_{\mathrm{tex}})$ evolve fast.
 
 **The Degenerate Limit:**
 Hard-code the semantics of $K$ to be fixed sub-policies rather than learned symbols.
@@ -429,7 +436,7 @@ $$
 q_\phi(z_n\mid x)=\mathcal{N}(\mu_\phi(x),\operatorname{diag}(\sigma_\phi^2(x))),
 
 $$
-with a task-appropriate prior $p(z_n)$ (often standard normal as a conservative default). The key requirement is *typed*: nuisance may influence reconstruction and may be used to explain structured deviations, but macro prediction/closure must not require it beyond $(K_t,A_t)$ ({ref}`Section 2.8 <sec-conditional-independence-and-sufficiency>`).
+with a task-appropriate prior $p(z_n)$ (often standard normal as a conservative default). The key requirement is *typed*: nuisance may influence reconstruction and may be used to explain structured deviations, but macro prediction/closure must not require it beyond $(K_t,K^{\text{act}}_t)$ ({ref}`Section 2.8 <sec-conditional-independence-and-sufficiency>`).
 
 **Texture residual ($z_{\mathrm{tex}}$).** Texture is modeled as a separate continuous residual with posterior
 
@@ -475,7 +482,7 @@ I(X;K)\le H(K)\le \log|\mathcal{K}|.
 
 $$
 For the hierarchical macro $(K_{\text{chart}},K_{\text{code}})$, this becomes $H(K)\le \log(N_c N_v)$.
-For deterministic nearest-neighbor quantization, $H(K\mid X)=0$ and hence $I(X;K)=H(K)$: the macro channel is a bounded-rate symbolic memory with capacity at most $\log|\mathcal{K}|$ bits.
+For deterministic nearest-neighbor quantization, $H(K\mid X)=0$ and hence $I(X;K)=H(K)$: the macro channel is a bounded-rate symbolic memory with capacity at most $\log|\mathcal{K}|$ nats.
 
 :::{div} feynman-prose
 This is profound. It means we have a hard limit on how much information can flow through the macro channel, and we can monitor it. If the agent is using too much or too little of its capacity, we can see it and fix it.
@@ -488,10 +495,10 @@ This is profound. It means we have a hard limit on how much information can flow
 The agent optimizes an entropy-regularized objective on the Riemannian manifold $(\mathcal{Z}, G)$:
 
 $$
-\mathcal{F}[p, \pi] = \int_{\mathcal{Z}} p(z) \Big( V(z) - \tau H(\pi(\cdot|z)) \Big) d\mu_G
+\mathcal{F}[p, \pi] = \int_{\mathcal{Z}} p(z) \Big( V(z) - T_c\, H(\pi(\cdot|z)) \Big) d\mu_G
 
 $$
-where $d\mu_G = \sqrt{|G|}\, dz$ is the Riemannian volume form and $\tau$ is the entropy weight.
+where $d\mu_G = \sqrt{|G|}\, dz$ is the Riemannian volume form and $T_c$ is the entropy weight (cognitive temperature).
 
 **The Degenerate Limit:**
 Restrict entropy regularization to action space only; ignore state-space geometry ($G \to I$).
@@ -499,7 +506,7 @@ Restrict entropy regularization to action space only; ignore state-space geometr
 **The Special Case (Standard RL):**
 
 $$
-J_{\text{SAC}}(\pi) = \mathbb{E}\left[\sum_{t=0}^\infty \gamma^t \big(r_t + \alpha H(\pi(\cdot|s_t))\big)\right]
+J_{\text{SAC}}(\pi) = \mathbb{E}\left[\sum_{t=0}^\infty \gamma_{\text{disc}}^t \big(r_t + \alpha H(\pi(\cdot|s_t))\big)\right]
 
 $$
 This recovers **Soft Actor-Critic** (SAC) with action entropy bonus.
@@ -521,11 +528,11 @@ For those who want the deep foundation: VQ-VAE is really a computational instant
 **Rate-distortion / MDL viewpoint (optional but canonical).** Because $K$ is a discrete string, an explicit entropy model $p_\psi(K)$ defines a literal expected codelength $\mathbb{E}[-\log p_\psi(K)]$ (in nats). Adding this term yields the Lagrangian form of lossy source coding:
 
 $$
-\min_{E,D}\ \mathbb{E}\big[d(X,\hat{X})\big] + \lambda\,\mathbb{E}\big[-\log p_\psi(K)\big],
+\min_{E,D}\ \mathbb{E}\big[d(X,\hat{X})\big] + \lambda_{\text{RD}}\,\mathbb{E}\big[-\log p_\psi(K)\big],
 
 $$
 with rate controlled by the symbolic model and distortion controlled by the decoder. This is the rigorous information-theoretic envelope in which VQ-VAE-style macrostates live.
-Units: $\lambda$ has units of the distortion scale divided by nats (dimensionless if $d$ is itself a negative-log-likelihood in nats).
+Units: $\lambda_{\text{RD}}$ has units of the distortion scale divided by nats (dimensionless if $d$ is itself a negative-log-likelihood in nats).
 
 **Notation note (micro split).** Earlier sections (and some later, legacy blocks) use $z_\mu$ / $\mathcal{Z}_\mu$ to denote "the continuous micro channel". In the refined typed specification, this channel is split as
 
@@ -553,7 +560,7 @@ In other words: by making part of our representation discrete, we've made the th
 :name: fig-three-tier-shutter
 :width: 100%
 
-**The Three-Tier Shutter Hierarchy.** The VQ-VAE shutter decomposes observations into three channels: $K$ (discrete macro-register, control-relevant), $z_n$ (continuous nuisance, structured), and $z_{\text{tex}}$ (texture, reconstruction-only). The information bottleneck at quantization ensures $I(X; K) \le H(K) \le \log|\mathcal{K}|$.
+**The Three-Tier Shutter Hierarchy.** The VQ-VAE shutter decomposes observations into three channels: $K$ (discrete macro-register, control-relevant), $z_n$ (continuous nuisance, structured), and $z_{\mathrm{tex}}$ (texture, reconstruction-only). The information bottleneck at quantization ensures $I(X; K) \le H(K) \le \log|\mathcal{K}|$.
 :::
 
 (sec-the-bridge-rl-as-lyapunov-constrained-control)=
@@ -572,7 +579,7 @@ Here's the insight: **these perspectives align around the same mathematical obje
 | Perspective                | Objective                                                            | Mechanism                           |
 |----------------------------|----------------------------------------------------------------------|-------------------------------------|
 | **Optimization**           | Minimize expected cost-to-go $V(z)$                                  | Gradient-based policy/value updates |
-| **Control Theory**         | Ensure stability: $\dot{V}(z) \le -\lambda V(z)$, $[\lambda]=s^{-1}$ | Lyapunov constraint                 |
+| **Control Theory**         | Ensure stability: $\dot{V}(z) \le -\lambda_{\text{Lyap}} V(z)$, $[\lambda_{\text{Lyap}}]=s^{-1}$ | Lyapunov constraint                 |
 | **Reinforcement Learning** | Improve value estimates/policy                                       | TD learning + policy gradients      |
 
 :::{div} feynman-prose
@@ -586,7 +593,7 @@ The key insight is that these perspectives align around the same mathematical ob
 The Critic $V(z)$ serves as a **Control Lyapunov Function** with explicit stability constraint:
 
 $$
-\dot{V}(z) := \nabla_A V(z)^\top \dot{z} \le -\lambda V(z), \quad [\lambda] = s^{-1}
+\dot{V}(z) := \nabla_A V(z)^\top \dot{z} \le -\lambda_{\text{Lyap}} V(z), \quad [\lambda_{\text{Lyap}}] = s^{-1}
 
 $$
 The Sieve (Node 7: StiffnessCheck) enforces $\|\nabla_A V\| > \epsilon$ and monitors bifurcation (Node 7a).
@@ -595,12 +602,12 @@ The Sieve (Node 7: StiffnessCheck) enforces $\|\nabla_A V\| > \epsilon$ and moni
 Remove the explicit stability check. Assume SGD will find a stable fixpoint.
 
 **The Special Case (Standard RL):**
-Standard policy gradient methods (PPO, SAC, etc.) optimize $\mathbb{E}[R]$ without enforcing $\dot{V} \le -\lambda V$. Stability is an implicit hope, not a guarantee.
+Standard policy gradient methods (PPO, SAC, etc.) optimize $\mathbb{E}[R]$ without enforcing $\dot{V} \le -\lambda_{\text{Lyap}} V$. Stability is an implicit hope, not a guarantee.
 
 **Result:** Standard RL oscillates and diverges precisely because it tries to find a Lyapunov function without enforcing the Lyapunov conditions. The Fragile Agent makes stability a *hard constraint*, not an emergent property.
 
 **What the generalization offers:**
-- Explicit stability: $\dot{V} \le -\lambda V$ is enforced, not hoped for
+- Explicit stability: $\dot{V} \le -\lambda_{\text{Lyap}} V$ is enforced, not hoped for
 - Bifurcation detection: Node 7a monitors $\det(J)$ for approaching instabilities
 - Remediation: violations trigger conservative updates, not catastrophic divergence
 :::
@@ -618,10 +625,15 @@ The key insight is that "size" depends on where you are. Imagine you're walking 
 The same thing is true in learning. A policy update of a certain size might be fine when the value function is flat, but catastrophic when the value function is sharply curved. We need a notion of distance that adapts to the local geometry.
 :::
 
+Throughout this section, the geometry and action functional live on the latent state manifold $\mathcal{Z}$: the
+updates are trajectories $z(t)$ induced by the policy and dynamics. Parameter updates in $\Theta$ are separate; any
+comparison to $\theta$ updates is an explicit analogy that conflates $\mathcal{Z}$ and $\Theta$ (the category error in
+Section 2.6).
+
 We can write an update objective that combines (i) a geometry-aware smoothness/trust-region penalty and (ii) a value-improvement term:
 
 $$
-\mathcal{S} = \int \left( \underbrace{\frac{1}{2} \lVert\dot{\pi}\rVert^2_{G}}_{\text{Update smoothness / trust region}} - \underbrace{\frac{d V}{d t}}_{\text{Value improvement}} \right) dt
+\mathcal{S} = \int \left( \underbrace{\frac{1}{2} \lVert\dot{z}\rVert^2_{G}}_{\text{Update smoothness / trust region}} - \underbrace{\frac{d V}{d t}}_{\text{Value improvement}} \right) dt
 
 $$
 Where $\lVert\cdot\rVert_G$ is the norm under a **state-space sensitivity metric** $G$ ({ref}`Section 2.5 <sec-second-order-sensitivity-value-defines-a-local-metric>`). This biases updates toward paths that are conservative in sensitive regions and more aggressive where the value landscape is well-conditioned.
@@ -630,16 +642,16 @@ Where $\lVert\cdot\rVert_G$ is the norm under a **state-space sensitivity metric
 :class: note
 :name: conn-rl-2
 **The General Law (Fragile Agent):**
-Policy updates follow **geodesic flow** on the Riemannian manifold $(\mathcal{Z}, G)$:
+State updates follow **geodesic flow** on the Riemannian manifold $(\mathcal{Z}, G)$:
 
 $$
-\mathcal{S} = \int \left( \frac{1}{2} \|\dot{\pi}\|_G^2 - \dot{V} \right) dt
+\mathcal{S} = \int \left( \frac{1}{2} \|\dot{z}\|_G^2 - \dot{V} \right) dt
 
 $$
 The Euler-Lagrange equations yield updates along geodesics---shortest paths that respect curvature.
 
 **The Degenerate Limit:**
-Set $G = I$ (flat metric). Geodesics become straight lines.
+Set $G = I$ (flat metric). Geodesics become straight lines in state space.
 
 **The Special Case (Standard RL):**
 
@@ -647,7 +659,7 @@ $$
 \theta_{t+1} = \theta_t + \eta \nabla_\theta J(\theta)
 
 $$
-This recovers **Euclidean SGD**---parameter updates as straight-line steps in flat space.
+If one *conflates* state space with parameter space (the category error in Section 2.6), this recovers **Euclidean SGD**---parameter updates as straight-line steps in flat space.
 
 **Result:** SGD ignores curvature. In ill-conditioned regions (sharp valleys, saddles), this leads to oscillation, slow convergence, or divergence. Geodesic flow automatically adapts step size to local geometry.
 
@@ -659,13 +671,13 @@ This recovers **Euclidean SGD**---parameter updates as straight-line steps in fl
 
 **Comparison: Euclidean vs Geometry-Aware Updates**
 
-| Aspect                           | Euclidean (Standard RL)      | Geometry-aware (Fragile Agent) |
-|----------------------------------|------------------------------|--------------------------------|
-| **Metric**                       | $\lVert\cdot\rVert_2$ (flat) | $\lVert\cdot\rVert_G$ (curved) |
-| **Step Size**                    | Constant everywhere          | Varies with curvature          |
-| **Near ill-conditioned regions** | Large steps causes instability    | Small steps ensures safety           |
-| **In Valleys**                   | Same as cliffs               | Large steps ensures efficiency       |
-| **Failure Mode**                 | BarrierBode (oscillation)    | Prevented by geometry          |
+| Aspect                           | Euclidean (parameter-space view) | Geometry-aware (state-space flow) |
+|----------------------------------|----------------------------------|-----------------------------------|
+| **Metric**                       | $\lVert\cdot\rVert_2$ (flat)     | $\lVert\cdot\rVert_G$ (curved)    |
+| **Step Size**                    | Constant everywhere              | Varies with curvature             |
+| **Near ill-conditioned regions** | Large steps cause instability    | Small steps ensure safety         |
+| **In Valleys**                   | Same as cliffs                   | Large steps ensure efficiency     |
+| **Failure Mode**                 | BarrierBode (oscillation)        | Prevented by geometry             |
 
 (sec-second-order-sensitivity-value-defines-a-local-metric)=
 ## Second-Order Sensitivity: Value Defines a Local Metric
@@ -673,7 +685,7 @@ This recovers **Euclidean SGD**---parameter updates as straight-line steps in fl
 :::{div} feynman-prose
 Now let's get concrete about what this metric $G$ actually is.
 
-In information geometry and second-order optimization, a local metric captures how sensitive the objective and the policy are to changes in state coordinates {cite}`amari1998natural`. For the Fragile Agent, we define a state-space sensitivity metric $G_{ij}$ using curvature of the critic/value function.
+In information geometry and second-order optimization, a local metric captures how sensitive the objective and the policy are to changes in state coordinates {cite}`amari1998natural`. For the Fragile Agent, we define a state-space sensitivity metric $G_{ij}$ that combines value curvature with control sensitivity in the latent state.
 
 The intuition is this: if you're in a region where the value function is sharply curved, then small changes in state lead to big changes in value. That's a dangerous place to be aggressive. Conversely, if the value function is flat, you can afford to take bigger steps.
 :::
@@ -688,40 +700,45 @@ Standard optimizers like Adam or K-FAC use the Fisher Information of the **Param
 :::{prf:definition} State-Space Sensitivity Metric
 :label: def-state-space-sensitivity-metric
 
-The **state-space sensitivity metric** $G_{ij}$ at a point $z$ in the latent space is defined as the Hessian of the value function:
+The **value-curvature component** of the state-space sensitivity metric at a point $z$ in the latent space is defined
+from the symmetric Hessian of the value function, with a PSD proxy used when enforcing metric positivity:
 
 $$
-G_{ij} = \frac{\partial^2 V}{\partial z_i \partial z_j} = \text{Hess}(V)
+(G_V)_{ij} = \frac{\partial^2 V}{\partial z_i \partial z_j} \quad \text{(theory)}, \qquad
+(G_V)_{ij} \approx c_V\,\frac{\partial V}{\partial z_i}\frac{\partial V}{\partial z_j} \quad \text{(Gauss--Newton proxy)}.
 
 $$
 
-Units: $[G_{ij}]=\mathrm{nat}\,[z]^{-2}$ if $z$ is measured in units $[z]$.
+The **complete** metric used elsewhere is $G = G_V + \lambda_G G_\pi$ with $G_\pi$ the state-space Fisher component (Definition {prf:ref}`def-complete-latent-space-metric`). Units: $[(G_V)_{ij}]=\mathrm{nat}\,[z]^{-2}$ if $z$ is measured in units $[z]$; in the proxy form, $c_V$ carries units $\mathrm{nat}^{-1}$.
 :::
 
 **Behavior in Different Regions:**
 
-* **Flat Region ($G \approx I$):** The Value function is linear/flat. Risk is uniform. The space is Euclidean.
+* **Flat Region ($G \approx \text{const}$):** The value curvature is small and the Fisher component is approximately constant (e.g., whitened to $I$), so distances are effectively Euclidean up to a fixed scale.
 * **Curved Region ($G \gg I$):** The value function is sharply curved (ill-conditioned). The metric rescales distances: a small Euclidean step can correspond to a large change in value/sensitivity.
 
 **The Upgrade: From Gradient Descent to Geodesic Flow**
 
-| Standard RL                                                 | Riemannian RL                                                      |
+This is an analogy across spaces: the left column is a parameter-space update, while the right column is a latent
+state-space flow governed by $G$.
+
+| Standard RL (parameter space)                               | State-space Riemannian update                                      |
 |-------------------------------------------------------------|--------------------------------------------------------------------|
-| $\theta \leftarrow \theta + \eta \nabla_\theta \mathcal{L}$ | $\theta \leftarrow \theta + \eta G^{-1} \nabla_\theta \mathcal{L}$ |
-| Euclidean gradient                                          | Natural gradient (Amari)                                           |
+| $\theta \leftarrow \theta + \eta \nabla_\theta \mathcal{L}$ | $z \leftarrow z - \eta G^{-1}(z)\nabla_z \mathcal{L}$              |
+| Euclidean gradient                                          | State-space natural gradient (Amari)                               |
 | Ignores curvature                                           | Respects curvature                                                 |
 
 :::{admonition} Connection to RL #1: REINFORCE as Degenerate Natural Gradient
 :class: note
 :name: conn-rl-1
 **The General Law (Fragile Agent):**
-Policy updates follow a flow on the Riemannian manifold $(\mathcal{Z}, G)$:
+Latent-state updates (policy-induced trajectories) follow a flow on the Riemannian manifold $(\mathcal{Z}, G)$:
 
 $$
 \delta z = G^{-1}(z) \nabla_z \mathcal{L}
 
 $$
-where $G(z)$ is the state-space sensitivity metric (Definition {prf:ref}`def-local-conditioning-scale`).
+where $G(z)$ is the state-space sensitivity metric (Definition {prf:ref}`def-complete-latent-space-metric`).
 
 **The Degenerate Limit:**
 Set $G = I$ (identity matrix). The manifold becomes flat Euclidean space.
@@ -747,9 +764,10 @@ In the Fragile Agent implementation, the **Riemannian metric lives in state spac
 :::
 
 $$
-\dot{V}_M = \nabla_A V(z)^\top M^{-1}(z) \Delta z
+\dot{V}_M = \nabla_A V(z)^\top M^{-1}(z) \frac{\Delta z}{\Delta t}
 
 $$
+with the discrete-time estimate $\Delta z / \Delta t$ used for the velocity in practice.
 Current state-space metric options (diagonal approximations):
 
 * **Observation variance (whitening):**
@@ -791,13 +809,13 @@ For practical implementation, we often use a diagonal approximation to the full 
 We construct a diagonal state-space sensitivity metric using the **scaling coefficients** from {ref}`Section 3.2 <sec-scaling-exponents-characterizing-the-agent>`:
 
 $$
-G = \text{diag}(\alpha, \beta, \gamma, \delta)
+G = \text{diag}(\alpha, \beta_{\pi}, \gamma_{\text{wm}}, \delta)
 
 $$
 Where:
 * $\alpha$: critic curvature scale (value landscape sensitivity).
-* $\beta$: policy stochasticity / exploration scale.
-* $\gamma$: world-model volatility / non-stationarity scale.
+* $\beta_{\pi}$: policy stochasticity / exploration scale.
+* $\gamma_{\text{wm}}$: world-model volatility / non-stationarity scale.
 * $\delta$: representation drift / codebook stability scale.
 
 These coefficients summarize relative update scales across subsystems and serve as a compact diagnostic for stability monitoring.
@@ -814,11 +832,13 @@ For the full picture, we combine the Hessian of the value function with the Fish
 The complete state-space sensitivity metric on $\mathcal{Z}$ is defined as:
 
 $$
-G_{ij}(z) = \underbrace{\frac{\partial^2 V(z)}{\partial z_i \partial z_j}}_{\text{Hessian (value curvature)}} + \lambda \underbrace{\mathbb{E}_{a \sim \pi} \left[ \frac{\partial \log \pi(a|z)}{\partial z_i} \frac{\partial \log \pi(a|z)}{\partial z_j} \right]}_{\text{Fisher (control sensitivity)}}
+G_{ij}(z) = \underbrace{(G_V)_{ij}(z)}_{\text{Hessian (value curvature)}} + \lambda_G \underbrace{(G_\pi)_{ij}(z)}_{\text{Fisher (control sensitivity)}},
+\qquad
+(G_\pi)_{ij}(z) := \mathbb{E}_{a \sim \pi} \left[ \frac{\partial \log \pi(a|z)}{\partial z_i} \frac{\partial \log \pi(a|z)}{\partial z_j} \right].
 
 $$
 
-Units: the Fisher term has units $[z]^{-2}$; therefore $\lambda$ carries the same units as $V$ (here $\mathrm{nat}$) so both addends match.
+Units: the Fisher term has units $[z]^{-2}$; therefore $\lambda_G$ carries the same units as $V$ (here $\mathrm{nat}$) so both addends match.
 :::
 
 **Dimensional Verification:**
@@ -880,7 +900,7 @@ appearing in the geodesic correction term of the dynamics (Definition {prf:ref}`
 | Metric compatibility $\nabla G = 0$ | Consistent distance measurement |
 | Torsion-free | Symmetric policy gradients |
 
-**Effect:** The Christoffel terms ensure that policy updates respect the curved geometry---updates are coordinate-invariant, not Euclidean.
+**Effect:** The Christoffel terms ensure that state updates respect the curved geometry---updates are coordinate-invariant, not Euclidean.
 ::::
 
 (sec-the-metric-hierarchy-fixing-the-category-error)=
@@ -896,7 +916,7 @@ A common mistake in geometric RL is conflating three distinct geometries:
 |-----------------------------|----------------------------|-----------------------------------------------------------------|------------------------|-------------------|
 | **Euclidean**               | Parameter Space $\Theta$   | $\lVert\cdot\rVert_2$ (flat)                                    | Neural network weights | Adam, SGD         |
 | **Fisher-Rao**              | Policy Space $\mathcal{P}$ | $F_{\theta\theta} = \mathbb{E}[(\nabla_\theta \log \pi)^2]$     | Policy parameters      | TRPO, PPO         |
-| **State-Space Sensitivity** | State Space $Z$            | $G_{zz} = \mathbb{E}[(\nabla_z \log \pi)^2] + \text{Hess}_z(V)$ | Latent states          | **Fragile Agent** |
+| **State-Space Sensitivity** | State Space $Z$            | $G_{zz} = \lambda_G\,\mathbb{E}[(\nabla_z \log \pi)^2] + \text{Hess}_z(V)$ | Latent states          | **Fragile Agent** |
 
 :::{div} feynman-prose
 **The Category Error:** Using Adam's $v_t$ (which approximates $F_{\theta\theta}$ in Parameter Space) as if it were $G_{zz}$ (State Space) mixes two different manifolds. This breaks coordinate invariance.
@@ -907,19 +927,19 @@ Think of it this way: the parameter space is like the DNA that encodes an organi
 **The State-Space Fisher Information:**
 
 $$
-G_{ij}(z) = \mathbb{E}_{a \sim \pi} \left[ \frac{\partial \log \pi(a|z)}{\partial z_i} \frac{\partial \log \pi(a|z)}{\partial z_j} \right]
+G_{\pi,ij}(z) = \mathbb{E}_{a \sim \pi} \left[ \frac{\partial \log \pi(a|z)}{\partial z_i} \frac{\partial \log \pi(a|z)}{\partial z_j} \right]
 
 $$
 This measures the **Information Bottleneck** between the Shutter (Split VQ-VAE) and the Actuator (Policy):
-- High $G_{ii}$: The policy is sensitive to state dimension $i$, meaning high control authority
-- Low $G_{ii}$: The policy ignores dimension $i$, indicating a potential blind spot
+- High $G_{\pi,ii}$: The policy is sensitive to state dimension $i$, meaning high control authority
+- Low $G_{\pi,ii}$: The policy ignores dimension $i$, indicating a potential blind spot
 
 **Why This Matters:**
 - **Coordinate Invariance:** The agent's behavior is invariant to how you encode $z$
 - **Natural-Gradient Paths:** updates follow shortest/least-distorting paths under the chosen metric
 - **Stability:** the metric discourages overly large updates in regions where the model/value is highly sensitive
 
-The Covariant Regulator uses the **State-Space Fisher Information** to scale the Lie Derivative. While standard RL uses Fisher in **Parameter Space** (TRPO/PPO), the Fragile Agent uses Fisher in **State Space** to stabilize **Causal Induction**.
+The Covariant Regulator uses the **State-Space Fisher Information** $G_\pi$ (or its diagonal) to scale update magnitudes. While standard RL uses Fisher in **Parameter Space** (TRPO/PPO), the Fragile Agent uses Fisher in **State Space** to stabilize **Causal Induction**.
 
 :::{admonition} Connection to RL #3: TRPO/PPO as Degenerate State-Space Metric
 :class: note
@@ -928,7 +948,7 @@ The Covariant Regulator uses the **State-Space Fisher Information** to scale the
 The trust region is defined by the **state-space sensitivity metric** $G(z)$:
 
 $$
-G_{ij}(z) = \mathbb{E}_{a \sim \pi}\left[\frac{\partial \log\pi(a|z)}{\partial z_i} \frac{\partial \log\pi(a|z)}{\partial z_j}\right] + \nabla^2_z V(z)
+G_{ij}(z) = \lambda_G\,\mathbb{E}_{a \sim \pi}\left[\frac{\partial \log\pi(a|z)}{\partial z_i} \frac{\partial \log\pi(a|z)}{\partial z_j}\right] + \nabla^2_z V(z)
 
 $$
 Updates satisfy $\|\delta\pi\|_G^2 \le \epsilon$ in **state space**.
@@ -963,11 +983,13 @@ The idea is beautiful: there's a consistency condition that any optimal value fu
 We replace the heuristic Bellman equation {cite}`bellman1957dynamic` with the rigorous **Hamilton-Jacobi-Bellman (HJB) Equation**:
 
 $$
-\underbrace{\mathcal{L}_f V}_{\text{Lie Derivative}} + \underbrace{\mathfrak{D}(z, a)}_{\text{Control Effort / Regularizer}} = \underbrace{-\mathcal{R}(f)}_{\text{Instantaneous cost rate}}
+\underbrace{\mathcal{L}_f V}_{\text{Lie Derivative}} + \underbrace{\mathfrak{D}(z, a)}_{\text{Control Effort / Regularizer}} = \underbrace{-\mathcal{C}(f)}_{\text{Instantaneous cost rate}}
 
 $$
 
-Here $\mathcal{R}$ is the reward 1-form; the scalar reward case corresponds to $\mathcal{R}=d\Phi$.
+Here $\mathcal{C}$ is the cost 1-form; in a reward convention set $\mathcal{C}:=-\mathcal{R}$. The exact component of
+$\mathcal{C}$ defines a scalar potential $\Phi$ that the critic tracks (so $V=\Phi$ up to a constant), while the
+non-exact component drives circulation.
 
 :::{div} feynman-prose
 Let me explain these terms.
@@ -1014,12 +1036,12 @@ The Lie derivative $\mathcal{L}_f V = dV(f)$ is a **pairing**, not an inner prod
 **Interpretation:**
 
 - The critic $V$ is a value/cost-to-go function that should decrease along controlled trajectories.
-- $\mathcal{R}(f)=\mathcal{R}_i(z)f^i(z,a)$ is the instantaneous cost rate (reward 1-form evaluated on the
-  action-induced dynamics; negative of reward rate depending on sign convention).
+- $\mathcal{C}(f)=\mathcal{C}_i(z)f^i(z,a)$ is the instantaneous cost rate (cost 1-form evaluated on the
+  action-induced dynamics; in reward convention $\mathcal{C}=-\mathcal{R}$).
 - $\mathfrak{D}(z,a)$ is an explicit control-effort / regularization term (e.g., KL control, action penalties).
 - At optimality, the relation enforces a local consistency between value change, immediate cost, and control effort.
 
-*Forward reference (Helmholtz Continuum Limit).* {ref}`Section 24.2 <sec-the-bulk-potential-screened-poisson-equation>` shows that in the continuum limit on the manifold $(\mathcal{Z}, G)$, the Bellman/HJB equation becomes the **Screened Poisson (Helmholtz) Equation** for the exact component of the reward 1-form: $-\Delta_G V + \kappa^2 V = \rho_r$, where $\kappa = \lambda / c_{\text{info}}$ with $\lambda = -\ln\gamma / \Delta t$ (natural units: $\kappa = -\ln\gamma$). This reveals the Critic as a **Field Solver** computing the Green's function of the screened Laplacian.
+*Forward reference (Helmholtz Continuum Limit).* {ref}`Section 24.2 <sec-the-bulk-potential-screened-poisson-equation>` shows that in the continuum limit on the manifold $(\mathcal{Z}, G)$, the Bellman/HJB equation becomes the **Screened Poisson (Helmholtz) Equation** for the exact component of the reward 1-form: $-\Delta_G V + \kappa^2 V = \rho_r$, where $\kappa = \lambda_{\text{disc}} / c_{\text{info}}$ with $\lambda_{\text{disc}} = -\ln\gamma_{\text{disc}} / \Delta t$ (natural units: $\kappa = -\ln\gamma_{\text{disc}}$). This reveals the Critic as a **Field Solver** computing the Green's function of the screened Laplacian.
 
 (sec-conditional-independence-and-sufficiency)=
 ## Conditional Independence and Sufficiency (Causal Enclosure)
@@ -1029,7 +1051,7 @@ Now we come to a very important concept: what does it mean for our macro represe
 
 Here's the intuition. We've compressed high-dimensional observations into a discrete macro symbol $K$ plus some residuals. The question is: do we lose anything important in that compression? Specifically, can we predict the future macro state from the current macro state alone, or do we need the residuals too?
 
-If we can predict $K_{t+1}$ from $(K_t, A_t)$ alone, without needing $z_n$ or $z_{\text{tex}}$, then we say the macro dynamics are "closed" or "enclosure-correct." The residuals are truly residual---they don't contain information needed for prediction.
+If we can predict $K_{t+1}$ from $(K_t, K^{\text{act}}_t)$ alone, without needing $z_n$ or $z_{\mathrm{tex}}$, then we say the macro dynamics are "closed" or "enclosure-correct." The residuals are truly residual---they don't contain information needed for prediction.
 :::
 
 The transition from micro to macro is a **projection operator** $\Pi:\mathcal{Z}\to\mathcal{K}$. In the discrete macro instantiation, $\Pi$ is precisely the **VQ quantizer** $z_e\mapsto K$ from {ref}`Section 2.2b <sec-the-shutter-as-a-vq-vae>`.
@@ -1037,16 +1059,16 @@ The transition from micro to macro is a **projection operator** $\Pi:\mathcal{Z}
 :::{prf:definition} Causal Enclosure Condition
 :label: def-causal-enclosure-condition
 
-**Causal Enclosure Condition (Markov sufficiency).** With the nuisance/texture split ({ref}`Section 2.2b <sec-the-shutter-as-a-vq-vae>`), let $(K_t, Z_{n,t}, Z_{\mathrm{tex},t}, A_t)$ be the internal state/action process and define the macrostate $K_t:=\Pi(Z_t)$ (projection to the discrete register). The macro-model requirement is the conditional independence
+**Causal Enclosure Condition (Markov sufficiency).** With the nuisance/texture split ({ref}`Section 2.2b <sec-the-shutter-as-a-vq-vae>`), let $(K_t, z_{n,t}, z_{\mathrm{tex},t}, K^{\text{act}}_t)$ be the internal state/action process and define the macrostate $K_t:=\Pi(Z_t)$ (projection to the discrete register). The macro-model requirement is the conditional independence
 
 $$
-K_{t+1}\ \perp\!\!\!\perp\ (Z_{n,t}, Z_{\mathrm{tex},t})\ \big|\ (K_t,A_t),
+K_{t+1}\ \perp\!\!\!\perp\ (z_{n,t}, z_{\mathrm{tex},t})\ \big|\ (K_t,K^{\text{act}}_t),
 
 $$
 equivalently the vanishing of a conditional mutual information:
 
 $$
-I(K_{t+1};Z_{n,t},Z_{\mathrm{tex},t}\mid K_t,A_t)=0.
+I(K_{t+1};z_{n,t},z_{\mathrm{tex},t}\mid K_t,K^{\text{act}}_t)=0.
 
 $$
 :::
@@ -1080,7 +1102,7 @@ Where:
 - $\bar{P}$ is the learned macro-dynamics (effective model) as a kernel on $\mathcal{K}$
 - the divergence is over the discrete macro alphabet, so it is a true Shannon quantity (no differential-entropy ambiguity)
 
-**Computational Meaning:** The macro-dynamics should be a homomorphism of the micro-dynamics. If $\delta_{\text{CE}} > 0$ (or equivalently $I(K_{t+1};Z_t\mid K_t,A_t)>0$), then the learned macro predictor is not sufficient: predicting $K_{t+1}$ still depends on nuisance microstate information.
+**Computational Meaning:** The macro-dynamics should be a homomorphism of the micro-dynamics. If $\delta_{\text{CE}} > 0$ (or equivalently $I(K_{t+1};Z_t\mid K_t,K^{\text{act}}_t)>0$), then the learned macro predictor is not sufficient: predicting $K_{t+1}$ still depends on nuisance microstate information.
 
 (sec-regularity-conditions)=
 ## Regularity Conditions
@@ -1128,11 +1150,11 @@ Below is an implementable hierarchy that improves on a raw diagonal while stayin
 $$
 g_t
 \approx
-\mathbb{E}_{a\sim\pi(\cdot\mid z_t)}\!\left[\left(\nabla_{z}\log\pi(a\mid z_t)\right)\odot\left(\nabla_{z}\log\pi(a\mid z_t)\right)\right]
-\operatorname{diag}(\nabla^2_z V(z_t)),
+\,c_V\,\left(\nabla_{z} V(z_t)\odot\nabla_{z} V(z_t)\right)
++\lambda_G\,\mathbb{E}_{a\sim\pi(\cdot\mid z_t)}\!\left[\left(\nabla_{z}\log\pi(a\mid z_t)\right)\odot\left(\nabla_{z}\log\pi(a\mid z_t)\right)\right],
 
 $$
-where $\odot$ denotes elementwise product (and the Hessian term can be omitted when too expensive).
+where $\odot$ denotes elementwise product and $c_V$ is a calibration constant with units $\mathrm{nat}^{-1}$; when Hessian estimates are available, replace the first term with $\operatorname{diag}(\nabla^2_z V(z_t))$ for a direct curvature term.
 
 Maintain a smoothed diagonal metric estimate with an exponential moving average (EMA):
 
@@ -1223,7 +1245,7 @@ The intuition is this: in regions where the value function is sharply curved, yo
 To connect geometry (sensitivity) with stochastic control, we relate the value/cost functional and entropy/variance regularization through a coupling (precision) coefficient.
 
 (sec-local-conditioning-scale-and-coupling)=
-### Local Conditioning Scale and Beta-Coupling
+### Local Conditioning Scale and Coupling Coefficient
 
 :::{prf:definition} Local Conditioning Scale
 :label: def-local-conditioning-scale
@@ -1234,8 +1256,11 @@ $$
 \Theta(z) := \frac{1}{d} \operatorname{Tr}\left( G^{-1}(z) \right)
 
 $$
-where $d = \dim(\mathcal{Z})$. The corresponding **precision / coupling coefficient** is $\beta(z) = [\Theta(z)]^{-1}$.
-Units: if $z$ carries units $[z]$, then $[G]=\mathrm{nat}\,[z]^{-2}$ implies $[\Theta]=[z]^2/\mathrm{nat}$ and $[\beta]=\mathrm{nat}/[z]^2$ (dimensionless when $z$ is normalized).
+where $d = \dim(\mathcal{Z})$. The corresponding **precision / coupling coefficient** is
+$\beta_{\text{cpl}}(z) = [\Theta(z)]^{-1}$. When entropy regularization is tied to geometry, interpret
+$\beta_{\text{cpl}}$ as a local inverse temperature; in an isothermal approximation where $\beta_{\text{cpl}}$ is
+constant, set $\beta_{\text{cpl}} = 1/T_c$.
+Units: if $z$ carries units $[z]$, then $[G]=\mathrm{nat}\,[z]^{-2}$ implies $[\Theta]=[z]^2/\mathrm{nat}$ and $[\beta_{\text{cpl}}]=\mathrm{nat}/[z]^2$ (dimensionless when $z$ is normalized).
 
 :::
 
@@ -1245,25 +1270,29 @@ Units: if $z$ carries units $[z]$, then $[G]=\mathrm{nat}\,[z]^{-2}$ implies $[\
 The covariance of the policy $\pi(a|z)$ is coupled to the curvature/sensitivity encoded by $G$. In entropy-regularized control, a natural scaling is:
 
 $$
-\Sigma_\pi(z) \propto \beta(z)^{-1} \cdot G^{-1}(z)
+\Sigma_\pi(z) \propto \beta_{\text{cpl}}(z)^{-1} \cdot G^{-1}(z)
 
 $$
-*Proof (sketch).* In maximum-entropy control / exponential-family models, stationary distributions over latent states often take an exponential form $p(z)\propto \exp(-\beta V(z))$. Matching this form with a geometry-aware update implies that policy covariance scales inversely with the sensitivity metric. Deviations can be measured by a **consistency defect** $\mathcal{D}_{\beta} := \|\nabla \log p + \beta \nabla_A V\|_G^2$.
+*Proof (sketch).* In maximum-entropy control / exponential-family models, stationary distributions over latent states
+often take an exponential form $p(z)\propto \exp(-V(z)/T_c)$. In an isothermal approximation where
+$\beta_{\text{cpl}}$ is constant, identify $T_c = \beta_{\text{cpl}}^{-1}$. Matching this form with a geometry-aware
+update implies that policy covariance scales inversely with the sensitivity metric. Deviations can be measured by a
+**consistency defect** $\mathcal{D}_{\beta_{\text{cpl}}} := \|\nabla \log p + \beta_{\text{cpl}} \nabla_A V\|_G^2$.
 
 :::
 
 :::{prf:definition} Entropy-Regularized Objective Functional
 :label: def-entropy-regularized-objective-functional
 
-Let $d\mu_G:=\sqrt{|G|}\,dz$ be the Riemannian volume form on $\mathcal{Z}$ and let $p(z)$ be a probability density with respect to $d\mu_G$. For a (dimensionless) trade-off coefficient $\tau\ge 0$, define
+Let $d\mu_G:=\sqrt{|G|}\,dz$ be the Riemannian volume form on $\mathcal{Z}$ and let $p(z)$ be a probability density with respect to $d\mu_G$. For a (dimensionless) trade-off coefficient $T_c\ge 0$, define
 
 $$
 \mathcal{F}[p,\pi]
 :=
-\int_{\mathcal{Z}} p(z)\Big(V(z) - \tau\,H(\pi(\cdot\mid z))\Big)\,d\mu_G,
+\int_{\mathcal{Z}} p(z)\Big(V(z) - T_c\,H(\pi(\cdot\mid z))\Big)\,d\mu_G,
 
 $$
-where $H(\pi(\cdot\mid z)) := -\mathbb{E}_{a\sim \pi(\cdot\mid z)}[\log \pi(a\mid z)]$ is the per-state policy entropy (in nats). Because $V$ and $H$ are measured in nats ({ref}`Section 1.2 <sec-units-and-dimensional-conventions>`), $\tau$ is dimensionless.
+where $H(\pi(\cdot\mid z)) := -\mathbb{E}_{a\sim \pi(\cdot\mid z)}[\log \pi(a\mid z)]$ is the per-state policy entropy (in nats). Because $V$ and $H$ are measured in nats ({ref}`Section 1.2 <sec-units-and-dimensional-conventions>`), $T_c$ is dimensionless.
 
 :::
 
@@ -1368,8 +1397,8 @@ The dimensional and conceptual alignment is now fixed:
 |--------------------------|----------------------|--------------------------|----------------------------------------------------------------------------------------------------|
 | $V$ (Value / cost-to-go) | Scalar Field         | $\mathrm{nat}$           | Objective landscape over $\mathcal{Z}$                                                             |
 | $G$ (Sensitivity metric) | $(0,2)$-Tensor Field | $\mathrm{nat}\,[z]^{-2}$ | Local conditioning / state-space sensitivity                                                       |
-| $\beta$ (Local coupling) | Scalar               | $\mathrm{nat}/[z]^2$     | Conditioning scale derived from $G$ (Definition {prf:ref}`def-local-conditioning-scale`)           |
-| $\tau$ (Entropy weight)  | Scalar               | dimensionless            | Cost-entropy trade-off weight (Definition {prf:ref}`def-entropy-regularized-objective-functional`) |
+| $\beta_{\text{cpl}}$ (Local coupling) | Scalar               | $\mathrm{nat}/[z]^2$     | Conditioning scale derived from $G$ (Definition {prf:ref}`def-local-conditioning-scale`)           |
+| $T_c$ (Entropy weight)   | Scalar               | dimensionless            | Cost-entropy trade-off weight (Definition {prf:ref}`def-entropy-regularized-objective-functional`) |
 | $p$ (Belief density)     | Measure              | $[d\mu_G]^{-1}$          | Belief mass/weight over $\mathcal{Z}$ (Definition {prf:ref}`def-belief-density`)                   |
 
 These identities are **model checks**, not automatic certificates for deep, nonconvex training. In practice, large residuals (e.g. persistent boundary decoupling or unstable drift statistics) indicate the agent is operating outside the assumed regime and should trigger conservative updates or explicit interventions (Sections 3-6 and 15).
@@ -1444,10 +1473,10 @@ Finally, how does the value function connect to the boundary? There's a consiste
 To maintain stability, the value/cost function $V$ must satisfy interface constraints dictated by the environment:
 
 $$
-\langle \nabla_G V, n \rangle \big|_{\partial \mathcal{Z}} = \gamma(x_t)
+\langle \nabla_G V, n \rangle \big|_{\partial \mathcal{Z}} = \gamma_{\text{ext}}(x_t)
 
 $$
-where $\gamma$ is an **instantaneous external cost/risk signal** of the external state $x_t$, with units matching $\langle \nabla_G V, n \rangle$ (dimensionless in normalized coordinates).
+where $\gamma_{\text{ext}}$ is an **instantaneous external cost/risk signal** of the external state $x_t$, with units matching $\langle \nabla_G V, n \rangle$ (dimensionless in normalized coordinates).
 
 **Interpretation:** This anchors the internal value landscape to externally observed signals at the interface. If the internal $V$ near the boundary does not match external feedback, the agent enters **Mode B.C (Control Deficit)**---its internal model may be self-consistent but poorly aligned with the task-relevant data stream.
 
@@ -1463,7 +1492,7 @@ The Trinity of Manifolds is extended to the **Boundary Operator**:
 | Aspect                                   | Governs                        | Formalism                                          |
 |------------------------------------------|--------------------------------|----------------------------------------------------|
 | **Internal Geometry**                    | Internal state dynamics        | Geodesics on $(\mathcal{Z}, G)$                    |
-| **Regularization / Precision ($\beta$)** | Conditioning of state updates  | Variance-curvature coupling via $\Theta(z)$        |
+| **Regularization / Precision ($\beta_{\text{cpl}}$)** | Conditioning of state updates  | Variance-curvature coupling via $\Theta(z)$        |
 | **Interface Inflow ($j$)**               | Grounding of internal states   | Conservation/balance across $\partial \mathcal{Z}$ |
 
 **Operational audit criterion.** Rather than treating internal variables as inherently grounded, we require that changes in internal belief/state be explainable by boundary coupling and declared projection events. In practice this is enforced via BoundaryCheck, coupling-window constraints, and enclosure/closure defects; persistent violations indicate that internal rollouts are no longer reliable for control and should trigger conservative updates or re-grounding interventions.

@@ -283,53 +283,53 @@ The drift field $F_{\text{total}}$ is the first-order velocity approximation, pr
 (sec-appendix-e-proof-of-theorem-prf-ref-e)=
 ## E.6 Proof of Theorem {prf:ref}`thm-interventional-closure`
 
-**Statement:** The macro-ontology $K$ is interventionally closed iff $I(K_{t+1}; Z_{\text{micro}, t} | K_t, do(A_t)) = 0$.
+**Statement:** The macro-ontology $K$ is interventionally closed iff $I(K_{t+1}; Z_{\text{micro}, t} | K_t, do(K^{\text{act}}_t)) = 0$.
 
 **Hypothesis:** Let $\mathcal{M}$ be a Markov Blanket for $K$.
 
 (proof-thm-interventional-closure)=
 :::{prf:proof}
 
-We compare the mutual information under the observational measure $P$ and the interventional measure $P_{do(A)}$.
+We compare the mutual information under the observational measure $P$ and the interventional measure $P_{do(K^{\text{act}})}$.
 
 **Observational case:** By the Causal Enclosure condition ({ref}`Section 2.8 <sec-conditional-independence-and-sufficiency>`):
 
 $$
-I(K_{t+1}; Z_{\text{micro}, t} | K_t, A_t) = 0 \quad \text{under } P.
+I(K_{t+1}; Z_{\text{micro}, t} | K_t, K^{\text{act}}_t) = 0 \quad \text{under } P.
 
 $$
 This states that the macro-state $K_{t+1}$ is conditionally independent of the micro-texture $Z_{\text{micro}, t}$ given the current macro-state and action.
 
-**Interventional case:** The $do(A_t)$ operator performs a graph surgery that removes all incoming edges to $A_t$ while preserving all other mechanisms. By Pearl's Causal Markov Condition {cite}`pearl2009causality`:
+**Interventional case:** The $do(K^{\text{act}}_t)$ operator performs a graph surgery that removes all incoming edges to $K^{\text{act}}_t$ while preserving all other mechanisms. By Pearl's Causal Markov Condition {cite}`pearl2009causality`:
 
 $$
-P(K_{t+1} | K_t, A_t, Z_{\text{micro}, t}) \text{ remains invariant under } do(A_t).
+P(K_{t+1} | K_t, K^{\text{act}}_t, Z_{\text{micro}, t}) \text{ remains invariant under } do(K^{\text{act}}_t).
 
 $$
-This is because the mechanism $P(K_{t+1} | \text{parents}(K_{t+1}))$ is a structural equation that does not depend on how $A_t$ was generated.
+This is because the mechanism $P(K_{t+1} | \text{parents}(K_{t+1}))$ is a structural equation that does not depend on how $K^{\text{act}}_t$ was generated.
 
 **Combining the conditions:**
 If the observational distribution satisfies $I = 0$, then:
 
 $$
-P(K_{t+1} | K_t, A_t) = P(K_{t+1} | K_t, A_t, Z_{\text{micro}, t}) \quad \forall Z_{\text{micro}, t}.
+P(K_{t+1} | K_t, K^{\text{act}}_t) = P(K_{t+1} | K_t, K^{\text{act}}_t, Z_{\text{micro}, t}) \quad \forall Z_{\text{micro}, t}.
 
 $$
 Since the mechanism is invariant under intervention:
 
 $$
-P(K_{t+1} | K_t, do(A_t)) = P(K_{t+1} | K_t, A_t) = P(K_{t+1} | K_t, A_t, Z_{\text{micro}, t}).
+P(K_{t+1} | K_t, do(K^{\text{act}}_t)) = P(K_{t+1} | K_t, K^{\text{act}}_t) = P(K_{t+1} | K_t, K^{\text{act}}_t, Z_{\text{micro}, t}).
 
 $$
-Therefore, $I(K_{t+1}; Z_{\text{micro}, t} | K_t, do(A_t)) = 0$.
+Therefore, $I(K_{t+1}; Z_{\text{micro}, t} | K_t, do(K^{\text{act}}_t)) = 0$.
 
-**Contrapositive (violation):** If $I > 0$ under $do(A_t)$, there exists a back-door path through $Z_{\text{micro}, t}$:
+**Contrapositive (violation):** If $I > 0$ under $do(K^{\text{act}}_t)$, there exists a back-door path through $Z_{\text{micro}, t}$:
 
 $$
 K_t \leftarrow Z_{\text{micro}, t} \to K_{t+1}.
 
 $$
-This path was confounded in observational data (the correlation between $Z_{\text{micro}}$ and $K_{t+1}$ was screened by the policy generating $A_t$). The intervention breaks this screening, exposing the hidden variable. The remedy is **Ontological Expansion** ({ref}`Section 30 <sec-ontological-expansion-topological-fission-and-the-semantic-vacuum>`): promote the relevant component of $Z_{\text{micro}}$ to a new macro-variable in $K$. $\square$
+This path was confounded in observational data (the correlation between $Z_{\text{micro}}$ and $K_{t+1}$ was screened by the policy generating $K^{\text{act}}_t$). The intervention breaks this screening, exposing the hidden variable. The remedy is **Ontological Expansion** ({ref}`Section 30 <sec-ontological-expansion-topological-fission-and-the-semantic-vacuum>`): promote the relevant component of $Z_{\text{micro}}$ to a new macro-variable in $K$. $\square$
 
 :::
 
@@ -822,60 +822,60 @@ This completes the rigorous foundation for the strategic tunneling mechanism. $\
 
 **Statement:** $V_H(z) = T_c^2 \frac{\partial H(\pi)}{\partial T_c}$.
 
-**Hypothesis:** Let $\pi(a|z) = \frac{1}{Z} \exp\left(\frac{Q(z,a)}{T_c}\right)$ be the policy, where $Z = \sum_a \exp(Q/T_c)$ is the partition function. Let $\beta = 1/T_c$ be the inverse {prf:ref}`def-cognitive-temperature`.
+**Hypothesis:** Let $\pi(a|z) = \frac{1}{Z} \exp\left(\frac{Q(z,a)}{T_c}\right)$ be the policy, where $Z = \sum_a \exp(Q/T_c)$ is the partition function. Let $\beta_{\text{ent}} = 1/T_c$ be the inverse {prf:ref}`def-cognitive-temperature`.
 
 (proof-cor-varentropy-stability)=
 :::{prf:proof}
 
-**Step 1: Express Entropy in terms of $\beta$.**
+**Step 1: Express Entropy in terms of $\beta_{\text{ent}}$.**
 The entropy of the policy is:
 
 $$
 H(\pi) = -\sum_a \pi(a) \ln \pi(a).
 
 $$
-Substituting $\ln \pi(a) = \beta Q(a) - \ln Z$:
+Substituting $\ln \pi(a) = \beta_{\text{ent}} Q(a) - \ln Z$:
 
 $$
-H(\pi) = -\sum_a \pi(a) [\beta Q(a) - \ln Z] = \ln Z - \beta \mathbb{E}_\pi[Q].
+H(\pi) = -\sum_a \pi(a) [\beta_{\text{ent}} Q(a) - \ln Z] = \ln Z - \beta_{\text{ent}} \mathbb{E}_\pi[Q].
 
 $$
-**Step 2: Derivative of Entropy w.r.t. $\beta$.**
-Differentiating with respect to $\beta$:
+**Step 2: Derivative of Entropy w.r.t. $\beta_{\text{ent}}$.**
+Differentiating with respect to $\beta_{\text{ent}}$:
 
 $$
-\frac{\partial H}{\partial \beta} = \frac{\partial \ln Z}{\partial \beta} - \mathbb{E}_\pi[Q] - \beta \frac{\partial \mathbb{E}_\pi[Q]}{\partial \beta}.
+\frac{\partial H}{\partial \beta_{\text{ent}}} = \frac{\partial \ln Z}{\partial \beta_{\text{ent}}} - \mathbb{E}_\pi[Q] - \beta_{\text{ent}} \frac{\partial \mathbb{E}_\pi[Q]}{\partial \beta_{\text{ent}}}.
 
 $$
-Using the identity $\frac{\partial \ln Z}{\partial \beta} = \mathbb{E}_\pi[Q]$:
+Using the identity $\frac{\partial \ln Z}{\partial \beta_{\text{ent}}} = \mathbb{E}_\pi[Q]$:
 
 $$
-\frac{\partial H}{\partial \beta} = -\beta \frac{\partial \mathbb{E}_\pi[Q]}{\partial \beta} = -\beta \mathrm{Var}_\pi(Q),
+\frac{\partial H}{\partial \beta_{\text{ent}}} = -\beta_{\text{ent}} \frac{\partial \mathbb{E}_\pi[Q]}{\partial \beta_{\text{ent}}} = -\beta_{\text{ent}} \mathrm{Var}_\pi(Q),
 
 $$
-where we used $\frac{\partial \mathbb{E}[Q]}{\partial \beta} = \mathrm{Var}(Q)$ (standard fluctuation-response relation).
+where we used $\frac{\partial \mathbb{E}[Q]}{\partial \beta_{\text{ent}}} = \mathrm{Var}(Q)$ (standard fluctuation-response relation).
 
 **Step 3: Relate $\mathrm{Var}(Q)$ to Varentropy.**
-Recall $\mathcal{I}(a) = -\ln \pi(a) = -\beta Q(a) + \ln Z$. The variance of the surprisal is:
+Recall $\mathcal{I}(a) = -\ln \pi(a) = -\beta_{\text{ent}} Q(a) + \ln Z$. The variance of the surprisal is:
 
 $$
-V_H(\pi) = \mathrm{Var}(\mathcal{I}) = \mathrm{Var}(-\beta Q + \ln Z) = \beta^2 \mathrm{Var}(Q).
+V_H(\pi) = \mathrm{Var}(\mathcal{I}) = \mathrm{Var}(-\beta_{\text{ent}} Q + \ln Z) = \beta_{\text{ent}}^2 \mathrm{Var}(Q).
 
 $$
 **Step 4: Change of variables to $T_c$.**
-We have $V_H = \beta^2 \mathrm{Var}(Q)$ and $\frac{\partial H}{\partial \beta} = -\beta \mathrm{Var}(Q)$.
-Therefore $V_H = -\beta \frac{\partial H}{\partial \beta}$.
+We have $V_H = \beta_{\text{ent}}^2 \mathrm{Var}(Q)$ and $\frac{\partial H}{\partial \beta_{\text{ent}}} = -\beta_{\text{ent}} \mathrm{Var}(Q)$.
+Therefore $V_H = -\beta_{\text{ent}} \frac{\partial H}{\partial \beta_{\text{ent}}}$.
 
-Using the chain rule $\frac{\partial}{\partial T_c} = -\frac{1}{T_c^2} \frac{\partial}{\partial \beta}$:
+Using the chain rule $\frac{\partial}{\partial T_c} = -\frac{1}{T_c^2} \frac{\partial}{\partial \beta_{\text{ent}}}$:
 
 $$
-\frac{\partial H}{\partial T_c} = -\frac{1}{T_c^2} \frac{\partial H}{\partial \beta} = \frac{1}{T_c^2} \cdot \beta \mathrm{Var}(Q) = \frac{V_H}{T_c^2 \cdot \beta} = \frac{V_H}{T_c}.
+\frac{\partial H}{\partial T_c} = -\frac{1}{T_c^2} \frac{\partial H}{\partial \beta_{\text{ent}}} = \frac{1}{T_c^2} \cdot \beta_{\text{ent}} \mathrm{Var}(Q) = \frac{V_H}{T_c^2 \cdot \beta_{\text{ent}}} = \frac{V_H}{T_c}.
 
 $$
 **Final Result:** Rearranging yields:
 
 $$
-V_H(z) = T_c \frac{\partial H(\pi)}{\partial T_c} = \beta^2 \mathrm{Var}(Q) = C_v.
+V_H(z) = T_c \frac{\partial H(\pi)}{\partial T_c} = \beta_{\text{ent}}^2 \mathrm{Var}(Q) = C_v.
 
 $$
 This proves that Varentropy equals the heat capacity and measures the sensitivity of the entropy to temperature fluctuations. $\square$

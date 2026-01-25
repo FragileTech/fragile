@@ -2664,6 +2664,10 @@ The measure $d\mu_G$ is the **Riemannian volume form**, ensuring coordinate inva
 
 *Remark (Coordinate Invariance).* Under a coordinate transformation $z \to z'$, the Jacobian factor $|\partial z/\partial z'|$ cancels with $\sqrt{\det G}$, leaving $\langle \psi_1 | \psi_2 \rangle$ invariant.
 
+*Remark (Field Extensions).* In the field-theoretic layer (SMoC), the scalar space $\mathcal{H}$
+is extended to bundle-valued $L^2$ sections (e.g., spinor and gauge bundles) over spacetime
+$\mathcal{M}$, with the same measure structure on each fiber.
+
 :::
 
 :::{prf:definition} Belief Wave-Function

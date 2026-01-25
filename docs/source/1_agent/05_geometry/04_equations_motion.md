@@ -273,7 +273,7 @@ The beautiful thing is that these are not five separate mechanisms bolted togeth
 |-------|------------|------------------|--------|
 | **Gradient** | $-G^{-1}\nabla\Phi$ | Gravity | Pulls toward low potential |
 | **Control** | $u_\pi$ | Rocket thrust | Policy-directed motion |
-| **Lorentz** | $\beta G^{-1}\mathcal{F}\dot{z}$ | Magnetic force | Induces rotation/orbiting |
+| **Lorentz** | $\beta_{\text{curl}} G^{-1}\mathcal{F}\dot{z}$ | Magnetic force | Induces rotation/orbiting |
 | **Geodesic** | $-\Gamma(\dot{z},\dot{z})$ | Coriolis/centrifugal | Keeps motion on manifold |
 
 Plus thermal noise for exploration.
@@ -342,12 +342,12 @@ This is exactly the resampling step in particle filtering. If you are running mu
 The jump intensity $\lambda_{\text{jump}}(z)$ is determined by the value difference across chart boundaries:
 
 $$
-\lambda_{\text{jump}}(z) = \lambda_0 \cdot \exp\left(\beta \cdot \left( V_{\text{target}}(L(z)) - V_{\text{source}}(z) - c_{\text{transport}} \right) \right),
+\lambda_{\text{jump}}(z) = \lambda_0 \cdot \exp\left(\beta_{\text{ent}} \cdot \left( V_{\text{target}}(L(z)) - V_{\text{source}}(z) - c_{\text{transport}} \right) \right),
 
 $$
 where:
 - $\lambda_0 > 0$ is a base jump rate
-- $\beta > 0$ is the inverse temperature (sharpness)
+- $\beta_{\text{ent}} > 0$ is the inverse temperature (sharpness)
 - $V_{\text{target}}$ and $V_{\text{source}}$ are the value functions on the target and source charts
 - $L: \mathcal{Z}_{\text{source}} \to \mathcal{Z}_{\text{target}}$ is the chart transition operator
 - $c_{\text{transport}} \ge 0$ is the transport cost (WFR term)
@@ -365,7 +365,7 @@ The jump intensity formula is a Boltzmann factor. The probability of jumping is 
 - If the target chart has lower value, $\lambda$ is small---why bother?
 - The transport cost $c_{\text{transport}}$ provides a barrier: even if the grass looks greener, there is a cost to jumping the fence
 
-The parameter $\beta$ controls how "sharp" this decision is. At high $\beta$, the agent is decisive: if the value difference is positive, jump; if negative, don't. At low $\beta$, the agent is more exploratory: it might jump even to slightly worse charts, just to see what is there.
+The parameter $\beta_{\text{ent}}$ controls how "sharp" this decision is. At high $\beta_{\text{ent}}$, the agent is decisive: if the value difference is positive, jump; if negative, don't. At low $\beta_{\text{ent}}$, the agent is more exploratory: it might jump even to slightly worse charts, just to see what is there.
 :::
 
 (sec-the-unified-effective-potential)=
@@ -1260,7 +1260,7 @@ These are the kinds of things you want to monitor in a running system. Not just 
 | Extended Onsager-Machlup | $S_{\mathrm{OM}} = \int (\frac{1}{2}\mathbf{M}\lVert\dot{z}\rVert^2 + \Phi_{\text{eff}} + \frac{T_c}{12}R + T_c H_\pi)\,ds$ | Path-space   | nat                  |
 | Full Geodesic SDE        | $dz = (-G^{-1}\nabla\Phi_{\text{eff}} + u_\pi + \beta_{\text{curl}} G^{-1}\mathcal{F}\dot{z} - \Gamma(\dot{z},\dot{z}))\,ds + \sqrt{2T_c}\,G^{-1/2}\,dW_s$                 | Second-order | $[z]$                |
 | Overdamped               | $dz = \mathcal{M}_{\text{curl}}\!\left(-G^{-1}\nabla\Phi_{\text{eff}} + u_\pi\right)\,ds + \sqrt{2T_c}\,G^{-1/2}\,dW_s$                                                      | First-order  | $[z]$                |
-| Jump Intensity           | $\lambda_{K\to j} = \lambda_0 \exp(\beta\,\Delta V)$                                                                        | Discrete     | step$^{-1}$          |
+| Jump Intensity           | $\lambda_{K\to j} = \lambda_0 \exp(\beta_{\text{ent}}\,\Delta V)$                                                           | Discrete     | step$^{-1}$          |
 | Mass = Metric            | $\mathbf{M}(z) \equiv G(z)$                                                                                                 | Kinematic    | $[z]^{-2}$           |
 | Texture Covariance       | $\Sigma_{\text{tex}}(z) = \sigma_{\text{tex}}^2\, G^{-1}(z)$                                                                | Boundary     | $[z_{\text{tex}}]^2$ |
 

@@ -502,7 +502,11 @@ The tactics fall into three automation classes:
 - **E9 (Ergodic)** {prf:ref}`def-e9`: Spectral gap computation for Markov chains. $O(n^3)$ eigenvalue computation.
 
 **Semi-Automatable (E2, E5, E10, E11, E12):**
-- **E2 (Invariants)** {prf:ref}`def-e2`: Standard invariants (Euler characteristic, Betti numbers) via computational topology. $O(n^3)$ simplicial homology. Exotic invariants (K-theory) may require manual proof.
+- **E2 (Invariants)** {prf:ref}`def-e2`: Standard invariants (Euler characteristic,
+  Betti numbers) via computational topology. $O(n^3)$ simplicial homology. Exotic
+  invariants (K-theory) may require manual proof. When available, the same topological
+  payload can include a nonnegative boundary invariant $T_{\partial}$ for holographic
+  bounds.
 - **E5 (Functional Equations)** {prf:ref}`def-e5`: Terminating rewrite rules via Knuth-Bendix. Undecidable in general; returns $K^{\text{inc}}$ on non-termination.
 - **E10 (Definability)** {prf:ref}`def-e10`: Quantifier elimination for o-minimal structures (real closed fields). Doubly exponential. Wild structures require manual proof.
 - **E11 (Galois-Monodromy)** {prf:ref}`def-e11`: Galois groups computable for low-degree polynomials via resolvents. General non-solvability may require mathematical proof.

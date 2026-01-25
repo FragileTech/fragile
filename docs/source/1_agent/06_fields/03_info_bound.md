@@ -533,7 +533,7 @@ This section provides a consolidated reference for the key symbols introduced ac
 | $\tilde{G}^{(i)}$              | Game-augmented metric           | $G^{(i)} + \alpha_{\text{adv}} \mathcal{G}_{ij}$                                                                   | $[z]^{-2}$        | 29.4           |
 | $\epsilon_{\text{Nash}}$       | Nash residual                   | Max gradient deviation from equilibrium                                                                            | nat$/[z]$         | 29.6           |
 | $\emptyset$                    | Semantic Vacuum                 | Fiber over origin $z=0$; maximal $SO(D)$ symmetry                                                                  | —                 | 30.1           |
-| $\Xi$                          | Ontological Stress              | $I(z_{\text{tex},t}; z_{\text{tex},t+1} \mid K_t, z_{n,t}, A_t)$                                                   | nat               | 30.2           |
+| $\Xi$                          | Ontological Stress              | $I(z_{\text{tex},t}; z_{\text{tex},t+1} \mid K_t, z_{n,t}, K^{\text{act}}_t)$                                                   | nat               | 30.2           |
 | $\Xi_{\text{crit}}$            | Fission threshold               | Critical stress for chart bifurcation                                                                              | nat               | 30.3           |
 | $\mathcal{L}_{\text{center}}$  | Centering loss                  | $\lVert\sum q_i\rVert^2 + \sum\lVert\sum e_{i,c}\rVert^2$                                                          | $[z]^2$           | 30.1           |
 | $\mathcal{L}_{\text{Ricci}}$   | Ricci flow loss                 | $\lVert R_{ij} - \frac{1}{2}RG_{ij} + \Lambda G_{ij} - \kappa T_{ij}\rVert_F^2 + \nu^2\lVert\nabla^2\Xi\rVert_F^2$ | $[z]^{-4}$        | 30.5           |
@@ -689,7 +689,7 @@ Here $v := \dot{z}$ and $\mathcal{M}_\gamma^{-1} = \gamma I - \beta_{\text{curl}
 | 46 | [GameTensorCheck](#node-46)                       | 29.6    | $\lVert\mathcal{G}_{ij}\rVert_F$                                                                                 |
 | 47 | [NashResidualCheck](#node-47)                     | 29.6    | $\epsilon_{\text{Nash}} := \max_i \lVert(G^{(i)})^{-1}\nabla \Phi_{\text{eff}}^{(i)}\rVert_{G^{(i)}}$            |
 | 48 | [SymplecticBridgeCheck](#node-48)                 | 29.6    | $\Delta_\omega := \lVert\int_{\mathcal{B}_{ij}} \omega_{ij}(t) - \omega_{ij}(0)\rVert$                           |
-| 49 | [OntologicalStressCheck](#node-49)                | 30.6    | $\Xi := I(z_{\text{tex},t}; z_{\text{tex},t+1} \mid K_t, z_{n,t}, A_t)$                                          |
+| 49 | [OntologicalStressCheck](#node-49)                | 30.6    | $\Xi := I(z_{\text{tex},t}; z_{\text{tex},t+1} \mid K_t, z_{n,t}, K^{\text{act}}_t)$                                          |
 | 50 | [FissionReadinessCheck](#node-50)                 | 30.6    | $\mathbb{I}(\Xi > \Xi_{\text{crit}}) \cdot \mathbb{I}(\Delta V_{\text{proj}} > \mathcal{C}_{\text{complexity}})$ |
 | 51 | [MetabolicEfficiencyCheck](#node-51)              | 31.5    | $\eta_{\text{ROI}} := \lvert\Delta\langle V\rangle\rvert / \Psi_{\text{met}}(S)$                                 |
 | 52 | [EntropyProductionCheck](#node-52)                | 31.5    | $\sigma_{\text{tot}} := \dot{H} + \dot{\mathcal{M}}/T_c \ge 0$                                                   |

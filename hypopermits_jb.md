@@ -364,11 +364,11 @@ Then:
 :::{prf:theorem} Halting/AIT Sieve Thermodynamics (Phase Transition Witness)
 :label: thm-halting-ait-sieve-thermo
 
-In the algorithmic-thermodynamic translation, let $\mathcal{K} = \{e : \varphi_e(e)\downarrow\}$ be the halting set and let Kolmogorov complexity ({prf:ref}`def-kolmogorov-complexity`) act as energy. Then there is a sharp boundary between:
+In the algorithmic-thermodynamic translation, let $\mathcal{K} = \{e : \varphi_e(e)\downarrow\}$ be the halting set and let Kolmogorov complexity ({prf:ref}`def-kolmogorov-complexity`) act as energy. Then there is a phase separation between:
 
-- **Crystal Phase (Decidable):** Families with $K(L \cap [0,n]) = O(\log n)$, where the Sieve certifies **REGULAR** via Axiom R
-- **Liquid Phase (C.E.):** Families with $K(L \cap [0,n]) = O(\log n)$ but Axiom R fails (e.g., Halting Set) → **HORIZON**
-- **Gas Phase (Random):** Families with $K(L \cap [0,n]) \geq n - O(1)$, where the Sieve routes to **HORIZON**
+- **Crystal Phase (Decidable):** Families with $L_n$ (the length-$n$ prefix of the characteristic sequence of $L$) satisfying $K(L_n) = O(\log n)$ and Axiom R holds → **REGULAR**
+- **Liquid Phase (C.E./Undecidable):** C.e. families where Axiom R fails; enumerability alone implies no bound on $K(L_n)$ → **HORIZON**
+- **Gas Phase (Random):** Families with $K(L_n) \geq n - O(1)$ (Martin-Lof random), hence Axiom R fails → **HORIZON**
 
 This theorem formalizes the phase transition detected by {prf:ref}`mt-krnl-horizon-limit`.
 :::
@@ -376,7 +376,7 @@ This theorem formalizes the phase transition detected by {prf:ref}`mt-krnl-horiz
 :::{prf:proof}
 We establish the sharp phase boundary in four steps.
 
-**Step 1 (Crystal Regime).** Let $L \subseteq \mathbb{N}$ be decidable. Then there exists a Turing machine $M$ with finite description computing $\chi_L$. For the initial segment $L_n := L \cap [0,n]$:
+**Step 1 (Crystal Regime).** Let $L \subseteq \mathbb{N}$ be decidable. Then there exists a Turing machine $M$ with finite description computing $\chi_L$. Let $L_n$ be the length-$n$ prefix of the characteristic sequence of $L$:
 $$K(L_n) \leq |M| + O(\log n) = O(\log n)$$
 The $O(\log n)$ term encodes $n$. Since $L$ is decidable, Axiom R holds (the decider serves as recovery operator). Sieve verdict: **REGULAR** with $K_{\text{Crystal}}^+$.
 
@@ -384,16 +384,9 @@ The $O(\log n)$ term encodes $n$. Since $L$ is decidable, Axiom R holds (the dec
 $$K(L_n) \geq n - O(1)$$
 No computable predictor can anticipate the membership of $L$. Axiom R fails absolutely—no recovery operator exists. Sieve verdict: **HORIZON** with $K_{\text{Gas}}^{\text{blk}}$.
 
-**Step 3 (Phase Transition).** The Halting Set $\mathcal{K}$ exhibits **liquid** behavior:
-- *Description complexity:* $K(\mathcal{K}_n) = O(\log n)$ since $\mathcal{K}$ is c.e. (the enumeration program has finite length).
-- *Axiom R failure:* Despite low complexity, $\mathcal{K}$ is undecidable—no total computable recovery operator exists (Turing 1936 {cite}`Turing36`).
-- *Certificate:* $K_{\text{Liquid}}^{\text{blk}} = (\text{c.e. index}, \text{diagonal construction})$
+**Step 3 (C.E. Undecidability).** The Halting Set $\mathcal{K}$ is c.e. but undecidable—there exists an enumerator, but no total computable recovery operator exists (Turing 1936 {cite}`Turing36`). This witnesses Axiom R failure without implying any $O(\log n)$ bound on $K(\mathcal{K}_n)$; enumerability does not control initial-segment complexity.
 
-This is the critical phase transition: low complexity does not imply decidability when Axiom R fails.
-
-**Step 4 (Sharp Boundary).** The boundary is sharp in the following sense: for any $\epsilon > 0$, there exist sets $L^+, L^-$ with:
-$$K(L^+_n) = (1-\epsilon)n, \quad K(L^-_n) = O(\log n)$$
-such that $L^+$ is undecidable (gas) and $L^-$ is decidable (crystal). The Halting Set $\mathcal{K}$ lies exactly at the boundary, demonstrating that the phase transition occurs at the computability threshold, not the complexity threshold.
+**Step 4 (Axes Separation).** There exist decidable sets with $K(L_n) = O(\log n)$ and Martin-Lof random sets with $K(L_n) \geq n - O(1)$. C.e. undecidable sets (e.g., $\mathcal{K}$) show that Axiom R failure is independent of low initial-segment complexity. The phase distinction therefore uses both Axiom R and randomness, not a single complexity threshold.
 
 **Thermodynamic Interpretation:** Under the correspondence of {prf:ref}`thm-sieve-thermo-correspondence`, this is a first-order phase transition in the decidability order parameter $\rho_R$ (Axiom R satisfaction).
 :::
@@ -443,7 +436,7 @@ The Horizon Limit instantiates the Sieve-Thermodynamic Correspondence ({prf:ref}
 
 For the Halting Set $\mathcal{K} = \{e : \varphi_e(e)\downarrow\}$:
 - **Crystal:** Decidable $L$ with $K(L_n) = O(\log n)$ → **REGULAR**
-- **Liquid:** C.e. sets like $\mathcal{K}$ with $K(\mathcal{K}_n) = O(\log n)$ but Axiom R fails → **HORIZON**
+- **Liquid:** C.e. sets like $\mathcal{K}$ where Axiom R fails (no total decider) → **HORIZON**
 - **Gas:** Random $L$ with $K(L_n) \geq n - O(1)$ → **HORIZON**
 
 See {prf:ref}`thm-halting-ait-sieve-thermo` for the phase transition witness theorem.
@@ -469,7 +462,7 @@ $$K_{\text{Horizon}}^{\text{blk}} = (\text{Complexity } K(\mathcal{I}) = [value]
 The HORIZON verdict does **not** claim the problem is unsolvable in principle—only that it exceeds the sieve's finite capacity. This maintains soundness: the sieve never claims regularity for a problem it cannot classify.
 
 **Corollary (Halting Problem)**:
-For the halting set $K$, individual programs $e$ with $K(e) > M_{\text{sieve}}$ receive **HORIZON** verdict. The set $K$ itself has $K(K \cap [0,n]) = O(\log n)$ (c.e.), but Axiom R fails by diagonal argument → **HORIZON** via Axiom R obstruction, not memory limit.
+For the halting set $K$, individual programs $e$ with $K(e) > M_{\text{sieve}}$ receive **HORIZON** verdict. The set $K$ itself is c.e. but undecidable, so Axiom R fails by diagonal argument → **HORIZON** via Axiom R obstruction, not memory limit.
 
 $\square$
 :::
@@ -490,10 +483,10 @@ This theorem makes the framework's limitations **explicit and mathematically rig
 | Input Type | Complexity | Axiom R | Sieve Verdict |
 |------------|------------|---------|---------------|
 | Crystal (Decidable) | $K = O(\log n)$ | Holds | REGULAR |
-| Liquid (C.E.) | $K = O(\log n)$, R fails | Fails | HORIZON |
+| Liquid (C.E.) | No $K(L_n)$ bound implied; c.e. but R fails | Fails | HORIZON |
 | Gas (Random) | $K \geq n - O(1)$ | Fails | HORIZON |
 
-The Sieve's HORIZON verdict encompasses both **information-theoretic limits** (Gas phase: incompressible problems) and **logical limits** (Liquid phase: c.e. problems where Axiom R fails despite low complexity). This classification is grounded in rigorous AIT, not physical analogy.
+The Sieve's HORIZON verdict encompasses both **information-theoretic limits** (Gas phase: incompressible problems) and **logical limits** (Liquid phase: c.e. problems where Axiom R fails regardless of initial-segment complexity). This classification is grounded in rigorous AIT, not physical analogy.
 :::
 
 ---
@@ -656,7 +649,7 @@ Per {prf:ref}`def-algorithmic-phases`, the Horizon verdict classifies problems i
 | Phase | $Kt$ Bound | Axiom R | Sieve Verdict |
 |-------|------------|---------|---------------|
 | Crystal | $Kt = O(\log n)$ | Holds | REGULAR |
-| Liquid | $Kt = O(\log n)$, R fails | Fails | HORIZON (logical) |
+| Liquid | No $Kt$ bound implied; R fails | Fails | HORIZON (logical) |
 | Gas | $Kt \geq n - O(1)$ | Fails | HORIZON (information) |
 
 The **Data Processing Inequality** provides the operational bound: information cannot be created through computation, only preserved or lost. Consequently, $M_{\text{sieve}} < \infty$ imposes fundamental limits on verification capacity.
@@ -13685,7 +13678,7 @@ $$\text{Verdict}(\mathcal{I}) = \begin{cases}
 \texttt{HORIZON} & \text{Axiom R fails (c.e. or random)} & \text{(Liquid/Gas)}
 \end{cases}$$
 
-**Complexity vs. Decidability:** Low complexity ($K = O(\log n)$) is necessary but not sufficient for decidability. The Halting Set has low complexity but Axiom R fails, placing it in the **Liquid** (HORIZON) phase.
+**Complexity vs. Decidability:** Low initial-segment complexity ($K(L_n) = O(\log n)$) is compatible with decidability, but it is not a test for undecidability. The Halting Set is c.e. but undecidable; enumerability alone does not imply any $O(\log n)$ bound on $K(L_n)$. It sits in the **Liquid** (HORIZON) phase because Axiom R fails.
 :::
 
 :::{prf:proof}
@@ -13703,10 +13696,10 @@ identifies Chaitin's $\Omega$ as the partition function $Z$.
 - Shallow depth (simple strings) → Low thermodynamic cost → Crystal-like
 - Deep (random strings) → High thermodynamic cost → Gas-like
 
-**Step 4 (Phase Classification):** The Sieve verdict is determined by Axiom R, not complexity alone:
-- **Crystal:** Decidable $L$ satisfies $K(L \cap [0,n]) = O(\log n)$ AND Axiom R holds. Verdict: REGULAR.
-- **Liquid:** C.e. sets like the Halting Set $\mathcal{K}$ satisfy $K(\mathcal{K} \cap [0,n]) = O(\log n)$ BUT Axiom R fails (no total decider exists). Verdict: HORIZON.
-- **Gas:** Random $L$ satisfies $K(L \cap [0,n]) \geq n - O(1)$ (Martin-Löf random), hence Axiom R fails absolutely. Verdict: HORIZON.
+**Step 4 (Phase Classification):** Let $L_n$ denote the length-$n$ prefix of the characteristic sequence. The Sieve verdict is determined by Axiom R, not complexity alone:
+- **Crystal:** Decidable $L$ satisfies $K(L_n) = O(\log n)$ AND Axiom R holds. Verdict: REGULAR.
+- **Liquid:** C.e. sets like the Halting Set $\mathcal{K}$ are undecidable, so Axiom R fails. Enumerability implies no $K(L_n)$ bound. Verdict: HORIZON.
+- **Gas:** Random $L$ satisfies $K(L_n) \geq n - O(1)$ (Martin-Lof random), hence Axiom R fails absolutely. Verdict: HORIZON.
 
 **Key insight:** Low complexity is *necessary* but not *sufficient* for decidability—Axiom R (existence of a total recovery operator) is the determining factor.
 :::
@@ -13716,15 +13709,15 @@ identifies Chaitin's $\Omega$ as the partition function $Z$.
 :::{prf:definition} Algorithmic Phase Classification
 :label: def-algorithmic-phases
 
-The **algorithmic phase** of a computational problem $\mathcal{I} \subseteq \mathbb{N}$ is determined by the growth rate of its Kolmogorov complexity:
+The **algorithmic phase** of a computational problem $\mathcal{I} \subseteq \mathbb{N}$ is determined by Axiom R status together with the growth rate of its initial-segment Kolmogorov complexity (let $\mathcal{I}_n$ denote the length-$n$ prefix of the characteristic sequence):
 
 | Phase | Complexity Growth | Axiom R | Decidability | Sieve Verdict |
 |-------|------------------|---------|--------------|---------------|
-| **Crystal** | $K(\mathcal{I} \cap [0,n]) = O(\log n)$ | Holds | Decidable | REGULAR |
-| **Liquid (C.E.)** | $K(\mathcal{I} \cap [0,n]) = O(\log n)$ but Axiom R fails | Fails | C.E. not decidable | HORIZON |
-| **Gas** | $K(\mathcal{I} \cap [0,n]) \geq n - O(1)$ | Fails | Undecidable (random) | HORIZON |
+| **Crystal** | $K(\mathcal{I}_n) = O(\log n)$ | Holds | Decidable | REGULAR |
+| **Liquid (C.E.)** | No $K(\mathcal{I}_n)$ bound implied; c.e. but Axiom R fails | Fails | C.E. not decidable | HORIZON |
+| **Gas** | $K(\mathcal{I}_n) \geq n - O(1)$ | Fails | Undecidable (random) | HORIZON |
 
-**Critical Observation:** The Halting Set $\mathcal{K} = \{e : \varphi_e(e)\downarrow\}$ is **Liquid**—it has low description complexity ($O(\log n)$ via its c.e. index) but is undecidable because Axiom R fails. This is the **phase transition** between decidable and undecidable.
+**Critical Observation:** The Halting Set $\mathcal{K} = \{e : \varphi_e(e)\downarrow\}$ is **Liquid** because it is c.e. but undecidable, so Axiom R fails. This shows that Axiom R failure is independent of low initial-segment complexity.
 :::
 
 :::{prf:remark} RG Flow Heuristic
@@ -14975,7 +14968,7 @@ The following notation is used consistently throughout this document. Symbols ar
 | Phase | Complexity | Axiom R | Decidability | Sieve Verdict |
 |-------|------------|---------|--------------|---------------|
 | Crystal | $K = O(\log n)$ | Holds | Decidable | REGULAR |
-| Liquid | $K = O(\log n)$ | Fails | C.E. not decidable | HORIZON |
+| Liquid | No $K(L_n)$ bound implied; c.e. but R fails | Fails | C.E. not decidable | HORIZON |
 | Gas | $K \geq n - O(1)$ | Fails | Random/Undecidable | HORIZON |
 
 See {prf:ref}`def-algorithmic-phases` for formal definitions and {prf:ref}`thm-sieve-thermo-correspondence` for the Sieve-Thermodynamic Correspondence.
