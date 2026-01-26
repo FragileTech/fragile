@@ -43,7 +43,7 @@ This project is divided into three **self-contained volumes**. While designed to
 3. **Consult the FAQs.** Common objections are addressed:
    - {doc}`Vol I FAQ <source/1_agent/10_appendices/04_faq>`: 40 objections about the agent architecture
    - {doc}`Vol II FAQ <source/2_hypostructure/11_appendices/03_faq>`: Questions about categorical foundations
-   - {doc}`Vol III FAQ <source/3_fractal_gas/appendices/14_faq>`: Questions about convergence and sampling
+   - {doc}`Vol III FAQ <source/3_fractal_gas/appendices/00_faq>`: Questions about convergence and sampling
 
 4. **Trace the derivations.** When you encounter a claim like "interface limits induce curvature," follow the cross-references to see the actual mathematical derivation (e.g., {doc}`the Metric Law <source/1_agent/05_geometry/01_metric_law>`).
 
@@ -470,7 +470,7 @@ We separated the components to ensure **robustness and adoptability**:
 **FAQs:**
 - {doc}`Vol I FAQ: 40 Objections Answered <source/1_agent/10_appendices/04_faq>`
 - {doc}`Vol II FAQ: Hypostructure Questions <source/2_hypostructure/11_appendices/03_faq>`
-- {doc}`Vol III FAQ: Fractal Gas Questions <source/3_fractal_gas/appendices/14_faq>`
+- {doc}`Vol III FAQ: Fractal Gas Questions <source/3_fractal_gas/appendices/00_faq>`
 
 **Appendices:**
 - {doc}`Vol I: Derivations <source/1_agent/10_appendices/01_derivations>`

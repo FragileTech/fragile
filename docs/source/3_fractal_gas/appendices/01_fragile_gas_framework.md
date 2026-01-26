@@ -2051,7 +2051,7 @@ Taking the supremum over segments yields $L_{g_A} = \max\{1, 1, L_P, 0\} = L_P$,
 **Q.E.D.**
 :::
 ### 8.3. Example Instantiation 2: The Canonical Logistic Rescale Function ({prf:ref}`def-axiom-rescale-function`)
-##### 8.2.2.8 Global Lipschitz bound for the standardized map
+#### 8.2.2.8 Global Lipschitz bound for the standardized map
 :::{prf:lemma} Lipschitz constant of the patched standardization
 :label: lem-lipschitz-constant-of-the-patched-standardization
 Let $z=\sigma\'_{\teLipschitz ({prf:ref}`axiom-reward-regularity`)enote the patched standardization of raw values with variance flooLipschitz ({prf:ref}`axiom-reward-regularity`)ext{std}}>0$, and let $g_A$ be the piecewise rescale in §8.2.2. Then $g_A\circ z$ Lipschitz ({prf:ref}`axiom-reward-regularity`)itz. In particular, if the variance functional of the chosen aggregator is $L_{\mathrm{var}}$‑Lipschitz (see §8.2.2.10), then
@@ -2063,7 +2063,7 @@ L_{g_A\circ z}\;\le\; L_{g_A}\cdot L_{z},\qquad L_{g_A}\le \max\{L_P,1\},\quad L
 $$
 Here $L_P=\|P'\|_\infty$ is the uniform derivative bound from {prf:ref}`lem-cubic-patch-derivative-bounds`. The factor $L_{\sigma\'_{\text{reg}}}$ is the global Lipschitz constant of the regularized standard deviation, provided by {prf:ref}`lem-sigma-patch-derivative-bound`.
 :::
-##### 8.2.2.9 Lemma: Patched standard deviation derivative bound
+#### 8.2.2.9 Lemma: Patched standard deviation derivative bound
 :::{prf:lemma} Derivative bound for \sigma\'_{\text{reg}}
 :label: lem-sigma-patch-derivative-bound
 Let $\sigma\'_{\text{reg}}(V) = \sqrt{V + \sigma'^2_{\min}}$ be the regularized standard deviation, where $\sigma'_{\min} = \sqrt{\kappa_{\text{var,min}}Lipschitz ({prf:ref}`axiom-reward-regularity`)ext{std}}^2}$. Its global derivative bound is:
@@ -2074,7 +2074,7 @@ L_{\sigma\'_{\text{reg}}}=\sup_{V\ge 0}\big|\,(\sigma\'_{\text{reg}})'(Lipschitz
 
 $$
 :::
-##### 8.2.2.10 Lemma: Lipschitz constant of the empirical variance
+#### 8.2.2.10 Lemma: Lipschitz constant of the empirical variance
 :::{prf:lemma} LipschitLipschitz ({prf:ref}`axiom-reward-regularity`)riance functional
 :label: lem-lipschitz-bound-for-the-variance-functional
 Let $\mu(\mathbf v)$ and $m_2(\mathbf v)$ denote, respectively, the (aggregaLipschitz ({prf:ref}`axiom-reward-regularity`)nd raw moment computed from a value vector $\mathbf v\in\mathbb{R}^k$ over the alive set ({prf:ref}`def-alive-dead-sets`). Assume the moment maps are Lipschitz in $\mathbf v$ with constants $L_{\mu,M}$ and $L_{m_2,M}$ as in §6.2.1, and suppose $|v_i|\le V_{\max}$. Define the variance functional $\mathrm{Var}(\mathbf v):=m_2(\mathbf v) - \mu(\mathbf v)^2$. Then, for all $\mathbf v_1,\mathbf v_2$,
@@ -5170,7 +5170,7 @@ $$
 **Q.E.D.**
 :::
 ### 17.2.4. Theorem: Continuity of the Swarm Update Operator
-##### 17.2.4.0. Lemma: Inequality Toolbox
+#### 17.2.4.0. Lemma: Inequality Toolbox
 ::{prf:lemma} Inequality Toolbox
 :label: lem-inequality-toolbox
 For non-negative reals $a,b$ and any random variable $X$ with finite second moment, the following inequalities hold:
@@ -5217,7 +5217,7 @@ $$
 
 $$
 with $\alpha_B$ being the **Boundary Smoothing Exponent**.
-##### 17.2.4.1. Definition: Composite Continuity Coefficients
+#### 17.2.4.1. Definition: Composite Continuity Coefficients
 :label: def-composite-continuity-coeffs-recorrected
 The state-dependent functions in the final continuity bound for the full Swarm Update Operator are constructed from the sequential composition of the continuity bounds of the cloning and post-cloning operators.
 1.  **The Composite Lipschitz Amplification Factor ($C_{\Psi,L}(\mathcal{S}_1, \mathcal{S}_2)$):** The coefficient of the term that is linear in the input squared displacement. An explicit admissible choice is
