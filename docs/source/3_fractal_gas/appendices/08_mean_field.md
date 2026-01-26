@@ -189,7 +189,7 @@ To ensure the numerical stability and continuity guarantees of the N-particle al
 The **Mean-Field Regularized Standard Deviations** are functionals of the density $f$, obtained by applying the `Regularized Standard Deviation` function from the abstract framework (*Chapter 1, Def. 11.1.2*) to the mean-field variance functionals (see {prf:ref}`def-mean-field-moments`):
 
 $$
-\widehat{\sigma}_R[f](t) := \sigma\'_{\text{reg}}(\sigma_R^2[f](t)), \qquad \widehat{\sigma}_D[f](t) := \sigma\'_{\text{reg}}(\sigma_D^2[f](t))
+\widehat{\sigma}_R[f](t) := \sigma'_{\text{reg}}(\sigma_R^2[f](t)), \qquad \widehat{\sigma}_D[f](t) := \sigma'_{\text{reg}}(\sigma_D^2[f](t))
 
 $$
 This ensures that the denominators in the mean-field standardization are also uniformly bounded away from zero, preserving the crucial stability properties of the discrete system.
@@ -234,7 +234,7 @@ The definition of the **Mean-Field Fitness Potential** $V[f]$ reveals the two co
 
 1.  **Non-Locality:** The potential at a single point $z$ depends on the moments $\mu[f]$ and $\sigma[f]$, which are *integrals over the entire domain $\Omega$*. This is the continuous analogue of the global standardization in the algorithm's measurement pipeline. It creates a system where the fitness of one particle is explicitly and instantaneously coupled to the statistical state of the entire population, no matter how distant.
 
-2.  **Non-Linearity:** The potential $V[f]$ depends on the density $f$ through multiple non-linear operations. This includes the quadratic dependence in the variance functionals ($\sigma^2[f]$ is an integral involving $f$ and $\int f$), the non-linear patching function ($\sigma\'_{\text{reg}}$), and the final multiplicative combination of the rescaled components.
+2.  **Non-Linearity:** The potential $V[f]$ depends on the density $f$ through multiple non-linear operations. This includes the quadratic dependence in the variance functionals ($\sigma^2[f]$ is an integral involving $f$ and $\int f$), the non-linear patching function ($\sigma'_{\text{reg}}$), and the final multiplicative combination of the rescaled components.
 
 These two properties guarantee that the resulting forward equation will not be a simple, linear Fokker-Planck equation. Instead, it will be a complex, non-local, non-linear **partial integro-differential equation** of the McKean-Vlasov type. The analysis of this equation requires a fundamentally different and more advanced set of mathematical tools than those used for the finite-N system, which we will begin to develop in the next section.
 :::

@@ -1766,7 +1766,7 @@ $$
 D_{\text{KL}}(\mu_t \| \pi_{\text{QSD}}) \le C_{\text{init}} \lambda^t V(\mu_0) \le C_{\text{init}} \lambda^t (D_{\text{KL}}(\mu_0 \| \pi) + c W_2^2(\mu_0, \pi))
 $$
 
-where $\lambda < 1$ is from Theorem {prf:ref}`thm-entropy-transport-contraction$.
+where $\lambda < 1$ is from Theorem {prf:ref}`thm-entropy-transport-contraction`.
 
 **LSI constant:**
 
@@ -2196,7 +2196,7 @@ with:
 **Implications**: This N-uniform LSI provides:
 1. Exponential KL-convergence: $D_{\text{KL}}(\mu_t \| \nu_N^{\text{QSD}}) \leq e^{-\lambda_{\text{LSI}} t} D_{\text{KL}}(\mu_0 \| \nu_N^{\text{QSD}})$
 2. Gaussian concentration inequalities via the Herbst argument
-3. Quantitative propagation of chaos bounds (see {prf:ref}`13_quantitative_error_bounds`)
+3. Quantitative propagation of chaos bounds (see {doc}`13_quantitative_error_bounds`)
 :::
 
 :::{prf:proof}

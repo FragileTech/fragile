@@ -23,7 +23,7 @@ The main result of this analysis is a **strict contraction theorem** in the HK m
 
 The scope of this chapter includes three main contributions:
 
-1. **Mass Contraction Lemma ({prf:ref}`lem-mass-contraction-revival-death`)**: A complete proof that the revival mechanism ({prf:ref}`def-axiom-guaranteed-revival`) combined with boundary death creates exponential contraction of mass fluctuations $\mathbb{E}[(k_t - k_*)^2]$, where $k_t = \|\mu_t\|$ is the number of alive walkers. This extends the discrete-time analysis from Chapter 3 to the continuous-time limit using the mean-field theory from Chapter 7 ({doc}`08_mean_field`).
+1. **Mass Contraction Lemma ({prf:ref}`lem-mass-contraction-revival-death`)**: A complete proof that the revival mechanism ({prf:ref}`axiom-guaranteed-revival`) combined with boundary death creates exponential contraction of mass fluctuations $\mathbb{E}[(k_t - k_*)^2]$, where $k_t = \|\mu_t\|$ is the number of alive walkers. This extends the discrete-time analysis from Chapter 3 to the continuous-time limit using the mean-field theory from Chapter 7 ({doc}`08_mean_field`).
 
 2. **Structural Variance Contraction ({prf:ref}`lem-structural-variance-contraction`)**: An application of the realization-level Wasserstein contraction theorems from Chapters 4 and 6 to prove exponential decay of the centered Wasserstein distance $W_2^2(\tilde{\mu}_t, \tilde{\pi}_{\text{QSD}})$, where $\tilde{\mu}_t$ is the normalized empirical measure.
 
@@ -189,7 +189,7 @@ Let $k_t = \|\mu_t\|$ denote the number of alive walkers at time $t$ (the total 
 
 Assume:
 1. **Birth Mechanism**: The Fragile Gas creates new walkers via two processes:
-   - Guaranteed revival of all dead walkers (from {prf:ref}`def-axiom-guaranteed-revival`)
+   - Guaranteed revival of all dead walkers (from {prf:ref}`axiom-guaranteed-revival`)
    - Cloning of alive walkers with rate $\lambda_{\text{clone}}(k_t)$ per walker
 
    Total births: $B_t = (N - k_t) + C_t$ where $\mathbb{E}[C_t | k_t] = \lambda_{\text{clone}}(k_t) k_t$
@@ -1199,7 +1199,7 @@ where $\tau$ is the time step size.
 
 1. **Bounded initial density:** If the empirical measure at $t=0$ has a bounded density ratio $d\mu_0/d\pi_{\text{QSD}} \leq M_0 < \infty$, which holds for any finite particle system initialized within the valid domain.
 
-2. **Gaussian regularization from cloning:** The cloning operator applies Gaussian perturbations with variance $\delta^2 > 0$ to all walkers (Axiom {prf:ref}`def-axiom-local-perturbation` from {doc}`01_fragile_gas_framework`). This acts as a convolution with a Gaussian kernel:
+2. **Gaussian regularization from cloning:** The cloning operator applies Gaussian perturbations with variance $\delta^2 > 0$ to all walkers (Axiom {prf:ref}`axiom-local-perturbation` from {doc}`01_fragile_gas_framework`). This acts as a convolution with a Gaussian kernel:
 
    $$
    \tilde{\mu}_{t+} = \tilde{\mu}_t * G_{\delta}
@@ -1529,7 +1529,7 @@ where $\alpha_{\text{eff}} = \min(\kappa_{\text{hypo}}, \alpha_U)$ combines:
 
 **Reference**: See Chapter 5, Theorem {prf:ref}`thm-bounded-density-ratio-main` for the complete rigorous proof.
 
-For the Euclidean Gas with cloning noise $\sigma_x > 0$ (from {prf:ref}`def-axiom-local-perturbation`) and confining potential $U$ satisfying the coercivity condition, there exists a finite constant $M = M(\gamma, \sigma_v, \sigma_x, U, R, M_0, N) < \infty$ such that:
+For the Euclidean Gas with cloning noise $\sigma_x > 0$ (from {prf:ref}`axiom-local-perturbation`) and confining potential $U$ satisfying the coercivity condition, there exists a finite constant $M = M(\gamma, \sigma_v, \sigma_x, U, R, M_0, N) < \infty$ such that:
 
 $$
 \sup_{t \geq 0} \sup_{x \in \mathcal{X}_{\text{valid}}} \frac{d\tilde{\mu}_t}{d\tilde{\pi}_{\text{QSD}}}(x) \leq M

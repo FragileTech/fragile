@@ -8,7 +8,7 @@
 
 **N-Uniform Scalability**: All contraction rates ($\kappa_x$, $\kappa_b$) and expansion bounds ($C_x$, $C_v$, $C_b$) are independent of the swarm size $N$. This N-uniformity is the foundation for mean-field analysis and validates the Fragile Gas as a continuum physics model. The proof is constructive with explicit constants expressed in terms of primitive algorithmic parameters.
 
-**Synergistic Stability**: The cloning operator provides partial contraction—it stabilizes position but perturbs velocity. The companion document proves that the kinetic operator $\Psi_{\text{kin}}$ ({prf:ref}`def-kinetic-operator`) provides complementary dynamics (stabilizes velocity, perturbs position). Together, they form a synergistic Foster-Lyapunov condition guaranteeing exponential convergence to a unique Quasi-Stationary Distribution (QSD) ({prf:ref}`def-qsd`).
+**Synergistic Stability**: The cloning operator provides partial contraction—it stabilizes position but perturbs velocity. The companion document proves that the kinetic operator $\Psi_{\text{kin}}$ ({prf:ref}`def-kinetic-operator-stratonovich`) provides complementary dynamics (stabilizes velocity, perturbs position). Together, they form a synergistic Foster-Lyapunov condition guaranteeing exponential convergence to a unique Quasi-Stationary Distribution (QSD) ({prf:ref}`def-qsd`).
 
 **Dependencies**: {doc}`01_fragile_gas_framework`, {doc}`04_single_particle`, {doc}`02_euclidean_gas`
 
@@ -18,7 +18,7 @@
 
 The goal of this document is to provide a complete, self-contained proof that the cloning and selection operator of the Fragile Gas is the primary source of the system's **positional error contraction** and long-term stability. The central object of study is the operator $\Psi_{\text{clone}}$, defined as the sequence of operations from the initial raw measurement of the swarm's state through the final cloning transition that produces an intermediate, all-alive swarm.
 
-We will prove that this complex, stochastic, and highly non-linear operator is fundamentally stabilizing for any system that satisfies the Fragile Gas axioms ({prf:ref}`def-fragile-gas-axioms`). The main result of this analysis is the derivation of a **two-part Foster-Lyapunov ({prf:ref}`def-foster-lyapunov`) drift condition**. This condition formally proves that, on average, the cloning operator exerts a powerful contractive force on the **positional ($V_{\text{Var},x}$)** and boundary components of the system's error, while maintaining **bounded expansion of the velocity variance ($V_{\text{Var},v}$)**, as measured by a specifically constructed hypocoercive Lyapunov function.
+We will prove that this complex, stochastic, and highly non-linear operator is fundamentally stabilizing for any system that satisfies the Fragile Gas axioms ({prf:ref}`def-fragile-gas-algorithm`). The main result of this analysis is the derivation of a **two-part Foster-Lyapunov ({prf:ref}`def-foster-lyapunov`) drift condition**. This condition formally proves that, on average, the cloning operator exerts a powerful contractive force on the **positional ($V_{\text{Var},x}$)** and boundary components of the system's error, while maintaining **bounded expansion of the velocity variance ($V_{\text{Var},v}$)**, as measured by a specifically constructed hypocoercive Lyapunov function.
 
 This document focuses exclusively on the analysis of the cloning operator. While we use the Euclidean Gas as a primary concrete example, the results derived are general to the entire class of Fragile Gas systems. The subsequent analysis of the kinetic Langevin operator ({prf:ref}`def-langevin-operator`) ($\Psi_{\text{kin}}$), which provides the necessary **contraction of velocity error**, the composition of the two operators, and the final proof of exponential convergence for the full Euclidean Gas model are deferred to the companion document, *"Hypocoercivity and Convergence of the Euclidean Gas."*
 
@@ -95,7 +95,7 @@ graph TD
 ```
 
 The document is structured as follows:
-*   **Chapters 2-4 (Foundations):** We begin by defining our analytical tools: the coupled state space for comparing swarms, the augmented hypocoercive Lyapunov ({prf:ref}`def-hypocoercive-lyapunov`) function for measuring error, and the complete set of foundational axioms that any valid Fragile Gas must satisfy.
+*   **Chapters 2-4 (Foundations):** We begin by defining our analytical tools: the coupled state space for comparing swarms, the augmented hypocoercive Lyapunov ({prf:ref}`def-hypocoercive-norm`) function for measuring error, and the complete set of foundational axioms that any valid Fragile Gas must satisfy.
 *   **Chapters 5-8 (The Keystone Lemma):** The core of this work is a multi-chapter proof of the Keystone Lemma. We build a rigorous causal chain, proving that a large system error is guaranteed to be converted into a non-cancellable fitness signal (Ch 6), that this signal correctly targets the walkers responsible for the error (Ch 7), and that the resulting expected contractive force is proportional to the error in a scalable, N-uniform manner (Ch 8).
 *   **Chapters 9-12 (Drift Analysis):** With the Keystone Lemma established, we apply it to analyze the one-step drift of the cloning operator. We formally define the operator (Ch 9) and then prove that it induces geometric expected contraction on the positional variance (Ch 10) and boundary potential (Ch 11). Chapter 12 synthesizes these results into the complete drift inequality for the cloning operator, demonstrating the synergistic interplay between variance contraction, boundary safety, and inter-swarm error dynamics.
 
@@ -110,7 +110,7 @@ The fundamental unit of the system is the walker ({prf:ref}`def-walker`), and a 
 :::{prf:definition} Single-Walker and Swarm State Spaces
 :label: def-single-swarm-space
 
-1.  A **walker** is a tuple $(x, s)$ ({prf:ref}`def-walker`), where $x \in \mathcal{X}$ is its position in a state space and $s \in \{0, 1\}$ is its survival status. For the Euclidean Gas ({prf:ref}`def-euclidean-gas`), this is extended to include a velocity component, making the **full state** of a single walker a tuple $(x, v, s) \in \mathbb{R}^d \times \mathbb{R}^d \times \{0, 1\}$. We refer to $(x,v)$ as the **kinematic state**.
+1.  A **walker** is a tuple $(x, s)$ ({prf:ref}`def-walker`), where $x \in \mathcal{X}$ is its position in a state space and $s \in \{0, 1\}$ is its survival status. For the Euclidean Gas ({prf:ref}`alg-euclidean-gas`), this is extended to include a velocity component, making the **full state** of a single walker a tuple $(x, v, s) \in \mathbb{R}^d \times \mathbb{R}^d \times \{0, 1\}$. We refer to $(x,v)$ as the **kinematic state**.
 
 2.  A **swarm ({prf:ref}`def-swarm-and-state-space`) configuration**, $S$, is an N-tuple of walker  states:
 
@@ -151,7 +151,7 @@ This synchronous coupling is chosen because it is designed to minimize the dista
 :::{prf:definition} The Coupled State Space
 :label: def-coupled-state-space
 
-The **coupled state space** for the Euclidean Gas ({prf:ref}`def-euclidean-gas`) is the Cartesian product $\Sigma_N \times \Sigma_N$, where $\Sigma_N$ is defined in {prf:ref}`def-single-swarm-space`. An element of this space is an ordered pair of swarm configurations, $(S_1, S_2)$, where:
+The **coupled state space** for the Euclidean Gas ({prf:ref}`alg-euclidean-gas`) is the Cartesian product $\Sigma_N \times \Sigma_N$, where $\Sigma_N$ is defined in {prf:ref}`def-single-swarm-space`. An element of this space is an ordered pair of swarm configurations, $(S_1, S_2)$, where:
 
 $$
 S_1 = \left( (x_{1,1}, v_{1,1}, s_{1,1}), \dots, (x_{1,N}, v_{1,N}, s_{1,N}) \right) \in \Sigma_N,
@@ -454,7 +454,7 @@ To create a robust analysis that is independent of walker labels, we define the 
 
 #### 3.2.1. The Location Error Component ($V_{\text{loc}}$)
 
-The distance between the swarms' centers of mass is an intrinsically permutation-invariant quantity. We define the location error as the hypocoercive quadratic form ({prf:ref}`def-hypocoercive-distance`) applied to the difference between the barycenters of the two swarms.
+The distance between the swarms' centers of mass is an intrinsically permutation-invariant quantity. We define the location error as the hypocoercive quadratic form ({prf:ref}`def-hypocoercive-metric`) applied to the difference between the barycenters of the two swarms.
 
 :::{prf:definition} The Location Error Component ($V_{\text{loc}}$)
 :label: def-location-error-component
@@ -485,7 +485,7 @@ $$
 
 where $k_{\text{alive}} = |\mathcal{A}(S_k)|$ is the number of alive walkers in swarm ({prf:ref}`def-swarm-and-state-space`) $k$, and $\delta_{x,k,i}, \delta_{v,k,i}$ are the centered vectors defined in {prf:ref}`def-barycentres-and-centered-vectors`.
 
-The **structural error component** $V_{\text{struct}}$ is defined as the squared hypocoercive Wasserstein distance ({prf:ref}`def-hypocoercive-distance`) between these centered measures:
+The **structural error component** $V_{\text{struct}}$ is defined as the squared hypocoercive Wasserstein distance ({prf:ref}`def-hypocoercive-metric`) between these centered measures:
 
 $$
 V_{\text{struct}} := W_h^2(\tilde{\mu}_1, \tilde{\mu}_2) = \inf_{\gamma \in \Gamma(\tilde{\mu}_1, \tilde{\mu}_2)} \int c(\delta_{z,1}, \delta_{z,2}) \, d\gamma(\delta_{z,1}, \delta_{z,2})
@@ -1262,6 +1262,7 @@ Referenced by {prf:ref}`prop-lyapunov-necessity`.
 
 :::{admonition} Failure Mode Analysis
 :class: dropdown warning
+:open:
 
 **If this axiom is violated:**
 
@@ -1285,6 +1286,7 @@ There exists a compact set $C_{\mathrm{safe}} \subset \mathcal X_{\mathrm{valid}
 
 :::{admonition} Failure Mode Analysis
 :class: dropdown warning
+:open:
 
 **If this axiom is violated:**
 
@@ -1299,7 +1301,7 @@ If no such Safe Harbor exists, the reward landscape could be structured such tha
 
 These axioms ensure that the environment is sufficiently informative to prevent algorithmic stagnation and to allow the swarm to distinguish between good and bad configurations.
 
-:::{prf:axiom} **(Axiom EG-3): Non-Deceptive Landscape ({prf:ref}`def-axiom-environmental-richness`)**
+:::{prf:axiom} **(Axiom EG-3): Non-Deceptive Landscape ({prf:ref}`axiom-environmental-richness`)**
 :label: axiom-non-deceptive-landscape
 
 The environment is **non-deceptive**. A sufficient geometric separation between two walkers guarantees a minimal, non-zero difference in their raw positional rewards. Formally, there exist constants $L_{\text{grad}} > 0$ and $\kappa_{\text{raw},r} > 0$ such that:
@@ -1311,6 +1313,7 @@ If $\|x - y\| \geq L_{\text{grad}}$, then $|R_{\mathrm{pos}}(y) - R_{\mathrm{pos
 
 :::{admonition} Failure Mode Analysis
 :class: dropdown warning
+:open:
 
 **If this axiom is violated:**
 
@@ -1345,7 +1348,7 @@ This axiom is a critical safety mechanism within the synergistic dissipation fra
 
 1.  **Limiting Velocity Variance Expansion During Cloning:** A walker ({prf:ref}`def-walker`) `i` that acquires an anomalously large velocity `v_i` contributes significantly to the $V_{\text{Var},v}$ component of the Lyapunov function. The `-c_{v\_reg} ||v_i||^{2}` term gives this walker an extremely low raw reward, making it "unfit" regardless of its position. It thus becomes a prime target for cloning. When cloned, its high velocity is reset to that of a companion, which is overwhelmingly likely to be much smaller. This mechanism biases the selection pressure away from high velocities; the hard state-independent cap remains the squashing map $\psi_v$.
 
-2.  **Enabling Kinetic Stage Dissipation:** This mechanism acts as a robust safety net, preventing the kinetic energy of the swarm from growing to levels where the kinetic stage's Langevin friction term cannot overcome the expansion caused by cloning. It ensures that the velocity variance remains within a regime where the kinetic operator ({prf:ref}`def-kinetic-operator`)'s dissipation can dominate, enabling the synergistic framework to achieve net contraction of the total Lyapunov function.
+2.  **Enabling Kinetic Stage Dissipation:** This mechanism acts as a robust safety net, preventing the kinetic energy of the swarm from growing to levels where the kinetic stage's Langevin friction term cannot overcome the expansion caused by cloning. It ensures that the velocity variance remains within a regime where the kinetic operator ({prf:ref}`def-kinetic-operator-stratonovich`)'s dissipation can dominate, enabling the synergistic framework to achieve net contraction of the total Lyapunov function.
 
 **Implications and Trade-offs:**
 
@@ -1353,6 +1356,7 @@ The inclusion of this term modifies the optimization objective. The algorithm no
 :::
 :::{admonition} Failure Mode Analysis
 :class: dropdown warning
+:open:
 
 **If this axiom is violated (`c_{v_reg} = 0`):**
 
@@ -1386,6 +1390,7 @@ $$
 
 :::{admonition} Failure Mode Analysis
 :class: dropdown warning
+:open:
 
 **If this axiom is violated ($\beta = 0$):**
 
@@ -2217,7 +2222,7 @@ This model introduces $\alpha_restitution$ as a crucial hyperparameter that cont
 
 *   If **$\alpha_restitution \in (0, 1)$**, the cloning event has **intermediate dissipation**. The internal kinetic energy of the interacting group is reduced by a factor of $\alpha_restitution^{2}$. This parameter provides a tunable mechanism for controlling the trade-off between maintaining kinetic diversity and bounding velocity variance expansion.
 
-The key insight is that **cloning causes bounded expansion of velocity variance through the velocity reset mechanism**, regardless of the value of $\alpha_restitution$. The restitution coefficient controls the magnitude of this expansion, with lower values providing tighter bounds. This expansion is then overcome by the kinetic operator ({prf:ref}`def-kinetic-operator`)'s Langevin dissipation, as proven in the companion document.
+The key insight is that **cloning causes bounded expansion of velocity variance through the velocity reset mechanism**, regardless of the value of $\alpha_restitution$. The restitution coefficient controls the magnitude of this expansion, with lower values providing tighter bounds. This expansion is then overcome by the kinetic operator ({prf:ref}`def-kinetic-operator-stratonovich`)'s Langevin dissipation, as proven in the companion document.
 :::
 
 #### 5.7.5. Bounded Velocity Variance Expansion from Cloning
@@ -2474,7 +2479,7 @@ The first step in the Keystone analysis is to connect the relevant component of 
 :::{prf:lemma} Large $V_{\text{Var},x}$ Implies Large Single-Swarm Positional Variance
 :label: lem-V_Varx-implies-variance
 
-Let $V_{Var,x}(S_1, S_2)$ be the total intra-swarm ({prf:ref}`def-swarm-and-state-space`) positional variance component of the Lyapunov function as defined in {prf:ref}`def-full-synergistic-lyapunov-function`:
+Let $V_{Var,x}(S_1, S_2)$ be the total intra-swarm ({prf:ref}`def-swarm-and-state-space`) positional variance component of the Lyapunov function as defined in [](#def-full-synergistic-lyapunov-function):
 
 $$
 V_{Var,x}(S_1, S_2) = \frac{1}{N} \sum_{i \in \mathcal{A}(S_1)} \|\delta_{x,1,i}\|^2 + \frac{1}{N} \sum_{i \in \mathcal{A}(S_2)} \|\delta_{x,2,i}\|^2
@@ -3768,7 +3773,7 @@ Our goal is to prove that we can choose $\gamma$ such that the guaranteed signal
 
 The signal originates from the raw distance measurements `d`, propagates to the standardized scores `z_d`, and is then amplified.
 
-*   **Raw and Standardized Signal:** From {prf:ref}`thm-geometry-guarantees-variance`, a high-error state guarantees $\text{Var}(d) \geq \kappa_meas(d) > 0$. The Z-scores $z_d = (d - \mu_d) / \sigma'_d$ have a variance $\text{Var}(z_d) = \text{Var}(d) / (\sigma'_d)^{2}$. Since the patched standard deviation (see {prf:ref}`def-patched-std-dev-function`) $\sigma'_d$ is uniformly bounded above by $\sigma'_max$ ({prf:ref}`def-max-patched-std`), the Z-score variance has a uniform lower bound:
+*   **Raw and Standardized Signal:** From [](#thm-geometry-guarantees-variance), a high-error state guarantees $\text{Var}(d) \geq \kappa_meas(d) > 0$. The Z-scores $z_d = (d - \mu_d) / \sigma'_d$ have a variance $\text{Var}(z_d) = \text{Var}(d) / (\sigma'_d)^{2}$. Since the patched standard deviation (see {prf:ref}`def-patched-std-dev-function`) $\sigma'_d$ is uniformly bounded above by $\sigma'_max$ ({prf:ref}`def-max-patched-std`), the Z-score variance has a uniform lower bound:
 
 
 $$
@@ -3838,7 +3843,7 @@ The introduction of the $\gamma$ parameter is a crucial step in ensuring the mat
 
 ### 7.3. Signal Propagation Through the Pipeline
 
-The preceding theorem ({prf:ref}`thm-geometry-guarantees-variance`) established that a swarm in a high-error state, possessing the geometric structure proven in Chapter 6, is guaranteed to generate a raw distance measurement signal with a non-vanishing expected variance, $\text{E}[\text{Var}(d)] \geq \kappa_meas(\varepsilon) > 0$. This section proves that the deterministic pipeline defined in Chapter 5 is a robust signal processor, capable of transforming this raw statistical signal into a concrete, usable gap in the final rescaled values.
+The preceding theorem ([](#thm-geometry-guarantees-variance)) established that a swarm in a high-error state, possessing the geometric structure proven in Chapter 6, is guaranteed to generate a raw distance measurement signal with a non-vanishing expected variance, $\text{E}[\text{Var}(d)] \geq \kappa_meas(\varepsilon) > 0$. This section proves that the deterministic pipeline defined in Chapter 5 is a robust signal processor, capable of transforming this raw statistical signal into a concrete, usable gap in the final rescaled values.
 
 The proof will follow the signal's journey in two stages:
 1.  First, we prove that a guaranteed variance in any set of raw values implies the existence of a guaranteed *gap* between at least two of those values.
@@ -3846,7 +3851,7 @@ The proof will follow the signal's journey in two stages:
 
 #### 7.3.1. From Raw Variance to a Guaranteed Raw Gap
 
-The first step in the signal integrity proof is to show that the statistical property of variance, now proven in {prf:ref}`thm-geometry-guarantees-variance`, has a direct, concrete consequence: it forces a measurable separation between the raw values of at least two walkers.
+The first step in the signal integrity proof is to show that the statistical property of variance, now proven in [](#thm-geometry-guarantees-variance), has a direct, concrete consequence: it forces a measurable separation between the raw values of at least two walkers.
 
 :::{prf:lemma} From Bounded Variance to a Guaranteed Gap
 :label: lem-variance-to-gap
@@ -3903,7 +3908,7 @@ Rearranging the inequality $\kappa \le \frac{1}{2} \Delta_{\max}^2$ gives $\Delt
 **Q.E.D.**
 :::
 
-This lemma provides the first crucial step in the signal processing analysis: it converts the abstract statistical guarantee of variance, now proven in {prf:ref}`thm-geometry-guarantees-variance`, into the concrete existence of at least two specific walkers with measurably different raw distance values.
+This lemma provides the first crucial step in the signal processing analysis: it converts the abstract statistical guarantee of variance, now proven in [](#thm-geometry-guarantees-variance), into the concrete existence of at least two specific walkers with measurably different raw distance values.
 
 #### 7.3.2. From a Raw Gap to a Guaranteed Rescaled Gap
 
@@ -4031,9 +4036,9 @@ Since `g'_min` and $\sigma'_max$ are positive, N-uniform constants, the function
 
 This section has forged a central link in the signal integrity proof. We have demonstrated that the measurement pipeline is a reliable signal processor whose behavior is uniformly bounded, independent of the swarm's size or specific configuration. By combining the lemmas, we have established a direct, N-uniform causal chain:
 
-`Guaranteed Raw Variance (from` {prf:ref}`thm-geometry-guarantees-variance``)` → `Guaranteed Raw Gap` → `Guaranteed Rescaled Gap`
+`Guaranteed Raw Variance (from` [](#thm-geometry-guarantees-variance)`)` → `Guaranteed Raw Gap` → `Guaranteed Rescaled Gap`
 
-With this result, we have proven that a high-error state, which is guaranteed by {prf:ref}`thm-geometry-guarantees-variance` to produce a non-trivial raw measurement variance, always produces a non-trivial signal that survives the standardization and rescaling process. The final and most critical step, addressed in the next section, is to prove that the signals from the reward and diversity channels cannot pathologically cancel each other out in the final fitness calculation.
+With this result, we have proven that a high-error state, which is guaranteed by [](#thm-geometry-guarantees-variance) to produce a non-trivial raw measurement variance, always produces a non-trivial signal that survives the standardization and rescaling process. The final and most critical step, addressed in the next section, is to prove that the signals from the reward and diversity channels cannot pathologically cancel each other out in the final fitness calculation.
 
 ### 7.4. The Corrective Nature of Fitness: Linking Unfitness to High Error
 
@@ -4248,19 +4253,19 @@ We now find uniform bounds for the two parenthesized terms in inequality `(*)`. 
 
     The term `E[ln(d')|H_k] - E[ln(d')|L_k]` represents the guaranteed advantage in the diversity signal for the high-error population. We establish this through the following causal chain:
 
-    1. **From Geometry to Raw Measurement Variance:** A high-error state guarantees a raw measurement variance $\text{E}[\text{Var}(d)] \geq \kappa_meas(\varepsilon) > 0$ (from {prf:ref}`thm-geometry-guarantees-variance`).
+    1. **From Geometry to Raw Measurement Variance:** A high-error state guarantees a raw measurement variance $\text{E}[\text{Var}(d)] \geq \kappa_meas(\varepsilon) > 0$ (from [](#thm-geometry-guarantees-variance)).
 
     2. **From Raw Variance to Rescaled Variance:** This raw variance propagates through the pipeline, guaranteeing a variance in the rescaled values $\text{Var}(d') \geq \kappa_var(d') > 0$. The constant $\kappa_var(d')$ is defined in terms of $\kappa_meas(\varepsilon)$ and the pipeline parameters via the gap propagation lemmas from Section 7.3.
 
     3. **Signal-to-Noise Condition:** The Signal-to-Noise Condition $\kappa_var(d') > Var_max(d')$ is satisfied by the choice of the gain parameter $\gamma$ (from {prf:ref}`prop-satisfiability-of-snr-gamma`).
 
-    4. **Applying {prf:ref}`lem-variance-to-mean-separation`:** We now apply {prf:ref}`lem-variance-to-mean-separation` to the set of rescaled diversity values `d'`. Let:
+    4. **Applying [](#lem-variance-to-mean-separation):** We now apply [](#lem-variance-to-mean-separation) to the set of rescaled diversity values `d'`. Let:
         - `V = d'` (the total set of rescaled diversity values)
         - `H = H_k` and `L = L_k` (the partition)
         - The premise $\text{Var}(V) \geq \kappa_var$ is met with $\kappa_var = \kappa_var(d')$
         - The premise $\kappa_var > Var_max$ is met by the Signal-to-Noise Condition
 
-    5. **Result from {prf:ref}`lem-variance-to-mean-separation`:** This yields a guaranteed lower bound on the separation between the subset means:
+    5. **Result from [](#lem-variance-to-mean-separation):** This yields a guaranteed lower bound on the separation between the subset means:
 
 
 $$
@@ -4286,7 +4291,7 @@ $$
 
 *   **RHS: The Maximum Adversarial Reward Signal.**
 
-    Symmetrically, we apply the same logic to find an upper bound on the term `E[ln(r')|L_k] - E[ln(r')|H_k]`, which represents the maximum potential advantage from a deceptive reward signal. A potential adversarial raw gap $\kappa_r'$ leads, through the application of {prf:ref}`lem-variance-to-mean-separation` to the reward channel, to a maximum possible rescaled mean gap of $\kappa_{\text{mean},r'}$. The largest possible logarithmic gap corresponding to this reward separation occurs when the values are compressed at the bottom of their range. This gives a uniform upper bound on the adversarial signal:
+    Symmetrically, we apply the same logic to find an upper bound on the term `E[ln(r')|L_k] - E[ln(r')|H_k]`, which represents the maximum potential advantage from a deceptive reward signal. A potential adversarial raw gap $\kappa_r'$ leads, through the application of [](#lem-variance-to-mean-separation) to the reward channel, to a maximum possible rescaled mean gap of $\kappa_{\text{mean},r'}$. The largest possible logarithmic gap corresponding to this reward separation occurs when the values are compressed at the bottom of their range. This gives a uniform upper bound on the adversarial signal:
 
 
 $$
@@ -4603,7 +4608,7 @@ This proposition forges the complete link from a macroscopic state of high geome
 :::{prf:proposition} **(Lower Bound on the Corrective Diversity Signal)**
 :label: prop-corrective-signal-bound
 
-Let a swarm ({prf:ref}`def-swarm-and-state-space`) state be in the high-error regime, such that the variance of its rescaled diversity values, `d'`, is bounded below, $\operatorname{Var}(d') \ge \kappa_{d', \text{var}} > 0$. Let the system parameters be chosen such that the Signal-to-Noise Condition of {prf:ref}`lem-variance-to-mean-separation` is satisfied, i.e., $\kappa_{d', \text{var}} > \operatorname{Var}_{\max}(d')$.
+Let a swarm ({prf:ref}`def-swarm-and-state-space`) state be in the high-error regime, such that the variance of its rescaled diversity values, `d'`, is bounded below, $\operatorname{Var}(d') \ge \kappa_{d', \text{var}} > 0$. Let the system parameters be chosen such that the Signal-to-Noise Condition of [](#lem-variance-to-mean-separation) is satisfied, i.e., $\kappa_{d', \text{var}} > \operatorname{Var}_{\max}(d')$.
 
 Then the expected logarithmic gap in the diversity signal between the high-error population $H_k$ and the low-error population $L_k$ is bounded below by a strictly positive, N-uniform constant:
 
@@ -4623,7 +4628,7 @@ Referenced by {prf:ref}`thm-stability-condition-final-corrected`.
 The proof proceeds in two steps. First, we translate the guaranteed variance into a guaranteed separation between the means of the high-error and low-error populations. Second, we translate this mean separation into a guaranteed separation in the expected logarithms.
 
 **1. From Variance to Mean Separation:**
-The premises state that $\operatorname{Var}(d') \ge \kappa_{d', \text{var}}$ and that the Signal-to-Noise Condition is satisfied. The population fractions $f_H$ and $f_L$ are N-uniform and bounded below by a constant $f_{\min} > 0$. We apply {prf:ref}`lem-variance-to-mean-separation` directly. This yields a guaranteed separation between the means of the rescaled diversity values:
+The premises state that $\operatorname{Var}(d') \ge \kappa_{d', \text{var}}$ and that the Signal-to-Noise Condition is satisfied. The population fractions $f_H$ and $f_L$ are N-uniform and bounded below by a constant $f_{\min} > 0$. We apply [](#lem-variance-to-mean-separation) directly. This yields a guaranteed separation between the means of the rescaled diversity values:
 
 $$
 |\mu_{d'}(H_k) - \mu_{d'}(L_k)| \ge \kappa_{d', \text{mean}} > 0
@@ -4633,7 +4638,7 @@ $$
 The direction of this inequality is also guaranteed. The geometric analysis in Chapter 6 ({prf:ref}`lem-geometric-separation-of-partition`) established that high-error walkers are systematically more isolated, which implies their expected raw distance-to-companion is larger: $\mathbb{E}[d|H_k] > \mathbb{E}[d|L_k]$. Since the standardization and rescaling operators (specifically the monotonic rescale function $g_A$) preserve the ordering of the means, this inequality propagates through the entire pipeline. This guarantees that the mean of the *rescaled* diversity values is also larger for the high-error set, $\mu_{d'}(H_k) > \mu_{d'}(L_k)$. We can therefore remove the absolute value and state the inequality directionally.
 
 **2. From Mean Separation to Logarithmic Mean Separation:**
-We now have a guaranteed mean separation, $\mu_{d'}(H_k) \ge \mu_{d'}(L_k) + \kappa_{d', \text{mean}}$. The rescaled values $d'$ are contained in the compact interval $[\eta, g_{A,\max}+\eta]$. We apply {prf:ref}`lem-log-gap-lower-bound` with $X$ representing the distribution of $d'$ in $H_k$, $Y$ representing the distribution in $L_k$, $\kappa = \kappa_{d', \text{mean}}$, and $V_{\max} = g_{A,\max}+\eta$.
+We now have a guaranteed mean separation, $\mu_{d'}(H_k) \ge \mu_{d'}(L_k) + \kappa_{d', \text{mean}}$. The rescaled values $d'$ are contained in the compact interval $[\eta, g_{A,\max}+\eta]$. We apply [](#lem-log-gap-lower-bound) with $X$ representing the distribution of $d'$ in $H_k$, $Y$ representing the distribution in $L_k$, $\kappa = \kappa_{d', \text{mean}}$, and $V_{\max} = g_{A,\max}+\eta$.
 The lemma gives the stated result directly:
 
 $$
@@ -4678,7 +4683,7 @@ $$
 We define the maximum possible mean separation as $\kappa_{r', \text{mean, max}} := g_{A,\max}$. This represents the most adversarial scenario, where the low-error set $L_k$ achieves the maximum possible mean reward ($g_{A,\max} + \eta$) and the high-error set $H_k$ achieves the minimum possible mean reward ($\eta$), maximizing the gap between them.
 
 **2. From Mean Separation to Logarithmic Mean Separation:**
-We now seek an upper bound for the expression $\mathbb{E}[\ln(r')|L_k] - \mathbb{E}[\ln(r')|H_k]$. We apply {prf:ref}`lem-log-gap-upper-bound`. Let $X$ represent the distribution of $r'$ in $L_k$ and $Y$ represent the distribution in $H_k$. We use the maximum possible mean separation $\kappa = \kappa_{r', \text{mean, max}}$ and note that the minimum value for any $r'$ is $V_{\min} = \eta$.
+We now seek an upper bound for the expression $\mathbb{E}[\ln(r')|L_k] - \mathbb{E}[\ln(r')|H_k]$. We apply [](#lem-log-gap-upper-bound). Let $X$ represent the distribution of $r'$ in $L_k$ and $Y$ represent the distribution in $H_k$. We use the maximum possible mean separation $\kappa = \kappa_{r', \text{mean, max}}$ and note that the minimum value for any $r'$ is $V_{\min} = \eta$.
 The lemma gives the stated result directly:
 
 $$
@@ -4807,7 +4812,7 @@ $$
 We define this upper bound on the mean separation as $\kappa_{r',\text{mean,adv}} := \kappa_{\mathrm{rescaled}}(L_R D_{\text{valid}})$.
 
 **3. From Mean Separation to Logarithmic Mean Separation.**
-We now have a valid upper bound on the mean separation, which is the required premise for {prf:ref}`lem-log-gap-upper-bound`. We apply this lemma with:
+We now have a valid upper bound on the mean separation, which is the required premise for [](#lem-log-gap-upper-bound). We apply this lemma with:
 *   $X$ representing the distribution of $r'$ in $L_k$.
 *   $Y$ representing the distribution of $r'$ in $H_k$.
 *   $\kappa = \kappa_{r',\text{mean,adv}}$.
@@ -4869,13 +4874,13 @@ This inequality provides a clear, quantitative guide for parameter tuning. If th
 
 ### 7.6. The Unfit-High-Error Overlap
 
-With the **Stability Condition** ({prf:ref}`thm-stability-condition-final-corrected`) now rigorously derived and justified in Section 7.5, we can prove the final and most critical property for the Keystone Principle: that the set of walkers targeted by the algorithm (the "unfit") and the set of walkers causing the system error (the "high-error") have a substantial, non-vanishing overlap.
+With the **Stability Condition** ([](#thm-stability-condition-final-corrected)) now rigorously derived and justified in Section 7.5, we can prove the final and most critical property for the Keystone Principle: that the set of walkers targeted by the algorithm (the "unfit") and the set of walkers causing the system error (the "high-error") have a substantial, non-vanishing overlap.
 
 This proof requires two foundational population guarantees. The first—that a large `V_struct` implies a non-vanishing high-error fraction `f_H`—was a central result of **Chapter 6** (specifically, {prf:ref}`cor-vvarx-to-high-error-fraction`). This section establishes the second guarantee: that a large `V_struct` also implies a non-vanishing unfit fraction `f_U`. With both population bounds secured, we will then assemble the final proof of the overlap.
 
 #### 7.6.1 A Large Fitness Gap Implies a Non-Vanishing "Unfit" Population
 
-The first pillar of the overlap proof is to show that the fitness signal generated by a high-error swarm is a collective phenomenon. A large `V_struct` implies a large internal variance, which is guaranteed to produce a non-vanishing raw measurement variance ({prf:ref}`thm-geometry-guarantees-variance`). This raw signal robustly propagates through the measurement pipeline to create a guaranteed microscopic gap in the final fitness potentials, ensuring a non-trivial overall fitness range, $\kappa_V,gap(\varepsilon) > 0$. The following lemma proves that such a gap cannot be explained by a single unusually fit or unfit walker; it necessitates a statistically significant imbalance in the fitness distribution of the entire population.
+The first pillar of the overlap proof is to show that the fitness signal generated by a high-error swarm is a collective phenomenon. A large `V_struct` implies a large internal variance, which is guaranteed to produce a non-vanishing raw measurement variance ([](#thm-geometry-guarantees-variance)). This raw signal robustly propagates through the measurement pipeline to create a guaranteed microscopic gap in the final fitness potentials, ensuring a non-trivial overall fitness range, $\kappa_V,gap(\varepsilon) > 0$. The following lemma proves that such a gap cannot be explained by a single unusually fit or unfit walker; it necessitates a statistically significant imbalance in the fitness distribution of the entire population.
 
 :::{prf:definition} The Unfit Set
 :label: def-unfit-set
@@ -4901,7 +4906,7 @@ $$
 
 $$
 
-where $V_{\text{pot,max}}$ and $V_{\text{pot,min}}$ are the N-uniform bounds on the fitness potential from {prf:ref}`lem-potential-bounds`.
+where $V_{\text{pot,max}}$ and $V_{\text{pot,min}}$ are the N-uniform bounds on the fitness potential from [](#lem-potential-bounds).
 :::
 :::{prf:proof}
 
@@ -4962,7 +4967,7 @@ This theorem proves that the set of walkers targeted by the algorithm for correc
 
 Let a swarm ({prf:ref}`def-swarm-and-state-space`) state satisfy $V_{\mathrm{struct}} > R^2_{\mathrm{spread}}$. Let $U_k$ be the unfit set for swarm `k` and let $H_k(\epsilon)$ be its corresponding unified high-error set.
 
-If the **Stability Condition** ({prf:ref}`thm-stability-condition-final-corrected`) holds for the chosen system parameters, then the fraction of alive walkers in the intersection set $I_{UH} = U_k \cap H_k(\epsilon)$ is bounded below by a positive, N-uniform constant:
+If the **Stability Condition** ([](#thm-stability-condition-final-corrected)) holds for the chosen system parameters, then the fraction of alive walkers in the intersection set $I_{UH} = U_k \cap H_k(\epsilon)$ is bounded below by a positive, N-uniform constant:
 
 $$
 \frac{|I_{UH}|}{k} \ge f_{UH}(\epsilon) > 0
@@ -4975,7 +4980,7 @@ where `k` is the number of alive walkers in swarm ({prf:ref}`def-swarm-and-state
 
 **Proof (by contradiction).**
 
-The proof follows directly from the consequences of the **Stability Condition** ({prf:ref}`thm-stability-condition-final-corrected`). This condition guarantees that the high-error population is systematically less fit, a statistical property that makes a vanishing overlap with the unfit set impossible.
+The proof follows directly from the consequences of the **Stability Condition** ([](#thm-stability-condition-final-corrected)). This condition guarantees that the high-error population is systematically less fit, a statistical property that makes a vanishing overlap with the unfit set impossible.
 
 **1. Setup for Contradiction.**
 Assume the premises hold: the swarm `k` has a large structural error, and the **Stability Condition** is satisfied. Now, assume for the sake of contradiction that the overlap between the unfit and high-error sets is vanishingly small. Formally, this means the fraction of their intersection approaches zero:
@@ -4996,7 +5001,7 @@ $$
 $$
 
 **3. Consequence 2: The Axiom's Guarantee.**
-The **Stability Condition** is precisely the condition required to ensure that the algorithm's targeting is intelligent. As proven in {prf:ref}`thm-stability-condition-final-corrected`, satisfying this condition guarantees that the expected fitness of the high-error population is *strictly less than* the expected fitness of the low-error population:
+The **Stability Condition** is precisely the condition required to ensure that the algorithm's targeting is intelligent. As proven in [](#thm-stability-condition-final-corrected), satisfying this condition guarantees that the expected fitness of the high-error population is *strictly less than* the expected fitness of the low-error population:
 
 $$
 \mathbb{E}[V_{\text{fit}} \mid i \in H_k] < \mathbb{E}[V_{\text{fit}} \mid i \in L_k]
@@ -5023,9 +5028,9 @@ The assumption of a vanishing overlap leads to a contradiction. Therefore, the o
 
 This chapter has provided a complete, first-principles proof of the **corrective nature of fitness**—the intellectual core of the Keystone Principle. Building upon the guarantee of a non-vanishing **statistical variance** signal established in Chapter 6, our focus shifted from the *existence* of a signal to the *intelligence* of the system's response. We have demonstrated that the Fragile Gas, when properly configured, behaves as an adaptive system whose corrective forces are reliably directed at the source of system-level error.
 
-The central achievement of this chapter was the rigorous derivation of the **Stability Condition for Intelligent Adaptation**. By analyzing the trade-off between the reliable geometric diversity signal and the potentially deceptive reward signal, we established the precise, quantitative inequality that separates a well-posed, learnable system from one vulnerable to pathological failure. This derivation was anchored by a robust statistical lemma ({prf:ref}`lem-variance-to-mean-separation`), proving that a guaranteed **total variance** in a signal is sufficient to force a **macroscopic separation** between the means of its underlying subpopulations, ensuring the argument's validity under all swarm configurations.
+The central achievement of this chapter was the rigorous derivation of the **Stability Condition for Intelligent Adaptation**. By analyzing the trade-off between the reliable geometric diversity signal and the potentially deceptive reward signal, we established the precise, quantitative inequality that separates a well-posed, learnable system from one vulnerable to pathological failure. This derivation was anchored by a robust statistical lemma ([](#lem-variance-to-mean-separation)), proving that a guaranteed **total variance** in a signal is sufficient to force a **macroscopic separation** between the means of its underlying subpopulations, ensuring the argument's validity under all swarm configurations.
 
-By restricting our analysis to the parameter regime where this condition holds, we proved the chapter's final and most critical result in {prf:ref}`thm-unfit-high-error-overlap-fraction`: for any swarm in a high-error state, there is a substantial, N-uniform fraction of the population that is simultaneously **"high-error"** (geometrically) and **"unfit"** (algorithmically). This is the **"correctly targeted"** population, as it proves that the algorithm's corrective action (cloning the unfit) is reliably focused on the physical source of the system's instability (the high-error walkers).
+By restricting our analysis to the parameter regime where this condition holds, we proved the chapter's final and most critical result in [](#thm-unfit-high-error-overlap-fraction): for any swarm in a high-error state, there is a substantial, N-uniform fraction of the population that is simultaneously **"high-error"** (geometrically) and **"unfit"** (algorithmically). This is the **"correctly targeted"** population, as it proves that the algorithm's corrective action (cloning the unfit) is reliably focused on the physical source of the system's instability (the high-error walkers).
 
 The guaranteed existence of this large, correctly targeted set is the crucial prerequisite for the final stage of our argument. The next chapter will take this result as its primary input to complete the proof of the **N-Uniform Quantitative Keystone Lemma**, quantifying the collective corrective action of cloning and demonstrating that its strength is proportional to the magnitude of the error itself.
 
@@ -5102,7 +5107,7 @@ I_{\text{target}} := I_{11} \cap U_k \cap H_k(\epsilon)
 
 $$
 
-The guaranteed existence of a substantial, non-vanishing overlap between the unfit and high-error sets, as proven in {prf:ref}`thm-unfit-high-error-overlap-fraction`, ensures that this critical target set is non-empty and contains a non-vanishing, N-uniform fraction of the alive population. The subsequent proofs will now proceed by demonstrating that the corrective cloning pressure is concentrated on this specific target set (Section 8.3) and that this same set is responsible for a substantial fraction of the total system error (Section 8.4).
+The guaranteed existence of a substantial, non-vanishing overlap between the unfit and high-error sets, as proven in [](#thm-unfit-high-error-overlap-fraction), ensures that this critical target set is non-empty and contains a non-vanishing, N-uniform fraction of the alive population. The subsequent proofs will now proceed by demonstrating that the corrective cloning pressure is concentrated on this specific target set (Section 8.3) and that this same set is responsible for a substantial fraction of the total system error (Section 8.4).
 
 Referenced by {prf:ref}`cor-cloning-pressure-target-set`.
 :::
@@ -5417,7 +5422,7 @@ In this regime, $H_k(\epsilon)$ is the union of outlier clusters. We must prove 
 
 **Step 1: Variance Decomposition.**
 
-From the Law of Total Variance (as used in the proof of {prf:ref}`lem-outlier-cluster-fraction-lower-bound`), the total sum of squared deviations decomposes as:
+From the Law of Total Variance (as used in the proof of [](#lem-outlier-cluster-fraction-lower-bound)), the total sum of squared deviations decomposes as:
 
 $$
 S_k = k \cdot \mathrm{Var}_k(x) = \sum_{m=1}^M |G_m|\mathrm{Var}(G_m) + \sum_{m=1}^M |G_m|\|\mu_m - \mu\|^2
@@ -5493,7 +5498,7 @@ $$
 
 $$
 
-where $R^2_{\text{means}} := R^2_{\text{var}} - (D_{\text{diam}}(\epsilon)/2)^2 > 0$ (by the premise of {prf:ref}`lem-outlier-cluster-fraction-lower-bound`).
+where $R^2_{\text{means}} := R^2_{\text{var}} - (D_{\text{diam}}(\epsilon)/2)^2 > 0$ (by the premise of [](#lem-outlier-cluster-fraction-lower-bound)).
 
 Combining these results:
 
@@ -6000,7 +6005,7 @@ We verify each component:
 - $\varepsilon_{\text{clone}}$: User-defined parameter, independent of $N$ ✓
 - $V_{\text{pot,max}} = (g_{A,\max} + \eta)^{\alpha+\beta}$: Depends only on pipeline parameters ($g_{A,\max}$, $\eta$, $\alpha$, $\beta$), all independent of $N$ ✓
 - $\kappa_{V,\text{gap}}(\epsilon)$: The fitness potential gap. We trace its dependencies:
-  - $\kappa_{\text{meas}}(\epsilon)$: From {prf:ref}`thm-geometry-guarantees-variance`, this depends on the phase-space separation constants $D_H(\epsilon)$ and $R_L(\epsilon)$, which are defined in terms of:
+  - $\kappa_{\text{meas}}(\epsilon)$: From [](#thm-geometry-guarantees-variance), this depends on the phase-space separation constants $D_H(\epsilon)$ and $R_L(\epsilon)$, which are defined in terms of:
     - Geometric properties of the outlier/cluster definitions ($\epsilon_O$, $D_{\text{diam}}(\epsilon)$): Independent of $N$ ✓
     - Domain diameter $D_{\text{valid}}$: Independent of $N$ ✓
     - Velocity bounds: Independent of $N$ ✓
@@ -6019,7 +6024,7 @@ From Section 8.6.1.2, $c_{\text{err}}(\epsilon) \propto \lambda_2 \cdot c_H \cdo
   - **Local-interaction regime**: $c_H = \min\{1-\epsilon_O, (1-\epsilon_O)R^2_{\text{means}}/R^2_{\text{var}}\}$, where:
     - $R^2_{\text{means}} = R^2_{\text{var}} - (D_{\text{diam}}(\epsilon)/2)^2$: Depends only on variance threshold and cluster diameter, both independent of $N$ ✓
 
-- $f_{UH}(\epsilon)$: The overlap fraction from {prf:ref}`thm-unfit-high-error-overlap-fraction`. This depends on:
+- $f_{UH}(\epsilon)$: The overlap fraction from [](#thm-unfit-high-error-overlap-fraction). This depends on:
   - Population fraction lower bounds $f_U(\epsilon)$ and $f_H(\epsilon)$ from Chapters 6-7
   - From {prf:ref}`lem-outlier-fraction-lower-bound` and 6.4.3, these fractions are **defined as N-uniform constants** - they are constructed precisely to be independent of swarm size ✓
   - The proof uses only geometric properties (phase-space packing, variance decomposition) that scale with the number of walkers but produce **fractions** that remain constant ✓
@@ -6169,7 +6174,7 @@ This explicit deconstruction provides a clear, quantitative story for the stabil
 
 *   **To increase $\chi(\epsilon)$ and improve stability, a user should:**
     1.  **Improve Targeting Accuracy:** Choose an interaction range $\epsilon$ that is well-matched to the problem's length scales. This maximizes the underlying measurement signal $\kappa_{\text{meas}}(\epsilon)$, which in turn strengthens the fitness gap $\kappa_{V,\text{gap}}(\epsilon)$ and increases the overlap $f_{UH}(\epsilon)$.
-    2.  **Increase Cloning Responsiveness:** Decrease the clone threshold $p_{\max}$ or the regularizer $\varepsilon_{\text{clone}}$ to make the system more sensitive to the fitness gap. However, this must be balanced against the **Guaranteed Revival ({prf:ref}`def-axiom-guaranteed-revival`) Axiom**, which places a lower bound on $p_{\max} \cdot \varepsilon_{\text{clone}}$.
+    2.  **Increase Cloning Responsiveness:** Decrease the clone threshold $p_{\max}$ or the regularizer $\varepsilon_{\text{clone}}$ to make the system more sensitive to the fitness gap. However, this must be balanced against the **Guaranteed Revival ({prf:ref}`axiom-guaranteed-revival`) Axiom**, which places a lower bound on $p_{\max} \cdot \varepsilon_{\text{clone}}$.
 
 The offset $g_{\max}(\epsilon)$ represents the intrinsic error floor of the system for a given configuration. It is large for large domains or for configurations where the targeting accuracy is poor. The Keystone Lemma guarantees that as long as the total error $V_{\text{struct}}$ is large enough to overcome this offset ($V_{\text{struct}} > g_{\max}(\epsilon) / \chi(\epsilon)$), the cloning operator will act as a powerful, linear contraction, driving the system back towards a stable, synchronized state.
 
@@ -8568,7 +8573,7 @@ For completeness, we state the separate bounds on the location and structural co
 :::{prf:corollary} Component-Wise Bounds on Inter-Swarm Error
 :label: cor-component-bounds-vw
 
-As a decomposition of {prf:ref}`thm-inter-swarm ({prf:ref}`def-swarm-and-state-space`)-bounded-expansion`, the location and structural error components satisfy:
+As a decomposition of {prf:ref}`thm-inter-swarm-bounded-expansion`, the location and structural error components satisfy:
 
 $$
 \begin{aligned}
@@ -8618,7 +8623,7 @@ where:
 
 **Note on Kinetic Contraction:**
 
-While the cloning operator ({prf:ref}`def-cloning-operator-formal`) allows bounded expansion of $V_W$, the **kinetic operator ({prf:ref}`def-kinetic-operator`)** provides contraction. From hypocoercive analysis (Chapter 4 of companion document):
+While the cloning operator ({prf:ref}`def-cloning-operator-formal`) allows bounded expansion of $V_W$, the **kinetic operator ({prf:ref}`def-kinetic-operator-stratonovich`)** provides contraction. From hypocoercive analysis (Chapter 4 of companion document):
 
 $$
 \mathbb{E}_{\text{kin}}[\Delta V_W] \leq -\kappa_W^{\text{kin}} \tau V_W + C_W^{\text{kin}} \tau
@@ -9040,7 +9045,7 @@ This document has established the following results for the cloning operator ({p
 **5. Complete Characterization (Chapter 12):**
 - All drift constants are **N-independent** (scalable to large swarms)
 - Cloning provides **partial contraction** of the Lyapunov function
-- Requires **kinetic operator ({prf:ref}`def-kinetic-operator`)** to overcome bounded expansions
+- Requires **kinetic operator ({prf:ref}`def-kinetic-operator-stratonovich`)** to overcome bounded expansions
 - Foundation for **synergistic Foster-Lyapunov ({prf:ref}`def-foster-lyapunov`) condition**
 
 All results hold under the foundational axioms (Chapter 4) and are **constructive** with explicit constants.
