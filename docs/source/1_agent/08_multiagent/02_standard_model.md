@@ -37,17 +37,17 @@ $G_{\text{Fragile}} = SU(N_f)_C \times SU(2)_L \times U(1)_Y$ emerges necessaril
 bounded, distributed, reward-seeking agent. The **Feature Dimension** $N_f$ is determined by the agent's environment;
 the physics Standard Model corresponds to the special case $N_f = 3$. Each factor is derived from redundancies in the
 agent's description that leave physical observables invariant. The proofs rely explicitly on prior definitions from the
-WFR framework ({ref}`Section 20 <sec-wasserstein-fisher-rao-geometry-unified-transport-on-hybrid-state-spaces>`), the
-Belief Wave-Function ({ref}`Section 29.21 <sec-the-belief-wave-function-schrodinger-representation>`), the Boundary
-Interface ({ref}`Section 23 <sec-the-boundary-interface-symplectic-structure>`), and the Ontological Fission dynamics
-({ref}`Section 30 <sec-ontological-expansion-topological-fission-and-the-semantic-vacuum>`).
+WFR framework ({ref}`sec-wasserstein-fisher-rao-geometry-unified-transport-on-hybrid-state-spaces`), the
+Belief Wave-Function ({ref}`sec-the-belief-wave-function-schrodinger-representation`), the Boundary
+Interface ({ref}`sec-the-boundary-interface-symplectic-structure`), and the Ontological Fission dynamics
+({ref}`sec-ontological-expansion-topological-fission-and-the-semantic-vacuum`).
 
 *Cross-references:* This chapter synthesizes:
-- {ref}`Section 29.21 <sec-the-belief-wave-function-schrodinger-representation>`–29.27 (Quantum Layer: Belief Wave-Function, Schrödinger Representation)
-- {ref}`Section 23 <sec-the-boundary-interface-symplectic-structure>` (Holographic Interface: Dirichlet/Neumann Boundary Conditions)
-- {ref}`Section 30 <sec-ontological-expansion-topological-fission-and-the-semantic-vacuum>` (Ontological Expansion: Pitchfork Bifurcation, Chart Fission)
-- {ref}`Section 18 <sec-capacity-constrained-metric-law-geometry-from-interface-limits>` (Capacity-Constrained Metric Law)
-- {ref}`Section 24 <sec-the-reward-field-value-forms-and-hodge-geometry>` (Helmholtz Equation, Value Field)
+- {ref}`sec-the-belief-wave-function-schrodinger-representation`–29.27 (Quantum Layer: Belief Wave-Function, Schrödinger Representation)
+- {ref}`sec-the-boundary-interface-symplectic-structure` (Holographic Interface: Dirichlet/Neumann Boundary Conditions)
+- {ref}`sec-ontological-expansion-topological-fission-and-the-semantic-vacuum` (Ontological Expansion: Pitchfork Bifurcation, Chart Fission)
+- {ref}`sec-capacity-constrained-metric-law-geometry-from-interface-limits` (Capacity-Constrained Metric Law)
+- {ref}`sec-the-reward-field-value-forms-and-hodge-geometry` (Helmholtz Equation, Value Field)
 
 
 
@@ -277,7 +277,7 @@ We derive the non-Abelian $SU(2)$ symmetry from the fundamental asymmetry of the
 :::{prf:axiom} Cybernetic Parity Violation
 :label: ax-cybernetic-parity-violation
 
-The agent's interaction with the environment is **Chiral**, as established by the boundary condition asymmetry in {ref}`Section 23 <sec-the-boundary-interface-symplectic-structure>`:
+The agent's interaction with the environment is **Chiral**, as established by the boundary condition asymmetry in {ref}`sec-the-boundary-interface-symplectic-structure`:
 
 1. **Sensors (Dirichlet Boundary, Definition {prf:ref}`def-dirichlet-boundary-condition-sensors`):** The internal state $\psi$ is *updated* by boundary data. The boundary clamps the field value: $\phi|_{\partial\mathcal{Z}} = \phi_D$.
 
@@ -338,7 +338,7 @@ $$
 
 where $\mathcal{P}_a$ is the agent's forward model mapping intended actions to predicted observations.
 
-*Cross-reference:* This doublet structure captures the boundary interface chirality from {ref}`Section 23 <sec-the-boundary-interface-symplectic-structure>`: Dirichlet (input) vs. Neumann (output). The prediction-update-projection dynamics from {ref}`Section 12 <sec-belief-dynamics-prediction-update-projection>` act on this doublet via the gauge field $W_\mu$.
+*Cross-reference:* This doublet structure captures the boundary interface chirality from {ref}`sec-the-boundary-interface-symplectic-structure`: Dirichlet (input) vs. Neumann (output). The prediction-update-projection dynamics from {ref}`sec-belief-dynamics-prediction-update-projection` act on this doublet via the gauge field $W_\mu$.
 
 :::
 
@@ -463,7 +463,7 @@ to maintain covariance.
 
 **Identification:**
 - The $W^\pm_\mu = (W^1_\mu \mp iW^2_\mu)/\sqrt{2}$ bosons mediate transitions between $\psi_{\text{obs}}$ and $\psi_{\text{act}}^{\text{pre}}$. These correspond to the coordination between sensory input and motor intent---the observation-action mixing that maintains boundary consistency.
-- The $W^3_\mu$ component mixes with $B_\mu$ after symmetry breaking ({ref}`Section 34.3 <sec-scalar-sector-symmetry-breaking>`).
+- The $W^3_\mu$ component mixes with $B_\mu$ after symmetry breaking ({ref}`sec-scalar-sector-symmetry-breaking`).
 - The $SU(2)_L$ gauge symmetry acts only on the active doublet ($\Psi_L$) carrying the Observation/Action mode, leaving the committed singlet ($\Psi_R$) invariant. This reflects the boundary interface asymmetry (Dirichlet vs. Neumann).
 
 $\square$
@@ -539,7 +539,7 @@ From our framework's perspective, the binding problem is a gauge symmetry proble
 But "doing it consistently" is the hard part. And that's where the gauge field comes in.
 :::
 
-We derive the $SU(N_f)$ symmetry from the **Binding Problem** inherent in the Hierarchical Atlas ({ref}`Section 7.12 <sec-stacked-topoencoders-deep-renormalization-group-flow>`), where $N_f$ is the Feature Dimension (Definition {prf:ref}`def-feature-dimension-parameter`).
+We derive the $SU(N_f)$ symmetry from the **Binding Problem** inherent in the Hierarchical Atlas ({ref}`sec-stacked-topoencoders-deep-renormalization-group-flow`), where $N_f$ is the Feature Dimension (Definition {prf:ref}`def-feature-dimension-parameter`).
 
 :::{prf:axiom} Feature Confinement
 :label: ax-feature-confinement
@@ -629,7 +629,7 @@ coefficient is in the asymptotically-free regime, so $\beta(g_s) < 0$ at weak co
 at coarse scales is then justified by the Area-Law/observability result (Theorem {prf:ref}`thm-fission-inhibition`
 / Section 33), rather than asserted as a universal consequence of $SU(N_f)$ alone.
 
-**Step 4.** From Theorem {prf:ref}`thm-fission-inhibition`, the energy cost of separating features grows linearly with distance (Area Law, {ref}`Section 33 <sec-causal-information-bound>`). Attempting to isolate a feature instead triggers Ontological Fission (Definition {prf:ref}`def-query-fission`), creating new concept pairs.
+**Step 4.** From Theorem {prf:ref}`thm-fission-inhibition`, the energy cost of separating features grows linearly with distance (Area Law, {ref}`sec-causal-information-bound`). Attempting to isolate a feature instead triggers Ontological Fission (Definition {prf:ref}`def-query-fission`), creating new concept pairs.
 
 $\square$
 
@@ -718,7 +718,7 @@ In particular, the chiral structure of the cybernetic loop (the asymmetry betwee
 If you haven't encountered spinors before, don't worry. The key idea is that spinors are the simplest objects that can "feel" the difference between left and right---they transform differently under left-handed and right-handed rotations. This is exactly what we need to capture the perception/action asymmetry.
 :::
 
-We define the "Matter" of cognition: the **Belief State**. In the Relativistic WFR limit ({ref}`Section 29 <sec-symplectic-multi-agent-field-theory>`), the belief state is a propagating amplitude. To satisfy the chiral constraints of the cybernetic loop (Axiom {prf:ref}`ax-cybernetic-parity-violation`), we lift the scalar belief $\psi$ to a **chiral spinor pair** $(\Psi_L,\Psi_R)$, assembled into a Dirac spinor $\Psi = \Psi_L + \Psi_R$ when needed.
+We define the "Matter" of cognition: the **Belief State**. In the Relativistic WFR limit ({ref}`sec-symplectic-multi-agent-field-theory`), the belief state is a propagating amplitude. To satisfy the chiral constraints of the cybernetic loop (Axiom {prf:ref}`ax-cybernetic-parity-violation`), we lift the scalar belief $\psi$ to a **chiral spinor pair** $(\Psi_L,\Psi_R)$, assembled into a Dirac spinor $\Psi = \Psi_L + \Psi_R$ when needed.
 
 ### A. The Inference Hilbert Space
 
@@ -793,7 +793,7 @@ $$
 Here $\Psi = \Psi_L + \Psi_R$ and $D_\mu$ acts chirally with representation-specific couplings
 (Definition {prf:ref}`def-rep-covariant-derivatives`).
 
-*Justification:* The WFR equation ({ref}`Section 20 <sec-wasserstein-fisher-rao-geometry-unified-transport-on-hybrid-state-spaces>`) is a second-order diffusion (Fokker-Planck). In the relativistic limit with finite information speed $c_{\text{info}}$ (Axiom {prf:ref}`ax-information-speed-limit`), this factorizes into two first-order wave equations coupled by mass. The Dirac equation is the unique first-order differential equation invariant under Lorentz transformations (causal structure) and the internal gauge group $G_{\text{Fragile}} = SU(N_f)_C \times SU(2)_L \times U(1)_Y$.
+*Justification:* The WFR equation ({ref}`sec-wasserstein-fisher-rao-geometry-unified-transport-on-hybrid-state-spaces`) is a second-order diffusion (Fokker-Planck). In the relativistic limit with finite information speed $c_{\text{info}}$ (Axiom {prf:ref}`ax-information-speed-limit`), this factorizes into two first-order wave equations coupled by mass. The Dirac equation is the unique first-order differential equation invariant under Lorentz transformations (causal structure) and the internal gauge group $G_{\text{Fragile}} = SU(N_f)_C \times SU(2)_L \times U(1)_Y$.
 
 - $\gamma^\mu$: The **Cognitive Gamma Matrices**, satisfying $\{\gamma^\mu, \gamma^\nu\} = 2g^{\mu\nu}$. They encode the local causal structure of the latent space.
 - $m$: The **Inference Mass** (inverse correlation length).
@@ -928,7 +928,7 @@ When $W_{\mu\nu} \neq 0$, the belief update depends on the path taken in the man
    G_{\mu\nu}^a = \partial_\mu G_\nu^a - \partial_\nu G_\mu^a + g_s f^{abc} G_\mu^b G_\nu^c
 
    $$
-   When $G_{\mu\nu} \neq 0$, the feature binding is under stress. This corresponds to the Ontological Stress $\Xi$ (Definition {prf:ref}`def-ontological-stress`). When $\Xi > \Xi_{\text{crit}}$, chart fission is triggered ({ref}`Section 30 <sec-ontological-expansion-topological-fission-and-the-semantic-vacuum>`).
+   When $G_{\mu\nu} \neq 0$, the feature binding is under stress. This corresponds to the Ontological Stress $\Xi$ (Definition {prf:ref}`def-ontological-stress`). When $\Xi > \Xi_{\text{crit}}$, chart fission is triggered ({ref}`sec-ontological-expansion-topological-fission-and-the-semantic-vacuum`).
 
 $\square$
 
@@ -1008,7 +1008,7 @@ In our framework, the analog is **ontological fission**. The agent's ontology co
 Let me show you how this works mathematically.
 :::
 
-We derive the scalar sector by lifting the **Fission-Fusion dynamics** from {ref}`Section 30.4 <sec-symmetry-breaking-and-chart-birth>` into a field-theoretic action. The "Higgs Field" of cognition is the **Ontological Order Parameter**.
+We derive the scalar sector by lifting the **Fission-Fusion dynamics** from {ref}`sec-symmetry-breaking-and-chart-birth` into a field-theoretic action. The "Higgs Field" of cognition is the **Ontological Order Parameter**.
 
 ### A. The Ontological Scalar Field
 
@@ -1059,7 +1059,7 @@ The shape of the potential energy function determines everything about symmetry 
 The beautiful thing is that we can derive this potential from the dynamics of ontological fission that we've already established.
 :::
 
-We derive the potential $V(\phi)$ from the stability analysis of the Topological Fission process ({ref}`Section 30.4 <sec-symmetry-breaking-and-chart-birth>`).
+We derive the potential $V(\phi)$ from the stability analysis of the Topological Fission process ({ref}`sec-symmetry-breaking-and-chart-birth`).
 
 :::{prf:theorem} The Complexity Potential
 :label: thm-complexity-potential
@@ -1333,7 +1333,7 @@ $$
 
 where $a$ is the $SU(2)_L$ index and $Y_{ij}$ is the **Affordance Matrix** (a learned weight matrix determining which concepts trigger which actions).
 
-*Cross-reference:* This implements the TopologicalDecoder ({ref}`Section 7.10 <sec-decoder-architecture-overview-topological-decoder>`) which maps belief geometry to motor output.
+*Cross-reference:* This implements the TopologicalDecoder ({ref}`sec-decoder-architecture-overview-topological-decoder`) which maps belief geometry to motor output.
 
 :::
 
@@ -1933,7 +1933,7 @@ reflection-positivity hypotheses.
 
 #### A.2 Constructive OS3: Cluster Property
 
-For the explicit construction of the mass gap used here, see {ref}`Section <sec-mass-gap>`.
+For the explicit construction of the mass gap used here, see {ref}`sec-mass-gap`.
 
 :::{prf:theorem} OS3 from the Constructed Mass Gap
 :label: thm-smoc-os3-construction
@@ -2034,7 +2034,7 @@ This table provides the mapping between Standard Model entities and Cognitive en
 | Gluons | $g$ (8 for $N_c=3$) | Feature Binding Force ($N_f^2-1$ generators) | Definition {prf:ref}`def-feature-color-space` |
 | Quarks | $q$ | Sub-symbolic Features | Definition {prf:ref}`def-the-peeling-step` |
 | Hadrons | Baryons/Mesons | Concepts $K$ | Axiom {prf:ref}`ax-feature-confinement` |
-| Confinement | Color Neutral | Observability Constraint | {ref}`Section 33 <sec-causal-information-bound>` (Area Law) |
+| Confinement | Color Neutral | Observability Constraint | {ref}`sec-causal-information-bound` (Area Law) |
 | Spontaneous Symmetry Breaking | Higgs Mechanism | Ontological Fission | Corollary {prf:ref}`cor-ontological-ssb` |
 | Goldstone Boson | Gauge-redundant mode | Texture $z_{\text{tex}}$ | Axiom {prf:ref}`ax-bulk-boundary-decoupling` |
 
