@@ -35,7 +35,7 @@ In standard RL, observations and actions are inputs and outputs. Here they are b
 :::
 
 :::{div} feynman-prose
-We have defined the internal dynamics of the agent (the interior) as a Jump-Diffusion process on a Riemannian fiber bundle ({ref}`Sections 20-22 <sec-wasserstein-fisher-rao-geometry-unified-transport-on-hybrid-state-spaces>`). We now rigorously define its coupling to the external world.
+We have defined the internal dynamics of the agent (the interior) as a Jump-Diffusion process on a Riemannian fiber bundle ({ref}`sec-wasserstein-fisher-rao-geometry-unified-transport-on-hybrid-state-spaces`). We now rigorously define its coupling to the external world.
 
 The interface exchanges information with the environment via two asymmetric boundary conditions: **Dirichlet** (position-clamping for sensors) and **Neumann** (flux-clamping for motors).
 
@@ -174,7 +174,7 @@ This duality is the mathematical foundation for the symmetric treatment of sensi
 
 *Proof sketch.* The symplectic form $\omega$ is invariant under canonical transformations. The Legendre transform $\mathcal{L}: T\mathcal{Q} \to T^*\mathcal{Q}$ maps velocity to momentum, exchanging position-fixing (Dirichlet) for flux-fixing (Neumann). $\square$
 
-**Cross-references:** {ref}`Section 2.11.4 <sec-the-interface-and-observation-inflow>` (Observation inflow), Definition {prf:ref}`def-dirichlet-boundary-condition-sensors`.
+**Cross-references:** {ref}`sec-the-interface-and-observation-inflow` (Observation inflow), Definition {prf:ref}`def-dirichlet-boundary-condition-sensors`.
 
 :::
 
@@ -199,7 +199,7 @@ Here's the key insight: perception and action each need their own atlas, but the
 Why do we need separate atlases? Because the same physical situation might look very different from the perception side versus the action side. When you're looking at a cup, the visual representation involves shape, color, distance. When you're reaching for that cup, the motor representation involves joint angles, velocities, forces. These are different coordinate systems on the same underlying reality, and the Legendre transform is what translates between them.
 :::
 
-To implement the symplectic interface, we require two symmetric topological structures: a **Visual Atlas** for perception and an **Action Atlas** for actuation. This symmetrizes the architecture from {ref}`Section 2.2b <sec-the-shutter-as-a-vq-vae>`.
+To implement the symplectic interface, we require two symmetric topological structures: a **Visual Atlas** for perception and an **Action Atlas** for actuation. This symmetrizes the architecture from {ref}`sec-the-shutter-as-a-vq-vae`.
 
 :::{prf:definition} Visual Atlas — Perception
 :label: def-visual-atlas-perception
@@ -228,10 +228,10 @@ The Action Atlas $\mathcal{A}_{\text{act}} = \{(V_\beta, \psi_\beta, e_\beta^{\t
 - **Chart maps** $\psi_\beta: V_\beta \to \mathbb{R}^{d_{\text{act}}}$: Local motor coordinates
 - **Codebook embeddings** $e_\beta^{\text{act}} \in \mathbb{R}^{d_m}$: Action primitive codes
 
-*Input:* Intention $u_{\text{intent}} \in T_z\mathcal{Z}$ (from Policy, {ref}`Section 21.2 <sec-policy-control-field>`).
+*Input:* Intention $u_{\text{intent}} \in T_z\mathcal{Z}$ (from Policy, {ref}`sec-policy-control-field`).
 *Output:* Actuation $a_{\text{raw}}$ (torques, voltages).
 
-*Remark (Jump Operator in Action Atlas).* The **Jump Operator** $L_{\beta \to \beta'}$ in the Action Atlas represents **Task Switching**: transitioning from one control primitive to another (e.g., "Walk" $\to$ "Jump", "Grasp" $\to$ "Release"). This mirrors the chart transition operator in the Visual Atlas ({ref}`Section 20.6 <sec-the-unified-world-model>`).
+*Remark (Jump Operator in Action Atlas).* The **Jump Operator** $L_{\beta \to \beta'}$ in the Action Atlas represents **Task Switching**: transitioning from one control primitive to another (e.g., "Walk" $\to$ "Jump", "Grasp" $\to$ "Release"). This mirrors the chart transition operator in the Visual Atlas ({ref}`sec-the-unified-world-model`).
 
 :::
 
@@ -280,7 +280,7 @@ which is smooth and invertible by positive-definiteness of $G$. $\square$
 
 *Remark (Why Legendre?).* The Legendre transform is the unique smooth map relating configuration-velocity (perception) to configuration-momentum (action) that:
 1. Preserves the symplectic structure (Proposition {prf:ref}`prop-symplectic-duality-principle`)
-2. Interchanges Dirichlet and Neumann boundary conditions ({ref}`Section 23.1 <sec-the-symplectic-interface-position-momentum-duality>`)
+2. Interchanges Dirichlet and Neumann boundary conditions ({ref}`sec-the-symplectic-interface-position-momentum-duality`)
 3. Maps kinetic energy to Hamiltonian dynamics
 
 *Cross-reference:* The metric $G$ appearing here is the capacity-constrained metric from Theorem {prf:ref}`thm-capacity-constrained-metric-law`, ensuring that the "mass" in the Legendre relation $p = G\dot{q}$ is the same "mass" that determines geodesic inertia (Definition {prf:ref}`def-mass-tensor`).
@@ -316,7 +316,7 @@ $$
 :::{prf:definition} The Holographic Shutter — Unified Interface
 :label: def-the-holographic-shutter-unified-interface
 
-The Shutter is extended from {ref}`Section 2.2b <sec-the-shutter-as-a-vq-vae>` to a symmetric tuple:
+The Shutter is extended from {ref}`sec-the-shutter-as-a-vq-vae` to a symmetric tuple:
 
 $$
 \mathbb{S} = (\mathcal{A}_{\text{vis}}, \mathcal{A}_{\text{act}}),
@@ -327,7 +327,7 @@ where:
 - **Egress (Actuation):** $D_A: T_z\mathcal{Z} \times \mathcal{Z} \to T^*\mathcal{Q}$ via Action Atlas
 - **Proprioception (Inverse Model):** $E_A: T^*\mathcal{Q} \to T_z\mathcal{Z}$ maps realized actions back to intentions
 
-**Cross-references:** {ref}`Section 2.2b <sec-the-shutter-as-a-vq-vae>` (VQ-VAE Shutter), {ref}`Section 7.8 <sec-tier-the-attentive-atlas>` (AttentiveAtlasEncoder), {ref}`Section 7.10 <sec-decoder-architecture-overview-topological-decoder>` (TopologicalDecoder).
+**Cross-references:** {ref}`sec-the-shutter-as-a-vq-vae` (VQ-VAE Shutter), {ref}`sec-tier-the-attentive-atlas` (AttentiveAtlasEncoder), {ref}`sec-decoder-architecture-overview-topological-decoder` (TopologicalDecoder).
 
 :::
 (sec-motor-texture-the-action-residual)=
@@ -341,7 +341,7 @@ This is *motor texture*. It's the high-frequency, fine-grained detail of motor e
 The reason this matters is the sim-to-real gap. In simulation, your motors are perfect: no tremor, no noise, no friction. In reality, all of that exists. If your policy depends on motor texture, it will fail catastrophically in the real world. So we build a *firewall*: the policy never sees motor texture, and therefore can't depend on it. The texture is only used for low-level execution, not for decision-making.
 :::
 
-Just as visual texture captures reconstruction-only detail ({ref}`Section 21.3 <sec-the-retrieval-texture-firewall>`), **motor texture** captures actuation-only detail that is excluded from planning.
+Just as visual texture captures reconstruction-only detail ({ref}`sec-the-retrieval-texture-firewall`), **motor texture** captures actuation-only detail that is excluded from planning.
 
 :::{prf:definition} Motor Texture Decomposition
 :label: def-motor-texture-decomposition
@@ -357,7 +357,7 @@ where:
 - $z_{n,\text{motor}} \in \mathbb{R}^{d_{\text{motor},n}}$ is **motor nuisance** (impedance, compliance, force distribution)
 - $z_{\text{tex,motor}} \in \mathbb{R}^{d_{\text{motor,tex}}}$ is **motor texture** (tremor, fine-grained noise, micro-corrections)
 
-*Remark (Parallel to Visual Decomposition).* This mirrors the visual decomposition $(K_t, z_{n,t}, z_{\text{tex},t})$ from {ref}`Section 2.2b <sec-the-shutter-as-a-vq-vae>`:
+*Remark (Parallel to Visual Decomposition).* This mirrors the visual decomposition $(K_t, z_{n,t}, z_{\text{tex},t})$ from {ref}`sec-the-shutter-as-a-vq-vae`:
 
 | Component                 | Visual Domain                 | Motor Domain                              |
 |---------------------------|-------------------------------|-------------------------------------------|
@@ -416,7 +416,7 @@ The policy $\pi_\theta$ operates on $(K, z_n, A, z_{n,\text{motor}})$ but **neve
 - **Reality:** $\sigma_{\text{motor}} > 0$ (friction, sensor noise, motor tremor)
 - **Robustness:** The Bulk policy $u_\pi$ is invariant; only the Action Decoder learns to manage domain-specific noise.
 
-**Cross-references:** {ref}`Section 21.3 <sec-the-retrieval-texture-firewall>` (Texture Firewall), Axiom {prf:ref}`ax-bulk-boundary-decoupling`.
+**Cross-references:** {ref}`sec-the-retrieval-texture-firewall` (Texture Firewall), Axiom {prf:ref}`ax-bulk-boundary-decoupling`.
 
 :::
 (sec-the-belief-evolution-cycle-perception-dreaming-action)=
@@ -518,9 +518,9 @@ where $T_{\text{sensor}}$ and $T_{\text{motor}}$ are the effective temperatures 
 
 *Interpretation:* Perfect efficiency ($\eta = 1$) requires $T_{\text{motor}} = 0$ (deterministic motors) or $T_{\text{sensor}} \to \infty$ (infinite sensory entropy). Real systems operate at $\eta < 1$.
 
-**Cross-references:** {ref}`Section 22.7 <sec-adaptive-thermodynamics>` (Adaptive Thermodynamics), {ref}`Section 14.2 <sec-the-equivalence-theorem>` (MaxEnt Control).
+**Cross-references:** {ref}`sec-adaptive-thermodynamics` (Adaptive Thermodynamics), {ref}`sec-the-equivalence-theorem` (MaxEnt Control).
 
-*Forward reference (Reward as Heat).* {ref}`Section 24.3 <sec-the-bulk-potential-screened-poisson-equation>` establishes that Reward is the thermodynamic **heat input** that drives the cycle: the Boltzmann-Value Law (Axiom {prf:ref}`ax-the-boltzmann-value-law`) identifies $V(z) = E(z) - T_c S(z)$ as Gibbs Free Energy, and Theorem {prf:ref}`thm-wfr-consistency-value-creates-mass` proves that WFR dynamics materialize the agent in high-value regions ("Value Creates Mass").
+*Forward reference (Reward as Heat).* {ref}`sec-the-bulk-potential-screened-poisson-equation` establishes that Reward is the thermodynamic **heat input** that drives the cycle: the Boltzmann-Value Law (Axiom {prf:ref}`ax-the-boltzmann-value-law`) identifies $V(z) = E(z) - T_c S(z)$ as Gibbs Free Energy, and Theorem {prf:ref}`thm-wfr-consistency-value-creates-mass` proves that WFR dynamics materialize the agent in high-value regions ("Value Creates Mass").
 
 :::
 (sec-wfr-boundary-conditions-waking-vs-dreaming)=
@@ -538,7 +538,7 @@ When you're dreaming, the boundary is *reflective*. No information flows in from
 Mathematically, this is the simplest possible change: swap a Dirichlet condition for a Neumann-zero condition. But the consequences are profound. In waking, your beliefs are constantly being corrected by reality. In dreaming, your beliefs can wander wherever the internal dynamics take them. That's why dreams can be so strange---there's no ground truth pulling you back.
 :::
 
-The **Wasserstein-Fisher-Rao** (WFR, {prf:ref}`def-the-wfr-action`) equation from {ref}`Section 20 <sec-wasserstein-fisher-rao-geometry-unified-transport-on-hybrid-state-spaces>` governs the belief density $\rho$. The distinction between Waking and Dreaming is rigorously defined by the **boundary condition** on $\rho$. Boundary conditions update at interaction time $t$, while internal flow evolves in computation time $s$ ({ref}`Section 1.3 <sec-the-chronology-temporal-distinctions>`).
+The **Wasserstein-Fisher-Rao** (WFR, {prf:ref}`def-the-wfr-action`) equation from {ref}`sec-wasserstein-fisher-rao-geometry-unified-transport-on-hybrid-state-spaces` governs the belief density $\rho$. The distinction between Waking and Dreaming is rigorously defined by the **boundary condition** on $\rho$. Boundary conditions update at interaction time $t$, while internal flow evolves in computation time $s$ ({ref}`sec-the-chronology-temporal-distinctions`).
 
 :::{prf:definition} Waking: Boundary Clamping
 :label: def-waking-boundary-clamping
@@ -600,7 +600,7 @@ which is:
 - **Zero** during dreaming (closed system)
 - **Negative** during pure actuation (net information outflow to motors)
 
-**Cross-references:** {ref}`Section 20.2 <sec-the-wfr-metric>` (WFR Action), {ref}`Section 20.6 <sec-the-unified-world-model>` (WFR World Model), {ref}`Section 2.11.4 <sec-the-interface-and-observation-inflow>` (Observation Inflow).
+**Cross-references:** {ref}`sec-the-wfr-metric` (WFR Action), {ref}`sec-the-unified-world-model` (WFR World Model), {ref}`sec-the-interface-and-observation-inflow` (Observation Inflow).
 
 :::
 (sec-the-context-space-unified-definition)=
@@ -676,13 +676,13 @@ All context instantiations share the same geometric structure:
    \pi(a | z, c) = \text{softmax}\left(-\frac{\Phi_{\text{eff}}(z, K, c)}{T_c}\right)
 
    $$
-*Proof.* The holographic expansion ({ref}`Section 21 <sec-radial-generation-entropic-drift-and-policy-control>`) is invariant to the interpretation of the control field $u_\pi$. Whether $u_\pi$ encodes "go left" (RL), "class = cat" (classification), or "continue with tone = formal" (LLM), the bulk dynamics follow the same geodesic SDE ({ref}`Section 22 <sec-the-equations-of-motion-geodesic-jump-diffusion>`). The interpretation is purely a boundary condition. $\square$
+*Proof.* The holographic expansion ({ref}`sec-radial-generation-entropic-drift-and-policy-control`) is invariant to the interpretation of the control field $u_\pi$. Whether $u_\pi$ encodes "go left" (RL), "class = cat" (classification), or "continue with tone = formal" (LLM), the bulk dynamics follow the same geodesic SDE ({ref}`sec-the-equations-of-motion-geodesic-jump-diffusion`). The interpretation is purely a boundary condition. $\square$
 
 :::
 :::{prf:definition} Context-Conditioned WFR
 :label: def-context-conditioned-wfr
 
-The WFR dynamics ({ref}`Section 20.2 <sec-the-wfr-metric>`) generalize to context-conditioned form:
+The WFR dynamics ({ref}`sec-the-wfr-metric`) generalize to context-conditioned form:
 
 $$
 \partial_s \rho + \nabla \cdot (\rho\, v_c) = \rho\, r_c,
@@ -709,9 +709,9 @@ Each specifies:
 
 *Remark (Unified Training Objective).* This isomorphism enables transfer learning across task domains: an agent trained on RL can be fine-tuned for classification by reinterpreting the action space as label space, with the same holographic dynamics.
 
-**Cross-references:** {ref}`Section 21.2 <sec-policy-control-field>` (Control Field), Theorem {prf:ref}`thm-unified-control-interpretation`, Definition {prf:ref}`def-effective-potential`.
+**Cross-references:** {ref}`sec-policy-control-field` (Control Field), Theorem {prf:ref}`thm-unified-control-interpretation`, Definition {prf:ref}`def-effective-potential`.
 
-*Forward reference (Effective Potential Resolution).* {ref}`Section 24.2 <sec-the-bulk-potential-screened-poisson-equation>`
+*Forward reference (Effective Potential Resolution).* {ref}`sec-the-bulk-potential-screened-poisson-equation`
 resolves the meaning of $\Phi_{\text{eff}} = V_{\text{critic}}$: the Critic solves the **Screened Poisson Equation** to
 compute the potential from boundary reward flux (scalar charges in the conservative case). The discount factor $\gamma$
 determines the screening length $\ell = c_{\text{info}} \Delta t / (-\ln\gamma)$ (natural units: $1/(-\ln\gamma)$)
@@ -782,7 +782,7 @@ class DualAtlasEncoder(nn.Module):
     """
     Definitions 23.2.1-23.2.2: Symmetric encoder for Visual/Action atlases.
 
-    Extends AttentiveAtlasEncoder ({ref}`Section 7.8 <sec-tier-the-attentive-atlas>`) with unified interface.
+    Extends AttentiveAtlasEncoder ({ref}`sec-tier-the-attentive-atlas`) with unified interface.
     """
 
     def __init__(
@@ -808,7 +808,7 @@ class DualAtlasEncoder(nn.Module):
             nn.SiLU(),
         )
 
-        # Cross-attention routing ({ref}`Section 7.8 <sec-tier-the-attentive-atlas>`)
+        # Cross-attention routing ({ref}`sec-tier-the-attentive-atlas`)
         self.key_proj = nn.Linear(hidden_dim, hidden_dim)
         self.chart_queries = nn.Parameter(torch.randn(num_charts, hidden_dim) * 0.02)
         self.scale = hidden_dim ** 0.5
@@ -943,7 +943,7 @@ class ContextConditionedPolicy(nn.Module):
 
 class HolographicInterface(nn.Module):
     """
-    {ref}`Section 23 <sec-the-boundary-interface-symplectic-structure>`: The Holographic Interface.
+    {ref}`sec-the-boundary-interface-symplectic-structure`: The Holographic Interface.
 
     Implements the symplectic boundary between Agent and Environment.
     Combines:
@@ -953,9 +953,9 @@ class HolographicInterface(nn.Module):
     - Thermodynamic cycle tracking
 
     Cross-references:
-    - {ref}`Section 20 <sec-wasserstein-fisher-rao-geometry-unified-transport-on-hybrid-state-spaces>` (WFR Geometry)
-    - {ref}`Section 21 <sec-radial-generation-entropic-drift-and-policy-control>` (Holographic Generation {cite}`thooft1993holographic,susskind1995world`)
-    - {ref}`Section 22 <sec-the-equations-of-motion-geodesic-jump-diffusion>` (Geodesic SDE)
+    - {ref}`sec-wasserstein-fisher-rao-geometry-unified-transport-on-hybrid-state-spaces` (WFR Geometry)
+    - {ref}`sec-radial-generation-entropic-drift-and-policy-control` (Holographic Generation {cite}`thooft1993holographic,susskind1995world`)
+    - {ref}`sec-the-equations-of-motion-geodesic-jump-diffusion` (Geodesic SDE)
     """
 
     def __init__(self, config: InterfaceConfig):
@@ -1080,13 +1080,13 @@ class HolographicInterface(nn.Module):
         }
 ```
 
-**Cross-references:** {ref}`Section 7.8 <sec-tier-the-attentive-atlas>` (AttentiveAtlasEncoder), {ref}`Section 7.10 <sec-decoder-architecture-overview-topological-decoder>` (TopologicalDecoder), Algorithm 22.4.2 (BAOAB).
+**Cross-references:** {ref}`sec-tier-the-attentive-atlas` (AttentiveAtlasEncoder), {ref}`sec-decoder-architecture-overview-topological-decoder` (TopologicalDecoder), Algorithm 22.4.2 (BAOAB).
 
 ::::{admonition} Connection to RL #7: Dreamer/World Models as Generic RNN Dynamics
 :class: note
 :name: conn-rl-7
 **The General Law (Fragile Agent):**
-The HolographicInterface implements latent dynamics via **symplectic integrators** on the state-space manifold $(\mathcal{Z}, G, \omega)$. The BAOAB algorithm ({ref}`Section 22.4 <sec-the-geodesic-baoab-integrator>`) preserves the symplectic structure:
+The HolographicInterface implements latent dynamics via **symplectic integrators** on the state-space manifold $(\mathcal{Z}, G, \omega)$. The BAOAB algorithm ({ref}`sec-the-geodesic-baoab-integrator`) preserves the symplectic structure:
 
 $$
 \hat{z}_{t+1} = \Phi_{\text{BAOAB}}(z_t) \quad \text{with} \quad \omega(\Phi_* X, \Phi_* Y) = \omega(X, Y).

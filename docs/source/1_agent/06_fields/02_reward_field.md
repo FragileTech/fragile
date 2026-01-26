@@ -35,7 +35,7 @@ Why does this matter? Because it opens up a whole world of structure that standa
 Think of Rock-Paper-Scissors. There's no "best" move. The optimal strategy cycles: rock beats scissors beats paper beats rock. That cyclic structure is encoded in the curl of the reward 1-form.
 :::
 
-We have defined Observations as **Configuration Constraints** (manifold position, {ref}`Section 23.1 <sec-the-symplectic-interface-position-momentum-duality>`) and Actions as **Momentum Constraints** (tangent vectors, {ref}`Section 23.1 <sec-the-symplectic-interface-position-momentum-duality>`). We now define the third component of the interface: **Reward**.
+We have defined Observations as **Configuration Constraints** (manifold position, {ref}`sec-the-symplectic-interface-position-momentum-duality`) and Actions as **Momentum Constraints** (tangent vectors, {ref}`sec-the-symplectic-interface-position-momentum-duality`). We now define the third component of the interface: **Reward**.
 
 We rigorously frame Reward not as a scalar signal, but as a **Differential 1-Form** on the latent manifold. This generalization is fundamental: the agent harvests reward by moving through the field, and the reward it collects depends on both position and direction of motion. The standard scalar value function $V(z)$ emerges as the special case where the reward field is **conservative** (curl-free).
 
@@ -358,14 +358,14 @@ Here $\nabla_A V := \nabla V - A$ with $A := \delta\Psi + \eta$ the non-conserva
 (conservative case: $A=0$).
 
 $$
-For the stationary case ($b = 0$) and absorbing the temperature into the source term, this yields the Helmholtz equation $-\Delta_G V + \kappa^2 V = \rho_r$. Details in {ref}`Appendix A.5 <sec-appendix-a-full-derivations>`. $\square$
+For the stationary case ($b = 0$) and absorbing the temperature into the source term, this yields the Helmholtz equation $-\Delta_G V + \kappa^2 V = \rho_r$. Details in {ref}`sec-appendix-a-full-derivations`. $\square$
 
 Units: $[\kappa] = 1/\text{length}$, $[\Delta_G V] = \mathrm{nat}/\text{length}^2$, $[\rho_r] = \mathrm{nat}/\text{length}^2$.
 
-*Cross-reference (Relativistic Extension):* This **elliptic** Helmholtz equation assumes instantaneous value propagation. When agents interact across spatial or computational separation with finite information speed $c_{\text{info}}$, the equation generalizes to the **hyperbolic Klein-Gordon equation**: $(\frac{1}{c^2}\partial_t^2 - \Delta_G + \kappa^2)V = \rho_r$. See Theorem {prf:ref}`thm-hjb-klein-gordon` in {ref}`Section 29.5 <sec-the-hyperbolic-value-equation>`.
+*Cross-reference (Relativistic Extension):* This **elliptic** Helmholtz equation assumes instantaneous value propagation. When agents interact across spatial or computational separation with finite information speed $c_{\text{info}}$, the equation generalizes to the **hyperbolic Klein-Gordon equation**: $(\frac{1}{c^2}\partial_t^2 - \Delta_G + \kappa^2)V = \rho_r$. See Theorem {prf:ref}`thm-hjb-klein-gordon` in {ref}`sec-the-hyperbolic-value-equation`.
 
 *Cross-reference (Gauge-Covariant Generalization):* When dynamics must be invariant under local nuisance
-transformations ({ref}`Section 29.13 <sec-local-gauge-symmetry-nuisance-bundle>`), covariant derivatives
+transformations ({ref}`sec-local-gauge-symmetry-nuisance-bundle`), covariant derivatives
 act on vector-valued belief fields (or nuisance orientation multiplets) rather than on the scalar
 value $V$. Only if $V$ is chosen to transform in a non-trivial representation does the Helmholtz
 operator become $-D_\mu D^\mu + \kappa^2$.
@@ -445,7 +445,7 @@ This recovers the **Bellman equation** $V = r + \gamma P V$.
 
 **What the generalization offers:**
 - Geometric propagation: rewards propagate as sources in a scalar field, respecting manifold curvature
-- Conformal coupling: high-value-curvature regions modulate the metric ({ref}`Section 24.4 <sec-geometric-back-reaction-the-conformal-coupling>`)
+- Conformal coupling: high-value-curvature regions modulate the metric ({ref}`sec-geometric-back-reaction-the-conformal-coupling`)
 - Continuous limit: natural extension to continuous state spaces without discretization artifacts
 - Physical interpretation: $\gamma$ has a spatial meaning (screening length), not just temporal (horizon)
 :::
@@ -543,7 +543,7 @@ For $\gamma = 0.99$ and $c_{\text{info}} \Delta t = 1$: $\ell_{\text{screen}} \a
 | $\gamma = 0.9$    | $\kappa \approx 0.1$    | $\ell \approx 10$       | Short horizon                     |
 | $\gamma \to 0$    | $\kappa \to \infty$     | $\ell \to 0$            | Myopic (infinitely massive)       |
 
-**Cross-references:** {ref}`Section 2.7 <sec-the-hjb-correspondence>` (HJB Equation), Theorem {prf:ref}`thm-capacity-constrained-metric-law`.
+**Cross-references:** {ref}`sec-the-hjb-correspondence` (HJB Equation), Theorem {prf:ref}`thm-capacity-constrained-metric-law`.
 
 :::
 
@@ -615,7 +615,7 @@ $$
 where:
 - $E(z)$ is the **task risk/cost** at state $z$
 - $S(z)$ is the **exploration entropy** (measure of uncertainty/optionality)
-- $T_c$ is the **cognitive temperature** ({prf:ref}`def-cognitive-temperature`, {ref}`Section 21.1 <sec-hyperbolic-volume-and-entropic-drift>`)
+- $T_c$ is the **cognitive temperature** ({prf:ref}`def-cognitive-temperature`, {ref}`sec-hyperbolic-volume-and-entropic-drift`)
 
 *Units:* $[\Phi] = [E] = [T_c S] = \mathrm{nat}$.
 
@@ -669,7 +669,7 @@ where $Z = \int_{\mathcal{Z}} \exp(V(z)/T_c) \, d\mu_G(z)$ is the partition func
 :::{prf:theorem} WFR Consistency: Value Creates Mass
 :label: thm-wfr-consistency-value-creates-mass
 
-In the WFR dynamics ({prf:ref}`def-the-wfr-action`, {ref}`Section 20 <sec-wasserstein-fisher-rao-geometry-unified-transport-on-hybrid-state-spaces>`), the reaction rate $r(z)$ in the unbalanced continuity equation is determined by the value function:
+In the WFR dynamics ({prf:ref}`def-the-wfr-action`, {ref}`sec-wasserstein-fisher-rao-geometry-unified-transport-on-hybrid-state-spaces`), the reaction rate $r(z)$ in the unbalanced continuity equation is determined by the value function:
 
 $$
 r(z) = \frac{1}{s_r} \left( V(z) - \bar{V} \right),
@@ -752,7 +752,7 @@ At stationarity, $\nabla \cdot J = 0$, but only $J_{\text{gradient}} = 0$ at tru
 | **Probability current $J$** | **Value harvesting flow** | **NESS circulation** |
 | **Entropy production $\dot{S}_i$** | **Cyclic reward rate** | **Perpetual motion** |
 
-**Cross-references:** {ref}`Section 20.2 <sec-the-wfr-metric>` (WFR dynamics), {ref}`Section 23.4 <sec-the-belief-evolution-cycle-perception-dreaming-action>` (Thermodynamic Cycle), {ref}`Section 14.2 <sec-the-equivalence-theorem>` (MaxEnt control), Theorem {prf:ref}`thm-hodge-decomposition` (Hodge Decomposition).
+**Cross-references:** {ref}`sec-the-wfr-metric` (WFR dynamics), {ref}`sec-the-belief-evolution-cycle-perception-dreaming-action` (Thermodynamic Cycle), {ref}`sec-the-equivalence-theorem` (MaxEnt control), Theorem {prf:ref}`thm-hodge-decomposition` (Hodge Decomposition).
 
 :::{prf:corollary} The Varentropy-Stability Relation (Cognitive Heat Capacity)
 :label: cor-varentropy-stability
@@ -868,7 +868,7 @@ The conformal factor encodes the local "importance" of the value landscape:
 
 Near sharp ridges or valleys of $V$ (where $\|\nabla^2 V\|$ is large), the conformal factor causes:
 
-1. **Inertia Increase:** The effective mass $\tilde{G}(z) = \Omega^2(z) G(z)$ increases, so the agent slows down near critical decision boundaries ({ref}`Section 22.2 <sec-the-coupled-jump-diffusion-sde>` mass scaling).
+1. **Inertia Increase:** The effective mass $\tilde{G}(z) = \Omega^2(z) G(z)$ increases, so the agent slows down near critical decision boundaries ({ref}`sec-the-coupled-jump-diffusion-sde` mass scaling).
 
 2. **Resolution Increase:** The capacity-constrained metric allocates more volume to high-curvature regions (Theorem {prf:ref}`thm-capacity-constrained-metric-law`), allowing higher-fidelity representation of value gradients.
 
@@ -898,7 +898,7 @@ with effective screening mass $\tilde{\kappa}^2 = \Omega^{-2} \kappa^2$.
 
 *Interpretation:* In high-curvature regions ($\Omega$ large), the effective screening mass decreases, making the field more "massless" and allowing longer-range correlations. This is the **self-focusing** effect: important regions become more interconnected.
 
-**Cross-references:** Theorem {prf:ref}`thm-capacity-constrained-metric-law`, {ref}`Section 22.1 <sec-the-stochastic-action-principle>` (Mass=Metric), Proposition {prf:ref}`prop-mass-scaling-near-boundary`.
+**Cross-references:** Theorem {prf:ref}`thm-capacity-constrained-metric-law`, {ref}`sec-the-stochastic-action-principle` (Mass=Metric), Proposition {prf:ref}`prop-mass-scaling-near-boundary`.
 
 :::
 
@@ -962,7 +962,7 @@ from typing import Optional, Tuple
 
 @dataclass
 class CriticConfig:
-    """Configuration for the HolographicCritic ({ref}`Section 24 <sec-the-reward-field-value-forms-and-hodge-geometry>`)."""
+    """Configuration for the HolographicCritic ({ref}`sec-the-reward-field-value-forms-and-hodge-geometry`)."""
     latent_dim: int = 32          # Dimension of latent space Z
     hidden_dim: int = 256         # Hidden layer dimension
     gamma: float = 0.99           # Discount factor
@@ -977,7 +977,7 @@ class CriticConfig:
 
 class HolographicCritic(nn.Module):
     """
-    {ref}`Section 24 <sec-the-reward-field-value-forms-and-hodge-geometry>`: The Reward Encoder / Field Solver.
+    {ref}`sec-the-reward-field-value-forms-and-hodge-geometry`: The Reward Encoder / Field Solver.
 
     Maps Boundary Charges (rewards r) to Bulk Potential (value V).
     Solves the Screened Poisson Equation on the latent manifold (Theorem {prf:ref}`thm-the-hjb-helmholtz-correspondence`).
@@ -1209,7 +1209,7 @@ def train_critic_step(
     return info
 ```
 
-**Cross-references:** {ref}`Section 22.4 <sec-the-geodesic-baoab-integrator>` (BAOAB integrator uses $\nabla\Phi_{\text{eff}}$), Section 23.7 (HolographicInterface).
+**Cross-references:** {ref}`sec-the-geodesic-baoab-integrator` (BAOAB integrator uses $\nabla\Phi_{\text{eff}}$), Section 23.7 (HolographicInterface).
 
 (sec-the-unified-holographic-dictionary)=
 ## The Unified Holographic Dictionary
@@ -1288,7 +1288,7 @@ The agent-environment interface decomposes into exactly three types of boundary 
 
 These three conditions fully specify the agent's interaction with its environment.
 
-**Cross-references:** {ref}`Section 23 <sec-the-boundary-interface-symplectic-structure>` (Holographic Interface), {ref}`Section 22 <sec-the-equations-of-motion-geodesic-jump-diffusion>` (Equations of Motion), {ref}`Section 18 <sec-capacity-constrained-metric-law-geometry-from-interface-limits>` (Capacity-Constrained Geometry).
+**Cross-references:** {ref}`sec-the-boundary-interface-symplectic-structure` (Holographic Interface), {ref}`sec-the-equations-of-motion-geodesic-jump-diffusion` (Equations of Motion), {ref}`sec-capacity-constrained-metric-law-geometry-from-interface-limits` (Capacity-Constrained Geometry).
 
 :::
 (sec-diagnostic-nodes-for-the-scalar-field)=
@@ -1397,7 +1397,7 @@ def value_curl_check(
     return abs(loop_integral)
 ```
 
-**Table 24.8.1 ({ref}`Section 24 <sec-the-reward-field-value-forms-and-hodge-geometry>` Diagnostic Summary).**
+**Table 24.8.1 ({ref}`sec-the-reward-field-value-forms-and-hodge-geometry` Diagnostic Summary).**
 
 | # | Name | Monitors | Healthy Range |
 |---|------|----------|---------------|
@@ -1408,4 +1408,4 @@ def value_curl_check(
 | 39 | ValueMassCorrelationCheck | WFR-Value alignment | $> 0.5$ |
 | 61 | ValueCurlCheck | Non-conservative structure | Context-dependent (see above) |
 
-**Cross-references:** {ref}`Section 3 <sec-diagnostics-stability-checks>` (Sieve Diagnostic Nodes), {ref}`Section 23.8 <sec-summary-tables-and-diagnostic-nodes-a>` (Interface Diagnostics Nodes 30-34), Theorem {prf:ref}`thm-hodge-decomposition` (Hodge Decomposition), Definition {prf:ref}`def-value-curl` (Value Curl).
+**Cross-references:** {ref}`sec-diagnostics-stability-checks` (Sieve Diagnostic Nodes), {ref}`sec-summary-tables-and-diagnostic-nodes-a` (Interface Diagnostics Nodes 30-34), Theorem {prf:ref}`thm-hodge-decomposition` (Hodge Decomposition), Definition {prf:ref}`def-value-curl` (Value Curl).

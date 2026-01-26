@@ -34,10 +34,10 @@ And there's a consequence that's even more striking: as you approach this limit,
 
 *Abstract.* We derive a fundamental limit on representational capacity: the maximum information an agent can stably
 represent is bounded by the area of its interface, measured in units of a characteristic length scale we call the
-**Levin Length**. This bound follows from the capacity-constrained metric law ({ref}`Section 18.2 <sec-main-result>`) and
+**Levin Length**. This bound follows from the capacity-constrained metric law ({ref}`sec-main-result`) and
 has a striking consequence: as the agent approaches this limit, its internal update rate slows to zero---a phenomenon we
 call **Causal Stasis**. This section provides the rigorous derivation (with full proofs in
-{ref}`Appendix A.6 <sec-appendix-a-area-law>`) and defines Diagnostic Node 56 to monitor proximity to this bound.
+{ref}`sec-appendix-a-area-law`) and defines Diagnostic Node 56 to monitor proximity to this bound.
 
 (rb-sensor-bandwidth)=
 :::{admonition} Researcher Bridge: The Sensor Bandwidth Ceiling
@@ -74,7 +74,7 @@ where $\ell_L$ is the Levin length (Definition {prf:ref}`def-levin-length`) and 
 {prf:ref}`thm-capacity-constrained-metric-law`), the Boundary Capacity Definition
 ({prf:ref}`def-boundary-capacity-area-law-at-finite-resolution`), and the Equation of Motion (Definition
 {prf:ref}`def-bulk-drift-continuous-flow`). The remediation connects to Ontological Fusion
-({ref}`Section 30.8 <sec-ontological-fusion-concept-consolidation>`).
+({ref}`sec-ontological-fusion-concept-consolidation`).
 
 *Literature:* Holographic bounds {cite}`thooft1993holographic,susskind1995world`; Fisher information geometry
 {cite}`amari2016information`; Levin complexity {cite}`levin1973universal`.
@@ -211,7 +211,7 @@ treatment. The Poincare metric $G_{ij} = 4\delta_{ij}/(1-|z|^2)^2$ is the correc
 with the horizon at $|z|=1$. In computation we truncate at $\lvert z\rvert = 1-\varepsilon$ with $\varepsilon$ tied to
 Levin length/resolution; this is a numerical cutoff distinct from any terminal subset $\Gamma_{\text{term}}$.
 
-*Proof sketch.* Substitute the uniform density into the Metric Law. The spherically symmetric solution follows from standard analysis of Einstein-like field equations {cite}`wald1984general`. Full derivation in {ref}`Appendix A.6 <sec-appendix-a-full-derivations>`. $\square$
+*Proof sketch.* Substitute the uniform density into the Metric Law. The spherically symmetric solution follows from standard analysis of Einstein-like field equations {cite}`wald1984general`. Full derivation in {ref}`sec-appendix-a-full-derivations`. $\square$
 
 *Critical observation.* The metric component $A(r)$ diverges at the horizon radius $r_h$ satisfying:
 
@@ -274,7 +274,7 @@ I_{\max} = \nu_2 \cdot \frac{\text{Area}(\partial\mathcal{Z})}{\ell_L^{D-1}} = \
 $$
 where $\nu_2 = 1/4$ is the holographic coefficient for $D=2$ and $\ell_L^{D-1} = \ell_L$ for the 1-dimensional boundary.
 
-*Proof sketch (full derivation in {ref}`Appendix A.6 <sec-appendix-a-area-law>`).*
+*Proof sketch (full derivation in {ref}`sec-appendix-a-area-law`).*
 
 **Step 1 (Holographic Reduction).** The bulk-to-boundary conversion relies on the Einstein tensor divergence identity (valid in arbitrary dimension): integrating the scalar curvature over a compact manifold with boundary yields a boundary term involving the extrinsic curvature. Applying this to the Metric Law (Theorem {prf:ref}`thm-capacity-constrained-metric-law`) via Lemma {prf:ref}`lem-a-divergence-to-boundary-conversion`:
 
@@ -350,7 +350,7 @@ v^r = -G^{rr}\partial_r \Phi_{\text{eff}} \to 0. \quad \blacksquare
 $$
 *Operational interpretation.* The agent becomes **frozen in thought**. Its internal update rate slows as the "inertia" (mass = metric, per Definition {prf:ref}`def-mass-tensor`) becomes infinite. The agent can still receive observations (inflow), but it cannot process them into updated beliefs or emit actions (outflow). This is **Causal Stasis**: the agent is overwhelmed by its own representational complexity.
 
-*Remark (Distinction from Deadlock).* Causal Stasis is not a software deadlock or resource exhaustion. It is a geometric phenomenon: the agent's belief manifold has curved so severely that motion becomes infinitely costly. The remedy is not debugging but **ontological surgery**—reducing $I_{\text{bulk}}$ via Fusion ({ref}`Section 30.8 <sec-ontological-fusion-concept-consolidation>`) or expanding the boundary capacity.
+*Remark (Distinction from Deadlock).* Causal Stasis is not a software deadlock or resource exhaustion. It is a geometric phenomenon: the agent's belief manifold has curved so severely that motion becomes infinitely costly. The remedy is not debugging but **ontological surgery**—reducing $I_{\text{bulk}}$ via Fusion ({ref}`sec-ontological-fusion-concept-consolidation`) or expanding the boundary capacity.
 
 :::
 
@@ -384,7 +384,7 @@ At 50% saturation, you're fine. At 90%, you're in the yellow zone---velocity is 
 The subscript "Sch" honors Karl Schwarzschild, who first computed the metric for a black hole. The analogy is exact: $\eta_{\text{Sch}} = 1$ is the horizon, beyond which lies the singularity.
 :::
 
-Following the diagnostic node convention ({ref}`Section 3.1 <sec-diagnostics-stability-checks>`), we define a monitor for proximity to the Causal Information Bound.
+Following the diagnostic node convention ({ref}`sec-diagnostics-stability-checks`), we define a monitor for proximity to the Causal Information Bound.
 
 (node-56)=
 **Node 56: CapacityHorizonCheck**
@@ -415,16 +415,16 @@ where:
 - $0.9 \le \eta_{\text{Sch}} < 0.99$: **Warning.** Update velocity degraded (Corollary {prf:ref}`cor-saturation-velocity-tradeoff`). Prepare for ontological intervention.
 - $\eta_{\text{Sch}} \ge 0.99$: **Critical.** Causal Stasis imminent. Halt exploration and trigger emergency fusion.
 
-*Cross-reference:* Complements CapacitySaturationCheck (Node 40, {ref}`Section 18.3 <sec-diagnostic-node-capacity-saturation>`) by providing the velocity-degradation interpretation and connecting to ontological remediation.
+*Cross-reference:* Complements CapacitySaturationCheck (Node 40, {ref}`sec-diagnostic-node-capacity-saturation`) by providing the velocity-degradation interpretation and connecting to ontological remediation.
 :::
 
 **Trigger Conditions:**
-- **$\eta_{\text{Sch}} > 0.9$:** Near-saturation. Trigger **Ontological Fusion** ({ref}`Section 30.8 <sec-ontological-fusion-concept-consolidation>`) to prune the macro-register $\mathcal{K}$ and reduce the "information mass" $\mu$.
+- **$\eta_{\text{Sch}} > 0.9$:** Near-saturation. Trigger **Ontological Fusion** ({ref}`sec-ontological-fusion-concept-consolidation`) to prune the macro-register $\mathcal{K}$ and reduce the "information mass" $\mu$.
 - **Velocity drop detected:** If $\|\dot{z}\|$ decreases while $\eta_{\text{Sch}}$ increases, the correlation confirms capacity-induced slowdown.
 - **Persistent high $\eta_{\text{Sch}}$ after fusion:** The interface capacity $C_\partial$ may be the bottleneck. Consider hardware/bandwidth scaling.
 
 **Remediation:**
-1. **Ontological Fusion** ({ref}`Section 30.8 <sec-ontological-fusion-concept-consolidation>`): Merge redundant charts to reduce $I_{\text{bulk}}$.
+1. **Ontological Fusion** ({ref}`sec-ontological-fusion-concept-consolidation`): Merge redundant charts to reduce $I_{\text{bulk}}$.
 2. **Chart Pruning**: Remove low-utility charts (Definition **Def: Metabolic Pruning Criterion**).
 3. **Interface Expansion**: Increase boundary bandwidth (sensor resolution, communication channels).
 4. **Depth Reduction**: Decrease TopoEncoder depth to reduce latent dimensionality.
@@ -565,7 +565,7 @@ This section provides a consolidated reference for the key symbols introduced ac
 | $r_h$                          | Horizon radius                  | Critical radius where $G_{rr} \to \infty$                                                                          | $[z]$             | 33.2           |
 
 (sec-boundary-conditions)=
-## Boundary Conditions ({ref}`Section 23 <sec-the-boundary-interface-symplectic-structure>`)
+## Boundary Conditions ({ref}`sec-the-boundary-interface-symplectic-structure`)
 
 | Type      | Symbol                                               | Interpretation              | Physics             |
 |-----------|------------------------------------------------------|-----------------------------|---------------------|
@@ -577,59 +577,59 @@ This section provides a consolidated reference for the key symbols introduced ac
 ## Cross-Section Connectivity Map (Sections 17-32)
 
 ```
-{ref}`Section 17 <sec-summary-unified-information-theoretic-control-view>` (Summary)
+{ref}`sec-summary-unified-information-theoretic-control-view` (Summary)
      |
      v
-{ref}`Section 18 <sec-capacity-constrained-metric-law-geometry-from-interface-limits>` (Capacity Law) ─────────────────────────────────────────┐
+{ref}`sec-capacity-constrained-metric-law-geometry-from-interface-limits` (Capacity Law) ─────────────────────────────────────────┐
      |                                                              |
      | $\rho_I$, $C_\partial$, $T_{ij}$                            |
      v                                                              |
 Section 19 (Conclusion) ←───────────────────────────────────────────────────────┐  |
      |                                                           |  |
      v                                                           |  |
-{ref}`Section 20 <sec-wasserstein-fisher-rao-geometry-unified-transport-on-hybrid-state-spaces>` (WFR Geometry) ──────────────────────────────────┐   |  |
+{ref}`sec-wasserstein-fisher-rao-geometry-unified-transport-on-hybrid-state-spaces` (WFR Geometry) ──────────────────────────────────┐   |  |
      |                                                       |   |  |
      | $\lambda$, $(v, r)$, WFR metric                       |   |  |
      v                                                       |   |  |
-{ref}`Section 21 <sec-radial-generation-entropic-drift-and-policy-control>` (Holographic Generation {cite}`thooft1993holographic,susskind1995world`) ────────────────┐       |   |  |
+{ref}`sec-radial-generation-entropic-drift-and-policy-control` (Holographic Generation {cite}`thooft1993holographic,susskind1995world`) ────────────────┐       |   |  |
      |                                               |       |   |  |
      | $U(z)$, $u_\pi$, SO(D) breaking              |       |   |  |
      v                                               v       v   |  |
-{ref}`Section 22 <sec-the-equations-of-motion-geodesic-jump-diffusion>` (Equations of Motion) ←──────────────────┴───────┴───┘  |
+{ref}`sec-the-equations-of-motion-geodesic-jump-diffusion` (Equations of Motion) ←──────────────────┴───────┴───┘  |
      |                                                              |
      | $\Phi_{\text{eff}}$, geodesic SDE, BAOAB                    |
      v                                                              |
-{ref}`Section 23 <sec-the-boundary-interface-symplectic-structure>` (Holographic Interface) ←────────────────────────────────┤
+{ref}`sec-the-boundary-interface-symplectic-structure` (Holographic Interface) ←────────────────────────────────┤
      |                                                              |
      | Symplectic structure, Legendre transform, $(q, p)$          |
      v                                                              |
-{ref}`Section 24 <sec-the-reward-field-value-forms-and-hodge-geometry>` (Scalar Field) ←─────────────────────────────────────────┘
+{ref}`sec-the-reward-field-value-forms-and-hodge-geometry` (Scalar Field) ←─────────────────────────────────────────┘
      |
      | $V$ as Helmholtz solution, conformal coupling $\Omega$
      v
-{ref}`Section 25 <sec-supervised-topology-semantic-potentials-and-metric-segmentation>` (Supervised Topology)
+{ref}`sec-supervised-topology-semantic-potentials-and-metric-segmentation` (Supervised Topology)
      |
      | Classification as geodesic relaxation
      v
-{ref}`Section 26 <sec-theory-of-meta-stability-the-universal-governor-as-homeostatic-controller>` (Meta-Stability) ←─────────────────────── {ref}`Section 3.5 <sec-adaptive-multipliers-learned-penalties-setpoints-and-calibration>`
+{ref}`sec-theory-of-meta-stability-the-universal-governor-as-homeostatic-controller` (Meta-Stability) ←─────────────────────── {ref}`sec-adaptive-multipliers-learned-penalties-setpoints-and-calibration`
      |                                               (Adaptive Multipliers)
      | $\pi_{\mathfrak{G}}$, $V_{\mathfrak{L}}$, bilevel optimization
      v
-{ref}`Section 27 <sec-section-non-local-memory-as-self-interaction-functional>` (Non-Local Memory) ←──────────────────── {ref}`Section 20 <sec-wasserstein-fisher-rao-geometry-unified-transport-on-hybrid-state-spaces>`, 22, 24
+{ref}`sec-section-non-local-memory-as-self-interaction-functional` (Non-Local Memory) ←──────────────────── {ref}`sec-wasserstein-fisher-rao-geometry-unified-transport-on-hybrid-state-spaces`, 22, 24
      |                                               (WFR, EoM, Scalar Field)
      | $\Xi_T$, $H_\tau$, $\Psi_{\text{mem}}$, $\Omega_{\text{mem}}$
      v
-{ref}`Section 28 <sec-section-hyperbolic-active-retrieval-geodesic-search-and-semantic-pull-back>` (Hyperbolic Retrieval) ←────────────────── {ref}`Section 21 <sec-radial-generation-entropic-drift-and-policy-control>` (Poincare metric)
-     |                                               {ref}`Section 27 <sec-section-non-local-memory-as-self-interaction-functional>` (Memory potential)
+{ref}`sec-section-hyperbolic-active-retrieval-geodesic-search-and-semantic-pull-back` (Hyperbolic Retrieval) ←────────────────── {ref}`sec-radial-generation-entropic-drift-and-policy-control` (Poincare metric)
+     |                                               {ref}`sec-section-non-local-memory-as-self-interaction-functional` (Memory potential)
      | $\Phi_{\text{ret}}$, Geodesic search, WFR sources
      v
-{ref}`Section 29 <sec-symplectic-multi-agent-field-theory>` (Multi-Agent SMFT) ←──────────────────── {ref}`Section 18 <sec-capacity-constrained-metric-law-geometry-from-interface-limits>`, 21, 23
+{ref}`sec-symplectic-multi-agent-field-theory` (Multi-Agent SMFT) ←──────────────────── {ref}`sec-capacity-constrained-metric-law-geometry-from-interface-limits`, 21, 23
      |                                               (Metric, Symplectic, Capacity)
      | $\mathcal{G}_{ij}$, Strategic potential, Nash equilibrium
      v
-{ref}`Section 30 <sec-ontological-expansion-topological-fission-and-the-semantic-vacuum>` (Ontological Expansion) ←───────────────── {ref}`Section 21 <sec-radial-generation-entropic-drift-and-policy-control>` (Pitchfork bifurcation)
-     |                                               {ref}`Section 7.8 <sec-tier-the-attentive-atlas>` (Attentive Atlas)
-     | $\Xi$, $\emptyset$, Query Fission, Ricci flow   {ref}`Section 18.2 <sec-main-result>` (Metric law)
+{ref}`sec-ontological-expansion-topological-fission-and-the-semantic-vacuum` (Ontological Expansion) ←───────────────── {ref}`sec-radial-generation-entropic-drift-and-policy-control` (Pitchfork bifurcation)
+     |                                               {ref}`sec-tier-the-attentive-atlas` (Attentive Atlas)
+     | $\Xi$, $\emptyset$, Query Fission, Ricci flow   {ref}`sec-main-result` (Metric law)
      v
 Appendices (Derivations, Units, WFR Tensor)
 ```
@@ -681,7 +681,7 @@ Appendices (Derivations, Units, WFR Tensor)
 
 Here $v := \dot{z}$ and $\mathcal{M}_\gamma^{-1} = \gamma I - \beta_{\text{curl}} G^{-1}\mathcal{F}$.
 | 40 | [CapacitySaturationCheck](#node-40)               | 18.3    | $I_{\text{bulk}}/C_\partial$                                                                                     |
-| 41 | [SupervisedTopologyChecks](#node-41)              | 25.4    | (See {ref}`Section 25.4 <sec-the-supervised-topology-loss>`)                                                                                               |
+| 41 | [SupervisedTopologyChecks](#node-41)              | 25.4    | (See {ref}`sec-the-supervised-topology-loss`)                                                                                               |
 | 42 | [GovernorStabilityCheck](#node-42)                | 26.9    | $\Delta V_{\mathfrak{L}} = V_{\mathfrak{L}}(\theta_{t+1}) - V_{\mathfrak{L}}(\theta_t)$                          |
 | 43 | [MemoryBalanceCheck](#node-43)                    | 27.5    | $\Omega_{\text{mem}} = \lVert\nabla_G\Psi_{\text{mem}}\rVert_G / \lVert\nabla_G\Phi_{\text{eff}}\rVert_G$        |
 | 44 | [HyperbolicAlignmentCheck](#node-44)              | 28.6    | $\Delta_{\text{align}} := \mathbb{E}[\lVert d_{\mathbb{D}}^{\text{int}} - d_{\mathbb{D}}^{\text{ext}}\rVert]$    |
