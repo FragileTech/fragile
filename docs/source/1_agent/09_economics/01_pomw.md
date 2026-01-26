@@ -110,7 +110,7 @@ where $B_{\text{comp}}$ is the number of irreversible bit operations.
 **Step 1 (Landauer Principle).** By Theorem {prf:ref}`thm-generalized-landauer-bound`, any computation that erases $\Delta H$ nats of information dissipates at least:
 
 $$
-\dot{\mathcal{M}} \geq T_c \left| \frac{dH}{ds} \right|
+\dot{\mathcal{M}} \geq k_B T_c \left| \frac{dH}{ds} \right|
 
 $$
 
@@ -975,7 +975,7 @@ $$
 where:
 
 $$
-P_{\text{floor}} = \frac{C_{\text{electricity}}}{J_{\text{per\_COG}}}
+P_{\text{floor}} = C_{\text{electricity}} \cdot J_{\text{per\_COG}}
 
 $$
 
@@ -1340,10 +1340,10 @@ Sustained deception by corrupt actors exceeds the **Babel Limit** (Theorem {prf:
 
 **Step 1.** A corrupt actor broadcasts metric $G_{\text{corrupt}}$ claiming to optimize the objective, but their actual gradient flow generates different geometry.
 
-**Step 2.** Maintaining the deception requires transmitting fake metric information at rate:
+**Step 2.** Maintaining the deception requires transmitting additional fake metric information:
 
 $$
-\dot{I}_{\text{deception}} = H(G_{\text{corrupt}}) - H(G_{\text{true}})
+I_{\text{deception}} = H(G_{\text{corrupt}}) - H(G_{\text{true}})
 
 $$
 
@@ -1357,7 +1357,7 @@ $$
 **Step 4.** The deception increases effective entropy, violating the Babel Limit:
 
 $$
-\dim(\mathfrak{g}) \cdot (H(G_{\text{true}}) + \dot{I}_{\text{deception}}) > C_{\mathcal{L}}
+\dim(\mathfrak{g}) \cdot (H(G_{\text{true}}) + I_{\text{deception}}) > C_{\mathcal{L}}
 
 $$
 
