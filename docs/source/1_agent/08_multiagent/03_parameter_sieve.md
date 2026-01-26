@@ -39,10 +39,10 @@ simultaneously satisfied. We prove that moving off this region triggers a Sieve 
 coherence, exceeds its holographic bound, violates thermodynamic consistency, or suffers ontological dissolution.
 
 *Cross-references:* This chapter synthesizes:
-- {ref}`Section 18 <sec-capacity-constrained-metric-law-geometry-from-interface-limits>` (Capacity-Constrained Metric Law)
-- {ref}`Section 29.21 <sec-the-belief-wave-function-schrodinger-representation>` (Cognitive Action Scale)
-- {ref}`Section 31 <sec-computational-metabolism-the-landauer-bound-and-deliberation-dynamics>` (Generalized Landauer Bound)
-- {ref}`Section 33 <sec-causal-information-bound>` (Causal Information Bound, Area Law)
+- {ref}`sec-capacity-constrained-metric-law-geometry-from-interface-limits` (Capacity-Constrained Metric Law)
+- {ref}`sec-the-belief-wave-function-schrodinger-representation` (Cognitive Action Scale)
+- {ref}`sec-computational-metabolism-the-landauer-bound-and-deliberation-dynamics` (Generalized Landauer Bound)
+- {ref}`sec-causal-information-bound` (Causal Information Bound, Area Law)
 - The Sieve Architecture (Nodes 2, 7, 29, 40, 52, 56, 62)
 
 
@@ -102,7 +102,7 @@ $$
 
 with dimension $[L^{-1}]$ (Corollary {prf:ref}`cor-discount-as-screening-length`).
 
-These correspond to the physics constants $\{c, \hbar, \ell_P, k_B T, \alpha_s, \gamma_{\text{cosmo}}\}$ under the isomorphism of {ref}`Section 34.6 <sec-isomorphism-dictionary>`.
+These correspond to the physics constants $\{c, \hbar, \ell_P, k_B T, \alpha_s, \gamma_{\text{cosmo}}\}$ under the isomorphism of {ref}`sec-isomorphism-dictionary`.
 
 :::
 
@@ -199,7 +199,7 @@ $$
 
 **Lower Bound (Node 2: ZenoCheck):**
 
-Suppose $c_{\text{info}} < d_{\text{sync}}/\tau_{\text{proc}}$. Then information cannot traverse the synchronization distance within one processing cycle. By the Causal Interval (Definition {prf:ref}`def-causal-interval`), spacelike-separated modules cannot coordinate updates. The agent enters a **Zeno freeze**: each module waits indefinitely for signals that arrive too slowly. The belief update stalls, violating the continuity required by the WFR dynamics ({ref}`Section 20 <sec-wasserstein-fisher-rao-geometry-unified-transport-on-hybrid-state-spaces>`).
+Suppose $c_{\text{info}} < d_{\text{sync}}/\tau_{\text{proc}}$. Then information cannot traverse the synchronization distance within one processing cycle. By the Causal Interval (Definition {prf:ref}`def-causal-interval`), spacelike-separated modules cannot coordinate updates. The agent enters a **Zeno freeze**: each module waits indefinitely for signals that arrive too slowly. The belief update stalls, violating the continuity required by the WFR dynamics ({ref}`sec-wasserstein-fisher-rao-geometry-unified-transport-on-hybrid-state-spaces`).
 
 **Upper Bound (Node 62: CausalityViolationCheck):**
 
@@ -324,7 +324,7 @@ This is why black holes have entropy proportional to area: you cannot pack more 
 :::{prf:definition} The Planck-Levin Correspondence
 :label: def-planck-levin-correspondence
 
-Under the physics isomorphism ({ref}`Section 34.6 <sec-isomorphism-dictionary>`), the Levin Length $\ell_L$ corresponds to the Planck Length $\ell_P$:
+Under the physics isomorphism ({ref}`sec-isomorphism-dictionary`), the Levin Length $\ell_L$ corresponds to the Planck Length $\ell_P$:
 
 $$
 \ell_L \leftrightarrow \ell_P = \sqrt{\frac{\hbar G}{c^3}}
@@ -536,7 +536,7 @@ We derive the constraints on the binding coupling $g_s$ from the requirements of
 :::{prf:definition} The Coupling Function
 :label: def-coupling-function
 
-Let the binding coupling $g_s(\mu)$ (dimensionless) be a function of the **resolution scale** $\mu$, which has dimension $[L^{-1}]$ (inverse length). Equivalently, $\mu$ can be expressed as an energy scale via $\mu \sim E/(\sigma)$ where $\sigma$ is the Cognitive Action Scale.
+Let the binding coupling $g_s(\mu)$ (dimensionless) be a function of the **resolution scale** $\mu$, which has dimension $[L^{-1}]$ (inverse length). Equivalently, $\mu$ can be expressed as an energy scale via $\mu \sim E/(\sigma \cdot c_{\text{info}})$ where $\sigma$ is the Cognitive Action Scale and $c_{\text{info}}$ is the Information Speed (Definition {prf:ref}`def-information-speed`).
 
 The limits are:
 - $\mu \to 0$: Macro-scale (coarse representation, low in TopoEncoder hierarchy)
@@ -588,7 +588,7 @@ $$
 
 where $r$ is the separation between features.
 
-**Step 3.** For $SU(N_f)$ gauge theory, this requires strong coupling $g_s > g_s^{\text{crit}}$ at large distances (Area Law, {ref}`Section 33 <sec-causal-information-bound>`).
+**Step 3.** For $SU(N_f)$ gauge theory, this requires strong coupling $g_s > g_s^{\text{crit}}$ at large distances (Area Law, {ref}`sec-causal-information-bound`).
 
 **Step 4.** If $g_s(\mu_{\text{IR}}) < g_s^{\text{crit}}$, features escape confinement—"color-charged" states propagate to the boundary $\partial\mathcal{Z}$. This violates the Observability Constraint (Definition {prf:ref}`def-boundary-markov-blanket`): the agent cannot form stable objects.
 
@@ -631,7 +631,7 @@ Texture coordinates are invisible to the dynamics.
 
 **Step 2.** This requires texture-level degrees of freedom to be non-interacting. If $g_s(\mu_{\text{UV}}) > 0$, texture elements would bind, creating structure at the noise level.
 
-**Step 3.** From the RG interpretation ({ref}`Section 7.12 <sec-stacked-topoencoders-deep-renormalization-group-flow>`), the TopoEncoder implements coarse-graining. Residual coupling at the UV scale would prevent efficient compression—the Kolmogorov complexity of texture would diverge.
+**Step 3.** From the RG interpretation ({ref}`sec-stacked-topoencoders-deep-renormalization-group-flow`), the TopoEncoder implements coarse-graining. Residual coupling at the UV scale would prevent efficient compression—the Kolmogorov complexity of texture would diverge.
 
 **Step 4.** Asymptotic freedom ($\beta < 0$) provides the required behavior: $g_s \to 0$ as $\mu \to \infty$.
 
