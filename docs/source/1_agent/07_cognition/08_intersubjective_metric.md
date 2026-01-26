@@ -85,7 +85,7 @@ where $\phi^* G_B$ denotes the pullback metric and $\|\cdot\|_F$ is the Frobeniu
 
 *Interpretation:* If $\mathcal{F}_{AB} > 0$, the agents disagree on the fundamental geometry of the world—distances, angles, and causal structure. Cooperation becomes impossible because "gradients" point in different directions.
 
-*Units:* $[\mathcal{F}_{AB}] = \text{dimensionless}$ (ratio of metric tensors).
+*Units:* $[\mathcal{F}_{AB}] = [z]^{-4}$ (squared Frobenius norm of metric difference). When normalized by $\|G_A\|_F^2$, the dimensionless ratio $\tilde{\mathcal{F}}_{AB} := \mathcal{F}_{AB}/\|G_A\|_F^2$ measures relative distortion.
 
 :::
 
@@ -294,7 +294,7 @@ $$
 where $U_A, U_B \in G_{\text{Fragile}}$ are the local gauge transformations. The **Locking Potential** governing its dynamics is:
 
 $$
-\mathcal{V}_{\text{lock}}(\phi_{AB}) = -\mu_{\text{lock}}^2 |\phi_{AB}|^2 + \lambda_{\text{lock}} |\phi_{AB}|^4
+\mathcal{V}_{\text{lock}}(\phi_{AB}) = -\mu_{\text{lock}}^2 |\phi_{AB}|^2 + g_{\text{lock}} |\phi_{AB}|^4
 
 $$
 
@@ -302,6 +302,7 @@ where:
 - $\mu_{\text{lock}}^2 = \beta - \beta_c$ is the effective mass parameter
 - $\beta$ is the interaction coupling strength
 - $\beta_c$ is the critical coupling
+- $g_{\text{lock}} > 0$ is the quartic self-interaction coefficient (stabilization term)
 
 :::
 
@@ -418,7 +419,7 @@ in this fixed gauge.
 $$
 \langle |\phi_{AB}| \rangle = \begin{cases}
 0 & \beta < \beta_c \\
-v_{\text{lock}} = \sqrt{(\beta - \beta_c)/\lambda_{\text{lock}}} & \beta > \beta_c
+v_{\text{lock}} = \sqrt{(\beta - \beta_c)/g_{\text{lock}}} & \beta > \beta_c
 \end{cases}
 
 $$
