@@ -216,35 +216,25 @@ def patched_standardization(
         For large ρ or rho=None (mean-field): statistics are global, giving mean-field
         interpretation.
     """
+    def _global_stats(values_tensor: Tensor, alive_mask: Tensor) -> tuple[Tensor, Tensor]:
+        n_alive = alive_mask.sum()
+        n_alive_safe = torch.clamp(n_alive, min=1.0)
+        mu = (values_tensor * alive_mask).sum() / n_alive_safe
+        centered = values_tensor - mu
+        sigma_sq = ((centered**2) * alive_mask).sum() / n_alive_safe
+        sigma_reg = torch.sqrt(sigma_sq + sigma_min**2)
+        return mu, sigma_reg
+
     # Branch 1: MEAN-FIELD REGIME (rho=None) - Global statistics, O(N) cost
     if rho is None:
         # Convert boolean mask to float for differentiable operations
         # This preserves gradients where boolean indexing would break them
         alive_mask = alive.float()  # [N], 1.0 for alive, 0.0 for dead
 
-        # Count alive walkers
-        n_alive = alive_mask.sum()
-
-        # Handle edge case: no alive walkers (avoiding if statement for vmap compatibility)
-        # Clamp to avoid division by zero (if all dead, we'll get NaN which will be masked later)
-        n_alive_safe = torch.clamp(n_alive, min=1.0)
-
-        # Compute masked mean over alive walkers
-        # μ[alive] = Σ(values_i * mask_i) / Σ(mask_i)
-        # Mathematically equivalent to values[alive].mean() but preserves gradients
-        mu = (values * alive_mask).sum() / n_alive_safe
-
-        # Compute masked variance over alive walkers
-        # σ²[alive] = Σ((values_i - μ)² * mask_i) / Σ(mask_i)
-        # Mathematically equivalent to values[alive].var() but preserves gradients
-        centered = values - mu
-        sigma_sq = ((centered**2) * alive_mask).sum() / n_alive_safe
-
-        # Regularized standard deviation: σ'[d|alive] = sqrt(σ²[d|alive] + σ²_min)
-        sigma_reg = torch.sqrt(sigma_sq + sigma_min**2)
+        mu, sigma_reg = _global_stats(values, alive_mask)
 
         # Compute Z-scores for all walkers
-        z_scores = centered / sigma_reg
+        z_scores = (values - mu) / sigma_reg
 
         # Mask dead walkers (set to 0.0)
         # Using multiplication instead of torch.where to preserve gradients
@@ -273,17 +263,30 @@ def patched_standardization(
         pbc=pbc,
     )  # [N, N]
 
+    if weights.shape[0] > 0:
+        eye = torch.eye(weights.shape[0], device=weights.device, dtype=weights.dtype)
+        # Avoid self-dominated neighborhoods collapsing local statistics.
+        weights = weights * (1.0 - eye)
+
     # Compute ρ-localized statistics for each walker
     mu_rho, sigma_rho = localized_statistics(
         values=values, weights=weights, sigma_min=sigma_min
     )  # [N], [N]
+
+    alive_mask = alive.to(values.dtype)
+    neighbor_mass = weights.sum(dim=1)
+    min_local_mass = torch.finfo(weights.dtype).eps
+    fallback_mask = (neighbor_mass <= min_local_mass) & alive
+    if fallback_mask.any():
+        mu_global, sigma_global = _global_stats(values, alive_mask)
+        mu_rho = torch.where(fallback_mask, mu_global, mu_rho)
+        sigma_rho = torch.where(fallback_mask, sigma_global, sigma_rho)
 
     # Compute Z-scores using LOCAL statistics
     # Z_ρ[f, d, x_i] = (v_i - μ_ρ(i)) / σ'_ρ(i)
     z_scores = (values - mu_rho) / sigma_rho  # [N]
 
     # Mask dead walkers (set to 0.0)
-    alive_mask = alive.float()
     z_scores_masked = z_scores * alive_mask
 
     if return_statistics:

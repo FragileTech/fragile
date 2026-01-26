@@ -231,6 +231,19 @@ class VectorizedHistoryRecorder:
             hess_fitness: Fitness Hessians [N, d] or [N, d, d] (optional)
             is_diagonal_hessian: If True, hess_fitness is diagonal [N, d]
         """
+        alive_mask = info["alive_mask"]
+
+        def _reduce_stat(value: Tensor | float, alive: Tensor) -> Tensor:
+            if isinstance(value, Tensor):
+                if value.ndim > 0:
+                    if bool(alive.any()):
+                        value = value[alive]
+                    if value.numel() == 0:
+                        return torch.zeros((), device=self.device, dtype=self.dtype)
+                    return value.mean()
+                return value
+            return torch.tensor(value, device=self.device, dtype=self.dtype)
+
         idx = self.recorded_idx
         idx_minus_1 = idx - 1
 
@@ -256,7 +269,7 @@ class VectorizedHistoryRecorder:
         self.cloning_scores[idx_minus_1] = info["cloning_scores"]
         self.cloning_probs[idx_minus_1] = info["cloning_probs"]
         self.will_clone[idx_minus_1] = info["will_clone"]
-        self.alive_mask[idx_minus_1] = info["alive_mask"]
+        self.alive_mask[idx_minus_1] = alive_mask
         self.companions_distance[idx_minus_1] = info["companions_distance"]
         self.companions_clone[idx_minus_1] = info["companions_clone"]
         self.clone_jitter[idx_minus_1] = info["clone_jitter"]
@@ -273,10 +286,11 @@ class VectorizedHistoryRecorder:
         self.rescaled_distances[idx_minus_1] = info["rescaled_distances"]
 
         # Record localized statistics
-        self.mu_rewards[idx_minus_1] = info["mu_rewards"]
-        self.sigma_rewards[idx_minus_1] = info["sigma_rewards"]
-        self.mu_distances[idx_minus_1] = info["mu_distances"]
-        self.sigma_distances[idx_minus_1] = info["sigma_distances"]
+        # Reduce per-walker localized stats to scalars for history storage.
+        self.mu_rewards[idx_minus_1] = _reduce_stat(info["mu_rewards"], alive_mask)
+        self.sigma_rewards[idx_minus_1] = _reduce_stat(info["sigma_rewards"], alive_mask)
+        self.mu_distances[idx_minus_1] = _reduce_stat(info["mu_distances"], alive_mask)
+        self.sigma_distances[idx_minus_1] = _reduce_stat(info["sigma_distances"], alive_mask)
 
         # Record adaptive kinetics data if provided
         if grad_fitness is not None and self.fitness_gradients is not None:

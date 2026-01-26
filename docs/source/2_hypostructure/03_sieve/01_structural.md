@@ -165,6 +165,7 @@ The Structural Sieve admits a natural interpretation as a **spectral sequence** 
   - $d_1 \sim$ EnergyCheck: Tests finite energy ($\ker d_1 =$ bounded energy states)
   - $d_2 \sim$ CompactCheck: Tests concentration vs. dispersion
   - $d_3 \sim$ ScaleCheck: Tests subcriticality
+  - Later gates correspond to higher differentials or to barrier/surgery corrections; the list is illustrative, not exhaustive.
 - **Gate Pass** ($K^+$): Class survives to next page ($d_r(\alpha) = 0$)
 - **Gate Fail** ($K^-$): Non-zero differential ($d_r(\alpha) \neq 0$), triggers barrier/surgery
 - **Global Regularity**: Collapse at $E_\infty$ with $E_\infty^{p,q} = 0$ for all $(p,q)$ corresponding to singular behavior
@@ -228,10 +229,10 @@ graph TD
     CompactCheck -- "Yes: K+_Cmu" --> Profile["<b>Canonical Profile V Emerges</b>"]
 
     %% --- LEVEL 3: EQUIVARIANT DESCENT ---
-    Profile --> ScaleCheck{"<b>4. SC_λ:</b> Is Profile Subcritical?<br>λ(V) < λ_c"}
+    Profile --> ScaleCheck{"<b>4. SC_λ:</b> Is Profile Subcritical?<br>α > β (iff λ(V) < λ_c)"}
 
     ScaleCheck -- "No: K-_SClam" --> BarrierTypeII{"<b>B4. SC_λ:</b> Is Renorm Cost ∞?<br>∫D̃ dt = ∞"}
-    BarrierTypeII -- "No: Kbr_SClam" --> SurgAdmSE{"<b>A4. SurgSE:</b> Admissible?<br>α-β < ε_crit ∧ V smooth"}
+    BarrierTypeII -- "No: Kbr_SClam" --> SurgAdmSE{"<b>A4. SurgSE:</b> Admissible?<br>0 < β-α < ε_crit ∧ V smooth"}
     SurgAdmSE -- "Yes: K+_Lift" --> SurgSE["<b>S4. SurgSE:</b><br>Regularity Lift"]
     SurgAdmSE -- "No: K-_Lift" --> ModeSE["<b>Mode S.E</b>: Supercritical Cascade"]
     SurgSE -. "Kre_SurgSE" .-> ParamCheck
@@ -255,7 +256,7 @@ graph TD
     SurgCD -. "Kre_SurgCD" .-> StiffnessCheck
     BarrierCap -- "Yes: Kblk_CapH" --> StiffnessCheck
 
-    GeomCheck -- "Yes: K+_CapH" --> StiffnessCheck{"<b>7. LS_σ:</b> Is Gap Certified?<br>inf σ(L) > 0"}
+    GeomCheck -- "Yes: K+_CapH" --> StiffnessCheck{"<b>7. LS_σ:</b> Is Stiffness Certified?<br>LS/KL/LSI or inf σ(L) > 0"}
 
     %% --- LEVEL 5: SPECTRAL OBSTRUCTION ---
     StiffnessCheck -- "No: K-_LSsig" --> BarrierGap{"<b>B7. LS_σ:</b> Is Kernel Finite?<br>dim ker#40;L#41; < ∞ ∧ σ_ess > 0"}
@@ -267,7 +268,7 @@ graph TD
     SurgAdmSD -- "Yes: K+_Iso" --> SurgSD["<b>S7. SurgSD:</b><br>Ghost Extension"]
     SurgAdmSD -- "No: K-_Iso" --> ModeSD["<b>Mode S.D</b>: Stiffness Breakdown"]
     SurgSD -. "Kre_SurgSD" .-> TopoCheck
-    BifurcateCheck -- "Yes: K+_LSd2V" --> SymCheck{"<b>7b. G_act:</b> Is G-orbit Degenerate?<br>⎸G·v₀⎸ = 1"}
+    BifurcateCheck -- "Yes: K+_LSd2V" --> SymCheck{"<b>7b. G_act:</b> Is G-orbit Nontrivial?<br>⎸G·v₀⎸ > 1"}
 
     %% Path A: Symmetry Breaking (Governed by SC_∂c)
     SymCheck -- "Yes: K+_Gact" --> CheckSC{"<b>7c. SC_∂c:</b> Are Constants Stable?<br>‖∂c‖ < ε"}
@@ -306,7 +307,7 @@ graph TD
     SurgTC -. "Kre_SurgTC" .-> ErgoCheck
     BarrierOmin -- "Yes: Kblk_TBO" --> ErgoCheck
 
-    TameCheck -- "Yes: K+_TBO" --> ErgoCheck{"<b>10. TB_ρ:</b> Does Flow Mix?<br>τ_mix < ∞"}
+    TameCheck -- "Yes: K+_TBO" --> ErgoCheck{"<b>10. TB_ρ:</b> Does Flow Mix?<br>ρ(μ) > 0"}
 
     ErgoCheck -- "No: K-_TBrho" --> BarrierMix{"<b>B10. TB_ρ:</b> Mixing Finite?<br>τ_mix < ∞"}
     BarrierMix -- "No: Kbr_TBrho" --> SurgAdmTD{"<b>A12. SurgTD:</b> Admissible?<br>Trap iso. ∧ ∂T > 0"}
@@ -315,17 +316,17 @@ graph TD
     SurgTD -. "Kre_SurgTD" .-> ComplexCheck
     BarrierMix -- "Yes: Kblk_TBrho" --> ComplexCheck
 
-    ErgoCheck -- "Yes: K+_TBrho" --> ComplexCheck{"<b>11. Rep_K:</b> Is K(x) Computable?<br>K(x) ∈ ℕ"}
+    ErgoCheck -- "Yes: K+_TBrho" --> ComplexCheck{"<b>11. Rep_K:</b> Is Trace Describable?<br>∃p: |p| ≤ L, U(p) ≈ T_thin"}
 
     %% --- LEVEL 7: KOLMOGOROV FILTRATION ---
-    ComplexCheck -- "No: K-_RepK" --> BarrierEpi{"<b>B11. Rep_K:</b> Approx. Bounded?<br>sup K_ε#40;x#41; ≤ S_BH"}
-    BarrierEpi -- "No: Kbr_RepK" --> SurgAdmDC{"<b>A13. SurgDC:</b> Admissible?<br>K ≤ S_BH+ε ∧ Lipschitz"}
+    ComplexCheck -- "No: K-_RepK" --> BarrierEpi{"<b>B11. Rep_K:</b> Approx. Bounded?<br>sup K_ε#40;T_thin#41; ≤ S_BH"}
+    BarrierEpi -- "No: Kbr_RepK" --> SurgAdmDC{"<b>A13. SurgDC:</b> Admissible?<br>K_ε#40;T_thin#41; ≤ S_BH+ε ∧ Lipschitz"}
     SurgAdmDC -- "Yes: K+_Lip" --> SurgDC["<b>S13. SurgDC:</b><br>Viscosity Solution"]
     SurgAdmDC -- "No: K-_Lip" --> ModeDC["<b>Mode D.C</b>: Semantic Horizon"]
     SurgDC -. "Kre_SurgDC" .-> OscillateCheck
     BarrierEpi -- "Yes: Kblk_RepK" --> OscillateCheck
 
-    ComplexCheck -- "Yes: K+_RepK" --> OscillateCheck{"<b>12. GC_∇:</b> Does Flow Oscillate?<br>ẋ ≠ -∇V"}
+    ComplexCheck -- "Yes: K+_RepK" --> OscillateCheck{"<b>12. GC_∇:</b> Does Flow Oscillate?<br>∃ω: S(ω) ≥ η"}
 
     OscillateCheck -- "Yes: K+_GCnabla" --> BarrierFreq{"<b>B12. GC_∇:</b> Oscillation Finite?<br>∫ω²S dω < ∞"}
     BarrierFreq -- "No: Kbr_GCnabla" --> SurgAdmDE{"<b>A14. SurgDE:</b> Admissible?<br>∃Λ: trunc. moment < ∞ ∧ elliptic"}
@@ -546,24 +547,33 @@ To instantiate the sieve for a specific system, one must implement each projecti
 | 1    | $D_E$                         | EnergyCheck      | $K_{D_E}^+$ / $K_{D_E}^-$                                                                             | $E$            | Flow $\Phi$              | $\mathfrak{D}$ on $\Phi$        | Energy functional                  | Is Energy Finite?                               | $E[\Phi] < \infty$                            |
 | 2    | $\mathrm{Rec}_N$              | ZenoCheck        | $K_{\mathrm{Rec}_N}^+$ / $K_{\mathrm{Rec}_N}^-$                                                       | $N$            | Jump sequence $J$        | $\mathfrak{D}$ on $\Phi$        | Event counter                      | Are Discrete Events Finite?                     | $N(J) < \infty$                               |
 | 3    | $C_\mu$                       | CompactCheck     | $K_{C_\mu}^+$ / $K_{C_\mu}^-$                                                                         | $\mu$          | Profile $V$              | $\mathfrak{D}$ on $\mathcal{X}$ | Concentration measure              | Does Energy Concentrate?                        | $\mu(V) > 0$                                  |
-| 4    | $\mathrm{SC}_\lambda$         | ScaleCheck       | $K_{\mathrm{SC}_\lambda}^+$ / $K_{\mathrm{SC}_\lambda}^-$                                             | $\lambda$      | Profile $V$              | $\mathfrak{D}$ on $\mathcal{X}$ | Scaling dimension                  | Is Profile Subcritical?                         | $\lambda(V) < \lambda_c$                      |
+| 4    | $\mathrm{SC}_\lambda$         | ScaleCheck       | $K_{\mathrm{SC}_\lambda}^+$ / $K_{\mathrm{SC}_\lambda}^-$                                             | $\lambda$      | Profile $V$              | $\mathfrak{D}$ on $\mathcal{X}$ | Scaling criticality               | Is Profile Subcritical?                         | $\alpha > \beta$ (iff $\lambda(V) < \lambda_c$) |
 | 5    | $\mathrm{SC}_{\partial c}$    | ParamCheck       | $K_{\mathrm{SC}_{\partial c}}^+$ / $K_{\mathrm{SC}_{\partial c}}^-$                                   | $\partial c$   | Constants $c$            | $\mathfrak{D}$ on $\mathcal{X}$ | Parameter derivative               | Are Constants Stable?                           | $\|\partial_c\| < \epsilon$           |
 | 6    | $\mathrm{Cap}_H$              | GeomCheck        | $K_{\mathrm{Cap}_H}^+$ / $K_{\mathrm{Cap}_H}^-$                                                       | $\dim_H$       | Singular set $S$         | $\mathfrak{D}$ on $\mathcal{X}$ | Hausdorff dimension                | Is Codim $\geq$ Threshold?                      | $\mathrm{codim}(S) \geq 2$                    |
-| 7    | $\mathrm{LS}_\sigma$          | StiffnessCheck   | $K_{\mathrm{LS}_\sigma}^+$ / $K_{\mathrm{LS}_\sigma}^-$                                               | $\sigma$       | Linearization $L$        | $\mathfrak{D}$ on $\Phi$        | Spectrum                           | Is Gap Certified?                               | $\inf \sigma(L) > 0$                          |
+| 7    | $\mathrm{LS}_\sigma$          | StiffnessCheck   | $K_{\mathrm{LS}_\sigma}^+$ / $K_{\mathrm{LS}_\sigma}^-$                                               | $\sigma$       | Linearization $L$        | $\mathfrak{D}$ on $\Phi$        | Spectrum                           | Is Stiffness Certified?                         | LS/KL/LSI or $\inf \sigma(L) > 0$             |
 | 7a   | $\mathrm{LS}_{\partial^2 V}$  | BifurcateCheck   | $K_{\mathrm{LS}_{\partial^2 V}}^+$ / $K_{\mathrm{LS}_{\partial^2 V}}^-$                               | $\partial^2 V$ | Equilibrium $x^*$        | $\mathfrak{D}$ on $\mathcal{X}$ | Hessian                            | Is State Unstable?                              | $\partial^2 V(x^*) \not\succ 0$               |
-| 7b   | $G_{\mathrm{act}}$            | SymCheck         | $K_{G_{\mathrm{act}}}^+$ / $K_{G_{\mathrm{act}}}^-$                                                   | $G$            | Vacuum $v_0$             | $G$                             | Group action                       | Is $G$-orbit Degenerate?                        | $\lvert G \cdot v_0 \rvert = 1$               |
+| 7b   | $G_{\mathrm{act}}$            | SymCheck         | $K_{G_{\mathrm{act}}}^+$ / $K_{G_{\mathrm{act}}}^-$                                                   | $G$            | Vacuum $v_0$             | $G$                             | Group action                       | Is $G$-orbit Nontrivial?                        | $\lvert G \cdot v_0 \rvert > 1$               |
 | 7c   | $\mathrm{SC}_{\partial c}$    | CheckSC          | $K_{\mathrm{SC}_{\partial c}}^+$ / $K_{\mathrm{SC}_{\partial c}}^-$                                   | $\partial c$   | Constants $c$            | $\mathfrak{D}$ on $\mathcal{X}$ | Parameter derivative (restoration) | Are Constants Stable?                           | $\|\partial_c\| < \epsilon$           |
 | 7d   | $\mathrm{TB}_S$               | CheckTB          | $K_{\mathrm{TB}_S}^+$ / $K_{\mathrm{TB}_S}^-$                                                         | $S$            | Instanton path $\gamma$  | $\mathfrak{D}$ on $\mathcal{X}$ | Action functional                  | Is Tunneling Finite?                            | $S[\gamma] < \infty$                          |
 | 8    | $\mathrm{TB}_\pi$             | TopoCheck        | $K_{\mathrm{TB}_\pi}^+$ / $K_{\mathrm{TB}_\pi}^-$                                                     | $\pi$          | Configuration $C$        | $\mathfrak{D}$ on $\mathcal{X}$ | Homotopy class                     | Is Sector Reachable?                            | $[\pi] \in \pi_0(\mathcal{C})_{\mathrm{acc}}$ |
 | 9    | $\mathrm{TB}_O$               | TameCheck        | $K_{\mathrm{TB}_O}^+$ / $K_{\mathrm{TB}_O}^-$                                                         | $O$            | Stratification $\Sigma$  | $\mathfrak{D}$ on $\mathcal{X}$ | O-minimal structure                | Is Topology Tame?                               | $\Sigma \in \mathcal{O}\text{-min}$           |
-| 10   | $\mathrm{TB}_\rho$            | ErgoCheck        | $K_{\mathrm{TB}_\rho}^+$ / $K_{\mathrm{TB}_\rho}^-$                                                   | $\rho$         | Invariant measure $\mu$  | $\mathfrak{D}$ on $\Phi$        | Mixing rate                        | Does Flow Mix?                                  | $\rho(\mu) > 0$                               |
-| 11   | $\mathrm{Rep}_K$              | ComplexCheck     | $K_{\mathrm{Rep}_K}^+$ / $K_{\mathrm{Rep}_K}^-$                                                       | $K$            | State $x$                | $\mathfrak{D}$ on $\mathcal{X}$ | Kolmogorov complexity              | Is K(x) Computable?                             | $K(x) \in \mathbb{N}$                         |
-| 12   | $\mathrm{GC}_\nabla$          | OscillateCheck   | $K_{\mathrm{GC}_\nabla}^+$ / $K_{\mathrm{GC}_\nabla}^-$                                               | $\nabla$       | Potential $V$            | $\mathfrak{D}$ on $\mathcal{X}$ | Gradient operator                  | Does Flow Oscillate?                            | $\dot{x} \neq -\nabla V$                      |
+| 10   | $\mathrm{TB}_\rho$            | ErgoCheck        | $K_{\mathrm{TB}_\rho}^+$ / $K_{\mathrm{TB}_\rho}^-$                                                   | $\rho$         | Invariant measure $\mu$  | $\mathfrak{D}$ on $\Phi$        | Spectral gap                       | Is Spectral Gap Positive?                        | $\rho(\mu) > 0$                               |
+| 11   | $\mathrm{Rep}_K$              | ComplexCheck     | $K_{\mathrm{Rep}_K}^+$ / $K_{\mathrm{Rep}_K}^-$                                                       | $K$            | Thin trace $T_{\mathrm{thin}}$ | $\mathfrak{D}$ on $\mathcal{X}$ | Description length                | Is Thin Trace Describable?                       | $\exists p:\, |p| \leq L,\, \mathrm{time}(p) \leq R,\, d(U(p), T_{\mathrm{thin}}) \leq \varepsilon$ |
+| 12   | $\mathrm{GC}_\nabla$          | OscillateCheck   | $K_{\mathrm{GC}_\nabla}^+$ / $K_{\mathrm{GC}_\nabla}^-$                                               | $\nabla$       | Potential $V$            | $\mathfrak{D}$ on $\mathcal{X}$ | Spectral density                   | Does Flow Oscillate?                            | $\sup_{0<|\omega|\leq \omega_{\max}} S(\omega) \geq \eta$ |
 | 13   | $\mathrm{Bound}_\partial$     | BoundaryCheck    | $K_{\mathrm{Bound}_\partial}^+$ / $K_{\mathrm{Bound}_\partial}^-$                                     | $\partial$     | Domain $\Omega$          | $\mathfrak{D}$ on $\mathcal{X}$ | Boundary operator                  | Is System Open?                                 | $\partial\Omega \neq \emptyset$               |
 | 14   | $\mathrm{Bound}_B$            | OverloadCheck    | $K_{\mathrm{Bound}_B}^+$ / $K_{\mathrm{Bound}_B}^-$                                                   | $B$            | Control signal $u$       | $\mathfrak{D}$ on $\Phi$        | Input operator                     | Is Input Bounded?                               | $\|Bu\| \leq M$                     |
 | 15   | $\mathrm{Bound}_{\Sigma}$         | StarveCheck      | $K_{\mathrm{Bound}_{\Sigma}}^+$ / $K_{\mathrm{Bound}_{\Sigma}}^-$                                             | $\int$         | Resource $r$             | $\mathfrak{D}$ on $\Phi$        | Supply integral                    | Is Input Sufficient?                            | $\int_0^T r \, dt \geq r_{\min}$              |
 | 16   | $\mathrm{GC}_T$               | AlignCheck       | $K_{\mathrm{GC}_T}^+$ / $K_{\mathrm{GC}_T}^-$                                                         | $T$            | Pair $(u,d)$             | $\mathfrak{D}$ on $\Phi$        | Gauge transform                    | Is Control Matched?                             | $T(u) \sim d$                                 |
 | 17   | $\mathrm{Cat}_{\mathrm{Hom}}$ | BarrierExclusion | $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}$ / $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{morph}}$ | $\mathrm{Hom}$ | Morphisms $\mathrm{Mor}$ | $\mathfrak{D}$ categorical      | Hom functor                        | Is $\mathrm{Hom}(\mathrm{Bad}, S) = \emptyset$? | $\mathrm{Hom}(\mathcal{B}, S) = \emptyset$    |
+
+:::{prf:remark} Scaling Index Mapping
+:label: rem-scaling-index
+
+The scale check uses a profile criticality index $\lambda(V)$ as a thin-kernel summary. In the homogeneous
+scaling case $\Phi(\lambda x) \sim \lambda^\alpha$ and $\mathfrak{D}(\lambda x) \sim \lambda^\beta$, set
+$\lambda(V) := \beta - \alpha$ with $\lambda_c := 0$ so that $\lambda(V) < \lambda_c$ iff $\alpha > \beta$
+(subcritical). Alternative indices may be used if they preserve this ordering.
+:::
 
 :::{prf:remark} Interface Composition
 :label: rem-interface-composition
@@ -599,12 +609,19 @@ The following table defines the **Secondary Obstruction Classes**---cohomologica
 | 8    | BarrierAction    | $\mathrm{TB}_\pi$                                | $K_{\mathrm{LS}_\sigma}^\pm$               | $K_{\mathrm{TB}_\pi}^{\mathrm{blk}}$ / $K_{\mathrm{TB}_\pi}^{\mathrm{br}}$                            | $E[\Phi] < S_{\min} + \Delta$                                  | Is the energy insufficient to cross the topological gap?     | Topological Suppression    |
 | 9    | BarrierOmin      | $\mathrm{TB}_O$, $\mathrm{Rep}_K$                | $K_{\mathrm{TB}_\pi}^\pm$                  | $K_{\mathrm{TB}_O}^{\mathrm{blk}}$ / $K_{\mathrm{TB}_O}^{\mathrm{br}}$                                | $S \in \mathcal{O}\text{-min}$                                 | Is the topology definable in an o-minimal structure?         | O-Minimal Taming           |
 | 10   | BarrierMix       | $\mathrm{TB}_\rho$, $D_E$                        | $K_{\mathrm{TB}_O}^\pm$                    | $K_{\mathrm{TB}_\rho}^{\mathrm{blk}}$ / $K_{\mathrm{TB}_\rho}^{\mathrm{br}}$                          | $\tau_{\text{mix}} < \infty$                                   | Does the system mix fast enough to escape traps?             | Ergodic Mixing             |
-| 11   | BarrierEpi       | $\mathrm{Rep}_K$, $\mathrm{Cap}_H$               | $K_{\mathrm{TB}_\rho}^\pm$                 | $K_{\mathrm{Rep}_K}^{\mathrm{blk}}$ / $K_{\mathrm{Rep}_K}^{\mathrm{br}}$                              | $\sup_\epsilon K_\epsilon(x) \leq S_{\text{BH}}$               | Is approximable complexity within holographic bounds?        | Epistemic Horizon          |
+| 11   | BarrierEpi       | $\mathrm{Rep}_K$, $\mathrm{Cap}_H$               | $K_{\mathrm{TB}_\rho}^\pm$                 | $K_{\mathrm{Rep}_K}^{\mathrm{blk}}$ / $K_{\mathrm{Rep}_K}^{\mathrm{br}}$                              | $\sup_\epsilon K_\epsilon(T_{\mathrm{thin}}) \leq S_{\text{BH}}$               | Is approximable complexity within holographic bounds?        | Epistemic Horizon          |
 | 12   | BarrierFreq      | $\mathrm{GC}_\nabla$, $\mathrm{SC}_\lambda$      | $K_{\mathrm{Rep}_K}^\pm$                   | $K_{\mathrm{GC}_\nabla}^{\mathrm{blk}}$ / $K_{\mathrm{GC}_\nabla}^{\mathrm{br}}$                      | $\int \omega^2 S(\omega) \,d\omega < \infty$                     | Is the total oscillation energy finite?                      | Frequency Barrier          |
 | 14   | BarrierBode      | $\mathrm{Bound}_B$, $\mathrm{LS}_\sigma$         | $K_{\mathrm{Bound}_\partial}^+$            | $K_{\mathrm{Bound}_B}^{\mathrm{blk}}$ / $K_{\mathrm{Bound}_B}^{\mathrm{br}}$                          | $\int_0^\infty \ln \|S(i\omega)\| \,d\omega > -\infty$ | Is the sensitivity integral conserved (waterbed effect)?     | Bode Sensitivity           |
 | 15   | BarrierInput     | $\mathrm{Bound}_{\Sigma}$, $C_\mu$                   | $K_{\mathrm{Bound}_B}^\pm$                 | $K_{\mathrm{Bound}_{\Sigma}}^{\mathrm{blk}}$ / $K_{\mathrm{Bound}_{\Sigma}}^{\mathrm{br}}$                    | $r_{\text{reserve}} > 0$                                       | Is there a reservoir to prevent starvation?                  | Input Stability            |
 | 16   | BarrierVariety   | $\mathrm{GC}_T$, $\mathrm{Cap}_H$                | $K_{\mathrm{Bound}_{\Sigma}}^\pm$              | $K_{\mathrm{GC}_T}^{\mathrm{blk}}$ / $K_{\mathrm{GC}_T}^{\mathrm{br}}$                                | $H(u) \geq H(d)$                                               | Does control entropy match disturbance entropy?              | Requisite Variety          |
 | 17   | BarrierExclusion | $\mathrm{Cat}_{\mathrm{Hom}}$                    | Full $\Gamma$                              | $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}$ / $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{morph}}$ / $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{hor}}$ | $\mathrm{Hom}(\mathcal{B}, S) = \emptyset$                     | Is there a categorical obstruction to the bad pattern?       | Morphism Exclusion / Reconstruction |
+
+:::{prf:remark} Causal Depth Scale
+:label: rem-causal-depth-scale
+
+In BarrierCausal, $\lambda(t)$ denotes a causal depth scale provided by $\mathrm{Rec}_N/\mathrm{TB}_\pi$,
+not the SC$_\lambda$ scaling parameter.
+:::
 
 ### Surgery Registry: Cobordism Morphisms
 
@@ -629,7 +646,7 @@ The following table defines the **Cobordism Morphisms**---categorical pushouts t
 | S1  | SurgCE       | $D_E$, $\mathrm{Cap}_H$                          | $K_{D_E}^{\mathrm{br}}$                      | $K_{\mathrm{SurgCE}}^{\mathrm{re}}$       | Growth conformal $\land$ $\partial_\infty X$ definable                                       | Ghost/Cap Extension       | Compactification        |
 | S2  | SurgCC       | $\mathrm{Rec}_N$, $\mathrm{TB}_\pi$              | $K_{\mathrm{Rec}_N}^{\mathrm{br}}$           | $K_{\mathrm{SurgCC}}^{\mathrm{re}}$       | $\exists N_{\max}$: events $\leq N_{\max}$                                                   | Discrete Saturation       | Event Coarsening        |
 | S3  | SurgCD\_Alt  | $C_\mu$, $D_E$                                   | $K_{C_\mu}^{\mathrm{path}}$                  | $K_{\mathrm{SurgCD\_Alt}}^{\mathrm{re}}$  | $V \in \mathcal{L}_{\text{soliton}} \land \|V\|_{H^1} < \infty$                              | Concentration-Compactness | Profile Extraction      |
-| S4  | SurgSE       | $\mathrm{SC}_\lambda$, $D_E$                     | $K_{\mathrm{SC}_\lambda}^{\mathrm{br}}$      | $K_{\mathrm{SurgSE}}^{\mathrm{re}}$       | $\alpha - \beta < \varepsilon_{\text{crit}} \land V$ smooth                                  | Regularity Lift           | Perturbative Upgrade    |
+| S4  | SurgSE       | $\mathrm{SC}_\lambda$, $D_E$                     | $K_{\mathrm{SC}_\lambda}^{\mathrm{br}}$      | $K_{\mathrm{SurgSE}}^{\mathrm{re}}$       | $0 < \beta - \alpha < \varepsilon_{\text{crit}} \land V$ smooth                              | Regularity Lift           | Perturbative Upgrade    |
 | S5  | SurgSC       | $\mathrm{SC}_{\partial c}$, $\mathrm{LS}_\sigma$ | $K_{\mathrm{SC}_{\partial c}}^{\mathrm{br}}$ | $K_{\mathrm{SurgSC}}^{\mathrm{re}}$       | $\|\partial_t \theta\| < C_{\text{adm}} \land \theta \in \Theta_{\text{stable}}$             | Convex Integration        | Parameter Freeze        |
 | S6  | SurgCD       | $\mathrm{Cap}_H$, $\mathrm{LS}_\sigma$           | $K_{\mathrm{Cap}_H}^{\mathrm{br}}$           | $K_{\mathrm{SurgCD}}^{\mathrm{re}}$       | $\operatorname{Cap}_H(\Sigma) \leq \varepsilon_{\text{adm}} \land V \in \mathcal{L}_{\text{neck}}$ | Auxiliary/Structural      | Excision-Capping        |
 | S7  | SurgSD       | $\mathrm{LS}_{\partial^2 V}$, $\mathrm{GC}_\nabla$ | $K_{\mathrm{LS}_{\partial^2 V}}^{-}$        | $K_{\mathrm{SurgSD}}^{\mathrm{re}}$       | $\dim(\ker(H_V)) < \infty \land V$ isolated                                                  | Ghost Extension           | Spectral Lift           |
@@ -638,7 +655,7 @@ The following table defines the **Cobordism Morphisms**---categorical pushouts t
 | S10 | SurgTE       | $\mathrm{TB}_\pi$, $C_\mu$                       | $K_{\mathrm{TB}_\pi}^{\mathrm{br}}$          | $K_{\mathrm{SurgTE}}^{\mathrm{re}}$       | $V \cong S^{n-1} \times \mathbb{R}$ (Neck)                                                   | Tunnel                    | Topological Surgery     |
 | S11 | SurgTC       | $\mathrm{TB}_O$, $\mathrm{Rep}_K$                | $K_{\mathrm{TB}_O}^{\mathrm{br}}$            | $K_{\mathrm{SurgTC}}^{\mathrm{re}}$       | $\Sigma \in \mathcal{O}_{\text{ext}}$-definable $\land \dim(\Sigma) < n$                     | O-minimal Regularization  | Structure Extension     |
 | S12 | SurgTD       | $\mathrm{TB}_\rho$, $D_E$                        | $K_{\mathrm{TB}_\rho}^{\mathrm{br}}$         | $K_{\mathrm{SurgTD}}^{\mathrm{re}}$       | Trap isolated $\land \partial T$ has positive measure                                        | Mixing Enhancement        | Stochastic Perturbation |
-| S13 | SurgDC       | $\mathrm{Rep}_K$, $\mathrm{Cap}_H$               | $K_{\mathrm{Rep}_K}^{\mathrm{br}}$           | $K_{\mathrm{SurgDC}}^{\mathrm{re}}$       | $K(x) \leq S_{\text{BH}} + \varepsilon \land x \in W^{1,\infty}$                             | Viscosity Solution        | Mollification           |
+| S13 | SurgDC       | $\mathrm{Rep}_K$, $\mathrm{Cap}_H$               | $K_{\mathrm{Rep}_K}^{\mathrm{br}}$           | $K_{\mathrm{SurgDC}}^{\mathrm{re}}$       | $K_\epsilon(T_{\mathrm{thin}}) \leq S_{\text{BH}} + \varepsilon \land T_{\mathrm{thin}} \in W^{1,\infty}$                             | Viscosity Solution        | Mollification           |
 | S14 | SurgDE       | $\mathrm{GC}_\nabla$, $\mathrm{SC}_\lambda$      | $K_{\mathrm{GC}_\nabla}^{\mathrm{br}}$       | $K_{\mathrm{SurgDE}}^{\mathrm{re}}$       | $\exists\Lambda: \int_{\lvert\omega\rvert\leq\Lambda} \omega^2 S \,d\omega < \infty \land$ uniform ellipticity | De Giorgi-Nash-Moser      | Holder Regularization   |
 | S15 | SurgBE       | $\mathrm{Bound}_B$, $\mathrm{LS}_\sigma$         | $K_{\mathrm{Bound}_B}^{\mathrm{br}}$         | $K_{\mathrm{SurgBE}}^{\mathrm{re}}$       | $\|S(i\omega)\|_\infty < M \land$ phase margin $> 0$                                         | Saturation                | Gain Limiting           |
 | S16 | SurgBD       | $\mathrm{Bound}_{\Sigma}$, $C_\mu$                   | $K_{\mathrm{Bound}_{\Sigma}}^{\mathrm{br}}$      | $K_{\mathrm{SurgBD}}^{\mathrm{re}}$       | $r_{\text{reserve}} > 0 \land$ recharge $>$ drain                                            | Reservoir                 | Buffer Addition         |
@@ -703,7 +720,7 @@ $$
 | A1 | $\mathrm{Adm}_{\mathrm{CE}}$ | Conformal? | $K^+_{\mathrm{Conf}}$: conformal factor $\Omega(x)$, definable $\partial_\infty X$ | $K^-_{\mathrm{Conf}}$: anisotropic blow-up witness | S1 | Mode C.E |
 | A2 | $\mathrm{Adm}_{\mathrm{CC}}$ | Discrete? | $K^+_{\mathrm{Disc}}$: bound $N_{\max}$ on event density | $K^-_{\mathrm{Disc}}$: accumulation point $t^*$ | S2 | Mode C.C |
 | A3 | $\mathrm{Adm}_{\mathrm{CDA}}$ | Soliton? | $K^+_{\mathrm{Prof}}$: $V \in \mathcal{L}_{\text{soliton}}$, finite $H^1$ norm | $K^-_{\mathrm{Prof}}$: diffusive/undefined profile | S3 | Mode C.D |
-| A4 | $\mathrm{Adm}_{\mathrm{SE}}$ | Smooth? | $K^+_{\mathrm{Lift}}$: regularity gap $\alpha - \beta < \varepsilon$, $V$ smooth | $K^-_{\mathrm{Lift}}$: gap too large, profile rough | S4 | Mode S.E |
+| A4 | $\mathrm{Adm}_{\mathrm{SE}}$ | Smooth? | $K^+_{\mathrm{Lift}}$: supercritical gap $0 < \beta - \alpha < \varepsilon$, $V$ smooth | $K^-_{\mathrm{Lift}}$: gap too large, profile rough | S4 | Mode S.E |
 | A5 | $\mathrm{Adm}_{\mathrm{SC}}$ | Stable $\theta$? | $K^+_{\mathrm{Stab}}$: $\|\dot{\theta}\| < \delta$, $\theta$ in stable basin | $K^-_{\mathrm{Stab}}$: velocity unbounded, chaotic | S5 | Mode S.C |
 | A6 | $\mathrm{Adm}_{\mathrm{CD}}$ | Neck? | $K^+_{\mathrm{Neck}}$: $V \cong S^{n-1} \times \mathbb{R}$, $\operatorname{Cap}(\Sigma) \leq \varepsilon$ | $K^-_{\mathrm{Neck}}$: fat singularity, non-cylindrical | S6 | Mode C.D |
 | A7 | $\mathrm{Adm}_{\mathrm{SD}}$ | Isolated? | $K^+_{\mathrm{Iso}}$: $\dim(\ker H) < \infty$, isolated critical pt | $K^-_{\mathrm{Iso}}$: infinite kernel, continuum of vacua | S7 | Mode S.D |
@@ -712,7 +729,7 @@ $$
 | A10 | $\mathrm{Adm}_{\mathrm{TE}}$ | Neck Pinch? | $K^+_{\mathrm{Topo}}$: $V \cong \text{Neck}$, $\pi_1$ compatible | $K^-_{\mathrm{Topo}}$: exotic topology, knotting | S10 | Mode T.E |
 | A11 | $\mathrm{Adm}_{\mathrm{TC}}$ | Definable? | $K^+_{\mathrm{Omin}}$: $\Sigma$ in $\mathcal{O}_{\text{ext}}$-definable | $K^-_{\mathrm{Omin}}$: wild set (Cantor) | S11 | Mode T.C |
 | A12 | $\mathrm{Adm}_{\mathrm{TD}}$ | Escapable? | $K^+_{\mathrm{Mix}}$: $\partial T$ has positive measure | $K^-_{\mathrm{Mix}}$: hermetic seal, infinite depth | S12 | Mode T.D |
-| A13 | $\mathrm{Adm}_{\mathrm{DC}}$ | Lipschitz? | $K^+_{\mathrm{Lip}}$: $x \in W^{1,\infty}$, $K \approx S_{\mathrm{BH}}$ | $K^-_{\mathrm{Lip}}$: $K \gg S_{\mathrm{BH}}$, fractal state | S13 | Mode D.C |
+| A13 | $\mathrm{Adm}_{\mathrm{DC}}$ | Lipschitz? | $K^+_{\mathrm{Lip}}$: $T_{\mathrm{thin}} \in W^{1,\infty}$, $K_\epsilon(T_{\mathrm{thin}}) \approx S_{\mathrm{BH}}$ | $K^-_{\mathrm{Lip}}$: $K_\epsilon(T_{\mathrm{thin}}) \gg S_{\mathrm{BH}}$, fractal state | S13 | Mode D.C |
 | A14 | $\mathrm{Adm}_{\mathrm{DE}}$ | Elliptic? | $K^+_{\mathrm{Ell}}$: marginal divergence, elliptic | $K^-_{\mathrm{Ell}}$: hyperbolic/chaotic oscillation | S14 | Mode D.E |
 | A15 | $\mathrm{Adm}_{\mathrm{BE}}$ | Phase Margin? | $K^+_{\mathrm{Marg}}$: phase margin $> 0$ | $K^-_{\mathrm{Marg}}$: zero phase margin | S15 | Mode B.E |
 | A16 | $\mathrm{Adm}_{\mathrm{BD}}$ | Recharge? | $K^+_{\mathrm{Res}}$: recharge $>$ drain, $r > 0$ | $K^-_{\mathrm{Res}}$: systemic deficit | S16 | Mode B.D |

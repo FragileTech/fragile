@@ -243,8 +243,8 @@ Concentration-Compactness (SurgCD_Alt) is one of the most elegant ideas in moder
 **Admissibility Signature:**
 - **Input Certificate:** $K_{\mathrm{SC}_\lambda}^{\mathrm{br}}$ (Supercritical scaling detected)
 - **Admissibility Predicate:**
-  $\alpha - \beta < \epsilon_{\text{crit}} \land \text{Profile } V \text{ is smooth}$
-  *(Near-critical with smooth profile allows perturbative lift.)*
+  $0 < \beta - \alpha < \epsilon_{\text{crit}} \land \text{Profile } V \text{ is smooth}$
+  *(Slightly supercritical with smooth profile allows perturbative lift.)*
 
 **Transformation Law ($\mathcal{O}_S$):**
 - **State Space:** $X' = X$ (same space, better regularity)
@@ -261,7 +261,7 @@ Concentration-Compactness (SurgCD_Alt) is one of the most elegant ideas in moder
 :::
 
 :::{div} feynman-prose
-The Regularity Lift surgery (SurgSE) is the mathematical equivalent of "if you are almost there, you can get all the way there." When a system is near-critical (the exponents $\alpha$ and $\beta$ are close but still in the right order), you can bootstrap to better regularity. You promote from $H^s$ to $H^{s+\delta}$---a small step in smoothness, but enough to escape the critical regime. This is the engine behind many regularity theorems in PDE.
+The Regularity Lift surgery (SurgSE) is the mathematical equivalent of "if you are almost there, you can get all the way there." When a system is near-critical on the supercritical side (the exponents $\alpha$ and $\beta$ are close, with $\beta$ only slightly larger), you can bootstrap to better regularity. You promote from $H^s$ to $H^{s+\delta}$---a small step in smoothness, but enough to escape the critical regime. This is the engine behind many regularity theorems in PDE.
 :::
 
 :::{prf:definition} Surgery Specification: Convex Integration
@@ -551,13 +551,13 @@ Mixing Enhancement (SurgTD) is the physical solution to glassy dynamics. When a 
 **Admissibility Signature:**
 - **Input Certificate:** $K_{\mathrm{Rep}_K}^{\mathrm{br}}$ (Complexity exceeds bound)
 - **Admissibility Predicate:**
-  $K(x) \leq S_{\text{BH}} + \epsilon \land x \in W^{1,\infty}$
+  $K_\epsilon(T_{\mathrm{thin}}) \leq S_{\text{BH}} + \epsilon \land T_{\mathrm{thin}} \in W^{1,\infty}$
   *(Near holographic bound with Lipschitz regularity.)*
 
 **Transformation Law ($\mathcal{O}_S$):**
 - **State Space:** $X' = X$ (same space, coarsened description)
 - **Viscosity Regularization:** $x' = x * \phi_\epsilon$ (convolution smoothing)
-- **Complexity Reduction:** $K(x') \leq K(x) - c \cdot \epsilon$
+- **Complexity Reduction:** $K_\epsilon(T_{\mathrm{thin}}') \leq K_\epsilon(T_{\mathrm{thin}}) - c \cdot \epsilon$
 
 **Postcondition:**
 - **Re-entry Certificate:** $K_{\mathrm{SurgDC}}^{\mathrm{re}}$ (Witnesses reduced complexity)

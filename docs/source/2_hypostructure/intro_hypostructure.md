@@ -37,7 +37,7 @@ Every predicate evaluation produces a typed certificate:
 **The Five Axioms:**
 1. **Conservation (D, Rec):** Energy dissipation + finite discrete events
 2. **Duality (C, SC):** Compactness modulo symmetry + subcritical scaling
-3. **Symmetry (LS, GC):** Stiffness (mass gap) + gradient consistency
+3. **Symmetry (LS, GC):** Stiffness (LS/KL/LSI or mass gap) + gradient consistency
 4. **Topology (TB, Cap):** Topological sector bounds + capacity constraints
 5. **Boundary:** Holographic interface linking bulk to boundary
 
@@ -358,7 +358,7 @@ The Hypostructure is valid if and only if it satisfies five families of structur
 
 ### Symmetry Axioms
 
-**Axiom LS (Stiffness):** The Łojasiewicz-Simon inequality holds near equilibria—there is a mass gap preventing arbitrarily soft modes. Enforced by Gate 7 ({prf:ref}`ax-stiffness`).
+**Axiom LS (Stiffness):** An effective stiffness permit holds near equilibria (LS/KL/LSI or spectral gap), preventing arbitrarily soft modes. Enforced by Gate 7 ({prf:ref}`ax-stiffness`).
 
 **Axiom GC (Gradient Consistency):** Gauge invariance and metric compatibility—control matches disturbance in a gauge-consistent way. Enforced by Gate 8 ({prf:ref}`ax-gradient-consistency`).
 

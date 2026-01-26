@@ -1400,18 +1400,18 @@ $$
 
 **Interface ID:** $\mathrm{TB}_\rho$
 
-**Predicate** $P_{10}$: The dynamics mixes (ergodic/explores full state space):
+**Predicate** $P_{10}$: The dynamics has a positive spectral gap (strong mixing certificate):
 
 $$
-P_{10} \equiv \tau_{\text{mix}} < \infty
+P_{10} \equiv \rho(\mu) > 0
 
 $$
 
-**Equivalence Note:** A positive spectral gap $\rho(\mu) > 0$ is a *sufficient* condition for finite mixing time: $\tau_{\text{mix}} \lesssim \rho^{-1} \log(1/\varepsilon)$.
+**Implication Note:** A positive spectral gap implies finite mixing time: $\tau_{\text{mix}} \lesssim \rho^{-1} \log(1/\varepsilon)$.
 
-**YES certificate** $K_{\mathrm{TB}_\rho}^+ = (\tau_{\text{mix}}, \text{mixing proof})$.
+**YES certificate** $K_{\mathrm{TB}_\rho}^+ = (\rho, \text{spectral gap proof})$.
 
-**NO certificate** $K_{\mathrm{TB}_\rho}^- = (\text{trap certificate}, \text{invariant subset})$.
+**NO certificate** $K_{\mathrm{TB}_\rho}^- = (\rho = 0 \text{ witness}, \text{metastable trap evidence})$.
 
 **NO routing**: BarrierMix (Mixing Barrier)
 
@@ -1424,7 +1424,7 @@ $$
 
 **Physical Interpretation:** Node 10 verifies **ergodicity**—whether the system explores its full phase space over time. This connects to fundamental statistical mechanics:
 
-- **Boltzmann's H-Theorem (1872):** The H-function (negative entropy) decreases monotonically, driving systems toward thermal equilibrium. Finite mixing time $\tau_{\text{mix}} < \infty$ ensures equilibration occurs on observable timescales.
+- **Boltzmann's H-Theorem (1872):** The H-function (negative entropy) decreases monotonically, driving systems toward thermal equilibrium. A positive spectral gap $\rho > 0$ implies finite mixing time, ensuring equilibration occurs on observable timescales.
 - **Thermalization:** An ergodic system eventually samples all accessible states according to the equilibrium distribution (Gibbs measure). This is the foundation of **statistical mechanics**.
 - **Glassy Freeze ($K_{\mathrm{TB}_\rho}^-$):** Non-ergodic systems become trapped in metastable states—like glasses that never reach crystalline equilibrium. The mixing barrier captures this phenomenon.
 
@@ -1440,24 +1440,27 @@ The spectral gap $\rho > 0$ quantifies how fast the Second Law of Thermodynamics
 
 **Interface ID:** $\mathrm{Rep}_K$
 
-**Predicate** $P_{11}$: The system admits a computable finite description:
+**Predicate** $P_{11}$: The thin trace admits a bounded description:
 
 $$
-P_{11} \equiv K(x) \in \mathbb{N} \text{ (Kolmogorov complexity is decidable and finite)}
+P_{11} \equiv \exists p:\, |p| \leq L,\; \mathrm{time}(p) \leq R,\; d(U(p), T_{\mathrm{thin}}) \leq \varepsilon
 
 $$
+
+Here $T_{\mathrm{thin}}$ is the finite thin-kernel trace available at this node, $U$ is a fixed universal
+machine, $d$ is a trace metric, and $(L, R, \varepsilon)$ are interface parameters.
 
 **Semantic Clarification:**
-- **YES:** $K(x)$ is computable and finite → proceed to OscillateCheck
-- **NO:** $K(x)$ is uncomputable, unbounded, or exceeds computational horizon → trigger BarrierEpi
+- **YES:** A concrete program $p$ reproduces the trace within $(L, R, \varepsilon)$ → proceed to OscillateCheck
+- **NO:** No program within bounds (or an incompressibility witness) → trigger BarrierEpi
 
 **Complexity Type Clarification:**
-- **Deterministic systems:** Complexity is evaluated on the state $K(x)$ or trajectory $K(x_t)$.
-- **Stochastic systems (post-S12):** Complexity is evaluated on the probability law $K(\mu_t)$ where $\mu_t = \text{Law}(x_t)$, not on individual sample paths. The SDE $dx = b\,dt + \sigma\,dW_t$ has finite description length $K(\text{SDE}) < \infty$ even though individual realizations $x_t(\omega)$ are algorithmically incompressible.
+- **Deterministic systems:** The trace is extracted from $x$ or $x_t$ and the program must reproduce $T_{\mathrm{thin}}$.
+- **Stochastic systems (post-S12):** The trace is extracted from the law $\mu_t = \text{Law}(x_t)$, not from individual paths. The SDE $dx = b\,dt + \sigma\,dW_t$ has finite description length even though sample paths are algorithmically incompressible.
 
-**YES certificate** $K_{\mathrm{Rep}_K}^+ = (D, K(D(x)), \text{computability proof})$.
+**YES certificate** $K_{\mathrm{Rep}_K}^+ = (p, L, R, \varepsilon, d(U(p), T_{\mathrm{thin}}) \leq \varepsilon)$.
 
-**NO certificate** $K_{\mathrm{Rep}_K}^- = (\text{uncomputability witness or divergence proof})$.
+**NO certificate** $K_{\mathrm{Rep}_K}^- = (\text{incompressibility witness or bounded search failure})$.
 
 **NO routing**: BarrierEpi (Epistemic Barrier)
 
@@ -1474,13 +1477,22 @@ $$
 
 **Interface ID:** $\mathrm{GC}_\nabla$
 
-**Predicate** $P_{12}$: Oscillatory behavior is present.
+**Predicate** $P_{12}$: Oscillatory behavior is detected in a finite spectral window:
 
-**Semantics**: This is *not* a good/bad check. YES means oscillation is present, which triggers the Frequency Barrier. NO means no oscillation, proceeding to boundary checks.
+$$
+P_{12} \equiv \sup_{0<|\omega|\leq \omega_{\max}} S(\omega) \geq \eta
 
-**YES certificate** $K_{\mathrm{GC}_\nabla}^+ = (\text{oscillation frequency}, \text{oscillation witness})$.
+$$
 
-**NO certificate** $K_{\mathrm{GC}_\nabla}^- = (\text{monotonicity certificate})$.
+Here $S(\omega)$ is the spectral density computed from the thin trace, $\omega_{\max}$ is a finite
+window, and $\eta$ is a detection threshold.
+
+**Semantics**: This is *not* a good/bad check. YES means oscillation is detected and triggers the Frequency
+Barrier. NO means no oscillatory component in the window, proceeding to boundary checks.
+
+**YES certificate** $K_{\mathrm{GC}_\nabla}^+ = (\omega_*, S(\omega_*), \omega_{\max}, \eta)$.
+
+**NO certificate** $K_{\mathrm{GC}_\nabla}^- = (S(\omega) < \eta \text{ for } 0<|\omega|\leq \omega_{\max})$.
 
 **YES routing**: BarrierFreq (Frequency Barrier)
 

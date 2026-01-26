@@ -81,7 +81,7 @@ The beautiful thing is that this is the *first* barrier you hit—the entry poin
 
 **Interface Dependencies:**
 - **Primary:** $\mathrm{Rec}_N$ (provides computational depth $D(T_*)$ of event tree)
-- **Secondary:** $\mathrm{TB}_\pi$ (provides time scale $\lambda(t)$ and horizon $T_*$)
+- **Secondary:** $\mathrm{TB}_\pi$ (provides time scale $\lambda(t)$ and horizon $T_*$; this $\lambda(t)$ is a causal depth scale, not the SC$_\lambda$ scaling parameter)
 
 **Sieve Signature:**
 - **Weakest Precondition:** $\{K_{D_E}^{\pm}\}$
@@ -514,6 +514,9 @@ $$
 "Does the system mix fast enough to escape traps?"
 *(Finite mixing time implies ergodicity: the system explores all accessible states and cannot be permanently trapped—the ergodic mixing principle.)*
 
+This barrier is intentionally weaker than the gate: Gate 10 requires a spectral gap $\rho>0$, while
+BarrierMix accepts finite $\tau_{\text{mix}}$ as a fallback certificate estimated from thin traces.
+
 **Outcomes:**
 - **Blocked** ($K_{\mathrm{TB}_\rho}^{\mathrm{blk}}$): Mixing time finite; trap escapable. Implies Pre(ComplexCheck).
 - **Breached** ($K_{\mathrm{TB}_\rho}^{\mathrm{br}}$): Infinite mixing time; permanent trapping possible. Activates **Mode T.D** (Trapping).
@@ -547,7 +550,7 @@ Here's the physical picture: imagine a ball rolling in a landscape with deep wel
 **Barrier ID:** `BarrierEpi`
 
 **Interface Dependencies:**
-- **Primary:** $\mathrm{Rep}_K$ (provides Kolmogorov complexity $K(x)$ of state description)
+- **Primary:** $\mathrm{Rep}_K$ (provides approximable complexity of the thin trace $T_{\mathrm{thin}}$)
 - **Secondary:** $\mathrm{Cap}_H$ (provides DPI information bound $I_{\max}$)
 
 **Sieve Signature:**
@@ -555,16 +558,18 @@ Here's the physical picture: imagine a ball rolling in a landscape with deep wel
 - **Barrier Predicate (Blocked Condition):**
 
 $$
-\sup_{\epsilon > 0} K_\epsilon(x) \leq S_{\text{BH}}
+\sup_{\epsilon > 0} K_\epsilon(T_{\mathrm{thin}}) \leq S_{\text{BH}}
 
 $$
 
-where $K_\epsilon(x) := \min\{|p| : d(U(p), x) < \epsilon\}$ is the $\epsilon$-approximable complexity.
+where $K_\epsilon(T_{\mathrm{thin}}) := \min\{|p| : d(U(p), T_{\mathrm{thin}}) < \epsilon\}$ is the $\epsilon$-approximable complexity.
 
 **Semantic Clarification:**
-This barrier is triggered when Node 11 determines that exact complexity is uncomputable. The predicate now asks: "Even though we cannot compute $K(x)$ exactly, can we bound all computable approximations within the holographic limit?" This makes the "Blocked" outcome logically reachable:
+This barrier is triggered when Node 11 determines that exact complexity is uncomputable. The predicate now asks: "Even though we cannot compute $K(T_{\mathrm{thin}})$ exactly, can we bound all computable approximations within the holographic limit?" This makes the "Blocked" outcome logically reachable:
 - If approximations converge to a finite limit $\leq S_{\text{BH}}$ → Blocked
 - If approximations diverge or exceed $S_{\text{BH}}$ → Breached
+
+Throughout this barrier, $x$ in the prose refers to the thin trace $T_{\mathrm{thin}}$.
 
 **Natural Language Logic:**
 "Is the approximable description length within physical bounds?"

@@ -309,3 +309,124 @@ def compute_effective_mass(corr: np.ndarray, delta_t: float) -> np.ndarray:
         if c0 > 0 and c1 > 0:
             eff[idx] = float(np.log(c0 / c1) / delta_t)
     return eff
+
+
+def select_mass_plateau(
+    lag_times: np.ndarray,
+    corr: np.ndarray,
+    fit_start: int = 1,
+    fit_stop: int | None = None,
+    min_points: int = 3,
+    max_points: int | None = None,
+    max_cv: float | None = 0.2,
+) -> dict[str, float | int] | None:
+    if corr.size < 3 or lag_times.size < 2:
+        return None
+
+    if min_points < 2:
+        min_points = 2
+    if max_points is not None and max_points < min_points:
+        max_points = min_points
+
+    diffs = np.diff(lag_times)
+    diffs = diffs[diffs > 0]
+    if diffs.size == 0:
+        return None
+    delta_t = float(np.median(diffs))
+    if delta_t <= 0 or not np.isfinite(delta_t):
+        return None
+
+    eff = compute_effective_mass(corr, delta_t)
+    if eff.size == 0:
+        return None
+
+    fit_stop_idx = corr.size - 1 if fit_stop is None else min(fit_stop, corr.size - 1)
+    fit_start_idx = max(0, fit_start)
+    eff_start = fit_start_idx
+    eff_stop = min(eff.size - 1, fit_stop_idx - 1)
+    if eff_stop < eff_start:
+        return None
+
+    valid = np.isfinite(eff) & (eff > 0)
+    valid[:eff_start] = False
+    valid[eff_stop + 1 :] = False
+    if not valid.any():
+        return None
+
+    def _better(candidate: dict[str, float], best: dict[str, float] | None) -> bool:
+        if best is None:
+            return True
+        if candidate["cv"] < best["cv"]:
+            return True
+        if candidate["cv"] == best["cv"] and candidate["n"] > best["n"]:
+            return True
+        if (
+            candidate["cv"] == best["cv"]
+            and candidate["n"] == best["n"]
+            and candidate["start"] < best["start"]
+        ):
+            return True
+        return False
+
+    best = None
+    best_any = None
+    idx = 0
+    while idx < valid.size:
+        if not valid[idx]:
+            idx += 1
+            continue
+        seg_start = idx
+        while idx < valid.size and valid[idx]:
+            idx += 1
+        seg_end = idx - 1
+        seg_len = seg_end - seg_start + 1
+        if seg_len < min_points:
+            continue
+        for start in range(seg_start, seg_end - min_points + 2):
+            window_max = min(seg_end, start + (max_points - 1) if max_points else seg_end)
+            for end in range(start + min_points - 1, window_max + 1):
+                window = eff[start : end + 1]
+                mean = float(np.mean(window))
+                if mean <= 0:
+                    continue
+                std = float(np.std(window, ddof=1)) if window.size > 1 else 0.0
+                cv = std / mean if mean > 0 else float("inf")
+                candidate = {
+                    "start": int(start),
+                    "end": int(end),
+                    "mean": mean,
+                    "std": std,
+                    "cv": cv,
+                    "n": int(window.size),
+                }
+                if _better(candidate, best_any):
+                    best_any = candidate
+                if max_cv is None or cv <= max_cv:
+                    if _better(candidate, best):
+                        best = candidate
+
+    selected = best or best_any
+    if selected is None:
+        return None
+
+    fit_start_idx = int(selected["start"])
+    fit_stop_idx = int(selected["end"]) + 1
+    if fit_stop_idx <= fit_start_idx:
+        return None
+
+    lag_start = float(lag_times[fit_start_idx])
+    lag_stop = float(lag_times[fit_stop_idx])
+
+    return {
+        "fit_start": fit_start_idx,
+        "fit_stop": fit_stop_idx,
+        "eff_start": int(selected["start"]),
+        "eff_stop": int(selected["end"]),
+        "eff_mean": float(selected["mean"]),
+        "eff_std": float(selected["std"]),
+        "eff_cv": float(selected["cv"]),
+        "eff_n": int(selected["n"]),
+        "delta_t": float(delta_t),
+        "lag_start": lag_start,
+        "lag_stop": lag_stop,
+    }

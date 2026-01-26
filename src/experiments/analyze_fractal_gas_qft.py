@@ -38,6 +38,7 @@ from fragile.fractalai.qft.particle_observables import (
     compute_meson_operator_knn,
     compute_time_correlator,
     fit_mass_exponential,
+    select_mass_plateau,
 )
 
 try:
@@ -85,8 +86,12 @@ class AnalysisConfig:
     compute_particles: bool = False
     particle_operators: tuple[str, ...] = ("baryon", "meson", "glueball")
     particle_max_lag: int | None = 80
-    particle_fit_start: int = 2
-    particle_fit_stop: int = 30
+    particle_fit_start: int = 7
+    particle_fit_stop: int = 16
+    particle_fit_mode: str = "window"
+    particle_plateau_min_points: int = 3
+    particle_plateau_max_points: int | None = None
+    particle_plateau_max_cv: float | None = 0.2
     particle_mass: float = 1.0
     particle_ell0: float | None = None
     particle_use_connected: bool = True
@@ -1082,6 +1087,59 @@ def _estimate_time_step(times: np.ndarray, fallback: float) -> float:
     return float(np.median(diffs))
 
 
+def _fit_particle_mass(
+    lag_times: np.ndarray,
+    corr: np.ndarray,
+    fit_start: int,
+    fit_stop: int | None,
+    fit_mode: str,
+    plateau_min_points: int,
+    plateau_max_points: int | None,
+    plateau_max_cv: float | None,
+) -> dict[str, Any]:
+    fit_stop_idx = corr.size - 1 if fit_stop is None else min(fit_stop, corr.size - 1)
+    fit_start_idx = max(0, fit_start)
+    base_fit = fit_mass_exponential(
+        lag_times,
+        corr,
+        fit_start=fit_start_idx,
+        fit_stop=fit_stop_idx,
+    )
+    base_fit["fit_start"] = int(fit_start_idx)
+    base_fit["fit_stop"] = int(fit_stop_idx)
+    base_fit["fit_mode"] = "window"
+
+    if fit_mode not in {"plateau", "auto"}:
+        return base_fit
+
+    plateau = select_mass_plateau(
+        lag_times,
+        corr,
+        fit_start=fit_start_idx,
+        fit_stop=fit_stop_idx,
+        min_points=plateau_min_points,
+        max_points=plateau_max_points,
+        max_cv=plateau_max_cv,
+    )
+    if plateau is None:
+        if fit_mode == "plateau":
+            base_fit["fit_mode"] = "window_fallback"
+            base_fit["plateau"] = None
+        return base_fit
+
+    plateau_fit = fit_mass_exponential(
+        lag_times,
+        corr,
+        fit_start=int(plateau["fit_start"]),
+        fit_stop=int(plateau["fit_stop"]),
+    )
+    plateau_fit["fit_start"] = int(plateau["fit_start"])
+    plateau_fit["fit_stop"] = int(plateau["fit_stop"])
+    plateau_fit["fit_mode"] = "plateau"
+    plateau_fit["plateau"] = plateau
+    return plateau_fit
+
+
 def _compute_particle_observables(
     history: RunHistory,
     operators: tuple[str, ...],
@@ -1091,6 +1149,10 @@ def _compute_particle_observables(
     max_lag: int | None,
     fit_start: int,
     fit_stop: int,
+    fit_mode: str,
+    plateau_min_points: int,
+    plateau_max_points: int | None,
+    plateau_max_cv: float | None,
     use_connected: bool,
     neighbor_method: str,
     knn_k: int,
@@ -1269,7 +1331,16 @@ def _compute_particle_observables(
         arrays[f"particle_{op}_corr"] = np.real(corr)
         arrays[f"particle_{op}_eff_mass"] = compute_effective_mass(corr, dt)
 
-        fit = fit_mass_exponential(lag_times, corr, fit_start=fit_start, fit_stop=fit_stop)
+        fit = _fit_particle_mass(
+            lag_times,
+            corr,
+            fit_start=fit_start,
+            fit_stop=fit_stop,
+            fit_mode=fit_mode,
+            plateau_min_points=plateau_min_points,
+            plateau_max_points=plateau_max_points,
+            plateau_max_cv=plateau_max_cv,
+        )
         metrics["operators"][op] = {
             "n_samples": int(series.size),
             "dt": float(dt),
@@ -1298,8 +1369,15 @@ def _compute_particle_observables(
             arrays["particle_glueball_corr"] = np.real(corr)
             arrays["particle_glueball_eff_mass"] = compute_effective_mass(corr, glue_dt)
 
-            fit = fit_mass_exponential(
-                lag_times, corr, fit_start=fit_start, fit_stop=fit_stop
+            fit = _fit_particle_mass(
+                lag_times,
+                corr,
+                fit_start=fit_start,
+                fit_stop=fit_stop,
+                fit_mode=fit_mode,
+                plateau_min_points=plateau_min_points,
+                plateau_max_points=plateau_max_points,
+                plateau_max_cv=plateau_max_cv,
             )
             metrics["operators"]["glueball"] = {
                 "n_samples": int(glue_series.size),
@@ -1354,8 +1432,32 @@ def parse_args() -> argparse.Namespace:
         help="Comma-separated particle operators to compute (glueball needs --build-fractal-set).",
     )
     parser.add_argument("--particle-max-lag", type=int, default=80)
-    parser.add_argument("--particle-fit-start", type=int, default=2)
-    parser.add_argument("--particle-fit-stop", type=int, default=30)
+    parser.add_argument("--particle-fit-start", type=int, default=7)
+    parser.add_argument("--particle-fit-stop", type=int, default=16)
+    parser.add_argument(
+        "--particle-fit-mode",
+        choices=["window", "plateau", "auto"],
+        default="window",
+        help="Particle mass fit mode: fixed window, effective-mass plateau, or auto fallback.",
+    )
+    parser.add_argument(
+        "--particle-plateau-min-points",
+        type=int,
+        default=3,
+        help="Minimum effective-mass points for plateau selection.",
+    )
+    parser.add_argument(
+        "--particle-plateau-max-points",
+        type=int,
+        default=None,
+        help="Optional maximum effective-mass points for plateau selection.",
+    )
+    parser.add_argument(
+        "--particle-plateau-max-cv",
+        type=float,
+        default=0.2,
+        help="Max coefficient of variation for plateau selection (larger = looser).",
+    )
     parser.add_argument(
         "--particle-mass",
         type=float,
@@ -1370,9 +1472,9 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--particle-use-connected",
-        action="store_true",
+        action=argparse.BooleanOptionalAction,
         default=True,
-        help="Use connected correlator for particle fits (default: true).",
+        help="Use connected correlator for particle fits.",
     )
     parser.add_argument(
         "--particle-neighbor-method",
@@ -1425,6 +1527,10 @@ def main() -> None:
         particle_max_lag=args.particle_max_lag,
         particle_fit_start=args.particle_fit_start,
         particle_fit_stop=args.particle_fit_stop,
+        particle_fit_mode=args.particle_fit_mode,
+        particle_plateau_min_points=args.particle_plateau_min_points,
+        particle_plateau_max_points=args.particle_plateau_max_points,
+        particle_plateau_max_cv=args.particle_plateau_max_cv,
         particle_mass=args.particle_mass,
         particle_ell0=args.particle_ell0,
         particle_use_connected=args.particle_use_connected,
@@ -1458,6 +1564,28 @@ def main() -> None:
             raise ValueError("particle_fit_start must be >= 0")
         if analysis_cfg.particle_fit_stop < analysis_cfg.particle_fit_start:
             raise ValueError("particle_fit_stop must be >= particle_fit_start")
+        if analysis_cfg.particle_fit_mode not in {"window", "plateau", "auto"}:
+            raise ValueError("particle_fit_mode must be 'window', 'plateau', or 'auto'")
+        if analysis_cfg.particle_plateau_min_points <= 0:
+            raise ValueError("particle_plateau_min_points must be positive")
+        if (
+            analysis_cfg.particle_plateau_max_points is not None
+            and analysis_cfg.particle_plateau_max_points <= 0
+        ):
+            raise ValueError("particle_plateau_max_points must be positive when set")
+        if (
+            analysis_cfg.particle_plateau_max_points is not None
+            and analysis_cfg.particle_plateau_max_points
+            < analysis_cfg.particle_plateau_min_points
+        ):
+            raise ValueError(
+                "particle_plateau_max_points must be >= particle_plateau_min_points"
+            )
+        if (
+            analysis_cfg.particle_plateau_max_cv is not None
+            and analysis_cfg.particle_plateau_max_cv <= 0
+        ):
+            raise ValueError("particle_plateau_max_cv must be positive when set")
         if analysis_cfg.particle_max_lag is not None and analysis_cfg.particle_max_lag <= 0:
             raise ValueError("particle_max_lag must be positive when set")
         if analysis_cfg.particle_neighbor_method not in {"companion", "knn"}:
@@ -1915,6 +2043,10 @@ def main() -> None:
             max_lag=analysis_cfg.particle_max_lag,
             fit_start=analysis_cfg.particle_fit_start,
             fit_stop=analysis_cfg.particle_fit_stop,
+            fit_mode=analysis_cfg.particle_fit_mode,
+            plateau_min_points=analysis_cfg.particle_plateau_min_points,
+            plateau_max_points=analysis_cfg.particle_plateau_max_points,
+            plateau_max_cv=analysis_cfg.particle_plateau_max_cv,
             use_connected=analysis_cfg.particle_use_connected,
             neighbor_method=analysis_cfg.particle_neighbor_method,
             knn_k=analysis_cfg.particle_knn_k,
@@ -2041,14 +2173,21 @@ def main() -> None:
         operators = particle_metrics.get("operators") or {}
         if operators:
             print("\nParticle Mass Estimates (Euclidean time):")
-            print("  Operator    | mass       | R²        | samples")
-            print("  ------------|------------|-----------|--------")
+            print("  Operator    | mass       | R²        | fit              | samples")
+            print("  ------------|------------|-----------|------------------|--------")
             for name, data in operators.items():
                 fit = data.get("fit", {})
                 mass = fit.get("mass", 0.0)
                 r2 = fit.get("r_squared", 0.0)
+                fit_mode = fit.get("fit_mode", "window")
+                fit_start = int(fit.get("fit_start", analysis_cfg.particle_fit_start))
+                fit_stop = int(fit.get("fit_stop", analysis_cfg.particle_fit_stop))
+                fit_label = f"{fit_mode} {fit_start}-{fit_stop}"
                 n_samples = data.get("n_samples", 0)
-                print(f"  {name:<11} | {mass:>10.4f} | {r2:>9.4f} | {n_samples:>7}")
+                print(
+                    f"  {name:<11} | {mass:>10.4f} | {r2:>9.4f} | "
+                    f"{fit_label:<16} | {n_samples:>7}"
+                )
 
 
 if __name__ == "__main__":
