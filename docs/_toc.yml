@@ -152,6 +152,7 @@ parts:
           - file: source/3_fractal_gas/2_fractal_set/04_standard_model
           - file: source/3_fractal_gas/2_fractal_set/05_yang_mills_noether
           - file: source/3_fractal_gas/2_fractal_set/06_empirical_validation
+          - file: source/3_fractal_gas/2_fractal_set/08_qft_calibration_notebook
       - file: source/3_fractal_gas/3_fitness_manifold/01_emergent_geometry
         title: "Part III - The Fitness Manifold"
         sections:

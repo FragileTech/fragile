@@ -63,6 +63,10 @@ class OperatorConfig:
     nu: float = 0.948271
     use_viscous_coupling: bool = True
     viscous_length_scale: float = 0.00976705
+    viscous_neighbor_mode: str = "all"
+    viscous_neighbor_threshold: float | None = None
+    viscous_neighbor_penalty: float = 0.0
+    viscous_degree_cap: float | None = None
     beta_curl: float = 0.0
     use_velocity_squashing: bool = False
     V_alg: float = float("inf")
@@ -166,6 +170,10 @@ def build_gas(
         nu=operator_cfg.nu,
         use_viscous_coupling=operator_cfg.use_viscous_coupling,
         viscous_length_scale=operator_cfg.viscous_length_scale,
+        viscous_neighbor_mode=operator_cfg.viscous_neighbor_mode,
+        viscous_neighbor_threshold=operator_cfg.viscous_neighbor_threshold,
+        viscous_neighbor_penalty=operator_cfg.viscous_neighbor_penalty,
+        viscous_degree_cap=operator_cfg.viscous_degree_cap,
         beta_curl=operator_cfg.beta_curl,
         use_velocity_squashing=operator_cfg.use_velocity_squashing,
         V_alg=operator_cfg.V_alg,
@@ -273,6 +281,30 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--viscous-length-scale", type=float, default=OperatorConfig.viscous_length_scale
     )
+    parser.add_argument(
+        "--viscous-neighbor-mode",
+        choices=["all", "nearest"],
+        default=OperatorConfig.viscous_neighbor_mode,
+        help="Neighbor mode for viscous coupling (all or nearest)",
+    )
+    parser.add_argument(
+        "--viscous-neighbor-threshold",
+        type=float,
+        default=OperatorConfig.viscous_neighbor_threshold,
+        help="Kernel threshold for strong neighbor penalty (0-1)",
+    )
+    parser.add_argument(
+        "--viscous-neighbor-penalty",
+        type=float,
+        default=OperatorConfig.viscous_neighbor_penalty,
+        help="Penalty strength for extra strong neighbors",
+    )
+    parser.add_argument(
+        "--viscous-degree-cap",
+        type=float,
+        default=OperatorConfig.viscous_degree_cap,
+        help="Optional cap on viscous degree (saturates multi-neighbor coupling)",
+    )
     parser.add_argument("--fitness-rho", type=float, default=OperatorConfig.fitness_rho)
     parser.add_argument(
         "--companion-epsilon",
@@ -309,6 +341,10 @@ def main() -> None:
         epsilon_F=args.epsilon_F,
         nu=args.nu,
         viscous_length_scale=args.viscous_length_scale,
+        viscous_neighbor_mode=args.viscous_neighbor_mode,
+        viscous_neighbor_threshold=args.viscous_neighbor_threshold,
+        viscous_neighbor_penalty=args.viscous_neighbor_penalty,
+        viscous_degree_cap=args.viscous_degree_cap,
         fitness_rho=args.fitness_rho,
         companion_epsilon=args.companion_epsilon,
         companion_epsilon_clone=args.companion_epsilon_clone,

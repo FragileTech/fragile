@@ -159,6 +159,29 @@ class KineticOperator(PanelModel):
         inclusive_bounds=(False, True),
         doc="Length scale (l) for Gaussian kernel K(r) = exp(-r²/(2l²))",
     )
+    viscous_neighbor_mode = param.Selector(
+        default="all",
+        objects=["all", "nearest"],
+        doc="Neighbor mode for viscous coupling (all or nearest)",
+    )
+    viscous_neighbor_threshold = param.Number(
+        default=None,
+        allow_None=True,
+        bounds=(0.0, 1.0),
+        inclusive_bounds=(False, True),
+        doc="Kernel threshold for strong neighbors in viscous penalty",
+    )
+    viscous_neighbor_penalty = param.Number(
+        default=0.0,
+        bounds=(0, None),
+        doc="Penalty strength for excess strong neighbors in viscous coupling",
+    )
+    viscous_degree_cap = param.Number(
+        default=None,
+        allow_None=True,
+        bounds=(0, None),
+        doc="Optional cap on viscous degree to saturate multi-neighbor coupling",
+    )
 
     # Boris rotation (curl-driven velocity rotation)
     beta_curl = param.Number(
@@ -272,6 +295,35 @@ class KineticOperator(PanelModel):
                 "end": 5.0,
                 "step": 0.1,
             },
+            "viscous_neighbor_mode": {
+                "type": pn.widgets.Select,
+                "width": INPUT_WIDTH,
+                "name": "Viscous neighbors",
+            },
+            "viscous_neighbor_threshold": {
+                "type": pn.widgets.EditableFloatSlider,
+                "width": INPUT_WIDTH,
+                "name": "Viscous neighbor threshold",
+                "start": 0.0,
+                "end": 1.0,
+                "step": 0.01,
+            },
+            "viscous_neighbor_penalty": {
+                "type": pn.widgets.EditableFloatSlider,
+                "width": INPUT_WIDTH,
+                "name": "Viscous neighbor penalty",
+                "start": 0.0,
+                "end": 10.0,
+                "step": 0.1,
+            },
+            "viscous_degree_cap": {
+                "type": pn.widgets.EditableFloatSlider,
+                "width": INPUT_WIDTH,
+                "name": "Viscous degree cap",
+                "start": 0.0,
+                "end": 200.0,
+                "step": 1.0,
+            },
             "beta_curl": {
                 "type": pn.widgets.EditableFloatSlider,
                 "width": INPUT_WIDTH,
@@ -312,6 +364,10 @@ class KineticOperator(PanelModel):
             "nu",
             "use_viscous_coupling",
             "viscous_length_scale",
+            "viscous_neighbor_mode",
+            "viscous_neighbor_threshold",
+            "viscous_neighbor_penalty",
+            "viscous_degree_cap",
             "beta_curl",
             "V_alg",
             "use_velocity_squashing",
@@ -332,6 +388,10 @@ class KineticOperator(PanelModel):
         nu: float = 0.0,
         use_viscous_coupling: bool = False,
         viscous_length_scale: float = 1.0,
+        viscous_neighbor_mode: str = "all",
+        viscous_neighbor_threshold: float | None = None,
+        viscous_neighbor_penalty: float = 0.0,
+        viscous_degree_cap: float | None = None,
         beta_curl: float = 0.0,
         curl_field=None,
         V_alg: float = float("inf"),
@@ -359,6 +419,10 @@ class KineticOperator(PanelModel):
             nu: Viscous coupling strength (ν)
             use_viscous_coupling: Enable viscous coupling
             viscous_length_scale: Length scale for Gaussian kernel
+            viscous_neighbor_mode: Neighbor mode for viscous coupling
+            viscous_neighbor_threshold: Kernel threshold for strong neighbors
+            viscous_neighbor_penalty: Penalty strength for excess neighbors
+            viscous_degree_cap: Degree cap for viscous coupling saturation
             beta_curl: Curl coupling strength for Boris rotation
             curl_field: Curl/2-form field; callable F(x)->[N, d, d] or [N, 3]
             V_alg: Algorithmic velocity bound for smooth squashing map (default: inf)
@@ -394,6 +458,10 @@ class KineticOperator(PanelModel):
             nu=nu,
             use_viscous_coupling=use_viscous_coupling,
             viscous_length_scale=viscous_length_scale,
+            viscous_neighbor_mode=viscous_neighbor_mode,
+            viscous_neighbor_threshold=viscous_neighbor_threshold,
+            viscous_neighbor_penalty=viscous_neighbor_penalty,
+            viscous_degree_cap=viscous_degree_cap,
             beta_curl=beta_curl,
             curl_field=curl_field,
             V_alg=V_alg,
@@ -541,6 +609,14 @@ class KineticOperator(PanelModel):
         # Zero out diagonal (no self-interaction)
         kernel.fill_diagonal_(0.0)
 
+        if self.viscous_neighbor_mode == "nearest":
+            nearest_dist = distances.clone()
+            nearest_dist.fill_diagonal_(float("inf"))
+            nn_idx = nearest_dist.argmin(dim=1)
+            mask = torch.zeros_like(kernel)
+            mask.scatter_(1, nn_idx.unsqueeze(1), 1.0)
+            kernel = kernel * mask
+
         # Compute local degree deg(i) = ∑_{j≠i} K(||x_i - x_j||)
         # Add small epsilon for numerical stability
         deg = kernel.sum(dim=1, keepdim=True)  # [N, 1]
@@ -548,6 +624,21 @@ class KineticOperator(PanelModel):
 
         # Compute normalized weights w_ij = K_ij / deg_i
         weights = kernel / deg  # [N, N], broadcasting deg over columns
+        if self.viscous_degree_cap is not None:
+            cap = float(self.viscous_degree_cap)
+            if cap <= 0:
+                return torch.zeros_like(v)
+            scale = torch.clamp(cap / deg, max=1.0)
+            weights = weights * scale
+
+        if self.viscous_neighbor_threshold is not None and self.viscous_neighbor_penalty > 0:
+            threshold = float(self.viscous_neighbor_threshold)
+            if threshold > 0:
+                strong = kernel >= threshold
+                strong_count = strong.sum(dim=1, keepdim=True).to(weights.dtype)
+                excess = torch.clamp(strong_count - 1.0, min=0.0)
+                penalty_scale = 1.0 / (1.0 + self.viscous_neighbor_penalty * excess)
+                weights = weights * penalty_scale
 
         # Compute velocity differences for all pairs
         # v_diff[i, j] = v_j - v_i

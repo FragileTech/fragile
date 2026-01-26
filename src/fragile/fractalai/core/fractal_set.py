@@ -72,6 +72,10 @@ class FractalSet:
         self.nu = kinetic_params.get("nu", 0.0)
         self.viscous_length_scale = kinetic_params.get("viscous_length_scale", 1.0)
         self.use_viscous_coupling = kinetic_params.get("use_viscous_coupling", False)
+        self.viscous_neighbor_mode = kinetic_params.get("viscous_neighbor_mode", "all")
+        self.viscous_neighbor_threshold = kinetic_params.get("viscous_neighbor_threshold", None)
+        self.viscous_neighbor_penalty = kinetic_params.get("viscous_neighbor_penalty", 0.0)
+        self.viscous_degree_cap = kinetic_params.get("viscous_degree_cap", None)
 
         self._graph_cache: nx.DiGraph | None = None
         self._graph_cache_aux: nx.DiGraph | None = None
@@ -365,8 +369,31 @@ class FractalSet:
         kernel.fill_diagonal_(0.0)
         alive_2d = alive.unsqueeze(0) & alive.unsqueeze(1)
         kernel = kernel * alive_2d.float()
+        if self.viscous_neighbor_mode == "nearest":
+            nearest_dist = dist.clone()
+            nearest_dist = nearest_dist.masked_fill(~alive_2d, float("inf"))
+            nearest_dist.fill_diagonal_(float("inf"))
+            nn_idx = nearest_dist.argmin(dim=1)
+            mask = torch.zeros_like(kernel)
+            mask.scatter_(1, nn_idx.unsqueeze(1), 1.0)
+            kernel = kernel * mask
         deg = torch.clamp(kernel.sum(dim=1, keepdim=True), min=1e-12)
         weights = kernel / deg
+        if self.viscous_neighbor_threshold is not None and self.viscous_neighbor_penalty > 0:
+            threshold = float(self.viscous_neighbor_threshold)
+            if threshold > 0:
+                strong = kernel >= threshold
+                strong_count = strong.sum(dim=1, keepdim=True).to(weights.dtype)
+                excess = torch.clamp(strong_count - 1.0, min=0.0)
+                penalty_scale = 1.0 / (1.0 + self.viscous_neighbor_penalty * excess)
+                weights = weights * penalty_scale
+        if self.viscous_degree_cap is not None:
+            cap = float(self.viscous_degree_cap)
+            if cap <= 0:
+                weights = torch.zeros_like(weights)
+            else:
+                scale = torch.clamp(cap / deg, max=1.0)
+                weights = weights * scale
         return {"kernel": kernel, "weights": weights}
 
     def _build_edges(self) -> None:
