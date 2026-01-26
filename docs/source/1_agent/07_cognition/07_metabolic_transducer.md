@@ -17,19 +17,19 @@
 3. Geometry under depletion + runtime diagnostics for metabolic failure.
 
 *Abstract.* This chapter closes the thermodynamic loop opened in
-{ref}`Section 31 <sec-computational-metabolism-the-landauer-bound-and-deliberation-dynamics>`. We derive the
+{ref}`sec-computational-metabolism-the-landauer-bound-and-deliberation-dynamics`. We derive the
 **Metabolic Transducer** $\mathfrak{T}_{\text{harvest}}$ from the Szilard engine analysis, showing that reward signals
 encode extractable work. We prove the **Autopoietic Inequality**—the survival condition requiring harvest rate to exceed
 metabolic dissipation. We derive the **Fading Metric Law** from Fisher Information principles, showing that the latent
 geometry degrades as energy depletes. Finally, we introduce diagnostic nodes 67–70 to monitor autopoietic viability.
 
 *Cross-references:*
-- Closes the loop from {ref}`Section 31 <sec-computational-metabolism-the-landauer-bound-and-deliberation-dynamics>`
+- Closes the loop from {ref}`sec-computational-metabolism-the-landauer-bound-and-deliberation-dynamics`
   (Metabolism).
-- Connects the Reward Field ({ref}`Section 24 <sec-the-reward-field-value-forms-and-hodge-geometry>`) to survival.
+- Connects the Reward Field ({ref}`sec-the-reward-field-value-forms-and-hodge-geometry`) to survival.
 - Provides the ultimate constraint for the Universal Governor
-  ({ref}`Section 26 <sec-theory-of-meta-stability-the-universal-governor-as-homeostatic-controller>`).
-- Adds metabolic viability to the Parameter Space Sieve ({ref}`Section 35 <sec-parameter-space-sieve>`).
+  ({ref}`sec-theory-of-meta-stability-the-universal-governor-as-homeostatic-controller`).
+- Adds metabolic viability to the Parameter Space Sieve ({ref}`sec-parameter-space-sieve`).
 
 *Literature:*
 - Maxwell's Demon {cite}`maxwell1871theory` (Maxwell, *Theory of Heat*, 1871).
@@ -60,7 +60,7 @@ This chapter will close the thermodynamic loop. We will show that an agent is re
 (sec-thermodynamics-of-information-harvesting)=
 ## The Thermodynamics of Information Harvesting
 
-In {ref}`Section 31 <sec-computational-metabolism-the-landauer-bound-and-deliberation-dynamics>`, we established that computation dissipates energy: the Generalized Landauer Bound (Theorem {prf:ref}`thm-generalized-landauer-bound`) states $\dot{\mathcal{M}} \geq T_c |dH/ds|$. Here we establish the converse: **correct prediction extracts work**. This is the Szilard engine operating in the forward direction.
+In {ref}`sec-computational-metabolism-the-landauer-bound-and-deliberation-dynamics`, we established that computation dissipates energy: the Generalized Landauer Bound (Theorem {prf:ref}`thm-generalized-landauer-bound`) states $\dot{\mathcal{M}} \geq T_c |dH/ds|$. Here we establish the converse: **correct prediction extracts work**. This is the Szilard engine operating in the forward direction.
 
 :::{div} feynman-prose
 Let me explain what we are after. In the metabolism chapter, we proved that sharpening your beliefs—reducing uncertainty—costs energy. That is Landauer's principle in action. But Landauer's principle has a flip side, and it is this flip side that makes life possible.
@@ -80,7 +80,7 @@ J_r(t) = \langle \mathcal{R}(z_t), v_t \rangle_G = r_t
 
 $$
 
-where $\mathcal{R}$ is the reward 1-form ({ref}`Section 24.1 <sec-the-reward-field-value-forms-and-hodge-geometry>`) and $v_t = \dot{z}_t$ is the velocity in latent space.
+where $\mathcal{R}$ is the reward 1-form ({ref}`sec-the-reward-field-value-forms-and-hodge-geometry`) and $v_t = \dot{z}_t$ is the velocity in latent space.
 
 *Units:* $[J_r] = \text{nats/step}$ (information-theoretic) or $[\text{utility/step}]$ (decision-theoretic).
 
@@ -276,7 +276,7 @@ The agent lives in the gap between these two. If you can harvest more than you b
 (sec-internal-battery-autopoietic-dynamics)=
 ## The Internal Battery and Autopoietic Dynamics
 
-The agent maintains an **internal energy reservoir** that fuels computation. This reservoir is depleted by inference ({ref}`Section 31 <sec-computational-metabolism-the-landauer-bound-and-deliberation-dynamics>`) and replenished by harvesting. The dynamics of this reservoir determine the agent's survival.
+The agent maintains an **internal energy reservoir** that fuels computation. This reservoir is depleted by inference ({ref}`sec-computational-metabolism-the-landauer-bound-and-deliberation-dynamics`) and replenished by harvesting. The dynamics of this reservoir determine the agent's survival.
 
 :::{div} feynman-prose
 Now we need to talk about the agent's bank account. Not money—energy.
@@ -454,7 +454,7 @@ This perspective resolves a lot of puzzles in RL. Why do agents often seem "risk
 
 The battery $B(t)$ is not merely a scalar reward modifier (conservative case)—it is a **constraint on the geometry
 itself**. Without energy, the agent cannot maintain the precise neural representations required for a high-resolution
-metric ({ref}`Section 18 <sec-capacity-constrained-metric-law-geometry-from-interface-limits>`). We derive this from
+metric ({ref}`sec-capacity-constrained-metric-law-geometry-from-interface-limits`). We derive this from
 Fisher Information principles.
 
 :::{div} feynman-prose
@@ -594,7 +594,7 @@ As $B(t) \to 0$, the following degenerations occur:
 
 2. **Inertia Loss:** The mass term in the geodesic SDE (Definition {prf:ref}`def-bulk-drift-continuous-flow`) vanishes. The agent loses momentum and becomes dominated by thermal noise.
 
-3. **Causal Dissolution:** The Causal Information Bound ({ref}`Section 33 <sec-causal-information-bound>`, Theorem {prf:ref}`thm-causal-information-bound`) collapses:
+3. **Causal Dissolution:** The Causal Information Bound ({ref}`sec-causal-information-bound`, Theorem {prf:ref}`thm-causal-information-bound`) collapses:
    $$I_{\max}^{\text{eff}} = \frac{\text{Area}(\partial\mathcal{Z})}{4\ell_L^2} \cdot f(B/B_{\text{crit}}) \to 0$$
    The agent's representational capacity vanishes.
 
@@ -720,7 +720,7 @@ $$
 
 $$
 
-The value function satisfies the augmented screened Poisson equation ({ref}`Section 24 <sec-the-reward-field-value-forms-and-hodge-geometry>`):
+The value function satisfies the augmented screened Poisson equation ({ref}`sec-the-reward-field-value-forms-and-hodge-geometry`):
 
 $$
 (-\Delta_{G^{\text{eff}}} + \kappa^2) V = \rho_r + \rho_{\text{homeo}}
@@ -938,7 +938,7 @@ from typing import Tuple
 class MetabolismConfig:
     """Configuration for the Metabolic Transducer and Battery.
 
-    All parameters have physical units and interpretations from {ref}`Section 36 <sec-the-metabolic-transducer-autopoiesis-and-the-szilard-engine>`.
+    All parameters have physical units and interpretations from {ref}`sec-the-metabolic-transducer-autopoiesis-and-the-szilard-engine`.
     """
     battery_capacity: float = 100.0      # B_max: Maximum stored energy (Joules)
     initial_battery: float = 50.0        # B_0: Initial endowment
@@ -1006,7 +1006,7 @@ class MetabolicBattery(nn.Module):
 
         Args:
             reward_nats: Reward signal r_t
-            metabolic_cost_joules: Metabolic cost M_dot from {ref}`Section 31 <sec-computational-metabolism-the-landauer-bound-and-deliberation-dynamics>`
+            metabolic_cost_joules: Metabolic cost M_dot from {ref}`sec-computational-metabolism-the-landauer-bound-and-deliberation-dynamics`
 
         Returns:
             delta: Net energy change
@@ -1172,7 +1172,7 @@ The interesting question is what happens in populations or across training runs.
 *Interpretation:* The agent is burning more energy than it collects. It is on a trajectory toward death.
 
 *Remediation:* Governor Intervention:
-1. Reduce Cognitive Temperature $T_c$ (enter "hibernate" / System 1 mode; see fast/slow phase transition in {ref}`Section 31 <sec-computational-metabolism-the-landauer-bound-and-deliberation-dynamics>`)
+1. Reduce Cognitive Temperature $T_c$ (enter "hibernate" / System 1 mode; see fast/slow phase transition in {ref}`sec-computational-metabolism-the-landauer-bound-and-deliberation-dynamics`)
 2. Suppress Curiosity coefficient $\beta_{\text{exp}}$ (stop exploring)
 3. Increase Homeostatic Weight $\lambda_{\text{surv}}$ (focus on food-seeking)
 4. Trigger Deliberation Stopping (Theorem {prf:ref}`thm-deliberation-optimality-condition`) earlier
@@ -1302,10 +1302,10 @@ This is not just a theoretical framework—it is a design specification for agen
 ```
 
 **Cross-references:**
-- Closes the loop opened in {ref}`Section 31 <sec-computational-metabolism-the-landauer-bound-and-deliberation-dynamics>` (Metabolism)
-- Connects the Reward Field ({ref}`Section 24 <sec-the-reward-field-value-forms-and-hodge-geometry>`) to agent survival
-- Provides the ultimate boundary condition for the Universal Governor ({ref}`Section 26 <sec-theory-of-meta-stability-the-universal-governor-as-homeostatic-controller>`)
-- Adds metabolic viability constraint to the Parameter Space Sieve ({ref}`Section 35 <sec-parameter-space-sieve>`)
+- Closes the loop opened in {ref}`sec-computational-metabolism-the-landauer-bound-and-deliberation-dynamics` (Metabolism)
+- Connects the Reward Field ({ref}`sec-the-reward-field-value-forms-and-hodge-geometry`) to agent survival
+- Provides the ultimate boundary condition for the Universal Governor ({ref}`sec-theory-of-meta-stability-the-universal-governor-as-homeostatic-controller`)
+- Adds metabolic viability constraint to the Parameter Space Sieve ({ref}`sec-parameter-space-sieve`)
 
 **The Autopoietic Closure:** The agent's objective function is derived from the structural necessity of maintaining $B(t) > 0$ while minimizing free energy of the task. Survival is not externally specified but emerges from the thermodynamic constraint: insufficient harvesting leads to metric collapse (Theorem {prf:ref}`thm-fading-metric-law`) and loss of computational capacity.
 

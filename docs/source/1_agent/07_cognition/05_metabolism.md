@@ -31,10 +31,10 @@ Most agents spend the same amount of FLOPs on a trivial decision as a critical o
 :::
 
 *Cross-references:* This section extends the WFR dynamics
-({ref}`Section 20 <sec-wasserstein-fisher-rao-geometry-unified-transport-on-hybrid-state-spaces>`) to account for the
+({ref}`sec-wasserstein-fisher-rao-geometry-unified-transport-on-hybrid-state-spaces`) to account for the
 thermodynamic cost of belief updates, building on the cognitive temperature framework
-({ref}`Section 22.4 <sec-the-geodesic-baoab-integrator>`) and the value potential
-({ref}`Section 24 <sec-the-reward-field-value-forms-and-hodge-geometry>`).
+({ref}`sec-the-geodesic-baoab-integrator`) and the value potential
+({ref}`sec-the-reward-field-value-forms-and-hodge-geometry`).
 
 *Literature:* Landauer's principle {cite}`landauer1961irreversibility`; thermodynamics of computation
 {cite}`bennett1982thermodynamics`; thermodynamics of information {cite}`parrondo2015thermodynamics`; dual-process theory
@@ -58,7 +58,7 @@ And here is the beautiful thing: once we accept that thinking has a cost, the qu
 (sec-the-energetics-of-information-updates)=
 ## The Energetics of Information Updates
 
-We begin by mapping the abstract WFR belief dynamics ({ref}`Section 20 <sec-wasserstein-fisher-rao-geometry-unified-transport-on-hybrid-state-spaces>`) {cite}`chizat2018unbalanced,liero2018optimal` to physical dissipation via Landauer's Principle.
+We begin by mapping the abstract WFR belief dynamics ({ref}`sec-wasserstein-fisher-rao-geometry-unified-transport-on-hybrid-state-spaces`) {cite}`chizat2018unbalanced,liero2018optimal` to physical dissipation via Landauer's Principle.
 
 :::{div} feynman-prose
 Before we dive into the formalism, let me explain what we are doing here in physical terms.
@@ -119,7 +119,7 @@ $$
 \dot{\mathcal{M}}(s) \ge T_c \left| \frac{d}{ds} H(\rho_s) \right|,
 
 $$
-where $H(\rho_s) = -\int_{\mathcal{Z}} \rho \ln \rho \, d\mu_G$ is the Shannon entropy and $T_c$ is the cognitive temperature ({prf:ref}`def-cognitive-temperature`, {ref}`Section 22.4 <sec-the-geodesic-baoab-integrator>`).
+where $H(\rho_s) = -\int_{\mathcal{Z}} \rho \ln \rho \, d\mu_G$ is the Shannon entropy and $T_c$ is the cognitive temperature ({prf:ref}`def-cognitive-temperature`, {ref}`sec-the-geodesic-baoab-integrator`).
 
 *Proof sketch.* The time derivative of the Shannon entropy is:
 
@@ -139,7 +139,7 @@ $$
 \left| \int_{\mathcal{Z}} \rho \langle \nabla \ln \rho, v \rangle_G \, d\mu_G \right| \le \left( \int_{\mathcal{Z}} \rho \|\nabla \ln \rho\|_G^2 \, d\mu_G \right)^{1/2} \left( \int_{\mathcal{Z}} \rho \|v\|_G^2 \, d\mu_G \right)^{1/2}.
 
 $$
-The first factor is the **Fisher Information** $\mathcal{I}(\rho) = \int \rho \|\nabla \ln \rho\|_G^2 \, d\mu_G$ {cite}`amari2016information`. Under the optimal transport scaling $v = -T_c \nabla \ln \rho$ (gradient flow of the free energy), we recover the de Bruijn identity {cite}`stam1959some` and the bound follows. The reaction term satisfies an analogous inequality via the $L^2(\rho)$ norm. See {ref}`Appendix E.3 <sec-appendix-e-rigorous-proof-sketches-for-ontological-and-metabolic-laws>` for the full proof. $\square$
+The first factor is the **Fisher Information** $\mathcal{I}(\rho) = \int \rho \|\nabla \ln \rho\|_G^2 \, d\mu_G$ {cite}`amari2016information`. Under the optimal transport scaling $v = -T_c \nabla \ln \rho$ (gradient flow of the free energy), we recover the de Bruijn identity {cite}`stam1959some` and the bound follows. The reaction term satisfies an analogous inequality via the $L^2(\rho)$ norm. See {ref}`sec-appendix-e-rigorous-proof-sketches-for-ontological-and-metabolic-laws` for the full proof. $\square$
 
 *Remark (Landauer's Principle).* The classical Landauer bound states that erasing one bit of information requires dissipating at least $k_B T \ln 2$ joules of heat. Theorem {prf:ref}`thm-generalized-landauer-bound` is the information-geometric generalization: reducing belief entropy by $\Delta H$ nats requires dissipating at least $T_c \cdot |\Delta H|$ nats of metabolic energy.
 
@@ -260,7 +260,7 @@ $$
 \mathcal{S}_{\text{delib}}[S] = -\underbrace{\mathbb{E}_{z \sim \rho_S} [V(z)]}_{\text{Expected Terminal Value}} + \underbrace{\Psi_{\text{met}}(S)}_{\text{Computational Cost}},
 
 $$
-where $V(z)$ is the task potential ({ref}`Section 24.2 <sec-hodge-decomposition-of-value>`). Units: $[\mathcal{S}_{\text{delib}}] = \text{nat}$.
+where $V(z)$ is the task potential ({ref}`sec-hodge-decomposition-of-value`). Units: $[\mathcal{S}_{\text{delib}}] = \text{nat}$.
 
 *Physical interpretation:* The agent faces a trade-off: longer deliberation ($S$ large) improves the expected value $\langle V \rangle_{\rho_S}$ by refining the belief toward high-value regions, but incurs greater metabolic cost $\Psi_{\text{met}}(S)$. The optimal $S^*$ balances these competing pressures.
 
@@ -348,7 +348,7 @@ $$
 \frac{d}{dS} \langle V \rangle_{\rho_S} = \int_{\mathcal{Z}} \rho \left( V r - \|\nabla_A V\|_G^2 \right) d\mu_G.
 
 $$
-The stationarity condition $\frac{d}{dS} \mathcal{S}_{\text{delib}} = 0$ yields the optimality condition. See {ref}`Appendix E.4 <sec-appendix-e-rigorous-proof-sketches-for-ontological-and-metabolic-laws>` for the full proof using the WFR adjoint operator. $\square$
+The stationarity condition $\frac{d}{dS} \mathcal{S}_{\text{delib}} = 0$ yields the optimality condition. See {ref}`sec-appendix-e-rigorous-proof-sketches-for-ontological-and-metabolic-laws` for the full proof using the WFR adjoint operator. $\square$
 
 *Physical interpretation:* The optimal stopping time $S^*$ is reached when the marginal gain in expected value (the "return on thinking") exactly equals the marginal metabolic cost (the "price of thinking"). At $S^*$, the agent has extracted all cost-effective information from deliberation.
 
@@ -597,7 +597,7 @@ The diagnostic Node 51 (MetabolicEfficiencyCheck) monitors exactly this quantity
 (sec-diagnostic-nodes-b)=
 ## Diagnostic Nodes 51--52
 
-Following the diagnostic node convention ({ref}`Section 3.1 <sec-theory-thin-interfaces>`), we define two new monitors for metabolic efficiency.
+Following the diagnostic node convention ({ref}`sec-theory-thin-interfaces`), we define two new monitors for metabolic efficiency.
 
 :::{div} feynman-prose
 The theory is beautiful, but how do we know if an actual agent is behaving according to these principles? We need diagnostics---measurable quantities that tell us if things are working correctly.
@@ -636,7 +636,7 @@ Here we define two diagnostic nodes. The first checks whether the agent is getti
 - **Cause:** Numerical errors in the WFR solver, unstable metric $G$, or incorrectly estimated entropy.
 - **Remediation:** Reduce integration step size; verify metric positive-definiteness; check entropy estimator calibration.
 
-*Cross-reference:* Node 52 extends the thermodynamic consistency checks of {ref}`Section 23.4 <sec-the-belief-evolution-cycle-perception-dreaming-action>` (ThermoCycleCheck, Node 33) to the internal deliberation loop.
+*Cross-reference:* Node 52 extends the thermodynamic consistency checks of {ref}`sec-the-belief-evolution-cycle-perception-dreaming-action` (ThermoCycleCheck, Node 33) to the internal deliberation loop.
 
 :::{div} feynman-prose
 Let me say a word about the Landauer Violation Check, because it is unusual to have a diagnostic that checks for violations of physics.

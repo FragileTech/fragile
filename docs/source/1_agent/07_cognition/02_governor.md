@@ -29,7 +29,7 @@ So what do we do? We write papers with titles like "Scheduled Learning Rate Anne
 This section changes that. We're going to introduce a **Governor**---a meta-controller that watches the training process and adjusts hyperparameters in real time based on what's actually happening. And here's the beautiful part: we can prove this Governor drives training toward stable equilibria using Lyapunov stability theory. The same mathematics that tells us a pendulum will settle to the bottom tells us our training will converge.
 :::
 
-The Fragile Agent architecture relies on the strict satisfaction of information-theoretic and geometric constraints (The Sieve, {ref}`Section 3 <sec-diagnostics-stability-checks>`). Manual tuning of the associated Lagrange multipliers is intractable due to the non-stationary coupling between the Representation ($G$), the Dynamics ($S$), and the Value ($V$). We formalize the training process as a dynamical system and introduce the **Universal Governor**, a meta-controller that regulates the learning dynamics. The Governor solves a bilevel optimization problem; convergence is characterized via a training Lyapunov function (Definition {prf:ref}`def-training-lyapunov-function`).
+The Fragile Agent architecture relies on the strict satisfaction of information-theoretic and geometric constraints (The Sieve, {ref}`sec-diagnostics-stability-checks`). Manual tuning of the associated Lagrange multipliers is intractable due to the non-stationary coupling between the Representation ($G$), the Dynamics ($S$), and the Value ($V$). We formalize the training process as a dynamical system and introduce the **Universal Governor**, a meta-controller that regulates the learning dynamics. The Governor solves a bilevel optimization problem; convergence is characterized via a training Lyapunov function (Definition {prf:ref}`def-training-lyapunov-function`).
 
 (rb-homeostasis)=
 :::{admonition} Researcher Bridge: Automated Homeostasis vs. Hyperparameter Tuning
@@ -37,10 +37,10 @@ The Fragile Agent architecture relies on the strict satisfaction of information-
 In standard RL, we spend weeks "grid-searching" for the right entropy coefficient ($\alpha$) or learning rate ($\eta$). The **Universal Governor** replaces this with a **homeostatic control loop**. It treats hyperparameters as a dynamical system that responds in real-time to the Sieve's diagnostic residuals. Instead of a static configuration, you have a meta-controller that "squeezes" the learning dynamics to stay on the stable manifold.
 :::
 
-This section **unifies and extends** the heuristic methods of {ref}`Section 3.5 <sec-adaptive-multipliers-learned-penalties-setpoints-and-calibration>` (Primal-Dual, PID, Learned Precisions) into a single neural meta-controller framework.
+This section **unifies and extends** the heuristic methods of {ref}`sec-adaptive-multipliers-learned-penalties-setpoints-and-calibration` (Primal-Dual, PID, Learned Precisions) into a single neural meta-controller framework.
 
 (sec-relationship-to-adaptive-multipliers)=
-## Relationship to Adaptive Multipliers ({ref}`Section 3.5 <sec-adaptive-multipliers-learned-penalties-setpoints-and-calibration>`)
+## Relationship to Adaptive Multipliers ({ref}`sec-adaptive-multipliers-learned-penalties-setpoints-and-calibration`)
 
 :::{div} feynman-prose
 Before we build the Governor, let's look at what people have tried before. It's like looking at the history of flight before the Wright Brothers---lots of clever ideas, each solving part of the problem, none putting it all together.
@@ -56,10 +56,10 @@ The methods we've already seen in Section 3.5 fall into three categories, and ea
 The Universal Governor looks at all of these and says: "What if we could learn a *policy* that observes the history of diagnostic signals and outputs the right hyperparameters?" That's the unification.
 :::
 
-:::{prf:remark} Extending {ref}`Section 3.5 <sec-adaptive-multipliers-learned-penalties-setpoints-and-calibration>`
+:::{prf:remark} Extending {ref}`sec-adaptive-multipliers-learned-penalties-setpoints-and-calibration`
 :label: rem-extending-section
 
-{ref}`Section 3.5 <sec-adaptive-multipliers-learned-penalties-setpoints-and-calibration>` introduces three methods for adaptive multiplier tuning:
+{ref}`sec-adaptive-multipliers-learned-penalties-setpoints-and-calibration` introduces three methods for adaptive multiplier tuning:
 - **3.5.A (Primal-Dual):** $\lambda_{t+1} = \Pi[\lambda_t + \eta_\lambda (C(\theta_t) - \epsilon)]$ — linear, memoryless
 - **3.5.B (PID):** $\lambda_{t+1} = K_p e_t + K_i \sum e + K_d \Delta e$ — hand-tuned temporal filter
 - **3.5.C (Learned Precisions):** $\lambda_i = \exp(-s_i)$ — diagonal covariance, no temporal structure
@@ -72,7 +72,7 @@ Each method addresses a specific failure mode but lacks generality. The **Univer
 
 Let $\theta_t \in \mathcal{M}_\Theta$ be the agent parameters at training step $t$. The meta-control problem is: find a policy $\pi_{\mathfrak{G}}$ that selects hyperparameters $\Lambda_t$ to minimize task loss while satisfying the Sieve constraints.
 
-**Cross-references:** {ref}`Section 3.5 <sec-adaptive-multipliers-learned-penalties-setpoints-and-calibration>` (Adaptive Multipliers), Section 3.4 (Joint Optimization).
+**Cross-references:** {ref}`sec-adaptive-multipliers-learned-penalties-setpoints-and-calibration` (Adaptive Multipliers), Section 3.4 (Joint Optimization).
 
 :::
 (sec-formalization-of-learning-dynamics)=
@@ -110,7 +110,7 @@ This is vanilla gradient descent. You take your current position $\theta_t$, com
 :::{prf:definition} Constrained Dynamics
 :label: def-constrained-dynamics
 
-The Fragile Agent imposes $K$ constraints $\{C_k(\theta) \leq 0\}_{k=1}^K$ defined by the Sieve ({ref}`Section 3.1 <sec-theory-thin-interfaces>`). Each $C_k$ corresponds to a diagnostic node:
+The Fragile Agent imposes $K$ constraints $\{C_k(\theta) \leq 0\}_{k=1}^K$ defined by the Sieve ({ref}`sec-theory-thin-interfaces`). Each $C_k$ corresponds to a diagnostic node:
 
 $$
 C_k(\theta) = \text{Node}_k(\theta) - \epsilon_k,
@@ -136,7 +136,7 @@ $$
 
 $$
 where:
-- $G(\theta)$ is the parameter-space metric (cf. natural gradient, {ref}`Section 2.5 <sec-second-order-sensitivity-value-defines-a-local-metric>`)
+- $G(\theta)$ is the parameter-space metric (cf. natural gradient, {ref}`sec-second-order-sensitivity-value-defines-a-local-metric`)
 - $\eta_t$ is the adaptive learning rate
 - $\lambda_{k,t} \geq 0$ are the constraint multipliers
 
@@ -144,7 +144,7 @@ Units: $[\lambda_k] = \text{dimensionless}$.
 
 *Remark (Natural Gradient Connection).* The factor $G^{-1}$ applies preconditioning analogous to Fisher Information in natural gradient methods {cite}`amari1998natural`. This ensures updates are measured in information-geometric units rather than Euclidean units.
 
-**Cross-references:** {ref}`Section 2.5 <sec-second-order-sensitivity-value-defines-a-local-metric>` (State-Space Metric), Section 3.1 (Diagnostic Nodes).
+**Cross-references:** {ref}`sec-second-order-sensitivity-value-defines-a-local-metric` (State-Space Metric), Section 3.1 (Diagnostic Nodes).
 
 :::
 
@@ -192,7 +192,7 @@ $$
 s_t = \Psi(\theta_t) = [C_1(\theta_t), \ldots, C_K(\theta_t)]^\top.
 
 $$
-The components of $s_t$ are the normalized defect functionals corresponding to diagnostic nodes 1–41 ({ref}`Section 3.1 <sec-theory-thin-interfaces>`). Positive values indicate constraint violation.
+The components of $s_t$ are the normalized defect functionals corresponding to diagnostic nodes 1–41 ({ref}`sec-theory-thin-interfaces`). Positive values indicate constraint violation.
 
 Units: $[s_t] = \text{nat}$ (for entropy-based nodes) or dimensionless (for normalized defects).
 
@@ -232,10 +232,10 @@ And look at the output: learning rate, constraint multipliers, and cognitive tem
 The architecture is just a recurrent neural network (in the implementation, a GRU) with some output heads. Nothing fancy. The magic is in what it learns.
 :::
 
-:::{prf:proposition} Subsumption of {ref}`Section 3.5 <sec-adaptive-multipliers-learned-penalties-setpoints-and-calibration>`
+:::{prf:proposition} Subsumption of {ref}`sec-adaptive-multipliers-learned-penalties-setpoints-and-calibration`
 :label: prop-subsumption-of-section
 
-The methods of {ref}`Section 3.5 <sec-adaptive-multipliers-learned-penalties-setpoints-and-calibration>` are recovered as special cases of $\pi_{\mathfrak{G}}$:
+The methods of {ref}`sec-adaptive-multipliers-learned-penalties-setpoints-and-calibration` are recovered as special cases of $\pi_{\mathfrak{G}}$:
 
 | Method                     | Governor Instantiation                                                       |
 |----------------------------|------------------------------------------------------------------------------|
@@ -333,7 +333,7 @@ The inner problem (agent learning) depends on the outer variables (Governor para
 
 *Remark (Gradient Computation).* Computing $\nabla_\phi J$ requires differentiating through the entire training trajectory. In practice, we use truncated backpropagation through time or evolutionary strategies.
 
-**Cross-references:** {ref}`Section 3.4 <sec-joint-optimization>` (Joint Optimization).
+**Cross-references:** {ref}`sec-joint-optimization` (Joint Optimization).
 
 :::
 
@@ -441,7 +441,7 @@ At any non-stationary point $\theta$ where LICQ holds (the gradients $\{\nabla C
 
 *Proof.* At a non-KKT point, either (i) the unconstrained gradient $-\nabla \mathcal{L}_{\text{task}}$ points into the feasible region, giving descent, or (ii) some constraint is active with $\nabla C_k \neq 0$. Under LICQ, we can solve for $\lambda_k$ such that the projected gradient onto the feasible tangent cone is non-zero {cite}`nocedal2006numerical`. Taking $\eta$ sufficiently small ensures descent. $\square$
 
-**Cross-references:** {ref}`Section 2.3 <sec-the-bridge-rl-as-lyapunov-constrained-control>` (Lyapunov-Constrained Control).
+**Cross-references:** {ref}`sec-the-bridge-rl-as-lyapunov-constrained-control` (Lyapunov-Constrained Control).
 
 :::
 
@@ -770,7 +770,7 @@ class UniversalGovernor(nn.Module):
     """
     Implements the meta-policy π_𝔊: s_{t:t-H} → Λ_t.
 
-    Subsumes {ref}`Section 3.5 <sec-adaptive-multipliers-learned-penalties-setpoints-and-calibration>` methods as special cases:
+    Subsumes {ref}`sec-adaptive-multipliers-learned-penalties-setpoints-and-calibration` methods as special cases:
     - Primal-Dual: H=1, linear layers, no hidden state
     - PID: H≥2, linear layers with fixed weights
     - Learned Precisions: H=0, diagonal output
@@ -930,7 +930,7 @@ And at the end of the day, it just works: plug in your Sieve diagnostics, let th
 (node-42)=
 **Node 42: GovernorStabilityCheck**
 
-Following the diagnostic node convention ({ref}`Section 3.1 <sec-theory-thin-interfaces>`), we define:
+Following the diagnostic node convention ({ref}`sec-theory-thin-interfaces`), we define:
 
 | **#**  | **Name**                   | **Component**       | **Type**              | **Interpretation**                   | **Proxy**                                                                               | **Cost** |
 |--------|----------------------------|---------------------|-----------------------|--------------------------------------|-----------------------------------------------------------------------------------------|----------|
@@ -941,7 +941,7 @@ Following the diagnostic node convention ({ref}`Section 3.1 <sec-theory-thin-int
 - Remedy: Reduce learning rate; increase constraint penalties $\mu_k$; check for conflicting gradients.
 - Persistent positive: Governor policy $\phi$ may need retraining on expanded Obstruction Suite.
 
-**Cross-references:** {ref}`Section 3 <sec-diagnostics-stability-checks>` (Sieve Diagnostic Nodes), {ref}`Section 3.5 <sec-adaptive-multipliers-learned-penalties-setpoints-and-calibration>` (Adaptive Multipliers), Section 2.3 (Lyapunov-Constrained Control).
+**Cross-references:** {ref}`sec-diagnostics-stability-checks` (Sieve Diagnostic Nodes), {ref}`sec-adaptive-multipliers-learned-penalties-setpoints-and-calibration` (Adaptive Multipliers), Section 2.3 (Lyapunov-Constrained Control).
 
 :::{div} feynman-prose
 Node 42 is the Governor's self-check. It's asking: "Am I doing my job?"

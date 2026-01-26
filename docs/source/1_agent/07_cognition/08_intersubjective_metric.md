@@ -30,7 +30,7 @@ Objective reality, we will argue, is not a pre-existing container that agents di
 :::
 
 *Abstract.* We introduce the **Locking Operator** $\mathfrak{L}_{\text{sync}}$, a functional derived from the gauge theory
-of {ref}`Section 34 <sec-standard-model-cognition>` that couples the latent geometries of distinct agents ($G_A, G_B$). We
+of {ref}`sec-standard-model-cognition` that couples the latent geometries of distinct agents ($G_A, G_B$). We
 prove that independent agents minimizing prediction error in a shared environment must undergo **Spontaneous Gauge
 Locking**, where their internal nuisance fibers align. This solves the "Solipsism Problem": objective reality is not a
 pre-existing container, but the stable fixed point of the inter-subjective locking dynamics. We derive **Language** as
@@ -39,11 +39,11 @@ elements of the Lie algebra $\mathfrak{g}$ of the gauge group. The **Babel Limit
 Shannon capacity of the communication channel.
 
 *Cross-references:*
-- Extends the Multi-Agent Field Theory ({ref}`Section 29 <sec-symplectic-multi-agent-field-theory>`) by providing the
+- Extends the Multi-Agent Field Theory ({ref}`sec-symplectic-multi-agent-field-theory`) by providing the
   mechanism for metric convergence.
-- Connects to the Nuisance Bundle ({ref}`Section 29.13 <sec-local-gauge-symmetry-nuisance-bundle>`), the
-  Gauge-Theoretic Formulation ({ref}`Section 34 <sec-standard-model-cognition>`), and the Causal Information Bound
-  ({ref}`Section 33 <sec-causal-information-bound>`).
+- Connects to the Nuisance Bundle ({ref}`sec-local-gauge-symmetry-nuisance-bundle`), the
+  Gauge-Theoretic Formulation ({ref}`sec-standard-model-cognition`), and the Causal Information Bound
+  ({ref}`sec-causal-information-bound`).
 - Provides the geometric foundation for the Game Tensor (Definition {prf:ref}`def-gauge-covariant-game-tensor`) to be
   well-defined.
 
@@ -67,7 +67,7 @@ This is what I mean by "metric friction." If I think two situations are nearby (
 You might think this is just philosophy, but it has real consequences. If my gradient says "go left" and your gradient says "go right" when we're trying to cooperate, we're going to crash into each other. Cooperation requires that our internal geometries be at least approximately aligned.
 :::
 
-In the previous chapters, we assumed agents could interact via a "Ghost Interface" ({ref}`Section 29.4 <sec-the-ghost-interface>`). However, this assumes a shared coordinate system. In reality, Agent $A$ maps observations to manifold $\mathcal{Z}_A$ with metric $G_A$ (the Capacity-Constrained Metric of Theorem {prf:ref}`thm-capacity-constrained-metric-law`), while Agent $B$ uses $\mathcal{Z}_B$ and $G_B$.
+In the previous chapters, we assumed agents could interact via a "Ghost Interface" ({ref}`sec-the-ghost-interface`). However, this assumes a shared coordinate system. In reality, Agent $A$ maps observations to manifold $\mathcal{Z}_A$ with metric $G_A$ (the Capacity-Constrained Metric of Theorem {prf:ref}`thm-capacity-constrained-metric-law`), while Agent $B$ uses $\mathcal{Z}_B$ and $G_B$.
 
 If $G_A \neq G_B$, the agents exist in different subjective universes. Action $a$ might be "safe" in $G_A$ (low curvature) but "risky" in $G_B$ (high curvature). This creates **Metric Friction**.
 
@@ -134,7 +134,7 @@ The beautiful answer comes from gauge theory -- the same mathematics that descri
 In gauge theory language, each agent has a "connection" -- a way of comparing vectors at different points. When agents communicate, their connections become coupled. And the natural dynamics of coupled connections is to minimize their curvature, which means minimizing their disagreement.
 :::
 
-We derive the Locking Operator from first principles using the gauge-theoretic framework of {ref}`Section 34 <sec-standard-model-cognition>`. The key insight is that inter-agent communication is a **gauge-covariant coupling** between their nuisance bundles (Definition {prf:ref}`def-strategic-connection`).
+We derive the Locking Operator from first principles using the gauge-theoretic framework of {ref}`sec-standard-model-cognition`. The key insight is that inter-agent communication is a **gauge-covariant coupling** between their nuisance bundles (Definition {prf:ref}`def-strategic-connection`).
 
 ### The Inter-Agent Connection
 
@@ -351,7 +351,7 @@ $$
 
 $$
 
-where $D^{(i)}$ is the TopologicalDecoder ({ref}`Section 7.10 <sec-decoder-architecture-overview-topological-decoder>`).
+where $D^{(i)}$ is the TopologicalDecoder ({ref}`sec-decoder-architecture-overview-topological-decoder`).
 
 **Step 3 (Relative Gauge).** Define the relative gauge transformation:
 
@@ -690,7 +690,7 @@ The Babel Limit is the information-theoretic boundary: if the complexity of your
 This is the origin of what philosophers call "qualia" and "ineffability." It's not mysticism. It's Shannon's theorem.
 :::
 
-We derive fundamental limits on achievable gauge alignment from the Causal Information Bound ({ref}`Section 33 <sec-causal-information-bound>`).
+We derive fundamental limits on achievable gauge alignment from the Causal Information Bound ({ref}`sec-causal-information-bound`).
 
 ### Shannon Capacity and Gauge Dimension
 
@@ -995,7 +995,7 @@ A dictionary is an institutional manifold for language. A legal code is an insti
 This is why institutions are so important. They're not just social conventions; they're computational necessities for scaling consensus.
 :::
 
-For $N \gg 2$, pairwise locking is $O(N^2)$—computationally prohibitive. We introduce institutional structures for efficient scaling, extending the Multi-Agent WFR framework of {ref}`Section 29 <sec-symplectic-multi-agent-field-theory>`.
+For $N \gg 2$, pairwise locking is $O(N^2)$—computationally prohibitive. We introduce institutional structures for efficient scaling, extending the Multi-Agent WFR framework of {ref}`sec-symplectic-multi-agent-field-theory`.
 
 :::{prf:definition} The Institutional Manifold
 :label: def-institutional-manifold

@@ -46,10 +46,10 @@ Fission**: a supercritical pitchfork bifurcation that instantiates new chart que
 structure.
 
 *Cross-references:*
-- {ref}`Section 21 <sec-radial-generation-entropic-drift-and-policy-control>` (Pitchfork bifurcation, $SO(D)$ symmetry).
-- {ref}`Section 7.8 <sec-tier-the-attentive-atlas>` (Attentive Atlas, chart queries).
-- {ref}`Section 18.2 <sec-main-result>` (Capacity-constrained metric).
-- {ref}`Section 2.11 <sec-variance-value-duality-and-information-conservation>` (Entropy-regularized objective).
+- {ref}`sec-radial-generation-entropic-drift-and-policy-control` (Pitchfork bifurcation, $SO(D)$ symmetry).
+- {ref}`sec-tier-the-attentive-atlas` (Attentive Atlas, chart queries).
+- {ref}`sec-main-result` (Capacity-constrained metric).
+- {ref}`sec-variance-value-duality-and-information-conservation` (Entropy-regularized objective).
 
 *Literature:* Symmetry breaking in dynamical systems {cite}`strogatz2015nonlinear`; Ricci flow
 {cite}`hamilton1982ricci,perelman2002entropy`; ontology learning {cite}`wong2012`.
@@ -88,7 +88,7 @@ equipped with the following properties:
 
 1. **$SO(D)$ Symmetry:** At $z=0$, the metric is isotropic $G(0) = 4I$ (Proposition {prf:ref}`prop-so-d-symmetry-at-origin`), and the entropic force vanishes: $F_{\text{entropy}}(0) = 0$. The system has full rotational symmetry $SO(D)$.
 
-2. **Infrared Limit:** For any TopoEncoder scale $\tau$ ({ref}`Section 7.12.3 <sec-rigorous-interpretation-renormalization-group-flow>`), $\lim_{\tau \to 0} z(\tau) = \emptyset$. The vacuum is the coarsest resolution.
+2. **Infrared Limit:** For any TopoEncoder scale $\tau$ ({ref}`sec-rigorous-interpretation-renormalization-group-flow`), $\lim_{\tau \to 0} z(\tau) = \emptyset$. The vacuum is the coarsest resolution.
 
 3. **Reference Measure:** The vacuum carries the Dirac reference measure $\delta_0$ on the bulk coordinates $(K, z_n)$:
 
@@ -179,7 +179,7 @@ where $I(\cdot;\cdot|\cdot)$ denotes conditional mutual information in nats.
 
 *Interpretation.* By Axiom {prf:ref}`ax-bulk-boundary-decoupling` (Bulk-Boundary Decoupling), texture should be unpredictable -- a white-noise residual. If $\Xi > 0$, then texture at time $t$ predicts texture at time $t+1$, conditional on the macro-state and action. This violates the partition condition: the texture channel contains structure that should have been captured by $(K, z_n)$ but was not. The agent's ontology is **too coarse**.
 
-*Cross-reference.* Compare with the closure defect $I(K_{t+1}; Z_t \mid K_t, K^{\text{act}}_t)$ ({ref}`Section 2.8 <sec-conditional-independence-and-sufficiency>`). Ontological Stress is the dual: predictability *within* texture rather than *from* texture to macro.
+*Cross-reference.* Compare with the closure defect $I(K_{t+1}; Z_t \mid K_t, K^{\text{act}}_t)$ ({ref}`sec-conditional-independence-and-sufficiency`). Ontological Stress is the dual: predictability *within* texture rather than *from* texture to macro.
 
 :::
 
@@ -238,7 +238,7 @@ $$
 \Xi := I(z_{\text{tex},t}; z_{\text{tex},t+1} \mid K_t, z_{n,t}, K^{\text{act}}_t)
 
 $$
-When $\Xi > \Xi_{\text{crit}}$, the system triggers **topological fission**: a pitchfork bifurcation that expands the chart structure ({ref}`Section 30.4 <sec-symmetry-breaking-and-chart-birth>`).
+When $\Xi > \Xi_{\text{crit}}$, the system triggers **topological fission**: a pitchfork bifurcation that expands the chart structure ({ref}`sec-symmetry-breaking-and-chart-birth`).
 
 **The Degenerate Limit:**
 Set $\Xi_{\text{crit}} \to \infty$ (never fission). Instead, feed $\Xi$ directly into the reward function as an exploration bonus.
@@ -289,7 +289,7 @@ $$
 $$
 where $\Delta V$ is the value gain from finer discrimination and $\mathcal{C}_{\text{complexity}}$ is measured in nats (to match units with value).
 
-*Remark.* This is the MDL/rate-distortion principle ({ref}`Section 2.2b <sec-the-shutter-as-a-vq-vae>`) applied to ontology: expand only if the distortion reduction exceeds the rate increase.
+*Remark.* This is the MDL/rate-distortion principle ({ref}`sec-the-shutter-as-a-vq-vae`) applied to ontology: expand only if the distortion reduction exceeds the rate increase.
 
 :::
 :::{prf:theorem} Fission Criterion
@@ -337,7 +337,7 @@ This recovers **standard deep learning**---the agent can never learn a concept t
 **What the generalization offers:**
 - Dynamic capacity: network topology adapts to task requirements
 - Principled growth: fission occurs when complexity cost is justified by value gain
-- No catastrophic forgetting: new charts are topologically isolated ({ref}`Section 30.7 <sec-summary-the-lifecycle-of-an-ontology>`)
+- No catastrophic forgetting: new charts are topologically isolated ({ref}`sec-summary-the-lifecycle-of-an-ontology`)
 :::
 
 
@@ -364,7 +364,7 @@ When the Fission Criterion is satisfied, the agent creates a new chart by splitt
 :::{prf:definition} Query Fission
 :label: def-query-fission
 
-Let $q_i \in \mathbb{R}^d$ be a chart query vector ({ref}`Section 7.8 <sec-tier-the-attentive-atlas>`) with associated codebook $\{e_{i,c}\}_{c=1}^{N_v}$. A **query fission** replaces $q_i$ with two daughter queries:
+Let $q_i \in \mathbb{R}^d$ be a chart query vector ({ref}`sec-tier-the-attentive-atlas`) with associated codebook $\{e_{i,c}\}_{c=1}^{N_v}$. A **query fission** replaces $q_i$ with two daughter queries:
 
 $$
 q_i \mapsto \{q_i^+, q_i^-\} := \{q_i + \epsilon u, q_i - \epsilon u\},
@@ -541,7 +541,7 @@ We introduce two diagnostic nodes---essentially, health monitors for the concept
 These are the sensory neurons of the meta-learning system. They tell the agent when its current concepts are struggling and when it's time to grow.
 :::
 
-Following the diagnostic node convention ({ref}`Section 3.1 <sec-theory-thin-interfaces>`), we define two new monitors for ontological expansion.
+Following the diagnostic node convention ({ref}`sec-theory-thin-interfaces`), we define two new monitors for ontological expansion.
 
 (node-49)=
 **Node 49: OntologicalStressCheck**
@@ -677,7 +677,7 @@ The solution is **fusion**: merging concepts that have become redundant. If two 
 Fusion is the dual of fission. Fission creates distinctions when the data demands them. Fusion removes distinctions when they stop mattering. Together, they form a complete metabolism: concepts are born, live, and die according to their utility.
 :::
 
-*Abstract.* If Fission ({ref}`Section 30.4 <sec-symmetry-breaking-and-chart-birth>`) is the birth of a concept driven by
+*Abstract.* If Fission ({ref}`sec-symmetry-breaking-and-chart-birth`) is the birth of a concept driven by
 ontological stress, **Fusion** is the death or merging of concepts driven by **metabolic efficiency**. Without Fusion,
 the agent suffers from **topological heat death**: unbounded chart fragmentation where every observation eventually gets
 its own private chart, destroying generalization. Fusion is triggered when the **Discrimination Gain** of keeping two
@@ -690,11 +690,11 @@ Most MoE (Mixture of Experts) or multi-chart models suffer from "Expert Explosio
 :::
 
 *Cross-references:*
-- Addresses Open Problem 1 from {ref}`Section 30.7 <sec-summary-the-lifecycle-of-an-ontology>`.
-- Dual to {ref}`Section 30.4 <sec-symmetry-breaking-and-chart-birth>` (Fission).
+- Addresses Open Problem 1 from {ref}`sec-summary-the-lifecycle-of-an-ontology`.
+- Dual to {ref}`sec-symmetry-breaking-and-chart-birth` (Fission).
 - Connects to the Universal Governor's metabolic monitoring
-  ({ref}`Section 26 <sec-theory-of-meta-stability-the-universal-governor-as-homeostatic-controller>`) and the complexity
-  cost functional ({ref}`Section 30.3 <sec-the-fission-criterion>`).
+  ({ref}`sec-theory-of-meta-stability-the-universal-governor-as-homeostatic-controller`) and the complexity
+  cost functional ({ref}`sec-the-fission-criterion`).
 
 
 
@@ -816,7 +816,7 @@ G_\Delta(i, j) < \mathcal{C}_{\text{complexity}}(N_c) - \mathcal{C}_{\text{compl
 
 $$
 where:
-- $\mathcal{C}_{\text{complexity}}(N_c) = \log N_c + \lambda_{\text{param}} |\theta_{\text{chart}}|$ is the metabolic cost of maintaining $N_c$ charts ({ref}`Section 30.3 <sec-the-fission-criterion>`),
+- $\mathcal{C}_{\text{complexity}}(N_c) = \log N_c + \lambda_{\text{param}} |\theta_{\text{chart}}|$ is the metabolic cost of maintaining $N_c$ charts ({ref}`sec-the-fission-criterion`),
 - $\epsilon_{\text{hysteresis}} > 0$ is a hysteresis constant preventing oscillatory fission-fusion ("ontological churn").
 
 *Proof sketch.* By {prf:ref}`ax-ontological-simplification`, fusion is justified when saved complexity exceeds lost discrimination. The complexity difference is:
@@ -952,7 +952,7 @@ This is the topological heartbeat: expand, contract, expand, contract. The syste
 (sec-diagnostic-nodes-fusion-and-codebook-liveness)=
 ## Diagnostic Nodes 54--55: Fusion and Codebook Liveness
 
-We introduce two new diagnostic nodes for the Sieve ({ref}`Section 3 <sec-diagnostics-stability-checks>`).
+We introduce two new diagnostic nodes for the Sieve ({ref}`sec-diagnostics-stability-checks`).
 
 
 
@@ -1008,7 +1008,7 @@ where $P(K = k)$ is the empirical usage frequency of code $k$ over a trailing wi
 
 **Remediation:** Execute Lazarus Protocol ({prf:ref}`alg-lazarus`).
 
-*Connection to existing diagnostics:* This node operationalizes the dead-code tolerance constraint from {ref}`Section 3.5.5 <sec-calibrating-tolerances>`: $H(K) \geq \log((1 - \rho_{\text{dead}})|\mathcal{K}|)$.
+*Connection to existing diagnostics:* This node operationalizes the dead-code tolerance constraint from {ref}`sec-calibrating-tolerances`: $H(K) \geq \log((1 - \rho_{\text{dead}})|\mathcal{K}|)$.
 :::
 
 **Summary Table:**
@@ -1157,7 +1157,7 @@ In standard VQ-VAEs, **codebook collapse** is a major failure mode where most co
 
 **Effect:** Vocabulary migrates to high-information-density regions. Dead codes are "resurrected" where they are needed.
 
-*Connection to existing constraints:* This implements the anti-collapse regularizer from {ref}`Section 3.5.5 <sec-calibrating-tolerances>`: $\lambda_{\text{use}} D_{\mathrm{KL}}(\hat{p}(K) \| \text{Unif}(\mathcal{K}))$.
+*Connection to existing constraints:* This implements the anti-collapse regularizer from {ref}`sec-calibrating-tolerances`: $\lambda_{\text{use}} D_{\mathrm{KL}}(\hat{p}(K) \| \text{Unif}(\mathcal{K}))$.
 :::
 
 
@@ -1290,7 +1290,7 @@ The fission/fusion dynamics operate at two hierarchical levels with analogous bu
 
 1. **Chart metabolism** governs the **global manifold partition**---how many semantic categories exist.
 2. **Symbol metabolism** governs the **local tessellation within each chart**---how finely each category is discretized.
-3. The **Universal Governor** ({ref}`Section 26 <sec-theory-of-meta-stability-the-universal-governor-as-homeostatic-controller>`) monitors both levels via the total entropy budget:
+3. The **Universal Governor** ({ref}`sec-theory-of-meta-stability-the-universal-governor-as-homeostatic-controller`) monitors both levels via the total entropy budget:
 
    $$
    H(K_{\text{chart}}) + \mathbb{E}_{i}[H(K_{\text{code}} | K_{\text{chart}} = i)] \leq B_{\text{metabolic}}
@@ -1363,7 +1363,7 @@ The hysteresis threshold must be at least as large as this minimum metabolic cos
 This is thermodynamic calibration: using fundamental physical principles to set practical hyperparameters.
 :::
 
-We derive the hysteresis constant $\epsilon_{\text{hysteresis}}$ appearing in the Fusion Criterion ({prf:ref}`thm-fusion-criterion`) as a thermodynamic necessity arising from the computational metabolism of the agent ({ref}`Section 31 <sec-computational-metabolism-the-landauer-bound-and-deliberation-dynamics>`).
+We derive the hysteresis constant $\epsilon_{\text{hysteresis}}$ appearing in the Fusion Criterion ({prf:ref}`thm-fusion-criterion`) as a thermodynamic necessity arising from the computational metabolism of the agent ({ref}`sec-computational-metabolism-the-landauer-bound-and-deliberation-dynamics`).
 
 :::{prf:theorem} Thermodynamic Lower Bound on Hysteresis
 :label: thm-thermodynamic-hysteresis-bound
@@ -1383,7 +1383,7 @@ Consider the free energy functional $\mathcal{F} = E - T_c S$.
 
 2. **Fusion Cost:** The merger of two charts implies the erasure of the mutual information $I(X; \{K_i, K_j\}) - I(X; K_{i \cup j})$, defined as the Discrimination Gain $G_\Delta$ ({prf:ref}`def-discrimination-gain`). This is an irreversible logical operation, dissipating heat $Q_{\text{fus}} \geq T_c G_\Delta$.
 
-3. **Cycle Condition:** For the cycle $\mathcal{C}$ to be non-spontaneous (preventing chattering), the total free energy change must be positive. The Governor imposes a metabolic efficiency constraint $\eta_{\text{ROI}} > \eta_{\min}$ ({ref}`Section 26 <sec-theory-of-meta-stability-the-universal-governor-as-homeostatic-controller>`).
+3. **Cycle Condition:** For the cycle $\mathcal{C}$ to be non-spontaneous (preventing chattering), the total free energy change must be positive. The Governor imposes a metabolic efficiency constraint $\eta_{\text{ROI}} > \eta_{\min}$ ({ref}`sec-theory-of-meta-stability-the-universal-governor-as-homeostatic-controller`).
 
 4. **Derivation:** The utility gain of the cycle is zero (the topology is unchanged). The cost is $\mathcal{W}_{\text{init}} + Q_{\text{fus}}$. For the cycle to be rejected by the Fusion Criterion ({prf:ref}`thm-fusion-criterion`), the hysteresis term must exceed the minimum metabolic dissipation of the cycle:
 
@@ -1397,7 +1397,7 @@ Substituting the Landauer bound yields the stated inequality. $\square$
 *Units:* $[\epsilon_{\text{hysteresis}}] = \text{nat}$, consistent with the complexity cost functional.
 
 *Cross-references:* This resolves the hysteresis calibration question by grounding it in the Landauer thermodynamics of
-{ref}`Section 31 <sec-computational-metabolism-the-landauer-bound-and-deliberation-dynamics>`.
+{ref}`sec-computational-metabolism-the-landauer-bound-and-deliberation-dynamics`.
 
 
 
@@ -1453,7 +1453,7 @@ where:
 - $\operatorname{Exp}_p: T_p\mathbb{D} \to \mathbb{D}$ is the exponential map at $p$
 - $\operatorname{Log}_p: \mathbb{D} \to T_p\mathbb{D}$ is the logarithmic map (inverse of exponential)
 
-For the Poincare disk, these have closed-form expressions via Mobius operations ({ref}`Section 21.3 <sec-bulk-boundary-independence>`).
+For the Poincare disk, these have closed-form expressions via Mobius operations ({ref}`sec-bulk-boundary-independence`).
 
 *Complexity:* $O(k \cdot d)$ per iteration, where $k$ is the number of charts being merged and $d$ is the embedding dimension.
 :::
@@ -1475,7 +1475,7 @@ This is the benefit of hierarchical representation. Coarse structure is captured
 The formal statement is the Fission Inhibition Corollary: fission at level $\ell$ *reduces* the probability of fission at level $\ell+1$. The hierarchy is a damper, not an amplifier. Perturbations attenuate as they propagate upward.
 :::
 
-We prove that the Stacked TopoEncoder architecture ({ref}`Section 7.12 <sec-stacked-topoencoders-deep-renormalization-group-flow>`) enforces **top-down stability** via the properties of the residual variance in the Renormalization Group (RG) flow. A fission event at layer $\ell$ does not trigger cascading fission at higher layers.
+We prove that the Stacked TopoEncoder architecture ({ref}`sec-stacked-topoencoders-deep-renormalization-group-flow`) enforces **top-down stability** via the properties of the residual variance in the Renormalization Group (RG) flow. A fission event at layer $\ell$ does not trigger cascading fission at higher layers.
 
 :::{prf:theorem} Fission Inhibition Corollary
 :label: thm-fission-inhibition

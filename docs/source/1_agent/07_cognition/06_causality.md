@@ -52,10 +52,10 @@ likely to be proven wrong.
 
 *Cross-references:*
 - Builds on the symplectic boundary framework
-  ({ref}`Section 23.1 <sec-the-symplectic-interface-position-momentum-duality>`).
-- Uses World Model dynamics ({ref}`Section 3.2 <sec-scaling-exponents-characterizing-the-agent>`) and the Causal
-  Enclosure condition ({ref}`Section 2.8 <sec-conditional-independence-and-sufficiency>`).
-- Connects to Ontological Expansion ({ref}`Section 30 <sec-ontological-expansion-topological-fission-and-the-semantic-vacuum>`)
+  ({ref}`sec-the-symplectic-interface-position-momentum-duality`).
+- Uses World Model dynamics ({ref}`sec-scaling-exponents-characterizing-the-agent`) and the Causal
+  Enclosure condition ({ref}`sec-conditional-independence-and-sufficiency`).
+- Connects to Ontological Expansion ({ref}`sec-ontological-expansion-topological-fission-and-the-semantic-vacuum`)
   via the interventional closure theorem.
 
 *Literature:* Causal inference {cite}`pearl2009causality`; causal discovery {cite}`spirtes2000causation`; expected
@@ -80,14 +80,14 @@ Pearl calls this the $do$ operator, and it's one of the deepest ideas in modern 
 The mathematical formalization is beautiful. We model intervention as a *surgery* on the joint distribution: you take the causal graph, you cut all the arrows pointing into the variable you're intervening on, and you clamp that variable to whatever value you chose. Everything downstream still works the same way; you've just destroyed the upstream connections.
 :::
 
-In passive interaction, the agent's state is constrained by the environment ({ref}`Section 23.1 <sec-the-symplectic-interface-position-momentum-duality>`). Causal discovery requires the active breaking of this constraint.
+In passive interaction, the agent's state is constrained by the environment ({ref}`sec-the-symplectic-interface-position-momentum-duality`). Causal discovery requires the active breaking of this constraint.
 
 :::{prf:definition} The Interventional Surgery
 :label: def-the-interventional-surgery
 
 Let $P(z_{t+1} | z_t, a_t)$ be the transition kernel on the latent manifold $\mathcal{Z}$. We define the **Interventional Operator** $\mathfrak{I}: \mathcal{P}(\mathcal{Z} \times \mathcal{A} \times \mathcal{Z}) \to \mathcal{P}(\mathcal{Z} \times \mathcal{A} \times \mathcal{Z})$—equivalent to Pearl's $do(a_t)$ {cite}`pearl2009causality`—as a surgery on the joint distribution that cuts the incoming edges to the action variable.
 
-Geometrically, $\mathfrak{I}$ transforms the symplectic interface ({ref}`Section 23.1 <sec-the-symplectic-interface-position-momentum-duality>`) from a **Coupled Dirichlet state** (where $z_t$ is clamped by the observation $x_t$) to a **Forced Neumann state** (where $z_{t+1}$ is driven purely by the agent's internal motor impulse $u_\pi$).
+Geometrically, $\mathfrak{I}$ transforms the symplectic interface ({ref}`sec-the-symplectic-interface-position-momentum-duality`) from a **Coupled Dirichlet state** (where $z_t$ is clamped by the observation $x_t$) to a **Forced Neumann state** (where $z_{t+1}$ is driven purely by the agent's internal motor impulse $u_\pi$).
 
 Formally, the operator acts by truncated factorization:
 
@@ -107,7 +107,7 @@ where $P_{\text{pre}}(\tilde{z})$ is the pre-intervention distribution over late
 :::{prf:lemma} The Interventional Singularity
 :label: lem-the-interventional-singularity
 
-An intervention at state $z$ is a point-source singularity in the field theory. It imposes a non-natural boundary condition that forces the system to explore the off-equilibrium response of the environment law $P_\partial$ ({ref}`Section 1.1.1 <sec-the-environment-is-an-input-output-law>`).
+An intervention at state $z$ is a point-source singularity in the field theory. It imposes a non-natural boundary condition that forces the system to explore the off-equilibrium response of the environment law $P_\partial$ ({ref}`sec-the-environment-is-an-input-output-law`).
 
 *Proof sketch.* Under passive observation, the agent samples from the equilibrium distribution $P_{\text{eq}}(z' | z, a)$ determined by the environment's Dirichlet boundary $\partial\mathcal{Z}$. The $do$-operator breaks this equilibrium by injecting an external impulse $u_\pi$ that does not arise from the natural dynamics. In PDE terms, this corresponds to introducing a Dirac delta source $\delta(z - z_0)$ at the intervention point, creating a Green's function response that propagates through the causal graph. The "singularity" is geometric: the intervention point has infinite curvature in the causal manifold because all causal arrows pointing into it are severed. $\square$
 
@@ -151,7 +151,7 @@ To motivate the agent to perform experiments, we define a potential based on the
 :::{prf:definition} Causal Information Potential
 :label: def-causal-information-potential
 
-Recall the World Model scaling coefficient $\gamma$ ({ref}`Section 3.2 <sec-scaling-exponents-characterizing-the-agent>`). We define the **Causal Information Potential** $\Psi_{\text{causal}}: \mathcal{Z} \times \mathcal{A} \to \mathbb{R}_{\ge 0}$ as the Expected Information Gain (EIG) {cite}`lindley1956measure` regarding the transition parameters $\theta_W$ at state-action pair $(z, a)$:
+Recall the World Model scaling coefficient $\gamma$ ({ref}`sec-scaling-exponents-characterizing-the-agent`). We define the **Causal Information Potential** $\Psi_{\text{causal}}: \mathcal{Z} \times \mathcal{A} \to \mathbb{R}_{\ge 0}$ as the Expected Information Gain (EIG) {cite}`lindley1956measure` regarding the transition parameters $\theta_W$ at state-action pair $(z, a)$:
 
 $$
 \Psi_{\text{causal}}(z, a) := \mathbb{E}_{z' \sim \bar{P}(\cdot | z, a)} \left[ D_{\text{KL}} \left( p(\theta_W | z, a, z') \| p(\theta_W | z, a) \right) \right].
@@ -279,7 +279,7 @@ The agent does not only move toward reward; it moves toward **Causal Clarity**.
 :::{prf:theorem} Augmented Drift Law
 :label: thm-augmented-drift-law
 
-The Equation of Motion ({ref}`Section 22.2 <sec-the-coupled-jump-diffusion-sde>`) is extended by the **Interventional Force** $\mathbf{f}_{\text{exp}}$:
+The Equation of Motion ({ref}`sec-the-coupled-jump-diffusion-sde`) is extended by the **Interventional Force** $\mathbf{f}_{\text{exp}}$:
 
 $$
 F_{\text{total}} = \underbrace{-G^{-1} \nabla_G V}_{\text{Utility Force}} + \underbrace{\beta_{\text{exp}} \mathbf{f}_{\text{exp}}}_{\text{Curiosity Force}},
@@ -307,14 +307,14 @@ $$
 \ddot{z}^m + \Gamma^m_{ij} \dot{z}^i \dot{z}^j = -G^{mk} (\nabla_A V)_k - \beta_{\text{exp}} G^{mk} \partial_k \Psi_{\text{causal}} + \beta_{\text{curl}} G^{mk} \mathcal{F}_{kj}\dot{z}^j.
 
 $$
-In the overdamped limit ({ref}`Section 22.3 <sec-the-unified-effective-potential>`), the acceleration term vanishes and the drift field is
+In the overdamped limit ({ref}`sec-the-unified-effective-potential`), the acceleration term vanishes and the drift field is
 $$
 \dot{z} = \mathcal{M}_{\text{curl}}\!\left(-G^{-1}\nabla_A V + \beta_{\text{exp}} G^{-1}\nabla\Psi_{\text{causal}}\right),
 $$
 with $\mathcal{M}_{\text{curl}} := (I - \beta_{\text{curl}} G^{-1}\mathcal{F})^{-1}$.
 Here $\nabla_A V := \nabla V - A$ with $A := \delta\Psi + \eta$ the non-conservative component of the reward 1-form
 (conservative case: $A=0$).
-See {ref}`Appendix E.5 <sec-appendix-e-rigorous-proof-sketches-for-ontological-and-metabolic-laws>` for the full derivation. $\square$
+See {ref}`sec-appendix-e-rigorous-proof-sketches-for-ontological-and-metabolic-laws` for the full derivation. $\square$
 
 *Physical interpretation:* The curiosity force $\mathbf{f}_{\text{exp}}$ pulls the agent toward regions of high epistemic uncertainty about the transition dynamics. This is the geometric formulation of **intrinsic motivation** {cite}`schmidhuber2010formal,oudeyer2007intrinsic`: the agent is rewarded for reducing its causal ignorance, independent of external task reward. This connects to curiosity-driven exploration in reinforcement learning {cite}`pathak2017curiosity,houthooft2016vime`.
 
@@ -357,7 +357,7 @@ The theorem below formalizes this. It says that an ontology is "interventionally
 This is how ontologies grow. You start with a coarse-grained view of the world. You act, and sometimes your actions have unexpected effects. Those surprises tell you that your categories are missing something. You refine your ontology, adding new distinctions. And then you test again, with new interventions, looking for the next surprise.
 :::
 
-We refine the **Causal Enclosure** condition ({ref}`Section 2.8 <sec-conditional-independence-and-sufficiency>`) to account for interventions.
+We refine the **Causal Enclosure** condition ({ref}`sec-conditional-independence-and-sufficiency`) to account for interventions.
 
 :::{prf:theorem} Interventional Closure
 :label: thm-interventional-closure
@@ -368,11 +368,11 @@ $$
 I(K_{t+1} ; Z_{\text{micro}, t} | K_t, do(K^{\text{act}}_t)) = 0.
 
 $$
-*Interpretation:* If an agent moves an object (intervention), and the resulting macro-state $K_{t+1}$ depends on micro-texture $z_{\text{tex}}$ that was previously labeled "noise," the ontology has failed. The intervention has **exposed a hidden variable**, triggering **Ontological Expansion** ({ref}`Section 30 <sec-ontological-expansion-topological-fission-and-the-semantic-vacuum>`).
+*Interpretation:* If an agent moves an object (intervention), and the resulting macro-state $K_{t+1}$ depends on micro-texture $z_{\text{tex}}$ that was previously labeled "noise," the ontology has failed. The intervention has **exposed a hidden variable**, triggering **Ontological Expansion** ({ref}`sec-ontological-expansion-topological-fission-and-the-semantic-vacuum`).
 
-*Proof sketch.* We compare the mutual information $I(K_{t+1}; Z_{\text{micro}, t} | K_t)$ under the observational measure $P$ and the interventional measure $P_{do(K^{\text{act}})}$. Causal enclosure ({ref}`Section 2.8 <sec-conditional-independence-and-sufficiency>`) guarantees the condition for $P$. Because the $do(K^{\text{act}})$ operator is a surgery that only removes incoming edges to $K^{\text{act}}$ (Pearl's Causal Markov Condition {cite}`pearl2009causality`), it leaves the mechanism $P(K_{t+1} | K_t, K^{\text{act}}_t, Z_{\text{micro}, t})$ invariant.
+*Proof sketch.* We compare the mutual information $I(K_{t+1}; Z_{\text{micro}, t} | K_t)$ under the observational measure $P$ and the interventional measure $P_{do(K^{\text{act}})}$. Causal enclosure ({ref}`sec-conditional-independence-and-sufficiency`) guarantees the condition for $P$. Because the $do(K^{\text{act}})$ operator is a surgery that only removes incoming edges to $K^{\text{act}}$ (Pearl's Causal Markov Condition {cite}`pearl2009causality`), it leaves the mechanism $P(K_{t+1} | K_t, K^{\text{act}}_t, Z_{\text{micro}, t})$ invariant.
 
-If the observational distribution is closed ($I = 0$), and the mechanism is invariant, the interventional distribution is necessarily closed. A violation ($I > 0$ under $do$) implies the existence of a back-door path through $Z_{\text{micro}}$ that was previously unobserved, necessitating a topological expansion of $K$ to include the confounding variable. See {ref}`Appendix E.6 <sec-appendix-e-rigorous-proof-sketches-for-ontological-and-metabolic-laws>` for the full proof. $\square$
+If the observational distribution is closed ($I = 0$), and the mechanism is invariant, the interventional distribution is necessarily closed. A violation ($I > 0$ under $do$) implies the existence of a back-door path through $Z_{\text{micro}}$ that was previously unobserved, necessitating a topological expansion of $K$ to include the confounding variable. See {ref}`sec-appendix-e-rigorous-proof-sketches-for-ontological-and-metabolic-laws` for the full proof. $\square$
 
 *Remark (Interventional Debugging).* Theorem {prf:ref}`thm-interventional-closure` provides a diagnostic for ontological adequacy: if the agent's predictions fail specifically under intervention but succeed under observation, the ontology contains a hidden confounder. This is the geometric manifestation of Simpson's paradox {cite}`pearl2009causality`. Algorithmic approaches to discovering such confounders are developed in the causal discovery literature {cite}`spirtes2000causation`.
 

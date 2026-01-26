@@ -41,14 +41,14 @@ Why does this matter? Because information propagates at finite speed. If you mov
 This chapter makes that distinction precise. We are going to build attention mechanisms that respect the full causal structure of spacetime, not just temporal ordering. The result is a world model for memory that is physically correct by construction.
 :::
 
-*Abstract.* This chapter derives **Covariant Self-Attention** and **Lorentzian Cross-Attention** for memory retrieval, extending the gauge-covariant attention architecture of {ref}`Section 35 <sec-covariant-cross-attention-architecture>` to include causal structure. We equip the memory manifold with a Lorentzian metric of signature $(-,+,\ldots,+)$, derive the light cone structure that determines which past events can influence the present, and implement attention mechanisms that enforce causality by construction. The causal mask emerges from the metric geometry rather than being imposed ad hoc. Retarded attention weights ensure that information propagates at finite speed $c_{\text{info}}$, connecting to the multi-agent ghost interface framework of {ref}`Section 33 <sec-symplectic-multi-agent-field-theory>`.
+*Abstract.* This chapter derives **Covariant Self-Attention** and **Lorentzian Cross-Attention** for memory retrieval, extending the gauge-covariant attention architecture of {ref}`sec-covariant-cross-attention-architecture` to include causal structure. We equip the memory manifold with a Lorentzian metric of signature $(-,+,\ldots,+)$, derive the light cone structure that determines which past events can influence the present, and implement attention mechanisms that enforce causality by construction. The causal mask emerges from the metric geometry rather than being imposed ad hoc. Retarded attention weights ensure that information propagates at finite speed $c_{\text{info}}$, connecting to the multi-agent ghost interface framework of {ref}`sec-symplectic-multi-agent-field-theory`.
 
 *Cross-references:* This chapter synthesizes:
-- {ref}`Section 27 <sec-section-non-local-memory-as-self-interaction-functional>` (Memory potential, heat kernel convolution)
-- {ref}`Section 28 <sec-section-hyperbolic-active-retrieval-geodesic-search-and-semantic-pull-back>` (Retrieval-augmented geometry)
-- {ref}`Section 32 <sec-causal-discovery-interventional-geometry-and-the-singularity-of-action>` (Causal information potential, interventional gap)
-- {ref}`Section 33 <sec-symplectic-multi-agent-field-theory>` (Ghost interface, retarded potentials, finite information speed)
-- {ref}`Section 35 <sec-covariant-cross-attention-architecture>` (Covariant cross-attention with Wilson lines)
+- {ref}`sec-section-non-local-memory-as-self-interaction-functional` (Memory potential, heat kernel convolution)
+- {ref}`sec-section-hyperbolic-active-retrieval-geodesic-search-and-semantic-pull-back` (Retrieval-augmented geometry)
+- {ref}`sec-causal-discovery-interventional-geometry-and-the-singularity-of-action` (Causal information potential, interventional gap)
+- {ref}`sec-symplectic-multi-agent-field-theory` (Ghost interface, retarded potentials, finite information speed)
+- {ref}`sec-covariant-cross-attention-architecture` (Covariant cross-attention with Wilson lines)
 
 
 
