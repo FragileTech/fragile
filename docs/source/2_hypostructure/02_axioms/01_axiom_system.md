@@ -126,10 +126,19 @@ In infinite dimensions, this problem becomes critical. If your energy landscape 
 :::{prf:axiom} Axiom LS (Stiffness)
 :label: ax-stiffness
 
-The Łojasiewicz-Simon inequality holds near equilibria, ensuring a mass gap:
+An effective stiffness permit holds at equilibria after closure (directly from LS/KL, or via promoted
+certificates such as LSI or higher-order stiffness): there exist $C > 0$,
+$\theta \in (0, \tfrac{1}{2}]$, and a neighborhood of each equilibrium $x^*$ such that
 
 $$
-\inf \sigma(L) > 0
+\|\nabla \Phi(x)\| \geq C\,|\Phi(x) - \Phi(x^*)|^{1-\theta}.
+
+$$
+
+A spectral gap is a sufficient (nondegenerate analytic) witness:
+
+$$
+\inf \sigma(L) > 0,
 
 $$
 
@@ -139,11 +148,23 @@ where $L$ is the linearized operator at equilibrium.
 :::
 
 :::{div} feynman-prose
-The mass gap $\inf \sigma(L) > 0$ says: the smallest eigenvalue of the linearized operator is bounded away from zero. No arbitrarily soft modes. No infinitely gentle perturbations that cost zero energy.
+Here is what Axiom LS is really asking: after the system closes onto equilibrium, do you have a *stiffness permit*? Something that certifies the equilibrium is genuinely stable, not sitting on a knife edge where the slightest breeze sends it drifting off forever?
 
-Why does this matter for regularity? Because if there are zero modes, small perturbations can grow without bound in that direction. The system might not blow up dramatically, but it drifts away forever, never settling down. The Sieve needs convergence to equilibrium, and convergence needs stiffness.
+Why does this matter? Because if there are zero modes---soft directions in configuration space that cost no energy to move along---small perturbations grow without bound in that direction. The system does not blow up dramatically; it just drifts away forever, never settling down. The Sieve needs convergence to equilibrium, and convergence needs stiffness.
 
-This is why the Yang-Mills mass gap problem is so important. If the Yang-Mills theory has a mass gap, then quantum chromodynamics (the theory of quarks and gluons) is mathematically consistent at low energies. If not, the theory might be sick in some subtle way. The Sieve would catch this: no mass gap means Axiom LS fails, and we route to Mode S.D (Stiffness Breakdown).
+Now, there are multiple ways to prove you have stiffness. Think of them as different grades of certificate:
+
+1. **Mass gap** (spectral gap $\inf \sigma(L) > 0$): This is the gold standard. It says the smallest eigenvalue of the linearized operator is bounded away from zero---no arbitrarily soft modes, no infinitely gentle perturbations. With a mass gap, you get *exponential* convergence to equilibrium. No questions asked, case closed.
+
+2. **LS/KL inequality**: If you cannot prove a mass gap, you can still show stiffness through the Lojasiewicz-Simon or Kurdyka-Lojasiewicz inequality. This gives *power-law* convergence---slower than exponential, but still sufficient. The system still settles down; it just takes longer.
+
+3. **Log-Sobolev inequality (LSI)**: Another route to the permit, particularly useful in probabilistic settings.
+
+4. **Higher-order stiffness**: For degenerate cases where the standard certificates fail, catastrophe theory and higher-order Taylor analysis can sometimes promote a certificate anyway.
+
+The key insight is this: we need stiffness, and there are multiple ways to certify you have it. What matters is not *which* certificate you produce, but that you produce *one*. Either way, the question the Sieve asks is: do you have something showing the system will not drift forever?
+
+This is why the Yang-Mills mass gap problem is so important. If the Yang-Mills theory has a mass gap, quantum chromodynamics (the theory of quarks and gluons) is mathematically consistent at low energies---exponential convergence, cleanest possible certificate. If not, you might still rescue the theory with a softer certificate, but you have to work harder. And if no certificate exists? Then the Sieve catches this: Axiom LS fails, and we route to Mode S.D (Stiffness Breakdown).
 :::
 
 :::{prf:axiom} Axiom GC (Gradient Consistency)
@@ -447,7 +468,7 @@ Now you understand the blueprint. What remains is to see how the Sieve implement
 | **Rec** (Recovery) | Finite events in finite time | C.C: Zeno/event accumulation |
 | **C** (Compactness) | Bounded energy $\Rightarrow$ convergence | C.D: Geometric collapse |
 | **SC** (Scaling) | Subcritical dimension | S.E: Supercritical cascade |
-| **LS** (Stiffness) | Spectral gap at equilibria | S.D: Stiffness breakdown |
+| **LS** (Stiffness) | Effective stiffness (LS/KL/LSI or gap) | S.D: Stiffness breakdown |
 | **GC** (Gradient Consistency) | Gauge-compatible dynamics | B.C: Misalignment |
 | **TB** (Topological Background) | Accessible sectors bounded | T.E: Topological twist |
 | **Cap** (Capacity) | Singularities have zero capacity | C.D: Fat singularity |
