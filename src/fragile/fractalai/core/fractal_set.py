@@ -14,9 +14,9 @@ Reference: docs/source/3_fractal_gas/2_fractal_set/01_fractal_set.md
 
 from __future__ import annotations
 
+import math
 from typing import Any
 
-import math
 import networkx as nx
 import torch
 from torch import Tensor
@@ -113,9 +113,7 @@ class FractalSet:
         node_abs_step = torch.empty(total_nodes, device=device, dtype=dtype)
         node_tau = torch.empty(total_nodes, device=device, dtype=dtype)
         node_alive = torch.empty(total_nodes, device=device, dtype=torch.bool)
-        node_clone_source = torch.full(
-            (total_nodes,), -1, device=device, dtype=torch.long
-        )
+        node_clone_source = torch.full((total_nodes,), -1, device=device, dtype=torch.long)
 
         node_E_kin = torch.empty(total_nodes, device=device, dtype=dtype)
         node_U = torch.empty(total_nodes, device=device, dtype=dtype)
@@ -129,17 +127,19 @@ class FractalSet:
         node_d_alg = torch.full((total_nodes,), float("nan"), device=device, dtype=dtype)
         node_z_rewards = torch.full((total_nodes,), float("nan"), device=device, dtype=dtype)
         node_z_distances = torch.full((total_nodes,), float("nan"), device=device, dtype=dtype)
-        node_rescaled_rewards = torch.full((total_nodes,), float("nan"), device=device, dtype=dtype)
-        node_rescaled_distances = torch.full((total_nodes,), float("nan"), device=device, dtype=dtype)
+        node_rescaled_rewards = torch.full(
+            (total_nodes,), float("nan"), device=device, dtype=dtype
+        )
+        node_rescaled_distances = torch.full(
+            (total_nodes,), float("nan"), device=device, dtype=dtype
+        )
         node_pos_sq = torch.full((total_nodes,), float("nan"), device=device, dtype=dtype)
         node_vel_sq = torch.full((total_nodes,), float("nan"), device=device, dtype=dtype)
         node_mu_rewards = torch.full((total_nodes,), float("nan"), device=device, dtype=dtype)
         node_sigma_rewards = torch.full((total_nodes,), float("nan"), device=device, dtype=dtype)
         node_mu_distances = torch.full((total_nodes,), float("nan"), device=device, dtype=dtype)
         node_sigma_distances = torch.full((total_nodes,), float("nan"), device=device, dtype=dtype)
-        node_companion_distance = torch.full(
-            (total_nodes,), -1, device=device, dtype=torch.long
-        )
+        node_companion_distance = torch.full((total_nodes,), -1, device=device, dtype=torch.long)
         node_companion_clone = torch.full((total_nodes,), -1, device=device, dtype=torch.long)
 
         pre_offset = 0
@@ -147,27 +147,26 @@ class FractalSet:
         final_offset = clone_offset + n_clone * self.N
 
         pre_ids = (
-            torch.arange(n_pre * self.N, device=device, dtype=torch.long)
-            .reshape(n_pre, self.N)
+            torch.arange(n_pre * self.N, device=device, dtype=torch.long).reshape(n_pre, self.N)
             + pre_offset
         )
         final_ids = (
-            torch.arange(n_final * self.N, device=device, dtype=torch.long)
-            .reshape(n_final, self.N)
+            torch.arange(n_final * self.N, device=device, dtype=torch.long).reshape(
+                n_final, self.N
+            )
             + final_offset
         )
         if n_clone > 0:
             clone_ids = (
-                torch.arange(n_clone * self.N, device=device, dtype=torch.long)
-                .reshape(n_clone, self.N)
+                torch.arange(n_clone * self.N, device=device, dtype=torch.long).reshape(
+                    n_clone, self.N
+                )
                 + clone_offset
             )
         else:
             clone_ids = torch.empty((0, self.N), device=device, dtype=torch.long)
 
-        clone_ids_full = torch.full(
-            (n_pre, self.N), -1, device=device, dtype=torch.long
-        )
+        clone_ids_full = torch.full((n_pre, self.N), -1, device=device, dtype=torch.long)
         if n_clone > 0:
             clone_ids_full[1:] = clone_ids
 
@@ -230,7 +229,7 @@ class FractalSet:
             node_abs_step[row_ids] = abs_step
             node_tau[row_ids] = abs_step * self.delta_t
 
-            x_clone = self.history.x_after_clone[clone_idx]
+            self.history.x_after_clone[clone_idx]
             v_clone = self.history.v_after_clone[clone_idx]
             node_E_kin[row_ids] = 0.5 * torch.sum(v_clone**2, dim=-1)
             node_U[row_ids] = self.history.U_after_clone[clone_idx]
@@ -328,9 +327,7 @@ class FractalSet:
         weights = kernel / row_sums
 
         if self.pbc and self.bounds is not None:
-            dist_matrix = compute_periodic_distance_matrix(
-                x, y=None, bounds=self.bounds, pbc=True
-            )
+            dist_matrix = compute_periodic_distance_matrix(x, y=None, bounds=self.bounds, pbc=True)
         else:
             diff = x[:, None, :] - x[None, :, :]
             dist_matrix = torch.linalg.vector_norm(diff, dim=-1)
@@ -377,31 +374,34 @@ class FractalSet:
         self._build_clone_edges()
 
     def _build_cst_edges(self) -> None:
-        cst = {k: [] for k in [
-            "source",
-            "target",
-            "walker",
-            "time_index",
-            "abs_step",
-            "delta_t",
-            "v_pre",
-            "v_final",
-            "delta_v",
-            "delta_x",
-            "x_clone",
-            "v_clone",
-            "force_stable",
-            "force_adapt",
-            "force_viscous",
-            "force_friction",
-            "force_total",
-            "noise",
-            "sigma_reg_diag",
-            "sigma_reg_full",
-            "phi_cst",
-            "norm_delta_v",
-            "norm_delta_x",
-        ]}
+        cst = {
+            k: []
+            for k in [
+                "source",
+                "target",
+                "walker",
+                "time_index",
+                "abs_step",
+                "delta_t",
+                "v_pre",
+                "v_final",
+                "delta_v",
+                "delta_x",
+                "x_clone",
+                "v_clone",
+                "force_stable",
+                "force_adapt",
+                "force_viscous",
+                "force_friction",
+                "force_total",
+                "noise",
+                "sigma_reg_diag",
+                "sigma_reg_full",
+                "phi_cst",
+                "norm_delta_v",
+                "norm_delta_x",
+            ]
+        }
 
         for t_idx in range(1, self.n_recorded):
             info_idx = t_idx - 1
@@ -441,15 +441,11 @@ class FractalSet:
                 cst["force_total"].append(self.history.force_total[info_idx, walker_id])
                 cst["noise"].append(self.history.noise[info_idx, walker_id])
                 if self.history.sigma_reg_diag is not None:
-                    cst["sigma_reg_diag"].append(
-                        self.history.sigma_reg_diag[info_idx, walker_id]
-                    )
+                    cst["sigma_reg_diag"].append(self.history.sigma_reg_diag[info_idx, walker_id])
                     cst["sigma_reg_full"].append(None)
                 elif self.history.sigma_reg_full is not None:
                     cst["sigma_reg_diag"].append(None)
-                    cst["sigma_reg_full"].append(
-                        self.history.sigma_reg_full[info_idx, walker_id]
-                    )
+                    cst["sigma_reg_full"].append(self.history.sigma_reg_full[info_idx, walker_id])
                 else:
                     cst["sigma_reg_diag"].append(None)
                     cst["sigma_reg_full"].append(None)
@@ -460,35 +456,38 @@ class FractalSet:
         self.edges["cst"] = cst
 
     def _build_ig_edges(self) -> None:
-        ig = {k: [] for k in [
-            "source",
-            "target",
-            "source_walker",
-            "target_walker",
-            "time_index",
-            "abs_step",
-            "x_i",
-            "x_j",
-            "v_i",
-            "v_j",
-            "delta_x",
-            "delta_v",
-            "viscous_force",
-            "kernel_companion",
-            "weight_companion",
-            "kernel_viscous",
-            "weight_viscous",
-            "distance",
-            "d_alg",
-            "theta_ij",
-            "fitness_i",
-            "fitness_j",
-            "V_clone",
-            "psi_amp",
-            "psi_real",
-            "psi_imag",
-            "companion_kind",
-        ]}
+        ig = {
+            k: []
+            for k in [
+                "source",
+                "target",
+                "source_walker",
+                "target_walker",
+                "time_index",
+                "abs_step",
+                "x_i",
+                "x_j",
+                "v_i",
+                "v_j",
+                "delta_x",
+                "delta_v",
+                "viscous_force",
+                "kernel_companion",
+                "weight_companion",
+                "kernel_viscous",
+                "weight_viscous",
+                "distance",
+                "d_alg",
+                "theta_ij",
+                "fitness_i",
+                "fitness_j",
+                "V_clone",
+                "psi_amp",
+                "psi_real",
+                "psi_imag",
+                "companion_kind",
+            ]
+        }
 
         for t_idx in range(1, self.n_recorded):
             info_idx = t_idx - 1
@@ -584,20 +583,23 @@ class FractalSet:
         self.edges["ig"] = ig
 
     def _build_ia_edges(self) -> None:
-        ia = {k: [] for k in [
-            "source",
-            "target",
-            "effect_walker",
-            "cause_walker",
-            "time_index",
-            "abs_step",
-            "kernel_viscous",
-            "weight_viscous",
-            "w_ia",
-            "clone_indicator",
-            "clone_source",
-            "phi_ia",
-        ]}
+        ia = {
+            k: []
+            for k in [
+                "source",
+                "target",
+                "effect_walker",
+                "cause_walker",
+                "time_index",
+                "abs_step",
+                "kernel_viscous",
+                "weight_viscous",
+                "w_ia",
+                "clone_indicator",
+                "clone_source",
+                "phi_ia",
+            ]
+        }
 
         for t_idx in range(1, self.n_recorded):
             info_idx = t_idx - 1
@@ -654,16 +656,19 @@ class FractalSet:
         self.edges["ia"] = ia
 
     def _build_clone_edges(self) -> None:
-        clone = {k: [] for k in [
-            "source",
-            "target",
-            "walker",
-            "time_index",
-            "abs_step",
-            "delta_x",
-            "delta_v",
-            "clone_jitter",
-        ]}
+        clone = {
+            k: []
+            for k in [
+                "source",
+                "target",
+                "walker",
+                "time_index",
+                "abs_step",
+                "delta_x",
+                "delta_v",
+                "clone_jitter",
+            ]
+        }
 
         if self.n_recorded <= 1:
             self.edges["clone"] = clone
@@ -690,17 +695,20 @@ class FractalSet:
     # =====================================================================
 
     def _build_triangles(self) -> None:
-        triangles = {k: [] for k in [
-            "time_index",
-            "source_walker",
-            "influencer_walker",
-            "node_pre",
-            "node_influencer",
-            "node_final",
-            "edge_cst",
-            "edge_ig",
-            "edge_ia",
-        ]}
+        triangles = {
+            k: []
+            for k in [
+                "time_index",
+                "source_walker",
+                "influencer_walker",
+                "node_pre",
+                "node_influencer",
+                "node_final",
+                "edge_cst",
+                "edge_ig",
+                "edge_ia",
+            ]
+        }
 
         ig_edges = self.edges["ig"]
         ia_edges = self.edges["ia"]
@@ -715,7 +723,7 @@ class FractalSet:
                 cst_edges["walker"],
             )
         ):
-            cst_lookup[(int(walker), int(t_idx))] = idx
+            cst_lookup[int(walker), int(t_idx)] = idx
 
         ia_lookup = {}
         for idx, (src, dst, t_idx, effect, cause) in enumerate(
@@ -727,7 +735,7 @@ class FractalSet:
                 ia_edges["cause_walker"],
             )
         ):
-            ia_lookup[(int(effect), int(cause), int(t_idx))] = idx
+            ia_lookup[int(effect), int(cause), int(t_idx)] = idx
 
         for idx, (src, dst, t_idx, source_walker, target_walker) in enumerate(
             zip(
@@ -874,11 +882,7 @@ class FractalSet:
         return torch.where(alive)[0].tolist()
 
     def get_cst_subgraph(self) -> nx.DiGraph:
-        edges = [
-            (u, v)
-            for u, v, d in self.graph.edges(data=True)
-            if d.get("edge_type") == "cst"
-        ]
+        edges = [(u, v) for u, v, d in self.graph.edges(data=True) if d.get("edge_type") == "cst"]
         return self.graph.edge_subgraph(edges).copy()
 
     def get_ig_subgraph(
@@ -901,7 +905,9 @@ class FractalSet:
             edges.append((u, v))
         return self.graph.edge_subgraph(edges).copy()
 
-    def get_ia_subgraph(self, timestep: int | None = None, clone_only: bool | None = None) -> nx.DiGraph:
+    def get_ia_subgraph(
+        self, timestep: int | None = None, clone_only: bool | None = None
+    ) -> nx.DiGraph:
         edges = []
         for u, v, d in self.graph.edges(data=True):
             if d.get("edge_type") != "ia":
@@ -993,7 +999,7 @@ class FractalSet:
         torch.save(data, path)
 
     @classmethod
-    def load(cls, path: str, history: RunHistory) -> "FractalSet":
+    def load(cls, path: str, history: RunHistory) -> FractalSet:
         data = torch.load(path, weights_only=False)
         fs = cls.__new__(cls)
         fs.history = history
@@ -1014,9 +1020,7 @@ class FractalSet:
         fs.lambda_alg = meta.get("lambda_alg")
         fs.hbar_eff = meta.get("hbar_eff", 1.0)
         fs.nu = fs.params.get("kinetic", {}).get("nu", 0.0)
-        fs.viscous_length_scale = fs.params.get("kinetic", {}).get(
-            "viscous_length_scale", 1.0
-        )
+        fs.viscous_length_scale = fs.params.get("kinetic", {}).get("viscous_length_scale", 1.0)
 
         fs.nodes = data["nodes"]
         fs.edges = data["edges"]

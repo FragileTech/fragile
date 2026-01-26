@@ -262,7 +262,7 @@ P_{\mathrm{Geom}}(K) := (\operatorname{Growth}(K) \leq \operatorname{Poly}(d)) \
 
 $$
 
-**Operational Check** (Node 7c):
+**Operational Check** (TitsCheck):
 1. **Polynomial Growth Test**: If ball growth satisfies $|B_r(x)| \sim r^d$ for some $d < \infty$, emit $K_{\mathrm{Geom}}^{+}(\text{Poly})$. *(Euclidean/Nilpotent structures)*
 2. **Hyperbolic Test**: Compute Gromov $\delta$-hyperbolicity constant. If $\delta < \epsilon \cdot \operatorname{diam}(K)$ for small $\epsilon$, emit $K_{\mathrm{Geom}}^{+}(\text{Hyp})$. *(Logic trees/Free groups)*
 3. **CAT(0) Test**: Check triangle comparison inequality $d^2(m,x) \leq \frac{1}{2}d^2(y,x) + \frac{1}{2}d^2(z,x) - \frac{1}{4}d^2(y,z)$ for all triangles. If satisfied, emit $K_{\mathrm{Geom}}^{+}(\text{CAT0})$. *(Higher-rank lattices/Yang-Mills)*
@@ -285,7 +285,9 @@ $$
 
 **Literature:** {cite}`Tits72` (Tits Alternative); {cite}`Gromov87` (Hyperbolic groups); {cite}`BridsonHaefliger99` (CAT(0) geometry); {cite}`Lubotzky94` (Expander graphs)
 
-**Enforced by:** Node 7c (Geometric Structure Check) --- Certificate $K_{\mathrm{Geom}}^{\pm}$
+**Enforced by:** TitsCheck (Geometric Structure License) --- Certificate $K_{\mathrm{Geom}}^{\pm}$
+
+This Thin Kernel license is evaluated on discrete geometry and is distinct from the Sieve's stiffness restoration subtree (Nodes 7a–7d).
 :::
 
 :::{div} feynman-prose
@@ -314,7 +316,7 @@ $$
 
 where $\{p_i\}$ are **quasi-periods** (resonances) and $\eta_{\mathrm{noise}}$ is the random matrix theory baseline.
 
-**Operational Check** (Node 7d):
+**Operational Check** (ResonanceCheck):
 1. **Eigenvalue Computation**: Compute spectrum $\operatorname{spec}(\Delta_K) = \{\lambda_i\}$
 2. **Level Spacing Statistics**: Compute nearest-neighbor spacing distribution $P(s)$
    - **Poisson** $P(s) \sim e^{-s}$: Random (Gas phase) → Fail
@@ -352,7 +354,7 @@ $$
 
 **Literature:** {cite}`Selberg56` (Trace formula); {cite}`MontgomeryOdlyzko73` (Pair correlation conjecture); {cite}`Sarnak95` (Quantum chaos); {cite}`KatzSarnak99` (Random matrix theory)
 
-**Enforced by:** Node 7d (Spectral Resonance Check) --- Certificate $K_{\mathrm{Spec}}^{\pm}$
+**Enforced by:** ResonanceCheck (Spectral Resonance Check) --- Certificate $K_{\mathrm{Spec}}^{\pm}$
 :::
 
 :::{div} feynman-prose

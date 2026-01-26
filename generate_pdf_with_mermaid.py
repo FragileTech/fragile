@@ -50,8 +50,10 @@ class Config:
     pandoc_engine: str = "xelatex"
     pandoc_args: list[str] = field(
         default_factory=lambda: [
-            "-V", "geometry:margin=0.5in",  # Reduced margins for larger diagrams
-            "-V", "fontsize=11pt",
+            "-V",
+            "geometry:margin=0.5in",  # Reduced margins for larger diagrams
+            "-V",
+            "fontsize=11pt",
         ]
     )
     mermaid_theme: str = "dark"
@@ -423,9 +425,7 @@ def convert_diagram_to_image(
         Path to PNG file, or None if failed.
     """
     # Step 1: Generate SVG using mmdc
-    svg_file = convert_diagram_to_svg(
-        diagram, temp_dir, puppeteer_config, theme, timeout
-    )
+    svg_file = convert_diagram_to_svg(diagram, temp_dir, puppeteer_config, theme, timeout)
 
     if svg_file is None:
         return None
@@ -594,9 +594,7 @@ def generate_pdf_with_mermaid(config: Config) -> bool:
 
         # Create LaTeX header for diagram pages with adjustable geometry
         header_file = temp_dir / "landscape_header.tex"
-        header_file.write_text(
-            "\\usepackage{graphicx}\n"
-        )
+        header_file.write_text("\\usepackage{graphicx}\n")
         logging.debug(f"Wrote LaTeX header: {header_file}")
 
         # Add header to pandoc args

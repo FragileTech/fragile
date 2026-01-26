@@ -43,7 +43,7 @@ The structure separates data into two categories based on transformation propert
 :name: fig-fractal-set-data-storage
 :width: 100%
 
-**What gets stored where.** Nodes carry only scalar data; CST and IG edges carry spinor-encoded vectors; IA edges store scalar attribution weights and phases.
+**What gets stored where.** Nodes carry only scalar data; CST and IG edges carry spinor-encoded vectors; IA edges store scalar attribution weights and phases and, for non-abelian gauge, an SU(2) attribution element.
 :::
 
 The edges divide into **three types** reflecting the algorithm's causal structure:
@@ -987,17 +987,20 @@ attributing the outcome to its source.
 :::{prf:definition} IA Edge Attributes
 :label: def-fractal-set-ia-attributes
 
-Each IA edge $e = (n_{i,t+1}, n_{j,t}) \in E_{\mathrm{IA}}$ carries the following scalar attributes:
+Each IA edge $e = (n_{i,t+1}, n_{j,t}) \in E_{\mathrm{IA}}$ carries the following attributes:
 
 | Attribute | Symbol | Type | Unit | Description |
 |-----------|--------|------|------|-------------|
 | Influence weight | $w_{\mathrm{IA}}(e)$ | $[0, 1]$ | [probability] | Fraction of $i$'s update attributable to $j$: $w_{ij}(t)$ |
 | Clone indicator | $\chi_{\mathrm{clone}}(e)$ | $\{0, 1\}$ | [boolean] | 1 if $c(n_{i,t+1}) = j$ (cloned from $j$), else 0 |
 | Phase contribution | $\phi_{\mathrm{IA}}(e)$ | $\mathbb{R}$ | [dimensionless] | Phase accumulated on attribution edge |
+| Attribution rotation | $U^{(2)}_{\mathrm{IA}}(e)$ | $SU(2)$ | [unitary] | Non-abelian credit-assignment map on the cloning doublet |
 
 For **viscous coupling**, $w_{\mathrm{IA}}(e) = K_\rho(x_i, x_j) / \sum_{l \in \mathcal{A}(t) \setminus \{i\}} K_\rho(x_i, x_l)$.
 
 For **cloning**, $w_{\mathrm{IA}}(e) = 1$ if $\chi_{\mathrm{clone}}(e) = 1$, else 0.
+
+For the SU(2) attribution connection, $U^{(2)}_{\mathrm{IA}}(e)$ records the rotation that credits walker $j$'s doublet into walker $i$'s update; in the absence of attribution it defaults to the identity.
 :::
 
 :::{prf:proposition} IA Edge Cardinality
@@ -1178,12 +1181,19 @@ mathematical structure.
 :::{prf:definition} Gauge Connection on Edges
 :label: def-fractal-set-gauge-connection
 
-A **gauge connection** on the Fractal Set assigns to each oriented edge $e$ a **parallel transport phase** $U_e \in \mathrm{U}(1)$. For the phase connection, we use:
-- $U_{\mathrm{IG}}(e) = e^{i\theta_{ij}}$ where $\theta_{ij}$ is the phase potential from {prf:ref}`def-fractal-set-phase-potential`
-- $U_{\mathrm{CST}}(e) = e^{i\phi_{\mathrm{CST}}}$ where $\phi_{\mathrm{CST}}$ is the phase accumulated during evolution
-- $U_{\mathrm{IA}}(e) = e^{i\phi_{\mathrm{IA}}}$ where $\phi_{\mathrm{IA}}$ is the attribution phase
+A **gauge connection** on the Fractal Set assigns to each oriented edge $e$ a **parallel transport element**. We use two connections:
 
-Orientation reversal conjugates: if $U_e = e^{i\phi_e}$, then $U_{-e} = U_e^* = e^{-i\phi_e}$.
+- **$U(1)$ phase connection**:
+  - $U^{(1)}_{\mathrm{IG}}(e) = e^{i\theta_{ij}}$ where $\theta_{ij}$ is the phase potential from {prf:ref}`def-fractal-set-phase-potential`
+  - $U^{(1)}_{\mathrm{CST}}(e) = e^{i\phi_{\mathrm{CST}}}$ where $\phi_{\mathrm{CST}}$ is the phase accumulated during evolution
+  - $U^{(1)}_{\mathrm{IA}}(e) = e^{i\phi_{\mathrm{IA}}}$ where $\phi_{\mathrm{IA}}$ is the attribution phase
+
+- **$SU(2)$ attribution connection**:
+  - $U^{(2)}_{\mathrm{IG}}(e) \in SU(2)$ encodes the cloning-score phase on IG edges
+  - $U^{(2)}_{\mathrm{IA}}(e) \in SU(2)$ encodes the attribution rotation on IA edges
+  - $U^{(2)}_{\mathrm{CST}}(e) = I$ (temporal gauge for the cloning doublet)
+
+Orientation reversal inverts: $U_{-e} = U_e^{-1}$ (complex conjugation for $U(1)$, adjoint for $SU(2)$).
 :::
 
 :::{prf:definition} Wilson Loop on a Triangle
@@ -1191,19 +1201,26 @@ Orientation reversal conjugates: if $U_e = e^{i\phi_e}$, then $U_{-e} = U_e^* = 
 
 The **Wilson loop** around an interaction triangle $\triangle_{ij,t}$ is the **holonomy** of the gauge connection:
 
-$$W(\triangle_{ij,t}) := U_{\mathrm{CST}}(e_{\mathrm{CST}}) \cdot U_{\mathrm{IA}}(e_{\mathrm{IA}}) \cdot U_{\mathrm{IG}}(e_{\mathrm{IG}})^* = e^{i(\phi_{\mathrm{CST}} + \phi_{\mathrm{IA}} - \theta_{ij})}.$$
+**$U(1)$ phase holonomy**:
 
-This is the phase holonomy around the triangle boundary.
+$$W^{(1)}(\triangle_{ij,t}) := U^{(1)}_{\mathrm{CST}}(e_{\mathrm{CST}}) \cdot U^{(1)}_{\mathrm{IA}}(e_{\mathrm{IA}}) \cdot U^{(1)}_{\mathrm{IG}}(e_{\mathrm{IG}})^* = e^{i(\phi_{\mathrm{CST}} + \phi_{\mathrm{IA}} - \theta_{ij})}.$$
+
+**$SU(2)$ attribution holonomy**:
+
+$$W^{(2)}(\triangle_{ij,t}) := U^{(2)}_{\mathrm{CST}}(e_{\mathrm{CST}}) \cdot U^{(2)}_{\mathrm{IA}}(e_{\mathrm{IA}}) \cdot \big(U^{(2)}_{\mathrm{IG}}(e_{\mathrm{IG}})\big)^{-1}.$$
+
+In temporal gauge $U^{(2)}_{\mathrm{CST}} = I$, so $W^{(2)}(\triangle_{ij,t}) = U^{(2)}_{\mathrm{IA}} \cdot (U^{(2)}_{\mathrm{IG}})^{-1}$.
 :::
 
 :::{prf:proposition} Plaquette Wilson Loop Factorization
 :label: prop-fractal-set-wilson-factorization
 
-The plaquette holonomy factorizes into triangle holonomies:
+The plaquette holonomy factorizes into triangle holonomies for each gauge factor:
 
-$$W(P_{ij,t}) = W(\triangle_{ij,t}) \cdot W(\triangle_{ji,t})$$
+$$W^{(1)}(P_{ij,t}) = W^{(1)}(\triangle_{ij,t}) \cdot W^{(1)}(\triangle_{ji,t}), \qquad
+W^{(2)}(P_{ij,t}) = W^{(2)}(\triangle_{ij,t}) \cdot W^{(2)}(\triangle_{ji,t}).$$
 
-*Proof.* The plaquette boundary $\partial P_{ij,t}$ equals $\partial\triangle_{ij,t} + \partial\triangle_{ji,t}$, with the shared IG edge canceling due to opposite orientations. The holonomy around $\partial P$ is the product of the triangle holonomies, and the shared IG edge contributes $U_{\mathrm{IG}} \cdot U_{\mathrm{IG}}^* = 1$. $\square$
+*Proof.* The plaquette boundary $\partial P_{ij,t}$ equals $\partial\triangle_{ij,t} + \partial\triangle_{ji,t}$, with the shared IG edge canceling due to opposite orientations. The holonomy around $\partial P$ is the product of the triangle holonomies, and the shared IG edge contributes $U^{(1)}_{\mathrm{IG}} \cdot (U^{(1)}_{\mathrm{IG}})^* = 1$ and $U^{(2)}_{\mathrm{IG}} \cdot (U^{(2)}_{\mathrm{IG}})^{-1} = 1$. $\square$
 :::
 
 :::{div} feynman-prose
@@ -1249,18 +1266,18 @@ let $M := \sum_{t=0}^{T} m_t$.
 | Nodes | $N(T+1)$ | $O(1)$ scalars | $O(NT)$ |
 | CST edges | $O(NT)$ | $O(s_d)$ spinors + $O(1)$ scalars | $O(NT \cdot s_d)$ |
 | IG edges | $O(M)$ | $O(s_d)$ spinors + $O(1)$ scalars | $O(M \cdot s_d)$ |
-| IA edges | $O(M)$ | $O(1)$ scalars | $O(M)$ |
+| IA edges | $O(M)$ | $O(1)$ scalars + $SU(2)$ element | $O(M)$ |
 | Triangles | $O(M)$ | $O(1)$ pointers | $O(M)$ |
 
 Total memory: $O(NT \cdot s_d + M \cdot s_d)$.
 
-Note: IA edges and triangles add only $O(M)$ scalar storage—negligible compared to the spinor-heavy
+Note: IA edges and triangles add only $O(M)$ scalar storage plus $O(M)$ group elements—negligible compared to the spinor-heavy
 IG edges.
 
 For two-companion sampling, $M = O(Tk)$; if all pairs are materialized, $M = O(Tk^2)$ and the
 dense bound is recovered.
 
-*Proof.* Direct counting from the definitions. IA edges store only scalar weights (no spinors), and triangles store only pointers to their three boundary edges. $\square$
+*Proof.* Direct counting from the definitions. IA edges store scalar weights plus a single $SU(2)$ element (no spinors), and triangles store only pointers to their three boundary edges. $\square$
 :::
 
 The IG and IA edges dominate memory for large $N$. If you materialize additional IG edges (for
@@ -1813,7 +1830,7 @@ With indexing (hash tables on $(i, t)$ pairs), lookups become $O(1)$ expected ti
 
 - **The Fractal Set** is a **2-dimensional directed 2-complex** with simplicial support that records the complete execution of the Fractal Gas algorithm with three edge types (CST, IG, IA) and interaction triangles as fundamental 2-simplices.
 
-- **Scalars on nodes, spinors on edges**: Frame-invariant quantities (energy, fitness, status) are stored at spacetime points; frame-covariant quantities (velocities, forces, gradients) are stored on temporal (CST) and spatial (IG) edges as spinor representations. IA edges store scalar attribution weights.
+- **Scalars on nodes, spinors on edges**: Frame-invariant quantities (energy, fitness, status) are stored at spacetime points; frame-covariant quantities (velocities, forces, gradients) are stored on temporal (CST) and spatial (IG) edges as spinor representations. IA edges store scalar attribution weights and (when non-abelian gauge is used) an SU(2) attribution element.
 
 - **Three edge types close causal loops**: CST edges encode timelike evolution, IG edges encode spacelike coupling with antisymmetric cloning potentials, and IA edges complete the causal attribution from effect to cause.
 

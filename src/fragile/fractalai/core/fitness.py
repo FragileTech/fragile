@@ -216,6 +216,7 @@ def patched_standardization(
         For large ρ or rho=None (mean-field): statistics are global, giving mean-field
         interpretation.
     """
+
     def _global_stats(values_tensor: Tensor, alive_mask: Tensor) -> tuple[Tensor, Tensor]:
         n_alive = alive_mask.sum()
         n_alive_safe = torch.clamp(n_alive, min=1.0)

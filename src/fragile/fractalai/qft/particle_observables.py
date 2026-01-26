@@ -32,7 +32,8 @@ def compute_knn_indices(
     sample_indices: torch.Tensor | None = None,
 ) -> torch.Tensor:
     if k <= 0:
-        raise ValueError("k must be positive.")
+        msg = "k must be positive."
+        raise ValueError(msg)
 
     if sample_indices is None:
         sample_indices = torch.where(alive)[0]
@@ -53,9 +54,7 @@ def compute_knn_indices(
     dist_sq = (diff**2).sum(dim=-1)
     alive_mask = alive.unsqueeze(0).expand(dist_sq.shape[0], -1)
     dist_sq = dist_sq.masked_fill(~alive_mask, float("inf"))
-    dist_sq[torch.arange(dist_sq.shape[0], device=positions.device), sample_indices] = float(
-        "inf"
-    )
+    dist_sq[torch.arange(dist_sq.shape[0], device=positions.device), sample_indices] = float("inf")
 
     k_eff = min(k, positions.shape[0] - 1)
     if k_eff <= 0:
@@ -74,11 +73,14 @@ def compute_color_state(
     eps: float = 1e-12,
 ) -> tuple[torch.Tensor, torch.Tensor]:
     if h_eff <= 0:
-        raise ValueError("h_eff must be positive.")
+        msg = "h_eff must be positive."
+        raise ValueError(msg)
     if mass <= 0:
-        raise ValueError("mass must be positive.")
+        msg = "mass must be positive."
+        raise ValueError(msg)
     if ell0 <= 0:
-        raise ValueError("ell0 must be positive.")
+        msg = "ell0 must be positive."
+        raise ValueError(msg)
     if force_viscous.shape != velocities.shape:
         msg = "force_viscous and velocities must have the same shape."
         raise ValueError(msg)
@@ -109,7 +111,8 @@ def compute_meson_operator_knn(
     reduce: str = "mean",
 ) -> tuple[torch.Tensor, torch.Tensor]:
     if neighbor_indices.shape[1] < 1:
-        raise ValueError("Need at least 1 neighbor for meson operator.")
+        msg = "Need at least 1 neighbor for meson operator."
+        raise ValueError(msg)
 
     i = sample_indices
     neighbors = neighbor_indices
@@ -129,7 +132,8 @@ def compute_meson_operator_knn(
         return meson, valid_first
 
     if reduce != "mean":
-        raise ValueError("reduce must be 'mean' or 'first'")
+        msg = "reduce must be 'mean' or 'first'"
+        raise ValueError(msg)
 
     dots = torch.where(valid, dots, torch.zeros_like(dots))
     counts = valid.sum(dim=1)
@@ -150,13 +154,12 @@ def compute_baryon_operator_knn(
         msg = "Baryon operator requires d=3 color vectors."
         raise ValueError(msg)
     if neighbor_indices.shape[1] < 2:
-        raise ValueError("Need at least 2 neighbors for baryon operator.")
+        msg = "Need at least 2 neighbors for baryon operator."
+        raise ValueError(msg)
 
     i = sample_indices
     k_neighbors = neighbor_indices.shape[1]
-    pair_idx = torch.combinations(
-        torch.arange(k_neighbors, device=neighbor_indices.device), r=2
-    )
+    pair_idx = torch.combinations(torch.arange(k_neighbors, device=neighbor_indices.device), r=2)
     if max_pairs is not None and pair_idx.shape[0] > max_pairs:
         pair_idx = pair_idx[:max_pairs]
 
@@ -323,8 +326,7 @@ def select_mass_plateau(
     if corr.size < 3 or lag_times.size < 2:
         return None
 
-    if min_points < 2:
-        min_points = 2
+    min_points = max(min_points, 2)
     if max_points is not None and max_points < min_points:
         max_points = min_points
 

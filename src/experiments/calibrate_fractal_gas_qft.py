@@ -27,10 +27,13 @@ from fragile.fractalai.core.companion_selection import compute_algorithmic_dista
 from fragile.fractalai.core.distance import compute_periodic_distance_matrix
 from fragile.fractalai.core.history import RunHistory
 
+
 try:
-    from constants_check import alpha as DEFAULT_ALPHA_EM
-    from constants_check import alpha_s_MZ as DEFAULT_ALPHA_S
-    from constants_check import sin2_theta_W as DEFAULT_SIN2_THETA_W
+    from constants_check import (
+        alpha as DEFAULT_ALPHA_EM,
+        alpha_s_MZ as DEFAULT_ALPHA_S,
+        sin2_theta_W as DEFAULT_SIN2_THETA_W,
+    )
 except ImportError:
     DEFAULT_ALPHA_EM = 1 / 137.035999084
     DEFAULT_ALPHA_S = 0.1179
@@ -78,19 +81,21 @@ def _fmt(value: float | None, precision: int = 6) -> str:
 
 def casimir_su(n: int) -> float:
     if n <= 1:
-        raise ValueError("Casimir requires n > 1.")
+        msg = "Casimir requires n > 1."
+        raise ValueError(msg)
     return (n**2 - 1) / (2 * n)
 
 
-def gauge_couplings(
-    alpha_em: float, sin2_theta_w: float, alpha_s: float
-) -> dict[str, float]:
+def gauge_couplings(alpha_em: float, sin2_theta_w: float, alpha_s: float) -> dict[str, float]:
     if alpha_em <= 0:
-        raise ValueError("alpha_em must be positive.")
+        msg = "alpha_em must be positive."
+        raise ValueError(msg)
     if not 0.0 < sin2_theta_w < 1.0:
-        raise ValueError("sin2_theta_w must be in (0, 1).")
+        msg = "sin2_theta_w must be in (0, 1)."
+        raise ValueError(msg)
     if alpha_s <= 0:
-        raise ValueError("alpha_s must be positive.")
+        msg = "alpha_s must be positive."
+        raise ValueError(msg)
 
     e_em = sqrt(4.0 * pi * alpha_em)
     sin_theta = sqrt(sin2_theta_w)
@@ -110,9 +115,11 @@ def gauge_couplings(
 
 def epsilon_c_from_g2(hbar_eff: float, g2: float, d: int) -> float:
     if hbar_eff <= 0:
-        raise ValueError("hbar_eff must be positive.")
+        msg = "hbar_eff must be positive."
+        raise ValueError(msg)
     if g2 <= 0:
-        raise ValueError("g2 must be positive.")
+        msg = "g2 must be positive."
+        raise ValueError(msg)
     c2_d = casimir_su(d)
     c2_2 = casimir_su(2)
     return sqrt(2.0 * hbar_eff * c2_2 / (c2_d * g2**2))
@@ -120,50 +127,64 @@ def epsilon_c_from_g2(hbar_eff: float, g2: float, d: int) -> float:
 
 def epsilon_d_from_g1(hbar_eff: float, g1: float, qsd_n1: float) -> float:
     if hbar_eff <= 0:
-        raise ValueError("hbar_eff must be positive.")
+        msg = "hbar_eff must be positive."
+        raise ValueError(msg)
     if g1 <= 0:
-        raise ValueError("g1 must be positive.")
+        msg = "g1 must be positive."
+        raise ValueError(msg)
     if qsd_n1 <= 0:
-        raise ValueError("qsd_n1 must be positive.")
+        msg = "qsd_n1 must be positive."
+        raise ValueError(msg)
     return sqrt(hbar_eff * qsd_n1 / (g1**2))
 
 
 def epsilon_f_from_em(m_gev: float, e_em: float) -> float:
     if m_gev <= 0:
-        raise ValueError("m_gev must be positive.")
+        msg = "m_gev must be positive."
+        raise ValueError(msg)
     if e_em <= 0:
-        raise ValueError("e_em must be positive.")
+        msg = "e_em must be positive."
+        raise ValueError(msg)
     return m_gev / (e_em**2)
 
 
 def nu_from_g3(hbar_eff: float, g3: float, d: int, qsd_kvisc2: float) -> float:
     if hbar_eff <= 0:
-        raise ValueError("hbar_eff must be positive.")
+        msg = "hbar_eff must be positive."
+        raise ValueError(msg)
     if g3 <= 0:
-        raise ValueError("g3 must be positive.")
+        msg = "g3 must be positive."
+        raise ValueError(msg)
     if qsd_kvisc2 <= 0:
-        raise ValueError("qsd_kvisc2 must be positive.")
+        msg = "qsd_kvisc2 must be positive."
+        raise ValueError(msg)
     dim_factor = d * (d**2 - 1) / 12.0
     return hbar_eff * g3 / sqrt(dim_factor * qsd_kvisc2)
 
 
 def tau_from_hbar(m_gev: float, epsilon_c: float, hbar_eff: float) -> float:
     if m_gev <= 0:
-        raise ValueError("m_gev must be positive.")
+        msg = "m_gev must be positive."
+        raise ValueError(msg)
     if epsilon_c <= 0:
-        raise ValueError("epsilon_c must be positive.")
+        msg = "epsilon_c must be positive."
+        raise ValueError(msg)
     if hbar_eff <= 0:
-        raise ValueError("hbar_eff must be positive.")
+        msg = "hbar_eff must be positive."
+        raise ValueError(msg)
     return m_gev * (epsilon_c**2) / (2.0 * hbar_eff)
 
 
 def rho_from_g2(m_gev: float, g2: float, hbar_eff: float) -> float:
     if m_gev <= 0:
-        raise ValueError("m_gev must be positive.")
+        msg = "m_gev must be positive."
+        raise ValueError(msg)
     if g2 <= 0:
-        raise ValueError("g2 must be positive.")
+        msg = "g2 must be positive."
+        raise ValueError(msg)
     if hbar_eff <= 0:
-        raise ValueError("hbar_eff must be positive.")
+        msg = "hbar_eff must be positive."
+        raise ValueError(msg)
     return sqrt(2.0 * hbar_eff) * g2 / m_gev
 
 
@@ -248,7 +269,8 @@ def compute_qsd_n1(
     if epsilon_d <= 0 or not indices:
         return None
     if history.pbc and history.bounds is None:
-        raise ValueError("history.bounds required when pbc=True")
+        msg = "history.bounds required when pbc=True"
+        raise ValueError(msg)
 
     total = 0.0
     n_samples = 0
@@ -286,7 +308,8 @@ def compute_qsd_kvisc2(
     if length_scale <= 0 or not indices:
         return None
     if history.pbc and history.bounds is None:
-        raise ValueError("history.bounds required when pbc=True")
+        msg = "history.bounds required when pbc=True"
+        raise ValueError(msg)
 
     total = 0.0
     n_samples = 0
@@ -333,11 +356,7 @@ def compute_stability_metrics(history: RunHistory) -> dict[str, Any]:
         out_of_bounds_frac = float((~inside).float().mean().item())
 
     stable = (
-        not history.terminated_early
-        and finite_x
-        and finite_v
-        and finite_fit
-        and min_alive > 0
+        not history.terminated_early and finite_x and finite_v and finite_fit and min_alive > 0
     )
     issues = []
     if history.terminated_early:
@@ -404,44 +423,36 @@ def build_summary(data: dict[str, Any]) -> str:
     ]
     if data.get("qsd_estimates") is not None:
         qsd = data["qsd_estimates"]
-        lines.extend(
-            [
-                "",
-                "QSD estimates:",
-                f"  qsd_n1 = {_fmt(qsd.get('qsd_n1'))}",
-                f"  qsd_kvisc2 = {_fmt(qsd.get('qsd_kvisc2'))}",
-                f"  samples = {qsd.get('samples')}",
-            ]
-        )
+        lines.extend([
+            "",
+            "QSD estimates:",
+            f"  qsd_n1 = {_fmt(qsd.get('qsd_n1'))}",
+            f"  qsd_kvisc2 = {_fmt(qsd.get('qsd_kvisc2'))}",
+            f"  samples = {qsd.get('samples')}",
+        ])
     else:
-        lines.extend(
-            [
-                "",
-                "QSD inputs:",
-                f"  qsd_n1 = {_fmt(data['inputs']['calibration']['qsd_n1'])}",
-                f"  qsd_kvisc2 = {_fmt(data['inputs']['calibration']['qsd_kvisc2'])}",
-            ]
-        )
+        lines.extend([
+            "",
+            "QSD inputs:",
+            f"  qsd_n1 = {_fmt(data['inputs']['calibration']['qsd_n1'])}",
+            f"  qsd_kvisc2 = {_fmt(data['inputs']['calibration']['qsd_kvisc2'])}",
+        ])
     if data.get("stability") is not None:
         stability = data["stability"]
-        lines.extend(
-            [
-                "",
-                "Stability checks:",
-                f"  stable = {stability.get('stable')}",
-                f"  issues = {', '.join(stability.get('issues', [])) or 'none'}",
-                f"  min_alive = {stability.get('min_alive')}",
-                f"  alive_fraction = {_fmt(stability.get('alive_fraction'), 4)}",
-            ]
-        )
-    lines.extend(
-        [
+        lines.extend([
             "",
-            "Notes:",
-            "  - qsd_n1 and qsd_kvisc2 must be measured from QSD statistics.",
-            "  - epsilon_d depends on qsd_n1, which depends on epsilon_d itself.",
-        ]
-    )
+            "Stability checks:",
+            f"  stable = {stability.get('stable')}",
+            f"  issues = {', '.join(stability.get('issues', [])) or 'none'}",
+            f"  min_alive = {stability.get('min_alive')}",
+            f"  alive_fraction = {_fmt(stability.get('alive_fraction'), 4)}",
+        ])
+    lines.extend([
+        "",
+        "Notes:",
+        "  - qsd_n1 and qsd_kvisc2 must be measured from QSD statistics.",
+        "  - epsilon_d depends on qsd_n1, which depends on epsilon_d itself.",
+    ])
     return "\n".join(lines)
 
 
@@ -518,15 +529,11 @@ def main() -> None:
 
             qsd_n1_iter = qsd_n1
             for _ in range(max(1, args.qsd_iter)):
-                epsilon_d_iter = epsilon_d_from_g1(
-                    inputs.hbar_eff, couplings["g1"], qsd_n1_iter
-                )
+                epsilon_d_iter = epsilon_d_from_g1(inputs.hbar_eff, couplings["g1"], qsd_n1_iter)
                 qsd_n1_new = compute_qsd_n1(history, epsilon_d_iter, lambda_alg, indices)
                 if qsd_n1_new is None:
                     break
-                if abs(qsd_n1_new - qsd_n1_iter) <= args.qsd_rtol * max(
-                    qsd_n1_iter, 1e-12
-                ):
+                if abs(qsd_n1_new - qsd_n1_iter) <= args.qsd_rtol * max(qsd_n1_iter, 1e-12):
                     qsd_n1_iter = qsd_n1_new
                     break
                 qsd_n1_iter = qsd_n1_new

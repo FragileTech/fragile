@@ -180,13 +180,14 @@ $\|\Delta x\|_{g_{t_k}} / \Delta t_k \le V_{\mathrm{alg}}$. Hence
 $c_{\mathrm{eff}}(t_k) \le V_{\mathrm{alg}}$ provides an algorithm-defined speed limit.
 Let $c:=V_{\mathrm{alg}}$.
 
-Define the **geometric path length**
+Define the **geometric path length**. Let $t_-:=\min(t_i,t_j)$ and $t_+:=\max(t_i,t_j)$. Then
 
 $$
-d_{\mathrm{geo}}(e_i, e_j) := \inf_{\gamma} \int_{t_i}^{t_j} \|\dot{x}(t)\|_{g_t}\,dt,
+d_{\mathrm{geo}}(e_i, e_j) := \inf_{\gamma} \int_{t_-}^{t_+} \|\dot{x}(t)\|_{g_t}\,dt,
 $$
-where the infimum is over $C^1$ curves $\gamma:t\mapsto x(t)$ with $\gamma(t_i)=x_i$ and
-$\gamma(t_j)=x_j$; if no such curve exists, set $d_{\mathrm{geo}}=\infty$.
+where the infimum is over $C^1$ curves $\gamma:[t_-,t_+]\to\mathcal{X}$ with
+$\gamma(t_i)=x_i$ and $\gamma(t_j)=x_j$; if no such curve exists, set
+$d_{\mathrm{geo}}=\infty$.
 
 Define the geometric (light-cone) order
 
@@ -627,7 +628,9 @@ $$
 J_{\mathrm{alg}}^{(\varepsilon)} := \{\xi:\tau(\xi)\in[0,\varepsilon],\; |\xi^0|\le T_{\mathrm{loc}},\; \|\xi\|\le R_{\mathrm{loc}}\}
 $$
 be the algorithmic double cone in tangent Minkowski space, with
-$\tau(\xi):=\sqrt{c^2(\xi^0)^2-\|\xi\|^2}$ and $c=V_{\mathrm{alg}}$. Under the rescaling
+$\tau(\xi):=\sqrt{c^2(\xi^0)^2-\|\xi\|^2}$ and $c=V_{\mathrm{alg}}$. For the rescaling step
+we work in units with $c=1$ (equivalently rescale the time coordinate by $c$) so that all
+components of $\xi$ have length units. Then set
 $\xi=\varepsilon \zeta$, the unit cone
 
 $$
@@ -636,7 +639,8 @@ $$
 is fixed once we identify $\varepsilon := R_{\mathrm{loc}}$ (A6), so the moment conditions are
 imposed on $\widehat{J}_{\mathrm{alg}}$ with the scaled kernel $K(\tau(\zeta))$.
 For $\varepsilon$ small enough that $R_{\mathrm{loc}}/c \le t_1-t_0$, we have
-$T_{\mathrm{loc}}=R_{\mathrm{loc}}/c$ and thus $|\zeta^0|\le 1/c$, $\|\zeta\|\le 1$.
+$T_{\mathrm{loc}}=R_{\mathrm{loc}}/c$ and thus $|\zeta^0|\le 1/c$ (i.e., $|\zeta^0|\le 1$ in
+$c=1$ units), $\|\zeta\|\le 1$.
 The moment conditions are:
 
 $$
@@ -792,6 +796,7 @@ $$
 Let $w_{\mathrm{geo}}(e') := \frac{Z(t_{e'})}{r(t_{e'})}
 \exp\!\left(\frac{U_{\mathrm{eff}}(x_{e'}, t_{e'})}{T}\right)$
 be the geometric reweighting from {prf:ref}`def-cst-volume`.
+Let $R:=\int_{t_0}^{t_1} r(t)\,dt$ (for half-open windows, $R=N$).
 Define the **localized** two-sided causal neighborhood
 
 $$
@@ -806,7 +811,7 @@ with edge lengths induced by $g_R$.
 The **Fractal Gas d'Alembertian** acting on $f:E\to\mathbb{R}$ is
 
 $$
-(\Box_{\mathrm{FG}} f)(e) := \frac{1}{m_2\,\varepsilon^{D+2}} \cdot \frac{1}{N}
+(\Box_{\mathrm{FG}} f)(e) := \frac{1}{m_2\,\varepsilon^{D+2}} \cdot \frac{R}{N}
 \sum_{e' \in J_{\mathrm{loc}}^\pm(e)} w_{\mathrm{geo}}(e')\,K\!\left(\frac{\tau(e', e)}{\varepsilon}\right)
 \bigl(f(e')-f(e)\bigr).
 $$
@@ -817,7 +822,8 @@ This operator is covariant under coordinate changes (all quantities are geometri
 :::{prf:definition} Fractal Gas Scalar Action
 :label: def-cst-fractal-action
 
-Let $\mu_{\mathrm{geo}}(e) := \frac{1}{N} w_{\mathrm{geo}}(e)$ be the normalized geometric measure.
+Let $\mu_{\mathrm{geo}}(e) := \frac{R}{N} w_{\mathrm{geo}}(e)$ be the discrete geometric volume weight
+(so $\mu_{\mathrm{geo}}=w_{\mathrm{geo}}$ on half-open windows).
 The **Fractal Gas scalar action** for a field $f$ is
 
 $$
@@ -860,10 +866,10 @@ $$
 By {prf:ref}`def-cst-volume`, the reweighting $w_{\mathrm{geo}}$ converts the QSD marginal to the
 geometric measure $d\mathrm{vol}_g$. Under A3-A4, conditional on each time slice $t$, empirical
 QSD-weighted sums of bounded Lipschitz functions converge in mean and probability to their
-geometric expectations uniformly over the window. Therefore, conditional on $e=(x,t)$, the
-expectation of the discrete sum equals the corresponding geometric integral over
-$J_{\mathrm{loc}}^\pm(e)$ up to $O(N^{-1/2})$ fluctuations. Boundary-layer contributions are
-$O(\varepsilon)$ by {prf:ref}`def-fractal-gas-interior-episodes`.
+geometric expectations uniformly over the window. Therefore, conditional on $e=(x,t)$ (and $N$),
+the prefactor $R/N$ converts the QSD-weighted discrete sum into the corresponding geometric
+integral over $J_{\mathrm{loc}}^\pm(e)$ up to $O(N^{-1/2})$ fluctuations. Boundary-layer
+contributions are $O(\varepsilon)$ by {prf:ref}`def-fractal-gas-interior-episodes`.
 
 **Step 2 (Local expansion).**
 Work in normal coordinates for $g$ at $(x,t)$ and write $\xi^\mu$ for the coordinate difference.
@@ -952,7 +958,8 @@ w_{\mathrm{geo}}(e) := \frac{Z(t_e)}{r(t_e)} \exp\!\left(\frac{U_{\mathrm{eff}}(
 $$
 
 $$
-r_w := \frac{\sum_{i<j} w_{\mathrm{geo}}(e_i) w_{\mathrm{geo}}(e_j)\,\mathbb{1}_{e_i\prec_{\mathrm{LC}} e_j}}
+r_w := \frac{\sum_{i<j} w_{\mathrm{geo}}(e_i) w_{\mathrm{geo}}(e_j)\,
+\mathbb{1}_{e_i\prec_{\mathrm{LC}} e_j \text{ or } e_j\prec_{\mathrm{LC}} e_i}}
 {\sum_{i<j} w_{\mathrm{geo}}(e_i) w_{\mathrm{geo}}(e_j)}.
 $$
 In the uniform limit, $w_{\mathrm{geo}}\equiv 1$ and $r_w=r$.

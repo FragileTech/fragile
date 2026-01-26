@@ -262,9 +262,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--device", default=RunConfig.device)
     parser.add_argument("--dtype", choices=["float32", "float64"], default=RunConfig.dtype)
     parser.add_argument("--alpha", type=float, default=PotentialWellConfig.alpha)
-    parser.add_argument(
-        "--bounds-extent", type=float, default=PotentialWellConfig.bounds_extent
-    )
+    parser.add_argument("--bounds-extent", type=float, default=PotentialWellConfig.bounds_extent)
     parser.add_argument("--gamma", type=float, default=OperatorConfig.gamma)
     parser.add_argument("--beta", type=float, default=OperatorConfig.beta)
     parser.add_argument("--delta-t", type=float, default=OperatorConfig.delta_t)

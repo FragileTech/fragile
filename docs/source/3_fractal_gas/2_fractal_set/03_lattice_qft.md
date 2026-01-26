@@ -19,7 +19,7 @@ For $N = d = 3$ dimensional latent space, this yields the Standard Model gauge g
 
 In the real velocity basis the redundancy is $O(N)$ (or $SO(N)$ if orientation-preserving); the $SU(N)$ statement refers to the complexified viscous-force components discussed in §2.1.
 
-**Fermionic Statistics Emerge from Cloning Antisymmetry**: The cloning score satisfies $S_i(j) = -S_j(i) \cdot (V_j + \varepsilon_{\mathrm{clone}})/(V_i + \varepsilon_{\mathrm{clone}})$, yielding exact antisymmetry when $V_i \approx V_j$. The Algorithmic Exclusion Principle—at most one walker per pair can clone in any direction—is the discrete analog of Pauli exclusion. This is not put in by hand; it emerges from the logic of fitness-based selection.
+**Fermionic Statistics Emerge from Cloning Antisymmetry**: The cloning score satisfies $S_i(j) = -S_j(i) \cdot (V_j + \varepsilon_{\mathrm{clone}})/(V_i + \varepsilon_{\mathrm{clone}})$, yielding exact antisymmetry when $V_i = V_j$ (and approximate antisymmetry when $V_i \approx V_j$). The Algorithmic Exclusion Principle—at most one walker per pair can clone in any direction—is the discrete analog of Pauli exclusion. This is not put in by hand; it emerges from the logic of fitness-based selection.
 
 **Quantum Dynamics from Equilibrium Structure**: At QSD equilibrium, the Fractal Set supports a Euclidean path measure whose Wick rotation yields the temporal operator $D_t$ via OS reconstruction. Grassmann variables model the exclusion structure, yielding a discrete fermionic action that converges to the Dirac equation in the continuum limit. The algorithm discovers quantum field theory.
 
@@ -74,10 +74,15 @@ $$
 \end{pmatrix},
 \quad \theta_{ij}^{(SU(2))} := \frac{S_i(j)}{\hbar_{\text{eff}}},
 $$
-with $P_i^{\mathrm{clone}}(j)$ from the cloning companion kernel ({prf:ref}`def-fractal-set-companion-kernel`). Fixing the overall $U(1)$ phase leaves a local $SU(2)$ basis freedom for each interacting pair. The resulting $SU(2)$ connection transports these doublets between local interaction bases; see {prf:ref}`thm-sm-su2-emergence` for the full construction and gauge-covariant form. This is the algorithmic origin of the weak force.
+with $P_i^{\mathrm{clone}}(j)$ from the cloning companion kernel ({prf:ref}`def-fractal-set-companion-kernel`).
+Here the **modulus** is set by $\sqrt{P_i^{\mathrm{clone}}(j)}$ (companion-selection amplitude), while the
+**phase** is the cloning score $S_i(j)$ (antisymmetric under $i\leftrightarrow j$). Fixing the overall
+$U(1)$ phase leaves a local $SU(2)$ basis freedom for each interacting pair. The resulting $SU(2)$ connection
+transports these doublets between local interaction bases; see {prf:ref}`thm-sm-su2-emergence` for the full
+construction and gauge-covariant form. This is the algorithmic origin of the weak force.
 
 **$SU(N)$ — Viscous Force Index Symmetry**: The viscous force couples an $N$-component **real** internal velocity vector. If the dynamics depends only on inner products (no preferred basis), it is invariant under orthogonal rotations $O(N)$ (or $SO(N)$ for orientation-preserving changes). Complexify the force components with momentum phases,
-$\tilde{c}_i^{(\alpha)} := F_\alpha^{(\text{visc})}(i)\exp(i p_i^{(\alpha)}\ell_0/\hbar_{\text{eff}})$ and $c_i^{(\alpha)} := \tilde{c}_i^{(\alpha)}/\|\tilde{c}_i\|$, with $p_i^{(\alpha)} = m v_i^{(\alpha)}$ and $\ell_0$ a characteristic IG length, and this redundancy lifts to unitary $U(N)$ basis changes; factoring out the overall $U(1)$ phase leaves $SU(N)$ (with permutations as a discrete subgroup). This is the algorithmic origin of the strong force (with $N = d$ for $d$-dimensional latent space). See {prf:ref}`thm-sm-su3-emergence`.
+$\tilde{c}_i^{(\alpha)} := F_\alpha^{(\text{visc})}(i)\exp(i p_i^{(\alpha)}\ell_0/\hbar_{\text{eff}})$ and $c_i^{(\alpha)} := \tilde{c}_i^{(\alpha)}/\|\tilde{c}_i\|$, with $p_i^{(\alpha)} = m v_i^{(\alpha)}$ and $\ell_0$ a characteristic IG length, and this redundancy lifts to unitary $U(N)$ basis changes; imposing the determinant constraint $\det U = 1$ fixes the overall phase and yields $SU(N)$ (with permutations as a discrete subgroup). This is the algorithmic origin of the strong force (with $N = d$ for $d$-dimensional latent space). See {prf:ref}`thm-sm-su3-emergence`.
 
 :::{admonition} Connection to Standard Model
 :class: info
@@ -124,7 +129,7 @@ $$
 U_{\mathrm{time}}(e_i \to e_j) = \exp\left(i q \int_{t_i}^{t_j} A_0 \, dt\right) \in U(1)
 $$
 
-where $A_0$ is the temporal gauge potential in algorithmic time and $\tau_{ij} = \kappa_\tau \Delta t_{ij}$ is the proper-time proxy from {prf:ref}`thm-fractal-faithful-embedding` (for slowly varying $A_0$, this reduces to $e^{i q A_0 \tau_{ij}}$).
+where $A_0$ is the temporal gauge potential in algorithmic time and $\tau_{ij} = \kappa_\tau \Delta t_{ij}$ is the proper-time proxy from {prf:ref}`thm-fractal-faithful-embedding` (for slowly varying $A_0$, this reduces to $e^{i q A_0 \Delta t_{ij}}$).
 
 **IG edges (spacelike):**
 
@@ -244,7 +249,7 @@ transport along the hourglass loop.
 
 Now that we know how to measure the field strength on each plaquette, we need to write down a cost function—an action—that tells us which gauge field configurations are "cheap" and which are "expensive." In the path integral, cheap configurations dominate; expensive ones are suppressed.
 
-Ken Wilson's beautiful insight was this: the simplest gauge-invariant action you can write down is just the sum over all plaquettes of $(1 - \text{Re}\,\text{Tr}\, U[P])$. Why this particular form? Because when the gauge field is weak (the continuum limit), $U[P]$ is close to the identity matrix, and this expression reduces to $(1/4)F_{\mu\nu}F^{\mu\nu}$—the standard Yang-Mills action. But the discrete form is valid even when the field is strong, even when the lattice is coarse. It is non-perturbative by construction.
+Ken Wilson's beautiful insight was this: the simplest gauge-invariant action you can write down is just the sum over all plaquettes of $(1 - \text{Re}\,\text{Tr}\, U[P])$. Why this particular form? Because when the gauge field is weak (the continuum limit), $U[P]$ is close to the identity matrix, and this expression reduces to $(1/4)F_{\mu\nu}^a F^{a\,\mu\nu}$—the standard Yang-Mills action. But the discrete form is valid even when the field is strong, even when the lattice is coarse. It is non-perturbative by construction.
 
 The parameter $\beta = 2N/g^2$ controls the coupling. Large $\beta$ means weak coupling: the plaquettes want to be close to identity, the field wants to be smooth. Small $\beta$ means strong coupling: wild fluctuations are cheap, the field is rough. The physics of confinement lives at strong coupling.
 :::
@@ -263,9 +268,9 @@ where $\beta = 2N/g^2$ is the inverse coupling constant.
 **Continuum limit:** As lattice spacing $a \to 0$:
 
 $$
-S_{\mathrm{Wilson}} \to \frac{1}{4g^2} \int d^4x \, F_{\mu\nu} F^{\mu\nu}
+S_{\mathrm{Wilson}} \to \frac{1}{4} \int d^4x \, F_{\mu\nu}^a F^{a\,\mu\nu}
 $$
-(Yang-Mills action).
+(Yang-Mills action; here $F_{\mu\nu}=\partial_\mu A_\nu-\partial_\nu A_\mu+g[A_\mu,A_\nu]$).
 :::
 
 
@@ -446,7 +451,7 @@ $$
 S_i(j) = -S_j(i) \cdot \frac{V_j + \varepsilon_{\mathrm{clone}}}{V_i + \varepsilon_{\mathrm{clone}}}
 $$
 
-**When $V_i \approx V_j$**: $S_i(j) \approx -S_j(i)$ (exact antisymmetry)
+**When $V_i \approx V_j$**: $S_i(j) \approx -S_j(i)$ (exact when $V_i = V_j$)
 
 This antisymmetry is the **algorithmic signature of fermionic structure**.
 :::
@@ -460,7 +465,10 @@ $$
 \tilde{K}(i, j) := K(i, j) - K(j, i)
 $$
 
-where $K(i,j) \propto \max(0, S_i(j))$ is the cloning probability.
+where $K(i,j)$ is the pairwise cloning **score** (not a probability). We take
+$K(i,j) \propto S_i(j)$ as an unnormalized antisymmetric score kernel; the
+$[0,1]$ renormalization by $p_{\max}$ is used only to decide whether a cloning
+event occurs, not to compare walkers or define phases.
 
 This kernel has the **mathematical structure of fermionic propagators**.
 :::
@@ -552,10 +560,21 @@ $$
 **Transition amplitudes:**
 
 $$
-\mathcal{A}(i \to j) \propto \bar{\psi}_j S_i(j) \psi_i
+\mathcal{A}(i \to j) \propto \bar{\psi}_i S_{ij} \psi_j, \quad S_{ij} := S_i(j)
 $$
 
 The anticommutation **automatically enforces exclusion** via the Grassmann identity $\psi_i^2 = 0$.
+:::
+
+:::{prf:remark} Orientation convention for fermionic bilinears
+:class: info
+
+We use the standard lattice-QFT convention: for an oriented edge $i \to j$, the bilinear is
+$\bar{\psi}_i S_{ij} \psi_j$ (and similarly $\bar{\psi}_i U_{ij} \psi_j$ for gauge transport). An equivalent
+"target-based" convention common in algorithmic discussions places the conjugate field at the target,
+$\bar{\psi}_j S_i(j) \psi_i$. The two are related by reversing edge orientation and (when needed) adjointing the
+link variable; all gauge-invariant observables and antisymmetry statements agree. We adopt the standard convention
+for direct comparison with lattice QFT.
 :::
 
 ### 4.4. Discrete Fermionic Action
@@ -592,7 +611,7 @@ $$
 **Temporal component** (CST edges):
 
 $$
-S_{\mathrm{fermion}}^{\mathrm{temporal}} = \sum_{(i \to j) \in E_{\mathrm{CST}}} \bar{\psi}_j \frac{\psi_j - U_{ij} \psi_i}{\Delta t_{ij}}
+S_{\mathrm{fermion}}^{\mathrm{temporal}} = -\sum_{(i \to j) \in E_{\mathrm{CST}}} \bar{\psi}_i \frac{\psi_j - U_{ij} \psi_i}{\Delta t_{ij}}
 $$
 
 where $U_{ij} \in U(1)$ is the parallel transport operator along the CST edge and $\Delta t_{ij} = t_j - t_i$.
@@ -621,7 +640,7 @@ This is one of those results that makes you sit up and pay attention. The algori
 For CST edge $(e_i \to e_j)$ with $t_j > t_i$, the temporal fermionic operator is the **covariant discrete derivative**:
 
 $$
-(D_t \psi)_j := \frac{\psi_j - U_{ij}\psi_i}{\Delta t_{ij}}, \quad \Delta t_{ij} := t_j - t_i
+(D_t \psi)_i := \frac{\psi_j - U_{ij}\psi_i}{\Delta t_{ij}}, \quad \Delta t_{ij} := t_j - t_i
 $$
 
 where the **parallel transport operator** is:
@@ -660,7 +679,7 @@ Working in Grothendieck universe $\mathcal{U}$, the temporal operator constructi
 
 5. **Unitary transport**: $U_{ij} = e^{i\theta} \in U(1) \subset \mathbb{C}$ with $|U_{ij}| = 1$ (unit circle).
 
-6. **Discrete derivative**: $(D_t \psi)_j = (\psi_j - U_{ij}\psi_i)/\Delta t_{ij}$ is a linear operator on Grassmann algebra $\Lambda^*(\mathbb{C}^M)$.
+6. **Discrete derivative**: $(D_t \psi)_i = (\psi_j - U_{ij}\psi_i)/\Delta t_{ij}$ is a linear operator on Grassmann algebra $\Lambda^*(\mathbb{C}^M)$.
 
 All constructions are well-defined in ZFC + standard measure theory and functional analysis. $\square$
 :::
@@ -800,12 +819,31 @@ $$
 (\Delta_{\mathcal{F}} \phi)(e) := \sum_{e' \sim e} w_{ee'} (\phi(e') - \phi(e))
 $$
 where $e'\sim e$ denotes IG neighbors on the same time slice and
-$w_{ee'} := K_\varepsilon(d_{g_R}(x_e, x_{e'})^2)$ are kernel weights encoding local geometry (e.g.,
-compactly supported $C^2$ kernels). The $d_{g_R}^{-2}$ form is a shorthand for this localized scaling.
+$w_{ee'} := \frac{1}{N\,\varepsilon^{d+2}}\,k\!\left(\frac{d_{g_R}(x_e, x_{e'})^2}{\varepsilon^2}\right)$
+are kernel weights encoding local geometry (with $k$ compactly supported and $C^2$; $N$ is the
+number of nodes on the slice). This makes the $\varepsilon$-scaling explicit; the classical
+normalization can be absorbed into $w_{ee'}$ as stated below.
 
-**Kernel scaling**: For rigorous convergence {cite}`belkin2008foundation`, one typically uses localized kernel weights
-with bandwidth $\varepsilon_N \to 0$ and $N \varepsilon_N^{d/2} \to \infty$. The $d_{g_R}^{-2}$ form here is a shorthand
-for such localized scaling on the Fractal Set.
+**Kernel scaling (classical route)**: For rigorous convergence under standard sampling,
+localized kernel weights use bandwidth $\varepsilon_N \to 0$ with
+$N \varepsilon_N^{d/2+2} \to \infty$ (see {cite}`belkin2008foundation` and references therein),
+together with the usual normalization absorbed into $w_{ee'}$.
+
+:::{dropdown} 📖 Hypostructure Route (Framework-Native, Volume 2)
+:icon: book
+
+An alternative, fully rigorous proof route is provided by the Volume 2 hypostructure.
+Under the certified permits for the Fractal Gas mean-field limit and reconstruction,
+the continuum operator is obtained by the metatheorem chain:
+Expansion Adjunction {prf:ref}`thm-expansion-adjunction`,
+emergent-continuum {prf:ref}`mt:emergent-continuum`,
+continuum injection {prf:ref}`mt:continuum-injection`,
+and Cheeger gradient {prf:ref}`mt:cheeger-gradient`.
+The required mixing/limit hypotheses are discharged by the QSD/LSI apparatus in the
+appendices (e.g., {doc}`/3_fractal_gas/appendices/07_discrete_qsd`,
+{doc}`/3_fractal_gas/appendices/09_propagation_chaos`).
+This establishes the continuum Laplacian without invoking classical kernel scaling.
+:::
 
 **Convergence (density-weighted)**: Under QSD sampling and the emergent-continuum permits, the unnormalized
 graph Laplacian converges in expectation to the weighted Laplacian
@@ -949,7 +987,7 @@ This is either a very remarkable coincidence, or we have stumbled onto something
 | $SU(2)$ gauge field | Defined | From cloning companion selection |
 | $SU(N)$ gauge field | Defined | From viscous force coupling |
 | Wilson loops | Defined | Gauge-invariant observables |
-| Fermionic structure | Derived | From cloning antisymmetry (exact when $V_i \approx V_j$) |
+| Fermionic structure | Derived | From cloning antisymmetry (exact when $V_i = V_j$) |
 | Temporal operator $D_t$ | Proven | Via QSD Euclidean measure + OS reconstruction (reflection positivity) |
 | Dirac limit | Proven | Via Clifford algebra isomorphism ({prf:ref}`thm-sm-dirac-isomorphism`) |
 | Scalar fields | Defined | Graph Laplacian (density-aware limit proven here) |

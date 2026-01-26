@@ -572,7 +572,9 @@ class EuclideanGas(PanelModel):
                     "pbc": self.pbc,
                 },
                 "companion_selection": {
-                    "method": self.companion_selection.method if self.companion_selection else None,
+                    "method": self.companion_selection.method
+                    if self.companion_selection
+                    else None,
                     "epsilon": self.companion_selection.epsilon
                     if self.companion_selection
                     else None,

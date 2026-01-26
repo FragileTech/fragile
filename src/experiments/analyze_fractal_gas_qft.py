@@ -41,6 +41,7 @@ from fragile.fractalai.qft.particle_observables import (
     select_mass_plateau,
 )
 
+
 try:
     import matplotlib
 
@@ -106,7 +107,7 @@ class AnalysisConfig:
 
 
 def _json_safe(value: Any) -> Any:
-    if isinstance(value, (np.ndarray, torch.Tensor)):
+    if isinstance(value, np.ndarray | torch.Tensor):
         if value.ndim == 0:
             return value.item()
         return value.tolist()
@@ -303,8 +304,7 @@ def _compute_local_fields(
         - kinetic: 0.5||v||² - kinetic energy
         - reward_raw: r(x) = -U(x) - raw rewards (already local)
     """
-    N = positions.shape[0]
-    device = positions.device
+    positions.shape[0]
 
     # 1. Local density field ρ(x_i) - kernel density estimate
     # ρ_i = Σ_j K(x_i, x_j) where K is Gaussian kernel
@@ -347,9 +347,7 @@ def _compute_local_fields(
     }
 
 
-def _fit_exponential_decay(
-    r: np.ndarray, C: np.ndarray, counts: np.ndarray
-) -> dict[str, float]:
+def _fit_exponential_decay(r: np.ndarray, C: np.ndarray, counts: np.ndarray) -> dict[str, float]:
     valid = (counts > 0) & (C > 0)
     if valid.sum() < 2:
         return {"C0": 0.0, "xi": 0.0, "r_squared": 0.0}
@@ -1306,7 +1304,7 @@ def _compute_particle_observables(
     arrays: dict[str, np.ndarray] = {}
     metrics: dict[str, Any] = {
         "operators": {},
-        "errors": errors if errors else None,
+        "errors": errors or None,
         "neighbor_method": neighbor_method,
         "knn_k": int(knn_k),
         "knn_sample": int(knn_sample) if knn_sample is not None else None,
@@ -1386,7 +1384,7 @@ def _compute_particle_observables(
                 "fit": fit,
             }
 
-    metrics["errors"] = errors if errors else None
+    metrics["errors"] = errors or None
     return metrics, arrays
 
 
@@ -1544,71 +1542,88 @@ def main() -> None:
         string_tension_bins=args.string_tension_bins,
     )
     if analysis_cfg.h_eff <= 0:
-        raise ValueError("h_eff must be positive")
+        msg = "h_eff must be positive"
+        raise ValueError(msg)
     if analysis_cfg.correlation_r_max <= 0:
-        raise ValueError("correlation_r_max must be positive")
+        msg = "correlation_r_max must be positive"
+        raise ValueError(msg)
     if analysis_cfg.correlation_bins <= 0:
-        raise ValueError("correlation_bins must be positive")
+        msg = "correlation_bins must be positive"
+        raise ValueError(msg)
     if analysis_cfg.gradient_neighbors <= 0:
-        raise ValueError("gradient_neighbors must be positive")
+        msg = "gradient_neighbors must be positive"
+        raise ValueError(msg)
     if analysis_cfg.fractal_set_stride <= 0:
-        raise ValueError("fractal_set_stride must be positive")
+        msg = "fractal_set_stride must be positive"
+        raise ValueError(msg)
     if analysis_cfg.density_sigma <= 0:
-        raise ValueError("density_sigma must be positive")
+        msg = "density_sigma must be positive"
+        raise ValueError(msg)
     if analysis_cfg.compute_particles:
         if analysis_cfg.particle_mass <= 0:
-            raise ValueError("particle_mass must be positive")
+            msg = "particle_mass must be positive"
+            raise ValueError(msg)
         if analysis_cfg.particle_ell0 is not None and analysis_cfg.particle_ell0 <= 0:
-            raise ValueError("particle_ell0 must be positive when set")
+            msg = "particle_ell0 must be positive when set"
+            raise ValueError(msg)
         if analysis_cfg.particle_fit_start < 0:
-            raise ValueError("particle_fit_start must be >= 0")
+            msg = "particle_fit_start must be >= 0"
+            raise ValueError(msg)
         if analysis_cfg.particle_fit_stop < analysis_cfg.particle_fit_start:
-            raise ValueError("particle_fit_stop must be >= particle_fit_start")
+            msg = "particle_fit_stop must be >= particle_fit_start"
+            raise ValueError(msg)
         if analysis_cfg.particle_fit_mode not in {"window", "plateau", "auto"}:
-            raise ValueError("particle_fit_mode must be 'window', 'plateau', or 'auto'")
+            msg = "particle_fit_mode must be 'window', 'plateau', or 'auto'"
+            raise ValueError(msg)
         if analysis_cfg.particle_plateau_min_points <= 0:
-            raise ValueError("particle_plateau_min_points must be positive")
+            msg = "particle_plateau_min_points must be positive"
+            raise ValueError(msg)
         if (
             analysis_cfg.particle_plateau_max_points is not None
             and analysis_cfg.particle_plateau_max_points <= 0
         ):
-            raise ValueError("particle_plateau_max_points must be positive when set")
+            msg = "particle_plateau_max_points must be positive when set"
+            raise ValueError(msg)
         if (
             analysis_cfg.particle_plateau_max_points is not None
-            and analysis_cfg.particle_plateau_max_points
-            < analysis_cfg.particle_plateau_min_points
+            and analysis_cfg.particle_plateau_max_points < analysis_cfg.particle_plateau_min_points
         ):
-            raise ValueError(
-                "particle_plateau_max_points must be >= particle_plateau_min_points"
-            )
+            msg = "particle_plateau_max_points must be >= particle_plateau_min_points"
+            raise ValueError(msg)
         if (
             analysis_cfg.particle_plateau_max_cv is not None
             and analysis_cfg.particle_plateau_max_cv <= 0
         ):
-            raise ValueError("particle_plateau_max_cv must be positive when set")
+            msg = "particle_plateau_max_cv must be positive when set"
+            raise ValueError(msg)
         if analysis_cfg.particle_max_lag is not None and analysis_cfg.particle_max_lag <= 0:
-            raise ValueError("particle_max_lag must be positive when set")
+            msg = "particle_max_lag must be positive when set"
+            raise ValueError(msg)
         if analysis_cfg.particle_neighbor_method not in {"companion", "knn"}:
-            raise ValueError("particle_neighbor_method must be 'companion' or 'knn'")
+            msg = "particle_neighbor_method must be 'companion' or 'knn'"
+            raise ValueError(msg)
         if analysis_cfg.particle_knn_k <= 0:
-            raise ValueError("particle_knn_k must be positive")
-        if (
-            analysis_cfg.particle_knn_sample is not None
-            and analysis_cfg.particle_knn_sample <= 0
-        ):
-            raise ValueError("particle_knn_sample must be positive when set")
+            msg = "particle_knn_k must be positive"
+            raise ValueError(msg)
+        if analysis_cfg.particle_knn_sample is not None and analysis_cfg.particle_knn_sample <= 0:
+            msg = "particle_knn_sample must be positive when set"
+            raise ValueError(msg)
         if analysis_cfg.particle_meson_reduce not in {"mean", "first"}:
-            raise ValueError("particle_meson_reduce must be 'mean' or 'first'")
+            msg = "particle_meson_reduce must be 'mean' or 'first'"
+            raise ValueError(msg)
         if (
             analysis_cfg.particle_baryon_pairs is not None
             and analysis_cfg.particle_baryon_pairs <= 0
         ):
-            raise ValueError("particle_baryon_pairs must be positive when set")
+            msg = "particle_baryon_pairs must be positive when set"
+            raise ValueError(msg)
     if analysis_cfg.compute_string_tension:
         if analysis_cfg.string_tension_max_triangles <= 0:
-            raise ValueError("string_tension_max_triangles must be positive")
+            msg = "string_tension_max_triangles must be positive"
+            raise ValueError(msg)
         if analysis_cfg.string_tension_bins <= 1:
-            raise ValueError("string_tension_bins must be > 1")
+            msg = "string_tension_bins must be > 1"
+            raise ValueError(msg)
 
     output_dir = Path(args.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -1728,7 +1743,9 @@ def main() -> None:
         # Choose correlation function based on --use-connected flag
         bin_func = _bin_by_distance_connected if analysis_cfg.use_connected else _bin_by_distance
         # Use appropriate fitting function for connected correlators
-        fit_func = _fit_connected_correlator if analysis_cfg.use_connected else _fit_exponential_decay
+        fit_func = (
+            _fit_connected_correlator if analysis_cfg.use_connected else _fit_exponential_decay
+        )
 
         for field_name, field_values in local_fields.items():
             bins, corr, counts = bin_func(
@@ -1759,12 +1776,8 @@ def main() -> None:
 
     fitness_stats = _fitness_stats(fields["fitness"], alive)
 
-    d_grad = _compute_field_gradients(
-        x_pre, d_prime, alive, analysis_cfg.gradient_neighbors
-    )
-    r_grad = _compute_field_gradients(
-        x_pre, r_prime, alive, analysis_cfg.gradient_neighbors
-    )
+    d_grad = _compute_field_gradients(x_pre, d_prime, alive, analysis_cfg.gradient_neighbors)
+    r_grad = _compute_field_gradients(x_pre, r_prime, alive, analysis_cfg.gradient_neighbors)
     d_grad_mean, d_grad_std = _masked_mean_std(d_grad, alive)
     r_grad_mean, r_grad_std = _masked_mean_std(r_grad, alive)
 
@@ -2026,7 +2039,7 @@ def main() -> None:
             "phase_histograms": str(phase_plot) if phase_plot else None,
             "wilson_histogram": str(wilson_hist_plot) if wilson_hist_plot else None,
             "wilson_timeseries": str(wilson_time_plot) if wilson_time_plot else None,
-            "local_fields": local_field_plots if local_field_plots else None,
+            "local_fields": local_field_plots or None,
         }
 
     _write_progress(progress_path, "plots", {"plots": plot_paths})
@@ -2155,7 +2168,9 @@ def main() -> None:
                 r_zero = fit.get("r_zero", 0.0)
                 n_pos = fit.get("n_positive", 0)
                 n_neg = fit.get("n_negative", 0)
-                print(f"  {field_name:<18} | {xi:>9.4f} | {r2:>8.4f} | {r_zero:>8.4f} | {n_pos}/{n_neg}")
+                print(
+                    f"  {field_name:<18} | {xi:>9.4f} | {r2:>8.4f} | {r_zero:>8.4f} | {n_pos}/{n_neg}"
+                )
         else:
             print("\n  Field               | ξ (corr. length) | R² (fit quality)")
             print("  --------------------|------------------|------------------")

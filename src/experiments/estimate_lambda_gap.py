@@ -22,6 +22,7 @@ import torch
 
 from fragile.fractalai.core.history import RunHistory
 
+
 try:
     from fragile.fractalai.core.fractal_set import FractalSet
     from fragile.fractalai.geometry.curvature import compute_graph_laplacian_eigenvalues
@@ -42,7 +43,7 @@ class LambdaGapConfig:
 
 
 def _json_safe(value: Any) -> Any:
-    if isinstance(value, (np.ndarray, torch.Tensor)):
+    if isinstance(value, np.ndarray | torch.Tensor):
         if value.ndim == 0:
             return value.item()
         return value.tolist()
@@ -94,7 +95,9 @@ def _select_timesteps(n_recorded: int, max_timesteps: int | None) -> list[int]:
     return sorted(set(indices.tolist()))
 
 
-def _build_neighbor_lists(fractal_set: FractalSet, timestep: int, undirected: bool) -> dict[int, list[int]]:
+def _build_neighbor_lists(
+    fractal_set: FractalSet, timestep: int, undirected: bool
+) -> dict[int, list[int]]:
     alive_walkers = fractal_set.get_alive_walkers(timestep)
     alive_set = set(alive_walkers)
     neighbor_lists: dict[int, set[int]] = {walker_id: set() for walker_id in alive_walkers}
@@ -193,9 +196,13 @@ def _default_analysis_id(history_path: Path) -> str:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Estimate lambda_gap from FractalSet spectral gaps.")
+    parser = argparse.ArgumentParser(
+        description="Estimate lambda_gap from FractalSet spectral gaps."
+    )
     parser.add_argument("--history-path", type=Path, required=True)
-    parser.add_argument("--output-dir", type=Path, default=Path("outputs/fractal_gas_potential_well_analysis"))
+    parser.add_argument(
+        "--output-dir", type=Path, default=Path("outputs/fractal_gas_potential_well_analysis")
+    )
     parser.add_argument("--analysis-id", type=str, default=None)
     parser.add_argument("--fractal-set-stride", type=int, default=20)
     parser.add_argument("--max-timesteps", type=int, default=50)

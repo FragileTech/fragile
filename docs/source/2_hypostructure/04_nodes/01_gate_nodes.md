@@ -932,7 +932,7 @@ The boundary-to-volume ratio tells us whether a region can legitimately be treat
 Cryptographic functions (AES, SHA-256, RSA) are **intentionally designed as expander graphs**:
 - **Goal:** Maximize confusion and diffusion (structured input → indistinguishable from random noise)
 - **Geometry:** Optimal expander with massive spectral gap + exponential volume growth
-- **Sieve Reaction:** Node 7c detects exponential growth + $\delta \to \infty$ → REJECT as Mode D.D (Dispersion)
+- **Sieve Reaction:** The Geometric Structure License (TitsCheck) detects exponential growth + $\delta \to \infty$ → REJECT as Mode D.D (Dispersion)
 
 **But this is correct!** Cryptography **should not be learnable via continuous intuition**. The Sieve is telling the agent: *"You cannot use geometric reasoning here. You must use symbolic abstraction."*
 
@@ -1276,16 +1276,16 @@ The beautiful thing is that all of these cases, which seem so different physical
 
 **NO certificate** $K_{G_{\mathrm{act}}}^- = (\text{asymmetry certificate})$.
 
-**YES routing**: CheckSC (Node 7c) --- symmetry breaking path
+**YES routing**: CheckSSB (Node 7c) --- symmetry breaking path
 
 **NO routing**: CheckTB (Node 7d) --- tunneling path
 
 :::
 
-:::{prf:definition} Node 7c: CheckSC (Restoration)
-:label: def-node-checksc
+:::{prf:definition} Node 7c: CheckSSB (Restoration)
+:label: def-node-checkssb
 
-**Interface ID:** $\mathrm{SC}_{\partial c}$
+**Interface ID:** $\mathrm{SC}_{\mathrm{SSB}}$
 
 **Predicate** $P_{7c}$: Parameters remain stable under symmetry breaking:
 
@@ -1296,9 +1296,11 @@ $$
 
 where $\theta_{\text{broken}}$ are the parameters in the broken-symmetry phase.
 
-**YES certificate** $K_{\mathrm{SC}_{\partial c}}^+ = (\theta_{\text{broken}}, C_{\text{SSB}}, \text{stability proof})$. Enables ActionSSB.
+This predicate is distinct from Node 5 ($\mathrm{SC}_{\partial c}$): it compares broken-phase parameters to the original baseline, not global drift along the unbroken flow.
 
-**NO certificate** $K_{\mathrm{SC}_{\partial c}}^- = (\text{parameter runaway witness})$. Routes to Mode S.C (Vacuum Decay).
+**YES certificate** $K_{\mathrm{SC}_{\mathrm{SSB}}}^+ = (\theta_{\text{broken}}, C_{\text{SSB}}, \text{stability proof})$. Enables ActionSSB.
+
+**NO certificate** $K_{\mathrm{SC}_{\mathrm{SSB}}}^- = (\text{parameter runaway witness})$. Routes to Mode S.C (Vacuum Decay).
 
 **YES routing**: ActionSSB $\to$ TopoCheck
 

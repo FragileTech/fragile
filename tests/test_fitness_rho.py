@@ -72,7 +72,7 @@ def test_patched_standardization_local_fallback_to_global():
     positions = torch.tensor([[0.0], [1.0], [2.0]])
     velocities = torch.zeros_like(positions)
 
-    z_global, mu_global, sigma_global = patched_standardization(
+    _z_global, mu_global, sigma_global = patched_standardization(
         values, alive, return_statistics=True
     )
     z_local, mu_local, sigma_local = patched_standardization(

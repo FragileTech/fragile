@@ -1,0 +1,20 @@
+{
+  "security": {
+    "enablePermanentToolApproval": true,
+    "environmentVariableRedaction": {
+      "enabled": true
+    },
+    "folderTrust": {
+      "enabled": true
+    }
+  },
+  "tools": {
+    "autoAccept": false,
+    "shell": {
+      "showColor": true
+    }
+  },
+  "experimental": {
+    "skills": true
+  }
+}
