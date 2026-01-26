@@ -35,7 +35,7 @@ In standard RL, observations and actions are inputs and outputs. Here they are b
 :::
 
 :::{div} feynman-prose
-We have defined the internal dynamics of the agent (the interior) as a Jump-Diffusion process on a Riemannian fiber bundle (Sections 20-22). We now rigorously define its coupling to the external world.
+We have defined the internal dynamics of the agent (the interior) as a Jump-Diffusion process on a Riemannian fiber bundle ({ref}`Sections 20-22 <sec-wasserstein-fisher-rao-geometry-unified-transport-on-hybrid-state-spaces>`). We now rigorously define its coupling to the external world.
 
 The interface exchanges information with the environment via two asymmetric boundary conditions: **Dirichlet** (position-clamping for sensors) and **Neumann** (flux-clamping for motors).
 
@@ -600,7 +600,7 @@ which is:
 - **Zero** during dreaming (closed system)
 - **Negative** during pure actuation (net information outflow to motors)
 
-**Cross-references:** {ref}`Section 20.2 <sec-the-wfr-metric>` (WFR Action), {ref}`Section 20.6 <sec-the-unified-world-model>` (WFR World Model), Section 2.11.4 (Observation Inflow).
+**Cross-references:** {ref}`Section 20.2 <sec-the-wfr-metric>` (WFR Action), {ref}`Section 20.6 <sec-the-unified-world-model>` (WFR World Model), {ref}`Section 2.11.4 <sec-the-interface-and-observation-inflow>` (Observation Inflow).
 
 :::
 (sec-the-context-space-unified-definition)=

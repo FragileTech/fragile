@@ -584,7 +584,7 @@ This section provides a consolidated reference for the key symbols introduced ac
      |                                                              |
      | $\rho_I$, $C_\partial$, $T_{ij}$                            |
      v                                                              |
-{ref}`Section 19 <sec-conclusion>` (Conclusion) ←───────────────────────────────────────┐  |
+Section 19 (Conclusion) ←───────────────────────────────────────────────────────┐  |
      |                                                           |  |
      v                                                           |  |
 {ref}`Section 20 <sec-wasserstein-fisher-rao-geometry-unified-transport-on-hybrid-state-spaces>` (WFR Geometry) ──────────────────────────────────┐   |  |
