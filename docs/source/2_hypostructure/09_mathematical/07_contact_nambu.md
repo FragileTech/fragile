@@ -11,7 +11,7 @@
 
 ## Motivation
 
-Standard Hamiltonian mechanics is conservative: energy is preserved, phase space volume is preserved (Liouville). But physical systems dissipate. The framework uses underdamped Langevin dynamics ({ref}`Section 22 <sec-the-equations-of-motion-geodesic-jump-diffusion>`, Definition {prf:ref}`def-bulk-drift-continuous-flow`) with explicit friction $-\gamma p$. 
+Standard Hamiltonian mechanics is conservative: energy is preserved, phase space volume is preserved (Liouville). But physical systems dissipate. The framework uses underdamped Langevin dynamics ({ref}`sec-the-equations-of-motion-geodesic-jump-diffusion`, Definition {prf:ref}`def-bulk-drift-continuous-flow`) with explicit friction $-\gamma p$. 
 
 **Question:** Where does the friction come from geometrically?
 

@@ -1263,7 +1263,7 @@ This serves as a "header file" for instantiation - users can read the table and 
 
 **Statement:** To instantiate a Hypostructure for a system $S$ of type $T$ is to provide:
 1. An ambient $(\infty,1)$-topos $\mathcal{E}$ (or a 1-topos/category with sufficient structure)
-2. Concrete implementations $(\mathcal{X}, \Phi, \mathfrak{D}, G)$ satisfying the specifications of {ref}`Section 19.A <sec-kernel-objects>`
+2. Concrete implementations $(\mathcal{X}, \Phi, \mathfrak{D}, G)$ satisfying the specifications of {ref}`sec-kernel-objects`
 3. For each relevant interface $I \in \{\text{Reg}^0, \text{D}^0, \ldots, \text{Lock}^0\}$:
    - The required structure $\mathcal{D}_I$ from the interface definition
    - A computable predicate $\mathcal{P}_I$ evaluating to $\{\text{YES}, \text{NO}, \text{Blocked}\}$ with typed NO certificates ($K^{\mathrm{wit}}$ or $K^{\mathrm{inc}}$)
@@ -1288,7 +1288,7 @@ where $\text{Result} \in \{\text{GlobalRegularity}, \text{Mode}_{1..15}, \text{F
 :::{prf:theorem} [FACT-MinInst] Minimal Instantiation
 :label: mt-fact-min-inst
 
-**Statement:** To instantiate a Hypostructure for system $S$ using the **thin object** formalism ({ref}`Section 19.C <sec-thin-kernel-objects>`), the user provides only:
+**Statement:** To instantiate a Hypostructure for system $S$ using the **thin object** formalism ({ref}`sec-thin-kernel-objects`), the user provides only:
 
 1. **The Space** $\mathcal{X}$ and its geometry (metric $d$, measure $\mu$)
 2. **The Energy** $\Phi$ and its scaling $\alpha$
@@ -1361,7 +1361,7 @@ This is what makes the framework actually usable in practice.
 
 :::
 
-**Design Principle:** The full Kernel Objects of {ref}`Section 19.A <sec-kernel-objects>` contain both *structural data* (user-provided) and *algorithmic machinery* (Framework-derived). This section extracts the **minimal user burden** - the "thin" objects that users must specify. Everything else is automatically constructed by the Sieve via the Universal Singularity Modules ({prf:ref}`mt-resolve-profile`, {prf:ref}`mt-resolve-admissibility`, {prf:ref}`mt-act-surgery`).
+**Design Principle:** The full Kernel Objects of {ref}`sec-kernel-objects` contain both *structural data* (user-provided) and *algorithmic machinery* (Framework-derived). This section extracts the **minimal user burden** - the "thin" objects that users must specify. Everything else is automatically constructed by the Sieve via the Universal Singularity Modules ({prf:ref}`mt-resolve-profile`, {prf:ref}`mt-resolve-admissibility`, {prf:ref}`mt-act-surgery`).
 
 :::{prf:definition} User vs Framework Responsibility
 :label: def-user-framework-split
@@ -1506,7 +1506,7 @@ To instantiate a Hypostructure, the user provides exactly **10 primitive compone
 | $\mathfrak{D}^{\text{thin}}$ | $R, \beta$ | "How fast does energy dissipate?" |
 | $G^{\text{thin}}$ | Grp, $\rho, \mathcal{S}$ | "What symmetries does the system have?" |
 
-The **full Kernel Objects** of {ref}`Section 19.A <sec-kernel-objects>` are then constructed automatically:
+The **full Kernel Objects** of {ref}`sec-kernel-objects` are then constructed automatically:
 
 $$\mathcal{H}^{\text{full}} = \text{Expand}(\mathcal{X}^{\text{thin}}, \Phi^{\text{thin}}, \mathfrak{D}^{\text{thin}}, G^{\text{thin}})$$
 
