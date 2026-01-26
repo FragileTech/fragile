@@ -1584,7 +1584,7 @@ The theory is rigid. Given the axioms (bounded, distributed, reward-seeking, cau
 |:-------|:-----|:----------|:----------------|
 | I. Gauge | $-\frac{1}{4}F_{\mu\nu}F^{\mu\nu}$ | Strategic inconsistency | Theorem {prf:ref}`thm-three-cognitive-forces` |
 | II. Inference | $\bar{\Psi}iD_\mu\gamma^\mu\Psi$ | Belief propagation cost | Axiom {prf:ref}`ax-cognitive-dirac-equation` |
-| III. Scalar | $|D_\mu\phi|^2 - V(\phi)$ | Complexity vs Information | Theorem {prf:ref}`thm-complexity-potential` |
+| III. Scalar | $\lvert D_\mu\phi\rvert^2 - V(\phi)$ | Complexity vs Information | Theorem {prf:ref}`thm-complexity-potential` |
 | IV. Yukawa | $Y\bar{\Psi}_L\phi\Psi_R$ | Belief-Action coupling | Theorem {prf:ref}`thm-cognitive-mass` |
 | V. External | $\bar{\Psi}\gamma^\mu A^{\text{ext}}_\mu\Psi$ | Value-seeking drive | Theorem {prf:ref}`thm-recovery-wfr-drift` |
 
