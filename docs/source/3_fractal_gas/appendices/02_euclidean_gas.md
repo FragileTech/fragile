@@ -428,7 +428,7 @@ For any constant $C>0$ define $\psi_C: \mathbb R^d\to B(0,C)$ by $\psi_C(z):=C\,
 2. $\psi_C\in C^{\infty}(\mathbb R^d\setminus\{0\})$.
 3. $\psi_C(\mathbb R^d)\subset B(0,C)$.
 
-```{dropdown} Proof
+::::{dropdown} Proof
 :::{prf:proof}
 1. *Lipschitz continuity.* The Jacobian at $z\neq 0$ is
 
@@ -443,8 +443,7 @@ For any constant $C>0$ define $\psi_C: \mathbb R^d\to B(0,C)$ by $\psi_C(z):=C\,
 3. *Image contained in the open ball.* For any $z\in\mathbb R^d$, $\|\psi_C(z)\| = C\,\|z\|/(C+\|z\|) < C$, so $\psi_C(z)$ lies in $B(0,C)$.
 
 All three properties follow immediately.
-```
-:::
+::::
 
 Both the positional squashing map $\psi_x$ and the velocity squashing map $\psi_v$ are obtained by setting $C=R_x$ and $C=V_{\mathrm{alg}}$, respectively, so they inherit the 1-Lipschitz and smoothness properties of Lemma {prf:ref}`lem-squashing-properties-generic`.
 
@@ -460,7 +459,7 @@ $$
 
 That is, $\varphi$ is $1$-Lipschitz when both domain and codomain carry the Sasaki metric with the same weight $\lambda_v$.
 
-```{dropdown} Proof
+::::{dropdown} Proof
 :::{prf:proof}
 Because $\psi_x$ and $\psi_v$ are $1$-Lipschitz (Lemma {prf:ref}`lem-squashing-properties-generic`),
 
@@ -481,8 +480,7 @@ d_{\mathcal Y}^{\mathrm{Sasaki}}\bigl(\varphi(x,v),\varphi(x',v')\bigr)^2
 $$
 
 Taking square roots gives the stated bound.
-```
-:::
+::::
 
 The bound exhibits at most quadratic growth in $\|x\|$ and $\|v\|$, meeting the controlled-moment requirement for the non-compact kinetic axiom.
 
@@ -574,7 +572,7 @@ $$
 
 Referenced by {prf:ref}`lem-euclidean-boundary-holder`.
 
-```{dropdown} Proof
+::::{dropdown} Proof
 :::{prf:proof}
 Fix $(x,v),(x',v')\in\mathcal X\times\mathcal V_{\mathrm{alg}}$ and $\xi_v,\xi_x\in\mathbb R^d$. Define the uncapped velocities
 
@@ -612,8 +610,7 @@ $$
 $$
 
 The constant in parentheses is $L_{\mathrm{flow}}$, completing the proof.
-```
-:::
+::::
 
 :::{prf:lemma} Hölder continuity of the death probability
 :label: lem-euclidean-boundary-holder
@@ -628,7 +625,7 @@ This establishes Hölder continuity with exponent $\alpha_B^{\mathrm{Sasaki}} = 
 
 Referenced by {prf:ref}`thm-euclidean-feller`.
 
-```{dropdown} Proof
+::::{dropdown} Proof
 :::{prf:proof}
 Fix $(x,v),(x',v')\in\mathcal X\times\mathcal V_{\mathrm{alg}}$ and set $\Delta:=d_{\mathcal Y}^{\mathrm{Sasaki}}((x,v),(x',v'))$. Let $C$ be any compact subset of $\mathbb R^d$ containing $x$ and $x'$, so that the local constants from Lemma {prf:ref}`lem-euclidean-geometric-consistency` apply uniformly on $C$. For independent $\xi_v,\xi_x\sim\mathcal N(0,I_d)$ define
 
@@ -739,8 +736,7 @@ L_{\mathrm{death}}^{\mathrm{Sasaki}}(C):=2\big(p_{\mathrm{aff}}+\rho_*(C)q_{\mat
 
 $$
 
-```
-:::
+::::
 3. **Finite algorithmic diameter.** Section 3.3 built $(\mathcal Y,d_{\mathcal Y}^{\mathrm{Sasaki}})$ from the capped velocities and showed that the projection $\varphi$ is $1$-Lipschitz. Consequently $\operatorname{diam}_{d_{\mathcal Y}^{\mathrm{Sasaki}}}(\mathcal Y)<\infty$, meeting the Axiom of Bounded Algorithmic Diameter ({prf:ref}`def-axiom-bounded-algorithmic-diameter`).
 
 ### 4.2 Environmental axioms
@@ -753,7 +749,7 @@ The ambient space ({prf:ref}`def-ambient-euclidean`) $(\mathcal X,d_{\mathcal X}
 The reward function $R(x,v)=R_{\mathrm{pos}}(x)-\lambda_{\mathrm{vel}}\|v\|^2$ is continuous on $(\mathcal Y,d_{\mathcal Y}^{\mathrm{Sasaki}})$ and therefore satisfies the Axiom of Reward Regularity ({prf:ref}`def-axiom-reward-regularity`).
 
 
-```{dropdown} Proof
+::::{dropdown} Proof
 :::{prf:proof}
 Let $\mathcal Y^{\circ}:=B(0,R_x)\times B(0,V_{\mathrm{alg}})$ be the image of the projection $\varphi:\mathbb R^d\times\mathbb R^d\to\mathcal Y^{\circ}$. For $y=(y_x,y_v)\in\mathcal Y^{\circ}$ the inverse mapping is explicit:
 
@@ -772,15 +768,14 @@ $$
 This is well defined because the squashing maps are bijections between $\mathbb R^d$ and the open balls $B(0,R_x)$ and $B(0,V_{\mathrm{alg}})$. The maps $\psi_{R_x}^{-1}$ and $\psi_{V_{\mathrm{alg}}}^{-1}$ are continuous on $\mathcal Y^{\circ}$, and the compositions with $R_{\mathrm{pos}}$ and the quadratic velocity term are continuous. Hence $R_{\mathcal Y}$ is continuous on $\mathcal Y^{\circ}$.
 
 Because $R_{\mathcal Y}$ is continuous on $\mathcal Y^{\circ}$ and $\mathcal Y^{\circ}$ is bounded, the restriction of $R_{\mathcal Y}$ to any compact subset of $\mathcal Y^{\circ}$ is uniformly continuous. In particular, the walker positions belong to the compact valid domain $\mathcal X_{\mathrm{valid}}$, so the image $\varphi(\mathcal X_{\mathrm{valid}}\times\mathcal V_{\mathrm{alg}})$ is compact and $R_{\mathcal Y}$ is uniformly continuous (indeed, Lipschitz) on that set. Consequently the reward evaluated along the Sasaki projection is uniformly continuous, satisfying the reward-regularity axiom without invoking a global Lipschitz bound for $R_{\mathrm{pos}}$ on $\mathbb R^d$. :::
-```
-:::
+::::
 
 :::{prf:lemma} Environmental richness with a kinetic regularizer
 :label: lem-euclidean-richness
 
 The reward $R(x,v)=R_{\mathrm{pos}}(x)-\lambda_{\mathrm{vel}}\|v\|^2$ with $\lambda_{\mathrm{vel}}>0$ satisfies the Axiom of Environmental Richness ({prf:ref}`def-axiom-environmental-richness`).
 
-```{dropdown} Proof
+::::{dropdown} Proof
 :::{prf:proof}
 Fix $(x_0,v_0)\in\mathcal Y$ and radius $r>0$. Every Sasaki ball of radius $r$ contains the set of velocities with Euclidean norm at most $r/\sqrt{\lambda_v}$ around $v_0$. Let
 
@@ -801,8 +796,7 @@ $$
 $$
 For the inward-pointing choice we use that $\|v_0\|>V_{\mathrm{alg}}-\delta\ge V_{\mathrm{alg}}/2\ge\delta$ because $\delta\le V_{\mathrm{alg}}/2$, guaranteeing the same lower bound.
 Hence the variance of $R$ on the ball is at least $\sigma_{\mathrm{rich}}^2(r):=\lambda_{\mathrm{vel}}^2\delta^4/4>0$, establishing environmental richness. :::
-```
-:::
+::::
 
 These bounds also guarantee that the position-derived force admits explicit growth control: with $F(x)=\nabla R_{\mathrm{pos}}(x)$ the Lipschitz assumption gives $\|F(x)\|\le\|F(0)\|+L_F\|x\|$. The velocity penalty therefore fixes the degeneracy noted in the earlier draft by ensuring every Sasaki ball carries non-zero reward variance while allowing us to track the kinetic growth terms explicitly.
 
@@ -828,7 +822,7 @@ where $C_x^{(\mathrm{pert})}$, $C_v^{(\mathrm{pert})}$, and $C_0^{(\mathrm{pert}
 
 Referenced by {prf:ref}`thm-euclidean-feller`.
 
-```{dropdown} Proof
+::::{dropdown} Proof
 :::{prf:proof}
 Introduce the uncapped velocity update
 
@@ -912,8 +906,7 @@ $$
 
 The kinetic kernel is Feller: it composes the continuous affine map $(x,v)\mapsto(x,\tilde v)$, the 1-Lipschitz projection $\psi_v$, and addition of a Gaussian with full support; appending the deterministic status update preserves this property.
 
-```
-:::
+::::
 2. **Geometric consistency constants.** Lemma {prf:ref}`lem-euclidean-geometric-consistency` bounds the drift and anisotropy parameters in the Sasaki geometry.
 
 :::{prf:lemma} Geometric consistency under the capped kinetic kernel
@@ -921,7 +914,7 @@ The kinetic kernel is Feller: it composes the continuous affine map $(x,v)\mapst
 
 Referenced by {prf:ref}`lem-euclidean-boundary-holder`.
 
-```{dropdown} Proof
+::::{dropdown} Proof
 :::{prf:proof}
 Because $\mathcal X_{\mathrm{valid}}$ is compact and $F$ and $u$ are continuous, the drift and anisotropy envelopes appearing in the Axiom of Geometric Consistency admit finite global bounds. To make the dependence on the geometry explicit we index the constants by an arbitrary compact subset $C \subset \mathcal X_{\mathrm{valid}}$; in practice we take $C = \mathcal X_{\mathrm{valid}}$ and obtain uniform constants on the entire valid domain.
 
@@ -1050,8 +1043,7 @@ $$
 
 These constants realise the drift and anisotropy requirements of Definition {prf:ref}`axiom-geometric-consistency` on the compact set $C$. Since $C$ was arbitrary, the bounds hold uniformly on every compact subset of the state space, which suffices for the non-compact geometric-consistency axiom.
 
-```
-:::
+::::
 3. **Distance-to-companion continuity.** The Sasaki geometry requires re-deriving the canonical continuity bounds for the expected raw distance vector before invoking the mean-square argument.
 
 #### 2.3.3 Continuity of the Expected Raw Distance Vector ($k \ge 2$ Regime)
@@ -1096,7 +1088,7 @@ $$
 
 $$
 
-```{dropdown} Proof
+::::{dropdown} Proof
 :::{prf:proof}
 Let $\Delta_{\mathrm{pos},i}$ denote the absolute error term we wish to bound. The proof proceeds by applying standard metric and probability inequalities.
 
@@ -1135,8 +1127,7 @@ $$
 By linearity of expectation, we can separate the terms. The first term, $d_{\mathcal Y}^{\mathrm{Sasaki}}(\varphi(w_{1,i}), \varphi(w_{2,i}))$, is a constant with respect to the expectation over the companion index $c$. This gives the final bound as stated in the lemma.
 
 **Q.E.D.**
-```
-:::
+::::
 
 :::{prf:lemma} Single-walker structural error bound in the Sasaki metric
 :label: lem-sasaki-single-walker-structural-error
@@ -1152,7 +1143,7 @@ $$
 
 where $D_{\mathcal Y}$ is the diameter of the algorithmic space.
 
-```{dropdown} Proof
+::::{dropdown} Proof
 :::{prf:proof}
 This result is a direct application of the framework's **Total Error Bound in Terms of Status Changes** ({prf:ref}`thm-total-error-status-bound`) to the specific function of interest in the Sasaki geometry.
 
@@ -1175,8 +1166,7 @@ This bound is purely algebraic and holds for any choice of metric or bounded fun
 We substitute our specific function bound $M_f = D_{\mathcal Y}$ and the support set size $|S_1| = k_1 - 1$ into the general formula. This immediately yields the stated bound for the structural error component.
 
 **Q.E.D.**
-```
-:::
+::::
 
 
 
@@ -1194,7 +1184,7 @@ where $C_{\mathrm{pos}}^{\mathrm{Sasaki}}(k_1,k_{\mathrm{stable}}):=2\Big(1+\fra
 
 Referenced by {prf:ref}`thm-sasaki-distance-ms`.
 
-```{dropdown} Proof
+::::{dropdown} Proof
 :::{prf:proof}
 For $i\in\mathcal A_{\mathrm{stable}}$ set $\Delta_i:=|d^{(1)}_i-d^{(2)}_i|$. Lemma {prf:ref}`lem-sasaki-single-walker-positional-error` gives
 
@@ -1237,7 +1227,7 @@ $$
 
 $$
 
-```{dropdown} Proof
+::::{dropdown} Proof
 :::{prf:proof}
 Decompose the index set into stable walkers $\mathcal A_{\mathrm{stable}}$ and the complement. For stable walkers the bound in Lemma {prf:ref}`lem-sasaki-total-squared-error-stable` applies. For walkers whose status changes between the two swarms we use $|d^{(1)}_i-d^{(2)}_i|\le D_{\mathcal Y}$ because each expected distance is bounded by the diameter of the Sasaki algorithmic space. There are at most $n_c$ such indices (one per status change), contributing at most $D_{\mathcal Y}^2 n_c$ to the squared error.
 
@@ -1268,12 +1258,11 @@ $$
 
 $$
 
-```{dropdown} Proof
+::::{dropdown} Proof
 :::{prf:proof}
 The identities follow from the gradient calculations $\nabla\mu=(1/k)\mathbf 1$ and $\nabla m_2=(2/k)\mathbf v$ together with Cauchy–Schwarz, as in Lemma 6.2.2.a of the framework.
 
-```
-:::
+::::
 
 :::{prf:lemma} Structural continuity of the empirical moments
 :label: lem-sasaki-aggregator-structural
@@ -1287,12 +1276,11 @@ $$
 
 $$
 
-```{dropdown} Proof
+::::{dropdown} Proof
 :::{prf:proof}
 The proof mirrors Lemma 6.2.2.b of the framework. Decompose the difference in means into contributions from walkers that remain alive in both swarms and those that change status. The former vanish, whereas the latter introduce at most $V_{\max}$ per status flip. Accounting for the normalisation factors $1/k_r$ and the difference in alive counts yields the stated bounds. The argument for $m_2$ uses $|a^2-b^2|\le 2V_{\max}|a-b|$.
 
-```
-:::
+::::
 
 :::{prf:lemma} Lipschitz data for the Sasaki empirical aggregators
 :label: lem-sasaki-aggregator-lipschitz
@@ -1312,11 +1300,10 @@ L_{\mu,S}^{\mathrm{Sasaki}}(k_{\min})=\frac{3V_{\max}}{k_{\min}},\qquad L_{m_2,S
 $$
 and growth exponents $p_{\mu,S}=p_{m_2,S}=p_{\mathrm{worst\text{-}case}}=-1$. Consequently $\kappa_{\mathrm{var}}^{\mathrm{Sasaki}}=\kappa_{\mathrm{range}}^{\mathrm{Sasaki}}=1$ as in the canonical framework.
 
-```{dropdown} Proof
+::::{dropdown} Proof
 :::{prf:proof}
 Combine Lemmas {prf:ref}`lem-sasaki-aggregator-value` and {prf:ref}`lem-sasaki-aggregator-structural` with the dispersion metric identity $n_c\le\frac{N}{\lambda_{\mathrm{status}}}d_{\mathrm{Disp},\mathcal Y}^{\mathrm{Sasaki}}(\mathcal S_1,\mathcal S_2)^2$ to obtain the stated Lipschitz functions and exponents.
-```
-:::
+::::
 
 7. **Standardization & rescale continuity.** Let $\sigma_{\min,\mathrm{patch}}:=\sqrt{\kappa_{\mathrm{var,min}}+\varepsilon_{\mathrm{std}}^2}$ be the lower bound supplied by the regularized standard deviation operator, and denote by $L_{\sigma'_{\mathrm{patch}}}$ the global derivative bound from Lemma {prf:ref}`lem-sigma-patch-derivative-bound`. For notational compactness write
 
@@ -1438,7 +1425,7 @@ $$
 
 $$
 
-```{dropdown} Proof
+::::{dropdown} Proof
 :::{prf:proof}
 **Step 1: Algebraic Decomposition.**
 The proof of the decomposition is a direct algebraic manipulation. We start with the definition of the error and add and subtract the intermediate term $(\mathbf r_2 - \mu_2) / \sigma'_1$.
@@ -1466,8 +1453,7 @@ $$
 This completes the proof.
 
 **Q.E.D.**
-```
-:::
+::::
 
 ##### 2.3.4.2. Sub-Lemma: Bounding the Squared Direct Shift Component
 
@@ -1484,7 +1470,7 @@ $$
 
 where $\sigma_{\min,\mathrm{patch}} := \sqrt{\kappa_{\mathrm{var,min}}+\varepsilon_{\mathrm{std}}^2}$ is the uniform lower bound from the regularized standard deviation.
 
-```{dropdown} Proof
+::::{dropdown} Proof
 :::{prf:proof}
 The proof is a direct application of the definition of $\Delta_{\text{direct}}$ and the uniform lower bound on the regularized standard deviation.
 
@@ -1521,8 +1507,7 @@ The proof is a direct application of the definition of $\Delta_{\text{direct}}$ 
     $$
 
 **Q.E.D.**
-```
-:::
+::::
 
 ##### 2.3.4.3. Sub-Lemma: Bounding the Squared Mean Shift Component
 
@@ -1539,7 +1524,7 @@ $$
 
 where $L_{\mu,M}^{\mathrm{Sasaki}}(k)$ is the axiomatic **Value Lipschitz Function** for the aggregator's mean from {prf:ref}`lem-sasaki-aggregator-lipschitz`.
 
-```{dropdown} Proof
+::::{dropdown} Proof
 :::{prf:proof}
 The proof combines the definition of the mean shift component with the axiomatic continuity of the mean aggregator.
 
@@ -1579,8 +1564,7 @@ The proof combines the definition of the mean shift component with the axiomatic
     $$
 
 **Q.E.D.**
-```
-:::
+::::
 
 ##### 2.3.4.4. Sub-Lemma: Bounding the Squared Denominator Shift Component
 
@@ -1597,7 +1581,7 @@ $$
 
 where $L_{\sigma',M}^{\mathrm{Sasaki}}(k)$ is the derived Lipschitz constant for the regularized standard deviation.
 
-```{dropdown} Proof
+::::{dropdown} Proof
 :::{prf:proof}
 The proof bounds the squared norm by bounding its three constituent parts: the norm of the standardized vector, the change in the regularized standard deviation, and the inverse of the standard deviation.
 
@@ -1650,8 +1634,7 @@ The proof bounds the squared norm by bounding its three constituent parts: the n
     Rearranging the terms gives the stated result.
 
 **Q.E.D.**
-```
-:::
+::::
 
 ##### 2.3.4.5. Proof of Theorem 2.3.4
 
@@ -1807,7 +1790,7 @@ $$
 
 $$
 
-```{dropdown} Proof
+::::{dropdown} Proof
 :::{prf:proof}
 The proof follows from partitioning the sum of squared errors over the N walker indices. Let the full set of indices be $\{1, ..., N\}$.
 
@@ -1836,8 +1819,7 @@ The proof follows from partitioning the sum of squared errors over the N walker 
 This completes the proof.
 
 **Q.E.D.**
-```
-:::
+::::
 
 ##### 2.3.6.2. Sub-Lemma: Bounding the Squared Direct Structural Error
 
@@ -1853,7 +1835,7 @@ $$
 
 $$
 
-```{dropdown} Proof
+::::{dropdown} Proof
 :::{prf:proof}
 The proof bounds the squared error for each unstable walker and sums the results.
 
@@ -1896,8 +1878,7 @@ The proof bounds the squared error for each unstable walker and sums the results
     $$
 
 **Q.E.D.**
-```
-:::
+::::
 
 ##### 2.3.6.3. Sub-Lemma: Bounding the Squared Indirect Structural Error
 
@@ -1915,7 +1896,7 @@ $$
 
 where $C_{S,\mathrm{indirect}}^{\mathrm{sq}}$ is the **Squared Indirect Structural Error Coefficient** defined in {prf:ref}`def-sasaki-structural-coeffs-sq`.
 
-```{dropdown} Proof
+::::{dropdown} Proof
 :::{prf:proof}
 The proof decomposes the error for each stable walker into a mean-shift and a denominator-shift component and then bounds the sum of their squares.
 
@@ -1991,8 +1972,7 @@ $$
 The term in the brackets is precisely the definition of the **Squared Indirect Structural Error Coefficient**, $C_{S,\mathrm{indirect}}^{\mathrm{sq}}(\mathcal S_1, \mathcal S_2)$. This completes the proof.
 
 **Q.E.D.**
-```
-:::
+::::
 
 ##### 2.3.6.4. Proof of Theorem 2.3.6
 
@@ -2076,7 +2056,7 @@ $$
 
 where $L_{z,L}^2$ and $L_{z,H}^2$ are state-dependent coefficients representing the Lipschitz and higher-order parts of the bound, respectively. Consequently, the logistic rescale operator $u(\mathcal S) = g_A(z(\mathcal S))$ is also continuous.
 
-```{dropdown} Proof
+::::{dropdown} Proof
 :::{prf:proof}
 The proof establishes a deterministic bound on the total error $\|z(\mathcal S_1, \mathbf r_1) - z(\mathcal S_2, \mathbf r_2)\|_2^2$ by combining the bounds for value-induced error and structure-induced error.
 
@@ -2158,11 +2138,10 @@ $$
 
 $$
 
-```{dropdown} Proof
+::::{dropdown} Proof
 :::{prf:proof}
 The inequality is precisely the statement of Theorem {prf:ref}`thm-sasaki-standardization-composite-sq`; no additional work is required.
-```
-:::
+::::
 
 :::
 
@@ -2382,7 +2361,7 @@ for Borel $A\subseteq\Sigma_N$, where $\Phi$ executes the deterministic composit
 :::{prf:theorem} Feller continuity of $\Psi_{\mathcal F_{\mathrm{EG}}}$
 :label: thm-euclidean-feller
 
-```{dropdown} Proof
+::::{dropdown} Proof
 :::{prf:proof}
 Write the single-step operator as the composition of the cemetery check (Stage 1), the measurement and potential pipeline (Stage 2), the Clone/Persist gate (Stage 3), and the kinetic-plus-status update (Stage 4). Each stage defines a Markov kernel on $\Sigma_N$ that is Feller with respect to $d_{\mathrm{Disp},\mathcal Y}^{\mathrm{Sasaki}}$; the claim follows because Feller kernels are closed under composition (see, e.g., \[Ethier & Kurtz 86, Prop. 4.2.2\]).
 
@@ -2395,8 +2374,7 @@ Write the single-step operator as the composition of the cemetery check (Stage 1
 4. **Stage 4 (kinetic step and boundary check).** Lemma {prf:ref}`lem-euclidean-perturb-moment` proves that the capped kinetic update map $(x,v)\mapsto(x^+,v^+)$ is Feller and that its second moment grows at most quadratically in the state norm. The status indicator is applied to $x^+$; Lemma {prf:ref}`lem-euclidean-boundary-holder` shows that the death probability varies continuously and that $\mathbb P(x^+\in\partial\mathcal X_{\mathrm{valid}})=0$ under the $C^1$-boundary assumption, so the indicator preserves the Feller property.
 
 Since every stage is Feller, their composition $\Psi_{\mathcal F_{\mathrm{EG}}}$ is a Feller Markov kernel on $(\Sigma_N,d_{\mathrm{Disp},\mathcal Y}^{\mathrm{Sasaki}})$.
-```
-:::
+::::
 
 ## Appendix B. References (selected)
 

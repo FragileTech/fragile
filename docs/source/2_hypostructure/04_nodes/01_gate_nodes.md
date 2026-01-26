@@ -1237,7 +1237,7 @@ What happens when the stiffness check fails? The system might be sitting at an u
 
 Nodes 7a through 7d form a subtree that handles the delicate situation when the main stiffness guarantee breaks down. The logic goes like this:
 
-First, we check if the system is actually at a bifurcation point (Node 7a). Is there an unstable direction? If not, the failure is something else, and we route to a stiffness breakdown mode.
+First, we check if the system is actually at a bifurcation point (Node 7a). Is there an unstable direction? If not—meaning the Hessian is semidefinite with no negative eigenvalues—then the system routes to the ghost-extension admissibility check (SurgAdmSD). Only if that extension turns out to be inadmissible do we enter Mode S.D.
 
 If there is a bifurcation, we next ask: is there a symmetry involved (Node 7b)? Many bifurcations happen because a symmetric potential has degenerate minima. Imagine a ball in a Mexican hat potential: at the top, the symmetry is unbroken, but the ball will roll down to one of the equivalent minima around the brim. This is spontaneous symmetry breaking.
 
