@@ -35,8 +35,8 @@ Standard Multi-Agent RL assumes a global clock: when Agent A acts, Agent B sees 
 :::
 
 *Cross-references:* This section generalizes the Helmholtz equation
-({ref}`Section 24.2 <sec-the-bulk-potential-screened-poisson-equation>`) to the Klein-Gordon equation, and elevates the
-Memory Screen ({ref}`Section 27.1 <sec-the-historical-manifold-and-memory-screen>`) from a recording device to a primary
+({ref}`sec-the-bulk-potential-screened-poisson-equation`) to the Klein-Gordon equation, and elevates the
+Memory Screen ({ref}`sec-the-historical-manifold-and-memory-screen`) from a recording device to a primary
 state variable. It extends the single-agent geometry (Sections 20–24) to the multi-agent setting.
 
 *Literature:* Game theory {cite}`fudenberg1991game`; stochastic games {cite}`shapley1953stochastic`; multi-agent RL
@@ -82,11 +82,11 @@ Each agent optimizes against a stationary environment—other agents are part of
 **Result:** IPPO is the $\mathcal{G}_{ij} \to \emptyset$ limit where agents are **solipsistic**—they share a world but have no causal coupling.
 
 **What the generalization offers:**
-- **Causal structure**: Finite $c_{\text{info}}$ determines which events can influence which ({ref}`Section 29.2 <sec-the-failure-of-simultaneity>`)
-- **Ghost Interface**: Agents couple to retarded images, not instantaneous states ({ref}`Section 29.4 <sec-the-ghost-interface>`)
-- **Klein-Gordon value equation**: Hyperbolic wave propagation replaces elliptic relaxation ({ref}`Section 29.5 <sec-the-hyperbolic-value-equation>`)
-- **Nash as standing wave**: Equilibrium is time-averaged stationarity ({ref}`Section 29.7 <sec-relativistic-nash-equilibrium>`)
-- **Diagnostic nodes 46-48, 62**: Runtime monitoring including causality violation checks ({ref}`Section 29.17 <sec-yang-mills-action>`)
+- **Causal structure**: Finite $c_{\text{info}}$ determines which events can influence which ({ref}`sec-the-failure-of-simultaneity`)
+- **Ghost Interface**: Agents couple to retarded images, not instantaneous states ({ref}`sec-the-ghost-interface`)
+- **Klein-Gordon value equation**: Hyperbolic wave propagation replaces elliptic relaxation ({ref}`sec-the-hyperbolic-value-equation`)
+- **Nash as standing wave**: Equilibrium is time-averaged stationarity ({ref}`sec-relativistic-nash-equilibrium`)
+- **Diagnostic nodes 46-48, 62**: Runtime monitoring including causality violation checks ({ref}`sec-yang-mills-action`)
 ::::
 
 (sec-the-product-configuration-space)=
@@ -126,7 +126,7 @@ where each $G^{(i)}$ is the capacity-constrained metric from Theorem {prf:ref}`t
 
 *Units:* $[G^{(N)}] = [z]^{-2}$.
 
-*Remark (Isolated Agents).* The product metric $G^{(N)}$ describes agents in **isolation**—there is no cross-coupling between $\mathcal{Z}^{(i)}$ and $\mathcal{Z}^{(j)}$. Strategic coupling modifies this to $\tilde{G}^{(N)}$ via the Game Tensor ({ref}`Section 29.6 <sec-the-game-tensor-deriving-adversarial-geometry>`).
+*Remark (Isolated Agents).* The product metric $G^{(N)}$ describes agents in **isolation**—there is no cross-coupling between $\mathcal{Z}^{(i)}$ and $\mathcal{Z}^{(j)}$. Strategic coupling modifies this to $\tilde{G}^{(N)}$ via the Game Tensor ({ref}`sec-the-game-tensor-deriving-adversarial-geometry`).
 
 :::
 
@@ -142,7 +142,7 @@ Each agent $i$ possesses its own symplectic boundary $(\partial\mathcal{Z}^{(i)}
 The boundary conditions follow the structure of Definition {prf:ref}`def-dirichlet-boundary-condition-sensors`–23.1.3,
 applied per-agent.
 
-*Cross-reference:* {ref}`Section 23.1 <sec-the-symplectic-interface-position-momentum-duality>` (Symplectic Boundary Manifold), Definition {prf:ref}`def-mass-tensor`.
+*Cross-reference:* {ref}`sec-the-symplectic-interface-position-momentum-duality` (Symplectic Boundary Manifold), Definition {prf:ref}`def-mass-tensor`.
 
 :::
 
@@ -365,7 +365,7 @@ Let $P(z^{(N)}_{t+\Delta t} | z^{(N)}_t, \Xi_{<t})$ denote the transition probab
 
    $$
 
-*Proof sketch.* The Memory Screen $\Xi_{<t}$ encodes all information about past states that can causally influence the future. By the definition of the past light cone (Definition {prf:ref}`def-past-light-cone`), no additional information from $\Xi_{<t'}$ for $t' < t$ is needed beyond what is already encoded in $\Xi_{<t}$. The causal structure guarantees that spacelike-separated events cannot contribute new information. See **{ref}`Appendix E.14 <sec-appendix-e-rigorous-proof-sketches-for-ontological-and-metabolic-laws>`** for the complete proof using causal factorization and Chapman-Kolmogorov. $\square$
+*Proof sketch.* The Memory Screen $\Xi_{<t}$ encodes all information about past states that can causally influence the future. By the definition of the past light cone (Definition {prf:ref}`def-past-light-cone`), no additional information from $\Xi_{<t'}$ for $t' < t$ is needed beyond what is already encoded in $\Xi_{<t}$. The causal structure guarantees that spacelike-separated events cannot contribute new information. See **{ref}`sec-appendix-e-rigorous-proof-sketches-for-ontological-and-metabolic-laws`** for the complete proof using causal factorization and Chapman-Kolmogorov. $\square$
 
 :::
 
@@ -374,7 +374,7 @@ Let $P(z^{(N)}_{t+\Delta t} | z^{(N)}_t, \Xi_{<t})$ denote the transition probab
 
 In the relativistic multi-agent setting, the Memory Screen (Definition {prf:ref}`def-memory-screen`) is not an optional enhancement but a **physical requirement** for a well-posed control problem. Without it, the agent's state is non-Markovian, and optimal control theory does not apply.
 
-*Cross-reference:* This elevates the role of $\Xi_{<t}$ from {ref}`Section 27.1 <sec-the-historical-manifold-and-memory-screen>`, where it served as a recording device for trajectory history, to a primary state variable that restores the Markov property.
+*Cross-reference:* This elevates the role of $\Xi_{<t}$ from {ref}`sec-the-historical-manifold-and-memory-screen`, where it served as a recording device for trajectory history, to a primary state variable that restores the Markov property.
 
 :::
 
@@ -591,9 +591,9 @@ where:
 Solenoidal/harmonic components induce velocity-dependent coupling and are handled by the curl field $\mathcal{F}$ in the
 dynamics.
 
-*Proof sketch.* Expand the Bellman recursion $V(z, t) = r \Delta t + \gamma \mathbb{E}[V(z', t+\Delta t)]$ to second order in both spatial and temporal increments. The finite propagation speed $c_{\text{info}}$ introduces the wave term $\partial_t^2 V$. The derivation parallels the passage from Poisson to wave equation in electrostatics vs. electrodynamics. See {ref}`Appendix E.12 <sec-appendix-e-rigorous-proof-sketches-for-ontological-and-metabolic-laws>`. $\square$
+*Proof sketch.* Expand the Bellman recursion $V(z, t) = r \Delta t + \gamma \mathbb{E}[V(z', t+\Delta t)]$ to second order in both spatial and temporal increments. The finite propagation speed $c_{\text{info}}$ introduces the wave term $\partial_t^2 V$. The derivation parallels the passage from Poisson to wave equation in electrostatics vs. electrodynamics. See {ref}`sec-appendix-e-rigorous-proof-sketches-for-ontological-and-metabolic-laws`. $\square$
 
-*Character:* This is a hyperbolic PDE (wave equation with mass and damping), in contrast to the elliptic Helmholtz equation of {ref}`Section 24.2 <sec-the-bulk-potential-screened-poisson-equation>`.
+*Character:* This is a hyperbolic PDE (wave equation with mass and damping), in contrast to the elliptic Helmholtz equation of {ref}`sec-the-bulk-potential-screened-poisson-equation`.
 
 :::
 
@@ -726,7 +726,7 @@ $$
 
 $$
 
-**Derivation 29.4.2 (The Strategic Metric).** Recall the **Capacity-Constrained Metric Law** (Theorem {prf:ref}`thm-capacity-constrained-metric-law`), where curvature is driven by the Risk Tensor $T_{ab}$. See **{ref}`Appendix E.16 <sec-appendix-e-rigorous-proof-sketches-for-ontological-and-metabolic-laws>`** for the formal derivation of the Strategic Jacobian and Game Tensor using the implicit function theorem.
+**Derivation 29.4.2 (The Strategic Metric).** Recall the **Capacity-Constrained Metric Law** (Theorem {prf:ref}`thm-capacity-constrained-metric-law`), where curvature is driven by the Risk Tensor $T_{ab}$. See **{ref}`sec-appendix-e-rigorous-proof-sketches-for-ontological-and-metabolic-laws`** for the formal derivation of the Strategic Jacobian and Game Tensor using the implicit function theorem.
 
 For Agent $i$, the "risk" includes the **Predictive Volatility** of the adversary $j$. If Agent $i$ updates its state by $\delta z^{(i)}$, and the adversary $j$ responds with $\delta z^{(j)} \approx \mathcal{J}_{ji} \delta z^{(i)}$ (where $\mathcal{J}_{ji}$ is the **Strategic Jacobian**—the best-response derivative, see Definition {prf:ref}`def-strategic-jacobian`), the second-order variation of Agent $i$'s value is:
 
@@ -911,7 +911,7 @@ where the averaging period $T \gg \max_{i,j} \tau_{ij}$ exceeds all causal delay
    $$
    where $L_{\text{eff}}$ is the dominant spatial scale (e.g., boundary separation or imposed horizon).
 
-*Proof sketch.* The coupled Klein-Gordon system (Theorem {prf:ref}`thm-hjb-klein-gordon`) for $N$ agents forms a cavity resonator when the domain is effectively compact (finite horizon, reflecting boundary, or confining potential). Equilibrium states are the eigenmodes of the joint D'Alembertian operator. The ground state (lowest energy mode) corresponds to the stable Nash equilibrium; higher modes are metastable. Without effective compactness, interpret equilibrium as time-averaged stationarity rather than literal standing waves. See **{ref}`Appendix E.15 <sec-appendix-e-rigorous-proof-sketches-for-ontological-and-metabolic-laws>`** for the derivation under explicit boundary conditions. $\square$
+*Proof sketch.* The coupled Klein-Gordon system (Theorem {prf:ref}`thm-hjb-klein-gordon`) for $N$ agents forms a cavity resonator when the domain is effectively compact (finite horizon, reflecting boundary, or confining potential). Equilibrium states are the eigenmodes of the joint D'Alembertian operator. The ground state (lowest energy mode) corresponds to the stable Nash equilibrium; higher modes are metastable. Without effective compactness, interpret equilibrium as time-averaged stationarity rather than literal standing waves. See **{ref}`sec-appendix-e-rigorous-proof-sketches-for-ontological-and-metabolic-laws`** for the derivation under explicit boundary conditions. $\square$
 
 :::
 
@@ -974,7 +974,7 @@ $$
 (sec-diagnostic-nodes-part-i)=
 ## Diagnostic Nodes 46–48, 62 (Multi-Agent Causality)
 
-Following the diagnostic node convention ({ref}`Section 3.1 <sec-theory-thin-interfaces>`), we define monitors for multi-agent causal systems.
+Following the diagnostic node convention ({ref}`sec-theory-thin-interfaces`), we define monitors for multi-agent causal systems.
 
 (node-46)=
 **Node 46: GameTensorCheck**
@@ -1073,7 +1073,7 @@ If $\epsilon_{\text{Nash}} > 0$ but below threshold, the system is in a **transi
 
 **Table 29.9.2 (Single to Multi-Agent).**
 
-| Concept | Single Agent (Sections 20–24) | Multi-Agent Relativistic ({ref}`Section 29 <sec-symplectic-multi-agent-field-theory>`) |
+| Concept | Single Agent (Sections 20–24) | Multi-Agent Relativistic ({ref}`sec-symplectic-multi-agent-field-theory`) |
 |:--------|:------------------------------|:--------------------------------------|
 | **State Space** | $\mathcal{Z}$ | $\mathcal{Z}_{\text{causal}} = \mathcal{Z}^{(N)} \times \Xi_{<t}$ |
 | **Boundary** | Fixed $\partial\mathcal{Z}$ | Ghost Interface $\mathcal{G}_{ij}(t)$ |
@@ -1141,7 +1141,7 @@ Here $\mathcal{J}(z,\zeta)$ is the transport map between local charts (identity 
 (sec-metabolic-tracking-bound)=
 ## The Metabolic Tracking Bound (Non-Stationary Nash Resolution)
 
-In non-stationary environments, the Nash equilibrium $z^*(t)$ shifts. We derive the tracking limit from the Computational Metabolism ({ref}`Section 31 <sec-computational-metabolism-the-landauer-bound-and-deliberation-dynamics>`), relating the metric speed of the target to the agent's power dissipation budget.
+In non-stationary environments, the Nash equilibrium $z^*(t)$ shifts. We derive the tracking limit from the Computational Metabolism ({ref}`sec-computational-metabolism-the-landauer-bound-and-deliberation-dynamics`), relating the metric speed of the target to the agent's power dissipation budget.
 
 :::{prf:theorem} Metabolic Tracking Bound
 :label: thm-metabolic-tracking-bound
@@ -1315,7 +1315,7 @@ $$
 where:
 - $\rho^{(i)}$ is the belief density
 - $V^{(i)}$ is the value function (scalar, gauge-invariant)
-- $\sigma > 0$ is the **cognitive action scale**, $\sigma := T_c \cdot \tau_{\text{update}}$, the information-theoretic analog of Planck's constant (full definition: {prf:ref}`def-cognitive-action-scale` in {ref}`Section 29.21 <sec-the-belief-wave-function-schrodinger-representation>`)
+- $\sigma > 0$ is the **cognitive action scale**, $\sigma := T_c \cdot \tau_{\text{update}}$, the information-theoretic analog of Planck's constant (full definition: {prf:ref}`def-cognitive-action-scale` in {ref}`sec-the-belief-wave-function-schrodinger-representation`)
 - $\xi^{(i)}(z) \in V$ is the **internal state vector** encoding nuisance orientation
 
 *Units:* $[\psi] = [\text{length}]^{-D/2}$ (probability amplitude density).
@@ -1348,10 +1348,10 @@ where:
 *Special cases:*
 1. **At origin ($K = 0$, Semantic Vacuum):** $G_0 = SO(D)$, $H_0 = \{e\}$, so $\mathcal{Z}_n|_0 \cong SO(D)$ (full rotational freedom).
 2. **At generic $K$:** The stabilizer $H_K$ is non-trivial if $e_K$ has special structure (e.g., aligned with coordinate axes).
-3. **At boundary ($|z| \to 1$):** The gauge orbit collapses as degrees of freedom freeze ({ref}`Section 33 <sec-causal-information-bound>`, Causal Stasis).
+3. **At boundary ($|z| \to 1$):** The gauge orbit collapses as degrees of freedom freeze ({ref}`sec-causal-information-bound`, Causal Stasis).
 
 *Motivation (not a rigorous proof):*
-The nuisance coordinates $z_n$ parameterize how an observation is embedded relative to the macro-code $K$. Under the VQ-VAE architecture ({ref}`Section 2.2b <sec-the-shutter-as-a-vq-vae>`), two nuisance values $z_n$ and $z'_n$ are designed to be equivalent if they differ by a transformation preserving the macro-code: $z'_n = U \cdot z_n$ for some $U \in G_K$.
+The nuisance coordinates $z_n$ parameterize how an observation is embedded relative to the macro-code $K$. Under the VQ-VAE architecture ({ref}`sec-the-shutter-as-a-vq-vae`), two nuisance values $z_n$ and $z'_n$ are designed to be equivalent if they differ by a transformation preserving the macro-code: $z'_n = U \cdot z_n$ for some $U \in G_K$.
 
 **Remark (Analogy vs. Isomorphism):** This correspondence is a *motivating analogy* rather than a proven isomorphism. A rigorous proof would require:
 1. Showing the nuisance equivalence relation coincides with gauge equivalence
@@ -1360,7 +1360,7 @@ The nuisance coordinates $z_n$ parameterize how an observation is embedded relat
 
 The gauge-theoretic formalism developed in Sections 29.13–29.20 is motivated by this conjecture but does not depend on it being rigorously true. The constructions (covariant derivative, field strength, etc.) are well-defined once the gauge group $G$ and its action are specified.
 
-*Cross-reference:* This formalizes the design goal "K represents $x/G_{\text{spatial}}$" from {ref}`Section 2.2b <sec-the-shutter-as-a-vq-vae>`.
+*Cross-reference:* This formalizes the design goal "K represents $x/G_{\text{spatial}}$" from {ref}`sec-the-shutter-as-a-vq-vae`.
 
 :::
 
@@ -1753,7 +1753,7 @@ $$
 
 $$
 
-The covariant derivative of $\mathcal{F}$ is $D_\rho\mathcal{F}_{\mu\nu} = \partial_\rho\mathcal{F}_{\mu\nu} - ig[A_\rho, \mathcal{F}_{\mu\nu}]$, and the identity follows. See **{ref}`Appendix E.17 <sec-appendix-e-rigorous-proof-sketches-for-ontological-and-metabolic-laws>`** for the complete algebraic derivation with component verification. $\square$
+The covariant derivative of $\mathcal{F}$ is $D_\rho\mathcal{F}_{\mu\nu} = \partial_\rho\mathcal{F}_{\mu\nu} - ig[A_\rho, \mathcal{F}_{\mu\nu}]$, and the identity follows. See **{ref}`sec-appendix-e-rigorous-proof-sketches-for-ontological-and-metabolic-laws`** for the complete algebraic derivation with component verification. $\square$
 
 *Interpretation:* The Bianchi identity is a **conservation law** for the strategic flux. It ensures topological consistency of the gauge structure.
 
@@ -2086,7 +2086,7 @@ $$
 
 $$
 
-The term $\frac{g^2v^2}{4}A_\mu A^\mu$ is a mass term for $A_\mu$ with $m_A^2 = g^2v^2/4$. Similarly, the Yukawa term generates fermion masses. See **{ref}`Appendix E.18 <sec-appendix-e-rigorous-proof-sketches-for-ontological-and-metabolic-laws>`** for the complete derivation including VEV calculation, Goldstone absorption, and the symmetry breaking pattern. $\square$
+The term $\frac{g^2v^2}{4}A_\mu A^\mu$ is a mass term for $A_\mu$ with $m_A^2 = g^2v^2/4$. Similarly, the Yukawa term generates fermion masses. See **{ref}`sec-appendix-e-rigorous-proof-sketches-for-ontological-and-metabolic-laws`** for the complete derivation including VEV calculation, Goldstone absorption, and the symmetry breaking pattern. $\square$
 
 *Interpretation:* Policy selection (choosing a direction in latent space) is spontaneous symmetry breaking. The agent commits to a strategy, breaking the rotational invariance of the Semantic Vacuum. This commitment generates "mass"—resistance to changing strategy.
 
@@ -2146,10 +2146,10 @@ The upshot is: any theory describing physics that a bounded observer can actuall
 
 The **Mass Gap Problem** asks whether the spectrum of the Hamiltonian has a non-zero gap between the ground state and the first excited state. We derive that bounded intelligence **requires** a positive mass gap from information-theoretic principles.
 
-::::{admonition} Forward Reference: Holographic Bounds ({ref}`Section 33 <sec-causal-information-bound>`)
+::::{admonition} Forward Reference: Holographic Bounds ({ref}`sec-causal-information-bound`)
 :class: note
 
-This section uses results from {ref}`Section 33 <sec-causal-information-bound>` (The Geometry of Bounded Intelligence). For reference:
+This section uses results from {ref}`sec-causal-information-bound` (The Geometry of Bounded Intelligence). For reference:
 
 - **Holographic Coefficient** $\nu_D$ (Definition {prf:ref}`def-holographic-coefficient`): The dimension-dependent coefficient $\nu_D = (D-1)\Omega_{D-1}/(8\pi)$. For $D=2$: $\nu_2 = 1/4$. For $D=3$: $\nu_3 = 1$.
 
@@ -2159,7 +2159,7 @@ This section uses results from {ref}`Section 33 <sec-causal-information-bound>` 
 
 - **Causal Stasis** (Theorem {prf:ref}`thm-causal-stasis`): As $I_{\text{bulk}} \to I_{\max}$, the update velocity $\|v\|_G \to 0$. The agent freezes when information capacity is saturated.
 
-These results are derived from first principles in {ref}`Appendix A.6 <sec-appendix-a-full-derivations>` (microstate counting) and {ref}`Section 33 <sec-causal-information-bound>`.
+These results are derived from first principles in {ref}`sec-appendix-a-full-derivations` (microstate counting) and {ref}`sec-causal-information-bound`.
 ::::
 
 :::{prf:definition} Mass Gap
@@ -2299,7 +2299,7 @@ Bounded intelligence requires $\Delta > 0$. A gapless theory ($\Delta = 0$) corr
 Gapless theories (Conformal Field Theories) exist only at **phase transition critical points**. They cannot support:
 
 1. **Stable matter:** Fluctuations destroy structure
-2. **Stable memory:** Infinite ontological stress triggers continuous Fission ({ref}`Section 30 <sec-ontological-expansion-topological-fission-and-the-semantic-vacuum>`)
+2. **Stable memory:** Infinite ontological stress triggers continuous Fission ({ref}`sec-ontological-expansion-topological-fission-and-the-semantic-vacuum`)
 3. **Stable identity:** No finite codebook representation exists
 
 *Interpretation:* Critical systems are mathematically special but physically transient. Stable intelligence requires departure from criticality via mass gap opening.
@@ -2527,7 +2527,7 @@ The framework is Yang-Mills theory applied to information systems. The mass gap 
 (sec-diagnostic-nodes-gauge)=
 ## Diagnostic Nodes 63–66 (Gauge Consistency)
 
-Following the diagnostic node convention ({ref}`Section 3.1 <sec-theory-thin-interfaces>`), we define four monitors for gauge consistency in multi-agent systems.
+Following the diagnostic node convention ({ref}`sec-theory-thin-interfaces`), we define four monitors for gauge consistency in multi-agent systems.
 
 (node-63)=
 **Node 63: GaugeInvarianceCheck**
@@ -2706,12 +2706,12 @@ $$
 
 $$
 where:
-- $T_c$ is the Cognitive Temperature ({prf:ref}`def-cognitive-temperature`, {ref}`Section 22.4 <sec-the-geodesic-baoab-integrator>`), setting the scale of stochastic exploration
+- $T_c$ is the Cognitive Temperature ({prf:ref}`def-cognitive-temperature`, {ref}`sec-the-geodesic-baoab-integrator`), setting the scale of stochastic exploration
 - $\tau_{\text{update}}$ is the characteristic belief update timescale
 
 **Equivalent characterizations:**
 1. **Entropy-Action Duality:** $\sigma$ relates entropy production to "cognitive action" via $\Delta S = \mathcal{A}/\sigma$
-2. **Resolution Limit:** $\sigma \sim \ell_L^2$ where $\ell_L$ is the Levin Length ({ref}`Section 33.2 <sec-saturation-limit>`)
+2. **Resolution Limit:** $\sigma \sim \ell_L^2$ where $\ell_L$ is the Levin Length ({ref}`sec-saturation-limit`)
 3. **Uncertainty Scale:** $\sigma$ sets the minimum uncertainty product $\Delta z \cdot \Delta p \geq \sigma/2$
 
 *Units:* $[\sigma] = \text{nat} \cdot \text{step} = \text{bit} \cdot \text{step} / \ln 2$.
@@ -2808,8 +2808,8 @@ Let the belief density $\rho$ and value $V$ satisfy the WFR-HJB system with vect
 2. **Hamilton-Jacobi-Bellman:** $\partial_s V + \frac{1}{2}\|\nabla_B V\|_G^2 + \Phi_{\text{eff}} = 0$
 
 where $\nabla_B V := \nabla V - B$ and $B$ is the vector potential for the reward 1-form (Value Curl), $dB = \mathcal{F}$.
-The drift is $\mathbf{v} = -G^{-1}\nabla_B V$ (canonical mobility; conservative case: $B=0$, $\mathcal{F}=0$).
-If curl-induced mobility is included, replace $\mathbf{v}$ by $\mathcal{M}_{\text{curl}}\!\left(-G^{-1}\nabla_B V\right)$ with
+The drift is $\mathbf{v} = +G^{-1}\nabla_B V$ (canonical mobility; conservative case: $B=0$, $\mathcal{F}=0$).
+If curl-induced mobility is included, replace $\mathbf{v}$ by $\mathcal{M}_{\text{curl}}\!\left(+G^{-1}\nabla_B V\right)$ with
 $\mathcal{M}_{\text{curl}} := (I - \beta_{\text{curl}} G^{-1}\mathcal{F})^{-1}$.
 $r$ is the WFR reaction rate (Definition {prf:ref}`def-the-wfr-action`).
 
@@ -2822,18 +2822,18 @@ $$
 where the **Inference Hamiltonian** is:
 
 $$
-\hat{H}_{\text{inf}} := -\frac{\sigma^2}{2} D^i D_i + \Phi_{\text{eff}} + Q_B - \frac{i\sigma}{2} r,
+\hat{H}_{\text{inf}} := -\frac{\sigma^2}{2} D^i D_i + \Phi_{\text{eff}} + Q_B + \frac{i\sigma}{2} r,
 
 $$
 The terms are:
 - **Kinetic:** $-\frac{\sigma^2}{2} D^i D_i$ (covariant Laplacian with vector potential)
 - **Potential:** $\Phi_{\text{eff}}$ (effective potential from rewards and constraints)
 - **Quantum Correction:** $Q_B$ (Bohm potential, Definition {prf:ref}`def-bohm-quantum-potential`)
-- **Dissipation:** $-\frac{i\sigma}{2} r$ (non-Hermitian term from WFR reaction)
+- **Reaction:** $+\frac{i\sigma}{2} r$ (non-Hermitian term from WFR reaction; positive $r$ creates mass)
 
 Here $D_i := \nabla_i - \frac{i}{\sigma} B_i$ is the $U(1)$ covariant derivative; $B$ is the Opportunity field (reward 1-form) and is distinct from the strategic gauge connection $A_\mu$.
 
-*Proof.* See {ref}`Appendix E.13 <sec-appendix-e-rigorous-proof-sketches-for-ontological-and-metabolic-laws>` for the rigorous derivation. The key steps are:
+*Proof.* See {ref}`sec-appendix-e-rigorous-proof-sketches-for-ontological-and-metabolic-laws` for the rigorous derivation. The key steps are:
 
 **Step 1 (Substitution).** Write $\psi = R e^{i\phi}$ with $R = \sqrt{\rho}$ and $\phi = V/\sigma$.
 
@@ -2892,7 +2892,7 @@ Q_B = -\frac{\sigma^2}{8\rho^2} \|\nabla_G \rho\|_G^2 + \frac{\sigma^2}{4\rho} \
 $$
 **Physical interpretation:** $Q_B$ represents the **energetic cost of belief localization**. Regions where $\rho$ has high curvature (sharp belief features) incur an effective potential energy penalty. This prevents the belief from concentrating to delta functions.
 
-**Information-theoretic interpretation:** $Q_B$ enforces the **Levin Length** ({ref}`Section 33.2 <sec-saturation-limit>`) as a resolution limit. The agent cannot represent distinctions finer than $\ell_L \sim \sqrt{\sigma}$.
+**Information-theoretic interpretation:** $Q_B$ enforces the **Levin Length** ({ref}`sec-saturation-limit`) as a resolution limit. The agent cannot represent distinctions finer than $\ell_L \sim \sqrt{\sigma}$.
 
 *Units:* $[Q_B] = \text{nat}$ (same as potential).
 
@@ -2903,14 +2903,14 @@ $$
 :::{prf:corollary} Open Quantum System Interpretation
 :label: cor-open-quantum-system
 
-The Inference Hamiltonian $\hat{H}_{\text{inf}}$ is **non-Hermitian** due to the reaction term $-\frac{i\sigma}{2}r$. This corresponds to an **open quantum system** where:
+The Inference Hamiltonian $\hat{H}_{\text{inf}}$ is **non-Hermitian** due to the reaction term $+\frac{i\sigma}{2}r$. This corresponds to an **open quantum system** where:
 - $r > 0$: Mass creation (information gain from boundary) → probability amplitude **grows**
 - $r < 0$: Mass destruction (information loss) → probability amplitude **decays**
 
 The **complex potential** formulation is:
 
 $$
-W(z) := \Phi_{\text{eff}}(z) - \frac{i\sigma}{2} r(z),
+W(z) := \Phi_{\text{eff}}(z) + \frac{i\sigma}{2} r(z),
 
 $$
 so that $\hat{H}_{\text{inf}} = -\frac{\sigma^2}{2} D^i D_i + W + Q_B$.
@@ -3203,7 +3203,7 @@ A Nash equilibrium $\mathbf{z}^* = (z^{(1)*}, \ldots, z^{(N)*})$ (Theorem {prf:r
 - The variational principle $\delta \langle \Psi | \hat{H} | \Psi \rangle / \delta \Psi^* = 0$ with normalization constraint yields the same stationarity conditions in the $\sigma \to 0$ limit.
 - The second variation (Hessian) being non-positive (Condition 3) corresponds to local stability of the ground state.
 
-See **{ref}`Appendix E.19 <sec-appendix-e-rigorous-proof-sketches-for-ontological-and-metabolic-laws>`** for the complete WKB/semiclassical analysis proving Gaussian concentration to delta function as $\sigma \to 0$, with explicit energy correction formulas. $\square$
+See **{ref}`sec-appendix-e-rigorous-proof-sketches-for-ontological-and-metabolic-laws`** for the complete WKB/semiclassical analysis proving Gaussian concentration to delta function as $\sigma \to 0$, with explicit energy correction formulas. $\square$
 
 *Remark (Multiple Nash).* If multiple Nash equilibria exist, each corresponds to a different local minimum of the energy landscape. The **global** ground state is the Nash with lowest $E_0$; other Nash equilibria are metastable excited states.
 
@@ -3318,7 +3318,7 @@ where:
 
 **Key scaling:** $P_{\text{tunnel}} \propto e^{-\Delta \Phi_P / \sigma}$, so higher barriers or lower temperature (small $\sigma$) exponentially suppress tunneling.
 
-*Cross-reference:* This generalizes Theorem {prf:ref}`thm-memory-induced-barrier-crossing` from single-agent memory barriers to multi-agent Pareto barriers. See {ref}`Appendix E.7 <sec-appendix-e-rigorous-proof-sketches-for-ontological-and-metabolic-laws>` for the rigorous proof via Agmon estimates and spectral theory.
+*Cross-reference:* This generalizes Theorem {prf:ref}`thm-memory-induced-barrier-crossing` from single-agent memory barriers to multi-agent Pareto barriers. See {ref}`sec-appendix-e-rigorous-proof-sketches-for-ontological-and-metabolic-laws` for the rigorous proof via Agmon estimates and spectral theory.
 
 :::
 
@@ -3395,7 +3395,7 @@ The following table consolidates the correspondence between quantum mechanical c
 | **Planck constant $\hbar$** | Cognitive Action Scale $\sigma$ | {prf:ref}`def-cognitive-action-scale` |
 | **Hilbert space $\mathcal{H}$** | $L^2(\mathcal{Z}, d\mu_G)$ | {prf:ref}`def-inference-hilbert-space` |
 | **Hamiltonian $\hat{H}$** | Inference Hamiltonian $\hat{H}_{\text{inf}}$ | {prf:ref}`thm-madelung-transform` |
-| **Kinetic energy $-\frac{\hbar^2}{2m}\nabla^2$** | Diffusion term $-\frac{\sigma^2}{2} D^i D_i$ | {ref}`Section 29.9 <sec-summary-table-from-single-to-multi-agent>` |
+| **Kinetic energy $-\frac{\hbar^2}{2m}\nabla^2$** | Diffusion term $-\frac{\sigma^2}{2} D^i D_i$ | {ref}`sec-summary-table-from-single-to-multi-agent` |
 | **Potential energy $V(x)$** | Effective Potential $\Phi_{\text{eff}}$ | Definition {prf:ref}`def-effective-potential` |
 | **Quantum potential $Q$** | Information Resolution Limit $Q_B$ | {prf:ref}`def-bohm-quantum-potential` |
 | **Schrödinger equation** | Inference-Wave equation | {prf:ref}`thm-madelung-transform` |
@@ -3407,7 +3407,7 @@ The following table consolidates the correspondence between quantum mechanical c
 | **Imaginary time evolution** | Value Iteration | {prf:ref}`prop-imaginary-time-nash-finding` |
 | **Density matrix $\hat{\rho}$** | Belief Operator (GKSL) | Definition {prf:ref}`def-belief-operator` |
 | **Lindblad dissipator** | WFR Reaction Term $r$ | Definition {prf:ref}`def-gksl-generator` |
-| **von Neumann entropy** | Belief Entropy $-\text{Tr}[\hat{\rho}\ln\hat{\rho}]$ | {ref}`Section 29.14 <sec-strategic-connection-covariant-derivative>` |
+| **von Neumann entropy** | Belief Entropy $-\text{Tr}[\hat{\rho}\ln\hat{\rho}]$ | {ref}`sec-strategic-connection-covariant-derivative` |
 | **WKB approximation** | Semiclassical limit | {prf:ref}`cor-semiclassical-limit` |
 | **Spectral gap** | Convergence rate to Nash | {prf:ref}`prop-imaginary-time-nash-finding` |
 
@@ -3422,7 +3422,7 @@ Each level adds expressive power while remaining mathematically consistent with 
 (sec-diagnostic-nodes-quantum-consistency)=
 ## Diagnostic Nodes 57–60 (Quantum Consistency)
 
-Following the diagnostic node convention ({ref}`Section 3.1 <sec-theory-thin-interfaces>`), we define four new monitors for quantum consistency in multi-agent systems.
+Following the diagnostic node convention ({ref}`sec-theory-thin-interfaces`), we define four new monitors for quantum consistency in multi-agent systems.
 
 (node-57)=
 **Node 57: CoherenceCheck**
@@ -3456,7 +3456,7 @@ Following the diagnostic node convention ({ref}`Section 3.1 <sec-theory-thin-int
 - $\dot{S}_{\text{vN}} < 0$: Entropy decreasing (spontaneous ordering, may indicate instability)
 - $\dot{S}_{\text{vN}} \approx 0$: Near equilibrium
 
-**Connection to Landauer:** Entropy production should satisfy $\dot{S}_{\text{vN}} \geq -\mathcal{W}_{\text{comp}}/T_c$ where $\mathcal{W}_{\text{comp}}$ is computational work ({ref}`Section 31 <sec-computational-metabolism-the-landauer-bound-and-deliberation-dynamics>`).
+**Connection to Landauer:** Entropy production should satisfy $\dot{S}_{\text{vN}} \geq -\mathcal{W}_{\text{comp}}/T_c$ where $\mathcal{W}_{\text{comp}}$ is computational work ({ref}`sec-computational-metabolism-the-landauer-bound-and-deliberation-dynamics`).
 
 **Threshold:** $|\dot{S}_{\text{vN}}| < \dot{S}_{\max}$ (implementation-dependent).
 
