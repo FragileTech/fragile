@@ -249,6 +249,8 @@ Each algorithm class achieves polynomial-time performance by exploiting structur
 $$\forall \lozenge \in \{\sharp, \int, \flat, \ast, \partial\}: \quad K_\lozenge(\text{solution}) \geq K(\text{instance}) - o(n)$$
 
 This is the AIT content of {prf:ref}`mt-alg-complete`.
+
+In Sieve instantiations, $K(\cdot)$ is evaluated on the encoded thin trace $T_{\mathrm{thin}}$ using the approximable proxy $K_\epsilon$ with fixed resource bounds.
 :::
 
 ### Detailed Algorithm Class Specifications
@@ -550,7 +552,7 @@ $((\sharp\text{-status}, \int\text{-status}, \flat\text{-status}, \ast\text{-sta
 
 *Step 1 (AIT Setup: Complexity Reduction Requirement).*
 
-By the Sieve-Thermodynamic Correspondence ({prf:ref}`thm-sieve-thermo-correspondence`), polynomial-time convergence requires **Kolmogorov complexity reduction**: the algorithm must decrease $K(x_t)$ ({prf:ref}`def-kolmogorov-complexity`) from the initial instance complexity $K(\mathcal{X}) \sim N$ to $O(\log N)$ (solution encoding) in $\text{poly}(N)$ steps.
+By the Sieve-Thermodynamic Correspondence ({prf:ref}`thm-sieve-thermo-correspondence`), polynomial-time convergence requires **Kolmogorov complexity reduction** on the thin trace: the algorithm must decrease $K_\epsilon(T_{\mathrm{thin},t})$ from the initial trace complexity $K_\epsilon(T_{\mathrm{thin},0}) \sim N$ to $O(\log N)$ (solution encoding) in $\text{poly}(N)$ steps.
 
 By the **Levin-Schnorr Theorem** {cite}`Levin73b,Schnorr73`, uniform random search on an amorphous (structureless) space achieves expected complexity reduction:
 

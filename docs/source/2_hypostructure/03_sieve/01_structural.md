@@ -316,7 +316,7 @@ graph TD
     SurgTD -. "Kre_SurgTD" .-> ComplexCheck
     BarrierMix -- "Yes: Kblk_TBrho" --> ComplexCheck
 
-    ErgoCheck -- "Yes: K+_TBrho" --> ComplexCheck{"<b>11. Rep_K:</b> Is Trace Describable?<br>∃p: |p| ≤ L, U(p) ≈ T_thin"}
+    ErgoCheck -- "Yes: K+_TBrho" --> ComplexCheck{"<b>11. Rep_K:</b> Is Trace Describable?<br>∃p: |p| ≤ L, time ≤ R, U(p) ≈ T_thin"}
 
     %% --- LEVEL 7: KOLMOGOROV FILTRATION ---
     ComplexCheck -- "No: K-_RepK" --> BarrierEpi{"<b>B11. Rep_K:</b> Approx. Bounded?<br>sup K_ε#40;T_thin#41; ≤ S_BH"}

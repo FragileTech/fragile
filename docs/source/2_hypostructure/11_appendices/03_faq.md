@@ -410,9 +410,9 @@ Yes. The framework explicitly admits **terminal failure modes** where all three 
 4. **Resource exhaustion:** Type A surgeries consume bounded resources (event count, surgery budget). If all surgeries are exhausted without reaching VICTORY, the system routes to a terminal mode documenting the exhaustion.
 
 **Example (BarrierEpi breach → SurgDC failure):**
-- BarrierEpi breaches if complexity exceeds holographic bound: $\sup_\epsilon K_\epsilon(x) > S_{\text{BH}}$.
-- SurgDC (Viscosity Solution) requires admissibility: $K(x) \leq S_{\text{BH}} + \epsilon$ (near bound) and $x \in W^{1,\infty}$ (Lipschitz).
-- If the state is genuinely pathological (e.g., white noise with $K(x) = \infty$), the admissibility predicate fails. No smoothing operation can reduce complexity below the threshold. The system enters Mode D.C (Complexity Explosion)—a terminal state.
+- BarrierEpi breaches if thin-trace complexity exceeds the holographic bound: $\sup_\epsilon K_\epsilon(T_{\mathrm{thin}}) > S_{\text{BH}}$.
+- SurgDC (Viscosity Solution) requires admissibility: $K_\epsilon(T_{\mathrm{thin}}) \leq S_{\text{BH}} + \epsilon$ (near bound) and $T_{\mathrm{thin}} \in W^{1,\infty}$ (Lipschitz).
+- If the thin trace is genuinely pathological (e.g., a white-noise trace with $K_\epsilon(T_{\mathrm{thin}}) \to \infty$), the admissibility predicate fails. No smoothing operation can reduce complexity below the threshold. The system enters Mode D.C (Complexity Explosion)—a terminal state.
 
 **Philosophy:** The framework does not promise to verify all systems. It provides a **systematic diagnostic**: if you reach a terminal mode, you receive a certificate documenting *why* verification failed (which axiom, which barrier, which surgery condition). This is the Exclusion Metatheorem ({prf:ref}`mt-krnl-exclusion`): VICTORY and failure modes are **mutually exclusive** and **jointly exhaustive**.
 

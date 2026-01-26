@@ -515,13 +515,13 @@ represent increasingly sophisticated restoration mechanisms. A system that clear
 
 - **Node 8 (Topology $\mathrm{TB}_\pi$):** Is the target topological sector accessible? This checks for topological obstructions.
 - **Node 9 (Tameness $\mathrm{TB}_O$):** Is the topology o-minimal? This excludes pathological fractal-like structures.
-- **Node 10 (Ergodicity $\mathrm{TB}_\rho$):** Does the flow mix? This determines whether the system explores its phase space uniformly.
+- **Node 10 (Ergodicity $\mathrm{TB}_\rho$):** Is there a spectral gap (strong mixing certificate)? This determines whether the system explores its phase space uniformly.
 
 ### Level 5: Epistemic Strata (Nodes 11-12)
-**Question:** "Can we describe the state, and is it monotonic or oscillatory?"
+**Question:** "Can we describe the thin trace, and is it oscillatory?"
 
-- **Node 11 (Complexity $\mathrm{Rep}_K$):** Is the Kolmogorov complexity of the state bounded? Can the state be described efficiently?
-- **Node 12 (Oscillation $\mathrm{GC}_\nabla$):** Is the flow gradient-like, or does it oscillate? This determines the geometric character of evolution.
+- **Node 11 (Complexity $\mathrm{Rep}_K$):** Is the thin trace describable by a bounded program (within $(L, R, \varepsilon)$)?
+- **Node 12 (Oscillation $\mathrm{GC}_\nabla$):** Is oscillation detected in a finite spectral window? This determines the geometric character of evolution.
 
 ### Level 6: Control Strata (Nodes 13-16)
 **Question:** "How does the system interact with the boundary and external signals?"
@@ -727,6 +727,8 @@ We now shift gears. Up to this point, we have been classifying problems by the *
 
 This is where algorithmic information theory enters. The central quantity is Kolmogorov complexity—the length of the shortest program that can produce a given string. It is the ultimate measure of compressibility, of pattern, of structure.
 
+In the Sieve, we never ask for the full global state. We apply this notion to the **thin trace** $T_{\mathrm{thin}}$ extracted from the thin kernel, so every complexity check is anchored to finite, computable data.
+
 Here is the key insight: decidability is not just about whether an answer exists, but about whether we can *find* it. A problem might have a simple structure (low Kolmogorov complexity) and yet be undecidable, because the algorithm that would solve it does not halt. The Halting Set is the canonical example—its description is short, but querying it requires solving an impossible problem.
 
 The thermodynamic language helps us organize this. Simple, decidable problems are like crystals—low energy, ordered. Complex, random problems are like gases—high energy, disordered. And right at the phase transition, we find the computationally enumerable sets: describable but not decidable, liquid in their behavior.
@@ -761,7 +763,7 @@ where $U$ is a fixed universal prefix-free Turing machine and $|p|$ denotes the 
 
 4. **Uncomputability:** $K$ is not computable, but is upper semi-computable (limit from above).
 
-**Sieve Correspondence:** $K(x)$ is the quantity computed at Node 11 ($\mathrm{Rep}_K$) in the complexity representation check.
+**Sieve Correspondence:** Node 11 ($\mathrm{Rep}_K$) evaluates a bounded program witness for the thin trace $T_{\mathrm{thin}}$; operationally the check is framed in terms of $K_\epsilon(T_{\mathrm{thin}})$.
 :::
 
 :::{div} feynman-prose
@@ -770,6 +772,8 @@ Let me tell you what these properties really mean. The Invariance Theorem says t
 The incompressibility property is beautiful. Most strings of length $n$ have complexity close to $n$—they cannot be compressed. A random string is, in a precise sense, maximally complex. But here is the thing that should make you sit up: we cannot *prove* that any particular string is random, because the complexity function itself is uncomputable.
 
 This is the deep tragedy of AIT: the most important quantity—Kolmogorov complexity—cannot be computed. We can approximate it from above, but we can never be sure we have found the shortest program.
+
+That is why the Sieve never demands exact $K$: it accepts an explicit program witness for $T_{\mathrm{thin}}$ and falls back to $K_\epsilon(T_{\mathrm{thin}})$ bounds when exact optimality is unprovable.
 :::
 
 :::{prf:definition} Chaitin's Halting Probability (Partition Function)
@@ -842,7 +846,7 @@ The Structural Sieve implements a formal correspondence between AIT quantities a
 
 | AIT Quantity | Symbol | Thermodynamic Analog | Sieve Interface |
 |--------------|--------|---------------------|-----------------|
-| Kolmogorov Complexity | $K(x)$ | Energy $E$ | Node 11 ($\mathrm{Rep}_K$) |
+| Kolmogorov Complexity (thin trace) | $K_\epsilon(T_{\mathrm{thin}})$ | Energy $E$ | Node 11 ($\mathrm{Rep}_K$) |
 | Chaitin's Halting Probability | $\Omega$ | Partition Function $Z$ | Normalization constant |
 | Computational Depth | $d_s(x)$ | Thermodynamic Depth | Computation time |
 | Algorithmic Probability | $m(x) \asymp 2^{-K(x)}$ | Boltzmann Weight $e^{-\beta E}$ | Prior distribution |
@@ -856,6 +860,8 @@ $$
 \end{cases}
 
 $$
+
+**Sieve Instantiation:** In the operational Sieve, replace $x$ with the encoded thin trace $T_{\mathrm{thin}}$ and $K$ with the approximable proxy $K_\epsilon$.
 
 **Complexity vs. Decidability:** Low initial-segment complexity ($K(L_n) = O(\log n)$) is compatible with decidability, but it is not a test for undecidability. The Halting Set is c.e. but undecidable; enumerability alone does not imply any $O(\log n)$ bound on $K(L_n)$. It sits in the **Liquid** (HORIZON) phase because Axiom R fails.
 :::

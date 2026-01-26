@@ -569,7 +569,7 @@ Mixing Enhancement (SurgTD) is the physical solution to glassy dynamics. When a 
 :::
 
 :::{div} feynman-prose
-Viscosity Solution (SurgDC) handles complexity explosions---when the description length of a state exceeds what is physically meaningful. The fix is convolution smoothing: blur everything at scale $\epsilon$. This is like looking at a photograph from farther away; fine details vanish, but the important structure remains. Kolmogorov complexity strictly decreases because the smoothed version has fewer degrees of freedom. This is precisely what viscosity solutions do in PDE theory: they select the "physical" solution by adding a small amount of regularization.
+Viscosity Solution (SurgDC) handles complexity explosions---when the description length of the thin trace exceeds what is physically meaningful. The fix is convolution smoothing: blur everything at scale $\epsilon$. This is like looking at a photograph from farther away; fine details vanish, but the important structure remains. Approximable complexity strictly decreases because the smoothed trace has fewer degrees of freedom. This is precisely what viscosity solutions do in PDE theory: they select the "physical" solution by adding a small amount of regularization.
 :::
 
 :::{prf:definition} Surgery Specification: De Giorgi-Nash-Moser

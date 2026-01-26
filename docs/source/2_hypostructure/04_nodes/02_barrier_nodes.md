@@ -590,9 +590,9 @@ Throughout this barrier, $x$ in the prose refers to the thin trace $T_{\mathrm{t
 :::{div} feynman-prose
 And now we arrive at something genuinely mind-bending: the epistemic horizon, where information theory meets the physics of spacetime.
 
-Here's the question: how much information can you encode in a given region of space? The holographic bound says the answer is *finite*—proportional to the surface area, not the volume. This is the Bekenstein-Hawking entropy, and it puts a hard limit on how complex any physical state can be.
+Here's the question: how much information can you encode in a given region of space? The holographic bound says the answer is *finite*—proportional to the surface area, not the volume. This is the Bekenstein-Hawking entropy, and it puts a hard limit on how complex any physical state (and its thin trace) can be.
 
-The barrier predicate $\sup_{\epsilon > 0} K_\epsilon(x) \leq S_{\text{BH}}$ is asking: "Even though we can't compute the exact Kolmogorov complexity, do all *approximations* to the complexity stay within the holographic bound?"
+The barrier predicate $\sup_{\epsilon > 0} K_\epsilon(T_{\mathrm{thin}}) \leq S_{\text{BH}}$ is asking: "Even though we can't compute the exact Kolmogorov complexity, do all *approximations* to the thin-trace complexity stay within the holographic bound?"
 
 This is subtle. Exact Kolmogorov complexity is famously uncomputable—you can never know for certain the length of the shortest program that generates a given string. But we can compute *approximations* that converge from above. If these approximations stay bounded, we're safe. If they blow up, we've hit an epistemic horizon—the state contains more information than spacetime can hold, which is physically impossible.
 :::
