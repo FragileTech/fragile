@@ -331,26 +331,21 @@ This is not a "they're approximately the same" result. It's exact equivalence. T
 Assume:
 1. finite macro alphabet $\mathcal{K}$ and (for simplicity) finite action set $\mathcal{A}$,
 2. an enclosure-consistent macro kernel $\bar{P}(k'\mid k,a)$,
-3. bounded reward flux $\mathcal{R}(k,a)$.
+3. bounded reward flux $\mathcal{R}(k,a)$,
+4. discount factor $\gamma \in (0,1)$ (ensures convergence of infinite-horizon sums).
 
 Then the following are equivalent characterizations of the same optimal control law:
 
 1. **MaxEnt control (utility + freedom):** $\pi^*$ maximizes $J_{T_c}(\pi)$ from {prf:ref}`def-maxent-rl-objective-on-macrostates`.
-2. **Exponentially tilted trajectory measure (KL-regularization).** Fix a reference (prior) policy $\pi_0(a\mid k)$ with full support (uniform when $\mathcal{A}$ is finite). For the finite-horizon trajectory
-
-   $$
-   \omega := (K^{\text{act}}_t,\dots,K^{\text{act}}_{t+H-1},K_{t+1},\dots,K_{t+H}),
-
-   $$
-   the optimal controlled path law admits an exponential-family form relative to the reference measure induced by $\pi_0$ and $\bar{P}$:
+2. **Exponentially tilted trajectory measure (KL-regularization).** Fix a reference (prior) policy $\pi_0(a\mid k)$ with full support (uniform when $\mathcal{A}$ is finite). Consider the infinite-horizon trajectory measure. The optimal controlled path law admits an exponential-family form relative to the reference measure induced by $\pi_0$ and $\bar{P}$:
 
    $$
    P^*(\omega\mid K_t=k)\ \propto\
-   \Big[\prod_{h=0}^{H-1}\pi_0(K^{\text{act}}_{t+h}\mid K_{t+h})\,\bar{P}(K_{t+h+1}\mid K_{t+h},K^{\text{act}}_{t+h})\Big]\,
-   \exp\!\left(\frac{1}{T_c}\sum_{h=0}^{H-1}\gamma^h\,\mathcal{R}(K_{t+h},K^{\text{act}}_{t+h})\right),
+   P_0(\omega \mid k)\,
+   \exp\!\left(\frac{1}{T_c}\sum_{h=0}^{\infty}\gamma^h\,\mathcal{R}(K_{t+h},K^{\text{act}}_{t+h})\right),
 
    $$
-   where the normalizer is the (state-dependent) path-space normalizing constant.
+   where $P_0(\omega \mid k) := \prod_{h=0}^{\infty}\pi_0(K^{\text{act}}_{t+h}\mid K_{t+h})\,\bar{P}(K_{t+h+1}\mid K_{t+h},K^{\text{act}}_{t+h})$ is the reference trajectory measure, and the normalizer is the (state-dependent) path-space normalizing constant. (For finite-horizon $H$, replace $\infty$ with $H-1$; the equivalence holds for any horizon.)
 3. **Soft Bellman optimality:** the optimal value function $V^*$ satisfies the soft Bellman recursion of {prf:ref}`prop-soft-bellman-form-discrete-actions`, and $\pi^*$ is the corresponding softmax policy.
 
 Moreover, the path-space log-normalizer is (up to scaling) the soft value. Gradients of the log-normalizer therefore induce a well-defined exploration direction in any differentiable macro coordinate system. The link between soft optimality and path entropy is cleanest when stated as a KL-regularized variational identity: if $P_0(\omega\mid k)$ denotes the reference trajectory measure induced by $\pi_0$ and $\bar{P}$, then
@@ -360,12 +355,12 @@ $$
 =
 \sup_{P(\cdot\mid k)}
 \left\{
-\frac{1}{T_c}\,\mathbb{E}_{P}\!\left[\sum_{h=0}^{H-1}\gamma^h\,\mathcal{R}\right]
+\frac{1}{T_c}\,\mathbb{E}_{P}\!\left[\sum_{h=0}^{\infty}\gamma^h\,\mathcal{R}\right]
 -D_{\mathrm{KL}}(P(\cdot\mid k)\Vert P_0(\cdot\mid k))
 \right\},
 
 $$
-and the optimizer is exactly the exponentially tilted law {math}`P^*`. In the special case where {math}`P_0` is uniform (or treated as constant), the KL term differs from Shannon path entropy by an additive constant, recovering the standard "maximize entropy subject to expected reward" view.
+and the optimizer is exactly the exponentially tilted law {math}`P^*`. In the special case where {math}`P_0` is uniform (or treated as constant), the KL term differs from Shannon path entropy by an additive constant, recovering the standard "maximize entropy subject to expected reward" view. The finite-horizon version replaces $\infty$ with $H-1$; as $H \to \infty$, the finite-horizon solution converges to the stationary infinite-horizon optimum.
 
 *Proof sketch.* Set up the constrained variational problem "maximize path entropy subject to an expected reward constraint." The Euler-Lagrange condition yields an exponential-family distribution on paths. The normalizer obeys dynamic programming and equals the soft value. Differentiating the log-normalizer yields the corresponding exploration-gradient direction.
 
@@ -402,7 +397,7 @@ For practical algorithms, this means: if you can efficiently compute or estimate
 MaxEnt control is equivalent to an **Exponentially Tilted Trajectory Measure**:
 
 $$
-P^*(\omega|K_t=k) \propto P_0(\omega|k) \exp\!\left(\frac{1}{T_c}\sum_{h=0}^{H-1} \gamma^h \mathcal{R}(K_{t+h}, K^{\text{act}}_{t+h})\right)
+P^*(\omega|K_t=k) \propto P_0(\omega|k) \exp\!\left(\frac{1}{T_c}\sum_{h=0}^{\infty} \gamma^h \mathcal{R}(K_{t+h}, K^{\text{act}}_{t+h})\right)
 
 $$
 The path-space log-normalizer equals the soft value (Theorem {prf:ref}`thm-equivalence-of-entropy-regularized-control-forms-discrete-macro`). This is a **Schrödinger bridge** formulation.
@@ -420,7 +415,7 @@ This recovers **KL-Regularized Policy Gradient** and exponential family policies
 
 **What the generalization offers:**
 - **Path-space view**: The optimal policy is a Schrödinger bridge between prior and reward-weighted measures
-- **Trajectory entropy**: Explores future *macro state-action trajectories* $\omega = (K^{\text{act}}_t, \ldots, K_{t+H})$, not just single actions
+- **Trajectory entropy**: Explores future *macro state-action trajectories* $\omega = (K^{\text{act}}_t, K_{t+1}, K^{\text{act}}_{t+1}, \ldots)$, not just single actions
 - **Variational principle**: Soft value = log-partition function of trajectory measure (eq. above)
 - **Causal entropy**: $S_c(k, H; \pi)$ measures future reachability under causal interventions
 ::::

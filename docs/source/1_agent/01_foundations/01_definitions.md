@@ -220,7 +220,7 @@ Now let's go through the standard RL vocabulary and see how each term looks from
 
      $$
      where $K_t$ is the **discrete predictive signal** (bounded-rate latent statistic), $z_{n,t}$ is a **structured nuisance / gauge residual** (pose/basis/disturbance coordinates), and $z_{\mathrm{tex},t}$ is a **texture residual** (high-rate reconstruction detail).
-   - *Boundary gate nodes ({ref}`Section 3 <sec-diagnostics-stability-checks>`):*
+   - *Boundary gate nodes ({ref}`sec-diagnostics-stability-checks`):*
      - **Node 14 (InputSaturationCheck):** input saturation (sensor dynamic range exceeded).
      - **Node 15 (SNRCheck):** low signal-to-noise (SNR too low to support stable inference).
      - **Node 13 (BoundaryCheck):** the channel is open in the only well-typed sense: $I(X;K)>0$ (symbolic mutual information).
@@ -231,11 +231,11 @@ Now let's go through the standard RL vocabulary and see how each term looks from
 
 3. **Action $a_t$ (Control / Actuation).**
    - *Standard:* a vector sent to the environment.
-   - *Fragile:* a control signal chosen to minimize expected future cost under uncertainty and constraints. Like observations, actions decompose into structured components: $a_t = (K^{\text{act}}_t, z_{n,\text{motor}}, z_{\text{tex,motor}})$ where $K^{\text{act}}_t$ is the discrete motor macro, $z_{n,\text{motor}}$ is motor nuisance (compliance), and $z_{\text{tex,motor}}$ is motor texture (tremor). See {ref}`Section 23.3 <sec-motor-texture-the-action-residual>` for details.
+   - *Fragile:* a control signal chosen to minimize expected future cost under uncertainty and constraints. Like observations, actions decompose into structured components: $a_t = (K^{\text{act}}_t, z_{n,\text{motor}}, z_{\text{tex,motor}})$ where $K^{\text{act}}_t$ is the discrete motor macro, $z_{n,\text{motor}}$ is motor nuisance (compliance), and $z_{\text{tex,motor}}$ is motor texture (tremor). See {ref}`sec-motor-texture-the-action-residual` for details.
    - *Cybernetic constraints:*
      - **Node 2 (ZenoCheck):** limits chattering (bounded variation in control outputs).
      - **BarrierSat:** actuator saturation (finite control authority).
-   - *Boundary interpretation ({ref}`Section 23.1 <sec-the-symplectic-interface-position-momentum-duality>`):* Actions impose **Neumann boundary conditions** (clamping flux/momentum) on the agent's internal manifold, dual to the Dirichlet conditions imposed by sensors.
+   - *Boundary interpretation ({ref}`sec-the-symplectic-interface-position-momentum-duality`):* Actions impose **Neumann boundary conditions** (clamping flux/momentum) on the agent's internal manifold, dual to the Dirichlet conditions imposed by sensors.
 
 :::{div} feynman-prose
    Actions aren't free. You can't jitter infinitely fast (Zeno check). You can't push infinitely hard (saturation). And there's a beautiful duality here: sensors tell you "where you are" (Dirichlet), while actions tell you "which way you're pushing" (Neumann). Together they close the boundary conditions on the agent's internal dynamics.
@@ -245,10 +245,10 @@ Now let's go through the standard RL vocabulary and see how each term looks from
    - *Standard:* a scalar to maximize.
    - *Fragile:* boundary reward flux (a 1-form) evaluated along the trajectory. In continuous time it appears as an
      instantaneous **cost rate** $r_t=\langle\mathcal{R},\dot{z}\rangle$; in discrete time it appears as an
-     incremental term in the Bellman/HJB consistency relation ({ref}`Section 2.7 <sec-the-hjb-correspondence>`).
+     incremental term in the Bellman/HJB consistency relation ({ref}`sec-the-hjb-correspondence`).
    - *Mechanism:* the critic's $V$ is the internal value/cost-to-go for the **exact (conservative) component**; the
-     non-conservative component remains as a curl/connection term in the dynamics ({ref}`Section 24.1 <sec-the-reward-1-form>`).
-   - *Boundary interpretation ({ref}`Section 24.1 <sec-the-reward-1-form>`):* Reward is a boundary reward flux
+     non-conservative component remains as a curl/connection term in the dynamics ({ref}`sec-the-reward-1-form`).
+   - *Boundary interpretation ({ref}`sec-the-reward-1-form`):* Reward is a boundary reward flux
      1-form $J_r$ defined by the pullback $J_r=\iota^*\mathcal{R}$ of the bulk reward 1-form $\mathcal{R}$.
      By Hodge decomposition, $\mathcal{R} = d\Phi + \delta \Psi + \eta$; only the exact part $d\Phi$ (identified with
      $dV$, the critic's exact component) yields a scalar charge density $\sigma_r$ and a **Screened Poisson Equation**
@@ -271,7 +271,7 @@ Now let's go through the standard RL vocabulary and see how each term looks from
 
 6. **Episode / Rollout (Finite-Horizon Segment).**
    - *Standard:* a finite trajectory segment.
-   - *Fragile:* a finite window used to estimate a cumulative objective under uncertainty. "Success" is satisfying task constraints while maintaining stability; "failure" is crossing a monitored limit ({ref}`Section 4 <sec-4-limits-barriers-the-limits-of-control>`).
+   - *Fragile:* a finite window used to estimate a cumulative objective under uncertainty. "Success" is satisfying task constraints while maintaining stability; "failure" is crossing a monitored limit ({ref}`sec-4-limits-barriers-the-limits-of-control`).
 
 (sec-symmetries-and-gauge-freedoms)=
 ### Symmetries and Gauge Freedoms (Operational)
@@ -302,10 +302,10 @@ Let:
   G_{\text{obj}} := \{(a,b): a>0,\ r\mapsto ar+b\}.
 
   $$
-  (If representing value as a unit-norm phase variable, one may instead use $U(1)$; {ref}`Section 3.3 <sec-defect-functionals-implementing-regulation>`.C treats the real-valued case via projective heads.)
+  (If representing value as a unit-norm phase variable, one may instead use $U(1)$; {ref}`sec-defect-functionals-implementing-regulation`.C treats the real-valued case via projective heads.)
 - $G_{\text{spatial}}$ be an **observation gauge** acting on raw observations $x$ (e.g., pose/translation/rotation; choose $SE(3)$, $SE(2)$, $\mathrm{Sim}(2)$, or a task-specific subgroup depending on sensors).
 - $S_{|\mathcal{K}|}$ be the **symbol-permutation symmetry** of the discrete macro register: relabeling code indices is unobservable if downstream components depend only on embeddings $\{e_k\}$.
-- $\mathrm{Symp}(2n,\mathbb{R})$ be an optional **phase-space symmetry** acting on canonical latent coordinates $z=(q,p)\in\mathbb{R}^{2n}$ when the world model is parameterized as a symplectic/Hamiltonian system {cite}`greydanus2019hamiltonian` ({ref}`Section 3.3 <sec-defect-functionals-implementing-regulation>`.B).
+- $\mathrm{Symp}(2n,\mathbb{R})$ be an optional **phase-space symmetry** acting on canonical latent coordinates $z=(q,p)\in\mathbb{R}^{2n}$ when the world model is parameterized as a symplectic/Hamiltonian system {cite}`greydanus2019hamiltonian` ({ref}`sec-defect-functionals-implementing-regulation`.B).
 
 The (candidate) total symmetry group is the direct product
 
@@ -332,9 +332,9 @@ $$
   K(x)\approx K(g\cdot x)\quad (g\in G_{\text{spatial}}),
 
   $$
-  while $z_n$ carries structured nuisance parameters (pose/basis/disturbance coordinates) and $z_{\mathrm{tex}}$ carries reconstruction-only texture ({ref}`Section 2.2b <sec-the-shutter-as-a-vq-vae>`, {ref}`Section 3.3 <sec-defect-functionals-implementing-regulation>`.A).
+  while $z_n$ carries structured nuisance parameters (pose/basis/disturbance coordinates) and $z_{\mathrm{tex}}$ carries reconstruction-only texture ({ref}`sec-the-shutter-as-a-vq-vae`, {ref}`sec-defect-functionals-implementing-regulation`.A).
 - **World model $S$ and policy $\pi$:** be covariant to symbol permutations $S_{|\mathcal{K}|}$ by treating $K$ only through its embedding $e_K$ (not the integer label) and by using permutation-invariant diagnostics.
-- **Critic/value and dual variables:** enforce stability and constraint satisfaction in a way that is robust to re-scaling/offset of the scalar feedback ({ref}`Section 3.3 <sec-defect-functionals-implementing-regulation>`.C, {ref}`Section 3.5 <sec-adaptive-multipliers-learned-penalties-setpoints-and-calibration>`).
+- **Critic/value and dual variables:** enforce stability and constraint satisfaction in a way that is robust to re-scaling/offset of the scalar feedback ({ref}`sec-defect-functionals-implementing-regulation`.C, {ref}`sec-adaptive-multipliers-learned-penalties-setpoints-and-calibration`).
 
 These are *requirements on representations and interfaces*, not philosophical claims: if an invariance is not enforced, the corresponding failure modes (symmetry blindness, brittle scaling, uncontrolled drift) become more likely and harder to debug.
 
@@ -436,7 +436,7 @@ Now here's something subtle. Between receiving observation $x_t$ and emitting ac
 We parameterize this internal process with a continuous variable $s$. The agent starts at $s=0$ when it receives the observation, and by the time $s$ reaches some budget $S_{\text{budget}}$, it needs to have an action ready.
 :::
 
-This is the integration variable of the internal solver and the Equation of Motion ({ref}`Section 22 <sec-the-equations-of-motion-geodesic-jump-diffusion>`). It represents the agent's "thinking" process:
+This is the integration variable of the internal solver and the Equation of Motion ({ref}`sec-the-equations-of-motion-geodesic-jump-diffusion`). It represents the agent's "thinking" process:
 
 $$
 \frac{dz}{ds} = \mathcal{M}_{\text{curl}}\!\left(-G^{-1}\nabla \Phi_{\text{eff}} + \dots\right), \qquad \mathcal{M}_{\text{curl}} := (I - \beta_{\text{curl}} G^{-1}\mathcal{F})^{-1}
@@ -444,7 +444,7 @@ $$
 $$
 - **Relationship to $t$:** to transition from $t$ to $t+1$, the agent integrates its internal dynamics from $s=0$ to $s=S_{\text{budget}}$.
 - **Thinking fast vs. slow:** small $S_{\text{budget}}$ yields reflexive action; large $S_{\text{budget}}$ yields deliberate planning.
-- **Thermodynamics:** this is the time variable in which Fokker-Planck dynamics evolve internal belief toward equilibrium ({ref}`Section 22.5 <sec-the-overdamped-limit>`).
+- **Thermodynamics:** this is the time variable in which Fokker-Planck dynamics evolve internal belief toward equilibrium ({ref}`sec-the-overdamped-limit`).
 
 :::{div} feynman-prose
 Here's the key insight: you can "think longer" within a single time step. An agent with more compute budget (larger $S_{\text{budget}}$) can do more deliberation before acting. This is like a chess player who takes 5 minutes to think versus one who moves immediately---they're both making one move (one increment of $t$), but one is doing more internal computation (larger $s$).

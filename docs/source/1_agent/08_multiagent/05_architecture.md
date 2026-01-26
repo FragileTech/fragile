@@ -221,7 +221,7 @@ where $\lambda(z) = 2/(1-|z|^2)$ is the **conformal factor**.
 - At origin $z = 0$: $\lambda(0) = 2$ (minimal metric)
 - Inverse metric: $G^{ij}(z) = \lambda(z)^{-2} \delta^{ij} = \frac{(1-|z|^2)^2}{4} \delta^{ij}$
 
-The **Christoffel symbols** for this metric are (Proposition {prf:ref}`prop-a-explicit-christoffel-symbols-for-poincar-disk`):
+The **Christoffel symbols** for this metric are (Proposition {prf:ref}`prop-explicit-christoffel-symbols-for-poincare-disk`):
 
 $$
 \Gamma^k_{ij}(z) = \frac{2}{1-|z|^2}\left(\delta^k_i z_j + \delta^k_j z_i - \delta_{ij} z^k\right)
@@ -626,7 +626,7 @@ With Values containing (symmetrized) quadratic features of $v'$, an attention-we
 :::{prf:proposition} Explicit Christoffel Encoding for Poincare Ball/Disk
 :label: prop-christoffel-encoding-poincare
 
-For the Poincare ball/disk with Christoffel symbols (Proposition {prf:ref}`prop-a-explicit-christoffel-symbols-for-poincar-disk`):
+For the Poincare ball/disk with Christoffel symbols (Proposition {prf:ref}`prop-explicit-christoffel-symbols-for-poincare-disk`):
 
 $$
 \Gamma^k_{ij}(z) = \frac{2}{1-|z|^2}\left(\delta^k_i z_j + \delta^k_j z_i - \delta_{ij} z^k\right)
@@ -673,7 +673,7 @@ In the attention mechanism, we need to preserve this structure. The observation 
 The chiral projector uses the value gradient to define the "direction" of action. Let $\hat{n}(z)$ be a unit vector in the $SU(2)$ internal space derived from the value gradient, using a learned projection $P: \mathbb{R}^d \to \mathbb{R}^3$ when $d>3$:
 
 $$
-\hat{n}(z) = \frac{P \nabla_A V}{\|P \nabla_A V\|}
+\hat{n}(z) = \frac{P \nabla V}{\|P \nabla V\|}
 $$
 
 where $\vec{\sigma}$ are the Pauli matrices. The projection operator is:
@@ -684,7 +684,7 @@ $$
 
 This projects the doublet onto the component aligned with the value gradient---the direction of improvement.
 
-In flat regions where $P \nabla_A V \approx 0$, the projector becomes ambiguous. This is correct: when there is no preferred direction, the agent should not commit to a definite action. The architecture naturally encodes decision ambiguity as projector degeneracy.
+In flat regions where $P \nabla V \approx 0$, the projector becomes ambiguous. This is correct: when there is no preferred direction, the agent should not commit to a definite action. The architecture naturally encodes decision ambiguity as projector degeneracy.
 :::
 
 We implement the $SU(2)_L$ gauge structure that distinguishes observation and action channels.
@@ -723,7 +723,7 @@ $$
 The **chiral projector** extracts committed actions from the observation-action doublet using a unit $SU(2)$ direction derived from the value gradient:
 
 $$
-\hat{n}(z) = \frac{P \nabla_A V(z)}{\|P \nabla_A V(z)\|}
+\hat{n}(z) = \frac{P \nabla V(z)}{\|P \nabla V(z)\|}
 $$
 
 where $P: \mathbb{R}^d \to \mathbb{R}^3$ is a learned projection and $\vec{\sigma} = (\sigma_1, \sigma_2, \sigma_3)$ are Pauli matrices (generators of $SU(2)$).
@@ -751,7 +751,7 @@ $$
 - $\text{Tr}(\Pi_{\text{chirality}}) = 1$ (rank-1 projector)
 - Under $SU(2)$ transformation $\Psi_L \to U\Psi_L$: if $\hat{n}$ is constructed as an adjoint vector, then $\hat{n} \to U\hat{n}U^\dagger$, preserving gauge covariance
 
-**Degeneracy**: When $\|P \nabla_A V\| \to 0$ (flat value landscape), $\hat{n}$ is undefined. The agent should not commit in ambiguous regions.
+**Degeneracy**: When $\|P \nabla V\| \to 0$ (flat value landscape), $\hat{n}$ is undefined. The agent should not commit in ambiguous regions.
 
 :::
 
@@ -1982,7 +1982,7 @@ $$
 
 where $U_r, V_r \in \mathbb{R}^{d_k \times d}$ are low-rank factors with $R \ll d$.
 
-**For the Poincare ball/disk**: the contracted Christoffel correction has a closed form. Using Proposition {prf:ref}`prop-a-explicit-christoffel-symbols-for-poincar-disk`,
+**For the Poincare ball/disk**: the contracted Christoffel correction has a closed form. Using Proposition {prf:ref}`prop-explicit-christoffel-symbols-for-poincare-disk`,
 $$
 \Gamma^k_{ij}(z) v^i v^j = \frac{2}{1-|z|^2}\left(2(z\cdot v)\,v^k - \|v\|^2 z^k\right),
 $$
@@ -2062,7 +2062,7 @@ For production deployment:
 
 2. **Use hierarchical Wilson lines** with $L \approx 8$ levels. Precompute once per batch.
 
-3. **Use closed-form Poincare geometry when applicable** (cf. Proposition {prf:ref}`prop-a-explicit-christoffel-symbols-for-poincar-disk`) and factorize only when learning departures from (or alternatives to) the closed form.
+3. **Use closed-form Poincare geometry when applicable** (cf. Proposition {prf:ref}`prop-explicit-christoffel-symbols-for-poincare-disk`) and factorize only when learning departures from (or alternatives to) the closed form.
 
 4. **Combine area law with sparse mask**. No additional cost.
 
@@ -2163,7 +2163,7 @@ We summarize the correspondence between the covariant attention architecture and
 | Position-dependent temperature $\tau(z)$ | Inverse conformal factor $1/\lambda(z)$ | Theorem {prf:ref}`thm-metric-temperature-correspondence` |
 | Geometric Query $W_{Qz}, W_{Q,\Gamma}$ (optional $W_{Qzv}$) | Christoffel symbols $\Gamma^k_{ij}$ | Definition {prf:ref}`def-geodesic-query-projection` |
 | Observation-action doublet | Left-handed $SU(2)_L$ field $\Psi_L$ | Definition {prf:ref}`def-observation-action-doublet-attention` |
-| Chiral projector $\Pi_{\nabla_A V}$ | Electroweak symmetry breaking | Definition {prf:ref}`def-chiral-projector-value-gradient` |
+| Chiral projector $\Pi_{\nabla V}$ | Electroweak symmetry breaking | Definition {prf:ref}`def-chiral-projector-value-gradient` |
 | Area law screening | Confinement string tension | Definition {prf:ref}`def-area-law-screening-attention` |
 | BAOAB steps (4 attention heads + OU) | Boris-BAOAB integrator | Definition {prf:ref}`def-baoab-attention-heads` |
 | Keys | Gradient bank | Proposition {prf:ref}`prop-keys-as-force-bank` |

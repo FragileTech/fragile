@@ -179,7 +179,7 @@ To prevent category errors, we formally distinguish three manifolds with distinc
 **Dimensional Verification:**
 
 - The shutter $E: \mathcal{X} \to \mathcal{K}\times \mathcal{Z}_n\times \mathcal{Z}_{\mathrm{tex}}$ is a **contraction** in structured continuous degrees of freedom ($d_n \ll D$) plus a **finite-rate quantization** in the macro channel ($\log|\mathcal{K}|$ nats); texture may remain high-rate but is firewall-restricted to reconstruction/likelihood.
-- The policy $\pi_\theta$ is typically a map on macrostates (or their code embeddings) $\pi_\theta:\mathcal{K}\to\mathcal{A}$. If a structured nuisance coordinate $z_n$ is required for actuation, treat it as an explicit typed input (policy on $(K,z_n)$) and keep enclosure/closure defined at the macro layer ({ref}`Section 2.8 <sec-conditional-independence-and-sufficiency>`). By contrast, dependence on **texture** $z_{\mathrm{tex}}$ is a causal leak for control and should be prohibited by architecture and monitored (texture is reconstruction-only).
+- The policy $\pi_\theta$ is typically a map on macrostates (or their code embeddings) $\pi_\theta:\mathcal{K}\to\mathcal{A}$. If a structured nuisance coordinate $z_n$ is required for actuation, treat it as an explicit typed input (policy on $(K,z_n)$) and keep enclosure/closure defined at the macro layer ({ref}`sec-conditional-independence-and-sufficiency`). By contrast, dependence on **texture** $z_{\mathrm{tex}}$ is a causal leak for control and should be prohibited by architecture and monitored (texture is reconstruction-only).
 - The metric $G_{n}$ is defined on the **structured nuisance coordinates** $\mathcal{Z}_n$ (and/or the induced geometry of the codebook embedding), not on $\Theta$; texture is excluded from the control metric.
 
 :::{admonition} The Anti-Mixing Principle
@@ -192,7 +192,7 @@ To prevent category errors, we formally distinguish three manifolds with distinc
 This is like confusing how your neurons fire with what you're thinking about. They're related, but they're not the same thing.
 :::
 
-*Remark (WFR Foundation).* The product metric $d_{\mathcal{K}} \oplus G_n$ is a first approximation treating discrete and continuous components separately. {ref}`Section 20 <sec-wasserstein-fisher-rao-geometry-unified-transport-on-hybrid-state-spaces>` provides the rigorous **Wasserstein-Fisher-Rao** (WFR) metric that unifies these components variationally: transport (Wasserstein) handles continuous motion within charts, while reaction (Fisher-Rao) handles discrete jumps between charts.
+*Remark (WFR Foundation).* The product metric $d_{\mathcal{K}} \oplus G_n$ is a first approximation treating discrete and continuous components separately. {ref}`sec-wasserstein-fisher-rao-geometry-unified-transport-on-hybrid-state-spaces` provides the rigorous **Wasserstein-Fisher-Rao** (WFR) metric that unifies these components variationally: transport (Wasserstein) handles continuous motion within charts, while reaction (Fisher-Rao) handles discrete jumps between charts.
 
 (sec-the-shutter-as-a-vq-vae)=
 ## The Shutter as a VQ-VAE (Discrete Macro, Continuous Micro)
@@ -363,7 +363,7 @@ so reconstruction uses the discrete macro code plus structured nuisance.
 Here's a practical problem: if you show the same mug from two different angles, you want the macro symbol $K$ to be the same (it's the same mug!), but of course the pixels are completely different. How do we achieve this?
 :::
 
-**Canonicalization and symmetry quotienting (optional).** Let $G_{\text{spatial}}$ be a nuisance group acting on observations ({ref}`Section 1.1.4 <sec-symmetries-and-gauge-freedoms>`). A practical way to make the macro register invariant to pose/basis choices is to insert a **canonicalization map** $C_\psi:\mathcal{X}\to\mathcal{X}$ before quantization and to train it so that
+**Canonicalization and symmetry quotienting (optional).** Let $G_{\text{spatial}}$ be a nuisance group acting on observations ({ref}`sec-symmetries-and-gauge-freedoms`). A practical way to make the macro register invariant to pose/basis choices is to insert a **canonicalization map** $C_\psi:\mathcal{X}\to\mathcal{X}$ before quantization and to train it so that
 
 $$
 C_\psi(g\cdot x)\approx C_\psi(x)\qquad (g\in G_{\text{spatial}}).
@@ -384,9 +384,9 @@ Let me summarize what we're trying to achieve with this three-way split.
 - $z_{n,t}$ carries **structured nuisance** ("where/how", pose/basis/disturbance coordinates) that may be needed for *actuation* or for explaining boundary-induced deviations, but must remain disentangled from $K$.
 - $z_{\mathrm{tex},t}$ carries **texture/detail** needed for reconstruction/likelihood only and is treated as *measurement/emission residual*: it must not be required for macro closure or for control decisions.
 
-This separation is enforced by orbit-invariance and (macro perpendicular to nuisance/texture) disentanglement losses in {ref}`Section 3.3 <sec-defect-functionals-implementing-regulation>`.A and monitored by SymmetryCheck/DisentanglementCheck ({ref}`Section 3 <sec-diagnostics-stability-checks>`). The jump/residual machinery ({ref}`Section 12.3 <sec-sieve-events-as-projections-reweightings>`) is attached to $z_n$ (structured disturbances), not to $z_{\mathrm{tex}}$.
+This separation is enforced by orbit-invariance and (macro perpendicular to nuisance/texture) disentanglement losses in {ref}`sec-defect-functionals-implementing-regulation`.A and monitored by SymmetryCheck/DisentanglementCheck ({ref}`sec-diagnostics-stability-checks`). The jump/residual machinery ({ref}`sec-sieve-events-as-projections-reweightings`) is attached to $z_n$ (structured disturbances), not to $z_{\mathrm{tex}}$.
 
-*Remark (Motor Texture Extension).* {ref}`Section 23.3 <sec-motor-texture-the-action-residual>` extends this decomposition to the **motor/action** side: $a_t = (K^{\text{act}}_t, z_{n,\text{motor}}, z_{\text{tex,motor}})$. The motor texture $z_{\text{tex,motor}}$ (tremor, fine motor noise) is dual to visual texture via the symplectic form (Theorem {prf:ref}`ax-motor-texture-firewall`). {ref}`Section 23.2 <sec-the-dual-atlas-architecture>` defines a **Dual Atlas Architecture** where $\mathcal{A}_{\text{vis}}$ (visual) and $\mathcal{A}_{\text{act}}$ (action) are related by Legendre transform.
+*Remark (Motor Texture Extension).* {ref}`sec-motor-texture-the-action-residual` extends this decomposition to the **motor/action** side: $a_t = (K^{\text{act}}_t, z_{n,\text{motor}}, z_{\text{tex,motor}})$. The motor texture $z_{\text{tex,motor}}$ (tremor, fine motor noise) is dual to visual texture via the symplectic form (Theorem {prf:ref}`ax-motor-texture-firewall`). {ref}`sec-the-dual-atlas-architecture` defines a **Dual Atlas Architecture** where $\mathcal{A}_{\text{vis}}$ (visual) and $\mathcal{A}_{\text{act}}$ (action) are related by Legendre transform.
 
 :::{admonition} Connection to RL #6: Options Framework as Read-Only Codebook
 :class: note
@@ -436,7 +436,7 @@ $$
 q_\phi(z_n\mid x)=\mathcal{N}(\mu_\phi(x),\operatorname{diag}(\sigma_\phi^2(x))),
 
 $$
-with a task-appropriate prior $p(z_n)$ (often standard normal as a conservative default). The key requirement is *typed*: nuisance may influence reconstruction and may be used to explain structured deviations, but macro prediction/closure must not require it beyond $(K_t,K^{\text{act}}_t)$ ({ref}`Section 2.8 <sec-conditional-independence-and-sufficiency>`).
+with a task-appropriate prior $p(z_n)$ (often standard normal as a conservative default). The key requirement is *typed*: nuisance may influence reconstruction and may be used to explain structured deviations, but macro prediction/closure must not require it beyond $(K_t,K^{\text{act}}_t)$ ({ref}`sec-conditional-independence-and-sufficiency`).
 
 **Texture residual ($z_{\mathrm{tex}}$).** Texture is modeled as a separate continuous residual with posterior
 
@@ -550,7 +550,7 @@ Let me step back and explain why we've gone to all this trouble.
 
 **Metatheorems unlocked by discretization.**
 - A discrete macro-register makes coding-theoretic and finite-memory update bounds applicable.
-- Macro-trajectories become literal strings $K_{0:T}$, so Levin/Kolmogorov-style horizon arguments become well-typed (see **MT: Levin-Search**).
+- Macro-trajectories become literal strings $K_{0:T}$, so Levin/Kolmogorov-style horizon arguments become well-typed (see Meta-Theorem: Levin-Search in {ref}sec-appendix-a-full-derivations).
 
 :::{div} feynman-prose
 In other words: by making part of our representation discrete, we've made the theory work. We can prove things. We can bound things. We can monitor things. That's the payoff for all this structure.
@@ -636,7 +636,7 @@ $$
 \mathcal{S} = \int \left( \underbrace{\frac{1}{2} \lVert\dot{z}\rVert^2_{G}}_{\text{Update smoothness / trust region}} - \underbrace{\frac{d V}{d t}}_{\text{Value improvement}} \right) dt
 
 $$
-Where $\lVert\cdot\rVert_G$ is the norm under a **state-space sensitivity metric** $G$ ({ref}`Section 2.5 <sec-second-order-sensitivity-value-defines-a-local-metric>`). This biases updates toward paths that are conservative in sensitive regions and more aggressive where the value landscape is well-conditioned.
+Where $\lVert\cdot\rVert_G$ is the norm under a **state-space sensitivity metric** $G$ ({ref}`sec-second-order-sensitivity-value-defines-a-local-metric`). This biases updates toward paths that are conservative in sensitive regions and more aggressive where the value landscape is well-conditioned.
 
 :::{admonition} Connection to RL #2: SGD as Degenerate Geodesic Flow
 :class: note
@@ -806,7 +806,7 @@ For practical implementation, we often use a diagonal approximation to the full 
 
 **A Practical Diagonal Sensitivity Metric:**
 
-We construct a diagonal state-space sensitivity metric using the **scaling coefficients** from {ref}`Section 3.2 <sec-scaling-exponents-characterizing-the-agent>`:
+We construct a diagonal state-space sensitivity metric using the **scaling coefficients** from {ref}`sec-scaling-exponents-characterizing-the-agent`:
 
 $$
 G = \text{diag}(\alpha, \beta_{\pi}, \gamma_{\text{wm}}, \delta)
@@ -875,7 +875,7 @@ $$
 (\nabla_i v)^k = \partial_i v^k + \Gamma^k_{ij}v^j.
 
 $$
-**Why this matters here.** Most of the document uses $G$ operationally via diagonal preconditioning $G^{-1}$ (which is computationally cheap). The connection becomes relevant when we ask whether updates are **path dependent** in state space: transporting a tangent vector (e.g., a value gradient direction) around a loop can return a different direction if curvature is present. {ref}`Section 3 <sec-diagnostics-stability-checks>` introduces an operational HolonomyCheck that detects loop drift without explicitly computing $\Gamma$.
+**Why this matters here.** Most of the document uses $G$ operationally via diagonal preconditioning $G^{-1}$ (which is computationally cheap). The connection becomes relevant when we ask whether updates are **path dependent** in state space: transporting a tangent vector (e.g., a value gradient direction) around a loop can return a different direction if curvature is present. {ref}`sec-diagnostics-stability-checks` introduces an operational HolonomyCheck that detects loop drift without explicitly computing $\Gamma$.
 
 (pi-levi-civita)=
 ::::{admonition} Physics Isomorphism: Levi-Civita Connection
@@ -883,7 +883,7 @@ $$
 
 **In Physics:** The Levi-Civita connection is the unique torsion-free, metric-compatible connection on a Riemannian manifold. It defines parallel transport and geodesics. The Christoffel symbols $\Gamma^k_{ij} = \frac{1}{2}G^{kl}(\partial_i G_{jl} + \partial_j G_{il} - \partial_l G_{ij})$ encode how vectors rotate under infinitesimal displacement {cite}`docarmo1992riemannian`.
 
-**In Implementation:** The latent metric $G$ induces a Levi-Civita connection with Christoffel symbols ({ref}`Section 2.5.1 <sec-levi-civita-connection-and-parallel-transport>`):
+**In Implementation:** The latent metric $G$ induces a Levi-Civita connection with Christoffel symbols ({ref}`sec-levi-civita-connection-and-parallel-transport`):
 
 $$
 \Gamma^k_{ij}(z) = \frac{1}{2}G^{kl}(z)\left(\partial_i G_{jl} + \partial_j G_{il} - \partial_l G_{ij}\right)
@@ -952,7 +952,7 @@ G_{ij}(z) = \lambda_G\,\mathbb{E}_{a \sim \pi}\left[\frac{\partial \log\pi(a|z)}
 
 $$
 The trust region is a **belief-space ball** under the Wasserstein-Fisher-Rao distance
-(Definition {prf:ref}`def-the-wfr-action`, {ref}`Section 20 <sec-wasserstein-fisher-rao-geometry-unified-transport-on-hybrid-state-spaces>`):
+(Definition {prf:ref}`def-the-wfr-action`, {ref}`sec-wasserstein-fisher-rao-geometry-unified-transport-on-hybrid-state-spaces`):
 
 $$
 d_{\mathrm{WFR}}(p_{\text{new}}, p_{\text{old}}) \le \epsilon
@@ -1064,7 +1064,7 @@ The Lie derivative $\mathcal{L}_f V = dV(f)$ is a **pairing**, not an inner prod
 - $\mathfrak{D}(z,a)$ is an explicit control-effort / regularization term (e.g., KL control, action penalties).
 - At optimality, the relation enforces a local consistency between value change, immediate cost, and control effort.
 
-*Forward reference (Helmholtz Continuum Limit).* {ref}`Section 24.2 <sec-the-bulk-potential-screened-poisson-equation>` shows that in the continuum limit on the manifold $(\mathcal{Z}, G)$, the Bellman/HJB equation becomes the **Screened Poisson (Helmholtz) Equation** for the exact component of the cost 1-form (reward convention via $\mathcal{C}=-\mathcal{R}$): $-\Delta_G V + \kappa^2 V = \rho_c$ with $\rho_c := -\rho_r$, where $\kappa = \lambda / c_{\text{info}}$ with $\lambda = -\ln\gamma / \Delta t$ (natural units: $\kappa = -\ln\gamma$). This reveals the Critic as a **Field Solver** computing the Green's function of the screened Laplacian.
+*Forward reference (Helmholtz Continuum Limit).* {ref}`sec-the-bulk-potential-screened-poisson-equation` shows that in the continuum limit on the manifold $(\mathcal{Z}, G)$, the Bellman/HJB equation becomes the **Screened Poisson (Helmholtz) Equation** for the exact component of the cost 1-form (reward convention via $\mathcal{C}=-\mathcal{R}$): $-\Delta_G V + \kappa^2 V = \rho_c$ with $\rho_c := -\rho_r$, where $\kappa = \lambda / c_{\text{info}}$ with $\lambda = -\ln\gamma / \Delta t$ (natural units: $\kappa = -\ln\gamma$). This reveals the Critic as a **Field Solver** computing the Green's function of the screened Laplacian.
 
 (sec-conditional-independence-and-sufficiency)=
 ## Conditional Independence and Sufficiency (Causal Enclosure)
@@ -1077,12 +1077,12 @@ Here's the intuition. We've compressed high-dimensional observations into a disc
 If we can predict $K_{t+1}$ from $(K_t, K^{\text{act}}_t)$ alone, without needing $z_n$ or $z_{\mathrm{tex}}$, then we say the macro dynamics are "closed" or "enclosure-correct." The residuals are truly residual---they don't contain information needed for prediction.
 :::
 
-The transition from micro to macro is a **projection operator** $\Pi:\mathcal{Z}\to\mathcal{K}$. In the discrete macro instantiation, $\Pi$ is precisely the **VQ quantizer** $z_e\mapsto K$ from {ref}`Section 2.2b <sec-the-shutter-as-a-vq-vae>`.
+The transition from micro to macro is a **projection operator** $\Pi:\mathcal{Z}\to\mathcal{K}$. In the discrete macro instantiation, $\Pi$ is precisely the **VQ quantizer** $z_e\mapsto K$ from {ref}`sec-the-shutter-as-a-vq-vae`.
 
 :::{prf:definition} Causal Enclosure Condition
 :label: def-causal-enclosure-condition
 
-**Causal Enclosure Condition (Markov sufficiency).** With the nuisance/texture split ({ref}`Section 2.2b <sec-the-shutter-as-a-vq-vae>`), let $(K_t, z_{n,t}, z_{\mathrm{tex},t}, K^{\text{act}}_t)$ be the internal state/action process and define the macrostate $K_t:=\Pi(Z_t)$ (projection to the discrete register). The macro-model requirement is the conditional independence
+**Causal Enclosure Condition (Markov sufficiency).** With the nuisance/texture split ({ref}`sec-the-shutter-as-a-vq-vae`), let $(K_t, z_{n,t}, z_{\mathrm{tex},t}, K^{\text{act}}_t)$ be the internal state/action process and define the macrostate $K_t:=\Pi(Z_t)$ (projection to the discrete register). The macro-model requirement is the conditional independence
 
 $$
 K_{t+1}\ \perp\!\!\!\perp\ (z_{n,t}, z_{\mathrm{tex},t})\ \big|\ (K_t,K^{\text{act}}_t),
@@ -1118,7 +1118,7 @@ $$
 $$
 :::
 
-This is the discrete, measure-theoretic refinement of the "commuting diagram" in the Micro-Macro Consistency metatheorem (see **MT: Micro-Macro Consistency**).
+This is the discrete, measure-theoretic refinement of the "commuting diagram" in the Micro-Macro Consistency metatheorem (see Meta-Theorem: Micro-Macro Consistency in {ref}sec-appendix-a-full-derivations).
 
 Where:
 - $P$ is the micro-dynamics (World Model) as a kernel on $\mathcal{Z}$
@@ -1202,7 +1202,7 @@ and optionally clamp inverse entries to a bounded interval to avoid singular tru
 
 This is a low-pass filter on curvature/sensitivity: it reduces high-frequency estimator noise while preserving slow curvature drift (consistent with the timescale-separation ethos of BarrierTypeII).
 
-**B. Macro-nuisance block-diagonal split (enclosure-aligned).** Under causal enclosure ({ref}`Section 2.8 <sec-conditional-independence-and-sufficiency>`), macro dynamics and macro prediction should not require the *residual* channels, and in particular should not require texture. This motivates a block structure
+**B. Macro-nuisance block-diagonal split (enclosure-aligned).** Under causal enclosure ({ref}`sec-conditional-independence-and-sufficiency`), macro dynamics and macro prediction should not require the *residual* channels, and in particular should not require texture. This motivates a block structure
 
 $$
 G
@@ -1217,9 +1217,9 @@ where:
 - $G_{\text{macro}}$ is a discrete/categorical sensitivity for the macro channel (e.g., the Fisher of $q(K\mid x)$ or curvature proxies derived from macro closure cross-entropy),
 - $G_{n}$ is the continuous sensitivity on $z_n$ (often diagonal); texture $z_{\mathrm{tex}}$ is excluded from the control metric (reconstruction-only).
 
-The off-diagonal block corresponds to macro-nuisance "cross-talk". If it is empirically non-negligible (Node 19: DisentanglementCheck), that is not a "numerical nuisance": it is an enclosure violation that should be penalized at the representation level ({ref}`Section 3.3 <sec-defect-functionals-implementing-regulation>`.A), not patched by a dense optimizer.
+The off-diagonal block corresponds to macro-nuisance "cross-talk". If it is empirically non-negligible (Node 19: DisentanglementCheck), that is not a "numerical nuisance": it is an enclosure violation that should be penalized at the representation level ({ref}`sec-defect-functionals-implementing-regulation`.A), not patched by a dense optimizer.
 
-**C. Occasional stochastic probing (low-rank signals without full $G$).** When the diagonal approximation is insufficient (e.g., strong anisotropy or a few stiff directions dominate), one can occasionally probe curvature using Jacobian-vector products ({ref}`Section 8.2 <sec-bifurcatecheck-stochastic-jacobian-probing>`). For example, random probes $v$ provide access to $Gv$ without forming $G$, allowing:
+**C. Occasional stochastic probing (low-rank signals without full $G$).** When the diagonal approximation is insufficient (e.g., strong anisotropy or a few stiff directions dominate), one can occasionally probe curvature using Jacobian-vector products ({ref}`sec-bifurcatecheck-stochastic-jacobian-probing`). For example, random probes $v$ provide access to $Gv$ without forming $G$, allowing:
 - rank-$k$ corrections (diagonal + low-rank),
 - diagnostics of effective conditioning (eigenvalue spread proxies),
 - conservative step-size reductions in detected stiff regimes.
@@ -1236,7 +1236,7 @@ $$
 c_\epsilon\,\widehat{\sigma}_t,
 
 $$
-where $\widehat{\sigma}_t$ can be any bounded "update unreliability" proxy consistent with the Sieve (e.g., SNRCheck, NEPCheck, residual-event statistics from {ref}`Section 12.3 <sec-sieve-events-as-projections-reweightings>`). The design intent is monotone: noisier / less-grounded regimes should imply more damping, not larger steps.
+where $\widehat{\sigma}_t$ can be any bounded "update unreliability" proxy consistent with the Sieve (e.g., SNRCheck, NEPCheck, residual-event statistics from {ref}`sec-sieve-events-as-projections-reweightings`). The design intent is monotone: noisier / less-grounded regimes should imply more damping, not larger steps.
 
 (sec-anti-mixing-rules)=
 ## Anti-Mixing Rules (Formal Prohibitions)
@@ -1315,7 +1315,7 @@ $$
 \int_{\mathcal{Z}} p(z)\Big(V(z) - T_c\,H(\pi(\cdot\mid z))\Big)\,d\mu_G,
 
 $$
-where $H(\pi(\cdot\mid z)) := -\mathbb{E}_{a\sim \pi(\cdot\mid z)}[\log \pi(a\mid z)]$ is the per-state policy entropy (in nats). Because $V$ and $H$ are measured in nats ({ref}`Section 1.2 <sec-units-and-dimensional-conventions>`), $T_c$ is dimensionless.
+where $H(\pi(\cdot\mid z)) := -\mathbb{E}_{a\sim \pi(\cdot\mid z)}[\log \pi(a\mid z)]$ is the per-state policy entropy (in nats). Because $V$ and $H$ are measured in nats ({ref}`sec-units-and-dimensional-conventions`), $T_c$ is dimensionless.
 
 :::
 
@@ -1326,12 +1326,12 @@ where $H(\pi(\cdot\mid z)) := -\mathbb{E}_{a\sim \pi(\cdot\mid z)}[\log \pi(a\mi
 Here's a beautiful idea: we can think of the agent's belief as a fluid flowing through the latent space. And just like a physical fluid, belief is conserved---it doesn't appear or disappear from nowhere.
 :::
 
-This subsection records a **continuous-time idealization in computation time $s$** that is useful for auditing "grounding": belief mass in latent space should change only via (i) transport under internal dynamics, (ii) boundary-driven updates from observations, and (iii) explicit projection/reweighting events (Sections 3-6). The discrete-time implementation is given in {ref}`Section 11 <sec-intrinsic-motivation-maximum-entropy-exploration>`; the PDEs below provide the corresponding limit intuition.
+This subsection records a **continuous-time idealization in computation time $s$** that is useful for auditing "grounding": belief mass in latent space should change only via (i) transport under internal dynamics, (ii) boundary-driven updates from observations, and (iii) explicit projection/reweighting events (Sections 3-6). The discrete-time implementation is given in {ref}`sec-intrinsic-motivation-maximum-entropy-exploration`; the PDEs below provide the corresponding limit intuition.
 
 :::{prf:definition} Belief Density
 :label: def-belief-density
 
-Let $p(z,s)\ge 0$ be a density with respect to $d\mu_G$ representing the agent's belief (or belief-weight) over latent coordinates. In closed-system idealizations one may impose $\int_{\mathcal{Z}}p(z,s)\,d\mu_G=1$; in open-system implementations with explicit projections/reweightings we track the unnormalized mass and renormalize when needed ({ref}`Section 11 <sec-intrinsic-motivation-maximum-entropy-exploration>`).
+Let $p(z,s)\ge 0$ be a density with respect to $d\mu_G$ representing the agent's belief (or belief-weight) over latent coordinates. In closed-system idealizations one may impose $\int_{\mathcal{Z}}p(z,s)\,d\mu_G=1$; in open-system implementations with explicit projections/reweightings we track the unnormalized mass and renormalize when needed ({ref}`sec-intrinsic-motivation-maximum-entropy-exploration`).
 
 :::
 
@@ -1344,7 +1344,7 @@ $$
 v^i(z) := -G^{ij}(z)\frac{\partial V}{\partial z^j},
 
 $$
-so transport points in the direction of decreasing $V$ (Riemannian steepest descent). Units: if computation time is measured in solver units, then $[v]=[z]/\mathrm{solver\ time}$ (map to $\mathrm{step}$ using the $t \leftrightarrow s$ budget in {ref}`Section 1.3 <sec-the-chronology-temporal-distinctions>`).
+so transport points in the direction of decreasing $V$ (Riemannian steepest descent). Units: if computation time is measured in solver units, then $[v]=[z]/\mathrm{solver\ time}$ (map to $\mathrm{step}$ using the $t \leftrightarrow s$ budget in {ref}`sec-the-chronology-temporal-distinctions`).
 
 :::
 

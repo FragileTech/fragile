@@ -116,13 +116,13 @@ See the difference? In hyperbolic space, going from radius 2 to radius 10 increa
 :::{prf:definition} The Entropic Force
 :label: def-the-entropic-force
 
-The "Free Energy" of a state at radius $r$ is dominated by the entropic volume term $S(r) \sim 2 \tanh^{-1}(r)$. To maximize entropy (fill the capacity), the agent experiences a radial force:
+The "Free Energy" of a state at radius $r$ is dominated by the entropic volume term $S(r) = 2 \operatorname{artanh}(r)$. To maximize entropy (fill the capacity), the agent experiences a radial force:
 
 $$
-F_{\text{entropy}}(z) = \nabla_G S(z) = \frac{z}{\|z\|}
+F_{\text{entropy}}(z) = \nabla_G S(z) = \frac{(1-|z|^2)}{2} \cdot \frac{z}{|z|}
 
 $$
-In normalized hyperbolic coordinates, this yields a **constant radial drift**.
+This accounts for the Poincaré metric conformal factor. The drift magnitude decreases near the boundary ($|z| \to 1$), ensuring the agent asymptotically approaches but never reaches it.
 
 Units: $[F_{\text{entropy}}] = [z]/\tau$.
 
@@ -193,16 +193,16 @@ This is exactly backwards from how we usually think about potential energy in ph
 :::{prf:proposition} Riemannian Gradient of $U$
 :label: prop-riemannian-gradient-of
 
-The gradient in the Poincare metric is:
+The gradient in the Poincaré metric is:
 
 $$
-\nabla_G U(z) = G^{-1} \nabla U = -\frac{(1-|z|^2)}{2} z.
+\nabla_G U(z) = G^{-1} \nabla U = -\frac{(1-|z|^2)}{2} \hat{z}, \quad \text{where } \hat{z} = \frac{z}{|z|}.
 
 $$
 The **entropic drift** (negative gradient) pushes radially outward:
 
 $$
--\nabla_G U(z) = \frac{(1-|z|^2)}{2} z.
+-\nabla_G U(z) = \frac{(1-|z|^2)}{2} \hat{z}.
 
 $$
 *Remark (Connection to {ref}`Section 7.11 <sec-the-geometry-of-the-latent-space-a-hyperbolic-hierarchy>`).* The Poincare coordinate $z$ relates to depth via $\rho = d_{\mathbb{D}}(0, z) = 2\operatorname{artanh}(|z|)$. Chart transitions are handled by the WFR jump process ({ref}`Section 22.2 <sec-the-coupled-jump-diffusion-sde>`), governed by the {prf:ref}`def-the-wfr-action`.
@@ -247,7 +247,7 @@ At $z = 0$:
 :::{admonition} Why Does the Entropic Force Vanish at the Origin?
 :class: feynman-added note
 
-Look back at the formula: $F_{\text{entropy}}(z) = z/\|z\|$. At $z = 0$, this is $0/0$---undefined! And $-\nabla_G U(z) = (1-|z|^2)z/2$, which at $z=0$ gives exactly zero.
+Look back at the formula: $F_{\text{entropy}}(z) = \frac{1-|z|^2}{2}\hat{z}$. At $z = 0$, this gives exactly zero (the unit vector $\hat{z}$ is undefined, but the prefactor vanishes anyway).
 
 Physically, this makes sense. The entropic force points radially outward, but at the exact center, there is no "radial direction"---all directions are equivalent. The force has to vanish there by symmetry.
 
@@ -323,65 +323,76 @@ The control field $u_\pi$ admits three equivalent interpretations:
 The beautiful thing is that all three are just different settings of the same dial: the control field $u_\pi$. The geometry doesn't care why you picked a direction---it just carries you along once you've picked.
 :::
 
-:::{prf:theorem} Pitchfork Bifurcation Structure {cite}`strogatz2015nonlinear`
-:label: thm-pitchfork-bifurcation-structure
+:::{prf:theorem} Angular Symmetry Breaking {cite}`strogatz2015nonlinear`
+:label: thm-angular-symmetry-breaking
 
-Near the origin, the combined dynamics exhibit a **supercritical pitchfork bifurcation**:
+In the **overdamped limit** of the second-order geodesic Langevin equation (Definition {prf:ref}`def-bulk-drift-continuous-flow`, Theorem {prf:ref}`thm-overdamped-limit`), the generation dynamics decompose into radial expansion and angular symmetry breaking.
 
-$$
-\dot{r} = \mu r - r^3 + \sigma \xi
-
-$$
-where $r = |z|$, $\mu = 1$ (unstable fixed point), and $\sigma = \sqrt{2T_c}$ is the noise amplitude (see {prf:ref}`def-cognitive-temperature`).
-
-**Phase Transition:**
-- **Symmetric phase** ($T_c$ large): Random walk near origin, symmetry preserved
-- **Broken phase** ($T_c$ small): Deterministic flow to boundary along selected direction
-
-*Proof sketch (Bifurcation derivation).* Near the origin, the Langevin dynamics (from {ref}`Section 22.2 <sec-the-coupled-jump-diffusion-sde>`) in radial coordinate $r = |z|$ becomes:
+**Radial dynamics (monotonic expansion):** The radial coordinate $r = |z|$ satisfies:
 
 $$
-dr = \left(\frac{1-r^2}{2} + u_\pi^r\right) d\tau + \sqrt{T_c(1-r^2)} dW_\tau
+dr = \frac{1-r^2}{2}\,d\tau + \frac{1-r^2}{2}\sqrt{2T_c}\,dW_r
 
 $$
-where $u_\pi^r = u_\pi \cdot \hat{r}$ is the radial component of the control field. Taylor expanding near $r = 0$:
+with drift $\frac{1-r^2}{2} > 0$ for all $r \in [0,1)$. The origin is not a fixed point; the drift pushes trajectories outward (though stochastic fluctuations can temporarily reverse this at small $r$).
+
+**Angular dynamics (symmetry breaking):** In polar coordinates $z = re^{i\theta}$, the angular evolution satisfies:
 
 $$
-dr \approx \left(\frac{1}{2} + u_\pi^r - \frac{r^2}{2}\right) d\tau + \sqrt{T_c}\, dW_\tau.
+d\theta = \frac{u_\pi^\theta}{r}\,d\tau + \frac{1-r^2}{2r}\sqrt{2T_c}\,dW_\theta
 
 $$
-For small control $u_\pi^r \ll 1$ and setting $\mu = 1/2 + u_\pi^r$, this matches the normal form $\dot{r} = \mu r - r^3/2 + \sigma\xi$.
+where $u_\pi^\theta = u_\pi \cdot \hat{\theta}$ is the tangential component of the control field.
 
-**Critical temperature:** The effective potential $U_{\text{eff}}(r) = -\mu r^2/2 + r^4/8$ has minima at $r^* = \pm\sqrt{2\mu}$ for $\mu > 0$. The barrier height is $\Delta U = \mu^2/4$. Symmetry is preserved when thermal fluctuations overcome the barrier:
-
-$$
-T_c^* = \frac{\mu^2}{4} = \frac{1}{16}(1 + 2u_\pi^r)^2 \approx \frac{1}{16}.
+**Phase Transition:** The $SO(D)$ rotational symmetry undergoes spontaneous breaking controlled by the dimensionless ratio:
 
 $$
-For $T_c > T_c^*$: symmetric phase; for $T_c < T_c^*$: broken phase with directional flow. $\square$
+\eta(r) := \frac{|u_\pi^\theta|^2}{T_c} \cdot \frac{2r^2}{(1-r^2)^2}
+
+$$
+- **Symmetric phase** ($\eta \ll 1$): Angular noise dominates; direction randomizes
+- **Broken phase** ($\eta \gg 1$): Policy dominates; direction determined by $u_\pi$
+
+*Proof.* Starting from the second-order geodesic Langevin equation (Definition {prf:ref}`def-bulk-drift-continuous-flow`) with the Poincaré metric $G_{ij} = \frac{4\delta_{ij}}{(1-r^2)^2}$, we take the overdamped limit (Theorem {prf:ref}`thm-overdamped-limit`). The overdamped position SDE in Cartesian coordinates is:
+
+$$
+dz^k = -G^{kj}\partial_j U\, d\tau + u_\pi^k\, d\tau + \sqrt{2T_c}(G^{-1/2})^{kj}\,dW^j_\tau
+
+$$
+where $G^{-1/2} = \frac{1-r^2}{2}I$. Converting to polar coordinates via Itô's lemma:
+- Radial: $dr = \langle dz, \hat{r}\rangle + \frac{1}{2}\text{tr}(\text{Hess}_r \cdot \Sigma)$ where $\Sigma = 2T_c G^{-1}$
+- Angular: $d\theta = \langle dz, \hat{\theta}/r\rangle + \frac{1}{2}\text{tr}(\text{Hess}_\theta \cdot \Sigma)$
+
+The Itô corrections vanish for the radial component (since $\partial^2 r/\partial z^i\partial z^j$ is traceless) and contribute a drift correction for angular that cancels with geometric terms. The stated SDEs follow after simplification.
+
+**Critical temperature:** The symmetry-breaking ratio $\eta(r)$ compares the squared angular drift to the angular diffusion coefficient. At characteristic radius $r_*$, setting $\eta(r_*) = 1$ defines the critical temperature.
+
+**Direction freeze-out:** As $r$ increases toward the boundary, $\eta(r) \to \infty$ (the denominator $(1-r^2)^2 \to 0$), causing the angular distribution to concentrate. The direction selected at early times persists to the boundary. $\square$
 
 :::
 
 :::{div} feynman-prose
-Now this is genuinely deep, so let me take a moment to explain what a pitchfork bifurcation means and why it matters here.
+Let me explain why the radial and angular dynamics separate so cleanly.
 
-Imagine a ball balanced on top of a hill. If the hill is gentle (high temperature, lots of noise), the ball just jiggles around near the top---it never commits to rolling down either side. But if the hill is steep enough (low temperature, weak noise), the tiniest perturbation will send the ball rolling down one side or the other.
+The radial direction is driven by entropy: the system always wants to expand outward because there is exponentially more "room" near the boundary than near the origin (recall the hyperbolic volume growth from Definition {prf:ref}`def-hyperbolic-volume-growth`). This expansion is inexorable---there is no fixed point at the origin, no moment of hesitation. The trajectory begins moving outward immediately.
 
-That's a pitchfork bifurcation. The "pitchfork" refers to the shape of the bifurcation diagram: at high temperature, there's one stable state (the origin). At low temperature, the origin becomes unstable and two stable branches emerge (the two sides of the hill).
+The angular direction is where the interesting physics happens. At the origin, all directions are equivalent by $SO(D)$ symmetry. As the trajectory expands, it must "choose" a direction. This choice is governed by the competition between two forces:
+1. The **policy** $u_\pi^\theta$, which nudges the trajectory toward a preferred direction
+2. **Thermal noise**, which randomizes the direction
 
-For generation, this is exactly what we want. At high cognitive temperature, the agent dithers near the origin without committing to anything. At low temperature, the slightest policy nudge or thermal fluctuation picks a direction, and the agent flows deterministically toward the boundary along that direction.
+Near the origin (small $r$), the angular noise dominates because the noise coefficient scales as $1/r$. As the trajectory expands (larger $r$), the noise weakens relative to the policy, and the direction "freezes in."
 
-The critical temperature $T_c^* \approx 1/16$ marks the boundary between these regimes. Below it, you get crisp, decisive generation. Above it, you get incoherent wandering.
+The critical temperature $T_c^*$ marks the boundary between two regimes: below it, the policy wins and generation is coherent; above it, noise wins and generation is incoherent.
 :::
 
 :::{admonition} Temperature and Generation Quality
 :class: feynman-added warning
 
 This explains the familiar phenomenon of "temperature" in language models:
-- **Low temperature** ($T_c < T_c^*$): Sharp, coherent outputs. The model commits to a direction early and follows through.
-- **High temperature** ($T_c > T_c^*$): Diffuse, incoherent outputs. The model wanders randomly without settling on a semantic direction.
+- **Low temperature** ($T_c < T_c^*$): Sharp, coherent outputs. The policy determines the direction early; the trajectory follows a nearly deterministic path to the boundary.
+- **High temperature** ($T_c > T_c^*$): Diffuse, incoherent outputs. Angular noise dominates; the direction wanders randomly throughout generation.
 
-The pitchfork bifurcation makes this precise: there's a critical temperature below which generation becomes deterministic (modulo the initial symmetry breaking), and above which it becomes a random walk.
+The angular symmetry breaking (Theorem {prf:ref}`thm-angular-symmetry-breaking`) makes this precise: there is a critical temperature below which the policy controls direction selection, and above which thermal fluctuations dominate.
 :::
 
 (pi-symmetry-breaking)=
@@ -390,22 +401,22 @@ The pitchfork bifurcation makes this precise: there's a critical temperature bel
 
 **In Physics:** Spontaneous symmetry breaking occurs when a system's ground state has lower symmetry than its Hamiltonian. The classic example is the Mexican hat potential $V(\phi) = -\mu^2|\phi|^2 + \lambda|\phi|^4$: for $\mu^2 > 0$, the $U(1)$-symmetric origin becomes unstable and the system selects a direction {cite}`goldstone1961field,weinberg1996qft`.
 
-**In Implementation:** The radial dynamics exhibit supercritical pitchfork bifurcation (Theorem {prf:ref}`thm-pitchfork-bifurcation-structure`):
+**In Implementation:** The angular dynamics exhibit symmetry breaking (Theorem {prf:ref}`thm-angular-symmetry-breaking`):
 
 $$
-\dot{r} = \mu r - r^3 + \sigma\xi
+d\theta = \frac{u_\pi^\theta}{r}\,d\tau + \frac{\sqrt{T_c(1-r^2)}}{r}\,dW_\theta
 
 $$
-where $\mu = 1/2$ and the $SO(D)$ symmetry at the origin is broken when the policy selects a direction.
+The $SO(D)$ symmetry is broken when the policy-to-noise ratio $\eta(r) = |u_\pi^\theta|^2 r^2 / [T_c(1-r^2)]$ exceeds unity.
 
 **Correspondence Table:**
 | Phase Transition Theory | Agent (Policy Emergence) |
 |:------------------------|:-------------------------|
-| Order parameter $\phi$ | Radial coordinate $r = \|z\|$ |
-| Control parameter $\mu$ | $\mu = 1/2$ (supercritical) |
-| Critical temperature $T_c^*$ | $T_c^* = 1/16$ (barrier height) |
-| Symmetric phase ($\phi = 0$) | Semantic vacuum (origin) |
-| Broken phase ($\phi \neq 0$) | Policy-selected direction |
+| Order parameter $\phi$ | Angular direction $\theta$ |
+| Control parameter | Policy strength $|u_\pi^\theta|$ |
+| Critical temperature $T_c^*$ | $T_c^* \approx |u_\pi^\theta|^2 r_*^2$ |
+| Symmetric phase | Isotropic angular distribution |
+| Broken phase | Policy-selected direction $\theta_\pi$ |
 | Goldstone modes | Angular fluctuations in $\theta$ |
 
 **Significance:** Policy selection is not arbitrary---it is a geometric phase transition where the agent spontaneously breaks $SO(D)$ symmetry to select a generation direction.
@@ -507,7 +518,7 @@ This recovers **Diffusion Models** {cite}`ho2020ddpm` and **Diffusion Policies**
 - **Hyperbolic structure**: Exponential volume growth provides natural hierarchy (Theorem **Thm: Hyperbolic Volume Growth**)
 - **Forward generation**: Origin to boundary matches RL's forward dynamics semantics
 - **Policy unification**: RL control and conditional generation share the same drift term $u_\pi$
-- **Symmetry breaking**: Policy kicks at origin select generation mode (Theorem {prf:ref}`thm-pitchfork-bifurcation-structure`)
+- **Symmetry breaking**: Policy kicks at origin select generation mode (Theorem {prf:ref}`thm-angular-symmetry-breaking`)
 ::::
 
 (sec-bulk-boundary-independence)=
@@ -761,8 +772,8 @@ This is generation: break symmetry at the origin, ride the entropic flow toward 
 
 | **Aspect**          | **Formula**                                   | **Units**            | **Reference**                                    |
 |---------------------|-----------------------------------------------|----------------------|--------------------------------------------------|
-| Entropic Drift      | $F_{\text{entropy}} = z/\lVert z\rVert$       | $[z]/\tau$           | Def {prf:ref}`def-hyperbolic-volume-growth`      |
-| Radial Expansion    | $r(\tau) = \tanh(\tau/2)$                     | dimensionless        | Prop {prf:ref}`def-the-entropic-force`           |
+| Entropic Drift      | $F_{\text{entropy}} = \frac{1-\lvert z\rvert^2}{2}\hat{z}$ | $[z]/\tau$           | Def {prf:ref}`def-the-entropic-force`            |
+| Radial Expansion    | $r(\tau) = \tanh(\tau/2)$                     | dimensionless        | Prop {prf:ref}`prop-isotropic-radial-expansion`  |
 | Control Field       | $u_\pi = G^{-1} \mathbb{E}[a]$                | $[z]/\tau$           | Def {prf:ref}`def-the-control-field`             |
 | Partition Condition | $\partial_{z_{\text{tex}}} \dot{z} = 0$       | -                    | Axiom {prf:ref}`ax-bulk-boundary-decoupling`     |
 | Texture Covariance  | $\Sigma(z) = \sigma_{\text{tex}}^2 G^{-1}(z)$ | $[z_{\text{tex}}]^2$ | Def {prf:ref}`def-boundary-texture-distribution` |

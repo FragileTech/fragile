@@ -42,6 +42,14 @@ A catalog of online diagnostics organized by failure mode ({ref}`Sections 3–6 
 - **Standard Model of Cognition**: The symmetry group $G_{\text{Fragile}} = SU(N_f)_C \times SU(2)_L \times U(1)_Y$ emerges from three invariance principles: utility phase invariance, sensor-motor chirality, and feature basis freedom ({ref}`Section 34 <sec-standard-model-cognition>`)
 - **Parameter Space Sieve**: Fundamental constants $(c_{\text{info}}, \sigma, \ell_L, T_c, g_s, \gamma)$ are derived from constraint satisfaction, not free parameters ({ref}`Section 35 <sec-parameter-space-sieve>`)
 
+**Gauge-Covariant Implementation (Part VIII, Chapters 04–06):**
+- **Geometric Micro-Architecture**: Standard DL primitives (Linear+bias, ReLU) violate gauge invariance. Covariant replacements: `SpectralLinear` (bias-free, Lipschitz-constrained), `NormGatedGELU` (acts on bundle norms). See {ref}`Chapter 04 <sec-geometric-micro-architecture>`.
+- **Covariant Cross-Attention**: World model as geodesic integrator. Wilson-line parallel transport, position-dependent temperature (= inverse conformal factor), Christoffel symbols from quadratic Query terms. Four attention heads implement Boris-BAOAB steps. See {ref}`Chapter 05 <sec-covariant-cross-attention-architecture>`.
+- **Universal Geometric Network**: End-to-end synthesis achieving universal approximation (unconstrained encoder/decoder) while maintaining geometric consistency (soft equivariance via L1 regularization). Discovers texture zeros automatically. See {ref}`Chapter 06 <sec-end-to-end-architecture>`.
+
+**Lorentzian Memory (Part VII, Chapter 09):**
+- **Covariant Memory Attention**: Standard self-attention ignores causality. Lorentzian metric signature $(-,+,\ldots,+)$ for memory manifold. Light cone structure determines causal masks. Retarded potentials ensure finite information speed $c_{\text{info}}$. See {ref}`Chapter 09 <sec-covariant-memory-attention-architecture>`.
+
 **Why "Fragile"?**
 The agent is designed to *degrade gracefully* and *fail loudly*. When constraints are violated, the system halts or degrades predictably rather than silently misbehaving. Fragility is a feature: it makes failure modes observable and debuggable. See {ref}`FAQ D.6.1 <sec-appendix-d-the-fragile-branding>`.
 
@@ -73,6 +81,12 @@ The agent is designed to *degrade gracefully* and *fail loudly*. When constraint
 - Ontological expansion via topological fission when texture becomes predictable
 - Thermodynamic hysteresis from Landauer bound
 - Computational metabolism as operational limits
+
+*Implementation (Theory → Neural Networks):*
+- Gauge-covariant neural primitives: `SpectralLinear`, `NormGatedGELU`, `IsotropicBlock` replace standard DL ops
+- Covariant Cross-Attention implementing Boris-BAOAB geodesic integration via attention heads
+- Universal Geometric Network: unconstrained boundaries + geometrically structured interior
+- Lorentzian memory attention with causal light-cone masks and retarded potentials
 
 **What's Repackaged (by Domain):**
 
@@ -126,6 +140,10 @@ The economic layer introduces a novel consensus mechanism where the cryptographi
 - *Want objections answered?* → {ref}`Appendix D <sec-appendix-d-frequently-asked-questions>`
 - *Want proofs?* → {ref}`Appendix A <sec-appendix-a-full-derivations>`
 - *Want loss functions?* → {ref}`Appendix F <sec-appendix-f-loss-terms-reference>`
+- *Want gauge-covariant neural ops?* → {ref}`Part VIII Ch. 04 <sec-geometric-micro-architecture>` *(NEW)*
+- *Want the world model architecture?* → {ref}`Part VIII Ch. 05 <sec-covariant-cross-attention-architecture>` *(NEW)*
+- *Want end-to-end network design?* → {ref}`Part VIII Ch. 06 <sec-end-to-end-architecture>` *(NEW)*
+- *Want causal memory?* → {ref}`Part VII Ch. 09 <sec-covariant-memory-attention-architecture>` *(NEW)*
 
 **Researcher Bridge Index (Quick Links):**
 | Researcher Bridge | Location |
@@ -195,9 +213,11 @@ This framework is designed to be **modular**. Each part is written to be as self
 |-----------------------------|--------------------------|-------------------------------------|
 | Safety contracts only       | Part II (The Sieve)      | Minimal (definitions in Part I)     |
 | The geometry                | Parts V–VI               | Part I foundations                  |
-| Multi-agent theory          | Part VIII                | Part VI boundary interface          |
+| Multi-agent theory          | Part VIII Ch. 01–03      | Part VI boundary interface          |
 | Implementation guidance     | Parts II–III             | Can standalone                      |
-| Gauge-theoretic unification | Part VIII Sections 34–35 | Parts V–VI helpful but not required |
+| Gauge-theoretic unification | Part VIII Ch. 01–03      | Parts V–VI helpful but not required |
+| **Neural network implementation** | **Part VIII Ch. 04–06** | **Part VIII Ch. 01–03 (gauge theory)** |
+| **Causal memory architecture** | **Part VII Ch. 09** | **Part VII Ch. 03 (memory retrieval)** |
 | Economic applications       | Part IX                  | Parts I–II foundations              |
 
 Cross-references are provided throughout so you can dive deeper when needed, but **you are not required to read linearly**. Each theorem and definition is self-contained with explicit dependencies stated.
@@ -236,8 +256,10 @@ Table of contents:
 - {doc}`02_sieve/04_approximations`
 
 **Part III: Implementation Architecture**
+- {doc}`03_architecture/00_architecture_at_a_glance` *(NEW: TopoEncoder overview)*
 - {doc}`03_architecture/01_compute_tiers`
 - {doc}`03_architecture/02_disentangled_vae`
+- {doc}`03_architecture/03_optimization` *(NEW: Optimization techniques)*
 
 **Part IV: Control and Belief**
 - {doc}`04_control/01_exploration`
@@ -264,11 +286,15 @@ Table of contents:
 - {doc}`07_cognition/06_causality`
 - {doc}`07_cognition/07_metabolic_transducer`
 - {doc}`07_cognition/08_intersubjective_metric`
+- {doc}`07_cognition/09_retrieval_attention` *(NEW: Lorentzian memory attention)*
 
-**Part VIII: Multi-Agent Gauge Theory**
+**Part VIII: Multi-Agent Gauge Theory & Implementation**
 - {doc}`08_multiagent/01_gauge_theory`
 - {doc}`08_multiagent/02_standard_model`
 - {doc}`08_multiagent/03_parameter_sieve`
+- {doc}`08_multiagent/04_dnn_blocks` *(NEW: Gauge-covariant DL primitives)*
+- {doc}`08_multiagent/05_architecture` *(NEW: Covariant Cross-Attention)*
+- {doc}`08_multiagent/06_full_net` *(NEW: Universal Geometric Network)*
 
 **Conclusion**
 - {doc}`/conclusions`
@@ -280,6 +306,7 @@ Table of contents:
 - {doc}`10_appendices/04_faq`
 - {doc}`10_appendices/05_proofs`
 - {doc}`10_appendices/06_losses`
+- {doc}`10_appendices/07_architecture` *(NEW: Architecture implementation details)*
 
 (sec-positioning-connections-to-prior-work-differences-and-advantages)=
 ## Positioning: Connections to Prior Work, Differences, and Advantages
@@ -340,7 +367,7 @@ This framework introduces a unified nomenclature. While these terms may seem nov
    $\kappa = \lambda / c_{\text{info}}$ with $\lambda = -\ln\gamma / \Delta t$ (natural units: $\kappa = -\ln\gamma$)
    ({ref}`Section 24.2 <sec-the-bulk-potential-screened-poisson-equation>`).
 8. **Conformal back-reaction of value on metric.** High-curvature value regions modulate the metric via $\Omega = 1 + \alpha\|\nabla^2 V\|$, creating a feedback loop where high-curvature regions have increased metric coefficients ({ref}`Section 24.4 <sec-geometric-back-reaction-the-conformal-coupling>`).
-9. **Policy as symmetry-breaking kick.** Generation and control are unified as perturbations breaking $SO(D)$ symmetry at the origin; the framework exhibits a supercritical pitchfork bifurcation with critical temperature ({ref}`Section 21.2 <sec-policy-control-field>`, Theorem {prf:ref}`thm-pitchfork-bifurcation-structure`).
+9. **Policy as symmetry-breaking kick.** Generation and control are unified as perturbations breaking $SO(D)$ angular symmetry at the origin; the policy-to-noise ratio determines whether direction selection is deterministic or stochastic ({ref}`Section 21.2 <sec-policy-control-field>`, Theorem {prf:ref}`thm-angular-symmetry-breaking`).
 10. **Non-local memory as self-interaction.** Trajectory history induces a memory potential $\Psi_{\text{mem}}$ via heat-kernel convolution, creating conservative forces that stabilize learned attractors ({ref}`Section 27 <sec-section-non-local-memory-as-self-interaction-functional>`).
 
 *Field-Theoretic Contributions (Multi-Agent & Bounds):*

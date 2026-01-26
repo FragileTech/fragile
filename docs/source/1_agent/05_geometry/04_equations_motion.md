@@ -216,71 +216,96 @@ The agent's state is not merely a point $z$ but a **particle with mass** $(z, m)
 
 *Cross-reference (WFR Boundary Conditions).* The SDE below assumes **Waking mode** boundary conditions (Definition {prf:ref}`def-waking-boundary-clamping`): Dirichlet on sensors (clamping observed position), Neumann on motors (clamping output flux). In **Dreaming mode** (Definition {prf:ref}`def-dreaming-reflective-boundary`), both boundaries become reflective and the flow recirculates internally without external grounding. See {ref}`Section 23.5 <sec-wfr-boundary-conditions-waking-vs-dreaming>` for the mode-switching table and the thermodynamic interpretation ({ref}`Section 23.4 <sec-the-belief-evolution-cycle-perception-dreaming-action>`).
 
-:::{prf:definition} Bulk Drift - Continuous Flow (Lorentz-Langevin Equation)
+:::{prf:definition} Second-Order Geodesic Langevin Equation
 :label: def-bulk-drift-continuous-flow
 
-The position coordinates $z^k$ evolve according to the **Lorentz-Langevin SDE**:
+The agent's state evolves as a **particle with position $z$ and momentum $p$** on the Riemannian manifold $(\mathcal{Z}, G)$. The dynamics are given by the coupled **second-order Langevin SDE**:
 
 $$
-dz^k = \underbrace{\left( -G^{kj}\partial_j \Phi + u_\pi^k \right)}_{\text{gradient + control}} ds \;+\; \underbrace{\beta_{\text{curl}}\, G^{km} \mathcal{F}_{mj} \dot{z}^j\,ds}_{\text{Lorentz force}} \;-\; \underbrace{\Gamma^k_{ij}\dot{z}^i \dot{z}^j\,ds}_{\text{geodesic correction}} \;+\; \underbrace{\sqrt{2T_c}\,(G^{-1/2})^{kj}\,dW^j_s}_{\text{thermal noise}},
+\begin{cases}
+dz^k = G^{kj}(z)\, p_j\, ds \\[8pt]
+dp_k = \left[ -\partial_k \Phi_{\text{eff}} - \gamma\, p_k + \beta_{\text{curl}}\, \mathcal{F}_{kj}\, G^{j\ell}\, p_\ell - \Gamma^m_{k\ell}\, G^{\ell j}\, p_j\, p_m + u_{\pi,k} \right] ds + \sqrt{2\gamma T_c}\, (G^{1/2})_{kj}\, dW^j_s
+\end{cases}
 
 $$
 where:
-- $\Phi$ is the **scalar potential** from the Hodge decomposition (Theorem {prf:ref}`thm-hodge-decomposition`)
+- $\Phi_{\text{eff}}$ is the **effective potential** (Definition {prf:ref}`def-effective-potential`)
+- $\gamma > 0$ is the **friction coefficient** (damping rate)
 - $\mathcal{F}_{ij} = \partial_i \mathcal{R}_j - \partial_j \mathcal{R}_i$ is the **Value Curl** tensor (Definition {prf:ref}`def-value-curl`)
 - $\beta_{\text{curl}} \ge 0$ is the **curl coupling strength** (dimensionless)
-- $u_\pi^k$ is the **control field** from the policy (Definition {prf:ref}`prop-so-d-symmetry-at-origin`)
-- $\Gamma^k_{ij}$ are the **Christoffel symbols** of the Levi-Civita connection ({ref}`Section 2.5.1 <sec-levi-civita-connection-and-parallel-transport>`, Theorem {prf:ref}`thm-capacity-constrained-metric-law`)
-- $G^{-1/2}$ is the matrix square root of the inverse metric
+- $\Gamma^m_{k\ell}$ are the **Christoffel symbols** of the Levi-Civita connection (Proposition {prf:ref}`prop-explicit-christoffel-symbols-for-poincare-disk`)
+- $u_{\pi,k}$ is the **control field** from the policy (Definition {prf:ref}`def-the-control-field`)
+- $T_c$ is the **cognitive temperature** (Definition {prf:ref}`def-cognitive-temperature`)
 - $W_s$ is a standard Wiener process
 
-*Units:* $[dz] = [z]$, $[\Phi] = \mathrm{nat}$, $[\mathcal{F}_{ij}] = \mathrm{nat}/[z]^2$, $[\Gamma^k_{ij}] = [z]^{-1}$.
+*Units:* $[z] = \text{length}$, $[p] = \text{length}/\tau$, $[\gamma] = 1/\tau$, $[\Phi_{\text{eff}}] = \mathrm{nat}$, $[T_c] = \mathrm{nat}$.
 
-*Remark (Four-Force Decomposition).* The drift decomposes into:
-1. **Gradient force**: $-G^{-1}\nabla\Phi$ — force proportional to scalar potential gradient
-2. **Lorentz force**: $\beta_{\text{curl}} G^{-1}\mathcal{F}\dot{z}$ — velocity-dependent force from Value Curl
-3. **Control field**: $u_\pi$ — policy-induced drift ({ref}`Section 21.2 <sec-policy-control-field>`)
-4. **Geodesic correction**: $-\Gamma(\dot{z},\dot{z})$ — parallel transport on curved space
+**Interpretation:** The position evolves via the momentum (kinematic relation), while the momentum evolves under:
 
-**Conservative Limit:** When $\mathcal{F} = 0$ (Definition {prf:ref}`def-conservative-reward-field`), the Lorentz term vanishes and we recover the standard geodesic SDE.
+1. **Gradient force**: $-\nabla\Phi_{\text{eff}}$ — force from effective potential
+2. **Friction**: $-\gamma p$ — damping toward equilibrium
+3. **Lorentz force**: $\beta_{\text{curl}} \mathcal{F} G^{-1} p$ — velocity-dependent force from Value Curl (perpendicular to velocity)
+4. **Geodesic correction**: $-\Gamma(G^{-1}p, G^{-1}p)$ — parallel transport on curved space
+5. **Control field**: $u_\pi$ — policy-induced force
+6. **Thermal noise**: $\sqrt{2\gamma T_c} G^{1/2} dW$ — fluctuation-dissipation balanced noise
+
+**Hamiltonian Structure:** The deterministic part ($T_c = 0$, $\gamma = 0$) derives from the Hamiltonian:
+
+$$
+H(z, p) = \frac{1}{2} G^{ij}(z)\, p_i\, p_j + \Phi_{\text{eff}}(z).
+
+$$
+The friction and noise terms implement an **Ornstein-Uhlenbeck thermostat** that samples the Boltzmann distribution $\rho(z,p) \propto \exp(-H(z,p)/T_c)$.
+
+**Conservative Limit:** When $\mathcal{F} = 0$ (Definition {prf:ref}`def-conservative-reward-field`), the Lorentz term vanishes and we recover the standard geodesic Langevin equation.
 
 **Non-Conservative Dynamics:** When $\mathcal{F} \neq 0$, the Lorentz force induces rotational dynamics. Trajectories may converge to limit cycles rather than fixed points (Theorem {prf:ref}`thm-ness-existence`).
 
-*Remark (Connection Specification).* The Christoffel symbols $\Gamma^k_{ij}$ are explicitly those of the **Levi-Civita connection** induced by the capacity-constrained metric $G$ from Theorem {prf:ref}`thm-capacity-constrained-metric-law`. This ensures metric compatibility ($\nabla G = 0$) and torsion-freeness.
+*Remark (BAOAB Integration).* This second-order system is integrated using the Boris-BAOAB scheme (Definition {prf:ref}`def-baoab-splitting`), which preserves the Boltzmann distribution to $O(h^2)$ and handles the velocity-dependent Lorentz force via the Boris rotation.
 
 :::
 
 :::{div} feynman-prose
-Let me break down this equation, because it looks intimidating but each piece has a clear physical meaning.
+Let me break down this second-order system, because it looks intimidating but each piece has a clear physical meaning.
 
-**The gradient term** $-G^{-1}\nabla\Phi$: This is "roll downhill." The agent feels a force pushing it toward lower potential. The $G^{-1}$ is there because we are on a curved manifold---it converts the gradient (which lives in the cotangent space) to a velocity (which lives in the tangent space).
+**Why two equations?** The agent has both *position* $z$ (where it is) and *momentum* $p$ (how fast it is moving and in what direction). This is like a ball rolling on a curved surface: you need to track both where it is and how fast it is going.
 
-**The control term** $u_\pi$: This is the policy. The agent can choose to go somewhere that is not just downhill. Maybe there is a hill it needs to climb to reach a better valley. The policy provides this intentional override of the gradient.
+**The position equation** $dz = G^{-1}p\, ds$: This just says "position changes according to velocity." The $G^{-1}$ converts momentum (a covector) to velocity (a vector) using the metric.
 
-**The Lorentz force** $\beta_{\text{curl}} G^{-1}\mathcal{F}\dot{z}$: This is the interesting one. When the reward field has curl---meaning there are regions where you can go around in a circle and accumulate reward---the agent feels a sideways force, perpendicular to its velocity. This is exactly like the Lorentz force on a charged particle in a magnetic field. It makes the agent spiral or orbit rather than just fall to the bottom.
+**The momentum equation** has several forces:
 
-**The geodesic correction** $-\Gamma(\dot{z},\dot{z})$: On a curved manifold, straight lines curve. This term corrects for that. If you want to go in a "straight line" (a geodesic) on a curved surface, you have to constantly adjust your direction. The Christoffel symbols tell you how much to adjust.
+**The gradient term** $-\nabla\Phi_{\text{eff}}$: This is "roll downhill." The agent feels a force pushing it toward lower potential.
 
-**The thermal noise** $\sqrt{2T_c} G^{-1/2} dW$: This is the exploration. The agent gets jostled by random thermal fluctuations. The $G^{-1/2}$ ensures the noise is properly adapted to the geometry---it produces isotropic noise in the metric-induced sense.
+**The friction term** $-\gamma p$: This is damping. Without it, the agent would coast forever. Friction brings it toward equilibrium, balancing against the thermal noise.
 
-The beautiful thing is that these are not five separate mechanisms bolted together. They all emerge from the same underlying structure: the geometry of the latent space plus the stochastic variational principle.
+**The control term** $u_\pi$: This is the policy. The agent can choose to go somewhere that is not just downhill. The policy provides intentional override of the gradient.
+
+**The Lorentz force** $\beta_{\text{curl}} \mathcal{F} G^{-1} p$: When the reward field has curl, the agent feels a sideways force perpendicular to its velocity---exactly like a charged particle in a magnetic field. It makes the agent spiral or orbit rather than just fall to the bottom.
+
+**The geodesic correction** $-\Gamma(v, v)$ where $v = G^{-1}p$: On a curved manifold, straight lines curve. This term corrects for that, keeping the trajectory on the manifold.
+
+**The thermal noise** $\sqrt{2\gamma T_c} G^{1/2} dW$: Exploration via random thermal fluctuations. The $\sqrt{2\gamma T_c}$ factor ensures **fluctuation-dissipation balance**: friction and noise are calibrated so the system samples the correct Boltzmann distribution.
+
+The beautiful thing is that these are not six separate mechanisms bolted together. They all emerge from the same underlying structure: Hamiltonian mechanics on a Riemannian manifold plus an Ornstein-Uhlenbeck thermostat.
 :::
 
-:::{admonition} The Four Forces on the Agent
+:::{admonition} The Six Terms in the Momentum Equation
 :class: feynman-added note
 
-| Force | Expression | Physical Analogy | Effect |
-|-------|------------|------------------|--------|
-| **Gradient** | $-G^{-1}\nabla\Phi$ | Gravity | Pulls toward low potential |
-| **Control** | $u_\pi$ | Rocket thrust | Policy-directed motion |
-| **Lorentz** | $\beta_{\text{curl}} G^{-1}\mathcal{F}\dot{z}$ | Magnetic force | Induces rotation/orbiting |
-| **Geodesic** | $-\Gamma(\dot{z},\dot{z})$ | Coriolis/centrifugal | Keeps motion on manifold |
+| Term | Expression | Physical Analogy | Effect |
+|------|------------|------------------|--------|
+| **Gradient** | $-\nabla\Phi_{\text{eff}}$ | Gravity | Pulls toward low potential |
+| **Friction** | $-\gamma p$ | Viscous drag | Damps toward equilibrium |
+| **Control** | $u_\pi$ | Rocket thrust | Policy-directed force |
+| **Lorentz** | $\beta_{\text{curl}} \mathcal{F} G^{-1} p$ | Magnetic force | Induces rotation/orbiting |
+| **Geodesic** | $-\Gamma(G^{-1}p, G^{-1}p)$ | Coriolis/centrifugal | Keeps motion on manifold |
+| **Noise** | $\sqrt{2\gamma T_c} G^{1/2} dW$ | Thermal fluctuation | Exploration + equilibrium sampling |
 
-Plus thermal noise for exploration.
+The friction-noise pair implements an **Ornstein-Uhlenbeck thermostat**.
 :::
 
-:::{prf:proposition} a (Explicit Christoffel Symbols for Poincare Disk)
-:label: prop-a-explicit-christoffel-symbols-for-poincar-disk
+:::{prf:proposition} Explicit Christoffel Symbols for Poincaré Disk
+:label: prop-explicit-christoffel-symbols-for-poincare-disk
 
 For the Poincare disk model with metric $G_{ij} = \frac{4\delta_{ij}}{(1-|z|^2)^2}$, the Christoffel symbols in Cartesian coordinates are:
 
@@ -399,7 +424,7 @@ $$
 
 $$
 where:
-- $U(z) = -d_{\mathbb{D}}(0, z) = -2\operatorname{artanh}(|z|)$ is the **hyperbolic information potential** (Definition {prf:ref}`def-hyperbolic-volume-growth`)
+- $U(z) = -d_{\mathbb{D}}(0, z) = -2\operatorname{artanh}(|z|)$ is the **hyperbolic information potential** (Definition {prf:ref}`def-hyperbolic-information-potential`)
 - $V_{\text{critic}}(z, K)$ is the **learned value/critic function** on chart $K$ ({ref}`Section 2.7 <sec-the-hjb-correspondence>`)
 - $\Psi_{\text{risk}}(z) = \frac{1}{2}\operatorname{tr}(T_{ij} G^{ij})$ is the **risk-stress contribution** (Theorem {prf:ref}`thm-capacity-constrained-metric-law`)
 - $\alpha \in [0, 1]$ is the generation-vs-control hyperparameter
@@ -452,7 +477,7 @@ $$
 \nabla_G U = -\frac{(1-|z|^2)}{2}\, \hat{z}, \qquad \hat{z} = \frac{z}{|z|}.
 
 $$
-**Cross-references:** Definition {prf:ref}`def-hyperbolic-volume-growth`, {ref}`Section 2.7 <sec-the-hjb-correspondence>` (Critic $V$), Section 14.2 (MaxEnt control), Theorem {prf:ref}`thm-capacity-constrained-metric-law`.
+**Cross-references:** Definition {prf:ref}`def-hyperbolic-information-potential`, {ref}`Section 2.7 <sec-the-hjb-correspondence>` (Critic $V$), Section 14.2 (MaxEnt control), Theorem {prf:ref}`thm-capacity-constrained-metric-law`.
 
 *Forward reference (Scalar Field Interpretation).* {ref}`Section 24 <sec-the-reward-field-value-forms-and-hodge-geometry>`
 provides the complete field-theoretic interpretation of $V_{\text{critic}}$: the Critic solves the **Screened Poisson
@@ -662,19 +687,22 @@ def christoffel_contraction(z: torch.Tensor, v: torch.Tensor) -> torch.Tensor:
     """
     Compute Γ^k_{ij} v^i v^j for Poincare disk.
 
-    For G = 4/(1-|z|²)² I, the Christoffel symbols contract to:
-    Γ(v,v)^k = 2/(1-|z|²) * (z^k |v|² + 2(z·v)v^k) - 4(z·v)²z^k/(1-|z|²)²
+    For conformal metric G = λ²I with λ = 2/(1-|z|²), the Christoffel contraction is:
+    Γ^k_{ij} v^i v^j = 4(z·v)v^k/(1-|z|²) - 2|v|²z^k/(1-|z|²)
+
+    Derivation: For G_{ij} = e^{2φ}δ_{ij}, Γ^k_{ij}v^iv^j = 2(v·∇φ)v^k - |v|²∂^kφ
+    With φ = log(2/(1-|z|²)), we have ∂^kφ = 2z^k/(1-|z|²).
     """
     r_sq = (z ** 2).sum(dim=-1, keepdim=True)
     v_sq = (v ** 2).sum(dim=-1, keepdim=True)
     z_dot_v = (z * v).sum(dim=-1, keepdim=True)
     one_minus_r_sq = 1.0 - r_sq + 1e-8
 
-    term1 = (2.0 / one_minus_r_sq) * z * v_sq
-    term2 = (4.0 / one_minus_r_sq) * z_dot_v * v
-    term3 = -(4.0 / one_minus_r_sq**2) * z_dot_v**2 * z
+    # Γ^k v^i v^j = 4(z·v)v^k/(1-|z|²) - 2|v|²z^k/(1-|z|²)
+    term1 = (4.0 / one_minus_r_sq) * z_dot_v * v
+    term2 = -(2.0 / one_minus_r_sq) * v_sq * z
 
-    return term1 + term2 + term3
+    return term1 + term2
 
 
 def geodesic_baoab_step(
@@ -1025,7 +1053,7 @@ The complete agent lifecycle integrates the components from Sections 21-22 into 
 | Phase           | Time Interval                | Dynamics                         | Texture      | Key Operations                                                                         |
 |-----------------|------------------------------|----------------------------------|--------------|----------------------------------------------------------------------------------------|
 | **1. Init**     | $\tau = 0$                   | $z(0) = 0$                       | None         | Initialize at origin; $p(0) \sim \mathcal{N}(0, T_c G(0))$                             |
-| **2. Kick**     | $[0, \tau_{kick}]$           | Langevin at origin               | None         | Apply symmetry-breaking control $u_\pi$ (Def. {prf:ref}`prop-so-d-symmetry-at-origin`) |
+| **2. Kick**     | $[0, \tau_{kick}]$           | Langevin at origin               | None         | Apply symmetry-breaking control $u_\pi$ (Def. {prf:ref}`def-the-control-field`)        |
 | **3. Bulk**     | $[\tau_{kick}, \tau_{stop}]$ | BAOAB + Jumps                    | **Firewall** | Geodesic flow with chart transitions                                                   |
 | **4. Boundary** | $\tau = \tau_{stop}$         | $\lVert z\rVert \geq R_{cutoff}$ | Sampled      | Sample texture $z_{tex} \sim \mathcal{N}(0, \Sigma(z))$                                |
 | **5. Decode**   | Post-$\tau_{stop}$           | —                                | Used         | $x = \text{Decoder}(e_K, z_n, z_{tex})$                                                |

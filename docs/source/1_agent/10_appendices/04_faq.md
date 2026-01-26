@@ -407,7 +407,7 @@ charges), is there any room for genuine "agency," or is the agent just a sophist
 
 The framework does not eliminate agency—it *geometrizes* it.
 
-1. **The Policy as symmetry-breaking.** At the origin (Semantic Vacuum), the system is $SO(D)$-symmetric: all directions are equally likely. The policy $\pi$ breaks this symmetry by injecting a directional kick ({ref}`Section 21.2 <sec-policy-control-field>`, Theorem {prf:ref}`thm-pitchfork-bifurcation-structure`). This is not passive resistance; it is an active *choice* of direction, analogous to spontaneous magnetization.
+1. **The Policy as symmetry-breaking.** At the origin (Semantic Vacuum), the system is $SO(D)$-symmetric: all directions are equally likely. The policy $\pi$ breaks this angular symmetry by selecting a direction during the initial expansion ({ref}`Section 21.2 <sec-policy-control-field>`, Theorem {prf:ref}`thm-angular-symmetry-breaking`). This is not passive resistance; it is an active *choice* of direction, analogous to spontaneous magnetization.
 
 2. **The Equations of Motion are not deterministic.** Definition {prf:ref}`def-bulk-drift-continuous-flow` defines a *stochastic* differential equation with diffusion term $\sigma dW$. The PDE (Helmholtz) determines the *expected* value landscape; the agent navigates this landscape under noise. Stochasticity provides the "degrees of freedom" for exploration.
 
@@ -461,7 +461,7 @@ The Semantic Vacuum is not empty—it is maximally symmetric.
 
 We use numerically stable hyperbolic primitives.
 
-1. **Poincare ball parameterization.** All operations stay inside the unit ball $|z| < 1$. The Christoffel symbols (Proposition {prf:ref}`prop-a-explicit-christoffel-symbols-for-poincar-disk`) are computed in closed form; no iterative inversion is required.
+1. **Poincare ball parameterization.** All operations stay inside the unit ball $|z| < 1$. The Christoffel symbols (Proposition {prf:ref}`prop-explicit-christoffel-symbols-for-poincare-disk`) are computed in closed form; no iterative inversion is required.
 
 2. **Geodesic BAOAB integrator.** The BAOAB splitting scheme ({ref}`Section 22.4 <sec-the-geodesic-baoab-integrator>`) is a symplectic integrator designed for Riemannian manifolds. Proposition {prf:ref}`prop-baoab-preserves-boltzmann` proves it preserves the Boltzmann distribution to $O(\Delta t^2)$. Symplectic integrators do not accumulate energy drift over long trajectories.
 

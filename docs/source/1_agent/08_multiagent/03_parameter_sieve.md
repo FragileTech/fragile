@@ -76,7 +76,7 @@ where:
 1. **$c_{\text{info}}$:** Information propagation speed (Axiom {prf:ref}`ax-information-speed-limit`)
 2. **$\sigma$:** Cognitive Action Scale (Definition {prf:ref}`def-cognitive-action-scale`)
 3. **$\ell_L$:** Levin Length, the minimal distinguishable scale (Definition {prf:ref}`def-levin-length`)
-4. **$T_c$:** Cognitive Temperature. The critical value is $T_c^* = \mu^2/4$ where $\mu = 1/2 + u_\pi^r$ is the bifurcation parameter (Theorem {prf:ref}`thm-pitchfork-bifurcation-structure`). For small policy control ($u_\pi^r \ll 1$), $T_c^* \approx 1/16$.
+4. **$T_c$:** Cognitive Temperature. The critical value $T_c^* \approx |u_\pi^\theta|^2 r_*^2$ separates the symmetric phase (isotropic direction) from the broken phase (policy-selected direction), where $r_*$ is the characteristic early-time radius (Theorem {prf:ref}`thm-angular-symmetry-breaking`).
 5. **$g_s$:** Binding coupling strength (Theorem {prf:ref}`thm-emergence-binding-field`)
 6. **$\gamma$:** Temporal discount factor, $\gamma \in (0,1)$
 
@@ -493,14 +493,14 @@ $$
 
 $$
 
-where the **Critical Temperature** is derived from the barrier height of the pitchfork bifurcation (Theorem {prf:ref}`thm-pitchfork-bifurcation-structure`):
+where the **Critical Temperature** is derived from the angular symmetry breaking (Theorem {prf:ref}`thm-angular-symmetry-breaking`):
 
 $$
-T_c^* = \frac{\mu^2}{4} = \frac{(1 + 2u_\pi^r)^2}{16}
+T_c^* \approx |u_\pi^\theta|^2 r_*^2
 
 $$
 
-with $\mu = 1/2 + u_\pi^r$ the bifurcation parameter and $u_\pi^r$ the radial policy control. For small control ($u_\pi^r \ll 1$), this reduces to $T_c^* \approx 1/16$.
+with $u_\pi^\theta$ the tangential policy control and $r_*$ the characteristic early-time radius at which direction selection occurs.
 
 *Remark:* For $T_c > T_c^*$, thermal fluctuations overcome the potential barrier and the system remains in the symmetric phase with no stable policy (random walk near origin). For $T_c$ exceeding the Landauer bound, the agent starves thermodynamically. Viable agents exist in the intersection of these constraints.
 

@@ -301,7 +301,7 @@ Let $\rho^{(j)}_r(t, z)$ be the scalar source density associated with the conser
 reward flux. The potential perceived by Agent $i$ at position $z$ and time $t$ is the **Retarded Potential**:
 
 $$
-\Psi_{\text{ret}}^{(i)}(t, z) = \sum_{j \neq i} \int_{-\infty}^{t} \int_{\mathcal{Z}^{(j)}} G_{\text{ret}}(z, t; \zeta, \tau) \rho^{(j)}_r(\tau, \zeta) \, d\mu_G(\zeta) \, d\tau,
+\Psi_{\text{ret}}^{(i)}(t, z) = \sum_{j \neq i} \int_{-\infty}^{t} \int_{\mathcal{Z}^{(j)}} G_{\text{ret}}(z, t; \zeta, \tau) \rho^{(j)}_r(\tau, \zeta) \, d\mu_{G^{(j)}}(\zeta) \, d\tau,
 
 $$
 where $G_{\text{ret}}$ is the **Retarded Green's Function** for the wave operator on the manifold:
@@ -462,7 +462,7 @@ The induced **Retarded Interaction Potential** is the retarded Green's function 
 
 $$
 \Phi^{\text{ret}}_{ij}(z^{(i)}, t) = \int_{-\infty}^{t} \int_{\mathcal{Z}^{(j)}} G_{\text{ret}}(z^{(i)}, t; \zeta, \tau)\,
-\rho^{\text{ret}}_{ij}(\zeta, \tau)\, d\mu_G(\zeta)\, d\tau,
+\rho^{\text{ret}}_{ij}(\zeta, \tau)\, d\mu_{G^{(j)}}(\zeta)\, d\tau,
 
 $$
 where $G_{\text{ret}}$ is the retarded Green's function (Definition {prf:ref}`def-retarded-potential`).
@@ -514,9 +514,10 @@ $$
 and the retarded potential becomes instantaneous:
 
 $$
-\lim_{c_{\text{info}} \to \infty} \Phi^{\text{ret}}_{ij}(z^{(i)}, t) = \Phi_{ij}(z^{(i)}, z^{(j)}_t).
+\lim_{c_{\text{info}} \to \infty} \Phi^{\text{ret}}_{ij}(z^{(i)}, t) = \Phi_{ij}(z^{(i)}, z^{(j)}_t),
 
 $$
+where $\Phi_{ij}$ denotes the instantaneous interaction potential (the quasi-static limit of Definition {prf:ref}`def-retarded-interaction-potential`).
 
 *Interpretation:* Co-located agents ($d_{\mathcal{E}}^{ij} = 0$) or systems with negligible propagation delay operate in the Newtonian regime where standard MARL applies.
 
@@ -639,7 +640,7 @@ This recovers Theorem {prf:ref}`thm-the-hjb-helmholtz-correspondence` as the ins
 The solution to the inhomogeneous Klein-Gordon equation is given by convolution with the **Retarded Green's Function**:
 
 $$
-V^{(i)}(z, t) = \int_{-\infty}^{t} \int_{\mathcal{Z}^{(i)}} G_{\text{ret}}(z, t; \zeta, \tau) \left[ \rho^{(i)}_r(\zeta, \tau) + \sum_{j \neq i} \rho^{\text{ret}}_{ij}(\zeta, \tau) \right] d\mu_G(\zeta) \, d\tau,
+V^{(i)}(z, t) = \int_{-\infty}^{t} \int_{\mathcal{Z}^{(i)}} G_{\text{ret}}(z, t; \zeta, \tau) \left[ \rho^{(i)}_r(\zeta, \tau) + \sum_{j \neq i} \rho^{\text{ret}}_{ij}(\zeta, \tau) \right] d\mu_{G^{(i)}}(\zeta) \, d\tau,
 
 $$
 where $G_{\text{ret}}$ satisfies:

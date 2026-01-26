@@ -105,7 +105,7 @@ The "Compute" column tells you the cost. Checkmarks are cheap enough to run ever
 | **8**   | **TopoCheck ($\mathrm{TB}_\pi$)**                 | **Policy**               | **Sector Reachability**         | Goal reachable?                             | $T_{\text{reach}}(z_{\text{goal}})$ (Reachability Map)                                                                                     | $O(HBZ)$ ✗                      |
 | **9**   | **TameCheck ($\mathrm{TB}_O$)**                   | **World Model**          | **Interpretability Check**      | Dynamics Lipschitz-bounded?                               | $\Vert \nabla^2 S_t \Vert$ (Hessian Norm / Smoothness)                                                                                     | $O(Z^2 P_{WM})$ ✗               |
 | **10**  | **ErgoCheck ($\mathrm{TB}_\rho$)**                | **Policy**               | **Exploration/Mixing**          | Sufficient exploration?                     | $-H(\pi)$ (Max Entropy)                                                                                                                    | $O(BA)$ ✓                       |
-| **11**  | **ComplexCheck ($\mathrm{Rep}_K$)**               | **VQ-VAE**               | **Model Capacity Check**        | Symbolic rate within budget?                | $\mathrm{Rep}_K := H(K)/\log\lvert\mathcal{K}\rvert$ (Rate Utilization)                                                                    | $O(B)$ ✓                        |
+| **11**  | **ComplexCheck ($\mathrm{Rep}_K$)**               | **VQ-VAE**               | **Model Capacity Check**        | Symbolic rate within budget?                | $1 - H(K)/\log\lvert\mathcal{K}\rvert$ (Capacity Gap)                                                                                      | $O(B)$ ✓                        |
 | **12**  | **OscillateCheck ($\mathrm{GC}_\nabla$)**         | **WM / Policy**          | **Oscillation / Chattering**    | Limit cycles?                               | $\Vert z_t - z_{t-2} \Vert$ (Period-2 Penalty)                                                                                             | $O(BZ)$ ✓                       |
 | **12a** | **HolonomyCheck ($\mathrm{GC}_{\mathrm{holo}}$)** | **WM / Policy**          | **Loop Drift**                  | Near-closed loop changes policy/value?      | $\mathbb{I}[d_G(z_t,z_{t-L})<\epsilon_z]\cdot \mathrm{ReLU}(D_{\mathrm{KL}}(\pi(\cdot\mid z_t)\Vert \pi(\cdot\mid z_{t-L}))-\epsilon_h)^2$ | $O(BA)$ ✓                       |
 | **13**  | **BoundaryCheck ($\mathrm{Bound}_\partial$)**     | **VQ-VAE**               | **Input Informativeness**       | External signal present at boundary ({prf:ref}`def-boundary-markov-blanket`)?                    | $I(X;K)$ (Symbolic MI $>0$)                                                                                                                | $O(B)$ ✓                        |
@@ -128,7 +128,7 @@ Here $v := \dot{z}$ and $\mathcal{M}_\gamma^{-1} = \gamma I - \beta_{\text{curl}
 
 **Compute Legend:** ✓ Low (typically online) | ⚡ Moderate (often amortized/approximated) | ✗ High (often offline or coarse approximations)
 **Variables:** $B$ = batch, $Z$ = latent dim, $A$ = actions, $P$ = params, $H$ = horizon, $D$ = observation dim
-**Threshold units:** whenever a node uses a threshold $\epsilon$, it inherits the units of the compared quantity (e.g., $\epsilon$ is dimensionless for SNR checks; $\epsilon$ has the same units as $\|\nabla_A V\|$ for stiffness checks; $\epsilon$ is in nats when compared to $I(X;K)$ or $H(K)$). Budgets like $V_{\text{max}},V_{\text{limit}}$, and $B_{\text{switch}}$ share units with $V$ (nats in the convention of {ref}`Section 1.2 <sec-units-and-dimensional-conventions>`).
+**Threshold units:** whenever a node uses a threshold $\epsilon$, it inherits the units of the compared quantity (e.g., $\epsilon$ is dimensionless for SNR checks; $\epsilon$ has the same units as $\|\nabla_A V\|$ for stiffness checks; $\epsilon$ is in nats when compared to $I(X;K)$ or $H(K)$). Budgets like $V_{\text{max}}$ and $B_{\text{switch}}$ share units with $V$ (nats in the convention of {ref}`Section 1.2 <sec-units-and-dimensional-conventions>`).
 
 **Geometric Properties of Key Nodes:**
 
@@ -552,7 +552,7 @@ regularization in Section 24.5.
 *   **Safety Budget (Node 1):**
 
     $$
-    \mathcal{L}_{\text{Risk}} = \lambda_{\text{safety}} \cdot \mathbb{E}[\max(0, V(z) - V_{\text{limit}})]
+    \mathcal{L}_{\text{Risk}} = \lambda_{\text{safety}} \cdot \mathbb{E}[\max(0, V(z) - V_{\text{max}})]
 
     $$
     *   *Effect:* Hard Lagrangian enforcement of the risk budget.

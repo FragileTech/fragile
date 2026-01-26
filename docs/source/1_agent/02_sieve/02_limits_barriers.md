@@ -173,7 +173,7 @@ Think of a thermostat that only knows "hot" or "cold." Great for simple temperat
 The loss function balances these concerns: the first term rewards compression, the second penalizes control effort. When control starts struggling, decrease the compression coefficients ($\beta$) to let more information through.
 :::
 
-2.  **The Stability-Plasticity Dilemma (BarrierVac vs BarrierPZ):**
+2.  **The Stability-Plasticity Dilemma (BarrierVac vs ZenoCheck (Node 2)):**
     *   *Conflict:* A stable World Model (model stability limit) resists updating to new dynamics (plasticity / Zeno).
     *   *Regularization:* **Elastic Weight Consolidation (EWC)**.
 

@@ -30,7 +30,7 @@ That's absurd, isn't it? Humans don't work that way. We encounter novel situatio
 The key insight is that this process has a precise geometric description. It's a *bifurcation*---a phase transition in the space of possible representations. And like any good phase transition, it has a critical point: enough stress in the system, and the old equilibrium becomes unstable. New structure spontaneously emerges.
 :::
 
-This section formalizes the mechanism by which agents expand their ontology---creating new conceptual distinctions---when the existing chart structure proves insufficient. The central object is the **Semantic Vacuum** at the origin $z=0$, where the agent's representation is maximally uncertain. Under **Ontological Stress**, this vacuum becomes unstable and undergoes **Topological Fission**: a pitchfork bifurcation (Theorem {prf:ref}`thm-pitchfork-bifurcation-structure`) that spawns new chart queries.
+This section formalizes the mechanism by which agents expand their ontology---creating new conceptual distinctions---when the existing chart structure proves insufficient. The central object is the **Semantic Vacuum** at the origin $z=0$, where the agent's representation is maximally uncertain. Under **Ontological Stress**, this vacuum becomes unstable and undergoes **Topological Fission**: a supercritical pitchfork bifurcation (Theorem {prf:ref}`thm-supercritical-pitchfork-bifurcation-for-charts`) that spawns new chart queries.
 
 (rb-dynamic-architecture)=
 :::{admonition} Researcher Bridge: Dynamic Architecture vs. Fixed Capacity
@@ -102,7 +102,7 @@ equipped with the following properties:
 
 *Units:* $[\mu_{\emptyset}]$ is a probability measure; $[U] = \mathrm{nat}$.
 
-*Remark (Unstable Equilibrium).* The vacuum is an **unstable fixed point** of the radial dynamics. From Theorem {prf:ref}`thm-pitchfork-bifurcation-structure`, the parameter $\mu = 1/2 > 0$ implies the origin is unstable: any perturbation grows exponentially until noise or policy breaks the symmetry.
+*Remark (Unstable Origin).* The vacuum is not a fixed point of the radial dynamics: the entropic drift $(1-r^2)/2 > 0$ at $r=0$ implies trajectories immediately expand outward (Theorem {prf:ref}`thm-angular-symmetry-breaking`). The $SO(D)$ angular symmetry is broken by the policy or thermal fluctuations during this expansion.
 
 :::
 
@@ -359,7 +359,7 @@ But here's the elegant part: both daughters are equivalent by symmetry. There's 
 This is how new concepts are born: not by design, but by instability. When the pressure gets high enough, the old structure cracks and new structure emerges.
 :::
 
-When the Fission Criterion is satisfied, the agent creates a new chart by splitting an existing query vector. This process is a **pitchfork bifurcation** in the space of chart queries, extending the structure established in Theorem {prf:ref}`thm-pitchfork-bifurcation-structure`.
+When the Fission Criterion is satisfied, the agent creates a new chart by splitting an existing query vector. This process is a **supercritical pitchfork bifurcation** in the space of chart queries (Theorem {prf:ref}`thm-supercritical-pitchfork-bifurcation-for-charts`).
 
 :::{prf:definition} Query Fission
 :label: def-query-fission
@@ -394,17 +394,17 @@ The fission direction $u$ is chosen to maximize *discriminability*. We're asking
 This is just PCA within a partition---finding the direction of greatest spread among the observations currently assigned to this chart, and splitting along that direction.
 :::
 
-:::{prf:theorem} Supercritical Pitchfork Bifurcation for Charts
+:::{prf:theorem} Supercritical Pitchfork Bifurcation for Charts {cite}`strogatz2015nonlinear`
 :label: thm-supercritical-pitchfork-bifurcation-for-charts
 
-The query fission dynamics exhibit the **supercritical pitchfork bifurcation** structure of Theorem {prf:ref}`thm-pitchfork-bifurcation-structure`. Let $r := \|q_i^+ - q_i^-\|/2 = \epsilon$ be the half-separation of daughter queries. The radial evolution satisfies:
+The query fission dynamics exhibit a **supercritical pitchfork bifurcation**. Let $r := \|q_i^+ - q_i^-\|/2 = \epsilon$ be the half-separation of daughter queries. The radial evolution satisfies:
 
 $$
 \frac{dr}{ds} = (\Xi - \Xi_{\text{crit}}) r - \alpha r^3 + \sigma\xi,
 
 $$
 where:
-- $\Xi - \Xi_{\text{crit}}$ plays the role of the bifurcation parameter $\mu$ in Theorem {prf:ref}`thm-pitchfork-bifurcation-structure`
+- $\Xi - \Xi_{\text{crit}}$ is the **bifurcation parameter** (supercritical when positive)
 - $\alpha > 0$ is a stabilizing cubic coefficient (from competition for training data)
 - $\sigma\xi$ is noise from stochastic gradient updates
 - $s$ is the training step (flow time)
@@ -423,9 +423,9 @@ $$
 \Phi_{\text{fission}}(r) = -\frac{(\Xi - \Xi_{\text{crit}})}{2} r^2 + \frac{\alpha}{4} r^4,
 
 $$
-which has the standard pitchfork form. For $\Xi > \Xi_{\text{crit}}$, the origin has $\Phi_{\text{fission}}''(0) = -(\Xi - \Xi_{\text{crit}}) < 0$, becoming unstable. Stable minima appear at $r = \pm r^*$. The cubic term arises from router saturation: as daughters separate, they compete for data, and the loss landscape penalizes excessive separation. This matches the normal form of Theorem {prf:ref}`thm-pitchfork-bifurcation-structure` with $\mu = \Xi - \Xi_{\text{crit}}$. $\square$
+which has the standard pitchfork normal form. For $\Xi > \Xi_{\text{crit}}$, the origin has $\Phi_{\text{fission}}''(0) = -(\Xi - \Xi_{\text{crit}}) < 0$, becoming unstable. Stable minima appear at $r = \pm r^*$. The cubic term arises from router saturation: as daughters separate, they compete for data, and the loss landscape penalizes excessive separation. $\square$
 
-*Critical Temperature Constraint.* From Theorem {prf:ref}`thm-pitchfork-bifurcation-structure`, the critical temperature $T_c^* = 1/16$ implies that thermal fluctuations can restore symmetry (collapse daughters) if cognitive temperature ({prf:ref}`def-cognitive-temperature`) exceeds the barrier height. For stable fission, require:
+*Critical Temperature Constraint.* The barrier height of the effective potential is $\Delta\Phi = (\Xi - \Xi_{\text{crit}})^2 / (4\alpha)$. Thermal fluctuations can restore symmetry (collapse daughters) if cognitive temperature ({prf:ref}`def-cognitive-temperature`) exceeds this barrier. For stable fission, require:
 
 $$
 T_c < \frac{(\Xi - \Xi_{\text{crit}})^2}{4\alpha}.

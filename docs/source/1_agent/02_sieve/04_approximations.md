@@ -197,13 +197,13 @@ def compute_bifurcation_loss(
     # Forward through world model
     z_next = world_model(z, a)  # [B, Z]
 
-    jvp_norms = []
+    vjp_norms = []
     for _ in range(n_probes):
         # Random probe direction
         v = torch.randn_like(z)  # [B, Z]
 
-        # Jacobian-vector product via autodiff (efficient: O(Z))
-        jvp = torch.autograd.grad(
+        # Vector-Jacobian product (VJP) via autodiff (efficient: O(Z))
+        vjp = torch.autograd.grad(
             outputs=z_next,
             inputs=z,
             grad_outputs=v,
@@ -211,12 +211,12 @@ def compute_bifurcation_loss(
             retain_graph=True,
         )[0]  # [B, Z]
 
-        jvp_norm = jvp.norm(dim=-1)  # [B]
-        jvp_norms.append(jvp_norm)
+        vjp_norm = vjp.norm(dim=-1)  # [B]
+        vjp_norms.append(vjp_norm)
 
     # Stack and compute variance across probes
-    jvp_norms = torch.stack(jvp_norms, dim=0)  # [n_probes, B]
-    variance = jvp_norms.var(dim=0).mean()  # Average variance across batch
+    vjp_norms = torch.stack(vjp_norms, dim=0)  # [n_probes, B]
+    variance = vjp_norms.var(dim=0).mean()  # Average variance across batch
 
     # Penalize high variance (indicates instability)
     loss = torch.relu(variance - instability_threshold).pow(2)
@@ -342,21 +342,21 @@ $$
 **Replacement: Value Gradient Alignment**
 
 $$
-\mathcal{L}_{\text{topo}} = -\left\langle \nabla_z V(z), \frac{z_{\text{goal}} - z}{\Vert z_{\text{goal}} - z \Vert} \right\rangle
+\mathcal{L}_{\text{topo}} = \mathrm{ReLU}\left(\left\langle \nabla_z V(z), \frac{z_{\text{goal}} - z}{\| z_{\text{goal}} - z \|} \right\rangle\right)
 
 $$
 
 :::{div} feynman-prose
-A much cheaper test: does the value function's gradient point toward the goal? If $\nabla_z V(z)$ aligns with $(z_{\text{goal}} - z)$, following the gradient takes us goalward. If they point opposite, something is wrong---the value function says "go this way" while the goal lies the other way.
+A much cheaper test: does the value function's gradient point the right way for cost minimization? If $V$ is a cost minimized at the goal, gradient descent follows $-\nabla_z V(z)$. That means $\nabla_z V(z)$ should point away from $(z_{\text{goal}} - z)$ so that $-\nabla_z V(z)$ points toward the goal.
 
-The inner product $\langle \nabla_z V, \hat{d}_{\text{goal}} \rangle$ measures alignment: positive means aligned, negative means misaligned. We penalize positive values (since value is typically something we minimize, like negative reward or distance to goal).
+The inner product $\langle \nabla_z V, \hat{d}_{\text{goal}} \rangle$ measures alignment: positive means the gradient points toward the goal (wrong for a cost), negative means it points away (correct). We penalize positive alignment and leave negative alignment alone.
 
 This is necessary but not sufficient for reachability. If you cannot start moving the right direction, you certainly cannot arrive. Obstacles might still block the path---but this catches the common failure where the value function points the wrong way entirely.
 
 Cost: one gradient computation. No multi-step simulation.
 :::
 
-When $\nabla_z V(z)$ aligns with the goal direction, gradient ascent on $V$ yields a path to $z_{\text{goal}}$.
+When $-\nabla_z V(z)$ aligns with the goal direction, gradient descent on $V$ yields a path to $z_{\text{goal}}$.
 
 ```python
 def compute_topo_loss(

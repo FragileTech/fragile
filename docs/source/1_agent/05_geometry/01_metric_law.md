@@ -85,15 +85,15 @@ The formula might look a bit intimidating, but the idea is simple: we're countin
 :::{prf:definition} Information density and bulk information volume
 :label: def-information-density-and-bulk-information-volume
 
-Let $\rho(z,s)$ denote the probability density of the agent's belief state at position $z \in \mathcal{Z}$ and computation time $s$. The **information density** $\rho_I(z,s)\ge 0$ is defined as:
+Let $\rho(z,s)$ denote the probability density of the agent's belief state at position $z \in \mathcal{Z}$ and computation time $s$, **defined with respect to the Riemannian volume measure** $d\mu_G = \sqrt{|G|}\,dz^n$. The **information density** $\rho_I(z,s)\ge 0$ is defined as the local Shannon entropy density:
 
 $$
-\rho_I(z,s) := -\rho(z,s) \log \rho(z,s) + \frac{1}{2}\rho(z,s) \log\det G(z),
+\rho_I(z,s) := -\rho(z,s) \log \rho(z,s),
 
 $$
-with units of nats per unit Riemannian volume $d\mu_G=\sqrt{|G|}\,dz^n$ ($n=\dim\mathcal{Z}$). The first term is the local entropy contribution (Shannon density); the second term is the geometric correction accounting for the metric-induced volume distortion.
+with units of nats per unit Riemannian volume ($n=\dim\mathcal{Z}$).
 
-*Remark.* Integrating $\rho_I$ over $\mathcal{Z}$ yields the differential entropy $h[\rho] = -\int \rho \log \rho \, d\mu_G$ plus the expected log-volume $\frac{1}{2}\mathbb{E}_\rho[\log\det G]$. The latter term ensures that the information measure respects the intrinsic geometry: regions with curved (high-$|G|$) geometry contribute more information capacity.
+*Remark.* Integrating $\rho_I$ over $\mathcal{Z}$ with respect to $d\mu_G$ yields the coordinate-invariant differential entropy $h[\rho] = -\int \rho \log \rho \, d\mu_G$. By defining $\rho$ as a density with respect to $d\mu_G$ (rather than Lebesgue measure $dz$), the entropy is automatically invariant under coordinate changes---no explicit metric correction term is needed.
 
 :::
 
@@ -102,7 +102,7 @@ with units of nats per unit Riemannian volume $d\mu_G=\sqrt{|G|}\,dz^n$ ($n=\dim
 The second term $\frac{1}{2}\rho \log\det G$ might seem like a technicality, but it's doing important work. Think of it this way: in a region where the metric determinant is large, the "volume is stretched"---a small coordinate box actually represents a lot of space. The information you're storing in that region is therefore worth more. This correction ensures we're measuring information in a geometrically honest way.
 :::
 
-:::{prf:definition} a (Bulk information volume)
+:::{prf:definition} Bulk Information Volume
 :label: def-a-bulk-information-volume
 
 Define the bulk information volume over a region $\Omega\subseteq\mathcal{Z}$ by

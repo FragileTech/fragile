@@ -363,41 +363,63 @@ This recovers **Distributional RL**: C51, QR-DQN, IQN {cite}`bellemare2017c51,da
 ## Connection to GKSL / Master Equation ({ref}`Section 12.5 <sec-optional-operator-valued-belief-updates>`)
 
 :::{div} feynman-prose
-Now let me show you a connection that surprised me when I first saw it: the WFR framework gives a geometric interpretation to the Lindblad master equation from quantum mechanics.
+Now let me show you a connection that has rigorous mathematical foundations: the WFR framework and the Lindblad master equation are both gradient flows, and in the classical limit they coincide exactly.
 
-You might ask: what does quantum mechanics have to do with our classical agent? The answer is: more than you'd think. The mathematical structure of quantum master equations turns out to be a natural way to describe belief dynamics with both smooth evolution and sudden jumps. And the WFR geometry makes this connection precise.
+You might ask: what does quantum mechanics have to do with our classical agent? The answer is structural. Both frameworks solve the same problem: how to describe dynamics that combine smooth evolution with sudden jumps, while preserving probability. The mathematics turns out to be the same.
 :::
 
-The WFR framework provides a natural interpretation of the GKSL (Lindblad) master equation from {ref}`Section 12.5 <sec-optional-operator-valued-belief-updates>`.
+The WFR framework connects rigorously to the GKSL (Lindblad) master equation via the **classical limit**. We state this precisely.
 
-**Correspondence Table:**
+:::{prf:theorem} Classical Master Equation as WFR Gradient Flow
+:label: thm-classical-master-equation-wfr
 
-| GKSL Component                                                                                    | WFR Interpretation                                     |
-|---------------------------------------------------------------------------------------------------|--------------------------------------------------------|
-| $-i[H, \varrho]$ (Commutator)                                                                     | Transport velocity $v$ (Hamiltonian drift)             |
-| $\sum_j \gamma_j(L_j \varrho L_j^\dagger - \frac{1}{2}\{L_j^\dagger L_j, \varrho\})$ (Dissipator) | Reaction rate $r$ (jump operators)                     |
-| Unitary evolution                                                                                 | Mass-preserving transport ($\int \rho = \text{const}$) |
-| Lindblad jumps                                                                                    | Mass redistribution ($r < 0$ source, $r > 0$ sink)     |
+Let $\mathcal{K} = \{1, \ldots, K\}$ be a finite state space with transition rates $W_{jk} \geq 0$ (rate of jumping from $k$ to $j$). The classical master equation
 
-:::{prf:proposition} GKSL Embedding
-:label: prop-gksl-embedding
+$$
+\dot{p}_j = \sum_{k} W_{jk} p_k - W_{kj} p_j
+$$
 
-The GKSL generator from Definition {prf:ref}`def-gksl-generator` embeds into the WFR framework as follows:
-- The Hamiltonian $H$ generates the velocity field via $v \propto G^{-1}\nabla_z \langle H \rangle_\varrho$ (gradient of expected energy)
-- Each Lindblad operator $L_j$ contributes to the reaction rate via $r \propto \sum_j \gamma_j(\mathrm{Tr}(L_j^\dagger L_j \varrho) - 1)$
+is the **gradient flow** of the relative entropy $H(p \| \pi) = \sum_j p_j \log(p_j / \pi_j)$ with respect to a discrete Wasserstein-type metric, where $\pi$ is the stationary distribution satisfying detailed balance {cite}`maas2011gradient,mielke2011gradient,chow2012fokker`.
 
-This provides a **geometric foundation** for the otherwise algebraic GKSL construction. The correspondence is heuristic; see Carlen & Maas (2014) {cite}`carlen2014wasserstein` for rigorous connections between quantum Markov semigroups and gradient flows on Wasserstein space.
+:::
+
+:::{prf:corollary} GKSL Classical Limit
+:label: cor-gksl-classical-limit
+
+When the GKSL density matrix is diagonal, $\varrho = \mathrm{diag}(p_1, \ldots, p_K)$, the GKSL equation reduces to a classical master equation with rates
+
+$$
+W_{jk} = \sum_\ell \gamma_\ell |\langle j | L_\ell | k \rangle|^2.
+$$
+
+The commutator term $-i[H, \varrho]$ vanishes identically for diagonal states. By Theorem {prf:ref}`thm-classical-master-equation-wfr`, this evolution is a gradient flow in WFR geometry.
+
+:::
+
+**Correspondence Table (Classical Limit):**
+
+| GKSL Component (diagonal $\varrho$)                                                               | WFR Interpretation                                           |
+|---------------------------------------------------------------------------------------------------|--------------------------------------------------------------|
+| $-i[H, \varrho]$ (Commutator)                                                                     | **Vanishes** (no off-diagonal elements to rotate)            |
+| $\sum_j \gamma_j(L_j \varrho L_j^\dagger - \frac{1}{2}\{L_j^\dagger L_j, \varrho\})$ (Dissipator) | Reaction rate $r$ (jump-induced mass redistribution)         |
+| Probability conservation $\sum_k \dot{p}_k = 0$                                                   | Balanced reaction ($\int r \, d\mu = 0$ globally)            |
+| Jump operators $L_j$                                                                              | Transition kernels (where mass teleports to)                 |
+
+:::{prf:remark} Full Quantum Case
+:label: rem-full-quantum-wfr
+
+For non-diagonal density matrices (quantum coherences), the appropriate geometric structure is the **quantum Wasserstein distance** of Carlen \& Maas {cite}`carlen2014wasserstein,carlen2017gradient`. The GKSL equation is the gradient flow of quantum relative entropy with respect to this metric. This framework handles coherences but is more complex than the classical WFR theory used here.
 
 :::
 
 :::{div} feynman-prose
-The GKSL equation (also called the Lindblad equation) is the most general form of Markovian evolution for a quantum system. It has two parts: the commutator with a Hamiltonian, which gives smooth, reversible evolution; and the "dissipator," which gives irreversible jumps.
+Let me be precise about what is rigorous and what is not.
 
-In our WFR language:
-- The commutator corresponds to transport. The belief flows smoothly according to some energy landscape.
-- The dissipator corresponds to reaction. Probability mass suddenly jumps from one place to another.
+**Rigorous:** When beliefs are classical probability distributions (no quantum coherences), the master equation dynamics are *exactly* a gradient flow in a Wasserstein-type metric. This is a theorem, not an analogy. Maas (2011) and Mielke (2011) proved it for discrete state spaces; Chizat et al. (2018) extended it to continuous spaces with the full WFR metric.
 
-This isn't just an analogy---there are rigorous theorems connecting GKSL dynamics to gradient flows on Wasserstein space. What we're doing here is taking that mathematical machinery and applying it to classical agents. The quantum formalism turns out to be the right language for describing mixed discrete-continuous dynamics, even when there's nothing quantum about the underlying physics.
+**Also rigorous but different:** For full quantum states with coherences, Carlen \& Maas (2014, 2017) constructed a quantum Wasserstein distance. GKSL is a gradient flow there too. But this is a different metric space (density matrices, not probability measures).
+
+**The practical upshot:** If your agent uses classical beliefs (probability distributions over states), WFR geometry is the *correct* geometric structure---not an approximation or analogy. If you want to extend to quantum-like coherent beliefs, the mathematics exists but requires the quantum Wasserstein framework.
 :::
 
 :::{admonition} Why This Connection Matters
@@ -679,10 +701,10 @@ What does this mean in practice? Regions of high belief dynamics---where the age
 **In Implementation:** The WFR stress-energy tensor (Theorem {prf:ref}`thm-wfr-stress-energy-tensor-variational-form`) is:
 
 $$
-T_{ij} = \rho\left(v_i v_j - \frac{1}{2}\|v\|_G^2 G_{ij}\right) + \frac{\lambda^2}{2}\rho r^2 G_{ij}
+T_{ij} = \rho v_i v_j + \frac{1}{2}\rho\left(\|v\|_G^2 + \lambda^2 r^2\right) G_{ij}
 
 $$
-derived from $\delta \mathcal{S}_{\text{WFR}}/\delta G^{ij}$.
+derived from $\delta \mathcal{S}_{\text{WFR}}/\delta G^{ij}$. This has the standard perfect-fluid form with positive pressure $P = \frac{1}{2}\rho(\|v\|_G^2 + \lambda^2 r^2)$.
 
 **Correspondence Table:**
 
