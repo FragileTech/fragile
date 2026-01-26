@@ -27,13 +27,13 @@ prove that a game-theoretic equilibrium exists where honest gradient computation
 resulting blockchain is a **Thermodynamic Record of Learning**.
 
 *Cross-references:*
-- Extends {ref}`Section 36 <sec-the-metabolic-transducer-autopoiesis-and-the-szilard-engine>` (Metabolic Transducer) to
+- Extends {ref}`sec-the-metabolic-transducer-autopoiesis-and-the-szilard-engine` (Metabolic Transducer) to
   decentralized networks.
-- Utilizes {ref}`Section 37 <sec-the-inter-subjective-metric-gauge-locking-and-the-emergence-of-objective-reality>`
+- Utilizes {ref}`sec-the-inter-subjective-metric-gauge-locking-and-the-emergence-of-objective-reality`
   (Gauge Locking) for consensus.
-- Relies on {ref}`Section 33 <sec-causal-information-bound>` (Causal Information Bound) for verification and capacity
+- Relies on {ref}`sec-causal-information-bound` (Causal Information Bound) for verification and capacity
   limits.
-- Connects to {ref}`Section 30 <sec-ontological-expansion-topological-fission-and-the-semantic-vacuum>` (Ontological
+- Connects to {ref}`sec-ontological-expansion-topological-fission-and-the-semantic-vacuum` (Ontological
   Fission) for network topology.
 
 *Literature:* Bitcoin/PoW {cite}`nakamoto2008bitcoin`; Proof of Useful Work {cite}`ball2017proof`; Federated Learning
@@ -319,7 +319,7 @@ A miner solving block $h$ must:
 The network **Difficulty** $\mathcal{D}_h$ at height $h$ controls the minimum batch size $|D_h|$ required for valid blocks:
 
 $$
-\mathcal{D}_{h+1} = \mathcal{D}_h \cdot \exp\left( \alpha_{\text{diff}} \left( \frac{t_h - t_{\text{target}}}{t_{\text{target}}} \right) \right)
+\mathcal{D}_{h+1} = \mathcal{D}_h \cdot \exp\left( -\alpha_{\text{diff}} \left( \frac{t_h - t_{\text{target}}}{t_{\text{target}}} \right) \right)
 
 $$
 
