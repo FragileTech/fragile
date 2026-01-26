@@ -57,7 +57,7 @@ $$
 I_{\max} = \nu_D \cdot \frac{\text{Area}(\partial\mathcal{Z})}{\ell_L^{D-1}}
 
 $$
-where $\ell_L$ is the Levin length (Definition {prf:ref}`def-levin-length`) and $\nu_D$ is the Holographic Coefficient (Definition {prf:ref}`def-holographic-coefficient`). For $D=2$: $I_{\max} = \text{Area}/(4\ell_L^2)$.
+where $\ell_L$ is the Levin length (Definition {prf:ref}`def-levin-length`) and $\nu_D$ is the Holographic Coefficient (Definition {prf:ref}`def-holographic-coefficient`). For $D=2$: $I_{\max} = \text{Area}/(4\ell_L)$.
 
 **Correspondence Table:**
 
@@ -121,7 +121,7 @@ where $\Omega_{D-1} = \frac{2\pi^{D/2}}{\Gamma(D/2)}$ is the surface area of the
 
 *Remark (Dimensional pressure).* The coefficient $\nu_D$ is non-monotonic: it increases from $D=2$ to a peak near $D \approx 9$ ($\nu_9 \approx 9.45$), then decays to zero as $D \to \infty$. The curse of dimensionality applies to this high-dimensional tail. Dimensional reduction pressure arises beyond the peak; $D \approx 3$ lies on the rising portion of the curve.
 
-*Remark (Physics correspondence).* For $D=2$, we recover the Bekenstein-Hawking coefficient $\nu_2 = 1/4$, making the Causal Information Bound $I_{\max} = \text{Area}/(4\ell_L^2)$ directly analogous to black hole entropy $S = A/(4\ell_P^2)$.
+*Remark (Physics correspondence).* For $D=2$, we recover the Bekenstein-Hawking coefficient $\nu_2 = 1/4$, making the Causal Information Bound $I_{\max} = \text{Area}/(4\ell_L)$ directly analogous to black hole entropy $S = A/(4\ell_P^2)$.
 
 *Units:* $[\nu_D] = \text{dimensionless}$.
 
@@ -269,10 +269,10 @@ where:
 *Corollary (Poincare disk, $D=2$).* For the 2-dimensional Poincare disk, the formula reduces to the Bekenstein-Hawking form:
 
 $$
-I_{\max} = \frac{\text{Area}(\partial\mathcal{Z})}{4\ell_L^2}
+I_{\max} = \nu_2 \cdot \frac{\text{Area}(\partial\mathcal{Z})}{\ell_L^{D-1}} = \frac{\text{Area}(\partial\mathcal{Z})}{4\ell_L}
 
 $$
-where the $\ell_L^2$ (rather than $\ell_L^{D-1} = \ell_L$) arises from the Poincare disk metric normalization $G(0) = 4I$, which maps a coordinate cell of side $\ell_L$ to Riemannian area $4\ell_L^2$.
+where $\nu_2 = 1/4$ is the holographic coefficient for $D=2$ and $\ell_L^{D-1} = \ell_L$ for the 1-dimensional boundary.
 
 *Proof sketch (full derivation in {ref}`Appendix A.6 <sec-appendix-a-area-law>`).*
 
@@ -407,7 +407,7 @@ where:
 - $\nu_D$ is the Holographic Coefficient (Definition {prf:ref}`def-holographic-coefficient`)
 - $D$ is the latent manifold dimension
 
-*Special case (Poincare disk, $D=2$):* $\eta_{\text{Sch}} = 4\ell_L^2 \cdot I_{\text{bulk}} / \text{Area}(\partial\mathcal{Z})$.
+*Special case (Poincare disk, $D=2$):* $\eta_{\text{Sch}} = 4\ell_L \cdot I_{\text{bulk}} / \text{Area}(\partial\mathcal{Z})$.
 
 *Interpretation:*
 - $\eta_{\text{Sch}} < 0.5$: Safe operating regime. Ample capacity headroom.
@@ -471,7 +471,7 @@ This is the kind of result that changes how you think about machine learning. It
 
 2. **The Levin Length** (Definition {prf:ref}`def-levin-length`) sets the minimal scale of representational distinction. One nat of information occupies $(D-1)$-dimensional volume $\ell_L^{D-1}$.
 
-3. **The Causal Information Bound** (Theorem {prf:ref}`thm-causal-information-bound`) proves that representational capacity is bounded by interface area: $I_{\max} = \nu_D \cdot \text{Area}(\partial\mathcal{Z})/\ell_L^{D-1}$. For the Poincare disk ($D=2$): $I_{\max} = \text{Area}/(4\ell_L^2)$.
+3. **The Causal Information Bound** (Theorem {prf:ref}`thm-causal-information-bound`) proves that representational capacity is bounded by interface area: $I_{\max} = \nu_D \cdot \text{Area}(\partial\mathcal{Z})/\ell_L^{D-1}$. For the Poincare disk ($D=2$): $I_{\max} = \text{Area}/(4\ell_L)$.
 
 4. **Causal Stasis** (Theorem {prf:ref}`thm-causal-stasis`) shows that approaching this bound causes the agent's internal update rate to vanish. The metric diverges, making belief updates infinitely costly.
 
