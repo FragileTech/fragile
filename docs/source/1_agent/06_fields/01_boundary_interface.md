@@ -116,7 +116,7 @@ This is exactly what sensors do: they *localize* you. A camera tells you "the vi
 The motor output stream $A(x)$ imposes a **Neumann** (flux-clamping) condition:
 
 $$
-\nabla_n \rho \cdot \mathbf{n} \big|_{\partial\mathcal{Z}_{\text{motor}}} = j_{\text{motor}}(p, t),
+\nabla \rho \cdot \mathbf{n} \big|_{\partial\mathcal{Z}_{\text{motor}}} = j_{\text{motor}}(p, t),
 
 $$
 where $j_{\text{motor}}$ is the motor current density determined by the policy:

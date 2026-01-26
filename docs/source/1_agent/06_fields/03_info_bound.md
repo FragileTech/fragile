@@ -89,9 +89,9 @@ Before we can write down the information bound, we need to understand a curious 
 
 Think about it this way. In 2D, the boundary of a disk is a circle. In 3D, the boundary of a ball is a sphere. In higher dimensions, the boundary becomes increasingly exotic. And here's the surprise: *higher dimensions are worse for holographic storage*.
 
-You might have expected the opposite. More dimensions, more room, more capacity, right? Wrong. The coefficient $\nu_D$ that determines how much information fits per unit boundary area actually *decreases* as dimension increases. In the limit of infinite dimensions, it goes to zero.
+You might have expected the opposite. More dimensions, more room, more capacity, right? The reality is subtler. The coefficient $\nu_D$ that determines how much information fits per unit boundary area is *non-monotonic*: it rises from $D=2$, peaks around $D \approx 9$, and only then declines toward zero as $D \to \infty$.
 
-This is the "curse of dimensionality" derived from first principles. High-dimensional latent spaces sound powerful, but they're geometrically inefficient. The sweet spot turns out to be around $D \approx 3$---which is suspiciously close to the dimensionality of the physical space we evolved to navigate.
+This is the "curse of dimensionality" in its asymptotic form: beyond the peak, high-dimensional latent spaces become geometrically inefficient. The familiar $D = 3$ lies on the *rising* side of this curve---not at the maximum, but still in the efficient regime.
 
 For $D = 2$, we get $\nu_2 = 1/4$, which matches the famous Bekenstein-Hawking coefficient for black holes. This isn't a coincidence; it's the same mathematics in a different context.
 :::
@@ -119,7 +119,7 @@ where $\Omega_{D-1} = \frac{2\pi^{D/2}}{\Gamma(D/2)}$ is the surface area of the
 | 6   | 5-sphere ($S^5$) | $\pi^3$ | $5\pi^2/8$ | 6.169 |
 | $D \gg 1$ | Hyper-sphere | $\to 0$ | $\to 0$ | Capacity collapse |
 
-*Remark (Dimensional pressure).* The coefficient $\nu_D \to 0$ as $D \to \infty$ (curse of dimensionality). High-dimensional agents are **less efficient** at boundary information storage. This creates pressure for dimensional reduction—$D \approx 3$ maximizes holographic efficiency near the sweet spot.
+*Remark (Dimensional pressure).* The coefficient $\nu_D$ is non-monotonic: it increases from $D=2$ to a peak near $D \approx 9$ ($\nu_9 \approx 9.45$), then decays to zero as $D \to \infty$. The curse of dimensionality applies to this high-dimensional tail. Dimensional reduction pressure arises beyond the peak; $D \approx 3$ lies on the rising portion of the curve.
 
 *Remark (Physics correspondence).* For $D=2$, we recover the Bekenstein-Hawking coefficient $\nu_2 = 1/4$, making the Causal Information Bound $I_{\max} = \text{Area}/(4\ell_L^2)$ directly analogous to black hole entropy $S = A/(4\ell_P^2)$.
 
@@ -296,7 +296,7 @@ Combining these steps yields the general bound. $\square$
 
 There is no third option. Adding internal parameters without expanding the interface yields diminishing returns as the agent approaches saturation.
 
-*Remark (Dimensional efficiency).* High-dimensional latent spaces ($D \gg 1$) have $\nu_D \to 0$, meaning **less** information can be stored per unit boundary area. This provides a first-principles derivation of the "curse of dimensionality" and suggests that $D \approx 3$ is optimal for holographic efficiency.
+*Remark (Dimensional efficiency).* The coefficient $\nu_D$ increases through moderate dimensions, peaks near $D \approx 9$, and declines toward zero for $D \gg 1$. The asymptotic decay corresponds to the curse of dimensionality; $D \approx 3$ is efficient but not the dimension maximizing holographic capacity.
 
 :::
 

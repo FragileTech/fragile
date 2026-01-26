@@ -752,7 +752,7 @@ At stationarity, $\nabla \cdot J = 0$, but only $J_{\text{gradient}} = 0$ at tru
 | **Probability current $J$** | **Value harvesting flow** | **NESS circulation** |
 | **Entropy production $\dot{S}_i$** | **Cyclic reward rate** | **Perpetual motion** |
 
-**Cross-references:** {ref}`Section 20.2 <sec-the-wfr-metric>` (WFR dynamics), Section 23.4 (Thermodynamic Cycle), Section 14.2 (MaxEnt control), Theorem {prf:ref}`thm-hodge-decomposition` (Hodge Decomposition).
+**Cross-references:** {ref}`Section 20.2 <sec-the-wfr-metric>` (WFR dynamics), {ref}`Section 23.4 <sec-the-belief-evolution-cycle-perception-dreaming-action>` (Thermodynamic Cycle), {ref}`Section 14.2 <sec-the-equivalence-theorem>` (MaxEnt control), Theorem {prf:ref}`thm-hodge-decomposition` (Hodge Decomposition).
 
 :::{prf:corollary} The Varentropy-Stability Relation (Cognitive Heat Capacity)
 :label: cor-varentropy-stability
@@ -1408,4 +1408,4 @@ def value_curl_check(
 | 39 | ValueMassCorrelationCheck | WFR-Value alignment | $> 0.5$ |
 | 61 | ValueCurlCheck | Non-conservative structure | Context-dependent (see above) |
 
-**Cross-references:** {ref}`Section 3 <sec-diagnostics-stability-checks>` (Sieve Diagnostic Nodes), Section 23.8 (Interface Diagnostics Nodes 30-34), Theorem {prf:ref}`thm-hodge-decomposition` (Hodge Decomposition), Definition {prf:ref}`def-value-curl` (Value Curl).
+**Cross-references:** {ref}`Section 3 <sec-diagnostics-stability-checks>` (Sieve Diagnostic Nodes), {ref}`Section 23.8 <sec-summary-tables-and-diagnostic-nodes-a>` (Interface Diagnostics Nodes 30-34), Theorem {prf:ref}`thm-hodge-decomposition` (Hodge Decomposition), Definition {prf:ref}`def-value-curl` (Value Curl).
