@@ -30,7 +30,7 @@ Standard DL primitives violate all of these. This chapter fixes that. We're goin
 And here's the beautiful part: once you have gauge-covariant primitives, the architecture almost writes itself. The constraints are so tight that there's essentially only one way to build each component. This is the deep learning equivalent of the Standard Model in physics: a unique structure that emerges from symmetry requirements alone.
 :::
 
-*Cross-references:* This chapter builds on gauge theory foundations ({ref}`Section 29.1 <sec-symplectic-multi-agent-field-theory>`), the capacity-constrained metric law ({ref}`Section 18 <sec-capacity-constrained-metric-law-geometry-from-interface-limits>`), WFR geometry ({ref}`Section 20 <sec-wasserstein-fisher-rao-geometry-unified-transport-on-hybrid-state-spaces>`), and feeds into the geodesic integrator implementation ({ref}`Section 22 <sec-equations-of-motion-langevin-sdes-on-information-manifolds>`).
+*Cross-references:* This chapter builds on gauge theory foundations ({ref}`sec-symplectic-multi-agent-field-theory`), the capacity-constrained metric law ({ref}`sec-capacity-constrained-metric-law-geometry-from-interface-limits`), WFR geometry ({ref}`sec-wasserstein-fisher-rao-geometry-unified-transport-on-hybrid-state-spaces`), and feeds into the geodesic integrator implementation ({ref}`sec-equations-of-motion-langevin-sdes-on-information-manifolds`).
 
 ---
 
@@ -2164,7 +2164,7 @@ $$
 
 **Chirality:** This is a **left-chiral** doublet (incoming information stream). Right-chiral singlets correspond to executed actions (outgoing, no longer subject to mixing).
 
-**Remark:** Full $SU(2)_L$ gauge theory requires complex-valued features. Current real-valued architectures (IsotropicBlock + SteerableConv) implement the $SO(2) \subset SU(2)$ subgroup. Extension to full 3-parameter $SU(2)$ requires complex steerable CNNs or quaternionic networks (see {ref}`Section 29.1 <sec-symplectic-multi-agent-field-theory>` for gauge-theoretic derivation).
+**Remark:** Full $SU(2)_L$ gauge theory requires complex-valued features. Current real-valued architectures (IsotropicBlock + SteerableConv) implement the $SO(2) \subset SU(2)$ subgroup. Extension to full 3-parameter $SU(2)$ requires complex steerable CNNs or quaternionic networks (see {ref}`sec-symplectic-multi-agent-field-theory` for gauge-theoretic derivation).
 :::
 
 :::{prf:theorem} Observation-Action Doublet as an $SO(2)$ (U(1)) Representation
@@ -3212,9 +3212,9 @@ Output (action a_t)
 ```
 
 **Forward cross-references:**
-- **Covariant Cross-Attention** ({ref}`Section 35 <sec-covariant-cross-attention>`): Implements Wilson lines for parallel transport along geodesics.
-- **Boris-BAOAB Integrator** ({ref}`Section 22 <sec-equations-of-motion-langevin-sdes-on-information-manifolds>`): Macroscopic integration scheme that requires microscopic primitives to preserve gauge structure.
-- **Temperature Schedule** ({ref}`Section 29 <sec-the-belief-wave-function-schrodinger-representation>`): Cognitive temperature $T_c$ varies with inverse conformal factor $1/\lambda(z)$ to maintain consistent exploration across curved manifold.
+- **Covariant Cross-Attention** ({ref}`sec-covariant-cross-attention`): Implements Wilson lines for parallel transport along geodesics.
+- **Boris-BAOAB Integrator** ({ref}`sec-equations-of-motion-langevin-sdes-on-information-manifolds`): Macroscopic integration scheme that requires microscopic primitives to preserve gauge structure.
+- **Temperature Schedule** ({ref}`sec-the-belief-wave-function-schrodinger-representation`): Cognitive temperature $T_c$ varies with inverse conformal factor $1/\lambda(z)$ to maintain consistent exploration across curved manifold.
 
 ---
 

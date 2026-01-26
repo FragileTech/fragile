@@ -3,18 +3,18 @@
 
 ## TLDR
 
-**The Synthesis Problem**: This chapter addresses the central engineering challenge: how do we combine gauge-covariant primitives ({ref}`Section 04 <sec-geometric-micro-architecture>`) and geodesic dynamics ({ref}`Section 05 <sec-covariant-cross-attention-architecture>`) into a complete, end-to-end agent architecture that is both universal (can learn any function) and geometrically consistent (respects the gauge structure $G_{\text{Fragile}} = SU(N_f)_C \times SU(2)_L \times U(1)_Y$)?
+**The Synthesis Problem**: This chapter addresses the central engineering challenge: how do we combine gauge-covariant primitives ({ref}`sec-geometric-micro-architecture`) and geodesic dynamics ({ref}`sec-covariant-cross-attention-architecture`) into a complete, end-to-end agent architecture that is both universal (can learn any function) and geometrically consistent (respects the gauge structure $G_{\text{Fragile}} = SU(N_f)_C \times SU(2)_L \times U(1)_Y$)?
 
 **The Universal Geometric Network**: The resolution is a three-stage architecture where strict equivariance lives in the latent dynamics, not at the boundaries. Unconstrained encoders and decoders provide universal approximation by freely choosing and interpreting gauges, while the latent dynamics use *soft equivariance* via L1 regularization on mixing weights. This achieves universal approximation (Theorem {prf:ref}`thm-ugn-universal-approximation`) while maintaining geometric structure through emergent texture zeros—forbidden interactions the network discovers automatically without being told which couplings to suppress.
 
-**Direct Sum Tractability**: For bounded agents, the direct sum representation $\mathcal{Z} = \mathcal{Z}_C \oplus \mathcal{Z}_L \oplus \mathcal{Z}_Y$ with dimension $O(\sum d_i)$ is computationally tractable, whereas the full tensor product $V_C \otimes V_L \otimes V_Y$ with dimension $O(\prod d_i)$ explodes combinatorially. The architecture integrates naturally with the Boris-BAOAB integrator from {ref}`Section 05 <sec-covariant-cross-attention-architecture>`, yielding a production-ready system that is both mathematically principled and practically implementable.
+**Direct Sum Tractability**: For bounded agents, the direct sum representation $\mathcal{Z} = \mathcal{Z}_C \oplus \mathcal{Z}_L \oplus \mathcal{Z}_Y$ with dimension $O(\sum d_i)$ is computationally tractable, whereas the full tensor product $V_C \otimes V_L \otimes V_Y$ with dimension $O(\prod d_i)$ explodes combinatorially. The architecture integrates naturally with the Boris-BAOAB integrator from {ref}`sec-covariant-cross-attention-architecture`, yielding a production-ready system that is both mathematically principled and practically implementable.
 
 ## Introduction
 
 :::{div} feynman-prose
 Now we face the engineer's question.
 
-We have collected a beautiful toolkit. Spectral linear layers that bound capacity. Norm-gated activations that respect bundle geometry. Isotropic blocks that honor the gauge structure $G_{\text{Fragile}} = SU(N_f)_C \times SU(2)_L \times U(1)_Y$ derived in {ref}`Section 8.1 <sec-symplectic-multi-agent-field-theory>`. We have dynamics—the Lorentz-Langevin equation on the WFR manifold, integrated via the Boris-BAOAB scheme with covariant cross-attention.
+We have collected a beautiful toolkit. Spectral linear layers that bound capacity. Norm-gated activations that respect bundle geometry. Isotropic blocks that honor the gauge structure $G_{\text{Fragile}} = SU(N_f)_C \times SU(2)_L \times U(1)_Y$ derived in {ref}`sec-symplectic-multi-agent-field-theory`. We have dynamics—the Lorentz-Langevin equation on the WFR manifold, integrated via the Boris-BAOAB scheme with covariant cross-attention.
 
 But here is the thing: having parts is not the same as having a machine. How do we assemble these pieces into a *complete* agent? Something that takes pixels at one end and produces motor commands at the other. An encoder mapping raw observations into structured latent bundles. A world model predicting how those bundles evolve under actions. A decoder translating internal states back into behavior. The full pipeline.
 
@@ -38,11 +38,11 @@ And here is the surprise that should make you sit up: the network discovers stru
 *Roadmap:* This chapter proceeds in seven sections. First, we define the design space and the fundamental questions any complete architecture must answer (**Section 1**). Then we explore architectural tradeoffs—direct sum versus tensor product representations, levels of cross-bundle interaction, parameter efficiency (**Section 2**). We rigorously establish the limitations of strict equivariance through impossibility theorems (**Section 3**), then present relaxation strategies including approximate equivariance and L1-regularized soft equivariance (**Section 4**). The centerpiece is the Universal Geometric Network itself (**Section 5**), followed by complete implementation details and integration with the BAOAB integrator (**Section 6**). We conclude by connecting to Chapters 04-05 and positioning within the broader literature (**Section 7**).
 
 *Cross-references:* This chapter synthesizes:
-- {ref}`Section 04 <sec-geometric-micro-architecture>` — Gauge-covariant primitives (SpectralLinear, NormGatedGELU, IsotropicBlock)
-- {ref}`Section 05 <sec-covariant-cross-attention-architecture>` — Geodesic integrator (BAOAB), covariant cross-attention, Wilson lines
-- {ref}`Section 8.1 <sec-symplectic-multi-agent-field-theory>` — Gauge group derivation $G_{\text{Fragile}} = SU(N_f)_C \times SU(2)_L \times U(1)_Y$
-- {ref}`Section 5.1 <sec-capacity-constrained-metric-law-geometry-from-interface-limits>` — Capacity-constrained metric law
-- {ref}`Section 5.2 <sec-wasserstein-fisher-rao-geometry-unified-transport-on-hybrid-state-spaces>` — WFR geometry
+- {ref}`sec-geometric-micro-architecture` — Gauge-covariant primitives (SpectralLinear, NormGatedGELU, IsotropicBlock)
+- {ref}`sec-covariant-cross-attention-architecture` — Geodesic integrator (BAOAB), covariant cross-attention, Wilson lines
+- {ref}`sec-symplectic-multi-agent-field-theory` — Gauge group derivation $G_{\text{Fragile}} = SU(N_f)_C \times SU(2)_L \times U(1)_Y$
+- {ref}`sec-capacity-constrained-metric-law-geometry-from-interface-limits` — Capacity-constrained metric law
+- {ref}`sec-wasserstein-fisher-rao-geometry-unified-transport-on-hybrid-state-spaces` — WFR geometry
 
 ---
 
@@ -3122,11 +3122,11 @@ This is not just a clever architectural trick. It reflects a deep principle: **g
 
 The Universal Geometric Network is the **default architecture** for bounded agents in the Fragile framework. It integrates seamlessly with:
 
-- {ref}`Section 04 <sec-geometric-micro-architecture>` (geometric primitives) — uses SpectralLinear, isotropic blocks, norm-gating
-- {ref}`Section 05 <sec-covariant-cross-attention-architecture>` (geodesic dynamics) — soft-equivariant layers implement BAOAB steps
-- {ref}`Section 8.1 <sec-symplectic-multi-agent-field-theory>` (gauge theory) — respects $G_{\text{Fragile}} = SU(N_f)_C \times SU(2)_L \times U(1)_Y$ structure
-- {ref}`Section 5.1 <sec-capacity-constrained-metric-law-geometry-from-interface-limits>` (metric law) — spectral normalization enforces capacity bounds
-- {ref}`Section 5.2 <sec-wasserstein-fisher-rao-geometry-unified-transport-on-hybrid-state-spaces>` (WFR geometry) — latent space is the WFR manifold
+- {ref}`sec-geometric-micro-architecture` (geometric primitives) — uses SpectralLinear, isotropic blocks, norm-gating
+- {ref}`sec-covariant-cross-attention-architecture` (geodesic dynamics) — soft-equivariant layers implement BAOAB steps
+- {ref}`sec-symplectic-multi-agent-field-theory` (gauge theory) — respects $G_{\text{Fragile}} = SU(N_f)_C \times SU(2)_L \times U(1)_Y$ structure
+- {ref}`sec-capacity-constrained-metric-law-geometry-from-interface-limits` (metric law) — spectral normalization enforces capacity bounds
+- {ref}`sec-wasserstein-fisher-rao-geometry-unified-transport-on-hybrid-state-spaces` (WFR geometry) — latent space is the WFR manifold
 
 And it makes testable predictions: emergent texture zeros, hierarchical mixing patterns, learned symmetry breaking. The next step is empirical validation.
 
