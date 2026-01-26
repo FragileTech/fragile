@@ -560,7 +560,7 @@ $$
 - Separates deterministic and stochastic dynamics cleanly
 :::
 
-:::{remark} Implementation Alignment
+:::{prf:remark} Implementation Alignment
 In the Euclidean Gas implementation, the BAOAB map is applied to the total force
 $
 F_{\text{tot}}(x, v) = -\nabla U(x) - \epsilon_F \nabla V_{\text{fit}}(x, v) + \nu F_{\text{viscous}}(x, v),

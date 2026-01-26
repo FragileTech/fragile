@@ -52,7 +52,7 @@ $$
 $$
 The first block controls the diversity and reward channels, the second block fixes cloning companion selection, collision, and thresholding, and the last block governs the kinetic step. The diversity pairing and cloning companion selection are treated as **independent** draws (typically with $\epsilon_c$ tuned separately from $\epsilon_d$). Additional algorithm-specific constants are absorbed into $\Theta_{\text{obs}}$ but are omitted from the notation when not required.
 
-:::{definition} Observable Parameter Stack
+:::{prf:definition} Observable Parameter Stack
 :label: def-single-observable-stack
 
 Given a swarm state $S_t$, the **observable stack** of walker $i$ is the tuple
@@ -84,7 +84,7 @@ P(M \mid S_t; \lambda_{\text{alg}}, \epsilon_d) = \prod_{i \in \mathcal{I}(M)} P
 $$
 where $U_i(M)$ records the remaining unmatched walkers when $i$ is processed.
 
-:::{remark} Independent Companion Selection
+:::{prf:remark} Independent Companion Selection
 If the diversity channel uses an independent softmax companion selector instead of mutual pairing, interpret $M$ as the vector of companion indices $(c_i)_{i \in \mathcal{A}(S_t)}$. Then
 
 $$
@@ -190,7 +190,7 @@ $$
 
 ### 4.4. Fitness Potential Distribution
 
-:::{proposition} Single Walker Fitness Distribution
+:::{prf:proposition} Single Walker Fitness Distribution
 :label: prop-single-fitness-distribution
 
 The fitness potential $V_{\text{fit}}(i, M, S_t) = \mathcal{D}_i(M, S_t) \cdot R_i(S_t)$ has probability mass function
@@ -286,7 +286,7 @@ $$
 
 where $V_{\text{COM},c} = \frac{1}{|I_c|+1}\left(v_c + \sum_{\ell \in I_c} v_\ell\right)$ and $R_i^{\text{rot}}$ is a random rotation (uniform on $SO(d)$). Conditional on $S_t$ and the collision group $I_c$, $V'_i$ is supported on a sphere of radius $\alpha_{\text{restitution}}\|u_i\|$ centered at $V_{\text{COM},c}$. The positional jitter and the rotation draws are independent, so the conditional joint law $\mathcal{P}_{X'_i, V'_i}$ factors into the Gaussian position kernel from Section 6.1 and the spherical velocity law above. When $k=1$, the collision group is trivial and $V'_i = v_i$.
 
-:::{remark} Interpretation as a Discrete Random Field
+:::{prf:remark} Interpretation as a Discrete Random Field
 
 The function $x' \mapsto \mathcal{P}_{X'_i}(x')$ is a random field **centered** on the alive swarm: its Gaussian components are centered at alive positions but the distribution has full support on $\mathbb{R}^d$. Locations near highly informative companions inherit large Gaussian weights, while inactive regions contribute only through the persistence mass. This view is convenient when studying local exploration pressure or extinction risk inside restricted domains.
 :::

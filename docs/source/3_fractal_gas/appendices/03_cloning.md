@@ -1262,7 +1262,6 @@ Referenced by {prf:ref}`prop-lyapunov-necessity`.
 
 :::{admonition} Failure Mode Analysis
 :class: dropdown warning
-:open:
 
 **If this axiom is violated:**
 
@@ -1286,7 +1285,6 @@ There exists a compact set $C_{\mathrm{safe}} \subset \mathcal X_{\mathrm{valid}
 
 :::{admonition} Failure Mode Analysis
 :class: dropdown warning
-:open:
 
 **If this axiom is violated:**
 
@@ -1313,7 +1311,6 @@ If $\|x - y\| \geq L_{\text{grad}}$, then $|R_{\mathrm{pos}}(y) - R_{\mathrm{pos
 
 :::{admonition} Failure Mode Analysis
 :class: dropdown warning
-:open:
 
 **If this axiom is violated:**
 
@@ -1356,7 +1353,6 @@ The inclusion of this term modifies the optimization objective. The algorithm no
 :::
 :::{admonition} Failure Mode Analysis
 :class: dropdown warning
-:open:
 
 **If this axiom is violated (`c_{v_reg} = 0`):**
 
@@ -1390,7 +1386,6 @@ $$
 
 :::{admonition} Failure Mode Analysis
 :class: dropdown warning
-:open:
 
 **If this axiom is violated ($\beta = 0$):**
 

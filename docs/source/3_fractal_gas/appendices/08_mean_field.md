@@ -100,7 +100,6 @@ This section applies the core principle of the mean-field limit—the translatio
 :::{admonition} The Core Principle: From Empirical Sums to Density Integrals
 :class: important
 :label: remark-mean-field-sum-to-integral
-:open:
 The fundamental "translation dictionary" of the mean-field limit is the replacement of discrete averages with continuous integrals. This is the bridge from statistics to functional analysis.
 
 *   **N-Particle System:** The average of a quantity $Q(w_i)$ over $k$ alive walkers is:
@@ -231,7 +230,6 @@ This potential inherits the floor from the N-particle algorithm, ensuring it is 
 :::{admonition} The Non-Local and Non-Linear Heart of the System
 :class: important
 :label: remark-important-nonlocal-nonlinear
-:open:
 The definition of the **Mean-Field Fitness Potential** $V[f]$ reveals the two core mathematical challenges—and the defining characteristics—of the continuous model:
 
 1.  **Non-Locality:** The potential at a single point $z$ depends on the moments $\mu[f]$ and $\sigma[f]$, which are *integrals over the entire domain $\Omega$*. This is the continuous analogue of the global standardization in the algorithm's measurement pipeline. It creates a system where the fitness of one particle is explicitly and instantaneously coupled to the statistical state of the entire population, no matter how distant.
@@ -316,7 +314,6 @@ An optional velocity cap, $\psi_v$, is applied after the final B-step to ensure 
 :::{admonition} Fidelity of the Continuous Generator
 :class: important
 :label: remark-fidelity-generator
-:open:
 This explicit definition of the BAOAB integrator (see {prf:ref}`def-baoab-update-rule`) provides the rigorous foundation for the continuous generator that follows. Each part of the BAOAB scheme corresponds directly to a term in the Fokker-Planck operator that we will derive in the next section:
 
 *   The **B-steps** (force kicks) and the drift part of the **O-step** correspond to the advection in velocity space, represented by the term $\nabla_v \cdot (A_v f)$.
@@ -371,7 +368,6 @@ In the two-population model, we explicitly separate the three distinct physical 
 :::{admonition} Separation of Death, Revival, and Internal Dynamics
 :class: important
 :label: remark-separation-death-revival-cloning
-:open:
 The key innovation of this formulation is the explicit decoupling of boundary death from the revival and cloning mechanisms. In the discrete algorithm, a walker dies when it leaves $X_{\text{valid}}$, setting its status to 0. In the continuous model, we represent this as:
 
 *   **Interior Killing**: A smooth killing rate $c(z)$ that is zero in the interior and positive near the boundary, removing mass from $f$ at rate $c(z)f(z)$.

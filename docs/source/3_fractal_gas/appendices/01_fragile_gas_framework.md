@@ -375,7 +375,6 @@ $$
 
 :::{admonition} The Revival Guarantee: Why This Constraint Matters
 :class: attention
-:open:
 This seemingly abstract inequality ensures something profound: **dead walker ({prf:ref}`def-walker`)s can always be revived** as long as at least one walker remains alive.
 
 Here's the intuition:
@@ -442,7 +441,6 @@ $$
 
 :::{admonition} Breaking Down the Formula
 :class: note
-:open:
 This formula has two parts:
 
 1. **Position Changes** (first term): For each walker ({prf:ref}`def-walker`) $i$, measure how far it moved in the algorithmic space, square it, then average over all walkers.
@@ -551,7 +549,6 @@ The **N-Particle Displacement Metric ({prf:ref}`def-n-particle-displacement-metr
 
 :::{admonition} What Are Axiomatic Foundations?
 :class: important
-:open:
 Think of axioms as the "assumptions we're willing to make" about our system. Just as Euclidean geometry starts with axioms like "two points determine a line," our swarm algorithm needs mathematical assumptions about the environment and operators.
 
 **The Brilliant Insight**: Instead of just stating these assumptions, we turn them into measurable parameters. This lets us:
@@ -665,7 +662,6 @@ Q.E.D.
 
 :::{admonition} The Catastrophic Collapse Problem
 :class: caution
-:open:
 While individual walker ({prf:ref}`def-walker`) deaths can be handled by revival, there's one terrifying scenario: **all walkers dying at once**. This happens when the entire swarm wanders into a "forbidden zone" where no positions are valid.
 
 The question is: how "sharp" are these boundaries? If they're like cliff edges (sudden death), small navigation errors can cause total extinction. If they're like gentle hills (gradual danger increase), the swarm ({prf:ref}`def-swarm-and-state-space`) can "sense" danger and back away.
@@ -747,7 +743,6 @@ These axioms quantify the properties of the environment in which the swarm ({prf
 
 :::{admonition} The "Interesting Environment" Requirement
 :class: tip
-:open:
 Imagine trying to learn navigation in a perfectly flat desert versus a landscape with hills and valleys. In the desert, every direction looks the same - there's no learning signal. Hills and valleys provide gradients that guide you toward better regions.
 
 This axiom ensures your reward landscape isn't "too flat" at any relevant scale. The parameters $r_{\min}$ and $\kappa_{\text{richness}}$ quantify this:
@@ -1021,7 +1016,6 @@ This theorem demonstrates that {prf:ref}`axiom-guaranteed-revival` ensures all w
 
 :::{admonition} The "No Stagnation" Guarantee
 :class: important
-:open:
 This theorem is beautiful because it guarantees the swarm ({prf:ref}`def-swarm-and-state-space`) can never get completely stuck! Here's the intuition:
 
 **The Setup**: If you have:
@@ -1287,7 +1281,6 @@ and measure the dissimilarity between two finite swarms, $\mathcal{S}_1$ and $\m
 analytical approaches to the N-particle system's dynamics.
 :::{admonition} 🎯 The N-Particle Displacement ({prf:ref}`def-n-particle-displacement-metric`) Metric: Why It Matters
 :class: important
-:open:
 The key insight here is that we need to measure how "different" two swarms are, but swarms have two types of changes:
 1. **Position changes**: Walker ({prf:ref}`def-walker`)s move in space (continuous)
 2. **Status changes**: Walker ({prf:ref}`def-walker`)s die or revive (discrete)
@@ -1346,7 +1339,6 @@ Why quadratic dependence on status changes? When a walker ({prf:ref}`def-walker`
 #### 7.2.2 Example Instantiation: The Empirical Measure Aggregator
 :::{admonition} The "Simple Average" Operator
 :class: tip
-:open:
 The empirical measure aggregator is just a fancy name for computing simple statistics (mean, variance) from your alive walker ({prf:ref}`def-walker`)s' measurements. Think of it as:
 **Input**: A bunch of numbers from alive walker ({prf:ref}`def-walker`)s (their rewards or distances)
 **Output**: Summary statistics (average reward, spread of values)
@@ -1536,7 +1528,6 @@ $$
 The process of choosing a companion is governed by a uniform probability measure on a set of available walker ({prf:ref}`def-walker`) indices. This selection is fundamental to the algorithm's diversity measurement. The stability of this selection process—how the expected outcome changes when the set of available companions changes—is a critical component of the overall system's continuity analysis.
 :::{admonition} 🎯 Key Insight: Social Dynamics in the Swarm
 :class: important
-:open:
 Companion selection is where the "swarm intelligence" emerges! Each walker ({prf:ref}`def-walker`) measures its distance to a randomly chosen companion, creating a web of pairwise comparisons. Think of it as each walker asking: "How different am I from a typical member of the swarm?" This creates pressure toward diversity—walkers that are far from others (high distance) get different treatment than those clustered together.
 The genius is in the randomness: by selecting companions uniformly at random, we get an unbiased estimate of the swarm's spatial distribution without expensive all-to-all comparisons.
 :::
@@ -1681,7 +1672,6 @@ $$
 The core non-linearity of the algorithm is encapsulated in the rescale transformation, which maps standardized Z-scores to positive values that form the components of the fitness potential. For the stability and continuity of the entire system to hold, this transformation cannot be arbitrary. It must be governed by a function that is smooth, bounded, and preserves the ordering of inputs.
 :::{admonition} 🎯 The Magic of the Rescale Function
 :class: important
-:open:
 The rescale transformation is where standardized measurements become "fitness components." Think of it as a "enthusiasm function"—it takes a walker ({prf:ref}`def-walker`)'s Z-score (how many standard deviations from average) and converts it to a positive number representing its contribution to fitness.
 The key insight: we need this function to be:
 1. **Smooth** (no sudden jumps that destabilize the algorithm)
@@ -4936,7 +4926,6 @@ The general continuity analysis presented in the preceding sections is valid for
 :label: thm-k1-revival-state
 :::{admonition} The Phoenix Theorem Intuition
 :class: note
-:open:
 **The Setup**: Only one walker ({prf:ref}`def-walker`) remains alive - the "last one standing" scenario.
 **The Magic**: This theorem proves that the one survivor automatically becomes a "life generator." Here's what happens:
 1. **The Survivor Stays Put**: The lone walker ({prf:ref}`def-walker`) gets score 0 (comparing itself to itself), so it doesn't clone - it just persists.

@@ -314,7 +314,6 @@ then $\pi$ satisfies an LSI with constant $C_{\text{LSI}} = 1/\rho$.
 :::
 
 :::{prf:proof}
-:label: proof-bakry-emery
 
 We provide a complete derivation of the LSI from the Bakry-Émery curvature criterion using the Γ₂-calculus and heat flow analysis. The proof follows the classical approach of Bakry and Émery (1985).
 
@@ -620,7 +619,6 @@ where $f_t$ solves $\partial_t f = \mathcal{L}_{\text{kin}} f$ and $\alpha = \mi
 :::
 
 :::{prf:proof}
-:label: proof-hypocoercive-dissipation
 We compute the dissipation using explicit matrix calculations.
 
 **Step 1: Block matrix representation**
@@ -744,7 +742,6 @@ $$
 :::
 
 :::{prf:proof}
-:label: proof-kinetic-lsi
 This proof bridges the continuous-time hypocoercive dissipation with the discrete-time integrator using Theorem 1.7.2 from Section 1.7 of {doc}`06_convergence`.
 
 **Step 1: Continuous-time generator bound for entropy**
@@ -855,7 +852,6 @@ $$
 :::
 
 :::{prf:proof}
-:label: proof-tensorization
 This is a classical result. For the product measure $\pi = \bigotimes_{i=1}^N \pi_i$ and function $f(x_1, \ldots, x_N)$:
 
 $$
@@ -1248,7 +1244,6 @@ where $S_i' = \Psi_{\text{clone}}(S_i)$, $\mu_S$ is the empirical measure of swa
 :::
 
 :::{prf:proof}
-:label: proof-cloning-wasserstein-contraction
 
 The complete proof is provided in {doc}`04_wasserstein_contraction`. The proof establishes:
 
@@ -1285,7 +1280,6 @@ where $C_I$ depends on the dimension $d$, the domain diameter, and the number of
 :::
 
 :::{prf:proof}
-:label: proof-cloning-fisher-info
 **Step 1: Decomposition**
 
 The cloning operator consists of resampling followed by Gaussian convolution with variance $\delta^2 I$.
@@ -1336,7 +1330,6 @@ where $\kappa_W$ is the Wasserstein contraction rate and $C_I$ is the Fisher inf
 :::
 
 :::{prf:proof}
-:label: proof-cloning-entropy-contraction
 **Step 1: Apply the HWI inequality**
 
 From Theorem {prf:ref}`thm-hwi-inequality`:
@@ -1455,7 +1448,6 @@ where $\mu' = (\Psi_{\text{clone}})_* \mu$ and $\alpha = O(\kappa_x)$ is the con
 :::
 
 :::{prf:proof}
-:label: proof-entropy-transport-dissipation
 This inequality connects geometric contraction to information-theoretic dissipation through the displacement convexity of relative entropy.
 
 **Step 1: Displacement convexity**
@@ -1597,7 +1589,6 @@ where $\beta = O(\tau \|v_{\max}\|^2 / r_{\text{valid}}^2)$ accounts for the vel
 :::
 
 :::{prf:proof}
-:label: proof-kinetic-evolution-bounds
 **Entropy:** Direct application of Theorem {prf:ref}`thm-kinetic-lsi`.
 
 **Wasserstein:** The kinetic SDE $dx = v dt + \ldots$ transports particles with velocity $v$. Over time $\tau$, particles can move distance $O(\tau v_{\max})$. This gives a Wasserstein expansion:
@@ -1645,7 +1636,6 @@ $$
 :::
 
 :::{prf:proof}
-:label: proof-entropy-transport-contraction
 Let $\mu_t$ be the distribution at step $t$. Define:
 - $\mu_{t+1/2} = (\Psi_{\text{clone}})_* \mu_t$ (after cloning)
 - $\mu_{t+1} = (\Psi_{\text{kin}})_* \mu_{t+1/2}$ (after kinetics)
@@ -1788,7 +1778,6 @@ for $\lambda$ close to 1.
 :::
 
 :::{prf:proof}
-:label: proof-main-lsi-composition
 **Step 1:** From Theorem {prf:ref}`thm-entropy-transport-contraction`, $V_t \le \lambda^t V_0 + C_{\text{steady}}/(1 - \lambda)$.
 
 **Step 2:** Since $H_t = D_{\text{KL}}(\mu_t \| \pi) \le V_t$:
@@ -1836,7 +1825,6 @@ $$
 :::
 
 :::{prf:proof}
-:label: proof-quantitative-lsi-final
 
 Direct computation from Theorem {prf:ref}`thm-main-lsi-composition` using:
 - $\rho_k = \alpha\tau/C_0 = O(\min(\gamma, \kappa_{\text{conf}}) \tau)$
@@ -1868,7 +1856,6 @@ where $\mu_t = K^t \mu_0$.
 :::
 
 :::{prf:proof}
-:label: proof-lsi-implies-kl-convergence
 **Step 1: Entropy contraction via LSI**
 
 Let $\rho_t = d\mu_t/d\pi$ be the Radon-Nikodym derivative. The LSI states:
@@ -1918,7 +1905,6 @@ where $\gamma$ is the friction coefficient, $\kappa_{\text{conf}}$ is the confin
 :::
 
 :::{prf:proof}
-:label: proof-main-kl-final
 Direct application of:
 1. Corollary {prf:ref}`cor-quantitative-lsi-final` (explicit LSI constant)
 2. Theorem {prf:ref}`thm-lsi-implies-kl-convergence` (LSI implies KL-convergence)
@@ -1975,7 +1961,6 @@ $$
 :::
 
 :::{prf:proof}
-:label: proof-lsi-perturbation
 Standard perturbation theory for functional inequalities. The key is that the adaptive terms are **bounded** (see the boundedness certificates in {doc}`../1_the_algorithm/02_fractal_gas_latent`):
 
 $$
@@ -2146,7 +2131,6 @@ where $\kappa_{W,\min} > 0$ is the N-uniform lower bound on the Wasserstein cont
 :::
 
 :::{prf:proof}
-:label: proof-n-uniform-lsi
 **Proof.**
 
 1. From Corollary {prf:ref}`cor-quantitative-lsi-final` (Section 5.6), the LSI constant for the N-particle system is given by:
@@ -2543,7 +2527,6 @@ with equality only at $z = 0$.
 :::
 
 :::{prf:proof}
-:label: proof-sinh-bound-global
 Taylor series: $\sinh(z)/z = 1 + z^2/6 + z^4/120 + \ldots \geq 1$ for all $z \neq 0$, and $\lim_{z \to 0} \sinh(z)/z = 1$. ∎
 :::
 
@@ -3278,7 +3261,6 @@ $$
 :::
 
 :::{prf:proof}
-:label: proof-entropy-bound-debruijn
 
 **Step 1**: Define heat flow $\rho_t = \rho_{\text{clone}} * G_t$ for $t \in [0, \delta^2]$.
 
@@ -4424,7 +4406,6 @@ for some universal constant $c > 0$, with $\kappa_{\text{conf}} := \inf_{x} \lam
 :::
 
 :::{prf:proof}
-:label: proof-kinetic-lsi-standalone
 
 We use **Villani's hypocoercivity framework** (Villani 2009, "Hypocoercivity").
 
@@ -4591,7 +4572,6 @@ for $\delta^2 > \delta_{\min}^2$.
 :::
 
 :::{prf:proof}
-:label: proof-cloning-contraction-standalone
 
 We use entropy-potential decomposition:
 
@@ -4842,7 +4822,6 @@ $$
 :::
 
 :::{prf:proof}
-:label: proof-composition-standalone
 
 **Step 1**: Apply kinetic operator:
 
@@ -4912,7 +4891,6 @@ $$
 :::
 
 :::{prf:proof}
-:label: proof-exp-convergence-standalone
 
 **Step 1**: Iterate the contraction from Theorem {prf:ref}`thm-composition-standalone`:
 
@@ -5481,7 +5459,6 @@ for some universal constant $c > 0$ (independent of the specific form of $U$).
 :::
 
 :::{prf:proof}
-:label: proof-hypocoercivity-piecewise
 
 **Step 1**: Construct a smooth surrogate potential.
 
@@ -5756,7 +5733,6 @@ $$
 :::
 
 :::{prf:proof}
-:label: proof-kinetic-lsi-hypocoercive
 
 **Step 1**: From Villani's Theorem {prf:ref}`thm-villani-hypocoercivity`, the continuous-time generator satisfies:
 
@@ -5816,7 +5792,6 @@ $$
 :::
 
 :::{prf:proof}
-:label: proof-n-particle-hypocoercive
 
 **Setup**: The N-particle state space is $\mathcal{Z}^N$ where $\mathcal{Z} = \mathcal{X} \times \mathbb{R}^d$ (position-velocity phase space). The kinetic operator acts independently:
 
@@ -5991,7 +5966,6 @@ where $k = |\mathcal{A}|$ is the number of alive walkers, and $C_{\text{softmax}
 :::
 
 :::{prf:proof}
-:label: proof-softmax-lipschitz-status
 
 **Strategy**: We directly bound the difference between softmax expectations by decomposing based on common vs. differing companions.
 
@@ -6142,7 +6116,6 @@ where $\lambda_{\text{clone}}$ is the cloning rate (inversely proportional to fi
 :::
 
 :::{prf:proof}
-:label: proof-dobrushin-contraction
 
 The proof proceeds in four steps:
 
@@ -6295,7 +6268,6 @@ $$
 :::
 
 :::{prf:proof}
-:label: proof-exponential-convergence-status
 
 This is a standard application of the **Banach fixed-point theorem for Markov chains** (see Meyn & Tweedie, "Markov Chains and Stochastic Stability", Theorem 16.0.2).
 
@@ -6389,7 +6361,6 @@ depends on friction, confinement strength, kinetic noise, interaction strength, 
 :::
 
 :::{prf:proof}
-:label: proof-nonconvex-main
 
 This proof uses the theory of interacting Feynman-Kac particle systems (Theorem {prf:ref}`thm-propagation-chaos-ips`), which establishes convergence for systems with mutation and state-dependent selection.
 

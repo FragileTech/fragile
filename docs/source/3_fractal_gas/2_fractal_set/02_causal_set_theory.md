@@ -1,6 +1,6 @@
 # Fractal Set as Causal Set
 
-**Prerequisites**: {doc}`01_fractal_set`, Causal Set Theory ({cite}`BombelliLeeEtAl87,Sorkin05`)
+**Prerequisites**: {doc}`/3_fractal_gas/2_fractal_set/01_fractal_set`, Causal Set Theory ({cite}`BombelliLeeEtAl87,Sorkin05`)
 
 ---
 
@@ -27,7 +27,7 @@ Now, the Fractal Set is also a discrete structure with a causal ordering. Episod
 The answer is yes. The Fractal Set is a valid causal set. But it is more than that: it is an *adaptive* causal set, where the sampling density automatically adjusts to local geometry. This goes beyond the standard Lorentz-invariant Poisson construction, which fixes a constant density.
 :::
 
-Causal set theory (CST) posits that spacetime is fundamentally discrete: a locally finite (typically countable) collection of events with a partial ordering encoding causal relationships. The Fractal Set, defined in {doc}`01_fractal_set`, provides exactly such a structure via its CST edges ({prf:ref}`def-fractal-set-cst-edges`) and CST axioms ({prf:ref}`def-fractal-set-cst-axioms`). This chapter establishes that:
+Causal set theory (CST) posits that spacetime is fundamentally discrete: a locally finite (typically countable) collection of events with a partial ordering encoding causal relationships. The Fractal Set, defined in {doc}`/3_fractal_gas/2_fractal_set/01_fractal_set`, provides exactly such a structure via its CST edges ({prf:ref}`def-fractal-set-cst-edges`) and CST axioms ({prf:ref}`def-fractal-set-cst-axioms`). This chapter establishes that:
 
 1. The Fractal Set satisfies all BLMS axioms for causal sets
 2. QSD sampling provides adaptive (not uniform) sprinkling
@@ -619,7 +619,7 @@ constant $\kappa>0$ uniform in $t$, implying exponential mixing and a law of lar
 for bounded Lipschitz functionals uniformly over the window.
 
 **A5 (Kernel + algorithmic cutoff)**: $K\in C^2_c([0,1])$. Let $\rho$ be the localization
-scale and $\varepsilon_c$ the coherence scale ({doc}`01_fractal_set`). Define the algorithmic
+scale and $\varepsilon_c$ the coherence scale ({doc}`/3_fractal_gas/2_fractal_set/01_fractal_set`). Define the algorithmic
 locality radius $R_{\mathrm{loc}} := \min(\rho,\varepsilon_c)$ and the light-crossing time
 $T_{\mathrm{loc}} := \min(t_1-t_0, R_{\mathrm{loc}}/c)$. For $\varepsilon>0$, let
 
@@ -677,15 +677,15 @@ assumptions are introduced; each item names the exact proof objects to cite.
    (Sections 1-2 of this chapter).
 5. **Global hyperbolicity**: Show causal diamonds are compact on the window
    $[t_0,t_1]$ using the confining envelope from the decorated Gibbs structure
-   ({prf:ref}`thm-decorated-gibbs` in {doc}`07_discrete_qsd`) and the Safe Harbor
-   barrier mechanisms ({doc}`03_cloning`, {doc}`07_discrete_qsd`). This yields a
+   ({prf:ref}`thm-decorated-gibbs` in {doc}`/3_fractal_gas/appendices/07_discrete_qsd`) and the Safe Harbor
+   barrier mechanisms ({doc}`/3_fractal_gas/appendices/03_cloning`, {doc}`/3_fractal_gas/appendices/07_discrete_qsd`). This yields a
    Cauchy foliation by constant-$t$ slices.
 
 #### A2 (Smooth fields): $U_{\mathrm{eff}}$, $r(t)$, $Z(t)$, $g_R$
 
 1. **$U_{\mathrm{eff}}$ regularity**: Express $U_{\mathrm{eff}}$ via the
    mean-field fitness potential and decorated Gibbs envelope
-   ({doc}`07_discrete_qsd`, {prf:ref}`thm-decorated-gibbs`). Use the fitness
+   ({doc}`/3_fractal_gas/appendices/07_discrete_qsd`, {prf:ref}`thm-decorated-gibbs`). Use the fitness
    pipeline smoothness certificate in {doc}`../1_the_algorithm/02_fractal_gas_latent`
    (composition of $C^2$ primitives + Gaussian smoothing) and hypoelliptic
    regularity from {doc}`09_propagation_chaos` to upgrade to $C^4$ on the alive core.
@@ -751,14 +751,14 @@ assumptions are introduced; each item names the exact proof objects to cite.
    (invert the $O(N^{-1/2})$ mean-field rate). This yields $\varepsilon(N)\to 0$.
 3. **Parameter identification**: Set $\varepsilon := R_{\mathrm{loc}}=\min(\rho,\varepsilon_c)$
    using the localization/coherence scales from the Fractal Set parameters
-   ({doc}`01_fractal_set`), and take the continuum limit with $\rho,\varepsilon_c \to 0$
+   ({doc}`/3_fractal_gas/2_fractal_set/01_fractal_set`), and take the continuum limit with $\rho,\varepsilon_c \to 0$
    while keeping macroscopic scales fixed.
 
 :::{prf:definition} Interior Episodes and Boundary Bias
 :label: def-fractal-gas-interior-episodes
 
 Let $\mathcal{X}_{\mathrm{core}}\subset\mathcal{X}$ be the compact alive core guaranteed by the
-Safe Harbor/confining envelope (Section 2; {doc}`07_discrete_qsd`). For time-dependent metrics,
+Safe Harbor/confining envelope (Section 2; {doc}`/3_fractal_gas/appendices/07_discrete_qsd`). For time-dependent metrics,
 write $\mathrm{dist}_{g_{R,t}}(x,\partial\mathcal{X}_{\mathrm{core}})$ for the slice-wise
 geodesic boundary distance induced by $g_R(\cdot,t)$ (set to $+\infty$ if
 $\partial\mathcal{X}_{\mathrm{core}}=\varnothing$). Define
@@ -1224,7 +1224,7 @@ The key difference is that the Fractal Set is classical and stochastic, not quan
 5. Meyer, D.A. (1988) *The Dimension of Causal Sets* (PhD thesis) {cite}`Meyer1988`
 
 ### Framework Documents
-6. {doc}`01_fractal_set` — Fractal Set definition and structure
+6. {doc}`/3_fractal_gas/2_fractal_set/01_fractal_set` — Fractal Set definition and structure
 7. {prf:ref}`def-fractal-set-cst-edges` — CST edge definition
 8. {prf:ref}`def-fractal-set-cst-axioms` — CST axioms
 9. {prf:ref}`mt:fractal-gas-lock-closure` — Lock Closure for Fractal Gas (Hypostructure)
