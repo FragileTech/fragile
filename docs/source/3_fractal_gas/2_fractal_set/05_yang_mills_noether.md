@@ -547,13 +547,21 @@ $$
 
 where $S_i(j)$ is the cloning score ({prf:ref}`def-fractal-set-cloning-score`).
 
-**Gauge field components (IG edges)**: For edge $e = (n_i, n_j) \in E_{\mathrm{IG}}$:
+**Gauge field components (IG/IA edges)**: For edge $e = (n_i, n_j)$ in $E_{\mathrm{IG}} \cup E_{\mathrm{IA}}$:
 
 $$
 A_e^{(a)} T^a := \frac{1}{g a_e} \theta_{ij}^{(SU(2))} \cdot \hat{n}^{(a)}
 $$
 
-where $a_e$ is the edge length ($a_e = \rho$ on IG edges). CST edges carry only the $U(1)$ fitness phase (temporal gauge for the SU(2) doublet).
+where $a_e$ is the edge length ($a_e = \rho$ on IG and IA edges). CST edges carry only the $U(1)$ fitness phase (temporal gauge for the SU(2) doublet).
+
+For IA edges, the SU(2) field is defined implicitly by the stored attribution rotation:
+
+$$
+U^{(2)}_{\mathrm{IA}}(i,t+1 \leftarrow j,t) = \exp\left(i g a_e \sum_{a=1}^3 A_e^{(a)} T^a\right),
+$$
+
+with $a_e = \rho$.
 
 where $T^a = \sigma^a/2$ are SU(2) generators and $\hat{n}^{(a)}$ is the direction in Lie algebra space.
 
@@ -939,7 +947,7 @@ And here is what we have accomplished: we have shown that this action emerges fr
 :::{admonition} Lattice spacing convention
 :class: note
 
-In the gauge-sector formulas below, $a$ denotes the relevant link length. For the SU(2) sector, take $a_e = \rho$ on IG and IA edges; the U(1) abelian link on CST edges uses $a_e = \tau$. For anisotropic plaquettes replace $a^2$ by $a_\mu a_\nu$ in the $(\mu,\nu)$-plane.
+In the gauge-sector formulas below, $a_e$ denotes the relevant link length. For the SU(2) sector, take $a_e = \rho$ on IG and IA edges; the U(1) abelian link on CST edges uses $a_e = \tau$. For plaquette formulas use the loop area $A_P$ (for interaction plaquettes $A_P \sim a_{\text{CST}} a_{\text{IA}} \approx \rho \tau$; on a regular lattice $A_P = a_\mu a_\nu$ in the $(\mu,\nu)$-plane).
 :::
 
 ### 5.1. Link Variables and Parallel Transport
@@ -1057,31 +1065,33 @@ $$
 
 **Small field expansion**:
 
-Expanding $U_P = \exp(i g a^2 F_P)$ to second order:
+Expanding $U_P = \exp(i g A_P F_P)$ to second order:
 
 $$
-U_P = I + i g a^2 F_P - \frac{g^2 a^4}{2} F_P^2 + O(a^6)
+U_P = I + i g A_P F_P - \frac{g^2 A_P^2}{2} F_P^2 + O(A_P^3)
 $$
 
 Taking the trace (using $\text{Tr}(I) = 2$ and $\text{Tr}(F_P) = 0$ for traceless $\mathfrak{su}(2)$):
 
 $$
-\text{Tr}(U_P) = 2 + 0 - \frac{g^2 a^4}{2}\text{Tr}(F_P^2) + O(a^6)
+\text{Tr}(U_P) = 2 + 0 - \frac{g^2 A_P^2}{2}\text{Tr}(F_P^2) + O(A_P^3)
 $$
 
 Therefore:
 
 $$
-1 - \frac{1}{2}\text{Re Tr}(U_P) = 1 - 1 + \frac{g^2 a^4}{4}\text{Tr}(F_P^2) + O(a^6) = \frac{g^2 a^4}{4}\text{Tr}(F_P^2)
+1 - \frac{1}{2}\text{Re Tr}(U_P) = 1 - 1 + \frac{g^2 A_P^2}{4}\text{Tr}(F_P^2) + O(A_P^3) = \frac{g^2 A_P^2}{4}\text{Tr}(F_P^2)
 $$
 
 The per-plaquette contribution to the action is:
 
 $$
-S_P = \beta \cdot \frac{g^2 a^4}{4} \text{Tr}(F_P^2) = a^4 \text{Tr}(F_P^2) = \frac{a^4}{2} \sum_{a=1}^3 (F_P^{(a)})^2
+S_P = \beta \cdot \frac{g^2 A_P^2}{4} \text{Tr}(F_P^2)
+    = A_P^2 \text{Tr}(F_P^2)
+    = \frac{A_P^2}{2} \sum_{a=1}^3 (F_P^{(a)})^2
 $$
 
-**Continuum limit**: As $a \to 0$:
+**Continuum limit**: As $\rho, \tau \to 0$ (so $A_P \to 0$):
 
 $$
 S_{\text{YM}} \to \frac{1}{4} \int d^{d+1}x \sum_{a=1}^3 F_{\mu\nu}^{(a)} F^{(a),\mu\nu}
@@ -1205,12 +1215,14 @@ $$
 
 **Step 2: Plaquette derivative.**
 
-A plaquette is an ordered product of four links: $U_P = U_{e_1} U_{e_2} U_{e_3}^\dagger U_{e_4}^\dagger$ (counterclockwise around the plaquette).
+A plaquette is an ordered product of four oriented links:
+$U_P = U_{e_1} U_{e_2} U_{e_3} U_{e_4}$,
+where each $U_{e_k}$ is taken along the loop (use $U_{ji} = U_{ij}^\dagger$ when traversing against the stored orientation).
 
 For edge $e = e_1$ (the case $e = e_2, e_3, e_4$ is similar by cyclic symmetry):
 
 $$
-\frac{\partial U_P}{\partial U_{e_1}} = U_{e_2} U_{e_3}^\dagger U_{e_4}^\dagger =: \Sigma_P^{(e_1)}
+\frac{\partial U_P}{\partial U_{e_1}} = U_{e_2} U_{e_3} U_{e_4} =: \Sigma_P^{(e_1)}
 $$
 
 The quantity $\Sigma_P^{(e)}$ is called the **staple** — the product of all links around the plaquette except $e$.
@@ -1243,17 +1255,17 @@ $$
 
 **Step 5: Small-field expansion to continuum.**
 
-For small field strength, expand $U_e = \exp(ig a A_\mu^{(a)}T^a) \approx I + ig a A_\mu^{(a)}T^a + O(a^2)$.
+For small field strength, expand $U_e = \exp(ig a_e A_\mu^{(a)}T^a) \approx I + ig a_e A_\mu^{(a)}T^a + O(a_e^2)$.
 
 The plaquette becomes:
 
 $$
-U_P = I + ig a^2 F_{\mu\nu}^{(a)} T^a + O(a^3)
+U_P = I + ig A_P F_{\mu\nu}^{(a)} T^a + O(A_P^2)
 $$
 
 where $F_{\mu\nu}^{(a)} = \partial_\mu A_\nu^{(a)} - \partial_\nu A_\mu^{(a)} + g\epsilon^{abc}A_\mu^{(b)}A_\nu^{(c)}$ is the Yang-Mills field strength.
 
-From $U_P = U_e \Sigma_P^{(e)}$, we have $\Sigma_P^{(e)} = U_e^{-1} U_P \approx (I - ig a A_\mu T^a)(I + ig a^2 F_{\mu\nu} T^a) + O(a^2)$.
+From $U_P = U_e \Sigma_P^{(e)}$, we have $\Sigma_P^{(e)} = U_e^{-1} U_P \approx (I - ig a_e A_\mu T^a)(I + ig A_P F_{\mu\nu} T^a) + O(A_P^2)$.
 
 Substituting and taking $a \to 0$, the discrete equation:
 
@@ -1575,180 +1587,49 @@ On the Fractal Set, temporal and spatial spacings are set by $\tau$ (time step) 
 :::{prf:theorem} Continuum Limit of Yang-Mills Action
 :label: thm-continuum-limit-ym
 
-As lattice spacing $a \to 0$ with fixed physical coupling $g_{\text{phys}}$, the discrete Wilson action converges to the continuum Yang-Mills action:
+As $\rho, \tau \to 0$ with fixed physical coupling $g_{\text{phys}}$ and mean-field density, the Wilson action built from interaction plaquettes converges to the continuum Yang-Mills action on the emergent manifold:
 
 $$
-S_{\text{YM}}^{\text{disc}} \to S_{\text{YM}}^{\text{cont}} = \frac{1}{4} \int d^{d+1}x \sum_{a=1}^3 F_{\mu\nu}^{(a)} F^{(a),\mu\nu}
+S_{\text{YM}}^{\text{disc}} \to S_{\text{YM}}^{\text{cont}} = \frac{1}{4} \int_M d\mathrm{vol}_g \sum_{a=1}^3 F_{\mu\nu}^{(a)} F^{(a),\mu\nu}.
 $$
 :::
 
 :::{prf:proof}
-**Dimensional setup:**
+We separate the argument into two complementary routes.
 
-| Quantity | Dimension | Lattice | Continuum |
-|----------|-----------|---------|-----------|
-| Position | $[\text{length}]$ | $x = n a$ | $x \in \mathbb{R}^{d+1}$ |
-| Gauge field | $[\text{length}^{-1}]$ | $A_\mu(n a)$ | $A_\mu(x)$ |
-| Field strength | $[\text{length}^{-2}]$ | $F_P = F_{\mu\nu}(n a)$ | $F_{\mu\nu}(x)$ |
-| Action | $[\text{dimensionless}]$ | $S^{\text{disc}}$ | $S^{\text{cont}}$ |
-
-In the physical case $d=3$ (so $d+1=4$), $a^4$ is the hypervolume element; for general $d+1$, replace $a^4$ by $a^{d+1}$ in the scaling arguments below.
-
-**Step 1: Plaquette expansion.**
-
-The link variable is $U_e = \exp(ig a A_\mu)$ where $A_\mu = A_\mu^{(a)} T^a$ with $T^a = \sigma^a/2$.
-
-For a plaquette $P$ in the $(\mu,\nu)$-plane with corners at $(x, x+a\hat{\mu}, x+a\hat{\mu}+a\hat{\nu}, x+a\hat{\nu})$, the ordered product is:
+**Classical lattice gauge route (consistency check).** On regular lattices, the Wilson action converges to the continuum Yang-Mills action via the standard small-loop holonomy expansion {cite}`wilson1974confinement,kogut1979introduction,creutz1983quarks`. For any sufficiently small loop, the same local expansion holds. Using the interaction-plaquette holonomy in {prf:ref}`def-plaquette-field-strength-ym`:
 
 $$
-U_P = U_\mu(x) U_\nu(x+a\hat{\mu}) U_\mu^\dagger(x+a\hat{\nu}) U_\nu^\dagger(x)
+s_P = 1 - \frac{1}{2}\text{Re Tr}(U_P) = \frac{g^2 A_P^2}{8}\sum_{a=1}^3 (F_P^{(a)})^2 + O(A_P^3),
 $$
 
-Using the Baker-Campbell-Hausdorff formula and Taylor expansion:
+with $A_P \sim \rho \tau$, which fixes the normalization independently of plaquette geometry.
+
+**Fractal Gas mean-field route (Volume 3).** The mean-field derivation {doc}`../appendices/08_mean_field` and propagation of chaos {doc}`../appendices/09_propagation_chaos` give convergence of the empirical measure to the QSD limit $\mu_\infty$. The hypocoercive LSI route ({doc}`../appendices/15_kl_convergence`) yields concentration of sampling averages, so Riemann-sum approximations apply to bounded Hölder observables. The emergent continuum and gradient identification ({prf:ref}`mt:emergent-continuum`, {prf:ref}`mt:continuum-injection`, {prf:ref}`mt:cheeger-gradient`) upgrade the discrete gauge data to a $C^1$ connection on $(M,g)$. Together with the kernel scaling used in graph-to-continuum limits {cite}`belkin2008foundation` (see {prf:ref}`thm-laplacian-convergence` in {doc}`03_lattice_qft`), this implies
 
 $$
-U_P = \exp\left(ig a^2 F_{\mu\nu}(x) + O(a^3)\right) = I + ig a^2 F_{\mu\nu}(x) - \frac{g^2 a^4}{2}F_{\mu\nu}^2 + O(a^5)
+S_{\text{YM}}^{\text{disc}} = \beta \sum_P s_P \;\longrightarrow\; \frac{1}{4}\int_M d\mathrm{vol}_g \sum_{a=1}^3 F_{\mu\nu}^{(a)} F^{(a),\mu\nu}.
 $$
 
-where the field strength is:
-
-$$
-F_{\mu\nu} = \partial_\mu A_\nu - \partial_\nu A_\mu - ig[A_\mu, A_\nu]
-$$
-
-**Dimensional check**: $[a^2 F_{\mu\nu}] = [\text{length}^2] \cdot [\text{length}^{-2}] = [\text{dimensionless}]$ ✓
-
-**Step 2: Action density per plaquette.**
-
-The Wilson action density is:
-
-$$
-s_P := 1 - \frac{1}{2}\text{Re Tr}(U_P)
-$$
-
-Substituting the expansion:
-
-$$
-\text{Tr}(U_P) = \text{Tr}(I) + ig a^2 \text{Tr}(F_{\mu\nu}) - \frac{g^2 a^4}{2}\text{Tr}(F_{\mu\nu}^2) + O(a^5)
-$$
-
-Using $\text{Tr}(I) = 2$ for SU(2) and $\text{Tr}(F_{\mu\nu}) = 0$ (traceless):
-
-$$
-\text{Re Tr}(U_P) = 2 - \frac{g^2 a^4}{2}\text{Tr}(F_{\mu\nu}^2) + O(a^6)
-$$
-
-Therefore:
-
-$$
-s_P = 1 - 1 + \frac{g^2 a^4}{4}\text{Tr}(F_{\mu\nu}^2) + O(a^6) = \frac{g^2 a^4}{8}\sum_{a=1}^3 (F_{\mu\nu}^{(a)})^2 + O(a^6)
-$$
-
-using $\text{Tr}(T^a T^b) = \frac{1}{2}\delta^{ab}$ and hence $\text{Tr}(F_{\mu\nu}^2) = \frac{1}{2}\sum_a (F_{\mu\nu}^{(a)})^2$.
-
-**Step 3: Fractal-Set sampling limit (rigorous).**
-
-Let $L_N := \frac{1}{N}\sum_{i=1}^N \delta_{x_i}$ be the empirical measure of CST/IG nodes sampled at QSD equilibrium.
-By propagation of chaos ({prf:ref}`thm-propagation-chaos-qsd`), $L_N \Rightarrow \mu_\infty$, so for any bounded
-Hölder $f$ on the emergent continuum we have
-
-$$
-\left|\frac{1}{N}\sum_{i=1}^N f(x_i) - \int_M f \, d\mu_\infty\right| \to 0.
-$$
-The emergent continuum and injection metatheorems ({prf:ref}`mt:emergent-continuum`,
-{prf:ref}`mt:continuum-injection`), together with the Cheeger-gradient isomorphism
-({prf:ref}`mt:cheeger-gradient`), identify the graph energies with the continuum Dirichlet form on $(M,g)$.
-The required permits $C_\mu$, $\mathrm{Cap}_H$, $\mathrm{LS}_\sigma$, and $\mathrm{Rep}_K$ are certified by the
-Latent Fractal Gas sieve (Part IV of {doc}`../1_the_algorithm/02_fractal_gas_latent`), so the convergence is
-unconditional within the Volume 3 framework. For unbounded $\mathbb{R}^4$, the decorated Gibbs envelope
-({prf:ref}`thm-decorated-gibbs`) provides a confining $V_{\text{eff}}$, yielding a normalizable $\mu_\infty$ and an
-effective compactification on the QSD support.
-
-:::{prf:lemma} Regularity bridge for $F_{\mu\nu}$
-:label: lem-ym-holder-regularity
-
-By {prf:ref}`mt:emergent-continuum` and {prf:ref}`mt:continuum-injection` (permits certified in
-{doc}`../1_the_algorithm/02_fractal_gas_latent`), the QSD support induces a $C^2$ manifold $(M,g)$ with bounded
-diameter on the effective support of $\mu_\infty$; on $\mathbb{R}^4$ this is enforced by the confining envelope
-from {prf:ref}`thm-decorated-gibbs`. Bounded fitness ({prf:ref}`def-fractal-set-two-channel-fitness`) keeps the
-phase amplitudes and drift contributions uniformly controlled within the regularity class of
-{prf:ref}`assumption-regularity-summary`. In the canonical Euclidean Gas, this makes the fitness field $\Phi$ a
-$C^2$ function of the continuum coordinates. The phase field $\theta(x) = -\Phi(x)/\hbar_{\text{eff}}$ is then $C^2$,
-so the continuum gauge potential $A_\mu := \frac{1}{g}\partial_\mu \theta$ is $C^1$ and the discrete gradients
-converge to it by {prf:ref}`mt:cheeger-gradient`. The field strength $F_{\mu\nu}$ is therefore Lipschitz on the
-QSD support. Hence $F_{\mu\nu} \in C^\alpha(M)$ for some $\alpha \in (0,1]$, with Hölder bounds compatible with the
-deterministic potential continuity and Poisson-regularity estimates ({prf:ref}`thm-deterministic-potential-continuity`,
-{prf:ref}`thm-error-propagation`) and with LSI-based concentration ({prf:ref}`mt:lsi-particle-systems`).
+For unbounded domains, the confining envelope ({prf:ref}`thm-decorated-gibbs`) provides effective compactness on the QSD support. $\square$
 :::
 
-**Sampling-to-integral convergence**: For $f \in C^\alpha(M)$ and plaquette centers $x_P$ at scale $a$:
+:::{dropdown} 📖 Hypostructure Proof Path (Formal)
+:icon: book
 
-$$
-\left|\sum_{P} a^{d+1} f(x_P) - \int_M f(x) \, d\mathrm{vol}_g(x)\right| \to 0
-$$
+**Rigor Class:** F (Framework-Original)
 
-The scale factor $a^{d+1}$ is $a=\tau$ on CST edges and $a=\rho$ on IG edges; the Fractal Set density converges to
-the volume form by {prf:ref}`mt:emergent-continuum`.
+**Permits:** $C_\mu$, $\mathrm{Cap}_H$, $\mathrm{LS}_\sigma$, $\mathrm{Rep}_K$ (certified in {doc}`../1_the_algorithm/02_fractal_gas_latent`).
 
-**Application**: Using $S_{\text{YM}}^{\text{disc}} = \beta \sum_P s_P$ with $\beta = 4/g^2$, the prefactor becomes
-$\beta \cdot g^2/8 = 1/2$. The plaquette sum runs over $\mu < \nu$, so
-$\sum_{\mu < \nu} F_{\mu\nu}^2 = \frac{1}{2}\sum_{\mu,\nu} F_{\mu\nu}^2$. Let
-$f(x) = \frac{1}{2}\sum_a (F_{\mu\nu}^{(a)}(x))^2$. Since $F_{\mu\nu}$ is Hölder, so is $f$. Then:
-
-$$
-\sum_P a^4 \cdot \frac{1}{2}\sum_a (F_{\mu\nu}^{(a)})^2 \xrightarrow[a \to 0]{} \frac{1}{2}\int_M \sum_a (F_{\mu\nu}^{(a)}(x))^2 \, d\mathrm{vol}_g(x)
-$$
-
-The convergence follows from the sampling-to-integral limit applied to $f(x)$.
-
-**Step 4: Remainder term control.**
-
-The $O(a^6)$ remainder in Step 2 contributes:
-
-$$
-|R_{\text{total}}| \leq \sum_P |R_P| \leq N_P \cdot C a^6
-$$
-
-where $N_P \sim |M|_g/a^{d+1}$ is the expected number of plaquettes at scale $a$ under the QSD sampling density.
-Therefore:
-
-$$
-|R_{\text{total}}| \leq C |M|_g a^{6-(d+1)} = C |M|_g a^{5-d}
-$$
-
-For $d < 5$ (physical dimensions $d = 3$), this vanishes as $a \to 0$. ✓
-
-**Step 5: Renormalization of coupling.**
-
-The bare lattice coupling $g$ must be renormalized to maintain a finite continuum limit. The one-loop relation {cite}`gross1973ultraviolet,politzer1973reliable` is:
-
-$$
-\frac{1}{g_{\text{phys}}^2(\mu)} = \frac{1}{g^2(a)} + \frac{b_0}{8\pi^2} \ln\left(\frac{\mu}{\Lambda}\right)
-$$
-
-where:
-- $\mu$ is the renormalization scale $[\text{GeV}]$
-- $\Lambda$ is the dynamical scale from dimensional transmutation $[\text{GeV}]$
-- $b_0 = \frac{11N_c}{3} = \frac{22}{3}$ for SU(2) (one-loop coefficient)
-
-The lattice cutoff is $\mu_{\text{UV}} \sim 1/a$, so $g^2(a)$ can be read as $g^2(\mu_{\text{UV}})$. As $a \to 0$:
-
-$$
-g^2(a) \to 0 \quad \text{(asymptotic freedom)}
-$$
-
-but the combination $g^2(a) \cdot \ln(\mu_{\text{UV}}/\Lambda)$ remains finite, giving a well-defined $g_{\text{phys}}$.
-
-**Conclusion:**
-
-Combining Steps 1-5, the discrete action converges:
-
-$$
-S_{\text{YM}}^{\text{disc}} = \beta(a) \sum_P s_P \xrightarrow{a \to 0} \frac{1}{4} \int d^{d+1}x \sum_a F_{\mu\nu}^{(a)} F^{(a),\mu\nu}
-$$
-
-with convergence rate $O(a^\alpha)$ for the leading term and $O(a^{5-d})$ for the remainder. $\square$
+**Formal chain:**
+1. Apply Expansion Adjunction ({prf:ref}`thm-expansion-adjunction`) to promote the thin interaction-plaquette holonomy functor to a continuum connection form.
+2. Invoke Lock Closure ({prf:ref}`mt:fractal-gas-lock-closure`) to ensure the promoted connection respects the Fractal Set relations (plaquette factorization and gauge invariance).
+3. Use Emergent Continuum and Continuum Injection ({prf:ref}`mt:emergent-continuum`, {prf:ref}`mt:continuum-injection`) to identify the limit metric-measure space $(M,g)$ and transport the empirical measure.
+4. Apply the Cheeger-Gradient Isomorphism ({prf:ref}`mt:cheeger-gradient`) to upgrade energy convergence to gradient convergence, yielding the curvature $F_{\mu\nu}$ as the promoted field strength.
+5. Conclude that the Wilson sum over interaction plaquettes converges to the continuum Yang-Mills functional with the normalization fixed by the holonomy expansion in {prf:ref}`def-plaquette-field-strength-ym`.
 :::
+
+The intuition below uses the standard square-plaquette language as a mnemonic; on the Fractal Set these are interaction 4-cycles with area $A_P \sim \rho \tau$.
 
 :::{div} feynman-prose feynman-added
 This proof is technical, so let me tell you what it is really saying.
