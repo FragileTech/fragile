@@ -333,7 +333,7 @@ K_i^{\mathrm{blk}} \wedge \bigwedge_{j > i} K_j^+ \Rightarrow K_i^+
 
 $$
 
-Example: Full Lock passage ($K_{\mathrm{Cat}_{\mathrm{Hom}}}^+$) may retroactively promote earlier blocked certificates to full YES.
+Example: Full Lock passage ($K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}$) may retroactively promote earlier blocked certificates to full YES.
 
 :::
 

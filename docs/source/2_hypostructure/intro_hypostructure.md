@@ -292,7 +292,7 @@ This formalism is a **categorical foundation for runtime safety verification**. 
 
 8. **17 Gate Nodes.** Complete formal specifications for all diagnostic checks with decidability analysis ([Gate Nodes](04_nodes/01_gate_nodes.md)).
 9. **Barrier/Surgery Architecture.** Fallback defense layer and repair mechanisms with re-entry protocols ([Barrier Nodes](04_nodes/02_barrier_nodes.md), [Surgery Nodes](04_nodes/03_surgery_nodes.md)).
-10. **Exclusion Tactics E1-E12.** Obstruction-theoretic methods for proving non-existence of bad morphisms ([Lock Mechanism](06_modules/03_lock.md)).
+10. **Exclusion Tactics E1-E13.** Obstruction-theoretic methods for proving non-existence of bad morphisms ([Lock Mechanism](06_modules/03_lock.md)).
 
 *Meta-Theoretic:*
 
@@ -336,7 +336,7 @@ This formalism is a **categorical foundation for runtime safety verification**. 
 | **Proof obligations**          | Manual verification with proof assistants     | Factory metatheorems generate correct-by-construction verifiers ({prf:ref}`mt-fact-gate`)                                                                     |
 | **Error handling**             | Exception propagation, error codes            | Typed NO certificates with witness/inconclusive distinction ({prf:ref}`def-typed-no-certificates`)                                                           |
 | **Regularity proofs**          | Case-by-case PDE analysis                     | Systematic sieve traversal with certificate accumulation ({prf:ref}`def-sieve-epoch`)                                                                        |
-| **Undecidable predicates**     | Conservative approximation or timeout         | Tactic library E1-E12 with $K^{\text{inc}}$ fallback ([Lock Mechanism](06_modules/03_lock.md))                                                        |
+| **Undecidable predicates**     | Conservative approximation or timeout         | Tactic library E1-E13 with $K^{\text{inc}}$ fallback ([Lock Mechanism](06_modules/03_lock.md))                                                        |
 | **Surgery/repair**             | Ad hoc modifications                          | Certified surgery nodes with re-entry protocols ([Surgery Nodes](04_nodes/03_surgery_nodes.md))                                                      |
 | **Axiom discovery**            | Human insight, conjecture-and-test            | Meta-learning optimization over defect functionals ([Meta-Learning](10_information_processing/01_metalearning.md))                                             |
 | **Classical grounding**        | Implicit set-theoretic interpretation         | Explicit ZFC translation with full correspondence ([ZFC Translation](11_appendices/01_zfc.md))                                                         |
@@ -493,7 +493,7 @@ This framework makes strong claims about categorical structure and proof-carryin
 
 1. **Why infinity-topoi?** The cohesive structure handles gauge redundancy and homotopy that set theory loses. See {prf:ref}`def-ambient-topos` and {prf:ref}`rem-classical-recovery`.
 
-2. **What about undecidability?** Gate 17 (the Lock) handles undecidable predicates via the tactic library E1-E12. The system is sound regardless—$K^{\text{inc}}$ routes to fallback. See [Lock Mechanism](06_modules/03_lock.md).
+2. **What about undecidability?** Gate 17 (the Lock) handles undecidable predicates via the tactic library E1-E13. The system is sound regardless—$K^{\text{inc}}$ routes to fallback. See [Lock Mechanism](06_modules/03_lock.md).
 
 3. **Is factory code generation practical?** The Factory Metatheorems specify *interface contracts*, not universal decision procedures. Domain-specific verifiers are provided by users; the framework guarantees soundness. See {prf:ref}`mt-fact-gate`.
 

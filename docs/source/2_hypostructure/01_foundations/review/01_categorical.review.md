@@ -13,7 +13,7 @@
   - def-progress-measures in docs/source/2_hypostructure/05_interfaces/03_contracts.md
   - def-germ-smallness (Germ Smallness Permit) in docs/source/2_hypostructure/06_modules/01_singularity.md
   - def-node-geom (ambient dimension d, codimension bounds) in docs/source/2_hypostructure/04_nodes/01_gate_nodes.md
-  - Permit WP_{s_c} and ProfDec_{s_c,G} (critical exponent s_c) in docs/source/2_hypostructure/05_interfaces/01_gate_evaluator.md
+  - def-critical-index (critical phase space $X_c$) and scaling permits WP_{s_c}, ProfDec_{s_c,G} in docs/source/2_hypostructure/05_interfaces/01_gate_evaluator.md
   - def-kolmogorov-complexity, def-chaitin-omega, def-computational-depth, def-algorithmic-phases in docs/source/2_hypostructure/09_mathematical/04_taxonomy.md
   - def-heyting-boolean-distinction in docs/source/2_hypostructure/11_appendices/01_zfc.md
 
@@ -23,7 +23,7 @@
 - Moderate: 0
 - Minor: 0
 - Notes: 0
-- Primary themes: All identified issues resolved (dual provenance, certificate-conditional logic, critical-index anchoring).
+- Primary themes: All identified issues resolved (dual provenance with literature isolated to L routes, certificate-conditional logic, critical-index anchoring).
 
 ## Upgrade plan (pre-implementation)
 - Add explicit **Rigor Class L** labels and **Bridge Verification** triples for the literature-anchored theorems in `01_categorical.md` (KRNL-Consistency, KRNL-Trichotomy, KRNL-Equivariance, Halting/AIT Sieve Thermodynamics), written entirely in terms of thin-interface certificates and existing definitions.
@@ -36,7 +36,7 @@
 - **Lock certificates / typed NO semantics:** `docs/source/2_hypostructure/03_sieve/01_structural.md` (`def-typed-no-certificates`) and `docs/source/2_hypostructure/03_sieve/02_kernel.md` (Lock reconstruction routing)
 - **Germ Smallness Permit:** `docs/source/2_hypostructure/06_modules/01_singularity.md` (`def-germ-smallness`)
 - **Ambient dimension (codimension/Cap_H):** `docs/source/2_hypostructure/04_nodes/01_gate_nodes.md` (`def-node-geom`)
-- **Critical exponent s_c:** `docs/source/2_hypostructure/05_interfaces/01_gate_evaluator.md` (`WP_{s_c}`, `ProfDec_{s_c,G}`)
+- **Critical index / phase space:** `docs/source/2_hypostructure/05_interfaces/01_gate_evaluator.md` (`def-critical-index`, `WP_{s_c}`, `ProfDec_{s_c,G}`)
 - **AIT/Kolmogorov formalism:** `docs/source/2_hypostructure/09_mathematical/04_taxonomy.md` (`def-kolmogorov-complexity`, `def-chaitin-omega`, `def-computational-depth`, `def-algorithmic-phases`)
 - **Decidability in internal logic:** `docs/source/2_hypostructure/11_appendices/01_zfc.md` (`def-heyting-boolean-distinction`)
 
@@ -57,7 +57,7 @@
 - Why this is an error in the framework: def-rigor-classification requires literature-anchored results to be labeled Rigor Class L with an explicit Bridge Verification. These statements are presented as internal theorems without a bridge construction that verifies the hypotheses in the hypostructure setting.
 - Impact on downstream results: Readers may treat these as fully framework-internal proofs, which undermines the formal provenance model and blurs which results require external hypothesis checks.
 **Resolution status:** Implemented.
-- Dual-provenance added: each theorem now has a Framework-Original (Class F) statement plus a Literature-Anchored (Class L) alternative proof with Bridge Verification triples.
+- Dual-provenance added: each theorem now has a Framework-Original (Class F) statement plus a Literature-Anchored (Class L) alternative proof with Bridge Verification triples. Literature citations are confined to the Class L route; Class F proofs now cite only internal permits/definitions.
 - Bridge blocks are expressed in terms of thin-interface certificates and cross-reference {prf:ref}`def-bridge-verification`.
 - Validation: verify that the four theorems each include both provenance paths and that the certificate payloads match.
 
@@ -73,7 +73,7 @@
   2. Add an explicit citation to the Lock obstruction tactics and their possible inconclusive outcome.
   3. Tie the “decidable in discrete fragment” statement to def-cert-finite or a specific termination/decidability permit.
 - Required new assumptions/permits (if any): None if Lock certificate logic is referenced explicitly; otherwise add a “Lock decidability” permit.
-- Framework-first proof sketch for the fix: Use case analysis on K_{Cat_Hom}^- = K^{wit} + K^{inc}. Only the K^{wit} or K^{blk} branch yields Rep_K; the K^{inc} branch defers to reconstruction.
+- Framework-first proof sketch for the fix: Use case analysis on the Lock outcomes $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}$, $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{morph}}$, and $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{br\text{-}inc}}$. Only the blocked branch yields Rep_K; the breached-inconclusive branch defers to reconstruction.
 **Resolution status:** Implemented.
 - Step 6 now conditions the contrapositive on $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}$ and explicitly routes $K^{\mathrm{br\text{-}inc}}$ to reconstruction/Horizon.
 - Validation: confirm references to {prf:ref}`def-typed-no-certificates` and the inconclusive branch wording align with Lock routing.

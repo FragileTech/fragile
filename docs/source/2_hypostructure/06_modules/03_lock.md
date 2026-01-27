@@ -35,10 +35,10 @@ Where:
 - $\mathcal{H}$ is the system under analysis
 
 **Outcomes**:
-- **Blocked** ($K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}$ or $K_{\mathrm{Cat}_{\mathrm{Hom}}}^+$): Hom-set empty; implies GLOBAL REGULARITY
-- **MorphismExists** ($K_{\mathrm{Cat}_{\mathrm{Hom}}}^-$): Explicit morphism $\phi: \mathbb{H}_{\mathrm{bad}} \to \mathcal{H}$; implies FATAL ERROR
+- **Blocked** ($K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}$): Hom-set empty; implies GLOBAL REGULARITY
+- **MorphismExists** ($K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{morph}}$): Explicit morphism $\phi: \mathbb{H}_{\mathrm{bad}} \to \mathcal{H}$; implies FATAL ERROR
 
-**Goal Certificate:** For the Lock, the designated goal certificate for the proof completion criterion ({prf:ref}`def-proof-complete`) is $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}$. This certificate suffices for proof completion—no additional promotion to $K_{\mathrm{Cat}_{\mathrm{Hom}}}^+$ is required. The blocked outcome at the Lock establishes morphism exclusion directly.
+**Goal Certificate:** For the Lock, the designated goal certificate for the proof completion criterion ({prf:ref}`def-proof-complete`) is $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}$. This certificate suffices for proof completion; the blocked outcome at the Lock establishes morphism exclusion directly.
 
 :::
 

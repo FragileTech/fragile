@@ -670,15 +670,15 @@ $$\forall i \in I: \text{Hom}_{\mathbf{Hypo}_T}(B_i, \mathcal{H}) = \emptyset$$
 The Lock evaluator checks whether any morphism exists from any bad pattern to the candidate hypostructure. If all Hom-sets are empty, no singularity-forming pattern can embed, and global regularity follows.
 
 **Certificates ($\mathcal{K}_{\mathrm{Cat}_{\mathrm{Hom}}}$):**
-- $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\text{blk}}$ (Blocked/VICTORY): Proof that $\forall i: \text{Hom}(B_i, \mathcal{H}) = \emptyset$. Techniques include:
+- $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}$ (Blocked/VICTORY): Proof that $\forall i: \text{Hom}(B_i, \mathcal{H}) = \emptyset$. Techniques include:
   - **E1 (Dimension):** $\dim(B_i) > \dim(\mathcal{H})$
   - **E2 (Invariant Mismatch):** $I(B_i) \neq I(\mathcal{H})$ for preserved invariant $I$
   - **E3 (Positivity/Integrality):** Obstruction from positivity or integrality constraints
   - **E4 (Functional Equation):** No solution to induced functional equations
   - **E5 (Modular):** Obstruction from modular/arithmetic properties
-- $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\text{morph}}$ (Breached/FATAL): Explicit morphism $f: B_i \to \mathcal{H}$ for some $i$, witnessing that singularity formation is possible.
+- $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{morph}}$ (Breached/FATAL): Explicit morphism $f: B_i \to \mathcal{H}$ for some $i$, witnessing that singularity formation is possible.
 
-**Does Not Promise:** That the Lock is decidable. Tactics E1-E12 may exhaust without resolution, yielding a Breached-inconclusive certificate ($K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{br\text{-}inc}}$).
+**Does Not Promise:** That the Lock is decidable. Tactics E1-E13 may exhaust without resolution, yielding a Breached-inconclusive certificate ($K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{br\text{-}inc}}$).
 
 **Remark (Library vs. Universal Object):**
 The universal bad object $\mathbb{H}_{\mathrm{bad}}^{(T)}$ is well-defined as the colimit over the **small** germ set $\mathcal{G}_T$ (see {prf:ref}`mt-krnl-exclusion`, Initiality Lemma). The Small Object Argument ({cite}`Quillen67` §II.3) ensures $\mathcal{G}_T$ is a genuine set by exploiting energy bounds and symmetry quotients. The library formulation $\mathcal{B} = \{B_i\}_{i \in I}$ is the **constructive implementation**: it provides a finite list of computable representatives. The density theorem {prf:ref}`mt-fact-germ-density` proves that checking $\mathcal{B}$ suffices to verify the full categorical obstruction.
@@ -693,7 +693,7 @@ At the soft layer, the framework does **not** assume:
 - **Global regularity**: Solutions may blow up; the sieve determines whether they must
 - **Finite canonical profile library**: Profiles may be classified, stratified, or horizon
 - **Surgery admissibility**: Each surgery must be checked via the Admissibility Trichotomy
-- **Decidable Lock outcomes**: E1--E10 tactics may exhaust without resolution
+- **Decidable Lock outcomes**: E1--E13 tactics may exhaust without resolution
 - **Unique gradient structure**: $\mathrm{GC}_\nabla$ is optional; many systems lack gradient form
 - **Closed system**: $\mathrm{Bound}$ explicitly handles open systems with inputs
 
@@ -701,7 +701,7 @@ These are obtained by **upgrades**:
 - Profile Classification Trichotomy (finite library, tame stratification, or horizon)
 - Surgery Admissibility Trichotomy (admissible, admissible$^\sim$, or inadmissible)
 - Promotion rules (blocked $\to$ YES via certificate accumulation)
-- Lock tactics (E1--E10 for Hom-emptiness proofs)
+- Lock tactics (E1--E13 for Hom-emptiness proofs)
 
 This separation makes the framework **honest about its assumptions** and enables systematic identification of what additional structure is needed when an inconclusive NO certificate ($K^{\mathrm{inc}}$) is produced.
 
@@ -1123,7 +1123,7 @@ Typical $\mathsf{missing}$: "Lyapunov function not verified to be strict", "$K_{
 | **$\mathrm{Rep}_K$** | Language Object | Finite description | Program/Code |
 | **$\mathrm{GC}_\nabla$** | Metric Tensor | Metric compatibility | Flow type |
 | **$\mathrm{Bound}$** | Input/Output Objects | Boundary conditions | Bounds |
-| **$\mathrm{Cat}_{\mathrm{Hom}}$** | Hypostructure Category | Hom-emptiness | E1-E10 obstruction |
+| **$\mathrm{Cat}_{\mathrm{Hom}}$** | Hypostructure Category | Hom-emptiness | E1-E13 obstruction |
 
 This table constitutes the **Type Signature** of a Hypostructure.
 

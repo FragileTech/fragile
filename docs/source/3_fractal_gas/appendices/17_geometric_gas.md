@@ -10,7 +10,7 @@
 
 **State-Dependent Diffusion Controlled**: The technical hurdle—extending hypocoercivity from constant isotropic diffusion ($\sigma I$) to state-dependent anisotropic diffusion ($\Sigma_{\mathrm{reg}}(x_i, S) = (H_i + \epsilon_\Sigma I)^{-1/2}$)—is resolved through two proven N-uniform properties: uniform ellipticity bounds $c_{\min}(\rho) I \preceq D_{\mathrm{reg}} \preceq c_{\max}(\rho) I$ and C³ regularity $\|\nabla^3 V_{\mathrm{fit}}\| \leq K_{V,3}(\rho)$. These provide sufficient control for the modified hypocoercive Lyapunov argument without requiring probabilistic verification.
 
-**Explicit Stability Threshold**: The system converges when two conditions hold: (1) the adaptive force satisfies $\epsilon_F < \epsilon_F^*(\rho) = (\kappa_{\mathrm{backbone}} - C_{\mathrm{diff},1}(\rho))/K_F(\rho)$ (Foster-Lyapunov constraint), and (2) friction exceeds $\gamma > \gamma_{\min}(\rho) = d L_\Sigma(\rho)/c_{\min}^2(\rho)$ (LSI gap constraint). Both thresholds depend continuously on the localization scale $\rho$. Smaller $\rho$ (more local adaptation) requires weaker $\epsilon_F$ and stronger $\gamma$ to maintain stability; as $\rho \to \infty$ (backbone limit), the constraints relax, recovering global robustness.
+**Explicit Stability Threshold**: The system converges when two conditions hold: (1) the adaptive force satisfies $\epsilon_F < \epsilon_F^*(\rho) = (\kappa_{\mathrm{backbone}} - C_{\mathrm{diff},1}(\rho))/K_F(\rho)$ (Foster-Lyapunov constraint), and (2) friction exceeds $\gamma > \gamma_{\min}(\rho) = \frac{c_{\max}(\rho)}{4}\tilde{C}_{\mathrm{comm}}(\rho)$ (LSI gap constraint). Both thresholds depend continuously on the localization scale $\rho$. Smaller $\rho$ (more local adaptation) requires weaker $\epsilon_F$ and stronger $\gamma$ to maintain stability; as $\rho \to \infty$ (backbone limit), the constraints relax, recovering global robustness.
 
 **Stable Backbone + Adaptive Perturbation Philosophy**: The proof treats the Geometric Gas as the proven Euclidean backbone plus three bounded perturbations: (1) state-dependent anisotropic diffusion (controlled by uniform ellipticity), (2) adaptive force $\epsilon_F \nabla V_{\mathrm{fit}}$ (N-uniformly bounded), (3) viscous coupling (purely dissipative). This separation of stability from intelligence allows rigorous convergence analysis via perturbation theory rather than re-proving hypocoercivity from scratch.
 
@@ -738,7 +738,7 @@ $$
 where both constants are **N-uniform**:
 
 $$
-C_{\mathrm{diff},0}(\rho) = d \cdot |c_{\max}^2(\rho) - \sigma^2|
+C_{\mathrm{diff},0}(\rho) = d \cdot \max\{|c_{\min}(\rho) - \sigma^2|, |c_{\max}(\rho) - \sigma^2|\}
 $$
 
 **Note:** $C_{\mathrm{diff},0}$ represents the difference in noise intensities. It can be positive (geometric diffusion stronger) or effectively treated as absolute value since it contributes additively to the bias term.
@@ -759,13 +759,13 @@ The diffusion perturbation has three sources:
 The diagonal diffusion changes from $\sigma^2$ to $\mathrm{tr}(\Sigma_{\mathrm{reg}}^2)/d$. By uniform ellipticity:
 
 $$
-c_{\min}^2(\rho) \leq \frac{\mathrm{tr}(\Sigma_{\mathrm{reg}}^2)}{d} \leq c_{\max}^2(\rho)
+c_{\min}(\rho) \leq \frac{\mathrm{tr}(\Sigma_{\mathrm{reg}}^2)}{d} \leq c_{\max}(\rho)
 $$
 
 The difference contributes:
 
 $$
-\left| \frac{1}{2} \sum_i \mathrm{tr}(\Sigma_{\mathrm{reg}}^2 \nabla_{v_i}^2 f) - \frac{\sigma^2}{2} \sum_i \Delta_{v_i} f \right| \leq d \cdot [c_{\max}(\rho) - \sigma^2]
+\left| \frac{1}{2} \sum_i \mathrm{tr}(\Sigma_{\mathrm{reg}}^2 \nabla_{v_i}^2 f) - \frac{\sigma^2}{2} \sum_i \Delta_{v_i} f \right| \leq d \cdot \max\{|c_{\min}(\rho) - \sigma^2|, |c_{\max}(\rho) - \sigma^2|\}
 $$
 
 **2. Geometric Drift (Stratonovich to Itô):**
@@ -1076,6 +1076,8 @@ $$
 
 By Lemmas {prf:ref}`lem-gg-phi-irreducibility` and {prf:ref}`lem-gg-aperiodicity`, the Markov chain is φ-irreducible and aperiodic. By Theorem {prf:ref}`thm-gg-foster-lyapunov-drift`, it satisfies a Foster-Lyapunov drift condition with $\kappa_{\mathrm{total}}(\rho) > 0$.
 
+Within the framework, the Euclidean Gas proof of QSD existence and exponential TV convergence is given in {doc}`/3_fractal_gas/appendices/06_convergence`, Theorem {prf:ref}`thm-main-convergence`. The present geometric case follows the same template, with the perturbation bounds in Section {ref}`sec-gg-perturbation-analysis` supplying the modified constants.
+
 The Meyn-Tweedie theorem (Theorem 15.0.1 in Meyn & Tweedie 2009) guarantees:
 
 1. **Existence and uniqueness** of a QSD $\pi_N(\rho)$
@@ -1147,7 +1149,7 @@ $$
 By Theorem {prf:ref}`thm-gg-ueph-construction`:
 
 $$
-c_{\min}^2(\rho) I_v(f) \leq I_{\mathrm{hypo}}^\Sigma(f) \leq c_{\max}^2(\rho) I_v(f)
+c_{\min}(\rho) I_v(f) \leq I_{\mathrm{hypo}}^\Sigma(f) \leq c_{\max}(\rho) I_v(f)
 $$
 
 :::
@@ -1160,67 +1162,19 @@ $$
 The velocity component of the generator provides coercive dissipation:
 
 $$
--\frac{d}{dt} \mathrm{Ent}_{\pi_N}(f | \pi_N) \Big|_{\mathrm{friction}} \geq \gamma c_{\min}^2(\rho) I_v(f)
+-\frac{d}{dt} \mathrm{Ent}_{\pi_N}(f | \pi_N) \Big|_{\mathrm{friction}} \geq 4\gamma I_v(f) \geq \frac{4\gamma}{c_{\max}(\rho)} I_{\mathrm{hypo}}^\Sigma(f)
 $$
 
-where $\gamma > 0$ is the friction coefficient and $c_{\min}(\rho)$ is the uniform ellipticity lower bound.
+where $\gamma > 0$ is the friction coefficient.
 
 :::
 
 :::{prf:proof}
-**Step 1. Entropy Production Identity:**
-
-For the friction term $-\gamma v_i \cdot \nabla_{v_i}$ in the generator:
-
+The entropy production bound for the Ornstein-Uhlenbeck friction term is standard; see the kinetic LSI derivation in {doc}`/3_fractal_gas/appendices/15_kl_convergence` (Theorem {prf:ref}`thm-kinetic-lsi`) or {doc}`/3_fractal_gas/appendices/10_kl_hypocoercive` (Theorem {prf:ref}`thm-unconditional-lsi-explicit`). This yields
 $$
--\frac{d}{dt} \mathrm{Ent}(f) \Big|_{\mathrm{friction}} = \gamma \int \sum_i v_i \cdot \nabla_{v_i} f \log(f/\pi_N) d\pi_N
+-\frac{d}{dt} \mathrm{Ent}(f) \Big|_{\mathrm{friction}} \geq 4\gamma I_v(f).
 $$
-
-**Step 2. Integration by Parts:**
-
-$$
-\begin{aligned}
-&= \gamma \int \sum_i \left[ -|\nabla_{v_i} f|^2 / f + v_i \cdot \nabla_{v_i} \log \pi_N \cdot f \right] d\pi_N
-\end{aligned}
-$$
-
-**Step 3. QSD Structure:**
-
-The QSD $\pi_N(\rho)$ has the form $\pi_N \propto \exp(-V_{\mathrm{pot}}(x) - \|v\|^2/(2T))$ where $T$ is the effective temperature. Therefore:
-
-$$
-v_i \cdot \nabla_{v_i} \log \pi_N = -v_i^2/T
-$$
-
-**Step 4. Fisher Information:**
-
-The first term yields:
-
-$$
-\gamma \int \sum_i \frac{|\nabla_{v_i} f|^2}{f} d\pi_N = 4\gamma I_v(f)
-$$
-
-**Step 5. Coercivity:**
-
-The second term from Step 2 is:
-
-$$
-\gamma \int \sum_i v_i \cdot \nabla_{v_i} \log \pi_N \cdot f \, d\pi_N = -\frac{\gamma}{T} \int \sum_i \|v_i\|^2 f \, d\pi_N \leq 0
-$$
-
-This term is non-positive (provides additional dissipation) and can be dropped for the lower bound:
-
-$$
--\frac{d}{dt} \mathrm{Ent}(f) \Big|_{\mathrm{friction}} \geq 4\gamma I_v(f)
-$$
-
-By uniform ellipticity comparison (Definition {prf:ref}`def-gg-hypocoercive-fisher`): $I_v(f) = c^{-2}_{\mathrm{eff}} I_{\mathrm{hypo}}^\Sigma(f)$ where $c_{\mathrm{eff}}^2 \in [c_{\min}^2, c_{\max}^2]$. Using the conservative bound $I_v(f) \geq c_{\max}^{-2}(\rho) I_{\mathrm{hypo}}^\Sigma(f)$:
-
-$$
--\frac{d}{dt} \mathrm{Ent}(f) \Big|_{\mathrm{friction}} \geq \frac{4\gamma}{c_{\max}^2(\rho)} I_{\mathrm{hypo}}^\Sigma(f)
-$$
-
-For the hypocoercive framework, we use the weaker but simpler bound $\gamma c_{\min}^2(\rho) I_v(f)$ which suffices for the LSI constant calculation.
+By uniform ellipticity (Definition {prf:ref}`def-gg-hypocoercive-fisher`), $I_{\mathrm{hypo}}^\Sigma(f) \leq c_{\max}(\rho) I_v(f)$, hence $I_v(f) \geq c_{\max}^{-1}(\rho) I_{\mathrm{hypo}}^\Sigma(f)$, which gives the second inequality.
 
 $\square$
 :::
@@ -1240,10 +1194,10 @@ $$
 where:
 
 $$
-C_{\mathrm{comm}}(\rho) = 2d \cdot c_{\max}(\rho) L_\Sigma(\rho)
+C_{\mathrm{comm}}(\rho) = 2d \cdot C_{\mathrm{hypo}} \, c_{\max}^{1/2}(\rho) L_\Sigma(\rho)
 $$
 
-is **N-uniform**, with $L_\Sigma(\rho) = \sup \|\nabla \Sigma_{\mathrm{reg}}\|$ the Lipschitz constant bounded by C³ regularity.
+is **N-uniform**, with $L_\Sigma(\rho) = \sup \|\nabla \Sigma_{\mathrm{reg}}\|$ the Lipschitz constant bounded by C³ regularity and $C_{\mathrm{hypo}}$ the hypocoercive curvature constant from {doc}`/3_fractal_gas/appendices/15_kl_convergence`.
 
 **Note:** In the entropy-Fisher inequality (Proposition {prf:ref}`prop-gg-entropy-fisher-gap`), this constant is further multiplied by velocity bounds from the QSD, yielding the effective commutator constant $\tilde{C}_{\mathrm{comm}}(\rho) = C_{\mathrm{comm}}(\rho) \sqrt{d T_{\mathrm{eff}}}$.
 
@@ -1269,18 +1223,16 @@ $$
 By C³ regularity (proven in {doc}`/3_fractal_gas/appendices/14_b_geometric_gas_cinf_regularity_full`):
 
 $$
-\|\nabla_x \Sigma^2\| \leq 2\|\Sigma_{\mathrm{reg}}\| \|\nabla \Sigma_{\mathrm{reg}}\| \leq 2 c_{\max}(\rho) L_\Sigma(\rho)
+\|\nabla_x \Sigma^2\| \leq 2\|\Sigma_{\mathrm{reg}}\| \|\nabla \Sigma_{\mathrm{reg}}\| \leq 2 c_{\max}^{1/2}(\rho) L_\Sigma(\rho)
 $$
 
 **Step 4. Fisher Information Bound:**
 
-The second derivative term $\|\nabla_v^2 f\|$ is controlled by the geometric Fisher information:
+The second derivative term is controlled via the hypocoercive curvature bound. In particular, the Γ₂ estimate from {doc}`/3_fractal_gas/appendices/15_kl_convergence` (Theorem {prf:ref}`thm-hypo-curvature-bound`) yields a constant $C_{\mathrm{hypo}}$ such that for smooth $f$ in the generator domain:
 
 $$
-\|\nabla_v^2 f\|^2 \leq C \cdot I_{\mathrm{hypo}}^\Sigma(f)
+\|\nabla_v^2 f\| \leq C_{\mathrm{hypo}} \, I_{\mathrm{hypo}}^\Sigma(f).
 $$
-
-for some constant $C$ depending on dimension.
 
 **Step 5. Combine:**
 
@@ -1288,9 +1240,9 @@ $$
 \left| [v \cdot \nabla_x, \mathrm{tr}(\Sigma^2 \nabla_v^2)] f \right| \leq C_{\mathrm{comm}}(\rho) \|v\| I_{\mathrm{hypo}}^\Sigma(f)
 $$
 
-where $C_{\mathrm{comm}}(\rho) = 2d \cdot c_{\max}(\rho) L_\Sigma(\rho)$.
+where $C_{\mathrm{comm}}(\rho) = 2d \cdot C_{\mathrm{hypo}} \, c_{\max}^{1/2}(\rho) L_\Sigma(\rho)$.
 
-**N-Uniformity:** Since $c_{\max}(\rho)$ and $L_\Sigma(\rho)$ are N-uniform, so is $C_{\mathrm{comm}}(\rho)$.
+**N-Uniformity:** Since $c_{\max}(\rho)$, $L_\Sigma(\rho)$, and $C_{\mathrm{hypo}}$ are N-uniform, so is $C_{\mathrm{comm}}(\rho)$.
 
 $\square$
 :::
@@ -1310,13 +1262,13 @@ $$
 where:
 
 $$
-\alpha_{\mathrm{hypo}}(\rho) = \gamma c_{\min}^2(\rho) - C_{\mathrm{comm}}(\rho)
+\alpha_{\mathrm{hypo}}(\rho) = \frac{4\gamma}{c_{\max}(\rho)} - \tilde{C}_{\mathrm{comm}}(\rho)
 $$
 
 **Positivity Condition:** $\alpha_{\mathrm{hypo}}(\rho) > 0$ when:
 
 $$
-\gamma c_{\min}^2(\rho) > d \cdot L_\Sigma(\rho)
+\gamma > \gamma_{\min}(\rho) := \frac{c_{\max}(\rho)}{4} \, \tilde{C}_{\mathrm{comm}}(\rho)
 $$
 
 This holds for sufficiently large friction $\gamma$ or sufficiently regular fitness (small $L_\Sigma(\rho)$).
@@ -1335,7 +1287,7 @@ $$
 By Lemma {prf:ref}`lem-gg-velocity-fisher-dissipation`:
 
 $$
--\frac{d}{dt} \mathrm{Ent}(f)\Big|_{\mathrm{friction}} \geq \gamma c_{\min}^2(\rho) I_{\mathrm{hypo}}^\Sigma(f)
+-\frac{d}{dt} \mathrm{Ent}(f)\Big|_{\mathrm{friction}} \geq \frac{4\gamma}{c_{\max}(\rho)} I_{\mathrm{hypo}}^\Sigma(f)
 $$
 
 **Step 3. Transport Contribution (Commutator Error):**
@@ -1361,16 +1313,16 @@ $$
 For the QSD with effective temperature $T_{\mathrm{eff}}$, we have $\int \|v\|^2 d\pi_N = O(d N T_{\mathrm{eff}})$. Using Cauchy-Schwarz on the second term and noting that Fisher information is intensive (per-particle contribution), the velocity-weighted commutator error is bounded by:
 
 $$
-\tilde{C}_{\mathrm{comm}}(\rho) = C_{\mathrm{comm}}(\rho) \sqrt{d T_{\mathrm{eff}}} = d \cdot L_\Sigma(\rho) \sqrt{d T_{\mathrm{eff}}}
+\tilde{C}_{\mathrm{comm}}(\rho) = C_{\mathrm{comm}}(\rho) \sqrt{d T_{\mathrm{eff}}}
 $$
 
 which is **N-independent**. Therefore:
 
 $$
--\frac{d}{dt} \mathrm{Ent}(f) \geq [\gamma c_{\min}^2(\rho) - \tilde{C}_{\mathrm{comm}}(\rho)] I_{\mathrm{hypo}}^\Sigma(f) =: \alpha_{\mathrm{hypo}}(\rho) I_{\mathrm{hypo}}^\Sigma(f)
+-\frac{d}{dt} \mathrm{Ent}(f) \geq \left[\frac{4\gamma}{c_{\max}(\rho)} - \tilde{C}_{\mathrm{comm}}(\rho)\right] I_{\mathrm{hypo}}^\Sigma(f) =: \alpha_{\mathrm{hypo}}(\rho) I_{\mathrm{hypo}}^\Sigma(f)
 $$
 
-**Positivity:** $\alpha_{\mathrm{hypo}}(\rho) > 0$ when $\gamma c_{\min}^2(\rho) > d L_\Sigma(\rho) \sqrt{d T_{\mathrm{eff}}}$, which simplifies to the condition stated in the theorem.
+**Positivity:** $\alpha_{\mathrm{hypo}}(\rho) > 0$ when $\frac{4\gamma}{c_{\max}(\rho)} > \tilde{C}_{\mathrm{comm}}(\rho)$.
 
 $\square$
 :::
@@ -1380,7 +1332,7 @@ $\square$
 :::{prf:theorem} N-Uniform Log-Sobolev Inequality for Geometric Gas
 :label: thm-gg-lsi-main
 
-Under Axioms {prf:ref}`axiom-gg-confining-potential`-{prf:ref}`axiom-gg-viscous-kernel`, for $\epsilon_F < \epsilon_F^*(\rho)$ and $\gamma c_{\min}^2(\rho) > d \cdot L_\Sigma(\rho)$, the Geometric Gas QSD $\pi_N(\rho)$ satisfies an **N-uniform Log-Sobolev Inequality**:
+Under Axioms {prf:ref}`axiom-gg-confining-potential`-{prf:ref}`axiom-gg-viscous-kernel`, for $\epsilon_F < \epsilon_F^*(\rho)$ and $\frac{4\gamma}{c_{\max}(\rho)} > \tilde{C}_{\mathrm{comm}}(\rho)$, the Geometric Gas QSD $\pi_N(\rho)$ satisfies an **N-uniform Log-Sobolev Inequality**:
 
 $$
 \mathrm{Ent}_{\pi_N}(f^2 | \pi_N) \leq C_{\mathrm{LSI}}(\rho) \int \sum_{i=1}^N \Gamma_\Sigma(f, f) d\pi_N
@@ -1391,13 +1343,13 @@ where $\Gamma_\Sigma(f,f) = \|\Sigma_{\mathrm{reg}} \nabla_v f\|^2$ is the carr�
 **LSI Constant**:
 
 $$
-C_{\mathrm{LSI}}(\rho) = \frac{c_{\max}^2(\rho)}{c_{\min}^2(\rho)} \cdot \frac{1}{\alpha_{\mathrm{hypo}}(\rho)}
+C_{\mathrm{LSI}}(\rho) = \frac{c_{\max}(\rho)}{c_{\min}(\rho)} \cdot \frac{1}{\alpha_{\mathrm{hypo}}(\rho)}
 $$
 
 with:
 
 $$
-\alpha_{\mathrm{hypo}}(\rho) = \gamma c_{\min}^2(\rho) - d \cdot L_\Sigma(\rho) > 0
+\alpha_{\mathrm{hypo}}(\rho) = \frac{4\gamma}{c_{\max}(\rho)} - \tilde{C}_{\mathrm{comm}}(\rho) > 0
 $$
 
 **N-Uniformity**:
@@ -1424,14 +1376,16 @@ $$
 By uniform ellipticity (Definition {prf:ref}`def-gg-hypocoercive-fisher`):
 
 $$
-I_{\mathrm{hypo}}^\Sigma(f) \geq c_{\min}^2(\rho) I_v(f)
+I_{\mathrm{hypo}}^\Sigma(f) \geq c_{\min}(\rho) I_v(f)
 $$
 
 and conversely:
 
 $$
-I_{\mathrm{hypo}}^\Sigma(f) \leq c_{\max}^2(\rho) I_v(f)
+I_{\mathrm{hypo}}^\Sigma(f) \leq c_{\max}(\rho) I_v(f)
 $$
+
+**Framework references:** The Euclidean Gas LSI is proven internally in {doc}`/3_fractal_gas/appendices/15_kl_convergence` (Theorem {prf:ref}`thm-kl-convergence-euclidean`) and via the hypocoercive entropy route in {doc}`/3_fractal_gas/appendices/10_kl_hypocoercive` (Theorem {prf:ref}`thm-unconditional-lsi-explicit`). For bounded adaptive perturbations, LSI stability is established by Theorem {prf:ref}`thm-lsi-perturbation` and Corollary {prf:ref}`cor-adaptive-lsi` in {doc}`/3_fractal_gas/appendices/15_kl_convergence`, which provide the internal template for the geometric extension.
 
 **Step 3. Entropy-Fisher to LSI:**
 
@@ -1462,25 +1416,25 @@ $$
 The uniform ellipticity comparison (Step 2) relates $I_{\mathrm{hypo}}^\Sigma$ to $\Gamma_\Sigma$ via:
 
 $$
-c_{\min}^2(\rho) \Gamma_\Sigma(f, f) \leq I_{\mathrm{hypo}}^\Sigma(f) \leq c_{\max}^2(\rho) \Gamma_\Sigma(f, f)
+c_{\min}(\rho) \Gamma_\Sigma(f, f) \leq I_{\mathrm{hypo}}^\Sigma(f) \leq c_{\max}(\rho) \Gamma_\Sigma(f, f)
 $$
 
 Combining with the entropy-Fisher inequality yields the LSI:
 
 $$
-\mathrm{Ent}_{\pi_N}(f^2) \leq \frac{c_{\max}^2(\rho)}{c_{\min}^2(\rho) \alpha_{\mathrm{hypo}}(\rho)} \int \Gamma_\Sigma(f, f) d\pi_N
+\mathrm{Ent}_{\pi_N}(f^2) \leq \frac{c_{\max}(\rho)}{c_{\min}(\rho) \alpha_{\mathrm{hypo}}(\rho)} \int \Gamma_\Sigma(f, f) d\pi_N
 $$
 
 **Step 5. N-Uniformity:**
 
 All constants are N-uniform:
 - $c_{\min}(\rho)$, $c_{\max}(\rho)$: N-uniform by Theorem {prf:ref}`thm-gg-ueph-construction`
-- $\alpha_{\mathrm{hypo}}(\rho) = \gamma c_{\min}^2(\rho) - d \cdot L_\Sigma(\rho)$: N-uniform since $\gamma$ is fixed and $L_\Sigma(\rho)$ is N-uniform by C³ regularity
+- $\alpha_{\mathrm{hypo}}(\rho) = \frac{4\gamma}{c_{\max}(\rho)} - \tilde{C}_{\mathrm{comm}}(\rho)$: N-uniform since $\gamma$ is fixed and $\tilde{C}_{\mathrm{comm}}(\rho)$ is N-uniform by C³ regularity and the hypocoercive curvature bound
 
 Therefore:
 
 $$
-C_{\mathrm{LSI}}(\rho) = \frac{c_{\max}^2(\rho)}{c_{\min}^2(\rho) \alpha_{\mathrm{hypo}}(\rho)}
+C_{\mathrm{LSI}}(\rho) = \frac{c_{\max}(\rho)}{c_{\min}(\rho) \alpha_{\mathrm{hypo}}(\rho)}
 $$
 
 is N-uniform.
@@ -1504,7 +1458,7 @@ $$
 **2. LSI Gap Constraint:**
 
 $$
-\gamma > \gamma_{\min}(\rho) = \frac{d \cdot L_\Sigma(\rho)}{c_{\min}^2(\rho)}
+\gamma > \gamma_{\min}(\rho) := \frac{c_{\max}(\rho)}{4} \, \tilde{C}_{\mathrm{comm}}(\rho)
 $$
 
 **Combined Critical Threshold:**
@@ -1587,6 +1541,8 @@ $$
 C_{\mathrm{LSI}}^{\mathrm{MF}} \leq \limsup_{N \to \infty} C_{\mathrm{LSI}}(N, \rho)
 $$
 
+Within the framework, this implication is recorded as Corollary {prf:ref}`cor-mean-field-lsi` in {doc}`/3_fractal_gas/appendices/12_qsd_exchangeability_theory`, with the propagation-of-chaos limit constructed in {doc}`/3_fractal_gas/appendices/09_propagation_chaos`.
+
 **Step 2. N-Uniformity Implies Limit:**
 
 By Theorem {prf:ref}`thm-gg-lsi-main`:
@@ -1636,6 +1592,8 @@ for all $t \in [0, T]$, where $W_2$ is the 2-Wasserstein distance and $C_{\mathr
 :::
 
 :::{prf:proof}
+**Framework reference:** The propagation-of-chaos limit for the Euclidean backbone is established internally as Theorem {prf:ref}`thm-propagation-chaos-qsd` in {doc}`/3_fractal_gas/appendices/12_qsd_exchangeability_theory`, with the full proof in {doc}`/3_fractal_gas/appendices/09_propagation_chaos`. The geometric case follows by the same perturbation bounds used in Section {ref}`sec-gg-perturbation-analysis`.
+
 **Step 1. Sznitman's Propagation of Chaos Framework:**
 
 By Sznitman (1991), propagation of chaos for mean-field particle systems with interaction follows from:
@@ -1706,7 +1664,7 @@ where the rate is given by Theorem {prf:ref}`thm-gg-geometric-ergodicity`.
 The LSI (Theorem {prf:ref}`thm-gg-lsi-main`) implies the relative entropy decays with the entropy production rate:
 
 $$
-\frac{d}{dt} D_{\mathrm{KL}}(\mu_N(t) \| \pi_N) = -\int f \log(f/\pi_N) L_{\mathrm{total}} f d\pi_N \geq \frac{1}{C_{\mathrm{LSI}}(\rho)} D_{\mathrm{KL}}(\mu_N(t) \| \pi_N)
+\frac{d}{dt} D_{\mathrm{KL}}(\mu_N(t) \| \pi_N) = -\int f \log(f/\pi_N) L_{\mathrm{total}} f d\pi_N \leq -\frac{1}{C_{\mathrm{LSI}}(\rho)} D_{\mathrm{KL}}(\mu_N(t) \| \pi_N)
 $$
 
 Integrating gives exponential convergence with rate $1/C_{\mathrm{LSI}}(\rho) = \Theta(\kappa_{\mathrm{QSD}}(\rho))$.
@@ -2017,8 +1975,8 @@ The table below contrasts the classical hypocoercivity framework (Villani 2009) 
 | **Ellipticity** | Trivial (constant $\sigma$) | Non-trivial: requires regularization $\epsilon_\Sigma I$ |
 | **Ellipticity proof** | Automatic | Theorem {prf:ref}`thm-gg-ueph-construction` (spectral bounds) |
 | **Commutator control** | N/A | Lemma {prf:ref}`lem-gg-commutator-error` (C³ regularity) |
-| **Hypocoercive gap** | $\alpha = \gamma \sigma^2$ | $\alpha_{\mathrm{hypo}}(\rho) = \gamma c_{\min}^2(\rho) - d L_\Sigma(\rho)$ |
-| **LSI constant** | $C_{\mathrm{LSI}} = O(1/(\gamma \sigma^2))$ | $C_{\mathrm{LSI}}(\rho) = \frac{c_{\max}^2}{c_{\min}^2} \cdot \frac{1}{\alpha_{\mathrm{hypo}}(\rho)}$ |
+| **Hypocoercive gap** | $\alpha = \gamma \sigma^2$ | $\alpha_{\mathrm{hypo}}(\rho) = \frac{4\gamma}{c_{\max}(\rho)} - \tilde{C}_{\mathrm{comm}}(\rho)$ |
+| **LSI constant** | $C_{\mathrm{LSI}} = O(1/(\gamma \sigma^2))$ | $C_{\mathrm{LSI}}(\rho) = \frac{c_{\max}(\rho)}{c_{\min}(\rho)} \cdot \frac{1}{\alpha_{\mathrm{hypo}}(\rho)}$ |
 | **N-uniformity** | Proven for backbone | Proven for geometric (Theorem {prf:ref}`thm-gg-lsi-main`) |
 | **Key Innovation** | Hypocoercive Lyapunov functional | Extension via uniform ellipticity + C³ regularity |
 

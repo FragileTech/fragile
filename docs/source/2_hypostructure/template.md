@@ -258,7 +258,7 @@ If any of these fail, the run produces a **conditional proof object** that docum
 
 **Phase 4: Lock (Node 17)**
 1. Construct universal bad pattern $\mathcal{H}_{\text{bad}}$.
-2. Apply exclusion tactics E1-E10 until one succeeds.
+2. Apply exclusion tactics E1-E13 until one succeeds.
 3. Emit Lock verdict.
 
 **Phase 5: Upgrade Pass (Part II-B)**
@@ -286,7 +286,7 @@ If any of these fail, the run produces a **conditional proof object** that docum
 2. Fill the **Execution Trace** table using data from your completed run.
    - **Crucial:** The table must match the `trace.json` logic exactly.
    - If you performed surgery, show the branching rows clearly (use `--` for Surgery/Re-entry rows).
-3. Fill the **Lock Mechanism** table showing which tactics E1-E10 were attempted and their outcomes.
+3. Fill the **Lock Mechanism** table showing which tactics E1-E13 were attempted and their outcomes.
 4. Fill the **Final Verdict** with Status, Obligation Ledger state, and Singularity Set description.
 
 :::
@@ -338,7 +338,7 @@ justify analytic bridge admissibility, cite them explicitly in the Lock Mechanis
 
 | Permit ID | Node | Question | Required Implementation | Certificate |
 |-----------|------|----------|------------------------|-------------|
-| $\mathrm{Cat}_{\mathrm{Hom}}$ | Lock | Is $\text{Hom}(\mathcal{H}_{\text{bad}}, \mathcal{H}) = \emptyset$? | Category $\mathbf{Hypo}_T$, Universal bad $\mathcal{H}_{\text{bad}}$, Tactics E1-E10 | $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk/morph}}$ |
+| $\mathrm{Cat}_{\mathrm{Hom}}$ | Lock | Is $\text{Hom}(\mathcal{H}_{\text{bad}}, \mathcal{H}) = \emptyset$? | Category $\mathbf{Hypo}_T$, Universal bad $\mathcal{H}_{\text{bad}}$, Tactics E1-E13 | $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk/morph}}$ |
 
 ### **0.4 Implementation Templates**
 
@@ -439,6 +439,9 @@ justify analytic bridge admissibility, cite them explicitly in the Lock Mechanis
   - [ ] E8 (Holographic): Bekenstein bound violation?
   - [ ] E9 (Ergodic): Mixing incompatibility?
   - [ ] E10 (Definability): Tameness violation?
+  - [ ] E11 (Galois-Monodromy): Solvability/monodromy obstruction?
+  - [ ] E12 (Algebraic Compressibility): Degree/Bezout obstruction?
+  - [ ] E13 (Algorithmic Completeness): Modality exhaustion?
 
 ---
 
@@ -1090,7 +1093,7 @@ For each node:
 
 **Step-by-step execution:**
 1. [ ] Construct Universal Bad Pattern $\mathcal{H}_{\text{bad}}$ (worst-case singularity for type $T$)
-2. [ ] Try each exclusion tactic E1-E10 until one succeeds:
+2. [ ] Try each exclusion tactic E1-E13 until one succeeds:
 
 **Tactic Checklist:**
 * [ ] **E1 (Dimension):** $\dim(\mathcal{H}_{\text{bad}}) \neq \dim(\mathcal{H})$?
@@ -1103,6 +1106,9 @@ For each node:
 * [ ] **E8 (Holographic):** Bekenstein bound / capacity mismatch?
 * [ ] **E9 (Ergodic):** Mixing rates incompatible?
 * [ ] **E10 (Definability):** O-minimal tameness violated?
+* [ ] **E11 (Galois-Monodromy):** Solvability/monodromy obstruction?
+* [ ] **E12 (Algebraic Compressibility):** Degree/Bezout obstruction?
+* [ ] **E13 (Algorithmic Completeness):** Modality exhaustion?
 
 **Lock Verdict:**
 * [ ] **BLOCKED** ($K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}$) via Tactic E__ → **GLOBAL REGULARITY ESTABLISHED**
@@ -1112,7 +1118,7 @@ For each node:
   { obligation: "Resolve Lock verdict",
     missing: ["successful_tactic", "morphism_construction"],
     failure_code: "LOCK_UNDECIDED",
-    trace: "All tactics E1-E10 exhausted without resolution" }
+    trace: "All tactics E1-E13 exhausted without resolution" }
   ```
   *Note: An inc Lock means the proof object is conditional. Document exactly which tactics were attempted and what additional structure might resolve the verdict.*
 
@@ -1381,7 +1387,7 @@ Before declaring the proof object complete, verify:
 - [ ] **All 12 core nodes executed** (Nodes 1-12)
 - [ ] **Boundary nodes executed** (Nodes 13-16, if system is open)
 - [ ] **Lock executed** (Node 17)
-- [ ] **Lock verdict obtained:** $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}$ or $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}$ or $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{morph}}$
+- [ ] **Lock verdict obtained:** $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}$ or $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{morph}}$ or $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{br\text{-}inc}}$
 - [ ] **Upgrade pass completed** (Part II-B)
 - [ ] **Surgery/Re-entry completed** (Part II-C, if any breaches)
 - [ ] **Obligation ledger is EMPTY** (Part III-C)
@@ -1550,6 +1556,9 @@ This proof object is replayed by providing:
 | **E8** | Holographic | [PASS/FAIL/N/A] | [e.g., Bekenstein bound] |
 | **E9** | Ergodic | [PASS/FAIL/N/A] | [e.g., Mixing rates] |
 | **E10** | Definability | [PASS/FAIL/N/A] | [e.g., O-minimal structure] |
+| **E11** | Galois-Monodromy | [PASS/FAIL/N/A] | [e.g., solvability obstruction] |
+| **E12** | Algebraic Compressibility | [PASS/FAIL/N/A] | [e.g., degree/Bezout bound] |
+| **E13** | Algorithmic Completeness | [PASS/FAIL/N/A] | [e.g., modality exhaustion] |
 
 **Auxiliary Witnesses (if analytic bridge admissibility is invoked):**
 

@@ -11,9 +11,10 @@ Run:
 from __future__ import annotations
 
 import argparse
+import os
 from pathlib import Path
+import time
 
-import holoviews as hv
 import numpy as np
 import pandas as pd
 import panel as pn
@@ -21,6 +22,9 @@ import param
 
 from fragile.fractalai.core.history import RunHistory
 from fragile.fractalai.experiments.gas_config_panel import GasConfigPanel
+
+# Prevent Plotly from probing the system browser during import.
+os.environ.setdefault("PLOTLY_RENDERER", "json")
 
 
 __all__ = ["create_app"]
@@ -66,9 +70,11 @@ class SwarmConvergence3D(param.Parameterized):
             sizing_mode="stretch_width",
         )
 
-        self.frame_stream = hv.streams.Stream.define("Frame", frame=0)()
-        self.dmap = hv.DynamicMap(self._render_frame, streams=[self.frame_stream])
-        self.plot_pane = pn.panel(self.dmap, sizing_mode="stretch_both", height=720)
+        self.plot_pane = pn.pane.Plotly(
+            self._make_figure(0),
+            sizing_mode="stretch_width",
+            height=720,
+        )
 
         self.param.watch(self._refresh_frame, ["point_size", "point_alpha", "color_metric"])
 
@@ -97,14 +103,12 @@ class SwarmConvergence3D(param.Parameterized):
     def _sync_frame(self, event):
         if self.history is None:
             return
-        frame = int(np.clip(event.new, 0, self.history.n_recorded - 1))
-        self.frame_stream.event(frame=frame)
+        self._update_plot(int(np.clip(event.new, 0, self.history.n_recorded - 1)))
 
     def _refresh_frame(self, *_):
         if self.history is None:
             return
-        frame = int(np.clip(self.time_player.value, 0, self.history.n_recorded - 1))
-        self.frame_stream.event(frame=frame)
+        self._update_plot(int(np.clip(self.time_player.value, 0, self.history.n_recorded - 1)))
 
     def _get_alive_mask(self, frame: int) -> np.ndarray:
         if self._alive is None:
@@ -120,9 +124,17 @@ class SwarmConvergence3D(param.Parameterized):
         step = self.history.recorded_steps[frame]
         return f"QFT Swarm Convergence (frame {frame}, step {step})"
 
-    def _render_frame(self, frame: int):
+    def _make_figure(self, frame: int):
+        import plotly.graph_objects as go
+
         if self.history is None or self._x is None:
-            return hv.Scatter3D([], kdims=["x", "y", "z"], vdims=[])
+            fig = go.Figure()
+            fig.update_layout(
+                title="QFT Swarm Convergence",
+                height=720,
+                margin=dict(l=0, r=0, t=40, b=0),
+            )
+            return fig
 
         positions = self._x[frame]
         if positions.shape[1] < 3:
@@ -133,160 +145,256 @@ class SwarmConvergence3D(param.Parameterized):
         positions = positions[alive][:, :3]
 
         if positions.size == 0:
-            return hv.Scatter3D([], kdims=["x", "y", "z"], vdims=[])
+            fig = go.Figure()
+            fig.update_layout(title=self._frame_title(frame), height=720)
+            return fig
 
-        data = {
-            "x": positions[:, 0],
-            "y": positions[:, 1],
-            "z": positions[:, 2],
-        }
+        colors = "#1f77b4"
+        colorbar = None
+        showscale = False
 
-        vdims = []
         if self.color_metric != "constant" and frame > 0:
             if self.color_metric == "fitness":
-                metric_values = self._fitness[frame - 1][alive]
-                data["fitness"] = metric_values
-                vdims = ["fitness"]
+                colors = self._fitness[frame - 1][alive]
+                colorbar = dict(title="fitness")
+                showscale = True
             elif self.color_metric == "reward":
-                metric_values = self._rewards[frame - 1][alive]
-                data["reward"] = metric_values
-                vdims = ["reward"]
+                colors = self._rewards[frame - 1][alive]
+                colorbar = dict(title="reward")
+                showscale = True
             elif self.color_metric == "radius":
-                radii = np.linalg.norm(positions, axis=1)
-                data["radius"] = radii
-                vdims = ["radius"]
+                colors = np.linalg.norm(positions, axis=1)
+                colorbar = dict(title="radius")
+                showscale = True
 
-        df = pd.DataFrame(data)
-        scatter = hv.Scatter3D(df, kdims=["x", "y", "z"], vdims=vdims)
+        scatter = go.Scatter3d(
+            x=positions[:, 0],
+            y=positions[:, 1],
+            z=positions[:, 2],
+            mode="markers",
+            marker=dict(
+                size=self.point_size,
+                color=colors,
+                colorscale="Viridis" if showscale else None,
+                opacity=self.point_alpha,
+                showscale=showscale,
+                colorbar=colorbar,
+            ),
+        )
 
-        opts = {
-            "size": self.point_size,
-            "alpha": self.point_alpha,
-            "title": self._frame_title(frame),
-            "width": 900,
-            "height": 720,
-        }
-        if vdims:
-            opts.update({"color": vdims[0], "cmap": "Viridis", "colorbar": True})
-        else:
-            opts.update({"color": "#1f77b4"})
+        fig = go.Figure(data=[scatter])
+        fig.update_layout(
+            title=self._frame_title(frame),
+            height=720,
+            margin=dict(l=0, r=0, t=40, b=0),
+        )
 
         if self.fix_axes:
             extent = float(self.bounds_extent)
-            opts.update(
-                {
-                    "xlim": (-extent, extent),
-                    "ylim": (-extent, extent),
-                    "zlim": (-extent, extent),
-                }
+            fig.update_layout(
+                scene=dict(
+                    xaxis=dict(range=[-extent, extent]),
+                    yaxis=dict(range=[-extent, extent]),
+                    zaxis=dict(range=[-extent, extent]),
+                )
             )
 
-        return scatter.opts(**opts)
+        return fig
+
+    def _update_plot(self, frame: int):
+        self.plot_pane.object = self._make_figure(frame)
 
     def panel(self) -> pn.Column:
         """Return the Panel layout for the 3D convergence viewer."""
         return pn.Column(
             pn.pane.Markdown("## 3D Swarm Convergence (Plotly)"),
             self.time_player,
+            pn.Spacer(height=10),
+            pn.layout.Divider(),
             self.plot_pane,
             self.status_pane,
-            sizing_mode="stretch_both",
+            sizing_mode="stretch_width",
         )
 
 
 def create_app() -> pn.template.FastListTemplate:
     """Create the QFT convergence dashboard."""
-    hv.extension("plotly")
-    pn.extension("plotly")
+    debug = os.environ.get("QFT_DASH_DEBUG", "").lower() in {"1", "true", "yes"}
+    skip_sidebar = os.environ.get("QFT_DASH_SKIP_SIDEBAR", "").lower() in {"1", "true", "yes"}
+    skip_visual = os.environ.get("QFT_DASH_SKIP_VIS", "").lower() in {"1", "true", "yes"}
 
-    gas_config = GasConfigPanel.create_qft_config(dims=3, bounds_extent=10.0)
-    visualizer = SwarmConvergence3D(history=None, bounds_extent=gas_config.bounds_extent)
+    def _debug(msg: str):
+        if debug:
+            print(f"[qft-dashboard] {msg}", flush=True)
 
-    repo_root = Path(__file__).resolve().parents[4]
-    qft_run_id = "qft_penalty_thr0p75_pen0p9_m354_ed2p80_nu1p10_N200_long"
-    qft_history_path = (
-        repo_root / "outputs" / "qft_calibrated" / f"{qft_run_id}_history.pt"
-    )
-    history_dir_candidates = [
-        qft_history_path.parent,
-        repo_root / "outputs",
-        repo_root,
-    ]
-    history_dir = next((p for p in history_dir_candidates if p.exists()), Path("."))
-    history_selector = pn.widgets.FileSelector(
-        name="QFT RunHistory",
-        directory=str(history_dir),
-        file_pattern="*_history.pt",
-        only_files=True,
-    )
-    if qft_history_path.exists():
-        history_selector.value = [str(qft_history_path)]
-
-    load_button = pn.widgets.Button(
-        name="Load RunHistory",
-        button_type="primary",
+    sidebar = pn.Column(
+        pn.pane.Markdown("## QFT Analysis"),
+        pn.pane.Markdown("Starting dashboard..."),
         sizing_mode="stretch_width",
     )
-    load_status = pn.pane.Markdown(
-        "**Load a history**: select a *_history.pt file and click Load.",
-        sizing_mode="stretch_width",
+    main = pn.Column(
+        pn.pane.Markdown("Loading visualization..."),
+        sizing_mode="stretch_both",
     )
 
-    def on_simulation_complete(history: RunHistory):
-        visualizer.bounds_extent = float(gas_config.bounds_extent)
-        visualizer.set_history(history)
-
-    def _infer_bounds_extent(history: RunHistory) -> float | None:
-        if history.bounds is None:
-            return None
-        high = history.bounds.high.detach().cpu().abs().max().item()
-        low = history.bounds.low.detach().cpu().abs().max().item()
-        return float(max(high, low))
-
-    def on_load_clicked(_):
-        if not history_selector.value:
-            load_status.object = "**Error:** Please select a RunHistory file."
-            return
-        history_path = Path(history_selector.value[0])
-        try:
-            history = RunHistory.load(str(history_path))
-            inferred_extent = _infer_bounds_extent(history)
-            if inferred_extent is not None:
-                visualizer.bounds_extent = inferred_extent
-                gas_config.bounds_extent = inferred_extent
-            visualizer.set_history(history)
-            load_status.object = f"**Loaded:** `{history_path}`"
-        except Exception as exc:
-            load_status.object = f"**Error loading history:** {exc!s}"
-
-    load_button.on_click(on_load_clicked)
-
-    gas_config.add_completion_callback(on_simulation_complete)
-
-    def on_bounds_change(event):
-        visualizer.bounds_extent = float(event.new)
-        visualizer._refresh_frame()
-
-    gas_config.param.watch(on_bounds_change, "bounds_extent")
-
-    return pn.template.FastListTemplate(
+    template = pn.template.FastListTemplate(
         title="QFT Swarm Convergence Dashboard",
-        sidebar=[
-            pn.pane.Markdown(
-                "## QFT Analysis\n"
-                "Use the calibrated QFT parameters in the sidebar to run a simulation, "
-                "then inspect swarm convergence in 3D."
-            ),
-            pn.pane.Markdown("### Load QFT RunHistory"),
-            history_selector,
-            load_button,
-            load_status,
-            gas_config.panel(),
-        ],
-        main=[visualizer.panel()],
-        sidebar_width=400,
+        sidebar=[sidebar],
+        main=[main],
+        sidebar_width=420,
         main_max_width="100%",
     )
+
+    def _build_ui():
+        start_total = time.time()
+        _debug("initializing extensions")
+        pn.extension("plotly")
+
+        _debug("building config + visualizer")
+        start = time.time()
+        gas_config = GasConfigPanel.create_qft_config(dims=3, bounds_extent=10.0)
+        visualizer = SwarmConvergence3D(history=None, bounds_extent=gas_config.bounds_extent)
+        _debug(f"config+visualizer ready ({time.time() - start:.2f}s)")
+
+        _debug("setting up history controls")
+        repo_root = Path(__file__).resolve().parents[4]
+        qft_run_id = "qft_penalty_thr0p75_pen0p9_m354_ed2p80_nu1p10_N200_long"
+        qft_history_path = (
+            repo_root / "outputs" / "qft_calibrated" / f"{qft_run_id}_history.pt"
+        )
+        qft_history_dir = qft_history_path.parent
+        qft_history_dir.mkdir(parents=True, exist_ok=True)
+        history_dir = qft_history_dir
+        history_path_input = pn.widgets.TextInput(
+            name="QFT RunHistory path",
+            value=str(qft_history_path),
+            sizing_mode="stretch_width",
+        )
+        browse_button = pn.widgets.Button(
+            name="Browse files...",
+            button_type="default",
+            sizing_mode="stretch_width",
+        )
+        file_selector_container = pn.Column(sizing_mode="stretch_width")
+
+        load_button = pn.widgets.Button(
+            name="Load RunHistory",
+            button_type="primary",
+            sizing_mode="stretch_width",
+        )
+        load_status = pn.pane.Markdown(
+            "**Load a history**: paste a *_history.pt path or browse and click Load.",
+            sizing_mode="stretch_width",
+        )
+
+        def on_simulation_complete(history: RunHistory):
+            visualizer.bounds_extent = float(gas_config.bounds_extent)
+            visualizer.set_history(history)
+
+        def _infer_bounds_extent(history: RunHistory) -> float | None:
+            if history.bounds is None:
+                return None
+            high = history.bounds.high.detach().cpu().abs().max().item()
+            low = history.bounds.low.detach().cpu().abs().max().item()
+            return float(max(high, low))
+
+        def _sync_history_path(value):
+            if value:
+                history_path_input.value = str(value[0])
+
+        def _ensure_file_selector() -> pn.widgets.FileSelector:
+            if file_selector_container.objects:
+                return file_selector_container.objects[0]
+            selector = pn.widgets.FileSelector(
+                name="Select RunHistory",
+                directory=str(history_dir),
+                file_pattern="*_history.pt",
+                only_files=True,
+            )
+            if qft_history_path.exists():
+                selector.value = [str(qft_history_path)]
+            selector.param.watch(lambda e: _sync_history_path(e.new), "value")
+            file_selector_container.objects = [selector]
+            return selector
+
+        def _on_browse_clicked(_):
+            _ensure_file_selector()
+
+        def on_load_clicked(_):
+            history_path = Path(history_path_input.value).expanduser()
+            if not history_path.exists():
+                load_status.object = "**Error:** History path does not exist."
+                return
+            try:
+                history = RunHistory.load(str(history_path))
+                inferred_extent = _infer_bounds_extent(history)
+                if inferred_extent is not None:
+                    visualizer.bounds_extent = inferred_extent
+                    gas_config.bounds_extent = inferred_extent
+                visualizer.set_history(history)
+                load_status.object = f"**Loaded:** `{history_path}`"
+            except Exception as exc:
+                load_status.object = f"**Error loading history:** {exc!s}"
+
+        browse_button.on_click(_on_browse_clicked)
+        load_button.on_click(on_load_clicked)
+
+        gas_config.add_completion_callback(on_simulation_complete)
+
+        def on_bounds_change(event):
+            visualizer.bounds_extent = float(event.new)
+            visualizer._refresh_frame()
+
+        gas_config.param.watch(on_bounds_change, "bounds_extent")
+
+        _debug("building sidebar + main panels")
+        if skip_sidebar:
+            sidebar.objects = [
+                pn.pane.Markdown(
+                    "## QFT Analysis\n"
+                    "Sidebar disabled via QFT_DASH_SKIP_SIDEBAR=1."
+                ),
+                pn.pane.Markdown("### Load QFT RunHistory"),
+                history_path_input,
+                browse_button,
+                file_selector_container,
+                load_button,
+                load_status,
+            ]
+        else:
+            start = time.time()
+            sidebar.objects = [
+                pn.pane.Markdown(
+                    "## QFT Analysis\n"
+                    "Use the calibrated QFT parameters in the sidebar to run a simulation, "
+                    "then inspect swarm convergence in 3D."
+                ),
+                pn.pane.Markdown("### Load QFT RunHistory"),
+                history_path_input,
+                browse_button,
+                file_selector_container,
+                load_button,
+                load_status,
+                gas_config.panel(),
+            ]
+            _debug(f"sidebar ready ({time.time() - start:.2f}s)")
+
+        if skip_visual:
+            main.objects = [
+                pn.pane.Markdown(
+                    "Visualization disabled via QFT_DASH_SKIP_VIS=1.",
+                    sizing_mode="stretch_both",
+                )
+            ]
+        else:
+            start = time.time()
+            main.objects = [visualizer.panel()]
+            _debug(f"main panel ready ({time.time() - start:.2f}s)")
+
+        _debug(f"ui ready ({time.time() - start_total:.2f}s)")
+
+    pn.state.onload(_build_ui)
+    return template
 
 
 def _parse_args() -> argparse.Namespace:

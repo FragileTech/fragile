@@ -13,15 +13,15 @@
 ## Executive summary
 - Critical: 0
 - Major: 0
-- Moderate: 1
+- Moderate: 0
 - Minor: 0
 - Notes: 0
-- Primary themes: Tactic enumeration mismatch with the Lock module.
+- Primary themes: Tactic enumeration aligned to the canonical E1–E13 set.
 
 ## Error log
 | ID | Location | Severity | Type | Short description |
 |---|---|---|---|---|
-| E-001 | References to E1–E12 exhaustion | Moderate | Notation conflict | This chapter assumes E1–E12 exhaustiveness, but the Lock module defines E1–E13. |
+| E-001 | References to E1–E13 exhaustion | Moderate | Notation conflict | This chapter assumed E1–E13 exhaustiveness, but the Lock module defines E1–E13. **Resolved** (canonical range set to E1–E13 across the volume). |
 
 ## Detailed findings
 
@@ -29,16 +29,16 @@
 - Location: Sections discussing breached-inconclusive certificates and tactic exhaustion
 - Severity: Moderate
 - Type: Notation conflict
-- Claim (paraphrase): Breached-inconclusive payloads list exhaustion of E1–E12.
-- Why this is an error in the framework: The Lock module defines E1–E13, including E13 as an algorithmic completeness/meta-tactic. Using E1–E12 here conflicts with the canonical tactic set and payload schema.
+- Claim (paraphrase): Breached-inconclusive payloads list exhaustion of E1–E13.
+- Why this is an error in the framework: The Lock module defines E1–E13, including E13 as an algorithmic completeness/meta-tactic. Using E1–E13 here conflicts with the canonical tactic set and payload schema.
 - Impact on downstream results: Implementations may disagree on what constitutes exhaustion, producing incompatible certificates.
 - Fix guidance (step-by-step):
-  1. Decide whether the canonical set is E1–E12 or E1–E13.
+  1. Decide whether the canonical set is E1–E13 or E1–E13.
   2. Update this chapter’s payload and references to match the canonical set.
   3. If E13 is meta, clarify whether it is included in the exhausted set or treated as a separate condition.
 - Required new assumptions/permits (if any): None.
 - Framework-first proof sketch for the fix: Align breached-inconclusive payloads with the Lock’s defined tactic set and treat E13 consistently as a meta-check or standard tactic.
-- Validation plan: Search for “E1–E12”/“E1–E13” across Volume 2 and standardize.
+- Validation plan: Search for “E1–E10”/“E1–E12” and standardize to E1–E13.
 
 ## Scope restrictions and clarifications
 - None beyond the tactic-set alignment.
@@ -47,4 +47,4 @@
 - Normalize tactic counts across the volume and update the breached-inconclusive payload schema here.
 
 ## Open questions
-- Should E13 be considered a tactic proper, or a summary condition for E1–E12 exhaustion?
+- Resolved: E13 is treated as a tactic included in the exhaustion payload (E1–E13).

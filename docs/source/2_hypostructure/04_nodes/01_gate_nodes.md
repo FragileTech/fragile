@@ -1692,14 +1692,14 @@ The Lock is where all the information from the entire Sieve comes together. It i
 - **Blocked** ($K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}$): Hom-set empty; no morphism to bad pattern exists. **VICTORY: Global Regularity Confirmed.**
 - **Breached** ($K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{br}}$): NO verdict with typed certificate (sum type $K^{\mathrm{br}} := K^{\mathrm{br\text{-}wit}} \sqcup K^{\mathrm{br\text{-}inc}}$):
   - **Breached-with-witness** ($K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{br\text{-}wit}}$): Explicit morphism $f: \mathbb{H}_{\mathrm{bad}} \to \mathcal{H}$ found; structural inconsistency. **FATAL ERROR.**
-  - **Breached-inconclusive** ($K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{br\text{-}inc}}$): Tactics E1–E12 exhausted without deciding Hom-emptiness. Certificate records $(\mathsf{tactics\_exhausted}, \mathsf{partial\_progress}, \mathsf{trace})$. Triggers {prf:ref}`mt-lock-reconstruction` (Structural Reconstruction Principle).
+  - **Breached-inconclusive** ($K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{br\text{-}inc}}$): Tactics E1–E13 exhausted without deciding Hom-emptiness. Certificate records $(\mathsf{tactics\_exhausted}, \mathsf{partial\_progress}, \mathsf{trace})$. Triggers {prf:ref}`mt-lock-reconstruction` (Structural Reconstruction Principle).
 
 **Routing:**
 - **On Block:** Exit with **GLOBAL REGULARITY** (structural exclusion confirmed).
 - **On Breached-with-witness:** Exit with **FATAL ERROR** (structural inconsistency—requires interface permit revision).
 - **On Breached-inconclusive:** Invoke {prf:ref}`mt-lock-reconstruction` (Structural Reconstruction) → Re-evaluate with reconstruction verdict $K_{\mathrm{Rec}}^{\mathrm{verdict}}$.
 
-**Exclusion Tactics (E1–E12):** The emptiness proof may invoke:
+**Exclusion Tactics (E1–E13):** The emptiness proof may invoke:
 - E1: Dimension count (bad pattern requires impossible dimension)
 - E2: Coercivity (energy structure forbids mapping)
 - E3: Spectral (eigenvalue gap prevents morphism)
@@ -1720,5 +1720,5 @@ The Lock is where all the information from the entire Sieve comes together. It i
 - **Conservation of Information:** In unitary quantum mechanics, information is never destroyed (Hawking's resolution of the black hole information paradox). The Lock ensures: $\text{Hom}(\mathbb{H}_{\text{bad}}, \mathcal{H}) = \varnothing$ means singularity formation would require information destruction incompatible with the system's structure.
 - **No-Cloning Theorem:** Quantum states cannot be perfectly copied. Similarly, the Lock prevents "copying" of bad patterns into a valid hypostructure.
 
-The **exclusion tactics (E1–E12)** are analogous to **selection rules** in quantum mechanics—symmetry and conservation laws that forbid certain transitions.
+The **exclusion tactics (E1–E13)** are analogous to **selection rules** in quantum mechanics—symmetry and conservation laws that forbid certain transitions.
 :::

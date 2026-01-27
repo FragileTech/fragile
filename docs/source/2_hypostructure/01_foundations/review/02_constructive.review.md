@@ -6,7 +6,7 @@
 - Reviewer: Codex
 - Scope: Entire document
 - Framework anchors (definitions/axioms/permits):
-  - def-sieve-functor and rem-sieve-dual-role in this file
+  - def-sieve-functor, rem-sieve-dual-role, and rem-sieve-adjoint in this file
   - thm-expansion-adjunction in this file
   - def-rigor-classification and def-bridge-verification in this file
   - def-thin-objects in this file
@@ -17,52 +17,53 @@
 - Moderate: 2
 - Minor: 0
 - Notes: 0
-- Primary themes: Adjunction notation mismatch; literature-based analytic theorems lack Rigor Class L/bridge framing.
+- Primary themes: Adjunction/type mismatch between classification vs. expansion; literature-based analytic theorems lack Rigor Class L/bridge verification framing.
 
 ## Error log
 | ID | Location | Severity | Type | Short description |
 |---|---|---|---|---|
-| E-001 | rem-sieve-adjoint | Moderate | Definition mismatch | Uses F_sieve (classification) as left adjoint to U, contradicting rem-sieve-dual-role which restricts adjunction to the expansion functor. |
-| E-002 | thm-rcd-dissipation-link, thm-log-sobolev-concentration, thm-cheeger-dissipation | Moderate | External dependency | Analytic results are presented as internal theorems without Rigor Class L / Bridge Verification. |
+| E-001 | def-sieve-functor, rem-sieve-dual-role, rem-sieve-adjoint | Moderate | Definition mismatch | Uses F_{\text{Sieve}} (classification) as left adjoint to U and as a hypostructure constructor, contradicting the explicit separation between classification and expansion. |
+| E-002 | thm-rcd-dissipation-link, thm-log-sobolev-concentration, thm-cheeger-dissipation | Moderate | External dependency | Analytic results are presented as internal theorems without Rigor Class L labeling or Bridge Verification prerequisites despite the new protocol. |
 
 ## Detailed findings
 
-### [E-001] Adjunction uses the wrong functor symbol
-- Location: rem-sieve-adjoint
+### [E-001] Adjunction conflates classification with expansion (and flips the adjunction typing)
+- Location: def-sieve-functor, rem-sieve-dual-role, rem-sieve-adjoint
 - Severity: Moderate
 - Type: Definition mismatch
-- Claim (paraphrase): The Structural Sieve computes the left adjoint F_sieve ⊣ U.
-- Why this is an error in the framework: def-sieve-functor defines F_sieve as a classification map to Result (not a functor into Hypo_T). rem-sieve-dual-role explicitly separates classification (F_sieve^{class}) from the categorical expansion (F). The adjunction applies to the expansion functor, not the classification output.
-- Impact on downstream results: This conflates the diagnostic label map with the categorical construction, blurring which object has the universal property and potentially invalidating proofs that rely on the adjunction.
+- Claim (paraphrase): The Structural Sieve computes the left adjoint $F_{\text{Sieve}} \dashv U : \mathbf{Hypo}_T \rightleftarrows \mathbf{Thin}_T$, and its unit/counit live on $F_{\text{Sieve}}$.
+- Why this is an error in the framework: def-sieve-functor defines $F_{\text{Sieve}}: \mathbf{Thin} \to \mathbf{Result}$ as a classification map, while rem-sieve-dual-role reserves the adjunction for the categorical expansion $\mathcal{F}$. Using $F_{\text{Sieve}}$ for the adjunction gives it the wrong codomain (Result instead of Hypo$_T$) and the displayed adjunction flips the domain/codomain order. This violates the explicit separation between classification and expansion.
+- Impact on downstream results: It blurs which functor satisfies the universal property, risks using unit/counit on the wrong codomain, and introduces type errors in any formalization or certificate payload that expects $\mathcal{F}: \mathbf{Thin}_T \to \mathbf{Hypo}_T$.
 - Fix guidance (step-by-step):
-  1. Replace F_sieve with the expansion functor symbol (\mathcal{F}) in rem-sieve-adjoint.
-  2. Add a sentence clarifying that F_sieve^{class} is not part of the adjunction.
-  3. Cross-check later references to “F_sieve is left adjoint” and align them to rem-sieve-dual-role.
+  1. In rem-sieve-adjoint, replace $F_{\text{Sieve}}$ with $\mathcal{F}$ and update the adjunction display to $\mathcal{F} \dashv U : \mathbf{Thin}_T \rightleftarrows \mathbf{Hypo}_T$.
+  2. Ensure the unit/counit bullets reference $\mathcal{F}$ (or introduce an explicit $F_{\text{Sieve}}^{\text{exp}}$ name if you want to keep $F_{\text{Sieve}}$ reserved for classification).
+  3. If $F_{\text{Sieve}}$ is meant to be the classification map, keep def-sieve-functor as-is and add a one-line reminder that only $\mathcal{F}$ participates in adjunctions.
 - Required new assumptions/permits (if any): None.
-- Framework-first proof sketch for the fix: Use the adjunction proof in thm-expansion-adjunction and rem-sieve-dual-role to identify the correct functor.
-- Validation plan: Ensure all adjunction references use \mathcal{F} and not F_sieve^{class}.
+- Framework-first proof sketch for the fix: Use rem-sieve-dual-role to distinguish the two operations and thm-expansion-adjunction to identify the left adjoint as $\mathcal{F}$.
+- Validation plan: Check that all adjunction references use $\mathcal{F}$ and that $F_{\text{Sieve}}$ only maps into Result labels.
 
-### [E-002] Analytic metric-measure theorems need Rigor Class L/bridge framing
+### [E-002] Metric-measure analytic theorems lack Rigor Class L / Bridge Verification framing
 - Location: thm-rcd-dissipation-link, thm-log-sobolev-concentration, thm-cheeger-dissipation
 - Severity: Moderate
 - Type: External dependency
 - Claim (paraphrase): RCD, LSI, and Cheeger-energy results are stated as internal theorems with literature citations.
-- Why this is an error in the framework: def-rigor-classification requires literature-anchored results to be labeled Rigor Class L with explicit Bridge Verification. These theorems import external analysis without stating the bridge hypotheses in certificate form.
-- Impact on downstream results: It is unclear which Sieve permits discharge the required hypotheses (e.g., RCD(K,N) or LSI constants), and whether the conclusions are conditional or absolute within the framework.
+- Why this is an error in the framework: def-rigor-classification and def-bridge-verification now make Bridge Verification mandatory for literature-anchored results. These theorems import external analysis (RCD/EVI, LSI, $\Gamma_2$) without stating the bridge hypotheses, certificates, or the embedding $\iota$ needed to justify the import.
+- Impact on downstream results: It is unclear which Sieve permits discharge the analytic hypotheses (e.g., RCD(K,N), infinitesimal Hilbertianity, LSI constants), and whether the conclusions are conditional upgrades or unconditional guarantees inside the framework.
 - Fix guidance (step-by-step):
-  1. Label these theorems as Rigor Class L and cite the Bridge Verification protocol.
-  2. State the certificate prerequisites (e.g., RCD(K,N) permit, infinitesimal Hilbertianity permit) explicitly.
-  3. If the results are only used as optional upgrades, mark them as conditional permits rather than unconditional theorems.
-- Required new assumptions/permits (if any): Bridge Verification clauses tying RCD/LSI hypotheses to gate certificates.
-- Framework-first proof sketch for the fix: Translate RCD/LSI hypotheses into interface permits on thin objects, then import the external conclusions as upgrade certificates.
-- Validation plan: Ensure any later use of these results references the corresponding permits or upgrades rather than assuming them unconditionally.
+  1. Add explicit “Rigor Class L” headers to these theorems and cite {prf:ref}`def-bridge-verification`.
+  2. State the Bridge Verification components: hypothesis translation (which Thin/Hypo certificates imply RCD/LSI/Γ2 assumptions), the domain embedding $\iota$, and the conclusion import to a named certificate.
+  3. If these are optional upgrades, reframe them as conditional permits (e.g., “If $K_{\mathrm{RCD}}^+$ then…”), not unconditional theorems.
+- Required new assumptions/permits (if any): Bridge Verification clauses tying RCD/LSI hypotheses to explicit certificates.
+- Framework-first proof sketch for the fix: Express RCD/LSI hypotheses as certified predicates on Thin Objects, then import the literature conclusion as a bridge permit that yields a named certificate.
+- Validation plan: Ensure all later uses of these theorems reference the corresponding bridge permits or conditional hypotheses.
 
 ## Scope restrictions and clarifications
-- None beyond the issues above.
+- Until Bridge Verification is specified, treat the metric-measure theorems as conditional upgrades rather than unconditional guarantees.
 
 ## Proposed edits (optional)
-- Replace F_sieve with \mathcal{F} in rem-sieve-adjoint and add a short clarification sentence.
-- Add Rigor Class L labels and Bridge Verification references for the metric-measure theorems.
+- Replace $F_{\text{Sieve}}$ with $\mathcal{F}$ in rem-sieve-adjoint, fix the adjunction arrow direction, and align unit/counit bullets to $\mathcal{F}$.
+- Add Rigor Class L labels and Bridge Verification components for thm-rcd-dissipation-link, thm-log-sobolev-concentration, and thm-cheeger-dissipation.
 
 ## Open questions
-- Should the metric-measure theorems be treated as optional upgrades (permits) rather than unconditional theorems?
+- Should the metric-measure results live in a dedicated “Bridge Permits” subsection rather than as unconditional theorems?
+- Do you want $F_{\text{Sieve}}$ reserved strictly for classification, or should it be renamed and used for expansion as well?

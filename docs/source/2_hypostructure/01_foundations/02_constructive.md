@@ -23,7 +23,7 @@ To instantiate a system, the user provides only:
    - $\mathfrak{m}$ is a locally finite Borel measure on $X$ (the **reference measure**)
    - Standard examples: $L^2(\mathbb{R}^3, e^{-V(x)}dx)$ where $\mathfrak{m} = e^{-V(x)}dx$ is the Gibbs measure weighted by potential $V$
 
-   **RCD Upgrade (Optional but Recommended):** For systems with dissipation, the triple $(X, d, \mathfrak{m})$ should satisfy the **Riemannian Curvature-Dimension condition** $\mathrm{RCD}(K, N)$ for some $K \in \mathbb{R}$ (lower Ricci curvature bound) and $N \in [1, \infty]$ (upper dimension bound). This generalizes Ricci curvature to metric-measure spaces and ensures geometric-thermodynamic consistency ({prf:ref}`thm-rcd-dissipation-link`).
+   **RCD Upgrade (Optional but Recommended):** For systems with dissipation, the triple $(X, d, \mathfrak{m})$ should satisfy the **Riemannian Curvature-Dimension condition** $\mathrm{RCD}(K, N)$ for some $K \in \mathbb{R}$ (lower Ricci curvature bound) and $N \in [1, \infty]$ (upper dimension bound). This generalizes Ricci curvature to metric-measure spaces and, when the Bridge Verification is certified, yields geometric-thermodynamic consistency ({prf:ref}`thm-rcd-dissipation-link`).
 
 2. **The Potential** $(\Phi^{\text{thin}})$: The energy functional and its scaling dimension $\alpha$.
 
@@ -70,6 +70,7 @@ Let me make sure you understand what we have just done. We have five ingredients
 5. **The Boundary** - how does the system couple to the outside world? This is now a full functorial structure: a boundary object, a trace morphism, a flux morphism, and a reinjection kernel. Absorbing boundaries, reflecting boundaries, and Fleming-Viot reinjection are all special cases of this general structure.
 
 Notice what is conspicuously absent: we never said "the solutions exist for all time" or "bounded energy implies bounded derivatives" or any of the hard theorems that mathematicians fight about. Those are outputs, not inputs.
+It's important to be clear: the RCD, Cheeger, and Log-Sobolev links are part of the Rigor Class L upgrades. They enter our framework only *after* the Bridge Verification protocol has certified their applicability, and are not taken as given in the Thin Kernel itself. This preserves the minimalist principle: we build up rigor, we don't assume it.
 :::
 
 (sec-metric-measure-foundations)=
@@ -83,14 +84,22 @@ Think about what Ricci curvature means geometrically: it measures how much the v
 The theorems below establish three key connections. First, the Evolution Variational Inequality (EVI) says that entropy decreases faster when curvature is more positive - the curvature bound $K$ directly appears in the rate. Second, the Log-Sobolev inequality connects entropy to Fisher information through the curvature constant. Third, the Cheeger Energy provides the computational tool: you can verify curvature bounds from the potential alone using the Bakry-Emery $\Gamma_2$ calculus.
 
 Why does this matter for singularities? Because singularities are places where something becomes infinite, and infinity is the enemy of both geometry (infinite curvature) and thermodynamics (infinite entropy production). If we can show that geometry and thermodynamics are mutually constraining through the RCD condition, we have twice as many ways to detect when something is about to go wrong. The measure $\mathfrak{m}$ is not just a technical device - it determines both the volume form (geometric) and the equilibrium distribution (thermodynamic). This closes what we call the "determinant is volume" gap.
+These three theorems are all Rigor Class L statements, meaning their full mathematical rigor is anchored in established literature. They become active within our framework only when the Bridge Verification protocol has discharged their specific hypotheses, turning a potential link into a certified connection. This way, we leverage existing knowledge without smuggling in unverified assumptions.
 :::
 
-The following theorems establish the rigorous connection between geometric curvature and thermodynamic dissipation via the Metric-Measure Space formalism.
+The following theorems (Rigor Class L) establish the bridge-verified connection between geometric curvature and thermodynamic dissipation via the Metric-Measure Space formalism.
 
 :::{prf:theorem} RCD Condition and Dissipation Consistency
 :label: thm-rcd-dissipation-link
 
-**Statement:** Let $(X, d, \mathfrak{m})$ be a metric-measure space equipped with a gradient flow $\rho_t$ evolving under potential $\Phi$. If $(X, d, \mathfrak{m})$ satisfies the **Curvature-Dimension condition** $\mathrm{CD}(K, N)$ (equivalently $\mathrm{RCD}(K, N)$ when $X$ is infinitesimally Hilbertian), then the following hold:
+**Rigor Class:** L (Literature-Anchored Bridge Permit) — see {prf:ref}`def-bridge-verification`
+
+**Bridge Verification (required for use in the framework):**
+- **Hypothesis translation** $\mathcal{H}_{\text{tr}}$: certificates for completeness, full support, infinitesimal Hilbertianity, and $\mathrm{RCD}(K, N)$ on $(X, d, \mathfrak{m})$ entail the hypotheses of the cited RCD/EVI results.
+- **Domain embedding** $\iota$: the hypostructure embeds into the metric-measure/optimal-transport setting used in the cited results.
+- **Conclusion import** $\mathcal{C}_{\text{imp}}$: the imported conclusions are recorded as conditional upgrade certificates (entropy-dissipation, convergence, Cheeger/Fisher identification).
+
+**Conditional Statement (Bridge):** Let $(X, d, \mathfrak{m})$ be a metric-measure space equipped with a gradient flow $\rho_t$ evolving under potential $\Phi$. If the Bridge Verification for the cited RCD literature is discharged (in particular, $\mathrm{CD}(K, N)$ or $\mathrm{RCD}(K, N)$ holds when $X$ is infinitesimally Hilbertian), then the following imported conclusions hold:
 
 1. **Entropy-Dissipation Relation (EVI):** The relative entropy $\text{Ent}(\rho_t | \mathfrak{m}) := \int \rho_t \log(\rho_t/\mathfrak{m}) d\mathfrak{m}$ satisfies the Evolution Variational Inequality:
 
@@ -102,12 +111,12 @@ The following theorems establish the rigorous connection between geometric curva
 
 3. **Cheeger Energy Bound:** The Cheeger Energy satisfies $\text{Ch}(u | \mathfrak{m}) = \text{Fisher}(e^{-u}\mathfrak{m} | \mathfrak{m})$ when $u = -\log(\rho/\mathfrak{m})$.
 
-**Hypotheses:**
-- $(X, d, \mathfrak{m})$ is a complete metric-measure space
-- $\mathfrak{m}$ is locally finite and has full support
-- The space is infinitesimally Hilbertian (the Cheeger energy induces a Hilbert space structure)
+**Bridge prerequisites (certificate form):**
+- $(X, d, \mathfrak{m})$ is complete, with locally finite full-support measure
+- Infinitesimal Hilbertianity (Cheeger energy yields a Hilbert space)
+- A verified $\mathrm{RCD}(K, N)$ (or $\mathrm{CD}(K, N)$ plus Hilbertianity) certificate for the thin arena
 
-**Interpretation:** The RCD condition provides a **logic-preserving isomorphism** between:
+**Interpretation:** When the bridge is certified, the RCD condition provides a **logic-preserving isomorphism** between:
 - **Geometry:** Lower Ricci curvature bound $\mathrm{Ric} \geq K$
 - **Thermodynamics:** Exponential entropy dissipation rate $\dot{S} \leq -K \cdot \text{distance}^2$
 
@@ -119,13 +128,20 @@ This closes the "determinant is volume" gap: the measure $\mathfrak{m}$ (not jus
 :::{prf:theorem} Log-Sobolev Inequality and Concentration
 :label: thm-log-sobolev-concentration
 
-**Statement:** Let $(X, d, \mathfrak{m})$ satisfy $\mathrm{RCD}(K, \infty)$ with $K > 0$. Then $(X, d, \mathfrak{m})$ satisfies the **Logarithmic Sobolev Inequality** (LSI):
+**Rigor Class:** L (Literature-Anchored Bridge Permit) — see {prf:ref}`def-bridge-verification`
+
+**Bridge Verification (required for use in the framework):**
+- **Hypothesis translation** $\mathcal{H}_{\text{tr}}$: certificates for $\mathrm{RCD}(K, \infty)$ with $K>0$ (and the required Sobolev/Dirichlet structure) entail the hypotheses of the cited LSI/concentration results.
+- **Domain embedding** $\iota$: the hypostructure embeds into the Sobolev/measure setting used by the LSI literature.
+- **Conclusion import** $\mathcal{C}_{\text{imp}}$: the LSI and concentration conclusions are recorded as conditional upgrade certificates (entropy contraction and concentration bounds).
+
+**Conditional Statement (Bridge):** If the Bridge Verification for the cited LSI literature is discharged for $(X, d, \mathfrak{m})$ with $\mathrm{RCD}(K, \infty)$ and $K>0$, then $(X, d, \mathfrak{m})$ satisfies the **Logarithmic Sobolev Inequality** (LSI):
 
 $$\text{Ent}(f^2 | \mathfrak{m}) \leq \frac{2}{K}\int_X |\nabla f|^2 d\mathfrak{m}$$
 
 for all $f \in W^{1,2}(X, \mathfrak{m})$ with $\int f^2 d\mathfrak{m} = 1$.
 
-**Consequences:**
+**Conditional Consequences (Bridge):**
 1. **Exponential Convergence (Sieve Node 7):** The heat semigroup contracts in relative entropy: $\|P_t f - \bar{f}\|_{L^2(\mathfrak{m})} \leq e^{-Kt/2}\|f - \bar{f}\|_{L^2(\mathfrak{m})}$
 2. **Concentration of Measure:** If LSI fails (with constant $K \to 0$), the system is in a **phase transition** and will exhibit metastability/hysteresis
 3. **Finite Thermodynamic Cost:** The Landauer bound $\Delta S \geq \ln(2) \cdot \text{bits erased}$ is saturated with constant $1/K$
@@ -136,7 +152,14 @@ for all $f \in W^{1,2}(X, \mathfrak{m})$ with $\int f^2 d\mathfrak{m} = 1$.
 :::{prf:theorem} Cheeger Energy and Dissipation
 :label: thm-cheeger-dissipation
 
-**Statement:** For a gradient flow $\partial_t \rho = \text{div}(\rho \nabla \Phi)$ on $(X, d, \mathfrak{m})$, the dissipation functional satisfies:
+**Rigor Class:** L (Literature-Anchored Bridge Permit) — see {prf:ref}`def-bridge-verification`
+
+**Bridge Verification (required for use in the framework):**
+- **Hypothesis translation** $\mathcal{H}_{\text{tr}}$: certificates for the metric-measure structure and Cheeger energy setup entail the hypotheses of the cited Cheeger/Bakry-Emery results.
+- **Domain embedding** $\iota$: the hypostructure embeds into the metric-measure/sobolev setting of the Cheeger and $\Gamma_2$ calculus literature.
+- **Conclusion import** $\mathcal{C}_{\text{imp}}$: the dissipation identity and $\Gamma_2$ bounds are recorded as conditional upgrade certificates.
+
+**Conditional Statement (Bridge):** For a gradient flow $\partial_t \rho = \text{div}(\rho \nabla \Phi)$ on $(X, d, \mathfrak{m})$, if the Bridge Verification for the cited Cheeger/Bakry-Emery results is discharged, then the dissipation functional satisfies:
 
 $$\mathfrak{D}[\rho] = \text{Ch}(\Phi | \rho \mathfrak{m}) = \int_X |\nabla \Phi|^2 d(\rho\mathfrak{m})$$
 
@@ -147,7 +170,7 @@ Moreover, if $(X, d, \mathfrak{m})$ satisfies $\mathrm{RCD}(K, N)$, then the **B
 $$\Gamma_2(\Phi, \Phi) := \frac{1}{2}\Delta|\nabla \Phi|^2 - \langle\nabla \Phi, \nabla \Delta \Phi\rangle \geq K|\nabla \Phi|^2 + \frac{(\Delta \Phi)^2}{N}$$
 
 
-This provides the computational tool for verifying curvature bounds from potential $\Phi$ alone.
+When the bridge is certified, this provides the computational tool for verifying curvature bounds from potential $\Phi$ alone.
 
 **Literature:** {cite}`Cheeger99` (Differentiability of Lipschitz functions); {cite}`BakryEmery85` ($\Gamma_2$ calculus)
 :::
@@ -238,9 +261,10 @@ But here is something subtle that I want you to understand. The Sieve actually d
 2. **Categorical Expansion**: This is the deeper operation. It takes your thin data and builds a full Hypostructure - an object in the rich category $\mathbf{Hypo}_T$ with all its morphisms and structure. This is a genuine functor, and it is this functor that forms the left adjoint.
 
 The key insight is that the categorical expansion is not making arbitrary choices - it is computing the unique "freest" structure compatible with your data. Category theorists call this a "left adjoint," which sounds intimidating but just means: given the minimal constraints, build the most general thing that satisfies them. The classification just tells you what verdict to announce; the categorical expansion gives you the full mathematical structure to work with.
+Crucially, only this categorical expansion is involved in the adjunction principle; the classification simply provides a diagnostic label and is not part of the adjoint pair.
 :::
 
-The Structural Sieve is defined as a functor $F_{\text{Sieve}}: \mathbf{Thin} \to \mathbf{Result}$. It attempts to promote Thin Objects into a full Hypostructure via certificate saturation.
+The Structural Sieve is defined as a functor $F_{\text{Sieve}}: \mathbf{Thin} \to \mathbf{Result}$. It classifies Thin Objects into diagnostic labels; the categorical expansion is handled by $\mathcal{F}$ (see {prf:ref}`rem-sieve-dual-role`).
 
 :::{prf:definition} The Sieve Functor
 :label: def-sieve-functor
@@ -296,12 +320,12 @@ We define two categories capturing the minimal and full structural data:
 
 The Structural Sieve computes the **left adjoint** (free construction) to the forgetful functor:
 
-$$F_{\text{Sieve}} \dashv U : \mathbf{Hypo}_T \rightleftarrows \mathbf{Thin}_T$$
+$$\mathcal{F} \dashv U : \mathbf{Thin}_T \rightleftarrows \mathbf{Hypo}_T$$
 
 **Interpretation:**
-- The **unit** $\eta_\mathcal{T}: \mathcal{T} \to U(F_{\text{Sieve}}(\mathcal{T}))$ embeds thin data into its promoted hypostructure.
-- The **counit** $\varepsilon_\mathbb{H}: F_{\text{Sieve}}(U(\mathbb{H})) \to \mathbb{H}$ witnesses that re-running the Sieve on already-verified data is idempotent.
-- **Freeness:** The promoted hypostructure $F_{\text{Sieve}}(\mathcal{T})$ is the "freest" (most general) valid hypostructure compatible with the thin data—it assumes no more than what the certificates prove.
+- The **unit** $\eta_\mathcal{T}: \mathcal{T} \to U(\mathcal{F}(\mathcal{T}))$ embeds thin data into its promoted hypostructure.
+- The **counit** $\varepsilon_\mathbb{H}: \mathcal{F}(U(\mathbb{H})) \to \mathbb{H}$ witnesses that re-running the Sieve on already-verified data is idempotent.
+- **Freeness:** The promoted hypostructure $\mathcal{F}(\mathcal{T})$ is the "freest" (most general) valid hypostructure compatible with the thin data—it assumes no more than what the certificates prove.
 
 This categorical perspective explains why the Sieve construction is **canonical** (unique up to isomorphism) and **natural**: it is the universal solution to the problem "given minimal physical data, what is the most general valid structural completion?"
 
@@ -383,6 +407,49 @@ For each **Rigor Class L** metatheorem citing literature source $\mathcal{L}$, t
 - $\mathcal{H}_{\text{tr}}$: Certificates $K_{D_E}^+ \wedge K_{C_\mu}^+$ imply "bounded sequence in $\dot{H}^{s_c}(\mathbb{R}^n)$ with concentration"
 - $\iota$: Sobolev embedding $\mathcal{X}^{\text{thin}} \hookrightarrow L^p(\mathbb{R}^n)$
 - $\mathcal{C}_{\text{imp}}$: Profile decomposition $\Rightarrow K_{\text{lib}}^+$ or $K_{\text{strat}}^+$
+:::
+
+:::{prf:definition} Bridge Permit (Compiled)
+:label: def-bridge-permit
+
+For each literature theorem $\mathcal{L}$ used in the framework, define a **Bridge Permit**
+$\mathsf{B}_{\mathcal{L}}$ as a compiled certificate transformer with the following fields:
+
+1. **Requires** $\mathsf{Req}(\mathcal{L})$: a finite set of thin-interface certificates
+   (and their parameter bounds) sufficient to discharge the hypotheses of $\mathcal{L}$.
+2. **Hypothesis translation** $\mathcal{H}_{\text{tr}}$: a formal proof that
+   $\Gamma_{\text{Sieve}} \vdash \mathcal{H}_{\mathcal{L}}$ whenever
+   $\mathsf{Req}(\mathcal{L}) \subseteq \Gamma_{\text{Sieve}}$.
+3. **Domain embedding** $\iota$: the canonical embedding of hypostructures into the
+   analytic domain of $\mathcal{L}$, together with the preservation claims required by
+   $\mathcal{L}$.
+4. **Conclusion import** $\mathcal{C}_{\text{imp}}$: a proof that
+   $\mathcal{C}_{\mathcal{L}}(\iota(\mathbb{H}))$ implies a named framework certificate
+   $K_{\text{target}}^+$.
+
+The permit is compiled once, stored as a framework artifact, and used as a purely
+certificate-level transformer at runtime.
+:::
+
+:::{prf:definition} Bridge Dispatch Rule (Automatic)
+:label: def-bridge-dispatch
+
+Let $\Gamma_{\text{Sieve}}$ be the current certificate context. The **Bridge Dispatch Rule**
+automatically emits $K_{\text{target}}^+$ whenever a compiled permit
+$\mathsf{B}_{\mathcal{L}}$ satisfies $\mathsf{Req}(\mathcal{L}) \subseteq \Gamma_{\text{Sieve}}$:
+
+$$
+\mathsf{Req}(\mathcal{L}) \subseteq \Gamma_{\text{Sieve}}
+\quad\Longrightarrow\quad
+\Gamma_{\text{Sieve}} \vdash K_{\text{target}}^+.
+$$
+
+No new analytical argument is performed at runtime; the only runtime action is
+certificate matching and instantiation of the compiled bridge proof object.
+:::
+
+:::{div} feynman-prose
+Bridge Permits function as pre-certified mathematical assurances. A specialized engineer performs rigorous verification once, compiling complex blueprints into a "permit." At runtime, the system efficiently matches thin-interface certificates against these permit requirements. If conditions align, the permit dispatches, eliminating redundant calculations. This mechanism (see {prf:ref}`def-bridge-verification`) ensures efficient, pre-verified trust, reserving resources for truly novel problems.
 :::
 
 :::{prf:definition} Categorical Proof Template (Cohesive Topos Setting)

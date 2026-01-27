@@ -7357,6 +7357,7 @@ $$
 $$
 
 *Reference:* {cite}`ambrose1953theorem`
+*Proof.* See Theorem {prf:ref}`appx-ambrose-singer` in {doc}`../appendices/17_geometric_gas`. $\square$
 :::
 
 :::{prf:lemma} Holonomy of Small Loops
@@ -7370,7 +7371,7 @@ $$
 
 where $T^{cd}$ is the tangent bivector to $\Sigma$.
 
-*Proof.* Expand the path-ordered exponential using the non-abelian Stokes theorem {cite}`kobayashi1963foundations`. $\square$
+*Proof.* See Lemma {prf:ref}`appx-holonomy-small-loops` in {doc}`../appendices/17_geometric_gas`. $\square$
 :::
 
 :::{prf:definition} Scutoid Plaquette
@@ -7473,7 +7474,7 @@ $$
 \frac{d\theta}{d\tau} = -\frac{1}{d}\theta^2 - \sigma_{\mu\nu}\sigma^{\mu\nu} + \omega_{\mu\nu}\omega^{\mu\nu} - R_{\mu\nu}u^\mu u^\nu
 $$
 
-*Proof.* Compute $u^\nu \nabla_\nu \theta$, use the Ricci identity, and substitute the kinematic decomposition. Standard derivation in {cite}`wald1984general` §9.2. $\square$
+*Proof.* See Theorem {prf:ref}`appx-raychaudhuri` in {doc}`../appendices/17_geometric_gas`. $\square$
 :::
 
 :::{prf:definition} Regularity Conditions
@@ -7511,7 +7512,7 @@ $$
 
 **Step 1: Volume evolution via Reynolds transport.**
 
-By the Reynolds transport theorem for a moving domain:
+By the Reynolds transport theorem for a moving domain (Lemma {prf:ref}`appx-reynolds-transport`):
 
 $$
 \frac{dV_i}{dt} = \int_{\partial \mathrm{Vor}_i} v_b \cdot n \, dA
@@ -7527,7 +7528,7 @@ $$
 \psi(x, t) := \frac{1}{2}d_g^2(x, z_i) - \frac{1}{2}d_g^2(x, z_j) = 0
 $$
 
-Taking the total derivative $\frac{D\psi}{Dt} = 0$ and solving for boundary velocity:
+Taking the total derivative $\frac{D\psi}{Dt} = 0$ and solving for boundary velocity (Lemma {prf:ref}`appx-voronoi-boundary-velocity`):
 
 $$
 v_b \cdot n_{ij} \approx \frac{u(z_i) + u(z_j)}{2} \cdot n_{ij} + O(\epsilon_N)
@@ -7537,7 +7538,7 @@ $$
 
 **Step 3: Apply divergence theorem.**
 
-For smooth $u$ on a small cell (diameter $\sim \epsilon_N$):
+For smooth $u$ on a small cell (diameter $\sim \epsilon_N$) using Lemma {prf:ref}`appx-divergence-remainder`:
 
 $$
 \int_{\partial \mathrm{Vor}_i} u \cdot n \, dA = \int_{\mathrm{Vor}_i} \nabla \cdot u \, dV = V_i (\nabla \cdot u)(z_i) + O(\epsilon_N^{d+1})
@@ -7557,7 +7558,7 @@ $$
 
 **Step 5: Apply continuous Raychaudhuri.**
 
-By Theorem {prf:ref}`thm-raychaudhuri`, the continuous field satisfies:
+By Theorem {prf:ref}`thm-raychaudhuri` (classical proof in Appendix {doc}`../appendices/17_geometric_gas`), the continuous field satisfies:
 
 $$
 u^\nu \nabla_\nu \theta = -\frac{1}{d}\theta^2 - \sigma^2 + \omega^2 - R_{\mu\nu} u^\mu u^\nu
@@ -31869,6 +31870,945 @@ Replacing A1-A6 in {prf:ref}`assm-fractal-gas-nonlocal` with Lemmas
 {prf:ref}`lem-continuum-a2-smooth-fields`–{prf:ref}`lem-continuum-a6-scaling`
 makes {prf:ref}`thm-cst-fractal-dalembertian-consistency` unconditional within
 Volume 3.
+:::
+
+## appendices/17_geometric_gas.md
+
+:::{prf:definition} Localization Kernel
+:label: def-gg-localization-kernel
+
+For localization scale $\rho > 0$, the **localization kernel** $K_\rho: \mathcal{X} \times \mathcal{X} \to [0, 1]$ is a smooth, non-negative function satisfying:
+
+1. **Normalization**: $\int_{\mathcal{X}} K_\rho(x, x') dx' = 1$ for all $x \in \mathcal{X}$
+2. **Locality**: $K_\rho(x, x') \to 0$ rapidly as $\|x - x'\| \gg \rho$
+3. **Symmetry**: $K_\rho(x, x') = K_\rho(x', x)$
+4. **Limit Behavior**:
+   - As $\rho \to 0$: $K_\rho(x, x') \to \delta(x - x')$ (hyper-local)
+   - As $\rho \to \infty$: $K_\rho(x, x') \to 1/|\mathcal{X}|$ (global)
+
+**Standard Example** (Gaussian kernel):
+
+$$
+K_\rho(x, x') = \frac{1}{Z_\rho(x)} \exp\left(-\frac{\|x - x'\|^2}{2\rho^2}\right)
+$$
+
+where $Z_\rho(x) = \int_{\mathcal{X}} \exp(-\|x - x''\|^2/(2\rho^2)) dx''$ ensures normalization.
+
+**Verification**: Properties 1-4 follow from standard Gaussian kernel theory. Normalization holds by construction. Locality follows from exponential decay. Symmetry is manifest. Limits: as $\rho \to 0$, the Gaussian becomes $\delta(x-x')$; as $\rho \to \infty$ on compact $\mathcal{X}$, the kernel becomes approximately constant.
+:::
+
+:::{prf:definition} ρ-Localized Moments
+:label: def-gg-rho-moments
+
+For alive-walker empirical measure $f_k = \frac{1}{k}\sum_{i \in A_k} \delta_{(x_i, v_i)}$, measurement function $d: \mathcal{X} \to \mathbb{R}$, and reference position $x \in \mathcal{X}$:
+
+**Localized Mean**:
+
+$$
+\mu_\rho[f_k, d, x] := \sum_{j \in A_k} w_{ij}(\rho) d(x_j)
+$$
+
+where the **normalized weights** are:
+
+$$
+w_{ij}(\rho) := \frac{K_\rho(x_i, x_j)}{\sum_{\ell \in A_k} K_\rho(x_i, x_\ell)}
+$$
+
+**Localized Variance**:
+
+$$
+\sigma^2_\rho[f_k, d, x] := \sum_{j \in A_k} w_{ij}(\rho) [d(x_j) - \mu_\rho[f_k, d, x]]^2
+$$
+
+**Regularized Standard Deviation**:
+
+$$
+\sigma'_\rho[f_k, d, x] := \sqrt{\sigma^2_\rho[f_k, d, x] + \sigma'^2_{\min}}
+$$
+
+where $\sigma'_{\min} > 0$ is a regularization floor ensuring $\sigma'_\rho \geq \sigma'_{\min} > 0$ always.
+
+**Unified Z-Score**:
+
+$$
+Z_\rho[f_k, d, x] := \frac{d(x) - \mu_\rho[f_k, d, x]}{\sigma'_\rho[f_k, d, x]}
+$$
+
+**Properties**:
+- Normalization: $\sum_{j \in A_k} w_{ij}(\rho) = 1$ ensures $\mu_\rho$ is a convex combination
+- Well-posedness: Regularization guarantees $\sigma'_\rho > 0$ and $Z_\rho$ is always finite
+- Smoothness: $\mu_\rho$, $\sigma^2_\rho$, $\sigma'_\rho$, $Z_\rho$ are smooth functions of $x_i$ (kernel and measurement smoothness)
+:::
+
+:::{prf:proposition} Limiting Behavior of ρ-Pipeline
+:label: prop-gg-rho-limits
+
+**1. Backbone Regime** ($\rho \to \infty$):
+
+$$
+\lim_{\rho \to \infty} w_{ij}(\rho) = \frac{1}{k} \quad \forall i, j \in A_k
+$$
+
+$$
+\lim_{\rho \to \infty} \mu_\rho[f_k, d, x_i] = \frac{1}{k}\sum_{j \in A_k} d(x_j) =: \mu[f_k, d]
+$$
+
+$$
+\lim_{\rho \to \infty} \sigma^2_\rho[f_k, d, x_i] = \frac{1}{k}\sum_{j \in A_k} [d(x_j) - \mu[f_k, d]]^2 =: \sigma^2[f_k, d]
+$$
+
+This **exactly recovers** the global k-normalized statistics from {doc}`/3_fractal_gas/appendices/03_cloning`, establishing continuity with the proven backbone.
+
+**2. Hyper-Local Regime** ($\rho \to 0$):
+
+$$
+\lim_{\rho \to 0} K_\rho(x, x') = \delta(x - x')
+$$
+
+Moments become nearest-neighbor evaluations, enabling infinitesimal geometric sensitivity.
+
+**3. Intermediate Regime** ($0 < \rho < \infty$):
+
+Balances local adaptation with statistical robustness. Optimal $\rho$ trades off geometric sensitivity (small $\rho$) versus statistical variance (large $\rho$).
+:::
+
+:::{prf:definition} Geometric Gas SDE
+:label: def-gg-sde
+
+Each walker $i \in A_k$ (alive set) evolves according to:
+
+$$
+\begin{aligned}
+dx_i &= v_i \, dt \\
+dv_i &= \left[ \mathbf{F}_{\mathrm{stable}}(x_i) + \mathbf{F}_{\mathrm{adapt}}(x_i, S) + \mathbf{F}_{\mathrm{viscous}}(x_i, S) - \gamma v_i \right] dt + \Sigma_{\mathrm{reg}}(x_i, S) \circ dW_i
+\end{aligned}
+$$
+
+where $S$ denotes the swarm state and $\circ$ is the Stratonovich product.
+
+**1. Stability Force**:
+
+$$
+\mathbf{F}_{\mathrm{stable}}(x_i) := -\nabla U(x_i)
+$$
+
+where $U: \mathcal{X} \to \mathbb{R}$ is a globally confining potential (Axiom {prf:ref}`axiom-gg-confining-potential`).
+
+**2. Adaptive Force**:
+
+$$
+\mathbf{F}_{\mathrm{adapt}}(x_i, S) := \epsilon_F \nabla_{x_i} V_{\mathrm{fit}}[f_k, \rho](x_i)
+$$
+
+where $\epsilon_F > 0$ is the adaptation rate and $V_{\mathrm{fit}}[f_k, \rho]$ is the ρ-localized fitness potential (Definition {prf:ref}`def-gg-fitness-potential`).
+
+**3. Viscous Force** (row-normalized):
+
+$$
+\mathbf{F}_{\mathrm{viscous}}(x_i, S) := \nu \sum_{j \in A_k, j \neq i} \frac{K(x_i - x_j)}{\mathrm{deg}(i)} (v_j - v_i)
+$$
+
+where $\mathrm{deg}(i) := \sum_{\ell \in A_k, \ell \neq i} K(x_i - x_\ell)$ and $K$ is a localization kernel.
+
+**4. Friction**:
+
+$$
+-\gamma v_i, \quad \gamma > 0
+$$
+
+**5. Adaptive Diffusion**:
+
+$$
+\Sigma_{\mathrm{reg}}(x_i, S) := (H_i(S) + \epsilon_\Sigma I)^{-1/2}
+$$
+
+where $H_i(S) = \nabla^2_{x_i} V_{\mathrm{fit}}[f_k, \rho](x_i)$ is the Hessian and $\epsilon_\Sigma > 0$ is the regularization parameter.
+:::
+
+:::{prf:definition} ρ-Localized Fitness Potential
+:label: def-gg-fitness-potential
+
+For alive-walker measure $f_k$ and reference position $x_i$:
+
+$$
+V_{\mathrm{fit}}[f_k, \rho](x_i) = \eta^{\alpha + \beta} \exp\left(\alpha Z_\rho[f_k, R, x_i] + \beta Z_\rho[f_k, d_{\mathrm{alg}}, x_i]\right)
+$$
+
+where:
+- $\eta > 0$ is a baseline fitness scale
+- $\alpha \geq 0$ weights reward channel
+- $\beta \geq 0$ weights distance (diversity) channel
+- $Z_\rho[f_k, R, x_i]$ is the ρ-localized Z-score for reward $R(x_i)$
+- $Z_\rho[f_k, d_{\mathrm{alg}}, x_i]$ is the ρ-localized Z-score for algorithmic distance
+
+**Hessian**:
+
+$$
+H_i(S) = \nabla^2_{x_i} V_{\mathrm{fit}}[f_k, \rho](x_i)
+$$
+
+By C³ regularity of $V_{\mathrm{fit}}$ (proven in {doc}`/3_fractal_gas/appendices/14_b_geometric_gas_cinf_regularity_full`), $H_i$ exists and is continuous.
+:::
+
+:::{prf:axiom} Globally Confining Potential
+:label: axiom-gg-confining-potential
+
+The stability potential $U: \mathcal{X} \to \mathbb{R}$ satisfies:
+
+1. **Smoothness**: $U \in C^2(\mathcal{X})$
+2. **Uniform Convexity**: $\nabla^2 U(x) \succeq \kappa_{\mathrm{conf}} I$ for all $x \in \mathcal{X}$, where $\kappa_{\mathrm{conf}} > 0$
+3. **Coercivity**: $U(x) \to \infty$ as $\|x\| \to \infty$ (for unbounded domains) or as $x \to \partial \mathcal{X}$ (for bounded domains)
+
+**Role**: Provides unconditional global restoring force preventing drift to boundary.
+:::
+
+:::{prf:axiom} Friction Dissipation
+:label: axiom-gg-friction
+
+The friction coefficient satisfies $\gamma > 0$, providing unconditional kinetic energy dissipation.
+:::
+
+:::{prf:axiom} Cloning Contraction (Keystone Principle)
+:label: axiom-gg-cloning
+
+The cloning operator $\Psi_{\mathrm{clone}}$ (from {doc}`/3_fractal_gas/appendices/03_cloning`) satisfies:
+
+$$
+\mathbb{E}[\Delta V_{\mathrm{Var},x}] \leq -\kappa_x V_{\mathrm{Var},x} + C_x
+$$
+
+where $V_{\mathrm{Var},x} = \frac{1}{k}\sum_{i \in A_k} \|x_i - \bar{x}\|^2$ is the positional variance, $\kappa_x > 0$ is N-uniform, and $C_x$ is N-uniform.
+
+**Verification**: Proven in {doc}`/3_fractal_gas/appendices/03_cloning` (Keystone Lemma).
+:::
+
+:::{prf:axiom} Bounded Adaptive Force
+:label: axiom-gg-bounded-adaptive-force
+
+The adaptive force satisfies:
+
+$$
+\|\mathbf{F}_{\mathrm{adapt}}(x_i, S)\| \leq \epsilon_F \cdot F_{\mathrm{adapt,max}}(\rho)
+$$
+
+where $F_{\mathrm{adapt,max}}(\rho) < \infty$ is **N-uniform** and depends only on $\rho$ and the reward/distance bounds.
+
+**Verification**: Follows from boundedness of $\nabla V_{\mathrm{fit}}$ proven in {doc}`/3_fractal_gas/appendices/14_b_geometric_gas_cinf_regularity_full`.
+:::
+
+:::{prf:axiom} Uniform Ellipticity by Construction (UEPH)
+:label: axiom-gg-ueph
+
+The regularized diffusion tensor satisfies:
+
+$$
+c_{\min}(\rho) I \preceq D_{\mathrm{reg}}(x_i, S) \preceq c_{\max}(\rho) I
+$$
+
+for all swarm states $S$, all walkers $i \in A_k$, where:
+
+$$
+c_{\min}(\rho) = \frac{1}{\Lambda_+(\rho) + \epsilon_\Sigma}, \quad c_{\max}(\rho) = \frac{1}{\epsilon_\Sigma - \Lambda_-(\rho)}
+$$
+
+with $\Lambda_{\pm}(\rho)$ the spectral bounds on $H_i(S)$ (N-uniform, ρ-dependent).
+
+**Verification**: Proven in Theorem {prf:ref}`thm-gg-ueph-construction` below.
+:::
+
+:::{prf:axiom} Well-Behaved Viscous Kernel
+:label: axiom-gg-viscous-kernel
+
+The viscous kernel $K: \mathcal{X} \to \mathbb{R}_+$ satisfies:
+
+1. **Smoothness**: $K \in C^1(\mathcal{X})$
+2. **Locality**: $K(x) \to 0$ rapidly as $\|x\| \to \infty$
+3. **Normalization**: $\mathrm{deg}(i) = \sum_{\ell \neq i} K(x_i - x_\ell) \geq \kappa_K > 0$ (ensures row-normalization is well-defined)
+
+**Role**: Ensures viscous force is N-uniformly bounded and purely dissipative.
+:::
+
+:::{prf:theorem} Uniform Ellipticity by Construction (UEPH)
+:label: thm-gg-ueph-construction
+
+Under Axiom {prf:ref}`axiom-gg-ueph` (spectral bounds on $H_i$), the diffusion matrix $D_{\mathrm{reg}}$ is **uniformly elliptic**:
+
+$$
+c_{\min}(\rho) I \preceq D_{\mathrm{reg}}(x_i, S) \preceq c_{\max}(\rho) I
+$$
+
+where the bounds are **N-uniform** (depend only on $\rho$, $\epsilon_\Sigma$, and fitness regularity parameters):
+
+$$
+c_{\min}(\rho) = \frac{1}{\Lambda_+(\rho) + \epsilon_\Sigma}, \quad c_{\max}(\rho) = \frac{1}{\epsilon_\Sigma - \Lambda_-(\rho)}
+$$
+:::
+
+:::{prf:corollary} SDE Well-Posedness
+:label: cor-gg-well-posedness
+
+Under Axioms {prf:ref}`axiom-gg-confining-potential`-{prf:ref}`axiom-gg-ueph`, the Geometric Gas SDE (Definition {prf:ref}`def-gg-sde`) admits a unique strong solution on any finite time interval $[0, T]$ for all $N \geq 2$ and all $\rho > 0$.
+:::
+
+:::{prf:definition} Generator Decomposition
+:label: def-gg-generator-decomp
+
+The total generator decomposes as:
+
+$$
+L_{\mathrm{total}} = L_{\mathrm{backbone}} + L_{\mathrm{pert}}
+$$
+
+where:
+
+**Backbone Generator**:
+
+$$
+L_{\mathrm{backbone}} f = \sum_{i=1}^N \left[ v_i \cdot \nabla_{x_i} f - \nabla U(x_i) \cdot \nabla_{v_i} f - \gamma v_i \cdot \nabla_{v_i} f + \frac{\sigma^2}{2} \Delta_{v_i} f \right]
+$$
+
+**Perturbation Generator**:
+
+$$
+L_{\mathrm{pert}} = L_{\mathrm{adapt}} + L_{\mathrm{viscous}} + L_{\mathrm{diff}}
+$$
+
+with:
+
+1. **Adaptive force perturbation**:
+   $$
+   L_{\mathrm{adapt}} f = \epsilon_F \sum_{i=1}^N \nabla V_{\mathrm{fit}}[f_k, \rho](x_i) \cdot \nabla_{v_i} f
+   $$
+
+2. **Viscous coupling perturbation**:
+   $$
+   L_{\mathrm{viscous}} f = \nu \sum_{i=1}^N \sum_{j \neq i} \frac{K(x_i - x_j)}{\mathrm{deg}(i)} (v_j - v_i) \cdot \nabla_{v_i} f
+   $$
+
+3. **Diffusion perturbation**:
+   $$
+   L_{\mathrm{diff}} f = \frac{1}{2} \sum_{i=1}^N \left[ \mathrm{tr}(\Sigma_{\mathrm{reg}}^2 \nabla_{v_i}^2 f) - \sigma^2 \Delta_{v_i} f \right]
+   $$
+
+:::
+
+:::{prf:lemma} Adaptive Force Contribution
+:label: lem-gg-adaptive-force-bounded
+
+For the TV Lyapunov function $V_{\mathrm{TV}}$, the adaptive force satisfies:
+
+$$
+\mathbb{E}[\Delta V_{\mathrm{TV}}]_{\mathrm{adapt}} \leq \epsilon_F K_F(\rho) V_{\mathrm{TV}} + \epsilon_F C_F(\rho)
+$$
+
+where $K_F(\rho)$ and $C_F(\rho)$ are **N-uniform** constants depending only on $\rho$ and fitness regularity.
+
+**Explicit Bounds**:
+
+$$
+K_F(\rho) = 2\delta F_{\mathrm{adapt,max}}(\rho) \max\{c_V, c_\mu\}
+$$
+
+where $\delta > 0$ is chosen appropriately (typically $\delta = O(1)$), and:
+
+$$
+C_F(\rho) = C_{\mathrm{const}} \cdot \frac{\epsilon_F F_{\mathrm{adapt,max}}^2(\rho)}{\delta} + \epsilon_F F_{\mathrm{adapt,max}}(\rho) C_{\mathrm{boundary}}
+$$
+
+where $C_{\mathrm{const}}$ depends on Lyapunov coefficients and dimension.
+
+:::
+
+:::{prf:lemma} Viscous Coupling Contribution
+:label: lem-gg-viscous-dissipative
+
+The viscous force is **purely dissipative** for $V_{\mathrm{Var},v}$:
+
+$$
+\mathbb{E}[\Delta V_{\mathrm{Var},v}]_{\mathrm{viscous}} \leq -\nu c_{\mathrm{visc}} V_{\mathrm{Var},v}
+$$
+
+where $c_{\mathrm{visc}} > 0$ is an N-uniform constant determined by the kernel $K$.
+
+**Other components**: $\mathbb{E}[\Delta V_{\mathrm{Var},x}]_{\mathrm{viscous}} = 0$, $\mathbb{E}[\Delta W_b]_{\mathrm{viscous}} = 0$.
+
+:::
+
+:::{prf:lemma} Diffusion Perturbation Bounds
+:label: lem-gg-diffusion-perturbation
+
+The diffusion modification contributes:
+
+$$
+\mathbb{E}[\Delta V_{\mathrm{TV}}]_{\mathrm{diff}} \leq C_{\mathrm{diff},0}(\rho) + C_{\mathrm{diff},1}(\rho) V_{\mathrm{TV}}
+$$
+
+where both constants are **N-uniform**:
+
+$$
+C_{\mathrm{diff},0}(\rho) = d \cdot \max\{|c_{\min}(\rho) - \sigma^2|, |c_{\max}(\rho) - \sigma^2|\}
+$$
+
+**Note:** $C_{\mathrm{diff},0}$ represents the difference in noise intensities. It can be positive (geometric diffusion stronger) or effectively treated as absolute value since it contributes additively to the bias term.
+
+$$
+C_{\mathrm{diff},1}(\rho) = C_{\mathrm{geo}} \cdot d \cdot c_{\max}(\rho) L_\Sigma(\rho)
+$$
+
+where $C_{\mathrm{geo}}$ is a universal constant from geometric drift and commutator bounds, and $L_\Sigma(\rho) = \sup \|\nabla \Sigma_{\mathrm{reg}}\|$ is the Lipschitz constant (bounded by C³ regularity).
+
+:::
+
+:::{prf:definition} Synergistic TV Lyapunov Function
+:label: def-gg-synergistic-lyapunov
+
+Define:
+
+$$
+V_{\mathrm{TV}} = c_V(V_{\mathrm{Var},x} + V_{\mathrm{Var},v}) + c_\mu \|\mu_v\|^2 + c_B W_b
+$$
+
+where:
+- $V_{\mathrm{Var},x} = \frac{1}{k}\sum_{i \in A_k} \|x_i - \bar{x}\|^2$ is positional variance
+- $V_{\mathrm{Var},v} = \frac{1}{k}\sum_{i \in A_k} \|v_i - \bar{v}\|^2$ is velocity variance
+- $\mu_v = \bar{v}$ is the velocity barycenter
+- $W_b$ is the boundary potential (from {doc}`/3_fractal_gas/appendices/03_cloning`)
+
+The **coupling constants** $(c_V, c_\mu, c_B) > 0$ are chosen to balance operator drifts (determined in the proof of Theorem {prf:ref}`thm-gg-foster-lyapunov-drift`).
+
+**Verification:** This is identical to the backbone Lyapunov function from {doc}`/3_fractal_gas/appendices/06_convergence`, Section 3.4. The analysis here extends the backbone results to the geometric perturbations.
+:::
+
+:::{prf:theorem} Foster-Lyapunov Drift for Geometric Gas
+:label: thm-gg-foster-lyapunov-drift
+
+Under Axioms {prf:ref}`axiom-gg-confining-potential`-{prf:ref}`axiom-gg-viscous-kernel`, for sufficiently small adaptive force strength $\epsilon_F < \epsilon_F^*(\rho)$, the Geometric Gas satisfies:
+
+$$
+\mathbb{E}[\Delta V_{\mathrm{TV}}] \leq -\kappa_{\mathrm{total}}(\rho) V_{\mathrm{TV}} + C_{\mathrm{total}}(\rho)
+$$
+
+where:
+
+**Total Contraction Rate**:
+
+$$
+\kappa_{\mathrm{total}}(\rho) = \kappa_{\mathrm{backbone}} - \epsilon_F K_F(\rho) - C_{\mathrm{diff},1}(\rho) - \nu c_{\mathrm{visc}}^{-}
+$$
+
+with $\kappa_{\mathrm{backbone}} > 0$ the proven backbone rate (from {doc}`/3_fractal_gas/appendices/06_convergence`) and $c_{\mathrm{visc}}^{-} \leq 0$ accounting for viscous dissipation (negative contribution increases stability).
+
+**Critical Threshold**:
+
+$$
+\epsilon_F^*(\rho) = \frac{\kappa_{\mathrm{backbone}} - C_{\mathrm{diff},1}(\rho)}{K_F(\rho)}
+$$
+
+**Total Bias**:
+
+$$
+C_{\mathrm{total}}(\rho) = C_{\mathrm{backbone}} + \epsilon_F C_F(\rho) + C_{\mathrm{diff},0}(\rho)
+$$
+
+**N-Uniformity:** All constants $\kappa_{\mathrm{total}}(\rho)$ and $C_{\mathrm{total}}(\rho)$ are **uniformly bounded in N** for fixed $\rho > 0$ and $\epsilon_F < \epsilon_F^*(\rho)$.
+
+:::
+
+:::{prf:lemma} φ-Irreducibility of Geometric Gas
+:label: lem-gg-phi-irreducibility
+
+Under Axioms {prf:ref}`axiom-gg-confining-potential`-{prf:ref}`axiom-gg-viscous-kernel`, the Geometric Gas is **φ-irreducible** for a suitable reference measure $\varphi$.
+
+:::
+
+:::{prf:lemma} Aperiodicity
+:label: lem-gg-aperiodicity
+
+The Geometric Gas is **aperiodic**.
+
+:::
+
+:::{prf:theorem} Geometric Ergodicity of the Geometric Gas
+:label: thm-gg-geometric-ergodicity
+
+Under Axioms {prf:ref}`axiom-gg-confining-potential`-{prf:ref}`axiom-gg-viscous-kernel`, for $\epsilon_F < \epsilon_F^*(\rho)$, the Geometric Gas converges exponentially fast to a unique quasi-stationary distribution (QSD) $\pi_N(\rho)$:
+
+$$
+\|P^t(z_0, \cdot) - \pi_N(\rho)\|_{\mathrm{TV}} \leq M e^{-\kappa_{\mathrm{QSD}}(\rho) t}
+$$
+
+where:
+
+**Convergence Rate**:
+
+$$
+\kappa_{\mathrm{QSD}}(\rho) = \Theta(\kappa_{\mathrm{total}}(\rho))
+$$
+
+**Initial Condition Bound**:
+
+$$
+M = M(z_0, V_{\mathrm{TV}}(z_0)) < \infty
+$$
+
+**N-Uniformity:** Both $\kappa_{\mathrm{QSD}}(\rho)$ and the implied constant in $\Theta(\cdot)$ are **uniformly bounded in N** for fixed $\rho > 0$ and $\epsilon_F < \epsilon_F^*(\rho)$.
+
+:::
+
+:::{prf:definition} Hypocoercive Fisher Information (State-Dependent Diffusion)
+:label: def-gg-hypocoercive-fisher
+
+For probability density $f$ with respect to the QSD $\pi_N(\rho)$, define:
+
+**Geometric Fisher Information**:
+
+$$
+I_{\mathrm{hypo}}^\Sigma(f) := \int \sum_{i=1}^N \|\Sigma_{\mathrm{reg}}(x_i, S) \nabla_{v_i} \sqrt{f}\|^2 d\pi_N
+$$
+
+**Euclidean Fisher Information** (for comparison):
+
+$$
+I_v(f) := \int \sum_{i=1}^N \|\nabla_{v_i} \sqrt{f}\|^2 d\pi_N
+$$
+
+**Uniform Ellipticity Comparison:**
+
+By Theorem {prf:ref}`thm-gg-ueph-construction`:
+
+$$
+c_{\min}(\rho) I_v(f) \leq I_{\mathrm{hypo}}^\Sigma(f) \leq c_{\max}(\rho) I_v(f)
+$$
+
+:::
+
+:::{prf:lemma} Velocity Fisher Information Dissipation
+:label: lem-gg-velocity-fisher-dissipation
+
+The velocity component of the generator provides coercive dissipation:
+
+$$
+-\frac{d}{dt} \mathrm{Ent}_{\pi_N}(f | \pi_N) \Big|_{\mathrm{friction}} \geq 4\gamma I_v(f) \geq \frac{4\gamma}{c_{\max}(\rho)} I_{\mathrm{hypo}}^\Sigma(f)
+$$
+
+where $\gamma > 0$ is the friction coefficient.
+
+:::
+
+:::{prf:lemma} Commutator Error Bound
+:label: lem-gg-commutator-error
+
+The commutator between position advection and state-dependent diffusion satisfies:
+
+$$
+\left| [v \cdot \nabla_x, \mathrm{tr}(\Sigma^2 \nabla_v^2)] f \right| \leq C_{\mathrm{comm}}(\rho) \|v\| I_{\mathrm{hypo}}^\Sigma(f)
+$$
+
+where:
+
+$$
+C_{\mathrm{comm}}(\rho) = 2d \cdot C_{\mathrm{hypo}} \, c_{\max}^{1/2}(\rho) L_\Sigma(\rho)
+$$
+
+is **N-uniform**, with $L_\Sigma(\rho) = \sup \|\nabla \Sigma_{\mathrm{reg}}\|$ the Lipschitz constant bounded by C³ regularity and $C_{\mathrm{hypo}}$ the hypocoercive curvature constant from {doc}`/3_fractal_gas/appendices/15_kl_convergence`.
+
+**Note:** In the entropy-Fisher inequality (Proposition {prf:ref}`prop-gg-entropy-fisher-gap`), this constant is further multiplied by velocity bounds from the QSD, yielding the effective commutator constant $\tilde{C}_{\mathrm{comm}}(\rho) = C_{\mathrm{comm}}(\rho) \sqrt{d T_{\mathrm{eff}}}$.
+
+:::
+
+:::{prf:proposition} Entropy-Fisher Inequality with Hypocoercive Gap
+:label: prop-gg-entropy-fisher-gap
+
+For the Geometric Gas QSD $\pi_N(\rho)$, there exists $\alpha_{\mathrm{hypo}}(\rho) > 0$ such that:
+
+$$
+-\frac{d}{dt} \mathrm{Ent}_{\pi_N}(f | \pi_N) \geq \alpha_{\mathrm{hypo}}(\rho) I_{\mathrm{hypo}}^\Sigma(f)
+$$
+
+where:
+
+$$
+\alpha_{\mathrm{hypo}}(\rho) = \frac{4\gamma}{c_{\max}(\rho)} - \tilde{C}_{\mathrm{comm}}(\rho)
+$$
+
+**Positivity Condition:** $\alpha_{\mathrm{hypo}}(\rho) > 0$ when:
+
+$$
+\gamma > \gamma_{\min}(\rho) := \frac{c_{\max}(\rho)}{4} \, \tilde{C}_{\mathrm{comm}}(\rho)
+$$
+
+This holds for sufficiently large friction $\gamma$ or sufficiently regular fitness (small $L_\Sigma(\rho)$).
+
+:::
+
+:::{prf:theorem} N-Uniform Log-Sobolev Inequality for Geometric Gas
+:label: thm-gg-lsi-main
+
+Under Axioms {prf:ref}`axiom-gg-confining-potential`-{prf:ref}`axiom-gg-viscous-kernel`, for $\epsilon_F < \epsilon_F^*(\rho)$ and $\frac{4\gamma}{c_{\max}(\rho)} > \tilde{C}_{\mathrm{comm}}(\rho)$, the Geometric Gas QSD $\pi_N(\rho)$ satisfies an **N-uniform Log-Sobolev Inequality**:
+
+$$
+\mathrm{Ent}_{\pi_N}(f^2 | \pi_N) \leq C_{\mathrm{LSI}}(\rho) \int \sum_{i=1}^N \Gamma_\Sigma(f, f) d\pi_N
+$$
+
+where $\Gamma_\Sigma(f,f) = \|\Sigma_{\mathrm{reg}} \nabla_v f\|^2$ is the carré du champ operator, and:
+
+**LSI Constant**:
+
+$$
+C_{\mathrm{LSI}}(\rho) = \frac{c_{\max}(\rho)}{c_{\min}(\rho)} \cdot \frac{1}{\alpha_{\mathrm{hypo}}(\rho)}
+$$
+
+with:
+
+$$
+\alpha_{\mathrm{hypo}}(\rho) = \frac{4\gamma}{c_{\max}(\rho)} - \tilde{C}_{\mathrm{comm}}(\rho) > 0
+$$
+
+**N-Uniformity**:
+
+$$
+\sup_{N \geq 2} C_{\mathrm{LSI}}(N, \rho) \leq C_{\mathrm{LSI}}^{\max}(\rho) < \infty
+$$
+
+for all $\rho > 0$, where the bound is explicit in terms of primitive parameters.
+
+:::
+
+:::{prf:corollary} Joint Threshold Conditions
+:label: cor-gg-joint-thresholds
+
+For the Geometric Gas to satisfy both Foster-Lyapunov convergence (Theorem {prf:ref}`thm-gg-foster-lyapunov-drift`) and N-uniform LSI (Theorem {prf:ref}`thm-gg-lsi-main`), the parameters must satisfy:
+
+**1. Foster-Lyapunov Constraint:**
+
+$$
+\epsilon_F < \epsilon_F^*(\rho) = \frac{\kappa_{\mathrm{backbone}} - C_{\mathrm{diff},1}(\rho)}{K_F(\rho)}
+$$
+
+**2. LSI Gap Constraint:**
+
+$$
+\gamma > \gamma_{\min}(\rho) := \frac{c_{\max}(\rho)}{4} \, \tilde{C}_{\mathrm{comm}}(\rho)
+$$
+
+**Combined Critical Threshold:**
+
+$$
+\epsilon_F^*(\rho) = \min\left\{ \frac{\kappa_{\mathrm{backbone}} - C_{\mathrm{diff},1}(\rho)}{K_F(\rho)}, \frac{\alpha_{\mathrm{hypo}}(\rho)}{K_F(\rho)} \right\}
+$$
+
+Both constraints are N-uniform and depend continuously on $\rho$.
+
+:::
+
+:::{prf:definition} McKean-Vlasov Geometric Gas
+:label: def-gg-mean-field-generator
+
+The **mean-field limit** of the Geometric Gas is the McKean-Vlasov-Fokker-Planck equation:
+
+$$
+\partial_t \mu_t = L_{\infty}^* \mu_t
+$$
+
+where $\mu_t \in \mathcal{P}(\mathcal{X} \times \mathcal{V})$ is the one-particle distribution and:
+
+$$
+L_{\infty} \phi = v \cdot \nabla_x \phi - \nabla U(x) \cdot \nabla_v \phi + \epsilon_F \nabla V_{\mathrm{fit}}[\mu_t, \rho](x) \cdot \nabla_v \phi - \gamma v \cdot \nabla_v \phi + \frac{1}{2} \mathrm{tr}(D_{\mathrm{reg}}[\mu_t] \nabla_v^2 \phi)
+$$
+
+**Non-Local Fitness Potential:**
+
+$$
+V_{\mathrm{fit}}[\mu_t, \rho](x) = \int V_{\mathrm{fit}}[\delta_x, \rho](x') \mu_t(dx', dv')
+$$
+
+where the ρ-localization is now with respect to the continuous measure $\mu_t$.
+
+**Regularized Diffusion Tensor:**
+
+$$
+D_{\mathrm{reg}}[\mu_t](x) = (\nabla^2_x V_{\mathrm{fit}}[\mu_t, \rho](x) + \epsilon_\Sigma I)^{-1}
+$$
+
+:::
+
+:::{prf:theorem} Mean-Field Log-Sobolev Inequality
+:label: thm-gg-mean-field-lsi
+
+The mean-field Geometric Gas satisfies an LSI with constant:
+
+$$
+C_{\mathrm{LSI}}^{\mathrm{MF}}(\rho) = O(C_{\mathrm{LSI}}(\rho))
+$$
+
+where the implied constant is independent of $\rho$ and depends only on the fitness regularity and parameter choices.
+
+**Explicit Bound:**
+
+$$
+C_{\mathrm{LSI}}^{\mathrm{MF}}(\rho) \leq C_{\mathrm{LSI}}(\rho) \cdot (1 + C_{\mathrm{Lip}}(\rho))
+$$
+
+where $C_{\mathrm{Lip}}(\rho)$ quantifies the Lipschitz continuity of the mean-field fitness map $\mu \mapsto V_{\mathrm{fit}}[\mu, \rho]$.
+
+:::
+
+:::{prf:proposition} Propagation of Chaos for Geometric Gas
+:label: prop-gg-propagation-chaos
+
+Let $\mu_N(t)$ be the empirical measure of the N-particle Geometric Gas, and let $\mu_\infty(t)$ be the solution to the mean-field McKean-Vlasov equation (Definition {prf:ref}`def-gg-mean-field-generator`). Then:
+
+$$
+W_2(\mu_N(t), \mu_\infty(t)) \leq C_{\mathrm{chaos}}(\rho, T) N^{-1/2}
+$$
+
+for all $t \in [0, T]$, where $W_2$ is the 2-Wasserstein distance and $C_{\mathrm{chaos}}(\rho, T)$ depends on $\rho$, the time horizon $T$, and fitness regularity, but is **independent of N**.
+
+:::
+
+:::{prf:corollary} KL-Divergence Convergence
+:label: cor-gg-kl-convergence
+
+The Geometric Gas satisfies exponential KL-divergence convergence to the QSD:
+
+$$
+D_{\mathrm{KL}}(\mu_N(t) \| \pi_N(\rho)) \leq D_{\mathrm{KL}}(\mu_N(0) \| \pi_N(\rho)) \cdot e^{-2\kappa_{\mathrm{QSD}}(\rho) t}
+$$
+
+where the rate is given by Theorem {prf:ref}`thm-gg-geometric-ergodicity`.
+
+:::
+
+:::{prf:corollary} Concentration of Measure
+:label: cor-gg-concentration
+
+For any Lipschitz function $\phi: \mathcal{X}^N \times \mathcal{V}^N \to \mathbb{R}$ with Lipschitz constant $L_\phi$:
+
+$$
+\pi_N(\{|\phi - \mathbb{E}_{\pi_N}[\phi]| > r\}) \leq 2 \exp\left( -\frac{r^2}{2 C_{\mathrm{LSI}}(\rho) L_\phi^2} \right)
+$$
+
+**Interpretation:** The QSD exhibits Gaussian concentration with variance $\sim C_{\mathrm{LSI}}(\rho)$.
+
+:::
+
+:::{prf:conjecture} WFR Contraction for Geometric Gas
+:label: conj-gg-wfr-contraction
+
+The Geometric Gas induces a **Wasserstein-Fisher-Rao (WFR) contraction** on the space of swarm distributions:
+
+$$
+\mathrm{WFR}(\mu_N(t+\tau), \pi_N(\rho)) \leq e^{-\kappa_{\mathrm{WFR}}(\rho) \tau} \mathrm{WFR}(\mu_N(t), \pi_N(\rho))
+$$
+
+where $\mathrm{WFR}$ is the Wasserstein-Fisher-Rao distance (see {doc}`/3_fractal_gas/3_fitness_manifold/01_emergent_geometry`) and $\kappa_{\mathrm{WFR}}(\rho) > 0$ is N-uniform.
+
+**Formal Evidence:**
+
+1. The emergent metric $g = H + \epsilon_\Sigma I$ (from {doc}`/3_fractal_gas/3_fitness_manifold/01_emergent_geometry`) defines a Riemannian structure on swarm configuration space
+2. The diffusion matrix $D_{\mathrm{reg}} = g^{-1}$ is exactly the metric-dual operator
+3. The cloning operator acts as the Fisher-Rao component (reweighting in fitness space)
+4. The kinetic operator acts as the Wasserstein component (transport in position-velocity space)
+
+**Status:** Conjecture. A full proof requires establishing that the generator $L_{\mathrm{total}}$ is the gradient flow of relative entropy with respect to the WFR metric, extending Otto calculus to the QSD setting.
+
+:::
+
+:::{prf:lemma} Commutator Expansion for State-Dependent Diffusion
+:label: lem-gg-commutator-expansion
+
+For state-dependent diffusion matrix $\Sigma_{\mathrm{reg}}(x, S)$ and velocity operator $v \cdot \nabla_x$:
+
+$$
+[v \cdot \nabla_x, \mathrm{tr}(\Sigma^2 \nabla_v^2)] f = v \cdot (\nabla_x \Sigma^2) : \nabla_v^2 f
+$$
+
+where $:$ denotes tensor contraction.
+
+:::
+
+:::{prf:lemma} Lipschitz Bound on $\Sigma_{\mathrm{reg}}$
+:label: lem-gg-lipschitz-sigma
+
+Under C³ regularity of $V_{\mathrm{fit}}$ (proven in {doc}`/3_fractal_gas/appendices/14_b_geometric_gas_cinf_regularity_full`):
+
+$$
+\|\nabla \Sigma_{\mathrm{reg}}(x, S)\| \leq L_\Sigma(\rho)
+$$
+
+where:
+
+$$
+L_\Sigma(\rho) = \frac{K_{V,3}(\rho)}{2 \epsilon_\Sigma^{3/2}}
+$$
+
+is **N-uniform**, with $K_{V,3}(\rho) = \sup \|\nabla^3 V_{\mathrm{fit}}\|$.
+
+:::
+
+:::{prf:lemma} Stratonovich-to-Itô Geometric Drift
+:label: lem-gg-geometric-drift
+
+The Stratonovich SDE (Definition {prf:ref}`def-gg-sde`) converts to Itô form with an additional geometric drift:
+
+$$
+b_{\mathrm{geo}}(x_i, S) = \frac{1}{2} \nabla \cdot D_{\mathrm{reg}}(x_i, S)
+$$
+
+where $\nabla \cdot$ is the divergence. This term satisfies:
+
+$$
+\|b_{\mathrm{geo}}\| \leq d \cdot L_\Sigma(\rho)
+$$
+
+where $d$ is the spatial dimension.
+
+:::
+
+:::{prf:theorem} Ambrose-Singer Theorem (classical)
+:label: appx-ambrose-singer
+
+Let $(M,g)$ be a connected Riemannian manifold with Levi-Civita connection and
+$p \in M$. The Lie algebra of the holonomy group at $p$ is generated by
+curvature endomorphisms transported back to $p$:
+
+$$
+\mathfrak{hol}_p = \mathrm{span}\{P_\gamma^{-1} R(X, Y) P_\gamma : \gamma\text{ any curve from } p\}.
+$$
+
+:::
+
+:::{prf:lemma} Small-loop holonomy expansion
+:label: appx-holonomy-small-loops
+
+Let $(M,g)$ be a $C^3$ Riemannian manifold with Levi-Civita connection. Let
+$\gamma = \partial \Sigma$ be a piecewise $C^2$ loop based at $p$ contained in a
+convex normal neighborhood, with bounded surface area $A = \mathrm{Area}(\Sigma)$.
+Let $T^{cd}$ denote the oriented unit bivector of $\Sigma$ at $p$ in normal
+coordinates. Then for any $V \in T_p M$,
+
+$$
+(\mathrm{Hol}_\gamma)^a{}_b V^b = V^a + R^a{}_{bcd}(p) V^b T^{cd} A + E^a,
+$$
+
+with remainder bound
+
+$$
+|E| \le C_1 \sup_{\Sigma} |\nabla R| \, A^{3/2} |V|,
+$$
+
+for a constant $C_1$ depending only on dimension and the convex neighborhood.
+
+:::
+
+:::{prf:remark}
+The same expansion holds for Lorentzian metrics on spacelike loops, with the
+holonomy group in $O(1,d-1)$ and the same curvature contraction.
+:::
+
+:::{prf:theorem} Raychaudhuri Equation (timelike, geodesic)
+:label: appx-raychaudhuri
+
+Let $(M,g)$ be a Lorentzian manifold with signature $(-,+,\ldots,+)$. Let
+$u^\mu$ be a future-directed timelike unit vector field tangent to a geodesic
+congruence (so $u^\nu \nabla_\nu u^\mu = 0$). Define the spatial projector
+$h_{\mu\nu} = g_{\mu\nu} + u_\mu u_\nu$ and the deformation tensor
+$B_{\mu\nu} = \nabla_\nu u_\mu$. Decompose
+
+$$
+B_{\mu\nu} = \frac{1}{d} \theta\, h_{\mu\nu} + \sigma_{\mu\nu} + \omega_{\mu\nu},
+$$
+
+where $\theta = \nabla_\mu u^\mu$ is the expansion, $\sigma$ is symmetric and
+trace-free, and $\omega$ is antisymmetric. Then
+
+$$
+\frac{d\theta}{d\tau}
+= -\frac{1}{d}\theta^2 - \sigma_{\mu\nu} \sigma^{\mu\nu}
++ \omega_{\mu\nu} \omega^{\mu\nu} - R_{\mu\nu} u^\mu u^\nu.
+$$
+
+:::
+
+:::{prf:remark}
+For a Riemannian metric and unit-speed geodesic congruence, the same derivation
+applies with $h_{\mu\nu} = g_{\mu\nu} - u_\mu u_\nu$; the sign conventions for the
+vorticity term follow the chosen definition of $\omega_{\mu\nu}$.
+:::
+
+:::{prf:lemma} Reynolds transport on a Riemannian manifold
+:label: appx-reynolds-transport
+
+Let $\Omega(t) \subset M$ be a $C^1$ family of domains with piecewise smooth
+boundary, transported by a $C^1$ boundary velocity field $w$. For any
+$C^1$ scalar field $f$,
+
+$$
+\frac{d}{dt} \int_{\Omega(t)} f \, dV
+= \int_{\Omega(t)} \partial_t f \, dV + \int_{\partial \Omega(t)} f\, w \cdot n \, dA.
+$$
+
+:::
+
+:::{prf:lemma} Voronoi boundary normal velocity (local estimate)
+:label: appx-voronoi-boundary-velocity
+
+Let $z_i(t), z_j(t)$ be $C^2$ trajectories in a convex normal neighborhood and
+let $u_i = \dot z_i$, $u_j = \dot z_j$. Define
+
+$$
+\psi(x,t) = \tfrac{1}{2} d_g^2(x, z_i(t)) - \tfrac{1}{2} d_g^2(x, z_j(t)),
+$$
+
+so that the Voronoi face between $i$ and $j$ is $F_{ij}(t) = \{x : \psi(x,t)=0\}$.
+For $x(t) \in F_{ij}(t)$ with boundary velocity $w = \dot x$ and outward unit
+normal $n_{ij} = \nabla_x \psi / |\nabla_x \psi|$, one has
+
+$$
+ w \cdot n_{ij} = - \frac{\partial_t \psi}{|\nabla_x \psi|}.
+$$
+
+Moreover, if $\mathrm{dist}(x,z_i) \sim \mathrm{dist}(x,z_j) \sim \epsilon_N$ and
+$|K| \le K_{\max}$ on the neighborhood, then
+
+$$
+ w \cdot n_{ij} = \frac{u_i + u_j}{2} \cdot n_{ij} + O\bigl(\epsilon_N (\|\nabla u\|_{C^0} + K_{\max})\bigr).
+$$
+
+:::
+
+:::{prf:lemma} Divergence theorem remainder on small cells
+:label: appx-divergence-remainder
+
+Let $\Omega \subset M$ be a domain of diameter $O(\epsilon)$ contained in a
+normal neighborhood, and let $u \in C^2(M)$ be a vector field. For any
+$x_0 \in \Omega$,
+
+$$
+\int_{\partial \Omega} u \cdot n \, dA
+= \int_{\Omega} \nabla \cdot u \, dV
+= \mathrm{Vol}(\Omega) (\nabla \cdot u)(x_0) + O(\epsilon^{d+1} \|\nabla^2 u\|_{C^0}).
+$$
+
+:::
+
+:::{prf:theorem} Discrete Raychaudhuri correspondence (classical)
+:label: appx-discrete-raychaudhuri
+
+Assume $(M,g)$ is $C^\infty$ with bounded curvature, $u \in C^3(M)$, and the
+Voronoi cells satisfy the regularity conditions in
+{prf:ref}`def-regularity-conditions` with spacing $\epsilon_N$ and
+$\Delta t = O(\epsilon_N)$. Define
+$\theta_i = V_i^{-1} dV_i/dt$ for the Voronoi cell $\mathrm{Vor}_i$. Then
+
+$$
+\frac{d\theta_i}{dt}
+= -\frac{1}{d}\theta_i^2 - \sigma^2(z_i) + \omega^2(z_i)
+- R_{\mu\nu}(z_i) u^\mu u^\nu + O(\epsilon_N),
+$$
+
+with the error bounded by $C\epsilon_N (\|u\|_{C^3} + \|\mathrm{Riem}\|_{C^1})$.
+
 :::
 
 ## appendices/proofs/proof_cor_effective_interaction_radius_full.md

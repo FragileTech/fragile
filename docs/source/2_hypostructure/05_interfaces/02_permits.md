@@ -862,7 +862,7 @@ Rep is not merely ``exists,'' but comes with:
 
 #### Lock backend tactics are effective
 
-E1--E10 tactics become effective procedures:
+E1--E13 tactics become effective procedures:
 - dimension checks, invariant mismatch checks, positivity/integrality constraints, functional equations,
 - in a decidable fragment (SMT/linear arithmetic/rewrite systems).
 
@@ -935,7 +935,7 @@ Every strong metatheorem should be written as:
 - "Soft Lyapunov exists" (base level)
 - "Canonical Lyapunov unique up to reparam" ($K_{\text{Rigid}}$)
 - "Explicit reconstruction (HJ/Jacobi)" ($K_{\text{Rigid}}$ + $K_{\text{GC}}$ certificates)
-- "Algorithmic lock proof (E1--E10 decidable)" ($K_{\text{Eff}}$)
+- "Algorithmic lock proof (E1--E13 decidable)" ($K_{\text{Eff}}$)
 
 ---
 

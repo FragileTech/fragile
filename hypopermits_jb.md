@@ -264,11 +264,11 @@ $$\neg(\exists \phi.\, \phi: \mathbb{H}_{\mathrm{bad}} \to \mathbb{H}(Z)) \Right
 The empty Hom-set (N11) verifies the antecedent, yielding the consequent.
 
 *Step 7 (Certificate Production).* The proof is constructive in the sense that:
-- The certificate $K_{\text{Lock}}^{\mathrm{blk}}$ witnesses $\mathrm{Hom} = \emptyset$
-- The verification is decidable: enumerate tactics E1–E12 and confirm each produces an obstruction
+- The certificate $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}$ witnesses $\mathrm{Hom} = \emptyset$
+- The verification is decidable: enumerate tactics E1–E13 and confirm each produces an obstruction
 - The payload contains the explicit obstruction witnesses from each tactic
 
-**Certificate Produced:** $K_{\text{Lock}}^{\mathrm{blk}}$ with payload $(\mathrm{Hom} = \emptyset, Z, T, \text{obstruction witnesses})$
+**Certificate Produced:** $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}$ with payload $(\mathrm{Hom} = \emptyset, Z, T, \text{obstruction witnesses})$
 
 **Literature:** {cite}`Grothendieck67` SGA 1 Exposé V (representability); {cite}`MacLane71` §III.3 (limits and colimits); {cite}`Lurie09` §5.5–6.1 (presentable $\infty$-categories, internal logic); {cite}`Johnstone02` (Sketches of an Elephant, topos internal logic)
 ::::
@@ -2267,7 +2267,7 @@ The framework produces explicit **NO-inconclusive certificates** ($K^{\mathrm{in
 - **Profile Trichotomy Case 3**: $K_{\mathrm{prof}}^{\mathrm{inc}}$ with classification obstruction witness
 - **Surgery Admissibility Case 3**: $K_{\mathrm{Surg}}^{\mathrm{inc}}$ with inadmissibility reason
 - **Promotion Closure**: $K_{\mathrm{Promo}}^{\mathrm{inc}}$ recording non-termination under budget
-- **Lock (E1--E12 fail)**: $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{br\text{-}inc}}$ with tactic exhaustion trace
+- **Lock (E1--E13 fail)**: $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{br\text{-}inc}}$ with tactic exhaustion trace
 
 The certificate structure (Definition {prf:ref}`def-typed-no-certificates`) ensures these are first-class outputs rather than silent failures. When $K^{\mathrm{inc}}$ is produced, the Sieve routes to reconstruction ({prf:ref}`mt-lock-reconstruction`) rather than fatal error, since inconclusiveness does not imply existence of a counterexample.
 
@@ -2304,7 +2304,7 @@ Formally, $\Downarrow(K_{\mathrm{Goal}})$ is the least set closed under:
 :label: def-proof-complete
 
 A sieve run with final context $\Gamma_{\mathrm{final}}$ **proves the goal** $K_{\mathrm{Goal}}$ if:
-1. $\Gamma_{\mathrm{final}}$ contains the designated goal certificate (e.g., $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}$, or $K_{\mathrm{Cat}_{\mathrm{Hom}}}^+$ after promotion closure), and
+1. $\Gamma_{\mathrm{final}}$ contains the designated goal certificate (e.g., $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}$), and
 2. $\mathsf{Obl}(\mathrm{Cl}(\Gamma_{\mathrm{final}}))$ contains **no entries whose certificate type lies in the goal dependency cone** $\Downarrow(K_{\mathrm{Goal}})$
 
 Equivalently, all NO-inconclusive obligations relevant to the goal have been discharged.
@@ -3656,14 +3656,14 @@ where $\mathcal{L}_{\text{proxy}}$ is the optimized/measured objective and $\mat
 - **Blocked** ($K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}$): Hom-set empty; no morphism to bad pattern exists. **VICTORY: Global Regularity Confirmed.**
 - **Breached** ($K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{br}}$): NO verdict with typed certificate (sum type $K^{\mathrm{br}} := K^{\mathrm{br\text{-}wit}} \sqcup K^{\mathrm{br\text{-}inc}}$):
   - **Breached-with-witness** ($K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{br\text{-}wit}}$): Explicit morphism $f: \mathbb{H}_{\mathrm{bad}} \to \mathcal{H}$ found; structural inconsistency. **FATAL ERROR.**
-  - **Breached-inconclusive** ($K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{br\text{-}inc}}$): Tactics E1–E12 exhausted without deciding Hom-emptiness. Certificate records $(\mathsf{tactics\_exhausted}, \mathsf{partial\_progress}, \mathsf{trace})$. Triggers {prf:ref}`mt-lock-reconstruction` (Structural Reconstruction Principle).
+  - **Breached-inconclusive** ($K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{br\text{-}inc}}$): Tactics E1–E13 exhausted without deciding Hom-emptiness. Certificate records $(\mathsf{tactics\_exhausted}, \mathsf{partial\_progress}, \mathsf{trace})$. Triggers {prf:ref}`mt-lock-reconstruction` (Structural Reconstruction Principle).
 
 **Routing:**
 - **On Block:** Exit with **GLOBAL REGULARITY** (structural exclusion confirmed).
 - **On Breached-with-witness:** Exit with **FATAL ERROR** (structural inconsistency—requires interface permit revision).
 - **On Breached-inconclusive:** Invoke {prf:ref}`mt-lock-reconstruction` (Structural Reconstruction) → Re-evaluate with reconstruction verdict $K_{\mathrm{Rec}}^{\mathrm{verdict}}$.
 
-**Exclusion Tactics (E1–E12):** The emptiness proof may invoke:
+**Exclusion Tactics (E1–E13):** The emptiness proof may invoke:
 - E1: Dimension count (bad pattern requires impossible dimension)
 - E2: Coercivity (energy structure forbids mapping)
 - E3: Spectral (eigenvalue gap prevents morphism)
@@ -3684,7 +3684,7 @@ where $\mathcal{L}_{\text{proxy}}$ is the optimized/measured objective and $\mat
 - **Conservation of Information:** In unitary quantum mechanics, information is never destroyed (Hawking's resolution of the black hole information paradox). The Lock ensures: $\text{Hom}(\mathbb{H}_{\text{bad}}, \mathcal{H}) = \varnothing$ means singularity formation would require information destruction incompatible with the system's structure.
 - **No-Cloning Theorem:** Quantum states cannot be perfectly copied. Similarly, the Lock prevents "copying" of bad patterns into a valid hypostructure.
 
-The **exclusion tactics (E1–E12)** are analogous to **selection rules** in quantum mechanics—symmetry and conservation laws that forbid certain transitions.
+The **exclusion tactics (E1–E13)** are analogous to **selection rules** in quantum mechanics—symmetry and conservation laws that forbid certain transitions.
 :::
 
 ---
@@ -5439,7 +5439,7 @@ The Lock evaluator checks whether any morphism exists from any bad pattern to th
   - **E5 (Modular):** Obstruction from modular/arithmetic properties
 - $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\text{morph}}$ (Breached/FATAL): Explicit morphism $f: B_i \to \mathcal{H}$ for some $i$, witnessing that singularity formation is possible.
 
-**Does Not Promise:** That the Lock is decidable. Tactics E1-E12 may exhaust without resolution, yielding a Breached-inconclusive certificate ($K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{br\text{-}inc}}$).
+**Does Not Promise:** That the Lock is decidable. Tactics E1-E13 may exhaust without resolution, yielding a Breached-inconclusive certificate ($K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{br\text{-}inc}}$).
 
 **Remark (Library vs. Universal Object):**
 The universal bad object $\mathbb{H}_{\mathrm{bad}}^{(T)}$ is well-defined as the colimit over the **small** germ set $\mathcal{G}_T$ (see {prf:ref}`mt-krnl-exclusion`, Initiality Lemma). The Small Object Argument ({cite}`Quillen67` §II.3) ensures $\mathcal{G}_T$ is a genuine set by exploiting energy bounds and symmetry quotients. The library formulation $\mathcal{B} = \{B_i\}_{i \in I}$ is the **constructive implementation**: it provides a finite list of computable representatives. The density theorem {prf:ref}`mt-fact-germ-density` proves that checking $\mathcal{B}$ suffices to verify the full categorical obstruction.
@@ -5454,7 +5454,7 @@ At the soft layer, the framework does **not** assume:
 - **Global regularity**: Solutions may blow up; the sieve determines whether they must
 - **Finite canonical profile library**: Profiles may be classified, stratified, or horizon
 - **Surgery admissibility**: Each surgery must be checked via the Admissibility Trichotomy
-- **Decidable Lock outcomes**: E1--E10 tactics may exhaust without resolution
+- **Decidable Lock outcomes**: E1--E13 tactics may exhaust without resolution
 - **Unique gradient structure**: $\mathrm{GC}_\nabla$ is optional; many systems lack gradient form
 - **Closed system**: $\mathrm{Bound}$ explicitly handles open systems with inputs
 
@@ -5462,7 +5462,7 @@ These are obtained by **upgrades**:
 - Profile Classification Trichotomy (finite library, tame stratification, or horizon)
 - Surgery Admissibility Trichotomy (admissible, admissible$^\sim$, or inadmissible)
 - Promotion rules (blocked $\to$ YES via certificate accumulation)
-- Lock tactics (E1--E10 for Hom-emptiness proofs)
+- Lock tactics (E1--E13 for Hom-emptiness proofs)
 
 This separation makes the framework **honest about its assumptions** and enables systematic identification of what additional structure is needed when an inconclusive NO certificate ($K^{\mathrm{inc}}$) is produced.
 
@@ -5630,7 +5630,7 @@ Typical $\mathsf{missing}$: "resolution of indeterminacy not computable", "degre
 
 **Name:** CouplingSmall
 
-**Question:** Is the interaction term $\Phi_{\mathrm{int}}$ controlled strongly enough (in the norms used by $K_{\mathrm{Lock}}^A, K_{\mathrm{Lock}}^B$) to prevent the coupling from destroying the component bounds?
+**Question:** Is the interaction term $\Phi_{\mathrm{int}}$ controlled strongly enough (in the norms used by $K_{\mathrm{Cat}_{\mathrm{Hom}}}^A, K_{\mathrm{Cat}_{\mathrm{Hom}}}^B$) to prevent the coupling from destroying the component bounds?
 
 **YES certificate**
 $$K_{\mathrm{CouplingSmall}}^+ := (\varepsilon,\ C_\varepsilon,\ \mathsf{bound\_form},\ \mathsf{closure})$$
@@ -5797,7 +5797,7 @@ Typical $\mathsf{missing}$: "Lyapunov function not verified to be strict", "$K_{
 | **$\mathrm{Rep}_K$** | Language Object | Finite description | Program/Code |
 | **$\mathrm{GC}_\nabla$** | Metric Tensor | Metric compatibility | Flow type |
 | **$\mathrm{Bound}$** | Input/Output Objects | Boundary conditions | Bounds |
-| **$\mathrm{Cat}_{\mathrm{Hom}}$** | Hypostructure Category | Hom-emptiness | E1-E10 obstruction |
+| **$\mathrm{Cat}_{\mathrm{Hom}}$** | Hypostructure Category | Hom-emptiness | E1-E13 obstruction |
 
 This table constitutes the **Type Signature** of a Hypostructure.
 
@@ -7536,7 +7536,7 @@ Rep is not merely ``exists,'' but comes with:
 
 #### 21.3.3 Lock backend tactics are effective
 
-E1--E10 tactics become effective procedures:
+E1--E13 tactics become effective procedures:
 - dimension checks, invariant mismatch checks, positivity/integrality constraints, functional equations,
 - in a decidable fragment (SMT/linear arithmetic/rewrite systems).
 
@@ -7575,7 +7575,7 @@ Every strong metatheorem should be written as:
 - "Soft Lyapunov exists" (base level)
 - "Canonical Lyapunov unique up to reparam" ($K_{\text{Rigid}}$)
 - "Explicit reconstruction (HJ/Jacobi)" ($K_{\text{Rigid}}$ + $K_{\text{GC}}$ certificates)
-- "Algorithmic lock proof (E1--E10 decidable)" ($K_{\text{Eff}}$)
+- "Algorithmic lock proof (E1--E13 decidable)" ($K_{\text{Eff}}$)
 
 ---
 
@@ -8681,7 +8681,7 @@ Rules using later certificates:
 
 $$K_i^{\mathrm{blk}} \wedge \bigwedge_{j > i} K_j^+ \Rightarrow K_i^+$$
 
-Example: Full Lock passage ($K_{\mathrm{Cat}_{\mathrm{Hom}}}^+$) may retroactively promote earlier blocked certificates to full YES.
+Example: Full Lock passage ($K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}$) may retroactively promote earlier blocked certificates to full YES.
 
 :::
 
@@ -8727,16 +8727,16 @@ Where:
 - $\mathcal{H}$ is the system under analysis
 
 **Outcomes**:
-- **Blocked** ($K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}$ or $K_{\mathrm{Cat}_{\mathrm{Hom}}}^+$): Hom-set empty; implies GLOBAL REGULARITY
-- **MorphismExists** ($K_{\mathrm{Cat}_{\mathrm{Hom}}}^-$): Explicit morphism $\phi: \mathbb{H}_{\mathrm{bad}} \to \mathcal{H}$; implies FATAL ERROR
+- **Blocked** ($K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}$): Hom-set empty; implies GLOBAL REGULARITY
+- **MorphismExists** ($K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{morph}}$): Explicit morphism $\phi: \mathbb{H}_{\mathrm{bad}} \to \mathcal{H}$; implies FATAL ERROR
 
-**Goal Certificate:** For Node 17, the designated goal certificate for the proof completion criterion (Definition {prf:ref}`def-proof-complete`) is $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}$. This certificate suffices for proof completion—no additional promotion to $K_{\mathrm{Cat}_{\mathrm{Hom}}}^+$ is required. The blocked outcome at the Lock establishes morphism exclusion directly.
+**Goal Certificate:** For Node 17, the designated goal certificate for the proof completion criterion (Definition {prf:ref}`def-proof-complete`) is $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}$. This certificate suffices for proof completion—the blocked outcome at the Lock establishes morphism exclusion directly.
 
 :::
 
 ---
 
-## 33. E1--E10 Exclusion Tactics
+## 33. E1--E13 Exclusion Tactics
 
 The Lock attempts ten proof-producing tactics to establish Hom-emptiness:
 
@@ -9251,7 +9251,7 @@ This metatheorem specifies the **interface contract** for verifiers, not an exis
 
 Soundness follows from the contract; the user's responsibility is to supply correct verifiers for their specific domain. The factory metatheorem guarantees that *if* verifiers satisfy the interface, *then* the Sieve produces sound certificates. This is analogous to type class constraints in programming: we specify what operations must exist, not how to implement them for all cases.
 
-For undecidable predicates (e.g., Gate 17), the framework uses the tactic library E1-E12 with $K^{\text{inc}}$ (inconclusive) fallback—the verifier always terminates, but may return "inconclusive" rather than a definite YES/NO.
+For undecidable predicates (e.g., Gate 17), the framework uses the tactic library E1-E13 with $K^{\text{inc}}$ (inconclusive) fallback—the verifier always terminates, but may return "inconclusive" rather than a definite YES/NO.
 :::
 
 **Proof (Following Categorical Proof Template — Natural Transformation Soundness):**
@@ -9278,7 +9278,7 @@ Each gate predicate $P_i^T$ belongs to one of three decidability classes:
 *Decidability Mechanisms:*
 - **Semi-decidable ($\Sigma_1^0$):** Predicate can be verified by finite search if true, but may loop if false. Resolution: introduce timeout with $K^{\text{inc}}$ fallback.
 - **Decidable:** Both truth and falsity can be determined in finite time. Resolution: direct evaluation.
-- **Undecidable ($\Pi_2^0$ or higher):** No general algorithm exists. Resolution: tactic library (E1-E12) with $K^{\text{inc}}$ exhaustion.
+- **Undecidable ($\Pi_2^0$ or higher):** No general algorithm exists. Resolution: tactic library (E1-E13) with $K^{\text{inc}}$ exhaustion.
 
 **Decidability Contingencies:** The complexity classifications above assume:
 - **Rep-Constructive:** Computable representation of system states (e.g., constructive reals with effective moduli of continuity)
@@ -9328,7 +9328,7 @@ Witness[StiffnessCheck] := {
 
 Witness[LockCheck] := {
   obstruction_class: H^*(ℋ_bad; Ω), -- cohomological obstruction
-  tactic_trace: List[TacticResult],  -- E1-E12 outcomes
+  tactic_trace: List[TacticResult],  -- E1-E13 outcomes
   hom_emptiness: Hom = ∅ ∨ Witness[morph],
   proof: tactic_trace ⊢ hom_emptiness
 }
@@ -9561,7 +9561,7 @@ where $\sim_T$ is the type's intrinsic equivalence relation. For well-studied ty
 :label: mt-fact-lock
 :class: metatheorem
 
-For any type $T$ with $\mathrm{Rep}_K$ available, there exist E1--E10 tactics for the Lock:
+For any type $T$ with $\mathrm{Rep}_K$ available, there exist E1--E13 tactics for the Lock:
 
 **Input**: Type $T$ + representation substrate
 
@@ -9601,7 +9601,7 @@ $$E_1^T \to E_2^T \to E_3^T \to E_4^T \to E_5^T \to \text{Horizon}$$
 Each tactic is **complete for its class**: E1 catches all geometric obstructions, E2 catches all topological obstructions, etc. The union covers all known obstruction mechanisms for type $T$.
 
 *Step 4 (Horizon Fallback).* If all tactics fail, the Lock enters horizon mode:
-- Emit $K_{\mathrm{Lock}}^{\mathrm{inc}} = (\text{tactics\_exhausted}, \{E_1, \ldots, E_5\}, \text{partial\_progress})$
+- Emit $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{br\text{-}inc}} = (\text{tactics\_exhausted}, \{E_1, \ldots, E_5\}, \text{partial\_progress})$
 - The certificate records which tactics were tried and any partial progress (near-obstructions, dimension bounds)
 - Route to {prf:ref}`mt-lock-reconstruction` for explicit construction attempt
 
@@ -9642,7 +9642,7 @@ The **Certificate Generator Library** maps standard literature lemmas to permits
 | ErgoCheck | Mixing times, ergodic theory | $K_{\mathrm{TB}_\rho}^+$ |
 | ComplexCheck | Kolmogorov complexity, MDL | $K_{\mathrm{Rep}_K}^+$ |
 | OscillateCheck | Monotonicity, De Giorgi-Nash-Moser | $K_{\mathrm{GC}_\nabla}^-$ |
-| Lock | Cohomology, invariant theory | $K_{\mathrm{Cat}_{\mathrm{Hom}}}^+$ |
+| Lock | Cohomology, invariant theory | $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}$ |
 
 ---
 
@@ -9712,7 +9712,7 @@ The dependency graph is acyclic by construction: factories are numbered in topol
 - **Global termination:** The Sieve DAG has finitely many nodes (17 + barriers + surgery). Surgery count is bounded by $N_{\max} = \lfloor \Phi(x_0)/\delta_{\text{surgery}} \rfloor$. Total steps $\leq 17 \cdot N_{\max} \cdot (\text{max barrier iterations})$.
 
 *Step 6 (Output Trichotomy).* The Sieve execution terminates with exactly one of:
-- **VICTORY:** All gates pass, Lock blocked → emit $K_{\text{Lock}}^{\mathrm{blk}}$ (Global Regularity)
+- **VICTORY:** All gates pass, Lock blocked → emit $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}$ (Global Regularity)
 - **Surgery path:** Barrier breach + admissibility → surgery iteration, returns to Step 1 with surgered state
 - **$K^{\mathrm{inc}}$:** Tactic exhaustion at some node → emit $K_P^{\mathrm{inc}}$ with $\mathsf{missing}$ set, route to {prf:ref}`mt-lock-reconstruction`
 
@@ -9730,12 +9730,12 @@ The following table specifies which metatheorems are unlocked by which certifica
 | Structural Resolution | $K_{C_\mu}^+$ (profile) | CompactCheck YES |
 | Type II Exclusion | $K_{\mathrm{SC}_\lambda}^+$ (subcritical) + $K_{D_E}^+$ (energy) | ScaleCheck YES + EnergyCheck YES |
 | Capacity Barrier | $K_{\mathrm{Cap}_H}^+$ or $K_{\text{cap}}^{\mathrm{blk}}$ | GeomCheck YES/Blocked |
-| Topological Suppression | $K_{\mathrm{TB}_\pi}^+$ + $K_{\mathrm{Cat}_{\mathrm{Hom}}}^+$ (Lock) | TopoCheck YES + Lock Blocked |
+| Topological Suppression | $K_{\mathrm{TB}_\pi}^+$ + $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}$ (Lock) | TopoCheck YES + Lock Blocked |
 | Canonical Lyapunov | $K_{\mathrm{LS}_\sigma}^+$ (stiffness) + $K_{\mathrm{GC}_\nabla}^-$ (no oscillation) | StiffnessCheck YES + OscillateCheck NO |
 | Functional Reconstruction | $K_{\mathrm{LS}_\sigma}^+$ + $K_{\mathrm{Rep}_K}^+$ (Rep) + $K_{\mathrm{GC}_\nabla}^-$ | LS + Rep + GC |
 | Profile Classification | $K_{C_\mu}^+$ | CompactCheck YES |
 | Surgery Admissibility | $K_{\text{lib}}$ or $K_{\text{strat}}$ | Profile Trichotomy Case 1/2 |
-| Global Regularity | $K_{\mathrm{Cat}_{\mathrm{Hom}}}^+$ (Lock Blocked) | BarrierExclusion Blocked |
+| Global Regularity | $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}$ (Lock Blocked) | BarrierExclusion Blocked |
 
 ---
 
@@ -10072,7 +10072,7 @@ The surgery construction follows Hamilton (1997) for Ricci flow and Perelman (20
 :label: mt-up-lock
 :class: metatheorem
 
-**Context:** Node 17 (The Lock) is Blocked ($K_{\text{Lock}}^{\mathrm{blk}}$).
+**Context:** Node 17 (The Lock) is Blocked ($K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}$).
 
 **Hypotheses.** Let $\mathcal{H}$ be a Hypostructure with:
 1. The universal bad pattern $\mathcal{B}_{\text{univ}}$ defined via the Interface Registry
@@ -10082,7 +10082,7 @@ The surgery construction follows Hamilton (1997) for Ricci flow and Perelman (20
 **Statement:** If the universal bad pattern cannot map into the system (Hom-set empty), no singularities of any type can exist. The Lock validates global regularity and retroactively confirms all earlier ambiguous certificates.
 
 **Certificate Logic:**
-$$K_{\text{Lock}}^{\mathrm{blk}} \Rightarrow \text{Global Regularity}$$
+$$K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}} \Rightarrow \text{Global Regularity}$$
 
 **Interface Permit Validated:** All Permits (Retroactively).
 
@@ -10091,7 +10091,7 @@ $$K_{\text{Lock}}^{\mathrm{blk}} \Rightarrow \text{Global Regularity}$$
 
 :::{prf:proof}
 
-The proof uses the contrapositive: if a singularity existed, it would generate a non-trivial morphism $\phi: \mathcal{B}_{\text{univ}} \to \mathcal{H}$ by the universal property. The emptiness of the Hom-set is established via cohomological/spectral obstructions (E1-E10 tactics). This is the "Grothendieck yoga" of reducing existence questions to non-existence of maps. See SGA 4 for the categorical framework.
+The proof uses the contrapositive: if a singularity existed, it would generate a non-trivial morphism $\phi: \mathcal{B}_{\text{univ}} \to \mathcal{H}$ by the universal property. The emptiness of the Hom-set is established via cohomological/spectral obstructions (E1-E13 tactics). This is the "Grothendieck yoga" of reducing existence questions to non-existence of maps. See SGA 4 for the categorical framework.
 :::
 
 ---
@@ -10274,14 +10274,14 @@ Each sector transition costs at least $\delta$ units of action/energy. With boun
 
 **Theorem:** Global Regularity Retro-Validation
 
-**Input:** $K_{\text{Lock}}^{\mathrm{blk}}$ (Node 17: Morphism Exclusion).
+**Input:** $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}$ (Node 17: Morphism Exclusion).
 
 **Target:** Any earlier "Blocked" Barrier certificate ($K_{\text{sat}}^{\mathrm{blk}}, K_{\text{cap}}^{\mathrm{blk}}, \ldots$).
 
 **Statement:** If the Lock proves that *no* singularity pattern can exist globally ($\mathrm{Hom}(\mathcal{B}_{\text{univ}}, \mathcal{H}) = \emptyset$), then all local "Blocked" states are retroactively validated as Regular points.
 
 **Certificate Logic:**
-$$K_{\text{Lock}}^{\mathrm{blk}} \Rightarrow \forall i: K_{\text{Barrier}_i}^{\mathrm{blk}} \to K_{\text{Gate}_i}^+$$
+$$K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}} \Rightarrow \forall i: K_{\text{Barrier}_i}^{\mathrm{blk}} \to K_{\text{Gate}_i}^+$$
 
 **Physical Interpretation:** If the laws of physics forbid black holes (Lock), then any localized dense matter detected earlier (BarrierCap) must eventually disperse, regardless of local uncertainty.
 
@@ -10487,14 +10487,14 @@ Thus, bounded K-complexity (certificate $K_{\mathrm{Rep}_K}^+$) implies $\dim_{\
 
 **Theorem:** Discrete Spectrum Enforcement
 
-**Input:** $K_{\text{Lock}}^{\mathrm{blk}}$ (Node 17: Integrality/E4 Tactic).
+**Input:** $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}$ (Node 17: Integrality/E4 Tactic).
 
 **Target:** Node 12 ($K_{\mathrm{GC}_\nabla}^-$: Chaotic Oscillation).
 
 **Statement:** If the Lock proves that global invariants must be Integers (E4: Integrality), the spectrum of the evolution operator is forced to be discrete (Quantized). Continuous chaotic drift is impossible; the system must be Quasi-Periodic or Periodic.
 
 **Certificate Logic:**
-$$K_{\mathrm{GC}_\nabla}^{\text{chaotic}} \wedge K_{\text{Lock}}^{\mathrm{blk}} \Rightarrow K_{\mathrm{GC}_\nabla}^{\sim} \text{ (Quasi-Periodic)}$$
+$$K_{\mathrm{GC}_\nabla}^{\text{chaotic}} \wedge K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}} \Rightarrow K_{\mathrm{GC}_\nabla}^{\sim} \text{ (Quasi-Periodic)}$$
 
 **Application:** Proves that chaotic oscillations are forbidden when integrality constraints exist.
 
@@ -10865,14 +10865,14 @@ These metatheorems are **universal**: they apply to any valid Hypostructure beca
 **Source:** Dynamical Systems (Morse-Smale Stability) / Geometric Analysis.
 
 **Hypotheses.** Let $\mathcal{H}(\theta_0)$ be a Hypostructure depending on parameters $\theta \in \Theta$ (a topological space). Assume:
-1. Global Regularity at $\theta_0$: $K_{\text{Lock}}^{\mathrm{blk}}(\theta_0)$
+1. Global Regularity at $\theta_0$: $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}(\theta_0)$
 2. Strict barriers: $\mathrm{Gap}(\theta_0) > \epsilon$, $\mathrm{Cap}(\theta_0) < \delta$ for some $\epsilon, \delta > 0$
 3. Continuous dependence: the certificate functionals are continuous in $\theta$
 
 **Statement:** The set of Globally Regular Hypostructures is **open** in the parameter topology. There exists a neighborhood $U \ni \theta_0$ such that $\forall \theta \in U$, $\mathcal{H}(\theta)$ is also Globally Regular.
 
 **Certificate Logic:**
-$$K_{\text{Lock}}^{\mathrm{blk}}(\theta_0) \wedge (\mathrm{Gap} > \epsilon) \wedge (\mathrm{Cap} < \delta) \Rightarrow \exists U: \forall \theta \in U, K_{\text{Lock}}^{\mathrm{blk}}(\theta)$$
+$$K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}(\theta_0) \wedge (\mathrm{Gap} > \epsilon) \wedge (\mathrm{Cap} < \delta) \Rightarrow \exists U: \forall \theta \in U, K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}(\theta)$$
 
 **Use:** Validates that the proof is robust to small modeling errors or physical noise.
 
@@ -10954,18 +10954,18 @@ The weak-strong uniqueness principle uses energy estimates. If $v = u_w - u_s$, 
 
 **Sieve Signature:**
 - **Required Permits (Alternative Backends):**
-  - **Backend A:** $K_{\text{Lock}}^A \wedge K_{\text{Lock}}^B \wedge K_{\mathrm{SC}_\lambda}^{\text{sub}} \wedge K_{\mathrm{CouplingSmall}}^+$ (Subcritical Scaling + Coupling Control)
-  - **Backend B:** $K_{\text{Lock}}^A \wedge K_{\text{Lock}}^B \wedge K_{D_E}^{\text{pert}} \wedge K_{\mathrm{ACP}}^+$ (Semigroup + Perturbation + ACP)
-  - **Backend C:** $K_{\text{Lock}}^A \wedge K_{\text{Lock}}^B \wedge K_{\mathrm{LS}_\sigma}^{\text{abs}}$ (Energy + Absorbability)
-- **Weakest Precondition:** $\{K_{\text{Lock}}^A, K_{\text{Lock}}^B\}$ (component regularity certified)
-- **Produces:** $K_{\text{Lock}}^{A \times B}$ (product system globally regular)
+  - **Backend A:** $K_{\mathrm{Cat}_{\mathrm{Hom}}}^A \wedge K_{\mathrm{Cat}_{\mathrm{Hom}}}^B \wedge K_{\mathrm{SC}_\lambda}^{\text{sub}} \wedge K_{\mathrm{CouplingSmall}}^+$ (Subcritical Scaling + Coupling Control)
+  - **Backend B:** $K_{\mathrm{Cat}_{\mathrm{Hom}}}^A \wedge K_{\mathrm{Cat}_{\mathrm{Hom}}}^B \wedge K_{D_E}^{\text{pert}} \wedge K_{\mathrm{ACP}}^+$ (Semigroup + Perturbation + ACP)
+  - **Backend C:** $K_{\mathrm{Cat}_{\mathrm{Hom}}}^A \wedge K_{\mathrm{Cat}_{\mathrm{Hom}}}^B \wedge K_{\mathrm{LS}_\sigma}^{\text{abs}}$ (Energy + Absorbability)
+- **Weakest Precondition:** $\{K_{\mathrm{Cat}_{\mathrm{Hom}}}^A, K_{\mathrm{Cat}_{\mathrm{Hom}}}^B\}$ (component regularity certified)
+- **Produces:** $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{A \times B}$ (product system globally regular)
 - **Blocks:** All failure modes on product space
 - **Breached By:** Strong coupling exceeding perturbation bounds
 
 **Context:** Product systems arise when composing verified components (e.g., Neural Net + Physics Engine, multi-scale PDE systems, coupled oscillators). The principle of **modular verification** requires that certified components remain certified under weak coupling.
 
 **Certificate Logic:**
-$$K_{\text{Lock}}^A \wedge K_{\text{Lock}}^B \wedge \left((K_{\mathrm{SC}_\lambda}^{\text{sub}} \wedge K_{\mathrm{CouplingSmall}}^+) \vee (K_{D_E}^{\text{pert}} \wedge K_{\mathrm{ACP}}^+) \vee K_{\mathrm{LS}_\sigma}^{\text{abs}}\right) \Rightarrow K_{\text{Lock}}^{A \times B}$$
+$$K_{\mathrm{Cat}_{\mathrm{Hom}}}^A \wedge K_{\mathrm{Cat}_{\mathrm{Hom}}}^B \wedge \left((K_{\mathrm{SC}_\lambda}^{\text{sub}} \wedge K_{\mathrm{CouplingSmall}}^+) \vee (K_{D_E}^{\text{pert}} \wedge K_{\mathrm{ACP}}^+) \vee K_{\mathrm{LS}_\sigma}^{\text{abs}}\right) \Rightarrow K_{\mathrm{Cat}_{\mathrm{Hom}}}^{A \times B}$$
 :::
 
 :::{prf:proof}
@@ -10974,7 +10974,7 @@ $$K_{\text{Lock}}^A \wedge K_{\text{Lock}}^B \wedge \left((K_{\mathrm{SC}_\lambd
 
 **Hypotheses:**
 1. Component Hypostructures $\mathcal{H}_A = (\mathcal{X}_A, \Phi_A, \mathfrak{D}_A)$ and $\mathcal{H}_B = (\mathcal{X}_B, \Phi_B, \mathfrak{D}_B)$
-2. Lock certificates: $K_{\text{Lock}}^A$ and $K_{\text{Lock}}^B$ (global regularity for each)
+2. Lock certificates: $K_{\mathrm{Cat}_{\mathrm{Hom}}}^A$ and $K_{\mathrm{Cat}_{\mathrm{Hom}}}^B$ (global regularity for each)
 3. Coupling term $\Phi_{\text{int}}: \mathcal{X}_A \times \mathcal{X}_B \to \mathbb{R}$ with scaling exponent $\alpha_{\text{int}}$
 4. **Subcritical condition:** $\alpha_{\text{int}} < \min(\alpha_c^A, \alpha_c^B)$
 5. **Coupling control** (permit $K_{\mathrm{CouplingSmall}}^+$, {prf:ref}`def-permit-couplingsmall`): Dissipation domination constants $\lambda_A, \lambda_B > 0$ with $\mathfrak{D}_i \geq \lambda_i E_i$, and energy absorbability $|\dot{E}_{\text{int}}| \leq \varepsilon(E_A + E_B) + C_\varepsilon$ for some $\varepsilon < \min(\lambda_A, \lambda_B)$
@@ -10991,7 +10991,7 @@ $$\Phi_{\text{tot}}(\lambda \cdot x) = \lambda^{\alpha_A} \Phi_A(x_A) + \lambda^
 $$|\Phi_{\text{int}}(\lambda \cdot x)| \leq C \lambda^{\alpha_{\text{int}}} = o(\lambda^{\alpha_c})$$
 The interaction cannot drive blow-up faster than the natural scaling.
 
-*Step 3 (Decoupled Barrier Transfer).* The Lock certificates $K_{\text{Lock}}^A, K_{\text{Lock}}^B$ provide a priori bounds:
+*Step 3 (Decoupled Barrier Transfer).* The Lock certificates $K_{\mathrm{Cat}_{\mathrm{Hom}}}^A, K_{\mathrm{Cat}_{\mathrm{Hom}}}^B$ provide a priori bounds:
 $$\|u_A(t)\|_{\mathcal{X}_A} \leq M_A, \quad \|u_B(t)\|_{\mathcal{X}_B} \leq M_B \quad \forall t \geq 0$$
 Under subcritical coupling, these bounds persist with at most polynomial growth correction.
 
@@ -10999,7 +10999,7 @@ Under subcritical coupling, these bounds persist with at most polynomial growth 
 $$\frac{d}{dt} E_{\text{tot}} \leq -\mathfrak{D}_A - \mathfrak{D}_B + |\dot{E}_{\text{int}}|$$
 where $\mathfrak{D}_A, \mathfrak{D}_B \geq 0$ are the dissipation rates (energy loss per unit time). Subcriticality implies $|\dot{E}_{\text{int}}| \leq \varepsilon (E_A + E_B) + C_\varepsilon$ for any $\varepsilon > 0$. Choosing $\varepsilon$ small enough that $\varepsilon < \min(\lambda_A, \lambda_B)$ (where $\mathfrak{D}_i \geq \lambda_i E_i$), the dissipation dominates the interaction.
 
-*Step 5 (Grönwall Closure + Global Existence).* Standard Grönwall inequality closes the estimate. **Product local well-posedness** follows from standard semilinear theory: component LWP (guaranteed by the Lock certificates $K_{\text{Lock}}^A, K_{\text{Lock}}^B$) extends to the product system under Lipschitz coupling with subcritical growth (Hypotheses 3-4). Combined with the uniform energy bound from Step 4, global existence follows: no singularity can form in the product space.
+*Step 5 (Grönwall Closure + Global Existence).* Standard Grönwall inequality closes the estimate. **Product local well-posedness** follows from standard semilinear theory: component LWP (guaranteed by the Lock certificates $K_{\mathrm{Cat}_{\mathrm{Hom}}}^A, K_{\mathrm{Cat}_{\mathrm{Hom}}}^B$) extends to the product system under Lipschitz coupling with subcritical growth (Hypotheses 3-4). Combined with the uniform energy bound from Step 4, global existence follows: no singularity can form in the product space.
 
 **Literature:** Scaling analysis {cite}`Tao06`; subcritical perturbation {cite}`CazenaveSemilinear03`
 
@@ -11100,14 +11100,14 @@ Bounded uniformly in time.
 **Source:** Invariant Manifold Theory.
 
 **Hypotheses.** Let $\mathcal{H}$ be a Hypostructure with:
-1. Global Regularity: $K_{\text{Lock}}^{\mathrm{blk}}$
+1. Global Regularity: $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}$
 2. An invariant subsystem $\mathcal{S} \subset \mathcal{H}$: if $x(0) \in \mathcal{S}$, then $x(t) \in \mathcal{S}$ for all $t$
 3. The subsystem inherits the Hypostructure: $\mathcal{H}|_{\mathcal{S}} = (\mathcal{S}, \Phi|_{\mathcal{S}}, \mathfrak{D}|_{\mathcal{S}}, G|_{\mathcal{S}})$
 
 **Statement:** Regularity is hereditary. If the parent system $\mathcal{H}$ admits no singularities (Lock Blocked), then no invariant subsystem $\mathcal{S} \subset \mathcal{H}$ can develop a singularity.
 
 **Certificate Logic:**
-$$K_{\text{Lock}}^{\mathrm{blk}}(\mathcal{H}) \wedge (\mathcal{S} \subset \mathcal{H} \text{ invariant}) \Rightarrow K_{\text{Lock}}^{\mathrm{blk}}(\mathcal{S})$$
+$$K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}(\mathcal{H}) \wedge (\mathcal{S} \subset \mathcal{H} \text{ invariant}) \Rightarrow K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}(\mathcal{S})$$
 
 **Use:** Proves safety for restricted dynamics (e.g., "If the general 3D fluid is safe, the axisymmetric flow is also safe").
 
@@ -11909,7 +11909,7 @@ The following table provides the complete mapping from Sieve components to their
 
 | **Sieve Component** | **Foundation Theorem** | **Certificate** | **Primary Literature** |
 |---------------------|------------------------|-----------------|------------------------|
-| {prf:ref}`def-node-lock` | {prf:ref}`mt-krnl-exclusion` | $K_{\text{Lock}}^{\text{blk}}$ | Grothendieck, Mac Lane |
+| {prf:ref}`def-node-lock` | {prf:ref}`mt-krnl-exclusion` | $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}$ | Grothendieck, Mac Lane |
 | {prf:ref}`def-node-compact` | Metatheorem KRNL-Trichotomy | Trichotomy | Lions, Kenig-Merle |
 | {prf:ref}`def-node-complex` | {prf:ref}`mt-resolve-profile` | $K_{11}^{\text{lib/tame/inc}}$ | van den Dries, Kurdyka |
 | Meta-Learning | {prf:ref}`mt-krnl-equivariance` | $K_{\text{SV08}}^+$ | Noether, Cohen-Welling |
@@ -12340,16 +12340,16 @@ containing the limiting Hodge filtration, weight filtration, monodromy data, cyc
 **Rigor Class:** L (Literature-Anchored) — see {prf:ref}`def-rigor-classification`
 
 **Bridge Verification:**
-1. *Hypothesis Translation:* Certificates $K_{\mathrm{Cat}_{\mathrm{Hom}}}^+ \wedge K_{\Gamma}^+$ imply: neutral Tannakian category $\mathcal{C}$ over $k$ with exact faithful tensor-preserving fiber functor $\omega$
+1. *Hypothesis Translation:* The $\mathrm{Cat}_{\mathrm{Hom}}$ interface data together with $K_{\Gamma}^+$ imply: neutral Tannakian category $\mathcal{C}$ over $k$ with exact faithful tensor-preserving fiber functor $\omega$
 2. *Domain Embedding:* $\iota: \mathbf{Hypo}_T \to \mathbf{TannCat}_k$ mapping to category of Tannakian categories via forgetful functor
 3. *Conclusion Import:* Deligne's Tannakian Duality {cite}`Deligne90` $\Rightarrow K_{\text{Tann}}^+$ (group scheme $G = \underline{\text{Aut}}^\otimes(\omega)$ recoverable, $\mathcal{C} \simeq \text{Rep}_k(G)$)
 
 **Sieve Signature**
-- **Requires:** $K_{\mathrm{Cat}_{\mathrm{Hom}}}^+$ (Hom-functor structure), $K_{\Gamma}^+$ (full context certificate)
+- **Requires:** $\mathrm{Cat}_{\mathrm{Hom}}$ interface data (Hom-functor structure), $K_{\Gamma}^+$ (full context certificate)
 - **Produces:** $K_{\text{Tann}}^+$ (Galois group reconstruction, algebraicity criterion, lock exclusion)
 
-**Statement:** Let $\mathcal{C}$ be a neutral Tannakian category over a field $k$ with fiber functor $\omega: \mathcal{C} \to \mathbf{Vect}_k$. Suppose the sieve has issued:
-- $K_{\mathrm{Cat}_{\mathrm{Hom}}}^+$: The category $\mathcal{C}$ is $k$-linear, abelian, rigid monoidal with $\text{End}(\mathbb{1}) = k$
+**Statement:** Let $\mathcal{C}$ be a neutral Tannakian category over a field $k$ with fiber functor $\omega: \mathcal{C} \to \mathbf{Vect}_k$. Suppose the sieve has instantiated the $\mathrm{Cat}_{\mathrm{Hom}}$ interface so that:
+- The category $\mathcal{C}$ is $k$-linear, abelian, rigid monoidal with $\text{End}(\mathbb{1}) = k$
 - $K_{\Gamma}^+$: Full context certificate with fiber functor $\omega$ exact, faithful, and tensor-preserving
 
 Then:
@@ -12387,7 +12387,7 @@ Then:
 
 :::{prf:proof}
 
-*Step 1 (Tannakian axioms).* The certificate $K_{\mathrm{Cat}_{\mathrm{Hom}}}^+$ ensures $\mathcal{C}$ satisfies the Tannakian axioms:
+*Step 1 (Tannakian axioms).* The $\mathrm{Cat}_{\mathrm{Hom}}$ interface data ensure $\mathcal{C}$ satisfies the Tannakian axioms:
 - **Abelian:** $\mathcal{C}$ is a $k$-linear abelian category
 - **Rigid monoidal:** $(\mathcal{C}, \otimes, \mathbb{1})$ is a rigid tensor category with unit $\mathbb{1}$
 - **Neutrality:** $\text{End}_{\mathcal{C}}(\mathbb{1}) = k$ (no non-trivial automorphisms of the unit)
@@ -12417,7 +12417,7 @@ This is the subspace of "algebraic" or "Hodge" elements. Certificate $K_{\text{T
 - Transcendental cycles = $h(X) / h(X)^{\mathcal{G}_{\text{mot}}}$
 
 *Step 7 (Lock verification).* For the sieve lock condition with barrier $\mathcal{B}$ and safe region $S$:
-$$K_{\text{Lock}}^+ \text{ iff } \text{Hom}_{\mathcal{C}}(\mathcal{B}, S) = \emptyset$$
+$$K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}} \text{ iff } \text{Hom}_{\mathcal{C}}(\mathcal{B}, S) = \emptyset$$
 By the equivalence $\mathcal{C} \simeq \text{Rep}(G)$, this becomes:
 $$\text{Hom}_{\text{Rep}(G)}(\rho_{\mathcal{B}}, \rho_S)^G = 0$$
 The lock is verified iff no $G$-equivariant morphisms exist. This is computed via representation theory of $G$.
@@ -12509,7 +12509,7 @@ This metatheorem is the "Main Result" of the framework: it proves that **Stiff**
 - $K_{\mathrm{SC}_\lambda}^+$: Scaling exponents $(\alpha, \beta)$ satisfy subcriticality: $\alpha < \beta + \lambda_c$
 - $K_{\mathrm{LS}_\sigma}^+$: Łojasiewicz-Simon gradient inequality holds: $\|\nabla\Phi\| \geq C|\Phi - \Phi_{\min}|^\theta$ with $\theta \in (0,1)$
 
-- $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{br\text{-}inc}}$: Tactics E1-E12 fail at Node 17 with partial progress indicators:
+- $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{br\text{-}inc}}$: Tactics E1-E13 fail at Node 17 with partial progress indicators:
   - Dimension bounds: $\dim \text{Hom}_{\mathcal{A}}(\mathcal{H}_{\text{bad}}, \mathcal{X}) \leq d_{\max}$ (via $K_{C_\mu}^+$)
   - Invariant constraints: $\mathcal{H}_{\text{bad}}$ annihilated by cone $\mathcal{C} \subset \text{End}(\mathcal{X})$
   - Obstruction witness: Critical symmetry group $G_{\text{crit}} \subseteq \text{Aut}(\mathcal{X})$
@@ -12654,14 +12654,14 @@ Given the tactic trace from $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{br\text{-}
 
 :::{prf:proof}
 
-*Step 1 (Breached-inconclusive certificate analysis).* The certificate $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{br\text{-}inc}}$ records that tactics E1-E12 have been exhausted at Node 17 without determining whether $\text{Hom}_{\mathcal{A}}(\mathcal{H}_{\text{bad}}, \mathcal{X}) = \emptyset$. The upstream certificates $K_{D_E}^+$, $K_{C_\mu}^+$, $K_{\mathrm{SC}_\lambda}^+$, $K_{\mathrm{LS}_\sigma}^+$ provide **partial progress data**:
+*Step 1 (Breached-inconclusive certificate analysis).* The certificate $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{br\text{-}inc}}$ records that tactics E1-E13 have been exhausted at Node 17 without determining whether $\text{Hom}_{\mathcal{A}}(\mathcal{H}_{\text{bad}}, \mathcal{X}) = \emptyset$. The upstream certificates $K_{D_E}^+$, $K_{C_\mu}^+$, $K_{\mathrm{SC}_\lambda}^+$, $K_{\mathrm{LS}_\sigma}^+$ provide **partial progress data**:
 
 - **Dimension bounds** (from $K_{C_\mu}^+$): $\dim \text{Hom}_{\mathcal{A}}(\mathcal{H}_{\text{bad}}, \mathcal{X}) \leq d_{\max}$ via concentration on $\mathcal{P}$
 - **Scaling constraints** (from $K_{\mathrm{SC}_\lambda}^+$): The exponents $(\alpha, \beta)$ stratify the Hom-space by weight
 - **Gradient regularity** (from $K_{\mathrm{LS}_\sigma}^+$): The kernel $\ker(\text{ev}: \text{Hom} \to \mathcal{X})$ has Łojasiewicz structure
 - **Obstruction witness** (from E3-E12): A critical symmetry group $G_{\text{crit}} \subseteq \text{Aut}(\mathcal{X})$ emerges
 
-The key insight is that $G_{\text{crit}}$ is not arbitrary—it is precisely the group of symmetries that prevent E1-E12 from concluding. This group becomes the target for the Bridge Certificate.
+The key insight is that $G_{\text{crit}}$ is not arbitrary—it is precisely the group of symmetries that prevent E1-E13 from concluding. This group becomes the target for the Bridge Certificate.
 
 *Step 2 (Bridge certificate: structural symmetry).* The certificate $K_{\text{Bridge}}$ establishes that $G_{\text{crit}}$ acts not merely as analytic automorphisms, but as **structural** automorphisms:
 $$\rho: G_{\text{crit}} \hookrightarrow \text{Aut}_{\mathcal{S}}(\mathcal{X})$$

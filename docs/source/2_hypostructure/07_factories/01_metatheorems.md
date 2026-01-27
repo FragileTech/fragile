@@ -47,7 +47,7 @@ This metatheorem specifies the **interface contract** for verifiers, not an exis
 
 Soundness follows from the contract; the user's responsibility is to supply correct verifiers for their specific domain. The factory metatheorem guarantees that *if* verifiers satisfy the interface, *then* the Sieve produces sound certificates. This is analogous to type class constraints in programming: we specify what operations must exist, not how to implement them for all cases.
 
-For undecidable predicates (e.g., Gate 17), the framework uses the tactic library E1-E12 with $K^{\mathrm{inc}}$ (inconclusive) fallback—the verifier always terminates, but may return "inconclusive" rather than a definite YES/NO.
+For undecidable predicates (e.g., Gate 17), the framework uses the tactic library E1-E13 with $K^{\mathrm{inc}}$ (inconclusive) fallback—the verifier always terminates, but may return "inconclusive" rather than a definite YES/NO.
 :::
 
 :::{prf:proof}
@@ -76,7 +76,7 @@ Each gate predicate $P_i^T$ belongs to one of three decidability classes:
 *Decidability Mechanisms:*
 - **Semi-decidable ($\Sigma_1^0$):** Predicate can be verified by finite search if true, but may loop if false. Resolution: introduce timeout with $K^{\mathrm{inc}}$ fallback.
 - **Decidable:** Both truth and falsity can be determined in finite time. Resolution: direct evaluation.
-- **Undecidable ($\Pi_2^0$ or higher):** No general algorithm exists. Resolution: tactic library (E1-E12) with $K^{\mathrm{inc}}$ exhaustion.
+- **Undecidable ($\Pi_2^0$ or higher):** No general algorithm exists. Resolution: tactic library (E1-E13) with $K^{\mathrm{inc}}$ exhaustion.
 
 **Decidability Contingencies:** The complexity classifications above assume:
 - **Rep-Constructive:** Computable representation of system states (e.g., constructive reals with effective moduli of continuity)
@@ -126,7 +126,7 @@ Witness[StiffnessCheck] := {
 
 Witness[LockCheck] := {
   obstruction_class: H^*(ℋ_bad; Ω), -- cohomological obstruction
-  tactic_trace: List[TacticResult],  -- E1-E12 outcomes
+  tactic_trace: List[TacticResult],  -- E1-E13 outcomes
   hom_emptiness: Hom = ∅ ∨ Witness[morph],
   proof: tactic_trace ⊢ hom_emptiness
 }
@@ -434,7 +434,7 @@ This is *honest incompleteness*. The system never claims more certainty than it 
 :::{prf:theorem} [FACT-Lock] Lock Backend Factory
 :label: mt-fact-lock
 
-For any type $T$ with $\mathrm{Rep}_K$ available, there exist E1--E10 tactics for the Lock:
+For any type $T$ with $\mathrm{Rep}_K$ available, there exist E1--E13 tactics for the Lock:
 
 **Input**: Type $T$ + representation substrate
 

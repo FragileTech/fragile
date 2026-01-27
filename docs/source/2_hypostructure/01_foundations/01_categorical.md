@@ -224,7 +224,7 @@ packages this as a local principle: if the axioms (the gate predicates) hold alo
 finite-energy trajectory, you get convergence, and if only fixed points persist and the
 gate predicates are certified along that trajectory, the axioms hold in the Sieve sense.
 
-Now, what about systems without strict dissipation? The theorem handles this too. When dissipation is not strict---when energy can stay constant along some directions---you do not get convergence to fixed points. Instead, trajectories converge to the *maximal invariant set*, which may include periodic orbits or more complex recurrence. This is the LaSalle Invariance Principle at work. The key insight remains: persistent states live in a well-defined attractor $\mathcal{A}$.
+Now, what about systems without strict dissipation? The theorem handles this too. When dissipation is not strict---when energy can stay constant along some directions---you do not get convergence to fixed points. Instead, trajectories converge to the *maximal invariant set*, which may include periodic orbits or more complex recurrence. This is the invariant-set principle encoded by the Conley/Morse permit. The key insight remains: persistent states live in a well-defined attractor $\mathcal{A}$.
 
 And here is the key: singularities are places where this self-consistency breaks down.
 The evolution tries to produce a state that cannot exist---$F(x) \neq x$ in the limit.
@@ -281,8 +281,8 @@ implications hold:
 Morse-Smale, Backend C: Conley-Morse in {prf:ref}`def-permit-morsedecomp`), replace (2)
 by: *persistent states are contained in the maximal invariant set (global attractor)
 $\mathcal{A}$, which may include periodic orbits or more complex recurrence*. The
-LaSalle Invariance Principle {cite}`LaSalle76` ensures convergence to this invariant
-set rather than to fixed points specifically.
+invariant-set conclusion is certified by the Conley/Morse permit together with the
+Lyapunov permit; the literature-anchored route below recovers the classical formulation.
 
 **Interpretation:** The equation $F(x) = x$ encapsulates a local consistency principle:
 persistent states must satisfy the gate predicates certified by the Sieve. Singularities
@@ -572,7 +572,7 @@ K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{br\text{-}inc}} \quad \text{(Breached/N
 
 *Step 7 (Certificate Production).* The proof is constructive in the Sieve sense:
 - The certificate $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}$ witnesses $\mathrm{Hom} = \emptyset$
-- The verification uses sufficient obstruction tactics E1--E12 (and E13 when enabled);
+- The verification uses sufficient obstruction tactics E1--E13;
   any successful tactic yields $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}$
 - If a concrete morphism is constructed, emit $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{morph}}$
   and route to the breached/fatal outcome
@@ -642,19 +642,24 @@ existence time $T_*(x) \in (0, \infty]$ classifies into exactly one of three out
 *Step 1 (Energy Dichotomy).* By (D), $\Phi(u(t))$ is non-increasing. Either dispersion
 occurs (local energy in the critical norm vanishes along a sequence, so no nontrivial
 profile forms), or concentration occurs (there exist $\varepsilon > 0$, times $t_n$, and
-points $x_n$ with a uniform lower bound on local energy). This is the
-**concentration-compactness dichotomy** of {cite}`Lions84` Lemma I.1: for bounded
-sequences in Sobolev spaces, either mass disperses or concentrates; multi-profile cases
-are handled by the profile classification machinery ({prf:ref}`mt-resolve-profile`).
-When $T_* = \infty$, the dispersion branch gives the Global Existence outcome; the concentration branches are analyzed only in the finite-time regime.
+points $x_n$ with a uniform lower bound on local energy). This dichotomy is certified
+by Node 3 (CompactCheck; {prf:ref}`def-node-compact`) together with the compactness
+permit; multi-profile cases are handled by the profile classification machinery
+({prf:ref}`mt-resolve-profile`). When $T_* = \infty$, the dispersion branch gives the
+Global Existence outcome; the concentration branches are analyzed only in the finite-time
+regime.
 
-*Step 2 (Profile Extraction).* In the concentration case, by (C), there exists a sequence $t_n \to T_*$ and symmetry elements $g_n \in G$ such that $g_n \cdot u(t_n) \to v^*$ (profile). This is the **profile decomposition** of {cite}`BahouriGerard99` Theorem 1: any bounded sequence in the critical phase space $X_c$ ({prf:ref}`def-critical-index`, PDE case $X_c = \dot{H}^{s_c}$) admits decomposition into orthogonal profiles with asymptotically vanishing remainder.
+*Step 2 (Profile Extraction).* In the concentration case, by (C), there exists a sequence
+$t_n \to T_*$ and symmetry elements $g_n \in G$ such that $g_n \cdot u(t_n) \to v^*$
+(profile). This extraction is provided by the profile resolver
+({prf:ref}`mt-resolve-profile`) in the critical phase space $X_c$
+({prf:ref}`def-critical-index`, PDE case $X_c = \dot{H}^{s_c}$), with remainder control
+encoded in the compactness permit.
 
 *Step 3 (Profile Classification).* The limiting profile $v^*$ either: (a) satisfies all
-interface permits → Global Regularity via imported rigidity/scattering upgrades
-({prf:ref}`mt-up-scattering`, {cite}`KenigMerle06` Theorem 1.1), or (b) violates at
-least one permit → Genuine Singularity (Mode C.E) with {cite}`Struwe90` providing the
-singularity structure.
+interface permits → Global Regularity via certified upgrades (e.g.,
+{prf:ref}`mt-up-scattering`), or (b) violates at least one permit → Genuine Singularity
+(Mode C.E) with an explicit obstruction certificate recorded by the Sieve.
 :::
 
 :::{prf:lemma} Analytic-to-Categorical Bridge
@@ -779,15 +784,21 @@ $$K(L_n) \leq |M| + O(\log n) = O(\log n)$$
 
 The $O(\log n)$ term encodes $n$. Since $L$ is decidable, Axiom R holds (the decider serves as recovery operator). Sieve verdict: **REGULAR** with $K_{\text{Crystal}}^+$.
 
-**Step 2 (Gas Regime).** Let $L \subseteq \mathbb{N}$ be Martin-Löf random. By the Levin-Schnorr Theorem {cite}`Levin73b`; {cite}`Schnorr73`:
-
+**Step 2 (Gas Regime).** Let $L \subseteq \mathbb{N}$ be certified as Gas/Random in the
+phase taxonomy ({prf:ref}`def-algorithmic-phases`). By definition of that certificate,
 $$K(L_n) \geq n - O(1)$$
+and no recovery operator exists. Axiom R fails absolutely. Sieve verdict: **HORIZON**
+with $K_{\text{Gas}}^{\text{blk}}$.
 
-No computable predictor can anticipate the membership of $L$. Axiom R fails absolutely—no recovery operator exists. Sieve verdict: **HORIZON** with $K_{\text{Gas}}^{\text{blk}}$.
+**Step 3 (C.E. Undecidability).** If only an enumerator is certified (c.e. status) and
+no Axiom R certificate exists, then Axiom R fails by definition of
+{prf:ref}`ax-algorithmic-recovery`. This yields the Liquid regime, without implying any
+$O(\log n)$ bound on $K(L_n)$; enumerability does not control initial-segment
+complexity.
 
-**Step 3 (C.E. Undecidability).** The Halting Set $\mathcal{K}$ is c.e. but undecidable—there exists an enumerator, but no total computable recovery operator exists (Turing 1936 {cite}`Turing36`). This witnesses Axiom R failure without implying any $O(\log n)$ bound on $K(\mathcal{K}_n)$; enumerability does not control initial-segment complexity.
-
-**Step 4 (Axes Separation).** There exist decidable sets with $K(L_n) = O(\log n)$ and Martin-Lof random sets with $K(L_n) \geq n - O(1)$. C.e. undecidable sets (e.g., $\mathcal{K}$) show that Axiom R failure is independent of low initial-segment complexity. The phase distinction therefore uses both Axiom R and randomness, not a single complexity threshold.
+**Step 4 (Axes Separation).** The phase distinction is two-axis: Axiom R (recovery
+operator) and randomness/complexity. Crystal/Gas/Liquid are defined by these
+certificates, so the classification does not collapse to a single complexity threshold.
 
 **Thermodynamic Interpretation:** Under the correspondence of {prf:ref}`thm-sieve-thermo-correspondence`, this is a first-order phase transition in the decidability order parameter $\rho_R$ (Axiom R satisfaction).
 :::
