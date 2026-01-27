@@ -12,6 +12,7 @@ PDF_FILES := $(SVG_FILES:.svg=.pdf)
 
 # Build the Jupyter Book
 build: venv
+	$(MAKE) -C .. prompt
 	$(JUPYTER_BOOK) build .
 
 # Alias for build

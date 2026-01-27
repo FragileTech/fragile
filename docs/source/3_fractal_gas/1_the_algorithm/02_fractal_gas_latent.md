@@ -1585,6 +1585,16 @@ At fixed $\Delta t$, the mean-field step is most naturally expressed as a nonlin
 
 In weak-selection continuous-time scalings (cloning probabilities $=O(\Delta t)$), this nonlinear map linearizes into a mutation–selection/replicator-type evolution with an *effective* selection functional induced by the pairwise rule; this proof object controls it through explicit bounded ranges and minorization constants (rather than asserting $\tilde V\equiv V_{\mathrm{fit}}$ as an identity).
 
+:::{prf:remark} Mean-Field Fitness Field
+:label: rem-mean-field-fitness-field-latent
+
+In the mean-field limit $N \to \infty$, the per-walker fitness induces a deterministic field
+$V_{\mathrm{fit}}(z; \mu)$ obtained by averaging over companion selection and using statistics
+computed from the limiting measure $\mu$ (global if $\rho=\varnothing$, localized if $\rho$ is finite).
+For finite $N$, the algorithm samples this field only at walker locations. See Definition
+{prf:ref}`def-mean-field-fitness-field`.
+:::
+
 ### Propagation-of-Chaos Error (Framework Bound)
 
 When the Wasserstein contraction rate $\kappa_W>0$ is certified (typically from the companion-selection minorization constant and cloning pressure), the framework uses the generic propagation-of-chaos bound

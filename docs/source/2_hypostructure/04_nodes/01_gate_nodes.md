@@ -20,6 +20,35 @@ Each gate node is specified by:
 - **Context update**: What is added to $\Gamma$
 - **NO routing**: Where the NO edge leads
 
+:::{prf:remark} Task-level outcomes
+:label: rem-task-level-outcomes
+
+The formal codomain of the Sieve is $\{\texttt{REGULARITY}, \texttt{DISPERSION},
+\texttt{FAILURE}(m)\}$ (Definition {prf:ref}`def-sieve-functor`). In task-driven
+settings, **DISPERSION** may be treated as an undesired outcome (a goal failure) even
+though it is a benign/global-existence exit in the formal classification; see
+{prf:ref}`rem-benign-exits` for the base interpretation.
+:::
+
+:::{prf:definition} Gate obstruction class assignment
+:label: def-gate-obstruction-class
+
+Fix gate index $i$ with predicate $P_i$. Under the spectral-sequence bridge
+({prf:ref}`mt-sieve-spectral-sequence`), associate to $P_i$ the class $[P_i] \in
+E_1^{i,0}$ represented by the vertex $v_i$ in the order complex of the sieve DAG.
+The evaluation semantics impose:
+
+- If $K_i^+$ is present in the context, set $[P_i] = 0$ in the associated graded.
+- If $K_i^{\mathrm{wit}}$ is present, then $[P_i] \neq 0$ and the bridge differential
+  detects the obstruction that triggers the NO edge.
+- If $K_i^{\mathrm{inc}}$ is present, $[P_i]$ is recorded as unresolved; inc-upgrades
+  ({prf:ref}`def-inc-upgrades`) may later set $[P_i]=0$ when the missing prerequisites
+  are discharged.
+
+This gives the exact mapping from gate predicates to obstruction classes used by the
+spectral-sequence construction.
+:::
+
 :::{prf:remark} Mandatory inconclusive output
 :label: rem-mandatory-inc
 
@@ -150,20 +179,21 @@ The dichotomy mirrors the **thermodynamic distinction** between ordered (low-ent
 **Predicate** $P_4$: The scaling structure is subcritical:
 
 $$
-P_4 \equiv \alpha > \beta
+P_4 \equiv \beta - \alpha < \lambda_c
 
 $$
 
-where $\alpha, \beta$ are the scaling exponents satisfying:
+where $\alpha, \beta$ are the scaling exponents and $\lambda_c$ is the critical
+threshold, with:
 
 $$
 \Phi(\mathcal{S}_\lambda x) = \lambda^\alpha \Phi(x), \quad \mathfrak{D}(\mathcal{S}_\lambda x) = \lambda^\beta \mathfrak{D}(x)
 
 $$
 
-**YES certificate** $K_{\mathrm{SC}_\lambda}^+ = (\alpha, \beta, \alpha > \beta \text{ proof})$.
+**YES certificate** $K_{\mathrm{SC}_\lambda}^+ = (\alpha, \beta, \lambda_c, \beta - \alpha < \lambda_c \text{ proof})$.
 
-**NO certificate** $K_{\mathrm{SC}_\lambda}^- = (\alpha, \beta, \alpha \leq \beta \text{ witness})$.
+**NO certificate** $K_{\mathrm{SC}_\lambda}^- = (\alpha, \beta, \lambda_c, \beta - \alpha \geq \lambda_c \text{ witness})$.
 
 **NO routing**: BarrierTypeII (Type II Barrier)
 

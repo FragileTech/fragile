@@ -784,6 +784,23 @@ def _masked_mean_std(values: torch.Tensor, alive: torch.Tensor) -> tuple[float, 
     return mean_val, alive_values.std().item()
 
 
+def _compute_electroweak_proxy(
+    u1_summary: dict[str, float], su2_summary: dict[str, float]
+) -> dict[str, float]:
+    g1 = float(max(u1_summary.get("phase_std", 0.0), 0.0))
+    g2 = float(max(su2_summary.get("phase_std", 0.0), 0.0))
+    denom = g1**2 + g2**2
+    sin2_theta_w = (g1**2 / denom) if denom > 0 else 0.0
+    tan_theta_w = (g1 / g2) if g2 > 0 else 0.0
+    return {
+        "g1_proxy": g1,
+        "g2_proxy": g2,
+        "sin2_theta_w_proxy": sin2_theta_w,
+        "tan_theta_w_proxy": tan_theta_w,
+        "denominator": denom,
+    }
+
+
 def _compute_hypocoercive_variance(
     positions: torch.Tensor, velocities: torch.Tensor, lambda_v: float = 1.0
 ) -> dict[str, float]:
@@ -1858,7 +1875,12 @@ def main() -> None:
         "gauge_invariant_norm": su2_norm,
         "walker_index": walker_i,
     }
-    _write_progress(progress_path, "gauge_phases", {"u1": u1_summary, "su2": su2_summary})
+    electroweak_proxy = _compute_electroweak_proxy(u1_summary, su2_summary)
+    _write_progress(
+        progress_path,
+        "gauge_phases",
+        {"u1": u1_summary, "su2": su2_summary, "electroweak_proxy": electroweak_proxy},
+    )
 
     qsd_metrics = None
     if history.n_recorded > 1:
@@ -2082,6 +2104,7 @@ def main() -> None:
         "local_fields": local_fields_summary,
         "u1": u1_summary,
         "su2": su2_summary,
+        "electroweak_proxy": electroweak_proxy,
         "qsd_variance": qsd_metrics,
         "lyapunov": lyapunov_summary,
         "fractal_set": fractal_set_metrics,

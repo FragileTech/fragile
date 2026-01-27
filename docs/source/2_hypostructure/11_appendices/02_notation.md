@@ -99,6 +99,13 @@ For barrier nodes, we have blocked ($K^{\text{blk}}$) versus breached ($K^{\text
 | $K^{\mathrm{hor}}$ | Horizon certificate (epistemic/paradox horizon reached) |
 | $\Gamma$ | Certificate accumulator (full chain of certificates) |
 
+**Derived witness certificates (auxiliary bounds):**
+
+| Symbol | Meaning |
+|--------|---------|
+| $K_{D_{\max}}^+$ | Bounded algorithmic diameter witness (payload: $D_{\max}$) |
+| $K_{\rho_{\max}}^+$ | Uniform invariant/QSD density bound witness (payload: $\rho_{\max}$) |
+
 (sec-notation-categorical)=
 ## Categorical Notation
 

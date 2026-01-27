@@ -124,7 +124,7 @@ The dependency graph is acyclic by construction: factories are numbered in topol
 - **Global termination:** The Sieve DAG has finitely many nodes (17 + barriers + surgery). Surgery count is bounded by $N_{\max} = \lfloor \Phi(x_0)/\delta_{\text{surgery}} \rfloor$. Total steps $\leq 17 \cdot N_{\max} \cdot (\text{max barrier iterations})$.
 
 *Step 6 (Output Trichotomy).* The Sieve execution terminates with exactly one of:
-- **VICTORY:** All gates pass, Lock blocked → emit $K_{\text{Lock}}^{\mathrm{blk}}$ (Global Regularity)
+- **VICTORY:** All gates pass, Lock blocked → emit $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}$ (Global Regularity)
 - **Surgery path:** Barrier breach + admissibility → surgery iteration, returns to Step 1 with surgered state
 - **$K^{\mathrm{inc}}$:** Tactic exhaustion at some node → emit $K_P^{\mathrm{inc}}$ with $\mathsf{missing}$ set, route to {prf:ref}`mt-lock-reconstruction`
 

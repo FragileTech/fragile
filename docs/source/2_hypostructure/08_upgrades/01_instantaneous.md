@@ -397,7 +397,7 @@ When the Lock returns BLOCKED, it validates not just one permit but all permits 
 :::{prf:theorem} [UP-Lock] Lock Promotion (BarrierExclusion $\to$ GLOBAL YES)
 :label: mt-up-lock
 
-**Context:** Node 17 (The Lock) is Blocked ($K_{\text{Lock}}^{\mathrm{blk}}$).
+**Context:** Node 17 (The Lock) is Blocked ($K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}$).
 
 **Hypotheses.** Let $\mathcal{H}$ be a Hypostructure with:
 1. The universal bad pattern $\mathcal{B}_{\text{univ}}$ defined via the Interface Registry
@@ -408,7 +408,7 @@ When the Lock returns BLOCKED, it validates not just one permit but all permits 
 
 **Certificate Logic:**
 
-$$K_{\text{Lock}}^{\mathrm{blk}} \Rightarrow \text{Global Regularity}$$
+$$K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}} \Rightarrow \text{Global Regularity}$$
 
 **Interface Permit Validated:** All Permits (Retroactively).
 

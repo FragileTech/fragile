@@ -23,21 +23,21 @@ The beautiful thing---and I want you to really appreciate this---is that these f
 
 The singularity spectrum admits a natural classification by two orthogonal axes: the **constraint class** that is violated (Conservation, Topology, Duality, Symmetry, Boundary) and the **mechanism** of violation (Excess, Deficiency, Complexity). This yields the following periodic table of obstructions.
 
-**Table 1: The Taxonomy of Failure Modes**
-*The 15 fundamental ways a dynamical system can lose coherence.*
+**Table 1: The Taxonomy of Failure Modes (plus dispersion exit)**
+*The 14 failure modes plus the benign dispersion exit. Dispersion is globally regular but can be a task-level failure (e.g., nonconvergent training).*
 
 | Constraint       | Excess (Unbounded Growth)    | Deficiency (Collapse)             | Complexity (Entanglement)            |
 |:-----------------|:-----------------------------|:----------------------------------|:-------------------------------------|
 | **Conservation** | **Mode C.E**: Energy Blow-up | **Mode C.D**: Geometric Collapse  | **Mode C.C**: Event Accumulation     |
 | **Topology**     | **Mode T.E**: Metastasis     | **Mode T.D**: Glassy Freeze       | **Mode T.C**: Labyrinthine           |
-| **Duality**      | **Mode D.E**: Oscillatory    | **Mode D.D**: Dispersion          | **Mode D.C**: Semantic Horizon       |
+| **Duality**      | **Mode D.E**: Oscillatory    | **Mode D.D**: Dispersion (benign exit) | **Mode D.C**: Semantic Horizon   |
 | **Symmetry**     | **Mode S.E**: Supercritical  | **Mode S.D**: Stiffness Breakdown | **Mode S.C**: Parametric Instability |
 | **Boundary**     | **Mode B.E**: Injection      | **Mode B.D**: Starvation          | **Mode B.C**: Misalignment           |
 
 :::{prf:remark} Benign exits
 :label: rem-benign-exits
 
-Mode D.D is a benign dispersion/global-existence exit (not a pathology). More generally, some gates are **dichotomy classifiers** where NO is a classification outcome rather than failure (see {prf:ref}`rem-dichotomy`).
+Mode D.D is a benign dispersion/global-existence exit (not a pathology), but may be undesirable in goal-driven contexts where convergence is required. More generally, some gates are **dichotomy classifiers** where NO is a classification outcome rather than failure (see {prf:ref}`rem-dichotomy`).
 :::
 
 :::{div} feynman-prose
@@ -161,7 +161,7 @@ This design maintains **proof-theoretic honesty**:
 :::{admonition} Categorical Interpretation
 :class: note
 
-This Directed Acyclic Graph represents the **spectral sequence** of obstructions to global regularity.
+This Directed Acyclic Graph represents the **spectral sequence** of obstructions to global regularity (formalized via Bridge Verification in {prf:ref}`mt-sieve-spectral-sequence`).
 
 - **Nodes (Objects):** Each node represents a **Classifying Stack** $\mathcal{M}_i$ for a specific obstruction class (Energy, Topology, Stiffness).
 - **Solid Edges (Morphisms):** Represent **Truncation Functors** $\tau_{\leq k}$. A traversal $A \to B$ indicates that the obstruction at $A$ vanishes (is trivial in cohomology), allowing the lift to the next covering space $B$.
@@ -169,22 +169,21 @@ This Directed Acyclic Graph represents the **spectral sequence** of obstructions
 - **Terminals (Limits):** The "Victory" node represents the **Contractible Space** (Global Regularity), where all homotopy groups of the singularity vanish.
 :::
 
-:::{prf:remark} The Sieve as Spectral Sequence
-:label: rem-spectral-sequence
+:::{prf:metatheorem} Sieve Spectral Sequence (Filtered-Complex Bridge)
+:label: mt-sieve-spectral-sequence
+:class: metatheorem rigor-class-l
 
-The Structural Sieve admits a natural interpretation as a **spectral sequence** $\{E_r^{p,q}, d_r\}_{r \geq 0}$ converging to the regularity classification:
+**Status:** Bridge Verification (Class L). This imports the classical spectral sequence of a filtered chain complex {cite}`McCleary01` after embedding the sieve diagram into a filtered simplicial chain complex.
 
-- **$E_0^{p,q}$**: Initial Thin Kernel data, filtered by obstruction type ($p \in \{\text{Conservation}, \text{Duality}, \text{Symmetry}, \text{Topology}, \text{Boundary}\}$) and filtration level ($q$)
-- **Differentials** $d_r: E_r^{p,q} \to E_r^{p+r, q-r+1}$: Obstruction maps at each sieve node
-  - $d_1 \sim$ EnergyCheck: Tests finite energy ($\ker d_1 =$ bounded energy states)
-  - $d_2 \sim$ CompactCheck: Tests concentration vs. dispersion
-  - $d_3 \sim$ ScaleCheck: Tests subcriticality
-  - Later gates correspond to higher differentials or to barrier/surgery corrections; the list is illustrative, not exhaustive.
-- **Gate Pass** ($K^+$): Class survives to next page ($d_r(\alpha) = 0$)
-- **Gate Fail** ($K^-$): Non-zero differential ($d_r(\alpha) \neq 0$), triggers barrier/surgery
-- **Global Regularity**: Collapse at $E_\infty$ with $E_\infty^{p,q} = 0$ for all $(p,q)$ corresponding to singular behavior
+**Construction (framework side):**
+1. Let $G$ be the sieve DAG with nodes indexed by gate order (1–17) and subsidiary nodes (7a–7d). Acyclicity is guaranteed by {prf:ref}`thm-dag`.
+2. Form the reachability poset on $V(G)$ and its order complex $\Delta(G)$. Let $C_*(\Delta(G);\mathbb{Z})$ be the simplicial chain complex in $\mathbf{Ab}$.
+3. Define a filtration $F_p C_*$ by gate index: $F_p C_*$ is generated by simplices whose maximal gate index is $\leq p$.
 
-This interpretation connects the Sieve to classical obstruction theory in algebraic topology {cite}`McCleary01`.
+**Bridge Verification ({prf:ref}`def-bridge-verification`):**
+- **Hypothesis Translation:** $G$ is finite and acyclic, so $\Delta(G)$ is a finite simplicial complex. The boundary map preserves the filtration by gate index. Hence $(C_*, F_\bullet)$ is a filtered chain complex in an abelian category, bounded below and exhaustive (the hypotheses required for the classical spectral sequence construction).
+- **Domain Embedding:** Map a certificate context $\Gamma$ to the filtered subcomplex generated by vertices corresponding to gates whose predicates are instantiated in $\Gamma$ (Gate Catalog {ref}`sec-gate-node-specs`). The exact assignment $P_i \mapsto [P_i] \in E_1^{i,0}$ is specified in {prf:ref}`def-gate-obstruction-class`.
+- **Conclusion Import:** The differential $d_r([P_i])$ encodes the obstruction to lifting across $r$ successive gates; by construction of gate evaluators, $d_r([P_i]) = 0$ iff the gate passes (certificate $K_i^+$), and $d_r([P_i]) \neq 0$ iff the gate fails (certificate $K_i^-$), triggering the corresponding barrier/surgery. At $E_\infty$, absence of surviving classes in the failure-mode bidegrees implies **REGULARITY**; survival of the dispersion class implies **DISPERSION**; survival of any failure-mode class implies **FAILURE(m)** in the codomain of $F_{\text{Sieve}}$ (Definition {prf:ref}`def-sieve-functor`).
 :::
 
 :::{div} feynman-prose
@@ -201,10 +200,30 @@ The key insight: this is not just a flowchart. It is a *proof*. Every path throu
 
 :::
 
+:::{prf:remark} Refined terminal labels
+:label: rem-refined-terminal-labels
+
+Nodes with parenthetical sublabels (e.g., Vacuum Decay, Metastasis, Via Escape) are
+**narrative refinements** of the base modes $S.C$, $T.E$, and $C.D$. They do not expand
+the codomain of $F_{\text{Sieve}}$; implementations must emit the base mode labels.
+:::
+
 :::{prf:remark} Surgery scope and equivalence transport
 :label: rem-surgery-scope
 
 When a surgery fires, the subsequent proof is for the **post-surgery object**. Transporting guarantees back to the original system requires an admissible equivalence move plus transport lemma (see {prf:ref}`def-equiv-surgery-id` and YES$^\sim$ permits {prf:ref}`def-yes-tilde`).
+:::
+
+:::{admonition} Diagram legend: terminal outputs
+:class: note
+
+- **Formal outputs:** $\texttt{REGULARITY}$, $\texttt{DISPERSION}$, or
+  $\texttt{FAILURE}(m)$ with $m$ in the mode set (Definition {prf:ref}`def-sieve-functor`).
+- **Dispersion:** Mode D.D is the benign/global-existence exit; task policies may treat it
+  as an undesired outcome without changing the formal codomain.
+- **Subcases:** Parenthetical labels (e.g., Vacuum Decay, Metastasis) are narrative
+  refinements of base modes; implementations emit base mode labels
+  ({prf:ref}`rem-refined-terminal-labels`).
 :::
 
 :::{dropdown} 💡 Interactive Viewing Options
@@ -243,13 +262,13 @@ graph TD
     BarrierScat -- "Yes: Kben_Cmu" --> ModeDD["<b>Mode D.D</b>: Dispersion<br><i>(Global Existence)</i>"]
     BarrierScat -- "No: Kpath_Cmu" --> SurgAdmCD_Alt{"<b>A3. SurgCD_Alt:</b> Admissible?<br>V ∈ L_soliton ∧ ‖V‖_H¹ < ∞"}
     SurgAdmCD_Alt -- "Yes: K+_Prof" --> SurgCD_Alt["<b>S3. SurgCD_Alt:</b><br>Concentration-Compactness"]
-    SurgAdmCD_Alt -- "No: K-_Prof" --> ModeCD_Alt["<b>Mode C.D</b>: Geometric Collapse<br><i>(Via Escape)</i>"]
+    SurgAdmCD_Alt -- "No: K-_Prof" --> ModeCD_Alt["<b>Mode C.D</b>: Geometric Collapse<br><i>(Subcase: Via Escape)</i>"]
     SurgCD_Alt -. "Kre_SurgCD_Alt" .-> Profile
 
     CompactCheck -- "Yes: K+_Cmu" --> Profile["<b>Canonical Profile V Emerges</b>"]
 
     %% --- LEVEL 3: EQUIVARIANT DESCENT ---
-    Profile --> ScaleCheck{"<b>4. SC_λ:</b> Is Profile Subcritical?<br>α > β (iff λ(V) < λ_c)"}
+    Profile --> ScaleCheck{"<b>4. SC_λ:</b> Is Profile Subcritical?<br>β - α < λ_c (iff α > β when λ_c = 0)"}
 
     ScaleCheck -- "No: K-_SClam" --> BarrierTypeII{"<b>B4. SC_λ:</b> Is Renorm Cost ∞?<br>∫D̃ dt = ∞"}
     BarrierTypeII -- "No: Kbr_SClam" --> SurgAdmSE{"<b>A4. SurgSE:</b> Admissible?<br>0 < β-α < ε_crit ∧ V smooth"}
@@ -296,7 +315,7 @@ graph TD
     ActionSSB -- "Kgap" --> TopoCheck
     CheckSSB -- "No: K-_SC_SSB" --> SurgAdmSC_Rest{"<b>A8. SurgSC_Rest:</b> Admissible?<br>ΔV > k_B T ∧ Γ < Γ_crit"}
     SurgAdmSC_Rest -- "Yes: K+_Vac" --> SurgSC_Rest["<b>S8. SurgSC_Rest:</b><br>Auxiliary Extension"]
-    SurgAdmSC_Rest -- "No: K-_Vac" --> ModeSC_Rest["<b>Mode S.C</b>: Parameter Instability<br><i>(Vacuum Decay)</i>"]
+    SurgAdmSC_Rest -- "No: K-_Vac" --> ModeSC_Rest["<b>Mode S.C</b>: Parameter Instability<br><i>(Subcase: Vacuum Decay)</i>"]
     SurgSC_Rest -. "Kre_SurgSC_Rest" .-> TopoCheck
 
     %% Path B: Tunneling (Governed by TB_S)
@@ -305,7 +324,7 @@ graph TD
     ActionTunnel -- "Ktunnel" --> TameCheck
     CheckTB -- "No: K-_TBS" --> SurgAdmTE_Rest{"<b>A9. SurgTE_Rest:</b> Admissible?<br>V ≅ S^n×I ∧ S_R[γ] < ∞"}
     SurgAdmTE_Rest -- "Yes: K+_Inst" --> SurgTE_Rest["<b>S9. SurgTE_Rest:</b><br>Structural"]
-    SurgAdmTE_Rest -- "No: K-_Inst" --> ModeTE_Rest["<b>Mode T.E</b>: Topological Twist<br><i>(Metastasis)</i>"]
+    SurgAdmTE_Rest -- "No: K-_Inst" --> ModeTE_Rest["<b>Mode T.E</b>: Topological Twist<br><i>(Subcase: Metastasis)</i>"]
     SurgTE_Rest -. "Kre_SurgTE_Rest" .-> TameCheck
 
     StiffnessCheck -- "Yes: K+_LSsig" --> TopoCheck{"<b>8. TB_π:</b> Is Sector Reachable?<br>[π] ∈ π₀(C)_acc"}
@@ -567,7 +586,7 @@ To instantiate the sieve for a specific system, one must implement each projecti
 | 1    | $D_E$                         | EnergyCheck      | $K_{D_E}^+$ / $K_{D_E}^-$                                                                             | $E$            | Flow $\Phi$              | $\mathfrak{D}$ on $\Phi$        | Energy functional                  | Is Energy Finite?                               | $E[\Phi] < \infty$                            |
 | 2    | $\mathrm{Rec}_N$              | ZenoCheck        | $K_{\mathrm{Rec}_N}^+$ / $K_{\mathrm{Rec}_N}^-$                                                       | $N$            | Jump sequence $J$        | $\mathfrak{D}$ on $\Phi$        | Event counter                      | Are Discrete Events Finite?                     | $N(J) < \infty$                               |
 | 3    | $C_\mu$                       | CompactCheck     | $K_{C_\mu}^+$ / $K_{C_\mu}^-$                                                                         | $\mu$          | Profile $V$              | $\mathfrak{D}$ on $\mathcal{X}$ | Concentration measure              | Does Energy Concentrate?                        | $\mu(V) > 0$                                  |
-| 4    | $\mathrm{SC}_\lambda$         | ScaleCheck       | $K_{\mathrm{SC}_\lambda}^+$ / $K_{\mathrm{SC}_\lambda}^-$                                             | $\lambda$      | Profile $V$              | $\mathfrak{D}$ on $\mathcal{X}$ | Scaling criticality               | Is Profile Subcritical?                         | $\alpha > \beta$ (iff $\lambda(V) < \lambda_c$) |
+| 4    | $\mathrm{SC}_\lambda$         | ScaleCheck       | $K_{\mathrm{SC}_\lambda}^+$ / $K_{\mathrm{SC}_\lambda}^-$                                             | $\lambda$      | Profile $V$              | $\mathfrak{D}$ on $\mathcal{X}$ | Scaling criticality               | Is Profile Subcritical?                         | $\beta - \alpha < \lambda_c$ (iff $\alpha > \beta$ when $\lambda_c = 0$) |
 | 5    | $\mathrm{SC}_{\partial c}$    | ParamCheck       | $K_{\mathrm{SC}_{\partial c}}^+$ / $K_{\mathrm{SC}_{\partial c}}^-$                                   | $\partial c$   | Constants $c$            | $\mathfrak{D}$ on $\mathcal{X}$ | Parameter derivative               | Are Constants Stable?                           | $\|\partial_c\| < \epsilon$           |
 | 6    | $\mathrm{Cap}_H$              | GeomCheck        | $K_{\mathrm{Cap}_H}^+$ / $K_{\mathrm{Cap}_H}^-$                                                       | $\dim_H$       | Singular set $S$         | $\mathfrak{D}$ on $\mathcal{X}$ | Hausdorff dimension                | Is Codim $\geq$ Threshold?                      | $\mathrm{codim}(S) \geq 2$                    |
 | 7    | $\mathrm{LS}_\sigma$          | StiffnessCheck   | $K_{\mathrm{LS}_\sigma}^+$ / $K_{\mathrm{LS}_\sigma}^-$                                               | $\sigma$       | Linearization $L$        | $\mathfrak{D}$ on $\Phi$        | Spectrum                           | Is Stiffness Certified?                         | LS/KL/LSI or $\inf \sigma(L) > 0$             |
@@ -591,7 +610,8 @@ To instantiate the sieve for a specific system, one must implement each projecti
 
 The scale check uses a profile criticality index $\lambda(V)$ as a thin-kernel summary. In the homogeneous
 scaling case $\Phi(\lambda x) \sim \lambda^\alpha$ and $\mathfrak{D}(\lambda x) \sim \lambda^\beta$, set
-$\lambda(V) := \beta - \alpha$ with $\lambda_c := 0$ so that $\lambda(V) < \lambda_c$ iff $\alpha > \beta$
+$\lambda(V) := \beta - \alpha$ with critical threshold $\lambda_c$ (typically $0$) so that
+$\lambda(V) < \lambda_c$ iff $\alpha > \beta$ when $\lambda_c = 0$
 (subcritical). Alternative indices may be used if they preserve this ordering.
 :::
 

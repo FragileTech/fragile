@@ -82,7 +82,21 @@ $$
 1. **Partition**: $\bigcup_{i=1}^N \mathrm{Vor}_i(t) = \mathcal{Z}$ (up to boundaries)
 2. **Closure**: Each cell $\mathrm{Vor}_i(t)$ is closed. Under the assumption that the space is a **Hadamard manifold** (complete, simply connected, with **non-positive sectional curvature**) or satisfies CAT(0) geometry, each cell is **geodesically convex** (and hence star-shaped from the walker position $z_i$). For general Riemannian manifolds with arbitrary curvature, geodesic convexity may fail and cells can be non-convex or even disconnected.
 
-   **Note on curvature regime:** The emergent metric $g = H + \epsilon_\Sigma I$ from {doc}`01_emergent_geometry` has curvature determined by the fitness Hessian. In typical optimization landscapes with bounded curvature (ensured by the Gevrey-1 bounds in {doc}`/3_fractal_gas/appendices/14_b_geometric_gas_cinf_regularity_full`), the regularization $\epsilon_\Sigma$ can be chosen to control the sectional curvature. For practical implementations, the local geodesic distance can be approximated by Euclidean distance when $\epsilon_\Sigma \gg \|H\|_{\mathrm{op}}$.
+   **Note on curvature regime (two independent routes):**
+   - **Analytic route (Appendix 14B):** The Gevrey-1 bounds in
+     {doc}`/3_fractal_gas/appendices/14_b_geometric_gas_cinf_regularity_full` give
+     uniform bounds on derivatives of $V_{\mathrm{fit}}$, hence on $H=\nabla^2
+     V_{\mathrm{fit}}$ and $\nabla H$ over Safe Harbor windows. With the spectral floor
+     $\epsilon_\Sigma$ (see {prf:ref}`thm-uniform-ellipticity-latent`), $g=H+\epsilon_\Sigma I$
+     is $C^2$ and uniformly elliptic, so sectional curvature is bounded on each window.
+     If $\|H\|_{\mathrm{op}} \le \eta\,\epsilon_\Sigma$ with $\eta<1$, then
+     $(1-\eta)I \preceq g \preceq (1+\eta)I$ and $d_g$ is locally bilipschitz to the
+     Euclidean distance; we use this only as a practical approximation.
+   - **Hypostructure route (Volume 2):** Independently of the analytic bounds, the
+     metatheorem chain {prf:ref}`mt:continuum-injection`, {prf:ref}`mt:emergent-continuum`,
+     and {prf:ref}`mt:cheeger-gradient` promotes the IG distance to a $C^2$ Riemannian
+     metric on slices. On any compact Safe Harbor window, $C^2$ regularity implies
+     bounded sectional curvature. This route does not use Gevrey-1 estimates.
 3. **Curved boundaries**: The boundary $\partial \mathrm{Vor}_i(t) \cap \partial \mathrm{Vor}_j(t)$ is the **equidistant hypersurface** (locus of points with $d_g(z, z_i) = d_g(z, z_j)$), which is generally curved when $g$ is non-flat.
 :::
 
@@ -158,28 +172,121 @@ How do you connect a polygon with 5 neighbors at the bottom to a polygon with 6 
 The scutoid is not some exotic geometric curiosity. It is the unique answer to a fundamental topological problem: how to fill the space between two parallel surfaces when the combinatorial structure changes. Nature discovered this solution in epithelial tissue; we rediscover it in algorithmic spacetime.
 :::
 
+:::{prf:definition} Scutoid Slab Metric (CST-Compatible)
+:label: def-scutoid-slab-metric
+
+Let the timestep be $[t_k, t_{k+1}]$ with $\Delta t = t_{k+1} - t_k$, and let
+$g_t(x)=H(x,S(t))+\epsilon_\Sigma I$ be the emergent metric
+({prf:ref}`def-adaptive-diffusion-tensor-latent`). Define the **midpoint state**
+$S_{k+1/2}$ as the algorithm state **after cloning (including jitter) and before
+diffusive evolution** on the interval. The **midpoint metric** is
+$$
+g_{k+1/2}(x) := H(x,S_{k+1/2}) + \epsilon_\Sigma I.
+$$
+If the implementation does not split the timestep, take $g_{k+1/2}=g_{k+1}$ (the
+post-clone metric).
+
+Define the **Lorentzian slab metric** on $M_k=\mathcal{Z}\times[t_k,t_{k+1}]$ by
+$$
+G_k := -c^2\,dt^2 + g_{k+1/2},
+$$
+with $c=V_{\mathrm{alg}}$ as in the CST construction
+({prf:ref}`def-fractal-causal-order`), and define the **Riemannianized slab metric**
+$$
+\bar{G}_k := c^2\,dt^2 + g_{k+1/2}.
+$$
+
+**Compatibility claim:** As $\Delta t\to 0$ in the mean-field limit, the piecewise-constant
+slab metrics $G_k$ converge to the time-dependent Lorentzian metric
+$G(t)=-c^2 dt^2 + g_t$ used in the CST formulation. Scutoid geometry therefore recovers the
+same continuum metric (and light-cone order) in the limit, while providing a discrete
+tessellation at finite step size.
+:::
+
+:::{prf:definition} Scutoid Path Length
+:label: def-scutoid-path-length
+
+Let $\gamma:[t_a,t_b]\to\mathcal{Z}$ be a $C^1$ curve and write $[t_a,t_b]$ as a union of
+slabs $[t_k,t_{k+1}]$. The **scutoid path length** is
+$$
+L_{\mathrm{sc}}(\gamma) := \sum_{k}\int_{t_k}^{t_{k+1}}
+\|\dot{\gamma}(t)\|_{g_{k+1/2}}\,dt.
+$$
+For episodes $e_i=(x_i,t_i)$ and $e_j=(x_j,t_j)$ with $t_i<t_j$, define the induced distance
+$$
+d_{\mathrm{sc}}(e_i,e_j) := \inf_{\gamma: x_i\to x_j} L_{\mathrm{sc}}(\gamma),
+$$
+and the **scutoid light-cone order**
+$$
+e_i \prec_{\mathrm{sc}} e_j
+\quad \iff \quad
+t_i < t_j \;\wedge\; d_{\mathrm{sc}}(e_i,e_j) \le c\,(t_j-t_i).
+$$
+:::
+
+:::{prf:proposition} Scutoid–CST Metric Compatibility (Mean-Field Limit)
+:label: prop-scutoid-cst-compatibility
+
+Assume the hypotheses used for geometric order in
+{prf:ref}`def-fractal-causal-order`: $g_t$ is uniformly elliptic, piecewise $C^1$ in $t$,
+$C^2$ in space on Safe Harbor regions, and the mean-field limit is taken with
+$\Delta t\to 0$. Then
+$$
+d_{\mathrm{sc}}(e_i,e_j) \to d_{\mathrm{geo}}(e_i,e_j)
+$$
+for fixed endpoints, and $\prec_{\mathrm{sc}}$ converges to the geometric light-cone order
+$\prec_{\mathrm{LC}}$. In particular, the scutoid tessellation recovers the same Lorentzian
+metric $G=-c^2 dt^2+g_t$ used in the CST formulation.
+
+*Proof sketch.* The slab metric is a midpoint Riemann sum for the time-dependent length
+functional $\int \|\dot{\gamma}(t)\|_{g_t} dt$. Under the stated regularity and uniform
+ellipticity, the midpoint rule converges as $\Delta t\to 0$, and minimizing curves
+converge to minimizers of the continuum functional. The light-cone relation is then the
+same speed-cap condition as in {prf:ref}`def-fractal-causal-order`. $\square$
+:::
+
 :::{prf:definition} Boundary Correspondence Map
 :label: def-boundary-correspondence-map
 
-Let $F_{\mathrm{bottom}} = \mathrm{Vor}_j(t)$ and $F_{\mathrm{top}} = \mathrm{Vor}_i(t + \Delta t)$ be the bottom and top faces of a spacetime cell, with neighbor sets $\mathcal{N}_j(t)$ and $\mathcal{N}_i(t + \Delta t)$ respectively.
+Let $F_{\mathrm{bottom}} = \mathrm{Vor}_i(t)$ and $F_{\mathrm{top}} = \mathrm{Vor}_i(t + \Delta t)$
+be the bottom and top faces of a spacetime cell indexed by walker ID $i$, with neighbor
+sets $\mathcal{N}_i(t)$ and $\mathcal{N}_i(t + \Delta t)$ respectively. If cloning occurs,
+the successor at time $t+\Delta t$ is a clone of some parent $j$, but the cell remains
+indexed by $i$ (the CST edge from $n_{i,t}$ to $n_{i,t+\Delta t}$).
 
 The **shared neighbor set** is:
 
 $$
-\mathcal{N}_{\mathrm{shared}} = \mathcal{N}_j(t) \cap \mathcal{N}_i(t + \Delta t)
+\mathcal{N}_{\mathrm{shared}} = \mathcal{N}_i(t) \cap \mathcal{N}_i(t + \Delta t)
 $$
 
-For each $k \in \mathcal{N}_{\mathrm{shared}}$, the **boundary correspondence map** $\phi_k: \Gamma_{j,k}(t) \to \Gamma_{i,k}(t + \Delta t)$ is any **measure-preserving correspondence** between the $(d-1)$-dimensional interfaces. Let $\mu_{\mathrm{bottom}}$ and $\mu_{\mathrm{top}}$ denote the $(d-1)$-dimensional Hausdorff measures induced by $g$ on $\Gamma_{j,k}(t)$ and $\Gamma_{i,k}(t + \Delta t)$, and assume both are finite and non-zero. A valid correspondence satisfies:
+For each $k \in \mathcal{N}_{\mathrm{shared}}$, the **boundary correspondence map**
+$\phi_k: \Gamma_{i,k}(t) \to \Gamma_{i,k}(t + \Delta t)$ is any **measure-preserving
+correspondence** between the $(d-1)$-dimensional interfaces. Assume the shared interfaces
+are $(d-1)$-rectifiable with finite, positive $(d-1)$-dimensional Hausdorff measure in the
+emergent metric $g$ (this holds in Safe Harbor regions with bounded curvature and away
+from critical configurations). Let $\mu_{\mathrm{bottom}}$ and $\mu_{\mathrm{top}}$ denote
+the induced Hausdorff measures on $\Gamma_{i,k}(t)$ and $\Gamma_{i,k}(t + \Delta t)$. A
+valid correspondence satisfies:
 
 $$
 (\phi_k)_* \mu_{\mathrm{bottom}} = \mu_{\mathrm{top}}.
 $$
 
-**Canonical choice in a convex normal neighborhood:** If the two interfaces lie inside a common convex normal neighborhood, one can take $\phi_k$ to be the optimal transport map between the normalized measures with cost $d_g^2$ (unique a.e. under absolute continuity). Any such $\phi_k$ yields a well-defined ruled lateral face.
+**Canonical choice in a convex normal neighborhood:** If the two interfaces lie inside a
+common convex normal neighborhood and the induced measures are absolutely continuous, one
+can take $\phi_k$ to be the optimal transport map between the normalized measures with
+cost $d_g^2$ (unique a.e. under absolute continuity). Any such $\phi_k$ yields a
+well-defined ruled lateral face.
 
-**Existence (measure-theoretic):** Any two standard Borel spaces with finite, non-zero measures admit a measure-preserving bijection modulo null sets, so $\phi_k$ always exists up to measure zero.
+**Existence (measure-theoretic):** Under the rectifiability and finite-measure
+assumptions above, $\Gamma_{i,k}(t)$ and $\Gamma_{i,k}(t + \Delta t)$ are standard Borel
+spaces with finite, non-zero measures, so a measure-preserving bijection exists modulo
+null sets.
 
-**Critical observation**: For neighbors $\ell \in \mathcal{N}_j(t) \setminus \mathcal{N}_i(t + \Delta t)$ (lost neighbors), there is no corresponding segment on the top face. The correspondence map is **undefined**.
+**Critical observation**: For neighbors $\ell \in \mathcal{N}_i(t) \setminus \mathcal{N}_i(t + \Delta t)$
+(lost neighbors), there is no corresponding segment on the top face. The correspondence map
+is **undefined**.
 :::
 
 :::{prf:definition} Scutoid Cell
@@ -190,33 +297,39 @@ A **scutoid** $\mathcal{S}_i$ is a $(d+1)$-dimensional polytope in the swarm spa
 **1. Bottom face** ($t = t_0$):
 
 $$
-F_{\mathrm{bottom}} = \mathrm{Vor}_j(t_0)
+F_{\mathrm{bottom}} = \mathrm{Vor}_i(t_0)
 $$
-where $j$ is the parent (for cloned walkers) or the walker itself (for persistent walkers).
+where $i$ indexes the walker at time $t_0$.
 
 **2. Top face** ($t = t_0 + \Delta t$):
 
 $$
 F_{\mathrm{top}} = \mathrm{Vor}_i(t_0 + \Delta t)
 $$
+If cloning occurs on this interval, the successor at $t_0+\Delta t$ is a clone of some
+parent $j$, but the scutoid cell remains indexed by $i$ (consistent with CST edges).
 
 **3. Lateral faces** (for shared neighbors):
 For each $k \in \mathcal{N}_{\mathrm{shared}}$, the lateral face $\Sigma_k$ is the **ruled surface** swept by geodesic segments:
 
 $$
-\Sigma_k = \bigcup_{p \in \Gamma_{j,k}(t_0)} \gamma_{p \to \phi_k(p)}
+\Sigma_k = \bigcup_{p \in \Gamma_{i,k}(t_0)} \gamma_{p \to \phi_k(p)}
 $$
-where $\gamma_{p \to \phi_k(p)}$ is the spacetime geodesic from $(p, t_0)$ to $(\phi_k(p), t_0 + \Delta t)$.
+where $\gamma_{p \to \phi_k(p)}$ is the minimizing geodesic in the Riemannianized slab
+metric $\bar{G}_k$ (Definition {prf:ref}`def-scutoid-slab-metric`) from
+$(p, t_0)$ to $(\phi_k(p), t_0 + \Delta t)$ with monotone time.
 
-**Geodesic well-posedness:** When these endpoints lie inside a convex normal neighborhood in spacetime, the minimizing geodesic is unique; otherwise choose any minimizing geodesic to define the ruled surface.
+**Geodesic well-posedness:** When these endpoints lie inside a convex normal neighborhood
+for $\bar{G}_k$, the minimizing geodesic is unique; otherwise choose any minimizing
+geodesic to define the ruled surface.
 
-**4. Mid-level structure** (when $\mathcal{N}_j(t_0) \neq \mathcal{N}_i(t_0 + \Delta t)$):
+**4. Mid-level structure** (when $\mathcal{N}_i(t_0) \neq \mathcal{N}_i(t_0 + \Delta t)$):
 
 - **Mid-level time**: $t_{\mathrm{mid}} = t_0 + \Delta t / 2$
-- **For lost neighbors** $\ell \in \mathcal{N}_j(t_0) \setminus \mathcal{N}_i(t_0 + \Delta t)$:
-  - Geodesic rulings from $\Gamma_{j,\ell}(t_0)$ **terminate** at mid-level vertices
-- **For gained neighbors** $m \in \mathcal{N}_i(t_0 + \Delta t) \setminus \mathcal{N}_j(t_0)$:
-  - Geodesic rulings to $\Gamma_{i,m}(t_0 + \Delta t)$ **originate** from mid-level vertices
+- **For lost neighbors** $\ell \in \mathcal{N}_i(t_0) \setminus \mathcal{N}_i(t_0 + \Delta t)$:
+  - Slab-geodesic rulings from $\Gamma_{i,\ell}(t_0)$ **terminate** at mid-level vertices
+- **For gained neighbors** $m \in \mathcal{N}_i(t_0 + \Delta t) \setminus \mathcal{N}_i(t_0)$:
+  - Slab-geodesic rulings to $\Gamma_{i,m}(t_0 + \Delta t)$ **originate** from mid-level vertices
 
 The **mid-level vertices** are the branching points where these geodesics meet.
 :::
@@ -255,11 +368,20 @@ Let $e_i$ be an episode (walker trajectory) traversing the interval $[t, t + \De
 
 1. **Persistence with No Critical Event**: If episode $e_i$ persists without cloning and the Delaunay complex is non-degenerate on $(t, t + \Delta t)$ (no critical configuration), then $\mathcal{N}_i(t) = \mathcal{N}_i(t + \Delta t)$ and the spacetime cell is a **Prism** (Type 0).
 
-2. **Cloning with Neighbor Change**: If episode $e_i$ ends at time $t$ and is replaced by a clone $e_{i'}$ from parent $e_j$ at a different position, and if $\mathcal{N}_i(t) \neq \mathcal{N}_{i'}(t + \Delta t)$, then the spacetime cell is a **Scutoid** (Type $\geq 1$).
+2. **Cloning with Neighbor Change**: If episode $e_i$ ends at time $t$ and the successor
+episode at $t+\Delta t$ (with the same walker ID $i$) is a clone of parent $e_j$ at a
+different position, and if $\mathcal{N}_i(t) \neq \mathcal{N}_i(t + \Delta t)$, then the
+spacetime cell is a **Scutoid** (Type $\geq 1$).
 
-3. **Genericity Under a Local Poisson Model**: Assume that, in a normal coordinate chart around the clone, the other walkers are distributed as a Poisson process of intensity $\rho$, the clone displacement is $r = \|z_i - z_j\|$, and there is a geometric separation condition: **if** $\mathcal{N}_i(t) = \mathcal{N}_{i'}(t + \Delta t)$, then a geodesic tube of volume at least $c_0 r^d$ between $z_i$ and $z_{i'}$ must be empty (with $c_0>0$ depending only on dimension and curvature bounds). Then
+3. **Genericity Under a Local Poisson Model**: Assume that, in a normal coordinate chart
+around the clone, the other walkers are distributed as a Poisson process of intensity
+$\rho$, the clone displacement is $r = \|z_i - z_j\|$ (from the pre-clone position $z_i$
+to the parent position $z_j$), and let $z_i^+$ be the successor position at $t+\Delta t$.
+Assume the geometric separation condition: **if** $\mathcal{N}_i(t) = \mathcal{N}_i(t +
+\Delta t)$, then a geodesic tube of volume at least $c_0 r^d$ between $z_i$ and $z_i^+$
+must be empty (with $c_0>0$ depending only on dimension and curvature bounds). Then
 $$
-\mathbb{P}(\mathcal{N}_i(t) = \mathcal{N}_{i'}(t + \Delta t)) \leq \exp\left(-c \cdot \frac{r^d}{\ell^d}\right),
+\mathbb{P}(\mathcal{N}_i(t) = \mathcal{N}_i(t + \Delta t)) \leq \exp\left(-c \cdot \frac{r^d}{\ell^d}\right),
 $$
 with $\ell \sim \rho^{-1/d}$ and $c>0$ depending only on dimension and local geometry. Thus for $r \gg \ell$, cloning produces a scutoid with high probability.
 
@@ -280,18 +402,25 @@ The Voronoi boundaries deform continuously under continuous motion of the seeds.
 
 **Part 2: Cloning with neighbor change forces scutoid geometry.**
 
-Assume $\mathcal{N}_i(t) \neq \mathcal{N}_{i'}(t + \Delta t)$. Let:
-- $\mathcal{N}_{\mathrm{lost}} = \mathcal{N}_i(t) \setminus \mathcal{N}_{i'}(t + \Delta t)$ (neighbors at bottom only)
-- $\mathcal{N}_{\mathrm{gained}} = \mathcal{N}_{i'}(t + \Delta t) \setminus \mathcal{N}_i(t)$ (neighbors at top only)
+Assume $\mathcal{N}_i(t) \neq \mathcal{N}_i(t + \Delta t)$. Let:
+- $\mathcal{N}_{\mathrm{lost}} = \mathcal{N}_i(t) \setminus \mathcal{N}_i(t + \Delta t)$ (neighbors at bottom only)
+- $\mathcal{N}_{\mathrm{gained}} = \mathcal{N}_i(t + \Delta t) \setminus \mathcal{N}_i(t)$ (neighbors at top only)
 
-If the spacetime cell were a prism $P = F_{\mathrm{bottom}} \times [0,1]$, then there would exist a boundary homeomorphism $h: \partial F_{\mathrm{bottom}} \to \partial F_{\mathrm{top}}$ that matches each boundary interface to a corresponding interface. This induces a bijection between neighbor sets. When $\mathcal{N}_{\mathrm{lost}} \neq \emptyset$ or $\mathcal{N}_{\mathrm{gained}} \neq \emptyset$, no such bijection exists. Therefore a prismatic boundary cannot close, and any valid cell complex must introduce intermediate branching (mid-level) faces and vertices. By Definition {prf:ref}`def-scutoid-cell`, the resulting cell is a scutoid.
+If the spacetime cell were a prism $P = F_{\mathrm{bottom}} \times [0,1]$, then the product
+structure induces a **face-preserving bijection** between the $(d-1)$-faces of
+$\partial F_{\mathrm{bottom}}$ and $\partial F_{\mathrm{top}}$, hence a bijection between
+neighbor sets. When $\mathcal{N}_{\mathrm{lost}} \neq \emptyset$ or
+$\mathcal{N}_{\mathrm{gained}} \neq \emptyset$, no such bijection exists. Therefore a
+prismatic boundary cannot close, and any valid cell complex must introduce intermediate
+branching (mid-level) faces and vertices. By Definition {prf:ref}`def-scutoid-cell`, the
+resulting cell is a scutoid.
 
 **Part 3: Genericity under a local Poisson model.**
 
 Assume the other walkers in a normal coordinate chart around the clone form a Poisson process of intensity $\rho$ and the clone displacement is $r = \|z_i - z_j\|$. Under the separation condition above, neighbor-set equality requires an empty tube of volume at least $c_0 r^d$, so the Poisson void probability gives:
 
 $$
-\mathbb{P}(\mathcal{N}_i(t) = \mathcal{N}_{i'}(t + \Delta t)) \leq \exp\left(-c \cdot \rho r^d\right) = \exp\left(-c \cdot \frac{r^d}{\ell^d}\right),
+\mathbb{P}(\mathcal{N}_i(t) = \mathcal{N}_i(t + \Delta t)) \leq \exp\left(-c \cdot \rho r^d\right) = \exp\left(-c \cdot \frac{r^d}{\ell^d}\right),
 $$
 
 where $\ell \sim \rho^{-1/d}$ and $c>0$ depends on $d$ and local curvature bounds. This yields the stated bound.
@@ -358,6 +487,21 @@ Spacetime cells in the scutoid tessellation are classified by their **topologica
 The **scutoid index** $\chi_{\mathrm{scutoid}}(\mathcal{S}) = |\mathcal{N}_{\mathrm{lost}}| + |\mathcal{N}_{\mathrm{gained}}|$ counts the total number of neighbor changes (lost + gained). Note: $\chi$ need not be even when $|\mathcal{N}_{\mathrm{lost}}| \neq |\mathcal{N}_{\mathrm{gained}}|$.
 :::
 
+:::{prf:remark} Metric Recovery via Scutoids
+:label: rem-scutoid-metric-recovery
+
+The scutoid tessellation provides a discrete, CST-compatible approximation of the same
+Lorentzian geometry used in {doc}`/3_fractal_gas/2_fractal_set/02_causal_set_theory`. On
+each slab, the midpoint metric $g_{k+1/2}$ determines the Riemannianized length
+functional and the scutoid light-cone order $\prec_{\mathrm{sc}}$
+({prf:ref}`def-scutoid-path-length`). In the mean-field limit ($\Delta t\to 0$), this
+order converges to the geometric light-cone order $\prec_{\mathrm{LC}}$, and the induced
+distance converges to $d_{\mathrm{geo}}$ (Proposition
+{prf:ref}`prop-scutoid-cst-compatibility`). Thus the metric recovered from scutoid
+geometry matches the CST metric in the continuum limit, while retaining a concrete cell
+complex at finite step size.
+:::
+
 :::{div} feynman-prose
 Think about what these types mean physically.
 
@@ -388,7 +532,11 @@ $$
 - Prismatic cells (Type 0): $N_{\mathrm{prism}} = N(1 - p_{\mathrm{clone}} - p_{\mathrm{crit}}) \cdot (T/\Delta t)$
 - Scutoid cells (Type $\geq 1$): $N_{\mathrm{scutoid}} = N (p_{\mathrm{clone}} + p_{\mathrm{crit}}) \cdot (T/\Delta t)$
 
-**Topological interpretation**: The cumulative scutoid index $\mathcal{K}_{\mathrm{total}}$ counts the total number of neighbor-relationship changes in the tessellation. Each unit of $\mathcal{K}_{\mathrm{total}}$ represents one "topological transaction" where a neighbor relationship is either created or destroyed.
+**Topological interpretation**: The cumulative scutoid index $\mathcal{K}_{\mathrm{total}}$
+counts **oriented** neighbor-relationship changes (per-cell lost + gained). Each unit of
+$\mathcal{K}_{\mathrm{total}}$ represents one oriented "topological transaction" where a
+neighbor relationship is either created or destroyed. Undirected counts are obtained by a
+factor-of-two adjustment under symmetric counting.
 
 **Relation to boundary structure**: For a single scutoid cell $\mathcal{S}$, the number of lateral faces is:
 

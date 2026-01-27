@@ -231,7 +231,7 @@ When $K^{\mathrm{wit}}$ is emitted at a barrier node:
 A proof object is **VALID** if and only if:
 
 - [ ] **All nodes executed** (no skips)
-- [ ] **Lock passed:** $K_{\mathrm{Lock}}^{\mathrm{blk}}$ or $K_{\mathrm{Lock}}^+$
+- [ ] **Lock passed:** $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}$
 - [ ] **Obligation ledger is EMPTY**
 - [ ] **No unresolved** $K^{\mathrm{inc}}$ in final Γ (all upgraded or discharged)
 
@@ -323,6 +323,17 @@ If any of these fail, the run produces a **conditional proof object** that docum
 | 15 | $\mathrm{Bound}_{\Sigma}$ | StarveCheck | Is Input Sufficient? | Minimum $u_{\min}$ | $K_{\mathrm{Bound}_{\Sigma}}^{\pm}$ |
 | 16 | $\mathrm{GC}_T$ | AlignCheck | Is Control Matched? | Alignment $\langle \iota(u), \nabla\Phi \rangle$ | $K_{\mathrm{GC}_T}^{\pm}$ |
 
+### **0.2b Derived Witness Certificates (Optional)**
+*These are **not** gate permits. They are payload certificates derived from the gate results or supplied explicitly.*
+
+| Certificate | Derived From | Payload | Notes |
+|---|---|---|---|
+| $K_{D_{\max}}^+$ | $C_\mu^+$ + boundary/overload/starve permits | $(D_{\max},\ \text{support/diameter proof})$ | Bounded algorithmic diameter on the alive core |
+| $K_{\rho_{\max}}^+$ | $K_{\mathrm{TB}_\rho}^+ + K_{\mathrm{Cap}_H}^+ + K_{D_E}^+$ | $(\rho_{\max},\ \text{density bound proof})$ | Uniform invariant/QSD density bound on the alive core |
+
+**Record any witness certificates** in the Execution Trace payloads; if they are used to
+justify analytic bridge admissibility, cite them explicitly in the Lock Mechanism section.
+
 ### **0.3 The Lock (Node 17)**
 
 | Permit ID | Node | Question | Required Implementation | Certificate |
@@ -336,6 +347,12 @@ If any of these fail, the run produces a **conditional proof object** that docum
 - [ ] **Dissipation Rate $\mathfrak{D}$:** [Define $\mathfrak{D}: \mathcal{X} \to \mathcal{H}$]
 - [ ] **Energy Inequality:** $\Phi(S_t x) \leq \Phi(x) + \int_0^t \mathfrak{D}(S_s x) ds$
 - [ ] **Bound Witness:** $B = $ [Insert explicit bound or $\infty$]
+
+#### **Template: Derived Witness Certificates (Optional)**
+- [ ] **$K_{D_{\max}}^+$ (diameter witness):** Provide $D_{\max}$ and a support/diameter proof
+      derived from $C_\mu^+$ and boundary/overload/starve permits.
+- [ ] **$K_{\rho_{\max}}^+$ (density witness):** Provide $\rho_{\max}$ and a density-bound proof
+      derived from $K_{\mathrm{TB}_\rho}^+$, $K_{\mathrm{Cap}_H}^+$, and $K_{D_E}^+$.
 
 #### **Template: $\mathrm{Rec}_N$ (Recovery Interface)**
 - [ ] **Bad Set $\mathcal{B}$:** [Define $\mathcal{B} \hookrightarrow \mathcal{X}$]
@@ -353,7 +370,7 @@ If any of these fail, the run produces a **conditional proof object** that docum
 - [ ] **Scaling Action:** $\mathcal{S}_\lambda: \mathcal{X} \to \mathcal{X}$
 - [ ] **Height Exponent $\alpha$:** $\Phi(\mathcal{S}_\lambda x) = \lambda^\alpha \Phi(x)$, $\alpha = $ [Value]
 - [ ] **Dissipation Exponent $\beta$:** $\mathfrak{D}(\mathcal{S}_\lambda x) = \lambda^\beta \mathfrak{D}(x)$, $\beta = $ [Value]
-- [ ] **Criticality:** $\alpha - \beta = $ [Value] (> 0 subcritical, = 0 critical, < 0 supercritical)
+- [ ] **Criticality:** $\beta - \alpha = $ [Value] (< $\lambda_c$ subcritical, = $\lambda_c$ critical, > $\lambda_c$ supercritical; $\lambda_c = 0$ in the homogeneous case)
 
 #### **Template: $\mathrm{SC}_{\partial c}$ (Parameter Interface)**
 - [ ] **Parameter Space $\Theta$:** [Define parameter object]
@@ -447,7 +464,7 @@ K_X^{wit} = (counterexample, reason)
 ```
 **Contents:** Evidence that the predicate fails. Triggers barrier check.
 
-**Example:** $K_{\mathrm{SC}_\lambda}^{\mathrm{wit}} = (\alpha - \beta = -1, \text{"supercritical"})$
+**Example:** $K_{\mathrm{SC}_\lambda}^{\mathrm{wit}} = (\beta - \alpha = 1, \text{"supercritical"})$
 
 #### **NO-Inconclusive Certificate ($K_X^{\mathrm{inc}}$)**
 ```
@@ -718,19 +735,19 @@ For each node:
 
 #### **Node 4: ScaleCheck ($\mathrm{SC}_\lambda$)**
 
-**Question:** Is the scaling exponent subcritical ($\alpha - \beta > 0$)?
+**Question:** Is the scaling exponent subcritical ($\beta - \alpha < \lambda_c$)?
 
 **Step-by-step execution:**
 1. [ ] Compute height scaling: $\Phi(\mathcal{S}_\lambda x) = \lambda^\alpha \Phi(x)$. Record $\alpha = $ ____
 2. [ ] Compute dissipation scaling: $\mathfrak{D}(\mathcal{S}_\lambda x) = \lambda^\beta \mathfrak{D}(x)$. Record $\beta = $ ____
-3. [ ] Compute criticality: $\alpha - \beta = $ ____
+3. [ ] Compute criticality: $\beta - \alpha = $ ____
 4. [ ] Classify:
-   - $\alpha - \beta > 0$: Subcritical (singularities cost infinite energy)
-   - $\alpha - \beta = 0$: Critical (borderline)
-   - $\alpha - \beta < 0$: Supercritical (singularities can form)
+   - $\beta - \alpha < \lambda_c$: Subcritical (singularities cost infinite energy)
+   - $\beta - \alpha = \lambda_c$: Critical (borderline)
+   - $\beta - \alpha > \lambda_c$: Supercritical (singularities can form)
 
 **Certificate:**
-* [ ] $K_{\mathrm{SC}_\lambda}^+ = (\alpha, \beta, \alpha - \beta > 0)$ → **Go to Node 5**
+* [ ] $K_{\mathrm{SC}_\lambda}^+ = (\alpha, \beta, \lambda_c, \beta - \alpha < \lambda_c)$ → **Go to Node 5**
 * [ ] $K_{\mathrm{SC}_\lambda}^-$ → Check BarrierTypeII
   * [ ] $K^{\mathrm{blk}}$: Renorm cost infinite → **Go to Node 5**
   * [ ] Breached: Enable Surgery `SurgSE`
@@ -1088,9 +1105,9 @@ For each node:
 * [ ] **E10 (Definability):** O-minimal tameness violated?
 
 **Lock Verdict:**
-* [ ] **BLOCKED** ($K_{\text{Lock}}^{\mathrm{blk}}$) via Tactic E__ → **GLOBAL REGULARITY ESTABLISHED**
-* [ ] **MORPHISM EXISTS** ($K_{\text{Lock}}^{\mathrm{morph}}$) → **SINGULARITY CONFIRMED**
-* [ ] **NO-INCONCLUSIVE** ($K_{\text{Lock}}^{\mathrm{inc}}$) → **Record obligation**
+* [ ] **BLOCKED** ($K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}$) via Tactic E__ → **GLOBAL REGULARITY ESTABLISHED**
+* [ ] **MORPHISM EXISTS** ($K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{morph}}$) → **SINGULARITY CONFIRMED**
+* [ ] **NO-INCONCLUSIVE** ($K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{br\text{-}inc}}$) → **Record obligation**
   ```
   { obligation: "Resolve Lock verdict",
     missing: ["successful_tactic", "morphism_construction"],
@@ -1364,7 +1381,7 @@ Before declaring the proof object complete, verify:
 - [ ] **All 12 core nodes executed** (Nodes 1-12)
 - [ ] **Boundary nodes executed** (Nodes 13-16, if system is open)
 - [ ] **Lock executed** (Node 17)
-- [ ] **Lock verdict obtained:** $K_{\text{Lock}}^{\mathrm{blk}}$ or $K_{\text{Lock}}^+$ or $K_{\text{Lock}}^{\mathrm{morph}}$
+- [ ] **Lock verdict obtained:** $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}$ or $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}$ or $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{morph}}$
 - [ ] **Upgrade pass completed** (Part II-B)
 - [ ] **Surgery/Re-entry completed** (Part II-C, if any breaches)
 - [ ] **Obligation ledger is EMPTY** (Part III-C)
@@ -1411,10 +1428,10 @@ $$\Gamma_{\mathrm{final}} = \{K_{D_E}^{?}, K_{\mathrm{Rec}_N}^{?}, K_{C_\mu}^{?}
 2.  **Structure:** Established by [Certificate ID] (e.g., $K_{C_\mu}^+$, $K_{\mathrm{Cap}_H}^+$).
 3.  **Stiffness:** Established by [Certificate ID] (e.g., $K_{\mathrm{LS}_\sigma}^+$, $K_{\text{gap}}^{\mathrm{blk}}$).
 4.  **Lyapunov:** Constructed via Part III-A (e.g., $K_{\mathcal{L}}^{\text{verified}}$, $K_{\text{Jacobi}}^+$, $K_{\text{HJ}}^+$).
-5.  **Exclusion:** Established by [Certificate ID] (e.g., $K_{\text{Lock}}^{\mathrm{blk}}$ via Tactic E__)."
+5.  **Exclusion:** Established by [Certificate ID] (e.g., $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}$ via Tactic E__)."
 
 **Full Certificate Chain:**
-$$\Gamma = \{K_{D_E}^+, K_{\mathrm{Rec}_N}^+, K_{C_\mu}^+, K_{\mathrm{SC}_\lambda}^+, K_{\mathrm{SC}_{\partial c}}^+, K_{\mathrm{Cap}_H}^+, K_{\mathrm{LS}_\sigma}^+, K_{\mathcal{L}}^{\text{verified}}, K_{\text{Lock}}^{\mathrm{blk}}\}$$
+$$\Gamma = \{K_{D_E}^+, K_{\mathrm{Rec}_N}^+, K_{C_\mu}^+, K_{\mathrm{SC}_\lambda}^+, K_{\mathrm{SC}_{\partial c}}^+, K_{\mathrm{Cap}_H}^+, K_{\mathrm{LS}_\sigma}^+, K_{\mathcal{L}}^{\text{verified}}, K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}\}$$
 
 ---
 
@@ -1436,7 +1453,7 @@ The proof proceeds by structural sieve analysis in seven phases:
 
 **Phase 6 (Boundary):** [If applicable] Nodes 13-16 verified boundary conditions.
 
-**Phase 7 (Lock):** Node 17 blocked the universal bad pattern $\mathcal{H}_{\text{bad}}$ via Tactic E[X], establishing $K_{\text{Lock}}^{\mathrm{blk}}$.
+**Phase 7 (Lock):** Node 17 blocked the universal bad pattern $\mathcal{H}_{\text{bad}}$ via Tactic E[X], establishing $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}$.
 
 **Conclusion:** By the Lock Metatheorem (KRNL-Consistency), the blocked Lock certificate implies the target claim.
 
@@ -1452,7 +1469,7 @@ $$\therefore \text{[CLAIM]} \quad \square$$
 |-----------|--------|-------------|
 | Nodes 1-12 (Core) | [PASS/FAIL/INC] | [List] |
 | Nodes 13-16 (Boundary) | [N/A/PASS/FAIL] | [List] |
-| Node 17 (Lock) | [BLOCKED/MORPHISM/INC] | $K_{\text{Lock}}^{?}$ |
+| Node 17 (Lock) | [BLOCKED/MORPHISM/INC] | $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{?}$ |
 | Obligation Ledger | [EMPTY/NON-EMPTY] | — |
 | Upgrade Pass | [COMPLETE] | [List upgrades] |
 
@@ -1533,6 +1550,13 @@ This proof object is replayed by providing:
 | **E8** | Holographic | [PASS/FAIL/N/A] | [e.g., Bekenstein bound] |
 | **E9** | Ergodic | [PASS/FAIL/N/A] | [e.g., Mixing rates] |
 | **E10** | Definability | [PASS/FAIL/N/A] | [e.g., O-minimal structure] |
+
+**Auxiliary Witnesses (if analytic bridge admissibility is invoked):**
+
+| Witness Certificate | Status | Note |
+| :--- | :---: | :--- |
+| $K_{D_{\max}}^+$ | [PRESENT/ABSENT] | [e.g., bounded diameter used for Gevrey admissibility] |
+| $K_{\rho_{\max}}^+$ | [PRESENT/ABSENT] | [e.g., density bound used for Gevrey admissibility] |
 
 ### 4. Final Verdict
 

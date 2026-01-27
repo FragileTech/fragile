@@ -62,7 +62,10 @@ class GasConfigPanel(param.Parameterized):
     init_offset = param.Number(default=4.5, bounds=(-6.0, 6.0), doc="Initial position offset")
     init_spread = param.Number(default=0.5, bounds=(0.1, 3.0), doc="Initial position spread")
     init_velocity_scale = param.Number(
-        default=0.1, bounds=(0.01, 0.8), doc="Initial velocity scale"
+        default=0.1,
+        bounds=(0.0, None),
+        softbounds=(0.01, 2.0),
+        doc="Initial velocity scale",
     )
     bounds_extent = param.Number(default=6.0, bounds=(1, 12), doc="Spatial bounds half-width")
 
@@ -127,6 +130,81 @@ class GasConfigPanel(param.Parameterized):
         self._on_simulation_complete: list[Callable[[RunHistory], None]] = []
         self._on_benchmark_updated: list[Callable[[object, object, object], None]] = []
 
+    @staticmethod
+    def create_qft_config(dims: int = 3, bounds_extent: float = 10.0) -> "GasConfigPanel":
+        """Create GasConfigPanel with QFT calibration defaults.
+
+        These parameters match the calibrated simulation from
+        08_qft_calibration_notebook.ipynb.
+
+        Args:
+            dims: Spatial dimensionality (default: 3)
+            bounds_extent: Half-width of spatial domain (default: 10.0)
+
+        Returns:
+            GasConfigPanel configured with QFT parameters
+        """
+        config = GasConfigPanel(dims=dims)
+
+        # Benchmark
+        config.bounds_extent = bounds_extent
+        config.benchmark_name = "Quadratic Well"
+
+        # Simulation
+        config.n_steps = 5000
+        config.gas_params["N"] = 200
+        config.gas_params["dtype"] = "float32"
+        config.gas_params["pbc"] = False
+
+        # Initialization (match EuclideanGas defaults used in QFT calibration)
+        config.init_offset = 0.0
+        config.init_spread = 1.0
+        config.init_velocity_scale = 1.0
+
+        # Kinetic operator (Langevin + viscous coupling)
+        config.kinetic_op.gamma = 1.0
+        config.kinetic_op.beta = 1.0
+        config.kinetic_op.delta_t = 0.1005
+        config.kinetic_op.epsilon_F = 38.6373
+        config.kinetic_op.use_fitness_force = False
+        config.kinetic_op.use_potential_force = True
+        config.kinetic_op.use_anisotropic_diffusion = False
+        config.kinetic_op.diagonal_diffusion = True
+        config.kinetic_op.nu = 1.10
+        config.kinetic_op.use_viscous_coupling = True
+        config.kinetic_op.viscous_length_scale = 0.251372
+        config.kinetic_op.viscous_neighbor_mode = "all"
+        config.kinetic_op.viscous_neighbor_threshold = 0.75
+        config.kinetic_op.viscous_neighbor_penalty = 0.9
+
+        # Companion selection (separate epsilon for diversity and cloning)
+        config.companion_selection.method = "cloning"
+        config.companion_selection.epsilon = 2.80  # epsilon_d
+        config.companion_selection.lambda_alg = 1.0
+        config.companion_selection.exclude_self = True
+        config.companion_selection_clone.method = "cloning"
+        config.companion_selection_clone.epsilon = 1.68419  # epsilon_clone
+        config.companion_selection_clone.lambda_alg = 1.0
+        config.companion_selection_clone.exclude_self = True
+
+        # Cloning operator
+        config.cloning.p_max = 1.0
+        config.cloning.epsilon_clone = 0.01
+        config.cloning.sigma_x = 0.1
+        config.cloning.alpha_restitution = 0.5
+
+        # Fitness operator
+        config.fitness_op.alpha = 1.0
+        config.fitness_op.beta = 1.0
+        config.fitness_op.eta = 0.1
+        config.fitness_op.lambda_alg = 1.0
+        config.fitness_op.sigma_min = 1e-8
+        config.fitness_op.epsilon_dist = 1e-8
+        config.fitness_op.A = 2.0
+        config.fitness_op.rho = 0.251372
+
+        return config
+
     # Backward compatibility properties for components expecting old GasConfig interface
     @property
     def gamma(self):
@@ -177,6 +255,13 @@ class GasConfigPanel(param.Parameterized):
         """Create default operator instances with sensible defaults for multimodal exploration."""
         # Companion selection
         self.companion_selection = CompanionSelection(
+            method="uniform",
+            epsilon=0.5,
+            lambda_alg=0.2,
+        )
+
+        # Companion selection for cloning (separate instance, allows different epsilon)
+        self.companion_selection_clone = CompanionSelection(
             method="uniform",
             epsilon=0.5,
             lambda_alg=0.2,
@@ -324,6 +409,7 @@ class GasConfigPanel(param.Parameterized):
             N=int(self.gas_params["N"]),
             d=self.dims,
             companion_selection=self.companion_selection,
+            companion_selection_clone=self.companion_selection_clone,
             potential=self.potential,
             kinetic_op=self.kinetic_op,
             cloning=self.cloning,

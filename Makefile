@@ -43,4 +43,6 @@ tldr-html:
 prompt:
 	@echo "Collecting prf directives into prompts/..."
 	@python3 docs/collect_prf_directives.py --include-proofs --include-file-headings --out-dir prompts
+	@echo "Preparing prompt downloads for docs..."
+	@python3 docs/build_prompt_downloads.py
 	@echo "✓ Prompts generated in prompts/"

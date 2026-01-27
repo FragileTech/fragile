@@ -259,6 +259,8 @@ $\partial$. It packages only the thin data needed by the Sieve's local gate pred
 :::{prf:theorem} [KRNL-Consistency] The Fixed-Point Principle
 :label: mt-krnl-consistency
 
+**Rigor Class:** F (Framework-Original) — see {prf:ref}`def-rigor-classification`
+
 Let $\mathcal{S}$ be a structural flow datum (Definition {prf:ref}`def-structural-flow-datum`)
 with **strict dissipation** (i.e., $\Phi(S_t x) < \Phi(x)$ unless $x$ is an
 equilibrium). Assume the local gate predicates for compactness, stiffness, and gradient
@@ -286,6 +288,19 @@ set rather than to fixed points specifically.
 persistent states must satisfy the gate predicates certified by the Sieve. Singularities
 represent trajectories where a local obstruction predicate is realized, so the Sieve
 does not claim the axioms hold without those certificates.
+
+**Alternative Proof (Rigor Class L):** Literature-Anchored — see {prf:ref}`def-rigor-classification`
+
+**Bridge Verification ({prf:ref}`def-bridge-verification`):**
+1. **Hypothesis Translation:** Certificates $K_{D_E}^+$ (strict or non-strict),
+   $K_{C_\mu}^+$, $K_{\mathrm{LS}_\sigma}^+$, $K_{\mathrm{GC}_\nabla}^+$, and when using
+   the non-gradient extension $K_{\mathrm{MorseDecomp}}^+$ ({prf:ref}`def-permit-morsedecomp`)
+   imply the Lyapunov/LaSalle hypotheses for a semiflow on a metric/Banach space.
+2. **Domain Embedding:** The structural flow datum $(X,S_t,\Phi,\mathfrak{D})$ embeds as a
+   classical dissipative dynamical system with Lyapunov function $\Phi$.
+3. **Conclusion Import:** LaSalle/Lyapunov invariance yields convergence to the maximal
+   invariant set (or fixed points under strict dissipation), giving the same conclusion
+   as the Framework-Original proof.
 
 **Literature:** {cite}`Banach22`; {cite}`LaSalle76`; {cite}`Lyapunov92`
 :::
@@ -446,10 +461,15 @@ patterns.
 
 *Germ Set Construction:* Define the **set of singularity germs** $\mathcal{G}_T$ as the set of isomorphism classes $[P, \pi]$ where:
 - $P$ is a local singularity profile extracted from thin kernel data
-  ({prf:ref}`def-thin-objects`) satisfying subcriticality:
-  $\dim_H(P) \leq d - 2s_c$ for critical exponent $s_c$
+  ({prf:ref}`def-thin-objects`) satisfying the type's certified subcriticality bound
+  when scaling data are available: $\dim_H(P) \leq d - 2s_c$, where $d$ is the ambient
+  dimension from the capacity interface ({prf:ref}`def-node-geom`) and $s_c$ is the
+  critical index from {prf:ref}`def-critical-index`. If $s_c$ is undefined for $T$,
+  this clause is conditional on the scaling-data certificate and may be replaced by a
+  type-specific bound supplied by the Germ Smallness Permit.
 - $\pi: P \to \mathbb{R}^n$ is a blow-up parametrization with
-  $\|\pi\|_{\dot{H}^{s_c}} \leq \Lambda_T$ (energy bound)
+  $\|\pi\|_{X_c} \leq \Lambda_T$ (energy bound in the critical phase space
+  {prf:ref}`def-critical-index`; for PDE, $X_c = \dot{H}^{s_c}$)
 - Two pairs $(P, \pi) \sim (P', \pi')$ if they are equivalent under local
   diffeomorphism respecting the blow-up structure
 - **Functor** $\mathcal{D}([P, \pi]) := \mathbb{H}_{[P,\pi]}$: the minimal hypostructure containing the germ
@@ -532,28 +552,35 @@ The initiality property (N9) ensures $\mathbb{H}_{\mathrm{bad}}^{(T)}$ is the **
 - If $\mathcal{S}_{\mathrm{bad}}(\mathbb{H}(Z)) \neq \emptyset$: there exists $\phi: \mathbb{H}_{\mathrm{bad}} \to \mathbb{H}(Z)$, witnessing a singularity in $Z$
 - If $\mathcal{S}_{\mathrm{bad}}(\mathbb{H}(Z)) = \emptyset$: no morphism exists, so by the **internal logic of $\mathcal{E}$**, the proposition "$Z$ is singular" is **internally false**
 
-*Step 6 (Contrapositive in Internal Logic).* The logical structure is:
+*Step 6 (Certificate-Conditional Contrapositive).* The logical structure is:
 
 $$(\exists \phi.\, \phi: \mathbb{H}_{\mathrm{bad}} \to \mathbb{H}(Z)) \Leftrightarrow \neg\mathrm{Rep}_K(T,Z)$$
 
-Taking the contrapositive in the Heyting algebra (valid on decidable propositions in
-the Boolean sub-topos; see {ref}`sec-zfc-classicality` and
-{prf:ref}`def-heyting-boolean-distinction`). The Hom-emptiness statement is certified
-in the discrete fragment, so this decidability condition is satisfied:
+Operationally, the Sieve applies the contrapositive **only when it has a Lock block
+certificate**. In the Boolean sub-topos (see {ref}`sec-zfc-classicality` and
+{prf:ref}`def-heyting-boolean-distinction`), this is valid for decidable propositions.
+The Lock produces typed certificates (Definition {prf:ref}`def-typed-no-certificates`):
 
-$$\neg(\exists \phi.\, \phi: \mathbb{H}_{\mathrm{bad}} \to \mathbb{H}(Z)) \Rightarrow \mathrm{Rep}_K(T,Z)$$
+$$K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}} \quad \text{(Blocked/YES)}, \qquad
+K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{morph}} \quad \text{(Breached/NO-witness)}, \qquad
+K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{br\text{-}inc}} \quad \text{(Breached/NO-inconclusive)}.$$
 
-The empty Hom-set (N11) verifies the antecedent, yielding the consequent.
+- **If** $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}$ (Lock blocked) certifies $\mathrm{Hom}(\mathbb{H}_{\mathrm{bad}}, \mathbb{H}(Z))=\emptyset$, we may take the contrapositive and conclude
+  $$\neg(\exists \phi.\, \phi: \mathbb{H}_{\mathrm{bad}} \to \mathbb{H}(Z)) \Rightarrow \mathrm{Rep}_K(T,Z).$$
+- **If** $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{morph}}$ is returned, an explicit morphism exists and the Lock signals a breached (fatal) singularity route.
+- **If** $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{br\text{-}inc}}$ is returned, the Lock is **inconclusive**; no decidability is claimed and the Sieve routes to reconstruction/Horizon.
 
 *Step 7 (Certificate Production).* The proof is constructive in the Sieve sense:
-- The certificate $K_{\text{Lock}}^{\mathrm{blk}}$ witnesses $\mathrm{Hom} = \emptyset$
-- The verification uses sufficient obstruction tactics E1-E13; any successful tactic
-  yields $K_{\text{Lock}}^{\mathrm{blk}}$
+- The certificate $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}$ witnesses $\mathrm{Hom} = \emptyset$
+- The verification uses sufficient obstruction tactics E1--E12 (and E13 when enabled);
+  any successful tactic yields $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}$
+- If a concrete morphism is constructed, emit $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{morph}}$
+  and route to the breached/fatal outcome
 - If all tactics fail or return INC, emit $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{br\text{-}inc}}$
   with a tactic-exhaustion trace and route to reconstruction or Horizon; no global
   decidability is claimed
 
-**Certificate Produced:** $K_{\text{Lock}}^{\mathrm{blk}}$ with payload $(\mathrm{Hom} = \emptyset, Z, T, \text{obstruction witnesses})$
+**Certificate Produced:** $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}$ with payload $(\mathrm{Hom} = \emptyset, Z, T, \text{obstruction witnesses})$
 
 **Literature:** {cite}`Grothendieck67` SGA 1 Exposé V (representability); {cite}`MacLane71` §III.3 (limits and colimits); {cite}`Lurie09` §5.5–6.1 (presentable $\infty$-categories, internal logic); {cite}`Johnstone02` (Sketches of an Elephant, topos internal logic)
 :::
@@ -571,6 +598,8 @@ The trichotomy theorem puts this into the categorical framework. Every breakdown
 
 :::{prf:theorem} [KRNL-Trichotomy] Structural Resolution
 :label: mt-krnl-trichotomy
+
+**Rigor Class:** F (Framework-Original) — see {prf:ref}`def-rigor-classification`
 
 **Sieve Target:** Node 3 (CompactCheck) --- justifies the Concentration/Dispersion dichotomy
 
@@ -592,6 +621,18 @@ existence time $T_*(x) \in (0, \infty]$ classifies into exactly one of three out
 
 **Certificate Produced:** Trichotomy classification $\{K_{\text{D.D}}, K_{\text{Reg}}, K_{\text{C.E}}\}$
 
+**Alternative Proof (Rigor Class L):** Literature-Anchored — see {prf:ref}`def-rigor-classification`
+
+**Bridge Verification ({prf:ref}`def-bridge-verification`):**
+1. **Hypothesis Translation:** Certificates $K_{D_E}^+$ and $K_{C_\mu}^+$ plus scaling data
+   $K_{\mathrm{SC}_\lambda}^+$ identify a critical phase space $X_c$ and index $s_c$
+   ({prf:ref}`def-critical-index`) in which bounded sequences admit concentration/dispersion
+   analysis.
+2. **Domain Embedding:** The thin data embed into the analytic phase space
+   (e.g., $\dot{H}^{s_c}$ or a type-specific $X_c$) used by concentration-compactness.
+3. **Conclusion Import:** Lions/Bahouri–Gérard profile decomposition and Kenig–Merle rigidity
+   yield the dispersion/concentration trichotomy, matching the Sieve outcomes.
+
 **Literature:** {cite}`Lions84` Lemma I.1 (concentration-compactness); {cite}`BahouriGerard99` Theorem 1 (profile decomposition); {cite}`KenigMerle06` Theorem 1.1 (rigidity); {cite}`Struwe90` §3 (singularity analysis)
 :::
 
@@ -607,7 +648,7 @@ sequences in Sobolev spaces, either mass disperses or concentrates; multi-profil
 are handled by the profile classification machinery ({prf:ref}`mt-resolve-profile`).
 When $T_* = \infty$, the dispersion branch gives the Global Existence outcome; the concentration branches are analyzed only in the finite-time regime.
 
-*Step 2 (Profile Extraction).* In the concentration case, by (C), there exists a sequence $t_n \to T_*$ and symmetry elements $g_n \in G$ such that $g_n \cdot u(t_n) \to v^*$ (profile). This is the **profile decomposition** of {cite}`BahouriGerard99` Theorem 1: any bounded sequence in $\dot{H}^{s_c}$ admits decomposition into orthogonal profiles with asymptotically vanishing remainder.
+*Step 2 (Profile Extraction).* In the concentration case, by (C), there exists a sequence $t_n \to T_*$ and symmetry elements $g_n \in G$ such that $g_n \cdot u(t_n) \to v^*$ (profile). This is the **profile decomposition** of {cite}`BahouriGerard99` Theorem 1: any bounded sequence in the critical phase space $X_c$ ({prf:ref}`def-critical-index`, PDE case $X_c = \dot{H}^{s_c}$) admits decomposition into orthogonal profiles with asymptotically vanishing remainder.
 
 *Step 3 (Profile Classification).* The limiting profile $v^*$ either: (a) satisfies all
 interface permits → Global Regularity via imported rigidity/scattering upgrades
@@ -625,7 +666,7 @@ singularity structure.
 
 **Mechanism:**
 1. **Analytic Input:** Trajectory $u(t)$ with breakdown time $T_* < \infty$
-2. **Profile Extraction:** By {prf:ref}`mt-krnl-trichotomy`, concentration-compactness yields profile $v^*$ with finite energy $\|v^*\|_{\dot{H}^{s_c}} \leq \Lambda_T$
+2. **Profile Extraction:** By {prf:ref}`mt-krnl-trichotomy`, concentration-compactness yields profile $v^*$ with finite energy $\|v^*\|_{X_c} \leq \Lambda_T$ (critical phase space {prf:ref}`def-critical-index`; PDE case $X_c = \dot{H}^{s_c}$)
 3. **Germ Construction:** Profile $v^*$ determines germ $[P, \pi] \in \mathcal{G}_T$ via the blow-up parametrization (scaling, centering, symmetry quotient)
 4. **Morphism Induction:** The singularity subobject inclusion $\iota: \Sigma \hookrightarrow Z$
    (with $\Sigma$ the bad set singled out by the thin kernel, e.g., dissipation blow-up)
@@ -645,6 +686,8 @@ singularity structure.
 :::{prf:theorem} [KRNL-Equivariance] Equivariance Principle
 :label: mt-krnl-equivariance
 
+**Rigor Class:** F (Framework-Original) — see {prf:ref}`def-rigor-classification`
+
 **Sieve Target:** Meta-Learning — guarantees learned parameters preserve symmetry group $G$
 
 **Statement:** Let $G$ be a compact Lie group acting on the system distribution $\mathcal{S}$ and parameter space $\Theta$. Under compatibility assumptions (see {prf:ref}`mt-equivariance` for the full hypothesis list):
@@ -661,6 +704,17 @@ Then:
 - Learned hypostructures inherit all symmetries of the system distribution
 
 **Certificate Produced:** $K_{\text{SV08}}^+$ (Symmetry Preservation)
+
+**Alternative Proof (Rigor Class L):** Literature-Anchored — see {prf:ref}`def-rigor-classification`
+
+**Bridge Verification ({prf:ref}`def-bridge-verification`):**
+1. **Hypothesis Translation:** The group-covariant distribution, equivariant parametrization,
+   and defect-level equivariance conditions match the hypotheses of standard equivariant
+   learning/representation theorems.
+2. **Domain Embedding:** The hypostructure parametrization embeds into $G$-representation
+   spaces (e.g., equivariant neural layers or group representations).
+3. **Conclusion Import:** Noether/Cohen–Welling/Kondor/Weyl equivariance results imply
+   invariance of minimizers and symmetry-preserving gradient flow, yielding $K_{\text{SV08}}^+$.
 
 **Literature:** {cite}`Noether18`; {cite}`CohenWelling16`; {cite}`Kondor18`; {cite}`Weyl46`
 :::
@@ -688,6 +742,8 @@ local certificate; if only an enumerator is known, Axiom R is not certified.
 :::{prf:theorem} Halting/AIT Sieve Thermodynamics (Phase Transition Witness)
 :label: thm-halting-ait-sieve-thermo
 
+**Rigor Class:** F (Framework-Original) — see {prf:ref}`def-rigor-classification`
+
 In the algorithmic-thermodynamic translation, let $\mathcal{K} = \{e : \varphi_e(e)\downarrow\}$ be the halting set and let Kolmogorov complexity ({prf:ref}`def-kolmogorov-complexity`) act as energy. Then there is a phase separation between:
 
 - **Crystal Phase (Decidable):** Families with $L_n$ (the length-$n$ prefix of the characteristic sequence of $L$) satisfying $K(L_n) = O(\log n)$ and Axiom R holds ({prf:ref}`ax-algorithmic-recovery`) → **REGULAR**
@@ -695,6 +751,21 @@ In the algorithmic-thermodynamic translation, let $\mathcal{K} = \{e : \varphi_e
 - **Gas Phase (Random):** Families with $K(L_n) \geq n - O(1)$ (Martin-Lof random), hence Axiom R fails → **HORIZON**
 
 This theorem formalizes the phase transition detected by {prf:ref}`mt-krnl-horizon-limit`.
+
+**Alternative Proof (Rigor Class L):** Literature-Anchored — see {prf:ref}`def-rigor-classification`
+
+**Bridge Verification ({prf:ref}`def-bridge-verification`):**
+1. **Hypothesis Translation:** Certificates for Axiom R (decider vs. enumerator),
+   c.e. status, and randomness/complexity bounds align with the hypotheses of
+   standard AIT results (decidability, Levin-Schnorr, halting undecidability).
+2. **Domain Embedding:** The thin trace is encoded as a binary sequence
+   (characteristic function of $L$), matching the AIT setting.
+3. **Conclusion Import:** Levin–Schnorr gives the random-phase lower bound,
+   Turing gives undecidability for $\mathcal{K}$, and standard complexity
+   bounds for decidable sets yield the crystal-phase regime, matching the
+   Sieve phase classification.
+
+**Literature:** {cite}`Levin73b`; {cite}`Schnorr73`; {cite}`Turing36`
 :::
 
 :::{prf:proof}

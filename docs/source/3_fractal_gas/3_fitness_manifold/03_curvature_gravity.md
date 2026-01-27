@@ -95,6 +95,7 @@ $$
 $$
 
 *Reference:* {cite}`ambrose1953theorem`
+*Proof.* See Theorem {prf:ref}`appx-ambrose-singer` in {doc}`../appendices/17_geometric_gas`. $\square$
 :::
 
 :::{prf:lemma} Holonomy of Small Loops
@@ -108,7 +109,7 @@ $$
 
 where $T^{cd}$ is the tangent bivector to $\Sigma$.
 
-*Proof.* Expand the path-ordered exponential using the non-abelian Stokes theorem {cite}`kobayashi1963foundations`. $\square$
+*Proof.* See Lemma {prf:ref}`appx-holonomy-small-loops` in {doc}`../appendices/17_geometric_gas`. $\square$
 :::
 
 ---
@@ -231,7 +232,7 @@ $$
 \frac{d\theta}{d\tau} = -\frac{1}{d}\theta^2 - \sigma_{\mu\nu}\sigma^{\mu\nu} + \omega_{\mu\nu}\omega^{\mu\nu} - R_{\mu\nu}u^\mu u^\nu
 $$
 
-*Proof.* Compute $u^\nu \nabla_\nu \theta$, use the Ricci identity, and substitute the kinematic decomposition. Standard derivation in {cite}`wald1984general` §9.2. $\square$
+*Proof.* See Theorem {prf:ref}`appx-raychaudhuri` in {doc}`../appendices/17_geometric_gas`. $\square$
 :::
 
 ---
@@ -278,7 +279,7 @@ $$
 
 **Step 1: Volume evolution via Reynolds transport.**
 
-By the Reynolds transport theorem for a moving domain:
+By the Reynolds transport theorem for a moving domain (Lemma {prf:ref}`appx-reynolds-transport`):
 
 $$
 \frac{dV_i}{dt} = \int_{\partial \mathrm{Vor}_i} v_b \cdot n \, dA
@@ -294,7 +295,7 @@ $$
 \psi(x, t) := \frac{1}{2}d_g^2(x, z_i) - \frac{1}{2}d_g^2(x, z_j) = 0
 $$
 
-Taking the total derivative $\frac{D\psi}{Dt} = 0$ and solving for boundary velocity:
+Taking the total derivative $\frac{D\psi}{Dt} = 0$ and solving for boundary velocity (Lemma {prf:ref}`appx-voronoi-boundary-velocity`):
 
 $$
 v_b \cdot n_{ij} \approx \frac{u(z_i) + u(z_j)}{2} \cdot n_{ij} + O(\epsilon_N)
@@ -304,7 +305,7 @@ $$
 
 **Step 3: Apply divergence theorem.**
 
-For smooth $u$ on a small cell (diameter $\sim \epsilon_N$):
+For smooth $u$ on a small cell (diameter $\sim \epsilon_N$) using Lemma {prf:ref}`appx-divergence-remainder`:
 
 $$
 \int_{\partial \mathrm{Vor}_i} u \cdot n \, dA = \int_{\mathrm{Vor}_i} \nabla \cdot u \, dV = V_i (\nabla \cdot u)(z_i) + O(\epsilon_N^{d+1})
@@ -324,7 +325,7 @@ $$
 
 **Step 5: Apply continuous Raychaudhuri.**
 
-By Theorem {prf:ref}`thm-raychaudhuri`, the continuous field satisfies:
+By Theorem {prf:ref}`thm-raychaudhuri` (classical proof in Appendix {doc}`../appendices/17_geometric_gas`), the continuous field satisfies:
 
 $$
 u^\nu \nabla_\nu \theta = -\frac{1}{d}\theta^2 - \sigma^2 + \omega^2 - R_{\mu\nu} u^\mu u^\nu

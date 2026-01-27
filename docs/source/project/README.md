@@ -47,6 +47,39 @@ python src/experiments/calibrate_fractal_gas_qft.py \
   --d 3
 ```
 
+## QFT Ensemble Validation
+
+Run multi-trial statistical validation of QFT predictions with full Standard Model gauge group (U(1) × SU(2) × SU(3)):
+
+```bash
+python src/experiments/run_qft_validation_ensemble.py \
+  --n-trials 100 \
+  --n-walkers 1000 \
+  --n-steps 1000 \
+  --parallel-jobs 50 \
+  --use-viscous-coupling \
+  --nu 0.1 \
+  --viscous-length-scale 1.0 \
+  --output-dir outputs/qft_ensemble
+```
+
+Quick test (runs in ~30 seconds):
+
+```bash
+python src/experiments/run_qft_validation_ensemble.py \
+  --n-trials 5 \
+  --n-walkers 100 \
+  --n-steps 200 \
+  --parallel-jobs 2 \
+  --use-viscous-coupling \
+  --output-dir outputs/qft_ensemble_test
+```
+
+Outputs:
+- `ensemble_report.md`: Summary with 95% confidence intervals
+- `ensemble_metrics.json`: Full statistics for all metrics
+- `plots/`: Correlation lengths, Wilson loops, phase distributions, SU(3) color alignment
+
 ## License
 
 MIT

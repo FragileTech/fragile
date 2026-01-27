@@ -59,7 +59,7 @@ $$
 
 where:
 
-- $H(z, S) = \nabla_z^2 V_{\mathrm{fit}}(z; S)$ is the **local Hessian** of the fitness potential evaluated at position $z$. Since $V_{\mathrm{fit}} \in C^\infty$ (see {doc}`/3_fractal_gas/appendices/14_b_geometric_gas_cinf_regularity_full`), the Hessian is symmetric by Schwarz's theorem. For mean-field fitness $V_{\mathrm{fit}}(S) = \frac{1}{N}\sum_{i,j}\phi(z_i, z_j)$, a walker at position $z$ experiences $H(z, S) = \frac{1}{N}\sum_{j \in S} \nabla_z^2 \phi(z, z_j)$
+- $H(z, S) = \nabla_z^2 V_{\mathrm{fit}}^{(i)}(z; S)$ is the **local Hessian** of the per-walker fitness potential evaluated at position $z$ (companions and other walkers treated as frozen). Since $V_{\mathrm{fit}} \in C^\infty$ (see {doc}`/3_fractal_gas/appendices/14_b_geometric_gas_cinf_regularity_full`), the Hessian is symmetric by Schwarz's theorem. In the mean-field limit $N \to \infty$, we may instead use the effective fitness field $V_{\mathrm{fit}}(z; \mu)$ from Definition {prf:ref}`def-mean-field-fitness-field` and set $H(z; \mu) = \nabla_z^2 V_{\mathrm{fit}}(z; \mu)$
 - $\epsilon_\Sigma > 0$ is the **regularization parameter** (spectral floor)
 - $I$ is the identity matrix in the coordinate basis (we work in coordinates where the latent space is locally Euclidean; for curved ambient spaces, replace $I$ with the ambient metric $G$)
 - The matrix square root is the unique symmetric positive definite square root
@@ -69,6 +69,23 @@ The induced **diffusion matrix** (covariance of the noise) is:
 $$
 D_{\mathrm{reg}}(z, S) = \Sigma_{\mathrm{reg}} \Sigma_{\mathrm{reg}}^T = \left( H(z, S) + \epsilon_\Sigma I \right)^{-1}
 $$
+:::
+
+:::{prf:definition} Mean-Field Fitness Field
+:label: def-mean-field-fitness-field
+
+Let $\mu_t$ be the deterministic limiting empirical measure as $N \to \infty$. Define the **effective fitness field**
+$V_{\mathrm{fit}}(z; \mu_t)$ by averaging the per-walker fitness over companion selection:
+
+$$
+V_{\mathrm{fit}}(z; \mu_t) := \mathbb{E}_{c \sim P_{\mu_t}(z, \cdot)}\!\left[ V_{\mathrm{fit}}^{(i)}(z, c; \mu_t) \right].
+$$
+
+Here $P_{\mu_t}(z,\cdot)$ is the companion-selection kernel induced by $\mu_t$ (softmax of algorithmic distance), and
+$V_{\mathrm{fit}}^{(i)}(z, c; \mu_t)$ is the same per-walker fitness functional used in the algorithm, with statistics
+computed from $\mu_t$ (global if $\rho=\varnothing$, localized if $\rho$ is finite). For finite $N$, the algorithm
+samples this field only at the walker locations; in the mean-field limit it becomes a deterministic field on
+$\mathcal{Z}$.
 :::
 
 ### Geometric Interpretation: Diffusion Inverse = Metric Tensor
@@ -326,13 +343,20 @@ The dynamics of the Latent Fractal Gas admit two mathematically equivalent formu
 - SDE (Manifold): $dv = [\tilde{F}_g(z) - \gamma v] dt + \sigma \sqrt{g^{-1}} \circ dW_{\mathcal{M}}$
 - *Intuition:* Walking through a warped room where distances themselves change
 
-**Equivalence Theorem:** Let $\Psi: (\mathcal{Z}, D_{\mathrm{flat}}) \to (\mathcal{M}, g)$ be the diffeomorphism relating the two coordinate systems. If the Jacobian is bounded, then:
+**Generator-level equivalence (precise):** The two descriptions are the same Markov generator on $\mathcal{Z}$ once the
+geometric drift $b_{\mathrm{geo}}$ is included (Lemma {prf:ref}`lem-geometric-drift-latent`). In this sense, anisotropic
+diffusion in flat coordinates is equivalent to isotropic diffusion on $(\mathcal{Z}, g)$—no global diffeomorphism is
+assumed or required. If a coordinate change $\Psi$ is used, it must satisfy $g=\Psi^*G$ in the chart, and the drift must
+transform accordingly.
+:::
 
-$$
-\|\mathcal{L}^{\mathrm{flat}}(Z_t) - \pi^{\mathrm{flat}}\|_{\mathrm{TV}} = \|\mathcal{L}^{\mathrm{curved}}(Y_t) - \pi^{\mathrm{curved}}\|_{\mathrm{TV}}
-$$
+:::{prf:remark} Equivalence as a Reinterpretation (Not a Global Diffeomorphism)
+:label: rem-equivalence-reinterpretation
 
-All convergence rates, mixing times, and observables are identical.
+The equivalence invoked here is **generator-level**: the same stochastic process on $\mathcal{Z}$ can be written either
+with anisotropic diffusion $D_{\mathrm{reg}}$ in Euclidean coordinates or with isotropic diffusion relative to the
+metric $g$ and the corresponding geometric drift. This does **not** claim a global diffeomorphism that isotropizes an
+arbitrary diffusion field; any coordinate-change statement is local and requires $g$ to be a pullback metric.
 :::
 
 ---
@@ -392,21 +416,24 @@ However, to ensure the system relaxes to the correct **Riemannian measure** (wit
 To ensure convergence to the Riemannian equilibrium $\rho(z) \propto \sqrt{\det g(z)} e^{-\Phi_{\mathrm{eff}}(z)/T}$, we augment the velocity dynamics with a **geometric drift**:
 
 $$
-dv_i = \left[ F(z_i) - \gamma v_i + b_{\mathrm{geo}}(z_i) \right] dt + \Sigma_{\mathrm{reg}}(z_i, S) \, dW_i
+dv_i = \left[ F(z_i) - \gamma v_i + b_{\mathrm{geo}}(z_i) \right] dt + \Sigma_{\mathrm{reg}}(z_i, S) \circ dW_i
 $$
 
 where the geometric drift is:
 
 $$
-b_{\mathrm{geo}}^k(z) = \frac{T}{2} \sum_{j,l} \Sigma_{lj}(z) \frac{\partial \Sigma_{kj}(z)}{\partial z_l} = \frac{T}{2} \nabla_z \cdot D_{\mathrm{reg}}(z)
+b_{\mathrm{geo}}^k(z) = \frac{T}{2}\,\frac{1}{\sqrt{\det g(z)}}\partial_{z_l}\!\left(\sqrt{\det g(z)}\,g^{kl}(z)\right)
+= \frac{T}{2}\Big[(\nabla_z \cdot D_{\mathrm{reg}}(z))^k + (D_{\mathrm{reg}}(z)\,\nabla_z \log \sqrt{\det g(z)})^k\Big]
 $$
 
-**Physical interpretation:** This drift compensates for the spatially-varying diffusion, ensuring that the equilibrium density includes the $\sqrt{\det g}$ Jacobian factor. Without it, the stationary distribution would be $\rho(z) \propto e^{-\Phi_{\mathrm{eff}}(z)/T}$ without geometric weighting.
+**Physical interpretation:** This drift compensates for the spatially-varying diffusion **and** the Riemannian volume element, ensuring that the equilibrium density includes the $\sqrt{\det g}$ Jacobian factor. Without it, the stationary distribution would be $\rho(z) \propto e^{-\Phi_{\mathrm{eff}}(z)/T}$ without geometric weighting.
 
-**Bound:** Under uniform ellipticity ($\|\Sigma_{\mathrm{reg}}\|_{\mathrm{op}} \leq c_{\max}^{1/2}$) and Lipschitz continuity ($\|\nabla \Sigma_{\mathrm{reg}}\|_{\mathrm{op}} \leq L_\Sigma$):
+**Bound:** Under uniform ellipticity ($\|\Sigma_{\mathrm{reg}}\|_{\mathrm{op}} \leq c_{\max}^{1/2}$), Lipschitz continuity
+($\|\nabla \Sigma_{\mathrm{reg}}\|_{\mathrm{op}} \leq L_\Sigma$), and bounded log-volume gradient
+($\|\nabla \log \sqrt{\det g}\|_2 \leq L_{\log\det}$):
 
 $$
-\|b_{\mathrm{geo}}(z)\|_2 \leq \frac{T \cdot d^{3/2}}{2} \sqrt{c_{\max}} \cdot L_\Sigma
+\|b_{\mathrm{geo}}(z)\|_2 \leq \frac{T}{2}\left(d^{3/2}\sqrt{c_{\max}}\,L_\Sigma + c_{\max}\,L_{\log\det}\right)
 $$
 :::
 
@@ -443,6 +470,29 @@ where $dz = dz_1 \wedge \cdots \wedge dz_d$ is the coordinate (Lebesgue) volume 
 - $\sqrt{\det g(z, S)}$: Jacobian factor relating coordinate volume to intrinsic volume
 - Large $\sqrt{\det g}$: "Stretched" region (high curvature), hard to explore
 - Small $\sqrt{\det g}$: "Compressed" region (low curvature), easy to explore
+:::
+
+:::{prf:remark} Regime for the Volume Element
+:label: rem-volume-element-regime
+
+In the analytic statements below, we take the **mean-field regime** and interpret $g(z,S)$ as the deterministic field
+$g(z;\mu)$ induced by Definition {prf:ref}`def-mean-field-fitness-field`. For finite $N$, the algorithm evaluates
+$g(z,S)$ only at walker locations and treats $S$ as frozen within a step (see {ref}`sec-eg-stage2`); the mean-field
+expressions describe the limiting field that these samples approximate.
+:::
+
+:::{admonition} Two Proof Routes for the Regime Choice
+:class: dropdown note
+
+**Route A — Mean-field/propagation-of-chaos (global field):**
+- Propagation of chaos gives convergence of single-particle marginals to a deterministic $\mu$ and justifies $g(z;\mu)$:
+  {prf:ref}`thm-propagation-chaos-qsd` in {doc}`/3_fractal_gas/appendices/12_qsd_exchangeability_theory`.
+- The hypostructure proof object records the mean-field limit and error bound in
+  {doc}`/3_fractal_gas/1_the_algorithm/02_fractal_gas_latent` (Part III-B: Mean-Field Limit).
+
+**Route B — Frozen-swarm within a step (local field):**
+- The Euclidean Gas kernel freezes $V_{\mathrm{fit}}$ during each step; this provides a fixed-$S$ geometry for the
+  kinetic update ({ref}`sec-eg-stage2` in {doc}`/3_fractal_gas/appendices/02_euclidean_gas`).
 :::
 
 :::{div} feynman-prose
@@ -817,7 +867,8 @@ In the next section, we will see how the discrete events of cloning create a tes
 
 ### Framework Documents
 
-- {doc}`/3_fractal_gas/1_the_algorithm/02_fractal_gas_latent` — Latent Fractal Gas algorithm definition
+- {doc}`/3_fractal_gas/1_the_algorithm/01_algorithm_intuition` — per-walker fitness definition and mean-field field remark
+- {doc}`/3_fractal_gas/1_the_algorithm/02_fractal_gas_latent` — Latent Fractal Gas algorithm definition and mean-field limit fitness remark
 - {doc}`/3_fractal_gas/2_fractal_set/01_fractal_set` — Fractal Set data structure
 - {doc}`/3_fractal_gas/3_fitness_manifold/02_scutoid_spacetime` — Scutoid tessellation and discrete spacetime geometry
 

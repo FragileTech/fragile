@@ -907,6 +907,16 @@ $$
 where $\nabla_{z_i}^2 V_{\text{fit}}^{(i)}$ is the per-walker Hessian of fitness with respect to $z_i$ (companions and other walkers treated as frozen), and $\epsilon_\Sigma > 0$ is a regularizer ensuring positive definiteness. The OU step scales this shape by the thermostat amplitude $c_2$.
 :::
 
+:::{prf:remark} Mean-Field Fitness Field
+:label: rem-mean-field-fitness-field-intuition
+
+In the mean-field limit $N \to \infty$, the per-walker fitness induces a deterministic field
+$V_{\mathrm{fit}}(z; \mu)$ obtained by averaging over companion selection and using statistics
+computed from the limiting measure $\mu$ (global if $\rho=\varnothing$, localized if $\rho$ is finite).
+For finite $N$, the algorithm samples this field only at walker locations. See Definition
+{prf:ref}`def-mean-field-fitness-field`.
+:::
+
 :::{div} feynman-prose
 Why anisotropic diffusion? Consider a fitness landscape with a narrow valley: stiff in one direction (walls of the
 valley) and flat in another (along the valley floor). Isotropic diffusion would waste energy bouncing off the walls.

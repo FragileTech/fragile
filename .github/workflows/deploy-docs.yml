@@ -36,6 +36,9 @@ jobs:
         run: |
           pip install -r docs/requirements.txt
 
+      - name: Generate prompt downloads
+        run: make prompt
+
       - name: Build JupyterBook
         run: jupyter-book build docs/
 

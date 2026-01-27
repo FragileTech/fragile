@@ -69,7 +69,7 @@ Each gate predicate $P_i^T$ belongs to one of three decidability classes:
 |------|-----------|-------------------|--------------|----------------------|
 | 1 (Energy) | $\Phi(x) < M$ | $\Pi_1^0$ (co-semi-decidable) | $(x, \Phi(x), M)$ | Infinite sup over time |
 | 3 (Compact) | $\exists V: \mu(B_\varepsilon(V)) > 0$ | $\Sigma_1^0$ | $(V, \varepsilon, \mu_{\mathrm{witness}})$ | Profile enumeration |
-| 4 (Scale) | $\alpha < \beta + \lambda_c$ | Decidable | $(\alpha, \beta, \lambda_c)$ | None (arithmetic) |
+| 4 (Scale) | $\beta - \alpha < \lambda_c$ | Decidable | $(\alpha, \beta, \lambda_c)$ | None (arithmetic) |
 | 7 (Stiff) | $\|\nabla\Phi\| \geq C|\Delta\Phi|^\theta$ | $\Pi_1^0$ | $(C, \theta, \mathrm{gradient\_bound})$ | Infimum over manifold |
 | 17 (Lock) | $\operatorname{Hom}(\mathbb{H}_{\mathrm{bad}}, -) = \emptyset$ | Undecidable in general | Obstruction cocycle | Rice's Theorem |
 
@@ -113,7 +113,7 @@ Witness[ScaleCheck] := {
   alpha: ℝ,              -- energy scaling exponent
   beta: ℝ,               -- dissipation scaling exponent
   lambda_c: ℝ,           -- critical threshold
-  proof: alpha < beta + lambda_c
+  proof: beta - alpha < lambda_c
 }
 
 Witness[StiffnessCheck] := {
@@ -144,7 +144,7 @@ $$
 *Step 1 (Predicate Extraction).* From type $T$'s structural data, extract the semantic content of each gate predicate $P_i^T$:
 - EnergyCheck: $P_1^T(x) \equiv \Phi(x) < \infty$ (finite energy) — **Decidability:** $\Sigma_1^0$ via numerical evaluation
 - CompactCheck: $P_3^T(x) \equiv \exists V \in \mathcal{L}_T: \mu(B_\varepsilon(V)) > 0$ (concentration) — **Decidability:** $\Sigma_1^0$ via profile search
-- ScaleCheck: $P_4^T(x) \equiv \alpha(x) < \beta(x) + \lambda_c$ (subcriticality) — **Decidability:** Decidable (arithmetic)
+- ScaleCheck: $P_4^T(x) \equiv \beta(x) - \alpha(x) < \lambda_c$ (subcriticality) — **Decidability:** Decidable (arithmetic)
 - StiffnessCheck: $P_7^T(x) \equiv \|\nabla\Phi(x)\| \geq C|\Phi(x) - \Phi_{\min}|^\theta$ (Łojasiewicz) — **Decidability:** $\Pi_2^0$ via variational methods
 
 The predicates are derived from the user-supplied $(\Phi, \mathfrak{D}, G)$ using type-specific templates from the {ref}`Gate Catalog <sec-gate-node-specs>`.
@@ -479,7 +479,7 @@ $$
 Each tactic is **complete for its class**: E1 catches all geometric obstructions, E2 catches all topological obstructions, etc. The union covers all known obstruction mechanisms for type $T$.
 
 *Step 4 (Horizon Fallback).* If all tactics fail, the Lock enters horizon mode:
-- Emit $K_{\mathrm{Lock}}^{\mathrm{inc}} = (\mathrm{tactics\_exhausted}, \{E_1, \ldots, E_5\}, \mathrm{partial\_progress})$
+- Emit $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{br\text{-}inc}} = (\mathrm{tactics\_exhausted}, \{E_1, \ldots, E_5\}, \mathrm{partial\_progress})$
 - The certificate records which tactics were tried and any partial progress (near-obstructions, dimension bounds)
 - Route to {prf:ref}`mt-lock-reconstruction` for explicit construction attempt
 

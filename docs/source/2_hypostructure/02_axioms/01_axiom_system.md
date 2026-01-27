@@ -95,7 +95,7 @@ The alternative to concentration is *dispersion*: the energy spreads out uniform
 :::{prf:axiom} Axiom SC (Scaling)
 :label: ax-scaling
 
-Dissipation scales faster than time: $\alpha > \beta$, where $\alpha$ is the energy scaling dimension and $\beta$ is the dissipation scaling dimension.
+Dissipation dominates at small scales: $\beta - \alpha < \lambda_c$, where $\alpha$ is the energy scaling dimension, $\beta$ is the dissipation scaling dimension, and $\lambda_c$ is the critical threshold (typically $0$ in homogeneous scaling).
 
 **Enforced by:** {prf:ref}`def-node-scale` --- Certificate $K_{SC_\lambda}^+$
 :::
@@ -103,11 +103,11 @@ Dissipation scales faster than time: $\alpha > \beta$, where $\alpha$ is the ene
 :::{div} feynman-prose
 Axiom SC is the *subcriticality* condition, and it is where dimensional analysis becomes powerful. Here is the idea: when you zoom in on a system, both energy and dissipation change. Energy might go as $\lambda^\alpha$ when you zoom by factor $\lambda$, while dissipation goes as $\lambda^\beta$.
 
-If $\alpha > \beta$, then at small scales, energy dominates dissipation. This is *bad* for regularity---it means zooming in amplifies problems rather than smoothing them out. The system is *supercritical*.
+If $\beta - \alpha \geq \lambda_c$, then at small scales, energy dominates dissipation. This is *bad* for regularity---it means zooming in amplifies problems rather than smoothing them out. The system is *supercritical*.
 
-If $\alpha < \beta$, dissipation wins at small scales. This is *good*---small-scale features get damped out. The system is *subcritical*.
+If $\beta - \alpha < \lambda_c$, dissipation wins at small scales. This is *good*---small-scale features get damped out. The system is *subcritical*.
 
-The boundary case $\alpha = \beta$ is *critical*, and that is where life gets interesting. Critical systems often have beautiful scale-invariant structures---fractals, conformal field theories, critical phenomena at phase transitions. But they are delicate. Proving regularity at criticality requires special techniques.
+The boundary case $\beta - \alpha = \lambda_c$ is *critical*, and that is where life gets interesting. Critical systems often have beautiful scale-invariant structures---fractals, conformal field theories, critical phenomena at phase transitions. But they are delicate. Proving regularity at criticality requires special techniques.
 
 The physical intuition: think of turbulence. In three dimensions, the Navier-Stokes equations are supercritical---the energy cascade to small scales is too fast for viscosity to control. This is why the Clay Millennium Prize for Navier-Stokes remains unclaimed. In two dimensions, the equations are subcritical, and we have global regularity. Same equations, different dimensions, different scaling, completely different behavior.
 :::

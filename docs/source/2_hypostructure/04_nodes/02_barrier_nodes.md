@@ -204,7 +204,7 @@ $$
 - **On Block:** Proceed to `ParamCheck`.
 - **On Breach:** Trigger **Mode S.E** → Enable Surgery `SurgSE` → Re-enter at `ParamCheck`.
 
-**Non-circularity note:** This barrier is triggered by ScaleCheck NO (supercritical: $\alpha \leq \beta$). Subcriticality ($\alpha > \beta$) may be used as an optional *sufficient* condition for Blocked (via Type I exclusion), but is not a *prerequisite* for barrier evaluation.
+**Non-circularity note:** This barrier is triggered by ScaleCheck NO (supercritical: $\beta - \alpha \geq \lambda_c$, with $\lambda_c = 0$ in the homogeneous case). Subcriticality ($\beta - \alpha < \lambda_c$) may be used as an optional *sufficient* condition for Blocked (via Type I exclusion), but is not a *prerequisite* for barrier evaluation.
 
 **Literature:** Type II blow-up and renormalization {cite}`MerleZaag98`; {cite}`RaphaelSzeftel11`; {cite}`CollotMerleRaphael17`.
 

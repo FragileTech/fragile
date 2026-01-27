@@ -891,6 +891,40 @@ If you also assume effective profile stratification (Tame Certificate) and effec
 
 ---
 
+## Witness Certificates (Auxiliary Bounds)
+
+These are **derived payload certificates** used to interface with analytic modules. They are
+*not* standalone gate permits; instead they are produced from existing permits by
+metatheorems (or supplied explicitly when derivation is impossible).
+
+:::{prf:definition} Witness Certificates for Uniform Bounds
+:label: def-witness-certificates-bounds
+
+| Certificate | Meaning | Payload |
+|---|---|---|
+| $K_{D_{\max}}^+$ | Bounded algorithmic diameter on the alive core | $(D_{\max},\ \text{support/diameter proof})$ |
+| $K_{\rho_{\max}}^+$ | Uniform upper bound on invariant/QSD density | $(\rho_{\max},\ \text{density bound proof})$ |
+
+**Scope:** Each witness is tied to a specified time window or alive core region.
+
+**Typical derivation (Fractal Gas):**
+- $K_{D_{\max}}^+$ from $C_\mu^+$ and boundary/overload/starve permits
+  ($\mathrm{Bound}_\partial$, $\mathrm{Bound}_B$, $\mathrm{Bound}_\Sigma$).
+- $K_{\rho_{\max}}^+$ from $K_{\mathrm{TB}_\rho}^+$ (mixing), $K_{\mathrm{Cap}_H}^+$ (non-collapse),
+  and $K_{D_E}^+$ (energy confinement).
+
+If a problem class cannot derive these witnesses from its thin interfaces, the witnesses
+must be **supplied explicitly** as extra permits.
+:::
+
+:::{prf:remark} Usage Pattern
+:label: rem-witness-usage
+
+Witness certificates appear as prerequisites in **bridge-verification** metatheorems
+(e.g., Gevrey admissibility). They are never used to *replace* the sieve; they only
+certify that an independent analytic proof has its hypotheses satisfied.
+:::
+
 ### How to Use These Certificates in Theorem Statements
 
 Every strong metatheorem should be written as:

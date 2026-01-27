@@ -72,7 +72,7 @@ But here is the trick. If you can prove that each event costs *something*---each
 
 **Theorem:** Global Regularity Retro-Validation
 
-**Input:** $K_{\text{Lock}}^{\mathrm{blk}}$ (Node 17: Morphism Exclusion).
+**Input:** $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}$ (Node 17: Morphism Exclusion).
 
 **Target:** Any earlier "Blocked" Barrier certificate ($K_{\text{sat}}^{\mathrm{blk}}, K_{\text{cap}}^{\mathrm{blk}}, \ldots$).
 
@@ -80,7 +80,7 @@ But here is the trick. If you can prove that each event costs *something*---each
 
 **Certificate Logic:**
 
-$$K_{\text{Lock}}^{\mathrm{blk}} \Rightarrow \forall i: K_{\text{Barrier}_i}^{\mathrm{blk}} \to K_{\text{Gate}_i}^+$$
+$$K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}} \Rightarrow \forall i: K_{\text{Barrier}_i}^{\mathrm{blk}} \to K_{\text{Gate}_i}^+$$
 
 **Physical Interpretation:** If the laws of physics forbid black holes (Lock), then any localized dense matter detected earlier (BarrierCap) must eventually disperse, regardless of local uncertainty.
 
@@ -344,7 +344,7 @@ Bounded K-complexity means your singular set is like the Mandelbrot set, not lik
 
 **Theorem:** Discrete Spectrum Enforcement
 
-**Input:** $K_{\text{Lock}}^{\mathrm{blk}}$ (Node 17: Integrality/E4 Tactic).
+**Input:** $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}$ (Node 17: Integrality/E4 Tactic).
 
 **Target:** Node 12 ($K_{\mathrm{GC}_\nabla}^-$: Chaotic Oscillation).
 
@@ -352,7 +352,7 @@ Bounded K-complexity means your singular set is like the Mandelbrot set, not lik
 
 **Certificate Logic:**
 
-$$K_{\mathrm{GC}_\nabla}^{\text{chaotic}} \wedge K_{\text{Lock}}^{\mathrm{blk}} \Rightarrow K_{\mathrm{GC}_\nabla}^{\sim} \text{ (Quasi-Periodic)}$$
+$$K_{\mathrm{GC}_\nabla}^{\text{chaotic}} \wedge K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}} \Rightarrow K_{\mathrm{GC}_\nabla}^{\sim} \text{ (Quasi-Periodic)}$$
 
 **Application:** Proves that chaotic oscillations are forbidden when integrality constraints exist.
 

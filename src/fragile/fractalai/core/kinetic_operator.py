@@ -301,12 +301,13 @@ class KineticOperator(PanelModel):
                 "name": "Viscous neighbors",
             },
             "viscous_neighbor_threshold": {
-                "type": pn.widgets.EditableFloatSlider,
+                "type": pn.widgets.FloatInput,
                 "width": INPUT_WIDTH,
                 "name": "Viscous neighbor threshold",
                 "start": 0.0,
                 "end": 1.0,
                 "step": 0.01,
+                "value": None,
             },
             "viscous_neighbor_penalty": {
                 "type": pn.widgets.EditableFloatSlider,
@@ -317,12 +318,13 @@ class KineticOperator(PanelModel):
                 "step": 0.1,
             },
             "viscous_degree_cap": {
-                "type": pn.widgets.EditableFloatSlider,
+                "type": pn.widgets.FloatInput,
                 "width": INPUT_WIDTH,
                 "name": "Viscous degree cap",
                 "start": 0.0,
                 "end": 200.0,
                 "step": 1.0,
+                "value": None,
             },
             "beta_curl": {
                 "type": pn.widgets.EditableFloatSlider,

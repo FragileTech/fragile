@@ -352,6 +352,51 @@ class Sphere(OptimBenchmark):
         return torch.zeros(self.shape)
 
 
+class QuadraticWell(OptimBenchmark):
+    """Quadratic potential well: U(x) = 0.5 * alpha * ||x||^2
+
+    A simple harmonic potential used in QFT calibration and physics simulations.
+    The global minimum is at the origin with U(0) = 0.
+
+    Args:
+        dims: Spatial dimensionality
+        alpha: Curvature parameter (default: 0.1)
+        bounds_extent: Half-width of spatial domain (default: 10.0)
+    """
+
+    alpha = param.Number(default=0.1, doc="Curvature parameter")
+
+    def __init__(self, dims: int, alpha: float = 0.1, bounds_extent: float = 10.0, **kwargs):
+        # Create potential function
+        alpha_ = alpha  # Capture in closure
+
+        def quadratic_potential(x: torch.Tensor) -> torch.Tensor:
+            return 0.5 * alpha_ * (x**2).sum(dim=-1)
+
+        # Create bounds
+        bounds = TorchBounds.from_tuples([(-bounds_extent, bounds_extent)] * dims)
+
+        super().__init__(
+            dims=dims,
+            function=quadratic_potential,
+            bounds=bounds,
+            alpha=alpha,
+            **kwargs
+        )
+
+    @staticmethod
+    def get_bounds(dims, bounds_extent=10.0):
+        return TorchBounds.from_tuples([(-bounds_extent, bounds_extent)] * dims)
+
+    @property
+    def benchmark(self) -> torch.Tensor:
+        return torch.tensor(0.0)
+
+    @property
+    def best_state(self) -> torch.Tensor:
+        return torch.zeros(self.shape)
+
+
 class Rastrigin(OptimBenchmark):
     def __init__(self, dims: int, **kwargs):
         super().__init__(dims=dims, function=rastrigin, **kwargs)
@@ -1166,6 +1211,7 @@ ALL_BENCHMARKS = [
     TaylorGreenVortex,
     LidDrivenCavity,
     KelvinHelmholtzInstability,
+    QuadraticWell,
 ]
 
 
@@ -1184,6 +1230,7 @@ BENCHMARK_NAMES = {
     "Taylor-Green Vortex": TaylorGreenVortex,
     "Lid-Driven Cavity": LidDrivenCavity,
     "Kelvin-Helmholtz Instability": KelvinHelmholtzInstability,
+    "Quadratic Well": QuadraticWell,
 }
 
 
@@ -1336,8 +1383,14 @@ def prepare_benchmark_for_explorer(
             mode_points = hv.Points([], kdims=["x₁", "x₂"])
 
     else:
-        # Standard benchmarks (Sphere, Rastrigin, etc.)
-        benchmark = benchmark_cls(dims=dims)
+        # Standard benchmarks (Sphere, Rastrigin, QuadraticWell, etc.)
+        if benchmark_cls == QuadraticWell:
+            # QuadraticWell needs bounds_extent parameter
+            bounds_extent = abs(bounds_range[1])  # Use max of bounds_range
+            alpha = benchmark_kwargs.get("alpha", 0.1)
+            benchmark = QuadraticWell(dims=dims, alpha=alpha, bounds_extent=bounds_extent)
+        else:
+            benchmark = benchmark_cls(dims=dims)
 
         # Add mode point at origin for benchmarks with known optima
         if dims == 2 and hasattr(benchmark, "best_state"):

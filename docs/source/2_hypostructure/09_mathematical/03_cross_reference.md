@@ -12,7 +12,7 @@ Now let me tell you what this chapter is really about. We have built an elaborat
 
 The answer is that every single piece of the Sieve has a mathematical pedigree. Each node, each barrier, each surgery operation is not just a good idea someone had---it is a theorem in disguise. The tables that follow are the Rosetta Stone of our framework: they map each operational component to the foundational mathematics that justifies it.
 
-Why does this matter? Because when you see a ScaleCheck node flagging a violation, you are not just seeing a heuristic alarm. You are seeing the Merle-Zaag blow-up theory, the Kenig-Merle concentration-compactness machinery, all those decades of PDE analysis, packaged into a single predicate: is $\alpha > \beta$?
+Why does this matter? Because when you see a ScaleCheck node flagging a violation, you are not just seeing a heuristic alarm. You are seeing the Merle-Zaag blow-up theory, the Kenig-Merle concentration-compactness machinery, all those decades of PDE analysis, packaged into a single predicate: is $\beta - \alpha < \lambda_c$ (with $\lambda_c = 0$ in the homogeneous case)?
 
 Think of it this way: the Sieve is the user interface; these theorems are the source code.
 :::
@@ -28,7 +28,7 @@ The kernel logic is where the Sieve makes its fundamental decisions. These are n
 
 | **Sieve Component** | **Foundation Theorem** | **Certificate** | **Primary Literature** |
 |---------------------|------------------------|-----------------|------------------------|
-| {prf:ref}`def-node-lock` | {prf:ref}`mt-krnl-exclusion` | $K_{\text{Lock}}^{\text{blk}}$ | Grothendieck, Mac Lane |
+| {prf:ref}`def-node-lock` | {prf:ref}`mt-krnl-exclusion` | $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}$ | Grothendieck, Mac Lane |
 | {prf:ref}`def-node-compact` | {prf:ref}`mt-krnl-trichotomy` | Trichotomy | Lions, Kenig-Merle |
 | {prf:ref}`def-node-complex` | {prf:ref}`mt-resolve-profile` | $K_{11}^{\text{lib/tame/inc}}$ | van den Dries, Kurdyka |
 | Meta-Learning | {prf:ref}`mt-krnl-equivariance` | $K_{\text{SV08}}^+$ | Noether, Cohen-Welling |
@@ -39,14 +39,14 @@ The kernel logic is where the Sieve makes its fundamental decisions. These are n
 :::{div} feynman-prose
 Here is where the rubber meets the road. The blue nodes are the gates---the yes/no decision points that determine whether a trajectory proceeds safely or gets flagged. Each gate implements a mathematical predicate, and each predicate distills a theorem into a single inequality.
 
-Look at the ScaleCheck gate: "$\alpha > \beta$"---that is all it asks. But behind that simple question stands the entire edifice of blow-up analysis. If the exponents satisfy $\alpha > \beta$, supercritical self-similar blow-up is excluded. You do not need to understand Merle and Zaag's intricate estimates; the Sieve has done that work for you and reduced it to a single comparison.
+Look at the ScaleCheck gate: "$\beta - \alpha < \lambda_c$"---that is all it asks. But behind that simple question stands the entire edifice of blow-up analysis. If the exponents satisfy $\beta - \alpha < \lambda_c$ (with $\lambda_c = 0$ in the homogeneous case), supercritical self-similar blow-up is excluded. You do not need to understand Merle and Zaag's intricate estimates; the Sieve has done that work for you and reduced it to a single comparison.
 
 This is the beauty of the design: profound mathematics becomes operational through abstraction.
 :::
 
 | **Blue Node** | **Foundation Theorem** | **Predicate** | **Primary Literature** |
 |---------------|------------------------|---------------|------------------------|
-| {prf:ref}`def-node-scale` | {prf:ref}`mt-lock-tactic-scale` | $\alpha > \beta$ | Merle-Zaag, Kenig-Merle |
+| {prf:ref}`def-node-scale` | {prf:ref}`mt-lock-tactic-scale` | $\beta - \alpha < \lambda_c$ | Merle-Zaag, Kenig-Merle |
 | {prf:ref}`def-node-stiffness` | {prf:ref}`mt-lock-spectral-gen` | $\sigma_{\min} > 0$ | Łojasiewicz, Simon |
 | {prf:ref}`def-node-ergo` | {prf:ref}`mt-lock-ergodic-mixing` | $\tau_{\text{mix}} < \infty$ | Birkhoff, Sinai |
 | {prf:ref}`def-node-oscillate` | {prf:ref}`mt-lock-spectral-dist` | $\|[D,a]\| < \infty$ | Connes |

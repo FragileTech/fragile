@@ -30,7 +30,7 @@ The key insight is this: the Sieve operates on certificates, not on the underlyi
 ### Openness of Regularity
 
 :::{div} feynman-prose
-Let me tell you what "openness" really means here. Imagine you have certified a system as globally regular. You have your certificate $K_{\text{Lock}}^{\mathrm{blk}}$ in hand. Now someone comes along and says, "But your parameter $\theta_0$ is only known to 6 decimal places. What about $\theta_0 + 0.000001$?"
+Let me tell you what "openness" really means here. Imagine you have certified a system as globally regular. You have your certificate $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}$ in hand. Now someone comes along and says, "But your parameter $\theta_0$ is only known to 6 decimal places. What about $\theta_0 + 0.000001$?"
 
 The openness theorem says: *Relax.* If your barriers are strict---if Gap is not merely positive but *bounded away from zero*---then there exists a whole neighborhood of parameters where the proof still works. You do not need to redo anything. The certificate algebra is continuous.
 
@@ -43,7 +43,7 @@ Think of it like a mountain pass. If you are at the very top of the saddle point
 **Source:** Dynamical Systems (Morse-Smale Stability) / Geometric Analysis.
 
 **Hypotheses.** Let $\mathcal{H}(\theta_0)$ be a Hypostructure depending on parameters $\theta \in \Theta$ (a topological space). Assume:
-1. Global Regularity at $\theta_0$: $K_{\text{Lock}}^{\mathrm{blk}}(\theta_0)$
+1. Global Regularity at $\theta_0$: $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}(\theta_0)$
 2. Strict barriers: $\mathrm{Gap}(\theta_0) > \epsilon$, $\mathrm{Cap}(\theta_0) < \delta$ for some $\epsilon, \delta > 0$
 3. Continuous dependence: the certificate functionals are continuous in $\theta$
 
@@ -52,7 +52,7 @@ Think of it like a mountain pass. If you are at the very top of the saddle point
 **Certificate Logic:**
 
 $$
-K_{\text{Lock}}^{\mathrm{blk}}(\theta_0) \wedge (\mathrm{Gap} > \epsilon) \wedge (\mathrm{Cap} < \delta) \Rightarrow \exists U: \forall \theta \in U, K_{\text{Lock}}^{\mathrm{blk}}(\theta)
+K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}(\theta_0) \wedge (\mathrm{Gap} > \epsilon) \wedge (\mathrm{Cap} < \delta) \Rightarrow \exists U: \forall \theta \in U, K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}(\theta)
 
 $$
 
@@ -190,11 +190,11 @@ Each backend accommodates different proof styles. Use whichever matches your pro
 
 **Sieve Signature:**
 - **Required Permits (Alternative Backends):**
-  - **Backend A:** $K_{\text{Lock}}^A \wedge K_{\text{Lock}}^B \wedge K_{\mathrm{SC}_\lambda}^{\text{sub}} \wedge K_{\mathrm{CouplingSmall}}^+$ (Subcritical Scaling + Coupling Control)
-  - **Backend B:** $K_{\text{Lock}}^A \wedge K_{\text{Lock}}^B \wedge K_{D_E}^{\text{pert}} \wedge K_{\mathrm{ACP}}^+$ (Semigroup + Perturbation + ACP)
-  - **Backend C:** $K_{\text{Lock}}^A \wedge K_{\text{Lock}}^B \wedge K_{\mathrm{LS}_\sigma}^{\text{abs}}$ (Energy + Absorbability)
-- **Weakest Precondition:** $\{K_{\text{Lock}}^A, K_{\text{Lock}}^B\}$ (component regularity certified)
-- **Produces:** $K_{\text{Lock}}^{A \times B}$ (product system globally regular)
+  - **Backend A:** $K_{\mathrm{Cat}_{\mathrm{Hom}}}^A \wedge K_{\mathrm{Cat}_{\mathrm{Hom}}}^B \wedge K_{\mathrm{SC}_\lambda}^{\text{sub}} \wedge K_{\mathrm{CouplingSmall}}^+$ (Subcritical Scaling + Coupling Control)
+  - **Backend B:** $K_{\mathrm{Cat}_{\mathrm{Hom}}}^A \wedge K_{\mathrm{Cat}_{\mathrm{Hom}}}^B \wedge K_{D_E}^{\text{pert}} \wedge K_{\mathrm{ACP}}^+$ (Semigroup + Perturbation + ACP)
+  - **Backend C:** $K_{\mathrm{Cat}_{\mathrm{Hom}}}^A \wedge K_{\mathrm{Cat}_{\mathrm{Hom}}}^B \wedge K_{\mathrm{LS}_\sigma}^{\text{abs}}$ (Energy + Absorbability)
+- **Weakest Precondition:** $\{K_{\mathrm{Cat}_{\mathrm{Hom}}}^A, K_{\mathrm{Cat}_{\mathrm{Hom}}}^B\}$ (component regularity certified)
+- **Produces:** $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{A \times B}$ (product system globally regular)
 - **Blocks:** All failure modes on product space
 - **Breached By:** Strong coupling exceeding perturbation bounds
 
@@ -203,7 +203,7 @@ Each backend accommodates different proof styles. Use whichever matches your pro
 **Certificate Logic:**
 
 $$
-K_{\text{Lock}}^A \wedge K_{\text{Lock}}^B \wedge \left((K_{\mathrm{SC}_\lambda}^{\text{sub}} \wedge K_{\mathrm{CouplingSmall}}^+) \vee (K_{D_E}^{\text{pert}} \wedge K_{\mathrm{ACP}}^+) \vee K_{\mathrm{LS}_\sigma}^{\text{abs}}\right) \Rightarrow K_{\text{Lock}}^{A \times B}
+K_{\mathrm{Cat}_{\mathrm{Hom}}}^A \wedge K_{\mathrm{Cat}_{\mathrm{Hom}}}^B \wedge \left((K_{\mathrm{SC}_\lambda}^{\text{sub}} \wedge K_{\mathrm{CouplingSmall}}^+) \vee (K_{D_E}^{\text{pert}} \wedge K_{\mathrm{ACP}}^+) \vee K_{\mathrm{LS}_\sigma}^{\text{abs}}\right) \Rightarrow K_{\mathrm{Cat}_{\mathrm{Hom}}}^{A \times B}
 
 $$
 
@@ -215,7 +215,7 @@ $$
 
 **Hypotheses:**
 1. Component Hypostructures $\mathcal{H}_A = (\mathcal{X}_A, \Phi_A, \mathfrak{D}_A)$ and $\mathcal{H}_B = (\mathcal{X}_B, \Phi_B, \mathfrak{D}_B)$
-2. Lock certificates: $K_{\text{Lock}}^A$ and $K_{\text{Lock}}^B$ (global regularity for each)
+2. Lock certificates: $K_{\mathrm{Cat}_{\mathrm{Hom}}}^A$ and $K_{\mathrm{Cat}_{\mathrm{Hom}}}^B$ (global regularity for each)
 3. Coupling term $\Phi_{\text{int}}: \mathcal{X}_A \times \mathcal{X}_B \to \mathbb{R}$ with scaling exponent $\alpha_{\text{int}}$
 4. **Subcritical condition:** $\alpha_{\text{int}} < \min(\alpha_c^A, \alpha_c^B)$
 5. **Coupling control** (permit $K_{\mathrm{CouplingSmall}}^+$, {prf:ref}`def-permit-couplingsmall`): Dissipation domination constants $\lambda_A, \lambda_B > 0$ with $\mathfrak{D}_i \geq \lambda_i E_i$, and energy absorbability $|\dot{E}_{\text{int}}| \leq \varepsilon(E_A + E_B) + C_\varepsilon$ for some $\varepsilon < \min(\lambda_A, \lambda_B)$
@@ -241,7 +241,7 @@ $$
 
 The interaction cannot drive blow-up faster than the natural scaling.
 
-*Step 3 (Decoupled Barrier Transfer).* The Lock certificates $K_{\text{Lock}}^A, K_{\text{Lock}}^B$ provide a priori bounds:
+*Step 3 (Decoupled Barrier Transfer).* The Lock certificates $K_{\mathrm{Cat}_{\mathrm{Hom}}}^A, K_{\mathrm{Cat}_{\mathrm{Hom}}}^B$ provide a priori bounds:
 
 $$
 \|u_A(t)\|_{\mathcal{X}_A} \leq M_A, \quad \|u_B(t)\|_{\mathcal{X}_B} \leq M_B \quad \forall t \geq 0
@@ -259,7 +259,7 @@ $$
 
 where $\mathfrak{D}_A, \mathfrak{D}_B \geq 0$ are the dissipation rates (energy loss per unit time). Subcriticality implies $|\dot{E}_{\text{int}}| \leq \varepsilon (E_A + E_B) + C_\varepsilon$ for any $\varepsilon > 0$. Choosing $\varepsilon$ small enough that $\varepsilon < \min(\lambda_A, \lambda_B)$ (where $\mathfrak{D}_i \geq \lambda_i E_i$), the dissipation dominates the interaction.
 
-*Step 5 (Grönwall Closure + Global Existence).* Standard Grönwall inequality closes the estimate. **Product local well-posedness** follows from standard semilinear theory: component LWP (guaranteed by the Lock certificates $K_{\text{Lock}}^A, K_{\text{Lock}}^B$) extends to the product system under Lipschitz coupling with subcritical growth (Hypotheses 3-4). Combined with the uniform energy bound from Step 4, global existence follows: no singularity can form in the product space.
+*Step 5 (Grönwall Closure + Global Existence).* Standard Grönwall inequality closes the estimate. **Product local well-posedness** follows from standard semilinear theory: component LWP (guaranteed by the Lock certificates $K_{\mathrm{Cat}_{\mathrm{Hom}}}^A, K_{\mathrm{Cat}_{\mathrm{Hom}}}^B$) extends to the product system under Lipschitz coupling with subcritical growth (Hypotheses 3-4). Combined with the uniform energy bound from Step 4, global existence follows: no singularity can form in the product space.
 
 **Literature:** Scaling analysis {cite}`Tao06`; subcritical perturbation {cite}`CazenaveSemilinear03`
 
@@ -415,7 +415,7 @@ This is useful in practice. Sometimes the full system is easier to analyze than 
 **Source:** Invariant Manifold Theory.
 
 **Hypotheses.** Let $\mathcal{H}$ be a Hypostructure with:
-1. Global Regularity: $K_{\text{Lock}}^{\mathrm{blk}}$
+1. Global Regularity: $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}$
 2. An invariant subsystem $\mathcal{S} \subset \mathcal{H}$: if $x(0) \in \mathcal{S}$, then $x(t) \in \mathcal{S}$ for all $t$
 3. The subsystem inherits the Hypostructure: $\mathcal{H}|_{\mathcal{S}} = (\mathcal{S}, \Phi|_{\mathcal{S}}, \mathfrak{D}|_{\mathcal{S}}, G|_{\mathcal{S}})$
 
@@ -424,7 +424,7 @@ This is useful in practice. Sometimes the full system is easier to analyze than 
 **Certificate Logic:**
 
 $$
-K_{\text{Lock}}^{\mathrm{blk}}(\mathcal{H}) \wedge (\mathcal{S} \subset \mathcal{H} \text{ invariant}) \Rightarrow K_{\text{Lock}}^{\mathrm{blk}}(\mathcal{S})
+K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}(\mathcal{H}) \wedge (\mathcal{S} \subset \mathcal{H} \text{ invariant}) \Rightarrow K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}(\mathcal{S})
 
 $$
 

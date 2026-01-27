@@ -51,7 +51,7 @@ Think of it this way. You have a flow on some space, and you want to understand 
 **Statement:** Let $X$ be a smooth projective variety over a field $k$ with flow $S_t: H^*(X) \to H^*(X)$ induced by correspondences. Suppose the sieve has issued:
 - $K_{D_E}^+$: The height functional $\Phi = \|\cdot\|_H^2$ is finite on cohomology
 - $K_{C_\mu}^+$: Energy concentrates on a finite-dimensional profile space $\mathcal{P}$
-- $K_{\mathrm{SC}_\lambda}^+$: Scaling exponents $(\alpha, \beta)$ satisfy $\alpha < \beta + \lambda_c$
+- $K_{\mathrm{SC}_\lambda}^+$: Scaling exponents $(\alpha, \beta)$ satisfy $\beta - \alpha < \lambda_c$
 
 Then there exists a contravariant functor to Chow motives:
 
@@ -495,7 +495,7 @@ What does this have to do with the sieve? The scaling exponents from $K_{\mathrm
 
 **Statement:** Let $\pi: \mathcal{X} \to \Delta$ be a proper flat morphism with smooth generic fiber $X_t$ ($t \neq 0$) and semistable reduction at $0 \in \Delta$. Suppose the sieve has issued:
 - $K_{\mathrm{TB}_\pi}^+$: Topological bound $\|\nabla\Pi\| \leq c$ for the period map $\Pi: \Delta^* \to D/\Gamma$
-- $K_{\mathrm{SC}_\lambda}^+$: Scaling exponents $(\alpha_i)$ satisfy subcriticality $\alpha_i < \lambda_c$
+- $K_{\mathrm{SC}_\lambda}^+$: Scaling exponents $(\alpha_i, \beta)$ satisfy subcriticality $\beta - \alpha_i < \lambda_c$
 - $K_{D_E}^+$: Energy $\Phi$ bounded on cohomology of general fiber
 
 Then the limiting mixed Hodge structure (MHS) satisfies:
@@ -550,9 +550,9 @@ This is the Deligne weight filtration associated to $(H^k_{\lim}, N)$.
 
 The certificate $K_{D_E}^+$ (bounded energy) ensures the MHS has finite-dimensional graded pieces.
 
-*Step 5 (Scaling-weight correspondence).* The certificate $K_{\mathrm{SC}_\lambda}^+$ provides scaling exponents $(\alpha_i)$. For $v \in \text{Gr}^W_j H^k$:
+*Step 5 (Scaling-weight correspondence).* The certificate $K_{\mathrm{SC}_\lambda}^+$ provides scaling exponents $(\alpha_i, \beta)$. For $v \in \text{Gr}^W_j H^k$:
 $$\|v(t)\| \sim |t|^{-j/2} \quad \text{as } t \to 0$$
-Thus $\alpha_j = j/2$. Subcriticality $\alpha_j < \lambda_c$ bounds the maximum weight: $j_{\max} < 2\lambda_c$.
+Thus $\alpha_j = j/2$. Subcriticality $\beta - \alpha_j < \lambda_c$ imposes $\alpha_j > \beta - \lambda_c$, hence $j > 2(\beta - \lambda_c)$ (weights below $2(\beta - \lambda_c)$ are excluded).
 
 *Step 6 (Clemens-Schmid sequence).* The exact sequence of mixed Hodge structures:
 $$\cdots \to H_k(X_0) \xrightarrow{i_*} H^k(X_t) \xrightarrow{1-T} H^k(X_t) \xrightarrow{\text{sp}} H_k(X_0) \xrightarrow{N} H_{k-2}(X_0)(-1) \to \cdots$$
@@ -666,7 +666,7 @@ This is the subspace of "algebraic" or "Hodge" elements. Certificate $K_{\text{T
 - Transcendental cycles = $h(X) / h(X)^{\mathcal{G}_{\text{mot}}}$
 
 *Step 7 (Lock verification).* For the sieve lock condition with barrier $\mathcal{B}$ and safe region $S$:
-$$K_{\text{Lock}}^+ \text{ iff } \text{Hom}_{\mathcal{C}}(\mathcal{B}, S) = \emptyset$$
+$$K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}} \text{ iff } \text{Hom}_{\mathcal{C}}(\mathcal{B}, S) = \emptyset$$
 By the equivalence $\mathcal{C} \simeq \text{Rep}(G)$, this becomes:
 $$\text{Hom}_{\text{Rep}(G)}(\rho_{\mathcal{B}}, \rho_S)^G = 0$$
 The lock is verified iff no $G$-equivariant morphisms exist. This is computed via representation theory of $G$.
@@ -793,7 +793,7 @@ This metatheorem is the "Main Result" of the framework: it proves that **Stiff**
 
 - $K_{D_E}^+$: The energy functional $\Phi: \mathcal{X} \to [0, \infty)$ is bounded: $\sup_{x \in \mathcal{X}} \Phi(x) < \infty$
 - $K_{C_\mu}^+$: Energy concentrates on a finite-dimensional profile space $\mathcal{P}$ with $\dim \mathcal{P} \leq d_{\max}$
-- $K_{\mathrm{SC}_\lambda}^+$: Scaling exponents $(\alpha, \beta)$ satisfy subcriticality: $\alpha < \beta + \lambda_c$
+- $K_{\mathrm{SC}_\lambda}^+$: Scaling exponents $(\alpha, \beta)$ satisfy subcriticality: $\beta - \alpha < \lambda_c$
 - $K_{\mathrm{LS}_\sigma}^+$: Łojasiewicz-Simon gradient inequality holds: $\|\nabla\Phi\| \geq C|\Phi - \Phi_{\min}|^\theta$ with $\theta \in (0,1)$
 
 - $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{br\text{-}inc}}$: Tactics E1-E12 fail at Node 17 with partial progress indicators:

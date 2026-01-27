@@ -1149,6 +1149,100 @@ automatic from Mosco convergence alone; it requires uniform inequality constants
 category. When stiffness is tracked via permits, this is handled separately (e.g. Theorem {prf:ref}`thm-lsi-thin-permit`).
 :::
 
+:::{prf:metatheorem} Hypostructure $C^\infty$ Bootstrap (Fractal Gas)
+:label: mt:fg-cinf-bootstrap
+
+**Thin inputs:** $\mathcal{X}^{\text{thin}}$, $\Phi^{\text{thin}}$, $\mathfrak{D}^{\text{thin}}$.
+**Permits:** $D_E$ (N1), $C_\mu$ (N3), $\mathrm{SC}_\lambda$ (N4), $\mathrm{LS}_\sigma$ (N7),
+$\mathrm{Cap}_H$ (N6) on a Safe Harbor window.
+
+**Status:** Framework (certificate logic; independent of analytic bounds).
+
+**Statement:** If the sieve returns a **Family I (Stable)** chain (all required gates return
+$K^+$) on a Safe Harbor window, then the promoted hypostructure admits a regularity
+bootstrap $L^2 \to H^s \to C^\infty$ on that window. If the chain is near-critical but
+admits the **Regularity Lift surgery** `SurgSE`, iterating the surgery yields
+$H^{s+\delta}$ upgrades for all $s$ and thus $C^\infty$. This furnishes a **pure
+hypostructure** $C^\infty$ regularity certificate.
+:::
+
+:::{prf:proof}
+Family I regularity bootstrap is stated in the classification taxonomy
+({doc}`/2_hypostructure/09_mathematical/04_taxonomy`, Family I). The Regularity Lift surgery
+is specified in {prf:ref}`def-surgery-se` and upgrades $H^s \to H^{s+\delta}$; iterating
+the upgrade yields $H^s$ for all $s$ on the window, hence $C^\infty$ by Sobolev
+embedding. These arguments are internal to the hypostructure certificate logic and do
+not invoke analytic bounds from the Gevrey route. $\square$
+:::
+
+:::{prf:metatheorem} Fractal Gas Gevrey Admissibility (Permit-Generated)
+:label: mt:fg-gevrey-admissibility
+:class: metatheorem rigor-class-f
+
+**Thin inputs:** $\mathcal{X}^{\text{thin}}$, $\Phi^{\text{thin}}$, $G^{\text{thin}}$ with the
+standard Fractal Gas kernel (regularized distance $d_{\mathrm{alg}}$ with
+$\varepsilon_d>0$, smooth softmax companion weights, and bounded parameters
+$(\rho,\varepsilon_c,\eta_{\min})$).
+**Permits:** $D_E$ (N1), $C_\mu$ (N3), $\mathrm{Cap}_H$ (N6), $\mathrm{TB}_\rho$ (N10),
+$\mathrm{Bound}_\partial$ (N13), $\mathrm{Bound}_B$ (N14), $\mathrm{Bound}_\Sigma$ (N15).
+
+**Status:** Framework (certificate-to-witness extraction; no analytic proof used).
+
+**Statement:** Under the listed permits, the sieve provides explicit **witnesses**
+$D_{\max}$ (bounded algorithmic diameter on the alive core) and $\rho_{\max}$ (uniform
+upper bound on the invariant/QSD density on the alive core). These witnesses match the
+standing hypotheses required by the Gevrey-1 regularity analysis in
+{doc}`/3_fractal_gas/appendices/14_b_geometric_gas_cinf_regularity_full`.
+:::
+
+:::{prf:proof}
+$C_\mu^+$ together with boundary/overload/starve permits bounds the alive support and
+thus the algorithmic diameter, yielding $D_{\max}$. The mixing certificate
+$K_{\mathrm{TB}_\rho}^+$ plus non-collapse from $\mathrm{Cap}_H$ and energy confinement
+$D_E$ yields a uniform invariant-density bound $\rho_{\max}$ on the alive core. These are
+certificate payloads extracted from the thin interfaces, so no analytic argument is
+imported. $\square$
+:::
+
+:::{prf:metatheorem} Gevrey Route Admissibility (Independent Analytic Proof)
+:label: mt:fg-gevrey-route
+:class: metatheorem rigor-class-l
+
+**Thin inputs:** $\mathcal{X}^{\text{thin}}$, $\Phi^{\text{thin}}$, $G^{\text{thin}}$ with the
+standard Fractal Gas kernel (regularized distance $d_{\mathrm{alg}}$ with
+$\varepsilon_d>0$, smooth softmax companion weights, and bounded parameters
+$(\rho,\varepsilon_c,\eta_{\min})$).
+**Permits:** Witnessed bounds $D_{\max}$ and $\rho_{\max}$ (as in
+{prf:ref}`mt:fg-gevrey-admissibility`), plus any kernel parameter bounds enforced by the
+thin inputs.
+
+**Status:** Bridge Verification (Class L). This metatheorem does **not** import analytic
+conclusions into the sieve; it only certifies that the hypotheses of the analytic Gevrey
+machinery are met, so that an **independent** proof may be invoked if desired.
+
+**Statement:** If (i) the instantiated Fractal Gas uses the standard kernel and
+regularization specified above, and (ii) the sieve provides witnesses $D_{\max}$ and
+$\rho_{\max}$ together with the thin-parameter bounds, then the hypotheses of the
+Gevrey-1 regularity analysis in
+{doc}`/3_fractal_gas/appendices/14_b_geometric_gas_cinf_regularity_full` are satisfied. In
+that case, the Gevrey-1 regularity proof may be applied as a **separate, independent**
+route to $C^\infty$ (and real-analytic) regularity of the mean-field expected fitness
+potential. This route remains logically independent of the hypostructure bootstrap above.
+
+**Non-Fractal-Gas instantiations:** If the witnesses $D_{\max}$ or $\rho_{\max}$ are not
+derivable from the thin interfaces in a given problem class (e.g., certain PDE
+instantiations), they must be supplied explicitly as additional permits. The sieve must
+record these extra permits rather than assuming them.
+:::
+
+:::{prf:proof}
+The Gevrey analysis in Appendix 14B is a kernel-level statement: it requires only the
+regularized distance, smooth companion-weight construction, and bounded parameter regime
+specified in the thin inputs, together with uniform bounds $D_{\max}$ and $\rho_{\max}$
+from the permit witnesses. This is a bridge
+verification of applicability, not a use of the analytic conclusion in the sieve. $\square$
+:::
+
 :::{prf:metatheorem} Dimension Selection
 :label: mt:dimension-selection
 

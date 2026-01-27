@@ -190,8 +190,181 @@ def create_app(dims: int = 2, n_gaussians: int = 3, bounds_extent: float = 6.0):
     )
 
 
+def create_qft_app():
+    """Create dashboard with QFT calibration defaults.
+
+    Launches the visualization dashboard pre-configured with parameters
+    from the QFT calibration notebook (08_qft_calibration_notebook.ipynb).
+
+    Returns:
+        Panel template ready to serve
+    """
+    # Initialize extensions
+    hv.extension("bokeh")
+    pn.extension()
+
+    # Create QFT-configured panel
+    gas_config = GasConfigPanel.create_qft_config(dims=3, bounds_extent=10.0)
+
+    # Get potential and mode_points from gas_config
+    potential = gas_config.potential
+    mode_points = gas_config.mode_points
+
+    # Generate rich background from benchmark.show()
+    background = potential.show(
+        show_optimum=gas_config.show_optimum,
+        show_density=gas_config.show_density,
+        show_contours=gas_config.show_contours,
+        n_cells=gas_config.viz_n_cells,
+    )
+
+    # Create visualizer (initially with no history)
+    visualizer = GasVisualizer(
+        history=None,
+        potential=potential,
+        background=background,
+        mode_points=mode_points,
+        bounds_extent=10.0,
+        pbc=gas_config.gas_params["pbc"],
+    )
+
+    # Create convergence panel (initially with no history)
+    convergence_panel = ConvergencePanel(
+        history=None,
+        potential=potential,
+        benchmark=potential,
+        bounds_extent=10.0,
+    )
+
+    # Create convergence bounds diagnostics panel
+    bounds_diagnostics_panel = ConvergenceBoundsPanel(
+        gas_config=gas_config,
+        potential=potential,
+        bounds_extent=10.0,
+    )
+
+    # Connect simulation completion to visualizer and convergence panel
+    def on_simulation_complete(history):
+        """Update visualizer and convergence panel when simulation completes."""
+        # Extract parameters from kinetic_op for force visualization
+        visualizer.epsilon_F = float(gas_config.kinetic_op.epsilon_F)
+        visualizer.use_fitness_force = bool(gas_config.kinetic_op.use_fitness_force)
+        visualizer.use_potential_force = bool(gas_config.kinetic_op.use_potential_force)
+
+        # Set companion selection and fitness params from gas_config operators
+        visualizer.companion_selection = gas_config.companion_selection
+        visualizer.fitness_op = gas_config.fitness_op
+
+        # Load the history in a separate thread to avoid blocking UI
+        def _update_history():
+            visualizer.set_history(history)
+            convergence_panel.set_history(history)
+            bounds_diagnostics_panel.set_history(history)
+
+        import threading
+
+        thread = threading.Thread(target=_update_history, daemon=True)
+        thread.start()
+
+    gas_config.add_completion_callback(on_simulation_complete)
+
+    def on_benchmark_change(potential, background, mode_points):
+        """Update visualizer, convergence panel, and diagnostics when benchmark changes."""
+        # Generate rich background visualization
+        rich_background = potential.show(
+            show_optimum=gas_config.show_optimum,
+            show_density=gas_config.show_density,
+            show_contours=gas_config.show_contours,
+            n_cells=gas_config.viz_n_cells,
+        )
+        visualizer.update_benchmark(potential, rich_background, mode_points)
+        convergence_panel.update_benchmark(potential)
+        bounds_diagnostics_panel.update_benchmark(potential)
+
+    gas_config.add_benchmark_callback(on_benchmark_change)
+
+    def update_benchmark_viz():
+        """Update benchmark background in visualizer when visualization parameters change."""
+        try:
+            rich_background = gas_config.potential.show(
+                show_optimum=gas_config.show_optimum,
+                show_density=gas_config.show_density,
+                show_contours=gas_config.show_contours,
+                n_cells=gas_config.viz_n_cells,
+            )
+            # Update visualizer's background
+            visualizer.update_benchmark(
+                gas_config.potential, rich_background, gas_config.mode_points
+            )
+        except Exception as e:
+            print(f"Error updating benchmark visualization: {e}")
+
+    # Watch for visualization parameter changes to update background
+    gas_config.param.watch(
+        lambda *_: update_benchmark_viz(),
+        [
+            "show_optimum",
+            "show_density",
+            "show_contours",
+            "viz_n_cells",
+        ],
+    )
+
+    # Create tabbed layout
+    tabs = pn.Tabs(
+        (
+            "Evolution",
+            pn.Column(
+                pn.pane.Markdown("## Swarm Evolution on Potential Landscape"),
+                visualizer.panel(),
+                sizing_mode="stretch_width",
+            ),
+        ),
+        (
+            "Convergence",
+            pn.Column(
+                pn.pane.Markdown("## Convergence Analysis"),
+                convergence_panel.panel(),
+                sizing_mode="stretch_width",
+            ),
+        ),
+        (
+            "Diagnostics",
+            pn.Column(
+                bounds_diagnostics_panel.panel(),
+                sizing_mode="stretch_width",
+            ),
+        ),
+        dynamic=True,
+        sizing_mode="stretch_width",
+    )
+
+    # Create layout using FastListTemplate
+    return pn.template.FastListTemplate(
+        title="Gas Visualization Dashboard (QFT Calibration)",
+        sidebar=[
+            pn.pane.Markdown("## Simulation Control"),
+            pn.pane.Markdown(
+                "**QFT Mode:** Pre-configured with calibrated parameters from "
+                "`08_qft_calibration_notebook.ipynb`. Uses quadratic potential well "
+                "with viscous coupling for QFT physics simulation."
+            ),
+            gas_config.panel(),
+        ],
+        main=[tabs],
+        sidebar_width=400,
+        main_max_width="100%",
+    )
+
+
 if __name__ == "__main__":
-    # Create and serve the app without opening browser
-    app = create_app()
+    import sys
+
+    if "--qft" in sys.argv:
+        app = create_qft_app()
+        print("QFT Calibration Dashboard running at http://localhost:5007")
+    else:
+        app = create_app()
+        print("Gas Visualization Dashboard running at http://localhost:5007")
+
     app.show(port=5007, open=False)
-    print("Gas Visualization Dashboard running at http://localhost:5007")

@@ -255,17 +255,18 @@ $$\exists V \in \mathcal{X} // G : x_n \to V$$
 **Required Structure ($\mathcal{D}$):**
 - **Scaling Action:** An action of the multiplicative group $\mathbb{G}_m$ (or $\mathbb{R}^+$) on $\mathcal{X}$.
 - **Weights:** Morphisms $\alpha, \beta: \mathcal{X} \to \mathbb{Q}$ defining how $\Phi$ and $\mathfrak{D}$ transform under scaling.
+- **Critical Threshold:** A scalar $\lambda_c$ defining the subcritical window (typically $0$ in the homogeneous case).
 
 **Evaluator ($\mathcal{P}_4$ - ScaleCheck):**
 Are the exponents ordered correctly for stability?
 
-$$\alpha(V) > \beta(V)$$
+$$\beta(V) - \alpha(V) < \lambda_c$$
 
 *(Does cost grow faster than time compression?)*
 
 **Certificates ($\mathcal{K}_{\mathrm{SC}_\lambda}$):**
-- $K_{\mathrm{SC}_\lambda}^+$: The values $\alpha, \beta$.
-- $K_{\mathrm{SC}_\lambda}^-$: A witness of criticality ($\alpha = \beta$) or supercriticality ($\alpha < \beta$).
+- $K_{\mathrm{SC}_\lambda}^+$: The values $\alpha, \beta, \lambda_c$.
+- $K_{\mathrm{SC}_\lambda}^-$: A witness of criticality ($\beta - \alpha = \lambda_c$) or supercriticality ($\beta - \alpha > \lambda_c$).
 
 **Does Not Promise:** Subcriticality.
 :::
@@ -710,6 +711,28 @@ This separation makes the framework **honest about its assumptions** and enables
 
 The following permits capture **backend-specific hypotheses** that are required by particular metatheorems. Unlike the universal interfaces (8.1–8.15), these permits encode deep theorems from specific mathematical domains (e.g., dispersive PDE, dynamical systems, algebraic geometry) that cannot be derived from the generic interface structure alone.
 
+:::{prf:definition} Critical Index and Critical Phase Space
+:label: def-critical-index
+
+A type $T$ with Scaling Interface data ({prf:ref}`def-interface-sclambda`) specifies:
+1. A scaling action $\rho_\lambda$ on thin states $\mathcal{X}$, and
+2. A scale family of control seminorms $\{\|\cdot\|_s\}_{s \in \mathcal{S}}$ declared by the type
+   (for PDE this is typically Sobolev $s$, but for non-PDE types it may be a spectral,
+   complexity, or filtration index).
+
+The **critical index** $s_c$ is any $s$ such that the control norm is scale-invariant:
+
+$$
+\|\rho_\lambda u\|_{s_c} = \|u\|_{s_c} \quad \text{for all admissible } \lambda.
+$$
+
+The **critical phase space** $X_c$ is the completion of thin states under $\|\cdot\|_{s_c}$.
+
+**Certification note:** If the scale family $\{\|\cdot\|_s\}$ is not declared or the
+invariance check cannot be certified, then $s_c$ is **undefined** and any statement
+depending on $s_c$ is conditional on the scaling-data certificate.
+:::
+
 :::{prf:definition} Permit $\mathrm{WP}_{s_c}$ (Critical Well-Posedness + Continuation)
 :label: def-permit-wp-sc
 
@@ -905,7 +928,7 @@ Typical $\mathsf{missing}$: "resolution of indeterminacy not computable", "degre
 
 **Name:** CouplingSmall
 
-**Question:** Is the interaction term $\Phi_{\mathrm{int}}$ controlled strongly enough (in the norms used by $K_{\mathrm{Lock}}^A, K_{\mathrm{Lock}}^B$) to prevent the coupling from destroying the component bounds?
+**Question:** Is the interaction term $\Phi_{\mathrm{int}}$ controlled strongly enough (in the norms used by $K_{\mathrm{Cat}_{\mathrm{Hom}}}^A, K_{\mathrm{Cat}_{\mathrm{Hom}}}^B$) to prevent the coupling from destroying the component bounds?
 
 **YES certificate**
 
@@ -1090,7 +1113,7 @@ Typical $\mathsf{missing}$: "Lyapunov function not verified to be strict", "$K_{
 | **$D_E$** | Height Morphism | Bound check | $B \in \mathcal{H}$ |
 | **$\mathrm{Rec}_N$** | Bad Subobject | Count check | Integer $N$ |
 | **$C_\mu$** | Group Action | Concentration | Profile $V$ |
-| **$\mathrm{SC}_\lambda$** | Scaling Action | Inequality $\alpha > \beta$ | Exponents |
+| **$\mathrm{SC}_\lambda$** | Scaling Action | Inequality $\beta - \alpha < \lambda_c$ | Exponents |
 | **$\mathrm{SC}_{\partial c}$** | Parameter Object | Stability check | Reference $\theta_0$ |
 | **$\mathrm{Cap}_H$** | Capacity Functional | Threshold check | Capacity value |
 | **$\mathrm{LS}_\sigma$** | Gradient Operator | Gradient domination | Exponent $\theta$ |
@@ -1134,7 +1157,7 @@ The following table provides the complete mapping from Sieve nodes to interfaces
 | 1 | EnergyCheck | $D_E$ | $\Phi(S_t x) \leq B$ | Node 2 | BarrierSat |
 | 2 | ZenoCheck | $\mathrm{Rec}_N$ | $\#\mathcal{B} < \infty$ | Node 3 | BarrierCausal |
 | 3 | CompactCheck | $C_\mu$ | Concentration controlled | Node 4 | **BarrierScat** |
-| 4 | ScaleCheck | $\mathrm{SC}_\lambda$ | $\alpha > \beta$ | Node 5 | BarrierTypeII |
+| 4 | ScaleCheck | $\mathrm{SC}_\lambda$ | $\beta - \alpha < \lambda_c$ | Node 5 | BarrierTypeII |
 | 5 | ParamCheck | $\mathrm{SC}_{\partial c}$ | $\dot{\theta} \approx 0$ | Node 6 | BarrierVac |
 | 6 | GeomCheck | $\mathrm{Cap}_H$ | $\text{Cap}(\Sigma) \leq C$ | Node 7 | BarrierCap |
 | 7 | StiffnessCheck | $\mathrm{LS}_\sigma$ | $\|\nabla\Phi\| \geq c\Phi^\theta$ | Node 8 | BarrierGap |

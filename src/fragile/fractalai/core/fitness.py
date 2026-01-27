@@ -630,6 +630,7 @@ class FitnessOperator(PanelModel):
                 "type": pn.widgets.FloatInput,
                 "width": INPUT_WIDTH,
                 "name": "ρ (localization scale)",
+                "value": None,
             },
         }
 

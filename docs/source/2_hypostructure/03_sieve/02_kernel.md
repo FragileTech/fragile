@@ -151,6 +151,8 @@ There are several categories:
 - **Barrier permits**: Blocked/Breached certificates from the orange fallback checks
 - **Surgery permits**: Re-entry certificates that authorize resuming the sieve after a repair
 - **Promotion permits**: Certificates that upgrade weaker guarantees to stronger ones
+- **Derived witness certificates**: Auxiliary bound witnesses used for analytic bridge admissibility
+  (see {prf:ref}`def-witness-certificates-bounds`)
 
 The beautiful thing is that all these certificates fit together like puzzle pieces. The precondition of one node is satisfied by the postcondition of another. The whole system is type-safe in a precise sense.
 :::

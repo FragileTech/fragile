@@ -33,6 +33,8 @@ Every predicate evaluation produces a typed certificate:
 - **$K^+$ (YES):** Witness that the property holds
 - **$K^-$ (NO):** Witness of violation or inconclusiveness
 - **$K^{\text{inc}}$:** Inconclusive—routes to fallback with honest bookkeeping
+- **Derived witnesses:** Auxiliary bound certificates (e.g., $K_{D_{\max}}^+$, $K_{\rho_{\max}}^+$) used to
+  certify analytic bridge admissibility; see {doc}`/2_hypostructure/05_interfaces/02_permits`.
 
 **The Five Axioms:**
 1. **Conservation (D, Rec):** Energy dissipation + finite discrete events

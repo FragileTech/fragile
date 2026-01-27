@@ -364,6 +364,7 @@ PYTHONUNBUFFERED = "1"
 [tool.hatch.envs.docs.scripts]
 features = ["docs"]
 build = [
+    "make prompt",
     "cp AUTHORS.md docs/source/project/",
     "cp CHANGELOG.md docs/source/project/",
     "cp CONTRIBUTING.md docs/source/project/",

@@ -24,7 +24,7 @@ Here is the first guard at our checkpoint. This one asks: "Are your scaling expo
 
 When a system develops a singularity, it often does so through self-similar blow-up. The solution starts concentrating energy at smaller and smaller scales, like water going down a drain that gets infinitely narrow. Now, there are two numbers that control whether this can actually happen: the exponent $\alpha$ that tells you how dissipation scales, and the exponent $\beta$ that tells you how time scales when you zoom in.
 
-Here is the key insight: if $\alpha > \beta$, dissipation wins. As you zoom into smaller scales, the system loses energy faster than it can concentrate it. The singularity literally cannot afford the energy bill. That is what "subcritical" means, it means the accounting does not work out for the singularity.
+Here is the key insight: if $\beta - \alpha < \lambda_c$ (with $\lambda_c = 0$ in the homogeneous case), dissipation wins. As you zoom into smaller scales, the system loses energy faster than it can concentrate it. The singularity literally cannot afford the energy bill. That is what "subcritical" means, it means the accounting does not work out for the singularity.
 
 The theorem proves this rigorously: any self-similar blow-up sequence that tried to form would require infinite dissipation, which contradicts our finite energy budget. So the singularity is excluded not by fiat, but by thermodynamics.
 :::
@@ -32,15 +32,15 @@ The theorem proves this rigorously: any self-similar blow-up sequence that tried
 :::{prf:theorem} [LOCK-Tactic-Scale] Type II Exclusion
 :label: mt-lock-tactic-scale
 
-**Sieve Target:** Node 4 (ScaleCheck) — predicate $\alpha > \beta$ excludes supercritical blow-up
+**Sieve Target:** Node 4 (ScaleCheck) — predicate $\beta - \alpha < \lambda_c$ excludes supercritical blow-up
 
-**Statement:** Let $\mathcal{S}$ be a hypostructure satisfying interface permits $D_E$ and $\mathrm{SC}_\lambda$ with scaling exponents $(\alpha, \beta)$ satisfying $\alpha > \beta$ (strict subcriticality). Let $x \in X$ with $\Phi(x) < \infty$ and $\mathcal{C}_*(x) < \infty$ (finite total cost). Then **no supercritical self-similar blow-up** can occur at $T_*(x)$.
+**Statement:** Let $\mathcal{S}$ be a hypostructure satisfying interface permits $D_E$ and $\mathrm{SC}_\lambda$ with scaling exponents $(\alpha, \beta)$ satisfying $\beta - \alpha < \lambda_c$ (strict subcriticality; $\lambda_c = 0$ in the homogeneous case). Let $x \in X$ with $\Phi(x) < \infty$ and $\mathcal{C}_*(x) < \infty$ (finite total cost). Then **no supercritical self-similar blow-up** can occur at $T_*(x)$.
 
 More precisely: if a supercritical sequence produces a nontrivial ancient trajectory $v_\infty$, then:
 
 $$\int_{-\infty}^0 \mathfrak{D}(v_\infty(s)) \, ds = \infty$$
 
-**Certificate Produced:** $K_4^+$ with payload $(\alpha, \beta, \alpha > \beta)$ or $K_{\text{TypeII}}^{\text{blk}}$
+**Certificate Produced:** $K_4^+$ with payload $(\alpha, \beta, \lambda_c, \beta - \alpha < \lambda_c)$ or $K_{\text{TypeII}}^{\text{blk}}$
 
 **Literature:** {cite}`MerleZaag98`; {cite}`KenigMerle06`; {cite}`Struwe88`; {cite}`Tao06`
 :::
@@ -63,7 +63,7 @@ $$\int_{t_n}^{T_*(x)} \mathfrak{D}(u(t)) \, dt = \lambda_n^{-(\alpha + \beta)} \
 
 $$\int_0^{S_n} \mathfrak{D}(v_n(s)) \, ds \gtrsim C_0 \lambda_n^\beta(T_*(x) - t_n)$$
 
-*Step 5 (Contradiction).* If $\alpha > \beta$, summing over dyadic scales requires $\int_{-\infty}^0 \mathfrak{D}(v_\infty) ds = \infty$ for consistency with $\mathcal{C}_*(x) < \infty$.
+*Step 5 (Contradiction).* If $\beta - \alpha < \lambda_c$ (with $\lambda_c = 0$ in the homogeneous case), summing over dyadic scales requires $\int_{-\infty}^0 \mathfrak{D}(v_\infty) ds = \infty$ for consistency with $\mathcal{C}_*(x) < \infty$.
 :::
 
 ---
