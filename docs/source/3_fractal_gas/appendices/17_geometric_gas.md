@@ -1,6 +1,6 @@
 # Convergence and Log-Sobolev Inequality for the Geometric Gas
 
-**Prerequisites**: {doc}`/3_fractal_gas/appendices/02_euclidean_gas`, {doc}`/3_fractal_gas/appendices/06_convergence`, {doc}`/3_fractal_gas/3_fitness_manifold/01_emergent_geometry`
+**Prerequisites**: {doc}`/source/3_fractal_gas/appendices/02_euclidean_gas`, {doc}`/source/3_fractal_gas/appendices/06_convergence`, {doc}`/source/3_fractal_gas/3_fitness_manifold/01_emergent_geometry`
 
 ---
 
@@ -26,11 +26,11 @@ This document establishes the complete convergence theory for the **Geometric Ga
 1. **Foster-Lyapunov Convergence** (Theorem {prf:ref}`thm-gg-foster-lyapunov-drift`): Geometric ergodicity with exponential rate $\kappa_{\mathrm{total}}(\rho) > 0$
 2. **N-Uniform Log-Sobolev Inequality** (Theorem {prf:ref}`thm-gg-lsi-main`): Entropy decay with constant $C_{\mathrm{LSI}}(\rho) < \infty$ independent of $N$
 
-The central technical achievement is extending the hypocoercivity framework (Villani 2009, proven for the Euclidean backbone in {doc}`/3_fractal_gas/appendices/06_convergence`) to handle **state-dependent anisotropic diffusion**. Classical hypocoercivity critically relies on constant diffusion coefficients; when diffusion becomes state-dependent, commutators explode with additional derivative terms and the hypocoercive gap can collapse.
+The central technical achievement is extending the hypocoercivity framework (Villani 2009, proven for the Euclidean backbone in {doc}`/source/3_fractal_gas/appendices/06_convergence`) to handle **state-dependent anisotropic diffusion**. Classical hypocoercivity critically relies on constant diffusion coefficients; when diffusion becomes state-dependent, commutators explode with additional derivative terms and the hypocoercive gap can collapse.
 
 Our resolution strategy exploits the **built-in** properties of the regularized Hessian diffusion:
-- **Uniform Ellipticity** ({prf:ref}`thm-ueph` in {doc}`/3_fractal_gas/3_fitness_manifold/01_emergent_geometry`): $c_{\min}(\rho) I \preceq D_{\mathrm{reg}} \preceq c_{\max}(\rho) I$ with N-uniform bounds
-- **C³ Regularity**: $\|\nabla^3 V_{\mathrm{fit}}\| \leq K_{V,3}(\rho)$ proven in {doc}`/3_fractal_gas/appendices/14_b_geometric_gas_cinf_regularity_full`
+- **Uniform Ellipticity** ({prf:ref}`thm-ueph` in {doc}`/source/3_fractal_gas/3_fitness_manifold/01_emergent_geometry`): $c_{\min}(\rho) I \preceq D_{\mathrm{reg}} \preceq c_{\max}(\rho) I$ with N-uniform bounds
+- **C³ Regularity**: $\|\nabla^3 V_{\mathrm{fit}}\| \leq K_{V,3}(\rho)$ proven in {doc}`/source/3_fractal_gas/appendices/14_b_geometric_gas_cinf_regularity_full`
 
 These properties—which follow from the regularization $\Sigma_{\mathrm{reg}} = (H + \epsilon_\Sigma I)^{-1/2}$ and the smoothness of the fitness potential—transform a difficult probabilistic verification into linear-algebra and calculus estimates.
 
@@ -88,7 +88,7 @@ The proof follows a three-part structure:
 
 **Appendices** provide technical lemmas (Appendix {ref}`sec-gg-appendix-a`) and comparison with classical hypocoercivity (Appendix {ref}`sec-gg-appendix-b`).
 
-The proof strategy embodies the **stable backbone + adaptive perturbation** philosophy: rather than re-proving everything for the complex adaptive system, we build rigorously upon the Euclidean Gas results proven in {doc}`/3_fractal_gas/appendices/06_convergence`, showing that intelligence can be added without sacrificing tractability.
+The proof strategy embodies the **stable backbone + adaptive perturbation** philosophy: rather than re-proving everything for the complex adaptive system, we build rigorously upon the Euclidean Gas results proven in {doc}`/source/3_fractal_gas/appendices/06_convergence`, showing that intelligence can be added without sacrificing tractability.
 
 ---
 
@@ -111,7 +111,7 @@ So $\rho$ is your bias-variance dial: small $\rho$ gives sharp local signal but 
 
 The adaptive model requires evaluating walker fitness relative to swarm statistics. Two natural regimes:
 
-1. **Global Measurement** ($\rho \to \infty$): Compare to entire swarm—backbone regime from {doc}`/3_fractal_gas/appendices/03_cloning`
+1. **Global Measurement** ($\rho \to \infty$): Compare to entire swarm—backbone regime from {doc}`/source/3_fractal_gas/appendices/03_cloning`
 2. **Local Measurement** ($\rho \to 0$): Compare to immediate neighbors—enables Hessian-based geometric response
 
 The **ρ-parameterized framework** encompasses both via a localization kernel $K_\rho(x, x')$ that weights spatial contributions.
@@ -205,7 +205,7 @@ $$
 \lim_{\rho \to \infty} \sigma^2_\rho[f_k, d, x_i] = \frac{1}{k}\sum_{j \in A_k} [d(x_j) - \mu[f_k, d]]^2 =: \sigma^2[f_k, d]
 $$
 
-This **exactly recovers** the global k-normalized statistics from {doc}`/3_fractal_gas/appendices/03_cloning`, establishing continuity with the proven backbone.
+This **exactly recovers** the global k-normalized statistics from {doc}`/source/3_fractal_gas/appendices/03_cloning`, establishing continuity with the proven backbone.
 
 **2. Hyper-Local Regime** ($\rho \to 0$):
 
@@ -312,7 +312,7 @@ $$
 H_i(S) = \nabla^2_{x_i} V_{\mathrm{fit}}[f_k, \rho](x_i)
 $$
 
-By C³ regularity of $V_{\mathrm{fit}}$ (proven in {doc}`/3_fractal_gas/appendices/14_b_geometric_gas_cinf_regularity_full`), $H_i$ exists and is continuous.
+By C³ regularity of $V_{\mathrm{fit}}$ (proven in {doc}`/source/3_fractal_gas/appendices/14_b_geometric_gas_cinf_regularity_full`), $H_i$ exists and is continuous.
 :::
 
 ### 3.3. The Regularized Diffusion Tensor
@@ -371,7 +371,7 @@ The friction coefficient satisfies $\gamma > 0$, providing unconditional kinetic
 :::{prf:axiom} Cloning Contraction (Keystone Principle)
 :label: axiom-gg-cloning
 
-The cloning operator $\Psi_{\mathrm{clone}}$ (from {doc}`/3_fractal_gas/appendices/03_cloning`) satisfies:
+The cloning operator $\Psi_{\mathrm{clone}}$ (from {doc}`/source/3_fractal_gas/appendices/03_cloning`) satisfies:
 
 $$
 \mathbb{E}[\Delta V_{\mathrm{Var},x}] \leq -\kappa_x V_{\mathrm{Var},x} + C_x
@@ -379,7 +379,7 @@ $$
 
 where $V_{\mathrm{Var},x} = \frac{1}{k}\sum_{i \in A_k} \|x_i - \bar{x}\|^2$ is the positional variance, $\kappa_x > 0$ is N-uniform, and $C_x$ is N-uniform.
 
-**Verification**: Proven in {doc}`/3_fractal_gas/appendices/03_cloning` (Keystone Lemma).
+**Verification**: Proven in {doc}`/source/3_fractal_gas/appendices/03_cloning` (Keystone Lemma).
 :::
 
 ### 4.2. Adaptive Perturbation Axioms
@@ -395,7 +395,7 @@ $$
 
 where $F_{\mathrm{adapt,max}}(\rho) < \infty$ is **N-uniform** and depends only on $\rho$ and the reward/distance bounds.
 
-**Verification**: Follows from boundedness of $\nabla V_{\mathrm{fit}}$ proven in {doc}`/3_fractal_gas/appendices/14_b_geometric_gas_cinf_regularity_full`.
+**Verification**: Follows from boundedness of $\nabla V_{\mathrm{fit}}$ proven in {doc}`/source/3_fractal_gas/appendices/14_b_geometric_gas_cinf_regularity_full`.
 :::
 
 :::{prf:axiom} Uniform Ellipticity by Construction (UEPH)
@@ -466,7 +466,7 @@ $$
 :::
 
 :::{prf:proof}
-Let $\{\lambda_k(H_i)\}$ be the eigenvalues of the Hessian $H_i(S)$. By C³ regularity ({doc}`/3_fractal_gas/appendices/14_b_geometric_gas_cinf_regularity_full`), we have:
+Let $\{\lambda_k(H_i)\}$ be the eigenvalues of the Hessian $H_i(S)$. By C³ regularity ({doc}`/source/3_fractal_gas/appendices/14_b_geometric_gas_cinf_regularity_full`), we have:
 
 $$
 -\Lambda_-(\rho) \leq \lambda_k(H_i) \leq \Lambda_+(\rho)
@@ -843,11 +843,11 @@ where:
 - $V_{\mathrm{Var},x} = \frac{1}{k}\sum_{i \in A_k} \|x_i - \bar{x}\|^2$ is positional variance
 - $V_{\mathrm{Var},v} = \frac{1}{k}\sum_{i \in A_k} \|v_i - \bar{v}\|^2$ is velocity variance
 - $\mu_v = \bar{v}$ is the velocity barycenter
-- $W_b$ is the boundary potential (from {doc}`/3_fractal_gas/appendices/03_cloning`)
+- $W_b$ is the boundary potential (from {doc}`/source/3_fractal_gas/appendices/03_cloning`)
 
 The **coupling constants** $(c_V, c_\mu, c_B) > 0$ are chosen to balance operator drifts (determined in the proof of Theorem {prf:ref}`thm-gg-foster-lyapunov-drift`).
 
-**Verification:** This is identical to the backbone Lyapunov function from {doc}`/3_fractal_gas/appendices/06_convergence`, Section 3.4. The analysis here extends the backbone results to the geometric perturbations.
+**Verification:** This is identical to the backbone Lyapunov function from {doc}`/source/3_fractal_gas/appendices/06_convergence`, Section 3.4. The analysis here extends the backbone results to the geometric perturbations.
 :::
 
 ### 7.2. Main Drift Theorem
@@ -869,7 +869,7 @@ $$
 \kappa_{\mathrm{total}}(\rho) = \kappa_{\mathrm{backbone}} - \epsilon_F K_F(\rho) - C_{\mathrm{diff},1}(\rho) - \nu c_{\mathrm{visc}}^{-}
 $$
 
-with $\kappa_{\mathrm{backbone}} > 0$ the proven backbone rate (from {doc}`/3_fractal_gas/appendices/06_convergence`) and $c_{\mathrm{visc}}^{-} \leq 0$ accounting for viscous dissipation (negative contribution increases stability).
+with $\kappa_{\mathrm{backbone}} > 0$ the proven backbone rate (from {doc}`/source/3_fractal_gas/appendices/06_convergence`) and $c_{\mathrm{visc}}^{-} \leq 0$ accounting for viscous dissipation (negative contribution increases stability).
 
 **Critical Threshold**:
 
@@ -896,7 +896,7 @@ $$
 
 **Step 2. Backbone Contribution:**
 
-From {doc}`/3_fractal_gas/appendices/06_convergence`, Theorem 3.5.1 (Foster-Lyapunov for Euclidean Gas):
+From {doc}`/source/3_fractal_gas/appendices/06_convergence`, Theorem 3.5.1 (Foster-Lyapunov for Euclidean Gas):
 
 $$
 \mathbb{E}[\Delta V_{\mathrm{TV}}]_{\mathrm{backbone}} \leq -\kappa_{\mathrm{backbone}} V_{\mathrm{TV}} + C_{\mathrm{backbone}}
@@ -1010,7 +1010,7 @@ Under Axioms {prf:ref}`axiom-gg-confining-potential`-{prf:ref}`axiom-gg-viscous-
 
 **Stage 1. Cloning to Core:**
 
-From {doc}`/3_fractal_gas/appendices/03_cloning`, the cloning operator has positive probability of driving the swarm into a compact core set $C \subset \mathcal{X}^N \times \mathcal{V}^N$ where $\|x_i - \bar{x}\| \leq R_C$ for all walkers, within finite time.
+From {doc}`/source/3_fractal_gas/appendices/03_cloning`, the cloning operator has positive probability of driving the swarm into a compact core set $C \subset \mathcal{X}^N \times \mathcal{V}^N$ where $\|x_i - \bar{x}\| \leq R_C$ for all walkers, within finite time.
 
 **Stage 2. Kinetic Minorization:**
 
@@ -1090,7 +1090,7 @@ $$
 
 By Lemmas {prf:ref}`lem-gg-phi-irreducibility` and {prf:ref}`lem-gg-aperiodicity`, the Markov chain is φ-irreducible and aperiodic. By Theorem {prf:ref}`thm-gg-foster-lyapunov-drift`, it satisfies a Foster-Lyapunov drift condition with $\kappa_{\mathrm{total}}(\rho) > 0$.
 
-Within the framework, the Euclidean Gas proof of QSD existence and exponential TV convergence is given in {doc}`/3_fractal_gas/appendices/06_convergence`, Theorem {prf:ref}`thm-main-convergence`. The present geometric case follows the same template, with the perturbation bounds in Section {ref}`sec-gg-perturbation-analysis` supplying the modified constants.
+Within the framework, the Euclidean Gas proof of QSD existence and exponential TV convergence is given in {doc}`/source/3_fractal_gas/appendices/06_convergence`, Theorem {prf:ref}`thm-main-convergence`. The present geometric case follows the same template, with the perturbation bounds in Section {ref}`sec-gg-perturbation-analysis` supplying the modified constants.
 
 The Meyn-Tweedie theorem (Theorem 15.0.1 in Meyn & Tweedie 2009) guarantees:
 
@@ -1186,7 +1186,7 @@ where $\gamma > 0$ is the friction coefficient.
 :::
 
 :::{prf:proof}
-The entropy production bound for the Ornstein-Uhlenbeck friction term is standard; see the kinetic LSI derivation in {doc}`/3_fractal_gas/appendices/15_kl_convergence` (Theorem {prf:ref}`thm-kinetic-lsi`) or {doc}`/3_fractal_gas/appendices/10_kl_hypocoercive` (Theorem {prf:ref}`thm-unconditional-lsi-explicit`). This yields
+The entropy production bound for the Ornstein-Uhlenbeck friction term is standard; see the kinetic LSI derivation in {doc}`/source/3_fractal_gas/appendices/15_kl_convergence` (Theorem {prf:ref}`thm-kinetic-lsi`) or {doc}`/source/3_fractal_gas/appendices/10_kl_hypocoercive` (Theorem {prf:ref}`thm-unconditional-lsi-explicit`). This yields
 $$
 -\frac{d}{dt} \mathrm{Ent}(f) \Big|_{\mathrm{friction}} \geq 4\gamma I_v(f).
 $$
@@ -1215,7 +1215,7 @@ $$
 
 is **N-uniform**, with $L_\Sigma(\rho) = \sup \|\nabla \Sigma_{\mathrm{reg}}\|$ the Lipschitz constant bounded by C³ regularity and $C_{\mathrm{hypo}}$ the second-derivative control constant from Lemma {prf:ref}`lem-gg-velocity-second-derivative`.
 
-**Note:** In the entropy-Fisher inequality (Proposition {prf:ref}`prop-gg-entropy-fisher-gap`), this constant is further multiplied by the QSD velocity moment bound from Theorem {prf:ref}`thm-equilibrium-variance-bounds` in {doc}`/3_fractal_gas/appendices/06_convergence`, yielding the effective commutator constant $\tilde{C}_{\mathrm{comm}}(\rho) = C_{\mathrm{comm}}(\rho) \sqrt{d M_v(\rho)}$ where $M_v(\rho)$ is an N-uniform per-particle second-moment bound.
+**Note:** In the entropy-Fisher inequality (Proposition {prf:ref}`prop-gg-entropy-fisher-gap`), this constant is further multiplied by the QSD velocity moment bound from Theorem {prf:ref}`thm-equilibrium-variance-bounds` in {doc}`/source/3_fractal_gas/appendices/06_convergence`, yielding the effective commutator constant $\tilde{C}_{\mathrm{comm}}(\rho) = C_{\mathrm{comm}}(\rho) \sqrt{d M_v(\rho)}$ where $M_v(\rho)$ is an N-uniform per-particle second-moment bound.
 
 :::
 
@@ -1236,7 +1236,7 @@ $$
 
 **Step 3. Lipschitz Bound:**
 
-By C³ regularity (proven in {doc}`/3_fractal_gas/appendices/14_b_geometric_gas_cinf_regularity_full`):
+By C³ regularity (proven in {doc}`/source/3_fractal_gas/appendices/14_b_geometric_gas_cinf_regularity_full`):
 
 $$
 \|\nabla_x \Sigma^2\| \leq 2\|\Sigma_{\mathrm{reg}}\| \|\nabla \Sigma_{\mathrm{reg}}\| \leq 2 c_{\max}^{1/2}(\rho) L_\Sigma(\rho)
@@ -1326,7 +1326,7 @@ $$
 \int \|v\| I_{\mathrm{hypo}}^\Sigma(f) d\pi_N \leq \left(\int \|v\|^2 d\pi_N\right)^{1/2} \left(\int I_{\mathrm{hypo}}^\Sigma(f)^2 d\pi_N\right)^{1/2}
 $$
 
-By Theorem {prf:ref}`thm-equilibrium-variance-bounds` in {doc}`/3_fractal_gas/appendices/06_convergence`, there exists an N-uniform per-particle second-moment bound $M_v(\rho)$ such that
+By Theorem {prf:ref}`thm-equilibrium-variance-bounds` in {doc}`/source/3_fractal_gas/appendices/06_convergence`, there exists an N-uniform per-particle second-moment bound $M_v(\rho)$ such that
 $$
 \int \|v\|^2 d\pi_N \leq d N M_v(\rho).
 $$
@@ -1405,7 +1405,7 @@ $$
 I_{\mathrm{hypo}}^\Sigma(f) \leq c_{\max}(\rho) I_v(f)
 $$
 
-**Framework references:** The Euclidean Gas LSI is proven internally in {doc}`/3_fractal_gas/appendices/15_kl_convergence` (Theorem {prf:ref}`thm-kl-convergence-euclidean`) and via the hypocoercive entropy route in {doc}`/3_fractal_gas/appendices/10_kl_hypocoercive` (Theorem {prf:ref}`thm-unconditional-lsi-explicit`). For bounded adaptive perturbations, LSI stability is established by Theorem {prf:ref}`thm-lsi-perturbation` and Corollary {prf:ref}`cor-adaptive-lsi` in {doc}`/3_fractal_gas/appendices/15_kl_convergence`, which provide the internal template for the geometric extension.
+**Framework references:** The Euclidean Gas LSI is proven internally in {doc}`/source/3_fractal_gas/appendices/15_kl_convergence` (Theorem {prf:ref}`thm-kl-convergence-euclidean`) and via the hypocoercive entropy route in {doc}`/source/3_fractal_gas/appendices/10_kl_hypocoercive` (Theorem {prf:ref}`thm-unconditional-lsi-explicit`). For bounded adaptive perturbations, LSI stability is established by Theorem {prf:ref}`thm-lsi-perturbation` and Corollary {prf:ref}`cor-adaptive-lsi` in {doc}`/source/3_fractal_gas/appendices/15_kl_convergence`, which provide the internal template for the geometric extension.
 
 **Step 3. Entropy-Fisher to LSI:**
 
@@ -1561,7 +1561,7 @@ $$
 C_{\mathrm{LSI}}^{\mathrm{MF}} \leq \limsup_{N \to \infty} C_{\mathrm{LSI}}(N, \rho)
 $$
 
-Within the framework, this implication is recorded as Corollary {prf:ref}`cor-mean-field-lsi` in {doc}`/3_fractal_gas/appendices/12_qsd_exchangeability_theory`, with the propagation-of-chaos limit constructed in {doc}`/3_fractal_gas/appendices/09_propagation_chaos`.
+Within the framework, this implication is recorded as Corollary {prf:ref}`cor-mean-field-lsi` in {doc}`/source/3_fractal_gas/appendices/12_qsd_exchangeability_theory`, with the propagation-of-chaos limit constructed in {doc}`/source/3_fractal_gas/appendices/09_propagation_chaos`.
 
 **Step 2. N-Uniformity Implies Limit:**
 
@@ -1579,7 +1579,7 @@ $$
 
 **Step 3. Lipschitz Correction (Framework Norms):**
 
-The mean-field interaction introduces a correction factor $C_{\mathrm{Lip}}^{H^1_w}(\rho)$ quantifying how fitness gradients respond to changes in the distribution $\mu$. In the framework, the fitness potential is Lipschitz from $\mathcal{P} \cap H^1_w(\Omega)$ into $L^\infty(\Omega)$ (see {doc}`/3_fractal_gas/appendices/09_propagation_chaos`, Part B: Lipschitz Continuity of Non-Linear Operators), so we use the norm already established there:
+The mean-field interaction introduces a correction factor $C_{\mathrm{Lip}}^{H^1_w}(\rho)$ quantifying how fitness gradients respond to changes in the distribution $\mu$. In the framework, the fitness potential is Lipschitz from $\mathcal{P} \cap H^1_w(\Omega)$ into $L^\infty(\Omega)$ (see {doc}`/source/3_fractal_gas/appendices/09_propagation_chaos`, Part B: Lipschitz Continuity of Non-Linear Operators), so we use the norm already established there:
 
 $$
 \|\nabla V_{\mathrm{fit}}[\mu_1, \rho] - \nabla V_{\mathrm{fit}}[\mu_2, \rho]\|_{L^\infty} \leq C_{\mathrm{Lip}}^{H^1_w}(\rho) \|\mu_1 - \mu_2\|_{H^1_w}.
@@ -1591,7 +1591,7 @@ $$
 C_{\mathrm{LSI}}^{\mathrm{MF}}(\rho) \leq C_{\mathrm{LSI}}(\rho) \left(1 + C_{\mathrm{Lip}}^{H^1_w}(\rho)\right).
 $$
 
-**Verification:** The constant $C_{\mathrm{Lip}}^{H^1_w}(\rho)$ is finite for all $\rho > 0$ by C³ regularity of the fitness potential, the ρ-localization kernel, and the Lipschitz lemmas in {doc}`/3_fractal_gas/appendices/09_propagation_chaos`.
+**Verification:** The constant $C_{\mathrm{Lip}}^{H^1_w}(\rho)$ is finite for all $\rho > 0$ by C³ regularity of the fitness potential, the ρ-localization kernel, and the Lipschitz lemmas in {doc}`/source/3_fractal_gas/appendices/09_propagation_chaos`.
 
 $\square$
 :::
@@ -1612,11 +1612,11 @@ for all $t \in [0, T]$, where $W_2$ is the 2-Wasserstein distance and $C_{\mathr
 :::
 
 :::{prf:proof}
-**Framework reference:** The propagation-of-chaos limit for the Euclidean backbone is established internally as Theorem {prf:ref}`thm-propagation-chaos-qsd` in {doc}`/3_fractal_gas/appendices/12_qsd_exchangeability_theory`, with the full proof in {doc}`/3_fractal_gas/appendices/09_propagation_chaos`. The geometric case follows by the same perturbation bounds used in Section {ref}`sec-gg-perturbation-analysis`.
+**Framework reference:** The propagation-of-chaos limit for the Euclidean backbone is established internally as Theorem {prf:ref}`thm-propagation-chaos-qsd` in {doc}`/source/3_fractal_gas/appendices/12_qsd_exchangeability_theory`, with the full proof in {doc}`/source/3_fractal_gas/appendices/09_propagation_chaos`. The geometric case follows by the same perturbation bounds used in Section {ref}`sec-gg-perturbation-analysis`.
 
 **Step 1. Framework Propagation-of-Chaos Ingredients:**
 
-In the framework proof ({doc}`/3_fractal_gas/appendices/09_propagation_chaos`), the key hypotheses are:
+In the framework proof ({doc}`/source/3_fractal_gas/appendices/09_propagation_chaos`), the key hypotheses are:
 
 1. **Lipschitz Drift (H^1_w / L^\infty):** $F[\mu]$ is Lipschitz on $\mathcal{P} \cap H^1_w(\Omega)$ with values in $L^\infty(\Omega)$
 2. **Uniform Ellipticity:** Diffusion satisfies $c_{\min} I \preceq D_{\mathrm{reg}} \preceq c_{\max} I$
@@ -1629,7 +1629,7 @@ $$
 F[\mu](x) = \epsilon_F \nabla V_{\mathrm{fit}}[\mu, \rho](x)
 $$
 
-By C³ regularity and the ρ-localization structure (see the Lipschitz lemmas in {doc}`/3_fractal_gas/appendices/09_propagation_chaos`):
+By C³ regularity and the ρ-localization structure (see the Lipschitz lemmas in {doc}`/source/3_fractal_gas/appendices/09_propagation_chaos`):
 
 $$
 \|F[\mu_1] - F[\mu_2]\|_{L^\infty} \leq \epsilon_F C_{\mathrm{Lip}}^{H^1_w}(\rho) \|\mu_1 - \mu_2\|_{H^1_w}.
@@ -1641,7 +1641,7 @@ By Theorem {prf:ref}`thm-gg-ueph-construction`, $D_{\mathrm{reg}}[\mu]$ satisfie
 
 **Step 4. Apply Propagation of Chaos Estimate:**
 
-The framework result (Theorem {prf:ref}`thm-propagation-chaos-qsd` in {doc}`/3_fractal_gas/appendices/12_qsd_exchangeability_theory`, with full proof in {doc}`/3_fractal_gas/appendices/09_propagation_chaos`) yields weak convergence of marginals; stronger $W_2$ convergence follows from the uniform second-moment bounds (see {doc}`/3_fractal_gas/appendices/09_propagation_chaos`, Corollary on $W_2$ convergence).
+The framework result (Theorem {prf:ref}`thm-propagation-chaos-qsd` in {doc}`/source/3_fractal_gas/appendices/12_qsd_exchangeability_theory`, with full proof in {doc}`/source/3_fractal_gas/appendices/09_propagation_chaos`) yields weak convergence of marginals; stronger $W_2$ convergence follows from the uniform second-moment bounds (see {doc}`/source/3_fractal_gas/appendices/09_propagation_chaos`, Corollary on $W_2$ convergence).
 
 where $C_{\mathrm{chaos}}(\rho, T) = O(e^{C_{\mathrm{Lip}}^{H^1_w}(\rho) T})$ grows at most exponentially with time.
 
@@ -1712,11 +1712,11 @@ $$
 \mathrm{WFR}(\mu_N(t+\tau), \pi_N(\rho)) \leq e^{-\kappa_{\mathrm{WFR}}(\rho) \tau} \mathrm{WFR}(\mu_N(t), \pi_N(\rho))
 $$
 
-where $\mathrm{WFR}$ is the Wasserstein-Fisher-Rao distance (see {doc}`/3_fractal_gas/3_fitness_manifold/01_emergent_geometry`) and $\kappa_{\mathrm{WFR}}(\rho) > 0$ is N-uniform.
+where $\mathrm{WFR}$ is the Wasserstein-Fisher-Rao distance (see {doc}`/source/3_fractal_gas/3_fitness_manifold/01_emergent_geometry`) and $\kappa_{\mathrm{WFR}}(\rho) > 0$ is N-uniform.
 
 **Formal Evidence:**
 
-1. The emergent metric $g = H + \epsilon_\Sigma I$ (from {doc}`/3_fractal_gas/3_fitness_manifold/01_emergent_geometry`) defines a Riemannian structure on swarm configuration space
+1. The emergent metric $g = H + \epsilon_\Sigma I$ (from {doc}`/source/3_fractal_gas/3_fitness_manifold/01_emergent_geometry`) defines a Riemannian structure on swarm configuration space
 2. The diffusion matrix $D_{\mathrm{reg}} = g^{-1}$ is exactly the metric-dual operator
 3. The cloning operator acts as the Fisher-Rao component (reweighting in fitness space)
 4. The kinetic operator acts as the Wasserstein component (transport in position-velocity space)
@@ -1728,7 +1728,7 @@ where $\mathrm{WFR}$ is the Wasserstein-Fisher-Rao distance (see {doc}`/3_fracta
 :::{div} feynman-prose
 This conjecture, if proven, would be profound. It would mean the Geometric Gas is not just an algorithm—it is a **natural gradient flow** in a geometric space that unifies information geometry (Fisher-Rao) with transport geometry (Wasserstein). The system would be following the steepest descent path of entropy in this unified metric.
 
-The evidence is tantalizing. The diffusion-metric duality (Theorem {prf:ref}`thm-diffusion-metric-duality` in {doc}`/3_fractal_gas/3_fitness_manifold/01_emergent_geometry`) shows that diffusion along $D_{\mathrm{reg}}$ is equivalent to geodesic motion in the metric $g$. The cloning operator rescales walker weights, which is exactly the Fisher-Rao operation. Together, these should combine into WFR contraction.
+The evidence is tantalizing. The diffusion-metric duality (Theorem {prf:ref}`thm-diffusion-metric-duality` in {doc}`/source/3_fractal_gas/3_fitness_manifold/01_emergent_geometry`) shows that diffusion along $D_{\mathrm{reg}}$ is equivalent to geodesic motion in the metric $g$. The cloning operator rescales walker weights, which is exactly the Fisher-Rao operation. Together, these should combine into WFR contraction.
 
 But the proof is technically demanding. The WFR metric is defined on a space of *measure-valued* trajectories, not point trajectories. You need to show that the generator—including the discrete cloning jumps—respects the WFR distance structure. This requires functional analysis machinery beyond what we have developed here. It is the frontier.
 
@@ -1774,7 +1774,7 @@ The velocities $\{v_i\}$ exhibit:
    $$
    \pi_N(v_i | x_i) \propto \exp\left( -\frac{1}{2} v_i^\top C_v(x_i)^{-1} v_i \right)
    $$
-   where $C_v(x_i)$ is the conditional velocity covariance induced by $D_{\mathrm{reg}}$ and friction. In the isotropic constant-diffusion limit, $C_v = (\sigma_v^2/2\gamma) I_d$; in the geometric case, the eigenvectors align with the local diffusion metric. Uniform ellipticity and the QSD variance bounds (Theorem {prf:ref}`thm-equilibrium-variance-bounds` in {doc}`/3_fractal_gas/appendices/06_convergence`) provide N-uniform bounds on $C_v(x_i)$.
+   where $C_v(x_i)$ is the conditional velocity covariance induced by $D_{\mathrm{reg}}$ and friction. In the isotropic constant-diffusion limit, $C_v = (\sigma_v^2/2\gamma) I_d$; in the geometric case, the eigenvectors align with the local diffusion metric. Uniform ellipticity and the QSD variance bounds (Theorem {prf:ref}`thm-equilibrium-variance-bounds` in {doc}`/source/3_fractal_gas/appendices/06_convergence`) provide N-uniform bounds on $C_v(x_i)$.
 
 2. **Anisotropic Velocity Correlations:**
    - In regions of high curvature (large $H$): Velocities aligned with eigenvectors of $H$
@@ -1885,7 +1885,7 @@ $\square$
 :::{prf:lemma} Lipschitz Bound on $\Sigma_{\mathrm{reg}}$
 :label: lem-gg-lipschitz-sigma
 
-Under C³ regularity of $V_{\mathrm{fit}}$ (proven in {doc}`/3_fractal_gas/appendices/14_b_geometric_gas_cinf_regularity_full`):
+Under C³ regularity of $V_{\mathrm{fit}}$ (proven in {doc}`/source/3_fractal_gas/appendices/14_b_geometric_gas_cinf_regularity_full`):
 
 $$
 \|\nabla \Sigma_{\mathrm{reg}}(x, S)\| \leq L_\Sigma(\rho)
@@ -2018,7 +2018,7 @@ The table below contrasts the classical hypocoercivity framework (Villani 2009) 
 
 ### C.1. Overview and Purpose
 
-This appendix provides classical differential geometry tools used in {doc}`/3_fractal_gas/3_fitness_manifold/03_curvature_gravity` and lays the foundation for the gauge-theoretic interpretation of the Geometric Gas. The material divides into two parts:
+This appendix provides classical differential geometry tools used in {doc}`/source/3_fractal_gas/3_fitness_manifold/03_curvature_gravity` and lays the foundation for the gauge-theoretic interpretation of the Geometric Gas. The material divides into two parts:
 
 **Part I (Classical Geometry):** Standard results on holonomy, Raychaudhuri equation, and transport on Riemannian/Lorentzian manifolds. These lemmas connect the emergent metric $g = H + \epsilon_\Sigma I$ to curvature effects and enable the discrete-continuum correspondence.
 
@@ -2351,8 +2351,8 @@ This interpretation connects to the Wasserstein-Fisher-Rao conjecture (Conjectur
 
 **Further Reading:**
 
-- {doc}`/3_fractal_gas/3_fitness_manifold/01_emergent_geometry` - Emergent metric and diffusion-metric duality
-- {doc}`/3_fractal_gas/3_fitness_manifold/03_curvature_gravity` - Ricci curvature and gravitational analogues
+- {doc}`/source/3_fractal_gas/3_fitness_manifold/01_emergent_geometry` - Emergent metric and diffusion-metric duality
+- {doc}`/source/3_fractal_gas/3_fitness_manifold/03_curvature_gravity` - Ricci curvature and gravitational analogues
 - Specialized gauge theory documents (in development)
 
 ---
@@ -2361,12 +2361,12 @@ This interpretation connects to the Wasserstein-Fisher-Rao conjecture (Conjectur
 
 ### Framework Documents
 
-- {doc}`/3_fractal_gas/appendices/02_euclidean_gas` - Euclidean Gas definition and backbone dynamics
-- {doc}`/3_fractal_gas/appendices/03_cloning` - Keystone Principle and Safe Harbor mechanism
-- {doc}`/3_fractal_gas/appendices/06_convergence` - Foster-Lyapunov convergence for Euclidean Gas
-- {doc}`/3_fractal_gas/3_fitness_manifold/01_emergent_geometry` - Emergent Riemannian metric and uniform ellipticity
-- {doc}`/3_fractal_gas/3_fitness_manifold/03_curvature_gravity` - Ricci curvature and gravitational analogues
-- {doc}`/3_fractal_gas/appendices/14_b_geometric_gas_cinf_regularity_full` - C³ regularity proof for fitness potential
+- {doc}`/source/3_fractal_gas/appendices/02_euclidean_gas` - Euclidean Gas definition and backbone dynamics
+- {doc}`/source/3_fractal_gas/appendices/03_cloning` - Keystone Principle and Safe Harbor mechanism
+- {doc}`/source/3_fractal_gas/appendices/06_convergence` - Foster-Lyapunov convergence for Euclidean Gas
+- {doc}`/source/3_fractal_gas/3_fitness_manifold/01_emergent_geometry` - Emergent Riemannian metric and uniform ellipticity
+- {doc}`/source/3_fractal_gas/3_fitness_manifold/03_curvature_gravity` - Ricci curvature and gravitational analogues
+- {doc}`/source/3_fractal_gas/appendices/14_b_geometric_gas_cinf_regularity_full` - C³ regularity proof for fitness potential
 
 ### Mathematical Literature
 

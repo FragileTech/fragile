@@ -968,7 +968,7 @@ Fix $(x,v) \in \Omega$ and consider the position after one timestep under the BA
 
 **Step 1: Characterize $x^+$ as a Gaussian Random Variable**
 
-Expanding the full BAOAB update (Definition [](#def-baoab-update-rule)) from steps 1-4:
+Expanding the full BAOAB update (Definition {prf:ref}`def-baoab-update-rule`) from steps 1-4:
 
 $$
 \begin{aligned}
@@ -1412,7 +1412,7 @@ For typical regularity assumptions (e.g., $f \in H^1(\Omega)$), the convergence 
 :class: tip
 :label: remark-numerical-validation-killing-rate
 
-The rigorous result in Theorem [](#thm-killing-rate-consistency) provides a concrete validation protocol:
+The rigorous result in Theorem {prf:ref}`thm-killing-rate-consistency` provides a concrete validation protocol:
 
 **Step 1: Measure Discrete Killing Rate**
 
@@ -1469,7 +1469,7 @@ f_N^\tau(t, \cdot, \cdot) \xrightarrow{\text{weak}} f(t, \cdot, \cdot)
 
 $$
 
-where $f$ solves the mean-field PDE (see {prf:ref}`thm-mean-field-equation`, Equations [](#eq-mean-field-pde-main) and [](#eq-dead-mass-ode)).
+where $f$ solves the mean-field PDE (see {prf:ref}`thm-mean-field-equation`, Equations {prf:ref}`eq-mean-field-pde-main` and {prf:ref}`eq-dead-mass-ode`).
 :::
 
 :::{note}

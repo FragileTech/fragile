@@ -145,7 +145,7 @@ Our central goal in this chapter is to prove that this sequence of single-partic
 
 ## **3. Tightness of the Marginal Sequence**
 
-#### **Introduction**
+### **Introduction**
 
 The first step in proving the convergence of the sequence of marginals $\{\mu_N\}$ is to ensure that as $N \to \infty$, the probability mass of these measures does not "escape to infinity" or become infinitely concentrated at a single point. This is achieved by establishing **tightness**, a pre-compactness condition that guarantees the existence of at least one convergent subsequence. Without tightness, the concept of a limit point would be ill-defined. This section provides the rigorous proof of this property.
 
@@ -206,7 +206,7 @@ The proof proceeds by verifying the conditions of Prokhorov's theorem. On the Po
 ## **4. Identification of the Limit Point**
 
 (sec-fg-propagation-intro-limit-point)=
-#### **Introduction: Identification of Limit Points**
+### **Introduction: Identification of Limit Points**
 
 The tightness of the sequence $\{\mu_N\}$, established in the previous section, guarantees that at least one convergent subsequence exists. However, this does not tell us the nature of the limit point. The purpose of this section is to complete the second, and most critical, step of our three-part proof: **identification**. We will rigorously prove that any such limit point is not an arbitrary measure but is, in fact, a **weak solution** to the stationary mean-field PDE derived in {doc}`08_mean_field`.
 
@@ -265,7 +265,7 @@ $$
 :::
 
 :::{prf:proof}
-By Lemma [](#lem-exchangeability), the sequence of N-particle QSDs consists of exchangeable measures. The **Hewitt-Savage theorem** (see Kallenberg, *Foundations of Modern Probability*, Theorem 11.10) states that any exchangeable sequence of random variables can be represented as a mixture of independent and identically distributed (IID) sequences.
+By Lemma {prf:ref}`lem-exchangeability`, the sequence of N-particle QSDs consists of exchangeable measures. The **Hewitt-Savage theorem** (see Kallenberg, *Foundations of Modern Probability*, Theorem 11.10) states that any exchangeable sequence of random variables can be represented as a mixture of independent and identically distributed (IID) sequences.
 
 For large $N_k$, this implies that the companions $\{z_2, \ldots, z_{N_k}\}$ behave asymptotically as if they were independent samples from the marginal distribution $\mu_{N_k}$. The **Glivenko-Cantelli theorem** (or its extension to Polish spaces, Varadarajan's theorem) guarantees that for such sequences, the empirical measure
 
@@ -475,7 +475,7 @@ The revival mechanism has two key components:
 
 As $N_k \to \infty$:
 - The fraction of dead walkers converges: $m_{d,N_k} \to m_{d,\infty}$ (by the law of large numbers for the coupled system)
-- The empirical distribution of alive walkers, normalized, converges: $\frac{\mu_{N_k}^{\text{alive}}}{m_{a,N_k}} \rightharpoonup \rho_0$ (by Lemma [](#lem-empirical-convergence))
+- The empirical distribution of alive walkers, normalized, converges: $\frac{\mu_{N_k}^{\text{alive}}}{m_{a,N_k}} \rightharpoonup \rho_0$ (by Lemma {prf:ref}`lem-empirical-convergence`)
 - The jitter kernel $Q_\delta(z \mid z')$ remains fixed (Gaussian with variance $\delta^2$)
 
 The revival operator in the mean-field model is defined as:
@@ -769,7 +769,7 @@ V_N(z_1) = V(z_1; \mu_R[\mu_{N_k-1}^{\text{comp}}], \sigma_R^2[\mu_{N_k-1}^{\tex
 
 $$
 
-By Lemma [](#lem-empirical-convergence), $\mu_{N_k-1}^{\text{comp}} \rightharpoonup \mu_\infty$. By Lemmas [](#lem-reward-continuity) and [](#lem-distance-continuity), the moment functionals converge:
+By Lemma {prf:ref}`lem-empirical-convergence`, $\mu_{N_k-1}^{\text{comp}} \rightharpoonup \mu_\infty$. By Lemmas {prf:ref}`lem-reward-continuity` and {prf:ref}`lem-distance-continuity`, the moment functionals converge:
 
 $$
 \mu_R[\mu_{N_k-1}^{\text{comp}}] \to \mu_R[\mu_\infty], \quad \sigma_R^2[\mu_{N_k-1}^{\text{comp}}] \to \sigma_R^2[\mu_\infty]
@@ -785,14 +785,14 @@ $$
 
 point-wise for $\mu_\infty$-almost every $z_1$, where $V[\rho_0]$ is the mean-field fitness potential computed using the moments of $\rho_0$.
 
-By Lemma [](#lem-uniform-integrability), we can interchange the limit and the expectation. The cloning rates, which involve sums of the form
+By Lemma {prf:ref}`lem-uniform-integrability`, we can interchange the limit and the expectation. The cloning rates, which involve sums of the form
 
 $$
 \frac{1}{N_k-1} \sum_{j=2}^{N_k} \pi(V_N(z_1), V_N(z_j))
 
 $$
 
-converge (by Lemma [](#lem-empirical-convergence)) to the integral
+converge (by Lemma {prf:ref}`lem-empirical-convergence`) to the integral
 
 $$
 \int_\Omega \pi(V[\rho_0](z_1), V[\rho_0](z_c)) \rho_0(z_c) \, dz_c
@@ -810,7 +810,7 @@ where $S[\rho_0]$ is the mean-field internal cloning operator defined in {doc}`0
 
 **Step 4: Limit of the Boundary Death and Revival Mechanism**
 
-By Lemma [](#lem-boundary-convergence), the discrete boundary death and revival mechanism converges to the continuous interior-killing-and-revival operators:
+By Lemma {prf:ref}`lem-boundary-convergence`, the discrete boundary death and revival mechanism converges to the continuous interior-killing-and-revival operators:
 
 $$
 \lim_{k \to \infty} \mathbb{E}_{\nu_{N_k}^{QSD}}[\mathcal{L}_{\text{boundary}, N_k} \phi(z_1)]
@@ -842,7 +842,7 @@ Since this holds for any smooth, compactly supported test function $\phi \in C_c
 ## **5. Uniqueness of the Weak Solution via Contraction Mapping**
 
 (sec-fg-propagation-intro-uniqueness)=
-#### **Introduction: Uniqueness via Contraction**
+### **Introduction: Uniqueness via Contraction**
 
 The analysis in the preceding sections has rigorously established that the sequence of N-particle marginals is tight and that any of its limit points must be a quasi-stationary distribution of the mean-field PDE. We have proven the *existence* of at least one QSD. The purpose of this final section is to prove **uniqueness**—that there can be at most one such solution. This result is the lynchpin that holds the entire proof together. If the stationary solution is unique, then every convergent subsequence must converge to the same limit, which in turn implies that the *entire* original sequence of marginals, $\{\mu_N\}$, must converge. This elevates our result from the existence of a limit point to the convergence of the sequence to a unique equilibrium.
 
@@ -1129,7 +1129,7 @@ $$
 
 **Step 1: Hypoelliptic regularity estimate**
 
-From the hypoelliptic regularity theory (Theorem [](#thm-uniqueness-hypoelliptic-regularity), established in Part C), the resolvent satisfies:
+From the hypoelliptic regularity theory (Theorem {prf:ref}`thm-uniqueness-hypoelliptic-regularity`, established in Part C), the resolvent satisfies:
 
 $$
 \|\rho^*\|_{H^1_w} = \|(C \cdot I - L^\dagger)^{-1} f\|_{H^1_w} \leq C_{\text{hypo}} \|f\|_{L^2_w}
@@ -1267,7 +1267,7 @@ $$
 
 where $D[\rho](z) = \int d(z, z') \rho(z') dz'$ is the expected distance functional.
 
-**Step 1**: By Lemma [](#lem-uniqueness-lipschitz-moments), the moments $\mu_R, \sigma_R, \mu_D, \sigma_D$ are Lipschitz in $\rho$.
+**Step 1**: By Lemma {prf:ref}`lem-uniqueness-lipschitz-moments`, the moments $\mu_R, \sigma_R, \mu_D, \sigma_D$ are Lipschitz in $\rho$.
 
 **Step 2**: The distance functional $D[\rho](z)$ is also Lipschitz:
 
@@ -1346,7 +1346,7 @@ $$
 
 **Step 4: Lipschitz continuity of π and V**
 
-By Lemma [](#lem-uniqueness-lipschitz-fitness-potential), $V[\rho]$ is Lipschitz:
+By Lemma {prf:ref}`lem-uniqueness-lipschitz-fitness-potential`, $V[\rho]$ is Lipschitz:
 
 $$
 \|V[\rho_1] - V[\rho_2]\|_{L^\infty} \leq L_V \|\rho_1 - \rho_2\|_{H^1_w}
@@ -1645,7 +1645,7 @@ $$
 :::{prf:lemma} Scaling of $C_{\text{hypo}}$ with Diffusion Strength
 :label: lem-uniqueness-scaling-hypoelliptic-constant
 
-The constant $C_{\text{hypo}}$ from Theorem [](#thm-uniqueness-hypoelliptic-regularity) satisfies the scaling estimate:
+The constant $C_{\text{hypo}}$ from Theorem {prf:ref}`thm-uniqueness-hypoelliptic-regularity` satisfies the scaling estimate:
 
 $$
 C_{\text{hypo}} \sim \frac{1}{\min(\sigma_v^2 \gamma, C)}
@@ -1661,7 +1661,7 @@ $$
 :::
 
 :::{prf:proof}
-The coercivity constant $c_1$ from the hypocoercivity argument in Theorem [](#thm-uniqueness-hypoelliptic-regularity) depends on the parameters as follows:
+The coercivity constant $c_1$ from the hypocoercivity argument in Theorem {prf:ref}`thm-uniqueness-hypoelliptic-regularity` depends on the parameters as follows:
 
 **From the diffusion term**:
 
@@ -1712,7 +1712,7 @@ We now have all the necessary components. We combine the Lipschitz continuity of
 :::{prf:theorem} Contraction Property of the Solution Operator on an Invariant Ball
 :label: thm-uniqueness-contraction-solution-operator
 
-Let $R^* > 0$ be the radius from Lemma [](#lem-uniqueness-fixed-point-boundedness) and define the closed ball:
+Let $R^* > 0$ be the radius from Lemma {prf:ref}`lem-uniqueness-fixed-point-boundedness` and define the closed ball:
 
 $$
 \mathcal{P}_R := \mathcal{P} \cap \{\rho \in H^1_w(\Omega) : \|\rho\|_{H^1_w} \le R^*\}
@@ -1741,18 +1741,18 @@ $$
 
 **Step 2: Hypoelliptic regularity of the inverse operator**
 
-By Theorem [](#thm-uniqueness-hypoelliptic-regularity), the operator $(-\mathcal{L}_{\text{lin}})^{-1}$ is a bounded linear operator from $L^2_w(\Omega)$ to $H^1_w(\Omega)$ with operator norm:
+By Theorem {prf:ref}`thm-uniqueness-hypoelliptic-regularity`, the operator $(-\mathcal{L}_{\text{lin}})^{-1}$ is a bounded linear operator from $L^2_w(\Omega)$ to $H^1_w(\Omega)$ with operator norm:
 
 $$
 \|(-\mathcal{L}_{\text{lin}})^{-1}\|_{L^2_w \to H^1_w} = C_{\text{hypo}}
 
 $$
 
-**Critical note**: The kinetic operator $L^\dagger$ is **hypoelliptic**, not elliptic. It has second-order derivatives only in velocity variables, but Hörmander's condition (Lemma [](#lem-uniqueness-hormander-verification)) ensures that smoothness propagates to position variables through the coupling term $v \cdot \nabla_x$.
+**Critical note**: The kinetic operator $L^\dagger$ is **hypoelliptic**, not elliptic. It has second-order derivatives only in velocity variables, but Hörmander's condition (Lemma {prf:ref}`lem-uniqueness-hormander-verification`) ensures that smoothness propagates to position variables through the coupling term $v \cdot \nabla_x$.
 
 **Step 3: Key scaling estimate**
 
-By Lemma [](#lem-uniqueness-scaling-hypoelliptic-constant), the constant $C_{\text{hypo}}$ scales as:
+By Lemma {prf:ref}`lem-uniqueness-scaling-hypoelliptic-constant`, the constant $C_{\text{hypo}}$ scales as:
 
 $$
 C_{\text{hypo}} \sim \frac{1}{\sigma_v^2 \gamma}
@@ -1763,7 +1763,7 @@ for sufficiently large $\sigma_v^2$. This scaling is a consequence of Villani's 
 
 **Step 4: Combining Lipschitz bounds on the ball**
 
-For any $\rho_1, \rho_2 \in \mathcal{P}_R$, by Lemma [](#lem-uniqueness-lipschitz-cloning-operator), we have R-dependent Lipschitz constants:
+For any $\rho_1, \rho_2 \in \mathcal{P}_R$, by Lemma {prf:ref}`lem-uniqueness-lipschitz-cloning-operator`, we have R-dependent Lipschitz constants:
 
 $$
 \|S[\rho_1] - S[\rho_2]\|_{L^2_w} \le L_S(R^*) \|\rho_1 - \rho_2\|_{H^1_w}
@@ -1795,7 +1795,7 @@ where $L_c = \|c\|_{L^\infty}$ (bounded since $c$ has compact support).
 
 **Step 5: Verifying self-mapping**
 
-We must verify that $\mathcal{T}[\mathcal{P}_R] \subseteq \mathcal{P}_R$. For any $\rho \in \mathcal{P}_R$, by Lemma [](#lem-uniqueness-fixed-point-boundedness):
+We must verify that $\mathcal{T}[\mathcal{P}_R] \subseteq \mathcal{P}_R$. For any $\rho \in \mathcal{P}_R$, by Lemma {prf:ref}`lem-uniqueness-fixed-point-boundedness`:
 
 $$
 \|\mathcal{T}[\rho]\|_{H^1_w} \le R^*
@@ -1870,9 +1870,9 @@ We apply the Banach Fixed-Point Theorem to the operator $\mathcal{T}: \mathcal{P
 
 1. **Completeness**: The ball $\mathcal{P}_R$ is a closed subset of the complete space $H^1_w(\Omega)$, hence complete.
 
-2. **Self-mapping**: By Lemma [](#lem-uniqueness-fixed-point-boundedness), $\mathcal{T}[\mathcal{P}_R] \subseteq \mathcal{P}_R$. The operator also preserves the probability measure constraint by Lemma [](#lem-uniqueness-self-mapping).
+2. **Self-mapping**: By Lemma {prf:ref}`lem-uniqueness-fixed-point-boundedness`, $\mathcal{T}[\mathcal{P}_R] \subseteq \mathcal{P}_R$. The operator also preserves the probability measure constraint by Lemma {prf:ref}`lem-uniqueness-self-mapping`.
 
-3. **Contraction**: By Theorem [](#thm-uniqueness-contraction-solution-operator), for sufficiently large $\sigma_v^2$, the operator $\mathcal{T}$ is a strict contraction on $\mathcal{P}_R$ with constant $\kappa(R^*) < 1$.
+3. **Contraction**: By Theorem {prf:ref}`thm-uniqueness-contraction-solution-operator`, for sufficiently large $\sigma_v^2$, the operator $\mathcal{T}$ is a strict contraction on $\mathcal{P}_R$ with constant $\kappa(R^*) < 1$.
 
 **Step 2: Existence and uniqueness on the ball**
 
@@ -1882,7 +1882,7 @@ By the Banach Fixed-Point Theorem, $\mathcal{T}$ has a unique fixed point $\rho_
 
 Suppose there exist two distinct stationary solutions $\rho_1, \rho_2 \in \mathcal{P}$. Both must satisfy the fixed point equation $\mathcal{T}[\rho_i] = \rho_i$.
 
-By Lemma [](#lem-uniqueness-fixed-point-boundedness), any fixed point of $\mathcal{T}$ satisfies $\|\rho_i\|_{H^1_w} \le R^*$, hence both $\rho_1, \rho_2 \in \mathcal{P}_R$.
+By Lemma {prf:ref}`lem-uniqueness-fixed-point-boundedness`, any fixed point of $\mathcal{T}$ satisfies $\|\rho_i\|_{H^1_w} \le R^*$, hence both $\rho_1, \rho_2 \in \mathcal{P}_R$.
 
 But we have proven uniqueness of the fixed point in $\mathcal{P}_R$, which contradicts $\rho_1 \neq \rho_2$. Therefore, there is at most one stationary solution in all of $\mathcal{P}$.
 
@@ -1893,8 +1893,8 @@ But we have proven uniqueness of the fixed point in $\mathcal{P}_R$, which contr
 :label: rem-uniqueness-proof-technique
 The proof structure demonstrates a powerful technique in nonlinear analysis: when global Lipschitz continuity fails, we can still prove uniqueness by:
 
-1. **Proving a priori bounds**: Any fixed point must lie in a bounded ball (Lemma [](#lem-uniqueness-fixed-point-boundedness))
-2. **Local contraction**: The operator is a contraction on this bounded ball (Theorem [](#thm-uniqueness-contraction-solution-operator))
+1. **Proving a priori bounds**: Any fixed point must lie in a bounded ball (Lemma {prf:ref}`lem-uniqueness-fixed-point-boundedness`)
+2. **Local contraction**: The operator is a contraction on this bounded ball (Theorem {prf:ref}`thm-uniqueness-contraction-solution-operator`)
 3. **Bootstrapping to global uniqueness**: Since all fixed points lie in the ball, local uniqueness implies global uniqueness
 
 This approach is essential for handling operators with quadratic or higher-order nonlinearities.
@@ -2218,7 +2218,7 @@ The upgrade from weak convergence to W2 convergence follows from a standard metr
 
 **Step 1: Uniform Second Moment Control**
 
-By Theorem [](#thm-qsd-marginals-are-tight), the tightness proof established that there exists a constant $C' < \infty$ independent of $N$ such that:
+By Theorem {prf:ref}`thm-qsd-marginals-are-tight`, the tightness proof established that there exists a constant $C' < \infty$ independent of $N$ such that:
 
 $$
 \sup_{N \ge 2} \mathbb{E}_{\mu_N}[\|z\|^2] = \sup_{N \ge 2} \int_\Omega (\|x\|^2 + \|v\|^2) \, d\mu_N(x,v) \le C'

@@ -1,7 +1,7 @@
 (sec-emergent-geometry)=
 # Emergent Geometry from Adaptive Diffusion
 
-**Prerequisites**: {doc}`/3_fractal_gas/1_the_algorithm/02_fractal_gas_latent` (Latent Fractal Gas), {doc}`/3_fractal_gas/2_fractal_set/01_fractal_set` (Fractal Set)
+**Prerequisites**: {doc}`/source/3_fractal_gas/1_the_algorithm/02_fractal_gas_latent` (Latent Fractal Gas), {doc}`/source/3_fractal_gas/2_fractal_set/01_fractal_set` (Fractal Set)
 
 ---
 
@@ -59,7 +59,7 @@ $$
 
 where:
 
-- $H(z, S) = \nabla_z^2 V_{\mathrm{fit}}^{(i)}(z; S)$ is the **local Hessian** of the per-walker fitness potential evaluated at position $z$ (companions and other walkers treated as frozen). Since $V_{\mathrm{fit}} \in C^\infty$ (see {doc}`/3_fractal_gas/appendices/14_b_geometric_gas_cinf_regularity_full`), the Hessian is symmetric by Schwarz's theorem. In the mean-field limit $N \to \infty$, we may instead use the effective fitness field $V_{\mathrm{fit}}(z; \mu)$ from Definition {prf:ref}`def-mean-field-fitness-field` and set $H(z; \mu) = \nabla_z^2 V_{\mathrm{fit}}(z; \mu)$
+- $H(z, S) = \nabla_z^2 V_{\mathrm{fit}}^{(i)}(z; S)$ is the **local Hessian** of the per-walker fitness potential evaluated at position $z$ (companions and other walkers treated as frozen). Since $V_{\mathrm{fit}} \in C^\infty$ (see {doc}`/source/3_fractal_gas/appendices/14_b_geometric_gas_cinf_regularity_full`), the Hessian is symmetric by Schwarz's theorem. In the mean-field limit $N \to \infty$, we may instead use the effective fitness field $V_{\mathrm{fit}}(z; \mu)$ from Definition {prf:ref}`def-mean-field-fitness-field` and set $H(z; \mu) = \nabla_z^2 V_{\mathrm{fit}}(z; \mu)$
 - $\epsilon_\Sigma > 0$ is the **regularization parameter** (spectral floor)
 - $I$ is the identity matrix in the coordinate basis (we work in coordinates where the latent space is locally Euclidean; for curved ambient spaces, replace $I$ with the ambient metric $G$)
 - The matrix square root is the unique symmetric positive definite square root
@@ -167,7 +167,7 @@ $$
 
 We fix $\epsilon_\Sigma > \Lambda_-$, which ensures that $g(z, S) = H(z, S) + \epsilon_\Sigma I$ is symmetric positive definite for all states. The upper bound $\Lambda_+$ ensures uniform ellipticity from below.
 
-**Verification:** These bounds follow from the Gevrey-1 derivative estimates in {doc}`/3_fractal_gas/appendices/14_b_geometric_gas_cinf_regularity_full`, which establish k-uniform bounds on all derivatives of $V_{\mathrm{fit}}$. The spectral bounds $\Lambda_\pm$ depend on the regularization parameters $(\rho, \varepsilon_d, \eta_{\min})$ and are independent of swarm size.
+**Verification:** These bounds follow from the Gevrey-1 derivative estimates in {doc}`/source/3_fractal_gas/appendices/14_b_geometric_gas_cinf_regularity_full`, which establish k-uniform bounds on all derivatives of $V_{\mathrm{fit}}$. The spectral bounds $\Lambda_\pm$ depend on the regularization parameters $(\rho, \varepsilon_d, \eta_{\min})$ and are independent of swarm size.
 :::
 
 :::{prf:theorem} Uniform Ellipticity by Construction
@@ -240,7 +240,7 @@ The proof goes in three steps. First, the Hessian of the fitness function is Lip
 :::{prf:proposition} Lipschitz Continuity of Adaptive Diffusion
 :label: prop-lipschitz-diffusion-latent
 
-The fitness potential $V_{\mathrm{fit}}$ is $C^\infty$ with Gevrey-1 bounds on all derivatives (see {doc}`/3_fractal_gas/appendices/14_b_geometric_gas_cinf_regularity_full`); in particular, it is $C^3$ with bounded third derivatives. Therefore, the adaptive diffusion tensor $\Sigma_{\mathrm{reg}}(z, S)$ is Lipschitz continuous:
+The fitness potential $V_{\mathrm{fit}}$ is $C^\infty$ with Gevrey-1 bounds on all derivatives (see {doc}`/source/3_fractal_gas/appendices/14_b_geometric_gas_cinf_regularity_full`); in particular, it is $C^3$ with bounded third derivatives. Therefore, the adaptive diffusion tensor $\Sigma_{\mathrm{reg}}(z, S)$ is Lipschitz continuous:
 
 $$
 \|\Sigma_{\mathrm{reg}}(z_1, S_1) - \Sigma_{\mathrm{reg}}(z_2, S_2)\|_F \leq L_\Sigma \cdot d_{\mathrm{alg}}((z_1, S_1), (z_2, S_2))
@@ -252,7 +252,7 @@ $$
 d_{\mathrm{alg}}((z_1, S_1), (z_2, S_2)) = \|z_1 - z_2\|_2 + W_1(S_1, S_2)
 $$
 
-with $W_1$ the 1-Wasserstein distance between swarm empirical measures (see {doc}`/3_fractal_gas/1_the_algorithm/02_fractal_gas_latent`).
+with $W_1$ the 1-Wasserstein distance between swarm empirical measures (see {doc}`/source/3_fractal_gas/1_the_algorithm/02_fractal_gas_latent`).
 :::
 
 :::{prf:proof}
@@ -486,13 +486,13 @@ expressions describe the limiting field that these samples approximate.
 
 **Route A — Mean-field/propagation-of-chaos (global field):**
 - Propagation of chaos gives convergence of single-particle marginals to a deterministic $\mu$ and justifies $g(z;\mu)$:
-  {prf:ref}`thm-propagation-chaos-qsd` in {doc}`/3_fractal_gas/appendices/12_qsd_exchangeability_theory`.
+  {prf:ref}`thm-propagation-chaos-qsd` in {doc}`/source/3_fractal_gas/appendices/12_qsd_exchangeability_theory`.
 - The hypostructure proof object records the mean-field limit and error bound in
-  {doc}`/3_fractal_gas/1_the_algorithm/02_fractal_gas_latent` (Part III-B: Mean-Field Limit).
+  {doc}`/source/3_fractal_gas/1_the_algorithm/02_fractal_gas_latent` (Part III-B: Mean-Field Limit).
 
 **Route B — Frozen-swarm within a step (local field):**
 - The Euclidean Gas kernel freezes $V_{\mathrm{fit}}$ during each step; this provides a fixed-$S$ geometry for the
-  kinetic update ({ref}`sec-eg-stage2` in {doc}`/3_fractal_gas/appendices/02_euclidean_gas`).
+  kinetic update ({ref}`sec-eg-stage2` in {doc}`/source/3_fractal_gas/appendices/02_euclidean_gas`).
 :::
 
 :::{div} feynman-prose
@@ -697,7 +697,7 @@ The geometry is baked into the sampling—you do not need to compute determinant
 :::{prf:proposition} Monte Carlo Integration with Riemannian Measure
 :label: prop-monte-carlo-riemannian-latent
 
-Let $\{z_i\}_{i=1}^N$ be positions sampled from the QSD with density $\rho(z) \propto \sqrt{\det g(z)} e^{-\Phi_{\mathrm{eff}}(z)/T}$. (Existence and uniqueness of the QSD is established in {doc}`/3_fractal_gas/appendices/07_discrete_qsd`; convergence to QSD is proven in {doc}`/3_fractal_gas/appendices/06_convergence`.)
+Let $\{z_i\}_{i=1}^N$ be positions sampled from the QSD with density $\rho(z) \propto \sqrt{\det g(z)} e^{-\Phi_{\mathrm{eff}}(z)/T}$. (Existence and uniqueness of the QSD is established in {doc}`/source/3_fractal_gas/appendices/07_discrete_qsd`; convergence to QSD is proven in {doc}`/source/3_fractal_gas/appendices/06_convergence`.)
 
 **Method 1 (QSD sampling):** If episodes sample from QSD:
 
@@ -711,7 +711,7 @@ $$
 \int_{\mathcal{Z}} f(z) \, dV_g(z) \approx \frac{1}{N} \sum_{i=1}^N f(z_i) \cdot \frac{\sqrt{\det g(z_i)}}{\rho(z_i)}
 $$
 
-**Convergence rate:** $O(N^{-1/2})$ regardless of dimension (see {doc}`/3_fractal_gas/appendices/13_quantitative_error_bounds` for explicit error bounds).
+**Convergence rate:** $O(N^{-1/2})$ regardless of dimension (see {doc}`/source/3_fractal_gas/appendices/13_quantitative_error_bounds` for explicit error bounds).
 :::
 
 ---
@@ -760,14 +760,14 @@ $$
 where:
 - $\gamma$ is friction coefficient
 - $\tau$ is kinetic time step
-- $\kappa_z^{\mathrm{clone}}$ is cloning contraction rate (see {doc}`/3_fractal_gas/appendices/03_cloning`)
+- $\kappa_z^{\mathrm{clone}}$ is cloning contraction rate (see {doc}`/source/3_fractal_gas/appendices/03_cloning`)
 - $c_{\min}$ is ellipticity lower bound (Theorem {prf:ref}`thm-uniform-ellipticity-latent`)
 - $\underline{\lambda}$ is the coercivity constant of the hypocoercive quadratic form
 - $C_1$ is a geometry-dependent constant
 
 **Condition for convergence:** $c_{\min} \underline{\lambda} > C_1 L_\Sigma$
 
-**Full proof:** See {doc}`/3_fractal_gas/appendices/05_kinetic_contraction` for kinetic drift analysis and {doc}`/3_fractal_gas/appendices/06_convergence` for the complete convergence theorem.
+**Full proof:** See {doc}`/source/3_fractal_gas/appendices/05_kinetic_contraction` for kinetic drift analysis and {doc}`/source/3_fractal_gas/appendices/06_convergence` for the complete convergence theorem.
 :::
 
 :::{prf:proof}
@@ -867,17 +867,17 @@ In the next section, we will see how the discrete events of cloning create a tes
 
 ### Framework Documents
 
-- {doc}`/3_fractal_gas/1_the_algorithm/01_algorithm_intuition` — per-walker fitness definition and mean-field field remark
-- {doc}`/3_fractal_gas/1_the_algorithm/02_fractal_gas_latent` — Latent Fractal Gas algorithm definition and mean-field limit fitness remark
-- {doc}`/3_fractal_gas/2_fractal_set/01_fractal_set` — Fractal Set data structure
-- {doc}`/3_fractal_gas/3_fitness_manifold/02_scutoid_spacetime` — Scutoid tessellation and discrete spacetime geometry
+- {doc}`/source/3_fractal_gas/1_the_algorithm/01_algorithm_intuition` — per-walker fitness definition and mean-field field remark
+- {doc}`/source/3_fractal_gas/1_the_algorithm/02_fractal_gas_latent` — Latent Fractal Gas algorithm definition and mean-field limit fitness remark
+- {doc}`/source/3_fractal_gas/2_fractal_set/01_fractal_set` — Fractal Set data structure
+- {doc}`/source/3_fractal_gas/3_fitness_manifold/02_scutoid_spacetime` — Scutoid tessellation and discrete spacetime geometry
 
 ### Regularity and Convergence Proofs
 
-- {doc}`/3_fractal_gas/appendices/14_b_geometric_gas_cinf_regularity_full` — C∞ regularity of fitness potential with Gevrey-1 bounds
-- {doc}`/3_fractal_gas/appendices/14_a_geometric_gas_c3_regularity` — C³ regularity (simplified model)
-- {doc}`/3_fractal_gas/appendices/03_cloning` — Cloning operator contraction analysis
-- {doc}`/3_fractal_gas/appendices/05_kinetic_contraction` — Hypocoercivity and kinetic drift
-- {doc}`/3_fractal_gas/appendices/06_convergence` — Full convergence theorem
-- {doc}`/3_fractal_gas/appendices/07_discrete_qsd` — Quasi-stationary distribution existence and uniqueness
-- {doc}`/3_fractal_gas/appendices/13_quantitative_error_bounds` — Quantitative error bounds for Monte Carlo estimates
+- {doc}`/source/3_fractal_gas/appendices/14_b_geometric_gas_cinf_regularity_full` — C∞ regularity of fitness potential with Gevrey-1 bounds
+- {doc}`/source/3_fractal_gas/appendices/14_a_geometric_gas_c3_regularity` — C³ regularity (simplified model)
+- {doc}`/source/3_fractal_gas/appendices/03_cloning` — Cloning operator contraction analysis
+- {doc}`/source/3_fractal_gas/appendices/05_kinetic_contraction` — Hypocoercivity and kinetic drift
+- {doc}`/source/3_fractal_gas/appendices/06_convergence` — Full convergence theorem
+- {doc}`/source/3_fractal_gas/appendices/07_discrete_qsd` — Quasi-stationary distribution existence and uniqueness
+- {doc}`/source/3_fractal_gas/appendices/13_quantitative_error_bounds` — Quantitative error bounds for Monte Carlo estimates

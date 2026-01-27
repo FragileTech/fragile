@@ -1608,6 +1608,8 @@ OUTPUT:
 25. RETURN companion_map
 :::
 
+The following subsection establishes the equivalence between this practical algorithm and the idealized model.
+
 #### 5.1.3. Signal Preservation and Proof of Correctness
 
 :::{admonition} A Note on the Proof Structure: Idealized vs. Practical Models
@@ -2479,7 +2481,7 @@ The first step in the Keystone analysis is to connect the relevant component of 
 :::{prf:lemma} Large $V_{\text{Var},x}$ Implies Large Single-Swarm Positional Variance
 :label: lem-V_Varx-implies-variance
 
-Let $V_{Var,x}(S_1, S_2)$ be the total intra-swarm ({prf:ref}`def-swarm-and-state-space`) positional variance component of the Lyapunov function as defined in [](#def-full-synergistic-lyapunov-function):
+Let $V_{Var,x}(S_1, S_2)$ be the total intra-swarm ({prf:ref}`def-swarm-and-state-space`) positional variance component of the Lyapunov function as defined in {prf:ref}`def-full-synergistic-lyapunov-function`:
 
 $$
 V_{Var,x}(S_1, S_2) = \frac{1}{N} \sum_{i \in \mathcal{A}(S_1)} \|\delta_{x,1,i}\|^2 + \frac{1}{N} \sum_{i \in \mathcal{A}(S_2)} \|\delta_{x,2,i}\|^2
@@ -3773,7 +3775,7 @@ Our goal is to prove that we can choose $\gamma$ such that the guaranteed signal
 
 The signal originates from the raw distance measurements `d`, propagates to the standardized scores `z_d`, and is then amplified.
 
-*   **Raw and Standardized Signal:** From [](#thm-geometry-guarantees-variance), a high-error state guarantees $\text{Var}(d) \geq \kappa_meas(d) > 0$. The Z-scores $z_d = (d - \mu_d) / \sigma'_d$ have a variance $\text{Var}(z_d) = \text{Var}(d) / (\sigma'_d)^{2}$. Since the patched standard deviation (see {prf:ref}`def-patched-std-dev-function`) $\sigma'_d$ is uniformly bounded above by $\sigma'_max$ ({prf:ref}`def-max-patched-std`), the Z-score variance has a uniform lower bound:
+*   **Raw and Standardized Signal:** From {prf:ref}`thm-geometry-guarantees-variance`, a high-error state guarantees $\text{Var}(d) \geq \kappa_meas(d) > 0$. The Z-scores $z_d = (d - \mu_d) / \sigma'_d$ have a variance $\text{Var}(z_d) = \text{Var}(d) / (\sigma'_d)^{2}$. Since the patched standard deviation (see {prf:ref}`def-patched-std-dev-function`) $\sigma'_d$ is uniformly bounded above by $\sigma'_max$ ({prf:ref}`def-max-patched-std`), the Z-score variance has a uniform lower bound:
 
 
 $$
@@ -3843,7 +3845,7 @@ The introduction of the $\gamma$ parameter is a crucial step in ensuring the mat
 
 ### 7.3. Signal Propagation Through the Pipeline
 
-The preceding theorem ([](#thm-geometry-guarantees-variance)) established that a swarm in a high-error state, possessing the geometric structure proven in Chapter 6, is guaranteed to generate a raw distance measurement signal with a non-vanishing expected variance, $\text{E}[\text{Var}(d)] \geq \kappa_meas(\varepsilon) > 0$. This section proves that the deterministic pipeline defined in Chapter 5 is a robust signal processor, capable of transforming this raw statistical signal into a concrete, usable gap in the final rescaled values.
+The preceding theorem ({prf:ref}`thm-geometry-guarantees-variance`) established that a swarm in a high-error state, possessing the geometric structure proven in Chapter 6, is guaranteed to generate a raw distance measurement signal with a non-vanishing expected variance, $\text{E}[\text{Var}(d)] \geq \kappa_meas(\varepsilon) > 0$. This section proves that the deterministic pipeline defined in Chapter 5 is a robust signal processor, capable of transforming this raw statistical signal into a concrete, usable gap in the final rescaled values.
 
 The proof will follow the signal's journey in two stages:
 1.  First, we prove that a guaranteed variance in any set of raw values implies the existence of a guaranteed *gap* between at least two of those values.
@@ -3851,7 +3853,7 @@ The proof will follow the signal's journey in two stages:
 
 #### 7.3.1. From Raw Variance to a Guaranteed Raw Gap
 
-The first step in the signal integrity proof is to show that the statistical property of variance, now proven in [](#thm-geometry-guarantees-variance), has a direct, concrete consequence: it forces a measurable separation between the raw values of at least two walkers.
+The first step in the signal integrity proof is to show that the statistical property of variance, now proven in {prf:ref}`thm-geometry-guarantees-variance`, has a direct, concrete consequence: it forces a measurable separation between the raw values of at least two walkers.
 
 :::{prf:lemma} From Bounded Variance to a Guaranteed Gap
 :label: lem-variance-to-gap
@@ -3908,7 +3910,7 @@ Rearranging the inequality $\kappa \le \frac{1}{2} \Delta_{\max}^2$ gives $\Delt
 **Q.E.D.**
 :::
 
-This lemma provides the first crucial step in the signal processing analysis: it converts the abstract statistical guarantee of variance, now proven in [](#thm-geometry-guarantees-variance), into the concrete existence of at least two specific walkers with measurably different raw distance values.
+This lemma provides the first crucial step in the signal processing analysis: it converts the abstract statistical guarantee of variance, now proven in {prf:ref}`thm-geometry-guarantees-variance`, into the concrete existence of at least two specific walkers with measurably different raw distance values.
 
 #### 7.3.2. From a Raw Gap to a Guaranteed Rescaled Gap
 
@@ -4036,9 +4038,9 @@ Since `g'_min` and $\sigma'_max$ are positive, N-uniform constants, the function
 
 This section has forged a central link in the signal integrity proof. We have demonstrated that the measurement pipeline is a reliable signal processor whose behavior is uniformly bounded, independent of the swarm's size or specific configuration. By combining the lemmas, we have established a direct, N-uniform causal chain:
 
-`Guaranteed Raw Variance (from` [](#thm-geometry-guarantees-variance)`)` → `Guaranteed Raw Gap` → `Guaranteed Rescaled Gap`
+`Guaranteed Raw Variance (from` {prf:ref}`thm-geometry-guarantees-variance``)` → `Guaranteed Raw Gap` → `Guaranteed Rescaled Gap`
 
-With this result, we have proven that a high-error state, which is guaranteed by [](#thm-geometry-guarantees-variance) to produce a non-trivial raw measurement variance, always produces a non-trivial signal that survives the standardization and rescaling process. The final and most critical step, addressed in the next section, is to prove that the signals from the reward and diversity channels cannot pathologically cancel each other out in the final fitness calculation.
+With this result, we have proven that a high-error state, which is guaranteed by {prf:ref}`thm-geometry-guarantees-variance` to produce a non-trivial raw measurement variance, always produces a non-trivial signal that survives the standardization and rescaling process. The final and most critical step, addressed in the next section, is to prove that the signals from the reward and diversity channels cannot pathologically cancel each other out in the final fitness calculation.
 
 ### 7.4. The Corrective Nature of Fitness: Linking Unfitness to High Error
 
@@ -4253,19 +4255,19 @@ We now find uniform bounds for the two parenthesized terms in inequality `(*)`. 
 
     The term `E[ln(d')|H_k] - E[ln(d')|L_k]` represents the guaranteed advantage in the diversity signal for the high-error population. We establish this through the following causal chain:
 
-    1. **From Geometry to Raw Measurement Variance:** A high-error state guarantees a raw measurement variance $\text{E}[\text{Var}(d)] \geq \kappa_meas(\varepsilon) > 0$ (from [](#thm-geometry-guarantees-variance)).
+    1. **From Geometry to Raw Measurement Variance:** A high-error state guarantees a raw measurement variance $\text{E}[\text{Var}(d)] \geq \kappa_meas(\varepsilon) > 0$ (from {prf:ref}`thm-geometry-guarantees-variance`).
 
     2. **From Raw Variance to Rescaled Variance:** This raw variance propagates through the pipeline, guaranteeing a variance in the rescaled values $\text{Var}(d') \geq \kappa_var(d') > 0$. The constant $\kappa_var(d')$ is defined in terms of $\kappa_meas(\varepsilon)$ and the pipeline parameters via the gap propagation lemmas from Section 7.3.
 
     3. **Signal-to-Noise Condition:** The Signal-to-Noise Condition $\kappa_var(d') > Var_max(d')$ is satisfied by the choice of the gain parameter $\gamma$ (from {prf:ref}`prop-satisfiability-of-snr-gamma`).
 
-    4. **Applying [](#lem-variance-to-mean-separation):** We now apply [](#lem-variance-to-mean-separation) to the set of rescaled diversity values `d'`. Let:
+    4. **Applying {prf:ref}`lem-variance-to-mean-separation`:** We now apply {prf:ref}`lem-variance-to-mean-separation` to the set of rescaled diversity values `d'`. Let:
         - `V = d'` (the total set of rescaled diversity values)
         - `H = H_k` and `L = L_k` (the partition)
         - The premise $\text{Var}(V) \geq \kappa_var$ is met with $\kappa_var = \kappa_var(d')$
         - The premise $\kappa_var > Var_max$ is met by the Signal-to-Noise Condition
 
-    5. **Result from [](#lem-variance-to-mean-separation):** This yields a guaranteed lower bound on the separation between the subset means:
+    5. **Result from {prf:ref}`lem-variance-to-mean-separation`:** This yields a guaranteed lower bound on the separation between the subset means:
 
 
 $$
@@ -4291,7 +4293,7 @@ $$
 
 *   **RHS: The Maximum Adversarial Reward Signal.**
 
-    Symmetrically, we apply the same logic to find an upper bound on the term `E[ln(r')|L_k] - E[ln(r')|H_k]`, which represents the maximum potential advantage from a deceptive reward signal. A potential adversarial raw gap $\kappa_r'$ leads, through the application of [](#lem-variance-to-mean-separation) to the reward channel, to a maximum possible rescaled mean gap of $\kappa_{\text{mean},r'}$. The largest possible logarithmic gap corresponding to this reward separation occurs when the values are compressed at the bottom of their range. This gives a uniform upper bound on the adversarial signal:
+    Symmetrically, we apply the same logic to find an upper bound on the term `E[ln(r')|L_k] - E[ln(r')|H_k]`, which represents the maximum potential advantage from a deceptive reward signal. A potential adversarial raw gap $\kappa_r'$ leads, through the application of {prf:ref}`lem-variance-to-mean-separation` to the reward channel, to a maximum possible rescaled mean gap of $\kappa_{\text{mean},r'}$. The largest possible logarithmic gap corresponding to this reward separation occurs when the values are compressed at the bottom of their range. This gives a uniform upper bound on the adversarial signal:
 
 
 $$
@@ -4608,7 +4610,7 @@ This proposition forges the complete link from a macroscopic state of high geome
 :::{prf:proposition} **(Lower Bound on the Corrective Diversity Signal)**
 :label: prop-corrective-signal-bound
 
-Let a swarm ({prf:ref}`def-swarm-and-state-space`) state be in the high-error regime, such that the variance of its rescaled diversity values, `d'`, is bounded below, $\operatorname{Var}(d') \ge \kappa_{d', \text{var}} > 0$. Let the system parameters be chosen such that the Signal-to-Noise Condition of [](#lem-variance-to-mean-separation) is satisfied, i.e., $\kappa_{d', \text{var}} > \operatorname{Var}_{\max}(d')$.
+Let a swarm ({prf:ref}`def-swarm-and-state-space`) state be in the high-error regime, such that the variance of its rescaled diversity values, `d'`, is bounded below, $\operatorname{Var}(d') \ge \kappa_{d', \text{var}} > 0$. Let the system parameters be chosen such that the Signal-to-Noise Condition of {prf:ref}`lem-variance-to-mean-separation` is satisfied, i.e., $\kappa_{d', \text{var}} > \operatorname{Var}_{\max}(d')$.
 
 Then the expected logarithmic gap in the diversity signal between the high-error population $H_k$ and the low-error population $L_k$ is bounded below by a strictly positive, N-uniform constant:
 
@@ -4628,7 +4630,7 @@ Referenced by {prf:ref}`thm-stability-condition-final-corrected`.
 The proof proceeds in two steps. First, we translate the guaranteed variance into a guaranteed separation between the means of the high-error and low-error populations. Second, we translate this mean separation into a guaranteed separation in the expected logarithms.
 
 **1. From Variance to Mean Separation:**
-The premises state that $\operatorname{Var}(d') \ge \kappa_{d', \text{var}}$ and that the Signal-to-Noise Condition is satisfied. The population fractions $f_H$ and $f_L$ are N-uniform and bounded below by a constant $f_{\min} > 0$. We apply [](#lem-variance-to-mean-separation) directly. This yields a guaranteed separation between the means of the rescaled diversity values:
+The premises state that $\operatorname{Var}(d') \ge \kappa_{d', \text{var}}$ and that the Signal-to-Noise Condition is satisfied. The population fractions $f_H$ and $f_L$ are N-uniform and bounded below by a constant $f_{\min} > 0$. We apply {prf:ref}`lem-variance-to-mean-separation` directly. This yields a guaranteed separation between the means of the rescaled diversity values:
 
 $$
 |\mu_{d'}(H_k) - \mu_{d'}(L_k)| \ge \kappa_{d', \text{mean}} > 0
@@ -4638,7 +4640,7 @@ $$
 The direction of this inequality is also guaranteed. The geometric analysis in Chapter 6 ({prf:ref}`lem-geometric-separation-of-partition`) established that high-error walkers are systematically more isolated, which implies their expected raw distance-to-companion is larger: $\mathbb{E}[d|H_k] > \mathbb{E}[d|L_k]$. Since the standardization and rescaling operators (specifically the monotonic rescale function $g_A$) preserve the ordering of the means, this inequality propagates through the entire pipeline. This guarantees that the mean of the *rescaled* diversity values is also larger for the high-error set, $\mu_{d'}(H_k) > \mu_{d'}(L_k)$. We can therefore remove the absolute value and state the inequality directionally.
 
 **2. From Mean Separation to Logarithmic Mean Separation:**
-We now have a guaranteed mean separation, $\mu_{d'}(H_k) \ge \mu_{d'}(L_k) + \kappa_{d', \text{mean}}$. The rescaled values $d'$ are contained in the compact interval $[\eta, g_{A,\max}+\eta]$. We apply [](#lem-log-gap-lower-bound) with $X$ representing the distribution of $d'$ in $H_k$, $Y$ representing the distribution in $L_k$, $\kappa = \kappa_{d', \text{mean}}$, and $V_{\max} = g_{A,\max}+\eta$.
+We now have a guaranteed mean separation, $\mu_{d'}(H_k) \ge \mu_{d'}(L_k) + \kappa_{d', \text{mean}}$. The rescaled values $d'$ are contained in the compact interval $[\eta, g_{A,\max}+\eta]$. We apply {prf:ref}`lem-log-gap-lower-bound` with $X$ representing the distribution of $d'$ in $H_k$, $Y$ representing the distribution in $L_k$, $\kappa = \kappa_{d', \text{mean}}$, and $V_{\max} = g_{A,\max}+\eta$.
 The lemma gives the stated result directly:
 
 $$
@@ -4683,7 +4685,7 @@ $$
 We define the maximum possible mean separation as $\kappa_{r', \text{mean, max}} := g_{A,\max}$. This represents the most adversarial scenario, where the low-error set $L_k$ achieves the maximum possible mean reward ($g_{A,\max} + \eta$) and the high-error set $H_k$ achieves the minimum possible mean reward ($\eta$), maximizing the gap between them.
 
 **2. From Mean Separation to Logarithmic Mean Separation:**
-We now seek an upper bound for the expression $\mathbb{E}[\ln(r')|L_k] - \mathbb{E}[\ln(r')|H_k]$. We apply [](#lem-log-gap-upper-bound). Let $X$ represent the distribution of $r'$ in $L_k$ and $Y$ represent the distribution in $H_k$. We use the maximum possible mean separation $\kappa = \kappa_{r', \text{mean, max}}$ and note that the minimum value for any $r'$ is $V_{\min} = \eta$.
+We now seek an upper bound for the expression $\mathbb{E}[\ln(r')|L_k] - \mathbb{E}[\ln(r')|H_k]$. We apply {prf:ref}`lem-log-gap-upper-bound`. Let $X$ represent the distribution of $r'$ in $L_k$ and $Y$ represent the distribution in $H_k$. We use the maximum possible mean separation $\kappa = \kappa_{r', \text{mean, max}}$ and note that the minimum value for any $r'$ is $V_{\min} = \eta$.
 The lemma gives the stated result directly:
 
 $$
@@ -4812,7 +4814,7 @@ $$
 We define this upper bound on the mean separation as $\kappa_{r',\text{mean,adv}} := \kappa_{\mathrm{rescaled}}(L_R D_{\text{valid}})$.
 
 **3. From Mean Separation to Logarithmic Mean Separation.**
-We now have a valid upper bound on the mean separation, which is the required premise for [](#lem-log-gap-upper-bound). We apply this lemma with:
+We now have a valid upper bound on the mean separation, which is the required premise for {prf:ref}`lem-log-gap-upper-bound`. We apply this lemma with:
 *   $X$ representing the distribution of $r'$ in $L_k$.
 *   $Y$ representing the distribution of $r'$ in $H_k$.
 *   $\kappa = \kappa_{r',\text{mean,adv}}$.
@@ -4874,13 +4876,13 @@ This inequality provides a clear, quantitative guide for parameter tuning. If th
 
 ### 7.6. The Unfit-High-Error Overlap
 
-With the **Stability Condition** ([](#thm-stability-condition-final-corrected)) now rigorously derived and justified in Section 7.5, we can prove the final and most critical property for the Keystone Principle: that the set of walkers targeted by the algorithm (the "unfit") and the set of walkers causing the system error (the "high-error") have a substantial, non-vanishing overlap.
+With the **Stability Condition** ({prf:ref}`thm-stability-condition-final-corrected`) now rigorously derived and justified in Section 7.5, we can prove the final and most critical property for the Keystone Principle: that the set of walkers targeted by the algorithm (the "unfit") and the set of walkers causing the system error (the "high-error") have a substantial, non-vanishing overlap.
 
 This proof requires two foundational population guarantees. The first—that a large `V_struct` implies a non-vanishing high-error fraction `f_H`—was a central result of **Chapter 6** (specifically, {prf:ref}`cor-vvarx-to-high-error-fraction`). This section establishes the second guarantee: that a large `V_struct` also implies a non-vanishing unfit fraction `f_U`. With both population bounds secured, we will then assemble the final proof of the overlap.
 
 #### 7.6.1 A Large Fitness Gap Implies a Non-Vanishing "Unfit" Population
 
-The first pillar of the overlap proof is to show that the fitness signal generated by a high-error swarm is a collective phenomenon. A large `V_struct` implies a large internal variance, which is guaranteed to produce a non-vanishing raw measurement variance ([](#thm-geometry-guarantees-variance)). This raw signal robustly propagates through the measurement pipeline to create a guaranteed microscopic gap in the final fitness potentials, ensuring a non-trivial overall fitness range, $\kappa_V,gap(\varepsilon) > 0$. The following lemma proves that such a gap cannot be explained by a single unusually fit or unfit walker; it necessitates a statistically significant imbalance in the fitness distribution of the entire population.
+The first pillar of the overlap proof is to show that the fitness signal generated by a high-error swarm is a collective phenomenon. A large `V_struct` implies a large internal variance, which is guaranteed to produce a non-vanishing raw measurement variance ({prf:ref}`thm-geometry-guarantees-variance`). This raw signal robustly propagates through the measurement pipeline to create a guaranteed microscopic gap in the final fitness potentials, ensuring a non-trivial overall fitness range, $\kappa_V,gap(\varepsilon) > 0$. The following lemma proves that such a gap cannot be explained by a single unusually fit or unfit walker; it necessitates a statistically significant imbalance in the fitness distribution of the entire population.
 
 :::{prf:definition} The Unfit Set
 :label: def-unfit-set
@@ -4906,7 +4908,7 @@ $$
 
 $$
 
-where $V_{\text{pot,max}}$ and $V_{\text{pot,min}}$ are the N-uniform bounds on the fitness potential from [](#lem-potential-bounds).
+where $V_{\text{pot,max}}$ and $V_{\text{pot,min}}$ are the N-uniform bounds on the fitness potential from {prf:ref}`lem-potential-bounds`.
 :::
 :::{prf:proof}
 
@@ -4967,7 +4969,7 @@ This theorem proves that the set of walkers targeted by the algorithm for correc
 
 Let a swarm ({prf:ref}`def-swarm-and-state-space`) state satisfy $V_{\mathrm{struct}} > R^2_{\mathrm{spread}}$. Let $U_k$ be the unfit set for swarm `k` and let $H_k(\epsilon)$ be its corresponding unified high-error set.
 
-If the **Stability Condition** ([](#thm-stability-condition-final-corrected)) holds for the chosen system parameters, then the fraction of alive walkers in the intersection set $I_{UH} = U_k \cap H_k(\epsilon)$ is bounded below by a positive, N-uniform constant:
+If the **Stability Condition** ({prf:ref}`thm-stability-condition-final-corrected`) holds for the chosen system parameters, then the fraction of alive walkers in the intersection set $I_{UH} = U_k \cap H_k(\epsilon)$ is bounded below by a positive, N-uniform constant:
 
 $$
 \frac{|I_{UH}|}{k} \ge f_{UH}(\epsilon) > 0
@@ -4980,7 +4982,7 @@ where `k` is the number of alive walkers in swarm ({prf:ref}`def-swarm-and-state
 
 **Proof (by contradiction).**
 
-The proof follows directly from the consequences of the **Stability Condition** ([](#thm-stability-condition-final-corrected)). This condition guarantees that the high-error population is systematically less fit, a statistical property that makes a vanishing overlap with the unfit set impossible.
+The proof follows directly from the consequences of the **Stability Condition** ({prf:ref}`thm-stability-condition-final-corrected`). This condition guarantees that the high-error population is systematically less fit, a statistical property that makes a vanishing overlap with the unfit set impossible.
 
 **1. Setup for Contradiction.**
 Assume the premises hold: the swarm `k` has a large structural error, and the **Stability Condition** is satisfied. Now, assume for the sake of contradiction that the overlap between the unfit and high-error sets is vanishingly small. Formally, this means the fraction of their intersection approaches zero:
@@ -5001,7 +5003,7 @@ $$
 $$
 
 **3. Consequence 2: The Axiom's Guarantee.**
-The **Stability Condition** is precisely the condition required to ensure that the algorithm's targeting is intelligent. As proven in [](#thm-stability-condition-final-corrected), satisfying this condition guarantees that the expected fitness of the high-error population is *strictly less than* the expected fitness of the low-error population:
+The **Stability Condition** is precisely the condition required to ensure that the algorithm's targeting is intelligent. As proven in {prf:ref}`thm-stability-condition-final-corrected`, satisfying this condition guarantees that the expected fitness of the high-error population is *strictly less than* the expected fitness of the low-error population:
 
 $$
 \mathbb{E}[V_{\text{fit}} \mid i \in H_k] < \mathbb{E}[V_{\text{fit}} \mid i \in L_k]
@@ -5028,9 +5030,9 @@ The assumption of a vanishing overlap leads to a contradiction. Therefore, the o
 
 This chapter has provided a complete, first-principles proof of the **corrective nature of fitness**—the intellectual core of the Keystone Principle. Building upon the guarantee of a non-vanishing **statistical variance** signal established in Chapter 6, our focus shifted from the *existence* of a signal to the *intelligence* of the system's response. We have demonstrated that the Fragile Gas, when properly configured, behaves as an adaptive system whose corrective forces are reliably directed at the source of system-level error.
 
-The central achievement of this chapter was the rigorous derivation of the **Stability Condition for Intelligent Adaptation**. By analyzing the trade-off between the reliable geometric diversity signal and the potentially deceptive reward signal, we established the precise, quantitative inequality that separates a well-posed, learnable system from one vulnerable to pathological failure. This derivation was anchored by a robust statistical lemma ([](#lem-variance-to-mean-separation)), proving that a guaranteed **total variance** in a signal is sufficient to force a **macroscopic separation** between the means of its underlying subpopulations, ensuring the argument's validity under all swarm configurations.
+The central achievement of this chapter was the rigorous derivation of the **Stability Condition for Intelligent Adaptation**. By analyzing the trade-off between the reliable geometric diversity signal and the potentially deceptive reward signal, we established the precise, quantitative inequality that separates a well-posed, learnable system from one vulnerable to pathological failure. This derivation was anchored by a robust statistical lemma ({prf:ref}`lem-variance-to-mean-separation`), proving that a guaranteed **total variance** in a signal is sufficient to force a **macroscopic separation** between the means of its underlying subpopulations, ensuring the argument's validity under all swarm configurations.
 
-By restricting our analysis to the parameter regime where this condition holds, we proved the chapter's final and most critical result in [](#thm-unfit-high-error-overlap-fraction): for any swarm in a high-error state, there is a substantial, N-uniform fraction of the population that is simultaneously **"high-error"** (geometrically) and **"unfit"** (algorithmically). This is the **"correctly targeted"** population, as it proves that the algorithm's corrective action (cloning the unfit) is reliably focused on the physical source of the system's instability (the high-error walkers).
+By restricting our analysis to the parameter regime where this condition holds, we proved the chapter's final and most critical result in {prf:ref}`thm-unfit-high-error-overlap-fraction`: for any swarm in a high-error state, there is a substantial, N-uniform fraction of the population that is simultaneously **"high-error"** (geometrically) and **"unfit"** (algorithmically). This is the **"correctly targeted"** population, as it proves that the algorithm's corrective action (cloning the unfit) is reliably focused on the physical source of the system's instability (the high-error walkers).
 
 The guaranteed existence of this large, correctly targeted set is the crucial prerequisite for the final stage of our argument. The next chapter will take this result as its primary input to complete the proof of the **N-Uniform Quantitative Keystone Lemma**, quantifying the collective corrective action of cloning and demonstrating that its strength is proportional to the magnitude of the error itself.
 
@@ -5107,7 +5109,7 @@ I_{\text{target}} := I_{11} \cap U_k \cap H_k(\epsilon)
 
 $$
 
-The guaranteed existence of a substantial, non-vanishing overlap between the unfit and high-error sets, as proven in [](#thm-unfit-high-error-overlap-fraction), ensures that this critical target set is non-empty and contains a non-vanishing, N-uniform fraction of the alive population. The subsequent proofs will now proceed by demonstrating that the corrective cloning pressure is concentrated on this specific target set (Section 8.3) and that this same set is responsible for a substantial fraction of the total system error (Section 8.4).
+The guaranteed existence of a substantial, non-vanishing overlap between the unfit and high-error sets, as proven in {prf:ref}`thm-unfit-high-error-overlap-fraction`, ensures that this critical target set is non-empty and contains a non-vanishing, N-uniform fraction of the alive population. The subsequent proofs will now proceed by demonstrating that the corrective cloning pressure is concentrated on this specific target set (Section 8.3) and that this same set is responsible for a substantial fraction of the total system error (Section 8.4).
 
 Referenced by {prf:ref}`cor-cloning-pressure-target-set`.
 :::
@@ -5422,7 +5424,7 @@ In this regime, $H_k(\epsilon)$ is the union of outlier clusters. We must prove 
 
 **Step 1: Variance Decomposition.**
 
-From the Law of Total Variance (as used in the proof of [](#lem-outlier-cluster-fraction-lower-bound)), the total sum of squared deviations decomposes as:
+From the Law of Total Variance (as used in the proof of {prf:ref}`lem-outlier-cluster-fraction-lower-bound`), the total sum of squared deviations decomposes as:
 
 $$
 S_k = k \cdot \mathrm{Var}_k(x) = \sum_{m=1}^M |G_m|\mathrm{Var}(G_m) + \sum_{m=1}^M |G_m|\|\mu_m - \mu\|^2
@@ -5498,7 +5500,7 @@ $$
 
 $$
 
-where $R^2_{\text{means}} := R^2_{\text{var}} - (D_{\text{diam}}(\epsilon)/2)^2 > 0$ (by the premise of [](#lem-outlier-cluster-fraction-lower-bound)).
+where $R^2_{\text{means}} := R^2_{\text{var}} - (D_{\text{diam}}(\epsilon)/2)^2 > 0$ (by the premise of {prf:ref}`lem-outlier-cluster-fraction-lower-bound`).
 
 Combining these results:
 
@@ -6005,7 +6007,7 @@ We verify each component:
 - $\varepsilon_{\text{clone}}$: User-defined parameter, independent of $N$ ✓
 - $V_{\text{pot,max}} = (g_{A,\max} + \eta)^{\alpha+\beta}$: Depends only on pipeline parameters ($g_{A,\max}$, $\eta$, $\alpha$, $\beta$), all independent of $N$ ✓
 - $\kappa_{V,\text{gap}}(\epsilon)$: The fitness potential gap. We trace its dependencies:
-  - $\kappa_{\text{meas}}(\epsilon)$: From [](#thm-geometry-guarantees-variance), this depends on the phase-space separation constants $D_H(\epsilon)$ and $R_L(\epsilon)$, which are defined in terms of:
+  - $\kappa_{\text{meas}}(\epsilon)$: From {prf:ref}`thm-geometry-guarantees-variance`, this depends on the phase-space separation constants $D_H(\epsilon)$ and $R_L(\epsilon)$, which are defined in terms of:
     - Geometric properties of the outlier/cluster definitions ($\epsilon_O$, $D_{\text{diam}}(\epsilon)$): Independent of $N$ ✓
     - Domain diameter $D_{\text{valid}}$: Independent of $N$ ✓
     - Velocity bounds: Independent of $N$ ✓
@@ -6024,7 +6026,7 @@ From Section 8.6.1.2, $c_{\text{err}}(\epsilon) \propto \lambda_2 \cdot c_H \cdo
   - **Local-interaction regime**: $c_H = \min\{1-\epsilon_O, (1-\epsilon_O)R^2_{\text{means}}/R^2_{\text{var}}\}$, where:
     - $R^2_{\text{means}} = R^2_{\text{var}} - (D_{\text{diam}}(\epsilon)/2)^2$: Depends only on variance threshold and cluster diameter, both independent of $N$ ✓
 
-- $f_{UH}(\epsilon)$: The overlap fraction from [](#thm-unfit-high-error-overlap-fraction). This depends on:
+- $f_{UH}(\epsilon)$: The overlap fraction from {prf:ref}`thm-unfit-high-error-overlap-fraction`. This depends on:
   - Population fraction lower bounds $f_U(\epsilon)$ and $f_H(\epsilon)$ from Chapters 6-7
   - From {prf:ref}`lem-outlier-fraction-lower-bound` and 6.4.3, these fractions are **defined as N-uniform constants** - they are constructed precisely to be independent of swarm size ✓
   - The proof uses only geometric properties (phase-space packing, variance decomposition) that scale with the number of walkers but produce **fractions** that remain constant ✓

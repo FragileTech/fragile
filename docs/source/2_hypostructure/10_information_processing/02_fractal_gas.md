@@ -1168,7 +1168,7 @@ hypostructure** $C^\infty$ regularity certificate.
 
 :::{prf:proof}
 Family I regularity bootstrap is stated in the classification taxonomy
-({doc}`/2_hypostructure/09_mathematical/04_taxonomy`, Family I). The Regularity Lift surgery
+({doc}`/source/2_hypostructure/09_mathematical/04_taxonomy`, Family I). The Regularity Lift surgery
 is specified in {prf:ref}`def-surgery-se` and upgrades $H^s \to H^{s+\delta}$; iterating
 the upgrade yields $H^s$ for all $s$ on the window, hence $C^\infty$ by Sobolev
 embedding. These arguments are internal to the hypostructure certificate logic and do
@@ -1192,7 +1192,7 @@ $\mathrm{Bound}_\partial$ (N13), $\mathrm{Bound}_B$ (N14), $\mathrm{Bound}_\Sigm
 $D_{\max}$ (bounded algorithmic diameter on the alive core) and $\rho_{\max}$ (uniform
 upper bound on the invariant/QSD density on the alive core). These witnesses match the
 standing hypotheses required by the Gevrey-1 regularity analysis in
-{doc}`/3_fractal_gas/appendices/14_b_geometric_gas_cinf_regularity_full`.
+{doc}`/source/3_fractal_gas/appendices/14_b_geometric_gas_cinf_regularity_full`.
 :::
 
 :::{prf:proof}
@@ -1224,7 +1224,7 @@ machinery are met, so that an **independent** proof may be invoked if desired.
 regularization specified above, and (ii) the sieve provides witnesses $D_{\max}$ and
 $\rho_{\max}$ together with the thin-parameter bounds, then the hypotheses of the
 Gevrey-1 regularity analysis in
-{doc}`/3_fractal_gas/appendices/14_b_geometric_gas_cinf_regularity_full` are satisfied. In
+{doc}`/source/3_fractal_gas/appendices/14_b_geometric_gas_cinf_regularity_full` are satisfied. In
 that case, the Gevrey-1 regularity proof may be applied as a **separate, independent**
 route to $C^\infty$ (and real-analytic) regularity of the mean-field expected fitness
 potential. This route remains logically independent of the hypostructure bootstrap above.

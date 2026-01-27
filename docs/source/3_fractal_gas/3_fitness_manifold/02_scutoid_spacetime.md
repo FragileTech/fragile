@@ -1,7 +1,7 @@
 (sec-scutoid-spacetime)=
 # Scutoid Spacetime: Discrete Geometry from Cloning
 
-**Prerequisites**: {doc}`01_emergent_geometry`, {doc}`/3_fractal_gas/2_fractal_set/02_causal_set_theory`, {cite}`gomez2018scutoids`
+**Prerequisites**: {doc}`01_emergent_geometry`, {doc}`/source/3_fractal_gas/2_fractal_set/02_causal_set_theory`, {cite}`gomez2018scutoids`
 
 ---
 
@@ -84,7 +84,7 @@ $$
 
    **Note on curvature regime (two independent routes):**
    - **Analytic route (Appendix 14B):** The Gevrey-1 bounds in
-     {doc}`/3_fractal_gas/appendices/14_b_geometric_gas_cinf_regularity_full` give
+     {doc}`/source/3_fractal_gas/appendices/14_b_geometric_gas_cinf_regularity_full` give
      uniform bounds on derivatives of $V_{\mathrm{fit}}$, hence on $H=\nabla^2
      V_{\mathrm{fit}}$ and $\nabla H$ over Safe Harbor windows. With the spectral floor
      $\epsilon_\Sigma$ (see {prf:ref}`thm-uniform-ellipticity-latent`), $g=H+\epsilon_\Sigma I$
@@ -491,7 +491,7 @@ The **scutoid index** $\chi_{\mathrm{scutoid}}(\mathcal{S}) = |\mathcal{N}_{\mat
 :label: rem-scutoid-metric-recovery
 
 The scutoid tessellation provides a discrete, CST-compatible approximation of the same
-Lorentzian geometry used in {doc}`/3_fractal_gas/2_fractal_set/02_causal_set_theory`. On
+Lorentzian geometry used in {doc}`/source/3_fractal_gas/2_fractal_set/02_causal_set_theory`. On
 each slab, the midpoint metric $g_{k+1/2}$ determines the Riemannianized length
 functional and the scutoid light-cone order $\prec_{\mathrm{sc}}$
 ({prf:ref}`def-scutoid-path-length`). In the mean-field limit ($\Delta t\to 0$), this
@@ -1041,9 +1041,9 @@ The rigorous statement is conditional: **neighbor changes force scutoids**; clon
 ### Framework Documents
 
 - {doc}`01_emergent_geometry` — Emergent Riemannian geometry from adaptive diffusion
-- {doc}`/3_fractal_gas/2_fractal_set/02_causal_set_theory` — Causal set structure of the Fractal Set
-- {doc}`/3_fractal_gas/appendices/09_propagation_chaos` — Mean-field justification for spatial statistics
-- {doc}`/3_fractal_gas/appendices/14_b_geometric_gas_cinf_regularity_full` — Regularity bounds for curvature control
+- {doc}`/source/3_fractal_gas/2_fractal_set/02_causal_set_theory` — Causal set structure of the Fractal Set
+- {doc}`/source/3_fractal_gas/appendices/09_propagation_chaos` — Mean-field justification for spatial statistics
+- {doc}`/source/3_fractal_gas/appendices/14_b_geometric_gas_cinf_regularity_full` — Regularity bounds for curvature control
 - {prf:ref}`def-adaptive-diffusion-tensor-latent` — Adaptive diffusion tensor and emergent metric
 - {prf:ref}`def-fractal-set-cst-edges` — CST edge definition
 - {prf:ref}`def-fractal-set-cloning-score` — Cloning score definition

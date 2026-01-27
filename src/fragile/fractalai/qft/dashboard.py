@@ -12,6 +12,7 @@ import sys
 import time
 from typing import Any
 
+import holoviews as hv
 import numpy as np
 import pandas as pd
 import panel as pn
@@ -30,6 +31,7 @@ from fragile.fractalai.qft.plotting import (
 
 # Prevent Plotly from probing the system browser during import.
 os.environ.setdefault("PLOTLY_RENDERER", "json")
+hv.extension("bokeh")
 
 __all__ = ["create_app"]
 
@@ -620,6 +622,173 @@ def _build_anchor_rows(
     return rows
 
 
+SWEEP_PARAM_DEFS: dict[str, dict[str, Any]] = {
+    "density_sigma": {"label": "density_sigma", "type": float},
+    "correlation_r_max": {"label": "correlation_r_max", "type": float},
+    "correlation_bins": {"label": "correlation_bins", "type": int},
+    "gradient_neighbors": {"label": "gradient_neighbors", "type": int},
+    "warmup_fraction": {"label": "warmup_fraction", "type": float},
+    "fractal_set_stride": {"label": "fractal_set_stride", "type": int},
+    "particle_fit_start": {"label": "particle_fit_start", "type": int},
+    "particle_fit_stop": {"label": "particle_fit_stop", "type": int},
+    "particle_max_lag": {"label": "particle_max_lag", "type": int},
+    "particle_knn_k": {"label": "particle_knn_k", "type": int},
+    "particle_knn_sample": {"label": "particle_knn_sample", "type": int},
+    "particle_mass": {"label": "particle_mass", "type": float},
+    "particle_ell0": {"label": "particle_ell0", "type": float},
+}
+
+SWEEP_METRICS: dict[str, str] = {
+    "baryon mass": "particle_baryon_mass",
+    "baryon R²": "particle_baryon_r2",
+    "meson mass": "particle_meson_mass",
+    "meson R²": "particle_meson_r2",
+    "glueball mass": "particle_glueball_mass",
+    "glueball R²": "particle_glueball_r2",
+    "d_prime ξ": "d_prime_xi",
+    "d_prime R²": "d_prime_r2",
+    "r_prime ξ": "r_prime_xi",
+    "r_prime R²": "r_prime_r2",
+    "string tension σ": "string_tension_sigma",
+}
+
+
+def _coerce_sweep_value(param_name: str, value: float) -> Any:
+    param_def = SWEEP_PARAM_DEFS.get(param_name, {})
+    cast = param_def.get("type", float)
+    return cast(value)
+
+
+def _build_sweep_values(param_name: str, min_val: float, max_val: float, steps: int) -> list[Any]:
+    steps = max(1, int(steps))
+    if min_val > max_val:
+        min_val, max_val = max_val, min_val
+    if steps == 1:
+        values = [min_val]
+    else:
+        values = np.linspace(float(min_val), float(max_val), steps)
+    param_type = SWEEP_PARAM_DEFS.get(param_name, {}).get("type", float)
+    if param_type is int:
+        cast_values = [int(round(v)) for v in values]
+        return sorted(set(cast_values))
+    return [float(v) for v in values]
+
+
+def _resolve_fit_window(
+    analysis_settings: AnalysisSettings,
+    x_param: str,
+    x_val: Any,
+    y_param: str | None,
+    y_val: Any | None,
+) -> tuple[int | None, int | None]:
+    fit_start = analysis_settings.particle_fit_start
+    fit_stop = analysis_settings.particle_fit_stop
+    if x_param == "particle_fit_start":
+        fit_start = int(x_val)
+    elif x_param == "particle_fit_stop":
+        fit_stop = int(x_val)
+    if y_param == "particle_fit_start" and y_val is not None:
+        fit_start = int(y_val)
+    elif y_param == "particle_fit_stop" and y_val is not None:
+        fit_stop = int(y_val)
+    return fit_start, fit_stop
+
+
+def _metric_operator(metric_key: str) -> str | None:
+    if metric_key.startswith("particle_baryon"):
+        return "baryon"
+    if metric_key.startswith("particle_meson"):
+        return "meson"
+    if metric_key.startswith("particle_glueball"):
+        return "glueball"
+    return None
+
+
+def _extract_fit_metadata(
+    metrics: dict[str, Any], operator: str
+) -> tuple[int | None, int | None, str | None]:
+    fit = (
+        metrics.get("particle_observables", {})
+        .get("operators", {})
+        .get(operator, {})
+        .get("fit", {})
+    )
+    fit_start = fit.get("fit_start")
+    fit_stop = fit.get("fit_stop")
+    fit_mode = fit.get("fit_mode")
+    return fit_start, fit_stop, fit_mode
+
+
+def _extract_metric(metrics: dict[str, Any], key: str) -> float:
+    if key == "d_prime_xi":
+        return float(metrics.get("observables", {}).get("d_prime_correlation", {}).get("xi", np.nan))
+    if key == "d_prime_r2":
+        return float(
+            metrics.get("observables", {}).get("d_prime_correlation", {}).get("r_squared", np.nan)
+        )
+    if key == "r_prime_xi":
+        return float(metrics.get("observables", {}).get("r_prime_correlation", {}).get("xi", np.nan))
+    if key == "r_prime_r2":
+        return float(
+            metrics.get("observables", {}).get("r_prime_correlation", {}).get("r_squared", np.nan)
+        )
+    if key == "string_tension_sigma":
+        return float(metrics.get("string_tension", {}).get("sigma", np.nan))
+
+    particle = metrics.get("particle_observables", {}) or {}
+    operators = particle.get("operators", {}) or {}
+    if key == "particle_baryon_mass":
+        return float(operators.get("baryon", {}).get("fit", {}).get("mass", np.nan))
+    if key == "particle_baryon_r2":
+        return float(operators.get("baryon", {}).get("fit", {}).get("r_squared", np.nan))
+    if key == "particle_meson_mass":
+        return float(operators.get("meson", {}).get("fit", {}).get("mass", np.nan))
+    if key == "particle_meson_r2":
+        return float(operators.get("meson", {}).get("fit", {}).get("r_squared", np.nan))
+    if key == "particle_glueball_mass":
+        return float(operators.get("glueball", {}).get("fit", {}).get("mass", np.nan))
+    if key == "particle_glueball_r2":
+        return float(operators.get("glueball", {}).get("fit", {}).get("r_squared", np.nan))
+
+    return float(np.nan)
+
+
+def _extract_particle_fit_metrics(metrics: dict[str, Any]) -> dict[str, float]:
+    return {
+        "baryon_mass": _extract_metric(metrics, "particle_baryon_mass"),
+        "baryon_r2": _extract_metric(metrics, "particle_baryon_r2"),
+        "meson_mass": _extract_metric(metrics, "particle_meson_mass"),
+        "meson_r2": _extract_metric(metrics, "particle_meson_r2"),
+        "glueball_mass": _extract_metric(metrics, "particle_glueball_mass"),
+        "glueball_r2": _extract_metric(metrics, "particle_glueball_r2"),
+    }
+
+
+def _build_sweep_plot(
+    dataframe: pd.DataFrame, x_param: str, metric_key: str, y_param: str | None = None
+) -> hv.Element | None:
+    if dataframe.empty:
+        return None
+    if y_param is None:
+        plot = hv.Curve(dataframe, kdims=[x_param], vdims=[metric_key]).opts(
+            xlabel=x_param,
+            ylabel=metric_key,
+            title=f"{metric_key} vs {x_param}",
+            width=700,
+            height=400,
+        )
+        return plot
+    plot = hv.HeatMap(dataframe, kdims=[x_param, y_param], vdims=[metric_key]).opts(
+        xlabel=x_param,
+        ylabel=y_param,
+        title=f"{metric_key} sweep",
+        width=700,
+        height=450,
+        colorbar=True,
+    )
+    return plot
+
+
 def create_app() -> pn.template.FastListTemplate:
     """Create the QFT convergence + analysis dashboard."""
     debug = os.environ.get("QFT_DASH_DEBUG", "").lower() in {"1", "true", "yes"}
@@ -792,6 +961,48 @@ def create_app() -> pn.template.FastListTemplate:
             sizing_mode="stretch_width",
         )
 
+        sweep_enable_2d = pn.widgets.Checkbox(name="2D sweep", value=False)
+        sweep_param_x = pn.widgets.Select(
+            name="Sweep param (X)",
+            options={v["label"]: k for k, v in SWEEP_PARAM_DEFS.items()},
+            value="density_sigma",
+        )
+        sweep_param_y = pn.widgets.Select(
+            name="Sweep param (Y)",
+            options={v["label"]: k for k, v in SWEEP_PARAM_DEFS.items()},
+            value="particle_knn_k",
+        )
+        sweep_metric = pn.widgets.Select(
+            name="Metric",
+            options={label: key for label, key in SWEEP_METRICS.items()},
+            value="particle_baryon_mass",
+        )
+        sweep_min_x = pn.widgets.FloatInput(name="X min", value=0.1, step=0.1, width=120)
+        sweep_max_x = pn.widgets.FloatInput(name="X max", value=1.0, step=0.1, width=120)
+        sweep_steps_x = pn.widgets.IntInput(name="X steps", value=5, step=1, width=120)
+        sweep_min_y = pn.widgets.FloatInput(name="Y min", value=1.0, step=1.0, width=120)
+        sweep_max_y = pn.widgets.FloatInput(name="Y max", value=5.0, step=1.0, width=120)
+        sweep_steps_y = pn.widgets.IntInput(name="Y steps", value=4, step=1, width=120)
+        sweep_run_button = pn.widgets.Button(
+            name="Run Sweep",
+            button_type="primary",
+            width=240,
+            sizing_mode="fixed",
+            disabled=True,
+        )
+        sweep_status = pn.pane.Markdown(
+            "**Sweep:** configure parameters and run to see results.",
+            sizing_mode="stretch_width",
+        )
+        sweep_table = pn.widgets.Tabulator(
+            pd.DataFrame(),
+            pagination="remote",
+            page_size=20,
+            show_index=False,
+            sizing_mode="stretch_width",
+        )
+        sweep_plot = pn.pane.HoloViews(sizing_mode="stretch_width")
+
         def _set_analysis_status(message: str) -> None:
             analysis_status_sidebar.object = message
             analysis_status_main.object = message
@@ -825,6 +1036,47 @@ def create_app() -> pn.template.FastListTemplate:
             )
             _set_particle_status("**Particles:** tables updated.")
 
+        def _default_sweep_range(param_name: str) -> tuple[float, float, int]:
+            current = getattr(analysis_settings, param_name, 1.0)
+            if current is None:
+                current = 1.0
+            param_type = SWEEP_PARAM_DEFS.get(param_name, {}).get("type", float)
+            if param_type is int:
+                base = int(current)
+                min_v = max(1, base - 5)
+                max_v = max(min_v + 1, base + 5)
+            else:
+                base = float(current)
+                if base == 0:
+                    base = 1.0
+                min_v = max(1e-6, base * 0.5)
+                max_v = max(min_v * 1.1, base * 1.5)
+            return float(min_v), float(max_v), 5
+
+        def _sync_sweep_bounds(param_name: str, min_w, max_w, steps_w) -> None:
+            min_v, max_v, steps = _default_sweep_range(param_name)
+            min_w.value = min_v
+            max_w.value = max_v
+            steps_w.value = steps
+
+        def _toggle_sweep_controls(event) -> None:
+            enabled = bool(event.new)
+            sweep_param_y.visible = enabled
+            sweep_min_y.visible = enabled
+            sweep_max_y.visible = enabled
+            sweep_steps_y.visible = enabled
+
+        def _on_sweep_param_x(event) -> None:
+            _sync_sweep_bounds(event.new, sweep_min_x, sweep_max_x, sweep_steps_x)
+
+        def _on_sweep_param_y(event) -> None:
+            _sync_sweep_bounds(event.new, sweep_min_y, sweep_max_y, sweep_steps_y)
+
+        _sync_sweep_bounds(sweep_param_x.value, sweep_min_x, sweep_max_x, sweep_steps_x)
+        _sync_sweep_bounds(sweep_param_y.value, sweep_min_y, sweep_max_y, sweep_steps_y)
+        for widget in (sweep_param_y, sweep_min_y, sweep_max_y, sweep_steps_y):
+            widget.visible = sweep_enable_2d.value
+
         def set_history(history: RunHistory, history_path: Path | None = None) -> None:
             state["history"] = history
             state["history_path"] = history_path
@@ -835,6 +1087,7 @@ def create_app() -> pn.template.FastListTemplate:
             run_analysis_button_main.disabled = False
             particle_run_button.disabled = False
             _set_particle_status("**Particles ready:** click Compute Particles.")
+            sweep_run_button.disabled = False
 
         def on_simulation_complete(history: RunHistory):
             set_history(history)
@@ -972,6 +1225,167 @@ def create_app() -> pn.template.FastListTemplate:
             _set_analysis_status("**Analysis complete.**")
             _update_particle_tables(metrics)
 
+        def on_run_sweep(_):
+            history = state.get("history")
+            if history is None:
+                _set_analysis_status("**Error:** load or run a simulation first.")
+                _set_particle_status("**Error:** load or run a simulation first.")
+                return
+
+            x_param = sweep_param_x.value
+            y_param = sweep_param_y.value if sweep_enable_2d.value else None
+            metric_key = sweep_metric.value
+
+            steps_x = max(1, int(sweep_steps_x.value))
+            x_values = _build_sweep_values(
+                x_param,
+                float(sweep_min_x.value),
+                float(sweep_max_x.value),
+                steps_x,
+            )
+            if y_param:
+                steps_y = max(1, int(sweep_steps_y.value))
+                y_values = _build_sweep_values(
+                    y_param,
+                    float(sweep_min_y.value),
+                    float(sweep_max_y.value),
+                    steps_y,
+                )
+            else:
+                y_values = [None]
+
+            original_values = {
+                x_param: getattr(analysis_settings, x_param),
+                "compute_particles": analysis_settings.compute_particles,
+                "build_fractal_set": analysis_settings.build_fractal_set,
+                "compute_string_tension": analysis_settings.compute_string_tension,
+            }
+            if y_param:
+                original_values[y_param] = getattr(analysis_settings, y_param)
+
+            original_analysis_id = analysis_id_input.value
+            base_id = original_analysis_id.strip() or datetime.utcnow().strftime("%Y%m%d_%H%M%S")
+
+            results: list[dict[str, Any]] = []
+            skipped = 0
+            attempted = 0
+            sweep_status.object = "**Sweep:** running..."
+            include_fit_meta = {
+                "particle_fit_start",
+                "particle_fit_stop",
+            }.intersection({x_param, y_param or ""})
+            fit_operator = _metric_operator(metric_key)
+
+            try:
+                for x_val in x_values:
+                    x_val_cast = _coerce_sweep_value(x_param, x_val)
+                    setattr(analysis_settings, x_param, x_val_cast)
+                    for y_val in y_values:
+                        suffix = f"{x_param}_{x_val_cast}"
+                        if y_param and y_val is not None:
+                            y_val_cast = _coerce_sweep_value(y_param, y_val)
+                            setattr(analysis_settings, y_param, y_val_cast)
+                            suffix = f"{suffix}__{y_param}_{y_val_cast}"
+                        else:
+                            y_val_cast = None
+
+                        fit_start, fit_stop = _resolve_fit_window(
+                            analysis_settings, x_param, x_val_cast, y_param, y_val_cast
+                        )
+                        if (
+                            fit_start is not None
+                            and fit_stop is not None
+                            and fit_stop < fit_start
+                        ):
+                            skipped += 1
+                            row = {
+                                x_param: x_val_cast,
+                                metric_key: np.nan,
+                                "status": "invalid_fit_window",
+                                "fit_start": fit_start,
+                                "fit_stop": fit_stop,
+                            }
+                            if y_param:
+                                row[y_param] = y_val_cast
+                            row.update(
+                                {
+                                    "baryon_mass": np.nan,
+                                    "baryon_r2": np.nan,
+                                    "meson_mass": np.nan,
+                                    "meson_r2": np.nan,
+                                    "glueball_mass": np.nan,
+                                    "glueball_r2": np.nan,
+                                }
+                            )
+                            results.append(row)
+                            continue
+
+                        analysis_id_input.value = f"{base_id}_sweep_{suffix}"
+                        attempted += 1
+                        result = _run_analysis(force_particles=True)
+                        if result is None:
+                            skipped += 1
+                            row = {
+                                x_param: x_val_cast,
+                                metric_key: np.nan,
+                                "status": "analysis_error",
+                                "fit_start": fit_start,
+                                "fit_stop": fit_stop,
+                            }
+                            if y_param:
+                                row[y_param] = y_val_cast
+                            row.update(
+                                {
+                                    "baryon_mass": np.nan,
+                                    "baryon_r2": np.nan,
+                                    "meson_mass": np.nan,
+                                    "meson_r2": np.nan,
+                                    "glueball_mass": np.nan,
+                                    "glueball_r2": np.nan,
+                                }
+                            )
+                            results.append(row)
+                            continue
+                        metrics, _arrays = result
+                        value = _extract_metric(metrics, metric_key)
+                        row = {x_param: x_val_cast, metric_key: value}
+                        if y_param:
+                            row[y_param] = y_val_cast
+                        row.update(_extract_particle_fit_metrics(metrics))
+                        if fit_start is not None:
+                            row["fit_start"] = fit_start
+                        if fit_stop is not None:
+                            row["fit_stop"] = fit_stop
+                        if include_fit_meta and fit_operator is not None:
+                            fit_start_used, fit_stop_used, fit_mode_used = _extract_fit_metadata(
+                                metrics, fit_operator
+                            )
+                            row["fit_start_used"] = fit_start_used
+                            row["fit_stop_used"] = fit_stop_used
+                            row["fit_mode_used"] = fit_mode_used
+                        results.append(row)
+            finally:
+                for name, value in original_values.items():
+                    setattr(analysis_settings, name, value)
+                analysis_id_input.value = original_analysis_id
+
+            if not results:
+                sweep_status.object = "**Sweep:** no results."
+                sweep_table.value = pd.DataFrame()
+                sweep_plot.object = None
+                return
+
+            df = pd.DataFrame(results)
+            sweep_table.value = df
+            plot = _build_sweep_plot(df, x_param, metric_key, y_param=y_param)
+            sweep_plot.object = plot
+            if skipped:
+                sweep_status.object = (
+                    f"**Sweep:** complete ({attempted} runs, {skipped} skipped)."
+                )
+            else:
+                sweep_status.object = f"**Sweep:** complete ({attempted} runs)."
+
         browse_button.on_click(_on_browse_clicked)
         load_button.on_click(on_load_clicked)
         gas_config.add_completion_callback(on_simulation_complete)
@@ -979,6 +1393,10 @@ def create_app() -> pn.template.FastListTemplate:
         run_analysis_button.on_click(on_run_analysis)
         run_analysis_button_main.on_click(on_run_analysis)
         particle_run_button.on_click(on_run_particles)
+        sweep_run_button.on_click(on_run_sweep)
+        sweep_enable_2d.param.watch(_toggle_sweep_controls, "value")
+        sweep_param_x.param.watch(_on_sweep_param_x, "value")
+        sweep_param_y.param.watch(_on_sweep_param_y, "value")
 
         visualization_controls = pn.Param(
             visualizer,
@@ -1052,6 +1470,30 @@ def create_app() -> pn.template.FastListTemplate:
             sqrt_sigma_ref_input,
             sizing_mode="stretch_width",
         )
+        sweep_controls = pn.Column(
+            pn.pane.Markdown("### Sweep Controls"),
+            pn.Row(sweep_enable_2d, sweep_metric, sizing_mode="stretch_width"),
+            pn.Row(
+                sweep_param_x,
+                sweep_min_x,
+                sweep_max_x,
+                sweep_steps_x,
+                sizing_mode="stretch_width",
+            ),
+            pn.Row(
+                sweep_param_y,
+                sweep_min_y,
+                sweep_max_y,
+                sweep_steps_y,
+                sizing_mode="stretch_width",
+            ),
+            pn.Row(sweep_run_button, sizing_mode="stretch_width"),
+            sweep_status,
+            pn.layout.Divider(),
+            sweep_plot,
+            sweep_table,
+            sizing_mode="stretch_width",
+        )
 
         if skip_sidebar:
             sidebar.objects = [
@@ -1118,6 +1560,7 @@ def create_app() -> pn.template.FastListTemplate:
             particle_tab = pn.Column(
                 particle_status,
                 pn.Row(particle_run_button, sizing_mode="stretch_width"),
+                sweep_controls,
                 pn.pane.Markdown("### Algorithmic Masses"),
                 particle_mass_table,
                 pn.pane.Markdown("### Best-Fit Scales"),

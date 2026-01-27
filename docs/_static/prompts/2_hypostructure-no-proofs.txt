@@ -1707,14 +1707,14 @@ A **certificate** $K$ is a formal witness object that records the outcome of a v
 :::{prf:definition} Context
 :label: def-context
 
-The **context** $\Gamma$ is a finite multiset of certificates accumulated during a sieve run:
+The **context** $\Gamma$ is a finite **set** of certificates accumulated during a sieve run:
 
 $$
 \Gamma = \{K_{D_E}, K_{\mathrm{Rec}_N}, K_{C_\mu}, \ldots, K_{\mathrm{Cat}_{\mathrm{Hom}}}\}
 
 $$
 
-The context grows monotonically during an epoch: certificates are added but never removed (except at surgery re-entry, where context may be partially reset).
+The context grows monotonically during an epoch: certificates are added but never removed (except at surgery re-entry, where context may be partially reset). Duplicate certificates are idempotent under set union.
 
 :::
 
@@ -3942,7 +3942,7 @@ $$
 
 $$
 
-**Scope of Non-Circularity:** This syntactic check ($K_i^- \notin \Gamma$) prevents direct circular dependencies. Semantic circularity (proof implicitly using an equivalent of the target conclusion) is addressed by the derivation-dependency constraint: certificate proofs must cite only lemmas of lower rank in the proof DAG. The ranking is induced by the topological sort of the Sieve, ensuring well-foundedness ({cite}`VanGelder91`).
+**Scope of Non-Circularity:** This syntactic check ($K_i^- \notin \Gamma$) prevents direct circular dependencies. Semantic circularity is ruled out by the Sieve DAG order and monotone context: a node’s evaluation may cite only certificates already in $\Gamma$, and $\Gamma$ contains certificates only from earlier nodes in the topological order (see {prf:ref}`thm-dag` and {prf:ref}`def-node-evaluation`). This enforces the dependency ranking without introducing a separate proof-DAG object.
 
 **Literature:** Well-founded semantics {cite}`VanGelder91`; stratification in logic programming {cite}`AptBolPedreschi94`.
 
@@ -11641,7 +11641,7 @@ satisfying:
 
 1. **Skew-symmetry:** $\{f_1, \ldots, f_n\}$ changes sign under transposition of any two arguments
 
-2. **Leibniz rule:**
+2. **Leibniz rule:** 
 $$
 \{f_1 g, f_2, \ldots, f_n\} = f_1\{g, f_2, \ldots, f_n\} + g\{f_1, f_2, \ldots, f_n\}
 $$
@@ -11778,7 +11778,7 @@ $$
 
 The first two equations match Definition {prf:ref}`def-bulk-drift-continuous-flow` exactly.
 
-*Proof.*
+*Proof.* 
 **Position:** $\dot{z}^k = \partial H / \partial p_k = G^{kj} p_j$ ✓
 
 **Momentum:** On a Riemannian manifold, the contact Hamilton equation includes the Christoffel connection:
@@ -11799,7 +11799,7 @@ $\square$
 The contact entropy evolution $\dot{s} = K - U - \gamma s$ has clear thermodynamic meaning:
 
 - **$K$ term:** Kinetic energy converted to heat (increases entropy)
-- **$-U$ term:** Potential energy release/absorption
+- **$-U$ term:** Potential energy release/absorption  
 - **$-\gamma s$ term:** Approach to equilibrium (entropy relaxation)
 
 At equilibrium ($\dot{s} = 0$): $s_{\text{eq}} = (K - U)/\gamma$
@@ -11900,8 +11900,8 @@ The system continuously dissipates energy while being driven by the rotational V
 The **Contact BAOAB** integrator for Definition {prf:ref}`def-stochastic-contact-hamiltonian`:
 
 1. **B** (half kick): $p \leftarrow p - \frac{h}{2}\nabla\Phi_{\text{eff}}$ + Boris rotation if $\mathcal{F} \neq 0$
-
-2. **A** (half drift):
+   
+2. **A** (half drift): 
    - $z \leftarrow \operatorname{Exp}_z\left(\frac{h}{2} G^{-1} p\right)$
    - $s \leftarrow s + \frac{h}{2}(K - \Phi_{\text{eff}} - \gamma s)$
 
@@ -14660,7 +14660,7 @@ $\mathrm{Bound}_\partial$ (N13), $\mathrm{Bound}_B$ (N14), $\mathrm{Bound}_\Sigm
 $D_{\max}$ (bounded algorithmic diameter on the alive core) and $\rho_{\max}$ (uniform
 upper bound on the invariant/QSD density on the alive core). These witnesses match the
 standing hypotheses required by the Gevrey-1 regularity analysis in
-{doc}`/3_fractal_gas/appendices/14_b_geometric_gas_cinf_regularity_full`.
+{doc}`/source/3_fractal_gas/appendices/14_b_geometric_gas_cinf_regularity_full`.
 :::
 
 :::{prf:metatheorem} Gevrey Route Admissibility (Independent Analytic Proof)
@@ -14683,7 +14683,7 @@ machinery are met, so that an **independent** proof may be invoked if desired.
 regularization specified above, and (ii) the sieve provides witnesses $D_{\max}$ and
 $\rho_{\max}$ together with the thin-parameter bounds, then the hypotheses of the
 Gevrey-1 regularity analysis in
-{doc}`/3_fractal_gas/appendices/14_b_geometric_gas_cinf_regularity_full` are satisfied. In
+{doc}`/source/3_fractal_gas/appendices/14_b_geometric_gas_cinf_regularity_full` are satisfied. In
 that case, the Gevrey-1 regularity proof may be applied as a **separate, independent**
 route to $C^\infty$ (and real-analytic) regularity of the mean-field expected fitness
 potential. This route remains logically independent of the hypostructure bootstrap above.

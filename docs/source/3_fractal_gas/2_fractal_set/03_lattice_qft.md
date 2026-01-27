@@ -841,8 +841,8 @@ emergent-continuum {prf:ref}`mt:emergent-continuum`,
 continuum injection {prf:ref}`mt:continuum-injection`,
 and Cheeger gradient {prf:ref}`mt:cheeger-gradient`.
 The required mixing/limit hypotheses are discharged by the QSD/LSI apparatus in the
-appendices (e.g., {doc}`/3_fractal_gas/appendices/07_discrete_qsd`,
-{doc}`/3_fractal_gas/appendices/09_propagation_chaos`).
+appendices (e.g., {doc}`/source/3_fractal_gas/appendices/07_discrete_qsd`,
+{doc}`/source/3_fractal_gas/appendices/09_propagation_chaos`).
 This establishes the continuum Laplacian without invoking classical kernel scaling.
 :::
 

@@ -544,6 +544,13 @@ class CompanionSelection(PanelModel):
                 "type": pn.widgets.Select,
                 "width": INPUT_WIDTH,
                 "name": "Selection method",
+                "options": {
+                    "Softmax pairing (greedy)": "greedy_pairing",
+                    "Softmax (independent)": "softmax",
+                    "Cloning (softmax + uniform dead)": "cloning",
+                    "Uniform": "uniform",
+                    "Random pairing": "random_pairing",
+                },
             },
             "epsilon": {
                 "type": pn.widgets.EditableFloatSlider,

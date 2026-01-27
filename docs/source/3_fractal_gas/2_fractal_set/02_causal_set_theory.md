@@ -1,6 +1,6 @@
 # Fractal Set as Causal Set
 
-**Prerequisites**: {doc}`/3_fractal_gas/2_fractal_set/01_fractal_set`, Causal Set Theory ({cite}`BombelliLeeEtAl87,Sorkin05`)
+**Prerequisites**: {doc}`/source/3_fractal_gas/2_fractal_set/01_fractal_set`, Causal Set Theory ({cite}`BombelliLeeEtAl87,Sorkin05`)
 
 ---
 
@@ -27,7 +27,7 @@ Now, the Fractal Set is also a discrete structure with a causal ordering. Episod
 The answer is yes. The Fractal Set is a valid causal set. But it is more than that: it is an *adaptive* causal set, where the sampling density automatically adjusts to local geometry. This goes beyond the standard Lorentz-invariant Poisson construction, which fixes a constant density.
 :::
 
-Causal set theory (CST) posits that spacetime is fundamentally discrete: a locally finite (typically countable) collection of events with a partial ordering encoding causal relationships. The Fractal Set, defined in {doc}`/3_fractal_gas/2_fractal_set/01_fractal_set`, provides exactly such a structure via its CST edges ({prf:ref}`def-fractal-set-cst-edges`) and CST axioms ({prf:ref}`def-fractal-set-cst-axioms`). This chapter establishes that:
+Causal set theory (CST) posits that spacetime is fundamentally discrete: a locally finite (typically countable) collection of events with a partial ordering encoding causal relationships. The Fractal Set, defined in {doc}`/source/3_fractal_gas/2_fractal_set/01_fractal_set`, provides exactly such a structure via its CST edges ({prf:ref}`def-fractal-set-cst-edges`) and CST axioms ({prf:ref}`def-fractal-set-cst-axioms`). This chapter establishes that:
 
 1. The Fractal Set satisfies all BLMS axioms for causal sets
 2. QSD sampling provides adaptive (not uniform) sprinkling
@@ -362,10 +362,10 @@ directly computable on the Fractal Set.
 
 :::{seealso}
 :class: feynman-added
-- {doc}`3_fitness_manifold/01_emergent_geometry`: Emergent metric from adaptive diffusion
-- {doc}`3_fitness_manifold/02_scutoid_spacetime`: Scutoid tessellation and plaquette structure
-- {doc}`3_fitness_manifold/03_curvature_gravity`: Curvature from discrete holonomy
-- {doc}`3_fitness_manifold/04_field_equations`: Field equations and pressure dynamics
+- {doc}`/source/3_fractal_gas/3_fitness_manifold/01_emergent_geometry`: Emergent metric from adaptive diffusion
+- {doc}`/source/3_fractal_gas/3_fitness_manifold/02_scutoid_spacetime`: Scutoid tessellation and plaquette structure
+- {doc}`/source/3_fractal_gas/3_fitness_manifold/03_curvature_gravity`: Curvature from discrete holonomy
+- {doc}`/source/3_fractal_gas/3_fitness_manifold/04_field_equations`: Field equations and pressure dynamics
 :::
 
 ---
@@ -620,7 +620,7 @@ constant $\kappa>0$ uniform in $t$, implying exponential mixing and a law of lar
 for bounded Lipschitz functionals uniformly over the window.
 
 **A5 (Kernel + algorithmic cutoff)**: $K\in C^2_c([0,1])$. Let $\rho$ be the localization
-scale and $\varepsilon_c$ the coherence scale ({doc}`/3_fractal_gas/2_fractal_set/01_fractal_set`). Define the algorithmic
+scale and $\varepsilon_c$ the coherence scale ({doc}`/source/3_fractal_gas/2_fractal_set/01_fractal_set`). Define the algorithmic
 locality radius $R_{\mathrm{loc}} := \min(\rho,\varepsilon_c)$ and the light-crossing time
 $T_{\mathrm{loc}} := \min(t_1-t_0, R_{\mathrm{loc}}/c)$. For $\varepsilon>0$, let
 
@@ -681,18 +681,18 @@ assumptions are introduced; each item names the exact proof objects to cite.
    (Sections 1-2 of this chapter).
 5. **Global hyperbolicity**: Show causal diamonds are compact on the window
    $[t_0,t_1]$ using the confining envelope from the decorated Gibbs structure
-   ({prf:ref}`thm-decorated-gibbs` in {doc}`/3_fractal_gas/appendices/07_discrete_qsd`) and the Safe Harbor
-   barrier mechanisms ({doc}`/3_fractal_gas/appendices/03_cloning`, {doc}`/3_fractal_gas/appendices/07_discrete_qsd`). This yields a
+   ({prf:ref}`thm-decorated-gibbs` in {doc}`/source/3_fractal_gas/appendices/07_discrete_qsd`) and the Safe Harbor
+   barrier mechanisms ({doc}`/source/3_fractal_gas/appendices/03_cloning`, {doc}`/source/3_fractal_gas/appendices/07_discrete_qsd`). This yields a
    Cauchy foliation by constant-$t$ slices.
 
 #### A2 (Smooth fields): $U_{\mathrm{eff}}$, $r(t)$, $Z(t)$, $g_R$
 
 1. **$U_{\mathrm{eff}}$ regularity**: Express $U_{\mathrm{eff}}$ via the
    mean-field fitness potential and decorated Gibbs envelope
-   ({doc}`/3_fractal_gas/appendices/07_discrete_qsd`, {prf:ref}`thm-decorated-gibbs`). Use the fitness
+   ({doc}`/source/3_fractal_gas/appendices/07_discrete_qsd`, {prf:ref}`thm-decorated-gibbs`). Use the fitness
    pipeline smoothness certificate in {doc}`../1_the_algorithm/02_fractal_gas_latent`
    (composition of $C^2$ primitives + Gaussian smoothing) and hypoelliptic
-   regularity from {doc}`09_propagation_chaos` to upgrade to $C^4$ on the alive core.
+   regularity from {doc}`/source/3_fractal_gas/appendices/09_propagation_chaos` to upgrade to $C^4$ on the alive core.
 2. **$g_R$ smoothness**: Start from the adaptive diffusion tensor
    ({prf:ref}`def-adaptive-diffusion-tensor-latent`) and the Lipschitz continuity
    result ({prf:ref}`prop-lipschitz-diffusion-latent` in
@@ -700,31 +700,31 @@ assumptions are introduced; each item names the exact proof objects to cite.
    $C^4$ regularity of $V_{\mathrm{fit}}$ (from Step 1) to lift $g_R$ to $C^4$.
 3. **$r(t)$ and $Z(t)$ smoothness**: Define $r(t)$ and $Z(t)$ as time-marginals of
    the QSD density (Section 2.2 here). Use mass conservation
-   ({prf:ref}`thm-mass-conservation` in {doc}`08_mean_field`) and differentiation
+   ({prf:ref}`thm-mass-conservation` in {doc}`/source/3_fractal_gas/appendices/08_mean_field`) and differentiation
    under the integral sign with $C^4$ density to show $r, Z \in C^4([t_0,t_1])$.
 4. **Uniform derivative bounds**: Use the confining envelope and bounded core
    (Safe Harbor + decorated Gibbs) to bound derivatives uniformly on the window.
 
 #### A3 (QSD sampling): stationarity and density form
 
-1. **Existence/uniqueness**: Use {doc}`06_convergence` (finite-$N$ QSD) plus
-   {doc}`09_propagation_chaos` (mean-field limit) to identify the QSD density
+1. **Existence/uniqueness**: Use {doc}`/source/3_fractal_gas/appendices/06_convergence` (finite-$N$ QSD) plus
+   {doc}`/source/3_fractal_gas/appendices/09_propagation_chaos` (mean-field limit) to identify the QSD density
    $\rho_{\mathrm{adaptive}}(\cdot,t)$ on each time slice.
 2. **Gibbs structure**: Apply {prf:ref}`thm-decorated-gibbs` to write
    $\rho_0(x) \propto e^{-U_{\mathrm{eff}}/T_{\mathrm{sys}}}\,\Xi(x)$ and match
    the QSD density used in the volume measure reweighting
    ({prf:ref}`def-cst-volume`).
 3. **Ergodicity**: Combine exchangeability and uniqueness
-   ({prf:ref}`thm-qsd-exchangeability` in {doc}`12_qsd_exchangeability_theory`)
+   ({prf:ref}`thm-qsd-exchangeability` in {doc}`/source/3_fractal_gas/appendices/12_qsd_exchangeability_theory`)
    with LSI mixing (A4) to obtain slice-wise ergodic sampling on the window.
 
 #### A4 (Mixing): LSI and concentration
 
 1. **N-uniform LSI**: Use {prf:ref}`thm-n-uniform-lsi-exchangeable`
-   ({doc}`12_qsd_exchangeability_theory`) and the KL convergence proof
-   ({prf:ref}`thm-kl-convergence-euclidean` in {doc}`15_kl_convergence`) to
+   ({doc}`/source/3_fractal_gas/appendices/12_qsd_exchangeability_theory`) and the KL convergence proof
+   ({prf:ref}`thm-kl-convergence-euclidean` in {doc}`/source/3_fractal_gas/appendices/15_kl_convergence`) to
    obtain an LSI constant independent of $N$ on the alive core.
-2. **Hypocoercive smoothing**: Use {doc}`10_kl_hypocoercive` to pass LSI from
+2. **Hypocoercive smoothing**: Use {doc}`/source/3_fractal_gas/appendices/10_kl_hypocoercive` to pass LSI from
    the discrete chain to the continuous-time generator.
 3. **LLN and exponential mixing**: Apply the standard LSI $\Rightarrow$
    hypercontractivity $\Rightarrow$ exponential decay of correlations pathway
@@ -755,14 +755,14 @@ assumptions are introduced; each item names the exact proof objects to cite.
    (invert the $O(N^{-1/2})$ mean-field rate). This yields $\varepsilon(N)\to 0$.
 3. **Parameter identification**: Set $\varepsilon := R_{\mathrm{loc}}=\min(\rho,\varepsilon_c)$
    using the localization/coherence scales from the Fractal Set parameters
-   ({doc}`/3_fractal_gas/2_fractal_set/01_fractal_set`), and take the continuum limit with $\rho,\varepsilon_c \to 0$
+   ({doc}`/source/3_fractal_gas/2_fractal_set/01_fractal_set`), and take the continuum limit with $\rho,\varepsilon_c \to 0$
    while keeping macroscopic scales fixed.
 
 :::{prf:definition} Interior Episodes and Boundary Bias
 :label: def-fractal-gas-interior-episodes
 
 Let $\mathcal{X}_{\mathrm{core}}\subset\mathcal{X}$ be the compact alive core guaranteed by the
-Safe Harbor/confining envelope (Section 2; {doc}`/3_fractal_gas/appendices/07_discrete_qsd`). For time-dependent metrics,
+Safe Harbor/confining envelope (Section 2; {doc}`/source/3_fractal_gas/appendices/07_discrete_qsd`). For time-dependent metrics,
 write $\mathrm{dist}_{g_{R,t}}(x,\partial\mathcal{X}_{\mathrm{core}})$ for the slice-wise
 geodesic boundary distance induced by $g_R(\cdot,t)$ (set to $+\infty$ if
 $\partial\mathcal{X}_{\mathrm{core}}=\varnothing$). Define
@@ -1231,7 +1231,7 @@ The key difference is that the Fractal Set is classical and stochastic, not quan
 5. Meyer, D.A. (1988) *The Dimension of Causal Sets* (PhD thesis) {cite}`Meyer1988`
 
 ### Framework Documents
-6. {doc}`/3_fractal_gas/2_fractal_set/01_fractal_set` — Fractal Set definition and structure
+6. {doc}`/source/3_fractal_gas/2_fractal_set/01_fractal_set` — Fractal Set definition and structure
 7. {prf:ref}`def-fractal-set-cst-edges` — CST edge definition
 8. {prf:ref}`def-fractal-set-cst-axioms` — CST axioms
 9. {prf:ref}`mt:fractal-gas-lock-closure` — Lock Closure for Fractal Gas (Hypostructure)

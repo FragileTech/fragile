@@ -57,6 +57,12 @@ class GasConfigPanel(param.Parameterized):
     n_steps = param.Integer(
         default=240, bounds=(10, 10000), softbounds=(50, 1000), doc="Simulation steps"
     )
+    record_every = param.Integer(
+        default=1,
+        bounds=(1, 1000),
+        softbounds=(1, 200),
+        doc="Record every k-th step (1=all steps)",
+    )
 
     # Initialization controls
     init_offset = param.Number(default=4.5, bounds=(-6.0, 6.0), doc="Initial position offset")
@@ -121,10 +127,14 @@ class GasConfigPanel(param.Parameterized):
             "n_steps": pnw.EditableIntSlider(
                 name="n_steps", start=10, end=10000, value=self.n_steps, step=1
             ),
+            "record_every": pnw.EditableIntSlider(
+                name="record_every", start=1, end=1000, value=self.record_every, step=1
+            ),
             "viz_n_cells": pnw.EditableIntSlider(
                 name="viz_n_cells (resolution)", start=50, end=500, value=self.viz_n_cells, step=10
             ),
         }
+        self._widget_links: set[str] = set()
 
         # Callbacks for external listeners
         self._on_simulation_complete: list[Callable[[RunHistory], None]] = []
@@ -178,11 +188,11 @@ class GasConfigPanel(param.Parameterized):
         config.kinetic_op.viscous_neighbor_penalty = 0.9
 
         # Companion selection (separate epsilon for diversity and cloning)
-        config.companion_selection.method = "cloning"
+        config.companion_selection.method = "softmax"
         config.companion_selection.epsilon = 2.80  # epsilon_d
         config.companion_selection.lambda_alg = 1.0
         config.companion_selection.exclude_self = True
-        config.companion_selection_clone.method = "cloning"
+        config.companion_selection_clone.method = "softmax"
         config.companion_selection_clone.epsilon = 1.68419  # epsilon_clone
         config.companion_selection_clone.lambda_alg = 1.0
         config.companion_selection_clone.exclude_self = True
@@ -255,14 +265,14 @@ class GasConfigPanel(param.Parameterized):
         """Create default operator instances with sensible defaults for multimodal exploration."""
         # Companion selection
         self.companion_selection = CompanionSelection(
-            method="uniform",
+            method="softmax",
             epsilon=0.5,
             lambda_alg=0.2,
         )
 
         # Companion selection for cloning (separate instance, allows different epsilon)
         self.companion_selection_clone = CompanionSelection(
-            method="uniform",
+            method="softmax",
             epsilon=0.5,
             lambda_alg=0.2,
         )
@@ -393,6 +403,11 @@ class GasConfigPanel(param.Parameterized):
         Raises:
             ValueError: If parameters are invalid
         """
+        for name in ("n_steps", "record_every"):
+            widget = self._widget_overrides.get(name)
+            if widget is not None and hasattr(widget, "value"):
+                setattr(self, name, widget.value)
+
         # Create bounds
         bounds_extent = float(self.bounds_extent)
         low = torch.full((self.dims,), -bounds_extent, dtype=torch.float32)
@@ -430,7 +445,12 @@ class GasConfigPanel(param.Parameterized):
         v_init = torch.randn(self.gas_params["N"], self.dims) * float(self.init_velocity_scale)
 
         # Run simulation
-        history = gas.run(self.n_steps, x_init=x_init, v_init=v_init)
+        history = gas.run(
+            self.n_steps,
+            x_init=x_init,
+            v_init=v_init,
+            record_every=int(self.record_every),
+        )
 
         # Store history and notify listeners
         self.history = history
@@ -444,6 +464,23 @@ class GasConfigPanel(param.Parameterized):
         widgets = {
             name: self._widget_overrides[name] for name in names if name in self._widget_overrides
         }
+        for name, widget in widgets.items():
+            if hasattr(widget, "value"):
+                widget.value = getattr(self, name)
+                if name not in self._widget_links:
+                    widget.param.watch(
+                        lambda e, param_name=name: setattr(self, param_name, e.new),
+                        "value",
+                    )
+                    self.param.watch(
+                        lambda e, widget_ref=widget: (
+                            None
+                            if getattr(widget_ref, "value", None) == e.new
+                            else setattr(widget_ref, "value", e.new)
+                        ),
+                        name,
+                    )
+                    self._widget_links.add(name)
         return pn.Param(
             self.param,
             parameters=names,
@@ -526,7 +563,7 @@ class GasConfigPanel(param.Parameterized):
         # Add widgets to column
         general_panel = pn.Column(
             n_slider,
-            self._build_param_panel(["n_steps"]),
+            self._build_param_panel(["n_steps", "record_every"]),
             enable_cloning_cb,
             enable_kinetic_cb,
             pbc_cb,
@@ -540,8 +577,10 @@ class GasConfigPanel(param.Parameterized):
             self.cloning.__panel__(),
             pn.pane.Markdown("#### Fitness Potential"),
             self.fitness_op.__panel__(),
-            pn.pane.Markdown("#### Companion Selection"),
+            pn.pane.Markdown("#### Companion Selection (distance)"),
             self.companion_selection.__panel__(),
+            pn.pane.Markdown("#### Companion Selection (clone)"),
+            self.companion_selection_clone.__panel__(),
             sizing_mode="stretch_width",
         )
 

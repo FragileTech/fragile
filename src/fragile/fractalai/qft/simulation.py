@@ -70,7 +70,7 @@ class OperatorConfig:
     beta_curl: float = 0.0
     use_velocity_squashing: bool = False
     V_alg: float = float("inf")
-    companion_method: str = "cloning"
+    companion_method: str = "softmax"
     companion_epsilon: float = 2.12029
     companion_epsilon_clone: float = 1.68419
     lambda_alg: float = 1.0
