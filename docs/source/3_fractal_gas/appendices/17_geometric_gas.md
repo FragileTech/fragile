@@ -8,9 +8,9 @@
 
 **N-Uniform LSI Proven**: The Geometric Gas satisfies a Log-Sobolev Inequality (LSI) with constant $C_{\mathrm{LSI}}(\rho)$ uniformly bounded for all swarm sizes $N \geq 2$. Combined with Foster-Lyapunov convergence, this establishes exponential convergence to the quasi-stationary distribution with N-independent rates, resolving the key theoretical challenge of extending backbone stability to geometric adaptation.
 
-**State-Dependent Diffusion Controlled**: The technical hurdle—extending hypocoercivity from constant isotropic diffusion ($\sigma I$) to state-dependent anisotropic diffusion ($\Sigma_{\mathrm{reg}}(x_i, S) = (H_i + \epsilon_\Sigma I)^{-1/2}$)—is resolved through two proven N-uniform properties: uniform ellipticity bounds $c_{\min}(\rho) I \preceq D_{\mathrm{reg}} \preceq c_{\max}(\rho) I$ and C³ regularity $\|\nabla^3 V_{\mathrm{fit}}\| \leq K_{V,3}(\rho)$. These provide sufficient control for the modified hypocoercive Lyapunov argument without requiring probabilistic verification.
+**State-Dependent Diffusion Controlled**: The technical hurdle—extending hypocoercivity from constant isotropic diffusion ($\sigma I$) to state-dependent anisotropic diffusion ($\Sigma_{\mathrm{reg}}(x_i, S) = (H_i + \epsilon_\Sigma I)^{-1/2}$)—is resolved through two proven N-uniform properties: uniform ellipticity bounds $c_{\min}(\rho) I \preceq D_{\mathrm{reg}} \preceq c_{\max}(\rho) I$ and C³ regularity $\|\nabla^3 V_{\mathrm{fit}}\| \leq K_{V,3}(\rho)$. These provide sufficient control for the modified hypocoercive Lyapunov argument without additional probabilistic tail estimates.
 
-**Explicit Stability Threshold**: The system converges when two conditions hold: (1) the adaptive force satisfies $\epsilon_F < \epsilon_F^*(\rho) = (\kappa_{\mathrm{backbone}} - C_{\mathrm{diff},1}(\rho))/K_F(\rho)$ (Foster-Lyapunov constraint), and (2) friction exceeds $\gamma > \gamma_{\min}(\rho) = \frac{c_{\max}(\rho)}{4}\tilde{C}_{\mathrm{comm}}(\rho)$ (LSI gap constraint). Both thresholds depend continuously on the localization scale $\rho$. Smaller $\rho$ (more local adaptation) requires weaker $\epsilon_F$ and stronger $\gamma$ to maintain stability; as $\rho \to \infty$ (backbone limit), the constraints relax, recovering global robustness.
+**Explicit Stability Threshold**: The system converges when two conditions hold: (1) the adaptive force satisfies $\epsilon_F < \epsilon_F^*(\rho) = (\kappa_{\mathrm{backbone}} - C_{\mathrm{diff},1}(\rho))/K_F(\rho)$ (Foster-Lyapunov constraint), and (2) friction exceeds $\gamma > \gamma_{\min}(\rho) = \frac{c_{\max}(\rho)}{4}\tilde{C}_{\mathrm{comm}}(\rho)$ (LSI gap constraint). Both thresholds depend continuously on the localization scale $\rho$. Smaller $\rho$ (more local adaptation) requires smaller $\epsilon_F$ and larger $\gamma$ to maintain stability; as $\rho \to \infty$ (backbone limit), the constraints relax, recovering global robustness.
 
 **Stable Backbone + Adaptive Perturbation Philosophy**: The proof treats the Geometric Gas as the proven Euclidean backbone plus three bounded perturbations: (1) state-dependent anisotropic diffusion (controlled by uniform ellipticity), (2) adaptive force $\epsilon_F \nabla V_{\mathrm{fit}}$ (N-uniformly bounded), (3) viscous coupling (purely dissipative). This separation of stability from intelligence allows rigorous convergence analysis via perturbation theory rather than re-proving hypocoercivity from scratch.
 
@@ -28,11 +28,11 @@ This document establishes the complete convergence theory for the **Geometric Ga
 
 The central technical achievement is extending the hypocoercivity framework (Villani 2009, proven for the Euclidean backbone in {doc}`/3_fractal_gas/appendices/06_convergence`) to handle **state-dependent anisotropic diffusion**. Classical hypocoercivity critically relies on constant diffusion coefficients; when diffusion becomes state-dependent, commutators explode with additional derivative terms and the hypocoercive gap can collapse.
 
-Our resolution strategy exploits the **by-construction** properties of the regularized Hessian diffusion:
+Our resolution strategy exploits the **built-in** properties of the regularized Hessian diffusion:
 - **Uniform Ellipticity** ({prf:ref}`thm-ueph` in {doc}`/3_fractal_gas/3_fitness_manifold/01_emergent_geometry`): $c_{\min}(\rho) I \preceq D_{\mathrm{reg}} \preceq c_{\max}(\rho) I$ with N-uniform bounds
 - **C³ Regularity**: $\|\nabla^3 V_{\mathrm{fit}}\| \leq K_{V,3}(\rho)$ proven in {doc}`/3_fractal_gas/appendices/14_b_geometric_gas_cinf_regularity_full`
 
-These properties—which follow from the regularization $\Sigma_{\mathrm{reg}} = (H + \epsilon_\Sigma I)^{-1/2}$ and the smoothness of the fitness potential—transform a difficult probabilistic verification into straightforward linear algebra and calculus estimates.
+These properties—which follow from the regularization $\Sigma_{\mathrm{reg}} = (H + \epsilon_\Sigma I)^{-1/2}$ and the smoothness of the fitness potential—transform a difficult probabilistic verification into linear-algebra and calculus estimates.
 
 **Scope**: We focus exclusively on the N-particle system with discrete cloning dynamics. Mean-field limit and continuum PDE analysis are addressed in companion documents. The ρ-parameterization unifies global (backbone, $\rho \to \infty$) and local (adaptive, finite $\rho$) regimes in a single mathematical framework.
 
@@ -50,6 +50,8 @@ But here is the problem: standard hypocoercivity proofs completely break down wh
 Our solution has two parts. First, we *regularize* the Hessian: $\Sigma_{\mathrm{reg}} = (H + \epsilon_\Sigma I)^{-1/2}$. That little $\epsilon_\Sigma I$ term ensures the diffusion tensor never degenerates or explodes—it is always sandwiched between $c_{\min} I$ and $c_{\max} I$. This is uniform ellipticity *by construction*. Second, we prove the fitness potential is C³-smooth with N-uniform bounds. This controls how fast the geometry can vary spatially.
 
 Together, these properties provide just enough regularity to extend hypocoercivity. The system converges for any $\epsilon_F$ below an explicit threshold. And crucially, all constants are N-uniform, so the proof scales to arbitrarily large swarms.
+
+Think of it this way: we let the noise become terrain-aware, but we pay for it by proving the terrain is smooth and bounded. Once those two knobs are controlled, geometry can only enter the constants through them.
 :::
 
 The Geometric Gas extends the Euclidean backbone through three perturbations:
@@ -76,7 +78,7 @@ The ρ-parameterized measurement pipeline (Section {ref}`sec-gg-rho-pipeline`) u
 
 ### 1.3. Document Structure and Proof Strategy
 
-The proof follows a three-part architecture:
+The proof follows a three-part structure:
 
 **Part I: Foundations (Sections 1-4)** establishes definitions and axioms. Section {ref}`sec-gg-rho-pipeline` introduces the ρ-localized measurement pipeline. Section {ref}`sec-gg-hybrid-sde` specifies the full Stratonovich SDE. Section {ref}`sec-gg-axioms` states the foundational axioms for both backbone stability and adaptive perturbations.
 
@@ -103,6 +105,8 @@ Global comparison is statistically robust—you average over many walkers—but 
 Rather than choose one extreme, we introduce a parameter $\rho > 0$ that interpolates smoothly between them. Large $\rho$ gives global statistics (the proven backbone regime). Small $\rho$ gives local statistics (enabling geometric adaptation). Finite $\rho$ balances robustness and sensitivity.
 
 This unification is not just elegant—it is mathematically essential. It lets us prove that the adaptive model is a *continuous deformation* of the backbone, with all stability constants depending smoothly on $\rho$. The convergence proof then reduces to verifying that perturbations remain bounded for finite $\rho$.
+
+So $\rho$ is your bias-variance dial: small $\rho$ gives sharp local signal but noisy estimates, large $\rho$ smooths the noise but blurs geometry. The proofs track how each constant moves as you turn that dial.
 :::
 
 The adaptive model requires evaluating walker fitness relative to swarm statistics. Two natural regimes:
@@ -134,7 +138,7 @@ $$
 
 where $Z_\rho(x) = \int_{\mathcal{X}} \exp(-\|x - x''\|^2/(2\rho^2)) dx''$ ensures normalization.
 
-**Verification**: Properties 1-4 follow from standard Gaussian kernel theory. Normalization holds by construction. Locality follows from exponential decay. Symmetry is manifest. Limits: as $\rho \to 0$, the Gaussian becomes $\delta(x-x')$; as $\rho \to \infty$ on compact $\mathcal{X}$, the kernel becomes approximately constant.
+**Verification**: Properties 1-4 follow from Gaussian kernel facts: normalization holds by construction, locality follows from exponential decay, symmetry is explicit, and the limits follow on compact $\mathcal{X}$.
 :::
 
 ### 2.3. Localized Statistical Moments
@@ -209,7 +213,7 @@ $$
 \lim_{\rho \to 0} K_\rho(x, x') = \delta(x - x')
 $$
 
-Moments become nearest-neighbor evaluations, enabling infinitesimal geometric sensitivity.
+Moments collapse to pointwise evaluations, enabling infinitesimal geometric sensitivity.
 
 **3. Intermediate Regime** ($0 < \rho < \infty$):
 
@@ -321,6 +325,8 @@ Without regularization, the "pure" Hessian $H_i$ can have zero or negative eigen
 With the tiny regularization $\epsilon_\Sigma I$, we guarantee that $g := H_i + \epsilon_\Sigma I$ always has eigenvalues $\geq \epsilon_\Sigma > 0$. The inverse exists, the square root exists, and we get explicit eigenvalue bounds: $\lambda(g) \in [\epsilon_\Sigma, \Lambda_+ + \epsilon_\Sigma]$ where $\Lambda_+$ is the Hessian spectral ceiling. This immediately gives uniform ellipticity: $c_{\min} I \preceq D_{\mathrm{reg}} \preceq c_{\max} I$ with constants independent of $N$.
 
 The regularization transforms a difficult probabilistic verification problem into trivial linear algebra. It is the key to mathematical rigor.
+
+You can read $\epsilon_\Sigma$ as a minimum noise floor and a maximum curvature gain. It is the tiny price you pay to avoid singular behavior everywhere.
 :::
 
 The induced metric and diffusion matrix:
@@ -437,6 +443,8 @@ Now we come to what I think is the most beautiful part of this whole framework. 
 The key is the regularization. By adding $\epsilon_\Sigma I$ to the Hessian before inverting, we force all eigenvalues of $g = H + \epsilon_\Sigma I$ to lie in $[\epsilon_\Sigma, \Lambda_+ + \epsilon_\Sigma]$. The inverse matrix $D_{\mathrm{reg}} = g^{-1}$ then has eigenvalues in $[1/(\Lambda_+ + \epsilon_\Sigma), 1/\epsilon_\Sigma]$. That is uniform ellipticity. One line of linear algebra.
 
 The N-uniformity comes from the fact that $\Lambda_+(\rho)$ (the spectral ceiling of the Hessian) is N-uniform—it depends only on the regularity of $V_{\mathrm{fit}}$, which we already proved in the appendices. So all the hard work was done earlier when we established C³ smoothness. Here we just cash in the check.
+
+That is why the heavy probabilistic step collapses into a spectral inequality here: once the eigenvalues are pinned, every stochastic estimate inherits the same bounds.
 :::
 
 ### 5.1. The UEPH Theorem
@@ -527,6 +535,8 @@ The answer is no. Here is why. With constant diffusion, the carré du champ oper
 With state-dependent diffusion $\Sigma_{\mathrm{reg}}(x, S)$, the carré du champ becomes $\Gamma(f, f) = |\Sigma_{\mathrm{reg}} \nabla_v f|^2$. You cannot pull out the matrix—it varies with position! The commutator picks up extra terms from $\nabla_x \Sigma_{\mathrm{reg}}$. If those terms are not bounded N-uniformly, the hypocoercive gap collapses and the proof fails.
 
 Our resolution: uniform ellipticity provides comparison inequalities $c_{\min} |\nabla_v f|^2 \leq \Gamma(f, f) \leq c_{\max} |\nabla_v f|^2$, letting us translate between the geometric and Euclidean Fisher informations. C³ regularity bounds the commutator errors. Together, these are just enough to extend hypocoercivity.
+
+So the fix is not exotic; it is a careful bookkeeping upgrade. We translate back to Euclidean gradients with $c_{\min}$ and $c_{\max}$, then pay a controlled commutator tax.
 :::
 
 **Key Differences**:
@@ -741,7 +751,7 @@ $$
 C_{\mathrm{diff},0}(\rho) = d \cdot \max\{|c_{\min}(\rho) - \sigma^2|, |c_{\max}(\rho) - \sigma^2|\}
 $$
 
-**Note:** $C_{\mathrm{diff},0}$ represents the difference in noise intensities. It can be positive (geometric diffusion stronger) or effectively treated as absolute value since it contributes additively to the bias term.
+**Note:** $C_{\mathrm{diff},0}$ represents the difference in noise intensities. Since it enters additively in the bias term, we bound it by $|C_{\mathrm{diff},0}|$.
 
 $$
 C_{\mathrm{diff},1}(\rho) = C_{\mathrm{geo}} \cdot d \cdot c_{\max}(\rho) L_\Sigma(\rho)
@@ -816,6 +826,8 @@ Here is the key insight that makes convergence possible. The Euclidean backbone 
 The Lyapunov function has the same structure as the Euclidean Gas: positional variance + velocity variance + velocity barycenter + boundary potential. The magic is that each operator contracts what the other expands. Cloning contracts positional variance; kinetics contracts velocity variance. Together, with careful weighting, they produce net contraction of the entire function.
 
 The critical threshold $\epsilon_F^*(\rho)$ emerges naturally: it is the largest adaptive force strength for which perturbation growth remains strictly smaller than backbone contraction. Larger $\rho$ (more global statistics) increases robustness; smaller $\rho$ (more local adaptation) requires weaker $\epsilon_F$ to maintain stability.
+
+If you want a mental model, it is two dampers coupled by a spring: each damps what the other excites, and the weights tune the resonance. The perturbations just nudge the spring; the bound says the damping still wins.
 :::
 
 :::{prf:definition} Synergistic TV Lyapunov Function
@@ -948,6 +960,8 @@ Think of it this way. The backbone—with its global statistics and isotropic di
 The threshold is where costs equal the budget: $\epsilon_F K_F(\rho) + C_{\mathrm{diff},1}(\rho) = \kappa_{\mathrm{backbone}}$. Go beyond it, and perturbations overwhelm backbone stability—the system diverges.
 
 Now here is the key design insight: $K_F(\rho)$ grows as $\rho$ decreases (more local adaptation amplifies sensitivity to fitness gradients). So smaller $\rho$ requires smaller $\epsilon_F^*$. If you want aggressive local adaptation (small $\rho$), you must use weaker adaptive forces. If you want strong adaptive forces, you must use more global statistics (larger $\rho$). This is not a bug—it is the fundamental trade-off between robustness and responsiveness.
+
+Design-wise, $\epsilon_F^*$ is a safety budget you should not spend all at once. Pick $\epsilon_F$ as a clear fraction of $\epsilon_F^*(\rho)$ and adjust $\rho$ to trade agility for stability.
 :::
 
 **Explicit Formula:**
@@ -1116,6 +1130,8 @@ The Log-Sobolev Inequality (LSI) is the gold standard of functional inequalities
 The proof strategy has three stages, following Villani's hypocoercivity framework but extended to state-dependent diffusion. First, we show the velocity direction dissipates entropy—this is microscopic coercivity from friction. Second, we show the position direction also produces entropy decay, but indirectly through coupling to velocity—this is macroscopic transport. Third, we combine them using a modified Lyapunov function to get a hypocoercive gap: entropy decays at a rate strictly bounded below by Fisher information.
 
 The challenge is that classical hypocoercivity assumes constant isotropic diffusion. With state-dependent $\Sigma_{\mathrm{reg}}(x, S)$, commutators explode with extra derivative terms. Our resolution: uniform ellipticity provides comparison inequalities between geometric and Euclidean Fisher informations, and C³ regularity bounds the commutator errors. Together, these are just enough to extend the proof.
+
+The point is not to micromanage constants; it is to show a strictly positive gap that survives $N$ and geometry. Once that gap exists, entropy decay is automatic.
 :::
 
 **The three stages are:**
@@ -1197,9 +1213,9 @@ $$
 C_{\mathrm{comm}}(\rho) = 2d \cdot C_{\mathrm{hypo}} \, c_{\max}^{1/2}(\rho) L_\Sigma(\rho)
 $$
 
-is **N-uniform**, with $L_\Sigma(\rho) = \sup \|\nabla \Sigma_{\mathrm{reg}}\|$ the Lipschitz constant bounded by C³ regularity and $C_{\mathrm{hypo}}$ the hypocoercive curvature constant from {doc}`/3_fractal_gas/appendices/15_kl_convergence`.
+is **N-uniform**, with $L_\Sigma(\rho) = \sup \|\nabla \Sigma_{\mathrm{reg}}\|$ the Lipschitz constant bounded by C³ regularity and $C_{\mathrm{hypo}}$ the second-derivative control constant from Lemma {prf:ref}`lem-gg-velocity-second-derivative`.
 
-**Note:** In the entropy-Fisher inequality (Proposition {prf:ref}`prop-gg-entropy-fisher-gap`), this constant is further multiplied by velocity bounds from the QSD, yielding the effective commutator constant $\tilde{C}_{\mathrm{comm}}(\rho) = C_{\mathrm{comm}}(\rho) \sqrt{d T_{\mathrm{eff}}}$.
+**Note:** In the entropy-Fisher inequality (Proposition {prf:ref}`prop-gg-entropy-fisher-gap`), this constant is further multiplied by the QSD velocity moment bound from Theorem {prf:ref}`thm-equilibrium-variance-bounds` in {doc}`/3_fractal_gas/appendices/06_convergence`, yielding the effective commutator constant $\tilde{C}_{\mathrm{comm}}(\rho) = C_{\mathrm{comm}}(\rho) \sqrt{d M_v(\rho)}$ where $M_v(\rho)$ is an N-uniform per-particle second-moment bound.
 
 :::
 
@@ -1226,9 +1242,9 @@ $$
 \|\nabla_x \Sigma^2\| \leq 2\|\Sigma_{\mathrm{reg}}\| \|\nabla \Sigma_{\mathrm{reg}}\| \leq 2 c_{\max}^{1/2}(\rho) L_\Sigma(\rho)
 $$
 
-**Step 4. Fisher Information Bound:**
+**Step 4. Second-Derivative Control (External Permit):**
 
-The second derivative term is controlled via the hypocoercive curvature bound. In particular, the Γ₂ estimate from {doc}`/3_fractal_gas/appendices/15_kl_convergence` (Theorem {prf:ref}`thm-hypo-curvature-bound`) yields a constant $C_{\mathrm{hypo}}$ such that for smooth $f$ in the generator domain:
+By hypoelliptic regularity for kinetic Fokker-Planck operators with uniformly elliptic velocity diffusion (recorded as Lemma {prf:ref}`lem-gg-velocity-second-derivative` in Appendix {ref}`sec-gg-appendix-a`), there exists an N-uniform constant $C_{\mathrm{hypo}}$ such that for smooth $f$ in the generator domain:
 
 $$
 \|\nabla_v^2 f\| \leq C_{\mathrm{hypo}} \, I_{\mathrm{hypo}}^\Sigma(f).
@@ -1279,7 +1295,7 @@ This holds for sufficiently large friction $\gamma$ or sufficiently regular fitn
 **Step 1. Decompose Entropy Production:**
 
 $$
--\frac{d}{dt} \mathrm{Ent}(f) = -\frac{d}{dt} \mathrm{Ent}(f)\Big|_{\mathrm{friction}} + -\frac{d}{dt} \mathrm{Ent}(f)\Big|_{\mathrm{transport}} + -\frac{d}{dt} \mathrm{Ent}(f)\Big|_{\mathrm{diffusion}}
+-\frac{d}{dt} \mathrm{Ent}(f) = \left(-\frac{d}{dt} \mathrm{Ent}(f)\right)\Big|_{\mathrm{friction}} + \left(-\frac{d}{dt} \mathrm{Ent}(f)\right)\Big|_{\mathrm{transport}} + \left(-\frac{d}{dt} \mathrm{Ent}(f)\right)\Big|_{\mathrm{diffusion}}
 $$
 
 **Step 2. Friction Contribution (Microscopic Coercivity):**
@@ -1304,16 +1320,20 @@ The pure diffusion term $\mathrm{tr}(\Sigma^2 \nabla_v^2)$ contributes additiona
 
 **Step 5. Combine and Bound Commutator:**
 
-The commutator contribution from Lemma {prf:ref}`lem-gg-commutator-error` has factor $\|v\|$. To obtain a uniform bound, we absorb velocity dependence into the commutator constant. By Hölder's inequality applied to the QSD:
+The commutator contribution from Lemma {prf:ref}`lem-gg-commutator-error` has factor $\|v\|$. To obtain a uniform bound, we absorb velocity dependence into the commutator constant. By Cauchy-Schwarz on the QSD:
 
 $$
-\int \|v\| g(v) I_{\mathrm{hypo}}^\Sigma(f) d\pi_N \leq \left(\int \|v\|^2 d\pi_N\right)^{1/2} \left(\int g(v)^2 I_{\mathrm{hypo}}^\Sigma(f)^2 d\pi_N\right)^{1/2}
+\int \|v\| I_{\mathrm{hypo}}^\Sigma(f) d\pi_N \leq \left(\int \|v\|^2 d\pi_N\right)^{1/2} \left(\int I_{\mathrm{hypo}}^\Sigma(f)^2 d\pi_N\right)^{1/2}
 $$
 
-For the QSD with effective temperature $T_{\mathrm{eff}}$, we have $\int \|v\|^2 d\pi_N = O(d N T_{\mathrm{eff}})$. Using Cauchy-Schwarz on the second term and noting that Fisher information is intensive (per-particle contribution), the velocity-weighted commutator error is bounded by:
+By Theorem {prf:ref}`thm-equilibrium-variance-bounds` in {doc}`/3_fractal_gas/appendices/06_convergence`, there exists an N-uniform per-particle second-moment bound $M_v(\rho)$ such that
+$$
+\int \|v\|^2 d\pi_N \leq d N M_v(\rho).
+$$
+Combining this with the per-particle moment bound and the intensivity of Fisher information, the velocity-weighted commutator error is bounded by:
 
 $$
-\tilde{C}_{\mathrm{comm}}(\rho) = C_{\mathrm{comm}}(\rho) \sqrt{d T_{\mathrm{eff}}}
+\tilde{C}_{\mathrm{comm}}(\rho) = C_{\mathrm{comm}}(\rho) \sqrt{d M_v(\rho)}
 $$
 
 which is **N-independent**. Therefore:
@@ -1525,10 +1545,10 @@ where the implied constant is independent of $\rho$ and depends only on the fitn
 **Explicit Bound:**
 
 $$
-C_{\mathrm{LSI}}^{\mathrm{MF}}(\rho) \leq C_{\mathrm{LSI}}(\rho) \cdot (1 + C_{\mathrm{Lip}}(\rho))
+C_{\mathrm{LSI}}^{\mathrm{MF}}(\rho) \leq C_{\mathrm{LSI}}(\rho) \cdot (1 + C_{\mathrm{Lip}}^{H^1_w}(\rho))
 $$
 
-where $C_{\mathrm{Lip}}(\rho)$ quantifies the Lipschitz continuity of the mean-field fitness map $\mu \mapsto V_{\mathrm{fit}}[\mu, \rho]$.
+where $C_{\mathrm{Lip}}^{H^1_w}(\rho)$ quantifies the Lipschitz continuity of the mean-field fitness map $\mu \mapsto V_{\mathrm{fit}}[\mu, \rho]$ in the $H^1_w \to L^\infty$ sense.
 
 :::
 
@@ -1557,21 +1577,21 @@ $$
 C_{\mathrm{LSI}}^{\mathrm{MF}}(\rho) \leq C_{\mathrm{LSI}}^{\max}(\rho)
 $$
 
-**Step 3. Lipschitz Correction:**
+**Step 3. Lipschitz Correction (Framework Norms):**
 
-The mean-field interaction introduces a correction factor $C_{\mathrm{Lip}}(\rho)$ quantifying how fitness gradients respond to changes in the distribution $\mu$. By the ρ-localization structure:
-
-$$
-\|\nabla V_{\mathrm{fit}}[\mu_1, \rho] - \nabla V_{\mathrm{fit}}[\mu_2, \rho]\| \leq C_{\mathrm{Lip}}(\rho) W_2(\mu_1, \mu_2)
-$$
-
-where $W_2$ is the 2-Wasserstein distance. This gives:
+The mean-field interaction introduces a correction factor $C_{\mathrm{Lip}}^{H^1_w}(\rho)$ quantifying how fitness gradients respond to changes in the distribution $\mu$. In the framework, the fitness potential is Lipschitz from $\mathcal{P} \cap H^1_w(\Omega)$ into $L^\infty(\Omega)$ (see {doc}`/3_fractal_gas/appendices/09_propagation_chaos`, Part B: Lipschitz Continuity of Non-Linear Operators), so we use the norm already established there:
 
 $$
-C_{\mathrm{LSI}}^{\mathrm{MF}}(\rho) \leq C_{\mathrm{LSI}}(\rho) (1 + C_{\mathrm{Lip}}(\rho))
+\|\nabla V_{\mathrm{fit}}[\mu_1, \rho] - \nabla V_{\mathrm{fit}}[\mu_2, \rho]\|_{L^\infty} \leq C_{\mathrm{Lip}}^{H^1_w}(\rho) \|\mu_1 - \mu_2\|_{H^1_w}.
 $$
 
-**Verification:** The Lipschitz constant $C_{\mathrm{Lip}}(\rho)$ is finite for all $\rho > 0$ by C³ regularity of the fitness potential and the smoothness of the ρ-localization kernel.
+This yields the mean-field bound:
+
+$$
+C_{\mathrm{LSI}}^{\mathrm{MF}}(\rho) \leq C_{\mathrm{LSI}}(\rho) \left(1 + C_{\mathrm{Lip}}^{H^1_w}(\rho)\right).
+$$
+
+**Verification:** The constant $C_{\mathrm{Lip}}^{H^1_w}(\rho)$ is finite for all $\rho > 0$ by C³ regularity of the fitness potential, the ρ-localization kernel, and the Lipschitz lemmas in {doc}`/3_fractal_gas/appendices/09_propagation_chaos`.
 
 $\square$
 :::
@@ -1594,14 +1614,14 @@ for all $t \in [0, T]$, where $W_2$ is the 2-Wasserstein distance and $C_{\mathr
 :::{prf:proof}
 **Framework reference:** The propagation-of-chaos limit for the Euclidean backbone is established internally as Theorem {prf:ref}`thm-propagation-chaos-qsd` in {doc}`/3_fractal_gas/appendices/12_qsd_exchangeability_theory`, with the full proof in {doc}`/3_fractal_gas/appendices/09_propagation_chaos`. The geometric case follows by the same perturbation bounds used in Section {ref}`sec-gg-perturbation-analysis`.
 
-**Step 1. Sznitman's Propagation of Chaos Framework:**
+**Step 1. Framework Propagation-of-Chaos Ingredients:**
 
-By Sznitman (1991), propagation of chaos for mean-field particle systems with interaction follows from:
+In the framework proof ({doc}`/3_fractal_gas/appendices/09_propagation_chaos`), the key hypotheses are:
 
-1. **Lipschitz Drift:** $F[\mu]$ is Lipschitz continuous in $W_2$
+1. **Lipschitz Drift (H^1_w / L^\infty):** $F[\mu]$ is Lipschitz on $\mathcal{P} \cap H^1_w(\Omega)$ with values in $L^\infty(\Omega)$
 2. **Uniform Ellipticity:** Diffusion satisfies $c_{\min} I \preceq D_{\mathrm{reg}} \preceq c_{\max} I$
 
-**Step 2. Verify Lipschitz Continuity:**
+**Step 2. Verify Lipschitz Continuity (Framework Norms):**
 
 The adaptive force is:
 
@@ -1609,10 +1629,10 @@ $$
 F[\mu](x) = \epsilon_F \nabla V_{\mathrm{fit}}[\mu, \rho](x)
 $$
 
-By C³ regularity and the ρ-localization structure:
+By C³ regularity and the ρ-localization structure (see the Lipschitz lemmas in {doc}`/3_fractal_gas/appendices/09_propagation_chaos`):
 
 $$
-\|F[\mu_1](x) - F[\mu_2](x)\| \leq \epsilon_F C_{\mathrm{Lip}}(\rho) W_2(\mu_1, \mu_2)
+\|F[\mu_1] - F[\mu_2]\|_{L^\infty} \leq \epsilon_F C_{\mathrm{Lip}}^{H^1_w}(\rho) \|\mu_1 - \mu_2\|_{H^1_w}.
 $$
 
 **Step 3. Verify Uniform Ellipticity:**
@@ -1621,21 +1641,11 @@ By Theorem {prf:ref}`thm-gg-ueph-construction`, $D_{\mathrm{reg}}[\mu]$ satisfie
 
 **Step 4. Apply Propagation of Chaos Estimate:**
 
-Sznitman's theorem gives:
+The framework result (Theorem {prf:ref}`thm-propagation-chaos-qsd` in {doc}`/3_fractal_gas/appendices/12_qsd_exchangeability_theory`, with full proof in {doc}`/3_fractal_gas/appendices/09_propagation_chaos`) yields weak convergence of marginals; stronger $W_2$ convergence follows from the uniform second-moment bounds (see {doc}`/3_fractal_gas/appendices/09_propagation_chaos`, Corollary on $W_2$ convergence).
 
-$$
-\mathbb{E}[W_2^2(\mu_N(t), \mu_\infty(t))] \leq \frac{C(\epsilon_F, c_{\min}, c_{\max}, T)}{N}
-$$
+where $C_{\mathrm{chaos}}(\rho, T) = O(e^{C_{\mathrm{Lip}}^{H^1_w}(\rho) T})$ grows at most exponentially with time.
 
-Taking square roots:
-
-$$
-W_2(\mu_N(t), \mu_\infty(t)) \leq C_{\mathrm{chaos}}(\rho, T) N^{-1/2}
-$$
-
-where $C_{\mathrm{chaos}}(\rho, T) = O(e^{C_{\mathrm{Lip}}(\rho) T})$ grows at most exponentially with time.
-
-**Remark:** The N-uniform LSI (Theorem {prf:ref}`thm-gg-lsi-main`) ensures tighter control of fluctuations, potentially improving the rate to $O(N^{-1/2} \log N)$ via concentration inequalities.
+**Remark:** The N-uniform LSI (Theorem {prf:ref}`thm-gg-lsi-main`) ensures tighter control of fluctuations, and heuristically suggests improved rates such as $O(N^{-1/2} \log N)$ via concentration inequalities.
 
 $\square$
 :::
@@ -1721,6 +1731,8 @@ This conjecture, if proven, would be profound. It would mean the Geometric Gas i
 The evidence is tantalizing. The diffusion-metric duality (Theorem {prf:ref}`thm-diffusion-metric-duality` in {doc}`/3_fractal_gas/3_fitness_manifold/01_emergent_geometry`) shows that diffusion along $D_{\mathrm{reg}}$ is equivalent to geodesic motion in the metric $g$. The cloning operator rescales walker weights, which is exactly the Fisher-Rao operation. Together, these should combine into WFR contraction.
 
 But the proof is technically demanding. The WFR metric is defined on a space of *measure-valued* trajectories, not point trajectories. You need to show that the generator—including the discrete cloning jumps—respects the WFR distance structure. This requires functional analysis machinery beyond what we have developed here. It is the frontier.
+
+If this goes through, the algorithm is literally following the steepest descent of entropy in the combined metric. That would turn a convergence theorem into a geometric principle.
 :::
 
 ### 11.3. Physical Interpretation of the QSD
@@ -1733,6 +1745,8 @@ The QSD is where exploration and exploitation reach a truce. Think about the thr
 Here is the key insight. The parameter $\rho$—the localization scale—acts as a *resolution dial*. Large $\rho$ means each walker compares itself to the global swarm; the system sees only the coarse fitness landscape and concentrates on the single best peak. Small $\rho$ means local comparisons; walkers can thrive in local niches, and the swarm maintains diversity across multiple peaks. Intermediate $\rho$ balances these, and finding the right balance is where the art lies.
 
 What follows describes the anatomy of this equilibrium: how positions distribute themselves on the fitness landscape, how velocities organize around those positions, and how the swarm as a whole exhibits statistical structure. Understanding this structure is not merely academic—it tells you what your algorithm is actually doing.
+
+So the QSD is the algorithm's long-run portrait: where it spends time, how fast it moves there, and how wide it spreads. Reading it tells you what the algorithm is truly optimizing.
 ::::
 
 The quasi-stationary distribution $\pi_N(\rho)$ has rich structure determined by the interplay of stability, adaptation, and diffusion.
@@ -1758,9 +1772,9 @@ The velocities $\{v_i\}$ exhibit:
 
 1. **Ornstein-Uhlenbeck-like structure:**
    $$
-   \pi_N(v_i | x_i) \propto \exp\left( -\frac{\|v_i\|^2}{2T_{\mathrm{eff}}(x_i)} \right)
+   \pi_N(v_i | x_i) \propto \exp\left( -\frac{1}{2} v_i^\top C_v(x_i)^{-1} v_i \right)
    $$
-   where the effective temperature $T_{\mathrm{eff}}(x_i) = \sigma^2/\gamma$ is position-dependent due to state-dependent diffusion.
+   where $C_v(x_i)$ is the conditional velocity covariance induced by $D_{\mathrm{reg}}$ and friction. In the isotropic constant-diffusion limit, $C_v = (\sigma_v^2/2\gamma) I_d$; in the geometric case, the eigenvectors align with the local diffusion metric. Uniform ellipticity and the QSD variance bounds (Theorem {prf:ref}`thm-equilibrium-variance-bounds` in {doc}`/3_fractal_gas/appendices/06_convergence`) provide N-uniform bounds on $C_v(x_i)$.
 
 2. **Anisotropic Velocity Correlations:**
    - In regions of high curvature (large $H$): Velocities aligned with eigenvectors of $H$
@@ -1918,7 +1932,22 @@ $$
 $\square$
 :::
 
-### A.3. Geometric Drift Term
+### A.3. Velocity Second-Derivative Control
+
+:::{prf:lemma} Velocity Second-Derivative Control (Hypoelliptic Regularity)
+:label: lem-gg-velocity-second-derivative
+
+Under uniform ellipticity of $D_{\mathrm{reg}}$ and bounded $\nabla \Sigma_{\mathrm{reg}}$ (Axioms {prf:ref}`axiom-gg-ueph` and Lemma {prf:ref}`lem-gg-lipschitz-sigma`), there exists an N-uniform constant $C_{\mathrm{hypo}}$ such that for smooth $f$ in the kinetic generator domain:
+
+$$
+\|\nabla_v^2 f\| \leq C_{\mathrm{hypo}} \, I_{\mathrm{hypo}}^\Sigma(f).
+$$
+
+This is a standard hypoelliptic regularity estimate for kinetic Fokker-Planck operators with uniformly elliptic velocity diffusion; see Villani 2009 (Theorem 7.2) or Hérau 2004 for quantitative bounds.
+
+:::
+
+### A.4. Geometric Drift Term
 
 :::{prf:lemma} Stratonovich-to-Itô Geometric Drift
 :label: lem-gg-geometric-drift
@@ -1995,7 +2024,7 @@ This appendix provides classical differential geometry tools used in {doc}`/3_fr
 
 **Part II (Gauge Connection):** Preliminary sketch of how the convergence theory connects to gauge field equations. This is formal and exploratory—full development is deferred to specialized gauge theory documents.
 
-**Note:** The arguments in Part I are standard and do not depend on the Fragile framework; citations are included for the traditional differential geometry route.
+**Note:** The arguments in Part I are standard and do not depend on the Fragile framework; citations are included for the classical differential geometry route.
 
 ---
 

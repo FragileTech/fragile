@@ -241,7 +241,7 @@ def create_app() -> pn.template.FastListTemplate:
         title="QFT Swarm Convergence Dashboard",
         sidebar=[sidebar],
         main=[main],
-        sidebar_width=420,
+        sidebar_width=435,
         main_max_width="100%",
     )
 
@@ -268,11 +268,13 @@ def create_app() -> pn.template.FastListTemplate:
         history_path_input = pn.widgets.TextInput(
             name="QFT RunHistory path",
             value=str(qft_history_path),
+            width=335,
             sizing_mode="stretch_width",
         )
         browse_button = pn.widgets.Button(
             name="Browse files...",
             button_type="default",
+            width=335,
             sizing_mode="stretch_width",
         )
         file_selector_container = pn.Column(sizing_mode="stretch_width")
@@ -280,6 +282,7 @@ def create_app() -> pn.template.FastListTemplate:
         load_button = pn.widgets.Button(
             name="Load RunHistory",
             button_type="primary",
+            width=335,
             sizing_mode="stretch_width",
         )
         load_status = pn.pane.Markdown(
