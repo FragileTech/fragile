@@ -721,13 +721,17 @@ def _extract_fit_metadata(
 
 def _extract_metric(metrics: dict[str, Any], key: str) -> float:
     if key == "d_prime_xi":
-        return float(metrics.get("observables", {}).get("d_prime_correlation", {}).get("xi", np.nan))
+        return float(
+            metrics.get("observables", {}).get("d_prime_correlation", {}).get("xi", np.nan)
+        )
     if key == "d_prime_r2":
         return float(
             metrics.get("observables", {}).get("d_prime_correlation", {}).get("r_squared", np.nan)
         )
     if key == "r_prime_xi":
-        return float(metrics.get("observables", {}).get("r_prime_correlation", {}).get("xi", np.nan))
+        return float(
+            metrics.get("observables", {}).get("r_prime_correlation", {}).get("xi", np.nan)
+        )
     if key == "r_prime_r2":
         return float(
             metrics.get("observables", {}).get("r_prime_correlation", {}).get("r_squared", np.nan)
@@ -770,15 +774,14 @@ def _build_sweep_plot(
     if dataframe.empty:
         return None
     if y_param is None:
-        plot = hv.Curve(dataframe, kdims=[x_param], vdims=[metric_key]).opts(
+        return hv.Curve(dataframe, kdims=[x_param], vdims=[metric_key]).opts(
             xlabel=x_param,
             ylabel=metric_key,
             title=f"{metric_key} vs {x_param}",
             width=700,
             height=400,
         )
-        return plot
-    plot = hv.HeatMap(dataframe, kdims=[x_param, y_param], vdims=[metric_key]).opts(
+    return hv.HeatMap(dataframe, kdims=[x_param, y_param], vdims=[metric_key]).opts(
         xlabel=x_param,
         ylabel=y_param,
         title=f"{metric_key} sweep",
@@ -786,7 +789,6 @@ def _build_sweep_plot(
         height=450,
         colorbar=True,
     )
-    return plot
 
 
 def create_app() -> pn.template.FastListTemplate:
@@ -974,7 +976,7 @@ def create_app() -> pn.template.FastListTemplate:
         )
         sweep_metric = pn.widgets.Select(
             name="Metric",
-            options={label: key for label, key in SWEEP_METRICS.items()},
+            options=dict(SWEEP_METRICS.items()),
             value="particle_baryon_mass",
         )
         sweep_min_x = pn.widgets.FloatInput(name="X min", value=0.1, step=0.1, width=120)
@@ -1292,11 +1294,7 @@ def create_app() -> pn.template.FastListTemplate:
                         fit_start, fit_stop = _resolve_fit_window(
                             analysis_settings, x_param, x_val_cast, y_param, y_val_cast
                         )
-                        if (
-                            fit_start is not None
-                            and fit_stop is not None
-                            and fit_stop < fit_start
-                        ):
+                        if fit_start is not None and fit_stop is not None and fit_stop < fit_start:
                             skipped += 1
                             row = {
                                 x_param: x_val_cast,
@@ -1307,16 +1305,14 @@ def create_app() -> pn.template.FastListTemplate:
                             }
                             if y_param:
                                 row[y_param] = y_val_cast
-                            row.update(
-                                {
-                                    "baryon_mass": np.nan,
-                                    "baryon_r2": np.nan,
-                                    "meson_mass": np.nan,
-                                    "meson_r2": np.nan,
-                                    "glueball_mass": np.nan,
-                                    "glueball_r2": np.nan,
-                                }
-                            )
+                            row.update({
+                                "baryon_mass": np.nan,
+                                "baryon_r2": np.nan,
+                                "meson_mass": np.nan,
+                                "meson_r2": np.nan,
+                                "glueball_mass": np.nan,
+                                "glueball_r2": np.nan,
+                            })
                             results.append(row)
                             continue
 
@@ -1334,16 +1330,14 @@ def create_app() -> pn.template.FastListTemplate:
                             }
                             if y_param:
                                 row[y_param] = y_val_cast
-                            row.update(
-                                {
-                                    "baryon_mass": np.nan,
-                                    "baryon_r2": np.nan,
-                                    "meson_mass": np.nan,
-                                    "meson_r2": np.nan,
-                                    "glueball_mass": np.nan,
-                                    "glueball_r2": np.nan,
-                                }
-                            )
+                            row.update({
+                                "baryon_mass": np.nan,
+                                "baryon_r2": np.nan,
+                                "meson_mass": np.nan,
+                                "meson_r2": np.nan,
+                                "glueball_mass": np.nan,
+                                "glueball_r2": np.nan,
+                            })
                             results.append(row)
                             continue
                         metrics, _arrays = result
@@ -1380,9 +1374,7 @@ def create_app() -> pn.template.FastListTemplate:
             plot = _build_sweep_plot(df, x_param, metric_key, y_param=y_param)
             sweep_plot.object = plot
             if skipped:
-                sweep_status.object = (
-                    f"**Sweep:** complete ({attempted} runs, {skipped} skipped)."
-                )
+                sweep_status.object = f"**Sweep:** complete ({attempted} runs, {skipped} skipped)."
             else:
                 sweep_status.object = f"**Sweep:** complete ({attempted} runs)."
 

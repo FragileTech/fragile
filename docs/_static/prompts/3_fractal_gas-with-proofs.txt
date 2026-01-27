@@ -14624,24 +14624,24 @@ The regularized standard deviation $\sigma'_{	ext{reg}}(V) = \sqrt{V + \sigma'^2
 
 $$
 \left|(\sigma'_{	ext{reg}})'(V)
-ight| = 
-rac{1}{2\sqrt{V + \sigma'^2_{\min}}} \le 
+ight| =
+rac{1}{2\sqrt{V + \sigma'^2_{\min}}} \le
 rac{1}{2\sigma'_{\min}} =: L_{\sigma'_{	ext{reg}}}
 
 $$
 
 $$
 \left|(\sigma'_{	ext{reg}})''(V)
-ight| = 
-rac{1}{4(V + \sigma'^2_{\min})^{3/2}} \le 
+ight| =
+rac{1}{4(V + \sigma'^2_{\min})^{3/2}} \le
 rac{1}{4\sigma'^3_{\min}} =: L_{\sigma''_{	ext{reg}}}
 
 $$
 
 $$
 \left|(\sigma'_{	ext{reg}})'''(V)
-ight| = 
-rac{3}{8(V + \sigma'^2_{\min})^{5/2}} \le 
+ight| =
+rac{3}{8(V + \sigma'^2_{\min})^{5/2}} \le
 rac{3}{8\sigma'^5_{\min}} =: L_{\sigma'''_{	ext{reg}}}
 
 $$
@@ -14650,7 +14650,7 @@ General form: For the $n$-th derivative with $n \ge 1$,
 
 $$
 \left|(\sigma'_{	ext{reg}})^{(n)}(V)
-ight| \le 
+ight| \le
 rac{(2n-1)!!}{2^n \sigma'^{(2n-1)}_{\min}}
 
 $$
@@ -14664,7 +14664,7 @@ Referenced by {prf:ref}`def-fragile-gas-algorithm`.
 Direct computation of derivatives of $\sigma'_{	ext{reg}}(V) = (V + \sigma'^2_{\min})^{1/2}$:
 
 $$
-(\sigma'_{	ext{reg}})'(V) = 
+(\sigma'_{	ext{reg}})'(V) =
 rac{1}{2}(V + \sigma'^2_{\min})^{-1/2}
 
 $$
@@ -14676,7 +14676,7 @@ rac{1}{4}(V + \sigma'^2_{\min})^{-3/2}
 $$
 
 $$
-(\sigma'_{	ext{reg}})'''(V) = 
+(\sigma'_{	ext{reg}})'''(V) =
 rac{3}{8}(V + \sigma'^2_{\min})^{-5/2}
 
 $$
@@ -16806,24 +16806,24 @@ The regularized standard deviation $\sigma'_{	ext{reg}}(V) = \sqrt{V + \sigma'^2
 
 $$
 \left|(\sigma'_{	ext{reg}})'(V)
-ight| = 
-rac{1}{2\sqrt{V + \sigma'^2_{\min}}} \le 
+ight| =
+rac{1}{2\sqrt{V + \sigma'^2_{\min}}} \le
 rac{1}{2\sigma'_{\min}} =: L_{\sigma'_{	ext{reg}}}
 
 $$
 
 $$
 \left|(\sigma'_{	ext{reg}})''(V)
-ight| = 
-rac{1}{4(V + \sigma'^2_{\min})^{3/2}} \le 
+ight| =
+rac{1}{4(V + \sigma'^2_{\min})^{3/2}} \le
 rac{1}{4\sigma'^3_{\min}} =: L_{\sigma''_{	ext{reg}}}
 
 $$
 
 $$
 \left|(\sigma'_{	ext{reg}})'''(V)
-ight| = 
-rac{3}{8(V + \sigma'^2_{\min})^{5/2}} \le 
+ight| =
+rac{3}{8(V + \sigma'^2_{\min})^{5/2}} \le
 rac{3}{8\sigma'^5_{\min}} =: L_{\sigma'''_{	ext{reg}}}
 
 $$
@@ -16832,7 +16832,7 @@ General form: For the $n$-th derivative with $n \ge 1$,
 
 $$
 \left|(\sigma'_{	ext{reg}})^{(n)}(V)
-ight| \le 
+ight| \le
 rac{(2n-1)!!}{2^n \sigma'^{(2n-1)}_{\min}}
 
 $$
@@ -16845,7 +16845,7 @@ Referenced by {prf:ref}`def-fragile-gas-algorithm`.
 Direct computation of derivatives of $\sigma'_{	ext{reg}}(V) = (V + \sigma'^2_{\min})^{1/2}$:
 
 $$
-(\sigma'_{	ext{reg}})'(V) = 
+(\sigma'_{	ext{reg}})'(V) =
 rac{1}{2}(V + \sigma'^2_{\min})^{-1/2}
 
 $$
@@ -16857,7 +16857,7 @@ rac{1}{4}(V + \sigma'^2_{\min})^{-3/2}
 $$
 
 $$
-(\sigma'_{	ext{reg}})'''(V) = 
+(\sigma'_{	ext{reg}})'''(V) =
 rac{3}{8}(V + \sigma'^2_{\min})^{-5/2}
 
 $$
@@ -38245,7 +38245,7 @@ Here $m_{\text{eq}} = \|\pi_{\text{QSD}}\|_{L^1}$ and $\beta_\star = (1 - e^{-2\
 
 **Proof**:
 
-**Step 1 (Velocity Refresh via Ornstein-Uhlenbeck Block)**  
+**Step 1 (Velocity Refresh via Ornstein-Uhlenbeck Block)**
 During a kinetic window of length $\tau_v$, the BAOAB operator evolves the velocity according to
 
 $$
@@ -38265,7 +38265,7 @@ $$
 
 Hence a single kinetic block already spreads mass over **all** velocity directions with a state-independent density floor.
 
-**Step 2 (Spatial Mollification Without Velocity Restriction)**  
+**Step 2 (Spatial Mollification Without Velocity Restriction)**
 Conditioned on any $(x_1, v_1)$ produced by Step 1, the cloning kernel
 
 $$
@@ -38284,7 +38284,7 @@ $$
 
 so positions are minorized by Lebesgue measure independently of the pre-cloning state.
 
-**Step 3 (Two-Step Doeblin Minorization)**  
+**Step 3 (Two-Step Doeblin Minorization)**
 Let $P^{(2)}$ denote “kinetic over $\tau_v$” composed with “cloning.” For any measurable $A \subseteq \Omega$,
 
 $$
@@ -38305,7 +38305,7 @@ $$
 
 with state-independent minorization measure $\nu(A) = |A|/|\Omega|$.
 
-**Step 4 (Transfer to the QSD)**  
+**Step 4 (Transfer to the QSD)**
 For the invariant quasi-stationary distribution,
 
 $$
@@ -38317,7 +38317,7 @@ $$
 
 so $\pi_{\text{QSD}}$ possesses a density bounded below by $c_\pi = \delta_2 m_{\text{eq}} / |\Omega|$ at every point of $\Omega$.
 
-**Step 5 (Smoothness)**  
+**Step 5 (Smoothness)**
 Lemma {prf:ref}`lem-linfty-full-operator` provides hypoelliptic smoothing, giving $\pi_{\text{QSD}} \in C^\infty(\Omega)$ and promoting the almost-everywhere lower bound to a pointwise one.
 
 **References**: This multi-step minorization follows the Harris/Doeblin framework for hypoelliptic diffusions (Hairer & Mattingly 2011; Villani 2009) and the QSD analysis of Champagnat & Villemonais (2016). $\square$
@@ -38386,7 +38386,7 @@ $$
 
 We split the argument into an **early-time deterministic floor** and a **late-time concentration regime**. Throughout we denote $k_t = k_t(\omega)$ the number of alive walkers and $m_a(t) = \|\rho_t\|_{L^1}$ the PDE mass.
 
-**Step 0: Deterministic floor on $[0, t_{\text{eq}}]$ via logistic ODE**  
+**Step 0: Deterministic floor on $[0, t_{\text{eq}}]$ via logistic ODE**
 The mass equation derived in {doc}`08_mean_field` reads
 
 $$
@@ -38434,7 +38434,7 @@ $$
 
 This establishes the desired floor on $[0, t_{\text{eq}}]$.
 
-**Step 1: Spectral gap for configuration observables (removing the Markov assumption on $k_t$)**  
+**Step 1: Spectral gap for configuration observables (removing the Markov assumption on $k_t$)**
 The $N$-particle process $Z_t = (z_t^{(1)}, \ldots, z_t^{(N)})$ is geometrically ergodic with spectral gap $\kappa_{\text{full}} > 0$ in $L^2(\Pi_{\text{QSD}}^{(N)})$ (Theorem 4.5 of {doc}`06_convergence`). For any observable $F : \Omega^N \to \mathbb{R}$,
 
 $$
@@ -38455,7 +38455,7 @@ where we set $\beta_{\text{gap}} := \kappa_{\text{full}} / 2$ (the second inequa
 
 This argument works directly on the full configuration process $Z_t$; no Markov property for the projected count $k_t$ is required, thereby correcting the earlier (invalid) reduction to a standalone birth-death chain.
 
-**Step 2: Finite-time concentration after equilibration**  
+**Step 2: Finite-time concentration after equilibration**
 Let $\mathcal{L}_t$ be the law of $Z_t$ starting from any initial configuration with alive mass at least $c_{\text{early}}$. By Theorem 4.5 of {doc}`06_convergence`,
 
 $$
@@ -38480,7 +38480,7 @@ $$
 
 $$
 
-**Step 3: Survival conditioning**  
+**Step 3: Survival conditioning**
 The survival estimate of Theorem {prf:ref}`thm-exponential-survival` gives
 
 $$
@@ -40197,7 +40197,7 @@ $$
 
 Write $k_s := N \|\mu_s^N\|_{L^1}$ for the number of alive walkers. The proof has two components.
 
-**Step 1: Mean-field bias control**  
+**Step 1: Mean-field bias control**
 Section 3 of {doc}`08_mean_field` (see Theorem {prf:ref}`thm-mean-field-limit-informal` and the quantitative estimates in its proof) yields
 
 $$
@@ -40208,7 +40208,7 @@ $$
 
 where $C_{\text{bias}}(t)$ depends continuously on $t$ and the model parameters. This follows from the classical propagation-of-chaos estimates (Fournier & Méléard 2004, Theorem 1.1), because the birth/death rates are globally Lipschitz on the compact phase space.
 
-**Step 2: Martingale concentration for $k_s$**  
+**Step 2: Martingale concentration for $k_s$**
 The Doob decomposition of $k_s$ reads
 
 $$
@@ -40235,7 +40235,7 @@ $$
 
 for all $s \leq t$, where $\beta_{\text{mart}} := \big(4 \Lambda t + 2\big)^{-1}$.
 
-**Step 3: Union bound and choice of parameters**  
+**Step 3: Union bound and choice of parameters**
 For any $\epsilon > 0$,
 
 $$

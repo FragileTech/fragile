@@ -11641,7 +11641,7 @@ satisfying:
 
 1. **Skew-symmetry:** $\{f_1, \ldots, f_n\}$ changes sign under transposition of any two arguments
 
-2. **Leibniz rule:** 
+2. **Leibniz rule:**
 $$
 \{f_1 g, f_2, \ldots, f_n\} = f_1\{g, f_2, \ldots, f_n\} + g\{f_1, f_2, \ldots, f_n\}
 $$
@@ -11778,7 +11778,7 @@ $$
 
 The first two equations match Definition {prf:ref}`def-bulk-drift-continuous-flow` exactly.
 
-*Proof.* 
+*Proof.*
 **Position:** $\dot{z}^k = \partial H / \partial p_k = G^{kj} p_j$ ✓
 
 **Momentum:** On a Riemannian manifold, the contact Hamilton equation includes the Christoffel connection:
@@ -11799,7 +11799,7 @@ $\square$
 The contact entropy evolution $\dot{s} = K - U - \gamma s$ has clear thermodynamic meaning:
 
 - **$K$ term:** Kinetic energy converted to heat (increases entropy)
-- **$-U$ term:** Potential energy release/absorption  
+- **$-U$ term:** Potential energy release/absorption
 - **$-\gamma s$ term:** Approach to equilibrium (entropy relaxation)
 
 At equilibrium ($\dot{s} = 0$): $s_{\text{eq}} = (K - U)/\gamma$
@@ -11900,8 +11900,8 @@ The system continuously dissipates energy while being driven by the rotational V
 The **Contact BAOAB** integrator for Definition {prf:ref}`def-stochastic-contact-hamiltonian`:
 
 1. **B** (half kick): $p \leftarrow p - \frac{h}{2}\nabla\Phi_{\text{eff}}$ + Boris rotation if $\mathcal{F} \neq 0$
-   
-2. **A** (half drift): 
+
+2. **A** (half drift):
    - $z \leftarrow \operatorname{Exp}_z\left(\frac{h}{2} G^{-1} p\right)$
    - $s \leftarrow s + \frac{h}{2}(K - \Phi_{\text{eff}} - \gamma s)$
 
