@@ -1,4 +1,4 @@
-# Mathematical Review: 01_fragile_gas_framework.md
+I wan# Mathematical Review: 01_fragile_gas_framework.md
 
 **Reviewed by:** Miau (Claude), Gemini CLI, Codex
 **Date:** 2026-01-26
