@@ -230,7 +230,7 @@ Let $\mathcal{X}_{\text{valid}}$ satisfy the conditions of {prf:ref}`axiom-domai
 2.  **Positivity:** $\varphi(x)$ is strictly positive for all $x \in \mathcal{X}_{\text{valid}}$.
 3.  **Boundary Divergence:** $\varphi(x) \to \infty$ as $x \to \partial \mathcal{X}_{\text{valid}}$.
 
-Referenced by {prf:ref}`def-boundary-potential-recall` and {prf:ref}`def-full-synergistic-lyapunov-function`.
+Referenced by {prf:ref}`def-boundary-potential-cloning` and {prf:ref}`def-full-synergistic-lyapunov-function`.
 :::
 :::{prf:proof}
 
@@ -916,7 +916,7 @@ This normalization implicitly assumes that the swarm remains viable, meaning $k_
 
 The separation between algorithmic calculations (using $k_{\text{alive}}$) and analytical tools (using $N$) is not a compromise but a hallmark of rigorous mean-field analysis. The algorithm uses the physically optimal metric for real-time decisions, while the Lyapunov function uses the mathematically tractable metric for proving convergence. Both serve their respective purposes correctly.
 
-Referenced by {prf:ref}`def-boundary-potential-recall`.
+Referenced by {prf:ref}`def-boundary-potential-cloning`.
 :::
 :::
 
@@ -1454,7 +1454,7 @@ $$
 
 where $\lambda_{\text{alg}} \geq 0$ is a fixed algorithmic parameter that controls the relative importance of velocity similarity in the pairing and selection processes.
 
-Referenced by {prf:ref}`def-greedy-pairing-algorithm` and {prf:ref}`def-spatial-pairing-operator-diversity`.
+Referenced by {prf:ref}`def-greedy-pairing-algorithm` and {prf:ref}`def-spatial-pairing-diversity-idealized`.
 :::
 
 **Physical Interpretation and Model Regimes:**
@@ -1488,7 +1488,7 @@ The foundation of the swarm's diversity measurement is the pairing of its member
 For the purposes of theoretical analysis, it is useful to model the pairing as a single, collective draw from a probability distribution over all possible perfect matchings of the alive set. This idealized model captures the physical intent of the operator—to strongly favor pairings between walkers that are close in the algorithmic space.
 
 :::{prf:definition} Spatially-Aware Pairing Operator (Idealized Model)
-:label: def-spatial-pairing-operator-diversity
+:label: def-spatial-pairing-diversity-idealized
 
 Let $\mathcal{S}_t$ be the current swarm ({prf:ref}`def-swarm-and-state-space`) state with alive set ({prf:ref}`def-alive-dead-sets`) $\mathcal{A}_t$ of size $k = |\mathcal{A}_t|$. The idealized **Spatially-Aware Pairing Operator**, denoted $\mathbb{P}_{\text{pair}}$, maps the alive set $\mathcal{A}_t$ to a probability distribution over the set of all possible perfect matchings, $\mathcal{M}_k$.
 
@@ -1525,7 +1525,7 @@ $$
 
 #### 5.1.2. Practical Implementation: The Sequential Stochastic Greedy Pairing Operator
 
-While the idealized model in {prf:ref}`def-spatial-pairing-operator-diversity` is analytically useful, its requirement to sum over all `(k-1)!!` possible perfect matchings makes it computationally intractable for any non-trivial swarm size. To ensure the algorithm is efficient, we implement a **Sequential Stochastic Greedy Pairing Operator**.
+While the idealized model in {prf:ref}`def-spatial-pairing-diversity-idealized` is analytically useful, its requirement to sum over all `(k-1)!!` possible perfect matchings makes it computationally intractable for any non-trivial swarm size. To ensure the algorithm is efficient, we implement a **Sequential Stochastic Greedy Pairing Operator**.
 
 This algorithm builds the matching iteratively. It selects an unpaired walker, computes a probability distribution over all other currently unpaired walkers based on proximity, samples a companion, and removes the new pair from the pool. This reduces the computational complexity from factorial to quadratic, making it practical for large swarms.
 
@@ -1613,7 +1613,7 @@ OUTPUT:
 :::{admonition} A Note on the Proof Structure: Idealized vs. Practical Models
 :class: note
 
-The subsequent analysis in this monograph, particularly the proofs of the Keystone Principle (Chapters 7-8) and the drift conditions (Chapters 9-11), will be conducted with respect to the idealized **Spatially-Aware Pairing Operator ({prf:ref}`def-spatial-pairing-operator-diversity`)**. This choice is made for the sake of analytical clarity, as the idealized model cleanly separates the stochastic choice of pairing from the deterministic measurement of distances.
+The subsequent analysis in this monograph, particularly the proofs of the Keystone Principle (Chapters 7-8) and the drift conditions (Chapters 9-11), will be conducted with respect to the idealized **Spatially-Aware Pairing Operator ({prf:ref}`def-spatial-pairing-diversity-idealized`)**. This choice is made for the sake of analytical clarity, as the idealized model cleanly separates the stochastic choice of pairing from the deterministic measurement of distances.
 
 This section's sole purpose is to provide a rigorous proof that our practical, computationally efficient **Sequential Stochastic Greedy Pairing Operator ({prf:ref}`def-greedy-pairing-algorithm`)** preserves the essential signal-detection properties of the idealized model. The following lemma, therefore, serves as the formal bridge connecting the theoretical analysis to the concrete implementation, assuring the reader that the conclusions drawn from the idealized model are valid for the algorithm as it is actually run.
 :::
@@ -7560,7 +7560,7 @@ We begin by recalling the structure of the boundary barrier and how it affects w
 ### 11.2.1. The Barrier Function
 
 :::{prf:definition} Boundary Potential Component (Recall)
-:label: def-boundary-potential-recall
+:label: def-boundary-potential-cloning
 
 From {prf:ref}`def-full-synergistic-lyapunov-function`, the boundary potential is:
 
@@ -9017,7 +9017,7 @@ We conclude by summarizing the main achievements of this document.
 ### 12.5.1. Theoretical Contributions
 
 :::{prf:theorem} Main Results of the Cloning Analysis (Summary)
-:label: thm-main-results-summary
+:label: thm-fg-cloning-main-results
 
 This document has established the following results for the cloning operator ({prf:ref}`def-cloning-operator-formal`) $\Psi_{\text{clone}}$:
 

@@ -377,11 +377,7 @@ class QuadraticWell(OptimBenchmark):
         bounds = TorchBounds.from_tuples([(-bounds_extent, bounds_extent)] * dims)
 
         super().__init__(
-            dims=dims,
-            function=quadratic_potential,
-            bounds=bounds,
-            alpha=alpha,
-            **kwargs
+            dims=dims, function=quadratic_potential, bounds=bounds, alpha=alpha, **kwargs
         )
 
     @staticmethod

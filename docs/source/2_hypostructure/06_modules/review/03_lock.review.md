@@ -16,35 +16,20 @@
 - Moderate: 0
 - Minor: 0
 - Notes: 0
-- Primary themes: Tactic-count references standardized to E1–E13 (including E13 in exhaustion payloads).
+- Primary themes: No issues found in this pass.
 
 ## Error log
 | ID | Location | Severity | Type | Short description |
 |---|---|---|---|---|
-| E-001 | E1–E13 tactic definitions and breached-inconclusive payload | Moderate | Notation conflict / Citation error | This module uses E1–E13, but other chapters referenced shorter ranges. **Resolved** (canonical range set to E1–E13 across the volume). |
+| — | — | — | — | No issues found. |
 
 ## Detailed findings
 
-### [E-001] Inconsistent exclusion-tactic count across the volume
-- Location: “E1–E13 Exclusion Tactics” section and breached-inconclusive payload definition
-- Severity: Moderate
-- Type: Notation conflict / Citation error
-- Claim (paraphrase): The Lock uses E1–E13 tactics, and breached-inconclusive lists {E1,…,E13} as exhausted.
-- Why this is an error in the framework: Other documents (e.g., kernel and barrier descriptions) refer to E1–E13 exhaustion. This inconsistency creates ambiguity about the completeness condition and the payload schema for K_{Cat_Hom}^{br-inc}.
-- Impact on downstream results: Implementations may disagree on the tactic set required for exhaustion, leading to mismatched certificates and reconstruction triggers.
-- Fix guidance (step-by-step):
-  1. Decide whether the exclusion tactic set is E1–E13 or E1–E13.
-  2. Update all references to the chosen count in kernel, node definitions, and lock payload schemas.
-  3. If E13 is a meta-tactic (exhaustive check), clarify its role and whether it should be included in the exhausted set.
-- Required new assumptions/permits (if any): None.
-- Framework-first proof sketch for the fix: Treat E13 as a meta-check over E1–E13, or incorporate it explicitly into the tactic list and adjust payloads accordingly.
-- Validation plan: Search the volume for “E1–E10”/“E1–E12” and standardize to E1–E13.
-
 ## Scope restrictions and clarifications
-- None beyond the tactic-set alignment.
+- None.
 
 ## Proposed edits (optional)
-- Normalize the tactic count across the volume and update the breached-inconclusive payload accordingly.
+- None.
 
 ## Open questions
-- Resolved: E13 is treated as a tactic included in the exhaustion payload (E1–E13).
+- None.

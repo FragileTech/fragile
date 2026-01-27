@@ -19,12 +19,13 @@ def run_dashboard_server(mode="standard", port=5008):
     if mode == "qft":
         sys.argv.append("--qft")
 
+    import holoviews as hv
+    import panel as pn
+
     from fragile.fractalai.experiments.gas_visualization_dashboard import (
         create_app,
         create_qft_app,
     )
-    import holoviews as hv
-    import panel as pn
 
     hv.extension("bokeh")
     pn.extension()
@@ -45,9 +46,7 @@ class TestDashboardServer:
     def test_standard_dashboard_server_starts(self):
         """Test standard dashboard server can start and serve content."""
         port = 5008
-        process = multiprocessing.Process(
-            target=run_dashboard_server, args=("standard", port)
-        )
+        process = multiprocessing.Process(target=run_dashboard_server, args=("standard", port))
 
         try:
             process.start()
@@ -67,9 +66,7 @@ class TestDashboardServer:
     def test_qft_dashboard_server_starts(self):
         """Test QFT dashboard server can start and serve content."""
         port = 5009
-        process = multiprocessing.Process(
-            target=run_dashboard_server, args=("qft", port)
-        )
+        process = multiprocessing.Process(target=run_dashboard_server, args=("qft", port))
 
         try:
             process.start()

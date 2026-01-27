@@ -1,9 +1,13 @@
 #!/usr/bin/env python
 """Test that a QFT simulation can actually run (with reduced steps for speed)."""
 
+import sys
+
 import holoviews as hv
 import torch
+
 from fragile.fractalai.experiments.gas_config_panel import GasConfigPanel
+
 
 # Initialize holoviews
 hv.extension("bokeh")
@@ -21,7 +25,7 @@ original_steps = config.n_steps
 config.n_steps = 100  # Quick test with 100 steps
 print(f"Using {config.n_steps} steps (instead of {original_steps}) for quick test")
 
-print(f"\nConfiguration:")
+print("\nConfiguration:")
 print(f"  Benchmark: {config.benchmark_name}")
 print(f"  N: {config.gas_params['N']} walkers")
 print(f"  Dimensions: {config.dims}")
@@ -37,7 +41,7 @@ try:
     history = config.run_simulation()
     print("✓ Simulation completed successfully!")
 
-    print(f"\nResults:")
+    print("\nResults:")
     print(f"  Steps: {history.n_steps}")
     print(f"  Recorded timesteps: {history.n_recorded}")
     print(f"  Walkers: {history.N}")
@@ -47,7 +51,7 @@ try:
     final_x = history.x_final[-1]  # Final positions [N, d]
     final_U = history.U_final[-1]  # Final potential energies [N]
 
-    print(f"\nFinal state statistics:")
+    print("\nFinal state statistics:")
     print(f"  Position mean: {final_x.mean(dim=0).tolist()}")
     print(f"  Position std: {final_x.std(dim=0).tolist()}")
     print(f"  Potential mean: {final_U.mean():.4f}")
@@ -69,7 +73,7 @@ try:
     if torch.allclose(expected_U, actual_U, rtol=1e-3):
         print("✓ Potential values match quadratic well formula")
     else:
-        print(f"⚠ Warning: Potential mismatch")
+        print("⚠ Warning: Potential mismatch")
         print(f"  Expected: {expected_U.mean():.4f}")
         print(f"  Actual: {actual_U.mean():.4f}")
 
@@ -82,5 +86,6 @@ try:
 except Exception as e:
     print(f"✗ Simulation failed: {e}")
     import traceback
+
     traceback.print_exc()
-    exit(1)
+    sys.exit(1)

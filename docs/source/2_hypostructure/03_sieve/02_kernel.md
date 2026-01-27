@@ -71,14 +71,14 @@ A **certificate** $K$ is a formal witness object that records the outcome of a v
 :::{prf:definition} Context
 :label: def-context
 
-The **context** $\Gamma$ is a finite multiset of certificates accumulated during a sieve run:
+The **context** $\Gamma$ is a finite **set** of certificates accumulated during a sieve run:
 
 $$
 \Gamma = \{K_{D_E}, K_{\mathrm{Rec}_N}, K_{C_\mu}, \ldots, K_{\mathrm{Cat}_{\mathrm{Hom}}}\}
 
 $$
 
-The context grows monotonically during an epoch: certificates are added but never removed (except at surgery re-entry, where context may be partially reset).
+The context grows monotonically during an epoch: certificates are added but never removed (except at surgery re-entry, where context may be partially reset). Duplicate certificates are idempotent under set union.
 
 :::
 
@@ -122,9 +122,14 @@ That is, the certificate produced by node $N_1$ with outcome $o$ logically impli
 
 For **soft checks** (where the predicate cannot be definitively verified), the sieve adopts the following policy:
 - If verification succeeds: output YES with positive certificate $K^+$
-- If verification fails: output NO with negative certificate $K^-$
-- If verification is inconclusive (UNKNOWN): output NO with uncertainty certificate $K^?$
+- If verification fails: output NO with witness certificate $K^{\mathrm{wit}}$
+- If verification is inconclusive (UNKNOWN): output NO with inconclusive certificate $K^{\mathrm{inc}}$
 This ensures the sieve is deterministic: UNKNOWN is conservatively treated as NO, routing to the barrier defense layer.
+By Binary Certificate Logic ({prf:ref}`def-typed-no-certificates`), the NO certificate is the coproduct
+$$
+K^- := K^{\mathrm{wit}} + K^{\mathrm{inc}}
+$$
+so routing is always binary even when epistemic status differs.
 
 :::
 
@@ -169,7 +174,14 @@ $$
 
 with certificate types:
 - $K_i^+$ (`YES` certificate): Witnesses that predicate $P_i$ holds on the current state/window
-- $K_i^-$ (`NO` certificate): Witnesses either that $P_i$ fails, or that $P_i$ cannot be certified from current $\Gamma$
+- $K_i^{\mathrm{wit}}$ (`NO` with witness): Counterexample to $P_i$
+- $K_i^{\mathrm{inc}}$ (`NO` inconclusive): Method/budget insufficient to certify $P_i$
+
+We package the NO outcomes as a single type via the coproduct
+$$
+K_i^- := K_i^{\mathrm{wit}} + K_i^{\mathrm{inc}}
+$$
+consistent with {prf:ref}`def-typed-no-certificates`.
 
 :::
 
@@ -179,7 +191,9 @@ with certificate types:
 Some gates are **dichotomy classifiers** where NO is a benign branch rather than an error:
 - **{prf:ref}`def-node-compact`**: NO = scattering $\to$ global existence (Mode D.D)
 - **{prf:ref}`def-node-oscillate`**: NO = no oscillation $\to$ proceed to boundary checks
-For these gates, $K^-$ represents a classification outcome, not a failure certificate.
+For these gates, the **witness** branch $K^{\mathrm{wit}}$ encodes the benign classification outcome.
+The **inconclusive** branch $K^{\mathrm{inc}}$ still routes along the NO edge but signals reconstruction rather
+than a semantic classification.
 
 :::
 
@@ -487,6 +501,11 @@ For type $T$, the certificate language $\mathcal{K}(T)$ satisfies the **finitene
 2. **Depth budget**: Closure is computed to a specified depth/complexity budget $D_{\max}$
 Non-termination under infinite certificate language is treated as a NO-inconclusive certificate ({prf:ref}`rem-inconclusive-general`).
 
+**Volume 2 convention (finite regime):** Throughout this volume we assume **(1)** bounded description length, so the
+certificate language is finite and full closure terminates. The **depth-budget** option is an engineering fallback for
+potentially infinite certificate languages; formal guarantees for that regime require additional theorems and are not
+claimed here.
+
 :::
 
 :::{prf:definition} Promotion closure
@@ -509,7 +528,9 @@ where $\Gamma_0 = \Gamma$ and $\Gamma_{n+1}$ applies all applicable immediate an
 
 **Rigor Class:** F (Framework-Original) --- see {prf:ref}`def-rigor-classification`
 
-Under the certificate finiteness condition ({prf:ref}`def-cert-finite`), the promotion closure $\mathrm{Cl}(\Gamma)$ is computable in finite time. Moreover, the closure is independent of the order in which upgrade rules are applied.
+Under the **bounded-description** regime of the certificate finiteness condition ({prf:ref}`def-cert-finite`, case 1),
+the promotion closure $\mathrm{Cl}(\Gamma)$ is computable in finite time. Moreover, the closure is independent of the
+order in which upgrade rules are applied.
 
 **Literature:** Knaster-Tarski fixed-point theorem {cite}`Tarski55`; Kleene iteration {cite}`Kleene52`; lattice theory {cite}`DaveyPriestley02`
 :::
@@ -571,7 +592,7 @@ $$
 
 $$
 
-*Step 5 (Finiteness and Termination).* Under certificate finiteness ({prf:ref}`def-cert-finite`):
+*Step 5 (Finiteness and Termination).* Under bounded description length ({prf:ref}`def-cert-finite`, case 1):
 - $|\mathcal{K}(T)| < \infty$, so $|\mathcal{L}| = 2^{|\mathcal{K}(T)|} < \infty$
 - The Kleene iteration $\Gamma_0, \Gamma_1, \Gamma_2, \ldots$ where $\Gamma_{n+1} = F(\Gamma_n)$ forms a strictly increasing chain
 - By finiteness of $\mathcal{L}$, the chain stabilizes in at most $|\mathcal{K}(T)|$ steps
@@ -589,11 +610,21 @@ This ensures $|\mathcal{K}(T)| < \infty$ and hence termination in $\leq |\mathca
 
 *Proof of Claim:* Both orderings compute the same least fixed point by Knaster-Tarski. The least fixed point is unique and characterized universally, independent of the iteration strategy used to reach it. $\checkmark$
 
-*Step 7 (Certificate Production).* Under bounded description length, the algorithm terminates in $\leq |\mathcal{K}(T)|$ steps. Under depth budget $D_{\max}$, if stabilization has not occurred, produce:
-$$K_{\mathrm{Promo}}^{\mathrm{inc}} := (\text{``promotion depth exceeded''}, D_{\max}, \Gamma_{D_{\max}}, \text{trace})$$
-indicating partial closure was computed.
+*Step 7 (Certificate Production).* Under bounded description length, the algorithm terminates in $\leq |\mathcal{K}(T)|$ steps.
+:::
 
-**Certificate Produced:** Either $\mathrm{Cl}(\Gamma)$ (complete closure) or $K_{\mathrm{Promo}}^{\mathrm{inc}}$ (depth-bounded partial closure)
+:::{prf:remark} Budgeted Closure (extension)
+:label: rem-closure-budgeted
+
+If one uses the **depth-budget** regime of {prf:ref}`def-cert-finite` (case 2), the closure computation is truncated
+after $D_{\max}$ iterations and yields a partial-closure certificate
+$$
+K_{\mathrm{Promo}}^{\mathrm{inc}} := (\text{``promotion depth exceeded''}, D_{\max}, \Gamma_{D_{\max}}, \text{trace}).
+$$
+This budgeted behavior is an engineering fallback for potentially infinite certificate languages. Formal guarantees for
+its completeness/optimality require additional theorems and are outside Volume 2; hence the main termination claim above
+is stated only for the bounded-description regime.
+
 :::
 
 :::{prf:remark} NO-Inconclusive Certificates ($K^{\mathrm{inc}}$)

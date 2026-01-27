@@ -2974,6 +2974,7 @@ The anticommutation **automatically enforces exclusion** via the Grassmann ident
 :::
 
 :::{prf:remark} Orientation convention for fermionic bilinears
+:label: rem-fg-lqft-orientation-convention
 :class: info
 
 We use the standard lattice-QFT convention: for an oriented edge $i \to j$, the bilinear is
@@ -6047,6 +6048,7 @@ This transforms the question "why these parameter values?" into a well-posed opt
 :::
 
 :::{prf:remark}
+:label: rem-fg-yang-mills-maximal-convergence
 The Maximal Convergence Principle is analogous to:
 - **Least action** in classical mechanics
 - **Maximum entropy** in statistical mechanics
@@ -11988,24 +11990,24 @@ The regularized standard deviation $\sigma'_{	ext{reg}}(V) = \sqrt{V + \sigma'^2
 
 $$
 \left|(\sigma'_{	ext{reg}})'(V)
-ight| = 
-rac{1}{2\sqrt{V + \sigma'^2_{\min}}} \le 
+ight| =
+rac{1}{2\sqrt{V + \sigma'^2_{\min}}} \le
 rac{1}{2\sigma'_{\min}} =: L_{\sigma'_{	ext{reg}}}
 
 $$
 
 $$
 \left|(\sigma'_{	ext{reg}})''(V)
-ight| = 
-rac{1}{4(V + \sigma'^2_{\min})^{3/2}} \le 
+ight| =
+rac{1}{4(V + \sigma'^2_{\min})^{3/2}} \le
 rac{1}{4\sigma'^3_{\min}} =: L_{\sigma''_{	ext{reg}}}
 
 $$
 
 $$
 \left|(\sigma'_{	ext{reg}})'''(V)
-ight| = 
-rac{3}{8(V + \sigma'^2_{\min})^{5/2}} \le 
+ight| =
+rac{3}{8(V + \sigma'^2_{\min})^{5/2}} \le
 rac{3}{8\sigma'^5_{\min}} =: L_{\sigma'''_{	ext{reg}}}
 
 $$
@@ -12014,7 +12016,7 @@ General form: For the $n$-th derivative with $n \ge 1$,
 
 $$
 \left|(\sigma'_{	ext{reg}})^{(n)}(V)
-ight| \le 
+ight| \le
 rac{(2n-1)!!}{2^n \sigma'^{(2n-1)}_{\min}}
 
 $$
@@ -13200,24 +13202,24 @@ The regularized standard deviation $\sigma'_{	ext{reg}}(V) = \sqrt{V + \sigma'^2
 
 $$
 \left|(\sigma'_{	ext{reg}})'(V)
-ight| = 
-rac{1}{2\sqrt{V + \sigma'^2_{\min}}} \le 
+ight| =
+rac{1}{2\sqrt{V + \sigma'^2_{\min}}} \le
 rac{1}{2\sigma'_{\min}} =: L_{\sigma'_{	ext{reg}}}
 
 $$
 
 $$
 \left|(\sigma'_{	ext{reg}})''(V)
-ight| = 
-rac{1}{4(V + \sigma'^2_{\min})^{3/2}} \le 
+ight| =
+rac{1}{4(V + \sigma'^2_{\min})^{3/2}} \le
 rac{1}{4\sigma'^3_{\min}} =: L_{\sigma''_{	ext{reg}}}
 
 $$
 
 $$
 \left|(\sigma'_{	ext{reg}})'''(V)
-ight| = 
-rac{3}{8(V + \sigma'^2_{\min})^{5/2}} \le 
+ight| =
+rac{3}{8(V + \sigma'^2_{\min})^{5/2}} \le
 rac{3}{8\sigma'^5_{\min}} =: L_{\sigma'''_{	ext{reg}}}
 
 $$
@@ -13226,7 +13228,7 @@ General form: For the $n$-th derivative with $n \ge 1$,
 
 $$
 \left|(\sigma'_{	ext{reg}})^{(n)}(V)
-ight| \le 
+ight| \le
 rac{(2n-1)!!}{2^n \sigma'^{(2n-1)}_{\min}}
 
 $$
@@ -13239,7 +13241,7 @@ Referenced by {prf:ref}`def-fragile-gas-algorithm`.
 Direct computation of derivatives of $\sigma'_{	ext{reg}}(V) = (V + \sigma'^2_{\min})^{1/2}$:
 
 $$
-(\sigma'_{	ext{reg}})'(V) = 
+(\sigma'_{	ext{reg}})'(V) =
 rac{1}{2}(V + \sigma'^2_{\min})^{-1/2}
 
 $$
@@ -13251,7 +13253,7 @@ rac{1}{4}(V + \sigma'^2_{\min})^{-3/2}
 $$
 
 $$
-(\sigma'_{	ext{reg}})'''(V) = 
+(\sigma'_{	ext{reg}})'''(V) =
 rac{3}{8}(V + \sigma'^2_{\min})^{-5/2}
 
 $$
@@ -16031,7 +16033,7 @@ Let $\mathcal{X}_{\text{valid}}$ satisfy the conditions of {prf:ref}`axiom-domai
 2.  **Positivity:** $\varphi(x)$ is strictly positive for all $x \in \mathcal{X}_{\text{valid}}$.
 3.  **Boundary Divergence:** $\varphi(x) \to \infty$ as $x \to \partial \mathcal{X}_{\text{valid}}$.
 
-Referenced by {prf:ref}`def-boundary-potential-recall` and {prf:ref}`def-full-synergistic-lyapunov-function`.
+Referenced by {prf:ref}`def-boundary-potential-cloning` and {prf:ref}`def-full-synergistic-lyapunov-function`.
 :::
 
 :::{prf:definition} Barycentres and Centered Vectors (Alive Walkers Only)
@@ -16272,7 +16274,7 @@ This normalization implicitly assumes that the swarm remains viable, meaning $k_
 
 The separation between algorithmic calculations (using $k_{\text{alive}}$) and analytical tools (using $N$) is not a compromise but a hallmark of rigorous mean-field analysis. The algorithm uses the physically optimal metric for real-time decisions, while the Lyapunov function uses the mathematically tractable metric for proving convergence. Both serve their respective purposes correctly.
 
-Referenced by {prf:ref}`def-boundary-potential-recall`.
+Referenced by {prf:ref}`def-boundary-potential-cloning`.
 :::
 :::
 
@@ -16502,11 +16504,11 @@ $$
 
 where $\lambda_{\text{alg}} \geq 0$ is a fixed algorithmic parameter that controls the relative importance of velocity similarity in the pairing and selection processes.
 
-Referenced by {prf:ref}`def-greedy-pairing-algorithm` and {prf:ref}`def-spatial-pairing-operator-diversity`.
+Referenced by {prf:ref}`def-greedy-pairing-algorithm` and {prf:ref}`def-spatial-pairing-diversity-idealized`.
 :::
 
 :::{prf:definition} Spatially-Aware Pairing Operator (Idealized Model)
-:label: def-spatial-pairing-operator-diversity
+:label: def-spatial-pairing-diversity-idealized
 
 Let $\mathcal{S}_t$ be the current swarm ({prf:ref}`def-swarm-and-state-space`) state with alive set ({prf:ref}`def-alive-dead-sets`) $\mathcal{A}_t$ of size $k = |\mathcal{A}_t|$. The idealized **Spatially-Aware Pairing Operator**, denoted $\mathbb{P}_{\text{pair}}$, maps the alive set $\mathcal{A}_t$ to a probability distribution over the set of all possible perfect matchings, $\mathcal{M}_k$.
 
@@ -18192,7 +18194,7 @@ These dependencies provide guidance for parameter tuning to optimize convergence
 :::
 
 :::{prf:definition} Boundary Potential Component (Recall)
-:label: def-boundary-potential-recall
+:label: def-boundary-potential-cloning
 
 From {prf:ref}`def-full-synergistic-lyapunov-function`, the boundary potential is:
 
@@ -18643,7 +18645,7 @@ If the system is experiencing:
 :::
 
 :::{prf:theorem} Main Results of the Cloning Analysis (Summary)
-:label: thm-main-results-summary
+:label: thm-fg-cloning-main-results
 
 This document has established the following results for the cloning operator ({prf:ref}`def-cloning-operator-formal`) $\Psi_{\text{clone}}$:
 
@@ -18714,6 +18716,7 @@ Therefore, $\mathcal{P}_{V(i)}$ inherits the atomic structure of $\mathcal{P}_{D
 :::
 
 :::{prf:remark} Interpretation as a Discrete Random Field
+:label: rem-fg-single-particle-discrete-field
 
 The function $x' \mapsto \mathcal{P}_{X'_i}(x')$ is a random field **centered** on the alive swarm: its Gaussian components are centered at alive positions but the distribution has full support on $\mathbb{R}^d$. Locations near highly informative companions inherit large Gaussian weights, while inactive regions contribute only through the persistence mass. This view is convenient when studying local exploration pressure or extinction risk inside restricted domains.
 :::
@@ -19542,6 +19545,7 @@ where $K_{\text{Var}} = C(d,N) \cdot \max(\gamma^2, L_F^2, \sigma_{\max}^2)$ wit
 :::
 
 :::{prf:remark}
+:label: rem-fg-kinetic-weak-error-velocity
 The same weak-error bound applies to $V_{\mu_v}(S) := \|\mu_v\|^2$. This is a quadratic function of the particle velocities with uniformly bounded derivatives on the squashed state space, so the BAOAB weak error theory applies verbatim with a constant $K_{\mu}$ of the same form as $K_{\text{Var}}$.
 :::
 
@@ -19698,7 +19702,7 @@ $$
 **Key Properties:**
 
 1. **Contraction rate** $\kappa_W$ scales as:
-   
+
 $$
 \kappa_W \sim \min(\gamma, \alpha_U, \sigma_{\min}^2)
 
@@ -19991,7 +19995,7 @@ $$
 :::
 
 :::{prf:definition} Boundary Potential (Recall)
-:label: def-boundary-potential-recall
+:label: def-boundary-potential-kinetic
 
 From {doc}`03_cloning` Definition 3.3.1:
 
@@ -23531,7 +23535,7 @@ Here $m_{\text{eq}} = \|\pi_{\text{QSD}}\|_{L^1}$ and $\beta_\star = (1 - e^{-2\
 
 **Proof**:
 
-**Step 1 (Velocity Refresh via Ornstein-Uhlenbeck Block)**  
+**Step 1 (Velocity Refresh via Ornstein-Uhlenbeck Block)**
 During a kinetic window of length $\tau_v$, the BAOAB operator evolves the velocity according to
 
 $$
@@ -23551,7 +23555,7 @@ $$
 
 Hence a single kinetic block already spreads mass over **all** velocity directions with a state-independent density floor.
 
-**Step 2 (Spatial Mollification Without Velocity Restriction)**  
+**Step 2 (Spatial Mollification Without Velocity Restriction)**
 Conditioned on any $(x_1, v_1)$ produced by Step 1, the cloning kernel
 
 $$
@@ -23570,7 +23574,7 @@ $$
 
 so positions are minorized by Lebesgue measure independently of the pre-cloning state.
 
-**Step 3 (Two-Step Doeblin Minorization)**  
+**Step 3 (Two-Step Doeblin Minorization)**
 Let $P^{(2)}$ denote “kinetic over $\tau_v$” composed with “cloning.” For any measurable $A \subseteq \Omega$,
 
 $$
@@ -23591,7 +23595,7 @@ $$
 
 with state-independent minorization measure $\nu(A) = |A|/|\Omega|$.
 
-**Step 4 (Transfer to the QSD)**  
+**Step 4 (Transfer to the QSD)**
 For the invariant quasi-stationary distribution,
 
 $$
@@ -23603,7 +23607,7 @@ $$
 
 so $\pi_{\text{QSD}}$ possesses a density bounded below by $c_\pi = \delta_2 m_{\text{eq}} / |\Omega|$ at every point of $\Omega$.
 
-**Step 5 (Smoothness)**  
+**Step 5 (Smoothness)**
 Lemma {prf:ref}`lem-linfty-full-operator` provides hypoelliptic smoothing, giving $\pi_{\text{QSD}} \in C^\infty(\Omega)$ and promoting the almost-everywhere lower bound to a pointwise one.
 
 **References**: This multi-step minorization follows the Harris/Doeblin framework for hypoelliptic diffusions (Hairer & Mattingly 2011; Villani 2009) and the QSD analysis of Champagnat & Villemonais (2016). $\square$
@@ -23672,7 +23676,7 @@ $$
 
 We split the argument into an **early-time deterministic floor** and a **late-time concentration regime**. Throughout we denote $k_t = k_t(\omega)$ the number of alive walkers and $m_a(t) = \|\rho_t\|_{L^1}$ the PDE mass.
 
-**Step 0: Deterministic floor on $[0, t_{\text{eq}}]$ via logistic ODE**  
+**Step 0: Deterministic floor on $[0, t_{\text{eq}}]$ via logistic ODE**
 The mass equation derived in {doc}`08_mean_field` reads
 
 $$
@@ -23720,7 +23724,7 @@ $$
 
 This establishes the desired floor on $[0, t_{\text{eq}}]$.
 
-**Step 1: Spectral gap for configuration observables (removing the Markov assumption on $k_t$)**  
+**Step 1: Spectral gap for configuration observables (removing the Markov assumption on $k_t$)**
 The $N$-particle process $Z_t = (z_t^{(1)}, \ldots, z_t^{(N)})$ is geometrically ergodic with spectral gap $\kappa_{\text{full}} > 0$ in $L^2(\Pi_{\text{QSD}}^{(N)})$ (Theorem 4.5 of {doc}`06_convergence`). For any observable $F : \Omega^N \to \mathbb{R}$,
 
 $$
@@ -23741,7 +23745,7 @@ where we set $\beta_{\text{gap}} := \kappa_{\text{full}} / 2$ (the second inequa
 
 This argument works directly on the full configuration process $Z_t$; no Markov property for the projected count $k_t$ is required, thereby correcting the earlier (invalid) reduction to a standalone birth-death chain.
 
-**Step 2: Finite-time concentration after equilibration**  
+**Step 2: Finite-time concentration after equilibration**
 Let $\mathcal{L}_t$ be the law of $Z_t$ starting from any initial configuration with alive mass at least $c_{\text{early}}$. By Theorem 4.5 of {doc}`06_convergence`,
 
 $$
@@ -23766,7 +23770,7 @@ $$
 
 $$
 
-**Step 3: Survival conditioning**  
+**Step 3: Survival conditioning**
 The survival estimate of Theorem {prf:ref}`thm-exponential-survival` gives
 
 $$
@@ -24327,7 +24331,7 @@ $$
 
 Write $k_s := N \|\mu_s^N\|_{L^1}$ for the number of alive walkers. The proof has two components.
 
-**Step 1: Mean-field bias control**  
+**Step 1: Mean-field bias control**
 Section 3 of {doc}`08_mean_field` (see Theorem {prf:ref}`thm-mean-field-limit-informal` and the quantitative estimates in its proof) yields
 
 $$
@@ -24338,7 +24342,7 @@ $$
 
 where $C_{\text{bias}}(t)$ depends continuously on $t$ and the model parameters. This follows from the classical propagation-of-chaos estimates (Fournier & Méléard 2004, Theorem 1.1), because the birth/death rates are globally Lipschitz on the compact phase space.
 
-**Step 2: Martingale concentration for $k_s$**  
+**Step 2: Martingale concentration for $k_s$**
 The Doob decomposition of $k_s$ reads
 
 $$
@@ -24365,7 +24369,7 @@ $$
 
 for all $s \leq t$, where $\beta_{\text{mart}} := \big(4 \Lambda t + 2\big)^{-1}$.
 
-**Step 3: Union bound and choice of parameters**  
+**Step 3: Union bound and choice of parameters**
 For any $\epsilon > 0$,
 
 $$
@@ -31894,7 +31898,7 @@ $$
 
 where $Z_\rho(x) = \int_{\mathcal{X}} \exp(-\|x - x''\|^2/(2\rho^2)) dx''$ ensures normalization.
 
-**Verification**: Properties 1-4 follow from standard Gaussian kernel theory. Normalization holds by construction. Locality follows from exponential decay. Symmetry is manifest. Limits: as $\rho \to 0$, the Gaussian becomes $\delta(x-x')$; as $\rho \to \infty$ on compact $\mathcal{X}$, the kernel becomes approximately constant.
+**Verification**: Properties 1-4 follow from Gaussian kernel facts: normalization holds by construction, locality follows from exponential decay, symmetry is explicit, and the limits follow on compact $\mathcal{X}$.
 :::
 
 :::{prf:definition} ρ-Localized Moments
@@ -31965,7 +31969,7 @@ $$
 \lim_{\rho \to 0} K_\rho(x, x') = \delta(x - x')
 $$
 
-Moments become nearest-neighbor evaluations, enabling infinitesimal geometric sensitivity.
+Moments collapse to pointwise evaluations, enabling infinitesimal geometric sensitivity.
 
 **3. Intermediate Regime** ($0 < \rho < \infty$):
 
@@ -32249,7 +32253,7 @@ $$
 C_{\mathrm{diff},0}(\rho) = d \cdot \max\{|c_{\min}(\rho) - \sigma^2|, |c_{\max}(\rho) - \sigma^2|\}
 $$
 
-**Note:** $C_{\mathrm{diff},0}$ represents the difference in noise intensities. It can be positive (geometric diffusion stronger) or effectively treated as absolute value since it contributes additively to the bias term.
+**Note:** $C_{\mathrm{diff},0}$ represents the difference in noise intensities. Since it enters additively in the bias term, we bound it by $|C_{\mathrm{diff},0}|$.
 
 $$
 C_{\mathrm{diff},1}(\rho) = C_{\mathrm{geo}} \cdot d \cdot c_{\max}(\rho) L_\Sigma(\rho)
@@ -32410,9 +32414,9 @@ $$
 C_{\mathrm{comm}}(\rho) = 2d \cdot C_{\mathrm{hypo}} \, c_{\max}^{1/2}(\rho) L_\Sigma(\rho)
 $$
 
-is **N-uniform**, with $L_\Sigma(\rho) = \sup \|\nabla \Sigma_{\mathrm{reg}}\|$ the Lipschitz constant bounded by C³ regularity and $C_{\mathrm{hypo}}$ the hypocoercive curvature constant from {doc}`/3_fractal_gas/appendices/15_kl_convergence`.
+is **N-uniform**, with $L_\Sigma(\rho) = \sup \|\nabla \Sigma_{\mathrm{reg}}\|$ the Lipschitz constant bounded by C³ regularity and $C_{\mathrm{hypo}}$ the second-derivative control constant from Lemma {prf:ref}`lem-gg-velocity-second-derivative`.
 
-**Note:** In the entropy-Fisher inequality (Proposition {prf:ref}`prop-gg-entropy-fisher-gap`), this constant is further multiplied by velocity bounds from the QSD, yielding the effective commutator constant $\tilde{C}_{\mathrm{comm}}(\rho) = C_{\mathrm{comm}}(\rho) \sqrt{d T_{\mathrm{eff}}}$.
+**Note:** In the entropy-Fisher inequality (Proposition {prf:ref}`prop-gg-entropy-fisher-gap`), this constant is further multiplied by the QSD velocity moment bound from Theorem {prf:ref}`thm-equilibrium-variance-bounds` in {doc}`/3_fractal_gas/appendices/06_convergence`, yielding the effective commutator constant $\tilde{C}_{\mathrm{comm}}(\rho) = C_{\mathrm{comm}}(\rho) \sqrt{d M_v(\rho)}$ where $M_v(\rho)$ is an N-uniform per-particle second-moment bound.
 
 :::
 
@@ -32546,10 +32550,10 @@ where the implied constant is independent of $\rho$ and depends only on the fitn
 **Explicit Bound:**
 
 $$
-C_{\mathrm{LSI}}^{\mathrm{MF}}(\rho) \leq C_{\mathrm{LSI}}(\rho) \cdot (1 + C_{\mathrm{Lip}}(\rho))
+C_{\mathrm{LSI}}^{\mathrm{MF}}(\rho) \leq C_{\mathrm{LSI}}(\rho) \cdot (1 + C_{\mathrm{Lip}}^{H^1_w}(\rho))
 $$
 
-where $C_{\mathrm{Lip}}(\rho)$ quantifies the Lipschitz continuity of the mean-field fitness map $\mu \mapsto V_{\mathrm{fit}}[\mu, \rho]$.
+where $C_{\mathrm{Lip}}^{H^1_w}(\rho)$ quantifies the Lipschitz continuity of the mean-field fitness map $\mu \mapsto V_{\mathrm{fit}}[\mu, \rho]$ in the $H^1_w \to L^\infty$ sense.
 
 :::
 
@@ -32643,6 +32647,19 @@ L_\Sigma(\rho) = \frac{K_{V,3}(\rho)}{2 \epsilon_\Sigma^{3/2}}
 $$
 
 is **N-uniform**, with $K_{V,3}(\rho) = \sup \|\nabla^3 V_{\mathrm{fit}}\|$.
+
+:::
+
+:::{prf:lemma} Velocity Second-Derivative Control (Hypoelliptic Regularity)
+:label: lem-gg-velocity-second-derivative
+
+Under uniform ellipticity of $D_{\mathrm{reg}}$ and bounded $\nabla \Sigma_{\mathrm{reg}}$ (Axioms {prf:ref}`axiom-gg-ueph` and Lemma {prf:ref}`lem-gg-lipschitz-sigma`), there exists an N-uniform constant $C_{\mathrm{hypo}}$ such that for smooth $f$ in the kinetic generator domain:
+
+$$
+\|\nabla_v^2 f\| \leq C_{\mathrm{hypo}} \, I_{\mathrm{hypo}}^\Sigma(f).
+$$
+
+This is a standard hypoelliptic regularity estimate for kinetic Fokker-Planck operators with uniformly elliptic velocity diffusion; see Villani 2009 (Theorem 7.2) or Hérau 2004 for quantitative bounds.
 
 :::
 

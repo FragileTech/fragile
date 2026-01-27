@@ -2,7 +2,9 @@
 """Verify QFT dashboard parameters are correctly set."""
 
 import holoviews as hv
+
 from fragile.fractalai.experiments.gas_config_panel import GasConfigPanel
+
 
 # Initialize holoviews
 hv.extension("bokeh")

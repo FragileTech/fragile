@@ -753,7 +753,7 @@ Let me be precise about what is proven and what is not:
 The third point is not a rigorous theorem yet. We know the mechanism (defocusing geometry from exploration), but computing the exact value of $\Lambda_{\mathrm{eff}}$ requires solving the non-equilibrium McKean-Vlasov equations, which is technically challenging.
 :::
 
-(sec-physical-interpretation)=
+(sec-fg-cosmology-physical-interpretation)=
 ## Physical Interpretation
 
 :::{div} feynman-prose

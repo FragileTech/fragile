@@ -74,17 +74,16 @@ class TestOperatorWidgets:
 
     def test_kinetic_operator_panel_widgets_have_values(self):
         """Test KineticOperator.__panel__() creates widgets with proper values."""
-        from fragile.fractalai.core.kinetic_operator import KineticOperator
         import torch
+
+        from fragile.fractalai.core.kinetic_operator import KineticOperator
 
         # KineticOperator requires gamma, beta, delta_t and potential parameters
         def dummy_potential(x):
             """Dummy potential function for testing."""
             return torch.zeros(x.shape[0])
 
-        kinetic_op = KineticOperator(
-            gamma=1.0, beta=0.5, delta_t=0.1, potential=dummy_potential
-        )
+        kinetic_op = KineticOperator(gamma=1.0, beta=0.5, delta_t=0.1, potential=dummy_potential)
         panel = kinetic_op.__panel__()
 
         # Panel should be created without errors
@@ -184,8 +183,9 @@ class TestGasConfigPanel:
 
     def test_all_widgets_have_initial_values(self):
         """Verify all widgets in GasConfigPanel have non-Unset values."""
-        from fragile.fractalai.experiments.gas_config_panel import GasConfigPanel
         from bokeh.core.property.descriptors import UnsetValueError
+
+        from fragile.fractalai.experiments.gas_config_panel import GasConfigPanel
 
         config = GasConfigPanel(dims=2)
         panel = config.panel()
@@ -193,7 +193,7 @@ class TestGasConfigPanel:
         # Try to access all widget values - should not raise UnsetValueError
         try:
             # This will traverse all widgets and access their values
-            servable = panel.servable()
+            panel.servable()
 
             # If we got here, no UnsetValueError was raised
             assert True

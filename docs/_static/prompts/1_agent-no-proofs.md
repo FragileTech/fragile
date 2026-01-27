@@ -865,6 +865,7 @@ obeys the adiabatic (varentropy) constraint.
 :::
 
 :::{prf:remark}
+:label: rem-agent-optimization-conditional
 These guarantees are conditional and local. They ensure stability and controlled descent, not global optimality.
 Violations of A1--A5 (e.g., non-smooth losses, unbounded noise, misordered groups) void the guarantees.
 :::

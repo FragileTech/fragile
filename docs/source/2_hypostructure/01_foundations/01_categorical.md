@@ -47,6 +47,7 @@ Standard examples include the topos of smooth $\infty$-stacks $\mathbf{Sh}_\inft
 :::
 
 :::{prf:remark}
+:label: rem-hypo-cat-modality-endofunctors
 The modalities $\int$, $\flat$, and $\sharp$ are endofunctors on $\mathcal{E}$. The
 shape functor $\Pi$ factors through $\infty$-groupoids (and $\pi_0 \circ \Pi$ lands in
 sets), while $\Gamma$ is the global sections functor used in the ZFC bridge. Certificates

@@ -287,6 +287,7 @@ $$
 where $V_{\text{COM},c} = \frac{1}{|I_c|+1}\left(v_c + \sum_{\ell \in I_c} v_\ell\right)$ and $R_i^{\text{rot}}$ is a random rotation (uniform on $SO(d)$). Conditional on $S_t$ and the collision group $I_c$, $V'_i$ is supported on a sphere of radius $\alpha_{\text{restitution}}\|u_i\|$ centered at $V_{\text{COM},c}$. The positional jitter and the rotation draws are independent, so the conditional joint law $\mathcal{P}_{X'_i, V'_i}$ factors into the Gaussian position kernel from Section 6.1 and the spherical velocity law above. When $k=1$, the collision group is trivial and $V'_i = v_i$.
 
 :::{prf:remark} Interpretation as a Discrete Random Field
+:label: rem-fg-single-particle-discrete-field
 
 The function $x' \mapsto \mathcal{P}_{X'_i}(x')$ is a random field **centered** on the alive swarm: its Gaussian components are centered at alive positions but the distribution has full support on $\mathbb{R}^d$. Locations near highly informative companions inherit large Gaussian weights, while inactive regions contribute only through the persistence mass. This view is convenient when studying local exploration pressure or extinction risk inside restricted domains.
 :::

@@ -184,7 +184,7 @@ fitness (Definition {prf:ref}`def:fractal-gas-fitness-cloning-kernel`).
 :::
 
 :::{prf:definition} Spatially-Aware Pairing Operator (Diversity Companion Selection)
-:label: def-spatial-pairing-operator-diversity
+:label: def-spatial-pairing-diversity-practical
 :class: rigor-class-f
 
 **Thin inputs:** $\mathcal{X}^{\text{thin}}$ (via the alive slice and $d_{\mathrm{alg}}$).
@@ -2049,6 +2049,7 @@ single scalar “energy” whose cutoff induces Levin’s resource allocation.
 :::
 
 :::{prf:remark} Complexity Envelope (Framework Classes)
+:label: rem-hypo-fractal-gas-complexity-envelope
 The complexity-class refinement (Propagator-regime linear-in-depth wavefront bound; singular-regime Levin fallback) is
 stated in the Algorithmic Classification chapter as Definition {prf:ref}`def-propagator-tube-witness` and Theorem
 {prf:ref}`mt:geodesic-tunneling-fractal-trees`.

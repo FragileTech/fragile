@@ -21,16 +21,16 @@ def test_viscous_neighbor_penalty_reduces_force():
         dtype=torch.float64,
     )
 
-    base = dict(
-        gamma=1.0,
-        beta=1.0,
-        delta_t=0.1,
-        nu=1.0,
-        use_viscous_coupling=True,
-        use_potential_force=False,
-        viscous_length_scale=1.0,
-        viscous_neighbor_threshold=0.5,
-    )
+    base = {
+        "gamma": 1.0,
+        "beta": 1.0,
+        "delta_t": 0.1,
+        "nu": 1.0,
+        "use_viscous_coupling": True,
+        "use_potential_force": False,
+        "viscous_length_scale": 1.0,
+        "viscous_neighbor_threshold": 0.5,
+    }
 
     kin_no = KineticOperator(**base, viscous_neighbor_penalty=0.0)
     kin_pen = KineticOperator(**base, viscous_neighbor_penalty=1.0)

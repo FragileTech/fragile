@@ -300,5 +300,6 @@ The beautiful thing is that these phase transitions mirror thermodynamic phase t
 See {prf:ref}`def-algorithmic-phases` for formal definitions and {prf:ref}`thm-sieve-thermo-correspondence` for the Sieve-Thermodynamic Correspondence.
 
 :::{prf:remark}
+:label: rem-hypo-notation-liquid-phase
 Liquid phase classification uses enumerability plus Axiom R failure; it does not imply $K(L_n) = O(\log n)$ for initial segments (here $L_n$ is the length-$n$ prefix of the characteristic sequence of $L$).
 :::

@@ -2218,7 +2218,7 @@ See the proof of {prf:ref}`cor-n-uniform-lsi` for the detailed N-uniformity argu
 - Optimize the noise parameter $\delta$ for practical implementations
 - Numerical verification of the parameter condition $\delta > \delta_*$ in benchmark problems
 
-
+(sec-fg-kl-conv-references-1)=
 ## References
 
 **Hypocoercivity Theory:**
@@ -3798,7 +3798,7 @@ $$
 - Use explicit constants for parameter optimization
 - Connect to Fokker-Planck analysis in future work
 
-
+(sec-fg-kl-conv-conclusion-mean-field)=
 ## Conclusion
 
 **All three gaps in the mean-field LSI proof have been resolved** using:
@@ -3831,7 +3831,7 @@ $$
 - It provides **explicit constants** from generator parameters
 - Both proofs rely on log-concavity ({prf:ref}`axiom-qsd-log-concave`) but through different machinery
 
-
+(sec-fg-kl-conv-main-result-hybrid)=
 ## Main Result
 
 :::{prf:theorem} Exponential KL-Convergence via Mean-Field Analysis
@@ -4259,7 +4259,7 @@ Both proofs (displacement convexity and mean-field generator) are complete and r
 
 Both rely fundamentally on **log-concavity** ({prf:ref}`axiom-qsd-log-concave`) but exploit it through different mathematical structures.
 
-
+(sec-fg-kl-conv-conclusion-hybrid)=
 ## Conclusion
 
 This hybrid approach provides a **complete, rigorous proof** of exponential KL-divergence convergence by:
@@ -4287,7 +4287,7 @@ This proof is **complementary** to the displacement convexity approach, providin
 - **Complementary perspective**: Infinitesimal/analytic vs. global/geometric
 - **Unique value**: Complete mean-field PDE treatment with explicit constants
 
-
+(sec-fg-kl-conv-main-result-standalone)=
 ## Main Result
 
 :::{prf:theorem} Exponential KL-Convergence via Mean-Field Generator Analysis
@@ -6994,7 +6994,7 @@ expressed directly in terms of physical parameters (hypocoercive mixing minus me
 - Develop adaptive tempering strategies for high-barrier landscapes
 - Apply to real-world multimodal optimization problems (neural networks, molecular dynamics)
 
-
+(sec-fg-kl-conv-references-2)=
 ## References
 
 **Hypocoercivity:**

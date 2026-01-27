@@ -447,7 +447,7 @@ This is studied in discrete differential geometry {cite}`cheeger1984curvature` b
 
 ---
 
-(sec-physical-interpretation)=
+(sec-fg-gravity-physical-interpretation)=
 ## Physical Interpretation
 
 :::{prf:remark} Gravity-Optimization Correspondence

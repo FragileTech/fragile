@@ -12,6 +12,7 @@ The key insight is that these moves are not approximations. They are exact trans
 :::
 
 :::{prf:remark} Naming convention
+:label: rem-hypo-equivalence-naming
 
 This part defines **equivalence moves** ({prf:ref}`def-equiv-symmetry`--{prf:ref}`def-equiv-bridge`) and **transport lemmas** ({prf:ref}`def-transport-t1`--{prf:ref}`def-transport-t6`). These are distinct from the **Lock tactics** ({prf:ref}`def-e1`--{prf:ref}`def-e10`) defined in {ref}`the Lock Exclusion Tactics section <sec-lock-exclusion-tactics>`. The `Eq` prefix distinguishes equivalence moves from Lock tactics.
 

@@ -274,7 +274,7 @@ $$
 :::
 
 
-(sec-wilson-loops)=
+(sec-fg-lqft-wilson-loops)=
 ## 3. Wilson Loops and Holonomy
 
 :::{div} feynman-prose
@@ -518,7 +518,7 @@ This is analogous to Pauli exclusion: "Two fermions cannot occupy the same state
 
 **References:**
 - Fitness-cloning kernel: {prf:ref}`def:fractal-gas-fitness-cloning-kernel`
-- Spatial pairing operator: {prf:ref}`def-spatial-pairing-operator-diversity`
+- Spatial pairing operator: {prf:ref}`def-spatial-pairing-diversity-idealized`
 - Antisymmetry metatheorem: {prf:ref}`mt:antisymmetry-fermion`
 :::
 
@@ -567,6 +567,7 @@ The anticommutation **automatically enforces exclusion** via the Grassmann ident
 :::
 
 :::{prf:remark} Orientation convention for fermionic bilinears
+:label: rem-fg-lqft-orientation-convention
 :class: info
 
 We use the standard lattice-QFT convention: for an oriented edge $i \to j$, the bilinear is

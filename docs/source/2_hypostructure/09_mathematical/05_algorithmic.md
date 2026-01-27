@@ -907,7 +907,7 @@ These are questions we can investigate, debate, and potentially settle. That is 
 ### Summary: What This Framework Establishes
 
 :::{prf:theorem} Main Results Summary
-:label: thm-main-results-summary
+:label: thm-hypo-algorithmic-main-results
 
 The algorithmic completeness framework establishes:
 

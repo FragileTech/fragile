@@ -205,7 +205,8 @@ The proof proceeds by verifying the conditions of Prokhorov's theorem. On the Po
 
 ## **4. Identification of the Limit Point**
 
-#### **Introduction**
+(sec-fg-propagation-intro-limit-point)=
+#### **Introduction: Identification of Limit Points**
 
 The tightness of the sequence $\{\mu_N\}$, established in the previous section, guarantees that at least one convergent subsequence exists. However, this does not tell us the nature of the limit point. The purpose of this section is to complete the second, and most critical, step of our three-part proof: **identification**. We will rigorously prove that any such limit point is not an arbitrary measure but is, in fact, a **weak solution** to the stationary mean-field PDE derived in {doc}`08_mean_field`.
 
@@ -840,7 +841,8 @@ Since this holds for any smooth, compactly supported test function $\phi \in C_c
 
 ## **5. Uniqueness of the Weak Solution via Contraction Mapping**
 
-#### **Introduction**
+(sec-fg-propagation-intro-uniqueness)=
+#### **Introduction: Uniqueness via Contraction**
 
 The analysis in the preceding sections has rigorously established that the sequence of N-particle marginals is tight and that any of its limit points must be a quasi-stationary distribution of the mean-field PDE. We have proven the *existence* of at least one QSD. The purpose of this final section is to prove **uniqueness**—that there can be at most one such solution. This result is the lynchpin that holds the entire proof together. If the stationary solution is unique, then every convergent subsequence must converge to the same limit, which in turn implies that the *entire* original sequence of marginals, $\{\mu_N\}$, must converge. This elevates our result from the existence of a limit point to the convergence of the sequence to a unique equilibrium.
 

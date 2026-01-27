@@ -18,13 +18,14 @@ def test_standard_dashboard():
     print("Testing standard dashboard...")
     import holoviews as hv
     import panel as pn
+
     from fragile.fractalai.experiments.gas_visualization_dashboard import create_app
 
     hv.extension("bokeh")
     pn.extension()
 
     app = create_app(dims=2)
-    servable = app.servable()
+    app.servable()
     print("  ✓ Standard dashboard creates and serializes")
     return True
 
@@ -34,13 +35,14 @@ def test_qft_dashboard():
     print("Testing QFT dashboard...")
     import holoviews as hv
     import panel as pn
+
     from fragile.fractalai.experiments.gas_visualization_dashboard import create_qft_app
 
     hv.extension("bokeh")
     pn.extension()
 
     app = create_qft_app()
-    servable = app.servable()
+    app.servable()
     print("  ✓ QFT dashboard creates and serializes")
     return True
 
@@ -51,6 +53,7 @@ def test_kinetic_operator_panel():
     import holoviews as hv
     import panel as pn
     import torch
+
     from fragile.fractalai.core.kinetic_operator import KineticOperator
 
     hv.extension("bokeh")
@@ -59,11 +62,9 @@ def test_kinetic_operator_panel():
     def dummy_potential(x):
         return torch.zeros(x.shape[0])
 
-    kinetic_op = KineticOperator(
-        gamma=1.0, beta=0.5, delta_t=0.1, potential=dummy_potential
-    )
+    kinetic_op = KineticOperator(gamma=1.0, beta=0.5, delta_t=0.1, potential=dummy_potential)
     panel = kinetic_op.__panel__()
-    servable = panel.servable()
+    panel.servable()
     print("  ✓ KineticOperator panel creates and serializes")
     return True
 
@@ -73,6 +74,7 @@ def test_fitness_operator_panel():
     print("Testing FitnessOperator panel...")
     import holoviews as hv
     import panel as pn
+
     from fragile.fractalai.core.fitness import FitnessOperator
 
     hv.extension("bokeh")
@@ -80,7 +82,7 @@ def test_fitness_operator_panel():
 
     fitness_op = FitnessOperator()
     panel = fitness_op.__panel__()
-    servable = panel.servable()
+    panel.servable()
     print("  ✓ FitnessOperator panel creates and serializes")
     return True
 

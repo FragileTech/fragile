@@ -131,7 +131,7 @@ class GasConfigPanel(param.Parameterized):
         self._on_benchmark_updated: list[Callable[[object, object, object], None]] = []
 
     @staticmethod
-    def create_qft_config(dims: int = 3, bounds_extent: float = 10.0) -> "GasConfigPanel":
+    def create_qft_config(dims: int = 3, bounds_extent: float = 10.0) -> GasConfigPanel:
         """Create GasConfigPanel with QFT calibration defaults.
 
         These parameters match the calibrated simulation from

@@ -28,7 +28,7 @@ $$
 
 $$
 
-**Scope of Non-Circularity:** This syntactic check ($K_i^- \notin \Gamma$) prevents direct circular dependencies. Semantic circularity (proof implicitly using an equivalent of the target conclusion) is addressed by the derivation-dependency constraint: certificate proofs must cite only lemmas of lower rank in the proof DAG. The ranking is induced by the topological sort of the Sieve, ensuring well-foundedness ({cite}`VanGelder91`).
+**Scope of Non-Circularity:** This syntactic check ($K_i^- \notin \Gamma$) prevents direct circular dependencies. Semantic circularity is ruled out by the Sieve DAG order and monotone context: a node’s evaluation may cite only certificates already in $\Gamma$, and $\Gamma$ contains certificates only from earlier nodes in the topological order (see {prf:ref}`thm-dag` and {prf:ref}`def-node-evaluation`). This enforces the dependency ranking without introducing a separate proof-DAG object.
 
 **Literature:** Well-founded semantics {cite}`VanGelder91`; stratification in logic programming {cite}`AptBolPedreschi94`.
 

@@ -3894,6 +3894,7 @@ This transforms the question "why these parameter values?" into a well-posed opt
 :::
 
 :::{prf:remark}
+:label: rem-fg-yang-mills-maximal-convergence
 The Maximal Convergence Principle is analogous to:
 - **Least action** in classical mechanics
 - **Maximum entropy** in statistical mechanics

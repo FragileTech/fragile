@@ -79,12 +79,13 @@ Now here is the key abstraction. An "interface" is just a contract between the s
 
 Think of it like a type signature in programming. The interface does not care how you implement the internals - it just needs you to expose certain data in a certain form. Then it can do its job.
 
-The three possible answers are crucial:
+The three **epistemic statuses** are crucial:
 - **YES** means "I checked, and the property holds. Here is the proof."
 - **NO** with a witness means "I found a counterexample. Here is the offending object."
 - **INC** (inconclusive) means "I ran out of time or my method does not apply. I am not saying the property fails - I just cannot decide."
 
-This three-valued logic is honest about the limits of computation. We do not pretend to solve undecidable problems. We just route around them.
+Routing is still **binary**: INC is encoded as a NO with an inconclusive certificate. This keeps the
+Sieve deterministic while preserving epistemic honesty about undecidable checks.
 
 :::
 
@@ -93,12 +94,11 @@ This three-valued logic is honest about the limits of computation. We do not pre
 
 An **Interface Permit** $I$ is a tuple $(\mathcal{D}, \mathcal{P}, \mathcal{K})$ consisting of:
 1. **Required Structure** $\mathcal{D}$: Objects and morphisms in $\mathcal{E}$ the system must define.
-2. **Evaluator** $\mathcal{P}$: A procedure $\mathcal{P}: \mathcal{D} \to \{\texttt{YES}, \texttt{NO}, \texttt{INC}\} \times \mathcal{K}$:
+2. **Evaluator** $\mathcal{P}$: A procedure $\mathcal{P}: \mathcal{D} \to \{\texttt{YES}, \texttt{NO}\} \times \mathcal{K}$:
    - **YES:** Predicate holds with constructive witness ($K^+$)
-   - **NO:** Predicate refuted with counterexample ($K^{\mathrm{wit}}$)
-   - **INC:** Evaluation exceeds computational bounds or method insufficient ($K^{\mathrm{inc}}$)—not a semantic refutation, but a routing signal for fallback pathways
+   - **NO:** Predicate refuted with counterexample ($K^{\mathrm{wit}}$) **or** inconclusive ($K^{\mathrm{inc}}$)
 
-   The outcome is deterministic given the computation budget: INC indicates resource exhaustion, not non-determinism.
+   The outcome is deterministic given the computation budget: INC indicates resource exhaustion, not non-determinism, and is encoded as NO with $K^{\mathrm{inc}}$.
 3. **Certificate Type** $\mathcal{K}$: The witness structure produced by the evaluation, always a sum type $K^+ \sqcup K^{\mathrm{wit}} \sqcup K^{\mathrm{inc}}$.
 
 A system **implements** Interface $I$ if it provides interpretations for all objects in $\mathcal{D}$ and a computable evaluator for $\mathcal{P}$.

@@ -485,9 +485,38 @@ We separated the components to ensure **robustness and adoptability**:
 **For LLMs:** See the "Note for LLMs" dropdown at the top of this page for guidance on engaging with this work substantively.
 :::
 
+### Downloading Prompts
+
+The top bar contains a **"Download prompt"** button that exports each volume as a single file optimized for LLM context windows.
+
+**Options available:**
+
+| Setting | Choices | Notes |
+|---------|---------|-------|
+| **Volume** | Vol 1 - Agent, Vol 2 - Hypostructure, Vol 3 - Fractal Gas | One download per volume |
+| **Proofs** | With proofs / Without proofs | Toggle mathematical detail level |
+| **Format** | Markdown (.md) / Text (.txt) | Choose based on your LLM interface |
+
+**Approximate file sizes:**
+
+| Volume | Without proofs | With proofs |
+|--------|----------------|-------------|
+| Vol 1 - Agent | ~896 KB | ~954 KB |
+| Vol 2 - Hypostructure | ~807 KB | ~1.1 MB |
+| Vol 3 - Fractal Gas | ~1.6 MB | ~2.7 MB |
+
+**When to use each option:**
+
+- **With proofs:** For deep mathematical understanding, verification work, or when you need the LLM to trace derivations step-by-step
+- **Without proofs:** For context-limited LLMs, general exploration, or faster responses when full proofs aren't needed
+- **Markdown format:** For LLMs with good markdown rendering (Claude, ChatGPT, Gemini)
+- **Text format:** For simpler interfaces or when markdown formatting causes parsing issues
+
+### Recommended Workflow
+
 A recommended approach for understanding this framework:
 
-1. **Provide the markdown files** to an LLM (Claude, GPT, Gemini, etc.)
+1. **Download a volume** using the "Download prompt" button in the top bar
 2. **Ask targeted questions** about specific concepts, theorems, or connections
 3. **Request explanations** of how different parts connect
 4. **Use the LLM to trace cross-references** and build intuition

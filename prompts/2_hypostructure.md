@@ -24,6 +24,7 @@ Standard examples include the topos of smooth $\infty$-stacks $\mathbf{Sh}_\inft
 :::
 
 :::{prf:remark}
+:label: rem-hypo-cat-modality-endofunctors
 The modalities $\int$, $\flat$, and $\sharp$ are endofunctors on $\mathcal{E}$. The
 shape functor $\Pi$ factors through $\infty$-groupoids (and $\pi_0 \circ \Pi$ lands in
 sets), while $\Gamma$ is the global sections functor used in the ZFC bridge. Certificates
@@ -2140,9 +2141,14 @@ That is, the certificate produced by node $N_1$ with outcome $o$ logically impli
 
 For **soft checks** (where the predicate cannot be definitively verified), the sieve adopts the following policy:
 - If verification succeeds: output YES with positive certificate $K^+$
-- If verification fails: output NO with negative certificate $K^-$
-- If verification is inconclusive (UNKNOWN): output NO with uncertainty certificate $K^?$
+- If verification fails: output NO with witness certificate $K^{\mathrm{wit}}$
+- If verification is inconclusive (UNKNOWN): output NO with inconclusive certificate $K^{\mathrm{inc}}$
 This ensures the sieve is deterministic: UNKNOWN is conservatively treated as NO, routing to the barrier defense layer.
+By Binary Certificate Logic ({prf:ref}`def-typed-no-certificates`), the NO certificate is the coproduct
+$$
+K^- := K^{\mathrm{wit}} + K^{\mathrm{inc}}
+$$
+so routing is always binary even when epistemic status differs.
 
 :::
 
@@ -2158,7 +2164,14 @@ $$
 
 with certificate types:
 - $K_i^+$ (`YES` certificate): Witnesses that predicate $P_i$ holds on the current state/window
-- $K_i^-$ (`NO` certificate): Witnesses either that $P_i$ fails, or that $P_i$ cannot be certified from current $\Gamma$
+- $K_i^{\mathrm{wit}}$ (`NO` with witness): Counterexample to $P_i$
+- $K_i^{\mathrm{inc}}$ (`NO` inconclusive): Method/budget insufficient to certify $P_i$
+
+We package the NO outcomes as a single type via the coproduct
+$$
+K_i^- := K_i^{\mathrm{wit}} + K_i^{\mathrm{inc}}
+$$
+consistent with {prf:ref}`def-typed-no-certificates`.
 
 :::
 
@@ -2168,7 +2181,9 @@ with certificate types:
 Some gates are **dichotomy classifiers** where NO is a benign branch rather than an error:
 - **{prf:ref}`def-node-compact`**: NO = scattering $\to$ global existence (Mode D.D)
 - **{prf:ref}`def-node-oscillate`**: NO = no oscillation $\to$ proceed to boundary checks
-For these gates, $K^-$ represents a classification outcome, not a failure certificate.
+For these gates, the **witness** branch $K^{\mathrm{wit}}$ encodes the benign classification outcome.
+The **inconclusive** branch $K^{\mathrm{inc}}$ still routes along the NO edge but signals reconstruction rather
+than a semantic classification.
 
 :::
 
@@ -2414,6 +2429,11 @@ For type $T$, the certificate language $\mathcal{K}(T)$ satisfies the **finitene
 2. **Depth budget**: Closure is computed to a specified depth/complexity budget $D_{\max}$
 Non-termination under infinite certificate language is treated as a NO-inconclusive certificate ({prf:ref}`rem-inconclusive-general`).
 
+**Volume 2 convention (finite regime):** Throughout this volume we assume **(1)** bounded description length, so the
+certificate language is finite and full closure terminates. The **depth-budget** option is an engineering fallback for
+potentially infinite certificate languages; formal guarantees for that regime require additional theorems and are not
+claimed here.
+
 :::
 
 :::{prf:definition} Promotion closure
@@ -2436,7 +2456,9 @@ where $\Gamma_0 = \Gamma$ and $\Gamma_{n+1}$ applies all applicable immediate an
 
 **Rigor Class:** F (Framework-Original) --- see {prf:ref}`def-rigor-classification`
 
-Under the certificate finiteness condition ({prf:ref}`def-cert-finite`), the promotion closure $\mathrm{Cl}(\Gamma)$ is computable in finite time. Moreover, the closure is independent of the order in which upgrade rules are applied.
+Under the **bounded-description** regime of the certificate finiteness condition ({prf:ref}`def-cert-finite`, case 1),
+the promotion closure $\mathrm{Cl}(\Gamma)$ is computable in finite time. Moreover, the closure is independent of the
+order in which upgrade rules are applied.
 
 **Literature:** Knaster-Tarski fixed-point theorem {cite}`Tarski55`; Kleene iteration {cite}`Kleene52`; lattice theory {cite}`DaveyPriestley02`
 :::
@@ -2488,7 +2510,7 @@ $$
 
 $$
 
-*Step 5 (Finiteness and Termination).* Under certificate finiteness ({prf:ref}`def-cert-finite`):
+*Step 5 (Finiteness and Termination).* Under bounded description length ({prf:ref}`def-cert-finite`, case 1):
 - $|\mathcal{K}(T)| < \infty$, so $|\mathcal{L}| = 2^{|\mathcal{K}(T)|} < \infty$
 - The Kleene iteration $\Gamma_0, \Gamma_1, \Gamma_2, \ldots$ where $\Gamma_{n+1} = F(\Gamma_n)$ forms a strictly increasing chain
 - By finiteness of $\mathcal{L}$, the chain stabilizes in at most $|\mathcal{K}(T)|$ steps
@@ -2506,11 +2528,21 @@ This ensures $|\mathcal{K}(T)| < \infty$ and hence termination in $\leq |\mathca
 
 *Proof of Claim:* Both orderings compute the same least fixed point by Knaster-Tarski. The least fixed point is unique and characterized universally, independent of the iteration strategy used to reach it. $\checkmark$
 
-*Step 7 (Certificate Production).* Under bounded description length, the algorithm terminates in $\leq |\mathcal{K}(T)|$ steps. Under depth budget $D_{\max}$, if stabilization has not occurred, produce:
-$$K_{\mathrm{Promo}}^{\mathrm{inc}} := (\text{``promotion depth exceeded''}, D_{\max}, \Gamma_{D_{\max}}, \text{trace})$$
-indicating partial closure was computed.
+*Step 7 (Certificate Production).* Under bounded description length, the algorithm terminates in $\leq |\mathcal{K}(T)|$ steps.
+:::
 
-**Certificate Produced:** Either $\mathrm{Cl}(\Gamma)$ (complete closure) or $K_{\mathrm{Promo}}^{\mathrm{inc}}$ (depth-bounded partial closure)
+:::{prf:remark} Budgeted Closure (extension)
+:label: rem-closure-budgeted
+
+If one uses the **depth-budget** regime of {prf:ref}`def-cert-finite` (case 2), the closure computation is truncated
+after $D_{\max}$ iterations and yields a partial-closure certificate
+$$
+K_{\mathrm{Promo}}^{\mathrm{inc}} := (\text{``promotion depth exceeded''}, D_{\max}, \Gamma_{D_{\max}}, \text{trace}).
+$$
+This budgeted behavior is an engineering fallback for potentially infinite certificate languages. Formal guarantees for
+its completeness/optimality require additional theorems and are outside Volume 2; hence the main termination claim above
+is stated only for the bounded-description regime.
+
 :::
 
 :::{prf:remark} NO-Inconclusive Certificates ($K^{\mathrm{inc}}$)
@@ -5069,12 +5101,11 @@ A **Height Object** $\mathcal{H}$ in $\mathcal{E}$ is an object equipped with:
 
 An **Interface Permit** $I$ is a tuple $(\mathcal{D}, \mathcal{P}, \mathcal{K})$ consisting of:
 1. **Required Structure** $\mathcal{D}$: Objects and morphisms in $\mathcal{E}$ the system must define.
-2. **Evaluator** $\mathcal{P}$: A procedure $\mathcal{P}: \mathcal{D} \to \{\texttt{YES}, \texttt{NO}, \texttt{INC}\} \times \mathcal{K}$:
+2. **Evaluator** $\mathcal{P}$: A procedure $\mathcal{P}: \mathcal{D} \to \{\texttt{YES}, \texttt{NO}\} \times \mathcal{K}$:
    - **YES:** Predicate holds with constructive witness ($K^+$)
-   - **NO:** Predicate refuted with counterexample ($K^{\mathrm{wit}}$)
-   - **INC:** Evaluation exceeds computational bounds or method insufficient ($K^{\mathrm{inc}}$)—not a semantic refutation, but a routing signal for fallback pathways
+   - **NO:** Predicate refuted with counterexample ($K^{\mathrm{wit}}$) **or** inconclusive ($K^{\mathrm{inc}}$)
 
-   The outcome is deterministic given the computation budget: INC indicates resource exhaustion, not non-determinism.
+   The outcome is deterministic given the computation budget: INC indicates resource exhaustion, not non-determinism, and is encoded as NO with $K^{\mathrm{inc}}$.
 3. **Certificate Type** $\mathcal{K}$: The witness structure produced by the evaluation, always a sum type $K^+ \sqcup K^{\mathrm{wit}} \sqcup K^{\mathrm{inc}}$.
 
 A system **implements** Interface $I$ if it provides interpretations for all objects in $\mathcal{D}$ and a computable evaluator for $\mathcal{P}$.
@@ -7945,6 +7976,7 @@ The Sieve automatically:
 ## 06_modules/02_equivalence.md
 
 :::{prf:remark} Naming convention
+:label: rem-hypo-equivalence-naming
 
 This part defines **equivalence moves** ({prf:ref}`def-equiv-symmetry`--{prf:ref}`def-equiv-bridge`) and **transport lemmas** ({prf:ref}`def-transport-t1`--{prf:ref}`def-transport-t6`). These are distinct from the **Lock tactics** ({prf:ref}`def-e1`--{prf:ref}`def-e10`) defined in {ref}`the Lock Exclusion Tactics section <sec-lock-exclusion-tactics>`. The `Eq` prefix distinguishes equivalence moves from Lock tactics.
 
@@ -8808,6 +8840,7 @@ This is a NO verdict (Breached) with inconclusive subtype—routing to {prf:ref}
 ## 07_factories/01_metatheorems.md
 
 :::{prf:remark} Interface Specification, Not Oracle
+:label: rem-hypo-metatheorems-interface-spec
 :class: feynman-added
 
 This metatheorem specifies the **interface contract** for verifiers, not an existence claim for a universal decision procedure. The framework assumes verifiers satisfying this contract are either:
@@ -8966,6 +8999,7 @@ For any system of type $T$ with user-defined objects $(\Phi, \mathfrak{D}, G, \m
 **Soundness**: $V_i^T(x, \Gamma) = (`YES`, K_i^+) \Rightarrow P_i^T(x)$
 
 :::{prf:remark} Interface Specification, Not Oracle
+:label: rem-hypo-metatheorems-interface-spec
 :class: feynman-added
 
 This metatheorem specifies the **interface contract** for verifiers, not an existence claim for a universal decision procedure. The framework assumes verifiers satisfying this contract are either:
@@ -9207,7 +9241,8 @@ The correspondence is type-specific and encoded in the profile library: each $\m
 
 If any condition fails, return $K_{\mathrm{inadm}}$ routing to reconstruction ({prf:ref}`mt-lock-reconstruction`).
 
-*Step 4 (Progress Measure).* Define the well-founded progress measure:
+*Step 4 (Progress Measure).* Define the well-founded progress measure (with the discrete
+progress constraint {prf:ref}`def-progress-measures`):
 
 $$
 \mathcal{P}(x, N_S) = (N_{\max} - N_S, \Phi_{\mathrm{residual}}(x)) \in \omega \times [0, \infty)
@@ -9216,9 +9251,9 @@ $$
 
 ordered lexicographically. Each surgery strictly decreases $\mathcal{P}$:
 - $N_S \mapsto N_S + 1$ strictly decreases the first component
-- $\Phi_{\mathrm{residual}}$ decreases by at least $\delta_{\mathrm{surgery}} > 0$ per surgery by {cite}`Perelman03` Lemma 4.3
+- $\Phi_{\mathrm{residual}}$ decreases by at least $\delta_{\mathrm{surgery}} > 0$ per surgery by {cite}`Perelman03` Lemma 4.3, so the second component lives on a discrete $\delta_{\mathrm{surgery}}$-grid
 
-Since $\mathcal{P}$ takes values in a well-founded order, termination follows.
+Since $\mathcal{P}$ takes values in a well-founded order (lexicographic on $\omega \times \delta_{\mathrm{surgery}}\mathbb{N}$), termination follows.
 
 *Step 5 (Re-entry Certificate).* Upon successful surgery, generate re-entry certificate:
 
@@ -14018,7 +14053,7 @@ The conditionality shifts from "we cannot prove it" to "the proof depends on fou
 :::
 
 :::{prf:theorem} Main Results Summary
-:label: thm-main-results-summary
+:label: thm-hypo-algorithmic-main-results
 
 The algorithmic completeness framework establishes:
 
@@ -14769,7 +14804,7 @@ satisfying:
 
 1. **Skew-symmetry:** $\{f_1, \ldots, f_n\}$ changes sign under transposition of any two arguments
 
-2. **Leibniz rule:** 
+2. **Leibniz rule:**
 $$
 \{f_1 g, f_2, \ldots, f_n\} = f_1\{g, f_2, \ldots, f_n\} + g\{f_1, f_2, \ldots, f_n\}
 $$
@@ -14906,7 +14941,7 @@ $$
 
 The first two equations match Definition {prf:ref}`def-bulk-drift-continuous-flow` exactly.
 
-*Proof.* 
+*Proof.*
 **Position:** $\dot{z}^k = \partial H / \partial p_k = G^{kj} p_j$ ✓
 
 **Momentum:** On a Riemannian manifold, the contact Hamilton equation includes the Christoffel connection:
@@ -14927,7 +14962,7 @@ $\square$
 The contact entropy evolution $\dot{s} = K - U - \gamma s$ has clear thermodynamic meaning:
 
 - **$K$ term:** Kinetic energy converted to heat (increases entropy)
-- **$-U$ term:** Potential energy release/absorption  
+- **$-U$ term:** Potential energy release/absorption
 - **$-\gamma s$ term:** Approach to equilibrium (entropy relaxation)
 
 At equilibrium ($\dot{s} = 0$): $s_{\text{eq}} = (K - U)/\gamma$
@@ -15028,8 +15063,8 @@ The system continuously dissipates energy while being driven by the rotational V
 The **Contact BAOAB** integrator for Definition {prf:ref}`def-stochastic-contact-hamiltonian`:
 
 1. **B** (half kick): $p \leftarrow p - \frac{h}{2}\nabla\Phi_{\text{eff}}$ + Boris rotation if $\mathcal{F} \neq 0$
-   
-2. **A** (half drift): 
+
+2. **A** (half drift):
    - $z \leftarrow \operatorname{Exp}_z\left(\frac{h}{2} G^{-1} p\right)$
    - $s \leftarrow s + \frac{h}{2}(K - \Phi_{\text{eff}} - \gamma s)$
 
@@ -18070,7 +18105,7 @@ fitness (Definition {prf:ref}`def:fractal-gas-fitness-cloning-kernel`).
 :::
 
 :::{prf:definition} Spatially-Aware Pairing Operator (Diversity Companion Selection)
-:label: def-spatial-pairing-operator-diversity
+:label: def-spatial-pairing-diversity-practical
 :class: rigor-class-f
 
 **Thin inputs:** $\mathcal{X}^{\text{thin}}$ (via the alive slice and $d_{\mathrm{alg}}$).
@@ -19915,6 +19950,7 @@ single scalar “energy” whose cutoff induces Levin’s resource allocation.
 :::
 
 :::{prf:remark} Complexity Envelope (Framework Classes)
+:label: rem-hypo-fractal-gas-complexity-envelope
 The complexity-class refinement (Propagator-regime linear-in-depth wavefront bound; singular-regime Levin fallback) is
 stated in the Algorithmic Classification chapter as Definition {prf:ref}`def-propagator-tube-witness` and Theorem
 {prf:ref}`mt:geodesic-tunneling-fractal-trees`.
@@ -21839,6 +21875,7 @@ This grounding ensures that every step of the Sieve has classical set-theoretic 
 ## 11_appendices/02_notation.md
 
 :::{prf:remark}
+:label: rem-hypo-notation-liquid-phase
 Liquid phase classification uses enumerability plus Axiom R failure; it does not imply $K(L_n) = O(\log n)$ for initial segments (here $L_n$ is the length-$n$ prefix of the characteristic sequence of $L$).
 :::
 

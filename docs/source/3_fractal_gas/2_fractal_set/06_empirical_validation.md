@@ -263,7 +263,7 @@ Comparison of companion-based vs. local diversity:
 
 ---
 
-(sec-wilson-loops)=
+(sec-fg-empirical-wilson-loops)=
 ## Wilson Loops and Gauge Structure
 
 **Validates**: {doc}`03_lattice_qft` — gauge field dynamics ({prf:ref}`def-wilson-loop-lqft`)
@@ -276,7 +276,8 @@ The answer is gauge-invariant—it does not depend on any arbitrary choice of re
 The analysis computes Wilson loops around the smallest closed paths in the Fractal Set—triangles formed by CST + IG + IA edges. The results show stable, non-trivial values. The mean Wilson loop is typically $0.7-0.9$, corresponding to a mean action of $0.1-0.3$. And crucially, these values are stable over time—they do not drift or diverge.
 :::
 
-### Theory
+(sec-fg-empirical-theory-wilson)=
+### Wilson Loop Theory
 
 :::{prf:definition} Wilson Loop on Fractal Set
 :label: def-wilson-loop-empirical
@@ -299,7 +300,8 @@ $$
 - $\langle S \rangle > 0$: Gauge field energy
 :::
 
-### Empirical Results
+(sec-fg-empirical-results-wilson)=
+### Wilson Loop Results
 
 :::{admonition} Wilson Loop Metrics
 :class: tip
@@ -356,7 +358,8 @@ For the Fractal Gas, the Lyapunov function tracks the variance of walker positio
 The empirical results are striking. On a logarithmic plot, the Lyapunov function decreases approximately linearly—which means exponential convergence on a linear scale. The system is finding its equilibrium, exactly as the theory predicts.
 :::
 
-### Theory
+(sec-fg-empirical-theory-lyapunov)=
+### Lyapunov Theory
 
 :::{prf:definition} Lyapunov Components
 :label: def-lyapunov-empirical
@@ -375,7 +378,8 @@ where:
 **Convergence criterion**: $V_{\mathrm{total}}(t_{\mathrm{final}}) < V_{\mathrm{total}}(t_{\mathrm{initial}})$
 :::
 
-### Empirical Results
+(sec-fg-empirical-results-lyapunov)=
+### Lyapunov Results
 
 :::{admonition} Lyapunov Convergence
 :class: tip
@@ -425,7 +429,8 @@ The variance metrics track this equilibration. After a warmup period (typically 
 The empirical results confirm equilibration. After warmup, the variance ratios stabilize. The scaling exponent—how the number of "close" walker pairs scales with total walker count—matches theoretical predictions.
 :::
 
-### Theory
+(sec-fg-empirical-theory-qsd)=
+### QSD Variance Theory
 
 :::{prf:definition} Hypocoercive Variance Metrics
 :label: def-qsd-variance
@@ -442,7 +447,8 @@ Key metrics computed post-warmup:
 - `scaling_exponent`: $\log(n_{\mathrm{close}}) / \log(N)$ for edge budget estimation
 :::
 
-### Empirical Results
+(sec-fg-empirical-results-qsd)=
+### QSD Results
 
 :::{admonition} QSD Equilibration
 :class: tip
@@ -474,7 +480,8 @@ The SU(2) phases come from cloning scores. The score $S_i(j) = (V_j - V_i)/(V_i 
 The empirical distributions of these phases tell us whether the gauge structure is non-trivial. Uniform distribution means no preferred direction—the gauge field is fluctuating thermally. Peaked distribution means some coherent structure has emerged.
 :::
 
-### Measured Quantities
+(sec-fg-empirical-measured-gauge-phases)=
+### Gauge Phase Measurements
 
 :::{prf:definition} Gauge Phase Observables
 :label: def-gauge-phases-empirical
@@ -496,7 +503,8 @@ $$
 - SU(2) norm: Doublet norm for cloning pairs
 :::
 
-### Empirical Results
+(sec-fg-empirical-results-gauge-phases)=
+### Gauge Phase Results
 
 :::{admonition} Phase Distribution Characteristics
 :class: tip
@@ -542,7 +550,8 @@ The analysis computes several curvature measures:
 When these measures agree, we have confidence that the emergent geometry is well-defined and consistent.
 :::
 
-### Measured Quantities
+(sec-fg-empirical-measured-curvature)=
+### Curvature Measurements
 
 :::{prf:definition} Curvature Observables
 :label: def-curvature-empirical
@@ -568,7 +577,8 @@ $$
 where $h$ is the Cheeger constant.
 :::
 
-### Empirical Results
+(sec-fg-empirical-results-curvature)=
+### Curvature Results
 
 :::{admonition} Curvature Metrics
 :class: tip

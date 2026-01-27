@@ -811,6 +811,7 @@ For practical purposes, this is absorbed into $K_{\text{Var}}$.
 :::
 
 :::{prf:remark}
+:label: rem-fg-kinetic-weak-error-velocity
 The same weak-error bound applies to $V_{\mu_v}(S) := \|\mu_v\|^2$. This is a quadratic function of the particle velocities with uniformly bounded derivatives on the squashed state space, so the BAOAB weak error theory applies verbatim with a constant $K_{\mu}$ of the same form as $K_{\text{Var}}$.
 :::
 
@@ -1372,7 +1373,7 @@ $$
 **Key Properties:**
 
 1. **Contraction rate** $\kappa_W$ scales as:
-   
+
 $$
 \kappa_W \sim \min(\gamma, \alpha_U, \sigma_{\min}^2)
 
@@ -2730,7 +2731,7 @@ This chapter proves the second mechanism, showing that the kinetic operator prov
 ### 7.2. Boundary Potential (Recall)
 
 :::{prf:definition} Boundary Potential (Recall)
-:label: def-boundary-potential-recall
+:label: def-boundary-potential-kinetic
 
 From {doc}`03_cloning` Definition 3.3.1:
 

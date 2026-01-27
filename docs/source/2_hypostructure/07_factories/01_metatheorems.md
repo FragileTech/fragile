@@ -39,6 +39,7 @@ For any system of type $T$ with user-defined objects $(\Phi, \mathfrak{D}, G, \m
 **Soundness**: $V_i^T(x, \Gamma) = (`YES`, K_i^+) \Rightarrow P_i^T(x)$
 
 :::{prf:remark} Interface Specification, Not Oracle
+:label: rem-hypo-metatheorems-interface-spec
 :class: feynman-added
 
 This metatheorem specifies the **interface contract** for verifiers, not an existence claim for a universal decision procedure. The framework assumes verifiers satisfying this contract are either:
@@ -308,7 +309,8 @@ The correspondence is type-specific and encoded in the profile library: each $\m
 
 If any condition fails, return $K_{\mathrm{inadm}}$ routing to reconstruction ({prf:ref}`mt-lock-reconstruction`).
 
-*Step 4 (Progress Measure).* Define the well-founded progress measure:
+*Step 4 (Progress Measure).* Define the well-founded progress measure (with the discrete
+progress constraint {prf:ref}`def-progress-measures`):
 
 $$
 \mathcal{P}(x, N_S) = (N_{\max} - N_S, \Phi_{\mathrm{residual}}(x)) \in \omega \times [0, \infty)
@@ -317,9 +319,9 @@ $$
 
 ordered lexicographically. Each surgery strictly decreases $\mathcal{P}$:
 - $N_S \mapsto N_S + 1$ strictly decreases the first component
-- $\Phi_{\mathrm{residual}}$ decreases by at least $\delta_{\mathrm{surgery}} > 0$ per surgery by {cite}`Perelman03` Lemma 4.3
+- $\Phi_{\mathrm{residual}}$ decreases by at least $\delta_{\mathrm{surgery}} > 0$ per surgery by {cite}`Perelman03` Lemma 4.3, so the second component lives on a discrete $\delta_{\mathrm{surgery}}$-grid
 
-Since $\mathcal{P}$ takes values in a well-founded order, termination follows.
+Since $\mathcal{P}$ takes values in a well-founded order (lexicographic on $\omega \times \delta_{\mathrm{surgery}}\mathbb{N}$), termination follows.
 
 *Step 5 (Re-entry Certificate).* Upon successful surgery, generate re-entry certificate:
 
