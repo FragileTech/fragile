@@ -1005,28 +1005,28 @@ for all $z \in \mathbb{R}$, where $g'_{\min}$ is a positive constant.
 
 The regularized standard deviation function is defined as:
 $$
-\sigma\'_{\text{reg}}(V) := \sqrt{V + \sigma\'^2_{\min}}
+\sigma'_{\text{reg}}(V) := \sqrt{V + \sigma'^2_{\min}}
 $$
 
-where $\sigma\'_{\min} = \sqrt{\kappa_{\text{var,min}} + \varepsilon_{\text{std}}^2} > 0$ is the regularization parameter.
+where $\sigma'_{\min} = \sqrt{\kappa_{\text{var,min}} + \varepsilon_{\text{std}}^2} > 0$ is the regularization parameter.
 
 This function is **infinitely differentiable** ($C^\infty$) with explicit derivative bounds:
 
-1. **Positive lower bound:** $\sigma\'_{\text{reg}}(V) \ge \sigma\'_{\min} > 0$ for all $V \ge 0$
-2. **Bounded first derivative:** $|(\sigma\'_{\text{reg}})'(V)| \le L_{\sigma\'_{\text{reg}}} = \frac{1}{2\sigma\'_{\min}}$ for all $V \ge 0$
-3. **Bounded second derivative:** $|(\sigma\'_{\text{reg}})''(V)| \le L_{\sigma''_{\text{reg}}} = \frac{1}{4\sigma\'^3_{\min}}$ for all $V \ge 0$
-4. **Bounded third derivative:** $|(\sigma\'_{\text{reg}})'''(V)| \le L_{\sigma'''_{\text{reg}}} = \frac{3}{8\sigma\'^5_{\min}}$ for all $V \ge 0$
+1. **Positive lower bound:** $\sigma'_{\text{reg}}(V) \ge \sigma'_{\min} > 0$ for all $V \ge 0$
+2. **Bounded first derivative:** $|(\sigma'_{\text{reg}})'(V)| \le L_{\sigma'_{\text{reg}}} = \frac{1}{2\sigma'_{\min}}$ for all $V \ge 0$
+3. **Bounded second derivative:** $|(\sigma'_{\text{reg}})''(V)| \le L_{\sigma''_{\text{reg}}} = \frac{1}{4\sigma'^3_{\min}}$ for all $V \ge 0$
+4. **Bounded third derivative:** $|(\sigma'_{\text{reg}})'''(V)| \le L_{\sigma'''_{\text{reg}}} = \frac{3}{8\sigma'^5_{\min}}$ for all $V \ge 0$
 
 **Derivation:** Direct computation of derivatives:
 $$
-(\sigma\'_{\text{reg}})'(V) = \frac{1}{2\sqrt{V + \sigma\'^2_{\min}}}, \quad
-(\sigma\'_{\text{reg}})''(V) = -\frac{1}{4(V + \sigma\'^2_{\min})^{3/2}}, \quad
-(\sigma\'_{\text{reg}})'''(V) = \frac{3}{8(V + \sigma\'^2_{\min})^{5/2}}
+(\sigma'_{\text{reg}})'(V) = \frac{1}{2\sqrt{V + \sigma'^2_{\min}}}, \quad
+(\sigma'_{\text{reg}})''(V) = -\frac{1}{4(V + \sigma'^2_{\min})^{3/2}}, \quad
+(\sigma'_{\text{reg}})'''(V) = \frac{3}{8(V + \sigma'^2_{\min})^{5/2}}
 $$
 
 Since $V \ge 0$, all bounds are achieved at $V = 0$.
 
-**Note:** $C^3$ regularity (actually $C^\infty$) is required because the chain rule for $\nabla^3(\sigma\'_{\text{reg}}(V))$ involves the third derivative $(\sigma\'_{\text{reg}})'''$ in the leading term (see Lemma {prf:ref}`lem-patch-chain-rule`). The regularized construction eliminates the need for polynomial patching while providing superior smoothness properties.
+**Note:** $C^3$ regularity (actually $C^\infty$) is required because the chain rule for $\nabla^3(\sigma'_{\text{reg}}(V))$ involves the third derivative $(\sigma'_{\text{reg}})'''$ in the leading term (see Lemma {prf:ref}`lem-patch-chain-rule`). The regularized construction eliminates the need for polynomial patching while providing superior smoothness properties.
 :::
 
 :::{admonition} Remark on Assumptions
@@ -1442,60 +1442,60 @@ $\square$
 
 ## 6. Third Derivatives of Regularized Standard Deviation
 
-The Z-score denominator involves the regularized standard deviation $\sigma\'_{\text{reg}}(V_\rho^{(i)})$, which is a composition requiring the chain rule.
+The Z-score denominator involves the regularized standard deviation $\sigma'_{\text{reg}}(V_\rho^{(i)})$, which is a composition requiring the chain rule.
 
 :::{prf:lemma} Chain Rule for Regularized Standard Deviation
 :label: lem-patch-chain-rule
 
-Let $\sigma\'_{\text{reg}}: \mathbb{R}_{\ge 0} \to \mathbb{R}_{>0}$ satisfy Assumption {prf:ref}`assump-c3-patch` ($C^3$ regularity). For a smooth function $V: \mathbb{R}^d \to \mathbb{R}_{\ge 0}$, the composition $h(x) := \sigma\'_{\text{reg}}(V(x))$ has third derivative given by the **Faà di Bruno formula**:
+Let $\sigma'_{\text{reg}}: \mathbb{R}_{\ge 0} \to \mathbb{R}_{>0}$ satisfy Assumption {prf:ref}`assump-c3-patch` ($C^3$ regularity). For a smooth function $V: \mathbb{R}^d \to \mathbb{R}_{\ge 0}$, the composition $h(x) := \sigma'_{\text{reg}}(V(x))$ has third derivative given by the **Faà di Bruno formula**:
 $$
-\nabla^3 h = (\sigma\'_{\text{reg}})'''(V) \cdot (\nabla V)^{\otimes 3} + 3(\sigma\'_{\text{reg}})''(V) \cdot \text{sym}(\nabla V \otimes \nabla^2 V) + (\sigma\'_{\text{reg}})'(V) \cdot \nabla^3 V
+\nabla^3 h = (\sigma'_{\text{reg}})'''(V) \cdot (\nabla V)^{\otimes 3} + 3(\sigma'_{\text{reg}})''(V) \cdot \text{sym}(\nabla V \otimes \nabla^2 V) + (\sigma'_{\text{reg}})'(V) \cdot \nabla^3 V
 $$
 
 where $\text{sym}(\nabla V \otimes \nabla^2 V)$ denotes the symmetrized tensor product (sum over all permutations).
 
 More explicitly, using index notation for clarity:
 $$
-\frac{\partial^3 h}{\partial x_i \partial x_j \partial x_k} = (\sigma\'_{\text{reg}})'''(V) \frac{\partial V}{\partial x_i} \frac{\partial V}{\partial x_j} \frac{\partial V}{\partial x_k} + (\sigma\'_{\text{reg}})''(V) \left[\frac{\partial V}{\partial x_i} \frac{\partial^2 V}{\partial x_j \partial x_k} + \text{perms}\right] + (\sigma\'_{\text{reg}})'(V) \frac{\partial^3 V}{\partial x_i \partial x_j \partial x_k}
+\frac{\partial^3 h}{\partial x_i \partial x_j \partial x_k} = (\sigma'_{\text{reg}})'''(V) \frac{\partial V}{\partial x_i} \frac{\partial V}{\partial x_j} \frac{\partial V}{\partial x_k} + (\sigma'_{\text{reg}})''(V) \left[\frac{\partial V}{\partial x_i} \frac{\partial^2 V}{\partial x_j \partial x_k} + \text{perms}\right] + (\sigma'_{\text{reg}})'(V) \frac{\partial^3 V}{\partial x_i \partial x_j \partial x_k}
 $$
 
 **Norm bound:**
 $$
-\|\nabla^3 h\| \le L_{\sigma\'\'\'_{\text{reg}}} \cdot \|\nabla V\|^3 + 3 L_{\sigma\'\'_{\text{reg}}} \cdot \|\nabla V\| \cdot \|\nabla^2 V\| + L_{\sigma\'_{\text{reg}}} \cdot \|\nabla^3 V\|
+\|\nabla^3 h\| \le L_{\sigma'\'\'_{\text{reg}}} \cdot \|\nabla V\|^3 + 3 L_{\sigma'\'_{\text{reg}}} \cdot \|\nabla V\| \cdot \|\nabla^2 V\| + L_{\sigma'_{\text{reg}}} \cdot \|\nabla^3 V\|
 $$
 
-where $L_{\sigma\'_{\text{reg}}}, L_{\sigma\'\'_{\text{reg}}}, L_{\sigma\'\'\'_{\text{reg}}}$ are the bounds from Assumption {prf:ref}`assump-c3-patch`.
+where $L_{\sigma'_{\text{reg}}}, L_{\sigma'\'_{\text{reg}}}, L_{\sigma'\'\'_{\text{reg}}}$ are the bounds from Assumption {prf:ref}`assump-c3-patch`.
 :::
 
 :::{prf:proof}
 :label: proof-lem-patch-chain-rule
 
-This is a direct application of the multivariable chain rule for third derivatives. The composition $h = \sigma\'_{\text{reg}} \circ V$ requires:
+This is a direct application of the multivariable chain rule for third derivatives. The composition $h = \sigma'_{\text{reg}} \circ V$ requires:
 
 **First derivative:**
 $$
-\nabla h = (\sigma\'_{\text{reg}})'(V) \cdot \nabla V
+\nabla h = (\sigma'_{\text{reg}})'(V) \cdot \nabla V
 $$
 
 **Second derivative:**
 $$
-\nabla^2 h = (\sigma\'_{\text{reg}})''(V) \cdot (\nabla V) \otimes (\nabla V) + (\sigma\'_{\text{reg}})'(V) \cdot \nabla^2 V
+\nabla^2 h = (\sigma'_{\text{reg}})''(V) \cdot (\nabla V) \otimes (\nabla V) + (\sigma'_{\text{reg}})'(V) \cdot \nabla^2 V
 $$
 
 **Third derivative:**
 
 Differentiate the second derivative expression:
 $$
-\nabla^3 h = \nabla[(\sigma\'_{\text{reg}})''(V) \cdot (\nabla V)^2] + \nabla[(\sigma\'_{\text{reg}})'(V) \cdot \nabla^2 V]
+\nabla^3 h = \nabla[(\sigma'_{\text{reg}})''(V) \cdot (\nabla V)^2] + \nabla[(\sigma'_{\text{reg}})'(V) \cdot \nabla^2 V]
 $$
 
-The first term gives $(\sigma\'_{\text{reg}})''(V) \cdot [(\nabla V)^3 + \text{mixed terms}]$ after applying the product rule.
+The first term gives $(\sigma'_{\text{reg}})''(V) \cdot [(\nabla V)^3 + \text{mixed terms}]$ after applying the product rule.
 
-The second term gives $(\sigma\'_{\text{reg}})'(V) \cdot \nabla^3 V$ plus lower-order cross-terms.
+The second term gives $(\sigma'_{\text{reg}})'(V) \cdot \nabla^3 V$ plus lower-order cross-terms.
 
 Taking the norm and using the bounds:
 $$
-\|\nabla^3 h\| \le L_{\sigma\'\'_{\text{reg}}} \cdot \|\nabla V\|^3 + 3 L_{\sigma\'_{\text{reg}}} \cdot \|\nabla V\| \cdot \|\nabla^2 V\| + L_{\sigma\'_{\text{reg}}} \cdot \|\nabla^3 V\|
+\|\nabla^3 h\| \le L_{\sigma'\'_{\text{reg}}} \cdot \|\nabla V\|^3 + 3 L_{\sigma'_{\text{reg}}} \cdot \|\nabla V\| \cdot \|\nabla^2 V\| + L_{\sigma'_{\text{reg}}} \cdot \|\nabla^3 V\|
 $$
 
 where the factor 3 arises from the binomial coefficient in the Leibniz rule.
@@ -1504,9 +1504,9 @@ where the factor 3 arises from the binomial coefficient in the Leibniz rule.
 :::{prf:lemma} Third Derivative Bound for Regularized Standard Deviation
 :label: lem-patch-third-derivative
 
-The regularized standard deviation $\sigma'_{\rho}^{(i)} := \sigma\'_{\text{reg}}(V_\rho^{(i)})$ satisfies:
+The regularized standard deviation $\sigma'_{\rho}^{(i)} := \sigma'_{\text{reg}}(V_\rho^{(i)})$ satisfies:
 $$
-\|\nabla^3_{x_i} \sigma'_{\rho}^{(i)}\| \le L_{\sigma\'\'\'_{\text{reg}}} \cdot (C_{V,\nabla}(\rho))^3 + 3 L_{\sigma\'\'_{\text{reg}}} \cdot C_{V,\nabla}(\rho) \cdot C_{V,\nabla^2}(\rho) + L_{\sigma\'_{\text{reg}}} \cdot C_{V,\nabla^3}(\rho)
+\|\nabla^3_{x_i} \sigma'_{\rho}^{(i)}\| \le L_{\sigma'\'\'_{\text{reg}}} \cdot (C_{V,\nabla}(\rho))^3 + 3 L_{\sigma'\'_{\text{reg}}} \cdot C_{V,\nabla}(\rho) \cdot C_{V,\nabla^2}(\rho) + L_{\sigma'_{\text{reg}}} \cdot C_{V,\nabla^3}(\rho)
 $$
 
 where $C_{V,\nabla}(\rho)$, $C_{V,\nabla^2}(\rho)$, $C_{V,\nabla^3}(\rho)$ are the bounds from
@@ -1525,7 +1525,7 @@ Immediate from Lemma {prf:ref}`lem-patch-chain-rule` by setting $V = V_\rho^{(i)
 :::{admonition} Regularization is Essential
 :class: important
 
-The regularized standard deviation ensures $\sigma\'_{\text{reg}}(V) \ge \sigma\'_{\min} > 0$, which is **critical** for the third derivative of the Z-score (next section). Without this lower bound, the reciprocal $1/\sigma'_{\rho}$ could have unbounded derivatives near zero, destroying k-uniformity.
+The regularized standard deviation ensures $\sigma'_{\text{reg}}(V) \ge \sigma'_{\min} > 0$, which is **critical** for the third derivative of the Z-score (next section). Without this lower bound, the reciprocal $1/\sigma'_{\rho}$ could have unbounded derivatives near zero, destroying k-uniformity.
 
 This highlights the importance of the regularization construction from the foundational framework.
 :::
@@ -1545,7 +1545,7 @@ $$
 where $K_{Z,3}(\rho)$ is a k-uniform constant:
 $$
 \begin{aligned}
-K_{Z,3}(\rho) := &\, \frac{1}{\sigma\'_{\min}} \Big[C_{u,\nabla^3}(\rho) + 3 C_{u,\nabla}(\rho) C_{v,\nabla^2}(\rho) \\
+K_{Z,3}(\rho) := &\, \frac{1}{\sigma'_{\min}} \Big[C_{u,\nabla^3}(\rho) + 3 C_{u,\nabla}(\rho) C_{v,\nabla^2}(\rho) \\
 &\quad + 3 C_{u,\nabla^2}(\rho) C_{v,\nabla}(\rho) + 6 C_{u,\nabla}(\rho) (C_{v,\nabla}(\rho))^2 \\
 &\quad + (d_{\max} + C_{\mu,\nabla}(\rho)) C_{v,\nabla^3}(\rho) \Big]
 \end{aligned}
@@ -1609,23 +1609,23 @@ $$
 
 **Step 3: Bounds on denominator derivatives.**
 
-The denominator is $v(x_i) = \sigma'_{\rho}^{(i)} = \sigma\'_{\text{reg}}(V_\rho^{(i)})$.
+The denominator is $v(x_i) = \sigma'_{\rho}^{(i)} = \sigma'_{\text{reg}}(V_\rho^{(i)})$.
 
 **Lower bound (crucial):**
 $$
-v(x_i) \ge \sigma\'_{\min} > 0
+v(x_i) \ge \sigma'_{\min} > 0
 $$
 
 This comes from Assumption {prf:ref}`assump-c3-patch` and ensures all powers of $1/v$ are bounded.
 
 **First derivative:**
 $$
-\|\nabla v\| \le C_{v,\nabla}(\rho) := L_{\sigma\'_{\text{reg}}} \cdot C_{V,\nabla}(\rho)
+\|\nabla v\| \le C_{v,\nabla}(\rho) := L_{\sigma'_{\text{reg}}} \cdot C_{V,\nabla}(\rho)
 $$
 
 **Second derivative:**
 $$
-\|\nabla^2 v\| \le C_{v,\nabla^2}(\rho) := L_{\sigma\'\'_{\text{reg}}} \cdot (C_{V,\nabla}(\rho))^2 + L_{\sigma\'_{\text{reg}}} \cdot C_{V,\nabla^2}(\rho)
+\|\nabla^2 v\| \le C_{v,\nabla^2}(\rho) := L_{\sigma'\'_{\text{reg}}} \cdot (C_{V,\nabla}(\rho))^2 + L_{\sigma'_{\text{reg}}} \cdot C_{V,\nabla^2}(\rho)
 $$
 
 **Third derivative (from Lemma {prf:ref}`lem-patch-third-derivative`):**
@@ -1637,39 +1637,39 @@ $$
 
 **Term 1:** $|\nabla^3 u / v|$
 $$
-\left\|\frac{\nabla^3 u}{v}\right\| \le \frac{C_{u,\nabla^3}(\rho)}{\sigma\'_{\min}}
+\left\|\frac{\nabla^3 u}{v}\right\| \le \frac{C_{u,\nabla^3}(\rho)}{\sigma'_{\min}}
 $$
 
 **Term 2:** $|3\nabla u \otimes \nabla^2 v / v^2|$
 $$
-\left\|\frac{3\nabla u \otimes \nabla^2 v}{v^2}\right\| \le \frac{3 C_{u,\nabla}(\rho) \cdot C_{v,\nabla^2}(\rho)}{(\sigma\'_{\min})^2}
+\left\|\frac{3\nabla u \otimes \nabla^2 v}{v^2}\right\| \le \frac{3 C_{u,\nabla}(\rho) \cdot C_{v,\nabla^2}(\rho)}{(\sigma'_{\min})^2}
 $$
 
 **Term 3:** $|3\nabla^2 u \otimes \nabla v / v^2|$
 $$
-\left\|\frac{3\nabla^2 u \otimes \nabla v}{v^2}\right\| \le \frac{3 C_{u,\nabla^2}(\rho) \cdot C_{v,\nabla}(\rho)}{(\sigma\'_{\min})^2}
+\left\|\frac{3\nabla^2 u \otimes \nabla v}{v^2}\right\| \le \frac{3 C_{u,\nabla^2}(\rho) \cdot C_{v,\nabla}(\rho)}{(\sigma'_{\min})^2}
 $$
 
 **Term 4:** $|6\nabla u \otimes (\nabla v)^2 / v^3|$
 $$
-\left\|\frac{6\nabla u \otimes (\nabla v)^2}{v^3}\right\| \le \frac{6 C_{u,\nabla}(\rho) \cdot (C_{v,\nabla}(\rho))^2}{(\sigma\'_{\min})^3}
+\left\|\frac{6\nabla u \otimes (\nabla v)^2}{v^3}\right\| \le \frac{6 C_{u,\nabla}(\rho) \cdot (C_{v,\nabla}(\rho))^2}{(\sigma'_{\min})^3}
 $$
 
 **Term 5:** $|u \nabla^3 v / v^2|$
 
 Using $|u| = |d(x_i) - \mu_\rho^{(i)}| \le d_{\max} + C_{\mu,\nabla}(\rho)$:
 $$
-\left\|\frac{u \nabla^3 v}{v^2}\right\| \le \frac{(d_{\max} + C_{\mu,\nabla}(\rho)) \cdot C_{v,\nabla^3}(\rho)}{(\sigma\'_{\min})^2}
+\left\|\frac{u \nabla^3 v}{v^2}\right\| \le \frac{(d_{\max} + C_{\mu,\nabla}(\rho)) \cdot C_{v,\nabla^3}(\rho)}{(\sigma'_{\min})^2}
 $$
 
 **Step 5: Combine terms.**
 
-Summing all contributions and extracting the dominant factor $1/\sigma\'_{\min}$:
+Summing all contributions and extracting the dominant factor $1/\sigma'_{\min}$:
 $$
-K_{Z,3}(\rho) = \frac{1}{\sigma\'_{\min}} \left[C_{u,\nabla^3}(\rho) + 3 C_{u,\nabla}(\rho) C_{v,\nabla^2}(\rho) + 3 C_{u,\nabla^2}(\rho) C_{v,\nabla}(\rho) + 6 C_{u,\nabla}(\rho) (C_{v,\nabla}(\rho))^2 + (d_{\max} + C_{\mu,\nabla}(\rho)) C_{v,\nabla^3}(\rho)\right]
+K_{Z,3}(\rho) = \frac{1}{\sigma'_{\min}} \left[C_{u,\nabla^3}(\rho) + 3 C_{u,\nabla}(\rho) C_{v,\nabla^2}(\rho) + 3 C_{u,\nabla^2}(\rho) C_{v,\nabla}(\rho) + 6 C_{u,\nabla}(\rho) (C_{v,\nabla}(\rho))^2 + (d_{\max} + C_{\mu,\nabla}(\rho)) C_{v,\nabla^3}(\rho)\right]
 $$
 
-(Here we've absorbed factors of $1/\sigma\'_{\min}$ from higher powers of $v$ into the leading factor.)
+(Here we've absorbed factors of $1/\sigma'_{\min}$ from higher powers of $v$ into the leading factor.)
 
 **Step 6: k-uniformity.**
 
@@ -1679,7 +1679,7 @@ Each constituent bound ($C_{u,\nabla^m}$, $C_{v,\nabla^m}$) is k-uniform by the 
 :::{admonition} The Role of Regularization
 :class: important
 
-**Critical observation:** Without the lower bound $\sigma\'_{\min} > 0$, the terms involving $v^{-2}$ and $v^{-3}$ could diverge as $\sigma'_{\rho} \to 0$. This would occur when the localized variance $V_\rho^{(i)} \to 0$, which happens when all walkers in the $\rho$-neighborhood have nearly identical measurement values.
+**Critical observation:** Without the lower bound $\sigma'_{\min} > 0$, the terms involving $v^{-2}$ and $v^{-3}$ could diverge as $\sigma'_{\rho} \to 0$. This would occur when the localized variance $V_\rho^{(i)} \to 0$, which happens when all walkers in the $\rho$-neighborhood have nearly identical measurement values.
 
 The **regularized standard deviation** prevents this collapse, ensuring k-uniform bounds even in degenerate configurations. This is a cornerstone of the algorithmic robustness.
 :::
@@ -1793,7 +1793,7 @@ The third derivative $\nabla^3 V_{\text{fit}}$ is a composition of continuous fu
 1. The localization kernel $K_\rho(x_i, x_j)$ is $C^3$ in $x_i$ (Assumption {prf:ref}`assump-c3-kernel`)
 2. The weights $w_{ij}(\rho)$ are continuous in $(x_i, \{x_j\}_{j \in A_k}, \rho)$
 3. The moments $\mu_\rho, V_\rho$ are continuous (weighted sums of continuous functions)
-4. The patched function $\sigma\'_{\text{reg}}$ is $C^3$ (Assumption {prf:ref}`assump-c3-patch`)
+4. The patched function $\sigma'_{\text{reg}}$ is $C^3$ (Assumption {prf:ref}`assump-c3-patch`)
 5. The Z-score is a quotient of continuous functions with positive denominator
 6. The rescale function $g_A$ is $C^3$ (Assumption {prf:ref}`assump-c3-rescale`)
 
@@ -2080,10 +2080,10 @@ $K_{V,3}(\rho)$.
 :::{prf:proposition} Explicit Formula for $K_{V,3}(\rho)$
 :label: prop-explicit-k-v-3
 
-For the Gaussian kernel with constants $(d_{\max}, d'_{\max}, d''_{\max}, d'''_{\max}, A, L_{g'_A}, L_{g''_A}, L_{g'''_A}, \sigma\'_{\min})$, the third-derivative bound is:
+For the Gaussian kernel with constants $(d_{\max}, d'_{\max}, d''_{\max}, d'''_{\max}, A, L_{g'_A}, L_{g''_A}, L_{g'''_A}, \sigma'_{\min})$, the third-derivative bound is:
 $$
 \begin{aligned}
-K_{V,3}(\rho) = &\, L_{g'_A} \cdot \frac{1}{\sigma\'_{\min}} \cdot \left[d'''_{\max} + \frac{6 d''_{\max}}{\rho} + \frac{6 d'_{\max}}{\rho^2} + \frac{C_{\max}}{\rho^3}\right] \\
+K_{V,3}(\rho) = &\, L_{g'_A} \cdot \frac{1}{\sigma'_{\min}} \cdot \left[d'''_{\max} + \frac{6 d''_{\max}}{\rho} + \frac{6 d'_{\max}}{\rho^2} + \frac{C_{\max}}{\rho^3}\right] \\
 &+ 3 L_{g''_A} \cdot K_{Z,1}(\rho) \cdot K_{Z,2}(\rho) + L_{g'''_A} \cdot (K_{Z,1}(\rho))^3
 \end{aligned}
 $$
@@ -2091,8 +2091,8 @@ $$
 where $C_{\max}$ is a constant depending on $(d_{\max}, d'_{\max}, d''_{\max}, d'''_{\max})$ and kernel coefficients.
 
 **Asymptotic behavior:**
-- As $\rho \to 0$: $K_{V,3}(\rho) \sim \frac{L_{g'_A} C_{\max}}{\sigma\'_{\min} \rho^3}$
-- As $\rho \to \infty$: $K_{V,3}(\rho) \sim \frac{L_{g'_A} d'''_{\max}}{\sigma\'_{\min}}$
+- As $\rho \to 0$: $K_{V,3}(\rho) \sim \frac{L_{g'_A} C_{\max}}{\sigma'_{\min} \rho^3}$
+- As $\rho \to \infty$: $K_{V,3}(\rho) \sim \frac{L_{g'_A} d'''_{\max}}{\sigma'_{\min}}$
 
 **Note on Conservative Bounds:** The bounds derived in this document use the triangle inequality on all terms from the Faρ di Bruno and quotient rule expansions. This approach is mathematically rigorous but potentially conservative, as it does not account for possible cancellations between terms. The true constants $K_{V,3}(\rho)$ in practice may be smaller than these theoretical upper bounds. For more refined estimates, numerical evaluation of the specific kernel and measurement function derivatives would be required.
 :::
@@ -2144,10 +2144,10 @@ The weights $w_{ij}(\rho) = K_\rho(x_i, x_j) / \sum_\ell K_\rho(x_i, x_\ell)$ ar
 The localized mean $\mu_\rho^{(i)}$ and variance $V_\rho^{(i)}$ are weighted sums (continuous functions) of continuous weights and continuous measurement values. Thus continuous.
 
 **Component 4: Patched function continuity.**
-The regularized standard deviation $\sigma\'_{\text{reg}}(V)$ is $C^3$ by Assumption {prf:ref}`assump-c3-patch`, hence its first and second derivatives are continuous.
+The regularized standard deviation $\sigma'_{\text{reg}}(V)$ is $C^3$ by Assumption {prf:ref}`assump-c3-patch`, hence its first and second derivatives are continuous.
 
 **Component 5: Z-score continuity.**
-The Z-score $Z_\rho = (d(x_i) - \mu_\rho^{(i)}) / \sigma\'_{\text{reg}}(V_\rho^{(i)})$ is a quotient of continuous functions with positive denominator ($\sigma\'_{\text{reg}} \ge \sigma\'_{\min} > 0$), hence continuous.
+The Z-score $Z_\rho = (d(x_i) - \mu_\rho^{(i)}) / \sigma'_{\text{reg}}(V_\rho^{(i)})$ is a quotient of continuous functions with positive denominator ($\sigma'_{\text{reg}} \ge \sigma'_{\min} > 0$), hence continuous.
 
 **Component 6: Rescale function continuity.**
 The rescale function $g_A$ is $C^3$ by Assumption {prf:ref}`assump-c3-rescale`, so $g_A, g'_A, g''_A, g'''_A$ are all continuous.
@@ -2361,7 +2361,7 @@ The $C^3$ regularity analysis presented in this document demonstrates the **math
    $k_{\text{eff}}^{(\rho)}$; for Gaussian kernels, $C_{w,3}(\rho) = O(\rho^{-3})$
 
 This level of regularity is **rare** in stochastic optimization algorithms, where most methods lack even $C^3$ guarantees. The Geometric Gas achieves $C^3$ through:
-- **Explicit regularization** ($\sigma\'_{\text{reg}}$ with positive lower bound)
+- **Explicit regularization** ($\sigma'_{\text{reg}}$ with positive lower bound)
 - **Careful kernel design** (smooth Gaussian with explicit derivative bounds)
 - **Telescoping identities** (exploiting $\sum_j \nabla^m w_{ij} = 0$ for k-uniformity, which contributes the crucial $k_{\text{eff}}^{(\rho)} = O(\rho^{2d})$ factor at each derivative order)
 

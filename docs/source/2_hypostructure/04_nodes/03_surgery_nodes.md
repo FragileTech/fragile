@@ -728,7 +728,7 @@ The Action Nodes are the final piece of the surgery machinery. Unlike the other 
 :::{prf:definition} ActionSSB (Symmetry Breaking)
 :label: def-action-ssb
 
-**Trigger**: CheckSC YES in restoration subtree
+**Trigger**: CheckSSB YES in restoration subtree
 
 **Action**: Spontaneous symmetry breaking of group $G$
 

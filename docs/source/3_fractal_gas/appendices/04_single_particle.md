@@ -30,7 +30,7 @@ The macroscopic drift and Lyapunov statements of Chapter 3 rely on aggregate sta
 4.  The **conditional cloning field** and **post-cloning mixture** describe the actual transitions used in {prf:ref}`def-cloning-operator-formal`.
 5.  The **kinetic convolution** produces the law of the full update operator ({prf:ref}`def-swarm-update-procedure`) at the single walker level.
 
-All expressions below are consistent with the Fragile Gas axioms ({prf:ref}`def-fragile-gas-axioms`) and adopt the same notation as Chapter 3.
+All expressions below are consistent with the Fragile Gas axioms ({prf:ref}`def-fragile-gas-algorithm`) and adopt the same notation as Chapter 3.
 
 ### 1.3. Notation
 

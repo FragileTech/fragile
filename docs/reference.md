@@ -3741,27 +3741,28 @@ $$
 
 This corresponds to the global gauge invariance of the Value function: $V(z) \to V(z) + \sigma\theta$. The addition of a constant baseline does not alter the policy gradient $\nabla V$.
 
-({prf:ref}`def-cognitive-isospin-doublet`) *definition* — **The Cognitive Isospin Doublet**
+({prf:ref}`def-cognitive-isospin-multiplet`) *definition* — **The Cognitive Isospin Multiplet (Doublet for r=2)**
 
-We define the **Left-Handed Field** $\Psi_L$ as an isospin doublet residing in the fundamental representation of $SU(2)$:
-
-$$
-\Psi_L(x) = \begin{pmatrix} \psi_{\text{pred}}(x) \\ \psi_{\text{obs}}(x) \end{pmatrix}
+We define the **Left-Handed Field** $\Psi_L$ as an isospin $r$-plet (doublet for $r=2$) residing in the fundamental
+representation of $SU(r)$:
 
 $$
-
-where:
-- $\psi_{\text{pred}}$ is the **Prior** (the top-down prediction of the World Model)
-- $\psi_{\text{obs}}$ is the **Likelihood** (the bottom-up sensory evidence)
-
-We define the **Right-Handed Field** $\Psi_R$ as an isospin singlet (invariant under $SU(2)$):
-
-$$
-\Psi_R(x) = \psi_{\text{act}}(x)
+\Psi_L(x) = \begin{pmatrix} \psi_1(x) \\ \vdots \\ \psi_r(x) \end{pmatrix}
 
 $$
 
-representing the settled **Posterior/Action** plan ready for execution.
+In the minimal $r=2$ case:
+- $\psi_1 \equiv \psi_{\text{obs}}$ is the **Observation** channel (the incoming sensory update)
+- $\psi_2 \equiv \psi_{\text{act}}^{\text{pre}}$ is the **Pre-commitment Action** channel (the outgoing motor intent)
+
+We define the **Right-Handed Field** $\Psi_R$ as an isospin singlet (invariant under $SU(r)$):
+
+$$
+\Psi_R(x) = \psi_{\text{act}}^{\text{commit}}(x)
+
+$$
+
+representing the **Committed Action** plan after mixing and projection.
 
 *Cross-reference:* This decomposition mirrors {ref}`Section 12 <sec-belief-dynamics-prediction-update-projection>`'s Belief Dynamics (Prediction-Update-Projection) and the Kalman filtering structure.
 
@@ -3797,14 +3798,18 @@ This symmetry represents the **Internal Basis Invariance** of a concept: an obje
 The belief state is a spinor field $\Psi(x)$ belonging to the **Inference Hilbert Space** (Definition {prf:ref}`def-inference-hilbert-space`):
 
 $$
-\Psi(x) = \begin{pmatrix} \Psi_L(x) \\ \Psi_R(x) \end{pmatrix} \in L^2(\mathcal{M}, \mathbb{C}^4 \otimes \mathbb{C}^{2} \otimes \mathbb{C}^{N_f})
+\Psi(x) = \begin{pmatrix} \Psi_L(x) \\ \Psi_R(x) \end{pmatrix} \in L^2(\mathcal{M}, \mathbb{C}^4 \otimes \mathbb{C}^{r} \otimes \mathbb{C}^{N_f})
 
 $$
 
-where $\mathbb{C}^4$ is the Dirac spinor space, $\mathbb{C}^2$ is the $SU(2)_L$ isospin space, and $\mathbb{C}^{N_f}$ is the $SU(N_f)_C$ color space. The components are:
-1. **$\Psi_L$ (The Active Doublet):** The Left-handed component, transforming as a doublet under $SU(2)_L$. It contains the **Prediction** and **Observation** amplitudes (Definition {prf:ref}`def-cognitive-isospin-doublet`).
+where $\mathbb{C}^4$ is the Dirac spinor space, $\mathbb{C}^r$ is the $SU(r)_L$ mode space (minimal case $r=2$), and
+$\mathbb{C}^{N_f}$ is the $SU(N_f)_C$ color space. The components are:
+1. **$\Psi_L$ (The Active Multiplet, doublet for $r=2$):** The Left-handed component, transforming as an $r$-plet under
+   $SU(r)_L$. It contains the **Prediction** and **Observation** amplitudes in the minimal case (Definition
+   {prf:ref}`def-cognitive-isospin-multiplet`).
 
-2. **$\Psi_R$ (The Passive Singlet):** The Right-handed component, invariant under $SU(2)_L$. It contains the **Action** intention.
+2. **$\Psi_R$ (The Passive Singlet):** The Right-handed component, invariant under $SU(r)_L$. It contains the **Action**
+   intention.
 
 **Probabilistic Interpretation:** The physical probability density (belief mass) is the vector current:
 

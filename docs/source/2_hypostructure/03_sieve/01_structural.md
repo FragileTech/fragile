@@ -7,6 +7,8 @@
 
 The following diagram is the **authoritative specification** of the obstruction-theoretic resolution. All subsequent definitions and theorems must align with this categorical atlas.
 
+Pointers: the Regularity Functor and Sieve output are defined in {prf:ref}`def-sieve-functor` (see also {prf:ref}`rem-sieve-dual-role`), the Singularity Spectrum completeness is {prf:ref}`thm-categorical-completeness`, Thin Kernel inputs are {prf:ref}`def-thin-objects`, and the gate predicates are specified in {ref}`sec-gate-node-specs`.
+
 :::{div} feynman-prose
 
 Now, here is the thing you have to understand about singularities. When a dynamical system fails---when your robot arm crashes, when your neural network diverges, when your market simulation blows up---it is not just "failing." It is failing in one of a finite number of *specific ways*, each with its own signature, its own mathematics, its own potential repair.
@@ -31,6 +33,12 @@ The singularity spectrum admits a natural classification by two orthogonal axes:
 | **Duality**      | **Mode D.E**: Oscillatory    | **Mode D.D**: Dispersion          | **Mode D.C**: Semantic Horizon       |
 | **Symmetry**     | **Mode S.E**: Supercritical  | **Mode S.D**: Stiffness Breakdown | **Mode S.C**: Parametric Instability |
 | **Boundary**     | **Mode B.E**: Injection      | **Mode B.D**: Starvation          | **Mode B.C**: Misalignment           |
+
+:::{prf:remark} Benign exits
+:label: rem-benign-exits
+
+Mode D.D is a benign dispersion/global-existence exit (not a pathology). More generally, some gates are **dichotomy classifiers** where NO is a classification outcome rather than failure (see {prf:ref}`rem-dichotomy`).
+:::
 
 :::{div} feynman-prose
 
@@ -70,10 +78,16 @@ When the Sieve asks a question like "Is energy finite?", it has to give an answe
 
 The answer is: we still say NO. But---and this is crucial---we attach *metadata* to that NO explaining *why* we said it. A NO-with-witness means "I found a counterexample; this property definitely fails." A NO-inconclusive means "I could not prove it either way, so I am being conservative."
 
-Why does this matter? Because the Sieve routes these two kinds of NO differently. A genuine refutation (NO-with-witness) routes to a failure mode---the system really is broken. An inconclusive answer routes to the reconstruction loop, where we try to acquire the missing information or extend our proof library.
+Why does this matter? Because the Sieve routes these two kinds of NO differently. A genuine refutation (NO-with-witness) routes along the NO edge to barriers/surgeries and, at the Lock, to fatal error. An inconclusive answer follows the same NO edge but carries an upgradeable payload; only the Lock’s breached-inconclusive case invokes reconstruction.
 
 This is how we remain honest about what we know while still making definite progress. The Sieve never hangs in an "I don't know" state. It always moves forward, but it remembers what kind of evidence led to its decisions.
 
+:::
+
+:::{prf:remark} Inconclusive routing convention
+:label: rem-inc-routing
+
+At gates and barriers, an inconclusive verdict ($K^{\mathrm{inc}}$) follows the same NO edge as a witness-based NO, but is recorded for later inc-upgrades ({prf:ref}`def-inc-upgrades`). Reconstruction is invoked only at the Lock when the Hom-emptiness decision is breached-inconclusive.
 :::
 
 :::{prf:definition} Typed NO Certificates (Binary Certificate Logic)
@@ -133,13 +147,13 @@ where $f_{\mathrm{wit}}: K_P^{\mathrm{wit}} \to X$ and $f_{\mathrm{inc}}: K_P^{\
 :label: rem-routing-semantics
 
 The Sieve branches on certificate kind via case analysis:
-- **NO with $K^{\mathrm{wit}}$** $\mapsto$ Fatal route (structural inconsistency confirmed; no reconstruction possible)
-- **NO with $K^{\mathrm{inc}}$** $\mapsto$ Reconstruction route (invoke {prf:ref}`mt-lock-reconstruction`; add interface/refine library/extend templates)
+- **NO with $K^{\mathrm{wit}}$** $\mapsto$ Follow the NO edge (barrier/failure mode); at the Lock, a witness is a fatal morphism.
+- **NO with $K^{\mathrm{inc}}$** $\mapsto$ Follow the NO edge (barrier/surgery) with an upgradeable payload; only the Lock’s breached-inconclusive route invokes {prf:ref}`mt-lock-reconstruction`.
 
 This design maintains **proof-theoretic honesty**:
 - The verdict is always in $\{$YES, NO$\}$—classical two-valued logic
 - The certificate carries the epistemic distinction between "refuted" and "not yet proven"
-- Reconstruction is triggered by $K^{\mathrm{inc}}$, never by $K^{\mathrm{wit}}$
+- Reconstruction is triggered only by the Lock’s breached-inconclusive certificate, never by $K^{\mathrm{wit}}$
 
 **Literature:** {cite}`Godel31`; {cite}`Turing36`; {cite}`Rice53`. For sum types in type theory: {cite}`MartinLof84`; {cite}`HoTTBook`.
 :::
@@ -187,6 +201,12 @@ The key insight: this is not just a flowchart. It is a *proof*. Every path throu
 
 :::
 
+:::{prf:remark} Surgery scope and equivalence transport
+:label: rem-surgery-scope
+
+When a surgery fires, the subsequent proof is for the **post-surgery object**. Transporting guarantees back to the original system requires an admissible equivalence move plus transport lemma (see {prf:ref}`def-equiv-surgery-id` and YES$^\sim$ permits {prf:ref}`def-yes-tilde`).
+:::
+
 :::{dropdown} 💡 Interactive Viewing Options
 :open:
 
@@ -209,7 +229,7 @@ graph TD
     SurgCE -. "Kre_SurgCE" .-> ZenoCheck
 
     EnergyCheck -- "Yes: K+_DE" --> ZenoCheck{"<b>2. Rec_N:</b> Are Discrete Events Finite?<br>N(J) < ∞"}
-    ZenoCheck -- "No: K-_RecN" --> BarrierCausal{"<b>B2. Rec_N:</b> Infinite Depth?<br>D#40;T*#41; = ∞"}
+    ZenoCheck -- "No: K-_RecN" --> BarrierCausal{"<b>B2. Rec_N:</b> Infinite Depth?<br>D(T*) = ∞"}
     BarrierCausal -- "No: Kbr_RecN" --> SurgAdmCC{"<b>A2. SurgCC:</b> Admissible?<br>∃N_max: events ≤ N_max"}
     SurgAdmCC -- "Yes: K+_Disc" --> SurgCC["<b>S2. SurgCC:</b><br>Discrete Saturation"]
     SurgAdmCC -- "No: K-_Disc" --> ModeCC["<b>Mode C.C</b>: Event Accumulation"]
@@ -220,10 +240,10 @@ graph TD
 
     %% --- LEVEL 2: COMPACTNESS LOCUS (Profile Moduli) ---
     CompactCheck -- "No: K-_Cmu" --> BarrierScat{"<b>B3. C_μ:</b> Is Interaction Finite?<br>M[Φ] < ∞"}
-    BarrierScat -- "Yes: Kben_Cmu" --> ModeDD["<b>Mode D.D</b>: Dispersion<br><i>#40;Global Existence#41;</i>"]
+    BarrierScat -- "Yes: Kben_Cmu" --> ModeDD["<b>Mode D.D</b>: Dispersion<br><i>(Global Existence)</i>"]
     BarrierScat -- "No: Kpath_Cmu" --> SurgAdmCD_Alt{"<b>A3. SurgCD_Alt:</b> Admissible?<br>V ∈ L_soliton ∧ ‖V‖_H¹ < ∞"}
     SurgAdmCD_Alt -- "Yes: K+_Prof" --> SurgCD_Alt["<b>S3. SurgCD_Alt:</b><br>Concentration-Compactness"]
-    SurgAdmCD_Alt -- "No: K-_Prof" --> ModeCD_Alt["<b>Mode C.D</b>: Geometric Collapse<br><i>#40;Via Escape#41;</i>"]
+    SurgAdmCD_Alt -- "No: K-_Prof" --> ModeCD_Alt["<b>Mode C.D</b>: Geometric Collapse<br><i>(Via Escape)</i>"]
     SurgCD_Alt -. "Kre_SurgCD_Alt" .-> Profile
 
     CompactCheck -- "Yes: K+_Cmu" --> Profile["<b>Canonical Profile V Emerges</b>"]
@@ -249,8 +269,8 @@ graph TD
     ParamCheck -- "Yes: K+_SCdc" --> GeomCheck{"<b>6. Cap_H:</b> Is Codim ≥ Threshold?<br>codim(S) ≥ 2"}
 
     %% --- LEVEL 4: DIMENSION FILTRATION ---
-    GeomCheck -- "No: K-_CapH" --> BarrierCap{"<b>B6. Cap_H:</b> Is Measure Zero?<br>Cap_H#40;S#41; = 0"}
-    BarrierCap -- "No: Kbr_CapH" --> SurgAdmCD{"<b>A6. SurgCD:</b> Admissible?<br>Cap#40;Σ#41; ≤ ε ∧ V ∈ L_neck"}
+    GeomCheck -- "No: K-_CapH" --> BarrierCap{"<b>B6. Cap_H:</b> Is Measure Zero?<br>Cap_H(S) = 0"}
+    BarrierCap -- "No: Kbr_CapH" --> SurgAdmCD{"<b>A6. SurgCD:</b> Admissible?<br>Cap(Σ) ≤ ε ∧ V ∈ L_neck"}
     SurgAdmCD -- "Yes: K+_Neck" --> SurgCD["<b>S6. SurgCD:</b><br>Auxiliary/Structural"]
     SurgAdmCD -- "No: K-_Neck" --> ModeCD["<b>Mode C.D</b>: Geometric Collapse"]
     SurgCD -. "Kre_SurgCD" .-> StiffnessCheck
@@ -259,24 +279,24 @@ graph TD
     GeomCheck -- "Yes: K+_CapH" --> StiffnessCheck{"<b>7. LS_σ:</b> Is Stiffness Certified?<br>LS/KL/LSI or inf σ(L) > 0"}
 
     %% --- LEVEL 5: SPECTRAL OBSTRUCTION ---
-    StiffnessCheck -- "No: K-_LSsig" --> BarrierGap{"<b>B7. LS_σ:</b> Is Kernel Finite?<br>dim ker#40;L#41; < ∞ ∧ σ_ess > 0"}
+    StiffnessCheck -- "No: K-_LSsig" --> BarrierGap{"<b>B7. LS_σ:</b> Is Kernel Finite?<br>dim ker(L) < ∞ ∧ σ_ess > 0"}
     BarrierGap -- "Yes: Kblk_LSsig" --> TopoCheck
     BarrierGap -- "No: Kstag_LSsig" --> BifurcateCheck{"<b>7a. LS_∂²V:</b> Is State Unstable?<br>∂²V(x*) ⊁ 0"}
 
     %% --- LEVEL 5b: SPECTRAL RESTORATION (Bifurcation Resolution) ---
-    BifurcateCheck -- "No: K-_LSd2V" --> SurgAdmSD{"<b>A7. SurgSD:</b> Admissible?<br>dim ker#40;H#41; < ∞ ∧ V iso."}
+    BifurcateCheck -- "No: K-_LSd2V" --> SurgAdmSD{"<b>A7. SurgSD:</b> Admissible?<br>dim ker(H) < ∞ ∧ V iso."}
     SurgAdmSD -- "Yes: K+_Iso" --> SurgSD["<b>S7. SurgSD:</b><br>Ghost Extension"]
     SurgAdmSD -- "No: K-_Iso" --> ModeSD["<b>Mode S.D</b>: Stiffness Breakdown"]
     SurgSD -. "Kre_SurgSD" .-> TopoCheck
     BifurcateCheck -- "Yes: K+_LSd2V" --> SymCheck{"<b>7b. G_act:</b> Is G-orbit Nontrivial?<br>⎸G·v₀⎸ > 1"}
 
-    %% Path A: Symmetry Breaking (Governed by SC_∂c)
-    SymCheck -- "Yes: K+_Gact" --> CheckSC{"<b>7c. SC_∂c:</b> Are Constants Stable?<br>‖∂c‖ < ε"}
-    CheckSC -- "Yes: K+_SCdc" --> ActionSSB["<b>ACTION: SYM. BREAKING</b><br>Generates Mass Gap"]
+    %% Path A: Symmetry Breaking (Governed by SC_SSB)
+    SymCheck -- "Yes: K+_Gact" --> CheckSSB{"<b>7c. SC_SSB:</b> Are Broken-Phase Parameters Stable?<br>‖θ_broken−θ0‖ ≤ C_SSB"}
+    CheckSSB -- "Yes: K+_SC_SSB" --> ActionSSB["<b>ACTION: SYM. BREAKING</b><br>Generates Mass Gap"]
     ActionSSB -- "Kgap" --> TopoCheck
-    CheckSC -- "No: K-_SCdc" --> SurgAdmSC_Rest{"<b>A8. SurgSC_Rest:</b> Admissible?<br>ΔV > k_B T ∧ Γ < Γ_crit"}
+    CheckSSB -- "No: K-_SC_SSB" --> SurgAdmSC_Rest{"<b>A8. SurgSC_Rest:</b> Admissible?<br>ΔV > k_B T ∧ Γ < Γ_crit"}
     SurgAdmSC_Rest -- "Yes: K+_Vac" --> SurgSC_Rest["<b>S8. SurgSC_Rest:</b><br>Auxiliary Extension"]
-    SurgAdmSC_Rest -- "No: K-_Vac" --> ModeSC_Rest["<b>Mode S.C</b>: Parameter Instability<br><i>#40;Vacuum Decay#41;</i>"]
+    SurgAdmSC_Rest -- "No: K-_Vac" --> ModeSC_Rest["<b>Mode S.C</b>: Parameter Instability<br><i>(Vacuum Decay)</i>"]
     SurgSC_Rest -. "Kre_SurgSC_Rest" .-> TopoCheck
 
     %% Path B: Tunneling (Governed by TB_S)
@@ -285,14 +305,14 @@ graph TD
     ActionTunnel -- "Ktunnel" --> TameCheck
     CheckTB -- "No: K-_TBS" --> SurgAdmTE_Rest{"<b>A9. SurgTE_Rest:</b> Admissible?<br>V ≅ S^n×I ∧ S_R[γ] < ∞"}
     SurgAdmTE_Rest -- "Yes: K+_Inst" --> SurgTE_Rest["<b>S9. SurgTE_Rest:</b><br>Structural"]
-    SurgAdmTE_Rest -- "No: K-_Inst" --> ModeTE_Rest["<b>Mode T.E</b>: Topological Twist<br><i>#40;Metastasis#41;</i>"]
+    SurgAdmTE_Rest -- "No: K-_Inst" --> ModeTE_Rest["<b>Mode T.E</b>: Topological Twist<br><i>(Metastasis)</i>"]
     SurgTE_Rest -. "Kre_SurgTE_Rest" .-> TameCheck
 
     StiffnessCheck -- "Yes: K+_LSsig" --> TopoCheck{"<b>8. TB_π:</b> Is Sector Reachable?<br>[π] ∈ π₀(C)_acc"}
 
     %% --- LEVEL 6: HOMOTOPICAL OBSTRUCTIONS ---
     TopoCheck -- "No: K-_TBpi" --> BarrierAction{"<b>B8. TB_π:</b> Energy < Gap?<br>E < S_min + Δ"}
-    BarrierAction -- "No: Kbr_TBpi" --> SurgAdmTE{"<b>A10. SurgTE:</b> Admissible?<br>V ≅ S^n×R #40;Neck#41;"}
+    BarrierAction -- "No: Kbr_TBpi" --> SurgAdmTE{"<b>A10. SurgTE:</b> Admissible?<br>V ≅ S^n×R (Neck)"}
     SurgAdmTE -- "Yes: K+_Topo" --> SurgTE["<b>S10. SurgTE:</b><br>Tunnel"]
     SurgAdmTE -- "No: K-_Topo" --> ModeTE["<b>Mode T.E</b>: Topological Twist"]
     SurgTE -. "Kre_SurgTE" .-> TameCheck
@@ -319,8 +339,8 @@ graph TD
     ErgoCheck -- "Yes: K+_TBrho" --> ComplexCheck{"<b>11. Rep_K:</b> Is Trace Describable?<br>∃p: |p| ≤ L, time ≤ R, U(p) ≈ T_thin"}
 
     %% --- LEVEL 7: KOLMOGOROV FILTRATION ---
-    ComplexCheck -- "No: K-_RepK" --> BarrierEpi{"<b>B11. Rep_K:</b> Approx. Bounded?<br>sup K_ε#40;T_thin#41; ≤ S_BH"}
-    BarrierEpi -- "No: Kbr_RepK" --> SurgAdmDC{"<b>A13. SurgDC:</b> Admissible?<br>K_ε#40;T_thin#41; ≤ S_BH+ε ∧ Lipschitz"}
+    ComplexCheck -- "No: K-_RepK" --> BarrierEpi{"<b>B11. Rep_K:</b> Approx. Bounded?<br>sup K_ε(T_thin) ≤ S_BH"}
+    BarrierEpi -- "No: Kbr_RepK" --> SurgAdmDC{"<b>A13. SurgDC:</b> Admissible?<br>K_ε(T_thin) ≤ S_BH+ε ∧ Lipschitz"}
     SurgAdmDC -- "Yes: K+_Lip" --> SurgDC["<b>S13. SurgDC:</b><br>Viscosity Solution"]
     SurgAdmDC -- "No: K-_Lip" --> ModeDC["<b>Mode D.C</b>: Semantic Horizon"]
     SurgDC -. "Kre_SurgDC" .-> OscillateCheck
@@ -357,8 +377,8 @@ graph TD
     BarrierInput -- "Yes: Kblk_BoundInt" --> AlignCheck
 
     StarveCheck -- "Yes: K+_BoundInt" --> AlignCheck{"<b>16. GC_T:</b> Is Control Matched?<br>T(u) ~ d"}
-    AlignCheck -- "No: K-_GCT" --> BarrierVariety{"<b>B16. GC_T:</b> Variety Sufficient?<br>H#40;u#41; ≥ H#40;d#41;"}
-    BarrierVariety -- "No: Kbr_GCT" --> SurgAdmBC{"<b>A17. SurgBC:</b> Admissible?<br>H#40;u#41; < H#40;d#41; ∧ bridgeable"}
+    AlignCheck -- "No: K-_GCT" --> BarrierVariety{"<b>B16. GC_T:</b> Variety Sufficient?<br>H(u) ≥ H(d)"}
+    BarrierVariety -- "No: Kbr_GCT" --> SurgAdmBC{"<b>A17. SurgBC:</b> Admissible?<br>H(u) < H(d) ∧ bridgeable"}
     SurgAdmBC -- "Yes: K+_Ent" --> SurgBC["<b>S17. SurgBC:</b><br>Controller Augmentation"]
     SurgAdmBC -- "No: K-_Ent" --> ModeBC["<b>Mode B.C</b>: Misalignment"]
     SurgBC -. "Kre_SurgBC" .-> BarrierExclusion
@@ -369,9 +389,9 @@ graph TD
     BarrierVariety -- "Yes: Kblk_GCT" --> BarrierExclusion
     AlignCheck -- "Yes: K+_GCT" --> BarrierExclusion
 
-    BarrierExclusion{"<b>17. Cat_Hom:</b> Is Hom#40;Bad, S#41; = ∅?<br>Hom#40;B, S#41; = ∅"}
+    BarrierExclusion{"<b>17. Cat_Hom:</b> Is Hom(B, S) = ∅?<br>Hom(B, S) = ∅"}
 
-    BarrierExclusion -- "Yes: Kblk_CatHom" --> VICTORY(["<b>GLOBAL REGULARITY</b><br><i>#40;Structural Exclusion Confirmed#41;</i>"])
+    BarrierExclusion -- "Yes: Kblk_CatHom" --> VICTORY(["<b>GLOBAL REGULARITY</b><br><i>(Structural Exclusion Confirmed)</i>"])
     BarrierExclusion -- "No: Kmorph_CatHom" --> ModeCat["<b>FATAL ERROR</b><br>Structural Inconsistency"]
     BarrierExclusion -- "NO(inc): Kbr-inc_CatHom" --> ReconstructionLoop["<b>LOCK-Reconstruction:</b><br>Structural Reconstruction"]
     ReconstructionLoop -- "Verdict: Kblk" --> VICTORY
@@ -448,7 +468,7 @@ graph TD
     %% Restoration checks - Blue (interface permit checks)
     style BifurcateCheck fill:#3b82f6,stroke:#2563eb,color:#ffffff
     style SymCheck fill:#3b82f6,stroke:#2563eb,color:#ffffff
-    style CheckSC fill:#3b82f6,stroke:#2563eb,color:#ffffff
+    style CheckSSB fill:#3b82f6,stroke:#2563eb,color:#ffffff
     style CheckTB fill:#3b82f6,stroke:#2563eb,color:#ffffff
 
     %% Restoration mechanisms - Purple (escape mechanisms)
@@ -553,7 +573,7 @@ To instantiate the sieve for a specific system, one must implement each projecti
 | 7    | $\mathrm{LS}_\sigma$          | StiffnessCheck   | $K_{\mathrm{LS}_\sigma}^+$ / $K_{\mathrm{LS}_\sigma}^-$                                               | $\sigma$       | Linearization $L$        | $\mathfrak{D}$ on $\Phi$        | Spectrum                           | Is Stiffness Certified?                         | LS/KL/LSI or $\inf \sigma(L) > 0$             |
 | 7a   | $\mathrm{LS}_{\partial^2 V}$  | BifurcateCheck   | $K_{\mathrm{LS}_{\partial^2 V}}^+$ / $K_{\mathrm{LS}_{\partial^2 V}}^-$                               | $\partial^2 V$ | Equilibrium $x^*$        | $\mathfrak{D}$ on $\mathcal{X}$ | Hessian                            | Is State Unstable?                              | $\partial^2 V(x^*) \not\succ 0$               |
 | 7b   | $G_{\mathrm{act}}$            | SymCheck         | $K_{G_{\mathrm{act}}}^+$ / $K_{G_{\mathrm{act}}}^-$                                                   | $G$            | Vacuum $v_0$             | $G$                             | Group action                       | Is $G$-orbit Nontrivial?                        | $\lvert G \cdot v_0 \rvert > 1$               |
-| 7c   | $\mathrm{SC}_{\partial c}$    | CheckSC          | $K_{\mathrm{SC}_{\partial c}}^+$ / $K_{\mathrm{SC}_{\partial c}}^-$                                   | $\partial c$   | Constants $c$            | $\mathfrak{D}$ on $\mathcal{X}$ | Parameter derivative (restoration) | Are Constants Stable?                           | $\|\partial_c\| < \epsilon$           |
+| 7c   | $\mathrm{SC}_{\mathrm{SSB}}$  | CheckSSB         | $K_{\mathrm{SC}_{\mathrm{SSB}}}^+$ / $K_{\mathrm{SC}_{\mathrm{SSB}}}^-$                               | $\Delta\theta$ | Constants $c$            | $\mathfrak{D}$ on $\mathcal{X}$ | Broken-phase stability             | Are Broken-Phase Parameters Stable?             | $\|\theta_{\text{broken}} - \theta_0\| \leq C_{\text{SSB}}$ |
 | 7d   | $\mathrm{TB}_S$               | CheckTB          | $K_{\mathrm{TB}_S}^+$ / $K_{\mathrm{TB}_S}^-$                                                         | $S$            | Instanton path $\gamma$  | $\mathfrak{D}$ on $\mathcal{X}$ | Action functional                  | Is Tunneling Finite?                            | $S[\gamma] < \infty$                          |
 | 8    | $\mathrm{TB}_\pi$             | TopoCheck        | $K_{\mathrm{TB}_\pi}^+$ / $K_{\mathrm{TB}_\pi}^-$                                                     | $\pi$          | Configuration $C$        | $\mathfrak{D}$ on $\mathcal{X}$ | Homotopy class                     | Is Sector Reachable?                            | $[\pi] \in \pi_0(\mathcal{C})_{\mathrm{acc}}$ |
 | 9    | $\mathrm{TB}_O$               | TameCheck        | $K_{\mathrm{TB}_O}^+$ / $K_{\mathrm{TB}_O}^-$                                                         | $O$            | Stratification $\Sigma$  | $\mathfrak{D}$ on $\mathcal{X}$ | O-minimal structure                | Is Topology Tame?                               | $\Sigma \in \mathcal{O}\text{-min}$           |
@@ -562,9 +582,9 @@ To instantiate the sieve for a specific system, one must implement each projecti
 | 12   | $\mathrm{GC}_\nabla$          | OscillateCheck   | $K_{\mathrm{GC}_\nabla}^+$ / $K_{\mathrm{GC}_\nabla}^-$                                               | $\nabla$       | Potential $V$            | $\mathfrak{D}$ on $\mathcal{X}$ | Spectral density                   | Does Flow Oscillate?                            | $\sup_{0<|\omega|\leq \omega_{\max}} S(\omega) \geq \eta$ |
 | 13   | $\mathrm{Bound}_\partial$     | BoundaryCheck    | $K_{\mathrm{Bound}_\partial}^+$ / $K_{\mathrm{Bound}_\partial}^-$                                     | $\partial$     | Domain $\Omega$          | $\mathfrak{D}$ on $\mathcal{X}$ | Boundary operator                  | Is System Open?                                 | $\partial\Omega \neq \emptyset$               |
 | 14   | $\mathrm{Bound}_B$            | OverloadCheck    | $K_{\mathrm{Bound}_B}^+$ / $K_{\mathrm{Bound}_B}^-$                                                   | $B$            | Control signal $u$       | $\mathfrak{D}$ on $\Phi$        | Input operator                     | Is Input Bounded?                               | $\|Bu\| \leq M$                     |
-| 15   | $\mathrm{Bound}_{\Sigma}$         | StarveCheck      | $K_{\mathrm{Bound}_{\Sigma}}^+$ / $K_{\mathrm{Bound}_{\Sigma}}^-$                                             | $\int$         | Resource $r$             | $\mathfrak{D}$ on $\Phi$        | Supply integral                    | Is Input Sufficient?                            | $\int_0^T r \, dt \geq r_{\min}$              |
+| 15   | $\mathrm{Bound}_{\int}$         | StarveCheck      | $K_{\mathrm{Bound}_{\int}}^+$ / $K_{\mathrm{Bound}_{\int}}^-$                                             | $\int$         | Resource $r$             | $\mathfrak{D}$ on $\Phi$        | Supply integral                    | Is Input Sufficient?                            | $\int_0^T r \, dt \geq r_{\min}$              |
 | 16   | $\mathrm{GC}_T$               | AlignCheck       | $K_{\mathrm{GC}_T}^+$ / $K_{\mathrm{GC}_T}^-$                                                         | $T$            | Pair $(u,d)$             | $\mathfrak{D}$ on $\Phi$        | Gauge transform                    | Is Control Matched?                             | $T(u) \sim d$                                 |
-| 17   | $\mathrm{Cat}_{\mathrm{Hom}}$ | BarrierExclusion | $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}$ / $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{morph}}$ | $\mathrm{Hom}$ | Morphisms $\mathrm{Mor}$ | $\mathfrak{D}$ categorical      | Hom functor                        | Is $\mathrm{Hom}(\mathrm{Bad}, S) = \emptyset$? | $\mathrm{Hom}(\mathcal{B}, S) = \emptyset$    |
+| 17   | $\mathrm{Cat}_{\mathrm{Hom}}$ | BarrierExclusion | $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}$ / $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{morph}}$ / $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{br\text{-}inc}}$ | $\mathrm{Hom}$ | Morphisms $\mathrm{Mor}$ | $\mathfrak{D}$ categorical      | Hom functor                        | Is $\mathrm{Hom}(\mathcal{B}, S) = \emptyset$? | $\mathrm{Hom}(\mathcal{B}, S) = \emptyset$    |
 
 :::{prf:remark} Scaling Index Mapping
 :label: rem-scaling-index
@@ -612,9 +632,9 @@ The following table defines the **Secondary Obstruction Classes**---cohomologica
 | 11   | BarrierEpi       | $\mathrm{Rep}_K$, $\mathrm{Cap}_H$               | $K_{\mathrm{TB}_\rho}^\pm$                 | $K_{\mathrm{Rep}_K}^{\mathrm{blk}}$ / $K_{\mathrm{Rep}_K}^{\mathrm{br}}$                              | $\sup_\epsilon K_\epsilon(T_{\mathrm{thin}}) \leq S_{\text{BH}}$               | Is approximable complexity within holographic bounds?        | Epistemic Horizon          |
 | 12   | BarrierFreq      | $\mathrm{GC}_\nabla$, $\mathrm{SC}_\lambda$      | $K_{\mathrm{Rep}_K}^\pm$                   | $K_{\mathrm{GC}_\nabla}^{\mathrm{blk}}$ / $K_{\mathrm{GC}_\nabla}^{\mathrm{br}}$                      | $\int \omega^2 S(\omega) \,d\omega < \infty$                     | Is the total oscillation energy finite?                      | Frequency Barrier          |
 | 14   | BarrierBode      | $\mathrm{Bound}_B$, $\mathrm{LS}_\sigma$         | $K_{\mathrm{Bound}_\partial}^+$            | $K_{\mathrm{Bound}_B}^{\mathrm{blk}}$ / $K_{\mathrm{Bound}_B}^{\mathrm{br}}$                          | $\int_0^\infty \ln \|S(i\omega)\| \,d\omega > -\infty$ | Is the sensitivity integral conserved (waterbed effect)?     | Bode Sensitivity           |
-| 15   | BarrierInput     | $\mathrm{Bound}_{\Sigma}$, $C_\mu$                   | $K_{\mathrm{Bound}_B}^\pm$                 | $K_{\mathrm{Bound}_{\Sigma}}^{\mathrm{blk}}$ / $K_{\mathrm{Bound}_{\Sigma}}^{\mathrm{br}}$                    | $r_{\text{reserve}} > 0$                                       | Is there a reservoir to prevent starvation?                  | Input Stability            |
-| 16   | BarrierVariety   | $\mathrm{GC}_T$, $\mathrm{Cap}_H$                | $K_{\mathrm{Bound}_{\Sigma}}^\pm$              | $K_{\mathrm{GC}_T}^{\mathrm{blk}}$ / $K_{\mathrm{GC}_T}^{\mathrm{br}}$                                | $H(u) \geq H(d)$                                               | Does control entropy match disturbance entropy?              | Requisite Variety          |
-| 17   | BarrierExclusion | $\mathrm{Cat}_{\mathrm{Hom}}$                    | Full $\Gamma$                              | $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}$ / $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{morph}}$ / $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{hor}}$ | $\mathrm{Hom}(\mathcal{B}, S) = \emptyset$                     | Is there a categorical obstruction to the bad pattern?       | Morphism Exclusion / Reconstruction |
+| 15   | BarrierInput     | $\mathrm{Bound}_{\int}$, $C_\mu$                   | $K_{\mathrm{Bound}_B}^\pm$                 | $K_{\mathrm{Bound}_{\int}}^{\mathrm{blk}}$ / $K_{\mathrm{Bound}_{\int}}^{\mathrm{br}}$                    | $r_{\text{reserve}} > 0$                                       | Is there a reservoir to prevent starvation?                  | Input Stability            |
+| 16   | BarrierVariety   | $\mathrm{GC}_T$, $\mathrm{Cap}_H$                | $K_{\mathrm{Bound}_{\int}}^\pm$              | $K_{\mathrm{GC}_T}^{\mathrm{blk}}$ / $K_{\mathrm{GC}_T}^{\mathrm{br}}$                                | $H(u) \geq H(d)$                                               | Does control entropy match disturbance entropy?              | Requisite Variety          |
+| 17   | BarrierExclusion | $\mathrm{Cat}_{\mathrm{Hom}}$                    | Full $\Gamma$                              | $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}$ / $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{morph}}$ / $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{br\text{-}inc}}$ | $\mathrm{Hom}(\mathcal{B}, S) = \emptyset$                     | Is there a categorical obstruction to the bad pattern?       | Morphism Exclusion / Reconstruction |
 
 :::{prf:remark} Causal Depth Scale
 :label: rem-causal-depth-scale
@@ -650,7 +670,7 @@ The following table defines the **Cobordism Morphisms**---categorical pushouts t
 | S5  | SurgSC       | $\mathrm{SC}_{\partial c}$, $\mathrm{LS}_\sigma$ | $K_{\mathrm{SC}_{\partial c}}^{\mathrm{br}}$ | $K_{\mathrm{SurgSC}}^{\mathrm{re}}$       | $\|\partial_t \theta\| < C_{\text{adm}} \land \theta \in \Theta_{\text{stable}}$             | Convex Integration        | Parameter Freeze        |
 | S6  | SurgCD       | $\mathrm{Cap}_H$, $\mathrm{LS}_\sigma$           | $K_{\mathrm{Cap}_H}^{\mathrm{br}}$           | $K_{\mathrm{SurgCD}}^{\mathrm{re}}$       | $\operatorname{Cap}_H(\Sigma) \leq \varepsilon_{\text{adm}} \land V \in \mathcal{L}_{\text{neck}}$ | Auxiliary/Structural      | Excision-Capping        |
 | S7  | SurgSD       | $\mathrm{LS}_{\partial^2 V}$, $\mathrm{GC}_\nabla$ | $K_{\mathrm{LS}_{\partial^2 V}}^{-}$        | $K_{\mathrm{SurgSD}}^{\mathrm{re}}$       | $\dim(\ker(H_V)) < \infty \land V$ isolated                                                  | Ghost Extension           | Spectral Lift           |
-| S8  | SurgSC\_Rest | $\mathrm{SC}_{\partial c}$, $\mathrm{LS}_\sigma$ | $K_{\mathrm{SC}_{\partial c}}^{-}$          | $K_{\mathrm{SurgSC\_Rest}}^{\mathrm{re}}$ | $\Delta V > k_B T \land \Gamma < \Gamma_{\text{crit}}$                                       | Auxiliary Extension       | Vacuum Shift            |
+| S8  | SurgSC\_Rest | $\mathrm{SC}_{\mathrm{SSB}}$, $\mathrm{LS}_\sigma$ | $K_{\mathrm{SC}_{\mathrm{SSB}}}^{-}$        | $K_{\mathrm{SurgSC\_Rest}}^{\mathrm{re}}$ | $\Delta V > k_B T \land \Gamma < \Gamma_{\text{crit}}$                                       | Auxiliary Extension       | Vacuum Shift            |
 | S9  | SurgTE\_Rest | $\mathrm{TB}_S$, $C_\mu$                         | $K_{\mathrm{TB}_S}^{-}$                     | $K_{\mathrm{SurgTE\_Rest}}^{\mathrm{re}}$ | $V \cong S^{n-1} \times I \land S_R[\gamma] < \infty$ (renormalized)                         | Structural                | Instanton Reconnection  |
 | S10 | SurgTE       | $\mathrm{TB}_\pi$, $C_\mu$                       | $K_{\mathrm{TB}_\pi}^{\mathrm{br}}$          | $K_{\mathrm{SurgTE}}^{\mathrm{re}}$       | $V \cong S^{n-1} \times \mathbb{R}$ (Neck)                                                   | Tunnel                    | Topological Surgery     |
 | S11 | SurgTC       | $\mathrm{TB}_O$, $\mathrm{Rep}_K$                | $K_{\mathrm{TB}_O}^{\mathrm{br}}$            | $K_{\mathrm{SurgTC}}^{\mathrm{re}}$       | $\Sigma \in \mathcal{O}_{\text{ext}}$-definable $\land \dim(\Sigma) < n$                     | O-minimal Regularization  | Structure Extension     |
@@ -658,7 +678,7 @@ The following table defines the **Cobordism Morphisms**---categorical pushouts t
 | S13 | SurgDC       | $\mathrm{Rep}_K$, $\mathrm{Cap}_H$               | $K_{\mathrm{Rep}_K}^{\mathrm{br}}$           | $K_{\mathrm{SurgDC}}^{\mathrm{re}}$       | $K_\epsilon(T_{\mathrm{thin}}) \leq S_{\text{BH}} + \varepsilon \land T_{\mathrm{thin}} \in W^{1,\infty}$                             | Viscosity Solution        | Mollification           |
 | S14 | SurgDE       | $\mathrm{GC}_\nabla$, $\mathrm{SC}_\lambda$      | $K_{\mathrm{GC}_\nabla}^{\mathrm{br}}$       | $K_{\mathrm{SurgDE}}^{\mathrm{re}}$       | $\exists\Lambda: \int_{\lvert\omega\rvert\leq\Lambda} \omega^2 S \,d\omega < \infty \land$ uniform ellipticity | De Giorgi-Nash-Moser      | Holder Regularization   |
 | S15 | SurgBE       | $\mathrm{Bound}_B$, $\mathrm{LS}_\sigma$         | $K_{\mathrm{Bound}_B}^{\mathrm{br}}$         | $K_{\mathrm{SurgBE}}^{\mathrm{re}}$       | $\|S(i\omega)\|_\infty < M \land$ phase margin $> 0$                                         | Saturation                | Gain Limiting           |
-| S16 | SurgBD       | $\mathrm{Bound}_{\Sigma}$, $C_\mu$                   | $K_{\mathrm{Bound}_{\Sigma}}^{\mathrm{br}}$      | $K_{\mathrm{SurgBD}}^{\mathrm{re}}$       | $r_{\text{reserve}} > 0 \land$ recharge $>$ drain                                            | Reservoir                 | Buffer Addition         |
+| S16 | SurgBD       | $\mathrm{Bound}_{\int}$, $C_\mu$                   | $K_{\mathrm{Bound}_{\int}}^{\mathrm{br}}$      | $K_{\mathrm{SurgBD}}^{\mathrm{re}}$       | $r_{\text{reserve}} > 0 \land$ recharge $>$ drain                                            | Reservoir                 | Buffer Addition         |
 | S17 | SurgBC       | $\mathrm{GC}_T$, $\mathrm{Cap}_H$                | $K_{\mathrm{GC}_T}^{\mathrm{br}}$            | $K_{\mathrm{SurgBC}}^{\mathrm{re}}$       | $H(u) < H(d) - \varepsilon \land \exists u': H(u') \geq H(d)$                                | Controller Augmentation   | Entropy Matching        |
 
 :::{note} Restoration vs. Barrier Surgeries

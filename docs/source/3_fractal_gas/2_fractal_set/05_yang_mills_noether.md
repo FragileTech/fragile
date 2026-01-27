@@ -43,7 +43,7 @@ In standard physics textbooks, you write down the Yang-Mills Lagrangian $\mathca
 
 What we are going to do in this chapter is more ambitious: derive Yang-Mills theory from first principles. The starting point is the Fractal Gas algorithm. Walkers explore a fitness landscape, cloning from successful neighbors. The cloning amplitudes carry phases from cloning scores (fitness comparisons), while their magnitudes come from cloning companion selection probabilities. These phases are the gauge field. We do not introduce the gauge field as an external object; we identify it with structure that is already present in the optimization algorithm.
 
-Here is the key insight. The Fractal Gas has a path integral structure. Walkers trace paths through the fitness landscape, and the probability of each path depends on the cloning events along the way. The log-probability of a path is an action. When we analyze this action carefully, decomposing it into kinetic, potential, and gauge contributions, we find that the gauge contribution has exactly the Wilson form. The plaquettes are closed loops in the causal set structure. The link variables are the cloning-score phases. The sum over plaquettes gives the Yang-Mills action.
+Here is the key insight. The Fractal Gas has a path integral structure. Walkers trace paths through the fitness landscape, and the probability of each path depends on the cloning events along the way. The log-probability of a path is an action. When we analyze this action carefully, decomposing it into kinetic, potential, and gauge contributions, we find that the gauge contribution has exactly the Wilson form. The plaquettes are interaction 4-cycles built from two triangles (CST+IA boundary; IG cancels). The SU(2) link data live on IG edges (cloning-score phases) and IA edges (attribution rotations). The sum over plaquettes gives the Yang-Mills action.
 
 This derivation has consequences. First, all fundamental constants become expressible in terms of algorithmic parameters like the cloning scale $\epsilon_c$, the localization scale $\rho$, and the timestep $\tau$. There are no free parameters to fit. Second, the mass gap becomes a computational necessity rather than a mysterious dynamical property. By {prf:ref}`thm-mass-gap-dichotomy` from the Agent volume, bounded observers cannot implement gapless theories. Since Yang-Mills describes physics, and physics is computed by bounded systems, Yang-Mills must be gapped.
 
@@ -128,7 +128,7 @@ The second layer is $\text{SU}(2)_{\text{weak}}$—the weak isospin symmetry. Th
 
 The third layer is $U(1)_{\text{fitness}}$—the fitness phase symmetry. Absolute fitness values are unphysical; only differences matter. This is like choosing a zero point for energy—different choices give the same physics.
 
-These three symmetries have different mathematical structures (discrete vs. continuous, local vs. global), but they all arise from the same principle: redundancy in the description of the physical state.
+These three symmetries have different mathematical structures (discrete vs. continuous, local vs. local), but they all arise from the same principle: redundancy in the description of the physical state.
 :::
 
 ### 2.1. Three-Tier Gauge Hierarchy
@@ -156,14 +156,14 @@ $$
 - **Transformation**: $(U \otimes I_{\text{div}})$ with $U \in \text{SU}(2)$
 - **Physical invariant**: Total interaction probability
 
-**Tier 3: $U(1)_{\text{fitness}}$ Global** (emergent, continuous)
+**Tier 3: $U(1)_{\text{fitness}}$ Local** (emergent, continuous)
 
 - **Origin**: Absolute fitness baseline is unphysical
-- **Transformation**: $\psi_{ik}^{(\text{div})} \to e^{i\alpha} \psi_{ik}^{(\text{div})}$ (same $\alpha$ everywhere)
+- **Transformation**: $\psi_{ik}^{(\text{div})} \to e^{i\alpha_i} \psi_{ik}^{(\text{div})}$ (global shifts are the special case $\alpha_i \equiv \alpha$)
 - **Physical invariant**: Cloning kernel modulus $|K_{\text{eff}}(i,j)|^2$
 - **Conserved charge**: Fitness current $J_{\text{fitness}}^\mu$
 
-**Hierarchy**: $S_N$ is fundamental (from indistinguishability); $\text{SU}(2)$ is local but emergent; $U(1)$ is global and emergent.
+**Hierarchy**: $S_N$ is fundamental (from indistinguishability); $\text{SU}(2)$ is local but emergent; $U(1)$ is local and emergent.
 :::
 
 ### 2.2. Dressed Walker States and Tensor Product Structure
@@ -193,8 +193,10 @@ $$
 
 with:
 - **Probability**: $P_{\text{comp}}^{(\text{div})}(k|i) = \frac{\exp(-d_{\text{alg}}^2(i,k)/(2\epsilon_d^2))}{\sum_{k'} \exp(-d_{\text{alg}}^2(i,k')/(2\epsilon_d^2))}$
-- **Fitness phase**: $\theta_i := -\frac{\Phi_i}{\hbar_{\text{eff}}}$, so
-  $\theta_{ik}^{(\text{div})} = \theta_k - \theta_i = -\frac{\Phi_k - \Phi_i}{\hbar_{\text{eff}}}$
+- **Fitness phase**: $\theta_i := -\frac{V_i}{\hbar_{\text{eff}}}$, so
+  $\theta_{ik}^{(\text{div})} = \theta_k - \theta_i = -\frac{V_k - V_i}{\hbar_{\text{eff}}}$
+
+**Notation**: $V \equiv V_{\text{fit}} \equiv \Phi$; along CST edges, $\Phi_j - \Phi_i$ denotes the accumulated fitness action.
 
 **Isospin Hilbert space**:
 
@@ -293,7 +295,7 @@ The key insight is that the Fractal Gas already has a path integral structure. W
 
 The cloning amplitudes have phases: cloning scores set the phase, while algorithmic distance fixes the amplitude through the companion kernel. These phases are exactly the gauge field. We do not introduce the gauge field as an external object; we identify it with the phase structure that is already there.
 
-Once we have the path integral and the gauge field, the action follows. The Wilson action—the sum over plaquettes of $(1 - \text{Re Tr } U)$—is not something we postulate. It is the unique gauge-invariant action that emerges from the structure of the path integral.
+Once we have the path integral and the gauge field, the action follows. The Wilson action—the sum over plaquettes of $(1 - \text{Re Tr } U)$—is not something we postulate. It is the unique gauge-invariant action that emerges from the structure of the interaction plaquettes.
 
 This is what it means to derive Yang-Mills from first principles.
 :::
@@ -492,6 +494,8 @@ $$
 \mathcal{L}_{\text{matter}}(i,j) = \bar{\Psi}_{ij} (i\gamma^\mu D_\mu - m_{\text{eff}}) \Psi_{ij}
 $$
 
+Here $m_{\text{eff}}$ is an isospin-space matrix (defined below), with an SU(2)-invariant trace part and a symmetry-breaking $T^3$ component.
+
 **Derivation of components**:
 
 **1. Kinetic term** from walker motion along CST edges:
@@ -507,13 +511,22 @@ Combining this with the spatial discrete derivatives in {prf:ref}`def-discrete-d
 **2. Mass term** from cloning score:
 
 $$
-m_{\text{eff}}(i,j) = \langle \Psi_{ij} | \hat{S}_{ij} | \Psi_{ij} \rangle = \sum_k |\psi_{ik}|^2 V_{\text{fit}}(i|k) - \sum_k |\psi_{jk}|^2 V_{\text{fit}}(j|k)
+m_i := \sum_k |\psi_{ik}|^2 V_{\text{fit}}(i|k), \quad m_j := \sum_k |\psi_{jk}|^2 V_{\text{fit}}(j|k)
+$$
+
+Define the isospin mass matrix:
+
+$$
+m_{\text{eff}}(i,j) := \begin{pmatrix} m_i & 0 \\ 0 & m_j \end{pmatrix}
+= m_0 I + \delta m \, T^3,
+\quad m_0 := \frac{m_i + m_j}{2},\ \delta m := m_i - m_j.
 $$
 
 **Physical interpretation**:
-- $m_{\text{eff}} > 0$: Walker $i$ is fitter (favors $i \to j$ cloning)
-- $m_{\text{eff}} < 0$: Walker $j$ is fitter (favors $j \to i$ cloning)
-- $m_{\text{eff}} = 0$: Equal fitness (neutral)
+- $\delta m > 0$: Walker $i$ is fitter (favors $i \to j$ cloning)
+- $\delta m < 0$: Walker $j$ is fitter (favors $j \to i$ cloning)
+- $\delta m = 0$: Equal fitness (SU(2)-symmetric)
+- $m_0$ sets the overall mass scale (SU(2)-invariant part)
 
 **Analogy to Higgs mechanism**: The fitness potential $V_{\text{fit}}$ plays the role of the Higgs field, giving "mass" (stability) to walker interactions.
 :::
@@ -529,28 +542,44 @@ The SU(2) gauge field is **identified** (not postulated) with cloning-score phas
 
 $$
 \theta_{ij}^{(SU(2))} := \frac{S_i(j)}{\hbar_{\text{eff}}}
-= \frac{\Phi_j - \Phi_i}{(\Phi_i + \varepsilon_{\text{clone}})\,\hbar_{\text{eff}}}
+= \frac{V_j - V_i}{(V_i + \varepsilon_{\text{clone}})\,\hbar_{\text{eff}}}
 $$
 
 where $S_i(j)$ is the cloning score ({prf:ref}`def-fractal-set-cloning-score`).
 
-**Gauge field components**: For edge $e = (n_i, n_j)$:
+**Gauge field components (IG/IA edges)**: For edge $e = (n_i, n_j)$ in $E_{\mathrm{IG}} \cup E_{\mathrm{IA}}$:
 
 $$
 A_e^{(a)} T^a := \frac{1}{g a_e} \theta_{ij}^{(SU(2))} \cdot \hat{n}^{(a)}
 $$
 
-where $a_e$ is the edge length ($a_e = \tau$ for CST edges and $a_e = \rho$ for IG edges).
+where $a_e$ is the edge length ($a_e = \rho$ on IG and IA edges). CST edges carry only the $U(1)$ fitness phase (temporal gauge for the SU(2) doublet).
+
+For IA edges, the SU(2) field is defined implicitly by the stored attribution rotation:
+
+$$
+U^{(2)}_{\mathrm{IA}}(i,t+1 \leftarrow j,t) = \exp\left(i g a_e \sum_{a=1}^3 A_e^{(a)} T^a\right),
+$$
+
+with $a_e = \rho$.
 
 where $T^a = \sigma^a/2$ are SU(2) generators and $\hat{n}^{(a)}$ is the direction in Lie algebra space.
 
-**Link variable** (parallel transport):
+**SU(2) link variable** (parallel transport on IG):
 
 $$
-U_{ij} = \exp\left(i g a_e \sum_{a=1}^3 A_e^{(a)} T^a\right) \in \text{SU}(2)
+U^{(2)}_{\mathrm{IG}}(i \to j) = \exp\left(i g a_e \sum_{a=1}^3 A_e^{(a)} T^a\right) \in \text{SU}(2)
 $$
 
-**Key insight**: The gauge field is the cloning score encoded as a phase, while the cloning companion kernel fixes amplitudes. This is not an analogy—the mathematical structures are identical.
+**SU(2) attribution link** (IA edges):
+
+$$
+U^{(2)}_{\mathrm{IA}}(i,t+1 \leftarrow j,t) \in \text{SU}(2),
+$$
+
+stored on IA edges as the non-abelian credit-assignment rotation (see {prf:ref}`def-fractal-set-ia-attributes`).
+
+**Key insight**: The SU(2) gauge field is the cloning score encoded as a phase on IG edges, while IA edges carry the non-abelian attribution rotations that close interaction triangles. The cloning companion kernel fixes amplitudes. This is not an analogy—the mathematical structures are identical.
 :::
 
 :::{admonition} Why This Is Not an Effective Field Theory
@@ -639,12 +668,12 @@ What we are going to show is that the Fractal Gas has exactly these Noether curr
 But there is a subtlety. The fitness-dependent mass $m_{\text{eff}}$ breaks exact SU(2) invariance. This means the SU(2) currents are only approximately conserved. This is not a bug—it is a feature. In the Standard Model, electroweak symmetry is also broken by the Higgs mechanism. The approximate conservation we find is the analog of this breaking.
 :::
 
-### 4.1. U(1) Fitness Global Current
+### 4.1. U(1) Fitness Current
 
 :::{prf:theorem} U(1) Fitness Noether Current
 :label: thm-u1-noether-current
 
-The global $U(1)_{\text{fitness}}$ symmetry implies a fitness current obeying a local continuity equation.
+The local $U(1)_{\text{fitness}}$ symmetry implies a fitness current obeying a local continuity equation.
 
 **Current definition**: For node $n_{i,t}$ (walker $i$ at time $t$):
 
@@ -758,10 +787,16 @@ $$
 J_\mu^{(3)}(i,j) = \frac{1}{2} \bar{\psi}_i \gamma_\mu \psi_i - \frac{1}{2} \bar{\psi}_j \gamma_\mu \psi_j
 $$
 
-For $a=1,2$ (off-diagonal):
+For $a=1$ (off-diagonal, symmetric):
 
 $$
-J_\mu^{(1,2)}(i,j) \propto \bar{\psi}_i \gamma_\mu \psi_j + \bar{\psi}_j \gamma_\mu \psi_i
+J_\mu^{(1)}(i,j) = \frac{1}{2}\left(\bar{\psi}_i \gamma_\mu \psi_j + \bar{\psi}_j \gamma_\mu \psi_i\right)
+$$
+
+For $a=2$ (off-diagonal, antisymmetric):
+
+$$
+J_\mu^{(2)}(i,j) = -\frac{i}{2}\left(\bar{\psi}_i \gamma_\mu \psi_j - \bar{\psi}_j \gamma_\mu \psi_i\right)
 $$
 
 **Conservation law** (on-shell, with covariant derivative):
@@ -776,6 +811,7 @@ $$
 \partial^\mu J_\mu^{(a)} = \bar{\Psi}_{ij} [m_{\text{eff}}, T^a \otimes I] \Psi_{ij}
 $$
 
+With $m_{\text{eff}} = m_0 I + \delta m\, T^3$, the commutator vanishes for $a=3$ and is $O(\delta m)$ for $a=1,2$.
 Current is exactly conserved only when $m_{\text{eff}}$ commutes with $T^a$ (constant mass).
 :::
 
@@ -901,17 +937,17 @@ We now come to the heart of the matter: the Yang-Mills action. This is the actio
 
 The standard approach is to write down $S = \frac{1}{4}\int F_{\mu\nu}F^{\mu\nu}$ and work from there. But this is a continuum expression. On a lattice—and the Fractal Set is a lattice—you need a discrete version.
 
-Ken Wilson figured this out in the 1970s {cite}`wilson1974confinement`. The key insight is that the gauge-invariant quantity is not the gauge field $A_\mu$ itself (which transforms inhomogeneously under gauge transformations), but the parallel transport around a closed loop. The product of link variables around a small square—a plaquette—gives you the discrete field strength.
+Ken Wilson figured this out in the 1970s {cite}`wilson1974confinement`. The key insight is that the gauge-invariant quantity is not the gauge field $A_\mu$ itself (which transforms inhomogeneously under gauge transformations), but the parallel transport around a closed loop. The product of link variables around a small closed loop—a plaquette—gives you the discrete field strength.
 
 The Wilson action is the sum over all plaquettes of $(1 - \frac{1}{N}\text{Re Tr } U_P)$. For small fields, this reduces to the continuum Yang-Mills action. But it is valid even for strong fields, even on coarse lattices. It is the natural action for non-perturbative gauge theory.
 
-And here is what we have accomplished: we have shown that this action emerges from the Fractal Gas. The plaquettes are the elementary closed loops in the CST+IG structure. The link variables encode the U(1) fitness phases and the SU(2) cloning-score phases. The action is not put in by hand—it falls out of the stochastic dynamics.
+And here is what we have accomplished: we have shown that this action emerges from the Fractal Gas. The plaquettes are the interaction 4-cycles built from two triangles (CST+IA boundary; IG cancels). The SU(2) link variables encode cloning-score phases on IG edges and attribution rotations on IA edges, while the U(1) fitness phases define a separate abelian link. The action is not put in by hand—it falls out of the stochastic dynamics.
 :::
 
 :::{admonition} Lattice spacing convention
 :class: note
 
-In the gauge-sector formulas below, $a$ denotes the relevant link length. For Fractal Set applications, take $a_e = \tau$ on CST (temporal) edges and $a_e = \rho$ on IG (spatial) edges; for anisotropic plaquettes replace $a^2$ by $a_\mu a_\nu$ in the $(\mu,\nu)$-plane.
+In the gauge-sector formulas below, $a_e$ denotes the relevant link length. For the SU(2) sector, take $a_e = \rho$ on IG and IA edges; the U(1) abelian link on CST edges uses $a_e = \tau$. For plaquette formulas use the loop area $A_P$ (for interaction plaquettes $A_P \sim a_{\text{CST}} a_{\text{IA}} \approx \rho \tau$; on a regular lattice $A_P = a_\mu a_\nu$ in the $(\mu,\nu)$-plane).
 :::
 
 ### 5.1. Link Variables and Parallel Transport
@@ -919,45 +955,55 @@ In the gauge-sector formulas below, $a$ denotes the relevant link length. For Fr
 :::{prf:definition} Link Variables
 :label: def-link-variable-ym
 
-Building on the gauge connection structure ({prf:ref}`def-fractal-set-gauge-connection`), for each edge $e = (n_i, n_j)$ in the Fractal Set, the **link variable** is:
+Building on the gauge connection structure ({prf:ref}`def-fractal-set-gauge-connection`), for each edge $e = (n_i, n_j)$ in the Fractal Set, we use separate link variables for the two gauge factors:
 
 $$
-U_e = U_{ij} := \exp\left(i g a_e \sum_{a=1}^3 A_e^{(a)} T^a\right) \in \text{SU}(2)
+U^{(1)}_{ij} := \exp\left(i q \, a_e \, A^{(1)}_e\right) \in U(1),
+\qquad
+U^{(2)}_{ij} := \exp\left(i g \, a_e \sum_{a=1}^3 A_e^{(a)} T^a\right) \in \text{SU}(2).
 $$
 
-with $a_e$ the length of edge $e$.
+The combined link is $U^{\text{full}}_{ij} := U^{(1)}_{ij} \, U^{(2)}_{ij} \in U(1)\times \text{SU}(2)$, with $a_e$ the length of edge $e$ (and $a_e=\rho$ on IG and IA edges for the SU(2) phase). On CST edges we set $U^{(2)}_{ij} = I$ (temporal gauge); on IA edges $U^{(2)}_{ij}$ is the attribution rotation.
+
+In the Yang-Mills (SU(2)) sector below, we write $U_{ij} \equiv U^{(2)}_{ij}$ and $U_P$ for the SU(2) plaquette; the abelian $U(1)$ factor is treated separately.
 
 **Physical interpretation**: Parallel transport of isospin from node $i$ to node $j$.
 
 **Properties**:
 
-1. **Unitarity**: $U_{ij}^\dagger U_{ij} = I$
+1. **Unitarity**: $(U^{(2)}_{ij})^\dagger U^{(2)}_{ij} = I$ and $(U^{(1)}_{ij})^\dagger U^{(1)}_{ij} = 1$
 
-2. **Inverse**: $U_{ji} = U_{ij}^\dagger$
+2. **Inverse**: $U^{(2)}_{ji} = (U^{(2)}_{ij})^\dagger$ and $U^{(1)}_{ji} = (U^{(1)}_{ij})^\dagger$
 
-3. **Gauge transformation**: Under local $U_i, U_j \in \text{SU}(2)$:
+3. **Gauge transformation**: Under local $V_i, V_j \in \text{SU}(2)$ and $e^{i\alpha_i}, e^{i\alpha_j} \in U(1)$:
 
    $$
-   U_{ij} \to U_i U_{ij} U_j^\dagger
+   U^{(2)}_{ij} \to V_i U^{(2)}_{ij} V_j^\dagger,
+   \qquad
+   U^{(1)}_{ij} \to e^{i\alpha_i} U^{(1)}_{ij} e^{-i\alpha_j}
    $$
 
 4. **Composition**: For path $\gamma = (n_1, n_2, \ldots, n_k)$:
 
    $$
-   U[\gamma] = U_{12} U_{23} \cdots U_{(k-1)k}
+   U^{(1)}[\gamma] = U^{(1)}_{12} U^{(1)}_{23} \cdots U^{(1)}_{(k-1)k},
+   \quad
+   U^{(2)}[\gamma] = U^{(2)}_{12} U^{(2)}_{23} \cdots U^{(2)}_{(k-1)k}
    $$
 
-**Phase identification** (from {prf:ref}`def-gauge-field-from-phases`):
+**Phase identification (SU(2) on IG)** (from {prf:ref}`def-gauge-field-from-phases`):
 
 $$
-U_{ij} = \exp\left(i \theta_{ij}^{(SU(2))} \cdot \hat{\sigma}\right)
+U^{(2)}_{ij} = \exp\left(i \theta_{ij}^{(SU(2))} \, \hat{n}^a T^a\right)
 $$
 
-where $\hat{\sigma}$ is the direction in isospin space, so that
+where $\hat{n}^a$ is the unit direction in isospin space, so that
 
 $$
-A_e^{(a)} T^a = \frac{1}{g a_e} \theta_{ij}^{(SU(2))} \, \hat{\sigma}.
+A_e^{(a)} T^a = \frac{1}{g a_e} \theta_{ij}^{(SU(2))} \, \hat{n}^a T^a.
 $$
+
+For IA edges, $U^{(2)}_{ij}$ is the attribution rotation stored on the IA edge (not derived from $\theta_{ij}$).
 :::
 
 ### 5.2. Plaquette Variables and Field Strength
@@ -965,33 +1011,31 @@ $$
 :::{prf:definition} Plaquette Field Strength
 :label: def-plaquette-field-strength-ym
 
-Using the plaquette structure from {prf:ref}`def-fractal-set-plaquette`, for a plaquette $P = (n_1, n_2, n_3, n_4)$—the smallest closed loop—the **plaquette holonomy** is:
+Using the interaction-plaquette structure from {prf:ref}`def-fractal-set-plaquette`, for a plaquette
+$P_{ij,t} = \triangle_{ij,t} \cup \triangle_{ji,t}$, the **plaquette holonomy** is the product along its
+4-cycle boundary (two CST edges and two IA edges; the shared IG edge cancels):
 
 $$
 U_P := U_{12} U_{23} U_{34} U_{41}
 $$
 
+In temporal gauge for the SU(2) doublet, the CST factors are identity, so $U_P$ reduces to the product of the two IA-edge transports (equivalently $U_P = W^{(2)}(\triangle_{ij,t})\,W^{(2)}(\triangle_{ji,t})$). The effective plaquette area is $A_P \sim \rho\,\tau$ under mean-field scaling.
+
 **Field strength** (from holonomy):
 
 $$
-F_P := \frac{1}{i g a^2} \log U_P \in \mathfrak{su}(2)
+F_P := \frac{1}{i g A_P} \log U_P \in \mathfrak{su}(2)
 $$
 
 **Expansion for small fields**:
 
 $$
-U_P = \exp(i g a^2 F_P) = I + i g a^2 F_P - \frac{g^2 a^4}{2} F_P^2 + O(a^6)
+U_P = \exp(i g A_P F_P) = I + i g A_P F_P - \frac{g^2 A_P^2}{2} F_P^2 + O(A_P^3)
 $$
 
-**Three types of plaquettes on Fractal Set**:
+**Interaction plaquettes**: Each $P_{ij,t}$ is built from two interaction triangles with opposite orientations. The boundary uses two CST edges and two IA back-edges; the IG edge at the waist cancels by opposite orientation.
 
-| Type | Structure | Physical Content |
-|------|-----------|------------------|
-| Temporal | 2 CST + 2 IG | Time evolution + spatial connection |
-| Spatial | 4 IG | Purely spatial (same time slice) |
-| Mixed | 3 IG + 1 CST | Triangle with one time edge |
-
-**Gauge invariance**: Under $U_i \to V_i U_i V_i^\dagger$ for all nodes:
+**Gauge invariance**: Under $U_{ij} \to V_i U_{ij} V_j^\dagger$ for all nodes:
 
 $$
 U_P \to V_1 U_P V_1^\dagger
@@ -1021,31 +1065,33 @@ $$
 
 **Small field expansion**:
 
-Expanding $U_P = \exp(i g a^2 F_P)$ to second order:
+Expanding $U_P = \exp(i g A_P F_P)$ to second order:
 
 $$
-U_P = I + i g a^2 F_P - \frac{g^2 a^4}{2} F_P^2 + O(a^6)
+U_P = I + i g A_P F_P - \frac{g^2 A_P^2}{2} F_P^2 + O(A_P^3)
 $$
 
 Taking the trace (using $\text{Tr}(I) = 2$ and $\text{Tr}(F_P) = 0$ for traceless $\mathfrak{su}(2)$):
 
 $$
-\text{Tr}(U_P) = 2 + 0 - \frac{g^2 a^4}{2}\text{Tr}(F_P^2) + O(a^6)
+\text{Tr}(U_P) = 2 + 0 - \frac{g^2 A_P^2}{2}\text{Tr}(F_P^2) + O(A_P^3)
 $$
 
 Therefore:
 
 $$
-1 - \frac{1}{2}\text{Re Tr}(U_P) = 1 - 1 + \frac{g^2 a^4}{4}\text{Tr}(F_P^2) + O(a^6) = \frac{g^2 a^4}{4}\text{Tr}(F_P^2)
+1 - \frac{1}{2}\text{Re Tr}(U_P) = 1 - 1 + \frac{g^2 A_P^2}{4}\text{Tr}(F_P^2) + O(A_P^3) = \frac{g^2 A_P^2}{4}\text{Tr}(F_P^2)
 $$
 
 The per-plaquette contribution to the action is:
 
 $$
-S_P = \beta \cdot \frac{g^2 a^4}{4} \text{Tr}(F_P^2) = a^4 \text{Tr}(F_P^2) = \frac{a^4}{2} \sum_{a=1}^3 (F_P^{(a)})^2
+S_P = \beta \cdot \frac{g^2 A_P^2}{4} \text{Tr}(F_P^2)
+    = A_P^2 \text{Tr}(F_P^2)
+    = \frac{A_P^2}{2} \sum_{a=1}^3 (F_P^{(a)})^2
 $$
 
-**Continuum limit**: As $a \to 0$:
+**Continuum limit**: As $\rho, \tau \to 0$ (so $A_P \to 0$):
 
 $$
 S_{\text{YM}} \to \frac{1}{4} \int d^{d+1}x \sum_{a=1}^3 F_{\mu\nu}^{(a)} F^{(a),\mu\nu}
@@ -1169,12 +1215,14 @@ $$
 
 **Step 2: Plaquette derivative.**
 
-A plaquette is an ordered product of four links: $U_P = U_{e_1} U_{e_2} U_{e_3}^\dagger U_{e_4}^\dagger$ (counterclockwise around the plaquette).
+A plaquette is an ordered product of four oriented links:
+$U_P = U_{e_1} U_{e_2} U_{e_3} U_{e_4}$,
+where each $U_{e_k}$ is taken along the loop (use $U_{ji} = U_{ij}^\dagger$ when traversing against the stored orientation).
 
 For edge $e = e_1$ (the case $e = e_2, e_3, e_4$ is similar by cyclic symmetry):
 
 $$
-\frac{\partial U_P}{\partial U_{e_1}} = U_{e_2} U_{e_3}^\dagger U_{e_4}^\dagger =: \Sigma_P^{(e_1)}
+\frac{\partial U_P}{\partial U_{e_1}} = U_{e_2} U_{e_3} U_{e_4} =: \Sigma_P^{(e_1)}
 $$
 
 The quantity $\Sigma_P^{(e)}$ is called the **staple** — the product of all links around the plaquette except $e$.
@@ -1207,17 +1255,17 @@ $$
 
 **Step 5: Small-field expansion to continuum.**
 
-For small field strength, expand $U_e = \exp(ig a A_\mu^{(a)}T^a) \approx I + ig a A_\mu^{(a)}T^a + O(a^2)$.
+For small field strength, expand $U_e = \exp(ig a_e A_\mu^{(a)}T^a) \approx I + ig a_e A_\mu^{(a)}T^a + O(a_e^2)$.
 
 The plaquette becomes:
 
 $$
-U_P = I + ig a^2 F_{\mu\nu}^{(a)} T^a + O(a^3)
+U_P = I + ig A_P F_{\mu\nu}^{(a)} T^a + O(A_P^2)
 $$
 
 where $F_{\mu\nu}^{(a)} = \partial_\mu A_\nu^{(a)} - \partial_\nu A_\mu^{(a)} + g\epsilon^{abc}A_\mu^{(b)}A_\nu^{(c)}$ is the Yang-Mills field strength.
 
-From $U_P = U_e \Sigma_P^{(e)}$, we have $\Sigma_P^{(e)} = U_e^{-1} U_P \approx (I - ig a A_\mu T^a)(I + ig a^2 F_{\mu\nu} T^a) + O(a^2)$.
+From $U_P = U_e \Sigma_P^{(e)}$, we have $\Sigma_P^{(e)} = U_e^{-1} U_P \approx (I - ig a_e A_\mu T^a)(I + ig A_P F_{\mu\nu} T^a) + O(A_P^2)$.
 
 Substituting and taking $a \to 0$, the discrete equation:
 
@@ -1300,30 +1348,32 @@ Expanding $D_\mu$ recovers the usual $g\,J \cdot A$ coupling term.
 :::{prf:theorem} Path Integral Gauge Invariance
 :label: thm-path-integral-gauge-invariance
 
-The path integral is formally gauge-invariant:
+The path integral is formally gauge-invariant in the SU(2)-symmetric limit ($\delta m = 0$):
 
 $$
 Z' = \int \mathcal{D}[\Psi'] \mathcal{D}[A'] \, e^{-S[\Psi', A']} = Z
 $$
 
-under local gauge transformations $\{V_x \in \text{SU}(2)\}_{x \in \mathcal{F}}$:
+under local gauge transformations $\{V_x \in \text{SU}(2)\}_{x \in \mathcal{F}}$ (restricted to preserve temporal gauge on CST edges):
 - Matter: $\Psi'_x = V_x \Psi_x$
 - Gauge (lattice): $U'_e = V_x U_e V_y^\dagger$ for edge $e = (x,y)$
 - Gauge (continuum): $A'_\mu = V A_\mu V^\dagger + \frac{i}{g} V \partial_\mu V^\dagger$
+- Abelian factor: $U^{(1)\prime}_e = e^{i\alpha_x} U^{(1)}_e e^{-i\alpha_y}$ and $A^{(1)\prime}_\mu = A^{(1)}_\mu + \frac{1}{q}\partial_\mu \alpha$
 :::
 
 :::{prf:proof}
 **Step 1: Action invariance (proven in {prf:ref}`thm-wilson-action-gauge-invariance`).**
 
-The total action $S = S_{\text{YM}} + S_{\text{matter}}$ is gauge-invariant:
+The gauge sector is exactly invariant, and the matter sector is invariant when $m_{\text{eff}}$ commutes with SU(2) (i.e., $\delta m = 0$):
 
 $$
-S[\Psi', U'] = S[\Psi, U]
+S_{\text{YM}}[\Psi', U'] = S_{\text{YM}}[\Psi, U], \qquad
+S_{\text{matter}}[\Psi', U'] = S_{\text{matter}}[\Psi, U]\ \text{if}\ [m_{\text{eff}}, T^a]=0
 $$
 
 This was established in:
 - $S_{\text{YM}}$: {prf:ref}`thm-wilson-action-gauge-invariance`
-- $S_{\text{matter}}$: $D'_\mu \Psi' = V(D_\mu \Psi)$, so $\bar{\Psi}' (i\gamma^\mu D'_\mu - m_{\text{eff}})\Psi' = \bar{\Psi}(i\gamma^\mu D_\mu - m_{\text{eff}})\Psi$
+- $S_{\text{matter}}$ (unbroken case): $D'_\mu \Psi' = V(D_\mu \Psi)$, so $\bar{\Psi}' (i\gamma^\mu D'_\mu - m_{\text{eff}})\Psi' = \bar{\Psi}(i\gamma^\mu D_\mu - m_{\text{eff}})\Psi$
 
 **Step 2: Gauge field measure invariance (Haar measure).**
 
@@ -1350,6 +1400,8 @@ $$
 by left-invariance (applying $V_x$) and right-invariance (applying $V_y^\dagger$).
 
 Therefore: $\mathcal{D}[U'] = \prod_e dU'_e = \prod_e dU_e = \mathcal{D}[U]$ ✓
+
+The abelian $U(1)$ link measure obeys the same left/right invariance, so $\mathcal{D}[U^{(1)}]$ is also gauge-invariant.
 
 **Step 3: Matter field measure invariance (Grassmann integration).**
 
@@ -1535,180 +1587,49 @@ On the Fractal Set, temporal and spatial spacings are set by $\tau$ (time step) 
 :::{prf:theorem} Continuum Limit of Yang-Mills Action
 :label: thm-continuum-limit-ym
 
-As lattice spacing $a \to 0$ with fixed physical coupling $g_{\text{phys}}$, the discrete Wilson action converges to the continuum Yang-Mills action:
+As $\rho, \tau \to 0$ with fixed physical coupling $g_{\text{phys}}$ and mean-field density, the Wilson action built from interaction plaquettes converges to the continuum Yang-Mills action on the emergent manifold:
 
 $$
-S_{\text{YM}}^{\text{disc}} \to S_{\text{YM}}^{\text{cont}} = \frac{1}{4} \int d^{d+1}x \sum_{a=1}^3 F_{\mu\nu}^{(a)} F^{(a),\mu\nu}
+S_{\text{YM}}^{\text{disc}} \to S_{\text{YM}}^{\text{cont}} = \frac{1}{4} \int_M d\mathrm{vol}_g \sum_{a=1}^3 F_{\mu\nu}^{(a)} F^{(a),\mu\nu}.
 $$
 :::
 
 :::{prf:proof}
-**Dimensional setup:**
+We separate the argument into two complementary routes.
 
-| Quantity | Dimension | Lattice | Continuum |
-|----------|-----------|---------|-----------|
-| Position | $[\text{length}]$ | $x = n a$ | $x \in \mathbb{R}^{d+1}$ |
-| Gauge field | $[\text{length}^{-1}]$ | $A_\mu(n a)$ | $A_\mu(x)$ |
-| Field strength | $[\text{length}^{-2}]$ | $F_P = F_{\mu\nu}(n a)$ | $F_{\mu\nu}(x)$ |
-| Action | $[\text{dimensionless}]$ | $S^{\text{disc}}$ | $S^{\text{cont}}$ |
-
-In the physical case $d=3$ (so $d+1=4$), $a^4$ is the hypervolume element; for general $d+1$, replace $a^4$ by $a^{d+1}$ in the scaling arguments below.
-
-**Step 1: Plaquette expansion.**
-
-The link variable is $U_e = \exp(ig a A_\mu)$ where $A_\mu = A_\mu^{(a)} T^a$ with $T^a = \sigma^a/2$.
-
-For a plaquette $P$ in the $(\mu,\nu)$-plane with corners at $(x, x+a\hat{\mu}, x+a\hat{\mu}+a\hat{\nu}, x+a\hat{\nu})$, the ordered product is:
+**Classical lattice gauge route (consistency check).** On regular lattices, the Wilson action converges to the continuum Yang-Mills action via the standard small-loop holonomy expansion {cite}`wilson1974confinement,kogut1979introduction,creutz1983quarks`. For any sufficiently small loop, the same local expansion holds. Using the interaction-plaquette holonomy in {prf:ref}`def-plaquette-field-strength-ym`:
 
 $$
-U_P = U_\mu(x) U_\nu(x+a\hat{\mu}) U_\mu^\dagger(x+a\hat{\nu}) U_\nu^\dagger(x)
+s_P = 1 - \frac{1}{2}\text{Re Tr}(U_P) = \frac{g^2 A_P^2}{8}\sum_{a=1}^3 (F_P^{(a)})^2 + O(A_P^3),
 $$
 
-Using the Baker-Campbell-Hausdorff formula and Taylor expansion:
+with $A_P \sim \rho \tau$, which fixes the normalization independently of plaquette geometry.
+
+**Fractal Gas mean-field route (Volume 3).** The mean-field derivation {doc}`../appendices/08_mean_field` and propagation of chaos {doc}`../appendices/09_propagation_chaos` give convergence of the empirical measure to the QSD limit $\mu_\infty$. The hypocoercive LSI route ({doc}`../appendices/15_kl_convergence`) yields concentration of sampling averages, so Riemann-sum approximations apply to bounded Hölder observables. The emergent continuum and gradient identification ({prf:ref}`mt:emergent-continuum`, {prf:ref}`mt:continuum-injection`, {prf:ref}`mt:cheeger-gradient`) upgrade the discrete gauge data to a $C^1$ connection on $(M,g)$. Together with the kernel scaling used in graph-to-continuum limits {cite}`belkin2008foundation` (see {prf:ref}`thm-laplacian-convergence` in {doc}`03_lattice_qft`), this implies
 
 $$
-U_P = \exp\left(ig a^2 F_{\mu\nu}(x) + O(a^3)\right) = I + ig a^2 F_{\mu\nu}(x) - \frac{g^2 a^4}{2}F_{\mu\nu}^2 + O(a^5)
+S_{\text{YM}}^{\text{disc}} = \beta \sum_P s_P \;\longrightarrow\; \frac{1}{4}\int_M d\mathrm{vol}_g \sum_{a=1}^3 F_{\mu\nu}^{(a)} F^{(a),\mu\nu}.
 $$
 
-where the field strength is:
-
-$$
-F_{\mu\nu} = \partial_\mu A_\nu - \partial_\nu A_\mu - ig[A_\mu, A_\nu]
-$$
-
-**Dimensional check**: $[a^2 F_{\mu\nu}] = [\text{length}^2] \cdot [\text{length}^{-2}] = [\text{dimensionless}]$ ✓
-
-**Step 2: Action density per plaquette.**
-
-The Wilson action density is:
-
-$$
-s_P := 1 - \frac{1}{2}\text{Re Tr}(U_P)
-$$
-
-Substituting the expansion:
-
-$$
-\text{Tr}(U_P) = \text{Tr}(I) + ig a^2 \text{Tr}(F_{\mu\nu}) - \frac{g^2 a^4}{2}\text{Tr}(F_{\mu\nu}^2) + O(a^5)
-$$
-
-Using $\text{Tr}(I) = 2$ for SU(2) and $\text{Tr}(F_{\mu\nu}) = 0$ (traceless):
-
-$$
-\text{Re Tr}(U_P) = 2 - \frac{g^2 a^4}{2}\text{Tr}(F_{\mu\nu}^2) + O(a^6)
-$$
-
-Therefore:
-
-$$
-s_P = 1 - 1 + \frac{g^2 a^4}{4}\text{Tr}(F_{\mu\nu}^2) + O(a^6) = \frac{g^2 a^4}{8}\sum_{a=1}^3 (F_{\mu\nu}^{(a)})^2 + O(a^6)
-$$
-
-using $\text{Tr}(T^a T^b) = \frac{1}{2}\delta^{ab}$ and hence $\text{Tr}(F_{\mu\nu}^2) = \frac{1}{2}\sum_a (F_{\mu\nu}^{(a)})^2$.
-
-**Step 3: Fractal-Set sampling limit (rigorous).**
-
-Let $L_N := \frac{1}{N}\sum_{i=1}^N \delta_{x_i}$ be the empirical measure of CST/IG nodes sampled at QSD equilibrium.
-By propagation of chaos ({prf:ref}`thm-propagation-chaos-qsd`), $L_N \Rightarrow \mu_\infty$, so for any bounded
-Hölder $f$ on the emergent continuum we have
-
-$$
-\left|\frac{1}{N}\sum_{i=1}^N f(x_i) - \int_M f \, d\mu_\infty\right| \to 0.
-$$
-The emergent continuum and injection metatheorems ({prf:ref}`mt:emergent-continuum`,
-{prf:ref}`mt:continuum-injection`), together with the Cheeger-gradient isomorphism
-({prf:ref}`mt:cheeger-gradient`), identify the graph energies with the continuum Dirichlet form on $(M,g)$.
-The required permits $C_\mu$, $\mathrm{Cap}_H$, $\mathrm{LS}_\sigma$, and $\mathrm{Rep}_K$ are certified by the
-Latent Fractal Gas sieve (Part IV of {doc}`../1_the_algorithm/02_fractal_gas_latent`), so the convergence is
-unconditional within the Volume 3 framework. For unbounded $\mathbb{R}^4$, the decorated Gibbs envelope
-({prf:ref}`thm-decorated-gibbs`) provides a confining $V_{\text{eff}}$, yielding a normalizable $\mu_\infty$ and an
-effective compactification on the QSD support.
-
-:::{prf:lemma} Regularity bridge for $F_{\mu\nu}$
-:label: lem-ym-holder-regularity
-
-By {prf:ref}`mt:emergent-continuum` and {prf:ref}`mt:continuum-injection` (permits certified in
-{doc}`../1_the_algorithm/02_fractal_gas_latent`), the QSD support induces a $C^2$ manifold $(M,g)$ with bounded
-diameter on the effective support of $\mu_\infty$; on $\mathbb{R}^4$ this is enforced by the confining envelope
-from {prf:ref}`thm-decorated-gibbs`. Bounded fitness ({prf:ref}`def-fractal-set-two-channel-fitness`) keeps the
-phase amplitudes and drift contributions uniformly controlled within the regularity class of
-{prf:ref}`assumption-regularity-summary`. In the canonical Euclidean Gas, this makes the fitness field $\Phi$ a
-$C^2$ function of the continuum coordinates. The phase field $\theta(x) = -\Phi(x)/\hbar_{\text{eff}}$ is then $C^2$,
-so the continuum gauge potential $A_\mu := \frac{1}{g}\partial_\mu \theta$ is $C^1$ and the discrete gradients
-converge to it by {prf:ref}`mt:cheeger-gradient`. The field strength $F_{\mu\nu}$ is therefore Lipschitz on the
-QSD support. Hence $F_{\mu\nu} \in C^\alpha(M)$ for some $\alpha \in (0,1]$, with Hölder bounds compatible with the
-deterministic potential continuity and Poisson-regularity estimates ({prf:ref}`thm-deterministic-potential-continuity`,
-{prf:ref}`thm-error-propagation`) and with LSI-based concentration ({prf:ref}`mt:lsi-particle-systems`).
+For unbounded domains, the confining envelope ({prf:ref}`thm-decorated-gibbs`) provides effective compactness on the QSD support. $\square$
 :::
 
-**Sampling-to-integral convergence**: For $f \in C^\alpha(M)$ and plaquette centers $x_P$ at scale $a$:
+:::{dropdown} 📖 Hypostructure Proof Path (Formal)
+:icon: book
 
-$$
-\left|\sum_{P} a^{d+1} f(x_P) - \int_M f(x) \, d\mathrm{vol}_g(x)\right| \to 0
-$$
+**Rigor Class:** F (Framework-Original)
 
-The scale factor $a^{d+1}$ is $a=\tau$ on CST edges and $a=\rho$ on IG edges; the Fractal Set density converges to
-the volume form by {prf:ref}`mt:emergent-continuum`.
+**Permits:** $C_\mu$, $\mathrm{Cap}_H$, $\mathrm{LS}_\sigma$, $\mathrm{Rep}_K$ (certified in {doc}`../1_the_algorithm/02_fractal_gas_latent`).
 
-**Application**: Using $S_{\text{YM}}^{\text{disc}} = \beta \sum_P s_P$ with $\beta = 4/g^2$, the prefactor becomes
-$\beta \cdot g^2/8 = 1/2$. The plaquette sum runs over $\mu < \nu$, so
-$\sum_{\mu < \nu} F_{\mu\nu}^2 = \frac{1}{2}\sum_{\mu,\nu} F_{\mu\nu}^2$. Let
-$f(x) = \frac{1}{2}\sum_a (F_{\mu\nu}^{(a)}(x))^2$. Since $F_{\mu\nu}$ is Hölder, so is $f$. Then:
-
-$$
-\sum_P a^4 \cdot \frac{1}{2}\sum_a (F_{\mu\nu}^{(a)})^2 \xrightarrow[a \to 0]{} \frac{1}{2}\int_M \sum_a (F_{\mu\nu}^{(a)}(x))^2 \, d\mathrm{vol}_g(x)
-$$
-
-The convergence follows from the sampling-to-integral limit applied to $f(x)$.
-
-**Step 4: Remainder term control.**
-
-The $O(a^6)$ remainder in Step 2 contributes:
-
-$$
-|R_{\text{total}}| \leq \sum_P |R_P| \leq N_P \cdot C a^6
-$$
-
-where $N_P \sim |M|_g/a^{d+1}$ is the expected number of plaquettes at scale $a$ under the QSD sampling density.
-Therefore:
-
-$$
-|R_{\text{total}}| \leq C |M|_g a^{6-(d+1)} = C |M|_g a^{5-d}
-$$
-
-For $d < 5$ (physical dimensions $d = 3$), this vanishes as $a \to 0$. ✓
-
-**Step 5: Renormalization of coupling.**
-
-The bare lattice coupling $g$ must be renormalized to maintain a finite continuum limit. The one-loop relation {cite}`gross1973ultraviolet,politzer1973reliable` is:
-
-$$
-\frac{1}{g_{\text{phys}}^2(\mu)} = \frac{1}{g^2(a)} + \frac{b_0}{8\pi^2} \ln\left(\frac{\mu}{\Lambda}\right)
-$$
-
-where:
-- $\mu$ is the renormalization scale $[\text{GeV}]$
-- $\Lambda$ is the dynamical scale from dimensional transmutation $[\text{GeV}]$
-- $b_0 = \frac{11N_c}{3} = \frac{22}{3}$ for SU(2) (one-loop coefficient)
-
-The lattice cutoff is $\mu_{\text{UV}} \sim 1/a$, so $g^2(a)$ can be read as $g^2(\mu_{\text{UV}})$. As $a \to 0$:
-
-$$
-g^2(a) \to 0 \quad \text{(asymptotic freedom)}
-$$
-
-but the combination $g^2(a) \cdot \ln(\mu_{\text{UV}}/\Lambda)$ remains finite, giving a well-defined $g_{\text{phys}}$.
-
-**Conclusion:**
-
-Combining Steps 1-5, the discrete action converges:
-
-$$
-S_{\text{YM}}^{\text{disc}} = \beta(a) \sum_P s_P \xrightarrow{a \to 0} \frac{1}{4} \int d^{d+1}x \sum_a F_{\mu\nu}^{(a)} F^{(a),\mu\nu}
-$$
-
-with convergence rate $O(a^\alpha)$ for the leading term and $O(a^{5-d})$ for the remainder. $\square$
+**Formal chain:**
+1. Apply Expansion Adjunction ({prf:ref}`thm-expansion-adjunction`) to promote the thin interaction-plaquette holonomy functor to a continuum connection form.
+2. Invoke Lock Closure ({prf:ref}`mt:fractal-gas-lock-closure`) to ensure the promoted connection respects the Fractal Set relations (plaquette factorization and gauge invariance).
+3. Use Emergent Continuum and Continuum Injection ({prf:ref}`mt:emergent-continuum`, {prf:ref}`mt:continuum-injection`) to identify the limit metric-measure space $(M,g)$ and transport the empirical measure.
+4. Apply the Cheeger-Gradient Isomorphism ({prf:ref}`mt:cheeger-gradient`) to upgrade energy convergence to gradient convergence, yielding the curvature $F_{\mu\nu}$ as the promoted field strength.
+5. Conclude that the Wilson sum over interaction plaquettes converges to the continuum Yang-Mills functional with the normalization fixed by the holonomy expansion in {prf:ref}`def-plaquette-field-strength-ym`.
 :::
+
+The intuition below uses the standard square-plaquette language as a mnemonic; on the Fractal Set these are interaction 4-cycles with area $A_P \sim \rho \tau$.
 
 :::{div} feynman-prose feynman-added
 This proof is technical, so let me tell you what it is really saying.
@@ -1890,7 +1811,7 @@ In four dimensions the SU(2) coupling is dimensionless. From the unit table, the
 
 **Step 2. Phase and timestep scaling.**
 
-The link phase is $g a_e A$ (with $a_e$ the link length), while the cloning phase is
+For SU(2) links on IG and IA edges, the link phase is $g a_e A$ with $a_e=\rho$, while the cloning phase is
 
 $$
 \theta_{ij}^{(SU(2))} = \frac{S_i(j)}{\hbar_{\text{eff}}}.
@@ -2268,7 +2189,7 @@ The Boris-BAOAB integrator ({prf:ref}`def-fractal-set-boris-baoab`) is second-or
 
 The symplectic structure ensures no secular energy drift, with energy error bounded by $O(\tau^2)$ uniformly in time. $\square$
 
-**Physical interpretation**: The timestep $\tau$ is the discrete time spacing; the spatial scale is set by $\rho$. In the gauge-sector notation we use $a$ for the link length (with $a_e=\tau$ or $a_e=\rho$ as appropriate). The rescaling $\epsilon_c \sim \sqrt{\tau}$ ensures the cloning kernel width vanishes in physical units while maintaining quantum coherence at the appropriate scale.
+**Physical interpretation**: The timestep $\tau$ is the discrete time spacing; the spatial scale is set by $\rho$. In the gauge-sector notation we use $a$ for the link length (with $a_e=\rho$ for SU(2) IG/IA links and $a_e=\tau$ for U(1) CST links). The rescaling $\epsilon_c \sim \sqrt{\tau}$ ensures the cloning kernel width vanishes in physical units while maintaining quantum coherence at the appropriate scale.
 :::
 
 ### 10.3. RG Fixed Point and Mass Gap Survival
@@ -2436,10 +2357,10 @@ Physical Yang-Mills has mass gap
 **Lower bound from screening** ({prf:ref}`thm-mass-gap-screening`):
 
 $$
-\Delta \geq \frac{\kappa^2}{2m_{\text{eff}}}
+\Delta \geq \frac{\kappa^2}{2m_0}
 $$
 
-where $\kappa = -\ln \gamma$ is the screening mass from {prf:ref}`thm-the-hjb-helmholtz-correspondence`.
+where $m_0 = (m_i + m_j)/2$ is the SU(2)-invariant mass scale and $\kappa = -\ln \gamma$ is the screening mass from {prf:ref}`thm-the-hjb-helmholtz-correspondence`.
 :::
 
 :::{dropdown} 📖 Hypostructure Reference: Mass Gap

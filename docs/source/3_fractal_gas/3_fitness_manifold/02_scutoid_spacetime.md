@@ -12,9 +12,9 @@
 
 **Scutoids Bridge Continuous Geometry and Discrete Dynamics**: The Latent Fractal Gas has continuous Riemannian geometry ({doc}`01_emergent_geometry`) but discrete cloning dynamics. Scutoids—$(d+1)$-dimensional polytopes with mid-level vertices—are the natural spacetime cells that accommodate topological transitions when neighbor sets change during cloning.
 
-**Cloning Forces Scutoid Geometry**: Theorem {prf:ref}`thm-cloning-implies-scutoid` proves that cloning events *necessarily* produce scutoid cells. When a walker dies and is replaced by a clone at a different position, the Voronoi neighbor sets change (generically), and connecting incompatible top/bottom faces requires mid-level branching vertices.
+**Cloning Typically Produces Scutoids**: Theorem {prf:ref}`thm-cloning-implies-scutoid` shows that whenever cloning changes the neighbor set, the spacetime cell must be a scutoid. Under a local Poisson model, large clone displacements make neighbor changes overwhelmingly likely.
 
-**Online Triangulation Algorithm**: Algorithm {prf:ref}`alg-online-triangulation-update` maintains the Voronoi/Delaunay tessellation in $O(N)$ amortized time per timestep, optimal by Theorem {prf:ref}`thm-omega-n-lower-bound`. This is a factor of $\log N$ faster than batch recomputation.
+**Online Triangulation Algorithm**: Algorithm {prf:ref}`alg-online-triangulation-update` maintains the Voronoi/Delaunay complex with per-timestep cost $O(N) + O(p_{\mathrm{clone}} N \log N)$ under local retriangulation. If the Delaunay complex size is linear and $p_{\mathrm{clone}} \ll 1/\log N$, the amortized cost is $O(N)$ and matches the output-size lower bound (Theorem {prf:ref}`thm-omega-n-lower-bound`).
 
 **Topological Information Rate**: The scutoid index $\chi_{\mathrm{scutoid}} = |\mathcal{N}_{\mathrm{lost}}| + |\mathcal{N}_{\mathrm{gained}}|$ counts neighbor relationship changes. Conjecture {prf:ref}`conj-topological-information-bound` proposes that the rate of topological information generation bounds computational activity.
 
@@ -117,14 +117,20 @@ Why do we care about the Delaunay triangulation? Because it is the natural arena
 The two structures are mathematically dual: Voronoi vertices correspond to Delaunay simplices, Voronoi edges correspond to Delaunay faces, and so on. This duality will be essential when we develop the online triangulation algorithm.
 :::
 
-:::{prf:definition} Delaunay Triangulation
+:::{admonition} Technical Note (Riemannian Setting)
+:class: note
+
+On a general Riemannian manifold, the **Delaunay complex** is defined as the nerve of the geodesic Voronoi cells. It is a genuine triangulation of a region only when the Voronoi cells are contractible (for example, when all sites lie inside a common convex normal neighborhood below the injectivity radius, or within a Safe Harbor region). Otherwise the nerve is still a well-defined cell complex but need not triangulate a convex hull.
+:::
+
+:::{prf:definition} Delaunay Triangulation (Geodesic Nerve)
 :label: def-delaunay-triangulation
 
-The **Delaunay triangulation** $\mathrm{DT}(t)$ at time $t$ is the simplicial complex dual to the Voronoi tessellation:
+The **Delaunay complex** $\mathrm{DT}(t)$ at time $t$ is the **nerve** of the geodesic Voronoi tessellation:
 
 - **Vertices**: Walker positions $\{z_i(t)\}_{i=1}^N$
 - **Edges**: $(i, j) \in \mathrm{DT}(t)$ iff $j \in \mathcal{N}_i(t)$
-- **Simplices**: A $(k+1)$-tuple $(i_0, \ldots, i_k)$ forms a $k$-simplex iff the corresponding Voronoi cells have a common intersection point
+- **Simplices**: A $(k+1)$-tuple $(i_0, \ldots, i_k)$ forms a $k$-simplex iff the corresponding Voronoi cells have a non-empty common intersection
 
 **Duality relations:**
 
@@ -133,6 +139,8 @@ The **Delaunay triangulation** $\mathrm{DT}(t)$ at time $t$ is the simplicial co
 | $d$-dimensional cell $\mathrm{Vor}_i$ | Vertex $z_i$ |
 | $(d-1)$-dimensional face $\Gamma_{i,j}$ | Edge $(i, j)$ |
 | Vertex (intersection of $d+1$ cells) | $d$-simplex |
+
+**Nerve theorem (local triangulation):** If the Voronoi cells are contractible and their intersections are contractible (e.g., inside a convex normal neighborhood), then $\mathrm{DT}(t)$ triangulates the covered region and is homotopy equivalent to it. In the absence of these conditions, $\mathrm{DT}(t)$ should be treated as a general cell complex rather than a global triangulation.
 :::
 
 (sec-scutoid-cell-definition)=
@@ -161,17 +169,15 @@ $$
 \mathcal{N}_{\mathrm{shared}} = \mathcal{N}_j(t) \cap \mathcal{N}_i(t + \Delta t)
 $$
 
-For each $k \in \mathcal{N}_{\mathrm{shared}}$, the **boundary correspondence map** $\phi_k: \Gamma_{j,k}(t) \to \Gamma_{i,k}(t + \Delta t)$ is defined by **arc-length rescaling**:
-
-1. Parameterize $\Gamma_{j,k}(t)$ by arc length: $\gamma_{\mathrm{bottom}}: [0, L_{\mathrm{bottom}}] \to \Gamma_{j,k}(t)$
-2. Parameterize $\Gamma_{i,k}(t + \Delta t)$ by arc length: $\gamma_{\mathrm{top}}: [0, L_{\mathrm{top}}] \to \Gamma_{i,k}(t + \Delta t)$
-3. Define the correspondence map:
+For each $k \in \mathcal{N}_{\mathrm{shared}}$, the **boundary correspondence map** $\phi_k: \Gamma_{j,k}(t) \to \Gamma_{i,k}(t + \Delta t)$ is any **measure-preserving correspondence** between the $(d-1)$-dimensional interfaces. Let $\mu_{\mathrm{bottom}}$ and $\mu_{\mathrm{top}}$ denote the $(d-1)$-dimensional Hausdorff measures induced by $g$ on $\Gamma_{j,k}(t)$ and $\Gamma_{i,k}(t + \Delta t)$, and assume both are finite and non-zero. A valid correspondence satisfies:
 
 $$
-\phi_k(\gamma_{\mathrm{bottom}}(s)) = \gamma_{\mathrm{top}}\left(s \cdot \frac{L_{\mathrm{top}}}{L_{\mathrm{bottom}}}\right)
+(\phi_k)_* \mu_{\mathrm{bottom}} = \mu_{\mathrm{top}}.
 $$
 
-This maps corresponding fractions of the boundary: the point at 30% along the bottom segment maps to the point at 30% along the top segment.
+**Canonical choice in a convex normal neighborhood:** If the two interfaces lie inside a common convex normal neighborhood, one can take $\phi_k$ to be the optimal transport map between the normalized measures with cost $d_g^2$ (unique a.e. under absolute continuity). Any such $\phi_k$ yields a well-defined ruled lateral face.
+
+**Existence (measure-theoretic):** Any two standard Borel spaces with finite, non-zero measures admit a measure-preserving bijection modulo null sets, so $\phi_k$ always exists up to measure zero.
 
 **Critical observation**: For neighbors $\ell \in \mathcal{N}_j(t) \setminus \mathcal{N}_i(t + \Delta t)$ (lost neighbors), there is no corresponding segment on the top face. The correspondence map is **undefined**.
 :::
@@ -201,6 +207,8 @@ $$
 \Sigma_k = \bigcup_{p \in \Gamma_{j,k}(t_0)} \gamma_{p \to \phi_k(p)}
 $$
 where $\gamma_{p \to \phi_k(p)}$ is the spacetime geodesic from $(p, t_0)$ to $(\phi_k(p), t_0 + \Delta t)$.
+
+**Geodesic well-posedness:** When these endpoints lie inside a convex normal neighborhood in spacetime, the minimizing geodesic is unique; otherwise choose any minimizing geodesic to define the ruled surface.
 
 **4. Mid-level structure** (when $\mathcal{N}_j(t_0) \neq \mathcal{N}_i(t_0 + \Delta t)$):
 
@@ -232,6 +240,12 @@ Now we prove the central theorem: cloning events necessarily produce scutoid geo
 The argument has two parts. First, we show that cloning changes the neighbor set with probability one. When a walker at position $z_i$ is replaced by a clone from position $z_j$, the new Voronoi cell has different neighbors (generically). Second, we show that different neighbor sets force scutoid geometry—there is no way to construct a simple prism when the top and bottom faces have incompatible combinatorial structure.
 :::
 
+:::{admonition} Technical Note (Precise Scope)
+:class: note
+
+Cloning does **not** guarantee a neighbor change in every realization. The rigorous statement is: **if** the neighbor set changes, then a scutoid is forced; under standard stochastic-geometry assumptions, large clone displacements make this event overwhelmingly likely.
+:::
+
 :::{prf:theorem} Cloning Implies Scutoid Geometry
 :label: thm-cloning-implies-scutoid
 
@@ -239,13 +253,21 @@ Let $e_i$ be an episode (walker trajectory) traversing the interval $[t, t + \De
 
 **Statement:**
 
-1. **No Cloning (Persistence)**: If episode $e_i$ persists without cloning, then with probability 1, $\mathcal{N}_i(t) = \mathcal{N}_i(t + \Delta t)$. The spacetime cell is a **Prism** (Type 0).
+1. **Persistence with No Critical Event**: If episode $e_i$ persists without cloning and the Delaunay complex is non-degenerate on $(t, t + \Delta t)$ (no critical configuration), then $\mathcal{N}_i(t) = \mathcal{N}_i(t + \Delta t)$ and the spacetime cell is a **Prism** (Type 0).
 
-2. **Cloning Event**: If episode $e_i$ ends at time $t$ and is replaced by a clone $e_{i'}$ from parent $e_j$ at a different position, then generically $\mathcal{N}_i(t) \neq \mathcal{N}_{i'}(t + \Delta t)$ (probability approaching 1 as $\|z_i - z_j\|/\ell \to \infty$). The spacetime cell is a **Scutoid** (Type $\geq 1$).
+2. **Cloning with Neighbor Change**: If episode $e_i$ ends at time $t$ and is replaced by a clone $e_{i'}$ from parent $e_j$ at a different position, and if $\mathcal{N}_i(t) \neq \mathcal{N}_{i'}(t + \Delta t)$, then the spacetime cell is a **Scutoid** (Type $\geq 1$).
+
+3. **Genericity Under a Local Poisson Model**: Assume that, in a normal coordinate chart around the clone, the other walkers are distributed as a Poisson process of intensity $\rho$, the clone displacement is $r = \|z_i - z_j\|$, and there is a geometric separation condition: **if** $\mathcal{N}_i(t) = \mathcal{N}_{i'}(t + \Delta t)$, then a geodesic tube of volume at least $c_0 r^d$ between $z_i$ and $z_{i'}$ must be empty (with $c_0>0$ depending only on dimension and curvature bounds). Then
+$$
+\mathbb{P}(\mathcal{N}_i(t) = \mathcal{N}_{i'}(t + \Delta t)) \leq \exp\left(-c \cdot \frac{r^d}{\ell^d}\right),
+$$
+with $\ell \sim \rho^{-1/d}$ and $c>0$ depending only on dimension and local geometry. Thus for $r \gg \ell$, cloning produces a scutoid with high probability.
+
+**Remark:** The separation condition holds, for example, when the configuration is quasi-uniform and the displacement $r$ exceeds a fixed multiple of the local feature size.
 
 *Proof.*
 
-**Part 1: Persistence implies prismatic geometry.**
+**Part 1: Persistence implies prismatic geometry (no critical event).**
 
 When no cloning occurs, the walker position evolves continuously via the Langevin SDE ({prf:ref}`def-fractal-set-sde`):
 
@@ -254,52 +276,42 @@ dz_i = v_i \, dt + \Sigma_{\mathrm{reg}}(z_i, S) \circ dW_i
 $$
 where $v_i$ is the drift velocity, $\Sigma_{\mathrm{reg}}$ is the adaptive diffusion tensor, and $dW_i$ is Brownian noise. The key point is that the trajectory is continuous (no jumps).
 
-For infinitesimal $\Delta t$, the Voronoi boundaries deform continuously. The neighbor graph of a Voronoi tessellation is constant under continuous deformation of seeds, except at **critical configurations** where the Delaunay triangulation is degenerate. In Euclidean space, this occurs when $d+2$ or more seeds lie on a common sphere; in Riemannian geometry, degeneracy occurs when seeds lie on a common geodesic sphere (equidistant from some center point). These critical configurations form a set of measure zero in the space of walker configurations.
+The Voronoi boundaries deform continuously under continuous motion of the seeds. The neighbor graph of a Voronoi tessellation is locally constant under such deformations, except at **critical configurations** where the Delaunay complex is degenerate. In Euclidean space, this occurs when $d+2$ or more seeds lie on a common sphere; in Riemannian geometry, degeneracy occurs when seeds lie on a common geodesic sphere (equidistant from some center point). If the interval $(t, t + \Delta t)$ contains no such critical time, then $\mathcal{N}_i(t) = \mathcal{N}_i(t + \Delta t)$ and the boundary correspondence map $\phi_k$ is defined for all neighbors. The spacetime cell is a prism with no mid-level vertices.
 
-Therefore, $\mathcal{N}_i(t) = \mathcal{N}_i(t + \Delta t)$ almost surely. The boundary correspondence map $\phi_k$ is defined for all neighbors, and the spacetime cell is a prism with no mid-level vertices.
+**Part 2: Cloning with neighbor change forces scutoid geometry.**
 
-**Part 2: Cloning induces neighbor change.**
+Assume $\mathcal{N}_i(t) \neq \mathcal{N}_{i'}(t + \Delta t)$. Let:
+- $\mathcal{N}_{\mathrm{lost}} = \mathcal{N}_i(t) \setminus \mathcal{N}_{i'}(t + \Delta t)$ (neighbors at bottom only)
+- $\mathcal{N}_{\mathrm{gained}} = \mathcal{N}_{i'}(t + \Delta t) \setminus \mathcal{N}_i(t)$ (neighbors at top only)
 
-A cloning event replaces walker $i$ at position $z_i$ with a clone at position $z_{i'} = z_j + \xi$, where $z_j$ is the parent's position and $\xi \sim \mathcal{N}(0, \sigma^2 I)$ is Gaussian jitter.
+If the spacetime cell were a prism $P = F_{\mathrm{bottom}} \times [0,1]$, then there would exist a boundary homeomorphism $h: \partial F_{\mathrm{bottom}} \to \partial F_{\mathrm{top}}$ that matches each boundary interface to a corresponding interface. This induces a bijection between neighbor sets. When $\mathcal{N}_{\mathrm{lost}} \neq \emptyset$ or $\mathcal{N}_{\mathrm{gained}} \neq \emptyset$, no such bijection exists. Therefore a prismatic boundary cannot close, and any valid cell complex must introduce intermediate branching (mid-level) faces and vertices. By Definition {prf:ref}`def-scutoid-cell`, the resulting cell is a scutoid.
 
-Consider a neighbor $k \in \mathcal{N}_i(t)$. For $k$ to remain a neighbor of the clone at $z_{i'}$, there must exist points equidistant from both $z_k$ and $z_{i'}$. The locus of such points (the Voronoi boundary) depends on the positions $z_k$ and $z_{i'}$.
+**Part 3: Genericity under a local Poisson model.**
 
-Since $z_i$ and $z_j$ are generically at different locations (the parent is a high-fitness walker, the dying walker is low-fitness), the Voronoi boundaries around $z_i$ and $z_j$ are different hypersurfaces. The probability that a neighbor of $z_i$ is also a neighbor of $z_j$ decreases as $\|z_i - z_j\| / \ell_{\mathrm{local}} \to \infty$, where $\ell_{\mathrm{local}}$ is the typical inter-walker spacing.
-
-**Quantitative bound**: For walker density $\rho \sim N / \mathrm{Vol}(\mathcal{Z})$ and typical spacing $\ell \sim \rho^{-1/d}$:
+Assume the other walkers in a normal coordinate chart around the clone form a Poisson process of intensity $\rho$ and the clone displacement is $r = \|z_i - z_j\|$. Under the separation condition above, neighbor-set equality requires an empty tube of volume at least $c_0 r^d$, so the Poisson void probability gives:
 
 $$
-\mathbb{P}(\mathcal{N}_i(t) = \mathcal{N}_{i'}(t + \Delta t)) \leq \exp\left(-c \cdot \frac{\|z_i - z_j\|^d}{\ell^d}\right)
+\mathbb{P}(\mathcal{N}_i(t) = \mathcal{N}_{i'}(t + \Delta t)) \leq \exp\left(-c \cdot \rho r^d\right) = \exp\left(-c \cdot \frac{r^d}{\ell^d}\right),
 $$
-for some constant $c > 0$ depending on dimension $d$ and the geometry of $\mathcal{Z}$.
 
-*Justification*: The expected number of walkers in the region between $z_i$ and $z_j$ scales as $\rho \cdot \|z_i - z_j\|^d = (\|z_i - z_j\|/\ell)^d$. For $z_i$ and $z_{i'}$ to share the same neighbor set, no intervening walkers can disrupt the Voronoi structure. By the spatial Poisson approximation (valid for well-mixed swarms approaching the QSD; see {doc}`/3_fractal_gas/appendices/09_propagation_chaos` for mean-field justification), this probability decays exponentially with the expected number of intervening walkers.
-
-**Part 3: Neighbor change forces scutoid geometry.**
-
-Suppose $\mathcal{N}_j(t) \neq \mathcal{N}_{i'}(t + \Delta t)$. Let:
-- $\mathcal{N}_{\mathrm{lost}} = \mathcal{N}_j(t) \setminus \mathcal{N}_{i'}(t + \Delta t)$ (neighbors at bottom only)
-- $\mathcal{N}_{\mathrm{gained}} = \mathcal{N}_{i'}(t + \Delta t) \setminus \mathcal{N}_j(t)$ (neighbors at top only)
-
-**Topological obstruction to prismatic geometry:**
-
-A prism $P = F_{\mathrm{bottom}} \times [0,1]$ requires a homeomorphism $h: \partial F_{\mathrm{bottom}} \to \partial F_{\mathrm{top}}$ mapping each boundary segment to a corresponding segment on the top face. This induces a bijection between neighbor sets: $h_*: \mathcal{N}_j(t) \xrightarrow{\sim} \mathcal{N}_{i'}(t + \Delta t)$.
-
-When $\mathcal{N}_{\mathrm{lost}} \neq \emptyset$ or $\mathcal{N}_{\mathrm{gained}} \neq \emptyset$, no such bijection exists. The boundary $\partial P$ cannot be assembled from:
-- Two non-homeomorphic faces $F_{\mathrm{bottom}}$ and $F_{\mathrm{top}}$ (with different numbers of edges if $|\mathcal{N}_{\mathrm{lost}}| \neq |\mathcal{N}_{\mathrm{gained}}|$)
-- Simple ruled lateral surfaces (which require matching edge counts)
-
-**Euler characteristic argument:** For a $(d+1)$-dimensional prism in $\mathbb{R}^{d+1}$, the Euler characteristic of the boundary satisfies $\chi(\partial P) = 1 + (-1)^d$. The number of $(d-1)$-faces on the boundary equals $|\mathcal{N}_{\mathrm{shared}}| + 2$ (top face, bottom face, plus shared laterals). When $|\mathcal{N}_{\mathrm{lost}}| + |\mathcal{N}_{\mathrm{gained}}| > 0$, we need additional faces to account for the lost/gained neighbors, which requires interior vertices (the mid-level vertices) to maintain a valid cell complex.
-
-For $\ell \in \mathcal{N}_{\mathrm{lost}}$, the boundary segment $\Gamma_{j,\ell}(t)$ has no corresponding segment on the top face. The geodesic ruling from this segment cannot continue to the top—it must terminate somewhere in between.
-
-For $m \in \mathcal{N}_{\mathrm{gained}}$, the boundary segment $\Gamma_{i',m}(t + \Delta t)$ has no corresponding segment on the bottom face. The geodesic ruling to this segment must originate somewhere in between.
-
-The intermediate locations where geodesics terminate and originate are the **mid-level vertices**. Their existence is topologically necessary to form a closed boundary.
-
-By Definition {prf:ref}`def-scutoid-cell`, any spacetime cell with mid-level vertices is a scutoid, not a prism.
+where $\ell \sim \rho^{-1/d}$ and $c>0$ depends on $d$ and local curvature bounds. This yields the stated bound.
 
 $\square$
+:::
+
+:::{dropdown} 📖 Hypostructure Proof Path
+:icon: book
+
+**Rigor Class:** F (Framework-Original)
+
+**Permits:** $\mathrm{TB}_\pi$ (Node 8), $\mathrm{TB}_O$ (Node 9)
+
+**Framework path (sketch):**
+
+1. Use {prf:ref}`def-fractal-set-cst-edges` and {prf:ref}`def-fractal-set-cloning-score` to identify cloning events and parent-child relations in the CST.
+2. Invoke the QSD sampling density from {prf:ref}`thm-fractal-adaptive-sprinkling` to justify a local Poisson approximation for walker locations (within Safe Harbor bounds).
+3. Apply the Poisson void probability to obtain the exponential bound on neighbor-set equality and conclude scutoid formation for large displacement.
+4. The topological obstruction argument is independent of framework assumptions and matches Definition {prf:ref}`def-scutoid-cell`.
 :::
 
 :::{dropdown} 📖 Hypostructure Reference
@@ -325,21 +337,21 @@ $\square$
 
 Spacetime cells in the scutoid tessellation are classified by their **topological complexity**:
 
-**Type 0: Prism** (No cloning)
+**Type 0: Prism** (No neighbor change)
 - $\mathcal{N}_{\mathrm{lost}} = \mathcal{N}_{\mathrm{gained}} = \emptyset$
-- No mid-level vertices
-- Represents: Persistent walker undergoing continuous diffusion
+- No mid-level branching
+- Represents: A trajectory segment with no neighbor changes (typically persistent diffusion without critical events)
 - Physics: Laminar flow, exploitation phase
 
 **Type 1: Simple Scutoid** (Single neighbor swap)
 - $|\mathcal{N}_{\mathrm{lost}}| = |\mathcal{N}_{\mathrm{gained}}| = 1$ (scutoid index $\chi = 2$)
-- One mid-level vertex (or edge in higher dimensions)
-- Represents: Standard cloning event with local reorganization
+- Minimal mid-level branching (a single vertex in $d=2$, or a minimal branching feature in higher $d$)
+- Represents: Standard cloning event or a single Delaunay flip
 - Physics: Plastic deformation, adaptive exploration
 
 **Type $\geq 2$: Complex Scutoid** (Multiple neighbor changes or asymmetric changes)
 - $\chi_{\mathrm{scutoid}} = |\mathcal{N}_{\mathrm{lost}}| + |\mathcal{N}_{\mathrm{gained}}| \geq 2$, excluding the symmetric single-swap case (Type 1)
-- Number of mid-level vertices: $\max(|\mathcal{N}_{\mathrm{lost}}|, |\mathcal{N}_{\mathrm{gained}}|)$
+- Mid-level branching forms a higher-complexity cell complex; the exact vertex count depends on geometry
 - Represents: Major topological reorganization, "teleportation" to distant basin
 - Physics: Phase transition, turbulent exploration
 
@@ -372,8 +384,9 @@ $$
 
 **Counting argument**: For $N$ walkers over time interval $[0,T]$ with timestep $\Delta t$:
 - Total spacetime cells: $N \cdot (T/\Delta t)$
-- Prismatic cells (Type 0): $N_{\mathrm{prism}} = N(1 - p_{\mathrm{clone}}) \cdot (T/\Delta t)$
-- Scutoid cells (Type $\geq 1$): $N_{\mathrm{scutoid}} = N \cdot p_{\mathrm{clone}} \cdot (T/\Delta t)$
+- Let $p_{\mathrm{clone}}$ be the cloning probability per step and $p_{\mathrm{crit}}$ the probability of a non-cloning neighbor-change event (critical Delaunay flip).
+- Prismatic cells (Type 0): $N_{\mathrm{prism}} = N(1 - p_{\mathrm{clone}} - p_{\mathrm{crit}}) \cdot (T/\Delta t)$
+- Scutoid cells (Type $\geq 1$): $N_{\mathrm{scutoid}} = N (p_{\mathrm{clone}} + p_{\mathrm{crit}}) \cdot (T/\Delta t)$
 
 **Topological interpretation**: The cumulative scutoid index $\mathcal{K}_{\mathrm{total}}$ counts the total number of neighbor-relationship changes in the tessellation. Each unit of $\mathcal{K}_{\mathrm{total}}$ represents one "topological transaction" where a neighbor relationship is either created or destroyed.
 
@@ -391,7 +404,7 @@ where mid-level vertices connect faces from lost neighbors to faces from gained 
 :::{div} feynman-prose
 Now we get practical. How do we actually compute and maintain these tessellations as the swarm evolves?
 
-The naive approach is to rebuild everything from scratch at each timestep: take the $N$ walker positions, run a Voronoi/Delaunay algorithm, output the result. This costs $O(N \log N)$ per timestep using Fortune's algorithm or Bowyer-Watson.
+The naive approach is to rebuild everything from scratch at each timestep: take the $N$ walker positions, run a Voronoi/Delaunay algorithm, output the result. The cost is **output-sensitive**: at least $O(|\mathrm{DT}|)$, $O(N \log N)$ in 2D, and superlinear in $N$ for higher dimensions or curved geometry (typically $O(N^{\lceil d/2\rceil})$ in the worst case).
 
 But this is wasteful. Between timesteps, most walkers move only slightly (continuous diffusion), and only a few undergo cloning (discrete jumps). The tessellation at time $t + \Delta t$ is a small perturbation of the tessellation at time $t$. We are throwing away valuable information by recomputing from scratch.
 
@@ -429,15 +442,15 @@ for walker_id in range(N):
     edge = CST.get_edge(walker_id, t, t + dt)
 
     if edge.type == "SDE_evolution":
-        # Type 1: Local move (prismatic scutoid)
+        # Local move (typically prism unless a critical event occurs)
         MovedWalkers.append((walker_id, edge.z_old, edge.z_new))
 
     elif edge.type == "cloning":
-        # Type 2: Teleport (non-prismatic scutoid)
+        # Teleport (non-prismatic scutoid)
         ClonedWalkers.append((walker_id, edge.z_new, edge.parent_id))
 ```
 
-**Step 2: Update Locally Moved Walkers** — Amortized $O(1)$ per walker (under small displacement condition)
+**Step 2: Update Locally Moved Walkers** — Output-sensitive, $O(k)$ per walker (conflict-region size)
 
 ```{code-block} python
 :caption: Update Delaunay structure for moved walkers
@@ -446,16 +459,16 @@ for (walker_id, z_old, z_new) in MovedWalkers:
     vertex = VertexMap[walker_id]
     vertex.position = z_new
 
-    # Restore Delaunay property via Lawson flips
-    LawsonFlip(DT, vertex)
+    # Restore Delaunay property (Lawson flips in d=2; local retriangulation in d>2)
+    RestoreDelaunay(DT, vertex)
 
     # Update corresponding Voronoi cell
     UpdateVoronoiCell(VT, vertex)
 ```
 
-**Small displacement condition:** The $O(1)$ amortized bound holds when the displacement $\|z_{\mathrm{new}} - z_{\mathrm{old}}\| \ll \ell_{\mathrm{local}}$, where $\ell_{\mathrm{local}}$ is the local feature size (distance to nearest neighbor). For the Langevin SDE with diffusion $\Sigma_{\mathrm{reg}}$ and timestep $\Delta t$, typical displacements scale as $O(\sqrt{\Delta t})$. The condition is satisfied when $\Delta t \ll \ell_{\mathrm{local}}^2 / \|\Sigma_{\mathrm{reg}}\|_{\mathrm{op}}^2$. In dense clusters where $\ell_{\mathrm{local}} \to 0$, the number of Lawson flips may exceed $O(1)$, but remains $O(\log N)$ in the worst case.
+**Small displacement condition:** When the displacement $\|z_{\mathrm{new}} - z_{\mathrm{old}}\| \ll \ell_{\mathrm{local}}$ (local feature size), the conflict region is small. For the Langevin SDE with diffusion $\Sigma_{\mathrm{reg}}$ and timestep $\Delta t$, typical displacements scale as $O(\sqrt{\Delta t})$, so the condition is met when $\Delta t \ll \ell_{\mathrm{local}}^2 / \|\Sigma_{\mathrm{reg}}\|_{\mathrm{op}}^2$. In dense clusters where $\ell_{\mathrm{local}} \to 0$, the conflict region size $k$ can grow, and update cost scales with $k$ (output-sensitive), potentially as large as $O(|\mathrm{DT}|)$ in the worst case.
 
-**Step 3: Update Cloned Walkers** — $O(\log N)$ per walker
+**Step 3: Update Cloned Walkers** — $O(N^{1/d})$ expected per walker ($O(\log N)$ with index)
 
 ```{code-block} python
 :caption: Handle cloning events with point location
@@ -466,25 +479,27 @@ for (dead_id, z_new, parent_id) in ClonedWalkers:
     DT.remove_vertex(dead_vertex)
 
     # Phase B: Insert new walker
-    containing_simplex = DT.locate(z_new)  # O(log N) via jump-and-walk
+    containing_simplex = DT.locate(z_new)  # expected O(N^{1/d}) walk; O(log N) with index
     new_vertex = DT.insert_vertex(z_new, containing_simplex)
-    LawsonFlip(DT, new_vertex)
+    RestoreDelaunay(DT, new_vertex)
 
     # Update mapping
     VertexMap[dead_id] = new_vertex
 ```
 
+**RestoreDelaunay:** In $d=2$, this is the Lawson-flip routine (Algorithm {prf:ref}`alg-lawson-flip`). In $d>2$ or on curved manifolds, it denotes local retriangulation of the conflict region inside a convex normal neighborhood.
+
 **Total Complexity per Timestep:**
 
 $$
-T(N) = O(N) + O(p_{\mathrm{clone}} \cdot N \cdot \log N)
+T(N) = O(N) + O\!\left(\sum_{\text{moved}} k_i\right) + O\!\left(\sum_{\text{clones}} (\log N + k_i)\right)
 $$
 
-For typical cloning probabilities $p_{\mathrm{clone}} \ll 1/\log N$, the second term is dominated by the first, yielding **$O(N)$ amortized** complexity per timestep.
+Under quasi-uniform sampling and small displacements, $\mathbb{E}[k_i]=O(1)$ and point location with an index gives $\mathbb{E}[T(N)] = O(N) + O(p_{\mathrm{clone}} N \log N)$. If $p_{\mathrm{clone}} \ll 1/\log N$ and $|\mathrm{DT}|=\Theta(N)$, this yields **$O(N)$ amortized** complexity per timestep.
 :::
 
 (sec-lawson-flip)=
-### Lawson Flip Algorithm
+### Local Delaunay Restoration (Lawson Flips in 2D)
 
 :::{div} feynman-prose
 The Lawson flip is the workhorse of incremental Delaunay maintenance. When you move a vertex, some of the incident simplices may violate the Delaunay criterion (empty circumsphere property). The Lawson algorithm fixes this by iteratively "flipping" edges until the criterion is restored.
@@ -494,7 +509,13 @@ Here is the beautiful thing: for small vertex movements, the number of flips is 
 The key insight is geometric: the Delaunay triangulation is a stable structure. Small perturbations cause small changes. Only large movements (like cloning teleportation) cause global reorganization.
 :::
 
-:::{prf:algorithm} Lawson Flip for Delaunay Restoration
+:::{admonition} Technical Note (General $d$)
+:class: note
+
+Lawson flips are guaranteed to restore a Delaunay triangulation only in $d=2$. In higher dimensions or on curved manifolds, the safe, rigorous update is to **retriangulate the conflict region** (the star of the moved/inserted vertex) using a local geodesic Delaunay construction inside a convex normal neighborhood.
+:::
+
+:::{prf:algorithm} Lawson Flip for Delaunay Restoration (2D)
 :label: alg-lawson-flip
 
 **Input:** Delaunay triangulation `DT`, vertex `v` whose position was updated
@@ -539,16 +560,13 @@ def LawsonFlip(DT, v):
             Q.enqueue(new_S)
 ```
 
-**Complexity Analysis:**
+**Complexity Analysis (local retriangulation viewpoint):**
 
-- For vertex displacement $\delta$, affected simplices lie within distance $O(\delta)$
-- Number of affected simplices: $O(1)$ for small $\delta$ in fixed dimension $d$
-- Each flip may cascade to $O(1)$ neighbors
-- **Total flips: $O(1)$ amortized** for small displacements
+- Let $k$ be the number of simplices in the conflict region (the star of the moved/inserted vertex).
+- In $d=2$, Lawson flips terminate and run in $O(k)$ time.
+- In $d>2$, a safe update is to delete the conflict region and retriangulate it; this costs $O(k \log k)$ in practice (output-sensitive).
 
-**Theoretical justification:** The amortized $O(1)$ bound for small displacements follows from the local nature of Delaunay violations. In dimension $d$, each vertex has $O(1)$ incident simplices on average (bounded by the kissing number). For displacement $\delta \ll \ell$ (inter-walker spacing), only $O(1)$ simplices can violate the Delaunay criterion. See {cite}`guibas1992randomized` for analysis of randomized incremental Delaunay construction, which provides the theoretical foundation for incremental updates.
-
-**Key Property:** Lawson flips preserve the Delaunay structure incrementally. The algorithm terminates because each flip reduces a potential function (total circumradius); see {cite}`lawson1977software`.
+Without regularity assumptions, $k$ can be as large as $|\mathrm{DT}|$. Under quasi-uniform sampling in a bounded-curvature region (points are $\delta$-separated and $\epsilon$-dense with $\epsilon/\delta$ bounded), $k$ is typically $O(1)$ in expectation for small displacements.
 :::
 
 (sec-jump-and-walk)=
@@ -562,6 +580,12 @@ The naive approach—check every simplex—takes $O(N)$ time. Much too slow.
 The jump-and-walk algorithm does better. Start from some "hint" simplex (say, one incident to the parent walker), then walk through the triangulation toward the target. At each step, check which face of the current simplex is "toward" the target, and cross to the adjacent simplex. Eventually you reach the simplex containing the target.
 
 The expected number of steps is $O(\log N)$ for typical point sets. The walk length depends on how far the target is from the starting hint, but for cloning events (where the new position is near the parent), the hint is excellent and the walk is short.
+:::
+
+:::{admonition} Technical Note (Point Location)
+:class: note
+
+In general, pure walk-based point location has expected complexity $O(N^{1/d})$ for random points. Achieving $O(\log N)$ requires an auxiliary spatial index (e.g., a hierarchical net or cover tree) or stronger regularity assumptions.
 :::
 
 :::{prf:algorithm} Jump-and-Walk Point Location
@@ -592,14 +616,15 @@ def locate(DT, z):
         current = DT.adjacent_simplex(current, exit_face)
 
         if current is None:
-            return None  # z is outside convex hull
+            return None  # z is outside the triangulated region
 ```
 
 **Complexity:**
 
-- Jump phase: $O(1)$ using spatial hashing or parent simplex
-- Walk phase: $O(\sqrt[d]{N})$ expected for random points, $O(\log N)$ with good hint
-- **Total: $O(\log N)$ expected** when hint simplex is near target
+- Jump phase: $O(1)$ using a hint simplex or spatial hashing
+- Walk phase: $O(N^{1/d})$ expected for random points
+- With a good hint and bounded jitter: expected $O(\mathrm{dist}/\ell)$ steps, where $\mathrm{dist}$ is the hint-to-target distance and $\ell$ is typical edge length
+- **Total: $O(N^{1/d})$ expected** without additional point-location structures; **$O(\log N)$ expected** if a hierarchical spatial index is maintained
 
 **Theoretical basis:** The expected walk length for uniformly random queries is $O(N^{1/d})$ in dimension $d$ {cite}`mucke1999fast`. With a good hint (e.g., the parent's simplex for cloning events), the walk length is $O(\mathrm{dist}/\ell)$ where $\mathrm{dist}$ is the distance from hint to target and $\ell$ is the typical edge length. For cloning events where the clone position has Gaussian jitter $\xi \sim \mathcal{N}(0, \sigma^2 I)$, the expected walk length is $O(\sigma/\ell) = O(1)$ when $\sigma \sim \ell$.
 :::
@@ -615,23 +640,25 @@ The online scutoid-guided triangulation update (Algorithm {prf:ref}`alg-online-t
 **Per-Timestep Complexity:**
 
 $$
-T(N) = O(N) + O(p_{\mathrm{clone}} \cdot N \cdot \log N)
+T(N) = O(N) + O\!\left(\sum_{\text{moved}} k_i\right) + O\!\left(\sum_{\text{clones}} (\log N + k_i)\right)
 $$
 
-**Amortized Complexity** (over $T$ timesteps):
+where $k_i$ is the size of the conflict region (number of simplices retriangulated) for update $i$.
+
+**Expected/Amortized Complexity** (under quasi-uniform sampling and small displacements):
 
 $$
-\bar{T}(N) = O(N) \quad \text{if } p_{\mathrm{clone}} \ll \frac{1}{\log N}
+\mathbb{E}[T(N)] = O(N) + O(p_{\mathrm{clone}} \cdot N \cdot \log N)
 $$
 
-**Typical Regime:** For $p_{\mathrm{clone}} \in [0.01, 0.1]$ and $N \in [10^3, 10^6]$:
-- $p_{\mathrm{clone}} \cdot \log N \approx 0.01 \times 20 = 0.2 \ll 1$
-- **Effective complexity: $O(N)$ per timestep**
+and therefore $\bar{T}(N) = O(N)$ when $p_{\mathrm{clone}} \ll 1/\log N$ and the Delaunay complex size is linear.
 
-**Speedup vs. Batch:**
+**Typical Regime (linear-size Delaunay):** For $p_{\mathrm{clone}} \in [0.01, 0.1]$ and $N \in [10^3, 10^6]$, $p_{\mathrm{clone}} \log N$ is often $< 1$, yielding **effective $O(N)$ per timestep**.
+
+**Speedup vs. Batch (output-sensitive):**
 
 $$
-\text{Speedup} = \frac{O(N \log N)}{O(N)} = O(\log N)
+\text{Speedup} = \frac{O(|\mathrm{DT}| \log N)}{O(N)} = O(\log N) \quad \text{when } |\mathrm{DT}| = \Theta(N)
 $$
 
 For $N = 10^6$: approximately $20\times$ speedup.
@@ -640,30 +667,42 @@ For $N = 10^6$: approximately $20\times$ speedup.
 
 **SDE moves (Type 0 prisms):**
 - Number of persistent walkers: $N(1 - p_{\mathrm{clone}})$
-- Cost per walker: $O(1)$ amortized (Lawson flips for small displacement)
-- Total: $O(N)$
+- Cost per walker: $O(k_i)$ (local conflict retriangulation)
+- Total: $O\!\left(\sum_{\text{moved}} k_i\right)$
 
 **Cloning events (Type $\geq 1$ scutoids):**
 - Number of cloned walkers: $N \cdot p_{\mathrm{clone}}$
-- Cost per walker: $O(\log N)$ (point location) + $O(1)$ (Lawson flips)
-- Total: $O(p_{\mathrm{clone}} \cdot N \cdot \log N)$
+- Cost per walker: $O(\log N)$ (point location with index) + $O(k_i)$ (local retriangulation)
+- Total: $O\!\left(\sum_{\text{clones}} (\log N + k_i)\right)$
 
-Combining: $T(N) = O(N) + O(p_{\mathrm{clone}} \cdot N \cdot \log N)$.
-
-For $p_{\mathrm{clone}} \ll 1/\log N$, the second term is dominated by the first.
+Combining gives the stated bound. Under quasi-uniform sampling, $\mathbb{E}[k_i]=O(1)$ for small displacements, yielding $\mathbb{E}[T(N)] = O(N) + O(p_{\mathrm{clone}} N \log N)$.
 
 $\square$
+:::
+
+:::{dropdown} 📖 Hypostructure Proof Path
+:icon: book
+
+**Rigor Class:** F (Framework-Original)
+
+**Permits:** $\mathrm{TB}_\rho$ (Node 10 ErgoCheck)
+
+**Framework path (sketch):**
+
+1. Use {prf:ref}`def-fractal-set-cst-edges` to classify CST edges into SDE moves and cloning events.
+2. Invoke {prf:ref}`thm-fractal-adaptive-sprinkling` to justify quasi-uniform sampling in Safe Harbor, yielding bounded expected conflict-region size.
+3. Combine with standard output-sensitive bounds to recover $\mathbb{E}[T(N)] = O(N) + O(p_{\mathrm{clone}} N \log N)$.
 :::
 
 (sec-lower-bound-proof)=
 ### Lower Bound Proof
 
-:::{prf:theorem} $\Omega(N)$ Lower Bound for Tessellation Update
+:::{prf:theorem} $\Omega(|\mathrm{DT}|)$ Lower Bound for Tessellation Update
 :label: thm-omega-n-lower-bound
 
-Any algorithm that correctly updates a Voronoi/Delaunay tessellation of $N$ points after arbitrary point movements must take, in the worst case, at least $\Omega(N)$ time.
+Any algorithm that correctly updates a Voronoi/Delaunay complex of $N$ points after arbitrary point movements must take, in the worst case, at least $\Omega(|\mathrm{DT}|)$ time.
 
-**Conclusion:** The $O(N)$ amortized complexity of Algorithm {prf:ref}`alg-online-triangulation-update` is **asymptotically optimal**.
+**Conclusion:** The update complexity is **asymptotically optimal** up to the output size.
 
 *Proof.*
 
@@ -671,18 +710,18 @@ Any algorithm that correctly updates a Voronoi/Delaunay tessellation of $N$ poin
 
 The output is a complete geometric data structure representing:
 - $N$ vertex positions (walker coordinates)
-- $\Theta(N)$ simplices (in fixed dimension $d$)
+- $\Theta(|\mathrm{DT}|)$ simplices
 - Adjacency information for each simplex
 
-The **output size is $\Theta(N)$** (in fixed dimension $d$, the number of Delaunay simplices is $\Theta(N)$ by the Upper Bound Theorem for convex polytopes).
+The **output size is $\Theta(|\mathrm{DT}|)$**. In fixed dimension $d$, the number of Delaunay simplices can be as large as $\Theta(N^{\lceil d/2\rceil})$ in the worst case; in favorable regimes (e.g., quasi-uniform sampling in bounded curvature), it is often $\Theta(N)$.
 
-Any algorithm producing $\Theta(N)$ output requires at least $\Omega(N)$ time—it is impossible to write $N$ pieces of information in fewer than $N$ operations. This is a fundamental information-theoretic lower bound that applies to any computational model.
+Any algorithm producing $\Theta(|\mathrm{DT}|)$ output requires at least $\Omega(|\mathrm{DT}|)$ time—it is impossible to write the output in fewer operations. This is a fundamental information-theoretic lower bound that applies to any computational model.
 
 **Worst-case construction:**
 
-Consider a global rotation: all $N$ walkers rotate by angle $\theta$ around a center. The combinatorial structure may be unchanged, but all vertex coordinates must be updated. The algorithm must touch all $\Theta(N)$ geometric objects to produce correct output.
+Consider a global rotation: all $N$ walkers rotate by angle $\theta$ around a center. The combinatorial structure may be unchanged, but all vertex coordinates must be updated. The algorithm must touch all $\Theta(|\mathrm{DT}|)$ geometric objects to produce correct output.
 
-**Conclusion:** Lower bound $\Omega(N)$, upper bound $O(N)$ amortized. The algorithm is optimal.
+**Conclusion:** Lower bound $\Omega(|\mathrm{DT}|)$, upper bound output-sensitive. When $|\mathrm{DT}| = \Theta(N)$, the algorithm achieves $O(N)$ and is optimal.
 
 $\square$
 :::
@@ -691,6 +730,12 @@ $\square$
 This is a satisfying result. We cannot do better than $O(N)$—the output is that big, and we have to at least look at it. Our algorithm achieves $O(N)$ amortized. We are as good as theoretically possible.
 
 The improvement over batch computation ($O(N \log N)$) comes from exploiting temporal coherence. Most of the structure is preserved between timesteps; we only update what changed. This is the power of incremental algorithms.
+:::
+
+:::{admonition} Technical Note (Output-Size Lower Bound)
+:class: note
+
+The rigorous lower bound is $\Omega(|\mathrm{DT}|)$. When the Delaunay complex is superlinear in $N$ (possible in $d\ge 3$), the optimal update cost scales accordingly.
 :::
 
 (sec-topological-information-rate)=
@@ -717,6 +762,8 @@ $$
 
 where the sum is over all spacetime cells corresponding to cloning events in the interval $[t, t + \Delta t)$.
 
+**Note:** Neighbor changes can also occur without cloning (via critical Delaunay events). The definition above focuses on cloning-driven topology changes; a fully general rate would sum over all neighbor-change events.
+
 **Alternative formulation:**
 
 $$
@@ -727,6 +774,8 @@ where:
 - $\chi_{\mathrm{scutoid}} = |\mathcal{N}_{\mathrm{lost}}| + |\mathcal{N}_{\mathrm{gained}}|$ is the scutoid index (total neighbor changes)
 - $\langle \chi_{\mathrm{scutoid}} \rangle$ is the average scutoid index per cloning event
 - $f_{\mathrm{clone}} = N \cdot p_{\mathrm{clone}} / \Delta t$ is the cloning frequency (events per unit time)
+
+If non-cloning neighbor changes are included, replace $f_{\mathrm{clone}}$ with the total neighbor-change event rate.
 :::
 
 :::{prf:conjecture} Topological Information Rate Bound
@@ -777,6 +826,12 @@ The theoretical payoff is the topological information rate (Conjecture {prf:ref}
 In the next chapter, we will see how the continuous limit of these discrete scutoid deformations recovers classical differential geometry: curvature from holonomy, the Raychaudhuri equation from scutoid evolution, and eventually the field equations of emergent gravity.
 :::
 
+:::{admonition} Technical Note (Precise Theorem Scope)
+:class: note
+
+The rigorous statement is conditional: **neighbor changes force scutoids**; cloning makes neighbor changes likely, but not guaranteed in every realization.
+:::
+
 :::{admonition} Key Takeaways
 :class: feynman-added tip
 
@@ -794,7 +849,7 @@ In the next chapter, we will see how the continuous limit of these discrete scut
 
 | Type | Scutoid Index | Algorithm Event | Physical Phase |
 |------|---------------|-----------------|----------------|
-| 0 (Prism) | $\chi = 0$ | Persistence | Exploitation |
+| 0 (Prism) | $\chi = 0$ | No neighbor change on interval | Exploitation |
 | 1 (Simple) | $\chi = 2$ (symmetric: 1 lost, 1 gained) | Single neighbor swap | Exploration |
 | $\geq 2$ (Complex) | $\chi \geq 2$ (asymmetric or multi-change) | Major reorganization | Phase transition |
 
@@ -802,13 +857,13 @@ In the next chapter, we will see how the continuous limit of these discrete scut
 
 | Operation | Batch | Online | Speedup |
 |-----------|-------|--------|---------|
-| Per timestep | $O(N \log N)$ | $O(N)$ amortized | $\log N$ |
-| Lower bound | $\Omega(N)$ | $\Omega(N)$ | Optimal |
+| Per timestep | $O(|\mathrm{DT}| \log N)$ | $O(N)$ amortized (linear-size $\mathrm{DT}$) | $\log N$ |
+| Lower bound | $\Omega(|\mathrm{DT}|)$ | $\Omega(|\mathrm{DT}|)$ | Output-size optimal |
 
 **Key Theorems:**
 
-1. **Cloning $\Rightarrow$ Scutoid** (Theorem {prf:ref}`thm-cloning-implies-scutoid`): Cloning events necessarily produce scutoid geometry
-2. **Optimality** (Theorem {prf:ref}`thm-omega-n-lower-bound`): The $O(N)$ online algorithm is asymptotically optimal
+1. **Neighbor Change $\Rightarrow$ Scutoid** (Theorem {prf:ref}`thm-cloning-implies-scutoid`): If cloning changes the neighbor set, the cell must be a scutoid
+2. **Optimality** (Theorem {prf:ref}`thm-omega-n-lower-bound`): The update cost is optimal up to output size ($O(N)$ when $|\mathrm{DT}|=\Theta(N)$)
 3. **Topological Information** (Conjecture {prf:ref}`conj-topological-information-bound`): Computation leaves geometric footprints as scutoid vertices
 :::
 
@@ -821,7 +876,7 @@ In the next chapter, we will see how the continuous limit of these discrete scut
 
 - **Voronoi tessellation**: Standard computational geometry construction; see {cite}`berg2008computational` for algorithms
 - **Delaunay triangulation**: Dual structure to Voronoi; Lawson flips for incremental updates {cite}`lawson1977software`
-- **Jump-and-walk point location**: Expected $O(N^{1/d})$ complexity for uniform random queries; $O(\log N)$ with good hints {cite}`mucke1999fast`
+- **Jump-and-walk point location**: Expected $O(N^{1/d})$ for uniform random queries; $O(\mathrm{dist}/\ell)$ with a good hint; $O(\log N)$ with a spatial index {cite}`mucke1999fast`
 - **Kinetic data structures**: Amortized analysis of geometric data structures under motion {cite}`guibas1992randomized`
 - **Lower bounds**: Information-theoretic lower bounds on geometric algorithms {cite}`preparata1985computational`
 

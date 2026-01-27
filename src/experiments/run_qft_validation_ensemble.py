@@ -14,16 +14,16 @@ Usage:
 from __future__ import annotations
 
 import argparse
-import json
-import os
-import traceback
-from dataclasses import asdict, dataclass, field
+from dataclasses import dataclass, field
 from datetime import datetime
-from multiprocessing import Pool, cpu_count
+import json
+from multiprocessing import cpu_count, Pool
 from pathlib import Path
+import traceback
 from typing import Any
 
 import numpy as np
+
 
 try:
     from tqdm import tqdm
@@ -278,7 +278,6 @@ def run_single_trial(args: tuple[int, EnsembleConfig]) -> dict[str, Any]:
 
 def _analyze_history(history, config: EnsembleConfig, trial_dir: Path, run_id: str) -> dict:
     """Analyze a single history and return metrics dict."""
-    import torch
 
     from fragile.fractalai.core.fitness import compute_fitness
     from fragile.fractalai.lyapunov import compute_lyapunov_components_trajectory
@@ -313,7 +312,7 @@ def _analyze_history(history, config: EnsembleConfig, trial_dir: Path, run_id: s
         "rho": _get_param(params, ["fitness", "rho"], None),
     }
 
-    fitness, info = compute_fitness(
+    fitness, _info = compute_fitness(
         positions=x_pre,
         velocities=v_pre,
         rewards=rewards,
@@ -427,7 +426,7 @@ def _analyze_history(history, config: EnsembleConfig, trial_dir: Path, run_id: s
             wilson_metrics = None
 
     # Assemble metrics
-    metrics = {
+    return {
         "analysis_time_index": analysis_time_idx,
         "analysis_step": analysis_step,
         "n_alive": int(alive.sum().item()),
@@ -455,13 +454,13 @@ def _analyze_history(history, config: EnsembleConfig, trial_dir: Path, run_id: s
         "wilson_loops": {
             "wilson_mean": wilson_metrics.get("wilson_mean", 0.0) if wilson_metrics else 0.0,
             "wilson_std": wilson_metrics.get("wilson_std", 0.0) if wilson_metrics else 0.0,
-            "wilson_action_mean": wilson_metrics.get("action_mean", 0.0) if wilson_metrics else 0.0,
+            "wilson_action_mean": wilson_metrics.get("action_mean", 0.0)
+            if wilson_metrics
+            else 0.0,
             "wilson_action_std": wilson_metrics.get("action_std", 0.0) if wilson_metrics else 0.0,
             "n_loops": wilson_metrics.get("n_loops", 0) if wilson_metrics else 0,
         },
     }
-
-    return metrics
 
 
 def _get_param(params: dict[str, Any] | None, keys: list[str], default: Any) -> Any:
@@ -484,7 +483,7 @@ def _compute_local_fields(
     """Compute proper LOCAL fields for QFT correlation analysis."""
     import torch
 
-    N = positions.shape[0]
+    positions.shape[0]
 
     # Local density field via kernel density estimate
     dists_sq = ((positions.unsqueeze(1) - positions.unsqueeze(0)) ** 2).sum(dim=-1)
@@ -787,7 +786,7 @@ def _compute_viscous_force(
     if nu == 0.0:
         return torch.zeros_like(velocities)
 
-    N, d = positions.shape
+    _N, _d = positions.shape
 
     # Compute pairwise distances with PBC support
     distances = compute_periodic_distance_matrix(
@@ -855,7 +854,7 @@ def _compute_su3_color_state(
     """
     import torch
 
-    N, d = viscous_force.shape
+    _N, _d = viscous_force.shape
 
     # Compute force magnitude ||F_viscous||
     force_magnitude = torch.norm(viscous_force, dim=1)  # [N]
@@ -972,7 +971,6 @@ def _compute_su3_metrics(color_state: dict, alive) -> dict:
 
 def _compute_variance_from_history(history, warmup_samples: int, lambda_v: float = 1.0) -> dict:
     """Compute QSD variance metrics from history."""
-    import torch
 
     n_recorded = history.n_recorded
     if warmup_samples >= n_recorded:
@@ -1009,7 +1007,9 @@ def _compute_variance_from_history(history, warmup_samples: int, lambda_v: float
     ratio_h_std = float(np.std(ratio_h_samples)) if ratio_h_samples else 0.0
 
     N = history.N
-    scaling_exponent = float(np.log(ratio_h_mean * N) / np.log(N)) if N > 1 and ratio_h_mean > 0 else 0.0
+    scaling_exponent = (
+        float(np.log(ratio_h_mean * N) / np.log(N)) if N > 1 and ratio_h_mean > 0 else 0.0
+    )
 
     return {
         "ratio_h_mean": ratio_h_mean,
@@ -1148,7 +1148,7 @@ def load_existing_results(config: EnsembleConfig) -> list[dict]:
 
         if metrics_path.exists():
             try:
-                with open(metrics_path) as f:
+                with open(metrics_path, encoding="utf-8") as f:
                     result["metrics"] = json.load(f)
                 result["success"] = True
                 result["metrics_path"] = str(metrics_path)
@@ -1165,7 +1165,14 @@ def aggregate_metrics(results: list[dict]) -> dict:
     successful = [r for r in results if r["success"] and r["metrics"]]
 
     if not successful:
-        return {"n_successful": 0, "local_fields": {}, "wilson_loops": {}, "lyapunov": {}, "qsd_variance": {}, "gauge_phases": {}}
+        return {
+            "n_successful": 0,
+            "local_fields": {},
+            "wilson_loops": {},
+            "lyapunov": {},
+            "qsd_variance": {},
+            "gauge_phases": {},
+        }
 
     aggregated = {
         "n_successful": len(successful),
@@ -1210,16 +1217,16 @@ def aggregate_metrics(results: list[dict]) -> dict:
     # Aggregate Wilson loops
     wilson_keys = ["wilson_mean", "wilson_std", "wilson_action_mean", "wilson_action_std"]
     for key in wilson_keys:
-        aggregated["wilson_loops"][key] = np.array(
-            [r["metrics"].get("wilson_loops", {}).get(key, 0.0) for r in successful]
-        )
+        aggregated["wilson_loops"][key] = np.array([
+            r["metrics"].get("wilson_loops", {}).get(key, 0.0) for r in successful
+        ])
 
     # Aggregate Lyapunov
     lyapunov_keys = ["initial_total", "final_total", "convergence_ratio"]
     for key in lyapunov_keys:
-        aggregated["lyapunov"][key] = np.array(
-            [r["metrics"].get("lyapunov", {}).get(key, 0.0) for r in successful]
-        )
+        aggregated["lyapunov"][key] = np.array([
+            r["metrics"].get("lyapunov", {}).get(key, 0.0) for r in successful
+        ])
 
     # Aggregate QSD variance
     qsd_keys = ["ratio_h_mean", "scaling_exponent"]
@@ -1235,16 +1242,21 @@ def aggregate_metrics(results: list[dict]) -> dict:
 
     # Aggregate gauge phases (U(1), SU(2), and SU(3))
     gauge_keys = [
-        "u1_phase_mean", "u1_phase_std",
-        "su2_phase_mean", "su2_phase_std",
-        "su3_color_magnitude_mean", "su3_color_magnitude_std",
-        "su3_alignment_mean", "su3_alignment_std",
-        "su3_phase_mean", "su3_phase_std",
+        "u1_phase_mean",
+        "u1_phase_std",
+        "su2_phase_mean",
+        "su2_phase_std",
+        "su3_color_magnitude_mean",
+        "su3_color_magnitude_std",
+        "su3_alignment_mean",
+        "su3_alignment_std",
+        "su3_phase_mean",
+        "su3_phase_std",
     ]
     for key in gauge_keys:
-        aggregated["gauge_phases"][key] = np.array(
-            [r["metrics"].get("gauge_phases", {}).get(key, 0.0) for r in successful]
-        )
+        aggregated["gauge_phases"][key] = np.array([
+            r["metrics"].get("gauge_phases", {}).get(key, 0.0) for r in successful
+        ])
 
     return aggregated
 
@@ -1323,7 +1335,7 @@ def generate_ensemble_plots(stats: dict, config: EnsembleConfig) -> dict[str, Pa
     # 1. Correlation lengths bar chart
     field_names = list(stats.get("local_fields", {}).keys())
     if field_names:
-        fig, ax = plt.subplots(figsize=(10, 6))
+        _fig, ax = plt.subplots(figsize=(10, 6))
         x = np.arange(len(field_names))
         means = [stats["local_fields"][f]["xi"]["mean"] for f in field_names]
         errors = [1.96 * stats["local_fields"][f]["xi"]["se"] for f in field_names]
@@ -1341,9 +1353,9 @@ def generate_ensemble_plots(stats: dict, config: EnsembleConfig) -> dict[str, Pa
 
     # 2. Correlation lengths distribution (violin/box plot)
     if field_names:
-        fig, ax = plt.subplots(figsize=(10, 6))
+        _fig, ax = plt.subplots(figsize=(10, 6))
         xi_data = [stats["local_fields"][f]["xi"]["values"] for f in field_names]
-        parts = ax.violinplot(xi_data, positions=np.arange(len(field_names)), showmeans=True)
+        ax.violinplot(xi_data, positions=np.arange(len(field_names)), showmeans=True)
         ax.set_xticks(np.arange(len(field_names)))
         ax.set_xticklabels(field_names, rotation=45, ha="right")
         ax.set_ylabel("Correlation Length ξ")
@@ -1356,7 +1368,7 @@ def generate_ensemble_plots(stats: dict, config: EnsembleConfig) -> dict[str, Pa
 
     # 3. R² summary
     if field_names:
-        fig, ax = plt.subplots(figsize=(10, 6))
+        _fig, ax = plt.subplots(figsize=(10, 6))
         x = np.arange(len(field_names))
         means = [stats["local_fields"][f]["r_squared"]["mean"] for f in field_names]
         errors = [1.96 * stats["local_fields"][f]["r_squared"]["se"] for f in field_names]
@@ -1378,7 +1390,7 @@ def generate_ensemble_plots(stats: dict, config: EnsembleConfig) -> dict[str, Pa
     # 4. Wilson loop distribution
     wilson_values = stats.get("wilson_loops", {}).get("wilson_mean", {}).get("values", [])
     if wilson_values:
-        fig, ax = plt.subplots(figsize=(8, 5))
+        _fig, ax = plt.subplots(figsize=(8, 5))
         ax.hist(wilson_values, bins=20, alpha=0.7, color="purple", edgecolor="black")
         mean = stats["wilson_loops"]["wilson_mean"]["mean"]
         se = stats["wilson_loops"]["wilson_mean"]["se"]
@@ -1398,7 +1410,7 @@ def generate_ensemble_plots(stats: dict, config: EnsembleConfig) -> dict[str, Pa
     # 5. Lyapunov convergence histogram
     conv_values = stats.get("lyapunov", {}).get("convergence_ratio", {}).get("values", [])
     if conv_values:
-        fig, ax = plt.subplots(figsize=(8, 5))
+        _fig, ax = plt.subplots(figsize=(8, 5))
         ax.hist(conv_values, bins=20, alpha=0.7, color="green", edgecolor="black")
         mean = stats["lyapunov"]["convergence_ratio"]["mean"]
         ax.axvline(mean, color="red", linestyle="-", linewidth=2, label=f"Mean: {mean:.3f}")
@@ -1422,7 +1434,7 @@ def generate_ensemble_plots(stats: dict, config: EnsembleConfig) -> dict[str, Pa
         has_su3 = su3_values and any(v != 0.0 for v in su3_values)
         n_panels = 3 if has_su3 else 2
 
-        fig, axes = plt.subplots(1, n_panels, figsize=(5 * n_panels, 5))
+        _fig, axes = plt.subplots(1, n_panels, figsize=(5 * n_panels, 5))
         if n_panels == 2:
             ax1, ax2 = axes
             ax3 = None
@@ -1452,9 +1464,11 @@ def generate_ensemble_plots(stats: dict, config: EnsembleConfig) -> dict[str, Pa
         plot_paths["phase_distributions"] = path
 
     # 7. SU(3) color alignment distribution
-    su3_align_values = stats.get("gauge_phases", {}).get("su3_alignment_mean", {}).get("values", [])
+    su3_align_values = (
+        stats.get("gauge_phases", {}).get("su3_alignment_mean", {}).get("values", [])
+    )
     if su3_align_values and any(v != 0.0 for v in su3_align_values):
-        fig, ax = plt.subplots(figsize=(8, 5))
+        _fig, ax = plt.subplots(figsize=(8, 5))
         ax.hist(su3_align_values, bins=20, alpha=0.7, color="purple", edgecolor="black")
         mean = stats["gauge_phases"]["su3_alignment_mean"]["mean"]
         se = stats["gauge_phases"]["su3_alignment_mean"]["se"]
@@ -1463,7 +1477,9 @@ def generate_ensemble_plots(stats: dict, config: EnsembleConfig) -> dict[str, Pa
         ax.axvline(mean + 1.96 * se, color="red", linestyle="--", alpha=0.5)
         ax.set_xlabel("SU(3) Color Alignment (pairwise dot product)")
         ax.set_ylabel("Count")
-        ax.set_title(f"SU(3) Color Alignment Distribution (n={stats['n_successful_trials']} trials)")
+        ax.set_title(
+            f"SU(3) Color Alignment Distribution (n={stats['n_successful_trials']} trials)"
+        )
         ax.legend()
         plt.tight_layout()
         path = plots_dir / "su3_color_alignment.png"
@@ -1543,7 +1559,13 @@ def save_ensemble_report(
     if lyap.get("convergence_ratio"):
         md_lines.append("## Lyapunov Convergence\n")
         conv = lyap["convergence_ratio"]
-        convergence_status = "strong convergence" if conv["mean"] < 0.7 else "moderate convergence" if conv["mean"] < 0.9 else "weak/no convergence"
+        convergence_status = (
+            "strong convergence"
+            if conv["mean"] < 0.7
+            else "moderate convergence"
+            if conv["mean"] < 0.9
+            else "weak/no convergence"
+        )
         md_lines.append(
             f"- Convergence ratio: {conv['mean']:.3f} ± {1.96 * conv['se']:.3f} ({convergence_status})"
         )
@@ -1554,7 +1576,9 @@ def save_ensemble_report(
     if qsd.get("ratio_h_mean"):
         md_lines.append("## QSD Variance\n")
         ratio = qsd["ratio_h_mean"]
-        md_lines.append(f"- Hypocoercive variance ratio: {ratio['mean']:.4f} ± {1.96 * ratio['se']:.4f}")
+        md_lines.append(
+            f"- Hypocoercive variance ratio: {ratio['mean']:.4f} ± {1.96 * ratio['se']:.4f}"
+        )
         if qsd.get("scaling_exponent"):
             scale = qsd["scaling_exponent"]
             md_lines.append(f"- Scaling exponent: {scale['mean']:.3f} ± {1.96 * scale['se']:.3f}")
@@ -1575,13 +1599,21 @@ def save_ensemble_report(
         su3_mag = gauge.get("su3_color_magnitude_mean")
         su3_align = gauge.get("su3_alignment_mean")
         su3_phase = gauge.get("su3_phase_mean")
-        if su3_mag and (su3_mag.get("mean", 0) != 0 or any(v != 0 for v in su3_mag.get("values", []))):
+        if su3_mag and (
+            su3_mag.get("mean", 0) != 0 or any(v != 0 for v in su3_mag.get("values", []))
+        ):
             md_lines.append("### SU(3) (Strong Force / Viscous Coupling)")
-            md_lines.append(f"- Color magnitude mean: {su3_mag['mean']:.4f} ± {1.96 * su3_mag['se']:.4f}")
+            md_lines.append(
+                f"- Color magnitude mean: {su3_mag['mean']:.4f} ± {1.96 * su3_mag['se']:.4f}"
+            )
             if su3_align:
-                md_lines.append(f"- Color alignment mean: {su3_align['mean']:.4f} ± {1.96 * su3_align['se']:.4f}")
+                md_lines.append(
+                    f"- Color alignment mean: {su3_align['mean']:.4f} ± {1.96 * su3_align['se']:.4f}"
+                )
             if su3_phase:
-                md_lines.append(f"- Color phase mean: {su3_phase['mean']:.4f} ± {1.96 * su3_phase['se']:.4f}")
+                md_lines.append(
+                    f"- Color phase mean: {su3_phase['mean']:.4f} ± {1.96 * su3_phase['se']:.4f}"
+                )
             md_lines.append("")
         else:
             md_lines.append("### SU(3) (Strong Force / Viscous Coupling)")
@@ -1597,9 +1629,7 @@ def save_ensemble_report(
 
     # Check correlation fits (R² > 0.5 for at least some fields)
     good_fits = sum(
-        1
-        for f in stats.get("local_fields", {}).values()
-        if f["r_squared"]["mean"] > 0.5
+        1 for f in stats.get("local_fields", {}).values() if f["r_squared"]["mean"] > 0.5
     )
     if good_fits > 0:
         validated.append(f"{good_fits} fields show QFT-like correlation decay (R² > 0.5)")
@@ -1622,7 +1652,13 @@ def save_ensemble_report(
     if su3_mag and su3_mag.get("mean", 0) > 0:
         validated.append(f"SU(3) color structure active (magnitude={su3_mag['mean']:.4f})")
         if su3_align and -1 <= su3_align.get("mean", 0) <= 1:
-            align_desc = "correlated" if su3_align["mean"] > 0.5 else "decorrelated" if su3_align["mean"] < -0.5 else "mixed"
+            align_desc = (
+                "correlated"
+                if su3_align["mean"] > 0.5
+                else "decorrelated"
+                if su3_align["mean"] < -0.5
+                else "mixed"
+            )
             validated.append(f"SU(3) color alignment: {align_desc} ({su3_align['mean']:.3f})")
 
     if validated:
@@ -1817,8 +1853,8 @@ def main() -> None:
 
     config.output_dir.mkdir(parents=True, exist_ok=True)
 
-    print(f"QFT Validation Ensemble Pipeline")
-    print(f"=" * 50)
+    print("QFT Validation Ensemble Pipeline")
+    print("=" * 50)
     print(f"Trials: {config.n_trials}")
     print(f"Walkers: {config.n_walkers}")
     print(f"Steps: {config.n_steps}")

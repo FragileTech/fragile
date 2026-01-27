@@ -13,7 +13,7 @@
 |-------------|-------------------|------------------------|
 | $U(1)_{\text{fitness}}$ | Diversity companion selection | Fitness phase invariance |
 | $SU(2)_{\text{weak}}$ | Cloning companion selection | Weak isospin doublet |
-| $SU(d)_{\text{color}}$ | Viscous force coupling (O(d) redundancy, complexified to $SU(d)$) | Color charge confinement |
+| $SU(d)_{\text{color}}$ | Viscous force coupling (O(d) redundancy, complexified to $U(d)$ with $\det=1$) | Color charge confinement |
 
 **Structural Isomorphisms**:
 
@@ -103,6 +103,7 @@ The Standard Model gauge group emerges from three independent redundancies in th
 - $\nu$: Viscous coupling strength.
 - $T$: Effective temperature.
 - $\hbar_{\text{eff}}$: Effective Planck constant controlling phases.
+- $V \equiv \Phi$: Fitness potential; along CST edges the accumulated action is written $\Phi_j - \Phi_i$.
 - $\ell_0$: Characteristic length scale used in momentum-phase encoding.
 :::
 
@@ -125,19 +126,19 @@ The miracle is that this simple logic—redundancy plus locality—generates exa
 
 The diversity companion selection mechanism induces a $U(1)$ gauge field on the Fractal Set.
 
-**Redundancy**: The cloning potential is a pure difference, $V_{\mathrm{clone}}(i \to j) = \Phi_j - \Phi_i$. Under a global fitness shift $\Phi \to \Phi + c$, this potential is exactly invariant, so the directed IG structure and any selection rule based on its sign or ordering are unchanged.
+**Redundancy**: The cloning potential is a pure difference, $V_{\mathrm{clone}}(i \to j) = V_j - V_i$. Under a global fitness shift $V \to V + c$, this potential is exactly invariant, so the directed IG structure and any selection rule based on its sign or ordering are unchanged.
 
 **Locality**: Distributed walkers cannot synchronize fitness baselines—each walker measures fitness relative to its local neighborhood.
 
 **Gauge Field**: Define parallel transport on CST edges:
 
 $$
-U_{\text{time}}(e_i \to e_j) = \exp\left(-i q A_0(e_i, e_j) \tau_{ij}\right) \in U(1)
+U_{\text{time}}(e_i \to e_j) = \exp\left(-i q A_0(e_i, e_j) \Delta t_{ij}\right) \in U(1)
 $$
 
 where:
 - $A_0$: Temporal gauge potential (from fitness)
-- $\tau_{ij} = t_j^{\text{d}} - t_i^{\text{b}}$: Proper time along edge
+- $\Delta t_{ij} = t_j - t_i$: Algorithmic time along the CST edge
 - $q$: Coupling constant
 
 **Companion amplitudes**: Define a complex amplitude over companions:
@@ -167,7 +168,7 @@ $$
 
 The diversity range $\epsilon_d$ fixes the amplitude scale, while the fitness baseline supplies the $U(1)$ phase redundancy.
 
-*Proof*: Under $\Phi \to \Phi + c$, $V_{\mathrm{clone}}(i \to j) = \Phi_j - \Phi_i$ is unchanged ({prf:ref}`def-fractal-set-cloning-potential`). The cloning score $S_i(j)$ depends on this difference; for fixed $i$, the denominator rescales all $S_i(j)$ by the same positive factor, preserving signs and ordering. Thus the directed IG structure is invariant under baseline shifts, while locality prevents global synchronization. Standard gauge theory then requires a compensating $U(1)$ field {cite}`yang1954conservation`. $\square$
+*Proof*: Under $V \to V + c$, $V_{\mathrm{clone}}(i \to j) = V_j - V_i$ is unchanged ({prf:ref}`def-fractal-set-cloning-potential`). The cloning score $S_i(j)$ depends on this difference; for fixed $i$, the denominator rescales all $S_i(j)$ by the same positive factor, preserving signs and ordering. Thus the directed IG structure is invariant under baseline shifts, while locality prevents global synchronization. Standard gauge theory then requires a compensating $U(1)$ field {cite}`yang1954conservation`. $\square$
 :::
 
 :::{div} feynman-prose
@@ -207,7 +208,7 @@ The cloning-score phases are:
 
 $$
 \theta_{ij}^{(SU(2))} := \frac{S_i(j)}{\hbar_{\text{eff}}}
-= \frac{\Phi_j - \Phi_i}{(\Phi_i + \varepsilon_{\text{clone}})\,\hbar_{\text{eff}}}.
+= \frac{V_j - V_i}{(V_i + \varepsilon_{\text{clone}})\,\hbar_{\text{eff}}}.
 $$
 
 Fixing the overall $U(1)$ phase of $\Psi_{ij}$ leaves $SU(2)$ basis rotations as the local redundancy.
@@ -277,7 +278,7 @@ $$
 
 **Confinement**: The localization kernel $K_\rho$ provides short-range coupling—walkers are "confined" to fitness basins by the viscous force structure (see {prf:ref}`def-fractal-set-viscous-force`).
 
-*Proof*: If $K_\rho$ depends only on distances, the viscous force $\mathbf{F}_{\text{viscous}}(i) = \nu \sum_j K_\rho(x_i, x_j)(v_j - v_i)$ is invariant under global orthogonal rotations of the velocity basis. After complexification of the force components (via the momentum-phase encoding), this redundancy becomes invariance under $U(d)$ basis changes; quotienting the overall phase yields $SU(d)$. In $d=3$ spatial dimensions, this gives $SU(3)$ on the complexified force vector.
+*Proof*: If $K_\rho$ depends only on distances, the viscous force $\mathbf{F}_{\text{viscous}}(i) = \nu \sum_j K_\rho(x_i, x_j)(v_j - v_i)$ is invariant under global orthogonal rotations of the velocity basis. After complexification of the force components (via the momentum-phase encoding), this redundancy becomes invariance under $U(d)$ basis changes; imposing $\det U = 1$ (equivalently, removing the global $U(1)$ phase) yields $SU(d)$. In $d=3$ spatial dimensions, this gives $SU(3)$ on the complexified force vector.
 
 **Note on dimension**: The choice $d=3$ for physical space selects $SU(3)$ as the color group. In general dimension $d$, the structure would be $SU(d)$. $\square$
 :::
@@ -289,7 +290,7 @@ Where does this come from in the Fractal Gas? From the viscous force between wal
 
 Each walker has a velocity vector with $d$ components. The viscous force tries to align nearby walkers' velocities—it is a kind of friction that smooths out velocity differences. Now here is the key: if you rotate the basis of velocity components (any global orthogonal change of basis), the viscous force does not care. It just wants neighboring velocities to match, regardless of which basis you choose.
 
-This basis-rotation redundancy on $d$ velocity components, combined with force amplitudes and momentum phases to build a normalized complex vector, generates $SU(d)$ after complexification (a $U(d)$ redundancy modulo the overall phase). In three spatial dimensions, that is $SU(3)$—the color gauge group of the strong force.
+This basis-rotation redundancy on $d$ velocity components, combined with force amplitudes and momentum phases to build a normalized complex vector, produces a $U(d)$ redundancy after complexification. Imposing $\det U = 1$ removes the global phase and yields $SU(d)$. In three spatial dimensions, that is $SU(3)$—the color gauge group of the strong force.
 
 The localization kernel $K_\rho$ provides short-range coupling: walkers only feel viscous forces from nearby neighbors. This is exactly the confinement property of the strong force—quarks can never be isolated because the gluon field between them stores energy proportional to distance.
 :::
@@ -430,16 +431,28 @@ $$
 **Amplitude for cloning $i \to j$**:
 
 $$
-\mathcal{A}(i \to j) \propto \bar{\psi}_i S_i(j) \psi_j
+\mathcal{A}(i \to j) \propto \bar{\psi}_i S_{ij} \psi_j, \quad S_{ij} := S_i(j)
 $$
 
 **Amplitude for cloning $j \to i$**:
 
 $$
-\mathcal{A}(j \to i) \propto \bar{\psi}_j S_j(i) \psi_i = -\bar{\psi}_i S_j(i) \psi_j
+\mathcal{A}(j \to i) \propto \bar{\psi}_j S_{ji} \psi_i = -\bar{\psi}_i S_{ji} \psi_j
 $$
 
 The anticommutation relation $\{\psi_i, \psi_j\} = 0$ **automatically enforces** the exclusion principle in the path integral.
+:::
+
+:::{prf:remark} Orientation convention for fermionic bilinears
+:label: remark-sm-fermion-orientation
+:class: info
+
+We adopt the standard lattice-QFT convention: for an oriented edge $i \to j$, the bilinear is
+$\bar{\psi}_i S_{ij} \psi_j$ (and $\bar{\psi}_i U_{ij} \psi_j$ for gauge transport). An equally valid
+"target-based" convention used in algorithmic discussions places the conjugate field at the target,
+$\bar{\psi}_j S_i(j) \psi_i$. The two are related by reversing edge orientation and, where appropriate,
+adjointing the link variable; all gauge-invariant observables coincide. We include the target-based form
+only as an intuition aid.
 :::
 
 :::{div} feynman-prose
@@ -474,13 +487,13 @@ where $\tilde{K}_{ij} = K_{ij} - K_{ji}$ is the antisymmetric cloning kernel.
 **Temporal component** (CST edges):
 
 $$
-S_{\text{fermion}}^{\text{temporal}} = -\sum_{(i \to j) \in E_{\text{CST}}} \bar{\psi}_i D_t \psi_j
+S_{\text{fermion}}^{\text{temporal}} = -\sum_{(i \to j) \in E_{\text{CST}}} \bar{\psi}_i (D_t \psi)_i
 $$
 
 where the **temporal operator** is:
 
 $$
-D_t \psi_j := \frac{\psi_j - U_{ij}\psi_i}{\Delta t_i}
+(D_t \psi)_i := \frac{\psi_j - U_{ij}\psi_i}{\Delta t_{ij}}, \quad \Delta t_{ij} := t_j - t_i
 $$
 
 with parallel transport:
@@ -489,7 +502,7 @@ $$
 U_{ij} = \exp\left(i\theta_{ij}^{\text{fit}}\right), \quad \theta_{ij}^{\text{fit}} = \theta_j - \theta_i = -\frac{\Phi_j - \Phi_i}{\hbar_{\text{eff}}}
 $$
 
-For the CST edge, $\Phi_j - \Phi_i = (\epsilon_F/T)\int_{t_i^{\text{b}}}^{t_i^{\text{d}}} V_{\text{fit}}(x_i(t)) \, dt$.
+For the CST edge, $\Phi_j - \Phi_i = (\epsilon_F/T)\int_{t_i}^{t_j} V_{\text{fit}}(x_{ij}(t)) \, dt$.
 
 :::
 
@@ -749,7 +762,7 @@ $$
 **Fermion Sector**:
 
 $$
-S_{\text{fermion}} = -\sum_{(i,j) \in E_{\text{IG}}} \bar{\psi}_i \tilde{K}_{ij} \psi_j - \sum_{(i \to j) \in E_{\text{CST}}} \bar{\psi}_i D_t \psi_j
+S_{\text{fermion}} = -\sum_{(i,j) \in E_{\text{IG}}} \bar{\psi}_i \tilde{K}_{ij} \psi_j - \sum_{(i \to j) \in E_{\text{CST}}} \bar{\psi}_i (D_t \psi)_i
 $$
 
 **Scalar Sector**:
@@ -784,7 +797,7 @@ $$
 |--------------------|-----------------|-------------|
 | $U(1)$ electromagnetism | Fitness phase invariance | {prf:ref}`thm-sm-u1-emergence` |
 | $SU(2)$ weak force | Cloning selection doublet | {prf:ref}`thm-sm-su2-emergence` |
-| $SU(d)$ strong force | Viscous coupling (O(d) redundancy, complexified) | {prf:ref}`thm-sm-su3-emergence` |
+| $SU(d)$ strong force | Viscous coupling (O(d) redundancy, complexified to $U(d)$ with $\det=1$) | {prf:ref}`thm-sm-su3-emergence` |
 | Dirac/Clifford algebra | Antisymmetric kernel | {prf:ref}`thm-sm-dirac-isomorphism` |
 | Pauli exclusion | Algorithmic exclusion | {prf:ref}`thm-sm-exclusion-principle` |
 | Higgs SSB mechanism | Bifurcation dynamics | {prf:ref}`thm-sm-higgs-isomorphism` |

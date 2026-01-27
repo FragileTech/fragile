@@ -109,15 +109,15 @@ This is enormously powerful. You do not need to analyze each local ambiguity sep
 
 **Theorem:** Mass Gap Retro-Validation
 
-**Input:** $K_{\text{Sym}}^+$ (Node 7b: Rigid Symmetry) + $K_{\text{CheckSC}}^+$ (Node 7c: Constants Stable).
+**Input:** $K_{\text{Sym}}^+$ (Node 7b: Rigid Symmetry) + $K_{\mathrm{SC}_{\mathrm{SSB}}}^+$ (Node 7c: Broken-phase Stability).
 
 **Target:** Node 7 ($K_{\mathrm{LS}_\sigma}^{\mathrm{stag}}$: Stagnation/Flatness).
 
-**Statement:** If the vacuum symmetry is rigid (SymCheck) and constants are stable (CheckSC), then the "Flatness" (Stagnation) detected at Node 7 is actually a **Spontaneous Symmetry Breaking** event. This mechanism generates a dynamic Mass Gap, satisfying the Stiffness requirement retroactively.
+**Statement:** If the vacuum symmetry is rigid (SymCheck) and broken-phase parameters are stable (CheckSSB), then the "Flatness" (Stagnation) detected at Node 7 is actually a **Spontaneous Symmetry Breaking** event. This mechanism generates a dynamic Mass Gap, satisfying the Stiffness requirement retroactively.
 
 **Certificate Logic:**
 
-$$K_{\mathrm{LS}_\sigma}^{\mathrm{stag}} \wedge K_{\text{Sym}}^+ \wedge K_{\text{CheckSC}}^+ \Rightarrow K_{\mathrm{LS}_\sigma}^+ \text{ (with gap } \lambda > 0\text{)}$$
+$$K_{\mathrm{LS}_\sigma}^{\mathrm{stag}} \wedge K_{\text{Sym}}^+ \wedge K_{\mathrm{SC}_{\mathrm{SSB}}}^+ \Rightarrow K_{\mathrm{LS}_\sigma}^+ \text{ (with gap } \lambda > 0\text{)}$$
 
 **Application:** Used in Yang-Mills and Riemann Hypothesis to upgrade a "Flat Potential" diagnosis to a "Massive/Stiff Potential" proof.
 
@@ -125,7 +125,7 @@ $$K_{\mathrm{LS}_\sigma}^{\mathrm{stag}} \wedge K_{\text{Sym}}^+ \wedge K_{\text
 :::
 
 :::{prf:proof}
-The Goldstone theorem (1961) states that spontaneous breaking of a continuous symmetry produces massless bosons. However, if the symmetry group is *compact* and the vacuum is unique (CheckSC), the would-be Goldstones acquire mass via the Higgs mechanism or explicit breaking. The resulting spectral gap $\lambda > 0$ provides stiffness. For gauge theories, this is the mass gap conjecture; for condensed matter, this is the BCS mechanism.
+The Goldstone theorem (1961) states that spontaneous breaking of a continuous symmetry produces massless bosons. However, if the symmetry group is *compact* and the vacuum is unique (CheckSSB), the would-be Goldstones acquire mass via the Higgs mechanism or explicit breaking. The resulting spectral gap $\lambda > 0$ provides stiffness. For gauge theories, this is the mass gap conjecture; for condensed matter, this is the BCS mechanism.
 :::
 
 :::{div} feynman-prose

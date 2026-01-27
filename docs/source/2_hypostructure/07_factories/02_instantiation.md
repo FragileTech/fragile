@@ -202,7 +202,7 @@ The following table provides a complete cross-reference between diagram node nam
 | 7 | StiffnessCheck | {prf:ref}`def-node-stiffness` | BarrierGap ({prf:ref}`def-barrier-gap`) |
 | 7a | BifurcateCheck | {prf:ref}`def-node-bifurcate` | Mode S.D |
 | 7b | SymCheck | {prf:ref}`def-node-sym` | --- |
-| 7c | CheckSC | {prf:ref}`def-node-checksc` | ActionSSB ({prf:ref}`def-action-ssb`) |
+| 7c | CheckSSB | {prf:ref}`def-node-checkssb` | ActionSSB ({prf:ref}`def-action-ssb`) |
 | 7d | CheckTB | {prf:ref}`def-node-checktb` | ActionTunnel ({prf:ref}`def-action-tunnel`) |
 | 8 | TopoCheck | {prf:ref}`def-node-topo` | BarrierAction ({prf:ref}`def-barrier-action`) |
 | 9 | TameCheck | {prf:ref}`def-node-tame` | BarrierOmin ({prf:ref}`def-barrier-omin`) |

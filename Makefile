@@ -1,4 +1,4 @@
-.PHONY: style check test tldr tldr-html tldr-debug tldr-fallback check-tldr-deps
+.PHONY: style check test tldr tldr-html tldr-debug tldr-fallback check-tldr-deps prompt
 
 style:
 	uv run ruff check --fix-only --unsafe-fixes .
@@ -39,3 +39,8 @@ check-tldr-deps:
 tldr-html:
 	@chmod +x generate_html.sh
 	@bash generate_html.sh
+
+prompt:
+	@echo "Collecting prf directives into prompts/..."
+	@python3 docs/collect_prf_directives.py --include-proofs --include-file-headings --out-dir prompts
+	@echo "✓ Prompts generated in prompts/"

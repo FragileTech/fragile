@@ -185,29 +185,25 @@ def build_table(
             m_cell = f"{m_name} {m_val:.3f} ({m_err:+.1f}%)"
 
         if include_glueball:
-            rows.append(
-                (
-                    label,
-                    scale,
-                    pred_b if pred_b > 0 else None,
-                    b_cell,
-                    pred_m if pred_m > 0 else None,
-                    m_cell,
-                    pred_g if pred_g and pred_g > 0 else None,
-                    g_cell,
-                )
-            )
+            rows.append((
+                label,
+                scale,
+                pred_b if pred_b > 0 else None,
+                b_cell,
+                pred_m if pred_m > 0 else None,
+                m_cell,
+                pred_g if pred_g and pred_g > 0 else None,
+                g_cell,
+            ))
         else:
-            rows.append(
-                (
-                    label,
-                    scale,
-                    pred_b if pred_b > 0 else None,
-                    b_cell,
-                    pred_m if pred_m > 0 else None,
-                    m_cell,
-                )
-            )
+            rows.append((
+                label,
+                scale,
+                pred_b if pred_b > 0 else None,
+                b_cell,
+                pred_m if pred_m > 0 else None,
+                m_cell,
+            ))
 
     header = (
         "Anchor | scale (GeV/alg) | baryon pred (GeV) | closest baryon | meson pred (GeV) | "
@@ -304,7 +300,7 @@ def main() -> None:
         sqrt_sigma = sigma**0.5
         r2 = string_tension.get("r_squared")
         n_used = string_tension.get("n_used")
-        r2_str = f"{r2:.3f}" if isinstance(r2, (float, int)) else "n/a"
+        r2_str = f"{r2:.3f}" if isinstance(r2, float | int) else "n/a"
         n_used_str = f"{n_used}" if n_used is not None else "n/a"
         print(
             "string tension: "

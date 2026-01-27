@@ -579,8 +579,13 @@ $$
 
 $$
 where:
-- $\square_{G} = \frac{1}{c_{\text{info}}^2}\partial_t^2 - \Delta_G$ is the **D'Alembertian** on the manifold
+- $\square_{G} = \frac{1}{c_{\text{info}}^2}\partial_t^2 - \Delta_G$ is the **D'Alembertian** on the manifold. With spacetime metric $g_{\mu\nu} = \text{diag}(-c_{\text{info}}^2, G_{ij})$, this equals
+  $$
+  \square_G = -\frac{1}{\sqrt{|g|}}\partial_\mu\left(\sqrt{|g|}g^{\mu\nu}\partial_\nu\right).
+  $$
 - $\kappa_i$ is the **spatial screening mass** with $[\kappa_i] = 1/[\text{length}]$. Let the temporal discount rate be $\lambda_i := -\ln\gamma_i / \Delta t$ (units $1/[\text{time}]$). Using the relativistic conversion $\text{length} = c_{\text{info}} \cdot \text{time}$ gives $\kappa_i = \lambda_i / c_{\text{info}}$. In natural units ($\Delta t = 1$, $c_{\text{info}} = 1$) this reduces to $\kappa_i = -\ln\gamma_i$.
+
+*Notation.* When we write the spacetime metric $g_{\mu\nu} = \text{diag}(-c_{\text{info}}^2, G_{ij})$ in this section, $G_{ij}$ denotes the **active** spatial metric for the equation at hand (the intrinsic $G$ for scalar $V$, or the strategic $\tilde{G}$ when the game-augmented metric is used).
 - $\rho^{(i)}_r$ is the local **conservative** reward source density derived from boundary reward flux
   (Definition {prf:ref}`def-the-reward-flux`) (units: $[\text{nat}]/[\text{length}]^2$)
 - $\rho^{\text{ret}}_{ij}$ is the retarded interaction source density (Definition {prf:ref}`def-retarded-interaction-potential`)
@@ -665,7 +670,7 @@ For $\kappa > 0$, the retarded kernel acquires an interior light-cone tail with 
 ::::{admonition} Physics Isomorphism: Klein-Gordon Equation
 :class: note
 
-**In Physics:** The Klein-Gordon equation $(\square + m^2)\phi = \rho$ describes a relativistic scalar field with mass $m$. It reduces to the Helmholtz equation in the static limit {cite}`jackson1999classical`.
+**In Physics:** The Klein-Gordon equation $(\square + m^2)\phi = \rho$ describes a relativistic scalar field with mass $m$. It reduces to the Helmholtz equation in the static limit {cite}`jackson1999classical`. (Sign convention: we use $\square_G = \frac{1}{c^2}\partial_t^2 - \Delta_G = -\frac{1}{\sqrt{|g|}}\partial_\mu(\sqrt{|g|}g^{\mu\nu}\partial_\nu)$.)
 
 **In Implementation:** The scalar Value potential (conservative component) satisfies:
 
@@ -728,10 +733,18 @@ $$
 
 **Derivation 29.4.2 (The Strategic Metric).** Recall the **Capacity-Constrained Metric Law** (Theorem {prf:ref}`thm-capacity-constrained-metric-law`), where curvature is driven by the Risk Tensor $T_{ab}$. See **{ref}`sec-appendix-e-rigorous-proof-sketches-for-ontological-and-metabolic-laws`** for the formal derivation of the Strategic Jacobian and Game Tensor using the implicit function theorem.
 
-For Agent $i$, the "risk" includes the **Predictive Volatility** of the adversary $j$. If Agent $i$ updates its state by $\delta z^{(i)}$, and the adversary $j$ responds with $\delta z^{(j)} \approx \mathcal{J}_{ji} \delta z^{(i)}$ (where $\mathcal{J}_{ji}$ is the **Strategic Jacobian**—the best-response derivative, see Definition {prf:ref}`def-strategic-jacobian`), the second-order variation of Agent $i$'s value is:
+For Agent $i$, the "risk" includes the **Predictive Volatility** of the adversary $j$. If Agent $i$ updates its state by $\delta z^{(i)}$, and the adversary $j$ responds with $\delta z^{(j)} \approx \mathcal{J}_{ji} \delta z^{(i)}$ (where $\mathcal{J}_{ji}$ is the **Strategic Jacobian**—the best-response derivative, see Definition {prf:ref}`def-strategic-jacobian`), write the block Hessians
+$H_{ab} := \nabla_{z^{(a)}}\nabla_{z^{(b)}} V^{(i)}$. The second-order variation is:
 
 $$
-\delta^2 V^{(i)} = (\delta z^{(i)})^\top \left( \nabla_{z^{(i)}}^2 V^{(i)} + \underbrace{(\nabla_{z^{(j)}} \nabla_{z^{(i)}} V^{(i)}) \mathcal{J}_{ji}}_{\text{Strategic back-reaction}} \right) \delta z^{(i)}.
+\delta^2 V^{(i)} = \delta z_i^\top H_{ii}\,\delta z_i + 2\,\delta z_i^\top H_{ij}\,\delta z_j + \delta z_j^\top H_{jj}\,\delta z_j.
+
+$$
+
+Substituting $\delta z_j = \mathcal{J}_{ji}\delta z_i$ gives the general quadratic form:
+
+$$
+\delta^2 V^{(i)} = (\delta z^{(i)})^\top\!\left( H_{ii} + H_{ij}\mathcal{J}_{ji} + \mathcal{J}_{ji}^\top H_{ji} + \mathcal{J}_{ji}^\top H_{jj}\mathcal{J}_{ji} \right)\!\delta z^{(i)}.
 
 $$
 **Agent $i$'s perceived geometry** is modified by adversarial presence as follows:
@@ -1508,8 +1521,17 @@ where:
 The minimal coupling principle replaces $\partial_\mu \to D_\mu$ for gauge-charged fields while preserving the equation's structure. The gauge-covariant d'Alembertian is:
 
 $$
-\Box_A := \frac{1}{c_{\text{info}}^2}D_t^2 - \tilde{G}^{ij}D_i D_j = \frac{1}{\sqrt{|\tilde{G}|}}D_\mu\left(\sqrt{|\tilde{G}|}\tilde{G}^{\mu\nu}D_\nu\right)
+\Box_A := \frac{1}{c_{\text{info}}^2}D_t^2 - \tilde{G}^{ij}D_i D_j
 
+$$
+
+Introduce the spacetime metric
+$$
+g_{\mu\nu} := \text{diag}(-c_{\text{info}}^2, \tilde{G}_{ij}), \quad g^{00} = -\frac{1}{c_{\text{info}}^2}, \quad g^{ij} = \tilde{G}^{ij},
+$$
+with $|g| = c_{\text{info}}^2 |\tilde{G}|$. Then
+$$
+\Box_A = -\frac{1}{\sqrt{|g|}}D_\mu\left(\sqrt{|g|}g^{\mu\nu}D_\nu\right).
 $$
 
 For scalar $V^{(i)}$, $D_\mu V^{(i)} = \partial_\mu V^{(i)}$, so the equation reduces to the non-gauged Klein-Gordon form. $\square$
@@ -1769,7 +1791,7 @@ $$
 
 $$
 
-where indices are raised with the Lorentzian metric $\eta^{\mu\nu} = \text{diag}(-1, +1, \ldots, +1)$ or the strategic metric $\tilde{G}^{\mu\nu}$.
+where indices are raised with the spacetime metric $g^{\mu\nu} = \text{diag}(-1/c_{\text{info}}^2, \tilde{G}^{ij})$ introduced above.
 
 *Properties:*
 - In Euclidean signature, $\mathcal{R}_{\text{strat}}$ is non-negative for compact gauge groups; in Lorentzian signature it is indefinite.
@@ -1823,14 +1845,14 @@ Having established the field strength tensor as the curvature of the strategic c
 The **Yang-Mills Action** for the strategic gauge field is:
 
 $$
-S_{\text{YM}}[A] = -\frac{1}{4}\int_{\mathcal{Z} \times \mathbb{R}} \text{Tr}(\mathcal{F}_{\mu\nu}\mathcal{F}^{\mu\nu})\sqrt{|\tilde{G}|}\,d^{D+1}x
+S_{\text{YM}}[A] = -\frac{1}{4}\int_{\mathcal{Z} \times \mathbb{R}} \text{Tr}(\mathcal{F}_{\mu\nu}\mathcal{F}^{\mu\nu})\sqrt{|g|}\,d^{D+1}x
 
 $$
 
 where:
 - $\mathcal{F}_{\mu\nu}$ is the field strength tensor (Definition {prf:ref}`def-field-strength-tensor`)
-- $\tilde{G}$ is the strategic metric with determinant $|\tilde{G}|$
-- $g$ is the coupling constant
+- $g_{\mu\nu}$ is the spacetime metric $g_{\mu\nu} = \text{diag}(-c_{\text{info}}^2, \tilde{G}_{ij})$ with determinant $|g| = c_{\text{info}}^2|\tilde{G}|$
+- $g_{\text{YM}}$ is the coupling constant
 - The trace is over Lie algebra indices: $\text{Tr}(\mathcal{F}_{\mu\nu}\mathcal{F}^{\mu\nu}) = \mathcal{F}_{\mu\nu}^a\mathcal{F}^{\mu\nu,a}$
 
 *Units:* $[S_{\text{YM}}] = \text{nat}$ (action).
@@ -1880,7 +1902,7 @@ $$
 Vary the total action $S = S_{\text{YM}} + S_{\text{matter}}$ with respect to $A_\mu^a$:
 
 $$
-\frac{\delta S}{\delta A_\mu^a} = 0 \implies \partial_\nu(\sqrt{|\tilde{G}|}\mathcal{F}^{\mu\nu,a}) + g f^{abc}A_\nu^b\sqrt{|\tilde{G}|}\mathcal{F}^{\mu\nu,c} + \frac{\delta S_{\text{matter}}}{\delta A_\mu^a} = 0
+\frac{\delta S}{\delta A_\mu^a} = 0 \implies \partial_\nu(\sqrt{|g|}\mathcal{F}^{\mu\nu,a}) + g f^{abc}A_\nu^b\sqrt{|g|}\mathcal{F}^{\mu\nu,c} + \frac{\delta S_{\text{matter}}}{\delta A_\mu^a} = 0
 
 $$
 
@@ -1916,14 +1938,16 @@ This recovers the **Maxwell equations** of electromagnetism in covariant form.
 The energy-momentum tensor of the gauge field is:
 
 $$
-T^{\text{gauge}}_{\mu\nu} = -\text{Tr}\left(\mathcal{F}_{\mu\rho}\mathcal{F}_\nu^{\ \rho} - \frac{1}{4}\tilde{G}_{\mu\nu}\mathcal{F}_{\rho\sigma}\mathcal{F}^{\rho\sigma}\right)
+T^{\text{gauge}}_{\mu\nu} = -\text{Tr}\left(\mathcal{F}_{\mu\rho}\mathcal{F}_\nu^{\ \rho} - \frac{1}{4}g_{\mu\nu}\mathcal{F}_{\rho\sigma}\mathcal{F}^{\rho\sigma}\right)
 
 $$
 
 *Properties:*
 1. **Symmetric:** $T^{\text{gauge}}_{\mu\nu} = T^{\text{gauge}}_{\nu\mu}$
 2. **Traceless** (for spacetime $d = 4$, i.e., $D = 3$): $T^{\text{gauge}\mu}_{\ \ \ \ \mu} = 0$
-3. **Conserved:** $\nabla_\mu T^{\text{gauge}\mu\nu} = 0$ (on-shell)
+3. **Conserved (total):** $\nabla_\mu\left(T^{\text{gauge}\mu\nu} + T^{\text{matter}\mu\nu}\right) = 0$. The gauge sector alone satisfies
+   $$\nabla_\mu T^{\text{gauge}\mu\nu} = -\text{Tr}(\mathcal{F}^{\nu\mu}J_\mu),$$
+   which vanishes only in the source-free case $J_\mu = 0$.
 
 *Interpretation:* The gauge field carries energy and momentum. Regions of high strategic curvature $\|\mathcal{F}\|$ have high energy density—strategic conflict is energetically costly.
 
@@ -2133,7 +2157,7 @@ Spontaneous breaking of a continuous symmetry produces massless **Goldstone boso
 :::{div} feynman-prose
 Now we come to something really deep. The mass gap problem is one of the great unsolved problems in mathematical physics. It is one of the Clay Millennium Prize problems, worth a million dollars to whoever solves it. And I am going to tell you something surprising about it.
 
-First, let me explain what the mass gap is. In a field theory, you have a ground state, the vacuum. And you have excited states. The mass gap is the minimum energy you need to create the first excitation. If the gap is zero, you can create excitations with arbitrarily small energy. If the gap is positive, there is a threshold. You need at least $\Delta$ energy to excite the system.
+First, let me explain what the mass gap is. In a field theory, you have a ground state, the vacuum. And you have excited states. The mass gap is the minimum energy you need to create the first excitation. If the gap is zero, you can create excitations with arbitrarily small energy. If the gap is positive, there is a threshold. You need at least $\Delta_{\text{KG}}$ (or $\Delta_H$ in the Schr\"odinger reduction) to excite the system.
 
 Why does this matter? Because if the gap is zero, correlations decay algebraically (for $D>2$, like $1/r^{D-2}$; in $D=2$ they are only logarithmic). They are long-range. But if there is a mass gap, correlations decay exponentially, like $e^{-\kappa r}$. They are short-range, screened.
 
@@ -2144,7 +2168,7 @@ So if you have a system with zero mass gap, and you put it in a finite box, some
 The upshot is: any theory describing physics that a bounded observer can actually see must have a positive mass gap. Gapless theories are mathematically consistent but computationally unrealizable. They live in what we call the Computational Swampland, theories that cannot describe anything a finite system could ever experience.
 :::
 
-The **Mass Gap Problem** asks whether the spectrum of the Hamiltonian has a non-zero gap between the ground state and the first excited state. We derive that bounded intelligence **requires** a positive mass gap from information-theoretic principles.
+The **Mass Gap Problem** asks whether the spectrum of the Hamiltonian has a non-zero gap between the ground state and the first excited state (here, $\Delta_H > 0$). Our field-theoretic arguments below establish a positive Klein-Gordon gap $\Delta_{\text{KG}}$; in the Schr\"odinger reduction, this implies $\Delta_H > 0$.
 
 ::::{admonition} Forward Reference: Holographic Bounds ({ref}`sec-causal-information-bound`)
 :class: note
@@ -2168,34 +2192,61 @@ These results are derived from first principles in {ref}`sec-appendix-a-full-der
 The **Mass Gap** of the strategic Hamiltonian $\hat{H}_{\text{strat}}$ is:
 
 $$
-\Delta := \inf\left\{\text{spec}(\hat{H}_{\text{strat}}) \setminus \{E_0\}\right\} - E_0
+\Delta_H := \inf\left\{\text{spec}(\hat{H}_{\text{strat}}) \setminus \{E_0\}\right\} - E_0
 
 $$
 
 where $E_0$ is the ground state energy.
 
 *Properties:*
-- $\Delta > 0$: **Gapped** spectrum (isolated ground state)
-- $\Delta = 0$: **Gapless** spectrum (continuous above ground state)
+- $\Delta_H > 0$: **Gapped** spectrum (isolated ground state)
+- $\Delta_H = 0$: **Gapless** spectrum (continuous above ground state)
 
-*Units:* $[\Delta] = \text{nat}/[\text{time}]$ (energy).
+*Units:* $[\Delta_H] = \text{nat}/[\text{time}]$ (energy).
+
+*Notation:* We reserve $\Delta_H$ for the Hamiltonian spectral gap. The Klein-Gordon operator has its own **frequency gap** $\Delta_{\text{KG}}$ defined below; the two coincide only after the non-relativistic reduction described in the Schr\"odinger-limit remark.
 
 :::
 
 :::{prf:theorem} Mass Gap from Screening
 :label: thm-mass-gap-screening
 
-The screening mass $\kappa = \lambda/c_{\text{info}}$ with $\lambda := -\ln\gamma / \Delta t$ from the Helmholtz equation (Theorem {prf:ref}`thm-the-hjb-helmholtz-correspondence`) provides a lower bound on the mass gap (in natural units, $\kappa = -\ln\gamma$):
+The screening mass $\kappa = \lambda/c_{\text{info}}$ with $\lambda := -\ln\gamma / \Delta t$ from the Helmholtz equation (Theorem {prf:ref}`thm-the-hjb-helmholtz-correspondence`) sets the **Klein-Gordon spectral gap**. Let $\{-\Delta_G \phi_n = \lambda_n \phi_n\}$ with $\lambda_n \ge 0$ on the spatial manifold. The mode frequencies are:
 
 $$
-\Delta \geq \frac{\kappa^2}{2m_{\text{eff}}}
+\omega_n = c_{\text{info}}\sqrt{\kappa^2 + \lambda_n}.
 
 $$
 
-where $m_{\text{eff}}$ is the effective inertia from Game Tensor inflation (Theorem {prf:ref}`thm-adversarial-mass-inflation`).
+The intrinsic **mass scale** (rest frequency) is
+
+$$
+\omega_0 = c_{\text{info}}\sqrt{\kappa^2 + \lambda_0},
+
+$$
+
+which reduces to $\omega_0 = c_{\text{info}}\kappa$ when $\lambda_0 = 0$ (e.g., periodic or Neumann boundary conditions). On a compact causal domain the **Klein-Gordon frequency gap** between the first two modes is
+
+$$
+\Delta_{\text{KG}} = \omega_1 - \omega_0 = c_{\text{info}}\left(\sqrt{\kappa^2 + \lambda_1} - \sqrt{\kappa^2 + \lambda_0}\right) \ge 0.
+
+$$
 
 *Proof sketch.*
-The Klein-Gordon operator $(-\Box + \kappa^2)$ has spectrum bounded below by $\kappa^2$. The effective mass $m_{\text{eff}}$ from metric inflation modifies the kinetic term, yielding the stated bound via the non-relativistic dispersion relation $E = p^2/(2m_{\text{eff}}) + \kappa^2/(2m_{\text{eff}})$. $\square$
+Insert a normal mode ansatz $V(z,t)=e^{-i\omega t}\phi(z)$ into the screened wave equation
+$\left(\frac{1}{c_{\text{info}}^2}\partial_t^2 - \Delta_G + \kappa^2\right)V=0$ to obtain
+$\omega^2/c_{\text{info}}^2 = \kappa^2 + \lambda_n$. The gap statements follow. $\square$
+
+*Remark (Schr\"odinger limit as special case).* For low spatial frequencies around the ground mode, $\lambda_n - \lambda_0 \ll \kappa^2 + \lambda_0$,
+$$
+\omega_n = \omega_0 + \frac{c_{\text{info}}}{2\sqrt{\kappa^2 + \lambda_0}}(\lambda_n - \lambda_0) + O\!\left(\frac{(\lambda_n-\lambda_0)^2}{(\kappa^2+\lambda_0)^{3/2}}\right).
+$$
+Factoring out the fast oscillation $e^{-i \omega_0 t}$ yields a slow envelope obeying a Schr\"odinger-type evolution with effective kinetic operator
+$-\frac{c_{\text{info}}}{2\sqrt{\kappa^2+\lambda_0}}\Delta_G$ (or $-\frac{c_{\text{info}}}{2\sqrt{\kappa^2+\lambda_0}}\Delta_{\tilde{G}}$ under metric inflation). In that limit the Hamiltonian spectral gap is
+$$
+\Delta_H \approx \frac{c_{\text{info}}}{2\sqrt{\kappa^2+\lambda_0}}(\lambda_1 - \lambda_0),
+$$
+which recovers the familiar non-relativistic scaling as a controlled approximation, not a replacement for the KG gap.
 
 :::
 
@@ -2207,11 +2258,11 @@ The Klein-Gordon operator $(-\Box + \kappa^2)$ has spectrum bounded below by $\k
 2. The system has finite spatial extent (bounded region $V$)
 3. Correlations follow the standard field-theoretic decay: massive $\sim e^{-\kappa r}$, massless $\sim 1/r^{D-2}$ for $D>2$ (logarithmic in $D=2$)
 
-**Statement:** Under these assumptions, a system with $\Delta = 0$ enters Causal Stasis ($\|v\|_G = 0$).
+**Statement:** Under these assumptions, a system with $\Delta_{\text{KG}} = 0$ enters Causal Stasis ($\|v\|_G = 0$).
 
 *Proof.*
 
-1. **Assume gapless theory:** Suppose $\Delta = 0$, so the lowest excitation above the vacuum is massless.
+1. **Assume gapless theory:** Suppose $\Delta_{\text{KG}} = 0$, so the lowest excitation above the vacuum is massless.
 
 2. **Infinite correlation length:** The screening mass $\kappa = 0$ implies the correlation length diverges:
 
@@ -2237,7 +2288,7 @@ The Klein-Gordon operator $(-\Box + \kappa^2)$ has spectrum bounded below by $\k
 
 5. **Causal Stasis:** By Theorem 33.4 (Causal Stasis), as $I_{\text{bulk}}$ saturates the bound, the metric component $G_{rr} \to \infty$ and the update velocity $\|v\|_G \to 0$.
 
-*Conclusion:* Under the stated assumptions, a gapless theory ($\Delta = 0$) implies frozen dynamics. For temporal evolution to occur, correlations must be screened: $\xi < \infty \implies \Delta > 0$. $\square$
+*Conclusion:* Under the stated assumptions, a gapless theory ($\Delta_{\text{KG}} = 0$) implies frozen dynamics. For temporal evolution to occur, correlations must be screened: $\xi < \infty \implies \Delta_{\text{KG}} > 0$. $\square$
 
 *Remark (Scope of Assumptions):* Assumption 1 is derived in Theorem 33.3 from first principles (the Levin complexity bound). For systems satisfying this bound—which includes all physically realizable computational systems—the mass gap necessity follows.
 
@@ -2251,30 +2302,32 @@ The Klein-Gordon operator $(-\Box + \kappa^2)$ has spectrum bounded below by $\k
 2. The system is **non-trivial**: has non-zero update velocity $\|v\|_G > 0$ at some time
 3. The system is **interacting**: coupling constants $\Phi_{ij} \neq 0$ or $\mathcal{G}_{ij} \neq 0$
 
-**Statement:** Under these assumptions, $\Delta > 0$.
+**Statement:** Under these assumptions, $\Delta_{\text{KG}} > 0$.
 
 *Proof (by contradiction).*
 
-Suppose $\Delta = 0$. By Theorem {prf:ref}`thm-computational-necessity-mass-gap` (using Assumption 1), the system enters Causal Stasis with $\|v\|_G = 0$. This contradicts Assumption 2 (non-triviality).
+Suppose $\Delta_{\text{KG}} = 0$. By Theorem {prf:ref}`thm-computational-necessity-mass-gap` (using Assumption 1), the system enters Causal Stasis with $\|v\|_G = 0$. This contradicts Assumption 2 (non-triviality).
 
-Therefore $\Delta > 0$ for any non-trivial theory describing an evolving system that satisfies the Causal Information Bound. $\square$
+Therefore $\Delta_{\text{KG}} > 0$ for any non-trivial theory describing an evolving system that satisfies the Causal Information Bound. $\square$
 
-*Bound:* The mass gap is bounded below by thermodynamic considerations:
+*Implication (Schr\"odinger reduction).* In the non-relativistic limit of the KG spectrum (Theorem {prf:ref}`thm-mass-gap-screening`), $\Delta_{\text{KG}} > 0$ implies a positive Hamiltonian spectral gap $\Delta_H > 0$ for the slow-envelope dynamics.
+
+*Bound (Hamiltonian gap in the Schr\"odinger limit):* The effective Hamiltonian gap satisfies
 
 $$
-\Delta \geq \frac{1}{\beta}\left(\Delta H + \frac{\mathcal{W}}{T_c}\right)
+\Delta_H \geq \frac{1}{\beta}\left(\Delta H + \frac{\mathcal{W}}{T_c}\right)
 
 $$
 where $\Delta H$ is the enthalpy barrier for excitation, $\mathcal{W}$ is computational work, and $T_c$ is cognitive temperature. This follows from Theorem 30.15 (Thermodynamic Hysteresis).
 
-*Remark (Conditional vs. Absolute):* This theorem does **not** prove that all field theories have a mass gap. It proves: IF a system satisfies the Causal Information Bound AND evolves non-trivially, THEN it must have $\Delta > 0$. The Clay Millennium Problem asks whether quantum Yang-Mills in continuous $\mathbb{R}^4$ has a mass gap; this framework addresses discrete, bounded, computational systems.
+*Remark (Conditional vs. Absolute):* This theorem does **not** prove that all field theories have a mass gap. It proves: IF a system satisfies the Causal Information Bound AND evolves non-trivially, THEN it must have $\Delta_{\text{KG}} > 0$ (hence $\Delta_H > 0$ in the Schr\"odinger reduction). The Clay Millennium Problem asks whether quantum Yang-Mills in continuous $\mathbb{R}^4$ has a mass gap; this framework addresses discrete, bounded, computational systems.
 
 :::
 
 :::{prf:corollary} Mass Gap as Existence Requirement
 :label: cor-mass-gap-existence
 
-Bounded intelligence requires $\Delta > 0$. A gapless theory ($\Delta = 0$) corresponds to:
+Bounded intelligence requires $\Delta_{\text{KG}} > 0$ (and thus $\Delta_H > 0$ in the Schr\"odinger limit). A gapless theory ($\Delta_{\text{KG}} = 0$) corresponds to:
 
 1. **Infinite ontological resolution:** No finite codebook can represent the state
 2. **Zero learning rate:** Dynamics frozen ($v = 0$)
@@ -2375,14 +2428,14 @@ Let $\mathcal{T}$ be a Conformal Field Theory on $\mathbb{R}^d$ ($d \geq 2$) wit
 :::{prf:corollary} Finite-Volume Mass Gap
 :label: cor-finite-volume-mass-gap
 
-A CFT restricted to a finite spatial volume $V$ with characteristic length $L$ acquires an effective mass gap:
+A CFT restricted to a finite spatial volume $V$ with characteristic length $L$ acquires an effective **Hamiltonian** gap:
 
 $$
-\Delta_{\text{eff}} \sim \frac{1}{L}
+\Delta_{H,\text{eff}} \sim \frac{1}{L}
 
 $$
 
-The gapless limit exists only as $L \to \infty$.
+The gapless Hamiltonian limit exists only as $L \to \infty$.
 
 *Proof.* Two independent mechanisms ensure bounded observers see gapped theories:
 
@@ -2390,11 +2443,11 @@ The gapless limit exists only as $L \to \infty$.
 
 2. **Resolution bound (Levin Length):** A bounded observer with interface capacity $C_\partial$ can only resolve spatial scales $L \geq L_{\min}$ where $L_{\min}^{d-1} \sim C_\partial \cdot \ell_L^2$. Systems smaller than $L_{\min}$ cannot be distinguished by the observer.
 
-Both effects contribute: even if the CFT were somehow realized at infinite volume, the observer could only access a finite effective volume, hence would measure $\Delta_{\text{eff}} > 0$. $\square$
+Both effects contribute: even if the CFT were somehow realized at infinite volume, the observer could only access a finite effective volume, hence would measure $\Delta_{H,\text{eff}} > 0$. $\square$
 
 *Remark (Distinct phenomena).* The finite-size gap is a property of the CFT itself (topological/boundary effect). The resolution bound is a property of the observer (information-theoretic). The corollary states that both independently prevent observation of gapless physics.
 
-*Physical interpretation.* CFTs exist in nature only at phase transition critical points (e.g., Ising model at $T_c$). Away from criticality, systems have finite correlation length and positive mass gap. The critical point is a measure-zero set in parameter space—physically realizable systems generically have $\Delta > 0$.
+*Physical interpretation.* CFTs exist in nature only at phase transition critical points (e.g., Ising model at $T_c$). Away from criticality, systems have finite correlation length and positive mass gap. The critical point is a measure-zero set in parameter space—physically realizable systems generically have $\Delta_{\text{KG}} > 0$ (and thus $\Delta_H > 0$ in the Schr\"odinger limit).
 
 :::
 
@@ -2436,7 +2489,7 @@ $$
 
 *Implication (UV finiteness).* The recursive self-consistency of the bound at all scales implies that no UV divergences arise. The Levin Length $\ell_L$ acts as a natural UV cutoff that is preserved under renormalization group flow. Unlike lattice regularization where the continuum limit requires careful tuning, this framework has built-in regularization.
 
-*Implication (Mass gap from scale invariance).* The only scale-invariant theories consistent with the Causal Information Bound are those with $I_{\text{bulk}} \sim R^{d-1}$ (area scaling). This requires exponential correlation decay, hence $\Delta > 0$. Theories with algebraic correlation decay (CFTs) fail scale covariance of the bound.
+*Implication (Mass gap from scale invariance).* The only scale-invariant theories consistent with the Causal Information Bound are those with $I_{\text{bulk}} \sim R^{d-1}$ (area scaling). This requires exponential correlation decay, hence $\Delta_{\text{KG}} > 0$. Theories with algebraic correlation decay (CFTs) fail scale covariance of the bound.
 
 :::
 
@@ -2445,7 +2498,7 @@ $$
 
 Let $\mathcal{T}_{\text{YM}}$ be Yang-Mills theory with compact simple gauge group $G$ in $d = 4$ dimensions.
 
-**Statement:** If $\mathcal{T}_{\text{YM}}$ describes physics (is realizable by bounded observers), then $\Delta > 0$.
+**Statement:** If $\mathcal{T}_{\text{YM}}$ describes physics (is realizable by bounded observers), then $\Delta_{\text{KG}} > 0$ (and thus $\Delta_H > 0$ in the Schr\"odinger reduction).
 
 *Proof.*
 
@@ -2453,24 +2506,24 @@ Let $\mathcal{T}_{\text{YM}}$ be Yang-Mills theory with compact simple gauge gro
 
 2. **Physical theories are computable:** Any theory describing physics accessible to bounded observers must be realizable with finite resources. This requires Levin Length $\ell_L > 0$ (Definition {prf:ref}`def-levin-length`).
 
-3. **Computability implies mass gap:** By Theorem {prf:ref}`thm-computational-necessity-mass-gap`, any theory with $\ell_L > 0$ and non-trivial dynamics ($\|v\|_G > 0$) has $\Delta > 0$.
+3. **Computability implies mass gap:** By Theorem {prf:ref}`thm-computational-necessity-mass-gap`, any theory with $\ell_L > 0$ and non-trivial dynamics ($\|v\|_G > 0$) has $\Delta_{\text{KG}} > 0$.
 
-4. **Conclusion:** If Yang-Mills describes physics, it is computable, hence has $\ell_L > 0$, hence has $\Delta > 0$. $\square$
+4. **Conclusion:** If Yang-Mills describes physics, it is computable, hence has $\ell_L > 0$, hence has $\Delta_{\text{KG}} > 0$. $\square$
 
 *Remark (Contrapositive).* If Yang-Mills on $\mathbb{R}^4$ requires $\ell_L \to 0$ (no UV cutoff), then by Theorem {prf:ref}`thm-cft-swampland` it lies in the Computational Swampland and does not describe physics. Either way, the physical theory has a mass gap.
 
-*Remark (Why this is not circular).* The mass gap necessity follows from information-theoretic constraints (the Causal Information Bound), not from assuming properties of Yang-Mills. The framework proves that **any** non-trivial gauge theory satisfying the bound has $\Delta > 0$. Yang-Mills is one such theory.
+*Remark (Why this is not circular).* The mass gap necessity follows from information-theoretic constraints (the Causal Information Bound), not from assuming properties of Yang-Mills. The framework proves that **any** non-trivial gauge theory satisfying the bound has $\Delta_{\text{KG}} > 0$. Yang-Mills is one such theory.
 
 :::
 
 :::{prf:remark} Relation to the Clay Millennium Problem
 :label: rem-clay-millennium
 
-The **Yang-Mills Existence and Mass Gap** problem (Clay Mathematics Institute) asks for rigorous construction of quantum Yang-Mills theory in $\mathbb{R}^4$ with mass gap $\Delta > 0$.
+The **Yang-Mills Existence and Mass Gap** problem (Clay Mathematics Institute) asks for rigorous construction of quantum Yang-Mills theory in $\mathbb{R}^4$ with Hamiltonian mass gap $\Delta_H > 0$.
 
 **What This Framework Proves:**
 
-Theorem {prf:ref}`thm-mass-gap-dichotomy` establishes: **If Yang-Mills describes physics, then $\Delta > 0$.**
+Theorem {prf:ref}`thm-mass-gap-dichotomy` establishes: **If Yang-Mills describes physics, then $\Delta_{\text{KG}} > 0$ (and thus $\Delta_H > 0$ in the Schr\"odinger reduction).**
 
 The logical structure is:
 
@@ -2478,7 +2531,7 @@ The logical structure is:
 
 2. **Physical theories require $\ell_L > 0$:** Any theory realizable by bounded observers with finite interface capacity must have a minimum resolution scale (the Levin Length).
 
-3. **$\ell_L > 0$ implies $\Delta > 0$:** By Theorem {prf:ref}`thm-computational-necessity-mass-gap`, any non-trivial theory with finite Levin Length has a mass gap.
+3. **$\ell_L > 0$ implies $\Delta_{\text{KG}} > 0$:** By Theorem {prf:ref}`thm-computational-necessity-mass-gap`, any non-trivial theory with finite Levin Length has a mass gap.
 
 4. **Gapless theories are in the Swampland:** By Theorem {prf:ref}`thm-cft-swampland`, theories requiring $\ell_L \to 0$ (CFTs) are mathematically consistent but not physically realizable.
 
@@ -2486,10 +2539,10 @@ The logical structure is:
 
 The Clay Institute asks about Yang-Mills on continuous $\mathbb{R}^4$ satisfying Wightman or Osterwalder-Schrader axioms. The framework does not prove this directly. Instead, it proves:
 
-- If the continuum theory describes physics, it has $\Delta > 0$ (Theorem {prf:ref}`thm-mass-gap-dichotomy`)
+- If the continuum theory describes physics, it has $\Delta_{\text{KG}} > 0$ (and hence $\Delta_H > 0$ in the Schr\"odinger reduction) (Theorem {prf:ref}`thm-mass-gap-dichotomy`)
 - If the continuum theory requires $\ell_L \to 0$, it is in the Swampland and does not describe nature
 
-The framework thus establishes that the **physical** Yang-Mills theory (the one describing strong interactions) necessarily has a mass gap. Whether this constitutes a "solution" to the Clay problem depends on whether one accepts that physical theories must be computable.
+The framework thus establishes that the **physical** Yang-Mills theory (the one describing strong interactions) necessarily has a mass gap. Whether this constitutes a "solution" to the Clay problem depends on whether one accepts that physical theories must be computable and the Schr\"odinger reduction as the operational energy notion.
 
 *Physical interpretation:* Nature forbids infinite-information vacua. The mass gap is not an empirical accident but a **logical requirement** for any theory describing existing systems.
 
@@ -2511,7 +2564,7 @@ The framework is Yang-Mills theory applied to information systems. The mass gap 
 
 | QCD (Yang-Mills) | Fragile Agent |
 |:-----------------|:--------------|
-| Mass gap $\Delta$ | Strategic excitation threshold |
+| Mass gap $\Delta_{\text{KG}}$ (→ $\Delta_H$ in Schr\"odinger limit) | Strategic excitation threshold |
 | Glueball mass | Minimum chart creation energy |
 | Confinement | Cooperative basin locking |
 | Lattice spacing $a$ | Levin Length $\ell_L$ |
@@ -2551,9 +2604,9 @@ Following the diagnostic node convention ({ref}`sec-theory-thin-interfaces`), we
 
 | **#** | **Name** | **Component** | **Type** | **Interpretation** | **Proxy** | **Cost** |
 |:------|:---------|:--------------|:---------|:-------------------|:----------|:---------|
-| **64** | **FieldStrengthBoundCheck** | Multi-Agent | Stability | Is strategic curvature bounded? | $\|\mathcal{F}_{\mu\nu}\|_F := \sqrt{\text{Tr}(\mathcal{F}_{\mu\nu}\mathcal{F}^{\mu\nu})}$ | $O(N^2d^2)$ |
+| **64** | **FieldStrengthBoundCheck** | Multi-Agent | Stability | Is strategic curvature bounded? | $\|\mathcal{F}\|_h := \sqrt{\text{Tr}(\mathcal{F}_{\mu\nu}\mathcal{F}_{\alpha\beta} h^{\mu\alpha} h^{\nu\beta})}$ | $O(N^2d^2)$ |
 
-**Interpretation:** Monitors the Frobenius norm of the field strength tensor.
+**Interpretation:** Monitors a positive-definite magnitude of the field strength tensor using a chosen Riemannian metric $h_{\mu\nu}$ on spacetime (e.g., the Wick-rotated $g_{\mu\nu}$).
 
 **Threshold:** $\|\mathcal{F}\|_F < F_{\max}$ (implementation-dependent).
 
@@ -2588,16 +2641,16 @@ Following the diagnostic node convention ({ref}`sec-theory-thin-interfaces`), we
 
 | **#** | **Name** | **Component** | **Type** | **Interpretation** | **Proxy** | **Cost** |
 |:------|:---------|:--------------|:---------|:-------------------|:----------|:---------|
-| **66** | **MassGapCheck** | Multi-Agent | Stability | Is mass gap positive? | $\Delta := E_1 - E_0$ (spectral gap) | $O(N^2d)$ |
+| **66** | **MassGapCheck** | Multi-Agent | Stability | Is mass gap positive? | $\Delta_H := E_1 - E_0$ (Hamiltonian spectral gap) | $O(N^2d)$ |
 
 **Interpretation:** Monitors the energy gap between ground state and first excited state.
 
-**Threshold:** $\Delta > \Delta_{\min}$ (must be strictly positive).
+**Threshold:** $\Delta_H > \Delta_{\min}$ (must be strictly positive).
 
 **Trigger conditions:**
-- $\Delta \to 0$: Approaching critical point (phase transition)
-- $\Delta < 0$: Unstable vacuum (tachyonic mode)
-- **Remedy:** Check for symmetry breaking; verify Higgs potential parameters; add mass regularization
+- $\Delta_H \to 0$: Approaching critical point (phase transition)
+- $\Delta_H < 0$: Numerical or spectral ordering error (gap should not be negative); re-estimate eigenvalues
+- **Remedy:** Check eigensolver stability; verify boundary conditions and normalization; add mass regularization
 
 
 
@@ -2608,7 +2661,7 @@ Following the diagnostic node convention ({ref}`sec-theory-thin-interfaces`), we
 | 63 | GaugeInvarianceCheck | Gauge symmetry | $\delta_{\text{gauge}} < 10^{-6}$ |
 | 64 | FieldStrengthBoundCheck | Strategic curvature | $\|\mathcal{F}\|_F < F_{\max}$ |
 | 65 | BianchiViolationCheck | Topological consistency | $\delta_B < 10^{-8}$ |
-| 66 | MassGapCheck | Spectral stability | $\Delta > 0$ |
+| 66 | MassGapCheck | Spectral stability | $\Delta_H > 0$ |
 
 
 
@@ -3671,7 +3724,7 @@ class RelativisticMultiAgentInterface(nn.Module):
 | **Potential** | $\Phi_{\text{eff}}(z)$ | $\Phi^{\text{ret}}_{ij}(z^{(i)}, t)$ (quasi-static: $\approx \Phi_{ij}(z^{(i)}, z^{(j)}_{t-\tau})$) | + Higgs $\mu^2|\Phi|^2 + \lambda|\Phi|^4$ | Operator $\hat{\Phi}_{\text{eff}} + \sum \hat{V}_{ij}$ |
 | **Metric Effect** | $G$ | $\tilde{G}^{(i)}(t) = G^{(i)} + \sum_j \beta_{ij}\mathcal{G}^{(i),\text{ret}}_{ij}$ | + Gauge-covariant $\tilde{\mathcal{G}}^{(i)}_{ij}$ | Game-Augmented Laplacian |
 | **Coupling Mechanism** | — | Ghost Interface $\mathcal{G}_{ij}(t)$ | + Gauge connection $A_\mu$ | + Strategic Entanglement |
-| **Resolution Limit** | — | Causal delay $\tau_{ij} = d_{\mathcal{E}}^{ij}/c_{\text{info}}$ | Mass gap $\Delta > 0$ | Bohm potential $Q_B$ |
+| **Resolution Limit** | — | Causal delay $\tau_{ij} = d_{\mathcal{E}}^{ij}/c_{\text{info}}$ | Mass gap $\Delta_{\text{KG}} > 0$ | Bohm potential $Q_B$ |
 | **Coupling Type** | — | Potential + Metric + Retardation | + Gauge curvature $\mathcal{F}_{\mu\nu}$ | + Entanglement |
 | **Correlation** | — | Classical (delayed, factorizable) | + Screened ($\xi = 1/\kappa < \infty$) | Quantum (non-factorizable) |
 | **Equilibrium** | Value maxima | Standing Wave (time-averaged Nash) | + Symmetry breaking (VEV) | Ground state of $\hat{H}_{\text{strat}}$ |

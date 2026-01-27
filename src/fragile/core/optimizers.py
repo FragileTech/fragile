@@ -69,7 +69,8 @@ class ThermodynamicAdam(Optimizer):
         if varentropy_min_history < 1:
             raise ValueError(f"Invalid varentropy_min_history: {varentropy_min_history}")
         if varentropy_min_history > history_window:
-            raise ValueError("varentropy_min_history cannot exceed history_window")
+            msg = "varentropy_min_history cannot exceed history_window"
+            raise ValueError(msg)
         if varentropy_eps <= 0.0:
             raise ValueError(f"Invalid varentropy_eps: {varentropy_eps}")
 

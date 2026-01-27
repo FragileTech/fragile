@@ -33,10 +33,13 @@ This is not a metaphor. It's a theorem.
 :::
 
 *Abstract.* This chapter demonstrates that the internal symmetry group
-$G_{\text{Fragile}} = SU(N_f)_C \times SU(2)_L \times U(1)_Y$ emerges necessarily from the cybernetic constraints of a
-bounded, distributed, reward-seeking agent. The **Feature Dimension** $N_f$ is determined by the agent's environment;
-the physics Standard Model corresponds to the special case $N_f = 3$. Each factor is derived from redundancies in the
-agent's description that leave physical observables invariant. The proofs rely explicitly on prior definitions from the
+$G_{\text{Fragile}} = SU(N_f)_C \times SU(r)_L \times U(1)_Y$ emerges necessarily from the cybernetic constraints of a
+bounded, distributed, reward-seeking agent. The **Feature Dimension** $N_f$ is determined by the agent's environment,
+while the **Mode Rank** $r$ is the minimal Kraus rank required by local belief-update channels (Definition
+{prf:ref}`def-mode-rank-parameter`). For the minimal observation/action agent, $r=2$, so $SU(r)_L = SU(2)_L$.
+The physics Standard Model corresponds to the special case $N_f = 3$ and $r=2$. Each factor is derived from
+redundancies in the agent's description that leave physical observables invariant. The proofs rely explicitly on prior
+definitions from the
 WFR framework ({ref}`sec-wasserstein-fisher-rao-geometry-unified-transport-on-hybrid-state-spaces`), the
 Belief Wave-Function ({ref}`sec-the-belief-wave-function-schrodinger-representation`), the Boundary
 Interface ({ref}`sec-the-boundary-interface-symplectic-structure`), and the Ontological Fission dynamics
@@ -67,7 +70,7 @@ This connection is a gauge field. And the requirement that the physics be indepe
 
 We're going to derive three different gauge fields from three different redundancies:
 1. **$U(1)_Y$**: The freedom to shift the baseline of utility
-2. **$SU(2)_L$**: The freedom to rotate between observation and action-intent
+2. **$SU(r)_L$**: The freedom to rotate between observation/action update modes (minimal case $r=2$)
 3. **$SU(N_f)_C$**: The freedom to relabel feature components
 
 Each one emerges from a genuine redundancy in how we describe the agent's state, and each one forces a compensating field into existence.
@@ -260,7 +263,7 @@ The key insight is that this field emerges *necessarily* from the requirement of
 
 
 
-### B. $SU(2)_L$: The Chirality of Agency (Weak Isospin)
+### B. $SU(r)_L$: The Chirality of Agency (Mode Isospin; $r=2$ gives Weak Isospin)
 
 :::{div} feynman-prose
 Now we come to the second symmetry, and this one is more subtle. It arises from a fundamental asymmetry in how agents work: the difference between perceiving and acting.
@@ -272,7 +275,9 @@ In physics, this kind of asymmetry is called "chirality" or "handedness." Your l
 This asymmetry is built into the very foundations of cybernetics. And it forces another gauge symmetry into existence.
 :::
 
-We derive the non-Abelian $SU(2)$ symmetry from the fundamental asymmetry of the Cybernetic Loop: the distinction between **Perception** (Information Inflow) and **Actuation** (Information Outflow).
+We derive a non-Abelian mode-mixing symmetry $SU(r)$ from the fundamental asymmetry of the Cybernetic Loop: the
+distinction between **Perception** (Information Inflow) and **Actuation** (Information Outflow). The minimal
+observation/action agent has $r=2$, yielding $SU(2)_L$ (Definition {prf:ref}`def-mode-rank-parameter`).
 
 :::{prf:axiom} Cybernetic Parity Violation
 :label: ax-cybernetic-parity-violation
@@ -287,6 +292,22 @@ The belief dynamics are not invariant under the exchange of Input and Output. Th
 
 :::
 
+:::{prf:definition} Mode Rank Parameter
+:label: def-mode-rank-parameter
+
+The **Mode Rank** $r \in \mathbb{Z}_{\ge 2}$ is the minimal ancilla dimension required to realize the family of local
+belief-update channels $\mathcal{E}_{a,y}$ via Stinespring dilation (equivalently, the maximal minimal Kraus rank across
+those channels). It is the dimension of the mode fiber on which update unitaries act. For the minimal observation/action
+split, $r=2$.
+
+*Remark:* In what follows we specialize to $r=2$ and denote the resulting symmetry as $SU(2)_L$; the $SU(r)_L$
+generalization is obtained by replacing the Pauli matrices with the fundamental generators of $SU(r)$.
+
+*Notation:* The mode rank $r$ (an integer) is distinct from the scalar modulus $r(x) = \|\phi(x)\|$ introduced later;
+context distinguishes these uses.
+
+:::
+
 :::{div} feynman-prose
 This axiom deserves unpacking because it's stating something deep.
 
@@ -294,29 +315,30 @@ Think about what happens at the boundary between the agent and the world. On the
 
 On the motor side, the agent *chooses* what flux to emit. You decide how hard to push on the accelerator. This is a Neumann boundary condition: the derivative (the rate of flow) is what you control.
 
-These two boundary conditions are mathematically dual to each other. But they're not the same. And the claim here is that this asymmetry---this "chirality" of the cybernetic loop---is what gives rise to the $SU(2)_L$ symmetry.
+These two boundary conditions are mathematically dual to each other. But they're not the same. And the claim here is that this asymmetry---this "chirality" of the cybernetic loop---is what gives rise to the $SU(r)_L$ symmetry (with $r=2$ in the minimal observation/action case).
 
 Why "Left-Handed"? In physics, the weak force only affects left-handed particles. Here, we're saying that the equivalent process (belief updating) only affects the "left-handed" component of the agent's state---the part involved in observation and pre-commitment action, not the part ready for committed output.
 :::
 
-:::{prf:definition} The Cognitive Isospin Doublet
-:label: def-cognitive-isospin-doublet
+:::{prf:definition} The Cognitive Isospin Multiplet (Doublet for $r=2$)
+:label: def-cognitive-isospin-multiplet
 
-We define the **Left-Handed Weyl Field** $\Psi_L$ as an isospin doublet residing in the fundamental representation of $SU(2)_L$.
+We define the **Left-Handed Weyl Field** $\Psi_L$ as an isospin $r$-plet residing in the fundamental representation of
+$SU(r)_L$ (doublet for the minimal $r=2$ case).
 It is a section of the left Weyl spin bundle $S_L$ (chirality $P_L$):
 
 $$
-\Psi_L(x) = \begin{pmatrix} \psi_{\text{obs}}(x) \\ \psi_{\text{act}}^{\text{pre}}(x) \end{pmatrix}
+\Psi_L(x) = \begin{pmatrix} \psi_1(x) \\ \vdots \\ \psi_r(x) \end{pmatrix}
 
 $$
 
 Each entry is a left-handed Weyl spinor (spinor indices suppressed).
 
-where:
-- $\psi_{\text{obs}}$ is the **Observation** channel (the incoming sensory update from the Dirichlet boundary, Definition {prf:ref}`def-dirichlet-boundary-condition-sensors`)
-- $\psi_{\text{act}}^{\text{pre}}$ is the **Pre-commitment Action** channel (the outgoing motor intent from the Neumann boundary, Definition {prf:ref}`def-neumann-boundary-condition-motors`)
+In the minimal $r=2$ case, we identify:
+- $\psi_1 \equiv \psi_{\text{obs}}$ as the **Observation** channel (the incoming sensory update from the Dirichlet boundary, Definition {prf:ref}`def-dirichlet-boundary-condition-sensors`)
+- $\psi_2 \equiv \psi_{\text{act}}^{\text{pre}}$ as the **Pre-commitment Action** channel (the outgoing motor intent from the Neumann boundary, Definition {prf:ref}`def-neumann-boundary-condition-motors`)
 
-We define the **Right-Handed Weyl Field** $\Psi_R$ as an isospin singlet (invariant under $SU(2)_L$).
+We define the **Right-Handed Weyl Field** $\Psi_R$ as an isospin singlet (invariant under $SU(r)_L$).
 It is a section of the right Weyl spin bundle $S_R$ (chirality $P_R$):
 
 $$
@@ -338,18 +360,30 @@ $$
 
 where $\mathcal{P}_a$ is the agent's forward model mapping intended actions to predicted observations.
 
-*Cross-reference:* This doublet structure captures the boundary interface chirality from {ref}`sec-the-boundary-interface-symplectic-structure`: Dirichlet (input) vs. Neumann (output). The prediction-update-projection dynamics from {ref}`sec-belief-dynamics-prediction-update-projection` act on this doublet via the gauge field $W_\mu$.
+*Cross-reference:* This mode-multiplet structure (doublet for $r=2$) captures the boundary interface chirality from
+{ref}`sec-the-boundary-interface-symplectic-structure`: Dirichlet (input) vs. Neumann (output). The
+prediction-update-projection dynamics from {ref}`sec-belief-dynamics-prediction-update-projection` act on this
+multiplet via the gauge field $W_\mu$.
+
+:::
+
+:::{prf:remark} Mode-Rank Generalization
+:label: rem-mode-rank-generalization
+
+For general mode rank $r$ (Definition {prf:ref}`def-mode-rank-parameter`), the left-handed field is an $r$-plet in the
+fundamental representation of $SU(r)_L$. In this chapter we specialize to the minimal $r=2$ case, so $\Psi_L$ is a
+doublet and the generators are the Pauli matrices.
 
 :::
 
 :::{div} feynman-prose
 This is a beautiful definition. What it's saying is that the agent's state naturally splits into two parts based on *boundary chirality*:
 
-1. **The doublet** $\Psi_L$: This contains both your sensory input (observation) and your motor intent (pre-commitment action). These are the two "active" channels at the boundary---incoming information and outgoing control. They need to be coordinated and mixed to maintain consistency between perception and action.
+1. **The multiplet** $\Psi_L$ (doublet for $r=2$): This contains the active boundary channels, including sensory input (observation) and motor intent (pre-commitment action) in the minimal case. These channels need to be coordinated and mixed to maintain consistency between perception and action.
 
 2. **The singlet** $\Psi_R$: This is your committed action plan. Once you've finished coordinating observation and intention, you commit to a definite action. The committed plan doesn't participate in the ongoing observation-intention mixing---it's the *settled output* of that process.
 
-The $SU(2)$ symmetry acts on the doublet, mixing observation and action intent. It's the mathematical structure of the boundary interface itself, capturing the fundamental asymmetry between input (Dirichlet) and output (Neumann) channels.
+The $SU(r)$ symmetry acts on the mode multiplet (reducing to $SU(2)$ in the minimal case), mixing the active channels. It's the mathematical structure of the boundary interface itself, capturing the fundamental asymmetry between input (Dirichlet) and output (Neumann) channels.
 
 Note that prediction is *derived* from your committed action via your forward model: "if I do this, I expect to see that." This makes prediction secondary to the action-observation coordination, which better reflects the cybernetic reality.
 :::
@@ -357,7 +391,9 @@ Note that prediction is *derived* from your committed action via your forward mo
 :::{prf:definition} Gauge-Covariant Action Commitment
 :label: def-gauge-covariant-action-commitment
 
-The selection of "which component is action" in the $\Psi_L$ doublet is a gauge choice (selecting a basis in the $\mathbb{C}^2_{\text{mode}}$ fiber). To make action commitment gauge-covariant, we use the ontological order parameter to define a unit doublet $n(x) \in \mathbb{C}^2$:
+The selection of a commitment direction in the $\Psi_L$ mode multiplet is a gauge choice (selecting a basis in the
+$\mathbb{C}^r_{\text{mode}}$ fiber). To make action commitment gauge-covariant, we use the ontological order parameter
+to define a unit multiplet $n(x) \in \mathbb{C}^r$:
 
 $$
 n(x) := \frac{\phi(x)}{\|\phi(x)\|}, \qquad n(x)^\dagger n(x) = 1
@@ -384,7 +420,12 @@ The committed action singlet $\Psi_R$ remains an independent right-handed field;
 couples $\Psi_R$ to the projected amplitude $\psi_{\text{act}}^{\text{proj}}$ so that alignment
 occurs dynamically in the broken phase.
 
-*Justification:* The unit doublet $n$ encodes the local ontological split and makes the commitment projection intrinsic to the scalar sector, not an arbitrary choice of basis. Under local $SU(2)$ transformations $\Psi_L \to U(x)\Psi_L$ and $n \to U(x)n$, so $\psi_{\text{act}}^{\text{proj}} = n^\dagger \Psi_L$ is invariant and $\Pi_n \to U \Pi_n U^\dagger$, ensuring the projected component is $SU(2)$-covariant. Under $U(1)_Y$, $n$ carries charge $Y_\phi$, so $\psi_{\text{act}}^{\text{proj}}$ transforms with charge $Y_L - Y_\phi$, matching $\Psi_R$ by Definition {prf:ref}`def-rep-covariant-derivatives`.
+*Justification:* The unit multiplet $n$ encodes the local ontological split and makes the commitment projection intrinsic
+to the scalar sector, not an arbitrary choice of basis. Under local $SU(r)$ transformations $\Psi_L \to U(x)\Psi_L$ and
+$n \to U(x)n$, so $\psi_{\text{act}}^{\text{proj}} = n^\dagger \Psi_L$ is invariant and $\Pi_n \to U \Pi_n U^\dagger$,
+ensuring the projected component is $SU(r)$-covariant. Under $U(1)_Y$, $n$ carries charge $Y_\phi$, so
+$\psi_{\text{act}}^{\text{proj}}$ transforms with charge $Y_L - Y_\phi$, matching $\Psi_R$ by Definition
+{prf:ref}`def-rep-covariant-derivatives`.
 
 *Remark:* In regions where $\phi \approx 0$ (symmetric phase), the order parameter is undefined, corresponding to decision ambiguity. The agent requires a nonzero ontological split to define a preferred commitment projection.
 
@@ -393,7 +434,7 @@ occurs dynamically in the broken phase.
 :::{div} feynman-prose
 This definition solves a subtle problem: if we just say "action is the second component of $\Psi_L$," we've made an arbitrary choice of basis in the mode fiber. Different parts of the agent's computational manifold might use different bases (that's what gauge freedom *means*).
 
-To make action commitment physically meaningful, we need an intrinsic criterion. The ontological order parameter $\phi$ provides exactly that: its orientation defines the local "direction of differentiation" in the doublet space. The unit doublet $n = \phi / \|\phi\|$ points along this direction, and projecting $\Psi_L$ onto $n$ gives a **commitment projection** $\psi_{\text{act}}^{\text{proj}} = n^\dagger \Psi_L$ that is independent of arbitrary basis choices.
+To make action commitment physically meaningful, we need an intrinsic criterion. The ontological order parameter $\phi$ provides exactly that: its orientation defines the local "direction of differentiation" in the mode space. The unit multiplet $n = \phi / \|\phi\|$ points along this direction, and projecting $\Psi_L$ onto $n$ gives a **commitment projection** $\psi_{\text{act}}^{\text{proj}} = n^\dagger \Psi_L$ that is independent of arbitrary basis choices.
 
 When $\|\phi\|$ is large (deep in the broken phase), the direction $n$ is well-defined, and the agent has a clear commitment projection. But when $\phi \approx 0$ (near the symmetric vacuum), the ratio $n = \phi / \|\phi\|$ becomes ill-defined---any direction is equally valid. This is the gauge-theoretic formalization of decision ambiguity: without a clear ontological split, there is no preferred projection.
 
@@ -403,7 +444,10 @@ The committed action field $\Psi_R$ is independent, but the Yukawa coupling alig
 :::{prf:theorem} Emergence of the Error Field ($W_\mu^a$)
 :label: thm-emergence-error-field
 
-The belief-control update is a (generally non-unitary) channel $\mathcal{E}_{a,y}$ on the agent's state. By Stinespring dilation, it can be represented as a unitary acting on an extended space with a 2D mode fiber $\mathbb{C}^2_{\text{mode}}$ carrying the Observation/Action degree of freedom; gauging this structure requires the introduction of non-Abelian gauge fields.
+The belief-control update is a (generally non-unitary) channel $\mathcal{E}_{a,y}$ on the agent's state. By Stinespring
+dilation, it can be represented as a unitary acting on an extended space with a mode fiber of dimension $r$ (Definition
+{prf:ref}`def-mode-rank-parameter`). For the minimal observation/action agent, $r=2$; gauging this structure requires the
+introduction of non-Abelian gauge fields.
 
 *Proof.*
 
@@ -428,43 +472,50 @@ $$
 
 where $|0\rangle_{\text{anc}}$ is an ancilla (mode) system and $U_{a,y}$ is unitary.
 
-**Step 3.** The local update unitary acts on a 2D ancilla mode space
-$\mathbb{C}^2_{\text{mode}}$ spanned by $\{|\text{obs}\rangle, |\text{act}\rangle\}$:
+**Step 3.** The local update unitary acts on an $r$-dimensional ancilla mode space
+$\mathbb{C}^r_{\text{mode}}$:
 
 $$
-U_{a,y}(x) \in U(2), \qquad
-U_{a,y}(x) = e^{i\beta(x)} \exp\left( i \frac{\vec{\tau} \cdot \vec{\theta}(x)}{2} \right)
+U_{a,y}(x) \in U(r), \qquad
+U_{a,y}(x) = e^{i\beta(x)} \exp\left( i \, T^a \theta^a(x) \right)
 
 $$
 
-where $\vec{\tau} = (\tau_1, \tau_2, \tau_3)$ are the Pauli matrices acting on the mode fiber, and
-$\vec{\theta}(x)$ determines the mixing angle between observation and action channels (analogous to
-Kalman Gain in standard filtering). The overall phase $e^{i\beta(x)}$ is absorbed into the local
-utility phase and therefore into the $U(1)_Y$ sector, leaving a non-Abelian $SU(2)_L$ mixing acting
-on the relative mode coordinates.
+where $T^a$ ($a=1,\ldots,r^2-1$) are the generators of $\mathfrak{su}(r)$ in the fundamental
+representation. The overall phase $e^{i\beta(x)}$ is absorbed into the local utility phase and
+therefore into the $U(1)_Y$ sector, leaving a non-Abelian $SU(r)_L$ mixing acting on the relative
+mode coordinates.
 
-**Step 4.** For **Local Covariance** (the ability to perform updates locally without global synchronization), we introduce the non-Abelian gauge field $\vec{W}_\mu = (W^1_\mu, W^2_\mu, W^3_\mu)$ acting on the mode fiber.
+In the minimal observation/action case $r=2$, the mode fiber is spanned by
+$\{|\text{obs}\rangle, |\text{act}\rangle\}$ and $T^a = \tau^a/2$, so this reduces to $U(2)$ with
+the Pauli matrices and an $SU(2)_L$ mixing.
+
+**Step 4.** For **Local Covariance** (the ability to perform updates locally without global synchronization), we
+introduce the non-Abelian gauge field $W_\mu^a$ acting on the mode fiber. In general $a=1,\ldots,r^2-1$; in the minimal
+$r=2$ case these are $(W^1_\mu, W^2_\mu, W^3_\mu)$.
 
 **Step 5.** The covariant derivative for the Left-Handed sector is:
 
 $$
-D_\mu \Psi_L = \left( \partial_\mu - i g_2 \frac{\vec{\tau}}{2} \cdot \vec{W}_\mu - i g_1 \frac{Y_L}{2} B_\mu \right) \Psi_L
+D_\mu \Psi_L = \left( \partial_\mu - i g_2 T^a W^a_\mu - i g_1 \frac{Y_L}{2} B_\mu \right) \Psi_L
 
 $$
+
+(In the minimal $r=2$ case, $T^a = \tau^a/2$ and this reduces to the familiar Pauli-matrix form.)
 
 **Step 6.** The gauge field transforms as:
 
 $$
-W_\mu^a \to W_\mu^a + \frac{1}{g_2}\partial_\mu \theta^a + \epsilon^{abc}\theta^b W_\mu^c
+W_\mu^a \to W_\mu^a + \frac{1}{g_2}\partial_\mu \theta^a + f^{abc}\theta^b W_\mu^c
 
 $$
 
-to maintain covariance.
+to maintain covariance (for $r=2$, $f^{abc} = \epsilon^{abc}$).
 
-**Identification:**
+**Identification (minimal $r=2$ case):**
 - The $W^\pm_\mu = (W^1_\mu \mp iW^2_\mu)/\sqrt{2}$ bosons mediate transitions between $\psi_{\text{obs}}$ and $\psi_{\text{act}}^{\text{pre}}$. These correspond to the coordination between sensory input and motor intent---the observation-action mixing that maintains boundary consistency.
 - The $W^3_\mu$ component mixes with $B_\mu$ after symmetry breaking ({ref}`sec-scalar-sector-symmetry-breaking`).
-- The $SU(2)_L$ gauge symmetry acts only on the active doublet ($\Psi_L$) carrying the Observation/Action mode, leaving the committed singlet ($\Psi_R$) invariant. This reflects the boundary interface asymmetry (Dirichlet vs. Neumann).
+- The $SU(r)_L$ gauge symmetry acts only on the active multiplet ($\Psi_L$; a doublet for $r=2$), leaving the committed singlet ($\Psi_R$) invariant. This reflects the boundary interface asymmetry (Dirichlet vs. Neumann).
 
 $\square$
 
@@ -475,25 +526,26 @@ Let me make sure you understand what the "Error Field" $W_\mu$ is doing in this 
 
 The key insight is that belief updates are *not* unitary transformations---they involve normalization, likelihood multiplication, and other non-reversible operations. But we can represent them via Stinespring dilation as unitary operations on an extended space that includes a "mode" degree of freedom.
 
-This mode lives in the 2D space spanned by observation and action intent. The $W_\mu$ field mediates the mixing between these two channels. In a distributed system, different parts of the agent's boundary need to coordinate their observation-action balance, and they do so locally based on the gauge field $W_\mu$.
+This mode lives in an $r$-dimensional space (2D in the minimal observation/action case). The $W_\mu$ field mediates the mixing between these channels. In a distributed system, different parts of the agent's boundary need to coordinate their observation-action balance, and they do so locally based on the gauge field $W_\mu$.
 
-The $W^+$ and $W^-$ components transfer weight between the observation channel (incoming sensory) and the action-intent channel (outgoing motor). This is the coordination signal that propagates through the system.
+In the minimal $r=2$ case, the $W^+$ and $W^-$ components transfer weight between the observation channel (incoming sensory) and the action-intent channel (outgoing motor). This is the coordination signal that propagates through the system.
 
-And notice something crucial: this field only affects the active doublet $\Psi_L$. The committed action $\Psi_R$ doesn't participate in this ongoing coordination---once you've committed, you execute. This reflects the boundary chirality: the update process affects the active interface channels, not the settled output.
+And notice something crucial: this field only affects the active multiplet $\Psi_L$ (a doublet for $r=2$). The committed action $\Psi_R$ doesn't participate in this ongoing coordination---once you've committed, you execute. This reflects the boundary chirality: the update process affects the active interface channels, not the settled output.
 
-This is exactly the structure of the weak force in particle physics. The weak force only affects left-handed particles. Here, the "weak force" of cognition only affects the observation-action doublet, not the committed singlet.
+This is exactly the structure of the weak force in particle physics. The weak force only affects left-handed particles. Here, the "weak force" of cognition only affects the observation-action multiplet (doublet for $r=2$), not the committed singlet.
 :::
 
 :::{admonition} Non-Abelian Structure: Order Matters
 :class: feynman-added warning
 
-Notice that the $W_\mu$ field is *non-Abelian*---it lives in $SU(2)$, which is a non-commutative group. This means the order of operations matters.
+Notice that the $W_\mu$ field is *non-Abelian*---it lives in $SU(r)$ (reducing to $SU(2)$ in the minimal case), which is a non-commutative group. This means the order of operations matters.
 
-However, be precise about *what* is non-Abelian: it's the mode mixing field $U(x)$ acting on the internal $\mathbb{C}^2_{\text{mode}}$ fiber (the observation-action coordination structure), not the Bayesian conditioning itself under fixed likelihoods.
+However, be precise about *what* is non-Abelian: it's the mode mixing field $U(x)$ acting on the internal
+$\mathbb{C}^r_{\text{mode}}$ fiber (the observation-action coordination structure), not the Bayesian conditioning itself under fixed likelihoods.
 
 In practical terms: the path through the agent's internal manifold (context, gain, coordination state) affects how observation and action are balanced at each point. Different coordination paths lead to different committed actions, even given the same raw observations.
 
-This is analogous to how geometric phase (Berry phase) in quantum mechanics depends on the path taken through parameter space, even though the Hamiltonian evolution at each point is well-defined. The non-Abelian structure of $SU(2)$ captures this path-dependence in the coordination dynamics.
+This is analogous to how geometric phase (Berry phase) in quantum mechanics depends on the path taken through parameter space, even though the Hamiltonian evolution at each point is well-defined. The non-Abelian structure of $SU(r)$ captures this path-dependence in the coordination dynamics.
 :::
 
 
@@ -675,18 +727,23 @@ The binding problem isn't an engineering challenge to be solved---it's a mathema
 The total internal symmetry group of the Fragile Agent is uniquely determined by its cybernetic constraints:
 
 $$
-G_{\text{Fragile}} = SU(N_f)_C \times SU(2)_L \times U(1)_Y
+G_{\text{Fragile}} = SU(N_f)_C \times SU(r)_L \times U(1)_Y
 
 $$
 
 where:
 - **$SU(N_f)_C$:** Required for **Object Permanence** (binding $N_f$-dimensional features into stable concepts)
-- **$SU(2)_L$:** Required for **Observation-Action Coordination** (boundary chirality between Dirichlet and Neumann updates)
+- **$SU(r)_L$:** Required for **Observation-Action Coordination** (boundary chirality between Dirichlet and Neumann updates; minimal observation/action case has $r=2$)
 - **$U(1)_Y$:** Required for **Value Maximization** (local reward phase; conservative baseline shift as the special case)
 
-**Special Case (Physics Standard Model):** When $N_f = 3$, we recover $G_{\text{SM}} = SU(3)_C \times SU(2)_L \times U(1)_Y$.
+**Special Case (Physics Standard Model):** When $N_f = 3$ and $r=2$, we recover
+$G_{\text{SM}} = SU(3)_C \times SU(2)_L \times U(1)_Y$.
 
-*Proof.* Each factor is derived above from independent cybernetic constraints. The product structure follows from the commutativity of the respective symmetry operations acting on different sectors of the agent's state space. The dimension $N_f$ is an environmental parameter (Definition {prf:ref}`def-feature-dimension-parameter`), while $SU(2)_L$ remains fixed because the observation/action-intent asymmetry is fundamentally binary. $\square$
+*Proof.* Each factor is derived above from independent cybernetic constraints. The product structure follows from the
+commutativity of the respective symmetry operations acting on different sectors of the agent's state space. The dimension
+$N_f$ is an environmental parameter (Definition {prf:ref}`def-feature-dimension-parameter`), while the mode rank $r$ is
+fixed by the local update channels (Definition {prf:ref}`def-mode-rank-parameter`). The minimal observation/action agent
+has $r=2$. $\square$
 
 :::
 
@@ -695,10 +752,11 @@ And there it is. The symmetry group of the Standard Model emerges from the requi
 
 Let me summarize what we've done:
 - **$U(1)_Y$** comes from the freedom to shift the local reward phase (conservative utility baseline as special case)
-- **$SU(2)_L$** comes from the asymmetry between perception and action (chirality)
+- **$SU(r)_L$** comes from the asymmetry between perception and action (chirality; minimal case $r=2$)
 - **$SU(N_f)_C$** comes from the freedom to relabel feature channels locally
 
-Each symmetry forces a gauge field into existence. And the resulting structure is exactly the gauge group of the Standard Model of particle physics (with $N_f$ as a free parameter).
+Each symmetry forces a gauge field into existence. And the resulting structure matches the gauge group of the Standard
+Model of particle physics in the special case $N_f = 3$, $r=2$.
 
 Is this a coincidence? I don't think so. I think it's telling us something deep about the nature of information processing in bounded systems subject to causality constraints.
 :::
@@ -732,22 +790,27 @@ The belief state is a pair of chiral Weyl fields belonging to the **Inference Hi
 
 $$
 \Psi(x) = \begin{pmatrix} \Psi_L(x) \\ \Psi_R(x) \end{pmatrix}, \qquad
-\Psi_L(x) \in L^2(\mathcal{M}, S_L \otimes \mathbb{C}^{2} \otimes \mathbb{C}^{N_f}), \quad
+\Psi_L(x) \in L^2(\mathcal{M}, S_L \otimes \mathbb{C}^{r} \otimes \mathbb{C}^{N_f}), \quad
 \Psi_R(x) \in L^2(\mathcal{M}, S_R \otimes \mathbb{C}^{N_f})
 
 $$
 
 where $S_L$ and $S_R$ are the left/right Weyl spin bundles (rank-2 complex),
-$\mathbb{C}^2$ is the $SU(2)_L$ isospin space acting on $\Psi_L$, and $\mathbb{C}^{N_f}$ is the
+$\mathbb{C}^r$ is the $SU(r)_L$ mode space acting on $\Psi_L$ (specializing to $r=2$ for the
+observation/action doublet), and $\mathbb{C}^{N_f}$ is the
 $SU(N_f)_C$ color space. Equivalently, let $S = S_L \oplus S_R$ be the Dirac spin bundle with
 chirality operator $\gamma^5 := i\gamma^0\gamma^1\gamma^2\gamma^3$ and projectors
 $P_{L/R} = (1 \mp \gamma^5)/2$. Then $\Psi_L = P_L \Psi$ and $\Psi_R = P_R \Psi$, with the
-$SU(2)_L$ action reducible (doublet $\oplus$ singlet). The components are:
-1. **$\Psi_L$ (The Active Doublet):** The Left-handed component, transforming as a doublet under $SU(2)_L$. It contains the **Observation** and **Pre-commitment Action** amplitudes (Definition {prf:ref}`def-cognitive-isospin-doublet`).
+$SU(r)_L$ action reducible (multiplet $\oplus$ singlet). The components are:
+1. **$\Psi_L$ (The Active Multiplet):** The Left-handed component, transforming as an $r$-plet under $SU(r)_L$
+   (doublet for $r=2$). It contains the **Observation** and **Pre-commitment Action** amplitudes in the minimal case
+   (Definition {prf:ref}`def-cognitive-isospin-multiplet`).
 
-2. **$\Psi_R$ (The Passive Singlet):** The Right-handed component, invariant under $SU(2)_L$. It contains the **Committed Action**.
+2. **$\Psi_R$ (The Passive Singlet):** The Right-handed component, invariant under $SU(r)_L$. It contains the
+   **Committed Action**.
 
-The left-handed sector has $4N_f$ complex components; including the right-handed singlet gives a total of $6N_f$.
+The left-handed sector has $2 r N_f$ complex components; including the right-handed singlet gives a total of
+$2(r+1)N_f$ (which reduces to $6N_f$ when $r=2$).
 
 **Probabilistic Interpretation:** The physical probability density (belief mass) is the vector current:
 
@@ -768,14 +831,14 @@ This definition packages everything we've discussed into a single mathematical o
 
 The belief spinor $\Psi$ has multiple "indices" or "slots" that transform under different symmetry groups:
 - The Dirac spinor bundle $S = S_L \oplus S_R$ handles the spacetime structure; each Weyl sector has 2 complex components
-- The isospin space ($\mathbb{C}^2$) handles the observation/action-intent doublet structure (only for $\Psi_L$)
+- The mode space ($\mathbb{C}^r$) handles the observation/action-intent structure (only for $\Psi_L$; $r=2$ is the minimal case)
 - The color space ($\mathbb{C}^{N_f}$) handles the feature binding structure
 
 Let me count the components carefully. The left-handed sector $\Psi_L$ lives in
-$S_L \otimes \mathbb{C}^2 \otimes \mathbb{C}^{N_f}$, giving $2 \times 2 \times N_f = 4N_f$
-complex components. The right-handed sector $\Psi_R$ is an $SU(2)$ singlet, so it lives in
+$S_L \otimes \mathbb{C}^r \otimes \mathbb{C}^{N_f}$, giving $2 \times r \times N_f = 2 r N_f$
+complex components. The right-handed sector $\Psi_R$ is an $SU(r)$ singlet, so it lives in
 $S_R \otimes \mathbb{C}^{N_f}$, giving $2 \times N_f = 2N_f$ complex components. The total is
-$4N_f + 2N_f = 6N_f$ complex components, as stated in the formal definition.
+$2 r N_f + 2N_f = 2(r+1)N_f$ complex components, which reduces to $6N_f$ for $r=2$.
 
 The probability current $J^\mu$ is constructed to be a proper 4-vector that transforms correctly under all the symmetries. Its conservation ($\partial_\mu J^\mu = 0$) ensures that probability is conserved---beliefs can flow around, but total belief "mass" doesn't spontaneously appear or disappear.
 :::
@@ -793,7 +856,7 @@ $$
 Here $\Psi = \Psi_L + \Psi_R$ and $D_\mu$ acts chirally with representation-specific couplings
 (Definition {prf:ref}`def-rep-covariant-derivatives`).
 
-*Justification:* The WFR equation ({ref}`sec-wasserstein-fisher-rao-geometry-unified-transport-on-hybrid-state-spaces`) is a second-order diffusion (Fokker-Planck). In the relativistic limit with finite information speed $c_{\text{info}}$ (Axiom {prf:ref}`ax-information-speed-limit`), this factorizes into two first-order wave equations coupled by mass. The Dirac equation is the unique first-order differential equation invariant under Lorentz transformations (causal structure) and the internal gauge group $G_{\text{Fragile}} = SU(N_f)_C \times SU(2)_L \times U(1)_Y$.
+*Justification:* The WFR equation ({ref}`sec-wasserstein-fisher-rao-geometry-unified-transport-on-hybrid-state-spaces`) is a second-order diffusion (Fokker-Planck). In the relativistic limit with finite information speed $c_{\text{info}}$ (Axiom {prf:ref}`ax-information-speed-limit`), this factorizes into two first-order wave equations coupled by mass. The Dirac equation is the unique first-order differential equation invariant under Lorentz transformations (causal structure) and the internal gauge group $G_{\text{Fragile}} = SU(N_f)_C \times SU(r)_L \times U(1)_Y$ (with $r=2$ in this chapter).
 
 - $\gamma^\mu$: The **Cognitive Gamma Matrices**, satisfying $\{\gamma^\mu, \gamma^\nu\} = 2g^{\mu\nu}$. They encode the local causal structure of the latent space.
 - $m$: The **Inference Mass** (inverse correlation length).
@@ -836,16 +899,17 @@ The agent cannot simply compare beliefs at $x$ and $x+\delta x$ because the "mea
 The operator moving the belief spinor through the latent manifold is:
 
 $$
-D_\mu = \underbrace{\partial_\mu}_{\text{Change}} - \underbrace{ig_1 \frac{Y}{2} B_\mu}_{U(1)_Y \text{ (Value)}} - \underbrace{ig_2 \frac{\tau^a}{2} W^a_\mu}_{SU(2)_L \text{ (Error)}} - \underbrace{ig_s \frac{\lambda^a}{2} G^a_\mu}_{SU(N_f)_C \text{ (Binding)}}
+D_\mu = \underbrace{\partial_\mu}_{\text{Change}} - \underbrace{ig_1 \frac{Y}{2} B_\mu}_{U(1)_Y \text{ (Value)}} - \underbrace{ig_2 T^a W^a_\mu}_{SU(r)_L \text{ (Error)}} - \underbrace{ig_s \frac{\lambda^a}{2} G^a_\mu}_{SU(N_f)_C \text{ (Binding)}}
 
 $$
 
-where $\lambda^a$ ($a = 1, \ldots, N_f^2 - 1$) are the generators of $SU(N_f)$, and:
+where $T^a$ ($a = 1, \ldots, r^2 - 1$) are the generators of $SU(r)$ in the fundamental representation (for $r=2$,
+$T^a = \tau^a/2$), and $\lambda^a$ ($a = 1, \ldots, N_f^2 - 1$) are the generators of $SU(N_f)$, and:
 - **$B_\mu$ (Opportunity Field):** Adjusts the belief for local shifts in the value baseline and path-dependent opportunity
 - **$W_\mu$ (Error Field):** Adjusts the belief for the rotation between Prior and Posterior
 - **$G_\mu$ (Binding Field):** Adjusts the belief for the permutation of sub-symbolic features
 
-For the right-handed singlet $\Psi_R$, the $SU(2)_L$ generators act trivially, so the $W_\mu$ term drops.
+For the right-handed singlet $\Psi_R$, the $SU(r)_L$ generators act trivially, so the $W_\mu$ term drops.
 
 **Operational Interpretation:** The quantity $D_\mu \Psi$ measures the deviation from parallel transport. When $D_\mu \Psi = 0$, the belief state is covariantly constant along the direction $\mu$---all changes are accounted for by the gauge connection. When $D_\mu \Psi \neq 0$, there is a residual force acting on the belief.
 
@@ -859,9 +923,9 @@ Then the covariant derivatives used in {prf:ref}`def-cognitive-lagrangian` are:
 
 $$
 \begin{aligned}
-D_\mu \Psi_L &= \left(\partial_\mu - i g_1 \frac{Y_L}{2} B_\mu - i g_2 \frac{\tau^a}{2} W^a_\mu - i g_s \frac{\lambda^a}{2} G^a_\mu \right)\Psi_L, \\
+D_\mu \Psi_L &= \left(\partial_\mu - i g_1 \frac{Y_L}{2} B_\mu - i g_2 T^a W^a_\mu - i g_s \frac{\lambda^a}{2} G^a_\mu \right)\Psi_L, \\
 D_\mu \Psi_R &= \left(\partial_\mu - i g_1 \frac{Y_R}{2} B_\mu - i g_s \frac{\lambda^a}{2} G^a_\mu \right)\Psi_R, \\
-D_\mu \phi &= \left(\partial_\mu - i g_1 \frac{Y_\phi}{2} B_\mu - i g_2 \frac{\tau^a}{2} W^a_\mu \right)\phi.
+D_\mu \phi &= \left(\partial_\mu - i g_1 \frac{Y_\phi}{2} B_\mu - i g_2 T^a W^a_\mu \right)\phi.
 \end{aligned}
 $$
 
@@ -878,7 +942,7 @@ This is the master equation for how beliefs move through representational space.
 The covariant derivative has four terms:
 1. **$\partial_\mu$**: The ordinary derivative, measuring how much $\Psi$ changes as you move
 2. **$-ig_1(Y/2)B_\mu$**: Correction for local utility baseline shifts and path-dependent opportunity
-3. **$-ig_2(\tau^a/2)W^a_\mu$**: Correction for local observation/action-intent rotations
+3. **$-ig_2 T^a W^a_\mu$**: Correction for local observation/action-intent rotations
 4. **$-ig_s(\lambda^a/2)G^a_\mu$**: Correction for local feature relabelings
 
 When you compute $D_\mu \Psi$ and it equals zero, that means all the change in $\Psi$ is "accounted for" by the gauge connections. The belief is being parallel transported---moved without any intrinsic change.
@@ -914,13 +978,13 @@ The commutator of the covariant derivatives $[D_\mu, D_\nu]$ generates three dis
 When $B_{\mu\nu} \neq 0$, the internal opportunity 1-form is non-conservative (Value Curl; Definition
    {prf:ref}`def-value-curl`). The resulting Lorentz-type force generates cyclic dynamics.
 
-2. **$SU(2)_L$ Curvature:**
+2. **$SU(r)_L$ Curvature:**
 
    $$
-   W_{\mu\nu}^a = \partial_\mu W_\nu^a - \partial_\nu W_\mu^a + g_2 \epsilon^{abc} W_\mu^b W_\nu^c
+   W_{\mu\nu}^a = \partial_\mu W_\nu^a - \partial_\nu W_\mu^a + g_2 f^{abc} W_\mu^b W_\nu^c
 
    $$
-When $W_{\mu\nu} \neq 0$, the belief update depends on the path taken in the manifold: parallel transport around a closed loop yields a non-trivial rotation in the observation-action-intent space.
+When $W_{\mu\nu} \neq 0$, the belief update depends on the path taken in the manifold: parallel transport around a closed loop yields a non-trivial rotation in the observation-action-intent space. Here $f^{abc}$ are the $SU(r)$ structure constants ($\epsilon^{abc}$ for $r=2$).
 
 3. **$SU(N_f)_C$ Curvature:**
 
@@ -957,7 +1021,7 @@ This "rotation accumulated by going around a loop" is called *holonomy*, and it'
 
 For the $U(1)$ case, the holonomy is just a phase (a complex number of magnitude 1). This is the Aharonov-Bohm effect in physics, where an electron passing around a magnetic flux picks up a phase even though it never passes through the flux itself.
 
-For the non-Abelian cases ($SU(2)$ and $SU(N_f)$), the holonomy is a matrix. Different paths give different matrices, and the non-commutativity means the order of operations matters.
+For the non-Abelian cases ($SU(r)$ and $SU(N_f)$), the holonomy is a matrix. Different paths give different matrices, and the non-commutativity means the order of operations matters.
 :::
 
 :::{prf:corollary} The Gauge-Invariant Action
@@ -1015,7 +1079,8 @@ We derive the scalar sector by lifting the **Fission-Fusion dynamics** from {ref
 :::{prf:definition} The Ontological Order Parameter
 :label: def-ontological-order-parameter
 
-Let the local chart structure at spacetime point $x$ be described by a complex $SU(2)_L$ doublet field $\phi(x) \in \mathbb{C}^2$:
+Let the local chart structure at spacetime point $x$ be described by a complex $SU(r)_L$ multiplet field
+$\phi(x) \in \mathbb{C}^r$ (doublet for the minimal $r=2$ case):
 
 $$
 \phi(x) = r(x)\,n(x), \qquad r(x) := \|\phi(x)\|
@@ -1027,17 +1092,20 @@ where:
    - $r=0$: Coalescence (Single Chart / Vacuum)
    - $r>0$: Fission (Distinct Concepts)
 
-2. **Unit doublet $n(x)$:** Encodes the **Orientation** of the split in the $SU(2)_L$ fiber (the specific feature axis along which differentiation occurs), with $n^\dagger n = 1$.
+2. **Unit multiplet $n(x)$:** Encodes the **Orientation** of the split in the $SU(r)_L$ fiber (the specific feature
+   axis along which differentiation occurs), with $n^\dagger n = 1$.
 
-The field $\phi$ transforms as a doublet under the gauge group $SU(2)_L$, coupling it to the inference spinor.
+The field $\phi$ transforms in the fundamental representation under the gauge group $SU(r)_L$, coupling it to the
+inference spinor.
 
 :::
 
 :::{prf:remark} Gauge-fixed scalar form
 :label: rem-ontological-order-parameter-gauge
 
-Choosing a gauge that fixes the $SU(2)_L$ orientation to a constant unit doublet $n_0$ reduces the order parameter to
-$\phi(x) = r(x) e^{i\theta(x)} n_0$, which is the scalar parametrization used in the intuitive discussion.
+Choosing a gauge that fixes the $SU(r)_L$ orientation to a constant unit vector $n_0$ reduces the order parameter to
+$\phi(x) = r(x) n_0$ (with $r \ge 0$ after using $U(1)_Y$). In the minimal $r=2$ case this is equivalent to the scalar
+parametrization $\phi(x) = r(x) e^{i\theta(x)} n_0$ used in the intuitive discussion.
 
 :::
 
@@ -1046,7 +1114,11 @@ This definition is packaging the idea of "how split apart are my concepts" into 
 
 The modulus $r$ tells you how distinct two concepts are. When $r=0$, they're the same concept (merged, undifferentiated). When $r>0$, they're separate.
 
-The unit doublet $n$ tells you the orientation of the split in the $SU(2)_L$ fiber---along which axis in the observation/action-intent space did the differentiation occur? In the gauge-fixed form (Remark {prf:ref}`rem-ontological-order-parameter-gauge`), we choose a constant reference orientation $n_0$ and parametrize the remaining freedom by a phase $\theta$: $\phi(x) = r(x) e^{i\theta(x)} n_0$. This phase then encodes how the local split orientation differs from the reference.
+The unit multiplet $n$ tells you the orientation of the split in the $SU(r)_L$ fiber---along which axis in the
+observation/action-intent space did the differentiation occur? In the gauge-fixed form (Remark
+{prf:ref}`rem-ontological-order-parameter-gauge`), we choose a constant reference orientation $n_0$ and, in the minimal
+$r=2$ case, parametrize the remaining freedom by a phase $\theta$: $\phi(x) = r(x) e^{i\theta(x)} n_0$. This phase then
+encodes how the local split orientation differs from the reference.
 
 The key insight is that the equations of motion for $\phi$ will determine when and how the agent's ontology splits. This isn't an arbitrary choice---it's governed by a potential energy function, just like in physics.
 :::
@@ -1209,20 +1281,22 @@ Definition {prf:ref}`def-rep-covariant-derivatives`.
 
 *Proof.*
 
-**Step 1.** In the Broken Phase, choose a gauge where the vacuum aligns with a constant unit doublet $n_0$ and expand
-around the expectation: $\phi(x) = (v + h(x))n_0$, where $h$ is the fluctuation (the physical Higgs mode).
+**Step 1.** In the Broken Phase, choose a gauge where the vacuum aligns with a constant unit vector $n_0 \in \mathbb{C}^r$
+(doublet for $r=2$) and expand around the expectation: $\phi(x) = (v + h(x))n_0$, where $h$ is the fluctuation (the
+physical Higgs mode).
 
-**Step 2.** The kinetic term generates quadratic gauge terms:
+**Step 2.** The kinetic term generates quadratic gauge terms. In general,
 
 $$
 |D_\mu (v n_0)|^2
-= \frac{v^2}{4}\left[g_2^2\left(W_\mu^1 W^{1\mu} + W_\mu^2 W^{2\mu}\right)
-+\left(g_2 W_\mu^3 - g_1 Y_\phi B_\mu\right)^2\right]
+= v^2\left[g_2^2 W_\mu^a W^{b\mu}(n_0^\dagger T^a T^b n_0)
+ + g_1 g_2 Y_\phi B_\mu W^{a\mu}(n_0^\dagger T^a n_0)
+ + \frac{g_1^2 Y_\phi^2}{4} B_\mu B^\mu\right].
 
 $$
 
-**Step 3.** This defines a **mass matrix** for the $SU(2)_L \times U(1)_Y$ sector. Defining
-$W_\mu^\pm := (W_\mu^1 \mp i W_\mu^2)/\sqrt{2}$ gives
+**Step 3.** In the minimal $r=2$ case, this defines the familiar **mass matrix** for the
+$SU(2)_L \times U(1)_Y$ sector. Defining $W_\mu^\pm := (W_\mu^1 \mp i W_\mu^2)/\sqrt{2}$ gives
 
 $$
 M_W = \frac{g_2 v}{2}, \qquad
@@ -1231,10 +1305,14 @@ M_Z = \frac{v}{2}\sqrt{g_2^2 + g_1^2 Y_\phi^2}
 $$
 
 with the orthogonal neutral combination
+
 $$
 A_\mu^{(0)} := \frac{g_1 Y_\phi W_\mu^3 + g_2 B_\mu}{\sqrt{g_2^2 + g_1^2 Y_\phi^2}}
 $$
 remaining massless. (Equivalently, $\tan\theta = g_1 Y_\phi / g_2$ and $Z_\mu = \cos\theta\, W_\mu^3 - \sin\theta\, B_\mu$.)
+
+For general $r$, the mass eigenmodes follow from diagonalizing the quadratic form in Step 2; the $r=2$ case yields the
+standard $W^\pm/Z/A^{(0)}$ pattern.
 
 **Step 4.** Connection to Theorem {prf:ref}`thm-capacity-constrained-metric-law`: The masses scale
 linearly with $v$, so larger ontological separation increases the effective metric eigenvalues.
@@ -1261,7 +1339,7 @@ Before symmetry breaking ($v = 0$), the gauge fields are massless. You can rotat
 
 After symmetry breaking ($v > 0$), the gauge fields acquire mass. Rotating between frames now costs energy. The ontological structure has "inertia"---it resists change.
 
-Because $\phi$ is a doublet, the masses come in a pattern: the charged modes $W^\pm$ and the neutral $Z$ become massive, while one orthogonal neutral combination stays massless. The mass scales are proportional to $v$ and the couplings ($g_2$ and $g_1 Y_\phi$).
+In the minimal $r=2$ (doublet) case, the masses come in a pattern: the charged modes $W^\pm$ and the neutral $Z$ become massive, while one orthogonal neutral combination stays massless. The mass scales are proportional to $v$ and the couplings ($g_2$ and $g_1 Y_\phi$).
 
 More differentiated concepts (larger $v$) are harder to reinterpret (larger mass scales). This makes intuitive sense: the more distinct two concepts become, the harder it is to confuse them or morph one into the other.
 :::
@@ -1269,10 +1347,12 @@ More differentiated concepts (larger $v$) are harder to reinterpret (larger mass
 :::{prf:remark} The Goldstone Mode (Texture)
 :label: rem-goldstone-texture
 
-The symmetry breaking selects a radius $v$, but the local orientation $\theta$ (in the $SU(2)_L$
-fiber) is a gauge degree of freedom because the symmetry is local. The would-be Goldstone mode is
-therefore gauge (absorbed by the gauge fields), so no physical massless scalar appears in the
-gauge-invariant sector.
+The symmetry breaking selects a radius $v$, but the local orientation in the $SU(r)_L$ fiber is a
+gauge degree of freedom because the symmetry is local (in the minimal $r=2$ case this is the angle
+$\theta$). The would-be Goldstone directions are therefore gauge (absorbed by the gauge fields), so
+no physical massless scalar appears in the gauge-invariant sector of the minimal model.
+For $r>2$, additional scalar multiplets may be required to break $SU(r)_L \times U(1)_Y$ fully; the
+Goldstone counting generalizes accordingly.
 
 In the Fragile Agent, this gauge-redundant orientation is the **Texture** ($z_{\text{tex}}$). The
 agent remains free to rotate the definition of "noise" without energetic cost, provided the
@@ -1322,7 +1402,12 @@ The Gauge and Scalar sectors define the geometry and topology of the latent spac
 :::{prf:definition} The Decision Coupling
 :label: def-decision-coupling
 
-Let $\Psi_L = (\psi_{\text{obs}}, \psi_{\text{act}}^{\text{pre}})^T$ be the observation-action doublet and $\Psi_R = \psi_{\text{act}}^{\text{commit}}$ be the committed action singlet. The gauge-covariant projection $\psi_{\text{act}}^{\text{proj}} := n^\dagger \Psi_L$ (Definition {prf:ref}`def-gauge-covariant-action-commitment`) is left-handed and defines the preferred commitment direction, and the **Ontological Order Parameter** $\phi$ mediates the dynamical coupling of $\Psi_R$ to this projection.
+Let $\Psi_L$ be the left-handed mode multiplet (doublet for the minimal $r=2$ case, where
+$\Psi_L = (\psi_{\text{obs}}, \psi_{\text{act}}^{\text{pre}})^T$) and $\Psi_R = \psi_{\text{act}}^{\text{commit}}$
+be the committed action singlet. The gauge-covariant projection $\psi_{\text{act}}^{\text{proj}} := n^\dagger \Psi_L$
+(Definition {prf:ref}`def-gauge-covariant-action-commitment`) is left-handed and defines the preferred commitment
+direction, and the **Ontological Order Parameter** $\phi$ mediates the dynamical coupling of $\Psi_R$ to this
+projection.
 
 The simplest $G_{\text{Fragile}}$-invariant coupling is:
 
@@ -1331,7 +1416,7 @@ $$
 
 $$
 
-where $a$ is the $SU(2)_L$ index and $Y_{ij}$ is the **Affordance Matrix** (a learned weight matrix determining which concepts trigger which actions).
+where $a$ is the $SU(r)_L$ index and $Y_{ij}$ is the **Affordance Matrix** (a learned weight matrix determining which concepts trigger which actions).
 
 *Cross-reference:* This implements the TopologicalDecoder ({ref}`sec-decoder-architecture-overview-topological-decoder`) which maps belief geometry to motor output.
 
@@ -1340,7 +1425,7 @@ where $a$ is the $SU(2)_L$ index and $Y_{ij}$ is the **Affordance Matrix** (a le
 :::{div} feynman-prose
 The Yukawa coupling is the bridge between active coordination and committed output.
 
-The left-handed doublet $\Psi_L$ contains the observation and pre-commitment action intent---the active channels at the boundary interface. The right-handed singlet $\Psi_R$ is the committed action plan. How does the ongoing coordination settle into definite output?
+The left-handed multiplet $\Psi_L$ (doublet for $r=2$) contains the observation and pre-commitment action intent in the minimal case---the active channels at the boundary interface. The right-handed singlet $\Psi_R$ is the committed action plan. How does the ongoing coordination settle into definite output?
 
 Through the ontological field $\phi$. The coupling $\bar{\Psi}_L \phi \Psi_R$ says: "the strength of the coordination-to-commitment connection depends on the local ontological structure."
 
@@ -1360,7 +1445,7 @@ In the **Broken Phase** ($\Xi > \Xi_{\text{crit}}$), the Yukawa coupling generat
 
 **Step 1.** The scalar field acquires VEV $\langle \phi \rangle = v$ (Corollary {prf:ref}`cor-ontological-ssb`).
 
-**Step 2.** Choose a gauge where the vacuum aligns with a constant unit doublet $n_0$ and write
+**Step 2.** Choose a gauge where the vacuum aligns with a constant unit vector $n_0$ (doublet for $r=2$) and write
 $\phi = (v + h)n_0$. Define the left-handed singlet projection $\psi_L := n_0^\dagger \Psi_L$. Then:
 
 $$
@@ -1583,7 +1668,7 @@ The theory is rigid. Given the axioms (bounded, distributed, reward-seeking, cau
 |:-------|:-----|:----------|:----------------|
 | I. Gauge | $-\frac{1}{4}F_{\mu\nu}F^{\mu\nu}$ | Strategic inconsistency | Theorem {prf:ref}`thm-three-cognitive-forces` |
 | II. Inference | $\bar{\Psi}iD_\mu\gamma^\mu\Psi$ | Belief propagation cost | Axiom {prf:ref}`ax-cognitive-dirac-equation` |
-| III. Scalar | $|D_\mu\phi|^2 - V(\phi)$ | Complexity vs Information | Theorem {prf:ref}`thm-complexity-potential` |
+| III. Scalar | $\lvert D_\mu\phi\rvert^2 - V(\phi)$ | Complexity vs Information | Theorem {prf:ref}`thm-complexity-potential` |
 | IV. Yukawa | $Y\bar{\Psi}_L\phi\Psi_R$ | Belief-Action coupling | Theorem {prf:ref}`thm-cognitive-mass` |
 | V. External | $\bar{\Psi}\gamma^\mu A^{\text{ext}}_\mu\Psi$ | Value-seeking drive | Theorem {prf:ref}`thm-recovery-wfr-drift` |
 
@@ -1738,7 +1823,7 @@ $\square$
 
 Let the cognitive Yang-Mills sector be defined by the gauge part of
 {prf:ref}`def-cognitive-lagrangian`, with field multiplet $\Phi_A$ and gauge group
-$G_{\text{Fragile}} = SU(N_f)_C \times SU(2)_L \times U(1)_Y$. If the associated Euclidean Schwinger
+$G_{\text{Fragile}} = SU(N_f)_C \times SU(r)_L \times U(1)_Y$. If the associated Euclidean Schwinger
 functions $S_n$ satisfy OS0-OS4 on the gauge-invariant observable algebra (Definition
 {prf:ref}`def-os-axioms`), then the OS reconstruction theorem yields Wightman functions $W_n$
 satisfying W0-W4 (Definition {prf:ref}`def-wightman-axioms`). Hence the cognitive Yang-Mills theory
@@ -1854,6 +1939,7 @@ Define the field-by-field OS reflection $\Theta$ by:
   $(\Theta \bar{\Psi})(\tau,x) = -\Psi(-\tau,x)^T C^{-1}\gamma_4$.
 
 The boundary term in Assumption 2 is the canonical surface term
+
 $$
 B[\Phi_0] = \int_{\tau=0} d^3x \left(\pi_\phi^a\,\phi_a + \pi_{\phi^\dagger,a}\,\phi^{\dagger a}
 +\sum_{i=1}^3 \pi_{A_i}\,A_i\right),
@@ -1880,6 +1966,7 @@ The fermionic action is first order and is treated directly by the OS inner prod
    {cite}`glimm1987quantum`.
 
 Then for all $F \in \mathcal{A}_+$,
+
 $$
 \langle \Theta F \cdot F \rangle_E \ge 0,
 $$
@@ -1908,6 +1995,7 @@ $\square$
 
 For the gauge sector, a concrete OS2 verification can be carried out on the gauge-invariant algebra
 generated by **Wilson loops**:
+
 $$
 W(C) := \operatorname{Tr}\,\mathcal{P}\exp\left(i\oint_C A_\mu\,dx^\mu\right),
 $$
@@ -2029,7 +2117,8 @@ This table provides the mapping between Standard Model entities and Cognitive en
 | Electron Mass | $m_e$ | Decision Inertia $Yv$ | Theorem {prf:ref}`thm-cognitive-mass` |
 | Higgs Mass | $m_H$ | Ontological Rigidity | Theorem {prf:ref}`thm-semantic-inertia` |
 | Photon | $\gamma$ | Value Gradient Signal | Definition {prf:ref}`def-effective-potential` |
-| W/Z Bosons | $W^\pm, Z$ | Observation-Action Coordination Mediators | Definition {prf:ref}`def-cognitive-isospin-doublet` |
+| Weak Isospin Group | $SU(2)_L$ | Mode-Mixing Group $SU(r)_L$ (minimal $r=2$) | Definition {prf:ref}`def-mode-rank-parameter` |
+| W/Z Bosons | $W^\pm, Z$ | Observation-Action Coordination Mediators (minimal $r=2$) | Definition {prf:ref}`def-cognitive-isospin-multiplet` |
 | Color Dimension | $N_c = 3$ | Feature Dimension $N_f$ | Definition {prf:ref}`def-feature-dimension-parameter` |
 | Gluons | $g$ (8 for $N_c=3$) | Feature Binding Force ($N_f^2-1$ generators) | Definition {prf:ref}`def-feature-color-space` |
 | Quarks | $q$ | Sub-symbolic Features | Definition {prf:ref}`def-the-peeling-step` |
@@ -2038,12 +2127,13 @@ This table provides the mapping between Standard Model entities and Cognitive en
 | Spontaneous Symmetry Breaking | Higgs Mechanism | Ontological Fission | Corollary {prf:ref}`cor-ontological-ssb` |
 | Goldstone Boson | Gauge-redundant mode | Texture $z_{\text{tex}}$ | Axiom {prf:ref}`ax-bulk-boundary-decoupling` |
 
-**Summary.** The gauge structure $G_{\text{Fragile}} = SU(N_f)_C \times SU(2)_L \times U(1)_Y$ arises from three independent redundancies in the agent's description:
+**Summary.** The gauge structure $G_{\text{Fragile}} = SU(N_f)_C \times SU(r)_L \times U(1)_Y$ arises from three independent redundancies in the agent's description:
 - $U(1)_Y$: Value baseline invariance (Theorem {prf:ref}`thm-emergence-opportunity-field`)
-- $SU(2)_L$: Sensor-motor boundary asymmetry (Theorem {prf:ref}`thm-emergence-error-field`)
+- $SU(r)_L$: Sensor-motor boundary asymmetry (Theorem {prf:ref}`thm-emergence-error-field`; minimal case $r=2$)
 - $SU(N_f)_C$: Feature basis invariance under hierarchical binding (Theorem {prf:ref}`thm-emergence-binding-field`)
 
-The Feature Dimension $N_f$ is environment-dependent (Definition {prf:ref}`def-feature-dimension-parameter`). The physics Standard Model corresponds to the special case $N_f = 3$.
+The Feature Dimension $N_f$ is environment-dependent (Definition {prf:ref}`def-feature-dimension-parameter`). The physics
+Standard Model corresponds to the special case $N_f = 3$ and $r=2$.
 
 The scalar potential derives from the pitchfork bifurcation dynamics (Theorem {prf:ref}`thm-supercritical-pitchfork-bifurcation-for-charts`), with the VEV $v$ corresponding to the equilibrium chart separation $r^*$.
 

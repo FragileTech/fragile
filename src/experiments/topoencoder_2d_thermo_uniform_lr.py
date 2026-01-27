@@ -16,11 +16,13 @@ Metrics reported:
 - Codebook usage (perplexity)
 
 Usage:
-    python src/experiments/topoencoder_2d_thermo.py --dataset mnist --epochs 1000
+    python src/experiments/topoencoder_2d_thermo_uniform_lr.py --dataset mnist --epochs 1000
 
 Notes:
-    Uses a ThermodynamicAdam stack optimizer for the atlas core, plus per-module
-    optimizers for detached baselines and auxiliary heads.
+    Uses a single ThermodynamicAdam optimizer for the atlas core (one LR shared
+    across all atlas parameters), plus per-module optimizers for detached
+    baselines and auxiliary heads. All ThermodynamicAdam parameter groups share
+    a uniform base learning rate.
 
 Reference: fragile-index.md Sections 7.8, 7.10
 """
@@ -29,6 +31,7 @@ import argparse
 from dataclasses import asdict, dataclass, field
 import math
 import os
+import sys
 
 import numpy as np
 from sklearn.cluster import KMeans
@@ -238,6 +241,15 @@ class TopoEncoderConfig:
     hk_target_ratio: float = 0.9
     code_entropy_target_ratio: float = 0.9
     consistency_target: float = 0.05
+
+    # EMA-based loss rescaling (self-balancing across domains)
+    loss_rescale: bool = False
+    loss_rescale_reference: str = "recon"
+    loss_rescale_target_ratio: float = 1.0
+    loss_rescale_ema_decay: float = 0.98
+    loss_rescale_min: float = 0.1
+    loss_rescale_max: float = 10.0
+    loss_rescale_eps: float = 1e-8
 
     # Learned precisions for likelihood-like losses
     use_learned_precisions: bool = False
@@ -584,19 +596,15 @@ def _build_block_optimizer(
     optimizer_kwargs: dict[str, float | int | bool] | None = None,
     fallback_module: nn.Module | None = None,
 ) -> ThermodynamicAdam | None:
-    param_groups: list[dict[str, object]] = []
-    for name, module in blocks:
-        params = list(module.parameters())
-        if params:
-            param_groups.append({"params": params, "name": name, "lr": lr})
-    if not param_groups and fallback_module is not None:
+    params: list[torch.Tensor] = []
+    for _name, module in blocks:
+        params.extend(list(module.parameters()))
+    if not params and fallback_module is not None:
         params = list(fallback_module.parameters())
-        if params:
-            param_groups.append({"params": params, "name": "fallback", "lr": lr})
-    if not param_groups:
+    if not params:
         return None
     optimizer_kwargs = optimizer_kwargs or {}
-    return ThermodynamicAdam(param_groups, lr=lr, **optimizer_kwargs)
+    return ThermodynamicAdam(params, lr=lr, **optimizer_kwargs)
 
 
 def _build_child_optimizers(
@@ -773,6 +781,65 @@ def _serialize_weight_state(
         }
         for name, entry in state.items()
     }
+
+
+def _restore_loss_rescale_state(resume_metrics: dict, names: list[str]) -> dict[str, float]:
+    raw_state = resume_metrics.get("loss_rescale_state", {})
+    state: dict[str, float] = {}
+    for name in names:
+        if name in raw_state:
+            state[name] = float(raw_state[name])
+        else:
+            state[name] = 0.0
+    return state
+
+
+def _serialize_loss_rescale_state(state: dict[str, float]) -> dict[str, float]:
+    return {name: float(value) for name, value in state.items()}
+
+
+def _update_loss_rescale_ema(
+    state: dict[str, float],
+    name: str,
+    value: float,
+    decay: float,
+) -> float:
+    if not math.isfinite(value):
+        return state.get(name, 0.0)
+    value = abs(float(value))
+    if value <= 0.0:
+        return state.get(name, 0.0)
+    prev = state.get(name, 0.0)
+    if prev <= 0.0:
+        state[name] = value
+    else:
+        state[name] = decay * prev + (1.0 - decay) * value
+    return state[name]
+
+
+def _loss_rescale_value(
+    name: str,
+    value: torch.Tensor,
+    config: TopoEncoderConfig,
+    state: dict[str, float],
+    reference: str | None,
+    *,
+    allow: bool = True,
+) -> torch.Tensor:
+    if not config.loss_rescale or not allow:
+        return value
+    ema = state.get(name, 0.0)
+    if ema <= 0.0:
+        return value
+    ref_ema = state.get(reference, 0.0) if reference else 0.0
+    target = (
+        ref_ema * config.loss_rescale_target_ratio
+        if ref_ema > 0.0
+        else (config.loss_rescale_target_ratio)
+    )
+    scale = target / (ema + config.loss_rescale_eps)
+    scale = min(max(scale, config.loss_rescale_min), config.loss_rescale_max)
+    return value * float(scale)
 
 
 def _restore_lr_state(config: TopoEncoderConfig, resume_metrics: dict) -> AdaptiveLRState:
@@ -1025,6 +1092,52 @@ def _benchmarks_compatible(bench_config: dict, config: TopoEncoderConfig) -> boo
         and float(bench_config.get("baseline_attn_dropout", -1.0))
         == float(config.baseline_attn_dropout)
     )
+
+
+def _cli_flag_set(flag: str) -> bool:
+    return flag in sys.argv[1:]
+
+
+def _apply_profile(args: argparse.Namespace) -> None:
+    if not args.profile:
+        return
+
+    def set_if_unset(flag: str, attr: str, value: object) -> None:
+        if not _cli_flag_set(flag):
+            setattr(args, attr, value)
+
+    if args.profile == "stable":
+        set_if_unset("--adaptive_lr", "adaptive_lr", True)
+        set_if_unset("--lr_min", "lr_min", 3e-4)
+        set_if_unset("--lr_max", "lr_max", 3e-3)
+        set_if_unset("--lr_grounding_warmup_epochs", "lr_grounding_warmup_epochs", 5)
+        set_if_unset("--adaptive_weights", "adaptive_weights", True)
+        set_if_unset("--adaptive_warmup_epochs", "adaptive_warmup_epochs", 5)
+        set_if_unset("--use_learned_precisions", "use_learned_precisions", True)
+        set_if_unset("--loss_rescale", "loss_rescale", True)
+        set_if_unset("--loss_rescale_reference", "loss_rescale_reference", "recon")
+        set_if_unset("--loss_rescale_target_ratio", "loss_rescale_target_ratio", 1.0)
+        set_if_unset("--loss_rescale_min", "loss_rescale_min", 0.1)
+        set_if_unset("--loss_rescale_max", "loss_rescale_max", 10.0)
+        set_if_unset("--thermo_temperature_floor", "thermo_temperature_floor", 0.5)
+        set_if_unset("--thermo_snr_floor", "thermo_snr_floor", 0.2)
+        set_if_unset("--thermo_alignment_damping", "thermo_alignment_damping", 1.0)
+    elif args.profile == "fast":
+        set_if_unset("--adaptive_lr", "adaptive_lr", True)
+        set_if_unset("--lr_min", "lr_min", 5e-4)
+        set_if_unset("--lr_max", "lr_max", 1e-2)
+        set_if_unset("--lr_grounding_warmup_epochs", "lr_grounding_warmup_epochs", 2)
+        set_if_unset("--adaptive_weights", "adaptive_weights", True)
+        set_if_unset("--adaptive_warmup_epochs", "adaptive_warmup_epochs", 2)
+        set_if_unset("--use_learned_precisions", "use_learned_precisions", True)
+        set_if_unset("--loss_rescale", "loss_rescale", True)
+        set_if_unset("--loss_rescale_reference", "loss_rescale_reference", "recon")
+        set_if_unset("--loss_rescale_target_ratio", "loss_rescale_target_ratio", 1.0)
+        set_if_unset("--loss_rescale_min", "loss_rescale_min", 0.1)
+        set_if_unset("--loss_rescale_max", "loss_rescale_max", 10.0)
+        set_if_unset("--thermo_temperature_floor", "thermo_temperature_floor", 0.3)
+        set_if_unset("--thermo_snr_floor", "thermo_snr_floor", 0.1)
+        set_if_unset("--thermo_alignment_damping", "thermo_alignment_damping", 1.0)
 
 
 def _move_optimizer_state(
@@ -1697,33 +1810,11 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
     if precision_module is not None:
         atlas_params.extend(list(precision_module.parameters()))
     opt_atlas: dict[str, ThermodynamicAdam] = {}
-    atlas_stack = _build_block_optimizer(
-        [
-            ("atlas/encoder", model_atlas.encoder),
-            ("atlas/jump", jump_op),
-            ("atlas/decoder", model_atlas.decoder),
-        ],
-        config.lr,
-        thermo_kwargs,
-        fallback_module=model_atlas,
-    )
-    if atlas_stack is not None:
-        opt_atlas["atlas/stack"] = atlas_stack
-    if supervised_loss is not None:
-        _add_module_optimizer(
-            opt_atlas,
-            "atlas/supervised",
-            supervised_loss,
-            config.lr,
-            thermo_kwargs,
-        )
-    if precision_module is not None:
-        _add_module_optimizer(
-            opt_atlas,
-            "atlas/precisions",
-            precision_module,
-            config.lr,
-            thermo_kwargs,
+    if atlas_params:
+        opt_atlas["atlas/all"] = ThermodynamicAdam(
+            atlas_params,
+            lr=config.lr,
+            **thermo_kwargs,
         )
     opt_classifier: dict[str, ThermodynamicAdam] = {}
     if classifier_head is not None:
@@ -1827,6 +1918,32 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
         for key, values in resume_metrics["info_metrics"].items():
             info_metrics.setdefault(key, [])
             info_metrics[key] = list(values)
+
+    loss_rescale_names = [
+        "recon",
+        "vq",
+        "entropy",
+        "consistency",
+        "variance",
+        "diversity",
+        "separation",
+        "codebook_center",
+        "chart_center_sep",
+        "residual_scale",
+        "soft_equiv_l1",
+        "soft_equiv_log_ratio",
+        "window",
+        "disentangle",
+        "orthogonality",
+        "code_entropy",
+        "per_chart_code_entropy",
+        "kl_prior",
+        "orbit",
+        "vicreg_inv",
+        "jump",
+        "sup_total",
+    ]
+    loss_rescale_state = _restore_loss_rescale_state(resume_metrics, loss_rescale_names)
 
     adaptive_weight_names = [
         "entropy_weight",
@@ -2172,43 +2289,239 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
                 p_y_x = torch.matmul(enc_w, supervised_loss.p_y_given_k)
                 sup_acc = (p_y_x.argmax(dim=1) == batch_labels).float().mean()
 
-            recon_term = recon_loss_a
-            vq_term = vq_loss_a
-            sup_term = sup_total
+            reference_name = config.loss_rescale_reference if config.loss_rescale else None
+            if reference_name and reference_name not in loss_rescale_state:
+                reference_name = None
+            if config.loss_rescale:
+                loss_rescale_inputs = {
+                    "recon": recon_loss_a,
+                    "vq": vq_loss_a,
+                    "entropy": entropy,
+                    "consistency": consistency,
+                    "variance": var_loss,
+                    "diversity": div_loss,
+                    "separation": sep_loss,
+                    "codebook_center": codebook_center_loss,
+                    "chart_center_sep": chart_center_sep_loss,
+                    "residual_scale": residual_scale_loss,
+                    "soft_equiv_l1": soft_equiv_l1,
+                    "soft_equiv_log_ratio": soft_equiv_log_ratio,
+                    "window": window_loss,
+                    "disentangle": dis_loss,
+                    "orthogonality": orth_loss,
+                    "code_entropy": code_ent_loss,
+                    "per_chart_code_entropy": per_chart_code_ent_loss,
+                    "kl_prior": kl_loss,
+                    "orbit": orbit_loss,
+                    "vicreg_inv": vicreg_loss,
+                    "jump": jump_loss,
+                    "sup_total": sup_total,
+                }
+                for name, value in loss_rescale_inputs.items():
+                    if torch.is_tensor(value):
+                        raw_value = float(value.detach().item())
+                    else:
+                        raw_value = float(value)
+                    _update_loss_rescale_ema(
+                        loss_rescale_state,
+                        name,
+                        raw_value,
+                        config.loss_rescale_ema_decay,
+                    )
+
+            rescale_core = not config.use_learned_precisions
+            recon_term = _loss_rescale_value(
+                "recon",
+                recon_loss_a,
+                config,
+                loss_rescale_state,
+                reference_name,
+                allow=rescale_core,
+            )
+            vq_term = _loss_rescale_value(
+                "vq",
+                vq_loss_a,
+                config,
+                loss_rescale_state,
+                reference_name,
+                allow=rescale_core,
+            )
+            sup_term = _loss_rescale_value(
+                "sup_total",
+                sup_total,
+                config,
+                loss_rescale_state,
+                reference_name,
+                allow=rescale_core,
+            )
+            entropy_term = _loss_rescale_value(
+                "entropy",
+                entropy,
+                config,
+                loss_rescale_state,
+                reference_name,
+            )
+            consistency_term = _loss_rescale_value(
+                "consistency",
+                consistency,
+                config,
+                loss_rescale_state,
+                reference_name,
+            )
+            var_term = _loss_rescale_value(
+                "variance",
+                var_loss,
+                config,
+                loss_rescale_state,
+                reference_name,
+            )
+            div_term = _loss_rescale_value(
+                "diversity",
+                div_loss,
+                config,
+                loss_rescale_state,
+                reference_name,
+            )
+            sep_term = _loss_rescale_value(
+                "separation",
+                sep_loss,
+                config,
+                loss_rescale_state,
+                reference_name,
+            )
+            codebook_center_term = _loss_rescale_value(
+                "codebook_center",
+                codebook_center_loss,
+                config,
+                loss_rescale_state,
+                reference_name,
+            )
+            chart_center_sep_term = _loss_rescale_value(
+                "chart_center_sep",
+                chart_center_sep_loss,
+                config,
+                loss_rescale_state,
+                reference_name,
+            )
+            residual_scale_term = _loss_rescale_value(
+                "residual_scale",
+                residual_scale_loss,
+                config,
+                loss_rescale_state,
+                reference_name,
+            )
+            soft_equiv_l1_term = _loss_rescale_value(
+                "soft_equiv_l1",
+                soft_equiv_l1,
+                config,
+                loss_rescale_state,
+                reference_name,
+            )
+            soft_equiv_log_ratio_term = _loss_rescale_value(
+                "soft_equiv_log_ratio",
+                soft_equiv_log_ratio,
+                config,
+                loss_rescale_state,
+                reference_name,
+            )
+            window_term = _loss_rescale_value(
+                "window",
+                window_loss,
+                config,
+                loss_rescale_state,
+                reference_name,
+            )
+            disentangle_term = _loss_rescale_value(
+                "disentangle",
+                dis_loss,
+                config,
+                loss_rescale_state,
+                reference_name,
+            )
+            orth_term = _loss_rescale_value(
+                "orthogonality",
+                orth_loss,
+                config,
+                loss_rescale_state,
+                reference_name,
+            )
+            code_ent_term = _loss_rescale_value(
+                "code_entropy",
+                code_ent_loss,
+                config,
+                loss_rescale_state,
+                reference_name,
+            )
+            per_chart_code_ent_term = _loss_rescale_value(
+                "per_chart_code_entropy",
+                per_chart_code_ent_loss,
+                config,
+                loss_rescale_state,
+                reference_name,
+            )
+            kl_term = _loss_rescale_value(
+                "kl_prior",
+                kl_loss,
+                config,
+                loss_rescale_state,
+                reference_name,
+            )
+            orbit_term = _loss_rescale_value(
+                "orbit",
+                orbit_loss,
+                config,
+                loss_rescale_state,
+                reference_name,
+            )
+            vicreg_term = _loss_rescale_value(
+                "vicreg_inv",
+                vicreg_loss,
+                config,
+                loss_rescale_state,
+                reference_name,
+            )
+            jump_term = _loss_rescale_value(
+                "jump",
+                jump_loss,
+                config,
+                loss_rescale_state,
+                reference_name,
+            )
+
             if precision_module is not None:
-                recon_term = _apply_precision(recon_loss_a, precision_module["recon"])
-                vq_term = _apply_precision(vq_loss_a, precision_module["vq"])
+                recon_term = _apply_precision(recon_term, precision_module["recon"])
+                vq_term = _apply_precision(vq_term, precision_module["vq"])
                 if supervised_loss is not None and "sup" in precision_module:
-                    sup_term = _apply_precision(sup_total, precision_module["sup"])
+                    sup_term = _apply_precision(sup_term, precision_module["sup"])
 
             # Total loss
             loss_a = (
                 recon_term
                 + vq_term
-                + config.entropy_weight * entropy
-                + config.consistency_weight * consistency
+                + config.entropy_weight * entropy_term
+                + config.consistency_weight * consistency_term
                 # Tier 1
-                + config.variance_weight * var_loss
-                + config.diversity_weight * div_loss
-                + config.separation_weight * sep_loss
-                + config.codebook_center_weight * codebook_center_loss
-                + config.chart_center_sep_weight * chart_center_sep_loss
-                + config.residual_scale_weight * residual_scale_loss
-                + config.soft_equiv_l1_weight * soft_equiv_l1
-                + config.soft_equiv_log_ratio_weight * soft_equiv_log_ratio
+                + config.variance_weight * var_term
+                + config.diversity_weight * div_term
+                + config.separation_weight * sep_term
+                + config.codebook_center_weight * codebook_center_term
+                + config.chart_center_sep_weight * chart_center_sep_term
+                + config.residual_scale_weight * residual_scale_term
+                + config.soft_equiv_l1_weight * soft_equiv_l1_term
+                + config.soft_equiv_log_ratio_weight * soft_equiv_log_ratio_term
                 # Tier 2
-                + config.window_weight * window_loss
-                + config.disentangle_weight * dis_loss
+                + config.window_weight * window_term
+                + config.disentangle_weight * disentangle_term
                 # Tier 3
-                + config.orthogonality_weight * orth_loss
-                + config.code_entropy_weight * code_ent_loss
-                + config.per_chart_code_entropy_weight * per_chart_code_ent_loss
+                + config.orthogonality_weight * orth_term
+                + config.code_entropy_weight * code_ent_term
+                + config.per_chart_code_entropy_weight * per_chart_code_ent_term
                 # Tier 4 (conditional - 0 if disabled)
-                + config.kl_prior_weight * kl_loss
-                + config.orbit_weight * orbit_loss
-                + config.vicreg_inv_weight * vicreg_loss
+                + config.kl_prior_weight * kl_term
+                + config.orbit_weight * orbit_term
+                + config.vicreg_inv_weight * vicreg_term
                 # Tier 5: Jump Operator (scheduled)
-                + current_jump_weight * jump_loss
+                + current_jump_weight * jump_term
                 # Supervised topology
                 + config.sup_weight * sup_term
             )
@@ -2216,8 +2529,8 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
             lr_loss_signal = (
                 recon_term
                 + vq_term
-                + config.entropy_weight * entropy
-                + config.consistency_weight * consistency
+                + config.entropy_weight * entropy_term
+                + config.consistency_weight * consistency_term
             )
             if supervised_loss is not None:
                 lr_loss_signal += config.sup_weight * sup_term
@@ -3147,6 +3460,7 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
                     "info_metrics": info_metrics,
                     "adaptive_weight_state": _serialize_weight_state(adaptive_weight_state),
                     "adaptive_target_state": _serialize_target_state(adaptive_target_state),
+                    "loss_rescale_state": _serialize_loss_rescale_state(loss_rescale_state),
                     "adaptive_lr_state": {
                         "lr": adaptive_lr_state.lr,
                         "loss_ema": adaptive_lr_state.loss_ema,
@@ -3409,6 +3723,7 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
         "info_metrics": info_metrics,
         "adaptive_weight_state": _serialize_weight_state(adaptive_weight_state),
         "adaptive_target_state": _serialize_target_state(adaptive_target_state),
+        "loss_rescale_state": _serialize_loss_rescale_state(loss_rescale_state),
         "adaptive_lr_state": {
             "lr": adaptive_lr_state.lr,
             "loss_ema": adaptive_lr_state.loss_ema,
@@ -3527,6 +3842,13 @@ def main():
         default="mnist",
         choices=["mnist", "cifar10"],
         help="Dataset to use (mnist or cifar10)",
+    )
+    parser.add_argument(
+        "--profile",
+        type=str,
+        default=None,
+        choices=["stable", "fast"],
+        help="Preset training profile (stable or fast)",
     )
     parser.add_argument("--lr", type=float, default=1e-3, help="Learning rate (default: 1e-3)")
     parser.add_argument(
@@ -4172,6 +4494,48 @@ def main():
         default=False,
         help="Use learned precisions for recon/vq/sup (default: False)",
     )
+    parser.add_argument(
+        "--loss_rescale",
+        type=lambda x: x.lower() == "true",
+        default=False,
+        help="Enable EMA-based loss rescaling (default: False)",
+    )
+    parser.add_argument(
+        "--loss_rescale_reference",
+        type=str,
+        default="recon",
+        help="Reference loss name for rescaling (default: recon)",
+    )
+    parser.add_argument(
+        "--loss_rescale_target_ratio",
+        type=float,
+        default=1.0,
+        help="Target ratio to reference EMA (default: 1.0)",
+    )
+    parser.add_argument(
+        "--loss_rescale_ema_decay",
+        type=float,
+        default=0.98,
+        help="EMA decay for loss rescaling (default: 0.98)",
+    )
+    parser.add_argument(
+        "--loss_rescale_min",
+        type=float,
+        default=0.1,
+        help="Minimum rescale factor (default: 0.1)",
+    )
+    parser.add_argument(
+        "--loss_rescale_max",
+        type=float,
+        default=10.0,
+        help="Maximum rescale factor (default: 10.0)",
+    )
+    parser.add_argument(
+        "--loss_rescale_eps",
+        type=float,
+        default=1e-8,
+        help="Epsilon for loss rescaling (default: 1e-8)",
+    )
 
     # Tier 5: Jump Operator (chart gluing)
     parser.add_argument(
@@ -4334,6 +4698,9 @@ def main():
     )
 
     args = parser.parse_args()
+    _apply_profile(args)
+    if args.loss_rescale_reference:
+        args.loss_rescale_reference = args.loss_rescale_reference.strip().lower()
 
     if args.soft_equiv:
         args.soft_equiv_metric = True
@@ -4416,6 +4783,13 @@ def main():
         config.code_entropy_target_ratio = args.code_entropy_target_ratio
         config.consistency_target = args.consistency_target
         config.use_learned_precisions = args.use_learned_precisions
+        config.loss_rescale = args.loss_rescale
+        config.loss_rescale_reference = args.loss_rescale_reference
+        config.loss_rescale_target_ratio = args.loss_rescale_target_ratio
+        config.loss_rescale_ema_decay = args.loss_rescale_ema_decay
+        config.loss_rescale_min = args.loss_rescale_min
+        config.loss_rescale_max = args.loss_rescale_max
+        config.loss_rescale_eps = args.loss_rescale_eps
         config.window_eps_ground = args.window_eps_ground
         config.codebook_center_weight = args.codebook_center_weight
         config.chart_center_sep_weight = args.chart_center_sep_weight
@@ -4570,6 +4944,13 @@ def main():
             code_entropy_target_ratio=args.code_entropy_target_ratio,
             consistency_target=args.consistency_target,
             use_learned_precisions=args.use_learned_precisions,
+            loss_rescale=args.loss_rescale,
+            loss_rescale_reference=args.loss_rescale_reference,
+            loss_rescale_target_ratio=args.loss_rescale_target_ratio,
+            loss_rescale_ema_decay=args.loss_rescale_ema_decay,
+            loss_rescale_min=args.loss_rescale_min,
+            loss_rescale_max=args.loss_rescale_max,
+            loss_rescale_eps=args.loss_rescale_eps,
             window_eps_ground=args.window_eps_ground,
             # Tier 5: Jump Operator
             jump_weight=args.jump_weight,
@@ -4597,6 +4978,8 @@ def main():
     print("Attentive Atlas vs Standard VQ-VAE")
     print("=" * 50)
     print("\nConfiguration:")
+    if args.profile:
+        print(f"  Profile: {args.profile}")
     print(f"  Dataset: {config.dataset}")
     if config.resume_checkpoint:
         print(f"  Resume: {config.resume_checkpoint}")

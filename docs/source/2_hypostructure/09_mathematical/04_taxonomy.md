@@ -91,16 +91,16 @@ The following unified table displays all **168 structural slots** organized by F
 
 **Columns 7a-7d (Stiffness Restoration Subtree):**
 
-| Family | 7a. $\mathrm{LS}_{\partial^2 V}$ ({prf:ref}`def-node-bifurcate`) | 7b. $G_{\mathrm{act}}$ ({prf:ref}`def-node-sym`) | 7c. $\mathrm{SC}_{\partial c}^{\mathrm{re}}$ ({prf:ref}`def-node-checksc`) | 7d. $\mathrm{TB}_S$ ({prf:ref}`def-node-checktb`) |
+| Family | 7a. $\mathrm{LS}_{\partial^2 V}$ ({prf:ref}`def-node-bifurcate`) | 7b. $G_{\mathrm{act}}$ ({prf:ref}`def-node-sym`) | 7c. $\mathrm{SC}_{\mathrm{SSB}}^{\mathrm{re}}$ ({prf:ref}`def-node-checkssb`) | 7d. $\mathrm{TB}_S$ ({prf:ref}`def-node-checktb`) |
 |:-------|:--------------------------------|:-----------------------|:--------------------------------------------|:--------------------|
 | **I** | $\varnothing$ Void | $\varnothing$ Void | $\varnothing$ Void | $\varnothing$ Void |
-| **II** | $K_{\mathrm{LS}_{\partial^2 V}}^\circ$ Morse | $K_{G_{\mathrm{act}}}^\circ$ Symmetric | $K_{\mathrm{SC}_{\partial c}}^{\mathrm{phase}}$ Phase | $K_{\mathrm{TB}_S}^\circ$ WKB |
-| **III** | $K_{\mathrm{LS}_{\partial^2 V}}^{\sim}$ Stratified | $K_{G_{\mathrm{act}}}^{\sim}$ Bridge | $K_{\mathrm{SC}_{\partial c}}^{\sim}$ Descent | $K_{\mathrm{TB}_S}^{\sim}$ Holonomy |
-| **IV** | $K_{\mathrm{LS}_{\partial^2 V}}^{\mathrm{re}}$ Bifurcation | $K_{G_{\mathrm{act}}}^{\mathrm{re}}$ Hidden | $K_{\mathrm{SC}_{\partial c}}^{\mathrm{vac}}$ Vacuum | $K_{\mathrm{TB}_S}^{\mathrm{re}}$ Path Integral |
-| **V** | $K_{\mathrm{LS}_{\partial^2 V}}^{\mathrm{ext}}$ Graded | $K_{G_{\mathrm{act}}}^{\mathrm{ext}}$ Higgs | $K_{\mathrm{SC}_{\partial c}}^{\mathrm{ext}}$ Faddeev-Popov | $K_{\mathrm{TB}_S}^{\mathrm{ext}}$ Euclidean |
-| **VI** | $K_{\mathrm{LS}_{\partial^2 V}}^{\mathrm{blk}}$ Catastrophe | $K_{G_{\mathrm{act}}}^{\mathrm{blk}}$ Gauge | $K_{\mathrm{SC}_{\partial c}}^{\mathrm{blk}}$ SSB | $K_{\mathrm{TB}_S}^{\mathrm{blk}}$ Barrier |
-| **VII** | $K_{\mathrm{LS}_{\partial^2 V}}^{\mathrm{morph}}$ Degenerate | $K_{G_{\mathrm{act}}}^{\mathrm{morph}}$ Decay | $K_{\mathrm{SC}_{\partial c}}^{\mathrm{morph}}$ Vacuum Decay | $K_{\mathrm{TB}_S}^{\mathrm{morph}}$ Infinite Action |
-| **VIII** | $K_{\mathrm{LS}_{\partial^2 V}}^{\mathrm{inc}}$ Singular Hessian | $K_{G_{\mathrm{act}}}^{\mathrm{inc}}$ Anomaly | $K_{\mathrm{SC}_{\partial c}}^{\mathrm{inc}}$ Vacuum Landscape | $K_{\mathrm{TB}_S}^{\mathrm{inc}}$ Infinite Barrier |
+| **II** | $K_{\mathrm{LS}_{\partial^2 V}}^\circ$ Morse | $K_{G_{\mathrm{act}}}^\circ$ Symmetric | $K_{\mathrm{SC}_{\mathrm{SSB}}}^{\mathrm{phase}}$ Phase | $K_{\mathrm{TB}_S}^\circ$ WKB |
+| **III** | $K_{\mathrm{LS}_{\partial^2 V}}^{\sim}$ Stratified | $K_{G_{\mathrm{act}}}^{\sim}$ Bridge | $K_{\mathrm{SC}_{\mathrm{SSB}}}^{\sim}$ Descent | $K_{\mathrm{TB}_S}^{\sim}$ Holonomy |
+| **IV** | $K_{\mathrm{LS}_{\partial^2 V}}^{\mathrm{re}}$ Bifurcation | $K_{G_{\mathrm{act}}}^{\mathrm{re}}$ Hidden | $K_{\mathrm{SC}_{\mathrm{SSB}}}^{\mathrm{vac}}$ Vacuum | $K_{\mathrm{TB}_S}^{\mathrm{re}}$ Path Integral |
+| **V** | $K_{\mathrm{LS}_{\partial^2 V}}^{\mathrm{ext}}$ Graded | $K_{G_{\mathrm{act}}}^{\mathrm{ext}}$ Higgs | $K_{\mathrm{SC}_{\mathrm{SSB}}}^{\mathrm{ext}}$ Faddeev-Popov | $K_{\mathrm{TB}_S}^{\mathrm{ext}}$ Euclidean |
+| **VI** | $K_{\mathrm{LS}_{\partial^2 V}}^{\mathrm{blk}}$ Catastrophe | $K_{G_{\mathrm{act}}}^{\mathrm{blk}}$ Gauge | $K_{\mathrm{SC}_{\mathrm{SSB}}}^{\mathrm{blk}}$ SSB | $K_{\mathrm{TB}_S}^{\mathrm{blk}}$ Barrier |
+| **VII** | $K_{\mathrm{LS}_{\partial^2 V}}^{\mathrm{morph}}$ Degenerate | $K_{G_{\mathrm{act}}}^{\mathrm{morph}}$ Decay | $K_{\mathrm{SC}_{\mathrm{SSB}}}^{\mathrm{morph}}$ Vacuum Decay | $K_{\mathrm{TB}_S}^{\mathrm{morph}}$ Infinite Action |
+| **VIII** | $K_{\mathrm{LS}_{\partial^2 V}}^{\mathrm{inc}}$ Singular Hessian | $K_{G_{\mathrm{act}}}^{\mathrm{inc}}$ Anomaly | $K_{\mathrm{SC}_{\mathrm{SSB}}}^{\mathrm{inc}}$ Vacuum Landscape | $K_{\mathrm{TB}_S}^{\mathrm{inc}}$ Infinite Barrier |
 
 **Columns 8-12 (Topology through Oscillation):**
 
@@ -175,16 +175,16 @@ The detailed breakdown by stratum group follows:
 
 This is the **subsidiary decomposition** of the Stiffness stratum—the nodes that distinguish between systems failing primary stiffness but admitting resolution via fundamentally different mechanisms.
 
-| **Family** | **7a. Bifurc** ($\mathrm{LS}_{\partial^2 V}$, {prf:ref}`def-node-bifurcate`) | **7b. Symm** ($G_{\mathrm{act}}$, {prf:ref}`def-node-sym`) | **7c. SC-Re** ($\mathrm{SC}_{\partial c}^{\mathrm{re}}$, {prf:ref}`def-node-checksc`) | **7d. Tunn** ($\mathrm{TB}_S$, {prf:ref}`def-node-checktb`) |
+| **Family** | **7a. Bifurc** ($\mathrm{LS}_{\partial^2 V}$, {prf:ref}`def-node-bifurcate`) | **7b. Symm** ($G_{\mathrm{act}}$, {prf:ref}`def-node-sym`) | **7c. SSB-Re** ($\mathrm{SC}_{\mathrm{SSB}}^{\mathrm{re}}$, {prf:ref}`def-node-checkssb`) | **7d. Tunn** ($\mathrm{TB}_S$, {prf:ref}`def-node-checktb`) |
 |:-----------|:---------------------------------------------|:----------------------------------|:--------------------------------------------------------|:------------------------------|
 | **I. Stable** ($K^+$) | $\varnothing$ *Void* | $\varnothing$ *Void* | $\varnothing$ *Void* | $\varnothing$ *Void* |
-| **II. Relaxed** ($\circ$) | $K_{\mathrm{LS}_{\partial^2 V}}^\circ$ Morse | $K_{G_{\mathrm{act}}}^\circ$ Symmetric | $K_{\mathrm{SC}_{\partial c}}^{\mathrm{phase}}$ Phase | $K_{\mathrm{TB}_S}^\circ$ WKB |
-| **III. Gauged** ($K^{\sim}$) | $K_{\mathrm{LS}_{\partial^2 V}}^{\sim}$ Stratified | $K_{G_{\mathrm{act}}}^{\sim}$ Bridge | $K_{\mathrm{SC}_{\partial c}}^{\sim}$ Descent | $K_{\mathrm{TB}_S}^{\sim}$ Holonomy |
-| **IV. Resurrected** ($K^{\mathrm{re}}$) | $K_{\mathrm{LS}_{\partial^2 V}}^{\mathrm{re}}$ Bifurcation | $K_{G_{\mathrm{act}}}^{\mathrm{re}}$ Hidden | $K_{\mathrm{SC}_{\partial c}}^{\mathrm{vac}}$ Vacuum | $K_{\mathrm{TB}_S}^{\mathrm{re}}$ Path Integral |
-| **V. Synthetic** ($K^{\mathrm{ext}}$) | $K_{\mathrm{LS}_{\partial^2 V}}^{\mathrm{ext}}$ Graded | $K_{G_{\mathrm{act}}}^{\mathrm{ext}}$ Higgs | $K_{\mathrm{SC}_{\partial c}}^{\mathrm{ext}}$ Faddeev-Popov | $K_{\mathrm{TB}_S}^{\mathrm{ext}}$ Euclidean |
-| **VI. Forbidden** ($K^{\mathrm{blk}}$) | $K_{\mathrm{LS}_{\partial^2 V}}^{\mathrm{blk}}$ Catastrophe | $K_{G_{\mathrm{act}}}^{\mathrm{blk}}$ Gauge | $K_{\mathrm{SC}_{\partial c}}^{\mathrm{blk}}$ SSB | $K_{\mathrm{TB}_S}^{\mathrm{blk}}$ Barrier |
-| **VII. Singular** ($K^{\mathrm{morph}}$) | $K_{\mathrm{LS}_{\partial^2 V}}^{\mathrm{morph}}$ Degenerate | $K_{G_{\mathrm{act}}}^{\mathrm{morph}}$ Decay | $K_{\mathrm{SC}_{\partial c}}^{\mathrm{morph}}$ Vacuum Decay | $K_{\mathrm{TB}_S}^{\mathrm{morph}}$ Infinite Action |
-| **VIII. Horizon** ($K^{\mathrm{inc}}$) | $K_{\mathrm{LS}_{\partial^2 V}}^{\mathrm{inc}}$ Singular Hessian | $K_{G_{\mathrm{act}}}^{\mathrm{inc}}$ Anomaly | $K_{\mathrm{SC}_{\partial c}}^{\mathrm{inc}}$ Vacuum Landscape | $K_{\mathrm{TB}_S}^{\mathrm{inc}}$ Infinite Barrier |
+| **II. Relaxed** ($\circ$) | $K_{\mathrm{LS}_{\partial^2 V}}^\circ$ Morse | $K_{G_{\mathrm{act}}}^\circ$ Symmetric | $K_{\mathrm{SC}_{\mathrm{SSB}}}^{\mathrm{phase}}$ Phase | $K_{\mathrm{TB}_S}^\circ$ WKB |
+| **III. Gauged** ($K^{\sim}$) | $K_{\mathrm{LS}_{\partial^2 V}}^{\sim}$ Stratified | $K_{G_{\mathrm{act}}}^{\sim}$ Bridge | $K_{\mathrm{SC}_{\mathrm{SSB}}}^{\sim}$ Descent | $K_{\mathrm{TB}_S}^{\sim}$ Holonomy |
+| **IV. Resurrected** ($K^{\mathrm{re}}$) | $K_{\mathrm{LS}_{\partial^2 V}}^{\mathrm{re}}$ Bifurcation | $K_{G_{\mathrm{act}}}^{\mathrm{re}}$ Hidden | $K_{\mathrm{SC}_{\mathrm{SSB}}}^{\mathrm{vac}}$ Vacuum | $K_{\mathrm{TB}_S}^{\mathrm{re}}$ Path Integral |
+| **V. Synthetic** ($K^{\mathrm{ext}}$) | $K_{\mathrm{LS}_{\partial^2 V}}^{\mathrm{ext}}$ Graded | $K_{G_{\mathrm{act}}}^{\mathrm{ext}}$ Higgs | $K_{\mathrm{SC}_{\mathrm{SSB}}}^{\mathrm{ext}}$ Faddeev-Popov | $K_{\mathrm{TB}_S}^{\mathrm{ext}}$ Euclidean |
+| **VI. Forbidden** ($K^{\mathrm{blk}}$) | $K_{\mathrm{LS}_{\partial^2 V}}^{\mathrm{blk}}$ Catastrophe | $K_{G_{\mathrm{act}}}^{\mathrm{blk}}$ Gauge | $K_{\mathrm{SC}_{\mathrm{SSB}}}^{\mathrm{blk}}$ SSB | $K_{\mathrm{TB}_S}^{\mathrm{blk}}$ Barrier |
+| **VII. Singular** ($K^{\mathrm{morph}}$) | $K_{\mathrm{LS}_{\partial^2 V}}^{\mathrm{morph}}$ Degenerate | $K_{G_{\mathrm{act}}}^{\mathrm{morph}}$ Decay | $K_{\mathrm{SC}_{\mathrm{SSB}}}^{\mathrm{morph}}$ Vacuum Decay | $K_{\mathrm{TB}_S}^{\mathrm{morph}}$ Infinite Action |
+| **VIII. Horizon** ($K^{\mathrm{inc}}$) | $K_{\mathrm{LS}_{\partial^2 V}}^{\mathrm{inc}}$ Singular Hessian | $K_{G_{\mathrm{act}}}^{\mathrm{inc}}$ Anomaly | $K_{\mathrm{SC}_{\mathrm{SSB}}}^{\mathrm{inc}}$ Vacuum Landscape | $K_{\mathrm{TB}_S}^{\mathrm{inc}}$ Infinite Barrier |
 
 :::{prf:remark} Stiffness Restoration Variants
 :label: rem-stiffness-restoration-variants
@@ -477,12 +477,12 @@ This is the **critical subtree** that distinguishes the expanded classification.
   - $K^{\mathrm{morph}}$: Decay—symmetry permanently broken, no restoration path
   - $K^{\mathrm{inc}}$: Anomaly—quantum anomaly, classical symmetry absent
 
-- **Node 7c (Scale Restoration $\mathrm{SC}_{\partial c}^{\mathrm{re}}$):** Can scaling restore criticality?
+- **Node 7c (SSB Stability $\mathrm{SC}_{\mathrm{SSB}}^{\mathrm{re}}$):** Are broken-phase parameters stable?
   - $K^+$: Void (not needed)
   - $K^\circ$: Phase—phase transition structure, critical exponents well-defined
-  - $K^{\sim}$: Descent—restoration via descent to quotient scale
+  - $K^{\sim}$: Descent—restoration via descent to a quotient vacuum
   - $K^{\mathrm{re}}$: Vacuum—vacuum restoration, running couplings converge to fixed point
-  - $K^{\mathrm{ext}}$: Faddeev-Popov—requires ghost field insertion for scale-consistent quantization
+  - $K^{\mathrm{ext}}$: Faddeev-Popov—requires ghost field insertion for SSB-consistent quantization
   - $K^{\mathrm{blk}}$: SSB—spontaneous symmetry breaking obstruction
   - $K^{\mathrm{morph}}$: Vacuum Decay—false vacuum decay, no stable restoration
   - $K^{\mathrm{inc}}$: Vacuum Landscape—landscape of vacua, no unique restoration
