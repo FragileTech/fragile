@@ -75,6 +75,7 @@ dependencies = [
     "pytest>=9.0.2",
     # "plangym>=0.1.30",  # Disabled: causes dependency conflicts
     "gymnasium>=1.2.3",
+    "plangym[atari]>=0.1.31",
 ]  # ToDo: Modify according to your needs!
 [project.urls]
 # important URLs for this project

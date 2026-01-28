@@ -408,6 +408,7 @@ class EuclideanGas(PanelModel):
         # Step 5: Compute fitness derivatives if needed for adaptive kinetics
         grad_fitness = None
         hess_fitness = None
+        is_diagonal_hessian = False
 
         if self.fitness_op is not None and self.enable_kinetic:
             # Compute fitness gradient if needed for adaptive force
@@ -426,6 +427,7 @@ class EuclideanGas(PanelModel):
                     companions_distance,
                     diagonal_only=self.kinetic_op.diagonal_diffusion,
                 )
+                is_diagonal_hessian = self.kinetic_op.diagonal_diffusion
 
             # Step 6: Kinetic update with optional fitness derivatives (if enabled)
             state_final, kinetic_info = self.kinetic_op.apply(
@@ -475,6 +477,11 @@ class EuclideanGas(PanelModel):
                 "U_final": U_final if U_final is not None else torch.zeros_like(rewards),
                 "kinetic_info": kinetic_info,
             }
+            if grad_fitness is not None:
+                info["grad_fitness"] = grad_fitness
+            if hess_fitness is not None:
+                info["hess_fitness"] = hess_fitness
+                info["is_diagonal_hessian"] = is_diagonal_hessian
             return state_cloned, state_final, info
         return state_cloned, state_final
 
@@ -744,28 +751,9 @@ class EuclideanGas(PanelModel):
             state_cloned, state_final, info = self.step(state, return_info=True)
 
             # Compute adaptive kinetics derivatives if enabled
-            grad_fitness = None
-            hess_fitness = None
-            is_diagonal_hessian = False
-            if self.fitness_op is not None:
-                if self.kinetic_op.use_fitness_force:
-                    grad_fitness = self.fitness_op.compute_gradient(
-                        positions=state_cloned.x,
-                        velocities=state_cloned.v,
-                        rewards=info["rewards"],
-                        alive=info["alive_mask"],
-                        companions=info["companions_distance"],
-                    )
-                if self.kinetic_op.use_anisotropic_diffusion:
-                    is_diagonal_hessian = self.kinetic_op.diagonal_diffusion
-                    hess_fitness = self.fitness_op.compute_hessian(
-                        positions=state_cloned.x,
-                        velocities=state_cloned.v,
-                        rewards=info["rewards"],
-                        alive=info["alive_mask"],
-                        companions=info["companions_distance"],
-                        diagonal_only=is_diagonal_hessian,
-                    )
+            grad_fitness = info.get("grad_fitness")
+            hess_fitness = info.get("hess_fitness")
+            is_diagonal_hessian = info.get("is_diagonal_hessian", False)
 
             # Determine if this step should be recorded
             should_record = t in recorded_steps

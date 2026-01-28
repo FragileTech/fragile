@@ -20,6 +20,7 @@ from torch import Tensor
 from fragile.fractalai.bounds import TorchBounds
 from fragile.fractalai.core.distance import compute_periodic_distance_matrix
 from fragile.fractalai.core.panel_model import INPUT_WIDTH, PanelModel
+import warnings
 
 
 def psi_v(v: Tensor, V_alg: float) -> Tensor:
@@ -782,22 +783,48 @@ class KineticOperator(PanelModel):
             # Add ε_Σ I to each [d, d] block
             eye = torch.eye(d, device=x.device, dtype=x.dtype)
             hess_reg = hess + eps_I * eye.unsqueeze(0)  # [N, d, d]
+            hess_reg = 0.5 * (hess_reg + hess_reg.transpose(-2, -1))
 
             # Compute matrix inverse square root via eigendecomposition
             # For symmetric positive definite A: A^{-1/2} = Q Λ^{-1/2} Q^T
-            eigenvalues, eigenvectors = torch.linalg.eigh(hess_reg)  # [N, d], [N, d, d]
+            base_jitter = float(max(eps_I, 1e-6))
+            eigenvalues = None
+            eigenvectors = None
+            for attempt in range(3):
+                try:
+                    if attempt == 0:
+                        hess_try = hess_reg
+                    else:
+                        jitter = base_jitter * (10**attempt)
+                        hess_try = hess_reg + jitter * eye.unsqueeze(0)
+                    eigenvalues, eigenvectors = torch.linalg.eigh(hess_try)
+                    break
+                except RuntimeError:
+                    continue
 
-            # Clamp eigenvalues to ensure positivity (handle numerical errors)
-            eigenvalues = torch.clamp(eigenvalues, min=eps_I)
+            if eigenvalues is None or eigenvectors is None:
+                # Fallback: use diagonal approximation to keep simulation stable
+                warnings.warn(
+                    "Anisotropic diffusion: eigen-decomposition failed after retries; "
+                    "falling back to diagonal diffusion for this step.",
+                    RuntimeWarning,
+                )
+                hess_diag = torch.diagonal(hess_reg, dim1=-2, dim2=-1)
+                hess_diag = torch.clamp(hess_diag, min=eps_I)
+                sigma_diag = self.c2 / torch.sqrt(hess_diag)
+                sigma = torch.diag_embed(sigma_diag)
+            else:
+                # Clamp eigenvalues to ensure positivity (handle numerical errors)
+                eigenvalues = torch.clamp(eigenvalues, min=eps_I)
 
-            eigenvalues_inv_sqrt = self.c2 / torch.sqrt(eigenvalues)  # [N, d]
+                eigenvalues_inv_sqrt = self.c2 / torch.sqrt(eigenvalues)  # [N, d]
 
-            # Reconstruct: Σ = Q Λ^{-1/2} Q^T
-            sigma = (
-                eigenvectors
-                @ torch.diag_embed(eigenvalues_inv_sqrt)
-                @ eigenvectors.transpose(-2, -1)
-            )
+                # Reconstruct: Σ = Q Λ^{-1/2} Q^T
+                sigma = (
+                    eigenvectors
+                    @ torch.diag_embed(eigenvalues_inv_sqrt)
+                    @ eigenvectors.transpose(-2, -1)
+                )
 
         return sigma
 
