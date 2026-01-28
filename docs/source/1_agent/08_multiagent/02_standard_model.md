@@ -1643,6 +1643,10 @@ $$
 :::
 
 :::{div} feynman-prose
+Construction note. In the implementation, each sector of $\mathcal{L}_{\text{SM}}$ is realized as a loss term; geometric distance terms are written with the curved metric $G_{ij}$ from the capacity-constrained geometry ({ref}`sec-capacity-constrained-metric-law-geometry-from-interface-limits`) and the loss catalog in Appendix F ({ref}`sec-appendix-f-loss-terms-reference`). After Wick rotation, the full training objective is the Euclidean action $S_E = \int d^4x \sqrt{g}\,\mathcal{L}_E$ on a Riemannian manifold. This is why the QFT axioms are not extra hypotheses: they are the formal restatement of the local, metric-covariant loss structure together with the reflection-positivity construction used below.
+:::
+
+:::{div} feynman-prose
 Look at this Lagrangian. It's not simple, but it's *complete*. Every term has a clear meaning:
 
 **Sector I (Gauge):** The kinetic energy of the force fields. Curvature costs energy. The system prefers flat connections.
@@ -1673,6 +1677,33 @@ The theory is rigid. Given the axioms (bounded, distributed, reward-seeking, cau
 | V. External | $\bar{\Psi}\gamma^\mu A^{\text{ext}}_\mu\Psi$ | Value-seeking drive | Theorem {prf:ref}`thm-recovery-wfr-drift` |
 
 ### A. Axiomatic QFT Compliance (Wightman + OS)
+
+#### Construction Invariants (Why the axioms are automatic)
+
+The agent is *constructed* as a local dynamical system on a Riemannian manifold, with geometric losses that are explicitly metric-covariant (Appendix F, {ref}`sec-appendix-f-loss-terms-reference`) and whose continuum limit is the Euclidean action $S_E$. This enforces the QFT axioms as structural invariants:
+
+1. **Geometry invariant:** The latent space is a smooth manifold with metric from the capacity-constrained metric law, and fields are bundle sections over $(\mathcal{M}, g)$ (Definition {prf:ref}`def-cognitive-lagrangian`, Theorem {prf:ref}`thm-capacity-constrained-metric-law`).
+2. **Locality invariant:** The continuum objective is an integral of local densities built from covariant derivatives; the action is local by construction (Definition {prf:ref}`def-cognitive-lagrangian`).
+3. **Covariance invariant:** Geometric losses are metric-covariant (Appendix F, {ref}`sec-appendix-f-loss-terms-reference`), and the continuum action is generally covariant, so Euclidean covariance (OS1) and Lorentz covariance (W1 in the flat sector) are built in.
+4. **Positivity invariant:** The bosonic Euclidean terms are positive and the fermionic sector is handled by the OS reflection/inner product; under the stated assumptions this yields reflection positivity on the gauge-invariant algebra (Theorem {prf:ref}`thm-smoc-os2-construction`).
+5. **Gap/cluster invariant:** The constructed mass gap forces decay of connected correlators and the cluster property (Theorem {prf:ref}`thm-smoc-os3-construction`).
+
+For the canonical continuum action principle used to pass from discrete losses to a local action, see the WFR action functional (Definition {prf:ref}`def-the-wfr-action`) and its field-theoretic extension in the SMoC Lagrangian (Definition {prf:ref}`def-cognitive-lagrangian`).
+
+#### Axiom-by-Construction Ledger
+
+| Axiom | Why it is automatic in this agent | Construction anchor |
+|:------|:----------------------------------|:-------------------|
+| W0 Temperedness | Fields are defined as Schwartz-smeared distributions on a smooth manifold; OS0 + Wick rotation yields tempered Wightman functions | {prf:ref}`def-os-axioms`, {prf:ref}`rem-wightman-verification-plan` |
+| W1 Poincare Covariance | The Lagrangian is metric-covariant; in the flat, drive-free sector OS reconstruction yields a unitary Poincare representation | {prf:ref}`def-cognitive-lagrangian`, {prf:ref}`thm-smoc-poincare-reconstruction` |
+| W2 Spectral Condition | OS reconstruction produces a self-adjoint Hamiltonian $H \ge 0$ | {prf:ref}`thm-smoc-poincare-reconstruction` |
+| W3 Locality | The action is local and built from covariant derivatives; microcausality follows in the flat sector | {prf:ref}`def-cognitive-lagrangian`, {prf:ref}`def-lc-aft` |
+| W4 Vacuum Cyclicity | The Hilbert space is the completion of field polynomials acting on $|\Omega\rangle$ via OS/GNS | {prf:ref}`thm-smoc-poincare-reconstruction` |
+| OS0 Temperedness | Polynomial bounds on the Euclidean generating functional in the curved loss formulation | {prf:ref}`rem-os-verification-plan` |
+| OS1 Euclidean Covariance | Wick-rotated action is invariant under $E(4)$ by metric covariance | {prf:ref}`def-cognitive-lagrangian` |
+| OS2 Reflection Positivity | Reflection-positive construction on the gauge-invariant algebra | {prf:ref}`thm-smoc-os2-construction` |
+| OS3 Cluster Property | Mass gap implies decay of connected correlators | {prf:ref}`thm-smoc-os3-construction` |
+| OS4 Symmetry | Graded symmetry from boson/fermion field multiplet | {prf:ref}`def-os-axioms` |
 
 :::{prf:definition} Axiomatic Field Theory (AFT)
 :label: def-aft
