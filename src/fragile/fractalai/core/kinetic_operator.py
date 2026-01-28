@@ -12,6 +12,8 @@ Mathematical notation:
 
 from __future__ import annotations
 
+import warnings
+
 import panel as pn
 import param
 import torch
@@ -20,7 +22,6 @@ from torch import Tensor
 from fragile.fractalai.bounds import TorchBounds
 from fragile.fractalai.core.distance import compute_periodic_distance_matrix
 from fragile.fractalai.core.panel_model import INPUT_WIDTH, PanelModel
-import warnings
 
 
 def psi_v(v: Tensor, V_alg: float) -> Tensor:

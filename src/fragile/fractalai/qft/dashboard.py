@@ -543,6 +543,16 @@ def _build_algorithmic_mass_rows(masses: dict[str, float]) -> list[dict[str, Any
     return rows
 
 
+def _format_mass_ratio(masses: dict[str, float]) -> str:
+    baryon = masses.get("baryon")
+    meson = masses.get("meson")
+    if baryon is None or meson is None or baryon <= 0 or meson <= 0:
+        return "**Baryon/Meson ratio:** n/a"
+    ratio = baryon / meson
+    inv_ratio = meson / baryon
+    return f"**Baryon/Meson ratio:** {ratio:.3f}  \n" f"**Meson/Baryon ratio:** {inv_ratio:.3f}"
+
+
 def _build_best_fit_rows(masses: dict[str, float]) -> list[dict[str, Any]]:
     anchors: list[tuple[str, float, str]] = []
     anchors.extend((f"baryon->{name}", mass, "baryon") for name, mass in BARYON_REFS.items())
@@ -955,6 +965,10 @@ def create_app() -> pn.template.FastListTemplate:
             show_index=False,
             sizing_mode="stretch_width",
         )
+        particle_ratio_pane = pn.pane.Markdown(
+            "**Baryon/Meson ratio:** n/a",
+            sizing_mode="stretch_width",
+        )
         particle_anchor_table = pn.widgets.Tabulator(
             pd.DataFrame(),
             pagination="remote",
@@ -1018,6 +1032,7 @@ def create_app() -> pn.template.FastListTemplate:
                 particle_mass_table.value = pd.DataFrame()
                 particle_fit_table.value = pd.DataFrame()
                 particle_anchor_table.value = pd.DataFrame()
+                particle_ratio_pane.object = "**Baryon/Meson ratio:** n/a"
                 _set_particle_status(
                     "**Particles:** missing baryon/meson masses. Enable compute_particles."
                 )
@@ -1033,6 +1048,7 @@ def create_app() -> pn.template.FastListTemplate:
 
             particle_mass_table.value = pd.DataFrame(_build_algorithmic_mass_rows(masses))
             particle_fit_table.value = pd.DataFrame(_build_best_fit_rows(masses))
+            particle_ratio_pane.object = _format_mass_ratio(masses)
             particle_anchor_table.value = pd.DataFrame(
                 _build_anchor_rows(masses, glueball_ref, sqrt_sigma_ref)
             )
@@ -1555,6 +1571,7 @@ def create_app() -> pn.template.FastListTemplate:
                 sweep_controls,
                 pn.pane.Markdown("### Algorithmic Masses"),
                 particle_mass_table,
+                particle_ratio_pane,
                 pn.pane.Markdown("### Best-Fit Scales"),
                 particle_fit_table,
                 pn.pane.Markdown("### Anchored Mass Table"),

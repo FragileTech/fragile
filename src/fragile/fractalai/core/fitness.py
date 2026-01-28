@@ -1,3 +1,5 @@
+import warnings
+
 import panel as pn
 import param
 import torch
@@ -743,17 +745,29 @@ class FitnessOperator(PanelModel):
             epsilon_dist=self.epsilon_dist,
             rho=self.rho,
         )
+        if not fitness.requires_grad:
+            warnings.warn(
+                "Fitness gradient unavailable (fitness does not require grad); "
+                "returning zero gradients.",
+                RuntimeWarning,
+            )
+            return torch.zeros_like(positions_grad)
 
         # Compute per-walker gradient: ∂V_i/∂positions_i (ignore cross-terms)
         N = fitness.shape[0]
         grad = torch.zeros_like(positions_grad)
         for i in range(N):
+            if not fitness[i].requires_grad:
+                continue
             (grad_i,) = torch.autograd.grad(
                 outputs=fitness[i],
                 inputs=positions_grad,
                 create_graph=False,
                 retain_graph=i < N - 1,
+                allow_unused=True,
             )
+            if grad_i is None:
+                continue
             grad[i] = grad_i[i]
 
         return grad
@@ -817,25 +831,45 @@ class FitnessOperator(PanelModel):
             epsilon_dist=self.epsilon_dist,
             rho=self.rho,
         )
+        if not fitness.requires_grad:
+            warnings.warn(
+                "Fitness Hessian unavailable (fitness does not require grad); "
+                "returning zero Hessian.",
+                RuntimeWarning,
+            )
+            if diagonal_only:
+                return torch.zeros_like(positions_grad)
+            return torch.zeros(N, d, d, dtype=positions.dtype, device=positions.device)
 
         if diagonal_only:
             # Compute diagonal Hessian elements ∂²V_i/∂positions_i²
             hessian_diag = torch.zeros_like(positions_grad)
 
             for i in range(N):
+                if not fitness[i].requires_grad:
+                    continue
                 (grad_i,) = torch.autograd.grad(
                     outputs=fitness[i],
                     inputs=positions_grad,
                     create_graph=True,
                     retain_graph=True,
+                    allow_unused=True,
                 )
+                if grad_i is None:
+                    continue
                 for j in range(d):
+                    grad_component = grad_i[i, j]
+                    if not grad_component.requires_grad:
+                        continue
                     (hess_i,) = torch.autograd.grad(
-                        outputs=grad_i[i, j],
+                        outputs=grad_component,
                         inputs=positions_grad,
                         create_graph=False,
                         retain_graph=not (i == N - 1 and j == d - 1),
+                        allow_unused=True,
                     )
+                    if hess_i is None:
+                        continue
                     hessian_diag[i, j] = hess_i[i, j]
 
             return hessian_diag
@@ -844,19 +878,30 @@ class FitnessOperator(PanelModel):
         hessian_full = torch.zeros(N, d, d, dtype=positions.dtype, device=positions.device)
 
         for i in range(N):
+            if not fitness[i].requires_grad:
+                continue
             (grad_i,) = torch.autograd.grad(
                 outputs=fitness[i],
                 inputs=positions_grad,
                 create_graph=True,
                 retain_graph=True,
+                allow_unused=True,
             )
+            if grad_i is None:
+                continue
             for j in range(d):
+                grad_component = grad_i[i, j]
+                if not grad_component.requires_grad:
+                    continue
                 (hess_i,) = torch.autograd.grad(
-                    outputs=grad_i[i, j],
+                    outputs=grad_component,
                     inputs=positions_grad,
                     create_graph=False,
                     retain_graph=not (i == N - 1 and j == d - 1),
+                    allow_unused=True,
                 )
+                if hess_i is None:
+                    continue
                 hessian_full[i, :, j] = hess_i[i]
 
         return hessian_full
