@@ -1113,6 +1113,18 @@ This is exactly the Vlasov limit in plasma physics, or the mean-field limit in s
 Of course, you still need to approximate the density field somehow. But that is much more tractable than tracking all pairwise interactions. Neural networks are good at representing smooth functions, and the density field is typically smooth.
 :::
 
+:::{prf:remark} Thermodynamic vs. Resolution Limit
+:label: rem-mean-field-vs-levin-length
+
+The continuum limit used here is the **population/thermodynamic limit** $N \to \infty$ with
+empirical measures $\mu_N \rightharpoonup \rho$, at **fixed** Levin length $\ell_L>0$. This is a
+mean-field limit, not a UV limit. The Levin length is an operational resolution bound (Axiom
+{prf:ref}`ax-constructive-finite-resolution`), not a lattice regulator to be sent to zero. Taking
+$\ell_L \to 0$ would exit the framework by violating the Causal Information Bound and is **not**
+required for validity. The continuum objects are the density fields $\rho$ at fixed resolution.
+
+:::
+
 The calculation of the Game Tensor $\mathcal{G}_{ij}$ ({prf:ref}`def-the-game-tensor`) entails computational complexity $O(N^2 d^2)$, which is intractable for large $N$. We prove that in the limit $N \to \infty$, the discrete Game Tensor converges to the Hessian of a convolution potential.
 
 :::{prf:theorem} Mean-Field Metric Law

@@ -2090,6 +2090,18 @@ The theory is interacting: at least one coupling or gauge-invariant curvature ob
 nonzero.
 :::
 
+:::{prf:remark} Thermodynamic vs. Resolution Limit
+:label: rem-thermo-vs-levin-length-smoc
+
+The continuum limit used in this volume is the **population/thermodynamic limit** (large $N$ with
+empirical measures converging to a density) at **fixed** Levin length $\ell_L>0$
+({ref}`sec-mean-field-metric-law`). The Levin length is an operational resolution bound (Axiom
+{prf:ref}`ax-constructive-finite-resolution`), not a regulator to be sent to zero. Taking
+$\ell_L \to 0$ would exit the framework by violating the Causal Information Bound and is **not**
+required for validity.
+
+:::
+
 #### A.0c Verification in the Fragile Agent (First-Principles Construction)
 
 :::{prf:theorem} Fragile Agent Satisfies the Constructive QFT Axioms

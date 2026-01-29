@@ -13,10 +13,10 @@
 
 **Two Pressure Mechanisms**:
 
-| Contribution | Formula | Sign | Physical Origin |
-|--------------|---------|------|-----------------|
-| Elastic | $\Pi_{\mathrm{elastic}} \propto -\varepsilon_c^{d+2}$ | $<0$ | Surface tension of IG correlation network |
-| Radiation | $\Pi_{\mathrm{radiation}} \propto T_{\mathrm{eff}}^{d/2}$ | $>0$ | Thermal occupation of QSD modes |
+| Contribution | Formula                                                   | Sign | Physical Origin                           |
+|--------------|-----------------------------------------------------------|------|-------------------------------------------|
+| Elastic      | $\Pi_{\mathrm{elastic}} \propto -\varepsilon_c^{d+2}$     | $<0$ | Surface tension of IG correlation network |
+| Radiation    | $\Pi_{\mathrm{radiation}} \propto T_{\mathrm{eff}}^{d/2}$ | $>0$ | Thermal occupation of QSD modes           |
 
 **Crown Jewel---QSD Stability**: Under explicit parameter conditions ({prf:ref}`thm-qsd-stability`), all modes decay ($\mathrm{Re}(\omega(k)) > 0$ for all $k$), guaranteeing stability of the quasi-stationary distribution.
 
