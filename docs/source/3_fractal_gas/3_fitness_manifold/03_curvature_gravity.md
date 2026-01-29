@@ -95,7 +95,7 @@ $$
 $$
 
 *Reference:* {cite}`ambrose1953theorem`
-*Proof.* See Theorem {prf:ref}`appx-ambrose-singer` in {doc}`../appendices/17_geometric_gas`. $\square$
+*Proof.* See Theorem {prf:ref}`appx-ambrose-singer` in {doc}`../convergence_program/17_geometric_gas`. $\square$
 :::
 
 :::{prf:lemma} Holonomy of Small Loops
@@ -109,7 +109,7 @@ $$
 
 where $T^{cd}$ is the tangent bivector to $\Sigma$.
 
-*Proof.* See Lemma {prf:ref}`appx-holonomy-small-loops` in {doc}`../appendices/17_geometric_gas`. $\square$
+*Proof.* See Lemma {prf:ref}`appx-holonomy-small-loops` in {doc}`../convergence_program/17_geometric_gas`. $\square$
 :::
 
 ---
@@ -232,7 +232,7 @@ $$
 \frac{d\theta}{d\tau} = -\frac{1}{d}\theta^2 - \sigma_{\mu\nu}\sigma^{\mu\nu} + \omega_{\mu\nu}\omega^{\mu\nu} - R_{\mu\nu}u^\mu u^\nu
 $$
 
-*Proof.* See Theorem {prf:ref}`appx-raychaudhuri` in {doc}`../appendices/17_geometric_gas`. $\square$
+*Proof.* See Theorem {prf:ref}`appx-raychaudhuri` in {doc}`../convergence_program/17_geometric_gas`. $\square$
 :::
 
 ---
@@ -325,7 +325,7 @@ $$
 
 **Step 5: Apply continuous Raychaudhuri.**
 
-By Theorem {prf:ref}`thm-raychaudhuri` (classical proof in Appendix {doc}`../appendices/17_geometric_gas`), the continuous field satisfies:
+By Theorem {prf:ref}`thm-raychaudhuri` (classical proof in Appendix {doc}`../convergence_program/17_geometric_gas`), the continuous field satisfies:
 
 $$
 u^\nu \nabla_\nu \theta = -\frac{1}{d}\theta^2 - \sigma^2 + \omega^2 - R_{\mu\nu} u^\mu u^\nu

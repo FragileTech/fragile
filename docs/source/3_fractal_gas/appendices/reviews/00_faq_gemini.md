@@ -2,7 +2,7 @@
 
 ## 1. Broken Cross-References
 
-- **Line 661 (Section N.11.4):** The "Hypocoercive rate" in the Rigor Classification table references only `{doc}`../appendices/10_kl_hypocoercive``. However, section N.4.4 references BOTH `10_kl_hypocoercive` AND `15_kl_convergence`. The table may be missing the second reference.
+- **Line 661 (Section N.11.4):** The "Hypocoercive rate" in the Rigor Classification table references only `{doc}`../convergence_program/10_kl_hypocoercive``. However, section N.4.4 references BOTH `10_kl_hypocoercive` AND `15_kl_convergence`. The table may be missing the second reference.
 
 No other broken cross-references were found.
 

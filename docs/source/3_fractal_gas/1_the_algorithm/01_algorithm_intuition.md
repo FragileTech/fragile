@@ -25,7 +25,7 @@ specification for theoretical analysis).
 
 This chapter provides an intuitive, implementation-oriented introduction to the Fractal Gas algorithm family. Where the formal treatment in {doc}`02_fractal_gas_latent` develops the mathematical machinery for convergence proofs and sieve verification, this chapter focuses on *what the algorithm does* and *why each component exists*. The goal is to build understanding before formalism—to make the subsequent mathematical analysis feel inevitable rather than arbitrary.
 
-**Prerequisites**: This chapter is designed to be self-contained for readers with basic familiarity with optimization and probability. No prior knowledge of the Fragile framework or Hypostructure is required—those concepts are developed in subsequent chapters. Readers seeking the rigorous mathematical treatment should proceed to {doc}`02_fractal_gas_latent` after building intuition here; those interested in the complete axiomatic foundations will find them in {doc}`../appendices/01_fragile_gas_framework`.
+**Prerequisites**: This chapter is designed to be self-contained for readers with basic familiarity with optimization and probability. No prior knowledge of the Fragile framework or Hypostructure is required—those concepts are developed in subsequent chapters. Readers seeking the rigorous mathematical treatment should proceed to {doc}`02_fractal_gas_latent` after building intuition here; those interested in the complete axiomatic foundations will find them in {doc}`../convergence_program/01_fragile_gas_framework`.
 
 The chapter is organized around the algorithm's core components:
 
@@ -1215,5 +1215,5 @@ works, why it has to work given its construction, the mathematics is there waiti
 :class: feynman-added
 - {doc}`02_fractal_gas_latent`: Proof object with full sieve verification
 - {doc}`../../2_hypostructure/10_information_processing/02_fractal_gas`: Hypostructure metatheorems
-- {doc}`../appendices/01_fragile_gas_framework`: Axiom system and revival guarantee proof
+- {doc}`../convergence_program/01_fragile_gas_framework`: Axiom system and revival guarantee proof
 :::

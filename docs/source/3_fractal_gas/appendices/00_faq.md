@@ -115,7 +115,7 @@ Fixed $N$ is a **requirement**, not a limitation:
 
 1. **Measure preservation.** The Fractal Gas dynamics preserve the Wasserstein-Fisher-Rao measure on population distributions. Variable $N$ would require tracking a time-dependent normalization factor, complicating the geometric analysis. The WFR metric ({doc}`/source/1_agent/05_geometry/02_wfr_geometry`) unifies transport (fixed $N$) and reaction (birth/death) in a single framework—but this requires mass-conserving birth/death, not population changes.
 
-2. **Mean-field consistency.** The mean-field limit ({doc}`../appendices/08_mean_field`) takes $N \to \infty$ with fixed density. If $N$ varied, the mean-field PDE would have time-dependent coefficients, preventing standard existence/uniqueness results.
+2. **Mean-field consistency.** The mean-field limit ({doc}`../convergence_program/08_mean_field`) takes $N \to \infty$ with fixed density. If $N$ varied, the mean-field PDE would have time-dependent coefficients, preventing standard existence/uniqueness results.
 
 3. **Revival guarantee.** With fixed $N$, dead walkers remain in the population and can be revived by cloning. Variable $N$ would require explicit deletion and respawning, breaking the genealogical structure that defines causal edges in the Fractal Set.
 
@@ -198,7 +198,7 @@ Momentum conservation prevents three failure modes:
 
 1. **Energy injection.** Without momentum conservation, cloning could inject arbitrary kinetic energy into the swarm. If walker $i$ (slow) clones from walker $j$ (fast), naive copying would create a second fast walker—injecting energy from nowhere. The inelastic collision $v_{\text{new}} = \alpha_{\text{rest}} v_j + (1 - \alpha_{\text{rest}}) v_i$ blends velocities, conserving total momentum $\sum_i m_i v_i$.
 
-2. **Thermodynamic consistency.** A QSD can exist without detailed balance; it only requires a well-defined conditioned steady state for the absorbing dynamics (see {doc}`../appendices/07_discrete_qsd`). The Volume 3 construction uses the QSD equilibrium Euclidean measure and OS reconstruction for Wick rotation, not a KMS argument. Arbitrary energy injection can block equilibration, but nonequilibrium QSDs can still exist.
+2. **Thermodynamic consistency.** A QSD can exist without detailed balance; it only requires a well-defined conditioned steady state for the absorbing dynamics (see {doc}`../convergence_program/07_discrete_qsd`). The Volume 3 construction uses the QSD equilibrium Euclidean measure and OS reconstruction for Wick rotation, not a KMS argument. Arbitrary energy injection can block equilibration, but nonequilibrium QSDs can still exist.
 
 3. **Symplectic structure.** The phase space $(z, v)$ has a symplectic form inherited from Hamiltonian mechanics. Momentum conservation preserves this form, ensuring the BAOAB integrator ({prf:ref}`def-baoab-splitting`) remains symplectic. Without conservation, long-time numerical stability degrades.
 
@@ -219,7 +219,7 @@ The guarantee is probabilistic, not deterministic:
 
 1. **Quasi-extinction.** Total extinction (all $s_i = 0$ simultaneously) has probability zero under the minorization condition. The Doeblin floor ensures some walker always has positive cloning probability from the boundary measure.
 
-2. **Cemetery coupling.** The QSD analysis ({doc}`../appendices/07_discrete_qsd`) models total extinction as absorption into a "cemetery state" $\partial$. The revival guarantee is the statement: starting from any configuration with at least one live walker, the expected time to revival of all walkers is finite.
+2. **Cemetery coupling.** The QSD analysis ({doc}`../convergence_program/07_discrete_qsd`) models total extinction as absorption into a "cemetery state" $\partial$. The revival guarantee is the statement: starting from any configuration with at least one live walker, the expected time to revival of all walkers is finite.
 
 3. **Explicit bound.** Under the constraint $\varepsilon_{\text{clone}} \cdot p_{\max} < \eta^{\alpha + \beta}$, the expected revival time is $O(N \log N)$ steps. This follows from coupon-collector arguments applied to the cloning genealogy.
 
@@ -260,9 +260,9 @@ The computational overhead is minimal: BAOAB requires 2 force evaluations per st
 
 The three-timescale analysis provides different guarantees:
 
-1. **Discrete analysis** ({doc}`../appendices/07_discrete_qsd`): Proves the algorithm converges on a computer—finite $N$, finite $h$, finite time. Results: mixing time bounds, finite-sample error floors.
+1. **Discrete analysis** ({doc}`../convergence_program/07_discrete_qsd`): Proves the algorithm converges on a computer—finite $N$, finite $h$, finite time. Results: mixing time bounds, finite-sample error floors.
 
-2. **Scaling limit** ({doc}`../appendices/08_mean_field`): Takes $N \to \infty$ with $h \to 0$ at controlled rate. Proves the population empirical measure converges to a deterministic flow. Results: mean-field PDE, propagation of chaos.
+2. **Scaling limit** ({doc}`../convergence_program/08_mean_field`): Takes $N \to \infty$ with $h \to 0$ at controlled rate. Proves the population empirical measure converges to a deterministic flow. Results: mean-field PDE, propagation of chaos.
 
 3. **Continuum limit** ({doc}`03_lattice_qft`): Takes the Fractal Set mesh to zero. Proves the discrete gauge theory converges to continuum QFT. Results: Wilson action, Dirac equation, Standard Model structure.
 
@@ -289,7 +289,7 @@ The Fractal Gas has **birth-death** dynamics that Wasserstein cannot capture:
 
 2. **Teleportation penalty.** Under Wasserstein, moving mass from $A$ to $B$ costs $\|A - B\|^2$. Under WFR, you can instead "kill at $A$, birth at $B$" with cost proportional to $|\log(\rho_A/\rho_B)|^2$. This teleportation option is essential for modeling cloning, which instantaneously copies state.
 
-3. **Reaction-diffusion structure.** The mean-field PDE ({doc}`../appendices/08_mean_field`) is reaction-diffusion type: $\partial_t \rho = \text{div}(D \nabla \rho) + R(\rho)$. WFR is the natural metric for such equations—the reaction term $R$ contributes to the Fisher-Rao component, not the Wasserstein component.
+3. **Reaction-diffusion structure.** The mean-field PDE ({doc}`../convergence_program/08_mean_field`) is reaction-diffusion type: $\partial_t \rho = \text{div}(D \nabla \rho) + R(\rho)$. WFR is the natural metric for such equations—the reaction term $R$ contributes to the Fisher-Rao component, not the Wasserstein component.
 
 4. **Contraction rates.** Theorem {prf:ref}`thm-alg-sieve-wasserstein-contraction` proves WFR contraction. The contraction rate $\kappa_W$ depends on both transport (Wasserstein) and growth (Fisher-Rao) timescales.
 
@@ -355,7 +355,7 @@ The error floor is standard; what matters is **how quickly you reach it**:
 
 2. **LSI constant.** The Log-Sobolev Inequality constant $\rho_{\text{LSI}}$ controls variance decay. The Fractal Gas has explicit bounds on $\rho_{\text{LSI}}$ in terms of the fitness landscape curvature—not available for generic MCMC.
 
-3. **Finite-time guarantees.** The $O(1/\sqrt{N})$ is an **asymptotic** bound. The appendices ({doc}`../appendices/13_quantitative_error_bounds`) provide **non-asymptotic** bounds: after $T$ steps with $N$ walkers, error is at most $C \cdot e^{-\kappa T} + D/\sqrt{N}$ with explicit constants $C, D$.
+3. **Finite-time guarantees.** The $O(1/\sqrt{N})$ is an **asymptotic** bound. The appendices ({doc}`../convergence_program/13_quantitative_error_bounds`) provide **non-asymptotic** bounds: after $T$ steps with $N$ walkers, error is at most $C \cdot e^{-\kappa T} + D/\sqrt{N}$ with explicit constants $C, D$.
 
 4. **Error decomposition.** The total error decomposes into bias (convergence to QSD) and variance (finite-$N$ fluctuations). The sieve constraints control bias; $N$ controls variance. This decomposition enables optimal resource allocation.
 
@@ -370,7 +370,7 @@ The error floor is standard; what matters is **how quickly you reach it**:
 
 We separate **proven convergence** from **constant refinement**:
 
-1. **LSI is proven.** The hypocoercive entropy route establishes an LSI and exponential convergence (Appendices {doc}`../appendices/10_kl_hypocoercive`, {doc}`../appendices/15_kl_convergence`). This gives a rigorous baseline rate without invoking curvature or log-concavity.
+1. **LSI is proven.** The hypocoercive entropy route establishes an LSI and exponential convergence (Appendices {doc}`../convergence_program/10_kl_hypocoercive`, {doc}`../convergence_program/15_kl_convergence`). This gives a rigorous baseline rate without invoking curvature or log-concavity.
 
 2. **Rigorous lower bound.** When an explicit rate is needed, we use a **proven lower bound** $\Lambda_{\text{hypo}} \geq \gamma / (1 + M^2/\rho_{\text{LSI}})$. This is conservative but fully rigorous.
 
@@ -915,11 +915,11 @@ Every result is explicitly classified:
 
 | Result | Status | Reference |
 |:-------|:-------|:----------|
-| QSD structure theorem | **Proven** | {doc}`../appendices/07_discrete_qsd` |
-| Wasserstein contraction | **Proven** | {doc}`../appendices/04_wasserstein_contraction` |
-| Mean-field error bounds | **Proven** | {doc}`../appendices/13_quantitative_error_bounds` |
-| Propagation of chaos | **Proven** | {doc}`../appendices/09_propagation_chaos` |
-| Hypocoercive rate | **Conjectured** | {doc}`../appendices/10_kl_hypocoercive` |
+| QSD structure theorem | **Proven** | {doc}`../convergence_program/07_discrete_qsd` |
+| Wasserstein contraction | **Proven** | {doc}`../convergence_program/04_wasserstein_contraction` |
+| Mean-field error bounds | **Proven** | {doc}`../convergence_program/13_quantitative_error_bounds` |
+| Propagation of chaos | **Proven** | {doc}`../convergence_program/09_propagation_chaos` |
+| Hypocoercive rate | **Conjectured** | {doc}`../convergence_program/10_kl_hypocoercive` |
 | $U(1)$ emergence | **Framework** | {prf:ref}`thm-sm-u1-emergence` |
 | $SU(2)$ emergence | **Framework** | {prf:ref}`thm-sm-su2-emergence` |
 | $SU(3)$ emergence | **Framework** | {prf:ref}`thm-sm-su3-emergence` |

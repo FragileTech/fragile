@@ -163,27 +163,28 @@ parts:
           - file: source/3_fractal_gas/3_fitness_manifold/04_field_equations
           - file: source/3_fractal_gas/3_fitness_manifold/05_holography
           - file: source/3_fractal_gas/3_fitness_manifold/06_cosmology
-      - file: source/3_fractal_gas/appendices/01_fragile_gas_framework
-        title: "Part IV - Appendices"
+      - file: source/3_fractal_gas/convergence_program/01_fragile_gas_framework
+        title: "Part IV - Convergence Program"
         sections:
-          - file: source/3_fractal_gas/appendices/02_euclidean_gas
-          - file: source/3_fractal_gas/appendices/03_cloning
-          - file: source/3_fractal_gas/appendices/04_single_particle
-          - file: source/3_fractal_gas/appendices/04_wasserstein_contraction
-          - file: source/3_fractal_gas/appendices/05_kinetic_contraction
-          - file: source/3_fractal_gas/appendices/06_convergence
-          - file: source/3_fractal_gas/appendices/07_discrete_qsd
-          - file: source/3_fractal_gas/appendices/08_mean_field
-          - file: source/3_fractal_gas/appendices/09_propagation_chaos
-          - file: source/3_fractal_gas/appendices/10_kl_hypocoercive
-          - file: source/3_fractal_gas/appendices/11_hk_convergence
-          - file: source/3_fractal_gas/appendices/12_qsd_exchangeability_theory
-          - file: source/3_fractal_gas/appendices/00_faq
-          - file: source/3_fractal_gas/appendices/13_quantitative_error_bounds
-          - file: source/3_fractal_gas/appendices/14_a_geometric_gas_c3_regularity
-          - file: source/3_fractal_gas/appendices/14_b_geometric_gas_cinf_regularity_full
-          - file: source/3_fractal_gas/appendices/15_kl_convergence
-          - file: source/3_fractal_gas/appendices/16_continuum_discharge
-          - file: source/3_fractal_gas/appendices/17_geometric_gas
+          - file: source/3_fractal_gas/convergence_program/02_euclidean_gas
+          - file: source/3_fractal_gas/convergence_program/03_cloning
+          - file: source/3_fractal_gas/convergence_program/04_single_particle
+          - file: source/3_fractal_gas/convergence_program/04_wasserstein_contraction
+          - file: source/3_fractal_gas/convergence_program/05_kinetic_contraction
+          - file: source/3_fractal_gas/convergence_program/06_convergence
+          - file: source/3_fractal_gas/convergence_program/07_discrete_qsd
+          - file: source/3_fractal_gas/convergence_program/08_mean_field
+          - file: source/3_fractal_gas/convergence_program/09_propagation_chaos
+          - file: source/3_fractal_gas/convergence_program/10_kl_hypocoercive
+          - file: source/3_fractal_gas/convergence_program/11_hk_convergence
+          - file: source/3_fractal_gas/convergence_program/12_qsd_exchangeability_theory
+          - file: source/3_fractal_gas/convergence_program/13_quantitative_error_bounds
+          - file: source/3_fractal_gas/convergence_program/14_a_geometric_gas_c3_regularity
+          - file: source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full
+          - file: source/3_fractal_gas/convergence_program/15_kl_convergence
+          - file: source/3_fractal_gas/convergence_program/16_continuum_discharge
+          - file: source/3_fractal_gas/convergence_program/17_geometric_gas
+      - file: source/3_fractal_gas/appendices/00_faq
+        title: "Part V - Appendices"
       - file: conclusions
         title: Conclusion

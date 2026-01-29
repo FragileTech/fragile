@@ -120,7 +120,7 @@ The algorithm exhibits self-similar behavior across scales: the same selection-m
 - *Want the Fractal Set and causal structure?* → {doc}`2_fractal_set/01_fractal_set`, {doc}`2_fractal_set/02_causal_set_theory`
 - *Want lattice QFT, Standard Model, or Yang-Mills?* → {doc}`2_fractal_set/03_lattice_qft`, {doc}`2_fractal_set/04_standard_model`, {doc}`2_fractal_set/05_yang_mills_noether`
 - *Want emergent geometry and fitness-manifold physics?* → {doc}`3_fitness_manifold/01_emergent_geometry`
-- *Want classical proofs, bounds, or FAQ?* → {doc}`appendices/02_euclidean_gas`, {doc}`appendices/13_quantitative_error_bounds`, {doc}`appendices/00_faq`
+- *Want classical proofs, bounds, or FAQ?* → {doc}`convergence_program/02_euclidean_gas`, {doc}`convergence_program/13_quantitative_error_bounds`, {doc}`appendices/00_faq`
 :::
 
 (sec-fg-how-to-read)=
@@ -156,7 +156,7 @@ This volume is designed to be **modular**. Each chapter is self-contained:
 | Causal sets and lattice QFT | {doc}`2_fractal_set/02_causal_set_theory`, {doc}`2_fractal_set/03_lattice_qft` | {doc}`2_fractal_set/01_fractal_set` |
 | Standard Model and Yang-Mills | {doc}`2_fractal_set/04_standard_model`, {doc}`2_fractal_set/05_yang_mills_noether` | QFT familiarity |
 | Emergent geometry and fitness manifold | {doc}`3_fitness_manifold/01_emergent_geometry` | Part 1 + {doc}`2_fractal_set/01_fractal_set` |
-| Classical proofs and bounds | {doc}`appendices/02_euclidean_gas`, {doc}`appendices/06_convergence`, {doc}`appendices/13_quantitative_error_bounds` | Minimal |
+| Classical proofs and bounds | {doc}`convergence_program/02_euclidean_gas`, {doc}`convergence_program/06_convergence`, {doc}`convergence_program/13_quantitative_error_bounds` | Minimal |
 | FAQ and objections | {doc}`appendices/00_faq` | None |
 
 ### LLM-Assisted Exploration
@@ -200,12 +200,12 @@ A recommended approach for understanding this framework:
 - {doc}`3_fitness_manifold/06_cosmology`: Cosmology and large-scale dynamics
 
 **Appendices: Classical Analysis and Bounds**
-- {doc}`appendices/01_fragile_gas_framework`: Axioms and framework
-- {doc}`appendices/02_euclidean_gas`: Euclidean instantiation
-- {doc}`appendices/06_convergence`: Classical convergence theorem
-- {doc}`appendices/07_discrete_qsd`: QSD structure
-- {doc}`appendices/08_mean_field`: Mean-field limit and propagation of chaos
-- {doc}`appendices/13_quantitative_error_bounds`: Quantitative error bounds
+- {doc}`convergence_program/01_fragile_gas_framework`: Axioms and framework
+- {doc}`convergence_program/02_euclidean_gas`: Euclidean instantiation
+- {doc}`convergence_program/06_convergence`: Classical convergence theorem
+- {doc}`convergence_program/07_discrete_qsd`: QSD structure
+- {doc}`convergence_program/08_mean_field`: Mean-field limit and propagation of chaos
+- {doc}`convergence_program/13_quantitative_error_bounds`: Quantitative error bounds
 - {doc}`appendices/00_faq`: FAQ and reviewer objections
 
 (sec-fg-positioning)=

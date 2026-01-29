@@ -31,7 +31,7 @@ The technical heart of the document is the derivation of explicit quantitative c
 ## Why Hypostructure? Classical Analysis vs. Structural Verification
 
 :::{div} feynman-prose
-Let me be direct about something that may puzzle readers familiar with mathematical analysis: why do we need this elaborate Hypostructure machinery when the appendices contain perfectly rigorous classical proofs? The Euclidean Gas convergence analysis in {doc}`../appendices/02_euclidean_gas`, {doc}`../appendices/05_kinetic_contraction`, and {doc}`../appendices/06_convergence` establishes exponential ergodicity using standard tools—Lyapunov functions, hypocoercive estimates, Foster drift conditions. These proofs work. They give quantitative rates. So what is the point of redoing everything in this categorical language?
+Let me be direct about something that may puzzle readers familiar with mathematical analysis: why do we need this elaborate Hypostructure machinery when the appendices contain perfectly rigorous classical proofs? The Euclidean Gas convergence analysis in {doc}`../convergence_program/02_euclidean_gas`, {doc}`../convergence_program/05_kinetic_contraction`, and {doc}`../convergence_program/06_convergence` establishes exponential ergodicity using standard tools—Lyapunov functions, hypocoercive estimates, Foster drift conditions. These proofs work. They give quantitative rates. So what is the point of redoing everything in this categorical language?
 
 The answer is that we are not redoing the same thing. We are doing something fundamentally different, and the difference matters precisely when you try to extend the theory beyond its original comfortable domain.
 :::
@@ -42,12 +42,12 @@ The appendices to this volume provide a complete classical treatment of the Eucl
 
 | Document | Content | Analytical Technique |
 |----------|---------|---------------------|
-| {doc}`../appendices/01_fragile_gas_framework` | Axiomatic foundations | Measure-theoretic framework |
-| {doc}`../appendices/02_euclidean_gas` | Euclidean instantiation | Sasaki metric geometry |
-| {doc}`../appendices/03_cloning` | Cloning operator analysis | Wasserstein contraction |
-| {doc}`../appendices/05_kinetic_contraction` | Kinetic operator | Hypocoercivity theory |
-| {doc}`../appendices/06_convergence` | Full convergence theorem | Composed Lyapunov function |
-| {doc}`../appendices/08_mean_field` | Mean-field limit | Propagation of chaos |
+| {doc}`../convergence_program/01_fragile_gas_framework` | Axiomatic foundations | Measure-theoretic framework |
+| {doc}`../convergence_program/02_euclidean_gas` | Euclidean instantiation | Sasaki metric geometry |
+| {doc}`../convergence_program/03_cloning` | Cloning operator analysis | Wasserstein contraction |
+| {doc}`../convergence_program/05_kinetic_contraction` | Kinetic operator | Hypocoercivity theory |
+| {doc}`../convergence_program/06_convergence` | Full convergence theorem | Composed Lyapunov function |
+| {doc}`../convergence_program/08_mean_field` | Mean-field limit | Propagation of chaos |
 
 These documents establish that the Euclidean Gas converges exponentially to a unique quasi-stationary distribution under appropriate parameter choices. The proofs are rigorous, the constants are explicit, and the results are mathematically unimpeachable.
 
@@ -60,7 +60,7 @@ Now here is where things get interesting. The classical proofs work beautifully 
 
 **The Lyapunov function problem.** To prove convergence classically, you need a Lyapunov function—a clever energy-like quantity that decreases along trajectories. The Euclidean Gas proof constructs $\mathcal{L} = W_h^2 + \alpha V_{\text{Var},x} + \beta V_{\text{Var},v} + \gamma W_b$ with carefully tuned coefficients. But how did we know to use *this* function? The honest answer is: we knew what we were trying to prove, and we reverse-engineered a function that would prove it. This is standard practice in analysis, but it means you must already understand the answer before you can write the proof.
 
-**The perturbative trap.** The hypocoercivity analysis in {doc}`../appendices/05_kinetic_contraction` decomposes the dynamics as "equilibrium plus small perturbation"—the kinetic operator has a nice invariant measure, and cloning is treated as a perturbation that must be controlled. This works when cloning is genuinely a small effect. But what if cloning is not small? What if it fundamentally restructures the dynamics? The perturbative framework has no answer.
+**The perturbative trap.** The hypocoercivity analysis in {doc}`../convergence_program/05_kinetic_contraction` decomposes the dynamics as "equilibrium plus small perturbation"—the kinetic operator has a nice invariant measure, and cloning is treated as a perturbation that must be controlled. This works when cloning is genuinely a small effect. But what if cloning is not small? What if it fundamentally restructures the dynamics? The perturbative framework has no answer.
 
 **The boundary nightmare.** Classical PDE theory requires smooth boundaries with well-defined normal vectors. But agent boundaries are not smooth. The terminal state of an Atari game is not a manifold with a tangent space. An agent entering causal stasis due to information overload—the sieve detecting an unrecoverable state—does not have a differentiable boundary. In classical analysis, you either pretend these boundaries do not exist or you spend enormous effort constructing regularized approximations.
 :::
@@ -69,7 +69,7 @@ Now here is where things get interesting. The classical proofs work beautifully 
 
 The deepest limitation of classical analysis is its inability to recognize **gauge symmetries**—transformations that leave the physics invariant but change the mathematical representation. Consider two walkers with identical fitness exploring symmetric regions of the state space. Classically, these are different states requiring separate tracking. But from the algorithm's perspective, they are equivalent—any observable property is identical under the symmetry.
 
-Classical analysis handles this by **adding axioms to exclude symmetric configurations**. The framework document {doc}`../appendices/01_fragile_gas_framework` must explicitly specify that certain "pathological" configurations are forbidden. But these configurations are not pathological—they are *features* of the underlying symmetry structure being treated as *bugs* because the mathematical formalism cannot accommodate them.
+Classical analysis handles this by **adding axioms to exclude symmetric configurations**. The framework document {doc}`../convergence_program/01_fragile_gas_framework` must explicitly specify that certain "pathological" configurations are forbidden. But these configurations are not pathological—they are *features* of the underlying symmetry structure being treated as *bugs* because the mathematical formalism cannot accommodate them.
 
 :::{prf:remark} Symmetry as Bug vs. Feature
 :label: rem-symmetry-bug-feature
@@ -165,7 +165,7 @@ $$K_{\mathrm{Auto}}^+ = (T_{\text{algorithmic}}\ \text{good},\ \text{AutomationG
 
 This document presents a **machine-checkable proof object** for the **Latent Fractal Gas** (Fragile-Agent kinetics) using the Hypostructure framework.
 
-**Approach:** We instantiate thin interfaces for a swarm in the **latent space** $(\mathcal{Z}, G)$ with: (i) **soft companion selection** via the phase-space softmax kernel (as in `docs/source/3_fractal_gas/appendices/03_cloning.md`), (ii) **fitness-based cloning** with Gaussian position jitter and **inelastic collision** velocity updates, and (iii) the **Fragile-Agent kinetic operator**: geodesic Boris-BAOAB on Lorentz-Langevin dynamics driven by the reward 1-form and effective potential, augmented with a state-dependent viscous velocity coupling.
+**Approach:** We instantiate thin interfaces for a swarm in the **latent space** $(\mathcal{Z}, G)$ with: (i) **soft companion selection** via the phase-space softmax kernel (as in `docs/source/3_fractal_gas/convergence_program/03_cloning.md`), (ii) **fitness-based cloning** with Gaussian position jitter and **inelastic collision** velocity updates, and (iii) the **Fragile-Agent kinetic operator**: geodesic Boris-BAOAB on Lorentz-Langevin dynamics driven by the reward 1-form and effective potential, augmented with a state-dependent viscous velocity coupling.
 
 **Result:** A fully specified step operator (in distribution), a complete constants table, derived constants computed from parameters, and a sieve run that reduces mean-field/QSD convergence claims to the framework rate calculators in `src/fragile/convergence_bounds.py`.
 
@@ -2117,7 +2117,7 @@ This table incorporates the assumption audit from Part III-E (Assumption Dischar
 
 1. Hypostructure Framework v1.0 (`docs/source/2_hypostructure/hypopermits_jb.md`)
 2. Fragile-Agent dynamics (`docs/source/1_agent/05_geometry/04_equations_motion.md`)
-3. Companion selection (soft companion kernel definition in `docs/source/3_fractal_gas/appendices/03_cloning.md`; implementation-level approximations, if any, are out of scope)
+3. Companion selection (soft companion kernel definition in `docs/source/3_fractal_gas/convergence_program/03_cloning.md`; implementation-level approximations, if any, are out of scope)
 4. Fitness operator (`src/fragile/fractalai/core/fitness.py`)
 5. Cloning operator (`src/fragile/fractalai/core/cloning.py`)
 6. Latent Fractal Gas step operator (this document)

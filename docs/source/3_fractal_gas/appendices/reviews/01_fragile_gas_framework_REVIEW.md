@@ -2,7 +2,7 @@ I wan# Mathematical Review: 01_fragile_gas_framework.md
 
 **Reviewed by:** Miau (Claude), Gemini CLI, Codex
 **Date:** 2026-01-26
-**File:** `docs/source/3_fractal_gas/appendices/01_fragile_gas_framework.md`
+**File:** `docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md`
 **Lines:** 5706
 
 ---

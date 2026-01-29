@@ -84,7 +84,7 @@ $$
 
    **Note on curvature regime (two independent routes):**
    - **Analytic route (Appendix 14B):** The Gevrey-1 bounds in
-     {doc}`/source/3_fractal_gas/appendices/14_b_geometric_gas_cinf_regularity_full` give
+     {doc}`/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full` give
      uniform bounds on derivatives of $V_{\mathrm{fit}}$, hence on $H=\nabla^2
      V_{\mathrm{fit}}$ and $\nabla H$ over Safe Harbor windows. With the spectral floor
      $\epsilon_\Sigma$ (see {prf:ref}`thm-uniform-ellipticity-latent`), $g=H+\epsilon_\Sigma I$
@@ -1050,8 +1050,8 @@ The rigorous statement is conditional: **neighbor changes force scutoids**; clon
 
 - {doc}`01_emergent_geometry` — Emergent Riemannian geometry from adaptive diffusion
 - {doc}`/source/3_fractal_gas/2_fractal_set/02_causal_set_theory` — Causal set structure of the Fractal Set
-- {doc}`/source/3_fractal_gas/appendices/09_propagation_chaos` — Mean-field justification for spatial statistics
-- {doc}`/source/3_fractal_gas/appendices/14_b_geometric_gas_cinf_regularity_full` — Regularity bounds for curvature control
+- {doc}`/source/3_fractal_gas/convergence_program/09_propagation_chaos` — Mean-field justification for spatial statistics
+- {doc}`/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full` — Regularity bounds for curvature control
 - {prf:ref}`def-adaptive-diffusion-tensor-latent` — Adaptive diffusion tensor and emergent metric
 - {prf:ref}`def-fractal-set-cst-edges` — CST edge definition
 - {prf:ref}`def-fractal-set-cloning-score` — Cloning score definition

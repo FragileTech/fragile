@@ -681,18 +681,18 @@ assumptions are introduced; each item names the exact proof objects to cite.
    (Sections 1-2 of this chapter).
 5. **Global hyperbolicity**: Show causal diamonds are compact on the window
    $[t_0,t_1]$ using the confining envelope from the decorated Gibbs structure
-   ({prf:ref}`thm-decorated-gibbs` in {doc}`/source/3_fractal_gas/appendices/07_discrete_qsd`) and the Safe Harbor
-   barrier mechanisms ({doc}`/source/3_fractal_gas/appendices/03_cloning`, {doc}`/source/3_fractal_gas/appendices/07_discrete_qsd`). This yields a
+   ({prf:ref}`thm-decorated-gibbs` in {doc}`/source/3_fractal_gas/convergence_program/07_discrete_qsd`) and the Safe Harbor
+   barrier mechanisms ({doc}`/source/3_fractal_gas/convergence_program/03_cloning`, {doc}`/source/3_fractal_gas/convergence_program/07_discrete_qsd`). This yields a
    Cauchy foliation by constant-$t$ slices.
 
 #### A2 (Smooth fields): $U_{\mathrm{eff}}$, $r(t)$, $Z(t)$, $g_R$
 
 1. **$U_{\mathrm{eff}}$ regularity**: Express $U_{\mathrm{eff}}$ via the
    mean-field fitness potential and decorated Gibbs envelope
-   ({doc}`/source/3_fractal_gas/appendices/07_discrete_qsd`, {prf:ref}`thm-decorated-gibbs`). Use the fitness
+   ({doc}`/source/3_fractal_gas/convergence_program/07_discrete_qsd`, {prf:ref}`thm-decorated-gibbs`). Use the fitness
    pipeline smoothness certificate in {doc}`../1_the_algorithm/02_fractal_gas_latent`
    (composition of $C^2$ primitives + Gaussian smoothing) and hypoelliptic
-   regularity from {doc}`/source/3_fractal_gas/appendices/09_propagation_chaos` to upgrade to $C^4$ on the alive core.
+   regularity from {doc}`/source/3_fractal_gas/convergence_program/09_propagation_chaos` to upgrade to $C^4$ on the alive core.
 2. **$g_R$ smoothness**: Start from the adaptive diffusion tensor
    ({prf:ref}`def-adaptive-diffusion-tensor-latent`) and the Lipschitz continuity
    result ({prf:ref}`prop-lipschitz-diffusion-latent` in
@@ -700,31 +700,31 @@ assumptions are introduced; each item names the exact proof objects to cite.
    $C^4$ regularity of $V_{\mathrm{fit}}$ (from Step 1) to lift $g_R$ to $C^4$.
 3. **$r(t)$ and $Z(t)$ smoothness**: Define $r(t)$ and $Z(t)$ as time-marginals of
    the QSD density (Section 2.2 here). Use mass conservation
-   ({prf:ref}`thm-mass-conservation` in {doc}`/source/3_fractal_gas/appendices/08_mean_field`) and differentiation
+   ({prf:ref}`thm-mass-conservation` in {doc}`/source/3_fractal_gas/convergence_program/08_mean_field`) and differentiation
    under the integral sign with $C^4$ density to show $r, Z \in C^4([t_0,t_1])$.
 4. **Uniform derivative bounds**: Use the confining envelope and bounded core
    (Safe Harbor + decorated Gibbs) to bound derivatives uniformly on the window.
 
 #### A3 (QSD sampling): stationarity and density form
 
-1. **Existence/uniqueness**: Use {doc}`/source/3_fractal_gas/appendices/06_convergence` (finite-$N$ QSD) plus
-   {doc}`/source/3_fractal_gas/appendices/09_propagation_chaos` (mean-field limit) to identify the QSD density
+1. **Existence/uniqueness**: Use {doc}`/source/3_fractal_gas/convergence_program/06_convergence` (finite-$N$ QSD) plus
+   {doc}`/source/3_fractal_gas/convergence_program/09_propagation_chaos` (mean-field limit) to identify the QSD density
    $\rho_{\mathrm{adaptive}}(\cdot,t)$ on each time slice.
 2. **Gibbs structure**: Apply {prf:ref}`thm-decorated-gibbs` to write
    $\rho_0(x) \propto e^{-U_{\mathrm{eff}}/T_{\mathrm{sys}}}\,\Xi(x)$ and match
    the QSD density used in the volume measure reweighting
    ({prf:ref}`def-cst-volume`).
 3. **Ergodicity**: Combine exchangeability and uniqueness
-   ({prf:ref}`thm-qsd-exchangeability` in {doc}`/source/3_fractal_gas/appendices/12_qsd_exchangeability_theory`)
+   ({prf:ref}`thm-qsd-exchangeability` in {doc}`/source/3_fractal_gas/convergence_program/12_qsd_exchangeability_theory`)
    with LSI mixing (A4) to obtain slice-wise ergodic sampling on the window.
 
 #### A4 (Mixing): LSI and concentration
 
 1. **N-uniform LSI**: Use {prf:ref}`thm-n-uniform-lsi-exchangeable`
-   ({doc}`/source/3_fractal_gas/appendices/12_qsd_exchangeability_theory`) and the KL convergence proof
-   ({prf:ref}`thm-kl-convergence-euclidean` in {doc}`/source/3_fractal_gas/appendices/15_kl_convergence`) to
+   ({doc}`/source/3_fractal_gas/convergence_program/12_qsd_exchangeability_theory`) and the KL convergence proof
+   ({prf:ref}`thm-kl-convergence-euclidean` in {doc}`/source/3_fractal_gas/convergence_program/15_kl_convergence`) to
    obtain an LSI constant independent of $N$ on the alive core.
-2. **Hypocoercive smoothing**: Use {doc}`/source/3_fractal_gas/appendices/10_kl_hypocoercive` to pass LSI from
+2. **Hypocoercive smoothing**: Use {doc}`/source/3_fractal_gas/convergence_program/10_kl_hypocoercive` to pass LSI from
    the discrete chain to the continuous-time generator.
 3. **LLN and exponential mixing**: Apply the standard LSI $\Rightarrow$
    hypercontractivity $\Rightarrow$ exponential decay of correlations pathway
@@ -762,7 +762,7 @@ assumptions are introduced; each item names the exact proof objects to cite.
 :label: def-fractal-gas-interior-episodes
 
 Let $\mathcal{X}_{\mathrm{core}}\subset\mathcal{X}$ be the compact alive core guaranteed by the
-Safe Harbor/confining envelope (Section 2; {doc}`/source/3_fractal_gas/appendices/07_discrete_qsd`). For time-dependent metrics,
+Safe Harbor/confining envelope (Section 2; {doc}`/source/3_fractal_gas/convergence_program/07_discrete_qsd`). For time-dependent metrics,
 write $\mathrm{dist}_{g_{R,t}}(x,\partial\mathcal{X}_{\mathrm{core}})$ for the slice-wise
 geodesic boundary distance induced by $g_R(\cdot,t)$ (set to $+\infty$ if
 $\partial\mathcal{X}_{\mathrm{core}}=\varnothing$). Define

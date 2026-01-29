@@ -1,15 +1,15 @@
-# Mathematical Review: docs/source/3_fractal_gas/appendices/17_geometric_gas.md
+# Mathematical Review: docs/source/3_fractal_gas/convergence_program/17_geometric_gas.md
 
 ## Metadata
-- Reviewed file: docs/source/3_fractal_gas/appendices/17_geometric_gas.md
+- Reviewed file: docs/source/3_fractal_gas/convergence_program/17_geometric_gas.md
 - Review date: 2026-01-27
 - Reviewer: Codex
 - Scope: Full document (post-fix review)
 - Framework anchors (definitions/axioms/permits):
   - Axioms {prf:ref}`axiom-gg-confining-potential`, {prf:ref}`axiom-gg-ueph`, and Theorem {prf:ref}`thm-gg-ueph-construction` (uniform ellipticity of D_reg)
-  - Hypocoercive LSI anchors: {doc}`/source/3_fractal_gas/appendices/15_kl_convergence` (Theorem {prf:ref}`thm-kl-convergence-euclidean`, {prf:ref}`thm-lsi-perturbation`, {prf:ref}`cor-adaptive-lsi`) and {doc}`/source/3_fractal_gas/appendices/10_kl_hypocoercive` (Theorem {prf:ref}`thm-unconditional-lsi-explicit`)
-  - Propagation-of-chaos Lipschitz framework: {doc}`/source/3_fractal_gas/appendices/09_propagation_chaos` (H^1_w to L^\infty Lipschitz continuity)
-  - QSD variance bounds: {doc}`/source/3_fractal_gas/appendices/06_convergence` (Theorem {prf:ref}`thm-equilibrium-variance-bounds`)
+  - Hypocoercive LSI anchors: {doc}`/source/3_fractal_gas/convergence_program/15_kl_convergence` (Theorem {prf:ref}`thm-kl-convergence-euclidean`, {prf:ref}`thm-lsi-perturbation`, {prf:ref}`cor-adaptive-lsi`) and {doc}`/source/3_fractal_gas/convergence_program/10_kl_hypocoercive` (Theorem {prf:ref}`thm-unconditional-lsi-explicit`)
+  - Propagation-of-chaos Lipschitz framework: {doc}`/source/3_fractal_gas/convergence_program/09_propagation_chaos` (H^1_w to L^\infty Lipschitz continuity)
+  - QSD variance bounds: {doc}`/source/3_fractal_gas/convergence_program/06_convergence` (Theorem {prf:ref}`thm-equilibrium-variance-bounds`)
   - External permit for hypoelliptic regularity: Villani 2009 (Theorem 7.2) / Herau 2004
 
 ## Executive summary
@@ -31,7 +31,7 @@ No errors found in this pass.
 ## Resolution notes
 - Commutator Step 4 now cites Lemma {prf:ref}`lem-gg-velocity-second-derivative`, backed by external hypoelliptic regularity permits.
 - Effective-temperature references replaced by N-uniform QSD velocity moment bounds from Theorem {prf:ref}`thm-equilibrium-variance-bounds`.
-- Mean-field Lipschitz bounds use the H^1_w to L^\infty constants from {doc}`/source/3_fractal_gas/appendices/09_propagation_chaos`.
+- Mean-field Lipschitz bounds use the H^1_w to L^\infty constants from {doc}`/source/3_fractal_gas/convergence_program/09_propagation_chaos`.
 
 ## Scope restrictions and clarifications
 - External probabilistic and functional-analytic theorems are allowed and explicitly cited in the appendix.
