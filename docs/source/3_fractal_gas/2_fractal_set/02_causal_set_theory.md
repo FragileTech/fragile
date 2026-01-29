@@ -320,6 +320,47 @@ emergent metric $g_R$ (from {prf:ref}`def-adaptive-diffusion-tensor-latent`) and
 ({prf:ref}`thm-n-uniform-lsi-exchangeable`) to keep the continuum limits coordinate-invariant.
 :::
 
+:::{prf:lemma} Causal Order Fixes the Lorentzian Conformal Class
+:label: lem-causal-order-conformal-class
+
+Let $(M, G)$ be the continuum lift on the window $[t_0,t_1] \times \mathcal{X}$ from
+Lemma {prf:ref}`lem-continuum-a1-geometry`, and let $\prec_{\mathrm{LC}}$ be the geometric light-cone
+order from {prf:ref}`def-fractal-causal-order`. Define the **strict** light-cone order
+$\prec_{\mathrm{LC}}^{\circ}$ by the same light-cone test but with
+$d_{\mathrm{geo}}(e_i,e_j) < c\,(t_j-t_i)$. If $G'$ is any Lorentzian metric on $M$ with the same
+strict order $\prec_{\mathrm{LC}}^{\circ}$, then there exists a positive function $\Omega$ such that
+$G' = \Omega^2 G$.
+
+*Proof.* Lemma {prf:ref}`lem-continuum-a1-geometry` yields a globally hyperbolic Lorentzian manifold,
+hence $(M,G)$ is distinguishing (see {cite}`minguzzi2008causal`). The strict order
+$\prec_{\mathrm{LC}}^{\circ}$ coincides with the chronological relation $I^+_G$ by construction,
+since it uses the same reconstructed $d_{\mathrm{geo}}$ and time function as the light-cone test.
+Malament's theorem states that on distinguishing spacetimes the chronological relation determines
+the conformal class of the metric ({cite}`malament1977`). Hence $G' = \Omega^2 G$. $\square$
+:::
+
+:::{prf:corollary} Order + Volume Fix the Conformal Factor
+:label: cor-order-volume-fix-conformal
+
+Let $G' = \Omega^2 G$ be a Lorentzian metric with the same strict order $\prec_{\mathrm{LC}}^{\circ}$,
+and let $dV_G$ be the **geometric** volume form recovered by reweighting the adaptive measure in
+Definition {prf:ref}`def-cst-volume`. In spacetime dimension $D = d+1$,
+
+$$
+dV_{G'} = \sqrt{-\det G'}\, d^D x = \Omega^D \sqrt{-\det G}\, d^D x = \Omega^D dV_G .
+$$
+
+The recovered geometric volume form $dV_G$ (Definition {prf:ref}`def-cst-volume` and
+Theorem {prf:ref}`thm-fractal-adaptive-sprinkling`) therefore fixes $\Omega$ pointwise via
+
+$$
+\Omega = \left( \frac{dV_{G'}}{dV_G} \right)^{1/D}.
+$$
+
+Hence the CST microdata (order + counting/volume) determine the Lorentzian metric on the window
+uniquely, up to the explicit normalization of the recovered volume form. $\square$
+:::
+
 :::{figure} figures/adaptive-sprinkling.svg
 :alt: Comparison of uniform and adaptive sprinkling densities.
 :width: 95%

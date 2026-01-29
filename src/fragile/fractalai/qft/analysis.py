@@ -87,6 +87,13 @@ class AnalysisConfig:
     particle_knn_sample: int | None = 512
     particle_meson_reduce: str = "mean"
     particle_baryon_pairs: int | None = None
+    # Voronoi-specific parameters
+    particle_voronoi_weight: str = "facet_area"
+    particle_voronoi_pbc_mode: str = "mirror"
+    particle_voronoi_normalize: bool = True
+    particle_voronoi_max_triplets: int | None = 100
+    particle_voronoi_exclude_boundary: bool = True
+    particle_voronoi_boundary_tolerance: float = 1e-6
     compute_string_tension: bool = False
     string_tension_max_triangles: int = 20000
     string_tension_bins: int = 20
@@ -1042,6 +1049,12 @@ def _compute_particle_observables(
     knn_sample: int | None,
     meson_reduce: str,
     baryon_pairs: int | None,
+    voronoi_weight: str,
+    voronoi_pbc_mode: str,
+    voronoi_normalize: bool,
+    voronoi_max_triplets: int | None,
+    voronoi_exclude_boundary: bool,
+    voronoi_boundary_tolerance: float,
     warmup_fraction: float,
     glueball_data: dict[str, np.ndarray] | None,
 ) -> tuple[dict[str, Any], dict[str, np.ndarray]]:
@@ -1112,6 +1125,9 @@ def _compute_particle_observables(
             break
 
         neighbor_indices = None
+        voronoi_data = None
+        geometric_weights = None
+
         if neighbor_method == "knn" and series_ops:
             try:
                 neighbor_indices = compute_knn_indices(
@@ -1125,6 +1141,38 @@ def _compute_particle_observables(
             except ValueError as exc:
                 errors["knn"] = str(exc)
                 neighbor_indices = None
+
+        elif neighbor_method == "voronoi" and series_ops:
+            # Import Voronoi functions
+            from fragile.fractalai.qft.voronoi_observables import (
+                compute_voronoi_tessellation,
+                compute_geometric_weights,
+            )
+
+            try:
+                voronoi_data = compute_voronoi_tessellation(
+                    positions=x_pre,
+                    alive=alive,
+                    bounds=history.bounds,
+                    pbc=history.pbc,
+                    pbc_mode=voronoi_pbc_mode,
+                    exclude_boundary=voronoi_exclude_boundary,
+                    boundary_tolerance=voronoi_boundary_tolerance,
+                )
+
+                if voronoi_data["voronoi"] is not None:
+                    geometric_weights = compute_geometric_weights(
+                        voronoi_data=voronoi_data,
+                        weight_mode=voronoi_weight,
+                        normalize=voronoi_normalize,
+                    )
+                else:
+                    errors["voronoi"] = voronoi_data.get("error", "Voronoi computation failed")
+
+            except Exception as exc:
+                errors["voronoi"] = str(exc)
+                voronoi_data = None
+                geometric_weights = None
 
         for op in series_ops:
             if op not in series_lists:
@@ -1141,6 +1189,27 @@ def _compute_particle_observables(
                             alive,
                             color_valid,
                             reduce=meson_reduce,
+                        )
+                        value = meson[valid].mean().item() if valid.any() else 0.0 + 0.0j
+                        series_lists[op].append(value)
+                elif neighbor_method == "voronoi":
+                    if voronoi_data is None or geometric_weights is None or sample_indices.numel() == 0:
+                        series_lists[op].append(0.0 + 0.0j)
+                    else:
+                        from fragile.fractalai.qft.voronoi_observables import (
+                            compute_meson_operator_voronoi,
+                        )
+
+                        meson, valid = compute_meson_operator_voronoi(
+                            color,
+                            sample_indices,
+                            voronoi_data["neighbor_lists"],
+                            geometric_weights,
+                            alive,
+                            color_valid,
+                            voronoi_data["index_map"],
+                            weight_mode=voronoi_weight,
+                            classification=voronoi_data.get("classification"),
                         )
                         value = meson[valid].mean().item() if valid.any() else 0.0 + 0.0j
                         series_lists[op].append(value)
@@ -1161,6 +1230,34 @@ def _compute_particle_observables(
                                 alive,
                                 color_valid,
                                 max_pairs=baryon_pairs,
+                            )
+                        except ValueError as exc:
+                            errors["baryon"] = str(exc)
+                            ops.discard("baryon")
+                            series_lists.pop("baryon", None)
+                            continue
+                        value = baryon[valid].mean().item() if valid.any() else 0.0 + 0.0j
+                        series_lists[op].append(value)
+                elif neighbor_method == "voronoi":
+                    if voronoi_data is None or geometric_weights is None or sample_indices.numel() == 0:
+                        series_lists[op].append(0.0 + 0.0j)
+                    else:
+                        try:
+                            from fragile.fractalai.qft.voronoi_observables import (
+                                compute_baryon_operator_voronoi,
+                            )
+
+                            baryon, valid = compute_baryon_operator_voronoi(
+                                color,
+                                sample_indices,
+                                voronoi_data["neighbor_lists"],
+                                geometric_weights,
+                                alive,
+                                color_valid,
+                                voronoi_data["index_map"],
+                                weight_mode=voronoi_weight,
+                                max_triplets=voronoi_max_triplets,
+                                classification=voronoi_data.get("classification"),
                             )
                         except ValueError as exc:
                             errors["baryon"] = str(exc)
@@ -1195,6 +1292,10 @@ def _compute_particle_observables(
         "knn_sample": int(knn_sample) if knn_sample is not None else None,
         "meson_reduce": meson_reduce,
         "baryon_pairs": int(baryon_pairs) if baryon_pairs is not None else None,
+        "voronoi_weight": voronoi_weight,
+        "voronoi_pbc_mode": voronoi_pbc_mode,
+        "voronoi_normalize": voronoi_normalize,
+        "voronoi_max_triplets": int(voronoi_max_triplets) if voronoi_max_triplets is not None else None,
     }
 
     if time_tau:
@@ -1361,7 +1462,7 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--particle-neighbor-method",
-        choices=["companion", "knn"],
+        choices=["companion", "knn", "voronoi"],
         default="knn",
         help="Neighbor selection for baryon/meson operators.",
     )
@@ -1372,6 +1473,42 @@ def parse_args() -> argparse.Namespace:
         choices=["mean", "first"],
         default="mean",
         help="Reduction over k-NN meson pairs.",
+    )
+    parser.add_argument(
+        "--particle-voronoi-weight",
+        choices=["facet_area", "volume", "combined"],
+        default="facet_area",
+        help="Geometric weighting scheme for Voronoi neighbors.",
+    )
+    parser.add_argument(
+        "--particle-voronoi-pbc-mode",
+        choices=["mirror", "replicate", "ignore"],
+        default="mirror",
+        help="How to handle periodic boundaries in Voronoi computation.",
+    )
+    parser.add_argument(
+        "--particle-voronoi-normalize",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="Normalize geometric weights.",
+    )
+    parser.add_argument(
+        "--particle-voronoi-max-triplets",
+        type=int,
+        default=100,
+        help="Maximum baryon triplets per walker (None = all).",
+    )
+    parser.add_argument(
+        "--particle-voronoi-exclude-boundary",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="Exclude boundary and boundary-adjacent cells from observables (non-PBC only).",
+    )
+    parser.add_argument(
+        "--particle-voronoi-boundary-tolerance",
+        type=float,
+        default=1e-6,
+        help="Distance threshold for boundary cell detection.",
     )
     parser.add_argument(
         "--particle-baryon-pairs",
@@ -1422,6 +1559,12 @@ def main() -> None:
         particle_knn_sample=args.particle_knn_sample,
         particle_meson_reduce=args.particle_meson_reduce,
         particle_baryon_pairs=args.particle_baryon_pairs,
+        particle_voronoi_weight=args.particle_voronoi_weight,
+        particle_voronoi_pbc_mode=args.particle_voronoi_pbc_mode,
+        particle_voronoi_normalize=args.particle_voronoi_normalize,
+        particle_voronoi_max_triplets=args.particle_voronoi_max_triplets,
+        particle_voronoi_exclude_boundary=args.particle_voronoi_exclude_boundary,
+        particle_voronoi_boundary_tolerance=args.particle_voronoi_boundary_tolerance,
         compute_string_tension=args.compute_string_tension,
         string_tension_max_triangles=args.string_tension_max_triangles,
         string_tension_bins=args.string_tension_bins,
@@ -1484,8 +1627,8 @@ def main() -> None:
         if analysis_cfg.particle_max_lag is not None and analysis_cfg.particle_max_lag <= 0:
             msg = "particle_max_lag must be positive when set"
             raise ValueError(msg)
-        if analysis_cfg.particle_neighbor_method not in {"companion", "knn"}:
-            msg = "particle_neighbor_method must be 'companion' or 'knn'"
+        if analysis_cfg.particle_neighbor_method not in {"companion", "knn", "voronoi"}:
+            msg = "particle_neighbor_method must be 'companion', 'knn', or 'voronoi'"
             raise ValueError(msg)
         if analysis_cfg.particle_knn_k <= 0:
             msg = "particle_knn_k must be positive"
@@ -1501,6 +1644,18 @@ def main() -> None:
             and analysis_cfg.particle_baryon_pairs <= 0
         ):
             msg = "particle_baryon_pairs must be positive when set"
+            raise ValueError(msg)
+        if analysis_cfg.particle_voronoi_weight not in {"facet_area", "volume", "combined"}:
+            msg = "particle_voronoi_weight must be 'facet_area', 'volume', or 'combined'"
+            raise ValueError(msg)
+        if analysis_cfg.particle_voronoi_pbc_mode not in {"mirror", "replicate", "ignore"}:
+            msg = "particle_voronoi_pbc_mode must be 'mirror', 'replicate', or 'ignore'"
+            raise ValueError(msg)
+        if (
+            analysis_cfg.particle_voronoi_max_triplets is not None
+            and analysis_cfg.particle_voronoi_max_triplets <= 0
+        ):
+            msg = "particle_voronoi_max_triplets must be positive when set"
             raise ValueError(msg)
     if analysis_cfg.compute_string_tension:
         if analysis_cfg.string_tension_max_triangles <= 0:
@@ -1948,6 +2103,12 @@ def main() -> None:
             knn_sample=analysis_cfg.particle_knn_sample,
             meson_reduce=analysis_cfg.particle_meson_reduce,
             baryon_pairs=analysis_cfg.particle_baryon_pairs,
+            voronoi_weight=analysis_cfg.particle_voronoi_weight,
+            voronoi_pbc_mode=analysis_cfg.particle_voronoi_pbc_mode,
+            voronoi_normalize=analysis_cfg.particle_voronoi_normalize,
+            voronoi_max_triplets=analysis_cfg.particle_voronoi_max_triplets,
+            voronoi_exclude_boundary=analysis_cfg.particle_voronoi_exclude_boundary,
+            voronoi_boundary_tolerance=analysis_cfg.particle_voronoi_boundary_tolerance,
             warmup_fraction=analysis_cfg.warmup_fraction,
             glueball_data=glueball_data,
         )

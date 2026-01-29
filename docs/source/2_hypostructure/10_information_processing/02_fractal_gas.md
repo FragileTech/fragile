@@ -1192,7 +1192,7 @@ $\mathrm{Bound}_\partial$ (N13), $\mathrm{Bound}_B$ (N14), $\mathrm{Bound}_\Sigm
 $D_{\max}$ (bounded algorithmic diameter on the alive core) and $\rho_{\max}$ (uniform
 upper bound on the invariant/QSD density on the alive core). These witnesses match the
 standing hypotheses required by the Gevrey-1 regularity analysis in
-{doc}`/source/3_fractal_gas/appendices/14_b_geometric_gas_cinf_regularity_full`.
+{doc}`/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full`.
 :::
 
 :::{prf:proof}
@@ -1224,7 +1224,7 @@ machinery are met, so that an **independent** proof may be invoked if desired.
 regularization specified above, and (ii) the sieve provides witnesses $D_{\max}$ and
 $\rho_{\max}$ together with the thin-parameter bounds, then the hypotheses of the
 Gevrey-1 regularity analysis in
-{doc}`/source/3_fractal_gas/appendices/14_b_geometric_gas_cinf_regularity_full` are satisfied. In
+{doc}`/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full` are satisfied. In
 that case, the Gevrey-1 regularity proof may be applied as a **separate, independent**
 route to $C^\infty$ (and real-analytic) regularity of the mean-field expected fitness
 potential. This route remains logically independent of the hypostructure bootstrap above.

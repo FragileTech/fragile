@@ -46,7 +46,7 @@ avoids hypostructure-based proofs by design.
   bounds in the appendices (see the next section).
 
 (sec-fg-revamp-qft-strategy)=
-## Proof strategy for the QFT layer (physicist/mathematician TL;DR)
+## Proof strategy for the QFT layer
 
 This QFT layer is not a handwaving analogy. It is a constructive chain with
 explicit carriers, operators, and convergence/discharge steps. The lattice action
@@ -57,73 +57,67 @@ and the appendices provide the full audit trail.
 
 **Strategy (compressed):**
 
-1. **Discrete carrier (Fractal Set).** Define the Fractal Set as a directed
-   2-complex with CST/IG/IA edges and interaction triangles; this is the discrete
-   substrate for holonomies and action functionals
-   ({doc}`2_fractal_set/01_fractal_set`).
-
-2. **Causal structure and continuum link.** Establish the causal order and the
-   continuum lift for the CST component; define the nonlocal d'Alembertian and
-   action limit on the emergent causal set
-   ({doc}`2_fractal_set/02_causal_set_theory`).
-
-3. **Lattice gauge construction.** Build Wilson loops and plaquette holonomies on
-   the Fractal Set lattice and formalize the lattice gauge theory layer
-   ({doc}`2_fractal_set/03_lattice_qft`).
-
-4. **Gauge group from algorithmic redundancies.** Identify the gauge symmetries
-   arising from the algorithmic structure (fitness, cloning, viscous coupling),
-   and map these to the Standard Model gauge group; this fixes link-variable
-   semantics and the color structure used in the lattice action
-   ({doc}`2_fractal_set/04_standard_model`, {doc}`1_the_algorithm/02_fractal_gas_latent`).
-
-5. **Yang-Mills action and currents.** Derive the Yang-Mills action from lattice
-   holonomies and extract the corresponding Noether currents; this is the QFT
-   bridge inside the Fractal Set framework
-   ({doc}`2_fractal_set/05_yang_mills_noether`).
-
-6. **Continuum hypotheses discharge.** Discharge the continuum assumptions for
-   the causal set action and nonlocal d'Alembertian using internal QSD, mean-field,
-   and mixing results (see the full discharge chain in the appendices)
-   ({doc}`convergence_program/16_continuum_discharge`).
-
-**Appendices inventory (all files, for audit trail):**
-
-- Core appendices (main proofs and constructions): `appendices/00_faq.md`,
-  `convergence_program/01_fragile_gas_framework.md`, `convergence_program/02_euclidean_gas.md`,
-  `convergence_program/03_cloning.md`, `convergence_program/04_single_particle.md`,
-  `convergence_program/04_wasserstein_contraction.md`, `convergence_program/05_kinetic_contraction.md`,
-  `convergence_program/06_convergence.md`, `convergence_program/07_discrete_qsd.md`,
-  `convergence_program/08_mean_field.md`, `convergence_program/09_propagation_chaos.md`,
-  `convergence_program/10_kl_hypocoercive.md`, `convergence_program/11_hk_convergence.md`,
-  `convergence_program/12_qsd_exchangeability_theory.md`, `convergence_program/13_quantitative_error_bounds.md`,
-  `convergence_program/14_a_geometric_gas_c3_regularity.md`,
-  `convergence_program/14_b_geometric_gas_cinf_regularity_full.md`,
-  `convergence_program/15_kl_convergence.md`, `convergence_program/16_continuum_discharge.md`,
-  `convergence_program/17_geometric_gas.md`.
-
-- Proofs subfolder (technical lemmas and full derivations): `convergence_program/proofs/proof_cor_exponential_qsd_companion_dependent_full.md`,
-  `convergence_program/proofs/proof_lem_effective_cluster_size_bounds_full(1).md`,
-  `convergence_program/proofs/14_geometric_gas_cinf_regularity_full.md`,
-  `convergence_program/proofs/proof_lem_telescoping_derivatives.md`,
-  `convergence_program/proofs/proof_thm_exponential_tails.md`,
-  `convergence_program/proofs/proof_cor_exp_convergence.md`,
-  `convergence_program/proofs/proof_prop_complete_gradient_bounds.md`,
-  `convergence_program/proofs/proof_thm_backbone_convergence.md`,
-  `convergence_program/proofs/13_geometric_gas_c3_regularity.md`,
-  `convergence_program/proofs/proof_cor_effective_interaction_radius_full.md`,
-  `convergence_program/proofs/proof_lem_greedy_ideal_equivalence.md`,
-  `convergence_program/proofs/proof_lem_hormander.md`,
-  `convergence_program/proofs/proof_lem_effective_cluster_size_bounds_full.md`,
-  `convergence_program/proofs/proof_cor_gevrey_1_fitness_potential_full.md`,
-  `convergence_program/proofs/proof_lem_effective_companion_count_corrected_full.md`,
-  `convergence_program/proofs/proof_thm_faa_di_bruno_appendix.md`,
-  `convergence_program/proofs/proof_lem_variance_to_gap_adaptive.md`,
-  `convergence_program/proofs/proof_lem_macro_transport.md`.
+- **Algorithmic specification.** Formalize the Fractal Gas operators, state space, and update
+  pipeline at the algorithmic level ({doc}`1_the_algorithm/01_algorithm_intuition`,
+  {doc}`1_the_algorithm/02_fractal_gas_latent`).
+- **Companion selection and minorization.** Fix the soft companion kernel and its explicit
+  Doeblin-type lower bounds as a mixing ingredient ({doc}`1_the_algorithm/02_fractal_gas_latent`,
+  {doc}`convergence_program/03_cloning`).
+- **Fitness construction.** Define the dual-channel fitness potential and its standardized
+  statistics, including the diversity/reward balance ({doc}`1_the_algorithm/02_fractal_gas_latent`,
+  {doc}`convergence_program/08_mean_field`).
+- **Cloning operator.** Prove the Keystone/Safe Harbor drift for positional variance and
+  boundary terms with N-uniform constants ({doc}`convergence_program/03_cloning`).
+- **Kinetic operator.** Establish velocity dissipation, bounded positional expansion, and
+  minorization for the BAOAB/Langevin step ({doc}`convergence_program/05_kinetic_contraction`).
+- **Synergistic Foster-Lyapunov.** Assemble cloning + kinetic drifts into a TV-track
+  Lyapunov inequality for the composed operator ({doc}`convergence_program/06_convergence`).
+- **QSD existence/uniqueness.** Prove geometric ergodicity and existence of a unique
+  quasi-stationary distribution for finite-N dynamics ({doc}`convergence_program/06_convergence`).
+- **QSD structure.** Characterize the equilibrium density and its thermodynamic form
+  in the mean-field limit ({doc}`convergence_program/07_discrete_qsd`).
+- **Exchangeability.** Prove permutation symmetry of the QSD and de Finetti structure
+  needed for the mean-field limit ({doc}`convergence_program/12_qsd_exchangeability_theory`).
+- **Mean-field PDE.** Derive the McKean–Vlasov Fokker–Planck equation with cloning and
+  revival terms as the continuum forward equation ({doc}`convergence_program/08_mean_field`).
+- **Propagation of chaos.** Construct the mean-field QSD as the large-N limit via
+  tightness, identification, and uniqueness ({doc}`convergence_program/09_propagation_chaos`).
+- **KL/LSI convergence.** Establish logarithmic Sobolev inequalities and exponential KL decay
+  with explicit constants ({doc}`convergence_program/15_kl_convergence`).
+- **Unconditional hypocoercive route.** Provide an alternative entropy-based convergence proof
+  without convexity assumptions ({doc}`convergence_program/10_kl_hypocoercive`).
+- **HK convergence.** Prove Hellinger–Kantorovich contraction by combining mass, transport,
+  and shape controls ({doc}`convergence_program/11_hk_convergence`).
+- **Quantitative rates.** Derive O(1/sqrt(N)) mean-field error bounds and explicit convergence
+  rates for observables ({doc}`convergence_program/13_quantitative_error_bounds`).
+- **Fractal Set carrier.** Define the directed 2-complex (CST/IG/IA edges and interaction
+  triangles) as the discrete QFT substrate ({doc}`2_fractal_set/01_fractal_set`).
+- **Causal set lift.** Establish the causal order and the nonlocal d'Alembertian/action limit
+  on the emergent causal set ({doc}`2_fractal_set/02_causal_set_theory`).
+- **Extension of causal set theory.** Generalize causal set theory by coupling CST with IG/IA
+  structure from the Fractal Set, yielding additional geometric data beyond pure order
+  ({doc}`2_fractal_set/01_fractal_set`, {doc}`2_fractal_set/02_causal_set_theory`).
+- **Recovery of classical causal sets.** Show that standard causal set theory is recovered
+  as the special case obtained by restricting to the CST subgraph and dropping IG/IA data
+  ({doc}`2_fractal_set/02_causal_set_theory`).
+- **Lattice gauge layer.** Build Wilson loops/plaquettes and the lattice gauge action on the
+  Fractal Set lattice ({doc}`2_fractal_set/03_lattice_qft`).
+- **Gauge group identification.** Derive the Standard Model gauge group from algorithmic
+  redundancies and fix link-variable semantics ({doc}`2_fractal_set/04_standard_model`,
+  {doc}`1_the_algorithm/02_fractal_gas_latent`).
+- **Yang–Mills + currents.** Extract the Yang–Mills action and Noether currents from lattice
+  holonomies ({doc}`2_fractal_set/05_yang_mills_noether`).
+- **Fitness manifold geometry.** Develop the emergent fitness-manifold metric, scutoid
+  spacetime, and curvature dynamics as the geometry/physics layer over the algorithm
+  ({doc}`3_fitness_manifold/01_emergent_geometry`, {doc}`3_fitness_manifold/02_scutoid_spacetime`,
+  {doc}`3_fitness_manifold/03_curvature_gravity`).
+- **Continuum hypotheses discharge.** Discharge the continuum assumptions for the causal set
+  action and nonlocal d'Alembertian using the internal QSD, mean-field, and mixing results
+  ({doc}`convergence_program/16_continuum_discharge`).
 
 
 (sec-fg-revamp-convergence-strategy)=
-## Convergence proof strategy (appendices only, no hypostructure)
+## Convergence proof strategy
 
 This is the end-to-end convergence chain used in Volume 3 when we restrict to the
 appendices and ignore hypostructure proofs. The focus is the Euclidean Gas.
@@ -155,30 +149,27 @@ appendices and ignore hypostructure proofs. The focus is the Euclidean Gas.
   assembling mass, transport, and shape contraction lemmas ({doc}`convergence_program/11_hk_convergence`).
 - **Quantitative rates.** Convert the qualitative mean-field limit into explicit finite-N error bounds
   and rates (including O(1/sqrt(N)) estimates) ({doc}`convergence_program/13_quantitative_error_bounds`).
-- **Proof pack (appendices/proofs, complete list).** These are the technical lemmas and full derivations
-  that complete the convergence chain. Each file is a standalone proof with its role indicated here:
-  `convergence_program/proofs/proof_thm_faa_di_bruno_appendix.md` proves Faà di Bruno bounds for high-order derivative
-  control; `convergence_program/proofs/proof_lem_telescoping_derivatives.md` proves the telescoping derivative identities
-  used in multi-scale estimates; `convergence_program/proofs/proof_prop_complete_gradient_bounds.md` proves complete
-  gradient bounds needed for regularity and stability; `convergence_program/proofs/proof_thm_exponential_tails.md` proves
-  exponential tail control; `convergence_program/proofs/proof_cor_exp_convergence.md` derives exponential convergence
-  corollaries from the main drift/LSI estimates; `convergence_program/proofs/proof_cor_exponential_qsd_companion_dependent_full.md`
-  proves exponential QSD convergence in the companion-dependent setting; `convergence_program/proofs/proof_lem_hormander.md`
-  verifies Hörmander’s bracket condition for hypoelliptic regularity; `convergence_program/proofs/proof_lem_macro_transport.md`
-  proves the macro-scale transport estimate used in mean-field/continuum coupling;
-  `convergence_program/proofs/proof_thm_backbone_convergence.md` proves convergence along the backbone construction;
-  `convergence_program/proofs/proof_lem_variance_to_gap_adaptive.md` derives the variance-to-gap bound for adaptive control;
-  `convergence_program/proofs/proof_lem_greedy_ideal_equivalence.md` proves equivalence between greedy and ideal companion
-  selection in the regime of interest; `convergence_program/proofs/proof_lem_effective_companion_count_corrected_full.md`
-  proves the corrected effective companion count bound; `convergence_program/proofs/proof_lem_effective_cluster_size_bounds_full.md`
-  and `convergence_program/proofs/proof_lem_effective_cluster_size_bounds_full(1).md` prove effective cluster size bounds
-  (two full derivations); `convergence_program/proofs/proof_cor_effective_interaction_radius_full.md` proves the effective
-  interaction radius corollary; `convergence_program/proofs/proof_cor_gevrey_1_fitness_potential_full.md` proves the Gevrey-1
-  regularity corollary for the fitness potential; and the geometric gas regularity proofs
-  `convergence_program/proofs/13_geometric_gas_c3_regularity.md` and `convergence_program/proofs/14_geometric_gas_cinf_regularity_full.md`
-  provide the C3 and C-infinity regularity details required by the geometric gas appendix.
+- **Proof pack (convergence_program/proofs, complete list).** Technical lemmas and full derivations that complete
+  the convergence chain.
+- {doc}`convergence_program/proofs/proof_thm_faa_di_bruno_appendix` - Faà di Bruno bounds for high-order derivative control.
+- {doc}`convergence_program/proofs/proof_lem_telescoping_derivatives` - telescoping derivative identities used in multi-scale estimates.
+- {doc}`convergence_program/proofs/proof_prop_complete_gradient_bounds` - complete gradient bounds needed for regularity and stability.
+- {doc}`convergence_program/proofs/proof_thm_exponential_tails` - exponential tail control.
+- {doc}`convergence_program/proofs/proof_cor_exp_convergence` - exponential convergence corollaries from the main drift/LSI estimates.
+- {doc}`convergence_program/proofs/proof_cor_exponential_qsd_companion_dependent_full` - exponential QSD convergence in the companion-dependent setting.
+- {doc}`convergence_program/proofs/proof_lem_hormander` - Hörmander bracket condition for hypoelliptic regularity.
+- {doc}`convergence_program/proofs/proof_lem_macro_transport` - macro-scale transport estimate used in mean-field/continuum coupling.
+- {doc}`convergence_program/proofs/proof_thm_backbone_convergence` - convergence along the backbone construction.
+- {doc}`convergence_program/proofs/proof_lem_variance_to_gap_adaptive` - variance-to-gap bound for adaptive control.
+- {doc}`convergence_program/proofs/proof_lem_greedy_ideal_equivalence` - equivalence between greedy and ideal companion selection in the regime of interest.
+- {doc}`convergence_program/proofs/proof_lem_effective_companion_count_full` - effective companion count bound.
+- {doc}`convergence_program/proofs/proof_lem_effective_cluster_size_bounds_full` - effective cluster size bounds (full derivation).
+- {doc}`convergence_program/proofs/proof_cor_effective_interaction_radius_full` - effective interaction radius corollary.
+- {doc}`convergence_program/proofs/proof_cor_gevrey_1_fitness_potential_full` - Gevrey-1 regularity corollary for the fitness potential.
+- {doc}`convergence_program/proofs/13_geometric_gas_c3_regularity` - C3 regularity details for the geometric gas appendix.
+- {doc}`convergence_program/proofs/14_geometric_gas_cinf_regularity_full` - C-infinity regularity details for the geometric gas appendix.
 
-```{mermaid}
+```mermaid
 flowchart TD
     A[01_fragile_gas_framework] --> B[02_euclidean_gas]
     B --> C[04_single_particle]
@@ -199,10 +190,6 @@ flowchart TD
     K --> N
     L --> N
     M --> N
-    P[(convergence_program/proofs/*)] -.-> D
-    P -.-> E
-    P -.-> F
-    P -.-> J
 ```
 
 (sec-fg-revamp-reading)=

@@ -59,7 +59,7 @@ The **Causal Spacetime Tree** is the directed graph $\mathcal{T} = (V, E)$ where
 
 **Vertices:** $V = \{e_i\}$ is the set of all episodes (walker lifetimes)
 
-**Edges:** $(e_j, e_i) \in E$ if and only if episode $e_i$ was created by cloning from episode $e_j$ (i.e., $e_j$ is the parent of $e_i$)
+**Edges:** $(e_j, e_i) \in E$ if and only if episode $e_i$ was created by cloning from episode $e_j$ (i.e., $e_j$ is the parent of $e_i$; see {prf:ref}`def-fractal-set-cst-edges`).
 
 **Properties:**
 1. **Tree structure**: Every episode except roots has exactly one parent
@@ -72,7 +72,7 @@ $$
 e_j \prec e_i \quad \Leftrightarrow \quad \text{there exists a directed path from } e_j \text{ to } e_i \text{ in } \mathcal{T}
 $$
 
-This defines a partial order on episodes: $e_j \prec e_i$ means "episode $e_j$ is an ancestor of episode $e_i$."
+This defines a partial order on episodes: $e_j \prec e_i$ means "episode $e_j$ is an ancestor of episode $e_i$" (cf. {prf:ref}`def-fractal-causal-order`).
 :::
 
 :::{prf:definition} Interaction Graph (IG)

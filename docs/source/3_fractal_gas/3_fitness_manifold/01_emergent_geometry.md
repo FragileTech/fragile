@@ -280,20 +280,55 @@ $$
 
 where $L_H = L_\phi^{(3)}$ is **independent of $N$** due to the $1/N$ normalization.
 
-**Step 2: Operator-Lipschitz property of matrix square root**
+:::{prf:lemma} Operator-Lipschitz bound for inverse square root
+:label: lem-operator-lipschitz-inv-sqrt-latent
 
-For symmetric positive definite matrices $A, B$ with spectra in $[a, b]$ where $a > 0$, the map $f(A) = (A + \epsilon I)^{-1/2}$ satisfies:
-
-$$
-\|f(A) - f(B)\|_F \leq K_{\mathrm{sqrt}}(a, b, \epsilon) \|A - B\|_F
-$$
-
-where $K_{\mathrm{sqrt}}$ depends only on the spectral bounds, not on matrix dimension.
-
-Specifically, by the integral representation of the matrix square root and standard perturbation theory:
+Let $A, B$ be symmetric positive definite matrices with $A \succeq m I$ and $B \succeq m I$ for some $m > 0$.
+Then:
 
 $$
-K_{\mathrm{sqrt}} \leq \frac{1}{2(\epsilon_\Sigma - \Lambda_-)^{3/2}}
+\|A^{-1/2} - B^{-1/2}\|_F \leq \frac{1}{2 m^{3/2}} \|A - B\|_F
+$$
+
+In particular, for $A = H_i(S_1) + \epsilon_\Sigma I$ and $B = H_i(S_2) + \epsilon_\Sigma I$ with
+$\epsilon_\Sigma > \Lambda_-$, we may take $m = \epsilon_\Sigma - \Lambda_-$.
+:::
+
+:::{prf:proof}
+Define $F(X, A) = X A X - I$. For each $A \succ 0$ there is a unique SPD solution $X = A^{-1/2}$.
+Along the segment $A_t = A + t(B - A)$ let $X_t = A_t^{-1/2}$. Differentiating $F(X_t, A_t) = 0$ gives
+
+$$
+L_t(\dot{X}_t) = -X_t (B - A) X_t, \quad L_t(H) = H A_t X_t + X_t A_t H.
+$$
+
+Since $A_t$ and $X_t$ commute, in a basis where $A_t$ is diagonal we have
+$(L_t(H))_{ij} = (\lambda_i^{1/2} + \lambda_j^{1/2}) H_{ij}$, so
+$\|L_t^{-1}\|_{F \to F} \leq (2 m^{1/2})^{-1}$. Also $\|X_t\|_{\mathrm{op}} \leq m^{-1/2}$, hence
+
+$$
+\|\dot{X}_t\|_F \leq \frac{1}{2 m^{3/2}} \|B - A\|_F.
+$$
+
+Integrating from $t=0$ to $t=1$ yields the bound.
+$\square$
+:::
+
+**Step 2: Operator-Lipschitz property of matrix inverse square root**
+
+Set $A = H_i(S_1) + \epsilon_\Sigma I$ and $B = H_i(S_2) + \epsilon_\Sigma I$. By the spectral floor
+$\lambda_{\min}(H_i) \geq -\Lambda_-$, we have $A, B \succeq (\epsilon_\Sigma - \Lambda_-) I$.
+Lemma {prf:ref}`lem-operator-lipschitz-inv-sqrt-latent` then gives:
+
+$$
+\|(H_i(S_1) + \epsilon_\Sigma I)^{-1/2} - (H_i(S_2) + \epsilon_\Sigma I)^{-1/2}\|_F
+\leq K_{\mathrm{sqrt}} \|H_i(S_1) - H_i(S_2)\|_F
+$$
+
+with:
+
+$$
+K_{\mathrm{sqrt}} = \frac{1}{2(\epsilon_\Sigma - \Lambda_-)^{3/2}}.
 $$
 
 **Step 3: Composition**
@@ -449,6 +484,14 @@ The key insight is that this is not a bug in our formalism—it is a feature. By
 
 (sec-riemannian-volume)=
 ## Riemannian Volume Elements and Integration
+
+:::{prf:remark} Drift convention for Riemannian weighting
+:label: rem-riemannian-volume-drift
+
+Throughout this section we assume the geometric drift $b_{\mathrm{geo}}$ from {ref}`sec-geometric-drift` is included in
+the velocity dynamics (Lemma {prf:ref}`lem-geometric-drift-latent`). This is the regime in which the QSD density carries
+the $\sqrt{\det g}$ factor.
+:::
 
 The emergent metric defines a natural notion of volume that differs from the coordinate (Lebesgue) volume. This is crucial for computing probabilities, entropies, and expectation values.
 
@@ -678,6 +721,8 @@ def compute_riemannian_volume_tetrahedron(
 (sec-monte-carlo-integration)=
 ### Monte Carlo Integration with QSD Sampling
 
+We continue under the drift convention of Remark {prf:ref}`rem-riemannian-volume-drift`.
+
 :::{div} feynman-prose
 Here is a beautiful fact that makes practical computation much easier. If you have a function $f(z)$ and you want to compute its integral over the Riemannian manifold:
 
@@ -697,7 +742,11 @@ The geometry is baked into the sampling—you do not need to compute determinant
 :::{prf:proposition} Monte Carlo Integration with Riemannian Measure
 :label: prop-monte-carlo-riemannian-latent
 
-Let $\{z_i\}_{i=1}^N$ be positions sampled from the QSD with density $\rho(z) \propto \sqrt{\det g(z)} e^{-\Phi_{\mathrm{eff}}(z)/T}$. (Existence and uniqueness of the QSD is established in {doc}`/source/3_fractal_gas/convergence_program/07_discrete_qsd`; convergence to QSD is proven in {doc}`/source/3_fractal_gas/convergence_program/06_convergence`.)
+Let $\{z_i\}_{i=1}^N$ be positions sampled from the QSD with density
+$\rho(z) \propto \sqrt{\det g(z)} e^{-\Phi_{\mathrm{eff}}(z)/T}$ for the drift-augmented dynamics
+(Remark {prf:ref}`rem-riemannian-volume-drift`). Existence and uniqueness of the QSD is established in
+{doc}`/source/3_fractal_gas/convergence_program/07_discrete_qsd`; convergence to the QSD is proven in
+{doc}`/source/3_fractal_gas/convergence_program/06_convergence`.
 
 **Method 1 (QSD sampling):** If episodes sample from QSD:
 
@@ -751,7 +800,12 @@ to be positive definite, i.e., $\lambda_v - b^2/4 > 0$.
 :::{prf:theorem} Hypocoercive Contraction with Anisotropic Diffusion
 :label: thm-hypocoercive-anisotropic
 
-Under uniform ellipticity ($D_{\mathrm{reg}} \succeq c_{\min} I$) and Lipschitz continuity ($\|\nabla \Sigma_{\mathrm{reg}}\| \leq L_\Sigma$), the Latent Fractal Gas exhibits geometric ergodicity with rate:
+Assume uniform ellipticity ($D_{\mathrm{reg}} \succeq c_{\min} I$), Lipschitz continuity
+($\|\nabla \Sigma_{\mathrm{reg}}\| \leq L_\Sigma$), and the Foster-Lyapunov/minorization hypotheses of
+{doc}`/source/3_fractal_gas/convergence_program/06_convergence` (built from
+{doc}`/source/3_fractal_gas/convergence_program/03_cloning` and
+{doc}`/source/3_fractal_gas/convergence_program/05_kinetic_contraction`). Then the Latent Fractal Gas exhibits geometric
+ergodicity with rate:
 
 $$
 \kappa_{\mathrm{total}} = O\left(\min\left\{\gamma \tau, \kappa_z^{\mathrm{clone}}, c_{\min} \underline{\lambda} - C_1 L_\Sigma\right\}\right) > 0
@@ -765,7 +819,8 @@ where:
 - $\underline{\lambda}$ is the coercivity constant of the hypocoercive quadratic form
 - $C_1$ is a geometry-dependent constant
 
-**Condition for convergence:** $c_{\min} \underline{\lambda} > C_1 L_\Sigma$
+**Condition for hypocoercive contraction:** $c_{\min} \underline{\lambda} > C_1 L_\Sigma$ (in addition to the QSD
+hypotheses above).
 
 **Full proof:** See {doc}`/source/3_fractal_gas/convergence_program/05_kinetic_contraction` for kinetic drift analysis and {doc}`/source/3_fractal_gas/convergence_program/06_convergence` for the complete convergence theorem.
 :::
@@ -835,6 +890,14 @@ The key results are:
 In the next section, we will see how the discrete events of cloning create a tessellation of spacetime—the scutoid geometry that complements this continuous Riemannian picture.
 :::
 
+:::{prf:remark} Convergence hypotheses
+:label: rem-emergent-geometry-convergence-hypotheses
+
+The convergence statements in this section use the full Foster-Lyapunov and minorization hypotheses from the convergence
+program (see {doc}`/source/3_fractal_gas/convergence_program/06_convergence`). Uniform ellipticity and Lipschitz
+continuity are necessary ingredients but not sufficient on their own.
+:::
+
 :::{admonition} Key Takeaways
 :class: tip
 
@@ -852,6 +915,7 @@ In the next section, we will see how the discrete events of cloning create a tes
 1. Uniform ellipticity: $c_{\min} I \preceq D_{\mathrm{reg}} \preceq c_{\max} I$ (N-independent)
 2. Lipschitz continuity: $\|\nabla \Sigma_{\mathrm{reg}}\| \leq L_\Sigma$ (N-independent)
 3. Hypocoercive rate: $\kappa \propto \min(\gamma, c_{\min})$
+4. Foster-Lyapunov + minorization hypotheses (see {doc}`/source/3_fractal_gas/convergence_program/06_convergence`)
 
 **Practical Implications:**
 

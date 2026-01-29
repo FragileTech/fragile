@@ -10,6 +10,8 @@ All tensors are vectorized with the first dimension being the number of walkers 
 
 from __future__ import annotations
 
+from typing import Callable
+
 import panel as pn
 import param
 import torch
@@ -494,6 +496,7 @@ class EuclideanGas(PanelModel):
         seed: int | None = None,
         record_rng_state: bool = False,
         show_progress: bool = False,
+        progress_callback: Callable[[int, int, float], None] | None = None,
     ):
         """
         Run Euclidean Gas for multiple steps and return complete history.
@@ -505,6 +508,7 @@ class EuclideanGas(PanelModel):
             record_every: Record every k-th step (1=all steps, 10=every 10th step).
                          Step 0 (initial) and final step are always recorded.
             show_progress: Show tqdm progress bar during simulation.
+            progress_callback: Optional callback invoked as (step, total_steps, elapsed_seconds).
 
         Returns:
             RunHistory object with complete execution trace including:
@@ -703,6 +707,8 @@ class EuclideanGas(PanelModel):
 
         # Check if initially all dead
         if n_alive == 0:
+            if progress_callback is not None:
+                progress_callback(0, n_steps, 0.0)
             recorded_steps = recorded_steps[: recorder.recorded_idx]
             return recorder.build(
                 n_steps=0,
@@ -724,6 +730,9 @@ class EuclideanGas(PanelModel):
         terminated_early = False
         final_step = n_steps
         total_start = time.time()
+
+        if progress_callback is not None:
+            progress_callback(0, n_steps, 0.0)
 
         # Set up progress bar if requested
         step_iterator = range(1, n_steps + 1)
@@ -775,7 +784,13 @@ class EuclideanGas(PanelModel):
             # Update state for next iteration
             state = state_final
 
+            if progress_callback is not None:
+                progress_callback(t, n_steps, time.time() - total_start)
+
         total_time = time.time() - total_start
+
+        if progress_callback is not None:
+            progress_callback(final_step, n_steps, total_time)
 
         # Build final RunHistory with automatic trimming to actual recorded size
         recorded_steps = recorded_steps[: recorder.recorded_idx]

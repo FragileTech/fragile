@@ -6,6 +6,8 @@ of EuclideanGas and its nested operators, replacing the manual GasConfig approac
 
 from __future__ import annotations
 
+import threading
+import time
 from typing import Callable
 
 import panel as pn
@@ -135,6 +137,28 @@ class GasConfigPanel(param.Parameterized):
             ),
         }
         self._widget_links: set[str] = set()
+
+        self.progress_label = pn.pane.Markdown("", sizing_mode="stretch_width")
+        self.progress_bar = pn.indicators.Progress(
+            name="Simulation progress",
+            value=0,
+            max=max(1, int(self.n_steps)),
+            bar_color="primary",
+            sizing_mode="stretch_width",
+        )
+
+        self._progress_update_interval = 0.2
+        self._progress_last_emit = 0.0
+        self._simulation_thread: threading.Thread | None = None
+
+        self.param.watch(self._on_n_steps_change, "n_steps")
+        n_steps_widget = self._widget_overrides.get("n_steps")
+        if n_steps_widget is not None:
+            n_steps_widget.param.watch(
+                lambda e: self._sync_progress_total(e.new),
+                "value",
+            )
+        self._sync_progress_total(self.n_steps)
 
         # Callbacks for external listeners
         self._on_simulation_complete: list[Callable[[RunHistory], None]] = []
@@ -376,25 +400,126 @@ class GasConfigPanel(param.Parameterized):
         for callback in self._on_benchmark_updated:
             callback(self.potential, self.background, self.mode_points)
 
+    def _format_eta(self, seconds: float | None) -> str:
+        if seconds is None:
+            return "n/a"
+        seconds = max(0.0, seconds)
+        total_seconds = int(round(seconds))
+        minutes, secs = divmod(total_seconds, 60)
+        hours, minutes = divmod(minutes, 60)
+        return f"{hours:d}:{minutes:02d}:{secs:02d}"
+
+    def _progress_text(self, step: int, total_steps: int, eta_seconds: float | None) -> str:
+        total_steps = max(1, int(total_steps))
+        step = max(0, min(int(step), total_steps))
+        percent = (step / total_steps) * 100.0 if total_steps else 0.0
+        eta_str = self._format_eta(eta_seconds)
+        return (
+            f"**Progress:** {step}/{total_steps} ({percent:.1f}%) "
+            f"| **Remaining:** {eta_str}"
+        )
+
+    def _sync_progress_total(self, total_steps: int) -> None:
+        total_steps = max(1, int(total_steps))
+        current = min(int(self.progress_bar.value), total_steps)
+        self.progress_bar.max = total_steps
+        self.progress_bar.value = current
+        self.progress_label.object = self._progress_text(current, total_steps, None)
+
+    def _on_n_steps_change(self, event) -> None:
+        self._sync_progress_total(event.new)
+
+    def _schedule_ui_update(self, callback: Callable[[], None]) -> None:
+        doc = pn.state.curdoc
+        if doc is None:
+            callback()
+        else:
+            doc.add_next_tick_callback(callback)
+
+    def _update_progress_display(
+        self, step: int, total_steps: int, eta_seconds: float | None
+    ) -> None:
+        total_steps = max(1, int(total_steps))
+        step = max(0, min(int(step), total_steps))
+        self.progress_bar.max = total_steps
+        self.progress_bar.value = step
+        self.progress_label.object = self._progress_text(step, total_steps, eta_seconds)
+
+    def _progress_callback(self, step: int, total_steps: int, elapsed: float) -> None:
+        now = time.perf_counter()
+        if step < total_steps and (
+            now - self._progress_last_emit
+        ) < self._progress_update_interval:
+            return
+        self._progress_last_emit = now
+        eta = None
+        if step > 0 and total_steps > step:
+            eta = (elapsed / step) * (total_steps - step)
+        self._schedule_ui_update(
+            lambda: self._update_progress_display(step, total_steps, eta)
+        )
+
+    def _current_steps_value(self) -> int:
+        widget = self._widget_overrides.get("n_steps")
+        if widget is not None and hasattr(widget, "value"):
+            return int(widget.value)
+        return int(self.n_steps)
+
+    def _run_simulation_worker(self) -> None:
+        history: RunHistory | None = None
+        error: Exception | None = None
+        try:
+            history = self.run_simulation(progress_callback=self._progress_callback)
+        except Exception as exc:
+            error = exc
+
+        def _finalize() -> None:
+            self.run_button.disabled = False
+            if error is not None:
+                self.status_pane.object = f"**Error:** {error!s}"
+                self.progress_bar.bar_color = "danger"
+                return
+
+            if history is None:
+                self.status_pane.object = "**Error:** simulation failed without history."
+                self.progress_bar.bar_color = "danger"
+                return
+
+            self.status_pane.object = (
+                f"**Simulation complete!** {history.n_steps} steps, "
+                f"{history.n_recorded} recorded timesteps"
+            )
+            self.progress_bar.bar_color = (
+                "warning" if history.terminated_early else "success"
+            )
+            self._update_progress_display(history.final_step, self.progress_bar.max, 0.0)
+
+        self._schedule_ui_update(_finalize)
+
     def _on_run_clicked(self, *_):
         """Handle Run button click."""
+        if self._simulation_thread is not None and self._simulation_thread.is_alive():
+            return
+
+        total_steps = self._current_steps_value()
+        self._sync_progress_total(total_steps)
+        self._update_progress_display(0, self.progress_bar.max, None)
+        self.progress_bar.bar_color = "primary"
         self.status_pane.object = "**Running simulation...**"
         self.run_button.disabled = True
+        self._progress_last_emit = 0.0
 
-        try:
-            self.run_simulation()
-            self.status_pane.object = (
-                f"**Simulation complete!** "
-                f"{self.history.n_steps} steps, "
-                f"{self.history.n_recorded} recorded timesteps"
-            )
+        self._simulation_thread = threading.Thread(
+            target=self._run_simulation_worker,
+            name="gas-simulation-thread",
+            daemon=True,
+        )
+        self._simulation_thread.start()
 
-        except Exception as e:
-            self.status_pane.object = f"**Error:** {e!s}"
-        finally:
-            self.run_button.disabled = False
-
-    def run_simulation(self) -> RunHistory:
+    def run_simulation(
+        self,
+        progress_callback: Callable[[int, int, float], None] | None = None,
+    ) -> RunHistory:
         """Run EuclideanGas simulation with current parameters.
 
         Returns:
@@ -450,12 +575,13 @@ class GasConfigPanel(param.Parameterized):
             x_init=x_init,
             v_init=v_init,
             record_every=int(self.record_every),
+            progress_callback=progress_callback,
         )
 
         # Store history and notify listeners
         self.history = history
         for callback in self._on_simulation_complete:
-            callback(self.history)
+            self._schedule_ui_update(lambda cb=callback, hist=self.history: cb(hist))
 
         return history
 
@@ -607,6 +733,8 @@ class GasConfigPanel(param.Parameterized):
         return pn.Column(
             pn.pane.Markdown("## Simulation Parameters"),
             accordion,
+            self.progress_label,
+            self.progress_bar,
             self.run_button,
             self.status_pane,
             sizing_mode="stretch_width",

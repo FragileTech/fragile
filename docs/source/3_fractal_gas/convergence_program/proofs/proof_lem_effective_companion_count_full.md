@@ -1,7 +1,7 @@
 # Proof: Effective Companion Count (Finite-$N$ Heuristic)
 
 :::{prf:lemma} Effective Companion Count (Finite-$N$ Heuristic)
-:label: proof-lem-effective-companion-count-corrected-full
+:label: proof-lem-effective-companion-count-full
 
 This lemma provides a **finite-$N$ heuristic** estimate and is **not used** in the mean-field
 $C^\infty$ proof (which uses kernel-mass bounds instead). Assume the uniform density bound from

@@ -1150,7 +1150,7 @@ softmax tail bound, but they are **not** used in the mean-field $C^\infty$ proof
 retained only for intuition and implementation guidance. See:
 
 - [Effective Interaction Radius (finite-$N$ heuristic)](proofs/proof_cor_effective_interaction_radius_full.md)
-- [Effective Companion Count (finite-$N$ heuristic)](proofs/proof_lem_effective_companion_count_corrected_full.md)
+- [Effective Companion Count (finite-$N$ heuristic)](proofs/proof_lem_effective_companion_count_full.md)
 :::
 
 :::{prf:lemma} Finite-$N$ Heuristic: Softmax Tail Bound
@@ -1182,7 +1182,7 @@ not used in the mean-field proof.
 :::
 
 :::{prf:lemma} Finite-$N$ Heuristic: Effective Companion Count
-:label: lem-effective-companion-count-corrected-full
+:label: lem-effective-companion-count-full
 
 Let $k_{\text{eff}}(i)$ be the number of companions within $R_{\text{eff}}$. Under the uniform
 density bound, the heuristic estimate is

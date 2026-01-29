@@ -253,11 +253,18 @@ class AnalysisSettings(param.Parameterized):
     particle_mass = param.Number(default=1.0, bounds=(1e-6, None))
     particle_ell0 = param.Number(default=None, bounds=(1e-6, None), allow_None=True)
     particle_use_connected = param.Boolean(default=True)
-    particle_neighbor_method = param.ObjectSelector(default="knn", objects=["companion", "knn"])
+    particle_neighbor_method = param.ObjectSelector(default="voronoi", objects=["companion", "knn", "voronoi"])
     particle_knn_k = param.Integer(default=4, bounds=(1, None))
     particle_knn_sample = param.Integer(default=512, bounds=(1, None), allow_None=True)
     particle_meson_reduce = param.ObjectSelector(default="mean", objects=["mean", "first"])
     particle_baryon_pairs = param.Integer(default=None, bounds=(1, None), allow_None=True)
+    # Voronoi-specific parameters
+    particle_voronoi_weight = param.ObjectSelector(default="facet_area", objects=["facet_area", "volume", "combined"])
+    particle_voronoi_pbc_mode = param.ObjectSelector(default="mirror", objects=["mirror", "replicate", "ignore"])
+    particle_voronoi_normalize = param.Boolean(default=True)
+    particle_voronoi_max_triplets = param.Integer(default=100, bounds=(1, None), allow_None=True)
+    particle_voronoi_exclude_boundary = param.Boolean(default=True)
+    particle_voronoi_boundary_tolerance = param.Number(default=1e-6, bounds=(1e-9, 1e-3))
 
     compute_string_tension = param.Boolean(default=False)
     string_tension_max_triangles = param.Integer(default=20000, bounds=(1, None))
@@ -304,11 +311,30 @@ class AnalysisSettings(param.Parameterized):
             str(self.particle_knn_k),
             "--particle-meson-reduce",
             str(self.particle_meson_reduce),
+            "--particle-voronoi-weight",
+            str(self.particle_voronoi_weight),
+            "--particle-voronoi-pbc-mode",
+            str(self.particle_voronoi_pbc_mode),
+            "--particle-voronoi-max-triplets",
+            str(self.particle_voronoi_max_triplets),
+            "--particle-voronoi-boundary-tolerance",
+            str(self.particle_voronoi_boundary_tolerance),
             "--string-tension-max-triangles",
             str(self.string_tension_max_triangles),
             "--string-tension-bins",
             str(self.string_tension_bins),
         ]
+
+        # Add boolean flags
+        if self.particle_voronoi_normalize:
+            args.append("--particle-voronoi-normalize")
+        else:
+            args.append("--no-particle-voronoi-normalize")
+
+        if self.particle_voronoi_exclude_boundary:
+            args.append("--particle-voronoi-exclude-boundary")
+        else:
+            args.append("--no-particle-voronoi-exclude-boundary")
 
         if self.analysis_time_index is not None:
             args.extend(["--analysis-time-index", str(self.analysis_time_index)])
@@ -1452,6 +1478,12 @@ def create_app() -> pn.template.FastListTemplate:
                 "particle_knn_sample",
                 "particle_meson_reduce",
                 "particle_baryon_pairs",
+                "particle_voronoi_weight",
+                "particle_voronoi_pbc_mode",
+                "particle_voronoi_normalize",
+                "particle_voronoi_max_triplets",
+                "particle_voronoi_exclude_boundary",
+                "particle_voronoi_boundary_tolerance",
             ],
             show_name=False,
         )

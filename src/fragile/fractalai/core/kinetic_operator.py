@@ -542,11 +542,23 @@ class KineticOperator(PanelModel):
         force_adapt = torch.zeros_like(x)
 
         if self.use_potential_force:
+            x_requires_grad = x.requires_grad
             x.requires_grad_(True)  # noqa: FBT003
             U = self.potential(x)  # [N]
-            grad_U = torch.autograd.grad(U.sum(), x, create_graph=False)[0]  # [N, d]
+            if isinstance(U, torch.Tensor) and (U.requires_grad or U.grad_fn is not None):
+                grad_U = torch.autograd.grad(
+                    U.sum(),
+                    x,
+                    create_graph=False,
+                    allow_unused=True,
+                )[0]
+                if grad_U is None:
+                    grad_U = torch.zeros_like(x)
+            else:
+                # Constant / stop-gradient potentials contribute zero force.
+                grad_U = torch.zeros_like(x)
             force_stable = -grad_U
-            x.requires_grad_(False)  # noqa: FBT003
+            x.requires_grad_(x_requires_grad)  # noqa: FBT003
 
         if self.use_fitness_force:
             if grad_fitness is None:

@@ -11,6 +11,10 @@
 - `docs/` is the Jupyter Book (source in `docs/source/`, build output in `docs/_build/`, project docs in `docs/source/project/`).
 - `examples/`, `media/`, and `outputs/` hold sample notebooks, assets, and generated artifacts.
 
+## Current Work Expectations
+- Expect to both improve the Jupyter Book content in `docs/` and implement or update code in `src/` as part of day-to-day tasks.
+- Keep documentation changes and code changes aligned (APIs, examples, and narratives should match actual behavior).
+
 ## Theory-Driven Development Focus
 - New deep learning algorithms should follow `docs/source/1_agent` and integrate with `src/fragile/core/` (layers, losses, optimizers), keeping notation and units aligned with the book.
 - Production-grade Fractal Gas work extends `src/fragile/fractalai/` (especially `core/` modules like `euclidean_gas.py`, `cloning.py`, `kinetic_operator.py`, `fractal_set.py`, `history.py`) and should stay faithful to `docs/source/3_fractal_gas`.
@@ -32,17 +36,21 @@
 - For efficient updates, prefer the helper scripts in `docs/` (for example `add_subsection_labels.py`, `convert_section_refs.py`, `fix_transitions.py`, `collect_prf_directives.py`) over manual bulk edits.
 - Expect to write, review, and improve docs in `docs/` and `docs/source/` alongside code changes, keeping `docs/source/project/` in sync with repo-level docs where applicable.
 
-## Build, Test, and Development Commands
-Use uv to run Hatch environments:
-- `uv run hatch run test:test` runs the pytest suite.
-- `uv run hatch run test:doctest` runs doctests in `src/` and Markdown.
-- `uv run hatch run test:cov` runs coverage with `pytest-cov`.
-- `uv run hatch run lint:all` runs ruff check + format.
-- `uv run hatch run lint:check` runs lint + format diff only.
-- `uv run hatch run docs:build` / `uv run hatch run docs:docs` builds or builds+serves docs.
-- `uv run hatch run lint:all && uv run hatch run docs:build && uv run hatch run test:test` runs lint + docs build + tests.
+## Tooling & MCP Usage
+- Use Claude and Gemini MCP tools only when the user explicitly instructs you to do so.
 
-Equivalent Hatch commands live under `hatch run lint:*`, `hatch run test:*`, and `hatch run docs:*`.
+## Build, Test, and Development Commands
+Use `uv run` directly (no Hatch) to invoke tooling:
+- `uv run pytest -s -o log_cli=true -o log_cli_level=info tests` runs the pytest suite.
+- `uv run pytest -s -o log_cli=true -o log_cli_level=info --doctest-modules --doctest-glob="*.md" -n 0 src` runs doctests in `src/` and Markdown.
+- `uv run pytest -s -o log_cli=true -o log_cli_level=info -n auto --cov-report=term-missing --cov-config=pyproject.toml --cov=src/fragile --cov=tests` runs coverage with `pytest-cov`.
+- `uv run ruff check .` runs ruff check; `uv run ruff format --diff .` shows format diff only.
+- `uv run ruff check --fix-only --unsafe-fixes . && uv run ruff format .` applies ruff fixes + formatting.
+- `uv run mypy --install-types --non-interactive src/fragile tests` runs mypy.
+- `uv run jupyter-book build docs/` builds the Jupyter Book (ensure `make prompt` and copies into `docs/source/project/` are up to date).
+- `uv run python3 -m http.server --directory docs/_build/html` serves the built docs.
+- `uv run jupyter-book config sphinx docs/ --overwrite && uv run sphinx-build -b html docs/ docs/_build/html` builds with Sphinx directly.
+- `uv run linkchecker --config .linkcheckerrc --ignore-url=/reference --ignore-url=None site` runs link validation.
 
 ## Coding Style & Naming Conventions
 - Python 3.10, 4-space indentation.

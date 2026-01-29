@@ -8,7 +8,7 @@
 (sec-tldr-curvature)=
 ## TLDR
 
-*Notation: $g_{ab}$ = emergent metric ({prf:ref}`def-adaptive-diffusion-tensor-latent`); $\Gamma^a_{bc}$ = Christoffel symbols; $R^a_{bcd}$ = Riemann tensor; $R_{bd}$ = Ricci tensor; $R$ = Ricci scalar; $\theta$ = expansion scalar; $\sigma_{\mu\nu}$ = shear tensor; $\omega_{\mu\nu}$ = vorticity tensor; $V_{\mathrm{fit}}$ = fitness potential; $H = \nabla^2 V_{\mathrm{fit}}$ = fitness Hessian.*
+*Notation: $G_{\mu\nu} = -c^2 dt^2 + g_{t,\mu\nu}$ (Lorentzian metric on $M$); $g_{ij}$ = spatial metric on slices ({prf:ref}`def-adaptive-diffusion-tensor-latent`); $\Gamma^a_{bc}$ = Christoffel symbols; $R^a_{bcd}$ = Riemann tensor; $R_{bd}$ = Ricci tensor; $R$ = Ricci scalar; $\theta$ = expansion scalar; $\sigma_{\mu\nu}$ = shear tensor; $\omega_{\mu\nu}$ = vorticity tensor; $V_{\mathrm{fit}}$ = fitness potential; $H = \nabla^2 V_{\mathrm{fit}}$ = fitness Hessian.*
 
 **Riemann-Scutoid Dictionary**: The Riemann curvature tensor is recovered asymptotically from holonomy around scutoid plaquettes:
 
@@ -35,6 +35,20 @@ Positive Ricci curvature causes geodesic focusing---the geometric mechanism unde
 (sec-introduction-curvature)=
 ## Introduction
 
+**Lorentzian setting**: By Lemma {prf:ref}`lem-causal-order-conformal-class` and Corollary
+{prf:ref}`cor-order-volume-fix-conformal` in {doc}`../2_fractal_set/02_causal_set_theory`, the CST
+causal order together with the recovered volume element fixes the Lorentzian metric on the window,
+up to the explicit normalization of the volume form.
+We therefore work on $M = [t_0,t_1] \times \mathcal{Z}$ with
+
+$$
+G = -c^2 dt^2 + g_t,
+$$
+
+where $g_t$ is the emergent spatial metric on each slice and $c = V_{\mathrm{alg}}$ is the
+algorithmic speed cap. Timelike/SEC statements below refer to $(M,G)$; when we restrict to loops
+contained in a fixed slice, we use the induced Riemannian metric $g_t$.
+
 :::{div} feynman-prose
 Let me tell you what this chapter is really about. We have built two beautiful structures in the previous chapters: a continuous Riemannian geometry from the fitness landscape ({doc}`01_emergent_geometry`), and a discrete tessellation of spacetime from cloning events ({doc}`02_scutoid_spacetime`). Now we face the deepest question: how does *curvature* emerge from this discrete structure?
 
@@ -58,6 +72,9 @@ $$
 2. **Torsion-free**: $\Gamma^a_{bc} = \Gamma^a_{cb}$
 3. **Uniqueness**: The Levi-Civita connection is unique with (1) and (2)
 
+On each slice this is computed from $g_t$; for spacetime congruences we use the Levi-Civita
+connection of $G$, which agrees with the above on purely spatial components.
+
 The Christoffel symbols depend on **third derivatives** of $V_{\mathrm{fit}}$.
 :::
 
@@ -67,21 +84,25 @@ The Christoffel symbols depend on **third derivatives** of $V_{\mathrm{fit}}$.
 :::{prf:definition} Parallel Transport
 :label: def-parallel-transport
 
-Let $\gamma: [0, 1] \to \mathcal{Z}$ be a smooth curve. The **parallel transport** of $V^a \in T_{\gamma(0)}\mathcal{Z}$ along $\gamma$ solves:
+Let $\gamma: [0, 1] \to M$ be a smooth curve. The **parallel transport** of $V^a \in T_{\gamma(0)}M$ along $\gamma$ solves:
 
 $$
 \frac{DV^a}{ds} := \frac{dV^a}{ds} + \Gamma^a_{bc}(\gamma(s)) V^b \dot{\gamma}^c = 0
 $$
 
-The parallel transport operator $P_\gamma: T_{\gamma(0)}\mathcal{Z} \to T_{\gamma(1)}\mathcal{Z}$ is the linear map $V \mapsto V(1)$.
+Here $\Gamma$ is the Levi-Civita connection of $G$; on curves contained in a fixed slice it reduces
+to the spatial connection defined above.
+
+The parallel transport operator $P_\gamma: T_{\gamma(0)}M \to T_{\gamma(1)}M$ is the linear map $V \mapsto V(1)$.
 :::
 
 :::{prf:definition} Holonomy
 :label: def-holonomy
 
-For a closed loop $\gamma$ based at $p$, the **holonomy** $\mathrm{Hol}_\gamma: T_p\mathcal{Z} \to T_p\mathcal{Z}$ is parallel transport around the loop.
+For a closed loop $\gamma$ based at $p$, the **holonomy** $\mathrm{Hol}_\gamma: T_p M \to T_p M$ is parallel transport around the loop.
 
-- $\mathrm{Hol}_\gamma \in O(d)$ for Levi-Civita connection
+- $\mathrm{Hol}_\gamma \in O(1,d-1)$ for the Levi-Civita connection of $(M,G)$; for loops contained
+  in a spacelike slice, the restricted holonomy lies in $O(d)$
 - $\mathrm{Hol}_\gamma = I$ for all contractible loops iff the manifold is flat
 :::
 
@@ -129,14 +150,78 @@ A **scutoid plaquette** $\Pi$ is a closed quadrilateral:
 Area: $A_\Pi \approx \ell \cdot c \cdot \Delta t$ where $\ell$ is edge length.
 :::
 
+:::{prf:definition} Delaunay Dual and Regge Holonomy
+:label: def-scutoid-regge-holonomy
+
+Fix a time slab and let $\mathcal{D}_t$ be the Delaunay triangulation of the walker sites in the
+slice $(\mathcal{Z}, g_t)$ (dual to the Voronoi/scutoid cells). Connect corresponding vertices along
+CST trajectories across slabs to obtain a Lorentzian simplicial complex with metric induced by the
+slab metric $G_k$.
+
+A **hinge** $h$ is a codimension-2 face that is spacelike with respect to $G_k$. For each hinge,
+let $\theta_h$ be the Lorentzian dihedral (boost) angle between adjacent simplices, and define the
+deficit angle
+
+$$
+\varepsilon_h := 2\pi - \sum_{\text{simplices meeting at } h} \theta_h ,
+$$
+
+interpreted with the Lorentzian sign convention for spacelike hinges. The **discrete holonomy**
+around $\Pi$ is the ordered product of hinge rotations/boosts in $SO(1,d-1)$ along the loop
+orientation, restricted to spacelike hinges intersecting the dual face:
+
+$$
+\mathcal{H}_{\mathrm{Regge}}[\Pi] := \prod_{h \cap \Pi^\ast \neq \emptyset} \exp(\varepsilon_h J_h),
+$$
+
+where $J_h$ is the generator fixing $h$ and $\Pi^\ast$ is the dual face intersecting the hinges
+encircled by the plaquette.
+:::
+
+:::{prf:definition} Scutoid Refinement Regime (Bounded Aspect Ratio)
+:label: def-scutoid-refinement-regime
+
+Let $\ell$ be a typical Delaunay edge length in a slice, and let $\Delta t$ be the slab timestep.
+Define the mesh size $h := \max(\ell, c\,\Delta t)$ and assume $h \to 0$ with bounded aspect ratio:
+
+$$
+0 < \kappa_{\min} \le \frac{c\,\Delta t}{\ell} \le \kappa_{\max} < \infty .
+$$
+
+Then $A_\Pi \sim \ell\,c\,\Delta t \sim h^2$ and plaquettes remain non-degenerate as $h \to 0$.
+:::
+
+:::{prf:lemma} Regge Holonomy Approximation
+:label: lem-regge-holonomy-approx
+
+Assume $G$ is $C^3$ on the window (equivalently $C^2$ with bounded $\nabla R$) and the Delaunay
+refinement satisfies {prf:ref}`def-scutoid-refinement-regime`, with simplices meeting $\Pi$ uniformly
+shape-regular (all dihedral angles bounded away from $0$ and $\pi$). Then the Regge holonomy
+$\mathcal{H}_{\mathrm{Regge}}[\Pi]$ equals the smooth holonomy of the associated piecewise-flat
+metric and approximates the smooth holonomy of $G$ with
+
+$$
+\|\mathcal{H}_{\mathrm{Regge}}[\Pi] - \mathrm{Hol}_\gamma\| \leq C\,A_\Pi^{3/2}.
+$$
+
+This is the standard Regge convergence regime under shape-regular refinement in the Lorentzian
+piecewise-flat setting with spacelike hinges; see the Riemannian proofs
+{cite}`regge1961general,cheeger1984curvature` and apply them on spacelike hinges. $\square$
+:::
+
 :::{prf:theorem} Riemann-Scutoid Correspondence
 :label: thm-riemann-scutoid
 
-The Riemann tensor is recovered from plaquette holonomy:
+Let $\mathcal{H}_{\mathrm{Regge}}[\Pi]$ be the discrete holonomy from
+{prf:ref}`def-scutoid-regge-holonomy`, and assume the refinement regime
+{prf:ref}`def-scutoid-refinement-regime`. The Riemann tensor is recovered from plaquette holonomy:
 
 $$
-R^a{}_{bcd}(z) V^b T^c T^d = \lim_{A_\Pi \to 0} \frac{(\mathcal{H}[\Pi]^a{}_b - \delta^a_b) V^b}{A_\Pi}
+R^a{}_{bcd}(z) V^b T^c T^d = \lim_{A_\Pi \to 0} \frac{(\mathcal{H}_{\mathrm{Regge}}[\Pi]^a{}_b - \delta^a_b) V^b}{A_\Pi}
 $$
+
+Here $R^a{}_{bcd}$ is the Riemann tensor of the spacetime metric $G$ on $M$; when the plaquette is
+contained in a fixed slice, the expression reduces to the Riemann tensor of the spatial metric $g_t$.
 
 **Error estimate:** For bounded curvature derivatives $|\nabla R| \leq C_R$:
 
@@ -144,7 +229,10 @@ $$
 \left| \frac{\Delta V^a}{A_\Pi} - R^a{}_{bcd} V^b T^c T^d \right| \leq C_R \cdot A_\Pi^{1/2} \cdot |V|
 $$
 
-*Proof.* Direct application of Lemma {prf:ref}`lem-holonomy-small-loops`. $\square$
+Under the bounded aspect ratio regime, $A_\Pi^{1/2} = O(h)$ with $h = \max(\ell, c\,\Delta t)$.
+
+*Proof.* Combine Lemma {prf:ref}`lem-regge-holonomy-approx` with
+Lemma {prf:ref}`lem-holonomy-small-loops`. $\square$
 :::
 
 ---
@@ -210,7 +298,7 @@ $$
 :::{prf:definition} Kinematic Decomposition
 :label: def-kinematic-decomposition
 
-For velocity field $u^\mu$:
+For velocity field $u^\mu$ with $G_{\mu\nu} u^\mu u^\nu = -1$:
 
 $$
 \nabla_\mu u_\nu = \frac{1}{d}\theta \, h_{\mu\nu} + \sigma_{\mu\nu} + \omega_{\mu\nu}
@@ -220,7 +308,7 @@ where:
 - $\theta = \nabla_\mu u^\mu$ (expansion)
 - $\sigma_{\mu\nu}$ = symmetric traceless part (shear)
 - $\omega_{\mu\nu}$ = antisymmetric part (vorticity)
-- $h_{\mu\nu} = g_{\mu\nu} + u_\mu u_\nu$ (projection)
+- $h_{\mu\nu} = G_{\mu\nu} + u_\mu u_\nu$ (projection)
 :::
 
 :::{prf:theorem} Raychaudhuri Equation
@@ -249,7 +337,7 @@ This is the key theorem connecting discrete Voronoi dynamics to continuous geome
 
 We require:
 
-1. **Manifold smoothness:** $(M, g)$ is $C^\infty$ with bounded sectional curvature $|K| \leq K_{\max}$
+1. **Manifold smoothness:** $(M, G)$ is $C^\infty$ with bounded sectional curvature $|K| \leq K_{\max}$
 2. **Flow regularity:** Velocity field $u \in C^3(M)$
 3. **Well-distributed particles:** For characteristic spacing $\epsilon_N \sim N^{-1/d}$:
    - $\mathrm{diam}(\mathrm{Vor}_i) \leq C_1 \epsilon_N$
@@ -274,6 +362,8 @@ where $\sigma^2 = \sigma_{\mu\nu}\sigma^{\mu\nu}$ and $\omega^2 = \omega_{\mu\nu
 $$
 \left| \frac{d\theta_i}{d\tau} - \left( -\frac{1}{d}\theta_i^2 - \sigma^2 + \omega^2 - \mathrm{Ric}(u,u) \right) \right| \leq C \epsilon_N (\|u\|_{C^3} + \|\mathrm{Riem}\|_{C^1})
 $$
+
+A full classical derivation is recorded in {doc}`../convergence_program/17_geometric_gas` (Theorem {prf:ref}`appx-discrete-raychaudhuri`).
 
 *Proof.*
 

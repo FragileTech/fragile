@@ -1,0 +1,776 @@
+"""
+Voronoi-weighted particle operators for QFT mass computation.
+
+This module implements geometric neighbor selection and weighting using Voronoi
+tessellation, addressing noise sensitivity issues with k-NN uniform sampling on
+non-uniform, dynamical grids.
+
+Key Functions:
+    - compute_voronoi_tessellation(): Build Voronoi diagram from walker positions
+    - compute_geometric_weights(): Extract facet areas, cell volumes
+    - compute_meson_operator_voronoi(): Meson operator with geometric weighting
+    - compute_baryon_operator_voronoi(): Baryon operator with geometric weighting
+
+Weighting Modes:
+    - "facet_area": w_ij = Area(facet_ij) / Σ_k Area(facet_ik)
+    - "volume": w_i = V_i / mean(V)
+    - "combined": w_ij = Area(facet_ij) / sqrt(V_i * V_j)
+
+Mathematical Justification:
+    In continuum QFT, spatial averages are volume integrals:
+        ⟨O⟩ = ∫ d³x O(x) / ∫ d³x
+
+    For non-uniform discrete grids, the correct discretization is:
+        ⟨O⟩ = Σ_i V_i O_i / Σ_i V_i
+
+    k-NN with uniform weights assumes equal volumes → incorrect for non-uniform grids.
+    Voronoi + volume weighting is the correct finite volume discretization.
+
+See Also:
+    - QFT_MASS_COMPUTATION_GUIDE.md: "Advanced: Voronoi Tessellation"
+    - particle_observables.py: k-NN baseline implementation
+"""
+
+from __future__ import annotations
+
+import itertools
+from typing import Any
+
+import numpy as np
+import torch
+from scipy.spatial import Voronoi, ConvexHull
+
+
+def classify_boundary_cells(
+    voronoi_data: dict[str, Any],
+    positions: torch.Tensor,
+    bounds: Any | None,
+    pbc: bool,
+    boundary_tolerance: float = 1e-6,
+) -> dict[str, torch.Tensor]:
+    """
+    Classify cells into boundary, boundary-adjacent, and interior tiers.
+
+    This implements a two-tier boundary exclusion strategy to eliminate
+    artifacts from cells touching the simulation box boundary.
+
+    Args:
+        voronoi_data: Output from compute_voronoi_tessellation (partial, needs neighbor_lists)
+        positions: Original walker positions [N, d]
+        bounds: Simulation box bounds
+        pbc: Whether periodic boundaries are used
+        boundary_tolerance: Distance threshold to classify as boundary
+
+    Returns:
+        Dictionary containing:
+            - "tier": torch.Tensor [N_alive] with values:
+                0 = Tier 1 (boundary, fully excluded)
+                1 = Tier 2 (boundary-adjacent, no observables but valid neighbor)
+                2 = Tier 3+ (interior, compute observables)
+            - "is_boundary": torch.Tensor [N_alive] boolean (Tier 1)
+            - "is_boundary_adjacent": torch.Tensor [N_alive] boolean (Tier 2)
+            - "is_interior": torch.Tensor [N_alive] boolean (Tier 3+)
+    """
+    vor = voronoi_data.get("voronoi")
+    neighbor_lists = voronoi_data.get("neighbor_lists", {})
+    index_map = voronoi_data.get("index_map", {})
+    n_alive = len(index_map)
+
+    if n_alive == 0:
+        return {
+            "tier": torch.tensor([], dtype=torch.long),
+            "is_boundary": torch.tensor([], dtype=torch.bool),
+            "is_boundary_adjacent": torch.tensor([], dtype=torch.bool),
+            "is_interior": torch.tensor([], dtype=torch.bool),
+        }
+
+    # For PBC, there are no real boundaries - all cells are interior
+    if pbc:
+        tier = torch.ones(n_alive, dtype=torch.long) * 2
+        is_boundary = torch.zeros(n_alive, dtype=torch.bool)
+        is_boundary_adjacent = torch.zeros(n_alive, dtype=torch.bool)
+        is_interior = torch.ones(n_alive, dtype=torch.bool)
+        return {
+            "tier": tier,
+            "is_boundary": is_boundary,
+            "is_boundary_adjacent": is_boundary_adjacent,
+            "is_interior": is_interior,
+        }
+
+    # Step 1: Detect Tier 1 (boundary cells)
+    is_boundary = torch.zeros(n_alive, dtype=torch.bool)
+
+    if vor is None:
+        # Voronoi failed, mark all as interior to avoid errors
+        tier = torch.ones(n_alive, dtype=torch.long) * 2
+        is_boundary_adjacent = torch.zeros(n_alive, dtype=torch.bool)
+        is_interior = torch.ones(n_alive, dtype=torch.bool)
+        return {
+            "tier": tier,
+            "is_boundary": is_boundary,
+            "is_boundary_adjacent": is_boundary_adjacent,
+            "is_interior": is_interior,
+        }
+
+    for i in range(n_alive):
+        # Method A: Check if Voronoi region has -1 vertices (infinite region)
+        region_idx = vor.point_region[i]
+        vertices_idx = vor.regions[region_idx]
+        if -1 in vertices_idx:
+            is_boundary[i] = True
+            continue
+
+        # Method B: Check if position is near box boundary
+        orig_idx = index_map[i]
+        pos = positions[orig_idx].cpu().numpy()
+
+        if bounds is not None:
+            near_boundary = False
+            for dim in range(positions.shape[1]):
+                low = float(bounds.low[dim].cpu().numpy() if torch.is_tensor(bounds.low) else bounds.low[dim])
+                high = float(bounds.high[dim].cpu().numpy() if torch.is_tensor(bounds.high) else bounds.high[dim])
+
+                if abs(pos[dim] - low) < boundary_tolerance:
+                    near_boundary = True
+                    break
+                if abs(pos[dim] - high) < boundary_tolerance:
+                    near_boundary = True
+                    break
+
+            if near_boundary:
+                is_boundary[i] = True
+
+    # Step 2: Detect Tier 2 (boundary-adjacent)
+    is_boundary_adjacent = torch.zeros(n_alive, dtype=torch.bool)
+
+    for i in range(n_alive):
+        if is_boundary[i]:
+            continue  # Already Tier 1
+
+        neighbors = neighbor_lists.get(i, [])
+        for j in neighbors:
+            if j < n_alive and is_boundary[j]:
+                is_boundary_adjacent[i] = True
+                break
+
+    # Step 3: Mark Tier 3+ (interior)
+    is_interior = ~is_boundary & ~is_boundary_adjacent
+
+    # Step 4: Create tier array
+    tier = torch.zeros(n_alive, dtype=torch.long)
+    tier[is_boundary] = 0
+    tier[is_boundary_adjacent] = 1
+    tier[is_interior] = 2
+
+    return {
+        "tier": tier,
+        "is_boundary": is_boundary,
+        "is_boundary_adjacent": is_boundary_adjacent,
+        "is_interior": is_interior,
+    }
+
+
+def compute_voronoi_tessellation(
+    positions: torch.Tensor,
+    alive: torch.Tensor,
+    bounds: Any | None,
+    pbc: bool,
+    pbc_mode: str = "mirror",
+    exclude_boundary: bool = True,
+    boundary_tolerance: float = 1e-6,
+) -> dict[str, Any]:
+    """
+    Compute Voronoi tessellation from walker positions.
+
+    Args:
+        positions: Walker positions [N, d]
+        alive: Alive mask [N]
+        bounds: Optional TorchBounds object for PBC
+        pbc: Whether to use periodic boundary conditions
+        pbc_mode: How to handle PBC - "mirror", "replicate", or "ignore"
+        exclude_boundary: Whether to exclude boundary cells (Tier 1) from neighbor lists
+        boundary_tolerance: Distance threshold for boundary cell detection
+
+    Returns:
+        Dictionary containing:
+            - "voronoi": scipy.spatial.Voronoi object
+            - "neighbor_lists": dict[int, list[int]] mapping i → [j1, j2, ...]
+            - "volumes": np.ndarray [N_alive] cell volumes
+            - "facet_areas": dict[(int,int), float] mapping (i,j) → area
+            - "alive_indices": np.ndarray original alive indices
+            - "index_map": dict[int, int] mapping voronoi idx → original idx
+            - "classification": dict with boundary tier classification (if exclude_boundary=True)
+    """
+    # Filter to alive walkers
+    alive_indices = torch.where(alive)[0].cpu().numpy()
+    if len(alive_indices) == 0:
+        return {
+            "voronoi": None,
+            "neighbor_lists": {},
+            "volumes": np.array([]),
+            "facet_areas": {},
+            "alive_indices": alive_indices,
+            "index_map": {},
+        }
+
+    positions_alive = positions[alive].cpu().numpy()
+    n_alive = len(alive_indices)
+    d = positions.shape[1]
+
+    # Handle periodic boundary conditions
+    if pbc and bounds is not None and pbc_mode != "ignore":
+        high = bounds.high.cpu().numpy()
+        low = bounds.low.cpu().numpy()
+        span = high - low
+
+        if pbc_mode == "mirror":
+            # Mirror positions across boundaries for PBC
+            # In 2D: 9 copies (original + 8 mirrors)
+            # In 3D: 27 copies (original + 26 mirrors)
+            offsets = []
+            for offset in itertools.product([-1, 0, 1], repeat=d):
+                offsets.append(offset)
+
+            positions_extended = []
+            for offset in offsets:
+                offset_arr = np.array(offset) * span
+                positions_extended.append(positions_alive + offset_arr)
+
+            positions_vor = np.vstack(positions_extended)
+
+        elif pbc_mode == "replicate":
+            # Similar to mirror but may use different tiling strategy
+            # For simplicity, use same as mirror
+            offsets = []
+            for offset in itertools.product([-1, 0, 1], repeat=d):
+                offsets.append(offset)
+
+            positions_extended = []
+            for offset in offsets:
+                offset_arr = np.array(offset) * span
+                positions_extended.append(positions_alive + offset_arr)
+
+            positions_vor = np.vstack(positions_extended)
+        else:
+            positions_vor = positions_alive
+    else:
+        positions_vor = positions_alive
+
+    # Compute Voronoi tessellation
+    try:
+        vor = Voronoi(positions_vor)
+    except Exception as e:
+        # Voronoi can fail for degenerate configurations (too few points, collinear, etc.)
+        # Return empty structure with initialized neighbor lists
+        return {
+            "voronoi": None,
+            "neighbor_lists": {i: [] for i in range(n_alive)},
+            "volumes": np.ones(n_alive),  # Use unit volumes as fallback
+            "facet_areas": {},
+            "alive_indices": alive_indices,
+            "index_map": {i: int(alive_indices[i]) for i in range(n_alive)},
+            "error": str(e),
+        }
+
+    # Build neighbor lists and compute facet areas
+    neighbor_lists: dict[int, list[int]] = {i: [] for i in range(n_alive)}
+    facet_areas: dict[tuple[int, int], float] = {}
+
+    # Extract ridges (shared facets between cells)
+    for ridge_idx, (p1, p2) in enumerate(vor.ridge_points):
+        # Map back to original indices if using PBC
+        if pbc and bounds is not None and pbc_mode != "ignore":
+            p1_orig = p1 % n_alive
+            p2_orig = p2 % n_alive
+
+            # Only keep connections within original domain or to immediate neighbors
+            if p1_orig == p2_orig:
+                continue  # Skip self-connections
+
+            # Check if both are in original domain
+            if p1 < n_alive and p2 < n_alive:
+                i, j = p1, p2
+            else:
+                # Skip ghost-to-ghost connections
+                continue
+        else:
+            i, j = p1, p2
+
+        if i >= n_alive or j >= n_alive:
+            continue
+
+        # Add to neighbor lists
+        if j not in neighbor_lists[i]:
+            neighbor_lists[i].append(j)
+        if i not in neighbor_lists[j]:
+            neighbor_lists[j].append(i)
+
+        # Compute facet area from ridge vertices
+        ridge_vertices = vor.ridge_vertices[ridge_idx]
+        if -1 not in ridge_vertices and len(ridge_vertices) >= d:
+            try:
+                vertices = vor.vertices[ridge_vertices]
+                area = _compute_facet_area(vertices, d)
+                facet_areas[(i, j)] = area
+                facet_areas[(j, i)] = area
+            except Exception:
+                # Use a default small area if computation fails
+                facet_areas[(i, j)] = 1.0
+                facet_areas[(j, i)] = 1.0
+
+    # Compute cell volumes
+    volumes = np.zeros(n_alive)
+    for i in range(n_alive):
+        region_idx = vor.point_region[i]
+        vertices_idx = vor.regions[region_idx]
+
+        if -1 not in vertices_idx and len(vertices_idx) >= d + 1:
+            try:
+                vertices = vor.vertices[vertices_idx]
+                volumes[i] = _compute_cell_volume(vertices, d)
+            except Exception:
+                # Use mean volume if computation fails
+                volumes[i] = 1.0
+
+    # Replace zero volumes with mean
+    mean_vol = volumes[volumes > 0].mean() if (volumes > 0).any() else 1.0
+    volumes[volumes == 0] = mean_vol
+
+    # Create index map
+    index_map = {i: int(alive_indices[i]) for i in range(n_alive)}
+
+    # Apply boundary filtering if requested
+    classification = None
+    if exclude_boundary and not pbc:
+        # Classify cells into tiers
+        classification = classify_boundary_cells(
+            voronoi_data={
+                "voronoi": vor,
+                "neighbor_lists": neighbor_lists,
+                "index_map": index_map,
+            },
+            positions=positions,
+            bounds=bounds,
+            pbc=pbc,
+            boundary_tolerance=boundary_tolerance,
+        )
+
+        # Filter Tier 1 cells from ALL neighbor lists
+        neighbor_lists_filtered = {}
+        for i in range(n_alive):
+            if classification["tier"][i] == 0:
+                # Tier 1 (boundary): completely excluded, empty neighbor list
+                neighbor_lists_filtered[i] = []
+            else:
+                # Tier 2 or 3: keep only Tier 2+ neighbors (exclude Tier 1)
+                neighbors = neighbor_lists.get(i, [])
+                filtered = [
+                    j for j in neighbors
+                    if j < n_alive and classification["tier"][j] > 0
+                ]
+                neighbor_lists_filtered[i] = filtered
+
+        neighbor_lists = neighbor_lists_filtered
+
+    return {
+        "voronoi": vor,
+        "neighbor_lists": neighbor_lists,
+        "volumes": volumes,
+        "facet_areas": facet_areas,
+        "alive_indices": alive_indices,
+        "index_map": index_map,
+        "classification": classification,
+    }
+
+
+def _compute_facet_area(vertices: np.ndarray, d: int) -> float:
+    """
+    Compute area of a facet from its vertices.
+
+    Args:
+        vertices: Vertex coordinates [n_vertices, d]
+        d: Dimension
+
+    Returns:
+        Facet area (length in 2D, area in 3D)
+    """
+    if d == 2:
+        # In 2D, facet is a line segment
+        if len(vertices) < 2:
+            return 0.0
+        # Distance between first two vertices
+        return float(np.linalg.norm(vertices[1] - vertices[0]))
+
+    elif d == 3:
+        # In 3D, facet is a polygon
+        if len(vertices) < 3:
+            return 0.0
+
+        # Compute area using cross products
+        # Triangulate from first vertex
+        v0 = vertices[0]
+        total_area = 0.0
+        for i in range(1, len(vertices) - 1):
+            v1 = vertices[i]
+            v2 = vertices[i + 1]
+            # Area of triangle = 0.5 * ||cross(v1-v0, v2-v0)||
+            cross = np.cross(v1 - v0, v2 - v0)
+            total_area += 0.5 * np.linalg.norm(cross)
+
+        return float(total_area)
+
+    else:
+        # For higher dimensions, use convex hull
+        try:
+            hull = ConvexHull(vertices)
+            return float(hull.volume)
+        except Exception:
+            return 1.0
+
+
+def _compute_cell_volume(vertices: np.ndarray, d: int) -> float:
+    """
+    Compute volume of a Voronoi cell from its vertices.
+
+    Args:
+        vertices: Vertex coordinates [n_vertices, d]
+        d: Dimension
+
+    Returns:
+        Cell volume (area in 2D, volume in 3D)
+    """
+    if len(vertices) < d + 1:
+        return 0.0
+
+    try:
+        hull = ConvexHull(vertices)
+        return float(hull.volume)
+    except Exception:
+        return 1.0
+
+
+def compute_geometric_weights(
+    voronoi_data: dict[str, Any],
+    weight_mode: str = "facet_area",
+    normalize: bool = True,
+) -> dict[str, Any]:
+    """
+    Compute geometric weights for Voronoi neighbors.
+
+    Args:
+        voronoi_data: Output from compute_voronoi_tessellation
+        weight_mode: Weighting scheme - "facet_area", "volume", or "combined"
+        normalize: Whether to normalize weights
+
+    Returns:
+        Dictionary containing:
+            - "node_weights": torch.Tensor [N] (for volume weighting)
+            - "edge_weights": dict[(i,j), float] (for facet/combined weighting)
+    """
+    volumes = voronoi_data["volumes"]
+    facet_areas = voronoi_data["facet_areas"]
+    neighbor_lists = voronoi_data["neighbor_lists"]
+    n = len(volumes)
+
+    if n == 0:
+        return {
+            "node_weights": torch.tensor([]),
+            "edge_weights": {},
+        }
+
+    node_weights = torch.from_numpy(volumes).float()
+    edge_weights: dict[tuple[int, int], float] = {}
+
+    if weight_mode == "facet_area":
+        # Weight by facet area: w_ij = Area(facet_ij) / Σ_k Area(facet_ik)
+        for i in range(n):
+            neighbors = neighbor_lists.get(i, [])
+            if not neighbors:
+                continue
+
+            # Sum of all facet areas for node i
+            total_area = 0.0
+            for j in neighbors:
+                area = facet_areas.get((i, j), 1.0)
+                total_area += area
+
+            # Normalize if requested
+            if normalize and total_area > 0:
+                for j in neighbors:
+                    area = facet_areas.get((i, j), 1.0)
+                    edge_weights[(i, j)] = area / total_area
+            else:
+                for j in neighbors:
+                    edge_weights[(i, j)] = facet_areas.get((i, j), 1.0)
+
+    elif weight_mode == "volume":
+        # Weight by cell volume: w_i = V_i / mean(V)
+        if normalize and volumes.size > 0:
+            mean_vol = volumes.mean()
+            if mean_vol > 0:
+                node_weights = torch.from_numpy(volumes / mean_vol).float()
+
+        # For edge-based operators, use average of node volumes
+        for i in range(n):
+            neighbors = neighbor_lists.get(i, [])
+            for j in neighbors:
+                if normalize:
+                    edge_weights[(i, j)] = (node_weights[i].item() + node_weights[j].item()) / 2.0
+                else:
+                    edge_weights[(i, j)] = (volumes[i] + volumes[j]) / 2.0
+
+    elif weight_mode == "combined":
+        # Combined: w_ij = Area(facet_ij) / sqrt(V_i * V_j)
+        for i in range(n):
+            neighbors = neighbor_lists.get(i, [])
+            for j in neighbors:
+                area = facet_areas.get((i, j), 1.0)
+                vol_product = volumes[i] * volumes[j]
+                if vol_product > 0:
+                    edge_weights[(i, j)] = area / np.sqrt(vol_product)
+                else:
+                    edge_weights[(i, j)] = area
+
+        # Normalize if requested
+        if normalize:
+            for i in range(n):
+                neighbors = neighbor_lists.get(i, [])
+                if not neighbors:
+                    continue
+                total_weight = sum(edge_weights.get((i, j), 0.0) for j in neighbors)
+                if total_weight > 0:
+                    for j in neighbors:
+                        if (i, j) in edge_weights:
+                            edge_weights[(i, j)] /= total_weight
+
+    else:
+        msg = f"Unknown weight_mode: {weight_mode}"
+        raise ValueError(msg)
+
+    return {
+        "node_weights": node_weights,
+        "edge_weights": edge_weights,
+    }
+
+
+def compute_meson_operator_voronoi(
+    color: torch.Tensor,
+    sample_indices: torch.Tensor,
+    voronoi_neighbors: dict[int, list[int]],
+    geometric_weights: dict[str, Any],
+    alive: torch.Tensor,
+    color_valid: torch.Tensor,
+    index_map: dict[int, int],
+    weight_mode: str = "facet_area",
+    classification: dict[str, torch.Tensor] | None = None,
+) -> tuple[torch.Tensor, torch.Tensor]:
+    """
+    Compute meson operator using Voronoi neighbors with geometric weighting.
+
+    Args:
+        color: Complex color vectors [N, d]
+        sample_indices: Walker indices to compute for [n_samples]
+        voronoi_neighbors: Neighbor lists from Voronoi tessellation
+        geometric_weights: Weights from compute_geometric_weights
+        alive: Alive mask [N]
+        color_valid: Valid color mask [N]
+        index_map: Mapping from Voronoi index to original index
+        weight_mode: Weighting mode ("facet_area", "volume", "combined")
+        classification: Optional boundary tier classification (from compute_voronoi_tessellation)
+
+    Returns:
+        (meson_values, valid_mask) where:
+            - meson_values: Complex meson operator values [n_samples]
+            - valid_mask: Boolean mask of valid computations [n_samples]
+
+    Note:
+        If classification is provided, only Tier 3+ (interior) cells will have observables computed.
+        Tier 1 (boundary) cells are excluded from neighbor lists.
+        Tier 2 (boundary-adjacent) cells contribute as neighbors but have no observable.
+    """
+    n_samples = sample_indices.shape[0]
+    device = color.device
+    dtype = color.dtype
+
+    meson = torch.zeros(n_samples, dtype=dtype, device=device)
+    valid = torch.zeros(n_samples, dtype=torch.bool, device=device)
+
+    edge_weights = geometric_weights["edge_weights"]
+    node_weights = geometric_weights.get("node_weights")
+
+    # Create reverse index map (original idx → voronoi idx)
+    reverse_map = {v: k for k, v in index_map.items()}
+
+    for idx, i_orig in enumerate(sample_indices):
+        i_orig_int = int(i_orig.item())
+
+        if not (alive[i_orig_int] and color_valid[i_orig_int]):
+            continue
+
+        # Map to Voronoi index
+        if i_orig_int not in reverse_map:
+            continue
+
+        i_vor = reverse_map[i_orig_int]
+
+        # Skip if not interior (Tier 3+)
+        if classification is not None:
+            if classification["tier"][i_vor] < 2:
+                # Tier 0 or 1: skip observable computation
+                valid[idx] = False
+                continue
+
+        neighbors_vor = voronoi_neighbors.get(i_vor, [])
+
+        if not neighbors_vor:
+            continue
+
+        weighted_sum = 0.0 + 0.0j
+        total_weight = 0.0
+
+        for j_vor in neighbors_vor:
+            j_orig = index_map[j_vor]
+
+            if not (alive[j_orig] and color_valid[j_orig]):
+                continue
+
+            # Meson operator: ⟨i|j⟩ = color[i]† · color[j]
+            meson_ij = torch.dot(color[i_orig_int].conj(), color[j_orig])
+
+            # Get geometric weight
+            if weight_mode == "volume" and node_weights is not None:
+                w_ij = float(node_weights[j_vor].item())
+            else:
+                w_ij = edge_weights.get((i_vor, j_vor), 1.0)
+
+            weighted_sum += w_ij * meson_ij
+            total_weight += w_ij
+
+        if total_weight > 0:
+            meson[idx] = weighted_sum / total_weight
+            valid[idx] = True
+
+    return meson, valid
+
+
+def compute_baryon_operator_voronoi(
+    color: torch.Tensor,
+    sample_indices: torch.Tensor,
+    voronoi_neighbors: dict[int, list[int]],
+    geometric_weights: dict[str, Any],
+    alive: torch.Tensor,
+    color_valid: torch.Tensor,
+    index_map: dict[int, int],
+    weight_mode: str = "facet_area",
+    max_triplets: int | None = None,
+    classification: dict[str, torch.Tensor] | None = None,
+) -> tuple[torch.Tensor, torch.Tensor]:
+    """
+    Compute baryon operator using Voronoi neighbor triplets with geometric weighting.
+
+    Args:
+        color: Complex color vectors [N, 3] (requires d=3!)
+        sample_indices: Walker indices to compute for [n_samples]
+        voronoi_neighbors: Neighbor lists from Voronoi tessellation
+        geometric_weights: Weights from compute_geometric_weights
+        alive: Alive mask [N]
+        color_valid: Valid color mask [N]
+        index_map: Mapping from Voronoi index to original index
+        weight_mode: Weighting mode ("facet_area", "volume", "combined")
+        max_triplets: Optional limit on number of triplets per walker
+        classification: Optional boundary tier classification (from compute_voronoi_tessellation)
+
+    Returns:
+        (baryon_values, valid_mask) where:
+            - baryon_values: Complex baryon operator values [n_samples]
+            - valid_mask: Boolean mask of valid computations [n_samples]
+
+    Note:
+        If classification is provided, only Tier 3+ (interior) cells will have observables computed.
+        Tier 1 (boundary) cells are excluded from neighbor lists.
+        Tier 2 (boundary-adjacent) cells contribute as neighbors but have no observable.
+    """
+    if color.shape[1] != 3:
+        msg = "Baryon operator requires d=3 (color dimension must be 3)"
+        raise ValueError(msg)
+
+    n_samples = sample_indices.shape[0]
+    device = color.device
+    dtype = color.dtype
+
+    baryon = torch.zeros(n_samples, dtype=dtype, device=device)
+    valid = torch.zeros(n_samples, dtype=torch.bool, device=device)
+
+    edge_weights = geometric_weights["edge_weights"]
+    node_weights = geometric_weights.get("node_weights")
+
+    # Create reverse index map (original idx → voronoi idx)
+    reverse_map = {v: k for k, v in index_map.items()}
+
+    for idx, i_orig in enumerate(sample_indices):
+        i_orig_int = int(i_orig.item())
+
+        if not (alive[i_orig_int] and color_valid[i_orig_int]):
+            continue
+
+        # Map to Voronoi index
+        if i_orig_int not in reverse_map:
+            continue
+
+        i_vor = reverse_map[i_orig_int]
+
+        # Skip if not interior (Tier 3+)
+        if classification is not None:
+            if classification["tier"][i_vor] < 2:
+                # Tier 0 or 1: skip observable computation
+                valid[idx] = False
+                continue
+
+        neighbors_vor = voronoi_neighbors.get(i_vor, [])
+
+        if len(neighbors_vor) < 2:
+            continue
+
+        # Generate all triplet pairs C(n_neighbors, 2)
+        neighbor_pairs = list(itertools.combinations(neighbors_vor, 2))
+
+        # Optionally limit number of triplets
+        if max_triplets is not None and len(neighbor_pairs) > max_triplets:
+            # Randomly sample triplets
+            import random
+            neighbor_pairs = random.sample(neighbor_pairs, max_triplets)
+
+        weighted_sum = 0.0 + 0.0j
+        total_weight = 0.0
+
+        for j_vor, k_vor in neighbor_pairs:
+            j_orig = index_map[j_vor]
+            k_orig = index_map[k_vor]
+
+            if not (alive[j_orig] and color_valid[j_orig]):
+                continue
+            if not (alive[k_orig] and color_valid[k_orig]):
+                continue
+
+            # Baryon operator: det([color[i], color[j], color[k]])
+            matrix = torch.stack([color[i_orig_int], color[j_orig], color[k_orig]], dim=-1)
+            det = torch.linalg.det(matrix)
+
+            # Get geometric weight (average over edges in triplet)
+            if weight_mode == "volume" and node_weights is not None:
+                w_j = float(node_weights[j_vor].item())
+                w_k = float(node_weights[k_vor].item())
+                w_triplet = (w_j + w_k) / 2.0
+            else:
+                w_ij = edge_weights.get((i_vor, j_vor), 1.0)
+                w_ik = edge_weights.get((i_vor, k_vor), 1.0)
+                w_triplet = (w_ij + w_ik) / 2.0
+
+            weighted_sum += w_triplet * det
+            total_weight += w_triplet
+
+        if total_weight > 0:
+            baryon[idx] = weighted_sum / total_weight
+            valid[idx] = True
+
+    return baryon, valid
