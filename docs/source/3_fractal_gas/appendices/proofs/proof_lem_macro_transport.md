@@ -7,6 +7,7 @@ Let $\rho_{\text{QSD}}(x,v)$ have position marginal $\rho_x(x)$ and conditional 
 covariance $\Sigma_v(x) := \int v v^\top \rho_{\text{QSD}}(v|x)\,dv$. Assume:
 
 1. **Position Poincare**: $\rho_x$ satisfies
+   
    $$
    \|a\|^2_{L^2(\rho_x)} \le \frac{1}{\kappa_x}\|\nabla_x a\|^2_{L^2(\rho_x)}
    \quad \text{for all } a \text{ with } \int a\,\rho_x = 0.

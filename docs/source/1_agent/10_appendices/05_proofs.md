@@ -1240,6 +1240,7 @@ D_i \psi = \left(\nabla_i R + \frac{i}{\sigma} R (\nabla_A V)_i\right) e^{i\phi}
 
 $$
 and
+
 $$
 D^i D_i \psi = \left[\Delta_G R + \frac{2i}{\sigma} G^{-1}(\nabla R, \nabla_A V) + \frac{i}{\sigma} R \nabla_G \cdot (G^{-1}\nabla_A V) - \frac{1}{\sigma^2} R \|\nabla_A V\|_G^2\right] e^{i\phi}.
 
@@ -1723,18 +1724,22 @@ $$
 [[D_\mu, D_\nu], D_\rho]\psi = [D_\mu, D_\nu](D_\rho \psi) - D_\rho([D_\mu, D_\nu]\psi)
 
 $$
+
 $$
 = -ig\mathcal{F}_{\mu\nu}(D_\rho \psi) - D_\rho(-ig\mathcal{F}_{\mu\nu}\psi)
 
 $$
+
 $$
 = -ig\mathcal{F}_{\mu\nu}D_\rho \psi + ig D_\rho(\mathcal{F}_{\mu\nu}\psi)
 
 $$
+
 $$
 = -ig\mathcal{F}_{\mu\nu}D_\rho \psi + ig (D_\rho \mathcal{F}_{\mu\nu})\psi + ig \mathcal{F}_{\mu\nu}D_\rho \psi
 
 $$
+
 $$
 = ig (D_\rho \mathcal{F}_{\mu\nu})\psi
 
@@ -1825,6 +1830,7 @@ $$
 2\mu^2 |\Phi| + 4\lambda |\Phi|^3 = 0
 
 $$
+
 $$
 |\Phi|^2 = -\frac{\mu^2}{2\lambda} =: \frac{v^2}{2}
 
@@ -1915,6 +1921,7 @@ $$
 \mathcal{L}_{\text{Yukawa}} = -\frac{y_{ij}}{\sqrt{2}}(v + h)\bar{\psi}^{(i)}\psi^{(j)}
 
 $$
+
 $$
 = -\frac{y_{ij} v}{\sqrt{2}}\bar{\psi}^{(i)}\psi^{(j)} - \frac{y_{ij}}{\sqrt{2}}h\bar{\psi}^{(i)}\psi^{(j)}
 

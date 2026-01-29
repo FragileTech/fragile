@@ -736,6 +736,7 @@ structure.
 :::{prf:definition} Preconditioned Update
 :label: def-preconditioned-update
 The preconditioned update is
+
 $$
 \theta_{t+1} = \theta_t - \eta_t M_t g_t,
 $$
@@ -745,10 +746,12 @@ with $M_t$ SPD and $g_t = \nabla\mathcal{V}(\theta_t)$.
 :::{prf:theorem} Preconditioned Descent (Sufficient Condition)
 :label: thm-preconditioned-descent
 Under A1--A2, if
+
 $$
 0 < \eta_t < \frac{2 m_{\min}}{L m_{\max}^2},
 $$
 then the update in Definition {prf:ref}`def-preconditioned-update` satisfies
+
 $$
 \mathcal{V}(\theta_{t+1}) \le \mathcal{V}(\theta_t) - \left(\eta_t m_{\min} - \frac{L}{2}\eta_t^2 m_{\max}^2\right)
 \|g_t\|^2.
@@ -760,6 +763,7 @@ $\eta_t = 2 m_{\min} / (L m_{\max}^2)$, the right-hand side yields nonincrease.
 :::{prf:definition} Relative Trust Region (Mach Limit)
 :label: def-relative-trust-region
 A relative trust region is the constraint
+
 $$
 \|\theta_{t+1} - \theta_t\| \le \kappa\,(\|\theta_t\| + \epsilon_\theta),
 $$
@@ -770,6 +774,7 @@ while $\epsilon_\theta > 0$ avoids degeneracy at $\|\theta_t\| = 0$.
 :::{prf:lemma} Trust-Region Scaling Preserves Descent
 :label: lem-trust-region-scaling
 Let $d_t = \eta_t M_t g_t$ with $\eta_t$ satisfying Theorem {prf:ref}`thm-preconditioned-descent`. Define the scaled step
+
 $$
 \tilde d_t = s d_t, \qquad s := \min\left(1, \frac{\kappa(\|\theta_t\| + \epsilon_\theta)}{\|d_t\|} \right).
 $$
@@ -779,6 +784,7 @@ Then $\mathcal{V}(\theta_t - \tilde d_t) \le \mathcal{V}(\theta_t)$.
 :::{prf:proposition} Discrete Varentropy Brake
 :label: prop-varentropy-brake-discrete
 Let $T_t > 0$ be the cognitive temperature and $V_H(\theta_t)$ the varentropy. Define
+
 $$
 T_{t+1} = T_t\left(1 - \frac{\eta_T}{1 + \gamma V_H(\theta_t)}\right),
 $$
@@ -791,6 +797,7 @@ with $\eta_T \in (0,1)$ and $\gamma > 0$. Then
 :::{prf:definition} Gradient-Momentum Alignment
 :label: def-gradient-alignment
 Let $g_t$ be the gradient and $m_t$ a momentum estimate. Define the alignment score
+
 $$
 a_t := g_t^\top m_t.
 $$
@@ -799,6 +806,7 @@ $$
 :::{prf:proposition} Alignment-Triggered Step Damping
 :label: prop-alignment-step-damping
 Let $a_t := g_t^\top m_t$ and fix a damping factor $\rho \in (0,1]$. Define
+
 $$
 \eta_t^{+} :=
 \begin{cases}
@@ -814,6 +822,7 @@ decreases $\mathcal{V}$.
 :label: prop-snr-gate
 Under A1--A3 and the stochastic update $\theta_{t+1} = \theta_t - \eta_t M_t \hat g_t$, assume $g_t \ne 0$. The
 expected Lyapunov change satisfies
+
 $$
 \mathbb{E}[\mathcal{V}(\theta_{t+1})\mid\theta_t]
 \le \mathcal{V}(\theta_t)
@@ -821,6 +830,7 @@ $$
 + \frac{L}{2}\eta_t^2 m_{\max}^2\left(\|g_t\|^2 + \sigma^2\right).
 $$
 Consequently, a sufficient condition for expected descent is
+
 $$
 \eta_t
 \le
@@ -833,6 +843,7 @@ with $\mathrm{SNR} := \|g_t\|^2 / \sigma^2$. If $g_t = 0$, the sufficient bound 
 :::{prf:definition} Log-LR Conduction Update
 :label: def-log-lr-conduction
 Let $\eta_i > 0$ be per-group learning rates and $x_i := \log(\eta_i)$. Define
+
 $$
  x_i^{+} = x_i + \frac{k}{2}(x_{i-1} - 2 x_i + x_{i+1}),
 $$
@@ -842,6 +853,7 @@ with Neumann boundary conditions $x_0 = x_1$, $x_{n+1} = x_n$ and conductivity $
 :::{prf:proposition} Conduction Contracts LR Disparities
 :label: prop-conduction-contracts
 Let $L$ be the path-graph Laplacian on $n$ groups and define the energy
+
 $$
 E(x) := \frac{1}{2} x^\top L x = \frac{1}{2}\sum_{i=1}^{n-1}(x_{i+1} - x_i)^2.
 $$
@@ -3835,6 +3847,7 @@ $$
 
 $$
 where $\phi_t$ denotes the flow of the curl-corrected system
+
 $$
 \dot{z} = \mathcal{M}_{\text{curl}}\!\left(-G^{-1}(z)\nabla_A V_y(z)\right), \qquad \mathcal{M}_{\text{curl}} := (I - \beta_{\text{curl}} G^{-1}\mathcal{F})^{-1}
 $$
@@ -6255,6 +6268,7 @@ $$
 
 $$
 In the overdamped limit ({ref}`sec-the-unified-effective-potential`), the acceleration term vanishes and the drift field is
+
 $$
 \dot{z} = \mathcal{M}_{\text{curl}}\!\left(-G^{-1}\nabla_A V + \beta_{\text{exp}} G^{-1}\nabla\Psi_{\text{causal}}\right),
 $$
@@ -7724,6 +7738,7 @@ where the gradient is with respect to the spatial coordinates $z$, holding $t$ f
 The **Causal BAOAB** integrator for memory-augmented dynamics uses five steps as in Definition {prf:ref}`def-baoab-attention-heads`, with the memory potential modified to respect causality:
 
 **Step 1 (B-step, first half-kick):**
+
 $$
 p \leftarrow p - \frac{h}{2} \nabla_z \left( \Phi_{\text{eff}}(z) + \Psi_{\text{mem}}^{\text{causal}}(z, t) \right)
 $$
@@ -7731,22 +7746,26 @@ $$
 **Step 1.5 (Boris rotation, if $\mathcal{F} \neq 0$):** Apply the rotation from Definition {prf:ref}`def-baoab-splitting` using the Value Curl $\mathcal{F}$.
 
 **Step 2 (A-step, first half-drift):**
+
 $$
 z \leftarrow z + \frac{h}{2} G^{-1}(z) p
 $$
 
 **Step 3 (O-step, thermostat):**
+
 $$
 p \leftarrow c_1 p + c_2 G^{1/2}(z) \xi, \quad \xi \sim \mathcal{N}(0, I)
 $$
 with $c_1 = e^{-\gamma h}$, $c_2 = \sqrt{(1 - c_1^2) T_c}$.
 
 **Step 4 (A-step, second half-drift):**
+
 $$
 z \leftarrow z + \frac{h}{2} G^{-1}(z) p
 $$
 
 **Step 5 (B-step, second half-kick):**
+
 $$
 p \leftarrow p - \frac{h}{2} \nabla_z \left( \Phi_{\text{eff}}(z) + \Psi_{\text{mem}}^{\text{causal}}(z, t) \right)
 $$
@@ -8055,6 +8074,7 @@ where $G_{\text{ret}}$ is the retarded Green's function (Definition {prf:ref}`de
 
 *Remark (Point-source / ghost limit).* If Agent $j$'s conservative source is concentrated along a trajectory,
 $\rho^{(j)}_r(\zeta, \tau) = \sigma^{(j)}_r(\tau)\,\delta(\zeta - z^{(j)}_\tau)$, then
+
 $$
 \Phi^{\text{ret}}_{ij}(z^{(i)}, t) = \alpha_{ij}\int_{-\infty}^{t} G_{\text{ret}}(z^{(i)}, t; z^{(j)}_\tau, \tau)\,
 \sigma^{(j)}_r(\tau)\, d\tau,
@@ -8120,6 +8140,7 @@ $$
 $$
 where:
 - $\square_{G} = \frac{1}{c_{\text{info}}^2}\partial_t^2 - \Delta_G$ is the **D'Alembertian** on the manifold. With spacetime metric $g_{\mu\nu} = \text{diag}(-c_{\text{info}}^2, G_{ij})$, this equals
+  
   $$
   \square_G = -\frac{1}{\sqrt{|g|}}\partial_\mu\left(\sqrt{|g|}g^{\mu\nu}\partial_\nu\right).
   $$
@@ -8752,10 +8773,12 @@ $$
 $$
 
 Introduce the spacetime metric
+
 $$
 g_{\mu\nu} := \text{diag}(-c_{\text{info}}^2, \tilde{G}_{ij}), \quad g^{00} = -\frac{1}{c_{\text{info}}^2}, \quad g^{ij} = \tilde{G}^{ij},
 $$
 with $|g| = c_{\text{info}}^2 |\tilde{G}|$. Then
+
 $$
 \Box_A = -\frac{1}{\sqrt{|g|}}D_\mu\left(\sqrt{|g|}g^{\mu\nu}D_\nu\right).
 $$
@@ -9152,6 +9175,7 @@ where:
 - $m_i$ is the "bare mass" (intrinsic inertia) of agent $i$
 
 *Scalar option:* If the belief field is modeled as a complex scalar (the canonical single-agent choice), replace the Dirac term by
+
 $$
 \mathcal{L}_{\text{scalar}} = \sum_{i=1}^N (D_\mu \psi^{(i)})^\dagger (D^\mu \psi^{(i)}) - m_i^2\,\psi^{(i)\dagger}\psi^{(i)}.
 $$
@@ -9295,11 +9319,13 @@ $\left(\frac{1}{c_{\text{info}}^2}\partial_t^2 - \Delta_G + \kappa^2\right)V=0$ 
 $\omega^2/c_{\text{info}}^2 = \kappa^2 + \lambda_n$. The gap statements follow. $\square$
 
 *Remark (Schr\"odinger limit as special case).* For low spatial frequencies around the ground mode, $\lambda_n - \lambda_0 \ll \kappa^2 + \lambda_0$,
+
 $$
 \omega_n = \omega_0 + \frac{c_{\text{info}}}{2\sqrt{\kappa^2 + \lambda_0}}(\lambda_n - \lambda_0) + O\!\left(\frac{(\lambda_n-\lambda_0)^2}{(\kappa^2+\lambda_0)^{3/2}}\right).
 $$
 Factoring out the fast oscillation $e^{-i \omega_0 t}$ yields a slow envelope obeying a Schr\"odinger-type evolution with effective kinetic operator
 $-\frac{c_{\text{info}}}{2\sqrt{\kappa^2+\lambda_0}}\Delta_G$ (or $-\frac{c_{\text{info}}}{2\sqrt{\kappa^2+\lambda_0}}\Delta_{\tilde{G}}$ under metric inflation). In that limit the Hamiltonian spectral gap is
+
 $$
 \Delta_H \approx \frac{c_{\text{info}}}{2\sqrt{\kappa^2+\lambda_0}}(\lambda_1 - \lambda_0),
 $$
@@ -10747,6 +10773,7 @@ Here $\Psi = \Psi_L + \Psi_R$ and $D_\mu$ acts chirally with representation-spec
 1. **Second-order hyperbolic dynamics:** Finite information speed upgrades the conservative value equation to the
    Klein-Gordon form (Theorem {prf:ref}`thm-hjb-klein-gordon`). For gauge-charged matter fields, the corresponding
    covariant wave equation is (Theorem {prf:ref}`thm-gauge-covariant-klein-gordon`):
+   
    $$
    \left(\frac{1}{c_{\text{info}}^2}D_t^2 - D^i D_i + \kappa^2\right)\psi = \mathcal{S}.
    $$
@@ -10756,6 +10783,7 @@ Here $\Psi = \Psi_L + \Psi_R$ and $D_\mu$ acts chirally with representation-spec
 3. **Minimal first-order covariant square root:** Define the Dirac operator
    $\slashed{D}:=i\gamma^\mu(\nabla_\mu^{\text{spin}}-igA_\mu)$ acting on the belief spinor. Then the standard
    factorization gives
+   
    $$
    (\slashed{D}-m)(\slashed{D}+m)
    = -D_\mu D^\mu + m^2 + \frac{1}{4}R + \frac{i}{2}\sigma^{\mu\nu}F_{\mu\nu},
@@ -12546,6 +12574,7 @@ A **linear representation** is a continuous group homomorphism $\rho: G \to GL(d
 **Smoothness:** When $G$ is a Lie group, we additionally require $\rho$ to be smooth as a map between manifolds: for any smooth curve $\gamma: (-\epsilon, \epsilon) \to G$ with $\gamma(0) = e_G$, the matrix-valued map $t \mapsto \rho(\gamma(t))$ is $C^\infty$.
 
 **Group action:** For $g \in G$ and $z \in \mathcal{Z}$ (viewed as a $d_z \times 1$ column vector), the action is given by standard matrix-vector multiplication:
+
 $$
 g \cdot z := \rho(g) z \in \mathbb{R}^{d_z}
 $$
@@ -12554,6 +12583,7 @@ where the right-hand side denotes the matrix product of $\rho(g) \in \mathbb{R}^
 **Orthogonal representations:** When $G$ is compact (e.g., $SO(d)$, $SU(N)$), any finite-dimensional continuous representation can be made orthogonal (unitary) by constructing a $G$-invariant inner product via Haar measure averaging {cite}`serre1977linear,sepanski2007compact`.
 
 **Construction:** Let $\rho_0: G \to GL(d_z, \mathbb{R})$ be any representation, and let $\langle \cdot, \cdot \rangle_0$ be an arbitrary initial inner product on $\mathcal{Z} = \mathbb{R}^{d_z}$. Define the averaged inner product:
+
 $$
 \langle z, z' \rangle_G := \int_G \langle \rho_0(g) z, \rho_0(g) z' \rangle_0 \, dg
 $$
@@ -12570,6 +12600,7 @@ where $dg$ is the normalized Haar measure on $G$ (unique bi-invariant measure wi
    Therefore $\rho_0(h)$ is orthogonal (actually unitary) with respect to $\langle \cdot, \cdot \rangle_G$ for all $h \in G$.
 
 We typically choose $\rho$ such that $\rho(g) \in O(d_z)$ for all $g$, ensuring:
+
 $$
 \langle \rho(g) z, \rho(g) z' \rangle = \langle z, z' \rangle \quad \forall z, z', g
 $$
@@ -12634,6 +12665,7 @@ $$
 **Construction via real forms:**
 
 1. **$SU(N_f)_C$ real representation:** With $N_f = n_b$ (number of bundles), we model bundle mixing with a real orthogonal action on the bundle index. This is a pragmatic, real-valued proxy for $SU(N_f)_C$ that preserves bundle norms and keeps the bundle count fixed. In block form:
+   
    $$
    \rho_C(R) = \begin{pmatrix}
    R_{11} I_{d_b} & R_{12} I_{d_b} & \cdots & R_{1n_b} I_{d_b} \\
@@ -12649,6 +12681,7 @@ $$
    1. **Complex to real decomposition:** Any $U \in SU(n_b)$ can be written as $U = A + iB$ where $A, B \in \mathbb{R}^{n_b \times n_b}$.
 
    2. **Block real form:** This induces a real representation $\rho_{\mathbb{R}}: SU(n_b) \to SO(2n_b)$ given by:
+      
       $$
       U = A + iB \mapsto \begin{pmatrix} A & -B \\ B & A \end{pmatrix} \in SO(2n_b)
       $$
@@ -12677,6 +12710,7 @@ $$
 2. **$SU(2)_L$ real representation:** The adjoint representation identifies the Lie algebras $\mathfrak{su}(2) \cong \mathfrak{so}(3)$ and yields a surjective homomorphism $\mathrm{Ad}: SU(2) \to SO(3)$ with kernel $\{\pm I\}$ {cite}`hall2015lie`. This gives a 3D real representation that factors through $SO(3)$ (so it is **not** faithful on $SU(2)$). A faithful real representation is obtained by realifying the fundamental doublet $SU(2) \curvearrowright \mathbb{C}^2$, giving an embedding $SU(2) \hookrightarrow SO(4)$ (equivalently, $SU(2)\cong Sp(1)$ acting on quaternions $\mathbb{H}\cong \mathbb{R}^4$ by left multiplication).
 
    **Architecture choice — spontaneous symmetry breaking:** In practice, the full $SU(2)_L$ symmetry is **broken to a $U(1)$ subgroup** (a maximal torus; all such subgroups are conjugate to the diagonal subgroup $\mathrm{diag}(e^{i\theta}, e^{-i\theta}) \in SU(2)$). In our real-valued implementation we realize this $U(1)$ action as the standard $SO(2)$ rotation mixing the observation-action doublet components (generated by $i\sigma_2$ in the Pauli basis):
+   
    $$
    \rho_L: U(1) \hookrightarrow SU(2)_L \xrightarrow{\text{real form}} SO(2) \subset GL(2, \mathbb{R})
    $$
@@ -12685,12 +12719,14 @@ $$
    **Justification for symmetry breaking:** The reduction from $SU(2)_L$ to $U(1) \subset SU(2)_L$ is consistent with the weak isospin structure in the Standard Model, where the unbroken subgroup after electroweak symmetry breaking is $U(1)_{\text{EM}} \subset SU(2)_L \times U(1)_Y$. In the neural architecture, only the $U(1)$ rotation symmetry between observation and action channels is explicitly enforced; a faithful real implementation of the full $SU(2)$ doublet would require complex features (or its 4D realification), which is incompatible with a 2D real obs-action plane. See the remark in Definition {prf:ref}`def-obs-action-doublet` on real-valued implementations.
 
 3. **$U(1)_Y$ real representation:** The hypercharge symmetry $U(1)_Y = \{e^{i\theta} : \theta \in [0, 2\pi)\}$ acts on complex fields as phase rotations $\psi \mapsto e^{iY\theta} \psi$, preserving $|\psi|^2$. The real representation is:
+   
    $$
    \rho_Y: U(1)_Y \to SO(2) \subset GL(2, \mathbb{R}), \quad e^{i\theta} \mapsto \begin{pmatrix} \cos(Y\theta) & -\sin(Y\theta) \\ \sin(Y\theta) & \cos(Y\theta) \end{pmatrix}
    $$
    where $Y \in \mathbb{R}$ is the hypercharge quantum number. This is a rotation in a 2D subspace with angular velocity proportional to $Y$.
 
    **Architecture implementation via norm preservation:** In practice, $U(1)_Y$ invariance is enforced through **Lipschitz constraints** $\sigma_{\max}(W) \leq 1$ on all linear operators (Definition {prf:ref}`def-spectral-linear`). These constraints ensure:
+   
    $$
    \|W z\| \leq \|z\| \quad \forall z \in \mathcal{Z}
    $$
@@ -12699,6 +12735,7 @@ $$
    **Relationship to hypercharge conservation:** In the Standard Model, hypercharge $Y$ is a conserved quantum number satisfying $Q = T_3 + Y/2$ (electric charge formula). In the neural architecture, the analog is **total information content** $I(X_t; Z_t) \leq C$, which is bounded by the holographic principle. Spectral normalization ensures the *linear* operators are non-expansive ($\|Wz\| \leq \|z\|$); keeping the overall network within capacity additionally requires controlling the gain of nonlinear blocks (e.g., via rescaled NormGate or explicit Lipschitz tracking).
 
 **Product representation:** The full representation is the **direct sum** (⊕) of these factors acting on disjoint subspaces:
+
 $$
 \rho(U_C, U_L, e^{i\theta_Y}) = \rho_C(U_C) \oplus \rho_L(U_L) \oplus \rho_Y(e^{i\theta_Y})
 $$
@@ -12746,6 +12783,7 @@ The choice of direct sum over tensor product is **architectural**, not fundament
 Let $d \geq 2$ and consider the standard representation $\rho: SO(d) \to GL(d, \mathbb{R})$ where $\rho(R) = R$ (i.e., rotations act by matrix multiplication).
 
 Define the ReLU activation $f: \mathbb{R}^d \to \mathbb{R}^d$ by:
+
 $$
 f(z) = (f(z_1), \ldots, f(z_d)) \quad \text{where} \quad f(z_i) = \max(0, z_i)
 $$
@@ -12759,6 +12797,7 @@ We prove by explicit counterexample for $d=2$, then indicate generalization.
 **Step 1. Counterexample construction ($d=2$):**
 
 Let $z = (1, -1)^T \in \mathbb{R}^2$. Then:
+
 $$
 f(z) = (\max(0, 1), \max(0, -1))^T = (1, 0)^T
 $$
@@ -12766,26 +12805,31 @@ $$
 **Step 2. Apply rotation:**
 
 Let $R_\theta \in SO(2)$ be counterclockwise rotation by $\theta = \pi/4$:
+
 $$
 R_{\pi/4} = \begin{pmatrix} \cos(\pi/4) & -\sin(\pi/4) \\ \sin(\pi/4) & \cos(\pi/4) \end{pmatrix} = \begin{pmatrix} \frac{1}{\sqrt{2}} & -\frac{1}{\sqrt{2}} \\ \frac{1}{\sqrt{2}} & \frac{1}{\sqrt{2}} \end{pmatrix}
 $$
 
 Then:
+
 $$
 R_{\pi/4} z = \begin{pmatrix} \frac{1}{\sqrt{2}} & -\frac{1}{\sqrt{2}} \\ \frac{1}{\sqrt{2}} & \frac{1}{\sqrt{2}} \end{pmatrix} \begin{pmatrix} 1 \\ -1 \end{pmatrix} = \begin{pmatrix} \frac{1+1}{\sqrt{2}} \\ \frac{1-1}{\sqrt{2}} \end{pmatrix} = \begin{pmatrix} \sqrt{2} \\ 0 \end{pmatrix}
 $$
 
 **Step 3. Compute $f(R_{\pi/4} z)$:**
+
 $$
 f(R_{\pi/4} z) = f((\sqrt{2}, 0)^T) = (\sqrt{2}, 0)^T
 $$
 
 **Step 4. Compute $R_{\pi/4} f(z)$:**
+
 $$
 R_{\pi/4} f(z) = R_{\pi/4} \begin{pmatrix} 1 \\ 0 \end{pmatrix} = \begin{pmatrix} \frac{1}{\sqrt{2}} \\ \frac{1}{\sqrt{2}} \end{pmatrix}
 $$
 
 **Step 5. Verify non-equality:**
+
 $$
 f(R_{\pi/4} z) = (\sqrt{2}, 0)^T \neq \left(\frac{1}{\sqrt{2}}, \frac{1}{\sqrt{2}}\right)^T = R_{\pi/4} f(z)
 $$
@@ -12799,6 +12843,7 @@ For arbitrary $d \geq 2$, we construct an analogous counterexample.
 **Setup:** Let $z = (1, -1, 0, \ldots, 0)^T \in \mathbb{R}^d$ (first two components nonzero, rest zero).
 
 Define $R_\theta \in SO(d)$ as the block-diagonal matrix:
+
 $$
 R_\theta = \begin{pmatrix}
 R_2(\theta) & 0 \\
@@ -12814,16 +12859,19 @@ where $R_2(\theta) = \begin{pmatrix} \cos\theta & -\sin\theta \\ \sin\theta & \c
 **Step 1. Compute $R_\theta z$:**
 
 Using the block-diagonal structure:
+
 $$
 R_\theta z = \begin{pmatrix} R_2(\pi/4) & 0 \\ 0 & I_{d-2} \end{pmatrix} \begin{pmatrix} 1 \\ -1 \\ 0 \\ \vdots \\ 0 \end{pmatrix} = \begin{pmatrix} R_2(\pi/4) \begin{pmatrix} 1 \\ -1 \end{pmatrix} \\ 0_{d-2} \end{pmatrix}
 $$
 
 Computing the $2 \times 2$ block (from Step 2 of the $d=2$ case):
+
 $$
 R_2(\pi/4) \begin{pmatrix} 1 \\ -1 \end{pmatrix} = \begin{pmatrix} \frac{1}{\sqrt{2}} & -\frac{1}{\sqrt{2}} \\ \frac{1}{\sqrt{2}} & \frac{1}{\sqrt{2}} \end{pmatrix} \begin{pmatrix} 1 \\ -1 \end{pmatrix} = \begin{pmatrix} \sqrt{2} \\ 0 \end{pmatrix}
 $$
 
 Therefore:
+
 $$
 R_\theta z = (\sqrt{2}, 0, 0, \ldots, 0)^T
 $$
@@ -12831,6 +12879,7 @@ $$
 **Step 2. Compute $f(R_\theta z)$:**
 
 Since all components of $R_\theta z$ are non-negative (first component $\sqrt{2} > 0$, rest are $0$):
+
 $$
 f(R_\theta z) = (\max(0, \sqrt{2}), \max(0, 0), \ldots, \max(0, 0))^T = (\sqrt{2}, 0, 0, \ldots, 0)^T
 $$
@@ -12838,6 +12887,7 @@ $$
 **Step 3. Compute $f(z)$:**
 
 Component-wise application of $\max(0, \cdot)$:
+
 $$
 f(z) = (\max(0, 1), \max(0, -1), \max(0, 0), \ldots, \max(0, 0))^T = (1, 0, 0, \ldots, 0)^T
 $$
@@ -12849,11 +12899,13 @@ R_\theta f(z) = \begin{pmatrix} R_2(\pi/4) & 0 \\ 0 & I_{d-2} \end{pmatrix} \beg
 $$
 
 Computing:
+
 $$
 R_2(\pi/4) \begin{pmatrix} 1 \\ 0 \end{pmatrix} = \begin{pmatrix} \frac{1}{\sqrt{2}} \\ \frac{1}{\sqrt{2}} \end{pmatrix}
 $$
 
 Therefore:
+
 $$
 R_\theta f(z) = \left(\frac{1}{\sqrt{2}}, \frac{1}{\sqrt{2}}, 0, \ldots, 0\right)^T
 $$
@@ -12865,6 +12917,7 @@ Comparing the first two components:
 - $R_\theta f(z) = (\frac{1}{\sqrt{2}}, \frac{1}{\sqrt{2}}, \ldots)^T$
 
 Since $\sqrt{2} \neq \frac{1}{\sqrt{2}}$ and $0 \neq \frac{1}{\sqrt{2}}$, we have:
+
 $$
 f(R_\theta z) \neq R_\theta f(z)
 $$
@@ -12897,6 +12950,7 @@ where $G^{ij}(z)$ is the metric tensor from Theorem {prf:ref}`thm-capacity-const
 
 **Step 1. Network with ReLU activation:**
 Consider a simple network layer $f(z) = \max(0, Wz + b)$ where $W \in \mathbb{R}^{d \times d}$, $b \in \mathbb{R}^d$. The derivative is:
+
 $$
 \frac{\partial f_i}{\partial z_j} = \begin{cases}
 W_{ij} & \text{if } (Wz + b)_i > 0 \\
@@ -12909,6 +12963,7 @@ $$
 The WFR action $\mathcal{L}_{\text{WFR}}[z]$ depends on the value function $V(z)$ and policy $\pi(a|z)$.
 
 **Illustrative functional form:** For a capacity-constrained agent (Chapter 4, Theorem {prf:ref}`thm-equivalence-entropy-regularized-control`), a typical action functional is:
+
 $$
 \mathcal{L}_{\text{WFR}}[z] = V(f(z)) + \lambda I(\pi(\cdot|f(z)))
 $$
@@ -12922,6 +12977,7 @@ where:
 
 **Step 3. Chain rule breakdown:**
 To compute $\nabla_z \mathcal{L}_{\text{WFR}}$, we need:
+
 $$
 \frac{\partial \mathcal{L}}{\partial z_j} = \sum_i \frac{\partial \mathcal{L}}{\partial f_i} \cdot \frac{\partial f_i}{\partial z_j}
 $$
@@ -12971,6 +13027,7 @@ where we identify $SO(d_b) \subset GL(d_b, \mathbb{R})$ as the subgroup of ortho
 **Product gauge group (derivation):** Given the direct sum decomposition $\mathcal{Z} = \bigoplus_{i=1}^{n_b} V_i$, what is the maximal symmetry group?
 
 **Claim:** The full symmetry group preserving the decomposition is:
+
 $$
 G_{\text{bundle}} = \prod_{i=1}^{n_b} SO(d_b)
 $$
@@ -12985,11 +13042,13 @@ $$
 4. **Independence:** Transformations on different bundles are independent, giving the product structure $\prod_{i=1}^{n_b} SO(d_b)$.
 
 **Group action:** For $(g_1, \ldots, g_{n_b}) \in G_{\text{bundle}}$ and $z = (z^{(1)}, \ldots, z^{(n_b)})$ with $z^{(i)} \in V_i$:
+
 $$
 \rho(g_1, \ldots, g_{n_b}) \cdot z = (g_1 z^{(1)}, \ldots, g_{n_b} z^{(n_b)})
 $$
 
 In matrix form (with respect to concatenated basis):
+
 $$
 \rho(g_1, \ldots, g_{n_b}) = \text{diag}(g_1, \ldots, g_{n_b}) = \begin{pmatrix} g_1 & 0 & \cdots & 0 \\ 0 & g_2 & \cdots & 0 \\ \vdots & \vdots & \ddots & \vdots \\ 0 & 0 & \cdots & g_{n_b} \end{pmatrix}
 $$
@@ -13044,21 +13103,25 @@ Thus the **light cone** $\mathcal{C}(z_0, t_0) := \{(z, t) : \|z - z_0\| \leq c_
 **Step 1. Spectral bound:** By spectral normalization (Definition {prf:ref}`def-spectral-linear`), $\sigma_{\max}(W) \leq 1$.
 
 **Step 2. Operator norm:** For the Euclidean norm, the induced operator norm satisfies $\|W\|_{\text{op}} = \sigma_{\max}(W)$, where:
+
 $$
 \|W\|_{\text{op}} := \sup_{\|z\| = 1} \|W \cdot z\|
 $$
 
 Thus for any $z \in \mathcal{Z}$:
+
 $$
 \|W \cdot z\| \leq \|W\|_{\text{op}} \cdot \|z\| = \sigma_{\max}(W) \cdot \|z\| \leq \|z\|
 $$
 
 **Step 3. Distance preservation:** For any $z_1, z_2 \in \mathcal{Z}$:
+
 $$
 \|W \cdot z_1 - W \cdot z_2\| = \|W \cdot (z_1 - z_2)\| \leq \|z_1 - z_2\|
 $$
 
 **Step 4. Causal structure:** If the inputs are causally connected ($d(z_1, z_2) \leq c_{\text{info}} \Delta t$), the outputs remain causally connected since:
+
 $$
 d(W \cdot z_1, W \cdot z_2) \leq d(z_1, z_2) \leq c_{\text{info}} \Delta t
 $$
@@ -13076,6 +13139,7 @@ $\square$
 Working in the tangent bundle $T\mathcal{Z}$, elements are pairs $(z, v)$ where $z \in \mathcal{Z}$ is a point and $v \in T_z \mathcal{Z}$ is a tangent vector at $z$.
 
 A gauge-covariant map on the tangent bundle must satisfy:
+
 $$
 f(z, \rho(g) \cdot v) = \rho'(g) \cdot f(z, v) \quad \forall g \in G
 $$
@@ -13083,10 +13147,12 @@ $$
 **Claim:** Adding a bias $b$ violates this unless $b = 0$.
 
 *Proof.* Consider $f(z, v) = W v + b$. Then:
+
 $$
 f(z, \rho(g) \cdot v) = W \rho(g) v + b
 $$
 but
+
 $$
 \rho'(g) \cdot f(z, v) = \rho'(g) (W v + b) = \rho'(g) W v + \rho'(g) b
 $$
@@ -13102,9 +13168,11 @@ If $F$ is $G$-equivariant, then $F(\rho(g) v) = \rho(g) F(v)$ for all $g, v$.
 - **Inductive step:** Assume $f_{L-1} \circ \cdots \circ f_1$ is equivariant, so each $b_i = 0$ for $i < L$.
 
   Then:
+  
   $$
   F(\rho(g) v) = f_L((f_{L-1} \circ \cdots \circ f_1)(\rho(g) v)) = f_L(\rho(g) (f_{L-1} \circ \cdots \circ f_1)(v))
   $$
+  
   $$
   = W_L \rho(g) h + b_L \quad \text{where } h = (f_{L-1} \circ \cdots \circ f_1)(v)
   $$
@@ -13174,16 +13242,19 @@ $$
 **Step 1. Decompose activation:** $f(v) = v \cdot h$ where $h = g(\|v\| + b)$ is a scalar.
 
 **Step 2. Norm invariance:** For any $R \in SO(d_b)$ (orthogonal matrix):
+
 $$
 \|R \cdot v\| = \sqrt{(R \cdot v)^T (R \cdot v)} = \sqrt{v^T R^T R v} = \sqrt{v^T v} = \|v\|
 $$
 
 **Step 3. Scalar invariance:** Since the norm is invariant:
+
 $$
 h(R \cdot v) = g(\|R \cdot v\| + b) = g(\|v\| + b) = h(v)
 $$
 
 **Step 4. Equivariance:** Combining:
+
 $$
 f(R \cdot v) = (R \cdot v) \cdot h(R \cdot v) = (R \cdot v) \cdot h(v) = R \cdot (v \cdot h(v)) = R \cdot f(v)
 $$
@@ -13206,6 +13277,7 @@ where:
 - **NormGate**: Norm-gated activation applied per bundle (Definition {prf:ref}`def-norm-gated-activation`)
 
 **Structure constraint:** For **exact** $G_{\text{bundle}} = \prod_{i=1}^{n_b} SO(d_b)$ equivariance, the weight matrix $W$ must be block-scalar:
+
 $$
 W = \begin{pmatrix} \lambda_1 I_{d_b} & 0 & \cdots & 0 \\ 0 & \lambda_2 I_{d_b} & \cdots & 0 \\ \vdots & \vdots & \ddots & \vdots \\ 0 & 0 & \cdots & \lambda_{n_b} I_{d_b} \end{pmatrix}
 $$
@@ -13230,11 +13302,13 @@ Suppose $W$ has off-diagonal blocks, i.e., there exist $i \neq j$ such that $W_{
 Consider a group element $g = (g_1, \ldots, g_{n_b})$ where $g_i = R_\theta \in SO(d_b)$ is a nontrivial rotation and $g_j = I$ for $j \neq i$.
 
 For this $g$ and input $z$ with $z^{(j)} \neq 0$, $z^{(k)} = 0$ for $k \neq j$:
+
 $$
 (W \rho(g) z)_i = \sum_{k=1}^{n_b} W_{ik} g_k z^{(k)} = W_{ii} g_i \cdot 0 + W_{ij} I \cdot z^{(j)} = W_{ij} z^{(j)}
 $$
 
 But:
+
 $$
 (\rho(g) W z)_i = g_i (W z)^{(i)} = R_\theta \sum_{k=1}^{n_b} W_{ik} z^{(k)} = R_\theta W_{ij} z^{(j)}
 $$
@@ -13252,6 +13326,7 @@ Therefore, off-diagonal blocks must vanish: $W_{ij} = 0$ for $i \neq j$. $\squar
 Let $W = \text{diag}(W_1, \ldots, W_{n_b})$ be block-diagonal where each $W_i: V_i \to V_i$ with $V_i \cong \mathbb{R}^{d_b}$.
 
 Assume the scalar map $\phi_i: [0,\infty) \to [0,\infty)$ defined by
+
 $$
 \phi_i(r) := r \, \bigl|g(r + b_i)\bigr|
 $$
@@ -13262,6 +13337,7 @@ Then the composition $\text{NormGate} \circ W$ is $G_{\text{bundle}}$-equivarian
 *Proof.*
 
 **($\Leftarrow$) Sufficiency:** If $W_i = \lambda_i I_{d_b}$, then for any $g_i \in SO(d_b)$:
+
 $$
 W_i g_i = \lambda_i I \cdot g_i = \lambda_i g_i = g_i \lambda_i I = g_i W_i
 $$
@@ -13271,24 +13347,29 @@ Thus $W_i$ commutes with all $g_i \in SO(d_b)$. The IsotropicBlock composition i
 **($\Rightarrow$) Necessity:** Suppose $\text{NormGate} \circ W$ is $G_{\text{bundle}}$-equivariant. We show each $W_i$ must be a scalar multiple of identity.
 
 **Step 1. Equivariance condition (bundle $i$):** For all $R \in SO(d_b)$ and $v \in V_i$,
+
 $$
 \text{NormGate}(W_i \, Rv) = R \, \text{NormGate}(W_i v)
 $$
 which expands to
+
 $$
 W_i Rv \cdot g(\|W_i Rv\| + b_i) = R W_i v \cdot g(\|W_i v\| + b_i).
 $$
 
 **Step 2. Take norms:** Using $\|R x\| = \|x\|$,
+
 $$
 \|W_i Rv\| \, \bigl|g(\|W_i Rv\| + b_i)\bigr| = \|W_i v\| \, \bigl|g(\|W_i v\| + b_i)\bigr|.
 $$
 By injectivity of $\phi_i$, this implies $\|W_i Rv\| = \|W_i v\|$ for all $R, v$, hence the gate scalars match:
+
 $$
 g(\|W_i Rv\| + b_i) = g(\|W_i v\| + b_i).
 $$
 
 **Step 3. Cancel the common scalar:** Substituting back into Step 1 gives
+
 $$
 W_i Rv = R W_i v \quad \forall R \in SO(d_b), \forall v \in V_i,
 $$
@@ -13317,6 +13398,7 @@ Then the IsotropicBlock (Definition {prf:ref}`def-isotropic-block`) is **exactly
 *Proof.*
 
 **Step 1. Define the group action:** On the flat space $\mathcal{Z} \cong \mathbb{R}^{n_b \cdot d_b}$, the group $G = \prod_{i=1}^{n_b} SO(d_b)$ acts as:
+
 $$
 \rho(g_1, \ldots, g_{n_b}) \cdot z = (g_1 \cdot z^{(1)}, \ldots, g_{n_b} \cdot z^{(n_b)})
 $$
@@ -13324,16 +13406,19 @@ where $z = (z^{(1)}, \ldots, z^{(n_b)})$ with $z^{(i)} \in \mathbb{R}^{d_b}$.
 
 **Step 2. SpectralLinear with scalar blocks:**
 For $W = \text{diag}(\lambda_1 I, \ldots, \lambda_{n_b} I)$ and $(g_1, \ldots, g_{n_b}) \in G$:
+
 $$
 W \cdot \rho(g_1, \ldots, g_{n_b}) \cdot z = (\lambda_1 g_1 z^{(1)}, \ldots, \lambda_{n_b} g_{n_b} z^{(n_b)})
 $$
 
 **Key property:** Since $\lambda_i I$ commutes with all $g_i \in SO(d_b)$:
+
 $$
 \lambda_i I \cdot g_i = g_i \cdot \lambda_i I \quad \forall g_i \in SO(d_b)
 $$
 
 Thus SpectralLinear is equivariant:
+
 $$
 W \cdot \rho(g) \cdot z = \rho(g) \cdot W \cdot z
 $$
@@ -13341,6 +13426,7 @@ $$
 **Step 3. Reshape is equivariant:** The bundle partition $\mathbb{R}^{n_b \cdot d_b} \to (\mathbb{R}^{d_b})^{n_b}$ is equivariant by construction (identity map in bundled coordinates).
 
 **Step 4. NormGate is $SO(d_b)$-equivariant per bundle:** By Theorem {prf:ref}`thm-norm-gating-equivariant`, for each bundle $i$:
+
 $$
 \text{NormGate}(g_i \cdot v_i) = g_i \cdot \text{NormGate}(v_i) \quad \forall g_i \in SO(d_b)
 $$
@@ -13352,6 +13438,7 @@ We prove $\text{IsotropicBlock}(\rho(g) \cdot z) = \rho(g) \cdot \text{Isotropic
 Let $g = (g_1, \ldots, g_{n_b}) \in G$ and $z = (z^{(1)}, \ldots, z^{(n_b)})$.
 
 Compute left-hand side:
+
 $$
 \begin{align}
 \text{IsotropicBlock}(\rho(g) \cdot z) &= \text{NormGate}(W \cdot \rho(g) \cdot z) \\
@@ -13379,6 +13466,7 @@ $\square$
 For practical architectures using general block-diagonal $W = \text{diag}(W_1, \ldots, W_{n_b})$ with $\sigma_{\max}(W_i) \leq 1$ (instead of scalar blocks), the equivariance violation is bounded.
 
 **Statement:** Let $\text{IB}$ denote IsotropicBlock with general block-diagonal $W$. Fix an operating range in which the per-bundle NormGate is $L_{\text{NG}}$-Lipschitz (Lemma {prf:ref}`lem-normgate-lipschitz`). Then for any $g = (g_1,\ldots,g_{n_b}) \in G_{\text{bundle}}$ and $z = (z^{(1)},\ldots,z^{(n_b)}) \in \mathcal{Z}$:
+
 $$
 \|\text{IB}(\rho(g)\cdot z) - \rho(g)\cdot \text{IB}(z)\|
 \le
@@ -13388,6 +13476,7 @@ L_{\text{NG}} \left(\sum_{i=1}^{n_b} \|[W_i, g_i]\,z^{(i)}\|^2\right)^{1/2}.
 $$
 
 In particular,
+
 $$
 \|\text{IB}(\rho(g)\cdot z) - \rho(g)\cdot \text{IB}(z)\|
 \le
@@ -13399,6 +13488,7 @@ $$
 *Proof.*
 
 Use equivariance of NormGate (Theorem {prf:ref}`thm-norm-gating-equivariant`) to rewrite:
+
 $$
 \rho(g)\cdot \text{IB}(z)
 =
@@ -13407,12 +13497,14 @@ $$
 \text{NormGate}(\rho(g)\cdot Wz).
 $$
 Therefore,
+
 $$
 \text{IB}(\rho(g)\cdot z) - \rho(g)\cdot \text{IB}(z)
 =
 \text{NormGate}(W\rho(g)z) - \text{NormGate}(\rho(g)Wz).
 $$
 By the $L_{\text{NG}}$-Lipschitz property of NormGate on the operating range (Lemma {prf:ref}`lem-normgate-lipschitz`),
+
 $$
 \|\text{NormGate}(W\rho(g)z) - \text{NormGate}(\rho(g)Wz)\|
 \le
@@ -13431,23 +13523,27 @@ Standard `Conv2d` with learned kernels is translation-equivariant but **not** ro
 *Proof.*
 
 **Setup:** Let $I: \mathbb{Z}^2 \to \mathbb{R}^{C_{\text{in}}}$ be a discrete image on pixel lattice $\mathbb{Z}^2$ with $C_{\text{in}}$ channels. Let $\psi: \mathbb{Z}^2 \to \mathbb{R}^{C_{\text{out}} \times C_{\text{in}}}$ be a convolutional kernel. The convolution operation is:
+
 $$
 (\psi * I)(x) = \sum_{y \in \mathbb{Z}^2} \psi(y) I(x - y) \quad \text{for } x \in \mathbb{Z}^2
 $$
 
 **Step 1. Discrete rotation problem:**
 For $R_\theta \in SO(2)$ with $\theta \notin \{0, \pi/2, \pi, 3\pi/2\}$, rotation maps lattice points off-grid. For example, with $\theta = \pi/4$:
+
 $$
 R_{\pi/4} \cdot (1, 0) = \left(\frac{\sqrt{2}}{2}, \frac{\sqrt{2}}{2}\right) \notin \mathbb{Z}^2
 $$
 
 To apply rotation to discrete images, we must use an interpolation scheme $\mathcal{I}$:
+
 $$
 (R_\theta \cdot I)(x) = \mathcal{I}(I, R_\theta^{-1} x) \quad \text{for } x \in \mathbb{Z}^2
 $$
 
 **Step 2. Standard interpolation (bilinear):**
 For $x' = R_\theta^{-1} x \in \mathbb{R}^2 \setminus \mathbb{Z}^2$, bilinear interpolation uses the four nearest lattice points:
+
 $$
 \mathcal{I}(I, x') = \sum_{i \in \{0,1\}^2} w_i(x') I(x'_{\text{floor}} + i)
 $$
@@ -13457,16 +13553,19 @@ where $w_i$ are barycentric weights depending on $x' - x'_{\text{floor}}$.
 We show $(\psi * (R_\theta \cdot I)) \neq (R_\theta \cdot (\psi * I))$.
 
 Left-hand side:
+
 $$
 (\psi * (R_\theta \cdot I))(x) = \sum_{y \in \mathbb{Z}^2} \psi(y) (R_\theta \cdot I)(x - y) = \sum_{y \in \mathbb{Z}^2} \psi(y) \mathcal{I}(I, R_\theta^{-1}(x - y))
 $$
 
 Right-hand side:
+
 $$
 (R_\theta \cdot (\psi * I))(x) = \mathcal{I}(\psi * I, R_\theta^{-1} x) = \mathcal{I}\left(\sum_{y \in \mathbb{Z}^2} \psi(y) I(\cdot - y), R_\theta^{-1} x\right)
 $$
 
 **Key:** Interpolation does not commute with summation:
+
 $$
 \sum_{y} \psi(y) \mathcal{I}(I, R_\theta^{-1}(x - y)) \neq \mathcal{I}\left(\sum_y \psi(y) I(\cdot - y), R_\theta^{-1} x\right)
 $$
@@ -13477,6 +13576,7 @@ The right side first computes the full convolution $\psi * I$ at all lattice poi
 **Explicit numerical counterexample:**
 
 Consider a $3 \times 3$ image with a vertical edge:
+
 $$
 I = \begin{pmatrix}
 0 & 0 & 1 \\
@@ -13486,6 +13586,7 @@ I = \begin{pmatrix}
 $$
 
 Use a $2 \times 2$ vertical Sobel kernel detecting vertical edges:
+
 $$
 \psi = \begin{pmatrix}
 -1 & 1 \\
@@ -13498,6 +13599,7 @@ $$
 Compute $(\psi * I)(x, y)$ at position $(1, 1)$ (center, using valid padding):
 
 At $(1,1)$, the $2 \times 2$ kernel overlays the patch $I[1:3, 1:3] = \begin{pmatrix} 0 & 1 \\ 0 & 1 \end{pmatrix}$:
+
 $$
 (\psi * I)(1, 1) = -1 \cdot 0 + 1 \cdot 1 + (-1) \cdot 0 + 1 \cdot 1 = 2
 $$
@@ -13508,6 +13610,7 @@ Similarly:
 - At $(1, 0)$: patch is $\begin{pmatrix} 0 & 0 \\ 0 & 0 \end{pmatrix}$, result $= 0$
 
 Convolution result (single channel):
+
 $$
 \psi * I = \begin{pmatrix}
 0 & 2 \\
@@ -13516,6 +13619,7 @@ $$
 $$
 
 Rotate by $45°$ using bilinear interpolation at position $(0.5, 0.5)$ (center after rotation):
+
 $$
 (R_{45°} \cdot (\psi * I))(0.5, 0.5) \approx \frac{1}{4}(0 + 2 + 0 + 2) = 1.0
 $$
@@ -13523,16 +13627,19 @@ $$
 **Path 2: Rotate then convolve**
 
 Rotate image $I$ by $45°$ first. At position $(1, 1)$, the rotated image samples from:
+
 $$
 R_{-45°} \cdot (1, 1) = \begin{pmatrix} \cos(45°) & \sin(45°) \\ -\sin(45°) & \cos(45°) \end{pmatrix} \begin{pmatrix} 1 \\ 1 \end{pmatrix} = \begin{pmatrix} \sqrt{2} \\ 0 \end{pmatrix} \approx (1.41, 0)
 $$
 
 Using bilinear interpolation between $(1, 0)$ and $(2, 0)$ (which wraps/pads):
+
 $$
 (R_{45°} \cdot I)(1, 1) \approx 0.41 \cdot I(2, 0) + 0.59 \cdot I(1, 0) \approx 0.41 \cdot 1 + 0.59 \cdot 0 = 0.41
 $$
 
 Computing convolution after rotation at position $(0.5, 0.5)$:
+
 $$
 (\psi * (R_{45°} \cdot I))(0.5, 0.5) \approx \text{different from } 0.5
 $$
@@ -13540,6 +13647,7 @@ $$
 Due to interpolation artifacts and edge effects, the two paths give **numerically different results**, violating exact equivariance.
 
 **Quantitative violation:** For the $3 \times 3$ edge image with $45°$ rotation:
+
 $$
 \|(\psi * (R_{45°} \cdot I)) - (R_{45°} \cdot (\psi * I))\|_F \approx 0.6 \text{ to } 1.0
 $$
@@ -13551,6 +13659,7 @@ $\square$
 **Remark on discrete subgroups:** Exact equivariance holds for the discrete group $C_4 = \{e, R_{\pi/2}, R_\pi, R_{3\pi/2}\}$ (90° rotations) since these map $\mathbb{Z}^2 \to \mathbb{Z}^2$ without interpolation. For continuous $SO(2)$ equivariance, we need steerable filters (Definition {prf:ref}`def-steerable-filter-bank`).
 
 **Connection to geodesic integrator:** The Lorentz-Langevin equation (Definition {prf:ref}`def-bulk-drift-continuous-flow`) requires well-defined geometric vectors in the tangent space $T_z \mathcal{Z}$. If the vision encoder produces rotation-variant features, the tangent space structure becomes viewing-angle-dependent:
+
 $$
 T_z \mathcal{Z} \neq T_{R_\theta \cdot z} \mathcal{Z} \quad \text{(geometric inconsistency)}
 $$
@@ -13563,6 +13672,7 @@ This breaks geodesic motion, as geodesics are defined as curves minimizing lengt
 An RGB image $I: \mathbb{R}^2 \to \mathbb{R}^3$ is a section of the trivial bundle $\mathbb{R}^2 \times \mathbb{R}^3$.
 
 A rotation $R \in SO(2)$ acts on the base (spatial coordinates) but not the fiber (RGB values):
+
 $$
 (R \cdot I)(x) = I(R^{-1} \cdot x)
 $$
@@ -13586,6 +13696,7 @@ where $D^{(\ell)}$ is the $\ell$-th irreducible representation of $SO(2)$.
 For $\ell \in \mathbb{Z}_{\geq 0}$ (non-negative integers), the $\ell$-th irreducible representation is:
 - **$\ell = 0$:** Trivial representation, $D^{(0)}(\theta) = 1$ (scalar, 1-dimensional)
 - **$\ell \geq 1$:** 2-dimensional representation acting on $\mathbb{R}^2$ or $\mathbb{C}$ via:
+  
   $$
   D^{(\ell)}(\theta) = \begin{pmatrix} \cos(\ell\theta) & -\sin(\ell\theta) \\ \sin(\ell\theta) & \cos(\ell\theta) \end{pmatrix} \in SO(2)
   $$
@@ -13607,6 +13718,7 @@ For $\ell \in \mathbb{Z}_{\geq 0}$ (non-negative integers), the $\ell$-th irredu
 Let $P = SE(2) = \mathbb{R}^2 \rtimes SO(2)$ be the Euclidean group (translations and rotations), and let $H = SO(2)$ be the structure group.
 
 For steerable features of type $\ell$, the **associated vector bundle** is:
+
 $$
 E^{(\ell)} = P \times_{H} V^{(\ell)}
 $$
@@ -13633,6 +13745,7 @@ In coordinates: $\phi(x) = (f_1^{(\ell)}(x), \ldots, f_N^{(\ell)}(x))$ where eac
 A **connection** on the bundle $E^{(\ell)}$ specifies how to compare fibers at different base points.
 
 For the associated bundle $E^{(\ell)} = SE(2) \times_{SO(2)} V^{(\ell)}$, the **canonical flat connection** is:
+
 $$
 \nabla_X \phi = X[\phi]
 $$
@@ -13642,6 +13755,7 @@ where $X$ is a vector field on $\mathbb{R}^2$ and $X[\phi]$ is the directional d
 **Parallel transport:** A section $\phi(x + tv)$ along direction $v$ is **parallel** if $\nabla_v \phi = 0$, i.e., $\frac{d}{dt}\phi(x + tv) = 0$.
 
 For steerable features, parallel transport preserves the transformation law:
+
 $$
 \phi(x + \delta x) = \phi(x) + \nabla_{\delta x} \phi + O(\|\delta x\|^2)
 $$
@@ -13663,6 +13777,7 @@ For the trivial bundle with flat connection (used in steerable CNNs), $F_{\mu\nu
 :label: thm-steerable-conv-equivariant
 
 Let $\{\psi_n^{(\ell)}\}_{n=1}^N$ be a steerable filter bank of type $\ell$ (Definition {prf:ref}`def-steerable-filter-bank`). Let $\text{Conv}_\ell$ denote convolution with these filters:
+
 $$
 (\text{Conv}_\ell I)_n(x) = \sum_m (\psi_m^{(\ell)} * I)(x) = \int_{\mathbb{R}^2} \psi_m^{(\ell)}(y) I(x - y) \, dy
 $$
@@ -13679,44 +13794,52 @@ where $D^{(\ell)}(\theta)$ is the $\ell$-th irreducible representation of $SO(2)
 
 **Step 1. Apply rotation to input:**
 By linearity of convolution:
+
 $$
 (\psi_n * (R_\theta \cdot I))(x) = \int_{\mathbb{R}^2} \psi_n(y) I(R_\theta^{-1}(x-y)) \, dy
 $$
 
 **Step 2. Change of variables:**
 Let $u = R_\theta^{-1} y$, so $y = R_\theta u$. Since $R_\theta \in SO(2)$ preserves measure ($|\det R_\theta| = 1$), we have $dy = du$:
+
 $$
 = \int_{\mathbb{R}^2} \psi_n(R_\theta u) I(R_\theta^{-1}(x - R_\theta u)) \, du
 $$
 
 Using the property $R_\theta^{-1}(x - R_\theta u) = R_\theta^{-1} x - u$:
+
 $$
 = \int_{\mathbb{R}^2} \psi_n(R_\theta u) I(R_\theta^{-1} x - u) \, du
 $$
 
 **Step 3. Apply steerability definition:**
 By the steerability property (Definition {prf:ref}`def-steerable-filter-bank`), the filter transforms as:
+
 $$
 \psi_n(R_\theta u) = (R_\theta \cdot \psi_n)(u)
 $$
 
 Therefore:
+
 $$
 = \int_{\mathbb{R}^2} (R_\theta \cdot \psi_n)(u) I(R_\theta^{-1} x - u) \, du
 $$
 
 **Step 4. Apply filter bank steerability:**
 By Definition {prf:ref}`def-steerable-filter-bank`, a steerable filter of type $\ell$ satisfies:
+
 $$
 (R_\theta \cdot \psi_n)(u) = \psi_n(R_\theta u) = \sum_m D_{nm}^{(\ell)}(\theta) \psi_m(u)
 $$
 
 Substituting:
+
 $$
 = \int_{\mathbb{R}^2} \left[\sum_m D_{nm}^{(\ell)}(\theta) \psi_m(u)\right] I(R_\theta^{-1} x - u) \, du
 $$
 
 **Step 5. Separate sum from integral:**
+
 $$
 = \sum_m D_{nm}^{(\ell)}(\theta) \int_{\mathbb{R}^2} \psi_m(u) I(R_\theta^{-1} x - u) \, du
 $$
@@ -13725,6 +13848,7 @@ $$
 The integral $\int \psi_m(u) I(R_\theta^{-1} x - u) \, du = (\psi_m * I)(R_\theta^{-1} x)$ by definition of convolution. This is precisely $(R_\theta \cdot (\psi_m * I))(x)$ by the definition of rotation action on functions.
 
 Therefore:
+
 $$
 (\psi_n^{(\ell)} * (R_\theta \cdot I))(x) = \sum_m D_{nm}^{(\ell)}(\theta) (R_\theta \cdot (\psi_m^{(\ell)} * I))(x)
 $$
@@ -13732,6 +13856,7 @@ $$
 which shows the desired equivariance property.
 
 In matrix form:
+
 $$
 \text{Conv}_\ell(R_\theta \cdot I) = D^{(\ell)}(\theta) \cdot \text{Conv}_\ell(I)
 $$
@@ -13747,11 +13872,13 @@ $\square$
 **Group structure:** The **special Euclidean group** $SE(2) = \mathbb{R}^2 \rtimes SO(2)$ is the group of rigid motions (translations + rotations) in the plane, with elements $g = (x, R_\theta)$ where $x \in \mathbb{R}^2$ is translation and $R_\theta \in SO(2)$ is rotation by angle $\theta$.
 
 **Group multiplication:** For $g_1 = (x_1, R_{\theta_1})$ and $g_2 = (x_2, R_{\theta_2})$:
+
 $$
 g_1 \cdot g_2 = (x_1 + R_{\theta_1} x_2, R_{\theta_1 + \theta_2})
 $$
 
 *Interpretation:* Composition $g_1 \cdot g_2$ means "first apply $g_2$, then $g_1$". Acting on a point $p \in \mathbb{R}^2$:
+
 $$
 (g_1 \cdot g_2) \cdot p = g_1 \cdot (g_2 \cdot p) = g_1 \cdot (R_{\theta_2} p + x_2) = R_{\theta_1}(R_{\theta_2} p + x_2) + x_1 = R_{\theta_1 + \theta_2} p + (x_1 + R_{\theta_1} x_2)
 $$
@@ -13760,11 +13887,13 @@ The rotation $R_{\theta_1}$ in $g_1$ acts on the translation $x_2$ from $g_2$, a
 **Domain and codomain:** Let $C(\mathbb{R}^2, \mathbb{R}^{C_{\text{in}}})$ be the space of continuous functions (images) from $\mathbb{R}^2$ to $\mathbb{R}^{C_{\text{in}}}$ (e.g., $C_{\text{in}} = 3$ for RGB). Let $C(SE(2), \mathbb{R}^{C_{\text{out}}})$ be functions on $SE(2)$ with values in $\mathbb{R}^{C_{\text{out}}}$ (output feature dimension).
 
 The **lifting map** is an operator:
+
 $$
 L: C(\mathbb{R}^2, \mathbb{R}^{C_{\text{in}}}) \to C(SE(2), \mathbb{R}^{C_{\text{out}}})
 $$
 
 **Definition:** For an input image $I \in C(\mathbb{R}^2, \mathbb{R}^{C_{\text{in}}})$ and group element $g = (x, R_\theta) \in SE(2)$:
+
 $$
 (L I)(g) = (L I)(x, \theta) := \sum_{i=1}^{C_{\text{out}}} (\psi_i^{(\theta)} * I)(x) \cdot e_i
 $$
@@ -13776,12 +13905,14 @@ where:
 **Key dependence on $\theta$:** The output $(LI)(x, \theta)$ depends explicitly on the rotation angle $\theta$ through the rotated filters $\psi_i^{(\theta)}$. At each orientation $\theta$, the network applies filters rotated to that orientation, detecting patterns aligned with $\theta$.
 
 **Explicit filter rotation:** For a filter $\psi: \mathbb{R}^2 \to \mathbb{R}$ and rotation $R_\theta \in SO(2)$:
+
 $$
 (R_\theta \cdot \psi)(y) := \psi(R_\theta^{-1} y)
 $$
 This ensures that a filter detecting "vertical edge" at $\theta = 0$ becomes a filter detecting "edge at angle $\theta$" after rotation.
 
 **Equivariance property:** For $g_0 = (x_0, R_{\theta_0}) \in SE(2)$ and image $I$, define the left-translated image $(L_{g_0} I)(x) := I(R_{\theta_0}^{-1}(x - x_0))$. Then:
+
 $$
 L(L_{g_0} I) = L_{g_0}(L I)
 $$
@@ -13812,21 +13943,25 @@ Z \mapsto Z' = Z \cdot U
 $$
 
 where $U \in SU(N_f)$ is an $n_b \times n_b$ special unitary matrix:
+
 $$
 U^\dagger U = I, \quad \det(U) = 1
 $$
 
 **Explicit action:** In matrix form, treating $Z$ as a $d_b \times n_b$ matrix:
+
 $$
 z'^{(j)} = \sum_{i=1}^{n_b} U_{ij} \, z^{(i)} \quad \text{(bundle mixing)}
 $$
 
 **Color charge:** Represent the latent state as a matrix $Z \in \mathbb{C}^{d_b \times n_b}$ where the $i$-th column is the $i$-th bundle vector $z^{(i)} \in \mathbb{C}^{d_b}$:
+
 $$
 Z = [z^{(1)} \mid z^{(2)} \mid \cdots \mid z^{(n_b)}]
 $$
 
 For each generator $T^a \in \mathfrak{su}(n_b)$ ($a = 1, \ldots, n_b^2 - 1$), where $T^a$ is a traceless Hermitian $n_b \times n_b$ matrix, define the **color charge operator**:
+
 $$
 Q_C^a[Z] = \text{Tr}_{\text{bundle}}(Z^\dagger Z \cdot T^a) = \sum_{i,j=1}^{n_b} T^a_{ij} \, (z^{(i)})^\dagger z^{(j)}
 $$
@@ -13846,6 +13981,7 @@ where:
 - $[Q_C^a] = \text{nat}$ (charge is extensive in latent dimension)
 
 A state is **color-neutral** (confined) if:
+
 $$
 Q_C^a[Z] = 0 \quad \forall \, a = 1, \ldots, n_b^2 - 1
 $$
@@ -13859,6 +13995,7 @@ $$
 The bundled structure (Definition {prf:ref}`def-latent-vector-bundle`) with $n_b$ bundles, coupled with norm-gating and the Binding field $G_\mu$, implements $SU(N_f)_C$ gauge invariance with $N_f = n_b$.
 
 **Statement:** For any $U \in SU(N_f)$, the effective dynamics satisfy:
+
 $$
 \mathcal{L}_{\text{eff}}[Z \cdot U] = \mathcal{L}_{\text{eff}}[Z]
 $$
@@ -13872,6 +14009,7 @@ Moreover, norm-gating induces scale-dependent coupling:
 **Step 1. Bundle structure and gauge group:**
 
 Recall from Definition {prf:ref}`def-latent-vector-bundle` that the latent space decomposes as:
+
 $$
 \mathcal{Z} = \bigoplus_{i=1}^{n_b} V_i, \quad V_i \cong \mathbb{R}^{d_b}
 $$
@@ -13881,11 +14019,13 @@ For the gauge-theoretic formulas in this subsection we implicitly work in the co
 Each bundle $V_i$ transforms under its $SO(d_b)$ factor. For $n_b = N_f$ bundles, consider the gauge group $SU(N_f)$ acting on the **bundle indices** (not on the internal bundle space).
 
 **Matrix notation:** Represent the latent state as a matrix $Z \in \mathbb{C}^{d_b \times N_f}$ where the $i$-th column is the $i$-th bundle vector:
+
 $$
 Z = [v_1 \mid v_2 \mid \cdots \mid v_{N_f}]
 $$
 
 **Gauge transformation:** $SU(N_f)$ acts by right multiplication:
+
 $$
 Z \mapsto Z \cdot U, \quad U \in SU(N_f), \quad U^\dagger U = I
 $$
@@ -13895,6 +14035,7 @@ This mixes bundle indices while preserving the Frobenius norm $\|Z\|_F^2 := \tex
 **Step 2. Covariant derivative:**
 
 To define dynamics that respect gauge invariance, introduce the **gauge-covariant derivative**:
+
 $$
 D_\mu Z := \partial_\mu Z - i g_s \, Z \cdot G_\mu
 $$
@@ -13905,21 +14046,25 @@ where:
 - $g_s > 0$ is the coupling constant
 
 **Connection transformation:** Under a gauge transformation $Z \to Z' = Z \cdot U$ with $U(x^\mu) \in SU(N_f)$ (spacetime-dependent), we require the covariant derivative to transform as
+
 $$
 D'_\mu Z' = (D_\mu Z)\cdot U,
 $$
 where $D'_\mu Z' := \partial_\mu Z' - i g_s \, Z'\cdot G'_\mu$ uses the transformed connection $G'_\mu$.
 
 Expanding and equating terms:
+
 $$
 (\partial_\mu Z)\cdot U + Z\cdot(\partial_\mu U) - i g_s \, Z\cdot U \cdot G'_\mu
 = (\partial_\mu Z)\cdot U - i g_s \, Z\cdot G_\mu \cdot U.
 $$
 Cancel $(\partial_\mu Z)\cdot U$ and use that this must hold for all $Z$ to obtain the operator identity
+
 $$
 \partial_\mu U - i g_s \, U G'_\mu + i g_s \, G_\mu U = 0.
 $$
 Solving for $G'_\mu$ yields the right-action Yang--Mills transformation law:
+
 $$
 \boxed{
 G_\mu \to G'_\mu = U^{-1} G_\mu U - \frac{i}{g_s} U^{-1}(\partial_\mu U)
@@ -13928,6 +14073,7 @@ $$
 (equivalently $G'_\mu = U^\dagger G_\mu U - \frac{i}{g_s} U^\dagger(\partial_\mu U)$ since $U^{-1}=U^\dagger$). This is the standard gauge transformation written for a right action $Z\mapsto ZU$ {cite}`peskin1995introduction`.
 
 **Verification:** With $D_\mu Z = \partial_\mu Z - i g_s \, ZG_\mu$ and $G'_\mu$ as above, one checks directly that
+
 $$
 D'_\mu(Z\cdot U) = (D_\mu Z)\cdot U.
 $$
@@ -13937,6 +14083,7 @@ Thus the effective Lagrangian $\mathcal{L}_{\text{eff}} = \|D_\mu Z\|_F^2 = \tex
 **Step 2. Norm-gating as effective coupling:**
 
 The norm-gating activation potential $b_i$ creates an energy barrier. The effective coupling at layer $\ell$ is:
+
 $$
 g_s^{(\ell)} = \frac{\langle \|G_\mu\| \rangle}{\langle \|\partial_\mu Z\| \rangle} \approx \frac{\beta_\ell}{\sqrt{1 + \|\nabla_{W_\ell} \mathcal{L}\|^{-2}}}
 $$
@@ -13951,6 +14098,7 @@ At large layer depth $\ell \to L$ (infrared scale):
 - Effective coupling $g_s^{(L)} \gg 1$
 
 **Energy penalty for non-neutral states:**
+
 $$
 \Delta E_{\text{conf}} = g_s^{(L)} \sum_a |Q_C^a|^2 \to \infty \quad \text{as } g_s^{(L)} \to \infty
 $$
@@ -13969,6 +14117,7 @@ Bundles behave as free, non-interacting subspaces → **asymptotic freedom**.
 **Step 5. Identification with coupling window:**
 
 By Corollary {prf:ref}`cor-coupling-window`, the gauge coupling must satisfy:
+
 $$
 g_s(\mu_{\text{IR}}) \geq g_s^{\text{crit}} \quad \text{and} \quad g_s(\mu_{\text{UV}}) \to 0
 $$
@@ -13986,6 +14135,7 @@ $\square$
 :label: prop-coupling-from-barriers
 
 The effective gauge coupling at layer $\ell$ is:
+
 $$
 g_s^{(\ell)} = \beta_\ell \cdot \frac{\xi_\ell}{\sqrt{\xi_\ell^2 + \eta_\ell^2}}
 $$
@@ -14002,11 +14152,13 @@ We derive the coupling formula from first principles using the Yang-Mills effect
 **Step 1. Effective Yang-Mills action on latent space:**
 
 From the covariant derivative $D_\mu Z = \partial_\mu Z - i g_s \, Z \cdot G_\mu$ (Step 2 of Theorem {prf:ref}`thm-isotropic-preserves-color`), the gauge-invariant kinetic term is:
+
 $$
 \mathcal{S}_{\text{kin}} = \int d^4x \, \text{Tr}[(D_\mu Z)^\dagger (D^\mu Z)]
 $$
 
 Expanding (for Hermitian $G_\mu$ and using cyclicity of the trace):
+
 $$
 \mathcal{S}_{\text{kin}} = \int d^4x \, \text{Tr}\left[(\partial_\mu Z)^\dagger (\partial^\mu Z) + i g_s\bigl(G^\mu Z^\dagger (\partial_\mu Z) - (\partial_\mu Z)^\dagger Z G^\mu\bigr) + g_s^2 (Z^\dagger Z)\, G_\mu G^\mu\right]
 $$
@@ -14019,6 +14171,7 @@ $$
 **Step 2. Gauge coupling definition from action ratios:**
 
 The effective dimensionless coupling constant is defined by the ratio:
+
 $$
 g_s^2 := \frac{\langle \mathcal{S}_{G} \rangle}{\langle \mathcal{S}_0 \rangle}
 $$
@@ -14026,12 +14179,14 @@ $$
 where $\langle \cdot \rangle$ denotes expectation over the weight distribution at layer $\ell$.
 
 **Explicit computation:**
+
 $$
 g_s^2 = \frac{\int \text{Tr}[(Z^\dagger Z)\, G_\mu G^\mu]}{\int \text{Tr}[(\partial_\mu Z)^\dagger (\partial^\mu Z)]}
 = \frac{\langle (Z^\dagger Z)\, G_\mu G^\mu \rangle}{\langle (\partial_\mu Z)^\dagger (\partial^\mu Z) \rangle}
 $$
 
 For approximately uniform field configurations, this simplifies to:
+
 $$
 g_s \approx \frac{\|G_\mu\|_{\text{op}}}{\|\partial_\mu Z\|_{\text{op}}}
 $$
@@ -14041,6 +14196,7 @@ where $\|\cdot\|_{\text{op}}$ denotes operator norm (largest singular value).
 **Step 3. Off-diagonal weight norm determines gauge field strength:**
 
 The Binding field $G_\mu$ couples bundles. In matrix representation, write the weight matrix $W^{(\ell)} \in \mathbb{R}^{d_z \times d_z}$ in block form with respect to the bundle decomposition $\mathcal{Z} = \bigoplus_{i=1}^{n_b} V_i$:
+
 $$
 W^{(\ell)} = \begin{pmatrix}
 W_{11} & W_{12} & \cdots & W_{1 n_b} \\
@@ -14053,6 +14209,7 @@ $$
 where each $W_{ij} \in \mathbb{R}^{d_b \times d_b}$ is the coupling from bundle $j$ to bundle $i$.
 
 **Diagonal vs off-diagonal decomposition:**
+
 $$
 W^{(\ell)} = W_{\text{diag}}^{(\ell)} + W_{\text{off}}^{(\ell)}
 $$
@@ -14062,6 +14219,7 @@ where:
 - $W_{\text{off}}$ has zeros on block diagonal (inter-bundle coupling)
 
 The gauge field $G_\mu$ is proportional to the **inter-bundle coupling**:
+
 $$
 \|G_\mu\|_{\text{op}} = \|W_{\text{off}}^{(\ell)}\|_{\text{op}} \cdot \kappa_\ell
 $$
@@ -14073,6 +14231,7 @@ where $\kappa_\ell$ is a geometry-dependent prefactor (typically $\kappa_\ell \s
 The norm-gating barrier $b_\ell$ enters through the **effective off-diagonal weights** after applying the gate $v \mapsto v \cdot g(\|v\| + b)$.
 
 For bundle $i$, the effective weight from bundle $j \neq i$ is:
+
 $$
 W_{ij}^{\text{eff}} = W_{ij} \cdot \frac{g'(\|v_j\| + b_\ell)}{\|v_j\|}
 $$
@@ -14087,21 +14246,25 @@ For small $b_\ell \to 0$ (weak barrier):
 - Bundles weakly coupled (UV asymptotic freedom)
 
 **Averaged effective norm:**
+
 $$
 \|W_{\text{off}}^{\text{eff}}\|_{\text{op}} = \langle g'(\|v\| + b_\ell) \rangle \cdot \|W_{\text{off}}\|_{\text{op}}
 $$
 
 Define the **barrier strength factor**:
+
 $$
 \beta_\ell := \frac{\langle g'(\|v\| + b_\ell) - g'(\|v\|) \rangle}{\max_b |g'(\|v\| + b) - g'(\|v\|)|}
 $$
 
 For GELU and unit-norm $v$, this is approximately:
+
 $$
 \beta_\ell \approx \tanh(b_\ell)
 $$
 
 Thus:
+
 $$
 \|G_\mu^{(\ell)}\|_{\text{op}} = \beta_\ell \cdot \xi_\ell
 $$
@@ -14111,21 +14274,25 @@ where $\xi_\ell := \|W_{\text{off}}^{(\ell)}\|_{\text{op}}$ is the bare off-diag
 **Step 5. Kinetic term from forward gradient flow:**
 
 The kinetic term $\|\partial_\mu Z\|$ measures latent state changes across layers. For discrete layer index $\ell$:
+
 $$
 \partial_\ell z := z^{(\ell)} - z^{(\ell-1)}
 $$
 
 **Normalized gradient flow ratio:**
+
 $$
 \eta_\ell := \frac{\|\partial_\ell z\|_2}{\|z^{(\ell-1)}\|_2}
 $$
 
 For spectrally normalized networks with $\|W^{(\ell)}\|_{\text{op}} \leq 1$:
+
 $$
 \|z^{(\ell)}\|_2 \leq \|W^{(\ell)}\|_{\text{op}} \cdot \|z^{(\ell-1)}\|_2 \leq \|z^{(\ell-1)}\|_2
 $$
 
 Thus norms are non-increasing. The **relative change** is:
+
 $$
 \eta_\ell = \left\| \frac{W^{(\ell)} \cdot z^{(\ell-1)}}{\|z^{(\ell-1)}\|} - \frac{z^{(\ell-1)}}{\|z^{(\ell-1)}\|} \right\|_2 = \left\| \left(W^{(\ell)} - I\right) \hat{z}^{(\ell-1)} \right\|_2
 $$
@@ -14133,6 +14300,7 @@ $$
 where $\hat{z} = z/\|z\|$ is the unit-normalized latent.
 
 **Typical magnitude:** For residual architectures $W^{(\ell)} = I + \epsilon \Delta W^{(\ell)}$ with small $\epsilon$:
+
 $$
 \eta_\ell \approx \epsilon \|\Delta W^{(\ell)}\|_{\text{op}} \sim 0.01 \text{ to } 0.1
 $$
@@ -14140,16 +14308,19 @@ $$
 **Step 6. Final coupling formula:**
 
 Substitute Steps 4 and 5 into Step 2:
+
 $$
 g_s^{(\ell)} = \frac{\|G_\mu^{(\ell)}\|_{\text{op}}}{\|\partial_\mu z^{(\ell)}\|_{\text{op}}} = \frac{\beta_\ell \cdot \xi_\ell}{\eta_\ell \cdot \|z^{(\ell-1)}\|}
 $$
 
 For unit-normalized latents $\|z^{(\ell)}\| = 1$ (enforced by normalization layers):
+
 $$
 g_s^{(\ell)} = \frac{\beta_\ell \cdot \xi_\ell}{\eta_\ell}
 $$
 
 **Geometric averaging form:** To handle varying $\eta_\ell$ across layers, use the normalized form:
+
 $$
 g_s^{(\ell)} = \beta_\ell \cdot \frac{\xi_\ell}{\sqrt{\xi_\ell^2 + \eta_\ell^2}}
 $$
@@ -14168,12 +14339,14 @@ This ensures:
 **Step 7. Verify IR/UV limits:**
 
 - **Infrared ($b_\ell \to +\infty$, deep layers):** $\beta_\ell \to 1$, and typically $\xi_\ell \sim O(1)$ (off-diagonal weights not suppressed), thus:
+
 $$
 g_s^{(\ell)} \to \frac{\xi_\ell}{\sqrt{\xi_\ell^2 + \eta_\ell^2}} \approx 1 \quad \text{if } \xi_\ell \gg \eta_\ell
 $$
 This gives **strong coupling** $g_s \sim O(1)$, leading to confinement (color-neutral states only).
 
 - **Ultraviolet ($b_\ell \to 0$, shallow layers):** $\beta_\ell \to 0$, thus:
+
 $$
 g_s^{(\ell)} \to 0 \quad \text{(weak coupling, asymptotic freedom)}
 $$
@@ -14206,6 +14379,7 @@ $$
 **Step 1. Hypercharge definition:** $Y(z) := \|z\|^2$ (quadratic quantity proportional to squared norm).
 
 **Step 2. Contraction (NOT isometry):** Spectral normalization with $\sigma_{\max}(W) \leq 1$ ensures:
+
 $$
 \|W \cdot z\| \leq \sigma_{\max}(W) \cdot \|z\| \leq \|z\|
 $$
@@ -14217,6 +14391,7 @@ This is a **contraction**, not an isometry. Equality $\|W \cdot z\| = \|z\|$ hol
 For general $z$, we have strict inequality $\|W \cdot z\| < \|z\|$.
 
 **Step 3. Hypercharge bound:**
+
 $$
 Y(W \cdot z) = \|W \cdot z\|^2 \leq \|z\|^2 = Y(z)
 $$
@@ -14225,6 +14400,7 @@ $$
 
 **Step 4. Conservation requires orthogonality:**
 For **exact** hypercharge conservation $Y(W \cdot z) = Y(z)$ for all $z$, we would need:
+
 $$
 \|W \cdot z\| = \|z\| \quad \forall z \in \mathcal{Z}
 $$
@@ -14236,6 +14412,7 @@ $\square$
 **Connection to Node 56 (CapacityHorizonCheck):** Hypercharge saturation $Y \to Y_{\max}$ indicates approaching capacity limit (holographic bound). The non-increasing property ensures the system cannot exceed this bound through forward propagation.
 
 **Remark on exact conservation:** If exact hypercharge conservation is required (not just non-increasing), constrain $W$ to be orthogonal via Cayley parameterization or exponential map from skew-symmetric matrices:
+
 $$
 W = \exp(A) \quad \text{where } A^T = -A \text{ (skew-symmetric)}
 $$
@@ -14254,30 +14431,36 @@ For a literal U(1) rotation representation, one would parametrize weights as $W 
 :label: def-obs-action-doublet
 
 The latent space decomposes into **observation** and **action planning** subspaces:
+
 $$
 \mathcal{Z} = \mathcal{Z}_{\text{obs}} \oplus \mathcal{Z}_{\text{act}}
 $$
 
 These form an $SU(2)_L$ doublet:
+
 $$
 \Psi = \begin{pmatrix} \psi_{\text{obs}} \\ \psi_{\text{act}} \end{pmatrix} \in \mathcal{Z}_{\text{obs}} \oplus \mathcal{Z}_{\text{act}}
 $$
 
 **Full SU(2)_L transformation:** The special unitary group $SU(2)$ has 3 real parameters. A general element is:
+
 $$
 U(\vec{\theta}) = \exp\left(i \sum_{a=1}^3 \theta_a \frac{\sigma_a}{2}\right), \quad \vec{\theta} = (\theta_1, \theta_2, \theta_3) \in \mathbb{R}^3
 $$
 where $\{\sigma_a\}_{a=1}^3$ are Pauli matrices:
+
 $$
 \sigma_1 = \begin{pmatrix} 0 & 1 \\ 1 & 0 \end{pmatrix}, \quad \sigma_2 = \begin{pmatrix} 0 & -i \\ i & 0 \end{pmatrix}, \quad \sigma_3 = \begin{pmatrix} 1 & 0 \\ 0 & -1 \end{pmatrix}
 $$
 
 **Real SO(2) subgroup (current implementation):** For real-valued neural networks, we restrict to the $SO(2)$ subgroup that performs real rotations in the $(\psi_{\text{obs}}, \psi_{\text{act}})$ plane. In the Pauli basis this corresponds to the one-parameter subgroup generated by $i\sigma_2$ (since $i\sigma_2 = \begin{psmallmatrix} 0 & 1 \\ -1 & 0 \end{psmallmatrix}$ is the canonical $\mathfrak{so}(2)$ generator). This gives 1-parameter transformations:
+
 $$
 U_{\text{SO(2)}}(\theta) = \begin{pmatrix} \cos\theta & \sin\theta \\ -\sin\theta & \cos\theta \end{pmatrix}, \quad \theta \in [0, 2\pi)
 $$
 
 **Action on doublet:**
+
 $$
 \Psi \to \Psi' = U_{\text{SO(2)}}(\theta) \Psi = \begin{pmatrix} \cos\theta & \sin\theta \\ -\sin\theta & \cos\theta \end{pmatrix} \begin{pmatrix} \psi_{\text{obs}} \\ \psi_{\text{act}} \end{pmatrix}
 $$
@@ -14296,6 +14479,7 @@ $$
 :label: thm-steerable-induces-doublet
 
 Let $\psi_{\text{obs}} \in \mathcal{Z}_{\text{obs}}$ and $\psi_{\text{act}} \in \mathcal{Z}_{\text{act}}$. Define the observation-action pair
+
 $$
 \Psi = \begin{pmatrix} \psi_{\text{obs}} \\ \psi_{\text{act}} \end{pmatrix}.
 $$
@@ -14304,12 +14488,14 @@ Under the one-parameter subgroup $U_{\text{SO(2)}}(\theta)$ from Definition {prf
 *Proof.*
 
 **Step 1. Group action:** The map $\theta \mapsto U_{\text{SO(2)}}(\theta)$ is a representation of $SO(2)$ since
+
 $$
 U_{\text{SO(2)}}(\theta_1)U_{\text{SO(2)}}(\theta_2)=U_{\text{SO(2)}}(\theta_1+\theta_2)
 $$
 and $U_{\text{SO(2)}}(0)=I$.
 
 **Step 2. Doublet transformation:** By Definition {prf:ref}`def-obs-action-doublet`,
+
 $$
 \Psi' = U_{\text{SO(2)}}(\theta)\Psi
 = \begin{pmatrix} \cos\theta & \sin\theta \\ -\sin\theta & \cos\theta \end{pmatrix}
@@ -14342,10 +14528,12 @@ where:
 **Variational origin** (sketch of derivation from Theorem {prf:ref}`thm-capacity-constrained-metric-law`):
 
 The metric arises from minimizing the effective action under capacity constraints:
+
 $$
 G_{ij}(z) = \frac{\delta^2}{\delta z_i \delta z_j} \mathcal{A}_{\text{eff}}[z]
 $$
 where $\mathcal{A}_{\text{eff}}$ is the capacity-constrained effective action:
+
 $$
 \mathcal{A}_{\text{eff}}[z] = \int \left[V(z) + \frac{\lambda}{2} I(Z;A|z)\right] dz
 $$
@@ -14377,16 +14565,19 @@ where $L_F$ is the Lipschitz constant of the composition $F$.
 *Proof.*
 
 **Equivariance:** Composition of equivariant maps is equivariant. For any $g \in G$:
+
 $$
 F(\rho(g) \cdot z) = f_L \circ \cdots \circ f_1(\rho(g) \cdot z) = \rho'(g) \cdot F(z)
 $$
 by repeatedly applying $f_i(\rho_i(g) \cdot w) = \rho_{i+1}(g) \cdot f_i(w)$.
 
 **Lipschitz:** For any $z_1, z_2$:
+
 $$
 \|F(z_1) - F(z_2)\| = \|f_L \circ \cdots \circ f_1(z_1) - f_L \circ \cdots \circ f_1(z_2)\|
 $$
 Applying the Lipschitz property of each layer successively:
+
 $$
 \leq L_L \|f_{L-1} \circ \cdots \circ f_1(z_1) - f_{L-1} \circ \cdots \circ f_1(z_2)\| \leq \cdots \leq \left(\prod_{i=1}^L L_i\right) \|z_1 - z_2\|
 $$
@@ -14401,6 +14592,7 @@ Let $f(v) = v \cdot g(\|v\| + b)$ be the norm-gated activation (Definition {prf:
 - $|g'(x)| \leq L_g$ for all $x$ (bounded derivative)
 
 Assume an operating range $\|v\| \leq R_{\max}$ and a bounded bias $|b| \leq B$. Then $f$ is Lipschitz on the operating range with constant:
+
 $$
 L_f \leq \max\bigl(R_{\max}(C_g + L_g) + C_gB,\; C_g(R_{\max} + B)\bigr).
 $$
@@ -14417,6 +14609,7 @@ $$g''(x) = \frac{d}{dx}[\Phi(x) + x\phi(x)] = \phi(x) + \phi(x) - x^2\phi(x) = \
 Setting $g''(x) = 0$ yields $x^2 = 2$, so $x^* = \sqrt{2}$ (taking positive root). At this point: $g'(\sqrt{2}) = \Phi(\sqrt{2}) + \sqrt{2}\phi(\sqrt{2}) \approx 0.9214 + 0.2075 \approx 1.129$.
 
 Thus $L_g \approx 1.129$ and
+
 $$
 L_f \leq R_{\max}(1 + 1.129) + B \approx 2.129\,R_{\max} + B.
 $$
@@ -14427,6 +14620,7 @@ $$
 Write $v = r\hat{v}$ where $r = \|v\| \geq 0$ and $\hat{v} = v/\|v\|$ is the unit direction vector.
 
 Then:
+
 $$
 f(v) = f(r\hat{v}) = r \cdot g(r + b) \cdot \hat{v}
 $$
@@ -14436,26 +14630,31 @@ $$
 Recall $f(v) = v \cdot g(\|v\| + b)$ where $\|v\| = \sqrt{v^T v}$. We compute the Jacobian $\nabla f(v) = \frac{\partial f}{\partial v} \in \mathbb{R}^{d_b \times d_b}$.
 
 **Decompose using product rule:**
+
 $$
 \frac{\partial f_i}{\partial v_j} = \frac{\partial}{\partial v_j}[v_i \cdot g(\|v\| + b)] = \delta_{ij} g(\|v\| + b) + v_i \frac{\partial g}{\partial v_j}
 $$
 
 **Compute gradient of norm:**
+
 $$
 \frac{\partial \|v\|}{\partial v_j} = \frac{\partial}{\partial v_j} (v^T v)^{1/2} = \frac{1}{2\|v\|} \cdot 2v_j = \frac{v_j}{\|v\|}
 $$
 
 **Apply chain rule to $g(\|v\| + b)$:**
+
 $$
 \frac{\partial g(\|v\| + b)}{\partial v_j} = g'(\|v\| + b) \cdot \frac{\partial(\|v\| + b)}{\partial v_j} = g'(\|v\| + b) \cdot \frac{v_j}{\|v\|}
 $$
 
 **Substitute into Jacobian:**
+
 $$
 \frac{\partial f_i}{\partial v_j} = \delta_{ij} g(\|v\| + b) + v_i \cdot g'(\|v\| + b) \cdot \frac{v_j}{\|v\|}
 $$
 
 **Matrix form:**
+
 $$
 \nabla f(v) = g(\|v\| + b) \cdot I_{d_b} + g'(\|v\| + b) \cdot \frac{vv^T}{\|v\|}
 $$
@@ -14466,21 +14665,25 @@ This is the sum of a scaled identity and a rank-1 matrix.
 Write $v = r\hat{v}$ where $r = \|v\|$ and $\|\hat{v}\| = 1$. The Jacobian has eigenvalues:
 
 - **Radial direction** (eigenvector $\hat{v}$):
+
 $$
 \lambda_r = g(r+b) + g'(r+b) \cdot r
 $$
 
 - **Tangential directions** (eigenvectors orthogonal to $\hat{v}$, there are $d_b-1$ of these):
+
 $$
 \lambda_t = g(r+b)
 $$
 
 **Verification:** For $u = \hat{v}$:
+
 $$
 \nabla f(v) \cdot \hat{v} = g(r+b)\hat{v} + g'(r+b) r \hat{v} = [g(r+b) + rg'(r+b)]\hat{v} = \lambda_r \hat{v} \quad \checkmark
 $$
 
 For $u \perp \hat{v}$ (so $u^T v = 0$):
+
 $$
 \nabla f(v) \cdot u = g(r+b) u + g'(r+b) \frac{(v^T u)}{\|v\|} v = g(r+b) u = \lambda_t u \quad \checkmark
 $$
@@ -14489,38 +14692,45 @@ $$
 Using $|g(x)| \leq C_g|x|$ and $|g'(x)| \leq L_g$:
 
 **Radial:**
+
 $$
 |\lambda_r| = |g(r+b) + rg'(r+b)| \leq |g(r+b)| + r|g'(r+b)| \leq C_g|r+b| + rL_g
 $$
 
 For $r \leq R_{\max}$ and bounded bias $|b| \leq B$:
+
 $$
 |\lambda_r| \leq C_g(R_{\max} + B) + R_{\max}L_g = R_{\max}(C_g + L_g) + C_gB
 $$
 
 **Tangential:**
+
 $$
 |\lambda_t| = |g(r+b)| \leq C_g|r+b| \leq C_g(R_{\max} + B)
 $$
 
 **Step 5. Spectral norm and Lipschitz constant:**
 The operator norm is:
+
 $$
 \|\nabla f(v)\|_{\text{op}} = \max(|\lambda_r|, |\lambda_t|) \leq \max(R_{\max}(C_g + L_g) + C_gB, C_g(R_{\max} + B))
 $$
 
 Since typically $L_g > 0$, the radial term dominates:
+
 $$
 L_f = \sup_v \|\nabla f(v)\|_{\text{op}} \leq R_{\max}(C_g + L_g) + C_gB
 $$
 
 **Step 6. Numerical values for GELU:**
 For GELU with $C_g = 1$, $L_g \approx 1.129$, and typical bias $|b| \leq 1$:
+
 $$
 L_f \leq R_{\max}(1 + 1.129) + 1 \approx 2.129 R_{\max} + 1
 $$
 
 With normalized inputs, $R_{\max} \approx \sqrt{d_b}$ for $d_b$-dimensional bundles. For $d_b = 16$:
+
 $$
 L_f \lesssim 2.129 \times 4 + 1 \approx 9.5
 $$
@@ -14528,6 +14738,7 @@ $$
 **Remark 1 (Composition with spectral norm):** While individual NormGate layers have $L_f > 1$, they compose with spectral-normalized linear layers (which have $L = 1$). The total Lipschitz constant for IsotropicBlock is bounded by the product, and layer normalization or skip connections prevent unbounded growth across depth.
 
 **Remark 2 (Rescaling option):** To enforce strict 1-Lipschitz property, rescale GELU:
+
 $$
 \tilde{g}(x) = \frac{g(x)}{R_{\max}(C_g + L_g) + C_gB}
 $$
@@ -14547,6 +14758,7 @@ $\square$
 A DNN layer $f: \mathcal{Z} \to \mathcal{Z}$ is **compatible with the geodesic integrator** if:
 
 1. **Preserves metric (pullback):** Writing $J(z) := \frac{\partial f}{\partial z}(z)$, the pulled-back metric is
+   
    $$
    (f^*G)(z) = J(z)^T\,G(f(z))\,J(z),
    $$
@@ -14575,6 +14787,7 @@ IsotropicBlock (Definition {prf:ref}`def-isotropic-block`) satisfies:
 **Condition 2 (light cone preservation) - RIGOROUS:**
 
 **Step 1. Decompose IsotropicBlock:**
+
 $$
 f = f_3 \circ f_2 \circ f_1
 $$
@@ -14587,17 +14800,20 @@ where:
 - By Theorem {prf:ref}`thm-spectral-preserves-light-cone`: $L_1 \leq 1$
 - $f_2$ is identity: $L_2 = 1$
 - By Lemma {prf:ref}`lem-normgate-lipschitz` with GELU ($C_g = 1$, $L_g \approx 1.129$):
+
 $$
 L_3 \leq R_{\max}(C_g + L_g) + C_gB \approx 2.129 R_{\max} + 1
 $$
 
 For normalized bundles with $R_{\max} \approx \sqrt{d_b}$ and $d_b = 16$:
+
 $$
 L_3 \lesssim 2.129 \times 4 + 1 \approx 9.5
 $$
 
 **Step 3. Composition:**
 By composition of Lipschitz functions ($\|f \circ g(x) - f \circ g(y)\| \leq L_f L_g \|x-y\|$):
+
 $$
 L_{\text{total}} = L_3 \cdot L_2 \cdot L_1 \leq 9.5 \cdot 1 \cdot 1 = 9.5
 $$
@@ -14625,6 +14841,7 @@ z = z / z.norm(dim=-1, keepdim=True) * target_norm  # Renormalize
 ```
 
 Thus:
+
 $$
 \|f(z_1) - f(z_2)\| \leq 9.5 \|z_1 - z_2\|
 $$
@@ -14639,6 +14856,7 @@ The effective light cone constraint $\|f(z_1) - f(z_2)\| \lesssim c_{\text{info}
 **Condition 3 (gauge invariance) - RIGOROUS:**
 
 Direct application of Theorem {prf:ref}`thm-isotropic-block-equivariant`. For gauge group $G_{\text{bundle}} = \prod_{i=1}^{n_b} SO(d_b)$:
+
 $$
 f(U(g) \cdot z) = U(g) \cdot f(z) \quad \forall g \in G_{\text{bundle}}
 $$
@@ -14648,6 +14866,7 @@ This is proven constructively in Theorem {prf:ref}`thm-isotropic-block-equivaria
 **Condition 1 (metric preservation) - QUALIFIED:**
 
 The strict isometry condition from Definition {prf:ref}`def-micro-macro-consistency`,
+
 $$
 G(z) = J(z)^T\,G(f(z))\,J(z),
 $$
@@ -14656,6 +14875,7 @@ depends critically on whether the metric is constant or state-dependent.
 **Case A: Constant Euclidean metric** ($G(z) = I$ for all $z$)
 
 The pullback condition becomes:
+
 $$
 I = J^T I J = J^T J
 $$
@@ -14663,6 +14883,7 @@ $$
 This requires $J$ to be orthogonal, which is NOT true for IsotropicBlock:
 - SpectralLinear: $J_1 = W$ with $\sigma_{\max}(W) \leq 1$ satisfies $W^T W \preceq I$ (contraction, not isometry unless $W$ is exactly orthogonal)
 - NormGate: $J_3 = g(\|v\|+b)I + g'(\|v\|+b)vv^T/\|v\|$ satisfies:
+
 $$
 J_3^T J_3 = g^2(\|v\|+b) I + \left[\frac{2g(\|v\|+b)g'(\|v\|+b)}{\|v\|} + g'^2(\|v\|+b)\right] vv^T \neq I
 $$
@@ -14672,6 +14893,7 @@ Thus **exact isometry** $(f^*G)(z)=G(z)$ fails for the constant Euclidean metric
 **Case B: Information Sensitivity Metric** (Definition {prf:ref}`def-latent-metric`)
 
 For state-dependent $G(z) = \nabla^2 V(z) + \lambda \mathcal{F}(z)$, the pullback requires:
+
 $$
 \nabla^2 V(z) + \lambda \mathcal{F}(z) = J^T [\nabla^2 V(f(z)) + \lambda \mathcal{F}(f(z))] J
 $$
@@ -14681,12 +14903,14 @@ Since $V$ and $\mathcal{F}$ depend on state, $G(f(z)) \neq G(z)$ in general, and
 **What IS rigorously true:**
 
 1. **Positive (semi)definiteness under pullback:** If $G \succ 0$, then for any Jacobian $J$ we have $J^T G J \succeq 0$, and if $J$ has full column rank (in particular, if $J$ is invertible) then $J^T G J \succ 0$. One convenient bound (when $J$ is full-rank) is:
+
 $$
 J^T G(z) J \succeq \lambda_{\min}(J^T J) \cdot \lambda_{\min}(G(z)) > 0
 $$
 Thus the pullback cannot introduce negative directions; it can only collapse directions if $J$ is rank-deficient.
 
 2. **Structure preservation:** NormGate acts isotropically within bundles:
+
 $$
 J_3^{(i)} = g_i I_{d_b} + h_i v_i v_i^T
 $$
@@ -14712,11 +14936,13 @@ Let $F = f_L \circ \cdots \circ f_1$ be a deep network on $\mathcal{Z}$, and let
 Define $z_0 := z$, $z_\ell := f_\ell(z_{\ell-1})$, and Jacobians $J_\ell := \frac{\partial f_\ell}{\partial z}(z_{\ell-1})$. Let $J_F := J_L \cdots J_1$.
 
 Define the per-layer **isometry defect**:
+
 $$
 E_\ell := J_\ell^T\,G(z_\ell)\,J_\ell - G(z_{\ell-1}).
 $$
 
 Then the total pullback defect admits the exact decomposition:
+
 $$
 J_F^T\,G(z_L)\,J_F - G(z_0)
 =
@@ -14725,6 +14951,7 @@ $$
 with the convention $J_0\cdots J_1 := I$.
 
 In particular, if $\|J_\ell\|_{\mathrm{op}} \leq L_J$ and $\|E_\ell\|_{\mathrm{op}} \leq e_\ell$, then:
+
 $$
 \|J_F^T\,G(F(z))\,J_F - G(z)\|_{\mathrm{op}} \leq \sum_{\ell=1}^L L_J^{2(\ell-1)}\,e_\ell.
 $$
@@ -14747,6 +14974,7 @@ For a Gaussian source $X \sim \mathcal{N}(0, \Sigma_X)$ encoded into latent $Z \
 
 **Step 1. Rate-distortion tradeoff:**
 The optimal encoder for squared error distortion $D = \mathbb{E}[\|X - \hat{X}\|^2]$ achieves:
+
 $$
 I(X;Z) = \frac{1}{2}\sum_{i=1}^{d_z} \log\left(1 + \frac{\lambda_i}{\sigma^2}\right)
 $$
@@ -14754,11 +14982,13 @@ where $\lambda_i$ are eigenvalues of the source covariance $\Sigma_X$ allocated 
 
 **Step 2. Equal allocation (isotropic latent):**
 For computational efficiency, neural encoders typically use isotropic latent representations with equal variance per dimension:
+
 $$
 \Sigma_Z = \sigma_z^2 I_{d_z}
 $$
 
 The total information is:
+
 $$
 I(X;Z) \leq \frac{1}{2} d_z \log\left(1 + \frac{\sigma_X^2}{\sigma_{\text{noise}}^2}\right)
 $$
@@ -14766,26 +14996,31 @@ $$
 **Step 3. Dimensional analysis from first principles:**
 
 The mutual information formula (Step 1) is:
+
 $$
 I(X;Z) = \frac{1}{2}\sum_{i=1}^{d_z} \log\left(1 + \frac{\lambda_i}{\sigma^2}\right)
 $$
 
 **Logarithm constraint:** The logarithm function requires a dimensionless argument. Therefore:
+
 $$
 \left[1 + \frac{\lambda_i}{\sigma^2}\right] = [1] \quad \text{(dimensionless)}
 $$
 
 This implies:
+
 $$
 \left[\frac{\lambda_i}{\sigma^2}\right] = [1] \quad \Rightarrow \quad [\lambda_i] = [\sigma^2]
 $$
 
 **Information-theoretic foundation:** In Shannon information theory, differential entropy for a Gaussian random variable $X \sim \mathcal{N}(0, \Sigma)$ is **defined** to have units [nat]:
+
 $$
 h(X) = \frac{1}{2} \log \det(2\pi e \Sigma) \quad [\text{nat}]
 $$
 
 For a single dimension with variance $\lambda$:
+
 $$
 h(X_i) = \frac{1}{2}\log(2\pi e \lambda) \quad [\text{nat}]
 $$
@@ -14793,12 +15028,14 @@ $$
 **Critical distinction:** The numerical prefactor $1/2$ is dimensionless (as all pure numbers are). The "nat" unit arises from the **operational definition** of information in Shannon's framework: entropy measures the expected log-probability, and we adopt the convention $[h(X)] = [\text{nat}]$ to distinguish information content from dimensionless logarithms. This is analogous to how we define $[E] = \text{Joule}$ in physics—it's a choice of unit system, not algebraic dimension propagation.
 
 **Dimensional interpretation:** The formula should be understood as:
+
 $$
 h(X) = \left[\frac{1}{2}\log \det(2\pi e \Sigma)\right]_{\text{nat}}
 $$
 where the subscript indicates the dimensionless logarithm is **measured in units** of nats (the information-theoretic unit), not that it algebraically has dimension [nat].
 
 **Dimensional convention (NOT derivation):** We **adopt the convention** that latent coordinates have dimension:
+
 $$
 \boxed{[z] = [\mathcal{Z}] := \sqrt{\text{nat}}}
 $$
@@ -14807,6 +15044,7 @@ $$
 
 **Step 3a. Consistency requirement:**
 If we want variance $[\sigma_z^2]$ to have the **same units** as information measures (differential entropy $h(X)$ in nats), and if coordinates are related to variance by $[z^2] = [\sigma_z^2]$, then we must have:
+
 $$
 [z] = \sqrt{[\sigma_z^2]} = \sqrt{[\text{nat}]}
 $$
@@ -14855,16 +15093,19 @@ Let $\mathcal{E}$ denote the environment observation space (e.g., pixel space fo
 Let $\phi: \mathcal{E} \to \mathcal{Z}$ be the encoder network mapping observations to latents, with Jacobian $J_\phi(x) = \nabla \phi(x) \in \mathbb{R}^{d_z \times d_{\mathcal{E}}}$.
 
 By the chain rule for composed dynamics $z(t) = \phi(x(t))$:
+
 $$
 \frac{dz}{dt} = J_\phi(x(t)) \cdot \frac{dx}{dt}
 $$
 
 Taking norms:
+
 $$
 \left\|\frac{dz}{dt}\right\| \leq \|J_\phi(x)\|_{\text{op}} \cdot \left\|\frac{dx}{dt}\right\|
 $$
 
 If the environment dynamics satisfy $\|dx/dt\| \leq c_{\text{info}}$ (Axiom {prf:ref}`ax-information-speed-limit` from Chapter 8.1), then:
+
 $$
 c_{\mathcal{Z}} \leq \sup_x \|J_\phi(x)\|_{\text{op}} \cdot c_{\text{info}}
 $$
@@ -14878,6 +15119,7 @@ $$
 :label: prop-dimensional-consistency
 
 Let $z \in \mathcal{Z}$ with $[z] = [\mathcal{Z}] = \sqrt{\text{nat}}$ (Proposition {prf:ref}`prop-latent-dimension-from-capacity`). The IsotropicBlock operation
+
 $$
 \text{IsotropicBlock}(z) = \text{Reshape}(\text{NormGate}(\text{SpectralLinear}(z)))
 $$
@@ -14891,6 +15133,7 @@ preserves the latent dimension $[\mathcal{Z}]$ through each stage when interpret
 3. For transcendental function $f: \mathbb{R} \to \mathbb{R}$ (like GELU), the argument must be dimensionless or implicitly normalized
 
 **Step 1. SpectralLinear:**
+
 $$
 [W \cdot z] = [W] \cdot [z] = \frac{[\mathcal{Z}']}{[\mathcal{Z}]} \cdot [\mathcal{Z}] = [\mathcal{Z}']
 $$
@@ -14902,6 +15145,7 @@ Identity operation that permutes indices: $[\text{Reshape}(h)] = [h] = [\mathcal
 **Step 3. NormGate per bundle $i$ — natural units convention:**
 
 **Convention adopted:** We work in **natural units** where the reference latent scale is:
+
 $$
 z_0 := 1 \quad \text{(in units of } \sqrt{\text{nat}}\text{)}
 $$
@@ -14913,6 +15157,7 @@ This is analogous to setting $c = \hbar = 1$ in relativistic quantum mechanics. 
 **Dimensional analysis under natural units:**
 
 Recall the definition (Def. {prf:ref}`def-norm-gated-activation`):
+
 $$
 f(v_i) = v_i \cdot g(\|v_i\| + b_i)
 $$
@@ -14925,6 +15170,7 @@ In natural units where $z_0 = 1$:
 - Therefore $[f(v_i)] = [v_i] \cdot [1] = [\mathcal{Z}]$ ✓
 
 **Step 4. Output dimension:**
+
 $$
 [\text{IsotropicBlock}(z)] = [\mathcal{Z}]
 $$
@@ -14938,6 +15184,7 @@ gate = F.gelu(energy + self.norm_bias)
 where `energy = ||v_i||` is numerically $O(1)$ due to spectral normalization. This directly implements the natural units convention with $z_0 = 1$ absorbed.
 
 **Alternative (strict dimensional analysis):** For explicit dimensional tracking without natural units, the formula would be:
+
 $$
 f(v) = v \cdot g\left(\frac{\|v\| + b}{z_0}\right)
 $$
@@ -15199,6 +15446,7 @@ where $\lambda(z) = 2/(1-|z|^2)$ is the conformal factor, implies:
 *Proof.*
 
 **Step 1 (Metric encoding).** For a conformal metric $G(z)=\lambda(z)^2 I$ and the stated choice of $\tau(z)$,
+
 $$
 \frac{d_k}{\tau(z)^2} = \frac{d_k}{(\sqrt{d_k}/\lambda(z))^2} = \lambda(z)^2,
 $$
@@ -15740,6 +15988,7 @@ $$
 where $U_r, V_r \in \mathbb{R}^{d_k \times d}$ are low-rank factors with $R \ll d$.
 
 **For the Poincare ball/disk**: the contracted Christoffel correction has a closed form. Using Proposition {prf:ref}`prop-explicit-christoffel-symbols-for-poincare-disk`,
+
 $$
 \Gamma^k_{ij}(z) v^i v^j = \frac{2}{1-|z|^2}\left(2(z\cdot v)\,v^k - \|v\|^2 z^k\right),
 $$
@@ -15814,6 +16063,7 @@ where:
 - $\mathcal{Y}$ — output space (actions $\mathcal{U}$ or reconstructed observations)
 
 **Sequential composition:** For multi-step rollouts, the dynamics are applied recursively:
+
 $$
 z_0 = E(x_0), \quad z_{t+1} = D(z_t, a_t), \quad a_t = P(z_t)
 $$
@@ -15832,17 +16082,20 @@ An agent architecture $\mathcal{A} = P \circ D \circ E$ is **$G$-equivariant** w
 1. **Latent space transforms:** There exists a representation $\rho: G \to \text{GL}(\mathcal{Z})$ such that for $g \in G$, latent states transform as $z \mapsto \rho(g) z$
 
 2. **Encoder invariance:** $E$ maps to gauge-equivalent latent states:
+   
    $$
    E(x) \sim \rho(g) E(x) \quad \forall g \in G, x \in \mathcal{X}
    $$
    where $\sim$ denotes equivalence up to gauge choice (physically identical states)
 
 3. **Dynamics equivariance:** $D$ commutes with gauge transformations:
+   
    $$
    D(\rho(g) z, a) = \rho(g) D(z, a) \quad \forall g \in G, z \in \mathcal{Z}, a \in \mathcal{Y}
    $$
 
 4. **Decoder covariance:** $P$ produces consistent outputs under gauge transformations:
+   
    $$
    P(\rho(g) z) = P(z) \quad \forall g \in G, z \in \mathcal{Z}
    $$
@@ -15872,6 +16125,7 @@ where:
 **Dimension:** $\dim(\mathcal{Z}) = d_C + d_L + d_Y$ (linear scaling)
 
 **Gauge action:** Block-diagonal:
+
 $$
 \rho(g_C, g_L, g_Y) = \begin{pmatrix}
 \rho_C(g_C) & 0 & 0 \\
@@ -15903,11 +16157,13 @@ where $V_C, V_L, V_Y$ are the representation spaces for each gauge factor.
 **Dimension:** $\dim(\mathcal{Z}) = \dim(V_C) \times \dim(V_L) \times \dim(V_Y)$ (multiplicative scaling)
 
 **Gauge action:** Kronecker product:
+
 $$
 \rho(g_C, g_L, g_Y) = \rho_C(g_C) \otimes \rho_L(g_L) \otimes \rho_Y(g_Y)
 $$
 
 **Basis:** Each basis vector $|c, \ell, y\rangle$ carries all three quantum numbers simultaneously. Under gauge transformation:
+
 $$
 |c, \ell, y\rangle \mapsto \sum_{c', \ell', y'} [\rho_C]_{c'c} [\rho_L]_{\ell'\ell} [\rho_Y]_{y'y} |c', \ell', y'\rangle
 $$
@@ -15919,6 +16175,7 @@ $$
 **Limitation:** Dimension explodes. For $d_C = 64, d_L = 8, d_Y = 4$: direct sum gives $76$ dimensions, tensor product gives $2048$ dimensions. This is why quarks work with small representations ($3 \times 2 \times 1 = 6$) while neural networks need hundreds of latent dimensions.
 
 **Factorization:** For low-rank structure (when gauge-invariant couplings are sparse), factored tensor representations can recover efficiency:
+
 $$
 W = \sum_{k=1}^r U_C^{(k)} \otimes U_L^{(k)} \otimes U_Y^{(k)}
 $$
@@ -15933,11 +16190,13 @@ For a latent space $\mathcal{Z} = \bigoplus_{i=1}^{n_b} V_i$ with bundles $v_i \
 **Level 1: Norms Only** (Strict $\prod_i SO(d_b)_i$ equivariance)
 
 Bundles interact only through their magnitudes $\|v_i\|$. Invariant features:
+
 $$
 \mathcal{I}_1 = \{\|v_1\|, \|v_2\|, \ldots, \|v_{n_b}\|\} \subset \mathbb{R}^{n_b}
 $$
 
 **Implication:** The output of bundle $i$ has the form (by Schur's lemma, Theorem {prf:ref}`thm-equivariant-function-structure`):
+
 $$
 f_i(v_1, \ldots, v_{n_b}) = v_i \cdot \phi_i(\|v_1\|, \ldots, \|v_{n_b}\|)
 $$
@@ -15948,6 +16207,7 @@ where $\phi_i: \mathbb{R}^{n_b} \to \mathbb{R}$ can be an arbitrary function (e.
 A single rotation $R \in SO(d_b)$ acts on *all* bundles: $(v_1, \ldots, v_{n_b}) \mapsto (Rv_1, \ldots, Rv_{n_b})$.
 
 Invariant features:
+
 $$
 \mathcal{I}_2 = \{G_{ij} = \langle v_i, v_j \rangle : 1 \leq i, j \leq n_b\} \subset \mathbb{R}^{n_b \times n_b}
 $$
@@ -15961,6 +16221,7 @@ The Gram matrix $G$ is a symmetric $n_b \times n_b$ matrix with:
 **Level 3: Hybrid / Soft Equivariance**
 
 Use Level 1 (norms) as the primary pathway, add small Level 2 (Gram) or symmetry-breaking terms with regularization:
+
 $$
 f = f_{\text{equivariant}} + \lambda \cdot f_{\text{mixing}}
 $$
@@ -15976,11 +16237,13 @@ where $\lambda \ll 1$ is learned or regularized (e.g., via L1 penalty).
 For a gauge group $G = G_C \times G_L \times G_Y$ with representation spaces $V_C, V_L, V_Y$ of dimensions $d_C, d_L, d_Y$ respectively:
 
 **Direct sum:**
+
 $$
 \dim(\mathcal{Z}_{\oplus}) = d_C + d_L + d_Y = \sum_{i \in \{C, L, Y\}} d_i
 $$
 
 **Tensor product:**
+
 $$
 \dim(\mathcal{Z}_{\otimes}) = d_C \times d_L \times d_Y = \prod_{i \in \{C, L, Y\}} d_i
 $$
@@ -15994,6 +16257,7 @@ $$
 A **norms-only** cross-bundle layer computes outputs solely from bundle magnitudes $\{\|v_i\|\}_{i=1}^{n_b}$.
 
 **Functional form:** For each bundle $i$, the output is:
+
 $$
 f_i(v_1, \ldots, v_{n_b}) = v_i \cdot \phi_i(\|v_1\|, \ldots, \|v_{n_b}\|)
 $$
@@ -16010,6 +16274,7 @@ where $\phi_i: \mathbb{R}^{n_b} \to \mathbb{R}_+$ is an arbitrary positive funct
 A **Gram matrix** interaction layer uses the full matrix of inner products $G_{ij} = \langle v_i, v_j \rangle$.
 
 **Invariant features:**
+
 $$
 \mathcal{I}_2 = \{G_{ij} : 1 \leq i, j \leq n_b\} \subset \mathbb{R}^{n_b \times n_b}
 $$
@@ -16029,6 +16294,7 @@ A **hybrid** interaction layer combines:
 2. A mixing pathway (Gram-based or fully learned) with L1 regularization
 
 **Functional form:**
+
 $$
 f(z) = f_{\text{equiv}}(z) + f_{\text{mix}}(z)
 $$
@@ -16046,6 +16312,7 @@ where $f_{\text{equiv}}$ is strictly equivariant and $f_{\text{mix}}$ has learne
 Let $V = \bigoplus_{i=1}^{n_b} V_i$ where each $V_i \cong \mathbb{R}^{d_b}$ is an irreducible representation of $SO(d_b)_i$ (the $i$-th copy of $SO(d_b)$ acting only on $V_i$).
 
 Let $T: V \to V$ be a linear map that is equivariant with respect to $\prod_{i=1}^{n_b} SO(d_b)_i$:
+
 $$
 \rho(g) \circ T = T \circ \rho(g) \quad \forall g \in \prod_{i=1}^{n_b} SO(d_b)_i
 $$
@@ -16056,6 +16323,7 @@ Then $T$ must be **block-diagonal** with each block $T_i: V_i \to V_i$ satisfyin
 *Proof.*
 
 **Step 1 (Block-diagonal structure):** By the direct sum decomposition, $T$ must respect the bundle structure:
+
 $$
 T = \begin{pmatrix}
 T_{11} & T_{12} & \cdots & T_{1n_b} \\
@@ -16071,26 +16339,31 @@ where $T_{ij}: V_j \to V_i$.
 By linearity, $T(v) = (T_{1j}(v_j), T_{2j}(v_j), \ldots, T_{n_b,j}(v_j))$.
 
 Equivariance requires:
+
 $$
 T(g \cdot v) = g \cdot T(v)
 $$
 
 The LHS is:
+
 $$
 T(0, \ldots, 0, g_j v_j, 0, \ldots, 0) = (T_{1j}(g_j v_j), \ldots, T_{n_b,j}(g_j v_j))
 $$
 
 The RHS is:
+
 $$
 g \cdot T(v) = (g_1 T_{1j}(v_j), \ldots, g_i T_{ij}(v_j), \ldots, g_{n_b} T_{n_b,j}(v_j))
 $$
 
 For $i \neq j$, equating components gives:
+
 $$
 T_{ij}(g_j v_j) = g_i T_{ij}(v_j) \quad \forall g_i \in SO(d_b), g_j \in SO(d_b), v_j \in V_j
 $$
 
 **Key observation:** For any fixed $g_j$ and $v_j$, the LHS $T_{ij}(g_j v_j)$ is a **fixed vector** in $V_i$. But the RHS $g_i T_{ij}(v_j)$ can be **any rotation** of $T_{ij}(v_j)$ as we vary $g_i$ arbitrarily over $SO(d_b)$. For these to be equal for all choices of $g_i$, we need:
+
 $$
 T_{ij}(g_j v_j) = g_i T_{ij}(v_j) \quad \text{for all } g_i \in SO(d_b)
 $$
@@ -16100,16 +16373,19 @@ This means $T_{ij}(v_j)$ must be **invariant** under all rotations $g_i$ (i.e., 
 Therefore, $T_{ij} = 0$ for all $i \neq j$.
 
 **Step 3 (Diagonal blocks are scalar multiples):** For each $i$, the block $T_{ii}: V_i \to V_i$ must commute with all $g_i \in SO(d_b)_i$:
+
 $$
 T_{ii}(g_i v_i) = g_i T_{ii}(v_i) \quad \forall g_i \in SO(d_b)_i, v_i \in V_i
 $$
 
 By Schur's lemma for irreducible representations, $SO(d_b)$ acting on $\mathbb{R}^{d_b}$ is irreducible over $\mathbb{R}$ (for $d_b \geq 2$), so any intertwining operator must be a scalar multiple of the identity:
+
 $$
 T_{ii} = \lambda_i I_{d_b}
 $$
 
 **Conclusion:**
+
 $$
 T = \begin{pmatrix}
 \lambda_1 I_{d_b} & 0 & \cdots & 0 \\
@@ -16133,6 +16409,7 @@ A feedforward network with:
 - Activations: Applied per-bundle (e.g., norm-gating)
 
 can only approximate functions of the form:
+
 $$
 f_i(v_1, \ldots, v_{n_b}) = v_i \cdot \phi_i(\|v_1\|, \ldots, \|v_{n_b}\|)
 $$
@@ -16147,11 +16424,13 @@ Such networks are **not universal approximators** over continuous functions $f: 
 **Base case ($L = 1$):** By Theorem {prf:ref}`thm-schur-bundle`, the first layer can only scale bundles: $z^{(1)}_i = \lambda_i v_i$. If $\lambda_i$ depends on norms $\{\|v_j\|\}$ (via a norm-MLP), we get $z^{(1)}_i = v_i \cdot \phi_i^{(1)}(\|v_1\|, \ldots, \|v_{n_b}\|)$.
 
 **Inductive step:** Suppose layer $\ell$ outputs $z^{(\ell)}_i = v_i \cdot \phi_i^{(\ell)}(\|v_1\|, \ldots, \|v_{n_b}\|)$. Layer $\ell+1$ can only scale:
+
 $$
 z^{(\ell+1)}_i = z^{(\ell)}_i \cdot \psi_i^{(\ell+1)}(\|z^{(\ell)}_1\|, \ldots, \|z^{(\ell)}_{n_b}\|)
 $$
 
 But $\|z^{(\ell)}_j\| = \|v_j\| \cdot |\phi_j^{(\ell)}(\|v_1\|, \ldots, \|v_{n_b}\|)|$, which is itself a function of norms only. Thus:
+
 $$
 z^{(\ell+1)}_i = v_i \cdot \underbrace{\phi_i^{(\ell)}(\{\|v_j\|\}) \cdot \psi_i^{(\ell+1)}(\{\|v_j\| \cdot |\phi_j^{(\ell)}(\{\|v_k\|\})|\})}_{\phi_i^{(\ell+1)}(\{\|v_j\|\})}
 $$
@@ -16159,6 +16438,7 @@ $$
 The composition is still a function of norms only.
 
 **Step 2 (Counterexample):** Consider the target function:
+
 $$
 f(v_1, v_2) = v_{1,1} \cdot v_{2,1}
 $$
@@ -16179,11 +16459,13 @@ $\square$
 :label: thm-equivariant-function-structure
 
 For a function $f: \bigoplus_{i=1}^{n_b} \mathbb{R}^{d_b} \to \bigoplus_{i=1}^{n_b} \mathbb{R}^{d_b}$ to be equivariant under $\prod_{i=1}^{n_b} SO(d_b)_i$, it must satisfy:
+
 $$
 f_i(R_1 v_1, \ldots, R_{n_b} v_{n_b}) = R_i f_i(v_1, \ldots, v_{n_b}) \quad \forall R_j \in SO(d_b), v_j \in \mathbb{R}^{d_b}
 $$
 
 The **necessary and sufficient** form is:
+
 $$
 f_i(v_1, \ldots, v_{n_b}) = v_i \cdot \phi_i(\|v_1\|, \ldots, \|v_{n_b}\|)
 $$
@@ -16192,31 +16474,37 @@ where $\phi_i: \mathbb{R}^{n_b} \to \mathbb{R}$ is arbitrary.
 *Proof.*
 
 **Sufficiency:** Compute:
+
 $$
 f_i(R_1 v_1, \ldots, R_i v_i, \ldots, R_{n_b} v_{n_b}) = R_i v_i \cdot \phi_i(\|R_1 v_1\|, \ldots, \|R_{n_b} v_{n_b}\|)
 $$
 
 Since $\|R_j v_j\| = \|v_j\|$ (orthogonal matrices preserve norms):
+
 $$
 = R_i v_i \cdot \phi_i(\|v_1\|, \ldots, \|v_{n_b}\|) = R_i \left[ v_i \cdot \phi_i(\|v_1\|, \ldots, \|v_{n_b}\|) \right] = R_i f_i(v_1, \ldots, v_{n_b})
 $$
 
 **Necessity:** Fix all bundles except $i$: $v_j = c_j$ for $j \neq i$. Equivariance under $R_i$ gives:
+
 $$
 f_i(c_1, \ldots, c_{i-1}, R_i v_i, c_{i+1}, \ldots, c_{n_b}) = R_i f_i(c_1, \ldots, c_{i-1}, v_i, c_{i+1}, \ldots, c_{n_b})
 $$
 
 This must hold for all $R_i \in SO(d_b)$ and all $v_i$. By Schur's lemma (irreducibility of $SO(d_b)$ on $\mathbb{R}^{d_b}$), $f_i$ must be proportional to $v_i$:
+
 $$
 f_i(\ldots, v_i, \ldots) = v_i \cdot \psi_i(\ldots, v_i, \ldots)
 $$
 
 But $\psi_i$ must also be equivariant under $R_i$:
+
 $$
 \psi_i(\ldots, R_i v_i, \ldots) = \psi_i(\ldots, v_i, \ldots)
 $$
 
 This is only possible if $\psi_i$ depends on $v_i$ through $\|v_i\|$ alone (the only $SO(d_b)$-invariant feature). Extending to all bundles:
+
 $$
 f_i = v_i \cdot \phi_i(\|v_1\|, \ldots, \|v_{n_b}\|)
 $$
@@ -16230,6 +16518,7 @@ $\square$
 A norm-based equivariant network with $L$ layers and hidden dimension $h$ can approximate any continuous function $\Phi: \mathbb{R}^{n_b} \to \mathbb{R}^{n_b}$ (the norm-to-scale mapping) to arbitrary precision, by the universal approximation theorem for MLPs.
 
 Thus, norm-based networks are **universal** over the restricted class:
+
 $$
 \mathcal{F}_{\text{norm}} = \left\{ f: f_i = v_i \cdot \phi_i(\|v_1\|, \ldots, \|v_{n_b}\|), \; \phi_i \in C(\mathbb{R}^{n_b}, \mathbb{R}) \right\}
 $$
@@ -16241,11 +16530,13 @@ But $\mathcal{F}_{\text{norm}}$ has measure zero in $C(\mathbb{R}^{n_b d_b}, \ma
 :label: def-approximate-equivariance
 
 A function $f: \mathcal{Z} \to \mathcal{Z}$ is **$\epsilon$-approximately equivariant** with respect to group $G$ and representation $\rho$ if:
+
 $$
 \sup_{g \in G, z \in \mathcal{Z}} \frac{\|f(\rho(g) z) - \rho(g) f(z)\|}{\|z\|} \leq \epsilon
 $$
 
 The quantity:
+
 $$
 \mathcal{V}(f) := \mathbb{E}_{g \sim G, z \sim \mathcal{Z}} \left[ \|f(\rho(g) z) - \rho(g) f(z)\|^2 \right]
 $$
@@ -16260,11 +16551,13 @@ is the **equivariance violation**.
 Let $f_{\text{equiv}}: \mathcal{Z} \to \mathcal{Z}$ be strictly $G$-equivariant and $f_{\text{break}}: \mathcal{Z} \to \mathcal{Z}$ be an arbitrary symmetry-breaking term.
 
 Define:
+
 $$
 f = f_{\text{equiv}} + \lambda f_{\text{break}}
 $$
 
 Then the equivariance violation satisfies:
+
 $$
 \mathcal{V}(f) = \lambda^2 \mathbb{E}_{g \sim \mu_G, z} \left[ \|f_{\text{break}}(\rho(g) z) - \rho(g) f_{\text{break}}(z)\|^2 \right]
 $$
@@ -16273,19 +16566,23 @@ where $\mu_G$ is the Haar measure on $G$ (uniform distribution for compact Lie g
 *Proof.*
 
 **Step 1:** Compute the violation:
+
 $$
 f(\rho(g) z) - \rho(g) f(z) = f_{\text{equiv}}(\rho(g) z) + \lambda f_{\text{break}}(\rho(g) z) - \rho(g) [f_{\text{equiv}}(z) + \lambda f_{\text{break}}(z)]
 $$
 
 **Step 2:** Use equivariance of $f_{\text{equiv}}$:
+
 $$
 = \rho(g) f_{\text{equiv}}(z) + \lambda f_{\text{break}}(\rho(g) z) - \rho(g) f_{\text{equiv}}(z) - \lambda \rho(g) f_{\text{break}}(z)
 $$
+
 $$
 = \lambda [f_{\text{break}}(\rho(g) z) - \rho(g) f_{\text{break}}(z)]
 $$
 
 **Step 3:** Square and take expectation:
+
 $$
 \mathbb{E}_{g, z} \|f(\rho(g) z) - \rho(g) f(z)\|^2 = \lambda^2 \mathbb{E}_{g, z} \|f_{\text{break}}(\rho(g) z) - \rho(g) f_{\text{break}}(z)\|^2
 $$
@@ -16299,6 +16596,7 @@ $\square$
 :label: thm-l1-hierarchies
 
 Consider a network with mixing weights $W \in \mathbb{R}^{n_b \times n_b \times d_b \times d_b}$ (cross-bundle coupling) trained with loss:
+
 $$
 \mathcal{L}_{\text{total}} = \mathcal{L}_{\text{task}} + \lambda_{\text{L1}} \|W\|_1
 $$
@@ -16332,10 +16630,12 @@ $$
 $$
 
 **Stage 1: Encoder** (Unconstrained)
+
 $$
 E: \mathbb{R}^{d_x} \to \mathbb{R}^{n_b \cdot d_b}
 $$
 Implemented as:
+
 $$
 E(x) = \text{SpectralMLP}(x) = W_2 \sigma(W_1 x)
 $$
@@ -16346,6 +16646,7 @@ where $W_1, W_2$ have spectral norm $\|W_i\|_2 \leq 1$ and $\sigma = \text{GELU}
 **Stage 2: Latent Dynamics** (Soft Equivariant)
 
 Each layer $D_\ell: \mathcal{Z} \to \mathcal{Z}$ has the form:
+
 $$
 D_\ell(z) = D_\ell^{\text{equiv}}(z) + D_\ell^{\text{mix}}(z)
 $$
@@ -16355,21 +16656,25 @@ where:
 - **Mixing pathway** $D_\ell^{\text{mix}}$: Weakly equivariant or symmetry-breaking (Gram-based or learned)
 
 **Regularization:** L1 penalty on mixing pathway weights:
+
 $$
 \mathcal{L}_{\text{reg}} = \lambda_{\text{L1}} \sum_{\ell=1}^L \|W_\ell^{\text{mix}}\|_1
 $$
 
 **Stage 3: Decoder** (Unconstrained)
+
 $$
 P: \mathbb{R}^{n_b \cdot d_b} \to \mathbb{R}^{d_y}
 $$
 Implemented as:
+
 $$
 P(z) = \text{SpectralMLP}(z) = W_4 \sigma(W_3 z)
 $$
 with spectral normalization $\|W_i\|_2 \leq 1$.
 
 **Total loss:**
+
 $$
 \mathcal{L}_{\text{total}} = \mathcal{L}_{\text{task}}(y, \hat{y}) + \lambda_{\text{L1}} \mathcal{L}_{\text{reg}} + \lambda_{\text{equiv}} \mathcal{L}_{\text{equiv}}
 $$
@@ -16423,6 +16728,7 @@ $$
 More precisely:
 
 **Sub-step 3a (Anchor points):** For a finite $\epsilon$-net $\{x_i\}_{i=1}^N$ covering $\mathcal{X}$ (exists by compactness), we need:
+
 $$
 P(D(E(x_i))) \approx f(x_i) \quad \forall i
 $$
@@ -16434,6 +16740,7 @@ $$
 **Sub-step 3d (Decoder design):** Let the decoder satisfy $P(z_i) \approx f(x_i)$ (using decoder's universality).
 
 **Sub-step 3e (Continuity):** By continuity of $E$, $D$, $P$ and density of $\{x_i\}$ in $\mathcal{X}$, we have:
+
 $$
 \sup_{x \in \mathcal{X}} \|P(D(E(x))) - f(x)\| \leq \sup_i \|P(D(E(x_i))) - f(x_i)\| + \underbrace{\text{continuity error}}_{\to 0 \text{ as } N \to \infty}
 $$
@@ -16457,6 +16764,7 @@ Therefore, the UGN is a universal approximator. $\square$
 Let $\mathcal{A}_{\text{UGN}}$ be a UGN with $\lambda_{\text{L1}} > 0$. Then:
 
 1. **Approximate capacity bound:** For all layers with spectral normalization, $\|W\|_2 \leq 1$ and approximately 1-Lipschitz activations ensure:
+   
    $$
    \|z_{\text{out}}\| \lesssim \|z_{\text{in}}\| + O(\sqrt{L})
    $$
@@ -16465,11 +16773,13 @@ Let $\mathcal{A}_{\text{UGN}}$ be a UGN with $\lambda_{\text{L1}} > 0$. Then:
 2. **Bundle structure preservation:** The latent space maintains decomposition $\mathcal{Z} = \bigoplus_{i=1}^{n_b} V_i$ throughout forward pass (bundles indexed consistently)
 
 3. **Soft equivariance:** Define the **equivariance violation** as:
+   
    $$
    \mathcal{V}(D) = \mathbb{E}_{z \sim \mathcal{Z}, R \sim \mu_{SO(d_b)}} \|D(Rz) - RD(z)\|^2
    $$
    where $\mu_{SO(d_b)}$ is the Haar measure on $SO(d_b)$.
    Then:
+   
    $$
    \mathcal{V}(D) \leq C \cdot \|W^{\text{mix}}\|_F^2
    $$
@@ -16478,10 +16788,12 @@ Let $\mathcal{A}_{\text{UGN}}$ be a UGN with $\lambda_{\text{L1}} > 0$. Then:
 *Proof.*
 
 **(1) Capacity bound:** By properties of spectral norm (see Section 04, Theorem {prf:ref}`thm-spectral-preserves-hypercharge`):
+
 $$
 \|Wz\|_2 \leq \|W\|_2 \|z\|_2 \leq \|z\|_2
 $$
 Activations (GELU, softplus) are approximately 1-Lipschitz: for large $|x|$, both behave as $\sigma(x) \approx x$, so $\|\sigma(Wz)\|_2 \lesssim \|Wz\|_2 \leq \|z\|_2$ plus bias terms. Composing $L$ spectrally normalized layers with these activations gives:
+
 $$
 \|z_{\text{out}}\|_2 \lesssim \|z_{\text{in}}\|_2 + O(\sqrt{L})
 $$
@@ -16492,6 +16804,7 @@ where the $O(\sqrt{L})$ term comes from accumulated biases. For fixed depth $L$,
 **(3) Soft equivariance bound:**
 
 **Step 1.** Decompose the latent dynamics:
+
 $$
 D(z) = D^{\text{equiv}}(z) + D^{\text{mix}}(z)
 $$
@@ -16499,35 +16812,43 @@ $$
 **Step 2.** The equivariant pathway satisfies $D^{\text{equiv}}(Rz) = R D^{\text{equiv}}(z)$ by construction (norm-based, Theorem {prf:ref}`thm-equivariant-function-structure`).
 
 **Step 3.** The violation comes entirely from the mixing pathway:
+
 $$
 D(Rz) - RD(z) = \bigl[ D^{\text{equiv}}(Rz) + D^{\text{mix}}(Rz) \bigr] - R \bigl[ D^{\text{equiv}}(z) + D^{\text{mix}}(z) \bigr]
 $$
+
 $$
 = \bigl[ RD^{\text{equiv}}(z) + D^{\text{mix}}(Rz) \bigr] - \bigl[ RD^{\text{equiv}}(z) + RD^{\text{mix}}(z) \bigr]
 $$
+
 $$
 = D^{\text{mix}}(Rz) - RD^{\text{mix}}(z)
 $$
 
 **Step 4.** For the mixing pathway implemented as $D^{\text{mix}}(z) = \sum_{i,j} W_{ij} z_j$ (linear in $z$ for each bundle component):
+
 $$
 D^{\text{mix}}(Rz) = \sum_{ij} W_{ij} (Rz_j)
 $$
+
 $$
 RD^{\text{mix}}(z) = R \sum_{ij} W_{ij} z_j
 $$
 
 The violation is bounded using operator norm arithmetic. Taking expectation over $R$ and applying Cauchy-Schwarz gives:
+
 $$
 \mathbb{E}_R \|D^{\text{mix}}(Rz) - RD^{\text{mix}}(z)\|^2 \leq C_1 \|W^{\text{mix}}\|_F^2 \|z\|^2
 $$
 
 Averaging over $z$ with $\|z\|^2$ bounded by capacity constraint:
+
 $$
 \mathcal{V}(D) \leq C \|W^{\text{mix}}\|_F^2
 $$
 
 **Step 5.** The regularization uses **group lasso** (Frobenius norm per block): $\mathcal{L}_{\text{reg}} = \lambda_{\text{L1}} \sum_{i \neq j} \|W_{ij}\|_F$ where $W_{ij}$ is the $[\text{bundle\_dim} \times \text{bundle\_dim}]$ block coupling bundles $i$ and $j$. This encourages entire blocks to be zero (sparsity at the bundle-interaction level). Since $\|W\|_F \leq \sqrt{n_{\text{blocks}}} \cdot \max_{ij} \|W_{ij}\|_F$, we have:
+
 $$
 \lambda_{\text{L1}} \sum_{ij} \|W_{ij}\|_F \to \text{large penalty} \implies \|W_{ij}\|_F \to 0 \text{ for most } (i,j) \implies \|W^{\text{mix}}\|_F \to 0 \implies \mathcal{V}(D) \to 0
 $$
@@ -16553,6 +16874,7 @@ Then at convergence, the learned mixing weights $W^{\text{mix}}$ exhibit:
 **Step 1 (Group lasso induces block sparsity):** The group lasso penalty $\sum_{i \neq j} \|W_{ij}\|_F$ (sum of Frobenius norms of blocks) has a non-differentiable minimum at $W_{ij} = 0$ for each block. During gradient descent, small blocks receive gradients pushing them toward zero (block soft thresholding). If the task loss can be minimized without a particular cross-bundle coupling, group lasso drives the entire block to zero.
 
 **Step 2 (Equivariant tasks don't need mixing):** If $f^*$ is equivariant, the optimal network architecture is strictly equivariant ($W^{\text{mix}} = 0$). The equivariant pathway $D^{\text{equiv}}$ can achieve $\mathcal{L}_{\text{task}} \approx 0$ alone. Thus:
+
 $$
 \min_{W^{\text{mix}}} \mathcal{L}_{\text{task}}(W^{\text{mix}}) + \lambda \sum_{i \neq j} \|W_{ij}\|_F
 $$

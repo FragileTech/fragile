@@ -987,10 +987,12 @@ $$
 :::{prf:proposition} Velocity Dissipation Rate (Parameter-Explicit)
 :label: prop-velocity-rate-explicit
 With the notation above,
+
 $$
 \kappa_v := (2\gamma-\epsilon)\tau, \quad C_v^{\text{kin}} := \left(\frac{F_{\max}^2}{\epsilon} + d\sigma_{\max}^2\right)\tau,
 $$
 and the composed step satisfies
+
 $$
 \mathbb{E}_{\text{total}}[\Delta V_{\text{Var},v}] \leq -\kappa_v V_{\text{Var},v} + (C_v + C_v^{\text{kin}}).
 $$
@@ -1053,18 +1055,21 @@ $$
 :::{prf:proposition} Positional Contraction Rate (Parameter-Explicit)
 :label: prop-position-rate-explicit
 The composed drift satisfies
+
 $$
 \mathbb{E}_{\text{total}}[\Delta V_{\text{Var},x}] \leq -\kappa_x V_{\text{Var},x} + (C_x + C_{\text{kin},x}\tau),
 $$
 where $\kappa_x$ and $C_x$ come from the Keystone Principle ({doc}`03_cloning`) and $C_{\text{kin},x}$ is the bounded expansion constant from {prf:ref}`thm-positional-variance-bounded-expansion` ({doc}`05_kinetic_contraction`).
 
 An explicit (N-uniform) choice from {doc}`05_kinetic_contraction` is
+
 $$
 C_{\text{kin},x} = 2\sqrt{M_x M_v} + \frac{2 V_{\text{Var},v}^{\text{eq}}}{\gamma},
 $$
 with $M_v = V_{\text{Var},v}^{\text{eq}}$ and $V_{\text{Var},v}^{\text{eq}} = \frac{F_{\max}^2/\epsilon + d\sigma_{\max}^2}{2\gamma-\epsilon}$.
 
 The equilibrium bound is
+
 $$
 V_{\text{Var},x}^{\text{QSD}} \leq \frac{C_x + C_{\text{kin},x}\tau}{\kappa_x}.
 $$

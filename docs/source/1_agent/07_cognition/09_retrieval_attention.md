@@ -765,6 +765,7 @@ The causal mask ensures that when computing the memory gradient, only contributi
 The **Causal BAOAB** integrator for memory-augmented dynamics uses five steps as in Definition {prf:ref}`def-baoab-attention-heads`, with the memory potential modified to respect causality:
 
 **Step 1 (B-step, first half-kick):**
+
 $$
 p \leftarrow p - \frac{h}{2} \nabla_z \left( \Phi_{\text{eff}}(z) + \Psi_{\text{mem}}^{\text{causal}}(z, t) \right)
 $$
@@ -772,22 +773,26 @@ $$
 **Step 1.5 (Boris rotation, if $\mathcal{F} \neq 0$):** Apply the rotation from Definition {prf:ref}`def-baoab-splitting` using the Value Curl $\mathcal{F}$.
 
 **Step 2 (A-step, first half-drift):**
+
 $$
 z \leftarrow z + \frac{h}{2} G^{-1}(z) p
 $$
 
 **Step 3 (O-step, thermostat):**
+
 $$
 p \leftarrow c_1 p + c_2 G^{1/2}(z) \xi, \quad \xi \sim \mathcal{N}(0, I)
 $$
 with $c_1 = e^{-\gamma h}$, $c_2 = \sqrt{(1 - c_1^2) T_c}$.
 
 **Step 4 (A-step, second half-drift):**
+
 $$
 z \leftarrow z + \frac{h}{2} G^{-1}(z) p
 $$
 
 **Step 5 (B-step, second half-kick):**
+
 $$
 p \leftarrow p - \frac{h}{2} \nabla_z \left( \Phi_{\text{eff}}(z) + \Psi_{\text{mem}}^{\text{causal}}(z, t) \right)
 $$

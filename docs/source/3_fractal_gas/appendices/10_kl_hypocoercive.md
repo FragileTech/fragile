@@ -174,10 +174,12 @@ $$
 L_{sym} h = \frac{1}{\rho_{\infty}} \gamma \nabla_v \cdot \left( v h \rho_{\infty} + T_{kin} \left( \rho_{\infty} \nabla_v h - h \rho_{\infty} \frac{v}{T_{kin}} \right) \right)
 
 $$
+
 $$
 L_{sym} h = \frac{1}{\rho_{\infty}} \gamma \nabla_v \cdot \left( v h \rho_{\infty} + T_{kin} \rho_{\infty} \nabla_v h - v h \rho_{\infty} \right)
 
 $$
+
 $$
 L_{sym} h = \frac{1}{\rho_{\infty}} \gamma \nabla_v \cdot \left( T_{kin} \rho_{\infty} \nabla_v h \right)
 
@@ -188,6 +190,7 @@ $$
 L_{sym} h = \frac{\gamma T_{kin}}{\rho_{\infty}} \left( \nabla_v \rho_{\infty} \cdot \nabla_v h + \rho_{\infty} \Delta_v h \right)
 
 $$
+
 $$
 L_{sym} h = \gamma T_{kin} \left( \frac{\nabla_v \rho_{\infty}}{\rho_{\infty}} \cdot \nabla_v h + \Delta_v h \right) = \gamma T_{kin} \left( \nabla_v \ln \rho_{\infty} \cdot \nabla_v h + \Delta_v h \right)
 
@@ -368,6 +371,7 @@ $$
 \frac{d}{dt} \mathcal{D} = 2 \int h \langle \nabla_x \ln h, \nabla^2 V_{\text{eff}} \nabla_v \ln h \rangle \, d\rho_{\infty} + (\text{dissipation})
 
 $$
+
 $$
 \frac{d}{dt} \mathcal{D} \le 2M \sqrt{\mathcal{B}\mathcal{D}}
 
@@ -435,6 +439,7 @@ $$
 (\gamma) \cdot (2\epsilon) - (M\epsilon)^2 > 0
 
 $$
+
 $$
 2\gamma \epsilon - M^2 \epsilon^2 > 0 \implies \epsilon < \frac{2\gamma}{M^2}
 
@@ -573,6 +578,7 @@ $$
 \frac{d}{dt} \mathcal{D} \bigg|_{clone} = 2\nu_{clone} \int \frac{\nabla_x h}{h} \cdot \left( \frac{\nabla_x V}{\bar{V}} h + \left(\frac{V}{\bar{V}} - 1\right) \nabla_x h \right) d\rho_{\infty}
 
 $$
+
 $$
 = 2\nu_{clone} \underbrace{\int \nabla_x h \cdot \frac{\nabla_x V}{\bar{V}} \, d\rho_{\infty}}_{\text{Term I}} + 2\nu_{clone} \underbrace{\int \left(\frac{V}{\bar{V}} - 1\right) \frac{|\nabla_x h|^2}{h} \, d\rho_{\infty}}_{\text{Term II}}
 

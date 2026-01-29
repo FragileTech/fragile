@@ -88,6 +88,7 @@ These are standard in stability analyses and make the guarantees precise.
 :::{prf:definition} Preconditioned Update
 :label: def-preconditioned-update
 The preconditioned update is
+
 $$
 \theta_{t+1} = \theta_t - \eta_t M_t g_t,
 $$
@@ -97,10 +98,12 @@ with $M_t$ SPD and $g_t = \nabla\mathcal{V}(\theta_t)$.
 :::{prf:theorem} Preconditioned Descent (Sufficient Condition)
 :label: thm-preconditioned-descent
 Under A1--A2, if
+
 $$
 0 < \eta_t < \frac{2 m_{\min}}{L m_{\max}^2},
 $$
 then the update in Definition {prf:ref}`def-preconditioned-update` satisfies
+
 $$
 \mathcal{V}(\theta_{t+1}) \le \mathcal{V}(\theta_t) - \left(\eta_t m_{\min} - \frac{L}{2}\eta_t^2 m_{\max}^2\right)
 \|g_t\|^2.
@@ -111,6 +114,7 @@ $\eta_t = 2 m_{\min} / (L m_{\max}^2)$, the right-hand side yields nonincrease.
 
 :::{prf:proof}
 By $L$-smoothness (A1), for $d_t := \eta_t M_t g_t$,
+
 $$
 \mathcal{V}(\theta_t - d_t)
 \le \mathcal{V}(\theta_t) - g_t^\top d_t + \frac{L}{2}\|d_t\|^2.
@@ -118,6 +122,7 @@ $$
 Since $M_t$ is SPD with eigenvalues in $[m_{\min}, m_{\max}]$ (A2), we have
 $g_t^\top M_t g_t \ge m_{\min}\|g_t\|^2$ and
 $\|M_t g_t\|^2 \le m_{\max}^2\|g_t\|^2$. Substituting yields
+
 $$
 \mathcal{V}(\theta_{t+1})
 \le \mathcal{V}(\theta_t) - \eta_t m_{\min}\|g_t\|^2 + \frac{L}{2}\eta_t^2 m_{\max}^2\|g_t\|^2.
@@ -129,6 +134,7 @@ $\eta_t < 2 m_{\min} / (L m_{\max}^2)$ and yields nonincrease at equality. \qedh
 :::{prf:definition} Relative Trust Region (Mach Limit)
 :label: def-relative-trust-region
 A relative trust region is the constraint
+
 $$
 \|\theta_{t+1} - \theta_t\| \le \kappa\,(\|\theta_t\| + \epsilon_\theta),
 $$
@@ -139,6 +145,7 @@ while $\epsilon_\theta > 0$ avoids degeneracy at $\|\theta_t\| = 0$.
 :::{prf:lemma} Trust-Region Scaling Preserves Descent
 :label: lem-trust-region-scaling
 Let $d_t = \eta_t M_t g_t$ with $\eta_t$ satisfying Theorem {prf:ref}`thm-preconditioned-descent`. Define the scaled step
+
 $$
 \tilde d_t = s d_t, \qquad s := \min\left(1, \frac{\kappa(\|\theta_t\| + \epsilon_\theta)}{\|d_t\|} \right).
 $$
@@ -148,6 +155,7 @@ Then $\mathcal{V}(\theta_t - \tilde d_t) \le \mathcal{V}(\theta_t)$.
 :::{prf:proof}
 If $d_t = 0$, then $\theta_{t+1} = \theta_t$ and the inequality holds trivially. Otherwise, for $s \in (0,1]$,
 $\mathcal{V}(\theta_t - s d_t)$ satisfies the smoothness bound
+
 $$
 \mathcal{V}(\theta_t - s d_t)
 \le \mathcal{V}(\theta_t) - s g_t^\top d_t + \frac{L}{2}s^2 \|d_t\|^2.
@@ -169,6 +177,7 @@ The Varentropy Brake is stated and proved in {prf:ref}`cor-varentropy-brake` and
 :::{prf:proposition} Discrete Varentropy Brake
 :label: prop-varentropy-brake-discrete
 Let $T_t > 0$ be the cognitive temperature and $V_H(\theta_t)$ the varentropy. Define
+
 $$
 T_{t+1} = T_t\left(1 - \frac{\eta_T}{1 + \gamma V_H(\theta_t)}\right),
 $$
@@ -194,6 +203,7 @@ Sieve ({ref}`sec-d-policy-regulation`).
 :::{prf:definition} Gradient-Momentum Alignment
 :label: def-gradient-alignment
 Let $g_t$ be the gradient and $m_t$ a momentum estimate. Define the alignment score
+
 $$
 a_t := g_t^\top m_t.
 $$
@@ -202,6 +212,7 @@ $$
 :::{prf:proposition} Alignment-Triggered Step Damping
 :label: prop-alignment-step-damping
 Let $a_t := g_t^\top m_t$ and fix a damping factor $\rho \in (0,1]$. Define
+
 $$
 \eta_t^{+} :=
 \begin{cases}
@@ -232,6 +243,7 @@ $\hat g_t$ instead of $g_t$.
 :label: prop-snr-gate
 Under A1--A3 and the stochastic update $\theta_{t+1} = \theta_t - \eta_t M_t \hat g_t$, assume $g_t \ne 0$. The
 expected Lyapunov change satisfies
+
 $$
 \mathbb{E}[\mathcal{V}(\theta_{t+1})\mid\theta_t]
 \le \mathcal{V}(\theta_t)
@@ -239,6 +251,7 @@ $$
 + \frac{L}{2}\eta_t^2 m_{\max}^2\left(\|g_t\|^2 + \sigma^2\right).
 $$
 Consequently, a sufficient condition for expected descent is
+
 $$
 \eta_t
 \le
@@ -266,6 +279,7 @@ conduction in log space to preserve positivity.
 :::{prf:definition} Log-LR Conduction Update
 :label: def-log-lr-conduction
 Let $\eta_i > 0$ be per-group learning rates and $x_i := \log(\eta_i)$. Define
+
 $$
  x_i^{+} = x_i + \frac{k}{2}(x_{i-1} - 2 x_i + x_{i+1}),
 $$
@@ -275,6 +289,7 @@ with Neumann boundary conditions $x_0 = x_1$, $x_{n+1} = x_n$ and conductivity $
 :::{prf:proposition} Conduction Contracts LR Disparities
 :label: prop-conduction-contracts
 Let $L$ be the path-graph Laplacian on $n$ groups and define the energy
+
 $$
 E(x) := \frac{1}{2} x^\top L x = \frac{1}{2}\sum_{i=1}^{n-1}(x_{i+1} - x_i)^2.
 $$

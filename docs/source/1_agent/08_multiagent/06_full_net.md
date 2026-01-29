@@ -112,6 +112,7 @@ where:
 - $\mathcal{Y}$ — output space (actions $\mathcal{U}$ or reconstructed observations)
 
 **Sequential composition:** For multi-step rollouts, the dynamics are applied recursively:
+
 $$
 z_0 = E(x_0), \quad z_{t+1} = D(z_t, a_t), \quad a_t = P(z_t)
 $$
@@ -130,17 +131,20 @@ An agent architecture $\mathcal{A} = P \circ D \circ E$ is **$G$-equivariant** w
 1. **Latent space transforms:** There exists a representation $\rho: G \to \text{GL}(\mathcal{Z})$ such that for $g \in G$, latent states transform as $z \mapsto \rho(g) z$
 
 2. **Encoder invariance:** $E$ maps to gauge-equivalent latent states:
+   
    $$
    E(x) \sim \rho(g) E(x) \quad \forall g \in G, x \in \mathcal{X}
    $$
    where $\sim$ denotes equivalence up to gauge choice (physically identical states)
 
 3. **Dynamics equivariance:** $D$ commutes with gauge transformations:
+   
    $$
    D(\rho(g) z, a) = \rho(g) D(z, a) \quad \forall g \in G, z \in \mathcal{Z}, a \in \mathcal{Y}
    $$
 
 4. **Decoder covariance:** $P$ produces consistent outputs under gauge transformations:
+   
    $$
    P(\rho(g) z) = P(z) \quad \forall g \in G, z \in \mathcal{Z}
    $$
@@ -180,6 +184,7 @@ where:
 **Dimension:** $\dim(\mathcal{Z}) = d_C + d_L + d_Y$ (linear scaling)
 
 **Gauge action:** Block-diagonal:
+
 $$
 \rho(g_C, g_L, g_Y) = \begin{pmatrix}
 \rho_C(g_C) & 0 & 0 \\
@@ -211,11 +216,13 @@ where $V_C, V_L, V_Y$ are the representation spaces for each gauge factor.
 **Dimension:** $\dim(\mathcal{Z}) = \dim(V_C) \times \dim(V_L) \times \dim(V_Y)$ (multiplicative scaling)
 
 **Gauge action:** Kronecker product:
+
 $$
 \rho(g_C, g_L, g_Y) = \rho_C(g_C) \otimes \rho_L(g_L) \otimes \rho_Y(g_Y)
 $$
 
 **Basis:** Each basis vector $|c, \ell, y\rangle$ carries all three quantum numbers simultaneously. Under gauge transformation:
+
 $$
 |c, \ell, y\rangle \mapsto \sum_{c', \ell', y'} [\rho_C]_{c'c} [\rho_L]_{\ell'\ell} [\rho_Y]_{y'y} |c', \ell', y'\rangle
 $$
@@ -227,6 +234,7 @@ $$
 **Limitation:** Dimension explodes. For $d_C = 64, d_L = 8, d_Y = 4$: direct sum gives $76$ dimensions, tensor product gives $2048$ dimensions. This is why quarks work with small representations ($3 \times 2 \times 1 = 6$) while neural networks need hundreds of latent dimensions.
 
 **Factorization:** For low-rank structure (when gauge-invariant couplings are sparse), factored tensor representations can recover efficiency:
+
 $$
 W = \sum_{k=1}^r U_C^{(k)} \otimes U_L^{(k)} \otimes U_Y^{(k)}
 $$
@@ -241,11 +249,13 @@ For a latent space $\mathcal{Z} = \bigoplus_{i=1}^{n_b} V_i$ with bundles $v_i \
 **Level 1: Norms Only** (Strict $\prod_i SO(d_b)_i$ equivariance)
 
 Bundles interact only through their magnitudes $\|v_i\|$. Invariant features:
+
 $$
 \mathcal{I}_1 = \{\|v_1\|, \|v_2\|, \ldots, \|v_{n_b}\|\} \subset \mathbb{R}^{n_b}
 $$
 
 **Implication:** The output of bundle $i$ has the form (by Schur's lemma, Theorem {prf:ref}`thm-equivariant-function-structure`):
+
 $$
 f_i(v_1, \ldots, v_{n_b}) = v_i \cdot \phi_i(\|v_1\|, \ldots, \|v_{n_b}\|)
 $$
@@ -256,6 +266,7 @@ where $\phi_i: \mathbb{R}^{n_b} \to \mathbb{R}$ can be an arbitrary function (e.
 A single rotation $R \in SO(d_b)$ acts on *all* bundles: $(v_1, \ldots, v_{n_b}) \mapsto (Rv_1, \ldots, Rv_{n_b})$.
 
 Invariant features:
+
 $$
 \mathcal{I}_2 = \{G_{ij} = \langle v_i, v_j \rangle : 1 \leq i, j \leq n_b\} \subset \mathbb{R}^{n_b \times n_b}
 $$
@@ -269,6 +280,7 @@ The Gram matrix $G$ is a symmetric $n_b \times n_b$ matrix with:
 **Level 3: Hybrid / Soft Equivariance**
 
 Use Level 1 (norms) as the primary pathway, add small Level 2 (Gram) or symmetry-breaking terms with regularization:
+
 $$
 f = f_{\text{equivariant}} + \lambda \cdot f_{\text{mixing}}
 $$
@@ -338,11 +350,13 @@ The choice between direct sum and tensor product representations has immediate p
 For a gauge group $G = G_C \times G_L \times G_Y$ with representation spaces $V_C, V_L, V_Y$ of dimensions $d_C, d_L, d_Y$ respectively:
 
 **Direct sum:**
+
 $$
 \dim(\mathcal{Z}_{\oplus}) = d_C + d_L + d_Y = \sum_{i \in \{C, L, Y\}} d_i
 $$
 
 **Tensor product:**
+
 $$
 \dim(\mathcal{Z}_{\otimes}) = d_C \times d_L \times d_Y = \prod_{i \in \{C, L, Y\}} d_i
 $$
@@ -430,6 +444,7 @@ Given a direct sum structure, we still have architectural freedom in how bundles
 A **norms-only** cross-bundle layer computes outputs solely from bundle magnitudes $\{\|v_i\|\}_{i=1}^{n_b}$.
 
 **Functional form:** For each bundle $i$, the output is:
+
 $$
 f_i(v_1, \ldots, v_{n_b}) = v_i \cdot \phi_i(\|v_1\|, \ldots, \|v_{n_b}\|)
 $$
@@ -477,6 +492,7 @@ class NormInteractionLayer(nn.Module):
 A **Gram matrix** interaction layer uses the full matrix of inner products $G_{ij} = \langle v_i, v_j \rangle$.
 
 **Invariant features:**
+
 $$
 \mathcal{I}_2 = \{G_{ij} : 1 \leq i, j \leq n_b\} \subset \mathbb{R}^{n_b \times n_b}
 $$
@@ -531,6 +547,7 @@ A **hybrid** interaction layer combines:
 2. A mixing pathway (Gram-based or fully learned) with L1 regularization
 
 **Functional form:**
+
 $$
 f(z) = f_{\text{equiv}}(z) + f_{\text{mix}}(z)
 $$
@@ -591,6 +608,7 @@ But first, let me prove these claims rigorously. I want you to see *why* strict 
 Let $V = \bigoplus_{i=1}^{n_b} V_i$ where each $V_i \cong \mathbb{R}^{d_b}$ is an irreducible representation of $SO(d_b)_i$ (the $i$-th copy of $SO(d_b)$ acting only on $V_i$).
 
 Let $T: V \to V$ be a linear map that is equivariant with respect to $\prod_{i=1}^{n_b} SO(d_b)_i$:
+
 $$
 \rho(g) \circ T = T \circ \rho(g) \quad \forall g \in \prod_{i=1}^{n_b} SO(d_b)_i
 $$
@@ -601,6 +619,7 @@ Then $T$ must be **block-diagonal** with each block $T_i: V_i \to V_i$ satisfyin
 *Proof.*
 
 **Step 1 (Block-diagonal structure):** By the direct sum decomposition, $T$ must respect the bundle structure:
+
 $$
 T = \begin{pmatrix}
 T_{11} & T_{12} & \cdots & T_{1n_b} \\
@@ -616,26 +635,31 @@ where $T_{ij}: V_j \to V_i$.
 By linearity, $T(v) = (T_{1j}(v_j), T_{2j}(v_j), \ldots, T_{n_b,j}(v_j))$.
 
 Equivariance requires:
+
 $$
 T(g \cdot v) = g \cdot T(v)
 $$
 
 The LHS is:
+
 $$
 T(0, \ldots, 0, g_j v_j, 0, \ldots, 0) = (T_{1j}(g_j v_j), \ldots, T_{n_b,j}(g_j v_j))
 $$
 
 The RHS is:
+
 $$
 g \cdot T(v) = (g_1 T_{1j}(v_j), \ldots, g_i T_{ij}(v_j), \ldots, g_{n_b} T_{n_b,j}(v_j))
 $$
 
 For $i \neq j$, equating components gives:
+
 $$
 T_{ij}(g_j v_j) = g_i T_{ij}(v_j) \quad \forall g_i \in SO(d_b), g_j \in SO(d_b), v_j \in V_j
 $$
 
 **Key observation:** For any fixed $g_j$ and $v_j$, the LHS $T_{ij}(g_j v_j)$ is a **fixed vector** in $V_i$. But the RHS $g_i T_{ij}(v_j)$ can be **any rotation** of $T_{ij}(v_j)$ as we vary $g_i$ arbitrarily over $SO(d_b)$. For these to be equal for all choices of $g_i$, we need:
+
 $$
 T_{ij}(g_j v_j) = g_i T_{ij}(v_j) \quad \text{for all } g_i \in SO(d_b)
 $$
@@ -645,16 +669,19 @@ This means $T_{ij}(v_j)$ must be **invariant** under all rotations $g_i$ (i.e., 
 Therefore, $T_{ij} = 0$ for all $i \neq j$.
 
 **Step 3 (Diagonal blocks are scalar multiples):** For each $i$, the block $T_{ii}: V_i \to V_i$ must commute with all $g_i \in SO(d_b)_i$:
+
 $$
 T_{ii}(g_i v_i) = g_i T_{ii}(v_i) \quad \forall g_i \in SO(d_b)_i, v_i \in V_i
 $$
 
 By Schur's lemma for irreducible representations, $SO(d_b)$ acting on $\mathbb{R}^{d_b}$ is irreducible over $\mathbb{R}$ (for $d_b \geq 2$), so any intertwining operator must be a scalar multiple of the identity:
+
 $$
 T_{ii} = \lambda_i I_{d_b}
 $$
 
 **Conclusion:**
+
 $$
 T = \begin{pmatrix}
 \lambda_1 I_{d_b} & 0 & \cdots & 0 \\
@@ -680,6 +707,7 @@ A feedforward network with:
 - Activations: Applied per-bundle (e.g., norm-gating)
 
 can only approximate functions of the form:
+
 $$
 f_i(v_1, \ldots, v_{n_b}) = v_i \cdot \phi_i(\|v_1\|, \ldots, \|v_{n_b}\|)
 $$
@@ -694,11 +722,13 @@ Such networks are **not universal approximators** over continuous functions $f: 
 **Base case ($L = 1$):** By Theorem {prf:ref}`thm-schur-bundle`, the first layer can only scale bundles: $z^{(1)}_i = \lambda_i v_i$. If $\lambda_i$ depends on norms $\{\|v_j\|\}$ (via a norm-MLP), we get $z^{(1)}_i = v_i \cdot \phi_i^{(1)}(\|v_1\|, \ldots, \|v_{n_b}\|)$.
 
 **Inductive step:** Suppose layer $\ell$ outputs $z^{(\ell)}_i = v_i \cdot \phi_i^{(\ell)}(\|v_1\|, \ldots, \|v_{n_b}\|)$. Layer $\ell+1$ can only scale:
+
 $$
 z^{(\ell+1)}_i = z^{(\ell)}_i \cdot \psi_i^{(\ell+1)}(\|z^{(\ell)}_1\|, \ldots, \|z^{(\ell)}_{n_b}\|)
 $$
 
 But $\|z^{(\ell)}_j\| = \|v_j\| \cdot |\phi_j^{(\ell)}(\|v_1\|, \ldots, \|v_{n_b}\|)|$, which is itself a function of norms only. Thus:
+
 $$
 z^{(\ell+1)}_i = v_i \cdot \underbrace{\phi_i^{(\ell)}(\{\|v_j\|\}) \cdot \psi_i^{(\ell+1)}(\{\|v_j\| \cdot |\phi_j^{(\ell)}(\{\|v_k\|\})|\})}_{\phi_i^{(\ell+1)}(\{\|v_j\|\})}
 $$
@@ -706,6 +736,7 @@ $$
 The composition is still a function of norms only.
 
 **Step 2 (Counterexample):** Consider the target function:
+
 $$
 f(v_1, v_2) = v_{1,1} \cdot v_{2,1}
 $$
@@ -740,11 +771,13 @@ This is why we need soft equivariance.
 :label: thm-equivariant-function-structure
 
 For a function $f: \bigoplus_{i=1}^{n_b} \mathbb{R}^{d_b} \to \bigoplus_{i=1}^{n_b} \mathbb{R}^{d_b}$ to be equivariant under $\prod_{i=1}^{n_b} SO(d_b)_i$, it must satisfy:
+
 $$
 f_i(R_1 v_1, \ldots, R_{n_b} v_{n_b}) = R_i f_i(v_1, \ldots, v_{n_b}) \quad \forall R_j \in SO(d_b), v_j \in \mathbb{R}^{d_b}
 $$
 
 The **necessary and sufficient** form is:
+
 $$
 f_i(v_1, \ldots, v_{n_b}) = v_i \cdot \phi_i(\|v_1\|, \ldots, \|v_{n_b}\|)
 $$
@@ -753,31 +786,37 @@ where $\phi_i: \mathbb{R}^{n_b} \to \mathbb{R}$ is arbitrary.
 *Proof.*
 
 **Sufficiency:** Compute:
+
 $$
 f_i(R_1 v_1, \ldots, R_i v_i, \ldots, R_{n_b} v_{n_b}) = R_i v_i \cdot \phi_i(\|R_1 v_1\|, \ldots, \|R_{n_b} v_{n_b}\|)
 $$
 
 Since $\|R_j v_j\| = \|v_j\|$ (orthogonal matrices preserve norms):
+
 $$
 = R_i v_i \cdot \phi_i(\|v_1\|, \ldots, \|v_{n_b}\|) = R_i \left[ v_i \cdot \phi_i(\|v_1\|, \ldots, \|v_{n_b}\|) \right] = R_i f_i(v_1, \ldots, v_{n_b})
 $$
 
 **Necessity:** Fix all bundles except $i$: $v_j = c_j$ for $j \neq i$. Equivariance under $R_i$ gives:
+
 $$
 f_i(c_1, \ldots, c_{i-1}, R_i v_i, c_{i+1}, \ldots, c_{n_b}) = R_i f_i(c_1, \ldots, c_{i-1}, v_i, c_{i+1}, \ldots, c_{n_b})
 $$
 
 This must hold for all $R_i \in SO(d_b)$ and all $v_i$. By Schur's lemma (irreducibility of $SO(d_b)$ on $\mathbb{R}^{d_b}$), $f_i$ must be proportional to $v_i$:
+
 $$
 f_i(\ldots, v_i, \ldots) = v_i \cdot \psi_i(\ldots, v_i, \ldots)
 $$
 
 But $\psi_i$ must also be equivariant under $R_i$:
+
 $$
 \psi_i(\ldots, R_i v_i, \ldots) = \psi_i(\ldots, v_i, \ldots)
 $$
 
 This is only possible if $\psi_i$ depends on $v_i$ through $\|v_i\|$ alone (the only $SO(d_b)$-invariant feature). Extending to all bundles:
+
 $$
 f_i = v_i \cdot \phi_i(\|v_1\|, \ldots, \|v_{n_b}\|)
 $$
@@ -809,6 +848,7 @@ Despite the limitations, norm-based networks are still expressive within their f
 A norm-based equivariant network with $L$ layers and hidden dimension $h$ can approximate any continuous function $\Phi: \mathbb{R}^{n_b} \to \mathbb{R}^{n_b}$ (the norm-to-scale mapping) to arbitrary precision, by the universal approximation theorem for MLPs.
 
 Thus, norm-based networks are **universal** over the restricted class:
+
 $$
 \mathcal{F}_{\text{norm}} = \left\{ f: f_i = v_i \cdot \phi_i(\|v_1\|, \ldots, \|v_{n_b}\|), \; \phi_i \in C(\mathbb{R}^{n_b}, \mathbb{R}) \right\}
 $$
@@ -845,11 +885,13 @@ Let me show you the options for implementing this.
 :label: def-approximate-equivariance
 
 A function $f: \mathcal{Z} \to \mathcal{Z}$ is **$\epsilon$-approximately equivariant** with respect to group $G$ and representation $\rho$ if:
+
 $$
 \sup_{g \in G, z \in \mathcal{Z}} \frac{\|f(\rho(g) z) - \rho(g) f(z)\|}{\|z\|} \leq \epsilon
 $$
 
 The quantity:
+
 $$
 \mathcal{V}(f) := \mathbb{E}_{g \sim G, z \sim \mathcal{Z}} \left[ \|f(\rho(g) z) - \rho(g) f(z)\|^2 \right]
 $$
@@ -864,11 +906,13 @@ is the **equivariance violation**.
 Let $f_{\text{equiv}}: \mathcal{Z} \to \mathcal{Z}$ be strictly $G$-equivariant and $f_{\text{break}}: \mathcal{Z} \to \mathcal{Z}$ be an arbitrary symmetry-breaking term.
 
 Define:
+
 $$
 f = f_{\text{equiv}} + \lambda f_{\text{break}}
 $$
 
 Then the equivariance violation satisfies:
+
 $$
 \mathcal{V}(f) = \lambda^2 \mathbb{E}_{g \sim \mu_G, z} \left[ \|f_{\text{break}}(\rho(g) z) - \rho(g) f_{\text{break}}(z)\|^2 \right]
 $$
@@ -877,19 +921,23 @@ where $\mu_G$ is the Haar measure on $G$ (uniform distribution for compact Lie g
 *Proof.*
 
 **Step 1:** Compute the violation:
+
 $$
 f(\rho(g) z) - \rho(g) f(z) = f_{\text{equiv}}(\rho(g) z) + \lambda f_{\text{break}}(\rho(g) z) - \rho(g) [f_{\text{equiv}}(z) + \lambda f_{\text{break}}(z)]
 $$
 
 **Step 2:** Use equivariance of $f_{\text{equiv}}$:
+
 $$
 = \rho(g) f_{\text{equiv}}(z) + \lambda f_{\text{break}}(\rho(g) z) - \rho(g) f_{\text{equiv}}(z) - \lambda \rho(g) f_{\text{break}}(z)
 $$
+
 $$
 = \lambda [f_{\text{break}}(\rho(g) z) - \rho(g) f_{\text{break}}(z)]
 $$
 
 **Step 3:** Square and take expectation:
+
 $$
 \mathbb{E}_{g, z} \|f(\rho(g) z) - \rho(g) f(z)\|^2 = \lambda^2 \mathbb{E}_{g, z} \|f_{\text{break}}(\rho(g) z) - \rho(g) f_{\text{break}}(z)\|^2
 $$
@@ -926,6 +974,7 @@ The most sophisticated relaxation strategy uses L1 regularization to let the net
 :label: thm-l1-hierarchies
 
 Consider a network with mixing weights $W \in \mathbb{R}^{n_b \times n_b \times d_b \times d_b}$ (cross-bundle coupling) trained with loss:
+
 $$
 \mathcal{L}_{\text{total}} = \mathcal{L}_{\text{task}} + \lambda_{\text{L1}} \|W\|_1
 $$
@@ -1103,10 +1152,12 @@ $$
 $$
 
 **Stage 1: Encoder** (Unconstrained)
+
 $$
 E: \mathbb{R}^{d_x} \to \mathbb{R}^{n_b \cdot d_b}
 $$
 Implemented as:
+
 $$
 E(x) = \text{SpectralMLP}(x) = W_2 \sigma(W_1 x)
 $$
@@ -1117,6 +1168,7 @@ where $W_1, W_2$ have spectral norm $\|W_i\|_2 \leq 1$ and $\sigma = \text{GELU}
 **Stage 2: Latent Dynamics** (Soft Equivariant)
 
 Each layer $D_\ell: \mathcal{Z} \to \mathcal{Z}$ has the form:
+
 $$
 D_\ell(z) = D_\ell^{\text{equiv}}(z) + D_\ell^{\text{mix}}(z)
 $$
@@ -1126,21 +1178,25 @@ where:
 - **Mixing pathway** $D_\ell^{\text{mix}}$: Weakly equivariant or symmetry-breaking (Gram-based or learned)
 
 **Regularization:** L1 penalty on mixing pathway weights:
+
 $$
 \mathcal{L}_{\text{reg}} = \lambda_{\text{L1}} \sum_{\ell=1}^L \|W_\ell^{\text{mix}}\|_1
 $$
 
 **Stage 3: Decoder** (Unconstrained)
+
 $$
 P: \mathbb{R}^{n_b \cdot d_b} \to \mathbb{R}^{d_y}
 $$
 Implemented as:
+
 $$
 P(z) = \text{SpectralMLP}(z) = W_4 \sigma(W_3 z)
 $$
 with spectral normalization $\|W_i\|_2 \leq 1$.
 
 **Total loss:**
+
 $$
 \mathcal{L}_{\text{total}} = \mathcal{L}_{\text{task}}(y, \hat{y}) + \lambda_{\text{L1}} \mathcal{L}_{\text{reg}} + \lambda_{\text{equiv}} \mathcal{L}_{\text{equiv}}
 $$
@@ -1626,6 +1682,7 @@ $$
 More precisely:
 
 **Sub-step 3a (Anchor points):** For a finite $\epsilon$-net $\{x_i\}_{i=1}^N$ covering $\mathcal{X}$ (exists by compactness), we need:
+
 $$
 P(D(E(x_i))) \approx f(x_i) \quad \forall i
 $$
@@ -1637,6 +1694,7 @@ $$
 **Sub-step 3d (Decoder design):** Let the decoder satisfy $P(z_i) \approx f(x_i)$ (using decoder's universality).
 
 **Sub-step 3e (Continuity):** By continuity of $E$, $D$, $P$ and density of $\{x_i\}$ in $\mathcal{X}$, we have:
+
 $$
 \sup_{x \in \mathcal{X}} \|P(D(E(x))) - f(x)\| \leq \sup_i \|P(D(E(x_i))) - f(x_i)\| + \underbrace{\text{continuity error}}_{\to 0 \text{ as } N \to \infty}
 $$
@@ -1676,6 +1734,7 @@ The geometry is not a constraint that limits what you can learn. It is a *prior*
 Let $\mathcal{A}_{\text{UGN}}$ be a UGN with $\lambda_{\text{L1}} > 0$. Then:
 
 1. **Approximate capacity bound:** For all layers with spectral normalization, $\|W\|_2 \leq 1$ and approximately 1-Lipschitz activations ensure:
+   
    $$
    \|z_{\text{out}}\| \lesssim \|z_{\text{in}}\| + O(\sqrt{L})
    $$
@@ -1684,11 +1743,13 @@ Let $\mathcal{A}_{\text{UGN}}$ be a UGN with $\lambda_{\text{L1}} > 0$. Then:
 2. **Bundle structure preservation:** The latent space maintains decomposition $\mathcal{Z} = \bigoplus_{i=1}^{n_b} V_i$ throughout forward pass (bundles indexed consistently)
 
 3. **Soft equivariance:** Define the **equivariance violation** as:
+   
    $$
    \mathcal{V}(D) = \mathbb{E}_{z \sim \mathcal{Z}, R \sim \mu_{SO(d_b)}} \|D(Rz) - RD(z)\|^2
    $$
    where $\mu_{SO(d_b)}$ is the Haar measure on $SO(d_b)$.
    Then:
+   
    $$
    \mathcal{V}(D) \leq C \cdot \|W^{\text{mix}}\|_F^2
    $$
@@ -1697,10 +1758,12 @@ Let $\mathcal{A}_{\text{UGN}}$ be a UGN with $\lambda_{\text{L1}} > 0$. Then:
 *Proof.*
 
 **(1) Capacity bound:** By properties of spectral norm (see Section 04, Theorem {prf:ref}`thm-spectral-preserves-hypercharge`):
+
 $$
 \|Wz\|_2 \leq \|W\|_2 \|z\|_2 \leq \|z\|_2
 $$
 Activations (GELU, softplus) are approximately 1-Lipschitz: for large $|x|$, both behave as $\sigma(x) \approx x$, so $\|\sigma(Wz)\|_2 \lesssim \|Wz\|_2 \leq \|z\|_2$ plus bias terms. Composing $L$ spectrally normalized layers with these activations gives:
+
 $$
 \|z_{\text{out}}\|_2 \lesssim \|z_{\text{in}}\|_2 + O(\sqrt{L})
 $$
@@ -1711,6 +1774,7 @@ where the $O(\sqrt{L})$ term comes from accumulated biases. For fixed depth $L$,
 **(3) Soft equivariance bound:**
 
 **Step 1.** Decompose the latent dynamics:
+
 $$
 D(z) = D^{\text{equiv}}(z) + D^{\text{mix}}(z)
 $$
@@ -1718,35 +1782,43 @@ $$
 **Step 2.** The equivariant pathway satisfies $D^{\text{equiv}}(Rz) = R D^{\text{equiv}}(z)$ by construction (norm-based, Theorem {prf:ref}`thm-equivariant-function-structure`).
 
 **Step 3.** The violation comes entirely from the mixing pathway:
+
 $$
 D(Rz) - RD(z) = \bigl[ D^{\text{equiv}}(Rz) + D^{\text{mix}}(Rz) \bigr] - R \bigl[ D^{\text{equiv}}(z) + D^{\text{mix}}(z) \bigr]
 $$
+
 $$
 = \bigl[ RD^{\text{equiv}}(z) + D^{\text{mix}}(Rz) \bigr] - \bigl[ RD^{\text{equiv}}(z) + RD^{\text{mix}}(z) \bigr]
 $$
+
 $$
 = D^{\text{mix}}(Rz) - RD^{\text{mix}}(z)
 $$
 
 **Step 4.** For the mixing pathway implemented as $D^{\text{mix}}(z) = \sum_{i,j} W_{ij} z_j$ (linear in $z$ for each bundle component):
+
 $$
 D^{\text{mix}}(Rz) = \sum_{ij} W_{ij} (Rz_j)
 $$
+
 $$
 RD^{\text{mix}}(z) = R \sum_{ij} W_{ij} z_j
 $$
 
 The violation is bounded using operator norm arithmetic. Taking expectation over $R$ and applying Cauchy-Schwarz gives:
+
 $$
 \mathbb{E}_R \|D^{\text{mix}}(Rz) - RD^{\text{mix}}(z)\|^2 \leq C_1 \|W^{\text{mix}}\|_F^2 \|z\|^2
 $$
 
 Averaging over $z$ with $\|z\|^2$ bounded by capacity constraint:
+
 $$
 \mathcal{V}(D) \leq C \|W^{\text{mix}}\|_F^2
 $$
 
 **Step 5.** The regularization uses **group lasso** (Frobenius norm per block): $\mathcal{L}_{\text{reg}} = \lambda_{\text{L1}} \sum_{i \neq j} \|W_{ij}\|_F$ where $W_{ij}$ is the $[\text{bundle\_dim} \times \text{bundle\_dim}]$ block coupling bundles $i$ and $j$. This encourages entire blocks to be zero (sparsity at the bundle-interaction level). Since $\|W\|_F \leq \sqrt{n_{\text{blocks}}} \cdot \max_{ij} \|W_{ij}\|_F$, we have:
+
 $$
 \lambda_{\text{L1}} \sum_{ij} \|W_{ij}\|_F \to \text{large penalty} \implies \|W_{ij}\|_F \to 0 \text{ for most } (i,j) \implies \|W^{\text{mix}}\|_F \to 0 \implies \mathcal{V}(D) \to 0
 $$
@@ -1772,6 +1844,7 @@ Then at convergence, the learned mixing weights $W^{\text{mix}}$ exhibit:
 **Step 1 (Group lasso induces block sparsity):** The group lasso penalty $\sum_{i \neq j} \|W_{ij}\|_F$ (sum of Frobenius norms of blocks) has a non-differentiable minimum at $W_{ij} = 0$ for each block. During gradient descent, small blocks receive gradients pushing them toward zero (block soft thresholding). If the task loss can be minimized without a particular cross-bundle coupling, group lasso drives the entire block to zero.
 
 **Step 2 (Equivariant tasks don't need mixing):** If $f^*$ is equivariant, the optimal network architecture is strictly equivariant ($W^{\text{mix}} = 0$). The equivariant pathway $D^{\text{equiv}}$ can achieve $\mathcal{L}_{\text{task}} \approx 0$ alone. Thus:
+
 $$
 \min_{W^{\text{mix}}} \mathcal{L}_{\text{task}}(W^{\text{mix}}) + \lambda \sum_{i \neq j} \|W_{ij}\|_F
 $$
@@ -3081,6 +3154,7 @@ In the Standard Model, electroweak symmetry breaking occurs at energy scale $v \
 When is the tensor product $V_C \otimes V_L \otimes V_Y$ worth the computational cost? For low-rank structure (Frobenius norm $\ll$ full rank), factored tensor layers (Section {ref}`sec-architectural-choices`, Definition {prf:ref}`def-tensor-product-representation` remark on factorization) can be efficient. Can we design architectures that *adaptively* choose between direct sum (cheap, separable) and tensor product (expensive, entangled) based on task requirements?
 
 **Idea:** Hybrid architecture with gating:
+
 $$
 \mathcal{Z} = \alpha \cdot (V_C \oplus V_L \oplus V_Y) + (1-\alpha) \cdot (V_C \otimes V_L \otimes V_Y)
 $$

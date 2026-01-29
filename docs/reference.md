@@ -4829,6 +4829,7 @@ $$
 d_{\text{Fisher}}\left(\tfrac{1}{2}, 1\right) = \frac{\pi}{2}.
 
 $$
+
 $$
 ds^2 = \frac{dp^2}{p(1-p)}.
 
@@ -6372,6 +6373,7 @@ $$
 \|v\|_G \to 0.
 
 $$
+
 $$
 dz^k = \left( -G^{kj}\partial_j \Phi_{\text{eff}} + u_\pi^k - \Gamma^k_{ij}\dot{z}^i\dot{z}^j \right) ds + \sqrt{2T_c}(G^{-1/2})^{kj} dW^j_s.
 
@@ -6570,6 +6572,7 @@ where:
    r^* = \sqrt{\frac{\Xi - \Xi_{\text{crit}}}{\alpha}}.
 
    $$
+
 $$
 \Phi_{\text{fission}}(r) = -\frac{(\Xi - \Xi_{\text{crit}})}{2} r^2 + \frac{\alpha}{4} r^4,
 
@@ -6808,6 +6811,7 @@ $$
 \sigma_{\text{tot}}(s) := \frac{d}{ds} H(\rho_s) + \frac{1}{T_c} \dot{\mathcal{M}}(s) \ge 0.
 
 $$
+
 $$
 \sigma_{\text{tot}} = \frac{dH}{ds} + \frac{\dot{\mathcal{M}}}{T_c} \ge \frac{dH}{ds} + \left| \frac{dH}{ds} \right| = \frac{dH}{ds} - \frac{dH}{ds} = 0.
 
@@ -8997,6 +9001,7 @@ $$
 C_\partial = \frac{A}{4\ell_L^2} \text{ nats}.
 
 $$
+
 $$
 C_\partial = N_{\text{cells}} \times 1 \text{ nat} = \frac{A}{4\ell_L^2}. \quad \square
 

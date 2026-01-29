@@ -469,6 +469,7 @@ where $G_{\text{ret}}$ is the retarded Green's function (Definition {prf:ref}`de
 
 *Remark (Point-source / ghost limit).* If Agent $j$'s conservative source is concentrated along a trajectory,
 $\rho^{(j)}_r(\zeta, \tau) = \sigma^{(j)}_r(\tau)\,\delta(\zeta - z^{(j)}_\tau)$, then
+
 $$
 \Phi^{\text{ret}}_{ij}(z^{(i)}, t) = \alpha_{ij}\int_{-\infty}^{t} G_{\text{ret}}(z^{(i)}, t; z^{(j)}_\tau, \tau)\,
 \sigma^{(j)}_r(\tau)\, d\tau,
@@ -580,6 +581,7 @@ $$
 $$
 where:
 - $\square_{G} = \frac{1}{c_{\text{info}}^2}\partial_t^2 - \Delta_G$ is the **D'Alembertian** on the manifold. With spacetime metric $g_{\mu\nu} = \text{diag}(-c_{\text{info}}^2, G_{ij})$, this equals
+  
   $$
   \square_G = -\frac{1}{\sqrt{|g|}}\partial_\mu\left(\sqrt{|g|}g^{\mu\nu}\partial_\nu\right).
   $$
@@ -1538,10 +1540,12 @@ $$
 $$
 
 Introduce the spacetime metric
+
 $$
 g_{\mu\nu} := \text{diag}(-c_{\text{info}}^2, \tilde{G}_{ij}), \quad g^{00} = -\frac{1}{c_{\text{info}}^2}, \quad g^{ij} = \tilde{G}^{ij},
 $$
 with $|g| = c_{\text{info}}^2 |\tilde{G}|$. Then
+
 $$
 \Box_A = -\frac{1}{\sqrt{|g|}}D_\mu\left(\sqrt{|g|}g^{\mu\nu}D_\nu\right).
 $$
@@ -2049,6 +2053,7 @@ where:
 - $m_i$ is the "bare mass" (intrinsic inertia) of agent $i$
 
 *Scalar option:* If the belief field is modeled as a complex scalar (the canonical single-agent choice), replace the Dirac term by
+
 $$
 \mathcal{L}_{\text{scalar}} = \sum_{i=1}^N (D_\mu \psi^{(i)})^\dagger (D^\mu \psi^{(i)}) - m_i^2\,\psi^{(i)\dagger}\psi^{(i)}.
 $$
@@ -2250,11 +2255,13 @@ $\left(\frac{1}{c_{\text{info}}^2}\partial_t^2 - \Delta_G + \kappa^2\right)V=0$ 
 $\omega^2/c_{\text{info}}^2 = \kappa^2 + \lambda_n$. The gap statements follow. $\square$
 
 *Remark (Schr\"odinger limit as special case).* For low spatial frequencies around the ground mode, $\lambda_n - \lambda_0 \ll \kappa^2 + \lambda_0$,
+
 $$
 \omega_n = \omega_0 + \frac{c_{\text{info}}}{2\sqrt{\kappa^2 + \lambda_0}}(\lambda_n - \lambda_0) + O\!\left(\frac{(\lambda_n-\lambda_0)^2}{(\kappa^2+\lambda_0)^{3/2}}\right).
 $$
 Factoring out the fast oscillation $e^{-i \omega_0 t}$ yields a slow envelope obeying a Schr\"odinger-type evolution with effective kinetic operator
 $-\frac{c_{\text{info}}}{2\sqrt{\kappa^2+\lambda_0}}\Delta_G$ (or $-\frac{c_{\text{info}}}{2\sqrt{\kappa^2+\lambda_0}}\Delta_{\tilde{G}}$ under metric inflation). In that limit the Hamiltonian spectral gap is
+
 $$
 \Delta_H \approx \frac{c_{\text{info}}}{2\sqrt{\kappa^2+\lambda_0}}(\lambda_1 - \lambda_0),
 $$

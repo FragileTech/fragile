@@ -165,6 +165,7 @@ $$
 \pi_0(\mathcal{M}) = \text{market regimes (discrete states)}, \quad \pi_1(\mathcal{M}) = \text{arbitrage cycles (gauge symmetries)},
 
 $$
+
 $$
 \pi_n(\mathcal{M}) = \text{higher anomalies and obstructions for } n \ge 2.
 
@@ -4685,6 +4686,7 @@ $$
 \rho_{\partial}^{\text{quote}}(w, t) = \delta(w - w_{\text{target}}(t)) \quad \text{(Dirichlet)},
 
 $$
+
 $$
 \nabla_n \rho \cdot \mathbf{n} = j_{\text{trade}}(u_\pi) \quad \text{(Neumann)}.
 

@@ -202,6 +202,7 @@ $$
 
 $$
 where $\phi_t$ denotes the flow of the curl-corrected system
+
 $$
 \dot{z} = \mathcal{M}_{\text{curl}}\!\left(-G^{-1}(z)\nabla_A V_y(z)\right), \qquad \mathcal{M}_{\text{curl}} := (I - \beta_{\text{curl}} G^{-1}\mathcal{F})^{-1}
 $$

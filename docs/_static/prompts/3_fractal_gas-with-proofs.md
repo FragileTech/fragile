@@ -8475,6 +8475,7 @@ $g_t(x)=H(x,S(t))+\epsilon_\Sigma I$ be the emergent metric
 ({prf:ref}`def-adaptive-diffusion-tensor-latent`). Define the **midpoint state**
 $S_{k+1/2}$ as the algorithm state **after cloning (including jitter) and before
 diffusive evolution** on the interval. The **midpoint metric** is
+
 $$
 g_{k+1/2}(x) := H(x,S_{k+1/2}) + \epsilon_\Sigma I.
 $$
@@ -8482,11 +8483,13 @@ If the implementation does not split the timestep, take $g_{k+1/2}=g_{k+1}$ (the
 post-clone metric).
 
 Define the **Lorentzian slab metric** on $M_k=\mathcal{Z}\times[t_k,t_{k+1}]$ by
+
 $$
 G_k := -c^2\,dt^2 + g_{k+1/2},
 $$
 with $c=V_{\mathrm{alg}}$ as in the CST construction
 ({prf:ref}`def-fractal-causal-order`), and define the **Riemannianized slab metric**
+
 $$
 \bar{G}_k := c^2\,dt^2 + g_{k+1/2}.
 $$
@@ -8503,15 +8506,18 @@ tessellation at finite step size.
 
 Let $\gamma:[t_a,t_b]\to\mathcal{Z}$ be a $C^1$ curve and write $[t_a,t_b]$ as a union of
 slabs $[t_k,t_{k+1}]$. The **scutoid path length** is
+
 $$
 L_{\mathrm{sc}}(\gamma) := \sum_{k}\int_{t_k}^{t_{k+1}}
 \|\dot{\gamma}(t)\|_{g_{k+1/2}}\,dt.
 $$
 For episodes $e_i=(x_i,t_i)$ and $e_j=(x_j,t_j)$ with $t_i<t_j$, define the induced distance
+
 $$
 d_{\mathrm{sc}}(e_i,e_j) := \inf_{\gamma: x_i\to x_j} L_{\mathrm{sc}}(\gamma),
 $$
 and the **scutoid light-cone order**
+
 $$
 e_i \prec_{\mathrm{sc}} e_j
 \quad \iff \quad
@@ -8526,6 +8532,7 @@ Assume the hypotheses used for geometric order in
 {prf:ref}`def-fractal-causal-order`: $g_t$ is uniformly elliptic, piecewise $C^1$ in $t$,
 $C^2$ in space on Safe Harbor regions, and the mean-field limit is taken with
 $\Delta t\to 0$. Then
+
 $$
 d_{\mathrm{sc}}(e_i,e_j) \to d_{\mathrm{geo}}(e_i,e_j)
 $$
@@ -8650,6 +8657,7 @@ to the parent position $z_j$), and let $z_i^+$ be the successor position at $t+\
 Assume the geometric separation condition: **if** $\mathcal{N}_i(t) = \mathcal{N}_i(t +
 \Delta t)$, then a geodesic tube of volume at least $c_0 r^d$ between $z_i$ and $z_i^+$
 must be empty (with $c_0>0$ depending only on dimension and curvature bounds). Then
+
 $$
 \mathbb{P}(\mathcal{N}_i(t) = \mathcal{N}_i(t + \Delta t)) \leq \exp\left(-c \cdot \frac{r^d}{\ell^d}\right),
 $$
@@ -9532,9 +9540,11 @@ $$
 Substitute $\rho = \rho_0(1 + \phi)$ into $\mathcal{F}_{\mathrm{IG}}$:
 
 **Entropy term:**
+
 $$
 \int \rho_0(1+\phi) \log(1+\phi) \, dz = \int \rho_0(1+\phi)\left(\phi - \frac{\phi^2}{2} + O(\phi^3)\right) dz
 $$
+
 $$
 = \rho_0 \int \phi \, dz + \frac{\rho_0}{2}\int \phi^2 \, dz + O(\phi^3)
 $$
@@ -9542,6 +9552,7 @@ $$
 The linear term vanishes if $\int \phi \, dz = 0$ (mass conservation).
 
 **Interaction term:**
+
 $$
 \frac{1}{2}\iint K_\varepsilon(z,z') \rho_0^2 \phi(z)\phi(z') \, dz \, dz'
 $$
@@ -13146,6 +13157,7 @@ $$
 |\mu(\mathcal{S}, \mathbf{v}_1) - \mu(\mathcal{S}, \mathbf{v}_2)| \le L_{\mu,M}(\mathcal{S}) \cdot \|\mathbf{v}_1 - \mathbf{v}_2\|_2
 
 $$
+
 $$
 |m_2(\mathcal{S}, \mathbf{v}_1) - m_2(\mathcal{S}, \mathbf{v}_2)| \le L_{m_2,M}(\mathcal{S}) \cdot \|\mathbf{v}_1 - \mathbf{v}_2\|_2
 
@@ -14558,6 +14570,7 @@ $$
     \|\mathbf{d}_1 - \mathbf{d}_2\|_2^2 = \|(\mathbf{d}_1 - \mathbb{E}[\mathbf{d}_1]) + (\mathbb{E}[\mathbf{d}_1] - \mathbb{E}[\mathbf{d}_2]) - (\mathbf{d}_2 - \mathbb{E}[\mathbf{d}_2])\|_2^2
 
 $$
+
 $$
     \le 3\|\mathbf{d}_1 - \mathbb{E}[\mathbf{d}_1]\|_2^2 + 3\|\mathbb{E}[\mathbf{d}_1] - \mathbb{E}[\mathbf{d}_2]\|_2^2 + 3\|\mathbf{d}_2 - \mathbb{E}[\mathbf{d}_2]\|_2^2
 
@@ -15375,6 +15388,7 @@ $$
     \Delta\mathbf{z} = \frac{\mathbf{v}_1 - \mu_1}{\sigma'_1} - \frac{\mathbf{v}_2 - \mu_2}{\sigma'_1} + \frac{\mathbf{v}_2 - \mu_2}{\sigma'_1} - \frac{\mathbf{v}_2 - \mu_2}{\sigma'_2}
 
 $$
+
 $$
 
     = \left( \frac{\mathbf{v}_1 - \mathbf{v}_2}{\sigma'_1} \right) + \left( \frac{\mu_2 - \mu_1}{\sigma'_1} \cdot \mathbf{1} \right) + \left( \frac{\mathbf{v}_2 - \mu_2}{\sigma'_1} - \frac{\mathbf{v}_2 - \mu_2}{\sigma'_2} \right)
@@ -16098,6 +16112,7 @@ $$
     \mathbb{E}[n_c(\mathcal{S}'_1, \mathcal{S}'_2)] = \sum_{i=1}^N \left( \operatorname{Var}[s'_{1,i}] + \operatorname{Var}[s'_{2,i}] \right) + \sum_{i=1}^N (\mathbb{E}[s'_{1,i}] - \mathbb{E}[s'_{2,i}])^2
 
 $$
+
 $$
     \le \sum_{i=1}^N \left( \operatorname{Var}[s'_{1,i}] + \operatorname{Var}[s'_{2,i}] \right) + \sum_{i=1}^N L_{\text{death}}^2 \left( d_{\text{Disp},\mathcal{Y}}(\mathcal{S}_1, \mathcal{S}_2) \right)^{2\alpha_B}
 
@@ -17623,6 +17638,7 @@ $$
     \Delta\mathbf{z} = \frac{\mathbf{v}_1 - \mu_1}{\sigma'_1} - \frac{\mathbf{v}_2 - \mu_2}{\sigma'_1} + \frac{\mathbf{v}_2 - \mu_2}{\sigma'_1} - \frac{\mathbf{v}_2 - \mu_2}{\sigma'_2}
 
 $$
+
 $$
 
     = \left( \frac{\mathbf{v}_1 - \mathbf{v}_2}{\sigma'_1} \right) + \left( \frac{\mu_2 - \mu_1}{\sigma'_1} \cdot \mathbf{1} \right) + \left( \frac{\mathbf{v}_2 - \mu_2}{\sigma'_1} - \frac{\mathbf{v}_2 - \mu_2}{\sigma'_2} \right)
@@ -18393,6 +18409,7 @@ $$
     \mathbb{E}[n_c(\mathcal{S}'_1, \mathcal{S}'_2)] = \sum_{i=1}^N \left( \operatorname{Var}[s'_{1,i}] + \operatorname{Var}[s'_{2,i}] \right) + \sum_{i=1}^N (\mathbb{E}[s'_{1,i}] - \mathbb{E}[s'_{2,i}])^2
 
 $$
+
 $$
     \le \sum_{i=1}^N \left( \operatorname{Var}[s'_{1,i}] + \operatorname{Var}[s'_{2,i}] \right) + \sum_{i=1}^N L_{\text{death}}^2 \left( d_{\text{Disp},\mathcal{Y}}(\mathcal{S}_1, \mathcal{S}_2) \right)^{2\alpha_B}
 
@@ -31607,10 +31624,12 @@ $$
 :::{prf:proposition} Velocity Dissipation Rate (Parameter-Explicit)
 :label: prop-velocity-rate-explicit
 With the notation above,
+
 $$
 \kappa_v := (2\gamma-\epsilon)\tau, \quad C_v^{\text{kin}} := \left(\frac{F_{\max}^2}{\epsilon} + d\sigma_{\max}^2\right)\tau,
 $$
 and the composed step satisfies
+
 $$
 \mathbb{E}_{\text{total}}[\Delta V_{\text{Var},v}] \leq -\kappa_v V_{\text{Var},v} + (C_v + C_v^{\text{kin}}).
 $$
@@ -31619,18 +31638,21 @@ $$
 :::{prf:proposition} Positional Contraction Rate (Parameter-Explicit)
 :label: prop-position-rate-explicit
 The composed drift satisfies
+
 $$
 \mathbb{E}_{\text{total}}[\Delta V_{\text{Var},x}] \leq -\kappa_x V_{\text{Var},x} + (C_x + C_{\text{kin},x}\tau),
 $$
 where $\kappa_x$ and $C_x$ come from the Keystone Principle ({doc}`03_cloning`) and $C_{\text{kin},x}$ is the bounded expansion constant from {prf:ref}`thm-positional-variance-bounded-expansion` ({doc}`05_kinetic_contraction`).
 
 An explicit (N-uniform) choice from {doc}`05_kinetic_contraction` is
+
 $$
 C_{\text{kin},x} = 2\sqrt{M_x M_v} + \frac{2 V_{\text{Var},v}^{\text{eq}}}{\gamma},
 $$
 with $M_v = V_{\text{Var},v}^{\text{eq}}$ and $V_{\text{Var},v}^{\text{eq}} = \frac{F_{\max}^2/\epsilon + d\sigma_{\max}^2}{2\gamma-\epsilon}$.
 
 The equilibrium bound is
+
 $$
 V_{\text{Var},x}^{\text{QSD}} \leq \frac{C_x + C_{\text{kin},x}\tau}{\kappa_x}.
 $$
@@ -35820,6 +35842,7 @@ Our proof establishes this by starting with the stationarity condition for the f
     \lim_{k \to \infty} \mathbb{E}_{\nu_{N_k}}[\mathcal{L}_{\text{clone}, N_k} \phi(z_1)] = \int_{\Omega} S[\rho_0]\phi(z) dz
 
     $$
+    
     $$
     \lim_{k \to \infty} \mathbb{E}_{\nu_{N_k}}[\mathcal{L}_{\text{boundary}, N_k} \phi(z_1)] = \int_{\Omega} (-c(z)\rho_0 + B[\rho_0, m_{d,\infty}])\phi(z) dz
 
@@ -45154,16 +45177,19 @@ The denominator is the continuous-time mixing rate, which is the spectral gap of
 :label: def-effective-counts-two-scales
 
 **1. Softmax Effective Companions** (scale $\varepsilon_c$):
+
 $$
 k_{\text{eff}}^{(\varepsilon_c)}(i) := \left|\left\{\ell \in \mathcal{A} : d_{\text{alg}}(i,\ell) \leq R_{\text{eff}}^{(\varepsilon_c)}\right\}\right|
 $$
 
 where:
+
 $$
 R_{\text{eff}}^{(\varepsilon_c)} = \varepsilon_c \sqrt{C_{\text{comp}}^2 + 2\log(k^2)}
 $$
 
 **Scaling**:
+
 $$
 k_{\text{eff}}^{(\varepsilon_c)}(i) = O(\rho_{\max} \cdot \varepsilon_c^{2d} \cdot (\log k)^d)
 $$
@@ -45174,11 +45200,13 @@ $$
 - Controls softmax companion sums over $\ell$
 
 **2. Localization Effective Neighbors** (scale $\rho$):
+
 $$
 k_{\text{eff}}^{(\rho)}(i) := \left|\left\{j \in \mathcal{A} : d_{\text{alg}}(i,j) \leq R_{\text{eff}}^{(\rho)}\right\}\right|
 $$
 
 where:
+
 $$
 R_{\text{eff}}^{(\rho)} = C_\rho \cdot \rho
 $$
@@ -45186,12 +45214,14 @@ $$
 for some constant $C_\rho$ independent of $k$.
 
 **Scaling**:
+
 $$
 k_{\text{eff}}^{(\rho)}(i) = O(\rho_{\max} \cdot \rho^{2d})
 $$
 
 
 **Explicit bound**: The effective neighbor count satisfies:
+
 $$
 k_{\text{eff}}^{(\rho)}(i) \leq C_{\text{vol}} \rho_{\max} \rho^{2d}
 $$
@@ -45221,6 +45251,7 @@ For clarity in proofs, **always use superscript notation** $k_{\text{eff}}^{(\va
 For walkers $i, j \in \mathcal{A}$ with $i \neq j$, the companion-dependent measurement $d_j = \sum_{\ell \in \mathcal{A} \setminus \{j\}} \mathbb{P}(c(j) = \ell) \cdot d_{\text{alg}}(j, \ell)$ satisfies:
 
 **First derivative**:
+
 $$
 \nabla_{x_i} d_j = P_{ji} A_{ji} \nabla_{x_i} d_{\text{alg}}(j,i)
 $$
@@ -45230,17 +45261,21 @@ where $P_{ji} = \mathbb{P}(c(j)=i)$ and $A_{ji} = 1 - \frac{d_{\text{alg}}(j,i)(
 **KEY INSIGHT**: In the sum over companions $\ell \in \mathcal{A} \setminus \{j\}$, only the term **$\ell = i$** contributes to $\nabla_{x_i} d_{\text{alg}}(j, \ell)$ because $d_{\text{alg}}(j,\ell)$ depends only on $(x_j, v_j, x_\ell, v_\ell)$, not on $(x_i, v_i)$ for $\ell \neq i$.
 
 **Derivative bounds** (using $d_{\text{alg}}(j,i) = \sqrt{\|x_j - x_i\|^2 + \lambda_{\text{alg}}\|v_j - v_i\|^2 + \varepsilon_d^2}$):
+
 $$
 \|\nabla_{x_i} d_{\text{alg}}(j,i)\| \leq 1, \quad \|\nabla^2_{x_i} d_{\text{alg}}(j,i)\| \leq \frac{2}{\varepsilon_d}, \quad \|\nabla^3_{x_i} d_{\text{alg}}(j,i)\| \leq \frac{6}{\varepsilon_d^2}
 $$
 
 **Bounds for companion-dependent measurement** (with $P_{ji} \leq 1$ and $|A_{ji}| \leq 1 + D_{\max}^2/\varepsilon_c^2$):
+
 $$
 \|\nabla_{x_i} d_j\| \leq C_{d,1} := 1 + \frac{D_{\max}^2}{\varepsilon_c^2}
 $$
+
 $$
 \|\nabla^2_{x_i} d_j\| \leq C_{d,2} \varepsilon_d^{-1} \quad \text{where} \quad C_{d,2} = 2\left(1 + \frac{D_{\max}^2}{\varepsilon_c^2}\right) + \frac{3D_{\max}^3}{\varepsilon_c^4}
 $$
+
 $$
 \|\nabla^3_{x_i} d_j\| \leq C_{d,3} \varepsilon_d^{-2} \quad \text{where} \quad C_{d,3} = 6\left(1 + \frac{D_{\max}^2}{\varepsilon_c^2}\right) + \frac{15D_{\max}^3}{\varepsilon_c^4}
 $$
@@ -45256,51 +45291,61 @@ where all constants $C_{d,k}$ are **k-uniform** (independent of $k$ and $N$) bec
 Let $P_{j\ell} = \mathbb{P}(c(j)=\ell) = \exp(-\Phi_{j\ell}) / Z_j$ where $\Phi_{j\ell} = d_{\text{alg}}^2(j,\ell)/(2\varepsilon_c^2)$ and $Z_j = \sum_r \exp(-\Phi_{jr})$.
 
 Differentiating with respect to $x_i$:
+
 $$
 \partial_{x_i} P_{j\ell} = P_{j\ell}\left[-\partial_{x_i}\Phi_{j\ell} + \sum_r P_{jr} \partial_{x_i}\Phi_{jr}\right]
 $$
 
 **Locality of $\Phi_{j\ell}$**: Since $d_{\text{alg}}(j,\ell)$ depends only on $(x_j, v_j, x_\ell, v_\ell)$, we have:
+
 $$
 \partial_{x_i}\Phi_{j\ell} = \delta_{\ell i} \partial_{x_i}\Phi_{ji}
 $$
 
 Therefore:
+
 $$
 \partial_{x_i} P_{j\ell} = P_{j\ell}[P_{ji} - \delta_{\ell i}] \partial_{x_i}\Phi_{ji}
 $$
 
 **Step 2: Derivative of expected measurement.**
+
 $$
 \nabla_{x_i} d_j = \sum_{\ell \in \mathcal{A} \setminus \{j\}} \left[(\nabla_{x_i} P_{j\ell}) d_{\text{alg}}(j,\ell) + P_{j\ell} (\nabla_{x_i} d_{\text{alg}}(j,\ell))\right]
 $$
 
 **Derivative locality for $d_{\text{alg}}$**: Since $\nabla_{x_i} d_{\text{alg}}(j,\ell) = \delta_{\ell i} \nabla_{x_i} d_{\text{alg}}(j,i)$, the second term gives:
+
 $$
 \sum_{\ell} P_{j\ell} (\nabla_{x_i} d_{\text{alg}}(j,\ell)) = P_{ji} \nabla_{x_i} d_{\text{alg}}(j,i)
 $$
 
 For the first term:
+
 $$
 \sum_{\ell} (\nabla_{x_i} P_{j\ell}) d_{\text{alg}}(j,\ell) = \left(\sum_{\ell} P_{j\ell}[\delta_{\ell i} - P_{ji}] d_{\text{alg}}(j,\ell)\right) \nabla_{x_i}\Phi_{ji}
 $$
 
 Simplifying: $\sum_{\ell} P_{j\ell} \delta_{\ell i} d_{\text{alg}}(j,\ell) = P_{ji} d_{\text{alg}}(j,i)$ and $\sum_{\ell} P_{j\ell} d_{\text{alg}}(j,\ell) = d_j$, so:
+
 $$
 \sum_{\ell} (\nabla_{x_i} P_{j\ell}) d_{\text{alg}}(j,\ell) = P_{ji}[d_j - d_{\text{alg}}(j,i)] \nabla_{x_i}\Phi_{ji}
 $$
 
 **Step 3: Combine terms.**
+
 $$
 \nabla_{x_i} d_j = P_{ji}\left[d_{\text{alg}}(j,i) - d_j\right] \nabla_{x_i}\Phi_{ji} + P_{ji} \nabla_{x_i} d_{\text{alg}}(j,i)
 $$
 
 Using $\Phi_{ji} = d_{\text{alg}}^2(j,i)/(2\varepsilon_c^2)$, so $\nabla_{x_i}\Phi_{ji} = \frac{d_{\text{alg}}(j,i)}{\varepsilon_c^2} \nabla_{x_i} d_{\text{alg}}(j,i)$:
+
 $$
 \nabla_{x_i} d_j = P_{ji}\left[1 - \frac{d_{\text{alg}}(j,i)(d_{\text{alg}}(j,i) - d_j)}{\varepsilon_c^2}\right] \nabla_{x_i} d_{\text{alg}}(j,i)
 $$
 
 Defining $A_{ji} := 1 - \frac{d_{\text{alg}}(j,i)(d_{\text{alg}}(j,i) - d_j)}{\varepsilon_c^2}$, we get:
+
 $$
 \nabla_{x_i} d_j = P_{ji} A_{ji} \nabla_{x_i} d_{\text{alg}}(j,i)
 $$
@@ -45310,14 +45355,17 @@ $$
 Let $w = (x_j - x_i, \sqrt{\lambda_{\text{alg}}}(v_j - v_i)) \in \mathbb{R}^{2d}$ and $d_{\text{alg}}(j,i) = \sqrt{\|w\|^2 + \varepsilon_d^2}$.
 
 Direct calculation gives:
+
 $$
 \nabla_w d_{\text{alg}} = \frac{w}{d_{\text{alg}}}, \quad \nabla^2_w d_{\text{alg}} = \frac{1}{d_{\text{alg}}}\text{Id}_{2d} - \frac{w \otimes w}{d_{\text{alg}}^3}
 $$
+
 $$
 \nabla^3_w d_{\text{alg}} = -\frac{1}{d_{\text{alg}}^3}\text{sym}(\text{Id} \otimes w) + \frac{3}{d_{\text{alg}}^5} w^{\otimes 3}
 $$
 
 Since $d_{\text{alg}} \geq \varepsilon_d$ and $\|w\| \leq d_{\text{alg}}$:
+
 $$
 \|\nabla d_{\text{alg}}\| \leq 1, \quad \|\nabla^2 d_{\text{alg}}\| \leq \frac{2}{\varepsilon_d}, \quad \|\nabla^3 d_{\text{alg}}\| \leq \frac{6}{\varepsilon_d^2}
 $$
@@ -45325,9 +45373,11 @@ $$
 **Step 5: Higher-order derivatives of $d_j$.**
 
 Applying Leibniz rule iteratively to $\nabla_{x_i} d_j = P_{ji} A_{ji} \nabla_{x_i} d_{\text{alg}}(j,i)$ gives:
+
 $$
 \nabla^2_{x_i} d_j = P_{ji} A_{ji} \nabla^2 d_{\text{alg}} + \nabla_{x_i}(P_{ji} A_{ji}) \otimes \nabla d_{\text{alg}}
 $$
+
 $$
 \nabla^3_{x_i} d_j = P_{ji} A_{ji} \nabla^3 d_{\text{alg}} + 3\,\text{sym}\left(\nabla_{x_i}(P_{ji} A_{ji}) \otimes \nabla^2 d_{\text{alg}}\right) + \text{sym}\left(\nabla^2_{x_i}(P_{ji} A_{ji}) \otimes \nabla d_{\text{alg}}\right)
 $$
@@ -45335,6 +45385,7 @@ $$
 **Step 6: Bound the coefficients.**
 
 Using $P_{ji} \leq 1$, $|d_{\text{alg}}(j,i)| \leq D_{\max}$, $|d_j| \leq D_{\max}$:
+
 $$
 |A_{ji}| \leq 1 + \frac{D_{\max}^2}{\varepsilon_c^2}
 $$
@@ -45344,12 +45395,15 @@ The derivatives $\nabla_{x_i}(P_{ji} A_{ji})$ and $\nabla^2_{x_i}(P_{ji} A_{ji})
 **Step 7: Final bounds.**
 
 Combining (using Codex's explicit formulas):
+
 $$
 \|\nabla_{x_i} d_j\| \leq C_{d,1} := 1 + \frac{D_{\max}^2}{\varepsilon_c^2}
 $$
+
 $$
 \|\nabla^2_{x_i} d_j\| \leq C_{d,2} \varepsilon_d^{-1} \quad \text{with} \quad C_{d,2} = 2\left(1 + \frac{D_{\max}^2}{\varepsilon_c^2}\right) + \frac{3D_{\max}^3}{\varepsilon_c^4}
 $$
+
 $$
 \|\nabla^3_{x_i} d_j\| \leq C_{d,3} \varepsilon_d^{-2} \quad \text{with} \quad C_{d,3} = 6\left(1 + \frac{D_{\max}^2}{\varepsilon_c^2}\right) + \frac{15D_{\max}^3}{\varepsilon_c^4}
 $$
@@ -45408,6 +45462,7 @@ All constants are **k-uniform** because normalization $\sum_{\ell} P_{i\ell} = 1
 :label: lem-telescoping-derivatives
 
 For any derivative order $m \in \{1, 2, 3\}$, the localization weights satisfy:
+
 $$
 \sum_{j \in A_k} \nabla^m_{x_i} w_{ij}(\rho) = 0
 $$
@@ -45421,6 +45476,7 @@ $$
 **Step 1: Normalization identity.**
 
 By definition, the localization weights are $w_{ij}(\rho) := K_\rho(x_i, x_j) / Z_i(\rho)$ where $Z_i(\rho) := \sum_{\ell \in A_k} K_\rho(x_i, x_\ell)$. Since the kernel $K_\rho$ is strictly positive (Gaussian kernel), we have $Z_i(\rho) > 0$. Therefore:
+
 $$
 \sum_{j \in A_k} w_{ij}(\rho) = \sum_{j \in A_k} \frac{K_\rho(x_i, x_j)}{Z_i(\rho)} = \frac{1}{Z_i(\rho)} \sum_{j \in A_k} K_\rho(x_i, x_j) = \frac{Z_i(\rho)}{Z_i(\rho)} = 1
 $$
@@ -45434,6 +45490,7 @@ Each weight $w_{ij}(\rho)$ is $C^3$ in $x_i$ by the quotient rule: the numerator
 **Step 3: Differentiation.**
 
 Apply $\nabla^m_{x_i}$ for $m \in \{1,2,3\}$ to both sides of the identity $\sum_j w_{ij}(\rho) = 1$. By linearity of differentiation and finiteness of the sum:
+
 $$
 \nabla^m_{x_i} \left(\sum_{j \in A_k} w_{ij}(\rho)\right) = \sum_{j \in A_k} \nabla^m_{x_i} w_{ij}(\rho)
 $$
@@ -45443,6 +45500,7 @@ The right-hand side of the original identity is the constant function 1, so $\na
 **Step 4: Conclusion.**
 
 Combining the above:
+
 $$
 \sum_{j \in A_k} \nabla^m_{x_i} w_{ij}(\rho) = \nabla^m_{x_i}(1) = 0
 $$
@@ -45455,6 +45513,7 @@ This completes the proof for all $m \in \{1, 2, 3\}$.
 :label: assump-c3-measurement-companion
 
 The measurement for each walker $j \in \mathcal{A}$ is the expected algorithmic distance to its companion:
+
 $$
 d_j = \mathbb{E}[d_{\text{alg}}(j, c(j))] = \sum_{\ell \in \mathcal{A} \setminus \{j\}} \mathbb{P}(c(j) = \ell) \cdot d_{\text{alg}}(j, \ell)
 $$
@@ -45467,6 +45526,7 @@ where:
 **C³ regularity properties** (from Lemma {prf:ref}`lem-derivative-locality-c3`):
 - $d_{\text{alg}}$ is C^∞ with third derivative bound $\|\nabla^3 d_{\text{alg}}\| \leq C \varepsilon_d^{-2}$
 - Companion-dependent measurement $d_j$ inherits third derivative bound:
+
 $$
 \|\nabla^3_{x_i} d_j\| \leq C_{d,3} \varepsilon_d^{-2}
 $$
@@ -45480,6 +45540,7 @@ where $C_{d,3}$ is **k-uniform** (independent of $k$ and $N$) due to derivative 
 :label: assump-c3-kernel
 
 The localization kernel $K_\rho: (\mathcal{X} \times \mathbb{R}^d) \times (\mathcal{X} \times \mathbb{R}^d) \to [0, 1]$ is defined using the algorithmic distance:
+
 $$
 K_\rho(i, j) := \frac{1}{Z_i(\rho)} \exp\left(-d_{\text{alg}}^2(i,j)/(2\rho^2)\right)
 $$
@@ -45706,6 +45767,7 @@ A bound is **k-uniform** if it is independent of the alive walker count $k = |A_
 :label: lem-telescoping-derivatives
 
 For any derivative order $m \in \{1, 2, 3\}$, the localization weights satisfy:
+
 $$
 \sum_{j \in A_k} \nabla^m_{x_i} w_{ij}(\rho) = 0
 $$
@@ -45719,6 +45781,7 @@ $$
 **Step 1: Normalization identity.**
 
 By definition, the localization weights are $w_{ij}(\rho) := K_\rho(x_i, x_j) / Z_i(\rho)$ where $Z_i(\rho) := \sum_{\ell \in A_k} K_\rho(x_i, x_\ell)$. Since the kernel $K_\rho$ is strictly positive (Gaussian kernel), we have $Z_i(\rho) > 0$. Therefore:
+
 $$
 \sum_{j \in A_k} w_{ij}(\rho) = \sum_{j \in A_k} \frac{K_\rho(x_i, x_j)}{Z_i(\rho)} = \frac{1}{Z_i(\rho)} \sum_{j \in A_k} K_\rho(x_i, x_j) = \frac{Z_i(\rho)}{Z_i(\rho)} = 1
 $$
@@ -45732,6 +45795,7 @@ Each weight $w_{ij}(\rho)$ is $C^3$ in $x_i$ by the quotient rule: the numerator
 **Step 3: Differentiation.**
 
 Apply $\nabla^m_{x_i}$ for $m \in \{1,2,3\}$ to both sides of the identity $\sum_j w_{ij}(\rho) = 1$. By linearity of differentiation and finiteness of the sum:
+
 $$
 \nabla^m_{x_i} \left(\sum_{j \in A_k} w_{ij}(\rho)\right) = \sum_{j \in A_k} \nabla^m_{x_i} w_{ij}(\rho)
 $$
@@ -45741,6 +45805,7 @@ The right-hand side of the original identity is the constant function 1, so $\na
 **Step 4: Conclusion.**
 
 Combining the above:
+
 $$
 \sum_{j \in A_k} \nabla^m_{x_i} w_{ij}(\rho) = \nabla^m_{x_i}(1) = 0
 $$
@@ -45792,6 +45857,7 @@ To establish $C^3$ regularity of the fitness potential, we require natural smoot
 :label: assump-c3-measurement-companion
 
 The measurement for each walker $j \in \mathcal{A}$ is the expected algorithmic distance to its companion:
+
 $$
 d_j = \mathbb{E}[d_{\text{alg}}(j, c(j))] = \sum_{\ell \in \mathcal{A} \setminus \{j\}} \mathbb{P}(c(j) = \ell) \cdot d_{\text{alg}}(j, \ell)
 $$
@@ -45804,6 +45870,7 @@ where:
 **C³ regularity properties** (from Lemma {prf:ref}`lem-derivative-locality-c3`):
 - $d_{\text{alg}}$ is C^∞ with third derivative bound $\|\nabla^3 d_{\text{alg}}\| \leq C \varepsilon_d^{-2}$
 - Companion-dependent measurement $d_j$ inherits third derivative bound:
+
 $$
 \|\nabla^3_{x_i} d_j\| \leq C_{d,3} \varepsilon_d^{-2}
 $$
@@ -45817,6 +45884,7 @@ where $C_{d,3}$ is **k-uniform** (independent of $k$ and $N$) due to derivative 
 :label: assump-c3-kernel
 
 The localization kernel $K_\rho: (\mathcal{X} \times \mathbb{R}^d) \times (\mathcal{X} \times \mathbb{R}^d) \to [0, 1]$ is defined using the algorithmic distance:
+
 $$
 K_\rho(i, j) := \frac{1}{Z_i(\rho)} \exp\left(-d_{\text{alg}}^2(i,j)/(2\rho^2)\right)
 $$
@@ -45866,6 +45934,7 @@ for all $z \in \mathbb{R}$, where $g'_{\min}$ is a positive constant.
 :label: assump-c3-patch
 
 The regularized standard deviation function is defined as:
+
 $$
 \sigma'_{\text{reg}}(V) := \sqrt{V + \sigma'^2_{\min}}
 $$
@@ -45880,6 +45949,7 @@ This function is **infinitely differentiable** ($C^\infty$) with explicit deriva
 4. **Bounded third derivative:** $|(\sigma'_{\text{reg}})'''(V)| \le L_{\sigma'''_{\text{reg}}} = \frac{3}{8\sigma'^5_{\min}}$ for all $V \ge 0$
 
 **Derivation:** Direct computation of derivatives:
+
 $$
 (\sigma'_{\text{reg}})'(V) = \frac{1}{2\sqrt{V + \sigma'^2_{\min}}}, \quad
 (\sigma'_{\text{reg}})''(V) = -\frac{1}{4(V + \sigma'^2_{\min})^{3/2}}, \quad
@@ -45895,11 +45965,13 @@ Since $V \ge 0$, all bounds are achieved at $V = 0$.
 :label: lem-weight-third-derivative
 
 The localization weights $w_{ij}(\rho) = K_\rho(x_i, x_j) / Z_i(\rho)$ where $Z_i(\rho) = \sum_{\ell \in A_k} K_\rho(x_i, x_\ell)$ satisfy:
+
 $$
 \|\nabla^3_{x_i} w_{ij}(\rho)\| \le C_{w,3}(\rho)
 $$
 
 where
+
 $$
 C_{w,3}(\rho) := \frac{C_{\nabla^3 K}(\rho)}{\rho^3} + \frac{12 C_{\nabla K}(\rho) C_{\nabla^2 K}(\rho)}{\rho^3} + \frac{16 C_{\nabla K}(\rho)^3}{\rho^3}
 $$
@@ -45931,6 +46003,7 @@ Since $v(x_i) = \sum_{\ell \in A_k} K_\rho(x_i, x_\ell)$, linearity gives:
 **Step 4: Apply quotient rule for third derivative.**
 
 The general formula for $\nabla^3(u/v)$ involves terms of the form:
+
 $$
 \nabla^3\left(\frac{u}{v}\right) = \frac{1}{v}\left[\nabla^3 u - 3\frac{\nabla u \cdot \nabla^2 v}{v} - 3\frac{\nabla^2 u \cdot \nabla v}{v} + 6\frac{(\nabla u) \cdot (\nabla v)^2}{v^2} - \frac{u \cdot \nabla^3 v}{v}\right]
 $$
@@ -45967,11 +46040,13 @@ The leading term $\nabla^3 K_\rho(x_i, x_j) / Z_i$ is already k-uniform since bo
 **Step 6: Explicit bound.**
 
 Collecting all terms and using $v = Z_i(\rho) \ge c_0 > 0$:
+
 $$
 \|\nabla^3 w_{ij}\| \le \frac{1}{c_0}\left[C_{\nabla^3 K}(\rho)/\rho^3 + 3 \cdot (C_{\nabla K}(\rho)/\rho) \cdot (C_{\nabla^2 K}(\rho)/\rho^2) + O((C_{\nabla K}(\rho)/\rho)^3)\right]
 $$
 
 Absorbing constants and using conservative bounds:
+
 $$
 \|\nabla^3 w_{ij}\| \le C_{w,3}(\rho) := \frac{C_{\nabla^3 K}(\rho)}{\rho^3} + \frac{12 C_{\nabla K}(\rho) C_{\nabla^2 K}(\rho)}{\rho^3} + \frac{16 C_{\nabla K}(\rho)^3}{\rho^3}
 $$
@@ -45983,6 +46058,7 @@ This bound is **independent of $k$ and $N$**, achieving k-uniformity.
 :label: lem-mean-third-derivative
 
 The localized mean for the companion-dependent model $\mu_\rho^{(i)} := \sum_{j \in \mathcal{A}} w_{ij}(\rho) \, d_j$ (where $d_j = \mathbb{E}[d_{\text{alg}}(j, c(j))]$) satisfies:
+
 $$
 \|\nabla^3_{x_i} \mu_\rho^{(i)}\| \leq K_{\mu,3}(\rho, \varepsilon_d, \varepsilon_c)
 $$
@@ -46006,11 +46082,13 @@ This bound is **k-uniform** and **N-uniform** due to the two-scale framework (de
 **Step 1: Product rule for all terms.**
 
 The mean is $\mu_\rho^{(i)} = \sum_{j \in \mathcal{A}} w_{ij}(\rho) \cdot d_j$ where $d_j = \mathbb{E}[d_{\text{alg}}(j, c(j))]$. Apply Leibniz rule for third derivatives:
+
 $$
 \nabla^3_{x_i} [w_{ij} \cdot d_j] = \sum_{k=0}^{3} \binom{3}{k} (\nabla^k_{x_i} w_{ij}) \cdot (\nabla^{3-k}_{x_i} d_j)
 $$
 
 Expanding all four terms:
+
 $$
 \nabla^3_{x_i} \mu_\rho^{(i)} = \sum_{j \in \mathcal{A}} \left[w_{ij} \nabla^3 d_j + 3(\nabla w_{ij})(\nabla^2 d_j) + 3(\nabla^2 w_{ij})(\nabla d_j) + (\nabla^3 w_{ij}) d_j\right]
 $$
@@ -46032,6 +46110,7 @@ Therefore, for all $j \in \mathcal{A}$:
 - $|d_j| \leq D_{\max}$ (bounded by diameter)
 
 **Term 1**: $\sum_j w_{ij} \nabla^3 d_j$
+
 $$
 \left\|\sum_j w_{ij} \nabla^3 d_j\right\| \leq \left(\sum_j w_{ij}\right) \cdot C_{d,3} \varepsilon_d^{-2} = C_{d,3} \varepsilon_d^{-2}
 $$
@@ -46039,6 +46118,7 @@ $$
 (using normalization $\sum_j w_{ij} = 1$)
 
 **Term 2**: $3 \sum_j (\nabla w_{ij})(\nabla^2 d_j)$
+
 $$
 \left\|\sum_j (\nabla w_{ij})(\nabla^2 d_j)\right\| \leq C_{d,2} \varepsilon_d^{-1} \sum_j \|\nabla w_{ij}\| \leq C_{d,2} \varepsilon_d^{-1} \cdot \frac{C_{\nabla K}(\rho)}{\rho} \cdot k_{\text{eff}}^{(\rho)}
 $$
@@ -46046,6 +46126,7 @@ $$
 where $k_{\text{eff}}^{(\rho)} = O(\rho^{2d})$ is k-uniform (exponential localization of Gaussian weights).
 
 **Term 3**: $3 \sum_j (\nabla^2 w_{ij})(\nabla d_j)$
+
 $$
 \left\|\sum_j (\nabla^2 w_{ij})(\nabla d_j)\right\| \leq C_{d,1} \sum_j \|\nabla^2 w_{ij}\| \leq C_{d,1} \cdot \frac{C_{\nabla^2 K}(\rho)}{\rho^2} \cdot k_{\text{eff}}^{(\rho)}
 $$
@@ -46053,16 +46134,19 @@ $$
 **Term 4**: $\sum_j (\nabla^3 w_{ij}) d_j$
 
 Apply telescoping identity $\sum_j \nabla^3 w_{ij} = 0$:
+
 $$
 \sum_j (\nabla^3 w_{ij}) d_j = \sum_j (\nabla^3 w_{ij})(d_j - d_i)
 $$
 
 By exponential localization, $\|\nabla^3 w_{ij}\|$ is significant only for $j$ with $d_{\text{alg}}(i,j) = O(\rho)$. For such $j$:
+
 $$
 |d_j - d_i| \leq 2D_{\max} \quad \text{(worst case)}
 $$
 
 Therefore:
+
 $$
 \left\|\sum_j (\nabla^3 w_{ij}) d_j\right\| \leq D_{\max} \sum_j \|\nabla^3 w_{ij}\| \leq D_{\max} \cdot C_{w,3}(\rho) \cdot k_{\text{eff}}^{(\rho)}
 $$
@@ -46071,6 +46155,7 @@ $$
 
 
 Since $k_{\text{eff}}^{(\rho)} = O(\rho^{2d})$ is k-uniform, we can absorb it into the constants:
+
 $$
 \begin{aligned}
 \|\nabla^3 \mu_\rho^{(i)}\| &\leq C_{d,3} \varepsilon_d^{-2} + 3 C_{d,2} \varepsilon_d^{-1} \frac{C_{\nabla K}(\rho)}{\rho} k_{\text{eff}}^{(\rho)} \\
@@ -46085,6 +46170,7 @@ where the bound has been split into:
 Substituting $k_{\text{eff}}^{(\rho)} \leq C_{\text{vol}} \rho_{\max} \rho^{2d}$ into the bound matches the definition of $K_{\mu,3}$ from the lemma statement (equation in §5.1 header), which keeps the $\rho^{-1}, \rho^{-2}, \rho^{-3}$ factors explicit:
 $$
 K_{\mu,3}(\rho, \varepsilon_d, \varepsilon_c) = C_{d,3} \varepsilon_d^{-2} + 6 C_{d,2} \varepsilon_d^{-1} \frac{C_{\nabla K}(\rho)}{\rho} C_{\text{vol}} \rho_{\max} \rho^{2d} + \cdots
+
 $$
 
 This gives $K_{\mu,3} = O(\varepsilon_d^{-2}) + O(\rho^{2d-1}) + O(\rho^{2d-2}) + O(\rho^{2d-3})$, which matches Appendix 14B's $m=3$ scaling.
@@ -46104,6 +46190,7 @@ Therefore $K_{\mu,3}(\rho, \varepsilon_d, \varepsilon_c)$ is **k-uniform** and *
 :label: lem-variance-third-derivative
 
 The localized variance for the companion-dependent model $V_\rho^{(i)} := \sigma^2_\rho[f_k, x_i] = \sum_{j \in \mathcal{A}} w_{ij}(\rho) d_j^2 - (\mu_\rho^{(i)})^2$ (where $d_j = \mathbb{E}[d_{\text{alg}}(j, c(j))]$) satisfies:
+
 $$
 \|\nabla^3_{x_i} V_\rho^{(i)}\| \leq K_{V,3}(\rho, \varepsilon_d, \varepsilon_c)
 $$
@@ -46121,11 +46208,13 @@ This bound is **k-uniform** and **N-uniform** due to the two-scale framework app
 **Step 1: Variance formula and differentiation structure.**
 
 The variance is:
+
 $$
 V_\rho^{(i)} = \sum_{j \in \mathcal{A}} w_{ij}(\rho) \, d_j^2 - (\mu_\rho^{(i)})^2
 $$
 
 Third derivative:
+
 $$
 \nabla^3 V_\rho^{(i)} = \nabla^3\left[\sum_j w_{ij} d_j^2\right] - \nabla^3\left[(\mu_\rho)^2\right]
 $$
@@ -46133,6 +46222,7 @@ $$
 **Step 2: Third derivative of $(\mu_\rho)^2$ using correct chain rule.**
 
 For the squared mean, apply the correct chain rule with $u = \mu_\rho^{(i)}$ (using Faà di Bruno with $h(u)=u^2$ where $h'''(u)=0$):
+
 $$
 \nabla^3[u^2] = 2\Big[u \nabla^3 u + 3\,\text{sym}(\nabla u \otimes \nabla^2 u)\Big]
 $$
@@ -46150,6 +46240,7 @@ where $K_{\mu,1}, K_{\mu,2}$ are first and second derivative bounds of $\mu_\rho
 **Step 3: Third derivative of $d_j^2$ using correct chain rule.**
 
 For each $j$, applying the correct chain rule to $d_j^2$ (using Faà di Bruno with $h(u)=u^2$ where $h'''(u)=0$):
+
 $$
 \nabla^3_{x_i}[d_j^2] = 2\Big[d_j \nabla^3 d_j + 3\,\text{sym}(\nabla d_j \otimes \nabla^2 d_j)\Big]
 $$
@@ -46165,11 +46256,13 @@ $$
 **Step 4: Leibniz rule for $w_{ij} \cdot d_j^2$.**
 
 Apply Leibniz rule to the product:
+
 $$
 \nabla^3[w_{ij} \cdot d_j^2] = \sum_{k=0}^3 \binom{3}{k} (\nabla^k w_{ij}) \cdot (\nabla^{3-k} [d_j^2])
 $$
 
 Expanding the four terms:
+
 $$
 \begin{aligned}
 \nabla^3[w_{ij} \cdot d_j^2] = &\, w_{ij} \nabla^3[d_j^2] + 3(\nabla w_{ij}) \nabla^2[d_j^2] \\
@@ -46180,6 +46273,7 @@ $$
 **Step 5: Bound the weighted sum $\sum_j w_{ij} \cdot d_j^2$ third derivative.**
 
 **Term 1**: $\sum_j w_{ij} \nabla^3[d_j^2]$
+
 $$
 \left\|\sum_j w_{ij} \nabla^3[d_j^2]\right\| \leq \left(\sum_j w_{ij}\right) \cdot (2D_{\max} C_{d,3} \varepsilon_d^{-2} + 6 C_{d,1} C_{d,2} \varepsilon_d^{-1})
 $$
@@ -46191,6 +46285,7 @@ Using $\sum_j w_{ij} = 1$: $= 2D_{\max} C_{d,3} \varepsilon_d^{-2} + 6 C_{d,1} C
 Chain rule for $\nabla^2[d_j^2] = 2[d_j \nabla^2 d_j + (\nabla d_j)^2]$ gives bound $\leq 2D_{\max} C_{d,2} \varepsilon_d^{-1} + 2C_{d,1}^2$.
 
 Then:
+
 $$
 \left\|\sum_j (\nabla w_{ij}) \nabla^2[d_j^2]\right\| \leq (2D_{\max} C_{d,2} \varepsilon_d^{-1} + 2C_{d,1}^2) \cdot \frac{C_{\nabla K}(\rho)}{\rho} \cdot k_{\text{eff}}^{(\rho)}
 $$
@@ -46200,6 +46295,7 @@ $$
 Chain rule for $\nabla[d_j^2] = 2 d_j \nabla d_j$ gives bound $\leq 2D_{\max} C_{d,1}$.
 
 Then:
+
 $$
 \left\|\sum_j (\nabla^2 w_{ij}) \nabla[d_j^2]\right\| \leq 2D_{\max} C_{d,1} \cdot \frac{C_{\nabla^2 K}(\rho)}{\rho^2} \cdot k_{\text{eff}}^{(\rho)}
 $$
@@ -46207,6 +46303,7 @@ $$
 **Term 4**: $\sum_j (\nabla^3 w_{ij}) d_j^2$
 
 Apply telescoping $\sum_j \nabla^3 w_{ij} = 0$:
+
 $$
 \sum_j (\nabla^3 w_{ij}) d_j^2 = \sum_j (\nabla^3 w_{ij})(d_j^2 - d_i^2)
 $$
@@ -46267,6 +46364,7 @@ $\square$
 :label: lem-patch-chain-rule
 
 Let $\sigma'_{\text{reg}}: \mathbb{R}_{\ge 0} \to \mathbb{R}_{>0}$ satisfy Assumption {prf:ref}`assump-c3-patch` ($C^3$ regularity). For a smooth function $V: \mathbb{R}^d \to \mathbb{R}_{\ge 0}$, the composition $h(x) := \sigma'_{\text{reg}}(V(x))$ has third derivative given by the **Faà di Bruno formula**:
+
 $$
 \nabla^3 h = (\sigma'_{\text{reg}})'''(V) \cdot (\nabla V)^{\otimes 3} + 3(\sigma'_{\text{reg}})''(V) \cdot \text{sym}(\nabla V \otimes \nabla^2 V) + (\sigma'_{\text{reg}})'(V) \cdot \nabla^3 V
 $$
@@ -46274,11 +46372,13 @@ $$
 where $\text{sym}(\nabla V \otimes \nabla^2 V)$ denotes the symmetrized tensor product (sum over all permutations).
 
 More explicitly, using index notation for clarity:
+
 $$
 \frac{\partial^3 h}{\partial x_i \partial x_j \partial x_k} = (\sigma'_{\text{reg}})'''(V) \frac{\partial V}{\partial x_i} \frac{\partial V}{\partial x_j} \frac{\partial V}{\partial x_k} + (\sigma'_{\text{reg}})''(V) \left[\frac{\partial V}{\partial x_i} \frac{\partial^2 V}{\partial x_j \partial x_k} + \text{perms}\right] + (\sigma'_{\text{reg}})'(V) \frac{\partial^3 V}{\partial x_i \partial x_j \partial x_k}
 $$
 
 **Norm bound:**
+
 $$
 \|\nabla^3 h\| \le L_{\sigma'\'\'_{\text{reg}}} \cdot \|\nabla V\|^3 + 3 L_{\sigma'\'_{\text{reg}}} \cdot \|\nabla V\| \cdot \|\nabla^2 V\| + L_{\sigma'_{\text{reg}}} \cdot \|\nabla^3 V\|
 $$
@@ -46292,11 +46392,13 @@ where $L_{\sigma'_{\text{reg}}}, L_{\sigma'\'_{\text{reg}}}, L_{\sigma'\'\'_{\te
 This is a direct application of the multivariable chain rule for third derivatives. The composition $h = \sigma'_{\text{reg}} \circ V$ requires:
 
 **First derivative:**
+
 $$
 \nabla h = (\sigma'_{\text{reg}})'(V) \cdot \nabla V
 $$
 
 **Second derivative:**
+
 $$
 \nabla^2 h = (\sigma'_{\text{reg}})''(V) \cdot (\nabla V) \otimes (\nabla V) + (\sigma'_{\text{reg}})'(V) \cdot \nabla^2 V
 $$
@@ -46304,6 +46406,7 @@ $$
 **Third derivative:**
 
 Differentiate the second derivative expression:
+
 $$
 \nabla^3 h = \nabla[(\sigma'_{\text{reg}})''(V) \cdot (\nabla V)^2] + \nabla[(\sigma'_{\text{reg}})'(V) \cdot \nabla^2 V]
 $$
@@ -46313,6 +46416,7 @@ The first term gives $(\sigma'_{\text{reg}})''(V) \cdot [(\nabla V)^3 + \text{mi
 The second term gives $(\sigma'_{\text{reg}})'(V) \cdot \nabla^3 V$ plus lower-order cross-terms.
 
 Taking the norm and using the bounds:
+
 $$
 \|\nabla^3 h\| \le L_{\sigma'\'_{\text{reg}}} \cdot \|\nabla V\|^3 + 3 L_{\sigma'_{\text{reg}}} \cdot \|\nabla V\| \cdot \|\nabla^2 V\| + L_{\sigma'_{\text{reg}}} \cdot \|\nabla^3 V\|
 $$
@@ -46324,6 +46428,7 @@ where the factor 3 arises from the binomial coefficient in the Leibniz rule.
 :label: lem-patch-third-derivative
 
 The regularized standard deviation $\sigma'_{\rho}^{(i)} := \sigma'_{\text{reg}}(V_\rho^{(i)})$ satisfies:
+
 $$
 \|\nabla^3_{x_i} \sigma'_{\rho}^{(i)}\| \le L_{\sigma'\'\'_{\text{reg}}} \cdot (C_{V,\nabla}(\rho))^3 + 3 L_{\sigma'\'_{\text{reg}}} \cdot C_{V,\nabla}(\rho) \cdot C_{V,\nabla^2}(\rho) + L_{\sigma'_{\text{reg}}} \cdot C_{V,\nabla^3}(\rho)
 $$
@@ -46345,11 +46450,13 @@ Immediate from Lemma {prf:ref}`lem-patch-chain-rule` by setting $V = V_\rho^{(i)
 :label: lem-zscore-third-derivative
 
 The Z-score $Z_\rho^{(i)} := Z_\rho[f_k, d, x_i]$ satisfies:
+
 $$
 \|\nabla^3_{x_i} Z_\rho^{(i)}\| \le K_{Z,3}(\rho)
 $$
 
 where $K_{Z,3}(\rho)$ is a k-uniform constant:
+
 $$
 \begin{aligned}
 K_{Z,3}(\rho) := &\, \frac{1}{\sigma'_{\min}} \Big[C_{u,\nabla^3}(\rho) + 3 C_{u,\nabla}(\rho) C_{v,\nabla^2}(\rho) \\
@@ -46374,6 +46481,7 @@ This bound is **k-uniform** and **N-uniform**.
 **Step 1: Quotient rule for third derivative.**
 
 For the quotient $Z = u/v$ where $u = d_i - \mu_\rho^{(i)}$ and $v = \sigma'_{\rho}^{(i)}$, the third derivative is:
+
 $$
 \nabla^3 Z = \frac{1}{v} \left[\nabla^3 u - 3 \frac{\nabla u \otimes \nabla^2 v}{v} - 3 \frac{\nabla^2 u \otimes \nabla v}{v} + 6 \frac{\nabla u \otimes (\nabla v)^2}{v^2} - \frac{u \nabla^3 v}{v}\right] + O(v^{-4})
 $$
@@ -46385,31 +46493,37 @@ The $O(v^{-4})$ terms involve higher powers of $1/v$ with lower-order derivative
 The numerator is $u(x_i) = d(x_i) - \mu_\rho^{(i)}$.
 
 **First derivative:**
+
 $$
 \nabla u = \nabla d(x_i) - \nabla \mu_\rho^{(i)}
 $$
 
 Bound:
+
 $$
 \|\nabla u\| \le d'_{\max} + C_{\mu,\nabla}(\rho) =: C_{u,\nabla}(\rho)
 $$
 
 **Second derivative:**
+
 $$
 \nabla^2 u = \nabla^2 d(x_i) - \nabla^2 \mu_\rho^{(i)}
 $$
 
 Bound:
+
 $$
 \|\nabla^2 u\| \le d''_{\max} + C_{\mu,\nabla^2}(\rho) =: C_{u,\nabla^2}(\rho)
 $$
 
 **Third derivative:**
+
 $$
 \nabla^3 u = \nabla^3 d(x_i) - \nabla^3 \mu_\rho^{(i)}
 $$
 
 Bound (using Lemma {prf:ref}`lem-mean-third-derivative`):
+
 $$
 \|\nabla^3 u\| \le d'''_{\max} + C_{\mu,\nabla^3}(\rho) =: C_{u,\nabla^3}(\rho)
 $$
@@ -46419,6 +46533,7 @@ $$
 The denominator is $v(x_i) = \sigma'_{\rho}^{(i)} = \sigma'_{\text{reg}}(V_\rho^{(i)})$.
 
 **Lower bound (crucial):**
+
 $$
 v(x_i) \ge \sigma'_{\min} > 0
 $$
@@ -46426,16 +46541,19 @@ $$
 This comes from Assumption {prf:ref}`assump-c3-patch` and ensures all powers of $1/v$ are bounded.
 
 **First derivative:**
+
 $$
 \|\nabla v\| \le C_{v,\nabla}(\rho) := L_{\sigma'_{\text{reg}}} \cdot C_{V,\nabla}(\rho)
 $$
 
 **Second derivative:**
+
 $$
 \|\nabla^2 v\| \le C_{v,\nabla^2}(\rho) := L_{\sigma'\'_{\text{reg}}} \cdot (C_{V,\nabla}(\rho))^2 + L_{\sigma'_{\text{reg}}} \cdot C_{V,\nabla^2}(\rho)
 $$
 
 **Third derivative (from Lemma {prf:ref}`lem-patch-third-derivative`):**
+
 $$
 \|\nabla^3 v\| \le C_{v,\nabla^3}(\rho)
 $$
@@ -46443,21 +46561,25 @@ $$
 **Step 4: Bound each term in the quotient rule.**
 
 **Term 1:** $|\nabla^3 u / v|$
+
 $$
 \left\|\frac{\nabla^3 u}{v}\right\| \le \frac{C_{u,\nabla^3}(\rho)}{\sigma'_{\min}}
 $$
 
 **Term 2:** $|3\nabla u \otimes \nabla^2 v / v^2|$
+
 $$
 \left\|\frac{3\nabla u \otimes \nabla^2 v}{v^2}\right\| \le \frac{3 C_{u,\nabla}(\rho) \cdot C_{v,\nabla^2}(\rho)}{(\sigma'_{\min})^2}
 $$
 
 **Term 3:** $|3\nabla^2 u \otimes \nabla v / v^2|$
+
 $$
 \left\|\frac{3\nabla^2 u \otimes \nabla v}{v^2}\right\| \le \frac{3 C_{u,\nabla^2}(\rho) \cdot C_{v,\nabla}(\rho)}{(\sigma'_{\min})^2}
 $$
 
 **Term 4:** $|6\nabla u \otimes (\nabla v)^2 / v^3|$
+
 $$
 \left\|\frac{6\nabla u \otimes (\nabla v)^2}{v^3}\right\| \le \frac{6 C_{u,\nabla}(\rho) \cdot (C_{v,\nabla}(\rho))^2}{(\sigma'_{\min})^3}
 $$
@@ -46465,6 +46587,7 @@ $$
 **Term 5:** $|u \nabla^3 v / v^2|$
 
 Using $|u| = |d(x_i) - \mu_\rho^{(i)}| \le d_{\max} + C_{\mu,\nabla}(\rho)$:
+
 $$
 \left\|\frac{u \nabla^3 v}{v^2}\right\| \le \frac{(d_{\max} + C_{\mu,\nabla}(\rho)) \cdot C_{v,\nabla^3}(\rho)}{(\sigma'_{\min})^2}
 $$
@@ -46472,6 +46595,7 @@ $$
 **Step 5: Combine terms.**
 
 Summing all contributions and extracting the dominant factor $1/\sigma'_{\min}$:
+
 $$
 K_{Z,3}(\rho) = \frac{1}{\sigma'_{\min}} \left[C_{u,\nabla^3}(\rho) + 3 C_{u,\nabla}(\rho) C_{v,\nabla^2}(\rho) + 3 C_{u,\nabla^2}(\rho) C_{v,\nabla}(\rho) + 6 C_{u,\nabla}(\rho) (C_{v,\nabla}(\rho))^2 + (d_{\max} + C_{\mu,\nabla}(\rho)) C_{v,\nabla^3}(\rho)\right]
 $$
@@ -46487,11 +46611,13 @@ Each constituent bound ($C_{u,\nabla^m}$, $C_{v,\nabla^m}$) is k-uniform by the 
 :label: thm-c3-regularity
 
 Under Assumptions {prf:ref}`assump-c3-measurement-companion`, {prf:ref}`assump-c3-kernel`, {prf:ref}`assump-c3-rescale`, and {prf:ref}`assump-c3-patch`, the fitness potential $V_{\text{fit}}[f_k, \rho](x_i) = g_A(Z_\rho[f_k, d, x_i])$ is three times continuously differentiable with respect to walker position $x_i \in \mathcal{X}$, with **k-uniform** and **N-uniform** bound:
+
 $$
 \|\nabla^3_{x_i} V_{\text{fit}}[f_k, \rho](x_i)\| \le K_{V,3}(\rho) < \infty
 $$
 
 for all alive walker counts $k \in \{1, \ldots, N\}$, all swarm sizes $N \ge 1$, and all localization scales $\rho > 0$, where:
+
 $$
 K_{V,3}(\rho) := L_{g'''_A} \cdot (K_{Z,1}(\rho))^3 + 3 L_{g''_A} \cdot K_{Z,1}(\rho) \cdot K_{Z,2}(\rho) + L_{g'_A} \cdot K_{Z,3}(\rho)
 $$
@@ -46516,6 +46642,7 @@ Here:
 **Step 1: Chain rule for composition.**
 
 The fitness potential is $V_{\text{fit}} = g_A \circ Z_\rho$, a composition of smooth functions. By the multivariable chain rule for third derivatives (see ρ2.4):
+
 $$
 \nabla^3 V_{\text{fit}} = g'''_A(Z_\rho) \cdot (\nabla Z_\rho)^3 + 3 g''_A(Z_\rho) \cdot \nabla Z_\rho \cdot \nabla^2 Z_\rho + g'_A(Z_\rho) \cdot \nabla^3 Z_\rho
 $$
@@ -46527,6 +46654,7 @@ $$
 By Assumption {prf:ref}`assump-c3-rescale`, $|g'''_A(z)| \le L_{g'''_A}$ for all $z \in \mathbb{R}$.
 
 The first derivative of $Z_\rho$ satisfies (Theorem {prf:ref}`thm-c1-regularity`):
+
 $$
 \|\nabla Z_\rho\| \le K_{Z,1}(\rho)
 $$
@@ -46534,6 +46662,7 @@ $$
 where $K_{Z,1}(\rho)$ is the k-uniform bound from Theorem {prf:ref}`thm-c1-regularity`.
 
 Therefore:
+
 $$
 \|g'''_A(Z_\rho) \cdot (\nabla Z_\rho)^3\| \le L_{g'''_A} \cdot (K_{Z,1}(\rho))^3
 $$
@@ -46543,11 +46672,13 @@ $$
 By Assumption {prf:ref}`assump-c3-rescale`, $|g''_A(z)| \le L_{g''_A}$.
 
 The second derivative of $Z_\rho$ satisfies (from Appendix A):
+
 $$
 \|\nabla^2 Z_\rho\| \le K_{Z,2}(\rho)
 $$
 
 Therefore:
+
 $$
 \|3 g''_A(Z_\rho) \cdot \nabla Z_\rho \cdot \nabla^2 Z_\rho\| \le 3 L_{g''_A} \cdot K_{Z,1}(\rho) \cdot K_{Z,2}(\rho)
 $$
@@ -46557,11 +46688,13 @@ $$
 By Assumption {prf:ref}`assump-c3-rescale`, $|g'_A(z)| \le L_{g'_A}$.
 
 The third derivative of $Z_\rho$ satisfies (from Lemma {prf:ref}`lem-zscore-third-derivative`):
+
 $$
 \|\nabla^3 Z_\rho\| \le K_{Z,3}(\rho)
 $$
 
 Therefore:
+
 $$
 \|g'_A(Z_\rho) \cdot \nabla^3 Z_\rho\| \le L_{g'_A} \cdot K_{Z,3}(\rho)
 $$
@@ -46569,6 +46702,7 @@ $$
 **Step 3: Combine bounds.**
 
 Summing the three terms:
+
 $$
 \|\nabla^3 V_{\text{fit}}\| \le L_{g'''_A} \cdot (K_{Z,1}(\rho))^3 + 3 L_{g''_A} \cdot K_{Z,1}(\rho) \cdot K_{Z,2}(\rho) + L_{g'_A} \cdot K_{Z,3}(\rho) =: K_{V,3}(\rho)
 $$
@@ -46626,6 +46760,7 @@ $C_{w,3}(\rho)$ follows from the explicit kernel derivatives. \(\square\)
 2. Friction coefficient $\gamma > 0$
 3. Temperature $T > 0$ (or equivalently, noise scale $\sigma > 0$)
 4. Time step $\Delta t$ satisfying the stability criterion:
+
 $$
 \Delta t \le \Delta t_{\max}(\rho, \gamma) := \min\left( \frac{1}{2\gamma}, \frac{1}{K_{V,3}(\rho)^{1/2}} \right)
 $$
@@ -46655,6 +46790,7 @@ bounds established here.
 :label: cor-lyapunov-c3
 
 The total Lyapunov function $V_{\text{total}}(S) = V_{\text{pos}}(S) + \lambda_v V_{\text{vel}}(S)$ used in the Foster-Lyapunov analysis satisfies $V_{\text{total}} \in C^3$ with N-uniform bounds:
+
 $$
 \|\nabla^3 V_{\text{total}}\| \le K_{\text{total},3} < \infty
 $$
@@ -46671,6 +46807,7 @@ level, ensuring smooth perturbations preserve geometric ergodicity.
 **Step 1: Structure of $V_{\text{total}}$.**
 
 From the Lyapunov construction in {doc}`06_convergence`, the total Lyapunov function is:
+
 $$
 V_{\text{total}}(S) = V_{\text{pos}}(S) + \lambda_v V_{\text{vel}}(S)
 $$
@@ -46695,6 +46832,7 @@ where:
 **Step 3: Combine bounds.**
 
 Since each component has bounded third derivatives, $V_{\text{total}} \in C^3$ with:
+
 $$
 K_{\text{total},3} = \max(\|\nabla^3 U\|, \|\nabla^3 V_{\text{fit}}\|, 0) = \max(\|\nabla^3 U\|, K_{V,3}(\rho))
 $$
@@ -46706,9 +46844,11 @@ This is N-uniform because the fitness potential bound $K_{V,3}(\rho)$ is N-unifo
 :label: cor-smooth-perturbation
 
 The adaptive force $\mathbf{F}_{\text{adapt}}(x_i, S) = \epsilon_F \nabla V_{\text{fit}}[f_k, \rho](x_i)$ is a **$C^3$ perturbation** of the backbone system, with:
+
 $$
 \|\nabla \mathbf{F}_{\text{adapt}}\| = \epsilon_F \|\nabla^2 V_{\text{fit}}\| \le \epsilon_F H_{\max}(\rho)
 $$
+
 $$
 \|\nabla^2 \mathbf{F}_{\text{adapt}}\| = \epsilon_F \|\nabla^3 V_{\text{fit}}\| \le \epsilon_F K_{V,3}(\rho)
 $$
@@ -46733,6 +46873,7 @@ These are $C^3$ bounds, confirming the perturbation is smooth.
 :label: cor-regularity-hierarchy
 
 The fitness potential $V_{\text{fit}}[f_k, \rho]$ satisfies the complete regularity hierarchy:
+
 $$
 V_{\text{fit}} \in C^1 \cap C^2 \cap C^3
 $$
@@ -46753,6 +46894,7 @@ This hierarchy is **sufficient for all convergence proofs** in the Fragile Gas f
 :label: prop-timestep-constraint
 
 For the BAOAB integrator to maintain $O(\Delta t^2)$ weak error, the time step must satisfy:
+
 $$
 \Delta t \lesssim \frac{1}{\sqrt{K_{V,3}(\rho)}}
 $$
@@ -46765,16 +46907,19 @@ stability requires smaller time steps as localization becomes sharper.
 :label: proof-prop-timestep-constraint
 
 The BAOAB weak error analysis (Theorem 1.7.2 in {doc}`06_convergence`) involves truncating the Itρ-Taylor expansion at second order. The truncation error depends on:
+
 $$
 \Delta t^2 \cdot \|\nabla^3 V\|
 $$
 
 For the error to remain $O(\Delta t^2)$, we need:
+
 $$
 \Delta t^2 \cdot K_{V,3}(\rho) = O(\Delta t^2)
 $$
 
 This is automatically satisfied, but for the **discrete-time Markov chain** to be well-behaved (e.g., to avoid large jumps), we require the higher-order correction terms to be small:
+
 $$
 \Delta t \cdot \sqrt{K_{V,3}(\rho)} \lesssim 1
 $$
@@ -46787,6 +46932,7 @@ $K_{V,3}(\rho)$.
 :label: prop-explicit-k-v-3
 
 For the Gaussian kernel with constants $(d_{\max}, d'_{\max}, d''_{\max}, d'''_{\max}, A, L_{g'_A}, L_{g''_A}, L_{g'''_A}, \sigma'_{\min})$, the third-derivative bound is:
+
 $$
 \begin{aligned}
 K_{V,3}(\rho) = &\, L_{g'_A} \cdot \frac{1}{\sigma'_{\min}} \cdot \left[d'''_{\max} + \frac{6 d''_{\max}}{\rho} + \frac{6 d'_{\max}}{\rho^2} + \frac{C_{\max}}{\rho^3}\right] \\
@@ -46812,6 +46958,7 @@ The third derivatives $\nabla^3 V_{\text{fit}}[f_k, \rho](x_i)$ are continuous f
 3. **Localization parameter** $\rho \in (0, \infty)$
 
 **Uniform continuity on compact sets:** For any compact set $K \subset \mathcal{X} \times (\mathcal{X} \times \mathbb{R}^d)^N \times (0, \infty)$, the map:
+
 $$
 (x_i, S, \rho) \mapsto \nabla^3 V_{\text{fit}}[f_k, \rho](x_i)
 $$
@@ -46852,6 +46999,7 @@ The rescale function $g_A$ is $C^3$ by Assumption {prf:ref}`assump-c3-rescale`, 
 **Step 2: Apply composition theorem.**
 
 The third derivative $\nabla^3 V_{\text{fit}}$ is given by the chain rule formula (Theorem {prf:ref}`thm-c3-regularity`):
+
 $$
 \nabla^3 V_{\text{fit}} = g'''_A(Z_\rho) \cdot (\nabla Z_\rho)^3 + 3 g''_A(Z_\rho) \cdot \nabla Z_\rho \cdot \nabla^2 Z_\rho + g'_A(Z_\rho) \cdot \nabla^3 Z_\rho
 $$
@@ -46875,6 +47023,7 @@ Continuous functions on compact sets are uniformly continuous (Heine-Cantor theo
 
 :::{prf:definition} Regularized Standard Deviation (Implementation)
 :label: def-reg-std-implementation
+
 $$
 \sigma'_{\text{reg}}(V) = \sqrt{V + \sigma'^2_{\min}}
 $$
@@ -46884,6 +47033,7 @@ where $\sigma'_{\min} = \sqrt{\kappa_{\text{var,min}} + \varepsilon_{\text{std}}
 - $\varepsilon_{\text{std}} > 0$: Numerical stability parameter (typical value: $10^{-6}$ to $10^{-4}$)
 
 **Derivative bounds:**
+
 $$
 \begin{align}
 L_{\sigma'_{\text{reg}}} &= \frac{1}{2\sigma'_{\min}} \\
@@ -47516,6 +47666,7 @@ $$
   by Lemma {prf:ref}`lem-mean-field-kernel-mass-bound`.
 
 Thus, in the mean-field bounds we have
+
 $$
 \|\nabla_{x_i} Z_j\| \leq \frac{C_K}{\varepsilon_c^2} \cdot Z_j,
 $$
@@ -47839,6 +47990,7 @@ $$
 **For higher-order derivatives ($n \geq 2$):** The k-uniform structure is preserved by the following argument:
 
 1. **Inductive structure**: Each higher-order derivative $\nabla^n_{x_i} d_j$ is obtained by differentiating $\nabla^{n-1}_{x_i} d_j$, which by induction has the form:
+   
    $$
    \nabla^{n-1}_{x_i} d_j = \sum_{\text{terms}} P_i^{k_1} (\nabla^{k_2} d_{ji}) (\nabla^{k_3} \log K_i) (\nabla^{k_4} d_j)
    $$
@@ -47855,6 +48007,7 @@ $$
 4. **Gevrey-1 growth**: The Leibniz rule, quotient rule, and Faà di Bruno formula (detailed in Step 3 below) produce combinatorial factors bounded by $\mathcal{O}(n!)$, yielding Gevrey-1 growth.
 
 Therefore, for all $n \geq 1$:
+
 $$
 \|\nabla^n_{x_i} d_j\| \leq C_n \max(\varepsilon_d^{1-n}, \varepsilon_d \varepsilon_c^{-n})
 $$
@@ -48123,6 +48276,7 @@ $$
 **For higher-order derivatives ($n \geq 2$):** The k-uniform structure is preserved by the following argument:
 
 1. **Inductive structure**: Each higher-order derivative $\nabla^n_{x_i} d_j$ is obtained by differentiating $\nabla^{n-1}_{x_i} d_j$, which by induction has the form:
+   
    $$
    \nabla^{n-1}_{x_i} d_j = \sum_{\text{terms}} P_i^{k_1} (\nabla^{k_2} d_{ji}) (\nabla^{k_3} \log K_i) (\nabla^{k_4} d_j)
    $$
@@ -48139,6 +48293,7 @@ $$
 4. **Gevrey-1 growth**: The Leibniz rule, quotient rule, and Faà di Bruno formula (detailed in Step 3 below) produce combinatorial factors bounded by $\mathcal{O}(n!)$, yielding Gevrey-1 growth.
 
 Therefore, for all $n \geq 1$:
+
 $$
 \|\nabla^n_{x_i} d_j\| \leq C_n \max(\varepsilon_d^{1-n}, \varepsilon_d \varepsilon_c^{-n})
 $$
@@ -49219,6 +49374,7 @@ $$
   by Lemma {prf:ref}`lem-mean-field-kernel-mass-bound`.
 
 Thus, in the mean-field bounds we have
+
 $$
 \|\nabla_{x_i} Z_j\| \leq \frac{C_K}{\varepsilon_c^2} \cdot Z_j,
 $$
@@ -49750,6 +49906,7 @@ $$
 **For higher-order derivatives ($n \geq 2$):** The k-uniform structure is preserved by the following argument:
 
 1. **Inductive structure**: Each higher-order derivative $\nabla^n_{x_i} d_j$ is obtained by differentiating $\nabla^{n-1}_{x_i} d_j$, which by induction has the form:
+   
    $$
    \nabla^{n-1}_{x_i} d_j = \sum_{\text{terms}} P_i^{k_1} (\nabla^{k_2} d_{ji}) (\nabla^{k_3} \log K_i) (\nabla^{k_4} d_j)
    $$
@@ -49766,6 +49923,7 @@ $$
 4. **Gevrey-1 growth**: The Leibniz rule, quotient rule, and Faà di Bruno formula (detailed in Step 3 below) produce combinatorial factors bounded by $\mathcal{O}(n!)$, yielding Gevrey-1 growth.
 
 Therefore, for all $n \geq 1$:
+
 $$
 \|\nabla^n_{x_i} d_j\| \leq C_n \max(\varepsilon_d^{1-n}, \varepsilon_d \varepsilon_c^{-n})
 $$
@@ -52008,6 +52166,7 @@ but are **independent of $k$ and $N$**.
 :label: proof-cor-gevrey-1-fitness-potential-full
 
 From {prf:ref}`thm-main-cinf-regularity-fitness-potential-full`,
+
 $$
 \|\nabla^m V_{\text{fit}}\| \leq C_{V,m} \cdot m! \cdot \max(\rho^{-m}, \varepsilon_d^{1-m})
 $$
@@ -53210,6 +53369,7 @@ For the Yang-Mills vacuum:
 **Step 2: Analyze fitness potential**
 
 With uniform reward, the fitness potential simplifies dramatically:
+
 $$
 V_{\text{fit}}(x) = \text{Rescale}(Z_r(x)) + \beta \cdot \text{Rescale}(Z_d(x))
 $$
@@ -53217,6 +53377,7 @@ $$
 where $Z_r(x) = 0$ (no reward gradient) and $Z_d(x)$ is the diversity Z-score (distance to companions).
 
 For uniform reward:
+
 $$
 V_{\text{fit}}(x) \approx \beta \cdot f(d(x, \text{swarm center}))
 $$
@@ -53230,6 +53391,7 @@ H(x) = \nabla^2 V_{\text{fit}}(x) \approx \beta \cdot \nabla^2 f
 $$
 
 For a smooth diversity term, $\|\nabla^2 f\| = O(1)$ is bounded. With regularization:
+
 $$
 g(x) = H(x) + \epsilon_\Sigma I \approx \beta \cdot O(1) + \epsilon_\Sigma I \approx \text{const} \cdot I
 $$
@@ -53243,6 +53405,7 @@ U_{\text{eff}}(x) = U(x) - \epsilon_F V_{\text{fit}}(x) = \frac{\kappa_{\text{co
 $$
 
 For $\epsilon_F$ small (weak adaptive force), the confining term dominates:
+
 $$
 U_{\text{eff}}(x) \approx \frac{\kappa_{\text{conf}}}{2}\|x\|^2 \quad \text{(quadratic)}
 $$
@@ -53258,6 +53421,7 @@ $$
 **Step 6: Perturbation argument**
 
 The small corrections from non-zero $\epsilon_F$ are **smooth perturbations** of the Gaussian. By continuity of log-concavity under small perturbations in the supremum norm:
+
 $$
 \|\rho_{\text{pert}} - \rho_{\text{Gaussian}}\|_{\infty} = O(\epsilon_F) \implies \rho_{\text{pert}} \text{ is log-concave}
 $$
@@ -54050,6 +54214,7 @@ where $\kappa_{W,\min} > 0$ is the N-uniform lower bound on the Wasserstein cont
 **Proof.**
 
 1. From Corollary {prf:ref}`cor-quantitative-lsi-final` (Section 5.6), the LSI constant for the N-particle system is given by:
+   
    $$
    C_{\text{LSI}}(N) = O\left(\frac{1}{\min(\gamma, \kappa_{\text{conf}}) \cdot \kappa_W(N) \cdot \delta^2}\right)
    $$
@@ -54066,6 +54231,7 @@ where $\kappa_{W,\min} > 0$ is the N-uniform lower bound on the Wasserstein cont
 4. The cloning noise parameter $\delta > 0$ is an algorithm parameter, independent of $N$.
 
 5. Therefore, the LSI constant is uniformly bounded:
+   
    $$
    C_{\text{LSI}}(N) \leq O\left(\frac{1}{\min(\gamma, \kappa_{\text{conf}}) \cdot \kappa_{W,\min} \cdot \delta^2}\right) =: C_{\text{LSI}}^{\max} < \infty
    $$
@@ -54244,6 +54410,7 @@ D_{\text{KL}}(\mu' \| \pi) \leq (1 - \alpha_{\text{kin}} \tau) D_{\text{KL}}(\mu
 $$
 
 where:
+
 $$
 \alpha_{\text{kin}} = O(\gamma \kappa_{\text{conf}})
 $$
@@ -54276,11 +54443,13 @@ D_{\text{KL}}(\mu' \| \pi) \leq (1 - \tau \beta_{\text{clone}}) D_{\text{KL}}(\m
 $$
 
 where:
+
 $$
 \beta_{\text{clone}} := \frac{\lambda_{\text{clone}}}{m_a} \lambda_{\text{corr}} \lambda_{\text{Poin}} (1 - \epsilon_{\text{ratio}}) > 0
 $$
 
 and:
+
 $$
 C_{\text{ent}} := \tau \lambda_{\text{clone}} \left[\log\left(\frac{\rho_{\max}}{\rho_{\min}}\right) - \frac{d}{2} \log(2\pi e \delta^2)\right] < 0
 $$
@@ -54348,6 +54517,7 @@ D_{\text{KL}}(\mu_t \| \pi) \leq e^{-t/C_{\text{LSI}}} D_{\text{KL}}(\mu_0 \| \p
 $$
 
 where:
+
 $$
 C_{\text{asymptotic}} := \frac{C_{\text{total}}}{\tau(\alpha_{\text{kin}} + \beta_{\text{clone}})}
 $$
@@ -54359,6 +54529,7 @@ D_{\text{KL}}(\mu_{t+1} \| \pi) \leq (1 - \epsilon) D_{\text{KL}}(\mu_t \| \pi) 
 $$
 
 gives the geometric series:
+
 $$
 D_{\text{KL}}(\mu_t \| \pi) \leq (1 - \epsilon)^t D_{\text{KL}}(\mu_0 \| \pi) + C_{\text{total}} \sum_{k=0}^{t-1} (1 - \epsilon)^k
 $$
@@ -54387,6 +54558,7 @@ The sum converges to $C_{\text{total}}/\epsilon$ as $t \to \infty$, and $(1 - \e
 **Conclusion**:
 
 The discrete-time Markov chain $S_{t+1} = \Psi_{\text{total}}(S_t)$ with:
+
 $$
 \Psi_{\text{total}} := \Psi_{\text{clone}} \circ \Psi_{\text{kin}}
 $$
@@ -54398,6 +54570,7 @@ D_{\text{KL}}(\mu_t \| \pi_{\text{QSD}}) \leq e^{-\lambda t} D_{\text{KL}}(\mu_0
 $$
 
 where:
+
 $$
 \lambda = \tau(\alpha_{\text{kin}} + \beta_{\text{clone}}) = \tau \cdot O(\gamma \kappa_{\text{conf}} + \lambda_{\text{clone}} \lambda_{\text{corr}})
 $$
@@ -54416,6 +54589,7 @@ D_{\text{KL}}(\mu' \| \pi_{\text{kin}}) \leq (1 - \alpha_{\text{kin}} \tau) D_{\
 $$
 
 where:
+
 $$
 \alpha_{\text{kin}} = c \cdot \gamma \kappa_{\text{conf}}
 $$
@@ -54526,11 +54700,13 @@ D_{\text{KL}}(\mu' \| \pi) \leq (1 - \tau \beta_{\text{clone}}) D_{\text{KL}}(\m
 $$
 
 where:
+
 $$
 \beta_{\text{clone}} = \frac{\lambda_{\text{clone}}}{m_a} \lambda_{\text{corr}} \lambda_{\text{Poin}} (1 - \epsilon_{\text{ratio}})
 $$
 
 and:
+
 $$
 C_{\text{ent}} = \tau \lambda_{\text{clone}} \left[\log\left(\frac{\rho_{\max}}{\rho_{\min}}\right) - \frac{d}{2} \log(2\pi e \delta^2)\right] < 0
 $$
@@ -54635,6 +54811,7 @@ E_{\mu'}[\pi] - E_\mu[\pi] \leq -\tau \beta_{\text{clone}} D_{\text{KL}}(\mu \| 
 $$
 
 where:
+
 $$
 \beta_{\text{clone}} = \frac{\lambda_{\text{clone}}}{m_a} \lambda_{\text{corr}} \lambda_{\text{Poin}} (1 - \epsilon_{\text{ratio}})
 $$
@@ -54780,6 +54957,7 @@ D_{\text{KL}}(\mu_{t+1} \| \pi) \leq [1 - \tau(\alpha_{\text{kin}} + \beta_{\tex
 $$
 
 where:
+
 $$
 C_{\text{total}} = C_{\text{ent}} + O(e^{-\kappa \delta^2})
 $$
@@ -54839,11 +55017,13 @@ D_{\text{KL}}(\mu_t \| \pi) \leq e^{-\lambda t} D_{\text{KL}}(\mu_0 \| \pi) + C_
 $$
 
 where:
+
 $$
 \lambda = \tau(\alpha_{\text{kin}} + \beta_{\text{clone}})
 $$
 
 and:
+
 $$
 C_\infty = \frac{C_{\text{total}}}{\alpha_{\text{kin}} + \beta_{\text{clone}}}
 $$
@@ -55915,11 +56095,13 @@ with finite-N error $O(N^{-1})$, where the rate depends only on physical paramet
 The fundamental issue is that the kinetic operator $\Psi_{\text{kin}}$ and the full Euclidean Gas operator $\Psi_{\text{EG}}$ have **different stationary distributions**:
 
 **Kinetic operator alone**:
+
 $$
 \pi_{\text{kin}}(x, v) \propto e^{-(U(x) + |v|^2/2)/\theta}
 $$
 
 **Full Euclidean Gas** (kinetic + cloning):
+
 $$
 \pi_{\text{QSD}}(x, v, \mathcal{A}) \propto e^{g(x,v,S)} \cdot e^{-(U(x) + |v|^2/2)/\theta}
 $$
@@ -55967,6 +56149,7 @@ where:
 :label: ex-fl-no-lsi
 
 Consider a lazy random walk on the integers with transition:
+
 $$
 P(x, x \pm 1) = \frac{1}{4}, \quad P(x, x) = \frac{1}{2}
 $$
@@ -55974,6 +56157,7 @@ $$
 and stationary measure $\pi$ geometric: $\pi(x) \propto e^{-|x|}$.
 
 **Has Foster-Lyapunov**: With $V(x) = |x|$:
+
 $$
 \mathbb{E}[V(X_{t+1})] \leq (1 - c)V(X_t) + C
 $$
@@ -55989,6 +56173,7 @@ Let $L$ be a diffusion generator on $\mathbb{R}^d$ with invariant measure $\pi$.
 - **Iterated carré du champ**: $\Gamma_2(f, f) = \frac{1}{2}(L\Gamma(f,f) - 2\Gamma(f, Lf))$
 
 If there exists $\rho > 0$ such that for all smooth $f$:
+
 $$
 \Gamma_2(f, f) \geq \rho \cdot \Gamma(f, f)
 $$
@@ -56030,6 +56215,7 @@ $$
 $$
 
 with:
+
 $$
 \kappa_{\text{total}} = \min\left(\frac{\kappa_W\tau}{2}, \frac{c_V\kappa_x}{2}, \frac{c_V\gamma\tau}{2}, \frac{c_B(\kappa_b + \kappa_{\text{pot}}\tau)}{2}\right) > 0
 $$
@@ -56047,6 +56233,7 @@ $$
 $$
 
 where:
+
 $$
 C_{\text{LSI}}^{\text{kin}} = \frac{1}{2\lambda_{\text{hypo}}}, \quad \lambda_{\text{hypo}} = c \cdot \min\left(\gamma, \frac{\alpha_U}{\sigma_v^2}\right)
 $$
@@ -56144,16 +56331,19 @@ where:
 By linearity of the generator $\mathcal{L} = \mathcal{L}_{\text{kin}} + \mathcal{L}_{\text{clone}}$:
 
 **Step 1**: Expand $\mathcal{L}(\Gamma^{\text{hypo}}(f,f))$ using linearity:
+
 $$
 \mathcal{L}(\Gamma^{\text{hypo}}) = \mathcal{L}_{\text{kin}}(\Gamma^{\text{hypo}}) + \mathcal{L}_{\text{clone}}(\Gamma^{\text{hypo}})
 $$
 
 **Step 2**: Expand $\Gamma^{\text{hypo}}(f, \mathcal{L} f)$ using bilinearity in the second argument:
+
 $$
 \Gamma^{\text{hypo}}(f, \mathcal{L} f) = \Gamma^{\text{hypo}}(f, \mathcal{L}_{\text{kin}} f) + \Gamma^{\text{hypo}}(f, \mathcal{L}_{\text{clone}} f)
 $$
 
 **Step 3**: Define the individual Γ₂ operators:
+
 $$
 \begin{aligned}
 \Gamma_2^{\text{kin}}(f, f) &:= \frac{1}{2}\mathcal{L}_{\text{kin}}(\Gamma^{\text{hypo}}(f, f)) - \Gamma^{\text{hypo}}(f, \mathcal{L}_{\text{kin}} f) \\[4pt]
@@ -56162,6 +56352,7 @@ $$
 $$
 
 **Step 4**: Verify the decomposition. Substituting Steps 1 and 2 into the definition of $\Gamma_2^{\text{hypo}}$:
+
 $$
 \begin{aligned}
 \Gamma_2^{\text{hypo}} &= \frac{1}{2}\mathcal{L}(\Gamma^{\text{hypo}}) - \Gamma^{\text{hypo}}(f, \mathcal{L} f) \\[4pt]
@@ -56193,6 +56384,7 @@ where:
 We apply Villani's hypocoercivity framework (Villani 2009, Theorem 35) adapted to the Langevin generator with non-convex potential. The proof proceeds by constructing a modified Lyapunov functional.
 
 **Step 1**: Write the kinetic generator in $(x, v)$ coordinates:
+
 $$
 \mathcal{L}_{\text{kin}} = \underbrace{v \cdot \nabla_x}_{\text{transport}} - \underbrace{\nabla U \cdot \nabla_v}_{\text{force}} - \underbrace{\gamma v \cdot \nabla_v}_{\text{friction}} + \underbrace{\frac{\sigma_v^2}{2}\Delta_v}_{\text{diffusion}}
 $$
@@ -56205,6 +56397,7 @@ $$
 The generator decomposes as $\mathcal{L}_{\text{kin}} = S + v \cdot \nabla_x - \nabla U \cdot \nabla_v$.
 
 **Step 3**: Construct the hypocoercive Lyapunov functional. Following Villani (2009, Section 6.4), define:
+
 $$
 \mathcal{H}(f) = \|f\|_{L^2(\pi)}^2 + 2\delta \langle \nabla_v f, \nabla_x f \rangle_{L^2(\pi)} + \varepsilon \|\nabla_x f\|_{L^2(\pi)}^2
 $$
@@ -56212,16 +56405,19 @@ $$
 where $\delta, \varepsilon > 0$ are coupling parameters to be optimized.
 
 **Step 4**: Compute the dissipation rate. The key calculation (Villani 2009, Theorem 35) shows:
+
 $$
 -\frac{d}{dt} \mathcal{H}(f_t) \geq \lambda_{\text{hypo}} \mathcal{H}(f_t) - \text{(error terms from non-convexity)}
 $$
 
 The error terms arise from $\nabla^2 U$ (Hessian of potential) appearing in:
+
 $$
 \langle \nabla_v f, \nabla^2 U \cdot \nabla_x f \rangle
 $$
 
 **Step 5**: Bound the Hessian contribution. By Cauchy-Schwarz and Young's inequality:
+
 $$
 |\langle \nabla_v f, \nabla^2 U \cdot \nabla_x f \rangle| \leq M \|\nabla_v f\| \cdot \|\nabla_x f\| \leq \frac{M^2}{2\eta} \|\nabla_x f\|^2 + \frac{\eta}{2} \|\nabla_v f\|^2
 $$
@@ -56229,6 +56425,7 @@ $$
 for any $\eta > 0$, where $M = \sup_x \|\nabla^2 U(x)\|$.
 
 **Step 6**: Optimize parameters. The optimal choice of $\delta, \varepsilon, \eta$ (Dolbeault-Mouhot-Schmeiser 2015, Theorem 2.3) gives:
+
 $$
 \lambda_{\text{hypo}} = c_1 \min\left(\gamma, \frac{\alpha_U}{\sigma_v^2}\right)
 $$
@@ -56238,6 +56435,7 @@ with $c_1 = 1/4$, provided:
 - Confinement: $\langle \nabla U, x \rangle \geq \alpha_U |x|^2$ for large $|x|$
 
 **Step 7**: Translate to Γ₂ bound. The Lyapunov inequality translates to the Γ₂ framework via the equivalence (Bakry-Émery-Ledoux correspondence):
+
 $$
 \Gamma_2^{\text{kin}}(f, f) \geq \alpha_{\text{kin}} \Gamma^{\text{hypo}}(f, f) - \beta_{\text{kin}} |\nabla_x f|^2
 $$
@@ -56265,17 +56463,20 @@ where $\epsilon_{\text{clone}} = C_{\text{Dob}} \nu_{\text{clone}} / \kappa_W$ w
 The cloning operator is a **non-local jump process** that doesn't fit the standard Γ₂ calculus for diffusions. We use a perturbation approach instead.
 
 **Step 1**: Characterize the cloning generator. The cloning operator acts on swarm observables as:
+
 $$
 \mathcal{L}_{\text{clone}} f(S) = \nu_{\text{clone}} \left( \mathbb{E}_{\text{clone}}[f(S') | S] - f(S) \right)
 $$
 where $S' \sim P_{\text{clone}}(\cdot | S)$ is the post-cloning state.
 
 **Step 2**: Apply the Dobrushin contraction. By {prf:ref}`thm-dobrushin-established`, the cloning operator satisfies Wasserstein contraction:
+
 $$
 W_1(P_{\text{clone}}^* \mu, P_{\text{clone}}^* \nu) \leq (1 - \kappa_W) W_1(\mu, \nu)
 $$
 
 where $\kappa_W \in (0, 1)$ is the contraction coefficient. By the Kantorovich-Rubinstein duality, this implies:
+
 $$
 \|P_{\text{clone}} f - \pi_{\text{clone}}(f)\|_{\infty} \leq (1 - \kappa_W) \|f - \pi_{\text{clone}}(f)\|_{\infty}
 $$
@@ -56283,11 +56484,13 @@ $$
 for functions $f$ with $\pi_{\text{clone}}(f) = \int f \, d\pi$.
 
 **Step 3**: Bound the perturbation to the Γ₂ inequality. The key observation is that cloning acts as a **bounded perturbation** to the kinetic dynamics. For any functional $\mathcal{F}(f)$:
+
 $$
 |\mathcal{L}_{\text{clone}} \mathcal{F}(f)| \leq \nu_{\text{clone}} \cdot \text{Var}_{\text{clone}}(\mathcal{F})
 $$
 
 For $\mathcal{F} = \Gamma^{\text{hypo}}(f, f)$, the variance is controlled by the fitness gradient. Using the uniform bound on fitness $|g| \leq G_{\max}$:
+
 $$
 |\mathcal{L}_{\text{clone}}(\Gamma^{\text{hypo}}(f, f))| \leq C_0 \nu_{\text{clone}} G_{\max}^2 \Gamma^{\text{hypo}}(f, f)
 $$
@@ -56295,36 +56498,43 @@ $$
 where $C_0$ is a geometric constant depending on dimension.
 
 **Step 4**: Bound the cross-term $\Gamma^{\text{hypo}}(f, \mathcal{L}_{\text{clone}} f)$. Since $\mathcal{L}_{\text{clone}}$ is a bounded operator with $\|\mathcal{L}_{\text{clone}} f\|_{\infty} \leq \nu_{\text{clone}} \cdot \text{osc}(f)$:
+
 $$
 |\Gamma^{\text{hypo}}(f, \mathcal{L}_{\text{clone}} f)| \leq \nu_{\text{clone}} \cdot \|\nabla f\| \cdot \|\nabla(\text{osc}(f))\|
 $$
 
 Using the spectral bound from the Wasserstein contraction (which implies spectral gap $\kappa_W$ for the cloning operator):
+
 $$
 \|\nabla(\mathcal{L}_{\text{clone}} f)\|^2 \leq \frac{\nu_{\text{clone}}^2}{\kappa_W} \|\nabla f\|^2
 $$
 
 Therefore:
+
 $$
 |\Gamma^{\text{hypo}}(f, \mathcal{L}_{\text{clone}} f)| \leq \frac{C_1 \nu_{\text{clone}}}{\sqrt{\kappa_W}} \Gamma^{\text{hypo}}(f, f)
 $$
 
 **Step 5**: Compute the Γ₂ bound. Combining the definition $\Gamma_2^{\text{clone}} = \frac{1}{2}\mathcal{L}_{\text{clone}}(\Gamma^{\text{hypo}}) - \Gamma^{\text{hypo}}(f, \mathcal{L}_{\text{clone}} f)$:
+
 $$
 \Gamma_2^{\text{clone}} \geq -\frac{C_0 \nu_{\text{clone}} G_{\max}^2}{2} \Gamma^{\text{hypo}} - \frac{C_1 \nu_{\text{clone}}}{\sqrt{\kappa_W}} \Gamma^{\text{hypo}}
 $$
 
 Factoring out:
+
 $$
 \Gamma_2^{\text{clone}} \geq -\left(\frac{C_0 G_{\max}^2}{2} + \frac{C_1}{\sqrt{\kappa_W}}\right) \nu_{\text{clone}} \cdot \Gamma^{\text{hypo}}
 $$
 
 **Step 6**: Define the effective perturbation constant. Since $\kappa_W \in (0, 1)$, we have $1/\sqrt{\kappa_W} \geq 1/\kappa_W^{1/2} \geq 1$. Define:
+
 $$
 \epsilon_{\text{clone}} := C_{\text{Dob}} \frac{\nu_{\text{clone}}}{\kappa_W}
 $$
 
 where $C_{\text{Dob}} = (C_0 G_{\max}^2/2 + C_1) \cdot \kappa_W^{1/2}$ is chosen so that:
+
 $$
 \left(\frac{C_0 G_{\max}^2}{2} + \frac{C_1}{\sqrt{\kappa_W}}\right) \nu_{\text{clone}} \leq C_{\text{Dob}} \frac{\nu_{\text{clone}}}{\kappa_W}
 $$
@@ -56332,6 +56542,7 @@ $$
 This inequality holds because $(C_0 G_{\max}^2/2 + C_1/\sqrt{\kappa_W}) \leq (C_0 G_{\max}^2/2 + C_1) / \sqrt{\kappa_W} \leq C_{\text{Dob}} / \kappa_W$.
 
 Therefore:
+
 $$
 \Gamma_2^{\text{clone}} \geq -\epsilon_{\text{clone}} \Gamma^{\text{hypo}}(f, f)
 $$
@@ -56371,11 +56582,13 @@ This is precisely the **Acoustic Limit condition** from {doc}`10_kl_hypocoercive
 
 :::{prf:proof}
 **Step 1**: Apply the exact decomposition from {prf:ref}`lem-gamma2-decomposition`:
+
 $$
 \Gamma_2^{\text{hypo}} = \Gamma_2^{\text{kin}} + \Gamma_2^{\text{clone}}
 $$
 
 **Step 2**: Apply the bounds from {prf:ref}`lem-kinetic-gamma2-bound` and {prf:ref}`lem-cloning-gamma2-bound`:
+
 $$
 \begin{aligned}
 \Gamma_2^{\text{kin}} &\geq \alpha_{\text{kin}} \Gamma^{\text{hypo}} - \beta_{\text{kin}} |\nabla_x f|^2 \\
@@ -56384,21 +56597,25 @@ $$
 $$
 
 Adding these:
+
 $$
 \Gamma_2^{\text{hypo}} \geq (\alpha_{\text{kin}} - \epsilon_{\text{clone}}) \Gamma^{\text{hypo}} - \beta_{\text{kin}} |\nabla_x f|^2
 $$
 
 **Step 3**: Establish positive definiteness of $\Gamma^{\text{hypo}}$. The hypocoercive norm satisfies:
+
 $$
 \Gamma^{\text{hypo}}(f,f) = |\nabla_v f|^2 + \lambda |\nabla_x f|^2 + 2\mu \nabla_v f \cdot \nabla_x f
 $$
 
 This quadratic form in $(|\nabla_v f|, |\nabla_x f|)$ is positive definite if and only if:
+
 $$
 \mu^2 < \lambda \quad \text{(positive definiteness condition)}
 $$
 
 **Step 4**: Derive the gradient absorption inequality. Under the positive definiteness condition, complete the square:
+
 $$
 \begin{aligned}
 \Gamma^{\text{hypo}}(f,f) &= |\nabla_v f|^2 + \lambda |\nabla_x f|^2 + 2\mu \nabla_v f \cdot \nabla_x f \\
@@ -56408,11 +56625,13 @@ $$
 $$
 
 Therefore:
+
 $$
 |\nabla_x f|^2 \leq \frac{1}{\lambda - \mu^2} \Gamma^{\text{hypo}}(f, f)
 $$
 
 **Step 5**: Absorb the non-convexity penalty. Substituting Step 4 into Step 2:
+
 $$
 \begin{aligned}
 \Gamma_2^{\text{hypo}} &\geq (\alpha_{\text{kin}} - \epsilon_{\text{clone}}) \Gamma^{\text{hypo}} - \frac{\beta_{\text{kin}}}{\lambda - \mu^2} \Gamma^{\text{hypo}} \\
@@ -56421,31 +56640,37 @@ $$
 $$
 
 **Step 6**: Optimize the coupling parameters. Choose $\mu$ small enough that $\mu^2 \ll \lambda$, so:
+
 $$
 \frac{1}{\lambda - \mu^2} = \frac{1}{\lambda}\left(1 + \frac{\mu^2}{\lambda} + O(\mu^4/\lambda^2)\right) \approx \frac{1}{\lambda}
 $$
 
 Then:
+
 $$
 \Gamma_2^{\text{hypo}} \geq \left(\alpha_{\text{kin}} - \frac{\beta_{\text{kin}}}{\lambda} - \epsilon_{\text{clone}}\right) \Gamma^{\text{hypo}}
 $$
 
 Define the **hypocoercive curvature**:
+
 $$
 \rho_{\text{hypo}} := \alpha_{\text{kin}} - \frac{\beta_{\text{kin}}}{\lambda} - \epsilon_{\text{clone}}
 $$
 
 **Step 7**: Derive the Acoustic Limit. The curvature bound $\Gamma_2^{\text{hypo}} \geq \rho_{\text{hypo}} \Gamma^{\text{hypo}}$ requires $\rho_{\text{hypo}} > 0$:
+
 $$
 \alpha_{\text{kin}} > \frac{\beta_{\text{kin}}}{\lambda} + \epsilon_{\text{clone}}
 $$
 
 Substituting $\alpha_{\text{kin}} = c_1 \min(\gamma, \alpha_U/\sigma_v^2)$, $\beta_{\text{kin}} = c_2 M^2$, and $\epsilon_{\text{clone}} = C_{\text{Dob}} \nu_{\text{clone}} / \kappa_W$:
+
 $$
 c_1 \min(\gamma, \alpha_U/\sigma_v^2) > \frac{c_2 M^2}{\lambda} + \frac{C_{\text{Dob}} \nu_{\text{clone}}}{\kappa_W}
 $$
 
 When $\gamma$ is the binding constraint (i.e., $\gamma \leq \alpha_U/\sigma_v^2$), solving for $\gamma$:
+
 $$
 \gamma > \frac{c_2 M^2}{c_1 \lambda} + \frac{C_{\text{Dob}} \nu_{\text{clone}}}{c_1 \kappa_W} =: \gamma_*
 $$
@@ -56477,6 +56702,7 @@ Therefore $\rho_{\text{hypo}} = \alpha_{\text{kin}} - \beta_{\text{kin}}/\lambda
 :label: lem-discrete-lsi-from-curvature
 
 Let $\Psi_{\tau} = \Psi_{\text{kin}}(\tau) \circ \Psi_{\text{clone}}$ be the discrete-time operator with step $\tau > 0$. If the continuous generator satisfies the curvature bound ({prf:ref}`thm-hypo-curvature-bound`):
+
 $$
 \Gamma_2^{\text{hypo}} \geq \rho_{\text{hypo}} \Gamma^{\text{hypo}}
 $$
@@ -56494,6 +56720,7 @@ where $C_{\text{hypo}} = c_{\text{hi}}/c_{\text{lo}} \leq 2$ is the hypocoercivi
 
 :::{prf:proof}
 **Step 1**: Construct hypocoercive Lyapunov functional. The standard entropy $\text{Ent}(f^2) = \int f^2 \log f^2 \, d\pi - (\int f^2 d\pi) \log(\int f^2 d\pi)$ does not decay monotonically under non-reversible dynamics. Following Villani (2009, Chapter 6), define a **modified functional**:
+
 $$
 \mathcal{H}(f) := \text{Ent}_\pi(f^2) + \epsilon \int (Af) \cdot f \, d\pi
 $$
@@ -56501,6 +56728,7 @@ $$
 where $A$ is an auxiliary operator chosen to capture position-velocity coupling. For the kinetic Fokker-Planck equation, take $A = a \nabla_v \cdot \nabla_x + b \nabla_x \cdot \nabla_v$ with small constants $a, b > 0$.
 
 **Step 2**: Verify equivalence. Under the conditions $|a|, |b| \ll 1$ and the positive definiteness constraint $\mu^2 < \lambda$ from {prf:ref}`def-hypo-carre-du-champ`, the modified functional is equivalent to the standard entropy:
+
 $$
 c_{\text{lo}} \text{Ent}_\pi(f^2) \leq \mathcal{H}(f) \leq c_{\text{hi}} \text{Ent}_\pi(f^2)
 $$
@@ -56508,6 +56736,7 @@ $$
 with constants $c_{\text{lo}} = 1 - O(\epsilon)$ and $c_{\text{hi}} = 1 + O(\epsilon)$ (Villani 2009, Proposition 6.3).
 
 **Step 3**: Establish decay of $\mathcal{H}$. The curvature bound $\Gamma_2^{\text{hypo}} \geq \rho_{\text{hypo}} \Gamma^{\text{hypo}}$ from {prf:ref}`thm-hypo-curvature-bound` implies decay of the modified functional (Villani 2009, Theorem 6.1):
+
 $$
 \frac{d}{dt} \mathcal{H}(f_t) \leq -\kappa \mathcal{H}(f_t)
 $$
@@ -56515,16 +56744,19 @@ $$
 where $\kappa = 2\rho_{\text{hypo}} \cdot c_{\text{lo}}/c_{\text{hi}}$ (the ratio accounts for the equivalence constants).
 
 **Step 4**: Transfer to standard entropy. Combining Steps 2 and 3:
+
 $$
 \text{Ent}_\pi(f_t^2) \leq \frac{1}{c_{\text{lo}}} \mathcal{H}(f_t) \leq \frac{1}{c_{\text{lo}}} e^{-\kappa t} \mathcal{H}(f_0) \leq \frac{c_{\text{hi}}}{c_{\text{lo}}} e^{-\kappa t} \text{Ent}_\pi(f_0^2)
 $$
 
 For well-chosen $\epsilon$, we have $c_{\text{hi}}/c_{\text{lo}} \leq 2$ and $\kappa \geq \rho_{\text{hypo}}$, giving:
+
 $$
 \text{Ent}_\pi(f_t^2) \leq 2 e^{-\rho_{\text{hypo}} t} \text{Ent}_\pi(f_0^2)
 $$
 
 **Step 5**: Account for discretization error. The BAOAB integrator has weak error $O(\tau^2)$ for smooth observables (Leimkuhler-Matthews 2015, Theorem 7.5). For the entropy functional:
+
 $$
 |\text{Ent}(P_\tau^{\text{BAOAB}} f^2) - \text{Ent}(e^{\tau \mathcal{L}} f^2)| \leq K_{\text{split}} \tau^2
 $$
@@ -56532,6 +56764,7 @@ $$
 where $K_{\text{split}}$ depends on derivatives of $f$ and the potential $U$.
 
 **Step 6**: Combine continuous and discrete bounds. Using the triangle inequality:
+
 $$
 \begin{aligned}
 \text{Ent}(P_\tau^{\text{BAOAB}} f^2) &\leq \text{Ent}(e^{\tau \mathcal{L}} f^2) + K_{\text{split}} \tau^2 \\
@@ -56540,11 +56773,13 @@ $$
 $$
 
 **Step 7**: Obtain the final bound. From Step 6, we have:
+
 $$
 \text{Ent}(P_\tau^{\text{BAOAB}} f^2) \leq 2 e^{-\rho_{\text{hypo}}\tau} \text{Ent}(f^2) + K_{\text{split}} \tau^2
 $$
 
 For $\text{Ent}(f^2) \geq \epsilon_0 > 0$ and $\tau < \tau_* = \min(1/(2\rho_{\text{hypo}}), \sqrt{\epsilon_0/K_{\text{split}}})$, the discretization error satisfies $K_{\text{split}} \tau^2 \leq \epsilon_0 \leq \text{Ent}(f^2)$. Therefore:
+
 $$
 \text{Ent}(P_\tau^{\text{BAOAB}} f^2) \leq 2 e^{-\rho_{\text{hypo}}\tau} \text{Ent}(f^2) + K_{\text{split}} \tau^2 \leq C_{\text{hypo}} e^{-\rho_{\text{hypo}}\tau + O(\tau^2)} \text{Ent}(f^2)
 $$
@@ -56570,6 +56805,7 @@ C_{\text{LSI}}^{\text{discrete}} = \frac{1}{\rho_{\text{hypo}}} \cdot \left(1 + 
 $$
 
 where:
+
 $$
 \rho_{\text{hypo}} = c_1 \min(\gamma, \alpha_U/\sigma_v^2) - \frac{c_2 M^2}{\lambda} - \frac{C_{\text{Dob}} \nu_{\text{clone}}}{\kappa_W}
 $$
@@ -56579,6 +56815,7 @@ $$
 
 :::{prf:proof}
 **Step 1**: Establish the continuous-time LSI. The curvature bound $\Gamma_2^{\text{hypo}} \geq \rho_{\text{hypo}} \Gamma^{\text{hypo}}$ from {prf:ref}`thm-hypo-curvature-bound` implies, by the Bakry-Émery theorem for hypocoercive systems (Bakry-Émery 1985, extended by Villani 2009), a **logarithmic Sobolev inequality** for the continuous-time semigroup:
+
 $$
 \text{Ent}_{\pi}(f^2) \leq \frac{1}{\rho_{\text{hypo}}} \mathbb{E}_{\pi}[\Gamma^{\text{hypo}}(f, f)]
 $$
@@ -56586,6 +56823,7 @@ $$
 This gives the continuous-time LSI constant $C_{\text{LSI}}^{\text{cont}} = 1/\rho_{\text{hypo}}$.
 
 **Step 2**: Transfer to discrete time. The discrete operator $P_\tau$ is a perturbation of the continuous semigroup $e^{\tau \mathcal{L}}$ with error $O(\tau^2)$. By the stability of LSI under perturbations (Ledoux 1999, Theorem 5.3), if the continuous semigroup satisfies an LSI with constant $C$, then a discrete approximation with $O(\tau^2)$ weak error satisfies an LSI with constant:
+
 $$
 C_{\text{LSI}}^{\text{discrete}} \leq C_{\text{LSI}}^{\text{cont}} \cdot (1 + K \tau)
 $$
@@ -56593,6 +56831,7 @@ $$
 for some constant $K$ depending on the potential and discretization scheme.
 
 **Step 3**: Derive the explicit constant. Substituting $C_{\text{LSI}}^{\text{cont}} = 1/\rho_{\text{hypo}}$ into the perturbation bound:
+
 $$
 C_{\text{LSI}}^{\text{discrete}} = \frac{1}{\rho_{\text{hypo}}}(1 + O(\tau))
 $$
@@ -56620,6 +56859,7 @@ where:
 - $\kappa_W$ is the Wasserstein contraction coefficient from {prf:ref}`thm-dobrushin-established`
 
 **Physical interpretation**: The condition decomposes as:
+
 $$
 \gamma > \underbrace{\frac{c_2 M^2}{c_1 \lambda}}_{\text{non-convexity penalty}} + \underbrace{\frac{C_{\text{Dob}} \nu_{\text{clone}}}{c_1 \kappa_W}}_{\text{cloning perturbation}}
 $$
@@ -57203,16 +57443,19 @@ $$
 with:
 
 1. **Adaptive force perturbation**:
+   
    $$
    L_{\mathrm{adapt}} f = \epsilon_F \sum_{i=1}^N \nabla V_{\mathrm{fit}}[f_k, \rho](x_i) \cdot \nabla_{v_i} f
    $$
 
 2. **Viscous coupling perturbation**:
+   
    $$
    L_{\mathrm{viscous}} f = \nu \sum_{i=1}^N \sum_{j \neq i} \frac{K(x_i - x_j)}{\mathrm{deg}(i)} (v_j - v_i) \cdot \nabla_{v_i} f
    $$
 
 3. **Diffusion perturbation**:
+   
    $$
    L_{\mathrm{diff}} f = \frac{1}{2} \sum_{i=1}^N \left[ \mathrm{tr}(\Sigma_{\mathrm{reg}}^2 \nabla_{v_i}^2 f) - \sigma^2 \Delta_{v_i} f \right]
    $$
@@ -57697,6 +57940,7 @@ where $\gamma > 0$ is the friction coefficient.
 
 :::{prf:proof}
 The entropy production bound for the Ornstein-Uhlenbeck friction term is standard; see the kinetic LSI derivation in {doc}`/source/3_fractal_gas/appendices/15_kl_convergence` (Theorem {prf:ref}`thm-kinetic-lsi`) or {doc}`/source/3_fractal_gas/appendices/10_kl_hypocoercive` (Theorem {prf:ref}`thm-unconditional-lsi-explicit`). This yields
+
 $$
 -\frac{d}{dt} \mathrm{Ent}(f) \Big|_{\mathrm{friction}} \geq 4\gamma I_v(f).
 $$
@@ -57831,6 +58075,7 @@ $$
 $$
 
 By Theorem {prf:ref}`thm-equilibrium-variance-bounds` in {doc}`/source/3_fractal_gas/appendices/06_convergence`, there exists an N-uniform per-particle second-moment bound $M_v(\rho)$ such that
+
 $$
 \int \|v\|^2 d\pi_N \leq d N M_v(\rho).
 $$
@@ -58928,6 +59173,7 @@ Let $\rho_{\text{QSD}}(x,v)$ have position marginal $\rho_x(x)$ and conditional 
 covariance $\Sigma_v(x) := \int v v^\top \rho_{\text{QSD}}(v|x)\,dv$. Assume:
 
 1. **Position Poincare**: $\rho_x$ satisfies
+   
    $$
    \|a\|^2_{L^2(\rho_x)} \le \frac{1}{\kappa_x}\|\nabla_x a\|^2_{L^2(\rho_x)}
    \quad \text{for all } a \text{ with } \int a\,\rho_x = 0.

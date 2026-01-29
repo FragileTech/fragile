@@ -894,6 +894,7 @@ This is the **overdamped limit**, and it is important for two reasons:
 2. **Relevance**: Many real systems operate in this regime---diffusion models, Brownian motion in viscous fluids, biological processes
 
 The mathematical statement is: when friction $\gamma$ is large compared to the forces, the velocity quickly relaxes to
+
 $$
 \dot{z} \approx \mathcal{M}_\gamma\!\left(-G^{-1}\nabla\Phi\right), \qquad \mathcal{M}_\gamma := (\gamma I - \beta_{\text{curl}} G^{-1}\mathcal{F})^{-1}.
 $$

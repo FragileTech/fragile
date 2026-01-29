@@ -330,6 +330,7 @@ instantiations) on tree/graph growth problems.
 **Setup (rooted transition system).**
 Let $(X,x_0,\mathsf{Next},\mathsf{Goal})$ be a rooted transition system, where $\mathsf{Next}(x)\subseteq X$ is finite
 and $\mathsf{Goal}\subseteq X$ is the goal set. Define the depth
+
 $$
 \mathrm{depth}(x):=\min\{k:\exists x_1,\dots,x_k\ \text{s.t.}\ x_1\in\mathsf{Next}(x_0),\ x_{i+1}\in\mathsf{Next}(x_i),\ x_k=x\},
 $$
@@ -366,6 +367,7 @@ branching factor $b=\sup_x|\mathsf{Next}(x)|$ is large.
 Assume the instance is Regular in the **Propagator / shape** sense (Definition {prf:ref}`def-class-ii-propagators`) and
 admits a Propagator tube witness $(\mathcal{T},V,\delta,p)$ (Definition {prf:ref}`def-propagator-tube-witness`). Then the
 expected number of outer iterations for a population-based Propagator to reach $\mathsf{Goal}$ satisfies
+
 $$
 \mathbb{E}[T_{\mathrm{hit}}]\ \le\ d_\star/p,
 $$
@@ -383,6 +385,7 @@ assumption in Definition {prf:ref}`def-propagator-tube-witness`, there is always
 until $d_\star$ is reached.
 
 Conditioned on being at any $x\in\mathcal{T}$ with $\mathrm{depth}(x)<d_\star$, the tube-following probability yields
+
 $$
 \mathbb{P}(Z_{t+1}=Z_t+1\mid Z_t<d_\star)\ge p.
 $$

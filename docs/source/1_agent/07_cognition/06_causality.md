@@ -308,6 +308,7 @@ $$
 
 $$
 In the overdamped limit ({ref}`sec-the-unified-effective-potential`), the acceleration term vanishes and the drift field is
+
 $$
 \dot{z} = \mathcal{M}_{\text{curl}}\!\left(-G^{-1}\nabla_A V + \beta_{\text{exp}} G^{-1}\nabla\Psi_{\text{causal}}\right),
 $$

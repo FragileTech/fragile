@@ -122,6 +122,7 @@ Let $k = |\mathcal{A}(S_t)|$. Two regimes are supported:
     \mu_{\rho, d}(i) = \frac{\sum_{j \in \mathcal{A}(S_t)} K_{\rho}(i, j) d_j}{\sum_{\ell \in \mathcal{A}(S_t)} K_{\rho}(i, \ell)},
 
     $$
+    
     $$
     \sigma'_{\rho, d}(i; \sigma_{\text{min}}) = \sqrt{\frac{\sum_{j \in \mathcal{A}(S_t)} K_{\rho}(i, j) (d_j - \mu_{\rho, d}(i))^2}{\sum_{\ell \in \mathcal{A}(S_t)} K_{\rho}(i, \ell)} + \sigma_{\text{min}}^2}.
 
@@ -172,6 +173,7 @@ $$
 \mu_r(S_t) = \frac{1}{k} \sum_{j} r_j, \quad \sigma'_r(S_t; \sigma_{\text{min}}) = \sqrt{\frac{1}{k} \sum_j (r_j - \mu_r)^2 + \sigma_{\text{min}}^2},
 
 $$
+
 $$
 \mu_{\rho, r}(i) = \frac{\sum_j K_{\rho}(i, j) r_j}{\sum_{\ell} K_{\rho}(i, \ell)}, \quad
 \sigma'_{\rho, r}(i; \sigma_{\text{min}}) = \sqrt{\frac{\sum_j K_{\rho}(i, j) (r_j - \mu_{\rho, r}(i))^2}{\sum_{\ell} K_{\rho}(i, \ell)} + \sigma_{\text{min}}^2}.

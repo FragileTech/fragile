@@ -1762,6 +1762,7 @@ For **soft checks** (where the predicate cannot be definitively verified), the s
 - If verification is inconclusive (UNKNOWN): output NO with inconclusive certificate $K^{\mathrm{inc}}$
 This ensures the sieve is deterministic: UNKNOWN is conservatively treated as NO, routing to the barrier defense layer.
 By Binary Certificate Logic ({prf:ref}`def-typed-no-certificates`), the NO certificate is the coproduct
+
 $$
 K^- := K^{\mathrm{wit}} + K^{\mathrm{inc}}
 $$
@@ -1785,6 +1786,7 @@ with certificate types:
 - $K_i^{\mathrm{inc}}$ (`NO` inconclusive): Method/budget insufficient to certify $P_i$
 
 We package the NO outcomes as a single type via the coproduct
+
 $$
 K_i^- := K_i^{\mathrm{wit}} + K_i^{\mathrm{inc}}
 $$
@@ -2041,6 +2043,7 @@ order in which upgrade rules are applied.
 
 If one uses the **depth-budget** regime of {prf:ref}`def-cert-finite` (case 2), the closure computation is truncated
 after $D_{\max}$ iterations and yields a partial-closure certificate
+
 $$
 K_{\mathrm{Promo}}^{\mathrm{inc}} := (\text{``promotion depth exceeded''}, D_{\max}, \Gamma_{D_{\max}}, \text{trace}).
 $$
@@ -10611,6 +10614,7 @@ instantiations) on tree/graph growth problems.
 **Setup (rooted transition system).**
 Let $(X,x_0,\mathsf{Next},\mathsf{Goal})$ be a rooted transition system, where $\mathsf{Next}(x)\subseteq X$ is finite
 and $\mathsf{Goal}\subseteq X$ is the goal set. Define the depth
+
 $$
 \mathrm{depth}(x):=\min\{k:\exists x_1,\dots,x_k\ \text{s.t.}\ x_1\in\mathsf{Next}(x_0),\ x_{i+1}\in\mathsf{Next}(x_i),\ x_k=x\},
 $$
@@ -10647,6 +10651,7 @@ branching factor $b=\sup_x|\mathsf{Next}(x)|$ is large.
 Assume the instance is Regular in the **Propagator / shape** sense (Definition {prf:ref}`def-class-ii-propagators`) and
 admits a Propagator tube witness $(\mathcal{T},V,\delta,p)$ (Definition {prf:ref}`def-propagator-tube-witness`). Then the
 expected number of outer iterations for a population-based Propagator to reach $\mathsf{Goal}$ satisfies
+
 $$
 \mathbb{E}[T_{\mathrm{hit}}]\ \le\ d_\star/p,
 $$
@@ -11642,11 +11647,13 @@ satisfying:
 1. **Skew-symmetry:** $\{f_1, \ldots, f_n\}$ changes sign under transposition of any two arguments
 
 2. **Leibniz rule:**
+
 $$
 \{f_1 g, f_2, \ldots, f_n\} = f_1\{g, f_2, \ldots, f_n\} + g\{f_1, f_2, \ldots, f_n\}
 $$
 
 3. **Fundamental identity (FI):**
+
 $$
 \{f_1, \ldots, f_{n-1}, \{g_1, \ldots, g_n\}\} = \sum_{i=1}^n \{g_1, \ldots, \{f_1, \ldots, f_{n-1}, g_i\}, \ldots, g_n\}
 $$
@@ -11782,6 +11789,7 @@ The first two equations match Definition {prf:ref}`def-bulk-drift-continuous-flo
 **Position:** $\dot{z}^k = \partial H / \partial p_k = G^{kj} p_j$ ✓
 
 **Momentum:** On a Riemannian manifold, the contact Hamilton equation includes the Christoffel connection:
+
 $$
 \dot{p}_k = -\partial_k H - p_k \cdot \partial_s H - \Gamma^m_{k\ell} G^{\ell j} p_j p_m = -\partial_k \Phi_{\text{eff}} - \gamma p_k - \Gamma^m_{k\ell} G^{\ell j} p_j p_m
 $$
@@ -11847,11 +11855,13 @@ $$
 $$
 
 *Proof.* The Fokker-Planck equation for the $(z, p)$ marginal:
+
 $$
 \partial_t \rho = -\nabla_z \cdot (\dot{z}\, \rho) - \nabla_p \cdot (\dot{p}\, \rho) + \frac{1}{2}\nabla_p \cdot (D \nabla_p \rho)
 $$
 
 has stationary solution $\rho_* \propto e^{-H/T_c}$ iff:
+
 $$
 D_{ij} = 2\gamma T_c\, G_{ij}
 $$

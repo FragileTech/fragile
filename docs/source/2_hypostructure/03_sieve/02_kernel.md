@@ -126,6 +126,7 @@ For **soft checks** (where the predicate cannot be definitively verified), the s
 - If verification is inconclusive (UNKNOWN): output NO with inconclusive certificate $K^{\mathrm{inc}}$
 This ensures the sieve is deterministic: UNKNOWN is conservatively treated as NO, routing to the barrier defense layer.
 By Binary Certificate Logic ({prf:ref}`def-typed-no-certificates`), the NO certificate is the coproduct
+
 $$
 K^- := K^{\mathrm{wit}} + K^{\mathrm{inc}}
 $$
@@ -178,6 +179,7 @@ with certificate types:
 - $K_i^{\mathrm{inc}}$ (`NO` inconclusive): Method/budget insufficient to certify $P_i$
 
 We package the NO outcomes as a single type via the coproduct
+
 $$
 K_i^- := K_i^{\mathrm{wit}} + K_i^{\mathrm{inc}}
 $$
@@ -618,6 +620,7 @@ This ensures $|\mathcal{K}(T)| < \infty$ and hence termination in $\leq |\mathca
 
 If one uses the **depth-budget** regime of {prf:ref}`def-cert-finite` (case 2), the closure computation is truncated
 after $D_{\max}$ iterations and yields a partial-closure certificate
+
 $$
 K_{\mathrm{Promo}}^{\mathrm{inc}} := (\text{``promotion depth exceeded''}, D_{\max}, \Gamma_{D_{\max}}, \text{trace}).
 $$

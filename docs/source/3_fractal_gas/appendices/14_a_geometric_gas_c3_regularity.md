@@ -3,6 +3,7 @@
 ## Abstract
 
 This document establishes **C³ regularity** (three times continuous differentiability) with **bounded third derivatives** for the fitness potential of the Geometric Gas algorithm with companion-dependent measurements. We prove regularity for the full algorithmic fitness potential:
+
 $$
 V_{\text{fit}}(x_i, v_i) = g_A\left(Z_\rho\left(\mu_\rho^{(i)}, \sigma_\rho^{2(i)}\right)\right)
 $$
@@ -23,6 +24,7 @@ The proof uses a **two-scale analytical framework** operating at distinct spatia
 ## 0. TLDR
 
 **C³ Regularity with k-Uniform Bounds**: The fitness potential $V_{\text{fit}}(x_i, v_i)$ of the Geometric Gas with companion-dependent measurements is three times continuously differentiable with bounded third derivatives:
+
 $$
 \|\nabla^3 V_{\text{fit}}\| \leq K_{V,3}(\rho, \varepsilon_c, \varepsilon_d, \eta_{\min})
 $$
@@ -46,6 +48,7 @@ Result: **k-uniform** third-derivative bounds for the full companion-dependent m
 ### 1.1. Goal and Scope
 
 The goal of this document is to establish **C³ regularity** (three times continuous differentiability) of the Geometric Gas fitness potential with companion-dependent measurements, providing explicit **k-uniform** and **N-uniform** third-derivative bounds. The central object of study is the full algorithmic fitness potential:
+
 $$
 V_{\text{fit}}(x_i, v_i) = g_A\left(Z_\rho\left(\mu_\rho^{(i)}, \sigma_\rho^{2(i)}\right)\right)
 $$
@@ -59,6 +62,7 @@ where measurements $d_j = d_{\text{alg}}(j, c(j))$ depend on **stochastic compan
 This document analyzes the full algorithmic implementation (not the simplified position-only model), addressing the fundamental challenge: **companion selection creates N-body coupling** where each walker's measurement depends on all other walkers' positions through the softmax probability distribution. Naive expansion of third derivatives yields $\mathcal{O}(N^3)$ terms, threatening k-uniformity.
 
 We prove that despite this coupling, $V_{\text{fit}} \in C^3(\mathcal{X} \times \mathbb{R}^d)$ with third-derivative bound:
+
 $$
 \|\nabla^3 V_{\text{fit}}\|_\infty \leq K_{V,3}(\rho, \varepsilon_c, \varepsilon_d, \eta_{\min})
 $$
@@ -127,6 +131,7 @@ The C³ analysis tracks how third-derivative bounds vary across this entire cont
 ### 1.3. The N-Body Coupling Challenge and Its Resolution
 
 The defining challenge of this analysis is the **N-body coupling** introduced by companion-dependent measurements. Each $d_j = d_{\text{alg}}(j, c(j))$ depends on the companion $c(j)$ selected via softmax:
+
 $$
 \mathbb{P}(c(j) = \ell) = \frac{\exp(-d_{\text{alg}}^2(j,\ell)/(2\varepsilon_c^2))}{\sum_{\ell' \in \mathcal{A} \setminus \{j\}} \exp(-d_{\text{alg}}^2(j,\ell')/(2\varepsilon_c^2))}
 $$
@@ -134,6 +139,7 @@ $$
 This creates **global coupling**: changing walker $i$'s position affects the companion probabilities for **all other walkers** $j \in \mathcal{A}$, making $\partial d_j / \partial x_i \neq 0$ even when $i \neq j$.
 
 **Naive Expansion Failure**: Direct differentiation gives:
+
 $$
 \frac{\partial^m}{\partial x_i^m} \left[\sum_{j \in \mathcal{A}} f(d_j)\right] \sim \sum_{j \in \mathcal{A}} \sum_{\text{multi-indices}} (\text{products of } \partial^{|\alpha|} d_j / \partial x_i^{\alpha})
 $$
@@ -179,16 +185,19 @@ The Geometric Gas fitness potential involves **two distinct spatial scales** wit
 :label: def-effective-counts-two-scales
 
 **1. Softmax Effective Companions** (scale $\varepsilon_c$):
+
 $$
 k_{\text{eff}}^{(\varepsilon_c)}(i) := \left|\left\{\ell \in \mathcal{A} : d_{\text{alg}}(i,\ell) \leq R_{\text{eff}}^{(\varepsilon_c)}\right\}\right|
 $$
 
 where:
+
 $$
 R_{\text{eff}}^{(\varepsilon_c)} = \varepsilon_c \sqrt{C_{\text{comp}}^2 + 2\log(k^2)}
 $$
 
 **Scaling**:
+
 $$
 k_{\text{eff}}^{(\varepsilon_c)}(i) = O(\rho_{\max} \cdot \varepsilon_c^{2d} \cdot (\log k)^d)
 $$
@@ -199,11 +208,13 @@ $$
 - Controls softmax companion sums over $\ell$
 
 **2. Localization Effective Neighbors** (scale $\rho$):
+
 $$
 k_{\text{eff}}^{(\rho)}(i) := \left|\left\{j \in \mathcal{A} : d_{\text{alg}}(i,j) \leq R_{\text{eff}}^{(\rho)}\right\}\right|
 $$
 
 where:
+
 $$
 R_{\text{eff}}^{(\rho)} = C_\rho \cdot \rho
 $$
@@ -211,12 +222,14 @@ $$
 for some constant $C_\rho$ independent of $k$.
 
 **Scaling**:
+
 $$
 k_{\text{eff}}^{(\rho)}(i) = O(\rho_{\max} \cdot \rho^{2d})
 $$
 
 
 **Explicit bound**: The effective neighbor count satisfies:
+
 $$
 k_{\text{eff}}^{(\rho)}(i) \leq C_{\text{vol}} \rho_{\max} \rho^{2d}
 $$
@@ -356,6 +369,7 @@ We work with the N-particle phase space $(\mathcal{X} \times \mathbb{R}^d)^N$ wh
 ### 2.2. The Alive-Walker Empirical Measure
 
 All statistical computations use the **alive-walker empirical measure**:
+
 $$
 f_k := \frac{1}{k} \sum_{j \in A_k} \delta_{(x_j, v_j)}
 $$
@@ -370,6 +384,7 @@ For a function $h: \mathbb{R}^d \to \mathbb{R}$, we use the following notation:
 - $\nabla^3_{x_i} h$ or $\nabla^3 h(x_i)$: Third derivative tensor (rank-3 tensor)
 
 For the third derivative, we use the norm:
+
 $$
 \|\nabla^3 h\| := \max_{\|u\| = \|v\| = \|w\| = 1} |(\nabla^3 h)(u, v, w)|
 $$
@@ -381,6 +396,7 @@ This is the operator norm of the trilinear form $\nabla^3 h: \mathbb{R}^d \times
 For composite functions, the third derivative follows the general Faρ di Bruno formula. For the specific cases we encounter:
 
 **Case 1: Composition $h = g \circ f$**
+
 $$
 \nabla^3 h = g'''(f) \cdot (\nabla f)^3 + 3g''(f) \cdot \nabla f \cdot \nabla^2 f + g'(f) \cdot \nabla^3 f
 $$
@@ -388,11 +404,13 @@ $$
 **Case 2: Quotient $h = u / v$**
 
 For a quotient, we use the product rule with $1/v$. First compute derivatives of $1/v$:
+
 $$
 \nabla(1/v) = -\frac{\nabla v}{v^2}, \quad \nabla^2(1/v) = \frac{2(\nabla v)^{\otimes 2} - v \nabla^2 v}{v^3}, \quad \nabla^3(1/v) = \frac{-6(\nabla v)^{\otimes 3} + 6v(\nabla v \otimes \nabla^2 v) - v^2 \nabla^3 v}{v^4}
 $$
 
 Then apply the Leibniz rule for $\nabla^3(u \cdot (1/v))$:
+
 $$
 \nabla^3\left(\frac{u}{v}\right) = \frac{\nabla^3 u}{v} + 3 \frac{\nabla^2 u \otimes \nabla(1/v)}{1} + 3 \frac{\nabla u \otimes \nabla^2(1/v)}{1} + \frac{u \otimes \nabla^3(1/v)}{1}
 $$
@@ -429,6 +447,7 @@ The Fragile framework supports **two companion selection mechanisms**: (1) **Ind
 #### 2.5.1. Algorithmic Distance with Regularization
 
 The algorithmic distance between walkers $i$ and $j$ in phase space $(\mathcal{X} \times \mathbb{R}^d)$ is:
+
 $$
 d_{\text{alg}}(i, j) := \sqrt{\|x_i - x_j\|^2 + \lambda_{\text{alg}} \|v_i - v_j\|^2 + \varepsilon_d^2}
 $$
@@ -443,11 +462,13 @@ where $\lambda_{\text{alg}} > 0$ weights velocity differences and $\varepsilon_d
 #### 2.5.2. Softmax Companion Selection
 
 For each walker $j \in \mathcal{A}$ (alive set), a companion $c(j) \in \mathcal{A} \setminus \{j\}$ is selected via **softmax** over algorithmic distances:
+
 $$
 \mathbb{P}(c(j) = \ell) = \frac{\exp\left(-d_{\text{alg}}^2(j,\ell)/(2\varepsilon_c^2)\right)}{Z_j^{(\text{comp})}}
 $$
 
 where the **partition function** is:
+
 $$
 Z_j^{(\text{comp})} := \sum_{\ell \in \mathcal{A} \setminus \{j\}} \exp\left(-d_{\text{alg}}^2(j,\ell)/(2\varepsilon_c^2)\right)
 $$
@@ -455,6 +476,7 @@ $$
 and $\varepsilon_c > 0$ is the **companion selection temperature** (controls locality).
 
 **Companion availability**: By compactness of $\mathcal{X} \times V$ and $k \geq 2$, we have:
+
 $$
 Z_j^{(\text{comp})} \geq \exp\left(-D_{\max}^2/(2\varepsilon_c^2)\right) =: Z_{\min} > 0
 $$
@@ -464,6 +486,7 @@ where $D_{\max} = \text{diam}(\mathcal{X} \times V)$. This ensures at least one 
 #### 2.5.3. Expected Measurement
 
 The measurement for walker $j$ is the **expected algorithmic distance to its companion**:
+
 $$
 d_j := \mathbb{E}[d_{\text{alg}}(j, c(j))] = \sum_{\ell \in \mathcal{A} \setminus \{j\}} \mathbb{P}(c(j) = \ell) \cdot d_{\text{alg}}(j, \ell)
 $$
@@ -478,6 +501,7 @@ This creates **N-body coupling**: $d_j$ depends on ALL walker positions through 
 For walkers $i, j \in \mathcal{A}$ with $i \neq j$, the companion-dependent measurement $d_j = \sum_{\ell \in \mathcal{A} \setminus \{j\}} \mathbb{P}(c(j) = \ell) \cdot d_{\text{alg}}(j, \ell)$ satisfies:
 
 **First derivative**:
+
 $$
 \nabla_{x_i} d_j = P_{ji} A_{ji} \nabla_{x_i} d_{\text{alg}}(j,i)
 $$
@@ -487,17 +511,21 @@ where $P_{ji} = \mathbb{P}(c(j)=i)$ and $A_{ji} = 1 - \frac{d_{\text{alg}}(j,i)(
 **KEY INSIGHT**: In the sum over companions $\ell \in \mathcal{A} \setminus \{j\}$, only the term **$\ell = i$** contributes to $\nabla_{x_i} d_{\text{alg}}(j, \ell)$ because $d_{\text{alg}}(j,\ell)$ depends only on $(x_j, v_j, x_\ell, v_\ell)$, not on $(x_i, v_i)$ for $\ell \neq i$.
 
 **Derivative bounds** (using $d_{\text{alg}}(j,i) = \sqrt{\|x_j - x_i\|^2 + \lambda_{\text{alg}}\|v_j - v_i\|^2 + \varepsilon_d^2}$):
+
 $$
 \|\nabla_{x_i} d_{\text{alg}}(j,i)\| \leq 1, \quad \|\nabla^2_{x_i} d_{\text{alg}}(j,i)\| \leq \frac{2}{\varepsilon_d}, \quad \|\nabla^3_{x_i} d_{\text{alg}}(j,i)\| \leq \frac{6}{\varepsilon_d^2}
 $$
 
 **Bounds for companion-dependent measurement** (with $P_{ji} \leq 1$ and $|A_{ji}| \leq 1 + D_{\max}^2/\varepsilon_c^2$):
+
 $$
 \|\nabla_{x_i} d_j\| \leq C_{d,1} := 1 + \frac{D_{\max}^2}{\varepsilon_c^2}
 $$
+
 $$
 \|\nabla^2_{x_i} d_j\| \leq C_{d,2} \varepsilon_d^{-1} \quad \text{where} \quad C_{d,2} = 2\left(1 + \frac{D_{\max}^2}{\varepsilon_c^2}\right) + \frac{3D_{\max}^3}{\varepsilon_c^4}
 $$
+
 $$
 \|\nabla^3_{x_i} d_j\| \leq C_{d,3} \varepsilon_d^{-2} \quad \text{where} \quad C_{d,3} = 6\left(1 + \frac{D_{\max}^2}{\varepsilon_c^2}\right) + \frac{15D_{\max}^3}{\varepsilon_c^4}
 $$
@@ -513,51 +541,61 @@ where all constants $C_{d,k}$ are **k-uniform** (independent of $k$ and $N$) bec
 Let $P_{j\ell} = \mathbb{P}(c(j)=\ell) = \exp(-\Phi_{j\ell}) / Z_j$ where $\Phi_{j\ell} = d_{\text{alg}}^2(j,\ell)/(2\varepsilon_c^2)$ and $Z_j = \sum_r \exp(-\Phi_{jr})$.
 
 Differentiating with respect to $x_i$:
+
 $$
 \partial_{x_i} P_{j\ell} = P_{j\ell}\left[-\partial_{x_i}\Phi_{j\ell} + \sum_r P_{jr} \partial_{x_i}\Phi_{jr}\right]
 $$
 
 **Locality of $\Phi_{j\ell}$**: Since $d_{\text{alg}}(j,\ell)$ depends only on $(x_j, v_j, x_\ell, v_\ell)$, we have:
+
 $$
 \partial_{x_i}\Phi_{j\ell} = \delta_{\ell i} \partial_{x_i}\Phi_{ji}
 $$
 
 Therefore:
+
 $$
 \partial_{x_i} P_{j\ell} = P_{j\ell}[P_{ji} - \delta_{\ell i}] \partial_{x_i}\Phi_{ji}
 $$
 
 **Step 2: Derivative of expected measurement.**
+
 $$
 \nabla_{x_i} d_j = \sum_{\ell \in \mathcal{A} \setminus \{j\}} \left[(\nabla_{x_i} P_{j\ell}) d_{\text{alg}}(j,\ell) + P_{j\ell} (\nabla_{x_i} d_{\text{alg}}(j,\ell))\right]
 $$
 
 **Derivative locality for $d_{\text{alg}}$**: Since $\nabla_{x_i} d_{\text{alg}}(j,\ell) = \delta_{\ell i} \nabla_{x_i} d_{\text{alg}}(j,i)$, the second term gives:
+
 $$
 \sum_{\ell} P_{j\ell} (\nabla_{x_i} d_{\text{alg}}(j,\ell)) = P_{ji} \nabla_{x_i} d_{\text{alg}}(j,i)
 $$
 
 For the first term:
+
 $$
 \sum_{\ell} (\nabla_{x_i} P_{j\ell}) d_{\text{alg}}(j,\ell) = \left(\sum_{\ell} P_{j\ell}[\delta_{\ell i} - P_{ji}] d_{\text{alg}}(j,\ell)\right) \nabla_{x_i}\Phi_{ji}
 $$
 
 Simplifying: $\sum_{\ell} P_{j\ell} \delta_{\ell i} d_{\text{alg}}(j,\ell) = P_{ji} d_{\text{alg}}(j,i)$ and $\sum_{\ell} P_{j\ell} d_{\text{alg}}(j,\ell) = d_j$, so:
+
 $$
 \sum_{\ell} (\nabla_{x_i} P_{j\ell}) d_{\text{alg}}(j,\ell) = P_{ji}[d_j - d_{\text{alg}}(j,i)] \nabla_{x_i}\Phi_{ji}
 $$
 
 **Step 3: Combine terms.**
+
 $$
 \nabla_{x_i} d_j = P_{ji}\left[d_{\text{alg}}(j,i) - d_j\right] \nabla_{x_i}\Phi_{ji} + P_{ji} \nabla_{x_i} d_{\text{alg}}(j,i)
 $$
 
 Using $\Phi_{ji} = d_{\text{alg}}^2(j,i)/(2\varepsilon_c^2)$, so $\nabla_{x_i}\Phi_{ji} = \frac{d_{\text{alg}}(j,i)}{\varepsilon_c^2} \nabla_{x_i} d_{\text{alg}}(j,i)$:
+
 $$
 \nabla_{x_i} d_j = P_{ji}\left[1 - \frac{d_{\text{alg}}(j,i)(d_{\text{alg}}(j,i) - d_j)}{\varepsilon_c^2}\right] \nabla_{x_i} d_{\text{alg}}(j,i)
 $$
 
 Defining $A_{ji} := 1 - \frac{d_{\text{alg}}(j,i)(d_{\text{alg}}(j,i) - d_j)}{\varepsilon_c^2}$, we get:
+
 $$
 \nabla_{x_i} d_j = P_{ji} A_{ji} \nabla_{x_i} d_{\text{alg}}(j,i)
 $$
@@ -567,14 +605,17 @@ $$
 Let $w = (x_j - x_i, \sqrt{\lambda_{\text{alg}}}(v_j - v_i)) \in \mathbb{R}^{2d}$ and $d_{\text{alg}}(j,i) = \sqrt{\|w\|^2 + \varepsilon_d^2}$.
 
 Direct calculation gives:
+
 $$
 \nabla_w d_{\text{alg}} = \frac{w}{d_{\text{alg}}}, \quad \nabla^2_w d_{\text{alg}} = \frac{1}{d_{\text{alg}}}\text{Id}_{2d} - \frac{w \otimes w}{d_{\text{alg}}^3}
 $$
+
 $$
 \nabla^3_w d_{\text{alg}} = -\frac{1}{d_{\text{alg}}^3}\text{sym}(\text{Id} \otimes w) + \frac{3}{d_{\text{alg}}^5} w^{\otimes 3}
 $$
 
 Since $d_{\text{alg}} \geq \varepsilon_d$ and $\|w\| \leq d_{\text{alg}}$:
+
 $$
 \|\nabla d_{\text{alg}}\| \leq 1, \quad \|\nabla^2 d_{\text{alg}}\| \leq \frac{2}{\varepsilon_d}, \quad \|\nabla^3 d_{\text{alg}}\| \leq \frac{6}{\varepsilon_d^2}
 $$
@@ -582,9 +623,11 @@ $$
 **Step 5: Higher-order derivatives of $d_j$.**
 
 Applying Leibniz rule iteratively to $\nabla_{x_i} d_j = P_{ji} A_{ji} \nabla_{x_i} d_{\text{alg}}(j,i)$ gives:
+
 $$
 \nabla^2_{x_i} d_j = P_{ji} A_{ji} \nabla^2 d_{\text{alg}} + \nabla_{x_i}(P_{ji} A_{ji}) \otimes \nabla d_{\text{alg}}
 $$
+
 $$
 \nabla^3_{x_i} d_j = P_{ji} A_{ji} \nabla^3 d_{\text{alg}} + 3\,\text{sym}\left(\nabla_{x_i}(P_{ji} A_{ji}) \otimes \nabla^2 d_{\text{alg}}\right) + \text{sym}\left(\nabla^2_{x_i}(P_{ji} A_{ji}) \otimes \nabla d_{\text{alg}}\right)
 $$
@@ -592,6 +635,7 @@ $$
 **Step 6: Bound the coefficients.**
 
 Using $P_{ji} \leq 1$, $|d_{\text{alg}}(j,i)| \leq D_{\max}$, $|d_j| \leq D_{\max}$:
+
 $$
 |A_{ji}| \leq 1 + \frac{D_{\max}^2}{\varepsilon_c^2}
 $$
@@ -601,12 +645,15 @@ The derivatives $\nabla_{x_i}(P_{ji} A_{ji})$ and $\nabla^2_{x_i}(P_{ji} A_{ji})
 **Step 7: Final bounds.**
 
 Combining (using Codex's explicit formulas):
+
 $$
 \|\nabla_{x_i} d_j\| \leq C_{d,1} := 1 + \frac{D_{\max}^2}{\varepsilon_c^2}
 $$
+
 $$
 \|\nabla^2_{x_i} d_j\| \leq C_{d,2} \varepsilon_d^{-1} \quad \text{with} \quad C_{d,2} = 2\left(1 + \frac{D_{\max}^2}{\varepsilon_c^2}\right) + \frac{3D_{\max}^3}{\varepsilon_c^4}
 $$
+
 $$
 \|\nabla^3_{x_i} d_j\| \leq C_{d,3} \varepsilon_d^{-2} \quad \text{with} \quad C_{d,3} = 6\left(1 + \frac{D_{\max}^2}{\varepsilon_c^2}\right) + \frac{15D_{\max}^3}{\varepsilon_c^4}
 $$
@@ -844,6 +891,7 @@ A bound is **k-uniform** if it is independent of the alive walker count $k = |A_
 :label: lem-telescoping-derivatives
 
 For any derivative order $m \in \{1, 2, 3\}$, the localization weights satisfy:
+
 $$
 \sum_{j \in A_k} \nabla^m_{x_i} w_{ij}(\rho) = 0
 $$
@@ -857,6 +905,7 @@ $$
 **Step 1: Normalization identity.**
 
 By definition, the localization weights are $w_{ij}(\rho) := K_\rho(x_i, x_j) / Z_i(\rho)$ where $Z_i(\rho) := \sum_{\ell \in A_k} K_\rho(x_i, x_\ell)$. Since the kernel $K_\rho$ is strictly positive (Gaussian kernel), we have $Z_i(\rho) > 0$. Therefore:
+
 $$
 \sum_{j \in A_k} w_{ij}(\rho) = \sum_{j \in A_k} \frac{K_\rho(x_i, x_j)}{Z_i(\rho)} = \frac{1}{Z_i(\rho)} \sum_{j \in A_k} K_\rho(x_i, x_j) = \frac{Z_i(\rho)}{Z_i(\rho)} = 1
 $$
@@ -870,6 +919,7 @@ Each weight $w_{ij}(\rho)$ is $C^3$ in $x_i$ by the quotient rule: the numerator
 **Step 3: Differentiation.**
 
 Apply $\nabla^m_{x_i}$ for $m \in \{1,2,3\}$ to both sides of the identity $\sum_j w_{ij}(\rho) = 1$. By linearity of differentiation and finiteness of the sum:
+
 $$
 \nabla^m_{x_i} \left(\sum_{j \in A_k} w_{ij}(\rho)\right) = \sum_{j \in A_k} \nabla^m_{x_i} w_{ij}(\rho)
 $$
@@ -879,6 +929,7 @@ The right-hand side of the original identity is the constant function 1, so $\na
 **Step 4: Conclusion.**
 
 Combining the above:
+
 $$
 \sum_{j \in A_k} \nabla^m_{x_i} w_{ij}(\rho) = \nabla^m_{x_i}(1) = 0
 $$
@@ -930,6 +981,7 @@ To establish $C^3$ regularity of the fitness potential, we require natural smoot
 :label: assump-c3-measurement-companion
 
 The measurement for each walker $j \in \mathcal{A}$ is the expected algorithmic distance to its companion:
+
 $$
 d_j = \mathbb{E}[d_{\text{alg}}(j, c(j))] = \sum_{\ell \in \mathcal{A} \setminus \{j\}} \mathbb{P}(c(j) = \ell) \cdot d_{\text{alg}}(j, \ell)
 $$
@@ -942,6 +994,7 @@ where:
 **C³ regularity properties** (from Lemma {prf:ref}`lem-derivative-locality-c3`):
 - $d_{\text{alg}}$ is C^∞ with third derivative bound $\|\nabla^3 d_{\text{alg}}\| \leq C \varepsilon_d^{-2}$
 - Companion-dependent measurement $d_j$ inherits third derivative bound:
+
 $$
 \|\nabla^3_{x_i} d_j\| \leq C_{d,3} \varepsilon_d^{-2}
 $$
@@ -955,6 +1008,7 @@ where $C_{d,3}$ is **k-uniform** (independent of $k$ and $N$) due to derivative 
 :label: assump-c3-kernel
 
 The localization kernel $K_\rho: (\mathcal{X} \times \mathbb{R}^d) \times (\mathcal{X} \times \mathbb{R}^d) \to [0, 1]$ is defined using the algorithmic distance:
+
 $$
 K_\rho(i, j) := \frac{1}{Z_i(\rho)} \exp\left(-d_{\text{alg}}^2(i,j)/(2\rho^2)\right)
 $$
@@ -1004,6 +1058,7 @@ for all $z \in \mathbb{R}$, where $g'_{\min}$ is a positive constant.
 :label: assump-c3-patch
 
 The regularized standard deviation function is defined as:
+
 $$
 \sigma'_{\text{reg}}(V) := \sqrt{V + \sigma'^2_{\min}}
 $$
@@ -1018,6 +1073,7 @@ This function is **infinitely differentiable** ($C^\infty$) with explicit deriva
 4. **Bounded third derivative:** $|(\sigma'_{\text{reg}})'''(V)| \le L_{\sigma'''_{\text{reg}}} = \frac{3}{8\sigma'^5_{\min}}$ for all $V \ge 0$
 
 **Derivation:** Direct computation of derivatives:
+
 $$
 (\sigma'_{\text{reg}})'(V) = \frac{1}{2\sqrt{V + \sigma'^2_{\min}}}, \quad
 (\sigma'_{\text{reg}})''(V) = -\frac{1}{4(V + \sigma'^2_{\min})^{3/2}}, \quad
@@ -1045,6 +1101,7 @@ Moreover, these conditions are **sufficient but not minimal**weaker regularity 
 The localization weights $w_{ij}(\rho)$ are the fundamental building blocks of the ρ-localized pipeline. We now establish bounds on their third derivatives.
 
 **Note on Algorithmic Distances**: In the full companion-dependent model, the localization kernel uses algorithmic distances:
+
 $$
 K_\rho(i, j) = \exp\left(-d_{\text{alg}}^2(i,j)/(2\rho^2)\right)
 $$
@@ -1055,11 +1112,13 @@ where $d_{\text{alg}}(i,j) = \sqrt{\|x_i - x_j\|^2 + \lambda_{\text{alg}}\|v_i -
 :label: lem-weight-third-derivative
 
 The localization weights $w_{ij}(\rho) = K_\rho(x_i, x_j) / Z_i(\rho)$ where $Z_i(\rho) = \sum_{\ell \in A_k} K_\rho(x_i, x_\ell)$ satisfy:
+
 $$
 \|\nabla^3_{x_i} w_{ij}(\rho)\| \le C_{w,3}(\rho)
 $$
 
 where
+
 $$
 C_{w,3}(\rho) := \frac{C_{\nabla^3 K}(\rho)}{\rho^3} + \frac{12 C_{\nabla K}(\rho) C_{\nabla^2 K}(\rho)}{\rho^3} + \frac{16 C_{\nabla K}(\rho)^3}{\rho^3}
 $$
@@ -1091,6 +1150,7 @@ Since $v(x_i) = \sum_{\ell \in A_k} K_\rho(x_i, x_\ell)$, linearity gives:
 **Step 4: Apply quotient rule for third derivative.**
 
 The general formula for $\nabla^3(u/v)$ involves terms of the form:
+
 $$
 \nabla^3\left(\frac{u}{v}\right) = \frac{1}{v}\left[\nabla^3 u - 3\frac{\nabla u \cdot \nabla^2 v}{v} - 3\frac{\nabla^2 u \cdot \nabla v}{v} + 6\frac{(\nabla u) \cdot (\nabla v)^2}{v^2} - \frac{u \cdot \nabla^3 v}{v}\right]
 $$
@@ -1127,11 +1187,13 @@ The leading term $\nabla^3 K_\rho(x_i, x_j) / Z_i$ is already k-uniform since bo
 **Step 6: Explicit bound.**
 
 Collecting all terms and using $v = Z_i(\rho) \ge c_0 > 0$:
+
 $$
 \|\nabla^3 w_{ij}\| \le \frac{1}{c_0}\left[C_{\nabla^3 K}(\rho)/\rho^3 + 3 \cdot (C_{\nabla K}(\rho)/\rho) \cdot (C_{\nabla^2 K}(\rho)/\rho^2) + O((C_{\nabla K}(\rho)/\rho)^3)\right]
 $$
 
 Absorbing constants and using conservative bounds:
+
 $$
 \|\nabla^3 w_{ij}\| \le C_{w,3}(\rho) := \frac{C_{\nabla^3 K}(\rho)}{\rho^3} + \frac{12 C_{\nabla K}(\rho) C_{\nabla^2 K}(\rho)}{\rho^3} + \frac{16 C_{\nabla K}(\rho)^3}{\rho^3}
 $$
@@ -1157,6 +1219,7 @@ We now compute the third derivatives of the localized mean and variance, which a
 :label: lem-mean-third-derivative
 
 The localized mean for the companion-dependent model $\mu_\rho^{(i)} := \sum_{j \in \mathcal{A}} w_{ij}(\rho) \, d_j$ (where $d_j = \mathbb{E}[d_{\text{alg}}(j, c(j))]$) satisfies:
+
 $$
 \|\nabla^3_{x_i} \mu_\rho^{(i)}\| \leq K_{\mu,3}(\rho, \varepsilon_d, \varepsilon_c)
 $$
@@ -1180,11 +1243,13 @@ This bound is **k-uniform** and **N-uniform** due to the two-scale framework (de
 **Step 1: Product rule for all terms.**
 
 The mean is $\mu_\rho^{(i)} = \sum_{j \in \mathcal{A}} w_{ij}(\rho) \cdot d_j$ where $d_j = \mathbb{E}[d_{\text{alg}}(j, c(j))]$. Apply Leibniz rule for third derivatives:
+
 $$
 \nabla^3_{x_i} [w_{ij} \cdot d_j] = \sum_{k=0}^{3} \binom{3}{k} (\nabla^k_{x_i} w_{ij}) \cdot (\nabla^{3-k}_{x_i} d_j)
 $$
 
 Expanding all four terms:
+
 $$
 \nabla^3_{x_i} \mu_\rho^{(i)} = \sum_{j \in \mathcal{A}} \left[w_{ij} \nabla^3 d_j + 3(\nabla w_{ij})(\nabla^2 d_j) + 3(\nabla^2 w_{ij})(\nabla d_j) + (\nabla^3 w_{ij}) d_j\right]
 $$
@@ -1206,6 +1271,7 @@ Therefore, for all $j \in \mathcal{A}$:
 - $|d_j| \leq D_{\max}$ (bounded by diameter)
 
 **Term 1**: $\sum_j w_{ij} \nabla^3 d_j$
+
 $$
 \left\|\sum_j w_{ij} \nabla^3 d_j\right\| \leq \left(\sum_j w_{ij}\right) \cdot C_{d,3} \varepsilon_d^{-2} = C_{d,3} \varepsilon_d^{-2}
 $$
@@ -1213,6 +1279,7 @@ $$
 (using normalization $\sum_j w_{ij} = 1$)
 
 **Term 2**: $3 \sum_j (\nabla w_{ij})(\nabla^2 d_j)$
+
 $$
 \left\|\sum_j (\nabla w_{ij})(\nabla^2 d_j)\right\| \leq C_{d,2} \varepsilon_d^{-1} \sum_j \|\nabla w_{ij}\| \leq C_{d,2} \varepsilon_d^{-1} \cdot \frac{C_{\nabla K}(\rho)}{\rho} \cdot k_{\text{eff}}^{(\rho)}
 $$
@@ -1220,6 +1287,7 @@ $$
 where $k_{\text{eff}}^{(\rho)} = O(\rho^{2d})$ is k-uniform (exponential localization of Gaussian weights).
 
 **Term 3**: $3 \sum_j (\nabla^2 w_{ij})(\nabla d_j)$
+
 $$
 \left\|\sum_j (\nabla^2 w_{ij})(\nabla d_j)\right\| \leq C_{d,1} \sum_j \|\nabla^2 w_{ij}\| \leq C_{d,1} \cdot \frac{C_{\nabla^2 K}(\rho)}{\rho^2} \cdot k_{\text{eff}}^{(\rho)}
 $$
@@ -1227,16 +1295,19 @@ $$
 **Term 4**: $\sum_j (\nabla^3 w_{ij}) d_j$
 
 Apply telescoping identity $\sum_j \nabla^3 w_{ij} = 0$:
+
 $$
 \sum_j (\nabla^3 w_{ij}) d_j = \sum_j (\nabla^3 w_{ij})(d_j - d_i)
 $$
 
 By exponential localization, $\|\nabla^3 w_{ij}\|$ is significant only for $j$ with $d_{\text{alg}}(i,j) = O(\rho)$. For such $j$:
+
 $$
 |d_j - d_i| \leq 2D_{\max} \quad \text{(worst case)}
 $$
 
 Therefore:
+
 $$
 \left\|\sum_j (\nabla^3 w_{ij}) d_j\right\| \leq D_{\max} \sum_j \|\nabla^3 w_{ij}\| \leq D_{\max} \cdot C_{w,3}(\rho) \cdot k_{\text{eff}}^{(\rho)}
 $$
@@ -1245,6 +1316,7 @@ $$
 
 
 Since $k_{\text{eff}}^{(\rho)} = O(\rho^{2d})$ is k-uniform, we can absorb it into the constants:
+
 $$
 \begin{aligned}
 \|\nabla^3 \mu_\rho^{(i)}\| &\leq C_{d,3} \varepsilon_d^{-2} + 3 C_{d,2} \varepsilon_d^{-1} \frac{C_{\nabla K}(\rho)}{\rho} k_{\text{eff}}^{(\rho)} \\
@@ -1259,6 +1331,7 @@ where the bound has been split into:
 Substituting $k_{\text{eff}}^{(\rho)} \leq C_{\text{vol}} \rho_{\max} \rho^{2d}$ into the bound matches the definition of $K_{\mu,3}$ from the lemma statement (equation in §5.1 header), which keeps the $\rho^{-1}, \rho^{-2}, \rho^{-3}$ factors explicit:
 $$
 K_{\mu,3}(\rho, \varepsilon_d, \varepsilon_c) = C_{d,3} \varepsilon_d^{-2} + 6 C_{d,2} \varepsilon_d^{-1} \frac{C_{\nabla K}(\rho)}{\rho} C_{\text{vol}} \rho_{\max} \rho^{2d} + \cdots
+
 $$
 
 This gives $K_{\mu,3} = O(\varepsilon_d^{-2}) + O(\rho^{2d-1}) + O(\rho^{2d-2}) + O(\rho^{2d-3})$, which matches Appendix 14B's $m=3$ scaling.
@@ -1281,6 +1354,7 @@ Therefore $K_{\mu,3}(\rho, \varepsilon_d, \varepsilon_c)$ is **k-uniform** and *
 :label: lem-variance-third-derivative
 
 The localized variance for the companion-dependent model $V_\rho^{(i)} := \sigma^2_\rho[f_k, x_i] = \sum_{j \in \mathcal{A}} w_{ij}(\rho) d_j^2 - (\mu_\rho^{(i)})^2$ (where $d_j = \mathbb{E}[d_{\text{alg}}(j, c(j))]$) satisfies:
+
 $$
 \|\nabla^3_{x_i} V_\rho^{(i)}\| \leq K_{V,3}(\rho, \varepsilon_d, \varepsilon_c)
 $$
@@ -1298,11 +1372,13 @@ This bound is **k-uniform** and **N-uniform** due to the two-scale framework app
 **Step 1: Variance formula and differentiation structure.**
 
 The variance is:
+
 $$
 V_\rho^{(i)} = \sum_{j \in \mathcal{A}} w_{ij}(\rho) \, d_j^2 - (\mu_\rho^{(i)})^2
 $$
 
 Third derivative:
+
 $$
 \nabla^3 V_\rho^{(i)} = \nabla^3\left[\sum_j w_{ij} d_j^2\right] - \nabla^3\left[(\mu_\rho)^2\right]
 $$
@@ -1310,6 +1386,7 @@ $$
 **Step 2: Third derivative of $(\mu_\rho)^2$ using correct chain rule.**
 
 For the squared mean, apply the correct chain rule with $u = \mu_\rho^{(i)}$ (using Faà di Bruno with $h(u)=u^2$ where $h'''(u)=0$):
+
 $$
 \nabla^3[u^2] = 2\Big[u \nabla^3 u + 3\,\text{sym}(\nabla u \otimes \nabla^2 u)\Big]
 $$
@@ -1327,6 +1404,7 @@ where $K_{\mu,1}, K_{\mu,2}$ are first and second derivative bounds of $\mu_\rho
 **Step 3: Third derivative of $d_j^2$ using correct chain rule.**
 
 For each $j$, applying the correct chain rule to $d_j^2$ (using Faà di Bruno with $h(u)=u^2$ where $h'''(u)=0$):
+
 $$
 \nabla^3_{x_i}[d_j^2] = 2\Big[d_j \nabla^3 d_j + 3\,\text{sym}(\nabla d_j \otimes \nabla^2 d_j)\Big]
 $$
@@ -1342,11 +1420,13 @@ $$
 **Step 4: Leibniz rule for $w_{ij} \cdot d_j^2$.**
 
 Apply Leibniz rule to the product:
+
 $$
 \nabla^3[w_{ij} \cdot d_j^2] = \sum_{k=0}^3 \binom{3}{k} (\nabla^k w_{ij}) \cdot (\nabla^{3-k} [d_j^2])
 $$
 
 Expanding the four terms:
+
 $$
 \begin{aligned}
 \nabla^3[w_{ij} \cdot d_j^2] = &\, w_{ij} \nabla^3[d_j^2] + 3(\nabla w_{ij}) \nabla^2[d_j^2] \\
@@ -1357,6 +1437,7 @@ $$
 **Step 5: Bound the weighted sum $\sum_j w_{ij} \cdot d_j^2$ third derivative.**
 
 **Term 1**: $\sum_j w_{ij} \nabla^3[d_j^2]$
+
 $$
 \left\|\sum_j w_{ij} \nabla^3[d_j^2]\right\| \leq \left(\sum_j w_{ij}\right) \cdot (2D_{\max} C_{d,3} \varepsilon_d^{-2} + 6 C_{d,1} C_{d,2} \varepsilon_d^{-1})
 $$
@@ -1368,6 +1449,7 @@ Using $\sum_j w_{ij} = 1$: $= 2D_{\max} C_{d,3} \varepsilon_d^{-2} + 6 C_{d,1} C
 Chain rule for $\nabla^2[d_j^2] = 2[d_j \nabla^2 d_j + (\nabla d_j)^2]$ gives bound $\leq 2D_{\max} C_{d,2} \varepsilon_d^{-1} + 2C_{d,1}^2$.
 
 Then:
+
 $$
 \left\|\sum_j (\nabla w_{ij}) \nabla^2[d_j^2]\right\| \leq (2D_{\max} C_{d,2} \varepsilon_d^{-1} + 2C_{d,1}^2) \cdot \frac{C_{\nabla K}(\rho)}{\rho} \cdot k_{\text{eff}}^{(\rho)}
 $$
@@ -1377,6 +1459,7 @@ $$
 Chain rule for $\nabla[d_j^2] = 2 d_j \nabla d_j$ gives bound $\leq 2D_{\max} C_{d,1}$.
 
 Then:
+
 $$
 \left\|\sum_j (\nabla^2 w_{ij}) \nabla[d_j^2]\right\| \leq 2D_{\max} C_{d,1} \cdot \frac{C_{\nabla^2 K}(\rho)}{\rho^2} \cdot k_{\text{eff}}^{(\rho)}
 $$
@@ -1384,6 +1467,7 @@ $$
 **Term 4**: $\sum_j (\nabla^3 w_{ij}) d_j^2$
 
 Apply telescoping $\sum_j \nabla^3 w_{ij} = 0$:
+
 $$
 \sum_j (\nabla^3 w_{ij}) d_j^2 = \sum_j (\nabla^3 w_{ij})(d_j^2 - d_i^2)
 $$
@@ -1448,6 +1532,7 @@ The Z-score denominator involves the regularized standard deviation $\sigma'_{\t
 :label: lem-patch-chain-rule
 
 Let $\sigma'_{\text{reg}}: \mathbb{R}_{\ge 0} \to \mathbb{R}_{>0}$ satisfy Assumption {prf:ref}`assump-c3-patch` ($C^3$ regularity). For a smooth function $V: \mathbb{R}^d \to \mathbb{R}_{\ge 0}$, the composition $h(x) := \sigma'_{\text{reg}}(V(x))$ has third derivative given by the **Faà di Bruno formula**:
+
 $$
 \nabla^3 h = (\sigma'_{\text{reg}})'''(V) \cdot (\nabla V)^{\otimes 3} + 3(\sigma'_{\text{reg}})''(V) \cdot \text{sym}(\nabla V \otimes \nabla^2 V) + (\sigma'_{\text{reg}})'(V) \cdot \nabla^3 V
 $$
@@ -1455,11 +1540,13 @@ $$
 where $\text{sym}(\nabla V \otimes \nabla^2 V)$ denotes the symmetrized tensor product (sum over all permutations).
 
 More explicitly, using index notation for clarity:
+
 $$
 \frac{\partial^3 h}{\partial x_i \partial x_j \partial x_k} = (\sigma'_{\text{reg}})'''(V) \frac{\partial V}{\partial x_i} \frac{\partial V}{\partial x_j} \frac{\partial V}{\partial x_k} + (\sigma'_{\text{reg}})''(V) \left[\frac{\partial V}{\partial x_i} \frac{\partial^2 V}{\partial x_j \partial x_k} + \text{perms}\right] + (\sigma'_{\text{reg}})'(V) \frac{\partial^3 V}{\partial x_i \partial x_j \partial x_k}
 $$
 
 **Norm bound:**
+
 $$
 \|\nabla^3 h\| \le L_{\sigma'\'\'_{\text{reg}}} \cdot \|\nabla V\|^3 + 3 L_{\sigma'\'_{\text{reg}}} \cdot \|\nabla V\| \cdot \|\nabla^2 V\| + L_{\sigma'_{\text{reg}}} \cdot \|\nabla^3 V\|
 $$
@@ -1473,11 +1560,13 @@ where $L_{\sigma'_{\text{reg}}}, L_{\sigma'\'_{\text{reg}}}, L_{\sigma'\'\'_{\te
 This is a direct application of the multivariable chain rule for third derivatives. The composition $h = \sigma'_{\text{reg}} \circ V$ requires:
 
 **First derivative:**
+
 $$
 \nabla h = (\sigma'_{\text{reg}})'(V) \cdot \nabla V
 $$
 
 **Second derivative:**
+
 $$
 \nabla^2 h = (\sigma'_{\text{reg}})''(V) \cdot (\nabla V) \otimes (\nabla V) + (\sigma'_{\text{reg}})'(V) \cdot \nabla^2 V
 $$
@@ -1485,6 +1574,7 @@ $$
 **Third derivative:**
 
 Differentiate the second derivative expression:
+
 $$
 \nabla^3 h = \nabla[(\sigma'_{\text{reg}})''(V) \cdot (\nabla V)^2] + \nabla[(\sigma'_{\text{reg}})'(V) \cdot \nabla^2 V]
 $$
@@ -1494,6 +1584,7 @@ The first term gives $(\sigma'_{\text{reg}})''(V) \cdot [(\nabla V)^3 + \text{mi
 The second term gives $(\sigma'_{\text{reg}})'(V) \cdot \nabla^3 V$ plus lower-order cross-terms.
 
 Taking the norm and using the bounds:
+
 $$
 \|\nabla^3 h\| \le L_{\sigma'\'_{\text{reg}}} \cdot \|\nabla V\|^3 + 3 L_{\sigma'_{\text{reg}}} \cdot \|\nabla V\| \cdot \|\nabla^2 V\| + L_{\sigma'_{\text{reg}}} \cdot \|\nabla^3 V\|
 $$
@@ -1505,6 +1596,7 @@ where the factor 3 arises from the binomial coefficient in the Leibniz rule.
 :label: lem-patch-third-derivative
 
 The regularized standard deviation $\sigma'_{\rho}^{(i)} := \sigma'_{\text{reg}}(V_\rho^{(i)})$ satisfies:
+
 $$
 \|\nabla^3_{x_i} \sigma'_{\rho}^{(i)}\| \le L_{\sigma'\'\'_{\text{reg}}} \cdot (C_{V,\nabla}(\rho))^3 + 3 L_{\sigma'\'_{\text{reg}}} \cdot C_{V,\nabla}(\rho) \cdot C_{V,\nabla^2}(\rho) + L_{\sigma'_{\text{reg}}} \cdot C_{V,\nabla^3}(\rho)
 $$
@@ -1538,11 +1630,13 @@ The Z-score $Z_\rho[f_k, d, x_i] = (d_i - \mu_\rho^{(i)}) / \sigma'_{\rho}^{(i)}
 :label: lem-zscore-third-derivative
 
 The Z-score $Z_\rho^{(i)} := Z_\rho[f_k, d, x_i]$ satisfies:
+
 $$
 \|\nabla^3_{x_i} Z_\rho^{(i)}\| \le K_{Z,3}(\rho)
 $$
 
 where $K_{Z,3}(\rho)$ is a k-uniform constant:
+
 $$
 \begin{aligned}
 K_{Z,3}(\rho) := &\, \frac{1}{\sigma'_{\min}} \Big[C_{u,\nabla^3}(\rho) + 3 C_{u,\nabla}(\rho) C_{v,\nabla^2}(\rho) \\
@@ -1567,6 +1661,7 @@ This bound is **k-uniform** and **N-uniform**.
 **Step 1: Quotient rule for third derivative.**
 
 For the quotient $Z = u/v$ where $u = d_i - \mu_\rho^{(i)}$ and $v = \sigma'_{\rho}^{(i)}$, the third derivative is:
+
 $$
 \nabla^3 Z = \frac{1}{v} \left[\nabla^3 u - 3 \frac{\nabla u \otimes \nabla^2 v}{v} - 3 \frac{\nabla^2 u \otimes \nabla v}{v} + 6 \frac{\nabla u \otimes (\nabla v)^2}{v^2} - \frac{u \nabla^3 v}{v}\right] + O(v^{-4})
 $$
@@ -1578,31 +1673,37 @@ The $O(v^{-4})$ terms involve higher powers of $1/v$ with lower-order derivative
 The numerator is $u(x_i) = d(x_i) - \mu_\rho^{(i)}$.
 
 **First derivative:**
+
 $$
 \nabla u = \nabla d(x_i) - \nabla \mu_\rho^{(i)}
 $$
 
 Bound:
+
 $$
 \|\nabla u\| \le d'_{\max} + C_{\mu,\nabla}(\rho) =: C_{u,\nabla}(\rho)
 $$
 
 **Second derivative:**
+
 $$
 \nabla^2 u = \nabla^2 d(x_i) - \nabla^2 \mu_\rho^{(i)}
 $$
 
 Bound:
+
 $$
 \|\nabla^2 u\| \le d''_{\max} + C_{\mu,\nabla^2}(\rho) =: C_{u,\nabla^2}(\rho)
 $$
 
 **Third derivative:**
+
 $$
 \nabla^3 u = \nabla^3 d(x_i) - \nabla^3 \mu_\rho^{(i)}
 $$
 
 Bound (using Lemma {prf:ref}`lem-mean-third-derivative`):
+
 $$
 \|\nabla^3 u\| \le d'''_{\max} + C_{\mu,\nabla^3}(\rho) =: C_{u,\nabla^3}(\rho)
 $$
@@ -1612,6 +1713,7 @@ $$
 The denominator is $v(x_i) = \sigma'_{\rho}^{(i)} = \sigma'_{\text{reg}}(V_\rho^{(i)})$.
 
 **Lower bound (crucial):**
+
 $$
 v(x_i) \ge \sigma'_{\min} > 0
 $$
@@ -1619,16 +1721,19 @@ $$
 This comes from Assumption {prf:ref}`assump-c3-patch` and ensures all powers of $1/v$ are bounded.
 
 **First derivative:**
+
 $$
 \|\nabla v\| \le C_{v,\nabla}(\rho) := L_{\sigma'_{\text{reg}}} \cdot C_{V,\nabla}(\rho)
 $$
 
 **Second derivative:**
+
 $$
 \|\nabla^2 v\| \le C_{v,\nabla^2}(\rho) := L_{\sigma'\'_{\text{reg}}} \cdot (C_{V,\nabla}(\rho))^2 + L_{\sigma'_{\text{reg}}} \cdot C_{V,\nabla^2}(\rho)
 $$
 
 **Third derivative (from Lemma {prf:ref}`lem-patch-third-derivative`):**
+
 $$
 \|\nabla^3 v\| \le C_{v,\nabla^3}(\rho)
 $$
@@ -1636,21 +1741,25 @@ $$
 **Step 4: Bound each term in the quotient rule.**
 
 **Term 1:** $|\nabla^3 u / v|$
+
 $$
 \left\|\frac{\nabla^3 u}{v}\right\| \le \frac{C_{u,\nabla^3}(\rho)}{\sigma'_{\min}}
 $$
 
 **Term 2:** $|3\nabla u \otimes \nabla^2 v / v^2|$
+
 $$
 \left\|\frac{3\nabla u \otimes \nabla^2 v}{v^2}\right\| \le \frac{3 C_{u,\nabla}(\rho) \cdot C_{v,\nabla^2}(\rho)}{(\sigma'_{\min})^2}
 $$
 
 **Term 3:** $|3\nabla^2 u \otimes \nabla v / v^2|$
+
 $$
 \left\|\frac{3\nabla^2 u \otimes \nabla v}{v^2}\right\| \le \frac{3 C_{u,\nabla^2}(\rho) \cdot C_{v,\nabla}(\rho)}{(\sigma'_{\min})^2}
 $$
 
 **Term 4:** $|6\nabla u \otimes (\nabla v)^2 / v^3|$
+
 $$
 \left\|\frac{6\nabla u \otimes (\nabla v)^2}{v^3}\right\| \le \frac{6 C_{u,\nabla}(\rho) \cdot (C_{v,\nabla}(\rho))^2}{(\sigma'_{\min})^3}
 $$
@@ -1658,6 +1767,7 @@ $$
 **Term 5:** $|u \nabla^3 v / v^2|$
 
 Using $|u| = |d(x_i) - \mu_\rho^{(i)}| \le d_{\max} + C_{\mu,\nabla}(\rho)$:
+
 $$
 \left\|\frac{u \nabla^3 v}{v^2}\right\| \le \frac{(d_{\max} + C_{\mu,\nabla}(\rho)) \cdot C_{v,\nabla^3}(\rho)}{(\sigma'_{\min})^2}
 $$
@@ -1665,6 +1775,7 @@ $$
 **Step 5: Combine terms.**
 
 Summing all contributions and extracting the dominant factor $1/\sigma'_{\min}$:
+
 $$
 K_{Z,3}(\rho) = \frac{1}{\sigma'_{\min}} \left[C_{u,\nabla^3}(\rho) + 3 C_{u,\nabla}(\rho) C_{v,\nabla^2}(\rho) + 3 C_{u,\nabla^2}(\rho) C_{v,\nabla}(\rho) + 6 C_{u,\nabla}(\rho) (C_{v,\nabla}(\rho))^2 + (d_{\max} + C_{\mu,\nabla}(\rho)) C_{v,\nabla^3}(\rho)\right]
 $$
@@ -1692,11 +1803,13 @@ We now combine the preparatory lemmas to establish the main result: $C^3$ regula
 :label: thm-c3-regularity
 
 Under Assumptions {prf:ref}`assump-c3-measurement-companion`, {prf:ref}`assump-c3-kernel`, {prf:ref}`assump-c3-rescale`, and {prf:ref}`assump-c3-patch`, the fitness potential $V_{\text{fit}}[f_k, \rho](x_i) = g_A(Z_\rho[f_k, d, x_i])$ is three times continuously differentiable with respect to walker position $x_i \in \mathcal{X}$, with **k-uniform** and **N-uniform** bound:
+
 $$
 \|\nabla^3_{x_i} V_{\text{fit}}[f_k, \rho](x_i)\| \le K_{V,3}(\rho) < \infty
 $$
 
 for all alive walker counts $k \in \{1, \ldots, N\}$, all swarm sizes $N \ge 1$, and all localization scales $\rho > 0$, where:
+
 $$
 K_{V,3}(\rho) := L_{g'''_A} \cdot (K_{Z,1}(\rho))^3 + 3 L_{g''_A} \cdot K_{Z,1}(\rho) \cdot K_{Z,2}(\rho) + L_{g'_A} \cdot K_{Z,3}(\rho)
 $$
@@ -1721,6 +1834,7 @@ Here:
 **Step 1: Chain rule for composition.**
 
 The fitness potential is $V_{\text{fit}} = g_A \circ Z_\rho$, a composition of smooth functions. By the multivariable chain rule for third derivatives (see ρ2.4):
+
 $$
 \nabla^3 V_{\text{fit}} = g'''_A(Z_\rho) \cdot (\nabla Z_\rho)^3 + 3 g''_A(Z_\rho) \cdot \nabla Z_\rho \cdot \nabla^2 Z_\rho + g'_A(Z_\rho) \cdot \nabla^3 Z_\rho
 $$
@@ -1732,6 +1846,7 @@ $$
 By Assumption {prf:ref}`assump-c3-rescale`, $|g'''_A(z)| \le L_{g'''_A}$ for all $z \in \mathbb{R}$.
 
 The first derivative of $Z_\rho$ satisfies (Theorem {prf:ref}`thm-c1-regularity`):
+
 $$
 \|\nabla Z_\rho\| \le K_{Z,1}(\rho)
 $$
@@ -1739,6 +1854,7 @@ $$
 where $K_{Z,1}(\rho)$ is the k-uniform bound from Theorem {prf:ref}`thm-c1-regularity`.
 
 Therefore:
+
 $$
 \|g'''_A(Z_\rho) \cdot (\nabla Z_\rho)^3\| \le L_{g'''_A} \cdot (K_{Z,1}(\rho))^3
 $$
@@ -1748,11 +1864,13 @@ $$
 By Assumption {prf:ref}`assump-c3-rescale`, $|g''_A(z)| \le L_{g''_A}$.
 
 The second derivative of $Z_\rho$ satisfies (from Appendix A):
+
 $$
 \|\nabla^2 Z_\rho\| \le K_{Z,2}(\rho)
 $$
 
 Therefore:
+
 $$
 \|3 g''_A(Z_\rho) \cdot \nabla Z_\rho \cdot \nabla^2 Z_\rho\| \le 3 L_{g''_A} \cdot K_{Z,1}(\rho) \cdot K_{Z,2}(\rho)
 $$
@@ -1762,11 +1880,13 @@ $$
 By Assumption {prf:ref}`assump-c3-rescale`, $|g'_A(z)| \le L_{g'_A}$.
 
 The third derivative of $Z_\rho$ satisfies (from Lemma {prf:ref}`lem-zscore-third-derivative`):
+
 $$
 \|\nabla^3 Z_\rho\| \le K_{Z,3}(\rho)
 $$
 
 Therefore:
+
 $$
 \|g'_A(Z_\rho) \cdot \nabla^3 Z_\rho\| \le L_{g'_A} \cdot K_{Z,3}(\rho)
 $$
@@ -1774,6 +1894,7 @@ $$
 **Step 3: Combine bounds.**
 
 Summing the three terms:
+
 $$
 \|\nabla^3 V_{\text{fit}}\| \le L_{g'''_A} \cdot (K_{Z,1}(\rho))^3 + 3 L_{g''_A} \cdot K_{Z,1}(\rho) \cdot K_{Z,2}(\rho) + L_{g'_A} \cdot K_{Z,3}(\rho) =: K_{V,3}(\rho)
 $$
@@ -1851,6 +1972,7 @@ The $C^3$ regularity theorem has immediate consequences for the stability and co
 2. Friction coefficient $\gamma > 0$
 3. Temperature $T > 0$ (or equivalently, noise scale $\sigma > 0$)
 4. Time step $\Delta t$ satisfying the stability criterion:
+
 $$
 \Delta t \le \Delta t_{\max}(\rho, \gamma) := \min\left( \frac{1}{2\gamma}, \frac{1}{K_{V,3}(\rho)^{1/2}} \right)
 $$
@@ -1892,6 +2014,7 @@ Without $C^3$ regularity, the weak error bound could fail, potentially invalidat
 :label: cor-lyapunov-c3
 
 The total Lyapunov function $V_{\text{total}}(S) = V_{\text{pos}}(S) + \lambda_v V_{\text{vel}}(S)$ used in the Foster-Lyapunov analysis satisfies $V_{\text{total}} \in C^3$ with N-uniform bounds:
+
 $$
 \|\nabla^3 V_{\text{total}}\| \le K_{\text{total},3} < \infty
 $$
@@ -1908,6 +2031,7 @@ level, ensuring smooth perturbations preserve geometric ergodicity.
 **Step 1: Structure of $V_{\text{total}}$.**
 
 From the Lyapunov construction in {doc}`06_convergence`, the total Lyapunov function is:
+
 $$
 V_{\text{total}}(S) = V_{\text{pos}}(S) + \lambda_v V_{\text{vel}}(S)
 $$
@@ -1932,6 +2056,7 @@ where:
 **Step 3: Combine bounds.**
 
 Since each component has bounded third derivatives, $V_{\text{total}} \in C^3$ with:
+
 $$
 K_{\text{total},3} = \max(\|\nabla^3 U\|, \|\nabla^3 V_{\text{fit}}\|, 0) = \max(\|\nabla^3 U\|, K_{V,3}(\rho))
 $$
@@ -1945,9 +2070,11 @@ This is N-uniform because the fitness potential bound $K_{V,3}(\rho)$ is N-unifo
 :label: cor-smooth-perturbation
 
 The adaptive force $\mathbf{F}_{\text{adapt}}(x_i, S) = \epsilon_F \nabla V_{\text{fit}}[f_k, \rho](x_i)$ is a **$C^3$ perturbation** of the backbone system, with:
+
 $$
 \|\nabla \mathbf{F}_{\text{adapt}}\| = \epsilon_F \|\nabla^2 V_{\text{fit}}\| \le \epsilon_F H_{\max}(\rho)
 $$
+
 $$
 \|\nabla^2 \mathbf{F}_{\text{adapt}}\| = \epsilon_F \|\nabla^3 V_{\text{fit}}\| \le \epsilon_F K_{V,3}(\rho)
 $$
@@ -1984,6 +2111,7 @@ The $C^3$ regularity ensures that even for moderate $\epsilon_F$, the perturbati
 :label: cor-regularity-hierarchy
 
 The fitness potential $V_{\text{fit}}[f_k, \rho]$ satisfies the complete regularity hierarchy:
+
 $$
 V_{\text{fit}} \in C^1 \cap C^2 \cap C^3
 $$
@@ -2022,6 +2150,7 @@ required elsewhere in the proof chain.
 :label: prop-timestep-constraint
 
 For the BAOAB integrator to maintain $O(\Delta t^2)$ weak error, the time step must satisfy:
+
 $$
 \Delta t \lesssim \frac{1}{\sqrt{K_{V,3}(\rho)}}
 $$
@@ -2034,16 +2163,19 @@ stability requires smaller time steps as localization becomes sharper.
 :label: proof-prop-timestep-constraint
 
 The BAOAB weak error analysis (Theorem 1.7.2 in {doc}`06_convergence`) involves truncating the Itρ-Taylor expansion at second order. The truncation error depends on:
+
 $$
 \Delta t^2 \cdot \|\nabla^3 V\|
 $$
 
 For the error to remain $O(\Delta t^2)$, we need:
+
 $$
 \Delta t^2 \cdot K_{V,3}(\rho) = O(\Delta t^2)
 $$
 
 This is automatically satisfied, but for the **discrete-time Markov chain** to be well-behaved (e.g., to avoid large jumps), we require the higher-order correction terms to be small:
+
 $$
 \Delta t \cdot \sqrt{K_{V,3}(\rho)} \lesssim 1
 $$
@@ -2081,6 +2213,7 @@ $K_{V,3}(\rho)$.
 :label: prop-explicit-k-v-3
 
 For the Gaussian kernel with constants $(d_{\max}, d'_{\max}, d''_{\max}, d'''_{\max}, A, L_{g'_A}, L_{g''_A}, L_{g'''_A}, \sigma'_{\min})$, the third-derivative bound is:
+
 $$
 \begin{aligned}
 K_{V,3}(\rho) = &\, L_{g'_A} \cdot \frac{1}{\sigma'_{\min}} \cdot \left[d'''_{\max} + \frac{6 d''_{\max}}{\rho} + \frac{6 d'_{\max}}{\rho^2} + \frac{C_{\max}}{\rho^3}\right] \\
@@ -2115,6 +2248,7 @@ The third derivatives $\nabla^3 V_{\text{fit}}[f_k, \rho](x_i)$ are continuous f
 3. **Localization parameter** $\rho \in (0, \infty)$
 
 **Uniform continuity on compact sets:** For any compact set $K \subset \mathcal{X} \times (\mathcal{X} \times \mathbb{R}^d)^N \times (0, \infty)$, the map:
+
 $$
 (x_i, S, \rho) \mapsto \nabla^3 V_{\text{fit}}[f_k, \rho](x_i)
 $$
@@ -2155,6 +2289,7 @@ The rescale function $g_A$ is $C^3$ by Assumption {prf:ref}`assump-c3-rescale`, 
 **Step 2: Apply composition theorem.**
 
 The third derivative $\nabla^3 V_{\text{fit}}$ is given by the chain rule formula (Theorem {prf:ref}`thm-c3-regularity`):
+
 $$
 \nabla^3 V_{\text{fit}} = g'''_A(Z_\rho) \cdot (\nabla Z_\rho)^3 + 3 g''_A(Z_\rho) \cdot \nabla Z_\rho \cdot \nabla^2 Z_\rho + g'_A(Z_\rho) \cdot \nabla^3 Z_\rho
 $$
@@ -2180,6 +2315,7 @@ Continuous functions on compact sets are uniformly continuous (Heine-Cantor theo
 :class: note
 
 A stronger result would be to establish **Hρlder continuity** with explicit exponent $\alpha \in (0, 1]$:
+
 $$
 \|\nabla^3 V_{\text{fit}}(x_i, S, \rho) - \nabla^3 V_{\text{fit}}(x'_i, S', \rho')\| \le C \cdot [\|x_i - x'_i\| + d(S, S') + |\rho - \rho'|]^\alpha
 $$
@@ -2298,6 +2434,7 @@ For implementation, we provide the explicit formulas resulting from the regulari
 
 :::{prf:definition} Regularized Standard Deviation (Implementation)
 :label: def-reg-std-implementation
+
 $$
 \sigma'_{\text{reg}}(V) = \sqrt{V + \sigma'^2_{\min}}
 $$
@@ -2307,6 +2444,7 @@ where $\sigma'_{\min} = \sqrt{\kappa_{\text{var,min}} + \varepsilon_{\text{std}}
 - $\varepsilon_{\text{std}} > 0$: Numerical stability parameter (typical value: $10^{-6}$ to $10^{-4}$)
 
 **Derivative bounds:**
+
 $$
 \begin{align}
 L_{\sigma'_{\text{reg}}} &= \frac{1}{2\sigma'_{\min}} \\

@@ -131,10 +131,12 @@ $$
 C = \rho(z)^{-\beta/D} \cdot R(z)^\alpha
 
 $$
+
 $$
 \rho(z)^{\beta/D} \propto R(z)^\alpha
 
 $$
+
 $$
 \rho(z) \propto R(z)^{\frac{\alpha D}{\beta}}
 

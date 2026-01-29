@@ -1078,6 +1078,7 @@ For the Yang-Mills vacuum:
 **Step 2: Analyze fitness potential**
 
 With uniform reward, the fitness potential simplifies dramatically:
+
 $$
 V_{\text{fit}}(x) = \text{Rescale}(Z_r(x)) + \beta \cdot \text{Rescale}(Z_d(x))
 $$
@@ -1085,6 +1086,7 @@ $$
 where $Z_r(x) = 0$ (no reward gradient) and $Z_d(x)$ is the diversity Z-score (distance to companions).
 
 For uniform reward:
+
 $$
 V_{\text{fit}}(x) \approx \beta \cdot f(d(x, \text{swarm center}))
 $$
@@ -1098,6 +1100,7 @@ H(x) = \nabla^2 V_{\text{fit}}(x) \approx \beta \cdot \nabla^2 f
 $$
 
 For a smooth diversity term, $\|\nabla^2 f\| = O(1)$ is bounded. With regularization:
+
 $$
 g(x) = H(x) + \epsilon_\Sigma I \approx \beta \cdot O(1) + \epsilon_\Sigma I \approx \text{const} \cdot I
 $$
@@ -1111,6 +1114,7 @@ U_{\text{eff}}(x) = U(x) - \epsilon_F V_{\text{fit}}(x) = \frac{\kappa_{\text{co
 $$
 
 For $\epsilon_F$ small (weak adaptive force), the confining term dominates:
+
 $$
 U_{\text{eff}}(x) \approx \frac{\kappa_{\text{conf}}}{2}\|x\|^2 \quad \text{(quadratic)}
 $$
@@ -1126,6 +1130,7 @@ $$
 **Step 6: Perturbation argument**
 
 The small corrections from non-zero $\epsilon_F$ are **smooth perturbations** of the Gaussian. By continuity of log-concavity under small perturbations in the supremum norm:
+
 $$
 \|\rho_{\text{pert}} - \rho_{\text{Gaussian}}\|_{\infty} = O(\epsilon_F) \implies \rho_{\text{pert}} \text{ is log-concave}
 $$
@@ -2134,6 +2139,7 @@ where $\kappa_{W,\min} > 0$ is the N-uniform lower bound on the Wasserstein cont
 **Proof.**
 
 1. From Corollary {prf:ref}`cor-quantitative-lsi-final` (Section 5.6), the LSI constant for the N-particle system is given by:
+   
    $$
    C_{\text{LSI}}(N) = O\left(\frac{1}{\min(\gamma, \kappa_{\text{conf}}) \cdot \kappa_W(N) \cdot \delta^2}\right)
    $$
@@ -2150,6 +2156,7 @@ where $\kappa_{W,\min} > 0$ is the N-uniform lower bound on the Wasserstein cont
 4. The cloning noise parameter $\delta > 0$ is an algorithm parameter, independent of $N$.
 
 5. Therefore, the LSI constant is uniformly bounded:
+   
    $$
    C_{\text{LSI}}(N) \leq O\left(\frac{1}{\min(\gamma, \kappa_{\text{conf}}) \cdot \kappa_{W,\min} \cdot \delta^2}\right) =: C_{\text{LSI}}^{\max} < \infty
    $$
@@ -2817,11 +2824,13 @@ The transition operator is **exactly invariant** under the symmetric group $S_N$
 ### Step 2: Compute the Integral Two Ways
 
 Define:
+
 $$
 f(z_d, z_c) = \rho_\mu(z_d) \rho_\mu(z_c) (e^{-\lambda_{\text{corr}} \Delta V} - 1) \Delta V
 $$
 
 **First expression**:
+
 $$
 I_1 = \frac{\lambda_{\text{clone}}}{2m_a} \int_{\Omega_1} f(z_d, z_c) \, \mathrm{d}z_d \mathrm{d}z_c
 $$
@@ -2831,11 +2840,13 @@ $$
 When we swap, $\Delta V \to -\Delta V$ and $e^{-\lambda_{\text{corr}} \Delta V} \to e^{\lambda_{\text{corr}} \Delta V}$.
 
 **Second expression**:
+
 $$
 I_1 = \frac{\lambda_{\text{clone}}}{2m_a} \int_{\Omega_1} \rho_\mu(z_c) \rho_\mu(z_d) (e^{\lambda_{\text{corr}} \Delta V} - 1) (-\Delta V) \, \mathrm{d}z_c \mathrm{d}z_d
 $$
 
 Since dummy variables can be renamed:
+
 $$
 I_1 = -\frac{\lambda_{\text{clone}}}{2m_a} \int_{\Omega_1} \rho_\mu(z_d) \rho_\mu(z_c) (e^{\lambda_{\text{corr}} \Delta V} - 1) \Delta V \, \mathrm{d}z_d \mathrm{d}z_c
 $$
@@ -2849,21 +2860,25 @@ $$
 $$
 
 Simplify:
+
 $$
 2I_1 = \frac{\lambda_{\text{clone}}}{2m_a} \int_{\Omega_1} \rho_\mu(z_d) \rho_\mu(z_c) \Delta V \left[e^{-\lambda_{\text{corr}} \Delta V} - e^{\lambda_{\text{corr}} \Delta V}\right] \mathrm{d}z_d \mathrm{d}z_c
 $$
 
 **Use hyperbolic sine**:
+
 $$
 e^{-\lambda_{\text{corr}} \Delta V} - e^{\lambda_{\text{corr}} \Delta V} = -2\sinh(\lambda_{\text{corr}} \Delta V)
 $$
 
 Therefore:
+
 $$
 I_1 = -\frac{\lambda_{\text{clone}}}{2m_a} \int_{\Omega_1} \rho_\mu(z_d) \rho_\mu(z_c) \Delta V \sinh(\lambda_{\text{corr}} \Delta V) \, \mathrm{d}z_d \mathrm{d}z_c
 $$
 
 **Rewrite**:
+
 $$
 I_1 = -\frac{\lambda_{\text{clone}} \lambda_{\text{corr}}}{2m_a} \int_{\Omega_1} \rho_\mu(z_d) \rho_\mu(z_c) (\Delta V)^2 \frac{\sinh(\lambda_{\text{corr}} \Delta V)}{\lambda_{\text{corr}} \Delta V} \, \mathrm{d}z_d \mathrm{d}z_c
 $$
@@ -2961,6 +2976,7 @@ and tried to use $x \sinh(ax) \geq ax^2$.
 ### Part A: Potential Energy Reduction
 
 **Conclusion**:
+
 $$
 E_{\mu'}[\pi] - E_\mu[\pi] \leq -\tau \beta D_{\text{KL}}(\mu \| \pi) + O(\tau^2)
 $$
@@ -3419,6 +3435,7 @@ All three critical gaps in the mean-field LSI proof have been resolved using a c
 4. Apply global inequality: $\sinh(z)/z \geq 1$ for all $z \in \mathbb{R}$
 
 **Result**:
+
 $$
 I_1 \leq -2\lambda_{\text{corr}} \cdot \text{Var}_\mu[V_{\text{QSD}}]
 $$
@@ -3440,6 +3457,7 @@ $$
 5. Integrate: exponential contraction
 
 **Result**:
+
 $$
 D_{\text{KL}}(\rho_{\text{offspring}} \| \rho_\mu) \leq e^{-\kappa \delta^2} \cdot D_{\text{KL}}(\rho_{\text{clone}} \| \rho_\mu)
 $$
@@ -3455,6 +3473,7 @@ $$
 
 **Analysis**:
 **Result**:
+
 $$
 I = I_1 + I_2 \lesssim -\frac{\lambda_{\text{clone}} \lambda_{\text{corr}}}{2m_a} (1 - \epsilon_{\text{ratio}}) \text{Var}_\mu[V_{\text{QSD}}]
 $$
@@ -3473,11 +3492,13 @@ where $\epsilon_{\text{ratio}} = O(V_{\max}/V_{\min} - 1)$ is a small correction
 **A.5**: Poincaré inequality (connects variance to KL divergence)
 
 **Result**:
+
 $$
 E_{\mu'}[\pi] - E_\mu[\pi] \leq -\tau \beta D_{\text{KL}}(\mu \| \pi) + O(\tau^2)
 $$
 
 where:
+
 $$
 \beta = \frac{\lambda_{\text{clone}}}{m_a} \lambda_{\text{corr}} \lambda_{\text{Poin}} (1 - \epsilon_{\text{ratio}}) > 0
 $$
@@ -3490,11 +3511,13 @@ $$
 **B.5**: Combined entropy bound
 
 **Result**:
+
 $$
 H(\mu) - H(\mu') \leq C_{\text{ent}} + O(e^{-\kappa \delta^2}) + O(\tau^2)
 $$
 
 where for large $\delta^2$:
+
 $$
 C_{\text{ent}} = \tau \lambda_{\text{clone}} \left[\log\left(\frac{\rho_{\max}}{\rho_{\min}}\right) - \frac{d}{2} \log(2\pi e \delta^2)\right] < 0
 $$
@@ -3611,6 +3634,7 @@ The project now has **TWO rigorous proofs** of {prf:ref}`lem-entropy-transport-d
 4. Wasserstein contraction from cloning
 
 **Result**:
+
 $$
 D_{\text{KL}}(\mu' \| \pi) \leq D_{\text{KL}}(\mu \| \pi) - \alpha W_2^2(\mu, \pi) + C_{\text{clone}}
 $$
@@ -3635,6 +3659,7 @@ $$
 4. Sinh inequality (elementary analysis)
 
 **Result**:
+
 $$
 D_{\text{KL}}(\mu' \| \pi) \leq D_{\text{KL}}(\mu \| \pi) - \tau \beta D_{\text{KL}}(\mu \| \pi) + C_{\text{ent}} + O(e^{-\kappa \delta^2})
 $$
@@ -3693,6 +3718,7 @@ Both proofs rely on **log-concavity** ({prf:ref}`axiom-qsd-log-concave`) but exp
 **Current**: Hypothesis 6 gives $\delta^2 > \delta_{\min}^2$ for $C_{\text{ent}} < 0$
 
 **New condition**:
+
 $$
 \delta^2 > \max\left\{\delta_{\min}^2, \frac{1}{\kappa} \log\left(\frac{C_{\text{KL}}}{|C_{\text{ent,base}}|}\right)\right\}
 $$
@@ -3887,6 +3913,7 @@ D_{\text{KL}}(\mu' \| \pi) \leq (1 - \alpha_{\text{kin}} \tau) D_{\text{KL}}(\mu
 $$
 
 where:
+
 $$
 \alpha_{\text{kin}} = O(\gamma \kappa_{\text{conf}})
 $$
@@ -3926,11 +3953,13 @@ D_{\text{KL}}(\mu' \| \pi) \leq (1 - \tau \beta_{\text{clone}}) D_{\text{KL}}(\m
 $$
 
 where:
+
 $$
 \beta_{\text{clone}} := \frac{\lambda_{\text{clone}}}{m_a} \lambda_{\text{corr}} \lambda_{\text{Poin}} (1 - \epsilon_{\text{ratio}}) > 0
 $$
 
 and:
+
 $$
 C_{\text{ent}} := \tau \lambda_{\text{clone}} \left[\log\left(\frac{\rho_{\max}}{\rho_{\min}}\right) - \frac{d}{2} \log(2\pi e \delta^2)\right] < 0
 $$
@@ -3994,6 +4023,7 @@ where $\epsilon_{\text{ratio}} = O(V_{\max}/V_{\min} - 1)$ accounts for domain s
 **A.5: Poincaré inequality**:
 
 For log-concave $\pi$:
+
 $$
 \text{Var}_\mu[V_{\text{QSD}}] \geq \lambda_{\text{Poin}} D_{\text{KL}}(\mu \| \pi)
 $$
@@ -4027,11 +4057,13 @@ $$
 The source term is a cross-entropy: $E_{z \sim \rho_{\text{offspring}}}[\log \rho_\mu(z)]$.
 
 Decompose as:
+
 $$
 J = M \cdot H(\rho_{\text{offspring}}) - M \cdot D_{\text{KL}}(\rho_{\text{offspring}} \| \rho_\mu) - M
 $$
 
 **Step 1**: Shannon's Entropy Power Inequality gives:
+
 $$
 H(\rho_{\text{offspring}}) \geq H(\rho_{\text{clone}}) + \frac{d}{2} \log(2\pi e \delta^2)
 $$
@@ -4039,16 +4071,19 @@ $$
 **Step 2**: Treat Gaussian convolution as heat flow $\rho_t = \rho_{\text{clone}} * G_t$ for $t \in [0, \delta^2]$.
 
 **Step 3**: Apply **de Bruijn's identity**:
+
 $$
 \frac{d}{dt} D_{\text{KL}}(\rho_t \| \rho_\mu) = -\frac{1}{2} I(\rho_t \| \rho_\mu)
 $$
 
 **Step 4**: Use **Log-Sobolev Inequality** (from log-concavity of $\pi$):
+
 $$
 I(\rho_t \| \rho_\mu) \geq 2\kappa D_{\text{KL}}(\rho_t \| \rho_\mu)
 $$
 
 **Step 5**: Integrate (Grönwall):
+
 $$
 D_{\text{KL}}(\rho_{\text{offspring}} \| \rho_\mu) \leq e^{-\kappa \delta^2} D_{\text{KL}}(\rho_{\text{clone}} \| \rho_\mu)
 $$
@@ -4062,6 +4097,7 @@ H(\mu) - H(\mu') \leq C_{\text{ent}} + O(e^{-\kappa \delta^2}) + O(\tau^2)
 $$
 
 where:
+
 $$
 C_{\text{ent}} = \tau \lambda_{\text{clone}} \left[\log\left(\frac{\rho_{\max}}{\rho_{\min}}\right) - \frac{d}{2} \log(2\pi e \delta^2)\right] < 0
 $$
@@ -4078,6 +4114,7 @@ D_{\text{KL}}(\mu' \| \pi) - D_{\text{KL}}(\mu \| \pi) &= [H(\mu) - H(\mu')] + [
 $$
 
 Rearranging:
+
 $$
 D_{\text{KL}}(\mu' \| \pi) \leq (1 - \tau \beta_{\text{clone}}) D_{\text{KL}}(\mu \| \pi) + C_{\text{ent}} + O(e^{-\kappa \delta^2}) + O(\tau^2)
 $$
@@ -4119,6 +4156,7 @@ D_{\text{KL}}(\mu_{t+1} \| \pi) \leq [1 - \tau(\alpha_{\text{kin}} + \beta_{\tex
 $$
 
 where:
+
 $$
 C_{\text{total}} := C_{\text{ent}} + O(e^{-\kappa \delta^2}) + O(\tau^2)
 $$
@@ -4179,6 +4217,7 @@ D_{\text{KL}}(\mu_t \| \pi) \leq e^{-t/C_{\text{LSI}}} D_{\text{KL}}(\mu_0 \| \p
 $$
 
 where:
+
 $$
 C_{\text{asymptotic}} := \frac{C_{\text{total}}}{\tau(\alpha_{\text{kin}} + \beta_{\text{clone}})}
 $$
@@ -4190,6 +4229,7 @@ D_{\text{KL}}(\mu_{t+1} \| \pi) \leq (1 - \epsilon) D_{\text{KL}}(\mu_t \| \pi) 
 $$
 
 gives the geometric series:
+
 $$
 D_{\text{KL}}(\mu_t \| \pi) \leq (1 - \epsilon)^t D_{\text{KL}}(\mu_0 \| \pi) + C_{\text{total}} \sum_{k=0}^{t-1} (1 - \epsilon)^k
 $$
@@ -4217,16 +4257,19 @@ $$
 ### Explicit Constants
 
 **Kinetic contribution** (from main document):
+
 $$
 \alpha_{\text{kin}} = O(\gamma \kappa_{\text{conf}})
 $$
 
 **Cloning contribution** (from mean-field analysis):
+
 $$
 \beta_{\text{clone}} = \frac{\lambda_{\text{clone}}}{m_a} \lambda_{\text{corr}} \lambda_{\text{Poin}} (1 - \epsilon_{\text{ratio}})
 $$
 
 **Asymptotic constant**:
+
 $$
 C_{\infty} = \frac{C_{\text{ent}} + O(e^{-\kappa \delta^2})}{\alpha_{\text{kin}} + \beta_{\text{clone}}}
 $$
@@ -4311,6 +4354,7 @@ This proof is **complementary** to the displacement convexity approach, providin
 **Conclusion**:
 
 The discrete-time Markov chain $S_{t+1} = \Psi_{\text{total}}(S_t)$ with:
+
 $$
 \Psi_{\text{total}} := \Psi_{\text{clone}} \circ \Psi_{\text{kin}}
 $$
@@ -4322,6 +4366,7 @@ D_{\text{KL}}(\mu_t \| \pi_{\text{QSD}}) \leq e^{-\lambda t} D_{\text{KL}}(\mu_0
 $$
 
 where:
+
 $$
 \lambda = \tau(\alpha_{\text{kin}} + \beta_{\text{clone}}) = \tau \cdot O(\gamma \kappa_{\text{conf}} + \lambda_{\text{clone}} \lambda_{\text{corr}})
 $$
@@ -4397,6 +4442,7 @@ D_{\text{KL}}(\mu' \| \pi_{\text{kin}}) \leq (1 - \alpha_{\text{kin}} \tau) D_{\
 $$
 
 where:
+
 $$
 \alpha_{\text{kin}} = c \cdot \gamma \kappa_{\text{conf}}
 $$
@@ -4516,6 +4562,7 @@ defined by:
 2. **Replacement**: Replace particle $i$ with a noisy copy of particle $j$: $z_i \gets z_j + \mathcal{N}(0, \delta^2 I)$
 
 where:
+
 $$
 P_{\text{clone}}(V_i, V_j) = \min(1, V_j/V_i) \cdot \lambda_{\text{clone}}
 $$
@@ -4535,11 +4582,13 @@ S[\rho](z) = S_{\text{src}}[\rho](z) - S_{\text{sink}}[\rho](z)
 $$
 
 **Source term** (offspring created):
+
 $$
 S_{\text{src}}[\rho](z) = \frac{1}{m_a} \int_{\Omega \times \Omega} \rho(z_d) \rho(z_c) P_{\text{clone}}(V_d, V_c) Q_\delta(z | z_c) \, dz_d dz_c
 $$
 
 **Sink term** (particles replaced):
+
 $$
 S_{\text{sink}}[\rho](z) = \frac{\rho(z)}{m_a} \int_\Omega P_{\text{clone}}(V[z], V[z']) \rho(z') \, dz'
 $$
@@ -4558,11 +4607,13 @@ D_{\text{KL}}(\mu' \| \pi) \leq (1 - \tau \beta_{\text{clone}}) D_{\text{KL}}(\m
 $$
 
 where:
+
 $$
 \beta_{\text{clone}} = \frac{\lambda_{\text{clone}}}{m_a} \lambda_{\text{corr}} \lambda_{\text{Poin}} (1 - \epsilon_{\text{ratio}})
 $$
 
 and:
+
 $$
 C_{\text{ent}} = \tau \lambda_{\text{clone}} \left[\log\left(\frac{\rho_{\max}}{\rho_{\min}}\right) - \frac{d}{2} \log(2\pi e \delta^2)\right] < 0
 $$
@@ -4667,6 +4718,7 @@ E_{\mu'}[\pi] - E_\mu[\pi] \leq -\tau \beta_{\text{clone}} D_{\text{KL}}(\mu \| 
 $$
 
 where:
+
 $$
 \beta_{\text{clone}} = \frac{\lambda_{\text{clone}}}{m_a} \lambda_{\text{corr}} \lambda_{\text{Poin}} (1 - \epsilon_{\text{ratio}})
 $$
@@ -4815,6 +4867,7 @@ D_{\text{KL}}(\mu_{t+1} \| \pi) \leq [1 - \tau(\alpha_{\text{kin}} + \beta_{\tex
 $$
 
 where:
+
 $$
 C_{\text{total}} = C_{\text{ent}} + O(e^{-\kappa \delta^2})
 $$
@@ -4879,11 +4932,13 @@ D_{\text{KL}}(\mu_t \| \pi) \leq e^{-\lambda t} D_{\text{KL}}(\mu_0 \| \pi) + C_
 $$
 
 where:
+
 $$
 \lambda = \tau(\alpha_{\text{kin}} + \beta_{\text{clone}})
 $$
 
 and:
+
 $$
 C_\infty = \frac{C_{\text{total}}}{\alpha_{\text{kin}} + \beta_{\text{clone}}}
 $$
@@ -6516,11 +6571,13 @@ The following table compares the new result (Theorem {prf:ref}`thm-nonconvex-mai
 The fundamental issue is that the kinetic operator $\Psi_{\text{kin}}$ and the full Euclidean Gas operator $\Psi_{\text{EG}}$ have **different stationary distributions**:
 
 **Kinetic operator alone**:
+
 $$
 \pi_{\text{kin}}(x, v) \propto e^{-(U(x) + |v|^2/2)/\theta}
 $$
 
 **Full Euclidean Gas** (kinetic + cloning):
+
 $$
 \pi_{\text{QSD}}(x, v, \mathcal{A}) \propto e^{g(x,v,S)} \cdot e^{-(U(x) + |v|^2/2)/\theta}
 $$
@@ -7135,6 +7192,7 @@ where:
 :label: ex-fl-no-lsi
 
 Consider a lazy random walk on the integers with transition:
+
 $$
 P(x, x \pm 1) = \frac{1}{4}, \quad P(x, x) = \frac{1}{2}
 $$
@@ -7142,6 +7200,7 @@ $$
 and stationary measure $\pi$ geometric: $\pi(x) \propto e^{-|x|}$.
 
 **Has Foster-Lyapunov**: With $V(x) = |x|$:
+
 $$
 \mathbb{E}[V(X_{t+1})] \leq (1 - c)V(X_t) + C
 $$
@@ -7163,6 +7222,7 @@ Let $L$ be a diffusion generator on $\mathbb{R}^d$ with invariant measure $\pi$.
 - **Iterated carré du champ**: $\Gamma_2(f, f) = \frac{1}{2}(L\Gamma(f,f) - 2\Gamma(f, Lf))$
 
 If there exists $\rho > 0$ such that for all smooth $f$:
+
 $$
 \Gamma_2(f, f) \geq \rho \cdot \Gamma(f, f)
 $$
@@ -7173,11 +7233,13 @@ then $\pi$ satisfies an LSI with constant $C_{\text{LSI}} \leq 2/\rho$.
 **For a diffusion with drift**: $L = \Delta - \nabla V \cdot \nabla$
 
 The condition $\Gamma_2 \geq \rho \Gamma$ becomes:
+
 $$
 \text{Hess}(V) \geq \rho I \quad \text{(convexity of potential)}
 $$
 
 **Problem for us**: Our potential includes fitness terms:
+
 $$
 V_{\text{eff}}(S) = \sum_{i=1}^N U(x_i) - \theta g(x_i, v_i, S)
 $$
@@ -7273,6 +7335,7 @@ $$
 $$
 
 with:
+
 $$
 \kappa_{\text{total}} = \min\left(\frac{\kappa_W\tau}{2}, \frac{c_V\kappa_x}{2}, \frac{c_V\gamma\tau}{2}, \frac{c_B(\kappa_b + \kappa_{\text{pot}}\tau)}{2}\right) > 0
 $$
@@ -7300,6 +7363,7 @@ $$
 $$
 
 where:
+
 $$
 C_{\text{LSI}}^{\text{kin}} = \frac{1}{2\lambda_{\text{hypo}}}, \quad \lambda_{\text{hypo}} = c \cdot \min\left(\gamma, \frac{\alpha_U}{\sigma_v^2}\right)
 $$
@@ -7312,11 +7376,13 @@ $$
 **Problem**: $\pi_{\text{kin}} \neq \pi_{\text{QSD}}$.
 
 The kinetic operator alone has:
+
 $$
 \pi_{\text{kin}}(x, v) \propto \exp(-(U(x) + |v|^2/2)/\theta)
 $$
 
 But the full QSD includes fitness weighting:
+
 $$
 \pi_{\text{QSD}}(x, v, S) \propto \exp(g(x, v, S)) \cdot \exp(-(U(x) + |v|^2/2)/\theta)
 $$
@@ -7456,6 +7522,7 @@ with:
 - Coupling terms
 
 **Step 3**: Prove curvature bound:
+
 $$
 \Gamma_2^{\text{hypo}}(f, f) \geq \rho_{\text{hypo}} \cdot \Gamma(f, f)
 $$
@@ -7521,16 +7588,19 @@ where:
 By linearity of the generator $\mathcal{L} = \mathcal{L}_{\text{kin}} + \mathcal{L}_{\text{clone}}$:
 
 **Step 1**: Expand $\mathcal{L}(\Gamma^{\text{hypo}}(f,f))$ using linearity:
+
 $$
 \mathcal{L}(\Gamma^{\text{hypo}}) = \mathcal{L}_{\text{kin}}(\Gamma^{\text{hypo}}) + \mathcal{L}_{\text{clone}}(\Gamma^{\text{hypo}})
 $$
 
 **Step 2**: Expand $\Gamma^{\text{hypo}}(f, \mathcal{L} f)$ using bilinearity in the second argument:
+
 $$
 \Gamma^{\text{hypo}}(f, \mathcal{L} f) = \Gamma^{\text{hypo}}(f, \mathcal{L}_{\text{kin}} f) + \Gamma^{\text{hypo}}(f, \mathcal{L}_{\text{clone}} f)
 $$
 
 **Step 3**: Define the individual Γ₂ operators:
+
 $$
 \begin{aligned}
 \Gamma_2^{\text{kin}}(f, f) &:= \frac{1}{2}\mathcal{L}_{\text{kin}}(\Gamma^{\text{hypo}}(f, f)) - \Gamma^{\text{hypo}}(f, \mathcal{L}_{\text{kin}} f) \\[4pt]
@@ -7539,6 +7609,7 @@ $$
 $$
 
 **Step 4**: Verify the decomposition. Substituting Steps 1 and 2 into the definition of $\Gamma_2^{\text{hypo}}$:
+
 $$
 \begin{aligned}
 \Gamma_2^{\text{hypo}} &= \frac{1}{2}\mathcal{L}(\Gamma^{\text{hypo}}) - \Gamma^{\text{hypo}}(f, \mathcal{L} f) \\[4pt]
@@ -7572,6 +7643,7 @@ where:
 We apply Villani's hypocoercivity framework (Villani 2009, Theorem 35) adapted to the Langevin generator with non-convex potential. The proof proceeds by constructing a modified Lyapunov functional.
 
 **Step 1**: Write the kinetic generator in $(x, v)$ coordinates:
+
 $$
 \mathcal{L}_{\text{kin}} = \underbrace{v \cdot \nabla_x}_{\text{transport}} - \underbrace{\nabla U \cdot \nabla_v}_{\text{force}} - \underbrace{\gamma v \cdot \nabla_v}_{\text{friction}} + \underbrace{\frac{\sigma_v^2}{2}\Delta_v}_{\text{diffusion}}
 $$
@@ -7584,6 +7656,7 @@ $$
 The generator decomposes as $\mathcal{L}_{\text{kin}} = S + v \cdot \nabla_x - \nabla U \cdot \nabla_v$.
 
 **Step 3**: Construct the hypocoercive Lyapunov functional. Following Villani (2009, Section 6.4), define:
+
 $$
 \mathcal{H}(f) = \|f\|_{L^2(\pi)}^2 + 2\delta \langle \nabla_v f, \nabla_x f \rangle_{L^2(\pi)} + \varepsilon \|\nabla_x f\|_{L^2(\pi)}^2
 $$
@@ -7591,16 +7664,19 @@ $$
 where $\delta, \varepsilon > 0$ are coupling parameters to be optimized.
 
 **Step 4**: Compute the dissipation rate. The key calculation (Villani 2009, Theorem 35) shows:
+
 $$
 -\frac{d}{dt} \mathcal{H}(f_t) \geq \lambda_{\text{hypo}} \mathcal{H}(f_t) - \text{(error terms from non-convexity)}
 $$
 
 The error terms arise from $\nabla^2 U$ (Hessian of potential) appearing in:
+
 $$
 \langle \nabla_v f, \nabla^2 U \cdot \nabla_x f \rangle
 $$
 
 **Step 5**: Bound the Hessian contribution. By Cauchy-Schwarz and Young's inequality:
+
 $$
 |\langle \nabla_v f, \nabla^2 U \cdot \nabla_x f \rangle| \leq M \|\nabla_v f\| \cdot \|\nabla_x f\| \leq \frac{M^2}{2\eta} \|\nabla_x f\|^2 + \frac{\eta}{2} \|\nabla_v f\|^2
 $$
@@ -7608,6 +7684,7 @@ $$
 for any $\eta > 0$, where $M = \sup_x \|\nabla^2 U(x)\|$.
 
 **Step 6**: Optimize parameters. The optimal choice of $\delta, \varepsilon, \eta$ (Dolbeault-Mouhot-Schmeiser 2015, Theorem 2.3) gives:
+
 $$
 \lambda_{\text{hypo}} = c_1 \min\left(\gamma, \frac{\alpha_U}{\sigma_v^2}\right)
 $$
@@ -7617,6 +7694,7 @@ with $c_1 = 1/4$, provided:
 - Confinement: $\langle \nabla U, x \rangle \geq \alpha_U |x|^2$ for large $|x|$
 
 **Step 7**: Translate to Γ₂ bound. The Lyapunov inequality translates to the Γ₂ framework via the equivalence (Bakry-Émery-Ledoux correspondence):
+
 $$
 \Gamma_2^{\text{kin}}(f, f) \geq \alpha_{\text{kin}} \Gamma^{\text{hypo}}(f, f) - \beta_{\text{kin}} |\nabla_x f|^2
 $$
@@ -7646,17 +7724,20 @@ where $\epsilon_{\text{clone}} = C_{\text{Dob}} \nu_{\text{clone}} / \kappa_W$ w
 The cloning operator is a **non-local jump process** that doesn't fit the standard Γ₂ calculus for diffusions. We use a perturbation approach instead.
 
 **Step 1**: Characterize the cloning generator. The cloning operator acts on swarm observables as:
+
 $$
 \mathcal{L}_{\text{clone}} f(S) = \nu_{\text{clone}} \left( \mathbb{E}_{\text{clone}}[f(S') | S] - f(S) \right)
 $$
 where $S' \sim P_{\text{clone}}(\cdot | S)$ is the post-cloning state.
 
 **Step 2**: Apply the Dobrushin contraction. By {prf:ref}`thm-dobrushin-established`, the cloning operator satisfies Wasserstein contraction:
+
 $$
 W_1(P_{\text{clone}}^* \mu, P_{\text{clone}}^* \nu) \leq (1 - \kappa_W) W_1(\mu, \nu)
 $$
 
 where $\kappa_W \in (0, 1)$ is the contraction coefficient. By the Kantorovich-Rubinstein duality, this implies:
+
 $$
 \|P_{\text{clone}} f - \pi_{\text{clone}}(f)\|_{\infty} \leq (1 - \kappa_W) \|f - \pi_{\text{clone}}(f)\|_{\infty}
 $$
@@ -7664,11 +7745,13 @@ $$
 for functions $f$ with $\pi_{\text{clone}}(f) = \int f \, d\pi$.
 
 **Step 3**: Bound the perturbation to the Γ₂ inequality. The key observation is that cloning acts as a **bounded perturbation** to the kinetic dynamics. For any functional $\mathcal{F}(f)$:
+
 $$
 |\mathcal{L}_{\text{clone}} \mathcal{F}(f)| \leq \nu_{\text{clone}} \cdot \text{Var}_{\text{clone}}(\mathcal{F})
 $$
 
 For $\mathcal{F} = \Gamma^{\text{hypo}}(f, f)$, the variance is controlled by the fitness gradient. Using the uniform bound on fitness $|g| \leq G_{\max}$:
+
 $$
 |\mathcal{L}_{\text{clone}}(\Gamma^{\text{hypo}}(f, f))| \leq C_0 \nu_{\text{clone}} G_{\max}^2 \Gamma^{\text{hypo}}(f, f)
 $$
@@ -7676,36 +7759,43 @@ $$
 where $C_0$ is a geometric constant depending on dimension.
 
 **Step 4**: Bound the cross-term $\Gamma^{\text{hypo}}(f, \mathcal{L}_{\text{clone}} f)$. Since $\mathcal{L}_{\text{clone}}$ is a bounded operator with $\|\mathcal{L}_{\text{clone}} f\|_{\infty} \leq \nu_{\text{clone}} \cdot \text{osc}(f)$:
+
 $$
 |\Gamma^{\text{hypo}}(f, \mathcal{L}_{\text{clone}} f)| \leq \nu_{\text{clone}} \cdot \|\nabla f\| \cdot \|\nabla(\text{osc}(f))\|
 $$
 
 Using the spectral bound from the Wasserstein contraction (which implies spectral gap $\kappa_W$ for the cloning operator):
+
 $$
 \|\nabla(\mathcal{L}_{\text{clone}} f)\|^2 \leq \frac{\nu_{\text{clone}}^2}{\kappa_W} \|\nabla f\|^2
 $$
 
 Therefore:
+
 $$
 |\Gamma^{\text{hypo}}(f, \mathcal{L}_{\text{clone}} f)| \leq \frac{C_1 \nu_{\text{clone}}}{\sqrt{\kappa_W}} \Gamma^{\text{hypo}}(f, f)
 $$
 
 **Step 5**: Compute the Γ₂ bound. Combining the definition $\Gamma_2^{\text{clone}} = \frac{1}{2}\mathcal{L}_{\text{clone}}(\Gamma^{\text{hypo}}) - \Gamma^{\text{hypo}}(f, \mathcal{L}_{\text{clone}} f)$:
+
 $$
 \Gamma_2^{\text{clone}} \geq -\frac{C_0 \nu_{\text{clone}} G_{\max}^2}{2} \Gamma^{\text{hypo}} - \frac{C_1 \nu_{\text{clone}}}{\sqrt{\kappa_W}} \Gamma^{\text{hypo}}
 $$
 
 Factoring out:
+
 $$
 \Gamma_2^{\text{clone}} \geq -\left(\frac{C_0 G_{\max}^2}{2} + \frac{C_1}{\sqrt{\kappa_W}}\right) \nu_{\text{clone}} \cdot \Gamma^{\text{hypo}}
 $$
 
 **Step 6**: Define the effective perturbation constant. Since $\kappa_W \in (0, 1)$, we have $1/\sqrt{\kappa_W} \geq 1/\kappa_W^{1/2} \geq 1$. Define:
+
 $$
 \epsilon_{\text{clone}} := C_{\text{Dob}} \frac{\nu_{\text{clone}}}{\kappa_W}
 $$
 
 where $C_{\text{Dob}} = (C_0 G_{\max}^2/2 + C_1) \cdot \kappa_W^{1/2}$ is chosen so that:
+
 $$
 \left(\frac{C_0 G_{\max}^2}{2} + \frac{C_1}{\sqrt{\kappa_W}}\right) \nu_{\text{clone}} \leq C_{\text{Dob}} \frac{\nu_{\text{clone}}}{\kappa_W}
 $$
@@ -7713,6 +7803,7 @@ $$
 This inequality holds because $(C_0 G_{\max}^2/2 + C_1/\sqrt{\kappa_W}) \leq (C_0 G_{\max}^2/2 + C_1) / \sqrt{\kappa_W} \leq C_{\text{Dob}} / \kappa_W$.
 
 Therefore:
+
 $$
 \Gamma_2^{\text{clone}} \geq -\epsilon_{\text{clone}} \Gamma^{\text{hypo}}(f, f)
 $$
@@ -7756,11 +7847,13 @@ This is precisely the **Acoustic Limit condition** from {doc}`10_kl_hypocoercive
 
 :::{prf:proof}
 **Step 1**: Apply the exact decomposition from {prf:ref}`lem-gamma2-decomposition`:
+
 $$
 \Gamma_2^{\text{hypo}} = \Gamma_2^{\text{kin}} + \Gamma_2^{\text{clone}}
 $$
 
 **Step 2**: Apply the bounds from {prf:ref}`lem-kinetic-gamma2-bound` and {prf:ref}`lem-cloning-gamma2-bound`:
+
 $$
 \begin{aligned}
 \Gamma_2^{\text{kin}} &\geq \alpha_{\text{kin}} \Gamma^{\text{hypo}} - \beta_{\text{kin}} |\nabla_x f|^2 \\
@@ -7769,21 +7862,25 @@ $$
 $$
 
 Adding these:
+
 $$
 \Gamma_2^{\text{hypo}} \geq (\alpha_{\text{kin}} - \epsilon_{\text{clone}}) \Gamma^{\text{hypo}} - \beta_{\text{kin}} |\nabla_x f|^2
 $$
 
 **Step 3**: Establish positive definiteness of $\Gamma^{\text{hypo}}$. The hypocoercive norm satisfies:
+
 $$
 \Gamma^{\text{hypo}}(f,f) = |\nabla_v f|^2 + \lambda |\nabla_x f|^2 + 2\mu \nabla_v f \cdot \nabla_x f
 $$
 
 This quadratic form in $(|\nabla_v f|, |\nabla_x f|)$ is positive definite if and only if:
+
 $$
 \mu^2 < \lambda \quad \text{(positive definiteness condition)}
 $$
 
 **Step 4**: Derive the gradient absorption inequality. Under the positive definiteness condition, complete the square:
+
 $$
 \begin{aligned}
 \Gamma^{\text{hypo}}(f,f) &= |\nabla_v f|^2 + \lambda |\nabla_x f|^2 + 2\mu \nabla_v f \cdot \nabla_x f \\
@@ -7793,11 +7890,13 @@ $$
 $$
 
 Therefore:
+
 $$
 |\nabla_x f|^2 \leq \frac{1}{\lambda - \mu^2} \Gamma^{\text{hypo}}(f, f)
 $$
 
 **Step 5**: Absorb the non-convexity penalty. Substituting Step 4 into Step 2:
+
 $$
 \begin{aligned}
 \Gamma_2^{\text{hypo}} &\geq (\alpha_{\text{kin}} - \epsilon_{\text{clone}}) \Gamma^{\text{hypo}} - \frac{\beta_{\text{kin}}}{\lambda - \mu^2} \Gamma^{\text{hypo}} \\
@@ -7806,31 +7905,37 @@ $$
 $$
 
 **Step 6**: Optimize the coupling parameters. Choose $\mu$ small enough that $\mu^2 \ll \lambda$, so:
+
 $$
 \frac{1}{\lambda - \mu^2} = \frac{1}{\lambda}\left(1 + \frac{\mu^2}{\lambda} + O(\mu^4/\lambda^2)\right) \approx \frac{1}{\lambda}
 $$
 
 Then:
+
 $$
 \Gamma_2^{\text{hypo}} \geq \left(\alpha_{\text{kin}} - \frac{\beta_{\text{kin}}}{\lambda} - \epsilon_{\text{clone}}\right) \Gamma^{\text{hypo}}
 $$
 
 Define the **hypocoercive curvature**:
+
 $$
 \rho_{\text{hypo}} := \alpha_{\text{kin}} - \frac{\beta_{\text{kin}}}{\lambda} - \epsilon_{\text{clone}}
 $$
 
 **Step 7**: Derive the Acoustic Limit. The curvature bound $\Gamma_2^{\text{hypo}} \geq \rho_{\text{hypo}} \Gamma^{\text{hypo}}$ requires $\rho_{\text{hypo}} > 0$:
+
 $$
 \alpha_{\text{kin}} > \frac{\beta_{\text{kin}}}{\lambda} + \epsilon_{\text{clone}}
 $$
 
 Substituting $\alpha_{\text{kin}} = c_1 \min(\gamma, \alpha_U/\sigma_v^2)$, $\beta_{\text{kin}} = c_2 M^2$, and $\epsilon_{\text{clone}} = C_{\text{Dob}} \nu_{\text{clone}} / \kappa_W$:
+
 $$
 c_1 \min(\gamma, \alpha_U/\sigma_v^2) > \frac{c_2 M^2}{\lambda} + \frac{C_{\text{Dob}} \nu_{\text{clone}}}{\kappa_W}
 $$
 
 When $\gamma$ is the binding constraint (i.e., $\gamma \leq \alpha_U/\sigma_v^2$), solving for $\gamma$:
+
 $$
 \gamma > \frac{c_2 M^2}{c_1 \lambda} + \frac{C_{\text{Dob}} \nu_{\text{clone}}}{c_1 \kappa_W} =: \gamma_*
 $$
@@ -7870,6 +7975,7 @@ The continuous-time curvature bound must be adapted to the discrete-time BAOAB i
 :label: lem-discrete-lsi-from-curvature
 
 Let $\Psi_{\tau} = \Psi_{\text{kin}}(\tau) \circ \Psi_{\text{clone}}$ be the discrete-time operator with step $\tau > 0$. If the continuous generator satisfies the curvature bound ({prf:ref}`thm-hypo-curvature-bound`):
+
 $$
 \Gamma_2^{\text{hypo}} \geq \rho_{\text{hypo}} \Gamma^{\text{hypo}}
 $$
@@ -7887,6 +7993,7 @@ where $C_{\text{hypo}} = c_{\text{hi}}/c_{\text{lo}} \leq 2$ is the hypocoercivi
 
 :::{prf:proof}
 **Step 1**: Construct hypocoercive Lyapunov functional. The standard entropy $\text{Ent}(f^2) = \int f^2 \log f^2 \, d\pi - (\int f^2 d\pi) \log(\int f^2 d\pi)$ does not decay monotonically under non-reversible dynamics. Following Villani (2009, Chapter 6), define a **modified functional**:
+
 $$
 \mathcal{H}(f) := \text{Ent}_\pi(f^2) + \epsilon \int (Af) \cdot f \, d\pi
 $$
@@ -7894,6 +8001,7 @@ $$
 where $A$ is an auxiliary operator chosen to capture position-velocity coupling. For the kinetic Fokker-Planck equation, take $A = a \nabla_v \cdot \nabla_x + b \nabla_x \cdot \nabla_v$ with small constants $a, b > 0$.
 
 **Step 2**: Verify equivalence. Under the conditions $|a|, |b| \ll 1$ and the positive definiteness constraint $\mu^2 < \lambda$ from {prf:ref}`def-hypo-carre-du-champ`, the modified functional is equivalent to the standard entropy:
+
 $$
 c_{\text{lo}} \text{Ent}_\pi(f^2) \leq \mathcal{H}(f) \leq c_{\text{hi}} \text{Ent}_\pi(f^2)
 $$
@@ -7901,6 +8009,7 @@ $$
 with constants $c_{\text{lo}} = 1 - O(\epsilon)$ and $c_{\text{hi}} = 1 + O(\epsilon)$ (Villani 2009, Proposition 6.3).
 
 **Step 3**: Establish decay of $\mathcal{H}$. The curvature bound $\Gamma_2^{\text{hypo}} \geq \rho_{\text{hypo}} \Gamma^{\text{hypo}}$ from {prf:ref}`thm-hypo-curvature-bound` implies decay of the modified functional (Villani 2009, Theorem 6.1):
+
 $$
 \frac{d}{dt} \mathcal{H}(f_t) \leq -\kappa \mathcal{H}(f_t)
 $$
@@ -7908,16 +8017,19 @@ $$
 where $\kappa = 2\rho_{\text{hypo}} \cdot c_{\text{lo}}/c_{\text{hi}}$ (the ratio accounts for the equivalence constants).
 
 **Step 4**: Transfer to standard entropy. Combining Steps 2 and 3:
+
 $$
 \text{Ent}_\pi(f_t^2) \leq \frac{1}{c_{\text{lo}}} \mathcal{H}(f_t) \leq \frac{1}{c_{\text{lo}}} e^{-\kappa t} \mathcal{H}(f_0) \leq \frac{c_{\text{hi}}}{c_{\text{lo}}} e^{-\kappa t} \text{Ent}_\pi(f_0^2)
 $$
 
 For well-chosen $\epsilon$, we have $c_{\text{hi}}/c_{\text{lo}} \leq 2$ and $\kappa \geq \rho_{\text{hypo}}$, giving:
+
 $$
 \text{Ent}_\pi(f_t^2) \leq 2 e^{-\rho_{\text{hypo}} t} \text{Ent}_\pi(f_0^2)
 $$
 
 **Step 5**: Account for discretization error. The BAOAB integrator has weak error $O(\tau^2)$ for smooth observables (Leimkuhler-Matthews 2015, Theorem 7.5). For the entropy functional:
+
 $$
 |\text{Ent}(P_\tau^{\text{BAOAB}} f^2) - \text{Ent}(e^{\tau \mathcal{L}} f^2)| \leq K_{\text{split}} \tau^2
 $$
@@ -7925,6 +8037,7 @@ $$
 where $K_{\text{split}}$ depends on derivatives of $f$ and the potential $U$.
 
 **Step 6**: Combine continuous and discrete bounds. Using the triangle inequality:
+
 $$
 \begin{aligned}
 \text{Ent}(P_\tau^{\text{BAOAB}} f^2) &\leq \text{Ent}(e^{\tau \mathcal{L}} f^2) + K_{\text{split}} \tau^2 \\
@@ -7933,11 +8046,13 @@ $$
 $$
 
 **Step 7**: Obtain the final bound. From Step 6, we have:
+
 $$
 \text{Ent}(P_\tau^{\text{BAOAB}} f^2) \leq 2 e^{-\rho_{\text{hypo}}\tau} \text{Ent}(f^2) + K_{\text{split}} \tau^2
 $$
 
 For $\text{Ent}(f^2) \geq \epsilon_0 > 0$ and $\tau < \tau_* = \min(1/(2\rho_{\text{hypo}}), \sqrt{\epsilon_0/K_{\text{split}}})$, the discretization error satisfies $K_{\text{split}} \tau^2 \leq \epsilon_0 \leq \text{Ent}(f^2)$. Therefore:
+
 $$
 \text{Ent}(P_\tau^{\text{BAOAB}} f^2) \leq 2 e^{-\rho_{\text{hypo}}\tau} \text{Ent}(f^2) + K_{\text{split}} \tau^2 \leq C_{\text{hypo}} e^{-\rho_{\text{hypo}}\tau + O(\tau^2)} \text{Ent}(f^2)
 $$
@@ -7965,6 +8080,7 @@ C_{\text{LSI}}^{\text{discrete}} = \frac{1}{\rho_{\text{hypo}}} \cdot \left(1 + 
 $$
 
 where:
+
 $$
 \rho_{\text{hypo}} = c_1 \min(\gamma, \alpha_U/\sigma_v^2) - \frac{c_2 M^2}{\lambda} - \frac{C_{\text{Dob}} \nu_{\text{clone}}}{\kappa_W}
 $$
@@ -7974,6 +8090,7 @@ $$
 
 :::{prf:proof}
 **Step 1**: Establish the continuous-time LSI. The curvature bound $\Gamma_2^{\text{hypo}} \geq \rho_{\text{hypo}} \Gamma^{\text{hypo}}$ from {prf:ref}`thm-hypo-curvature-bound` implies, by the Bakry-Émery theorem for hypocoercive systems (Bakry-Émery 1985, extended by Villani 2009), a **logarithmic Sobolev inequality** for the continuous-time semigroup:
+
 $$
 \text{Ent}_{\pi}(f^2) \leq \frac{1}{\rho_{\text{hypo}}} \mathbb{E}_{\pi}[\Gamma^{\text{hypo}}(f, f)]
 $$
@@ -7981,6 +8098,7 @@ $$
 This gives the continuous-time LSI constant $C_{\text{LSI}}^{\text{cont}} = 1/\rho_{\text{hypo}}$.
 
 **Step 2**: Transfer to discrete time. The discrete operator $P_\tau$ is a perturbation of the continuous semigroup $e^{\tau \mathcal{L}}$ with error $O(\tau^2)$. By the stability of LSI under perturbations (Ledoux 1999, Theorem 5.3), if the continuous semigroup satisfies an LSI with constant $C$, then a discrete approximation with $O(\tau^2)$ weak error satisfies an LSI with constant:
+
 $$
 C_{\text{LSI}}^{\text{discrete}} \leq C_{\text{LSI}}^{\text{cont}} \cdot (1 + K \tau)
 $$
@@ -7988,6 +8106,7 @@ $$
 for some constant $K$ depending on the potential and discretization scheme.
 
 **Step 3**: Derive the explicit constant. Substituting $C_{\text{LSI}}^{\text{cont}} = 1/\rho_{\text{hypo}}$ into the perturbation bound:
+
 $$
 C_{\text{LSI}}^{\text{discrete}} = \frac{1}{\rho_{\text{hypo}}}(1 + O(\tau))
 $$
@@ -8017,6 +8136,7 @@ where:
 - $\kappa_W$ is the Wasserstein contraction coefficient from {prf:ref}`thm-dobrushin-established`
 
 **Physical interpretation**: The condition decomposes as:
+
 $$
 \gamma > \underbrace{\frac{c_2 M^2}{c_1 \lambda}}_{\text{non-convexity penalty}} + \underbrace{\frac{C_{\text{Dob}} \nu_{\text{clone}}}{c_1 \kappa_W}}_{\text{cloning perturbation}}
 $$

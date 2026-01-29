@@ -120,9 +120,11 @@ $$
 Substitute $\rho = \rho_0(1 + \phi)$ into $\mathcal{F}_{\mathrm{IG}}$:
 
 **Entropy term:**
+
 $$
 \int \rho_0(1+\phi) \log(1+\phi) \, dz = \int \rho_0(1+\phi)\left(\phi - \frac{\phi^2}{2} + O(\phi^3)\right) dz
 $$
+
 $$
 = \rho_0 \int \phi \, dz + \frac{\rho_0}{2}\int \phi^2 \, dz + O(\phi^3)
 $$
@@ -130,6 +132,7 @@ $$
 The linear term vanishes if $\int \phi \, dz = 0$ (mass conservation).
 
 **Interaction term:**
+
 $$
 \frac{1}{2}\iint K_\varepsilon(z,z') \rho_0^2 \phi(z)\phi(z') \, dz \, dz'
 $$

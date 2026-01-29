@@ -1272,6 +1272,7 @@ $$
   by Lemma {prf:ref}`lem-mean-field-kernel-mass-bound`.
 
 Thus, in the mean-field bounds we have
+
 $$
 \|\nabla_{x_i} Z_j\| \leq \frac{C_K}{\varepsilon_c^2} \cdot Z_j,
 $$
@@ -1803,6 +1804,7 @@ $$
 **For higher-order derivatives ($n \geq 2$):** The k-uniform structure is preserved by the following argument:
 
 1. **Inductive structure**: Each higher-order derivative $\nabla^n_{x_i} d_j$ is obtained by differentiating $\nabla^{n-1}_{x_i} d_j$, which by induction has the form:
+   
    $$
    \nabla^{n-1}_{x_i} d_j = \sum_{\text{terms}} P_i^{k_1} (\nabla^{k_2} d_{ji}) (\nabla^{k_3} \log K_i) (\nabla^{k_4} d_j)
    $$
@@ -1819,6 +1821,7 @@ $$
 4. **Gevrey-1 growth**: The Leibniz rule, quotient rule, and Faà di Bruno formula (detailed in Step 3 below) produce combinatorial factors bounded by $\mathcal{O}(n!)$, yielding Gevrey-1 growth.
 
 Therefore, for all $n \geq 1$:
+
 $$
 \|\nabla^n_{x_i} d_j\| \leq C_n \max(\varepsilon_d^{1-n}, \varepsilon_d \varepsilon_c^{-n})
 $$
@@ -4350,6 +4353,7 @@ but are **independent of $k$ and $N$**.
 :label: proof-cor-gevrey-1-fitness-potential-full
 
 From {prf:ref}`thm-main-cinf-regularity-fitness-potential-full`,
+
 $$
 \|\nabla^m V_{\text{fit}}\| \leq C_{V,m} \cdot m! \cdot \max(\rho^{-m}, \varepsilon_d^{1-m})
 $$
@@ -4452,6 +4456,7 @@ The following table traces how the ε_d dependence specifically flows through ea
 3. **Conservative regime**: If you set $\varepsilon_d \geq \rho$, the localization scale $\rho^{-m}$ dominates, and derivative bounds are controlled by the Gaussian localization width.
 
 4. **Practical impact**: For $\varepsilon_d = 10^{-3} \varepsilon_c$ and $m=5$:
+   
    $$
    \frac{\varepsilon_d^{1-m}}{\rho^{-m}} = \left(\frac{\rho}{\varepsilon_d}\right)^m \approx (10^3)^5 = 10^{15}
    $$

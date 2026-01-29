@@ -471,6 +471,7 @@ where $\lambda(z) = 2/(1-|z|^2)$ is the conformal factor, implies:
 *Proof.*
 
 **Step 1 (Metric encoding).** For a conformal metric $G(z)=\lambda(z)^2 I$ and the stated choice of $\tau(z)$,
+
 $$
 \frac{d_k}{\tau(z)^2} = \frac{d_k}{(\sqrt{d_k}/\lambda(z))^2} = \lambda(z)^2,
 $$
@@ -1983,6 +1984,7 @@ $$
 where $U_r, V_r \in \mathbb{R}^{d_k \times d}$ are low-rank factors with $R \ll d$.
 
 **For the Poincare ball/disk**: the contracted Christoffel correction has a closed form. Using Proposition {prf:ref}`prop-explicit-christoffel-symbols-for-poincare-disk`,
+
 $$
 \Gamma^k_{ij}(z) v^i v^j = \frac{2}{1-|z|^2}\left(2(z\cdot v)\,v^k - \|v\|^2 z^k\right),
 $$

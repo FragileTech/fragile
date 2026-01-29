@@ -120,11 +120,13 @@ satisfying:
 1. **Skew-symmetry:** $\{f_1, \ldots, f_n\}$ changes sign under transposition of any two arguments
 
 2. **Leibniz rule:** 
+
 $$
 \{f_1 g, f_2, \ldots, f_n\} = f_1\{g, f_2, \ldots, f_n\} + g\{f_1, f_2, \ldots, f_n\}
 $$
 
 3. **Fundamental identity (FI):**
+
 $$
 \{f_1, \ldots, f_{n-1}, \{g_1, \ldots, g_n\}\} = \sum_{i=1}^n \{g_1, \ldots, \{f_1, \ldots, f_{n-1}, g_i\}, \ldots, g_n\}
 $$
@@ -274,6 +276,7 @@ The first two equations match Definition {prf:ref}`def-bulk-drift-continuous-flo
 **Position:** $\dot{z}^k = \partial H / \partial p_k = G^{kj} p_j$ ✓
 
 **Momentum:** On a Riemannian manifold, the contact Hamilton equation includes the Christoffel connection:
+
 $$
 \dot{p}_k = -\partial_k H - p_k \cdot \partial_s H - \Gamma^m_{k\ell} G^{\ell j} p_j p_m = -\partial_k \Phi_{\text{eff}} - \gamma p_k - \Gamma^m_{k\ell} G^{\ell j} p_j p_m
 $$
@@ -357,11 +360,13 @@ $$
 $$
 
 *Proof.* The Fokker-Planck equation for the $(z, p)$ marginal:
+
 $$
 \partial_t \rho = -\nabla_z \cdot (\dot{z}\, \rho) - \nabla_p \cdot (\dot{p}\, \rho) + \frac{1}{2}\nabla_p \cdot (D \nabla_p \rho)
 $$
 
 has stationary solution $\rho_* \propto e^{-H/T_c}$ iff:
+
 $$
 D_{ij} = 2\gamma T_c\, G_{ij}
 $$

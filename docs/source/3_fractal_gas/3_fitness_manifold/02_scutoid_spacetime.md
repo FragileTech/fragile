@@ -180,6 +180,7 @@ $g_t(x)=H(x,S(t))+\epsilon_\Sigma I$ be the emergent metric
 ({prf:ref}`def-adaptive-diffusion-tensor-latent`). Define the **midpoint state**
 $S_{k+1/2}$ as the algorithm state **after cloning (including jitter) and before
 diffusive evolution** on the interval. The **midpoint metric** is
+
 $$
 g_{k+1/2}(x) := H(x,S_{k+1/2}) + \epsilon_\Sigma I.
 $$
@@ -187,11 +188,13 @@ If the implementation does not split the timestep, take $g_{k+1/2}=g_{k+1}$ (the
 post-clone metric).
 
 Define the **Lorentzian slab metric** on $M_k=\mathcal{Z}\times[t_k,t_{k+1}]$ by
+
 $$
 G_k := -c^2\,dt^2 + g_{k+1/2},
 $$
 with $c=V_{\mathrm{alg}}$ as in the CST construction
 ({prf:ref}`def-fractal-causal-order`), and define the **Riemannianized slab metric**
+
 $$
 \bar{G}_k := c^2\,dt^2 + g_{k+1/2}.
 $$
@@ -208,15 +211,18 @@ tessellation at finite step size.
 
 Let $\gamma:[t_a,t_b]\to\mathcal{Z}$ be a $C^1$ curve and write $[t_a,t_b]$ as a union of
 slabs $[t_k,t_{k+1}]$. The **scutoid path length** is
+
 $$
 L_{\mathrm{sc}}(\gamma) := \sum_{k}\int_{t_k}^{t_{k+1}}
 \|\dot{\gamma}(t)\|_{g_{k+1/2}}\,dt.
 $$
 For episodes $e_i=(x_i,t_i)$ and $e_j=(x_j,t_j)$ with $t_i<t_j$, define the induced distance
+
 $$
 d_{\mathrm{sc}}(e_i,e_j) := \inf_{\gamma: x_i\to x_j} L_{\mathrm{sc}}(\gamma),
 $$
 and the **scutoid light-cone order**
+
 $$
 e_i \prec_{\mathrm{sc}} e_j
 \quad \iff \quad
@@ -231,6 +237,7 @@ Assume the hypotheses used for geometric order in
 {prf:ref}`def-fractal-causal-order`: $g_t$ is uniformly elliptic, piecewise $C^1$ in $t$,
 $C^2$ in space on Safe Harbor regions, and the mean-field limit is taken with
 $\Delta t\to 0$. Then
+
 $$
 d_{\mathrm{sc}}(e_i,e_j) \to d_{\mathrm{geo}}(e_i,e_j)
 $$
@@ -380,6 +387,7 @@ to the parent position $z_j$), and let $z_i^+$ be the successor position at $t+\
 Assume the geometric separation condition: **if** $\mathcal{N}_i(t) = \mathcal{N}_i(t +
 \Delta t)$, then a geodesic tube of volume at least $c_0 r^d$ between $z_i$ and $z_i^+$
 must be empty (with $c_0>0$ depending only on dimension and curvature bounds). Then
+
 $$
 \mathbb{P}(\mathcal{N}_i(t) = \mathcal{N}_i(t + \Delta t)) \leq \exp\left(-c \cdot \frac{r^d}{\ell^d}\right),
 $$

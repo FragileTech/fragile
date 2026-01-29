@@ -938,6 +938,7 @@ Here $\Psi = \Psi_L + \Psi_R$ and $D_\mu$ acts chirally with representation-spec
 1. **Second-order hyperbolic dynamics:** Finite information speed upgrades the conservative value equation to the
    Klein-Gordon form (Theorem {prf:ref}`thm-hjb-klein-gordon`). For gauge-charged matter fields, the corresponding
    covariant wave equation is (Theorem {prf:ref}`thm-gauge-covariant-klein-gordon`):
+   
    $$
    \left(\frac{1}{c_{\text{info}}^2}D_t^2 - D^i D_i + \kappa^2\right)\psi = \mathcal{S}.
    $$
@@ -947,6 +948,7 @@ Here $\Psi = \Psi_L + \Psi_R$ and $D_\mu$ acts chirally with representation-spec
 3. **Minimal first-order covariant square root:** Define the Dirac operator
    $\slashed{D}:=i\gamma^\mu(\nabla_\mu^{\text{spin}}-igA_\mu)$ acting on the belief spinor. Then the standard
    factorization gives
+   
    $$
    (\slashed{D}-m)(\slashed{D}+m)
    = -D_\mu D^\mu + m^2 + \frac{1}{4}R + \frac{i}{2}\sigma^{\mu\nu}F_{\mu\nu},
