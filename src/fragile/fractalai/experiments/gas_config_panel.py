@@ -65,6 +65,21 @@ class GasConfigPanel(param.Parameterized):
         softbounds=(1, 200),
         doc="Record every k-th step (1=all steps)",
     )
+    neighbor_graph_method = param.ObjectSelector(
+        default="delaunay",
+        objects=["none", "delaunay", "voronoi"],
+        doc="Neighbor graph backend (SciPy) for true-neighbor coupling",
+    )
+    neighbor_graph_update_every = param.Integer(
+        default=1,
+        bounds=(1, 1000),
+        softbounds=(1, 200),
+        doc="Recompute neighbor graph every k steps",
+    )
+    neighbor_graph_record = param.Boolean(
+        default=True,
+        doc="Record neighbor edges + Voronoi regions into RunHistory",
+    )
 
     # Initialization controls
     init_offset = param.Number(default=4.5, bounds=(-6.0, 6.0), doc="Initial position offset")
@@ -182,13 +197,17 @@ class GasConfigPanel(param.Parameterized):
 
         # Benchmark
         config.bounds_extent = bounds_extent
-        config.benchmark_name = "Quadratic Well"
+        config.benchmark_name = "Voronoi Cell Volume"
+        config._apply_voronoi_volume_preset()
 
         # Simulation
         config.n_steps = 5000
         config.gas_params["N"] = 200
         config.gas_params["dtype"] = "float32"
         config.gas_params["pbc"] = False
+        config.neighbor_graph_method = "delaunay"
+        config.neighbor_graph_update_every = 1
+        config.neighbor_graph_record = True
 
         # Initialization (match EuclideanGas defaults used in QFT calibration)
         config.init_offset = 0.0
@@ -235,7 +254,8 @@ class GasConfigPanel(param.Parameterized):
         config.fitness_op.sigma_min = 1e-8
         config.fitness_op.epsilon_dist = 1e-8
         config.fitness_op.A = 2.0
-        config.fitness_op.rho = 0.251372
+        # Tuned for improved electroweak probe ratios (Jan 2026 calibration sweep).
+        config.fitness_op.rho = 0.1
 
         return config
 
@@ -395,7 +415,10 @@ class GasConfigPanel(param.Parameterized):
     def _on_benchmark_change(self, *_):
         """Handle benchmark parameter changes."""
         self._update_benchmark()
-        self.status_pane.object = f"**Benchmark updated:** {self.benchmark_name}"
+        if self.benchmark_name == "Voronoi Cell Volume":
+            self._apply_voronoi_volume_preset()
+        else:
+            self.status_pane.object = f"**Benchmark updated:** {self.benchmark_name}"
 
         # Notify listeners
         for callback in self._on_benchmark_updated:
@@ -412,6 +435,26 @@ class GasConfigPanel(param.Parameterized):
         self.fitness_op.detach_companions = True
         self.fitness_op.sigma_min = 1e-1
         self.status_pane.object = "**Applied fast fitness preset (approximate gradients).**"
+
+    def _apply_voronoi_volume_preset(self) -> None:
+        """Apply Voronoi volume benchmark preset settings."""
+        self.neighbor_graph_method = "voronoi"
+        self.neighbor_graph_update_every = 1
+        self.neighbor_graph_record = True
+        self.record_every = 1
+        self.kinetic_op.use_viscous_coupling = True
+        self.kinetic_op.viscous_neighbor_weighting = "uniform"
+        self.kinetic_op.use_potential_force = False
+        self.kinetic_op.use_fitness_force = False
+        self.kinetic_op.use_anisotropic_diffusion = True
+        self.kinetic_op.diagonal_diffusion = False
+        self.fitness_op.grad_mode = "sum"
+        self.fitness_op.detach_stats = True
+        self.fitness_op.detach_companions = True
+        self.status_pane.object = (
+            "**Applied Voronoi cell volume preset (record every step, "
+            "use Voronoi neighbors for viscous coupling).**"
+        )
 
     def _format_eta(self, seconds: float | None) -> str:
         if seconds is None:
@@ -574,6 +617,9 @@ class GasConfigPanel(param.Parameterized):
             enable_cloning=self.gas_params["enable_cloning"],
             enable_kinetic=self.gas_params["enable_kinetic"],
             pbc=self.gas_params["pbc"],
+            neighbor_graph_method=self.neighbor_graph_method,
+            neighbor_graph_update_every=int(self.neighbor_graph_update_every),
+            neighbor_graph_record=self.neighbor_graph_record,
         )
 
         # Initialize state
@@ -706,6 +752,11 @@ class GasConfigPanel(param.Parameterized):
             enable_cloning_cb,
             enable_kinetic_cb,
             pbc_cb,
+            self._build_param_panel([
+                "neighbor_graph_method",
+                "neighbor_graph_update_every",
+                "neighbor_graph_record",
+            ]),
             sizing_mode="stretch_width",
         )
 

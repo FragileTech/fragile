@@ -167,6 +167,18 @@ class RunHistory(BaseModel):
     )
 
     # ========================================================================
+    # Neighbor Graph Data (Optional)
+    # ========================================================================
+    neighbor_edges: list[Tensor] | None = Field(
+        default=None,
+        description="Per-recorded-step neighbor edges (directed) used for viscous coupling",
+    )
+    voronoi_regions: list[dict[str, Any]] | None = Field(
+        default=None,
+        description="Per-recorded-step Voronoi regions/vertices metadata (if computed)",
+    )
+
+    # ========================================================================
     # Timing Data
     # ========================================================================
     total_time: float = Field(description="Total execution time (seconds)")

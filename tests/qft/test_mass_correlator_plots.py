@@ -140,7 +140,7 @@ class TestMassCorrelatorPlotter:
             correlator = np.exp(-lags * 0.3) * (1 + 0.1 * np.random.randn(20))
             correlator = np.maximum(correlator, 1e-10)  # Ensure positive
             eff_mass = np.ones(19) * 0.3
-            
+
             results[name] = ChannelCorrelatorResult(
                 channel=channel,
                 lags=lags,
@@ -210,6 +210,6 @@ class TestIntegration:
             assert hasattr(channel, 'quantum_numbers')
             assert hasattr(channel, 'color')
             assert hasattr(channel, 'operator_type')
-            
+
             # Operator type should be valid
             assert channel.operator_type in {'bilinear', 'trilinear', 'gauge'}

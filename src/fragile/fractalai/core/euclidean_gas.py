@@ -12,6 +12,7 @@ from __future__ import annotations
 
 from typing import Callable
 
+import itertools
 import panel as pn
 import param
 import torch
@@ -155,6 +156,21 @@ class EuclideanGas(PanelModel):
             "PBC is applied before computing fitness and after kinetic updates."
         ),
     )
+    neighbor_graph_method = param.Selector(
+        default="delaunay",
+        objects=["none", "delaunay", "voronoi"],
+        doc=(
+            "Neighbor graph backend (SciPy): 'delaunay' for simplicial neighbors, "
+            "'voronoi' for Voronoi ridge neighbors, or 'none' to disable."
+        ),
+    )
+    neighbor_graph_update_every = param.Integer(
+        default=1, bounds=(1, None), doc="Recompute neighbor graph every k steps"
+    )
+    neighbor_graph_record = param.Boolean(
+        default=True,
+        doc="Record neighbor edges and Voronoi regions into RunHistory",
+    )
 
     @property
     def widgets(self) -> dict[str, dict]:
@@ -292,6 +308,134 @@ class EuclideanGas(PanelModel):
             raise ValueError(msg)
         return -self.potential(state.x)
 
+    def _compute_neighbor_graph(
+        self,
+        x: Tensor,
+        alive_mask: Tensor,
+    ) -> dict[str, object]:
+        """Compute Delaunay/Voronoi neighbor graph for alive walkers."""
+        if self.neighbor_graph_method == "none":
+            return {"neighbor_edges": None, "voronoi_regions": None, "updated": False}
+
+        alive_idx = torch.where(alive_mask)[0]
+        if alive_idx.numel() == 0:
+            empty = torch.zeros((0, 2), dtype=torch.long, device=x.device)
+            return {"neighbor_edges": empty, "voronoi_regions": None, "updated": True}
+
+        if x.shape[1] < 2:
+            empty = torch.zeros((0, 2), dtype=torch.long, device=x.device)
+            return {"neighbor_edges": empty, "voronoi_regions": None, "updated": True}
+
+        points = x[alive_idx].detach().cpu().numpy()
+        try:
+            from scipy.spatial import Delaunay, Voronoi
+        except Exception as exc:
+            msg = f"SciPy required for neighbor graph computation: {exc}"
+            raise RuntimeError(msg) from exc
+
+        edges: set[tuple[int, int]] = set()
+        vor_data: dict[str, object] | None = None
+
+        if self.neighbor_graph_method == "delaunay":
+            try:
+                delaunay = Delaunay(points)
+                simplices = delaunay.simplices
+                for simplex in simplices:
+                    for i, j in itertools.combinations(simplex.tolist(), 2):
+                        a = int(alive_idx[i].item())
+                        b = int(alive_idx[j].item())
+                        edges.add((a, b))
+                        edges.add((b, a))
+            except Exception:
+                pass
+
+            if self.neighbor_graph_record:
+                try:
+                    vor = Voronoi(points)
+                except Exception as exc:
+                    vor = None
+                    vor_data = {"error": str(exc)}
+                if vor is not None:
+                    vertices = torch.as_tensor(
+                        vor.vertices, device=x.device, dtype=x.dtype
+                    )
+                    point_region = vor.point_region.tolist()
+                    regions = [vor.regions[idx] for idx in point_region]
+                    regions_full: list[list[int] | None] = [None] * self.N
+                    for local_idx, orig_idx in enumerate(alive_idx.tolist()):
+                        regions_full[int(orig_idx)] = regions[local_idx]
+                    vor_data = {
+                        "vertices": vertices,
+                        "regions": regions_full,
+                        "point_region": point_region,
+                        "alive_indices": alive_idx.tolist(),
+                    }
+
+        elif self.neighbor_graph_method == "voronoi":
+            try:
+                vor = Voronoi(points)
+            except Exception as exc:
+                vor = None
+                vor_data = {"error": str(exc)}
+
+            if vor is not None:
+                ridge_points = vor.ridge_points
+                for i, j in ridge_points.tolist():
+                    a = int(alive_idx[i].item())
+                    b = int(alive_idx[j].item())
+                    edges.add((a, b))
+                    edges.add((b, a))
+
+                if self.neighbor_graph_record:
+                    vertices = torch.as_tensor(
+                        vor.vertices, device=x.device, dtype=x.dtype
+                    )
+                    point_region = vor.point_region.tolist()
+                    regions = [vor.regions[idx] for idx in point_region]
+                    regions_full = [None] * self.N
+                    for local_idx, orig_idx in enumerate(alive_idx.tolist()):
+                        regions_full[int(orig_idx)] = regions[local_idx]
+                    vor_data = {
+                        "vertices": vertices,
+                        "regions": regions_full,
+                        "point_region": point_region,
+                        "alive_indices": alive_idx.tolist(),
+                    }
+
+        if not edges:
+            neighbor_edges = torch.zeros((0, 2), dtype=torch.long, device=x.device)
+        else:
+            edge_list = list(edges)
+            neighbor_edges = torch.tensor(edge_list, dtype=torch.long, device=x.device)
+
+        return {
+            "neighbor_edges": neighbor_edges,
+            "voronoi_regions": vor_data if self.neighbor_graph_record else None,
+            "updated": True,
+        }
+
+    def _maybe_update_neighbor_cache(
+        self,
+        x: Tensor,
+        alive_mask: Tensor,
+        step_idx: int | None = None,
+    ) -> dict[str, object] | None:
+        """Update neighbor graph on schedule and cache results."""
+        if self.neighbor_graph_method == "none":
+            return None
+
+        update_every = max(1, int(self.neighbor_graph_update_every))
+        cache = getattr(self, "_neighbor_cache", None)
+        if step_idx is None:
+            step_idx = getattr(self, "_current_step", None)
+
+        if cache is not None and step_idx is not None and (step_idx % update_every != 0):
+            return {**cache, "updated": False}
+
+        result = self._compute_neighbor_graph(x, alive_mask)
+        self._neighbor_cache = result
+        return result
+
     def step(
         self, state: SwarmState, return_info: bool = False
     ) -> tuple[SwarmState, SwarmState] | tuple[SwarmState, SwarmState, dict] | None:
@@ -319,6 +463,8 @@ class EuclideanGas(PanelModel):
             - If enable_cloning=False, cloning is skipped and state_after_cloning = state
             - If enable_kinetic=False, kinetic is skipped and
               state_after_kinetic = state_after_cloning
+            - If kinetic_op.n_kinetic_steps > 1, the kinetic operator is applied
+              repeatedly using the same fitness derivatives for each substep
         """
         # Apply PBC at start if enabled (ensures positions valid before computing fitness)
         if self.pbc and self.bounds is not None:
@@ -403,6 +549,13 @@ class EuclideanGas(PanelModel):
                 "clone_delta_v": torch.zeros_like(state.v),
             }
 
+        neighbor_info = None
+        neighbor_edges = None
+        if self.neighbor_graph_method != "none":
+            neighbor_info = self._maybe_update_neighbor_cache(state_cloned.x, alive_mask)
+            if neighbor_info is not None:
+                neighbor_edges = neighbor_info.get("neighbor_edges")
+
         # # Apply freeze mask if needed
         # if freeze_mask is not None and freeze_mask.any():
         #     state_cloned.copy_from(reference_state, freeze_mask)
@@ -440,14 +593,21 @@ class EuclideanGas(PanelModel):
                 is_diagonal_hessian = self.kinetic_op.diagonal_diffusion
 
             # Step 6: Kinetic update with optional fitness derivatives (if enabled)
-            state_final, kinetic_info = self.kinetic_op.apply(
-                state_cloned,
-                grad_fitness,
-                hess_fitness,
-                return_info=True,
-            )
-            if freeze_mask is not None and freeze_mask.any():
-                state_final.copy_from(reference_state, freeze_mask)
+            n_kinetic_steps = max(1, int(getattr(self.kinetic_op, "n_kinetic_steps", 1)))
+            state_final = state_cloned
+            kinetic_info = {}
+            for _ in range(n_kinetic_steps):
+                state_final, kinetic_info = self.kinetic_op.apply(
+                    state_final,
+                    grad_fitness,
+                    hess_fitness,
+                    neighbor_edges=neighbor_edges,
+                    return_info=True,
+                )
+                if self.pbc and self.bounds is not None:
+                    state_final.x = self.bounds.apply_pbc_to_out_of_bounds(state_final.x)
+                if freeze_mask is not None and freeze_mask.any():
+                    state_final.copy_from(reference_state, freeze_mask)
         else:
             # Skip kinetic update, use cloned state as final
             state_final = state_cloned.clone()
@@ -487,6 +647,10 @@ class EuclideanGas(PanelModel):
                 "U_final": U_final if U_final is not None else torch.zeros_like(rewards),
                 "kinetic_info": kinetic_info,
             }
+            if neighbor_info is not None:
+                info["neighbor_edges"] = neighbor_edges
+                info["voronoi_regions"] = neighbor_info.get("voronoi_regions")
+                info["neighbor_updated"] = neighbor_info.get("updated")
             if grad_fitness is not None:
                 info["grad_fitness"] = grad_fitness
             if hess_fitness is not None:
@@ -628,6 +792,7 @@ class EuclideanGas(PanelModel):
                     "gamma": self.kinetic_op.gamma,
                     "beta": self.kinetic_op.beta,
                     "delta_t": self.kinetic_op.delta_t,
+                    "n_kinetic_steps": getattr(self.kinetic_op, "n_kinetic_steps", 1),
                     "epsilon_F": self.kinetic_op.epsilon_F,
                     "use_fitness_force": self.kinetic_op.use_fitness_force,
                     "use_potential_force": self.kinetic_op.use_potential_force,
@@ -638,6 +803,7 @@ class EuclideanGas(PanelModel):
                     "use_viscous_coupling": self.kinetic_op.use_viscous_coupling,
                     "viscous_length_scale": self.kinetic_op.viscous_length_scale,
                     "viscous_neighbor_mode": self.kinetic_op.viscous_neighbor_mode,
+                    "viscous_neighbor_weighting": self.kinetic_op.viscous_neighbor_weighting,
                     "viscous_neighbor_threshold": self.kinetic_op.viscous_neighbor_threshold,
                     "viscous_neighbor_penalty": self.kinetic_op.viscous_neighbor_penalty,
                     "viscous_degree_cap": self.kinetic_op.viscous_degree_cap,
@@ -662,6 +828,11 @@ class EuclideanGas(PanelModel):
                     "name": type(self.reward_1form).__name__
                     if self.reward_1form is not None
                     else None
+                },
+                "neighbor_graph": {
+                    "method": self.neighbor_graph_method,
+                    "update_every": self.neighbor_graph_update_every,
+                    "record": self.neighbor_graph_record,
                 },
             }
 
@@ -702,7 +873,10 @@ class EuclideanGas(PanelModel):
             record_hessians_full=record_hessians_full,
             record_sigma_reg_diag=record_sigma_reg_diag,
             record_sigma_reg_full=record_sigma_reg_full,
+            record_neighbors=self.neighbor_graph_record and self.neighbor_graph_method != "none",
+            record_voronoi=self.neighbor_graph_record and self.neighbor_graph_method != "none",
         )
+        self._neighbor_cache = None
 
         # Check initial alive status
         if self.pbc:
@@ -772,6 +946,7 @@ class EuclideanGas(PanelModel):
                     break
 
             # Execute step with return_info=True to get all data
+            self._current_step = t
             state_cloned, state_final, info = self.step(state, return_info=True)
 
             # Compute adaptive kinetics derivatives if enabled

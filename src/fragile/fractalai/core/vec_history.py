@@ -78,6 +78,8 @@ class VectorizedHistoryRecorder:
         record_hessians_full: bool = False,
         record_sigma_reg_diag: bool = False,
         record_sigma_reg_full: bool = False,
+        record_neighbors: bool = False,
+        record_voronoi: bool = False,
     ):
         """Initialize recorder with pre-allocated arrays.
 
@@ -97,6 +99,8 @@ class VectorizedHistoryRecorder:
         self.device = device
         self.dtype = dtype
         self.recorded_idx = 1  # Index in recorded arrays (0 is initial state)
+        self.record_neighbors = record_neighbors
+        self.record_voronoi = record_voronoi
 
         # ====================================================================
         # Preallocate all storage arrays
@@ -180,6 +184,10 @@ class VectorizedHistoryRecorder:
         self.force_total = torch.zeros(n_recorded - 1, N, d, device=device, dtype=dtype)
         self.noise = torch.zeros(n_recorded - 1, N, d, device=device, dtype=dtype)
 
+        # Optional neighbor graph storage (variable-length per step)
+        self.neighbor_edges: list[Tensor] | None = [] if record_neighbors else None
+        self.voronoi_regions: list[dict] | None = [] if record_voronoi else None
+
     def record_initial_state(
         self,
         state: SwarmState,
@@ -202,6 +210,12 @@ class VectorizedHistoryRecorder:
         if U_final is not None:
             self.U_final[0] = U_final
         self.n_alive[0] = n_alive
+        if self.neighbor_edges is not None:
+            self.neighbor_edges.append(
+                torch.zeros((0, 2), dtype=torch.long, device=self.device)
+            )
+        if self.voronoi_regions is not None:
+            self.voronoi_regions.append({})
 
     def record_step(
         self,
@@ -315,6 +329,17 @@ class VectorizedHistoryRecorder:
             if kinetic_info.get("sigma_reg_full") is not None and self.sigma_reg_full is not None:
                 self.sigma_reg_full[idx_minus_1] = kinetic_info["sigma_reg_full"]
 
+        if self.neighbor_edges is not None:
+            edges = info.get("neighbor_edges")
+            if edges is None:
+                edges = torch.zeros((0, 2), dtype=torch.long, device=self.device)
+            self.neighbor_edges.append(edges)
+        if self.voronoi_regions is not None:
+            regions = info.get("voronoi_regions")
+            if regions is None:
+                regions = {}
+            self.voronoi_regions.append(regions)
+
         # Increment recorded index for next step
         self.recorded_idx += 1
 
@@ -421,6 +446,12 @@ class VectorizedHistoryRecorder:
             else None,
             sigma_reg_full=self.sigma_reg_full[: actual_recorded - 1]
             if self.sigma_reg_full is not None
+            else None,
+            neighbor_edges=self.neighbor_edges[:actual_recorded]
+            if self.neighbor_edges is not None
+            else None,
+            voronoi_regions=self.voronoi_regions[:actual_recorded]
+            if self.voronoi_regions is not None
             else None,
             total_time=total_time,
             init_time=init_time,

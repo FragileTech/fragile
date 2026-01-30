@@ -594,3 +594,223 @@ def analyze_curvature_evolution(
         "method": method,
         "n_recorded": len(timesteps),
     }
+
+
+# ==============================================================================
+# Voronoi-Based Fast Curvature Proxies (O(N) methods)
+# ==============================================================================
+
+
+def compute_laplacian_curvature_from_voronoi(
+    voronoi_data: dict,
+    d: int,
+    k_eigenvalues: int = 5,
+) -> dict:
+    """
+    Extract Ricci lower bound from Graph Laplacian using Voronoi neighbors.
+
+    This wrapper integrates the existing `compute_graph_laplacian_eigenvalues()`
+    with Voronoi tessellation data, providing fast O(N) curvature estimates.
+
+    Method:
+        Uses Cheeger inequality to bound Ricci curvature from below:
+            R ≥ 2λ₁/d
+        where λ₁ is the spectral gap (first non-zero eigenvalue) and d is dimension.
+
+    Args:
+        voronoi_data: Output from compute_voronoi_tessellation()
+            Must contain "neighbor_lists" key
+        d: Dimension of space
+        k_eigenvalues: Number of smallest eigenvalues to compute
+
+    Returns:
+        Dictionary with:
+            - 'spectral_gap': λ₁ (Fiedler value)
+            - 'ricci_lower_bound': Heuristic R ≥ 2λ₁/d via Cheeger
+            - 'eigenvalues': First k eigenvalues [k]
+            - 'eigenvectors': Corresponding eigenfunctions [N, k]
+            - 'n_walkers': Number of cells analyzed
+
+    Reference:
+        Plan: /home/guillem/.claude/plans/cryptic-percolating-creek.md
+        Theory: curvature.md § 1.2 "Graph Laplacian Spectrum"
+
+    Example:
+        >>> voronoi_data = compute_voronoi_tessellation(positions, alive, ...)
+        >>> curv = compute_laplacian_curvature_from_voronoi(voronoi_data, d=3)
+        >>> print(f"Spectral gap: {curv['spectral_gap']:.4f}")
+        >>> print(f"Ricci lower bound: {curv['ricci_lower_bound']:.4f}")
+    """
+    neighbor_lists = voronoi_data.get("neighbor_lists", {})
+    n = len(neighbor_lists)
+
+    if n < 2:
+        return {
+            "spectral_gap": 0.0,
+            "ricci_lower_bound": 0.0,
+            "eigenvalues": np.array([]),
+            "eigenvectors": np.array([]),
+            "n_walkers": n,
+            "warning": f"Too few walkers ({n}) for Laplacian computation",
+        }
+
+    # Compute graph Laplacian eigenvalues
+    eigenvalues, eigenvectors = compute_graph_laplacian_eigenvalues(
+        neighbor_lists, k=min(k_eigenvalues, n - 1)
+    )
+
+    # Extract spectral gap (λ₁)
+    spectral_gap = float(eigenvalues[1]) if len(eigenvalues) > 1 else 0.0
+
+    # Ricci lower bound via Cheeger inequality: R ≥ 2λ₁/d
+    ricci_lower_bound = 2.0 * spectral_gap / d if d > 0 else 0.0
+
+    return {
+        "spectral_gap": spectral_gap,
+        "ricci_lower_bound": ricci_lower_bound,
+        "eigenvalues": eigenvalues,
+        "eigenvectors": eigenvectors,
+        "n_walkers": n,
+        "dimension": d,
+    }
+
+
+def compare_curvature_methods(
+    voronoi_data: dict,
+    curvature_proxies: dict,
+    laplacian_curvature: dict | None = None,
+    prev_volumes: np.ndarray | None = None,
+    dt: float = 1.0,
+) -> dict:
+    """
+    Compare all three fast curvature proxy methods for consistency.
+
+    This function integrates:
+    1. Volume-based proxies (volume variance, shape distortion)
+    2. Graph Laplacian (spectral gap → Ricci lower bound)
+    3. Raychaudhuri expansion (volume evolution → curvature estimate)
+
+    All three methods should agree on the *sign* of curvature:
+    - Positive curvature: high volume variance, large spectral gap, negative expansion
+    - Negative curvature: low volume variance, small spectral gap, positive expansion
+    - Flat space: low variance, moderate gap, near-zero expansion
+
+    Args:
+        voronoi_data: Output from compute_voronoi_tessellation()
+        curvature_proxies: Output from compute_curvature_proxies()
+        laplacian_curvature: Optional pre-computed Laplacian result
+            If None, will compute using compute_laplacian_curvature_from_voronoi()
+        prev_volumes: Previous timestep volumes for Raychaudhuri
+        dt: Timestep for volume evolution
+
+    Returns:
+        Dictionary with:
+            - 'volume_variance': σ²(V_i/<V>) - geometric distortion
+            - 'spectral_gap': λ₁ from Graph Laplacian
+            - 'raychaudhuri_estimate': Mean θ = -R from volume evolution (if available)
+            - 'ricci_lower_bound': From Cheeger inequality R ≥ 2λ₁/d
+            - 'consistency_check': Whether all methods agree on curvature sign
+            - 'mean_shape_distortion': Mean inradius/circumradius ratio
+            - 'unified_curvature_estimate': Weighted average of available estimates
+
+    Reference:
+        Plan: /home/guillem/.claude/plans/cryptic-percolating-creek.md § Step 4
+
+    Example:
+        >>> voronoi_data = compute_voronoi_tessellation(...)
+        >>> curv_proxies = compute_curvature_proxies(voronoi_data, positions)
+        >>> comparison = compare_curvature_methods(voronoi_data, curv_proxies)
+        >>> print(f"Consistent: {comparison['consistency_check']}")
+        >>> print(f"Unified estimate: {comparison['unified_curvature_estimate']:.4f}")
+    """
+    # Extract volume-based measures
+    volume_variance = curvature_proxies.get("volume_variance", 0.0)
+    mean_curvature_ray = curvature_proxies.get("mean_curvature_estimate", 0.0)
+    shape_distortion = curvature_proxies.get("shape_distortion", np.array([]))
+    mean_shape_distortion = float(np.mean(shape_distortion)) if len(shape_distortion) > 0 else 1.0
+
+    # Compute Laplacian curvature if not provided
+    if laplacian_curvature is None:
+        # Infer dimension from positions
+        volumes = voronoi_data.get("volumes", np.array([]))
+        d = 3  # Default, should be passed explicitly in production
+        if len(volumes) > 0:
+            # Try to infer from voronoi object
+            vor = voronoi_data.get("voronoi")
+            if vor is not None and hasattr(vor, "points"):
+                d = vor.points.shape[1]
+        
+        laplacian_curvature = compute_laplacian_curvature_from_voronoi(
+            voronoi_data, d=d, k_eigenvalues=5
+        )
+
+    spectral_gap = laplacian_curvature.get("spectral_gap", 0.0)
+    ricci_lower_bound = laplacian_curvature.get("ricci_lower_bound", 0.0)
+
+    # Check for Raychaudhuri estimate
+    has_raychaudhuri = "raychaudhuri_expansion" in curvature_proxies and prev_volumes is not None
+    raychaudhuri_estimate = mean_curvature_ray if has_raychaudhuri else None
+
+    # Consistency check: Do all methods agree on sign?
+    # Define thresholds for "positive" vs "negative" vs "flat"
+    estimates = []
+    signs = []
+
+    # Volume variance → high variance suggests positive curvature (concentrated swarm)
+    # But this is tricky: could also be transient dynamics
+    # For now, we'll use it as a consistency indicator but not sign
+    
+    # Ricci lower bound from Laplacian
+    if ricci_lower_bound > 0.01:
+        signs.append("+")
+        estimates.append(ricci_lower_bound)
+    elif ricci_lower_bound < -0.01:
+        signs.append("-")
+        estimates.append(ricci_lower_bound)
+    else:
+        signs.append("0")
+        estimates.append(ricci_lower_bound)
+
+    # Raychaudhuri: R ≈ -θ
+    if raychaudhuri_estimate is not None:
+        if raychaudhuri_estimate > 0.01:
+            signs.append("+")
+            estimates.append(raychaudhuri_estimate)
+        elif raychaudhuri_estimate < -0.01:
+            signs.append("-")
+            estimates.append(raychaudhuri_estimate)
+        else:
+            signs.append("0")
+            estimates.append(raychaudhuri_estimate)
+
+    # Check consistency: all signs should agree (ignoring "0")
+    non_zero_signs = [s for s in signs if s != "0"]
+    if len(non_zero_signs) == 0:
+        consistency_check = True  # All flat
+    elif len(set(non_zero_signs)) == 1:
+        consistency_check = True  # All agree
+    else:
+        consistency_check = False  # Disagreement
+
+    # Unified curvature estimate: weighted average
+    if len(estimates) > 0:
+        # Weight Laplacian more heavily (more reliable)
+        if has_raychaudhuri:
+            unified_curvature_estimate = 0.7 * ricci_lower_bound + 0.3 * raychaudhuri_estimate
+        else:
+            unified_curvature_estimate = ricci_lower_bound
+    else:
+        unified_curvature_estimate = 0.0
+
+    return {
+        "volume_variance": volume_variance,
+        "spectral_gap": spectral_gap,
+        "raychaudhuri_estimate": raychaudhuri_estimate,
+        "ricci_lower_bound": ricci_lower_bound,
+        "consistency_check": consistency_check,
+        "mean_shape_distortion": mean_shape_distortion,
+        "unified_curvature_estimate": unified_curvature_estimate,
+        "signs": signs,
+        "has_raychaudhuri": has_raychaudhuri,
+        "n_methods": len(estimates),
+    }

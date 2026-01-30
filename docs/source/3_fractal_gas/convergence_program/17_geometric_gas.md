@@ -586,19 +586,19 @@ $$
 with:
 
 1. **Adaptive force perturbation**:
-   
+
    $$
    L_{\mathrm{adapt}} f = \epsilon_F \sum_{i=1}^N \nabla V_{\mathrm{fit}}[f_k, \rho](x_i) \cdot \nabla_{v_i} f
    $$
 
 2. **Viscous coupling perturbation**:
-   
+
    $$
    L_{\mathrm{viscous}} f = \nu \sum_{i=1}^N \sum_{j \neq i} \frac{K(x_i - x_j)}{\mathrm{deg}(i)} (v_j - v_i) \cdot \nabla_{v_i} f
    $$
 
 3. **Diffusion perturbation**:
-   
+
    $$
    L_{\mathrm{diff}} f = \frac{1}{2} \sum_{i=1}^N \left[ \mathrm{tr}(\Sigma_{\mathrm{reg}}^2 \nabla_{v_i}^2 f) - \sigma^2 \Delta_{v_i} f \right]
    $$
@@ -1761,7 +1761,7 @@ The quasi-stationary distribution $\pi_N(\rho)$ has rich structure determined by
 The positions $\{x_i\}$ exhibit:
 
 1. **Gibbs-like concentration** near fitness peaks:
-   
+
    $$
    \pi_N(x_i) \propto \exp\left( -\frac{U(x_i)}{\lambda_{\mathrm{conf}}} + \epsilon_F \frac{V_{\mathrm{fit}}[\pi_N, \rho](x_i)}{\lambda_{\mathrm{adapt}}} \right)
    $$
@@ -1777,7 +1777,7 @@ The positions $\{x_i\}$ exhibit:
 The velocities $\{v_i\}$ exhibit:
 
 1. **Ornstein-Uhlenbeck-like structure:**
-   
+
    $$
    \pi_N(v_i | x_i) \propto \exp\left( -\frac{1}{2} v_i^\top C_v(x_i)^{-1} v_i \right)
    $$

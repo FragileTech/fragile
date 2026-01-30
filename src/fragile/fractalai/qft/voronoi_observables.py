@@ -40,6 +40,8 @@ import numpy as np
 import torch
 from scipy.spatial import Voronoi, ConvexHull
 
+from fragile.fractalai.core.history import RunHistory
+
 
 def classify_boundary_cells(
     voronoi_data: dict[str, Any],
@@ -178,6 +180,9 @@ def compute_voronoi_tessellation(
     pbc_mode: str = "mirror",
     exclude_boundary: bool = True,
     boundary_tolerance: float = 1e-6,
+    compute_curvature: bool = True,
+    prev_volumes: np.ndarray | None = None,
+    dt: float = 1.0,
 ) -> dict[str, Any]:
     """
     Compute Voronoi tessellation from walker positions.
@@ -190,6 +195,9 @@ def compute_voronoi_tessellation(
         pbc_mode: How to handle PBC - "mirror", "replicate", or "ignore"
         exclude_boundary: Whether to exclude boundary cells (Tier 1) from neighbor lists
         boundary_tolerance: Distance threshold for boundary cell detection
+        compute_curvature: Whether to compute curvature proxies (default True)
+        prev_volumes: Previous timestep volumes for Raychaudhuri expansion (optional)
+        dt: Timestep for volume evolution rate (default 1.0)
 
     Returns:
         Dictionary containing:
@@ -200,6 +208,7 @@ def compute_voronoi_tessellation(
             - "alive_indices": np.ndarray original alive indices
             - "index_map": dict[int, int] mapping voronoi idx → original idx
             - "classification": dict with boundary tier classification (if exclude_boundary=True)
+            - "curvature_proxies": dict with curvature proxy estimates (if compute_curvature=True)
     """
     # Filter to alive walkers
     alive_indices = torch.where(alive)[0].cpu().numpy()
@@ -372,6 +381,33 @@ def compute_voronoi_tessellation(
 
         neighbor_lists = neighbor_lists_filtered
 
+    # Compute curvature proxies if requested
+    curvature_proxies = None
+    if compute_curvature and n_alive > 0:
+        # Build the voronoi_data dict needed for curvature computation
+        voronoi_data_for_curvature = {
+            "voronoi": vor,
+            "neighbor_lists": neighbor_lists,
+            "volumes": volumes,
+            "facet_areas": facet_areas,
+            "alive_indices": alive_indices,
+            "index_map": index_map,
+            "classification": classification,
+        }
+        
+        try:
+            curvature_proxies = compute_curvature_proxies(
+                voronoi_data=voronoi_data_for_curvature,
+                positions=positions_alive,
+                prev_volumes=prev_volumes,
+                dt=dt,
+            )
+        except Exception as e:
+            # If curvature computation fails, log warning but don't break tessellation
+            import warnings
+            warnings.warn(f"Curvature proxy computation failed: {e}", RuntimeWarning, stacklevel=2)
+            curvature_proxies = None
+
     return {
         "voronoi": vor,
         "neighbor_lists": neighbor_lists,
@@ -380,6 +416,7 @@ def compute_voronoi_tessellation(
         "alive_indices": alive_indices,
         "index_map": index_map,
         "classification": classification,
+        "curvature_proxies": curvature_proxies,
     }
 
 
@@ -447,6 +484,69 @@ def _compute_cell_volume(vertices: np.ndarray, d: int) -> float:
         return float(hull.volume)
     except Exception:
         return 1.0
+
+
+def compute_dual_volumes_from_history(
+    history: RunHistory,
+    step: int | None = None,
+    record_index: int | None = None,
+) -> torch.Tensor:
+    """Compute Voronoi dual volumes from stored history.voronoi_regions.
+
+    Args:
+        history: RunHistory with voronoi_regions recorded.
+        step: Absolute step number to extract (mutually exclusive with record_index).
+        record_index: Recorded index to extract (0-based).
+
+    Returns:
+        Tensor of dual volumes [N] (NaN for missing/unbounded cells).
+    """
+    if history.voronoi_regions is None:
+        msg = "RunHistory.voronoi_regions is empty; run with neighbor_graph_record=True."
+        raise ValueError(msg)
+
+    if step is not None and record_index is not None:
+        msg = "Provide either step or record_index, not both."
+        raise ValueError(msg)
+
+    if record_index is None:
+        if step is None:
+            record_index = history.n_recorded - 1
+        else:
+            record_index = history.get_step_index(step)
+
+    if record_index < 0 or record_index >= len(history.voronoi_regions):
+        msg = f"record_index {record_index} out of range for voronoi_regions"
+        raise IndexError(msg)
+
+    entry = history.voronoi_regions[record_index]
+    device = history.x_final.device
+    volumes = torch.full((history.N,), float("nan"), device=device, dtype=history.x_final.dtype)
+
+    if entry is None:
+        return volumes
+
+    vertices = entry.get("vertices")
+    regions = entry.get("regions")
+    if vertices is None or regions is None:
+        return volumes
+
+    if torch.is_tensor(vertices):
+        vertices_np = vertices.detach().cpu().numpy()
+    else:
+        vertices_np = np.asarray(vertices)
+
+    d = history.d
+    for idx, region in enumerate(regions):
+        if region is None:
+            continue
+        if len(region) < d + 1 or -1 in region:
+            continue
+        cell_vertices = vertices_np[region]
+        vol = _compute_cell_volume(cell_vertices, d)
+        volumes[idx] = float(vol)
+
+    return volumes
 
 
 def compute_geometric_weights(
@@ -774,3 +874,237 @@ def compute_baryon_operator_voronoi(
             valid[idx] = True
 
     return baryon, valid
+
+
+def compute_curvature_proxies(
+    voronoi_data: dict[str, Any],
+    positions: np.ndarray,
+    prev_volumes: np.ndarray | None = None,
+    dt: float = 1.0,
+) -> dict[str, Any]:
+    """
+    Compute fast O(N) geometric curvature proxies from Voronoi tessellation.
+
+    This function implements three fast curvature estimation methods that avoid
+    expensive Hessian computation:
+    
+    1. **Volume Distortion**: Variance of normalized cell volumes measures curvature
+       - Flat space → uniform volumes → low variance
+       - Curved space → non-uniform volumes → high variance
+    
+    2. **Shape Distortion**: Inradius/circumradius ratio per cell
+       - Regular cells (flat) → ratio ≈ 1
+       - Distorted cells (curved) → ratio << 1
+    
+    3. **Raychaudhuri Expansion**: Volume evolution dV/dt ≈ -R
+       - From discrete Raychaudhuri equation
+       - Positive curvature → volumes shrink (θ < 0)
+       - Negative curvature → volumes grow (θ > 0)
+
+    Args:
+        voronoi_data: Output from compute_voronoi_tessellation()
+        positions: Walker positions [N, d]
+        prev_volumes: Previous timestep volumes for Raychaudhuri (optional)
+        dt: Timestep for volume evolution
+
+    Returns:
+        Dictionary with keys:
+            - 'volume_variance': Variance of normalized cell volumes σ²(V_i/<V>)
+            - 'volume_distortion': Per-cell normalized volumes V_i/<V> [N]
+            - 'shape_distortion': Per-cell inradius/circumradius ratios [N]
+            - 'raychaudhuri_expansion': Volume rate dV/dt if prev_volumes provided [N]
+            - 'mean_curvature_estimate': Heuristic R ≈ -<dV/dt>/V from Raychaudhuri
+            - 'cell_centroids': Centroid positions [N, d] for each cell
+            - 'centroid_distances': Distance variance within each cell [N]
+
+    Reference:
+        Plan: /home/guillem/.claude/plans/cryptic-percolating-creek.md
+        Theory: docs/source/3_fractal_gas/3_fitness_manifold/03_curvature_gravity.md
+    """
+    volumes = voronoi_data["volumes"]
+    neighbor_lists = voronoi_data["neighbor_lists"]
+    vor = voronoi_data.get("voronoi")
+    n = len(volumes)
+    d = positions.shape[1]
+
+    if n == 0:
+        return {
+            "volume_variance": 0.0,
+            "volume_distortion": np.array([]),
+            "shape_distortion": np.array([]),
+            "raychaudhuri_expansion": np.array([]),
+            "mean_curvature_estimate": 0.0,
+            "cell_centroids": np.array([]).reshape(0, d),
+            "centroid_distances": np.array([]),
+        }
+
+    # 1. Volume Distortion
+    mean_vol = volumes.mean() if len(volumes) > 0 else 1.0
+    normalized_volumes = volumes / mean_vol if mean_vol > 0 else np.ones_like(volumes)
+    volume_variance = float(np.var(normalized_volumes))
+
+    # 2. Shape Distortion (inradius/circumradius ratio)
+    shape_distortion = np.zeros(n)
+    cell_centroids = np.zeros((n, d))
+    centroid_distances = np.zeros(n)
+
+    for i in range(n):
+        if vor is not None:
+            region_idx = vor.point_region[i]
+            vertices_idx = vor.regions[region_idx]
+
+            if -1 not in vertices_idx and len(vertices_idx) >= d + 1:
+                try:
+                    vertices = vor.vertices[vertices_idx]
+                    centroid = vertices.mean(axis=0)
+                    cell_centroids[i] = centroid
+
+                    # Compute inradius (min distance to vertices) and circumradius (max distance)
+                    distances = np.linalg.norm(vertices - centroid, axis=1)
+                    inradius = distances.min() if len(distances) > 0 else 0.0
+                    circumradius = distances.max() if len(distances) > 0 else 1.0
+
+                    if circumradius > 1e-10:
+                        shape_distortion[i] = inradius / circumradius
+                    else:
+                        shape_distortion[i] = 1.0
+
+                    # Distance variance within cell (user's insight!)
+                    centroid_distances[i] = float(np.var(distances)) if len(distances) > 1 else 0.0
+
+                except Exception:
+                    shape_distortion[i] = 1.0
+                    cell_centroids[i] = positions[i] if i < len(positions) else 0.0
+                    centroid_distances[i] = 0.0
+            else:
+                # Boundary cell or degenerate - use walker position as centroid
+                shape_distortion[i] = 1.0
+                cell_centroids[i] = positions[i] if i < len(positions) else 0.0
+                centroid_distances[i] = 0.0
+        else:
+            # No Voronoi available
+            shape_distortion[i] = 1.0
+            cell_centroids[i] = positions[i] if i < len(positions) else 0.0
+            centroid_distances[i] = 0.0
+
+    # 3. Raychaudhuri Expansion: θ = (1/V) dV/dt ≈ -R
+    result = {
+        "volume_variance": volume_variance,
+        "volume_distortion": normalized_volumes,
+        "shape_distortion": shape_distortion,
+        "cell_centroids": cell_centroids,
+        "centroid_distances": centroid_distances,
+    }
+
+    if prev_volumes is not None and dt > 0:
+        if len(prev_volumes) == n:
+            # Compute volume rate: dV/dt ≈ (V_t - V_{t-dt}) / dt
+            dV_dt = (volumes - prev_volumes) / dt
+
+            # Raychaudhuri expansion: θ = (1/V) dV/dt
+            # Avoid division by zero
+            safe_volumes = np.where(volumes > 1e-10, volumes, 1.0)
+            raychaudhuri_expansion = dV_dt / safe_volumes
+
+            # Mean curvature estimate: R ≈ -<θ>
+            # Filter out extreme values for robustness
+            valid_mask = np.isfinite(raychaudhuri_expansion) & (np.abs(raychaudhuri_expansion) < 1e6)
+            mean_curvature_estimate = 0.0
+            if valid_mask.sum() > 0:
+                mean_curvature_estimate = float(-raychaudhuri_expansion[valid_mask].mean())
+
+            result["raychaudhuri_expansion"] = raychaudhuri_expansion
+            result["mean_curvature_estimate"] = mean_curvature_estimate
+
+    return result
+
+
+def compute_voronoi_diffusion_tensor(
+    voronoi_data: dict[str, Any],
+    positions: np.ndarray,
+    epsilon_sigma: float = 0.1,
+    c2: float = 1.0,
+) -> np.ndarray:
+    """
+    Approximate diffusion tensor from Voronoi cell geometry (O(N), no derivatives!).
+
+    This function computes an anisotropic diffusion tensor by analyzing cell
+    elongation in each coordinate direction. Cell shape encodes the metric
+    anisotropy:
+    - Volume distortion V_i/<V> → det(g) (scalar part)
+    - Cell elongation → principal directions of metric
+    - Aspect ratio → anisotropy strength
+
+    Method:
+    1. For each cell, compute volume V_i and characteristic lengths in each direction
+    2. Elongation in direction j: e_j = L_j / (V_i)^(1/d)
+    3. Diffusion: σ_j ≈ c₂ / √(e_j + ε_Σ)
+    4. Compressed direction → large e_j → small σ_j (less diffusion)
+       Expanded direction → small e_j → large σ_j (more diffusion)
+
+    Theoretical Justification:
+    From scutoid geometry theory, Voronoi cells adapt to fitness landscape curvature.
+    Cell stretching in direction v indicates low fitness Hessian eigenvalue in that
+    direction. This naturally gives the inverse metric g⁻¹ for diffusion without
+    computing any derivatives!
+
+    Args:
+        voronoi_data: Output from compute_voronoi_tessellation()
+        positions: Walker positions [N, d]
+        epsilon_sigma: Regularization parameter (ε_Σ)
+        c2: Diffusion scale factor
+
+    Returns:
+        sigma: [N, d] diagonal diffusion tensor components
+
+    Reference:
+        Plan: /home/guillem/.claude/plans/cryptic-percolating-creek.md § Bonus
+        Theory: docs/source/3_fractal_gas/3_fitness_manifold/02_scutoid_spacetime.md
+    """
+    volumes = voronoi_data["volumes"]
+    neighbor_lists = voronoi_data["neighbor_lists"]
+    vor = voronoi_data.get("voronoi")
+    n = len(volumes)
+    d = positions.shape[1]
+
+    if n == 0:
+        return np.array([]).reshape(0, d)
+
+    # Initialize diffusion tensor (diagonal approximation)
+    sigma = np.ones((n, d))
+
+    for i in range(n):
+        if vor is not None:
+            region_idx = vor.point_region[i]
+            vertices_idx = vor.regions[region_idx]
+
+            if -1 not in vertices_idx and len(vertices_idx) >= d + 1 and volumes[i] > 1e-10:
+                try:
+                    vertices = vor.vertices[vertices_idx]
+
+                    # Compute characteristic length in each coordinate direction
+                    # Use range (max - min) along each axis
+                    for j in range(d):
+                        coord_range = vertices[:, j].max() - vertices[:, j].min()
+
+                        # Normalize by volume^(1/d) to get elongation
+                        vol_scale = volumes[i] ** (1.0 / d)
+                        if vol_scale > 1e-10:
+                            elongation = coord_range / vol_scale
+                        else:
+                            elongation = 1.0
+
+                        # Diffusion coefficient: σ_j = c₂ / √(e_j + ε_Σ)
+                        sigma[i, j] = c2 / np.sqrt(elongation + epsilon_sigma)
+
+                except Exception:
+                    # Fallback to isotropic
+                    sigma[i, :] = c2 / np.sqrt(1.0 + epsilon_sigma)
+            else:
+                # Boundary or degenerate cell - use isotropic diffusion
+                sigma[i, :] = c2 / np.sqrt(1.0 + epsilon_sigma)
+        else:
+            # No Voronoi - isotropic diffusion
+            sigma[i, :] = c2 / np.sqrt(1.0 + epsilon_sigma)
+
+    return sigma

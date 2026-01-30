@@ -324,6 +324,249 @@ viscous coupling.
   correlator (heavier glueball mass).
 - Use $\gamma$ only to fine-tune decay speed while preserving the mass-scale hierarchy.
 
+### Empirical calibration status (zero-reward baseline)
+
+The baseline QFT calibration runs in `QFT_CALIBRATION_REPORT.txt` (zero reward, viscosity-only,
+200 walkers, 300 steps, Channels-tab analysis) show a **tradeoff** between the target ratios
+$R_{\rho\pi}=5.5$ and $R_{N\pi}=6.7$:
+
+- **Closest $R_{\rho\pi}$**: $\;R_{\rho\pi}\approx 5.437$ (thr=0.9, pen=1.1, $\beta=0.5$), but
+  $R_{N\pi}\approx 0.592$ (nucleon suppressed).
+- **Closest $R_{N\pi}$**: $\;R_{N\pi}\approx 6.171$ (weak\_potential\_fit1\_aniso\_stable2), but
+  $R_{\rho\pi}\approx 3.186$ (rho too light).
+- **Nucleon\_abs2** can raise $R_{N\pi}$ (≈7.55) but collapses $\pi$ and explodes $R_{\rho\pi}$.
+- **Threshold sensitivity**: high neighbor thresholds (≈0.9) are the only tested lever that moves
+  $R_{\rho\pi}$ near target, but they suppress $R_{N\pi}$ in the baseline.
+- **Numerical stability**: curl + anisotropic diffusion runs are currently unstable (NaN noise at
+  step 1), so those results are not admissible for calibration.
+
+**Empirical conclusion.** Within the current viscosity-only baseline and neighbor-threshold/penalty
+parameter space, no configuration achieves both ratios within the ±2% tolerance. High companion
+thresholds move $R_{\rho\pi}$ toward target but suppress $R_{N\pi}$; stable anisotropic settings
+recover $R_{N\pi}$ but leave $R_{\rho\pi}$ low. These findings are measurement-based and do not
+override the theoretical ratio-sieve constraints below; they instead flag where the current
+baseline fails to realize the target point.
+
+(sec-qft-calibration-electroweak)=
+## Electroweak proxy calibration (U(1)/SU(2) tab)
+
+The Electroweak tab reports **proxy** U(1)/SU(2) channel masses extracted from the same Euclidean
+correlator pipeline used in the Channels tab, but built from fitness-phase observables rather than
+color operators. The summary panel additionally reports coupling proxies and mixing-angle proxies
+derived from phase dispersion, together with the coupling estimates implied by the Volume 3
+identities {prf:ref}`thm-sm-g1-coupling` and {prf:ref}`thm-sm-g2-coupling`. All quantities in this
+section are operational proxies: they must be validated by sweep and should be interpreted through
+the definitions in {prf:ref}`def-fractal-set-phase-potential`,
+{prf:ref}`def-fractal-set-companion-kernel`, and {prf:ref}`def-fractal-set-cloning-score`. For the
+calibration inversion that maps measured constants to $(\epsilon_d,\epsilon_c,\epsilon_F,\nu,\rho,\tau)$,
+see {doc}`07_qft_calibration_report` and {doc}`08_qft_calibration_notebook`; the Electroweak tab is
+a diagnostic lens on phase structure, not a replacement for that inversion.
+
+Implementation note: electroweak correlators are computed in
+`src/fragile/fractalai/qft/electroweak_channels.py`; proxy couplings are summarized in
+`src/fragile/fractalai/qft/analysis.py`; the tab wiring and reference tables live in
+`src/fragile/fractalai/qft/dashboard.py`.
+
+### Electroweak phase construction and proxies
+
+Let $c_d(i)$ be the **distance** companion and $c_c(i)$ the **clone** companion of walker $i$. The
+U(1) and SU(2) phases are constructed from the fitness differences as
+
+$$
+\phi_i^{(U1)} = -\frac{F_{c_d(i)} - F_i}{\hbar_{\text{eff}}}, \qquad
+\phi_i^{(SU2)} = \frac{F_{c_c(i)} - F_i}{(F_i + \epsilon_{\text{clone}})\,\hbar_{\text{eff}}}.
+$$
+
+The companion-localized amplitudes use the algorithmic distance
+({prf:ref}`def-fractal-set-companion-kernel`):
+
+$$
+D_{d,i}^2 = \|x_i - x_{c_d(i)}\|^2 + \lambda_{\text{alg}}\|v_i - v_{c_d(i)}\|^2,
+\qquad
+D_{c,i}^2 = \|x_i - x_{c_c(i)}\|^2 + \lambda_{\text{alg}}\|v_i - v_{c_c(i)}\|^2,
+$$
+
+$$
+w_{d,i} = \exp\!\left(-\frac{D_{d,i}^2}{2\epsilon_d^2}\right), \qquad
+w_{c,i} = \exp\!\left(-\frac{D_{c,i}^2}{2\epsilon_c^2}\right),
+$$
+
+and amplitudes $A_{d,i}=\sqrt{w_{d,i}}$, $A_{c,i}=\sqrt{w_{c,i}}$. The Electroweak tab computes
+correlators from complex phase series and extracts masses using the same effective-mass relation
+and correlation-length definition {prf:ref}`def-correlation-length`.
+
+The dashboard proxies are computed from phase dispersion (a diagnostic for phase coherence, not a
+direct measurement of the physical couplings in {doc}`07_qft_calibration_report`):
+
+$$
+g_1^{\text{proxy}} = \operatorname{std}(\phi^{(U1)}), \qquad
+g_2^{\text{proxy}} = \operatorname{std}(\phi^{(SU2)}),
+$$
+
+$$
+\sin^2\theta_W^{\text{proxy}} = \frac{(g_1^{\text{proxy}})^2}{(g_1^{\text{proxy}})^2+(g_2^{\text{proxy}})^2},
+\qquad
+\tan\theta_W^{\text{proxy}} = \frac{g_1^{\text{proxy}}}{g_2^{\text{proxy}}}.
+$$
+
+The coupling estimates displayed in the Electroweak Couplings table follow directly from Volume 3:
+
+$$
+g_1^{\text{est}} = \sqrt{\frac{\hbar_{\text{eff}}}{\epsilon_d^2}}, \qquad
+g_2^{\text{est}} = \sqrt{\frac{2\hbar_{\text{eff}}}{\epsilon_c^2}\frac{C_2(2)}{C_2(d)}}.
+$$
+
+**Calibration cross-check.** The dashboard label `g1_est (N1=1)` corresponds to the simplified
+$\mathcal{N}_1(T,d)=1$ normalization. To compare with the calibration report, rescale via
+$g_1 = g_1^{\text{est}}\sqrt{\mathcal{N}_1(T,d)}$ and use the report's $g_2$ directly.
+
+**Measurement note.** The Electroweak settings panel allows overriding
+$(\hbar_{\text{eff}},\epsilon_d,\epsilon_c,\epsilon_{\text{clone}},\lambda_{\text{alg}})$; these
+modify the **analysis** map, not the underlying dynamics. The companion indices are stored in
+`RunHistory`, so changing $\epsilon_d$ or $\epsilon_c$ in the settings does not alter the companion
+graph for `u1_phase` or `su2_phase`; the overrides mainly affect `u1_dressed`, `su2_doublet`, and
+`ew_mixed`. For calibrated sweeps, keep these consistent with the run parameters in `RunHistory`.
+
+**Reference mapping (dashboard defaults).**
+
+| Electroweak channel | Proxy reference (GeV) | Dashboard mapping |
+| --- | --- | --- |
+| `u1_phase` | 0.000511 | electron |
+| `u1_dressed` | 0.105658 | muon |
+| `su2_phase` | 80.379 | $W$ boson |
+| `su2_doublet` | 91.1876 | $Z$ boson |
+| `ew_mixed` | 1.77686 | tau |
+
+These references are dashboard anchors for visual comparison of proxy masses. The calibration
+inversion in {doc}`07_qft_calibration_report` uses measured couplings
+$(\alpha_{\text{em}}, \sin^2\theta_W, \alpha_s)$ at a chosen scale instead of these proxy masses.
+
+### U(1) phase channel (`u1_phase`)
+
+| Parameter | Symbol | Code parameter | Effect on observed mass |
+| --- | --- | --- | --- |
+| Phase scale | $\hbar_{\text{eff}}$ | `ElectroweakSettings.h_eff` | Increase $\hbar_{\text{eff}}$ → typically smaller phase winding → often lighter $m_{u1}$. |
+| Distance companion selection | $\epsilon_d$ | `OperatorConfig.companion_epsilon` | Decrease $\epsilon_d$ → tighter locality → often heavier $m_{u1}$ (validate by sweep). |
+| Algorithmic distance weight | $\lambda_{\text{alg}}$ | `OperatorConfig.lambda_alg` | Increase $\lambda_{\text{alg}}$ → more velocity weighting → often heavier $m_{u1}$. |
+| Time step | $\Delta t$ | `KineticOperator.delta_t` | Rescales all electroweak masses uniformly (fix for comparisons). |
+
+**Operator (U(1) phase mean):**
+
+$$
+O_{u1}(t) = \left\langle e^{i\phi_i^{(U1)}(t)} \right\rangle_{\text{alive}}.
+$$
+
+**Tuning rule (first-principles):**
+- Increasing $\hbar_{\text{eff}}$ tends to reduce phase dispersion and lengthen the correlator.
+- Decreasing $\epsilon_d$ (or increasing $\lambda_{\text{alg}}$) typically tightens companion
+  locality and shortens the correlator; confirm empirically.
+- Fitness coupling parameters ($\epsilon_F$, fitness weights) can shift the fitness differences and
+  therefore the U(1) phase spread.
+
+### U(1) dressed channel (`u1_dressed`)
+
+| Parameter | Symbol | Code parameter | Effect on observed mass |
+| --- | --- | --- | --- |
+| Distance temperature | $\epsilon_d$ | `OperatorConfig.companion_epsilon` | Decrease $\epsilon_d$ → sharper amplitude localization → often heavier $m_{u1,d}$. |
+| Algorithmic distance weight | $\lambda_{\text{alg}}$ | `OperatorConfig.lambda_alg` | Increase $\lambda_{\text{alg}}$ → more velocity weighting → often heavier $m_{u1,d}$. |
+| Phase scale | $\hbar_{\text{eff}}$ | `ElectroweakSettings.h_eff` | Increase $\hbar_{\text{eff}}$ → often lighter $m_{u1,d}$. |
+
+**Operator (amplitude-weighted U(1) phase):**
+
+$$
+O_{u1,d}(t) = \left\langle A_{d,i}\,e^{i\phi_i^{(U1)}(t)} \right\rangle_{\text{alive}},
+\\qquad A_{d,i}=\sqrt{w_{d,i}}.
+$$
+
+**Tuning rule (first-principles):**
+- Use $\epsilon_d$ and $\lambda_{\text{alg}}$ to control the locality of the U(1) amplitude
+  envelope; tighter locality often shortens the plateau.
+- Use $\hbar_{\text{eff}}$ to control the overall phase winding without changing locality.
+
+### SU(2) phase channel (`su2_phase`)
+
+| Parameter | Symbol | Code parameter | Effect on observed mass |
+| --- | --- | --- | --- |
+| Phase scale | $\hbar_{\text{eff}}$ | `ElectroweakSettings.h_eff` | Increase $\hbar_{\text{eff}}$ → often lighter $m_{su2}$. |
+| Clone regularizer | $\epsilon_{\text{clone}}$ | `CloneOperator.epsilon_clone` | Increase $\epsilon_{\text{clone}}$ → smaller score → often lighter $m_{su2}$. |
+| Clone companion selection | $\epsilon_c$ | `OperatorConfig.companion_epsilon_clone` | Decrease $\epsilon_c$ → tighter clone locality → often heavier $m_{su2}$. |
+| Algorithmic distance weight | $\lambda_{\text{alg}}$ | `OperatorConfig.lambda_alg` | Increase $\lambda_{\text{alg}}$ → often heavier $m_{su2}$. |
+
+**Operator (SU(2) phase mean):**
+
+$$
+O_{su2}(t) = \left\langle e^{i\phi_i^{(SU2)}(t)} \right\rangle_{\text{alive}}.
+$$
+
+**Tuning rule (first-principles):**
+- Decreasing $\epsilon_{\text{clone}}$ tends to increase the phase score magnitude and shorten the
+  correlator (confirm by sweep).
+- Decreasing $\epsilon_c$ (or increasing $\lambda_{\text{alg}}$) typically tightens clone pairing
+  and increases $m_{su2}$.
+- Adjust $\hbar_{\text{eff}}$ to rescale phase winding without changing clone topology.
+
+### SU(2) doublet channel (`su2_doublet`)
+
+| Parameter | Symbol | Code parameter | Effect on observed mass |
+| --- | --- | --- | --- |
+| Clone temperature | $\epsilon_c$ | `OperatorConfig.companion_epsilon_clone` | Decrease $\epsilon_c$ → tighter pairing → often heavier $m_{su2,d}$. |
+| Clone regularizer | $\epsilon_{\text{clone}}$ | `CloneOperator.epsilon_clone` | Increase $\epsilon_{\text{clone}}$ → often lighter $m_{su2,d}$. |
+| Algorithmic distance weight | $\lambda_{\text{alg}}$ | `OperatorConfig.lambda_alg` | Increase $\lambda_{\text{alg}}$ → often heavier $m_{su2,d}$. |
+| Phase scale | $\hbar_{\text{eff}}$ | `ElectroweakSettings.h_eff` | Increase $\hbar_{\text{eff}}$ → often lighter $m_{su2,d}$. |
+
+**Operator (clone-paired doublet):**
+
+$$
+O_{su2,d}(t) = \left\langle A_{c,i}e^{i\phi_i^{(SU2)}(t)}
++ A_{c,c(i)}e^{i\phi_{c(i)}^{(SU2)}(t)} \right\rangle_{\text{alive}}.
+$$
+
+**Tuning rule (first-principles):**
+- Tightening clone locality (smaller $\epsilon_c$) often sharpens the doublet and shortens the
+  plateau; verify with sweeps.
+- Use $\epsilon_{\text{clone}}$ to regulate phase-score magnitude without changing the pairing
+  graph.
+
+### Mixed electroweak channel (`ew_mixed`)
+
+| Parameter | Symbol | Code parameter | Effect on observed mass |
+| --- | --- | --- | --- |
+| U(1) locality | $\epsilon_d$ | `OperatorConfig.companion_epsilon` | Decrease $\epsilon_d$ → often heavier $m_{\text{EW}}$. |
+| SU(2) locality | $\epsilon_c$ | `OperatorConfig.companion_epsilon_clone` | Decrease $\epsilon_c$ → often heavier $m_{\text{EW}}$. |
+| Clone regularizer | $\epsilon_{\text{clone}}$ | `CloneOperator.epsilon_clone` | Increase $\epsilon_{\text{clone}}$ → often lighter $m_{\text{EW}}$. |
+| Algorithmic distance weight | $\lambda_{\text{alg}}$ | `OperatorConfig.lambda_alg` | Increase $\lambda_{\text{alg}}$ → often heavier $m_{\text{EW}}$. |
+| Phase scale | $\hbar_{\text{eff}}$ | `ElectroweakSettings.h_eff` | Increase $\hbar_{\text{eff}}$ → often lighter $m_{\text{EW}}$. |
+
+**Operator (U(1) × SU(2) phase product):**
+
+$$
+O_{\text{EW}}(t) = \left\langle A_{d,i}A_{c,i}\,e^{i(\phi_i^{(U1)}(t)+\phi_i^{(SU2)}(t))}
+\right\rangle_{\text{alive}}.
+$$
+
+**Tuning rule (first-principles):**
+- Use $\epsilon_d$ and $\epsilon_c$ to control the relative U(1) vs. SU(2) localization; the mixed
+  channel is typically the most sensitive to simultaneous changes in both.
+- Adjust $\hbar_{\text{eff}}$ and $\epsilon_{\text{clone}}$ to shift phase winding without changing
+  the companion graphs; validate shifts with the Electroweak tab fits.
+
+### Empirical tuning status (QFT baseline)
+
+The electroweak tuning runs in `electroweak_tuning_report.md` (zero reward, viscosity-only,
+analysis-level Electroweak tab) support the theoretical mapping for **coupling estimates** but not
+for **mass ratios**:
+
+- **Couplings**: adjusting $\epsilon_d$ and $\epsilon_c$ moves $g_1^{\text{est}}$ and
+  $g_2^{\text{est}}$ as predicted, and defaults land within $\sim$3.5% of the $M_Z$ targets.
+- **Ratios**: observed proxy ratios remain $\mathcal{O}(1)$ across analysis-level sweeps. The best
+  $m_{\text{su2\_doublet}}/m_{\text{u1\_dressed}}$ achieved $\sim 5.83$ (target $\sim 863$), and
+  $m_{\text{u1\_phase}}/m_{\text{u1\_dressed}}$ stays orders of magnitude above the observed
+  electron/muon ratio.
+- **Interpretation**: the electroweak channels are therefore **phase-coherence diagnostics** in the
+  current baseline, not a calibrated reproduction of electroweak mass hierarchies. This aligns with
+  the coupling inversion workflow in {doc}`07_qft_calibration_report`, which calibrates couplings
+  directly rather than through proxy mass ratios.
+
 (sec-qft-calibration-ratio-sieve)=
 ## Ratio-sieve theorems (symbolic constraints)
 

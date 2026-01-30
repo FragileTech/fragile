@@ -2139,7 +2139,7 @@ where $\kappa_{W,\min} > 0$ is the N-uniform lower bound on the Wasserstein cont
 **Proof.**
 
 1. From Corollary {prf:ref}`cor-quantitative-lsi-final` (Section 5.6), the LSI constant for the N-particle system is given by:
-   
+
    $$
    C_{\text{LSI}}(N) = O\left(\frac{1}{\min(\gamma, \kappa_{\text{conf}}) \cdot \kappa_W(N) \cdot \delta^2}\right)
    $$
@@ -2156,7 +2156,7 @@ where $\kappa_{W,\min} > 0$ is the N-uniform lower bound on the Wasserstein cont
 4. The cloning noise parameter $\delta > 0$ is an algorithm parameter, independent of $N$.
 
 5. Therefore, the LSI constant is uniformly bounded:
-   
+
    $$
    C_{\text{LSI}}(N) \leq O\left(\frac{1}{\min(\gamma, \kappa_{\text{conf}}) \cdot \kappa_{W,\min} \cdot \delta^2}\right) =: C_{\text{LSI}}^{\max} < \infty
    $$

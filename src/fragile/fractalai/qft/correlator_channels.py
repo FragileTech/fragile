@@ -67,8 +67,12 @@ class ChannelConfig:
     ell0: float | None = None
 
     # Neighbor selection
+    neighbor_method: str = "knn"
     knn_k: int = 4
     knn_sample: int | None = 512
+    voronoi_pbc_mode: str = "mirror"
+    voronoi_exclude_boundary: bool = True
+    voronoi_boundary_tolerance: float = 1e-6
 
     # AIC fitting parameters
     window_widths: list[int] | None = None
@@ -470,6 +474,9 @@ class ChannelCorrelator(ABC):
 
     def _validate_config(self) -> None:
         """Validate and fill missing config values."""
+        if self.config.neighbor_method not in {"uniform", "knn", "voronoi", "recorded"}:
+            msg = "neighbor_method must be 'uniform', 'knn', 'voronoi', or 'recorded'"
+            raise ValueError(msg)
         if self.config.ell0 is None:
             self._estimate_ell0()
 
@@ -679,6 +686,229 @@ class ChannelCorrelator(ABC):
 
         return sample_indices, neighbor_indices, alive
 
+    def _compute_companion_batch(
+        self,
+        start_idx: int,
+        sample_size: int | None = None,
+    ) -> tuple[Tensor, Tensor, Tensor]:
+        """Use stored companion indices as neighbors (uniform companion selection)."""
+        n_recorded = self.history.n_recorded
+        T = n_recorded - start_idx
+        N = self.history.N
+        k = max(2, int(self.config.knn_k))
+        sample_size = sample_size or self.config.knn_sample or N
+        device = self.history.x_final.device
+
+        alive = self.history.alive_mask[start_idx - 1 : n_recorded - 1]  # [T, N]
+        companions_distance = self.history.companions_distance[start_idx - 1 : n_recorded - 1]
+        companions_clone = self.history.companions_clone[start_idx - 1 : n_recorded - 1]
+
+        all_sample_idx = []
+        all_neighbor_idx = []
+
+        for t in range(T):
+            alive_t = alive[t]
+            alive_indices = torch.where(alive_t)[0]
+
+            if alive_indices.numel() == 0:
+                all_sample_idx.append(torch.zeros(sample_size, device=device, dtype=torch.long))
+                all_neighbor_idx.append(torch.zeros(sample_size, k, device=device, dtype=torch.long))
+                continue
+
+            if alive_indices.numel() <= sample_size:
+                sample_idx = alive_indices
+            else:
+                sample_idx = alive_indices[:sample_size]
+
+            actual_sample_size = sample_idx.numel()
+            comp_d = companions_distance[t, sample_idx]
+            comp_c = companions_clone[t, sample_idx]
+            neighbor_idx = torch.zeros(actual_sample_size, k, device=device, dtype=torch.long)
+            neighbor_idx[:, 0] = comp_d
+            neighbor_idx[:, 1] = comp_c
+
+            if actual_sample_size < sample_size:
+                sample_idx = F.pad(sample_idx, (0, sample_size - actual_sample_size), value=0)
+                neighbor_idx = F.pad(neighbor_idx, (0, 0, 0, sample_size - actual_sample_size), value=0)
+
+            all_sample_idx.append(sample_idx)
+            all_neighbor_idx.append(neighbor_idx)
+
+        sample_indices = torch.stack(all_sample_idx, dim=0)  # [T, S]
+        neighbor_indices = torch.stack(all_neighbor_idx, dim=0)  # [T, S, k]
+
+        return sample_indices, neighbor_indices, alive
+
+    def _compute_voronoi_batch(
+        self,
+        start_idx: int,
+        sample_size: int | None = None,
+    ) -> tuple[Tensor, Tensor, Tensor]:
+        """Compute Voronoi neighbor indices for all timesteps."""
+        try:
+            from fragile.fractalai.qft.voronoi_observables import compute_voronoi_tessellation
+        except Exception:
+            return self._compute_knn_batch(start_idx, sample_size=sample_size)
+
+        n_recorded = self.history.n_recorded
+        T = n_recorded - start_idx
+        N = self.history.N
+        k = int(self.config.knn_k)
+        sample_size = sample_size or self.config.knn_sample or N
+        device = self.history.x_final.device
+
+        x_pre = self.history.x_before_clone[start_idx:]  # [T, N, d]
+        alive = self.history.alive_mask[start_idx - 1 : n_recorded - 1]  # [T, N]
+
+        all_sample_idx = []
+        all_neighbor_idx = []
+
+        for t in range(T):
+            alive_t = alive[t]
+            alive_indices = torch.where(alive_t)[0]
+
+            if alive_indices.numel() == 0:
+                all_sample_idx.append(torch.zeros(sample_size, device=device, dtype=torch.long))
+                all_neighbor_idx.append(torch.zeros(sample_size, k, device=device, dtype=torch.long))
+                continue
+
+            if alive_indices.numel() <= sample_size:
+                sample_idx = alive_indices
+            else:
+                sample_idx = alive_indices[:sample_size]
+
+            actual_sample_size = sample_idx.numel()
+            neighbor_idx = torch.zeros(actual_sample_size, k, device=device, dtype=torch.long)
+
+            vor_data = compute_voronoi_tessellation(
+                positions=x_pre[t],
+                alive=alive_t,
+                bounds=self.history.bounds,
+                pbc=self.history.pbc,
+                pbc_mode=self.config.voronoi_pbc_mode,
+                exclude_boundary=self.config.voronoi_exclude_boundary,
+                boundary_tolerance=self.config.voronoi_boundary_tolerance,
+            )
+            neighbor_lists = vor_data.get("neighbor_lists", {})
+            index_map = vor_data.get("index_map", {})
+            reverse_map = {v: k for k, v in index_map.items()}
+
+            for s_idx, i_idx in enumerate(sample_idx):
+                i_orig = int(i_idx.item())
+                i_vor = reverse_map.get(i_orig)
+                if i_vor is None:
+                    continue
+                neighbors_vor = neighbor_lists.get(i_vor, [])
+                if not neighbors_vor:
+                    continue
+                neighbors_orig = [index_map[n] for n in neighbors_vor if n in index_map]
+                if not neighbors_orig:
+                    continue
+                chosen = neighbors_orig[:k]
+                if len(chosen) < k:
+                    chosen.extend([i_orig] * (k - len(chosen)))
+                neighbor_idx[s_idx] = torch.tensor(chosen, device=device)
+
+            if actual_sample_size < sample_size:
+                sample_idx = F.pad(sample_idx, (0, sample_size - actual_sample_size), value=0)
+                neighbor_idx = F.pad(neighbor_idx, (0, 0, 0, sample_size - actual_sample_size), value=0)
+
+            all_sample_idx.append(sample_idx)
+            all_neighbor_idx.append(neighbor_idx)
+
+        sample_indices = torch.stack(all_sample_idx, dim=0)  # [T, S]
+        neighbor_indices = torch.stack(all_neighbor_idx, dim=0)  # [T, S, k]
+
+        return sample_indices, neighbor_indices, alive
+
+    def _compute_recorded_neighbors_batch(
+        self,
+        start_idx: int,
+        sample_size: int | None = None,
+    ) -> tuple[Tensor, Tensor, Tensor]:
+        """Use recorded neighbor edges from RunHistory (uniform over neighbors)."""
+        if self.history.neighbor_edges is None:
+            return self._compute_companion_batch(start_idx, sample_size=sample_size)
+
+        n_recorded = self.history.n_recorded
+        T = n_recorded - start_idx
+        N = self.history.N
+        k = max(1, int(self.config.knn_k))
+        sample_size = sample_size or self.config.knn_sample or N
+        device = self.history.x_final.device
+
+        alive = self.history.alive_mask[start_idx - 1 : n_recorded - 1]  # [T, N]
+
+        all_sample_idx = []
+        all_neighbor_idx = []
+
+        for t in range(T):
+            alive_t = alive[t]
+            alive_indices = torch.where(alive_t)[0]
+            if alive_indices.numel() == 0:
+                all_sample_idx.append(torch.zeros(sample_size, device=device, dtype=torch.long))
+                all_neighbor_idx.append(torch.zeros(sample_size, k, device=device, dtype=torch.long))
+                continue
+
+            if alive_indices.numel() <= sample_size:
+                sample_idx = alive_indices
+            else:
+                sample_idx = alive_indices[:sample_size]
+
+            actual_sample_size = sample_idx.numel()
+            neighbor_idx = torch.zeros(actual_sample_size, k, device=device, dtype=torch.long)
+
+            record_idx = start_idx + t
+            edges = self.history.neighbor_edges[record_idx]
+            if not torch.is_tensor(edges) or edges.numel() == 0:
+                # Fallback to self-padding
+                neighbor_idx[:] = sample_idx.unsqueeze(1)
+            else:
+                edge_list = edges.tolist()
+                neighbor_map: dict[int, list[int]] = {}
+                for i, j in edge_list:
+                    if i == j:
+                        continue
+                    if i not in neighbor_map:
+                        neighbor_map[i] = [j]
+                    else:
+                        neighbor_map[i].append(j)
+
+                for s_i, i_idx in enumerate(sample_idx.tolist()):
+                    neighbors = neighbor_map.get(i_idx, [])
+                    if not neighbors:
+                        neighbor_idx[s_i] = i_idx
+                        continue
+                    chosen = neighbors[:k]
+                    if len(chosen) < k:
+                        chosen.extend([i_idx] * (k - len(chosen)))
+                    neighbor_idx[s_i] = torch.tensor(chosen, device=device)
+
+            if actual_sample_size < sample_size:
+                sample_idx = F.pad(sample_idx, (0, sample_size - actual_sample_size), value=0)
+                neighbor_idx = F.pad(neighbor_idx, (0, 0, 0, sample_size - actual_sample_size), value=0)
+
+            all_sample_idx.append(sample_idx)
+            all_neighbor_idx.append(neighbor_idx)
+
+        sample_indices = torch.stack(all_sample_idx, dim=0)  # [T, S]
+        neighbor_indices = torch.stack(all_neighbor_idx, dim=0)  # [T, S, k]
+
+        return sample_indices, neighbor_indices, alive
+
+    def _compute_neighbor_batch(
+        self,
+        start_idx: int,
+    ) -> tuple[Tensor, Tensor, Tensor]:
+        """Dispatch neighbor selection based on config."""
+        if self.config.neighbor_method == "uniform":
+            return self._compute_companion_batch(start_idx)
+        if self.config.neighbor_method == "recorded":
+            return self._compute_recorded_neighbors_batch(start_idx)
+        if self.config.neighbor_method == "voronoi":
+            return self._compute_voronoi_batch(start_idx)
+        return self._compute_knn_batch(start_idx)
+
     @abstractmethod
     def _compute_operators_vectorized(
         self,
@@ -713,8 +943,8 @@ class ChannelCorrelator(ABC):
         # Batch compute color states
         color, valid = self._compute_color_states_batch(start_idx)
 
-        # Batch compute k-NN
-        sample_indices, neighbor_indices, alive = self._compute_knn_batch(start_idx)
+        # Batch compute neighbors
+        sample_indices, neighbor_indices, alive = self._compute_neighbor_batch(start_idx)
 
         # Compute operators (implemented by subclass)
         series = self._compute_operators_vectorized(
@@ -974,7 +1204,7 @@ class BilinearChannelCorrelator(ChannelCorrelator):
         # Validity masks
         valid_i = valid[t_idx, sample_indices] & alive[t_idx.clamp(max=alive.shape[0] - 1), sample_indices]
         valid_j = valid[t_idx, first_neighbor] & alive[t_idx.clamp(max=alive.shape[0] - 1), first_neighbor]
-        valid_mask = valid_i & valid_j
+        valid_mask = valid_i & valid_j & (first_neighbor != sample_indices)
 
         # Apply channel-specific projection
         op_values = self._apply_gamma_projection(color_i, color_j)  # [T, S]

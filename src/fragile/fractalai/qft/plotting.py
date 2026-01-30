@@ -239,6 +239,16 @@ CHANNEL_COLORS = {
     "tensor": "#9467bd",        # Purple
     "nucleon": "#8c564b",       # Brown
     "glueball": "#e377c2",      # Pink
+    # Electroweak proxy channels
+    "u1_phase": "#17becf",      # Cyan
+    "u1_dressed": "#bcbd22",    # Olive
+    "u1_phase_q2": "#00b5ad",   # Teal
+    "u1_dressed_q2": "#c7d11b", # Yellow-green
+    "su2_phase": "#ff9896",     # Light red
+    "su2_component": "#ff7b7b", # Soft red
+    "su2_doublet": "#c49c94",   # Tan
+    "su2_doublet_diff": "#b07c7c", # Dusky red
+    "ew_mixed": "#7f7f7f",      # Gray
 }
 
 

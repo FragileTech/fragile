@@ -1804,7 +1804,7 @@ $$
 **For higher-order derivatives ($n \geq 2$):** The k-uniform structure is preserved by the following argument:
 
 1. **Inductive structure**: Each higher-order derivative $\nabla^n_{x_i} d_j$ is obtained by differentiating $\nabla^{n-1}_{x_i} d_j$, which by induction has the form:
-   
+
    $$
    \nabla^{n-1}_{x_i} d_j = \sum_{\text{terms}} P_i^{k_1} (\nabla^{k_2} d_{ji}) (\nabla^{k_3} \log K_i) (\nabla^{k_4} d_j)
    $$
@@ -4456,7 +4456,7 @@ The following table traces how the ε_d dependence specifically flows through ea
 3. **Conservative regime**: If you set $\varepsilon_d \geq \rho$, the localization scale $\rho^{-m}$ dominates, and derivative bounds are controlled by the Gaussian localization width.
 
 4. **Practical impact**: For $\varepsilon_d = 10^{-3} \varepsilon_c$ and $m=5$:
-   
+
    $$
    \frac{\varepsilon_d^{1-m}}{\rho^{-m}} = \left(\frac{\rho}{\varepsilon_d}\right)^m \approx (10^3)^5 = 10^{15}
    $$

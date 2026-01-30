@@ -31,7 +31,9 @@ def logistic_rescale(z: Tensor, A: float = 1.0) -> Tensor:
     Returns:
         Tensor with values in [0, A]
     """
-    return A / (1.0 + torch.exp(-z))
+    z_safe = torch.nan_to_num(z, nan=0.0, posinf=50.0, neginf=-50.0)
+    z_safe = torch.clamp(z_safe, min=-50.0, max=50.0)
+    return A * torch.sigmoid(z_safe)
 
 
 def compute_localization_weights(

@@ -31674,7 +31674,7 @@ $$
 **For higher-order derivatives ($n \geq 2$):** The k-uniform structure is preserved by the following argument:
 
 1. **Inductive structure**: Each higher-order derivative $\nabla^n_{x_i} d_j$ is obtained by differentiating $\nabla^{n-1}_{x_i} d_j$, which by induction has the form:
-   
+
    $$
    \nabla^{n-1}_{x_i} d_j = \sum_{\text{terms}} P_i^{k_1} (\nabla^{k_2} d_{ji}) (\nabla^{k_3} \log K_i) (\nabla^{k_4} d_j)
    $$
@@ -34995,19 +34995,19 @@ $$
 with:
 
 1. **Adaptive force perturbation**:
-   
+
    $$
    L_{\mathrm{adapt}} f = \epsilon_F \sum_{i=1}^N \nabla V_{\mathrm{fit}}[f_k, \rho](x_i) \cdot \nabla_{v_i} f
    $$
 
 2. **Viscous coupling perturbation**:
-   
+
    $$
    L_{\mathrm{viscous}} f = \nu \sum_{i=1}^N \sum_{j \neq i} \frac{K(x_i - x_j)}{\mathrm{deg}(i)} (v_j - v_i) \cdot \nabla_{v_i} f
    $$
 
 3. **Diffusion perturbation**:
-   
+
    $$
    L_{\mathrm{diff}} f = \frac{1}{2} \sum_{i=1}^N \left[ \mathrm{tr}(\Sigma_{\mathrm{reg}}^2 \nabla_{v_i}^2 f) - \sigma^2 \Delta_{v_i} f \right]
    $$

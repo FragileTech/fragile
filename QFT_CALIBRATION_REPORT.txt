@@ -101,10 +101,23 @@ E) Earlier stability/aniso experiments (pre-options)
 - Anisotropic strong stabilization (grad_scale=100, eps_sigma=1.0): pi collapsed, rho/pi exploded (~198), N/pi_abs2 ~7.55
 - Anisotropic stable2 (grad_scale=30, eps_sigma=0.5): best N/pi (~6.17) but rho/pi ~3.19
 
+F) Curl + anisotropic diffusion (thr=0.9)
+- beta_curl=0.02/0.05/0.1 with eps_sigma=0.7/1.0 -> terminated early (n_steps=1); noise and sigma_reg_full are NaN
+- diag diffusion + eps_sigma=0.3/0.5 + grad_scale=20 -> same early termination
+- soft diffusion (eps_sigma=0.1, grad_scale=10, curl_strength=0.2) -> still early termination
+
+What did not work
+- Any beta_curl > 0 combined with anisotropic diffusion currently yields NaN noise at step 1 in this script.
+
+G) Stable2 config retest at thr=0.9 (alpha=0.02, use_potential_force, use_fitness_force)
+- pen=0.6 -> rho/pi 14.33, nucleon 0 (N/pi undefined)
+- pen=1.1 -> rho/pi 6.38, N/pi 0.22 (nucleon still dead)
+
 Key Takeaways
 - There is a tradeoff: settings that give near-target rho/pi (thr=0.9) suppress N/pi.
 - Settings that keep N/pi near target (thr=0.75, stable2) leave rho/pi ~3.2.
 - Using nucleon_abs2 can recover N/pi at high stabilization, but pi collapses and rho/pi diverges.
+- Curl + anisotropic diffusion is currently numerically unstable (NaN noise at step 1).
 
 Immediate Candidate Configs
 - Best rho/pi: thr=0.9, pen=1.1, beta=0.5 (nucleon dead)
@@ -112,6 +125,7 @@ Immediate Candidate Configs
 
 Open Gap
 - No configuration in the current parameter space achieves both ratios within +/-2%.
+- Curl experiments with anisotropic diffusion are invalid until the diffusion regularization is fixed.
 
 Files of Interest
 - outputs/qft_baseline/opt1_thr0p9_pen1p1_beta0p5_baseline.json

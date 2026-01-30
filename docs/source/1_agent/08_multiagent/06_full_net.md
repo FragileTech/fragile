@@ -131,20 +131,20 @@ An agent architecture $\mathcal{A} = P \circ D \circ E$ is **$G$-equivariant** w
 1. **Latent space transforms:** There exists a representation $\rho: G \to \text{GL}(\mathcal{Z})$ such that for $g \in G$, latent states transform as $z \mapsto \rho(g) z$
 
 2. **Encoder invariance:** $E$ maps to gauge-equivalent latent states:
-   
+
    $$
    E(x) \sim \rho(g) E(x) \quad \forall g \in G, x \in \mathcal{X}
    $$
    where $\sim$ denotes equivalence up to gauge choice (physically identical states)
 
 3. **Dynamics equivariance:** $D$ commutes with gauge transformations:
-   
+
    $$
    D(\rho(g) z, a) = \rho(g) D(z, a) \quad \forall g \in G, z \in \mathcal{Z}, a \in \mathcal{Y}
    $$
 
 4. **Decoder covariance:** $P$ produces consistent outputs under gauge transformations:
-   
+
    $$
    P(\rho(g) z) = P(z) \quad \forall g \in G, z \in \mathcal{Z}
    $$
@@ -1734,7 +1734,7 @@ The geometry is not a constraint that limits what you can learn. It is a *prior*
 Let $\mathcal{A}_{\text{UGN}}$ be a UGN with $\lambda_{\text{L1}} > 0$. Then:
 
 1. **Approximate capacity bound:** For all layers with spectral normalization, $\|W\|_2 \leq 1$ and approximately 1-Lipschitz activations ensure:
-   
+
    $$
    \|z_{\text{out}}\| \lesssim \|z_{\text{in}}\| + O(\sqrt{L})
    $$
@@ -1743,13 +1743,13 @@ Let $\mathcal{A}_{\text{UGN}}$ be a UGN with $\lambda_{\text{L1}} > 0$. Then:
 2. **Bundle structure preservation:** The latent space maintains decomposition $\mathcal{Z} = \bigoplus_{i=1}^{n_b} V_i$ throughout forward pass (bundles indexed consistently)
 
 3. **Soft equivariance:** Define the **equivariance violation** as:
-   
+
    $$
    \mathcal{V}(D) = \mathbb{E}_{z \sim \mathcal{Z}, R \sim \mu_{SO(d_b)}} \|D(Rz) - RD(z)\|^2
    $$
    where $\mu_{SO(d_b)}$ is the Haar measure on $SO(d_b)$.
    Then:
-   
+
    $$
    \mathcal{V}(D) \leq C \cdot \|W^{\text{mix}}\|_F^2
    $$

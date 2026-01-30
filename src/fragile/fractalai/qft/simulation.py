@@ -64,6 +64,7 @@ class OperatorConfig:
     use_viscous_coupling: bool = True
     viscous_length_scale: float = 0.00976705
     viscous_neighbor_mode: str = "all"
+    viscous_neighbor_weighting: str = "kernel"
     viscous_neighbor_threshold: float | None = None
     viscous_neighbor_penalty: float = 1.1
     viscous_degree_cap: float | None = None
@@ -103,6 +104,9 @@ class RunConfig:
     dtype: str = "float32"
     pbc: bool = False
     record_rng_state: bool = True
+    neighbor_graph_method: str = "delaunay"
+    neighbor_graph_update_every: int = 1
+    neighbor_graph_record: bool = True
 
 
 class QuadraticPotential:
@@ -135,12 +139,26 @@ def build_gas(
     run_cfg: RunConfig,
     reward_1form: Callable[[torch.Tensor], torch.Tensor] | None = None,
     curl_field: Callable[[torch.Tensor], torch.Tensor] | None = None,
+    reward_mode: str = "potential",
+    voronoi_reward_update_every: int = 1,
 ) -> tuple[EuclideanGas, QuadraticPotential]:
-    potential = QuadraticPotential(
-        alpha=potential_cfg.alpha,
-        dims=potential_cfg.dims,
-        bounds_extent=potential_cfg.bounds_extent,
-    )
+    if reward_mode == "voronoi_volume":
+        from fragile.fractalai.core.benchmarks import VoronoiCellVolume
+
+        bounds = TorchBounds.from_tuples(
+            [(-potential_cfg.bounds_extent, potential_cfg.bounds_extent)] * potential_cfg.dims
+        )
+        potential = VoronoiCellVolume(
+            dims=potential_cfg.dims,
+            bounds=bounds,
+            update_every=voronoi_reward_update_every,
+        )
+    else:
+        potential = QuadraticPotential(
+            alpha=potential_cfg.alpha,
+            dims=potential_cfg.dims,
+            bounds_extent=potential_cfg.bounds_extent,
+        )
 
     companion = CompanionSelection(
         method=operator_cfg.companion_method,
@@ -185,6 +203,7 @@ def build_gas(
         use_viscous_coupling=operator_cfg.use_viscous_coupling,
         viscous_length_scale=operator_cfg.viscous_length_scale,
         viscous_neighbor_mode=operator_cfg.viscous_neighbor_mode,
+        viscous_neighbor_weighting=operator_cfg.viscous_neighbor_weighting,
         viscous_neighbor_threshold=operator_cfg.viscous_neighbor_threshold,
         viscous_neighbor_penalty=operator_cfg.viscous_neighbor_penalty,
         viscous_degree_cap=operator_cfg.viscous_degree_cap,
@@ -218,6 +237,9 @@ def build_gas(
         enable_cloning=True,
         enable_kinetic=True,
         pbc=run_cfg.pbc,
+        neighbor_graph_method=run_cfg.neighbor_graph_method,
+        neighbor_graph_update_every=run_cfg.neighbor_graph_update_every,
+        neighbor_graph_record=run_cfg.neighbor_graph_record,
     )
 
     return gas, potential
@@ -230,6 +252,8 @@ def run_simulation(
     show_progress: bool = True,
     reward_1form: Callable[[torch.Tensor], torch.Tensor] | None = None,
     curl_field: Callable[[torch.Tensor], torch.Tensor] | None = None,
+    reward_mode: str = "potential",
+    voronoi_reward_update_every: int = 1,
 ) -> tuple[Any, QuadraticPotential]:
     gas, potential = build_gas(
         potential_cfg,
@@ -237,6 +261,8 @@ def run_simulation(
         run_cfg,
         reward_1form=reward_1form,
         curl_field=curl_field,
+        reward_mode=reward_mode,
+        voronoi_reward_update_every=voronoi_reward_update_every,
     )
     history = gas.run(
         n_steps=run_cfg.n_steps,
@@ -310,6 +336,12 @@ def parse_args() -> argparse.Namespace:
         help="Neighbor mode for viscous coupling (all or nearest)",
     )
     parser.add_argument(
+        "--viscous-neighbor-weighting",
+        choices=["kernel", "uniform"],
+        default=OperatorConfig.viscous_neighbor_weighting,
+        help="Weighting for viscous neighbors (kernel or uniform)",
+    )
+    parser.add_argument(
         "--viscous-neighbor-threshold",
         type=float,
         default=OperatorConfig.viscous_neighbor_threshold,
@@ -328,6 +360,30 @@ def parse_args() -> argparse.Namespace:
         help="Optional cap on viscous degree (saturates multi-neighbor coupling)",
     )
     parser.add_argument("--fitness-rho", type=float, default=OperatorConfig.fitness_rho)
+    parser.add_argument(
+        "--neighbor-graph-method",
+        choices=["none", "delaunay", "voronoi"],
+        default=RunConfig.neighbor_graph_method,
+        help="Neighbor graph backend for viscous coupling/recording",
+    )
+    parser.add_argument(
+        "--neighbor-graph-update-every",
+        type=int,
+        default=RunConfig.neighbor_graph_update_every,
+        help="Recompute neighbor graph every k steps",
+    )
+    parser.add_argument(
+        "--neighbor-graph-record",
+        action="store_true",
+        default=RunConfig.neighbor_graph_record,
+        help="Record neighbor graph and Voronoi regions in RunHistory",
+    )
+    parser.add_argument(
+        "--no-neighbor-graph-record",
+        action="store_false",
+        dest="neighbor_graph_record",
+        help="Disable recording neighbor graph/Voronoi regions",
+    )
     parser.add_argument(
         "--companion-epsilon",
         type=float,
@@ -364,6 +420,7 @@ def main() -> None:
         nu=args.nu,
         viscous_length_scale=args.viscous_length_scale,
         viscous_neighbor_mode=args.viscous_neighbor_mode,
+        viscous_neighbor_weighting=args.viscous_neighbor_weighting,
         viscous_neighbor_threshold=args.viscous_neighbor_threshold,
         viscous_neighbor_penalty=args.viscous_neighbor_penalty,
         viscous_degree_cap=args.viscous_degree_cap,
@@ -378,6 +435,9 @@ def main() -> None:
         seed=args.seed,
         device=args.device,
         dtype=args.dtype,
+        neighbor_graph_method=args.neighbor_graph_method,
+        neighbor_graph_update_every=args.neighbor_graph_update_every,
+        neighbor_graph_record=args.neighbor_graph_record,
     )
 
     run_id = args.run_id or datetime.utcnow().strftime("%Y%m%d_%H%M%S")

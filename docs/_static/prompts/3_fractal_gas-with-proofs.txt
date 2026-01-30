@@ -39885,7 +39885,7 @@ Our proof establishes this by starting with the stationarity condition for the f
     \lim_{k \to \infty} \mathbb{E}_{\nu_{N_k}}[\mathcal{L}_{\text{clone}, N_k} \phi(z_1)] = \int_{\Omega} S[\rho_0]\phi(z) dz
 
     $$
-    
+
     $$
     \lim_{k \to \infty} \mathbb{E}_{\nu_{N_k}}[\mathcal{L}_{\text{boundary}, N_k} \phi(z_1)] = \int_{\Omega} (-c(z)\rho_0 + B[\rho_0, m_{d,\infty}])\phi(z) dz
 
@@ -52033,7 +52033,7 @@ $$
 **For higher-order derivatives ($n \geq 2$):** The k-uniform structure is preserved by the following argument:
 
 1. **Inductive structure**: Each higher-order derivative $\nabla^n_{x_i} d_j$ is obtained by differentiating $\nabla^{n-1}_{x_i} d_j$, which by induction has the form:
-   
+
    $$
    \nabla^{n-1}_{x_i} d_j = \sum_{\text{terms}} P_i^{k_1} (\nabla^{k_2} d_{ji}) (\nabla^{k_3} \log K_i) (\nabla^{k_4} d_j)
    $$
@@ -52319,7 +52319,7 @@ $$
 **For higher-order derivatives ($n \geq 2$):** The k-uniform structure is preserved by the following argument:
 
 1. **Inductive structure**: Each higher-order derivative $\nabla^n_{x_i} d_j$ is obtained by differentiating $\nabla^{n-1}_{x_i} d_j$, which by induction has the form:
-   
+
    $$
    \nabla^{n-1}_{x_i} d_j = \sum_{\text{terms}} P_i^{k_1} (\nabla^{k_2} d_{ji}) (\nabla^{k_3} \log K_i) (\nabla^{k_4} d_j)
    $$
@@ -53949,7 +53949,7 @@ $$
 **For higher-order derivatives ($n \geq 2$):** The k-uniform structure is preserved by the following argument:
 
 1. **Inductive structure**: Each higher-order derivative $\nabla^n_{x_i} d_j$ is obtained by differentiating $\nabla^{n-1}_{x_i} d_j$, which by induction has the form:
-   
+
    $$
    \nabla^{n-1}_{x_i} d_j = \sum_{\text{terms}} P_i^{k_1} (\nabla^{k_2} d_{ji}) (\nabla^{k_3} \log K_i) (\nabla^{k_4} d_j)
    $$
@@ -58257,7 +58257,7 @@ where $\kappa_{W,\min} > 0$ is the N-uniform lower bound on the Wasserstein cont
 **Proof.**
 
 1. From Corollary {prf:ref}`cor-quantitative-lsi-final` (Section 5.6), the LSI constant for the N-particle system is given by:
-   
+
    $$
    C_{\text{LSI}}(N) = O\left(\frac{1}{\min(\gamma, \kappa_{\text{conf}}) \cdot \kappa_W(N) \cdot \delta^2}\right)
    $$
@@ -58274,7 +58274,7 @@ where $\kappa_{W,\min} > 0$ is the N-uniform lower bound on the Wasserstein cont
 4. The cloning noise parameter $\delta > 0$ is an algorithm parameter, independent of $N$.
 
 5. Therefore, the LSI constant is uniformly bounded:
-   
+
    $$
    C_{\text{LSI}}(N) \leq O\left(\frac{1}{\min(\gamma, \kappa_{\text{conf}}) \cdot \kappa_{W,\min} \cdot \delta^2}\right) =: C_{\text{LSI}}^{\max} < \infty
    $$
@@ -61486,19 +61486,19 @@ $$
 with:
 
 1. **Adaptive force perturbation**:
-   
+
    $$
    L_{\mathrm{adapt}} f = \epsilon_F \sum_{i=1}^N \nabla V_{\mathrm{fit}}[f_k, \rho](x_i) \cdot \nabla_{v_i} f
    $$
 
 2. **Viscous coupling perturbation**:
-   
+
    $$
    L_{\mathrm{viscous}} f = \nu \sum_{i=1}^N \sum_{j \neq i} \frac{K(x_i - x_j)}{\mathrm{deg}(i)} (v_j - v_i) \cdot \nabla_{v_i} f
    $$
 
 3. **Diffusion perturbation**:
-   
+
    $$
    L_{\mathrm{diff}} f = \frac{1}{2} \sum_{i=1}^N \left[ \mathrm{tr}(\Sigma_{\mathrm{reg}}^2 \nabla_{v_i}^2 f) - \sigma^2 \Delta_{v_i} f \right]
    $$

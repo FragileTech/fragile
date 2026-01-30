@@ -2063,7 +2063,7 @@ Our proof establishes this by starting with the stationarity condition for the f
     \lim_{k \to \infty} \mathbb{E}_{\nu_{N_k}}[\mathcal{L}_{\text{clone}, N_k} \phi(z_1)] = \int_{\Omega} S[\rho_0]\phi(z) dz
 
     $$
-    
+
     $$
     \lim_{k \to \infty} \mathbb{E}_{\nu_{N_k}}[\mathcal{L}_{\text{boundary}, N_k} \phi(z_1)] = \int_{\Omega} (-c(z)\rho_0 + B[\rho_0, m_{d,\infty}])\phi(z) dz
 

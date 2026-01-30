@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-"""Baseline QFT run + channels-only mass extraction.
+"""Baseline QFT run with strong-force + electroweak channel extraction.
 
 Runs a Euclidean Gas simulation with the same channel analysis used in the QFT
-Dashboard Channels tab, then stores extracted masses and the selected parameters.
+Dashboard Channels tab, plus electroweak (U1/SU2) proxy channels. Stores
+extracted masses, ratios, coupling summaries, and selected parameters.
 Also saves full channel analysis payloads to support tuning against ratio targets.
 """
 
@@ -26,6 +27,11 @@ from fragile.fractalai.qft.correlator_channels import (
     compute_effective_mass_torch,
     get_channel_class,
 )
+from fragile.fractalai.qft.electroweak_channels import (
+    ELECTROWEAK_CHANNELS,
+    ElectroweakChannelConfig,
+    compute_all_electroweak_channels,
+)
 from fragile.fractalai.qft.simulation import (
     OperatorConfig,
     PotentialWellConfig,
@@ -37,6 +43,25 @@ from fragile.fractalai.qft.simulation import (
 TARGET_RATIOS = {
     "rho_pi": 5.5,
     "nucleon_pi": 6.7,
+}
+
+# Default electroweak reference masses (GeV) mapped to proxy channels.
+ELECTROWEAK_REF_MASSES = {
+    "u1_phase": 0.000511,   # electron
+    "u1_dressed": 0.105658, # muon
+    "su2_phase": 80.379,    # W boson
+    "su2_doublet": 91.1876, # Z boson
+    "ew_mixed": 1.77686,    # tau
+}
+
+# Coupling reference values (mZ and GUT benchmarks).
+ELECTROWEAK_COUPLING_REFS = {
+    "g1_est (N1=1)": {"observed_mZ": 0.357468, "observed_GUT": 0.560499},
+    "g2_est": {"observed_mZ": 0.651689, "observed_GUT": 0.723601},
+    "g1_proxy": {"observed_mZ": 0.357468, "observed_GUT": 0.560499},
+    "g2_proxy": {"observed_mZ": 0.651689, "observed_GUT": 0.723601},
+    "sin2theta_w proxy": {"observed_mZ": 0.23129, "observed_GUT": 0.375},
+    "tan_theta_w proxy": {"observed_mZ": 0.548526, "observed_GUT": 0.774597},
 }
 
 
@@ -74,6 +99,249 @@ def _parse_window_widths(spec: str) -> list[int]:
         return list(range(5, 51))
 
 
+def _resolve_history_param(
+    history: Any | None,
+    *keys: str,
+    default: float | None = None,
+) -> float | None:
+    if history is None or not isinstance(history.params, dict):
+        return default
+    current: Any = history.params
+    for key in keys:
+        if not isinstance(current, dict) or key not in current:
+            return default
+        current = current[key]
+    if current is None:
+        return default
+    try:
+        return float(current)
+    except (TypeError, ValueError):
+        return default
+
+
+def _compute_force_stats(history: Any | None) -> dict[str, float]:
+    if history is None or history.force_viscous is None:
+        return {"mean_force_sq": float("nan")}
+
+    force = history.force_viscous
+    alive = history.alive_mask
+    if alive is None:
+        alive = torch.ones(force.shape[:-1], dtype=torch.bool, device=force.device)
+    if alive.shape[0] != force.shape[0]:
+        min_len = min(alive.shape[0], force.shape[0])
+        alive = alive[:min_len]
+        force = force[:min_len]
+
+    force_sq = (force**2).sum(dim=-1)
+    if alive.numel() == 0:
+        return {"mean_force_sq": float("nan")}
+    masked = torch.where(alive, force_sq, torch.zeros_like(force_sq))
+    counts = alive.sum().clamp(min=1)
+    mean_force_sq = float((masked.sum() / counts).item())
+    return {"mean_force_sq": mean_force_sq}
+
+
+def _compute_coupling_constants(
+    history: Any | None,
+    h_eff: float,
+    epsilon_d: float | None = None,
+    epsilon_c: float | None = None,
+) -> dict[str, float]:
+    d = float(history.d) if history is not None else float("nan")
+    h_eff = float(max(h_eff, 1e-12))
+
+    epsilon_d = epsilon_d or _resolve_history_param(
+        history, "companion_selection", "epsilon", default=None
+    )
+    epsilon_c = epsilon_c or _resolve_history_param(
+        history, "companion_selection_clone", "epsilon", default=None
+    )
+    nu = _resolve_history_param(history, "kinetic", "nu", default=None)
+
+    if epsilon_d is None or epsilon_d <= 0:
+        g1_est = float("nan")
+    else:
+        g1_est = (h_eff / (epsilon_d**2)) ** 0.5
+
+    c2d = (d**2 - 1.0) / (2.0 * d) if d > 0 else float("nan")
+    c2_2 = 3.0 / 4.0
+    if epsilon_c is None or epsilon_c <= 0 or not np.isfinite(c2d) or c2d <= 0:
+        g2_est = float("nan")
+    else:
+        g2_sq = (2.0 * h_eff / (epsilon_c**2)) * (c2_2 / c2d)
+        g2_est = float(max(g2_sq, 0.0) ** 0.5)
+
+    force_stats = _compute_force_stats(history)
+    mean_force_sq = force_stats["mean_force_sq"]
+    if nu is None or not np.isfinite(mean_force_sq) or d <= 0:
+        g3_est = float("nan")
+        kvisc_sq = float("nan")
+    else:
+        kvisc_sq = mean_force_sq / max(float(nu) ** 2, 1e-12)
+        g3_sq = (float(nu) ** 2 / h_eff**2) * (d * (d**2 - 1.0) / 12.0) * kvisc_sq
+        g3_est = float(max(g3_sq, 0.0) ** 0.5)
+
+    return {
+        "g1_est": float(g1_est),
+        "g2_est": float(g2_est),
+        "g3_est": float(g3_est),
+        "epsilon_d": float(epsilon_d) if epsilon_d is not None else float("nan"),
+        "epsilon_c": float(epsilon_c) if epsilon_c is not None else float("nan"),
+        "nu": float(nu) if nu is not None else float("nan"),
+        "kvisc_sq_proxy": float(kvisc_sq),
+        "mean_force_sq": float(mean_force_sq),
+        "d": float(d),
+        "h_eff": float(h_eff),
+    }
+
+
+def _build_coupling_rows(
+    couplings: dict[str, float],
+    refs: dict[str, dict[str, float]] | None = None,
+) -> list[dict[str, Any]]:
+    refs = refs or {}
+    rows = [
+        {"name": "g1_est (N1=1)", "value": couplings.get("g1_est"), "note": "from epsilon_d, h_eff"},
+        {"name": "g2_est", "value": couplings.get("g2_est"), "note": "from epsilon_c, h_eff, C2"},
+        {
+            "name": "g3_est",
+            "value": couplings.get("g3_est"),
+            "note": "from nu, h_eff, <K_visc^2>",
+        },
+        {
+            "name": "<K_visc^2> proxy",
+            "value": couplings.get("kvisc_sq_proxy"),
+            "note": "mean ||F_visc||^2 / nu^2",
+        },
+    ]
+    for row in rows:
+        ref_values = refs.get(row.get("name"), {})
+        for column in ("observed_mZ", "observed_GUT"):
+            observed = ref_values.get(column)
+            value = row.get("value")
+            error_pct = None
+            if observed is not None and observed > 0 and value is not None and np.isfinite(value):
+                error_pct = (float(value) - observed) / observed * 100.0
+            row[column] = observed
+            row[f"error_pct_{column}"] = error_pct
+    return rows
+
+
+def _best_fit_scale(masses: dict[str, float], refs: dict[str, float]) -> float | None:
+    numerator = 0.0
+    denominator = 0.0
+    for name, mass_phys in refs.items():
+        alg_mass = masses.get(name)
+        if alg_mass is None or alg_mass <= 0:
+            continue
+        numerator += alg_mass * mass_phys
+        denominator += alg_mass**2
+    if denominator <= 0:
+        return None
+    return numerator / denominator
+
+
+def _build_electroweak_ratio_rows(
+    masses: dict[str, float],
+    base_name: str,
+    refs: dict[str, float] | None = None,
+) -> list[dict[str, Any]]:
+    refs = refs or {}
+    rows: list[dict[str, Any]] = []
+    base_mass = masses.get(base_name)
+    if base_mass is None or base_mass <= 0:
+        return rows
+    for name, mass in masses.items():
+        if name == base_name or mass <= 0:
+            continue
+        measured = mass / base_mass
+        observed = None
+        error_pct = None
+        obs_num = refs.get(name)
+        obs_den = refs.get(base_name)
+        if obs_num is not None and obs_den is not None and obs_den > 0:
+            observed = obs_num / obs_den
+            if observed > 0:
+                error_pct = (measured - observed) / observed * 100.0
+        rows.append(
+            {
+                "ratio": f"{name}/{base_name}",
+                "measured": measured,
+                "observed": observed,
+                "error_pct": error_pct,
+            }
+        )
+    return rows
+
+
+def _build_electroweak_best_fit_rows(
+    masses: dict[str, float],
+    refs: dict[str, float],
+    r2s: dict[str, float] | None = None,
+) -> list[dict[str, Any]]:
+    r2s = r2s or {}
+    scale = _best_fit_scale(masses, refs)
+    if scale is None:
+        return [{"fit_mode": "electroweak refs", "scale_GeV_per_alg": None}]
+
+    row: dict[str, Any] = {"fit_mode": "electroweak refs", "scale_GeV_per_alg": scale}
+    for name, alg_mass in masses.items():
+        row[f"{name}_pred_GeV"] = alg_mass * scale
+        if name in r2s:
+            row[f"{name}_r2"] = r2s[name]
+    return [row]
+
+
+def _build_electroweak_anchor_rows(
+    masses: dict[str, float],
+    refs: dict[str, float],
+    r2s: dict[str, float] | None = None,
+) -> list[dict[str, Any]]:
+    r2s = r2s or {}
+    rows: list[dict[str, Any]] = []
+    for name, mass_phys in refs.items():
+        alg_mass = masses.get(name)
+        if alg_mass is None or alg_mass <= 0:
+            rows.append({"anchor": f"{name}->{mass_phys:.6f}"})
+            continue
+        scale = mass_phys / alg_mass
+        row: dict[str, Any] = {"anchor": f"{name}->{mass_phys:.6f}", "scale_GeV_per_alg": scale}
+        for ch_name, alg in masses.items():
+            row[f"{ch_name}_pred_GeV"] = alg * scale
+            if ch_name in r2s:
+                row[f"{ch_name}_r2"] = r2s[ch_name]
+        rows.append(row)
+    return rows
+
+
+def _build_electroweak_comparison_rows(
+    masses: dict[str, float],
+    refs: dict[str, float],
+) -> list[dict[str, Any]]:
+    scale = _best_fit_scale(masses, refs)
+    if scale is None:
+        return []
+
+    rows: list[dict[str, Any]] = []
+    for name, alg_mass in masses.items():
+        if alg_mass <= 0:
+            continue
+        obs = refs.get(name)
+        pred = alg_mass * scale
+        err_pct = None
+        if obs is not None and obs > 0:
+            err_pct = (pred - obs) / obs * 100.0
+        rows.append(
+            {
+                "channel": name,
+                "alg_mass": alg_mass,
+                "obs_mass_GeV": obs,
+                "pred_mass_GeV": pred,
+                "error_pct": err_pct,
+            }
+        )
+    return rows
+
 def _build_channel_config(args: argparse.Namespace) -> tuple[ChannelConfig, dict[str, Any]]:
     # Match the Channels tab defaults where possible. Extra keys are ignored.
     window_widths = _parse_window_widths(args.window_widths)
@@ -83,6 +351,7 @@ def _build_channel_config(args: argparse.Namespace) -> tuple[ChannelConfig, dict
         "h_eff": args.h_eff,
         "mass": args.channel_mass,
         "ell0": args.ell0,
+        "neighbor_method": args.neighbor_method,
         "knn_k": args.knn_k,
         "knn_sample": args.knn_sample,
         "use_connected": args.use_connected,
@@ -172,16 +441,17 @@ def _save_full_analysis(
     results: dict[str, Any],
     output_dir: Path,
     run_id: str,
+    label: str = "channels",
 ) -> tuple[Path, Path | None]:
     arrays: dict[str, np.ndarray] = {}
     packed = _pack_results(results, arrays, "chan")
 
     arrays_path = None
     if arrays:
-        arrays_path = output_dir / f"{run_id}_channels_arrays.npz"
+        arrays_path = output_dir / f"{run_id}_{label}_arrays.npz"
         np.savez_compressed(arrays_path, **arrays)
 
-    full_path = output_dir / f"{run_id}_channels_full.json"
+    full_path = output_dir / f"{run_id}_{label}_full.json"
     _write_json(
         full_path,
         {
@@ -359,9 +629,21 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--bounds-extent", type=float, default=10.0)
     parser.add_argument("--no-progress", action="store_true")
     parser.add_argument(
+        "--reward-mode",
+        default="voronoi_volume",
+        choices=["potential", "zero", "voronoi_volume"],
+        help="Reward mode: potential, constant zero, or Voronoi cell volume.",
+    )
+    parser.add_argument(
+        "--voronoi-reward-update-every",
+        type=int,
+        default=1,
+        help="Recompute Voronoi volume reward every k steps (1 = every step).",
+    )
+    parser.add_argument(
         "--zero-reward",
         action="store_true",
-        default=True,
+        default=False,
         help="Use constant zero reward (dashboard Constant benchmark).",
     )
     parser.add_argument(
@@ -379,6 +661,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--epsilon-sigma", type=float, default=None)
     parser.add_argument("--nu", type=float, default=None)
     parser.add_argument("--viscous-length-scale", type=float, default=None)
+    parser.add_argument(
+        "--viscous-neighbor-weighting",
+        choices=["kernel", "uniform"],
+        default=None,
+    )
     parser.add_argument("--viscous-neighbor-threshold", type=float, default=None)
     parser.add_argument("--viscous-neighbor-penalty", type=float, default=None)
     parser.add_argument("--companion-epsilon", type=float, default=None)
@@ -387,6 +674,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--lambda-alg", type=float, default=None)
     parser.add_argument("--epsilon-clone", type=float, default=None)
     parser.add_argument("--p-max", type=float, default=None)
+    parser.add_argument("--clone-sigma-x", type=float, default=None)
+    parser.add_argument("--clone-alpha-restitution", type=float, default=None)
     parser.add_argument("--use-fitness-force", action="store_true", default=False)
     parser.add_argument("--use-potential-force", action="store_true", default=False)
     parser.add_argument("--use-velocity-squashing", action="store_true", default=False)
@@ -404,7 +693,12 @@ def parse_args() -> argparse.Namespace:
         default=1.0,
         help="Curl field strength (scaled by beta_curl).",
     )
-    parser.add_argument("--use-anisotropic-diffusion", action="store_true", default=False)
+    parser.add_argument("--use-anisotropic-diffusion", action="store_true", default=True)
+    parser.add_argument(
+        "--no-anisotropic-diffusion",
+        action="store_false",
+        dest="use_anisotropic_diffusion",
+    )
     parser.add_argument("--use-diagonal-diffusion", action="store_true", default=False)
     parser.add_argument(
         "--diffusion-mode",
@@ -425,6 +719,10 @@ def parse_args() -> argparse.Namespace:
         choices=["exact", "sum"],
         help="Fitness gradient mode (exact per-walker or summed backward).",
     )
+    parser.add_argument("--fitness-alpha", type=float, default=None)
+    parser.add_argument("--fitness-beta", type=float, default=None)
+    parser.add_argument("--fitness-eta", type=float, default=None)
+    parser.add_argument("--fitness-A", type=float, default=None)
     parser.add_argument(
         "--fitness-detach-stats",
         action="store_true",
@@ -436,6 +734,26 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         default=False,
         help="Detach companions in fitness gradients to avoid cross terms.",
+    )
+    parser.add_argument("--fitness-epsilon-dist", type=float, default=None)
+    parser.add_argument("--fitness-rho", type=float, default=None)
+    parser.add_argument(
+        "--neighbor-graph-method",
+        choices=["none", "delaunay", "voronoi"],
+        default="voronoi",
+    )
+    parser.add_argument("--neighbor-graph-update-every", type=int, default=1)
+    parser.add_argument(
+        "--neighbor-graph-record",
+        action="store_true",
+        default=True,
+        help="Record neighbor graph and Voronoi regions in RunHistory.",
+    )
+    parser.add_argument(
+        "--no-neighbor-graph-record",
+        action="store_false",
+        dest="neighbor_graph_record",
+        help="Disable recording neighbor graph/Voronoi regions.",
     )
 
     # Channels-tab analysis settings
@@ -451,6 +769,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--ell0", type=float, default=None)
     parser.add_argument("--knn-k", type=int, default=4)
     parser.add_argument("--knn-sample", type=int, default=512)
+    parser.add_argument(
+        "--neighbor-method",
+        default="recorded",
+        choices=["uniform", "knn", "voronoi", "recorded"],
+    )
     parser.add_argument("--window-widths", default="5-50")
     parser.add_argument("--use-connected", action="store_true", default=True)
     parser.add_argument("--no-connected", action="store_false", dest="use_connected")
@@ -466,6 +789,28 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--nucleon-fit-stop", type=int, default=None)
     parser.add_argument("--nucleon-min-fit-points", type=int, default=None)
 
+    # Electroweak channels (U1/SU2) analysis settings
+    parser.add_argument("--no-electroweak", action="store_true", help="Skip electroweak analysis.")
+    parser.add_argument(
+        "--ew-channels",
+        default=",".join(ELECTROWEAK_CHANNELS),
+        help="Comma-separated electroweak channel list.",
+    )
+    parser.add_argument("--ew-warmup-fraction", type=float, default=0.1)
+    parser.add_argument("--ew-max-lag", type=int, default=80)
+    parser.add_argument("--ew-h-eff", type=float, default=1.0)
+    parser.add_argument("--ew-use-connected", action="store_true", default=True)
+    parser.add_argument("--ew-no-connected", action="store_false", dest="ew_use_connected")
+    parser.add_argument("--ew-window-widths", default="5-50")
+    parser.add_argument("--ew-fit-mode", default="aic", choices=["aic", "linear", "linear_abs"])
+    parser.add_argument("--ew-fit-start", type=int, default=2)
+    parser.add_argument("--ew-fit-stop", type=int, default=None)
+    parser.add_argument("--ew-min-fit-points", type=int, default=2)
+    parser.add_argument("--ew-epsilon-d", type=float, default=None)
+    parser.add_argument("--ew-epsilon-c", type=float, default=None)
+    parser.add_argument("--ew-epsilon-clone", type=float, default=None)
+    parser.add_argument("--ew-lambda-alg", type=float, default=None)
+
     return parser.parse_args()
 
 
@@ -475,7 +820,7 @@ def main() -> None:
     if args.p_max is not None and not (0.0 < args.p_max <= 1.0):
         raise ValueError("--p-max must be in (0, 1].")
 
-    # Constant zero reward by default (matches "Constant" benchmark in dashboard).
+    # Reward mode (default Voronoi cell volume).
     potential_cfg = PotentialWellConfig(
         dims=args.dims,
         alpha=args.alpha,
@@ -488,16 +833,17 @@ def main() -> None:
     operator_cfg.beta = 1.0
     operator_cfg.delta_t = 0.1005
     operator_cfg.epsilon_F = 38.6373
-    operator_cfg.use_fitness_force = args.use_fitness_force
-    operator_cfg.use_potential_force = args.use_potential_force
+    operator_cfg.use_fitness_force = False
+    operator_cfg.use_potential_force = False
     operator_cfg.use_anisotropic_diffusion = args.use_anisotropic_diffusion
     operator_cfg.diagonal_diffusion = args.use_diagonal_diffusion
     operator_cfg.nu = 1.10
     operator_cfg.use_viscous_coupling = True
     operator_cfg.viscous_length_scale = 0.251372
     operator_cfg.viscous_neighbor_mode = "all"
-    operator_cfg.viscous_neighbor_threshold = 0.75
-    operator_cfg.viscous_neighbor_penalty = 1.1
+    operator_cfg.viscous_neighbor_weighting = "uniform"
+    operator_cfg.viscous_neighbor_threshold = None
+    operator_cfg.viscous_neighbor_penalty = 0.0
 
     operator_cfg.companion_method = "uniform"
     if args.companion_method is not None:
@@ -519,7 +865,8 @@ def main() -> None:
     operator_cfg.fitness_A = 2.0
     operator_cfg.fitness_sigma_min = 1e-8
     operator_cfg.fitness_epsilon_dist = 1e-8
-    operator_cfg.fitness_rho = 0.251372
+    # Tuned for improved electroweak probe ratios (Jan 2026 calibration sweep).
+    operator_cfg.fitness_rho = 0.1
     if args.gamma is not None:
         operator_cfg.gamma = args.gamma
     if args.beta is not None:
@@ -538,6 +885,8 @@ def main() -> None:
         operator_cfg.nu = args.nu
     if args.viscous_length_scale is not None:
         operator_cfg.viscous_length_scale = args.viscous_length_scale
+    if args.viscous_neighbor_weighting is not None:
+        operator_cfg.viscous_neighbor_weighting = args.viscous_neighbor_weighting
     if args.viscous_neighbor_threshold is not None:
         operator_cfg.viscous_neighbor_threshold = args.viscous_neighbor_threshold
     if args.viscous_neighbor_penalty is not None:
@@ -552,6 +901,10 @@ def main() -> None:
         operator_cfg.epsilon_clone = args.epsilon_clone
     if args.p_max is not None:
         operator_cfg.p_max = args.p_max
+    if args.clone_sigma_x is not None:
+        operator_cfg.sigma_x = args.clone_sigma_x
+    if args.clone_alpha_restitution is not None:
+        operator_cfg.alpha_restitution = args.clone_alpha_restitution
     if args.v_alg is not None:
         operator_cfg.V_alg = args.v_alg
     if args.beta_curl is not None:
@@ -560,8 +913,20 @@ def main() -> None:
         operator_cfg.fitness_sigma_min = args.fitness_sigma_min
     if args.fitness_grad_mode is not None:
         operator_cfg.fitness_grad_mode = args.fitness_grad_mode
+    if args.fitness_alpha is not None:
+        operator_cfg.fitness_alpha = args.fitness_alpha
+    if args.fitness_beta is not None:
+        operator_cfg.fitness_beta = args.fitness_beta
+    if args.fitness_eta is not None:
+        operator_cfg.fitness_eta = args.fitness_eta
+    if args.fitness_A is not None:
+        operator_cfg.fitness_A = args.fitness_A
     operator_cfg.fitness_detach_stats = args.fitness_detach_stats
     operator_cfg.fitness_detach_companions = args.fitness_detach_companions
+    if args.fitness_epsilon_dist is not None:
+        operator_cfg.fitness_epsilon_dist = args.fitness_epsilon_dist
+    if args.fitness_rho is not None:
+        operator_cfg.fitness_rho = args.fitness_rho
 
     run_cfg = RunConfig(
         N=args.N,
@@ -570,14 +935,21 @@ def main() -> None:
         seed=args.seed,
         device=args.device,
         dtype=args.dtype,
+        neighbor_graph_method=args.neighbor_graph_method,
+        neighbor_graph_update_every=args.neighbor_graph_update_every,
+        neighbor_graph_record=args.neighbor_graph_record,
 
     )
     run_id = args.run_id or datetime.utcnow().strftime("%Y%m%d_%H%M%S")
     output_dir = Path(args.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    reward_1form = None
+    reward_mode = args.reward_mode
     if args.zero_reward:
+        reward_mode = "zero"
+
+    reward_1form = None
+    if reward_mode == "zero":
         def reward_1form(x: torch.Tensor) -> torch.Tensor:
             return torch.zeros_like(x)
 
@@ -593,6 +965,8 @@ def main() -> None:
         show_progress=not args.no_progress,
         reward_1form=reward_1form,
         curl_field=curl_field,
+        reward_mode=reward_mode,
+        voronoi_reward_update_every=args.voronoi_reward_update_every,
     )
     paths = save_outputs(history, output_dir, run_id, potential_cfg, operator_cfg, run_cfg)
 
@@ -624,13 +998,96 @@ def main() -> None:
     if args.use_vector_abs2:
         results["vector_abs2"] = _compute_channel_transform(history, channel_cfg, "vector", "abs2")
 
-    full_json_path, arrays_path = _save_full_analysis(results, output_dir, run_id)
+    full_json_path, arrays_path = _save_full_analysis(results, output_dir, run_id, label="channels")
     masses, r2s, summaries = _extract_masses(results)
     ratios = _compute_ratios(
         masses,
         use_nucleon_abs=args.use_nucleon_abs or args.use_nucleon_abs2,
         use_vector_abs2=args.use_vector_abs2,
     )
+
+    electroweak_block = None
+    electroweak_paths: dict[str, str | None] = {"electroweak_full": None, "electroweak_arrays": None}
+    if not args.no_electroweak:
+        ew_channels = [c.strip() for c in args.ew_channels.split(",") if c.strip()]
+        ew_cfg = ElectroweakChannelConfig(
+            warmup_fraction=args.ew_warmup_fraction,
+            max_lag=args.ew_max_lag,
+            h_eff=args.ew_h_eff,
+            use_connected=args.ew_use_connected,
+            neighbor_method="uniform",
+            window_widths=_parse_window_widths(args.ew_window_widths),
+            fit_mode=args.ew_fit_mode,
+            fit_start=args.ew_fit_start,
+            fit_stop=args.ew_fit_stop,
+            min_fit_points=args.ew_min_fit_points,
+            epsilon_d=args.ew_epsilon_d,
+            epsilon_c=args.ew_epsilon_c,
+            epsilon_clone=args.ew_epsilon_clone,
+            lambda_alg=args.ew_lambda_alg,
+        )
+        ew_results = compute_all_electroweak_channels(
+            history,
+            channels=ew_channels,
+            config=ew_cfg,
+        )
+        ew_full_json_path, ew_arrays_path = _save_full_analysis(
+            ew_results, output_dir, run_id, label="electroweak"
+        )
+        electroweak_paths = {
+            "electroweak_full": str(ew_full_json_path),
+            "electroweak_arrays": str(ew_arrays_path) if ew_arrays_path is not None else None,
+        }
+
+        ew_masses, ew_r2s, ew_summaries = _extract_masses(ew_results)
+        ew_base = "u1_dressed" if "u1_dressed" in ew_masses else "u1_phase"
+        ew_ratio_rows = _build_electroweak_ratio_rows(
+            ew_masses, ew_base, refs=ELECTROWEAK_REF_MASSES
+        )
+        ew_fit_rows = _build_electroweak_best_fit_rows(ew_masses, ELECTROWEAK_REF_MASSES, ew_r2s)
+        ew_anchor_rows = _build_electroweak_anchor_rows(
+            ew_masses, ELECTROWEAK_REF_MASSES, ew_r2s
+        )
+        ew_compare_rows = _build_electroweak_comparison_rows(ew_masses, ELECTROWEAK_REF_MASSES)
+
+        ew_couplings = _compute_coupling_constants(
+            history,
+            h_eff=args.ew_h_eff,
+            epsilon_d=args.ew_epsilon_d,
+            epsilon_c=args.ew_epsilon_c,
+        )
+        ew_coupling_rows = _build_coupling_rows(ew_couplings, refs=ELECTROWEAK_COUPLING_REFS)
+
+        electroweak_block = {
+            "list": list(ew_results.keys()),
+            "settings": {
+                "channels": ew_channels,
+                "warmup_fraction": args.ew_warmup_fraction,
+                "max_lag": args.ew_max_lag,
+                "h_eff": args.ew_h_eff,
+                "use_connected": args.ew_use_connected,
+                "window_widths": _parse_window_widths(args.ew_window_widths),
+                "fit_mode": args.ew_fit_mode,
+                "fit_start": args.ew_fit_start,
+                "fit_stop": args.ew_fit_stop,
+                "min_fit_points": args.ew_min_fit_points,
+                "epsilon_d": args.ew_epsilon_d,
+                "epsilon_c": args.ew_epsilon_c,
+                "epsilon_clone": args.ew_epsilon_clone,
+                "lambda_alg": args.ew_lambda_alg,
+            },
+            "reference_masses": ELECTROWEAK_REF_MASSES,
+            "masses": ew_masses,
+            "r_squared": ew_r2s,
+            "summaries": ew_summaries,
+            "ratios": ew_ratio_rows,
+            "best_fit_rows": ew_fit_rows,
+            "anchor_rows": ew_anchor_rows,
+            "comparison_rows": ew_compare_rows,
+            "couplings": ew_couplings,
+            "coupling_rows": ew_coupling_rows,
+            "coupling_refs": ELECTROWEAK_COUPLING_REFS,
+        }
 
     baseline = {
         "run_id": run_id,
@@ -641,12 +1098,14 @@ def main() -> None:
             "config": str(paths["metadata"]),
             "channels_full": str(full_json_path),
             "channels_arrays": str(arrays_path) if arrays_path is not None else None,
+            **electroweak_paths,
         },
         "configs": {
             "potential": asdict(potential_cfg),
             "operators": asdict(operator_cfg),
             "run": asdict(run_cfg),
-            "reward_mode": "zero" if args.zero_reward else "potential",
+            "reward_mode": reward_mode,
+            "voronoi_reward_update_every": args.voronoi_reward_update_every,
             "curl_mode": curl_mode,
             "curl_strength": args.curl_strength if curl_mode != "none" else None,
         },
@@ -660,6 +1119,7 @@ def main() -> None:
             "ratios": ratios,
             "target_ratios": TARGET_RATIOS,
         },
+        "electroweak": electroweak_block,
     }
 
     baseline_path = output_dir / f"{run_id}_baseline.json"
@@ -670,6 +1130,10 @@ def main() -> None:
     print(f"Channels (full): {full_json_path}")
     if arrays_path is not None:
         print(f"Channels arrays: {arrays_path}")
+    if electroweak_paths["electroweak_full"]:
+        print(f"Electroweak (full): {electroweak_paths['electroweak_full']}")
+    if electroweak_paths["electroweak_arrays"]:
+        print(f"Electroweak arrays: {electroweak_paths['electroweak_arrays']}")
     print(f"Baseline JSON: {baseline_path}")
 
 

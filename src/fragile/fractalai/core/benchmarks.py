@@ -579,6 +579,95 @@ class Constant(OptimBenchmark):
         return torch.zeros(self.shape)
 
 
+class VoronoiCellVolume(OptimBenchmark):
+    """Voronoi cell volume benchmark.
+
+    Returns U(x) = -V_i for each walker, where V_i is the volume/area of the
+    walker Voronoi cell. Infinite cells return zero volume.
+
+    Note:
+        This benchmark is non-differentiable and requires SciPy. When used
+        with EuclideanGas, set use_potential_force=False.
+    """
+
+    update_every = param.Integer(
+        default=1,
+        bounds=(1, None),
+        doc="Recompute Voronoi volumes every k calls (1 = every call).",
+    )
+
+    def __init__(self, dims: int, update_every: int = 1, **kwargs):
+        self._cache_step = 0
+        self._cache_values: torch.Tensor | None = None
+        update_every = max(1, int(update_every))
+
+        def voronoi_volume_potential(x: torch.Tensor) -> torch.Tensor:
+            if (
+                self._cache_values is not None
+                and self._cache_values.shape[0] == x.shape[0]
+                and self._cache_step % update_every != 0
+            ):
+                self._cache_step += 1
+                return self._cache_values
+
+            if x.shape[1] < 2:
+                values = torch.zeros(x.shape[0], dtype=x.dtype, device=x.device)
+                self._cache_values = values
+                self._cache_step += 1
+                return values
+
+            try:
+                from scipy.spatial import ConvexHull, Voronoi
+            except Exception as exc:
+                msg = f"SciPy required for Voronoi cell volume benchmark: {exc}"
+                raise RuntimeError(msg) from exc
+
+            points = x.detach().cpu().numpy()
+            if points.shape[0] < points.shape[1] + 1:
+                values = torch.zeros(x.shape[0], dtype=x.dtype, device=x.device)
+                self._cache_values = values
+                self._cache_step += 1
+                return values
+
+            try:
+                vor = Voronoi(points)
+            except Exception:
+                values = torch.zeros(x.shape[0], dtype=x.dtype, device=x.device)
+                self._cache_values = values
+                self._cache_step += 1
+                return values
+
+            volumes = np.zeros(points.shape[0], dtype=np.float64)
+            for idx, region_index in enumerate(vor.point_region):
+                region = vor.regions[region_index]
+                if not region or -1 in region:
+                    continue
+                vertices = vor.vertices[region]
+                if vertices.shape[0] <= points.shape[1]:
+                    continue
+                try:
+                    hull = ConvexHull(vertices)
+                except Exception:
+                    continue
+                volumes[idx] = hull.volume
+
+            values = torch.as_tensor(-volumes, dtype=x.dtype, device=x.device)
+            self._cache_values = values
+            self._cache_step += 1
+            return values
+
+        super().__init__(dims=dims, function=voronoi_volume_potential, update_every=update_every, **kwargs)
+
+    @property
+    def benchmark(self) -> torch.Tensor:
+        return torch.tensor(0.0)
+
+    @staticmethod
+    def get_bounds(dims):
+        bounds = [(-10.0, 10.0) for _ in range(dims)]
+        return Bounds.from_tuples(bounds)
+
+
 class StochasticGaussian(OptimBenchmark):
     """Stochastic Gaussian noise benchmark.
 
@@ -1203,6 +1292,7 @@ ALL_BENCHMARKS = [
     Easom,
     MixtureOfGaussians,
     Constant,
+    VoronoiCellVolume,
     StochasticGaussian,
     TaylorGreenVortex,
     LidDrivenCavity,
@@ -1222,6 +1312,7 @@ BENCHMARK_NAMES = {
     "Mixture of Gaussians": MixtureOfGaussians,
     "Lennard-Jones": LennardJones,
     "Constant (Zero)": Constant,
+    "Voronoi Cell Volume": VoronoiCellVolume,
     "Stochastic Gaussian": StochasticGaussian,
     "Taylor-Green Vortex": TaylorGreenVortex,
     "Lid-Driven Cavity": LidDrivenCavity,
@@ -1696,6 +1787,7 @@ __all__ = [
     "StochasticGaussian",
     "StyblinskiTang",
     "TaylorGreenVortex",
+    "VoronoiCellVolume",
     # Collections
     "ALL_BENCHMARKS",
     "BENCHMARK_NAMES",

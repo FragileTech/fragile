@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 from contextlib import contextmanager
+from dataclasses import replace
 from datetime import datetime
 import json
 import os
@@ -17,8 +18,10 @@ import numpy as np
 import pandas as pd
 import panel as pn
 import param
+import torch
 
 from fragile.fractalai.core.history import RunHistory
+from fragile.fractalai.core.benchmarks import prepare_benchmark_for_explorer
 from fragile.fractalai.experiments.gas_config_panel import GasConfigPanel
 from fragile.fractalai.qft import analysis as qft_analysis
 from fragile.fractalai.qft.correlator_channels import (
@@ -26,6 +29,11 @@ from fragile.fractalai.qft.correlator_channels import (
     ChannelCorrelatorResult,
     compute_all_channels,
     CHANNEL_REGISTRY,
+)
+from fragile.fractalai.qft.electroweak_channels import (
+    ELECTROWEAK_CHANNELS,
+    ElectroweakChannelConfig,
+    compute_all_electroweak_channels,
 )
 from fragile.fractalai.qft.plotting import (
     build_all_channels_overlay,
@@ -59,6 +67,15 @@ class SwarmConvergence3D(param.Parameterized):
         doc="Color encoding for walkers",
     )
     fix_axes = param.Boolean(default=True, doc="Fix axis ranges to bounds extent")
+    show_delaunay = param.Boolean(default=False, doc="Show Delaunay neighbor graph")
+    line_color = param.Color(default="#2b2b2b", doc="Delaunay line color")
+    line_style = param.ObjectSelector(
+        default="solid",
+        objects=["solid", "dash", "dot", "dashdot", "longdash", "longdashdot"],
+        doc="Delaunay line style",
+    )
+    line_width = param.Number(default=1.2, bounds=(0.1, 8.0), doc="Delaunay line width")
+    line_alpha = param.Number(default=0.35, bounds=(0.05, 1.0), doc="Delaunay line alpha")
 
     def __init__(self, history: RunHistory | None, bounds_extent: float = 10.0, **params):
         super().__init__(**params)
@@ -69,6 +86,8 @@ class SwarmConvergence3D(param.Parameterized):
         self._fitness = None
         self._rewards = None
         self._alive = None
+        self._neighbor_edges = None
+        self._neighbor_graph_method = None
 
         self.time_player = pn.widgets.Player(
             name="frame",
@@ -94,7 +113,20 @@ class SwarmConvergence3D(param.Parameterized):
             height=720,
         )
 
-        self.param.watch(self._refresh_frame, ["point_size", "point_alpha", "color_metric"])
+        self.param.watch(
+            self._refresh_frame,
+            [
+                "point_size",
+                "point_alpha",
+                "color_metric",
+                "fix_axes",
+                "show_delaunay",
+                "line_color",
+                "line_style",
+                "line_width",
+                "line_alpha",
+            ],
+        )
 
         if history is not None:
             self.set_history(history)
@@ -106,6 +138,9 @@ class SwarmConvergence3D(param.Parameterized):
         self._fitness = history.fitness.detach().cpu().numpy()
         self._rewards = history.rewards.detach().cpu().numpy()
         self._alive = history.alive_mask.detach().cpu().numpy().astype(bool)
+        self._neighbor_edges = history.neighbor_edges
+        if history.params is not None:
+            self._neighbor_graph_method = history.params.get("neighbor_graph", {}).get("method")
 
         self.time_player.end = max(0, history.n_recorded - 1)
         self.time_player.value = 0
@@ -116,6 +151,15 @@ class SwarmConvergence3D(param.Parameterized):
             f"steps={history.n_steps}, "
             f"recorded={history.n_recorded}"
         )
+        if self._neighbor_edges is None:
+            self.status_pane.object += (
+                " | Neighbor graph not recorded (rerun with neighbor_graph_method='delaunay' and "
+                "neighbor_graph_record=True to show edges)"
+            )
+        elif self._neighbor_graph_method and self._neighbor_graph_method != "delaunay":
+            self.status_pane.object += (
+                f" | Neighbor graph method: {self._neighbor_graph_method}"
+            )
         self._refresh_frame()
 
     def _sync_frame(self, event):
@@ -142,6 +186,98 @@ class SwarmConvergence3D(param.Parameterized):
         step = self.history.recorded_steps[frame]
         return f"QFT Swarm Convergence (frame {frame}, step {step})"
 
+    def _get_delaunay_edges(self, frame: int) -> np.ndarray | None:
+        if self.history is None or self._neighbor_edges is None:
+            return None
+        if frame < 0 or frame >= len(self._neighbor_edges):
+            return None
+        edges = self._neighbor_edges[frame]
+        if edges is None:
+            return None
+        if isinstance(edges, torch.Tensor):
+            edges = edges.detach().cpu().numpy()
+        else:
+            edges = np.asarray(edges)
+        if edges.size == 0:
+            return None
+        edges = edges.reshape(-1, 2)
+        edges = edges[edges[:, 0] != edges[:, 1]]
+        if edges.size == 0:
+            return None
+        edges = np.sort(edges, axis=1)
+        return np.unique(edges, axis=0)
+
+    @staticmethod
+    def _rgba_from_color(color: str, alpha: float) -> str:
+        if color is None:
+            return f"rgba(0, 0, 0, {alpha})"
+        color = color.strip()
+        if color.startswith("rgba(") and color.endswith(")"):
+            parts = color[5:-1].split(",")
+            if len(parts) >= 3:
+                r, g, b = (p.strip() for p in parts[:3])
+                return f"rgba({r}, {g}, {b}, {alpha})"
+        if color.startswith("rgb(") and color.endswith(")"):
+            parts = color[4:-1].split(",")
+            if len(parts) >= 3:
+                r, g, b = (p.strip() for p in parts[:3])
+                return f"rgba({r}, {g}, {b}, {alpha})"
+        if color.startswith("#"):
+            hex_value = color[1:]
+            if len(hex_value) == 3:
+                hex_value = "".join([c * 2 for c in hex_value])
+            if len(hex_value) == 6:
+                r = int(hex_value[0:2], 16)
+                g = int(hex_value[2:4], 16)
+                b = int(hex_value[4:6], 16)
+                return f"rgba({r}, {g}, {b}, {alpha})"
+        return color
+
+    def _build_delaunay_trace(
+        self, frame: int, positions: np.ndarray, alive_mask: np.ndarray
+    ):
+        import plotly.graph_objects as go
+
+        edges = self._get_delaunay_edges(frame)
+        if edges is None or positions.size == 0:
+            return None
+        if alive_mask is not None and alive_mask.size:
+            mask = alive_mask[edges[:, 0]] & alive_mask[edges[:, 1]]
+            edges = edges[mask]
+        if edges.size == 0:
+            return None
+        n = positions.shape[0]
+        mask = (edges[:, 0] >= 0) & (edges[:, 1] >= 0) & (edges[:, 0] < n) & (edges[:, 1] < n)
+        edges = edges[mask]
+        if edges.size == 0:
+            return None
+
+        xs: list[float | None] = []
+        ys: list[float | None] = []
+        zs: list[float | None] = []
+        for i, j in edges:
+            p0 = positions[i]
+            p1 = positions[j]
+            xs.extend([float(p0[0]), float(p1[0]), None])
+            ys.extend([float(p0[1]), float(p1[1]), None])
+            zs.extend([float(p0[2]), float(p1[2]), None])
+
+        line_color = self._rgba_from_color(self.line_color, float(self.line_alpha))
+        return go.Scatter3d(
+            x=xs,
+            y=ys,
+            z=zs,
+            mode="lines",
+            line={
+                "color": line_color,
+                "width": float(self.line_width),
+                "dash": self.line_style,
+            },
+            hoverinfo="skip",
+            name="Delaunay edges",
+            showlegend=False,
+        )
+
     def _make_figure(self, frame: int):
         import plotly.graph_objects as go
 
@@ -154,13 +290,13 @@ class SwarmConvergence3D(param.Parameterized):
             )
             return fig
 
-        positions = self._x[frame]
-        if positions.shape[1] < 3:
+        positions_all = self._x[frame]
+        if positions_all.shape[1] < 3:
             msg = "Need at least 3 dimensions for 3D convergence visualization."
             raise ValueError(msg)
 
         alive = self._get_alive_mask(frame)
-        positions = positions[alive][:, :3]
+        positions = positions_all[alive][:, :3]
 
         if positions.size == 0:
             fig = go.Figure()
@@ -200,7 +336,14 @@ class SwarmConvergence3D(param.Parameterized):
             },
         )
 
-        fig = go.Figure(data=[scatter])
+        traces = []
+        if self.show_delaunay:
+            line_trace = self._build_delaunay_trace(frame, positions_all[:, :3], alive)
+            if line_trace is not None:
+                traces.append(line_trace)
+        traces.append(scatter)
+
+        fig = go.Figure(data=traces)
         fig.update_layout(
             title=self._frame_title(frame),
             height=720,
@@ -224,10 +367,27 @@ class SwarmConvergence3D(param.Parameterized):
 
     def panel(self) -> pn.Column:
         """Return the Panel layout for the 3D convergence viewer."""
+        controls = pn.Param(
+            self,
+            parameters=[
+                "point_size",
+                "point_alpha",
+                "color_metric",
+                "fix_axes",
+                "show_delaunay",
+                "line_color",
+                "line_style",
+                "line_width",
+                "line_alpha",
+            ],
+            sizing_mode="stretch_width",
+            show_name=False,
+        )
         return pn.Column(
             pn.pane.Markdown("## 3D Swarm Convergence (Plotly)"),
             self.time_player,
             pn.Spacer(height=10),
+            controls,
             pn.layout.Divider(),
             self.plot_pane,
             self.status_pane,
@@ -277,6 +437,17 @@ class AnalysisSettings(param.Parameterized):
     particle_voronoi_max_triplets = param.Integer(default=100, bounds=(1, None), allow_None=True)
     particle_voronoi_exclude_boundary = param.Boolean(default=True)
     particle_voronoi_boundary_tolerance = param.Number(default=1e-6, bounds=(1e-9, 1e-3))
+    
+    # Curvature proxy parameters (computed automatically when Voronoi is active)
+    compute_curvature_proxies = param.Boolean(
+        default=True,
+        doc="Compute fast O(N) curvature proxies from Voronoi geometry (volume variance, Graph Laplacian, Raychaudhuri)",
+    )
+    curvature_compute_interval = param.Integer(
+        default=1,
+        bounds=(1, None),
+        doc="Compute curvature every N timesteps (1=every step, 10=every 10th step)",
+    )
 
     compute_string_tension = param.Boolean(default=False)
     string_tension_max_triangles = param.Integer(default=20000, bounds=(1, None))
@@ -347,6 +518,14 @@ class AnalysisSettings(param.Parameterized):
             args.append("--particle-voronoi-exclude-boundary")
         else:
             args.append("--no-particle-voronoi-exclude-boundary")
+        
+        if self.compute_curvature_proxies:
+            args.append("--compute-curvature-proxies")
+        else:
+            args.append("--no-compute-curvature-proxies")
+        
+        if self.curvature_compute_interval != 1:
+            args.extend(["--curvature-compute-interval", str(self.curvature_compute_interval)])
 
         if self.analysis_time_index is not None:
             args.extend(["--analysis-time-index", str(self.analysis_time_index)])
@@ -390,15 +569,65 @@ class ChannelSettings(param.Parameterized):
     h_eff = param.Number(default=1.0, bounds=(1e-6, None))
     mass = param.Number(default=1.0, bounds=(1e-6, None))
     ell0 = param.Number(default=None, bounds=(1e-6, None), allow_None=True)
+    neighbor_method = param.ObjectSelector(
+        default="recorded",
+        objects=("uniform", "knn", "voronoi", "recorded"),
+    )
     knn_k = param.Integer(default=4, bounds=(1, 20))
     knn_sample = param.Integer(default=512, bounds=(1, None), allow_None=True)
     use_connected = param.Boolean(default=True)
     channel_list = param.String(default="scalar,pseudoscalar,vector,nucleon,glueball")
     window_widths_spec = param.String(default="5-50")
     fit_mode = param.ObjectSelector(default="aic", objects=("aic", "linear", "linear_abs"))
+    scalar_fit_mode = param.ObjectSelector(
+        default="default",
+        objects=("default", "aic", "linear", "linear_abs"),
+    )
+    pseudoscalar_fit_mode = param.ObjectSelector(
+        default="default",
+        objects=("default", "aic", "linear", "linear_abs"),
+    )
+    vector_fit_mode = param.ObjectSelector(
+        default="default",
+        objects=("default", "aic", "linear", "linear_abs"),
+    )
+    nucleon_fit_mode = param.ObjectSelector(
+        default="default",
+        objects=("default", "aic", "linear", "linear_abs"),
+    )
+    glueball_fit_mode = param.ObjectSelector(
+        default="default",
+        objects=("default", "aic", "linear", "linear_abs"),
+    )
     fit_start = param.Integer(default=2, bounds=(0, None))
     fit_stop = param.Integer(default=None, bounds=(1, None), allow_None=True)
     min_fit_points = param.Integer(default=2, bounds=(2, None))
+
+
+class ElectroweakSettings(param.Parameterized):
+    """Settings for electroweak (U1/SU2) channel correlators."""
+
+    warmup_fraction = param.Number(default=0.1, bounds=(0.0, 0.5))
+    max_lag = param.Integer(default=80, bounds=(10, 200))
+    h_eff = param.Number(default=1.0, bounds=(1e-6, None))
+    use_connected = param.Boolean(default=True)
+    neighbor_method = param.ObjectSelector(
+        default="uniform",
+        objects=("uniform", "knn", "voronoi"),
+    )
+    knn_k = param.Integer(default=1, bounds=(1, 20))
+    channel_list = param.String(default=",".join(ELECTROWEAK_CHANNELS))
+    window_widths_spec = param.String(default="5-50")
+    fit_mode = param.ObjectSelector(default="aic", objects=("aic", "linear", "linear_abs"))
+    fit_start = param.Integer(default=2, bounds=(0, None))
+    fit_stop = param.Integer(default=None, bounds=(1, None), allow_None=True)
+    min_fit_points = param.Integer(default=2, bounds=(2, None))
+
+    # Electroweak parameters (override history params if provided)
+    epsilon_d = param.Number(default=None, bounds=(1e-8, None), allow_None=True)
+    epsilon_c = param.Number(default=None, bounds=(1e-8, None), allow_None=True)
+    epsilon_clone = param.Number(default=None, bounds=(1e-8, None), allow_None=True)
+    lambda_alg = param.Number(default=None, bounds=(0.0, None), allow_None=True)
 
 
 def _parse_window_widths(spec: str) -> list[int]:
@@ -422,12 +651,13 @@ def _compute_channels_vectorized(
     settings: ChannelSettings,
 ) -> dict[str, ChannelCorrelatorResult]:
     """Compute channels using vectorized correlator_channels."""
-    config = ChannelConfig(
+    base_config = ChannelConfig(
         warmup_fraction=settings.warmup_fraction,
         max_lag=settings.max_lag,
         h_eff=settings.h_eff,
         mass=settings.mass,
         ell0=settings.ell0,
+        neighbor_method=settings.neighbor_method,
         knn_k=settings.knn_k,
         knn_sample=settings.knn_sample,
         use_connected=settings.use_connected,
@@ -438,7 +668,50 @@ def _compute_channels_vectorized(
         min_fit_points=settings.min_fit_points,
     )
     channels = [c.strip() for c in settings.channel_list.split(",") if c.strip()]
-    return compute_all_channels(history, channels=channels, config=config)
+
+    per_channel = {
+        "scalar": settings.scalar_fit_mode,
+        "pseudoscalar": settings.pseudoscalar_fit_mode,
+        "vector": settings.vector_fit_mode,
+        "nucleon": settings.nucleon_fit_mode,
+        "glueball": settings.glueball_fit_mode,
+    }
+
+    results: dict[str, ChannelCorrelatorResult] = {}
+    for channel in channels:
+        override = per_channel.get(channel, "default")
+        if override and override != "default":
+            config = replace(base_config, fit_mode=str(override))
+        else:
+            config = base_config
+        results.update(compute_all_channels(history, channels=[channel], config=config))
+    return results
+
+
+def _compute_electroweak_channels(
+    history: RunHistory,
+    settings: ElectroweakSettings,
+) -> dict[str, ChannelCorrelatorResult]:
+    """Compute electroweak channels using electroweak_channels module."""
+    config = ElectroweakChannelConfig(
+        warmup_fraction=settings.warmup_fraction,
+        max_lag=settings.max_lag,
+        h_eff=settings.h_eff,
+        use_connected=settings.use_connected,
+        neighbor_method=settings.neighbor_method,
+        knn_k=settings.knn_k,
+        window_widths=_parse_window_widths(settings.window_widths_spec),
+        fit_mode=settings.fit_mode,
+        fit_start=settings.fit_start,
+        fit_stop=settings.fit_stop,
+        min_fit_points=settings.min_fit_points,
+        epsilon_d=settings.epsilon_d,
+        epsilon_c=settings.epsilon_c,
+        epsilon_clone=settings.epsilon_clone,
+        lambda_alg=settings.lambda_alg,
+    )
+    channels = [c.strip() for c in settings.channel_list.split(",") if c.strip()]
+    return compute_all_electroweak_channels(history, channels=channels, config=config)
 
 
 @contextmanager
@@ -486,6 +759,206 @@ def _format_analysis_summary(metrics: dict[str, Any]) -> str:
             )
 
     return "\n".join(lines)
+
+
+def _format_electroweak_summary(metrics: dict[str, Any]) -> str:
+    u1 = metrics.get("u1", {}) if isinstance(metrics, dict) else {}
+    su2 = metrics.get("su2", {}) if isinstance(metrics, dict) else {}
+    ew = metrics.get("electroweak_proxy", {}) if isinstance(metrics, dict) else {}
+
+    lines = [
+        "## Electroweak Summary",
+        f"- g1 proxy: {ew.get('g1_proxy', 0.0):.4f}",
+        f"- g2 proxy: {ew.get('g2_proxy', 0.0):.4f}",
+        f"- sin²θw proxy: {ew.get('sin2_theta_w_proxy', 0.0):.4f}",
+        f"- tanθw proxy: {ew.get('tan_theta_w_proxy', 0.0):.4f}",
+    ]
+
+    if u1:
+        lines.append("\n### U1 Phase")
+        lines.append(f"- mean: {u1.get('phase_mean', 0.0):.4f}")
+        lines.append(f"- std: {u1.get('phase_std', 0.0):.4f}")
+        lines.append(f"- gauge norm: {u1.get('gauge_invariant_norm', 0.0):.4f}")
+    if su2:
+        lines.append("\n### SU2 Phase")
+        lines.append(f"- mean: {su2.get('phase_mean', 0.0):.4f}")
+        lines.append(f"- std: {su2.get('phase_std', 0.0):.4f}")
+        lines.append(f"- gauge norm: {su2.get('gauge_invariant_norm', 0.0):.4f}")
+
+    return "\n".join(lines)
+
+
+def _resolve_history_param(
+    history: RunHistory | None,
+    *keys: str,
+    default: float | None = None,
+) -> float | None:
+    if history is None or not isinstance(history.params, dict):
+        return default
+    current: Any = history.params
+    for key in keys:
+        if not isinstance(current, dict) or key not in current:
+            return default
+        current = current[key]
+    if current is None:
+        return default
+    try:
+        return float(current)
+    except (TypeError, ValueError):
+        return default
+
+
+def _compute_force_stats(history: RunHistory | None) -> dict[str, float]:
+    if history is None or history.force_viscous is None:
+        return {"mean_force_sq": float("nan")}
+
+    force = history.force_viscous
+    alive = history.alive_mask
+    if alive is None:
+        alive = torch.ones(force.shape[:-1], dtype=torch.bool, device=force.device)
+    if alive.shape[0] != force.shape[0]:
+        min_len = min(alive.shape[0], force.shape[0])
+        alive = alive[:min_len]
+        force = force[:min_len]
+
+    force_sq = (force**2).sum(dim=-1)
+    if alive.numel() == 0:
+        return {"mean_force_sq": float("nan")}
+    masked = torch.where(alive, force_sq, torch.zeros_like(force_sq))
+    counts = alive.sum().clamp(min=1)
+    mean_force_sq = float((masked.sum() / counts).item())
+    return {"mean_force_sq": mean_force_sq}
+
+
+def _compute_coupling_constants(
+    history: RunHistory | None,
+    h_eff: float,
+    epsilon_d: float | None = None,
+    epsilon_c: float | None = None,
+) -> dict[str, float]:
+    d = float(history.d) if history is not None else float("nan")
+    h_eff = float(max(h_eff, 1e-12))
+
+    epsilon_d = epsilon_d or _resolve_history_param(history, "companion_selection", "epsilon", default=None)
+    epsilon_c = epsilon_c or _resolve_history_param(
+        history, "companion_selection_clone", "epsilon", default=None
+    )
+    nu = _resolve_history_param(history, "kinetic", "nu", default=None)
+
+    if epsilon_d is None or epsilon_d <= 0:
+        g1_est = float("nan")
+    else:
+        g1_est = (h_eff / (epsilon_d**2)) ** 0.5
+
+    c2d = (d**2 - 1.0) / (2.0 * d) if d > 0 else float("nan")
+    c2_2 = 3.0 / 4.0
+    if epsilon_c is None or epsilon_c <= 0 or not np.isfinite(c2d) or c2d <= 0:
+        g2_est = float("nan")
+    else:
+        g2_sq = (2.0 * h_eff / (epsilon_c**2)) * (c2_2 / c2d)
+        g2_est = float(max(g2_sq, 0.0) ** 0.5)
+
+    force_stats = _compute_force_stats(history)
+    mean_force_sq = force_stats["mean_force_sq"]
+    if nu is None or not np.isfinite(mean_force_sq) or d <= 0:
+        g3_est = float("nan")
+        kvisc_sq = float("nan")
+    else:
+        kvisc_sq = mean_force_sq / max(float(nu) ** 2, 1e-12)
+        g3_sq = (float(nu) ** 2 / h_eff**2) * (d * (d**2 - 1.0) / 12.0) * kvisc_sq
+        g3_est = float(max(g3_sq, 0.0) ** 0.5)
+
+    return {
+        "g1_est": float(g1_est),
+        "g2_est": float(g2_est),
+        "g3_est": float(g3_est),
+        "epsilon_d": float(epsilon_d) if epsilon_d is not None else float("nan"),
+        "epsilon_c": float(epsilon_c) if epsilon_c is not None else float("nan"),
+        "nu": float(nu) if nu is not None else float("nan"),
+        "kvisc_sq_proxy": float(kvisc_sq),
+        "mean_force_sq": float(mean_force_sq),
+        "d": float(d),
+        "h_eff": float(h_eff),
+    }
+
+
+def _build_coupling_rows(
+    couplings: dict[str, float],
+    proxies: dict[str, float] | None = None,
+    include_strong: bool = False,
+    refs: dict[str, dict[str, float]] | None = None,
+) -> list[dict[str, Any]]:
+    proxies = proxies or {}
+    refs = refs or {}
+    rows = [
+        {"name": "g1_est (N1=1)", "value": couplings.get("g1_est"), "note": "from ε_d, h_eff"},
+        {"name": "g2_est", "value": couplings.get("g2_est"), "note": "from ε_c, h_eff, C2"},
+    ]
+    if "g1_proxy" in proxies:
+        rows.append({"name": "g1_proxy", "value": proxies.get("g1_proxy"), "note": "phase std"})
+    if "g2_proxy" in proxies:
+        rows.append({"name": "g2_proxy", "value": proxies.get("g2_proxy"), "note": "phase std"})
+    if "sin2_theta_w_proxy" in proxies:
+        rows.append(
+            {
+                "name": "sin2θw proxy",
+                "value": proxies.get("sin2_theta_w_proxy"),
+                "note": "from phase stds",
+            }
+        )
+    if "tan_theta_w_proxy" in proxies:
+        rows.append(
+            {
+                "name": "tanθw proxy",
+                "value": proxies.get("tan_theta_w_proxy"),
+                "note": "from phase stds",
+            }
+        )
+    if include_strong:
+        rows.append(
+            {
+                "name": "g3_est",
+                "value": couplings.get("g3_est"),
+                "note": "from ν, h_eff, <K_visc^2>",
+            }
+        )
+        rows.append(
+            {
+                "name": "<K_visc^2> proxy",
+                "value": couplings.get("kvisc_sq_proxy"),
+                "note": "mean ||F_visc||^2 / ν^2",
+            }
+        )
+
+    for row in rows:
+        name = row.get("name")
+        value = row.get("value")
+        ref_values = refs.get(name, {})
+        for column in ELECTROWEAK_COUPLING_REFERENCE_COLUMNS:
+            observed = ref_values.get(column)
+            error_pct = None
+            if observed is not None and observed > 0 and value is not None and np.isfinite(value):
+                error_pct = (float(value) - observed) / observed * 100.0
+            row[column] = observed
+            row[f"error_pct_{column}"] = error_pct
+    return rows
+
+
+def _build_strong_coupling_rows(couplings: dict[str, float]) -> list[dict[str, Any]]:
+    return [
+        {
+            "name": "g3_est",
+            "value": couplings.get("g3_est"),
+            "note": "from ν, h_eff, <K_visc^2>",
+        },
+        {
+            "name": "<K_visc^2> proxy",
+            "value": couplings.get("kvisc_sq_proxy"),
+            "note": "mean ||F_visc||^2 / ν^2",
+        },
+        {"name": "nu", "value": couplings.get("nu"), "note": "viscous coupling"},
+        {"name": "h_eff", "value": couplings.get("h_eff"), "note": "phase scale"},
+    ]
 
 
 def _build_analysis_plots(metrics: dict[str, Any], arrays: dict[str, Any]) -> list[Any]:
@@ -583,6 +1056,41 @@ MESON_REFS = {
     "jpsi": 3.0969,
     "upsilon": 9.4603,
 }
+
+# Default electroweak mass references (GeV) mapped to proxy channels.
+DEFAULT_ELECTROWEAK_REFS = {
+    "u1_phase": 0.000511,   # electron
+    "u1_dressed": 0.105658, # muon
+    "su2_phase": 80.379,    # W boson
+    "su2_doublet": 91.1876, # Z boson
+    "ew_mixed": 1.77686,    # tau
+}
+
+ELECTROWEAK_COUPLING_NAMES = (
+    "g1_est (N1=1)",
+    "g2_est",
+    "g1_proxy",
+    "g2_proxy",
+    "sin2θw proxy",
+    "tanθw proxy",
+)
+
+ELECTROWEAK_COUPLING_REFERENCE_COLUMNS = ("observed_mZ", "observed_GUT")
+
+DEFAULT_ELECTROWEAK_COUPLING_REFS = {
+    "g1_est (N1=1)": {"observed_mZ": 0.357468, "observed_GUT": 0.560499},
+    "g2_est": {"observed_mZ": 0.651689, "observed_GUT": 0.723601},
+    "g1_proxy": {"observed_mZ": 0.357468, "observed_GUT": 0.560499},
+    "g2_proxy": {"observed_mZ": 0.651689, "observed_GUT": 0.723601},
+    "sin2θw proxy": {"observed_mZ": 0.23129, "observed_GUT": 0.375},
+    "tanθw proxy": {"observed_mZ": 0.548526, "observed_GUT": 0.774597},
+}
+
+
+def _format_ref_value(value: float | None) -> str:
+    if value is None or not np.isfinite(value):
+        return ""
+    return f"{value:.6f}"
 
 # Channel-to-family mapping for physics comparisons
 CHANNEL_FAMILY_MAP = {
@@ -907,6 +1415,172 @@ def _format_channel_ratios(
     return "  \n".join(lines)
 
 
+def _format_electroweak_ratios(
+    results: dict[str, ChannelCorrelatorResult],
+    mode: str = "AIC-Weighted",
+) -> str:
+    """Format proxy ratios for electroweak channels."""
+    if not results:
+        return "**Electroweak Ratios:** n/a"
+
+    base_name = "u1_dressed" if "u1_dressed" in results else "u1_phase"
+    base_result = results.get(base_name)
+    if base_result is None:
+        return "**Electroweak Ratios:** n/a (no U1 mass)"
+    base_mass = _get_channel_mass(base_result, mode)
+    if base_mass <= 0:
+        return "**Electroweak Ratios:** n/a (no U1 mass)"
+
+    lines = ["**Electroweak Ratios (proxy):**"]
+    for name in sorted(results.keys()):
+        if name == base_name:
+            continue
+        mass = _get_channel_mass(results[name], mode)
+        if mass > 0:
+            ratio = mass / base_mass
+            lines.append(f"- {name}/{base_name}: **{ratio:.3f}**")
+
+    return "  \n".join(lines)
+
+
+def _extract_electroweak_masses(
+    results: dict[str, ChannelCorrelatorResult],
+    mode: str = "AIC-Weighted",
+) -> dict[str, float]:
+    masses: dict[str, float] = {}
+    for name, result in results.items():
+        if result.n_samples == 0:
+            continue
+        mass = _get_channel_mass(result, mode)
+        if mass > 0:
+            masses[name] = mass
+    return masses
+
+
+def _extract_electroweak_r2(
+    results: dict[str, ChannelCorrelatorResult],
+    mode: str = "AIC-Weighted",
+) -> dict[str, float]:
+    r2s: dict[str, float] = {}
+    for name, result in results.items():
+        if result.n_samples == 0:
+            continue
+        r2 = _get_channel_r2(result, mode)
+        if np.isfinite(r2):
+            r2s[name] = r2
+    return r2s
+
+
+def _build_electroweak_best_fit_rows(
+    masses: dict[str, float],
+    refs: dict[str, float],
+    r2s: dict[str, float] | None = None,
+) -> list[dict[str, Any]]:
+    r2s = r2s or {}
+    anchors = [(f"{name}->{mass:.6f}", mass, name) for name, mass in refs.items()]
+    scale = _best_fit_scale(masses, anchors)
+    if scale is None:
+        return [{"fit_mode": "electroweak refs", "scale_GeV_per_alg": None}]
+
+    row: dict[str, Any] = {
+        "fit_mode": "electroweak refs",
+        "scale_GeV_per_alg": scale,
+    }
+    for name, alg_mass in masses.items():
+        row[f"{name}_pred_GeV"] = alg_mass * scale
+        if name in r2s:
+            row[f"{name}_r2"] = r2s[name]
+    return [row]
+
+
+def _build_electroweak_anchor_rows(
+    masses: dict[str, float],
+    refs: dict[str, float],
+    r2s: dict[str, float] | None = None,
+) -> list[dict[str, Any]]:
+    r2s = r2s or {}
+    rows: list[dict[str, Any]] = []
+    for name, mass_phys in refs.items():
+        alg_mass = masses.get(name)
+        if alg_mass is None or alg_mass <= 0:
+            rows.append({"anchor": f"{name}->{mass_phys:.6f}"})
+            continue
+        scale = mass_phys / alg_mass
+        row: dict[str, Any] = {
+            "anchor": f"{name}->{mass_phys:.6f}",
+            "scale_GeV_per_alg": scale,
+        }
+        for ch_name, alg in masses.items():
+            row[f"{ch_name}_pred_GeV"] = alg * scale
+            if ch_name in r2s:
+                row[f"{ch_name}_r2"] = r2s[ch_name]
+        rows.append(row)
+    return rows
+
+
+def _build_electroweak_comparison_rows(
+    masses: dict[str, float],
+    refs: dict[str, float],
+) -> list[dict[str, Any]]:
+    anchors = [(f"{name}->{mass:.6f}", mass, name) for name, mass in refs.items()]
+    scale = _best_fit_scale(masses, anchors)
+    if scale is None:
+        return []
+
+    rows: list[dict[str, Any]] = []
+    for name, alg_mass in masses.items():
+        if alg_mass <= 0:
+            continue
+        obs = refs.get(name)
+        pred = alg_mass * scale
+        err_pct = None
+        if obs is not None and obs > 0:
+            err_pct = (pred - obs) / obs * 100.0
+        rows.append(
+            {
+                "channel": name,
+                "alg_mass": alg_mass,
+                "obs_mass_GeV": obs,
+                "pred_mass_GeV": pred,
+                "error_pct": err_pct,
+            }
+        )
+    return rows
+
+
+def _build_electroweak_ratio_rows(
+    masses: dict[str, float],
+    base_name: str,
+    refs: dict[str, float] | None = None,
+) -> list[dict[str, Any]]:
+    refs = refs or {}
+    rows: list[dict[str, Any]] = []
+    base_mass = masses.get(base_name)
+    if base_mass is None or base_mass <= 0:
+        return rows
+    for name, mass in masses.items():
+        if name == base_name or mass <= 0:
+            continue
+        measured = mass / base_mass
+        observed = None
+        error_pct = None
+        obs_num = refs.get(name)
+        obs_den = refs.get(base_name)
+        if obs_num is not None and obs_den is not None and obs_den > 0:
+            observed = obs_num / obs_den
+            if observed > 0:
+                error_pct = (measured - observed) / observed * 100.0
+        rows.append(
+            {
+                "ratio": f"{name}/{base_name}",
+                "measured": measured,
+                "observed": observed,
+                "error_pct": error_pct,
+            }
+        )
+    return rows
+
+
 SWEEP_PARAM_DEFS: dict[str, dict[str, Any]] = {
     "density_sigma": {"label": "density_sigma", "type": float},
     "correlation_r_max": {"label": "correlation_r_max", "type": float},
@@ -1111,6 +1785,75 @@ def create_app() -> pn.template.FastListTemplate:
 
         _debug("building config + visualizer")
         gas_config = GasConfigPanel.create_qft_config(dims=3, bounds_extent=10.0)
+        # Override with the best stable calibration settings found in QFT tuning.
+        # This matches weak_potential_fit1_aniso_stable2 (200 walkers, 300 steps).
+        gas_config.n_steps = 300
+        gas_config.gas_params["N"] = 200
+        gas_config.gas_params["dtype"] = "float32"
+        gas_config.gas_params["pbc"] = False
+        gas_config.init_offset = 0.0
+        gas_config.init_spread = 1.0
+        gas_config.init_velocity_scale = 1.0
+
+        # Quadratic well with calibrated curvature.
+        benchmark, background, mode_points = prepare_benchmark_for_explorer(
+            benchmark_name="Quadratic Well",
+            dims=gas_config.dims,
+            bounds_range=(-gas_config.bounds_extent, gas_config.bounds_extent),
+            resolution=100,
+            alpha=0.02,
+        )
+        gas_config.potential = benchmark
+        gas_config.background = background
+        gas_config.mode_points = mode_points
+
+        # Kinetic operator (Langevin + viscous coupling).
+        gas_config.kinetic_op.gamma = 1.0
+        gas_config.kinetic_op.beta = 1.0
+        gas_config.kinetic_op.delta_t = 0.05
+        gas_config.kinetic_op.epsilon_F = 1.0
+        gas_config.kinetic_op.use_fitness_force = True
+        gas_config.kinetic_op.use_potential_force = True
+        gas_config.kinetic_op.use_anisotropic_diffusion = True
+        gas_config.kinetic_op.diagonal_diffusion = True
+        gas_config.kinetic_op.diffusion_mode = "grad_proxy"
+        gas_config.kinetic_op.diffusion_grad_scale = 30.0
+        gas_config.kinetic_op.epsilon_Sigma = 0.5
+        gas_config.kinetic_op.nu = 1.10
+        gas_config.kinetic_op.use_viscous_coupling = True
+        gas_config.kinetic_op.viscous_length_scale = 0.251372
+        gas_config.kinetic_op.viscous_neighbor_mode = "all"
+        gas_config.kinetic_op.viscous_neighbor_threshold = 0.75
+        gas_config.kinetic_op.viscous_neighbor_penalty = 1.1
+
+        # Companion selection (diversity + cloning).
+        gas_config.companion_selection.method = "uniform"
+        gas_config.companion_selection.epsilon = 2.80
+        gas_config.companion_selection.lambda_alg = 1.0
+        gas_config.companion_selection.exclude_self = True
+        gas_config.companion_selection_clone.method = "uniform"
+        gas_config.companion_selection_clone.epsilon = 1.68419
+        gas_config.companion_selection_clone.lambda_alg = 1.0
+        gas_config.companion_selection_clone.exclude_self = True
+
+        # Cloning operator.
+        gas_config.cloning.p_max = 1.0
+        gas_config.cloning.epsilon_clone = 0.01
+        gas_config.cloning.sigma_x = 0.1
+        gas_config.cloning.alpha_restitution = 0.5
+
+        # Fitness operator.
+        gas_config.fitness_op.alpha = 1.0
+        gas_config.fitness_op.beta = 1.0
+        gas_config.fitness_op.eta = 0.1
+        gas_config.fitness_op.lambda_alg = 1.0
+        gas_config.fitness_op.sigma_min = 0.1
+        gas_config.fitness_op.epsilon_dist = 1e-8
+        gas_config.fitness_op.A = 2.0
+        gas_config.fitness_op.rho = 0.1
+        gas_config.fitness_op.grad_mode = "sum"
+        gas_config.fitness_op.detach_stats = True
+        gas_config.fitness_op.detach_companions = True
         visualizer = SwarmConvergence3D(history=None, bounds_extent=gas_config.bounds_extent)
         analysis_settings = AnalysisSettings()
 
@@ -1119,6 +1862,7 @@ def create_app() -> pn.template.FastListTemplate:
             "history_path": None,
             "analysis_metrics": None,
             "analysis_arrays": None,
+            "electroweak_results": None,
         }
 
         _debug("setting up history controls")
@@ -1300,7 +2044,7 @@ def create_app() -> pn.template.FastListTemplate:
         channel_settings = ChannelSettings()
 
         channels_status = pn.pane.Markdown(
-            "**Channels:** Load a RunHistory and click Compute to analyze.",
+            "**Strong Force:** Load a RunHistory and click Compute to analyze.",
             sizing_mode="stretch_width",
         )
         channels_run_button = pn.widgets.Button(
@@ -1319,11 +2063,21 @@ def create_app() -> pn.template.FastListTemplate:
                 "h_eff",
                 "mass",
                 "ell0",
+                "neighbor_method",
                 "knn_k",
                 "knn_sample",
                 "use_connected",
                 "channel_list",
                 "window_widths_spec",
+                "fit_mode",
+                "scalar_fit_mode",
+                "pseudoscalar_fit_mode",
+                "vector_fit_mode",
+                "nucleon_fit_mode",
+                "glueball_fit_mode",
+                "fit_start",
+                "fit_stop",
+                "min_fit_points",
             ],
             show_name=False,
         )
@@ -1334,6 +2088,12 @@ def create_app() -> pn.template.FastListTemplate:
         channel_plots_spectrum = pn.pane.HoloViews(sizing_mode="stretch_width", linked_axes=False)
         channel_plots_overlay_corr = pn.pane.HoloViews(sizing_mode="stretch_width", linked_axes=False)
         channel_plots_overlay_meff = pn.pane.HoloViews(sizing_mode="stretch_width", linked_axes=False)
+        strong_coupling_table = pn.widgets.Tabulator(
+            pd.DataFrame(),
+            pagination=None,
+            show_index=False,
+            sizing_mode="stretch_width",
+        )
         # New plot containers for plateau and heatmap visualizations
         channel_plateau_plots = pn.Column(sizing_mode="stretch_width")
         channel_heatmap_plots = pn.Column(sizing_mode="stretch_width")
@@ -1390,6 +2150,159 @@ def create_app() -> pn.template.FastListTemplate:
             step=0.01,
             width=200,
             sizing_mode="fixed",
+        )
+
+        # =====================================================================
+        # Electroweak tab components (U1/SU2 phase channels)
+        # =====================================================================
+        electroweak_settings = ElectroweakSettings()
+        electroweak_status = pn.pane.Markdown(
+            "**Electroweak:** Load a RunHistory and click Compute.",
+            sizing_mode="stretch_width",
+        )
+        electroweak_run_button = pn.widgets.Button(
+            name="Compute Electroweak",
+            button_type="primary",
+            width=240,
+            sizing_mode="fixed",
+            disabled=True,
+        )
+        electroweak_summary = pn.pane.Markdown(
+            "## Electroweak Summary\n_Run analysis to populate._",
+            sizing_mode="stretch_width",
+        )
+        electroweak_coupling_table = pn.widgets.Tabulator(
+            pd.DataFrame(),
+            pagination=None,
+            show_index=False,
+            sizing_mode="stretch_width",
+        )
+        electroweak_coupling_ref_table = pn.widgets.Tabulator(
+            pd.DataFrame(
+                {
+                    "name": list(ELECTROWEAK_COUPLING_NAMES),
+                    "observed_mZ": [
+                        _format_ref_value(
+                            DEFAULT_ELECTROWEAK_COUPLING_REFS.get(name, {}).get(
+                                "observed_mZ"
+                            )
+                        )
+                        for name in ELECTROWEAK_COUPLING_NAMES
+                    ],
+                    "observed_GUT": [
+                        _format_ref_value(
+                            DEFAULT_ELECTROWEAK_COUPLING_REFS.get(name, {}).get(
+                                "observed_GUT"
+                            )
+                        )
+                        for name in ELECTROWEAK_COUPLING_NAMES
+                    ],
+                }
+            ),
+            pagination=None,
+            show_index=False,
+            sizing_mode="stretch_width",
+            selectable=False,
+            configuration={"editable": True},
+            editors={column: "input" for column in ELECTROWEAK_COUPLING_REFERENCE_COLUMNS},
+        )
+        electroweak_phase_plot = pn.pane.HTML(
+            "<p><em>Phase histograms will appear after analysis.</em></p>",
+            sizing_mode="stretch_width",
+            height=420,
+        )
+
+        electroweak_settings_panel = pn.Param(
+            electroweak_settings,
+            parameters=[
+                "warmup_fraction",
+                "max_lag",
+                "h_eff",
+                "use_connected",
+                "neighbor_method",
+                "knn_k",
+                "channel_list",
+                "window_widths_spec",
+                "fit_mode",
+                "fit_start",
+                "fit_stop",
+                "min_fit_points",
+                "epsilon_d",
+                "epsilon_c",
+                "epsilon_clone",
+                "lambda_alg",
+            ],
+            show_name=False,
+        )
+
+        electroweak_plots_correlator = pn.Column(sizing_mode="stretch_width")
+        electroweak_plots_effective_mass = pn.Column(sizing_mode="stretch_width")
+        electroweak_plots_overlay_corr = pn.pane.HoloViews(
+            sizing_mode="stretch_width", linked_axes=False
+        )
+        electroweak_plots_overlay_meff = pn.pane.HoloViews(
+            sizing_mode="stretch_width", linked_axes=False
+        )
+        electroweak_plots_spectrum = pn.pane.HoloViews(
+            sizing_mode="stretch_width", linked_axes=False
+        )
+        electroweak_mass_table = pn.widgets.Tabulator(
+            pd.DataFrame(),
+            pagination=None,
+            show_index=False,
+            sizing_mode="stretch_width",
+        )
+        electroweak_mass_mode = pn.widgets.RadioButtonGroup(
+            name="Mass Display",
+            options=["AIC-Weighted", "Best Window"],
+            value="AIC-Weighted",
+            button_type="default",
+        )
+        electroweak_ratio_pane = pn.pane.Markdown(
+            "**Electroweak Ratios:** Compute channels to see ratios.",
+            sizing_mode="stretch_width",
+        )
+        electroweak_ratio_table = pn.widgets.Tabulator(
+            pd.DataFrame(),
+            pagination=None,
+            show_index=False,
+            sizing_mode="stretch_width",
+        )
+        electroweak_fit_table = pn.widgets.Tabulator(
+            pd.DataFrame(),
+            pagination=None,
+            show_index=False,
+            sizing_mode="stretch_width",
+        )
+        electroweak_compare_table = pn.widgets.Tabulator(
+            pd.DataFrame(),
+            pagination=None,
+            show_index=False,
+            sizing_mode="stretch_width",
+        )
+        electroweak_anchor_table = pn.widgets.Tabulator(
+            pd.DataFrame(),
+            pagination="remote",
+            page_size=20,
+            show_index=False,
+            sizing_mode="stretch_width",
+        )
+        electroweak_ref_table = pn.widgets.Tabulator(
+            pd.DataFrame(
+                {
+                    "channel": list(ELECTROWEAK_CHANNELS),
+                    "mass_ref_GeV": [
+                        _format_ref_value(DEFAULT_ELECTROWEAK_REFS.get(name))
+                        for name in ELECTROWEAK_CHANNELS
+                    ],
+                }
+            ),
+            pagination=None,
+            show_index=False,
+            sizing_mode="stretch_width",
+            selectable=False,
+            configuration={"editable": True},
+            editors={"mass_ref_GeV": "input"},
         )
 
         def _set_analysis_status(message: str) -> None:
@@ -1482,7 +2395,10 @@ def create_app() -> pn.template.FastListTemplate:
             sweep_run_button.disabled = False
             # Enable channels tab
             channels_run_button.disabled = False
-            channels_status.object = "**Channels ready:** click Compute Channels."
+            channels_status.object = "**Strong Force ready:** click Compute Channels."
+            # Enable electroweak tab
+            electroweak_run_button.disabled = False
+            electroweak_status.object = "**Electroweak ready:** click Compute Electroweak."
 
         def on_simulation_complete(history: RunHistory):
             set_history(history)
@@ -1594,6 +2510,59 @@ def create_app() -> pn.template.FastListTemplate:
             state["analysis_arrays"] = arrays
             return metrics, arrays
 
+        def _extract_coupling_refs() -> dict[str, dict[str, float]]:
+            refs: dict[str, dict[str, float]] = {}
+            ref_df = electroweak_coupling_ref_table.value
+            if isinstance(ref_df, pd.DataFrame):
+                for _, row in ref_df.iterrows():
+                    name = str(row.get("name", "")).strip()
+                    if not name:
+                        continue
+                    ref_values: dict[str, float] = {}
+                    for column in ELECTROWEAK_COUPLING_REFERENCE_COLUMNS:
+                        raw = row.get(column)
+                        if isinstance(raw, str):
+                            raw = raw.strip()
+                            if raw == "":
+                                continue
+                        try:
+                            value = float(raw)
+                        except (TypeError, ValueError):
+                            continue
+                        if value > 0:
+                            ref_values[column] = value
+                    if ref_values:
+                        refs[name] = ref_values
+            return refs
+
+        def _update_electroweak_summary(metrics: dict[str, Any]) -> None:
+            electroweak_summary.object = _format_electroweak_summary(metrics)
+            history = state.get("history")
+            proxies = metrics.get("electroweak_proxy", {}) if isinstance(metrics, dict) else {}
+            couplings = _compute_coupling_constants(
+                history,
+                h_eff=float(electroweak_settings.h_eff),
+                epsilon_d=electroweak_settings.epsilon_d,
+                epsilon_c=electroweak_settings.epsilon_c,
+            )
+            electroweak_coupling_table.value = pd.DataFrame(
+                _build_coupling_rows(
+                    couplings,
+                    proxies,
+                    include_strong=False,
+                    refs=_extract_coupling_refs(),
+                )
+            )
+            plots = metrics.get("plots", {}) if isinstance(metrics, dict) else {}
+            phase_path = plots.get("phase_histograms")
+            if phase_path and Path(phase_path).exists():
+                electroweak_phase_plot.object = Path(phase_path).read_text()
+            else:
+                electroweak_phase_plot.object = (
+                    "<p><em>Phase histograms not available. "
+                    "Run analysis with gauge phase plots enabled.</em></p>"
+                )
+
         def _update_analysis_outputs(metrics: dict[str, Any], arrays: dict[str, Any]) -> None:
             analysis_summary.object = _format_analysis_summary(metrics)
             analysis_json.object = metrics
@@ -1601,6 +2570,7 @@ def create_app() -> pn.template.FastListTemplate:
                 pn.pane.HoloViews(plot, sizing_mode="stretch_width", linked_axes=False)
                 for plot in _build_analysis_plots(metrics, arrays)
             ]
+            _update_electroweak_summary(metrics)
 
         def on_run_analysis(_):
             result = _run_analysis(force_particles=False)
@@ -1960,6 +2930,13 @@ def create_app() -> pn.template.FastListTemplate:
         heatmap_color_metric.param.watch(_on_heatmap_metric_change, "value")
         heatmap_alpha_metric.param.watch(_on_heatmap_metric_change, "value")
 
+        def _update_strong_couplings(history: RunHistory | None) -> None:
+            couplings = _compute_coupling_constants(
+                history,
+                h_eff=float(channel_settings.h_eff),
+            )
+            strong_coupling_table.value = pd.DataFrame(_build_strong_coupling_rows(couplings))
+
         def on_run_channels(_):
             """Compute channels using vectorized correlator_channels (new code)."""
             history = state.get("history")
@@ -1978,11 +2955,190 @@ def create_app() -> pn.template.FastListTemplate:
 
                 # Update all tables (mass table, ratios, best-fit, anchored)
                 _update_channel_tables(results)
+                _update_strong_couplings(history)
 
                 n_channels = len([r for r in results.values() if r.n_samples > 0])
                 channels_status.object = f"**Complete:** {n_channels} channels computed."
             except Exception as e:
                 channels_status.object = f"**Error:** {e}"
+                import traceback
+                traceback.print_exc()
+
+        # =====================================================================
+        # Electroweak tab callbacks (U1/SU2 correlators)
+        # =====================================================================
+
+        def _update_electroweak_plots(results: dict[str, ChannelCorrelatorResult]) -> None:
+            corr_plots = []
+            meff_plots = []
+
+            for name, result in results.items():
+                if result.n_samples == 0:
+                    continue
+
+                corr = (
+                    result.correlator.cpu().numpy()
+                    if hasattr(result.correlator, "cpu")
+                    else np.asarray(result.correlator)
+                )
+                meff = (
+                    result.effective_mass.cpu().numpy()
+                    if hasattr(result.effective_mass, "cpu")
+                    else np.asarray(result.effective_mass)
+                )
+                lag_times = np.arange(len(corr)) * result.dt
+                meff_times = np.arange(len(meff)) * result.dt
+
+                corr_plot = build_correlator_plot(lag_times, corr, result.mass_fit, name)
+                if corr_plot is not None:
+                    corr_plots.append(
+                        pn.pane.HoloViews(corr_plot, sizing_mode="stretch_width", linked_axes=False)
+                    )
+
+                meff_plot = build_effective_mass_plot(meff_times, meff, result.mass_fit, name)
+                if meff_plot is not None:
+                    meff_plots.append(
+                        pn.pane.HoloViews(meff_plot, sizing_mode="stretch_width", linked_axes=False)
+                    )
+
+            electroweak_plots_correlator.objects = corr_plots if corr_plots else [
+                pn.pane.Markdown("_No correlator plots available._")
+            ]
+            electroweak_plots_effective_mass.objects = meff_plots if meff_plots else [
+                pn.pane.Markdown("_No effective mass plots available._")
+            ]
+
+            electroweak_plots_spectrum.object = build_mass_spectrum_bar(results)
+            electroweak_plots_overlay_corr.object = build_all_channels_overlay(
+                results, plot_type="correlator"
+            )
+            electroweak_plots_overlay_meff.object = build_all_channels_overlay(
+                results, plot_type="effective_mass"
+            )
+
+        def _update_electroweak_mass_table(
+            results: dict[str, ChannelCorrelatorResult],
+            mode: str = "AIC-Weighted",
+        ) -> None:
+            rows = []
+            for name, result in results.items():
+                if result.n_samples == 0:
+                    continue
+
+                if mode == "AIC-Weighted":
+                    mass = result.mass_fit.get("mass", 0.0)
+                    mass_error = result.mass_fit.get("mass_error", float("inf"))
+                    r2 = result.mass_fit.get("r_squared", float("nan"))
+                else:
+                    best_window = result.mass_fit.get("best_window", {})
+                    mass = best_window.get("mass", 0.0)
+                    mass_error = 0.0
+                    r2 = best_window.get("r2", float("nan"))
+
+                n_windows = result.mass_fit.get("n_valid_windows", 0)
+                rows.append(
+                    {
+                        "channel": name,
+                        "mass": f"{mass:.6f}" if mass > 0 else "n/a",
+                        "mass_error": (
+                            f"{mass_error:.6f}" if mass_error < float("inf") else "n/a"
+                        ),
+                        "r2": f"{r2:.4f}" if np.isfinite(r2) else "n/a",
+                        "n_windows": n_windows,
+                        "n_samples": result.n_samples,
+                    }
+                )
+            electroweak_mass_table.value = pd.DataFrame(rows) if rows else pd.DataFrame()
+
+        def _update_electroweak_tables(
+            results: dict[str, ChannelCorrelatorResult],
+            mode: str | None = None,
+        ) -> None:
+            if mode is None:
+                mode = electroweak_mass_mode.value
+            _update_electroweak_mass_table(results, mode)
+            electroweak_ratio_pane.object = _format_electroweak_ratios(results, mode)
+
+            masses = _extract_electroweak_masses(results, mode)
+            r2s = _extract_electroweak_r2(results, mode)
+
+            base_name = "u1_dressed" if "u1_dressed" in masses else "u1_phase"
+
+            refs_df = electroweak_ref_table.value
+            refs: dict[str, float] = {}
+            if isinstance(refs_df, pd.DataFrame):
+                for _, row in refs_df.iterrows():
+                    name = str(row.get("channel", "")).strip()
+                    try:
+                        mass_raw = row.get("mass_ref_GeV")
+                        if isinstance(mass_raw, str):
+                            mass_raw = mass_raw.strip()
+                            if mass_raw == "":
+                                continue
+                        mass_ref = float(mass_raw)
+                    except (TypeError, ValueError):
+                        continue
+                    if name and mass_ref > 0:
+                        refs[name] = mass_ref
+
+            ratio_rows = _build_electroweak_ratio_rows(masses, base_name, refs=refs)
+            electroweak_ratio_table.value = pd.DataFrame(ratio_rows) if ratio_rows else pd.DataFrame()
+
+            if not masses or not refs:
+                electroweak_fit_table.value = pd.DataFrame()
+                electroweak_anchor_table.value = pd.DataFrame()
+                electroweak_compare_table.value = pd.DataFrame()
+                return
+
+            fit_rows = _build_electroweak_best_fit_rows(masses, refs, r2s)
+            electroweak_fit_table.value = pd.DataFrame(fit_rows)
+
+            anchor_rows = _build_electroweak_anchor_rows(masses, refs, r2s)
+            electroweak_anchor_table.value = pd.DataFrame(anchor_rows)
+
+            compare_rows = _build_electroweak_comparison_rows(masses, refs)
+            electroweak_compare_table.value = pd.DataFrame(compare_rows)
+
+        def _on_electroweak_mass_mode_change(event) -> None:
+            if "electroweak_results" in state:
+                _update_electroweak_tables(state["electroweak_results"], event.new)
+
+        electroweak_mass_mode.param.watch(_on_electroweak_mass_mode_change, "value")
+
+        def on_run_electroweak(_):
+            history = state.get("history")
+            if history is None:
+                electroweak_status.object = "**Error:** Load a RunHistory first."
+                return
+
+            electroweak_status.object = "**Computing electroweak channels...**"
+            try:
+                results = _compute_electroweak_channels(history, electroweak_settings)
+                state["electroweak_results"] = results
+
+                _update_electroweak_plots(results)
+                _update_electroweak_tables(results)
+                couplings = _compute_coupling_constants(
+                    history,
+                    h_eff=float(electroweak_settings.h_eff),
+                    epsilon_d=electroweak_settings.epsilon_d,
+                    epsilon_c=electroweak_settings.epsilon_c,
+                )
+                electroweak_coupling_table.value = pd.DataFrame(
+                    _build_coupling_rows(
+                        couplings,
+                        proxies=None,
+                        include_strong=False,
+                        refs=_extract_coupling_refs(),
+                    )
+                )
+
+                n_channels = len([r for r in results.values() if r.n_samples > 0])
+                electroweak_status.object = (
+                    f"**Complete:** {n_channels} electroweak channels computed."
+                )
+            except Exception as e:
+                electroweak_status.object = f"**Error:** {e}"
                 import traceback
                 traceback.print_exc()
 
@@ -1995,6 +3151,7 @@ def create_app() -> pn.template.FastListTemplate:
         particle_run_button.on_click(on_run_particles)
         sweep_run_button.on_click(on_run_sweep)
         channels_run_button.on_click(on_run_channels)
+        electroweak_run_button.on_click(on_run_electroweak)
         sweep_enable_2d.param.watch(_toggle_sweep_controls, "value")
         sweep_param_x.param.watch(_on_sweep_param_x, "value")
         sweep_param_y.param.watch(_on_sweep_param_y, "value")
@@ -2051,6 +3208,8 @@ def create_app() -> pn.template.FastListTemplate:
                 "particle_voronoi_max_triplets",
                 "particle_voronoi_exclude_boundary",
                 "particle_voronoi_boundary_tolerance",
+                "compute_curvature_proxies",
+                "curvature_compute_interval",
             ],
             show_name=False,
         )
@@ -2140,6 +3299,7 @@ def create_app() -> pn.template.FastListTemplate:
                     ("Analysis: String Tension", analysis_string),
                     ("Analysis: Output", analysis_output),
                     ("Particle Anchors", particle_anchor_controls),
+                    ("Electroweak Channels", electroweak_settings_panel),
                     sizing_mode="stretch_width",
                 ),
             ]
@@ -2195,6 +3355,8 @@ def create_app() -> pn.template.FastListTemplate:
                 pn.layout.Divider(),
                 pn.pane.Markdown("### Mass Spectrum"),
                 channel_plots_spectrum,
+                pn.pane.Markdown("### Strong Coupling Constants"),
+                strong_coupling_table,
                 pn.layout.Divider(),
                 pn.pane.Markdown("### Extracted Masses"),
                 channel_mass_mode,
@@ -2231,12 +3393,72 @@ def create_app() -> pn.template.FastListTemplate:
                 sizing_mode="stretch_both",
             )
 
+            electroweak_tab = pn.Column(
+                electroweak_status,
+                pn.Row(electroweak_run_button, sizing_mode="stretch_width"),
+                pn.Accordion(
+                    ("Electroweak Settings", electroweak_settings_panel),
+                    sizing_mode="stretch_width",
+                ),
+                pn.pane.Markdown(
+                    "_Electroweak channels are proxy observables built from U(1)/SU(2) phases "
+                    "defined in `docs/source/3_fractal_gas/2_fractal_set/04_standard_model.md`._"
+                ),
+                pn.layout.Divider(),
+                electroweak_summary,
+                pn.pane.Markdown("### Electroweak Couplings"),
+                electroweak_coupling_table,
+                pn.pane.Markdown("### Electroweak Coupling References"),
+                pn.pane.Markdown(
+                    "_Set observed values to compute error percentages for couplings._"
+                ),
+                electroweak_coupling_ref_table,
+                pn.pane.Markdown("### Gauge Phase Histograms"),
+                electroweak_phase_plot,
+                pn.layout.Divider(),
+                pn.pane.Markdown("### Electroweak Mass Spectrum"),
+                electroweak_plots_spectrum,
+                pn.pane.Markdown("### Extracted Masses"),
+                electroweak_mass_mode,
+                electroweak_mass_table,
+                electroweak_ratio_pane,
+                pn.pane.Markdown("### Electroweak Ratios"),
+                electroweak_ratio_table,
+                pn.pane.Markdown("### Electroweak Reference Masses (GeV)"),
+                pn.pane.Markdown(
+                    "_Edit the table below to set observed masses for calibration._"
+                ),
+                electroweak_ref_table,
+                pn.pane.Markdown("### Best-Fit Scales"),
+                electroweak_fit_table,
+                pn.pane.Markdown("### Measured vs Observed"),
+                pn.pane.Markdown(
+                    "_Best-fit scale applied to all electroweak channels; "
+                    "error shows percent deviation from observed masses._"
+                ),
+                electroweak_compare_table,
+                pn.pane.Markdown("### Anchored Mass Table"),
+                electroweak_anchor_table,
+                pn.layout.Divider(),
+                pn.pane.Markdown("### All Channels Overlay - Correlators"),
+                electroweak_plots_overlay_corr,
+                pn.pane.Markdown("### All Channels Overlay - Effective Masses"),
+                electroweak_plots_overlay_meff,
+                pn.layout.Divider(),
+                pn.pane.Markdown("### Individual Channel Correlators C(t)"),
+                electroweak_plots_correlator,
+                pn.pane.Markdown("### Individual Channel Effective Masses m_eff(t)"),
+                electroweak_plots_effective_mass,
+                sizing_mode="stretch_both",
+            )
+
             main.objects = [
                 pn.Tabs(
                     ("Simulation", simulation_tab),
                     ("Analysis", analysis_tab),
                     ("Particles", particle_tab),
-                    ("Channels", channels_tab),
+                    ("Strong Force", channels_tab),
+                    ("Electroweak", electroweak_tab),
                 )
             ]
 
