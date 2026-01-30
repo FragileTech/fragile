@@ -5,7 +5,7 @@ I wan# Mathematical Review: 01_fragile_gas_framework.md
 **File:** `docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md`
 **Lines:** 5706
 
----
+
 
 ## Executive Summary
 
@@ -13,7 +13,7 @@ This is the foundational document establishing the Fragile Gas framework with 16
 
 **Status:** Review in progress - agents still running
 
----
+
 
 ## Preliminary Findings (Miau Analysis)
 
@@ -21,7 +21,7 @@ This is the foundational document establishing the Fragile Gas framework with 16
 
 *None identified yet in reviewed sections - document appears mathematically rigorous*
 
----
+
 
 ### MAJOR Issues
 
@@ -34,7 +34,7 @@ The document uses inconsistent section numbering:
 
 **Location:** Lines ~170-300
 
----
+
 
 #### 2. **Duplicate Sub-Lemma Definitions**
 **Severity:** MAJOR
@@ -45,7 +45,7 @@ Sub-lemmas appear twice with identical content:
 
 **Resolution needed:** Remove duplicate definitions
 
----
+
 
 #### 3. **Kolmogorov Quotient Definition Missing Context**
 **Severity:** MAJOR
@@ -56,7 +56,7 @@ The metric quotient definition (`def-metric-quotient`) is introduced but the equ
 
 **Resolution needed:** Clarify the order of definitions
 
----
+
 
 ### MINOR Issues
 
@@ -65,7 +65,7 @@ The metric quotient definition (`def-metric-quotient`) is introduced but the equ
 
 Throughout the document, `({prf:ref}\`def-walker\`)` appears repeatedly inline, making the text harder to read. Consider removing redundant back-references.
 
----
+
 
 #### 5. **Missing Units/Dimensions**
 **Severity:** MINOR
@@ -75,7 +75,7 @@ Some axiomatic parameters lack explicit dimensionality:
 - $L_{\text{death}}$ - probability per unit distance? (unclear)
 - $\alpha_B$ - Hölder exponent (should be in $(0,1]$ per definition)
 
----
+
 
 #### 6. **Notation: $\sigma$ vs $\sigma'$**
 **Severity:** MINOR
@@ -86,7 +86,7 @@ The document explicitly addresses this with a "Notation freeze" admonition, whic
 
 **Recommendation:** Move notation freeze earlier or add forward reference.
 
----
+
 
 #### 7. **Reference to Non-Existent Sections**
 **Severity:** MINOR
@@ -95,7 +95,7 @@ Several references point to sections that may not exist in this document:
 - `{doc}\`/source/1_agent/05_geometry/02_wfr_geometry\`` - external reference (OK if exists)
 - Various `{prf:ref}` cross-references need verification
 
----
+
 
 ### Structural Observations
 
@@ -112,7 +112,7 @@ Several references point to sections that may not exist in this document:
 
 3. **Continuity Analysis:** The mean-square continuity framework (Sections 10-12) is mathematically rigorous with explicit error bounds.
 
----
+
 
 ## Agent Reviews (Pending)
 
@@ -122,7 +122,7 @@ Several references point to sections that may not exist in this document:
 ### Gemini Review
 *Status: Restarted (session `fresh-kelp`)*
 
----
+
 
 ## Summary Table (Preliminary)
 
@@ -136,7 +136,7 @@ Several references point to sections that may not exist in this document:
 | Notation freeze placement | §12 | MINOR | Relocate |
 | Reference verification | Various | MINOR | Check links |
 
----
+
 
 *Generated: 2026-01-26 (preliminary)*
 *Will be updated when agent reviews complete*

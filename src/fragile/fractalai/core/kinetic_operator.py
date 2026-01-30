@@ -139,12 +139,22 @@ class KineticOperator(PanelModel):
     )
     use_potential_force = param.Boolean(default=True, doc="Enable potential gradient force -∇U(x)")
 
-    # Anisotropic diffusion tensor (Hessian-based)
+    # Anisotropic diffusion tensor (Hessian-based or fast proxy)
     epsilon_Sigma = param.Number(
         default=0.1, bounds=(0, None), doc="Hessian regularization (ε_Σ) for positive definiteness"
     )
     use_anisotropic_diffusion = param.Boolean(
         default=False, doc="Enable Hessian-based anisotropic diffusion Σ_reg"
+    )
+    diffusion_mode = param.Selector(
+        default="hessian",
+        objects=["hessian", "grad_proxy"],
+        doc="Anisotropic diffusion mode (Hessian or gradient-proxy).",
+    )
+    diffusion_grad_scale = param.Number(
+        default=1.0,
+        bounds=(0, None),
+        doc="Scale for gradient-proxy diffusion (multiplies |∇V|).",
     )
     diagonal_diffusion = param.Boolean(
         default=True, doc="Use diagonal-only diffusion (faster, O(Nd) vs O(Nd²))"
@@ -266,6 +276,20 @@ class KineticOperator(PanelModel):
                 "end": 1.0,
                 "step": 0.01,
             },
+            "diffusion_mode": {
+                "type": pn.widgets.Select,
+                "width": INPUT_WIDTH,
+                "name": "Diffusion mode",
+                "options": ["hessian", "grad_proxy"],
+            },
+            "diffusion_grad_scale": {
+                "type": pn.widgets.EditableFloatSlider,
+                "width": INPUT_WIDTH,
+                "name": "Grad-proxy scale",
+                "start": 0.01,
+                "end": 10.0,
+                "step": 0.01,
+            },
             "use_anisotropic_diffusion": {
                 "type": pn.widgets.Checkbox,
                 "width": INPUT_WIDTH,
@@ -364,6 +388,8 @@ class KineticOperator(PanelModel):
             "use_potential_force",
             "epsilon_Sigma",
             "use_anisotropic_diffusion",
+            "diffusion_mode",
+            "diffusion_grad_scale",
             "diagonal_diffusion",
             "nu",
             "use_viscous_coupling",
@@ -388,6 +414,8 @@ class KineticOperator(PanelModel):
         use_potential_force: bool = True,
         epsilon_Sigma: float = 0.1,
         use_anisotropic_diffusion: bool = False,
+        diffusion_mode: str = "hessian",
+        diffusion_grad_scale: float = 1.0,
         diagonal_diffusion: bool = True,
         nu: float = 0.0,
         use_viscous_coupling: bool = False,
@@ -418,7 +446,9 @@ class KineticOperator(PanelModel):
             use_fitness_force: Enable fitness-based force
             use_potential_force: Enable potential gradient force
             epsilon_Sigma: Hessian regularization (ε_Σ)
-            use_anisotropic_diffusion: Enable Hessian-based anisotropic diffusion
+            use_anisotropic_diffusion: Enable anisotropic diffusion
+            diffusion_mode: Diffusion mode ("hessian" or "grad_proxy")
+            diffusion_grad_scale: Scale factor for gradient-proxy diffusion
             diagonal_diffusion: Use diagonal-only diffusion
             nu: Viscous coupling strength (ν)
             use_viscous_coupling: Enable viscous coupling
@@ -458,6 +488,8 @@ class KineticOperator(PanelModel):
             use_potential_force=use_potential_force,
             epsilon_Sigma=epsilon_Sigma,
             use_anisotropic_diffusion=use_anisotropic_diffusion,
+            diffusion_mode=diffusion_mode,
+            diffusion_grad_scale=diffusion_grad_scale,
             diagonal_diffusion=diagonal_diffusion,
             nu=nu,
             use_viscous_coupling=use_viscous_coupling,
@@ -738,19 +770,23 @@ class KineticOperator(PanelModel):
     def _compute_diffusion_tensor(
         self,
         x: Tensor,
+        grad_fitness: Tensor | None = None,
         hess_fitness: Tensor | None = None,
     ) -> Tensor:
-        """Compute anisotropic diffusion tensor σ = c2 · (∇²V_fit,i + ε_Σ I)^{-1/2}.
+        """Compute anisotropic diffusion tensor σ (Hessian or gradient-proxy).
 
-        The regularized Hessian ensures positive definiteness and provides
-        state-dependent noise aligned with the fitness landscape geometry.
+        The Hessian mode uses σ = c2 · (∇²V_fit,i + ε_Σ I)^{-1/2}. The gradient-proxy
+        mode uses σ ≈ c2 / sqrt(|∇V_fit,i| + ε_Σ) (diagonal), which is fast and
+        avoids second derivatives.
 
         Args:
             x: Positions [N, d]
+        grad_fitness: Precomputed per-walker fitness gradient ∇V_fit,i [N, d]
+                      Required for diffusion_mode="grad_proxy"
         hess_fitness: Precomputed per-walker Hessian ∇²V_fit,i
-                         - If diagonal_diffusion=True: [N, d]
-                         - If diagonal_diffusion=False: [N, d, d]
-                         Required if use_anisotropic_diffusion=True
+                          - If diagonal_diffusion=True: [N, d]
+                          - If diagonal_diffusion=False: [N, d, d]
+                          Required for diffusion_mode="hessian"
 
         Returns:
             If diagonal_diffusion=True: Diagonal elements [N, d]
@@ -771,9 +807,20 @@ class KineticOperator(PanelModel):
             eye = torch.eye(d, device=x.device, dtype=x.dtype)
             return self.c2 * eye.unsqueeze(0).expand(N, d, d)
 
-        # Use precomputed Hessian
+        if self.diffusion_mode == "grad_proxy":
+            if grad_fitness is None:
+                msg = "grad_fitness required when diffusion_mode='grad_proxy'"
+                raise ValueError(msg)
+            proxy = self.diffusion_grad_scale * grad_fitness.abs()
+            proxy = proxy + self.epsilon_Sigma
+            sigma_diag = self.c2 / torch.sqrt(proxy)
+            if self.diagonal_diffusion:
+                return sigma_diag
+            return torch.diag_embed(sigma_diag)
+
+        # Use precomputed Hessian (default)
         if hess_fitness is None:
-            msg = "hess_fitness required when use_anisotropic_diffusion=True"
+            msg = "hess_fitness required when diffusion_mode='hessian'"
             raise ValueError(msg)
 
         hess = hess_fitness
@@ -914,7 +961,7 @@ class KineticOperator(PanelModel):
 
         if self.use_anisotropic_diffusion:
             # Compute state-dependent diffusion tensor Σ_reg
-            sigma = self._compute_diffusion_tensor(x, hess_fitness)
+            sigma = self._compute_diffusion_tensor(x, grad_fitness, hess_fitness)
 
             if self.diagonal_diffusion:
                 # Diagonal: σ[i, j] · ξ[i, j] (element-wise)

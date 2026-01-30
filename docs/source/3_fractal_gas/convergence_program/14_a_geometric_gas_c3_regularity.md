@@ -18,7 +18,7 @@ where measurements $d_j = d_{\text{alg}}(j, c(j))$ depend on **companion selecti
 
 The proof uses a **two-scale analytical framework** operating at distinct spatial scales (companion selection ε_c, localization ρ) to handle the N-body coupling introduced by companion selection, establishing **N-uniform** and **k-uniform** third-derivative bounds.
 
----
+
 
 (sec-gg-c3-regularity)=
 ## 0. TLDR
@@ -266,7 +266,7 @@ For clarity in proofs, **always use superscript notation** $k_{\text{eff}}^{(\va
 - **$\varepsilon_c$** (smaller) → softmax companions → $(\log k)^d$ growth
 - **$\rho$** (larger, typically) → localization → k-uniform
 
----
+
 
 ### 1.5. Overview of the Proof Strategy and Document Structure
 
@@ -2505,7 +2505,7 @@ This level of regularity is **rare** in stochastic optimization algorithms, wher
 
 The result is a **provably stable, numerically sound, and theoretically complete** algorithm with rigorous convergence guarantees. This document serves as the foundation for implementing the adaptive algorithm with confidence in its mathematical correctness.
 
----
+
 
 **Document Status:** COMPLETE
 

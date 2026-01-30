@@ -23,7 +23,7 @@ Think of it like detective work. You find a mysterious footprint at a crime scen
 This is precisely what these theorems formalize: the logical machinery for propagating global certainty backwards to resolve local doubt.
 :::
 
----
+
 
 (sec-shadow-sector-retroactive-promotion)=
 ### Shadow-Sector Retroactive Promotion
@@ -62,7 +62,7 @@ Let me make sure you understand the picture here. Zeno behavior is when infinite
 But here is the trick. If you can prove that each event costs *something*---each transition between sectors has a minimum energy toll---and the total energy is finite, then arithmetic does the rest. You cannot pay the toll infinitely many times with a finite wallet. The worry about Zeno behavior evaporates, retroactively, once the topological check confirms the sector structure.
 :::
 
----
+
 
 (sec-lock-back-theorem)=
 ### The Lock-Back Theorem
@@ -99,7 +99,7 @@ Why? Because you only have two options: regular or singular. If singular is glob
 This is enormously powerful. You do not need to analyze each local ambiguity separately. Prove one global impossibility, and all the local uncertainties clear up at once.
 :::
 
----
+
 
 (sec-symmetry-gap-theorem)=
 ### The Symmetry-Gap Theorem
@@ -136,7 +136,7 @@ But wait. What if the flatness is not a bug but a feature? What if the system ha
 This is the Higgs mechanism in disguise. The would-be massless mode gets "eaten" by the gauge field and becomes massive. So the retroactive upgrade here says: if symmetry is rigid and the vacuum is unique, what looked like dangerous flatness is actually the signature of spontaneous symmetry breaking with a healthy mass gap.
 :::
 
----
+
 
 (sec-tame-topology-theorem)=
 ### The Tame-Topology Theorem
@@ -173,7 +173,7 @@ So if your system lives in an o-minimal world (polynomials, exponentials, and th
 This is the power of tameness: it rules out the pathological cases without you having to check them one by one.
 :::
 
----
+
 
 (sec-ergodic-sat-theorem)=
 ### The Ergodic-Sat Theorem
@@ -208,7 +208,7 @@ Poincare recurrence is one of those facts that seems almost magical until you se
 Now, the Sieve might flag "saturation"---the system is bounded, but it seems stuck at high energy, drifting without returning to low-energy states. Ergodicity resolves this. If the system mixes properly, it does not just wander---it samples the entire phase space fairly. Time averages equal space averages. So that saturation bound is not just a ceiling; it is a guarantee of thermodynamic equilibrium. The system *will* return to low energy states, over and over, forever.
 :::
 
----
+
 
 (sec-variety-control-theorem)=
 ### The Variety-Control Theorem
@@ -245,7 +245,7 @@ Now, the Sieve might flag a supercritical scaling instability---the system wants
 This is how you reconcile an unstable plant with a stable system: the controller provides the missing variety. The retroactive upgrade recognizes that supercritical scaling is not fatal if the controller has what it takes.
 :::
 
----
+
 
 (sec-algorithm-depth-theorem)=
 ### The Algorithm-Depth Theorem
@@ -282,7 +282,7 @@ But if the solution has finite description length, it is *simple*. And simple ob
 Think of the event horizon in Schwarzschild coordinates. The metric components blow up at $r = 2M$. Looks singular! But switch to Eddington-Finkelstein coordinates, and the singularity vanishes. The horizon is smooth; it was just the coordinates that were badly behaved. Finite complexity is the proof that you are looking at a coordinate singularity, not a real one.
 :::
 
----
+
 
 (sec-holographic-regularity-theorem)=
 ### The Holographic-Regularity Theorem
@@ -334,7 +334,7 @@ The resolution is *effective dimension*. This refined notion asks: how much info
 Bounded K-complexity means your singular set is like the Mandelbrot set, not like a random fractal. And that implies it cannot have positive effective dimension. The fractal appearance is an illusion of scale, not a fundamental obstacle.
 :::
 
----
+
 
 (sec-spectral-quantization-theorem)=
 ### The Spectral-Quantization Theorem
@@ -369,7 +369,7 @@ The spectrum is the fingerprint of a system. And here is the key: if the fingerp
 So if the Lock proves integrality constraints---global invariants that must be integers---the spectrum is forced to be discrete. And discrete spectrum kills chaos. What looked like chaotic oscillation at Node 12 is retroactively downgraded to quasi-periodic behavior. Still complicated, perhaps, but fundamentally predictable.
 :::
 
----
+
 
 (sec-unique-attractor-theorem)=
 ### The Unique-Attractor Theorem
@@ -444,7 +444,7 @@ Hence orbits spend asymptotically zero fraction of time near $V_i$.
 
 **Literature:** {cite}`Birkhoff31`; {cite}`Furstenberg81`; {cite}`Oxtoby52`; {cite}`MeynTweedie93`
 
----
+
 
 #### Backend B: Gradient + Lojasiewicz-Simon Convergence
 
@@ -491,7 +491,7 @@ Hence the trajectory has **finite arc length** and converges to a single limit $
 
 **Literature:** {cite}`Simon83`; {cite}`Huang06`; {cite}`Raugel02`; {cite}`Temam97`
 
----
+
 
 #### Backend C: Contraction / Spectral-Gap Mixing
 
@@ -544,7 +544,7 @@ for **all** initial conditions $x \in \mathcal{X}$. The basin of attraction of $
 
 **Literature:** {cite}`MeynTweedie93`; {cite}`HairerMattingly11`; {cite}`LevinPeresWilmer09`; {cite}`Temam97`
 
----
+
 
 **Backend Selection Logic:**
 
@@ -570,7 +570,7 @@ Let me summarize the three backends, because choosing the right one matters.
 Each backend has its domain of applicability. Use the table to match your system to the right tool.
 :::
 
----
+
 
 (sec-selector-certificate-theorem)=
 ### The Selector Certificate Theorem (Algorithmic Scope)
@@ -671,7 +671,7 @@ The selector certificate captures this discontinuity formally. An algorithm's in
 This is devastating for gradient-based or local search methods. They need the gradual approach that OGP forbids. The only option is to *guess* which cluster contains the solution, and with exponentially many clusters, that means exponential time.
 :::
 
----
+
 
 (sec-universal-algorithmic-obstruction-theorem)=
 ### The Universal Algorithmic Obstruction Theorem
@@ -756,7 +756,7 @@ The only things we used were: (1) the representable set has polynomial size (thi
 This is why the theorem says "universal obstruction." It is not that we found a specific algorithm that fails. It is that *any* algorithm, no matter how clever, must fail on these instances. The structure of the problem itself forbids efficient solution.
 :::
 
----
+
 
 (sec-bridge-verification-algorithmic)=
 ### Bridge Verification: Algorithmic Hypostructure -> TM Semantics
@@ -831,7 +831,7 @@ We have been working in the language of hypostructures, certificates, and upgrad
 This is not a new proof of P vs NP---that remains open, of course. What we have done is translate the problem into hypostructure language, where the Sieve machinery can be applied. If the OGP hypotheses hold for random SAT instances (which is conjectured but not proven), then the universal obstruction theorem gives P vs NP. The bridge makes the implication rigorous.
 :::
 
----
+
 
 (sec-retroactive-upgrade-summary)=
 ## Retroactive Upgrade Summary Table

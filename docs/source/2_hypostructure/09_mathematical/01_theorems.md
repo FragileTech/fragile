@@ -15,7 +15,7 @@ Now, what are these gate evaluator theorems really about? Think of the Sieve as 
 The beautiful thing is that these are not arbitrary checks. Each one corresponds to a known mathematical mechanism by which systems can fail catastrophically. If you can prove the predicate is satisfied, you have mathematically certified that this particular failure mode cannot occur. That is the whole game: turning vague safety concerns into precise mathematical certificates.
 :::
 
----
+
 
 ### Type II Exclusion (ScaleCheck Predicate)
 
@@ -66,7 +66,7 @@ $$\int_0^{S_n} \mathfrak{D}(v_n(s)) \, ds \gtrsim C_0 \lambda_n^\beta(T_*(x) - t
 *Step 5 (Contradiction).* If $\beta - \alpha < \lambda_c$ (with $\lambda_c = 0$ in the homogeneous case), summing over dyadic scales requires $\int_{-\infty}^0 \mathfrak{D}(v_\infty) ds = \infty$ for consistency with $\mathcal{C}_*(x) < \infty$.
 :::
 
----
+
 
 ### Spectral Generator (StiffnessCheck Predicate)
 
@@ -117,7 +117,7 @@ This gives the Łojasiewicz exponent $\theta = 1/2$ (optimal for analytic functi
 *Step 4 (Simon's extension).* For infinite-dimensional systems, Simon (1983) extended the Łojasiewicz inequality to Banach spaces with analytic structure, showing $\theta \in [1/2, 1)$ suffices for convergence.
 :::
 
----
+
 
 ### Ergodic Mixing Barrier (ErgoCheck Predicate)
 
@@ -169,7 +169,7 @@ For small $\varepsilon$, the measure of return diminishes, preventing persistent
 *Step 4 (Escape guarantee).* Combined with interface permit $D_E$, the trajectory cannot remain trapped in any finite region indefinitely. Mixing spreads mass throughout the accessible phase space.
 :::
 
----
+
 
 ### Spectral Distance Isomorphism (OscillateCheck Predicate)
 
@@ -217,7 +217,7 @@ The interface permit $\mathrm{GC}_\nabla$ (Gradient Consistency) is equivalent t
 *Step 4 (Oscillation detection).* Oscillatory breakdown corresponds to $\|[D, a]\| \to \infty$ for bounded $a$—the derivative blows up. This violates interface permit $\mathrm{GC}_\nabla$.
 :::
 
----
+
 
 ### Antichain-Surface Correspondence (BoundaryCheck Predicate)
 
@@ -274,7 +274,7 @@ for hypersurfaces $Σ$ in the continuum limit.
 *Step 4 (Minimal surface emergence).* Minimizers of $F_n$ (minimal antichains) converge to minimizers of $F$ (minimal surfaces). This is the boundary measure in the Sieve.
 :::
 
----
+
 
 (sec-barrier-defense-theorems)=
 ## Barrier Defense Theorems
@@ -289,7 +289,7 @@ A barrier is not just a wall, it is a mathematical proof that certain trajectori
 Think of it like a bank vault. You do not stop robbers by posting more guards. You design the vault so that opening it requires solving an impossible equation. The robber can try all day, but the math does not work out. That is what these barrier theorems do: they show that the math does not work out for singularities.
 :::
 
----
+
 
 ### Saturation Principle (BarrierSat)
 
@@ -344,7 +344,7 @@ $$\limsup_{t \to \infty} \mathbb{E}[\mathcal{V}(X_t)] \leq \frac{b}{\lambda} = E
 *Step 4 (Pathological saturation).* Pathologies saturate the inequality: the threshold energy $E^*$ is determined by the ground state of the singular profile. Energy cannot exceed $E^*$ asymptotically.
 :::
 
----
+
 
 ### Physical Computational Depth Limit (BarrierCausal)
 
@@ -405,7 +405,7 @@ $$N \leq \frac{4}{\pi\hbar} \int_0^T E(t) \, dt$$
 *Step 4 (Zeno exclusion).* A Zeno sequence (infinitely many events in finite time) would require $N = \infty$ with $T < \infty$. By the bound above, this requires $\int_0^T E(t) dt = \infty$, contradicting the energy certificate $K_{D_E}^+$.
 :::
 
----
+
 
 ### Capacity Barrier (BarrierCap)
 
@@ -463,7 +463,7 @@ $$\int_\Sigma |V|^2 d\mathcal{H}^{\dim(\Sigma)} < \infty \implies E(V) = 0$$
 A zero-energy profile cannot mediate blow-up.
 :::
 
----
+
 
 ### Topological Sector Suppression (BarrierAction)
 
@@ -514,7 +514,7 @@ $$\mu(\{x : \tau(x) \neq 0\}) \leq \exp\left(-\frac{\lambda_{\text{LS}} (\Delta/
 *Step 5 (Exponential suppression).* The probability of residing in a nontrivial topological sector decays exponentially with the action gap squared. Large $\Delta$ or strong LSI exponentially suppresses topological obstructions.
 :::
 
----
+
 
 ### Bode Sensitivity Integral (BarrierBode)
 
@@ -573,7 +573,7 @@ where the sum is over unstable poles of $L(s)$.
 *Step 6 (Waterbed interpretation).* The integral is fixed by unstable poles. Pushing down $|S|$ at some frequencies forces it up elsewhere—this is the "waterbed effect."
 :::
 
----
+
 
 ### Epistemic Horizon Principle (BarrierEpi)
 
@@ -635,7 +635,7 @@ $$I(u_0; V_\lambda) \leq \min\{C_\Phi(\lambda), H(u_0) - \Sigma(T_*)\}$$
 If entropy production exceeds channel capacity, the singularity cannot form.
 :::
 
----
+
 
 (sec-surgery-construction-theorems)=
 ## Surgery Construction Theorems
@@ -650,7 +650,7 @@ The philosophy here is different from blocking. Instead of proving a singularity
 Each surgery theorem tells you: when you encounter this type of failure, here is how to lift, cut, extend, or transform the system to get past it. Hairer's regularity structures, Perelman's Ricci flow surgery, BRST ghost fields, these are all surgery techniques that mathematicians developed to handle specific pathologies. The Sieve organizes them systematically.
 :::
 
----
+
 
 ### Regularity Lift Principle (SurgSE)
 
@@ -719,7 +719,7 @@ in the space of modelled distributions. The fixed point exists by Banach contrac
 *Step 5 (Reconstruction).* Apply $\mathcal{R}$ to obtain $u = \mathcal{R}\hat{u} \in \mathcal{D}'$, the actual solution.
 :::
 
----
+
 
 ### Structural Surgery Principle (SurgTE)
 
@@ -785,7 +785,7 @@ Surgeries only decrease entropy by controlled amounts.
 *Step 5 (Finite surgery).* The entropy is bounded below; each surgery costs at least $\delta > 0$ entropy. Total surgeries $\leq (\mathcal{W}_{\max} - \mathcal{W}_{\min})/\delta < \infty$.
 :::
 
----
+
 
 ### Projective Extension (SurgCD)
 
@@ -839,7 +839,7 @@ The central path follows $\nabla f_\mu = 0$ as $\mu \to 0$.
 *Step 4 (Convergence).* As $\varepsilon \to 0$ (equivalently $\mu \to 0$), the relaxed solutions converge to the original constrained optimum by standard interior point convergence theory.
 :::
 
----
+
 
 ### Derived Extension / BRST (SurgSD)
 
@@ -901,7 +901,7 @@ $$\int \mathcal{D}c\mathcal{D}\bar{c} \, e^{-\bar{c}Mc} = \det(M)$$
 This exactly cancels the divergent gauge orbit volume, yielding finite $Z$.
 :::
 
----
+
 
 ### Adjoint Surgery (SurgBC)
 
@@ -966,7 +966,7 @@ The Hamiltonian $H = f + \lambda^T \dot{x}$ couples state and costate dynamics.
 - Convergence requires actor-critic alignment, preventing boundary misalignment.
 :::
 
----
+
 
 ### Lyapunov Compactification (SurgCE)
 

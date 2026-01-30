@@ -58,7 +58,7 @@ This rule preserves determinism (two-valued outcomes: YES or NO) while recording
 
 :::
 
----
+
 
 ### Node 1: EnergyCheck ($D_E$)
 
@@ -100,7 +100,7 @@ $$
 - **BarrierSat:** Even if instantaneous energy is formally unbounded, bounded drift (Foster-Lyapunov) ensures long-term stability via entropy production bounds.
 :::
 
----
+
 
 ### Node 2: ZenoCheck ($\mathrm{Rec}_N$)
 
@@ -126,7 +126,7 @@ $$
 
 :::
 
----
+
 
 ### Node 3: CompactCheck ($C_\mu$)
 
@@ -167,7 +167,7 @@ $$
 The dichotomy mirrors the **thermodynamic distinction** between ordered (low-entropy, concentrated) and disordered (high-entropy, dispersed) phases. The critical threshold separating these regimes is the **phase boundary**.
 :::
 
----
+
 
 ### Node 4: ScaleCheck ($\mathrm{SC}_\lambda$)
 
@@ -201,7 +201,7 @@ $$
 
 :::
 
----
+
 
 ### Node 5: ParamCheck ($\mathrm{SC}_{\partial c}$)
 
@@ -225,7 +225,7 @@ $$
 
 :::
 
----
+
 
 ### Node 6: GeomCheck ($\mathrm{Cap}_H$)
 
@@ -255,7 +255,7 @@ where $d$ is the ambient dimension and $d_{\text{crit}}$ is the critical codimen
 
 :::
 
----
+
 
 ### Node 7: StiffnessCheck ($\mathrm{LS}_\sigma$)
 
@@ -306,7 +306,7 @@ $$
 
 :::
 
----
+
 
 ### Gromov δ-Hyperbolicity: Distinguishing Structure from Chaos
 
@@ -518,7 +518,7 @@ $$
 
 :::
 
----
+
 
 ### Node 7: LSI Permit via Thin Interfaces (Discrete-to-Continuum Lifting)
 
@@ -564,7 +564,7 @@ where:
 
 **Complexity:** $O(N)$ to $O(N^2)$ matrix operation. **No partial differential equations required.**
 
----
+
 
 **Step 2: The Lift (The "Free" Proof via RCD Theory)**
 
@@ -580,7 +580,7 @@ where:
 - **Domain Embedding:** Gromov-Hausdorff embedding $\iota: \mathbf{Thin}_T \to \mathbf{RCD}(K,N)$ (RCD spaces with curvature $K$ and dimension $N$)
 - **Conclusion Import:** Convergence in RCD topology $\Rightarrow K_{\mathrm{LS}_\sigma}^{\text{LSI}}$ on the continuum limit
 
----
+
 
 **Step 3: The Telemetry Proxy (The "Physicist" Certificate)**
 
@@ -609,7 +609,7 @@ where:
 
 :::
 
----
+
 
 :::{prf:definition} Permit $K_{\mathrm{LSI}}$ (LSI via Thin Spectral Gap + Volume Growth)
 :label: permit-lsi-thin
@@ -753,7 +753,7 @@ The system is admitted if the discrete Thin Kernel satisfies **BOTH**:
 
 :::
 
----
+
 
 :::{admonition} Physicist's Perspective: Why This Works
 :class: feynman-added seealso
@@ -776,7 +776,7 @@ When you discretize a PDE on a mesh, you replace:
 
 :::
 
----
+
 
 :::{prf:theorem} Hyperbolic Density Bound (Energy Conservation Under Exponential Growth)
 :label: thm-lsi-hyperbolic-density
@@ -840,7 +840,7 @@ This ensures that any exponential growth in state volume corresponds to a **tree
 
 :::
 
----
+
 
 :::{div} feynman-prose
 There is one more case we need to handle, and it is the most subtle of all.
@@ -936,7 +936,7 @@ This is a **trace formula**: it expresses a sum over primes (arithmetic object) 
 
 :::
 
----
+
 
 :::{div} feynman-prose
 Now let me tell you about cryptography and why it creates a problem for us.
@@ -992,7 +992,7 @@ Cryptographic functions (AES, SHA-256, RSA) are **intentionally designed as expa
 
 :::
 
----
+
 
 :::{prf:definition} Permit $K_{\mathrm{Box}}$ (Opaque Encapsulation)
 :label: permit-opaque-encapsulation
@@ -1049,7 +1049,7 @@ If $R$ is admitted as a black box:
 
 :::
 
----
+
 
 :::{prf:definition} Permit $K_{\mathrm{Spec}}$ (Spectral Resonance - The Arithmetic Exception)
 :label: permit-spectral-resonance
@@ -1125,7 +1125,7 @@ If arithmetic chaos is detected:
 
 :::
 
----
+
 
 :::{admonition} Implementation: Monte Carlo δ-Hyperbolicity Estimation
 :class: feynman-added dropdown
@@ -1258,7 +1258,7 @@ elif volume_growth_rate > polynomial_threshold:
 
 :::
 
----
+
 
 ### Nodes 7a--7d: Stiffness Restoration Subtree
 
@@ -1362,7 +1362,7 @@ where $\mathcal{A}_{\text{tunnel}}$ is the instanton action connecting the curre
 
 :::
 
----
+
 
 ### Node 8: TopoCheck ($\mathrm{TB}_\pi$)
 
@@ -1397,7 +1397,7 @@ invariant $T_{\partial}$ (with provenance), used by topological bound checks
 
 :::
 
----
+
 
 ### Node 9: TameCheck ($\mathrm{TB}_O$)
 
@@ -1423,7 +1423,7 @@ $$
 
 :::
 
----
+
 
 ### Node 10: ErgoCheck ($\mathrm{TB}_\rho$)
 
@@ -1463,7 +1463,7 @@ $$
 The spectral gap $\rho > 0$ quantifies how fast the Second Law of Thermodynamics operates: larger gaps mean faster equilibration.
 :::
 
----
+
 
 ### Node 11: ComplexCheck ($\mathrm{Rep}_K$)
 
@@ -1500,7 +1500,7 @@ machine, $d$ is a trace metric, and $(L, R, \varepsilon)$ are interface paramete
 
 :::
 
----
+
 
 ### Node 12: OscillateCheck ($\mathrm{GC}_\nabla$)
 
@@ -1532,7 +1532,7 @@ Barrier. NO means no oscillatory component in the window, proceeding to boundary
 
 :::
 
----
+
 
 ### Nodes 13--16: Boundary Checks
 
@@ -1644,7 +1644,7 @@ where $\mathcal{L}_{\text{proxy}}$ is the optimized/measured objective and $\mat
 
 :::
 
----
+
 
 ### Node 17: BarrierExclusion ($\mathrm{Cat}_{\mathrm{Hom}}$) --- The Lock
 

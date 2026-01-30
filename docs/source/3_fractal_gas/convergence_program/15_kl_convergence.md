@@ -148,7 +148,7 @@ graph TD
 
 The primary proof (Section 2) is complete and rigorous. Sections 3-4 consolidate alternative approaches and provide a roadmap for future generalizations.
 
----
+
 
 ## 2. Primary Proof via Displacement Convexity
 
@@ -902,7 +902,7 @@ This section presents the **historical axiom** that was a foundational assumptio
 The axiom statement below is retained for backward compatibility and to preserve the context for the displacement convexity proof that follows.
 :::
 
----
+
 
 Before proceeding to analyze the cloning operator using optimal transport techniques, we must state a foundational assumption about the target distribution.
 
@@ -915,7 +915,7 @@ Before proceeding to analyze the cloning operator using optimal transport techni
 
 **Proof Method**: Hypocoercivity with state-dependent diffusion (does NOT require log-concavity assumption)
 
----
+
 
 **Original Axiom Statement** (retained for context):
 
@@ -2250,7 +2250,7 @@ See the proof of {prf:ref}`cor-n-uniform-lsi` for the detailed N-uniformity argu
 - Collet, P., Martínez, S., & San Martín, J. (2013). *Quasi-Stationary Distributions: Markov Chains, Diffusions and Dynamical Systems.* Springer.
 - Champagnat, N. & Villemonais, D. (2016). "Exponential convergence to quasi-stationary distribution." *Probab. Theory Related Fields*, 164(1-2), 243-283.
 
----
+
 ## Part III: Alternative Proofs via Mean-Field Generator
 
 **This section provides alternative, self-contained proofs using mean-field PDE analysis.**
@@ -2785,7 +2785,7 @@ Both geometric proofs rely on **log-concavity** ({prf:ref}`axiom-qsd-log-concave
 
 **Solution:** Exploit permutation symmetry (S_N invariance) to symmetrize the integral, converting it to a tractable sinh expression.
 
----
+
 
 **Key insight**: The permutation invariance (S_N symmetry) enables a powerful symmetrization argument that transforms the problematic integrand into a manifestly quadratic form.
 
@@ -3017,7 +3017,7 @@ The interplay between **discrete symmetry** (S_N permutations) and **continuous 
 
 **Solution:** Treat Gaussian noise as heat flow, use de Bruijn's identity combined with Log-Sobolev inequality from log-concavity.
 
----
+
 
 **Key insight**: The Gaussian noise addition is a **heat flow** process. The KL divergence evolves according to de Bruijn's identity, and the LSI (which follows from log-concavity) provides exponential contraction.
 
@@ -3842,7 +3842,7 @@ $$
 - Explicit constants from mean-field cloning analysis
 - Clear separation of kinetic vs. cloning contributions
 
----
+
 
 ## Mean-Field LSI and KL Convergence (Hybrid Proof)
 
@@ -4317,7 +4317,7 @@ This proof is **complementary** to the displacement convexity approach, providin
 
 **Pedagogical Value:** This is the most didactically complete proof, suitable for understanding all components from scratch.
 
----
+
 
 ## Mean-Field LSI and KL Convergence (Standalone Proof)
 
@@ -5126,7 +5126,7 @@ For **AI engineers** implementing the Fragile Gas:
 - $C_{\text{ent}}$: entropy production constant
 - $C_\infty$: asymptotic KL divergence
 
----
+
 ## Part IV: Non-Convex Extensions and Hypocoercivity
 
 **This section extends KL-convergence results to NON-CONVEX fitness landscapes.**
@@ -5136,7 +5136,7 @@ For **AI engineers** implementing the Fragile Gas:
 2. Positive friction $\gamma > 0$
 3. Positive noise $\sigma_v^2 > 0$
 
----
+
 
 ## Exponential Convergence for Non-Convex Fitness Landscapes: Hypocoercivity and Feynman-Kac Theory
 
@@ -6661,7 +6661,7 @@ The original question remains open:
 
 **Practical significance**: For optimization tasks, status convergence + Keystone Principle ensure the algorithm finds and maintains high-fitness solutions. For sampling tasks, the question of full distributional convergence remains open.
 
----
+
 
 **Use confining result (Theorem {prf:ref}`thm-nonconvex-main`)** if:
 - Fitness landscape is multimodal or non-convex
@@ -7080,11 +7080,11 @@ expressed directly in terms of physical parameters (hypocoercive mixing minus me
 - {doc}`../1_the_algorithm/02_fractal_gas_latent`: Adaptive/latent viscous model
 - KL-convergence unification analysis: Unified KL-Convergence Proof
 
----
+
 
 **END OF DOCUMENT**
 
----
+
 ## Part V: Future Research Directions
 
 **This section collects constant refinements and alternative derivations. The hypocoercive LSI is already established in {doc}`10_kl_hypocoercive`, and the role of this part is to sharpen constants and document curvature-based routes.**
@@ -7096,7 +7096,7 @@ expressed directly in terms of physical parameters (hypocoercive mixing minus me
 
 **Objective:** Refine constants and alternative derivations beyond the baseline hypocoercive LSI.
 
----
+
 
 ## LSI Constant Refinement via Hypocoercivity
 
@@ -7138,7 +7138,7 @@ expressed directly in terms of physical parameters (hypocoercive mixing minus me
 - [A.1 What Changes](#a1-what-changes)
 - [A.2 Parameter Dependencies](#a2-parameter-dependencies)
 
----
+
 
 ## Part 0: Motivation and Strategy
 
@@ -7312,7 +7312,7 @@ for some $\rho_{\text{hypo}} > 0$.
 3. **Proof Construction** (Part 4): Compute modified Γ₂, verify curvature bound
 4. **Main Theorem** (Part 5): Sharpen constants and curvature-based derivation
 
----
+
 
 ## Part 1: What We Already Have
 
@@ -7407,7 +7407,7 @@ where $\gamma = (1 - \lambda_{\text{clone}}\tau) < 1$.
 
 **This is weaker than LSI**: Status convergence doesn't imply KL-convergence.
 
----
+
 
 ## Part 2: Literature Review
 
@@ -7454,7 +7454,7 @@ For kinetic Fokker-Planck equations, there exists a **modified Bakry-Émery crit
 
 **Status**: [TO BE FILLED]
 
----
+
 
 **[REST OF DOCUMENT TO BE FILLED AS LITERATURE REVIEW PROGRESSES]**
 
@@ -7466,7 +7466,7 @@ For kinetic Fokker-Planck equations, there exists a **modified Bakry-Émery crit
 
 [TO BE FILLED based on condition verification]
 
----
+
 
 ## Part 3: LSI Reference Statement (Constant Refinement)
 
@@ -7536,7 +7536,7 @@ using:
 
 **Step 5**: Verify N-uniformity of constants
 
----
+
 
 ## Part 4: Technical Development
 
@@ -8150,7 +8150,7 @@ This matches the Acoustic Limit condition derived in {doc}`10_kl_hypocoercive` v
 The unconditional proof via hypocoercive Bakry-Émery gives the **same stability condition** as the conditional proof via displacement convexity. This consistency validates both approaches and confirms that the Acoustic Limit is a fundamental constraint of the Euclidean Gas dynamics, not an artifact of a particular proof technique.
 :::
 
----
+
 
 ## Appendix: Comparison with Conditional Proof
 
@@ -8174,7 +8174,7 @@ The unconditional proof via hypocoercive Bakry-Émery gives the **same stability
 
 **For Yang-Mills**: Both give mass gap $\Delta_{\text{YM}} > 0$, but unconditional proof removes assumption.
 
----
+
 
 **[DOCUMENT CONTINUES AS LITERATURE REVIEW PROGRESSES]**
 
@@ -8183,7 +8183,7 @@ The unconditional proof via hypocoercive Bakry-Émery gives the **same stability
 
 **Key Papers:** Dolbeault-Mouhot-Schmeiser (2017), Grothaus-Stilgenbauer (2018), Guillin-Le Bris-Monmarché (2021)
 
----
+
 
 ## Literature Review Checklist: LSI Constant Refinement via Hypocoercivity
 
@@ -8472,7 +8472,7 @@ Accept conditional result but strengthen justification:
 
 ...
 
----
+
 ## Part VI: Cross-References, Indices, and Appendices
 
 ## Section 17. Theorem and Definition Index
@@ -8764,6 +8764,6 @@ This document builds on results from:
 
 **This document is now the single source of truth for KL-divergence convergence results in the Fragile framework.**
 
----
+
 
 **END OF CONSOLIDATED DOCUMENT**

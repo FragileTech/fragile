@@ -40,7 +40,7 @@
 
 ::::
 
----
+
 
 (sec-sm-introduction)=
 ## Introduction
@@ -88,7 +88,7 @@ Traditional lattice QFT requires a hand-designed regular lattice. The Fractal Ga
 | Quantum correlations | From path integral | From companion selection (IG) |
 | Gauge fields | Added by hand | Derived from redundancies |
 
----
+
 
 (sec-sm-gauge-principle)=
 ## The Gauge Principle: Three Redundancies
@@ -334,7 +334,7 @@ Notice what just happened. We didn't put the Standard Model in by hand. We start
 This is the same gauge group that physicists discovered through decades of particle accelerator experiments. The Fractal Gas derives it from first principles of bounded information processing.
 :::
 
----
+
 
 (sec-sm-matter-sector)=
 ## The Matter Sector: Fermionic Structure
@@ -557,7 +557,7 @@ with $g_{\mu\nu}^{\text{eff}} = \mathrm{diag}(-1, g^{\text{spatial}})$ and $g^{\
 See {prf:ref}`thm-sm-dirac-isomorphism` for the formal statement.
 :::
 
----
+
 
 (sec-sm-scalar-sector)=
 ## The Scalar Sector
@@ -667,7 +667,7 @@ The "Mexican hat" potential $V(r) = -(\Xi - \Xi_{\text{crit}})r^2/2 + \alpha r^4
 This is not a metaphor. The mathematical structures are isomorphic.
 :::
 
----
+
 
 (sec-sm-wilson-loops)=
 ## Wilson Loops and Observables
@@ -731,7 +731,7 @@ The area law is a beautiful diagnostic for confinement. If you compute the expec
 In the Fractal Gas, the localization kernel $K_\rho$ naturally produces area-law behavior because the viscous force only acts over short distances. Walkers in the same fitness basin stay coupled; walkers that try to escape pay an energy cost proportional to how far they go. This is the same physics that keeps quarks confined inside protons.
 :::
 
----
+
 
 (sec-sm-unified-lagrangian)=
 ## The Unified Fractal Gas Lagrangian
@@ -785,7 +785,7 @@ $$
 \mathcal{L}_{\text{SM}} = -\frac{1}{4}F_{\mu\nu}^a F^{a\mu\nu} + \bar{\psi}(i\gamma^\mu D_\mu - m)\psi + |D_\mu\phi|^2 - V(\phi)
 $$
 
----
+
 
 (sec-sm-dictionary)=
 ## The Isomorphism Dictionary
@@ -814,7 +814,7 @@ $$
 These correspondences are structural isomorphisms verified via Hypostructure machinery.
 :::
 
----
+
 
 (sec-sm-completing)=
 ## Completing the Standard Model
@@ -1500,7 +1500,7 @@ The derivations above complete the structural components of the Standard Model. 
 2. Verification of Lorentz covariance in the continuum limit
 3. Consistency with neutrino oscillation data
 
----
+
 
 (sec-sm-structural-isomorphisms)=
 ## Structural Isomorphisms
@@ -1726,7 +1726,7 @@ Here's what we've accomplished. We haven't proven that the Fractal Gas *is* the 
 Every theorem about the Standard Model translates to a theorem about the Fractal Gas, and vice versa. That's the power of isomorphism—it doesn't care which system is "fundamental."
 :::
 
----
+
 
 ## Summary
 
@@ -1807,7 +1807,7 @@ All isomorphisms are verified using Hypostructure formalism:
 
 The isomorphisms $\mathfrak{A}_{\text{FG}} \cong \mathfrak{A}_{\text{SM}}$ are algebraic correspondences—theorems about one structure translate to theorems about the other. Whether this correspondence reflects physical reality is an empirical question.
 
----
+
 
 ## References
 

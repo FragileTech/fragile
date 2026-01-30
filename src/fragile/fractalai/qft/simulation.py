@@ -30,7 +30,7 @@ from dataclasses import asdict, dataclass
 from datetime import datetime
 import json
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 
 import torch
 
@@ -56,21 +56,21 @@ class OperatorConfig:
     delta_t: float = 0.01
     epsilon_F: float = 994.399
     use_fitness_force: bool = False
-    use_potential_force: bool = True
+    use_potential_force: bool = False
     use_anisotropic_diffusion: bool = False
-    diagonal_diffusion: bool = True
+    diagonal_diffusion: bool = False
     epsilon_Sigma: float = 0.1
     nu: float = 0.948271
     use_viscous_coupling: bool = True
     viscous_length_scale: float = 0.00976705
     viscous_neighbor_mode: str = "all"
     viscous_neighbor_threshold: float | None = None
-    viscous_neighbor_penalty: float = 0.0
+    viscous_neighbor_penalty: float = 1.1
     viscous_degree_cap: float | None = None
     beta_curl: float = 0.0
     use_velocity_squashing: bool = False
     V_alg: float = float("inf")
-    companion_method: str = "softmax"
+    companion_method: str = "uniform"
     companion_epsilon: float = 2.12029
     companion_epsilon_clone: float = 1.68419
     lambda_alg: float = 1.0
@@ -86,6 +86,11 @@ class OperatorConfig:
     fitness_sigma_min: float = 1e-8
     fitness_epsilon_dist: float = 1e-8
     fitness_rho: float | None = None
+    fitness_grad_mode: str = "exact"
+    fitness_detach_stats: bool = False
+    fitness_detach_companions: bool = False
+    diffusion_mode: str = "hessian"
+    diffusion_grad_scale: float = 1.0
 
 
 @dataclass
@@ -125,7 +130,11 @@ def _json_safe(value: Any) -> Any:
 
 
 def build_gas(
-    potential_cfg: PotentialWellConfig, operator_cfg: OperatorConfig, run_cfg: RunConfig
+    potential_cfg: PotentialWellConfig,
+    operator_cfg: OperatorConfig,
+    run_cfg: RunConfig,
+    reward_1form: Callable[[torch.Tensor], torch.Tensor] | None = None,
+    curl_field: Callable[[torch.Tensor], torch.Tensor] | None = None,
 ) -> tuple[EuclideanGas, QuadraticPotential]:
     potential = QuadraticPotential(
         alpha=potential_cfg.alpha,
@@ -155,6 +164,9 @@ def build_gas(
         epsilon_dist=operator_cfg.fitness_epsilon_dist,
         A=operator_cfg.fitness_A,
         rho=operator_cfg.fitness_rho,
+        grad_mode=operator_cfg.fitness_grad_mode,
+        detach_stats=operator_cfg.fitness_detach_stats,
+        detach_companions=operator_cfg.fitness_detach_companions,
     )
 
     kinetic_op = KineticOperator(
@@ -167,6 +179,8 @@ def build_gas(
         use_anisotropic_diffusion=operator_cfg.use_anisotropic_diffusion,
         diagonal_diffusion=operator_cfg.diagonal_diffusion,
         epsilon_Sigma=operator_cfg.epsilon_Sigma,
+        diffusion_mode=operator_cfg.diffusion_mode,
+        diffusion_grad_scale=operator_cfg.diffusion_grad_scale,
         nu=operator_cfg.nu,
         use_viscous_coupling=operator_cfg.use_viscous_coupling,
         viscous_length_scale=operator_cfg.viscous_length_scale,
@@ -175,6 +189,7 @@ def build_gas(
         viscous_neighbor_penalty=operator_cfg.viscous_neighbor_penalty,
         viscous_degree_cap=operator_cfg.viscous_degree_cap,
         beta_curl=operator_cfg.beta_curl,
+        curl_field=curl_field,
         use_velocity_squashing=operator_cfg.use_velocity_squashing,
         V_alg=operator_cfg.V_alg,
         potential=potential,
@@ -191,6 +206,7 @@ def build_gas(
         N=run_cfg.N,
         d=potential_cfg.dims,
         potential=potential,
+        reward_1form=reward_1form,
         companion_selection=companion,
         companion_selection_clone=companion_clone,
         kinetic_op=kinetic_op,
@@ -212,8 +228,16 @@ def run_simulation(
     operator_cfg: OperatorConfig,
     run_cfg: RunConfig,
     show_progress: bool = True,
+    reward_1form: Callable[[torch.Tensor], torch.Tensor] | None = None,
+    curl_field: Callable[[torch.Tensor], torch.Tensor] | None = None,
 ) -> tuple[Any, QuadraticPotential]:
-    gas, potential = build_gas(potential_cfg, operator_cfg, run_cfg)
+    gas, potential = build_gas(
+        potential_cfg,
+        operator_cfg,
+        run_cfg,
+        reward_1form=reward_1form,
+        curl_field=curl_field,
+    )
     history = gas.run(
         n_steps=run_cfg.n_steps,
         record_every=run_cfg.record_every,

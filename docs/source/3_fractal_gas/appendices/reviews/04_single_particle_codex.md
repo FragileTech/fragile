@@ -3,7 +3,7 @@
 ## Summary
 Small file (22KB) describing single walker observables. **One broken cross-reference found.**
 
----
+
 
 ## 🔴 Broken Cross-Reference
 
@@ -17,7 +17,7 @@ This reference appears in:
 
 **Suggested fix:** Either create the definition or change to `def-fragile-gas-algorithm` which exists.
 
----
+
 
 ## ✅ Other Cross-References
 All 15 other `{prf:ref}` labels verified as existing:

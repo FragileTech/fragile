@@ -413,14 +413,22 @@ class EuclideanGas(PanelModel):
         is_diagonal_hessian = False
 
         if self.fitness_op is not None and self.enable_kinetic:
-            # Compute fitness gradient if needed for adaptive force
-            if self.kinetic_op.use_fitness_force:
+            # Compute fitness gradient if needed for adaptive force or diffusion proxy
+            needs_grad = self.kinetic_op.use_fitness_force or (
+                self.kinetic_op.use_anisotropic_diffusion
+                and getattr(self.kinetic_op, "diffusion_mode", "hessian") == "grad_proxy"
+            )
+            if needs_grad:
                 grad_fitness = self.fitness_op.compute_gradient(
                     state_cloned.x, state_cloned.v, rewards, alive_mask, companions_distance
                 )
 
             # Compute fitness Hessian if needed for anisotropic diffusion
-            if self.kinetic_op.use_anisotropic_diffusion:
+            needs_hess = (
+                self.kinetic_op.use_anisotropic_diffusion
+                and getattr(self.kinetic_op, "diffusion_mode", "hessian") == "hessian"
+            )
+            if needs_hess:
                 hess_fitness = self.fitness_op.compute_hessian(
                     state_cloned.x,
                     state_cloned.v,
@@ -665,8 +673,15 @@ class EuclideanGas(PanelModel):
         record_hessians_full = False
 
         if self.fitness_op is not None:
-            record_gradients = self.kinetic_op.use_fitness_force
-            if self.kinetic_op.use_anisotropic_diffusion:
+            needs_grad = self.kinetic_op.use_fitness_force or (
+                self.kinetic_op.use_anisotropic_diffusion
+                and getattr(self.kinetic_op, "diffusion_mode", "hessian") == "grad_proxy"
+            )
+            record_gradients = needs_grad
+            if (
+                self.kinetic_op.use_anisotropic_diffusion
+                and getattr(self.kinetic_op, "diffusion_mode", "hessian") == "hessian"
+            ):
                 record_hessians_diag = self.kinetic_op.diagonal_diffusion
                 record_hessians_full = not self.kinetic_op.diagonal_diffusion
 

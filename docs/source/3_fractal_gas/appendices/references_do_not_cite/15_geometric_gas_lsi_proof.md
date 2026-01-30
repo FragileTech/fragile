@@ -13,7 +13,7 @@
 
 The existing backbone LSI proof (Corollary 9.6 in `10_kl_convergence.md`) is **N-uniform and rigorous** for the Euclidean Gas. This document attempts to extend it to handle the three perturbations above, focusing on the **diffusion modification** which is the primary technical challenge.
 
----
+
 
 ## 0. TLDR
 
@@ -125,7 +125,7 @@ graph TD
 
 **Appendices** provide technical lemmas on state-dependent diffusion (Appendix A) and comparison with classical hypocoercivity literature (Appendix B).
 
----
+
 
 ## Table of Contents
 
@@ -156,7 +156,7 @@ graph TD
 - Appendix A: Technical Lemmas on State-Dependent Diffusion
 - Appendix B: Comparison with Classical Hypocoercivity
 
----
+
 
 ## Part I: Framework and Problem Setup
 
@@ -260,7 +260,7 @@ We will attempt to prove the N-uniform LSI for the Geometric Gas by:
 
 **Philosophy:** We are not inventing new mathematics, but carefully verifying that existing hypocoercivity theory (Villani 2009, Dolbeault et al. 2015) extends to our specific setting with proven N-uniform bounds.
 
----
+
 
 ## 3. Mathematical Preliminaries
 
@@ -366,7 +366,7 @@ $$
 
 **Goal:** Prove that $C_{\text{LSI}}$ is **uniformly bounded** for all $N \geq 2$, i.e., $\sup_N C_{\text{LSI}}(N) < \infty$.
 
----
+
 
 ## 4. The Geometric Gas Generator: Decomposition and Structure
 
@@ -409,7 +409,7 @@ The backbone $\mathcal{L}_{\text{backbone}}$ includes the state-dependent diffus
 - The position-velocity coupling $v \cdot \nabla_x$ is unchanged
 - The confining potential structure is unchanged
 
----
+
 
 ## Part II: Hypocoercivity for State-Dependent Anisotropic Diffusion
 
@@ -510,7 +510,7 @@ with $C_0$ **N-uniform**.
 
 Then by Consequence 1, we get the desired LSI for $I_v^{\Sigma}$ with N-uniform constant.
 
----
+
 
 ## 6. Microscopic Coercivity with Regularized Diffusion
 
@@ -574,7 +574,7 @@ where $C_v(\rho)$ depends on the effective temperature from $\Sigma_{\text{reg}}
 
 This suggests $C_P$ should be N-uniform, but requires careful verification.
 
----
+
 
 ## 7. Macroscopic Transport Under Uniform Ellipticity
 
@@ -669,7 +669,7 @@ yielding an LSI with constant proportional to $1/(\alpha_{\text{hypo}} - C_{\tex
 
 **N-uniformity:** If all constants $(\alpha_{\text{hypo}}, C_{\text{error}})$ are N-uniform, the LSI constant is N-uniform.
 
----
+
 
 ## Part III: N-Uniformity Analysis
 
@@ -713,7 +713,7 @@ The N-uniform LSI proof for the Geometric Gas relies on the following **fully pr
 All these results have been rigorously established with complete proofs in the framework. The current document extends these foundations to handle state-dependent anisotropic diffusion.
 :::
 
----
+
 
 ## 8. N-Uniform Bounds on All Constants
 
@@ -906,7 +906,7 @@ Here:
 :label: proof-thm-qsd-poincare-rigorous
 We prove this using the Lyapunov equation for the conditional velocity covariance and the Holley-Stroock theorem for mixtures of Gaussians.
 
----
+
 
 **Step 1: Conditional Velocity Distribution is a Multivariate Gaussian**
 
@@ -938,7 +938,7 @@ $$
 
 **Note:** $\Sigma_{\mathbf{v}}(\mathbf{x})$ is generally **not** block diagonal due to viscous coupling in $A$. Velocities are correlated even conditionally on positions.
 
----
+
 
 **Step 2: N-Uniform Bound on Largest Eigenvalue**
 
@@ -970,7 +970,7 @@ $$
 
 **N-uniformity:** The bound depends only on $c_{\max}(\rho)$ (uniform ellipticity, N-uniform by {prf:ref}`thm-ueph-proven`) and $\gamma$ (algorithm parameter).
 
----
+
 
 **Step 3: Conditional Poincaré Inequality**
 
@@ -986,7 +986,7 @@ $$
 \text{Var}_{\pi_N(\mathbf{v}|\mathbf{x})}(g) \leq \frac{c_{\max}^2(\rho)}{2\gamma} \sum_{i=1}^N \int |\nabla_{v_i} g|^2 d\pi_N(\mathbf{v}|\mathbf{x})
 $$
 
----
+
 
 **Step 4: Unconditional Poincaré via Holley-Stroock**
 
@@ -1273,7 +1273,7 @@ $$
 Both the threshold and the LSI constant are **N-independent** but **ρ-dependent**.
 :::
 
----
+
 
 ## 9. Main Theorem: N-Uniform LSI for Geometric Gas
 
@@ -1426,7 +1426,7 @@ which is finite and N-uniform for **all $\nu > 0$**.
 
 **Status:** The N-uniform Log-Sobolev Inequality for the Geometric Viscous Fluid Model is **PROVEN**. Framework Conjecture 8.3 can be elevated to a theorem.
 
----
+
 
 ## 10. Implications and Open Questions
 
@@ -1502,7 +1502,7 @@ This is a standard question in propagation of chaos theory. The N-uniformity sug
 
 This would require implementing the explicit formulas from Section 7 and checking them against simulations (see [Stage 3 of the mean-field proof](16_convergence_mean_field.md) for similar numerical work on the Euclidean Gas).
 
----
+
 
 ## Appendices
 
@@ -1608,7 +1608,7 @@ $$
 
 where the $N$ factor is absorbed by the $1/N$ normalization in the Fisher information. This gives the bound used in Section 6. $\square$
 
----
+
 
 ## Appendix B: Comparison with Classical Hypocoercivity
 
@@ -1681,7 +1681,7 @@ Compared to classical hypocoercivity literature (Villani 2009, Dolbeault et al. 
 
 These extensions are necessary for the Geometric Gas application but may be of independent interest for kinetic theory.
 
----
+
 
 ## References
 
@@ -1706,6 +1706,6 @@ These extensions are necessary for the Geometric Gas application but may be of i
 **QSD Structure:**
 - [10_qsd_exchangeability_theory.md](../1_euclidean_gas/10_qsd_exchangeability_theory.md) - Rigorous QSD theory (exchangeability, mean-field limit, N-uniform LSI)
 
----
+
 
 **Document Status:** ✅ **PROOF COMPLETE AND PUBLICATION-READY** - All gaps resolved, dual-reviewed (Gemini 100% confidence, Codex flagged only documentation inconsistencies which are now fixed). Ready for submission to top-tier venues. Framework Conjecture 8.3 should be elevated to Theorem 8.3 in `07_geometric_gas.md`.

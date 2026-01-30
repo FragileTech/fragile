@@ -21,9 +21,21 @@ import param
 from fragile.fractalai.core.history import RunHistory
 from fragile.fractalai.experiments.gas_config_panel import GasConfigPanel
 from fragile.fractalai.qft import analysis as qft_analysis
+from fragile.fractalai.qft.correlator_channels import (
+    ChannelConfig,
+    ChannelCorrelatorResult,
+    compute_all_channels,
+    CHANNEL_REGISTRY,
+)
 from fragile.fractalai.qft.plotting import (
+    build_all_channels_overlay,
     build_correlation_decay_plot,
+    build_correlator_plot,
+    build_effective_mass_plot,
+    build_effective_mass_plateau_plot,
     build_lyapunov_plot,
+    build_mass_spectrum_bar,
+    build_window_heatmap,
     build_wilson_histogram_plot,
     build_wilson_timeseries_plot,
 )
@@ -370,6 +382,65 @@ class AnalysisSettings(param.Parameterized):
         return args
 
 
+class ChannelSettings(param.Parameterized):
+    """Settings for the new Channels tab (independent of old particle analysis)."""
+
+    warmup_fraction = param.Number(default=0.1, bounds=(0.0, 0.5))
+    max_lag = param.Integer(default=80, bounds=(10, 200))
+    h_eff = param.Number(default=1.0, bounds=(1e-6, None))
+    mass = param.Number(default=1.0, bounds=(1e-6, None))
+    ell0 = param.Number(default=None, bounds=(1e-6, None), allow_None=True)
+    knn_k = param.Integer(default=4, bounds=(1, 20))
+    knn_sample = param.Integer(default=512, bounds=(1, None), allow_None=True)
+    use_connected = param.Boolean(default=True)
+    channel_list = param.String(default="scalar,pseudoscalar,vector,nucleon,glueball")
+    window_widths_spec = param.String(default="5-50")
+    fit_mode = param.ObjectSelector(default="aic", objects=("aic", "linear", "linear_abs"))
+    fit_start = param.Integer(default=2, bounds=(0, None))
+    fit_stop = param.Integer(default=None, bounds=(1, None), allow_None=True)
+    min_fit_points = param.Integer(default=2, bounds=(2, None))
+
+
+def _parse_window_widths(spec: str) -> list[int]:
+    """Parse '5-50' or '5,10,15,20' into list of ints."""
+    if "-" in spec and "," not in spec:
+        parts = spec.split("-")
+        if len(parts) == 2:
+            try:
+                start, end = int(parts[0]), int(parts[1])
+                return list(range(start, end + 1))
+            except ValueError:
+                pass
+    try:
+        return [int(x.strip()) for x in spec.split(",") if x.strip()]
+    except ValueError:
+        return list(range(5, 51))
+
+
+def _compute_channels_vectorized(
+    history: RunHistory,
+    settings: ChannelSettings,
+) -> dict[str, ChannelCorrelatorResult]:
+    """Compute channels using vectorized correlator_channels."""
+    config = ChannelConfig(
+        warmup_fraction=settings.warmup_fraction,
+        max_lag=settings.max_lag,
+        h_eff=settings.h_eff,
+        mass=settings.mass,
+        ell0=settings.ell0,
+        knn_k=settings.knn_k,
+        knn_sample=settings.knn_sample,
+        use_connected=settings.use_connected,
+        window_widths=_parse_window_widths(settings.window_widths_spec),
+        fit_mode=settings.fit_mode,
+        fit_start=settings.fit_start,
+        fit_stop=settings.fit_stop,
+        min_fit_points=settings.min_fit_points,
+    )
+    channels = [c.strip() for c in settings.channel_list.split(",") if c.strip()]
+    return compute_all_channels(history, channels=channels, config=config)
+
+
 @contextmanager
 def _temporary_argv(args: list[str]):
     original = sys.argv
@@ -513,6 +584,17 @@ MESON_REFS = {
     "upsilon": 9.4603,
 }
 
+# Channel-to-family mapping for physics comparisons
+CHANNEL_FAMILY_MAP = {
+    "scalar": "meson",  # σ (sigma)
+    "pseudoscalar": "meson",  # π (pion)
+    "vector": "meson",  # ρ (rho)
+    "axial_vector": "meson",  # a₁
+    "tensor": "meson",  # f₂
+    "nucleon": "baryon",  # N (proton/neutron)
+    "glueball": "glueball",  # 0^++
+}
+
 
 def _closest_reference(value: float, refs: dict[str, float]) -> tuple[str, float, float]:
     name, ref = min(refs.items(), key=lambda kv: abs(value - kv[1]))
@@ -561,11 +643,31 @@ def _extract_particle_masses(metrics: dict[str, Any]) -> dict[str, float]:
     return masses
 
 
-def _build_algorithmic_mass_rows(masses: dict[str, float]) -> list[dict[str, Any]]:
+def _extract_particle_r2(metrics: dict[str, Any]) -> dict[str, float]:
+    particle = metrics.get("particle_observables") or {}
+    operators = particle.get("operators") or {}
+    r2s: dict[str, float] = {}
+    for name in ("baryon", "meson", "glueball"):
+        fit = operators.get(name, {}).get("fit")
+        if fit and isinstance(fit.get("r_squared"), int | float):
+            r2s[name] = float(fit["r_squared"])
+    return r2s
+
+
+def _build_algorithmic_mass_rows(
+    masses: dict[str, float],
+    r2s: dict[str, float] | None = None,
+) -> list[dict[str, Any]]:
     rows = []
+    r2s = r2s or {}
     for name in ("baryon", "meson", "glueball", "sqrt_sigma"):
         if name in masses:
-            rows.append({"operator": name, "mass_alg": masses[name]})
+            r2 = r2s.get(name)
+            rows.append({
+                "operator": name,
+                "mass_alg": masses[name],
+                "r2": r2 if r2 is not None and np.isfinite(r2) else None,
+            })
     return rows
 
 
@@ -579,13 +681,20 @@ def _format_mass_ratio(masses: dict[str, float]) -> str:
     return f"**Baryon/Meson ratio:** {ratio:.3f}  \n" f"**Meson/Baryon ratio:** {inv_ratio:.3f}"
 
 
-def _build_best_fit_rows(masses: dict[str, float]) -> list[dict[str, Any]]:
+def _build_best_fit_rows(
+    masses: dict[str, float],
+    r2s: dict[str, float] | None = None,
+) -> list[dict[str, Any]]:
     anchors: list[tuple[str, float, str]] = []
     anchors.extend((f"baryon->{name}", mass, "baryon") for name, mass in BARYON_REFS.items())
     anchors.extend((f"meson->{name}", mass, "meson") for name, mass in MESON_REFS.items())
     baryon_anchors = [a for a in anchors if a[2] == "baryon"]
     meson_anchors = [a for a in anchors if a[2] == "meson"]
     combined_anchors = baryon_anchors + meson_anchors
+
+    r2s = r2s or {}
+    baryon_r2 = r2s.get("baryon")
+    meson_r2 = r2s.get("meson")
 
     rows: list[dict[str, Any]] = []
     for label, anchor_list in (
@@ -604,8 +713,10 @@ def _build_best_fit_rows(masses: dict[str, float]) -> list[dict[str, Any]]:
             "scale_GeV_per_alg": scale,
             "baryon_pred_GeV": pred_b,
             "closest_baryon": _format_closest(pred_b, BARYON_REFS),
+            "baryon_r2": baryon_r2 if baryon_r2 is not None and np.isfinite(baryon_r2) else None,
             "meson_pred_GeV": pred_m,
             "closest_meson": _format_closest(pred_m, MESON_REFS),
+            "meson_r2": meson_r2 if meson_r2 is not None and np.isfinite(meson_r2) else None,
         })
     return rows
 
@@ -614,6 +725,7 @@ def _build_anchor_rows(
     masses: dict[str, float],
     glueball_ref: tuple[str, float] | None,
     sqrt_sigma_ref: float | None,
+    r2s: dict[str, float] | None = None,
 ) -> list[dict[str, Any]]:
     anchors: list[tuple[str, float, str]] = []
     anchors.extend((f"baryon->{name}", mass, "baryon") for name, mass in BARYON_REFS.items())
@@ -629,6 +741,11 @@ def _build_anchor_rows(
         label, mass = glueball_ref
         glueball_refs[label] = mass
 
+    r2s = r2s or {}
+    baryon_r2 = r2s.get("baryon")
+    meson_r2 = r2s.get("meson")
+    glueball_r2 = r2s.get("glueball")
+
     rows: list[dict[str, Any]] = []
     for label, mass_phys, family in anchors:
         alg_mass = masses.get(family)
@@ -643,19 +760,151 @@ def _build_anchor_rows(
             "scale_GeV_per_alg": scale,
             "baryon_pred_GeV": pred_b,
             "closest_baryon": _format_closest(pred_b, BARYON_REFS),
+            "baryon_r2": baryon_r2 if baryon_r2 is not None and np.isfinite(baryon_r2) else None,
             "meson_pred_GeV": pred_m,
             "closest_meson": _format_closest(pred_m, MESON_REFS),
+            "meson_r2": meson_r2 if meson_r2 is not None and np.isfinite(meson_r2) else None,
         }
         if masses.get("glueball") and glueball_ref is not None:
             pred_g = masses.get("glueball", 0.0) * scale
             row["glueball_pred_GeV"] = pred_g
             row["closest_glueball"] = _format_closest(pred_g, glueball_refs)
+            row["glueball_r2"] = (
+                glueball_r2 if glueball_r2 is not None and np.isfinite(glueball_r2) else None
+            )
         if masses.get("sqrt_sigma") and sqrt_sigma_ref is not None:
             pred_s = masses.get("sqrt_sigma", 0.0) * scale
             row["sqrt_sigma_pred_GeV"] = pred_s
             row["closest_sqrt_sigma"] = f"{sqrt_sigma_ref:.3f}"
         rows.append(row)
     return rows
+
+
+def _get_channel_mass(
+    result: ChannelCorrelatorResult,
+    mode: str = "AIC-Weighted",
+) -> float:
+    """Extract mass from a channel result based on mode."""
+    if mode == "AIC-Weighted":
+        return result.mass_fit.get("mass", 0.0)
+    else:  # Best Window
+        best_window = result.mass_fit.get("best_window", {})
+        return best_window.get("mass", 0.0)
+
+
+def _get_channel_r2(
+    result: ChannelCorrelatorResult,
+    mode: str = "AIC-Weighted",
+) -> float:
+    if mode == "AIC-Weighted":
+        return result.mass_fit.get("r_squared", float("nan"))
+    best_window = result.mass_fit.get("best_window", {})
+    return best_window.get("r2", float("nan"))
+
+
+def _extract_channel_masses(
+    results: dict[str, ChannelCorrelatorResult],
+    mode: str = "AIC-Weighted",
+) -> dict[str, float]:
+    """Extract masses from channel results, mapped to families.
+
+    Uses pseudoscalar as the primary meson reference (maps to pion).
+    Returns dict like {"baryon": nucleon_mass, "meson": pseudoscalar_mass, "glueball": glueball_mass}.
+    """
+    masses: dict[str, float] = {}
+
+    # Use pseudoscalar as the primary meson mass (maps to pion)
+    if "pseudoscalar" in results:
+        ps_mass = _get_channel_mass(results["pseudoscalar"], mode)
+        if ps_mass > 0:
+            masses["meson"] = ps_mass
+
+    # Use nucleon channel for baryon mass
+    if "nucleon" in results:
+        nuc_mass = _get_channel_mass(results["nucleon"], mode)
+        if nuc_mass > 0:
+            masses["baryon"] = nuc_mass
+
+    # Use glueball channel directly
+    if "glueball" in results:
+        glue_mass = _get_channel_mass(results["glueball"], mode)
+        if glue_mass > 0:
+            masses["glueball"] = glue_mass
+
+    return masses
+
+
+def _extract_channel_r2(
+    results: dict[str, ChannelCorrelatorResult],
+    mode: str = "AIC-Weighted",
+) -> dict[str, float]:
+    r2s: dict[str, float] = {}
+
+    if "pseudoscalar" in results:
+        ps_r2 = _get_channel_r2(results["pseudoscalar"], mode)
+        if np.isfinite(ps_r2):
+            r2s["meson"] = ps_r2
+
+    if "nucleon" in results:
+        nuc_r2 = _get_channel_r2(results["nucleon"], mode)
+        if np.isfinite(nuc_r2):
+            r2s["baryon"] = nuc_r2
+
+    if "glueball" in results:
+        glue_r2 = _get_channel_r2(results["glueball"], mode)
+        if np.isfinite(glue_r2):
+            r2s["glueball"] = glue_r2
+
+    return r2s
+
+
+def _format_channel_ratios(
+    results: dict[str, ChannelCorrelatorResult],
+    mode: str = "AIC-Weighted",
+) -> str:
+    """Format mass ratios: nucleon/pseudoscalar, vector/pseudoscalar, etc."""
+    lines = ["**Mass Ratios:**"]
+
+    # Get pseudoscalar mass as denominator
+    ps_mass = 0.0
+    if "pseudoscalar" in results:
+        ps_mass = _get_channel_mass(results["pseudoscalar"], mode)
+
+    if ps_mass <= 0:
+        return "**Mass Ratios:** n/a (no pseudoscalar mass)"
+
+    # Nucleon / Pseudoscalar (proton/pion ≈ 6.7)
+    if "nucleon" in results:
+        nuc_mass = _get_channel_mass(results["nucleon"], mode)
+        if nuc_mass > 0:
+            ratio = nuc_mass / ps_mass
+            lines.append(f"- nucleon/pseudoscalar: **{ratio:.3f}** (proton/pion ≈ 6.7)")
+
+    # Vector / Pseudoscalar (rho/pion ≈ 5.5)
+    if "vector" in results:
+        vec_mass = _get_channel_mass(results["vector"], mode)
+        if vec_mass > 0:
+            ratio = vec_mass / ps_mass
+            lines.append(f"- vector/pseudoscalar: **{ratio:.3f}** (rho/pion ≈ 5.5)")
+
+    # Scalar / Pseudoscalar (sigma/pion ≈ 3.5-7.0 depending on interpretation)
+    if "scalar" in results:
+        scalar_mass = _get_channel_mass(results["scalar"], mode)
+        if scalar_mass > 0:
+            ratio = scalar_mass / ps_mass
+            lines.append(f"- scalar/pseudoscalar: **{ratio:.3f}** (sigma/pion)")
+
+    # Glueball / Pseudoscalar
+    if "glueball" in results:
+        glue_mass = _get_channel_mass(results["glueball"], mode)
+        if glue_mass > 0:
+            ratio = glue_mass / ps_mass
+            lines.append(f"- glueball/pseudoscalar: **{ratio:.3f}**")
+
+    if len(lines) == 1:
+        return "**Mass Ratios:** n/a (no valid channel masses)"
+
+    return "  \n".join(lines)
 
 
 SWEEP_PARAM_DEFS: dict[str, dict[str, Any]] = {
@@ -1043,7 +1292,105 @@ def create_app() -> pn.template.FastListTemplate:
             show_index=False,
             sizing_mode="stretch_width",
         )
-        sweep_plot = pn.pane.HoloViews(sizing_mode="stretch_width")
+        sweep_plot = pn.pane.HoloViews(sizing_mode="stretch_width", linked_axes=False)
+
+        # =====================================================================
+        # New "Channels" tab components (independent vectorized analysis)
+        # =====================================================================
+        channel_settings = ChannelSettings()
+
+        channels_status = pn.pane.Markdown(
+            "**Channels:** Load a RunHistory and click Compute to analyze.",
+            sizing_mode="stretch_width",
+        )
+        channels_run_button = pn.widgets.Button(
+            name="Compute Channels",
+            button_type="primary",
+            width=240,
+            sizing_mode="fixed",
+            disabled=True,
+        )
+
+        channel_settings_panel = pn.Param(
+            channel_settings,
+            parameters=[
+                "warmup_fraction",
+                "max_lag",
+                "h_eff",
+                "mass",
+                "ell0",
+                "knn_k",
+                "knn_sample",
+                "use_connected",
+                "channel_list",
+                "window_widths_spec",
+            ],
+            show_name=False,
+        )
+
+        # Plot containers for channel tab
+        channel_plots_correlator = pn.Column(sizing_mode="stretch_width")
+        channel_plots_effective_mass = pn.Column(sizing_mode="stretch_width")
+        channel_plots_spectrum = pn.pane.HoloViews(sizing_mode="stretch_width", linked_axes=False)
+        channel_plots_overlay_corr = pn.pane.HoloViews(sizing_mode="stretch_width", linked_axes=False)
+        channel_plots_overlay_meff = pn.pane.HoloViews(sizing_mode="stretch_width", linked_axes=False)
+        # New plot containers for plateau and heatmap visualizations
+        channel_plateau_plots = pn.Column(sizing_mode="stretch_width")
+        channel_heatmap_plots = pn.Column(sizing_mode="stretch_width")
+        heatmap_color_metric = pn.widgets.RadioButtonGroup(
+            name="Heatmap Color",
+            options=["mass", "aic", "r2"],
+            value="mass",
+            button_type="default",
+        )
+        heatmap_alpha_metric = pn.widgets.RadioButtonGroup(
+            name="Heatmap Opacity",
+            options=["aic", "mass", "r2"],
+            value="aic",
+            button_type="default",
+        )
+        channel_mass_table = pn.widgets.Tabulator(
+            pd.DataFrame(),
+            pagination=None,
+            show_index=False,
+            sizing_mode="stretch_width",
+        )
+
+        # Toggle for AIC-weighted vs best-window masses
+        channel_mass_mode = pn.widgets.RadioButtonGroup(
+            name="Mass Display",
+            options=["AIC-Weighted", "Best Window"],
+            value="AIC-Weighted",
+            button_type="default",
+        )
+
+        # New tables for channel comparison (mirrors Particles tab)
+        channel_ratio_pane = pn.pane.Markdown(
+            "**Mass Ratios:** Compute channels to see ratios.",
+            sizing_mode="stretch_width",
+        )
+        channel_fit_table = pn.widgets.Tabulator(
+            pd.DataFrame(),
+            pagination=None,
+            show_index=False,
+            sizing_mode="stretch_width",
+        )
+        channel_anchor_table = pn.widgets.Tabulator(
+            pd.DataFrame(),
+            pagination="remote",
+            page_size=20,
+            show_index=False,
+            sizing_mode="stretch_width",
+        )
+
+        # Optional: Channel-specific reference inputs
+        channel_glueball_ref_input = pn.widgets.FloatInput(
+            name="Glueball ref (GeV)",
+            value=None,
+            step=0.01,
+            width=200,
+            sizing_mode="fixed",
+        )
 
         def _set_analysis_status(message: str) -> None:
             analysis_status_sidebar.object = message
@@ -1054,6 +1401,7 @@ def create_app() -> pn.template.FastListTemplate:
 
         def _update_particle_tables(metrics: dict[str, Any]) -> None:
             masses = _extract_particle_masses(metrics)
+            r2s = _extract_particle_r2(metrics)
             if "baryon" not in masses or "meson" not in masses:
                 particle_mass_table.value = pd.DataFrame()
                 particle_fit_table.value = pd.DataFrame()
@@ -1072,11 +1420,11 @@ def create_app() -> pn.template.FastListTemplate:
             if sqrt_sigma_ref_input.value is not None:
                 sqrt_sigma_ref = float(sqrt_sigma_ref_input.value)
 
-            particle_mass_table.value = pd.DataFrame(_build_algorithmic_mass_rows(masses))
-            particle_fit_table.value = pd.DataFrame(_build_best_fit_rows(masses))
+            particle_mass_table.value = pd.DataFrame(_build_algorithmic_mass_rows(masses, r2s))
+            particle_fit_table.value = pd.DataFrame(_build_best_fit_rows(masses, r2s))
             particle_ratio_pane.object = _format_mass_ratio(masses)
             particle_anchor_table.value = pd.DataFrame(
-                _build_anchor_rows(masses, glueball_ref, sqrt_sigma_ref)
+                _build_anchor_rows(masses, glueball_ref, sqrt_sigma_ref, r2s)
             )
             _set_particle_status("**Particles:** tables updated.")
 
@@ -1132,6 +1480,9 @@ def create_app() -> pn.template.FastListTemplate:
             particle_run_button.disabled = False
             _set_particle_status("**Particles ready:** click Compute Particles.")
             sweep_run_button.disabled = False
+            # Enable channels tab
+            channels_run_button.disabled = False
+            channels_status.object = "**Channels ready:** click Compute Channels."
 
         def on_simulation_complete(history: RunHistory):
             set_history(history)
@@ -1247,7 +1598,7 @@ def create_app() -> pn.template.FastListTemplate:
             analysis_summary.object = _format_analysis_summary(metrics)
             analysis_json.object = metrics
             analysis_plots.objects = [
-                pn.pane.HoloViews(plot, sizing_mode="stretch_width")
+                pn.pane.HoloViews(plot, sizing_mode="stretch_width", linked_axes=False)
                 for plot in _build_analysis_plots(metrics, arrays)
             ]
 
@@ -1420,6 +1771,221 @@ def create_app() -> pn.template.FastListTemplate:
             else:
                 sweep_status.object = f"**Sweep:** complete ({attempted} runs)."
 
+        # =====================================================================
+        # Channels tab callbacks (vectorized correlator_channels)
+        # =====================================================================
+
+        def _update_channel_plots(results: dict[str, ChannelCorrelatorResult]) -> None:
+            """Update all channel plots from computed results."""
+            corr_plots = []
+            meff_plots = []
+            plateau_plots = []
+            heatmap_plots = []
+
+            for name, result in results.items():
+                if result.n_samples == 0:
+                    continue
+
+                # Convert tensors to numpy
+                corr = result.correlator.cpu().numpy() if hasattr(result.correlator, "cpu") else np.asarray(result.correlator)
+                meff = result.effective_mass.cpu().numpy() if hasattr(result.effective_mass, "cpu") else np.asarray(result.effective_mass)
+                lag_times = np.arange(len(corr)) * result.dt
+                meff_times = np.arange(len(meff)) * result.dt
+
+                corr_plot = build_correlator_plot(lag_times, corr, result.mass_fit, name)
+                if corr_plot is not None:
+                    corr_plots.append(
+                        pn.pane.HoloViews(corr_plot, sizing_mode="stretch_width", linked_axes=False)
+                    )
+
+                meff_plot = build_effective_mass_plot(meff_times, meff, result.mass_fit, name)
+                if meff_plot is not None:
+                    meff_plots.append(
+                        pn.pane.HoloViews(meff_plot, sizing_mode="stretch_width", linked_axes=False)
+                    )
+
+                # Build enhanced plateau plot (2-panel layout)
+                plateau_panels = build_effective_mass_plateau_plot(
+                    lag_times, corr, meff, result.mass_fit, name, dt=result.dt
+                )
+                if plateau_panels is not None:
+                    left_panel, right_panel = plateau_panels
+                    plateau_plots.append(pn.Row(
+                        pn.pane.HoloViews(
+                            left_panel,
+                            sizing_mode="stretch_width",
+                            linked_axes=False,
+                        ),
+                        pn.pane.HoloViews(
+                            right_panel,
+                            sizing_mode="stretch_width",
+                            linked_axes=False,
+                        ),
+                        sizing_mode="stretch_width",
+                    ))
+
+                # Build window heatmap if window data is available
+                if result.window_masses is not None and result.window_aic is not None:
+                    window_masses = result.window_masses.cpu().numpy() if hasattr(result.window_masses, "cpu") else np.asarray(result.window_masses)
+                    window_aic = result.window_aic.cpu().numpy() if hasattr(result.window_aic, "cpu") else np.asarray(result.window_aic)
+                    window_r2 = None
+                    if result.window_r2 is not None:
+                        window_r2 = result.window_r2.cpu().numpy() if hasattr(result.window_r2, "cpu") else np.asarray(result.window_r2)
+                    best_window = result.mass_fit.get("best_window", {})
+
+                    heatmap_plot = build_window_heatmap(
+                        window_masses,
+                        window_aic,
+                        result.window_widths or [],
+                        best_window,
+                        name,
+                        window_r2=window_r2,
+                        color_metric=str(heatmap_color_metric.value),
+                        alpha_metric=str(heatmap_alpha_metric.value),
+                    )
+                    if heatmap_plot is not None:
+                        heatmap_plots.append(pn.pane.HoloViews(
+                            heatmap_plot,
+                            sizing_mode="stretch_width",
+                            linked_axes=False,  # Prevent axis sharing between plots
+                        ))
+
+            channel_plots_correlator.objects = corr_plots if corr_plots else [
+                pn.pane.Markdown("_No correlator plots available._")
+            ]
+            channel_plots_effective_mass.objects = meff_plots if meff_plots else [
+                pn.pane.Markdown("_No effective mass plots available._")
+            ]
+            channel_plateau_plots.objects = plateau_plots if plateau_plots else [
+                pn.pane.Markdown("_No plateau plots available._")
+            ]
+            channel_heatmap_plots.objects = heatmap_plots if heatmap_plots else [
+                pn.pane.Markdown("_No window heatmaps available._")
+            ]
+
+            # Mass spectrum bar chart
+            spectrum = build_mass_spectrum_bar(results)
+            channel_plots_spectrum.object = spectrum
+
+            # Overlay plots
+            overlay_corr = build_all_channels_overlay(results, plot_type="correlator")
+            channel_plots_overlay_corr.object = overlay_corr
+
+            overlay_meff = build_all_channels_overlay(results, plot_type="effective_mass")
+            channel_plots_overlay_meff.object = overlay_meff
+
+        def _update_channel_mass_table(
+            results: dict[str, ChannelCorrelatorResult],
+            mode: str = "AIC-Weighted",
+        ) -> None:
+            """Update the channel mass table with extracted masses."""
+            rows = []
+            for name, result in results.items():
+                if result.n_samples == 0:
+                    continue
+
+                if mode == "AIC-Weighted":
+                    mass = result.mass_fit.get("mass", 0.0)
+                    mass_error = result.mass_fit.get("mass_error", float("inf"))
+                    r2 = result.mass_fit.get("r_squared", float("nan"))
+                else:  # Best Window
+                    best_window = result.mass_fit.get("best_window", {})
+                    mass = best_window.get("mass", 0.0)
+                    mass_error = 0.0  # No error for single window
+                    r2 = best_window.get("r2", float("nan"))
+
+                n_windows = result.mass_fit.get("n_valid_windows", 0)
+                rows.append({
+                    "channel": name,
+                    "mass": f"{mass:.6f}" if mass > 0 else "n/a",
+                    "mass_error": f"{mass_error:.6f}" if mass_error < float("inf") else "n/a",
+                    "r2": f"{r2:.4f}" if np.isfinite(r2) else "n/a",
+                    "n_windows": n_windows,
+                    "n_samples": result.n_samples,
+                })
+            channel_mass_table.value = pd.DataFrame(rows) if rows else pd.DataFrame()
+
+        def _update_channel_tables(
+            results: dict[str, ChannelCorrelatorResult],
+            mode: str | None = None,
+        ) -> None:
+            """Update all channel tables from computed results."""
+            if mode is None:
+                mode = channel_mass_mode.value
+
+            # 1. Update raw mass table (existing)
+            _update_channel_mass_table(results, mode)
+
+            # 2. Update ratio pane
+            channel_ratio_pane.object = _format_channel_ratios(results, mode)
+
+            # 3. Extract family-mapped masses
+            channel_masses = _extract_channel_masses(results, mode)
+            channel_r2 = _extract_channel_r2(results, mode)
+
+            if not channel_masses:
+                channel_fit_table.value = pd.DataFrame()
+                channel_anchor_table.value = pd.DataFrame()
+                return
+
+            # 4. Update best-fit table (reuse existing function)
+            fit_rows = _build_best_fit_rows(channel_masses, channel_r2)
+            channel_fit_table.value = pd.DataFrame(fit_rows)
+
+            # 5. Update anchor table
+            glueball_ref = None
+            if channel_glueball_ref_input.value is not None:
+                glueball_ref = ("glueball", float(channel_glueball_ref_input.value))
+
+            # sqrt_sigma not available from channels, pass None
+            anchor_rows = _build_anchor_rows(
+                channel_masses,
+                glueball_ref,
+                sqrt_sigma_ref=None,
+                r2s=channel_r2,
+            )
+            channel_anchor_table.value = pd.DataFrame(anchor_rows)
+
+        def _on_channel_mass_mode_change(event):
+            """Handle mass mode toggle changes - updates all tables."""
+            if "channel_results" in state:
+                _update_channel_tables(state["channel_results"], event.new)
+
+        channel_mass_mode.param.watch(_on_channel_mass_mode_change, "value")
+
+        def _on_heatmap_metric_change(_event):
+            if "channel_results" in state:
+                _update_channel_plots(state["channel_results"])
+
+        heatmap_color_metric.param.watch(_on_heatmap_metric_change, "value")
+        heatmap_alpha_metric.param.watch(_on_heatmap_metric_change, "value")
+
+        def on_run_channels(_):
+            """Compute channels using vectorized correlator_channels (new code)."""
+            history = state.get("history")
+            if history is None:
+                channels_status.object = "**Error:** Load a RunHistory first."
+                return
+
+            channels_status.object = "**Computing channels (vectorized)...**"
+
+            try:
+                results = _compute_channels_vectorized(history, channel_settings)
+                state["channel_results"] = results
+
+                # Update plots
+                _update_channel_plots(results)
+
+                # Update all tables (mass table, ratios, best-fit, anchored)
+                _update_channel_tables(results)
+
+                n_channels = len([r for r in results.values() if r.n_samples > 0])
+                channels_status.object = f"**Complete:** {n_channels} channels computed."
+            except Exception as e:
+                channels_status.object = f"**Error:** {e}"
+                import traceback
+                traceback.print_exc()
+
         browse_button.on_click(_on_browse_clicked)
         load_button.on_click(on_load_clicked)
         gas_config.add_completion_callback(on_simulation_complete)
@@ -1428,6 +1994,7 @@ def create_app() -> pn.template.FastListTemplate:
         run_analysis_button_main.on_click(on_run_analysis)
         particle_run_button.on_click(on_run_particles)
         sweep_run_button.on_click(on_run_sweep)
+        channels_run_button.on_click(on_run_channels)
         sweep_enable_2d.param.watch(_toggle_sweep_controls, "value")
         sweep_param_x.param.watch(_on_sweep_param_x, "value")
         sweep_param_y.param.watch(_on_sweep_param_y, "value")
@@ -1611,11 +2178,65 @@ def create_app() -> pn.template.FastListTemplate:
                 sizing_mode="stretch_both",
             )
 
+            # New Channels tab (vectorized correlator_channels)
+            channels_tab = pn.Column(
+                channels_status,
+                pn.Row(channels_run_button, sizing_mode="stretch_width"),
+                pn.Accordion(
+                    ("Channel Settings", channel_settings_panel),
+                    ("Reference Anchors", pn.Column(channel_glueball_ref_input)),
+                    sizing_mode="stretch_width",
+                ),
+                pn.layout.Divider(),
+                pn.pane.Markdown("### All Channels Overlay - Correlators"),
+                channel_plots_overlay_corr,
+                pn.pane.Markdown("### All Channels Overlay - Effective Masses"),
+                channel_plots_overlay_meff,
+                pn.layout.Divider(),
+                pn.pane.Markdown("### Mass Spectrum"),
+                channel_plots_spectrum,
+                pn.layout.Divider(),
+                pn.pane.Markdown("### Extracted Masses"),
+                channel_mass_mode,
+                channel_mass_table,
+                channel_ratio_pane,
+                pn.pane.Markdown("### Best-Fit Scales"),
+                channel_fit_table,
+                pn.pane.Markdown("### Anchored Mass Table"),
+                channel_anchor_table,
+                pn.layout.Divider(),
+                pn.pane.Markdown("### Effective Mass Plateaus"),
+                pn.pane.Markdown(
+                    "_Two-panel view: correlator decay (left) + effective mass with best window "
+                    "region (green) and error band (red)._",
+                ),
+                channel_plateau_plots,
+                pn.layout.Divider(),
+                pn.pane.Markdown("### Window Heatmaps"),
+                pn.pane.Markdown(
+                    "_2D matrix of start × end positions. Color/opacity map to mass, AIC, or R². "
+                    "Hover shows mass, AIC, R². Red marker = best window._",
+                ),
+                pn.Row(
+                    heatmap_color_metric,
+                    heatmap_alpha_metric,
+                    sizing_mode="stretch_width",
+                ),
+                channel_heatmap_plots,
+                pn.layout.Divider(),
+                pn.pane.Markdown("### Individual Channel Correlators C(t)"),
+                channel_plots_correlator,
+                pn.pane.Markdown("### Individual Channel Effective Masses m_eff(t)"),
+                channel_plots_effective_mass,
+                sizing_mode="stretch_both",
+            )
+
             main.objects = [
                 pn.Tabs(
                     ("Simulation", simulation_tab),
                     ("Analysis", analysis_tab),
                     ("Particles", particle_tab),
+                    ("Channels", channels_tab),
                 )
             ]
 

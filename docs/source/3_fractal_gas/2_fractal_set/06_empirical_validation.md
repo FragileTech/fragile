@@ -2,7 +2,7 @@
 
 **Prerequisites**: {doc}`01_fractal_set`, {doc}`02_causal_set_theory`, {doc}`03_lattice_qft`
 
----
+
 
 ## TLDR
 
@@ -33,7 +33,7 @@ The theoretical machinery we have built—causal sets, lattice gauge theory, sca
 
 **Critical Methodological Insight**: The companion-based `d_prime` field exhibits anti-QFT behavior ($\xi = 0$ or increasing correlation), while proper local fields (density-based) show the expected exponential decay. This distinction is essential for valid QFT observable construction.
 
----
+
 
 (sec-empirical-intro)=
 ## Introduction
@@ -57,7 +57,7 @@ This chapter presents empirical validation of the QFT theoretical framework deve
 
 The validation uses the `analyze_fractal_gas_qft.py` analysis script, which processes saved `RunHistory` objects from Fractal Gas simulations.
 
----
+
 
 (sec-analysis-pipeline)=
 ## The Analysis Pipeline
@@ -108,7 +108,7 @@ The analysis produces three types of output:
 | Arrays NPZ | `{id}_arrays.npz` | Raw correlation data, Lyapunov trajectories |
 | Plots | `plots/{id}_*.png` | Visualization of key observables |
 
----
+
 
 (sec-correlation-functions)=
 ## Two-Point Correlation Functions
@@ -261,7 +261,7 @@ Comparison of companion-based vs. local diversity:
 | d_prime (companion) | ~0 | ~0 | **No** |
 | diversity_local (density-based) | 0.14 | 0.92 | **Yes** |
 
----
+
 
 (sec-fg-empirical-wilson-loops)=
 ## Wilson Loops and Gauge Structure
@@ -343,7 +343,7 @@ The Wilson loop distribution typically shows:
 **Wilson action time series.** Mean Wilson action $\langle S \rangle = 1 - \langle \mathrm{Re}\, W \rangle$ over simulation steps. After initial transient, the action stabilizes around 0.20, confirming equilibration of the gauge field.
 :::
 
----
+
 
 (sec-lyapunov)=
 ## Lyapunov Stability
@@ -414,7 +414,7 @@ where:
 **Lyapunov function convergence.** Log-scale plot of $V_{\mathrm{total}}$ (blue), position variance $V_{\mathrm{var},x}$ (orange), and velocity variance $V_{\mathrm{var},v}$ (green) vs simulation step. Position variance drops by ~25× while velocity variance remains stable, demonstrating hypocoercive convergence to QSD.
 :::
 
----
+
 
 (sec-qsd-variance)=
 ## QSD Variance Metrics
@@ -463,7 +463,7 @@ Key metrics computed post-warmup:
 | `scaling_exponent` | 1.89 | Edge budget scaling with $N$ |
 :::
 
----
+
 
 (sec-gauge-phases)=
 ## Gauge Phase Distributions
@@ -532,7 +532,7 @@ $$
 **Gauge phase distributions.** Histograms of U(1) phases (blue, from fitness differences) and SU(2) phases (orange, from cloning scores). Both are approximately centered at zero. U(1) has tighter distribution (std=0.65) than SU(2) (std=0.87), reflecting different physical origins.
 :::
 
----
+
 
 (sec-fractal-curvature)=
 ## FractalSet Curvature
@@ -599,7 +599,7 @@ where $h$ is the Cheeger constant.
 - Node/triangle ratio $\sim 1.85$ consistent with interaction graph density
 :::
 
----
+
 
 (sec-methodology)=
 ## Methodological Notes
@@ -675,7 +675,7 @@ For connected correlator data $(r_i, G_i, n_i)$ where $n_i$ is the bin count:
 - `n_fit_points`: Number of points used in fit
 :::
 
----
+
 
 (sec-running-validation)=
 ## Running Your Own Validation
@@ -714,7 +714,7 @@ python src/experiments/analyze_fractal_gas_qft.py \
 - Check QSD equilibration (stable variance ratios)
 :::
 
----
+
 
 ## Summary
 
@@ -743,7 +743,7 @@ The algorithm is discovering quantum field theory. The data proves it.
 | Gauge phase structure | **Validated** | Non-trivial distributions |
 | d_prime as QFT observable | **Invalidated** | Anti-QFT behavior, $\xi \approx 0$ |
 
----
+
 
 ## References
 

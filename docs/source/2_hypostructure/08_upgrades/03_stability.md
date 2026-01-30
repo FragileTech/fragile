@@ -24,7 +24,7 @@ The metatheorems in this section say: *No, it does not.* If your proof has enoug
 The key insight is this: the Sieve operates on certificates, not on the underlying physics directly. And certificates that pass with strict inequalities form an *open set*. Small perturbations preserve openness. This is the implicit function theorem doing its quiet, powerful work.
 :::
 
----
+
 
 (sec-openness-of-regularity)=
 ### Openness of Regularity
@@ -66,7 +66,7 @@ $$
 Strict inequalities define open sets. The Morse-Smale stability theorem (Palis and de Melo, 1982) states that structurally stable systems form an open set. The key is non-degeneracy: if all eigenvalues are strictly away from zero and all capacities are strictly bounded, small perturbations preserve these properties. This is the implicit function theorem applied to the certificate functionals.
 :::
 
----
+
 
 (sec-shadowing-metatheorem)=
 ### Shadowing Metatheorem
@@ -112,7 +112,7 @@ $$
 The Anosov shadowing lemma (1967) states that uniformly hyperbolic systems have the shadowing property. The spectral gap $\lambda$ controls the contraction rate, and the shadowing distance is $\delta \sim \varepsilon/\lambda$. Bowen (1975) extended this to Axiom A systems. Palmer (1988) gave a proof via the contraction mapping theorem on sequence spaces.
 :::
 
----
+
 
 (sec-weak-strong-uniqueness)=
 ### Weak-Strong Uniqueness
@@ -160,7 +160,7 @@ $$
 The weak-strong uniqueness principle uses energy estimates. If $v = u_w - u_s$, then $\frac{d}{dt}\|v\|^2 \leq C\|v\|^2 \cdot \|u_s\|_{X}$ for an appropriate norm $X$. If $u_s \in L^p([0,T]; X)$ (Serrin class), Gronwall's inequality gives $\|v(t)\| = 0$. For Navier-Stokes, $X = L^r$ with $\frac{2}{p} + \frac{3}{r} = 1$, $r > 3$ (Serrin, 1963; Lions, 1996).
 :::
 
----
+
 
 (sec-product-regularity-metatheorem)=
 ### Product-Regularity Metatheorem
@@ -263,7 +263,7 @@ where $\mathfrak{D}_A, \mathfrak{D}_B \geq 0$ are the dissipation rates (energy 
 
 **Literature:** Scaling analysis {cite}`Tao06`; subcritical perturbation {cite}`CazenaveSemilinear03`
 
----
+
 
 #### Backend B: Semigroup + Perturbation Theory
 
@@ -307,7 +307,7 @@ Standard semigroup theory: if $u(t) \in D(A)$ initially and $A$ generates $C_0$-
 
 **Literature:** Semigroup theory {cite}`EngelNagel00`; perturbation of generators {cite}`Pazy83`; coupled parabolic systems {cite}`Cardanobile10`
 
----
+
 
 #### Backend C: Energy + Absorbability
 
@@ -378,7 +378,7 @@ Bounded uniformly in time.
 
 **Literature:** Grönwall inequalities {cite}`Gronwall19`; energy methods {cite}`Lions69`; dissipative systems {cite}`Temam97`
 
----
+
 
 **Backend Selection Logic:**
 
@@ -392,7 +392,7 @@ Bounded uniformly in time.
 
 :::
 
----
+
 
 (sec-subsystem-inheritance)=
 ### Subsystem Inheritance

@@ -27,7 +27,7 @@ When filling out this template, replace `[problem-slug]` with a lowercase, hyphe
 | Proofs | `proof-[problem-slug]-*` | `proof-thm-navier-stokes-main` |
 | Proof Sketches | `sketch-[problem-slug]-*` | `sketch-thm-navier-stokes-main` |
 
----
+
 
 ## Automation Witness (Framework Offloading Justification)
 
@@ -39,7 +39,7 @@ We certify that this instance is eligible for the Universal Singularity Modules.
 **Certificate:**
 $$K_{\mathrm{Auto}}^+ = (T_{\text{[type]}}\ \text{good},\ \text{AutomationGuarantee holds},\ \text{factories enabled: RESOLVE-AutoProfile, RESOLVE-AutoAdmit, RESOLVE-AutoSurgery})$$
 
----
+
 
 ## Abstract
 
@@ -49,7 +49,7 @@ This document presents a **machine-checkable proof object** for **[PROBLEM NAME]
 
 **Result:** [Brief statement of the result, e.g., "The Lock is blocked via Tactic E7 (thermodynamic), establishing global smoothness for all $H^1$ initial data."]
 
----
+
 
 ## Theorem Statement
 
@@ -74,7 +74,7 @@ This document presents a **machine-checkable proof object** for **[PROBLEM NAME]
 
 ::::
 
----
+
 
 :::{dropdown} **LLM Execution Protocol** (Click to expand)
 
@@ -82,7 +82,7 @@ This document presents a **machine-checkable proof object** for **[PROBLEM NAME]
 
 > **IMPORTANT:** When using this template, you are NOT doing traditional mathematical analysis. You are executing a **deterministic diagnostic algorithm** that produces a **machine-checkable proof object**.
 
----
+
 
 ### **A.1 Mindset Shift**
 
@@ -97,7 +97,7 @@ This document presents a **machine-checkable proof object** for **[PROBLEM NAME]
 
 **Core principle: Unknown is recoverable.** If you cannot verify a condition, emit `K^{inc}` with a structured payload. Do NOT guess, do NOT skip, do NOT pretend success.
 
----
+
 
 ### **A.2 Certificate Outcome Types**
 
@@ -124,7 +124,7 @@ Can you verify the predicate?
 └─ NO (inconclusive) → Emit K^{inc} with payload, go to next node
 ```
 
----
+
 
 ### **A.3 Inc Permit Protocol**
 
@@ -154,7 +154,7 @@ K_X^{inc} = {
 | `MISSING_COMPACTNESS` | Need profile decomposition | Add concentration-compactness |
 | `NEEDS_UPGRADE` | Premises exist but upgrade not yet applied | Apply upgrade rule |
 
----
+
 
 ### **A.4 Upgrade Rule Execution**
 
@@ -184,7 +184,7 @@ Non-circularity: K_X^+ not used to derive K_A^+ or K_B^+
 1. **Instantaneous** (same pass): Premises available before the inc certificate was emitted.
 2. **A-posteriori** (after surgery/later nodes): Premises obtained from subsequent nodes or surgery.
 
----
+
 
 ### **A.5 Breach Detection and Surgery**
 
@@ -209,7 +209,7 @@ When $K^{\mathrm{wit}}$ is emitted at a barrier node:
 4. **Re-enter:** Use new certificates to discharge the breach obligations.
 5. **Apply a-posteriori upgrades:** Check if new certificates enable upgrades of earlier inc permits.
 
----
+
 
 ### **A.6 Obligation Tracking**
 
@@ -224,7 +224,7 @@ When $K^{\mathrm{wit}}$ is emitted at a barrier node:
 
 **The ledger must be EMPTY for a valid proof object.**
 
----
+
 
 ### **A.7 Completion Criteria**
 
@@ -237,7 +237,7 @@ A proof object is **VALID** if and only if:
 
 If any of these fail, the run produces a **conditional proof object** that documents exactly what remains to be established.
 
----
+
 
 ### **A.8 Step-by-Step Implementation Guide for New Problems**
 
@@ -291,7 +291,7 @@ If any of these fail, the run produces a **conditional proof object** that docum
 
 :::
 
----
+
 
 ## **Part 0: Interface Permit Implementation Checklist**
 *Complete this section before running the Sieve. Each permit requires specific mathematical structures to be defined.*
@@ -443,7 +443,7 @@ justify analytic bridge admissibility, cite them explicitly in the Lock Mechanis
   - [ ] E12 (Algebraic Compressibility): Degree/Bezout obstruction?
   - [ ] E13 (Algorithmic Completeness): Modality exhaustion?
 
----
+
 
 :::{dropdown} **Part 0.5: Certificate Schemas and Upgrade Protocol** (Reference - Click to expand)
 
@@ -511,7 +511,7 @@ K_X^{br} = {
 ```
 **Contents:** Documents barrier failure and what must be recovered via surgery.
 
----
+
 
 ### **0.5.2 Upgrade Rule Schema**
 
@@ -539,7 +539,7 @@ The upgrade is **invalid** if any premise certificate depends on the target $K_X
 | **Instantaneous** | Same sieve pass | Earlier nodes |
 | **A-posteriori** | After surgery or later nodes | Later nodes or surgery |
 
----
+
 
 ### **0.5.2b Promotion Permits (Blocked → YES$^\sim$)**
 
@@ -570,7 +570,7 @@ K_Surg^+(Curl2D) = {
 }
 ```
 
----
+
 
 ### **0.5.4 Re-entry Certificate Schema**
 
@@ -593,7 +593,7 @@ K_re^+(GradBound) = {
 }
 ```
 
----
+
 
 ### **0.5.5 Context Accumulation**
 
@@ -608,7 +608,7 @@ where $\Gamma_{k+1}$ applies all valid promotions and upgrades to $\Gamma_k$.
 
 :::
 
----
+
 
 ## **Part I: The Instantiation (Thin Object Definitions)**
 *User Input: Define the four "Thin Objects" (Section 8.C). The Factory Metatheorems (TM-1 to TM-4) automatically expand these into the full Kernel Objects.*
@@ -640,7 +640,7 @@ where $\Gamma_{k+1}$ applies all valid promotions and upgrades to $\Gamma_k$.
 * **Scaling Subgroup ($\mathcal{S}$):** [Dilations / Renormalization action]
     * *Framework Derivation:* Profile Library $\mathcal{L}_T$ via RESOLVE-AutoProfile (Profile Trichotomy).
 
----
+
 
 ## **Part II: Sieve Execution (Verification Run)**
 *Execute the Canonical Sieve Algorithm node-by-node. At each node, perform the specified check and record the certificate.*
@@ -653,7 +653,7 @@ For each node:
 3. **Record** the certificate: $K^+$ (yes), $K^{\mathrm{wit}}$ (no with witness), $K^{\mathrm{inc}}$ (no-inconclusive), or $K^{\mathrm{blk}}$ (barrier blocked)
 4. **Follow** the flowchart to the next node
 
----
+
 
 ### **Level 1: Conservation**
 
@@ -680,7 +680,7 @@ For each node:
     trace: "Step 1-3 of EnergyCheck" }
   ```
 
----
+
 
 #### **Node 2: ZenoCheck ($\mathrm{Rec}_N$)**
 
@@ -705,7 +705,7 @@ For each node:
     trace: "Step 2-4 of ZenoCheck" }
   ```
 
----
+
 
 #### **Node 3: CompactCheck ($C_\mu$)**
 
@@ -732,7 +732,7 @@ For each node:
     trace: "Step 3-4 of CompactCheck" }
   ```
 
----
+
 
 ### **Level 2: Duality & Symmetry**
 
@@ -762,7 +762,7 @@ For each node:
     trace: "Step 1-3 of ScaleCheck" }
   ```
 
----
+
 
 #### **Node 5: ParamCheck ($\mathrm{SC}_{\partial c}$)**
 
@@ -787,7 +787,7 @@ For each node:
     trace: "Step 3-4 of ParamCheck" }
   ```
 
----
+
 
 ### **Level 3: Geometry & Stiffness**
 
@@ -815,7 +815,7 @@ For each node:
     trace: "Step 2-4 of GeomCheck" }
   ```
 
----
+
 
 #### **Node 7: StiffnessCheck ($\mathrm{LS}_\sigma$)**
 
@@ -840,7 +840,7 @@ For each node:
     trace: "Step 2-3 of StiffnessCheck" }
   ```
 
----
+
 
 ### **Level 4: Topology**
 
@@ -868,7 +868,7 @@ For each node:
     trace: "Step 1-4 of TopoCheck" }
   ```
 
----
+
 
 #### **Node 9: TameCheck ($\mathrm{TB}_O$)**
 
@@ -896,7 +896,7 @@ For each node:
     trace: "Step 2-4 of TameCheck" }
   ```
 
----
+
 
 ### **Level 5: Mixing**
 
@@ -924,7 +924,7 @@ For each node:
     trace: "Step 1-4 of ErgoCheck" }
   ```
 
----
+
 
 ### **Level 6: Complexity**
 
@@ -952,7 +952,7 @@ For each node:
     trace: "Step 2-4 of ComplexCheck" }
   ```
 
----
+
 
 #### **Node 12: OscillateCheck ($\mathrm{GC}_\nabla$)**
 
@@ -982,7 +982,7 @@ For each node:
     trace: "Step 1-2 of OscillateCheck" }
   ```
 
----
+
 
 ### **Level 7: Boundary (Open Systems)**
 *These nodes apply only if the system has external inputs/outputs. Skip to Node 17 if system is closed.*
@@ -1005,7 +1005,7 @@ For each node:
 
 *Note: This is a dichotomy classifier. Both outcomes are valid; they determine which path to follow.*
 
----
+
 
 #### **Node 14: OverloadCheck ($\mathrm{Bound}_B$)**
 
@@ -1030,7 +1030,7 @@ For each node:
     trace: "Step 1-2 of OverloadCheck" }
   ```
 
----
+
 
 #### **Node 15: StarveCheck ($\mathrm{Bound}_{\Sigma}$)**
 
@@ -1056,7 +1056,7 @@ For each node:
     trace: "Step 1-3 of StarveCheck" }
   ```
 
----
+
 
 #### **Node 16: AlignCheck ($\mathrm{GC}_T$)**
 
@@ -1083,7 +1083,7 @@ For each node:
     trace: "Step 3-4 of AlignCheck" }
   ```
 
----
+
 
 ### **Level 8: The Lock**
 
@@ -1122,7 +1122,7 @@ For each node:
   ```
   *Note: An inc Lock means the proof object is conditional. Document exactly which tactics were attempted and what additional structure might resolve the verdict.*
 
----
+
 
 ## **Part II-B: Upgrade Pass**
 *After completing the sieve, apply upgrade rules to discharge inc certificates.*
@@ -1147,7 +1147,7 @@ For each $K_X^{\mathrm{inc}}$:
 
 The upgrade pass terminates when no $K^{\mathrm{inc}}$ can be upgraded.
 
----
+
 
 ## **Part II-C: Breach/Surgery/Re-entry Protocol**
 *If any barrier was breached, execute this protocol.*
@@ -1194,7 +1194,7 @@ For each breach obligation:
 3. [ ] Apply a-posteriori upgrades to earlier inc certificates
 4. [ ] Update obligation ledger
 
----
+
 
 ## **Part III-A: Lyapunov Reconstruction**
 *If Nodes 1, 3, 7 passed ($K_{D_E}^+$, $K_{C_\mu}^+$, $K_{\mathrm{LS}_\sigma}^+$), construct the canonical Lyapunov functional.*
@@ -1208,7 +1208,7 @@ For each breach obligation:
 
 If YES → Proceed with construction. If NO → Lyapunov may not exist canonically.
 
----
+
 
 ### **Step 1: Value Function Construction (KRNL-Lyapunov)**
 
@@ -1226,7 +1226,7 @@ $$\mathcal{C}(x \to y) := \inf\left\{\int_0^T \mathfrak{D}(S_s x)\, ds : S_T x =
 
 **Certificate:** $K_{\mathcal{L}}^+ = (\mathcal{L}, M, \Phi_{\min}, \mathcal{C})$
 
----
+
 
 ### **Step 2: Jacobi Metric Reconstruction (KRNL-Jacobi)**
 
@@ -1245,7 +1245,7 @@ $$\mathcal{L}(x) = \Phi_{\min} + \inf_{\gamma: x \to M} \int_0^1 \sqrt{\mathfrak
 
 **Certificate:** $K_{\text{Jacobi}}^+ = (g_{\mathfrak{D}}, \mathrm{dist}_{g_{\mathfrak{D}}}, M)$
 
----
+
 
 ### **Step 3: Hamilton-Jacobi PDE (KRNL-HamiltonJacobi)**
 
@@ -1262,7 +1262,7 @@ with boundary condition: $\mathcal{L}|_M = \Phi_{\min}$
 
 **Certificate:** $K_{\text{HJ}}^+ = (\mathcal{L}, \nabla_g \mathcal{L}, \mathfrak{D})$
 
----
+
 
 ### **Step 4: Verify Lyapunov Properties**
 
@@ -1275,7 +1275,7 @@ Check the reconstructed $\mathcal{L}$ satisfies:
 
 **Final Lyapunov Certificate:** $K_{\mathcal{L}}^{\text{verified}}$
 
----
+
 
 ## **Part III-B: Result Extraction (Mining the Run)**
 *Use the Extraction Metatheorems to pull rigorous math objects from the certificates.*
@@ -1339,7 +1339,7 @@ $$\mathcal{B}_{\text{ZFC}} := (\mathcal{U}, \varphi, \text{axioms\_used}, \text{
 * [ ] For each node, cite the corresponding axiom(s) from Definition {prf:ref}`def-sieve-zfc-correspondence` and state the translated lemma $\psi_i$.
 * [ ] Conclude $V_\mathcal{U} \vDash \varphi$ (and hence the classical regularity claim) via Metatheorem {prf:ref}`mt-krnl-zfc-bridge`.
 
----
+
 
 ## **Part III-C: Obligation Ledger**
 *Track all obligations introduced during the run and their discharge status.*
@@ -1376,7 +1376,7 @@ $$\mathcal{B}_{\text{ZFC}} := (\mathcal{U}, \varphi, \text{axioms\_used}, \text{
 
 **Ledger Status:** [ ] EMPTY (valid unconditional proof) / [ ] NON-EMPTY (conditional proof)
 
----
+
 
 ## **Part IV: Final Certificate Chain**
 
@@ -1411,10 +1411,10 @@ Node 10: K_{TB_ρ}^? (mixing)
 Node 11: K_{Rep_K}^? (complexity)
 Node 12: K_{GC_∇}^? (gradient)
 Node 13: K_{Bound_∂}^? (boundary)
----
+
 [Surgery: K_{Surg}^? if applicable]
 [Re-Entry: K^{re}_{...} if applicable]
----
+
 Node 17: K_{Cat_Hom}^? (Lock)
 ```
 
@@ -1439,7 +1439,7 @@ $$\Gamma_{\mathrm{final}} = \{K_{D_E}^{?}, K_{\mathrm{Rec}_N}^{?}, K_{C_\mu}^{?}
 **Full Certificate Chain:**
 $$\Gamma = \{K_{D_E}^+, K_{\mathrm{Rec}_N}^+, K_{C_\mu}^+, K_{\mathrm{SC}_\lambda}^+, K_{\mathrm{SC}_{\partial c}}^+, K_{\mathrm{Cap}_H}^+, K_{\mathrm{LS}_\sigma}^+, K_{\mathcal{L}}^{\text{verified}}, K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}\}$$
 
----
+
 
 ## **Formal Proof**
 
@@ -1467,7 +1467,7 @@ $$\therefore \text{[CLAIM]} \quad \square$$
 
 ::::
 
----
+
 
 ## **Verification Summary**
 
@@ -1481,7 +1481,7 @@ $$\therefore \text{[CLAIM]} \quad \square$$
 
 **Final Verdict:** [ ] UNCONDITIONAL PROOF / [ ] CONDITIONAL PROOF / [ ] SINGULARITY CONFIRMED
 
----
+
 
 ## **References**
 
@@ -1489,7 +1489,7 @@ $$\therefore \text{[CLAIM]} \quad \square$$
 2. [Add relevant mathematical references]
 3. [Add relevant prior work]
 
----
+
 
 ## Appendix: Replay Bundle (Machine-Checkability)
 
@@ -1501,7 +1501,7 @@ This proof object is replayed by providing:
 
 **Replay acceptance criterion:** The checker recomputes the same $\Gamma_{\mathrm{final}}$ and emits `FINAL`.
 
----
+
 
 ## Executive Summary: The Proof Dashboard
 *Fill this section after completing the sieve run (Phase 0: Dashboard Generation).*
@@ -1574,7 +1574,7 @@ This proof object is replayed by providing:
 * **Singularity Set:** $\Sigma = \emptyset$ (or description of allowable set)
 * **Primary Blocking Tactic:** [E? - Description]
 
----
+
 
 ## Document Information
 
@@ -1589,7 +1589,7 @@ This proof object is replayed by providing:
 | **Final Status** | [ ] Draft / [ ] Final |
 | **Generated** | [YYYY-MM-DD] |
 
----
+
 
 *This document constitutes a machine-checkable proof object under the Hypostructure framework.*
 *Each certificate can be independently verified against the definitions in `hypopermits_jb.md`.*

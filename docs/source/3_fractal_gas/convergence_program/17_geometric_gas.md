@@ -2,7 +2,7 @@
 
 **Prerequisites**: {doc}`/source/3_fractal_gas/convergence_program/02_euclidean_gas`, {doc}`/source/3_fractal_gas/convergence_program/06_convergence`, {doc}`/source/3_fractal_gas/3_fitness_manifold/01_emergent_geometry`
 
----
+
 
 ## TLDR
 
@@ -14,7 +14,7 @@
 
 **Stable Backbone + Adaptive Perturbation Philosophy**: The proof treats the Geometric Gas as the proven Euclidean backbone plus three bounded perturbations: (1) state-dependent anisotropic diffusion (controlled by uniform ellipticity), (2) adaptive force $\epsilon_F \nabla V_{\mathrm{fit}}$ (N-uniformly bounded), (3) viscous coupling (purely dissipative). This separation of stability from intelligence allows rigorous convergence analysis via perturbation theory rather than re-proving hypocoercivity from scratch.
 
----
+
 
 (sec-gg-intro)=
 ## 1. Introduction
@@ -90,7 +90,7 @@ The proof follows a three-part structure:
 
 The proof strategy embodies the **stable backbone + adaptive perturbation** philosophy: rather than re-proving everything for the complex adaptive system, we build rigorously upon the Euclidean Gas results proven in {doc}`/source/3_fractal_gas/convergence_program/06_convergence`, showing that intelligence can be added without sacrificing tractability.
 
----
+
 
 (sec-gg-rho-pipeline)=
 ## 2. The ρ-Parameterized Measurement Pipeline
@@ -228,7 +228,7 @@ Balances local adaptation with statistical robustness. Optimal $\rho$ trades off
 $\square$
 :::
 
----
+
 
 (sec-gg-hybrid-sde)=
 ## 3. Formal Definition of the Geometric Gas
@@ -343,7 +343,7 @@ $$
 \Sigma_{\mathrm{reg}}(x_i, S) = D_{\mathrm{reg}}^{1/2} = (H_i(S) + \epsilon_\Sigma I)^{-1/2} \quad \text{(diffusion matrix)}
 $$
 
----
+
 
 (sec-gg-axioms)=
 ## 4. Axiomatic Framework
@@ -430,7 +430,7 @@ The viscous kernel $K: \mathcal{X} \to \mathbb{R}_+$ satisfies:
 **Role**: Ensures viscous force is N-uniformly bounded and purely dissipative.
 :::
 
----
+
 
 ## Part II: Convergence Theory
 
@@ -549,7 +549,7 @@ So the fix is not exotic; it is a careful bookkeeping upgrade. We translate back
 | Ellipticity | Trivial (constant $\sigma$) | Non-trivial (requires regularization) |
 | Resolution | N/A | Uniform ellipticity + C³ regularity |
 
----
+
 
 ## Part II: Convergence Theory
 
@@ -816,7 +816,7 @@ Applying to $V_{\mathrm{TV}}$ components and using velocity bounds gives $O(L_\S
 $\square$
 :::
 
----
+
 
 (sec-gg-foster-lyapunov)=
 ## 7. Foster-Lyapunov Drift Condition
@@ -994,7 +994,7 @@ $$
 - For **exploitation** (known peaks): use smaller $\rho \sim 0.3$, carefully tuned $\epsilon_F < \epsilon_F^*(\rho)$
 - **Safety factor**: Always operate at $\epsilon_F \leq 0.5 \epsilon_F^*(\rho)$ to maintain margin for model uncertainty
 
----
+
 
 (sec-gg-ergodicity)=
 ## 8. Geometric Ergodicity
@@ -1118,7 +1118,7 @@ Since $\kappa_{\mathrm{total}}(\rho)$ and $C_{\mathrm{total}}(\rho)$ are N-unifo
 $\square$
 :::
 
----
+
 
 ## Part III: Functional Inequalities
 
@@ -1496,7 +1496,7 @@ Both constraints are N-uniform and depend continuously on $\rho$.
 
 :::
 
----
+
 
 (sec-gg-mean-field-lsi)=
 ## 10. Mean-Field LSI and Propagation of Chaos
@@ -1655,7 +1655,7 @@ where $C_{\mathrm{chaos}}(\rho, T) = O(e^{C_{\mathrm{Lip}}^{H^1_w}(\rho) T})$ gr
 $\square$
 :::
 
----
+
 
 (sec-gg-implications)=
 ## 11. Implications and Open Questions
@@ -1840,7 +1840,7 @@ where $T_{\mathrm{fit}}$ is a stress-energy tensor for the fitness field.
 
 *Status:* Formal speculation. Requires developing gauge-theoretic formulation of Geometric Gas. See Appendix {ref}`sec-gg-appendix-c` for preliminary geometric tools.
 
----
+
 
 ## Appendices
 
@@ -1996,7 +1996,7 @@ For simplicity, we absorb $c_{\max}(\rho)$ into the definition of $L_\Sigma(\rho
 $\square$
 :::
 
----
+
 
 (sec-gg-appendix-b)=
 ## Appendix B: Comparison with Classical Hypocoercivity
@@ -2018,7 +2018,7 @@ The table below contrasts the classical hypocoercivity framework (Villani 2009) 
 
 **Key Insight:** The resolution strategy transforms a difficult probabilistic problem (verifying hypocoercivity with state-dependent diffusion) into straightforward functional analysis (verifying bounds on spectral constants and derivatives). The regularization $\epsilon_\Sigma I$ is the linchpin—it ensures uniform ellipticity *by construction*, avoiding the need for delicate probabilistic arguments.
 
----
+
 
 (sec-gg-appendix-c)=
 ## Appendix C: Geometric Analysis Tools and Gauge Theory Connection
@@ -2033,7 +2033,7 @@ This appendix provides classical differential geometry tools used in {doc}`/sour
 
 **Note:** The arguments in Part I are standard and do not depend on the Fragile framework; citations are included for the classical differential geometry route.
 
----
+
 
 (sec-appx-geometric-gas-holonomy)=
 ## Holonomy and Small-Loop Expansion
@@ -2107,7 +2107,7 @@ The same expansion holds for Lorentzian metrics on spacelike loops, with the
 holonomy group in $O(1,d-1)$ and the same curvature contraction.
 :::
 
----
+
 
 (sec-appx-geometric-gas-raychaudhuri)=
 ## Raychaudhuri Equation (Classical)
@@ -2165,7 +2165,7 @@ applies with $h_{\mu\nu} = g_{\mu\nu} - u_\mu u_\nu$; the sign conventions for t
 vorticity term follow the chosen definition of $\omega_{\mu\nu}$.
 :::
 
----
+
 
 (sec-appx-geometric-gas-transport)=
 ## Moving Domains, Voronoi Faces, and Divergence Remainders
@@ -2253,7 +2253,7 @@ The first-order term integrates to zero by symmetry up to $O(\epsilon^{d+1})$,
 and the second-order term is controlled by $\|\nabla^2 u\|_{C^0}$.
 :::
 
----
+
 
 (sec-appx-geometric-gas-discrete-raychaudhuri)=
 ## Discrete Raychaudhuri: Classical Error Estimate
@@ -2295,7 +2295,7 @@ Apply the continuous Raychaudhuri equation
 into $O(\epsilon_N)$.
 :::
 
----
+
 
 ### C.5. Connection to Gauge Theory
 
@@ -2362,7 +2362,7 @@ This interpretation connects to the Wasserstein-Fisher-Rao conjecture (Conjectur
 - {doc}`/source/3_fractal_gas/3_fitness_manifold/03_curvature_gravity` - Ricci curvature and gravitational analogues
 - Specialized gauge theory documents (in development)
 
----
+
 
 ## References
 
@@ -2400,7 +2400,7 @@ This interpretation connects to the Wasserstein-Fisher-Rao conjecture (Conjectur
 - Otto, F. (2001). The geometry of dissipative evolution equations: the porous medium equation. *Communications in PDE*, 26(1-2), 101-174.
 - Ledoux, M. (2001). *The Concentration of Measure Phenomenon*. American Mathematical Society.
 
----
+
 
 **Document Status:** ✅ **COMPLETE** (January 2026)
 

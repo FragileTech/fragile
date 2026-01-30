@@ -26,7 +26,7 @@ We discharge the following:
   $M_2^{\mu\nu}=2m_2 g^{\mu\nu}$.
 - **A6 (Scaling)**: $\varepsilon\to 0$, $N\to\infty$, and $N\varepsilon^{D+4}\to\infty$.
 
----
+
 
 ## 2. A2: Smooth Fields from QSD + Algorithmic Smoothing
 
@@ -77,7 +77,7 @@ under the integral sign gives $r, Z \in C^4([t_0,t_1])$.
 All four fields are therefore $C^4$ with bounded derivatives on the window.
 :::
 
----
+
 
 ## 3. A1: Geometry and Global Hyperbolicity
 
@@ -122,7 +122,7 @@ confining envelope from the decorated Gibbs structure
 window, yielding global hyperbolicity.
 :::
 
----
+
 
 ## 4. A3: QSD Sampling and Stationarity
 
@@ -149,7 +149,7 @@ the mean-field stationary solution imply stationarity; ergodicity follows from
 LSI-based mixing (Lemma {prf:ref}`lem-continuum-a4-mixing`).
 :::
 
----
+
 
 ## 5. A4: LSI Mixing and LLN
 
@@ -179,7 +179,7 @@ With LSI and exchangeability, concentration and propagation-of-chaos bounds
 imply the LLN used in the d'Alembertian estimator.
 :::
 
----
+
 
 ## 6. A5: Kernel Moment Conditions
 
@@ -207,7 +207,7 @@ the second moment is proportional to $g^{\mu\nu}$, giving the required tensor
 form.
 :::
 
----
+
 
 ## 7. A6: Scaling Regime
 
@@ -238,7 +238,7 @@ radius. This uses only the mean-field certificate and does not alter the
 algorithm.
 :::
 
----
+
 
 ## 8. Corollary: Assumption-Free Continuum Consistency
 

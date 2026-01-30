@@ -40,7 +40,7 @@ Why is non-circularity so important? Here is the thing to keep in your mind: ima
 This is not just logical hygiene. It is what guarantees termination. Without non-circularity, a surgery could trigger another surgery that triggers the first one again, creating an infinite loop of "repairs" that never actually fix anything. The ranking induced by the proof DAG ensures this cannot happen.
 :::
 
----
+
 
 ### Surgery Contracts Table
 
@@ -70,7 +70,7 @@ Look at this table carefully. Each row tells you a complete story: something wen
 The actions themselves read like a catalog of mathematical repair techniques, each one carefully matched to its failure mode. Energy blowing up? Compactify the space. Events accumulating infinitely fast? Saturate the discrete structure. Topology getting too complicated? Use o-minimal regularization. Each is a proven technique from analysis, geometry, or control theory, repurposed here as a systematic repair mechanism.
 :::
 
----
+
 
 ### Surgery Contract Template
 
@@ -120,7 +120,7 @@ The non-circularity checker must verify that the progress measure is compatible 
 The progress certificate is crucial. Notice that there are two types: Type A says "we can only do this a bounded number of times" (like counting surgeries), while Type B says "some measure strictly decreases each time" (like energy or complexity). Either way, the surgeries cannot go on forever. This is not an afterthought---it is baked into the very definition of what a valid surgery is.
 :::
 
----
+
 
 ### Surgery Specifications
 
@@ -717,7 +717,7 @@ Reservoir (SurgBD) handles the practical problem of resource starvation. When in
 Controller Augmentation (SurgBC) addresses Ashby's Law of Requisite Variety---one of the deepest insights in cybernetics. If your controller does not have enough "variety" (entropy, degrees of freedom) to match the disturbances it faces, it *cannot possibly* maintain control. The solution is not to try harder with what you have; it is to *add degrees of freedom*. You augment the control space until $H(u) \geq H(d)$, then use the adjoint criterion to select the best control from this larger space. The entropy gap strictly decreases to zero, ensuring you eventually have enough variety.
 :::
 
----
+
 
 ### Action Nodes (Dynamic Restoration)
 

@@ -6,7 +6,7 @@
 
 **Dependencies**: {doc}`03_cloning`, {doc}`05_kinetic_contraction`, {doc}`06_convergence`, {doc}`08_mean_field`, {doc}`09_propagation_chaos`, {doc}`15_kl_convergence`
 
----
+
 
 ## A1.1 QSD Structure: Exchangeability
 
@@ -222,7 +222,7 @@ $$
 Therefore, the representation is exact. $\square$
 :::
 
----
+
 
 ## A1.2 Mean-Field Limit and Propagation of Chaos
 
@@ -566,7 +566,7 @@ This proof achieves O(1/N) for **all bounded functions** (including indicators),
 - Chernoff + tail integration gives variance without needing derivatives
 :::
 
----
+
 
 ## A1.3 N-Uniform Log-Sobolev Inequality
 
@@ -758,7 +758,7 @@ $$
 Therefore, the mean-field density $\rho_\infty$ satisfies the LSI with constant $C_{\text{LSI}}^{\text{MF}}$. $\square$
 :::
 
----
+
 
 ## A1.4 Summary and Framework Integration
 
@@ -801,7 +801,7 @@ Therefore, the mean-field density $\rho_\infty$ satisfies the LSI with constant 
 - Check convergence to McKean-Vlasov PDE solution
 - Verify LSI constant independence of $N$
 
----
+
 
 ## References
 

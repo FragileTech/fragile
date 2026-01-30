@@ -46,7 +46,7 @@ The **Certificate Generator Library** maps standard literature lemmas to permits
 | OscillateCheck | Monotonicity, De Giorgi-Nash-Moser | $K_{\mathrm{GC}_\nabla}^-$ |
 | Lock | Cohomology, invariant theory | $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}$ |
 
----
+
 
 (sec-minimal-instantiation-checklist)=
 ## Minimal Instantiation Checklist
@@ -149,7 +149,7 @@ Let me make sure you understand what just happened in that proof. The six steps 
 **Output trichotomy** (Step 6): At the end, you get exactly one of three things: global regularity (VICTORY), a surgery path to try again, or an honest admission of incompleteness. No fourth option. No silent failures.
 :::
 
----
+
 
 (sec-metatheorem-unlock-table)=
 ## Metatheorem Unlock Table
@@ -176,7 +176,7 @@ The following table specifies which metatheorems are unlocked by which certifica
 | Surgery Admissibility | $K_{\text{lib}}$ or $K_{\text{strat}}$ | Profile Trichotomy Case 1/2 |
 | Global Regularity | $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}$ (Lock Blocked) | BarrierExclusion Blocked |
 
----
+
 
 (sec-diagram-specification-cross-reference)=
 ## Diagram ↔ Specification Cross-Reference

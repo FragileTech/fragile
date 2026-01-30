@@ -2,7 +2,7 @@
 
 **Prerequisites**: {doc}`/source/3_fractal_gas/2_fractal_set/01_fractal_set`, Causal Set Theory ({cite}`BombelliLeeEtAl87,Sorkin05`)
 
----
+
 
 ## TLDR
 
@@ -14,7 +14,7 @@
 
 **Causal Set Machinery Applies**: With causal set status established, CST tools (d'Alembertian, dimension estimators, curvature measures) apply in full, using the geometric light-cone order and adaptive-density formulas given here.
 
----
+
 
 (sec-cst-intro)=
 ## Introduction
@@ -33,7 +33,7 @@ Causal set theory (CST) posits that spacetime is fundamentally discrete: a local
 2. QSD sampling provides adaptive (not uniform) sprinkling
 3. CST mathematical machinery applies, with explicit adaptive-density formulas
 
----
+
 
 (sec-cst-axioms)=
 ## Causal Set Theory: Axioms and Framework
@@ -108,7 +108,7 @@ Given a $D$-dimensional Lorentzian manifold $(M, g_{\mu\nu})$ with volume elemen
 
 An inhomogeneous density generally breaks global Lorentz invariance; in the Fractal Set this tradeoff is intentional because the target geometry and sampling measure are emergent and algorithm-defined.
 
----
+
 
 (sec-fractal-causal-set)=
 ## Fractal Set as Adaptive Causal Set
@@ -409,7 +409,7 @@ directly computable on the Fractal Set.
 - {doc}`/source/3_fractal_gas/3_fitness_manifold/04_field_equations`: Field equations and pressure dynamics
 :::
 
----
+
 
 (sec-axiom-verification)=
 ## Verification of Causal Set Axioms
@@ -478,7 +478,7 @@ many episodes (bounded by the walker count), so the interval is finite.
 All axioms verified using only ZFC set theory and real analysis. $\square$
 :::
 
----
+
 
 (sec-faithful-discretization)=
 ## Faithful Discretization and Manifoldlikeness
@@ -558,7 +558,7 @@ Compared to uniform Poisson sprinkling, the Fractal Set achieves:
 3. **Automatic adaptation**: No ad-hoc density choices; $\rho$ emerges from QSD
 :::
 
----
+
 
 (sec-cst-machinery)=
 ## Causal Set Mathematical Machinery
@@ -1154,7 +1154,7 @@ matching the Benincasa-Dowker coefficients, this action reduces to $S_{\mathrm{B
   holonomy/plaquette curvature to validate the emergent geometry.
 :::
 
----
+
 
 (sec-physical-consequences)=
 ## Physical Consequences
@@ -1246,7 +1246,7 @@ The key difference is that the Fractal Set is classical and stochastic, not quan
 **Key difference**: Fractal Set is classical + stochastic; LQG is quantum from the start.
 :::
 
----
+
 
 ## Summary
 
@@ -1260,7 +1260,7 @@ The key difference is that the Fractal Set is classical and stochastic, not quan
 
 4. ✅ **Physical implications**: Foundation for quantum gravity calculations on emergent spacetime
 
----
+
 
 ## References
 

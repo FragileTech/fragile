@@ -810,7 +810,7 @@ $$
 **Literature:** {cite}`Levin73`; {cite}`Schnorr71`; {cite}`Chaitin75`; {cite}`Tits72`; {cite}`Gromov87`; {cite}`Selberg56`; {cite}`Bekenstein81`; {cite}`Lloyd00`
 :::
 
----
+
 
 ### Trainable Hypostructure Consistency
 
@@ -911,7 +911,7 @@ $$
 
 **Key Insight (Structural parameter estimation).** This theorem elevates the meta-learning framework from "we can optimize a loss" to a metatheorem: under identifiability, **structural parameters are estimable**. The parameter manifold $\Theta$ is equipped with the Fisher-Rao metric, following Amari's Information Geometry {cite}`Amari00`, treating learning as a projection onto a statistical manifold. The minimization of defect risk $\mathcal{R}(\theta)$ converges to the unique hypostructure compatible with the trajectory distribution $\mu$, and all high-level structural predictions (barrier constants, forbidden failure modes) converge with it.
 
----
+
 
 :::{prf:remark} What the metatheorem says
 
@@ -1078,7 +1078,7 @@ If $b \in E(\theta)$: The sum excludes block $b$, so $Q_b^* = \frac{1}{2}\sum_{c
 **Step 5 (Signature discrimination).** Blocks in $E(\theta)$ have systematically smaller $\mathcal{R}_b^*$ than blocks not in $E(\theta)$, by a multiplicative margin depending on the spectra of $H_c$. Taking $\gamma$ as the ratio of spectral bounds yields the equivalence.
 :::
 
----
+
 
 **Key Insight (Built-in debugger).** A trainable hypostructure comes with principled error diagnosis:
 
@@ -2745,7 +2745,7 @@ This is a structural analogue of standard results for equivariant neural network
 
 > **Key Insight:** Trainable hypostructures inherit all symmetries of the underlying system distribution. The learned axioms preserve equivariance—not just at the level of predictions, but at the level of structural components ($\Phi$, $\mathfrak{D}$, barriers, capacities). Symmetry cannot be spontaneously broken by the learning process unless the true theory itself admits symmetry-broken branches.
 
----
+
 
 (ch-general-loss)=
 
@@ -2991,7 +2991,7 @@ A system trained on $\mathcal{L}_{\text{gen}}$ with sufficient capacity and trai
 The combination of these four loss components produces a system that instantiates and optimizes over hypostructures universally.
 :::
 
----
+
 
 ### The Learnability Threshold
 
@@ -3111,7 +3111,7 @@ implies the Łojasiewicz inequality transfers to $\hat{\Phi}_\Theta$ for suffici
 In the Coarse-Grained Regime, Axiom LS fails at the micro-scale but is restored at the emergent macro-scale $\Pi^*(X)$, where the reduced dynamics satisfy the Łojasiewicz inequality with an effective exponent $\theta_{\text{eff}} \geq \theta$.
 :::
 
----
+
 
 ### The Optimal Effective Theory
 
@@ -3256,7 +3256,7 @@ At the fixed point, the effective theory is **scale-invariant**: further coarse-
 This completes the proof: gradient descent on $\mathcal{L}_{\text{gen}}$ under capacity constraints converges to the RG fixed point, which is the optimal coarse-graining for prediction.
 :::
 
----
+
 
 ### Summary: The Universal Simulator Guarantee
 
@@ -3273,7 +3273,7 @@ The two preceding metatheorems provide the rigorous guarantee for the ``Glass Bo
 
 This is the derivation of **Effective Field Theory** from first principles of learning: the scale of description is not chosen by the physicist but discovered by the optimization process. The AGI's internal model is always interpretable as physics at some scale—either exact micro-physics or emergent macro-physics with explicit noise terms.
 
----
+
 
 ### Non-differentiable environments
 
@@ -3356,7 +3356,7 @@ Backpropagating a global loss through a non-differentiable RL environment is the
 
 :::
 
----
+
 
 ### Structural Identifiability
 
@@ -3423,7 +3423,7 @@ Axiom (D) requires $\partial_t \Phi_\Theta + \mathfrak{D}_\Theta \leq 0$ along t
 
 **Key Insight:** The reconstruction operator $\mathcal{R}$ is a derived object of the framework—not a new assumption. Every step uses existing axioms and metatheorems (Structural Resolution, Canonical Lyapunov, Action Reconstruction).
 
----
+
 
 :::{prf:definition} Persistent excitation
 :label: def-persistent-excitation
@@ -3486,7 +3486,7 @@ The map $[\Theta] \in \Theta_{\mathrm{adm}}/{\sim} \mapsto \mathsf{Sig}(\Theta)$
 
 **Key Insight:** Meta-Identifiability reduces parameter learning to defect minimization. Minimizing $\mathcal{R}_A(\Theta) = \int_{\mathcal{U}} K_A^{(\Theta)}(u) \, d\mu(u)$ over $\Theta$ converges to the true hypostructure as trajectory data increases.
 
----
+
 
 :::{prf:remark} Irreducible extrinsic conditions
 
@@ -3635,7 +3635,7 @@ Dividing by $\max\{K(T_1), K(T_3)\}$ and using monotonicity yields the result.
 *The theory space $(\mathfrak{T}/{\sim}, d_{\text{NID}})$ is a complete metric space.*
 :::
 
----
+
 
 ### The Epistemic Fixed Point
 

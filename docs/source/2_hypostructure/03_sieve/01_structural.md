@@ -556,7 +556,7 @@ The flow proceeds by **Iterative Obstruction Theory**:
 5. **The Structure Sheaf:** The accumulation of certificates $\Gamma$ forms a **Structure Sheaf** $\mathcal{O}_{\mathrm{Reg}}$ over the trajectory space. A "Victory" is a proof that the **Global Sections** of the singularity sheaf vanish.
 :::
 
----
+
 
 ### Interface Registry: The Obstruction Atlas
 

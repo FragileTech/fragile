@@ -2530,7 +2530,7 @@ where:
 
 **Complexity:** $O(N)$ to $O(N^2)$ matrix operation. **No partial differential equations required.**
 
----
+
 
 **Step 2: The Lift (The "Free" Proof via RCD Theory)**
 
@@ -2546,7 +2546,7 @@ where:
 - **Domain Embedding:** Gromov-Hausdorff embedding $\iota: \mathbf{Thin}_T \to \mathbf{RCD}(K,N)$ (RCD spaces with curvature $K$ and dimension $N$)
 - **Conclusion Import:** Convergence in RCD topology $\Rightarrow K_{\mathrm{LS}_\sigma}^{\text{LSI}}$ on the continuum limit
 
----
+
 
 **Step 3: The Telemetry Proxy (The "Physicist" Certificate)**
 
@@ -6570,7 +6570,7 @@ where $\mathsf{route\_tag} \in \{\text{CC-Rig}, \text{Attr-Morse}, \text{Tame-LS
 
 **Downstream Independence:** All subsequent theorems (Lock promotion, surgery admissibility, etc.) depend only on $K_{\mathrm{prof}}^+$, never on which mechanism produced it.
 
----
+
 
 ### Public Signature (Soft Interfaces Only)
 
@@ -7609,7 +7609,7 @@ K_{\mathrm{Rep}_K}^+ \wedge K_{\mathrm{SC}_\lambda}^+ \wedge \left(K_{\mathrm{E1
 
 $$
 
----
+
 
 ### Backend A: Hypersurface Form
 
@@ -7622,7 +7622,7 @@ $$
 
 **Literature:** Irreducibility and defining equations {cite}`Hartshorne77`; Nullstellensatz {cite}`CoxLittleOShea15`.
 
----
+
 
 ### Backend B: Complete Intersection Form
 
@@ -7635,7 +7635,7 @@ $$
 
 **Literature:** Bézout's theorem {cite}`Fulton84`; complete intersections {cite}`EisenbudHarris16`.
 
----
+
 
 ### Backend C: Morphism / Compression Form
 
@@ -7648,7 +7648,7 @@ $$
 
 **Literature:** Degrees of morphisms {cite}`Lazarsfeld04`; projection formulas {cite}`Fulton84`.
 
----
+
 
 **Backend Selection Logic:**
 

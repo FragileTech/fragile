@@ -129,7 +129,7 @@ The document is structured as follows:
 3. **Inelastic collision physics**: Momentum-conserving cloning with energy dissipation
 4. **Explicit constants**: All Hölder/Lipschitz constants expressed in terms of physical parameters $(\tau, \sigma_v, \sigma_x, \gamma_{\text{fric}}, \ldots)$
 
----
+
 
 ## 2. Framework alignment with velocity states
 
@@ -538,7 +538,7 @@ We measure dispersion in the Sasaki metric and retain the canonical aggregation 
 
 The kinetic parameters feed the geometric consistency constants computed in Section 2 (perturbation moment, anisotropy, drift control) and inherit continuity from the Gaussian/affine structure.
 
----
+
 
 ## 4. Axiom-by-axiom validation (Sasaki formulation)
 
@@ -2204,7 +2204,7 @@ $$
 **Validation:** This axiom is satisfied by ensuring the potential function $R_{\mathrm{pos}}$ does not contain large, perfectly flat plateaus within the compact valid domain $X_{\mathrm{valid}}$. Continuity of $\nabla R_{\mathrm{pos}}$ on the compact set allows the constants to be chosen with $L_{\mathrm{grad}}$ no larger than the richness scale $r_{\mathrm{rich}}/4$ from Section 4.2. This regularity condition is assumed to hold for the Euclidean Gas instantiation.
 :::
 
----
+
 
 ## 5. Statement & proof: Kinetic Euclidean Gas is a valid Fragile Gas
 
@@ -2234,7 +2234,7 @@ Since all axioms are satisfied, $\Psi_{\mathcal F_{\mathrm{EG}}}$ is a Feller Ma
 | Boundary Regularity | Lemma {prf:ref}`lem-euclidean-boundary-holder` |
 ````
 
----
+
 
 (sec-eg-kernel)=
 ## 6. Swarm Update Operator Kernel

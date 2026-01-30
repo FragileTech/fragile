@@ -80,7 +80,7 @@ The Sieve works the same way. Domain expertise goes into implementing the local 
 This separation is not just elegant. It is practical. A geometer working on Ricci flow does not need to understand how the Sieve handles dispersive equations. She implements her interface predicates, runs the Sieve, gets her certificate. The framework holds it all together.
 :::
 
----
+
 
 (sec-rigidity-recovery)=
 ## Rigidity & Recovery Metatheorems
@@ -98,7 +98,7 @@ This section defines **strengthening metatheorems** that upgrade soft interface 
 - **Rigidity** ($K_{\text{Rigid}}$): Canonical Lyapunov functions and convergence rates
 - **Effectivity** ($K_{\text{Eff}}$): Algorithmic decidability of lock exclusion
 
----
+
 
 ### Tame Singularity and Recovery
 
@@ -140,7 +140,7 @@ The Tame Certificate includes the premise needed to invoke the **Structural Surg
 
 **Certificate produced**: $K_{\text{Tame}}$ with `HasRecoveryEngine(T)`.
 
----
+
 
 ### Rigidity and Canonical Energy
 
@@ -492,7 +492,7 @@ $$
 This extends {prf:ref}`mt-krnl-jacobi` to non-smooth settings where $|\partial\Phi|$ replaces $\|\nabla\Phi\|_g$.
 :::
 
----
+
 
 #### Soft Local Tower Globalization
 
@@ -647,7 +647,7 @@ for any $\gamma > 0$, contradicting $K_{D_E^{\mathrm{tower}}}^+$.
 - Constraints: any violation at $X_\infty$ propagates back to finite levels, contradicting the permits.
 :::
 
----
+
 
 #### Obstruction Capacity Collapse
 
@@ -752,7 +752,7 @@ for some $\delta > 0$. But accumulating such obstructions requires $\sum_n H_{\m
 *Step 5 (Structural detectability).* By $K_{\mathrm{TB}+\mathrm{LS}}^{\mathcal{O}+}$, the pairing is non-degenerate: any non-trivial $x \in \mathcal{O}$ has $\langle x, y \rangle_{\mathcal{O}} \neq 0$ for some $y$. Combined with $H_{\mathcal{O}}$, obstructions are localized to specific directions with quantifiable pairing contributions.
 :::
 
----
+
 
 #### Stiff Pairing / No Null Directions
 
@@ -817,7 +817,7 @@ Let $\mathcal{X} = X_{\mathrm{free}} \oplus X_{\mathrm{obs}} \oplus X_{\mathrm{r
 *Step 5 (Gradient consistency).* By $K_{\mathrm{GC}_\nabla}^+$, flat directions of $\Phi$ correspond to flat directions of the pairing. Since the pairing has trivial radical, $\Phi$ has no hidden flat directions. Therefore $X_{\mathrm{rest}} = 0$.
 :::
 
----
+
 
 ### Effective (Algorithmic) Proof
 
@@ -880,7 +880,7 @@ If you also assume effective profile stratification (Tame Certificate) and effec
 
 **Level-up certificate**: `Classification-Decidable`.
 
----
+
 
 ### Relationship between Certificate Levels (Summary)
 
@@ -889,7 +889,7 @@ If you also assume effective profile stratification (Tame Certificate) and effec
 - **$K_{\text{Rigid}}$**: You can derive *canonical Lyapunov structure*, *uniqueness*, and *rates* (including stratified Lyapunov across surgery).
 - **$K_{\text{Eff}}$**: You can make large parts of the engine *algorithmic/decidable* (proof backend becomes executable).
 
----
+
 
 ## Witness Certificates (Auxiliary Bounds)
 
@@ -937,7 +937,7 @@ Every strong metatheorem should be written as:
 - "Explicit reconstruction (HJ/Jacobi)" ($K_{\text{Rigid}}$ + $K_{\text{GC}}$ certificates)
 - "Algorithmic lock proof (E1--E13 decidable)" ($K_{\text{Eff}}$)
 
----
+
 
 (sec-type-system)=
 ## The Type System
@@ -963,7 +963,7 @@ A **type** $T$ is a class of dynamical systems sharing:
 
 :::
 
----
+
 
 ### Type Catalog
 

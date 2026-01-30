@@ -32,7 +32,7 @@ And here's the beautiful part: once you have gauge-covariant primitives, the arc
 
 *Cross-references:* This chapter builds on gauge theory foundations ({ref}`sec-symplectic-multi-agent-field-theory`), the capacity-constrained metric law ({ref}`sec-capacity-constrained-metric-law-geometry-from-interface-limits`), WFR geometry ({ref}`sec-wasserstein-fisher-rao-geometry-unified-transport-on-hybrid-state-spaces`), and feeds into the geodesic integrator implementation ({ref}`sec-equations-of-motion-langevin-sdes-on-information-manifolds`).
 
----
+
 
 (sec-fundamental-symmetry-constraint)=
 ## The Fundamental Symmetry Constraint
@@ -522,7 +522,7 @@ See Section 5.2 (WFR stress-energy tensor) and Part II, Hypostructure, Section 9
 $\square$
 :::
 
----
+
 
 (sec-isotropic-bundle-operator)=
 ## The Isotropic Bundle Operator
@@ -1096,7 +1096,7 @@ Since both $W$ and $\rho(g)$ are block-diagonal, the commutator is block-diagona
 $\square$
 :::
 
----
+
 
 (sec-covariant-retina)=
 ## The Covariant Retina
@@ -1754,7 +1754,7 @@ def test_rotation_equivariance(retina: CovariantRetina, img: torch.Tensor):
         assert violation < 1e-3, f"Rotation invariance violated at {angle}°"
 ```
 
----
+
 
 (sec-connection-to-gauge-structure)=
 ## Connection to Gauge Structure
@@ -2362,7 +2362,7 @@ The Error field $W_\mu$ from gauge theory (Chapter 8.1, {ref}`sec-symplectic-mul
 
 The specific connection to $SU(2)_L$ gauge theory is established in Chapter 8.2 through rigorous derivation, not analogy.
 
----
+
 
 (sec-integration-with-geodesic-integrator)=
 ## Integration with Geodesic Integrator
@@ -2853,7 +2853,7 @@ So when $L_J \le 1$ the defect accumulates at most linearly in $\sum_\ell e_\ell
 **Result:** Guaranteed consistency without optimization overhead.
 :::
 
----
+
 
 (sec-dimensional-analysis)=
 ## Dimensional Analysis and Unit Tracking
@@ -3102,7 +3102,7 @@ $$
 where $z_0 = \mathbb{E}[\|v\|]$ is the expected bundle norm with $[z_0] = [\mathcal{Z}]$. In normalized architectures, $z_0 \approx 1\,\sqrt{\text{nat}}$, reducing to the natural units case.
 :::
 
----
+
 
 (sec-diagnostic-nodes)=
 ## Diagnostic Nodes and Runtime Verification
@@ -3166,7 +3166,7 @@ class GaugeInvarianceCheck(DiagnosticNode):
 | 67 | GaugeInvarianceCheck | $G$-equivariance | $\delta_{\text{gauge}} > \epsilon_{\text{gauge}}$ |
 | 68 | RotationEquivarianceCheck | $SO(2)$ for images | $\|f(R \cdot I) - R \cdot f(I)\| > \epsilon$ |
 
----
+
 
 (sec-implementation-reference)=
 ## Implementation Reference
@@ -3348,7 +3348,7 @@ class IsotropicBlock(nn.Module):
         return h_out.view(B, D)  # [B, out_dim]
 ```
 
----
+
 
 (sec-summary-tables)=
 ## Summary and Cross-Reference Tables
@@ -3400,7 +3400,7 @@ The correspondence runs deep. Physics constants map to architecture hyperparamet
 This is what it means to derive architecture from first principles.
 :::
 
----
+
 
 (sec-forward-to-chapter-5)=
 ## Connection to Chapter 5 (Macroscopic Integration)
@@ -3435,7 +3435,7 @@ Output (action a_t)
 - **Boris-BAOAB Integrator** ({ref}`sec-equations-of-motion-langevin-sdes-on-information-manifolds`): Macroscopic integration scheme that requires microscopic primitives to preserve gauge structure.
 - **Temperature Schedule** ({ref}`sec-the-belief-wave-function-schrodinger-representation`): Cognitive temperature $T_c$ varies with inverse conformal factor $1/\lambda(z)$ to maintain consistent exploration across curved manifold.
 
----
+
 
 (sec-dnn-blocks-conclusion)=
 ## Conclusion

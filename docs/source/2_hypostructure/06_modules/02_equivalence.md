@@ -50,7 +50,7 @@ An **admissible equivalence move** for type $T$ is a transformation $(x, \Phi, \
 
 :::
 
----
+
 
 ### Standard Equivalence Moves
 
@@ -140,7 +140,7 @@ with inverse bounds.
 
 :::
 
----
+
 
 (sec-yes-tilde-permits)=
 ## YES$^\sim$ Permits
@@ -192,7 +192,7 @@ That is, YES$^\sim$ certificates may substitute for YES certificates in the meta
 
 :::
 
----
+
 
 (sec-transport-toolkit)=
 ## Transport Toolkit
@@ -287,7 +287,7 @@ $$
 
 :::
 
----
+
 
 (sec-promotion-system)=
 ## Promotion System

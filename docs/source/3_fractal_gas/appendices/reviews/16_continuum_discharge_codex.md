@@ -3,7 +3,7 @@
 ## Summary
 **No critical issues.** This is a short (11KB) discharge appendix that maps hypotheses A1-A6 to internal lemmas.
 
----
+
 
 ## ✅ Cross-References
 - **25 prf:ref labels checked** - all found in docs/source

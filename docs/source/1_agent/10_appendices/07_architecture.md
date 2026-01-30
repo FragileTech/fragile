@@ -15,7 +15,7 @@
 - Use as a single reference when implementing the Fragile Agent architecture
 - All modules follow the gauge-covariant paradigm with explicit unit tracking
 
----
+
 
 ## G.1 TopoEncoder Modules
 
@@ -431,7 +431,7 @@ flowchart TD
 - Learned precisions apply to recon/vq/sup via `_apply_precision` when enabled.
 - Other regularizers (entropy, consistency, tiered losses) are omitted from the diagram.
 
----
+
 ## G.2 Supervised Topology Modules
 
 These modules implement the supervised topology framework from {ref}`Section 25 <sec-supervised-topology-semantic-potentials-and-metric-segmentation>`, ensuring chart purity and class-consistent transitions.
@@ -527,7 +527,7 @@ where $D_{\text{class}}(k, k') = 1$ if charts $k$ and $k'$ have different domina
 **Source:** {ref}`Section 25.3 <sec-metric-segmentation-via-jump-rate-modulation>`, Definition {prf:ref}`def-class-consistent-jump-rate`, line 445.
 :::
 
----
+
 
 ## G.3 Lorentzian Memory Attention Modules
 
@@ -725,7 +725,7 @@ class LorentzianMemoryAttention(nn.Module):
 **Source:** {ref}`Section 33 <sec-covariant-memory-attention-architecture>`, line 1095.
 :::
 
----
+
 
 ## G.4 Gauge-Covariant Attention Modules
 
@@ -1076,7 +1076,7 @@ $$c_1 = e^{-\gamma h}, \quad c_2 = \sqrt{(1-c_1^2)T_c}$$
 **Source:** {ref}`Section 35 <sec-covariant-cross-attention-architecture>`, Definition {prf:ref}`def-baoab-attention-heads`, line 1616.
 :::
 
----
+
 
 ## G.5 Gauge-Covariant Primitives (Section 04)
 
@@ -1306,7 +1306,7 @@ where $R_\theta$ is a rotation by angle $\theta$ and $D^{(\ell)}$ is the represe
 **Source:** {ref}`Section 04 <sec-dnn-blocks>`, line 1464.
 :::
 
----
+
 
 ## G.6 Universal Geometric Network (Section 06)
 
@@ -1685,7 +1685,7 @@ class CovariantAttentionLayer(nn.Module):
 **Source:** {ref}`Section 06 <sec-universal-geometric-network>`, line 2445. See also {ref}`Section 05 <sec-covariant-cross-attention-architecture>` for full derivation.
 :::
 
----
+
 
 ## G.7 Summary Table
 
@@ -1727,7 +1727,7 @@ class CovariantAttentionLayer(nn.Module):
 | `AdaptiveL1Scheduler` | 06 | UGN | — | Adaptive L1 regularization schedule |
 | `CovariantAttentionLayer` | 06 | UGN | CovariantAttention | Alternative to soft equivariance for planning |
 
----
+
 
 ## G.8 Implementation Dependencies
 

@@ -63,7 +63,7 @@ A Hypostructure $\mathcal{H}$ satisfies the **Automation Guarantee** if:
 - **Dynamical systems:** Contraction mappings with Lipschitz constant $L < 1$
 :::
 
----
+
 
 (sec-profile-classification-trichotomy)=
 ## Profile Classification Trichotomy
@@ -287,7 +287,7 @@ where $\mathsf{route\_tag} \in \{\text{CC-Rig}, \text{Attr-Morse}, \text{Tame-LS
 
 **Downstream Independence:** All subsequent theorems (Lock promotion, surgery admissibility, etc.) depend only on $K_{\mathrm{prof}}^+$, never on which mechanism produced it.
 
----
+
 
 ### Public Signature (Soft Interfaces Only)
 
@@ -351,7 +351,7 @@ else try MechD(SoftCore); if YES → emit K_prof^+ (tag: Lock-Excl)
 else emit NO with K_prof^inc (mechanism_failures: [A,B,C,D])
 ```
 
----
+
 
 ### Mechanism A: Concentration-Compactness + Rigidity
 
@@ -396,7 +396,7 @@ Conclusion: almost-periodic solutions are either **stationary** (soliton/ground 
 
 **Literature:** Concentration-compactness {cite}`Lions84`; profile decomposition {cite}`BahouriGerard99`; Kenig-Merle {cite}`KenigMerle06`; rigidity {cite}`DuyckaertsKenigMerle11`.
 
----
+
 
 ### Mechanism B: Attractor + Morse Decomposition
 
@@ -449,7 +449,7 @@ $$
 
 **Literature:** Global attractor theory {cite}`Temam97`; gradient-like structure {cite}`HaleBook88`; Morse decomposition {cite}`Conley78`.
 
----
+
 
 ### Mechanism C: Tame + Łojasiewicz (O-Minimal Types)
 
@@ -485,7 +485,7 @@ where each $C_i$ is a definable cell (diffeomorphic to $(0,1)^{d_i}$). The strat
 
 **Literature:** O-minimal structures {cite}`vandenDries98`; tame geometry {cite}`Shiota97`; Łojasiewicz inequality {cite}`Lojasiewicz84`.
 
----
+
 
 ### Mechanism D: Lock / Hom-Exclusion (Categorical Types)
 
@@ -521,7 +521,7 @@ Alternatively, if Lock blocks specific patterns but allows others, classify the 
 
 **Literature:** Lock mechanism (Section {ref}`sec-lock`); categorical obstructions in PDE {cite}`Fargues21`.
 
----
+
 
 ### Mechanism Comparison
 
@@ -536,7 +536,7 @@ Alternatively, if Lock blocks specific patterns but allows others, classify the 
 
 :::
 
----
+
 
 (sec-surgery-admissibility-trichotomy)=
 ## Surgery Admissibility Trichotomy
@@ -711,7 +711,7 @@ Proof Sketch
 *Step 3 (Trichotomy Application).* Feed $(\Sigma, V, \text{Cap}(\Sigma))$ into MT {prf:ref}`mt-resolve-admissibility`. The output determines admissibility without user-provided verification code.
 :::
 
----
+
 
 (sec-structural-surgery-principle)=
 ## Structural Surgery Principle

@@ -89,7 +89,7 @@ The literature references point to work on stratified logic programs and well-fo
 **Literature:** Stratification and well-foundedness {cite}`VanGelder91`; non-circular definitions {cite}`AptBolPedreschi94`.
 :::
 
----
+
 
 (sec-surgery-contracts)=
 ## Surgery Contracts

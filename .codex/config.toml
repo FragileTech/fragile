@@ -1,0 +1,8 @@
+[mcp_servers.claude_code]
+command = "claude"
+args = ["mcp", "serve"]
+
+[mcp_servers.gemini]
+command = "npx"
+args = ["-y", "https://github.com/rlabs-inc/gemini-mcp.git"]
+env_vars = ["GEMINI_API_KEY"]

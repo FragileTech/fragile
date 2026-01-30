@@ -48,7 +48,7 @@ successful ones.
 This is the essence of the Fractal Gas: a swarm of *walkers* exploring a space, where *fitness* determines who thrives and who must relocate, and *companion selection* determines who learns from whom. The result is a self-organizing search process that automatically concentrates computational effort in promising regions while maintaining diversity to avoid local traps.
 :::
 
----
+
 
 (sec-overview)=
 ## Overview
@@ -130,7 +130,7 @@ diversity through diffusion.
 Fractal Gas step overview: selection, fitness, cloning, kinetics, and repeat with constant population.
 :::
 
----
+
 
 (sec-state-space)=
 ## 1. State Space and Walkers
@@ -230,7 +230,7 @@ coordinate chart (or after transporting velocities) so the difference $v_i - v_j
 Algorithmic distance combines position similarity with velocity similarity via $\lambda_{\text{alg}}$.
 :::
 
----
+
 
 (sec-companion-selection)=
 ## 2. Companion Selection
@@ -350,7 +350,7 @@ walker *could* be selected for both roles, but usually will not be. The key poin
 does not influence the selection for the other.
 :::
 
----
+
 
 (sec-fitness-computation)=
 ## 3. Fitness Computation
@@ -519,7 +519,7 @@ The exponents $\alpha_{\text{fit}}$ and $\beta_{\text{fit}}$ control the balance
 The multiplicative form $(d')^\beta (r')^\alpha$ rather than additive $(d')^\beta + (r')^\alpha$ is deliberate: it means a walker needs *both* good reward *and* good diversity to achieve high fitness. A walker with excellent reward but zero diversity (on top of its companion) gets low fitness.
 :::
 
----
+
 
 ### 3.4 Worked Example: Fitness Computation
 
@@ -571,7 +571,7 @@ Consider a swarm of $N = 4$ walkers with the following raw values (all alive):
 Walker 3 has the highest fitness because it balances both channels well.
 :::
 
----
+
 
 (sec-cloning-mechanics)=
 ## 4. Cloning Mechanics
@@ -710,7 +710,7 @@ Why conserve momentum? In physical systems, momentum conservation is fundamental
 The restitution coefficient $\alpha_{\text{rest}}$ controls how much individual velocity information is retained. At $\alpha_{\text{rest}} = 0$, all walkers in a collision group end up with the same velocity—maximum coordination. At $\alpha_{\text{rest}} = 1$, velocities are unchanged—maximum independence. The default $\alpha_{\text{rest}} = 0.5$ balances these extremes.
 :::
 
----
+
 
 (sec-revival-guarantee)=
 ## 5. The Revival Guarantee
@@ -767,7 +767,7 @@ moderate swarm sizes it is typically negligible—but it is not literally zero.
 This is a key difference from genetic algorithms {cite}`goldberg1989genetic`, where population can dwindle through selection pressure. The Fractal Gas maintains constant population $N$—it's the *distribution* of walkers that evolves, not the count.
 :::
 
----
+
 
 (sec-kinetic-dynamics)=
 ## 6. Kinetic Dynamics
@@ -926,7 +926,7 @@ less along stiff directions. The walker slides along the valley floor instead of
 This is the same principle behind preconditioned gradient descent and natural gradient methods {cite}`amari1998natural`—adapting the step size to the local geometry of the loss landscape.
 :::
 
----
+
 
 (sec-step-operator)=
 ## 7. The Complete Step Operator
@@ -987,7 +987,7 @@ for alive walkers needs a special case. In practice, catastrophic extinction (al
 extremely unlikely, and the single-survivor regime can be handled explicitly (see Section 2).
 :::
 
----
+
 
 (sec-algorithm-variants)=
 ## 8. Algorithm Variants
@@ -1034,7 +1034,7 @@ The **Abstract Fractal Gas** is the minimal specification:
 
 This is the version formalized in the Hypostructure framework (Volume 2, Part X).
 
----
+
 
 (sec-continuum-preview)=
 ## 9. Connection to Continuum Theory
@@ -1104,7 +1104,7 @@ where $\kappa_W > 0$ is the Wasserstein contraction rate certified by the sieve.
 
 For formal treatment of convergence, see {doc}`02_fractal_gas_latent` (Part III-B).
 
----
+
 
 (sec-parameter-glossary)=
 ## Parameter Glossary
@@ -1182,7 +1182,7 @@ increase $\eta$.
 $p_{\max}$ (more aggressive cloning), or increase the kinetic step size $h$.
 :::
 
----
+
 
 ## Summary
 

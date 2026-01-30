@@ -153,7 +153,7 @@ Our proof will be built upon a cornerstone result in measure theory, **Prokhorov
 
 The core of our strategy is to satisfy this condition by leveraging the powerful results of the Foster-Lyapunov drift analysis performed in {doc}`06_convergence`. That analysis, which proved the stability of the N-particle system, provides us with uniform bounds on the moments of the stationary measures $\nu_N^{QSD}$. By exploiting the linearity of expectation and the exchangeability of the walkers, we will show that these N-particle bounds directly imply uniform moment bounds for our single-particle marginals, $\mu_N$. A final application of Markov's inequality will demonstrate that this uniform moment control is sufficient to guarantee the uniform containment required by Prokhorov's theorem, thereby completing the proof of tightness.
 
----
+
 
 :::{prf:theorem} The Sequence of Marginals $\{\mu_N\}$ is Tight
 :label: thm-qsd-marginals-are-tight
@@ -217,7 +217,7 @@ The proof is structured as a sequence of lemmas organized into three parts:
 2. **Part B: Continuity of Mean-Field Functionals** proves that the fitness potential components are well-behaved under weak convergence.
 3. **Part C: Assembly of the Full Convergence** uses Parts A and B to prove term-by-term convergence of the cloning operator.
 
----
+
 
 ### **Part A: Convergence of the Empirical Measures**
 
@@ -279,7 +279,7 @@ converges almost surely to the true underlying measure $\mu_{N_k}$ as $N_k \to \
 **Q.E.D.**
 :::
 
----
+
 
 ### **Part B: Continuity of the Mean-Field Functionals**
 
@@ -361,7 +361,7 @@ The function $(d(z, z') - c)^2$ is continuous in both its spatial arguments and 
 **Q.E.D.**
 :::
 
----
+
 
 ### **Part C: Assembly of the Convergence Proof**
 
@@ -524,7 +524,7 @@ This is precisely the boundary contribution in the mean-field PDE derived in {do
 **Q.E.D.**
 :::
 
----
+
 
 ### **Part C.5: The Vanishing Extinction Rate**
 
@@ -683,7 +683,7 @@ This rigorously justifies the identification step.
 The vanishing extinction rate reflects the **collective stability** of large swarms. While a small swarm (small $N$) has a non-negligible chance of complete extinction within a finite time, a large swarm becomes exponentially more stable. The probability of all walkers dying simultaneously decays exponentially with $N$, making extinction a zero-probability event in the thermodynamic limit. This is consistent with the physical intuition that macroscopic systems do not exhibit sudden total phase transitions without external perturbations.
 :::
 
----
+
 
 #### **Theorem C.2: Limit Points are Weak Solutions to the Stationary Mean-Field PDE**
 
@@ -857,7 +857,7 @@ The proof is structured into four parts:
 3. **Part C: Hypoelliptic Regularity of the Kinetic Resolvent** handles the non-elliptic structure
 4. **Part D: Assembly of the Contraction Argument** combines all results for uniqueness
 
----
+
 
 ### **Part A: The Weighted Function Space**
 
@@ -914,7 +914,7 @@ The space $\mathcal{P}$ is a closed subset of the Banach space $H^1_w(\Omega)$, 
 This completeness is crucial for applying the Banach Fixed-Point Theorem, which requires a complete metric space.
 :::
 
----
+
 
 ### **Part B: Lipschitz Continuity of Non-Linear Operators**
 
@@ -1424,7 +1424,7 @@ where $L_B(R)$ grows at most linearly with $R$ due to the product structure.
 **Q.E.D.**
 :::
 
----
+
 
 ### **Part C: Hypoelliptic Regularity of the Kinetic Resolvent**
 
@@ -1703,7 +1703,7 @@ $$
 **Q.E.D.**
 :::
 
----
+
 
 ### **Part D: Assembly of the Contraction Argument**
 
@@ -1912,7 +1912,7 @@ $$
 is both a **mathematical necessity** (for uniqueness) and a **practical guideline** (for algorithm design). It quantifies the required balance between exploration (kinetic noise) and exploitation (cloning selection pressure).
 :::
 
----
+
 
 #### **Final Conclusion for Section 4**
 

@@ -9,7 +9,7 @@ author: "Guillem Duran-Ballester"
 
 **Prerequisites**: {doc}`intro_fractal_gas_revamp`, {doc}`1_the_algorithm/01_algorithm_intuition`
 
----
+
 
 (sec-fractalai-tldr)=
 ## TLDR
@@ -35,7 +35,7 @@ This document traces FractalAI's development and empirical validation from 2017-
 - Mean-field limit ({doc}`convergence_program/09_propagation_chaos`) → group scaling
 - KL convergence ({doc}`convergence_program/15_kl_convergence`) → exploration balance
 
----
+
 
 (sec-fractalai-introduction)=
 ## Introduction
@@ -66,7 +66,7 @@ Volume 3 provides rigorous theoretical foundation for algorithmic properties obs
 - {ref}`sec-fractalai-volume3-integration`: Empirical-theoretical bridge
 - {ref}`sec-fractalai-conclusions`: Assessment and research agenda
 
----
+
 
 (sec-fractalai-gas-foundation)=
 ## GAS Algorithm — Optimization Foundation
@@ -158,7 +158,7 @@ Tests: separability, modality, scaling, conditioning.
 Volume 3 formalizes this transition via QSD convergence ({doc}`convergence_program/06_convergence`).
 :::
 
----
+
 
 (sec-fractalai-theory-framework)=
 ## Fractal AI Theory and Framework
@@ -315,7 +315,7 @@ Before definitive 2022 validation, Hornischer et al. {cite}`hornischer2019struct
 
 **Significance**: Demonstrated emergent coordination from individual FSX optimization, setting stage for human experiments.
 
----
+
 
 (sec-fractalai-hornischer-validation)=
 ## Hornischer Applied Validation — Core Evidence
@@ -567,7 +567,7 @@ Volume 3 supports Hypothesis 3: QSD is equilibrium for resource-constrained syst
 **Positive Framing**: Despite limitations, this is gold-standard validation compared to typical AI benchmarks (real humans, quantitative comparison, Bayesian statistics, peer-reviewed in top physics journal).
 :::
 
----
+
 
 (sec-fractalai-timeline)=
 ## Timeline and Intellectual History
@@ -627,7 +627,7 @@ Volume 3 supports Hypothesis 3: QSD is equilibrium for resource-constrained syst
 
 **Key Insight**: Volume 3 is **post-hoc theory** for algorithm with **prior empirical success**. Phenomenon → theory → predictions (good science).
 
----
+
 
 (sec-fractalai-volume3-integration)=
 ## Volume 3 Integration
@@ -704,7 +704,7 @@ $$
 All quantitative and falsifiable.
 :::
 
----
+
 
 (sec-fractalai-conclusions)=
 ## Conclusions
@@ -756,7 +756,7 @@ FractalAI development (2017-2023) progression:
 
 **Implications**: AI design (FSX for uncertainty), cognitive science (human "irrationality" as QSD optimality), neuroscience (brain entropy), economics (market QSD), philosophy (freedom vs. outcomes).
 
----
+
 
 ## References
 

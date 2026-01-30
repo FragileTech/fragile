@@ -22,7 +22,7 @@ Each barrier is specified by:
 - **Breached certificate**: Must imply mode activation + surgery admissibility
 - **Next nodes**: Routing for each outcome
 
----
+
 
 (sec-barrier-sat)=
 ### BarrierSat (Saturation Barrier)
@@ -69,7 +69,7 @@ The BarrierSat does exactly this check for dynamical systems. It asks: "Even if 
 The beautiful thing is that this is the *first* barrier you hit—the entry point. No prior certificates required. Either energy is under control and you proceed to check for Zeno behavior, or energy is blowing up and you need surgery to fix it before continuing.
 :::
 
----
+
 
 (sec-barrier-causal)=
 ### BarrierCausal (Causal Censor)
@@ -118,7 +118,7 @@ If this integral diverges, the singularity is *causally censored*. Not by some a
 When the integral is finite, though, watch out. The singularity is computationally accessible, which means events are accumulating faster than you can process them. Time for surgery.
 :::
 
----
+
 
 (sec-barrier-scat)=
 ### BarrierScat (Scattering Barrier) --- Special Alphabet
@@ -169,7 +169,7 @@ But what if the energy *doesn't* disperse? What if it concentrates, forming some
 This barrier is one of the *success exits* from the Sieve. If you get Benign, congratulations—you've proven global existence via dispersion. Your system won't blow up because the energy spreads out to infinity. That's a real theorem, not just a diagnostic.
 :::
 
----
+
 
 (sec-barrier-type2)=
 ### BarrierTypeII (Type II Barrier)
@@ -220,7 +220,7 @@ What this barrier checks is the *renormalization cost*. If you try to zoom in on
 The non-circularity note is important: we don't *assume* subcriticality to run this check. Subcriticality is a *bonus*—if you already know the scaling exponent is favorable, Type I is excluded for free. But this barrier works even without that assumption.
 :::
 
----
+
 
 (sec-barrier-vac)=
 ### BarrierVac (Vacuum Barrier)
@@ -269,7 +269,7 @@ The condition $\Delta V > k_B T$ is the mass gap principle. If the potential bar
 What's beautiful is that this connects field theory to mundane thermodynamics. Whether you're worried about the Higgs vacuum decaying or a bistable chemical reaction switching states, the mathematics is the same: compare barrier height to temperature. If the barrier wins, your phase is stable.
 :::
 
----
+
 
 (sec-barrier-cap)=
 ### BarrierCap (Capacity Barrier)
@@ -318,7 +318,7 @@ Here's a good mental picture: think of capacity as "how much current can flow th
 This is the mathematical machinery behind "removable singularities"—singularities that look scary but don't actually affect the solution. If $\mathrm{Cap}_H(S) = 0$, you can ignore the singular set and extend your solution smoothly across it.
 :::
 
----
+
 
 (sec-barrier-gap)=
 ### BarrierGap (Spectral Barrier) --- Special Alphabet
@@ -389,7 +389,7 @@ This lemma is the mathematical bridge between linear and nonlinear analysis. The
 Why does this matter? Because the LS inequality is what lets you prove *finite-time convergence* and *uniqueness of limits* for gradient flows. Without it, solutions could spiral around forever, never quite reaching equilibrium. With it, they must converge—and the rate is completely determined by that spectral gap.
 :::
 
----
+
 
 (sec-barrier-action)=
 ### BarrierAction (Action Barrier)
@@ -438,7 +438,7 @@ The beautiful thing about $E[\Phi] < S_{\min} + \Delta$ is that it's an *energet
 This connects to some deep physics: the reason certain quantum numbers are conserved (like baryon number) is that changing them would require going over an action barrier that's energetically forbidden. The topology is *protected* by energy.
 :::
 
----
+
 
 (sec-barrier-omin)=
 ### BarrierOmin (O-Minimal Barrier)
@@ -487,7 +487,7 @@ O-minimal structures are a precise definition of "tameness." A set is o-minimall
 The condition $S \in \mathcal{O}\text{-min}$ is asking: "Is your topology *boring* in a good way?" Boring topology is predictable topology. Wild topology requires surgery.
 :::
 
----
+
 
 (sec-barrier-mix)=
 ### BarrierMix (Mixing Barrier)
@@ -539,7 +539,7 @@ But what if the mixing time is *infinite*? Then you have trapping. The system ca
 Here's the physical picture: imagine a ball rolling in a landscape with deep wells. If the wells are too deep relative to the thermal energy, the ball can get trapped forever in one well, never making it over the hills to explore the rest of the landscape. The mixing barrier checks whether this pathological trapping is happening.
 :::
 
----
+
 
 (sec-barrier-epi)=
 ### BarrierEpi (Epistemic Barrier)
@@ -597,7 +597,7 @@ The barrier predicate $\sup_{\epsilon > 0} K_\epsilon(T_{\mathrm{thin}}) \leq S_
 This is subtle. Exact Kolmogorov complexity is famously uncomputable—you can never know for certain the length of the shortest program that generates a given string. But we can compute *approximations* that converge from above. If these approximations stay bounded, we're safe. If they blow up, we've hit an epistemic horizon—the state contains more information than spacetime can hold, which is physically impossible.
 :::
 
----
+
 
 (sec-barrier-freq)=
 ### BarrierFreq (Frequency Barrier)
@@ -646,7 +646,7 @@ Why is this bad? Because high frequencies mean small scales, and small scales me
 The De Giorgi-Nash-Moser theory tells us that elliptic and parabolic PDEs have built-in frequency barriers. Solutions can't oscillate too wildly—they inherit regularity from the equation itself. This barrier checks whether your system has similar protection.
 :::
 
----
+
 
 (sec-barrier-boundary)=
 ### Boundary Barriers (BarrierBode, BarrierInput, BarrierVariety)

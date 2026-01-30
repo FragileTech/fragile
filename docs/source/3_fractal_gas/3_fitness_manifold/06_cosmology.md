@@ -3,7 +3,7 @@
 
 **Prerequisites:** {doc}`03_curvature_gravity`, {doc}`05_holography`
 
----
+
 
 ## TLDR
 
@@ -17,7 +17,7 @@
 
 **Dark Energy Reframed**: The observed $\Lambda_{\mathrm{obs}} \approx 10^{-52}$ m$^{-2}$ is not mysterious vacuum energy but exploration pressure---a dynamical signature of a universe that has not yet reached QSD equilibrium. The "cosmological constant problem" becomes a different question: Why is the universe so close to equilibrium?
 
----
+
 
 (sec-cosmology-intro)=
 ## Introduction
@@ -932,7 +932,7 @@ The universe is searching. It has not found the answer yet. And the tiny positiv
 | $w$ | Equation of state parameter | {prf:ref}`prop-dark-energy-exploration` |
 | QSD | Quasi-stationary distribution | {prf:ref}`def-qsd-regime` |
 
----
+
 
 ## References
 

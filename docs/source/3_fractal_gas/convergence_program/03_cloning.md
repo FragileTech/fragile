@@ -9253,13 +9253,13 @@ The cloning operator $\Psi_{\text{clone}}$ is:
 
 It cannot achieve convergence alone, but provides **exactly the stabilization needed** to complement the kinetic operator's hypocoercive drift. Together, they form the synergistic dissipation framework that enables the Euclidean Gas to converge to its quasi-stationary distribution.
 
----
+
 
 **End of Document: The Keystone Principle and the Contractive Nature of Cloning**
 
 **Next:** Companion Document - "Hypocoercivity and Convergence of the Euclidean Gas"
 
----
+
 
 :::{admonition} Acknowledgment
 :class: note

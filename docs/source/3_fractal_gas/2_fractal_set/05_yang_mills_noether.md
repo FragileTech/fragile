@@ -2,7 +2,7 @@
 
 **Prerequisites**: {doc}`01_fractal_set`, {doc}`02_causal_set_theory`, {doc}`03_lattice_qft`, {doc}`04_standard_model`
 
----
+
 
 ## TLDR
 
@@ -33,7 +33,7 @@ In particular, there exists $C_F$ such that $|F_{\mu\nu}(x) - F_{\mu\nu}(y)| \le
 | $e_{\text{fitness}}^2$ | $m/\epsilon_F$ | U(1) fitness coupling |
 | $m_{\text{gap}}$ | $\hbar_{\text{eff}} \lambda_{\text{gap}}$ (=$\lambda_{\text{gap}}$ in $\hbar_{\text{eff}}=1$ units) | Mass gap from spectral gap |
 
----
+
 
 (sec-ym-intro)=
 ## Introduction
@@ -114,7 +114,7 @@ Our framework provides verification of all three:
 | {ref}`sec-ym-summary` | Summary | Achievement summary, open questions |
 | {ref}`sec-qft-axioms-verification` | QFT axioms verification | Wightman, OS, Haag-Kastler |
 
----
+
 
 (sec-ym-symmetry)=
 ## 2. Symmetry Structure and Hilbert Space
@@ -283,7 +283,7 @@ $$
 **Note**: Individual probabilities $P_{\text{clone}}(i \to j)$ are **not** gauge-invariant.
 :::
 
----
+
 
 (sec-ym-first-principles)=
 ## 3. First-Principles Derivation of the Action
@@ -653,7 +653,7 @@ $$
 **Continuum limit**: As $\Delta t, \rho \to 0$, discrete operators converge to standard $\partial_\mu$.
 :::
 
----
+
 
 (sec-ym-noether)=
 ## 4. Noether Currents from Continuous Symmetries
@@ -927,7 +927,7 @@ $$
 | Cloning-dominated | small $\epsilon_c$ | Frequent selection |
 :::
 
----
+
 
 (sec-ym-action)=
 ## 5. Discrete Yang-Mills Action
@@ -1300,7 +1300,7 @@ The staple $\Sigma_P^{(e)}$—that product of links around a plaquette with one 
 What we have shown is that this discrete equation, derived from counting paths through the Fractal Set, becomes the standard Yang-Mills equation in the continuum limit. The physics of gauge field dynamics is encoded in the topology of closed loops.
 :::
 
----
+
 
 (sec-ym-path-integral)=
 ## 6. Gauge-Covariant Path Integral
@@ -1476,7 +1476,7 @@ where:
 **Open question for Fractal Set**: Does the antisymmetric IG structure ({prf:ref}`thm-cloning-antisymmetry-lqft`) provide an effective gauge-fixing via fermionic exclusion?
 :::
 
----
+
 
 (sec-ym-observables)=
 ## 7. Physical Observables
@@ -1561,7 +1561,7 @@ where $\xi$ is the correlation length ({prf:ref}`def-correlation-length`).
 **Connection to mass gap**: Exponential falloff of correlations implies $\Delta > 0$.
 :::
 
----
+
 
 (sec-ym-continuum)=
 ## 8. Continuum Limit and Asymptotic Freedom
@@ -1741,7 +1741,7 @@ This explains why atomic nuclei are stable. The quarks inside are strongly bound
 The Fractal Gas derivation shows that asymptotic freedom is not just a feature of Yang-Mills—it is a consequence of the optimization structure. Any algorithm that efficiently explores a space with this symmetry will exhibit this running coupling.
 :::
 
----
+
 
 (sec-ym-constants)=
 ## 9. Fundamental Constants Dictionary
@@ -2050,7 +2050,7 @@ The asymptotic freedom signature is subtler. Run the algorithm at different reso
 These are not idle predictions. They can be measured in numerical experiments with the Fractal Gas algorithm. If the framework is correct, these signatures should appear. If they do not, something is wrong with the derivation. Science makes predictions and tests them—that is how we know when we are on the right track.
 :::
 
----
+
 
 (sec-ym-mass-gap)=
 ## 10. UV Safety and Mass Gap
@@ -2377,7 +2377,7 @@ where $m_0 = (m_i + m_j)/2$ is the SU(2)-invariant mass scale and $\kappa = -\ln
 **Connection**: The mass gap arises from the same spectral structure that ensures convergence to the QSD. The generator $\mathcal{L}$ has a gap $\lambda_{\text{gap}}$, which translates to mass gap $m_{\text{gap}} = \hbar_{\text{eff}}\lambda_{\text{gap}}$ (with $P_\tau = e^{\tau\mathcal{L}}$ having gap $1 - e^{-\lambda_{\text{gap}}\tau}$).
 :::
 
----
+
 
 (sec-ym-summary)=
 ## 11. Summary
@@ -2425,7 +2425,7 @@ And there is a deeper result: the mass gap. We have shown that bounded computati
 
 7. **Higher gauge groups**: Can SU(3) strong sector be constructed?
 
----
+
 
 (sec-qft-axioms-verification)=
 ## 12. QFT Axioms Verification
@@ -3870,7 +3870,7 @@ The rest follows from the structure of the Fractal Set—the CST edges give caus
 This is what mathematical rigor looks like: not just formulas, but proofs that the formulas satisfy the axioms that define a consistent quantum field theory.
 :::
 
----
+
 
 (sec-spectral-gap-variational)=
 ## Spectral Gap Variational Principle
@@ -3903,7 +3903,7 @@ The Maximal Convergence Principle is analogous to:
 Each selects a unique physical state from a space of possibilities. Here, maximal spectral gap selects unique parameter values from the space of gauge-compatible configurations.
 :::
 
----
+
 
 (sec-strong-cp-solution)=
 ### Resolution of the Strong CP Problem
@@ -3979,7 +3979,7 @@ This is remarkable. The strong CP problem has troubled physicists for decades. T
 Why does $\theta \neq 0$ reduce the spectral gap? Because instantons create tunneling between degenerate vacua. More tunneling means worse convergence to equilibrium. The universe "wants" to minimize tunneling, which means $\theta = 0$.
 :::
 
----
+
 
 ## References
 

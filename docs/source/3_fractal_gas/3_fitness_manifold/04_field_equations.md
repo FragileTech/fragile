@@ -3,7 +3,7 @@
 
 **Prerequisites**: {doc}`01_emergent_geometry`, {doc}`02_scutoid_spacetime`, {doc}`03_curvature_gravity`
 
----
+
 
 ## TLDR
 
@@ -22,7 +22,7 @@
 
 **UV Regime Consistent with AdS**: In the UV regime ($\varepsilon_c \ll \varepsilon_c^{\mathrm{thermal}}$), elastic pressure dominates, yielding negative effective cosmological constant consistent with Anti-de Sitter geometry.
 
----
+
 
 (sec-field-equations-intro)=
 ## Introduction
@@ -41,7 +41,7 @@ The answer is *pressure*. But not just any pressure---two fundamentally differen
 This chapter differs from the previous ones in an important way: we will be explicit about which results are rigorous theorems and which are physical arguments that require additional assumptions. The QSD stability theorem is fully rigorous. The connection to Einstein's equations is a structural correspondence that requires interpretation.
 :::
 
----
+
 
 (sec-ig-free-energy)=
 ## The IG Free Energy Functional
@@ -171,7 +171,7 @@ where $z_1$ is the first coordinate.
 **Note:** We use $\phi_{\mathrm{boost}} = -\kappa z_1/L$ (negative sign) so that $\kappa > 0$ corresponds to expansion.
 :::
 
----
+
 
 (sec-elastic-pressure)=
 ## Elastic Pressure (Surface Tension)
@@ -309,7 +309,7 @@ The elastic pressure is negative because:
 This is analogous to surface tension in liquids: molecules at the surface have fewer favorable interactions than bulk molecules, so the system minimizes surface area.
 :::
 
----
+
 
 (sec-linearized-dynamics)=
 ## Linearized McKean-Vlasov Dynamics
@@ -462,7 +462,7 @@ The dispersion relation $\omega(k)$ is real for all $k$ because:
 More precisely: the operator $-\mathcal{L}$ (with the sign convention that $\omega > 0$ means decay) is symmetric and bounded below, hence essentially self-adjoint on appropriate domains.
 :::
 
----
+
 
 (sec-qsd-stability)=
 ## QSD Stability Theorem
@@ -592,7 +592,7 @@ The IG interaction *enhances* long-wavelength diffusion, not reduces it. There i
 **Clarification:** The term "IG anti-diffusion" in earlier literature refers to the nonlinear regime where high-density regions attract more cloning. In the linearized regime around uniform density, this effect manifests as *enhanced* decay of long-wavelength modes, not instability.
 :::
 
----
+
 
 (sec-chapman-enskog)=
 ## Chapman-Enskog Expansion
@@ -641,7 +641,7 @@ This is the Einstein relation, connecting diffusion to friction via the fluctuat
 $\square$
 :::
 
----
+
 
 (sec-radiation-pressure)=
 ## Radiation Pressure
@@ -717,7 +717,7 @@ $$
 | Regime of dominance | UV (small $\varepsilon_c$) | IR (large $T_{\mathrm{eff}}$) |
 :::
 
----
+
 
 (sec-pressure-regimes)=
 ## Pressure Regime Analysis
@@ -796,7 +796,7 @@ $\square$
 2. What is the equation of state $\Pi(T_{\mathrm{eff}}, \varepsilon_c, \rho_0)$ in the crossover regime?
 :::
 
----
+
 
 (sec-stress-energy-tensor)=
 ## Effective Stress-Energy Tensor
@@ -910,7 +910,7 @@ $\square$
 The correspondence is *structural*: the mathematical form of the field equations emerges from optimization dynamics.
 :::
 
----
+
 
 (sec-summary-field-equations)=
 ## Summary
@@ -955,7 +955,7 @@ The correspondence is *structural*: the mathematical form of the field equations
 | Radiation pressure | Classical equipartition assumed | Explicit assumption stated |
 :::
 
----
+
 
 (sec-symbols-field-equations)=
 ## Table of Symbols
@@ -982,7 +982,7 @@ The correspondence is *structural*: the mathematical form of the field equations
 | $\sigma_v^2$ | Velocity noise strength | {prf:ref}`def-phase-space-kinetic-operator` |
 | $v_T$ | Thermal velocity | {prf:ref}`def-phase-space-kinetic-operator` |
 
----
+
 
 (sec-references-field-equations)=
 ## References

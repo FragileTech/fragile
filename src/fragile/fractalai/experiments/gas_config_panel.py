@@ -201,22 +201,22 @@ class GasConfigPanel(param.Parameterized):
         config.kinetic_op.delta_t = 0.1005
         config.kinetic_op.epsilon_F = 38.6373
         config.kinetic_op.use_fitness_force = False
-        config.kinetic_op.use_potential_force = True
+        config.kinetic_op.use_potential_force = False
         config.kinetic_op.use_anisotropic_diffusion = False
-        config.kinetic_op.diagonal_diffusion = True
+        config.kinetic_op.diagonal_diffusion = False
         config.kinetic_op.nu = 1.10
         config.kinetic_op.use_viscous_coupling = True
         config.kinetic_op.viscous_length_scale = 0.251372
         config.kinetic_op.viscous_neighbor_mode = "all"
         config.kinetic_op.viscous_neighbor_threshold = 0.75
-        config.kinetic_op.viscous_neighbor_penalty = 0.9
+        config.kinetic_op.viscous_neighbor_penalty = 1.1
 
         # Companion selection (separate epsilon for diversity and cloning)
-        config.companion_selection.method = "softmax"
+        config.companion_selection.method = "uniform"
         config.companion_selection.epsilon = 2.80  # epsilon_d
         config.companion_selection.lambda_alg = 1.0
         config.companion_selection.exclude_self = True
-        config.companion_selection_clone.method = "softmax"
+        config.companion_selection_clone.method = "uniform"
         config.companion_selection_clone.epsilon = 1.68419  # epsilon_clone
         config.companion_selection_clone.lambda_alg = 1.0
         config.companion_selection_clone.exclude_self = True
@@ -289,14 +289,14 @@ class GasConfigPanel(param.Parameterized):
         """Create default operator instances with sensible defaults for multimodal exploration."""
         # Companion selection
         self.companion_selection = CompanionSelection(
-            method="softmax",
+            method="uniform",
             epsilon=0.5,
             lambda_alg=0.2,
         )
 
         # Companion selection for cloning (separate instance, allows different epsilon)
         self.companion_selection_clone = CompanionSelection(
-            method="softmax",
+            method="uniform",
             epsilon=0.5,
             lambda_alg=0.2,
         )
@@ -312,10 +312,11 @@ class GasConfigPanel(param.Parameterized):
             use_potential_force=False,
             epsilon_Sigma=0.1,
             use_anisotropic_diffusion=False,
-            diagonal_diffusion=True,
+            diagonal_diffusion=False,
             nu=0.0,
             use_viscous_coupling=False,
             viscous_length_scale=1.0,
+            viscous_neighbor_penalty=1.1,
             V_alg=10.0,
             use_velocity_squashing=False,
         )
@@ -399,6 +400,18 @@ class GasConfigPanel(param.Parameterized):
         # Notify listeners
         for callback in self._on_benchmark_updated:
             callback(self.potential, self.background, self.mode_points)
+
+    def _apply_fast_fitness_preset(self, *_):
+        """Apply fast fitness-force settings (approximate gradients)."""
+        self.kinetic_op.use_fitness_force = True
+        self.kinetic_op.use_anisotropic_diffusion = False
+        self.kinetic_op.diagonal_diffusion = False
+        self.kinetic_op.epsilon_F = 5.0
+        self.fitness_op.grad_mode = "sum"
+        self.fitness_op.detach_stats = True
+        self.fitness_op.detach_companions = True
+        self.fitness_op.sigma_min = 1e-1
+        self.status_pane.object = "**Applied fast fitness preset (approximate gradients).**"
 
     def _format_eta(self, seconds: float | None) -> str:
         if seconds is None:
@@ -698,10 +711,16 @@ class GasConfigPanel(param.Parameterized):
 
         # === Operator Panels using __panel__() methods ===
         langevin_panel = self.kinetic_op.__panel__()
+        fast_fitness_button = pn.widgets.Button(
+            name="Apply fast fitness preset",
+            button_type="primary",
+        )
+        fast_fitness_button.on_click(self._apply_fast_fitness_preset)
         cloning_panel_combined = pn.Column(
             pn.pane.Markdown("#### Cloning Operator"),
             self.cloning.__panel__(),
             pn.pane.Markdown("#### Fitness Potential"),
+            fast_fitness_button,
             self.fitness_op.__panel__(),
             pn.pane.Markdown("#### Companion Selection (distance)"),
             self.companion_selection.__panel__(),

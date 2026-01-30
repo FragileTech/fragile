@@ -182,7 +182,7 @@ $\square$
 
 ::::
 
----
+
 
 (sec-tm2-barrier-implementation)=
 ## TM-2: Barrier Implementation Factory
@@ -252,7 +252,7 @@ The payload structure ensures downstream consumers (surgery, Lock) have all nece
 $\square$
 :::
 
----
+
 
 (sec-tm3-surgery-schema)=
 ## TM-3: Surgery Schema Factory
@@ -339,7 +339,7 @@ The certificate attests:
 $\square$
 :::
 
----
+
 
 (sec-tm4-equivalence-transport)=
 ## TM-4: Equivalence + Transport Factory
@@ -418,7 +418,7 @@ where $\sim_T$ is the type's intrinsic equivalence relation. For well-studied ty
 $\square$
 :::
 
----
+
 
 (sec-tm5-lock-backend)=
 ## TM-5: Lock Backend Factory

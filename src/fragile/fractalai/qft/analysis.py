@@ -53,6 +53,13 @@ from fragile.fractalai.qft.plotting import (
     plot_wilson_histogram,
     plot_wilson_timeseries,
 )
+from fragile.fractalai.qft.mass_correlator_plots import (
+    MassCorrelatorComputer,
+    MassCorrelatorConfig,
+    MassCorrelatorPlotter,
+    STANDARD_CHANNELS,
+    save_mass_correlator_plots,
+)
 
 
 @dataclass
@@ -97,6 +104,9 @@ class AnalysisConfig:
     compute_string_tension: bool = False
     string_tension_max_triangles: int = 20000
     string_tension_bins: int = 20
+    # Mass correlator plot options
+    compute_mass_correlators: bool = False
+    mass_correlator_channels: tuple[str, ...] = ("scalar", "pseudoscalar", "vector", "nucleon")
 
 
 def _json_safe(value: Any) -> Any:
@@ -1519,6 +1529,18 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--compute-string-tension", action="store_true")
     parser.add_argument("--string-tension-max-triangles", type=int, default=20000)
     parser.add_argument("--string-tension-bins", type=int, default=20)
+    # Mass correlator plot options
+    parser.add_argument(
+        "--compute-mass-correlators",
+        action="store_true",
+        help="Compute and plot mass correlators for all standard lattice QFT channels.",
+    )
+    parser.add_argument(
+        "--mass-correlator-channels",
+        default="scalar,pseudoscalar,vector,nucleon",
+        help="Comma-separated list of channels for mass correlator plots "
+        "(scalar, pseudoscalar, vector, axial_vector, tensor, nucleon, glueball).",
+    )
     return parser.parse_args()
 
 
@@ -1568,6 +1590,12 @@ def main() -> None:
         compute_string_tension=args.compute_string_tension,
         string_tension_max_triangles=args.string_tension_max_triangles,
         string_tension_bins=args.string_tension_bins,
+        compute_mass_correlators=args.compute_mass_correlators,
+        mass_correlator_channels=tuple(
+            ch.strip().lower()
+            for ch in args.mass_correlator_channels.split(",")
+            if ch.strip()
+        ),
     )
     if analysis_cfg.h_eff <= 0:
         msg = "h_eff must be positive"
@@ -2115,7 +2143,69 @@ def main() -> None:
 
     _write_progress(progress_path, "particles", {"particle_observables": particle_metrics})
 
+    # Mass correlator plots for all standard channels
+    mass_correlator_metrics = None
+    mass_correlator_plot_paths = {}
+    if analysis_cfg.compute_mass_correlators:
+        try:
+            # Build config for mass correlator computation
+            mc_config = MassCorrelatorConfig(
+                warmup_fraction=analysis_cfg.warmup_fraction,
+                max_lag=analysis_cfg.particle_max_lag,
+                h_eff=analysis_cfg.h_eff,
+                mass=analysis_cfg.particle_mass,
+                ell0=analysis_cfg.particle_ell0,
+                neighbor_method=analysis_cfg.particle_neighbor_method,
+                knn_k=analysis_cfg.particle_knn_k,
+                knn_sample=analysis_cfg.particle_knn_sample,
+                use_connected=analysis_cfg.particle_use_connected,
+                fit_start=analysis_cfg.particle_fit_start,
+                fit_stop=analysis_cfg.particle_fit_stop,
+                channels=analysis_cfg.mass_correlator_channels,
+            )
+
+            # Compute correlators for all channels
+            mc_computer = MassCorrelatorComputer(history, mc_config)
+            mc_results = mc_computer.compute_all_channels()
+
+            # Generate and save plots
+            mc_plots_dir = plots_dir / "mass_correlators"
+            mc_plots_dir.mkdir(parents=True, exist_ok=True)
+            mass_correlator_plot_paths = save_mass_correlator_plots(
+                history, mc_plots_dir, mc_config.channels, mc_config
+            )
+
+            # Extract metrics summary for JSON
+            mass_correlator_metrics = {
+                "channels": {},
+                "n_channels": len(mc_results),
+            }
+            for channel, result in mc_results.items():
+                mass_correlator_metrics["channels"][channel] = {
+                    "display_name": result.channel.display_name,
+                    "quantum_numbers": result.channel.quantum_numbers,
+                    "n_samples": result.n_samples,
+                    "mass_fit": result.mass_fit,
+                }
+
+            _write_progress(
+                progress_path,
+                "mass_correlators",
+                {"mass_correlator_metrics": mass_correlator_metrics},
+            )
+        except Exception as e:
+            mass_correlator_metrics = {"error": str(e)}
+            _write_progress(
+                progress_path,
+                "mass_correlators",
+                {"mass_correlator_metrics": mass_correlator_metrics},
+            )
+
     summary = history.summary()
+    # Add mass correlator plot paths to plot_paths
+    if mass_correlator_plot_paths:
+        plot_paths["mass_correlators"] = {k: str(v) for k, v in mass_correlator_plot_paths.items()}
+
     analysis = {
         "history_path": str(history_path),
         "summary": summary,
@@ -2133,6 +2223,7 @@ def main() -> None:
         "wilson_timeseries": wilson_timeseries if analysis_cfg.build_fractal_set else None,
         "string_tension": string_tension,
         "particle_observables": particle_metrics,
+        "mass_correlator_channels": mass_correlator_metrics,
         "analysis_config": asdict(analysis_cfg),
         "obs_params": obs_params,
         "companion_epsilon": epsilon_companion,
@@ -2246,6 +2337,33 @@ def main() -> None:
                     f"  {name:<11} | {mass:>10.4f} | {r2:>9.4f} | "
                     f"{fit_label:<16} | {n_samples:>7}"
                 )
+
+    # Print mass correlator channel summary
+    if analysis_cfg.compute_mass_correlators and mass_correlator_metrics is not None:
+        if "error" in mass_correlator_metrics:
+            print(f"\nMass Correlator Analysis Error: {mass_correlator_metrics['error']}")
+        else:
+            channels = mass_correlator_metrics.get("channels") or {}
+            if channels:
+                print("\nMass Correlator Analysis by Channel (Lattice QFT):")
+                print("  Channel           | J^PC       | mass       | R²        | samples")
+                print("  ------------------|------------|------------|-----------|--------")
+                for name, data in channels.items():
+                    qn = data.get("quantum_numbers", {})
+                    j = qn.get("J", "?")
+                    p = qn.get("P", "?")
+                    c = qn.get("C", "?")
+                    jpc = f"{j}^{{{p}{c}}}" if all(x != "?" for x in [j, p, c]) else "-"
+                    fit = data.get("mass_fit", {})
+                    mass = fit.get("mass", 0.0)
+                    r2 = fit.get("r_squared", 0.0)
+                    n_samples = data.get("n_samples", 0)
+                    disp_name = data.get("display_name", name)[:16]
+                    print(
+                        f"  {disp_name:<17} | {jpc:<10} | {mass:>10.4f} | {r2:>9.4f} | {n_samples:>7}"
+                    )
+                if mass_correlator_plot_paths:
+                    print(f"\n  Mass correlator plots saved to: {plots_dir / 'mass_correlators'}")
 
 
 if __name__ == "__main__":

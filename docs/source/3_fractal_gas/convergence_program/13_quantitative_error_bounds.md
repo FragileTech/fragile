@@ -2305,7 +2305,7 @@ Identifying the mixing rate: $\kappa_{\text{mix}}^{\text{discrete}} = \kappa_E$,
 - Meyn & Tweedie (2009): "Markov Chains and Stochastic Stability" (Chapter 15: Geometric ergodicity)
 - Hairer, Stuart, Voss (2011): "Analysis of SPDEs arising in path sampling" (Theorem 3.10: Uniform ergodicity for discretized SDEs)
 
----
+
 
 :::{prf:proposition} Relationship Between Continuous and Discrete Mixing Rates
 :label: prop-mixing-rate-relationship
@@ -2606,7 +2606,7 @@ $$
 
 where $\rho_N$ is the single-particle marginal of $\nu_N$. This connects N-particle expectations to single-particle observables.
 
----
+
 
 :::{prf:proof}
 

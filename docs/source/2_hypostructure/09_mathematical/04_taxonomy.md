@@ -128,7 +128,7 @@ The following unified table displays all **168 structural slots** organized by F
 | **VII** | $K_{\mathrm{Bound}}^{\mathrm{morph}}$ Open | $K_{\mathrm{Bound}_B}^{\mathrm{morph}}$ Overload | $K_{\mathrm{Bound}_\Sigma}^{\mathrm{morph}}$ Starvation | $K_{\mathrm{GC}_T}^{\mathrm{morph}}$ Mismatch | $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{morph}}$ Morphism |
 | **VIII** | $K_{\mathrm{Bound}}^{\mathrm{inc}}$ Horizon | $K_{\mathrm{Bound}_B}^{\mathrm{inc}}$ Non-Causal | $K_{\mathrm{Bound}_\Sigma}^{\mathrm{inc}}$ Depleted | $K_{\mathrm{GC}_T}^{\mathrm{inc}}$ Anomaly | $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{hor}}$ Paradox |
 
----
+
 
 The detailed breakdown by stratum group follows:
 
@@ -717,7 +717,7 @@ By locating a problem on the 8x21 Periodic Table, the researcher immediately kno
 This transforms problem analysis into a systematic discipline where the certificate signature determines the proof strategy—the **8x21 Classification Matrix** provides the complete taxonomy.
 :::
 
----
+
 
 (sec-algorithmic-information-theory)=
 ## Algorithmic Information Theory Foundations

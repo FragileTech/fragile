@@ -3,7 +3,7 @@
 **Total labels defined:** 2650
 **Missing labels:** 39
 
----
+
 
 ## 🔴 Critical: Corrupted Label References (Need Manual Fix)
 
@@ -18,7 +18,7 @@ These labels contain corrupted text from previous edits:
 | `axiom-bounded-algorithmic ({prf:ref}` | 01_fragile_gas_framework.md | Corrupted prf:ref |
 | `thm-entropy-transport-contraction$...` | 15_kl_convergence.md | Corrupted prf:ref |
 
----
+
 
 ## 🟡 Missing Label Definitions (May need to be created)
 
@@ -71,7 +71,7 @@ These labels contain corrupted text from previous edits:
 - `thm-energy-bounds`
 - `thm-entropy-production-discrete`
 
----
+
 
 ## Recommendations
 

@@ -70,7 +70,7 @@ Together, the three edge types form a **directed 1-skeleton**: CST encodes timel
 **CST growth tree with IG and IA edges.** CST edges build the forward-time tree, IG edges link contemporaneous walkers in sampled directed pairs, and IA edges attribute influence back across timesteps.
 :::
 
----
+
 
 ## Overview
 
@@ -127,7 +127,7 @@ The following table summarizes the structural properties:
 | **Key weight** | Timestep $\Delta t$ | Cloning potential $V_{\mathrm{clone}}$ | Influence weight $w_{ij}$ |
 | **Role in triangle** | Evolution edge | Influence edge | Attribution edge |
 
----
+
 
 :::{admonition} The Big Picture: Why This Structure?
 :class: feynman-added tip
@@ -322,7 +322,7 @@ The answer is *geometric naturalness*. A spinor is a coordinate-free object. Whe
 This is not just aesthetic. When the Fractal Set is passed between systems, serialized to disk, or analyzed by different components, there is no need to track "which coordinate system was used." The spinor *is* the data, and the coordinates are derived as needed.
 :::
 
----
+
 
 (sec-nodes)=
 ## 2. Nodes: Spacetime Points with Scalar Data
@@ -459,7 +459,7 @@ The node knows only what can be measured with a ruler and a stopwatch, not a com
 This separation is not arbitrary. It reflects a deep physical principle: the state of a system at a single instant can be characterized by coordinate-free quantities, but the *evolution* of a system—how it changes from one instant to the next—inherently involves directions and thus requires covariant data.
 :::
 
----
+
 
 (sec-cst-edges)=
 ## 3. CST Edges: Temporal Evolution with Spinor Data
@@ -665,7 +665,7 @@ For $d \leq 4$, conversions are constant-time with fixed arithmetic operations. 
 *Proof.* For $d = 2$: constant-time complex square root/extraction. For $d = 3$: trigonometric functions and 2×2 matrix operations. For general $d$: eigenvalue decomposition of $s \times s$ Hermitian matrix. $\square$
 :::
 
----
+
 
 (sec-ig-edges)=
 ## 4. IG Edges: Asymmetric Selection Coupling
@@ -885,7 +885,7 @@ The algorithmic distance combines position and velocity into a single measure of
 The algorithmic distance controls the amplitude of interaction through $P_{\mathrm{comp}}$, while the fitness difference sets the phase. Close walkers interact strongly (large amplitude), and large fitness gaps generate rapid phase winding. This creates the possibility of wave-like interference in the walker ensemble—a feature that emerges naturally from the algorithm's structure without being explicitly designed.
 :::
 
----
+
 
 (sec-fractal-set)=
 ## 5. The Fractal Set: Complete Data Structure
@@ -1286,7 +1286,7 @@ $O(TNk_{\mathrm{eff}})$ where $k_{\mathrm{eff}}$ is the effective number of neig
 kernel bandwidth. When sparsifying, triangles are also pruned: only triangles whose IG edge
 survives the threshold are retained.
 
----
+
 
 (sec-reconstruction)=
 ## 6. Reconstruction of Algorithm Dynamics
@@ -1451,7 +1451,7 @@ The only thing not directly recorded is what the fitness landscape looks like *b
 This is not just theoretical completeness. It means you can take a Fractal Set, hand it to someone using completely different coordinates, and they can reconstruct the exact same physics. They will see the same energies, the same convergence rates, the same optimal solutions. The mathematics guarantees it.
 :::
 
----
+
 
 (sec-latent-instantiation)=
 ## 7. Instantiation in Latent Space
@@ -1717,7 +1717,7 @@ The Boris-BAOAB integrator provides:
 - Exact handling of reward curl via Boris rotation
 - Preservation of long-time statistical properties
 
----
+
 
 (sec-guarantees)=
 ## 8. Operational Guarantees
@@ -1797,7 +1797,7 @@ Here $\deg_t(i)$ is the number of sampled IG edges incident to walker $i$ at tim
 With indexing (hash tables on $(i, t)$ pairs), lookups become $O(1)$ expected time. $\square$
 :::
 
----
+
 
 (sec-fractal-set-parameters)=
 ## Parameter Glossary
@@ -1824,7 +1824,7 @@ With indexing (hash tables on $(i, t)$ pairs), lookups become $O(1)$ expected ti
 | | $\varepsilon_c$ | $\rho$ | [distance] | Coherence scale |
 | | $\hbar_{\mathrm{eff}}$ | Problem-dependent | [dimensionless] | Effective phase scale (choose units so $\theta_{ij}$ is dimensionless) |
 
----
+
 
 ## Summary
 

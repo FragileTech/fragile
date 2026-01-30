@@ -26,7 +26,7 @@ Why does this matter for us? Because the sieve is fundamentally an analytic obje
 
 :::
 
----
+
 
 ### Motivic Flow Principle
 
@@ -137,7 +137,7 @@ $$
 containing the motive, Künneth projectors, weight filtration, scaling exponents, and spectral radius.
 :::
 
----
+
 
 ### Schematic Sieve
 
@@ -235,7 +235,7 @@ K_{\text{SOS}}^+ = \left(\{p_\alpha\}_\alpha, \{g_i\}_i, \text{SDP feasibility w
 $$
 :::
 
----
+
 
 ### Kodaira-Spencer Stiffness Link
 
@@ -344,7 +344,7 @@ $$
 where classification $\in \{\text{rigid}, \text{obstructed}, \text{unobstructed-positive}\}$.
 :::
 
----
+
 
 ### Virtual Cycle Correspondence
 
@@ -461,7 +461,7 @@ $$K_{\text{virtual}}^+ = \left([\mathcal{M}]^{\text{vir}}, \text{vdim}, \mathbb{
 with virtual class, dimension, obstruction theory, and computed invariants.
 :::
 
----
+
 
 ### Monodromy-Weight Lock
 
@@ -565,7 +565,7 @@ $$K_{\text{MHS}}^+ = \left(F^\bullet_\infty, W_\bullet, N, T, (I, V), \{(\alpha_
 containing the limiting Hodge filtration, weight filtration, monodromy data, cycle decomposition, and weight-scaling pairs.
 :::
 
----
+
 
 ### Tannakian Recognition Principle
 
@@ -672,7 +672,7 @@ $$\text{Hom}_{\text{Rep}(G)}(\rho_{\mathcal{B}}, \rho_S)^G = 0$$
 The lock is verified iff no $G$-equivariant morphisms exist. This is computed via representation theory of $G$.
 :::
 
----
+
 
 ### Holographic Entropy Lock
 
@@ -735,7 +735,7 @@ Then the **Data Processing Inequality** provides an information-theoretic lock:
 *Step 3 (Lock Application).* If $\mathbb{H}_{\mathrm{bad}}$ requires establishing an isomorphism or embedding that preserves $I_{\mathrm{bad}}$ bits of information, but $I_{\mathrm{bad}} > C(Y)$, such a morphism cannot exist. The attempt to observe the "bad" structure fails because the boundary cannot transmit the necessary bits to distinguish it.
 :::
 
----
+
 
 (sec-structural-reconstruction-principle)=
 ## Structural Reconstruction Principle
@@ -767,7 +767,7 @@ This is why the sieve works. Not because it tries all possibilities, which would
 
 :::
 
----
+
 
 ### The Reconstruction Metatheorem
 
@@ -1106,7 +1106,7 @@ This ensures reconstruction makes definite progress: either discharging obligati
 
 :::
 
----
+
 
 ### Type Instantiation Table
 
@@ -1127,7 +1127,7 @@ The following table summarizes how the Structural Reconstruction Principle insta
 | $K_{\mathrm{SC}_\lambda}^+$ | Weight filtration bounded | Scaling exponent subcritical | Spectral dimension finite |
 | $K_{\mathrm{LS}_\sigma}^+$ | Hodge metric analytic | Łojasiewicz at solitons | Spectral gap $\delta > 0$ |
 
----
+
 
 ### Corollaries
 
@@ -1189,7 +1189,7 @@ K_{D_E}^+ @>>> K_{C_\mu}^+ @>>> K_{\mathrm{SC}_\lambda}^+ @>>> K_{\mathrm{LS}_\s
 Each arrow represents a certificate dependency. The output $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\text{verdict}} \in \{\text{blk}, \text{morph}\}$ is the decidable resolution of the Lock.
 :::
 
----
+
 
 ### The Analytic-Algebraic Rigidity Lemma
 
@@ -1370,7 +1370,7 @@ The failure mode **N.A (Non-Algebraic)** is excluded.
 - *GAGA:* {cite}`Serre56`
 :::
 
----
+
 
 **Connection to {prf:ref}`mt-lock-reconstruction`:** This lemma is the **algebraic instantiation** of the Structural Reconstruction Principle:
 

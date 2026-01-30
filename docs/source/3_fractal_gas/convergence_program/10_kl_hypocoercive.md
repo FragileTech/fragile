@@ -21,7 +21,7 @@ This result places the "Euclidean Gas" algorithm on a solid mathematical footing
 
 **Dependencies**: {doc}`07_discrete_qsd`, {doc}`05_kinetic_contraction`, {doc}`03_cloning`, {doc}`08_mean_field`, {doc}`06_convergence`
 
----
+
 
 # Chapter 1. Mathematical Foundations and the Entropic Structure
 

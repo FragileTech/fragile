@@ -121,7 +121,7 @@ The convergence rates we derive in Part III are not approximations or formal lim
 
 Both paths arrive at exponential convergence for the Euclidean Gas. But only Hypostructure extends naturally to the Latent Gas with its delayed potentials, adaptive diffusion, and non-smooth boundaries. The appendices provide valuable intuition and serve as independent validation; this document provides the machinery for general deployment.
 
----
+
 
 ## Metadata
 
@@ -146,7 +146,7 @@ When filling out this template, replace `[problem-slug]` with a lowercase, hyphe
 | Proofs | `proof-latent-fractal-gas-*` | `proof-thm-latent-fractal-gas-main` |
 | Proof Sketches | `sketch-latent-fractal-gas-*` | `sketch-thm-latent-fractal-gas-main` |
 
----
+
 
 ## Automation Witness (Framework Offloading Justification)
 
@@ -159,7 +159,7 @@ We certify that this instance is eligible for the Universal Singularity Modules.
 
 $$K_{\mathrm{Auto}}^+ = (T_{\text{algorithmic}}\ \text{good},\ \text{AutomationGuarantee holds},\ \text{factories enabled: RESOLVE-AutoProfile, RESOLVE-AutoAdmit, RESOLVE-AutoSurgery})$$
 
----
+
 
 ## Abstract
 
@@ -169,7 +169,7 @@ This document presents a **machine-checkable proof object** for the **Latent Fra
 
 **Result:** A fully specified step operator (in distribution), a complete constants table, derived constants computed from parameters, and a sieve run that reduces mean-field/QSD convergence claims to the framework rate calculators in `src/fragile/convergence_bounds.py`.
 
----
+
 
 ## Theorem Statement
 
@@ -205,13 +205,13 @@ In addition, once the quantitative constants $(m_\epsilon,\kappa_W,\kappa_{\math
 
 ::::
 
----
+
 
 :::{dropdown} **LLM Execution Protocol** (Click to expand)
 See `docs/source/prompts/template.md` for the deterministic protocol. This document implements the full instantiation + sieve pass for this algorithmic type.
 :::
 
----
+
 
 ## Algorithm Definition (Variant: Soft Companion Selection + Fragile-Agent Kinetics)
 
@@ -613,7 +613,7 @@ Let $S$ denote the current swarm state.
 
 The output is the next swarm state $(z, v)$ and diagnostics (fitness, companions, cloning stats).
 
----
+
 
 ## Constants and Hyperparameters (All Algorithm Constants)
 
@@ -652,7 +652,7 @@ The output is the next swarm state $(z, v)$ and diagnostics (fitness, companions
 | Kinetic | $\mathcal{R}$ | field | Reward 1-form | {prf:ref}`def-reward-1-form` | [dimensionless] |
 | Kinetic | $u_\pi$ | policy field | Control drift | {prf:ref}`def-bulk-drift-continuous-flow` | [dimensionless] |
 
----
+
 
 ## Derived Constants (Computed from Parameters)
 
@@ -965,7 +965,7 @@ $c_2^2\,G^{1/2}(z)\Sigma_{\text{reg}}(z)\Sigma_{\text{reg}}(z)^\top G^{1/2}(z)$,
 The resulting $(z,p)$ chain is hypoelliptic and admits a smooth transition density for $P^2$ on compact cores, which is
 the mixing/smoothing mechanism used in the Sieve.
 
----
+
 
 ## Thin Interfaces and Operator Contracts
 
@@ -999,7 +999,7 @@ The beauty of thin interfaces is compositionality. Once you specify these five o
 | Kinetic | Boris-BAOAB on latent manifold (Lorentz-Langevin + optional viscous coupling) | {prf:ref}`def-baoab-splitting` |
 | Step | Compose reward 1-form, companion selection, fitness, cloning, kinetic | this document |
 
----
+
 
 ## Instantiation Assumptions (Algorithmic Type)
 
@@ -1039,7 +1039,7 @@ These assumptions are the explicit witnesses used by RESOLVE-AutoAdmit/AutoProfi
 
 These are part of the **problem instantiation**; the sieve uses them as certified inputs.
 
----
+
 
 ## Part 0: Interface Permit Implementation Checklist
 
@@ -1150,7 +1150,7 @@ The Latent Fractal Gas is treated as an **open system**: the domain boundary ind
 * **Injection ($\mathcal{J}$):** OU thermostat noise and cloning jitter.
 * **Recovery ($\mathcal{R}$):** dead walkers are forced to clone from alive walkers (and the all-dead event is a cemetery state).
 
----
+
 
 ## Part II: Sieve Execution (Verification Run)
 
@@ -1176,7 +1176,7 @@ We run the full sieve using the instantiation assumptions A1-A6 plus A2b. The al
 
 $$K_{D_E}^+ = (\Phi, \mathfrak{D}, B), \quad B = V_{\max}.$$
 
----
+
 
 #### Node 2: ZenoCheck ($\mathrm{Rec}_N$)
 
@@ -1188,7 +1188,7 @@ $$K_{D_E}^+ = (\Phi, \mathfrak{D}, B), \quad B = V_{\max}.$$
 
 $$K_{\mathrm{Rec}_N}^+ = (\mathcal{B}, \mathcal{R}_{\mathrm{rec}}, N_{\max}=T).$$
 
----
+
 
 #### Node 3: CompactCheck ($C_\mu$)
 
@@ -1233,7 +1233,7 @@ This is **non-trivial scaling** (unlike $\alpha = \beta = 0$ for compact domains
 $$K_{\mathrm{SC}_\lambda}^{\text{crit}} = (\alpha=2, \beta=2, \alpha-\beta=0, \text{parabolic confinement}),$$
 $$K_{\mathrm{TypeII}}^{\mathrm{blk}} = (\text{BarrierTypeII}, \text{Foster-Lyapunov confinement}, \{K_{D_E}^+, K_{C_\mu}^+\}).$$
 
----
+
 
 #### Node 5: ParamCheck ($\mathrm{SC}_{\partial c}$)
 
@@ -1257,7 +1257,7 @@ $$K_{\mathrm{SC}_{\partial c}}^+ = (\Theta, \theta_0, C=0).$$
 
 $$K_{\mathrm{Cap}_H}^+ = (\Sigma=\{\text{NaN/Inf},\ \text{cemetery}\},\ \text{Cap}(\Sigma)=0\ \text{(framework sense)}).$$
 
----
+
 
 #### Node 7: StiffnessCheck ($\mathrm{LS}_\sigma$)
 
@@ -1281,7 +1281,7 @@ $$K_{\mathrm{LS}_\sigma}^+ = (\|\nabla\Phi_{\text{eff}}\|_G,\ \|\nabla^2\Phi_{\t
 
 $$K_{\mathrm{TB}_\pi}^+ = (\tau \equiv \text{const}, \pi_0(\mathcal{X})=\{\ast\}, \text{sector preserved}).$$
 
----
+
 
 #### Node 9: TameCheck ($\mathrm{TB}_O$)
 
@@ -1342,7 +1342,7 @@ $$
 
 $$K_{\mathrm{Rep}_K}^+ = (\mathcal{L}_{\mathrm{fp}}, D_{\mathrm{fp}}, K(z) \le C_{\mathrm{fp}}).$$
 
----
+
 
 ### Node 12: OscillateCheck ($\mathrm{GC}_\nabla$)
 
@@ -1372,7 +1372,7 @@ $$K_{\mathrm{Freq}}^{\mathrm{blk}} = (\text{BarrierFreq}, \text{oscillation boun
 
 $$K_{\mathrm{Bound}_\partial}^+ = (\partial\Omega=\mathcal{Z}\setminus B,\ \iota,\ \pi).$$
 
----
+
 
 ### Node 14: OverloadCheck ($\mathrm{Bound}_B$)
 
@@ -1389,7 +1389,7 @@ So the open-system injection is controlled at the level relevant for the QSD/mea
 $$K_{\mathrm{Bound}_B}^- = (\text{Gaussian injection is unbounded}),$$
 $$K_{\mathrm{Bode}}^{\mathrm{blk}} = (\text{thermostat + killing/recovery prevent overload on the alive slice}).$$
 
----
+
 
 ### Node 15: StarveCheck ($\mathrm{Bound}_{\Sigma}$)
 
@@ -1401,7 +1401,7 @@ $$K_{\mathrm{Bode}}^{\mathrm{blk}} = (\text{thermostat + killing/recovery preven
 
 $$K_{\mathrm{Bound}_{\Sigma}}^{\mathrm{blk}} = (\text{QSD/conditioned dynamics exclude starvation; cemetery absorbs all-dead}).$$
 
----
+
 
 ### Node 16: AlignCheck ($\mathrm{GC}_T$)
 
@@ -1437,19 +1437,19 @@ The Lock (Node 17) uses tactic E2: invariant mismatch. Our system has bounded en
 
 $$K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}} = (\text{E2-Invariant}, I(\mathcal{H})=B < \infty, I(\mathcal{H}_{\mathrm{bad}})=\infty).$$
 
----
+
 
 ## Part II-B: Upgrade Pass
 
 No $K^{\mathrm{inc}}$ certificates were emitted; the upgrade pass is vacuous.
 
----
+
 
 ## Part II-C: Breach/Surgery/Re-entry Protocol
 
 No barriers were breached; no surgery is executed.
 
----
+
 
 ## Part III-A: Quantitative Rates (Framework Constants)
 
@@ -1557,7 +1557,7 @@ inputs are discharged by A1–A6 plus A2b and the derived-constants section: $\g
 with $G$ continuous on $B$ (A2) gives $0<c_{\min}\le c_{\max}<\infty$, and $\kappa_W>0$ is certified by the companion-selection
 Doeblin constant (Lemma {prf:ref}`lem-latent-fractal-gas-companion-doeblin`) together with positive selection pressure.
 
----
+
 
 ## Part III-B: Mean-Field Limit (Propagation of Chaos)
 
@@ -1613,7 +1613,7 @@ Fitness and cloning affect the mean-field limit through:
 2. **Selection pressure:** $(\alpha_{\mathrm{fit}},\beta_{\mathrm{fit}},A,\eta,\epsilon_{\mathrm{clone}},p_{\max})$ determine $V_{\min},V_{\max},S_{\max}$ and therefore the range of clone probabilities; this controls $\lambda_{\mathrm{alg}}^{\mathrm{eff}}$ and ultimately $\kappa_x$.
 3. **Noise regularization:** $\sigma_x$ injects positional noise at cloning; this prevents genealogical collapse and enters the KL/LSI constants as $\delta_x^2=\sigma_x^2$.
 
----
+
 
 ## Part III-C: Quasi-Stationary Distribution (QSD) Characterization
 
@@ -1653,7 +1653,7 @@ Once $(c_{\min},c_{\max})$ (ellipticity), $\kappa_{\mathrm{conf}}$ (confinement)
 - **Entropy convergence to QSD:** exponential KL decay with rate $1/C_{\mathrm{LSI}}^{(\mathrm{geom})}$.
 - **Time-scale conversion:** discrete-time contraction $\kappa_{\mathrm{total}}$ induces a continuous-time proxy $\kappa_{\mathrm{QSD}}\approx \kappa_{\mathrm{total}}\tau$.
 
----
+
 
 ## Part III-D: Fitness/Cloning Sensitivity (What Moves the Rates)
 
@@ -1675,7 +1675,7 @@ The constants make the dependence transparent:
 4. **Cloning jitter $\sigma_x$:** larger $\sigma_x$ increases regularization (better KL/LSI constants) but also increases equilibrium variance; too small $\sigma_x$ risks particle collapse and degraded Wasserstein contraction.
 5. **Diffusion regularization $\epsilon_\Sigma$:** larger $\epsilon_\Sigma$ improves ellipticity (reduces $c_{\max}/c_{\min}$) and improves LSI/KL rates, at the cost of injecting larger kinetic noise (via $\Sigma_{\mathrm{reg}}$).
 
----
+
 
 ## Part III-E: Assumption Discharge Ledger
 
@@ -1927,7 +1927,7 @@ $$
 The key difference is that classical results require $V$ to be convex (or satisfy Bakry-Émery conditions), while the factory certificate $\kappa_{\text{total}} > 0$ replaces this with a **computable contraction check** that accounts for the selection mechanism's confining effect.
 :::
 
----
+
 
 ## Part III-F: Obligation Ledger
 
@@ -1935,7 +1935,7 @@ No obligations were introduced in this run.
 
 **Ledger Status:** EMPTY (no $K^{\mathrm{inc}}$ emitted).
 
----
+
 
 ## Part IV: Final Certificate Chain
 
@@ -1969,7 +1969,7 @@ Node 13: K_{Bound_∂}^+
 Node 14: K_{Bound_B}^- -> K_{Bode}^{blk}
 Node 15: K_{Bound_Σ}^{blk}
 Node 16: K_{GC_T}^+
----
+
 Node 17: K_{Cat_Hom}^{blk}
 ```
 
@@ -1981,7 +1981,7 @@ $$\Gamma_{\mathrm{final}} = \{K_{D_E}^+, K_{\mathrm{Rec}_N}^+, K_{C_\mu}^+, K_{\
 
 **Conclusion:** TRUE. The universal bad pattern is excluded via invariant mismatch (E2).
 
----
+
 
 ## Formal Proof
 
@@ -2008,7 +2008,7 @@ $\therefore$ the theorem holds. $\square$
 
 ::::
 
----
+
 
 ## Verification Summary
 
@@ -2022,7 +2022,7 @@ $\therefore$ the theorem holds. $\square$
 
 **Final Verdict:** SIEVE CLOSED (0 inc certificates under A1–A6 plus A2b)
 
----
+
 
 ## Metatheorem Instantiations (from 02_fractal_gas)
 
@@ -2125,7 +2125,7 @@ This table incorporates the assumption audit from Part III-E (Assumption Dischar
 8. QSD metatheorem sketch (`docs/source/sketches/fragile/fractal-gas.md`)
 9. Feynman–Kac/QSD appendix sketch (`docs/source/sketches/fragile/fragile_gas.md`)
 
----
+
 
 ## Appendix: Replay Bundle Schema (Optional)
 
@@ -2139,7 +2139,7 @@ For external machine replay, a bundle for this proof object would consist of:
 
 **Note:** These artifacts are not generated/committed by this document alone; they require a separate checker/export pipeline.
 
----
+
 
 ## Executive Summary: The Proof Dashboard
 
@@ -2229,7 +2229,7 @@ The Hypostructure framework transforms classical mathematical requirements into 
 
 **Key insight:** Convergence guarantees are **computable at runtime** by checking $\kappa_{\text{total}} > 0$, not proven by manual mathematical analysis.
 
----
+
 
 ## Document Information
 
@@ -2244,7 +2244,7 @@ The Hypostructure framework transforms classical mathematical requirements into 
 | **Final Status** | Final |
 | **Generated** | 2025-12-29 |
 
----
+
 
 *This document constitutes a machine-checkable proof object under the Hypostructure framework.*
 *Each certificate can be independently verified against the definitions in `hypopermits_jb.md`.*

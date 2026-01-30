@@ -3,7 +3,7 @@
 
 **Prerequisites**: {doc}`/source/3_fractal_gas/1_the_algorithm/02_fractal_gas_latent` (Latent Fractal Gas), {doc}`/source/3_fractal_gas/2_fractal_set/01_fractal_set` (Fractal Set)
 
----
+
 
 (sec-tldr-emergent-geometry)=
 ## TLDR
@@ -18,7 +18,7 @@
 
 **Two Equivalent Descriptions**: The same physics admits two mathematically equivalent formulations: (1) flat space with anisotropic diffusion, or (2) curved Riemannian manifold with isotropic diffusion. All convergence rates, mixing times, and observables are identical in both views—choose whichever makes your calculation simpler.
 
----
+
 
 (sec-emergent-geometry-intro)=
 ## Introduction
@@ -35,7 +35,7 @@ The key insight is that diffusion and metric are two sides of the same coin. If 
 This is not just mathematically pretty—it is algorithmically powerful. The swarm automatically concentrates exploration where it matters (flat regions with low curvature) and exploits efficiently where the landscape is already well-characterized (peaked regions with high curvature). Geometry and optimization become the same thing.
 :::
 
----
+
 
 (sec-adaptive-diffusion-tensor)=
 ## The Adaptive Diffusion Tensor
@@ -138,7 +138,7 @@ The parameter $\epsilon_\Sigma > 0$ plays three essential roles:
 2. **Algorithmic**: Acts as a trust-region radius, preventing infinite step sizes in flat regions
 3. **Physical**: Sets a thermal/quantum cutoff—the minimum geometric stiffness of spacetime
 
----
+
 
 (sec-regularity-convergence)=
 ## Regularity and Convergence
@@ -344,7 +344,7 @@ Setting $L_\Sigma = K_{\mathrm{sqrt}} \cdot L_H$ completes the proof.
 $\square$
 :::
 
----
+
 
 (sec-equivalence-principle)=
 ## The Equivalence Principle: Flat vs Curved
@@ -394,7 +394,7 @@ metric $g$ and the corresponding geometric drift. This does **not** claim a glob
 arbitrary diffusion field; any coordinate-change statement is local and requires $g$ to be a pullback metric.
 :::
 
----
+
 
 (sec-kinetic-evolution)=
 ## Kinetic Evolution in Emergent Geometry
@@ -480,7 +480,7 @@ If we want the equilibrium to reflect the *intrinsic* Riemannian geometry (where
 The key insight is that this is not a bug in our formalism—it is a feature. By choosing whether to include this drift, we can select which measure we want to sample: coordinate measure (no drift) or Riemannian measure (with drift). For geometric applications, we want the Riemannian measure.
 :::
 
----
+
 
 (sec-riemannian-volume)=
 ## Riemannian Volume Elements and Integration
@@ -763,7 +763,7 @@ $$
 **Convergence rate:** $O(N^{-1/2})$ regardless of dimension (see {doc}`/source/3_fractal_gas/convergence_program/13_quantitative_error_bounds` for explicit error bounds).
 :::
 
----
+
 
 (sec-hypocoercivity)=
 ## Hypocoercivity in Anisotropic Geometry
@@ -869,7 +869,7 @@ The condition $c_{\min} \underline{\lambda} > C_1 L_\Sigma$ has a clear physical
 For the Latent Fractal Gas with regularization $\epsilon_\Sigma$, this condition is always satisfiable by choosing $\epsilon_\Sigma$ large enough. Larger $\epsilon_\Sigma$ increases $c_{\min}$ (more diffusion everywhere) and decreases $L_\Sigma$ (smoother variation). The price is reduced adaptation to local curvature—you move toward isotropic diffusion. The optimal $\epsilon_\Sigma$ balances convergence speed against geometric adaptation.
 :::
 
----
+
 
 (sec-emergent-geometry-summary)=
 ## Summary
@@ -924,7 +924,7 @@ continuity are necessary ingredients but not sufficient on their own.
 - Monte Carlo integration works with $O(N^{-1/2})$ convergence regardless of dimension
 :::
 
----
+
 
 (sec-emergent-geometry-references)=
 ## References

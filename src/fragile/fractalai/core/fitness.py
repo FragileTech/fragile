@@ -157,6 +157,7 @@ def patched_standardization(
     rho: float | None = None,
     lambda_alg: float = 0.0,
     sigma_min: float = 1e-8,
+    detach_stats: bool = False,
     return_statistics: bool = False,
     bounds=None,
     pbc: bool = False,
@@ -235,6 +236,9 @@ def patched_standardization(
         alive_mask = alive.float()  # [N], 1.0 for alive, 0.0 for dead
 
         mu, sigma_reg = _global_stats(values, alive_mask)
+        if detach_stats:
+            mu = mu.detach()
+            sigma_reg = sigma_reg.detach()
 
         # Compute Z-scores for all walkers
         z_scores = (values - mu) / sigma_reg
@@ -284,6 +288,9 @@ def patched_standardization(
         mu_global, sigma_global = _global_stats(values, alive_mask)
         mu_rho = torch.where(fallback_mask, mu_global, mu_rho)
         sigma_rho = torch.where(fallback_mask, sigma_global, sigma_rho)
+    if detach_stats:
+        mu_rho = mu_rho.detach()
+        sigma_rho = sigma_rho.detach()
 
     # Compute Z-scores using LOCAL statistics
     # Z_ρ[f, d, x_i] = (v_i - μ_ρ(i)) / σ'_ρ(i)
@@ -313,6 +320,8 @@ def compute_fitness(
     rho: float | None = None,
     bounds=None,
     pbc: bool = False,
+    detach_stats: bool = False,
+    detach_companions: bool = False,
 ) -> tuple[Tensor, dict[str, Tensor]]:
     """Compute fitness potential using the Euclidean Gas measurement pipeline.
 
@@ -378,7 +387,13 @@ def compute_fitness(
     # Step 2: Compute regularized algorithmic distances in phase space
     # Regularized distance: d_alg(i,j) = sqrt(||x_i - x_j||² + λ_alg ||v_i - v_j||² + ε²)
     # The epsilon term ensures C^∞ differentiability at the origin (prevents NaN gradients)
-    pos_diff = positions - positions[companions]
+    if detach_companions:
+        companion_positions = positions.detach()[companions]
+        companion_velocities = velocities.detach()[companions]
+    else:
+        companion_positions = positions[companions]
+        companion_velocities = velocities[companions]
+    pos_diff = positions - companion_positions
 
     # Apply minimum image convention for periodic boundary conditions
     # This ensures shortest distance through wrapping: dx_wrapped = dx - L * round(dx / L)
@@ -386,7 +401,7 @@ def compute_fitness(
         L = bounds.high - bounds.low  # Domain size [d]
         pos_diff -= L * torch.round(pos_diff / L)  # Wrap to [-L/2, L/2]
 
-    vel_diff = velocities - velocities[companions]  # Velocities never use PBC
+    vel_diff = velocities - companion_velocities  # Velocities never use PBC
     pos_sq = (pos_diff**2).sum(dim=-1)
     vel_sq = (vel_diff**2).sum(dim=-1)
     distances = torch.sqrt(pos_sq + lambda_alg * vel_sq + epsilon_dist**2)
@@ -402,6 +417,7 @@ def compute_fitness(
         rho=rho,
         lambda_alg=lambda_alg,
         sigma_min=sigma_min,
+        detach_stats=detach_stats,
         return_statistics=True,
         bounds=bounds,
         pbc=pbc,
@@ -414,6 +430,7 @@ def compute_fitness(
         rho=rho,
         lambda_alg=lambda_alg,
         sigma_min=sigma_min,
+        detach_stats=detach_stats,
         return_statistics=True,
         bounds=bounds,
         pbc=pbc,
@@ -565,6 +582,19 @@ class FitnessOperator(PanelModel):
             "Small ρ enables local gauge theory interpretation."
         ),
     )
+    grad_mode = param.ObjectSelector(
+        default="exact",
+        objects=["exact", "sum"],
+        doc="Gradient mode: exact per-walker or single backward on summed fitness.",
+    )
+    detach_stats = param.Boolean(
+        default=False,
+        doc="Detach mean/std statistics in z-score computation (stabilizes gradients).",
+    )
+    detach_companions = param.Boolean(
+        default=False,
+        doc="Detach companion positions/velocities to avoid cross-walker gradients.",
+    )
 
     @property
     def widgets(self) -> dict[str, dict]:
@@ -693,6 +723,8 @@ class FitnessOperator(PanelModel):
             bounds=bounds,
             pbc=pbc,
             rho=self.rho,
+            detach_stats=self.detach_stats,
+            detach_companions=self.detach_companions,
         )
 
     def compute_gradient(
@@ -744,6 +776,8 @@ class FitnessOperator(PanelModel):
             A=self.A,
             epsilon_dist=self.epsilon_dist,
             rho=self.rho,
+            detach_stats=self.detach_stats,
+            detach_companions=self.detach_companions,
         )
         if not fitness.requires_grad:
             warnings.warn(
@@ -752,6 +786,17 @@ class FitnessOperator(PanelModel):
                 RuntimeWarning,
             )
             return torch.zeros_like(positions_grad)
+
+        if self.grad_mode == "sum":
+            (grad,) = torch.autograd.grad(
+                outputs=fitness.sum(),
+                inputs=positions_grad,
+                create_graph=False,
+                allow_unused=True,
+            )
+            if grad is None:
+                return torch.zeros_like(positions_grad)
+            return grad
 
         # Compute per-walker gradient: ∂V_i/∂positions_i (ignore cross-terms)
         N = fitness.shape[0]
@@ -830,6 +875,8 @@ class FitnessOperator(PanelModel):
             A=self.A,
             epsilon_dist=self.epsilon_dist,
             rho=self.rho,
+            detach_stats=self.detach_stats,
+            detach_companions=self.detach_companions,
         )
         if not fitness.requires_grad:
             warnings.warn(
@@ -965,6 +1012,8 @@ class FitnessOperator(PanelModel):
                 A=self.A,
                 epsilon_dist=self.epsilon_dist,
                 rho=self.rho,
+                detach_stats=self.detach_stats,
+                detach_companions=self.detach_companions,
             )
             return fitness
 
@@ -1031,6 +1080,8 @@ class FitnessOperator(PanelModel):
                 A=self.A,
                 epsilon_dist=self.epsilon_dist,
                 rho=self.rho,
+                detach_stats=self.detach_stats,
+                detach_companions=self.detach_companions,
             )
             return fitness
 
@@ -1103,6 +1154,8 @@ class FitnessOperator(PanelModel):
                     A=self.A,
                     epsilon_dist=self.epsilon_dist,
                     rho=self.rho,
+                    detach_stats=self.detach_stats,
+                    detach_companions=self.detach_companions,
                 )
                 return fitness[idx]
 

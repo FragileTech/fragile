@@ -26,7 +26,7 @@ A Hypostructure $\mathbb{H}$ is an object in a cohesive $(\infty, 1)$-topos $\ma
 
 To support everything from **Navier-Stokes** to **Graph Theory** to **Homotopy Type Theory**, we define the interfaces using the language of **Higher Topos Theory** (specifically, internal logic of an $(\infty,1)$-topos). This allows "Space" to be a manifold, a graph, or a type; "Energy" to be a functional, a complexity measure, or a truth value.
 
----
+
 
 ### Ambient Structure
 
@@ -112,7 +112,7 @@ This enables:
 - Caching and reuse of certificates across Sieve traversals
 :::
 
----
+
 
 ### $\mathcal{H}_0$ (Substrate Interface)
 *The Substrate Definition.*
@@ -149,7 +149,7 @@ $$\vdash S_t \in \text{Hom}_{\mathcal{E}}(\mathcal{X}, \mathcal{X})$$
 **Does Not Promise:** Global existence. The refinement filter may exhaust at finite time.
 :::
 
----
+
 
 ### $D_E$ (Energy Interface)
 *The Cost Interface. Enables Node 1: EnergyCheck*
@@ -188,7 +188,7 @@ $$\Phi(S_t x) \leq \Phi(x) + \int \mathfrak{D}$$
 **Does Not Promise:** That energy is actually bounded.
 :::
 
----
+
 
 ### $\mathrm{Rec}_N$ (Recovery Interface)
 *The Discrete Event Interface. Enables Node 2: ZenoCheck*
@@ -215,7 +215,7 @@ $$\#\{t \mid S_t(x) \in \mathcal{B}\} < \infty$$
 **Does Not Promise:** That Zeno behavior is impossible.
 :::
 
----
+
 
 ### $C_\mu$ (Compactness Interface)
 *The Limit Interface. Enables Node 3: CompactCheck*
@@ -242,7 +242,7 @@ $$\exists V \in \mathcal{X} // G : x_n \to V$$
 **Does Not Promise:** Compactness. Dispersion ($K_{C_\mu}^-$) is a valid success state.
 :::
 
----
+
 
 ### $\mathrm{SC}_\lambda$ (Scaling Interface)
 *The Homogeneity Interface. Enables Node 4: ScaleCheck*
@@ -271,7 +271,7 @@ $$\beta(V) - \alpha(V) < \lambda_c$$
 **Does Not Promise:** Subcriticality.
 :::
 
----
+
 
 ### $\mathrm{SC}_{\partial c}$ (Parameter Interface)
 *Enables Node 5: ParamCheck*
@@ -299,7 +299,7 @@ $$\forall t.\, d(\theta(S_t x), \theta_0) \leq C$$
 **Does Not Promise:** Parameter stability.
 :::
 
----
+
 
 ### $\mathrm{Cap}_H$ (Capacity Interface)
 *The Measure/Dimension Interface. Enables Node 6: GeomCheck*
@@ -326,7 +326,7 @@ $$\text{Cap}(\Sigma) < C_{\text{crit}}$$
 **Does Not Promise:** That singularities are small.
 :::
 
----
+
 
 ### $\mathrm{LS}_\sigma$ (Stiffness Interface)
 *The Local Convexity Interface. Enables Node 7: StiffnessCheck*
@@ -352,7 +352,7 @@ $$\|\nabla \Phi(x)\| \geq C |\Phi(x) - \Phi(V)|^{1-\theta}$$
 **Does Not Promise:** Convexity. Flat landscapes ($K_{\mathrm{LS}_\sigma}^-$) trigger the Spectral Barrier.
 :::
 
----
+
 
 ### $\mathrm{Mon}_\phi$ (Monotonicity Interface)
 *The Virial/Morawetz Interface. Enables Soft→Rigidity Compilation*
@@ -393,7 +393,7 @@ $$\frac{d^2}{dt^2} M_\phi(t) \geq c \cdot \|\nabla u\|^2 - C \cdot \|u\|^2$$
 **Literature:** Morawetz estimates {cite}`Morawetz68`; virial identities {cite}`GlasseyScattering77`; interaction Morawetz {cite}`CollianderKeelStaffilaniTakaokaTao08`.
 :::
 
----
+
 
 ### $\mathrm{TB}_\pi$ (Topology Interface)
 *The Invariant Interface. Enables Node 8: TopoCheck*
@@ -419,7 +419,7 @@ $$\tau(S_t x) = \tau(x)$$
 **Does Not Promise:** Topological stability.
 :::
 
----
+
 
 ### $\mathrm{TB}_O$ (Tameness Interface)
 *Enables Node 9: TameCheck*
@@ -445,7 +445,7 @@ $$\Sigma \in \mathcal{O}\text{-definable}$$
 **Does Not Promise:** Tameness. Wild topology ($K_{\mathrm{TB}_O}^-$) routes to the O-Minimal Barrier.
 :::
 
----
+
 
 ### $\mathrm{TB}_\rho$ (Mixing Interface)
 *Enables Node 10: ErgoCheck*
@@ -472,7 +472,7 @@ $$\tau_{\text{mix}}(x) < \infty$$
 **Does Not Promise:** Mixing.
 :::
 
----
+
 
 ### $\mathrm{Rep}_K$ (Dictionary Interface)
 *The Equivalence Interface. Enables Node 11: ComplexCheck*
@@ -506,7 +506,7 @@ $$K(D(x)) < \infty$$
 **Epistemic Role:** $\mathrm{Rep}_K$ is the boundary between "analysis engine" and "conjecture prover engine." When $\mathrm{Rep}_K$ produces a NO-inconclusive certificate ($K_{\mathrm{Rep}_K}^{\mathrm{inc}}$), the Lock uses only geometric tactics (E1--E3).
 :::
 
----
+
 
 ### $\mathrm{GC}_\nabla$ (Gradient Interface)
 *The Geometry Interface. Enables Node 12: OscillateCheck*
@@ -536,7 +536,7 @@ $$\mathfrak{D}(x) = \|\nabla_g \Phi(x)\|^2$$
 **Optionality:** $\mathrm{GC}_\nabla$ is not required for basic singularity exclusion. It only unlocks "explicit Lyapunov/action reconstruction" upgrades.
 :::
 
----
+
 
 ### Open System Interfaces
 *Enables Nodes 13-16: BoundaryCheck, OverloadCheck, StarveCheck, AlignCheck*
@@ -631,7 +631,7 @@ $$\Delta(T(u), d) \leq \varepsilon_{\text{align}}$$
 - $K_{\mathrm{GC}_T}^-$ (Misaligned): $(\text{misalignment mode})$ — triggers BarrierVariety.
 :::
 
----
+
 
 ### $\mathrm{Cat}_{\mathrm{Hom}}$ (Categorical Interface)
 *Enables Node 17: The Lock (BarrierExclusion)*
@@ -684,7 +684,7 @@ The Lock evaluator checks whether any morphism exists from any bad pattern to th
 The universal bad object $\mathbb{H}_{\mathrm{bad}}^{(T)}$ is well-defined as the colimit over the **small** germ set $\mathcal{G}_T$ (see {prf:ref}`mt-krnl-exclusion`, Initiality Lemma). The Small Object Argument ({cite}`Quillen67` §II.3) ensures $\mathcal{G}_T$ is a genuine set by exploiting energy bounds and symmetry quotients. The library formulation $\mathcal{B} = \{B_i\}_{i \in I}$ is the **constructive implementation**: it provides a finite list of computable representatives. The density theorem {prf:ref}`mt-fact-germ-density` proves that checking $\mathcal{B}$ suffices to verify the full categorical obstruction.
 :::
 
----
+
 
 ### What base level Does NOT Promise
 
@@ -705,7 +705,7 @@ These are obtained by **upgrades**:
 
 This separation makes the framework **honest about its assumptions** and enables systematic identification of what additional structure is needed when an inconclusive NO certificate ($K^{\mathrm{inc}}$) is produced.
 
----
+
 
 ### Backend-Specific Permits (Specialized Certificates)
 
@@ -999,7 +999,7 @@ Typical $\mathsf{missing}$: "generator domain $D(A)$ not characterizable from so
 **Literature:** {cite}`EngelNagel00`; {cite}`Pazy83`.
 :::
 
----
+
 
 :::{prf:definition} Permit $\mathrm{Rigidity}_T^+$ (Rigidity / No-Minimal-Counterexample Theorem)
 :label: def-permit-rigidity
@@ -1046,7 +1046,7 @@ Typical $\mathsf{missing}$: "$K_{\mathrm{Mon}_\phi}^+$ certificate insufficient 
 **Literature:** {cite}`DuyckaertsKenigMerle11`; {cite}`KenigMerle06`.
 :::
 
----
+
 
 :::{prf:definition} Permit $\mathrm{MorseDecomp}^+$ (Attractor Structure via Morse/Conley or Gradient-like Dynamics)
 :label: def-permit-morsedecomp
@@ -1101,7 +1101,7 @@ Typical $\mathsf{missing}$: "Lyapunov function not verified to be strict", "$K_{
 **Literature:** {cite}`Conley78`; {cite}`Hale88`; {cite}`SellYou02`.
 :::
 
----
+
 
 ### Summary Tables
 
@@ -1146,7 +1146,7 @@ This table constitutes the **Type Signature** of a Hypostructure.
 | **Neural Networks** | Smooth | ✓ | ✓ | ✓ | ✓ | — | ✓ | — | ✓ |
 | **Crypto Protocols** | Sh(FinSet) | ✓ | ✓ | — | — | — | — | ✓ | ✓ |
 
----
+
 
 ### Master Node Map
 
@@ -1185,7 +1185,7 @@ When CompactCheck (Node 3) returns NO with a concentration profile, the system e
 | 3c | SurgeryExec | Execute surgery | Node 3d | BarrierSurgery |
 | 3d | ReEntry | Re-enter at Node 4 | Node 4 | BarrierReEntry |
 
----
+
 
 (sec-kernel-objects)=
 ### 19.A. The Kernel Objects: Interface Implementations
@@ -1215,7 +1215,7 @@ This section specifies each kernel object using a standardized template:
 
 This serves as a "header file" for instantiation - users can read the table and know exactly what data structures to provide for their domain.
 
----
+
 
 #### 19.A.1. $\mathcal{X}$ — The State Object
 **Implements Interfaces:** **$\mathcal{H}_0$**, **$\mathrm{Cap}_H$**, **$\mathrm{TB}_\pi$**, **$\mathrm{TB}_O$**, **$\mathrm{Rep}_K$**, **$\mathrm{Bound}$**, **$\mathrm{Cat}_{\mathrm{Hom}}$**
@@ -1234,7 +1234,7 @@ This serves as a "header file" for instantiation - users can read the table and 
 | **10. $(\iota, \pi)$** | $\iota: \mathcal{U} \to \mathcal{X}$, $\pi: \mathcal{X} \to \mathcal{Y}$ | **$\mathrm{Bound}$** | **Open system coupling** (input/output). Powers **Nodes 13-16**. |
 | **11. $\mathcal{B}$** | Set of objects in $\mathbf{Hypo}_T$ | **$\mathrm{Cat}_{\mathrm{Hom}}$** | **Bad Pattern Library** $\{B_i\}_{i \in I}$ for morphism obstruction. Powers **Node 17**. |
 
----
+
 
 #### 19.A.2. $\Phi$ — The Height Object
 **Implements Interfaces:** **$D_E$**, **$\mathrm{SC}_\lambda$**, **$\mathrm{LS}_\sigma$**
@@ -1250,7 +1250,7 @@ This serves as a "header file" for instantiation - users can read the table and 
 | **7. $\theta$** | Element of $(0, 1]$ | **$\mathrm{LS}_\sigma$** | **Łojasiewicz exponent**: $\|\nabla\Phi\| \geq c|\Phi - \Phi_\infty|^\theta$. |
 | **8. $\Phi_\infty$** | Element of $\mathcal{H}$ | **$\mathrm{LS}_\sigma$** | **Limit height** (infimum/equilibrium value). |
 
----
+
 
 #### 19.A.3. $\mathfrak{D}$ — The Dissipation Object
 **Implements Interfaces:** **$D_E$**, **$\mathrm{Rec}_N$**, **$\mathrm{SC}_\lambda$**, **$\mathrm{GC}_\nabla$**, **$\mathrm{TB}_\rho$**
@@ -1263,7 +1263,7 @@ This serves as a "header file" for instantiation - users can read the table and 
 | **4. $g$** | Metric structure on $\mathcal{X}$ | **$\mathrm{GC}_\nabla$** | **Riemannian/metric tensor** enabling $\mathfrak{D} = \|\nabla\Phi\|_g^2$. Powers **Node 12**. |
 | **5. $\tau_{\text{mix}}$** | Morphism $\mathcal{X} \to \mathcal{T}$ | **$\mathrm{TB}_\rho$** | **Mixing time** to equilibrium. Powers **Node 10**. |
 
----
+
 
 #### 19.A.4. $G$ — The Symmetry Object
 **Implements Interfaces:** **$\mathcal{H}_0$**, **$C_\mu$**, **$\mathrm{SC}_\lambda$**, **$\mathrm{LS}_\sigma$**, **$\mathrm{SC}_{\partial c}$**
@@ -1277,7 +1277,7 @@ This serves as a "header file" for instantiation - users can read the table and 
 | **5. Stab** | Map $\mathcal{X} \to \text{Sub}(\mathcal{G})$ | **$\mathrm{LS}_\sigma$** | **Stabilizer/Isotropy** at each point. Powers **Node 7** (symmetry breaking). |
 | **6. $\Theta$** | Parameter space object | **$\mathrm{SC}_{\partial c}$** | **Moduli of symmetry-breaking parameters**. Powers **Node 5**. |
 
----
+
 
 ### 19.B. The Instantiation Metatheorem
 
@@ -1359,7 +1359,7 @@ where $\text{Result} \in \{\text{GlobalRegularity}, \text{Mode}_{1..15}, \text{F
 - $G = \text{Aut}(G) \times S_k$ (graph automorphisms, color permutations)
 :::
 
----
+
 
 (sec-thin-kernel-objects)=
 ### 19.C Thin Kernel Objects
@@ -1399,7 +1399,7 @@ This is what makes the framework actually usable in practice.
 | **Symmetry** | Group $G$, action $\rho$ | ProfileExtractor, VacuumStabilizer |
 :::
 
----
+
 
 #### 19.C.1 $\mathcal{X}^{\text{thin}}$ — Thin State Object
 
@@ -1428,7 +1428,7 @@ $$\mathcal{X}^{\text{thin}} = (\mathcal{X}, d, \mu)$$
 | $\mathcal{O}$ | O-minimal structure from $d$ | $\mathrm{TB}_O$ |
 :::
 
----
+
 
 #### 19.C.2 $\Phi^{\text{thin}}$ — Thin Height Object
 
@@ -1457,7 +1457,7 @@ $$\Phi^{\text{thin}} = (F, \nabla, \alpha)$$
 | Stiffness | $\theta$ from $\|F - F_\infty\| \leq C \|\nabla F\|^\theta$ | $\mathrm{LS}_\sigma$ |
 :::
 
----
+
 
 #### 19.C.3 $\mathfrak{D}^{\text{thin}}$ — Thin Dissipation Object
 
@@ -1484,7 +1484,7 @@ $$\mathfrak{D}^{\text{thin}} = (R, \beta)$$
 | Concentration locus | $\{x : \mu(\epsilon\text{-ball}) \to 0\}$ | $C_\mu$ |
 :::
 
----
+
 
 #### 19.C.4 $G^{\text{thin}}$ — Thin Symmetry Object
 
@@ -1513,7 +1513,7 @@ $$G^{\text{thin}} = (\text{Grp}, \rho, \mathcal{S})$$
 | Parameter Moduli | $\Theta = \mathcal{X}/G$ | $\mathrm{SC}_{\partial c}$ |
 :::
 
----
+
 
 #### 19.C.5 Summary: The Four Thin Objects
 
@@ -1562,7 +1562,7 @@ Given thin objects $(\mathcal{X}^{\text{thin}}, \Phi^{\text{thin}}, \mathfrak{D}
 **Literature:** Concentration-compactness profile extraction {cite}`Lions84`; moduli space theory {cite}`MumfordFogartyKirwan94`; excision in surgery {cite}`Perelman03`.
 :::
 
----
+
 
 (sec-soft-backend-compilation)=
 ### 19.19. Soft-to-Backend Compilation
@@ -1607,7 +1607,7 @@ Lock^blk, K_prof^+, Global Regularity
 
 For **good types** (satisfying the Automation Guarantee), soft interface verification **automatically discharges** backend permits via compilation metatheorems.
 
----
+
 
 :::{prf:theorem} [FACT-SoftWP] Soft-to-WP Compilation
 :label: mt-fact-soft-wp
@@ -1640,7 +1640,7 @@ $K_{\mathrm{WP}_{s_c}}^+ = (\mathsf{template\_ID}, \mathsf{theorem\_citation}, s
 **Literature:** {cite}`CazenaveSemilinear03`; {cite}`Tao06`.
 :::
 
----
+
 
 :::{prf:theorem} Soft-to-Backend Completeness
 :label: thm-soft-backend-complete
@@ -1656,7 +1656,7 @@ $$\underbrace{K_{\mathrm{WP}}^+ \wedge K_{\mathrm{ProfDec}}^+ \wedge K_{\mathrm{
 **Consequence:** The public signature of `mt-auto-profile` requires only soft interfaces. Backend permits appear only in the **internal compilation proof**, not in the user-facing hypotheses.
 :::
 
----
+
 
 #### 19.19.2 Evaluators for Derived Permits
 
@@ -1680,7 +1680,7 @@ The Sieve implements proof-producing evaluators for each derived permit. Every e
 - **NO with $K^{\mathrm{wit}}$**: Fatal route—a genuine counterexample exists
 - **NO with $K^{\mathrm{inc}}$**: Reconstruction route—try adding interfaces, refining library, or extending templates
 
----
+
 
 :::{prf:theorem} [FACT-GermDensity] Germ Set Density
 :label: mt-fact-germ-density

@@ -42,7 +42,7 @@ Where:
 
 :::
 
----
+
 
 (sec-lock-exclusion-tactics)=
 ## E1--E13 Exclusion Tactics
@@ -513,7 +513,7 @@ K_{\mathrm{Rep}_K}^+ \wedge K_{\mathrm{SC}_\lambda}^+ \wedge \left(K_{\mathrm{E1
 
 $$
 
----
+
 
 ### Backend A: Hypersurface Form
 
@@ -526,7 +526,7 @@ $$
 
 **Literature:** Irreducibility and defining equations {cite}`Hartshorne77`; Nullstellensatz {cite}`CoxLittleOShea15`.
 
----
+
 
 ### Backend B: Complete Intersection Form
 
@@ -539,7 +539,7 @@ $$
 
 **Literature:** Bézout's theorem {cite}`Fulton84`; complete intersections {cite}`EisenbudHarris16`.
 
----
+
 
 ### Backend C: Morphism / Compression Form
 
@@ -552,7 +552,7 @@ $$
 
 **Literature:** Degrees of morphisms {cite}`Lazarsfeld04`; projection formulas {cite}`Fulton84`.
 
----
+
 
 **Backend Selection Logic:**
 

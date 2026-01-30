@@ -616,7 +616,7 @@ Throughout Chapters 4-7, we analyze the kinetic operator's effect on various Lya
 
 This section establishes the foundational result that allows us to translate continuous-time drift inequalities into discrete-time contraction guarantees.
 
----
+
 
 #### 3.7.1. The Continuous-Time Generator
 
@@ -667,7 +667,7 @@ $$
 then this immediately implies exponential decay of $V$ in continuous time. The challenge is translating this to the discrete-time algorithm.
 :::
 
----
+
 
 #### 3.7.2. Main Discretization Theorem
 
@@ -720,7 +720,7 @@ $$
 which is the **discrete-time drift inequality** with effective contraction rate $\kappa\tau/2$.
 :::
 
----
+
 
 #### 3.7.3. Rigorous Component-Wise Weak Error Analysis
 
@@ -1147,7 +1147,7 @@ $$
 This multi-part proof is structured so that the **TV-relevant components** (variance, barycenter, boundary) rely only on standard weak-error estimates for smooth bounded test functions. The Wasserstein component is **deferred** and not used in the TV proof.
 :::
 
----
+
 
 #### 3.7.4. Explicit Constants
 
@@ -1185,7 +1185,7 @@ For typical parameters $(\gamma = 1, \sigma_v = 1, \kappa \sim 0.1)$, taking $\t
 A full derivation of $K_{\text{integ}}$ follows standard BAOAB weak-error expansions for smooth test functions (Leimkuhler & Matthews, 2015). The constants above are stated explicitly to keep the TV proof constructive.
 :::
 
----
+
 
 #### 3.7.5. Application to Each Lyapunov Component
 
@@ -1211,7 +1211,7 @@ for $\tau < \tau_*(\kappa_{\text{component}})$.
 
 **Unified timestep:** Taking $\tau < \tau_{\text{global}} := \min_{\text{components}} \tau_*(\kappa_{\text{component}})$ ensures all components satisfy their drift inequalities simultaneously.
 
----
+
 
 #### 3.7.6. Summary and Interpretation
 
@@ -1234,7 +1234,7 @@ for $\tau < \tau_*(\kappa_{\text{component}})$.
 - Acceptable tradeoff: timestep restrictions are standard in numerical analysis
 :::
 
----
+
 
 **Notation for Subsequent Chapters:**
 
@@ -1243,7 +1243,7 @@ From now on:
 - **$\mathbb{E}[\Delta V] = \mathbb{E}[V(S_\tau) - V(S_0)] \leq ...$** denotes discrete-time drift, derived via {prf:ref}`thm-discretization`
 - We will prove generator bounds first, then immediately cite {prf:ref}`thm-discretization` for the discrete version
 
----
+
 
 **End of Section 3.7**
 

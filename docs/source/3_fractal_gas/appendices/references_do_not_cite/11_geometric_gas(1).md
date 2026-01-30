@@ -1920,7 +1920,7 @@ This is the main practical result: the algorithm is guaranteed to converge, and 
 
 **Important:** The Foster-Lyapunov proof in Chapter 7 is **rigorous and complete**. It establishes geometric ergodicity and exponential convergence to the QSD. The LSI conjecture in this chapter, if proven, would **strengthen** these results by providing entropy decay and concentration of measure, but it is **not required** for the main convergence theorem.
 
----
+
 
 The Foster-Lyapunov analysis in Chapter 7 provides a direct and constructive proof of geometric ergodicity. However, functional inequalities like the Logarithmic Sobolev Inequality (LSI) offer additional insights and stronger convergence guarantees.
 
@@ -2923,7 +2923,7 @@ This would fully realize the vision of information-geometric exploration, where 
 - Validate the theoretical predictions (exponential convergence, parameter scaling laws) through numerical experiments.
 - Investigate the practical impact of the Hessian-based diffusion tensor compared to simpler alternatives.
 
----
+
 
 **Closing remark.** This document has demonstrated that sophisticated, adaptive, nonlinear stochastic systems can be rigorously analyzed when designed with mathematical principles in mind. The key insights—separation of stability from adaptation, regularization as a safety switch, and perturbation theory for convergence proofs—are not specific to our particular model, but represent a general paradigm for bringing the full power of modern probability theory to bear on the analysis of intelligent systems.
 

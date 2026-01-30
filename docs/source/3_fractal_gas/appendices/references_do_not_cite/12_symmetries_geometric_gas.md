@@ -10,7 +10,7 @@
 
 **Time-Reversal Asymmetry and Entropy Production**: Unlike conservative Hamiltonian systems, the Euclidean Gas exhibits strict irreversibility. Time-reversal symmetry is broken by the measurement-collapse structure of cloning and by friction in the Langevin dynamics, leading to monotonic entropy production and convergence to the QSD. This asymmetry is formalized via a generalized H-theorem.
 
----
+
 
 ## 1. Introduction
 
@@ -75,7 +75,7 @@ graph TB
 - **§3.4 (Scaling Symmetries)**: Analyze how multiplicative reward rescaling transforms the fitness potential and leaves the dynamics qualitatively unchanged.
 - **§3.5 (Time-Reversal Asymmetry)**: Establish irreversibility via the measurement structure and friction, prove monotonic entropy production (H-theorem).
 
----
+
 
 ## 2. Foundational Definitions
 
@@ -238,7 +238,7 @@ $$
 This defines a **state-dependent Riemannian manifold** $(\mathcal{X}, g(\cdot, S))$ for each swarm state $S$.
 :::
 
----
+
 
 ## 3. Flat Algorithmic Space Symmetries
 

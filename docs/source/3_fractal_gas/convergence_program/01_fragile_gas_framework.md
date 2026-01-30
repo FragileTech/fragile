@@ -298,7 +298,7 @@ The system is defined by a hierarchy of choices and parameters that affect the s
 *   **A. Foundational & Environmental Parameters:** Properties of the fixed environment and state space.
 *   **B. Core Algorithmic Parameters:** The primary tunable values that control the algorithm's execution.
 
----
+
 
 #### A. Foundational & Environmental Parameters
 

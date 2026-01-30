@@ -3,7 +3,7 @@
 
 **Prerequisites**: {doc}`01_emergent_geometry`, {doc}`/source/3_fractal_gas/2_fractal_set/02_causal_set_theory`, {cite}`gomez2018scutoids`
 
----
+
 
 (sec-scutoid-tldr)=
 ## TLDR
@@ -18,7 +18,7 @@
 
 **Topological Information Rate**: The scutoid index $\chi_{\mathrm{scutoid}} = |\mathcal{N}_{\mathrm{lost}}| + |\mathcal{N}_{\mathrm{gained}}|$ counts neighbor relationship changes. Conjecture {prf:ref}`conj-topological-information-bound` proposes that the rate of topological information generation bounds computational activity.
 
----
+
 
 (sec-scutoid-introduction)=
 ## Introduction
@@ -1023,7 +1023,7 @@ The rigorous statement is conditional: **neighbor changes force scutoids**; clon
 3. **Topological Information** (Conjecture {prf:ref}`conj-topological-information-bound`): Computation leaves geometric footprints as scutoid vertices
 :::
 
----
+
 
 (sec-scutoid-references)=
 ## References

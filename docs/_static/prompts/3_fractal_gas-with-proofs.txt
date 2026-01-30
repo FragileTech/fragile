@@ -2295,6 +2295,47 @@ $N = |E| = \sum_k |E_{\mathrm{CST}}(t_k)|$ and $R = \int_{t_0}^{t_1} r(t)\,dt = 
 | Ad-hoc choice of $\rho$ | Automatic from QSD |
 :::
 
+:::{prf:lemma} Causal Order Fixes the Lorentzian Conformal Class
+:label: lem-causal-order-conformal-class
+
+Let $(M, G)$ be the continuum lift on the window $[t_0,t_1] \times \mathcal{X}$ from
+Lemma {prf:ref}`lem-continuum-a1-geometry`, and let $\prec_{\mathrm{LC}}$ be the geometric light-cone
+order from {prf:ref}`def-fractal-causal-order`. Define the **strict** light-cone order
+$\prec_{\mathrm{LC}}^{\circ}$ by the same light-cone test but with
+$d_{\mathrm{geo}}(e_i,e_j) < c\,(t_j-t_i)$. If $G'$ is any Lorentzian metric on $M$ with the same
+strict order $\prec_{\mathrm{LC}}^{\circ}$, then there exists a positive function $\Omega$ such that
+$G' = \Omega^2 G$.
+
+*Proof.* Lemma {prf:ref}`lem-continuum-a1-geometry` yields a globally hyperbolic Lorentzian manifold,
+hence $(M,G)$ is distinguishing (see {cite}`minguzzi2008causal`). The strict order
+$\prec_{\mathrm{LC}}^{\circ}$ coincides with the chronological relation $I^+_G$ by construction,
+since it uses the same reconstructed $d_{\mathrm{geo}}$ and time function as the light-cone test.
+Malament's theorem states that on distinguishing spacetimes the chronological relation determines
+the conformal class of the metric ({cite}`malament1977`). Hence $G' = \Omega^2 G$. $\square$
+:::
+
+:::{prf:corollary} Order + Volume Fix the Conformal Factor
+:label: cor-order-volume-fix-conformal
+
+Let $G' = \Omega^2 G$ be a Lorentzian metric with the same strict order $\prec_{\mathrm{LC}}^{\circ}$,
+and let $dV_G$ be the **geometric** volume form recovered by reweighting the adaptive measure in
+Definition {prf:ref}`def-cst-volume`. In spacetime dimension $D = d+1$,
+
+$$
+dV_{G'} = \sqrt{-\det G'}\, d^D x = \Omega^D \sqrt{-\det G}\, d^D x = \Omega^D dV_G .
+$$
+
+The recovered geometric volume form $dV_G$ (Definition {prf:ref}`def-cst-volume` and
+Theorem {prf:ref}`thm-fractal-adaptive-sprinkling`) therefore fixes $\Omega$ pointwise via
+
+$$
+\Omega = \left( \frac{dV_{G'}}{dV_G} \right)^{1/D}.
+$$
+
+Hence the CST microdata (order + counting/volume) determine the Lorentzian metric on the window
+uniquely, up to the explicit normalization of the recovered volume form. $\square$
+:::
+
 :::{prf:proposition} Framework Lift for CST Operators
 :label: prop-fractal-cst-framework-lift
 
@@ -7958,6 +7999,198 @@ For connected correlator data $(r_i, G_i, n_i)$ where $n_i$ is the bin count:
 - `n_fit_points`: Number of points used in fit
 :::
 
+## 2_fractal_set/09_qft_calibration.md
+
+:::{prf:theorem} Ratio Invariance Under Time Rescaling
+:label: thm-qft-ratio-rescale
+
+Let $\Delta\tau = \Delta t \cdot r_{\text{rec}}$ be the Euclidean time unit, where $r_{\text{rec}}$
+is `record_every`. If
+$\Delta\tau \mapsto s\,\Delta\tau$ for any $s>0$, then all extracted channel masses scale as
+$m_\chi \mapsto m_\chi/s$, and all channel mass ratios remain unchanged.
+
+*Proof.* The effective mass is
+
+$$
+m_\chi(\tau) = -\frac{1}{\Delta\tau}\log\frac{C_\chi(\tau+\Delta\tau)}{C_\chi(\tau)}
+$$
+so scaling $\Delta\tau$ by $s$ multiplies every $m_\chi$ by $1/s$, while ratios cancel the scale.
+$\square$
+:::
+
+:::{prf:corollary} Dimensionless Reduction of Ratio Dependence
+:label: cor-qft-ratio-dimensionless
+
+Because mass ratios are dimensionless, they can only depend on the **dimensionless combinations**
+identified in {prf:ref}`thm-dimensionless-ratios`, together with dimensionless coupling inputs.
+Equivalently, the ratio targets constrain only the reduced set
+
+$$
+(\sigma_{\text{sep}}, \eta_{\text{time}}, \kappa; \; g_1, g_2, g_3; \; N, d; \; \phi),
+$$
+where $\phi := m\ell_0/\hbar_{\text{eff}}$ is the phase-winding combination from
+{prf:ref}`thm-sm-su3-emergence`.
+
+*Justification.* {prf:ref}`thm-dimensionless-ratios` enumerates the fundamental dimensionless
+ratios built from $(m,\tau,\rho,\epsilon_c)$; the gauge couplings are themselves dimensionless
+({prf:ref}`thm-sm-g1-coupling`, {prf:ref}`thm-sm-g2-coupling`, {prf:ref}`thm-sm-g3-coupling`), and
+the only dimensionless combination in the phase factor is $\phi$.
+$\square$
+:::
+
+:::{prf:theorem} Spectral-Gap Lower Bound for Channel Masses
+:label: thm-qft-channel-gap-bound
+
+For any channel operator $O_\chi$ with connected correlator $C_\chi(\tau)$, the exponential
+clustering bound in {prf:ref}`thm-os-os3-fg` implies
+
+$$
+m_\chi \geq m_{\text{gap}} = \hbar_{\text{eff}} \lambda_{\text{gap}}.
+$$
+
+*Proof.* By {prf:ref}`thm-os-os3-fg`, connected correlators satisfy
+
+$$
+|C_\chi(\tau)| \leq C\,e^{-\tau/\xi}, \quad \xi = 1/m_{\text{gap}}.
+$$
+Taking logarithms of the positive-decay regime used for mass extraction yields
+$m_\chi(\tau) \geq 1/\xi = m_{\text{gap}}$. $\square$
+:::
+
+:::{prf:corollary} Ratio-Driven Bounds on $\lambda_{\text{gap}}, \eta_{\text{time}}, \kappa$
+:label: cor-qft-ratio-gap-bounds
+
+Let
+
+$$
+m_{\min} := \min(m_\pi, m_\sigma, m_\rho, m_G, m_N)
+       = m_\pi \cdot \min(1, R_{\sigma\pi}, R_{\rho\pi}, R_{G\pi}, R_{N\pi}).
+$$
+Then
+
+$$
+\lambda_{\text{gap}} \leq \frac{m_{\min}}{\hbar_{\text{eff}}},
+\qquad
+\eta_{\text{time}} = \tau \lambda_{\text{gap}} \leq \tau \frac{m_{\min}}{\hbar_{\text{eff}}},
+\qquad
+\kappa = \frac{1}{\rho \hbar_{\text{eff}} \lambda_{\text{gap}}} \geq \frac{1}{\rho m_{\min}}.
+$$
+
+These bounds prune parameter space before any sweeps: any candidate set that violates them cannot
+produce the target ratios.
+$\square$
+:::
+
+:::{prf:corollary} Explicit Pruning Bounds for $R_{\rho\pi}=5.5$, $R_{N\pi}=6.7$
+:label: cor-qft-ratio-numeric-bounds
+
+With the fixed targets $R_{\rho\pi}=5.5$ and $R_{N\pi}=6.7$,
+
+$$
+m_\rho = 5.5\,m_\pi, \qquad m_N = 6.7\,m_\pi,
+$$
+and
+
+$$
+m_{\min} = m_\pi \cdot \min(1, R_{\sigma\pi}, R_{G\pi})
+$$
+because both $5.5$ and $6.7$ exceed $1$. Therefore the ratio-sieve bounds become
+
+$$
+\lambda_{\text{gap}} \leq \frac{m_\pi}{\hbar_{\text{eff}}}\,\min(1, R_{\sigma\pi}, R_{G\pi}),
+$$
+
+$$
+\eta_{\text{time}} \leq \tau \frac{m_\pi}{\hbar_{\text{eff}}}\,\min(1, R_{\sigma\pi}, R_{G\pi}),
+$$
+
+$$
+\kappa \geq \frac{1}{\rho\,m_\pi\,\min(1, R_{\sigma\pi}, R_{G\pi})}.
+$$
+In particular, if future calibration anchors give $R_{\sigma\pi} \geq 1$ and
+$R_{G\pi} \geq 1$, then
+
+$$
+\lambda_{\text{gap}} \leq \frac{m_\pi}{\hbar_{\text{eff}}}, \qquad
+\eta_{\text{time}} \leq \tau \frac{m_\pi}{\hbar_{\text{eff}}}, \qquad
+\kappa \geq \frac{1}{\rho\,m_\pi}.
+$$
+$\square$
+:::
+
+:::{prf:corollary} Parameter Sieve Checklist (Admissible Set)
+:label: cor-qft-parameter-sieve
+
+A parameter set is admissible for the target ratios if it satisfies all of:
+
+1. **Hierarchy constraint** ({prf:ref}`thm-mass-scales`):
+
+$$
+m_{\text{friction}} \ll m_{\text{gap}} < m_{\text{MF}} < m_{\text{clone}}.
+$$
+
+2. **Dimensionless ratios** ({prf:ref}`thm-dimensionless-ratios`):
+
+$$
+\sigma_{\text{sep}} = \frac{\epsilon_c}{\rho}, \quad
+\eta_{\text{time}} = \tau\lambda_{\text{gap}}, \quad
+\kappa = \frac{1}{\rho \hbar_{\text{eff}} \lambda_{\text{gap}}}.
+$$
+
+3. **Gap lower bound (all channels)** ({prf:ref}`thm-qft-channel-gap-bound`):
+
+$$
+m_\chi \geq \hbar_{\text{eff}} \lambda_{\text{gap}} \quad \text{for } \chi \in \{\pi,\sigma,\rho,G,N\}.
+$$
+
+4. **Ratio-sieve bounds** (from {prf:ref}`cor-qft-ratio-numeric-bounds`):
+
+$$
+R_{\rho\pi} = 5.5, \qquad R_{N\pi} = 6.7,
+$$
+
+$$
+\lambda_{\text{gap}} \leq \frac{m_\pi}{\hbar_{\text{eff}}}\,\min(1, R_{\sigma\pi}, R_{G\pi}),
+$$
+
+$$
+\kappa \geq \frac{1}{\rho\,m_\pi\,\min(1, R_{\sigma\pi}, R_{G\pi})}.
+$$
+
+5. **Coupling inversion manifold** ({prf:ref}`cor-qft-coupling-inversion-manifold`):
+
+$$
+\epsilon_c = \sqrt{\frac{2\hbar_{\text{eff}}C_2(2)}{C_2(d)\,g_2^2}}, \quad
+\rho = g_2\sqrt{\frac{2\hbar_{\text{eff}}}{m^2}}, \quad
+\tau = \frac{m\,\epsilon_c^2}{2\hbar_{\text{eff}}}.
+$$
+
+Any candidate failing one of these conditions is eliminated before channel sweeps.
+$\square$
+:::
+
+:::{prf:corollary} Coupling-Inversion Manifold (Symbolic Constraints)
+:label: cor-qft-coupling-inversion-manifold
+
+Fixing $(g_1,g_2,g_3)$ and QSD statistics $(\mathcal{N}_1,\langle K_{\text{visc}}^2\rangle)$
+determines $(\epsilon_d,\epsilon_c,\nu,\epsilon_F,\rho,\tau)$ via the Volume 3 coupling identities:
+{prf:ref}`thm-sm-g1-coupling`, {prf:ref}`thm-sm-g2-coupling`, {prf:ref}`thm-sm-g3-coupling`,
+{prf:ref}`thm-u1-coupling-constant`, and {prf:ref}`thm-effective-planck-constant`. In particular,
+
+$$
+\epsilon_c = \sqrt{\frac{2\hbar_{\text{eff}}C_2(2)}{C_2(d)\,g_2^2}},
+\qquad
+\rho = g_2\sqrt{\frac{2\hbar_{\text{eff}}}{m^2}},
+\qquad
+\tau = \frac{m\,\epsilon_c^2}{2\hbar_{\text{eff}}}.
+$$
+
+Therefore the ratio constraints carve out a **low-dimensional admissible manifold** inside the
+full parameter space: only $(\hbar_{\text{eff}}, m, \lambda_{\text{gap}})$ and the QSD statistics
+remain free once couplings are fixed.
+$\square$
+:::
+
 ## 3_fitness_manifold/01_emergent_geometry.md
 
 :::{prf:definition} Adaptive Diffusion Tensor
@@ -8080,6 +8313,40 @@ $$
 with $W_1$ the 1-Wasserstein distance between swarm empirical measures (see {doc}`/source/3_fractal_gas/1_the_algorithm/02_fractal_gas_latent`).
 :::
 
+:::{prf:lemma} Operator-Lipschitz bound for inverse square root
+:label: lem-operator-lipschitz-inv-sqrt-latent
+
+Let $A, B$ be symmetric positive definite matrices with $A \succeq m I$ and $B \succeq m I$ for some $m > 0$.
+Then:
+
+$$
+\|A^{-1/2} - B^{-1/2}\|_F \leq \frac{1}{2 m^{3/2}} \|A - B\|_F
+$$
+
+In particular, for $A = H_i(S_1) + \epsilon_\Sigma I$ and $B = H_i(S_2) + \epsilon_\Sigma I$ with
+$\epsilon_\Sigma > \Lambda_-$, we may take $m = \epsilon_\Sigma - \Lambda_-$.
+:::
+
+:::{prf:proof}
+Define $F(X, A) = X A X - I$. For each $A \succ 0$ there is a unique SPD solution $X = A^{-1/2}$.
+Along the segment $A_t = A + t(B - A)$ let $X_t = A_t^{-1/2}$. Differentiating $F(X_t, A_t) = 0$ gives
+
+$$
+L_t(\dot{X}_t) = -X_t (B - A) X_t, \quad L_t(H) = H A_t X_t + X_t A_t H.
+$$
+
+Since $A_t$ and $X_t$ commute, in a basis where $A_t$ is diagonal we have
+$(L_t(H))_{ij} = (\lambda_i^{1/2} + \lambda_j^{1/2}) H_{ij}$, so
+$\|L_t^{-1}\|_{F \to F} \leq (2 m^{1/2})^{-1}$. Also $\|X_t\|_{\mathrm{op}} \leq m^{-1/2}$, hence
+
+$$
+\|\dot{X}_t\|_F \leq \frac{1}{2 m^{3/2}} \|B - A\|_F.
+$$
+
+Integrating from $t=0$ to $t=1$ yields the bound.
+$\square$
+:::
+
 :::{prf:proof}
 We establish Lipschitz continuity in three steps.
 
@@ -8105,20 +8372,55 @@ $$
 
 where $L_H = L_\phi^{(3)}$ is **independent of $N$** due to the $1/N$ normalization.
 
-**Step 2: Operator-Lipschitz property of matrix square root**
+:::{prf:lemma} Operator-Lipschitz bound for inverse square root
+:label: lem-operator-lipschitz-inv-sqrt-latent
 
-For symmetric positive definite matrices $A, B$ with spectra in $[a, b]$ where $a > 0$, the map $f(A) = (A + \epsilon I)^{-1/2}$ satisfies:
-
-$$
-\|f(A) - f(B)\|_F \leq K_{\mathrm{sqrt}}(a, b, \epsilon) \|A - B\|_F
-$$
-
-where $K_{\mathrm{sqrt}}$ depends only on the spectral bounds, not on matrix dimension.
-
-Specifically, by the integral representation of the matrix square root and standard perturbation theory:
+Let $A, B$ be symmetric positive definite matrices with $A \succeq m I$ and $B \succeq m I$ for some $m > 0$.
+Then:
 
 $$
-K_{\mathrm{sqrt}} \leq \frac{1}{2(\epsilon_\Sigma - \Lambda_-)^{3/2}}
+\|A^{-1/2} - B^{-1/2}\|_F \leq \frac{1}{2 m^{3/2}} \|A - B\|_F
+$$
+
+In particular, for $A = H_i(S_1) + \epsilon_\Sigma I$ and $B = H_i(S_2) + \epsilon_\Sigma I$ with
+$\epsilon_\Sigma > \Lambda_-$, we may take $m = \epsilon_\Sigma - \Lambda_-$.
+:::
+
+:::{prf:proof}
+Define $F(X, A) = X A X - I$. For each $A \succ 0$ there is a unique SPD solution $X = A^{-1/2}$.
+Along the segment $A_t = A + t(B - A)$ let $X_t = A_t^{-1/2}$. Differentiating $F(X_t, A_t) = 0$ gives
+
+$$
+L_t(\dot{X}_t) = -X_t (B - A) X_t, \quad L_t(H) = H A_t X_t + X_t A_t H.
+$$
+
+Since $A_t$ and $X_t$ commute, in a basis where $A_t$ is diagonal we have
+$(L_t(H))_{ij} = (\lambda_i^{1/2} + \lambda_j^{1/2}) H_{ij}$, so
+$\|L_t^{-1}\|_{F \to F} \leq (2 m^{1/2})^{-1}$. Also $\|X_t\|_{\mathrm{op}} \leq m^{-1/2}$, hence
+
+$$
+\|\dot{X}_t\|_F \leq \frac{1}{2 m^{3/2}} \|B - A\|_F.
+$$
+
+Integrating from $t=0$ to $t=1$ yields the bound.
+$\square$
+:::
+
+**Step 2: Operator-Lipschitz property of matrix inverse square root**
+
+Set $A = H_i(S_1) + \epsilon_\Sigma I$ and $B = H_i(S_2) + \epsilon_\Sigma I$. By the spectral floor
+$\lambda_{\min}(H_i) \geq -\Lambda_-$, we have $A, B \succeq (\epsilon_\Sigma - \Lambda_-) I$.
+Lemma {prf:ref}`lem-operator-lipschitz-inv-sqrt-latent` then gives:
+
+$$
+\|(H_i(S_1) + \epsilon_\Sigma I)^{-1/2} - (H_i(S_2) + \epsilon_\Sigma I)^{-1/2}\|_F
+\leq K_{\mathrm{sqrt}} \|H_i(S_1) - H_i(S_2)\|_F
+$$
+
+with:
+
+$$
+K_{\mathrm{sqrt}} = \frac{1}{2(\epsilon_\Sigma - \Lambda_-)^{3/2}}.
 $$
 
 **Step 3: Composition**
@@ -8192,6 +8494,14 @@ $$
 $$
 \|b_{\mathrm{geo}}(z)\|_2 \leq \frac{T}{2}\left(d^{3/2}\sqrt{c_{\max}}\,L_\Sigma + c_{\max}\,L_{\log\det}\right)
 $$
+:::
+
+:::{prf:remark} Drift convention for Riemannian weighting
+:label: rem-riemannian-volume-drift
+
+Throughout this section we assume the geometric drift $b_{\mathrm{geo}}$ from {ref}`sec-geometric-drift` is included in
+the velocity dynamics (Lemma {prf:ref}`lem-geometric-drift-latent`). This is the regime in which the QSD density carries
+the $\sqrt{\det g}$ factor.
 :::
 
 :::{prf:definition} Riemannian Volume Element
@@ -8293,7 +8603,11 @@ $$
 :::{prf:proposition} Monte Carlo Integration with Riemannian Measure
 :label: prop-monte-carlo-riemannian-latent
 
-Let $\{z_i\}_{i=1}^N$ be positions sampled from the QSD with density $\rho(z) \propto \sqrt{\det g(z)} e^{-\Phi_{\mathrm{eff}}(z)/T}$. (Existence and uniqueness of the QSD is established in {doc}`/source/3_fractal_gas/convergence_program/07_discrete_qsd`; convergence to QSD is proven in {doc}`/source/3_fractal_gas/convergence_program/06_convergence`.)
+Let $\{z_i\}_{i=1}^N$ be positions sampled from the QSD with density
+$\rho(z) \propto \sqrt{\det g(z)} e^{-\Phi_{\mathrm{eff}}(z)/T}$ for the drift-augmented dynamics
+(Remark {prf:ref}`rem-riemannian-volume-drift`). Existence and uniqueness of the QSD is established in
+{doc}`/source/3_fractal_gas/convergence_program/07_discrete_qsd`; convergence to the QSD is proven in
+{doc}`/source/3_fractal_gas/convergence_program/06_convergence`.
 
 **Method 1 (QSD sampling):** If episodes sample from QSD:
 
@@ -8330,7 +8644,12 @@ to be positive definite, i.e., $\lambda_v - b^2/4 > 0$.
 :::{prf:theorem} Hypocoercive Contraction with Anisotropic Diffusion
 :label: thm-hypocoercive-anisotropic
 
-Under uniform ellipticity ($D_{\mathrm{reg}} \succeq c_{\min} I$) and Lipschitz continuity ($\|\nabla \Sigma_{\mathrm{reg}}\| \leq L_\Sigma$), the Latent Fractal Gas exhibits geometric ergodicity with rate:
+Assume uniform ellipticity ($D_{\mathrm{reg}} \succeq c_{\min} I$), Lipschitz continuity
+($\|\nabla \Sigma_{\mathrm{reg}}\| \leq L_\Sigma$), and the Foster-Lyapunov/minorization hypotheses of
+{doc}`/source/3_fractal_gas/convergence_program/06_convergence` (built from
+{doc}`/source/3_fractal_gas/convergence_program/03_cloning` and
+{doc}`/source/3_fractal_gas/convergence_program/05_kinetic_contraction`). Then the Latent Fractal Gas exhibits geometric
+ergodicity with rate:
 
 $$
 \kappa_{\mathrm{total}} = O\left(\min\left\{\gamma \tau, \kappa_z^{\mathrm{clone}}, c_{\min} \underline{\lambda} - C_1 L_\Sigma\right\}\right) > 0
@@ -8344,7 +8663,8 @@ where:
 - $\underline{\lambda}$ is the coercivity constant of the hypocoercive quadratic form
 - $C_1$ is a geometry-dependent constant
 
-**Condition for convergence:** $c_{\min} \underline{\lambda} > C_1 L_\Sigma$
+**Condition for hypocoercive contraction:** $c_{\min} \underline{\lambda} > C_1 L_\Sigma$ (in addition to the QSD
+hypotheses above).
 
 **Full proof:** See {doc}`/source/3_fractal_gas/convergence_program/05_kinetic_contraction` for kinetic drift analysis and {doc}`/source/3_fractal_gas/convergence_program/06_convergence` for the complete convergence theorem.
 :::
@@ -8385,6 +8705,14 @@ $$
 The condition $c_{\min}\underline{\lambda} > C_1 L_\Sigma$ ensures the total rate is positive.
 
 $\square$
+:::
+
+:::{prf:remark} Convergence hypotheses
+:label: rem-emergent-geometry-convergence-hypotheses
+
+The convergence statements in this section use the full Foster-Lyapunov and minorization hypotheses from the convergence
+program (see {doc}`/source/3_fractal_gas/convergence_program/06_convergence`). Uniform ellipticity and Lipschitz
+continuity are necessary ingredients but not sufficient on their own.
 :::
 
 ## 3_fitness_manifold/02_scutoid_spacetime.md
@@ -9095,27 +9423,34 @@ $$
 2. **Torsion-free**: $\Gamma^a_{bc} = \Gamma^a_{cb}$
 3. **Uniqueness**: The Levi-Civita connection is unique with (1) and (2)
 
+On each slice this is computed from $g_t$; for spacetime congruences we use the Levi-Civita
+connection of $G$, which agrees with the above on purely spatial components.
+
 The Christoffel symbols depend on **third derivatives** of $V_{\mathrm{fit}}$.
 :::
 
 :::{prf:definition} Parallel Transport
 :label: def-parallel-transport
 
-Let $\gamma: [0, 1] \to \mathcal{Z}$ be a smooth curve. The **parallel transport** of $V^a \in T_{\gamma(0)}\mathcal{Z}$ along $\gamma$ solves:
+Let $\gamma: [0, 1] \to M$ be a smooth curve. The **parallel transport** of $V^a \in T_{\gamma(0)}M$ along $\gamma$ solves:
 
 $$
 \frac{DV^a}{ds} := \frac{dV^a}{ds} + \Gamma^a_{bc}(\gamma(s)) V^b \dot{\gamma}^c = 0
 $$
 
-The parallel transport operator $P_\gamma: T_{\gamma(0)}\mathcal{Z} \to T_{\gamma(1)}\mathcal{Z}$ is the linear map $V \mapsto V(1)$.
+Here $\Gamma$ is the Levi-Civita connection of $G$; on curves contained in a fixed slice it reduces
+to the spatial connection defined above.
+
+The parallel transport operator $P_\gamma: T_{\gamma(0)}M \to T_{\gamma(1)}M$ is the linear map $V \mapsto V(1)$.
 :::
 
 :::{prf:definition} Holonomy
 :label: def-holonomy
 
-For a closed loop $\gamma$ based at $p$, the **holonomy** $\mathrm{Hol}_\gamma: T_p\mathcal{Z} \to T_p\mathcal{Z}$ is parallel transport around the loop.
+For a closed loop $\gamma$ based at $p$, the **holonomy** $\mathrm{Hol}_\gamma: T_p M \to T_p M$ is parallel transport around the loop.
 
-- $\mathrm{Hol}_\gamma \in O(d)$ for Levi-Civita connection
+- $\mathrm{Hol}_\gamma \in O(1,d-1)$ for the Levi-Civita connection of $(M,G)$; for loops contained
+  in a spacelike slice, the restricted holonomy lies in $O(d)$
 - $\mathrm{Hol}_\gamma = I$ for all contractible loops iff the manifold is flat
 :::
 
@@ -9158,14 +9493,78 @@ A **scutoid plaquette** $\Pi$ is a closed quadrilateral:
 Area: $A_\Pi \approx \ell \cdot c \cdot \Delta t$ where $\ell$ is edge length.
 :::
 
+:::{prf:definition} Delaunay Dual and Regge Holonomy
+:label: def-scutoid-regge-holonomy
+
+Fix a time slab and let $\mathcal{D}_t$ be the Delaunay triangulation of the walker sites in the
+slice $(\mathcal{Z}, g_t)$ (dual to the Voronoi/scutoid cells). Connect corresponding vertices along
+CST trajectories across slabs to obtain a Lorentzian simplicial complex with metric induced by the
+slab metric $G_k$.
+
+A **hinge** $h$ is a codimension-2 face that is spacelike with respect to $G_k$. For each hinge,
+let $\theta_h$ be the Lorentzian dihedral (boost) angle between adjacent simplices, and define the
+deficit angle
+
+$$
+\varepsilon_h := 2\pi - \sum_{\text{simplices meeting at } h} \theta_h ,
+$$
+
+interpreted with the Lorentzian sign convention for spacelike hinges. The **discrete holonomy**
+around $\Pi$ is the ordered product of hinge rotations/boosts in $SO(1,d-1)$ along the loop
+orientation, restricted to spacelike hinges intersecting the dual face:
+
+$$
+\mathcal{H}_{\mathrm{Regge}}[\Pi] := \prod_{h \cap \Pi^\ast \neq \emptyset} \exp(\varepsilon_h J_h),
+$$
+
+where $J_h$ is the generator fixing $h$ and $\Pi^\ast$ is the dual face intersecting the hinges
+encircled by the plaquette.
+:::
+
+:::{prf:definition} Scutoid Refinement Regime (Bounded Aspect Ratio)
+:label: def-scutoid-refinement-regime
+
+Let $\ell$ be a typical Delaunay edge length in a slice, and let $\Delta t$ be the slab timestep.
+Define the mesh size $h := \max(\ell, c\,\Delta t)$ and assume $h \to 0$ with bounded aspect ratio:
+
+$$
+0 < \kappa_{\min} \le \frac{c\,\Delta t}{\ell} \le \kappa_{\max} < \infty .
+$$
+
+Then $A_\Pi \sim \ell\,c\,\Delta t \sim h^2$ and plaquettes remain non-degenerate as $h \to 0$.
+:::
+
+:::{prf:lemma} Regge Holonomy Approximation
+:label: lem-regge-holonomy-approx
+
+Assume $G$ is $C^3$ on the window (equivalently $C^2$ with bounded $\nabla R$) and the Delaunay
+refinement satisfies {prf:ref}`def-scutoid-refinement-regime`, with simplices meeting $\Pi$ uniformly
+shape-regular (all dihedral angles bounded away from $0$ and $\pi$). Then the Regge holonomy
+$\mathcal{H}_{\mathrm{Regge}}[\Pi]$ equals the smooth holonomy of the associated piecewise-flat
+metric and approximates the smooth holonomy of $G$ with
+
+$$
+\|\mathcal{H}_{\mathrm{Regge}}[\Pi] - \mathrm{Hol}_\gamma\| \leq C\,A_\Pi^{3/2}.
+$$
+
+This is the standard Regge convergence regime under shape-regular refinement in the Lorentzian
+piecewise-flat setting with spacelike hinges; see the Riemannian proofs
+{cite}`regge1961general,cheeger1984curvature` and apply them on spacelike hinges. $\square$
+:::
+
 :::{prf:theorem} Riemann-Scutoid Correspondence
 :label: thm-riemann-scutoid
 
-The Riemann tensor is recovered from plaquette holonomy:
+Let $\mathcal{H}_{\mathrm{Regge}}[\Pi]$ be the discrete holonomy from
+{prf:ref}`def-scutoid-regge-holonomy`, and assume the refinement regime
+{prf:ref}`def-scutoid-refinement-regime`. The Riemann tensor is recovered from plaquette holonomy:
 
 $$
-R^a{}_{bcd}(z) V^b T^c T^d = \lim_{A_\Pi \to 0} \frac{(\mathcal{H}[\Pi]^a{}_b - \delta^a_b) V^b}{A_\Pi}
+R^a{}_{bcd}(z) V^b T^c T^d = \lim_{A_\Pi \to 0} \frac{(\mathcal{H}_{\mathrm{Regge}}[\Pi]^a{}_b - \delta^a_b) V^b}{A_\Pi}
 $$
+
+Here $R^a{}_{bcd}$ is the Riemann tensor of the spacetime metric $G$ on $M$; when the plaquette is
+contained in a fixed slice, the expression reduces to the Riemann tensor of the spatial metric $g_t$.
 
 **Error estimate:** For bounded curvature derivatives $|\nabla R| \leq C_R$:
 
@@ -9173,7 +9572,10 @@ $$
 \left| \frac{\Delta V^a}{A_\Pi} - R^a{}_{bcd} V^b T^c T^d \right| \leq C_R \cdot A_\Pi^{1/2} \cdot |V|
 $$
 
-*Proof.* Direct application of Lemma {prf:ref}`lem-holonomy-small-loops`. $\square$
+Under the bounded aspect ratio regime, $A_\Pi^{1/2} = O(h)$ with $h = \max(\ell, c\,\Delta t)$.
+
+*Proof.* Combine Lemma {prf:ref}`lem-regge-holonomy-approx` with
+Lemma {prf:ref}`lem-holonomy-small-loops`. $\square$
 :::
 
 :::{prf:definition} Riemann Curvature Tensor
@@ -9224,7 +9626,7 @@ $$
 :::{prf:definition} Kinematic Decomposition
 :label: def-kinematic-decomposition
 
-For velocity field $u^\mu$:
+For velocity field $u^\mu$ with $G_{\mu\nu} u^\mu u^\nu = -1$:
 
 $$
 \nabla_\mu u_\nu = \frac{1}{d}\theta \, h_{\mu\nu} + \sigma_{\mu\nu} + \omega_{\mu\nu}
@@ -9234,7 +9636,7 @@ where:
 - $\theta = \nabla_\mu u^\mu$ (expansion)
 - $\sigma_{\mu\nu}$ = symmetric traceless part (shear)
 - $\omega_{\mu\nu}$ = antisymmetric part (vorticity)
-- $h_{\mu\nu} = g_{\mu\nu} + u_\mu u_\nu$ (projection)
+- $h_{\mu\nu} = G_{\mu\nu} + u_\mu u_\nu$ (projection)
 :::
 
 :::{prf:theorem} Raychaudhuri Equation
@@ -9254,7 +9656,7 @@ $$
 
 We require:
 
-1. **Manifold smoothness:** $(M, g)$ is $C^\infty$ with bounded sectional curvature $|K| \leq K_{\max}$
+1. **Manifold smoothness:** $(M, G)$ is $C^\infty$ with bounded sectional curvature $|K| \leq K_{\max}$
 2. **Flow regularity:** Velocity field $u \in C^3(M)$
 3. **Well-distributed particles:** For characteristic spacing $\epsilon_N \sim N^{-1/d}$:
    - $\mathrm{diam}(\mathrm{Vor}_i) \leq C_1 \epsilon_N$
@@ -9279,6 +9681,8 @@ where $\sigma^2 = \sigma_{\mu\nu}\sigma^{\mu\nu}$ and $\omega^2 = \omega_{\mu\nu
 $$
 \left| \frac{d\theta_i}{d\tau} - \left( -\frac{1}{d}\theta_i^2 - \sigma^2 + \omega^2 - \mathrm{Ric}(u,u) \right) \right| \leq C \epsilon_N (\|u\|_{C^3} + \|\mathrm{Riem}\|_{C^1})
 $$
+
+A full classical derivation is recorded in {doc}`../convergence_program/17_geometric_gas` (Theorem {prf:ref}`appx-discrete-raychaudhuri`).
 
 *Proof.*
 
@@ -10272,7 +10676,7 @@ The **Causal Spacetime Tree** is the directed graph $\mathcal{T} = (V, E)$ where
 
 **Vertices:** $V = \{e_i\}$ is the set of all episodes (walker lifetimes)
 
-**Edges:** $(e_j, e_i) \in E$ if and only if episode $e_i$ was created by cloning from episode $e_j$ (i.e., $e_j$ is the parent of $e_i$)
+**Edges:** $(e_j, e_i) \in E$ if and only if episode $e_i$ was created by cloning from episode $e_j$ (i.e., $e_j$ is the parent of $e_i$; see {prf:ref}`def-fractal-set-cst-edges`).
 
 **Properties:**
 1. **Tree structure**: Every episode except roots has exactly one parent
@@ -10285,7 +10689,7 @@ $$
 e_j \prec e_i \quad \Leftrightarrow \quad \text{there exists a directed path from } e_j \text{ to } e_i \text{ in } \mathcal{T}
 $$
 
-This defines a partial order on episodes: $e_j \prec e_i$ means "episode $e_j$ is an ancestor of episode $e_i$."
+This defines a partial order on episodes: $e_j \prec e_i$ means "episode $e_j$ is an ancestor of episode $e_i$" (cf. {prf:ref}`def-fractal-causal-order`).
 :::
 
 :::{prf:definition} Interaction Graph (IG)
@@ -14901,7 +15305,7 @@ Here:
 :label: proof-thm-qsd-poincare-rigorous
 We prove this using the Lyapunov equation for the conditional velocity covariance and the Holley-Stroock theorem for mixtures of Gaussians.
 
----
+
 
 **Step 1: Conditional Velocity Distribution is a Multivariate Gaussian**
 
@@ -14933,7 +15337,7 @@ $$
 
 **Note:** $\Sigma_{\mathbf{v}}(\mathbf{x})$ is generally **not** block diagonal due to viscous coupling in $A$. Velocities are correlated even conditionally on positions.
 
----
+
 
 **Step 2: N-Uniform Bound on Largest Eigenvalue**
 
@@ -14965,7 +15369,7 @@ $$
 
 **N-uniformity:** The bound depends only on $c_{\max}(\rho)$ (uniform ellipticity, N-uniform by {prf:ref}`thm-ueph-proven`) and $\gamma$ (algorithm parameter).
 
----
+
 
 **Step 3: Conditional Poincaré Inequality**
 
@@ -14981,7 +15385,7 @@ $$
 \text{Var}_{\pi_N(\mathbf{v}|\mathbf{x})}(g) \leq \frac{c_{\max}^2(\rho)}{2\gamma} \sum_{i=1}^N \int |\nabla_{v_i} g|^2 d\pi_N(\mathbf{v}|\mathbf{x})
 $$
 
----
+
 
 **Step 4: Unconditional Poincaré via Holley-Stroock**
 
@@ -51221,7 +51625,7 @@ not used in the mean-field proof.
 :::
 
 :::{prf:lemma} Finite-$N$ Heuristic: Effective Companion Count
-:label: lem-effective-companion-count-corrected-full
+:label: lem-effective-companion-count-full
 
 Let $k_{\text{eff}}(i)$ be the number of companions within $R_{\text{eff}}$. Under the uniform
 density bound, the heuristic estimate is
@@ -52566,7 +52970,7 @@ exponential coefficient.
 - Gevrey-1 growth ($m!$) is preserved through all stages of composition (sums, products, quotients, compositions via Faà di Bruno formula).
 - Parameter dependencies accumulate through the pipeline: the final constant $C_{V,m}$ depends on all regularization parameters.
 
----
+
 
 (sec-gg-cinf-regularity)=
 ## Part I: Smooth Clustering Framework and Partition of Unity
@@ -52841,7 +53245,7 @@ For the full publication-ready proof with detailed verification, see:
 - Extension to general cluster geometries beyond balls
 :::
 
----
+
 
 ## 4. Exponential Locality and Effective Interactions
 
@@ -52923,7 +53327,7 @@ not used in the mean-field proof.
 :::
 
 :::{prf:lemma} Finite-$N$ Heuristic: Effective Companion Count
-:label: lem-effective-companion-count-corrected-full
+:label: lem-effective-companion-count-full
 
 Let $k_{\text{eff}}(i)$ be the number of companions within $R_{\text{eff}}$. Under the uniform
 density bound, the heuristic estimate is
@@ -53056,7 +53460,7 @@ Derivative locality removes $\ell$-sums for $j \neq i$, and the mean-field kerne
 controls the $j=i$ term, so no $k$-dependent amplification appears in the derivative bounds.
 :::
 
----
+
 
 ## 5. Derivatives of Algorithmic Distance (Regularized Version)
 
@@ -53209,7 +53613,7 @@ Combined with the chain rule contributions from $\nabla^m r^2$, we obtain $C_{d,
 The regularization is the key technical innovation that enables C^∞ regularity with uniform bounds throughout the entire state space.
 :::
 
----
+
 
 :::{prf:property} Locality of Algorithmic Distance
 :label: prop-dalg-locality
@@ -53237,7 +53641,7 @@ $\mathcal{O}(k_{\text{eff}}^{(\varepsilon_c)})$ factor from $\ell$-sums, prevent
 k-dependent growth in the mean-field bounds.
 :::
 
----
+
 
 ## 5.5 Companion-Dependent Measurements with Softmax Coupling
 
@@ -53801,7 +54205,7 @@ where $C_{d_i,n} = \mathcal{O}(n!)$ arises from:
 □
 :::
 
----
+
 
 ## 5.6 Diversity Pairing Mechanism Analysis
 
@@ -56866,7 +57270,7 @@ $$
 
 **Proof Method**: Hypocoercivity with state-dependent diffusion (does NOT require log-concavity assumption)
 
----
+
 
 **Original Axiom Statement** (retained for context):
 
@@ -62690,7 +63094,7 @@ $$
 ## convergence_program/proofs/proof_lem_effective_companion_count_full.md
 
 :::{prf:lemma} Effective Companion Count (Finite-$N$ Heuristic)
-:label: proof-lem-effective-companion-count-corrected-full
+:label: proof-lem-effective-companion-count-full
 
 This lemma provides a **finite-$N$ heuristic** estimate and is **not used** in the mean-field
 $C^\infty$ proof (which uses kernel-mass bounds instead). Assume the uniform density bound from
@@ -63071,4 +63475,244 @@ $$
 $$
 
 The sum over partitions of $m$ is bounded by a combinatorial constant times $m!$ (standard Bell-number control). Absorb all combinatorial factors into $A$ and set $B = C \max(B_f, B_g)$ for a constant $C$ depending on $d$. This yields the stated Gevrey-1 bound. \(\square\)
+:::
+
+## fractalai_references.md
+
+:::{prf:definition} General Algorithmic Search
+:label: def-gas-algorithm
+
+**GAS** optimizes $f: \mathbb{R}^d \to \mathbb{R}$ using a population of $N$ particles.
+
+**State**: Positions $\{x_i \in \mathbb{R}^d\}_{i=1}^N$, fitness values $\{f(x_i)\}_{i=1}^N$.
+
+**Operators** (per iteration):
+1. Swarm motion: Physics-inspired position updates
+2. Fitness evaluation: Compute $f(x_i)$
+3. Resampling: Replace low-fitness particles with high-fitness variants
+4. Exploration noise: Prevent premature convergence
+
+**Objective**: Converge swarm to global optimum.
+:::
+
+:::{prf:definition} GAS Benchmark Categories
+:label: def-gas-benchmarks
+
+**Unimodal** (single optimum):
+- Sphere: $f(x) = \sum_{i=1}^d x_i^2$
+- Rosenbrock: $f(x) = \sum_{i=1}^{d-1} [100(x_{i+1} - x_i^2)^2 + (x_i - 1)^2]$
+
+**Multimodal** (many local optima):
+- Rastrigin: $f(x) = 10d + \sum_{i=1}^d [x_i^2 - 10\cos(2\pi x_i)]$
+- Ackley: $f(x) = -20\exp(-0.2\sqrt{\frac{1}{d}\sum_{i=1}^d x_i^2}) - \exp(\frac{1}{d}\sum_{i=1}^d \cos(2\pi x_i)) + 20 + e$
+- Lévy: Complex multimodal function cited by subsequent work
+
+**Fixed-Dimension**:
+- Shekel, Kowalik, Hartman (4D, 6D variants)
+
+Tests: separability, modality, scaling, conditioning.
+:::
+
+:::{prf:definition} Future State Maximization
+:label: def-fsx-principle
+
+**FSX Principle**: Intelligent agents maximize diversity of reachable future states.
+
+**Formal Statement**: At state $s_t$ with action $a_t$, define future distribution:
+
+$$
+p(s_{t+\tau} | s_t, a_t)
+$$
+
+FSX-optimal action:
+
+$$
+a_t^* = \arg\max_{a_t} H[p(s_{t+\tau} | s_t, a_t)]
+$$
+
+where $H[p] = -\int p(s) \log p(s) \, ds$ is differential entropy.
+
+**Core Idea**: Intelligence = preserving adaptability, not optimizing fixed objective.
+:::
+
+:::{prf:definition} Fractal Monte Carlo (FMC)
+:label: def-fmc-algorithm
+
+**FMC** implements FSX via walker swarm:
+
+1. Initialize $N$ walkers at current state $s_t$
+2. Simulate each walker forward $\tau$ steps under random actions
+3. For each candidate action $a$:
+   - Simulate walkers one step under $a$
+   - Measure endpoint diversity $D(a) = \operatorname{Var}[\{s_{t+\tau}^{(i)}\}]$
+4. Select $a^* = \arg\max_a D(a)$
+5. Iterate from new state
+
+**Diversity Proxy**: Spatial variance approximates entropy.
+
+**Volume 3 Connection**: FMC is algorithmic predecessor to Fractal Gas. Volume 3 formalizes walker dynamics and proves QSD convergence.
+:::
+
+:::{prf:definition} Human Coordination Protocol
+:label: def-hornischer-experiment
+
+**Task**: 10-player spatial coordination in 2D environment
+
+**Participants**:
+- Total: 400 (40 runs × 10 players)
+- Recruitment: University + online
+- Compensation: Performance-based monetary reward
+
+**Environment**:
+- 2D continuous space, periodic boundaries
+- Dynamic target locations
+- No explicit communication
+
+**Measurements**:
+- Agent trajectories: $x_i(t)$, $v_i(t)$ at 10 Hz
+- Group metrics: Convergence time, dispersion, success rate
+- Individual metrics: Action sequences, reaction times
+
+**Statistical Analysis**:
+- Mixed-effects models (participant ID random effect)
+- Bootstrapped confidence intervals (10,000 resamples)
+- Bayesian model comparison (Bayes factors)
+:::
+
+:::{prf:definition} Cognitive Force Model
+:label: def-cognitive-force
+
+FSX implementation for spatial coordination:
+
+**Forward Simulation**: Project $M$ trajectories from current $x_i(t)$ under random actions.
+
+**Diversity Measurement**: For action $a$, compute endpoint spread:
+
+$$
+D_i(a) = \frac{1}{M} \sum_{m=1}^M \| x_i^{(m)}(t + \tau) - \bar{x}_i(t + \tau) \|^2
+$$
+
+**Action Selection**: $a_i^* = \arg\max_a D_i(a)$
+
+**Parameters**: Horizon $\tau \in [5, 50]$, trajectories $M \in [50, 200]$.
+
+Direct implementation of Fractal AI principle.
+:::
+
+:::{prf:definition} MARL Baseline
+:label: def-marl-baseline
+
+**Algorithm**: Decentralized Q-learning with experience replay.
+
+**Reward**: Shared group reward based on target proximity:
+
+$$
+r_t = -\frac{1}{N} \sum_{i=1}^N \min_j \| x_i(t) - \text{target}_j(t) \|
+$$
+
+**Training**: 100,000 simulated episodes before deployment.
+
+**Parameters**: Learning rate $\alpha \in [10^{-4}, 10^{-3}]$, discount $\gamma = 0.99$, exploration annealed.
+:::
+
+:::{prf:definition} Trajectory Distance
+:label: def-trajectory-distance
+
+**Dynamic Time Warping** and **Fréchet Distance** measure trajectory shape similarity.
+
+**Results**:
+
+| Metric | FSX vs. Human | MARL vs. Human | FSX Advantage |
+|--------|---------------|----------------|---------------|
+| Mean DTW Distance | 12.4 ± 2.1 | 19.7 ± 3.4 | **37% lower** |
+| Mean Fréchet Distance | 8.3 ± 1.5 | 14.2 ± 2.8 | **42% lower** |
+
+FSX trajectories significantly closer to human trajectories.
+:::
+
+:::{prf:definition} Action Entropy
+:label: def-action-entropy
+
+Empirical action entropy:
+
+$$
+H[a_i] = -\sum_{a \in \mathcal{A}} p_i(a) \log p_i(a)
+$$
+
+**Results**:
+
+| Agent Type | Mean $H[a]$ | Std Dev |
+|------------|------------|---------|
+| Humans | **2.31** | 0.42 |
+| FSX | **2.28** | 0.39 |
+| MARL | 1.74 | 0.31 |
+
+Humans and FSX maintain higher exploration entropy than MARL.
+
+**Volume 3 Connection**: Empirical entropy matches QSD theoretical entropy ({doc}`convergence_program/07_discrete_qsd`).
+:::
+
+:::{prf:definition} Bayes Factor
+:label: def-bayes-factor
+
+Relative evidence for model $M_1$ vs. $M_2$:
+
+$$
+BF_{12} = \frac{P(D | M_1)}{P(D | M_2)}
+$$
+
+Interpretation: $BF > 10$ strong evidence, $BF > 100$ decisive.
+
+**Results** (FSX vs. MARL):
+
+| Data Type | Bayes Factor | Interpretation |
+|-----------|--------------|----------------|
+| Convergence rates | 47.3 | Strong for FSX |
+| Trajectory distances | 132.7 | **Decisive for FSX** |
+| Action entropy | 28.4 | Strong for FSX |
+| **Combined** | **521.6** | **Overwhelming for FSX** |
+
+Data 521× more likely under FSX than MARL.
+:::
+
+:::{prf:theorem} QSD Existence (Simplified)
+:label: thm-qsd-existence
+
+For Fractal Gas with cloning $P_C$, kinetic $P_K$:
+
+$$
+\lim_{t \to \infty} \| \mu_t^N - \mu_{\infty}^N \|_{\mathrm{TV}} = 0
+$$
+
+with exponential rate $\lambda_{\mathrm{gap}} = \Theta(\gamma \wedge \delta)$.
+
+**Proof**: {doc}`convergence_program/06_convergence`, Thm 6.3.
+:::
+
+:::{prf:theorem} Mean-Field Error
+:label: thm-mean-field-error
+
+Finite-$N$ QSD converges to mean-field QSD with error:
+
+$$
+W_2(\mu_{\infty}^N, \mu_{\infty}^{\mathrm{MF}}) = O\left(\frac{1}{\sqrt{N}}\right)
+$$
+
+**Proof**: {doc}`convergence_program/09_propagation_chaos`, Thm 9.4.
+:::
+
+:::{prf:definition} Volume 3 Predictions
+:label: def-predictions
+
+**P1: Convergence Rate**: $\lambda_{\mathrm{gap}} = \Theta(\gamma)$ → vary friction, measure relaxation time
+
+**P2: Critical Horizon**: FSX quality plateaus for $\tau > \tau_{\mathrm{crit}} = O(1/\lambda_{\mathrm{gap}})$
+
+**P3: Entropy Production**: Steady-state $\dot{S} = \sigma^2 / T_{\mathrm{eff}}$ measurable in groups
+
+**P4: Gauge Phase Distribution**: U(1) phase $\theta = -\Delta\Phi/\hbar_{\mathrm{eff}}$ thermal
+
+**P5: Mean-Field Breakdown**: Error grows faster than $1/\sqrt{N}$ for $N < N_{\mathrm{crit}}$
+
+All quantitative and falsifiable.
 :::

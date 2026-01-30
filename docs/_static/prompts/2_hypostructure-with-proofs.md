@@ -3063,7 +3063,7 @@ where:
 
 **Complexity:** $O(N)$ to $O(N^2)$ matrix operation. **No partial differential equations required.**
 
----
+
 
 **Step 2: The Lift (The "Free" Proof via RCD Theory)**
 
@@ -3079,7 +3079,7 @@ where:
 - **Domain Embedding:** Gromov-Hausdorff embedding $\iota: \mathbf{Thin}_T \to \mathbf{RCD}(K,N)$ (RCD spaces with curvature $K$ and dimension $N$)
 - **Conclusion Import:** Convergence in RCD topology $\Rightarrow K_{\mathrm{LS}_\sigma}^{\text{LSI}}$ on the continuum limit
 
----
+
 
 **Step 3: The Telemetry Proxy (The "Physicist" Certificate)**
 
@@ -7350,7 +7350,7 @@ where $\mathsf{route\_tag} \in \{\text{CC-Rig}, \text{Attr-Morse}, \text{Tame-LS
 
 **Downstream Independence:** All subsequent theorems (Lock promotion, surgery admissibility, etc.) depend only on $K_{\mathrm{prof}}^+$, never on which mechanism produced it.
 
----
+
 
 ### Public Signature (Soft Interfaces Only)
 
@@ -7414,7 +7414,7 @@ else try MechD(SoftCore); if YES → emit K_prof^+ (tag: Lock-Excl)
 else emit NO with K_prof^inc (mechanism_failures: [A,B,C,D])
 ```
 
----
+
 
 ### Mechanism A: Concentration-Compactness + Rigidity
 
@@ -7459,7 +7459,7 @@ Conclusion: almost-periodic solutions are either **stationary** (soliton/ground 
 
 **Literature:** Concentration-compactness {cite}`Lions84`; profile decomposition {cite}`BahouriGerard99`; Kenig-Merle {cite}`KenigMerle06`; rigidity {cite}`DuyckaertsKenigMerle11`.
 
----
+
 
 ### Mechanism B: Attractor + Morse Decomposition
 
@@ -7512,7 +7512,7 @@ $$
 
 **Literature:** Global attractor theory {cite}`Temam97`; gradient-like structure {cite}`HaleBook88`; Morse decomposition {cite}`Conley78`.
 
----
+
 
 ### Mechanism C: Tame + Łojasiewicz (O-Minimal Types)
 
@@ -7548,7 +7548,7 @@ where each $C_i$ is a definable cell (diffeomorphic to $(0,1)^{d_i}$). The strat
 
 **Literature:** O-minimal structures {cite}`vandenDries98`; tame geometry {cite}`Shiota97`; Łojasiewicz inequality {cite}`Lojasiewicz84`.
 
----
+
 
 ### Mechanism D: Lock / Hom-Exclusion (Categorical Types)
 
@@ -7584,7 +7584,7 @@ Alternatively, if Lock blocks specific patterns but allows others, classify the 
 
 **Literature:** Lock mechanism (Section {ref}`sec-lock`); categorical obstructions in PDE {cite}`Fargues21`.
 
----
+
 
 ### Mechanism Comparison
 
@@ -8673,7 +8673,7 @@ K_{\mathrm{Rep}_K}^+ \wedge K_{\mathrm{SC}_\lambda}^+ \wedge \left(K_{\mathrm{E1
 
 $$
 
----
+
 
 ### Backend A: Hypersurface Form
 
@@ -8686,7 +8686,7 @@ $$
 
 **Literature:** Irreducibility and defining equations {cite}`Hartshorne77`; Nullstellensatz {cite}`CoxLittleOShea15`.
 
----
+
 
 ### Backend B: Complete Intersection Form
 
@@ -8699,7 +8699,7 @@ $$
 
 **Literature:** Bézout's theorem {cite}`Fulton84`; complete intersections {cite}`EisenbudHarris16`.
 
----
+
 
 ### Backend C: Morphism / Compression Form
 
@@ -8712,7 +8712,7 @@ $$
 
 **Literature:** Degrees of morphisms {cite}`Lazarsfeld04`; projection formulas {cite}`Fulton84`.
 
----
+
 
 **Backend Selection Logic:**
 
@@ -10183,7 +10183,7 @@ Hence orbits spend asymptotically zero fraction of time near $V_i$.
 
 **Literature:** {cite}`Birkhoff31`; {cite}`Furstenberg81`; {cite}`Oxtoby52`; {cite}`MeynTweedie93`
 
----
+
 
 #### Backend B: Gradient + Lojasiewicz-Simon Convergence
 
@@ -10230,7 +10230,7 @@ Hence the trajectory has **finite arc length** and converges to a single limit $
 
 **Literature:** {cite}`Simon83`; {cite}`Huang06`; {cite}`Raugel02`; {cite}`Temam97`
 
----
+
 
 #### Backend C: Contraction / Spectral-Gap Mixing
 
@@ -10283,7 +10283,7 @@ for **all** initial conditions $x \in \mathcal{X}$. The basin of attraction of $
 
 **Literature:** {cite}`MeynTweedie93`; {cite}`HairerMattingly11`; {cite}`LevinPeresWilmer09`; {cite}`Temam97`
 
----
+
 
 **Backend Selection Logic:**
 
@@ -10686,7 +10686,7 @@ where $\mathfrak{D}_A, \mathfrak{D}_B \geq 0$ are the dissipation rates (energy 
 
 **Literature:** Scaling analysis {cite}`Tao06`; subcritical perturbation {cite}`CazenaveSemilinear03`
 
----
+
 
 #### Backend B: Semigroup + Perturbation Theory
 
@@ -10730,7 +10730,7 @@ Standard semigroup theory: if $u(t) \in D(A)$ initially and $A$ generates $C_0$-
 
 **Literature:** Semigroup theory {cite}`EngelNagel00`; perturbation of generators {cite}`Pazy83`; coupled parabolic systems {cite}`Cardanobile10`
 
----
+
 
 #### Backend C: Energy + Absorbability
 
@@ -10801,7 +10801,7 @@ Bounded uniformly in time.
 
 **Literature:** Grönwall inequalities {cite}`Gronwall19`; energy methods {cite}`Lions69`; dissipative systems {cite}`Temam97`
 
----
+
 
 **Backend Selection Logic:**
 

@@ -133,7 +133,7 @@ graph TD
 
 **Chapter 7** summarizes contributions and discusses future directions including Hessian-based anisotropic diffusion, recursive fitness landscapes, mean-field PDE analysis, Riemannian manifold extensions, and multi-scale hierarchical swarms.
 
----
+
 
 ## 2. Document Overview and Prerequisites
 
@@ -212,7 +212,7 @@ Throughout this document:
 - $V_W$: inter-swarm Wasserstein term (deferred W2 track)
 - Cross-document references use notation: "Theorem 05:X.Y.Z" for {doc}`05_kinetic_contraction`
 
----
+
 
 ## 3. Synergistic Composition and Foster-Lyapunov Condition
 
@@ -3823,7 +3823,7 @@ can be rigorously analyzed using:
 
 The synergistic dissipation framework provides a **template** for designing and analyzing future adaptive algorithms across optimization, sampling, and multi-agent systems.
 
----
+
 
 **End of Document: Convergence Theory and Parameter Optimization for the Euclidean Gas**
 
@@ -3832,7 +3832,7 @@ The synergistic dissipation framework provides a **template** for designing and 
 - **{doc}`03_cloning`:** The Keystone Principle and the Contractive Nature of Cloning
 - **{doc}`01_fragile_gas_framework`:** Mathematical Foundations of Fragile Gas Systems
 
----
+
 
 :::{admonition} Acknowledgments
 :class: note

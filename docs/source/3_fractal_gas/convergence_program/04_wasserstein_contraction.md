@@ -165,7 +165,7 @@ graph TD
 
 The result is a rigorous, self-contained proof of centered Wasserstein-2 **control via a variance proxy** (with a closed drift bound under structural dominance), with explicit N-uniform constants.
 
----
+
 
 ## 2. Cluster Structure
 
@@ -257,7 +257,7 @@ This remark clarifies that while the analysis is formally at the $N$-particle le
 
 This document does not assume any cross-swarm alignment or matching axiom. All geometric guarantees are imported from the Keystone Lemma chain in {doc}`03_cloning`. The only cross-swarm coupling used later is the standard independent coupling for bounding $W_{2,x}^2$ by internal variances (Lemma {prf:ref}`lem-centered-w2-variance-bound`), which requires no alignment structure.
 
----
+
 
 ## 3. Variance Decomposition and Centered Wasserstein Bound
 
@@ -413,7 +413,7 @@ $$
 then the proxy control in Section 5 combines with the decomposition above to yield geometric $W_2$ contraction. In practice this regime is obtained after composing with $\Psi_{\text{kin}}$ (see {doc}`05_kinetic_contraction` and {doc}`06_convergence`).
 :::
 
----
+
 
 ## 4. Keystone-Driven Positional Variance Contraction
 
@@ -463,7 +463,7 @@ Here $c_{\text{struct}} > 0$ is the structural-variance link constant from {doc}
 $\delta$ is the positional jitter scale in the cloning update. In the Euclidean Gas implementation, one typically sets $\delta = \sigma_x$ (or $\delta = \sqrt{\tau}\,\sigma_x$ for a discretized step), but the analysis keeps $\delta$ explicit.
 :::
 
----
+
 
 ## 5. From Variance Contraction to Centered $W_2$ Control
 
@@ -530,7 +530,7 @@ $$
 In particular, if $c_{\text{proxy}} < 1/(1-\kappa_x)$, then $\kappa_{\text{eff}} > 0$ and the centered positional error contracts geometrically. The correction term is linear in $V_{\text{x,struct}}$, so larger mismatch yields stronger expected correction. When the mismatch is small and the dominance condition fails, the kinetic step provides the remaining contraction.
 :::
 
----
+
 
 ## 6. Full $W_2$ Contraction After the Kinetic Step
 
@@ -549,7 +549,7 @@ $$
 Cloning controls the centered positional component via Proposition {prf:ref}`prop-centered-w2-control`. The kinetic operator $\Psi_{\text{kin}}$ contracts the barycenter and velocity components ({doc}`05_kinetic_contraction`). Therefore the composed dynamics $\Psi_{\text{kin}} \circ \Psi_{\text{clone}}$ yields full phase-space $W_2$ contraction as in {doc}`06_convergence`.
 :::
 
----
+
 
 ## 7. Comparison with Single-Walker Approach
 
@@ -581,7 +581,7 @@ Result: N-uniformity PRESERVED
 | **N-uniformity** | BROKEN (q_min → 0) | ✓ PROVEN (Keystone constants from {doc}`03_cloning`) |
 | **Framework consistency** | Ad-hoc definitions | Uses exact definitions from Chapters 6-8 |
 
----
+
 
 ## 8. Explicit Constants and Derived Bounds
 
@@ -708,7 +708,7 @@ The KL-convergence framework ({doc}`15_kl_convergence`) may provide faster conve
 
 Both approaches are valid; the Keystone-based variance proxy control provides an independent verification of convergence with explicit N-uniform constants.
 
----
+
 
 ## 9. Conclusion and Future Work
 
@@ -736,7 +736,7 @@ This result enables:
 - **Mean-Field Convergence** ({doc}`08_mean_field`): Measure-level contraction
 - **Combined with kinetic contraction**: Full Wasserstein contraction for alternating operator $\Psi_{\text{kin}} \circ \Psi_{\text{clone}}$
 
----
+
 
 ## References
 
@@ -757,7 +757,7 @@ This result enables:
 - {doc}`01_fragile_gas_framework`: Axioms
 - {doc}`15_kl_convergence`: Alternative convergence analysis
 
----
+
 
 **Document Status**: COMPLETE (Keystone-Based Proxy Control)
 

@@ -3,7 +3,7 @@
 
 **Prerequisites**: {doc}`01_emergent_geometry`, {doc}`02_scutoid_spacetime`
 
----
+
 
 (sec-tldr-curvature)=
 ## TLDR
@@ -30,7 +30,7 @@ Positive Ricci curvature causes geodesic focusing---the geometric mechanism unde
 
 **Focusing Theorem**: Under the strong energy condition ($R_{\mu\nu}u^\mu u^\nu \geq 0$) and vorticity-free flow, convergence occurs within time $\tau_* \leq d/|\theta_0|$.
 
----
+
 
 (sec-introduction-curvature)=
 ## Introduction
@@ -133,7 +133,7 @@ where $T^{cd}$ is the tangent bivector to $\Sigma$.
 *Proof.* See Lemma {prf:ref}`appx-holonomy-small-loops` in {doc}`../convergence_program/17_geometric_gas`. $\square$
 :::
 
----
+
 
 (sec-riemann-scutoid-dictionary)=
 ## The Riemann-Scutoid Dictionary
@@ -235,7 +235,7 @@ Under the bounded aspect ratio regime, $A_\Pi^{1/2} = O(h)$ with $h = \max(\ell,
 Lemma {prf:ref}`lem-holonomy-small-loops`. $\square$
 :::
 
----
+
 
 (sec-riemann-tensor)=
 ## Riemann Tensor
@@ -261,7 +261,7 @@ For emergent metric $g = H + \epsilon_\Sigma I$ with $H = \nabla^2 V_{\mathrm{fi
 - $R < 0$: Negative curvature, geodesics diverge
 :::
 
----
+
 
 (sec-discrete-connection)=
 ## Discrete Connection Recovery
@@ -290,7 +290,7 @@ $$
 **Error:** $|\Gamma^{\mathrm{discrete}} - \Gamma^{\mathrm{true}}| = O(h)$ for mesh size $h$.
 :::
 
----
+
 
 (sec-raychaudhuri)=
 ## The Raychaudhuri Equation
@@ -323,7 +323,7 @@ $$
 *Proof.* See Theorem {prf:ref}`appx-raychaudhuri` in {doc}`../convergence_program/17_geometric_gas`. $\square$
 :::
 
----
+
 
 (sec-discrete-raychaudhuri)=
 ## Discrete Raychaudhuri Correspondence
@@ -444,7 +444,7 @@ $$
 for some $\lambda > 0$ depending on the curvature bounds.
 :::
 
----
+
 
 (sec-focusing-theorem)=
 ## Focusing Theorem
@@ -467,7 +467,7 @@ $$
 *Proof.* From Raychaudhuri with SEC and $\omega = 0$: $\frac{d\theta}{d\tau} \leq -\frac{1}{d}\theta^2$. This Riccati inequality integrates to $\theta^{-1}(\tau) \geq \theta_0^{-1} + \tau/d$, which diverges at $\tau_* = d/|\theta_0|$. $\square$
 :::
 
----
+
 
 (sec-curvature-topology)=
 ## Curvature and Topology Changes
@@ -535,7 +535,7 @@ The Regge action $S = \sum_h \varepsilon_h \cdot A_h$ changes when hinges are cr
 This is studied in discrete differential geometry {cite}`cheeger1984curvature` but a simple universal formula $\Delta(\int R) = C_g(d) \cdot \Delta N$ holds only under idealized assumptions (e.g., Poisson-Voronoi in flat space).
 :::
 
----
+
 
 (sec-fg-gravity-physical-interpretation)=
 ## Physical Interpretation
@@ -570,7 +570,7 @@ The focusing theorem ({prf:ref}`thm-focusing`) provides a geometric mechanism fo
 - QSD stability ({doc}`04_field_equations`)
 :::
 
----
+
 
 (sec-symbols-curvature)=
 ## Table of Symbols
@@ -589,7 +589,7 @@ The focusing theorem ({prf:ref}`thm-focusing`) provides a geometric mechanism fo
 | $\varepsilon_h$ | Deficit angle | {prf:ref}`def-regge-curvature` |
 | $\epsilon_N$ | Inter-particle spacing | {prf:ref}`def-regularity-conditions` |
 
----
+
 
 (sec-summary-curvature)=
 ## Summary
@@ -607,7 +607,7 @@ The focusing theorem ({prf:ref}`thm-focusing`) provides a geometric mechanism fo
 6. **Curvature-Topology (2D)** ({prf:ref}`prop-curvature-change-2d`): Cloning changes curvature by $O(1)$
 :::
 
----
+
 
 ## References
 

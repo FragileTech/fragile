@@ -23,7 +23,7 @@ where measurements $d_j = d_{\text{alg}}(j, c(j))$ depend on **companion selecti
 
 The proof uses a **smooth clustering framework** with partition-of-unity localization to handle the N-body coupling introduced by companion selection, establishing **N-uniform** and **k-uniform** derivative bounds at all orders.
 
----
+
 
 ## 0. TLDR
 
@@ -43,7 +43,7 @@ This Gevrey-1 regularity enables rigorous analysis of the Geometric Gas generato
 
 **Regularization Cascade**: Three regularization parameters enter multiplicatively: (1) $\varepsilon_d > 0$ eliminates singularities in $d_{\text{alg}}$ at walker collisions (contributes $\varepsilon_d^{1-m}$ for $m \geq 2$); (2) $\rho > 0$ controls localization scale (contributes $\rho^{2dm}$ and $\rho^{-m}$); (3) $\eta_{\min} > 0$ prevents division by zero in the Z-score (contributes $\eta_{\min}^{-(2m+1)}$). Any implementation choice that tightens one scale must account for blow-up in the others.
 
----
+
 
 ## 1. Introduction
 
@@ -227,7 +227,7 @@ and are not used in the proofs.
 - **$\varepsilon_c$** controls the softmax kernel mass (smaller $\varepsilon_c$ → tighter localization)
 - **$\rho$** controls localization weights (larger $\rho$ → broader averaging window)
 
----
+
 
 ### 1.4. Overview of the Proof Strategy and Document Structure
 
@@ -345,7 +345,7 @@ k-dependent derivative bounds, invalidating mean-field analysis. This technique 
 Geometric Gas framework and may have applications to other mean-field systems with global coupling.
 :::
 
----
+
 
 ## 2. Companion Selection Mechanisms: Framework Context
 
@@ -415,7 +415,7 @@ where $\mathcal{M}_k$ is the set of perfect matchings and $W(M) = \prod_{(i,j) \
 
 **Consequence**: The **mean-field expected** fitness potential $V_{\text{fit}}$ is C^∞ with k-uniform Gevrey-1 bounds **regardless of which mechanism is implemented**.
 
----
+
 
 ### 2.1 The Full Fitness Potential Pipeline
 
@@ -825,7 +825,7 @@ exponential coefficient.
 - Gevrey-1 growth ($m!$) is preserved through all stages of composition (sums, products, quotients, compositions via Faà di Bruno formula).
 - Parameter dependencies accumulate through the pipeline: the final constant $C_{V,m}$ depends on all regularization parameters.
 
----
+
 
 (sec-gg-cinf-regularity)=
 ## Part I: Smooth Clustering Framework and Partition of Unity
@@ -1100,7 +1100,7 @@ For the full publication-ready proof with detailed verification, see:
 - Extension to general cluster geometries beyond balls
 :::
 
----
+
 
 ## 4. Exponential Locality and Effective Interactions
 
@@ -1315,7 +1315,7 @@ Derivative locality removes $\ell$-sums for $j \neq i$, and the mean-field kerne
 controls the $j=i$ term, so no $k$-dependent amplification appears in the derivative bounds.
 :::
 
----
+
 
 ## 5. Derivatives of Algorithmic Distance (Regularized Version)
 
@@ -1468,7 +1468,7 @@ Combined with the chain rule contributions from $\nabla^m r^2$, we obtain $C_{d,
 The regularization is the key technical innovation that enables C^∞ regularity with uniform bounds throughout the entire state space.
 :::
 
----
+
 
 :::{prf:property} Locality of Algorithmic Distance
 :label: prop-dalg-locality
@@ -1496,7 +1496,7 @@ $\mathcal{O}(k_{\text{eff}}^{(\varepsilon_c)})$ factor from $\ell$-sums, prevent
 k-dependent growth in the mean-field bounds.
 :::
 
----
+
 
 ## 5.5 Companion-Dependent Measurements with Softmax Coupling
 
@@ -2060,7 +2060,7 @@ where $C_{d_i,n} = \mathcal{O}(n!)$ arises from:
 □
 :::
 
----
+
 
 ## 5.6 Diversity Pairing Mechanism Analysis
 
@@ -2599,7 +2599,7 @@ This enables:
 - **Recommendation**: Choose based on algorithmic needs (simplicity vs diversity)
 :::
 
----
+
 
 ## Part II: Localization Weights with Companion-Dependent Measurements
 
@@ -2925,7 +2925,7 @@ By induction and combinatorial counting (Faà di Bruno), the total bound grows a
 This is why interactions with $k$ particles can be bounded by $O(1)$ instead of $O(k)$ - the contributions from different particles **cancel** rather than add, just as positive and negative charges cancel in a neutral plasma.
 :::
 
----
+
 
 ## 7. Companion-Dependent Measurements: Handling N-Body Coupling
 
@@ -3074,7 +3074,7 @@ This completes the proof.
 
 This decomposition localizes the coupling problem to **intra-cluster interactions** (which have finite effective size) plus **exponentially suppressed inter-cluster corrections**.
 
----
+
 
 ## Part III: Localized Moments with Full Coupling Analysis
 
@@ -3453,7 +3453,7 @@ where $C_{\mu,m+1}(\rho) = \mathcal{O}((m+1)! \cdot \rho^{2d(m+1)})$ is independ
 3. **ρ-dependence**: The constant depends on $\rho$ as $\mathcal{O}(\rho^{2dm})$, reflecting the localization scale
 :::
 
----
+
 
 ## 9. Localized Variance: Full Derivative Analysis
 
@@ -3917,7 +3917,7 @@ where $C_{\sigma^2,m}(\rho) = \mathcal{O}(m! \cdot \rho^{2dm})$ is **k-uniform**
 The composition preserves Gevrey-1 scaling.
 :::
 
----
+
 
 ## Part IV: Regularized Standard Deviation and Z-Score
 
@@ -4037,7 +4037,7 @@ where $C_{\sigma',m}(\rho) = \mathcal{O}(m! \cdot \rho^{2dm} \cdot \eta_{\min}^{
 **Conclusion**: The regularized standard deviation is C^∞ with Gevrey-1 bounds, maintaining k-uniformity.
 :::
 
----
+
 
 ## 11. Z-Score: Quotient Rule Analysis
 
@@ -4158,7 +4158,7 @@ accounts for:
 4. **Regularization dependence**: Constants depend on $\eta_{\min}^{-(2m+1)}$, emphasizing the importance of sufficient regularization
 :::
 
----
+
 
 ## Part V: Final Composition and Main Theorem
 
@@ -4470,7 +4470,7 @@ The following table traces how the ε_d dependence specifically flows through ea
 - For analysis: Always include both terms in bounds: $\max(\rho^{-m}, \varepsilon_d^{1-m})$
 :::
 
----
+
 
 ## 13. Main Theorem: Complete Statement
 
@@ -4574,7 +4574,7 @@ The constant is **independent of** (uniformity properties):
 **Conclusion**: By systematic composition through the six-stage pipeline, maintaining Gevrey-1 bounds and k-uniform constants at each stage, we establish C^∞ regularity for the **mean-field expected** fitness potential.
 :::
 
----
+
 
 ## Part VI: Spectral Implications and Applications
 
@@ -4654,7 +4654,7 @@ For a publication-ready bracket computation, see Lemma {prf:ref}`lem-uniqueness-
 - Extension to potential-modified Langevin dynamics with confinement $U(x)$
 :::
 
----
+
 
 ## 15. Logarithmic Sobolev Inequality
 
@@ -4764,7 +4764,7 @@ For the full publication-ready proof with detailed verification, see:
 - Physical interpretation of convergence time scales and practical implications
 :::
 
----
+
 
 ## 16. Comparison to Simplified Model
 
@@ -4787,7 +4787,7 @@ For the full publication-ready proof with detailed verification, see:
 **Conclusion**: The full model achieves the **same regularity class** as the simplified model but requires **significantly more sophisticated analysis** due to N-body coupling. The smooth clustering framework with exponential locality is essential for maintaining N-uniform bounds.
 :::
 
----
+
 
 ## 16.5 Parameter Dependence and Practical Trade-offs
 
@@ -4911,7 +4911,7 @@ $$
 
 **Conclusion**: The ρ-dependence is **not prohibitive** for practical use, but must be accounted for in adaptive time-stepping schemes.
 
----
+
 
 ## 17. Summary and Future Directions
 
@@ -4955,7 +4955,7 @@ This document establishes:
 
 4. **Numerical Verification**: Can spectral methods exploit Gevrey-1 regularity for exponentially convergent discretizations?
 
----
+
 
 ## Appendix A: Combinatorial Proof of Gevrey-1 Bounds via Faà di Bruno Formula
 
@@ -5179,7 +5179,7 @@ where:
 
 By {prf:ref}`cor-gevrey-closure`, each stage preserves the Gevrey-1 property, and composition of finitely many Gevrey-1 functions yields a Gevrey-1 result. The **key technical content** of Sections 7-10 is tracking the **constants** through each stage to ensure k-uniformity and N-uniformity, not just the factorial growth (which is guaranteed by this appendix).
 
----
+
 
 ## References
 

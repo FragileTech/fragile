@@ -4,13 +4,13 @@
 **Date:** 2026-01-26
 **File:** `docs/source/3_fractal_gas/appendices/00_faq.md`
 
----
+
 
 ## Executive Summary
 
 This FAQ document addresses common objections to the Fractal Gas framework. The review identified several mathematical issues ranging from critical inconsistencies to minor notation concerns.
 
----
+
 
 ## Critical Issues
 
@@ -26,7 +26,7 @@ This is **non-zero** unless $v_i = v_j$ or $\alpha_{\text{rest}} = 0$.
 
 **Resolution needed:** Either (a) the source walker $j$ must explicitly recoil, or (b) the claim of momentum conservation should be removed/corrected.
 
----
+
 
 ### 2. **Falsifiability Prediction is Self-Contradictory** (N.11.3 vs N.2.1)
 **Severity:** CRITICAL
@@ -44,7 +44,7 @@ This equals zero **only if** $V_i = V_j$, which defeats the purpose of the test.
 
 **Resolution needed:** Fix the algebraic identity or the falsifiability prediction.
 
----
+
 
 ## Major Issues
 
@@ -60,7 +60,7 @@ This equals zero **only if** $V_i = V_j$, which defeats the purpose of the test.
 
 **Resolution needed:** Explicitly define $D$ and distinguish from diversity $d'$ and dimension $d$.
 
----
+
 
 ### 4. **BAOAB Symplectic Claim is Imprecise** (N.3.1)
 **Severity:** MAJOR
@@ -71,7 +71,7 @@ This equals zero **only if** $V_i = V_j$, which defeats the purpose of the test.
 
 **Resolution needed:** Clarify that BAOAB preserves the correct invariant measure, not the symplectic form per se.
 
----
+
 
 ### 5. **Wilson Action on Triangles is Ill-Defined** (N.7.3)
 **Severity:** MAJOR
@@ -82,7 +82,7 @@ This equals zero **only if** $V_i = V_j$, which defeats the purpose of the test.
 
 **Resolution needed:** Define the pairing scheme explicitly or use triangle-based action directly.
 
----
+
 
 ### 6. **Inconsistent Doeblin Constraints** (N.4.1 vs N.10.2)
 **Severity:** MAJOR
@@ -95,7 +95,7 @@ This equals zero **only if** $V_i = V_j$, which defeats the purpose of the test.
 
 **Resolution needed:** Use consistent constraint formulation.
 
----
+
 
 ## Minor Issues
 
@@ -111,7 +111,7 @@ Multiple uses:
 
 **Recommendation:** Use distinct symbols (e.g., $\mathbf{v}$ for velocity, $\mathcal{F}$ for fitness, $U$ for potential).
 
----
+
 
 ### 8. **Grassmann Encoding Gap** (N.2.2)
 **Severity:** MINOR
@@ -122,7 +122,7 @@ Multiple uses:
 
 **Resolution needed:** Add clarifying bridge or reference to where this is formalized.
 
----
+
 
 ### 9. **$O(d)$ to $U(d)$ Jump** (N.7.2)
 **Severity:** MINOR
@@ -131,7 +131,7 @@ Multiple uses:
 
 **Resolution needed:** Explain where the imaginary component arises in "momentum-phase complexification."
 
----
+
 
 ### 10. **"Forty Objections" Count** (Line 12)
 **Severity:** MINOR
@@ -140,7 +140,7 @@ Multiple uses:
 
 **Resolution needed:** Verify count or revise claim.
 
----
+
 
 ### 11. **Mean-Field Limit Clarification** (N.1.4)
 **Severity:** MINOR
@@ -149,7 +149,7 @@ Multiple uses:
 
 **Resolution needed:** Clarify which interpretation applies.
 
----
+
 
 ## Summary Table
 
@@ -167,7 +167,7 @@ Multiple uses:
 | Forty objections count | Line 12 | MINOR | Verify |
 | Mean-field limit ambiguity | N.1.4 | MINOR | Clarify |
 
----
+
 
 ## Reviewers
 
@@ -175,6 +175,6 @@ Multiple uses:
 **Gemini CLI (Gemini 3 Pro):** Detailed mathematical review
 **Codex (GPT-5.2):** Review in progress
 
----
+
 
 *Generated: 2026-01-26*

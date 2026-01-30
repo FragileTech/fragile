@@ -42,7 +42,7 @@ If you are coming from a standard optimization, sampling, or physics background,
 - {ref}`N.10 Implementation <sec-fg-faq-implementation>` — Practical considerations
 - {ref}`N.11 Foundations <sec-fg-faq-foundations>` — Philosophical and rigor questions
 
----
+
 
 (sec-fg-faq-algorithm-fundamentals)=
 ## N.1 Algorithm Fundamentals: Walkers, Companions, Population
@@ -64,7 +64,7 @@ Velocity is not optional—it provides three essential capabilities:
 
 The computational cost of doubling state dimension is amortized across benefits: better mixing, momentum conservation, and emergent gauge structure.
 
----
+
 
 (sec-fg-faq-soft-kernel)=
 ### N.1.2 The Soft Kernel vs. Nearest Neighbor Selection
@@ -83,7 +83,7 @@ Hard nearest-neighbor selection creates three fatal problems that the soft kerne
 
 The computational overhead of softmax over $N$ walkers is $O(N)$ per step—negligible compared to fitness evaluation.
 
----
+
 
 (sec-fg-faq-dual-fitness)=
 ### N.1.3 Dual-Channel Fitness: Why Both Reward and Diversity?
@@ -102,7 +102,7 @@ The dual-channel structure ({prf:ref}`def-fg-fitness`) $V_{\text{fit}} = (d')^\b
 
 4. **Phase behavior.** The ratio $\Gamma = T_{\text{kin}}/T_{\text{clone}} = \beta/(\alpha D \cdot h\gamma)$ determines whether the swarm behaves like a gas (high $\Gamma$), liquid (moderate $\Gamma$), or crystal (low $\Gamma$). This phase control enables adaptive exploration strategies.
 
----
+
 
 (sec-fg-faq-constant-population)=
 ### N.1.4 Population Size: Why Keep N Constant?
@@ -121,7 +121,7 @@ Fixed $N$ is a **requirement**, not a limitation:
 
 4. **Error bounds.** The $O(1/\sqrt{N})$ error floor ({prf:ref}`thm-alg-sieve-error-bounds`) assumes fixed $N$. Variable population would introduce additional variance from population fluctuations, potentially degrading convergence rates.
 
----
+
 
 (sec-fg-faq-dead-walkers)=
 ### N.1.5 What Happens to Dead Walkers?
@@ -142,7 +142,7 @@ Dead walkers serve critical structural and analytical purposes:
 
 The computational cost of tracking dead walkers is negligible—they simply skip the kinetic update step.
 
----
+
 
 (sec-fg-faq-cloning-dynamics)=
 ## N.2 Cloning Dynamics and Selection Pressure
@@ -164,7 +164,7 @@ The asymmetry is not arbitrary—it encodes the **flow of fitness information** 
 
 4. **Symmetry breaking.** If cloning were symmetric ($S_i(j) = S_j(i)$), the gauge group would be Abelian. The asymmetry forces non-Abelian structure, ultimately producing the Standard Model.
 
----
+
 
 (sec-fg-faq-fermionic-antisymmetry)=
 ### N.2.2 The Fermionic Interpretation of Cloning Antisymmetry
@@ -185,7 +185,7 @@ The claim is structural, not ontological:
 
 The emergence is mathematical structure, not physical identity.
 
----
+
 
 (sec-fg-faq-momentum-conservation)=
 ### N.2.3 Momentum Conservation During Cloning
@@ -206,7 +206,7 @@ Momentum conservation prevents three failure modes:
 
 The restitution coefficient $\alpha_{\text{rest}} \in [0,1]$ controls energy dissipation while preserving momentum.
 
----
+
 
 (sec-fg-faq-revival-guarantee)=
 ### N.2.4 The Revival Guarantee: Can the Swarm Go Extinct?
@@ -225,7 +225,7 @@ The guarantee is probabilistic, not deterministic:
 
 4. **Boundary restart.** If extinction does occur (measure-zero event), the algorithm restarts from the boundary distribution $P_\partial$. This is not a hack—it is the natural behavior when conditioning on non-extinction (Yaglom limit).
 
----
+
 
 (sec-fg-faq-kinetics)=
 ## N.3 Kinetics and Timescales
@@ -249,7 +249,7 @@ BAOAB ({prf:ref}`def-baoab-splitting`) provides three guarantees that Euler cann
 
 The computational overhead is minimal: BAOAB requires 2 force evaluations per step versus 1 for Euler, but with much better stability.
 
----
+
 
 (sec-fg-faq-three-timescales)=
 ### N.3.2 The Three Timescales: Discrete, Scaling, Continuum
@@ -274,7 +274,7 @@ Each level builds on the previous:
 
 Without all three, we would have either an algorithm without theory or theory without implementation.
 
----
+
 
 (sec-fg-faq-wfr-metric)=
 ### N.3.3 Why Wasserstein-Fisher-Rao Instead of Plain Wasserstein?
@@ -293,7 +293,7 @@ The Fractal Gas has **birth-death** dynamics that Wasserstein cannot capture:
 
 4. **Contraction rates.** Theorem {prf:ref}`thm-alg-sieve-wasserstein-contraction` proves WFR contraction. The contraction rate $\kappa_W$ depends on both transport (Wasserstein) and growth (Fisher-Rao) timescales.
 
----
+
 
 (sec-fg-faq-constraints)=
 ## N.4 Parameter Constraints and the Sieve
@@ -319,7 +319,7 @@ The five constraints correspond to five distinct failure modes:
 
 These five are **complete** in the sense that satisfying all five guarantees convergence to QSD ({prf:ref}`thm-alg-sieve-qsd-structure`). No hidden constraints exist because the proof constructs an explicit Lyapunov function that decreases unless one of the five is violated.
 
----
+
 
 (sec-fg-faq-17-nodes)=
 ### N.4.2 The 17-Node Sieve: Overkill or Necessary?
@@ -340,7 +340,7 @@ The 17 nodes provide **systematic coverage** of failure modes that ad-hoc checks
 
 The 17 nodes add negligible computational overhead (a few scalar comparisons per step) while providing strong guarantees.
 
----
+
 
 (sec-fg-faq-error-floor)=
 ### N.4.3 The Irreducible $O(1/\sqrt{N})$ Error Floor
@@ -359,7 +359,7 @@ The error floor is standard; what matters is **how quickly you reach it**:
 
 4. **Error decomposition.** The total error decomposes into bias (convergence to QSD) and variance (finite-$N$ fluctuations). The sieve constraints control bias; $N$ controls variance. This decomposition enables optimal resource allocation.
 
----
+
 
 (sec-fg-faq-hypocoercive)=
 ### N.4.4 Hypocoercive Rate: Proven Baseline and Constant Refinements
@@ -380,7 +380,7 @@ We separate **proven convergence** from **constant refinement**:
 
 The framework is rigorous at the baseline level, and constant refinements are optional.
 
----
+
 
 (sec-fg-faq-fractal-set)=
 ## N.5 The Fractal Set: Data Structure and Causal Order
@@ -407,7 +407,7 @@ The structure emerges naturally from the algorithm's causal relations:
 
 The 2D complex is the **natural boundary** of the algorithm's interaction structure.
 
----
+
 
 (sec-fg-faq-spinors)=
 ### N.5.2 Spinors on Edges: Necessary or Pedantic?
@@ -428,7 +428,7 @@ Spinors solve the **frame ambiguity** problem:
 
 The implementation overhead is one extra sign bit per edge—negligible for the theoretical benefits.
 
----
+
 
 (sec-fg-faq-ia-edges)=
 ### N.5.3 Influence Attribution (IA) Edges: Closing the Causal Loop
@@ -449,7 +449,7 @@ IA edges encode **information flow**, not physical causation:
 
 The direction is a bookkeeping convention, not a physical claim about time reversal.
 
----
+
 
 (sec-fg-faq-causal-sets)=
 ## N.6 Causal Set Theory Connection
@@ -473,7 +473,7 @@ The verification is rigorous, not analogical:
 
 The connection to quantum gravity is a **bonus interpretation**, not a claim about physical reality.
 
----
+
 
 (sec-fg-faq-adaptive-sprinkling)=
 ### N.6.2 Adaptive vs. Poisson Sprinkling: What's the Advantage?
@@ -492,7 +492,7 @@ Adaptive sprinkling provides **resolution where it matters**:
 
 4. **Dimension recovery.** Causal set dimension estimators (Myrheim-Meyer) applied to adaptively-sprinkled sets recover the correct dimension $d$ with fewer nodes than uniformly-sprinkled sets. This is because the adaptive density matches the geometric measure.
 
----
+
 
 (sec-fg-faq-emergent-spacetime)=
 ### N.6.3 Does Spacetime Really "Emerge" from Optimization?
@@ -516,7 +516,7 @@ The claim is **structural isomorphism**, not physical identity:
 
 The appropriate attitude is curiosity, not credulity.
 
----
+
 
 (sec-fg-faq-lattice-qft)=
 ## N.7 Lattice QFT and Gauge Fields
@@ -543,7 +543,7 @@ The gauge structure emerges from two principles: **redundancy** and **locality**
 
 The gauge structure is a **consequence** of the algorithm's redundancies, not an input.
 
----
+
 
 (sec-fg-faq-three-gauge-groups)=
 ### N.7.2 Why Three Independent Gauge Groups?
@@ -564,7 +564,7 @@ The three redundancies are **logically independent**: you can have fitness phase
 
 For $d=3$, we recover $U(1) \times SU(2) \times SU(3)$—the Standard Model gauge group.
 
----
+
 
 (sec-fg-faq-wilson-action)=
 ### N.7.3 The Wilson Action: Why Plaquettes?
@@ -589,7 +589,7 @@ Triangles are the **building blocks** of plaquettes:
 
 4. **Continuum limit.** As the Fractal Set mesh goes to zero, the discrete action converges to the Yang-Mills action $\int F_{\mu\nu}^a F^{a\mu\nu}$. The triangle/plaquette distinction becomes irrelevant.
 
----
+
 
 (sec-fg-faq-dirac-fermions)=
 ### N.7.4 From Cloning Antisymmetry to Dirac Fermions
@@ -609,7 +609,7 @@ The emergence proceeds in three steps:
 
 The emergence is **structural**: the algebraic relations of cloning match the algebraic relations of Dirac theory. We do not claim the algorithm "is" quantum mechanics—we claim the mathematical structures are isomorphic.
 
----
+
 
 (sec-fg-faq-standard-model)=
 ## N.8 Standard Model Emergence
@@ -635,7 +635,7 @@ The dimension-gauge correspondence ({prf:ref}`thm-sm-generation-dimension`) is t
 
    The volume provides evidence for (a) but does not claim to prove it.
 
----
+
 
 (sec-fg-faq-higgs-bifurcation)=
 ### N.8.2 Higgs Mechanism as Bifurcation: Is This Real Symmetry Breaking?
@@ -658,7 +658,7 @@ The isomorphism ({prf:ref}`thm-sm-higgs-isomorphism`) is structural:
 
 4. **Bifurcation interpretation.** The transition from $\mu^2 < 0$ (symmetric vacuum) to $\mu^2 > 0$ (broken vacuum) is a **pitchfork bifurcation** in dynamical systems language. The Fractal Gas naturally produces such bifurcations as cloning temperature varies.
 
----
+
 
 (sec-fg-faq-cp-violation)=
 ### N.8.3 CP Violation from Selection Non-Commutativity
@@ -683,7 +683,7 @@ The mechanism ({prf:ref}`thm-sm-cp-violation`) is subtle:
 
 The simplicity is a feature: CP violation emerges from a generic asymmetry, not fine-tuned parameters.
 
----
+
 
 (sec-fg-faq-neutrino-mass)=
 ### N.8.4 Neutrino Masses from Ancestral Self-Coupling
@@ -704,7 +704,7 @@ The mechanism ({prf:ref}`thm-sm-majorana-mass`) involves self-referential clonin
 
 4. **Hierarchy prediction.** The three-generation neutrino mass hierarchy (normal or inverted) depends on the ordering of fitness gaps for the three generations. The model predicts correlations between generation index and mass ordering.
 
----
+
 
 (sec-fg-faq-cross-volume)=
 ## N.9 Cross-Volume Connections
@@ -730,7 +730,7 @@ The Fractal Gas is the **latent-space optimizer** inside the Fragile Agent:
 
 4. **Hypostructure bridge.** Both volumes use Volume 2's categorical machinery for verification. The 17-node sieve applies to both agent diagnostics and algorithmic constraints.
 
----
+
 
 (sec-fg-faq-hypostructure-connection)=
 ### N.9.2 Connection to Hypostructure (Volume 2)
@@ -752,7 +752,7 @@ The Hypostructure provides the **verification framework**:
 
 4. **Expansion Adjunction.** The key theorem {prf:ref}`thm-expansion-adjunction` promotes discrete algebraic structures (Grassmann, Clifford) to continuous ones. This is essential for the continuum limit arguments in Chapter 4.
 
----
+
 
 (sec-fg-faq-future-work)=
 ### N.9.3 Preview: Fractal Gas in Economics (Future Work)
@@ -771,7 +771,7 @@ The connection is through **consensus mechanisms**:
 
 4. **Future development.** A planned Volume 4 will develop these economic applications in detail. The mathematical foundations in Volumes 1-3 are prerequisites.
 
----
+
 
 (sec-fg-faq-implementation)=
 ## N.10 Implementation and Practicality
@@ -793,7 +793,7 @@ The naive implementation is $O(N^2)$, but practical implementations achieve $O(N
 
 4. **Comparison.** Standard genetic algorithms have similar $O(N^2)$ selection costs. Particle swarm optimization has $O(N)$ per step but worse convergence. The Fractal Gas trades slightly higher per-step cost for better convergence guarantees.
 
----
+
 
 (sec-fg-faq-hyperparameters)=
 ### N.10.2 Hyperparameter Tuning: Does the Sieve Help?
@@ -815,7 +815,7 @@ The sieve provides **theory-derived defaults**:
 
 4. **Contrast with black-box.** Standard optimizers require trial-and-error tuning. The Fractal Gas has theory relating parameters to behavior: $\Gamma$ controls phase, $\varepsilon$ controls mixing, $\alpha/\beta$ controls exploitation-exploration.
 
----
+
 
 (sec-fg-faq-when-to-use)=
 ### N.10.3 When Should I Use Fractal Gas vs. Standard Gradient Descent?
@@ -836,7 +836,7 @@ The Fractal Gas excels in specific problem classes:
 
 5. **Hybrid approaches.** The Fractal Gas can warm-start gradient descent: use the population to find promising regions, then refine with local optimization. This combines global exploration with local precision.
 
----
+
 
 (sec-fg-faq-foundations)=
 ## N.11 Philosophical and Foundational Issues
@@ -858,7 +858,7 @@ The name reflects three self-similar structures:
 
 4. **Historical.** The name originated from early experiments where the walker distribution displayed visually fractal patterns in 2D projections. The mathematical justification came later.
 
----
+
 
 (sec-fg-faq-physics-from-optimization)=
 ### N.11.2 Physics from Optimization: Category Error?
@@ -879,7 +879,7 @@ We make a carefully scoped claim:
 
 4. **Falsifiable scope.** We provide specific predictions ({ref}`N.11.3 <sec-fg-faq-falsifiability>`) that can distinguish deep connection from coincidence. If predictions fail, we learn the isomorphism is shallow.
 
----
+
 
 (sec-fg-faq-falsifiability)=
 ### N.11.3 Falsifiability: What Would Prove This Wrong?
@@ -902,7 +902,7 @@ The following would falsify specific claims:
 
 Any of these falsifications would disprove specific technical claims, not the entire framework.
 
----
+
 
 (sec-fg-faq-rigor-classification)=
 ### N.11.4 The Rigor Classification: Proven vs. Conjectured

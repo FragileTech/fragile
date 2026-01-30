@@ -40,7 +40,7 @@ Think of an epoch like a single pass through airport security. You start at the 
 The crucial property is that each pass is *finite*. You cannot get stuck in an infinite loop within a single epoch. The DAG structure guarantees this.
 :::
 
----
+
 
 (sec-operational-semantics)=
 ## Operational Semantics
@@ -144,7 +144,7 @@ The key insight is that the NO-inconclusive certificate ($K^{\mathrm{inc}}$) is 
 This is honest bookkeeping. We do not pretend to know things we do not know.
 :::
 
----
+
 
 (sec-permit-vocabulary)=
 ## Permit Vocabulary and Certificate Types
@@ -350,7 +350,7 @@ The inc-upgrade rules work similarly for inconclusive certificates. If you could
 This is how the sieve achieves robustness: it does not give up just because facts arrive out of order.
 :::
 
----
+
 
 (sec-kernel-theorems)=
 ## Kernel Theorems

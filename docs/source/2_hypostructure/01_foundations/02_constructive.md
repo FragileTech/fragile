@@ -244,7 +244,7 @@ $$K_{\text{Horizon}}^{\text{blk}} = (\text{"Levin Limit exceeded"}, Kt(\tau), M_
 **Literature:** {cite}`Levin73` (Levin complexity); {cite}`LiVitanyi19` (AIT); {cite}`CoverThomas06` (DPI)
 :::
 
----
+
 
 (sec-sieve-constructor)=
 ## The Sieve as Constructor

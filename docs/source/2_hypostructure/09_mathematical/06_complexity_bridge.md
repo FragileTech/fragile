@@ -44,7 +44,7 @@ P_{\text{Fragile}} \neq NP_{\text{Fragile}} \quad\Rightarrow\quad P_{\text{DTM}}
 
 $$
 
----
+
 
 (sec-bridge-definitions)=
 ## Foundational Definitions
@@ -181,7 +181,7 @@ These three definitions pin down exactly what we mean by "polynomial-time" and "
 This is the right way to think about computational complexity: the *concept* of "efficient computation" is model-independent (you can only look at a small fraction of the exponentially large space). The *details* of how you formalize it (Turing machines, circuits, lambda calculus, categorical morphisms) should not matter, and the bridge theorems verify that they do not.
 :::
 
----
+
 
 (sec-bridge-theorems)=
 ## The Four Bridge Theorems
@@ -277,7 +277,7 @@ So the compilation is almost trivial: just translate the DTM state-update functi
 This is why the forward bridge is easy. The hard direction is the reverse bridge, where we have to show that our richer framework does not secretly give us more computational power.
 :::
 
----
+
 
 ### Theorem II: P-Extraction (Fragile P → DTM P)
 
@@ -410,7 +410,7 @@ The key point: *no primitive operation involves unbounded search or exponential 
 Once **(A2)** is verified, the extraction theorem follows mechanically.
 :::
 
----
+
 
 ### Theorem III: NP-Bridge (DTM NP → Fragile NP)
 
@@ -493,7 +493,7 @@ This theorem is pleasingly straightforward: an NP verifier is just a polynomial-
 The beauty of the verifier characterization of NP is that it separates the hard part (finding the witness) from the easy part (checking the witness). Our framework handles the easy part—verification—and the hard part remains hard in both models.
 :::
 
----
+
 
 ### Theorem IV: NP-Extraction (Fragile NP → DTM NP)
 
@@ -565,7 +565,7 @@ Now here is the punchline: if we prove $P_{\text{FM}} \neq NP_{\text{FM}}$ using
 The internal separation exports to the classical one. That is what these bridges buy us.
 :::
 
----
+
 
 (sec-bridge-corollaries)=
 ## Corollaries: Exporting the Separation
@@ -634,7 +634,7 @@ If you accept (1)—and you should, because it is just standard complexity thesi
 This is the value of the framework: it converts an amorphous problem ("does there exist an algorithm?") into a concrete problem ("does this geometric structure exist?"). One is philosophy; the other is mathematics.
 :::
 
----
+
 
 (sec-adequacy-verification)=
 ## Appendix A: Adequacy Hypothesis Verification
@@ -779,7 +779,7 @@ This is the same kind of proof that every compiler writer must do, implicitly or
 With this in place, the bridges are rigorous. We have not assumed our way to the conclusion; we have built it from first principles.
 :::
 
----
+
 
 (sec-bridge-summary)=
 ## Summary: The Complete Export Path
@@ -841,7 +841,7 @@ This means the Hypostructure framework is a **legitimate foundation** for attack
 That is the value of this chapter. We have built a bridge that can bear the weight of a P ≠ NP proof, if such a proof exists. The bridge is ready. Now we need the proof to cross it.
 :::
 
----
+
 
 (sec-bridge-references)=
 ## References and Further Reading
@@ -871,6 +871,6 @@ That is the value of this chapter. We have built a bridge that can bear the weig
 - Part XV ({ref}`sec-bridge-verification-algorithmic`): Initial DTM embedding
 - Appendix: ZFC Translation Layer ({ref}`sec-zfc-translation`): Foundations
 
----
+
 
 **Document Status:** This chapter completes the P/NP bridge infrastructure. The adequacy hypothesis **(A2)** is proven in {prf:ref}`lem-adequacy-fragile-runtime`. The export path is rigorous and fully specified. The remaining work is purely mathematical (OGP verification), not framework development.

@@ -3,7 +3,7 @@
 
 **Prerequisites**: {doc}`01_emergent_geometry`, {doc}`../2_fractal_set/02_causal_set_theory`
 
----
+
 
 (sec-holography-tldr)=
 ## TL;DR
@@ -12,7 +12,7 @@
 
 The Latent Fractal Gas produces two structurally independent data streams: the Causal Spacetime Tree (CST), which records walker genealogy through cloning events, and the Interaction Graph (IG), which encodes fitness correlations between walkers. These capture fundamentally different information---ancestry versus interaction---yet both measure the same geometric quantity: boundary area. This coincidence is the algorithmic version of the Bekenstein-Hawking formula, where entanglement entropy equals area divided by four times Newton's constant. This chapter proves the Informational Area Law $S_{\mathrm{IG}}(A) = \alpha \cdot \mathrm{Area}_{\mathrm{CST}}(\gamma_A)$, establishes thermodynamic relations including a first law connecting entropy and energy variations, and shows that the UV regime naturally yields Anti-de Sitter geometry with the Ryu-Takayanagi formula emerging as a direct consequence.
 
----
+
 
 (sec-holography-introduction)=
 ## Introduction
@@ -35,7 +35,7 @@ And yet---and here is the miracle---when you compute the entropy of a region usi
 This is not something we put in by hand. It *emerges* from the dynamics. The area law is not an assumption; it is a theorem. And understanding why it emerges will teach us something deep about the relationship between information, geometry, and optimization.
 :::
 
----
+
 
 (sec-two-data-streams)=
 ## The Two Data Streams
@@ -102,7 +102,7 @@ W_{\mathrm{total}} = \sum_{(i,j) \in E_t} w_{ij}
 $$
 :::
 
----
+
 
 (sec-holography-jump-hamiltonian)=
 ## The Jump Hamiltonian and Modular Structure
@@ -173,7 +173,7 @@ where $\Phi_A$ is the perturbation corresponding to density change $\delta\rho$ 
 **Physical interpretation:** The jump Hamiltonian measures the change in modular energy when the density is perturbed. This connects the classical correlation structure (IG) to quantum information concepts (modular Hamiltonian).
 :::
 
----
+
 
 (sec-holography-antichain)=
 ## Antichain Structure and Spacelike Hypersurfaces
@@ -240,7 +240,7 @@ You can think of the CST as a discrete sampling of spacetime. Each episode is an
 This discreteness is not an approximation or a numerical artifact. It is fundamental. The CST tells us that spacetime has a minimum resolvable unit---you cannot probe smaller than one episode. This is the algorithmic version of the Planck scale.
 :::
 
----
+
 
 (sec-holography-ig-entropy)=
 ## IG Entanglement Entropy
@@ -311,7 +311,7 @@ Compare this to the ordinary perimeter, which is just the length (or area) of th
 As the correlation length $\varepsilon$ goes to zero, the nonlocal perimeter converges to the ordinary perimeter (times a density factor). This is the Gamma-convergence result we prove next.
 :::
 
----
+
 
 (sec-holography-gamma-convergence)=
 ## Gamma-Convergence of IG Entropy
@@ -410,7 +410,7 @@ The density factor $\rho(z)^2$ is interesting. It tells us that regions of high 
 The practical upshot is that we can compute IG entanglement entropy for large regions, and it will match the geometric area. This is the first step toward proving the area law.
 :::
 
----
+
 
 (sec-holography-area-law)=
 ## The Informational Area Law
@@ -614,7 +614,7 @@ But here is the crucial difference: we derived it from optimization, not from bl
 This suggests that the Bekenstein-Hawking formula is not really about black holes. It is about *information and geometry*. Any system that has both a causal structure (CST) and a correlation structure (IG) will satisfy the area law, because the two structures are secretly measuring the same geometric quantity.
 :::
 
----
+
 
 (sec-holography-first-law)=
 ## First Law of Algorithmic Entanglement
@@ -753,7 +753,7 @@ Notice that the effective temperature $T_{\mathrm{eff}} = 1/\beta$ scales invers
 This is the algorithmic analog of the relationship between Hawking temperature and black hole mass. Large black holes (large area) are cold; small black holes (small area) are hot. Here, large correlation length (large IG network) is cold; small correlation length is hot.
 :::
 
----
+
 
 (sec-holography-pressure)=
 ## Holographic IG Pressure
@@ -841,7 +841,7 @@ The fact that both approaches give the same answer is not a coincidence. It is a
 The negative sign is crucial. Negative pressure means the IG network pulls inward, like surface tension. This is why the UV regime gives AdS geometry (negative cosmological constant). The holographic structure is not just a formal correspondence---it has physical consequences for the effective gravity.
 :::
 
----
+
 
 (sec-holography-ads-cft)=
 ## AdS/CFT Correspondence
@@ -930,7 +930,7 @@ What we have shown is that this formula is not just a feature of AdS/CFT---it is
 The emergence of a CFT on the boundary is more subtle. We have not proven that the IG correlation structure has all the properties of a conformal field theory (conformal symmetry, operator product expansion, etc.). What we have proven is that it satisfies the same entanglement entropy formula. The full CFT structure might emerge in a more refined analysis.
 :::
 
----
+
 
 (sec-holography-qsd-thermal)=
 ## QSD Thermal Equilibrium
@@ -1006,7 +1006,7 @@ What we have shown is that the QSD naturally equilibrates to the Unruh temperatu
 This is perhaps the deepest result of the holographic analysis. It says that the thermodynamic properties of the Latent Fractal Gas are not just analogous to black hole thermodynamics---they are *identical*, in regimes where both can be defined.
 :::
 
----
+
 
 (sec-holography-summary)=
 ## Summary
@@ -1077,7 +1077,7 @@ This, I think, is the crown jewel of the fitness manifold framework. We have not
 3. **Ryu-Takayanagi** ({prf:ref}`thm-ryu-takayanagi`): $S = \mathrm{Area}(\gamma_{\min})/(4G_N)$
 :::
 
----
+
 
 (sec-holography-symbols)=
 ## Table of Symbols
@@ -1105,7 +1105,7 @@ This, I think, is the crown jewel of the fitness manifold framework. We have not
 | $H_{\mathrm{eff}}$ | Effective Hamiltonian (QSD) | {prf:ref}`thm-qsd-gibbs` |
 | $T_{\mathrm{eff}}$ | Effective temperature | {prf:ref}`thm-qsd-gibbs` |
 
----
+
 
 (sec-holography-references)=
 ## References

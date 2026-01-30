@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "claude-code": {
+      "type": "stdio",
+      "command": "claude",
+      "args": ["mcp", "serve"]
+    },
+    "gemini": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["/home/guillem/fragiletech/fragile/tools/gemini_mcp_server.mjs"]
+    }
+  }
+}

@@ -44,7 +44,7 @@ And here is the surprise that should make you sit up: the network discovers stru
 - {ref}`sec-capacity-constrained-metric-law-geometry-from-interface-limits` — Capacity-constrained metric law
 - {ref}`sec-wasserstein-fisher-rao-geometry-unified-transport-on-hybrid-state-spaces` — WFR geometry
 
----
+
 
 (sec-design-space)=
 ## The Design Space
@@ -313,7 +313,7 @@ The following table previews the solution we'll arrive at (the Universal Geometr
 
 This decomposition exploits the gauge freedom: the encoder can choose any convenient gauge for representing observations, the latent dynamics respect geometric structure, and the decoder translates back to observable outputs. Gauge transformations in the latent space don't affect encoder or decoder—they're arbitrary internal reframings.
 
----
+
 
 (sec-architectural-choices)=
 ## Architectural Choices and Tradeoffs
@@ -573,7 +573,7 @@ where $h$ is MLP hidden dimension.
 
 **Recommendation:** Use Level 3 (hybrid/soft) as default. The equivariant pathway provides inductive bias, the mixing pathway provides flexibility, and L1 lets the network discover the right balance.
 
----
+
 
 (sec-strict-equivariance-limitations)=
 ## Strict Equivariance: Beauty and Limitations
@@ -856,7 +856,7 @@ $$
 But $\mathcal{F}_{\text{norm}}$ has measure zero in $C(\mathbb{R}^{n_b d_b}, \mathbb{R}^{n_b d_b})$.
 :::
 
----
+
 
 (sec-relaxation-strategies)=
 ## Relaxation Strategies
@@ -1076,7 +1076,7 @@ def log_sparsity_diagnostics(model, step):
         wandb.log(log_dict, step=step)
 ```
 
----
+
 
 (sec-universal-geometric-network)=
 ## The Universal Geometric Network
@@ -1890,7 +1890,7 @@ $$
 The UGN provides the *default* latent dynamics for bounded agents. Covariant cross-attention extends this to explicit trajectory prediction and planning.
 :::
 
----
+
 
 (sec-complete-implementation)=
 ## Complete Implementation
@@ -3009,7 +3009,7 @@ The emergent sparsity pattern from L1 regularization mirrors **Froggatt-Nielsen 
 This is **not imposed**—it emerges from optimization under L1 penalty. The value $\epsilon \approx 0.22$ nat/step is proposed as an empirical target for investigation—analogous to the Cabibbo angle ($\sin \theta_C \approx 0.225$ in the CKM matrix)—but requires experimental validation to determine if it emerges naturally from L1 optimization.
 :::
 
----
+
 
 (sec-connections-outlook)=
 ## Connections and Outlook
