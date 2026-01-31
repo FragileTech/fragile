@@ -17,6 +17,7 @@ from fragile.fractalai.core.history import RunHistory
 from fragile.fractalai.qft.correlator_channels import (
     ChannelCorrelatorResult,
     ConvolutionalAICExtractor,
+    bin_by_euclidean_time,
     compute_correlator_fft,
     compute_effective_mass_torch,
 )
@@ -48,6 +49,13 @@ class ElectroweakChannelConfig:
     voronoi_pbc_mode: str = "mirror"
     voronoi_exclude_boundary: bool = True
     voronoi_boundary_tolerance: float = 1e-6
+
+    # Time axis selection (for 4D Euclidean time analysis)
+    time_axis: str = "mc"  # "mc" or "euclidean"
+    euclidean_time_dim: int = 3  # Which dimension is Euclidean time (0-indexed)
+    euclidean_time_bins: int = 50  # Number of time bins for Euclidean analysis
+    euclidean_time_range: tuple[float, float] | None = None  # (t_min, t_max) or None for auto
+    mc_time_index: int | None = None  # Recorded index for Euclidean slice; None => last
 
     # Fit settings
     window_widths: list[int] | None = None
@@ -118,6 +126,31 @@ def _resolve_electroweak_params(history: RunHistory, cfg: ElectroweakChannelConf
         "epsilon_clone": epsilon_clone,
         "lambda_alg": lambda_alg,
     }
+
+
+def _resolve_mc_time_index(history: RunHistory, mc_time_index: int | None) -> int:
+    """Resolve a Monte Carlo slice index from either recorded index or step."""
+    if history.n_recorded < 2:
+        raise ValueError("Need at least 2 recorded timesteps for Euclidean analysis.")
+    if mc_time_index is None:
+        resolved = history.n_recorded - 1
+    else:
+        try:
+            raw = int(mc_time_index)
+        except (TypeError, ValueError) as exc:
+            raise ValueError(f"Invalid mc_time_index: {mc_time_index}") from exc
+        if raw in history.recorded_steps:
+            resolved = history.get_step_index(raw)
+        else:
+            resolved = raw
+    if resolved < 1 or resolved >= history.n_recorded:
+        msg = (
+            f"mc_time_index {resolved} out of bounds "
+            f"(valid recorded index 1..{history.n_recorded - 1} "
+            "or a recorded step value)."
+        )
+        raise ValueError(msg)
+    return resolved
 
 
 def _apply_pbc_diff(diff: Tensor, bounds) -> Tensor:
@@ -339,6 +372,8 @@ def _compute_electroweak_series(
     cfg: ElectroweakChannelConfig,
 ) -> dict[str, Tensor]:
     start_idx = max(1, int(history.n_recorded * cfg.warmup_fraction))
+    if cfg.time_axis == "euclidean":
+        start_idx = _resolve_mc_time_index(history, cfg.mc_time_index)
     if start_idx >= history.n_recorded:
         return {}
 
@@ -380,23 +415,71 @@ def _compute_electroweak_series(
     su2_comp_amp = torch.gather(su2_amp, 1, companions_clone)
     su2_comp_phase_exp = torch.exp(1j * su2_comp_phase)
 
-    series = {
-        "u1_phase": _masked_mean(u1_phase_exp, alive),
-        "u1_dressed": _masked_mean(u1_amp * u1_phase_exp, alive),
-        "u1_phase_q2": _masked_mean(u1_phase_q2_exp, alive),
-        "u1_dressed_q2": _masked_mean(u1_amp * u1_phase_q2_exp, alive),
-        "su2_phase": _masked_mean(su2_phase_exp, alive),
-        "su2_component": _masked_mean(su2_amp * su2_phase_exp, alive),
-        "su2_doublet": _masked_mean(
-            su2_amp * su2_phase_exp + su2_comp_amp * su2_comp_phase_exp, alive
-        ),
-        "su2_doublet_diff": _masked_mean(
-            su2_amp * su2_phase_exp - su2_comp_amp * su2_comp_phase_exp, alive
-        ),
-        "ew_mixed": _masked_mean(
-            (u1_amp * su2_amp) * torch.exp(1j * (u1_phase + su2_phase)), alive
-        ),
+    # Compute per-walker operators
+    operators = {
+        "u1_phase": u1_phase_exp,
+        "u1_dressed": u1_amp * u1_phase_exp,
+        "u1_phase_q2": u1_phase_q2_exp,
+        "u1_dressed_q2": u1_amp * u1_phase_q2_exp,
+        "su2_phase": su2_phase_exp,
+        "su2_component": su2_amp * su2_phase_exp,
+        "su2_doublet": su2_amp * su2_phase_exp + su2_comp_amp * su2_comp_phase_exp,
+        "su2_doublet_diff": su2_amp * su2_phase_exp - su2_comp_amp * su2_comp_phase_exp,
+        "ew_mixed": (u1_amp * su2_amp) * torch.exp(1j * (u1_phase + su2_phase)),
     }
+
+    # Average based on time axis
+    if cfg.time_axis == "euclidean":
+        # Check dimension
+        if history.d < cfg.euclidean_time_dim + 1:
+            msg = (
+                f"Cannot use dimension {cfg.euclidean_time_dim} as Euclidean time "
+                f"(only {history.d} dimensions available)"
+            )
+            raise ValueError(msg)
+
+        # Get positions for Euclidean time extraction
+        positions = history.x_before_clone[start_idx : start_idx + 1]  # [1, N, d]
+        alive_slice = alive[:1]
+
+        # Bin each operator by Euclidean time
+        series = {}
+        for name, op_values in operators.items():
+            # For real operators, bin the real part
+            if op_values.is_complex():
+                # Bin real and imaginary parts separately
+                time_coords_real, series_real = bin_by_euclidean_time(
+                    positions=positions,
+                    operators=op_values.real[:1],
+                    alive=alive_slice,
+                    time_dim=cfg.euclidean_time_dim,
+                    n_bins=cfg.euclidean_time_bins,
+                    time_range=cfg.euclidean_time_range,
+                )
+                time_coords_imag, series_imag = bin_by_euclidean_time(
+                    positions=positions,
+                    operators=op_values.imag[:1],
+                    alive=alive_slice,
+                    time_dim=cfg.euclidean_time_dim,
+                    n_bins=cfg.euclidean_time_bins,
+                    time_range=cfg.euclidean_time_range,
+                )
+                series[name] = series_real + 1j * series_imag
+            else:
+                time_coords, series[name] = bin_by_euclidean_time(
+                    positions=positions,
+                    operators=op_values[:1],
+                    alive=alive_slice,
+                    time_dim=cfg.euclidean_time_dim,
+                    n_bins=cfg.euclidean_time_bins,
+                    time_range=cfg.euclidean_time_range,
+                )
+    else:
+        # Monte Carlo time: average over walkers
+        series = {
+            name: _masked_mean(op_values, alive)
+            for name, op_values in operators.items()
+        }
 
     return series
 

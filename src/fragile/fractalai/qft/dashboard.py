@@ -59,11 +59,65 @@ __all__ = ["create_app"]
 class SwarmConvergence3D(param.Parameterized):
     """3D swarm convergence viewer using Plotly backend."""
 
+    # Dimension mapping parameters
+    x_axis_dim = param.ObjectSelector(
+        default="dim_0",
+        objects=["dim_0", "dim_1", "dim_2", "mc_time", "euclidean_time"],
+        doc="Dimension to map to X axis",
+    )
+    y_axis_dim = param.ObjectSelector(
+        default="dim_1",
+        objects=["dim_0", "dim_1", "dim_2", "mc_time", "euclidean_time"],
+        doc="Dimension to map to Y axis",
+    )
+    z_axis_dim = param.ObjectSelector(
+        default="dim_2",
+        objects=["dim_0", "dim_1", "dim_2", "mc_time", "euclidean_time"],
+        doc="Dimension to map to Z axis",
+    )
+    time_iteration = param.ObjectSelector(
+        default="euclidean",
+        objects=["monte_carlo", "euclidean", "spatial"],
+        doc="Player axis: Monte Carlo time, Euclidean time, or spatial slices",
+    )
+    mc_time_index = param.Integer(
+        default=None,
+        bounds=(0, None),
+        allow_None=True,
+        doc="Monte Carlo slice (recorded step or index) for Euclidean/spatial visualization",
+    )
+    spatial_iteration_dim = param.ObjectSelector(
+        default="dim_0",
+        objects=["dim_0", "dim_1", "dim_2"],
+        doc="Spatial dimension to iterate over when using spatial slices",
+    )
+    euclidean_time_dim = param.Integer(
+        default=3,
+        bounds=(0, 10),
+        doc="Spatial dimension index for Euclidean time slices (0-indexed)",
+    )
+    euclidean_time_bins = param.Integer(
+        default=50,
+        bounds=(5, 500),
+        doc="Number of Euclidean/spatial slices",
+    )
+
+    # Appearance parameters
     point_size = param.Number(default=4, bounds=(1, 20), doc="Walker point size")
     point_alpha = param.Number(default=0.85, bounds=(0.05, 1.0), doc="Marker opacity")
     color_metric = param.ObjectSelector(
-        default="constant",
-        objects=["constant", "fitness", "reward", "radius"],
+        default="fitness",
+        objects=[
+            "constant",
+            "fitness",
+            "reward",
+            "radius",
+            "dim_0",
+            "dim_1",
+            "dim_2",
+            "mc_time",
+            "euclidean_time",
+        ],
         doc="Color encoding for walkers",
     )
     fix_axes = param.Boolean(default=True, doc="Fix axis ranges to bounds extent")
@@ -88,6 +142,11 @@ class SwarmConvergence3D(param.Parameterized):
         self._alive = None
         self._neighbor_edges = None
         self._neighbor_graph_method = None
+        self._last_mc_frame = 0
+        self._mc_slice_controls = None
+        self._spatial_slice_controls = None
+        self._time_bin_controls = None
+        self._time_distribution_pane = None
 
         self.time_player = pn.widgets.Player(
             name="frame",
@@ -116,6 +175,9 @@ class SwarmConvergence3D(param.Parameterized):
         self.param.watch(
             self._refresh_frame,
             [
+                "x_axis_dim",
+                "y_axis_dim",
+                "z_axis_dim",
                 "point_size",
                 "point_alpha",
                 "color_metric",
@@ -125,8 +187,13 @@ class SwarmConvergence3D(param.Parameterized):
                 "line_style",
                 "line_width",
                 "line_alpha",
+                "euclidean_time_dim",
+                "euclidean_time_bins",
+                "mc_time_index",
+                "spatial_iteration_dim",
             ],
         )
+        self.param.watch(self._on_time_iteration_change, ["time_iteration", "euclidean_time_bins"])
 
         if history is not None:
             self.set_history(history)
@@ -142,14 +209,48 @@ class SwarmConvergence3D(param.Parameterized):
         if history.params is not None:
             self._neighbor_graph_method = history.params.get("neighbor_graph", {}).get("method")
 
-        self.time_player.end = max(0, history.n_recorded - 1)
-        self.time_player.value = 0
+        # Update dimension options based on history.d
+        d = history.d
+        dim_options = [f"dim_{i}" for i in range(d)] + ["mc_time", "euclidean_time"]
+
+        # Update parameter objects dynamically
+        self.param.x_axis_dim.objects = dim_options
+        self.param.y_axis_dim.objects = dim_options
+        self.param.z_axis_dim.objects = dim_options
+        spatial_options = [f"dim_{i}" for i in range(d)]
+        time_dim_idx = self._resolve_euclidean_dim(d)
+        time_dim_label = f"dim_{time_dim_idx}"
+        if d > 3 and time_dim_label in spatial_options:
+            spatial_options.remove(time_dim_label)
+        if not spatial_options:
+            spatial_options = [f"dim_{i}" for i in range(d)]
+        self.param.spatial_iteration_dim.objects = spatial_options
+
+        # For color, include all dimensions plus existing metrics
+        color_options = dim_options + ["fitness", "reward", "radius", "constant"]
+        self.param.color_metric.objects = color_options
+
+        # Reset to defaults if current selection no longer valid
+        if self.x_axis_dim not in dim_options:
+            self.x_axis_dim = "dim_0"
+        if self.y_axis_dim not in dim_options:
+            self.y_axis_dim = "dim_1" if d > 1 else "dim_0"
+        if self.z_axis_dim not in dim_options:
+            self.z_axis_dim = "dim_2" if d > 2 else "dim_0"
+        if self.color_metric not in color_options:
+            self.color_metric = "fitness"
+        if self.spatial_iteration_dim not in spatial_options:
+            self.spatial_iteration_dim = spatial_options[0]
+
+        self._last_mc_frame = max(0, history.n_recorded - 1)
         self.time_player.disabled = False
+        self._update_time_player_range(reset_value=True)
 
         self.status_pane.object = (
             f"**RunHistory loaded:** N={history.N}, "
             f"steps={history.n_steps}, "
-            f"recorded={history.n_recorded}"
+            f"recorded={history.n_recorded}, "
+            f"dims={d}"
         )
         if self._neighbor_edges is None:
             self.status_pane.object += (
@@ -165,12 +266,122 @@ class SwarmConvergence3D(param.Parameterized):
     def _sync_frame(self, event):
         if self.history is None:
             return
-        self._update_plot(int(np.clip(event.new, 0, self.history.n_recorded - 1)))
+        if self.time_iteration == "monte_carlo":
+            self._last_mc_frame = int(np.clip(event.new, 0, self.history.n_recorded - 1))
+        self._update_plot(int(event.new))
 
     def _refresh_frame(self, *_):
         if self.history is None:
             return
-        self._update_plot(int(np.clip(self.time_player.value, 0, self.history.n_recorded - 1)))
+        self._update_time_distribution()
+        self._update_plot(int(self.time_player.value))
+
+    def _on_time_iteration_change(self, event):
+        if self.history is None:
+            return
+        if event.name == "time_iteration":
+            if event.new in {"euclidean", "spatial"}:
+                self._last_mc_frame = int(
+                    np.clip(self.time_player.value, 0, self.history.n_recorded - 1)
+                )
+                self._update_time_player_range(reset_value=True)
+            elif event.new == "monte_carlo":
+                self._update_time_player_range(reset_value=False)
+                self.time_player.value = int(
+                    np.clip(self._last_mc_frame, 0, self.history.n_recorded - 1)
+                )
+        elif (
+            event.name == "euclidean_time_bins"
+            and self.time_iteration in {"euclidean", "spatial"}
+        ):
+            self._update_time_player_range(reset_value=False)
+        self._sync_mc_slice_visibility()
+        self._sync_spatial_slice_visibility()
+        self._sync_time_bin_visibility()
+        self._refresh_frame()
+
+    def _update_time_player_range(self, reset_value: bool) -> None:
+        if self.history is None:
+            self.time_player.start = 0
+            self.time_player.end = 0
+            self.time_player.value = 0
+            return
+        if self.time_iteration == "monte_carlo":
+            end = max(0, self.history.n_recorded - 1)
+            self.time_player.start = 0
+            self.time_player.end = end
+            if reset_value:
+                self.time_player.value = 0
+            else:
+                self.time_player.value = int(np.clip(self.time_player.value, 0, end))
+        else:
+            bins = max(1, int(self.euclidean_time_bins))
+            end = max(0, bins - 1)
+            self.time_player.start = 0
+            self.time_player.end = end
+            if reset_value:
+                self.time_player.value = 0
+            else:
+                self.time_player.value = int(np.clip(self.time_player.value, 0, end))
+
+    def _sync_mc_slice_visibility(self) -> None:
+        if self._mc_slice_controls is None:
+            return
+        self._mc_slice_controls.visible = self.time_iteration in {"euclidean", "spatial"}
+
+    def _sync_spatial_slice_visibility(self) -> None:
+        if self._spatial_slice_controls is None:
+            return
+        self._spatial_slice_controls.visible = self.time_iteration == "spatial"
+
+    def _sync_time_bin_visibility(self) -> None:
+        if self._time_bin_controls is None:
+            return
+        self._time_bin_controls.visible = self.time_iteration in {"euclidean", "spatial"}
+        if self._time_distribution_pane is not None:
+            self._time_distribution_pane.visible = self._time_bin_controls.visible
+
+    def _build_time_distribution(self):
+        if self.history is None or self._x is None:
+            return hv.Text(0, 0, "No history loaded").opts(height=160)
+
+        mc_frame = self._resolve_mc_frame(int(self.time_player.value))
+        mc_frame = int(np.clip(mc_frame, 0, self._x.shape[0] - 1))
+        positions = self._x[mc_frame]
+        if positions.size == 0:
+            return hv.Text(0, 0, "No samples").opts(height=160)
+
+        dim_idx = self._resolve_euclidean_dim(positions.shape[1])
+        values = positions[:, dim_idx]
+        bins = max(1, int(self.euclidean_time_bins))
+        extent = float(self.bounds_extent)
+        if np.isfinite(extent) and extent > 0:
+            hist_range = (-extent, extent)
+        else:
+            hist_range = (float(np.min(values)), float(np.max(values)))
+        counts, edges = np.histogram(values, bins=bins, range=hist_range)
+        centers = 0.5 * (edges[:-1] + edges[1:])
+        bars = hv.Bars((centers, counts), kdims=["t"], vdims=["count"]).opts(
+            height=160,
+            width=420,
+            color="#4c78a8",
+            line_color="#2a4a6d",
+            xlabel="Euclidean time",
+            ylabel="samples",
+            title="Euclidean time samples",
+        )
+        if self.time_iteration in {"euclidean", "spatial"} and bins > 0:
+            idx = int(np.clip(self.time_player.value, 0, bins - 1))
+            low = edges[idx]
+            high = edges[idx + 1]
+            span = hv.VSpan(low, high).opts(color="#f28e2b", alpha=0.25)
+            return bars * span
+        return bars
+
+    def _update_time_distribution(self) -> None:
+        if self._time_distribution_pane is None:
+            return
+        self._time_distribution_pane.object = self._build_time_distribution()
 
     def _get_alive_mask(self, frame: int) -> np.ndarray:
         if self._alive is None:
@@ -180,11 +391,106 @@ class SwarmConvergence3D(param.Parameterized):
         idx = min(frame - 1, self._alive.shape[0] - 1)
         return self._alive[idx]
 
-    def _frame_title(self, frame: int) -> str:
+    def _resolve_mc_frame(self, frame: int) -> int:
+        if self.history is None:
+            return 0
+        if self.time_iteration == "monte_carlo":
+            return int(np.clip(frame, 0, self.history.n_recorded - 1))
+        return self._resolve_mc_time_index()
+
+    def _resolve_mc_time_index(self) -> int:
+        if self.history is None:
+            return 0
+        n_recorded = max(1, int(self.history.n_recorded))
+        if self.mc_time_index is None:
+            return n_recorded - 1
+        try:
+            raw = int(self.mc_time_index)
+        except (TypeError, ValueError):
+            return n_recorded - 1
+        if raw in self.history.recorded_steps:
+            try:
+                resolved = self.history.get_step_index(raw)
+            except ValueError:
+                resolved = raw
+        else:
+            resolved = raw
+        if resolved < 0 or resolved >= n_recorded:
+            return n_recorded - 1
+        return resolved
+
+    def _resolve_spatial_dim(self, d: int) -> int:
+        if isinstance(self.spatial_iteration_dim, str) and self.spatial_iteration_dim.startswith(
+            "dim_"
+        ):
+            try:
+                dim_idx = int(self.spatial_iteration_dim.split("_")[1])
+            except (TypeError, ValueError):
+                dim_idx = 0
+        else:
+            dim_idx = 0
+        if dim_idx >= d:
+            return max(0, d - 1)
+        if dim_idx < 0:
+            return 0
+        return dim_idx
+
+    def _resolve_euclidean_dim(self, d: int) -> int:
+        dim = int(self.euclidean_time_dim)
+        if dim >= d:
+            return max(0, d - 1)
+        if dim < 0:
+            return 0
+        return dim
+
+    def _get_slice_mask(
+        self, positions_all: np.ndarray, slice_index: int, dim_idx: int
+    ) -> tuple[np.ndarray, tuple[float, float], int]:
+        n = positions_all.shape[0]
+        bins = max(1, int(self.euclidean_time_bins))
+        idx = int(np.clip(slice_index, 0, bins - 1))
+        extent = float(self.bounds_extent)
+        edges = np.linspace(-extent, extent, bins + 1)
+        low = float(edges[idx])
+        high = float(edges[idx + 1])
+        if positions_all.shape[1] == 0:
+            return np.zeros(n, dtype=bool), (low, high), dim_idx
+        values = positions_all[:, dim_idx]
+        mask = (values >= low) & (values < high)
+        return mask, (low, high), dim_idx
+
+    def _frame_title(
+        self,
+        mc_frame: int,
+        slice_index: int | None = None,
+        slice_bounds: tuple[float, float] | None = None,
+        slice_dim: int | None = None,
+        slice_mode: str | None = None,
+    ) -> str:
         if self.history is None:
             return "QFT Swarm Convergence"
-        step = self.history.recorded_steps[frame]
-        return f"QFT Swarm Convergence (frame {frame}, step {step})"
+        if not self.history.recorded_steps:
+            return "QFT Swarm Convergence"
+        safe_idx = int(np.clip(mc_frame, 0, len(self.history.recorded_steps) - 1))
+        step = self.history.recorded_steps[safe_idx]
+        if slice_index is None:
+            return f"QFT Swarm Convergence (frame {mc_frame}, step {step})"
+        label = None
+        if slice_dim is not None:
+            label = self._axis_label(f"dim_{slice_dim}")
+        if slice_bounds is None:
+            return (
+                f"QFT Swarm Convergence (frame {mc_frame}, step {step}, slice {slice_index})"
+            )
+        low, high = slice_bounds
+        label_text = f"{label} in [{low:.2f}, {high:.2f})" if label else (
+            f"time in [{low:.2f}, {high:.2f})"
+        )
+        mode = f", {slice_mode}" if slice_mode else ""
+        return (
+            f"QFT Swarm Convergence (frame {mc_frame}, step {step}, slice {slice_index}{mode}, "
+            f"{label_text})"
+        )
 
     def _get_delaunay_edges(self, frame: int) -> np.ndarray | None:
         if self.history is None or self._neighbor_edges is None:
@@ -232,6 +538,190 @@ class SwarmConvergence3D(param.Parameterized):
                 b = int(hex_value[4:6], 16)
                 return f"rgba({r}, {g}, {b}, {alpha})"
         return color
+
+    def _extract_dimension(
+        self, dim_spec: str, frame: int, positions_all: np.ndarray, alive: np.ndarray
+    ) -> np.ndarray:
+        """Extract coordinate values based on dimension specification.
+
+        Args:
+            dim_spec: Dimension specifier ("dim_0", "dim_1", ..., "mc_time")
+            frame: Current frame index
+            positions_all: All walker positions [N, d]
+            alive: Alive mask [N]
+
+        Returns:
+            Coordinate values for alive walkers [N_alive]
+        """
+        if dim_spec == "mc_time":
+            # All walkers get same MC time value (frame index)
+            n_alive = alive.sum()
+            return np.full(n_alive, frame, dtype=float)
+        if dim_spec == "euclidean_time":
+            dim_idx = self._resolve_euclidean_dim(positions_all.shape[1])
+            if dim_idx >= positions_all.shape[1]:
+                return np.zeros(alive.sum())
+            return positions_all[alive, dim_idx]
+
+        elif dim_spec.startswith("dim_"):
+            # Extract spatial dimension
+            dim_idx = int(dim_spec.split("_")[1])
+            if dim_idx >= positions_all.shape[1]:
+                # Dimension not available, return zeros
+                return np.zeros(alive.sum())
+            return positions_all[alive, dim_idx]
+
+        else:
+            # Invalid spec, return zeros
+            return np.zeros(alive.sum())
+
+    def _get_color_values(self, frame: int, positions_all: np.ndarray, alive: np.ndarray):
+        """Extract color values based on color_metric selection.
+
+        Returns:
+            (colors, showscale, colorbar) tuple
+        """
+        metric = self.color_metric
+
+        # Handle dimension-based coloring
+        if metric.startswith("dim_"):
+            dim_idx = int(metric.split("_")[1])
+            if dim_idx < positions_all.shape[1]:
+                colors = positions_all[alive, dim_idx]
+            else:
+                colors = np.zeros(alive.sum())
+            return colors, True, {"title": self._axis_label(metric)}
+
+        if metric == "euclidean_time":
+            dim_idx = self._resolve_euclidean_dim(positions_all.shape[1])
+            if dim_idx < positions_all.shape[1]:
+                colors = positions_all[alive, dim_idx]
+            else:
+                colors = np.zeros(alive.sum())
+            return colors, True, {"title": "Euclidean Time"}
+
+        elif metric == "mc_time":
+            # Color by MC time (constant for this frame)
+            colors = np.full(alive.sum(), frame, dtype=float)
+            return colors, True, {"title": "MC Time (frame)"}
+
+        # Existing metrics
+        elif metric == "fitness":
+            if frame == 0 or self._fitness is None:
+                colors = "#1f77b4"
+                return colors, False, None
+            idx = min(frame - 1, len(self._fitness) - 1)
+            colors = self._fitness[idx][alive]
+            return colors, True, {"title": "Fitness"}
+
+        elif metric == "reward":
+            if frame == 0 or self._rewards is None:
+                colors = "#1f77b4"
+                return colors, False, None
+            idx = min(frame - 1, len(self._rewards) - 1)
+            colors = self._rewards[idx][alive]
+            return colors, True, {"title": "Reward"}
+
+        elif metric == "radius":
+            # Compute radius from original positions (first 3 dims)
+            positions_filtered = positions_all[alive][:, : min(3, positions_all.shape[1])]
+            colors = np.linalg.norm(positions_filtered, axis=1)
+            return colors, True, {"title": "Radius"}
+
+        else:  # "constant"
+            return "#1f77b4", False, None
+
+    def _get_axis_ranges(self, frame: int):
+        """Determine axis ranges based on dimension mappings."""
+
+        def get_range(dim_spec: str):
+            if dim_spec == "mc_time":
+                return [0, len(self._x) - 1]
+            if dim_spec == "euclidean_time":
+                extent = self.bounds_extent
+                return [-extent, extent]
+            elif dim_spec.startswith("dim_"):
+                # Use bounds extent for spatial dimensions
+                extent = self.bounds_extent
+                return [-extent, extent]
+            else:
+                return [-10, 10]  # Default
+
+        return {
+            "xaxis": {"range": get_range(self.x_axis_dim)},
+            "yaxis": {"range": get_range(self.y_axis_dim)},
+            "zaxis": {"range": get_range(self.z_axis_dim)},
+        }
+
+    def _axis_label(self, dim_spec: str) -> str:
+        """Generate axis label from dimension specification."""
+        if dim_spec == "mc_time":
+            return "Monte Carlo Time (frame)"
+        if dim_spec == "euclidean_time":
+            dim_idx = 0
+            if self.history is not None:
+                dim_idx = self._resolve_euclidean_dim(self.history.d)
+            return f"Euclidean Time (dim_{dim_idx})"
+        elif dim_spec.startswith("dim_"):
+            dim_idx = int(dim_spec.split("_")[1])
+            labels = ["X", "Y", "Z", "T"]
+            if dim_idx < len(labels):
+                return f"Dimension {dim_idx} ({labels[dim_idx]})"
+            return f"Dimension {dim_idx}"
+        return dim_spec
+
+    def _build_delaunay_trace_mapped(
+        self,
+        frame: int,
+        positions_all: np.ndarray,
+        alive: np.ndarray,
+        positions_mapped: np.ndarray,
+    ):
+        """Build Delaunay edges using mapped 3D coordinates."""
+        import plotly.graph_objects as go
+
+        # Get edges from history
+        edges = self._get_delaunay_edges(frame)
+        if edges is None or positions_mapped.size == 0:
+            return None
+
+        # Filter edges to alive walkers only
+        alive_indices = np.where(alive)[0]
+        alive_set = set(alive_indices)
+
+        valid_edges = []
+        for i, j in edges:
+            if i in alive_set and j in alive_set and i != j:
+                valid_edges.append((i, j))
+
+        if not valid_edges:
+            return None
+
+        # Build edge coordinates using mapped positions
+        x_edges, y_edges, z_edges = [], [], []
+        for i, j in valid_edges:
+            i_local = np.where(alive_indices == i)[0][0]
+            j_local = np.where(alive_indices == j)[0][0]
+
+            x_edges.extend([positions_mapped[i_local, 0], positions_mapped[j_local, 0], None])
+            y_edges.extend([positions_mapped[i_local, 1], positions_mapped[j_local, 1], None])
+            z_edges.extend([positions_mapped[i_local, 2], positions_mapped[j_local, 2], None])
+
+        line_color = self._rgba_from_color(self.line_color, float(self.line_alpha))
+        return go.Scatter3d(
+            x=x_edges,
+            y=y_edges,
+            z=z_edges,
+            mode="lines",
+            line={
+                "color": line_color,
+                "width": float(self.line_width),
+                "dash": self.line_style,
+            },
+            hoverinfo="skip",
+            name="Delaunay edges",
+            showlegend=False,
+        )
 
     def _build_delaunay_trace(
         self, frame: int, positions: np.ndarray, alive_mask: np.ndarray
@@ -290,41 +780,62 @@ class SwarmConvergence3D(param.Parameterized):
             )
             return fig
 
-        positions_all = self._x[frame]
-        if positions_all.shape[1] < 3:
-            msg = "Need at least 3 dimensions for 3D convergence visualization."
-            raise ValueError(msg)
+        mc_frame = self._resolve_mc_frame(frame)
+        positions_all = self._x[mc_frame]
+        alive = self._get_alive_mask(mc_frame)
+        slice_index = None
+        slice_bounds = None
+        slice_dim = None
+        slice_mode = None
+        if self.time_iteration in {"euclidean", "spatial"}:
+            slice_index = int(np.clip(frame, 0, max(0, int(self.euclidean_time_bins) - 1)))
+            if self.time_iteration == "euclidean":
+                slice_dim = self._resolve_euclidean_dim(positions_all.shape[1])
+                slice_mode = "euclidean"
+            else:
+                slice_dim = self._resolve_spatial_dim(positions_all.shape[1])
+                slice_mode = "spatial"
+            slice_mask, slice_bounds, slice_dim = self._get_slice_mask(
+                positions_all, slice_index, slice_dim
+            )
+            alive = alive & slice_mask
+        n_alive = alive.sum()
 
-        alive = self._get_alive_mask(frame)
-        positions = positions_all[alive][:, :3]
-
-        if positions.size == 0:
+        if n_alive == 0:
             fig = go.Figure()
-            fig.update_layout(title=self._frame_title(frame), height=720)
+            fig.update_layout(
+                title=self._frame_title(
+                    mc_frame,
+                    slice_index=slice_index,
+                    slice_bounds=slice_bounds,
+                    slice_dim=slice_dim,
+                    slice_mode=slice_mode,
+                ),
+                height=720,
+            )
             return fig
 
-        colors = "#1f77b4"
-        colorbar = None
-        showscale = False
+        # Extract coordinates based on dimension mapping
+        x_coords = self._extract_dimension(
+            self.x_axis_dim, mc_frame, positions_all, alive
+        )
+        y_coords = self._extract_dimension(
+            self.y_axis_dim, mc_frame, positions_all, alive
+        )
+        z_coords = self._extract_dimension(
+            self.z_axis_dim, mc_frame, positions_all, alive
+        )
 
-        if self.color_metric != "constant" and frame > 0:
-            if self.color_metric == "fitness":
-                colors = self._fitness[frame - 1][alive]
-                colorbar = {"title": "fitness"}
-                showscale = True
-            elif self.color_metric == "reward":
-                colors = self._rewards[frame - 1][alive]
-                colorbar = {"title": "reward"}
-                showscale = True
-            elif self.color_metric == "radius":
-                colors = np.linalg.norm(positions, axis=1)
-                colorbar = {"title": "radius"}
-                showscale = True
+        # Extract color values
+        colors, showscale, colorbar = self._get_color_values(
+            mc_frame, positions_all, alive
+        )
 
+        # Create scatter trace
         scatter = go.Scatter3d(
-            x=positions[:, 0],
-            y=positions[:, 1],
-            z=positions[:, 2],
+            x=x_coords,
+            y=y_coords,
+            z=z_coords,
             mode="markers",
             marker={
                 "size": self.point_size,
@@ -334,31 +845,52 @@ class SwarmConvergence3D(param.Parameterized):
                 "showscale": showscale,
                 "colorbar": colorbar,
             },
+            hovertemplate=(
+                f"X ({self.x_axis_dim}): %{{x:.3f}}<br>"
+                f"Y ({self.y_axis_dim}): %{{y:.3f}}<br>"
+                f"Z ({self.z_axis_dim}): %{{z:.3f}}<br>"
+                "<extra></extra>"
+            ),
         )
 
+        # Add Delaunay edges if enabled
         traces = []
         if self.show_delaunay:
-            line_trace = self._build_delaunay_trace(frame, positions_all[:, :3], alive)
+            # Build mapped positions for edge rendering
+            positions_mapped = np.column_stack([x_coords, y_coords, z_coords])
+            line_trace = self._build_delaunay_trace_mapped(
+                mc_frame, positions_all, alive, positions_mapped
+            )
             if line_trace is not None:
                 traces.append(line_trace)
         traces.append(scatter)
 
+        # Create figure
         fig = go.Figure(data=traces)
+
+        # Update layout with dimension-aware axis labels
         fig.update_layout(
-            title=self._frame_title(frame),
+            title=self._frame_title(
+                mc_frame,
+                slice_index=slice_index,
+                slice_bounds=slice_bounds,
+                slice_dim=slice_dim,
+                slice_mode=slice_mode,
+            ),
             height=720,
             margin={"l": 0, "r": 0, "t": 40, "b": 0},
+            scene={
+                "xaxis": {"title": self._axis_label(self.x_axis_dim)},
+                "yaxis": {"title": self._axis_label(self.y_axis_dim)},
+                "zaxis": {"title": self._axis_label(self.z_axis_dim)},
+                "aspectmode": "cube" if self.fix_axes else "auto",
+            },
         )
 
+        # Set axis ranges
         if self.fix_axes:
-            extent = float(self.bounds_extent)
-            fig.update_layout(
-                scene={
-                    "xaxis": {"range": [-extent, extent]},
-                    "yaxis": {"range": [-extent, extent]},
-                    "zaxis": {"range": [-extent, extent]},
-                }
-            )
+            axis_ranges = self._get_axis_ranges(frame)
+            fig.update_layout(scene=axis_ranges)
 
         return fig
 
@@ -367,12 +899,31 @@ class SwarmConvergence3D(param.Parameterized):
 
     def panel(self) -> pn.Column:
         """Return the Panel layout for the 3D convergence viewer."""
-        controls = pn.Param(
+        # Row 1: Dimension mapping and point appearance
+        controls_row1 = pn.Param(
             self,
             parameters=[
+                "x_axis_dim",
+                "y_axis_dim",
+                "z_axis_dim",
                 "point_size",
                 "point_alpha",
                 "color_metric",
+            ],
+            sizing_mode="stretch_width",
+            show_name=False,
+            widgets={
+                "x_axis_dim": {"type": pn.widgets.Select, "name": "X Axis"},
+                "y_axis_dim": {"type": pn.widgets.Select, "name": "Y Axis"},
+                "z_axis_dim": {"type": pn.widgets.Select, "name": "Z Axis"},
+                "color_metric": {"type": pn.widgets.Select, "name": "Color By"},
+            },
+        )
+
+        # Row 2: Axis settings and Delaunay graph
+        controls_row2 = pn.Param(
+            self,
+            parameters=[
                 "fix_axes",
                 "show_delaunay",
                 "line_color",
@@ -383,11 +934,104 @@ class SwarmConvergence3D(param.Parameterized):
             sizing_mode="stretch_width",
             show_name=False,
         )
+
+        dimension_info = pn.pane.Alert(
+            """
+            **Dimension Mapping:** Map spatial dimensions (dim_0, dim_1, dim_2, dim_3), Euclidean time, or Monte Carlo time to plot axes.
+            - **Spatial dims**: Position coordinates from simulation
+            - **MC time**: Current frame index (useful for temporal evolution visualization)
+            - **Player mode**: Choose Monte Carlo, Euclidean, or spatial slices
+            """,
+            alert_type="info",
+            sizing_mode="stretch_width",
+        )
+        time_toggle = pn.widgets.RadioButtonGroup(
+            name="Iterate by",
+            options={
+                "Monte Carlo": "monte_carlo",
+                "Euclidean": "euclidean",
+                "Spatial": "spatial",
+            },
+            value=self.time_iteration,
+            sizing_mode="stretch_width",
+        )
+        time_toggle.param.watch(
+            lambda e: setattr(self, "time_iteration", e.new), "value"
+        )
+        self.param.watch(
+            lambda e, widget_ref=time_toggle: (
+                None
+                if widget_ref.value == e.new
+                else setattr(widget_ref, "value", e.new)
+            ),
+            "time_iteration",
+        )
+        mc_slice_controls = pn.Param(
+            self,
+            parameters=["mc_time_index"],
+            sizing_mode="stretch_width",
+            show_name=False,
+            widgets={
+                "mc_time_index": {
+                    "type": pn.widgets.IntInput,
+                    "name": "MC slice (step or idx; blank=last)",
+                }
+            },
+        )
+        time_bin_controls = pn.Param(
+            self,
+            parameters=["euclidean_time_dim", "euclidean_time_bins"],
+            sizing_mode="stretch_width",
+            show_name=False,
+            widgets={
+                "euclidean_time_dim": {
+                    "type": pn.widgets.IntInput,
+                    "name": "Euclidean time dim (0-indexed)",
+                },
+                "euclidean_time_bins": {
+                    "type": pn.widgets.IntSlider,
+                    "name": "Time bins (Euclidean/Spatial)",
+                    "start": 5,
+                    "end": 500,
+                    "step": 1,
+                }
+            },
+        )
+        spatial_slice_controls = pn.Param(
+            self,
+            parameters=["spatial_iteration_dim"],
+            sizing_mode="stretch_width",
+            show_name=False,
+            widgets={
+                "spatial_iteration_dim": {
+                    "type": pn.widgets.Select,
+                    "name": "Slice dimension",
+                }
+            },
+        )
+        self._mc_slice_controls = mc_slice_controls
+        self._spatial_slice_controls = spatial_slice_controls
+        self._time_bin_controls = time_bin_controls
+        self._time_distribution_pane = pn.pane.HoloViews(
+            self._build_time_distribution(),
+            sizing_mode="stretch_width",
+            height=180,
+        )
+        self._sync_mc_slice_visibility()
+        self._sync_spatial_slice_visibility()
+        self._sync_time_bin_visibility()
+
         return pn.Column(
             pn.pane.Markdown("## 3D Swarm Convergence (Plotly)"),
+            dimension_info,
+            time_toggle,
+            mc_slice_controls,
+            time_bin_controls,
+            self._time_distribution_pane,
+            spatial_slice_controls,
             self.time_player,
             pn.Spacer(height=10),
-            controls,
+            pn.Row(controls_row1, controls_row2, sizing_mode="stretch_width"),
             pn.layout.Divider(),
             self.plot_pane,
             self.status_pane,
@@ -576,6 +1220,47 @@ class ChannelSettings(param.Parameterized):
     knn_k = param.Integer(default=4, bounds=(1, 20))
     knn_sample = param.Integer(default=512, bounds=(1, None), allow_None=True)
     use_connected = param.Boolean(default=True)
+
+    # User-friendly time dimension selection
+    time_dimension = param.ObjectSelector(
+        default="t",
+        objects=["t", "x", "y", "z", "monte_carlo"],
+        doc=(
+            "Time axis for correlator analysis:\n"
+            "  - 't': Euclidean time dimension (default, spatial dim 3)\n"
+            "  - 'x': X spatial dimension (dim 0)\n"
+            "  - 'y': Y spatial dimension (dim 1)\n"
+            "  - 'z': Z spatial dimension (dim 2)\n"
+            "  - 'monte_carlo': Monte Carlo timesteps (ignores spatial dims)"
+        ),
+    )
+    mc_time_index = param.Integer(
+        default=None,
+        bounds=(1, None),
+        allow_None=True,
+        doc=(
+            "Recorded Monte Carlo index or step to use as the 4D slice for Euclidean "
+            "analysis. None uses the last recorded slice."
+        ),
+    )
+
+    # Time axis selection (for 4D Euclidean time analysis)
+    time_axis = param.ObjectSelector(
+        default="mc",
+        objects=("mc", "euclidean"),
+        doc="Time axis: 'mc' (Monte Carlo timesteps) or 'euclidean' (spatial dimension as time)",
+    )
+    euclidean_time_dim = param.Integer(
+        default=3,
+        bounds=(0, 10),
+        doc="Spatial dimension index to use as Euclidean time (0-indexed, default 3 = 4th dimension)",
+    )
+    euclidean_time_bins = param.Integer(
+        default=50,
+        bounds=(10, 500),
+        doc="Number of time bins for Euclidean time analysis",
+    )
+
     channel_list = param.String(default="scalar,pseudoscalar,vector,nucleon,glueball")
     window_widths_spec = param.String(default="5-50")
     fit_mode = param.ObjectSelector(default="aic", objects=("aic", "linear", "linear_abs"))
@@ -616,6 +1301,47 @@ class ElectroweakSettings(param.Parameterized):
         objects=("uniform", "knn", "voronoi"),
     )
     knn_k = param.Integer(default=1, bounds=(1, 20))
+
+    # User-friendly time dimension selection
+    time_dimension = param.ObjectSelector(
+        default="t",
+        objects=["t", "x", "y", "z", "monte_carlo"],
+        doc=(
+            "Time axis for correlator analysis:\n"
+            "  - 't': Euclidean time dimension (default, spatial dim 3)\n"
+            "  - 'x': X spatial dimension (dim 0)\n"
+            "  - 'y': Y spatial dimension (dim 1)\n"
+            "  - 'z': Z spatial dimension (dim 2)\n"
+            "  - 'monte_carlo': Monte Carlo timesteps (ignores spatial dims)"
+        ),
+    )
+    mc_time_index = param.Integer(
+        default=None,
+        bounds=(1, None),
+        allow_None=True,
+        doc=(
+            "Recorded Monte Carlo index or step to use as the 4D slice for Euclidean "
+            "analysis. None uses the last recorded slice."
+        ),
+    )
+
+    # Time axis selection (for 4D Euclidean time analysis)
+    time_axis = param.ObjectSelector(
+        default="mc",
+        objects=("mc", "euclidean"),
+        doc="Time axis: 'mc' (Monte Carlo timesteps) or 'euclidean' (spatial dimension as time)",
+    )
+    euclidean_time_dim = param.Integer(
+        default=3,
+        bounds=(0, 10),
+        doc="Spatial dimension index to use as Euclidean time (0-indexed, default 3 = 4th dimension)",
+    )
+    euclidean_time_bins = param.Integer(
+        default=50,
+        bounds=(10, 500),
+        doc="Number of time bins for Euclidean time analysis",
+    )
+
     channel_list = param.String(default=",".join(ELECTROWEAK_CHANNELS))
     window_widths_spec = param.String(default="5-50")
     fit_mode = param.ObjectSelector(default="aic", objects=("aic", "linear", "linear_abs"))
@@ -646,11 +1372,55 @@ def _parse_window_widths(spec: str) -> list[int]:
         return list(range(5, 51))
 
 
+def _map_time_dimension(time_dimension: str, history_d: int | None = None) -> tuple[str, int]:
+    """Map user-friendly time dimension name to backend parameters.
+
+    Args:
+        time_dimension: User selection ("t", "x", "y", "z", "monte_carlo")
+        history_d: Optional spatial dimensionality for validation/fallback.
+
+    Returns:
+        (time_axis, euclidean_time_dim) tuple:
+        - time_axis: "mc" or "euclidean"
+        - euclidean_time_dim: 0-3 (dimension index, clamped for "t" if needed)
+    """
+    mapping = {
+        "monte_carlo": ("mc", 3),      # MC time, dim doesn't matter
+        "x": ("euclidean", 0),         # X spatial dimension
+        "y": ("euclidean", 1),         # Y spatial dimension
+        "z": ("euclidean", 2),         # Z spatial dimension
+        "t": ("euclidean", 3),         # Euclidean time (default)
+    }
+
+    if time_dimension not in mapping:
+        msg = f"Invalid time_dimension: {time_dimension}. Must be one of {list(mapping.keys())}"
+        raise ValueError(msg)
+
+    time_axis, euclidean_time_dim = mapping[time_dimension]
+    if history_d is not None and time_axis == "euclidean":
+        if euclidean_time_dim >= history_d:
+            if time_dimension == "t":
+                euclidean_time_dim = max(0, history_d - 1)
+            else:
+                msg = (
+                    f"Cannot use dimension {euclidean_time_dim} as Euclidean time "
+                    f"(only {history_d} dimensions available)."
+                )
+                raise ValueError(msg)
+
+    return time_axis, euclidean_time_dim
+
+
 def _compute_channels_vectorized(
     history: RunHistory,
     settings: ChannelSettings,
 ) -> dict[str, ChannelCorrelatorResult]:
     """Compute channels using vectorized correlator_channels."""
+    # Map user-friendly dimension selection to backend parameters
+    time_axis, euclidean_time_dim = _map_time_dimension(
+        settings.time_dimension, history_d=history.d
+    )
+
     base_config = ChannelConfig(
         warmup_fraction=settings.warmup_fraction,
         max_lag=settings.max_lag,
@@ -661,6 +1431,10 @@ def _compute_channels_vectorized(
         knn_k=settings.knn_k,
         knn_sample=settings.knn_sample,
         use_connected=settings.use_connected,
+        mc_time_index=settings.mc_time_index,
+        time_axis=time_axis,
+        euclidean_time_dim=euclidean_time_dim,
+        euclidean_time_bins=settings.euclidean_time_bins,
         window_widths=_parse_window_widths(settings.window_widths_spec),
         fit_mode=settings.fit_mode,
         fit_start=settings.fit_start,
@@ -693,6 +1467,11 @@ def _compute_electroweak_channels(
     settings: ElectroweakSettings,
 ) -> dict[str, ChannelCorrelatorResult]:
     """Compute electroweak channels using electroweak_channels module."""
+    # Map user-friendly dimension selection to backend parameters
+    time_axis, euclidean_time_dim = _map_time_dimension(
+        settings.time_dimension, history_d=history.d
+    )
+
     config = ElectroweakChannelConfig(
         warmup_fraction=settings.warmup_fraction,
         max_lag=settings.max_lag,
@@ -700,6 +1479,10 @@ def _compute_electroweak_channels(
         use_connected=settings.use_connected,
         neighbor_method=settings.neighbor_method,
         knn_k=settings.knn_k,
+        mc_time_index=settings.mc_time_index,
+        time_axis=time_axis,
+        euclidean_time_dim=euclidean_time_dim,
+        euclidean_time_bins=settings.euclidean_time_bins,
         window_widths=_parse_window_widths(settings.window_widths_spec),
         fit_mode=settings.fit_mode,
         fit_start=settings.fit_start,
@@ -1785,15 +2568,18 @@ def create_app() -> pn.template.FastListTemplate:
 
         _debug("building config + visualizer")
         gas_config = GasConfigPanel.create_qft_config(dims=3, bounds_extent=10.0)
+        gas_config.hide_viscous_kernel_widgets = True
         # Override with the best stable calibration settings found in QFT tuning.
         # This matches weak_potential_fit1_aniso_stable2 (200 walkers, 300 steps).
         gas_config.n_steps = 300
         gas_config.gas_params["N"] = 200
         gas_config.gas_params["dtype"] = "float32"
         gas_config.gas_params["pbc"] = False
+        gas_config.neighbor_graph_method = "voronoi"
+        gas_config.neighbor_graph_record = True
         gas_config.init_offset = 0.0
-        gas_config.init_spread = 1.0
-        gas_config.init_velocity_scale = 1.0
+        gas_config.init_spread = 10.0
+        gas_config.init_velocity_scale = 5.0
 
         # Quadratic well with calibrated curvature.
         benchmark, background, mode_points = prepare_benchmark_for_explorer(
@@ -1812,19 +2598,23 @@ def create_app() -> pn.template.FastListTemplate:
         gas_config.kinetic_op.beta = 1.0
         gas_config.kinetic_op.delta_t = 0.05
         gas_config.kinetic_op.epsilon_F = 1.0
-        gas_config.kinetic_op.use_fitness_force = True
-        gas_config.kinetic_op.use_potential_force = True
+        gas_config.kinetic_op.use_fitness_force = False
+        gas_config.kinetic_op.use_potential_force = False
         gas_config.kinetic_op.use_anisotropic_diffusion = True
-        gas_config.kinetic_op.diagonal_diffusion = True
-        gas_config.kinetic_op.diffusion_mode = "grad_proxy"
+        gas_config.kinetic_op.diagonal_diffusion = False
+        gas_config.kinetic_op.diffusion_mode = "voronoi_proxy"
         gas_config.kinetic_op.diffusion_grad_scale = 30.0
         gas_config.kinetic_op.epsilon_Sigma = 0.5
         gas_config.kinetic_op.nu = 1.10
+        gas_config.kinetic_op.beta_curl = 1.0
         gas_config.kinetic_op.use_viscous_coupling = True
         gas_config.kinetic_op.viscous_length_scale = 0.251372
         gas_config.kinetic_op.viscous_neighbor_mode = "all"
-        gas_config.kinetic_op.viscous_neighbor_threshold = 0.75
-        gas_config.kinetic_op.viscous_neighbor_penalty = 1.1
+        gas_config.kinetic_op.viscous_neighbor_weighting = "uniform"
+        gas_config.kinetic_op.viscous_neighbor_threshold = None
+        gas_config.kinetic_op.viscous_neighbor_penalty = 0.0
+        gas_config.kinetic_op.viscous_degree_cap = None
+        gas_config.kinetic_op.use_velocity_squashing = True
 
         # Companion selection (diversity + cloning).
         gas_config.companion_selection.method = "uniform"
@@ -1840,7 +2630,7 @@ def create_app() -> pn.template.FastListTemplate:
         gas_config.cloning.p_max = 1.0
         gas_config.cloning.epsilon_clone = 0.01
         gas_config.cloning.sigma_x = 0.1
-        gas_config.cloning.alpha_restitution = 0.5
+        gas_config.cloning.alpha_restitution = 1.0
 
         # Fitness operator.
         gas_config.fitness_op.alpha = 1.0
@@ -2063,6 +2853,9 @@ def create_app() -> pn.template.FastListTemplate:
                 "h_eff",
                 "mass",
                 "ell0",
+                "time_dimension",
+                "mc_time_index",
+                "euclidean_time_bins",
                 "neighbor_method",
                 "knn_k",
                 "knn_sample",
@@ -2080,6 +2873,18 @@ def create_app() -> pn.template.FastListTemplate:
                 "min_fit_points",
             ],
             show_name=False,
+            widgets={
+                "time_dimension": {
+                    "type": pn.widgets.Select,
+                    "name": "Time Axis",
+                },
+                "mc_time_index": {
+                    "name": "MC time slice (step or idx; blank=last)",
+                },
+                "euclidean_time_bins": {
+                    "name": "Time Bins (Euclidean only)",
+                },
+            },
         )
 
         # Plot containers for channel tab
@@ -2218,6 +3023,9 @@ def create_app() -> pn.template.FastListTemplate:
                 "warmup_fraction",
                 "max_lag",
                 "h_eff",
+                "time_dimension",
+                "mc_time_index",
+                "euclidean_time_bins",
                 "use_connected",
                 "neighbor_method",
                 "knn_k",
@@ -2233,6 +3041,18 @@ def create_app() -> pn.template.FastListTemplate:
                 "lambda_alg",
             ],
             show_name=False,
+            widgets={
+                "time_dimension": {
+                    "type": pn.widgets.Select,
+                    "name": "Time Axis",
+                },
+                "mc_time_index": {
+                    "name": "MC time slice (step or idx; blank=last)",
+                },
+                "euclidean_time_bins": {
+                    "name": "Time Bins (Euclidean only)",
+                },
+            },
         )
 
         electroweak_plots_correlator = pn.Column(sizing_mode="stretch_width")
@@ -3339,8 +4159,26 @@ def create_app() -> pn.template.FastListTemplate:
             )
 
             # New Channels tab (vectorized correlator_channels)
+            # Informational alert for time dimension selection
+            time_dimension_info = pn.pane.Alert(
+                """
+**Time Axis Selection:**
+- **t (default)**: Use Euclidean time dimension (4th spatial dimension)
+- **x, y, z**: Use spatial dimensions as time (correlators along that axis)
+- **monte_carlo**: Use Monte Carlo timesteps (standard time evolution)
+
+When using spatial dimensions (t, x, y, z), the analysis ignores the Monte Carlo
+dimension and bins walkers by their spatial coordinate.
+Set **MC time slice** in the settings to choose which recorded Monte Carlo
+configuration to analyze (recorded step or index; blank = last recorded slice).
+                """,
+                alert_type="info",
+                sizing_mode="stretch_width",
+            )
+
             channels_tab = pn.Column(
                 channels_status,
+                time_dimension_info,
                 pn.Row(channels_run_button, sizing_mode="stretch_width"),
                 pn.Accordion(
                     ("Channel Settings", channel_settings_panel),
@@ -3393,8 +4231,26 @@ def create_app() -> pn.template.FastListTemplate:
                 sizing_mode="stretch_both",
             )
 
+            # Informational alert for time dimension selection
+            electroweak_time_dimension_info = pn.pane.Alert(
+                """
+**Time Axis Selection:**
+- **t (default)**: Use Euclidean time dimension (4th spatial dimension)
+- **x, y, z**: Use spatial dimensions as time (correlators along that axis)
+- **monte_carlo**: Use Monte Carlo timesteps (standard time evolution)
+
+When using spatial dimensions (t, x, y, z), the analysis ignores the Monte Carlo
+dimension and bins walkers by their spatial coordinate.
+Set **MC time slice** in the settings to choose which recorded Monte Carlo
+configuration to analyze (recorded step or index; blank = last recorded slice).
+                """,
+                alert_type="info",
+                sizing_mode="stretch_width",
+            )
+
             electroweak_tab = pn.Column(
                 electroweak_status,
+                electroweak_time_dimension_info,
                 pn.Row(electroweak_run_button, sizing_mode="stretch_width"),
                 pn.Accordion(
                     ("Electroweak Settings", electroweak_settings_panel),

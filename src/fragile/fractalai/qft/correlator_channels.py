@@ -61,6 +61,15 @@ class ChannelConfig:
     warmup_fraction: float = 0.1
     max_lag: int = 80
 
+    # Monte Carlo slice selection (for Euclidean time analysis)
+    mc_time_index: int | None = None  # Recorded index; None => last recorded slice
+
+    # Time axis selection (Monte Carlo vs Euclidean)
+    time_axis: str = "mc"  # "mc" (Monte Carlo timesteps) or "euclidean" (spatial dimension as time)
+    euclidean_time_dim: int = 3  # Which spatial dimension to use as Euclidean time (0-indexed)
+    euclidean_time_bins: int = 50  # Number of time bins for Euclidean time analysis
+    euclidean_time_range: tuple[float, float] | None = None  # (t_min, t_max) or None for auto
+
     # Color state parameters
     h_eff: float = 1.0
     mass: float = 1.0
@@ -105,6 +114,31 @@ class ChannelCorrelatorResult:
     window_aic: Tensor | None = None  # [num_widths, max_positions]
     window_widths: list[int] | None = None  # List of window widths used
     window_r2: Tensor | None = None  # [num_widths, max_positions]
+
+
+def _resolve_mc_time_index(history, mc_time_index: int | None) -> int:
+    """Resolve a Monte Carlo slice index from either recorded index or step."""
+    if history.n_recorded < 2:
+        raise ValueError("Need at least 2 recorded timesteps for Euclidean analysis.")
+    if mc_time_index is None:
+        resolved = history.n_recorded - 1
+    else:
+        try:
+            raw = int(mc_time_index)
+        except (TypeError, ValueError) as exc:
+            raise ValueError(f"Invalid mc_time_index: {mc_time_index}") from exc
+        if raw in history.recorded_steps:
+            resolved = history.get_step_index(raw)
+        else:
+            resolved = raw
+    if resolved < 1 or resolved >= history.n_recorded:
+        msg = (
+            f"mc_time_index {resolved} out of bounds "
+            f"(valid recorded index 1..{history.n_recorded - 1} "
+            "or a recorded step value)."
+        )
+        raise ValueError(msg)
+    return resolved
 
 
 # =============================================================================
@@ -441,6 +475,92 @@ def compute_effective_mass_torch(
     eff[valid] = torch.log(c0[valid] / c1[valid]) / dt
 
     return eff
+
+
+def bin_by_euclidean_time(
+    positions: Tensor,
+    operators: Tensor,
+    alive: Tensor,
+    time_dim: int = 3,
+    n_bins: int = 50,
+    time_range: tuple[float, float] | None = None,
+) -> tuple[Tensor, Tensor]:
+    """Bin walkers by Euclidean time coordinate and compute mean operator per bin.
+    
+    In 4D simulations (3 spatial + 1 Euclidean time), this function treats one
+    spatial dimension as a time coordinate and computes operator averages within
+    time bins. This enables lattice QFT analysis where correlators are computed
+    over spatial separation in the time dimension rather than Monte Carlo timesteps.
+    
+    Args:
+        positions: Walker positions over MC time [T, N, d]
+        operators: Operator values to average [T, N]
+        alive: Alive mask [T, N]
+        time_dim: Which spatial dimension is Euclidean time (0-indexed, default 3)
+        n_bins: Number of time bins
+        time_range: (t_min, t_max) or None for auto from data
+        
+    Returns:
+        time_coords: Bin centers [n_bins]
+        operator_series: Mean operator vs Euclidean time [n_bins]
+        
+    Example:
+        >>> # 4D simulation with d=4, treat 4th dim as time
+        >>> positions = history.x_before_clone  # [T, N, 4]
+        >>> operators = compute_scalar_operators(...)  # [T, N]
+        >>> alive = history.alive_mask  # [T, N]
+        >>> time_coords, series = bin_by_euclidean_time(positions, operators, alive)
+        >>> correlator = compute_correlator_fft(series, max_lag=40)
+    """
+    # Extract Euclidean time coordinate
+    t_euc = positions[:, :, time_dim]  # [T, N]
+    
+    # Flatten over MC time dimension to treat all snapshots as ensemble
+    t_euc_flat = t_euc[alive]  # [total_alive_walkers]
+    ops_flat = operators[alive]
+    
+    if t_euc_flat.numel() == 0:
+        # No alive walkers
+        device = positions.device
+        return torch.zeros(n_bins, device=device), torch.zeros(n_bins, device=device)
+    
+    # Determine time range
+    if time_range is None:
+        t_min, t_max = t_euc_flat.min().item(), t_euc_flat.max().item()
+        # Add small padding to avoid edge effects
+        padding = (t_max - t_min) * 0.01
+        t_min -= padding
+        t_max += padding
+    else:
+        t_min, t_max = time_range
+    
+    # Create bins
+    edges = torch.linspace(t_min, t_max, n_bins + 1, device=positions.device)
+    bin_centers = (edges[:-1] + edges[1:]) / 2
+    
+    # Bin operators using vectorized histogram
+    operator_series = torch.zeros(n_bins, device=positions.device)
+    counts = torch.zeros(n_bins, device=positions.device)
+    
+    for i in range(n_bins):
+        mask = (t_euc_flat >= edges[i]) & (t_euc_flat < edges[i + 1])
+        count = mask.sum()
+        if count > 0:
+            operator_series[i] = ops_flat[mask].sum()
+            counts[i] = count.float()
+    
+    # Handle last bin inclusively
+    mask = t_euc_flat == edges[-1]
+    if mask.sum() > 0:
+        operator_series[-1] += ops_flat[mask].sum()
+        counts[-1] += mask.sum().float()
+    
+    # Average
+    valid = counts > 0
+    operator_series[valid] = operator_series[valid] / counts[valid]
+    operator_series[~valid] = 0.0
+    
+    return bin_centers, operator_series
 
 
 # =============================================================================
@@ -936,8 +1056,17 @@ class ChannelCorrelator(ABC):
         """Compute operator time series.
 
         Returns:
-            Series [T] of operator values.
+            Series [T] of operator values (MC time) or [n_bins] (Euclidean time).
         """
+        if self.config.time_axis == "euclidean":
+            # Euclidean time analysis: bin operators by spatial time coordinate
+            return self._compute_series_euclidean()
+        else:
+            # Standard Monte Carlo time analysis
+            return self._compute_series_mc()
+    
+    def _compute_series_mc(self) -> Tensor:
+        """Compute operator time series over Monte Carlo timesteps."""
         start_idx = max(1, int(self.history.n_recorded * self.config.warmup_fraction))
 
         # Batch compute color states
@@ -952,6 +1081,60 @@ class ChannelCorrelator(ABC):
         )
 
         return series
+    
+    def _compute_series_euclidean(self) -> Tensor:
+        """Compute operator time series over Euclidean time coordinate.
+
+        This method bins walkers by their Euclidean time coordinate and computes
+        operator averages within each time bin.
+        """
+        # Check dimension
+        if self.history.d < self.config.euclidean_time_dim + 1:
+            msg = (
+                f"Cannot use dimension {self.config.euclidean_time_dim} as Euclidean time "
+                f"(only {self.history.d} dimensions available)"
+            )
+            raise ValueError(msg)
+        
+        start_idx = _resolve_mc_time_index(self.history, self.config.mc_time_index)
+
+        # Get positions for Euclidean time extraction
+        positions = self.history.x_before_clone[start_idx : start_idx + 1]  # [1, N, d]
+        alive = self.history.alive_mask[start_idx - 1 : start_idx]  # [1, N]
+
+        # Compute operators for all walkers (not averaged)
+        operators = self._compute_operators_per_walker(start_idx)[:1]  # [1, N]
+
+        # Bin by Euclidean time
+        time_coords, series = bin_by_euclidean_time(
+            positions=positions,
+            operators=operators,
+            alive=alive,
+            time_dim=self.config.euclidean_time_dim,
+            n_bins=self.config.euclidean_time_bins,
+            time_range=self.config.euclidean_time_range,
+        )
+        
+        return series
+    
+    def _compute_operators_per_walker(self, start_idx: int) -> Tensor:
+        """Compute operators for each walker (not averaged).
+        
+        Args:
+            start_idx: Starting time index.
+            
+        Returns:
+            Operators [T, N] for each walker at each timestep.
+        """
+        # Batch compute color states
+        color, valid = self._compute_color_states_batch(start_idx)
+        
+        # Get alive mask
+        n_recorded = self.history.n_recorded
+        alive = self.history.alive_mask[start_idx - 1 : n_recorded - 1]  # [T, N]
+        
+        # Compute operators without averaging (subclass-specific)
+        return self._compute_operators_all_walkers(color, valid, alive)
 
     def compute_correlator(self) -> Tensor:
         """Compute time correlator using FFT.
@@ -1218,6 +1401,103 @@ class BilinearChannelCorrelator(ChannelCorrelator):
 
         return series
 
+    def _compute_operators_all_walkers(
+        self,
+        color: Tensor,
+        valid: Tensor,
+        alive: Tensor,
+    ) -> Tensor:
+        """Compute bilinear operators for all walkers without averaging.
+
+        Args:
+            color: Color states [T, N, d].
+            valid: Valid color flags [T, N].
+            alive: Alive walker flags [T, N].
+
+        Returns:
+            Operator values [T, N] for each walker.
+        """
+        T, N, d = color.shape
+        device = color.device
+
+        # Get neighbors for all walkers at all timesteps
+        neighbor_indices = self._get_all_neighbors(color, valid, alive)  # [T, N, k]
+
+        # Use first neighbor for each walker
+        first_neighbor = neighbor_indices[:, :, 0]  # [T, N]
+
+        # Gather color states
+        t_idx = torch.arange(T, device=device).unsqueeze(1).expand(-1, N)  # [T, N]
+        color_i = color  # [T, N, d] (walkers themselves)
+        color_j = color[t_idx, first_neighbor]  # [T, N, d] (their neighbors)
+
+        # Validity masks
+        valid_i = valid & alive
+        valid_j_idx = t_idx.clamp(max=alive.shape[0] - 1)
+        valid_j = valid[t_idx, first_neighbor] & alive[valid_j_idx, first_neighbor]
+        valid_mask = valid_i & valid_j & (first_neighbor != torch.arange(N, device=device).unsqueeze(0))
+
+        # Apply channel-specific projection
+        op_values = self._apply_gamma_projection(color_i, color_j)  # [T, N]
+
+        # Mask invalid
+        op_values = torch.where(valid_mask, op_values, torch.zeros_like(op_values))
+
+        return op_values
+
+    def _get_all_neighbors(
+        self,
+        color: Tensor,
+        valid: Tensor,
+        alive: Tensor,
+    ) -> Tensor:
+        """Get neighbor indices for all walkers at all timesteps.
+
+        Args:
+            color: Color states [T, N, d].
+            valid: Valid color flags [T, N].
+            alive: Alive walker flags [T, N].
+
+        Returns:
+            Neighbor indices [T, N, k] where k is number of neighbors.
+        """
+        T, N, d = color.shape
+        device = color.device
+        k = self.config.knn_k
+
+        neighbor_indices = torch.zeros((T, N, k), dtype=torch.long, device=device)
+
+        for t in range(T):
+            # Get neighbors for this timestep
+            alive_t = alive[min(t, alive.shape[0] - 1)]
+
+            if self.config.neighbor_method == "euclidean":
+                # Euclidean distance neighbors
+                x_t = self.history.x_before_clone[t + max(1, int(self.history.n_recorded * self.config.warmup_fraction))]
+                dists = torch.cdist(x_t, x_t)  # [N, N]
+                dists = dists + torch.eye(N, device=device) * 1e10  # Exclude self
+                dists[:, ~alive_t] = 1e10  # Exclude dead walkers
+                neighbor_indices[t] = torch.topk(dists, k, largest=False, dim=1).indices
+            else:
+                # Voronoi neighbors (not implemented for per-walker)
+                # For now, fall back to random alive walkers
+                alive_idx = torch.where(alive_t)[0]
+                if len(alive_idx) > 0:
+                    for i in range(N):
+                        if alive_t[i]:
+                            # Get k random alive neighbors (excluding self)
+                            other_alive = alive_idx[alive_idx != i]
+                            if len(other_alive) >= k:
+                                perm = torch.randperm(len(other_alive), device=device)[:k]
+                                neighbor_indices[t, i] = other_alive[perm]
+                            elif len(other_alive) > 0:
+                                # Repeat if not enough neighbors
+                                neighbor_indices[t, i] = other_alive[torch.randint(0, len(other_alive), (k,), device=device)]
+                            else:
+                                neighbor_indices[t, i] = i  # Self-neighbor if no others
+
+        return neighbor_indices
+
 
 class ScalarChannel(BilinearChannelCorrelator):
     """Scalar channel (σ): Identity projection.
@@ -1429,6 +1709,111 @@ class NucleonChannel(TrilinearChannelCorrelator):
 
         return series.real if series.is_complex() else series
 
+    def _compute_operators_all_walkers(
+        self,
+        color: Tensor,
+        valid: Tensor,
+        alive: Tensor,
+    ) -> Tensor:
+        """Compute nucleon operators for all walkers without averaging.
+
+        Args:
+            color: Color states [T, N, d].
+            valid: Valid color flags [T, N].
+            alive: Alive walker flags [T, N].
+
+        Returns:
+            Operator values [T, N] for each walker.
+        """
+        T, N, d = color.shape
+        device = color.device
+
+        if d != 3:
+            # Nucleon requires d=3
+            return torch.zeros((T, N), device=device)
+
+        # Get neighbors for all walkers
+        neighbor_indices = self._get_all_neighbors_nucleon(color, valid, alive)  # [T, N, k]
+
+        if neighbor_indices.shape[2] < 2:
+            return torch.zeros((T, N), device=device)
+
+        # Gather indices
+        t_idx = torch.arange(T, device=device).unsqueeze(1).expand(-1, N)
+
+        # Color states for triplets
+        color_i = color  # [T, N, d]
+        color_j = color[t_idx, neighbor_indices[:, :, 0]]  # [T, N, d]
+        color_k = color[t_idx, neighbor_indices[:, :, 1]]  # [T, N, d]
+
+        # Stack to form 3x3 matrix: [T, N, d, 3]
+        matrix = torch.stack([color_i, color_j, color_k], dim=-1)
+
+        # Compute determinant: [T, N]
+        det = torch.linalg.det(matrix)
+
+        # Validity mask
+        valid_i = valid & alive
+        valid_j_idx = t_idx.clamp(max=alive.shape[0] - 1)
+        valid_j = valid[t_idx, neighbor_indices[:, :, 0]] & alive[valid_j_idx, neighbor_indices[:, :, 0]]
+        valid_k = valid[t_idx, neighbor_indices[:, :, 1]] & alive[valid_j_idx, neighbor_indices[:, :, 1]]
+        valid_mask = valid_i & valid_j & valid_k
+
+        # Mask invalid
+        det = torch.where(valid_mask, det, torch.zeros_like(det))
+
+        return det.real if det.is_complex() else det
+
+    def _get_all_neighbors_nucleon(
+        self,
+        color: Tensor,
+        valid: Tensor,
+        alive: Tensor,
+    ) -> Tensor:
+        """Get neighbor indices for all walkers (nucleon needs 2 neighbors).
+
+        Args:
+            color: Color states [T, N, d].
+            valid: Valid color flags [T, N].
+            alive: Alive walker flags [T, N].
+
+        Returns:
+            Neighbor indices [T, N, 2] for first two neighbors.
+        """
+        T, N, d = color.shape
+        device = color.device
+        k = max(2, self.config.n_neighbors)
+
+        neighbor_indices = torch.zeros((T, N, k), dtype=torch.long, device=device)
+
+        for t in range(T):
+            alive_t = alive[min(t, alive.shape[0] - 1)]
+
+            if self.config.neighbor_method == "euclidean":
+                # Euclidean distance neighbors
+                start_idx = max(1, int(self.history.n_recorded * self.config.warmup_fraction))
+                x_t = self.history.x_before_clone[min(t + start_idx, len(self.history.x_before_clone) - 1)]
+                dists = torch.cdist(x_t, x_t)  # [N, N]
+                dists = dists + torch.eye(N, device=device) * 1e10  # Exclude self
+                dists[:, ~alive_t] = 1e10  # Exclude dead walkers
+                neighbor_indices[t] = torch.topk(dists, k, largest=False, dim=1).indices
+            else:
+                # Fall back to random alive walkers
+                alive_idx = torch.where(alive_t)[0]
+                if len(alive_idx) > 0:
+                    for i in range(N):
+                        if alive_t[i]:
+                            other_alive = alive_idx[alive_idx != i]
+                            if len(other_alive) >= k:
+                                perm = torch.randperm(len(other_alive), device=device)[:k]
+                                neighbor_indices[t, i] = other_alive[perm]
+                            elif len(other_alive) > 0:
+                                neighbor_indices[t, i] = other_alive[torch.randint(0, len(other_alive), (k,), device=device)]
+                            else:
+                                neighbor_indices[t, i] = i
+
+        return neighbor_indices
+
 
 # =============================================================================
 # Gauge (Glueball) Channel Correlator
@@ -1492,6 +1877,36 @@ class GlueballChannel(GaugeChannelCorrelator):
                 series.append(torch.tensor(0.0, device=device))
 
         return torch.stack(series)
+
+    def _compute_operators_all_walkers(
+        self,
+        color: Tensor,
+        valid: Tensor,
+        alive: Tensor,
+    ) -> Tensor:
+        """Compute glueball operators for all walkers without averaging.
+
+        Args:
+            color: Color states [T, N, d] (unused for glueball).
+            valid: Valid color flags [T, N].
+            alive: Alive walker flags [T, N].
+
+        Returns:
+            Operator values [T, N] for each walker.
+        """
+        start_idx = max(1, int(self.history.n_recorded * self.config.warmup_fraction))
+        n_recorded = self.history.n_recorded
+
+        # Get force field
+        force = self.history.force_viscous[start_idx - 1 : n_recorded - 1]  # [T, N, d]
+
+        # Force squared norm: [T, N]
+        force_sq = torch.linalg.vector_norm(force, dim=-1).pow(2)
+
+        # Mask invalid walkers
+        force_sq = torch.where(alive, force_sq, torch.zeros_like(force_sq))
+
+        return force_sq
 
 
 # =============================================================================

@@ -44,7 +44,7 @@ from fragile.fractalai.core.kinetic_operator import KineticOperator
 
 @dataclass
 class PotentialWellConfig:
-    dims: int = 3
+    dims: int = 4
     alpha: float = 0.1
     bounds_extent: float = 10.0
 

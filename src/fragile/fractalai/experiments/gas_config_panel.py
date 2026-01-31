@@ -80,12 +80,16 @@ class GasConfigPanel(param.Parameterized):
         default=True,
         doc="Record neighbor edges + Voronoi regions into RunHistory",
     )
+    hide_viscous_kernel_widgets = param.Boolean(
+        default=False,
+        doc="Hide viscous kernel-only widgets (deprecated).",
+    )
 
     # Initialization controls
-    init_offset = param.Number(default=4.5, bounds=(-6.0, 6.0), doc="Initial position offset")
-    init_spread = param.Number(default=0.5, bounds=(0.1, 3.0), doc="Initial position spread")
+    init_offset = param.Number(default=0.0, bounds=(-6.0, 6.0), doc="Initial position offset")
+    init_spread = param.Number(default=10.0, bounds=(0.0, 50.0), doc="Initial position spread")
     init_velocity_scale = param.Number(
-        default=0.1,
+        default=5.0,
         bounds=(0.0, None),
         softbounds=(0.01, 2.0),
         doc="Initial velocity scale",
@@ -149,6 +153,15 @@ class GasConfigPanel(param.Parameterized):
             ),
             "viz_n_cells": pnw.EditableIntSlider(
                 name="viz_n_cells (resolution)", start=50, end=500, value=self.viz_n_cells, step=10
+            ),
+            "init_offset": pnw.EditableIntSlider(
+                name="init_offset", start=-6, end=6, value=int(self.init_offset), step=1
+            ),
+            "init_spread": pnw.EditableIntSlider(
+                name="init_spread", start=0, end=50, value=int(self.init_spread), step=1
+            ),
+            "init_velocity_scale": pnw.EditableIntSlider(
+                name="init_velocity_scale", start=0, end=50, value=int(self.init_velocity_scale), step=1
             ),
         }
         self._widget_links: set[str] = set()
@@ -649,9 +662,17 @@ class GasConfigPanel(param.Parameterized):
         widgets = {
             name: self._widget_overrides[name] for name in names if name in self._widget_overrides
         }
+        def _coerce_widget_value(widget_ref: pn.widgets.Widget, value):
+            if isinstance(widget_ref, pnw.EditableIntSlider):
+                try:
+                    return int(value)
+                except (TypeError, ValueError):
+                    return value
+            return value
+
         for name, widget in widgets.items():
             if hasattr(widget, "value"):
-                widget.value = getattr(self, name)
+                widget.value = _coerce_widget_value(widget, getattr(self, name))
                 if name not in self._widget_links:
                     widget.param.watch(
                         lambda e, param_name=name: setattr(self, param_name, e.new),
@@ -661,7 +682,7 @@ class GasConfigPanel(param.Parameterized):
                         lambda e, widget_ref=widget: (
                             None
                             if getattr(widget_ref, "value", None) == e.new
-                            else setattr(widget_ref, "value", e.new)
+                            else setattr(widget_ref, "value", _coerce_widget_value(widget_ref, e.new))
                         ),
                         name,
                     )
@@ -746,22 +767,32 @@ class GasConfigPanel(param.Parameterized):
         pbc_cb.param.watch(lambda e: self.gas_params.update({"pbc": e.new}), "value")
 
         # Add widgets to column
+        neighbor_params = ["neighbor_graph_update_every", "neighbor_graph_record"]
+        if not self.hide_viscous_kernel_widgets:
+            neighbor_params.insert(0, "neighbor_graph_method")
         general_panel = pn.Column(
             n_slider,
             self._build_param_panel(["n_steps", "record_every"]),
             enable_cloning_cb,
             enable_kinetic_cb,
             pbc_cb,
-            self._build_param_panel([
-                "neighbor_graph_method",
-                "neighbor_graph_update_every",
-                "neighbor_graph_record",
-            ]),
+            self._build_param_panel(neighbor_params),
             sizing_mode="stretch_width",
         )
 
         # === Operator Panels using __panel__() methods ===
-        langevin_panel = self.kinetic_op.__panel__()
+        langevin_params = list(self.kinetic_op.widget_parameters)
+        if self.hide_viscous_kernel_widgets:
+            hide = {
+                "viscous_length_scale",
+                "viscous_neighbor_mode",
+                "viscous_neighbor_weighting",
+                "viscous_neighbor_threshold",
+                "viscous_neighbor_penalty",
+                "viscous_degree_cap",
+            }
+            langevin_params = [name for name in langevin_params if name not in hide]
+        langevin_panel = self.kinetic_op.__panel__(parameters=langevin_params)
         fast_fitness_button = pn.widgets.Button(
             name="Apply fast fitness preset",
             button_type="primary",

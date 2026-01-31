@@ -1053,33 +1053,50 @@ class GasVisualizer(param.Parameterized):
 
         histogram_toggle.param.watch(update_histograms, "value")
 
+        # Split display parameters into two groups for row layout
+        display_params_row1 = pn.Param(
+            self.param,
+            parameters=[
+                "color_metric",
+                "size_metric",
+                "show_velocity_vectors",
+                "color_vectors_by_cloning",
+                "show_force_vectors",
+                "force_arrow_length",
+            ],
+            show_name=False,
+            sizing_mode="stretch_width",
+        )
+
+        display_params_row2 = pn.Param(
+            self.param,
+            parameters=[
+                "show_velocity_field",
+                "show_force_field",
+                "field_grid_resolution",
+                "field_kernel_bandwidth",
+                "field_scale",
+                "measure_stride",
+            ],
+            show_name=False,
+            sizing_mode="stretch_width",
+        )
+
         display_controls = pn.Column(
             pn.pane.Markdown("### Display Options"),
-            pn.Param(
-                self.param,
-                parameters=[
-                    "color_metric",
-                    "size_metric",
-                    "show_velocity_vectors",
-                    "color_vectors_by_cloning",
-                    "show_force_vectors",
-                    "force_arrow_length",
-                    "show_velocity_field",
-                    "show_force_field",
-                    "field_grid_resolution",
-                    "field_kernel_bandwidth",
-                    "field_scale",
-                    "measure_stride",
-                ],
-                show_name=False,
+            pn.Row(
+                display_params_row1,
+                display_params_row2,
                 sizing_mode="stretch_width",
             ),
             histogram_toggle,
             pn.pane.Markdown("### Playback"),
-            self.time_player,
-            self.status_pane,
+            pn.Row(
+                self.time_player,
+                self.status_pane,
+                sizing_mode="stretch_width",
+            ),
             sizing_mode="stretch_width",
-            min_width=300,
         )
 
         # Create histogram grid with all 6 panes (3x2 layout)

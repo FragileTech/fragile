@@ -947,8 +947,17 @@ class KineticOperator(PanelModel):
         if self.diffusion_mode == "voronoi_proxy":
             # Voronoi-proxy: Use cell geometry to approximate metric anisotropy (O(N), no derivatives!)
             if voronoi_data is None:
-                msg = "voronoi_data required when diffusion_mode='voronoi_proxy'"
-                raise ValueError(msg)
+                import warnings
+                warnings.warn(
+                    "voronoi_data is None but diffusion_mode='voronoi_proxy'. "
+                    "Falling back to isotropic diffusion.",
+                    RuntimeWarning,
+                )
+                # Return isotropic diffusion tensor
+                if self.diagonal_diffusion:
+                    return torch.ones(N, d, device=x.device, dtype=x.dtype) * self.c2
+                else:
+                    return torch.eye(d, device=x.device, dtype=x.dtype).unsqueeze(0).expand(N, d, d) * self.c2
 
             # Import here to avoid circular dependency
             from fragile.fractalai.qft.voronoi_observables import compute_voronoi_diffusion_tensor
@@ -957,27 +966,75 @@ class KineticOperator(PanelModel):
             x_np = x.detach().cpu().numpy()
 
             # Compute diffusion tensor from Voronoi cell geometry
+            # Pass diagonal_only flag to get appropriate tensor shape
             sigma_np = compute_voronoi_diffusion_tensor(
                 voronoi_data=voronoi_data,
                 positions=x_np,
                 epsilon_sigma=self.epsilon_Sigma,
                 c2=self.c2.item() if isinstance(self.c2, torch.Tensor) else float(self.c2),
+                diagonal_only=self.diagonal_diffusion,
             )
 
             # Convert back to torch tensor
-            sigma_diag = torch.from_numpy(sigma_np).to(device=x.device, dtype=x.dtype)
+            sigma = torch.from_numpy(sigma_np).to(device=x.device, dtype=x.dtype)
 
-            # Handle NaN/Inf values (fallback to isotropic)
-            sigma_diag = torch.nan_to_num(
-                sigma_diag,
-                nan=self.c2,
-                posinf=self.c2,
-                neginf=self.c2,
-            )
+            if sigma.shape[0] != N:
+                # Voronoi is computed on alive walkers only; expand to full N.
+                alive_indices = voronoi_data.get("alive_indices")
+                if self.diagonal_diffusion:
+                    sigma = torch.nan_to_num(
+                        sigma,
+                        nan=self.c2,
+                        posinf=self.c2,
+                        neginf=self.c2,
+                    )
+                    sigma_full = torch.ones(N, d, device=x.device, dtype=x.dtype) * self.c2
+                else:
+                    sigma = torch.nan_to_num(
+                        sigma,
+                        nan=self.c2,
+                        posinf=self.c2,
+                        neginf=self.c2,
+                    )
+                    sigma_full = (
+                        torch.eye(d, device=x.device, dtype=x.dtype)
+                        .unsqueeze(0)
+                        .expand(N, d, d)
+                        * self.c2
+                    )
+
+                if alive_indices is None:
+                    n = min(sigma.shape[0], N)
+                    sigma_full[:n] = sigma[:n]
+                else:
+                    alive_idx = torch.as_tensor(alive_indices, device=x.device, dtype=torch.long)
+                    alive_idx = alive_idx[alive_idx < N]
+                    n = min(alive_idx.shape[0], sigma.shape[0])
+                    if n > 0:
+                        sigma_full[alive_idx[:n]] = sigma[:n]
+
+                sigma = sigma_full
 
             if self.diagonal_diffusion:
-                return sigma_diag
-            return torch.diag_embed(sigma_diag)
+                # Diagonal mode: sigma is [N, d]
+                # Handle NaN/Inf values (fallback to isotropic)
+                sigma = torch.nan_to_num(
+                    sigma,
+                    nan=self.c2,
+                    posinf=self.c2,
+                    neginf=self.c2,
+                )
+                return sigma
+            else:
+                # Full anisotropic mode: sigma is [N, d, d]
+                # Handle NaN/Inf values (fallback to isotropic)
+                sigma = torch.nan_to_num(
+                    sigma,
+                    nan=self.c2,
+                    posinf=self.c2,
+                    neginf=self.c2,
+                )
+                return sigma
 
         # Use precomputed Hessian (default)
         if hess_fitness is None:

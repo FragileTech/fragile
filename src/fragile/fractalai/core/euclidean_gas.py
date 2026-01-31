@@ -470,6 +470,9 @@ class EuclideanGas(PanelModel):
         if self.pbc and self.bounds is not None:
             state.x = self.bounds.apply_pbc_to_out_of_bounds(state.x)
 
+        if self.potential is not None and hasattr(self.potential, "set_step_id"):
+            self.potential.set_step_id(getattr(self, "_current_step", None))
+
         freeze_mask = self._freeze_mask(state)
         reference_state = state.clone() if freeze_mask is not None else None
 
@@ -564,6 +567,7 @@ class EuclideanGas(PanelModel):
         grad_fitness = None
         hess_fitness = None
         is_diagonal_hessian = False
+        voronoi_data = None
 
         if self.fitness_op is not None and self.enable_kinetic:
             # Compute fitness gradient if needed for adaptive force or diffusion proxy
@@ -592,6 +596,34 @@ class EuclideanGas(PanelModel):
                 )
                 is_diagonal_hessian = self.kinetic_op.diagonal_diffusion
 
+            # Compute Voronoi data if needed for voronoi_proxy diffusion
+            needs_voronoi = (
+                self.kinetic_op.use_anisotropic_diffusion
+                and getattr(self.kinetic_op, "diffusion_mode", "hessian") == "voronoi_proxy"
+            )
+            if needs_voronoi:
+                try:
+                    from fragile.fractalai.qft.voronoi_observables import compute_voronoi_tessellation
+
+                    voronoi_data = compute_voronoi_tessellation(
+                        positions=state_cloned.x,
+                        alive=alive_mask,
+                        bounds=self.bounds,
+                        pbc=self.pbc,
+                        pbc_mode="mirror" if self.pbc else "ignore",
+                        exclude_boundary=not self.pbc,  # Exclude boundary only if not using PBC
+                        boundary_tolerance=1e-6,
+                        compute_curvature=False,  # Not needed for diffusion
+                    )
+                except Exception as e:
+                    # Fall back to isotropic diffusion if Voronoi fails
+                    import warnings
+                    warnings.warn(
+                        f"Voronoi tessellation failed: {e}. Falling back to isotropic diffusion.",
+                        RuntimeWarning,
+                    )
+                    voronoi_data = None
+
             # Step 6: Kinetic update with optional fitness derivatives (if enabled)
             n_kinetic_steps = max(1, int(getattr(self.kinetic_op, "n_kinetic_steps", 1)))
             state_final = state_cloned
@@ -602,6 +634,7 @@ class EuclideanGas(PanelModel):
                     grad_fitness,
                     hess_fitness,
                     neighbor_edges=neighbor_edges,
+                    voronoi_data=voronoi_data,
                     return_info=True,
                 )
                 if self.pbc and self.bounds is not None:
@@ -621,6 +654,27 @@ class EuclideanGas(PanelModel):
                 "sigma_reg_diag": None,
                 "sigma_reg_full": None,
             }
+
+        if self.potential is not None and hasattr(self.potential, "update_voronoi_cache"):
+            step_id = getattr(self, "_current_step", None)
+            if voronoi_data is not None:
+                self.potential.update_voronoi_cache(
+                    voronoi_data,
+                    state_cloned.x,
+                    step_id,
+                    dt=self.kinetic_op.delta_t,
+                )
+            elif (
+                neighbor_info is not None
+                and neighbor_info.get("updated")
+                and neighbor_info.get("voronoi_regions") is not None
+            ):
+                self.potential.update_voronoi_cache(
+                    neighbor_info["voronoi_regions"],
+                    state_cloned.x,
+                    step_id,
+                    dt=self.kinetic_op.delta_t,
+                )
 
         U_after_clone = self.potential(state_cloned.x) if self.potential is not None else None
 

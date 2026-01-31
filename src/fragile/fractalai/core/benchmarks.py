@@ -579,6 +579,120 @@ class Constant(OptimBenchmark):
         return torch.zeros(self.shape)
 
 
+def _extract_voronoi_volumes(voronoi_data: dict, n_total: int, dims: int) -> np.ndarray:
+    if not voronoi_data:
+        return np.array([])
+
+    volumes = voronoi_data.get("volumes")
+    if volumes is not None:
+        volumes_np = np.asarray(volumes, dtype=np.float64)
+        alive_indices = voronoi_data.get("alive_indices")
+        if alive_indices is None:
+            if volumes_np.shape[0] == n_total:
+                return volumes_np
+            return np.array([])
+        alive_indices_np = np.asarray(alive_indices, dtype=np.int64)
+        full = np.zeros(n_total, dtype=np.float64)
+        if alive_indices_np.size == volumes_np.shape[0]:
+            valid = (alive_indices_np >= 0) & (alive_indices_np < n_total)
+            full[alive_indices_np[valid]] = volumes_np[valid]
+            return full
+        n_copy = min(alive_indices_np.size, volumes_np.shape[0])
+        if n_copy > 0:
+            valid = (alive_indices_np[:n_copy] >= 0) & (alive_indices_np[:n_copy] < n_total)
+            full[alive_indices_np[:n_copy][valid]] = volumes_np[:n_copy][valid]
+        return full
+
+    vertices = voronoi_data.get("vertices")
+    regions = voronoi_data.get("regions")
+    if vertices is None or regions is None:
+        return np.array([])
+    if torch.is_tensor(vertices):
+        vertices = vertices.detach().cpu().numpy()
+    if dims < 2:
+        return np.zeros(n_total, dtype=np.float64)
+
+    try:
+        from fragile.fractalai.qft.voronoi_observables import _compute_cell_volume
+    except Exception:
+        return np.array([])
+
+    full = np.zeros(n_total, dtype=np.float64)
+    for idx, region in enumerate(regions):
+        if idx >= n_total:
+            break
+        if region is None or not region or -1 in region:
+            continue
+        try:
+            region_idx = np.asarray(region, dtype=int)
+            if region_idx.size < dims + 1:
+                continue
+            verts = vertices[region_idx]
+            full[idx] = _compute_cell_volume(verts, dims)
+        except Exception:
+            continue
+    return full
+
+
+def _expand_alive_values(
+    voronoi_data: dict,
+    values: np.ndarray,
+    n_total: int,
+    fill: float = 0.0,
+) -> np.ndarray:
+    if values is None:
+        return np.full(n_total, fill, dtype=np.float64)
+    values_np = np.asarray(values, dtype=np.float64)
+    alive_indices = voronoi_data.get("alive_indices")
+    if alive_indices is None:
+        if values_np.shape[0] == n_total:
+            return values_np
+        return np.full(n_total, fill, dtype=np.float64)
+    alive_indices_np = np.asarray(alive_indices, dtype=np.int64)
+    full = np.full(n_total, fill, dtype=np.float64)
+    n_copy = min(alive_indices_np.size, values_np.shape[0])
+    if n_copy > 0:
+        valid = (alive_indices_np[:n_copy] >= 0) & (alive_indices_np[:n_copy] < n_total)
+        full[alive_indices_np[:n_copy][valid]] = values_np[:n_copy][valid]
+    return full
+
+
+def _maybe_compute_curvature_proxies(
+    voronoi_data: dict,
+    x: torch.Tensor,
+    prev_volumes: np.ndarray | None,
+    dt: float,
+) -> dict | None:
+    if voronoi_data.get("curvature_proxies") is not None:
+        return voronoi_data.get("curvature_proxies")
+    if "neighbor_lists" not in voronoi_data or "volumes" not in voronoi_data:
+        return None
+    try:
+        from fragile.fractalai.qft.voronoi_observables import compute_curvature_proxies
+    except Exception:
+        return None
+    alive_indices = voronoi_data.get("alive_indices")
+    positions = x.detach().cpu().numpy()
+    if alive_indices is not None:
+        alive_idx = np.asarray(alive_indices, dtype=np.int64)
+        if alive_idx.size == 0:
+            return None
+        positions_alive = positions[alive_idx]
+    else:
+        positions_alive = positions
+    try:
+        proxies = compute_curvature_proxies(
+            voronoi_data=voronoi_data,
+            positions=positions_alive,
+            prev_volumes=prev_volumes,
+            dt=dt,
+        )
+    except Exception:
+        return None
+    voronoi_data["curvature_proxies"] = proxies
+    return proxies
+
+
 class VoronoiCellVolume(OptimBenchmark):
     """Voronoi cell volume benchmark.
 
@@ -599,9 +713,18 @@ class VoronoiCellVolume(OptimBenchmark):
     def __init__(self, dims: int, update_every: int = 1, **kwargs):
         self._cache_step = 0
         self._cache_values: torch.Tensor | None = None
+        self._cache_step_id: int | None = None
+        self._current_step_id: int | None = None
+        self._cache_x_ptr: int | None = None
+        self._cache_x_shape: tuple[int, ...] | None = None
         update_every = max(1, int(update_every))
 
         def voronoi_volume_potential(x: torch.Tensor) -> torch.Tensor:
+            cached = self._cached_values_for_x(x)
+            if cached is not None:
+                self._cache_step += 1
+                return cached
+
             if (
                 self._cache_values is not None
                 and self._cache_values.shape[0] == x.shape[0]
@@ -657,6 +780,337 @@ class VoronoiCellVolume(OptimBenchmark):
             return values
 
         super().__init__(dims=dims, function=voronoi_volume_potential, update_every=update_every, **kwargs)
+
+    def _cached_values_for_x(self, x: torch.Tensor) -> torch.Tensor | None:
+        if self._cache_values is None:
+            return None
+        if self._cache_x_ptr != x.data_ptr():
+            return None
+        if self._cache_x_shape != tuple(x.shape):
+            return None
+        if self._cache_step_id is not None or self._current_step_id is not None:
+            if self._cache_step_id != self._current_step_id:
+                return None
+        return self._cache_values
+
+    def set_step_id(self, step_id: int | None) -> None:
+        self._current_step_id = step_id
+
+    def update_voronoi_cache(
+        self,
+        voronoi_data: dict,
+        x: torch.Tensor,
+        step_id: int | None = None,
+        dt: float = 1.0,  # noqa: ARG002
+    ) -> None:
+        volumes = _extract_voronoi_volumes(voronoi_data, x.shape[0], x.shape[1])
+        if volumes.size == 0:
+            return
+        values = torch.as_tensor(-volumes, dtype=x.dtype, device=x.device)
+        self._cache_values = values
+        self._cache_step_id = step_id
+        self._cache_x_ptr = x.data_ptr()
+        self._cache_x_shape = tuple(x.shape)
+
+    @property
+    def benchmark(self) -> torch.Tensor:
+        return torch.tensor(0.0)
+
+    @staticmethod
+    def get_bounds(dims):
+        bounds = [(-10.0, 10.0) for _ in range(dims)]
+        return Bounds.from_tuples(bounds)
+
+
+class VoronoiManifoldVolumeElement(OptimBenchmark):
+    """Voronoi manifold volume element benchmark.
+
+    Returns U(x) = -dμ_i for each walker, where dμ_i is the Riemannian volume
+    element estimated from Voronoi curvature proxies for that cell.
+    """
+
+    update_every = param.Integer(
+        default=1,
+        bounds=(1, None),
+        doc="Recompute Voronoi proxies every k calls (1 = every call).",
+    )
+
+    def __init__(self, dims: int, update_every: int = 1, **kwargs):
+        self._cache_step = 0
+        self._cache_values: torch.Tensor | None = None
+        self._cache_step_id: int | None = None
+        self._current_step_id: int | None = None
+        self._cache_x_ptr: int | None = None
+        self._cache_x_shape: tuple[int, ...] | None = None
+        self._prev_volumes: np.ndarray | None = None
+        update_every = max(1, int(update_every))
+
+        def manifold_volume_potential(x: torch.Tensor) -> torch.Tensor:
+            cached = self._cached_values_for_x(x)
+            if cached is not None:
+                self._cache_step += 1
+                return cached
+
+            if (
+                self._cache_values is not None
+                and self._cache_values.shape[0] == x.shape[0]
+                and self._cache_step % update_every != 0
+            ):
+                self._cache_step += 1
+                return self._cache_values
+
+            if x.shape[1] < 2:
+                values = torch.zeros(x.shape[0], dtype=x.dtype, device=x.device)
+                self._cache_values = values
+                self._cache_step += 1
+                return values
+
+            try:
+                from fragile.fractalai.qft.voronoi_observables import compute_voronoi_tessellation
+            except Exception as exc:
+                msg = f"Voronoi proxies required for manifold volume benchmark: {exc}"
+                raise RuntimeError(msg) from exc
+
+            alive = torch.ones(x.shape[0], dtype=torch.bool, device=x.device)
+            voronoi_data = compute_voronoi_tessellation(
+                positions=x,
+                alive=alive,
+                bounds=self.bounds,
+                pbc=False,
+                compute_curvature=True,
+                prev_volumes=self._prev_volumes,
+                dt=1.0,
+            )
+            volumes = voronoi_data.get("volumes", np.array([]))
+            if volumes.size == 0:
+                values = torch.zeros(x.shape[0], dtype=x.dtype, device=x.device)
+                self._cache_values = values
+                self._cache_step += 1
+                return values
+
+            proxies = voronoi_data.get("curvature_proxies") or {}
+            volume_distortion = proxies.get("volume_distortion")
+            if volume_distortion is None or len(volume_distortion) != len(volumes):
+                mean_vol = volumes.mean() if volumes.size > 0 else 1.0
+                if mean_vol > 0:
+                    volume_distortion = volumes / mean_vol
+                else:
+                    volume_distortion = np.ones_like(volumes)
+
+            volume_distortion = np.clip(volume_distortion, a_min=0.0, a_max=None)
+            volume_element = volumes * np.sqrt(volume_distortion)
+
+            values = torch.as_tensor(-volume_element, dtype=x.dtype, device=x.device)
+            self._cache_values = values
+            self._prev_volumes = volumes
+            self._cache_step += 1
+            return values
+
+        super().__init__(
+            dims=dims,
+            function=manifold_volume_potential,
+            update_every=update_every,
+            **kwargs,
+        )
+
+    def _cached_values_for_x(self, x: torch.Tensor) -> torch.Tensor | None:
+        if self._cache_values is None:
+            return None
+        if self._cache_x_ptr != x.data_ptr():
+            return None
+        if self._cache_x_shape != tuple(x.shape):
+            return None
+        if self._cache_step_id is not None or self._current_step_id is not None:
+            if self._cache_step_id != self._current_step_id:
+                return None
+        return self._cache_values
+
+    def set_step_id(self, step_id: int | None) -> None:
+        self._current_step_id = step_id
+
+    def update_voronoi_cache(
+        self,
+        voronoi_data: dict,
+        x: torch.Tensor,
+        step_id: int | None = None,
+        dt: float = 1.0,  # noqa: ARG002
+    ) -> None:
+        volumes = _extract_voronoi_volumes(voronoi_data, x.shape[0], x.shape[1])
+        if volumes.size == 0:
+            return
+        proxies = (
+            voronoi_data.get("curvature_proxies")
+            or _maybe_compute_curvature_proxies(voronoi_data, x, self._prev_volumes, dt)
+            or {}
+        )
+        proxy_distortion = proxies.get("volume_distortion")
+        if proxy_distortion is not None:
+            volume_distortion = _expand_alive_values(
+                voronoi_data, proxy_distortion, x.shape[0], fill=1.0
+            )
+        else:
+            positive = volumes > 0
+            mean_vol = volumes[positive].mean() if positive.any() else 1.0
+            if mean_vol > 0:
+                volume_distortion = volumes / mean_vol
+            else:
+                volume_distortion = np.ones_like(volumes)
+        volume_distortion = np.clip(volume_distortion, a_min=0.0, a_max=None)
+        volume_element = volumes * np.sqrt(volume_distortion)
+        values = torch.as_tensor(-volume_element, dtype=x.dtype, device=x.device)
+        self._cache_values = values
+        self._cache_step_id = step_id
+        self._cache_x_ptr = x.data_ptr()
+        self._cache_x_shape = tuple(x.shape)
+        self._prev_volumes = volumes
+
+    @property
+    def benchmark(self) -> torch.Tensor:
+        return torch.tensor(0.0)
+
+    @staticmethod
+    def get_bounds(dims):
+        bounds = [(-10.0, 10.0) for _ in range(dims)]
+        return Bounds.from_tuples(bounds)
+
+
+class VoronoiRicciScalar(OptimBenchmark):
+    """Voronoi Ricci scalar benchmark.
+
+    Returns U(x) = -R_i for each walker, where R_i is estimated from Voronoi
+    curvature proxies (Raychaudhuri expansion).
+    """
+
+    update_every = param.Integer(
+        default=1,
+        bounds=(1, None),
+        doc="Recompute Voronoi proxies every k calls (1 = every call).",
+    )
+
+    def __init__(self, dims: int, update_every: int = 1, **kwargs):
+        self._cache_step = 0
+        self._cache_values: torch.Tensor | None = None
+        self._cache_step_id: int | None = None
+        self._current_step_id: int | None = None
+        self._cache_x_ptr: int | None = None
+        self._cache_x_shape: tuple[int, ...] | None = None
+        self._prev_volumes: np.ndarray | None = None
+        update_every = max(1, int(update_every))
+
+        def voronoi_ricci_potential(x: torch.Tensor) -> torch.Tensor:
+            cached = self._cached_values_for_x(x)
+            if cached is not None:
+                self._cache_step += 1
+                return cached
+
+            if (
+                self._cache_values is not None
+                and self._cache_values.shape[0] == x.shape[0]
+                and self._cache_step % update_every != 0
+            ):
+                self._cache_step += 1
+                return self._cache_values
+
+            if x.shape[1] < 2:
+                values = torch.zeros(x.shape[0], dtype=x.dtype, device=x.device)
+                self._cache_values = values
+                self._cache_step += 1
+                return values
+
+            try:
+                from fragile.fractalai.qft.voronoi_observables import compute_voronoi_tessellation
+            except Exception as exc:
+                msg = f"Voronoi proxies required for Ricci benchmark: {exc}"
+                raise RuntimeError(msg) from exc
+
+            alive = torch.ones(x.shape[0], dtype=torch.bool, device=x.device)
+            voronoi_data = compute_voronoi_tessellation(
+                positions=x,
+                alive=alive,
+                bounds=self.bounds,
+                pbc=False,
+                compute_curvature=True,
+                prev_volumes=self._prev_volumes,
+                dt=1.0,
+            )
+            volumes = voronoi_data.get("volumes", np.array([]))
+            if volumes.size == 0:
+                values = torch.zeros(x.shape[0], dtype=x.dtype, device=x.device)
+                self._cache_values = values
+                self._cache_step += 1
+                return values
+
+            proxies = voronoi_data.get("curvature_proxies") or {}
+            expansion = proxies.get("raychaudhuri_expansion")
+            if expansion is None or len(expansion) != len(volumes):
+                ricci_proxy = np.zeros_like(volumes)
+            else:
+                ricci_proxy = -np.asarray(expansion, dtype=np.float64)
+
+            values = torch.as_tensor(ricci_proxy, dtype=x.dtype, device=x.device)
+            self._cache_values = values
+            self._prev_volumes = volumes
+            self._cache_step += 1
+            return values
+
+        super().__init__(
+            dims=dims,
+            function=voronoi_ricci_potential,
+            update_every=update_every,
+            **kwargs,
+        )
+
+    def _cached_values_for_x(self, x: torch.Tensor) -> torch.Tensor | None:
+        if self._cache_values is None:
+            return None
+        if self._cache_x_ptr != x.data_ptr():
+            return None
+        if self._cache_x_shape != tuple(x.shape):
+            return None
+        if self._cache_step_id is not None or self._current_step_id is not None:
+            if self._cache_step_id != self._current_step_id:
+                return None
+        return self._cache_values
+
+    def set_step_id(self, step_id: int | None) -> None:
+        self._current_step_id = step_id
+
+    def update_voronoi_cache(
+        self,
+        voronoi_data: dict,
+        x: torch.Tensor,
+        step_id: int | None = None,
+        dt: float = 1.0,
+    ) -> None:
+        volumes = _extract_voronoi_volumes(voronoi_data, x.shape[0], x.shape[1])
+        if volumes.size == 0:
+            return
+        proxies = (
+            voronoi_data.get("curvature_proxies")
+            or _maybe_compute_curvature_proxies(voronoi_data, x, self._prev_volumes, dt)
+            or {}
+        )
+        proxy_expansion = proxies.get("raychaudhuri_expansion")
+        if proxy_expansion is not None:
+            expansion = _expand_alive_values(
+                voronoi_data, proxy_expansion, x.shape[0], fill=0.0
+            )
+            ricci_proxy = -expansion
+        else:
+            ricci_proxy = np.zeros_like(volumes)
+            if self._prev_volumes is not None and len(self._prev_volumes) == len(volumes) and dt > 0:
+                dV_dt = (volumes - self._prev_volumes) / dt
+                safe_volumes = np.where(volumes > 1e-10, volumes, 1.0)
+                expansion = dV_dt / safe_volumes
+                valid = (volumes > 0) & (self._prev_volumes > 0)
+                expansion = np.where(valid, expansion, 0.0)
+                ricci_proxy = -expansion
+        values = torch.as_tensor(ricci_proxy, dtype=x.dtype, device=x.device)
+        self._cache_values = values
+        self._cache_step_id = step_id
+        self._cache_x_ptr = x.data_ptr()
+        self._cache_x_shape = tuple(x.shape)
+        self._prev_volumes = volumes
 
     @property
     def benchmark(self) -> torch.Tensor:
@@ -1284,39 +1738,28 @@ class KelvinHelmholtzInstability(FluidBenchmark):
 
 
 ALL_BENCHMARKS = [
-    Sphere,
     Rastrigin,
-    EggHolder,
-    StyblinskiTang,
-    HolderTable,
-    Easom,
     MixtureOfGaussians,
+    LennardJones,
     Constant,
     VoronoiCellVolume,
+    VoronoiManifoldVolumeElement,
+    VoronoiRicciScalar,
     StochasticGaussian,
-    TaylorGreenVortex,
-    LidDrivenCavity,
-    KelvinHelmholtzInstability,
     QuadraticWell,
 ]
 
 
 # Benchmark name mapping for UI
 BENCHMARK_NAMES = {
-    "Sphere": Sphere,
     "Rastrigin": Rastrigin,
-    "EggHolder": EggHolder,
-    "Styblinski-Tang": StyblinskiTang,
-    "Holder Table": HolderTable,
-    "Easom": Easom,
     "Mixture of Gaussians": MixtureOfGaussians,
     "Lennard-Jones": LennardJones,
     "Constant (Zero)": Constant,
     "Voronoi Cell Volume": VoronoiCellVolume,
+    "Voronoi Manifold Volume": VoronoiManifoldVolumeElement,
+    "Voronoi Ricci Scalar": VoronoiRicciScalar,
     "Stochastic Gaussian": StochasticGaussian,
-    "Taylor-Green Vortex": TaylorGreenVortex,
-    "Lid-Driven Cavity": LidDrivenCavity,
-    "Kelvin-Helmholtz Instability": KelvinHelmholtzInstability,
     "Quadratic Well": QuadraticWell,
 }
 
@@ -1788,6 +2231,8 @@ __all__ = [
     "StyblinskiTang",
     "TaylorGreenVortex",
     "VoronoiCellVolume",
+    "VoronoiManifoldVolumeElement",
+    "VoronoiRicciScalar",
     # Collections
     "ALL_BENCHMARKS",
     "BENCHMARK_NAMES",

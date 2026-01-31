@@ -183,6 +183,7 @@ def compute_voronoi_tessellation(
     compute_curvature: bool = True,
     prev_volumes: np.ndarray | None = None,
     dt: float = 1.0,
+    spatial_dims: int | None = None,
 ) -> dict[str, Any]:
     """
     Compute Voronoi tessellation from walker positions.
@@ -198,6 +199,8 @@ def compute_voronoi_tessellation(
         compute_curvature: Whether to compute curvature proxies (default True)
         prev_volumes: Previous timestep volumes for Raychaudhuri expansion (optional)
         dt: Timestep for volume evolution rate (default 1.0)
+        spatial_dims: If provided, only use first N dimensions for Voronoi (default: all dimensions)
+                     Useful for Euclidean time analysis where 4th dimension is time, not space
 
     Returns:
         Dictionary containing:
@@ -222,9 +225,15 @@ def compute_voronoi_tessellation(
             "index_map": {},
         }
 
-    positions_alive = positions[alive].cpu().numpy()
+    # Filter positions to spatial dimensions only if requested
+    if spatial_dims is not None:
+        positions_alive = positions[alive, :spatial_dims].cpu().numpy()
+        d = spatial_dims
+    else:
+        positions_alive = positions[alive].cpu().numpy()
+        d = positions.shape[1]
+
     n_alive = len(alive_indices)
-    d = positions.shape[1]
 
     # Handle periodic boundary conditions
     if pbc and bounds is not None and pbc_mode != "ignore":
@@ -1024,6 +1033,7 @@ def compute_voronoi_diffusion_tensor(
     positions: np.ndarray,
     epsilon_sigma: float = 0.1,
     c2: float = 1.0,
+    diagonal_only: bool = True,
 ) -> np.ndarray:
     """
     Approximate diffusion tensor from Voronoi cell geometry (O(N), no derivatives!).
@@ -1035,12 +1045,19 @@ def compute_voronoi_diffusion_tensor(
     - Cell elongation → principal directions of metric
     - Aspect ratio → anisotropy strength
 
-    Method:
+    Method (diagonal_only=True):
     1. For each cell, compute volume V_i and characteristic lengths in each direction
     2. Elongation in direction j: e_j = L_j / (V_i)^(1/d)
     3. Diffusion: σ_j ≈ c₂ / √(e_j + ε_Σ)
     4. Compressed direction → large e_j → small σ_j (less diffusion)
        Expanded direction → small e_j → large σ_j (more diffusion)
+
+    Method (diagonal_only=False - full anisotropic):
+    1. Compute inertia tensor (covariance) of cell vertices
+    2. Eigendecompose: I = R @ diag(λ) @ R^T to find principal axes
+    3. Compute diffusion along principal axes: σ_k = c₂ / √(λ_k + ε_Σ)
+    4. Rotate back to coordinate frame: Σ = R @ diag(σ) @ R^T
+    5. Result captures true cell geometry including rotation/tilt
 
     Theoretical Justification:
     From scutoid geometry theory, Voronoi cells adapt to fitness landscape curvature.
@@ -1053,9 +1070,12 @@ def compute_voronoi_diffusion_tensor(
         positions: Walker positions [N, d]
         epsilon_sigma: Regularization parameter (ε_Σ)
         c2: Diffusion scale factor
+        diagonal_only: If True, return [N, d] diagonal elements only.
+                      If False, return [N, d, d] full symmetric tensors.
 
     Returns:
-        sigma: [N, d] diagonal diffusion tensor components
+        If diagonal_only=True: [N, d] diagonal diffusion tensor components
+        If diagonal_only=False: [N, d, d] full symmetric diffusion tensors
 
     Reference:
         Plan: /home/guillem/.claude/plans/cryptic-percolating-creek.md § Bonus
@@ -1068,43 +1088,121 @@ def compute_voronoi_diffusion_tensor(
     d = positions.shape[1]
 
     if n == 0:
-        return np.array([]).reshape(0, d)
+        if diagonal_only:
+            return np.array([]).reshape(0, d)
+        else:
+            return np.array([]).reshape(0, d, d)
 
-    # Initialize diffusion tensor (diagonal approximation)
-    sigma = np.ones((n, d))
+    # Branch based on mode
+    if diagonal_only:
+        # ===== DIAGONAL MODE (Original Implementation) =====
+        # Initialize diffusion tensor (diagonal approximation)
+        sigma = np.ones((n, d))
 
-    for i in range(n):
-        if vor is not None:
-            region_idx = vor.point_region[i]
-            vertices_idx = vor.regions[region_idx]
+        for i in range(n):
+            if vor is not None:
+                region_idx = vor.point_region[i]
+                vertices_idx = vor.regions[region_idx]
 
-            if -1 not in vertices_idx and len(vertices_idx) >= d + 1 and volumes[i] > 1e-10:
-                try:
-                    vertices = vor.vertices[vertices_idx]
+                if -1 not in vertices_idx and len(vertices_idx) >= d + 1 and volumes[i] > 1e-10:
+                    try:
+                        vertices = vor.vertices[vertices_idx]
 
-                    # Compute characteristic length in each coordinate direction
-                    # Use range (max - min) along each axis
-                    for j in range(d):
-                        coord_range = vertices[:, j].max() - vertices[:, j].min()
+                        # Compute characteristic length in each coordinate direction
+                        # Use range (max - min) along each axis
+                        for j in range(d):
+                            coord_range = vertices[:, j].max() - vertices[:, j].min()
 
-                        # Normalize by volume^(1/d) to get elongation
-                        vol_scale = volumes[i] ** (1.0 / d)
-                        if vol_scale > 1e-10:
-                            elongation = coord_range / vol_scale
-                        else:
-                            elongation = 1.0
+                            # Normalize by volume^(1/d) to get elongation
+                            vol_scale = volumes[i] ** (1.0 / d)
+                            if vol_scale > 1e-10:
+                                elongation = coord_range / vol_scale
+                            else:
+                                elongation = 1.0
 
-                        # Diffusion coefficient: σ_j = c₂ / √(e_j + ε_Σ)
-                        sigma[i, j] = c2 / np.sqrt(elongation + epsilon_sigma)
+                            # Diffusion coefficient: σ_j = c₂ / √(e_j + ε_Σ)
+                            sigma[i, j] = c2 / np.sqrt(elongation + epsilon_sigma)
 
-                except Exception:
-                    # Fallback to isotropic
+                    except Exception:
+                        # Fallback to isotropic
+                        sigma[i, :] = c2 / np.sqrt(1.0 + epsilon_sigma)
+                else:
+                    # Boundary or degenerate cell - use isotropic diffusion
                     sigma[i, :] = c2 / np.sqrt(1.0 + epsilon_sigma)
             else:
-                # Boundary or degenerate cell - use isotropic diffusion
+                # No Voronoi - isotropic diffusion
                 sigma[i, :] = c2 / np.sqrt(1.0 + epsilon_sigma)
-        else:
-            # No Voronoi - isotropic diffusion
-            sigma[i, :] = c2 / np.sqrt(1.0 + epsilon_sigma)
 
-    return sigma
+        return sigma
+
+    else:
+        # ===== FULL ANISOTROPIC MODE (New Implementation) =====
+        # Initialize full diffusion tensors
+        sigma_full = np.zeros((n, d, d))
+        isotropic_value = c2 / np.sqrt(1.0 + epsilon_sigma)
+
+        for i in range(n):
+            if vor is not None:
+                region_idx = vor.point_region[i]
+                vertices_idx = vor.regions[region_idx]
+
+                # Need at least d+1 vertices for valid d-dimensional inertia tensor
+                if (-1 not in vertices_idx and
+                    len(vertices_idx) >= d + 1 and
+                    volumes[i] > 1e-10):
+                    try:
+                        vertices = vor.vertices[vertices_idx]
+
+                        # Compute centroid of cell vertices
+                        centroid = vertices.mean(axis=0)  # [d]
+
+                        # Center vertices at origin
+                        v_centered = vertices - centroid  # [n_vertices, d]
+
+                        # Compute inertia tensor (covariance matrix)
+                        # I = (1/n_vertices) * ∑_k v_k v_k^T
+                        n_verts = len(vertices)
+                        inertia = (v_centered.T @ v_centered) / n_verts  # [d, d]
+
+                        # Ensure symmetry (numerical stability)
+                        inertia = 0.5 * (inertia + inertia.T)
+
+                        # Eigendecompose: I = R @ diag(λ) @ R^T
+                        eigenvalues, eigenvectors = np.linalg.eigh(inertia)  # [d], [d, d]
+
+                        # Clamp eigenvalues to avoid division by zero
+                        # Larger eigenvalue = more elongation in that direction
+                        eigenvalues = np.maximum(eigenvalues, epsilon_sigma * 1e-2)
+
+                        # Compute elongation along each principal axis
+                        # elongation_k = sqrt(λ_k)
+                        elongation_principal = np.sqrt(eigenvalues)
+
+                        # Diffusion coefficients along principal axes
+                        # Larger elongation → smaller diffusion
+                        sigma_principal = c2 / np.sqrt(elongation_principal + epsilon_sigma)
+
+                        # Rotate back to coordinate frame
+                        # Σ = R @ diag(σ_principal) @ R^T
+                        sigma_full[i] = eigenvectors @ np.diag(sigma_principal) @ eigenvectors.T
+
+                        # Ensure symmetry (numerical stability)
+                        sigma_full[i] = 0.5 * (sigma_full[i] + sigma_full[i].T)
+
+                        # Validate positive-definiteness
+                        evals_check = np.linalg.eigvalsh(sigma_full[i])
+                        if np.any(evals_check <= 0):
+                            # Fallback to isotropic if not positive-definite
+                            sigma_full[i] = np.eye(d) * isotropic_value
+
+                    except Exception:
+                        # Fallback to isotropic on any error
+                        sigma_full[i] = np.eye(d) * isotropic_value
+                else:
+                    # Boundary or degenerate cell - use isotropic diffusion
+                    sigma_full[i] = np.eye(d) * isotropic_value
+            else:
+                # No Voronoi - isotropic diffusion
+                sigma_full[i] = np.eye(d) * isotropic_value
+
+        return sigma_full
