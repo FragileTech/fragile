@@ -729,15 +729,12 @@ def _compute_all_facet_areas(
             elif d == 3:
                 # In 3D, facet is a polygon
                 if len(vertices) >= 3:
-                    # Triangulate from first vertex and sum triangle areas
+                    # Triangulate from first vertex and sum triangle areas (vectorized)
                     v0 = vertices[0]
-                    total_area = 0.0
-                    for i in range(1, len(vertices) - 1):
-                        v1 = vertices[i]
-                        v2 = vertices[i + 1]
-                        cross = np.cross(v1 - v0, v2 - v0)
-                        total_area += 0.5 * np.linalg.norm(cross)
-                    areas_half[k] = total_area
+                    v1 = vertices[1:-1]
+                    v2 = vertices[2:]
+                    cross = np.cross(v1 - v0, v2 - v0)
+                    areas_half[k] = 0.5 * np.linalg.norm(cross, axis=1).sum()
                 else:
                     areas_half[k] = 1.0
             else:
@@ -783,31 +780,42 @@ def _extract_vertex_data(
     n_vertices = len(vor.vertices)
 
     # Build cell->vertex mapping
+    counts_np = np.zeros(n_alive, dtype=np.int64)
+    flat_vertices_list: list[int] = []
     max_verts = 0
-    cell_vertices_list = []
 
     for i in range(n_alive):
         region_idx = vor.point_region[i]
         vertices_idx = vor.regions[region_idx]
 
-        # Filter out -1 (infinite vertex)
-        vertices_idx = [v for v in vertices_idx if v >= 0]
-        cell_vertices_list.append(vertices_idx)
-        max_verts = max(max_verts, len(vertices_idx))
+        # Filter out -1 (infinite vertex) while building flat index list.
+        count = 0
+        for v in vertices_idx:
+            if v >= 0:
+                flat_vertices_list.append(v)
+                count += 1
+        counts_np[i] = count
+        if count > max_verts:
+            max_verts = count
 
     # Create padded array
+    cell_vertex_counts = torch.from_numpy(counts_np).to(device=device)
     cell_vertex_indices = torch.full(
         (n_alive, max_verts), -1, dtype=torch.long, device=device
     )
-    cell_vertex_counts = torch.zeros(n_alive, dtype=torch.long, device=device)
 
-    for i, vertices_idx in enumerate(cell_vertices_list):
-        n_verts = len(vertices_idx)
-        if n_verts > 0:
-            cell_vertex_indices[i, :n_verts] = torch.tensor(
-                vertices_idx, dtype=torch.long, device=device
-            )
-        cell_vertex_counts[i] = n_verts
+    total_verts = int(counts_np.sum())
+    if total_verts > 0:
+        flat_np = np.fromiter(flat_vertices_list, dtype=np.int64, count=total_verts)
+        flat_vertices = torch.from_numpy(flat_np).to(device=device)
+        row_indices = torch.repeat_interleave(
+            torch.arange(n_alive, device=device), cell_vertex_counts
+        )
+        row_offsets = torch.repeat_interleave(
+            cell_vertex_counts.cumsum(0) - cell_vertex_counts, cell_vertex_counts
+        )
+        col_indices = torch.arange(total_verts, device=device) - row_offsets
+        cell_vertex_indices[row_indices, col_indices] = flat_vertices
 
     return vertex_positions, cell_vertex_indices, cell_vertex_counts
 
@@ -833,22 +841,17 @@ def _compute_cell_centroids(
     Returns:
         [N, d] tensor of cell centroids
     """
-    n_cells = cell_vertex_indices.shape[0]
-    centroids = torch.zeros(n_cells, d, device=device, dtype=dtype)
+    n_cells, max_verts = cell_vertex_indices.shape
+    if max_verts == 0 or vertex_positions.numel() == 0:
+        return torch.zeros(n_cells, d, device=device, dtype=dtype)
 
-    for i in range(n_cells):
-        n_verts = cell_vertex_counts[i].item()
-        if n_verts == 0:
-            # No vertices - leave as zero
-            continue
-
-        # Get vertex indices (exclude padding)
-        vert_idx = cell_vertex_indices[i, :n_verts]
-
-        # Compute mean position
-        centroids[i] = vertex_positions[vert_idx].mean(dim=0)
-
-    return centroids
+    valid_mask = cell_vertex_indices >= 0
+    safe_indices = cell_vertex_indices.clamp(min=0)
+    verts = vertex_positions[safe_indices]
+    verts = verts * valid_mask.unsqueeze(-1)
+    summed = verts.sum(dim=1)
+    counts = cell_vertex_counts.to(dtype=dtype).clamp(min=1).unsqueeze(-1)
+    return summed / counts
 
 
 def _classify_boundary_cells(
@@ -885,53 +888,34 @@ def _classify_boundary_cells(
     # Step 1: Detect Tier 0 (boundary cells)
     is_boundary = torch.zeros(n_alive, dtype=torch.bool, device=device)
 
-    for i in range(n_alive):
-        # Method A: Check if Voronoi region has -1 vertices (infinite region)
-        region_idx = vor.point_region[i]
-        vertices_idx = vor.regions[region_idx]
-        if -1 in vertices_idx:
-            is_boundary[i] = True
-            continue
+    # Method A: infinite Voronoi regions (-1 in region list)
+    region_has_inf = np.fromiter(((-1 in region) for region in vor.regions), dtype=np.bool_)
+    region_idx = np.asarray(vor.point_region[:n_alive], dtype=np.int64)
+    is_boundary |= torch.from_numpy(region_has_inf[region_idx]).to(device=device)
 
-        # Method B: Check if position is near box boundary
-        if bounds is not None:
-            pos = positions[i].cpu().numpy()
-            d = positions.shape[1]
+    # Method B: near box boundary (vectorized)
+    if bounds is not None:
+        if spatial_dims is not None:
+            low = bounds.low[:spatial_dims]
+            high = bounds.high[:spatial_dims]
+        else:
+            low = bounds.low
+            high = bounds.high
 
-            # Extract bounds (handle spatial_dims)
-            if spatial_dims is not None:
-                low = bounds.low[:spatial_dims].cpu().numpy() if torch.is_tensor(bounds.low) else bounds.low[:spatial_dims]
-                high = bounds.high[:spatial_dims].cpu().numpy() if torch.is_tensor(bounds.high) else bounds.high[:spatial_dims]
-            else:
-                low = bounds.low.cpu().numpy() if torch.is_tensor(bounds.low) else bounds.low
-                high = bounds.high.cpu().numpy() if torch.is_tensor(bounds.high) else bounds.high
+        low = torch.as_tensor(low, device=device, dtype=positions.dtype)
+        high = torch.as_tensor(high, device=device, dtype=positions.dtype)
 
-            near_boundary = False
-            for dim in range(d):
-                if abs(pos[dim] - low[dim]) < boundary_tolerance:
-                    near_boundary = True
-                    break
-                if abs(pos[dim] - high[dim]) < boundary_tolerance:
-                    near_boundary = True
-                    break
+        near_boundary = ((positions - low) < boundary_tolerance) | (
+            (high - positions) < boundary_tolerance
+        )
+        is_boundary |= near_boundary.any(dim=1)
 
-            if near_boundary:
-                is_boundary[i] = True
-
-    # Step 2: Detect Tier 1 (boundary-adjacent)
-    is_boundary_adjacent = torch.zeros(n_alive, dtype=torch.bool, device=device)
-
+    # Step 2: Detect Tier 1 (boundary-adjacent), vectorized
     src, dst = edge_index
-    for i in range(n_alive):
-        if is_boundary[i]:
-            continue  # Already Tier 0
-
-        # Check if any neighbor is boundary
-        neighbor_mask = src == i
-        neighbors = dst[neighbor_mask]
-
-        if torch.any(is_boundary[neighbors]):
-            is_boundary_adjacent[i] = True
+    neighbor_is_boundary = is_boundary[dst].to(torch.int64)
+    boundary_neighbor_counts = torch.zeros(n_alive, dtype=torch.int64, device=device)
+    boundary_neighbor_counts.index_add_(0, src, neighbor_is_boundary)
+    is_boundary_adjacent = (boundary_neighbor_counts > 0) & (~is_boundary)
 
     # Step 3: Assign tiers
     tier[is_boundary] = 0

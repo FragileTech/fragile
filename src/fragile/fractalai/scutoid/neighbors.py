@@ -132,6 +132,139 @@ def project_to_boundary_face(
     return projected, normal
 
 
+def _get_dimensional_fallback(d: int) -> float:
+    """Get reasonable default facet area based on dimensionality.
+
+    These constants assume a unit box domain and provide conservative
+    estimates for average cell boundary areas.
+
+    Args:
+        d: Spatial dimension
+
+    Returns:
+        Default area estimate
+    """
+    if d == 2:
+        return 0.1
+    elif d == 3:
+        return 0.05
+    elif d == 4:
+        return 0.025
+    else:
+        return 0.1 / d
+
+
+def _compute_2d_boundary_segment_length(
+    boundary_vertices: np.ndarray,
+    dim: int,
+) -> float:
+    """Compute length of boundary line segment in 2D.
+
+    In 2D, the boundary intersection is a 1D line segment.
+    Find the two extreme points along the non-boundary dimension.
+
+    Args:
+        boundary_vertices: [n, 2] vertices near boundary (n >= 2)
+        dim: Boundary dimension (0 or 1)
+
+    Returns:
+        Length of segment
+
+    Raises:
+        ValueError: If insufficient vertices
+    """
+    if len(boundary_vertices) < 2:
+        raise ValueError("Need at least 2 vertices for 2D facet")
+
+    # Find the two extreme points along the non-boundary dimension
+    other_dim = 1 - dim
+    sorted_verts = boundary_vertices[boundary_vertices[:, other_dim].argsort()]
+    return float(np.linalg.norm(sorted_verts[-1] - sorted_verts[0]))
+
+
+def _compute_convexhull_projection_area(
+    boundary_vertices: np.ndarray,
+    dim: int,
+    d: int,
+) -> float:
+    """Compute area/volume of boundary intersection using ConvexHull projection.
+
+    Projects boundary vertices to (d-1)-dimensional space by removing the
+    boundary dimension, then computes ConvexHull measure.
+
+    Args:
+        boundary_vertices: [n, d] vertices near boundary
+        dim: Boundary dimension to remove (0..d-1)
+        d: Total dimensionality (3, 4, or higher)
+
+    Returns:
+        Area (d=3) or volume (d≥4) of boundary intersection
+
+    Raises:
+        ValueError: If insufficient vertices or ConvexHull fails
+    """
+    # Minimum vertices: d for d-dimensional ConvexHull
+    if len(boundary_vertices) < d:
+        raise ValueError(f"Need at least {d} vertices for {d}D facet")
+
+    # Project to (d-1)-dimensional space by removing boundary dimension
+    dims_to_keep = [i for i in range(d) if i != dim]
+    verts_proj = boundary_vertices[:, dims_to_keep]
+
+    # Compute ConvexHull in projected space
+    hull = ConvexHull(verts_proj)
+    return float(hull.volume)  # In (d-1)D, volume = (d-1)-measure
+
+
+def _estimate_from_ridge_areas(
+    walker_idx: int,
+    vor: Voronoi,
+) -> float | None:
+    """Estimate facet area from walker's ridge (neighbor facet) areas.
+
+    Analyzes all ridges (shared facets) involving the walker and
+    computes their average area as a proxy for boundary facet area.
+
+    Args:
+        walker_idx: Index of walker in Voronoi tessellation
+        vor: scipy Voronoi object
+
+    Returns:
+        Mean ridge area, or None if no valid ridges found
+    """
+    # Find all ridges involving this walker
+    walker_ridges = []
+    for ridge_idx, (p1, p2) in enumerate(vor.ridge_points):
+        if p1 == walker_idx or p2 == walker_idx:
+            walker_ridges.append(ridge_idx)
+
+    if not walker_ridges:
+        return None
+
+    # Compute ridge areas
+    ridge_areas = []
+    for ridge_idx in walker_ridges:
+        ridge_verts = vor.ridge_vertices[ridge_idx]
+        if -1 not in ridge_verts and len(ridge_verts) >= 2:
+            verts = vor.vertices[ridge_verts]
+
+            if len(verts) == 2:  # 2D ridge is a line
+                area = np.linalg.norm(verts[1] - verts[0])
+            else:  # 3D+ ridge is a polygon/polyhedron
+                try:
+                    hull = ConvexHull(verts)
+                    area = hull.volume
+                except Exception:
+                    area = 0.1  # Default fallback
+
+            ridge_areas.append(area)
+
+    if ridge_areas:
+        return float(np.mean(ridge_areas))
+
+    return None
+
+
 def estimate_boundary_facet_area(
     walker_idx: int,
     face_id: int,
@@ -163,14 +296,14 @@ def estimate_boundary_facet_area(
         Estimated facet area (positive float)
     """
     try:
-        # Get Voronoi region for this walker
+        # Extract Voronoi region vertices
         region_idx = vor.point_region[walker_idx]
         vertex_indices = vor.regions[region_idx]
 
         # Filter out infinite vertices (-1)
         vertex_indices = [v for v in vertex_indices if v != -1]
 
-        if len(vertex_indices) < 2:  # Need at least 2 vertices for area
+        if len(vertex_indices) < 2:
             raise ValueError("Insufficient vertices")
 
         vertices = vor.vertices[vertex_indices]
@@ -190,91 +323,27 @@ def estimate_boundary_facet_area(
 
         boundary_vertices = vertices[near_boundary]
 
-        # Estimate area based on dimensionality
+        # Compute area based on dimensionality
         if d == 2:
-            # In 2D, boundary intersection is a line segment
-            # Area = length of segment
-            if len(boundary_vertices) >= 2:
-                # Find the two extreme points
-                other_dim = 1 - dim
-                sorted_verts = boundary_vertices[boundary_vertices[:, other_dim].argsort()]
-                area = np.linalg.norm(sorted_verts[-1] - sorted_verts[0])
-            else:
-                raise ValueError("Need 2 vertices for 2D facet")
-
-        elif d == 3:
-            # In 3D, boundary intersection is a polygon
-            # Use convex hull area
-            if len(boundary_vertices) >= 3:
-
-                # Project to 2D (remove the boundary dimension)
-                dims_to_keep = [i for i in range(3) if i != dim]
-                verts_2d = boundary_vertices[:, dims_to_keep]
-
-                # Compute convex hull area
-                hull = ConvexHull(verts_2d)
-                area = hull.volume  # In 2D, volume is area
-            else:
-                raise ValueError("Need 3 vertices for 3D facet")
-        elif d == 4:
-            # In 4D, boundary intersection is a 3D polyhedron
-            # Use convex hull volume
-            if len(boundary_vertices) >= 4:
-
-                # Project to 3D (remove the boundary dimension)
-                dims_to_keep = [i for i in range(4) if i != dim]
-                verts_3d = boundary_vertices[:, dims_to_keep]
-
-                # Compute convex hull volume (3D)
-                hull = ConvexHull(verts_3d)
-                area = hull.volume  # 3D volume
-            else:
-                raise ValueError("Need 4 vertices for 4D facet")
+            area = _compute_2d_boundary_segment_length(boundary_vertices, dim)
+        elif d in (3, 4):
+            area = _compute_convexhull_projection_area(boundary_vertices, dim, d)
         else:
             raise ValueError(f"Unsupported dimension: {d}")
 
         return float(area)
 
     except (ValueError, IndexError, Exception):
-        # Fallback: estimate from average neighbor facet area
-        # Get ridge information for this walker
-        walker_ridges = []
-        for ridge_idx, (p1, p2) in enumerate(vor.ridge_points):
-            if p1 == walker_idx or p2 == walker_idx:
-                walker_ridges.append(ridge_idx)
+        # Fallback strategy: ridge analysis → dimensional defaults
 
-        if walker_ridges:
-            # Estimate facet area from ridge lengths
-            ridge_areas = []
-            for ridge_idx in walker_ridges:
-                ridge_verts = vor.ridge_vertices[ridge_idx]
-                if -1 not in ridge_verts and len(ridge_verts) >= 2:
-                    verts = vor.vertices[ridge_verts]
-                    if len(verts) == 2:  # 2D ridge is a line
-                        area = np.linalg.norm(verts[1] - verts[0])
-                    else:  # 3D+ ridge is a polygon/polyhedron
-                        try:
-                            from scipy.spatial import ConvexHull
+        # Try ridge-based estimation
+        ridge_area = _estimate_from_ridge_areas(walker_idx, vor)
+        if ridge_area is not None:
+            return ridge_area
 
-                            hull = ConvexHull(verts)
-                            area = hull.volume
-                        except Exception:
-                            area = 0.1  # Default fallback
-                    ridge_areas.append(area)
-
-            if ridge_areas:
-                return float(np.mean(ridge_areas))
-
-        # Ultimate fallback: use average cell size
+        # Ultimate fallback: dimensional defaults
         d = positions.shape[1]
-        if d == 2:
-            return 0.1  # Reasonable default for unit box
-        elif d == 3:
-            return 0.05  # Smaller for 3D
-        elif d == 4:
-            return 0.025  # Smaller for 4D
-        else:
-            return 0.1 / d  # Scale by dimension
+        return _get_dimensional_fallback(d)
 
 
 def project_faces_vectorized(
@@ -309,7 +378,7 @@ def project_faces_vectorized(
     proj_positions = position.unsqueeze(0).expand(k, d).clone()  # [k, d]
     normals = torch.zeros(k, d, dtype=dtype, device=device)  # [k, d]
 
-    #  TODO: vectorize this if worth it
+    #  TODO: vectorize this as a single pytorch operation
     for i in range(k):
         dim = dims[i].item()
         if is_high[i]:
