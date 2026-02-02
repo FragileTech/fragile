@@ -8,7 +8,7 @@ author: "Guillem Duran-Ballester"
 # The Fractal Gas
 **Population-Based Optimization with Gauge Structure**
 
-by *Guillem Duran-Ballester*
+by *Guillem Duran-Ballester and Sergio Hernández Cerezo*
 
 :::{admonition} TL;DR — One-Page Summary
 :class: tip dropdown

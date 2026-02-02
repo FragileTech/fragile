@@ -8,7 +8,7 @@ author: "Guillem Duran-Ballester"
 # Lectures on Algorithmic Geometrodynamics
 **A Three-Volume Theory of Bounded Intelligence**
 
-by *Guillem Duran-Ballester*
+by *Guillem Duran-Ballester and Sergio Hernández Cerezo*
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18237451.svg)](https://doi.org/10.5281/zenodo.18237451)
 
@@ -545,7 +545,7 @@ A recommended approach for understanding this framework:
 **BibTeX:**
 ```bibtex
 @book{duranballester2025lag,
-  author    = {Duran Ballester, Guillem},
+  author    = {Duran Ballester, Guillem and Hernández Cerezo, Sergio },
   title     = {Lectures on Algorithmic Geometrodynamics},
   year      = {2025},
   publisher = {Zenodo},
@@ -554,5 +554,5 @@ A recommended approach for understanding this framework:
 }
 ```
 
-**Note on naming:** The author's name follows Spanish naming conventions. *Duran Ballester* is the complete surname (paternal + maternal). Please index under **D** for Duran, not B for Ballester. The hyphenated form *Duran-Ballester* is used in English contexts to prevent parser errors.
+**Note on naming:** The author's name follows Spanish naming conventions. *Duran Ballester* is the complete surname (paternal + maternal). Please index under **D** for Duran, not B for Ballester. The hyphenated form *Duran-Ballester* is used in English contexts to prevent parser errors. The same logic applies to Sergio Hernández Cerezo.
 :::

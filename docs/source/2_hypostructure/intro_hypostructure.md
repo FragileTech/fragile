@@ -8,7 +8,7 @@ author: "Guillem Duran-Ballester"
 # The Hypostructure Formalism
 **A Categorical Framework for Singularity Resolution**
 
-by *Guillem Duran-Ballester*
+by *Guillem Duran-Ballester and Sergio Hernández Cerezo*
 
 :::{admonition} TL;DR — One-Page Summary
 :class: tip dropdown
