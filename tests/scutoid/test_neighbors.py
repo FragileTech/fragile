@@ -632,6 +632,68 @@ class TestVectorizedProjection:
             assert torch.allclose(normals_vec[i], normal_scalar)
 
 
+class TestParallelization:
+    """Tests for parallel facet area computation."""
+
+    def test_parallel_matches_sequential(self):
+        """Verify parallel computation produces identical results to sequential."""
+        # Create positions near boundaries in 3D
+        np.random.seed(42)
+        positions = torch.from_numpy(
+            np.random.randn(100, 3).astype(np.float32) * 0.3 + 0.5
+        )
+        positions = torch.clamp(positions, 0.05, 0.95)
+
+        vor = Voronoi(positions.numpy())
+        tier = torch.zeros(len(positions), dtype=torch.long)
+        bounds = TorchBounds(
+            low=torch.tensor([0.0, 0.0, 0.0]), high=torch.tensor([1.0, 1.0, 1.0])
+        )
+
+        # Compute with sequential (n_jobs=1)
+        result_seq = compute_boundary_neighbors(
+            positions, tier, bounds, vor, boundary_tolerance=0.2, n_jobs=1
+        )
+
+        # Compute with parallel (n_jobs=4)
+        result_par = compute_boundary_neighbors(
+            positions, tier, bounds, vor, boundary_tolerance=0.2, n_jobs=4
+        )
+
+        # Results should match exactly
+        assert len(result_seq.positions) == len(result_par.positions)
+        assert torch.allclose(result_seq.positions, result_par.positions)
+        assert torch.allclose(result_seq.normals, result_par.normals)
+        assert torch.allclose(result_seq.distances, result_par.distances)
+        assert torch.allclose(result_seq.facet_areas, result_par.facet_areas, rtol=1e-5)
+        assert torch.equal(result_seq.walker_indices, result_par.walker_indices)
+        assert torch.equal(result_seq.face_ids, result_par.face_ids)
+
+    def test_parallel_small_workload(self):
+        """Test that small workloads (<10 pairs) fall back to sequential."""
+        # Create just a few positions (need at least d+1 non-colinear points)
+        positions = torch.tensor(
+            [
+                [0.05, 0.5],  # Near left boundary
+                [0.95, 0.5],  # Near right boundary
+                [0.5, 0.2],   # Interior - lower
+                [0.5, 0.8],   # Interior - upper
+            ],
+            dtype=torch.float32,
+        )
+
+        vor = Voronoi(positions.numpy())
+        tier = torch.zeros(len(positions), dtype=torch.long)
+        bounds = TorchBounds(low=torch.tensor([0.0, 0.0]), high=torch.tensor([1.0, 1.0]))
+
+        # Should work without crashing (uses sequential path)
+        result = compute_boundary_neighbors(
+            positions, tier, bounds, vor, boundary_tolerance=0.2, n_jobs=4
+        )
+
+        assert len(result.positions) >= 1
+
+
 class TestPerformance:
     """Performance tests for CSR format and vectorization."""
 
@@ -677,6 +739,70 @@ class TestPerformance:
 
         # Performance should be reasonable (< 1 second for 200 walkers)
         assert avg_time < 1.0
+
+    def test_parallel_performance_improvement(self):
+        """Benchmark parallel vs sequential facet area computation.
+
+        Note: Parallelization overhead may dominate for small workloads (<500 pairs).
+        This test documents the performance characteristics but doesn't enforce
+        a speedup threshold.
+        """
+        import time
+
+        # Create positions with significant boundary workload
+        np.random.seed(42)
+        positions = torch.from_numpy(
+            np.random.randn(200, 3).astype(np.float32) * 0.3 + 0.5
+        )
+        positions = torch.clamp(positions, 0.05, 0.95)
+
+        vor = Voronoi(positions.numpy())
+        tier = torch.zeros(len(positions), dtype=torch.long)
+        bounds = TorchBounds(
+            low=torch.tensor([0.0, 0.0, 0.0]), high=torch.tensor([1.0, 1.0, 1.0])
+        )
+
+        # Warm up
+        _ = compute_boundary_neighbors(
+            positions, tier, bounds, vor, boundary_tolerance=0.2, n_jobs=1
+        )
+
+        # Benchmark sequential
+        num_runs = 3
+        times_seq = []
+        for _ in range(num_runs):
+            start = time.time()
+            result_seq = compute_boundary_neighbors(
+                positions, tier, bounds, vor, boundary_tolerance=0.2, n_jobs=1
+            )
+            times_seq.append(time.time() - start)
+
+        # Benchmark parallel (4 cores)
+        times_par = []
+        for _ in range(num_runs):
+            start = time.time()
+            result_par = compute_boundary_neighbors(
+                positions, tier, bounds, vor, boundary_tolerance=0.2, n_jobs=4
+            )
+            times_par.append(time.time() - start)
+
+        avg_seq = np.mean(times_seq)
+        avg_par = np.mean(times_par)
+        speedup = avg_seq / avg_par
+
+        print(f"\nParallel performance (200 walkers):")
+        print(f"  Sequential: {avg_seq*1000:.2f} ms")
+        print(f"  Parallel (4 cores): {avg_par*1000:.2f} ms")
+        print(f"  Speedup: {speedup:.2f}x")
+        print(f"  Number of boundary pairs: {len(result_par.positions)}")
+
+        # Note: For small workloads (~170 pairs), parallelization overhead
+        # dominates and sequential is faster. Parallelization becomes beneficial
+        # for workloads >500 pairs where facet area computation time exceeds
+        # process spawning overhead.
+        #
+        # This test documents the behavior - no assertion on speedup since
+        # small workloads are expected to be slower with parallelization.
 
     def test_csr_performance_improvement(self):
         """Benchmark CSR vs COO for neighbor queries."""

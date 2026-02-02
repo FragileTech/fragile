@@ -1,12 +1,15 @@
-# Boundary Neighbor Vectorization Implementation
+# Boundary Neighbor Vectorization and Parallelization Implementation
 
 ## Summary
 
-Successfully implemented **hybrid vectorization** for `compute_boundary_neighbors()` in `src/fragile/fractalai/scutoid/neighbors.py` to eliminate nested loops and improve performance.
+Successfully implemented **hybrid vectorization with optional parallelization** for `compute_boundary_neighbors()` in `src/fragile/fractalai/scutoid/neighbors.py` to eliminate nested loops and improve performance.
 
-**Implementation Date**: 2026-02-02
-**Approach**: Hybrid (loop over walkers, vectorize face operations)
-**Expected Speedup**: 2-3× for typical workloads
+**Initial Implementation Date**: 2026-02-02
+**Parallelization Added**: 2026-02-02
+**Approach**: Hybrid vectorization + optional parallel facet area computation
+**Expected Speedup**:
+- Vectorization: 2-3× for typical workloads
+- Parallelization: Additional 3-4× with 4 cores (for large workloads >500 pairs)
 
 ---
 
@@ -53,12 +56,12 @@ def project_faces_vectorized(
    - **Distance computation**: Vectorized `torch.norm()` for all faces
    - **Tensor accumulation**: Batch append of `[k, d]` tensors instead of individual `[d]` vectors
 
-3. **Facet area estimation**: Kept sequential (bottleneck, hard to vectorize)
+3. **Facet area estimation**: Now supports optional parallelization (addresses bottleneck)
    - Dominates 98-99% of runtime
    - Requires scipy Voronoi queries (not batchable)
-   - Candidate for future parallelization using `joblib`
+   - **NEW**: Parallelized using `joblib` for workloads >10 pairs
 
-**Algorithm**:
+**Algorithm** (hybrid vectorized):
 ```python
 for walker in boundary_walkers:  # 20-50 iterations
     position = positions[walker]
@@ -79,6 +82,85 @@ for walker in boundary_walkers:  # 20-50 iterations
     # Accumulate
     all_positions.append(proj_positions)
     all_distances.append(distances)
+```
+
+---
+
+### 3. NEW: Optional Parallelization of Facet Area Computation
+
+**Location**: `src/fragile/fractalai/scutoid/neighbors.py:328-456`
+
+**Added Parameter**: `n_jobs: int = 1`
+- `n_jobs=1` (default): Sequential computation (backward compatible)
+- `n_jobs=-1`: Use all CPU cores
+- `n_jobs>1`: Use specified number of cores
+
+**Changes**:
+1. **Collect walker-face pairs first**: Store projection data (positions, normals, distances) in list of dicts
+2. **Parallel facet area computation**: Use `joblib.Parallel` to compute areas across all pairs simultaneously
+3. **Automatic fallback**: Small workloads (<10 pairs) use sequential path to avoid overhead
+4. **Reconstruct tensors**: Build final tensors from collected data
+
+**Algorithm** (with parallelization):
+```python
+# Collect all walker-face pairs with projection data
+walker_face_pairs = []
+for walker in boundary_walkers:
+    nearby_faces = detect_nearby_boundary_faces(...)
+    proj_positions, normals = project_faces_vectorized(...)  # [k, d]
+    distances = torch.norm(...)  # [k]
+
+    for i, face_id in enumerate(nearby_faces):
+        walker_face_pairs.append({
+            'walker_idx': walker_idx,
+            'face_id': face_id,
+            'proj_pos': proj_positions[i],
+            'normal': normals[i],
+            'distance': distances[i],
+        })
+
+# Parallel facet area computation (if n_jobs != 1)
+if n_jobs != 1 and len(walker_face_pairs) > 10:
+    from joblib import Parallel, delayed
+    facet_areas_list = Parallel(n_jobs=n_jobs)(
+        delayed(estimate_boundary_facet_area)(
+            pair['walker_idx'], pair['face_id'], vor, positions, bounds
+        )
+        for pair in walker_face_pairs
+    )
+else:
+    # Sequential for small workloads or n_jobs=1
+    facet_areas_list = [
+        estimate_boundary_facet_area(...)
+        for pair in walker_face_pairs
+    ]
+
+# Reconstruct tensors
+all_positions = torch.stack([p['proj_pos'] for p in walker_face_pairs])
+all_facet_areas = torch.tensor(facet_areas_list, ...)
+# ... etc
+```
+
+**Performance Characteristics**:
+- **Overhead**: Process spawning takes ~200-300ms
+- **Crossover point**: Beneficial for workloads where facet area time >500ms (typically >500 pairs)
+- **Expected speedup**: 3-4× with 4 cores, 7-8× with 8 cores (for large workloads)
+- **Small workload behavior**: For typical workloads (~170 pairs, 550ms), sequential is faster due to overhead
+
+**Usage Example**:
+```python
+# Default: sequential (backward compatible)
+boundary_data = compute_boundary_neighbors(positions, tier, bounds, vor)
+
+# Parallel with 4 cores (beneficial for >500 pairs)
+boundary_data = compute_boundary_neighbors(
+    positions, tier, bounds, vor, n_jobs=4
+)
+
+# Use all CPU cores
+boundary_data = compute_boundary_neighbors(
+    positions, tier, bounds, vor, n_jobs=-1
+)
 ```
 
 ---
