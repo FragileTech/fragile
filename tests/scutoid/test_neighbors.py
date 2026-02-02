@@ -8,6 +8,7 @@ from scipy.spatial import Voronoi
 from fragile.fractalai.scutoid.neighbors import (
     detect_nearby_boundary_faces,
     project_to_boundary_face,
+    project_faces_vectorized,
     estimate_boundary_facet_area,
     compute_boundary_neighbors,
     create_extended_edge_index,
@@ -553,8 +554,129 @@ class TestVoronoiIntegration:
         assert len(neighbors_walkers) <= len(neighbors_all)
 
 
+class TestVectorizedProjection:
+    """Test vectorized projection function."""
+
+    def test_project_faces_vectorized_single_face(self):
+        """Test vectorized projection with single face."""
+        bounds = TorchBounds(low=torch.tensor([0.0, 0.0]), high=torch.tensor([1.0, 1.0]))
+        position = torch.tensor([0.1, 0.5])
+        face_ids = torch.tensor([0])  # Left wall
+
+        proj_positions, normals = project_faces_vectorized(
+            position, face_ids, bounds, 2, torch.device("cpu"), torch.float32
+        )
+
+        assert proj_positions.shape == (1, 2)
+        assert normals.shape == (1, 2)
+        assert torch.allclose(proj_positions[0], torch.tensor([0.0, 0.5]))
+        assert torch.allclose(normals[0], torch.tensor([-1.0, 0.0]))
+
+    def test_project_faces_vectorized_multiple_faces(self):
+        """Test vectorized projection with multiple faces (corner case)."""
+        bounds = TorchBounds(low=torch.tensor([0.0, 0.0]), high=torch.tensor([1.0, 1.0]))
+        position = torch.tensor([0.05, 0.03])  # Near bottom-left corner
+        face_ids = torch.tensor([0, 2])  # Left and bottom walls
+
+        proj_positions, normals = project_faces_vectorized(
+            position, face_ids, bounds, 2, torch.device("cpu"), torch.float32
+        )
+
+        assert proj_positions.shape == (2, 2)
+        assert normals.shape == (2, 2)
+
+        # First projection (left wall)
+        assert torch.allclose(proj_positions[0], torch.tensor([0.0, 0.03]))
+        assert torch.allclose(normals[0], torch.tensor([-1.0, 0.0]))
+
+        # Second projection (bottom wall)
+        assert torch.allclose(proj_positions[1], torch.tensor([0.05, 0.0]))
+        assert torch.allclose(normals[1], torch.tensor([0.0, -1.0]))
+
+    def test_project_faces_vectorized_3d(self):
+        """Test vectorized projection in 3D."""
+        bounds = TorchBounds(
+            low=torch.tensor([0.0, 0.0, 0.0]), high=torch.tensor([1.0, 1.0, 1.0])
+        )
+        position = torch.tensor([0.5, 0.95, 0.5])
+        face_ids = torch.tensor([3])  # y-high wall
+
+        proj_positions, normals = project_faces_vectorized(
+            position, face_ids, bounds, 3, torch.device("cpu"), torch.float32
+        )
+
+        assert proj_positions.shape == (1, 3)
+        assert torch.allclose(proj_positions[0], torch.tensor([0.5, 1.0, 0.5]))
+        assert torch.allclose(normals[0], torch.tensor([0.0, 1.0, 0.0]))
+
+    def test_project_faces_vectorized_matches_scalar(self):
+        """Test that vectorized version matches scalar projection."""
+        bounds = TorchBounds(low=torch.tensor([0.0, 0.0]), high=torch.tensor([1.0, 1.0]))
+        position = torch.tensor([0.1, 0.9])
+
+        # Test all 4 faces
+        face_ids = torch.tensor([0, 1, 2, 3])
+
+        # Vectorized version
+        proj_vec, normals_vec = project_faces_vectorized(
+            position, face_ids, bounds, 2, torch.device("cpu"), torch.float32
+        )
+
+        # Scalar version (for comparison)
+        for i, face_id in enumerate(face_ids):
+            proj_scalar, normal_scalar = project_to_boundary_face(
+                position, face_id.item(), bounds
+            )
+
+            assert torch.allclose(proj_vec[i], proj_scalar)
+            assert torch.allclose(normals_vec[i], normal_scalar)
+
+
 class TestPerformance:
-    """Performance tests for CSR format."""
+    """Performance tests for CSR format and vectorization."""
+
+    def test_vectorized_boundary_neighbors_performance(self):
+        """Benchmark vectorized boundary neighbor computation."""
+        import time
+
+        # Create positions near boundaries in 3D
+        np.random.seed(42)
+        positions = torch.from_numpy(
+            np.random.randn(200, 3).astype(np.float32) * 0.3 + 0.5
+        )
+
+        # Clip to ensure some are near boundaries
+        positions = torch.clamp(positions, 0.05, 0.95)
+
+        # Build Voronoi
+        vor = Voronoi(positions.numpy())
+
+        # All walkers are tier 0 (boundary) for maximum workload
+        tier = torch.zeros(len(positions), dtype=torch.long)
+
+        bounds = TorchBounds(
+            low=torch.tensor([0.0, 0.0, 0.0]), high=torch.tensor([1.0, 1.0, 1.0])
+        )
+
+        # Warm up
+        _ = compute_boundary_neighbors(positions, tier, bounds, vor, boundary_tolerance=0.2)
+
+        # Benchmark
+        num_runs = 5
+        times = []
+        for _ in range(num_runs):
+            start = time.time()
+            result = compute_boundary_neighbors(
+                positions, tier, bounds, vor, boundary_tolerance=0.2
+            )
+            times.append(time.time() - start)
+
+        avg_time = np.mean(times)
+        print(f"\nVectorized boundary neighbors (200 walkers, 3D): {avg_time*1000:.2f} ms")
+        print(f"  Number of boundary pairs: {len(result.positions)}")
+
+        # Performance should be reasonable (< 1 second for 200 walkers)
+        assert avg_time < 1.0
 
     def test_csr_performance_improvement(self):
         """Benchmark CSR vs COO for neighbor queries."""
