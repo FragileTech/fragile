@@ -79,6 +79,9 @@ class VectorizedHistoryRecorder:
         record_sigma_reg_diag: bool = False,
         record_sigma_reg_full: bool = False,
         record_volume_weights: bool = False,
+        record_ricci_scalar: bool = False,
+        record_geodesic_edges: bool = False,
+        record_diffusion_tensors: bool = False,
         record_neighbors: bool = False,
         record_voronoi: bool = False,
     ):
@@ -102,6 +105,7 @@ class VectorizedHistoryRecorder:
         self.recorded_idx = 1  # Index in recorded arrays (0 is initial state)
         self.record_neighbors = record_neighbors
         self.record_voronoi = record_voronoi
+        self.record_geodesic_edges = record_geodesic_edges
 
         # ====================================================================
         # Preallocate all storage arrays
@@ -162,6 +166,8 @@ class VectorizedHistoryRecorder:
         self.sigma_reg_diag: Tensor | None = None
         self.sigma_reg_full: Tensor | None = None
         self.riemannian_volume_weights: Tensor | None = None
+        self.ricci_scalar_proxy: Tensor | None = None
+        self.diffusion_tensors_full: Tensor | None = None
 
         if record_gradients:
             self.fitness_gradients = torch.zeros(n_recorded - 1, N, d, device=device, dtype=dtype)
@@ -181,6 +187,12 @@ class VectorizedHistoryRecorder:
             self.riemannian_volume_weights = torch.zeros(
                 n_recorded - 1, N, device=device, dtype=dtype
             )
+        if record_ricci_scalar:
+            self.ricci_scalar_proxy = torch.zeros(n_recorded - 1, N, device=device, dtype=dtype)
+        if record_diffusion_tensors:
+            self.diffusion_tensors_full = torch.zeros(
+                n_recorded - 1, N, d, d, device=device, dtype=dtype
+            )
 
         # Kinetic operator data
         self.force_stable = torch.zeros(n_recorded - 1, N, d, device=device, dtype=dtype)
@@ -192,6 +204,9 @@ class VectorizedHistoryRecorder:
 
         # Optional neighbor graph storage (variable-length per step)
         self.neighbor_edges: list[Tensor] | None = [] if record_neighbors else None
+        self.geodesic_edge_distances: list[Tensor] | None = (
+            [] if record_geodesic_edges else None
+        )
         self.voronoi_regions: list[dict] | None = [] if record_voronoi else None
 
     def record_initial_state(
@@ -219,6 +234,10 @@ class VectorizedHistoryRecorder:
         if self.neighbor_edges is not None:
             self.neighbor_edges.append(
                 torch.zeros((0, 2), dtype=torch.long, device=self.device)
+            )
+        if self.geodesic_edge_distances is not None:
+            self.geodesic_edge_distances.append(
+                torch.zeros((0,), dtype=self.dtype, device=self.device)
             )
         if self.voronoi_regions is not None:
             self.voronoi_regions.append({})
@@ -341,12 +360,29 @@ class VectorizedHistoryRecorder:
                 self.riemannian_volume_weights[idx_minus_1] = kinetic_info[
                     "riemannian_volume_weights"
                 ]
+            if (
+                kinetic_info.get("ricci_scalar_proxy") is not None
+                and self.ricci_scalar_proxy is not None
+            ):
+                self.ricci_scalar_proxy[idx_minus_1] = kinetic_info["ricci_scalar_proxy"]
+            if (
+                kinetic_info.get("diffusion_tensors_full") is not None
+                and self.diffusion_tensors_full is not None
+            ):
+                self.diffusion_tensors_full[idx_minus_1] = kinetic_info[
+                    "diffusion_tensors_full"
+                ]
 
         if self.neighbor_edges is not None:
             edges = info.get("neighbor_edges")
             if edges is None:
                 edges = torch.zeros((0, 2), dtype=torch.long, device=self.device)
             self.neighbor_edges.append(edges)
+        if self.geodesic_edge_distances is not None:
+            geo = info.get("geodesic_edge_distances")
+            if geo is None:
+                geo = torch.zeros((0,), dtype=self.dtype, device=self.device)
+            self.geodesic_edge_distances.append(geo)
         if self.voronoi_regions is not None:
             regions = info.get("voronoi_regions")
             if regions is None:
@@ -462,6 +498,15 @@ class VectorizedHistoryRecorder:
             else None,
             riemannian_volume_weights=self.riemannian_volume_weights[: actual_recorded - 1]
             if self.riemannian_volume_weights is not None
+            else None,
+            ricci_scalar_proxy=self.ricci_scalar_proxy[: actual_recorded - 1]
+            if self.ricci_scalar_proxy is not None
+            else None,
+            geodesic_edge_distances=self.geodesic_edge_distances[:actual_recorded]
+            if self.geodesic_edge_distances is not None
+            else None,
+            diffusion_tensors_full=self.diffusion_tensors_full[: actual_recorded - 1]
+            if self.diffusion_tensors_full is not None
             else None,
             neighbor_edges=self.neighbor_edges[:actual_recorded]
             if self.neighbor_edges is not None

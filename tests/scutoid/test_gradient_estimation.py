@@ -7,6 +7,8 @@ from fragile.fractalai.scutoid import (
     compute_directional_derivative,
     estimate_gradient_quality_metrics,
 )
+from fragile.fractalai.scutoid.weights import compute_edge_weights
+from fragile.fractalai.scutoid.neighbors import build_csr_from_coo
 
 
 @pytest.fixture
@@ -43,11 +45,17 @@ def quadratic_setup():
 
 def test_gradient_quadratic_uniform_weighting(quadratic_setup):
     """Test gradient estimation with uniform weighting on quadratic function."""
+    edge_weights = compute_edge_weights(
+        quadratic_setup["positions"],
+        quadratic_setup["edge_index"],
+        mode="uniform",
+    )
+
     result = estimate_gradient_finite_difference(
         quadratic_setup["positions"],
         quadratic_setup["fitness"],
         quadratic_setup["edge_index"],
-        weighting_mode="uniform",
+        edge_weights=edge_weights,
     )
 
     grad_estimated = result["gradient"]
@@ -71,7 +79,6 @@ def test_gradient_quadratic_inverse_distance(quadratic_setup):
         quadratic_setup["positions"],
         quadratic_setup["fitness"],
         quadratic_setup["edge_index"],
-        weighting_mode="inverse_distance",
     )
 
     grad_estimated = result["gradient"]
@@ -86,25 +93,31 @@ def test_gradient_quadratic_inverse_distance(quadratic_setup):
     assert relative_error < 0.15, f"Gradient error too large: {relative_error:.2e}"
 
 
-def test_gradient_quadratic_gaussian(quadratic_setup):
-    """Test gradient estimation with Gaussian weighting."""
-    result = estimate_gradient_finite_difference(
-        quadratic_setup["positions"],
-        quadratic_setup["fitness"],
-        quadratic_setup["edge_index"],
-        weighting_mode="gaussian",
-        kernel_bandwidth=0.5,
+def test_gradient_quadratic_csr_matches_coo(quadratic_setup):
+    """CSR-based gradient estimation should match COO results."""
+    positions = quadratic_setup["positions"]
+    fitness = quadratic_setup["fitness"]
+    edge_index = quadratic_setup["edge_index"]
+
+    csr_data = build_csr_from_coo(edge_index, positions.shape[0])
+
+    result_coo = estimate_gradient_finite_difference(positions, fitness, edge_index)
+    result_csr = estimate_gradient_finite_difference(
+        positions,
+        fitness,
+        edge_index=None,
+        csr_ptr=csr_data["csr_ptr"],
+        csr_indices=csr_data["csr_indices"],
     )
 
-    grad_estimated = result["gradient"]
-    grad_true = quadratic_setup["grad_true"]
-    valid_mask = result["valid_mask"]
-
-    error = torch.norm(grad_estimated[valid_mask] - grad_true[valid_mask], dim=1)
-    relative_error = error.mean() / torch.norm(grad_true[valid_mask], dim=1).mean()
-
-    # Gaussian weighting: similar accuracy to inverse-distance
-    assert relative_error < 0.2, f"Gradient error too large: {relative_error:.2e}"
+    assert torch.equal(result_coo["valid_mask"], result_csr["valid_mask"])
+    valid_mask = result_coo["valid_mask"]
+    assert torch.allclose(
+        result_coo["gradient"][valid_mask],
+        result_csr["gradient"][valid_mask],
+        atol=1e-5,
+        rtol=1e-4,
+    )
 
 
 def test_gradient_rosenbrock():
@@ -130,7 +143,7 @@ def test_gradient_rosenbrock():
 
     # Estimate
     result = estimate_gradient_finite_difference(
-        positions, fitness, edge_index, weighting_mode="inverse_distance"
+        positions, fitness, edge_index
     )
 
     grad_estimated = result["gradient"]
@@ -154,7 +167,6 @@ def test_directional_derivative_quadratic(quadratic_setup):
         quadratic_setup["fitness"],
         quadratic_setup["edge_index"],
         direction,
-        weighting_mode="inverse_distance",
     )
 
     # True directional derivative: ∇V · [1, 0] = 2x
@@ -169,13 +181,45 @@ def test_directional_derivative_quadratic(quadratic_setup):
     assert relative_error < 1.0, f"Directional derivative error: {relative_error:.2e}"
 
 
+def test_directional_derivative_csr_matches_coo(quadratic_setup):
+    """CSR-based directional derivative should match COO results."""
+    positions = quadratic_setup["positions"]
+    fitness = quadratic_setup["fitness"]
+    edge_index = quadratic_setup["edge_index"]
+    direction = torch.tensor([1.0, 0.0])
+
+    csr_data = build_csr_from_coo(edge_index, positions.shape[0])
+
+    result_coo = compute_directional_derivative(
+        positions,
+        fitness,
+        edge_index,
+        direction,
+    )
+    result_csr = compute_directional_derivative(
+        positions,
+        fitness,
+        edge_index=None,
+        direction=direction,
+        csr_ptr=csr_data["csr_ptr"],
+        csr_indices=csr_data["csr_indices"],
+    )
+
+    valid_mask = torch.isfinite(result_coo) & torch.isfinite(result_csr)
+    assert torch.allclose(
+        result_coo[valid_mask],
+        result_csr[valid_mask],
+        atol=1e-5,
+        rtol=1e-4,
+    )
+
+
 def test_gradient_quality_metrics(quadratic_setup):
     """Test quality metrics computation."""
     result = estimate_gradient_finite_difference(
         quadratic_setup["positions"],
         quadratic_setup["fitness"],
         quadratic_setup["edge_index"],
-        weighting_mode="inverse_distance",
     )
 
     metrics = estimate_gradient_quality_metrics(
@@ -210,7 +254,6 @@ def test_gradient_with_alive_mask(quadratic_setup):
         quadratic_setup["fitness"],
         quadratic_setup["edge_index"],
         alive=alive,
-        weighting_mode="inverse_distance",
     )
 
     grad_estimated = result["gradient"]
@@ -235,7 +278,6 @@ def test_convergence_with_neighbors(quadratic_setup):
             quadratic_setup["positions"],
             quadratic_setup["fitness"],
             edge_index,
-            weighting_mode="inverse_distance",
         )
 
         grad_estimated = result["gradient"]

@@ -8,7 +8,7 @@ from pydantic import BaseModel, Field
 import torch
 from torch import Tensor
 
-from fragile.euclidean_gas import CloningParams, SwarmState, VectorizedOps
+from fragile.fractalai.core.euclidean_gas import CloningParams, SwarmState, VectorizedOps
 
 
 class AtariSwarmState(SwarmState):

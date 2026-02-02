@@ -7,22 +7,86 @@ Implements weighted finite-difference methods to estimate ∇V_fit from:
 
 import torch
 from torch import Tensor
-from typing import Literal
 
 from .utils import (
-    compute_edge_weights,
     validate_finite_difference_inputs,
 )
+from .weights import compute_edge_weights, WeightMode
+
+
+def _prepare_edge_index(
+    positions: Tensor,
+    edge_index: Tensor | None,
+    csr_ptr: Tensor | None,
+    csr_indices: Tensor | None,
+    csr_types: Tensor | None,
+) -> tuple[Tensor, Tensor]:
+    """Resolve edge_index and neighbor counts from COO or CSR inputs."""
+    device = positions.device
+    n_walkers = positions.shape[0]
+
+    if edge_index is not None:
+        if csr_ptr is not None or csr_indices is not None:
+            raise ValueError("Provide either edge_index or csr_ptr/csr_indices, not both.")
+        if edge_index.device != device:
+            raise ValueError("edge_index must be on the same device as positions.")
+        if edge_index.numel() == 0:
+            return edge_index, torch.zeros(n_walkers, dtype=torch.long, device=device)
+        if torch.any(edge_index[0] >= n_walkers) or torch.any(edge_index[1] >= n_walkers):
+            raise ValueError(
+                "edge_index contains indices outside positions. "
+                "Filter boundary neighbors before calling."
+            )
+        num_neighbors = torch.bincount(edge_index[0], minlength=n_walkers)
+        return edge_index, num_neighbors
+
+    if csr_ptr is None or csr_indices is None:
+        raise ValueError("edge_index or csr_ptr/csr_indices must be provided.")
+    if csr_ptr.device != device or csr_indices.device != device:
+        raise ValueError("CSR tensors must be on the same device as positions.")
+    if csr_ptr.numel() - 1 < n_walkers:
+        raise ValueError("csr_ptr has fewer rows than walkers in positions.")
+
+    edge_end = int(csr_ptr[n_walkers].item())
+    ptr = csr_ptr[: n_walkers + 1]
+    indices = csr_indices[:edge_end]
+    types = csr_types[:edge_end] if csr_types is not None else None
+
+    counts = ptr[1:] - ptr[:-1]
+    src = torch.repeat_interleave(torch.arange(n_walkers, device=device), counts)
+
+    if types is not None:
+        mask = types == 0
+        src = src[mask]
+        dst = indices[mask]
+        num_neighbors = torch.bincount(src, minlength=n_walkers)
+        edge_index = torch.stack([src, dst], dim=0)
+        return edge_index, num_neighbors
+
+    if torch.any(indices >= n_walkers):
+        raise ValueError(
+            "csr_types required to filter boundary neighbors for gradient estimation."
+        )
+
+    edge_index = torch.stack([src, indices], dim=0)
+    return edge_index, counts
 
 
 def estimate_gradient_finite_difference(
     positions: Tensor,
     fitness_values: Tensor,
-    edge_index: Tensor,
+    edge_index: Tensor | None,
     alive: Tensor | None = None,
-    weighting_mode: Literal["uniform", "inverse_distance", "gaussian"] = "inverse_distance",
-    kernel_bandwidth: float = 1.0,
+    edge_weights: Tensor | None = None,
+    weight_mode: WeightMode = "inverse_distance",
+    cell_volumes: Tensor | None = None,
+    metric_tensors: Tensor | None = None,
+    riemannian_volumes: Tensor | None = None,
+    normalize_weights: bool = True,
     validate_inputs: bool = True,
+    csr_ptr: Tensor | None = None,
+    csr_indices: Tensor | None = None,
+    csr_types: Tensor | None = None,
 ) -> dict[str, Tensor]:
     """Estimate fitness gradient using weighted finite differences on neighbors.
 
@@ -37,12 +101,21 @@ def estimate_gradient_finite_difference(
         fitness_values: [N] fitness/potential V(x_i) at each position
         edge_index: [2, E] neighbor connectivity graph (COO format)
         alive: [N] optional boolean mask for valid walkers
-        weighting_mode: How to weight neighbor contributions:
-            - "uniform": Simple average (robust, lower accuracy)
-            - "inverse_distance": Weight by 1/distance (recommended default)
-            - "gaussian": Smooth kernel weighting
-        kernel_bandwidth: Bandwidth σ for Gaussian weighting (if used)
+        edge_weights: Optional [E] precomputed neighbor weights
+        weight_mode: Weighting scheme for automatic computation if edge_weights is None:
+            - "uniform"
+            - "inverse_distance"
+            - "inverse_volume"
+            - "inverse_riemannian_volume"
+            - "inverse_riemannian_distance"
+        cell_volumes: Optional [N] cell volumes for volume-based weights
+        metric_tensors: Optional [N, d, d] emergent metric for Riemannian weights
+        riemannian_volumes: Optional [N] precomputed Riemannian volumes
+        normalize_weights: If True, normalize weights per source walker
         validate_inputs: If True, check for NaN/isolated walkers
+        csr_ptr: Optional [N+1] CSR row pointers
+        csr_indices: Optional [E] CSR column indices
+        csr_types: Optional [E] edge types (0=walker, 1=boundary)
 
     Returns:
         dict containing:
@@ -68,10 +141,19 @@ def estimate_gradient_finite_difference(
     N, d = positions.shape
     device = positions.device
 
+    edge_index, num_neighbors = _prepare_edge_index(
+        positions, edge_index, csr_ptr, csr_indices, csr_types
+    )
+
     # Validate inputs if requested
     if validate_inputs:
         diagnostics = validate_finite_difference_inputs(
-            positions, fitness_values, edge_index, alive, min_neighbors=2
+            positions,
+            fitness_values,
+            edge_index,
+            alive,
+            min_neighbors=2,
+            num_neighbors=num_neighbors,
         )
         valid_mask = diagnostics["valid_walkers"]
         num_neighbors = diagnostics["num_neighbors"]
@@ -79,63 +161,56 @@ def estimate_gradient_finite_difference(
         valid_mask = torch.ones(N, dtype=torch.bool, device=device)
         if alive is not None:
             valid_mask &= alive
-        # Count neighbors
-        src, dst = edge_index
-        num_neighbors = torch.zeros(N, dtype=torch.long, device=device)
-        num_neighbors.scatter_add_(0, src, torch.ones_like(src))
 
     # Compute edge weights
-    edge_weights = compute_edge_weights(
-        positions, edge_index, mode=weighting_mode,
-        kernel_bandwidth=kernel_bandwidth, alive=alive
-    )
-
     # Extract source and destination indices
     src, dst = edge_index
 
-    # Compute fitness differences
-    fitness_diffs = fitness_values[dst] - fitness_values[src]  # [E]
-
     # Compute position displacements
     displacements = positions[dst] - positions[src]  # [E, d]
-    distances_sq = (displacements**2).sum(dim=1)  # [E], needed for quality metrics
+    distances = torch.norm(displacements, dim=1)  # [E]
+    distances_sq = distances**2  # [E], needed for quality metrics
+
+    if edge_weights is None:
+        edge_weights = compute_edge_weights(
+            positions,
+            edge_index,
+            mode=weight_mode,
+            edge_distances=distances,
+            cell_volumes=cell_volumes,
+            metric_tensors=metric_tensors,
+            riemannian_volumes=riemannian_volumes,
+            alive=alive,
+            normalize=normalize_weights,
+        )
+    elif edge_weights.numel() != edge_index.shape[1]:
+        raise ValueError("edge_weights must have the same length as edge_index edges.")
+
+    # Compute fitness differences
+    fitness_diffs = fitness_values[dst] - fitness_values[src]  # [E]
 
     # For gradient estimation, we use weighted least squares:
     # Minimize Σ w_ij (∇V·Δx_ij - ΔV_ij)²
     # Solution: ∇V = (Σ w_ij Δx Δx^T)^(-1) (Σ w_ij Δx ΔV)
 
-    # Build per-walker systems
-    gradient = torch.zeros(N, d, device=device)
+    # Build per-walker systems (vectorized)
+    gradient = torch.zeros(N, d, device=device, dtype=positions.dtype)
 
-    for i in range(N):
-        # Find edges from walker i
-        walker_edges = src == i
-        if walker_edges.sum() < 2:
-            continue
+    weighted_dx = displacements * edge_weights.unsqueeze(1)  # [E, d]
+    b_contrib = weighted_dx * fitness_diffs.unsqueeze(1)  # [E, d]
 
-        # Get neighbor displacements and fitness differences
-        Δx = displacements[walker_edges]  # [k, d]
-        ΔV = fitness_diffs[walker_edges]   # [k]
-        w = edge_weights[walker_edges]     # [k]
+    b = torch.zeros(N, d, device=device, dtype=positions.dtype)
+    b.scatter_add_(0, src[:, None].expand(-1, d), b_contrib)
 
-        # Weighted covariance: Σ w_ij Δx Δx^T
-        # Shape: [d, d]
-        W_diag = torch.diag(w)  # [k, k]
-        A = Δx.T @ W_diag @ Δx   # [d, d]
+    outer = displacements[:, :, None] * displacements[:, None, :]  # [E, d, d]
+    outer = outer * edge_weights[:, None, None]
 
-        # Weighted cross-covariance: Σ w_ij Δx ΔV
-        # Shape: [d]
-        b = Δx.T @ (w * ΔV)      # [d]
+    A_flat = torch.zeros(N, d * d, device=device, dtype=positions.dtype)
+    A_flat.scatter_add_(0, src[:, None].expand(-1, d * d), outer.reshape(-1, d * d))
+    A = A_flat.view(N, d, d)
 
-        # Solve: A @ grad = b
-        # Add small regularization for numerical stability
-        A_reg = A + 1e-6 * torch.eye(d, device=device)
-
-        try:
-            gradient[i] = torch.linalg.solve(A_reg, b)
-        except RuntimeError:
-            # Singular matrix - use pseudo-inverse
-            gradient[i] = torch.linalg.lstsq(A_reg, b).solution
+    A_reg = A + 1e-6 * torch.eye(d, device=device, dtype=positions.dtype)
+    gradient = torch.linalg.solve(A_reg, b.unsqueeze(-1)).squeeze(-1)
 
     # Set invalid walkers to NaN
     gradient[~valid_mask] = float("nan")
@@ -148,22 +223,21 @@ def estimate_gradient_finite_difference(
     # and measure their variance (should be small if consistent)
     directional_derivatives = fitness_diffs / torch.sqrt(distances_sq + 1e-10)  # [E]
 
-    # Compute variance per source walker
-    estimation_quality = torch.zeros(N, device=device)
+    # Compute variance per source walker (vectorized)
+    estimation_quality = torch.zeros(N, device=device, dtype=positions.dtype)
+    if directional_derivatives.numel() > 0:
+        sum_dd = torch.zeros(N, device=device, dtype=positions.dtype)
+        sum_dd_sq = torch.zeros(N, device=device, dtype=positions.dtype)
+        sum_dd.scatter_add_(0, src, directional_derivatives)
+        sum_dd_sq.scatter_add_(0, src, directional_derivatives**2)
 
-    # For each walker, compute variance of its neighbor derivatives
-    for i in range(N):
-        if not valid_mask[i]:
-            estimation_quality[i] = float("nan")
-            continue
+        counts = torch.clamp(num_neighbors.to(sum_dd.dtype), min=1.0)
+        mean_dd = sum_dd / counts
+        var_dd = sum_dd_sq / counts - mean_dd**2
+        estimation_quality = var_dd
 
-        walker_edges = src == i
-        if walker_edges.sum() < 2:
-            estimation_quality[i] = float("nan")
-            continue
-
-        walker_derivatives = directional_derivatives[walker_edges]
-        estimation_quality[i] = torch.var(walker_derivatives)
+    estimation_quality[num_neighbors < 2] = float("nan")
+    estimation_quality[~valid_mask] = float("nan")
 
     return {
         "gradient": gradient,
@@ -177,10 +251,18 @@ def estimate_gradient_finite_difference(
 def compute_directional_derivative(
     positions: Tensor,
     fitness_values: Tensor,
-    edge_index: Tensor,
+    edge_index: Tensor | None,
     direction: Tensor,
     alive: Tensor | None = None,
-    weighting_mode: Literal["uniform", "inverse_distance", "gaussian"] = "inverse_distance",
+    edge_weights: Tensor | None = None,
+    weight_mode: WeightMode = "inverse_distance",
+    cell_volumes: Tensor | None = None,
+    metric_tensors: Tensor | None = None,
+    riemannian_volumes: Tensor | None = None,
+    normalize_weights: bool = True,
+    csr_ptr: Tensor | None = None,
+    csr_indices: Tensor | None = None,
+    csr_types: Tensor | None = None,
 ) -> Tensor:
     """Compute directional derivative ∂V/∂n along specified direction(s).
 
@@ -200,7 +282,15 @@ def compute_directional_derivative(
             If [d]: same direction for all walkers
             If [N, d]: per-walker directions (will be normalized)
         alive: [N] optional validity mask
-        weighting_mode: Edge weighting scheme
+        edge_weights: Optional [E] precomputed neighbor weights
+        weight_mode: Weighting scheme for automatic computation if edge_weights is None
+        cell_volumes: Optional [N] cell volumes for volume-based weights
+        metric_tensors: Optional [N, d, d] emergent metric for Riemannian weights
+        riemannian_volumes: Optional [N] precomputed Riemannian volumes
+        normalize_weights: If True, normalize weights per source walker
+        csr_ptr: Optional [N+1] CSR row pointers
+        csr_indices: Optional [E] CSR column indices
+        csr_types: Optional [E] edge types (0=walker, 1=boundary)
 
     Returns:
         [N] directional derivatives ∂V/∂n for each walker
@@ -225,10 +315,7 @@ def compute_directional_derivative(
         assert direction.shape == (N, d), f"Direction shape {direction.shape} != {(N, d)}"
         direction = direction / (torch.norm(direction, dim=1, keepdim=True) + 1e-10)
 
-    # Compute edge weights
-    edge_weights = compute_edge_weights(
-        positions, edge_index, mode=weighting_mode, alive=alive
-    )
+    edge_index, _ = _prepare_edge_index(positions, edge_index, csr_ptr, csr_indices, csr_types)
 
     src, dst = edge_index
 
@@ -238,6 +325,22 @@ def compute_directional_derivative(
     # Displacements
     displacements = positions[dst] - positions[src]  # [E, d]
     distances = torch.norm(displacements, dim=1)  # [E]
+
+    # Compute edge weights
+    if edge_weights is None:
+        edge_weights = compute_edge_weights(
+            positions,
+            edge_index,
+            mode=weight_mode,
+            edge_distances=distances,
+            cell_volumes=cell_volumes,
+            metric_tensors=metric_tensors,
+            riemannian_volumes=riemannian_volumes,
+            alive=alive,
+            normalize=normalize_weights,
+        )
+    elif edge_weights.numel() != edge_index.shape[1]:
+        raise ValueError("edge_weights must have the same length as edge_index edges.")
 
     # Project displacements onto directions: n̂·Δx
     # direction[src] shape: [E, d]
@@ -250,7 +353,7 @@ def compute_directional_derivative(
     )  # [E]
 
     # Accumulate per walker
-    directional_derivative = torch.zeros(N, device=device)
+    directional_derivative = torch.zeros(N, device=device, dtype=positions.dtype)
     directional_derivative.scatter_add_(0, src, dd_contributions)
 
     # Apply alive mask

@@ -98,6 +98,10 @@ class ChannelConfig:
     # Correlator options
     use_connected: bool = True
 
+    # Bootstrap error estimation
+    compute_bootstrap_errors: bool = False  # Enable bootstrap error estimation
+    n_bootstrap: int = 100  # Number of bootstrap resamples
+
 
 @dataclass
 class ChannelCorrelatorResult:
@@ -458,12 +462,12 @@ class ConvolutionalAICExtractor:
 # =============================================================================
 
 
-def compute_correlator_fft(
+def _fft_correlator_single(
     series: Tensor,
     max_lag: int,
     use_connected: bool = True,
 ) -> Tensor:
-    """Compute time correlator using FFT.
+    """Compute time correlator using FFT (internal helper).
 
     Args:
         series: Operator time series [T].
@@ -495,6 +499,68 @@ def compute_correlator_fft(
         result = F.pad(result, (0, max_lag - effective_lag), value=0.0)
 
     return result
+
+
+def bootstrap_correlator_error(
+    series: Tensor,
+    max_lag: int,
+    n_bootstrap: int = 100,
+    use_connected: bool = True,
+) -> Tensor:
+    """Compute bootstrap standard error for correlator.
+
+    Uses block bootstrap resampling to estimate uncertainty in the correlator.
+    The series is resampled with replacement and the correlator is computed
+    for each resample. The standard deviation across resamples gives the
+    standard error estimate.
+
+    Args:
+        series: Operator time series [T].
+        max_lag: Maximum lag to compute.
+        n_bootstrap: Number of bootstrap resamples.
+        use_connected: Subtract mean (connected correlator).
+
+    Returns:
+        Bootstrap standard error for C(t) [max_lag+1].
+    """
+    if series.numel() == 0:
+        return torch.zeros(max_lag + 1, device=series.device, dtype=series.dtype)
+
+    T = series.shape[0]
+    device = series.device
+    dtype = series.dtype
+
+    # Collect bootstrap correlator samples
+    bootstrap_corrs = []
+    for _ in range(n_bootstrap):
+        # Resample with replacement
+        indices = torch.randint(0, T, (T,), device=device)
+        resampled = series[indices]
+        # Compute correlator for this resample
+        corr = _fft_correlator_single(resampled, max_lag, use_connected)
+        bootstrap_corrs.append(corr)
+
+    # Stack and compute standard deviation (standard error)
+    stacked = torch.stack(bootstrap_corrs)  # [n_bootstrap, max_lag+1]
+    return stacked.std(dim=0)
+
+
+def compute_correlator_fft(
+    series: Tensor,
+    max_lag: int,
+    use_connected: bool = True,
+) -> Tensor:
+    """Compute time correlator using FFT.
+
+    Args:
+        series: Operator time series [T].
+        max_lag: Maximum lag to compute.
+        use_connected: Subtract mean (connected correlator).
+
+    Returns:
+        Correlator C(t) for t=0 to max_lag [max_lag+1].
+    """
+    return _fft_correlator_single(series, max_lag, use_connected)
 
 
 def compute_effective_mass_torch(
@@ -1254,11 +1320,22 @@ class ChannelCorrelator(ABC):
                 window_r2=None,
             )
 
+        real_series = series.real if series.is_complex() else series
         correlator = compute_correlator_fft(
-            series.real if series.is_complex() else series,
+            real_series,
             max_lag=self.config.max_lag,
             use_connected=self.config.use_connected,
         )
+
+        # Compute bootstrap errors if enabled
+        correlator_err = None
+        if self.config.compute_bootstrap_errors:
+            correlator_err = bootstrap_correlator_error(
+                real_series,
+                max_lag=self.config.max_lag,
+                n_bootstrap=self.config.n_bootstrap,
+                use_connected=self.config.use_connected,
+            )
 
         dt = float(self.history.delta_t * self.history.record_every)
         effective_mass = compute_effective_mass_torch(correlator, dt)
@@ -1284,7 +1361,7 @@ class ChannelCorrelator(ABC):
         return ChannelCorrelatorResult(
             channel_name=self.channel_name,
             correlator=correlator,
-            correlator_err=None,
+            correlator_err=correlator_err,
             effective_mass=effective_mass,
             mass_fit=mass_fit,
             series=series,

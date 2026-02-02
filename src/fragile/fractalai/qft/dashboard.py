@@ -60,6 +60,7 @@ from fragile.fractalai.qft.quantum_gravity_plotting import (
 )
 from fragile.fractalai.qft.plotting import (
     CHANNEL_COLORS,
+    ChannelPlot,
     build_all_channels_overlay,
     build_correlation_decay_plot,
     build_correlator_plot,
@@ -156,7 +157,7 @@ class SwarmConvergence3D(param.Parameterized):
     line_alpha = param.Number(default=0.35, bounds=(0.05, 1.0), doc="Delaunay line alpha")
     line_color_metric = param.ObjectSelector(
         default="constant",
-        objects=["constant", "distance", "timelike/spacelike"],
+        objects=["constant", "distance", "geodesic", "timelike/spacelike"],
         doc="Delaunay edge color metric",
     )
     line_colorscale = param.ObjectSelector(
@@ -184,6 +185,7 @@ class SwarmConvergence3D(param.Parameterized):
         self._volume_weights = None
         self._alive = None
         self._neighbor_edges = None
+        self._geodesic_edge_distances = None
         self._neighbor_graph_method = None
         self._data_d = None
         self._last_mc_frame = 0
@@ -271,6 +273,7 @@ class SwarmConvergence3D(param.Parameterized):
         )
         self._alive = history.alive_mask.detach().cpu().numpy().astype(bool)
         self._neighbor_edges = history.neighbor_edges
+        self._geodesic_edge_distances = history.geodesic_edge_distances
         self._time_sliced_cache_key = None
         self._time_sliced_cache_edges = None
         self._data_d = int(self._x.shape[2]) if self._x is not None and self._x.ndim >= 3 else None
@@ -608,7 +611,7 @@ class SwarmConvergence3D(param.Parameterized):
         edges = np.sort(edges, axis=1)
         return np.unique(edges, axis=0)
 
-    def _get_delaunay_edges(self, frame: int) -> np.ndarray | None:
+    def _get_delaunay_edges(self, frame: int, normalize: bool = True) -> np.ndarray | None:
         if self.history is None or self._neighbor_edges is None:
             return None
         if frame < 0 or frame >= len(self._neighbor_edges):
@@ -618,8 +621,22 @@ class SwarmConvergence3D(param.Parameterized):
             return None
         if isinstance(edges, torch.Tensor):
             edges = edges.detach().cpu().numpy()
-        edges = self._normalize_edges(edges)
+        if normalize:
+            edges = self._normalize_edges(edges)
         return edges if edges.size else None
+
+    def _get_geodesic_edge_distances(self, frame: int) -> np.ndarray | None:
+        if self.history is None or self._geodesic_edge_distances is None:
+            return None
+        if frame < 0 or frame >= len(self._geodesic_edge_distances):
+            return None
+        distances = self._geodesic_edge_distances[frame]
+        if distances is None:
+            return None
+        if torch.is_tensor(distances):
+            distances = distances.detach().cpu().numpy()
+        distances = np.asarray(distances)
+        return distances if distances.size else None
 
     def _get_time_sliced_edges(self, frame: int, time_dim: int) -> dict[str, np.ndarray] | None:
         if self.history is None or self._x is None or not self.use_time_sliced_tessellation:
@@ -949,7 +966,13 @@ class SwarmConvergence3D(param.Parameterized):
     ):
         """Build Delaunay edges using mapped 3D coordinates."""
         # Get edges from history
-        edges = self._get_delaunay_edges(frame)
+        use_geodesic = self.line_color_metric == "geodesic"
+        edges = self._get_delaunay_edges(frame, normalize=not use_geodesic)
+        edge_values = None
+        if use_geodesic:
+            edge_values = self._get_geodesic_edge_distances(frame)
+            if edge_values is not None and edges is not None and edge_values.shape[0] != edges.shape[0]:
+                edge_values = None
         if edges is None or positions_mapped.size == 0:
             return None
         return self._build_delaunay_trace_mapped_from_edges(
@@ -957,6 +980,7 @@ class SwarmConvergence3D(param.Parameterized):
             positions_all,
             alive,
             positions_mapped,
+            edge_values=edge_values,
             trace_name="Delaunay edges",
         )
 
@@ -967,6 +991,7 @@ class SwarmConvergence3D(param.Parameterized):
         alive: np.ndarray,
         positions_mapped: np.ndarray,
         *,
+        edge_values: np.ndarray | None = None,
         color_override: str | None = None,
         color_mode: str | None = None,
         trace_name: str = "Delaunay edges",
@@ -984,48 +1009,73 @@ class SwarmConvergence3D(param.Parameterized):
         alive_map = {int(idx): pos for pos, idx in enumerate(alive_indices)}
 
         valid_edges: list[tuple[int, int, int, int]] = []
-        for i, j in edges:
+        values: list[float] | None = [] if edge_values is not None else None
+        seen: set[tuple[int, int]] = set()
+        for idx, (i, j) in enumerate(edges):
             if i == j:
                 continue
             i_local = alive_map.get(int(i))
             j_local = alive_map.get(int(j))
             if i_local is None or j_local is None:
                 continue
+            key = (int(min(i, j)), int(max(i, j)))
+            if key in seen:
+                continue
+            seen.add(key)
             valid_edges.append((int(i), int(j), i_local, j_local))
+            if values is not None:
+                values.append(float(edge_values[idx]))
 
         if not valid_edges:
             return None
 
         x_edges, y_edges, z_edges = [], [], []
         metric = color_mode or self.line_color_metric
-        edge_values: list[float] | None = None
+        label_metric = metric
+        edge_values_list: list[float] | None = None
+        raw_values = None
         distances = None
         if metric == "distance":
-            edge_values = []
+            edge_values_list = []
             pairs = np.array([(i, j) for i, j, _, _ in valid_edges], dtype=np.int64)
             deltas = positions_all[pairs[:, 0]] - positions_all[pairs[:, 1]]
             distances = np.linalg.norm(deltas, axis=1)
+            raw_values = distances
+        elif metric == "geodesic":
+            edge_values_list = []
+            if values is not None and len(values) == len(valid_edges):
+                raw_values = np.asarray(values, dtype=float)
+            else:
+                label_metric = "distance"
+                pairs = np.array([(i, j) for i, j, _, _ in valid_edges], dtype=np.int64)
+                deltas = positions_all[pairs[:, 0]] - positions_all[pairs[:, 1]]
+                distances = np.linalg.norm(deltas, axis=1)
+                raw_values = distances
 
         for idx, (i, j, i_local, j_local) in enumerate(valid_edges):
             x_edges.extend([positions_mapped[i_local, 0], positions_mapped[j_local, 0], None])
             y_edges.extend([positions_mapped[i_local, 1], positions_mapped[j_local, 1], None])
             z_edges.extend([positions_mapped[i_local, 2], positions_mapped[j_local, 2], None])
-            if edge_values is not None and distances is not None:
-                value = float(distances[idx])
-                edge_values.extend([value, value, np.nan])
+            if edge_values_list is not None:
+                value = float(raw_values[idx]) if raw_values is not None else float("nan")
+                edge_values_list.extend([value, value, np.nan])
 
-        if edge_values is not None:
+        if edge_values_list is not None:
             line = {
-                "color": edge_values,
+                "color": edge_values_list,
                 "width": float(self.line_width),
                 "dash": self.line_style,
                 "colorscale": self.line_colorscale,
                 "showscale": True,
-                "colorbar": {"title": "Euclidean distance"},
+                "colorbar": {
+                    "title": "Geodesic distance"
+                    if label_metric == "geodesic"
+                    else "Euclidean distance"
+                },
             }
-            if distances is not None and distances.size:
-                line["cmin"] = float(np.nanmin(distances))
-                line["cmax"] = float(np.nanmax(distances))
+            if raw_values is not None and np.asarray(raw_values).size:
+                line["cmin"] = float(np.nanmin(raw_values))
+                line["cmax"] = float(np.nanmax(raw_values))
             return go.Scatter3d(
                 x=x_edges,
                 y=y_edges,
@@ -1787,6 +1837,17 @@ class ChannelSettings(param.Parameterized):
     fit_stop = param.Integer(default=None, bounds=(1, None), allow_None=True)
     min_fit_points = param.Integer(default=2, bounds=(2, None))
 
+    # Bootstrap error estimation
+    compute_bootstrap_errors = param.Boolean(
+        default=False,
+        doc="Enable bootstrap resampling for correlator error estimation",
+    )
+    n_bootstrap = param.Integer(
+        default=100,
+        bounds=(10, 1000),
+        doc="Number of bootstrap resamples for error estimation",
+    )
+
 
 class RadialSettings(param.Parameterized):
     """Settings for radial channel correlators (axis-free)."""
@@ -2162,6 +2223,8 @@ def _compute_channels_vectorized(
         fit_start=settings.fit_start,
         fit_stop=settings.fit_stop,
         min_fit_points=settings.min_fit_points,
+        compute_bootstrap_errors=settings.compute_bootstrap_errors,
+        n_bootstrap=settings.n_bootstrap,
     )
     channels = [c.strip() for c in settings.channel_list.split(",") if c.strip()]
 
@@ -3312,7 +3375,7 @@ def create_app() -> pn.template.FastListTemplate:
         gas_config.gas_params["dtype"] = "float32"
         gas_config.gas_params["pbc"] = False
         gas_config.gas_params["clone_every"] = 1
-        gas_config.neighbor_graph_method = "voronoi"
+        gas_config.neighbor_graph_method = "delaunay"
         gas_config.neighbor_graph_record = True
         gas_config.init_offset = 0.0
         gas_config.init_spread = 0.0
@@ -3345,8 +3408,8 @@ def create_app() -> pn.template.FastListTemplate:
         gas_config.kinetic_op.beta_curl = 1.0
         gas_config.kinetic_op.use_viscous_coupling = True
         gas_config.kinetic_op.viscous_length_scale = 0.251372
-        gas_config.kinetic_op.viscous_neighbor_mode = "all"
-        gas_config.kinetic_op.viscous_neighbor_weighting = "metric_full"
+        gas_config.kinetic_op.viscous_neighbor_mode = "nearest"
+        gas_config.kinetic_op.viscous_neighbor_weighting = "geodesic"
         gas_config.kinetic_op.viscous_neighbor_threshold = None
         gas_config.kinetic_op.viscous_neighbor_penalty = 0.0
         gas_config.kinetic_op.viscous_degree_cap = None
@@ -3526,6 +3589,8 @@ def create_app() -> pn.template.FastListTemplate:
                 "fit_start",
                 "fit_stop",
                 "min_fit_points",
+                "compute_bootstrap_errors",
+                "n_bootstrap",
             ],
             show_name=False,
             widgets={
@@ -3555,8 +3620,7 @@ def create_app() -> pn.template.FastListTemplate:
         )
 
         # Plot containers for channel tab
-        channel_plots_correlator = pn.Column(sizing_mode="stretch_width")
-        channel_plots_effective_mass = pn.Column(sizing_mode="stretch_width")
+        # Channel plots container removed - now using channel_plateau_plots with ChannelPlot
         channel_plots_spectrum = pn.pane.HoloViews(sizing_mode="stretch_width", linked_axes=False)
         channel_plots_overlay_corr = pn.pane.HoloViews(sizing_mode="stretch_width", linked_axes=False)
         channel_plots_overlay_meff = pn.pane.HoloViews(sizing_mode="stretch_width", linked_axes=False)
@@ -3690,9 +3754,7 @@ def create_app() -> pn.template.FastListTemplate:
             button_type="default",
         )
 
-        # Plot containers (4D)
-        radial4d_plots_correlator = pn.Column(sizing_mode="stretch_width")
-        radial4d_plots_effective_mass = pn.Column(sizing_mode="stretch_width")
+        # Plot containers (4D) - using ChannelPlot for side-by-side display
         radial4d_plots_spectrum = pn.pane.HoloViews(
             sizing_mode="stretch_width", linked_axes=False
         )
@@ -3849,9 +3911,8 @@ def create_app() -> pn.template.FastListTemplate:
             button_type="default",
         )
 
-        # Plot containers (4D)
-        radial_ew4d_plots_correlator = pn.Column(sizing_mode="stretch_width")
-        radial_ew4d_plots_effective_mass = pn.Column(sizing_mode="stretch_width")
+        # Plot containers (4D) - using ChannelPlot for side-by-side display
+        radial_ew4d_channel_plots = pn.Column(sizing_mode="stretch_width")
         radial_ew4d_plots_spectrum = pn.pane.HoloViews(
             sizing_mode="stretch_width", linked_axes=False
         )
@@ -3898,8 +3959,8 @@ def create_app() -> pn.template.FastListTemplate:
         )
 
         # Plot containers (3D Avg)
-        radial_ew3d_plots_correlator = pn.Column(sizing_mode="stretch_width")
-        radial_ew3d_plots_effective_mass = pn.Column(sizing_mode="stretch_width")
+        # 3D containers - using ChannelPlot for side-by-side display
+        radial_ew3d_channel_plots = pn.Column(sizing_mode="stretch_width")
         radial_ew3d_plots_spectrum = pn.pane.HoloViews(
             sizing_mode="stretch_width", linked_axes=False
         )
@@ -3945,9 +4006,7 @@ def create_app() -> pn.template.FastListTemplate:
             sizing_mode="stretch_width",
         )
 
-        # Plot containers (3D average)
-        radial3d_plots_correlator = pn.Column(sizing_mode="stretch_width")
-        radial3d_plots_effective_mass = pn.Column(sizing_mode="stretch_width")
+        # Plot containers (3D average) - using ChannelPlot for side-by-side display
         radial3d_plots_spectrum = pn.pane.HoloViews(
             sizing_mode="stretch_width", linked_axes=False
         )
@@ -4097,8 +4156,8 @@ def create_app() -> pn.template.FastListTemplate:
             default_layout=type("ElectroweakSettingsGrid", (pn.GridBox,), {"ncols": 2}),
         )
 
-        electroweak_plots_correlator = pn.Column(sizing_mode="stretch_width")
-        electroweak_plots_effective_mass = pn.Column(sizing_mode="stretch_width")
+        # Electroweak channel plots - using ChannelPlot for side-by-side display
+        electroweak_channel_plots = pn.Column(sizing_mode="stretch_width")
         electroweak_plots_overlay_corr = pn.pane.HoloViews(
             sizing_mode="stretch_width", linked_axes=False
         )
@@ -4592,53 +4651,19 @@ def create_app() -> pn.template.FastListTemplate:
         # =====================================================================
 
         def _update_channel_plots(results: dict[str, ChannelCorrelatorResult]) -> None:
-            """Update all channel plots from computed results."""
-            corr_plots = []
-            meff_plots = []
-            plateau_plots = []
+            """Update all channel plots from computed results using ChannelPlot."""
+            channel_plots = []
             heatmap_plots = []
 
             for name, result in results.items():
                 if result.n_samples == 0:
                     continue
 
-                # Convert tensors to numpy
-                corr = result.correlator.cpu().numpy() if hasattr(result.correlator, "cpu") else np.asarray(result.correlator)
-                meff = result.effective_mass.cpu().numpy() if hasattr(result.effective_mass, "cpu") else np.asarray(result.effective_mass)
-                lag_times = np.arange(len(corr)) * result.dt
-                meff_times = np.arange(len(meff)) * result.dt
-
-                corr_plot = build_correlator_plot(lag_times, corr, result.mass_fit, name)
-                if corr_plot is not None:
-                    corr_plots.append(
-                        pn.pane.HoloViews(corr_plot, sizing_mode="stretch_width", linked_axes=False)
-                    )
-
-                meff_plot = build_effective_mass_plot(meff_times, meff, result.mass_fit, name)
-                if meff_plot is not None:
-                    meff_plots.append(
-                        pn.pane.HoloViews(meff_plot, sizing_mode="stretch_width", linked_axes=False)
-                    )
-
-                # Build enhanced plateau plot (2-panel layout)
-                plateau_panels = build_effective_mass_plateau_plot(
-                    lag_times, corr, meff, result.mass_fit, name, dt=result.dt
-                )
-                if plateau_panels is not None:
-                    left_panel, right_panel = plateau_panels
-                    plateau_plots.append(pn.Row(
-                        pn.pane.HoloViews(
-                            left_panel,
-                            sizing_mode="stretch_width",
-                            linked_axes=False,
-                        ),
-                        pn.pane.HoloViews(
-                            right_panel,
-                            sizing_mode="stretch_width",
-                            linked_axes=False,
-                        ),
-                        sizing_mode="stretch_width",
-                    ))
+                # Build side-by-side plot using ChannelPlot (with error bars if available)
+                channel_plot = ChannelPlot(result, logy=True, width=400, height=350)
+                side_by_side = channel_plot.side_by_side()
+                if side_by_side is not None:
+                    channel_plots.append(side_by_side)
 
                 # Build window heatmap if window data is available
                 if result.window_masses is not None and result.window_aic is not None:
@@ -4663,17 +4688,11 @@ def create_app() -> pn.template.FastListTemplate:
                         heatmap_plots.append(pn.pane.HoloViews(
                             heatmap_plot,
                             sizing_mode="stretch_width",
-                            linked_axes=False,  # Prevent axis sharing between plots
+                            linked_axes=False,
                         ))
 
-            channel_plots_correlator.objects = corr_plots if corr_plots else [
-                pn.pane.Markdown("_No correlator plots available._")
-            ]
-            channel_plots_effective_mass.objects = meff_plots if meff_plots else [
-                pn.pane.Markdown("_No effective mass plots available._")
-            ]
-            channel_plateau_plots.objects = plateau_plots if plateau_plots else [
-                pn.pane.Markdown("_No plateau plots available._")
+            channel_plateau_plots.objects = channel_plots if channel_plots else [
+                pn.pane.Markdown("_No channel plots available._")
             ]
             channel_heatmap_plots.objects = heatmap_plots if heatmap_plots else [
                 pn.pane.Markdown("_No window heatmaps available._")
@@ -4816,60 +4835,25 @@ def create_app() -> pn.template.FastListTemplate:
 
         def _update_radial_plots(
             results: dict[str, ChannelCorrelatorResult],
-            plots_correlator: pn.Column,
-            plots_effective_mass: pn.Column,
             plots_spectrum: pn.pane.HoloViews,
             plots_overlay_corr: pn.pane.HoloViews,
             plots_overlay_meff: pn.pane.HoloViews,
-            plateau_plots: pn.Column,
+            channel_plots_container: pn.Column,
             heatmap_plots: pn.Column,
         ) -> None:
-            corr_plots = []
-            meff_plots = []
-            plateau_items = []
+            """Update radial plots using ChannelPlot for side-by-side display."""
+            channel_plot_items = []
             heatmap_items = []
 
             for name, result in results.items():
                 if result.n_samples == 0:
                     continue
 
-                corr = (
-                    result.correlator.cpu().numpy()
-                    if hasattr(result.correlator, "cpu")
-                    else np.asarray(result.correlator)
-                )
-                meff = (
-                    result.effective_mass.cpu().numpy()
-                    if hasattr(result.effective_mass, "cpu")
-                    else np.asarray(result.effective_mass)
-                )
-                lag_times = np.arange(len(corr)) * result.dt
-                meff_times = np.arange(len(meff)) * result.dt
-
-                corr_plot = build_correlator_plot(lag_times, corr, result.mass_fit, name)
-                if corr_plot is not None:
-                    corr_plots.append(
-                        pn.pane.HoloViews(corr_plot, sizing_mode="stretch_width", linked_axes=False)
-                    )
-
-                meff_plot = build_effective_mass_plot(meff_times, meff, result.mass_fit, name)
-                if meff_plot is not None:
-                    meff_plots.append(
-                        pn.pane.HoloViews(meff_plot, sizing_mode="stretch_width", linked_axes=False)
-                    )
-
-                plateau_panels = build_effective_mass_plateau_plot(
-                    lag_times, corr, meff, result.mass_fit, name, dt=result.dt
-                )
-                if plateau_panels is not None:
-                    left_panel, right_panel = plateau_panels
-                    plateau_items.append(
-                        pn.Row(
-                            pn.pane.HoloViews(left_panel, sizing_mode="stretch_width", linked_axes=False),
-                            pn.pane.HoloViews(right_panel, sizing_mode="stretch_width", linked_axes=False),
-                            sizing_mode="stretch_width",
-                        )
-                    )
+                # Build side-by-side plot using ChannelPlot (with error bars if available)
+                channel_plot = ChannelPlot(result, logy=True, width=400, height=350)
+                side_by_side = channel_plot.side_by_side()
+                if side_by_side is not None:
+                    channel_plot_items.append(side_by_side)
 
                 if result.window_masses is not None and result.window_aic is not None:
                     window_masses = (
@@ -4907,11 +4891,9 @@ def create_app() -> pn.template.FastListTemplate:
                             )
                         )
 
-            plots_correlator.objects = corr_plots or [pn.pane.Markdown("_No correlator plots available._")]
-            plots_effective_mass.objects = meff_plots or [
-                pn.pane.Markdown("_No effective mass plots available._")
+            channel_plots_container.objects = channel_plot_items or [
+                pn.pane.Markdown("_No channel plots available._")
             ]
-            plateau_plots.objects = plateau_items or [pn.pane.Markdown("_No plateau plots available._")]
             heatmap_plots.objects = heatmap_items or [pn.pane.Markdown("_No window heatmaps available._")]
 
             plots_spectrum.object = _build_radial_mass_spectrum_bar(results)
@@ -5020,8 +5002,6 @@ def create_app() -> pn.template.FastListTemplate:
             if state.get("radial_results_4d") is not None:
                 _update_radial_plots(
                     state["radial_results_4d"],
-                    radial4d_plots_correlator,
-                    radial4d_plots_effective_mass,
                     radial4d_plots_spectrum,
                     radial4d_plots_overlay_corr,
                     radial4d_plots_overlay_meff,
@@ -5031,8 +5011,6 @@ def create_app() -> pn.template.FastListTemplate:
             if state.get("radial_results_3d") is not None:
                 _update_radial_plots(
                     state["radial_results_3d"],
-                    radial3d_plots_correlator,
-                    radial3d_plots_effective_mass,
                     radial3d_plots_spectrum,
                     radial3d_plots_overlay_corr,
                     radial3d_plots_overlay_meff,
@@ -5086,8 +5064,6 @@ def create_app() -> pn.template.FastListTemplate:
 
                 _update_radial_plots(
                     bundle.radial_4d.channel_results,
-                    radial4d_plots_correlator,
-                    radial4d_plots_effective_mass,
                     radial4d_plots_spectrum,
                     radial4d_plots_overlay_corr,
                     radial4d_plots_overlay_meff,
@@ -5121,8 +5097,6 @@ def create_app() -> pn.template.FastListTemplate:
 
                     _update_radial_plots(
                         bundle.radial_3d_avg.channel_results,
-                        radial3d_plots_correlator,
-                        radial3d_plots_effective_mass,
                         radial3d_plots_spectrum,
                         radial3d_plots_overlay_corr,
                         radial3d_plots_overlay_meff,
@@ -5157,49 +5131,26 @@ def create_app() -> pn.template.FastListTemplate:
 
         def _update_electroweak_plots_generic(
             results: dict[str, ChannelCorrelatorResult],
-            plots_correlator: pn.Column,
-            plots_effective_mass: pn.Column,
+            channel_plots_container: pn.Column,
             plots_spectrum: pn.pane.HoloViews,
             plots_overlay_corr: pn.pane.HoloViews,
             plots_overlay_meff: pn.pane.HoloViews,
         ) -> None:
-            corr_plots = []
-            meff_plots = []
+            """Update electroweak plots using ChannelPlot for side-by-side display."""
+            channel_plot_items = []
 
             for name, result in results.items():
                 if result.n_samples == 0:
                     continue
 
-                corr = (
-                    result.correlator.cpu().numpy()
-                    if hasattr(result.correlator, "cpu")
-                    else np.asarray(result.correlator)
-                )
-                meff = (
-                    result.effective_mass.cpu().numpy()
-                    if hasattr(result.effective_mass, "cpu")
-                    else np.asarray(result.effective_mass)
-                )
-                lag_times = np.arange(len(corr)) * result.dt
-                meff_times = np.arange(len(meff)) * result.dt
+                # Build side-by-side plot using ChannelPlot (with error bars if available)
+                channel_plot = ChannelPlot(result, logy=True, width=400, height=350)
+                side_by_side = channel_plot.side_by_side()
+                if side_by_side is not None:
+                    channel_plot_items.append(side_by_side)
 
-                corr_plot = build_correlator_plot(lag_times, corr, result.mass_fit, name)
-                if corr_plot is not None:
-                    corr_plots.append(
-                        pn.pane.HoloViews(corr_plot, sizing_mode="stretch_width", linked_axes=False)
-                    )
-
-                meff_plot = build_effective_mass_plot(meff_times, meff, result.mass_fit, name)
-                if meff_plot is not None:
-                    meff_plots.append(
-                        pn.pane.HoloViews(meff_plot, sizing_mode="stretch_width", linked_axes=False)
-                    )
-
-            plots_correlator.objects = corr_plots if corr_plots else [
-                pn.pane.Markdown("_No correlator plots available._")
-            ]
-            plots_effective_mass.objects = meff_plots if meff_plots else [
-                pn.pane.Markdown("_No effective mass plots available._")
+            channel_plots_container.objects = channel_plot_items if channel_plot_items else [
+                pn.pane.Markdown("_No channel plots available._")
             ]
 
             plots_spectrum.object = build_mass_spectrum_bar(results)
@@ -5300,8 +5251,7 @@ def create_app() -> pn.template.FastListTemplate:
         def _update_electroweak_plots(results: dict[str, ChannelCorrelatorResult]) -> None:
             _update_electroweak_plots_generic(
                 results,
-                electroweak_plots_correlator,
-                electroweak_plots_effective_mass,
+                electroweak_channel_plots,
                 electroweak_plots_spectrum,
                 electroweak_plots_overlay_corr,
                 electroweak_plots_overlay_meff,
@@ -5380,16 +5330,14 @@ def create_app() -> pn.template.FastListTemplate:
 
         def _update_radial_ew_plots(
             results: dict[str, ChannelCorrelatorResult],
-            plots_correlator: pn.Column,
-            plots_effective_mass: pn.Column,
+            channel_plots_container: pn.Column,
             plots_spectrum: pn.pane.HoloViews,
             plots_overlay_corr: pn.pane.HoloViews,
             plots_overlay_meff: pn.pane.HoloViews,
         ) -> None:
             _update_electroweak_plots_generic(
                 results,
-                plots_correlator,
-                plots_effective_mass,
+                channel_plots_container,
                 plots_spectrum,
                 plots_overlay_corr,
                 plots_overlay_meff,
@@ -5466,8 +5414,7 @@ def create_app() -> pn.template.FastListTemplate:
                 results_4d = state["radial_ew_results_4d"] or {}
                 _update_radial_ew_plots(
                     results_4d,
-                    radial_ew4d_plots_correlator,
-                    radial_ew4d_plots_effective_mass,
+                    radial_ew4d_channel_plots,
                     radial_ew4d_plots_spectrum,
                     radial_ew4d_plots_overlay_corr,
                     radial_ew4d_plots_overlay_meff,
@@ -5485,8 +5432,7 @@ def create_app() -> pn.template.FastListTemplate:
                 results_3d = state["radial_ew_results_3d"] or {}
                 _update_radial_ew_plots(
                     results_3d,
-                    radial_ew3d_plots_correlator,
-                    radial_ew3d_plots_effective_mass,
+                    radial_ew3d_channel_plots,
                     radial_ew3d_plots_spectrum,
                     radial_ew3d_plots_overlay_corr,
                     radial_ew3d_plots_overlay_meff,
@@ -5651,11 +5597,11 @@ def create_app() -> pn.template.FastListTemplate:
                 mc_frame = config.mc_time_index if config.mc_time_index is not None else history.n_recorded - 1
                 mc_frame = min(mc_frame, history.n_recorded - 1)
                 positions = history.x_final[mc_frame].detach().cpu().numpy()
-                
+
                 # Validate and slice positions if needed
                 analysis_dims_input = config.analysis_dims or (0, 1, 2)
                 analysis_dims = [int(d) for d in analysis_dims_input]
-                
+
                 # Check for invalid dimensions
                 invalid_dims = [d for d in analysis_dims if d < 0 or d >= positions.shape[1]]
                 if invalid_dims:
@@ -5664,7 +5610,7 @@ def create_app() -> pn.template.FastListTemplate:
                         f"{positions.shape[1]}D data (valid range: 0..{positions.shape[1]-1})"
                     )
                     return
-                
+
                 # Filter to valid unique dimensions
                 analysis_dims = [d for d in analysis_dims if 0 <= d < positions.shape[1]]
                 if analysis_dims:
@@ -5674,7 +5620,7 @@ def create_app() -> pn.template.FastListTemplate:
                             f"**Error:** Expected 2D positions, got shape {positions.shape}"
                         )
                         return
-                    
+
                     positions = positions[:, analysis_dims]
 
                 # Build all plots
@@ -5955,10 +5901,11 @@ configuration to analyze (recorded step or index; blank = last recorded slice).
                 pn.pane.Markdown("### Anchored Mass Table"),
                 channel_anchor_table,
                 pn.layout.Divider(),
-                pn.pane.Markdown("### Effective Mass Plateaus"),
+                pn.pane.Markdown("### Channel Plots (Correlator + Effective Mass)"),
                 pn.pane.Markdown(
-                    "_Two-panel view: correlator decay (left) + effective mass with best window "
-                    "region (green) and error band (red)._",
+                    "_Side-by-side view: correlator C(t) with exponential fit (left) and effective mass "
+                    "m_eff(t) with plateau and best window region (right). Error bars shown when bootstrap "
+                    "estimation is enabled._",
                 ),
                 channel_plateau_plots,
                 pn.layout.Divider(),
@@ -5973,11 +5920,6 @@ configuration to analyze (recorded step or index; blank = last recorded slice).
                     sizing_mode="stretch_width",
                 ),
                 channel_heatmap_plots,
-                pn.layout.Divider(),
-                pn.pane.Markdown("### Individual Channel Correlators C(t)"),
-                channel_plots_correlator,
-                pn.pane.Markdown("### Individual Channel Effective Masses m_eff(t)"),
-                channel_plots_effective_mass,
                 sizing_mode="stretch_both",
             )
 
@@ -6008,7 +5950,11 @@ fitting (p defaults to (d-1)/2 unless overridden). Mass tables are scaled by
                 pn.pane.Markdown("### Anchored Mass Table"),
                 radial4d_anchor_table,
                 pn.layout.Divider(),
-                pn.pane.Markdown("### Effective Mass Plateaus"),
+                pn.pane.Markdown("### Channel Plots (Correlator + Effective Mass)"),
+                pn.pane.Markdown(
+                    "_Side-by-side view: correlator C(r) (left) and effective mass m_eff(r) (right). "
+                    "Error bars shown when bootstrap estimation is enabled._"
+                ),
                 radial4d_plateau_plots,
                 pn.layout.Divider(),
                 pn.pane.Markdown("### Window Heatmaps"),
@@ -6018,11 +5964,6 @@ fitting (p defaults to (d-1)/2 unless overridden). Mass tables are scaled by
                     sizing_mode="stretch_width",
                 ),
                 radial4d_heatmap_plots,
-                pn.layout.Divider(),
-                pn.pane.Markdown("### Individual Channel Correlators C(r)"),
-                radial4d_plots_correlator,
-                pn.pane.Markdown("### Individual Channel Effective Masses m_eff(r)"),
-                radial4d_plots_effective_mass,
                 sizing_mode="stretch_both",
             )
 
@@ -6047,16 +5988,15 @@ fitting (p defaults to (d-1)/2 unless overridden). Mass tables are scaled by
                 pn.pane.Markdown("### Anchored Mass Table"),
                 radial3d_anchor_table,
                 pn.layout.Divider(),
-                pn.pane.Markdown("### Effective Mass Plateaus"),
+                pn.pane.Markdown("### Channel Plots (Correlator + Effective Mass)"),
+                pn.pane.Markdown(
+                    "_Side-by-side view: correlator C(r) (left) and effective mass m_eff(r) (right). "
+                    "Error bars shown when bootstrap estimation is enabled._"
+                ),
                 radial3d_plateau_plots,
                 pn.layout.Divider(),
                 pn.pane.Markdown("### Window Heatmaps"),
                 radial3d_heatmap_plots,
-                pn.layout.Divider(),
-                pn.pane.Markdown("### Individual Channel Correlators C(r)"),
-                radial3d_plots_correlator,
-                pn.pane.Markdown("### Individual Channel Effective Masses m_eff(r)"),
-                radial3d_plots_effective_mass,
                 sizing_mode="stretch_both",
             )
 
@@ -6093,10 +6033,12 @@ Use **MC time slice** to select the snapshot.""",
                 pn.pane.Markdown("### Anchored Mass Table"),
                 radial_ew4d_anchor_table,
                 pn.layout.Divider(),
-                pn.pane.Markdown("### Individual Channel Correlators C(r)"),
-                radial_ew4d_plots_correlator,
-                pn.pane.Markdown("### Individual Channel Effective Masses m_eff(r)"),
-                radial_ew4d_plots_effective_mass,
+                pn.pane.Markdown("### Channel Plots (Correlator + Effective Mass)"),
+                pn.pane.Markdown(
+                    "_Side-by-side view: correlator C(r) (left) and effective mass m_eff(r) (right). "
+                    "Error bars shown when bootstrap estimation is enabled._"
+                ),
+                radial_ew4d_channel_plots,
                 sizing_mode="stretch_both",
             )
 
@@ -6125,10 +6067,12 @@ Use **MC time slice** to select the snapshot.""",
                 pn.pane.Markdown("### Anchored Mass Table"),
                 radial_ew3d_anchor_table,
                 pn.layout.Divider(),
-                pn.pane.Markdown("### Individual Channel Correlators C(r)"),
-                radial_ew3d_plots_correlator,
-                pn.pane.Markdown("### Individual Channel Effective Masses m_eff(r)"),
-                radial_ew3d_plots_effective_mass,
+                pn.pane.Markdown("### Channel Plots (Correlator + Effective Mass)"),
+                pn.pane.Markdown(
+                    "_Side-by-side view: correlator C(r) (left) and effective mass m_eff(r) (right). "
+                    "Error bars shown when bootstrap estimation is enabled._"
+                ),
+                radial_ew3d_channel_plots,
                 sizing_mode="stretch_both",
             )
 
@@ -6265,10 +6209,13 @@ configuration to analyze (recorded step or index; blank = last recorded slice).
                 pn.pane.Markdown("### All Channels Overlay - Effective Masses"),
                 electroweak_plots_overlay_meff,
                 pn.layout.Divider(),
-                pn.pane.Markdown("### Individual Channel Correlators C(t)"),
-                electroweak_plots_correlator,
-                pn.pane.Markdown("### Individual Channel Effective Masses m_eff(t)"),
-                electroweak_plots_effective_mass,
+                pn.pane.Markdown("### Channel Plots (Correlator + Effective Mass)"),
+                pn.pane.Markdown(
+                    "_Side-by-side view: correlator C(t) with exponential fit (left) "
+                    "and effective mass m_eff(t) with plateau (right). Error bars shown when "
+                    "bootstrap estimation is enabled._"
+                ),
+                electroweak_channel_plots,
                 sizing_mode="stretch_both",
             )
 

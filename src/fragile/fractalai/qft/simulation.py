@@ -342,11 +342,18 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--viscous-neighbor-weighting",
-        choices=["kernel", "uniform", "inverse_distance", "metric_diag", "metric_full"],
+        choices=[
+            "kernel",
+            "uniform",
+            "inverse_distance",
+            "geodesic",
+            "metric_diag",
+            "metric_full",
+        ],
         default=OperatorConfig.viscous_neighbor_weighting,
         help=(
             "Weighting for viscous neighbors (kernel, uniform, inverse_distance, "
-            "metric_diag, metric_full)"
+            "geodesic, metric_diag, metric_full)"
         ),
     )
     parser.add_argument(

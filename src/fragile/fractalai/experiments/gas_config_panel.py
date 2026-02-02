@@ -239,8 +239,7 @@ class GasConfigPanel(param.Parameterized):
 
         # Benchmark
         config.bounds_extent = bounds_extent
-        config.benchmark_name = "Voronoi Cell Volume"
-        config._apply_voronoi_volume_preset()
+        config.benchmark_name = "Voronoi Ricci Scalar"
 
         # Simulation
         config.n_steps = 5000
@@ -263,12 +262,13 @@ class GasConfigPanel(param.Parameterized):
         config.kinetic_op.epsilon_F = 38.6373
         config.kinetic_op.use_fitness_force = False
         config.kinetic_op.use_potential_force = False
-        config.kinetic_op.use_anisotropic_diffusion = False
+        config.kinetic_op.use_anisotropic_diffusion = True
         config.kinetic_op.diagonal_diffusion = False
         config.kinetic_op.nu = 1.10
         config.kinetic_op.use_viscous_coupling = True
         config.kinetic_op.viscous_length_scale = 0.251372
-        config.kinetic_op.viscous_neighbor_mode = "all"
+        config.kinetic_op.viscous_neighbor_mode = "nearest"
+        config.kinetic_op.viscous_neighbor_weighting = "geodesic"
         config.kinetic_op.viscous_neighbor_threshold = 0.75
         config.kinetic_op.viscous_neighbor_penalty = 1.1
 
@@ -373,11 +373,13 @@ class GasConfigPanel(param.Parameterized):
             use_fitness_force=False,
             use_potential_force=False,
             epsilon_Sigma=0.1,
-            use_anisotropic_diffusion=False,
+            use_anisotropic_diffusion=True,
             diagonal_diffusion=False,
-            nu=0.0,
-            use_viscous_coupling=False,
+            nu=0.1,
+            use_viscous_coupling=True,
             viscous_length_scale=1.0,
+            viscous_neighbor_mode="nearest",
+            viscous_neighbor_weighting="geodesic",
             viscous_neighbor_penalty=1.1,
             V_alg=10.0,
             use_velocity_squashing=False,

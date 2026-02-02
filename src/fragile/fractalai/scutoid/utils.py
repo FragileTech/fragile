@@ -2,13 +2,11 @@
 
 Provides helper functions for:
 - Step size estimation
-- Edge weight computation
 - Axial neighbor finding
 """
 
 import torch
 from torch import Tensor
-from typing import Literal
 
 
 def estimate_optimal_step_size(
@@ -69,75 +67,6 @@ def estimate_optimal_step_size(
     return target_fraction * min_distances
 
 
-def compute_edge_weights(
-    positions: Tensor,
-    edge_index: Tensor,
-    mode: Literal["uniform", "inverse_distance", "gaussian"] = "inverse_distance",
-    kernel_bandwidth: float = 1.0,
-    alive: Tensor | None = None,
-) -> Tensor:
-    """Compute weights for finite-difference averaging over neighbors.
-
-    Different weighting schemes balance accuracy vs noise:
-    - Uniform: Simple average, robust to outliers
-    - Inverse distance: Closer neighbors weighted more, good default
-    - Gaussian: Smooth falloff, good for irregular spacing
-
-    Args:
-        positions: [N, d] walker positions
-        edge_index: [2, E] neighbor connectivity
-        mode: Weighting scheme to use
-        kernel_bandwidth: Bandwidth σ for Gaussian kernel (ignored for other modes)
-        alive: [N] optional mask for valid walkers
-
-    Returns:
-        [E] normalized weights per edge (sum to 1 per source walker)
-
-    Weighting formulas:
-        - uniform: w_ij = 1/k where k = |N(i)|
-        - inverse_distance: w_ij ∝ 1/||x_j - x_i||
-        - gaussian: w_ij ∝ exp(-||x_j - x_i||²/(2σ²))
-    """
-    src, dst = edge_index
-    E = edge_index.shape[1]
-    N = positions.shape[0]
-    device = positions.device
-
-    # Compute edge distances
-    edge_vectors = positions[dst] - positions[src]  # [E, d]
-    edge_distances = torch.norm(edge_vectors, dim=1)  # [E]
-
-    # Identify valid edges (both endpoints alive)
-    if alive is not None:
-        valid_edges = alive[src] & alive[dst]
-    else:
-        valid_edges = torch.ones(E, dtype=torch.bool, device=device)
-
-    # Compute raw weights based on mode
-    if mode == "uniform":
-        raw_weights = torch.ones(E, device=device)
-    elif mode == "inverse_distance":
-        # Add small epsilon to avoid division by zero
-        raw_weights = 1.0 / (edge_distances + 1e-8)
-    elif mode == "gaussian":
-        raw_weights = torch.exp(-edge_distances**2 / (2 * kernel_bandwidth**2))
-    else:
-        raise ValueError(f"Unknown weighting mode: {mode}")
-
-    # Set weights to zero for invalid edges
-    raw_weights = torch.where(valid_edges, raw_weights, torch.zeros_like(raw_weights))
-
-    # Normalize weights per source walker (so they sum to 1)
-    weight_sums = torch.zeros(N, device=device)
-    weight_sums.scatter_add_(0, src, raw_weights)
-
-    # Avoid division by zero for isolated walkers
-    weight_sums = torch.clamp(weight_sums, min=1e-8)
-
-    # Normalize
-    normalized_weights = raw_weights / weight_sums[src]
-
-    return normalized_weights
 
 
 def find_axial_neighbors(
@@ -222,9 +151,10 @@ def find_axial_neighbors(
 def validate_finite_difference_inputs(
     positions: Tensor,
     fitness_values: Tensor,
-    edge_index: Tensor,
+    edge_index: Tensor | None,
     alive: Tensor | None = None,
     min_neighbors: int = 3,
+    num_neighbors: Tensor | None = None,
 ) -> dict[str, Tensor]:
     """Validate inputs for finite-difference estimation and compute diagnostics.
 
@@ -236,7 +166,7 @@ def validate_finite_difference_inputs(
     Args:
         positions: [N, d] walker positions
         fitness_values: [N] fitness values
-        edge_index: [2, E] neighbor graph
+        edge_index: [2, E] neighbor graph (optional if num_neighbors provided)
         alive: [N] optional validity mask
         min_neighbors: Minimum neighbors required per walker
 
@@ -266,9 +196,12 @@ def validate_finite_difference_inputs(
     valid_walkers &= ~has_nan_position
 
     # Count neighbors per walker
-    src, dst = edge_index
-    num_neighbors = torch.zeros(N, dtype=torch.long, device=device)
-    num_neighbors.scatter_add_(0, src, torch.ones_like(src))
+    if num_neighbors is None:
+        if edge_index is None:
+            raise ValueError("edge_index is required when num_neighbors is not provided.")
+        src, dst = edge_index
+        num_neighbors = torch.zeros(N, dtype=torch.long, device=device)
+        num_neighbors.scatter_add_(0, src, torch.ones_like(src))
 
     # Check for isolated walkers
     is_isolated = num_neighbors < min_neighbors

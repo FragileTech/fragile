@@ -50,7 +50,7 @@ def build_metric_tensor_heatmap(
 
     # Extract metric component values
     metric_values = metric_tensors[:, i, j]
-    
+
     # Validate spatial dimensions
     if x_dim >= positions.shape[1] or y_dim >= positions.shape[1]:
         return hv.Text(
@@ -93,27 +93,27 @@ def build_centroid_vector_field(
     subsample: int = 1,
 ) -> hv.VectorField:
     """Vector field showing Lloyd vectors (drift).
-    
+
     Args:
         positions: Walker positions [N, d]
         centroid_vectors: Lloyd displacement vectors [N, d]
         alive: Alive mask [N]
         spatial_dims: Which spatial dimensions to use for plotting
         subsample: Plot every Nth vector (for clarity)
-        
+
     Returns:
         HoloViews VectorField
     """
     x_dim, y_dim = spatial_dims
-    
+
     # Filter alive walkers
     alive_mask = alive.astype(bool)
     pos_alive = positions[alive_mask]
     vec_alive = centroid_vectors[alive_mask]
-    
+
     if len(pos_alive) == 0:
         return hv.Text(0, 0, "No alive walkers").opts(title="Centroid Vector Field")
-    
+
     # Defensive: ensure vectors have proper dimensionality
     if vec_alive.ndim == 1:
         # Edge case: 1D vectors (should have been 2D [N, d])
@@ -122,7 +122,7 @@ def build_centroid_vector_field(
             0, 0,
             f"Invalid centroid vectors shape {vec_alive.shape} (expected 2D)"
         ).opts(title="Centroid Vector Field - Error")
-    
+
     # Validate spatial dimensions exist
     x_dim, y_dim = spatial_dims
     if x_dim >= vec_alive.shape[1] or y_dim >= vec_alive.shape[1]:
@@ -130,22 +130,22 @@ def build_centroid_vector_field(
             0, 0,
             f"Spatial dims ({x_dim}, {y_dim}) invalid for {vec_alive.shape[1]}D vectors"
         ).opts(title="Centroid Vector Field - Error")
-    
+
     # Subsample for clarity
     if subsample > 1:
         indices = np.arange(0, len(pos_alive), subsample)
         pos_alive = pos_alive[indices]
         vec_alive = vec_alive[indices]
-    
+
     # Extract components
     x = pos_alive[:, x_dim]
     y = pos_alive[:, y_dim]
     u = vec_alive[:, x_dim]
     v = vec_alive[:, y_dim]
-    
+
     # Compute magnitude for coloring
     magnitude = np.sqrt(u**2 + v**2)
-    
+
     data = pd.DataFrame({
         'x': x,
         'y': y,
@@ -153,7 +153,7 @@ def build_centroid_vector_field(
         'v': v,
         'magnitude': magnitude,
     })
-    
+
     vector_field = hv.VectorField(data, ['x', 'y'], ['u', 'v', 'magnitude']).opts(
         color='magnitude',
         cmap='fire',
@@ -166,7 +166,7 @@ def build_centroid_vector_field(
         xlabel=f'Dimension {x_dim}',
         ylabel=f'Dimension {y_dim}',
     )
-    
+
     return vector_field
 
 
@@ -236,11 +236,11 @@ def build_geodesic_distance_scatter(
     geodesic_distances: np.ndarray,
 ) -> hv.Scatter:
     """Scatter plot comparing Euclidean vs geodesic distances.
-    
+
     Args:
         euclidean_distances: Euclidean edge lengths [E]
         geodesic_distances: Geodesic edge lengths [E]
-        
+
     Returns:
         HoloViews Scatter plot with diagonal reference line
     """
@@ -248,15 +248,15 @@ def build_geodesic_distance_scatter(
     valid = np.isfinite(euclidean_distances) & np.isfinite(geodesic_distances)
     euc = euclidean_distances[valid]
     geo = geodesic_distances[valid]
-    
+
     if len(euc) == 0:
         return hv.Text(0, 0, "No valid distances").opts(title="Geodesic vs Euclidean Distances")
-    
+
     data = pd.DataFrame({
         'euclidean': euc,
         'geodesic': geo,
     })
-    
+
     scatter = hv.Scatter(data, 'euclidean', 'geodesic').opts(
         color='#4c78a8',
         size=3,
@@ -267,7 +267,7 @@ def build_geodesic_distance_scatter(
         xlabel='Euclidean Distance',
         ylabel='Geodesic Distance',
     )
-    
+
     # Add diagonal reference line (geodesic = euclidean)
     max_dist = max(euc.max(), geo.max())
     min_dist = min(euc.min(), geo.min())
@@ -276,7 +276,7 @@ def build_geodesic_distance_scatter(
         line_dash='dashed',
         line_width=2,
     )
-    
+
     return scatter * diagonal
 
 
@@ -284,15 +284,15 @@ def build_higgs_action_summary(
     observables: HiggsObservables,
 ) -> pn.Column:
     """Summary panel showing action components and statistics.
-    
+
     Args:
         observables: HiggsObservables dataclass
-        
+
     Returns:
         Panel Column with formatted summary
     """
     config = observables.config
-    
+
     # Format action components (convert tensors to Python floats first)
     mean_field = float(observables.scalar_field.mean())
     std_field = float(observables.scalar_field.std())
@@ -325,7 +325,7 @@ def build_higgs_action_summary(
         f"- alpha_gravity: {config.alpha_gravity}\n"
         f"- h_eff: {config.h_eff}\n"
     )
-    
+
     return pn.Column(
         pn.pane.Markdown(action_md),
         sizing_mode="stretch_width",
@@ -338,32 +338,32 @@ def build_volume_vs_curvature_scatter(
     alive: np.ndarray,
 ) -> hv.Scatter:
     """Scatter plot showing relationship between cell volume and curvature.
-    
+
     Args:
         cell_volumes: Voronoi cell volumes [N]
         ricci_scalars: Ricci scalar at each walker [N]
         alive: Alive mask [N]
-        
+
     Returns:
         HoloViews Scatter plot
     """
     alive_mask = alive.astype(bool)
     vols = cell_volumes[alive_mask]
     ricci = ricci_scalars[alive_mask]
-    
+
     # Filter finite values
     valid = np.isfinite(vols) & np.isfinite(ricci) & (vols > 0)
     vols = vols[valid]
     ricci = ricci[valid]
-    
+
     if len(vols) == 0:
         return hv.Text(0, 0, "No valid data").opts(title="Cell Volume vs Curvature")
-    
+
     data = pd.DataFrame({
         'volume': vols,
         'ricci': ricci,
     })
-    
+
     scatter = hv.Scatter(data, 'volume', 'ricci').opts(
         color='#e15759',
         size=4,
@@ -375,7 +375,7 @@ def build_volume_vs_curvature_scatter(
         ylabel='Ricci Scalar R',
         logx=True,  # Often volumes span orders of magnitude
     )
-    
+
     return scatter
 
 
@@ -386,31 +386,31 @@ def build_scalar_field_map(
     spatial_dims: tuple[int, int] = (0, 1),
 ) -> hv.Points:
     """2D/3D visualization of the scalar field on the manifold.
-    
+
     Args:
         positions: Walker positions [N, d]
         scalar_field: Scalar field values [N]
         alive: Alive mask [N]
         spatial_dims: Which spatial dimensions to plot
-        
+
     Returns:
         HoloViews Points plot
     """
     x_dim, y_dim = spatial_dims
-    
+
     alive_mask = alive.astype(bool)
     pos_alive = positions[alive_mask]
     field_alive = scalar_field[alive_mask]
-    
+
     if len(pos_alive) == 0:
         return hv.Text(0, 0, "No alive walkers").opts(title="Scalar Field Configuration")
-    
+
     data = pd.DataFrame({
         f'dim_{x_dim}': pos_alive[:, x_dim],
         f'dim_{y_dim}': pos_alive[:, y_dim],
         'phi': field_alive,
     })
-    
+
     points = hv.Points(data, [f'dim_{x_dim}', f'dim_{y_dim}'], 'phi').opts(
         color='phi',
         cmap='coolwarm',
@@ -422,7 +422,7 @@ def build_scalar_field_map(
         xlabel=f'Dimension {x_dim}',
         ylabel=f'Dimension {y_dim}',
     )
-    
+
     return points
 
 
@@ -431,41 +431,41 @@ def build_metric_eigenvalues_distribution(
     alive: np.ndarray,
 ) -> hv.Overlay:
     """Distribution of metric tensor eigenvalues (measures anisotropy).
-    
+
     Args:
         metric_tensors: Metric tensors [N, d, d]
         alive: Alive mask [N]
-        
+
     Returns:
         HoloViews overlay of histograms for each eigenvalue
     """
     alive_mask = alive.astype(bool)
     metrics_alive = metric_tensors[alive_mask]
-    
+
     if len(metrics_alive) == 0:
         return hv.Text(0, 0, "No alive walkers").opts(title="Metric Eigenvalue Distribution")
-    
+
     # Compute eigenvalues for each metric tensor
     eigenvalues = np.linalg.eigvalsh(metrics_alive)  # [N, d]
-    
+
     # Create histogram for each eigenvalue dimension
     d = eigenvalues.shape[1]
     histograms = []
-    
+
     for i in range(d):
         eigs = eigenvalues[:, i]
         eigs_finite = eigs[np.isfinite(eigs) & (eigs > 0)]
-        
+
         if len(eigs_finite) > 0:
             hist = hv.Histogram(np.histogram(np.log10(eigs_finite), bins=50)).opts(
                 alpha=0.6,
                 color=hv.Cycle('Category10').values[i % 10],
             )
             histograms.append(hist)
-    
+
     if not histograms:
         return hv.Text(0, 0, "No finite eigenvalues").opts(title="Metric Eigenvalue Distribution")
-    
+
     overlay = hv.Overlay(histograms).opts(
         width=600,
         height=400,
@@ -474,7 +474,7 @@ def build_metric_eigenvalues_distribution(
         ylabel='Count',
         show_legend=True,
     )
-    
+
     return overlay
 
 

@@ -196,8 +196,8 @@ $$
 \phi^{L}_g(S) := k_L\, \mathrm{dist}_g(\bar{x}(S), L),
 $$
 
-where $\mathrm{dist}_g$ is the Riemannian distance induced by the emergent metric
-$g = H + \epsilon_\Sigma I$ on the slice. When $d_g$ is not explicitly computed, use the Delaunay-graph proxy
+where $\mathrm{dist}_g(x,\mathcal{S}) := \inf_{y\in\mathcal{S}} d_g(x,y)$ is the distance from a point to a subset
+in the Riemannian metric induced by $g = H + \epsilon_\Sigma I$ on the slice. When $d_g$ is not explicitly computed, use the Delaunay-graph proxy
 
 $$
 \mathrm{dist}_g(\bar{x}, \cdot) \approx d_{\mathrm{DT}}(i, \cdot),
@@ -260,11 +260,13 @@ Either choice yields a nonnegative amplitude and is compatible with the scutoid 
 Given a probe at time $t_k$, define the measured signal as
 
 $$
-\mathcal{M}(t_k) := \sum_{S \in \mathcal{S}_{t_k}} A(S)\, e^{i\phi(S)},
+\mathcal{M}(t_k) := \sum_{S \in \mathcal{S}_{t_k}} \psi(S),
 $$
 
-where $\mathcal{S}_{t_k}$ is the set of scutoids pierced at time $t_k$ (by bottom association),
-$A(S)$ is a chosen amplitude map, and $\phi(S)$ is a chosen phase map from Sections 3–4.
+where $\mathcal{S}_{t_k}$ is the set of scutoids pierced at time $t_k$ (by bottom association) and
+$\psi(S)$ is the scutoid field from {prf:ref}`def-scutoid-field-transport`. In the abelian case,
+$\psi(S) = A(S)e^{i\phi(S)}$ and $\mathcal{M}(t_k) \in \mathbb{C}$; in the non-abelian case,
+$\mathcal{M}(t_k) \in V$.
 :::
 
 **Choice of phase map**: For hyperplane probes use $\phi^H_E$ or $\phi^H_g$; for line probes use $\phi^L_E$ or $\phi^L_g$. Walker-relative phases can be combined additively with probe phases.
@@ -292,22 +294,34 @@ U_{ij} \mapsto G_i\, U_{ij}\, G_j^{-1}.
 $$
 :::
 
+:::{prf:definition} Edge-Type Transport Assignment
+:label: def-edge-type-transport-assignment
+
+Let the pierced neighbor graph be realized on a single time slice $t_k$ so that its edges are spatial IG/Delaunay edges. Define the transport assignment by edge type:
+
+- **IG edges**: use the spatial transport $U_{\mathrm{IG}}(e_i \sim e_j)$ as in {doc}`/source/3_fractal_gas/2_fractal_set/03_lattice_qft`.
+- **CST edges** (if the probe is extended across slices): use the temporal transport $U_{\mathrm{CST}}(e_i \to e_j)$.
+- **IA edges** (if attribution phases are included): use $U_{\mathrm{IA}}(e_i \to e_j)$ with the stored attribution phase.
+
+This fixes the gauge content of the pierced graph as a subgraph of the Fractal Set with transport inherited from the edge-type assignments.
+:::
+
 :::{prf:definition} Scutoid Field and Transport to Reference
 :label: def-scutoid-field-transport
 
-Let $S_{i,k}$ be a scutoid associated to walker $i$ on slice $t_k$. Define its complex field value
+Let $S_{i,k}$ be a scutoid associated to walker $i$ on slice $t_k$. Let $V$ be the representation space of the gauge group on the pierced graph (for $U(1)$, $V=\mathbb{C}$; for $SU(N)$, $V=\mathbb{C}^N$). Define a unit vector $\chi(S_{i,k}) \in V$ and the scutoid field value
 
 $$
-\psi(S_{i,k}) := A(S_{i,k})\, e^{i\phi(S_{i,k})}.
+\psi(S_{i,k}) := A(S_{i,k})\, e^{i\phi(S_{i,k})}\,\chi(S_{i,k}).
 $$
 
 Fix a reference walker $r$ on the same slice and a path $\gamma : i \to r$ along IG/Delaunay edges. Let $U(\gamma)$ be the parallel transport operator (path-ordered product of edge transports). The reference-transported field is
 
 $$
-\psi_r(S_{i,k}) := U(\gamma)\, \psi(S_{i,k}).
+\psi_r(S_{i,k}) := U(\gamma)\, \psi(S_{i,k}) \in V.
 $$
 
-Changes of local gauge at nodes act by phase rotations on $\psi$ and conjugation on $U(\gamma)$, so $\psi_r$ is gauge-covariant and can be compared at a common reference.
+Changes of local gauge at nodes act by $\psi(S_{i,k}) \mapsto G_i\,\psi(S_{i,k})$ and conjugation on $U(\gamma)$, so $\psi_r$ is gauge-covariant and can be compared at a common reference.
 :::
 
 :::{prf:definition} Reference-Transported Measurement
@@ -380,6 +394,26 @@ $$
 $$
 
 up to the chosen reference transport. This condition is optional; if it is not enforced, the probe phase is an external scalar field independent of the gauge phases.
+:::
+
+:::{prf:theorem} Path-Independent Reference Transport on the Pierced Graph
+:label: thm-path-independent-reference-transport
+
+Assume the probe phase assignment is gauge-compatible on $E^{\mathrm{pierced}}_{t_k}$ and the pierced graph is **flat** in the sense that every closed loop $\mathcal{C}$ satisfies
+
+$$
+\mathcal{P} \prod_{(i,j)\in \mathcal{C}} U_{ij} = I,
+$$
+
+with $I=1$ in $U(1)$ and $I$ the identity in $SU(N)$. Then for any two paths $\gamma,\gamma'$ from node $i$ to the reference node $r$,
+
+$$
+U(\gamma) = U(\gamma'),
+$$
+
+so $\psi_r(S_{i,k})$ and $\mathcal{M}_r(t_k)$ are path-independent. Consequently, the gauge-invariant scalars $\mathcal{I}_r(t_k)$ defined in {prf:ref}`def-reference-transported-measurement` are well-defined and gauge-invariant.
+
+*Proof.* Concatenating $\gamma$ with the reverse of $\gamma'$ gives a closed loop. Flatness implies the corresponding holonomy is the identity, hence $U(\gamma)=U(\gamma')$. Path-independence yields a well-defined $\psi_r$ and $\mathcal{M}_r$. Gauge invariance of $\mathcal{I}_r$ follows from {prf:ref}`lem-reference-transport-covariance`. $\square$
 :::
 
 :::{prf:definition} Gauge-Invariant Measurement via Holonomy
