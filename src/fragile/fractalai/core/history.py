@@ -165,6 +165,10 @@ class RunHistory(BaseModel):
     sigma_reg_full: Tensor | None = Field(
         default=None, description="Full diffusion tensor Σ_reg (if anisotropic)"
     )
+    riemannian_volume_weights: Tensor | None = Field(
+        default=None,
+        description="Riemannian volume weights from Voronoi cells [n_recorded-1, N]",
+    )
 
     # ========================================================================
     # Neighbor Graph Data (Optional)

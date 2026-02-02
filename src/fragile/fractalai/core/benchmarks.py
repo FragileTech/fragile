@@ -657,11 +657,28 @@ def _expand_alive_values(
     return full
 
 
+def _extract_riemannian_volume_weights(voronoi_data: dict, n_total: int) -> np.ndarray:
+    if not voronoi_data:
+        return np.array([])
+    weights = voronoi_data.get("riemannian_volume_weights")
+    if weights is None:
+        weights = voronoi_data.get("volume_weights")
+    if weights is None:
+        return np.array([])
+    if torch.is_tensor(weights):
+        weights = weights.detach().cpu().numpy()
+    weights_np = np.asarray(weights, dtype=np.float64).reshape(-1)
+    if weights_np.shape[0] == n_total:
+        return weights_np
+    return _expand_alive_values(voronoi_data, weights_np, n_total, fill=0.0)
+
+
 def _maybe_compute_curvature_proxies(
     voronoi_data: dict,
     x: torch.Tensor,
     prev_volumes: np.ndarray | None,
     dt: float,
+    volume_weights: np.ndarray | None = None,
 ) -> dict | None:
     if voronoi_data.get("curvature_proxies") is not None:
         return voronoi_data.get("curvature_proxies")
@@ -680,12 +697,26 @@ def _maybe_compute_curvature_proxies(
         positions_alive = positions[alive_idx]
     else:
         positions_alive = positions
+        alive_idx = None
+    prev_volumes_alive = None
+    if prev_volumes is not None:
+        prev_np = np.asarray(prev_volumes, dtype=np.float64).reshape(-1)
+        if alive_idx is not None:
+            if prev_np.shape[0] == alive_idx.size:
+                prev_volumes_alive = prev_np
+            else:
+                alive_idx_max = int(alive_idx.max()) if alive_idx.size > 0 else -1
+                if prev_np.shape[0] > alive_idx_max:
+                    prev_volumes_alive = prev_np[alive_idx]
+        elif prev_np.shape[0] == positions_alive.shape[0]:
+            prev_volumes_alive = prev_np
     try:
         proxies = compute_curvature_proxies(
             voronoi_data=voronoi_data,
             positions=positions_alive,
-            prev_volumes=prev_volumes,
+            prev_volumes=prev_volumes_alive,
             dt=dt,
+            volume_weights=volume_weights,
         )
     except Exception:
         return None
@@ -872,6 +903,7 @@ class VoronoiManifoldVolumeElement(OptimBenchmark):
                 raise RuntimeError(msg) from exc
 
             alive = torch.ones(x.shape[0], dtype=torch.bool, device=x.device)
+            # Use all provided dimensions for Voronoi (benchmark dims are spatial only)
             voronoi_data = compute_voronoi_tessellation(
                 positions=x,
                 alive=alive,
@@ -880,6 +912,7 @@ class VoronoiManifoldVolumeElement(OptimBenchmark):
                 compute_curvature=True,
                 prev_volumes=self._prev_volumes,
                 dt=1.0,
+                spatial_dims=None,  # Use all dimensions provided (x.shape[1])
             )
             volumes = voronoi_data.get("volumes", np.array([]))
             if volumes.size == 0:
@@ -936,11 +969,30 @@ class VoronoiManifoldVolumeElement(OptimBenchmark):
         dt: float = 1.0,  # noqa: ARG002
     ) -> None:
         volumes = _extract_voronoi_volumes(voronoi_data, x.shape[0], x.shape[1])
+        volume_weights = _extract_riemannian_volume_weights(voronoi_data, x.shape[0])
+        volume_weights_used = (
+            volume_weights if volume_weights.size == x.shape[0] and np.any(volume_weights) else None
+        )
+        if volume_weights_used is not None:
+            volume_element = volume_weights_used
+            values = torch.as_tensor(-volume_element, dtype=x.dtype, device=x.device)
+            self._cache_values = values
+            self._cache_step_id = step_id
+            self._cache_x_ptr = x.data_ptr()
+            self._cache_x_shape = tuple(x.shape)
+            self._prev_volumes = volume_weights_used
+            return
         if volumes.size == 0:
             return
         proxies = (
             voronoi_data.get("curvature_proxies")
-            or _maybe_compute_curvature_proxies(voronoi_data, x, self._prev_volumes, dt)
+            or _maybe_compute_curvature_proxies(
+                voronoi_data,
+                x,
+                self._prev_volumes,
+                dt,
+                volume_weights=volume_weights_used,
+            )
             or {}
         )
         proxy_distortion = proxies.get("volume_distortion")
@@ -1024,6 +1076,7 @@ class VoronoiRicciScalar(OptimBenchmark):
                 raise RuntimeError(msg) from exc
 
             alive = torch.ones(x.shape[0], dtype=torch.bool, device=x.device)
+            # Use all provided dimensions for Voronoi (benchmark dims are spatial only)
             voronoi_data = compute_voronoi_tessellation(
                 positions=x,
                 alive=alive,
@@ -1032,6 +1085,7 @@ class VoronoiRicciScalar(OptimBenchmark):
                 compute_curvature=True,
                 prev_volumes=self._prev_volumes,
                 dt=1.0,
+                spatial_dims=None,  # Use all dimensions provided (x.shape[1])
             )
             volumes = voronoi_data.get("volumes", np.array([]))
             if volumes.size == 0:
@@ -1083,11 +1137,22 @@ class VoronoiRicciScalar(OptimBenchmark):
         dt: float = 1.0,
     ) -> None:
         volumes = _extract_voronoi_volumes(voronoi_data, x.shape[0], x.shape[1])
-        if volumes.size == 0:
+        volume_weights = _extract_riemannian_volume_weights(voronoi_data, x.shape[0])
+        volume_weights_used = (
+            volume_weights if volume_weights.size == x.shape[0] and np.any(volume_weights) else None
+        )
+        base_volumes = volume_weights_used if volume_weights_used is not None else volumes
+        if base_volumes.size == 0:
             return
         proxies = (
             voronoi_data.get("curvature_proxies")
-            or _maybe_compute_curvature_proxies(voronoi_data, x, self._prev_volumes, dt)
+            or _maybe_compute_curvature_proxies(
+                voronoi_data,
+                x,
+                self._prev_volumes,
+                dt,
+                volume_weights=volume_weights_used,
+            )
             or {}
         )
         proxy_expansion = proxies.get("raychaudhuri_expansion")
@@ -1097,12 +1162,12 @@ class VoronoiRicciScalar(OptimBenchmark):
             )
             ricci_proxy = -expansion
         else:
-            ricci_proxy = np.zeros_like(volumes)
-            if self._prev_volumes is not None and len(self._prev_volumes) == len(volumes) and dt > 0:
-                dV_dt = (volumes - self._prev_volumes) / dt
-                safe_volumes = np.where(volumes > 1e-10, volumes, 1.0)
+            ricci_proxy = np.zeros_like(base_volumes)
+            if self._prev_volumes is not None and len(self._prev_volumes) == len(base_volumes) and dt > 0:
+                dV_dt = (base_volumes - self._prev_volumes) / dt
+                safe_volumes = np.where(base_volumes > 1e-10, base_volumes, 1.0)
                 expansion = dV_dt / safe_volumes
-                valid = (volumes > 0) & (self._prev_volumes > 0)
+                valid = (base_volumes > 0) & (self._prev_volumes > 0)
                 expansion = np.where(valid, expansion, 0.0)
                 ricci_proxy = -expansion
         values = torch.as_tensor(ricci_proxy, dtype=x.dtype, device=x.device)
@@ -1110,7 +1175,7 @@ class VoronoiRicciScalar(OptimBenchmark):
         self._cache_step_id = step_id
         self._cache_x_ptr = x.data_ptr()
         self._cache_x_shape = tuple(x.shape)
-        self._prev_volumes = volumes
+        self._prev_volumes = base_volumes
 
     @property
     def benchmark(self) -> torch.Tensor:

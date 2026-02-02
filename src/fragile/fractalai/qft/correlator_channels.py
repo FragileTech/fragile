@@ -40,6 +40,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any
 
+import numpy as np
 import torch
 import torch.nn.functional as F
 from torch import Tensor
@@ -76,12 +77,13 @@ class ChannelConfig:
     ell0: float | None = None
 
     # Neighbor selection
-    neighbor_method: str = "knn"
-    knn_k: int = 4
-    knn_sample: int | None = 512
+    neighbor_method: str = "voronoi"
+    neighbor_k: int = 100
     voronoi_pbc_mode: str = "mirror"
     voronoi_exclude_boundary: bool = True
     voronoi_boundary_tolerance: float = 1e-6
+    use_time_sliced_tessellation: bool = True
+    time_sliced_neighbor_mode: str = "spacelike"
 
     # AIC fitting parameters
     window_widths: list[int] | None = None
@@ -114,6 +116,53 @@ class ChannelCorrelatorResult:
     window_aic: Tensor | None = None  # [num_widths, max_positions]
     window_widths: list[int] | None = None  # List of window widths used
     window_r2: Tensor | None = None  # [num_widths, max_positions]
+
+
+def _collect_time_sliced_edges(time_sliced, mode: str) -> np.ndarray:
+    edges: list[np.ndarray] = []
+    if mode in {"spacelike", "spacelike+timelike"}:
+        for bin_result in time_sliced.bins:
+            if bin_result.spacelike_edges is not None and bin_result.spacelike_edges.size:
+                edges.append(bin_result.spacelike_edges)
+    if mode in {"timelike", "spacelike+timelike"}:
+        if (
+            time_sliced.timelike_edges is not None
+            and time_sliced.timelike_edges.size
+        ):
+            edges.append(time_sliced.timelike_edges)
+    if not edges:
+        return np.zeros((0, 2), dtype=np.int64)
+    return np.vstack(edges)
+
+
+def _build_neighbor_lists(edges: np.ndarray, n: int) -> list[list[int]]:
+    neighbors = [[] for _ in range(n)]
+    if edges.size == 0:
+        return neighbors
+    for i, j in edges:
+        if i == j:
+            continue
+        if 0 <= i < n and 0 <= j < n:
+            neighbors[i].append(int(j))
+    # De-duplicate while preserving order
+    for idx, items in enumerate(neighbors):
+        if len(items) <= 1:
+            continue
+        seen: set[int] = set()
+        unique = []
+        for item in items:
+            if item in seen:
+                continue
+            seen.add(item)
+            unique.append(item)
+        neighbors[idx] = unique
+    return neighbors
+
+
+def _normalize_neighbor_method(method: str) -> str:
+    if method == "uniform":
+        return "companions"
+    return method
 
 
 def _resolve_mc_time_index(history, mc_time_index: int | None) -> int:
@@ -486,12 +535,12 @@ def bin_by_euclidean_time(
     time_range: tuple[float, float] | None = None,
 ) -> tuple[Tensor, Tensor]:
     """Bin walkers by Euclidean time coordinate and compute mean operator per bin.
-    
+
     In 4D simulations (3 spatial + 1 Euclidean time), this function treats one
     spatial dimension as a time coordinate and computes operator averages within
     time bins. This enables lattice QFT analysis where correlators are computed
     over spatial separation in the time dimension rather than Monte Carlo timesteps.
-    
+
     Args:
         positions: Walker positions over MC time [T, N, d]
         operators: Operator values to average [T, N]
@@ -499,11 +548,11 @@ def bin_by_euclidean_time(
         time_dim: Which spatial dimension is Euclidean time (0-indexed, default 3)
         n_bins: Number of time bins
         time_range: (t_min, t_max) or None for auto from data
-        
+
     Returns:
         time_coords: Bin centers [n_bins]
         operator_series: Mean operator vs Euclidean time [n_bins]
-        
+
     Example:
         >>> # 4D simulation with d=4, treat 4th dim as time
         >>> positions = history.x_before_clone  # [T, N, 4]
@@ -514,16 +563,16 @@ def bin_by_euclidean_time(
     """
     # Extract Euclidean time coordinate
     t_euc = positions[:, :, time_dim]  # [T, N]
-    
+
     # Flatten over MC time dimension to treat all snapshots as ensemble
     t_euc_flat = t_euc[alive]  # [total_alive_walkers]
     ops_flat = operators[alive]
-    
+
     if t_euc_flat.numel() == 0:
         # No alive walkers
         device = positions.device
         return torch.zeros(n_bins, device=device), torch.zeros(n_bins, device=device)
-    
+
     # Determine time range
     if time_range is None:
         t_min, t_max = t_euc_flat.min().item(), t_euc_flat.max().item()
@@ -533,33 +582,33 @@ def bin_by_euclidean_time(
         t_max += padding
     else:
         t_min, t_max = time_range
-    
+
     # Create bins
     edges = torch.linspace(t_min, t_max, n_bins + 1, device=positions.device)
     bin_centers = (edges[:-1] + edges[1:]) / 2
-    
+
     # Bin operators using vectorized histogram
     operator_series = torch.zeros(n_bins, device=positions.device)
     counts = torch.zeros(n_bins, device=positions.device)
-    
+
     for i in range(n_bins):
         mask = (t_euc_flat >= edges[i]) & (t_euc_flat < edges[i + 1])
         count = mask.sum()
         if count > 0:
             operator_series[i] = ops_flat[mask].sum()
             counts[i] = count.float()
-    
+
     # Handle last bin inclusively
     mask = t_euc_flat == edges[-1]
     if mask.sum() > 0:
         operator_series[-1] += ops_flat[mask].sum()
         counts[-1] += mask.sum().float()
-    
+
     # Average
     valid = counts > 0
     operator_series[valid] = operator_series[valid] / counts[valid]
     operator_series[~valid] = 0.0
-    
+
     return bin_centers, operator_series
 
 
@@ -594,9 +643,22 @@ class ChannelCorrelator(ABC):
 
     def _validate_config(self) -> None:
         """Validate and fill missing config values."""
-        if self.config.neighbor_method not in {"uniform", "knn", "voronoi", "recorded"}:
-            msg = "neighbor_method must be 'uniform', 'knn', 'voronoi', or 'recorded'"
+        method = _normalize_neighbor_method(self.config.neighbor_method)
+        self.config.neighbor_method = method
+        if method not in {"companions", "voronoi", "recorded"}:
+            msg = "neighbor_method must be 'companions', 'voronoi', or 'recorded'"
             raise ValueError(msg)
+        if self.config.use_time_sliced_tessellation:
+            if self.config.time_sliced_neighbor_mode not in {
+                "spacelike",
+                "timelike",
+                "spacelike+timelike",
+            }:
+                msg = (
+                    "time_sliced_neighbor_mode must be "
+                    "'spacelike', 'timelike', or 'spacelike+timelike'"
+                )
+                raise ValueError(msg)
         if self.config.ell0 is None:
             self._estimate_ell0()
 
@@ -718,105 +780,17 @@ class ChannelCorrelator(ABC):
 
         return color, valid
 
-    def _compute_knn_batch(
-        self,
-        start_idx: int,
-        sample_size: int | None = None,
-    ) -> tuple[Tensor, Tensor, Tensor]:
-        """Compute k-NN indices for all timesteps.
-
-        Args:
-            start_idx: Starting time index.
-            sample_size: Number of walkers to sample per timestep.
-
-        Returns:
-            Tuple of (sample_indices [T, S], neighbor_indices [T, S, k], alive [T, N]).
-        """
-        n_recorded = self.history.n_recorded
-        T = n_recorded - start_idx
-        N = self.history.N
-        k = self.config.knn_k
-        sample_size = sample_size or self.config.knn_sample or N
-        device = self.history.x_final.device
-
-        # Get positions and alive masks
-        x_pre = self.history.x_before_clone[start_idx:]  # [T, N, d]
-        alive = self.history.alive_mask[start_idx - 1 : n_recorded - 1]  # [T, N]
-
-        all_sample_idx = []
-        all_neighbor_idx = []
-
-        for t in range(T):
-            alive_t = alive[t]
-            alive_indices = torch.where(alive_t)[0]
-
-            if alive_indices.numel() == 0:
-                # No alive walkers
-                all_sample_idx.append(torch.zeros(sample_size, device=device, dtype=torch.long))
-                all_neighbor_idx.append(torch.zeros(sample_size, k, device=device, dtype=torch.long))
-                continue
-
-            # Sample indices
-            if alive_indices.numel() <= sample_size:
-                sample_idx = alive_indices
-            else:
-                sample_idx = alive_indices[:sample_size]
-
-            actual_sample_size = sample_idx.numel()
-
-            # Compute pairwise distances
-            pos_sample = x_pre[t, sample_idx]  # [S, d]
-            pos_all = x_pre[t]  # [N, d]
-
-            diff = pos_sample.unsqueeze(1) - pos_all.unsqueeze(0)  # [S, N, d]
-            if self.history.pbc and self.history.bounds is not None:
-                high = self.history.bounds.high.to(pos_sample)
-                low = self.history.bounds.low.to(pos_sample)
-                span = high - low
-                diff = diff - span * torch.round(diff / span)
-
-            dist_sq = (diff**2).sum(dim=-1)  # [S, N]
-
-            # Mask out dead walkers and self
-            alive_mask = alive_t.unsqueeze(0).expand(actual_sample_size, -1)
-            dist_sq = dist_sq.masked_fill(~alive_mask, float("inf"))
-            dist_sq[torch.arange(actual_sample_size, device=device), sample_idx] = float("inf")
-
-            # Get k nearest neighbors
-            k_eff = min(k, alive_indices.numel() - 1)
-            if k_eff <= 0:
-                neighbor_idx = torch.zeros(actual_sample_size, k, device=device, dtype=torch.long)
-            else:
-                _, indices = torch.topk(dist_sq, k=k_eff, largest=False)
-                # Pad to k if needed
-                if k_eff < k:
-                    indices = F.pad(indices, (0, k - k_eff), value=0)
-                neighbor_idx = indices
-
-            # Pad sample to sample_size if needed
-            if actual_sample_size < sample_size:
-                sample_idx = F.pad(sample_idx, (0, sample_size - actual_sample_size), value=0)
-                neighbor_idx = F.pad(neighbor_idx, (0, 0, 0, sample_size - actual_sample_size), value=0)
-
-            all_sample_idx.append(sample_idx)
-            all_neighbor_idx.append(neighbor_idx)
-
-        sample_indices = torch.stack(all_sample_idx, dim=0)  # [T, S]
-        neighbor_indices = torch.stack(all_neighbor_idx, dim=0)  # [T, S, k]
-
-        return sample_indices, neighbor_indices, alive
-
     def _compute_companion_batch(
         self,
         start_idx: int,
         sample_size: int | None = None,
     ) -> tuple[Tensor, Tensor, Tensor]:
-        """Use stored companion indices as neighbors (uniform companion selection)."""
+        """Use stored companion indices as neighbors."""
         n_recorded = self.history.n_recorded
         T = n_recorded - start_idx
         N = self.history.N
-        k = max(2, int(self.config.knn_k))
-        sample_size = sample_size or self.config.knn_sample or N
+        k = max(2, int(self.config.neighbor_k))
+        sample_size = sample_size or N
         device = self.history.x_final.device
 
         alive = self.history.alive_mask[start_idx - 1 : n_recorded - 1]  # [T, N]
@@ -868,13 +842,13 @@ class ChannelCorrelator(ABC):
         try:
             from fragile.fractalai.qft.voronoi_observables import compute_voronoi_tessellation
         except Exception:
-            return self._compute_knn_batch(start_idx, sample_size=sample_size)
+            return self._compute_companion_batch(start_idx, sample_size=sample_size)
 
         n_recorded = self.history.n_recorded
         T = n_recorded - start_idx
         N = self.history.N
-        k = int(self.config.knn_k)
-        sample_size = sample_size or self.config.knn_sample or N
+        k = int(self.config.neighbor_k)
+        sample_size = sample_size or N
         device = self.history.x_final.device
 
         x_pre = self.history.x_before_clone[start_idx:]  # [T, N, d]
@@ -946,15 +920,15 @@ class ChannelCorrelator(ABC):
         start_idx: int,
         sample_size: int | None = None,
     ) -> tuple[Tensor, Tensor, Tensor]:
-        """Use recorded neighbor edges from RunHistory (uniform over neighbors)."""
+        """Use recorded neighbor edges from RunHistory."""
         if self.history.neighbor_edges is None:
             return self._compute_companion_batch(start_idx, sample_size=sample_size)
 
         n_recorded = self.history.n_recorded
         T = n_recorded - start_idx
         N = self.history.N
-        k = max(1, int(self.config.knn_k))
-        sample_size = sample_size or self.config.knn_sample or N
+        k = max(1, int(self.config.neighbor_k))
+        sample_size = sample_size or N
         device = self.history.x_final.device
 
         alive = self.history.alive_mask[start_idx - 1 : n_recorded - 1]  # [T, N]
@@ -1021,13 +995,13 @@ class ChannelCorrelator(ABC):
         start_idx: int,
     ) -> tuple[Tensor, Tensor, Tensor]:
         """Dispatch neighbor selection based on config."""
-        if self.config.neighbor_method == "uniform":
+        if self.config.neighbor_method == "companions":
             return self._compute_companion_batch(start_idx)
         if self.config.neighbor_method == "recorded":
             return self._compute_recorded_neighbors_batch(start_idx)
         if self.config.neighbor_method == "voronoi":
             return self._compute_voronoi_batch(start_idx)
-        return self._compute_knn_batch(start_idx)
+        return self._compute_companion_batch(start_idx)
 
     @abstractmethod
     def _compute_operators_vectorized(
@@ -1064,7 +1038,7 @@ class ChannelCorrelator(ABC):
         else:
             # Standard Monte Carlo time analysis
             return self._compute_series_mc()
-    
+
     def _compute_series_mc(self) -> Tensor:
         """Compute operator time series over Monte Carlo timesteps."""
         start_idx = max(1, int(self.history.n_recorded * self.config.warmup_fraction))
@@ -1081,7 +1055,7 @@ class ChannelCorrelator(ABC):
         )
 
         return series
-    
+
     def _compute_series_euclidean(self) -> Tensor:
         """Compute operator time series over Euclidean time coordinate.
 
@@ -1095,7 +1069,7 @@ class ChannelCorrelator(ABC):
                 f"(only {self.history.d} dimensions available)"
             )
             raise ValueError(msg)
-        
+
         start_idx = _resolve_mc_time_index(self.history, self.config.mc_time_index)
 
         # Get positions for Euclidean time extraction
@@ -1114,25 +1088,25 @@ class ChannelCorrelator(ABC):
             n_bins=self.config.euclidean_time_bins,
             time_range=self.config.euclidean_time_range,
         )
-        
+
         return series
-    
+
     def _compute_operators_per_walker(self, start_idx: int) -> Tensor:
         """Compute operators for each walker (not averaged).
-        
+
         Args:
             start_idx: Starting time index.
-            
+
         Returns:
             Operators [T, N] for each walker at each timestep.
         """
         # Batch compute color states
         color, valid = self._compute_color_states_batch(start_idx)
-        
+
         # Get alive mask
         n_recorded = self.history.n_recorded
         alive = self.history.alive_mask[start_idx - 1 : n_recorded - 1]  # [T, N]
-        
+
         # Compute operators without averaging (subclass-specific)
         return self._compute_operators_all_walkers(color, valid, alive)
 
@@ -1445,6 +1419,67 @@ class BilinearChannelCorrelator(ChannelCorrelator):
 
         return op_values
 
+    def _compute_time_sliced_neighbor_matrix(
+        self,
+        alive: Tensor,
+        k: int,
+    ) -> Tensor:
+        T, N = alive.shape
+        device = alive.device
+        neighbor_indices = torch.zeros((T, N, k), dtype=torch.long, device=device)
+
+        try:
+            from fragile.fractalai.qft.voronoi_time_slices import (
+                compute_time_sliced_voronoi,
+            )
+        except Exception:
+            return neighbor_indices
+
+        if len(self.history.x_before_clone) == 0:
+            return neighbor_indices
+
+        start_idx = _resolve_mc_time_index(self.history, self.config.mc_time_index)
+        pos_idx = min(start_idx, len(self.history.x_before_clone) - 1)
+        positions = self.history.x_before_clone[pos_idx]
+        alive_t = alive[0] if alive.shape[0] else torch.ones(N, dtype=torch.bool, device=device)
+
+        time_sliced = compute_time_sliced_voronoi(
+            positions=positions,
+            time_dim=int(self.config.euclidean_time_dim),
+            n_bins=int(self.config.euclidean_time_bins),
+            min_walkers_bin=1,
+            bounds=self.history.bounds,
+            alive=alive_t,
+            pbc=bool(self.history.pbc),
+            pbc_mode=self.config.voronoi_pbc_mode,
+            exclude_boundary=self.config.voronoi_exclude_boundary,
+            boundary_tolerance=self.config.voronoi_boundary_tolerance,
+            compute_curvature=False,
+        )
+
+        edges = _collect_time_sliced_edges(time_sliced, self.config.time_sliced_neighbor_mode)
+        neighbor_lists = _build_neighbor_lists(edges, N)
+        alive_idx = torch.where(alive_t)[0].tolist()
+        alive_set = set(int(i) for i in alive_idx)
+
+        neighbors_t = torch.zeros((N, k), dtype=torch.long, device=device)
+        for i in range(N):
+            if i not in alive_set:
+                neighbors_t[i] = i
+                continue
+            choices = [j for j in neighbor_lists[i] if j in alive_set and j != i]
+            if not choices:
+                neighbors_t[i] = i
+                continue
+            if len(choices) < k:
+                choices = choices + [i] * (k - len(choices))
+            else:
+                choices = choices[:k]
+            neighbors_t[i] = torch.tensor(choices, device=device)
+
+        neighbor_indices[:] = neighbors_t.unsqueeze(0).expand(T, -1, -1)
+        return neighbor_indices
+
     def _get_all_neighbors(
         self,
         color: Tensor,
@@ -1463,9 +1498,16 @@ class BilinearChannelCorrelator(ChannelCorrelator):
         """
         T, N, d = color.shape
         device = color.device
-        k = self.config.knn_k
+        k = max(1, int(self.config.neighbor_k))
 
         neighbor_indices = torch.zeros((T, N, k), dtype=torch.long, device=device)
+
+        if (
+            self.config.time_axis == "euclidean"
+            and self.config.neighbor_method == "voronoi"
+            and self.config.use_time_sliced_tessellation
+        ):
+            return self._compute_time_sliced_neighbor_matrix(alive, k)
 
         for t in range(T):
             # Get neighbors for this timestep
@@ -1782,9 +1824,16 @@ class NucleonChannel(TrilinearChannelCorrelator):
         """
         T, N, d = color.shape
         device = color.device
-        k = max(2, self.config.n_neighbors)
+        k = max(2, int(self.config.neighbor_k))
 
         neighbor_indices = torch.zeros((T, N, k), dtype=torch.long, device=device)
+
+        if (
+            self.config.time_axis == "euclidean"
+            and self.config.neighbor_method == "voronoi"
+            and self.config.use_time_sliced_tessellation
+        ):
+            return self._compute_time_sliced_neighbor_matrix(alive, k)
 
         for t in range(T):
             alive_t = alive[min(t, alive.shape[0] - 1)]
@@ -1929,6 +1978,7 @@ def compute_all_channels(
     history: RunHistory,
     channels: list[str] | None = None,
     config: ChannelConfig | None = None,
+    spatial_dims: int | None = None,
 ) -> dict[str, ChannelCorrelatorResult]:
     """Compute correlators for multiple channels.
 
@@ -1936,12 +1986,18 @@ def compute_all_channels(
         history: Fractal Gas run history.
         channels: List of channel names (default: all registered).
         config: Configuration parameters.
+        spatial_dims: Number of spatial dimensions (2 or 3). If provided, filters out
+            channels that require specific dimensionality (e.g., nucleon requires d=3).
 
     Returns:
         Dictionary mapping channel names to results.
     """
     if channels is None:
         channels = list(CHANNEL_REGISTRY.keys())
+
+    # Filter out baryon channels in 2D mode (they require d=3)
+    if spatial_dims is not None and spatial_dims < 3:
+        channels = [ch for ch in channels if ch not in {"nucleon"}]
 
     config = config or ChannelConfig()
     results = {}

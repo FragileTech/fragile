@@ -68,7 +68,7 @@ def build_correlation_decay_plot(
         title=title,
         width=600,
         height=400,
-        legend_position="top_left",
+        show_legend=True,
     )
 
 
@@ -103,7 +103,7 @@ def build_lyapunov_plot(
         title="Lyapunov Components",
         width=600,
         height=400,
-        legend_position="top_left",
+        show_legend=True,
     )
 
 
@@ -140,7 +140,7 @@ def build_phase_histograms_plot(
         title="Gauge Phase Distributions",
         width=600,
         height=400,
-        legend_position="top_left",
+        show_legend=True,
     )
 
 
@@ -324,7 +324,7 @@ def build_correlator_plot(
         title=f"{channel_name.replace('_', ' ').title()} Correlator",
         width=600,
         height=350,
-        legend_position="top_right",
+        show_legend=True,
     )
 
 
@@ -396,7 +396,7 @@ def build_effective_mass_plot(
         title=f"{channel_name.replace('_', ' ').title()} Effective Mass",
         width=600,
         height=350,
-        legend_position="top_right",
+        show_legend=True,
     )
 
 
@@ -706,7 +706,7 @@ def build_effective_mass_plateau_plot(
         title=f"{channel_name.replace('_', ' ').title()} Correlator",
         width=400,
         height=350,
-        legend_position="top_right",
+        show_legend=True,
     )
 
     # Right panel: Effective mass plateau
@@ -799,7 +799,7 @@ def build_effective_mass_plateau_plot(
         title=f"{channel_name.replace('_', ' ').title()} Effective Mass Plateau",
         width=400,
         height=350,
-        legend_position="top_right",
+        show_legend=True,
     )
 
     return left_panel, right_panel
@@ -870,5 +870,5 @@ def build_all_channels_overlay(
         title=title,
         width=700,
         height=400,
-        legend_position="top_right",
+        show_legend=True,
     )

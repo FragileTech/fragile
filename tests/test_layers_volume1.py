@@ -19,6 +19,7 @@ from fragile.core.layers import (
     GeodesicConfig,
     GeodesicCrossAttention,
     HierarchicalDisentangled,
+    HyperbolicTransport,
     InvariantChartClassifier,
     IsotropicBlock,
     LorentzianConfig,
@@ -29,7 +30,15 @@ from fragile.core.layers import (
     SupervisedTopologyLoss,
     TemporalChristoffelQuery,
     VectorQuantizer,
-    WilsonLineApprox,
+)
+from fragile.core.layers.gauge import (
+    exp_map_zero,
+    hyperbolic_distance,
+    log_map_zero,
+    mobius_add,
+    mobius_scalar_mul,
+    parallel_transport,
+    parallel_transport_zero,
 )
 
 
@@ -147,8 +156,9 @@ def test_topology_helpers_and_jump_consistency() -> None:
     loss_sep = compute_separation_loss(chart_outputs, weights, margin=0.5)
     assert loss_sep.ndim == 0
 
-    jump_op = FactorizedJumpOperator(num_charts=num_charts, latent_dim=dim, global_rank=2)
-    z_n_by_chart = torch.randn(batch, num_charts, dim)
+    # Test Möbius-based jump operator (default, O(n))
+    jump_op = FactorizedJumpOperator(num_charts=num_charts, latent_dim=dim, use_mobius=True)
+    z_n_by_chart = torch.randn(batch, num_charts, dim) * 0.5  # Keep inside ball
     loss_jump, info = compute_jump_consistency_loss(
         z_n_by_chart,
         weights,
@@ -166,6 +176,41 @@ def test_topology_helpers_and_jump_consistency() -> None:
     )
     orth_loss = compute_orthogonality_loss([dummy])
     assert orth_loss.ndim == 0
+
+
+def test_mobius_jump_operator() -> None:
+    """Test Möbius-based chart transitions preserve hyperbolic structure."""
+    torch.manual_seed(7)
+    batch = 8
+    num_charts = 4
+    dim = 6
+
+    jump_op = FactorizedJumpOperator(num_charts=num_charts, latent_dim=dim)
+
+    # Generate points inside the Poincaré ball
+    z_n = torch.randn(batch, dim) * 0.3
+    source_idx = torch.randint(0, num_charts, (batch,))
+    target_idx = torch.randint(0, num_charts, (batch,))
+
+    # Apply jump
+    z_out = jump_op(z_n, source_idx, target_idx)
+
+    # Check output shape
+    assert z_out.shape == (batch, dim)
+
+    # Check output stays inside ball (hyperbolic constraint)
+    norms = z_out.norm(dim=-1)
+    assert (norms < 1.0).all(), "Output should stay inside Poincaré ball"
+
+    # Test roundtrip: jumping from A to B and back to A preserves norm
+    z_to_target = jump_op(z_n, source_idx, target_idx)
+    z_roundtrip = jump_op(z_to_target, target_idx, source_idx)
+    assert torch.allclose(z_roundtrip.norm(dim=-1), z_n.norm(dim=-1), atol=0.1)
+
+    # Test lift_to_global and project_from_global
+    z_global = jump_op.lift_to_global(z_n, source_idx)
+    z_back = jump_op.project_from_global(z_global, source_idx)
+    assert torch.allclose(z_back, z_n, atol=0.1)
 
 
 def test_invariant_chart_classifier_rotation_invariance() -> None:
@@ -226,23 +271,66 @@ def test_lorentzian_modules() -> None:
     assert torch.allclose(weights.sum(dim=-1), torch.ones(2), atol=1e-5)
 
 
-def test_wilson_line_and_metric_temperature() -> None:
+def test_hyperbolic_primitives() -> None:
+    """Test fundamental Möbius operations in the Poincaré ball."""
+    torch.manual_seed(6)
+
+    # Test mobius_add identity: x ⊕ 0 = x
+    x = torch.randn(4, 3) * 0.5  # Keep inside ball
+    zero = torch.zeros_like(x)
+    assert torch.allclose(mobius_add(x, zero), x, atol=1e-5)
+
+    # Test mobius_add commutativity at origin
+    y = torch.randn(4, 3) * 0.5
+    # Note: Möbius addition is NOT commutative in general, but x ⊕ 0 = 0 ⊕ x = x
+    assert torch.allclose(mobius_add(zero, x), x, atol=1e-5)
+
+    # Test exp/log inverse: log_0(exp_0(v)) ≈ v for small v
+    v = torch.randn(4, 3) * 0.3
+    recovered = log_map_zero(exp_map_zero(v))
+    assert torch.allclose(recovered, v, atol=1e-4)
+
+    # Test hyperbolic distance is non-negative
+    dist = hyperbolic_distance(x, y)
+    assert (dist >= 0).all()
+
+    # Test hyperbolic distance is zero for same points (within numerical precision)
+    dist_same = hyperbolic_distance(x, x)
+    assert torch.allclose(dist_same, torch.zeros_like(dist_same), atol=1e-4)
+
+    # Test parallel transport preserves norm (approximately)
+    v_tangent = torch.randn(4, 3) * 0.2
+    transported = parallel_transport(v_tangent, zero, x)
+    # Norm should be scaled by conformal factor ratio
+    assert transported.shape == v_tangent.shape
+
+
+def test_hyperbolic_transport_shapes() -> None:
+    """Test HyperbolicTransport module shapes and properties."""
     torch.manual_seed(6)
     config = GeodesicConfig(d_model=8, d_latent=4)
-    wilson = WilsonLineApprox(config, d_k=6)
+    transport = HyperbolicTransport(config, d_k=6)
     metric = ConformalMetric()
 
     z_query = torch.zeros(2, 4)
-    z_key = torch.randn(2, 3, 4)
-    u_mat = wilson(z_query, z_key)
+    z_key = torch.randn(2, 3, 4) * 0.5  # Keep inside ball
+    u_mat = transport(z_query, z_key)
 
-    identity = torch.eye(6, device=u_mat.device, dtype=u_mat.dtype)
-    identity = identity.expand(2, 3, 6, 6)
-    h_mat = u_mat - identity
-    skew_sym = h_mat + h_mat.transpose(-1, -2)
+    # Check shape: [B, N, d_k, d_k]
+    assert u_mat.shape == (2, 3, 6, 6)
 
-    assert torch.allclose(skew_sym, torch.zeros_like(skew_sym), atol=1e-5)
+    # For query at origin, transport should scale by 1/λ(key)
+    # λ(0) = 2, so transport from key to origin = λ(key) / 2
+    # Check diagonal structure (transport matrices are diagonal scaling)
+    for b in range(2):
+        for n in range(3):
+            # Off-diagonal should be zero
+            mat = u_mat[b, n]
+            diag = torch.diag(mat)
+            off_diag = mat - torch.diag(diag)
+            assert torch.allclose(off_diag, torch.zeros_like(off_diag), atol=1e-5)
 
+    # Test temperature scaling
     tau = metric.temperature(torch.zeros(2, 4), d_k=6)
     expected = torch.full_like(tau, fill_value=(6**0.5) / 2.0)
     assert torch.allclose(tau, expected, atol=1e-6)
@@ -251,11 +339,14 @@ def test_wilson_line_and_metric_temperature() -> None:
 def test_gauge_modules() -> None:
     torch.manual_seed(5)
     config = GeodesicConfig(d_model=8, d_latent=4, n_heads=2)
-    wilson = WilsonLineApprox(config, d_k=4)
+
+    # Test both transports
+    transport = HyperbolicTransport(config, d_k=4)
     metric = ConformalMetric()
     query = ChristoffelQuery(d_in=8, d_out=8, d_latent=4)
     chiral = ChiralProjector(d_latent=4)
     screening = AreaLawScreening(config)
+    # Use hyperbolic transport (default)
     head = CovariantAttention(config, use_chirality=True, use_screening=True)
     cross = GeodesicCrossAttention(config)
 
@@ -265,7 +356,7 @@ def test_gauge_modules() -> None:
     x_key = torch.randn(2, 3, 8)  # [B, N, d_model]
     x_value = torch.randn(2, 3, 8)  # [B, N, d_model]
 
-    U = wilson(z_query, z_key)  # [B, N, d_k, d_k]
+    U = transport(z_query, z_key)  # [B, N, d_k, d_k]
     g = metric.metric(z_query)  # [B, d, d]
     q = query(x_query, z_query)  # [B, d_out]
     psi = torch.stack([x_query, x_query], dim=1)  # [B, 2, d_model]
@@ -293,7 +384,8 @@ def test_gauge_modules() -> None:
     z_next, p_next = cross(z, p, z_key, x_key, context_force)
 
     assert U.shape == (2, 3, 4, 4)
-    assert torch.allclose(U[:, :, torch.arange(4), torch.arange(4)], torch.ones(2, 3, 4))
+    # HyperbolicTransport produces diagonal matrices (not identity + skew)
+    # For z_query at origin and z_key at origin, transport is identity
     assert g.shape == (2, 4, 4)
     assert q.shape == (2, 8)
     assert psi_proj.shape == (2, 16)

@@ -348,7 +348,7 @@ class FluidDynamicsExplorer(param.Parameterized):
             gamma=float(self.gas_config.gamma),
             beta=float(self.gas_config.beta),
             delta_t=float(self.gas_config.delta_t),
-            integrator="baoab",
+            integrator="boris-baoab",
             epsilon_F=float(self.gas_config.epsilon_F),
             use_fitness_force=bool(self.gas_config.use_fitness_force),
             use_potential_force=bool(self.gas_config.use_potential_force),

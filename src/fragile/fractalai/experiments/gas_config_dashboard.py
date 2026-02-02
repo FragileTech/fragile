@@ -122,7 +122,11 @@ class GasConfig(param.Parameterized):
     companion_epsilon = param.Number(
         default=0.5, bounds=(0.0001, 1000), softbounds=(0.01, 5.0), doc="Companion ε"
     )
-    integrator = param.ObjectSelector(default="baoab", objects=("baoab",), doc="Integrator")
+    integrator = param.ObjectSelector(
+        default="boris-baoab",
+        objects=("boris-baoab", "baoab"),
+        doc="Integrator",
+    )
 
     # Algorithm control
     enable_cloning = param.Boolean(default=True, doc="Enable cloning operator")

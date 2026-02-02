@@ -78,6 +78,7 @@ class VectorizedHistoryRecorder:
         record_hessians_full: bool = False,
         record_sigma_reg_diag: bool = False,
         record_sigma_reg_full: bool = False,
+        record_volume_weights: bool = False,
         record_neighbors: bool = False,
         record_voronoi: bool = False,
     ):
@@ -160,6 +161,7 @@ class VectorizedHistoryRecorder:
         self.fitness_hessians_full: Tensor | None = None
         self.sigma_reg_diag: Tensor | None = None
         self.sigma_reg_full: Tensor | None = None
+        self.riemannian_volume_weights: Tensor | None = None
 
         if record_gradients:
             self.fitness_gradients = torch.zeros(n_recorded - 1, N, d, device=device, dtype=dtype)
@@ -175,6 +177,10 @@ class VectorizedHistoryRecorder:
             self.sigma_reg_diag = torch.zeros(n_recorded - 1, N, d, device=device, dtype=dtype)
         if record_sigma_reg_full:
             self.sigma_reg_full = torch.zeros(n_recorded - 1, N, d, d, device=device, dtype=dtype)
+        if record_volume_weights:
+            self.riemannian_volume_weights = torch.zeros(
+                n_recorded - 1, N, device=device, dtype=dtype
+            )
 
         # Kinetic operator data
         self.force_stable = torch.zeros(n_recorded - 1, N, d, device=device, dtype=dtype)
@@ -328,6 +334,13 @@ class VectorizedHistoryRecorder:
                 self.sigma_reg_diag[idx_minus_1] = kinetic_info["sigma_reg_diag"]
             if kinetic_info.get("sigma_reg_full") is not None and self.sigma_reg_full is not None:
                 self.sigma_reg_full[idx_minus_1] = kinetic_info["sigma_reg_full"]
+            if (
+                kinetic_info.get("riemannian_volume_weights") is not None
+                and self.riemannian_volume_weights is not None
+            ):
+                self.riemannian_volume_weights[idx_minus_1] = kinetic_info[
+                    "riemannian_volume_weights"
+                ]
 
         if self.neighbor_edges is not None:
             edges = info.get("neighbor_edges")
@@ -446,6 +459,9 @@ class VectorizedHistoryRecorder:
             else None,
             sigma_reg_full=self.sigma_reg_full[: actual_recorded - 1]
             if self.sigma_reg_full is not None
+            else None,
+            riemannian_volume_weights=self.riemannian_volume_weights[: actual_recorded - 1]
+            if self.riemannian_volume_weights is not None
             else None,
             neighbor_edges=self.neighbor_edges[:actual_recorded]
             if self.neighbor_edges is not None

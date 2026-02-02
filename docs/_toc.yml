@@ -164,6 +164,8 @@ parts:
           - file: source/3_fractal_gas/3_fitness_manifold/04_field_equations
           - file: source/3_fractal_gas/3_fitness_manifold/05_holography
           - file: source/3_fractal_gas/3_fitness_manifold/06_cosmology
+          - file: source/3_fractal_gas/3_fitness_manifold/07_computational_proxies
+          - file: source/3_fractal_gas/3_fitness_manifold/08_voronoi_wilson_loops
       - file: source/3_fractal_gas/convergence_program/01_fragile_gas_framework
         title: "Part IV - Convergence Program"
         sections:

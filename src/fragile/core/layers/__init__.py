@@ -18,7 +18,7 @@ from fragile.core.layers.gauge import (
     CovariantAttention,
     GeodesicConfig,
     GeodesicCrossAttention,
-    WilsonLineApprox,
+    HyperbolicTransport,
 )
 from fragile.core.layers.lorentzian import (
     CausalMask,
@@ -132,7 +132,7 @@ __all__ = [
     "UniversalGeometricNetwork",
     "VanillaAE",
     "VectorQuantizer",
-    "WilsonLineApprox",
+    "HyperbolicTransport",
     "class_modulated_jump_rate",
     "compute_diagnostics",
     "compute_jump_consistency_loss",

@@ -26,7 +26,7 @@ Notes:
 from __future__ import annotations
 
 import argparse
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
 from datetime import datetime
 import json
 from pathlib import Path
@@ -44,9 +44,14 @@ from fragile.fractalai.core.kinetic_operator import KineticOperator
 
 @dataclass
 class PotentialWellConfig:
-    dims: int = 4
+    spatial_dims: int = 3  # Number of spatial dimensions (2 or 3)
+    dims: int = field(init=False)  # Total dimensions = spatial_dims + 1 (for Euclidean time)
     alpha: float = 0.1
     bounds_extent: float = 10.0
+
+    def __post_init__(self):
+        """Compute total dimensions as spatial + time"""
+        self.dims = self.spatial_dims + 1  # Always add 1 for Euclidean time
 
 
 @dataclass
@@ -337,9 +342,12 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--viscous-neighbor-weighting",
-        choices=["kernel", "uniform"],
+        choices=["kernel", "uniform", "inverse_distance", "metric_diag", "metric_full"],
         default=OperatorConfig.viscous_neighbor_weighting,
-        help="Weighting for viscous neighbors (kernel or uniform)",
+        help=(
+            "Weighting for viscous neighbors (kernel, uniform, inverse_distance, "
+            "metric_diag, metric_full)"
+        ),
     )
     parser.add_argument(
         "--viscous-neighbor-threshold",

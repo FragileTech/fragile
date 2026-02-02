@@ -1171,10 +1171,15 @@ def _compute_particle_observables(
                 )
 
                 if voronoi_data["voronoi"] is not None:
+                    volume_weights = None
+                    if getattr(history, "riemannian_volume_weights", None) is not None:
+                        if info_idx < len(history.riemannian_volume_weights):
+                            volume_weights = history.riemannian_volume_weights[info_idx]
                     geometric_weights = compute_geometric_weights(
                         voronoi_data=voronoi_data,
                         weight_mode=voronoi_weight,
                         normalize=voronoi_normalize,
+                        volume_weights=volume_weights,
                     )
                 else:
                     errors["voronoi"] = voronoi_data.get("error", "Voronoi computation failed")

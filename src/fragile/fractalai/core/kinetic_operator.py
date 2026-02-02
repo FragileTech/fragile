@@ -127,7 +127,7 @@ class KineticOperator(PanelModel):
         doc="Number of kinetic substeps per algorithm iteration",
     )
     integrator = param.Selector(
-        default="baoab",
+        default="boris-baoab",
         objects=["baoab", "boris-baoab"],
         doc="Integration scheme (baoab or boris-baoab)",
     )
@@ -183,8 +183,11 @@ class KineticOperator(PanelModel):
     )
     viscous_neighbor_weighting = param.Selector(
         default="kernel",
-        objects=["kernel", "uniform"],
-        doc="Weighting for viscous neighbors (Gaussian kernel or uniform)",
+        objects=["kernel", "uniform", "inverse_distance", "metric_diag", "metric_full"],
+        doc=(
+            "Weighting for viscous neighbors (Gaussian kernel, uniform, inverse distance, "
+            "or metric-weighted inverse distance)"
+        ),
     )
     viscous_neighbor_threshold = param.Number(
         default=None,
@@ -203,6 +206,14 @@ class KineticOperator(PanelModel):
         allow_None=True,
         bounds=(0, None),
         doc="Optional cap on viscous degree to saturate multi-neighbor coupling",
+    )
+    viscous_volume_weighting = param.Boolean(
+        default=True,
+        doc="Weight viscous neighbors by Riemannian volume element",
+    )
+    compute_volume_weights = param.Boolean(
+        default=True,
+        doc="Compute and store Riemannian volume weights for analysis",
     )
 
     # Boris rotation (curl-driven velocity rotation)
@@ -348,6 +359,13 @@ class KineticOperator(PanelModel):
                 "type": pn.widgets.Select,
                 "width": INPUT_WIDTH,
                 "name": "Viscous weighting",
+                "options": [
+                    "kernel",
+                    "uniform",
+                    "inverse_distance",
+                    "metric_diag",
+                    "metric_full",
+                ],
             },
             "viscous_neighbor_threshold": {
                 "type": pn.widgets.FloatInput,
@@ -374,6 +392,16 @@ class KineticOperator(PanelModel):
                 "end": 200.0,
                 "step": 1.0,
                 "value": None,
+            },
+            "viscous_volume_weighting": {
+                "type": pn.widgets.Checkbox,
+                "width": INPUT_WIDTH,
+                "name": "Viscous volume weighting",
+            },
+            "compute_volume_weights": {
+                "type": pn.widgets.Checkbox,
+                "width": INPUT_WIDTH,
+                "name": "Record volume weights",
             },
             "beta_curl": {
                 "type": pn.widgets.EditableFloatSlider,
@@ -423,6 +451,8 @@ class KineticOperator(PanelModel):
             "viscous_neighbor_threshold",
             "viscous_neighbor_penalty",
             "viscous_degree_cap",
+            "viscous_volume_weighting",
+            "compute_volume_weights",
             "beta_curl",
             "V_alg",
             "use_velocity_squashing",
@@ -434,7 +464,7 @@ class KineticOperator(PanelModel):
         beta: float,
         delta_t: float,
         n_kinetic_steps: int = 1,
-        integrator: str = "baoab",
+        integrator: str = "boris-baoab",
         epsilon_F: float = 0.0,
         use_fitness_force: bool = False,
         use_potential_force: bool = True,
@@ -451,6 +481,8 @@ class KineticOperator(PanelModel):
         viscous_neighbor_threshold: float | None = None,
         viscous_neighbor_penalty: float = 0.0,
         viscous_degree_cap: float | None = None,
+        viscous_volume_weighting: bool = True,
+        compute_volume_weights: bool = True,
         beta_curl: float = 0.0,
         curl_field=None,
         V_alg: float = float("inf"),
@@ -469,7 +501,7 @@ class KineticOperator(PanelModel):
             beta: Inverse temperature 1/(k_B T) (β)
             delta_t: Time step size (Δt)
             n_kinetic_steps: Number of kinetic substeps per algorithm iteration
-            integrator: Integration scheme (default: "baoab")
+            integrator: Integration scheme (default: "boris-baoab")
             epsilon_F: Adaptation rate for fitness force (ε_F)
             use_fitness_force: Enable fitness-based force
             use_potential_force: Enable potential gradient force
@@ -486,6 +518,8 @@ class KineticOperator(PanelModel):
             viscous_neighbor_threshold: Kernel threshold for strong neighbors
             viscous_neighbor_penalty: Penalty strength for excess neighbors
             viscous_degree_cap: Degree cap for viscous coupling saturation
+            viscous_volume_weighting: Weight viscous neighbors by Riemannian volume element
+            compute_volume_weights: Store Riemannian volume weights in history
             beta_curl: Curl coupling strength for Boris rotation
             curl_field: Curl/2-form field; callable F(x)->[N, d, d] or [N, 3]
             V_alg: Algorithmic velocity bound for smooth squashing map (default: inf)
@@ -529,6 +563,8 @@ class KineticOperator(PanelModel):
             viscous_neighbor_threshold=viscous_neighbor_threshold,
             viscous_neighbor_penalty=viscous_neighbor_penalty,
             viscous_degree_cap=viscous_degree_cap,
+            viscous_volume_weighting=viscous_volume_weighting,
+            compute_volume_weights=compute_volume_weights,
             beta_curl=beta_curl,
             curl_field=curl_field,
             V_alg=V_alg,
@@ -636,6 +672,10 @@ class KineticOperator(PanelModel):
         x: Tensor,
         v: Tensor,
         neighbor_edges: Tensor | None = None,
+        grad_fitness: Tensor | None = None,
+        hess_fitness: Tensor | None = None,
+        voronoi_data: dict | None = None,
+        volume_weights: Tensor | None = None,
     ) -> Tensor:
         """Compute viscous coupling force using normalized graph Laplacian.
 
@@ -656,6 +696,10 @@ class KineticOperator(PanelModel):
             x: Positions [N, d]
             v: Velocities [N, d]
             neighbor_edges: Optional directed edges [E, 2] for true-neighbor coupling
+            grad_fitness: Optional fitness gradient [N, d] (for metric weighting)
+            hess_fitness: Optional fitness Hessian [N, d] or [N, d, d] (for metric weighting)
+            voronoi_data: Optional Voronoi data (for metric weighting when using voronoi_proxy)
+            volume_weights: Optional Riemannian volume weights [N] for neighbor weighting
 
         Returns:
             viscous_force: Velocity-dependent damping force [N, d]
@@ -675,6 +719,14 @@ class KineticOperator(PanelModel):
 
         _N, _d = x.shape
 
+        if self.viscous_volume_weighting and volume_weights is None and voronoi_data is not None:
+            volume_weights = self._compute_volume_weights(
+                x,
+                grad_fitness=grad_fitness,
+                hess_fitness=hess_fitness,
+                voronoi_data=voronoi_data,
+            )
+
         if neighbor_edges is None:
             # Compute pairwise distances
             # With PBC: use minimum image convention (wrapping)
@@ -688,8 +740,19 @@ class KineticOperator(PanelModel):
             l_sq = self.viscous_length_scale**2
             if self.viscous_neighbor_weighting == "uniform":
                 kernel = torch.ones_like(distances)
-            else:
+            elif self.viscous_neighbor_weighting == "kernel":
                 kernel = torch.exp(-(distances**2) / (2 * l_sq))  # [N, N]
+            elif self.viscous_neighbor_weighting == "inverse_distance":
+                eps = 1e-8
+                kernel = 1.0 / (distances + eps)
+            else:
+                warnings.warn(
+                    "Metric-weighted viscous coupling requires neighbor_edges; "
+                    "falling back to inverse-distance weighting.",
+                    RuntimeWarning,
+                )
+                eps = 1e-8
+                kernel = 1.0 / (distances + eps)
 
             # Zero out diagonal (no self-interaction)
             kernel.fill_diagonal_(0.0)
@@ -701,6 +764,11 @@ class KineticOperator(PanelModel):
                 mask = torch.zeros_like(kernel)
                 mask.scatter_(1, nn_idx.unsqueeze(1), 1.0)
                 kernel = kernel * mask
+
+            if self.viscous_volume_weighting and volume_weights is not None:
+                vw = volume_weights.to(device=kernel.device, dtype=kernel.dtype)
+                if vw.numel() == kernel.shape[1]:
+                    kernel = kernel * vw.unsqueeze(0)
 
             # Compute local degree deg(i) = ∑_{j≠i} K(||x_i - x_j||)
             # Add small epsilon for numerical stability
@@ -755,23 +823,69 @@ class KineticOperator(PanelModel):
             diff = diff - span * torch.round(diff / span)
         dist_sq = (diff**2).sum(dim=-1)
 
+        weighting = self.viscous_neighbor_weighting
         l_sq = self.viscous_length_scale**2
-        if self.viscous_neighbor_weighting == "uniform":
+        eps = 1e-8
+        if weighting == "uniform":
             kernel = torch.ones_like(dist_sq)
+        elif weighting == "kernel":
+            kernel = torch.exp(-dist_sq / (2 * l_sq))
+        elif weighting == "inverse_distance":
+            kernel = 1.0 / (torch.sqrt(dist_sq) + eps)
+        elif weighting in {"metric_diag", "metric_full"}:
+            sigma = self._compute_diffusion_tensor(x, grad_fitness, hess_fitness, voronoi_data)
+            if sigma is None:
+                kernel = 1.0 / (torch.sqrt(dist_sq) + eps)
+            else:
+                c2 = self.c2 if torch.is_tensor(self.c2) else torch.tensor(self.c2, device=x.device, dtype=x.dtype)
+                if sigma.dim() == 2:
+                    sigma_safe = torch.clamp(sigma, min=eps)
+                    g_diag = (c2**2) / (sigma_safe**2)
+                    g_edge = 0.5 * (g_diag[i] + g_diag[j])
+                    dist_sq_metric = torch.sum(g_edge * (diff**2), dim=-1)
+                else:
+                    sigma_sym = 0.5 * (sigma + sigma.transpose(-1, -2))
+                    try:
+                        inv_sigma = torch.linalg.inv(sigma_sym)
+                    except RuntimeError:
+                        inv_sigma = torch.linalg.pinv(sigma_sym)
+                    g_full = (c2**2) * (inv_sigma @ inv_sigma.transpose(-1, -2))
+                    if weighting == "metric_diag":
+                        g_diag = torch.diagonal(g_full, dim1=-2, dim2=-1)
+                        g_edge = 0.5 * (g_diag[i] + g_diag[j])
+                        dist_sq_metric = torch.sum(g_edge * (diff**2), dim=-1)
+                    else:
+                        g_edge = 0.5 * (g_full[i] + g_full[j])
+                        diff_vec = diff.unsqueeze(1)
+                        dist_sq_metric = torch.bmm(
+                            torch.bmm(diff_vec, g_edge), diff.unsqueeze(-1)
+                        ).squeeze(-1).squeeze(-1)
+                dist_sq_metric = torch.clamp(dist_sq_metric, min=0.0)
+                kernel = 1.0 / (torch.sqrt(dist_sq_metric) + eps)
         else:
             kernel = torch.exp(-dist_sq / (2 * l_sq))
 
         if self.viscous_neighbor_mode == "nearest":
             try:
                 min_dist = torch.full((x.shape[0],), float("inf"), device=x.device)
-                min_dist.scatter_reduce_(0, i, dist_sq, reduce="amin", include_self=False)
-                keep = dist_sq <= (min_dist[i] + 1e-12)
+                if weighting in {"metric_diag", "metric_full"}:
+                    dist_metric = 1.0 / torch.clamp(kernel, min=eps)
+                    min_dist.scatter_reduce_(0, i, dist_metric, reduce="amin", include_self=False)
+                    keep = dist_metric <= (min_dist[i] + 1e-12)
+                else:
+                    min_dist.scatter_reduce_(0, i, dist_sq, reduce="amin", include_self=False)
+                    keep = dist_sq <= (min_dist[i] + 1e-12)
                 i = i[keep]
                 j = j[keep]
                 dist_sq = dist_sq[keep]
                 kernel = kernel[keep]
             except Exception:
                 pass
+
+        if self.viscous_volume_weighting and volume_weights is not None:
+            vw = volume_weights.to(device=kernel.device, dtype=kernel.dtype)
+            if vw.numel() == x.shape[0]:
+                kernel = kernel * vw[j]
 
         deg = torch.zeros(x.shape[0], device=x.device, dtype=kernel.dtype)
         deg.index_add_(0, i, kernel)
@@ -850,12 +964,23 @@ class KineticOperator(PanelModel):
         v: Tensor,
         grad_fitness: Tensor | None,
         neighbor_edges: Tensor | None = None,
+        hess_fitness: Tensor | None = None,
+        voronoi_data: dict | None = None,
+        volume_weights: Tensor | None = None,
     ) -> Tensor:
         """Apply one Boris-aware B step (half kick + rotation + half kick)."""
         force = self._compute_force(x, v, grad_fitness)
 
         viscous = (
-            self._compute_viscous_force(x, v, neighbor_edges)
+            self._compute_viscous_force(
+                x,
+                v,
+                neighbor_edges,
+                grad_fitness=grad_fitness,
+                hess_fitness=hess_fitness,
+                voronoi_data=voronoi_data,
+                volume_weights=volume_weights,
+            )
             if self.use_viscous_coupling
             else torch.zeros_like(v)
         )
@@ -868,7 +993,15 @@ class KineticOperator(PanelModel):
             v_rot = v_minus
 
         viscous_rot = (
-            self._compute_viscous_force(x, v_rot, neighbor_edges)
+            self._compute_viscous_force(
+                x,
+                v_rot,
+                neighbor_edges,
+                grad_fitness=grad_fitness,
+                hess_fitness=hess_fitness,
+                voronoi_data=voronoi_data,
+                volume_weights=volume_weights,
+            )
             if self.use_viscous_coupling
             else torch.zeros_like(v)
         )
@@ -1106,6 +1239,47 @@ class KineticOperator(PanelModel):
 
         return sigma
 
+    def _compute_volume_weights(
+        self,
+        x: Tensor,
+        grad_fitness: Tensor | None = None,
+        hess_fitness: Tensor | None = None,
+        voronoi_data: dict | None = None,
+    ) -> Tensor | None:
+        if voronoi_data is None:
+            return None
+        try:
+            from fragile.fractalai.qft.voronoi_observables import (
+                compute_riemannian_volume_weights,
+            )
+        except Exception as exc:
+            warnings.warn(
+                f"Riemannian volume weights unavailable: {exc}",
+                RuntimeWarning,
+            )
+            return None
+
+        try:
+            sigma = self._compute_diffusion_tensor(
+                x,
+                grad_fitness=grad_fitness,
+                hess_fitness=hess_fitness,
+                voronoi_data=voronoi_data,
+            )
+        except Exception as exc:
+            warnings.warn(
+                f"Failed to compute diffusion tensor for volume weights: {exc}",
+                RuntimeWarning,
+            )
+            return None
+
+        return compute_riemannian_volume_weights(
+            voronoi_data=voronoi_data,
+            sigma=sigma,
+            c2=self.c2,
+            full_size=x.shape[0],
+        )
+
     def apply(
         self,
         state,
@@ -1155,11 +1329,31 @@ class KineticOperator(PanelModel):
         x, v = state.x.clone(), state.v.clone()
         N, d = state.N, state.d
         info = {}
+        volume_weights = None
+
+        if voronoi_data is not None and (
+            self.compute_volume_weights
+            or (self.use_viscous_coupling and self.viscous_volume_weighting)
+        ):
+            volume_weights = self._compute_volume_weights(
+                x,
+                grad_fitness=grad_fitness,
+                hess_fitness=hess_fitness,
+                voronoi_data=voronoi_data,
+            )
 
         if return_info:
             force_stable, force_adapt = self._compute_force_components(x, grad_fitness)
             force_viscous = (
-                self._compute_viscous_force(x, v, neighbor_edges)
+                self._compute_viscous_force(
+                    x,
+                    v,
+                    neighbor_edges,
+                    grad_fitness=grad_fitness,
+                    hess_fitness=hess_fitness,
+                    voronoi_data=voronoi_data,
+                    volume_weights=volume_weights,
+                )
                 if self.use_viscous_coupling
                 else torch.zeros_like(v)
             )
@@ -1172,9 +1366,19 @@ class KineticOperator(PanelModel):
                 "force_friction": force_friction,
                 "force_total": force_total,
             })
+            if self.compute_volume_weights:
+                info["riemannian_volume_weights"] = volume_weights
 
         # === FIRST B STEP: Apply forces + optional Boris rotation ===
-        v = self._apply_boris_kick(x, v, grad_fitness, neighbor_edges)
+        v = self._apply_boris_kick(
+            x,
+            v,
+            grad_fitness,
+            neighbor_edges,
+            hess_fitness=hess_fitness,
+            voronoi_data=voronoi_data,
+            volume_weights=volume_weights,
+        )
 
         # === FIRST A STEP: Update positions ===
         x += (self.dt / 2) * v
@@ -1226,7 +1430,15 @@ class KineticOperator(PanelModel):
         x += (self.dt / 2) * v
 
         # === SECOND B STEP: Apply forces + optional Boris rotation ===
-        v = self._apply_boris_kick(x, v, grad_fitness, neighbor_edges)
+        v = self._apply_boris_kick(
+            x,
+            v,
+            grad_fitness,
+            neighbor_edges,
+            hess_fitness=hess_fitness,
+            voronoi_data=voronoi_data,
+            volume_weights=volume_weights,
+        )
 
         # === VELOCITY SQUASHING: Apply smooth radial squashing map ===
         if self.use_velocity_squashing:

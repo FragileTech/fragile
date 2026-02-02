@@ -45,6 +45,13 @@ class GasConfigPanel(param.Parameterized):
         >>> history = config.history  # Access result after running
     """
 
+    # Spatial dimension selection
+    spatial_dims = param.ObjectSelector(
+        default=3,
+        objects=[2, 3],
+        doc="Number of spatial dimensions (Euclidean time will be added as extra dimension)",
+    )
+
     # Benchmark selection
     benchmark_name = param.ObjectSelector(
         default="Mixture of Gaussians",
@@ -94,7 +101,7 @@ class GasConfigPanel(param.Parameterized):
         softbounds=(0.01, 2.0),
         doc="Initial velocity scale",
     )
-    bounds_extent = param.Number(default=6.0, bounds=(1, 12), doc="Spatial bounds half-width")
+    bounds_extent = param.Number(default=3.0, bounds=(1, 12), doc="Spatial bounds half-width")
 
     # Benchmark visualization controls
     show_optimum = param.Boolean(default=True, doc="Show global optimum marker on benchmark plot")
@@ -104,15 +111,28 @@ class GasConfigPanel(param.Parameterized):
         default=200, bounds=(50, 500), doc="Grid resolution for benchmark visualization"
     )
 
-    def __init__(self, dims: int = 2, **params):
+    def __init__(self, dims: int = 2, spatial_dims: int | None = None, **params):
         """Initialize GasConfigPanel.
 
         Args:
-            dims: Spatial dimension (default: 2)
+            dims: Spatial dimension (default: 2) - DEPRECATED, use spatial_dims instead
+            spatial_dims: Number of spatial dimensions (2 or 3). If None, uses dims parameter.
             **params: Override default parameter values
         """
+        # Handle backward compatibility: spatial_dims takes precedence over dims
+        if spatial_dims is not None:
+            dims = spatial_dims
+        elif "spatial_dims" in params:
+            dims = params["spatial_dims"]
+
         super().__init__(**params)
-        self.dims = dims
+        # dims/spatial_dims are interpreted as spatial dimension count
+        spatial_count = int(dims)
+        # Sync the spatial_dims parameter
+        if self.spatial_dims != spatial_count:
+            self.spatial_dims = spatial_count
+        # Total dimension includes Euclidean time
+        self.dims = spatial_count + 1
         self.history: RunHistory | None = None
 
         # Create default operators with sensible defaults
@@ -126,6 +146,9 @@ class GasConfigPanel(param.Parameterized):
             self._on_benchmark_change,
             ["benchmark_name", "n_gaussians", "benchmark_seed", "n_atoms"],
         )
+
+        # Watch for spatial_dims changes to update dims
+        self.param.watch(self._on_spatial_dims_change, "spatial_dims")
 
         # Create UI components
         self.run_button = pn.widgets.Button(name="Run Simulation", button_type="primary")
@@ -193,20 +216,26 @@ class GasConfigPanel(param.Parameterized):
         self._on_benchmark_updated: list[Callable[[object, object, object], None]] = []
 
     @staticmethod
-    def create_qft_config(dims: int = 3, bounds_extent: float = 10.0) -> GasConfigPanel:
+    def create_qft_config(
+        spatial_dims: int = 3, bounds_extent: float = 3.0, dims: int | None = None
+    ) -> GasConfigPanel:
         """Create GasConfigPanel with QFT calibration defaults.
 
         These parameters match the calibrated simulation from
         08_qft_calibration_notebook.ipynb.
 
         Args:
-            dims: Spatial dimensionality (default: 3)
-            bounds_extent: Half-width of spatial domain (default: 10.0)
+            spatial_dims: Number of spatial dimensions (2 or 3, default: 3)
+            bounds_extent: Half-width of spatial domain (default: 3.0)
+            dims: DEPRECATED - use spatial_dims instead
 
         Returns:
             GasConfigPanel configured with QFT parameters
         """
-        config = GasConfigPanel(dims=dims)
+        # Backward compatibility
+        if dims is not None:
+            spatial_dims = dims
+        config = GasConfigPanel(spatial_dims=spatial_dims)
 
         # Benchmark
         config.bounds_extent = bounds_extent
@@ -339,7 +368,7 @@ class GasConfigPanel(param.Parameterized):
             gamma=1.0,
             beta=1.0,
             delta_t=0.05,
-            integrator="baoab",
+            integrator="boris-baoab",
             epsilon_F=0.15,
             use_fitness_force=False,
             use_potential_force=False,
@@ -378,6 +407,7 @@ class GasConfigPanel(param.Parameterized):
             "d": self.dims,
             "freeze_best": False,
             "enable_cloning": True,
+            "clone_every": 1,
             "enable_kinetic": True,
             "pbc": False,
             "dtype": "float32",
@@ -436,6 +466,17 @@ class GasConfigPanel(param.Parameterized):
         # Notify listeners
         for callback in self._on_benchmark_updated:
             callback(self.potential, self.background, self.mode_points)
+
+    def _on_spatial_dims_change(self, event):
+        """Handle spatial dimensions parameter changes."""
+        new_spatial_dims = event.new
+        self.dims = int(new_spatial_dims) + 1
+        # Update benchmark with new dimensions
+        self._update_benchmark()
+        self.status_pane.object = (
+            f"**Spatial dimensions updated:** {new_spatial_dims}D spatial + 1D time "
+            f"= {new_spatial_dims + 1}D total"
+        )
 
     def _apply_fast_fitness_preset(self, *_):
         """Apply fast fitness-force settings (approximate gradients)."""
@@ -628,6 +669,7 @@ class GasConfigPanel(param.Parameterized):
             dtype=self.gas_params["dtype"],
             freeze_best=self.gas_params["freeze_best"],
             enable_cloning=self.gas_params["enable_cloning"],
+            clone_every=int(self.gas_params.get("clone_every", 1)),
             enable_kinetic=self.gas_params["enable_kinetic"],
             pbc=self.gas_params["pbc"],
             neighbor_graph_method=self.neighbor_graph_method,
@@ -726,7 +768,24 @@ class GasConfigPanel(param.Parameterized):
             sizing_mode="stretch_width",
         )
 
+        # Spatial dimensions selector (added before benchmark)
+        spatial_dims_description = pn.pane.Markdown(
+            """
+**Spatial Dimensions**: Choose 2D or 3D spatial configuration.
+Euclidean time will be added as an additional dimension for QFT analysis.
+- **2D spatial + time** = 3D total
+- **3D spatial + time** = 4D total (default)
+
+*Note: 1D spatial is not supported due to Voronoi tessellation requirements.*
+            """,
+            sizing_mode="stretch_width",
+        )
+
         benchmark_panel = pn.Column(
+            pn.pane.Markdown("### Spatial Dimensions"),
+            spatial_dims_description,
+            self._build_param_panel(["spatial_dims"]),
+            pn.layout.Divider(),
             pn.pane.Markdown("### Potential Function"),
             self._build_param_panel(benchmark_params_base),
             benchmark_specific,
@@ -767,9 +826,11 @@ class GasConfigPanel(param.Parameterized):
         pbc_cb.param.watch(lambda e: self.gas_params.update({"pbc": e.new}), "value")
 
         # Add widgets to column
-        neighbor_params = ["neighbor_graph_update_every", "neighbor_graph_record"]
-        if not self.hide_viscous_kernel_widgets:
-            neighbor_params.insert(0, "neighbor_graph_method")
+        neighbor_params = [
+            "neighbor_graph_method",
+            "neighbor_graph_update_every",
+            "neighbor_graph_record",
+        ]
         general_panel = pn.Column(
             n_slider,
             self._build_param_panel(["n_steps", "record_every"]),
@@ -782,24 +843,60 @@ class GasConfigPanel(param.Parameterized):
 
         # === Operator Panels using __panel__() methods ===
         langevin_params = list(self.kinetic_op.widget_parameters)
+        kinetic_widgets = {
+            name: (dict(cfg) if isinstance(cfg, dict) else cfg)
+            for name, cfg in self.kinetic_op.widgets.items()
+        }
         if self.hide_viscous_kernel_widgets:
-            hide = {
+            weighting_widget = kinetic_widgets.get("viscous_neighbor_weighting")
+            if isinstance(weighting_widget, dict):
+                options = [opt for opt in weighting_widget.get("options", []) if opt != "kernel"]
+                if options:
+                    weighting_widget["options"] = options
+                    if self.kinetic_op.viscous_neighbor_weighting not in options:
+                        self.kinetic_op.viscous_neighbor_weighting = options[0]
+            hidden_params = {
                 "viscous_length_scale",
-                "viscous_neighbor_mode",
-                "viscous_neighbor_weighting",
-                "viscous_neighbor_threshold",
                 "viscous_neighbor_penalty",
+                "viscous_neighbor_threshold",
                 "viscous_degree_cap",
             }
-            langevin_params = [name for name in langevin_params if name not in hide]
-        langevin_panel = self.kinetic_op.__panel__(parameters=langevin_params)
+            langevin_params = [name for name in langevin_params if name not in hidden_params]
+            for name in hidden_params:
+                kinetic_widgets.pop(name, None)
+        langevin_panel = pn.Param(
+            self.kinetic_op,
+            show_name=False,
+            parameters=langevin_params,
+            widgets=self.kinetic_op.process_widgets(kinetic_widgets),
+            default_layout=self.kinetic_op.default_layout,
+        )
         fast_fitness_button = pn.widgets.Button(
             name="Apply fast fitness preset",
             button_type="primary",
         )
         fast_fitness_button.on_click(self._apply_fast_fitness_preset)
+        clone_every_input = pn.widgets.IntInput(
+            name="Clone every (steps)",
+            value=int(self.gas_params.get("clone_every", 1)),
+            start=1,
+            end=10000,
+            step=1,
+        )
+        def _set_clone_every(event):
+            try:
+                value = int(event.new)
+            except (TypeError, ValueError):
+                value = 1
+            value = max(1, value)
+            self.gas_params["clone_every"] = value
+            if getattr(clone_every_input, "value", None) != value:
+                clone_every_input.value = value
+
+        clone_every_input.param.watch(_set_clone_every, "value")
         cloning_panel_combined = pn.Column(
             pn.pane.Markdown("#### Cloning Operator"),
+            clone_every_input,
             self.cloning.__panel__(),
             pn.pane.Markdown("#### Fitness Potential"),
             fast_fitness_button,

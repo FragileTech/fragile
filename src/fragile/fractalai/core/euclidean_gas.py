@@ -144,6 +144,11 @@ class EuclideanGas(PanelModel):
         default=True,
         doc="Enable cloning operator (fitness still computed for adaptive forces)",
     )
+    clone_every = param.Integer(
+        default=1,
+        bounds=(1, None),
+        doc="Apply cloning every N steps (scores still computed every step)",
+    )
     enable_kinetic = param.Boolean(
         default=True,
         doc="Enable kinetic (Langevin dynamics) operator",
@@ -204,6 +209,14 @@ class EuclideanGas(PanelModel):
                 "width": INPUT_WIDTH,
                 "name": "Enable cloning",
             },
+            "clone_every": {
+                "type": pn.widgets.IntInput,
+                "width": INPUT_WIDTH,
+                "name": "Clone every (steps)",
+                "start": 1,
+                "end": 10000,
+                "step": 1,
+            },
             "enable_kinetic": {
                 "type": pn.widgets.Checkbox,
                 "width": INPUT_WIDTH,
@@ -219,7 +232,16 @@ class EuclideanGas(PanelModel):
     @property
     def widget_parameters(self) -> list[str]:
         """Parameters to display in UI (excluding nested operators and internal objects)."""
-        return ["N", "d", "dtype", "freeze_best", "enable_cloning", "enable_kinetic", "pbc"]
+        return [
+            "N",
+            "d",
+            "dtype",
+            "freeze_best",
+            "enable_cloning",
+            "clone_every",
+            "enable_kinetic",
+            "pbc",
+        ]
 
     def __init__(self, **params):
         """Initialize Euclidean Gas with post-initialization validation."""
@@ -461,6 +483,7 @@ class EuclideanGas(PanelModel):
               cloning_scores, cloning_probs, will_clone, num_cloned
             - Fitness is always computed (needed for adaptive forces)
             - If enable_cloning=False, cloning is skipped and state_after_cloning = state
+            - If clone_every > 1, cloning is applied every clone_every steps
             - If enable_kinetic=False, kinetic is skipped and
               state_after_kinetic = state_after_cloning
             - If kinetic_op.n_kinetic_steps > 1, the kinetic operator is applied
@@ -537,7 +560,18 @@ class EuclideanGas(PanelModel):
                 companions=companions_clone,
                 alive=alive_mask,
             )
-            state_cloned = SwarmState(x_cloned, v_cloned)
+            step_idx = getattr(self, "_current_step", None)
+            clone_every = max(1, int(self.clone_every))
+            apply_clone = (
+                step_idx is None
+                or clone_every <= 1
+                or (step_idx % clone_every == 0)
+            )
+            if apply_clone:
+                state_cloned = SwarmState(x_cloned, v_cloned)
+            else:
+                state_cloned = state.clone()
+            clone_info["cloning_applied"] = apply_clone
         else:
             # Skip cloning, use current state
             state_cloned = state.clone()
@@ -550,6 +584,7 @@ class EuclideanGas(PanelModel):
                 "clone_jitter": torch.zeros_like(state.x),
                 "clone_delta_x": torch.zeros_like(state.x),
                 "clone_delta_v": torch.zeros_like(state.v),
+                "cloning_applied": False,
             }
 
         neighbor_info = None
@@ -601,9 +636,20 @@ class EuclideanGas(PanelModel):
                 self.kinetic_op.use_anisotropic_diffusion
                 and getattr(self.kinetic_op, "diffusion_mode", "hessian") == "voronoi_proxy"
             )
+            needs_voronoi = needs_voronoi or bool(
+                getattr(self.kinetic_op, "compute_volume_weights", False)
+            )
+            needs_voronoi = needs_voronoi or (
+                self.kinetic_op.use_viscous_coupling
+                and getattr(self.kinetic_op, "viscous_volume_weighting", False)
+            )
             if needs_voronoi:
                 try:
                     from fragile.fractalai.qft.voronoi_observables import compute_voronoi_tessellation
+
+                    # For QFT mode (d>=3), use d-1 spatial dims (exclude Euclidean time)
+                    # For regular mode (d<=2), use all dimensions
+                    spatial_dims = self.d - 1 if self.d >= 3 else None
 
                     voronoi_data = compute_voronoi_tessellation(
                         positions=state_cloned.x,
@@ -614,6 +660,7 @@ class EuclideanGas(PanelModel):
                         exclude_boundary=not self.pbc,  # Exclude boundary only if not using PBC
                         boundary_tolerance=1e-6,
                         compute_curvature=False,  # Not needed for diffusion
+                        spatial_dims=spatial_dims,  # Exclude time dimension in QFT mode
                     )
                 except Exception as e:
                     # Fall back to isotropic diffusion if Voronoi fails
@@ -653,7 +700,13 @@ class EuclideanGas(PanelModel):
                 "noise": torch.zeros_like(state.v),
                 "sigma_reg_diag": None,
                 "sigma_reg_full": None,
+                "riemannian_volume_weights": None,
             }
+
+        if voronoi_data is not None:
+            volume_weights = kinetic_info.get("riemannian_volume_weights")
+            if volume_weights is not None:
+                voronoi_data["riemannian_volume_weights"] = volume_weights
 
         if self.potential is not None and hasattr(self.potential, "update_voronoi_cache"):
             step_id = getattr(self, "_current_step", None)
@@ -805,6 +858,7 @@ class EuclideanGas(PanelModel):
                     "dtype": self.dtype,
                     "freeze_best": self.freeze_best,
                     "enable_cloning": self.enable_cloning,
+                    "clone_every": self.clone_every,
                     "enable_kinetic": self.enable_kinetic,
                     "pbc": self.pbc,
                 },
@@ -861,6 +915,8 @@ class EuclideanGas(PanelModel):
                     "viscous_neighbor_threshold": self.kinetic_op.viscous_neighbor_threshold,
                     "viscous_neighbor_penalty": self.kinetic_op.viscous_neighbor_penalty,
                     "viscous_degree_cap": self.kinetic_op.viscous_degree_cap,
+                    "viscous_volume_weighting": self.kinetic_op.viscous_volume_weighting,
+                    "compute_volume_weights": self.kinetic_op.compute_volume_weights,
                     "beta_curl": self.kinetic_op.beta_curl,
                     "use_velocity_squashing": self.kinetic_op.use_velocity_squashing,
                     "V_alg": self.kinetic_op.V_alg,
@@ -915,6 +971,7 @@ class EuclideanGas(PanelModel):
         if self.kinetic_op.use_anisotropic_diffusion:
             record_sigma_reg_diag = self.kinetic_op.diagonal_diffusion
             record_sigma_reg_full = not self.kinetic_op.diagonal_diffusion
+        record_volume_weights = bool(getattr(self.kinetic_op, "compute_volume_weights", False))
 
         recorder = VectorizedHistoryRecorder(
             N=N,
@@ -927,6 +984,7 @@ class EuclideanGas(PanelModel):
             record_hessians_full=record_hessians_full,
             record_sigma_reg_diag=record_sigma_reg_diag,
             record_sigma_reg_full=record_sigma_reg_full,
+            record_volume_weights=record_volume_weights,
             record_neighbors=self.neighbor_graph_record and self.neighbor_graph_method != "none",
             record_voronoi=self.neighbor_graph_record and self.neighbor_graph_method != "none",
         )

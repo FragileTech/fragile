@@ -10190,6 +10190,803 @@ Different "vacua" in the string landscape may correspond to different QSD attrac
 **Status:** Speculative interpretation, not proven from the framework.
 :::
 
+## 3_fitness_manifold/07_computational_proxies.md
+
+:::{prf:definition} Discrete Deficit Angle
+:label: def-deficit-angle
+
+Let $\mathcal{V}$ be a Voronoi tessellation of $N$ points in $\mathbb{R}^d$. For a walker at position $x_i$, let $V_i$ be its Voronoi cell with boundary $\partial V_i$.
+
+In **2D** ($d=2$): Let $\{e_1, e_2, \ldots, e_k\}$ be the edges incident to vertex $x_i$ in the dual Delaunay triangulation. The **deficit angle** is:
+
+$$
+\delta_i = 2\pi - \sum_{j=1}^{k} \alpha_j
+$$
+
+where $\alpha_j$ is the interior angle of the $j$-th Delaunay triangle at vertex $x_i$.
+
+In **higher dimensions** ($d \geq 3$): The deficit angle is defined via dihedral angles at $(d-2)$-dimensional hinges (Voronoi edges). For computational purposes, we use the Gauss-Bonnet relation:
+
+$$
+\delta_i = \omega_d - \sum_{F \in \partial V_i} \text{SolidAngle}_i(F)
+$$
+
+where $\omega_d = 2\pi^{d/2}/\Gamma(d/2)$ is the surface area of the unit $(d-1)$-sphere, and the sum runs over all $(d-1)$-faces $F$ of the Voronoi cell boundary.
+
+**Normalization**: $\text{Vol}(\partial V_i)$ denotes the $(d-1)$-dimensional volume (surface area) of the Voronoi cell boundary.
+:::
+
+:::{prf:theorem} Deficit Angle Convergence to Ricci Scalar
+:label: thm-deficit-angle-convergence
+
+Let $\mathcal{V}_N$ be a sequence of Voronoi tessellations with inter-particle spacing $\epsilon_N \sim N^{-1/d}$ in a bounded domain $\Omega \subset \mathbb{R}^d$ with Riemannian metric $g$. Assume the generators are quasi-uniformly distributed with shape-regularity constant $C_{\text{shape}} < \infty$.
+
+**For $d = 2$**: The discrete Gaussian curvature at vertex $x_i$ converges to the continuous Gaussian curvature:
+
+$$
+K(x_i) = \frac{\delta_i}{A_{V_i}} + O(\epsilon_N^2)
+$$
+
+where $A_{V_i}$ is the **area** of the Voronoi cell $V_i$. The Ricci scalar is:
+
+$$
+R(x_i) = 2K(x_i) = \frac{2\delta_i}{A_{V_i}} + O(\epsilon_N^2)
+$$
+
+**For $d = 3$**: The deficit angle is defined at each **edge** $e$ of the Delaunay triangulation. The Ricci scalar is:
+
+$$
+R(x_i) = \frac{1}{V_{V_i}} \sum_{e \ni x_i} \delta_e \ell_e
+$$
+
+where:
+- $\delta_e$ is the deficit angle at edge $e$ (sum of dihedral angles around $e$ subtracted from $2\pi$)
+- $\ell_e$ is the edge length
+- $V_{V_i}$ is the **volume** of the Voronoi cell
+
+**Error bound**: The convergence rate is $O(\epsilon_N^2) = O(N^{-2/d})$ under $C^3$ regularity of the metric and shape-regular refinement.
+
+*Proof.*
+
+**Step 1. Discrete Gauss-Bonnet Theorem (2D):**
+
+For a polygonal region $V_i$ with piecewise straight boundary, the integrated Gaussian curvature equals the angle deficit:
+
+$$
+\int_{V_i} K(x) \, dA = \delta_i
+$$
+
+This follows from the Gauss-Bonnet theorem: for a region with $n$ vertices and interior angles $\{\alpha_j\}_{j=1}^n$,
+
+$$
+\int_{V_i} K \, dA + \sum_{j=1}^n (\pi - \alpha_j) = 2\pi \chi(V_i)
+$$
+
+For a simply connected cell ($\chi = 1$) with straight edges (zero geodesic curvature), this reduces to:
+
+$$
+\int_{V_i} K \, dA = 2\pi - \sum_{j=1}^n \alpha_j = \delta_i
+$$
+
+**Step 2. Localization (2D):**
+
+For small cells ($\text{diam}(V_i) \sim \epsilon_N$), expand $K(x)$ around $x_i$:
+
+$$
+K(x) = K(x_i) + \nabla K(x_i) \cdot (x - x_i) + O(\|x - x_i\|^2)
+$$
+
+Integrating over $V_i$ and using $\int_{V_i} (x - x_i) \, dA = 0$ (by symmetry of Voronoi cells):
+
+$$
+\int_{V_i} K(x) \, dA = K(x_i) \cdot A_{V_i} + O(\epsilon_N^{2+d})
+$$
+
+Therefore:
+
+$$
+K(x_i) = \frac{\delta_i}{A_{V_i}} + O(\epsilon_N^2)
+$$
+
+**Step 3. Ricci Scalar (2D):**
+
+For a 2D Riemannian manifold embedded in higher dimensions, the Ricci scalar is $R = 2K$. Thus:
+
+$$
+R(x_i) = \frac{2\delta_i}{A_{V_i}} + O(\epsilon_N^2)
+$$
+
+**Step 4. Higher Dimensions:**
+
+In $d = 3$, curvature concentrates at edges (codimension-2 hinges). The Regge action is:
+
+$$
+S_{\text{Regge}} = \sum_{\text{edges } e} \delta_e \ell_e
+$$
+
+The Ricci scalar is recovered by distributing edge contributions to vertices and dividing by cell volume (see Regge 1961, Cheeger-Müller-Schrader 1984).
+
+**Error Analysis**: Under shape-regular refinement and $C^3$ metric regularity, higher-order terms in the Taylor expansion contribute $O(\epsilon_N^2)$ to the pointwise approximation.
+
+**Remark**: This formula differs from the implementation in `scutoids.py` which uses boundary volume (perimeter in 2D). The **correct** formula uses the $d$-dimensional Voronoi cell volume. See Section {ref}`sec-implementation-notes` for discussion of this discrepancy.
+
+$\square$
+:::
+
+:::{prf:definition} Volume Distortion
+:label: def-volume-distortion
+
+Let $\{V_i\}_{i=1}^N$ be the Voronoi cell volumes for $N$ walkers. The **volume distortion** is the variance of normalized volumes:
+
+$$
+\sigma^2_V = \text{Var}\left(\frac{V_i}{\langle V \rangle}\right)
+$$
+
+where $\langle V \rangle = (1/N) \sum_{i=1}^N V_i$ is the mean cell volume.
+
+**Optional Riemannian correction**: If the emergent metric $g_{\mu\nu}(x)$ is known, compute Riemannian volumes:
+
+$$
+V^{\text{Riem}}_i = V^{\text{Eucl}}_i \cdot \sqrt{\det(g(x_i))}
+$$
+
+and use these in the variance calculation.
+
+**Boundary handling**: Exclude boundary and boundary-adjacent cells (3-tier classification implemented in `voronoi_observables.py::classify_boundary_cells()`) to avoid artifacts from unbounded Voronoi regions.
+:::
+
+:::{prf:theorem} Volume-Curvature Scaling Relation
+:label: thm-volume-curvature-relation
+
+For quasi-uniformly distributed particles in a Riemannian manifold $(M, g)$ with spatially varying Ricci scalar $R(x)$, the volume distortion satisfies:
+
+$$
+\sigma^2_V \sim \frac{\epsilon_N^4}{d^2} \text{Var}(R) + O(\epsilon_N^{d+2})
+$$
+
+where:
+- $\epsilon_N \sim N^{-1/d}$ is the inter-particle spacing
+- $\text{Var}(R) = \langle (R - \langle R \rangle)^2 \rangle$ is the spatial variance of the Ricci scalar
+- The symbol $\sim$ denotes scaling behavior (not a rigorous bound)
+
+*Proof Sketch.*
+
+**Step 1. Jacobi Equation for Volume Distortion:**
+
+The volume of a small geodesic ball in a Riemannian manifold with Ricci curvature satisfies (to second order in radius):
+
+$$
+V(\epsilon, x) = V_0(\epsilon) \left(1 - \frac{R(x) \epsilon^2}{6d} + O(\epsilon^3)\right)
+$$
+
+where $V_0(\epsilon) = \omega_d \epsilon^d$ is the flat-space volume and $\omega_d = \pi^{d/2} / \Gamma(1 + d/2)$.
+
+**Step 2. Voronoi Cell Volume Approximation:**
+
+For quasi-uniform particle distribution, the Voronoi cell volume at position $x_i$ scales as the geodesic ball volume:
+
+$$
+V_i \approx V_0(\epsilon_N) \left(1 - \frac{R(x_i) \epsilon_N^2}{6d} + O(\epsilon_N^3)\right)
+$$
+
+**Step 3. Normalized Volume Variance:**
+
+The normalized volumes are:
+
+$$
+\frac{V_i}{\langle V \rangle} \approx \frac{1 - R(x_i) \epsilon_N^2 / (6d)}{1 - \langle R \rangle \epsilon_N^2 / (6d)} \approx 1 + \frac{(R(x_i) - \langle R \rangle) \epsilon_N^2}{6d} + O(\epsilon_N^4)
+$$
+
+where we used $(1 + \delta)^{-1} \approx 1 - \delta$ for small $\delta$.
+
+**Step 4. Variance Computation:**
+
+Taking the variance:
+
+$$
+\sigma^2_V = \text{Var}\left(\frac{V_i}{\langle V \rangle}\right) \approx \text{Var}\left(\frac{R(x_i) \epsilon_N^2}{6d}\right) = \frac{\epsilon_N^4}{36d^2} \text{Var}(R)
+$$
+
+Therefore:
+
+$$
+\sigma^2_V \sim \frac{\epsilon_N^4}{d^2} \text{Var}(R) \sim \frac{\langle (R - \langle R \rangle)^2 \rangle}{N^{4/d} d^2}
+$$
+
+**Remark**: This is a **heuristic scaling relation**, not a rigorous theorem, as it assumes:
+1. Perfect quasi-uniformity (no clustering beyond curvature effects)
+2. Small curvature regime ($R \epsilon_N^2 \ll 1$)
+3. Voronoi cells well-approximated by geodesic balls
+
+For empirical verification, plot $\log(\sigma^2_V)$ vs. $\log(N)$; slope should be $-4/d$.
+
+$\square$
+:::
+
+:::{prf:definition} Shape Distortion
+:label: def-shape-distortion
+
+For each Voronoi cell $V_i$, let $\{v_1, v_2, \ldots, v_m\}$ be its vertex positions. Compute:
+
+1. **Centroid**: $c_i = (1/m) \sum_{j=1}^m v_j$
+2. **Vertex distances**: $d_j = \|v_j - c_i\|$
+3. **Inradius**: $r_{\text{in},i} = \min_j d_j$
+4. **Circumradius**: $r_{\text{circ},i} = \max_j d_j$
+
+The **shape distortion** for cell $i$ is:
+
+$$
+\rho_i = \frac{r_{\text{in},i}}{r_{\text{circ},i}} \in (0, 1]
+$$
+
+A value of $\rho_i = 1$ indicates perfect spherical symmetry (all vertices equidistant from centroid). Values $\rho_i \ll 1$ indicate strong elongation.
+
+**Alternative measure**: The variance of vertex distances:
+
+$$
+\sigma^2_{\text{dist},i} = \text{Var}(\{d_1, d_2, \ldots, d_m\})
+$$
+
+also quantifies shape irregularity.
+:::
+
+:::{prf:theorem} Shape Distortion and Metric Anisotropy
+:label: thm-shape-distortion-anisotropy
+
+In a Riemannian manifold with metric $g_{\mu\nu}$, let $\lambda_{\min}$ and $\lambda_{\max}$ be the minimum and maximum eigenvalues of $g$ at point $x$. For small Voronoi cells in quasi-equilibrium, the expected shape distortion satisfies:
+
+$$
+\mathbb{E}[\rho_i] \approx \sqrt{\frac{\lambda_{\min}}{\lambda_{\max}}} + O(\epsilon_N)
+$$
+
+where $\epsilon_N$ is the inter-particle spacing.
+
+*Proof Sketch.*
+
+**Step 1. Ellipsoidal Approximation:**
+
+In a locally flat coordinate system aligned with the metric eigenvectors, distances scale as:
+
+$$
+\|x - x_i\|_g^2 = \sum_{\mu=1}^d \lambda_\mu (x^\mu - x_i^\mu)^2
+$$
+
+A sphere in Euclidean coordinates becomes an ellipsoid in the metric-induced geometry.
+
+**Step 2. Voronoi Cell Shape:**
+
+The Voronoi cell boundary is (approximately) the locus of points equidistant from $x_i$ and its neighbors. In the presence of metric anisotropy, this boundary is ellipsoidal with axis ratios determined by $\sqrt{\lambda_\mu}$.
+
+**Step 3. Inradius/Circumradius:**
+
+For an ellipsoid with semi-axes $a_1 \leq a_2 \leq \cdots \leq a_d$, the inradius is $r_{\text{in}} \approx a_1$ and circumradius is $r_{\text{circ}} \approx a_d$. Thus:
+
+$$
+\rho \approx \frac{a_1}{a_d} \sim \sqrt{\frac{\lambda_{\min}}{\lambda_{\max}}}
+$$
+
+**Remark**: This is a mean-field approximation. Fluctuations from discrete sampling add noise $O(\epsilon_N)$.
+
+$\square$
+:::
+
+:::{prf:definition} Discrete Raychaudhuri Expansion
+:label: def-raychaudhuri-expansion
+
+Let $V_i(t)$ be the Voronoi cell volume for walker $i$ at time $t$, and $V_i(t + \Delta t)$ at time $t + \Delta t$. The **expansion scalar** for cell $i$ is:
+
+$$
+\theta_i = \frac{1}{V_i(t)} \cdot \frac{V_i(t + \Delta t) - V_i(t)}{\Delta t}
+$$
+
+This approximates the continuous definition $\theta = \nabla_\mu u^\mu$ for a congruence of worldlines.
+
+**Sign convention**: Positive $\theta$ means expansion (volume increasing); negative $\theta$ means contraction.
+
+**Curvature relation**: From the Raychaudhuri equation (neglecting shear and vorticity):
+
+$$
+\frac{d\theta}{dt} \approx -\frac{1}{d}\theta^2 - R_{tt}
+$$
+
+where $R_{tt}$ is the timelike-timelike component of the Ricci tensor. For small $\theta$ and approximately constant curvature:
+
+$$
+\theta(t) \approx -R_{tt} \cdot \Delta t + O((\Delta t)^2)
+$$
+
+For spatial slices in the quasi-static regime, $R_{tt} \approx R/d$ where $R$ is the spatial Ricci scalar, giving:
+
+$$
+\langle R \rangle \approx -d \cdot \langle \theta \rangle / \Delta t
+$$
+
+**Note**: This is a heuristic relation; rigorous convergence requires careful treatment of the metric's time dependence and the relationship between spatial and spacetime curvature.
+:::
+
+:::{prf:theorem} Discrete Raychaudhuri Convergence
+:label: thm-raychaudhuri-convergence
+
+Let $\{x_i(t)\}_{i=1}^N$ be a family of particles evolving under a smooth vector field $u^\mu(x, t)$ in a Riemannian manifold. Let $V_i(t)$ be the Voronoi cell volumes. Under quasi-uniform refinement ($\epsilon_N \sim N^{-1/d}$), the discrete expansion $\theta_i^{\text{disc}}$ converges to the continuous expansion $\theta(x_i, t) = \nabla_\mu u^\mu$ with error:
+
+$$
+\left| \theta_i^{\text{disc}} - \theta(x_i, t) \right| \leq C \epsilon_N
+$$
+
+where $C$ depends on the $C^2$ norm of $u^\mu$ and the shape-regularity of the tessellation.
+
+*Proof.*
+
+This is a special case of {prf:ref}`thm-discrete-raychaudhuri` in {doc}`03_curvature_gravity`, which proves convergence of the full discrete Raychaudhuri equation including shear and vorticity terms. The key steps are:
+
+**Step 1. Voronoi Volume as Flow Determinant:**
+
+By the divergence theorem:
+
+$$
+\frac{dV_i}{dt} = \int_{\partial V_i} u \cdot \hat{n} \, dS
+$$
+
+For small cells, approximate $u$ as constant:
+
+$$
+\frac{dV_i}{dt} \approx V_i \cdot \nabla \cdot u = V_i \cdot \theta
+$$
+
+**Step 2. Discrete Derivative:**
+
+The forward difference approximation gives:
+
+$$
+\theta_i^{\text{disc}} = \frac{V_i(t+\Delta t) - V_i(t)}{V_i(t) \cdot \Delta t} = \theta(x_i, t) + O(\Delta t)
+$$
+
+**Step 3. Spatial Error:**
+
+Cell-to-cell variation in $\theta$ introduces error $O(\epsilon_N)$ from the "constant $u$" approximation.
+
+**Identification**: Combining temporal and spatial errors gives $O(\epsilon_N + \Delta t)$. For typical integration schemes, $\Delta t \sim \epsilon_N$, so total error is $O(\epsilon_N)$.
+
+$\square$
+:::
+
+:::{prf:definition} Graph Laplacian for Voronoi Tessellation
+:label: def-graph-laplacian
+
+Let $G = (V, E)$ be the graph with vertices $V = \{x_1, x_2, \ldots, x_N\}$ (walker positions) and edges $E$ connecting Voronoi neighbors. Define edge weights:
+
+$$
+w_{ij} = \begin{cases}
+\exp\left(-\|x_i - x_j\|^2 / (2\ell^2)\right) & \text{if } i \sim j \\
+0 & \text{otherwise}
+\end{cases}
+$$
+
+where $\ell$ is a length scale and $i \sim j$ means cells $i$ and $j$ share a Voronoi facet.
+
+The **graph Laplacian** is:
+
+$$
+L = D - W
+$$
+
+where:
+- $W$ is the adjacency matrix with entries $W_{ij} = w_{ij}$
+- $D$ is the degree matrix: $D_{ii} = \sum_{j=1}^N w_{ij}$
+
+The **normalized graph Laplacian** is:
+
+$$
+\mathcal{L} = D^{-1/2} L D^{-1/2} = I - D^{-1/2} W D^{-1/2}
+$$
+
+**Spectrum**: The eigenvalues $0 = \lambda_0 < \lambda_1 \leq \lambda_2 \leq \cdots \leq \lambda_{N-1} \leq 2$ of $\mathcal{L}$ encode geometric information. The first non-zero eigenvalue $\lambda_1$ is the **spectral gap**.
+:::
+
+:::{prf:theorem} Cheeger Inequality and Ricci Curvature
+:label: thm-cheeger-inequality
+
+For a graph $G$ approximating a Riemannian manifold $(M, g)$ with Ricci curvature $\text{Ric}_g \geq \kappa g$ for some $\kappa > 0$, the spectral gap satisfies:
+
+$$
+\lambda_1 \geq \frac{C(d) \cdot \kappa}{N^{2/d}}
+$$
+
+where $C(d)$ is a dimension-dependent constant.
+
+Conversely, if $\text{Ric}_g \leq \kappa_{\max} g$, then:
+
+$$
+\lambda_1 \leq C'(d) \cdot \kappa_{\max} + O(N^{-1/d})
+$$
+
+*Reference.*
+
+This is a discrete version of the Li-Yau inequality and Cheeger's inequality from Riemannian geometry. Rigorous proofs for graph approximations appear in:
+- Chung, F. R. K. (1997). *Spectral Graph Theory*. AMS.
+- Ollivier, Y. (2009). "Ricci curvature of Markov chains on metric spaces." *Journal of Functional Analysis*.
+
+$\square$
+:::
+
+:::{prf:definition} Emergent Metric from Neighbor Covariance
+:label: def-emergent-metric-neighbor
+
+For each walker $i$ at position $x_i$, let $\mathcal{N}(i) = \{j_1, j_2, \ldots, j_k\}$ be its $k$ nearest Voronoi neighbors. Compute the **neighbor covariance matrix**:
+
+$$
+C_{\alpha\beta}(x_i) = \frac{1}{k} \sum_{j \in \mathcal{N}(i)} (x_j^\alpha - x_i^\alpha)(x_j^\beta - x_i^\beta)
+$$
+
+where Greek indices $\alpha, \beta \in \{1, 2, \ldots, d\}$ label spatial coordinates.
+
+The **emergent metric tensor** is defined as:
+
+$$
+g_{\mu\nu}(x_i) = (C^{-1})_{\mu\nu} + \epsilon_{\text{reg}} \delta_{\mu\nu}
+$$
+
+where $\epsilon_{\text{reg}} > 0$ is a small regularization parameter to ensure positive definiteness (typically $\epsilon_{\text{reg}} \sim 10^{-5}$).
+
+**Properties**:
+1. Symmetric: $g_{\mu\nu} = g_{\nu\mu}$ (from $C$ symmetry)
+2. Positive definite: Guaranteed by regularization
+3. $O(k)$ accuracy: Error scales as $O(k^{-1})$ for large $k$
+:::
+
+:::{prf:theorem} Neighbor Covariance Convergence to Metric
+:label: thm-neighbor-covariance-metric
+
+Let walkers be distributed according to the quasi-stationary distribution $\rho_{\text{QSD}}(x) \propto \exp(-\beta V_{\mathrm{fit}}(x))$ on a Riemannian manifold with metric $g_{\mu\nu}$ and diffusion tensor $D_{\mu\nu} = g^{-1}_{\mu\nu}$.
+
+For large neighbor count $k$ and quasi-uniform density, the neighbor covariance satisfies:
+
+$$
+C_{\alpha\beta}(x_i) = D_{\alpha\beta}(x_i) \cdot r_k^2 + O(r_k^3) + O(k^{-1/2})
+$$
+
+where $r_k \sim k^{1/d}$ is the typical neighbor distance.
+
+Therefore:
+
+$$
+g_{\mu\nu}(x_i) \approx \frac{1}{r_k^2} \cdot (C^{-1})_{\mu\nu}
+$$
+
+converges to the true metric with error $O(k^{-1/2})$.
+
+*Proof Sketch.*
+
+**Step 1. Diffusion-Covariance Relation:**
+
+In equilibrium, walkers are distributed according to $\rho \propto e^{-V_{\mathrm{fit}}}$. For small regions around $x_i$, the density is approximately uniform in the metric-induced measure.
+
+The covariance of positions under uniform sampling in a metric $g$ is proportional to $g^{-1}$:
+
+$$
+\mathbb{E}[(x - x_i)(x - x_i)^T] \propto g^{-1}
+$$
+
+This follows from the fact that $g^{-1}$ is the diffusion tensor in Riemannian Brownian motion.
+
+**Step 2. Finite Neighbor Corrections:**
+
+For $k$ finite neighbors, the sample covariance $C$ is an unbiased estimator of the true covariance with variance $O(k^{-1})$:
+
+$$
+C_{\alpha\beta} = \mathbb{E}[C_{\alpha\beta}] + O(k^{-1/2})
+$$
+
+**Step 3. Inversion:**
+
+Inverting $C$ with regularization gives:
+
+$$
+(C^{-1})_{\mu\nu} = ((\mathbb{E}[C])^{-1})_{\mu\nu} + O(k^{-1/2})
+$$
+
+using perturbation theory for matrix inversion.
+
+**Identification**: Combining steps and rescaling by $r_k^2$ gives the metric approximation.
+
+$\square$
+:::
+
+:::{prf:definition} Discrete Geodesic Distance
+:label: def-discrete-geodesic-distance
+
+Let $G = (V, E)$ be the Voronoi neighbor graph with vertices $V = \{x_1, \ldots, x_N\}$ and edges $E$. For each edge $(i, j) \in E$, define the **Riemannian edge length**:
+
+$$
+\ell_{ij} = \sqrt{(x_j - x_i)^T \cdot g_{\text{edge}} \cdot (x_j - x_i)}
+$$
+
+where $g_{\text{edge}} = (g_i + g_j)/2$ is the metric interpolated to the edge midpoint.
+
+The **discrete geodesic distance** between walkers $i$ and $j$ is:
+
+$$
+d_{\text{geo}}(i, j) = \min_{\gamma: i \to j} \sum_{(p,q) \in \gamma} \ell_{pq}
+$$
+
+where the minimum is over all paths $\gamma$ from $i$ to $j$ in the graph.
+
+**Computation**: Use Dijkstra's algorithm with edge weights $\ell_{ij}$.
+
+**Convergence**: Under quasi-uniform refinement, $d_{\text{geo}}(i,j) \to d_g(x_i, x_j)$ where $d_g$ is the Riemannian distance on the continuous manifold, with error $O(\epsilon_N)$.
+:::
+
+:::{prf:theorem} Convergence of Discrete Geodesic Distance
+:label: thm-geodesic-distance-convergence
+
+Let $(M, g)$ be a smooth Riemannian manifold and $\{x_i\}_{i=1}^N$ a quasi-uniform sampling with inter-particle spacing $\epsilon_N \sim N^{-1/d}$. Let $d_{\text{geo}}^N(i,j)$ be the discrete geodesic distance on the Voronoi graph.
+
+Then:
+
+$$
+\left| d_{\text{geo}}^N(i,j) - d_g(x_i, x_j) \right| \leq C \epsilon_N
+$$
+
+where $d_g$ is the Riemannian distance on $(M,g)$ and $C$ depends on the $C^2$ norm of $g$ and the shape-regularity constant.
+
+*Proof.*
+
+**Step 1. Geodesic Approximation by Piecewise Linear Paths:**
+
+Any continuous geodesic $\gamma: [0,1] \to M$ can be approximated by a sequence of straight-line segments connecting nearby points:
+
+$$
+\ell_g(\gamma) = \int_0^1 \sqrt{g(\dot{\gamma}, \dot{\gamma})} \, dt
+$$
+
+**Step 2. Discrete Path Length:**
+
+For a path through graph vertices $\{x_{i_0}, x_{i_1}, \ldots, x_{i_m}\}$, the discrete length is:
+
+$$
+\ell_{\text{disc}} = \sum_{k=0}^{m-1} \ell_{i_k, i_{k+1}}
+$$
+
+**Step 3. Error Analysis:**
+
+The difference between continuous and discrete arises from:
+1. **Chord vs. arc length**: $O(\epsilon_N^2)$ for small segments
+2. **Metric interpolation error**: $O(\epsilon_N)$ from using midpoint approximation
+3. **Path non-optimality**: Discrete path may not follow exact geodesic
+
+Summing over $O(\epsilon_N^{-1})$ segments gives total error $O(\epsilon_N)$.
+
+$\square$
+:::
+
+:::{prf:definition} Riemannian Volume Weights
+:label: def-riemannian-volume-weights
+
+Let $V_i^{\text{Eucl}}$ be the Voronoi cell volume computed in Euclidean coordinates, and $g_{\mu\nu}(x_i)$ the emergent metric at walker $i$.
+
+The **Riemannian volume weight** is:
+
+$$
+V_i^{\text{Riem}} = V_i^{\text{Eucl}} \cdot \sqrt{\det(g(x_i))}
+$$
+
+**Normalized weights** (for weighted averaging):
+
+$$
+w_i = \frac{V_i^{\text{Riem}}}{\sum_{j=1}^N V_j^{\text{Riem}}}
+$$
+
+**Weighted average** of an observable $O_i$:
+
+$$
+\langle O \rangle_g = \sum_{i=1}^N w_i \cdot O_i
+$$
+:::
+
+:::{prf:theorem} Volume Element Transformation
+:label: thm-volume-element-transformation
+
+On a Riemannian manifold $(M, g)$, the volume element in local coordinates $\{x^\mu\}$ is:
+
+$$
+dV_g = \sqrt{\det(g)} \, dx^1 \wedge dx^2 \wedge \cdots \wedge dx^d
+$$
+
+For a measurable set $A \subset M$:
+
+$$
+\text{Vol}_g(A) = \int_A \sqrt{\det(g(x))} \, dx
+$$
+
+For quasi-uniform discrete sampling, the discrete approximation is:
+
+$$
+\text{Vol}_g(A) \approx \sum_{i: x_i \in A} V_i^{\text{Eucl}} \cdot \sqrt{\det(g(x_i))}
+$$
+
+with error $O(\epsilon_N^2)$ under $C^2$ regularity of $g$.
+
+*Proof.*
+
+This is the standard change-of-variables formula in Riemannian geometry. See Lee, J. M. (2018), *Introduction to Riemannian Manifolds*, Chapter 4.
+
+$\square$
+:::
+
+:::{prf:definition} Scutoidal Viscous Force
+:label: def-scutoidal-viscous-force
+
+Let $\{x_i, v_i\}_{i=1}^N$ be the positions and velocities of $N$ walkers, and $\mathcal{N}(i)$ the set of Voronoi neighbors of walker $i$. The **scutoidal viscous force** on walker $i$ is:
+
+$$
+F_{\text{visc},i} = \nu \sum_{j \in \mathcal{N}(i)} \frac{w_{ij}}{\sum_{k \in \mathcal{N}(i)} w_{ik}} (v_j - v_i)
+$$
+
+where:
+- $\nu \geq 0$ is the **viscous coupling strength** $[\text{force} \cdot \text{time} / \text{length}]$
+- $w_{ij} > 0$ are **neighbor edge weights** (see {prf:ref}`def-viscous-weighting-modes`)
+- The sum $\sum_{k \in \mathcal{N}(i)} w_{ik}$ is the **local degree** (total weight of incident edges)
+
+**Matrix Form**: Define the row-normalized weight matrix:
+
+$$
+\tilde{W}_{ij} = \begin{cases}
+w_{ij} / \sum_k w_{ik} & \text{if } j \in \mathcal{N}(i) \\
+0 & \text{otherwise}
+\end{cases}
+$$
+
+Then:
+
+$$
+F_{\text{visc},i} = \nu \sum_{j=1}^N \tilde{W}_{ij} (v_j - v_i) = -\nu (I - \tilde{W})_{ij} v_j
+$$
+
+The matrix $I - \tilde{W}$ is the **row-normalized graph Laplacian**.
+:::
+
+:::{prf:theorem} Dissipative Property of Viscous Force
+:label: thm-viscous-force-dissipative
+
+The viscous force {prf:ref}`def-scutoidal-viscous-force` reduces velocity variance:
+
+$$
+\frac{d}{dt} \sum_{i=1}^N \|v_i - \bar{v}\|^2 \leq 0
+$$
+
+where $\bar{v} = (1/N) \sum_i v_i$ is the mean velocity.
+
+Equality holds iff all velocities are equal: $v_i = \bar{v}$ for all $i$.
+
+*Proof.*
+
+**Step 1. Velocity Evolution:**
+
+Assume dynamics $\dot{v}_i = F_{\text{visc},i}$. Then:
+
+$$
+\dot{v}_i = \nu \sum_j \tilde{W}_{ij} (v_j - v_i)
+$$
+
+**Step 2. Variance Evolution:**
+
+Compute:
+
+$$
+\frac{d}{dt} \sum_i \|v_i - \bar{v}\|^2 = 2 \sum_i (v_i - \bar{v}) \cdot \dot{v}_i
+$$
+
+Since $\sum_i \dot{v}_i = 0$ (momentum conservation from row normalization), we have:
+
+$$
+\sum_i (v_i - \bar{v}) \cdot \dot{v}_i = \sum_i v_i \cdot \dot{v}_i
+$$
+
+**Step 3. Dissipation Calculation:**
+
+$$
+\sum_i v_i \cdot \dot{v}_i = \nu \sum_i \sum_j \tilde{W}_{ij} v_i \cdot (v_j - v_i)
+$$
+
+Expanding the dot product:
+
+$$
+= \nu \sum_i \sum_j \tilde{W}_{ij} (v_i \cdot v_j - \|v_i\|^2)
+$$
+
+Since $\sum_j \tilde{W}_{ij} = 1$ (row normalization):
+
+$$
+= \nu \sum_i \sum_j \tilde{W}_{ij} v_i \cdot v_j - \nu \sum_i \|v_i\|^2
+$$
+
+**Step 4. Symmetrization Trick:**
+
+Define the symmetrized weight $\hat{W}_{ij} = (\tilde{W}_{ij} + \tilde{W}_{ji})/2$. Then:
+
+$$
+\sum_i \sum_j \tilde{W}_{ij} v_i \cdot v_j = \sum_i \sum_j \hat{W}_{ij} (v_i \cdot v_j + v_j \cdot v_i) = 2\sum_{i < j} \hat{W}_{ij} v_i \cdot v_j
+$$
+
+**Step 5. Quadratic Form:**
+
+$$
+\sum_i v_i \cdot \dot{v}_i = -\nu \sum_{i,j} \hat{W}_{ij} \|v_i - v_j\|^2 \leq 0
+$$
+
+since $\hat{W}_{ij} \geq 0$ (row-normalized weights are non-negative).
+
+**Identification**: Velocity variance decreases monotonically. Equilibrium ($\dot{v}_i = 0$ for all $i$) occurs when $v_i = v_j$ for all connected pairs, implying $v_i = \bar{v}$ if the graph is connected.
+
+$\square$
+:::
+
+:::{prf:definition} Viscous Force Weighting Modes
+:label: def-viscous-weighting-modes
+
+Five schemes for computing edge weights $w_{ij}$ in {prf:ref}`def-scutoidal-viscous-force`:
+
+1. **Uniform**: $w_{ij} = 1$ for all neighbors
+   - Cost: $O(N \cdot k)$
+   - Use case: Flat-space approximation, fastest computation
+
+2. **Gaussian kernel**: $w_{ij} = \exp\left(-\|x_i - x_j\|^2 / (2\ell^2)\right)$
+   - Cost: $O(N \cdot k)$
+   - Parameter: $\ell$ is the viscous length scale
+   - Use case: Smooth falloff with distance
+
+3. **Inverse distance**: $w_{ij} = 1 / (\|x_i - x_j\| + \epsilon)$
+   - Cost: $O(N \cdot k)$
+   - Parameter: $\epsilon > 0$ prevents singularities
+   - Use case: Stronger coupling for close neighbors
+
+4. **Metric-diagonal**: $w_{ij} = 1 / \|x_i - x_j\|_{g_{\text{diag}}}$
+   - Cost: $O(N \cdot k \cdot d)$
+   - Distance: $\|x\|_{g_{\text{diag}}}^2 = \sum_\mu g_{\mu\mu} (x^\mu)^2$ (diagonal approximation)
+   - Use case: Cheap anisotropic correction
+
+5. **Metric-full**: $w_{ij} = 1 / \sqrt{(x_i - x_j)^T g_{\text{edge}} (x_i - x_j)}$
+   - Cost: $O(N \cdot k \cdot d^2)$
+   - Metric: $g_{\text{edge}} = (g_i + g_j)/2$ from {prf:ref}`def-emergent-metric-neighbor`
+   - Use case: Full Riemannian geometry
+
+**Optional volume weighting**: Multiply $w_{ij}$ by Riemannian volume weights from {prf:ref}`def-riemannian-volume-weights`.
+:::
+
+:::{prf:definition} Metric Correction Framework
+:label: def-metric-correction-framework
+
+Let $R^{\text{flat}}(x_i)$ be the Ricci scalar computed from deficit angles using Euclidean Voronoi tessellation. The **metric-corrected Ricci scalar** is:
+
+$$
+R^{\text{manifold}}(x_i) \approx R^{\text{flat}}(x_i) + \Delta R^{\text{metric}}(x_i)
+$$
+
+where $\Delta R^{\text{metric}}$ is a first-order correction depending on the metric $g$.
+
+**Diagonal approximation**: Use only diagonal metric components $g_{\mu\mu}$:
+
+$$
+\Delta R^{\text{diag}}(x_i) \approx \frac{1}{2} \sum_{\mu=1}^d \frac{\partial^2 g_{\mu\mu}}{\partial (x^\mu)^2}(x_i)
+$$
+
+Compute derivatives by finite differences using neighboring cell volumes.
+
+**Full correction**: Use the full metric tensor from {prf:ref}`def-emergent-metric-neighbor`:
+
+$$
+\Delta R^{\text{full}}(x_i) = -\frac{1}{2} \nabla_\mu \nabla_\nu g^{\mu\nu} + \frac{1}{4} g^{\mu\nu} \nabla_\mu g^{\rho\sigma} \nabla_\nu g_{\rho\sigma}
+$$
+
+Compute covariant derivatives from metric values at neighboring cells using graph-based finite differences.
+
+**Error**: For metric perturbations $\|g - I\| = O(\delta)$, corrections satisfy:
+
+$$
+\left| R^{\text{manifold}} - (R^{\text{flat}} + \Delta R^{\text{metric}}) \right| = O(\delta^2) + O(\epsilon_N)
+$$
+:::
+
 ## appendices/references_do_not_cite/11_geometric_gas(1).md
 
 :::{prf:definition} Localization Kernel

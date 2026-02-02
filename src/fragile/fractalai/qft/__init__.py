@@ -56,6 +56,48 @@ from fragile.fractalai.qft.correlator_channels import (
     compute_all_channels,
     get_channel_class,
 )
+from fragile.fractalai.qft.voronoi_time_slices import (
+    compute_time_sliced_voronoi,
+    TimeSliceResult,
+    TimeSlicedVoronoi,
+)
+from fragile.fractalai.qft.higgs_observables import (
+    HiggsConfig,
+    HiggsObservables,
+    compute_higgs_observables,
+    compute_emergent_metric,
+    compute_centroid_displacement,
+    compute_geodesic_distances,
+    compute_higgs_action,
+)
+from fragile.fractalai.qft.higgs_plotting import (
+    build_all_higgs_plots,
+    build_metric_tensor_heatmap,
+    build_centroid_vector_field,
+    build_ricci_scalar_distribution,
+    build_geodesic_distance_scatter,
+    build_higgs_action_summary,
+    build_volume_vs_curvature_scatter,
+    build_scalar_field_map,
+    build_metric_eigenvalues_distribution,
+)
+from fragile.fractalai.qft.radial_channels import (
+    RadialChannelBundle,
+    RadialChannelConfig,
+    RadialChannelOutput,
+    compute_radial_channels,
+)
+from fragile.fractalai.qft.quantum_gravity import (
+    QuantumGravityConfig,
+    QuantumGravityObservables,
+    QuantumGravityTimeSeries,
+    compute_quantum_gravity_observables,
+    compute_quantum_gravity_time_evolution,
+)
+from fragile.fractalai.qft.quantum_gravity_plotting import (
+    build_all_gravity_plots,
+    build_all_quantum_gravity_time_series_plots,
+)
 
 __all__ = [
     # SMoC pipeline
@@ -103,4 +145,37 @@ __all__ = [
     "CHANNEL_REGISTRY",
     "compute_all_channels",
     "get_channel_class",
+    "compute_time_sliced_voronoi",
+    "TimeSliceResult",
+    "TimeSlicedVoronoi",
+    # Higgs field observables
+    "HiggsConfig",
+    "HiggsObservables",
+    "compute_higgs_observables",
+    "compute_emergent_metric",
+    "compute_centroid_displacement",
+    "compute_geodesic_distances",
+    "compute_higgs_action",
+    "build_all_higgs_plots",
+    "build_metric_tensor_heatmap",
+    "build_centroid_vector_field",
+    "build_ricci_scalar_distribution",
+    "build_geodesic_distance_scatter",
+    "build_higgs_action_summary",
+    "build_volume_vs_curvature_scatter",
+    "build_scalar_field_map",
+    "build_metric_eigenvalues_distribution",
+    # Radial channel correlators
+    "RadialChannelBundle",
+    "RadialChannelConfig",
+    "RadialChannelOutput",
+    "compute_radial_channels",
+    # Quantum gravity observables
+    "QuantumGravityConfig",
+    "QuantumGravityObservables",
+    "QuantumGravityTimeSeries",
+    "compute_quantum_gravity_observables",
+    "compute_quantum_gravity_time_evolution",
+    "build_all_gravity_plots",
+    "build_all_quantum_gravity_time_series_plots",
 ]

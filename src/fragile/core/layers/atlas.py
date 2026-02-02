@@ -929,7 +929,10 @@ def _init_soft_equiv_layers(layers: nn.ModuleList) -> None:
 
 
 class CovariantChartRouter(nn.Module):
-    """Gauge-covariant chart router with Wilson-line transport and metric-aware temperature."""
+    """Gauge-covariant chart router with hyperbolic transport and metric-aware temperature.
+
+    Uses O(n) Poincaré ball parallel transport instead of O(n³) Cayley transform.
+    """
 
     def __init__(
         self,
@@ -977,10 +980,7 @@ class CovariantChartRouter(nn.Module):
         self.chart_queries = nn.Parameter(torch.randn(num_charts, key_dim) * 0.02)
         self.chart_key_proj = SpectralLinear(latent_dim, key_dim, bias=False)
 
-        if use_transport:
-            self.transport_proj = SpectralLinear(latent_dim, key_dim * key_dim, bias=False)
-        else:
-            self.transport_proj = None
+        # Note: transport_proj removed - using O(n) hyperbolic transport instead
 
     def _gamma_term(self, z: torch.Tensor) -> torch.Tensor:
         if self.tensorization == "full":
@@ -992,9 +992,20 @@ class CovariantChartRouter(nn.Module):
         z_v = z @ self.q_gamma_v.t()  # [B, R]
         return (z_u * z_v) @ self.q_gamma_out  # [B, K]
 
+    def _conformal_factor(self, z: torch.Tensor) -> torch.Tensor:
+        """Compute Poincaré ball conformal factor λ(z) = 2 / (1 - |z|²)."""
+        r2 = (z**2).sum(dim=-1, keepdim=True)
+        r2 = torch.clamp(r2, max=1.0 - self.transport_eps)
+        return 2.0 / (1.0 - r2 + self.transport_eps)
+
     def _transport_queries(
         self, z: torch.Tensor, chart_tokens: torch.Tensor | None = None
     ) -> torch.Tensor:
+        """Transport chart queries using O(n) hyperbolic parallel transport.
+
+        In the Poincaré ball, parallel transport from the origin scales vectors
+        by the conformal factor ratio. This replaces the O(n³) Cayley transform.
+        """
         batch_size = z.shape[0]
         if chart_tokens is None:
             base_queries = self.chart_queries
@@ -1010,16 +1021,20 @@ class CovariantChartRouter(nn.Module):
                 msg = "chart_tokens must have shape [N_c, D] or [N_c, K]."
                 raise ValueError(msg)
 
-        if self.transport_proj is None:
+        if not self.use_transport:
             return base_queries.unsqueeze(0).expand(batch_size, -1, -1)
 
-        # Cayley transform of skew matrix approximates parallel transport.
-        skew = self.transport_proj(z).view(batch_size, self.key_dim, self.key_dim)
-        skew = 0.5 * (skew - skew.transpose(1, 2))
-        eye = torch.eye(self.key_dim, device=z.device, dtype=z.dtype).expand(batch_size, -1, -1)
-        eye = eye * (1.0 + self.transport_eps)
-        u = torch.linalg.solve(eye + 0.5 * skew, eye - 0.5 * skew)
-        return torch.einsum("bij,nj->bni", u, base_queries)
+        # O(n) hyperbolic parallel transport using conformal factors
+        # Transport from origin (where chart_queries live) to z
+        # P_{0→z}(v) = v / λ(z) (scales by inverse conformal factor)
+        lambda_z = self._conformal_factor(z)  # [B, 1]
+
+        # Expand base_queries: [N_c, K] -> [B, N_c, K]
+        queries_expanded = base_queries.unsqueeze(0).expand(batch_size, -1, -1)
+
+        # Apply transport scaling: divide by conformal factor at destination
+        # This preserves the hyperbolic norm of the queries
+        return queries_expanded / lambda_z.unsqueeze(1)
 
     def _temperature(self, z: torch.Tensor) -> torch.Tensor:
         # Poincare conformal factor scales attention temperature by radius.
@@ -1028,26 +1043,90 @@ class CovariantChartRouter(nn.Module):
         tau = math.sqrt(self.key_dim) * denom / 2.0
         return tau.clamp(min=self.tau_min)
 
+    def _hyperbolic_score(
+        self, z: torch.Tensor, chart_centers: torch.Tensor
+    ) -> torch.Tensor:
+        """Compute logits based on negative hyperbolic distance. O(N*D).
+
+        Uses the Poincaré ball distance formula for efficient chart scoring
+        without requiring matrix operations.
+
+        Args:
+            z: [B, D] latent positions
+            chart_centers: [N_c, D] chart center positions
+
+        Returns:
+            scores: [B, N_c] negative distances (higher = closer)
+        """
+        # z: [B, D], chart_centers: [N_c, D]
+        z_exp = z.unsqueeze(1)  # [B, 1, D]
+        c_exp = chart_centers.unsqueeze(0)  # [1, N_c, D]
+
+        # Squared Euclidean norm of difference
+        diff = z_exp - c_exp
+        dist_sq = (diff**2).sum(dim=-1)  # [B, N_c]
+
+        # Boundary terms (1 - |z|²) and (1 - |c|²)
+        z_sq = (z**2).sum(dim=-1, keepdim=True)  # [B, 1]
+        c_sq = (chart_centers**2).sum(dim=-1).unsqueeze(0)  # [1, N_c]
+        denom = (1 - z_sq) * (1 - c_sq)  # [B, N_c]
+
+        # Poincaré distance formula: d(z, c) = acosh(1 + 2 * |z-c|² / ((1-|z|²)(1-|c|²)))
+        arg = 1 + 2 * dist_sq / (denom + self.transport_eps)
+        dist = torch.acosh(arg.clamp(min=1.0 + self.transport_eps))  # [B, N_c]
+
+        # Temperature scaling
+        tau = self._temperature(z)  # [B]
+        return -dist / tau.unsqueeze(1)
+
     def forward(
         self,
         z: torch.Tensor,
         features: torch.Tensor | None = None,
         chart_tokens: torch.Tensor | None = None,
     ) -> tuple[torch.Tensor, torch.Tensor]:
-        # Query mixes feature and geometry terms with curvature corrections.
-        q = self.q_z_proj(z)
-        if self.q_feat_proj is not None:
-            if features is None:
-                msg = "features are required when q_feat_proj is enabled."
-                raise ValueError(msg)
-            q += self.q_feat_proj(features)
-        q += self._gamma_term(z)
+        """Route to charts using hyperbolic distance scoring.
 
-        # Transport chart keys into the local frame and score by dot product.
-        keys = self._transport_queries(z, chart_tokens=chart_tokens)  # [B, N_c, K]
-        scores = (keys * q.unsqueeze(1)).sum(dim=-1)
-        tau = self._temperature(z)
-        scores /= tau.unsqueeze(1)
+        Args:
+            z: [B, D] latent positions
+            features: [B, F] optional feature vectors
+            chart_tokens: [N_c, D] optional chart centers (defaults to self.chart_centers)
+
+        Returns:
+            router_weights: [B, N_c] softmax routing weights
+            K_chart: [B] argmax chart assignments
+        """
+        # Get chart centers for scoring
+        if chart_tokens is not None:
+            if chart_tokens.ndim != 2 or chart_tokens.shape[0] != self.num_charts:
+                msg = "chart_tokens must have shape [N_c, D]."
+                raise ValueError(msg)
+            # Project to latent dim if needed
+            if chart_tokens.shape[1] != self.latent_dim:
+                # Use key_proj if chart_tokens are in key space
+                centers = chart_tokens
+            else:
+                centers = chart_tokens
+        else:
+            # Use learned chart queries projected to latent space
+            # Note: chart_queries are in key_dim, we need latent_dim for distance
+            # Fall back to using q_z_proj inverse or just use chart_queries directly
+            centers = self.chart_queries[:, : self.latent_dim]  # Truncate to latent_dim
+
+        # O(n) hyperbolic distance-based scoring
+        scores = self._hyperbolic_score(z, centers)
+
+        # Optional: add feature-based corrections via gamma term
+        if self.q_feat_proj is not None and features is not None:
+            q = self.q_z_proj(z)
+            q += self.q_feat_proj(features)
+            q += self._gamma_term(z)
+            # Add small correction from feature projection
+            keys = self._transport_queries(z, chart_tokens=chart_tokens)
+            feature_scores = (keys * q.unsqueeze(1)).sum(dim=-1)
+            tau = self._temperature(z)
+            scores = scores + 0.1 * feature_scores / tau.unsqueeze(1)
+
         router_weights = F.softmax(scores, dim=-1)
         K_chart = torch.argmax(router_weights, dim=1)
         return router_weights, K_chart

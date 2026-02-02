@@ -663,7 +663,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--viscous-length-scale", type=float, default=None)
     parser.add_argument(
         "--viscous-neighbor-weighting",
-        choices=["kernel", "uniform"],
+        choices=["kernel", "uniform", "inverse_distance", "metric_diag", "metric_full"],
         default=None,
     )
     parser.add_argument("--viscous-neighbor-threshold", type=float, default=None)
@@ -1015,7 +1015,7 @@ def main() -> None:
             max_lag=args.ew_max_lag,
             h_eff=args.ew_h_eff,
             use_connected=args.ew_use_connected,
-            neighbor_method="uniform",
+            neighbor_method="companions",
             window_widths=_parse_window_widths(args.ew_window_widths),
             fit_mode=args.ew_fit_mode,
             fit_start=args.ew_fit_start,

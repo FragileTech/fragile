@@ -6,7 +6,7 @@ import torch
 from torch import nn
 import torch.nn.functional as F
 
-from fragile.core.layers.gauge import ConformalMetric
+from fragile.core.layers.gauge import ConformalMetric, mobius_add
 from fragile.core.layers.primitives import IsotropicBlock, SpectralLinear
 
 
@@ -217,93 +217,49 @@ class SupervisedTopologyLoss(nn.Module):
 
 
 class FactorizedJumpOperator(nn.Module):
-    """Factorized jump operator between charts."""
+    """Möbius-based jump operator between charts using O(n) hyperbolic geometry.
+
+    Implements chart transitions via: z_target = c_target ⊕ R((-c_source) ⊕ z_source)
+    where ⊕ is Möbius addition and R is an optional gauge rotation.
+    """
 
     def __init__(
         self,
         num_charts: int,
         latent_dim: int,
+        curvature: float = 1.0,
+        # Legacy args (ignored, kept for API compat)
         global_rank: int | None = None,
         use_spectral: bool = True,
+        use_mobius: bool = True,
     ) -> None:
         super().__init__()
         self.num_charts = num_charts
         self.latent_dim = latent_dim
-        self.rank = global_rank if global_rank is not None else latent_dim
-        self.use_spectral = use_spectral
+        self.curvature = curvature
 
-        if use_spectral:
-            self.encoders = nn.ModuleList([
-                SpectralLinear(latent_dim, self.rank, bias=False) for _ in range(num_charts)
-            ])
-            self.decoders = nn.ModuleList([
-                SpectralLinear(self.rank, latent_dim, bias=False) for _ in range(num_charts)
-            ])
-        else:
-            self.encoders = nn.ModuleList([
-                nn.Linear(latent_dim, self.rank, bias=False) for _ in range(num_charts)
-            ])
-            self.decoders = nn.ModuleList([
-                nn.Linear(self.rank, latent_dim, bias=False) for _ in range(num_charts)
-            ])
+        # Chart centers in the Poincaré ball
+        self.chart_centers = nn.Parameter(torch.randn(num_charts, latent_dim) * 0.1)
 
-        self.c = nn.Parameter(torch.zeros(num_charts, self.rank))
-        self.d = nn.Parameter(torch.zeros(num_charts, latent_dim))
+        # Learnable rotation matrices for gauge transformations (init as identity)
+        self.rotations = nn.Parameter(
+            torch.eye(latent_dim).unsqueeze(0).expand(num_charts, -1, -1).clone()
+        )
 
-        self._init_weights()
-
-    def _init_weights(self) -> None:
-        """Initialize parameters near identity."""
-        for idx in range(self.num_charts):
-            if isinstance(self.encoders[idx], nn.Linear | SpectralLinear):
-                nn.init.eye_(self.encoders[idx].weight[: self.rank, : self.latent_dim])
-                self.encoders[idx].weight.data += (
-                    torch.randn_like(self.encoders[idx].weight) * 0.01
-                )
-            if isinstance(self.decoders[idx], nn.Linear | SpectralLinear):
-                nn.init.eye_(self.decoders[idx].weight[: self.latent_dim, : self.rank])
-                self.decoders[idx].weight.data += (
-                    torch.randn_like(self.decoders[idx].weight) * 0.01
-                )
-
-    def _apply_per_chart(
-        self,
-        x: torch.Tensor,
-        chart_idx: torch.Tensor,
-        modules: nn.ModuleList,
-    ) -> torch.Tensor:
-        chart_idx = chart_idx.to(device=x.device, dtype=torch.long)
-        if isinstance(modules[0], SpectralLinear):
-            weights = torch.stack(
-                [module._spectral_normalized_weight(update_u=self.training) for module in modules],
-                dim=0,
-            )
-            bias = None
-            if modules[0].bias is not None:
-                bias = torch.stack([module.bias for module in modules], dim=0)
-        else:
-            weights = torch.stack([module.weight for module in modules], dim=0)
-            bias = None
-            if modules[0].bias is not None:
-                bias = torch.stack([module.bias for module in modules], dim=0)
-
-        weight_per_sample = weights[chart_idx]
-        out = torch.einsum("boi,bi->bo", weight_per_sample, x)
-        if bias is not None:
-            out += bias[chart_idx]
-        return out
+    def _project_to_ball(self, z: torch.Tensor, max_norm: float = 0.99) -> torch.Tensor:
+        """Project points to interior of the Poincaré ball."""
+        norm = z.norm(dim=-1, keepdim=True)
+        return torch.where(norm > max_norm, z * max_norm / norm, z)
 
     def lift_to_global(self, z_n: torch.Tensor, chart_idx: torch.Tensor) -> torch.Tensor:
-        """Lift local coordinates to global tangent space."""
-        # Chart-specific encoder lifts local nuisance to a shared tangent space.
-        h = self._apply_per_chart(z_n, chart_idx, self.encoders)
-        return h + self.c[chart_idx]
+        """Lift local coordinates to global frame via Möbius subtraction."""
+        c_source = self._project_to_ball(self.chart_centers[chart_idx])
+        return mobius_add(-c_source, z_n, c=self.curvature)
 
     def project_from_global(self, h: torch.Tensor, chart_idx: torch.Tensor) -> torch.Tensor:
-        """Project global tangent coordinates to local chart coordinates."""
-        # Chart-specific decoder projects global tangent back to local coordinates.
-        z = self._apply_per_chart(h, chart_idx, self.decoders)
-        return z + self.d[chart_idx]
+        """Project global coordinates to local chart via Möbius addition."""
+        c_target = self._project_to_ball(self.chart_centers[chart_idx])
+        return mobius_add(c_target, h, c=self.curvature)
 
     def forward(
         self,
@@ -311,7 +267,9 @@ class FactorizedJumpOperator(nn.Module):
         source_idx: torch.Tensor,
         target_idx: torch.Tensor,
     ) -> torch.Tensor:
-        """Apply chart transition.
+        """Apply chart transition using Möbius transformations.
+
+        Implements: z_target = c_target ⊕ R((-c_source) ⊕ z_source)
 
         Args:
             z_n: [B, D] source nuisance coordinates
@@ -321,9 +279,27 @@ class FactorizedJumpOperator(nn.Module):
         Returns:
             z_out: [B, D] target nuisance coordinates
         """
-        # Compose lift and projection to enforce chart-to-chart consistency.
-        z_global = self.lift_to_global(z_n, source_idx)
-        return self.project_from_global(z_global, target_idx)
+        source_idx = source_idx.to(device=z_n.device, dtype=torch.long)
+        target_idx = target_idx.to(device=z_n.device, dtype=torch.long)
+
+        # Ensure input is inside ball
+        z_n = self._project_to_ball(z_n)
+
+        # 1. Move from source chart to origin (Möbius subtraction)
+        c_source = self._project_to_ball(self.chart_centers[source_idx])
+        z_global = mobius_add(-c_source, z_n, c=self.curvature)
+
+        # 2. Apply gauge rotation at origin
+        R_source = self.rotations[source_idx]
+        R_target = self.rotations[target_idx]
+        z_rotated = torch.einsum("bij,bj->bi", R_target, z_global)
+        z_rotated = torch.einsum("bij,bj->bi", R_source.transpose(-1, -2), z_rotated)
+
+        # 3. Move from origin to target chart (Möbius addition)
+        c_target = self._project_to_ball(self.chart_centers[target_idx])
+        z_out = mobius_add(c_target, z_rotated, c=self.curvature)
+
+        return self._project_to_ball(z_out)
 
     def get_transition_matrix(self, source: int, target: int) -> tuple[torch.Tensor, torch.Tensor]:
         """Return affine map (M, b) for chart transition.
