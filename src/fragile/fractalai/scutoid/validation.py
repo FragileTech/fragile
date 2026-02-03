@@ -75,7 +75,7 @@ def compare_estimation_methods(
 
     # 1. Estimate gradient (FD)
     grad_result = estimate_gradient_finite_difference(
-        positions, fitness_values, edge_index, weighting_mode="inverse_distance"
+        positions, fitness_values, edge_index
     )
     gradient_fd = grad_result["gradient"]
 

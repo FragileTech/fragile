@@ -149,7 +149,7 @@ class KineticOperator(PanelModel):
         default=0.1, bounds=(0, None), doc="Hessian regularization (ε_Σ) for positive definiteness"
     )
     use_anisotropic_diffusion = param.Boolean(
-        default=False, doc="Enable Hessian-based anisotropic diffusion Σ_reg"
+        default=True, doc="Enable Hessian-based anisotropic diffusion Σ_reg"
     )
     diffusion_mode = param.Selector(
         default="hessian",
@@ -162,13 +162,13 @@ class KineticOperator(PanelModel):
         doc="Scale for gradient-proxy diffusion (multiplies |∇V|).",
     )
     diagonal_diffusion = param.Boolean(
-        default=True, doc="Use diagonal-only diffusion (faster, O(Nd) vs O(Nd²))"
+        default=False, doc="Use diagonal-only diffusion (faster, O(Nd) vs O(Nd²))"
     )
 
     # Viscous coupling (velocity-dependent damping)
-    nu = param.Number(default=0.0, bounds=(0, None), doc="Viscous coupling strength (ν)")
+    nu = param.Number(default=0.1, bounds=(0, None), doc="Viscous coupling strength (ν)")
     use_viscous_coupling = param.Boolean(
-        default=False, doc="Enable viscous coupling for fluid-like behavior"
+        default=True, doc="Enable viscous coupling for fluid-like behavior"
     )
     viscous_length_scale = param.Number(
         default=1.0,
@@ -177,7 +177,7 @@ class KineticOperator(PanelModel):
         doc="Length scale (l) for Gaussian kernel K(r) = exp(-r²/(2l²))",
     )
     viscous_neighbor_mode = param.Selector(
-        default="all",
+        default="nearest",
         objects=["all", "nearest"],
         doc="Neighbor mode for viscous coupling (all or nearest)",
     )
@@ -377,6 +377,7 @@ class KineticOperator(PanelModel):
                     "kernel",
                     "uniform",
                     "inverse_distance",
+                    "geodesic",
                     "metric_diag",
                     "metric_full",
                     "kernel_geodesic_euclidean",
@@ -485,15 +486,15 @@ class KineticOperator(PanelModel):
         use_fitness_force: bool = False,
         use_potential_force: bool = True,
         epsilon_Sigma: float = 0.1,
-        use_anisotropic_diffusion: bool = False,
+        use_anisotropic_diffusion: bool = True,
         diffusion_mode: str = "hessian",
         diffusion_grad_scale: float = 1.0,
-        diagonal_diffusion: bool = True,
-        nu: float = 0.0,
-        use_viscous_coupling: bool = False,
+        diagonal_diffusion: bool = False,
+        nu: float = 0.1,
+        use_viscous_coupling: bool = True,
         viscous_length_scale: float = 1.0,
-        viscous_neighbor_mode: str = "all",
-        viscous_neighbor_weighting: str = "kernel",
+        viscous_neighbor_mode: str = "nearest",
+        viscous_neighbor_weighting: str = "geodesic",
         viscous_neighbor_threshold: float | None = None,
         viscous_neighbor_penalty: float = 0.0,
         viscous_degree_cap: float | None = None,
@@ -692,6 +693,8 @@ class KineticOperator(PanelModel):
         hess_fitness: Tensor | None = None,
         voronoi_data: dict | None = None,
         volume_weights: Tensor | None = None,
+        edge_weights: Tensor | None = None,
+        diffusion_tensors: Tensor | None = None,
     ) -> Tensor:
         """Compute viscous coupling force using normalized graph Laplacian.
 
@@ -716,6 +719,8 @@ class KineticOperator(PanelModel):
             hess_fitness: Optional fitness Hessian [N, d] or [N, d, d] (for metric weighting)
             voronoi_data: Optional Voronoi data (for metric weighting when using voronoi_proxy)
             volume_weights: Optional Riemannian volume weights [N] for neighbor weighting
+            edge_weights: Optional precomputed edge weights [E] aligned with neighbor_edges
+            diffusion_tensors: Optional precomputed diffusion tensors Σ (unscaled)
 
         Returns:
             viscous_force: Velocity-dependent damping force [N, d]
@@ -741,6 +746,7 @@ class KineticOperator(PanelModel):
                 grad_fitness=grad_fitness,
                 hess_fitness=hess_fitness,
                 voronoi_data=voronoi_data,
+                diffusion_tensors=diffusion_tensors,
             )
 
         if neighbor_edges is None:
@@ -770,6 +776,14 @@ class KineticOperator(PanelModel):
             elif weighting == "kernel":
                 kernel = torch.exp(-(distances**2) / (2 * l_sq))  # [N, N]
             elif weighting == "inverse_distance":
+                eps = 1e-8
+                kernel = 1.0 / (distances + eps)
+            elif self.viscous_neighbor_weighting == "geodesic":
+                warnings.warn(
+                    "Geodesic viscous weighting requires neighbor_edges; "
+                    "falling back to inverse-distance weighting.",
+                    RuntimeWarning,
+                )
                 eps = 1e-8
                 kernel = 1.0 / (distances + eps)
             else:
@@ -841,6 +855,9 @@ class KineticOperator(PanelModel):
             return torch.zeros_like(v)
         i = i[valid]
         j = j[valid]
+        if edge_weights is not None:
+            edge_weights = edge_weights.to(device=x.device, dtype=x.dtype)
+            edge_weights = edge_weights[valid]
 
         diff = x[i] - x[j]
         if self.pbc and self.bounds is not None:
@@ -874,12 +891,29 @@ class KineticOperator(PanelModel):
             kernel = torch.exp(-dist_sq / (2 * l_sq))
         elif weighting == "inverse_distance":
             kernel = 1.0 / (torch.sqrt(dist_sq) + eps)
+        elif weighting == "geodesic":
+            warnings.warn(
+                "Geodesic viscous weighting requires precomputed edge_weights; "
+                "falling back to inverse-distance weighting.",
+                RuntimeWarning,
+            )
+            kernel = 1.0 / (torch.sqrt(dist_sq) + eps)
         elif weighting in {"metric_diag", "metric_full"}:
-            sigma = self._compute_diffusion_tensor(x, grad_fitness, hess_fitness, voronoi_data)
+            sigma = self._compute_diffusion_tensor(
+                x,
+                grad_fitness=grad_fitness,
+                hess_fitness=hess_fitness,
+                voronoi_data=voronoi_data,
+                diffusion_tensors=diffusion_tensors,
+            )
             if sigma is None:
                 kernel = 1.0 / (torch.sqrt(dist_sq) + eps)
             else:
-                c2 = self.c2 if torch.is_tensor(self.c2) else torch.tensor(self.c2, device=x.device, dtype=x.dtype)
+                c2 = (
+                    self.c2
+                    if torch.is_tensor(self.c2)
+                    else torch.tensor(self.c2, device=x.device, dtype=x.dtype)
+                )
                 if sigma.dim() == 2:
                     sigma_safe = torch.clamp(sigma, min=eps)
                     g_diag = (c2**2) / (sigma_safe**2)
@@ -914,6 +948,10 @@ class KineticOperator(PanelModel):
                     dist_metric = 1.0 / torch.clamp(kernel, min=eps)
                     min_dist.scatter_reduce_(0, i, dist_metric, reduce="amin", include_self=False)
                     keep = dist_metric <= (min_dist[i] + 1e-12)
+                elif weighting == "geodesic" and edge_weights is not None:
+                    max_w = torch.zeros(x.shape[0], device=x.device, dtype=kernel.dtype)
+                    max_w.scatter_reduce_(0, i, kernel, reduce="amax", include_self=False)
+                    keep = kernel >= (max_w[i] - 1e-12)
                 else:
                     min_dist.scatter_reduce_(0, i, dist_sq, reduce="amin", include_self=False)
                     keep = dist_sq <= (min_dist[i] + 1e-12)
@@ -1111,6 +1149,8 @@ class KineticOperator(PanelModel):
         hess_fitness: Tensor | None = None,
         voronoi_data: dict | None = None,
         volume_weights: Tensor | None = None,
+        edge_weights: Tensor | None = None,
+        diffusion_tensors: Tensor | None = None,
     ) -> Tensor:
         """Apply one Boris-aware B step (half kick + rotation + half kick)."""
         force = self._compute_force(x, v, grad_fitness)
@@ -1124,6 +1164,8 @@ class KineticOperator(PanelModel):
                 hess_fitness=hess_fitness,
                 voronoi_data=voronoi_data,
                 volume_weights=volume_weights,
+                edge_weights=edge_weights,
+                diffusion_tensors=diffusion_tensors,
             )
             if self.use_viscous_coupling
             else torch.zeros_like(v)
@@ -1145,6 +1187,8 @@ class KineticOperator(PanelModel):
                 hess_fitness=hess_fitness,
                 voronoi_data=voronoi_data,
                 volume_weights=volume_weights,
+                edge_weights=edge_weights,
+                diffusion_tensors=diffusion_tensors,
             )
             if self.use_viscous_coupling
             else torch.zeros_like(v)
@@ -1157,6 +1201,7 @@ class KineticOperator(PanelModel):
         grad_fitness: Tensor | None = None,
         hess_fitness: Tensor | None = None,
         voronoi_data: dict | None = None,
+        diffusion_tensors: Tensor | None = None,
     ) -> Tensor:
         """Compute anisotropic diffusion tensor σ (Hessian, gradient-proxy, or voronoi-proxy).
 
@@ -1188,6 +1233,11 @@ class KineticOperator(PanelModel):
             Voronoi-proxy mode uses cell elongation to approximate metric anisotropy.
         """
         N, d = x.shape
+
+        if diffusion_tensors is not None:
+            sigma = diffusion_tensors.to(device=x.device, dtype=x.dtype)
+            sigma = torch.nan_to_num(sigma, nan=1.0, posinf=1.0, neginf=1.0)
+            return sigma * float(self.c2)
 
         if not self.use_anisotropic_diffusion:
             # Isotropic diffusion: σ I (standard BAOAB)
@@ -1389,6 +1439,7 @@ class KineticOperator(PanelModel):
         grad_fitness: Tensor | None = None,
         hess_fitness: Tensor | None = None,
         voronoi_data: dict | None = None,
+        diffusion_tensors: Tensor | None = None,
     ) -> Tensor | None:
         if voronoi_data is None:
             return None
@@ -1409,6 +1460,7 @@ class KineticOperator(PanelModel):
                 grad_fitness=grad_fitness,
                 hess_fitness=hess_fitness,
                 voronoi_data=voronoi_data,
+                diffusion_tensors=diffusion_tensors,
             )
         except Exception as exc:
             warnings.warn(
@@ -1431,6 +1483,9 @@ class KineticOperator(PanelModel):
         hess_fitness: Tensor | None = None,
         neighbor_edges: Tensor | None = None,
         voronoi_data: dict | None = None,
+        edge_weights: Tensor | None = None,
+        volume_weights: Tensor | None = None,
+        diffusion_tensors: Tensor | None = None,
         return_info: bool = False,
     ):
         """Apply BAOAB integrator for one time step with optional adaptive features.
@@ -1458,6 +1513,9 @@ class KineticOperator(PanelModel):
             neighbor_edges: Optional directed neighbor edges [E, 2] for viscous coupling
             voronoi_data: Voronoi tessellation data from compute_voronoi_tessellation()
                          (required if use_anisotropic_diffusion=True and diffusion_mode='voronoi_proxy')
+            edge_weights: Optional precomputed edge weights aligned with neighbor_edges
+            volume_weights: Optional precomputed Riemannian volume weights [N]
+            diffusion_tensors: Optional precomputed diffusion tensors Σ (unscaled)
 
         Returns:
             Updated state after integration
@@ -1473,9 +1531,8 @@ class KineticOperator(PanelModel):
         x, v = state.x.clone(), state.v.clone()
         N, d = state.N, state.d
         info = {}
-        volume_weights = None
 
-        if voronoi_data is not None and (
+        if volume_weights is None and voronoi_data is not None and (
             self.compute_volume_weights
             or (self.use_viscous_coupling and self.viscous_volume_weighting)
         ):
@@ -1484,6 +1541,7 @@ class KineticOperator(PanelModel):
                 grad_fitness=grad_fitness,
                 hess_fitness=hess_fitness,
                 voronoi_data=voronoi_data,
+                diffusion_tensors=diffusion_tensors,
             )
 
         if return_info:
@@ -1497,6 +1555,8 @@ class KineticOperator(PanelModel):
                     hess_fitness=hess_fitness,
                     voronoi_data=voronoi_data,
                     volume_weights=volume_weights,
+                    edge_weights=edge_weights,
+                    diffusion_tensors=diffusion_tensors,
                 )
                 if self.use_viscous_coupling
                 else torch.zeros_like(v)
@@ -1522,6 +1582,8 @@ class KineticOperator(PanelModel):
             hess_fitness=hess_fitness,
             voronoi_data=voronoi_data,
             volume_weights=volume_weights,
+            edge_weights=edge_weights,
+            diffusion_tensors=diffusion_tensors,
         )
 
         # === FIRST A STEP: Update positions ===
@@ -1532,7 +1594,13 @@ class KineticOperator(PanelModel):
 
         if self.use_anisotropic_diffusion:
             # Compute state-dependent diffusion tensor Σ_reg
-            sigma = self._compute_diffusion_tensor(x, grad_fitness, hess_fitness, voronoi_data)
+            sigma = self._compute_diffusion_tensor(
+                x,
+                grad_fitness=grad_fitness,
+                hess_fitness=hess_fitness,
+                voronoi_data=voronoi_data,
+                diffusion_tensors=diffusion_tensors,
+            )
             if not torch.isfinite(sigma).all():
                 warnings.warn(
                     "Anisotropic diffusion: non-finite sigma; falling back to isotropic noise.",
@@ -1582,6 +1650,8 @@ class KineticOperator(PanelModel):
             hess_fitness=hess_fitness,
             voronoi_data=voronoi_data,
             volume_weights=volume_weights,
+            edge_weights=edge_weights,
+            diffusion_tensors=diffusion_tensors,
         )
 
         # === VELOCITY SQUASHING: Apply smooth radial squashing map ===

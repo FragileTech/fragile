@@ -118,7 +118,7 @@ def _normalize_analysis_dims(
     if analysis_dims is None:
         # Default to first 3 dimensions (or fewer if not available)
         default_dims = tuple(range(min(3, total_dims)))
-        
+
         # Warn if truncating high-dimensional data
         if total_dims > 3:
             import warnings
@@ -128,7 +128,7 @@ def _normalize_analysis_dims(
                 UserWarning,
                 stacklevel=2,
             )
-        
+
         return default_dims
 
     # Validate requested dimensions
@@ -212,7 +212,7 @@ def _build_scutoid_history_view(
 ) -> RunHistory:
     if analysis_dims == tuple(range(history.d)):
         return history
-    
+
     # Convert tuple to list for proper 3D indexing
     x_final = history.x_final[:, :, list(analysis_dims)]
     update = {"d": len(analysis_dims), "x_final": x_final, "bounds": bounds}
@@ -1239,6 +1239,32 @@ def compute_quantum_gravity_observables(
     time_dim = _map_time_dim(config.euclidean_time_dim, analysis_dims)
     scutoid_history = _build_scutoid_history_view(history, analysis_dims, analysis_bounds)
 
+    edge_index = None
+    if getattr(history, "neighbor_edges", None) is not None and mc_frame < len(history.neighbor_edges):
+        edges = history.neighbor_edges[mc_frame]
+        if edges is not None:
+            if torch.is_tensor(edges):
+                edges = edges.to(device=positions.device)
+            else:
+                edges = torch.as_tensor(edges, device=positions.device)
+            if edges.ndim == 2 and edges.shape[0] == 2:
+                edge_index = edges.long()
+            elif edges.ndim == 2 and edges.shape[1] == 2:
+                edge_index = edges.t().contiguous().long()
+
+    volume_weights_full = _get_volume_weights(history, mc_frame)
+    ricci_override = None
+    if getattr(history, "ricci_scalar_proxy", None) is not None and mc_frame > 0:
+        info_idx = min(mc_frame - 1, len(history.ricci_scalar_proxy) - 1)
+        if info_idx >= 0:
+            ricci_override = history.ricci_scalar_proxy[info_idx]
+
+    diffusion_from_history = None
+    if getattr(history, "diffusion_tensors_full", None) is not None and mc_frame > 0:
+        info_idx = min(mc_frame - 1, len(history.diffusion_tensors_full) - 1)
+        if info_idx >= 0:
+            diffusion_from_history = history.diffusion_tensors_full[info_idx]
+
     # Compute Voronoi tessellation (reuse across analyses)
     voronoi_data = compute_voronoi_tessellation(
         positions=positions,
@@ -1249,24 +1275,46 @@ def compute_quantum_gravity_observables(
         compute_curvature=True,
         spatial_dims=positions.shape[1],
     )
-    volume_weights_full = _get_volume_weights(history, mc_frame)
 
     # Build edge index from neighbor lists
-    neighbor_lists = voronoi_data["neighbor_lists"]
-    edges = []
-    for i, neighbors in neighbor_lists.items():
-        for j in neighbors:
-            edges.append([i, j])
+    if edge_index is None or edge_index.numel() == 0:
+        neighbor_lists = voronoi_data["neighbor_lists"]
+        edges = []
+        for i, neighbors in neighbor_lists.items():
+            for j in neighbors:
+                edges.append([i, j])
 
-    if not edges:
-        edge_index = torch.zeros((2, 0), dtype=torch.long, device=positions.device)
-    else:
-        edge_index = torch.tensor(edges, dtype=torch.long, device=positions.device).t()
+        if not edges:
+            edge_index = torch.zeros((2, 0), dtype=torch.long, device=positions.device)
+        else:
+            edge_index = torch.tensor(edges, dtype=torch.long, device=positions.device).t()
 
     n_edges = edge_index.shape[1]
 
     # Compute metric tensors (from Higgs module)
-    metric_tensors = compute_emergent_metric(positions, edge_index, alive)
+    metric_tensors = None
+    if diffusion_from_history is not None:
+        sigma = diffusion_from_history.to(device=positions.device, dtype=positions.dtype)
+        if sigma.dim() == 3 and sigma.shape[-1] != positions.shape[1]:
+            dims = positions.shape[1]
+            sigma = sigma[..., :dims, :dims]
+        if sigma.dim() == 2:
+            sigma_safe = torch.clamp(sigma, min=1e-8)
+            metric_tensors = torch.diag_embed(1.0 / (sigma_safe**2))
+        elif sigma.dim() == 3:
+            d = sigma.shape[-1]
+            eye = torch.eye(d, device=positions.device, dtype=positions.dtype).expand(
+                sigma.shape[0], d, d
+            )
+            try:
+                sigma_inv = torch.linalg.solve(sigma, eye)
+            except RuntimeError:
+                sigma_inv = torch.linalg.pinv(sigma)
+            metric_tensors = sigma_inv.transpose(-1, -2) @ sigma_inv
+            metric_tensors = 0.5 * (metric_tensors + metric_tensors.transpose(-1, -2))
+
+    if metric_tensors is None:
+        metric_tensors = compute_emergent_metric(positions, edge_index, alive)
 
     # Get curvature proxies
     curvature_proxies = voronoi_data.get("curvature_proxies", {})
@@ -1314,6 +1362,28 @@ def compute_quantum_gravity_observables(
                 volume_weights=volume_weights_full,
             )
         )
+        if ricci_override is not None:
+            ricci = ricci_override.to(device=positions.device, dtype=torch.float32)
+            if volume_weights_full is not None and volume_weights_full.shape[0] == history.N:
+                volumes_full = volume_weights_full.to(device=positions.device, dtype=ricci.dtype)
+            else:
+                volumes = torch.from_numpy(voronoi_data["volumes"]).float()
+                volumes_full = torch.zeros(history.N, device=positions.device, dtype=ricci.dtype)
+                alive_indices = voronoi_data["alive_indices"]
+                alive_indices_torch = (
+                    torch.from_numpy(alive_indices).long()
+                    if isinstance(alive_indices, np.ndarray)
+                    else alive_indices
+                )
+                volumes_full[alive_indices_torch] = volumes.to(device=positions.device, dtype=ricci.dtype)
+            action = (ricci * volumes_full).sum()
+            results.update(
+                {
+                    "einstein_hilbert_action": action.item(),
+                    "ricci_scalars": ricci,
+                    "scalar_curvature_mean": ricci.mean().item() if ricci.numel() > 0 else 0.0,
+                }
+            )
 
         # 3. ADM Energy
         ricci = results.get("ricci_scalars", torch.zeros(history.N))

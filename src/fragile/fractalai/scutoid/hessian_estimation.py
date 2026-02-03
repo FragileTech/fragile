@@ -5,159 +5,310 @@ Provides two complementary approaches:
 2. Geometric (validation): H = g - ε_Σ I from neighbor covariance
 """
 
-import torch
-from torch import Tensor
 from typing import Literal
 import warnings
 
+import torch
+from torch import Tensor
+
 from .utils import (
-    estimate_optimal_step_size,
-    find_axial_neighbors,
     validate_finite_difference_inputs,
 )
+
+
+# -----------------------------------------------------------------------------
+# Neighbor preparation helpers (COO/CSR)
+# -----------------------------------------------------------------------------
+
+
+def _prepare_edge_index(
+    positions: Tensor,
+    edge_index: Tensor | None,
+    csr_ptr: Tensor | None,
+    csr_indices: Tensor | None,
+    csr_types: Tensor | None,
+) -> tuple[Tensor, Tensor]:
+    """Resolve edge_index and neighbor counts from COO or CSR inputs."""
+    device = positions.device
+    n_walkers = positions.shape[0]
+
+    if edge_index is not None:
+        if csr_ptr is not None or csr_indices is not None:
+            raise ValueError("Provide either edge_index or csr_ptr/csr_indices, not both.")
+        if edge_index.device != device:
+            raise ValueError("edge_index must be on the same device as positions.")
+        if edge_index.numel() == 0:
+            return edge_index, torch.zeros(n_walkers, dtype=torch.long, device=device)
+        if torch.any(edge_index[0] >= n_walkers) or torch.any(edge_index[1] >= n_walkers):
+            raise ValueError(
+                "edge_index contains indices outside positions. "
+                "Filter boundary neighbors before calling."
+            )
+        num_neighbors = torch.bincount(edge_index[0], minlength=n_walkers)
+        return edge_index, num_neighbors
+
+    if csr_ptr is None or csr_indices is None:
+        raise ValueError("edge_index or csr_ptr/csr_indices must be provided.")
+    if csr_ptr.device != device or csr_indices.device != device:
+        raise ValueError("CSR tensors must be on the same device as positions.")
+    if csr_ptr.numel() - 1 < n_walkers:
+        raise ValueError("csr_ptr has fewer rows than walkers in positions.")
+
+    edge_end = int(csr_ptr[n_walkers].item())
+    ptr = csr_ptr[: n_walkers + 1]
+    indices = csr_indices[:edge_end]
+    types = csr_types[:edge_end] if csr_types is not None else None
+
+    counts = ptr[1:] - ptr[:-1]
+    src = torch.repeat_interleave(torch.arange(n_walkers, device=device), counts)
+
+    if types is not None:
+        mask = types == 0
+        src = src[mask]
+        dst = indices[mask]
+        num_neighbors = torch.bincount(src, minlength=n_walkers)
+        edge_index = torch.stack([src, dst], dim=0)
+        return edge_index, num_neighbors
+
+    if torch.any(indices >= n_walkers):
+        raise ValueError(
+            "csr_types required to filter boundary neighbors for Hessian estimation."
+        )
+
+    edge_index = torch.stack([src, indices], dim=0)
+    return edge_index, counts
+
+
+# -----------------------------------------------------------------------------
+# Vectorized neighbor geometry
+# -----------------------------------------------------------------------------
+
+
+def _build_neighbor_matrix(edge_index: Tensor, n_nodes: int) -> tuple[Tensor, Tensor]:
+    """Build padded neighbor matrix and mask from edge_index."""
+    device = edge_index.device
+    if edge_index.numel() == 0:
+        neighbors = torch.empty(n_nodes, 0, dtype=torch.long, device=device)
+        mask = torch.empty(n_nodes, 0, dtype=torch.bool, device=device)
+        return neighbors, mask
+
+    src = edge_index[0]
+    dst = edge_index[1]
+    sorted_idx = torch.argsort(src)
+    src = src[sorted_idx]
+    dst = dst[sorted_idx]
+    counts = torch.bincount(src, minlength=n_nodes)
+    max_degree = int(counts.max().item()) if counts.numel() > 0 else 0
+
+    if max_degree == 0:
+        neighbors = torch.empty(n_nodes, 0, dtype=torch.long, device=device)
+        mask = torch.empty(n_nodes, 0, dtype=torch.bool, device=device)
+        return neighbors, mask
+
+    row_indices = torch.repeat_interleave(torch.arange(n_nodes, device=device), counts)
+    edge_pos = torch.arange(dst.numel(), device=device) - torch.repeat_interleave(
+        torch.cumsum(
+            torch.cat([torch.zeros(1, device=device, dtype=counts.dtype), counts]), dim=0
+        )[:-1],
+        counts,
+    )
+
+    neighbors = torch.full((n_nodes, max_degree), -1, dtype=torch.long, device=device)
+    mask = torch.zeros((n_nodes, max_degree), dtype=torch.bool, device=device)
+    neighbors[row_indices, edge_pos] = dst
+    mask[row_indices, edge_pos] = True
+    return neighbors, mask
+
+
+def _compute_neighbor_geometry(
+    positions: Tensor,
+    neighbors: Tensor,
+    mask: Tensor,
+) -> tuple[Tensor, Tensor, Tensor]:
+    """Compute neighbor displacements, distances, and normalized directions."""
+    device = positions.device
+    n_nodes, max_degree = neighbors.shape
+    if max_degree == 0:
+        displacements = torch.empty(n_nodes, 0, positions.shape[1], device=device)
+        distances = torch.empty(n_nodes, 0, device=device)
+        directions = torch.empty(n_nodes, 0, positions.shape[1], device=device)
+        return displacements, distances, directions
+
+    pos_i = positions.unsqueeze(1)  # [N, 1, d]
+    safe_neighbors = neighbors.clamp(min=0)
+    pos_j = positions[safe_neighbors]  # [N, K, d]
+
+    displacements = pos_j - pos_i
+    displacements = torch.where(mask.unsqueeze(-1), displacements, torch.zeros_like(displacements))
+
+    distances = torch.norm(displacements, dim=2)
+    directions = displacements / (distances.unsqueeze(-1) + 1e-10)
+
+    return displacements, distances, directions
+
+
+def _select_axis_neighbors(
+    positions: Tensor,
+    neighbors: Tensor,
+    mask: Tensor,
+    directions: Tensor,
+    max_angle_deg: float,
+) -> tuple[Tensor, Tensor, Tensor, Tensor]:
+    """Select closest positive and negative neighbors per axis (vectorized)."""
+    device = positions.device
+    n_nodes, max_degree = neighbors.shape
+    d = positions.shape[1]
+
+    if max_degree == 0:
+        empty_idx = torch.full((n_nodes, d), -1, dtype=torch.long, device=device)
+        empty_delta = torch.full((n_nodes, d), float("nan"), device=device)
+        return empty_idx, empty_idx.clone(), empty_delta, empty_delta.clone()
+
+    cos_threshold = torch.cos(torch.tensor(max_angle_deg * torch.pi / 180.0, device=device))
+
+    axis_cos = directions  # [N, K, d]
+
+    aligned = mask.unsqueeze(-1) & (axis_cos.abs() >= cos_threshold)
+    positive = aligned & (axis_cos > 0)
+    negative = aligned & (axis_cos < 0)
+
+    neighbor_coords = positions[neighbors.clamp(min=0)]  # [N, K, d]
+    center_coords = positions.unsqueeze(1)  # [N, 1, d]
+    deltas = neighbor_coords - center_coords  # [N, K, d]
+
+    delta_axis = deltas[..., torch.arange(d, device=device)]  # [N, K, d]
+
+    large = torch.full_like(delta_axis, float("inf"))
+    pos_cost = torch.where(positive, delta_axis.abs(), large)
+    neg_cost = torch.where(negative, delta_axis.abs(), large)
+
+    pos_idx = pos_cost.argmin(dim=1)  # [N, d]
+    neg_idx = neg_cost.argmin(dim=1)  # [N, d]
+
+    batch_idx = torch.arange(n_nodes, device=device)[:, None]
+    axis_idx = torch.arange(d, device=device)[None, :]
+
+    pos_valid = positive[batch_idx, pos_idx, axis_idx]
+    neg_valid = negative[batch_idx, neg_idx, axis_idx]
+
+    pos_neighbors = neighbors[batch_idx, pos_idx]
+    neg_neighbors = neighbors[batch_idx, neg_idx]
+
+    pos_neighbors = torch.where(pos_valid, pos_neighbors, torch.full_like(pos_neighbors, -1))
+    neg_neighbors = torch.where(neg_valid, neg_neighbors, torch.full_like(neg_neighbors, -1))
+
+    pos_delta = delta_axis[batch_idx, pos_idx, axis_idx]
+    neg_delta = delta_axis[batch_idx, neg_idx, axis_idx]
+
+    pos_delta = torch.where(pos_valid, pos_delta, torch.full_like(pos_delta, float("nan")))
+    neg_delta = torch.where(neg_valid, neg_delta, torch.full_like(neg_delta, float("nan")))
+
+    return pos_neighbors, neg_neighbors, pos_delta, neg_delta
+
+
+# -----------------------------------------------------------------------------
+# Public APIs
+# -----------------------------------------------------------------------------
 
 
 def estimate_hessian_diagonal_fd(
     positions: Tensor,
     fitness_values: Tensor,
-    edge_index: Tensor,
+    edge_index: Tensor | None,
     alive: Tensor | None = None,
     step_size: float | None = None,
     min_neighbors_per_axis: int = 2,
+    csr_ptr: Tensor | None = None,
+    csr_indices: Tensor | None = None,
+    csr_types: Tensor | None = None,
+    max_angle_deg: float = 30.0,
 ) -> dict[str, Tensor]:
     """Estimate diagonal Hessian elements using second-order finite differences.
-
-    Computes ∂²V/∂x_α² for each coordinate axis α using central differences:
-        ∂²V/∂x_α² ≈ [V(x + h·e_α) + V(x - h·e_α) - 2V(x)] / h²
-
-    This is O(N·d) and provides a fast approximation when off-diagonal coupling
-    is weak or full Hessian O(N·d²) is too expensive.
 
     Args:
         positions: [N, d] walker positions
         fitness_values: [N] fitness at each position
-        edge_index: [2, E] neighbor connectivity
+        edge_index: [2, E] neighbor connectivity (COO). Optional if CSR provided.
         alive: [N] optional validity mask
-        step_size: Step size h for finite differences (auto if None)
+        step_size: Optional manual step size (used for reporting)
         min_neighbors_per_axis: Minimum neighbors needed along each axis
-
-    Returns:
-        dict containing:
-            - "hessian_diagonal": [N, d] diagonal elements H_αα
-            - "eigenvalues": [N, d] (same as diagonal for diagonal-only estimate)
-            - "step_sizes": [N, d] effective step size used per axis
-            - "axis_quality": [N, d] alignment quality (1 = perfect axial)
-            - "valid_mask": [N] walkers with valid estimates
-
-    Complexity: O(N·d·k) where k = avg neighbors
-
-    Algorithm:
-        For each walker i and axis α:
-            1. Find neighbors j,k approximately along ±e_α
-            2. Estimate h from neighbor distances
-            3. Compute (V_j + V_k - 2V_i) / h²
-            4. Average if multiple neighbor pairs available
+        csr_ptr: Optional [N+1] CSR row pointers
+        csr_indices: Optional [E] CSR column indices
+        csr_types: Optional [E] edge types (0=walker, 1=boundary)
+        max_angle_deg: Angular threshold for axial alignment
     """
     N, d = positions.shape
     device = positions.device
 
-    # Initialize outputs
-    hessian_diagonal = torch.zeros(N, d, device=device)
-    step_sizes_used = torch.zeros(N, d, device=device)
-    axis_quality = torch.zeros(N, d, device=device)
-    valid_mask = torch.ones(N, dtype=torch.bool, device=device)
-
-    # Validate inputs
-    diagnostics = validate_finite_difference_inputs(
-        positions, fitness_values, edge_index, alive, min_neighbors=min_neighbors_per_axis * d
+    edge_index, num_neighbors = _prepare_edge_index(
+        positions, edge_index, csr_ptr, csr_indices, csr_types
     )
 
-    # Estimate step size if not provided
-    if step_size is None:
-        step_sizes_per_walker = estimate_optimal_step_size(
-            positions, edge_index, target_fraction=0.5, alive=alive
-        )
-    else:
-        step_sizes_per_walker = torch.full((N,), step_size, device=device)
+    diagnostics = validate_finite_difference_inputs(
+        positions,
+        fitness_values,
+        edge_index,
+        alive,
+        min_neighbors=min_neighbors_per_axis * d,
+        num_neighbors=num_neighbors,
+    )
 
-    # Process each walker
-    for i in range(N):
-        if alive is not None and not alive[i]:
-            valid_mask[i] = False
-            hessian_diagonal[i] = float("nan")
-            continue
+    neighbors, mask = _build_neighbor_matrix(edge_index, N)
+    _, _, directions = _compute_neighbor_geometry(positions, neighbors, mask)
 
-        # Process each axis
-        for axis in range(d):
-            # Find neighbors along this axis
-            pos_neighbors, neg_neighbors = find_axial_neighbors(
-                positions, edge_index, walker_idx=i, axis=axis, max_angle_deg=30.0
+    pos_idx, neg_idx, pos_delta, neg_delta = _select_axis_neighbors(
+        positions, neighbors, mask, directions, max_angle_deg=max_angle_deg
+    )
+
+    hessian_diagonal = torch.full((N, d), float("nan"), device=device, dtype=positions.dtype)
+    step_sizes_used = torch.full((N, d), float("nan"), device=device, dtype=positions.dtype)
+    axis_quality = torch.zeros((N, d), device=device, dtype=positions.dtype)
+
+    has_pos = pos_idx >= 0
+    has_neg = neg_idx >= 0
+    valid_axis = has_pos & has_neg
+
+    if valid_axis.any():
+        pos_vals = fitness_values[pos_idx.clamp(min=0)]
+        neg_vals = fitness_values[neg_idx.clamp(min=0)]
+        center_vals = fitness_values.unsqueeze(1)
+
+        h_pos = pos_delta.abs()
+        h_neg = neg_delta.abs()
+        h_avg = 0.5 * (h_pos + h_neg)
+
+        symmetry = 1.0 - (h_pos - h_neg).abs() / (h_pos + h_neg + 1e-10)
+
+        hessian_est = (pos_vals + neg_vals - 2.0 * center_vals) / (h_avg**2 + 1e-10)
+
+        hessian_diagonal = torch.where(valid_axis, hessian_est, hessian_diagonal)
+        if step_size is None:
+            step_sizes_used = torch.where(valid_axis, h_avg, step_sizes_used)
+        else:
+            step_sizes_used = torch.where(
+                valid_axis,
+                torch.full_like(h_avg, step_size),
+                step_sizes_used,
             )
+        axis_quality = torch.where(valid_axis, symmetry, axis_quality)
 
-            if len(pos_neighbors) == 0 or len(neg_neighbors) == 0:
-                # Not enough axial neighbors
-                hessian_diagonal[i, axis] = float("nan")
-                axis_quality[i, axis] = 0.0
-                step_sizes_used[i, axis] = float("nan")
-                continue
-
-            # Use all combinations of positive and negative neighbors
-            h_estimates = []
-            H_estimates = []
-            quality_scores = []
-
-            for j in pos_neighbors:
-                for k in neg_neighbors:
-                    # Estimate step size from neighbor positions
-                    delta_pos = positions[j, axis] - positions[i, axis]
-                    delta_neg = positions[k, axis] - positions[i, axis]
-
-                    # Should have opposite signs
-                    if delta_pos * delta_neg >= 0:
-                        continue
-
-                    h_pos = abs(delta_pos)
-                    h_neg = abs(delta_neg)
-                    h_avg = (h_pos + h_neg) / 2
-
-                    # Central difference formula
-                    V_i = fitness_values[i]
-                    V_j = fitness_values[j]
-                    V_k = fitness_values[k]
-
-                    H_estimate = (V_j + V_k - 2 * V_i) / (h_avg ** 2)
-
-                    # Quality: how symmetric are the steps?
-                    symmetry = 1.0 - abs(h_pos - h_neg) / (h_pos + h_neg + 1e-10)
-
-                    h_estimates.append(h_avg)
-                    H_estimates.append(H_estimate)
-                    quality_scores.append(symmetry)
-
-            if len(H_estimates) == 0:
-                hessian_diagonal[i, axis] = float("nan")
-                axis_quality[i, axis] = 0.0
-                step_sizes_used[i, axis] = float("nan")
-                continue
-
-            # Average estimates weighted by quality
-            h_estimates = torch.tensor(h_estimates, device=device)
-            H_estimates = torch.tensor(H_estimates, device=device)
-            quality_scores = torch.tensor(quality_scores, device=device)
-
-            # Weighted average
-            weights = quality_scores / (quality_scores.sum() + 1e-10)
-            hessian_diagonal[i, axis] = (weights * H_estimates).sum()
-            step_sizes_used[i, axis] = (weights * h_estimates).sum()
-            axis_quality[i, axis] = quality_scores.mean()
-
-    # Overall validity: at least half the axes have valid estimates
     n_valid_axes = torch.isfinite(hessian_diagonal).sum(dim=1)
     valid_mask = n_valid_axes >= (d // 2)
 
+    if alive is not None:
+        valid_mask &= alive
+
+    valid_mask &= diagnostics["valid_walkers"]
+
+    invalid = ~valid_mask
+    if invalid.any():
+        hessian_diagonal[invalid] = float("nan")
+        step_sizes_used[invalid] = float("nan")
+        axis_quality[invalid] = float("nan")
+
     return {
         "hessian_diagonal": hessian_diagonal,
-        "eigenvalues": hessian_diagonal,  # For diagonal matrix, eigenvalues = diagonal
+        "eigenvalues": hessian_diagonal,
         "step_sizes": step_sizes_used,
         "axis_quality": axis_quality,
         "valid_mask": valid_mask,
@@ -168,44 +319,31 @@ def estimate_hessian_full_fd(
     positions: Tensor,
     fitness_values: Tensor,
     gradient_vectors: Tensor | None,
-    edge_index: Tensor,
+    edge_index: Tensor | None,
     alive: Tensor | None = None,
     step_size: float | None = None,
     method: Literal["central", "gradient_fd"] = "central",
     symmetrize: bool = True,
+    csr_ptr: Tensor | None = None,
+    csr_indices: Tensor | None = None,
+    csr_types: Tensor | None = None,
+    max_angle_deg: float = 30.0,
 ) -> dict[str, Tensor]:
     """Estimate full Hessian matrix using second-order finite differences.
-
-    Two methods available:
-    1. "central": Mixed second derivatives from fitness values
-       H_αβ ≈ [V(x+h_α+h_β) - V(x+h_α) - V(x+h_β) + V(x)] / (h_α·h_β)
-
-    2. "gradient_fd": Finite difference of gradients
-       H_αβ ≈ [∇V_β(x+h·e_α) - ∇V_β(x)] / h
-       (Requires pre-computed gradient_vectors)
 
     Args:
         positions: [N, d] walker positions
         fitness_values: [N] fitness values
-        gradient_vectors: [N, d] optional pre-computed gradients (for method="gradient_fd")
-        edge_index: [2, E] neighbor graph
+        gradient_vectors: [N, d] optional pre-computed gradients
+        edge_index: [2, E] neighbor connectivity (COO). Optional if CSR provided.
         alive: [N] optional validity mask
-        step_size: Step size h (auto if None)
-        method: "central" (from fitness) or "gradient_fd" (from gradients)
-        symmetrize: Force Hessian symmetric by averaging H and H^T
-
-    Returns:
-        dict containing:
-            - "hessian_tensors": [N, d, d] full symmetric Hessian matrices
-            - "hessian_eigenvalues": [N, d] eigenspectrum (sorted descending)
-            - "condition_numbers": [N] κ(H) = |λ_max|/|λ_min|
-            - "symmetry_error": [N] ||H - H^T||_F (before symmetrization)
-            - "psd_fraction": float, fraction with all eigenvalues ≥ 0
-            - "valid_mask": [N] boolean validity
-
-    Complexity: O(N·d²·k)
-
-    Note: For d > 20, consider using diagonal approximation instead.
+        step_size: Optional manual step size (used for reporting)
+        method: "central" or "gradient_fd"
+        symmetrize: If True, enforce symmetry by averaging H and H^T
+        csr_ptr: Optional [N+1] CSR row pointers
+        csr_indices: Optional [E] CSR column indices
+        csr_types: Optional [E] edge types (0=walker, 1=boundary)
+        max_angle_deg: Angular threshold for axial alignment
     """
     N, d = positions.shape
     device = positions.device
@@ -213,56 +351,52 @@ def estimate_hessian_full_fd(
     if method == "gradient_fd" and gradient_vectors is None:
         raise ValueError("gradient_fd method requires gradient_vectors input")
 
-    # Initialize
-    hessian_tensors = torch.zeros(N, d, d, device=device)
-    symmetry_errors = torch.zeros(N, device=device)
-    valid_mask = torch.ones(N, dtype=torch.bool, device=device)
-
-    # Estimate step size if needed
-    if step_size is None:
-        step_sizes_per_walker = estimate_optimal_step_size(
-            positions, edge_index, target_fraction=0.3, alive=alive
-        )
-    else:
-        step_sizes_per_walker = torch.full((N,), step_size, device=device)
+    edge_index, num_neighbors = _prepare_edge_index(
+        positions, edge_index, csr_ptr, csr_indices, csr_types
+    )
 
     if method == "central":
-        # Central difference method: need 4-point stencil per (α,β) pair
         hessian_tensors = _estimate_hessian_central_differences(
-            positions, fitness_values, edge_index, step_sizes_per_walker, alive
+            positions,
+            fitness_values,
+            edge_index,
+            alive,
+            max_angle_deg=max_angle_deg,
         )
-
-    elif method == "gradient_fd":
-        # Gradient finite difference: ∂∇V/∂x
+    else:
         hessian_tensors = _estimate_hessian_from_gradient_fd(
-            positions, gradient_vectors, edge_index, step_sizes_per_walker, alive
+            positions,
+            gradient_vectors,
+            edge_index,
+            alive,
+            max_angle_deg=max_angle_deg,
         )
 
-    # Compute symmetry error before symmetrization
     symmetry_errors = torch.norm(
         hessian_tensors - hessian_tensors.transpose(1, 2),
         p="fro",
-        dim=(1, 2)
+        dim=(1, 2),
     )
 
-    # Symmetrize if requested
     if symmetrize:
         hessian_tensors = 0.5 * (hessian_tensors + hessian_tensors.transpose(1, 2))
 
-    # Compute eigenvalues
-    eigenvalues = torch.linalg.eigvalsh(hessian_tensors)  # [N, d], sorted ascending
+    eigenvalues = torch.linalg.eigvalsh(hessian_tensors)
 
-    # Condition numbers
-    lambda_max = eigenvalues[:, -1].abs()  # Largest magnitude
-    lambda_min = eigenvalues[:, 0].abs()   # Smallest magnitude
+    lambda_max = eigenvalues[:, -1].abs()
+    lambda_min = eigenvalues[:, 0].abs()
     condition_numbers = lambda_max / (lambda_min + 1e-10)
 
-    # Fraction with all non-negative eigenvalues (PSD)
-    psd_mask = (eigenvalues >= -1e-6).all(dim=1)  # Small tolerance for numerical error
+    psd_mask = (eigenvalues >= -1e-6).all(dim=1)
     psd_fraction = psd_mask.float().mean().item()
 
-    # Sort eigenvalues descending
     eigenvalues = torch.flip(eigenvalues, dims=[1])
+
+    valid_mask = torch.ones(N, dtype=torch.bool, device=device)
+    if alive is not None:
+        valid_mask &= alive
+
+    valid_mask &= num_neighbors >= 2
 
     return {
         "hessian_tensors": hessian_tensors,
@@ -274,67 +408,52 @@ def estimate_hessian_full_fd(
     }
 
 
+# -----------------------------------------------------------------------------
+# Internal Hessian estimators
+# -----------------------------------------------------------------------------
+
+
 def _estimate_hessian_central_differences(
     positions: Tensor,
     fitness_values: Tensor,
     edge_index: Tensor,
-    step_sizes: Tensor,
     alive: Tensor | None,
+    max_angle_deg: float,
 ) -> Tensor:
-    """Internal: Estimate Hessian using central differences on fitness values.
-
-    For each (α, β) pair, need to find neighbors at:
-        - x + h·e_α + h·e_β
-        - x + h·e_α
-        - x + h·e_β
-        - x (center)
-
-    In practice, with irregular neighbor graphs, we approximate using
-    available neighbors and directional differences.
-
-    Returns:
-        [N, d, d] Hessian tensors
-    """
+    """Estimate Hessian using central differences (diagonal only)."""
     N, d = positions.shape
     device = positions.device
 
-    H = torch.zeros(N, d, d, device=device)
+    neighbors, mask = _build_neighbor_matrix(edge_index, N)
+    _, _, directions = _compute_neighbor_geometry(positions, neighbors, mask)
 
-    # For diagonal elements: use central differences
-    for i in range(N):
-        h = step_sizes[i]
+    pos_idx, neg_idx, pos_delta, neg_delta = _select_axis_neighbors(
+        positions, neighbors, mask, directions, max_angle_deg=max_angle_deg
+    )
 
-        for alpha in range(d):
-            # Diagonal: H_αα
-            pos_neighbors, neg_neighbors = find_axial_neighbors(
-                positions, edge_index, i, alpha, max_angle_deg=30.0
-            )
+    H = torch.zeros(N, d, d, device=device, dtype=positions.dtype)
 
-            if len(pos_neighbors) > 0 and len(neg_neighbors) > 0:
-                # Take closest in each direction
-                delta_pos = positions[pos_neighbors, alpha] - positions[i, alpha]
-                delta_neg = positions[neg_neighbors, alpha] - positions[i, alpha]
+    has_pos = pos_idx >= 0
+    has_neg = neg_idx >= 0
+    valid_axis = has_pos & has_neg
 
-                j_pos = pos_neighbors[torch.argmin(delta_pos.abs())]
-                j_neg = neg_neighbors[torch.argmin(delta_neg.abs())]
+    if valid_axis.any():
+        pos_vals = fitness_values[pos_idx.clamp(min=0)]
+        neg_vals = fitness_values[neg_idx.clamp(min=0)]
+        center_vals = fitness_values.unsqueeze(1)
 
-                V_i = fitness_values[i]
-                V_pos = fitness_values[j_pos]
-                V_neg = fitness_values[j_neg]
+        h_pos = pos_delta.abs()
+        h_neg = neg_delta.abs()
+        h_avg = 0.5 * (h_pos + h_neg)
 
-                H[i, alpha, alpha] = (V_pos + V_neg - 2 * V_i) / (h ** 2)
+        diag_est = (pos_vals + neg_vals - 2.0 * center_vals) / (h_avg**2 + 1e-10)
 
-            # Off-diagonal: H_αβ for β > α
-            for beta in range(alpha + 1, d):
-                # Need neighbors in 4 quadrants (simplified: use nearest)
-                # This is approximate - exact requires finding specific combinations
+        diag_values = torch.where(valid_axis, diag_est, torch.zeros_like(diag_est))
+        H[:, torch.arange(d), torch.arange(d)] = diag_values
 
-                # Approximate via directional second derivatives
-                # H_αβ ≈ (∂²V/∂n² along n = (e_α + e_β)/√2) - (H_αα + H_ββ)/2
-
-                # For now, use a simpler approximation: numerical gradient of gradient
-                # Skip if too complex - leave as zero (diagonal dominant)
-                pass
+    if alive is not None:
+        invalid = ~alive
+        H[invalid] = float("nan")
 
     return H
 
@@ -343,118 +462,92 @@ def _estimate_hessian_from_gradient_fd(
     positions: Tensor,
     gradient_vectors: Tensor,
     edge_index: Tensor,
-    step_sizes: Tensor,
     alive: Tensor | None,
+    max_angle_deg: float,
 ) -> Tensor:
-    """Internal: Estimate Hessian from finite differences of gradients.
-
-    H_αβ ≈ [∇V_β(x + h·e_α) - ∇V_β(x)] / h
-
-    Requires finding neighbors along each axis and interpolating their gradients.
-
-    Returns:
-        [N, d, d] Hessian tensors
-    """
+    """Estimate Hessian from finite differences of gradients (vectorized)."""
     N, d = positions.shape
     device = positions.device
 
-    H = torch.zeros(N, d, d, device=device)
+    neighbors, mask = _build_neighbor_matrix(edge_index, N)
+    _, _, directions = _compute_neighbor_geometry(positions, neighbors, mask)
 
-    for i in range(N):
-        h = step_sizes[i]
-        grad_i = gradient_vectors[i]  # [d]
+    pos_idx, _, pos_delta, _ = _select_axis_neighbors(
+        positions, neighbors, mask, directions, max_angle_deg=max_angle_deg
+    )
 
-        for alpha in range(d):
-            # Find neighbors along axis α
-            pos_neighbors, neg_neighbors = find_axial_neighbors(
-                positions, edge_index, i, alpha, max_angle_deg=30.0
-            )
+    H = torch.full((N, d, d), float("nan"), device=device, dtype=positions.dtype)
 
-            if len(pos_neighbors) == 0:
-                continue
+    valid_pos = pos_idx >= 0
+    if valid_pos.any():
+        grad_j = gradient_vectors[pos_idx.clamp(min=0)]  # [N, d, d]
+        grad_i = gradient_vectors.unsqueeze(1).expand(-1, d, -1)
 
-            # Use closest positive neighbor
-            delta_pos = positions[pos_neighbors, alpha] - positions[i, alpha]
-            j_pos = pos_neighbors[torch.argmin(delta_pos.abs())]
+        delta_x = pos_delta  # [N, d]
+        delta_x = delta_x.unsqueeze(2)  # [N, d, 1]
 
-            grad_j = gradient_vectors[j_pos]  # [d]
+        H_est = (grad_j - grad_i) / (delta_x + 1e-10)
 
-            # Finite difference of gradient
-            delta_x = positions[j_pos, alpha] - positions[i, alpha]
-            H[i, alpha, :] = (grad_j - grad_i) / (delta_x + 1e-10)
+        valid_mask = valid_pos.unsqueeze(2)
+        H = torch.where(valid_mask, H_est, H)
+
+    if alive is not None:
+        H[~alive] = float("nan")
 
     return H
 
 
+# -----------------------------------------------------------------------------
+# Metric-based Hessian
+# -----------------------------------------------------------------------------
+
+
 def estimate_hessian_from_metric(
     positions: Tensor,
-    edge_index: Tensor,
+    edge_index: Tensor | None,
     epsilon_sigma: float = 0.1,
     alive: Tensor | None = None,
     metric_tensors: Tensor | None = None,
     validate_equilibrium: bool = True,
+    csr_ptr: Tensor | None = None,
+    csr_indices: Tensor | None = None,
+    csr_types: Tensor | None = None,
 ) -> dict[str, Tensor]:
     """Estimate Hessian from emergent metric: H = g - ε_Σ I.
 
-    This is the VALIDATION method. It uses the theoretical relationship:
-        g = H + ε_Σ I  →  H = g - ε_Σ I
-
-    where g is the emergent metric computed from neighbor covariance.
-
-    Compare with finite-difference results to:
-    1. Validate FD estimates are correct
-    2. Check walkers are in equilibrium (ρ ∝ e^(-βV))
-    3. Get independent curvature measurement
-
     Args:
         positions: [N, d] walker positions
-        edge_index: [2, E] neighbor graph
-        epsilon_sigma: Physical spectral floor ε_Σ from theory (NOT numerical reg!)
+        edge_index: [2, E] neighbor connectivity (COO). Optional if CSR provided.
+        epsilon_sigma: Physical spectral floor ε_Σ
         alive: [N] optional validity mask
-        metric_tensors: [N, d, d] pre-computed metrics (else compute from neighbors)
-        validate_equilibrium: If True, compute equilibrium quality score
-
-    Returns:
-        dict containing:
-            - "hessian_tensors": [N, d, d] estimated Hessian
-            - "hessian_eigenvalues": [N, d] eigenspectrum
-            - "metric_tensors": [N, d, d] the emergent metric g used
-            - "psd_violation_mask": [N] bool, H not positive semi-definite
-            - "equilibrium_score": [N] metric-fitness correlation (0-1)
-                High score = good equilibrium, estimates more reliable
-
-    Complexity: O(N·k·d² + N·d³) for covariance + eigendecomp
-
-    Warning: This method assumes walkers are in quasi-equilibrium.
-    If not, H estimates may be unreliable. Check equilibrium_score.
+        metric_tensors: Optional precomputed metrics
+        validate_equilibrium: If True, compute equilibrium score
+        csr_ptr: Optional [N+1] CSR row pointers
+        csr_indices: Optional [E] CSR column indices
+        csr_types: Optional [E] edge types (0=walker, 1=boundary)
     """
     N, d = positions.shape
     device = positions.device
 
-    # Compute metric tensors if not provided
     if metric_tensors is None:
+        edge_index, _ = _prepare_edge_index(
+            positions, edge_index, csr_ptr, csr_indices, csr_types
+        )
         metric_tensors = _compute_emergent_metric(positions, edge_index, alive)
 
-    # Extract Hessian: H = g - ε_Σ I
-    identity = torch.eye(d, device=device).unsqueeze(0).expand(N, d, d)
+    identity = torch.eye(d, device=device, dtype=positions.dtype).unsqueeze(0).expand(N, d, d)
     hessian_tensors = metric_tensors - epsilon_sigma * identity
 
-    # Compute eigenvalues
-    eigenvalues = torch.linalg.eigvalsh(hessian_tensors)  # [N, d], ascending
+    eigenvalues = torch.linalg.eigvalsh(hessian_tensors)
 
-    # Check for PSD violations (negative eigenvalues)
-    psd_violation_mask = (eigenvalues[:, 0] < -1e-6)  # Most negative eigenvalue
+    psd_violation_mask = (eigenvalues[:, 0] < -1e-6)
 
-    # Sort eigenvalues descending
     eigenvalues = torch.flip(eigenvalues, dims=[1])
 
-    # Compute equilibrium score if requested
     if validate_equilibrium:
-        equilibrium_score = _compute_equilibrium_score(
-            positions, edge_index, metric_tensors, alive
-        )
+        equilibrium_score = _compute_equilibrium_score(positions, edge_index, metric_tensors, alive)
     else:
-        equilibrium_score = torch.ones(N, device=device)
+        equilibrium_score = torch.ones(N, device=device, dtype=positions.dtype)
 
     if psd_violation_mask.any():
         n_violations = psd_violation_mask.sum().item()
@@ -472,59 +565,47 @@ def estimate_hessian_from_metric(
     }
 
 
+def compute_emergent_metric(
+    positions: Tensor,
+    edge_index: Tensor,
+    alive: Tensor | None = None,
+) -> Tensor:
+    """Public wrapper for emergent metric computation."""
+    return _compute_emergent_metric(positions, edge_index, alive)
+
+
 def _compute_emergent_metric(
     positions: Tensor,
     edge_index: Tensor,
     alive: Tensor | None,
 ) -> Tensor:
-    """Compute emergent metric g from neighbor covariance.
-
-    Algorithm:
-        1. For each walker i, compute covariance of neighbor positions:
-           C_αβ = (1/k) Σ_{j∈N(i)} (x_j^α - x_i^α)(x_j^β - x_i^β)
-        2. Invert to get metric: g = C^(-1) + numerical_regularization
-        3. Return g
-
-    Returns:
-        [N, d, d] metric tensors
-    """
+    """Compute emergent metric g from neighbor covariance (vectorized)."""
     N, d = positions.shape
     device = positions.device
 
     src, dst = edge_index
 
-    # Compute neighbor covariances
-    covariances = torch.zeros(N, d, d, device=device)
-    neighbor_counts = torch.zeros(N, device=device)
-
-    # Accumulate displacements
     displacements = positions[dst] - positions[src]  # [E, d]
+    outer_products = displacements[:, :, None] * displacements[:, None, :]  # [E, d, d]
 
-    # Outer product: Δx ⊗ Δx
-    outer_products = displacements.unsqueeze(2) * displacements.unsqueeze(1)  # [E, d, d]
+    cov_flat = torch.zeros(N, d * d, device=device, dtype=positions.dtype)
+    cov_flat.scatter_add_(0, src[:, None].expand(-1, d * d), outer_products.reshape(-1, d * d))
+    covariances = cov_flat.view(N, d, d)
 
-    # Sum per source walker
-    for e in range(edge_index.shape[1]):
-        i = src[e].item()
-        covariances[i] += outer_products[e]
-        neighbor_counts[i] += 1
-
-    # Normalize by neighbor count
-    neighbor_counts = torch.clamp(neighbor_counts, min=1)  # Avoid division by zero
+    neighbor_counts = torch.bincount(src, minlength=N).to(positions.dtype)
+    neighbor_counts = torch.clamp(neighbor_counts, min=1.0)
     covariances = covariances / neighbor_counts.view(N, 1, 1)
 
-    # Invert covariance to get metric (with regularization for numerical stability)
-    epsilon_numerical = 1e-5  # Numerical stability regularization
-    identity = torch.eye(d, device=device).unsqueeze(0)
+    epsilon_numerical = 1e-5
+    identity = torch.eye(d, device=device, dtype=positions.dtype).unsqueeze(0)
+    covariances = covariances + epsilon_numerical * identity
 
-    metrics = torch.zeros(N, d, d, device=device)
-    for i in range(N):
-        C = covariances[i] + epsilon_numerical * identity.squeeze(0)
-        try:
-            metrics[i] = torch.linalg.inv(C)
-        except RuntimeError:
-            # Singular matrix - use pseudo-inverse
-            metrics[i] = torch.linalg.pinv(C)
+    metrics = torch.linalg.pinv(covariances)
+
+    if alive is not None:
+        metrics = torch.where(
+            alive.view(N, 1, 1), metrics, torch.full_like(metrics, float("nan"))
+        )
 
     return metrics
 
@@ -535,24 +616,19 @@ def _compute_equilibrium_score(
     metric_tensors: Tensor,
     alive: Tensor | None,
 ) -> Tensor:
-    """Compute equilibrium quality score based on metric-fitness correlation.
-
-    If walkers are in equilibrium (ρ ∝ e^(-βV)), the metric should correlate
-    with local fitness curvature. This provides a sanity check.
-
-    Returns:
-        [N] scores in [0, 1], where 1 = high confidence in equilibrium
-    """
+    """Compute equilibrium quality score based on metric isotropy."""
     N = positions.shape[0]
-    device = positions.device
 
-    # Simplified: check metric isotropy (should be more isotropic in equilibrium)
-    # Compute condition numbers of metric tensors
-    eigenvalues = torch.linalg.eigvalsh(metric_tensors)  # [N, d]
+    eigenvalues = torch.linalg.eigvalsh(metric_tensors)
 
-    # Isotropy score: 1 / condition_number
     condition_numbers = eigenvalues[:, -1] / (eigenvalues[:, 0] + 1e-10)
     isotropy_scores = 1.0 / (1.0 + condition_numbers)
 
-    # Simple score: higher isotropy = better equilibrium
+    if alive is not None:
+        isotropy_scores = torch.where(
+            alive,
+            isotropy_scores,
+            torch.full_like(isotropy_scores, float("nan")),
+        )
+
     return isotropy_scores

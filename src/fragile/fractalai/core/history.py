@@ -169,6 +169,18 @@ class RunHistory(BaseModel):
         default=None,
         description="Riemannian volume weights from Voronoi cells [n_recorded-1, N]",
     )
+    ricci_scalar_proxy: Tensor | None = Field(
+        default=None,
+        description="Ricci scalar proxy from scutoid data [n_recorded-1, N]",
+    )
+    geodesic_edge_distances: list[Tensor] | None = Field(
+        default=None,
+        description="Per-recorded-step geodesic edge distances aligned with neighbor_edges",
+    )
+    diffusion_tensors_full: Tensor | None = Field(
+        default=None,
+        description="Full anisotropic diffusion tensor from scutoid metric [n_recorded-1, N, d, d]",
+    )
 
     # ========================================================================
     # Neighbor Graph Data (Optional)

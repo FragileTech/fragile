@@ -14,6 +14,7 @@ from fragile.fractalai.scutoid.neighbors import (
     create_extended_edge_index,
     build_csr_from_coo,
     query_walker_neighbors,
+    query_walker_neighbors_vectorized,
 )
 from fragile.fractalai.scutoid.voronoi import compute_vectorized_voronoi
 from fragile.fractalai.bounds import TorchBounds
@@ -445,6 +446,56 @@ class TestCSRQueries:
         # Query boundary neighbors only
         neighbors = query_walker_neighbors(0, csr_ptr, csr_indices, csr_types, filter_type=1)
         assert torch.equal(neighbors, torch.tensor([3]))
+
+    def test_query_walker_neighbors_vectorized(self):
+        """Test vectorized neighbor query for all walkers."""
+        csr_ptr = torch.tensor([0, 2, 3, 3], dtype=torch.long)
+        csr_indices = torch.tensor([1, 2, 2], dtype=torch.long)
+
+        neighbors, mask, counts = query_walker_neighbors_vectorized(csr_ptr, csr_indices)
+
+        assert neighbors.shape == (3, 2)
+        assert torch.equal(neighbors[0], torch.tensor([1, 2]))
+        assert torch.equal(neighbors[1], torch.tensor([2, -1]))
+        assert torch.equal(neighbors[2], torch.tensor([-1, -1]))
+        assert torch.equal(
+            mask,
+            torch.tensor(
+                [[True, True], [True, False], [False, False]],
+                dtype=torch.bool,
+            ),
+        )
+        assert torch.equal(counts, torch.tensor([2, 1, 0]))
+
+    def test_query_walker_neighbors_vectorized_with_filter(self):
+        """Test vectorized neighbor query with type filtering."""
+        csr_ptr = torch.tensor([0, 3, 3], dtype=torch.long)
+        csr_indices = torch.tensor([1, 2, 3], dtype=torch.long)
+        csr_types = torch.tensor([0, 0, 1], dtype=torch.long)
+
+        neighbors, mask, counts = query_walker_neighbors_vectorized(
+            csr_ptr, csr_indices, csr_types, filter_type=0
+        )
+        assert neighbors.shape == (2, 2)
+        assert torch.equal(neighbors[0], torch.tensor([1, 2]))
+        assert torch.equal(neighbors[1], torch.tensor([-1, -1]))
+        assert torch.equal(
+            mask,
+            torch.tensor([[True, True], [False, False]], dtype=torch.bool),
+        )
+        assert torch.equal(counts, torch.tensor([2, 0]))
+
+        neighbors, mask, counts = query_walker_neighbors_vectorized(
+            csr_ptr, csr_indices, csr_types, filter_type=1
+        )
+        assert neighbors.shape == (2, 1)
+        assert torch.equal(neighbors[0], torch.tensor([3]))
+        assert torch.equal(neighbors[1], torch.tensor([-1]))
+        assert torch.equal(
+            mask,
+            torch.tensor([[True], [False]], dtype=torch.bool),
+        )
+        assert torch.equal(counts, torch.tensor([1, 0]))
 
 
 class TestVoronoiIntegration:

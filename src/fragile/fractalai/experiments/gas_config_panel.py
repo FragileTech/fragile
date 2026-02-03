@@ -62,6 +62,20 @@ class GasConfigPanel(param.Parameterized):
     benchmark_seed = param.Integer(default=42, bounds=(0, 9999), doc="Random seed (MoG)")
     n_atoms = param.Integer(default=10, bounds=(2, 30), doc="Number of atoms (Lennard-Jones)")
 
+    # Riemannian Mix parameters
+    riemannian_volume_weight = param.Number(
+        default=1.0,
+        bounds=(-10.0, 10.0),
+        softbounds=(-2.0, 2.0),
+        doc="Volume element weight for Riemannian Mix",
+    )
+    riemannian_ricci_weight = param.Number(
+        default=1.0,
+        bounds=(-10.0, 10.0),
+        softbounds=(-2.0, 2.0),
+        doc="Ricci scalar weight for Riemannian Mix",
+    )
+
     # Simulation controls
     n_steps = param.Integer(
         default=240, bounds=(10, 10000), softbounds=(50, 1000), doc="Simulation steps"
@@ -144,7 +158,8 @@ class GasConfigPanel(param.Parameterized):
         # Watch for benchmark parameter changes
         self.param.watch(
             self._on_benchmark_change,
-            ["benchmark_name", "n_gaussians", "benchmark_seed", "n_atoms"],
+            ["benchmark_name", "n_gaussians", "benchmark_seed", "n_atoms",
+             "riemannian_volume_weight", "riemannian_ricci_weight"],
         )
 
         # Watch for spatial_dims changes to update dims
@@ -185,6 +200,20 @@ class GasConfigPanel(param.Parameterized):
             ),
             "init_velocity_scale": pnw.EditableIntSlider(
                 name="init_velocity_scale", start=0, end=50, value=int(self.init_velocity_scale), step=1
+            ),
+            "riemannian_volume_weight": pnw.EditableFloatSlider(
+                name="Volume Weight",
+                start=-10.0,
+                end=10.0,
+                value=self.riemannian_volume_weight,
+                step=0.1,
+            ),
+            "riemannian_ricci_weight": pnw.EditableFloatSlider(
+                name="Ricci Weight",
+                start=-10.0,
+                end=10.0,
+                value=self.riemannian_ricci_weight,
+                step=0.1,
             ),
         }
         self._widget_links: set[str] = set()
@@ -239,8 +268,7 @@ class GasConfigPanel(param.Parameterized):
 
         # Benchmark
         config.bounds_extent = bounds_extent
-        config.benchmark_name = "Voronoi Cell Volume"
-        config._apply_voronoi_volume_preset()
+        config.benchmark_name = "Voronoi Ricci Scalar"
 
         # Simulation
         config.n_steps = 5000
@@ -263,12 +291,13 @@ class GasConfigPanel(param.Parameterized):
         config.kinetic_op.epsilon_F = 38.6373
         config.kinetic_op.use_fitness_force = False
         config.kinetic_op.use_potential_force = False
-        config.kinetic_op.use_anisotropic_diffusion = False
+        config.kinetic_op.use_anisotropic_diffusion = True
         config.kinetic_op.diagonal_diffusion = False
         config.kinetic_op.nu = 1.10
         config.kinetic_op.use_viscous_coupling = True
         config.kinetic_op.viscous_length_scale = 0.251372
-        config.kinetic_op.viscous_neighbor_mode = "all"
+        config.kinetic_op.viscous_neighbor_mode = "nearest"
+        config.kinetic_op.viscous_neighbor_weighting = "geodesic"
         config.kinetic_op.viscous_neighbor_threshold = 0.75
         config.kinetic_op.viscous_neighbor_penalty = 1.1
 
@@ -373,11 +402,13 @@ class GasConfigPanel(param.Parameterized):
             use_fitness_force=False,
             use_potential_force=False,
             epsilon_Sigma=0.1,
-            use_anisotropic_diffusion=False,
+            use_anisotropic_diffusion=True,
             diagonal_diffusion=False,
-            nu=0.0,
-            use_viscous_coupling=False,
+            nu=0.1,
+            use_viscous_coupling=True,
             viscous_length_scale=1.0,
+            viscous_neighbor_mode="nearest",
+            viscous_neighbor_weighting="geodesic",
             viscous_neighbor_penalty=1.1,
             V_alg=10.0,
             use_velocity_squashing=False,
@@ -440,6 +471,9 @@ class GasConfigPanel(param.Parameterized):
             benchmark_kwargs["seed"] = self.benchmark_seed
         elif self.benchmark_name == "Lennard-Jones":
             benchmark_kwargs["n_atoms"] = self.n_atoms
+        elif self.benchmark_name == "Riemannian Mix":
+            benchmark_kwargs["volume_weight"] = self.riemannian_volume_weight
+            benchmark_kwargs["ricci_weight"] = self.riemannian_ricci_weight
 
         # Create benchmark with background and mode_points
         benchmark, background, mode_points = prepare_benchmark_for_explorer(
@@ -460,6 +494,8 @@ class GasConfigPanel(param.Parameterized):
         self._update_benchmark()
         if self.benchmark_name == "Voronoi Cell Volume":
             self._apply_voronoi_volume_preset()
+        elif self.benchmark_name == "Riemannian Mix":
+            self._apply_riemannian_mix_preset()
         else:
             self.status_pane.object = f"**Benchmark updated:** {self.benchmark_name}"
 
@@ -508,6 +544,18 @@ class GasConfigPanel(param.Parameterized):
         self.status_pane.object = (
             "**Applied Voronoi cell volume preset (record every step, "
             "use Voronoi neighbors for viscous coupling).**"
+        )
+
+    def _apply_riemannian_mix_preset(self) -> None:
+        """Apply Riemannian Mix benchmark preset settings."""
+        self.neighbor_graph_method = "delaunay"
+        self.neighbor_graph_update_every = 1
+        self.neighbor_graph_record = True
+        self.record_every = 1
+        self.kinetic_op.use_viscous_coupling = True
+        self.status_pane.object = (
+            "**Applied Riemannian Mix preset (Delaunay neighbors, "
+            "record every step).**"
         )
 
     def _format_eta(self, seconds: float | None) -> str:
@@ -752,6 +800,8 @@ class GasConfigPanel(param.Parameterized):
                 return self._build_param_panel(["n_gaussians", "benchmark_seed"])
             if benchmark_name == "Lennard-Jones":
                 return self._build_param_panel(["n_atoms"])
+            if benchmark_name == "Riemannian Mix":
+                return self._build_param_panel(["riemannian_volume_weight", "riemannian_ricci_weight"])
             return pn.pane.Markdown("*No additional parameters*", sizing_mode="stretch_width")
 
         benchmark_specific = pn.bind(get_benchmark_specific_params, self.param.benchmark_name)

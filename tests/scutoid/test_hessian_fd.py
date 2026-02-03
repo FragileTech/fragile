@@ -7,6 +7,7 @@ from fragile.fractalai.scutoid import (
     estimate_hessian_full_fd,
     estimate_gradient_finite_difference,
 )
+from fragile.fractalai.scutoid.neighbors import build_csr_from_coo
 
 
 @pytest.fixture
@@ -61,6 +62,34 @@ def test_hessian_diagonal_quadratic(quadratic_2d_setup):
     assert relative_error < 0.1, f"Diagonal Hessian error too large: {relative_error:.2e}"
 
 
+def test_hessian_diagonal_csr_matches_coo(quadratic_2d_setup):
+    """CSR-based diagonal Hessian should match COO results."""
+    positions = quadratic_2d_setup["positions"]
+    fitness = quadratic_2d_setup["fitness"]
+    edge_index = quadratic_2d_setup["edge_index"]
+
+    csr_data = build_csr_from_coo(edge_index, positions.shape[0])
+
+    result_coo = estimate_hessian_diagonal_fd(positions, fitness, edge_index)
+    result_csr = estimate_hessian_diagonal_fd(
+        positions,
+        fitness,
+        edge_index=None,
+        csr_ptr=csr_data["csr_ptr"],
+        csr_indices=csr_data["csr_indices"],
+    )
+
+    assert torch.equal(result_coo["valid_mask"], result_csr["valid_mask"])
+    valid_mask = result_coo["valid_mask"]
+    if valid_mask.any():
+        assert torch.allclose(
+            result_coo["hessian_diagonal"][valid_mask],
+            result_csr["hessian_diagonal"][valid_mask],
+            atol=1e-5,
+            rtol=1e-4,
+        )
+
+
 def test_hessian_full_quadratic_central(quadratic_2d_setup):
     """Test full Hessian with central difference method."""
     # First estimate gradient
@@ -96,6 +125,47 @@ def test_hessian_full_quadratic_central(quadratic_2d_setup):
         assert relative_error < 0.15, f"Full Hessian diagonal error: {relative_error:.2e}"
 
 
+def test_hessian_full_central_csr_matches_coo(quadratic_2d_setup):
+    """CSR-based central Hessian should match COO results (diagonal)."""
+    positions = quadratic_2d_setup["positions"]
+    fitness = quadratic_2d_setup["fitness"]
+    edge_index = quadratic_2d_setup["edge_index"]
+
+    csr_data = build_csr_from_coo(edge_index, positions.shape[0])
+
+    grad_result = estimate_gradient_finite_difference(positions, fitness, edge_index)
+    result_coo = estimate_hessian_full_fd(
+        positions,
+        fitness,
+        grad_result["gradient"],
+        edge_index,
+        method="central",
+        symmetrize=True,
+    )
+    result_csr = estimate_hessian_full_fd(
+        positions,
+        fitness,
+        grad_result["gradient"],
+        edge_index=None,
+        method="central",
+        symmetrize=True,
+        csr_ptr=csr_data["csr_ptr"],
+        csr_indices=csr_data["csr_indices"],
+    )
+
+    diag_coo = torch.diagonal(result_coo["hessian_tensors"], dim1=1, dim2=2)
+    diag_csr = torch.diagonal(result_csr["hessian_tensors"], dim1=1, dim2=2)
+    valid_mask = torch.isfinite(diag_coo).all(dim=1) & torch.isfinite(diag_csr).all(dim=1)
+
+    if valid_mask.any():
+        assert torch.allclose(
+            diag_coo[valid_mask],
+            diag_csr[valid_mask],
+            atol=1e-5,
+            rtol=1e-4,
+        )
+
+
 def test_hessian_full_quadratic_gradient_fd(quadratic_2d_setup):
     """Test full Hessian with gradient finite difference method."""
     # Estimate gradient first
@@ -129,6 +199,46 @@ def test_hessian_full_quadratic_gradient_fd(quadratic_2d_setup):
         relative_error = error.mean() / eig_true[valid_mask].abs().mean()
 
         assert relative_error < 0.2, f"Eigenvalue error: {relative_error:.2e}"
+
+
+def test_hessian_full_gradient_fd_csr_matches_coo(quadratic_2d_setup):
+    """CSR-based gradient-FD Hessian should match COO results."""
+    positions = quadratic_2d_setup["positions"]
+    fitness = quadratic_2d_setup["fitness"]
+    edge_index = quadratic_2d_setup["edge_index"]
+
+    csr_data = build_csr_from_coo(edge_index, positions.shape[0])
+
+    grad_result = estimate_gradient_finite_difference(positions, fitness, edge_index)
+    result_coo = estimate_hessian_full_fd(
+        positions,
+        fitness,
+        grad_result["gradient"],
+        edge_index,
+        method="gradient_fd",
+        symmetrize=True,
+    )
+    result_csr = estimate_hessian_full_fd(
+        positions,
+        fitness,
+        grad_result["gradient"],
+        edge_index=None,
+        method="gradient_fd",
+        symmetrize=True,
+        csr_ptr=csr_data["csr_ptr"],
+        csr_indices=csr_data["csr_indices"],
+    )
+
+    valid_mask = torch.isfinite(result_coo["hessian_tensors"]).all(dim=(1, 2)) & torch.isfinite(
+        result_csr["hessian_tensors"]
+    ).all(dim=(1, 2))
+    if valid_mask.any():
+        assert torch.allclose(
+            result_coo["hessian_tensors"][valid_mask],
+            result_csr["hessian_tensors"][valid_mask],
+            atol=1e-5,
+            rtol=1e-4,
+        )
 
 
 def test_hessian_symmetry(quadratic_2d_setup):

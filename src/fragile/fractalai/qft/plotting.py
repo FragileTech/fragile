@@ -7,12 +7,17 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import holoviews as hv
 import numpy as np
 import plotly.graph_objects as go
 import torch
+
+if TYPE_CHECKING:
+    import panel as pn
+
+    from fragile.fractalai.qft.correlator_channels import ChannelCorrelatorResult
 
 
 hv.extension("bokeh")
@@ -803,6 +808,279 @@ def build_effective_mass_plateau_plot(
     )
 
     return left_panel, right_panel
+
+
+class ChannelPlot:
+    """Generates side-by-side correlator and effective mass plots for a channel.
+
+    Takes a ChannelCorrelatorResult and produces a two-panel visualization:
+    - Left: Correlator C(t) with exponential fit
+    - Right: Effective mass m_eff(t) with fitted mass plateau
+
+    Both panels include error bars when uncertainty data is available.
+    """
+
+    def __init__(
+        self,
+        result: "ChannelCorrelatorResult",
+        logy: bool = True,
+        width: int = 400,
+        height: int = 350,
+    ):
+        """Initialize ChannelPlot.
+
+        Args:
+            result: ChannelCorrelatorResult from channel computation.
+            logy: Use logarithmic y-axis for correlator plot.
+            width: Width of each panel in pixels.
+            height: Height of each panel in pixels.
+        """
+        self.result = result
+        self.logy = logy
+        self.width = width
+        self.height = height
+        self._color = CHANNEL_COLORS.get(result.channel_name, "#1f77b4")
+
+    def correlator_plot(self) -> hv.Overlay | None:
+        """Build correlator C(t) plot with error bars and exponential fit.
+
+        Returns:
+            HoloViews Overlay with scatter, error bars, and fit curve,
+            or None if insufficient data.
+        """
+        correlator = self.result.correlator
+        if hasattr(correlator, "cpu"):
+            correlator = correlator.cpu().numpy()
+        else:
+            correlator = np.asarray(correlator)
+
+        mask = (correlator > 0) & np.isfinite(correlator)
+        if mask.sum() < 2:
+            return None
+
+        dt = self.result.dt
+        t_all = np.arange(len(correlator)) * dt
+        t_plot = t_all[mask]
+        c_plot = correlator[mask]
+
+        # Scatter points
+        scatter = hv.Scatter(
+            (t_plot, c_plot), "t", "C(t)"
+        ).opts(
+            color=self._color,
+            size=6,
+            alpha=0.8,
+        ).relabel(f"{self.result.channel_name} C(t)")
+
+        overlays = scatter
+
+        # Add error bars if available
+        if self.result.correlator_err is not None:
+            corr_err = self.result.correlator_err
+            if hasattr(corr_err, "cpu"):
+                corr_err = corr_err.cpu().numpy()
+            else:
+                corr_err = np.asarray(corr_err)
+
+            err_plot = corr_err[mask]
+            # Filter out zero/invalid errors
+            valid_err = (err_plot > 0) & np.isfinite(err_plot)
+            if valid_err.any():
+                errorbars = hv.ErrorBars(
+                    (t_plot[valid_err], c_plot[valid_err], err_plot[valid_err]),
+                    kdims=["t"],
+                    vdims=["C(t)", "yerr"],
+                ).opts(
+                    color=self._color,
+                    line_width=1.5,
+                )
+                overlays = overlays * errorbars
+
+        # Add exponential fit curve
+        mass_fit = self.result.mass_fit
+        mass = mass_fit.get("mass", 0.0)
+        best_window = mass_fit.get("best_window", {})
+        t_start = best_window.get("t_start", 0)
+        dt_scale = dt if dt > 0 else 1.0
+        mass_scaled = mass / dt_scale if mass > 0 and dt_scale > 0 else 0.0
+
+        if mass_scaled > 0:
+            t_line = np.linspace(float(t_plot.min()), float(t_plot.max()), 200)
+            t_anchor = t_start * dt_scale
+            anchor_idx = np.argmin(np.abs(t_plot - t_anchor))
+            c_anchor = c_plot[anchor_idx] if anchor_idx < len(c_plot) else c_plot[0]
+
+            if c_anchor > 0:
+                c_line = c_anchor * np.exp(-mass_scaled * (t_line - t_anchor))
+                curve = hv.Curve(
+                    (t_line, c_line), "t", "C(t)"
+                ).opts(
+                    color=self._color,
+                    line_dash="dashed",
+                    line_width=2,
+                ).relabel(f"fit m={mass_scaled:.4f}")
+                overlays = overlays * curve
+
+        return overlays.opts(
+            logy=self.logy,
+            xlabel="t (time lag)",
+            ylabel="C(t)",
+            title=f"{self.result.channel_name.replace('_', ' ').title()} Correlator",
+            width=self.width,
+            height=self.height,
+            show_legend=True,
+        )
+
+    def effective_mass_plot(self) -> hv.Overlay | None:
+        """Build effective mass m_eff(t) plot with error bars and plateau line.
+
+        Returns:
+            HoloViews Overlay with scatter, error bars, and fitted mass line,
+            or None if insufficient data.
+        """
+        effective_mass = self.result.effective_mass
+        if hasattr(effective_mass, "cpu"):
+            effective_mass = effective_mass.cpu().numpy()
+        else:
+            effective_mass = np.asarray(effective_mass)
+
+        mask = np.isfinite(effective_mass) & (effective_mass > 0)
+        if mask.sum() < 2:
+            return None
+
+        dt = self.result.dt
+        t_all = np.arange(len(effective_mass)) * dt
+        t_plot = t_all[mask]
+        m_plot = effective_mass[mask]
+
+        # Scatter points
+        scatter = hv.Scatter(
+            (t_plot, m_plot), "t", "m_eff(t)"
+        ).opts(
+            color=self._color,
+            size=6,
+            alpha=0.8,
+        ).relabel(f"{self.result.channel_name} m_eff")
+
+        overlays = scatter
+
+        # Compute effective mass errors from correlator errors if available
+        if self.result.correlator_err is not None:
+            corr = self.result.correlator
+            corr_err = self.result.correlator_err
+            if hasattr(corr, "cpu"):
+                corr = corr.cpu().numpy()
+            else:
+                corr = np.asarray(corr)
+            if hasattr(corr_err, "cpu"):
+                corr_err = corr_err.cpu().numpy()
+            else:
+                corr_err = np.asarray(corr_err)
+
+            # Error propagation: m_eff = log(C(t)/C(t+1)) / dt
+            # δm_eff = sqrt((δC(t)/C(t))² + (δC(t+1)/C(t+1))²) / dt
+            c0 = corr[:-1]
+            c1 = corr[1:]
+            e0 = corr_err[:-1]
+            e1 = corr_err[1:]
+
+            with np.errstate(divide="ignore", invalid="ignore"):
+                rel_err_0 = np.where(c0 > 0, e0 / c0, 0.0)
+                rel_err_1 = np.where(c1 > 0, e1 / c1, 0.0)
+                meff_err = np.sqrt(rel_err_0**2 + rel_err_1**2) / dt
+
+            meff_err_plot = meff_err[mask]
+            valid_err = (meff_err_plot > 0) & np.isfinite(meff_err_plot)
+            if valid_err.any():
+                errorbars = hv.ErrorBars(
+                    (t_plot[valid_err], m_plot[valid_err], meff_err_plot[valid_err]),
+                    kdims=["t"],
+                    vdims=["m_eff(t)", "yerr"],
+                ).opts(
+                    color=self._color,
+                    line_width=1.5,
+                )
+                overlays = overlays * errorbars
+
+        # Add fitted mass line and error band
+        mass_fit = self.result.mass_fit
+        mass = mass_fit.get("mass", 0.0)
+        mass_error = mass_fit.get("mass_error", 0.0)
+        best_window = mass_fit.get("best_window", {})
+        width = best_window.get("width", 0)
+        t_start = best_window.get("t_start", 0)
+        dt_scale = dt if dt > 0 else 1.0
+
+        # Add best window shading
+        if width > 0 and t_start >= 0:
+            t_window_start = t_start * dt_scale
+            t_window_end = (t_start + width - 1) * dt_scale
+            window_shade = hv.VSpan(t_window_start, t_window_end).opts(
+                color="green",
+                alpha=0.15,
+            )
+            overlays = window_shade * overlays
+
+        if mass > 0:
+            t_line = np.array([float(t_plot.min()), float(t_plot.max())])
+            m_line = np.array([mass, mass])
+            curve = hv.Curve(
+                (t_line, m_line), "t", "m_eff(t)"
+            ).opts(
+                color="red",
+                line_dash="dashed",
+                line_width=2,
+            ).relabel(f"M={mass:.4f}±{mass_error:.4f}")
+            overlays = overlays * curve
+
+            # Error band
+            if mass_error > 0 and mass_error < mass:
+                band = hv.Area(
+                    (t_line, [mass - mass_error, mass - mass_error],
+                     [mass + mass_error, mass + mass_error]),
+                    kdims=["t"],
+                    vdims=["lower", "upper"],
+                ).opts(
+                    color="red",
+                    alpha=0.15,
+                )
+                overlays = band * overlays
+
+        return overlays.opts(
+            xlabel="t (time lag)",
+            ylabel="m_eff(t)",
+            title=f"{self.result.channel_name.replace('_', ' ').title()} Effective Mass",
+            width=self.width,
+            height=self.height,
+            show_legend=True,
+        )
+
+    def side_by_side(self) -> "pn.Row | None":
+        """Return both plots in a side-by-side Panel Row layout.
+
+        Returns:
+            Panel Row with correlator (left) and effective mass (right) plots,
+            or None if both plots are empty.
+        """
+        import panel as pn
+
+        left = self.correlator_plot()
+        right = self.effective_mass_plot()
+
+        if left is None and right is None:
+            return None
+
+        panels = []
+        if left is not None:
+            panels.append(
+                pn.pane.HoloViews(left, sizing_mode="stretch_width", linked_axes=False)
+            )
+        if right is not None:
+            panels.append(
+                pn.pane.HoloViews(right, sizing_mode="stretch_width", linked_axes=False)
+            )
+
+        return pn.Row(*panels, sizing_mode="stretch_width")
 
 
 def build_all_channels_overlay(

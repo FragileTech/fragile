@@ -723,3 +723,108 @@ def query_walker_neighbors(
         neighbors = neighbors[mask]
 
     return neighbors
+
+
+def query_walker_neighbors_vectorized(
+    csr_ptr: Tensor,
+    csr_indices: Tensor,
+    csr_types: Tensor | None = None,
+    filter_type: int | None = None,
+    pad_value: int = -1,
+) -> tuple[Tensor, Tensor, Tensor]:
+    """Vectorized neighbor query for all walkers using CSR format.
+
+    Args:
+        csr_ptr: [N+1] CSR row pointers
+        csr_indices: [E] CSR column indices
+        csr_types: Optional [E] edge types (0=walker, 1=boundary)
+        filter_type: If provided, return only neighbors of this type
+            0 = walker neighbors only
+            1 = boundary neighbors only
+            None = all neighbors
+        pad_value: Value used to pad neighbor rows to uniform length
+
+    Returns:
+        Tuple of:
+        - neighbors: [N, max_degree] padded neighbor indices
+        - mask: [N, max_degree] boolean mask for valid neighbors
+        - counts: [N] number of neighbors per walker (after filtering)
+    """
+    device = csr_indices.device
+    n_nodes = int(csr_ptr.numel() - 1)
+    if n_nodes <= 0:
+        empty = torch.empty(0, 0, dtype=csr_indices.dtype, device=device)
+        return empty, empty.bool(), torch.empty(0, dtype=torch.long, device=device)
+
+    counts = csr_ptr[1:] - csr_ptr[:-1]
+    n_edges = int(csr_indices.numel())
+
+    if n_edges == 0:
+        neighbors = torch.empty(n_nodes, 0, dtype=csr_indices.dtype, device=device)
+        mask = torch.empty(n_nodes, 0, dtype=torch.bool, device=device)
+        return neighbors, mask, torch.zeros(n_nodes, dtype=torch.long, device=device)
+
+    apply_filter = filter_type is not None and csr_types is not None
+    row_indices = torch.repeat_interleave(torch.arange(n_nodes, device=device), counts)
+
+    if apply_filter:
+        edge_mask = csr_types == filter_type
+        if not torch.any(edge_mask):
+            neighbors = torch.empty(n_nodes, 0, dtype=csr_indices.dtype, device=device)
+            mask = torch.empty(n_nodes, 0, dtype=torch.bool, device=device)
+            return neighbors, mask, torch.zeros(n_nodes, dtype=torch.long, device=device)
+
+        filtered_row_indices = row_indices[edge_mask]
+        filtered_neighbors = csr_indices[edge_mask]
+
+        edge_mask_int = edge_mask.to(torch.long)
+        cum = torch.cumsum(edge_mask_int, dim=0)
+        row_start = csr_ptr[:-1]
+        row_base = torch.zeros(n_nodes, dtype=cum.dtype, device=device)
+        if n_nodes > 1:
+            start_indices = row_start[1:]
+            safe_indices = torch.clamp(start_indices - 1, min=0)
+            row_base[1:] = torch.where(
+                start_indices > 0,
+                cum[safe_indices],
+                torch.zeros_like(start_indices),
+            )
+
+        pos_in_row = cum - row_base[row_indices]
+        filtered_pos = pos_in_row[edge_mask] - 1
+
+        counts_filtered = torch.bincount(filtered_row_indices, minlength=n_nodes)
+        max_degree = int(counts_filtered.max().item()) if counts_filtered.numel() > 0 else 0
+        if max_degree == 0:
+            neighbors = torch.empty(n_nodes, 0, dtype=csr_indices.dtype, device=device)
+            mask = torch.empty(n_nodes, 0, dtype=torch.bool, device=device)
+            return neighbors, mask, counts_filtered
+
+        neighbors = torch.full(
+            (n_nodes, max_degree),
+            pad_value,
+            dtype=csr_indices.dtype,
+            device=device,
+        )
+        mask = torch.zeros((n_nodes, max_degree), dtype=torch.bool, device=device)
+        neighbors[filtered_row_indices, filtered_pos] = filtered_neighbors
+        mask[filtered_row_indices, filtered_pos] = True
+        return neighbors, mask, counts_filtered
+
+    max_degree = int(counts.max().item()) if counts.numel() > 0 else 0
+    if max_degree == 0:
+        neighbors = torch.empty(n_nodes, 0, dtype=csr_indices.dtype, device=device)
+        mask = torch.empty(n_nodes, 0, dtype=torch.bool, device=device)
+        return neighbors, mask, counts
+
+    edge_pos = torch.arange(n_edges, device=device) - csr_ptr[row_indices]
+    neighbors = torch.full(
+        (n_nodes, max_degree),
+        pad_value,
+        dtype=csr_indices.dtype,
+        device=device,
+    )
+    mask = torch.zeros((n_nodes, max_degree), dtype=torch.bool, device=device)
+    neighbors[row_indices, edge_pos] = csr_indices
+    mask[row_indices, edge_pos] = True
+    return neighbors, mask, counts

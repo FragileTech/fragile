@@ -69,6 +69,10 @@ class RadialChannelConfig:
     drop_axis_average: bool = True
     drop_axes: list[int] | None = None
 
+    # Bootstrap error estimation
+    compute_bootstrap_errors: bool = False
+    n_bootstrap: int = 100
+
 
 @dataclass
 class RadialChannelOutput:
@@ -616,16 +620,22 @@ def _build_channel_result(
     config: RadialChannelConfig,
     channel_name: str,
     n_samples: int,
+    correlator_err: np.ndarray | None = None,
 ) -> ChannelCorrelatorResult:
     corr_tensor = torch.as_tensor(correlator, dtype=torch.float32)
     effective_mass = compute_effective_mass_torch(corr_tensor, dt)
     mass_fit, window_masses, window_aic, window_widths, window_r2 = _compute_mass_fit(
         corr_tensor, config
     )
+    err_tensor = (
+        torch.as_tensor(correlator_err, dtype=torch.float32)
+        if correlator_err is not None
+        else None
+    )
     return ChannelCorrelatorResult(
         channel_name=channel_name,
         correlator=corr_tensor,
-        correlator_err=None,
+        correlator_err=err_tensor,
         effective_mass=effective_mass,
         mass_fit=mass_fit,
         series=corr_tensor,
@@ -828,6 +838,71 @@ def _power_correct(corr: np.ndarray, bin_centers: np.ndarray, power: float) -> n
     return corrected * scale
 
 
+def _bootstrap_radial_correlator_error(
+    operators: np.ndarray,
+    pair_i: np.ndarray,
+    pair_j: np.ndarray,
+    distances: np.ndarray,
+    bin_edges: np.ndarray,
+    weights: np.ndarray | None,
+    n_bootstrap: int,
+    power: float = 0.0,
+    bin_centers: np.ndarray | None = None,
+) -> np.ndarray:
+    """Compute bootstrap error estimates for radial correlator.
+
+    Resamples pairs with replacement, computes correlators for each bootstrap
+    sample, then computes standard deviation.
+
+    Args:
+        operators: Operator values for each particle
+        pair_i: First particle index of each pair
+        pair_j: Second particle index of each pair
+        distances: Distance for each pair
+        bin_edges: Bin edges for histogram
+        weights: Optional weights for each pair
+        n_bootstrap: Number of bootstrap resamples
+        power: Power correction exponent
+        bin_centers: Bin centers for power correction
+
+    Returns:
+        Bootstrap std deviation [n_bins]
+    """
+    n_pairs = len(pair_i)
+    if n_pairs == 0:
+        n_bins = len(bin_edges) - 1
+        return np.zeros(n_bins, dtype=float)
+
+    bootstrap_corrs = []
+    rng = np.random.default_rng()
+
+    for _ in range(n_bootstrap):
+        # Resample pairs with replacement
+        indices = rng.integers(0, n_pairs, size=n_pairs)
+        boot_pair_i = pair_i[indices]
+        boot_pair_j = pair_j[indices]
+        boot_distances = distances[indices]
+        boot_weights = weights[indices] if weights is not None else None
+
+        corr, _, _ = _compute_radial_correlator(
+            operators,
+            boot_pair_i,
+            boot_pair_j,
+            boot_distances,
+            bin_edges,
+            weights=boot_weights,
+        )
+
+        # Apply power correction if needed
+        if power > 0 and bin_centers is not None:
+            corr = _power_correct(corr, bin_centers, power)
+
+        bootstrap_corrs.append(corr)
+
+    stacked = np.stack(bootstrap_corrs)  # [n_bootstrap, n_bins]
+    return np.std(stacked, axis=0)
+
+
 # -----------------------------------------------------------------------------
 # Core computation
 # -----------------------------------------------------------------------------
@@ -914,6 +989,22 @@ def _compute_radial_output(
             else:
                 power = 0.5 * (positions.shape[1] - 1)
         corr_fit = _power_correct(corr, bin_centers, power)
+
+        # Compute bootstrap errors if enabled
+        correlator_err = None
+        if config.compute_bootstrap_errors:
+            correlator_err = _bootstrap_radial_correlator_error(
+                operators_np[channel],
+                pair_i,
+                pair_j,
+                distances,
+                bin_edges,
+                weights,
+                n_bootstrap=config.n_bootstrap,
+                power=power,
+                bin_centers=bin_centers,
+            )
+
         dt = float(bin_edges[1] - bin_edges[0]) if len(bin_edges) > 1 else 1.0
         results[channel] = _build_channel_result(
             corr_fit,
@@ -921,6 +1012,7 @@ def _compute_radial_output(
             config,
             channel,
             n_samples=int(np.sum(counts)),
+            correlator_err=correlator_err,
         )
 
     return RadialChannelOutput(

@@ -273,6 +273,10 @@ class EuclideanGas(PanelModel):
         if self.companion_selection_clone is None:
             self.companion_selection_clone = self.companion_selection
 
+        # Cached scutoid values from previous step for cloning
+        self._cached_ricci_scalar: Tensor | None = None
+        self._cached_riemannian_volume: Tensor | None = None
+
     @property
     def torch_dtype(self) -> torch.dtype:
         """Convert dtype string to torch dtype."""
@@ -553,12 +557,28 @@ class EuclideanGas(PanelModel):
                 bounds=self.bounds,
                 pbc=self.pbc,
             )
-            x_cloned, v_cloned, _other_cloned, clone_info = self.cloning(
+            # Prepare cached values to be cloned from companion
+            clone_tensor_kwargs = {"fitness_cloned": fitness}
+            if self._cached_ricci_scalar is not None:
+                clone_tensor_kwargs["ricci_scalar"] = self._cached_ricci_scalar
+            else:
+                clone_tensor_kwargs["ricci_scalar"] = torch.zeros(
+                    state.N, device=self.device, dtype=self.torch_dtype
+                )
+            if self._cached_riemannian_volume is not None:
+                clone_tensor_kwargs["riemannian_volume"] = self._cached_riemannian_volume
+            else:
+                clone_tensor_kwargs["riemannian_volume"] = torch.ones(
+                    state.N, device=self.device, dtype=self.torch_dtype
+                )
+
+            x_cloned, v_cloned, other_cloned, clone_info = self.cloning(
                 positions=state.x,
                 velocities=state.v,
                 fitness=fitness,
                 companions=companions_clone,
                 alive=alive_mask,
+                **clone_tensor_kwargs,
             )
             step_idx = getattr(self, "_current_step", None)
             clone_every = max(1, int(self.clone_every))
@@ -586,6 +606,8 @@ class EuclideanGas(PanelModel):
                 "clone_delta_v": torch.zeros_like(state.v),
                 "cloning_applied": False,
             }
+            # No cloning happened, so no cloned tensors
+            other_cloned = {}
 
         neighbor_info = None
         neighbor_edges = None
@@ -603,8 +625,68 @@ class EuclideanGas(PanelModel):
         hess_fitness = None
         is_diagonal_hessian = False
         voronoi_data = None
+        scutoid_data = None
+        scutoid_edges = None
+        scutoid_edge_weights = None
+        scutoid_edge_geodesic = None
+        scutoid_volume_full = None
+        scutoid_ricci_full = None
+        scutoid_diffusion_full = None
 
         if self.fitness_op is not None and self.enable_kinetic:
+            needs_scutoid = (
+                self.neighbor_graph_method != "none"
+                or self.neighbor_graph_record
+                or self.kinetic_op.use_viscous_coupling
+                or self.kinetic_op.use_anisotropic_diffusion
+                or bool(getattr(self.kinetic_op, "compute_volume_weights", False))
+            )
+            if needs_scutoid:
+                try:
+                    from fragile.fractalai.scutoid.delaunai import compute_delaunay_scutoid
+
+                    spatial_dims = self.d - 1 if self.d >= 3 else None
+                    scutoid_data = compute_delaunay_scutoid(
+                        positions=state_cloned.x,
+                        fitness_values=fitness,
+                        alive=alive_mask,
+                        spatial_dims=spatial_dims,
+                    )
+                    scutoid_edges = scutoid_data.edge_index_full.t().contiguous()
+                    scutoid_edge_geodesic = scutoid_data.edge_geodesic_distances
+                    scutoid_edge_weights = scutoid_data.edge_weights.get(
+                        "inverse_riemannian_distance"
+                    )
+
+                    scutoid_volume_full = torch.zeros(
+                        state.N, device=self.device, dtype=state_cloned.x.dtype
+                    )
+                    scutoid_ricci_full = torch.zeros_like(scutoid_volume_full)
+                    scutoid_diffusion_full = (
+                        torch.eye(state.d, device=self.device, dtype=state_cloned.x.dtype)
+                        .unsqueeze(0)
+                        .expand(state.N, state.d, state.d)
+                        .clone()
+                    )
+                    alive_idx = scutoid_data.alive_indices
+                    scutoid_volume_full[alive_idx] = scutoid_data.riemannian_volume_weights
+                    scutoid_ricci_full[alive_idx] = scutoid_data.ricci_proxy
+                    diffusion_alive = scutoid_data.diffusion_tensors
+                    if diffusion_alive.shape[-1] == state.d:
+                        scutoid_diffusion_full[alive_idx] = diffusion_alive
+                    else:
+                        spatial_dims = diffusion_alive.shape[-1]
+                        scutoid_diffusion_full[alive_idx, :spatial_dims, :spatial_dims] = (
+                            diffusion_alive
+                        )
+                except Exception as exc:
+                    import warnings
+
+                    warnings.warn(
+                        f"Delaunay scutoid computation failed: {exc}",
+                        RuntimeWarning,
+                    )
+
             # Compute fitness gradient if needed for adaptive force or diffusion proxy
             needs_grad = self.kinetic_op.use_fitness_force or (
                 self.kinetic_op.use_anisotropic_diffusion
@@ -671,6 +753,9 @@ class EuclideanGas(PanelModel):
                     )
                     voronoi_data = None
 
+            if scutoid_edges is not None:
+                neighbor_edges = scutoid_edges
+
             # Step 6: Kinetic update with optional fitness derivatives (if enabled)
             n_kinetic_steps = max(1, int(getattr(self.kinetic_op, "n_kinetic_steps", 1)))
             state_final = state_cloned
@@ -682,6 +767,9 @@ class EuclideanGas(PanelModel):
                     hess_fitness,
                     neighbor_edges=neighbor_edges,
                     voronoi_data=voronoi_data,
+                    edge_weights=scutoid_edge_weights,
+                    volume_weights=scutoid_volume_full,
+                    diffusion_tensors=scutoid_diffusion_full,
                     return_info=True,
                 )
                 if self.pbc and self.bounds is not None:
@@ -702,6 +790,19 @@ class EuclideanGas(PanelModel):
                 "sigma_reg_full": None,
                 "riemannian_volume_weights": None,
             }
+
+        if scutoid_volume_full is not None:
+            kinetic_info["riemannian_volume_weights"] = scutoid_volume_full
+        if scutoid_ricci_full is not None:
+            kinetic_info["ricci_scalar_proxy"] = scutoid_ricci_full
+        if scutoid_diffusion_full is not None:
+            kinetic_info["diffusion_tensors_full"] = scutoid_diffusion_full
+
+        # Cache scutoid values for next step's cloning
+        if scutoid_ricci_full is not None:
+            self._cached_ricci_scalar = scutoid_ricci_full.clone()
+        if scutoid_volume_full is not None:
+            self._cached_riemannian_volume = scutoid_volume_full.clone()
 
         if voronoi_data is not None:
             volume_weights = kinetic_info.get("riemannian_volume_weights")
@@ -724,6 +825,24 @@ class EuclideanGas(PanelModel):
             ):
                 self.potential.update_voronoi_cache(
                     neighbor_info["voronoi_regions"],
+                    state_cloned.x,
+                    step_id,
+                    dt=self.kinetic_op.delta_t,
+                )
+
+        if self.potential is not None and hasattr(self.potential, "update_scutoid_cache"):
+            if scutoid_volume_full is not None or scutoid_ricci_full is not None:
+                # Use cloned values where available so cloned walkers get
+                # their companion's precomputed values
+                ricci_for_cache = other_cloned.get("ricci_scalar", scutoid_ricci_full)
+                volume_for_cache = other_cloned.get("riemannian_volume", scutoid_volume_full)
+                scutoid_cache = {
+                    "riemannian_volume_weights": volume_for_cache,
+                    "ricci_scalar": ricci_for_cache,
+                }
+                step_id = getattr(self, "_current_step", None)
+                self.potential.update_scutoid_cache(
+                    scutoid_cache,
                     state_cloned.x,
                     step_id,
                     dt=self.kinetic_op.delta_t,
@@ -758,6 +877,10 @@ class EuclideanGas(PanelModel):
                 info["neighbor_edges"] = neighbor_edges
                 info["voronoi_regions"] = neighbor_info.get("voronoi_regions")
                 info["neighbor_updated"] = neighbor_info.get("updated")
+            elif neighbor_edges is not None:
+                info["neighbor_edges"] = neighbor_edges
+            if scutoid_edge_geodesic is not None:
+                info["geodesic_edge_distances"] = scutoid_edge_geodesic
             if grad_fitness is not None:
                 info["grad_fitness"] = grad_fitness
             if hess_fitness is not None:
@@ -971,7 +1094,18 @@ class EuclideanGas(PanelModel):
         if self.kinetic_op.use_anisotropic_diffusion:
             record_sigma_reg_diag = self.kinetic_op.diagonal_diffusion
             record_sigma_reg_full = not self.kinetic_op.diagonal_diffusion
-        record_volume_weights = bool(getattr(self.kinetic_op, "compute_volume_weights", False))
+        record_scutoid = self.neighbor_graph_record or (
+            self.fitness_op is not None
+            and self.enable_kinetic
+            and (
+                self.kinetic_op.use_viscous_coupling
+                or self.kinetic_op.use_anisotropic_diffusion
+                or bool(getattr(self.kinetic_op, "compute_volume_weights", False))
+            )
+        )
+        record_volume_weights = bool(
+            getattr(self.kinetic_op, "compute_volume_weights", False) or record_scutoid
+        )
 
         recorder = VectorizedHistoryRecorder(
             N=N,
@@ -985,6 +1119,9 @@ class EuclideanGas(PanelModel):
             record_sigma_reg_diag=record_sigma_reg_diag,
             record_sigma_reg_full=record_sigma_reg_full,
             record_volume_weights=record_volume_weights,
+            record_ricci_scalar=record_scutoid,
+            record_geodesic_edges=record_scutoid,
+            record_diffusion_tensors=record_scutoid,
             record_neighbors=self.neighbor_graph_record and self.neighbor_graph_method != "none",
             record_voronoi=self.neighbor_graph_record and self.neighbor_graph_method != "none",
         )
