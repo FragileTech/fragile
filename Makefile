@@ -9,7 +9,7 @@ check:
 	uv run ruff format --diff .
 
 test:
-	uv run pytest tests/
+	PYGLET_HEADLESS=1 uv run pytest tests/
 
 tldr:
 	@echo "Generating PDF with rendered Mermaid diagrams..."

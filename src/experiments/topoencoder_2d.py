@@ -82,7 +82,7 @@ class TopoEncoderConfig:
 
     # Data
     dataset: str = "mnist"
-    n_samples: int = 3000  # Subsample size
+    n_samples: int = 40000  # Subsample size
     input_dim: int = 784  # MNIST default (overridden for CIFAR-10)
 
     # Model architecture
@@ -118,11 +118,11 @@ class TopoEncoderConfig:
     vision_norm_bias: bool = True
 
     # Training
-    epochs: int = 1000
-    batch_size: int = 256  # Batch size for training (0 = full batch)
+    epochs: int = 50
+    batch_size: int = 128  # Batch size for training (0 = full batch)
     lr: float = 1e-3
     vq_commitment_cost: float = 0.25
-    entropy_weight: float = 0.1  # Encourage sharp routing (was 0.01)
+    entropy_weight: float = 0.1  # Encourage high routing entropy (anti-collapse)
     consistency_weight: float = 0.1  # Align encoder/decoder routing
 
     # Tier 1 losses (low overhead ~5%)
@@ -154,8 +154,8 @@ class TopoEncoderConfig:
 
     # Tier 5: Jump Operator (chart gluing - learns transition functions between charts)
     jump_weight: float = 0.1  # Final jump consistency weight after warmup
-    jump_warmup: int = 50  # Epochs before jump loss starts (let atlas form first)
-    jump_ramp_end: int = 100  # Epoch when jump weight reaches final value
+    jump_warmup: int = 2  # Epochs before jump loss starts (let atlas form first)
+    jump_ramp_end: int = 50  # Epoch when jump weight reaches final value
     jump_global_rank: int = 0  # Rank of global tangent space (0 = use latent_dim)
 
     # Supervised topology loss (Section 7.12)
@@ -233,8 +233,8 @@ class TopoEncoderConfig:
     test_split: float = 0.2
 
     # Logging and output
-    log_every: int = 100
-    save_every: int = 100  # Save checkpoint every N epochs (0 to disable)
+    log_every: int = 1
+    save_every: int = 5  # Save checkpoint every N epochs (0 to disable)
     output_dir: str = "outputs/topoencoder"
     resume_checkpoint: str = ""
     mlflow: bool = False
@@ -1574,10 +1574,13 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
 
             # Core losses
             recon_loss_a = F.mse_loss(recon_a, batch_X)
-            entropy = compute_routing_entropy(enc_w)
+            entropy_value = compute_routing_entropy(enc_w)
+            entropy_loss = math.log(config.num_charts) - entropy_value
             consistency = model_atlas.compute_consistency_loss(enc_w, dec_w)
 
             # Tier 1 losses (low overhead)
+            # Note: geometry-aware losses (variance/disentangle/separation/centering/jump/vicreg)
+            # are hyperbolic internally; tangent-space losses (KL, residual scale) stay Euclidean.
             var_loss = compute_variance_loss(z_geo)
             div_loss = compute_diversity_loss(enc_w, config.num_charts)
             sep_loss = compute_separation_loss(
@@ -1703,7 +1706,7 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
             loss_a = (
                 recon_term
                 + vq_term
-                + config.entropy_weight * entropy
+                + config.entropy_weight * entropy_loss
                 + config.consistency_weight * consistency
                 # Tier 1
                 + config.variance_weight * var_loss
@@ -1734,7 +1737,7 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
             lr_loss_signal = (
                 recon_term
                 + vq_term
-                + config.entropy_weight * entropy
+                + config.entropy_weight * entropy_loss
                 + config.consistency_weight * consistency
             )
             if supervised_loss is not None:
@@ -1844,7 +1847,7 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
                     entropy_target = config.entropy_target_ratio * log_k
                     hk_target = config.hk_target_ratio * log_k
 
-                    entropy_error = entropy - entropy_target
+                    entropy_error = entropy_target - entropy_value.item()
                     config.entropy_weight = _update_pi_controller(
                         adaptive_weight_state["entropy_weight"],
                         entropy_error,
@@ -2159,7 +2162,7 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
             epoch_ae_loss += loss_ae.item()
             epoch_losses["recon"] += recon_loss_a.item()
             epoch_losses["vq"] += vq_loss_a.item()
-            epoch_losses["entropy"] += entropy
+            epoch_losses["entropy"] += entropy_value.item()
             epoch_losses["consistency"] += consistency.item()
             epoch_losses["variance"] += var_loss.item()
             epoch_losses["diversity"] += div_loss.item()
@@ -2192,7 +2195,7 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
             epoch_losses["ae_cls_acc"] += ae_cls_acc.item()
             epoch_info["I_XK"] += window_info["I_XK"]
             epoch_info["H_K"] += window_info["H_K"]
-            epoch_info["H_K_given_X"] += entropy
+            epoch_info["H_K_given_X"] += entropy_value.item()
             epoch_info["code_entropy"] += code_entropy_value
             epoch_info["per_chart_code_entropy"] += per_chart_entropy_value
             epoch_info["grad_norm"] += grad_norm_val
@@ -2906,7 +2909,7 @@ def main():
     parser = argparse.ArgumentParser(
         description="TopoEncoder Benchmark: Attentive Atlas vs Standard VQ-VAE"
     )
-    parser.add_argument("--epochs", type=int, default=1000, help="Number of training epochs")
+    parser.add_argument("--epochs", type=int, default=50, help="Number of training epochs")
     parser.add_argument(
         "--dataset",
         type=str,
@@ -2918,13 +2921,13 @@ def main():
     parser.add_argument(
         "--batch_size",
         type=int,
-        default=256,
+        default=128,
         help="Batch size for training (0 = full batch)",
     )
     parser.add_argument(
         "--n_samples",
         type=int,
-        default=3000,
+        default=40000,
         help="Number of samples to use",
     )
     parser.add_argument(
@@ -2948,8 +2951,8 @@ def main():
     parser.add_argument(
         "--latent_dim",
         type=int,
-        default=2,
-        help="Latent dimension for TopoEncoder (default: 2)",
+        default=3,
+        help="Latent dimension for TopoEncoder (default: 3)",
     )
     parser.add_argument(
         "--hidden_dim",
@@ -3125,13 +3128,13 @@ def main():
     parser.add_argument(
         "--log_every",
         type=int,
-        default=100,
+        default=1,
         help="Log training metrics every N epochs",
     )
     parser.add_argument(
         "--save_every",
         type=int,
-        default=100,
+        default=5,
         help="Save checkpoint every N epochs (0 to disable)",
     )
     parser.add_argument(
@@ -3479,13 +3482,13 @@ def main():
     parser.add_argument(
         "--jump_warmup",
         type=int,
-        default=50,
+        default=5,
         help="Epochs before jump loss starts (default: 50)",
     )
     parser.add_argument(
         "--jump_ramp_end",
         type=int,
-        default=100,
+        default=50,
         help="Epoch when jump weight reaches final value (default: 100)",
     )
     parser.add_argument(

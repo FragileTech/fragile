@@ -183,10 +183,24 @@ class KineticOperator(PanelModel):
     )
     viscous_neighbor_weighting = param.Selector(
         default="kernel",
-        objects=["kernel", "uniform", "inverse_distance", "metric_diag", "metric_full"],
+        objects=[
+            "kernel",
+            "uniform",
+            "inverse_distance",
+            "metric_diag",
+            "metric_full",
+            "kernel_geodesic_euclidean",
+            "kernel_geodesic_metric",
+        ],
         doc=(
-            "Weighting for viscous neighbors (Gaussian kernel, uniform, inverse distance, "
-            "or metric-weighted inverse distance)"
+            "Weighting for viscous neighbors:\n"
+            "  - kernel: Gaussian kernel on Euclidean distance\n"
+            "  - uniform: Equal weights\n"
+            "  - inverse_distance: 1/r weighting\n"
+            "  - metric_diag: Metric-weighted inverse distance (diagonal)\n"
+            "  - metric_full: Metric-weighted inverse distance (full)\n"
+            "  - kernel_geodesic_euclidean: Gaussian kernel on geodesic distance (Euclidean edges)\n"
+            "  - kernel_geodesic_metric: Gaussian kernel on geodesic distance (metric-weighted edges)"
         ),
     )
     viscous_neighbor_threshold = param.Number(
@@ -365,6 +379,8 @@ class KineticOperator(PanelModel):
                     "inverse_distance",
                     "metric_diag",
                     "metric_full",
+                    "kernel_geodesic_euclidean",
+                    "kernel_geodesic_metric",
                 ],
             },
             "viscous_neighbor_threshold": {
@@ -738,16 +754,27 @@ class KineticOperator(PanelModel):
 
             # Compute Gaussian kernel K(r) = exp(-r²/(2l²))
             l_sq = self.viscous_length_scale**2
-            if self.viscous_neighbor_weighting == "uniform":
+            weighting = self.viscous_neighbor_weighting
+
+            # Geodesic kernels require neighbor graph
+            if weighting in {"kernel_geodesic_euclidean", "kernel_geodesic_metric"}:
+                warnings.warn(
+                    f"Geodesic kernel weighting '{weighting}' requires neighbor_edges; "
+                    "falling back to Euclidean kernel.",
+                    RuntimeWarning,
+                )
+                weighting = "kernel"
+
+            if weighting == "uniform":
                 kernel = torch.ones_like(distances)
-            elif self.viscous_neighbor_weighting == "kernel":
+            elif weighting == "kernel":
                 kernel = torch.exp(-(distances**2) / (2 * l_sq))  # [N, N]
-            elif self.viscous_neighbor_weighting == "inverse_distance":
+            elif weighting == "inverse_distance":
                 eps = 1e-8
                 kernel = 1.0 / (distances + eps)
             else:
                 warnings.warn(
-                    "Metric-weighted viscous coupling requires neighbor_edges; "
+                    f"Metric-weighted viscous coupling '{weighting}' requires neighbor_edges; "
                     "falling back to inverse-distance weighting.",
                     RuntimeWarning,
                 )
@@ -826,7 +853,22 @@ class KineticOperator(PanelModel):
         weighting = self.viscous_neighbor_weighting
         l_sq = self.viscous_length_scale**2
         eps = 1e-8
-        if weighting == "uniform":
+
+        # Handle geodesic kernel weighting options
+        if weighting in {"kernel_geodesic_euclidean", "kernel_geodesic_metric"}:
+            use_metric = (weighting == "kernel_geodesic_metric")
+            geodesic_dist = self._compute_geodesic_distances(
+                x,
+                neighbor_edges,
+                grad_fitness=grad_fitness,
+                hess_fitness=hess_fitness,
+                voronoi_data=voronoi_data,
+                use_metric_weighting=use_metric,
+            )
+            # Extract geodesic distances for the edges
+            geodesic_dist_edges = geodesic_dist[i, j]
+            kernel = torch.exp(-(geodesic_dist_edges**2) / (2 * l_sq))
+        elif weighting == "uniform":
             kernel = torch.ones_like(dist_sq)
         elif weighting == "kernel":
             kernel = torch.exp(-dist_sq / (2 * l_sq))
@@ -913,6 +955,108 @@ class KineticOperator(PanelModel):
         force = torch.zeros_like(v)
         force.index_add_(0, i, weights.unsqueeze(1) * v_diff)
         return self.nu * force
+
+    def _compute_geodesic_distances(
+        self,
+        x: Tensor,
+        neighbor_edges: Tensor,
+        grad_fitness: Tensor | None = None,
+        hess_fitness: Tensor | None = None,
+        voronoi_data: dict | None = None,
+        use_metric_weighting: bool = False,
+    ) -> Tensor:
+        """Compute geodesic distances on the neighbor graph using Floyd-Warshall algorithm.
+
+        Args:
+            x: Positions [N, d]
+            neighbor_edges: Directed neighbor edges [E, 2]
+            grad_fitness: Optional fitness gradient for metric weighting
+            hess_fitness: Optional fitness Hessian for metric weighting
+            voronoi_data: Optional Voronoi data for metric weighting
+            use_metric_weighting: If True, use metric-weighted edge lengths
+
+        Returns:
+            Geodesic distance matrix [N, N]
+        """
+        N = x.shape[0]
+        device = x.device
+        dtype = x.dtype
+
+        # Initialize distance matrix with infinity
+        dist = torch.full((N, N), float('inf'), device=device, dtype=dtype)
+
+        # Set diagonal to zero
+        dist.fill_diagonal_(0.0)
+
+        if neighbor_edges is None or neighbor_edges.numel() == 0:
+            return dist
+
+        # Compute edge lengths
+        edges = neighbor_edges.to(device)
+        i = edges[:, 0].long()
+        j = edges[:, 1].long()
+
+        # Filter valid edges
+        valid = (i != j) & (i >= 0) & (i < N) & (j >= 0) & (j < N)
+        i = i[valid]
+        j = j[valid]
+
+        if i.numel() == 0:
+            return dist
+
+        # Compute edge vectors
+        diff = x[i] - x[j]
+
+        # Apply PBC if enabled
+        if self.pbc and self.bounds is not None:
+            high = self.bounds.high.to(x)
+            low = self.bounds.low.to(x)
+            span = high - low
+            diff = diff - span * torch.round(diff / span)
+
+        if use_metric_weighting:
+            # Use metric-weighted distances
+            sigma = self._compute_diffusion_tensor(x, grad_fitness, hess_fitness, voronoi_data)
+            if sigma is not None:
+                c2 = self.c2 if torch.is_tensor(self.c2) else torch.tensor(self.c2, device=device, dtype=dtype)
+                eps = 1e-8
+
+                if sigma.dim() == 2:
+                    # Diagonal metric
+                    sigma_safe = torch.clamp(sigma, min=eps)
+                    g_diag = (c2**2) / (sigma_safe**2)
+                    g_edge = 0.5 * (g_diag[i] + g_diag[j])
+                    edge_lengths = torch.sqrt(torch.sum(g_edge * (diff**2), dim=-1))
+                else:
+                    # Full metric
+                    sigma_sym = 0.5 * (sigma + sigma.transpose(-1, -2))
+                    try:
+                        inv_sigma = torch.linalg.inv(sigma_sym)
+                    except RuntimeError:
+                        inv_sigma = torch.linalg.pinv(sigma_sym)
+                    g_full = (c2**2) * (inv_sigma @ inv_sigma.transpose(-1, -2))
+                    g_edge = 0.5 * (g_full[i] + g_full[j])
+                    diff_vec = diff.unsqueeze(1)
+                    dist_sq_metric = torch.bmm(
+                        torch.bmm(diff_vec, g_edge), diff.unsqueeze(-1)
+                    ).squeeze(-1).squeeze(-1)
+                    edge_lengths = torch.sqrt(torch.clamp(dist_sq_metric, min=0.0))
+            else:
+                # Fallback to Euclidean
+                edge_lengths = torch.sqrt((diff**2).sum(dim=-1))
+        else:
+            # Euclidean distances
+            edge_lengths = torch.sqrt((diff**2).sum(dim=-1))
+
+        # Set edge lengths in distance matrix
+        dist[i, j] = edge_lengths
+
+        # Floyd-Warshall algorithm for all-pairs shortest paths
+        # This is O(N^3) but typically N is small enough
+        for k in range(N):
+            dist = torch.minimum(dist, dist[:, k:k+1] + dist[k:k+1, :])
+
+        return dist
 
     def _boris_rotate(self, v: Tensor, curl: Tensor) -> Tensor:
         """Apply Boris rotation for curl-driven velocity updates.

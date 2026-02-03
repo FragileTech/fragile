@@ -1,0 +1,52 @@
+# Dockerfile for running Atari Fractal Gas CLI in a container
+# This provides complete isolation from host X11/XCB issues
+
+FROM python:3.10-slim
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    xvfb \
+    mesa-utils \
+    libgl1-mesa-glx \
+    libgl1-mesa-dri \
+    libglu1-mesa \
+    libsm6 \
+    libxext6 \
+    libxrender1 \
+    git \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set working directory
+WORKDIR /app
+
+# Copy requirements
+COPY requirements.txt* pyproject.toml* setup.py* ./
+COPY src/ ./src/
+
+# Install Python dependencies
+RUN pip install --no-cache-dir -e . && \
+    pip install --no-cache-dir gymnasium[atari] gymnasium[accept-rom-license] torch numpy
+
+# Copy scripts
+COPY scripts/ ./scripts/
+
+# Set environment variables for headless operation
+ENV LIBGL_ALWAYS_SOFTWARE=1 \
+    GALLIUM_DRIVER=llvmpipe \
+    MESA_GL_VERSION_OVERRIDE=3.3 \
+    QT_X11_NO_MITSHM=1 \
+    LIBGL_ALWAYS_INDIRECT=0 \
+    PYGLET_HEADLESS=1 \
+    SDL_VIDEODRIVER=dummy \
+    SDL_AUDIODRIVER=dummy \
+    MPLBACKEND=Agg \
+    DISPLAY=:99
+
+# Create results directory
+RUN mkdir -p /app/results
+
+# Set entrypoint to run with xvfb
+ENTRYPOINT ["xvfb-run", "-a", "--server-args=-screen 0 1024x768x24 -ac +extension GLX +render -noreset", "python3", "scripts/run_atari_gas_cli.py"]
+
+# Default command (can be overridden)
+CMD ["--game", "Pong", "--N", "10", "--iterations", "100"]

@@ -137,7 +137,7 @@ class TopoEncoderConfig:
     eval_batch_size: int = 0  # Batch size for eval/logging (0 = use batch_size)
     lr: float = 1e-3
     vq_commitment_cost: float = 0.25
-    entropy_weight: float = 0.1  # Encourage sharp routing (was 0.01)
+    entropy_weight: float = 0.1  # Encourage high routing entropy (anti-collapse)
     consistency_weight: float = 0.1  # Align encoder/decoder routing
 
     # Tier 1 losses (low overhead ~5%)
@@ -2173,7 +2173,8 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
 
             # Core losses
             recon_loss_a = F.mse_loss(recon_a, batch_X)
-            entropy = compute_routing_entropy(enc_w)
+            entropy_value = compute_routing_entropy(enc_w)
+            entropy_loss = math.log(config.num_charts) - entropy_value
             consistency = model_atlas.compute_consistency_loss(enc_w, dec_w)
 
             # Tier 1 losses (low overhead)
@@ -2296,7 +2297,7 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
                 loss_rescale_inputs = {
                     "recon": recon_loss_a,
                     "vq": vq_loss_a,
-                    "entropy": entropy,
+                    "entropy": entropy_loss,
                     "consistency": consistency,
                     "variance": var_loss,
                     "diversity": div_loss,
@@ -2356,7 +2357,7 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
             )
             entropy_term = _loss_rescale_value(
                 "entropy",
-                entropy,
+                entropy_loss,
                 config,
                 loss_rescale_state,
                 reference_name,
@@ -2642,7 +2643,7 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
                     entropy_target = config.entropy_target_ratio * log_k
                     hk_target = config.hk_target_ratio * log_k
 
-                    entropy_error = entropy - entropy_target
+                    entropy_error = entropy_target - entropy_value.item()
                     config.entropy_weight = _update_pi_controller(
                         adaptive_weight_state["entropy_weight"],
                         entropy_error,
@@ -2964,7 +2965,7 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
             epoch_cifar_std_acc += acc_cifar_std.item()
             epoch_losses["recon"] += recon_loss_a.item()
             epoch_losses["vq"] += vq_loss_a.item()
-            epoch_losses["entropy"] += entropy
+            epoch_losses["entropy"] += entropy_value.item()
             epoch_losses["consistency"] += consistency.item()
             epoch_losses["variance"] += var_loss.item()
             epoch_losses["diversity"] += div_loss.item()
@@ -2997,7 +2998,7 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
             epoch_losses["ae_cls_acc"] += ae_cls_acc.item()
             epoch_info["I_XK"] += window_info["I_XK"]
             epoch_info["H_K"] += window_info["H_K"]
-            epoch_info["H_K_given_X"] += entropy
+            epoch_info["H_K_given_X"] += entropy_value.item()
             epoch_info["code_entropy"] += code_entropy_value
             epoch_info["per_chart_code_entropy"] += per_chart_entropy_value
             epoch_info["grad_norm"] += grad_norm_val

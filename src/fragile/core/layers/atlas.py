@@ -6,6 +6,7 @@ import torch
 from torch import nn
 import torch.nn.functional as F
 
+from fragile.core.layers.gauge import exp_map_zero, log_map_zero, mobius_add
 from fragile.core.layers.primitives import IsotropicBlock, NormGatedGELU, SpectralLinear
 from fragile.core.layers.topology import FactorizedJumpOperator, InvariantChartClassifier
 from fragile.core.layers.ugn import SoftEquivariantLayer
@@ -15,6 +16,81 @@ from fragile.core.layers.vision import (
     StandardResNetBackbone,
     StandardResNetDecoder,
 )
+
+
+def _poincare_temperature(
+    z: torch.Tensor,
+    key_dim: int,
+    tau_min: float,
+    tau_denom_min: float,
+) -> torch.Tensor:
+    """Compute position-dependent temperature for Poincare ball."""
+    r2 = (z**2).sum(dim=-1)
+    denom = (1.0 - r2).clamp(min=tau_denom_min)
+    tau = math.sqrt(key_dim) * denom / 2.0
+    return tau.clamp(min=tau_min)
+
+
+def _poincare_hyperbolic_score(
+    z: torch.Tensor,
+    centers: torch.Tensor,
+    key_dim: int,
+    tau_min: float,
+    tau_denom_min: float,
+    eps: float,
+) -> torch.Tensor:
+    """Compute hyperbolic distance-based scores with metric temperature."""
+    z_exp = z.unsqueeze(1)  # [B, 1, D]
+    c_exp = centers.unsqueeze(0)  # [1, N_c, D]
+    diff = z_exp - c_exp
+    dist_sq = (diff**2).sum(dim=-1)  # [B, N_c]
+    z_sq = (z**2).sum(dim=-1, keepdim=True)  # [B, 1]
+    c_sq = (centers**2).sum(dim=-1).unsqueeze(0)  # [1, N_c]
+    denom = (1.0 - z_sq) * (1.0 - c_sq)
+    arg = 1.0 + 2.0 * dist_sq / (denom + eps)
+    dist = torch.acosh(arg.clamp(min=1.0 + eps))  # [B, N_c]
+    tau = _poincare_temperature(z, key_dim, tau_min, tau_denom_min)
+    return -dist / tau.unsqueeze(1)
+
+
+def _project_to_ball(
+    z: torch.Tensor,
+    max_norm: float = 0.99,
+    eps: float = 1e-6,
+) -> torch.Tensor:
+    """Project points to interior of the Poincare ball."""
+    norm = z.norm(dim=-1, keepdim=True).clamp(min=eps)
+    scale = (max_norm / norm).clamp(max=1.0)
+    return z * scale
+
+
+def _poincare_weighted_mean(
+    points: torch.Tensor,
+    weights: torch.Tensor,
+    eps: float = 1e-6,
+) -> torch.Tensor:
+    """Approximate hyperbolic barycenter using log/exp maps at the origin."""
+    if points.dim() == 2:
+        points = points.unsqueeze(0).expand(weights.shape[0], -1, -1)
+    w = weights.unsqueeze(-1)
+    w_sum = w.sum(dim=1, keepdim=True).clamp(min=eps)
+    tangent = log_map_zero(points)
+    mean_tan = (w * tangent).sum(dim=1) / w_sum.squeeze(1)
+    return exp_map_zero(mean_tan)
+
+
+def _poincare_weighted_mean_per_chart(
+    points: torch.Tensor,
+    weights: torch.Tensor,
+    eps: float = 1e-6,
+) -> torch.Tensor:
+    """Per-chart hyperbolic barycenter for codebook soft assignment."""
+    points_exp = points.unsqueeze(0).expand(weights.shape[0], -1, -1, -1)
+    tangent = log_map_zero(points_exp)
+    w = weights.unsqueeze(-1)
+    w_sum = w.sum(dim=2, keepdim=True).clamp(min=eps)
+    mean_tan = (w * tangent).sum(dim=2) / w_sum.squeeze(2)
+    return exp_map_zero(mean_tan)
 
 
 class TokenSelfAttentionBlock(nn.Module):
@@ -1175,6 +1251,9 @@ class PrimitiveAttentiveAtlasEncoder(nn.Module):
         self.latent_dim = latent_dim
         self.codes_per_chart = codes_per_chart
         self.covariant_attn = covariant_attn
+        self.router_tau_min = covariant_attn_tau_min
+        self.router_tau_denom_min = covariant_attn_denom_min
+        self.router_transport_eps = covariant_attn_transport_eps
 
         bundle_size, n_bundles = _resolve_bundle_params(hidden_dim, latent_dim, bundle_size)
 
@@ -1367,31 +1446,39 @@ class PrimitiveAttentiveAtlasEncoder(nn.Module):
         torch.Tensor,
     ]:
         """Forward pass through the attentive atlas."""
-        # Extract features and map into chart coordinates.
+        # Extract features and map into chart coordinates (Poincare ball).
         features = self._encode_features(x)  # [B, H]
-        v = self.val_proj(features)  # [B, D]
+        v = _project_to_ball(self.val_proj(features))  # [B, D]
+        chart_centers = _project_to_ball(self.chart_centers)  # [N_c, D]
 
         if self.covariant_attn:
             # Covariant router performs gauge-aware chart assignment.
             router_weights, K_chart = self.cov_router(
-                v, features=features, chart_tokens=self.chart_centers
+                v, features=features, chart_tokens=chart_centers
             )
         else:
-            scores = torch.matmul(v, self.chart_centers.t()) / math.sqrt(
-                self.latent_dim
-            )  # [B, N_c]
+            scores = _poincare_hyperbolic_score(
+                v,
+                chart_centers,
+                key_dim=self.latent_dim,
+                tau_min=self.router_tau_min,
+                tau_denom_min=self.router_tau_denom_min,
+                eps=self.router_transport_eps,
+            )
             router_weights = F.softmax(scores, dim=-1)  # [B, N_c]
             K_chart = torch.argmax(router_weights, dim=1)  # [B]
 
-        # Chart-center mixture defines the macro coordinate.
-        c_bar = torch.matmul(router_weights, self.chart_centers)  # [B, D]
-        v_local = v - c_bar  # [B, D]
+        # Chart-center mixture defines the macro coordinate (hyperbolic barycenter).
+        c_bar = _poincare_weighted_mean(chart_centers, router_weights)  # [B, D]
+        v_local = _project_to_ball(mobius_add(-c_bar, v))  # [B, D]
 
         # Per-chart codebook lookup under optional equivariant metric.
-        codebook = self.codebook.unsqueeze(0)  # [1, N_c, K, D]
+        codebook = _project_to_ball(self.codebook)  # [N_c, K, D]
         v_exp = v_local.unsqueeze(1).unsqueeze(2)  # [B, 1, 1, D]
-        diff = v_exp - codebook  # [B, N_c, K, D]
-        dist = self._apply_soft_equiv_metric(diff)  # [B, N_c, K]
+        codebook_exp = codebook.unsqueeze(0)  # [1, N_c, K, D]
+        diff = mobius_add(-codebook_exp, v_exp)  # [B, N_c, K, D]
+        diff_tan = log_map_zero(diff)
+        dist = self._apply_soft_equiv_metric(diff_tan)  # [B, N_c, K]
         indices = torch.argmin(dist, dim=-1)  # [B, N_c]
         indices_stack = indices  # [B, N_c]
 
@@ -1402,38 +1489,43 @@ class PrimitiveAttentiveAtlasEncoder(nn.Module):
         if self.soft_equiv_layers is not None and self.soft_equiv_soft_assign:
             temperature = max(self.soft_equiv_temperature, 1e-6)
             weights = F.softmax(-dist / temperature, dim=-1)
-            z_q_soft = (weights.unsqueeze(-1) * codebook).sum(dim=2)
+            z_q_soft = _poincare_weighted_mean_per_chart(codebook, weights)
             # Straight-through soft assignment so gradients reach the metric network.
             z_q_all += z_q_soft - z_q_soft.detach()
 
         # VQ objective weighted by routing.
         w = router_weights.unsqueeze(-1).detach()  # [B, N_c, 1]
         v_bc = v_local.unsqueeze(1)  # [B, 1, D]
-        commitment = ((v_bc - z_q_all.detach()) ** 2 * w).mean(dim=(0, 2)).sum()  # []
-        codebook_loss = ((z_q_all - v_bc.detach()) ** 2 * w).mean(dim=(0, 2)).sum()  # []
+        delta_commit = log_map_zero(mobius_add(-z_q_all.detach(), v_bc))
+        commitment = (delta_commit**2 * w).mean(dim=(0, 2)).sum()  # []
+        delta_codebook = log_map_zero(mobius_add(-v_bc.detach(), z_q_all))
+        codebook_loss = (delta_codebook**2 * w).mean(dim=(0, 2)).sum()  # []
         vq_loss = codebook_loss + 0.25 * commitment  # []
 
         # Blend chart codes to form macro latent.
-        z_q_blended = (z_q_all * router_weights.unsqueeze(-1)).sum(dim=1)  # [B, D]
+        z_q_blended = _poincare_weighted_mean(z_q_all, router_weights)  # [B, D]
         K_code = indices_stack.gather(1, K_chart.unsqueeze(1)).squeeze(1)  # [B]
 
         # Structure filter extracts nuisance; remainder is texture.
-        delta = v_bc - z_q_all.detach()  # [B, N_c, D]
+        delta = log_map_zero(mobius_add(-z_q_all.detach(), v_bc))  # [B, N_c, D]
         z_n_all = self.structure_filter(delta.reshape(-1, self.latent_dim))  # [B*N_c, D]
-        z_n_all_charts = z_n_all.view(v.shape[0], self.num_charts, self.latent_dim)  # [B, N_c, D]
+        z_n_all_charts_tan = z_n_all.view(v.shape[0], self.num_charts, self.latent_dim)
+        z_n_all_charts = _project_to_ball(exp_map_zero(z_n_all_charts_tan))  # [B, N_c, D]
 
-        z_n = (z_n_all_charts * router_weights.unsqueeze(-1)).sum(dim=1)  # [B, D]
-        delta_blended = v_local - z_q_blended.detach()  # [B, D]
-        z_tex = delta_blended - z_n  # [B, D]
+        z_n_tan = (z_n_all_charts_tan * router_weights.unsqueeze(-1)).sum(dim=1)  # [B, D]
+        delta_blended = log_map_zero(mobius_add(-z_q_blended.detach(), v_local))  # [B, D]
+        z_tex = delta_blended - z_n_tan  # [B, D]
 
-        # Geometric latent = chart center + macro code + nuisance.
-        z_q_st = v_local + (z_q_blended - v_local).detach()  # [B, D]
-        z_geo = c_bar + z_q_st + z_n  # [B, D]
+        # Geometric latent = chart center + macro code + nuisance (Möbius sums).
+        delta_to_code = log_map_zero(mobius_add(-v_local, z_q_blended))
+        z_q_st = mobius_add(v_local, exp_map_zero(delta_to_code.detach()))
+        z_local = mobius_add(z_q_st, exp_map_zero(z_n_tan))
+        z_geo = _project_to_ball(mobius_add(c_bar, z_local))  # [B, D]
 
         return (
             K_chart,
             K_code,
-            z_n,
+            z_n_tan,
             z_tex,
             router_weights,
             z_geo,
@@ -1476,8 +1568,12 @@ class PrimitiveTopologicalDecoder(nn.Module):
         super().__init__()
         self.num_charts = num_charts
         self.hidden_dim = hidden_dim
+        self.latent_dim = latent_dim
         self.covariant_attn = covariant_attn
         self.output_dim = output_dim
+        self.router_tau_min = covariant_attn_tau_min
+        self.router_tau_denom_min = covariant_attn_denom_min
+        self.router_transport_eps = covariant_attn_transport_eps
 
         bundle_size, n_bundles = _resolve_bundle_params(hidden_dim, latent_dim, bundle_size)
 
@@ -1485,6 +1581,8 @@ class PrimitiveTopologicalDecoder(nn.Module):
             SpectralLinear(latent_dim, hidden_dim, bias=False) for _ in range(num_charts)
         ])
         self.chart_gate = NormGatedGELU(bundle_size=bundle_size, n_bundles=n_bundles)
+
+        self.chart_centers = nn.Parameter(torch.randn(num_charts, latent_dim) * 0.02)
 
         if covariant_attn:
             self.cov_router = CovariantChartRouter(
@@ -1547,18 +1645,34 @@ class PrimitiveTopologicalDecoder(nn.Module):
         chart_index: torch.Tensor | None = None,
     ) -> tuple[torch.Tensor, torch.Tensor]:
         """Decode from latent geometry."""
-        # Clamp geometry to chart range.
-        z_geo = torch.tanh(z_geo)
+        # Clamp geometry to chart range (Poincare ball).
+        z_geo = _project_to_ball(z_geo)
+        chart_centers = _project_to_ball(self.chart_centers)
         if chart_index is not None:
             router_weights = F.one_hot(
                 chart_index, num_classes=self.num_charts
             ).float()  # [B, N_c]
         elif self.covariant_attn:
             # Covariant router predicts chart membership from geometry.
-            router_weights, _ = self.cov_router(z_geo)
+            router_weights, _ = self.cov_router(z_geo, chart_tokens=chart_centers)
         else:
-            logits = self.latent_router(z_geo)  # [B, N_c]
-            router_weights = F.softmax(logits, dim=-1)  # [B, N_c]
+            scores = _poincare_hyperbolic_score(
+                z_geo,
+                chart_centers,
+                key_dim=self.latent_dim,
+                tau_min=self.router_tau_min,
+                tau_denom_min=self.router_tau_denom_min,
+                eps=self.router_transport_eps,
+            )
+            if self.latent_router is not None:
+                tau = _poincare_temperature(
+                    z_geo,
+                    key_dim=self.latent_dim,
+                    tau_min=self.router_tau_min,
+                    tau_denom_min=self.router_tau_denom_min,
+                )
+                scores = scores + 0.1 * self.latent_router(z_geo) / tau.unsqueeze(1)
+            router_weights = F.softmax(scores, dim=-1)  # [B, N_c]
 
         # Chart-specific projections + gauge-covariant gating.
         h_stack = torch.stack(

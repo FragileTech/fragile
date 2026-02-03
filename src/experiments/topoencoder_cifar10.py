@@ -634,7 +634,8 @@ def train_benchmark(config: TopoEncoderCIFAR10Config) -> dict:
 
             # Core losses
             recon_loss_a = F.mse_loss(recon_a, batch_X)
-            entropy = compute_routing_entropy(enc_w)
+            entropy_value = compute_routing_entropy(enc_w)
+            entropy_loss = math.log(config.num_charts) - entropy_value
             consistency = model_atlas.compute_consistency_loss(enc_w, dec_w)
 
             # Tier 1 losses
@@ -735,7 +736,7 @@ def train_benchmark(config: TopoEncoderCIFAR10Config) -> dict:
             loss_a = (
                 recon_loss_a
                 + vq_loss_a
-                + config.entropy_weight * entropy
+                + config.entropy_weight * entropy_loss
                 + config.consistency_weight * consistency
                 + config.variance_weight * var_loss
                 + config.diversity_weight * div_loss
@@ -781,7 +782,7 @@ def train_benchmark(config: TopoEncoderCIFAR10Config) -> dict:
             epoch_ae_loss += loss_ae.item()
             epoch_losses["recon"] += recon_loss_a.item()
             epoch_losses["vq"] += vq_loss_a.item()
-            epoch_losses["entropy"] += entropy
+            epoch_losses["entropy"] += entropy_value.item()
             epoch_losses["consistency"] += consistency.item()
             epoch_losses["variance"] += var_loss.item()
             epoch_losses["diversity"] += div_loss.item()

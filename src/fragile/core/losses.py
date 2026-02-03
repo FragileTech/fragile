@@ -7,6 +7,23 @@ from torch import nn
 import torch.nn.functional as F
 
 from .layers import FactorizedJumpOperator
+from .layers.gauge import exp_map_zero, hyperbolic_distance, log_map_zero
+
+
+def _project_to_ball(
+    z: torch.Tensor, max_norm: float = 0.99, eps: float = 1e-6
+) -> torch.Tensor:
+    """Project points to interior of the Poincare ball."""
+    norm = z.norm(dim=-1, keepdim=True).clamp(min=eps)
+    scale = (max_norm / norm).clamp(max=1.0)
+    return z * scale
+
+
+def _as_tangent(z: torch.Tensor, assume_tangent: bool) -> torch.Tensor:
+    """Return tangent vectors; map from ball if needed."""
+    if assume_tangent:
+        return z
+    return log_map_zero(_project_to_ball(z))
 
 
 class _ConformalMetricLike(Protocol):
@@ -113,10 +130,10 @@ class SupervisedTopologyLoss(nn.Module):
         }
 
 
-def compute_routing_entropy(router_weights: torch.Tensor, eps: float = 1e-6) -> float:
+def compute_routing_entropy(router_weights: torch.Tensor, eps: float = 1e-6) -> torch.Tensor:
     """Compute mean routing entropy (lower = sharper decisions)."""
     entropy = -(router_weights * torch.log(router_weights + eps)).sum(dim=1)
-    return entropy.mean().item()
+    return entropy.mean()
 
 
 def compute_variance_loss(
@@ -127,10 +144,11 @@ def compute_variance_loss(
 ) -> torch.Tensor:
     """Prevent latent collapse using invariant energy (trace of covariance).
 
-    Uses per-bundle or global energy to avoid fixing a basis.
+    Uses per-bundle or global energy in the tangent space to avoid fixing a basis.
     """
     batch, dim = z.shape
-    z_centered = z - z.mean(dim=0, keepdim=True)
+    z_tan = log_map_zero(_project_to_ball(z))
+    z_centered = z_tan - z_tan.mean(dim=0, keepdim=True)
 
     if bundle_size is not None and bundle_size > 0 and dim % bundle_size == 0:
         n_bundles = dim // bundle_size
@@ -180,13 +198,16 @@ def compute_separation_loss(
     """
     device = z_geo.device
 
+    z_geo = _project_to_ball(z_geo)
+    z_geo_tan = log_map_zero(z_geo)
+
     # Compute weighted center for each chart
     centers = []
     for i in range(num_charts):
         weights = router_weights[:, i : i + 1]
         weight_sum = weights.sum() + eps
-        center = (z_geo * weights).sum(dim=0) / weight_sum
-        centers.append(center)
+        center_tan = (z_geo_tan * weights).sum(dim=0) / weight_sum
+        centers.append(exp_map_zero(center_tan))
     centers_tensor = torch.stack(centers)  # [K, D]
 
     # Hinge loss: force centers at least 'margin' apart
@@ -194,7 +215,10 @@ def compute_separation_loss(
     n_pairs = 0
     for i in range(num_charts):
         for j in range(i + 1, num_charts):
-            dist = torch.norm(centers_tensor[i] - centers_tensor[j])
+            dist = hyperbolic_distance(
+                centers_tensor[i].unsqueeze(0),
+                centers_tensor[j].unsqueeze(0),
+            ).squeeze()
             if metric is not None:
                 lambda_i = metric.conformal_factor(centers_tensor[i].unsqueeze(0)).squeeze()
                 lambda_j = metric.conformal_factor(centers_tensor[j].unsqueeze(0)).squeeze()
@@ -214,11 +238,15 @@ def compute_chart_center_separation_loss(
     Uses hinge loss on pairwise distances between chart centers.
     """
     device = chart_centers.device
+    chart_centers = _project_to_ball(chart_centers)
     loss_sep = torch.tensor(0.0, device=device)
     n_pairs = 0
     for i in range(chart_centers.shape[0]):
         for j in range(i + 1, chart_centers.shape[0]):
-            dist = torch.norm(chart_centers[i] - chart_centers[j])
+            dist = hyperbolic_distance(
+                chart_centers[i].unsqueeze(0),
+                chart_centers[j].unsqueeze(0),
+            ).squeeze()
             loss_sep += F.relu(margin - dist)
             n_pairs += 1
     return loss_sep / max(n_pairs, 1)
@@ -230,13 +258,15 @@ def compute_codebook_centering_loss(codebook: torch.Tensor) -> torch.Tensor:
     Args:
         codebook: [N_c, K, D] codebook deltas
     """
-    centers = codebook.mean(dim=1)  # [N_c, D]
-    return (centers**2).sum(dim=1).mean()
+    codebook = _project_to_ball(codebook)
+    centers_tan = log_map_zero(codebook).mean(dim=1)  # [N_c, D]
+    return (centers_tan**2).sum(dim=1).mean()
 
 
-def compute_residual_scale_loss(z_n: torch.Tensor) -> torch.Tensor:
+def compute_residual_scale_loss(z_n: torch.Tensor, assume_tangent: bool = True) -> torch.Tensor:
     """Penalize residual gauge scale to preserve macro/meso hierarchy."""
-    return (z_n**2).sum(dim=1).mean()
+    z_tan = _as_tangent(z_n, assume_tangent)
+    return (z_tan**2).sum(dim=1).mean()
 
 
 def compute_window_loss(
@@ -280,20 +310,21 @@ def compute_disentangle_loss(
 ) -> torch.Tensor:
     """Gauge coherence using invariant radial statistics.
 
-    L = ||Cov(q(K|x), ||z||)||^2_F (global or per-bundle norms).
+    L = ||Cov(q(K|x), ||log_0(z)||)||^2_F (global or per-bundle norms).
     """
     device = z_geo.device
-    batch, dim = z_geo.shape
+    z_tan = log_map_zero(_project_to_ball(z_geo))
+    batch, dim = z_tan.shape
 
     if batch < 2:
         return torch.tensor(0.0, device=device)
 
     if bundle_size is not None and bundle_size > 0 and dim % bundle_size == 0:
         n_bundles = dim // bundle_size
-        bundled = z_geo.reshape(batch, n_bundles, bundle_size)
+        bundled = z_tan.reshape(batch, n_bundles, bundle_size)
         norms = torch.norm(bundled, dim=-1)
     else:
-        norms = torch.norm(z_geo, dim=-1, keepdim=True)
+        norms = torch.norm(z_tan, dim=-1, keepdim=True)
 
     norms_centered = norms - norms.mean(dim=0, keepdim=True)
     w_centered = router_weights - router_weights.mean(dim=0, keepdim=True)
@@ -488,8 +519,10 @@ def compute_jump_consistency_loss(
             idx_j = torch.full((B,), j, dtype=torch.long, device=device)
             z_j_pred = jump_op(z_i, idx_i, idx_j)  # [B, D]
 
-            # Consistency error: weighted MSE
-            error = (z_j_pred - z_j_target).pow(2).sum(dim=-1)  # [B]
+            # Consistency error: weighted hyperbolic distance
+            z_j_pred = _project_to_ball(z_j_pred)
+            z_j_target = _project_to_ball(z_j_target)
+            error = hyperbolic_distance(z_j_pred, z_j_target).pow(2)  # [B]
             pair_loss = (error * weights).sum() / (weights.sum() + 1e-6)
 
             total_loss += pair_loss
@@ -589,6 +622,8 @@ def compute_vicreg_invariance_loss(
 
     Uses Gram(z) = z z^T to avoid fixing a basis. O(B^2) overhead.
     """
+    z_tan = log_map_zero(_project_to_ball(z_geo))
+    z_tan_aug = log_map_zero(_project_to_ball(z_geo_aug))
 
     def gram(z: torch.Tensor) -> torch.Tensor:
         if center:
@@ -598,4 +633,4 @@ def compute_vicreg_invariance_loss(
         scale = max(z_centered.shape[1], 1)
         return (z_centered @ z_centered.t()) / scale
 
-    return F.mse_loss(gram(z_geo), gram(z_geo_aug))
+    return F.mse_loss(gram(z_tan), gram(z_tan_aug))

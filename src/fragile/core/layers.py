@@ -5,6 +5,41 @@ from torch import nn
 import torch.nn.functional as F
 
 
+def _poincare_temperature(
+    z: torch.Tensor,
+    key_dim: int,
+    tau_min: float,
+    tau_denom_min: float,
+) -> torch.Tensor:
+    """Compute position-dependent temperature for Poincare ball."""
+    r2 = (z**2).sum(dim=-1)
+    denom = (1.0 - r2).clamp(min=tau_denom_min)
+    tau = math.sqrt(key_dim) * denom / 2.0
+    return tau.clamp(min=tau_min)
+
+
+def _poincare_hyperbolic_score(
+    z: torch.Tensor,
+    centers: torch.Tensor,
+    key_dim: int,
+    tau_min: float,
+    tau_denom_min: float,
+    eps: float,
+) -> torch.Tensor:
+    """Compute hyperbolic distance-based scores with metric temperature."""
+    z_exp = z.unsqueeze(1)  # [B, 1, D]
+    c_exp = centers.unsqueeze(0)  # [1, N_c, D]
+    diff = z_exp - c_exp
+    dist_sq = (diff**2).sum(dim=-1)  # [B, N_c]
+    z_sq = (z**2).sum(dim=-1, keepdim=True)  # [B, 1]
+    c_sq = (centers**2).sum(dim=-1).unsqueeze(0)  # [1, N_c]
+    denom = (1.0 - z_sq) * (1.0 - c_sq)
+    arg = 1.0 + 2.0 * dist_sq / (denom + eps)
+    dist = torch.acosh(arg.clamp(min=1.0 + eps))  # [B, N_c]
+    tau = _poincare_temperature(z, key_dim, tau_min, tau_denom_min)
+    return -dist / tau.unsqueeze(1)
+
+
 class TokenSelfAttentionBlock(nn.Module):
     """Tokenized self-attention block for MLP baselines."""
 
@@ -526,18 +561,28 @@ class TopologicalDecoder(nn.Module):
         hidden_dim: int = 32,
         num_charts: int = 3,
         output_dim: int = 2,
+        tau_min: float = 1e-2,
+        tau_denom_min: float = 1e-3,
+        transport_eps: float = 1e-3,
     ):
         super().__init__()
         self.num_charts = num_charts
         self.hidden_dim = hidden_dim
+        self.latent_dim = latent_dim
+        self.router_tau_min = tau_min
+        self.router_tau_denom_min = tau_denom_min
+        self.router_transport_eps = transport_eps
 
         # Chart-specific projectors (one per chart)
         self.chart_projectors = nn.ModuleList([
             nn.Linear(latent_dim, hidden_dim) for _ in range(num_charts)
         ])
 
-        # Inverse router (dreaming mode) - infers routing from geometry alone
+        # Inverse router correction (dreaming mode)
         self.latent_router = nn.Linear(latent_dim, num_charts)
+
+        # Chart centers for hyperbolic routing
+        self.chart_centers = nn.Parameter(torch.randn(num_charts, latent_dim) * 0.02)
 
         # Texture projector (global)
         self.tex_projector = nn.Linear(latent_dim, hidden_dim)
@@ -574,9 +619,23 @@ class TopologicalDecoder(nn.Module):
             # Discrete planning mode: hard one-hot routing
             router_weights = F.one_hot(chart_index, num_classes=self.num_charts).float()
         else:
-            # Continuous generation / dreaming mode: infer from geometry
-            logits = self.latent_router(z_geo)
-            router_weights = F.softmax(logits, dim=-1)
+            # Continuous generation / dreaming mode: hyperbolic routing from geometry
+            scores = _poincare_hyperbolic_score(
+                z_geo,
+                self.chart_centers,
+                key_dim=self.latent_dim,
+                tau_min=self.router_tau_min,
+                tau_denom_min=self.router_tau_denom_min,
+                eps=self.router_transport_eps,
+            )
+            tau = _poincare_temperature(
+                z_geo,
+                key_dim=self.latent_dim,
+                tau_min=self.router_tau_min,
+                tau_denom_min=self.router_tau_denom_min,
+            )
+            scores = scores + 0.1 * self.latent_router(z_geo) / tau.unsqueeze(1)
+            router_weights = F.softmax(scores, dim=-1)
 
         # Project through each chart using einsum for proper broadcasting
         # weights[c] is [hidden_dim, latent_dim] for chart c
