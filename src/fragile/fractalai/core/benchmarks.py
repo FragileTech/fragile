@@ -965,6 +965,108 @@ class VoronoiRicciScalar(OptimBenchmark):
         return Bounds.from_tuples(bounds)
 
 
+class RiemannianMix(OptimBenchmark):
+    """Weighted mixture of Riemannian volume element and Ricci scalar benchmarks.
+
+    Returns U(x) = w_V * (-dμ_i) + w_R * R_i for each walker, where:
+    - dμ_i is the Riemannian volume element (maximizing volume)
+    - R_i is the Ricci curvature scalar
+    - w_V, w_R are configurable weights (can be positive or negative)
+
+    This benchmark combines:
+    - Volume maximization: particles spread to maximize Riemannian volume
+    - Curvature sensitivity: particles respond to Ricci curvature
+
+    Args:
+        dims: Spatial dimension
+        volume_weight: Weight for volume element term (default: 1.0)
+        ricci_weight: Weight for Ricci scalar term (default: 1.0)
+    """
+
+    volume_weight = param.Number(default=1.0, doc="Weight for volume element (-dμ)")
+    ricci_weight = param.Number(default=1.0, doc="Weight for Ricci scalar (R)")
+
+    def __init__(
+        self,
+        dims: int,
+        volume_weight: float = 1.0,
+        ricci_weight: float = 1.0,
+        **kwargs,
+    ):
+        self._cache_volume: torch.Tensor | None = None
+        self._cache_ricci: torch.Tensor | None = None
+        self._volume_weight = volume_weight
+        self._ricci_weight = ricci_weight
+
+        def riemannian_mix_potential(x: torch.Tensor) -> torch.Tensor:
+            n = x.shape[0]
+            result = torch.zeros(n, dtype=x.dtype, device=x.device)
+
+            # Add volume element contribution: -dμ (negative for maximization)
+            if self._cache_volume is not None and self._cache_volume.shape[0] == n:
+                result += self._volume_weight * self._cache_volume
+
+            # Add Ricci scalar contribution
+            if self._cache_ricci is not None and self._cache_ricci.shape[0] == n:
+                result += self._ricci_weight * self._cache_ricci
+
+            return result
+
+        super().__init__(
+            dims=dims,
+            function=riemannian_mix_potential,
+            volume_weight=volume_weight,
+            ricci_weight=ricci_weight,
+            **kwargs,
+        )
+
+    def update_scutoid_cache(
+        self,
+        scutoid_data: dict,
+        x: torch.Tensor,
+        step_id: int | None = None,  # noqa: ARG002
+        dt: float = 1.0,  # noqa: ARG002
+    ) -> None:
+        """Cache precomputed Riemannian volume and Ricci values from scutoid data."""
+        if not scutoid_data:
+            return
+
+        # Cache volume element (negative for maximization)
+        volume_weights = scutoid_data.get("riemannian_volume_weights")
+        if volume_weights is not None:
+            self._cache_volume = (
+                -volume_weights.to(device=x.device, dtype=x.dtype)
+                if torch.is_tensor(volume_weights)
+                else torch.as_tensor(-volume_weights, dtype=x.dtype, device=x.device)
+            )
+
+        # Cache Ricci scalar (try multiple keys)
+        ricci = scutoid_data.get("ricci_scalar")
+        if ricci is None:
+            ricci = scutoid_data.get("ricci_proxy")
+        if ricci is None:
+            ricci = scutoid_data.get("ricci_scalar_proxy")
+        if ricci is not None:
+            self._cache_ricci = (
+                ricci.to(device=x.device, dtype=x.dtype)
+                if torch.is_tensor(ricci)
+                else torch.as_tensor(ricci, dtype=x.dtype, device=x.device)
+            )
+
+    @property
+    def benchmark(self) -> torch.Tensor:
+        return torch.tensor(0.0)
+
+    @staticmethod
+    def get_bounds(dims):
+        bounds = [(-10.0, 10.0) for _ in range(dims)]
+        return Bounds.from_tuples(bounds)
+
+    @property
+    def best_state(self):
+        return torch.zeros(self.shape)
+
+
 class StochasticGaussian(OptimBenchmark):
     """Stochastic Gaussian noise benchmark.
 
@@ -1588,6 +1690,7 @@ ALL_BENCHMARKS = [
     VoronoiCellVolume,
     VoronoiManifoldVolumeElement,
     VoronoiRicciScalar,
+    RiemannianMix,
     StochasticGaussian,
     QuadraticWell,
 ]
@@ -1602,6 +1705,7 @@ BENCHMARK_NAMES = {
     "Voronoi Cell Volume": VoronoiCellVolume,
     "Voronoi Manifold Volume": VoronoiManifoldVolumeElement,
     "Voronoi Ricci Scalar": VoronoiRicciScalar,
+    "Riemannian Mix": RiemannianMix,
     "Stochastic Gaussian": StochasticGaussian,
     "Quadratic Well": QuadraticWell,
 }
@@ -1733,6 +1837,18 @@ def prepare_benchmark_for_explorer(
         n_atoms = benchmark_kwargs.get("n_atoms", 10)
         benchmark = LennardJones(n_atoms=n_atoms)
         # No mode points for Lennard-Jones
+        mode_points = hv.Points([], kdims=["x₁", "x₂"])
+
+    elif benchmark_cls == RiemannianMix:
+        # Special handling for RiemannianMix
+        volume_weight = benchmark_kwargs.get("volume_weight", 1.0)
+        ricci_weight = benchmark_kwargs.get("ricci_weight", 1.0)
+        benchmark = RiemannianMix(
+            dims=dims,
+            volume_weight=volume_weight,
+            ricci_weight=ricci_weight,
+        )
+        # No mode points for RiemannianMix
         mode_points = hv.Points([], kdims=["x₁", "x₂"])
 
     elif benchmark_cls in {EggHolder, Easom, HolderTable}:
@@ -2068,6 +2184,7 @@ __all__ = [
     "MixtureOfGaussians",
     "OptimBenchmark",
     "Rastrigin",
+    "RiemannianMix",
     "Rosenbrock",
     "Sphere",
     "StochasticGaussian",

@@ -23,6 +23,7 @@ from fragile.fractalai.qft.correlator_channels import (
     ChannelCorrelatorResult,
     ConvolutionalAICExtractor,
     bin_by_euclidean_time,
+    bootstrap_correlator_error,
     compute_correlator_fft,
     compute_effective_mass_torch,
 )
@@ -79,6 +80,10 @@ class ElectroweakChannelConfig:
     epsilon_c: float | None = None
     epsilon_clone: float | None = None
     lambda_alg: float | None = None
+
+    # Bootstrap error estimation
+    compute_bootstrap_errors: bool = False
+    n_bootstrap: int = 100
 
 
 NEIGHBOR_WEIGHT_MODES = (
@@ -1120,12 +1125,22 @@ def _build_result(
             window_r2=None,
         )
 
+    real_series = series.real if series.is_complex() else series
     correlator = compute_correlator_fft(
-        series.real if series.is_complex() else series,
+        real_series,
         max_lag=cfg.max_lag,
         use_connected=cfg.use_connected,
     )
     effective_mass = compute_effective_mass_torch(correlator, dt)
+
+    # Compute bootstrap errors if enabled
+    correlator_err = None
+    if cfg.compute_bootstrap_errors:
+        correlator_err = bootstrap_correlator_error(
+            real_series,
+            max_lag=cfg.max_lag,
+            n_bootstrap=cfg.n_bootstrap,
+        )
 
     window_masses = None
     window_aic = None
@@ -1146,7 +1161,7 @@ def _build_result(
     return ChannelCorrelatorResult(
         channel_name=channel_name,
         correlator=correlator,
-        correlator_err=None,
+        correlator_err=correlator_err,
         effective_mass=effective_mass,
         mass_fit=mass_fit,
         series=series,

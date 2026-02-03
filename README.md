@@ -83,3 +83,5 @@ Outputs:
 ## License
 
 MIT
+
+/home/guillem/fragiletech/fragile/outputs/qft_calibrated/qft_penalty_thr0p75_pen0p9_m354_ed2p80_nu1p10_N10000_long_history.pt

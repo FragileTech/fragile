@@ -1755,7 +1755,7 @@ class TrilinearChannelCorrelator(ChannelCorrelator):
 class NucleonChannel(TrilinearChannelCorrelator):
     """Nucleon channel: 3×3 determinant of color states.
 
-    Requires d=3.
+    Requires d>=3 (uses first 3 spatial components).
 
     Operator: det([ψ_i, ψ_j, ψ_k]) for triplets (i, j, k)
     """
@@ -1785,9 +1785,12 @@ class NucleonChannel(TrilinearChannelCorrelator):
         T, N, d = color.shape
         device = color.device
 
-        if d != 3:
-            # Nucleon requires d=3
+        if d < 3:
+            # Nucleon requires at least 3 spatial dimensions
             return torch.zeros(T, device=device)
+
+        # Use only first 3 components (spatial dimensions, excluding Euclidean time)
+        color = color[..., :3]
 
         S = sample_indices.shape[1]
         k = neighbor_indices.shape[2]
@@ -1847,9 +1850,12 @@ class NucleonChannel(TrilinearChannelCorrelator):
         T, N, d = color.shape
         device = color.device
 
-        if d != 3:
-            # Nucleon requires d=3
+        if d < 3:
+            # Nucleon requires at least 3 spatial dimensions
             return torch.zeros((T, N), device=device)
+
+        # Use only first 3 components (spatial dimensions, excluding Euclidean time)
+        color = color[..., :3]
 
         # Get neighbors for all walkers
         neighbor_indices = self._get_all_neighbors_nucleon(color, valid, alive)  # [T, N, k]

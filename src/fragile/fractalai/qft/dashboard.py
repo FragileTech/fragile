@@ -1893,6 +1893,17 @@ class RadialSettings(param.Parameterized):
     channel_list = param.String(default="scalar,pseudoscalar,vector,nucleon,glueball")
     drop_axis_average = param.Boolean(default=True)
 
+    # Bootstrap error estimation
+    compute_bootstrap_errors = param.Boolean(
+        default=False,
+        doc="Enable bootstrap resampling for correlator error estimation",
+    )
+    n_bootstrap = param.Integer(
+        default=100,
+        bounds=(10, 1000),
+        doc="Number of bootstrap resamples for error estimation",
+    )
+
 
 class RadialElectroweakSettings(param.Parameterized):
     """Settings for radial electroweak channel correlators (axis-free)."""
@@ -1941,6 +1952,17 @@ class RadialElectroweakSettings(param.Parameterized):
     epsilon_c = param.Number(default=None, bounds=(1e-8, None), allow_None=True)
     epsilon_clone = param.Number(default=None, bounds=(1e-8, None), allow_None=True)
     lambda_alg = param.Number(default=None, bounds=(0.0, None), allow_None=True)
+
+    # Bootstrap error estimation
+    compute_bootstrap_errors = param.Boolean(
+        default=False,
+        doc="Enable bootstrap resampling for correlator error estimation",
+    )
+    n_bootstrap = param.Integer(
+        default=100,
+        bounds=(10, 1000),
+        doc="Number of bootstrap resamples for error estimation",
+    )
 
 
 class ElectroweakSettings(param.Parameterized):
@@ -2031,6 +2053,17 @@ class ElectroweakSettings(param.Parameterized):
     epsilon_c = param.Number(default=None, bounds=(1e-8, None), allow_None=True)
     epsilon_clone = param.Number(default=None, bounds=(1e-8, None), allow_None=True)
     lambda_alg = param.Number(default=None, bounds=(0.0, None), allow_None=True)
+
+    # Bootstrap error estimation
+    compute_bootstrap_errors = param.Boolean(
+        default=False,
+        doc="Enable bootstrap resampling for correlator error estimation",
+    )
+    n_bootstrap = param.Integer(
+        default=100,
+        bounds=(10, 1000),
+        doc="Number of bootstrap resamples for error estimation",
+    )
 
 
 class HiggsSettings(param.Parameterized):
@@ -2276,6 +2309,8 @@ def _compute_radial_channels_bundle(
         power_override=settings.power_override,
         window_widths=_parse_window_widths(settings.window_widths_spec),
         drop_axis_average=bool(settings.drop_axis_average),
+        compute_bootstrap_errors=settings.compute_bootstrap_errors,
+        n_bootstrap=settings.n_bootstrap,
     )
     channels = [c.strip() for c in settings.channel_list.split(",") if c.strip()]
     return compute_radial_channels(history, config=config, channels=channels)
@@ -2301,6 +2336,8 @@ def _compute_radial_electroweak_bundle(
         power_override=settings.power_override,
         window_widths=_parse_window_widths(settings.window_widths_spec),
         drop_axis_average=bool(settings.drop_axis_average),
+        compute_bootstrap_errors=settings.compute_bootstrap_errors,
+        n_bootstrap=settings.n_bootstrap,
     )
     channels = [c.strip() for c in settings.channel_list.split(",") if c.strip()]
 
@@ -2356,6 +2393,8 @@ def _compute_electroweak_channels(
         epsilon_c=settings.epsilon_c,
         epsilon_clone=settings.epsilon_clone,
         lambda_alg=settings.lambda_alg,
+        compute_bootstrap_errors=settings.compute_bootstrap_errors,
+        n_bootstrap=settings.n_bootstrap,
     )
     channels = [c.strip() for c in settings.channel_list.split(",") if c.strip()]
     return compute_all_electroweak_channels(history, channels=channels, config=config)
@@ -3729,6 +3768,8 @@ def create_app() -> pn.template.FastListTemplate:
                 "window_widths_spec",
                 "channel_list",
                 "drop_axis_average",
+                "compute_bootstrap_errors",
+                "n_bootstrap",
             ],
             show_name=False,
             default_layout=type("RadialSettingsGrid", (pn.GridBox,), {"ncols": 2}),
@@ -3841,6 +3882,8 @@ def create_app() -> pn.template.FastListTemplate:
                 "epsilon_c",
                 "epsilon_clone",
                 "lambda_alg",
+                "compute_bootstrap_errors",
+                "n_bootstrap",
             ],
             show_name=False,
             widgets={
@@ -4128,6 +4171,8 @@ def create_app() -> pn.template.FastListTemplate:
                 "epsilon_c",
                 "epsilon_clone",
                 "lambda_alg",
+                "compute_bootstrap_errors",
+                "n_bootstrap",
             ],
             show_name=False,
             widgets={
