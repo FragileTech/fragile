@@ -10987,6 +10987,378 @@ $$
 $$
 :::
 
+## 3_fitness_manifold/09_measurement.md
+
+:::{prf:definition} Measurement Schedule
+:label: def-measurement-schedule
+
+Fix $T>0$ and define measurement times
+
+$$
+t_k = t_0 + k T, \quad k \in \mathbb{Z}_{\ge 0}.
+$$
+
+At each $t_k$, define a spatial probe in the latent space $\mathcal{Z}$ and evaluate which Voronoi cells are pierced.
+:::
+
+:::{prf:definition} Hyperplane Probe
+:label: def-hyperplane-probe
+
+A **hyperplane probe** is specified by a unit normal $n \in \mathbb{R}^d$ and offset $b \in \mathbb{R}$, defining
+
+$$
+H(n,b) := \{x \in \mathcal{Z} : n \cdot x = b\}.
+$$
+
+The signed Euclidean distance from $x$ to $H$ is
+
+$$
+\mathrm{dist}_E(x,H) = n \cdot x - b.
+$$
+:::
+
+:::{prf:definition} Line Probe
+:label: def-line-probe
+
+A **line probe** is specified by an anchor point $p \in \mathbb{R}^d$ and unit direction $u \in \mathbb{R}^d$, defining
+
+$$
+L(p,u) := \{p + \lambda u : \lambda \in \mathbb{R}\}.
+$$
+
+The Euclidean distance from $x$ to $L$ is
+
+$$
+\mathrm{dist}_E(x,L) = \| (I - u u^T)(x - p) \|.
+$$
+:::
+
+:::{prf:definition} Pierced Voronoi Cell (Hyperplane)
+:label: def-pierced-cell-hyperplane
+
+At time $t_k$, the Voronoi cell $\mathrm{Vor}_i(t_k)$ is **pierced** by $H(n,b)$ if
+
+$$
+H(n,b) \cap \mathrm{Vor}_i(t_k) \neq \emptyset.
+$$
+
+Define the pierced set
+
+$$
+P^{H}_{t_k} := \{ i : H(n,b) \cap \mathrm{Vor}_i(t_k) \neq \emptyset \}.
+$$
+:::
+
+:::{prf:definition} Pierced Voronoi Cell (Line)
+:label: def-pierced-cell-line
+
+At time $t_k$, the Voronoi cell $\mathrm{Vor}_i(t_k)$ is **pierced** by $L(p,u)$ if
+
+$$
+L(p,u) \cap \mathrm{Vor}_i(t_k) \neq \emptyset.
+$$
+
+Define the pierced set
+
+$$
+P^{L}_{t_k} := \{ i : L(p,u) \cap \mathrm{Vor}_i(t_k) \neq \emptyset \}.
+$$
+:::
+
+:::{prf:definition} Pierced Neighbor Graph
+:label: def-pierced-neighbor-graph
+
+Let $\mathrm{DT}(t_k)$ be the Delaunay complex at time $t_k$ with edge set
+$E_{\mathrm{DT}}(t_k)$. The **pierced neighbor graph** is the induced subgraph on the pierced set
+
+$$
+E^{\mathrm{pierced}}_{t_k} := \{(i,j) \in E_{\mathrm{DT}}(t_k) : i,j \in P_{t_k}\},
+$$
+
+where $P_{t_k}$ is either $P^{H}_{t_k}$ or $P^{L}_{t_k}$.
+:::
+
+:::{prf:definition} Scutoid Indexing on a Measurement Slice
+:label: def-scutoid-indexing-measurement
+
+Let $S_{i,k}$ denote the scutoid connecting walker $i$ across $[t_k,t_{k+1}]$. We associate $S_{i,k}$ to the slice $t_k$ by its bottom cell (walker index at $t_k$), and to the slice $t_{k+1}$ by its top cell. A scutoid is **pierced at time $t_k$** if its associated bottom (or top) Voronoi cell is pierced by the probe.
+:::
+
+:::{prf:definition} Scutoid Barycenter (Center-Only)
+:label: def-scutoid-barycenter-center
+
+Let $x^-_{i,k}$ and $x^+_{i,k}$ be the bottom and top walker positions of scutoid $S_{i,k}$. The **center-only barycenter** is
+
+$$
+\bar{x}_{\mathrm{ctr}}(S_{i,k}) := \tfrac{1}{2}(x^-_{i,k} + x^+_{i,k}).
+$$
+
+The spacetime barycenter is
+
+$$
+\bar{X}_{\mathrm{ctr}}(S_{i,k}) := \big(\bar{x}_{\mathrm{ctr}}(S_{i,k}),\; \tfrac{1}{2}(t_k + t_{k+1})\big).
+$$
+:::
+
+:::{prf:definition} Scutoid Barycenter (Vertex-Augmented)
+:label: def-scutoid-barycenter-vertex
+
+Let $V^-_{i,k}$ and $V^+_{i,k}$ be the sets of Voronoi vertices at the bottom and top. The **vertex-augmented barycenter** is
+
+$$
+\bar{x}_{\mathrm{vx}}(S_{i,k}) := \frac{1}{2 + |V^-_{i,k}| + |V^+_{i,k}|}
+\Big(x^-_{i,k} + x^+_{i,k} + \sum_{v \in V^-_{i,k}} v + \sum_{v \in V^+_{i,k}} v\Big).
+$$
+:::
+
+:::{prf:definition} Phase from Hyperplane (Euclidean)
+:label: def-phase-hyperplane-euclidean
+
+Given a barycenter $\bar{x}(S)$, the Euclidean phase induced by the hyperplane probe is
+
+$$
+\phi^{H}_E(S) := k_H\, \mathrm{dist}_E(\bar{x}(S), H(n,b))
+\quad \text{with} \quad \mathrm{dist}_E(\bar{x},H) = n \cdot \bar{x} - b.
+$$
+
+Here $k_H$ is a fixed scale factor (e.g., inverse length).
+:::
+
+:::{prf:definition} Phase from Line (Euclidean)
+:label: def-phase-line-euclidean
+
+Given a barycenter $\bar{x}(S)$, the Euclidean phase induced by the line probe is
+
+$$
+\phi^{L}_E(S) := k_L\, \mathrm{dist}_E(\bar{x}(S), L(p,u))
+\quad \text{with} \quad \mathrm{dist}_E(\bar{x},L) = \| (I - u u^T)(\bar{x} - p) \|.
+$$
+:::
+
+:::{prf:definition} Geodesic Phase Proxies
+:label: def-phase-geodesic-proxy
+
+When the geodesic distance $d_g$ is available, define
+
+$$
+\phi^{H}_g(S) := k_H\, \mathrm{dist}_g(\bar{x}(S), H),
+\quad
+\phi^{L}_g(S) := k_L\, \mathrm{dist}_g(\bar{x}(S), L),
+$$
+
+where $\mathrm{dist}_g(x,\mathcal{S}) := \inf_{y\in\mathcal{S}} d_g(x,y)$ is the distance from a point to a subset
+in the Riemannian metric induced by $g = H + \epsilon_\Sigma I$ on the slice. When $d_g$ is not explicitly computed, use the Delaunay-graph proxy
+
+$$
+\mathrm{dist}_g(\bar{x}, \cdot) \approx d_{\mathrm{DT}}(i, \cdot),
+$$
+
+where $i$ is the walker index associated to $S$ and $d_{\mathrm{DT}}$ is the shortest-path distance on $\mathrm{DT}(t_k)$ with Euclidean edge lengths.
+:::
+
+:::{prf:definition} Walker-Relative Phase (Euclidean)
+:label: def-walker-relative-phase-euclidean
+
+Let $x^-_{i,k}$, $x^+_{i,k}$ be the bottom and top walker positions of scutoid $S_{i,k}$. Define
+
+$$
+\phi^{-}_E(S_{i,k}) := k_W\, \|\bar{x}(S_{i,k}) - x^-_{i,k}\|,
+\quad
+\phi^{+}_E(S_{i,k}) := k_W\, \|\bar{x}(S_{i,k}) - x^+_{i,k}\|.
+$$
+:::
+
+:::{prf:definition} Walker-Relative Phase (Geodesic Proxy)
+:label: def-walker-relative-phase-geo
+
+When $d_g$ is not explicitly available, approximate by the Delaunay-graph distance between the walker and the pierced set or the probe intersection on the slice:
+
+$$
+\phi^{-}_g(S_{i,k}) := k_W\, d_{\mathrm{DT}}(i, P_{t_k}),
+\quad
+\phi^{+}_g(S_{i,k}) := k_W\, d_{\mathrm{DT}}(i, P_{t_{k+1}}).
+$$
+:::
+
+:::{prf:definition} Scutoid Amplitude
+:label: def-scutoid-amplitude
+
+Define the scutoid amplitude by one of the following choices:
+
+1. **Volume amplitude**: $A_V(S) := \mathrm{Vol}_{d+1}(S)$.
+2. **QSD amplitude**: $A_Q(S) := w_{\mathrm{geo}}(S)$, the geometric reweighting from
+   {prf:ref}`def-cst-volume` applied to the scutoid volume or its slice-wise proxy.
+
+Either choice yields a nonnegative amplitude and is compatible with the scutoid tessellation.
+:::
+
+:::{prf:definition} Measurement Functional
+:label: def-measurement-functional
+
+Given a probe at time $t_k$, define the measured signal as
+
+$$
+\mathcal{M}(t_k) := \sum_{S \in \mathcal{S}_{t_k}} \psi(S),
+$$
+
+where $\mathcal{S}_{t_k}$ is the set of scutoids pierced at time $t_k$ (by bottom association) and
+$\psi(S)$ is the scutoid field from {prf:ref}`def-scutoid-field-transport`. In the abelian case,
+$\psi(S) = A(S)e^{i\phi(S)}$ and $\mathcal{M}(t_k) \in \mathbb{C}$; in the non-abelian case,
+$\mathcal{M}(t_k) \in V$.
+:::
+
+:::{prf:definition} Edge Parallel Transport on the Pierced Graph
+:label: def-pierced-edge-transport
+
+Let $E^{\mathrm{pierced}}_{t_k}$ be the pierced neighbor graph at time $t_k$. For each edge $(i,j) \in E^{\mathrm{pierced}}_{t_k}$, assign a parallel transport operator
+
+$$
+U_{ij} := U(e_i, e_j),
+$$
+
+with $U_{ij} \in U(1)$ for abelian transport or $U_{ij} \in SU(N)$ for non-abelian transport, as in {doc}`/source/3_fractal_gas/2_fractal_set/03_lattice_qft`. For $SU(2)$ interaction-pair transport, replace $U_{ij}$ by the pairwise transport $U_{ij\to i'j'}$ acting on local doublets along interaction edges (see Section 2.2 in {doc}`/source/3_fractal_gas/2_fractal_set/03_lattice_qft`). Under a local gauge transformation $G_i$ at node $i$, the transport transforms by
+
+$$
+U_{ij} \mapsto G_i\, U_{ij}\, G_j^{-1}.
+$$
+:::
+
+:::{prf:definition} Edge-Type Transport Assignment
+:label: def-edge-type-transport-assignment
+
+Let the pierced neighbor graph be realized on a single time slice $t_k$ so that its edges are spatial IG/Delaunay edges. Define the transport assignment by edge type:
+
+- **IG edges**: use the spatial transport $U_{\mathrm{IG}}(e_i \sim e_j)$ as in {doc}`/source/3_fractal_gas/2_fractal_set/03_lattice_qft`.
+- **CST edges** (if the probe is extended across slices): use the temporal transport $U_{\mathrm{CST}}(e_i \to e_j)$.
+- **IA edges** (if attribution phases are included): use $U_{\mathrm{IA}}(e_i \to e_j)$ with the stored attribution phase.
+
+This fixes the gauge content of the pierced graph as a subgraph of the Fractal Set with transport inherited from the edge-type assignments.
+:::
+
+:::{prf:definition} Scutoid Field and Transport to Reference
+:label: def-scutoid-field-transport
+
+Let $S_{i,k}$ be a scutoid associated to walker $i$ on slice $t_k$. Let $V$ be the representation space of the gauge group on the pierced graph (for $U(1)$, $V=\mathbb{C}$; for $SU(N)$, $V=\mathbb{C}^N$). Define a unit vector $\chi(S_{i,k}) \in V$ and the scutoid field value
+
+$$
+\psi(S_{i,k}) := A(S_{i,k})\, e^{i\phi(S_{i,k})}\,\chi(S_{i,k}).
+$$
+
+Fix a reference walker $r$ on the same slice and a path $\gamma : i \to r$ along IG/Delaunay edges. Let $U(\gamma)$ be the parallel transport operator (path-ordered product of edge transports). The reference-transported field is
+
+$$
+\psi_r(S_{i,k}) := U(\gamma)\, \psi(S_{i,k}) \in V.
+$$
+
+Changes of local gauge at nodes act by $\psi(S_{i,k}) \mapsto G_i\,\psi(S_{i,k})$ and conjugation on $U(\gamma)$, so $\psi_r$ is gauge-covariant and can be compared at a common reference.
+:::
+
+:::{prf:definition} Reference-Transported Measurement
+:label: def-reference-transported-measurement
+
+Let $\mathcal{S}_{t_k}$ be the pierced scutoid set at time $t_k$. Define the reference-transported measurement
+
+$$
+\mathcal{M}_r(t_k) := \sum_{S \in \mathcal{S}_{t_k}} \psi_r(S).
+$$
+
+For the abelian case ($U(1)$), define the gauge-invariant scalar
+
+$$
+\mathcal{I}_r(t_k) := |\mathcal{M}_r(t_k)|.
+$$
+
+For the non-abelian case ($SU(N)$), define
+
+$$
+\mathcal{I}_r(t_k) := \mathrm{tr}\,\big(\mathcal{M}_r(t_k)\,\mathcal{M}_r(t_k)^{\dagger}\big).
+$$
+:::
+
+:::{prf:lemma} Reference-Transport Covariance
+:label: lem-reference-transport-covariance
+
+Under a local gauge transformation $G_i$ at each node, the reference-transported fields satisfy
+
+$$
+\psi_r(S_{i,k}) \mapsto G_r\,\psi_r(S_{i,k}),
+$$
+
+and hence
+
+$$
+\mathcal{M}_r(t_k) \mapsto G_r\,\mathcal{M}_r(t_k).
+$$
+
+Consequently, $\mathcal{I}_r(t_k)$ is gauge-invariant in both the abelian and non-abelian cases.
+
+*Proof.*
+
+**Step 1. Edge transport covariance:** For any path $\gamma:i\to r$, the path-ordered transport transforms as
+$U(\gamma) \mapsto G_r\,U(\gamma)\,G_i^{-1}$ by repeated application of
+$U_{ij} \mapsto G_i U_{ij} G_j^{-1}$.
+
+**Step 2. Field covariance:** Since $\psi(S_{i,k}) \mapsto G_i\,\psi(S_{i,k})$, we have
+$\psi_r(S_{i,k}) = U(\gamma)\psi(S_{i,k}) \mapsto G_r\,\psi_r(S_{i,k})$.
+
+**Step 3. Measurement covariance:** Linearity of the sum yields
+$\mathcal{M}_r(t_k) \mapsto G_r\,\mathcal{M}_r(t_k)$.
+
+**Step 4. Invariants:** In $U(1)$, $|\mathcal{M}_r|$ is invariant under multiplication by $e^{i\alpha}$. In $SU(N)$, $\mathrm{tr}(\mathcal{M}_r\mathcal{M}_r^{\dagger})$ is invariant under conjugation. $\square$
+:::
+
+:::{prf:definition} Gauge-Compatible Probe Phase
+:label: def-gauge-compatible-probe-phase
+
+A probe phase assignment $\phi(S)$ is **gauge-compatible** if, for every IG/Delaunay edge $(i,j)$ in a pierced neighbor graph at $t_k$, the relative phase matches the edge transport in the abelian case:
+
+$$
+\exp\big(i(\phi(S_{j,k})-\phi(S_{i,k}))\big) = U_{ij},
+$$
+
+or, for non-abelian transport, the scutoid field transforms by
+
+$$
+\psi(S_{j,k}) = U_{ij}\, \psi(S_{i,k})
+$$
+
+up to the chosen reference transport. This condition is optional; if it is not enforced, the probe phase is an external scalar field independent of the gauge phases.
+:::
+
+:::{prf:theorem} Path-Independent Reference Transport on the Pierced Graph
+:label: thm-path-independent-reference-transport
+
+Assume the probe phase assignment is gauge-compatible on $E^{\mathrm{pierced}}_{t_k}$ and the pierced graph is **flat** in the sense that every closed loop $\mathcal{C}$ satisfies
+
+$$
+\mathcal{P} \prod_{(i,j)\in \mathcal{C}} U_{ij} = I,
+$$
+
+with $I=1$ in $U(1)$ and $I$ the identity in $SU(N)$. Then for any two paths $\gamma,\gamma'$ from node $i$ to the reference node $r$,
+
+$$
+U(\gamma) = U(\gamma'),
+$$
+
+so $\psi_r(S_{i,k})$ and $\mathcal{M}_r(t_k)$ are path-independent. Consequently, the gauge-invariant scalars $\mathcal{I}_r(t_k)$ defined in {prf:ref}`def-reference-transported-measurement` are well-defined and gauge-invariant.
+
+*Proof.* Concatenating $\gamma$ with the reverse of $\gamma'$ gives a closed loop. Flatness implies the corresponding holonomy is the identity, hence $U(\gamma)=U(\gamma')$. Path-independence yields a well-defined $\psi_r$ and $\mathcal{M}_r$. Gauge invariance of $\mathcal{I}_r$ follows from {prf:ref}`lem-reference-transport-covariance`. $\square$
+:::
+
+:::{prf:definition} Gauge-Invariant Measurement via Holonomy
+:label: def-gauge-invariant-measurement
+
+Let $\mathcal{C}$ be a closed loop in the pierced neighbor graph. The gauge-invariant holonomy is
+
+$$
+W(\mathcal{C}) := \mathrm{tr}\, \mathcal{P} \prod_{(i,j)\in \mathcal{C}} U_{ij}.
+$$
+
+This is the Wilson loop {prf:ref}`def-wilson-loop-lqft` evaluated on a loop in the pierced neighbor graph.
+
+A gauge-invariant probe statistic can be formed by combining the measured field with holonomy along loops that traverse pierced cells. This isolates the gauge content from the probe-induced scalar phase.
+:::
+
 ## appendices/references_do_not_cite/11_geometric_gas(1).md
 
 :::{prf:definition} Localization Kernel
@@ -15528,24 +15900,24 @@ The regularized standard deviation $\sigma'_{	ext{reg}}(V) = \sqrt{V + \sigma'^2
 
 $$
 \left|(\sigma'_{	ext{reg}})'(V)
-ight| =
-rac{1}{2\sqrt{V + \sigma'^2_{\min}}} \le
+ight| = 
+rac{1}{2\sqrt{V + \sigma'^2_{\min}}} \le 
 rac{1}{2\sigma'_{\min}} =: L_{\sigma'_{	ext{reg}}}
 
 $$
 
 $$
 \left|(\sigma'_{	ext{reg}})''(V)
-ight| =
-rac{1}{4(V + \sigma'^2_{\min})^{3/2}} \le
+ight| = 
+rac{1}{4(V + \sigma'^2_{\min})^{3/2}} \le 
 rac{1}{4\sigma'^3_{\min}} =: L_{\sigma''_{	ext{reg}}}
 
 $$
 
 $$
 \left|(\sigma'_{	ext{reg}})'''(V)
-ight| =
-rac{3}{8(V + \sigma'^2_{\min})^{5/2}} \le
+ight| = 
+rac{3}{8(V + \sigma'^2_{\min})^{5/2}} \le 
 rac{3}{8\sigma'^5_{\min}} =: L_{\sigma'''_{	ext{reg}}}
 
 $$
@@ -15554,7 +15926,7 @@ General form: For the $n$-th derivative with $n \ge 1$,
 
 $$
 \left|(\sigma'_{	ext{reg}})^{(n)}(V)
-ight| \le
+ight| \le 
 rac{(2n-1)!!}{2^n \sigma'^{(2n-1)}_{\min}}
 
 $$
@@ -16740,24 +17112,24 @@ The regularized standard deviation $\sigma'_{	ext{reg}}(V) = \sqrt{V + \sigma'^2
 
 $$
 \left|(\sigma'_{	ext{reg}})'(V)
-ight| =
-rac{1}{2\sqrt{V + \sigma'^2_{\min}}} \le
+ight| = 
+rac{1}{2\sqrt{V + \sigma'^2_{\min}}} \le 
 rac{1}{2\sigma'_{\min}} =: L_{\sigma'_{	ext{reg}}}
 
 $$
 
 $$
 \left|(\sigma'_{	ext{reg}})''(V)
-ight| =
-rac{1}{4(V + \sigma'^2_{\min})^{3/2}} \le
+ight| = 
+rac{1}{4(V + \sigma'^2_{\min})^{3/2}} \le 
 rac{1}{4\sigma'^3_{\min}} =: L_{\sigma''_{	ext{reg}}}
 
 $$
 
 $$
 \left|(\sigma'_{	ext{reg}})'''(V)
-ight| =
-rac{3}{8(V + \sigma'^2_{\min})^{5/2}} \le
+ight| = 
+rac{3}{8(V + \sigma'^2_{\min})^{5/2}} \le 
 rac{3}{8\sigma'^5_{\min}} =: L_{\sigma'''_{	ext{reg}}}
 
 $$
@@ -16766,7 +17138,7 @@ General form: For the $n$-th derivative with $n \ge 1$,
 
 $$
 \left|(\sigma'_{	ext{reg}})^{(n)}(V)
-ight| \le
+ight| \le 
 rac{(2n-1)!!}{2^n \sigma'^{(2n-1)}_{\min}}
 
 $$
@@ -16779,7 +17151,7 @@ Referenced by {prf:ref}`def-fragile-gas-algorithm`.
 Direct computation of derivatives of $\sigma'_{	ext{reg}}(V) = (V + \sigma'^2_{\min})^{1/2}$:
 
 $$
-(\sigma'_{	ext{reg}})'(V) =
+(\sigma'_{	ext{reg}})'(V) = 
 rac{1}{2}(V + \sigma'^2_{\min})^{-1/2}
 
 $$
@@ -16791,7 +17163,7 @@ rac{1}{4}(V + \sigma'^2_{\min})^{-3/2}
 $$
 
 $$
-(\sigma'_{	ext{reg}})'''(V) =
+(\sigma'_{	ext{reg}})'''(V) = 
 rac{3}{8}(V + \sigma'^2_{\min})^{-5/2}
 
 $$
@@ -27078,7 +27450,7 @@ Here $m_{\text{eq}} = \|\pi_{\text{QSD}}\|_{L^1}$ and $\beta_\star = (1 - e^{-2\
 
 **Proof**:
 
-**Step 1 (Velocity Refresh via Ornstein-Uhlenbeck Block)**
+**Step 1 (Velocity Refresh via Ornstein-Uhlenbeck Block)**  
 During a kinetic window of length $\tau_v$, the BAOAB operator evolves the velocity according to
 
 $$
@@ -27098,7 +27470,7 @@ $$
 
 Hence a single kinetic block already spreads mass over **all** velocity directions with a state-independent density floor.
 
-**Step 2 (Spatial Mollification Without Velocity Restriction)**
+**Step 2 (Spatial Mollification Without Velocity Restriction)**  
 Conditioned on any $(x_1, v_1)$ produced by Step 1, the cloning kernel
 
 $$
@@ -27117,7 +27489,7 @@ $$
 
 so positions are minorized by Lebesgue measure independently of the pre-cloning state.
 
-**Step 3 (Two-Step Doeblin Minorization)**
+**Step 3 (Two-Step Doeblin Minorization)**  
 Let $P^{(2)}$ denote “kinetic over $\tau_v$” composed with “cloning.” For any measurable $A \subseteq \Omega$,
 
 $$
@@ -27138,7 +27510,7 @@ $$
 
 with state-independent minorization measure $\nu(A) = |A|/|\Omega|$.
 
-**Step 4 (Transfer to the QSD)**
+**Step 4 (Transfer to the QSD)**  
 For the invariant quasi-stationary distribution,
 
 $$
@@ -27150,7 +27522,7 @@ $$
 
 so $\pi_{\text{QSD}}$ possesses a density bounded below by $c_\pi = \delta_2 m_{\text{eq}} / |\Omega|$ at every point of $\Omega$.
 
-**Step 5 (Smoothness)**
+**Step 5 (Smoothness)**  
 Lemma {prf:ref}`lem-linfty-full-operator` provides hypoelliptic smoothing, giving $\pi_{\text{QSD}} \in C^\infty(\Omega)$ and promoting the almost-everywhere lower bound to a pointwise one.
 
 **References**: This multi-step minorization follows the Harris/Doeblin framework for hypoelliptic diffusions (Hairer & Mattingly 2011; Villani 2009) and the QSD analysis of Champagnat & Villemonais (2016). $\square$
@@ -27219,7 +27591,7 @@ $$
 
 We split the argument into an **early-time deterministic floor** and a **late-time concentration regime**. Throughout we denote $k_t = k_t(\omega)$ the number of alive walkers and $m_a(t) = \|\rho_t\|_{L^1}$ the PDE mass.
 
-**Step 0: Deterministic floor on $[0, t_{\text{eq}}]$ via logistic ODE**
+**Step 0: Deterministic floor on $[0, t_{\text{eq}}]$ via logistic ODE**  
 The mass equation derived in {doc}`08_mean_field` reads
 
 $$
@@ -27267,7 +27639,7 @@ $$
 
 This establishes the desired floor on $[0, t_{\text{eq}}]$.
 
-**Step 1: Spectral gap for configuration observables (removing the Markov assumption on $k_t$)**
+**Step 1: Spectral gap for configuration observables (removing the Markov assumption on $k_t$)**  
 The $N$-particle process $Z_t = (z_t^{(1)}, \ldots, z_t^{(N)})$ is geometrically ergodic with spectral gap $\kappa_{\text{full}} > 0$ in $L^2(\Pi_{\text{QSD}}^{(N)})$ (Theorem 4.5 of {doc}`06_convergence`). For any observable $F : \Omega^N \to \mathbb{R}$,
 
 $$
@@ -27288,7 +27660,7 @@ where we set $\beta_{\text{gap}} := \kappa_{\text{full}} / 2$ (the second inequa
 
 This argument works directly on the full configuration process $Z_t$; no Markov property for the projected count $k_t$ is required, thereby correcting the earlier (invalid) reduction to a standalone birth-death chain.
 
-**Step 2: Finite-time concentration after equilibration**
+**Step 2: Finite-time concentration after equilibration**  
 Let $\mathcal{L}_t$ be the law of $Z_t$ starting from any initial configuration with alive mass at least $c_{\text{early}}$. By Theorem 4.5 of {doc}`06_convergence`,
 
 $$
@@ -27313,7 +27685,7 @@ $$
 
 $$
 
-**Step 3: Survival conditioning**
+**Step 3: Survival conditioning**  
 The survival estimate of Theorem {prf:ref}`thm-exponential-survival` gives
 
 $$
@@ -27874,7 +28246,7 @@ $$
 
 Write $k_s := N \|\mu_s^N\|_{L^1}$ for the number of alive walkers. The proof has two components.
 
-**Step 1: Mean-field bias control**
+**Step 1: Mean-field bias control**  
 Section 3 of {doc}`08_mean_field` (see Theorem {prf:ref}`thm-mean-field-limit-informal` and the quantitative estimates in its proof) yields
 
 $$
@@ -27885,7 +28257,7 @@ $$
 
 where $C_{\text{bias}}(t)$ depends continuously on $t$ and the model parameters. This follows from the classical propagation-of-chaos estimates (Fournier & Méléard 2004, Theorem 1.1), because the birth/death rates are globally Lipschitz on the compact phase space.
 
-**Step 2: Martingale concentration for $k_s$**
+**Step 2: Martingale concentration for $k_s$**  
 The Doob decomposition of $k_s$ reads
 
 $$
@@ -27912,7 +28284,7 @@ $$
 
 for all $s \leq t$, where $\beta_{\text{mart}} := \big(4 \Lambda t + 2\big)^{-1}$.
 
-**Step 3: Union bound and choice of parameters**
+**Step 3: Union bound and choice of parameters**  
 For any $\epsilon > 0$,
 
 $$
@@ -36624,7 +36996,7 @@ Let $\rho_{\text{QSD}}(x,v)$ have position marginal $\rho_x(x)$ and conditional 
 covariance $\Sigma_v(x) := \int v v^\top \rho_{\text{QSD}}(v|x)\,dv$. Assume:
 
 1. **Position Poincare**: $\rho_x$ satisfies
-
+   
    $$
    \|a\|^2_{L^2(\rho_x)} \le \frac{1}{\kappa_x}\|\nabla_x a\|^2_{L^2(\rho_x)}
    \quad \text{for all } a \text{ with } \int a\,\rho_x = 0.

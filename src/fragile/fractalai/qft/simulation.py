@@ -5,8 +5,8 @@ This script runs a simple Euclidean Gas in a quadratic potential well and saves
 full RunHistory data for later FractalSet construction and analysis.
 
 Defaults:
-- N=1000 walkers
-- n_steps=1000
+- n_walkers=1000
+- steps=1000
 - record_every=1 (record every step)
 - Quadratic well U(x) = 0.5 * alpha * ||x||^2 with alpha=0.1
 - Bounds: [-bounds_extent, bounds_extent]^d with bounds_extent=10
@@ -15,7 +15,7 @@ Defaults:
 
 Usage:
     python src/experiments/fractal_gas_potential_well.py
-    python src/experiments/fractal_gas_potential_well.py --n-steps 500 --record-every 5
+    python src/experiments/fractal_gas_potential_well.py --steps 500 --record-every 5
 
 Notes:
 - This produces large output files. Increase record_every to reduce size.
@@ -26,11 +26,11 @@ Notes:
 from __future__ import annotations
 
 import argparse
-from dataclasses import asdict, dataclass, field
+from dataclasses import asdict, dataclass
 from datetime import datetime
 import json
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any, Callable, ClassVar
 
 import torch
 
@@ -44,14 +44,32 @@ from fragile.fractalai.core.kinetic_operator import KineticOperator
 
 @dataclass
 class PotentialWellConfig:
-    spatial_dims: int = 3  # Number of spatial dimensions (2 or 3)
-    dims: int = field(init=False)  # Total dimensions = spatial_dims + 1 (for Euclidean time)
+    DEFAULT_SPATIAL_DIMS: ClassVar[int] = 3
+    DEFAULT_DIMS: ClassVar[int] = DEFAULT_SPATIAL_DIMS + 1
+
+    dims: int | None = None  # Total dimensions = spatial_dims + 1 (for Euclidean time)
+    spatial_dims: int | None = None  # Number of spatial dimensions (2 or 3)
     alpha: float = 0.1
     bounds_extent: float = 10.0
 
-    def __post_init__(self):
-        """Compute total dimensions as spatial + time"""
-        self.dims = self.spatial_dims + 1  # Always add 1 for Euclidean time
+    def __post_init__(self) -> None:
+        """Normalize dims/spatial_dims consistency."""
+        if self.dims is None and self.spatial_dims is None:
+            self.spatial_dims = self.DEFAULT_SPATIAL_DIMS
+            self.dims = self.DEFAULT_DIMS
+            return
+        if self.dims is None:
+            self.dims = self.spatial_dims + 1
+            return
+        if self.spatial_dims is None:
+            self.spatial_dims = self.dims - 1
+            return
+        expected_dims = self.spatial_dims + 1
+        if self.dims != expected_dims:
+            raise ValueError(
+                "PotentialWellConfig dims must equal spatial_dims + 1 "
+                f"(dims={self.dims}, spatial_dims={self.spatial_dims})."
+            )
 
 
 @dataclass
@@ -317,9 +335,9 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output-dir", default="outputs/fractal_gas_potential_well")
     parser.add_argument("--run-id", default=None)
-    parser.add_argument("--N", type=int, default=RunConfig.N)
-    parser.add_argument("--n-steps", type=int, default=RunConfig.n_steps)
-    parser.add_argument("--dims", type=int, default=PotentialWellConfig.dims)
+    parser.add_argument("--n-walkers", "--N", dest="n_walkers", type=int, default=RunConfig.N)
+    parser.add_argument("--steps", "--n-steps", dest="steps", type=int, default=RunConfig.n_steps)
+    parser.add_argument("--dims", type=int, default=PotentialWellConfig.DEFAULT_DIMS)
     parser.add_argument("--record-every", type=int, default=RunConfig.record_every)
     parser.add_argument("--seed", type=int, default=RunConfig.seed)
     parser.add_argument("--device", default=RunConfig.device)
@@ -444,8 +462,8 @@ def main() -> None:
         companion_epsilon_clone=args.companion_epsilon_clone,
     )
     run_cfg = RunConfig(
-        N=args.N,
-        n_steps=args.n_steps,
+        N=args.n_walkers,
+        n_steps=args.steps,
         record_every=args.record_every,
         seed=args.seed,
         device=args.device,

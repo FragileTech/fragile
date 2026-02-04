@@ -7,6 +7,7 @@ from torch import nn
 import torch.nn.functional as F
 
 from fragile.core.layers.primitives import SpectralLinear
+from fragile.core.layers.ugn import SoftEquivariantLayer
 
 
 try:  # Optional dependency
@@ -449,6 +450,83 @@ class NormGatedConv2d(nn.Module):
         return x.reshape(B, C, H, W)
 
 
+def _init_soft_equiv_layer(layer: SoftEquivariantLayer) -> None:
+    """Initialize soft-equivariant layer to minimize cross-bundle mixing."""
+    with torch.no_grad():
+        if isinstance(layer.mixing_weights, torch.Tensor):
+            layer.mixing_weights.zero_()
+        else:
+            for row in layer.mixing_weights:
+                for weight in row:
+                    weight.zero_()
+
+
+class SoftEquivariantConvMix(nn.Module):
+    """Apply soft-equivariant bundle mixing to feature maps."""
+
+    def __init__(
+        self,
+        channels: int,
+        bundle_size: int,
+        hidden_dim: int = 64,
+        use_spectral_norm: bool = True,
+        zero_self_mixing: bool = False,
+        alpha: float = 0.1,
+    ) -> None:
+        super().__init__()
+        if channels <= 0:
+            msg = "channels must be positive."
+            raise ValueError(msg)
+        if bundle_size <= 0:
+            msg = "bundle_size must be positive."
+            raise ValueError(msg)
+        if channels % bundle_size != 0:
+            msg = "channels must be divisible by bundle_size."
+            raise ValueError(msg)
+        if alpha < 0.0 or alpha > 1.0:
+            msg = "alpha must be in [0, 1]."
+            raise ValueError(msg)
+
+        n_bundles = channels // bundle_size
+        self.layer = SoftEquivariantLayer(
+            n_bundles=n_bundles,
+            bundle_dim=bundle_size,
+            hidden_dim=hidden_dim,
+            use_spectral_norm=use_spectral_norm,
+            zero_self_mixing=zero_self_mixing,
+        )
+        _init_soft_equiv_layer(self.layer)
+        self.alpha = float(alpha)
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        if x.dim() != 4:
+            msg = "Expected input shape [B, C, H, W]."
+            raise ValueError(msg)
+        b, c, h, w = x.shape
+        z = x.permute(0, 2, 3, 1).reshape(b * h * w, c)
+        z_mixed = self.layer(z)
+        z = (1.0 - self.alpha) * z + self.alpha * z_mixed
+        return z.view(b, h, w, c).permute(0, 3, 1, 2).contiguous()
+
+
+class StandardConvBlock(nn.Module):
+    """Non-covariant CNN block for symmetry breaking."""
+
+    def __init__(self, channels: int) -> None:
+        super().__init__()
+        if channels <= 0:
+            msg = "channels must be positive."
+            raise ValueError(msg)
+        self.block = nn.Sequential(
+            nn.Conv2d(channels, channels, kernel_size=3, padding=1, bias=False),
+            nn.BatchNorm2d(channels),
+            nn.ReLU(inplace=True),
+        )
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        return self.block(x)
+
+
 class CovariantCIFARBackbone(nn.Module):
     """Gauge-covariant vision backbone for CIFAR-10 benchmarking.
 
@@ -494,6 +572,14 @@ class CovariantCIFARBackbone(nn.Module):
         base_channels: int = 16,
         bundle_size: int = 4,
         use_spectral_fc: bool = True,
+        soft_equiv_per_block: bool = False,
+        soft_equiv_bundle_size: int | None = None,
+        soft_equiv_hidden_dim: int = 64,
+        soft_equiv_use_spectral_norm: bool = True,
+        soft_equiv_zero_self_mixing: bool = False,
+        soft_equiv_alpha: float = 0.1,
+        standard_head: bool = False,
+        standard_head_blocks: int = 2,
     ) -> None:
         super().__init__()
         if base_channels % bundle_size != 0:
@@ -534,6 +620,43 @@ class CovariantCIFARBackbone(nn.Module):
             self.fc = nn.Linear(c3, num_classes)
 
         self._num_features = c3
+        self.soft_equiv1 = None
+        self.soft_equiv2 = None
+        self.soft_equiv3 = None
+        self.standard_head = None
+        if soft_equiv_per_block:
+            mix_bundle_size = soft_equiv_bundle_size or bundle_size
+            self.soft_equiv1 = SoftEquivariantConvMix(
+                channels=c1,
+                bundle_size=mix_bundle_size,
+                hidden_dim=soft_equiv_hidden_dim,
+                use_spectral_norm=soft_equiv_use_spectral_norm,
+                zero_self_mixing=soft_equiv_zero_self_mixing,
+                alpha=soft_equiv_alpha,
+            )
+            self.soft_equiv2 = SoftEquivariantConvMix(
+                channels=c2,
+                bundle_size=mix_bundle_size,
+                hidden_dim=soft_equiv_hidden_dim,
+                use_spectral_norm=soft_equiv_use_spectral_norm,
+                zero_self_mixing=soft_equiv_zero_self_mixing,
+                alpha=soft_equiv_alpha,
+            )
+            self.soft_equiv3 = SoftEquivariantConvMix(
+                channels=c3,
+                bundle_size=mix_bundle_size,
+                hidden_dim=soft_equiv_hidden_dim,
+                use_spectral_norm=soft_equiv_use_spectral_norm,
+                zero_self_mixing=soft_equiv_zero_self_mixing,
+                alpha=soft_equiv_alpha,
+            )
+        if standard_head:
+            if standard_head_blocks <= 0:
+                msg = "standard_head_blocks must be positive when standard_head is enabled."
+                raise ValueError(msg)
+            self.standard_head = nn.Sequential(
+                *[StandardConvBlock(c3) for _ in range(int(standard_head_blocks))]
+            )
 
     @property
     def num_features(self) -> int:
@@ -543,8 +666,16 @@ class CovariantCIFARBackbone(nn.Module):
     def forward_features(self, x: torch.Tensor) -> torch.Tensor:
         """Extract features without classification head."""
         x = self.stage1(x)
+        if self.soft_equiv1 is not None:
+            x = self.soft_equiv1(x)
         x = self.stage2(x)
+        if self.soft_equiv2 is not None:
+            x = self.soft_equiv2(x)
         x = self.stage3(x)
+        if self.soft_equiv3 is not None:
+            x = self.soft_equiv3(x)
+        if self.standard_head is not None:
+            x = self.standard_head(x)
         x = self.pool(x)
         return x.flatten(1)
 

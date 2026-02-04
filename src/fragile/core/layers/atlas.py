@@ -624,7 +624,10 @@ class AttentiveAtlasEncoder(nn.Module):
         return self._last_soft_equiv_log_ratio
 
     def forward(
-        self, x: torch.Tensor
+        self,
+        x: torch.Tensor,
+        hard_routing: bool = False,
+        hard_routing_tau: float = 1.0,
     ) -> tuple[
         torch.Tensor,
         torch.Tensor,
@@ -658,7 +661,7 @@ class AttentiveAtlasEncoder(nn.Module):
         v = self.val_proj(features)  # [B, D]
         scores = torch.matmul(v, self.chart_centers.t()) / math.sqrt(self.latent_dim)  # [B, N_c]
         # Chart routing distributes mass across atlas charts.
-        router_weights = F.softmax(scores, dim=-1)  # [B, N_c]
+        router_weights = _routing_weights(scores, hard_routing, hard_routing_tau)  # [B, N_c]
         K_chart = torch.argmax(router_weights, dim=1)  # [B]
 
         # Chart-center mixture is the macro coordinate; local residual is per-chart.
@@ -784,6 +787,9 @@ class TopologicalDecoder(nn.Module):
         z_geo: torch.Tensor,
         z_tex: torch.Tensor | None = None,
         chart_index: torch.Tensor | None = None,
+        router_weights: torch.Tensor | None = None,
+        hard_routing: bool = False,
+        hard_routing_tau: float = 1.0,
     ) -> tuple[torch.Tensor, torch.Tensor]:
         """Decode from latent geometry.
 
@@ -798,14 +804,18 @@ class TopologicalDecoder(nn.Module):
         """
         # Clamp geometry inside atlas chart range.
         z_geo = torch.tanh(z_geo)
-        if chart_index is not None:
+        if router_weights is not None:
+            if router_weights.ndim != 2 or router_weights.shape[1] != self.num_charts:
+                msg = "router_weights must have shape [B, N_c]."
+                raise ValueError(msg)
+        elif chart_index is not None:
             router_weights = F.one_hot(
                 chart_index, num_classes=self.num_charts
             ).float()  # [B, N_c]
         else:
             # Autonomous routing predicts chart membership from geometry.
             logits = self.latent_router(z_geo)  # [B, N_c]
-            router_weights = F.softmax(logits, dim=-1)  # [B, N_c]
+            router_weights = _routing_weights(logits, hard_routing, hard_routing_tau)  # [B, N_c]
 
         # Chart-specific linear maps reconstruct local observations.
         h_stack = torch.einsum("bl,chl->bch", z_geo, self.chart_weight)  # [B, N_c, H]
@@ -896,6 +906,7 @@ class TopoEncoder(nn.Module):
         self,
         x: torch.Tensor,
         use_hard_routing: bool = False,
+        hard_routing_tau: float = 1.0,
     ) -> tuple[
         torch.Tensor,
         torch.Tensor,
@@ -933,10 +944,21 @@ class TopoEncoder(nn.Module):
             _indices,
             _z_n_all,
             c_bar,
-        ) = self.encoder(x)
+        ) = self.encoder(
+            x,
+            hard_routing=use_hard_routing,
+            hard_routing_tau=hard_routing_tau,
+        )
 
-        chart_index = K_chart if use_hard_routing else None
-        x_recon, dec_router_weights = self.decoder(z_geo, z_tex, chart_index)
+        router_override = enc_router_weights if use_hard_routing else None
+        x_recon, dec_router_weights = self.decoder(
+            z_geo,
+            z_tex,
+            chart_index=None,
+            router_weights=router_override,
+            hard_routing=use_hard_routing,
+            hard_routing_tau=hard_routing_tau,
+        )
 
         return x_recon, vq_loss, enc_router_weights, dec_router_weights, K_chart, z_geo, z_n, c_bar
 
@@ -1160,6 +1182,8 @@ class CovariantChartRouter(nn.Module):
         z: torch.Tensor,
         features: torch.Tensor | None = None,
         chart_tokens: torch.Tensor | None = None,
+        hard_routing: bool = False,
+        hard_routing_tau: float = 1.0,
     ) -> tuple[torch.Tensor, torch.Tensor]:
         """Route to charts using hyperbolic distance scoring.
 
@@ -1169,7 +1193,7 @@ class CovariantChartRouter(nn.Module):
             chart_tokens: [N_c, D] optional chart centers (defaults to self.chart_centers)
 
         Returns:
-            router_weights: [B, N_c] softmax routing weights
+            router_weights: [B, N_c] routing weights
             K_chart: [B] argmax chart assignments
         """
         # Get chart centers for scoring
@@ -1203,7 +1227,7 @@ class CovariantChartRouter(nn.Module):
             tau = self._temperature(z)
             scores = scores + 0.1 * feature_scores / tau.unsqueeze(1)
 
-        router_weights = F.softmax(scores, dim=-1)
+        router_weights = _routing_weights(scores, hard_routing, hard_routing_tau)
         K_chart = torch.argmax(router_weights, dim=1)
         return router_weights, K_chart
 
@@ -1238,6 +1262,16 @@ class PrimitiveAttentiveAtlasEncoder(nn.Module):
         vision_backbone_type: str = "covariant_retina",
         vision_cifar_base_channels: int = 32,
         vision_cifar_bundle_size: int = 4,
+        vision_soft_equiv: bool = False,
+        vision_soft_equiv_bundle_size: int | None = None,
+        vision_soft_equiv_hidden_dim: int = 64,
+        vision_soft_equiv_use_spectral_norm: bool = True,
+        vision_soft_equiv_zero_self_mixing: bool = False,
+        vision_soft_equiv_alpha: float = 0.1,
+        vision_soft_equiv_per_block: bool = False,
+        vision_standard_head: bool = False,
+        vision_standard_head_blocks: int = 2,
+        vision_spectral_head: bool = False,
         soft_equiv_metric: bool = False,
         soft_equiv_bundle_size: int | None = None,
         soft_equiv_hidden_dim: int = 64,
@@ -1274,11 +1308,31 @@ class PrimitiveAttentiveAtlasEncoder(nn.Module):
                     base_channels=vision_cifar_base_channels,
                     bundle_size=vision_cifar_bundle_size,
                     use_spectral_fc=False,  # We don't need the classifier
+                    soft_equiv_per_block=vision_soft_equiv_per_block,
+                    soft_equiv_bundle_size=vision_soft_equiv_bundle_size,
+                    soft_equiv_hidden_dim=vision_soft_equiv_hidden_dim,
+                    soft_equiv_use_spectral_norm=vision_soft_equiv_use_spectral_norm,
+                    soft_equiv_zero_self_mixing=vision_soft_equiv_zero_self_mixing,
+                    soft_equiv_alpha=vision_soft_equiv_alpha,
+                    standard_head=vision_standard_head,
+                    standard_head_blocks=vision_standard_head_blocks,
                 )
                 # Output: [B, base_channels * 4]
                 vision_out_dim = backbone.num_features
                 self.vision_preproc = backbone
                 # Add projection if needed
+                if vision_out_dim != hidden_dim:
+                    self.vision_proj = SpectralLinear(vision_out_dim, hidden_dim, bias=False)
+            elif vision_backbone_type == "standard_cifar":
+                from fragile.core.layers.vision import StandardCIFARBackbone
+
+                backbone = StandardCIFARBackbone(
+                    in_channels=vision_in_channels,
+                    num_classes=1,  # Dummy, not used for features
+                    base_channels=vision_cifar_base_channels,
+                )
+                vision_out_dim = backbone.num_features
+                self.vision_preproc = backbone
                 if vision_out_dim != hidden_dim:
                     self.vision_proj = SpectralLinear(vision_out_dim, hidden_dim, bias=False)
             else:  # "covariant_retina"
@@ -1299,6 +1353,55 @@ class PrimitiveAttentiveAtlasEncoder(nn.Module):
                 SpectralLinear(hidden_dim, hidden_dim, bias=True),
                 NormGatedGELU(bundle_size=bundle_size, n_bundles=n_bundles),
             )
+        self.vision_head = None
+        self.vision_soft_equiv = None
+        self.vision_soft_equiv_alpha = float(vision_soft_equiv_alpha)
+        if self.vision_soft_equiv_alpha < 0.0 or self.vision_soft_equiv_alpha > 1.0:
+            msg = "vision_soft_equiv_alpha must be in [0, 1]."
+            raise ValueError(msg)
+        if vision_spectral_head and not vision_preproc:
+            msg = "vision_spectral_head requires vision_preproc."
+            raise ValueError(msg)
+        if vision_soft_equiv and not vision_preproc:
+            msg = "vision_soft_equiv requires vision_preproc."
+            raise ValueError(msg)
+        if vision_soft_equiv_per_block and not vision_preproc:
+            msg = "vision_soft_equiv_per_block requires vision_preproc."
+            raise ValueError(msg)
+        if vision_soft_equiv_per_block and vision_backbone_type != "covariant_cifar":
+            msg = "vision_soft_equiv_per_block requires vision_backbone_type=covariant_cifar."
+            raise ValueError(msg)
+        if vision_standard_head and not vision_preproc:
+            msg = "vision_standard_head requires vision_preproc."
+            raise ValueError(msg)
+        if vision_standard_head and vision_backbone_type != "covariant_cifar":
+            msg = "vision_standard_head requires vision_backbone_type=covariant_cifar."
+            raise ValueError(msg)
+        if vision_standard_head and not vision_preproc:
+            msg = "vision_standard_head requires vision_preproc."
+            raise ValueError(msg)
+        if vision_standard_head and vision_backbone_type != "covariant_cifar":
+            msg = "vision_standard_head requires vision_backbone_type=covariant_cifar."
+            raise ValueError(msg)
+        if vision_preproc and vision_soft_equiv:
+            bundle_size = vision_soft_equiv_bundle_size or hidden_dim
+            if bundle_size <= 0:
+                msg = "vision_soft_equiv_bundle_size must be positive."
+                raise ValueError(msg)
+            if hidden_dim % bundle_size != 0:
+                msg = "hidden_dim must be divisible by vision_soft_equiv_bundle_size."
+                raise ValueError(msg)
+            n_bundles = hidden_dim // bundle_size
+            self.vision_soft_equiv = SoftEquivariantLayer(
+                n_bundles=n_bundles,
+                bundle_dim=bundle_size,
+                hidden_dim=vision_soft_equiv_hidden_dim,
+                use_spectral_norm=vision_soft_equiv_use_spectral_norm,
+                zero_self_mixing=vision_soft_equiv_zero_self_mixing,
+            )
+            _init_soft_equiv_layers(nn.ModuleList([self.vision_soft_equiv]))
+        if vision_preproc and vision_spectral_head:
+            self.vision_head = SpectralLinear(hidden_dim, hidden_dim, bias=True)
         if covariant_attn:
             self.cov_router = CovariantChartRouter(
                 latent_dim=latent_dim,
@@ -1386,6 +1489,11 @@ class PrimitiveAttentiveAtlasEncoder(nn.Module):
         # Apply projection if needed
         if self.vision_proj is not None:
             h = self.vision_proj(h)
+        if self.vision_head is not None:
+            h = self.vision_head(h)
+        if self.vision_soft_equiv is not None:
+            h_mixed = self.vision_soft_equiv(h)
+            h = (1.0 - self.vision_soft_equiv_alpha) * h + self.vision_soft_equiv_alpha * h_mixed
         return h
 
     def _apply_soft_equiv_metric(self, diff: torch.Tensor) -> torch.Tensor:
@@ -1432,7 +1540,10 @@ class PrimitiveAttentiveAtlasEncoder(nn.Module):
         return self._last_soft_equiv_log_ratio
 
     def forward(
-        self, x: torch.Tensor
+        self,
+        x: torch.Tensor,
+        hard_routing: bool = False,
+        hard_routing_tau: float = 1.0,
     ) -> tuple[
         torch.Tensor,
         torch.Tensor,
@@ -1454,7 +1565,11 @@ class PrimitiveAttentiveAtlasEncoder(nn.Module):
         if self.covariant_attn:
             # Covariant router performs gauge-aware chart assignment.
             router_weights, K_chart = self.cov_router(
-                v, features=features, chart_tokens=chart_centers
+                v,
+                features=features,
+                chart_tokens=chart_centers,
+                hard_routing=hard_routing,
+                hard_routing_tau=hard_routing_tau,
             )
         else:
             scores = _poincare_hyperbolic_score(
@@ -1465,7 +1580,7 @@ class PrimitiveAttentiveAtlasEncoder(nn.Module):
                 tau_denom_min=self.router_tau_denom_min,
                 eps=self.router_transport_eps,
             )
-            router_weights = F.softmax(scores, dim=-1)  # [B, N_c]
+            router_weights = _routing_weights(scores, hard_routing, hard_routing_tau)  # [B, N_c]
             K_chart = torch.argmax(router_weights, dim=1)  # [B]
 
         # Chart-center mixture defines the macro coordinate (hyperbolic barycenter).
@@ -1606,7 +1721,7 @@ class PrimitiveTopologicalDecoder(nn.Module):
         self.render_skip = None
         self.vision_decoder = None
         if vision_preproc:
-            if vision_backbone_type == "covariant_cifar":
+            if vision_backbone_type in ("covariant_cifar", "standard_cifar"):
                 from fragile.core.layers.vision import StandardResNetDecoder
 
                 self.vision_decoder = StandardResNetDecoder(
@@ -1643,18 +1758,30 @@ class PrimitiveTopologicalDecoder(nn.Module):
         z_geo: torch.Tensor,
         z_tex: torch.Tensor | None = None,
         chart_index: torch.Tensor | None = None,
+        router_weights: torch.Tensor | None = None,
+        hard_routing: bool = False,
+        hard_routing_tau: float = 1.0,
     ) -> tuple[torch.Tensor, torch.Tensor]:
         """Decode from latent geometry."""
         # Clamp geometry to chart range (Poincare ball).
         z_geo = _project_to_ball(z_geo)
         chart_centers = _project_to_ball(self.chart_centers)
-        if chart_index is not None:
+        if router_weights is not None:
+            if router_weights.ndim != 2 or router_weights.shape[1] != self.num_charts:
+                msg = "router_weights must have shape [B, N_c]."
+                raise ValueError(msg)
+        elif chart_index is not None:
             router_weights = F.one_hot(
                 chart_index, num_classes=self.num_charts
             ).float()  # [B, N_c]
         elif self.covariant_attn:
             # Covariant router predicts chart membership from geometry.
-            router_weights, _ = self.cov_router(z_geo, chart_tokens=chart_centers)
+            router_weights, _ = self.cov_router(
+                z_geo,
+                chart_tokens=chart_centers,
+                hard_routing=hard_routing,
+                hard_routing_tau=hard_routing_tau,
+            )
         else:
             scores = _poincare_hyperbolic_score(
                 z_geo,
@@ -1672,7 +1799,7 @@ class PrimitiveTopologicalDecoder(nn.Module):
                     tau_denom_min=self.router_tau_denom_min,
                 )
                 scores = scores + 0.1 * self.latent_router(z_geo) / tau.unsqueeze(1)
-            router_weights = F.softmax(scores, dim=-1)  # [B, N_c]
+            router_weights = _routing_weights(scores, hard_routing, hard_routing_tau)  # [B, N_c]
 
         # Chart-specific projections + gauge-covariant gating.
         h_stack = torch.stack(
@@ -1724,6 +1851,16 @@ class TopoEncoderPrimitives(nn.Module):
         vision_backbone_type: str = "covariant_retina",
         vision_cifar_base_channels: int = 32,
         vision_cifar_bundle_size: int = 4,
+        vision_soft_equiv: bool = False,
+        vision_soft_equiv_bundle_size: int | None = None,
+        vision_soft_equiv_hidden_dim: int = 64,
+        vision_soft_equiv_use_spectral_norm: bool = True,
+        vision_soft_equiv_zero_self_mixing: bool = False,
+        vision_soft_equiv_alpha: float = 0.1,
+        vision_soft_equiv_per_block: bool = False,
+        vision_standard_head: bool = False,
+        vision_standard_head_blocks: int = 2,
+        vision_spectral_head: bool = False,
         soft_equiv_metric: bool = False,
         soft_equiv_bundle_size: int | None = None,
         soft_equiv_hidden_dim: int = 64,
@@ -1761,6 +1898,16 @@ class TopoEncoderPrimitives(nn.Module):
             vision_backbone_type=vision_backbone_type,
             vision_cifar_base_channels=vision_cifar_base_channels,
             vision_cifar_bundle_size=vision_cifar_bundle_size,
+            vision_soft_equiv=vision_soft_equiv,
+            vision_soft_equiv_bundle_size=vision_soft_equiv_bundle_size,
+            vision_soft_equiv_hidden_dim=vision_soft_equiv_hidden_dim,
+            vision_soft_equiv_use_spectral_norm=vision_soft_equiv_use_spectral_norm,
+            vision_soft_equiv_zero_self_mixing=vision_soft_equiv_zero_self_mixing,
+            vision_soft_equiv_alpha=vision_soft_equiv_alpha,
+            vision_soft_equiv_per_block=vision_soft_equiv_per_block,
+            vision_standard_head=vision_standard_head,
+            vision_standard_head_blocks=vision_standard_head_blocks,
+            vision_spectral_head=vision_spectral_head,
             soft_equiv_metric=soft_equiv_metric,
             soft_equiv_bundle_size=soft_equiv_bundle_size,
             soft_equiv_hidden_dim=soft_equiv_hidden_dim,
@@ -1799,6 +1946,7 @@ class TopoEncoderPrimitives(nn.Module):
         self,
         x: torch.Tensor,
         use_hard_routing: bool = False,
+        hard_routing_tau: float = 1.0,
     ) -> tuple[
         torch.Tensor,
         torch.Tensor,
@@ -1820,10 +1968,21 @@ class TopoEncoderPrimitives(nn.Module):
             _indices,
             _z_n_all,
             c_bar,
-        ) = self.encoder(x)
+        ) = self.encoder(
+            x,
+            hard_routing=use_hard_routing,
+            hard_routing_tau=hard_routing_tau,
+        )
 
-        chart_index = K_chart if use_hard_routing else None
-        x_recon, dec_router_weights = self.decoder(z_geo, z_tex, chart_index)
+        router_override = enc_router_weights if use_hard_routing else None
+        x_recon, dec_router_weights = self.decoder(
+            z_geo,
+            z_tex,
+            chart_index=None,
+            router_weights=router_override,
+            hard_routing=use_hard_routing,
+            hard_routing_tau=hard_routing_tau,
+        )
 
         return x_recon, vq_loss, enc_router_weights, dec_router_weights, K_chart, z_geo, z_n, c_bar
 
@@ -1857,6 +2016,15 @@ def _select_chart_latent(z_by_chart: torch.Tensor, chart_idx: torch.Tensor) -> t
     return z_by_chart.gather(1, idx).squeeze(1)
 
 
+def _routing_weights(
+    scores: torch.Tensor, hard_routing: bool, hard_routing_tau: float
+) -> torch.Tensor:
+    if not hard_routing:
+        return F.softmax(scores, dim=-1)
+    tau = max(float(hard_routing_tau), 1e-6)
+    return F.gumbel_softmax(scores, tau=tau, hard=True)
+
+
 class _SharedFeatureExtractor(nn.Module):
     """Shared feature extractor for hierarchical atlas stacks."""
 
@@ -1878,6 +2046,16 @@ class _SharedFeatureExtractor(nn.Module):
         vision_backbone_type: str = "covariant_retina",
         vision_cifar_base_channels: int = 32,
         vision_cifar_bundle_size: int = 4,
+        vision_soft_equiv: bool = False,
+        vision_soft_equiv_bundle_size: int | None = None,
+        vision_soft_equiv_hidden_dim: int = 64,
+        vision_soft_equiv_use_spectral_norm: bool = True,
+        vision_soft_equiv_zero_self_mixing: bool = False,
+        vision_soft_equiv_alpha: float = 0.1,
+        vision_soft_equiv_per_block: bool = False,
+        vision_standard_head: bool = False,
+        vision_standard_head_blocks: int = 2,
+        vision_spectral_head: bool = False,
     ) -> None:
         super().__init__()
         bundle_size, n_bundles = _resolve_bundle_params(hidden_dim, latent_dim, bundle_size)
@@ -1899,6 +2077,26 @@ class _SharedFeatureExtractor(nn.Module):
                     base_channels=vision_cifar_base_channels,
                     bundle_size=vision_cifar_bundle_size,
                     use_spectral_fc=False,
+                    soft_equiv_per_block=vision_soft_equiv_per_block,
+                    soft_equiv_bundle_size=vision_soft_equiv_bundle_size,
+                    soft_equiv_hidden_dim=vision_soft_equiv_hidden_dim,
+                    soft_equiv_use_spectral_norm=vision_soft_equiv_use_spectral_norm,
+                    soft_equiv_zero_self_mixing=vision_soft_equiv_zero_self_mixing,
+                    soft_equiv_alpha=vision_soft_equiv_alpha,
+                    standard_head=vision_standard_head,
+                    standard_head_blocks=vision_standard_head_blocks,
+                )
+                vision_out_dim = backbone.num_features
+                self.vision_preproc = backbone
+                if vision_out_dim != hidden_dim:
+                    self.vision_proj = SpectralLinear(vision_out_dim, hidden_dim, bias=False)
+            elif vision_backbone_type == "standard_cifar":
+                from fragile.core.layers.vision import StandardCIFARBackbone
+
+                backbone = StandardCIFARBackbone(
+                    in_channels=vision_in_channels,
+                    num_classes=1,  # Dummy, not used for features
+                    base_channels=vision_cifar_base_channels,
                 )
                 vision_out_dim = backbone.num_features
                 self.vision_preproc = backbone
@@ -1922,6 +2120,43 @@ class _SharedFeatureExtractor(nn.Module):
                 SpectralLinear(hidden_dim, hidden_dim, bias=True),
                 NormGatedGELU(bundle_size=bundle_size, n_bundles=n_bundles),
             )
+        self.vision_head = None
+        self.vision_soft_equiv = None
+        self.vision_soft_equiv_alpha = float(vision_soft_equiv_alpha)
+        if self.vision_soft_equiv_alpha < 0.0 or self.vision_soft_equiv_alpha > 1.0:
+            msg = "vision_soft_equiv_alpha must be in [0, 1]."
+            raise ValueError(msg)
+        if vision_spectral_head and not vision_preproc:
+            msg = "vision_spectral_head requires vision_preproc."
+            raise ValueError(msg)
+        if vision_soft_equiv and not vision_preproc:
+            msg = "vision_soft_equiv requires vision_preproc."
+            raise ValueError(msg)
+        if vision_soft_equiv_per_block and not vision_preproc:
+            msg = "vision_soft_equiv_per_block requires vision_preproc."
+            raise ValueError(msg)
+        if vision_soft_equiv_per_block and vision_backbone_type != "covariant_cifar":
+            msg = "vision_soft_equiv_per_block requires vision_backbone_type=covariant_cifar."
+            raise ValueError(msg)
+        if vision_preproc and vision_soft_equiv:
+            bundle_size = vision_soft_equiv_bundle_size or hidden_dim
+            if bundle_size <= 0:
+                msg = "vision_soft_equiv_bundle_size must be positive."
+                raise ValueError(msg)
+            if hidden_dim % bundle_size != 0:
+                msg = "hidden_dim must be divisible by vision_soft_equiv_bundle_size."
+                raise ValueError(msg)
+            n_bundles = hidden_dim // bundle_size
+            self.vision_soft_equiv = SoftEquivariantLayer(
+                n_bundles=n_bundles,
+                bundle_dim=bundle_size,
+                hidden_dim=vision_soft_equiv_hidden_dim,
+                use_spectral_norm=vision_soft_equiv_use_spectral_norm,
+                zero_self_mixing=vision_soft_equiv_zero_self_mixing,
+            )
+            _init_soft_equiv_layers(nn.ModuleList([self.vision_soft_equiv]))
+        if vision_preproc and vision_spectral_head:
+            self.vision_head = SpectralLinear(hidden_dim, hidden_dim, bias=True)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         if self.vision_preproc is None:
@@ -1950,6 +2185,11 @@ class _SharedFeatureExtractor(nn.Module):
         # Apply projection if needed
         if self.vision_proj is not None:
             h = self.vision_proj(h)
+        if self.vision_head is not None:
+            h = self.vision_head(h)
+        if self.vision_soft_equiv is not None:
+            h_mixed = self.vision_soft_equiv(h)
+            h = (1.0 - self.vision_soft_equiv_alpha) * h + self.vision_soft_equiv_alpha * h_mixed
         return h
 
 
@@ -2086,7 +2326,10 @@ class _AtlasEncoderLevel(nn.Module):
         return self._last_soft_equiv_log_ratio
 
     def forward(
-        self, features: torch.Tensor
+        self,
+        features: torch.Tensor,
+        hard_routing: bool = False,
+        hard_routing_tau: float = 1.0,
     ) -> tuple[
         torch.Tensor,
         torch.Tensor,
@@ -2105,11 +2348,15 @@ class _AtlasEncoderLevel(nn.Module):
         if self.covariant_attn:
             # Covariant router assigns charts with gauge-aware transport.
             router_weights, K_chart = self.cov_router(
-                v, features=features, chart_tokens=self.chart_centers
+                v,
+                features=features,
+                chart_tokens=self.chart_centers,
+                hard_routing=hard_routing,
+                hard_routing_tau=hard_routing_tau,
             )
         else:
             scores = torch.matmul(v, self.chart_centers.t()) / math.sqrt(self.latent_dim)
-            router_weights = F.softmax(scores, dim=-1)
+            router_weights = _routing_weights(scores, hard_routing, hard_routing_tau)
             K_chart = torch.argmax(router_weights, dim=1)
 
         # Chart-center mixture defines the macro coordinate.
@@ -2204,6 +2451,16 @@ class HierarchicalAtlasStack(nn.Module):
         vision_backbone_type: str = "covariant_retina",
         vision_cifar_base_channels: int = 32,
         vision_cifar_bundle_size: int = 4,
+        vision_soft_equiv: bool = False,
+        vision_soft_equiv_bundle_size: int | None = None,
+        vision_soft_equiv_hidden_dim: int = 64,
+        vision_soft_equiv_use_spectral_norm: bool = True,
+        vision_soft_equiv_zero_self_mixing: bool = False,
+        vision_soft_equiv_alpha: float = 0.1,
+        vision_soft_equiv_per_block: bool = False,
+        vision_standard_head: bool = False,
+        vision_standard_head_blocks: int = 2,
+        vision_spectral_head: bool = False,
         soft_equiv_metric: bool = False,
         soft_equiv_bundle_size: int | None = None,
         soft_equiv_hidden_dim: int = 64,
@@ -2251,6 +2508,16 @@ class HierarchicalAtlasStack(nn.Module):
                 vision_backbone_type=vision_backbone_type,
                 vision_cifar_base_channels=vision_cifar_base_channels,
                 vision_cifar_bundle_size=vision_cifar_bundle_size,
+                vision_soft_equiv=vision_soft_equiv,
+                vision_soft_equiv_bundle_size=vision_soft_equiv_bundle_size,
+                vision_soft_equiv_hidden_dim=vision_soft_equiv_hidden_dim,
+                vision_soft_equiv_use_spectral_norm=vision_soft_equiv_use_spectral_norm,
+                vision_soft_equiv_zero_self_mixing=vision_soft_equiv_zero_self_mixing,
+                vision_soft_equiv_alpha=vision_soft_equiv_alpha,
+                vision_soft_equiv_per_block=vision_soft_equiv_per_block,
+                vision_standard_head=vision_standard_head,
+                vision_standard_head_blocks=vision_standard_head_blocks,
+                vision_spectral_head=vision_spectral_head,
             )
             self.feature_extractors = None
         else:
@@ -2273,6 +2540,16 @@ class HierarchicalAtlasStack(nn.Module):
                     vision_backbone_type=vision_backbone_type,
                     vision_cifar_base_channels=vision_cifar_base_channels,
                     vision_cifar_bundle_size=vision_cifar_bundle_size,
+                    vision_soft_equiv=vision_soft_equiv,
+                    vision_soft_equiv_bundle_size=vision_soft_equiv_bundle_size,
+                    vision_soft_equiv_hidden_dim=vision_soft_equiv_hidden_dim,
+                    vision_soft_equiv_use_spectral_norm=vision_soft_equiv_use_spectral_norm,
+                    vision_soft_equiv_zero_self_mixing=vision_soft_equiv_zero_self_mixing,
+                    vision_soft_equiv_alpha=vision_soft_equiv_alpha,
+                    vision_soft_equiv_per_block=vision_soft_equiv_per_block,
+                    vision_standard_head=vision_standard_head,
+                    vision_standard_head_blocks=vision_standard_head_blocks,
+                    vision_spectral_head=vision_spectral_head,
                 )
                 for idx in range(n_levels)
             ])
@@ -2358,6 +2635,7 @@ class HierarchicalAtlasStack(nn.Module):
         step: int | torch.Tensor | None = None,
         prev_state: list[dict[str, torch.Tensor]] | None = None,
         use_hard_routing: bool = False,
+        hard_routing_tau: float = 1.0,
     ) -> list[dict[str, torch.Tensor]]:
         if prev_state is not None and len(prev_state) != self.n_levels:
             msg = "prev_state must have one entry per level."
@@ -2405,10 +2683,21 @@ class HierarchicalAtlasStack(nn.Module):
                 indices_stack,
                 z_n_all_charts,
                 c_bar,
-            ) = self.encoder_levels[idx](level_features)
+            ) = self.encoder_levels[idx](
+                level_features,
+                hard_routing=use_hard_routing,
+                hard_routing_tau=hard_routing_tau,
+            )
 
-            chart_index = K_chart if use_hard_routing else None
-            x_recon, dec_router_weights = self.decoder_levels[idx](z_geo, z_tex, chart_index)
+            router_override = enc_router_weights if use_hard_routing else None
+            x_recon, dec_router_weights = self.decoder_levels[idx](
+                z_geo,
+                z_tex,
+                chart_index=None,
+                router_weights=router_override,
+                hard_routing=use_hard_routing,
+                hard_routing_tau=hard_routing_tau,
+            )
             z_n_local = _select_chart_latent(z_n_all_charts, K_chart)
 
             outputs.append({

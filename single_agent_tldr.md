@@ -8,70 +8,72 @@ The following diagrams illustrate the current implementation architecture of the
 
 ### 0.1 CovariantChartRouter
 
-The chart router is shared by both encoder and decoder. It performs metric-aware, covariant chart assignment using:
-- Geodesic query terms (linear + quadratic Christoffel correction)
-- Wilson-line transport via Cayley transform for gauge invariance
-- Position-dependent temperature scaled by local metric (conformal factor)
+The chart router is shared by both encoder and decoder. It performs hyperbolic chart assignment using:
+- Poincaré-ball distance scoring with conformal temperature
+- O(n) parallel transport via conformal factor scaling (no Cayley transform)
+- Optional feature-aware correction with Christoffel-style quadratic terms
 
 ```mermaid
 %%{init: {"themeVariables": {"background":"#1e293b","edgeLabelBackground":"#334155","textColor":"#ffffff","lineColor":"#cbd5e1","primaryColor":"#334155","primaryTextColor":"#ffffff","secondaryTextColor":"#ffffff","tertiaryTextColor":"#ffffff","titleColor":"#ffffff","nodeTextColor":"#ffffff","clusterBkg":"#334155","clusterBorder":"#64748b","fontSize":"18px"},"flowchart":{"nodeSpacing":60,"rankSpacing":70,"useMaxWidth":true}}}%%
 flowchart TB
-    subgraph ROUTER["CovariantChartRouter"]
+    subgraph ROUTER["CovariantChartRouter (Hyperbolic)"]
         direction TB
 
         subgraph INPUT["Inputs"]
             direction TB
-            Z["z [B, D]"]
-            F["features [B, H]<br/>(encoder only)"]
-            ChartTokens["chart_tokens c_k [N_c, D]"]
+            Z["z [B, D]<br/>(Poincaré ball)"]
+            F["features [B, H]<br/>(optional)"]
+            ChartTokens["chart_centers c_k [N_c, D]"]
         end
 
-        subgraph QUERY["Query Path"]
+        subgraph HYPER["Hyperbolic Distance"]
+            direction TB
+            Dist["d_P(z, c_k)"]
+            Tau["τ(z)=√K·(1-‖z‖²)/2"]
+            Sdist["s_dist = -dist / τ"]
+        end
+
+        subgraph CORR["Covariant Correction (optional)"]
             direction TB
             Qz["q_z_proj(z) [B, K]"]
-            Gamma["Christoffel: z⊗z → γ [B, K]"]
             Qfeat["q_feat_proj(features) [B, K]"]
-            Qsum["q = q_z + γ + q_feat [B, K]"]
-        end
-
-        subgraph TRANSPORT["Transport Path"]
-            direction TB
-            Transport["transport_proj → skew [B, K, K]"]
-            Cayley["Cayley: U=(I+½S)⁻¹(I-½S)"]
-            KeyProj["chart_key_proj [N_c, K]"]
-            Keys["keys = U(z) · base_queries"]
+            Gamma["γ(z⊗z) [B, K]"]
+            Qsum["q = q_z + q_feat + γ [B, K]"]
+            Lambda["λ(z)=2/(1-‖z‖²)"]
+            Keys["keys = base_queries / λ(z)"]
+            Sfeat["s_feat = Σ(keys · q) / τ"]
         end
 
         subgraph SCORING["Scoring"]
             direction TB
-            Scores["scores = Σ(keys · q) [B, N_c]"]
-            Tau["τ(z) = √K·(1-‖z‖²)/2"]
-            Scale["scores / τ"]
-            W["w = softmax [B, N_c]"]
+            Scores["scores = s_dist + 0.1·s_feat"]
+            W["w = softmax / hard-route [B, N_c]"]
             Kchart["K_chart = argmax(w)"]
         end
     end
 
-    Z --> Qz
-    Z --> Gamma
-    F --> Qfeat
-    Qz --> Qsum
-    Gamma --> Qsum
-    Qfeat --> Qsum
-
-    Z --> Transport
-    Transport --> Cayley
-    ChartTokens --> KeyProj
-    Cayley --> Keys
-    KeyProj --> Keys
-
-    Qsum --> Scores
-    Keys --> Scores
+    Z --> Dist
+    ChartTokens --> Dist
     Z --> Tau
-    Scores --> Scale
-    Tau --> Scale
-    Scale --> W
-    W --> Kchart
+    Dist --> Sdist
+    Tau --> Sdist
+
+    Z --> Qz
+    F --> Qfeat
+    Z --> Gamma
+    Qz --> Qsum
+    Qfeat --> Qsum
+    Gamma --> Qsum
+    Z --> Lambda
+    ChartTokens --> Keys
+    Lambda --> Keys
+    Qsum --> Sfeat
+    Keys --> Sfeat
+    Tau --> Sfeat
+
+    Sdist --> Scores
+    Sfeat --> Scores
+    Scores --> W --> Kchart
 
     classDef io fill:#0b1320,stroke:#93c5fd,stroke-width:1px,color:#ffffff;
     classDef feat fill:#111827,stroke:#22d3ee,stroke-width:1px,color:#ffffff;
@@ -80,12 +82,12 @@ flowchart TB
 
     class Z,Kchart geom;
     class F,Qfeat feat;
-    class Qz,Gamma,Qsum,Transport,Cayley,ChartTokens,KeyProj,Keys,Scores,Tau,Scale,W router;
+    class Dist,Tau,Sdist,Qz,Gamma,Qsum,Lambda,Keys,Sfeat,Scores,W,ChartTokens router;
 ```
 
 ### 0.2 Encoder (PrimitiveAttentiveAtlasEncoder)
 
-The encoder performs feature extraction, chart routing, VQ quantization per chart, and splits the latent into $(z_{geo}, z_n, z_{tex})$:
+The encoder performs feature extraction, hyperbolic routing, hyperbolic VQ per chart, and splits the latent into $(z_{geo}, z_n, z_{tex})$ (with $z_{geo}$ on the Poincaré ball and $z_n, z_{tex}$ in the tangent space):
 
 ```mermaid
 %%{init: {"themeVariables": {"background":"#1e293b","edgeLabelBackground":"#334155","textColor":"#ffffff","lineColor":"#cbd5e1","primaryColor":"#334155","primaryTextColor":"#ffffff","secondaryTextColor":"#ffffff","tertiaryTextColor":"#ffffff","titleColor":"#ffffff","nodeTextColor":"#ffffff","clusterBkg":"#334155","clusterBorder":"#64748b","fontSize":"18px"},"flowchart":{"nodeSpacing":60,"rankSpacing":70,"useMaxWidth":true}}}%%
@@ -98,81 +100,88 @@ flowchart TB
             X["Input x [B, D_in]"]
             FE["Feature extractor<br/>MLP or CovariantRetina"]
             F["features [B, H]"]
-            Vproj["val_proj → v [B, D]"]
+            Vproj["val_proj → v_raw [B, D]"]
+            Vball["project_to_ball(v_raw) → v"]
         end
 
-        subgraph S2["Stage 2: Chart Routing"]
+        subgraph S2["Stage 2: Hyperbolic Chart Routing"]
             direction TB
-            ChartCenters["chart_centers c_k"]
-            RouterEnc["CovariantChartRouter"]
+            ChartCenters["chart_centers c_k (ball)"]
+            RouterEnc["CovariantChartRouter (hyperbolic)"]
             Wenc["w_enc [B, N_c]"]
             Kchart["K_chart [B]"]
         end
 
-        subgraph S3["Stage 3: Local Coordinates"]
+        subgraph S3["Stage 3: Hyperbolic Local Coordinates"]
             direction TB
-            Cbar["c̄ = Σ(w·c_k) [B, D]"]
-            Vlocal["v_local = v - c̄"]
+            Cbar["c̄ = hyp_barycenter(w,c_k)"]
+            Vlocal["v_local = (-c̄) ⊕ v"]
         end
 
-        subgraph S4["Stage 4: VQ Quantization"]
+        subgraph S4["Stage 4: Hyperbolic VQ"]
             direction TB
-            Codebook["Codebook [N_c, K, D]"]
-            Diff["diff = v_local - codebook"]
-            Dist["dist = ‖diff‖² [B, N_c, K]"]
+            Codebook["codebook [N_c, K, D] (ball)"]
+            Diff["Δ = (-codebook) ⊕ v_local"]
+            Log["log_map_zero(Δ) → Δ_tan"]
+            Dist["dist = ‖Δ_tan‖² (soft-equiv metric optional)"]
             Indices["indices per chart"]
             ZqAll["z_q_all [B, N_c, D]"]
-            ZqBlend["z_q_blended = Σ(w·z_q)"]
+            ZqBlend["z_q_blended = hyp_barycenter(w,z_q_all)"]
         end
 
-        subgraph S5["Stage 5: Nuisance Extraction"]
+        subgraph S5["Stage 5: Nuisance + Texture (tangent)"]
             direction TB
-            DeltaAll["δ_all = v_local - z_q_all"]
-            Struct["structure_filter"]
-            ZnAll["z_n_all [B, N_c, D]"]
-            Zn["z_n = Σ(w·z_n_all)"]
+            DeltaAll["δ = log_map_zero((-z_q_all) ⊕ v_local)"]
+            Struct["structure_filter (tangent)"]
+            ZnAllTan["z_n_all^tan [B, N_c, D]"]
+            ZnTan["z_n^tan = Σ(w·z_n_all^tan)"]
+            DeltaBlend["δ_blended = log_map_zero((-z_q_blended) ⊕ v_local)"]
+            Ztex["z_tex = δ_blended - z_n^tan"]
         end
 
-        subgraph S6["Stage 6: Output Assembly"]
+        subgraph S6["Stage 6: Geometric Assembly (ball)"]
             direction TB
-            ZqSt["z_q_st (straight-through)"]
-            Zgeo["z_geo = c̄ + z_q_st + z_n"]
-            DeltaBlend["δ_blended = v_local - z_q"]
-            Ztex["z_tex = δ_blended - z_n"]
+            ZqSt["z_q_st = v_local ⊕ exp_map(δ_to_code)"]
+            Zlocal["z_local = z_q_st ⊕ exp_map(z_n^tan)"]
+            Zgeo["z_geo = c̄ ⊕ z_local (project_to_ball)"]
         end
     end
 
-    X --> FE --> F --> Vproj
+    X --> FE --> F --> Vproj --> Vball
 
     F --> RouterEnc
-    Vproj --> RouterEnc
+    Vball --> RouterEnc
     ChartCenters --> RouterEnc
     RouterEnc --> Wenc
     RouterEnc --> Kchart
 
     Wenc --> Cbar
     ChartCenters --> Cbar
-    Vproj --> Vlocal
+    Vball --> Vlocal
     Cbar --> Vlocal
 
     Vlocal --> Diff
     Codebook --> Diff
-    Diff --> Dist --> Indices --> ZqAll
+    Diff --> Log --> Dist --> Indices --> ZqAll
     Wenc --> ZqBlend
     ZqAll --> ZqBlend
 
     ZqAll --> DeltaAll
-    DeltaAll --> Struct --> ZnAll
-    Wenc --> Zn
-    ZnAll --> Zn
-
-    ZqBlend --> ZqSt
-    ZqSt --> Zgeo
-    Zn --> Zgeo
-    Cbar --> Zgeo
+    Vlocal --> DeltaAll
+    DeltaAll --> Struct --> ZnAllTan
+    Wenc --> ZnTan
+    ZnAllTan --> ZnTan
     ZqBlend --> DeltaBlend
-    Zn --> Ztex
+    Vlocal --> DeltaBlend
     DeltaBlend --> Ztex
+    ZnTan --> Ztex
+
+    Vlocal --> ZqSt
+    ZqBlend --> ZqSt
+    ZqSt --> Zlocal
+    ZnTan --> Zlocal
+    Cbar --> Zgeo
+    Zlocal --> Zgeo
 
     classDef io fill:#0b1320,stroke:#93c5fd,stroke-width:1px,color:#ffffff;
     classDef feat fill:#111827,stroke:#22d3ee,stroke-width:1px,color:#ffffff;
@@ -184,16 +193,16 @@ flowchart TB
     class X,Kchart io;
     class FE,F,Vproj,Struct feat;
     class RouterEnc,Wenc router;
-    class Codebook,Diff,Dist,Indices,ZqAll,ZqBlend vq;
-    class ChartCenters,Cbar,Vlocal,Zgeo,ZqSt,ZnAll,Zn geom;
-    class DeltaAll,DeltaBlend,Ztex residual;
+    class Codebook,Diff,Log,Dist,Indices,ZqAll,ZqBlend vq;
+    class ChartCenters,Cbar,Vball,Vlocal,Zgeo,ZqSt,Zlocal geom;
+    class DeltaAll,DeltaBlend,ZnAllTan,ZnTan,Ztex residual;
 ```
 
 ### 0.3 Decoder (PrimitiveTopologicalDecoder)
 
-The decoder performs chart-weighted reconstruction from the geometric latent $z_{geo}$ and adds the texture residual $z_{tex}$:
-- Geometric path: Chart projectors → Chart-weighted mixing → Renderer
-- Texture path: Independent residual network
+The decoder performs chart-weighted reconstruction from the hyperbolic geometric latent $z_{geo}$ and adds the texture residual $z_{tex}$:
+- Geometric path: Hyperbolic routing → SpectralLinear chart projectors → NormGatedGELU → Renderer
+- Texture path: Tanh + SpectralLinear residual with learned scale
 - Final output: Base reconstruction + scaled texture residual
 
 ```mermaid
@@ -204,19 +213,19 @@ flowchart TB
 
         subgraph INPUTS["Inputs"]
             direction TB
-            Zgeo["z_geo [B, D]"]
-            Ztex["z_tex [B, D]"]
+            Zgeo["z_geo [B, D] (ball)"]
+            Ztex["z_tex [B, D] (tangent)"]
         end
 
         subgraph GEO["Geometric Path"]
             direction TB
-            TanhG["tanh(z_geo)"]
-            RouterDec["CovariantChartRouter"]
+            Clamp["project_to_ball(z_geo)"]
+            RouterDec["CovariantChartRouter (hyperbolic)"]
             Wdec["w_dec [B, N_c]"]
-            ChartProj["chart_projectors × N_c"]
+            ChartProj["chart_projectors × N_c<br/>(SpectralLinear)"]
             Gate["NormGatedGELU"]
             Mix["h_global = Σ(w·h_stack)"]
-            Renderer["renderer MLP"]
+            Renderer["renderer (SpectralLinear + NormGatedGELU)"]
             Skip["render_skip"]
             AddSkip["x̂_base = render + skip"]
         end
@@ -224,7 +233,8 @@ flowchart TB
         subgraph TEX["Texture Path"]
             direction TB
             TanhT["tanh(z_tex)"]
-            TexRes["tex_residual: Linear"]
+            TexRes["tex_residual (SpectralLinear)"]
+            Scale["α = tex_residual_scale"]
         end
 
         subgraph OUTPUT["Output"]
@@ -234,17 +244,18 @@ flowchart TB
         end
     end
 
-    Zgeo --> TanhG
-    TanhG --> RouterDec --> Wdec
-    TanhG --> ChartProj --> Gate --> Mix
+    Zgeo --> Clamp
+    Clamp --> RouterDec --> Wdec
+    Clamp --> ChartProj --> Gate --> Mix
     Wdec --> Mix
     Mix --> Renderer --> AddSkip
     Mix --> Skip --> AddSkip
 
     Ztex --> TanhT --> TexRes
+    TexRes --> Scale
 
     AddSkip --> AddTex
-    TexRes --> AddTex
+    Scale --> AddTex
     AddTex --> Xhat
 
     classDef io fill:#0b1320,stroke:#93c5fd,stroke-width:1px,color:#ffffff;
@@ -256,17 +267,17 @@ flowchart TB
     class Zgeo geom;
     class RouterDec,Wdec router;
     class Xhat io;
-    class TanhG,ChartProj,Gate,Mix,Renderer,Skip,AddSkip,AddTex decoder;
-    class Ztex,TanhT,TexRes residual;
+    class Clamp,ChartProj,Gate,Mix,Renderer,Skip,AddSkip,AddTex decoder;
+    class Ztex,TanhT,TexRes,Scale residual;
 ```
 
 ### 0.4 Experiment Wiring (Training Losses)
 
-Optional training components available in the experiment configuration:
-- Learned precisions for automatic loss balancing (reconstruction, VQ, supervised)
-- SupervisedTopologyLoss for semantic topology learning
-- FactorizedJumpOperator for chart transition consistency
-- InvariantChartClassifier (detached readout head with separate optimizer)
+Training components in `topoencoder_2d.py` (hyperbolic-aware):
+- Core losses: reconstruction, VQ, routing entropy, encoder/decoder consistency
+- Atlas regularizers: variance/diversity/separation, codebook centering, chart-center separation, residual scale, soft-equiv penalties
+- Disentangle + window, code entropy, KL prior, orbit/VICReg, jump consistency
+- SupervisedTopologyLoss (route/purity/balance/metric) and detached InvariantChartClassifier
 
 ```mermaid
 %%{init: {"themeVariables": {"background":"#1e293b","edgeLabelBackground":"#334155","textColor":"#ffffff","lineColor":"#cbd5e1","primaryColor":"#334155","primaryTextColor":"#ffffff","secondaryTextColor":"#ffffff","tertiaryTextColor":"#ffffff","titleColor":"#ffffff","nodeTextColor":"#ffffff","clusterBkg":"#334155","clusterBorder":"#64748b","fontSize":"18px"},"flowchart":{"nodeSpacing":60,"rankSpacing":70,"useMaxWidth":true}}}%%
@@ -282,42 +293,57 @@ flowchart TB
 
         subgraph FORWARD["Forward Pass"]
             direction TB
-            Enc["Encoder"]
-            EncOut["z_geo, z_tex, w_enc, vq_loss"]
-            Dec["Decoder"]
+            Enc["Encoder (hyperbolic)"]
+            EncOut["z_geo, z_tex, w_enc,<br/>vq_loss, indices, z_n_all_charts"]
+            Dec["Decoder (hyperbolic)"]
             Recon["recon_a"]
         end
 
         subgraph LOSSES["Loss Terms"]
             direction TB
 
-            subgraph L1["Reconstruction"]
+            subgraph CORE["Core"]
                 direction TB
                 ReconLoss["MSE(recon, x)"]
-                ReconTerm["recon_term"]
+                VQLoss["VQ loss (tangent)"]
+                Entropy["routing entropy"]
+                Consistency["encoder/decoder consistency"]
             end
 
-            subgraph L2["VQ"]
+            subgraph T1["Atlas Regularizers (Tier 1)"]
                 direction TB
-                VQLoss["codebook + commit"]
-                VQTerm["vq_term"]
+                Reg1["variance(z_geo)<br/>diversity(w)<br/>separation(z_geo)<br/>codebook_center<br/>chart_center_sep<br/>residual_scale(z_n)<br/>soft-equiv L1/log"]
             end
 
-            subgraph L3["Supervised"]
+            subgraph T2["Disentangle (Tier 2)"]
                 direction TB
-                Sup["SupervisedTopologyLoss"]
-                SupTerm["sup_term"]
+                Reg2["window_loss + disentangle_loss"]
             end
 
-            subgraph L4["Jump"]
+            subgraph T3["Codebook Health (Tier 3)"]
                 direction TB
-                Jump["FactorizedJumpOperator"]
+                Reg3["orthogonality<br/>code_entropy<br/>per_chart_code_entropy"]
+            end
+
+            subgraph T4["Invariance (Tier 4)"]
+                direction TB
+                Reg4["KL prior(z_n,z_tex)<br/>orbit(w)<br/>VICReg(z_geo)"]
+            end
+
+            subgraph T5["Jump (Tier 5)"]
+                direction TB
+                Jump["FactorizedJumpOperator<br/>(Möbius jump consistency)"]
+            end
+
+            subgraph SUP["Supervised"]
+                direction TB
+                Sup["SupervisedTopologyLoss<br/>(route/purity/balance/metric)"]
             end
         end
 
         subgraph AGGREGATE["Atlas Loss"]
             direction TB
-            LossA["Σ losses"]
+            LossA["Σ weighted losses"]
         end
 
         subgraph CLASSIFIER["Classifier (detached)"]
@@ -332,15 +358,17 @@ flowchart TB
 
     Recon --> ReconLoss
     X --> ReconLoss
-    ReconLoss --> ReconTerm --> LossA
 
-    EncOut --> VQLoss --> VQTerm --> LossA
-
-    EncOut --> Sup
-    Y --> Sup
-    Sup --> SupTerm --> LossA
-
+    EncOut --> VQLoss --> LossA
+    EncOut --> Entropy --> LossA
+    EncOut --> Consistency --> LossA
+    EncOut --> Reg1 --> LossA
+    EncOut --> Reg2 --> LossA
+    EncOut --> Reg3 --> LossA
+    EncOut --> Reg4 --> LossA
     EncOut --> Jump --> LossA
+    EncOut --> Sup --> LossA
+    Y --> Sup
 
     EncOut -.-> Cls
     Y --> CE
@@ -357,10 +385,9 @@ flowchart TB
     class X,Y io;
     class Enc,EncOut encoder;
     class Dec,Recon decoder;
-    class ReconLoss,ReconTerm,LossA loss;
-    class VQLoss,VQTerm vq;
-    class Sup,SupTerm sup;
-    class Jump loss;
+    class ReconLoss,LossA,Entropy,Consistency,Reg1,Reg2,Reg3,Reg4,Jump loss;
+    class VQLoss vq;
+    class Sup sup;
     class Cls,CE,OptCls opt;
 ```
 

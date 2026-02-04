@@ -98,6 +98,8 @@ class TopoEncoderConfig:
     covariant_attn_denom_min: float = 1e-3
     covariant_attn_use_transport: bool = True
     covariant_attn_transport_eps: float = 1e-3
+    hard_routing: bool = False
+    hard_routing_tau: float = 1.0
     soft_equiv_metric: bool = False
     soft_equiv_bundle_size: int | None = None
     soft_equiv_hidden_dim: int = 64
@@ -116,6 +118,19 @@ class TopoEncoderConfig:
     vision_use_reflections: bool = False
     vision_norm_nonlinearity: str = "n_sigmoid"
     vision_norm_bias: bool = True
+    vision_backbone_type: str = "covariant_retina"
+    vision_cifar_base_channels: int = 32
+    vision_cifar_bundle_size: int = 4
+    vision_soft_equiv: bool = False
+    vision_soft_equiv_bundle_size: int = 0
+    vision_soft_equiv_hidden_dim: int = 64
+    vision_soft_equiv_use_spectral_norm: bool = True
+    vision_soft_equiv_zero_self_mixing: bool = False
+    vision_soft_equiv_alpha: float = 0.1
+    vision_soft_equiv_per_block: bool = False
+    vision_standard_head: bool = False
+    vision_standard_head_blocks: int = 2
+    vision_spectral_head: bool = False
 
     # Training
     epochs: int = 50
@@ -1074,6 +1089,19 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
         vision_use_reflections=config.vision_use_reflections,
         vision_norm_nonlinearity=config.vision_norm_nonlinearity,
         vision_norm_bias=config.vision_norm_bias,
+        vision_backbone_type=config.vision_backbone_type,
+        vision_cifar_base_channels=config.vision_cifar_base_channels,
+        vision_cifar_bundle_size=config.vision_cifar_bundle_size,
+        vision_soft_equiv=config.vision_soft_equiv,
+        vision_soft_equiv_bundle_size=config.vision_soft_equiv_bundle_size,
+        vision_soft_equiv_hidden_dim=config.vision_soft_equiv_hidden_dim,
+        vision_soft_equiv_use_spectral_norm=config.vision_soft_equiv_use_spectral_norm,
+        vision_soft_equiv_zero_self_mixing=config.vision_soft_equiv_zero_self_mixing,
+        vision_soft_equiv_alpha=config.vision_soft_equiv_alpha,
+        vision_soft_equiv_per_block=config.vision_soft_equiv_per_block,
+        vision_standard_head=config.vision_standard_head,
+        vision_standard_head_blocks=config.vision_standard_head_blocks,
+        vision_spectral_head=config.vision_spectral_head,
         soft_equiv_metric=config.soft_equiv_metric,
         soft_equiv_bundle_size=config.soft_equiv_bundle_size,
         soft_equiv_hidden_dim=config.soft_equiv_hidden_dim,
@@ -1567,10 +1595,22 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
                 indices_stack,
                 z_n_all_charts,
                 _c_bar,
-            ) = model_atlas.encoder(batch_X)
+            ) = model_atlas.encoder(
+                batch_X,
+                hard_routing=config.hard_routing,
+                hard_routing_tau=config.hard_routing_tau,
+            )
 
-            # Decoder forward (dreaming mode - infers routing from z_geo)
-            recon_a, dec_w = model_atlas.decoder(z_geo, z_tex, chart_index=None)
+            # Decoder forward (optional hard routing via encoder chart index)
+            router_override = enc_w if config.hard_routing else None
+            recon_a, dec_w = model_atlas.decoder(
+                z_geo,
+                z_tex,
+                chart_index=None,
+                router_weights=router_override,
+                hard_routing=config.hard_routing,
+                hard_routing_tau=config.hard_routing_tau,
+            )
 
             # Core losses
             recon_loss_a = F.mse_loss(recon_a, batch_X)
@@ -1658,7 +1698,11 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
                     config.augment_noise_std,
                     config.augment_rotation_max,
                 )
-                _, _, _, _, enc_w_aug, z_geo_aug, _, _, _, _c_bar_aug = model_atlas.encoder(x_aug)
+                _, _, _, _, enc_w_aug, z_geo_aug, _, _, _, _c_bar_aug = model_atlas.encoder(
+                    x_aug,
+                    hard_routing=config.hard_routing,
+                    hard_routing_tau=config.hard_routing_tau,
+                )
 
                 if config.orbit_weight > 0:
                     orbit_loss = compute_orbit_loss(enc_w, enc_w_aug)
@@ -2349,7 +2393,9 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
             model_atlas.eval()
             with torch.no_grad():
                 K_chart_full, _, _, _, enc_w_full, _, _, _, _, _c_bar_full = model_atlas.encoder(
-                    X_test
+                    X_test,
+                    hard_routing=config.hard_routing,
+                    hard_routing_tau=config.hard_routing_tau,
                 )
                 usage = enc_w_full.mean(dim=0).cpu().numpy()
                 chart_assignments = K_chart_full.cpu().numpy()
@@ -2449,7 +2495,9 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
                 model_atlas.eval()
                 with torch.no_grad():
                     _, _, _, _, enc_w_test, z_geo_test, _, _, _, _c_bar_test = model_atlas.encoder(
-                        X_test
+                        X_test,
+                        hard_routing=config.hard_routing,
+                        hard_routing_tau=config.hard_routing_tau,
                     )
                 if was_training:
                     model_atlas.train()
@@ -2715,7 +2763,9 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
         # Atlas metrics (use dreaming mode to test autonomous routing)
         model_atlas.eval()
         recon_atlas_final, _, enc_w, dec_w, K_chart, _z_geo, _z_n, _c_bar = model_atlas(
-            X_test, use_hard_routing=False
+            X_test,
+            use_hard_routing=config.hard_routing,
+            hard_routing_tau=config.hard_routing_tau,
         )
         chart_assignments = K_chart.cpu().numpy()
         atlas_perplexity = model_atlas.compute_perplexity(K_chart)
@@ -2728,7 +2778,11 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
             sup_acc = (p_y_x.argmax(dim=1) == labels_test_t).float().mean().item()
         cls_acc = 0.0
         if classifier_head is not None:
-            _, _, _, _, enc_w_cls, z_geo_cls, _, _, _, _c_bar_cls = model_atlas.encoder(X_test)
+            _, _, _, _, enc_w_cls, z_geo_cls, _, _, _, _c_bar_cls = model_atlas.encoder(
+                X_test,
+                hard_routing=config.hard_routing,
+                hard_routing_tau=config.hard_routing_tau,
+            )
             cls_logits = classifier_head(enc_w_cls, z_geo_cls)
             cls_acc = (cls_logits.argmax(dim=1) == labels_test_t).float().mean().item()
         std_cls_acc = 0.0
@@ -3004,6 +3058,18 @@ def main():
         help="Diagonal stabilizer for transport (default: 1e-3)",
     )
     parser.add_argument(
+        "--hard_routing",
+        type=lambda x: x.lower() == "true",
+        default=False,
+        help="Use hard chart routing in the decoder (default: False)",
+    )
+    parser.add_argument(
+        "--hard_routing_tau",
+        type=float,
+        default=1.0,
+        help="Gumbel-softmax temperature for hard routing (default: 1.0)",
+    )
+    parser.add_argument(
         "--vision_preproc",
         type=lambda x: x.lower() == "true",
         default=False,
@@ -3056,6 +3122,87 @@ def main():
         type=lambda x: x.lower() == "true",
         default=True,
         help="Vision preproc norm bias (default: True)",
+    )
+    parser.add_argument(
+        "--vision_backbone_type",
+        type=str,
+        default="covariant_retina",
+        help=(
+            "Vision backbone type: covariant_retina (SO(2)-equivariant), "
+            "covariant_cifar (gauge-covariant), or standard_cifar (non-equivariant)"
+        ),
+    )
+    parser.add_argument(
+        "--vision_cifar_base_channels",
+        type=int,
+        default=32,
+        help="Base channels for CovariantCIFARBackbone (default: 32)",
+    )
+    parser.add_argument(
+        "--vision_cifar_bundle_size",
+        type=int,
+        default=4,
+        help="Bundle size for NormGatedConv2d in CovariantCIFARBackbone (default: 4)",
+    )
+    parser.add_argument(
+        "--vision_soft_equiv",
+        type=lambda x: x.lower() == "true",
+        default=False,
+        help="Enable soft equivariant mixing on vision features (default: False)",
+    )
+    parser.add_argument(
+        "--vision_soft_equiv_bundle_size",
+        type=int,
+        default=0,
+        help="Bundle size for vision soft equivariant mixing (0 = hidden_dim)",
+    )
+    parser.add_argument(
+        "--vision_soft_equiv_hidden_dim",
+        type=int,
+        default=64,
+        help="Hidden dim for vision soft equivariant mixing (default: 64)",
+    )
+    parser.add_argument(
+        "--vision_soft_equiv_use_spectral_norm",
+        type=lambda x: x.lower() == "true",
+        default=True,
+        help="Use spectral norm in vision soft equivariant mixing (default: True)",
+    )
+    parser.add_argument(
+        "--vision_soft_equiv_zero_self_mixing",
+        type=lambda x: x.lower() == "true",
+        default=False,
+        help="Zero self-mixing in vision soft equivariant mixing (default: False)",
+    )
+    parser.add_argument(
+        "--vision_soft_equiv_alpha",
+        type=float,
+        default=0.1,
+        help="Blend factor for vision soft equivariant mixing (default: 0.1)",
+    )
+    parser.add_argument(
+        "--vision_soft_equiv_per_block",
+        type=lambda x: x.lower() == "true",
+        default=False,
+        help="Apply vision soft equivariant mixing after each conv block (default: False)",
+    )
+    parser.add_argument(
+        "--vision_standard_head",
+        type=lambda x: x.lower() == "true",
+        default=False,
+        help="Apply standard CNN head after covariant stages (default: False)",
+    )
+    parser.add_argument(
+        "--vision_standard_head_blocks",
+        type=int,
+        default=2,
+        help="Number of standard CNN blocks in the head (default: 2)",
+    )
+    parser.add_argument(
+        "--vision_spectral_head",
+        type=lambda x: x.lower() == "true",
+        default=False,
+        help="Apply a spectral linear head on vision features (default: False)",
     )
     parser.add_argument(
         "--soft_equiv",
@@ -3182,6 +3329,24 @@ def main():
     )
 
     # Tier 1 losses (residual hierarchy)
+    parser.add_argument(
+        "--entropy_weight",
+        type=float,
+        default=0.1,
+        help="Routing entropy weight (default: 0.1)",
+    )
+    parser.add_argument(
+        "--diversity_weight",
+        type=float,
+        default=0.1,
+        help="Chart diversity weight (default: 0.1)",
+    )
+    parser.add_argument(
+        "--separation_weight",
+        type=float,
+        default=0.1,
+        help="Chart separation weight (default: 0.1)",
+    )
     parser.add_argument(
         "--codebook_center_weight",
         type=float,
@@ -3636,6 +3801,19 @@ def main():
         config.vision_use_reflections = args.vision_use_reflections
         config.vision_norm_nonlinearity = args.vision_norm_nonlinearity
         config.vision_norm_bias = args.vision_norm_bias
+        config.vision_backbone_type = args.vision_backbone_type
+        config.vision_cifar_base_channels = args.vision_cifar_base_channels
+        config.vision_cifar_bundle_size = args.vision_cifar_bundle_size
+        config.vision_soft_equiv = args.vision_soft_equiv
+        config.vision_soft_equiv_bundle_size = args.vision_soft_equiv_bundle_size
+        config.vision_soft_equiv_hidden_dim = args.vision_soft_equiv_hidden_dim
+        config.vision_soft_equiv_use_spectral_norm = args.vision_soft_equiv_use_spectral_norm
+        config.vision_soft_equiv_zero_self_mixing = args.vision_soft_equiv_zero_self_mixing
+        config.vision_soft_equiv_alpha = args.vision_soft_equiv_alpha
+        config.vision_soft_equiv_per_block = args.vision_soft_equiv_per_block
+        config.vision_standard_head = args.vision_standard_head
+        config.vision_standard_head_blocks = args.vision_standard_head_blocks
+        config.vision_spectral_head = args.vision_spectral_head
         config.use_scheduler = args.use_scheduler
         config.min_lr = args.min_lr
         config.adaptive_lr = args.adaptive_lr
@@ -3672,6 +3850,9 @@ def main():
         config.consistency_target = args.consistency_target
         config.use_learned_precisions = args.use_learned_precisions
         config.window_eps_ground = args.window_eps_ground
+        config.entropy_weight = args.entropy_weight
+        config.diversity_weight = args.diversity_weight
+        config.separation_weight = args.separation_weight
         config.codebook_center_weight = args.codebook_center_weight
         config.chart_center_sep_weight = args.chart_center_sep_weight
         config.chart_center_sep_margin = args.chart_center_sep_margin
@@ -3683,6 +3864,8 @@ def main():
         config.covariant_attn_denom_min = args.covariant_attn_denom_min
         config.covariant_attn_use_transport = args.covariant_attn_use_transport
         config.covariant_attn_transport_eps = args.covariant_attn_transport_eps
+        config.hard_routing = args.hard_routing
+        config.hard_routing_tau = args.hard_routing_tau
         config.soft_equiv_metric = args.soft_equiv_metric
         config.soft_equiv_bundle_size = args.soft_equiv_bundle_size or None
         config.soft_equiv_hidden_dim = args.soft_equiv_hidden_dim
@@ -3722,6 +3905,8 @@ def main():
             covariant_attn_denom_min=args.covariant_attn_denom_min,
             covariant_attn_use_transport=args.covariant_attn_use_transport,
             covariant_attn_transport_eps=args.covariant_attn_transport_eps,
+            hard_routing=args.hard_routing,
+            hard_routing_tau=args.hard_routing_tau,
             vision_preproc=args.vision_preproc,
             vision_in_channels=args.vision_in_channels,
             vision_height=args.vision_height,
@@ -3731,6 +3916,19 @@ def main():
             vision_use_reflections=args.vision_use_reflections,
             vision_norm_nonlinearity=args.vision_norm_nonlinearity,
             vision_norm_bias=args.vision_norm_bias,
+            vision_backbone_type=args.vision_backbone_type,
+            vision_cifar_base_channels=args.vision_cifar_base_channels,
+            vision_cifar_bundle_size=args.vision_cifar_bundle_size,
+            vision_soft_equiv=args.vision_soft_equiv,
+            vision_soft_equiv_bundle_size=args.vision_soft_equiv_bundle_size,
+            vision_soft_equiv_hidden_dim=args.vision_soft_equiv_hidden_dim,
+            vision_soft_equiv_use_spectral_norm=args.vision_soft_equiv_use_spectral_norm,
+            vision_soft_equiv_zero_self_mixing=args.vision_soft_equiv_zero_self_mixing,
+            vision_soft_equiv_alpha=args.vision_soft_equiv_alpha,
+            vision_soft_equiv_per_block=args.vision_soft_equiv_per_block,
+            vision_standard_head=args.vision_standard_head,
+            vision_standard_head_blocks=args.vision_standard_head_blocks,
+            vision_spectral_head=args.vision_spectral_head,
             soft_equiv_metric=args.soft_equiv_metric,
             soft_equiv_bundle_size=args.soft_equiv_bundle_size or None,
             soft_equiv_hidden_dim=args.soft_equiv_hidden_dim,
@@ -3755,6 +3953,9 @@ def main():
             mlflow_experiment=args.mlflow_experiment,
             mlflow_run_name=args.mlflow_run_name,
             # Tier 1 losses
+            entropy_weight=args.entropy_weight,
+            diversity_weight=args.diversity_weight,
+            separation_weight=args.separation_weight,
             codebook_center_weight=args.codebook_center_weight,
             chart_center_sep_weight=args.chart_center_sep_weight,
             chart_center_sep_margin=args.chart_center_sep_margin,
