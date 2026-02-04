@@ -1,11 +1,14 @@
 """Fractal gas implementation for video games (Atari)."""
 
+from fragile.fractalai.videogames.atari import AtariEnv, AtariState
 from fragile.fractalai.videogames.atari_gas import AtariFractalGas, WalkerState
 from fragile.fractalai.videogames.atari_history import AtariHistory
 from fragile.fractalai.videogames.cloning import FractalCloningOperator
 from fragile.fractalai.videogames.kinetic import RandomActionOperator
 
 __all__ = [
+    "AtariEnv",
+    "AtariState",
     "AtariFractalGas",
     "WalkerState",
     "AtariHistory",
