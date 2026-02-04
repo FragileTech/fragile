@@ -10,6 +10,7 @@ import pandas as pd
 import panel as pn
 import param
 
+from fragile.fractalai.videogames.atari import AtariEnv
 from fragile.fractalai.videogames.atari_gas import AtariFractalGas
 from fragile.fractalai.videogames.atari_history import AtariHistory
 
@@ -33,12 +34,12 @@ class AtariGasConfigPanel(param.Parameterized):
 
     # Environment parameters
     game_name = param.ObjectSelector(
-        default="PongNoFrameskip-v4",
+        default="ALE/Pong-v5",
         objects=[
-            "PongNoFrameskip-v4",
-            "BreakoutNoFrameskip-v4",
-            "MsPacmanNoFrameskip-v4",
-            "SpaceInvadersNoFrameskip-v4",
+            "ALE/Pong-v5",
+            "ALE/Breakout-v5",
+            "ALE/MsPacman-v5",
+            "ALE/SpaceInvaders-v5",
         ],
         doc="Atari game environment",
     )
@@ -119,7 +120,7 @@ class AtariGasConfigPanel(param.Parameterized):
 
         self.status_pane = pn.pane.Markdown(
             "Ready to run simulation. "
-            "**Note:** Running simulations requires plangym and a display (may not work on headless WSL)."
+            "**Note:** Uses AtariEnv with gymnasium backend (headless compatible)."
         )
 
         # Callbacks
@@ -176,12 +177,12 @@ class AtariGasConfigPanel(param.Parameterized):
         XCB threading errors. X11/OpenGL initialization is not thread-safe.
 
         Returns:
-            Environment wrapper compatible with AtariFractalGas
+            AtariEnv wrapper compatible with AtariFractalGas
 
         Raises:
             Exception: If environment creation fails
         """
-        # Check environment before importing plangym/gymnasium
+        # Check environment before importing
         if not self._check_display_available():
             raise RuntimeError(
                 "OpenGL/Display not available. On WSL:\n"
@@ -189,62 +190,38 @@ class AtariGasConfigPanel(param.Parameterized):
                 "2. Or set up xvfb manually (see scripts/run_dashboard_wsl.sh)"
             )
 
-        # Try gymnasium first (better headless support), fall back to plangym
-        env = None
-
-        # Try gymnasium with headless rendering
+        # Try AtariEnv (primary, fully tested)
         try:
-            import gymnasium as gym
-            from gymnasium.wrappers import FrameStack
+            env = AtariEnv(
+                name=self.game_name,
+                obs_type=self.obs_type,
+                render_mode="rgb_array",  # Headless compatible
+                include_rgb=True,  # Enable frame capture for visualization
+            )
+            self.status_pane.object = "Using AtariEnv (gymnasium backend)"
+            return env
 
-            # Create gym environment with rgb_array rendering (headless)
-            env_name = self.game_name.replace("NoFrameskip-v4", "-v4")
-            base_env = gym.make(env_name, render_mode="rgb_array")
-
-            # Wrap to match plangym interface
-            class GymEnvWrapper:
-                def __init__(self, env):
-                    self.env = env
-                    self.obs_type = "rgb"  # gymnasium uses rgb arrays
-
-                def reset(self):
-                    obs, info = self.env.reset()
-                    return obs
-
-                def step(self, action):
-                    obs, reward, terminated, truncated, info = self.env.step(action)
-                    return obs, reward, terminated or truncated, info
-
-                def render(self):
-                    return self.env.render()
-
-                def close(self):
-                    self.env.close()
-
-            env = GymEnvWrapper(base_env)
-            self.status_pane.object = "Using gymnasium (headless-compatible)"
-
-        except Exception:
-            # Fall back to plangym
+        except Exception as e:
+            # Fall back to plangym if AtariEnv fails
             try:
                 from plangym import AtariEnvironment
+
+                # Convert game name if needed (ALE/Pong-v5 -> Pong-v5 for plangym)
+                game_name = self.game_name.replace("ALE/", "").replace("-v5", "NoFrameskip-v4")
+
                 env = AtariEnvironment(
-                    name=self.game_name,
+                    name=game_name,
                     obs_type=self.obs_type,
                 )
-                self.status_pane.object = "Using plangym"
+                self.status_pane.object = "Using plangym (fallback)"
+                return env
+
             except ImportError:
                 raise ImportError(
-                    "Neither gymnasium nor plangym available.\n"
+                    "Neither AtariEnv nor plangym available.\n"
                     "Install with: pip install gymnasium[atari] gymnasium[accept-rom-license]\n"
-                    "Or: pip install plangym\n\n"
-                    "For WSL: Use gymnasium for better headless support"
+                    f"\nOriginal AtariEnv error: {e}"
                 )
-
-        if env is None:
-            raise RuntimeError("Failed to create Atari environment")
-
-        return env
 
     def _run_simulation_worker(self, env):
         """Background thread for simulation execution.
@@ -334,6 +311,10 @@ class AtariGasConfigPanel(param.Parameterized):
     def _check_display_available(self) -> bool:
         """Check if OpenGL/display is available."""
         import os
+
+        # Headless mode via PYGLET_HEADLESS bypasses DISPLAY requirement
+        if os.environ.get('PYGLET_HEADLESS') == '1':
+            return True
 
         # Check for DISPLAY environment variable
         if not os.environ.get('DISPLAY'):
