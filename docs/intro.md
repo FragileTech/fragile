@@ -121,7 +121,7 @@ This work is designed to be **modular**. You are not required to read all three 
 | Understand the mathematics | {doc}`Vol II <source/2_hypostructure/intro_hypostructure>` | Basic category theory helpful |
 | Use parallel planning/sampling | {doc}`Vol III Part I <source/3_fractal_gas/1_the_algorithm/01_algorithm_intuition>` | Minimal |
 | Full gauge-theoretic picture | {doc}`Vol I Part VIII <source/1_agent/08_multiagent/01_gauge_theory>` + {doc}`Vol III Part II <source/3_fractal_gas/2_fractal_set/01_fractal_set>` | Vol I foundations |
-| Convergence proofs | {doc}`Vol II Part VII <source/2_hypostructure/07_factories/01_metatheorems>` + {doc}`Vol III Appendices <source/3_fractal_gas/appendices/06_convergence>` | Mathematical maturity |
+| Convergence proofs | {doc}`Vol II Part VII <source/2_hypostructure/07_factories/01_metatheorems>` + {doc}`Vol III Appendices <source/3_fractal_gas/convergence_program/06_convergence>` | Mathematical maturity |
 
 Each volume has its own introduction with detailed navigation. Cross-references link related material across volumes.
 
@@ -392,7 +392,7 @@ The structural parallel is not accidental: gauge symmetry is the mathematical ex
 **Recommended Path:**
 1. {doc}`Vol III Introduction <source/3_fractal_gas/intro_fractal_gas>` (overview)
 2. {doc}`Vol III Part I: The Algorithm <source/3_fractal_gas/1_the_algorithm/01_algorithm_intuition>` (complete treatment)
-3. {doc}`Vol III Appendices: Convergence <source/3_fractal_gas/appendices/06_convergence>` (proofs)
+3. {doc}`Vol III Appendices: Convergence <source/3_fractal_gas/convergence_program/06_convergence>` (proofs)
 4. {doc}`Vol I Part IV: Belief Dynamics <source/1_agent/04_control/02_belief_dynamics>` (how agents use the gas internally)
 5. {doc}`Vol I Part V: WFR geometry <source/1_agent/05_geometry/02_wfr_geometry>` (the continuum limit)
 
@@ -476,7 +476,7 @@ We separated the components to ensure **robustness and adoptability**:
 - {doc}`Vol I: Derivations <source/1_agent/10_appendices/01_derivations>`
 - {doc}`Vol I: Loss Terms Reference (37 losses) <source/1_agent/10_appendices/06_losses>`
 - {doc}`Vol II: ZFC Translation <source/2_hypostructure/11_appendices/01_zfc>`
-- {doc}`Vol III: Convergence Proofs <source/3_fractal_gas/appendices/06_convergence>`
+- {doc}`Vol III: Convergence Proofs <source/3_fractal_gas/convergence_program/06_convergence>`
 
 (sec-llm-exploration)=
 ## LLM-Assisted Exploration

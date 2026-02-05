@@ -7,7 +7,7 @@ author: "Guillem Duran-Ballester"
 (sec-fractalai-references)=
 # FractalAI: Development and Validation in the Literature
 
-**Prerequisites**: {doc}`intro_fractal_gas_revamp`, {doc}`1_the_algorithm/01_algorithm_intuition`
+**Prerequisites**: {doc}`../../intro_fractal_gas`, {doc}`../../1_the_algorithm/01_algorithm_intuition`
 
 
 
@@ -31,9 +31,9 @@ This document traces FractalAI's development and empirical validation from 2017-
 - Bayes Factor: 521:1 in favor of FSX
 
 **Volume 3 Connection:**
-- QSD existence ({doc}`convergence_program/06_convergence`) → FSX stability
-- Mean-field limit ({doc}`convergence_program/09_propagation_chaos`) → group scaling
-- KL convergence ({doc}`convergence_program/15_kl_convergence`) → exploration balance
+- QSD existence ({doc}`../../convergence_program/06_convergence`) → FSX stability
+- Mean-field limit ({doc}`../../convergence_program/09_propagation_chaos`) → group scaling
+- KL convergence ({doc}`../../convergence_program/15_kl_convergence`) → exploration balance
 
 
 
@@ -52,10 +52,10 @@ Volume 3 provides rigorous theoretical foundation for algorithmic properties obs
 
 | Observed Behavior | Volume 3 Theory | Reference |
 |-------------------|-----------------|-----------|
-| FSX agents reach equilibrium | QSD existence/uniqueness | {doc}`convergence_program/06_convergence` |
-| Coordination scales with $N$ | Mean-field limit, $O(1/\sqrt{N})$ error | {doc}`convergence_program/09_propagation_chaos` |
-| Exploration-exploitation balance | KL convergence via LSI | {doc}`convergence_program/15_kl_convergence` |
-| Walker diversity maintained | Hypocoercive variance control | {doc}`convergence_program/10_kl_hypocoercive` |
+| FSX agents reach equilibrium | QSD existence/uniqueness | {doc}`../../convergence_program/06_convergence` |
+| Coordination scales with $N$ | Mean-field limit, $O(1/\sqrt{N})$ error | {doc}`../../convergence_program/09_propagation_chaos` |
+| Exploration-exploitation balance | KL convergence via LSI | {doc}`../../convergence_program/15_kl_convergence` |
+| Walker diversity maintained | Hypocoercive variance control | {doc}`../../convergence_program/10_kl_hypocoercive` |
 
 ### Document Structure
 
@@ -155,7 +155,7 @@ Tests: separability, modality, scaling, conditioning.
 - Physics motion → Langevin dynamics
 - Diversity maintenance → Diffusion term
 
-Volume 3 formalizes this transition via QSD convergence ({doc}`convergence_program/06_convergence`).
+Volume 3 formalizes this transition via QSD convergence ({doc}`../../convergence_program/06_convergence`).
 :::
 
 
@@ -478,7 +478,7 @@ $$
 
 Humans and FSX maintain higher exploration entropy than MARL.
 
-**Volume 3 Connection**: Empirical entropy matches QSD theoretical entropy ({doc}`convergence_program/07_discrete_qsd`).
+**Volume 3 Connection**: Empirical entropy matches QSD theoretical entropy ({doc}`../../convergence_program/07_discrete_qsd`).
 :::
 
 #### Robustness Analysis
@@ -512,7 +512,7 @@ FSX maintains closer human match under partial observability.
 
 Convergence degrades with $N$ for all models; FSX tracks humans at all scales.
 
-**Volume 3 Connection**: Scaling matches mean-field $O(1/\sqrt{N})$ error prediction ({doc}`convergence_program/09_propagation_chaos`).
+**Volume 3 Connection**: Scaling matches mean-field $O(1/\sqrt{N})$ error prediction ({doc}`../../convergence_program/09_propagation_chaos`).
 
 #### Bayesian Model Comparison
 
@@ -638,11 +638,11 @@ Volume 3 provides theoretical explanation for empirical phenomena.
 
 | Empirical Result | Theoretical Explanation | Reference |
 |------------------|------------------------|-----------|
-| FSX agents equilibrate | QSD existence/uniqueness | {doc}`convergence_program/06_convergence` |
-| Diversity maintained despite cloning | Cloning drift + kinetic diffusion balance | {doc}`convergence_program/03_cloning`, {doc}`convergence_program/05_kinetic_contraction` |
-| Coordination scales with $N$ | Mean-field $O(1/\sqrt{N})$ error | {doc}`convergence_program/09_propagation_chaos` |
-| Exploration-exploitation balance | KL convergence via LSI | {doc}`convergence_program/15_kl_convergence` |
-| Emergent patterns | Gauge symmetry breaking | {doc}`2_fractal_set/04_standard_model` |
+| FSX agents equilibrate | QSD existence/uniqueness | {doc}`../../convergence_program/06_convergence` |
+| Diversity maintained despite cloning | Cloning drift + kinetic diffusion balance | {doc}`../../convergence_program/03_cloning`, {doc}`../../convergence_program/05_kinetic_contraction` |
+| Coordination scales with $N$ | Mean-field $O(1/\sqrt{N})$ error | {doc}`../../convergence_program/09_propagation_chaos` |
+| Exploration-exploitation balance | KL convergence via LSI | {doc}`../../convergence_program/15_kl_convergence` |
+| Emergent patterns | Gauge symmetry breaking | {doc}`../../2_fractal_set/04_standard_model` |
 
 ### QSD Existence
 
@@ -661,7 +661,7 @@ $$
 
 with exponential rate $\lambda_{\mathrm{gap}} = \Theta(\gamma \wedge \delta)$.
 
-**Proof**: {doc}`convergence_program/06_convergence`, Thm 6.3.
+**Proof**: {doc}`../../convergence_program/06_convergence`, Thm 6.3.
 :::
 
 **Connection**: Observed equilibrium is the QSD. Walkers converge to distribution balancing exploration (diffusion) and exploitation (cloning).
@@ -681,7 +681,7 @@ $$
 W_2(\mu_{\infty}^N, \mu_{\infty}^{\mathrm{MF}}) = O\left(\frac{1}{\sqrt{N}}\right)
 $$
 
-**Proof**: {doc}`convergence_program/09_propagation_chaos`, Thm 9.4.
+**Proof**: {doc}`../../convergence_program/09_propagation_chaos`, Thm 9.4.
 :::
 
 **Empirical Test**: Hornischer data fits $1 - c/\sqrt{N}$ with $c \approx 1.2$ (within experimental error).
@@ -780,11 +780,11 @@ FractalAI development (2017-2023) progression:
 
 **Volume 3 Cross-References:**
 
-- {doc}`intro_fractal_gas_revamp` — Volume 3 overview
-- {doc}`convergence_program/06_convergence` — QSD existence/uniqueness
-- {doc}`convergence_program/09_propagation_chaos` — Mean-field limit
-- {doc}`convergence_program/15_kl_convergence` — KL convergence via LSI
-- {doc}`2_fractal_set/04_standard_model` — Gauge structure emergence
+- {doc}`../../intro_fractal_gas` — Volume 3 overview
+- {doc}`../../convergence_program/06_convergence` — QSD existence/uniqueness
+- {doc}`../../convergence_program/09_propagation_chaos` — Mean-field limit
+- {doc}`../../convergence_program/15_kl_convergence` — KL convergence via LSI
+- {doc}`../../2_fractal_set/04_standard_model` — Gauge structure emergence
 
 **Bibliography:**
 

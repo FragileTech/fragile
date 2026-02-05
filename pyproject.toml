@@ -74,7 +74,7 @@ dependencies = [
     "torchvision>=0.14.1,<0.15",
     "pytest>=9.0.2",
     # "plangym>=0.1.30",  # Disabled: causes dependency conflicts
-    "gymnasium>=1.2.3",
+    "gymnasium[atari]>=1.2.3",
     "plangym[atari]>=0.1.31",
     "scipy-stubs~=1.15.3",
 ]  # ToDo: Modify according to your needs!

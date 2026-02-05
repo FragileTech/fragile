@@ -189,5 +189,10 @@ parts:
           - file: source/3_fractal_gas/convergence_program/17_geometric_gas
       - file: source/3_fractal_gas/appendices/00_faq
         title: "Part V - Appendices"
+        sections:
+          - file: source/3_fractal_gas/appendices/archive/roadmap_fractal_gas
+            title: "Proof Path Document"
+          - file: source/3_fractal_gas/appendices/archive/fractalai_references
+            title: "FractalAI Literature Review"
       - file: conclusions
         title: Conclusion

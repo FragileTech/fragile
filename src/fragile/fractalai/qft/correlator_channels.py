@@ -1,8 +1,14 @@
-"""Vectorized channel correlator computation for lattice QFT analysis.
+"""Correlator computation and mass fitting from operator time series.
 
-This module provides a class hierarchy for computing two-point correlators
-across different particle channels, with PyTorch-based vectorization and
-convolutional AIC fitting for efficient mass extraction.
+This module computes two-point correlators and extracts effective masses
+from operator time series. Time series preprocessing is handled by the
+aggregation module.
+
+Workflow:
+    1. Preprocessing: aggregation.py generates operator time series
+    2. Correlator: compute_correlator_fft() via FFT
+    3. Mass extraction: ConvolutionalAICExtractor with AIC weighting
+    4. Results: ChannelCorrelatorResult with mass, errors, diagnostics
 
 Class Hierarchy:
     ChannelCorrelator (ABC)
@@ -16,6 +22,14 @@ Class Hierarchy:
     │   └── NucleonChannel       - 3×3 determinant
     └── GaugeChannelCorrelator
         └── GlueballChannel      - ||force||² norm
+
+Main entry points:
+    - compute_all_channels(history, config): Compute all particle channels
+    - ScalarChannel(history, config).compute(): Single channel analysis
+
+For custom time series analysis without RunHistory:
+    - Use compute_correlator_fft() directly with your series
+    - Use ConvolutionalAICExtractor for mass fitting
 
 Usage:
     from fragile.fractalai.qft.correlator_channels import (
@@ -37,10 +51,9 @@ Usage:
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any
 
-import numpy as np
 import torch
 import torch.nn.functional as F
 from torch import Tensor
@@ -56,11 +69,14 @@ if TYPE_CHECKING:
 
 @dataclass
 class ChannelConfig:
-    """Configuration for channel correlator computation."""
+    """Configuration for aggregation (operator computation).
+
+    This config is used for preprocessing and operator computation only.
+    For correlator analysis configuration, use CorrelatorConfig.
+    """
 
     # Time parameters
     warmup_fraction: float = 0.1
-    max_lag: int = 80
 
     # Monte Carlo slice selection (for Euclidean time analysis)
     mc_time_index: int | None = None  # Recorded index; None => last recorded slice
@@ -85,22 +101,32 @@ class ChannelConfig:
     use_time_sliced_tessellation: bool = True
     time_sliced_neighbor_mode: str = "spacelike"
 
+
+@dataclass
+class CorrelatorConfig:
+    """Configuration for correlator analysis (mass fitting).
+
+    Separated from ChannelConfig which is for aggregation.
+    """
+
+    # Correlator computation
+    max_lag: int = 80
+    use_connected: bool = True
+
     # AIC fitting parameters
     window_widths: list[int] | None = None
     min_mass: float = 0.0
     max_mass: float = float("inf")
-    # Linear fit parameters (legacy-style)
-    fit_mode: str = "aic"
+
+    # Linear fit parameters (legacy)
+    fit_mode: str = "aic"  # "aic", "linear", "linear_abs"
     fit_start: int = 2
     fit_stop: int | None = None
     min_fit_points: int = 2
 
-    # Correlator options
-    use_connected: bool = True
-
     # Bootstrap error estimation
-    compute_bootstrap_errors: bool = False  # Enable bootstrap error estimation
-    n_bootstrap: int = 100  # Number of bootstrap resamples
+    compute_bootstrap_errors: bool = False
+    n_bootstrap: int = 100
 
 
 @dataclass
@@ -122,76 +148,6 @@ class ChannelCorrelatorResult:
     window_r2: Tensor | None = None  # [num_widths, max_positions]
 
 
-def _collect_time_sliced_edges(time_sliced, mode: str) -> np.ndarray:
-    edges: list[np.ndarray] = []
-    if mode in {"spacelike", "spacelike+timelike"}:
-        for bin_result in time_sliced.bins:
-            if bin_result.spacelike_edges is not None and bin_result.spacelike_edges.size:
-                edges.append(bin_result.spacelike_edges)
-    if mode in {"timelike", "spacelike+timelike"}:
-        if (
-            time_sliced.timelike_edges is not None
-            and time_sliced.timelike_edges.size
-        ):
-            edges.append(time_sliced.timelike_edges)
-    if not edges:
-        return np.zeros((0, 2), dtype=np.int64)
-    return np.vstack(edges)
-
-
-def _build_neighbor_lists(edges: np.ndarray, n: int) -> list[list[int]]:
-    neighbors = [[] for _ in range(n)]
-    if edges.size == 0:
-        return neighbors
-    for i, j in edges:
-        if i == j:
-            continue
-        if 0 <= i < n and 0 <= j < n:
-            neighbors[i].append(int(j))
-    # De-duplicate while preserving order
-    for idx, items in enumerate(neighbors):
-        if len(items) <= 1:
-            continue
-        seen: set[int] = set()
-        unique = []
-        for item in items:
-            if item in seen:
-                continue
-            seen.add(item)
-            unique.append(item)
-        neighbors[idx] = unique
-    return neighbors
-
-
-def _normalize_neighbor_method(method: str) -> str:
-    if method == "uniform":
-        return "companions"
-    return method
-
-
-def _resolve_mc_time_index(history, mc_time_index: int | None) -> int:
-    """Resolve a Monte Carlo slice index from either recorded index or step."""
-    if history.n_recorded < 2:
-        raise ValueError("Need at least 2 recorded timesteps for Euclidean analysis.")
-    if mc_time_index is None:
-        resolved = history.n_recorded - 1
-    else:
-        try:
-            raw = int(mc_time_index)
-        except (TypeError, ValueError) as exc:
-            raise ValueError(f"Invalid mc_time_index: {mc_time_index}") from exc
-        if raw in history.recorded_steps:
-            resolved = history.get_step_index(raw)
-        else:
-            resolved = raw
-    if resolved < 1 or resolved >= history.n_recorded:
-        msg = (
-            f"mc_time_index {resolved} out of bounds "
-            f"(valid recorded index 1..{history.n_recorded - 1} "
-            "or a recorded step value)."
-        )
-        raise ValueError(msg)
-    return resolved
 
 
 # =============================================================================
@@ -592,90 +548,274 @@ def compute_effective_mass_torch(
     return eff
 
 
-def bin_by_euclidean_time(
-    positions: Tensor,
-    operators: Tensor,
-    alive: Tensor,
-    time_dim: int = 3,
-    n_bins: int = 50,
-    time_range: tuple[float, float] | None = None,
-) -> tuple[Tensor, Tensor]:
-    """Bin walkers by Euclidean time coordinate and compute mean operator per bin.
+# =============================================================================
+# Pure Function API for Correlator Analysis
+# =============================================================================
 
-    In 4D simulations (3 spatial + 1 Euclidean time), this function treats one
-    spatial dimension as a time coordinate and computes operator averages within
-    time bins. This enables lattice QFT analysis where correlators are computed
-    over spatial separation in the time dimension rather than Monte Carlo timesteps.
+
+def extract_mass_aic(
+    correlator: Tensor,
+    dt: float,
+    config: CorrelatorConfig,
+) -> dict[str, Any]:
+    """Extract mass using convolutional AIC.
+
+    Extracted from ChannelCorrelator.extract_mass_aic().
 
     Args:
-        positions: Walker positions over MC time [T, N, d]
-        operators: Operator values to average [T, N]
-        alive: Alive mask [T, N]
-        time_dim: Which spatial dimension is Euclidean time (0-indexed, default 3)
-        n_bins: Number of time bins
-        time_range: (t_min, t_max) or None for auto from data
+        correlator: Correlator C(t) [max_lag+1].
+        dt: Time step.
+        config: CorrelatorConfig.
 
     Returns:
-        time_coords: Bin centers [n_bins]
-        operator_series: Mean operator vs Euclidean time [n_bins]
-
-    Example:
-        >>> # 4D simulation with d=4, treat 4th dim as time
-        >>> positions = history.x_before_clone  # [T, N, 4]
-        >>> operators = compute_scalar_operators(...)  # [T, N]
-        >>> alive = history.alive_mask  # [T, N]
-        >>> time_coords, series = bin_by_euclidean_time(positions, operators, alive)
-        >>> correlator = compute_correlator_fft(series, max_lag=40)
+        Dict with mass, mass_error, and fitting details.
     """
-    # Extract Euclidean time coordinate
-    t_euc = positions[:, :, time_dim]  # [T, N]
+    # Filter positive values for log
+    mask = correlator > 0
+    if not mask.any():
+        return {"mass": 0.0, "mass_error": float("inf"), "n_valid_windows": 0}
 
-    # Flatten over MC time dimension to treat all snapshots as ensemble
-    t_euc_flat = t_euc[alive]  # [total_alive_walkers]
-    ops_flat = operators[alive]
+    log_corr = torch.full_like(correlator, float("nan"))
+    log_corr[mask] = torch.log(correlator[mask])
 
-    if t_euc_flat.numel() == 0:
-        # No alive walkers
-        device = positions.device
-        return torch.zeros(n_bins, device=device), torch.zeros(n_bins, device=device)
+    # Estimate errors (simple bootstrap proxy)
+    log_err = torch.ones_like(log_corr) * 0.1
 
-    # Determine time range
-    if time_range is None:
-        t_min, t_max = t_euc_flat.min().item(), t_euc_flat.max().item()
-        # Add small padding to avoid edge effects
-        padding = (t_max - t_min) * 0.01
-        t_min -= padding
-        t_max += padding
+    # Find first NaN to trim series
+    finite_mask = torch.isfinite(log_corr)
+    if not finite_mask.any():
+        return {"mass": 0.0, "mass_error": float("inf"), "n_valid_windows": 0}
+
+    last_valid = finite_mask.nonzero()[-1].item()
+    log_corr = log_corr[: last_valid + 1]
+    log_err = log_err[: last_valid + 1]
+
+    extractor = ConvolutionalAICExtractor(
+        window_widths=config.window_widths,
+        min_mass=config.min_mass,
+        max_mass=config.max_mass,
+    )
+
+    return extractor.fit_all_widths(log_corr, log_err)
+
+
+def extract_mass_linear(
+    correlator: Tensor,
+    dt: float,
+    config: CorrelatorConfig,
+) -> dict[str, Any]:
+    """Extract mass using a simple linear fit on log(C(t)).
+
+    Extracted from ChannelCorrelator.extract_mass_linear().
+
+    Args:
+        correlator: Correlator C(t).
+        dt: Time step.
+        config: CorrelatorConfig.
+
+    Returns:
+        Dict with mass, amplitude, r_squared, fit_points.
+    """
+    if correlator.numel() == 0:
+        return {
+            "mass": 0.0,
+            "amplitude": 0.0,
+            "r_squared": 0.0,
+            "fit_points": 0.0,
+        }
+
+    n = correlator.shape[0]
+    fit_start = max(0, int(config.fit_start))
+    fit_stop = config.fit_stop
+    if fit_stop is None:
+        fit_stop = n - 1
+    fit_stop = min(int(fit_stop), n - 1)
+    if fit_stop < fit_start:
+        return {
+            "mass": 0.0,
+            "amplitude": 0.0,
+            "r_squared": 0.0,
+            "fit_points": 0.0,
+        }
+
+    idx = torch.arange(n, device=correlator.device, dtype=torch.float32)
+    mask = (idx >= fit_start) & (idx <= fit_stop) & (correlator > 0)
+    n_points = int(mask.sum().item())
+    if n_points < max(2, int(config.min_fit_points)):
+        return {
+            "mass": 0.0,
+            "amplitude": 0.0,
+            "r_squared": 0.0,
+            "fit_points": float(n_points),
+        }
+
+    x = idx[mask]
+    y = torch.log(correlator[mask])
+    sum_x = x.sum()
+    sum_y = y.sum()
+    sum_xx = (x * x).sum()
+    sum_xy = (x * y).sum()
+    denom = n_points * sum_xx - sum_x * sum_x
+    if denom.abs() < 1e-12:
+        return {
+            "mass": 0.0,
+            "amplitude": 0.0,
+            "r_squared": 0.0,
+            "fit_points": float(n_points),
+        }
+
+    slope = (n_points * sum_xy - sum_x * sum_y) / denom
+    intercept = (sum_y - slope * sum_x) / n_points
+    mass = -slope
+    amplitude = torch.exp(intercept)
+
+    y_pred = intercept + slope * x
+    ss_res = ((y - y_pred) ** 2).sum()
+    ss_tot = ((y - y.mean()) ** 2).sum()
+    r_squared = 1.0 - ss_res / ss_tot if ss_tot > 0 else 0.0
+
+    return {
+        "mass": float(mass.item()),
+        "amplitude": float(amplitude.item()),
+        "r_squared": float(r_squared.item()),
+        "fit_points": float(n_points),
+    }
+
+
+def compute_channel_correlator(
+    series: Tensor,
+    dt: float,
+    config: CorrelatorConfig,
+    channel_name: str = "unknown",
+) -> ChannelCorrelatorResult:
+    """Compute correlator and mass for a single channel.
+
+    PURE FUNCTION: Takes pre-computed series, no RunHistory access.
+
+    Args:
+        series: Operator time series [T].
+        dt: Time step.
+        config: CorrelatorConfig (analysis configuration).
+        channel_name: Channel name for result.
+
+    Returns:
+        ChannelCorrelatorResult with correlator, mass, diagnostics.
+    """
+    if series.numel() == 0:
+        return ChannelCorrelatorResult(
+            channel_name=channel_name,
+            correlator=torch.zeros(config.max_lag + 1),
+            correlator_err=None,
+            effective_mass=torch.zeros(config.max_lag),
+            mass_fit={"mass": 0.0, "mass_error": float("inf")},
+            series=series,
+            n_samples=0,
+            dt=dt,
+        )
+
+    # Compute correlator
+    real_series = series.real if series.is_complex() else series
+    correlator = compute_correlator_fft(
+        real_series,
+        max_lag=config.max_lag,
+        use_connected=config.use_connected,
+    )
+
+    # Bootstrap errors if requested
+    correlator_err = None
+    if config.compute_bootstrap_errors:
+        correlator_err = bootstrap_correlator_error(
+            real_series,
+            max_lag=config.max_lag,
+            n_bootstrap=config.n_bootstrap,
+            use_connected=config.use_connected,
+        )
+
+    # Effective mass
+    effective_mass = compute_effective_mass_torch(correlator, dt)
+
+    # Mass extraction
+    if config.fit_mode == "linear_abs":
+        mass_fit = extract_mass_linear(correlator.abs(), dt, config)
+        window_data = {}
+    elif config.fit_mode == "linear":
+        mass_fit = extract_mass_linear(correlator, dt, config)
+        window_data = {}
     else:
-        t_min, t_max = time_range
+        mass_fit = extract_mass_aic(correlator, dt, config)
+        window_data = {
+            "window_masses": mass_fit.pop("window_masses", None),
+            "window_aic": mass_fit.pop("window_aic", None),
+            "window_widths": mass_fit.pop("window_widths", None),
+            "window_r2": mass_fit.pop("window_r2", None),
+        }
 
-    # Create bins
-    edges = torch.linspace(t_min, t_max, n_bins + 1, device=positions.device)
-    bin_centers = (edges[:-1] + edges[1:]) / 2
+    return ChannelCorrelatorResult(
+        channel_name=channel_name,
+        correlator=correlator,
+        correlator_err=correlator_err,
+        effective_mass=effective_mass,
+        mass_fit=mass_fit,
+        series=series,
+        n_samples=int(series.numel()),
+        dt=dt,
+        **window_data,
+    )
 
-    # Bin operators using vectorized histogram
-    operator_series = torch.zeros(n_bins, device=positions.device)
-    counts = torch.zeros(n_bins, device=positions.device)
 
-    for i in range(n_bins):
-        mask = (t_euc_flat >= edges[i]) & (t_euc_flat < edges[i + 1])
-        count = mask.sum()
-        if count > 0:
-            operator_series[i] = ops_flat[mask].sum()
-            counts[i] = count.float()
+def compute_all_correlators(
+    operator_series: OperatorTimeSeries,
+    config: CorrelatorConfig,
+    channels: list[str] | None = None,
+) -> dict[str, ChannelCorrelatorResult]:
+    """Compute correlators for all channels from pre-computed operators.
 
-    # Handle last bin inclusively
-    mask = t_euc_flat == edges[-1]
-    if mask.sum() > 0:
-        operator_series[-1] += ops_flat[mask].sum()
-        counts[-1] += mask.sum().float()
+    PURE FUNCTION: No RunHistory access, just processes operator series.
 
-    # Average
-    valid = counts > 0
-    operator_series[valid] = operator_series[valid] / counts[valid]
-    operator_series[~valid] = 0.0
+    Args:
+        operator_series: Pre-computed operator series.
+        config: CorrelatorConfig (analysis configuration).
+        channels: List of channel names (None = all in operator_series).
 
-    return bin_centers, operator_series
+    Returns:
+        Dictionary mapping channel names to results.
+    """
+    from fragile.fractalai.qft.aggregation import OperatorTimeSeries
+
+    if channels is None:
+        channels = list(operator_series.operators.keys())
+
+    results = {}
+    for channel_name in channels:
+        if channel_name not in operator_series.operators:
+            continue
+
+        series = operator_series.operators[channel_name]
+
+        try:
+            result = compute_channel_correlator(
+                series=series,
+                dt=operator_series.dt,
+                config=config,
+                channel_name=channel_name,
+            )
+            results[channel_name] = result
+        except Exception as e:
+            # Create empty result on error
+            results[channel_name] = ChannelCorrelatorResult(
+                channel_name=channel_name,
+                correlator=torch.zeros(config.max_lag + 1),
+                correlator_err=None,
+                effective_mass=torch.zeros(config.max_lag),
+                mass_fit={"mass": 0.0, "mass_error": float("inf"), "error": str(e)},
+                series=torch.zeros(0),
+                n_samples=0,
+                dt=operator_series.dt,
+            )
+
+    return results
+
+
 
 
 # =============================================================================
@@ -695,20 +835,43 @@ class ChannelCorrelator(ABC):
         self,
         history: RunHistory,
         config: ChannelConfig | None = None,
+        correlator_config: CorrelatorConfig | None = None,
     ):
         """Initialize the channel correlator.
 
         Args:
             history: Fractal Gas run history.
-            config: Configuration parameters.
+            config: Configuration parameters for aggregation.
+            correlator_config: Configuration for correlator analysis (optional).
         """
         self.history = history
         self.config = config or ChannelConfig()
+
+        # Create correlator config from aggregation config if not provided
+        # This maintains backward compatibility
+        if correlator_config is None:
+            correlator_config = CorrelatorConfig(
+                max_lag=getattr(config, 'max_lag', 80) if config else 80,
+                use_connected=getattr(config, 'use_connected', True) if config else True,
+                window_widths=getattr(config, 'window_widths', None) if config else None,
+                min_mass=getattr(config, 'min_mass', 0.0) if config else 0.0,
+                max_mass=getattr(config, 'max_mass', float('inf')) if config else float('inf'),
+                fit_mode=getattr(config, 'fit_mode', 'aic') if config else 'aic',
+                fit_start=getattr(config, 'fit_start', 2) if config else 2,
+                fit_stop=getattr(config, 'fit_stop', None) if config else None,
+                min_fit_points=getattr(config, 'min_fit_points', 2) if config else 2,
+                compute_bootstrap_errors=getattr(config, 'compute_bootstrap_errors', False) if config else False,
+                n_bootstrap=getattr(config, 'n_bootstrap', 100) if config else 100,
+            )
+        self.correlator_config = correlator_config
+
         self._validate_config()
         self._build_gamma_matrices()
 
     def _validate_config(self) -> None:
         """Validate and fill missing config values."""
+        from fragile.fractalai.qft.aggregation import _normalize_neighbor_method, estimate_ell0
+
         method = _normalize_neighbor_method(self.config.neighbor_method)
         self.config.neighbor_method = method
         if method not in {"companions", "voronoi", "recorded"}:
@@ -726,32 +889,8 @@ class ChannelCorrelator(ABC):
                 )
                 raise ValueError(msg)
         if self.config.ell0 is None:
-            self._estimate_ell0()
+            self.config.ell0 = estimate_ell0(self.history)
 
-    def _estimate_ell0(self) -> None:
-        """Estimate ell0 from median companion distance."""
-        mid_idx = self.history.n_recorded // 2
-        if mid_idx == 0:
-            self.config.ell0 = 1.0
-            return
-
-        x_pre = self.history.x_before_clone[mid_idx]
-        comp_idx = self.history.companions_distance[mid_idx - 1]
-        alive = self.history.alive_mask[mid_idx - 1]
-
-        # Compute distances
-        diff = x_pre - x_pre[comp_idx]
-        if self.history.pbc and self.history.bounds is not None:
-            high = self.history.bounds.high.to(x_pre)
-            low = self.history.bounds.low.to(x_pre)
-            span = high - low
-            diff = diff - span * torch.round(diff / span)
-        dist = torch.linalg.vector_norm(diff, dim=-1)
-
-        if dist.numel() > 0 and alive.any():
-            self.config.ell0 = float(dist[alive].median().item())
-        else:
-            self.config.ell0 = 1.0
 
     def _build_gamma_matrices(self) -> None:
         """Build gamma matrices for bilinear projections."""
@@ -804,270 +943,6 @@ class ChannelCorrelator(ABC):
         else:
             self.gamma["sigma"] = torch.zeros(0, d, d, device=device, dtype=dtype)
 
-    def _compute_color_states_batch(
-        self,
-        start_idx: int,
-    ) -> tuple[Tensor, Tensor]:
-        """Compute color states for all timesteps from start_idx onward.
-
-        Vectorized across T dimension.
-
-        Args:
-            start_idx: Starting time index.
-
-        Returns:
-            Tuple of (color [T, N, d], valid [T, N]).
-        """
-        n_recorded = self.history.n_recorded
-        T = n_recorded - start_idx
-
-        # Extract batched tensors
-        v_pre = self.history.v_before_clone[start_idx:]  # [T, N, d]
-        force_visc = self.history.force_viscous[start_idx - 1 : n_recorded - 1]  # [T, N, d]
-
-        # Color state computation (vectorized)
-        h_eff = self.config.h_eff
-        mass = self.config.mass
-        ell0 = self.config.ell0
-
-        phase = (mass * v_pre * ell0) / h_eff
-        complex_phase = torch.polar(torch.ones_like(phase), phase.float())
-
-        if force_visc.dtype == torch.float64:
-            complex_dtype = torch.complex128
-        else:
-            complex_dtype = torch.complex64
-
-        tilde = force_visc.to(complex_dtype) * complex_phase.to(complex_dtype)
-        norm = torch.linalg.vector_norm(tilde, dim=-1, keepdim=True)
-        norm = torch.clamp(norm, min=1e-12)
-        color = tilde / norm
-        valid = norm.squeeze(-1) > 1e-12
-
-        return color, valid
-
-    def _compute_companion_batch(
-        self,
-        start_idx: int,
-        sample_size: int | None = None,
-    ) -> tuple[Tensor, Tensor, Tensor]:
-        """Use stored companion indices as neighbors."""
-        n_recorded = self.history.n_recorded
-        T = n_recorded - start_idx
-        N = self.history.N
-        k = max(2, int(self.config.neighbor_k))
-        sample_size = sample_size or N
-        device = self.history.x_final.device
-
-        alive = self.history.alive_mask[start_idx - 1 : n_recorded - 1]  # [T, N]
-        companions_distance = self.history.companions_distance[start_idx - 1 : n_recorded - 1]
-        companions_clone = self.history.companions_clone[start_idx - 1 : n_recorded - 1]
-
-        all_sample_idx = []
-        all_neighbor_idx = []
-
-        for t in range(T):
-            alive_t = alive[t]
-            alive_indices = torch.where(alive_t)[0]
-
-            if alive_indices.numel() == 0:
-                all_sample_idx.append(torch.zeros(sample_size, device=device, dtype=torch.long))
-                all_neighbor_idx.append(torch.zeros(sample_size, k, device=device, dtype=torch.long))
-                continue
-
-            if alive_indices.numel() <= sample_size:
-                sample_idx = alive_indices
-            else:
-                sample_idx = alive_indices[:sample_size]
-
-            actual_sample_size = sample_idx.numel()
-            comp_d = companions_distance[t, sample_idx]
-            comp_c = companions_clone[t, sample_idx]
-            neighbor_idx = torch.zeros(actual_sample_size, k, device=device, dtype=torch.long)
-            neighbor_idx[:, 0] = comp_d
-            neighbor_idx[:, 1] = comp_c
-
-            if actual_sample_size < sample_size:
-                sample_idx = F.pad(sample_idx, (0, sample_size - actual_sample_size), value=0)
-                neighbor_idx = F.pad(neighbor_idx, (0, 0, 0, sample_size - actual_sample_size), value=0)
-
-            all_sample_idx.append(sample_idx)
-            all_neighbor_idx.append(neighbor_idx)
-
-        sample_indices = torch.stack(all_sample_idx, dim=0)  # [T, S]
-        neighbor_indices = torch.stack(all_neighbor_idx, dim=0)  # [T, S, k]
-
-        return sample_indices, neighbor_indices, alive
-
-    def _compute_voronoi_batch(
-        self,
-        start_idx: int,
-        sample_size: int | None = None,
-    ) -> tuple[Tensor, Tensor, Tensor]:
-        """Compute Voronoi neighbor indices for all timesteps."""
-        try:
-            from fragile.fractalai.qft.voronoi_observables import compute_voronoi_tessellation
-        except Exception:
-            return self._compute_companion_batch(start_idx, sample_size=sample_size)
-
-        n_recorded = self.history.n_recorded
-        T = n_recorded - start_idx
-        N = self.history.N
-        k = int(self.config.neighbor_k)
-        sample_size = sample_size or N
-        device = self.history.x_final.device
-
-        x_pre = self.history.x_before_clone[start_idx:]  # [T, N, d]
-        alive = self.history.alive_mask[start_idx - 1 : n_recorded - 1]  # [T, N]
-
-        all_sample_idx = []
-        all_neighbor_idx = []
-
-        for t in range(T):
-            alive_t = alive[t]
-            alive_indices = torch.where(alive_t)[0]
-
-            if alive_indices.numel() == 0:
-                all_sample_idx.append(torch.zeros(sample_size, device=device, dtype=torch.long))
-                all_neighbor_idx.append(torch.zeros(sample_size, k, device=device, dtype=torch.long))
-                continue
-
-            if alive_indices.numel() <= sample_size:
-                sample_idx = alive_indices
-            else:
-                sample_idx = alive_indices[:sample_size]
-
-            actual_sample_size = sample_idx.numel()
-            neighbor_idx = torch.zeros(actual_sample_size, k, device=device, dtype=torch.long)
-
-            vor_data = compute_voronoi_tessellation(
-                positions=x_pre[t],
-                alive=alive_t,
-                bounds=self.history.bounds,
-                pbc=self.history.pbc,
-                pbc_mode=self.config.voronoi_pbc_mode,
-                exclude_boundary=self.config.voronoi_exclude_boundary,
-                boundary_tolerance=self.config.voronoi_boundary_tolerance,
-            )
-            neighbor_lists = vor_data.get("neighbor_lists", {})
-            index_map = vor_data.get("index_map", {})
-            reverse_map = {v: k for k, v in index_map.items()}
-
-            for s_idx, i_idx in enumerate(sample_idx):
-                i_orig = int(i_idx.item())
-                i_vor = reverse_map.get(i_orig)
-                if i_vor is None:
-                    continue
-                neighbors_vor = neighbor_lists.get(i_vor, [])
-                if not neighbors_vor:
-                    continue
-                neighbors_orig = [index_map[n] for n in neighbors_vor if n in index_map]
-                if not neighbors_orig:
-                    continue
-                chosen = neighbors_orig[:k]
-                if len(chosen) < k:
-                    chosen.extend([i_orig] * (k - len(chosen)))
-                neighbor_idx[s_idx] = torch.tensor(chosen, device=device)
-
-            if actual_sample_size < sample_size:
-                sample_idx = F.pad(sample_idx, (0, sample_size - actual_sample_size), value=0)
-                neighbor_idx = F.pad(neighbor_idx, (0, 0, 0, sample_size - actual_sample_size), value=0)
-
-            all_sample_idx.append(sample_idx)
-            all_neighbor_idx.append(neighbor_idx)
-
-        sample_indices = torch.stack(all_sample_idx, dim=0)  # [T, S]
-        neighbor_indices = torch.stack(all_neighbor_idx, dim=0)  # [T, S, k]
-
-        return sample_indices, neighbor_indices, alive
-
-    def _compute_recorded_neighbors_batch(
-        self,
-        start_idx: int,
-        sample_size: int | None = None,
-    ) -> tuple[Tensor, Tensor, Tensor]:
-        """Use recorded neighbor edges from RunHistory."""
-        if self.history.neighbor_edges is None:
-            return self._compute_companion_batch(start_idx, sample_size=sample_size)
-
-        n_recorded = self.history.n_recorded
-        T = n_recorded - start_idx
-        N = self.history.N
-        k = max(1, int(self.config.neighbor_k))
-        sample_size = sample_size or N
-        device = self.history.x_final.device
-
-        alive = self.history.alive_mask[start_idx - 1 : n_recorded - 1]  # [T, N]
-
-        all_sample_idx = []
-        all_neighbor_idx = []
-
-        for t in range(T):
-            alive_t = alive[t]
-            alive_indices = torch.where(alive_t)[0]
-            if alive_indices.numel() == 0:
-                all_sample_idx.append(torch.zeros(sample_size, device=device, dtype=torch.long))
-                all_neighbor_idx.append(torch.zeros(sample_size, k, device=device, dtype=torch.long))
-                continue
-
-            if alive_indices.numel() <= sample_size:
-                sample_idx = alive_indices
-            else:
-                sample_idx = alive_indices[:sample_size]
-
-            actual_sample_size = sample_idx.numel()
-            neighbor_idx = torch.zeros(actual_sample_size, k, device=device, dtype=torch.long)
-
-            record_idx = start_idx + t
-            edges = self.history.neighbor_edges[record_idx]
-            if not torch.is_tensor(edges) or edges.numel() == 0:
-                # Fallback to self-padding
-                neighbor_idx[:] = sample_idx.unsqueeze(1)
-            else:
-                edge_list = edges.tolist()
-                neighbor_map: dict[int, list[int]] = {}
-                for i, j in edge_list:
-                    if i == j:
-                        continue
-                    if i not in neighbor_map:
-                        neighbor_map[i] = [j]
-                    else:
-                        neighbor_map[i].append(j)
-
-                for s_i, i_idx in enumerate(sample_idx.tolist()):
-                    neighbors = neighbor_map.get(i_idx, [])
-                    if not neighbors:
-                        neighbor_idx[s_i] = i_idx
-                        continue
-                    chosen = neighbors[:k]
-                    if len(chosen) < k:
-                        chosen.extend([i_idx] * (k - len(chosen)))
-                    neighbor_idx[s_i] = torch.tensor(chosen, device=device)
-
-            if actual_sample_size < sample_size:
-                sample_idx = F.pad(sample_idx, (0, sample_size - actual_sample_size), value=0)
-                neighbor_idx = F.pad(neighbor_idx, (0, 0, 0, sample_size - actual_sample_size), value=0)
-
-            all_sample_idx.append(sample_idx)
-            all_neighbor_idx.append(neighbor_idx)
-
-        sample_indices = torch.stack(all_sample_idx, dim=0)  # [T, S]
-        neighbor_indices = torch.stack(all_neighbor_idx, dim=0)  # [T, S, k]
-
-        return sample_indices, neighbor_indices, alive
-
-    def _compute_neighbor_batch(
-        self,
-        start_idx: int,
-    ) -> tuple[Tensor, Tensor, Tensor]:
-        """Dispatch neighbor selection based on config."""
-        if self.config.neighbor_method == "companions":
-            return self._compute_companion_batch(start_idx)
-        if self.config.neighbor_method == "recorded":
-            return self._compute_recorded_neighbors_batch(start_idx)
-        if self.config.neighbor_method == "voronoi":
-            return self._compute_voronoi_batch(start_idx)
-        return self._compute_companion_batch(start_idx)
 
     @abstractmethod
     def _compute_operators_vectorized(
@@ -1107,17 +982,18 @@ class ChannelCorrelator(ABC):
 
     def _compute_series_mc(self) -> Tensor:
         """Compute operator time series over Monte Carlo timesteps."""
-        start_idx = max(1, int(self.history.n_recorded * self.config.warmup_fraction))
+        from fragile.fractalai.qft.aggregation import aggregate_time_series
 
-        # Batch compute color states
-        color, valid = self._compute_color_states_batch(start_idx)
+        # Delegate preprocessing to aggregation module
+        agg_data = aggregate_time_series(self.history, self.config)
 
-        # Batch compute neighbors
-        sample_indices, neighbor_indices, alive = self._compute_neighbor_batch(start_idx)
-
-        # Compute operators (implemented by subclass)
+        # Compute channel-specific operators (subclass implements)
         series = self._compute_operators_vectorized(
-            color, valid, alive, sample_indices, neighbor_indices
+            agg_data.color,
+            agg_data.color_valid,
+            agg_data.alive,
+            agg_data.sample_indices,
+            agg_data.neighbor_indices,
         )
 
         return series
@@ -1128,6 +1004,11 @@ class ChannelCorrelator(ABC):
         This method bins walkers by their Euclidean time coordinate and computes
         operator averages within each time bin.
         """
+        from fragile.fractalai.qft.aggregation import (
+            _resolve_mc_time_index,
+            bin_by_euclidean_time,
+        )
+
         # Check dimension
         if self.history.d < self.config.euclidean_time_dim + 1:
             msg = (
@@ -1166,8 +1047,16 @@ class ChannelCorrelator(ABC):
         Returns:
             Operators [T, N] for each walker at each timestep.
         """
+        from fragile.fractalai.qft.aggregation import compute_color_states_batch
+
         # Batch compute color states
-        color, valid = self._compute_color_states_batch(start_idx)
+        color, valid = compute_color_states_batch(
+            self.history,
+            start_idx,
+            self.config.h_eff,
+            self.config.mass,
+            self.config.ell0,
+        )
 
         # Get alive mask
         n_recorded = self.history.n_recorded
@@ -1185,117 +1074,9 @@ class ChannelCorrelator(ABC):
         series = self.compute_series()
         return compute_correlator_fft(
             series.real if series.is_complex() else series,
-            max_lag=self.config.max_lag,
-            use_connected=self.config.use_connected,
+            max_lag=self.correlator_config.max_lag,
+            use_connected=self.correlator_config.use_connected,
         )
-
-    def extract_mass_aic(self, correlator: Tensor) -> dict[str, Any]:
-        """Extract mass using convolutional AIC.
-
-        Args:
-            correlator: Correlator C(t) [max_lag+1].
-
-        Returns:
-            Dict with mass, mass_error, and fitting details.
-        """
-        # Filter positive values for log
-        mask = correlator > 0
-        if not mask.any():
-            return {"mass": 0.0, "mass_error": float("inf"), "n_valid_windows": 0}
-
-        log_corr = torch.full_like(correlator, float("nan"))
-        log_corr[mask] = torch.log(correlator[mask])
-
-        # Estimate errors (simple bootstrap proxy)
-        log_err = torch.ones_like(log_corr) * 0.1
-
-        # Find first NaN to trim series
-        finite_mask = torch.isfinite(log_corr)
-        if not finite_mask.any():
-            return {"mass": 0.0, "mass_error": float("inf"), "n_valid_windows": 0}
-
-        last_valid = finite_mask.nonzero()[-1].item()
-        log_corr = log_corr[: last_valid + 1]
-        log_err = log_err[: last_valid + 1]
-
-        extractor = ConvolutionalAICExtractor(
-            window_widths=self.config.window_widths,
-            min_mass=self.config.min_mass,
-            max_mass=self.config.max_mass,
-        )
-
-        return extractor.fit_all_widths(log_corr, log_err)
-
-    def extract_mass_linear(self, correlator: Tensor) -> dict[str, Any]:
-        """Extract mass using a simple linear fit on log(C(t))."""
-        if correlator.numel() == 0:
-            return {
-                "mass": 0.0,
-                "amplitude": 0.0,
-                "r_squared": 0.0,
-                "fit_points": 0.0,
-            }
-
-        n = correlator.shape[0]
-        fit_start = max(0, int(self.config.fit_start))
-        fit_stop = self.config.fit_stop
-        if fit_stop is None:
-            fit_stop = n - 1
-        fit_stop = min(int(fit_stop), n - 1)
-        if fit_stop < fit_start:
-            return {
-                "mass": 0.0,
-                "amplitude": 0.0,
-                "r_squared": 0.0,
-                "fit_points": 0.0,
-            }
-
-        idx = torch.arange(n, device=correlator.device, dtype=torch.float32)
-        mask = (idx >= fit_start) & (idx <= fit_stop) & (correlator > 0)
-        n_points = int(mask.sum().item())
-        if n_points < max(2, int(self.config.min_fit_points)):
-            return {
-                "mass": 0.0,
-                "amplitude": 0.0,
-                "r_squared": 0.0,
-                "fit_points": float(n_points),
-            }
-
-        x = idx[mask]
-        y = torch.log(correlator[mask])
-        sum_x = x.sum()
-        sum_y = y.sum()
-        sum_xx = (x * x).sum()
-        sum_xy = (x * y).sum()
-        denom = n_points * sum_xx - sum_x * sum_x
-        if denom.abs() < 1e-12:
-            return {
-                "mass": 0.0,
-                "amplitude": 0.0,
-                "r_squared": 0.0,
-                "fit_points": float(n_points),
-            }
-
-        slope = (n_points * sum_xy - sum_x * sum_y) / denom
-        intercept = (sum_y - slope * sum_x) / n_points
-        mass = -slope
-        amplitude = torch.exp(intercept)
-
-        y_pred = intercept + slope * x
-        ss_res = ((y - y_pred) ** 2).sum()
-        ss_tot = ((y - y.mean()) ** 2).sum()
-        r_squared = 1.0 - ss_res / ss_tot if ss_tot > 0 else 0.0
-
-        return {
-            "mass": float(mass.item()),
-            "amplitude": float(amplitude.item()),
-            "r_squared": float(r_squared.item()),
-            "fit_points": float(n_points),
-        }
-
-    def extract_mass_linear_abs(self, correlator: Tensor) -> dict[str, Any]:
-        """Extract mass using a linear fit on log(|C(t)|)."""
-        return self.extract_mass_linear(correlator.abs())
     def compute(self) -> ChannelCorrelatorResult:
         """Compute full channel analysis.
 
@@ -1303,74 +1084,14 @@ class ChannelCorrelator(ABC):
             ChannelCorrelatorResult with all computed quantities.
         """
         series = self.compute_series()
-
-        if series.numel() == 0:
-            return ChannelCorrelatorResult(
-                channel_name=self.channel_name,
-                correlator=torch.zeros(self.config.max_lag + 1),
-                correlator_err=None,
-                effective_mass=torch.zeros(self.config.max_lag),
-                mass_fit={"mass": 0.0, "mass_error": float("inf")},
-                series=series,
-                n_samples=0,
-                dt=float(self.history.delta_t * self.history.record_every),
-                window_masses=None,
-                window_aic=None,
-                window_widths=None,
-                window_r2=None,
-            )
-
-        real_series = series.real if series.is_complex() else series
-        correlator = compute_correlator_fft(
-            real_series,
-            max_lag=self.config.max_lag,
-            use_connected=self.config.use_connected,
-        )
-
-        # Compute bootstrap errors if enabled
-        correlator_err = None
-        if self.config.compute_bootstrap_errors:
-            correlator_err = bootstrap_correlator_error(
-                real_series,
-                max_lag=self.config.max_lag,
-                n_bootstrap=self.config.n_bootstrap,
-                use_connected=self.config.use_connected,
-            )
-
         dt = float(self.history.delta_t * self.history.record_every)
-        effective_mass = compute_effective_mass_torch(correlator, dt)
-        if self.config.fit_mode == "linear_abs":
-            mass_fit = self.extract_mass_linear_abs(correlator)
-            window_masses = None
-            window_aic = None
-            window_widths = None
-            window_r2 = None
-        elif self.config.fit_mode == "linear":
-            mass_fit = self.extract_mass_linear(correlator)
-            window_masses = None
-            window_aic = None
-            window_widths = None
-            window_r2 = None
-        else:
-            mass_fit = self.extract_mass_aic(correlator)
-            window_masses = mass_fit.pop("window_masses", None)
-            window_aic = mass_fit.pop("window_aic", None)
-            window_widths = mass_fit.pop("window_widths", None)
-            window_r2 = mass_fit.pop("window_r2", None)
 
-        return ChannelCorrelatorResult(
-            channel_name=self.channel_name,
-            correlator=correlator,
-            correlator_err=correlator_err,
-            effective_mass=effective_mass,
-            mass_fit=mass_fit,
+        # Use the new pure function API
+        return compute_channel_correlator(
             series=series,
-            n_samples=int(series.numel()),
             dt=dt,
-            window_masses=window_masses,
-            window_aic=window_aic,
-            window_widths=window_widths,
-            window_r2=window_r2,
+            config=self.correlator_config,
+            channel_name=self.channel_name,
         )
 
 
@@ -1501,6 +1222,12 @@ class BilinearChannelCorrelator(ChannelCorrelator):
         alive: Tensor,
         k: int,
     ) -> Tensor:
+        from fragile.fractalai.qft.aggregation import (
+            _build_neighbor_lists,
+            _collect_time_sliced_edges,
+            _resolve_mc_time_index,
+        )
+
         T, N = alive.shape
         device = alive.device
         neighbor_indices = torch.zeros((T, N, k), dtype=torch.long, device=device)
@@ -2065,6 +1792,8 @@ def compute_all_channels(
 ) -> dict[str, ChannelCorrelatorResult]:
     """Compute correlators for multiple channels.
 
+    BACKWARD COMPATIBLE API: Delegates to new implementation.
+
     Args:
         history: Fractal Gas run history.
         channels: List of channel names (default: all registered).
@@ -2075,6 +1804,8 @@ def compute_all_channels(
     Returns:
         Dictionary mapping channel names to results.
     """
+    from fragile.fractalai.qft.aggregation import compute_all_operator_series
+
     if channels is None:
         channels = list(CHANNEL_REGISTRY.keys())
 
@@ -2083,34 +1814,28 @@ def compute_all_channels(
         channels = [ch for ch in channels if ch not in {"nucleon"}]
 
     config = config or ChannelConfig()
-    results = {}
 
-    for channel_name in channels:
-        if channel_name not in CHANNEL_REGISTRY:
-            continue
+    # Step 1: Compute operators (aggregation phase)
+    operator_series = compute_all_operator_series(history, config, channels)
 
-        channel_class = CHANNEL_REGISTRY[channel_name]
-        try:
-            correlator = channel_class(history, config)
-            results[channel_name] = correlator.compute()
-        except Exception as e:
-            # Create empty result on error
-            results[channel_name] = ChannelCorrelatorResult(
-                channel_name=channel_name,
-                correlator=torch.zeros(config.max_lag + 1),
-                correlator_err=None,
-                effective_mass=torch.zeros(config.max_lag),
-                mass_fit={"mass": 0.0, "mass_error": float("inf"), "error": str(e)},
-                series=torch.zeros(0),
-                n_samples=0,
-                dt=float(history.delta_t * history.record_every),
-                window_masses=None,
-                window_aic=None,
-                window_widths=None,
-                window_r2=None,
-            )
+    # Step 2: Create correlator config from channel config
+    # Extract correlator parameters from config (for backward compatibility)
+    correlator_config = CorrelatorConfig(
+        max_lag=getattr(config, 'max_lag', 80),
+        use_connected=getattr(config, 'use_connected', True),
+        window_widths=getattr(config, 'window_widths', None),
+        min_mass=getattr(config, 'min_mass', 0.0),
+        max_mass=getattr(config, 'max_mass', float('inf')),
+        fit_mode=getattr(config, 'fit_mode', 'aic'),
+        fit_start=getattr(config, 'fit_start', 2),
+        fit_stop=getattr(config, 'fit_stop', None),
+        min_fit_points=getattr(config, 'min_fit_points', 2),
+        compute_bootstrap_errors=getattr(config, 'compute_bootstrap_errors', False),
+        n_bootstrap=getattr(config, 'n_bootstrap', 100),
+    )
 
-    return results
+    # Step 3: Compute correlators (analysis phase)
+    return compute_all_correlators(operator_series, correlator_config, channels)
 
 
 def get_channel_class(channel_name: str) -> type[ChannelCorrelator]:

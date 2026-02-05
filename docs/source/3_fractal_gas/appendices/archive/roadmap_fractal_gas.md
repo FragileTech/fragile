@@ -1,15 +1,24 @@
 ---
-title: "The Fractal Gas"
-subtitle: "Population-Based Optimization with Gauge Structure"
+title: "Original Proof Path Document"
+subtitle: "Historical Development of Volume III Structure"
 author: "Guillem Duran-Ballester"
 ---
-(sec-fractal-gas-intro-revamp)=
+(sec-fractal-gas-original-roadmap)=
 
-# The Fractal Gas - Intro Revamp (Draft)
+# Original Proof Path Document (Archived)
 
-This is a working replacement for `intro_fractal_gas.md`. It is written to make the
-scope explicit, and to foreground the proof strategy for the QFT layer and for
-convergence (via the appendices).
+:::{admonition} Historical Document
+:class: note
+
+This is the original roadmap document that outlined the proof strategy for Volume III. It has been superseded by {doc}`../../intro_fractal_gas`, which integrates this content with the complete Volume III introduction.
+
+This document is preserved in the appendices for historical reference and to show the evolution of the proof strategy narrative.
+:::
+:::
+
+## Purpose and scope (Original Draft)
+
+This document was written to make the scope explicit, and to foreground the proof strategy for the QFT layer and for convergence (via the appendices).
 
 (sec-fg-revamp-purpose)=
 ## Purpose and scope

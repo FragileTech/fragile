@@ -7,7 +7,7 @@
 - Use it when something feels implausible: most answers point to a specific definition, theorem, or constraint that resolves the concern.
 - It is intentionally blunt: if the responses are unconvincing, the framework should be treated skeptically.
 
-**Dependencies**: {doc}`01_fragile_gas_framework`, {doc}`02_euclidean_gas`, {doc}`03_cloning`, {doc}`06_convergence`, {doc}`07_discrete_qsd`, {doc}`08_mean_field`, {doc}`09_propagation_chaos`, {doc}`13_quantitative_error_bounds`, {doc}`../2_fractal_set/02_causal_set_theory`, {doc}`../2_fractal_set/03_lattice_qft`
+**Dependencies**: {doc}`../convergence_program/01_fragile_gas_framework`, {doc}`../convergence_program/02_euclidean_gas`, {doc}`../convergence_program/03_cloning`, {doc}`../convergence_program/06_convergence`, {doc}`../convergence_program/07_discrete_qsd`, {doc}`../convergence_program/08_mean_field`, {doc}`../convergence_program/09_propagation_chaos`, {doc}`../convergence_program/13_quantitative_error_bounds`, {doc}`../2_fractal_set/02_causal_set_theory`, {doc}`../2_fractal_set/03_lattice_qft`
 
 This appendix addresses forty rigorous objections that a skeptical reviewer might raise about the Fractal Gas algorithm and its connection to gauge field theory. Each question is stated in its strongest form; the answers point to specific mechanisms and sections. If the responses are unconvincing, the framework deserves skepticism.
 
@@ -22,8 +22,8 @@ If you are coming from a standard optimization, sampling, or physics background,
 | **Genetic Algorithm Selection** | Fitness-based cloning scores | {prf:ref}`def-fg-fitness` |
 | **MCMC Target Distribution** | QSD as equilibrium measure | {prf:ref}`thm-alg-sieve-qsd-structure` |
 | **Momentum SGD** | Momentum-conserving inelastic cloning | {prf:ref}`def-fg-inelastic-collision` |
-| **Lattice QFT** | Fractal Set with Wilson loops | {doc}`03_lattice_qft` |
-| **Causal Sets (BLMS)** | CST edges with adaptive sprinkling | {doc}`02_causal_set_theory` |
+| **Lattice QFT** | Fractal Set with Wilson loops | {doc}`../2_fractal_set/03_lattice_qft` |
+| **Causal Sets (BLMS)** | CST edges with adaptive sprinkling | {doc}`../2_fractal_set/02_causal_set_theory` |
 | **Standard Model Gauge Group** | Three independent redundancy mechanisms | {prf:ref}`thm-sm-u1-emergence` |
 | **Pauli Exclusion Principle** | Cloning antisymmetry | {prf:ref}`cor-fractal-set-selection-asymmetry` |
 :::
@@ -264,7 +264,7 @@ The three-timescale analysis provides different guarantees:
 
 2. **Scaling limit** ({doc}`../convergence_program/08_mean_field`): Takes $N \to \infty$ with $h \to 0$ at controlled rate. Proves the population empirical measure converges to a deterministic flow. Results: mean-field PDE, propagation of chaos.
 
-3. **Continuum limit** ({doc}`03_lattice_qft`): Takes the Fractal Set mesh to zero. Proves the discrete gauge theory converges to continuum QFT. Results: Wilson action, Dirac equation, Standard Model structure.
+3. **Continuum limit** ({doc}`../2_fractal_set/03_lattice_qft`): Takes the Fractal Set mesh to zero. Proves the discrete gauge theory converges to continuum QFT. Results: Wilson action, Dirac equation, Standard Model structure.
 
 Each level builds on the previous:
 
@@ -854,7 +854,7 @@ The name reflects three self-similar structures:
 
 2. **Hierarchical selection.** Selection operates at multiple levels: individual walkers compete, subpopulations compete, the whole population competes against alternatives. This nested structure is fractal in the sense of self-similar recursion.
 
-3. **Fractal Set.** The data structure produced by the algorithm ({doc}`01_fractal_set`) has fractal dimension related to the effective dimension of the search space. Dimension estimators applied to the Fractal Set produce non-integer values—a hallmark of fractal geometry.
+3. **Fractal Set.** The data structure produced by the algorithm ({doc}`../2_fractal_set/01_fractal_set`) has fractal dimension related to the effective dimension of the search space. Dimension estimators applied to the Fractal Set produce non-integer values—a hallmark of fractal geometry.
 
 4. **Historical.** The name originated from early experiments where the walker distribution displayed visually fractal patterns in 2D projections. The mathematical justification came later.
 

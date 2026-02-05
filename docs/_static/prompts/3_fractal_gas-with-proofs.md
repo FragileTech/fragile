@@ -13176,6 +13176,246 @@ This is the Wilson loop {prf:ref}`def-wilson-loop-lqft` evaluated on a loop in t
 A gauge-invariant probe statistic can be formed by combining the measured field with holonomy along loops that traverse pierced cells. This isolates the gauge content from the probe-induced scalar phase.
 :::
 
+## appendices/archive/fractalai_references.md
+
+:::{prf:definition} General Algorithmic Search
+:label: def-gas-algorithm
+
+**GAS** optimizes $f: \mathbb{R}^d \to \mathbb{R}$ using a population of $N$ particles.
+
+**State**: Positions $\{x_i \in \mathbb{R}^d\}_{i=1}^N$, fitness values $\{f(x_i)\}_{i=1}^N$.
+
+**Operators** (per iteration):
+1. Swarm motion: Physics-inspired position updates
+2. Fitness evaluation: Compute $f(x_i)$
+3. Resampling: Replace low-fitness particles with high-fitness variants
+4. Exploration noise: Prevent premature convergence
+
+**Objective**: Converge swarm to global optimum.
+:::
+
+:::{prf:definition} GAS Benchmark Categories
+:label: def-gas-benchmarks
+
+**Unimodal** (single optimum):
+- Sphere: $f(x) = \sum_{i=1}^d x_i^2$
+- Rosenbrock: $f(x) = \sum_{i=1}^{d-1} [100(x_{i+1} - x_i^2)^2 + (x_i - 1)^2]$
+
+**Multimodal** (many local optima):
+- Rastrigin: $f(x) = 10d + \sum_{i=1}^d [x_i^2 - 10\cos(2\pi x_i)]$
+- Ackley: $f(x) = -20\exp(-0.2\sqrt{\frac{1}{d}\sum_{i=1}^d x_i^2}) - \exp(\frac{1}{d}\sum_{i=1}^d \cos(2\pi x_i)) + 20 + e$
+- Lévy: Complex multimodal function cited by subsequent work
+
+**Fixed-Dimension**:
+- Shekel, Kowalik, Hartman (4D, 6D variants)
+
+Tests: separability, modality, scaling, conditioning.
+:::
+
+:::{prf:definition} Future State Maximization
+:label: def-fsx-principle
+
+**FSX Principle**: Intelligent agents maximize diversity of reachable future states.
+
+**Formal Statement**: At state $s_t$ with action $a_t$, define future distribution:
+
+$$
+p(s_{t+\tau} | s_t, a_t)
+$$
+
+FSX-optimal action:
+
+$$
+a_t^* = \arg\max_{a_t} H[p(s_{t+\tau} | s_t, a_t)]
+$$
+
+where $H[p] = -\int p(s) \log p(s) \, ds$ is differential entropy.
+
+**Core Idea**: Intelligence = preserving adaptability, not optimizing fixed objective.
+:::
+
+:::{prf:definition} Fractal Monte Carlo (FMC)
+:label: def-fmc-algorithm
+
+**FMC** implements FSX via walker swarm:
+
+1. Initialize $N$ walkers at current state $s_t$
+2. Simulate each walker forward $\tau$ steps under random actions
+3. For each candidate action $a$:
+   - Simulate walkers one step under $a$
+   - Measure endpoint diversity $D(a) = \operatorname{Var}[\{s_{t+\tau}^{(i)}\}]$
+4. Select $a^* = \arg\max_a D(a)$
+5. Iterate from new state
+
+**Diversity Proxy**: Spatial variance approximates entropy.
+
+**Volume 3 Connection**: FMC is algorithmic predecessor to Fractal Gas. Volume 3 formalizes walker dynamics and proves QSD convergence.
+:::
+
+:::{prf:definition} Human Coordination Protocol
+:label: def-hornischer-experiment
+
+**Task**: 10-player spatial coordination in 2D environment
+
+**Participants**:
+- Total: 400 (40 runs × 10 players)
+- Recruitment: University + online
+- Compensation: Performance-based monetary reward
+
+**Environment**:
+- 2D continuous space, periodic boundaries
+- Dynamic target locations
+- No explicit communication
+
+**Measurements**:
+- Agent trajectories: $x_i(t)$, $v_i(t)$ at 10 Hz
+- Group metrics: Convergence time, dispersion, success rate
+- Individual metrics: Action sequences, reaction times
+
+**Statistical Analysis**:
+- Mixed-effects models (participant ID random effect)
+- Bootstrapped confidence intervals (10,000 resamples)
+- Bayesian model comparison (Bayes factors)
+:::
+
+:::{prf:definition} Cognitive Force Model
+:label: def-cognitive-force
+
+FSX implementation for spatial coordination:
+
+**Forward Simulation**: Project $M$ trajectories from current $x_i(t)$ under random actions.
+
+**Diversity Measurement**: For action $a$, compute endpoint spread:
+
+$$
+D_i(a) = \frac{1}{M} \sum_{m=1}^M \| x_i^{(m)}(t + \tau) - \bar{x}_i(t + \tau) \|^2
+$$
+
+**Action Selection**: $a_i^* = \arg\max_a D_i(a)$
+
+**Parameters**: Horizon $\tau \in [5, 50]$, trajectories $M \in [50, 200]$.
+
+Direct implementation of Fractal AI principle.
+:::
+
+:::{prf:definition} MARL Baseline
+:label: def-marl-baseline
+
+**Algorithm**: Decentralized Q-learning with experience replay.
+
+**Reward**: Shared group reward based on target proximity:
+
+$$
+r_t = -\frac{1}{N} \sum_{i=1}^N \min_j \| x_i(t) - \text{target}_j(t) \|
+$$
+
+**Training**: 100,000 simulated episodes before deployment.
+
+**Parameters**: Learning rate $\alpha \in [10^{-4}, 10^{-3}]$, discount $\gamma = 0.99$, exploration annealed.
+:::
+
+:::{prf:definition} Trajectory Distance
+:label: def-trajectory-distance
+
+**Dynamic Time Warping** and **Fréchet Distance** measure trajectory shape similarity.
+
+**Results**:
+
+| Metric | FSX vs. Human | MARL vs. Human | FSX Advantage |
+|--------|---------------|----------------|---------------|
+| Mean DTW Distance | 12.4 ± 2.1 | 19.7 ± 3.4 | **37% lower** |
+| Mean Fréchet Distance | 8.3 ± 1.5 | 14.2 ± 2.8 | **42% lower** |
+
+FSX trajectories significantly closer to human trajectories.
+:::
+
+:::{prf:definition} Action Entropy
+:label: def-action-entropy
+
+Empirical action entropy:
+
+$$
+H[a_i] = -\sum_{a \in \mathcal{A}} p_i(a) \log p_i(a)
+$$
+
+**Results**:
+
+| Agent Type | Mean $H[a]$ | Std Dev |
+|------------|------------|---------|
+| Humans | **2.31** | 0.42 |
+| FSX | **2.28** | 0.39 |
+| MARL | 1.74 | 0.31 |
+
+Humans and FSX maintain higher exploration entropy than MARL.
+
+**Volume 3 Connection**: Empirical entropy matches QSD theoretical entropy ({doc}`convergence_program/07_discrete_qsd`).
+:::
+
+:::{prf:definition} Bayes Factor
+:label: def-bayes-factor
+
+Relative evidence for model $M_1$ vs. $M_2$:
+
+$$
+BF_{12} = \frac{P(D | M_1)}{P(D | M_2)}
+$$
+
+Interpretation: $BF > 10$ strong evidence, $BF > 100$ decisive.
+
+**Results** (FSX vs. MARL):
+
+| Data Type | Bayes Factor | Interpretation |
+|-----------|--------------|----------------|
+| Convergence rates | 47.3 | Strong for FSX |
+| Trajectory distances | 132.7 | **Decisive for FSX** |
+| Action entropy | 28.4 | Strong for FSX |
+| **Combined** | **521.6** | **Overwhelming for FSX** |
+
+Data 521× more likely under FSX than MARL.
+:::
+
+:::{prf:theorem} QSD Existence (Simplified)
+:label: thm-qsd-existence
+
+For Fractal Gas with cloning $P_C$, kinetic $P_K$:
+
+$$
+\lim_{t \to \infty} \| \mu_t^N - \mu_{\infty}^N \|_{\mathrm{TV}} = 0
+$$
+
+with exponential rate $\lambda_{\mathrm{gap}} = \Theta(\gamma \wedge \delta)$.
+
+**Proof**: {doc}`convergence_program/06_convergence`, Thm 6.3.
+:::
+
+:::{prf:theorem} Mean-Field Error
+:label: thm-mean-field-error
+
+Finite-$N$ QSD converges to mean-field QSD with error:
+
+$$
+W_2(\mu_{\infty}^N, \mu_{\infty}^{\mathrm{MF}}) = O\left(\frac{1}{\sqrt{N}}\right)
+$$
+
+**Proof**: {doc}`convergence_program/09_propagation_chaos`, Thm 9.4.
+:::
+
+:::{prf:definition} Volume 3 Predictions
+:label: def-predictions
+
+**P1: Convergence Rate**: $\lambda_{\mathrm{gap}} = \Theta(\gamma)$ → vary friction, measure relaxation time
+
+**P2: Critical Horizon**: FSX quality plateaus for $\tau > \tau_{\mathrm{crit}} = O(1/\lambda_{\mathrm{gap}})$
+
+**P3: Entropy Production**: Steady-state $\dot{S} = \sigma^2 / T_{\mathrm{eff}}$ measurable in groups
+
+**P4: Gauge Phase Distribution**: U(1) phase $\theta = -\Delta\Phi/\hbar_{\mathrm{eff}}$ thermal
+
+**P5: Mean-Field Breakdown**: Error grows faster than $1/\sqrt{N}$ for $N < N_{\mathrm{crit}}$
+
+All quantitative and falsifiable.
+:::
+
 ## appendices/references_do_not_cite/11_geometric_gas(1).md
 
 :::{prf:definition} Localization Kernel
@@ -64644,244 +64884,4 @@ $$
 $$
 
 The sum over partitions of $m$ is bounded by a combinatorial constant times $m!$ (standard Bell-number control). Absorb all combinatorial factors into $A$ and set $B = C \max(B_f, B_g)$ for a constant $C$ depending on $d$. This yields the stated Gevrey-1 bound. \(\square\)
-:::
-
-## fractalai_references.md
-
-:::{prf:definition} General Algorithmic Search
-:label: def-gas-algorithm
-
-**GAS** optimizes $f: \mathbb{R}^d \to \mathbb{R}$ using a population of $N$ particles.
-
-**State**: Positions $\{x_i \in \mathbb{R}^d\}_{i=1}^N$, fitness values $\{f(x_i)\}_{i=1}^N$.
-
-**Operators** (per iteration):
-1. Swarm motion: Physics-inspired position updates
-2. Fitness evaluation: Compute $f(x_i)$
-3. Resampling: Replace low-fitness particles with high-fitness variants
-4. Exploration noise: Prevent premature convergence
-
-**Objective**: Converge swarm to global optimum.
-:::
-
-:::{prf:definition} GAS Benchmark Categories
-:label: def-gas-benchmarks
-
-**Unimodal** (single optimum):
-- Sphere: $f(x) = \sum_{i=1}^d x_i^2$
-- Rosenbrock: $f(x) = \sum_{i=1}^{d-1} [100(x_{i+1} - x_i^2)^2 + (x_i - 1)^2]$
-
-**Multimodal** (many local optima):
-- Rastrigin: $f(x) = 10d + \sum_{i=1}^d [x_i^2 - 10\cos(2\pi x_i)]$
-- Ackley: $f(x) = -20\exp(-0.2\sqrt{\frac{1}{d}\sum_{i=1}^d x_i^2}) - \exp(\frac{1}{d}\sum_{i=1}^d \cos(2\pi x_i)) + 20 + e$
-- Lévy: Complex multimodal function cited by subsequent work
-
-**Fixed-Dimension**:
-- Shekel, Kowalik, Hartman (4D, 6D variants)
-
-Tests: separability, modality, scaling, conditioning.
-:::
-
-:::{prf:definition} Future State Maximization
-:label: def-fsx-principle
-
-**FSX Principle**: Intelligent agents maximize diversity of reachable future states.
-
-**Formal Statement**: At state $s_t$ with action $a_t$, define future distribution:
-
-$$
-p(s_{t+\tau} | s_t, a_t)
-$$
-
-FSX-optimal action:
-
-$$
-a_t^* = \arg\max_{a_t} H[p(s_{t+\tau} | s_t, a_t)]
-$$
-
-where $H[p] = -\int p(s) \log p(s) \, ds$ is differential entropy.
-
-**Core Idea**: Intelligence = preserving adaptability, not optimizing fixed objective.
-:::
-
-:::{prf:definition} Fractal Monte Carlo (FMC)
-:label: def-fmc-algorithm
-
-**FMC** implements FSX via walker swarm:
-
-1. Initialize $N$ walkers at current state $s_t$
-2. Simulate each walker forward $\tau$ steps under random actions
-3. For each candidate action $a$:
-   - Simulate walkers one step under $a$
-   - Measure endpoint diversity $D(a) = \operatorname{Var}[\{s_{t+\tau}^{(i)}\}]$
-4. Select $a^* = \arg\max_a D(a)$
-5. Iterate from new state
-
-**Diversity Proxy**: Spatial variance approximates entropy.
-
-**Volume 3 Connection**: FMC is algorithmic predecessor to Fractal Gas. Volume 3 formalizes walker dynamics and proves QSD convergence.
-:::
-
-:::{prf:definition} Human Coordination Protocol
-:label: def-hornischer-experiment
-
-**Task**: 10-player spatial coordination in 2D environment
-
-**Participants**:
-- Total: 400 (40 runs × 10 players)
-- Recruitment: University + online
-- Compensation: Performance-based monetary reward
-
-**Environment**:
-- 2D continuous space, periodic boundaries
-- Dynamic target locations
-- No explicit communication
-
-**Measurements**:
-- Agent trajectories: $x_i(t)$, $v_i(t)$ at 10 Hz
-- Group metrics: Convergence time, dispersion, success rate
-- Individual metrics: Action sequences, reaction times
-
-**Statistical Analysis**:
-- Mixed-effects models (participant ID random effect)
-- Bootstrapped confidence intervals (10,000 resamples)
-- Bayesian model comparison (Bayes factors)
-:::
-
-:::{prf:definition} Cognitive Force Model
-:label: def-cognitive-force
-
-FSX implementation for spatial coordination:
-
-**Forward Simulation**: Project $M$ trajectories from current $x_i(t)$ under random actions.
-
-**Diversity Measurement**: For action $a$, compute endpoint spread:
-
-$$
-D_i(a) = \frac{1}{M} \sum_{m=1}^M \| x_i^{(m)}(t + \tau) - \bar{x}_i(t + \tau) \|^2
-$$
-
-**Action Selection**: $a_i^* = \arg\max_a D_i(a)$
-
-**Parameters**: Horizon $\tau \in [5, 50]$, trajectories $M \in [50, 200]$.
-
-Direct implementation of Fractal AI principle.
-:::
-
-:::{prf:definition} MARL Baseline
-:label: def-marl-baseline
-
-**Algorithm**: Decentralized Q-learning with experience replay.
-
-**Reward**: Shared group reward based on target proximity:
-
-$$
-r_t = -\frac{1}{N} \sum_{i=1}^N \min_j \| x_i(t) - \text{target}_j(t) \|
-$$
-
-**Training**: 100,000 simulated episodes before deployment.
-
-**Parameters**: Learning rate $\alpha \in [10^{-4}, 10^{-3}]$, discount $\gamma = 0.99$, exploration annealed.
-:::
-
-:::{prf:definition} Trajectory Distance
-:label: def-trajectory-distance
-
-**Dynamic Time Warping** and **Fréchet Distance** measure trajectory shape similarity.
-
-**Results**:
-
-| Metric | FSX vs. Human | MARL vs. Human | FSX Advantage |
-|--------|---------------|----------------|---------------|
-| Mean DTW Distance | 12.4 ± 2.1 | 19.7 ± 3.4 | **37% lower** |
-| Mean Fréchet Distance | 8.3 ± 1.5 | 14.2 ± 2.8 | **42% lower** |
-
-FSX trajectories significantly closer to human trajectories.
-:::
-
-:::{prf:definition} Action Entropy
-:label: def-action-entropy
-
-Empirical action entropy:
-
-$$
-H[a_i] = -\sum_{a \in \mathcal{A}} p_i(a) \log p_i(a)
-$$
-
-**Results**:
-
-| Agent Type | Mean $H[a]$ | Std Dev |
-|------------|------------|---------|
-| Humans | **2.31** | 0.42 |
-| FSX | **2.28** | 0.39 |
-| MARL | 1.74 | 0.31 |
-
-Humans and FSX maintain higher exploration entropy than MARL.
-
-**Volume 3 Connection**: Empirical entropy matches QSD theoretical entropy ({doc}`convergence_program/07_discrete_qsd`).
-:::
-
-:::{prf:definition} Bayes Factor
-:label: def-bayes-factor
-
-Relative evidence for model $M_1$ vs. $M_2$:
-
-$$
-BF_{12} = \frac{P(D | M_1)}{P(D | M_2)}
-$$
-
-Interpretation: $BF > 10$ strong evidence, $BF > 100$ decisive.
-
-**Results** (FSX vs. MARL):
-
-| Data Type | Bayes Factor | Interpretation |
-|-----------|--------------|----------------|
-| Convergence rates | 47.3 | Strong for FSX |
-| Trajectory distances | 132.7 | **Decisive for FSX** |
-| Action entropy | 28.4 | Strong for FSX |
-| **Combined** | **521.6** | **Overwhelming for FSX** |
-
-Data 521× more likely under FSX than MARL.
-:::
-
-:::{prf:theorem} QSD Existence (Simplified)
-:label: thm-qsd-existence
-
-For Fractal Gas with cloning $P_C$, kinetic $P_K$:
-
-$$
-\lim_{t \to \infty} \| \mu_t^N - \mu_{\infty}^N \|_{\mathrm{TV}} = 0
-$$
-
-with exponential rate $\lambda_{\mathrm{gap}} = \Theta(\gamma \wedge \delta)$.
-
-**Proof**: {doc}`convergence_program/06_convergence`, Thm 6.3.
-:::
-
-:::{prf:theorem} Mean-Field Error
-:label: thm-mean-field-error
-
-Finite-$N$ QSD converges to mean-field QSD with error:
-
-$$
-W_2(\mu_{\infty}^N, \mu_{\infty}^{\mathrm{MF}}) = O\left(\frac{1}{\sqrt{N}}\right)
-$$
-
-**Proof**: {doc}`convergence_program/09_propagation_chaos`, Thm 9.4.
-:::
-
-:::{prf:definition} Volume 3 Predictions
-:label: def-predictions
-
-**P1: Convergence Rate**: $\lambda_{\mathrm{gap}} = \Theta(\gamma)$ → vary friction, measure relaxation time
-
-**P2: Critical Horizon**: FSX quality plateaus for $\tau > \tau_{\mathrm{crit}} = O(1/\lambda_{\mathrm{gap}})$
-
-**P3: Entropy Production**: Steady-state $\dot{S} = \sigma^2 / T_{\mathrm{eff}}$ measurable in groups
-
-**P4: Gauge Phase Distribution**: U(1) phase $\theta = -\Delta\Phi/\hbar_{\mathrm{eff}}$ thermal
-
-**P5: Mean-Field Breakdown**: Error grows faster than $1/\sqrt{N}$ for $N < N_{\mathrm{crit}}$
-
-All quantitative and falsifiable.
 :::

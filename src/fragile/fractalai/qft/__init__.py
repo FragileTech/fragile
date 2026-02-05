@@ -29,15 +29,47 @@ from fragile.fractalai.qft.mass_correlator_plots import (
     save_mass_correlator_plots,
 )
 
+from fragile.fractalai.qft.aggregation import (
+    # Data structures
+    AggregatedTimeSeries,
+    OperatorTimeSeries,
+    # Main aggregation function
+    aggregate_time_series,
+    compute_all_operator_series,
+    # Time series binning
+    bin_by_euclidean_time,
+    # Component functions
+    compute_color_states_batch,
+    compute_neighbor_topology,
+    estimate_ell0,
+    # Gamma matrices
+    build_gamma_matrices,
+    # Channel-specific operator functions
+    compute_scalar_operators,
+    compute_pseudoscalar_operators,
+    compute_vector_operators,
+    compute_axial_vector_operators,
+    compute_tensor_operators,
+    compute_nucleon_operators,
+    compute_glueball_operators,
+)
+
 from fragile.fractalai.qft.correlator_channels import (
     # Config and results
     ChannelConfig,
+    CorrelatorConfig as CorrelatorAnalysisConfig,  # Avoid conflict with SMoC pipeline
     ChannelCorrelatorResult,
     # AIC extractor
     ConvolutionalAICExtractor,
     # FFT correlator
     compute_correlator_fft,
     compute_effective_mass_torch,
+    bootstrap_correlator_error,
+    # Pure function API (new)
+    extract_mass_aic,
+    extract_mass_linear,
+    compute_channel_correlator,
+    compute_all_correlators,
     # Base classes
     ChannelCorrelator,
     BilinearChannelCorrelator,
@@ -125,12 +157,35 @@ __all__ = [
     "build_mass_correlator_dashboard",
     "compute_all_channel_correlators",
     "save_mass_correlator_plots",
+    # Time series aggregation (new)
+    "AggregatedTimeSeries",
+    "OperatorTimeSeries",
+    "aggregate_time_series",
+    "compute_all_operator_series",
+    "bin_by_euclidean_time",
+    "compute_color_states_batch",
+    "compute_neighbor_topology",
+    "estimate_ell0",
+    "build_gamma_matrices",
+    "compute_scalar_operators",
+    "compute_pseudoscalar_operators",
+    "compute_vector_operators",
+    "compute_axial_vector_operators",
+    "compute_tensor_operators",
+    "compute_nucleon_operators",
+    "compute_glueball_operators",
     # Correlator channels (new vectorized)
     "ChannelConfig",
+    "CorrelatorAnalysisConfig",
     "ChannelCorrelatorResult",
     "ConvolutionalAICExtractor",
     "compute_correlator_fft",
     "compute_effective_mass_torch",
+    "bootstrap_correlator_error",
+    "extract_mass_aic",
+    "extract_mass_linear",
+    "compute_channel_correlator",
+    "compute_all_correlators",
     "ChannelCorrelator",
     "BilinearChannelCorrelator",
     "TrilinearChannelCorrelator",
