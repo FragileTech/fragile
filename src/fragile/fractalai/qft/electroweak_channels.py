@@ -19,10 +19,12 @@ from fragile.fractalai.qft.higgs_observables import (
     compute_emergent_metric,
     compute_geodesic_distances,
 )
+from fragile.fractalai.qft.aggregation import (
+    bin_by_euclidean_time,
+)
 from fragile.fractalai.qft.correlator_channels import (
     ChannelCorrelatorResult,
     ConvolutionalAICExtractor,
-    bin_by_euclidean_time,
     bootstrap_correlator_error,
     compute_correlator_fft,
     compute_effective_mass_torch,

@@ -42,6 +42,7 @@ from fragile.fractalai.qft.aggregation import (
     compute_color_states_batch,
     compute_neighbor_topology,
     estimate_ell0,
+    check_neighbor_data_availability,
     # Gamma matrices
     build_gamma_matrices,
     # Channel-specific operator functions
@@ -166,6 +167,7 @@ __all__ = [
     "compute_color_states_batch",
     "compute_neighbor_topology",
     "estimate_ell0",
+    "check_neighbor_data_availability",
     "build_gamma_matrices",
     "compute_scalar_operators",
     "compute_pseudoscalar_operators",
