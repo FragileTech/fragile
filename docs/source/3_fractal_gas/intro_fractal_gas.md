@@ -57,7 +57,7 @@ See {prf:ref}`def-fg-walker`.
 
 4. **Boris-BAOAB Kinetics**: Symplectic integrator on Riemannian manifold with OU thermostat and anisotropic diffusion. Full-rank Gaussian noise ensures hypoelliptic mixing. See {prf:ref}`def-baoab-splitting`.
 
-5. **Viscous Coupling**: Velocity-dependent force between walkers with localization kernel. After complexification, yields $SU(d)$ gauge structure. See {prf:ref}`def-latent-fractal-gas-gauge-structure`.
+5. **Viscous Coupling**: Velocity-dependent force between walkers with localization kernel. After complexification, yields $SU(d)$ gauge structure. See {prf:ref}`thm-sm-su3-emergence`.
 
 ### 1.3 Quantitative Guarantees
 
@@ -175,13 +175,13 @@ Volume III makes strong claims. A rigorous reader should ask: *What's genuinely 
 
 ### 3.2 Novel Gauge-Theoretic Structure
 
-5. **$SU(d)$ from viscous coupling**. The $d$-dimensional latent space velocity has $O(d)$ redundancy. After momentum-phase complexification via de Broglie relation $p = \hbar k$, this lifts to $U(d)$ and descends to $SU(d)$ gauge symmetry. See {prf:ref}`def-latent-fractal-gas-gauge-structure`.
+5. **$SU(d)$ from viscous coupling**. The $d$-dimensional latent space velocity has $O(d)$ redundancy. After momentum-phase complexification via de Broglie relation $p = \hbar k$, this lifts to $U(d)$ and descends to $SU(d)$ gauge symmetry. See {prf:ref}`thm-sm-su3-emergence`.
 
-6. **Pairwise complex coupling**. Color link variables $W_{ij}^{(\alpha)} = F_{\mathrm{viscous},ij}^{(\alpha)} \cdot \exp(i p_i^{(\alpha)} \ell_0/\hbar_{\text{eff}})$ encode force as amplitude and momentum as phase. This is the algorithmic analog of QCD color charge. See {prf:ref}`def-latent-fractal-gas-color-link`.
+6. **Pairwise complex coupling**. Color link variables $W_{ij}^{(\alpha)} = F_{\mathrm{viscous},ij}^{(\alpha)} \cdot \exp(i p_i^{(\alpha)} \ell_0/\hbar_{\text{eff}})$ encode force as amplitude and momentum as phase. This is the algorithmic analog of QCD color charge. See {prf:ref}`thm-sm-su3-emergence`.
 
-7. **Gluon field extraction**. The traceless projection $\Phi_{ij}^{(0)} = \Phi_{ij} - \bar{\phi}_{ij} I$ yields gluon components $A_{ij}^a = \frac{2}{g}\text{Tr}[T^a \Phi_{ij}^{(0)}]$ in the Cartan subalgebra. See {prf:ref}`def-latent-fractal-gas-gluon-field`.
+7. **Gluon field extraction**. The traceless projection $\Phi_{ij}^{(0)} = \Phi_{ij} - \bar{\phi}_{ij} I$ yields gluon components $A_{ij}^a = \frac{2}{g}\text{Tr}[T^a \Phi_{ij}^{(0)}]$ in the Cartan subalgebra. See {prf:ref}`def-gauge-field-from-phases`.
 
-8. **Confinement from localization**. The kernel $K_\rho = \exp(-\|z_i - z_j\|^2/(2\epsilon^2))$ provides asymptotic freedom at $d \gg \epsilon$ and confinement at $d < \epsilon$, mirroring QCD phenomenology. See {prf:ref}`prop-latent-fractal-gas-confinement`.
+8. **Confinement from localization**. The kernel $K_\rho = \exp(-\|z_i - z_j\|^2/(2\epsilon^2))$ provides asymptotic freedom at $d \gg \epsilon$ and confinement at $d < \epsilon$, mirroring QCD phenomenology. See {prf:ref}`thm-sm-su3-emergence`.
 
 9. **Standard Model gauge group from three redundancies**. $U(1)_{\text{fitness}}$ from diversity normalization, $SU(2)_{\text{weak}}$ from cloning pairing, and $SU(d)_{\text{color}}$ from viscous coupling combine to yield the Standard Model structure. See {doc}`2_fractal_set/04_standard_model`.
 
@@ -803,7 +803,7 @@ $$
 
 This mirrors QCD phenomenology: quarks are confined at low energies, asymptotically free at high energies.
 
-See {prf:ref}`def-latent-fractal-gas-gauge-structure`, {prf:ref}`def-latent-fractal-gas-color-link`, {prf:ref}`def-latent-fractal-gas-gluon-field`, {prf:ref}`prop-latent-fractal-gas-confinement`.
+See {prf:ref}`thm-sm-su3-emergence` and {prf:ref}`def-gauge-field-from-phases`.
 
 **Standard Model gauge group**: Together with diversity ($U(1)_{\text{fitness}}$) and cloning ($SU(2)_{\text{weak}}$) redundancies, this yields:
 
@@ -852,7 +852,7 @@ Volume III isn't just post-hoc rationalization—the theory makes **falsifiable 
 **P4: Gauge Phase Distribution**
 - **Prediction**: $U(1)$ phase $\theta = -\Delta\Phi/\hbar_{\text{eff}}$ should be thermally distributed
 - **Test**: Extract phase from inter-agent momentum correlations, check for thermal statistics
-- **Reference**: {prf:ref}`def-latent-fractal-gas-color-link`
+- **Reference**: {prf:ref}`def-gauge-field-from-phases`
 
 **P5: Mean-Field Breakdown**
 - **Prediction**: Error grows faster than $1/\sqrt{N}$ for $N < N_{\text{crit}}$ (finite-size effects dominate)
@@ -991,11 +991,11 @@ This framework makes strong claims about convergence, gauge structure, and verif
 
 **Q3: Is the gauge structure physically meaningful?**
 
-**A3**: The $SU(d)$ symmetry is a **mathematical consequence** of algorithm structure, not a physical claim about fundamental forces. It provides organizing principles (confinement, color dynamics, conserved currents) that clarify inter-particle coupling. The gauge structure **constrains** allowed operators—modifications that break gauge invariance generically destroy convergence. See {prf:ref}`def-latent-fractal-gas-gauge-structure`.
+**A3**: The $SU(d)$ symmetry is a **mathematical consequence** of algorithm structure, not a physical claim about fundamental forces. It provides organizing principles (confinement, color dynamics, conserved currents) that clarify inter-particle coupling. The gauge structure **constrains** allowed operators—modifications that break gauge invariance generically destroy convergence. See {prf:ref}`thm-sm-su3-emergence`.
 
 **Q4: What if parameters violate the revival constraint?**
 
-**A4**: If $\varepsilon_{\text{clone}} \cdot p_{\max} \ge V_{\min}$, the revival guarantee fails and population may extinct. The framework diagnoses this as a **parameter configuration error** via {doc}`1_the_algorithm/03_algorithmic_sieve`. The sieve explicitly checks the constraint and reports violations. See {prf:ref}`def-fg-revival-constraint`.
+**A4**: If $\varepsilon_{\text{clone}} \cdot p_{\max} \ge V_{\min}$, the revival guarantee fails and population may extinct. The framework diagnoses this as a **parameter configuration error** via {doc}`1_the_algorithm/03_algorithmic_sieve`. The sieve explicitly checks the constraint and reports violations. See {prf:ref}`prop-fg-guaranteed-revival`.
 
 **Q5: How does this relate to standard swarm methods?**
 

@@ -1541,9 +1541,24 @@ The antisymmetric cloning kernel structure is isomorphic to the Clifford algebra
 - Combined action: $S_{\text{fermion}} = S^{\text{spatial}} + S^{\text{temporal}}$
 
 **Dirac structure**:
-- Clifford algebra: $\{\gamma^\mu, \gamma^\nu\} = 2\eta^{\mu\nu}$
-- Dirac operator: $\slashed{D} = i\gamma^\mu\partial_\mu$
-- Dirac action: $\bar{\psi}(i\slashed{D} - m)\psi$
+
+- **Clifford algebra**:
+
+  $$
+  \{\gamma^\mu, \gamma^\nu\} = 2\eta^{\mu\nu}
+  $$
+
+- **Dirac operator**:
+
+  $$
+  \not{D} = i\gamma^\mu\partial_\mu
+  $$
+
+- **Dirac action**:
+
+  $$
+  S_{\text{Dirac}} = \int d^4x \, \bar{\psi}(i\not{D} - m)\psi
+  $$
 
 **Isomorphism Construction:**
 

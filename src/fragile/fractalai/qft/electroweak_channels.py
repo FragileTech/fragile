@@ -97,12 +97,6 @@ NEIGHBOR_WEIGHT_MODES = (
 )
 
 
-def _normalize_neighbor_method(method: str) -> str:
-    if method == "uniform":
-        return "companions"
-    return method
-
-
 def _collect_time_sliced_edges(time_sliced, mode: str) -> np.ndarray:
     edges: list[np.ndarray] = []
     if mode in {"spacelike", "spacelike+timelike"}:
@@ -645,8 +639,12 @@ def _select_electroweak_neighbors_snapshot(
     frame_idx: int,
     cfg: ElectroweakChannelConfig,
 ) -> tuple[Tensor, Tensor]:
-    method = _normalize_neighbor_method(cfg.neighbor_method)
-    if method == "companions":
+    # Handle deprecated "uniform" alias
+    neighbor_method = cfg.neighbor_method
+    if neighbor_method == "uniform":
+        neighbor_method = "companions"
+
+    if neighbor_method == "companions":
         return (
             history.companions_distance[frame_idx - 1],
             history.companions_clone[frame_idx - 1],
@@ -660,7 +658,7 @@ def _select_electroweak_neighbors_snapshot(
     alive = history.alive_mask[frame_idx - 1]
     x_pre = history.x_before_clone[frame_idx]
 
-    if method == "recorded":
+    if neighbor_method == "recorded":
         if history.neighbor_edges is None or frame_idx >= len(history.neighbor_edges):
             return (
                 history.companions_distance[frame_idx - 1],
@@ -683,7 +681,7 @@ def _select_electroweak_neighbors_snapshot(
             neighbors_clone[i_idx] = neighbor
         return neighbors_distance, neighbors_clone
 
-    if method == "voronoi":
+    if neighbor_method == "voronoi":
         try:
             from fragile.fractalai.qft.voronoi_observables import compute_voronoi_tessellation
         except Exception:
@@ -732,8 +730,12 @@ def _select_electroweak_neighbors(
     start_idx: int,
     cfg: ElectroweakChannelConfig,
 ) -> tuple[Tensor, Tensor]:
-    method = _normalize_neighbor_method(cfg.neighbor_method)
-    if method == "companions":
+    # Handle deprecated "uniform" alias
+    neighbor_method = cfg.neighbor_method
+    if neighbor_method == "uniform":
+        neighbor_method = "companions"
+
+    if neighbor_method == "companions":
         companions_distance = history.companions_distance[start_idx - 1 : history.n_recorded - 1]
         companions_clone = history.companions_clone[start_idx - 1 : history.n_recorded - 1]
         return companions_distance, companions_clone
@@ -748,7 +750,7 @@ def _select_electroweak_neighbors(
     alive = history.alive_mask[start_idx - 1 : n_recorded - 1]
     x_pre = history.x_before_clone[start_idx:]
 
-    if method == "recorded":
+    if neighbor_method == "recorded":
         if history.neighbor_edges is None:
             return (
                 history.companions_distance[start_idx - 1 : history.n_recorded - 1],
@@ -779,7 +781,7 @@ def _select_electroweak_neighbors(
         return neighbors_distance, neighbors_clone
 
     if (
-        method == "voronoi"
+        neighbor_method == "voronoi"
         and cfg.time_axis == "euclidean"
         and cfg.use_time_sliced_tessellation
     ):
@@ -821,7 +823,7 @@ def _select_electroweak_neighbors(
             neighbors_clone[0, i] = int(neighbor)
         return neighbors_distance, neighbors_clone
 
-    if method == "voronoi":
+    if neighbor_method == "voronoi":
         try:
             from fragile.fractalai.qft.voronoi_observables import compute_voronoi_tessellation
         except Exception:

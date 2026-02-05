@@ -29,6 +29,18 @@ from fragile.fractalai.qft.mass_correlator_plots import (
     save_mass_correlator_plots,
 )
 
+from fragile.fractalai.qft.neighbor_analysis import (
+    # Neighbor computation functions
+    compute_neighbor_topology,
+    compute_full_neighbor_matrix,
+    check_neighbor_data_availability,
+    # Individual neighbor methods
+    compute_companion_batch,
+    compute_voronoi_batch,
+    compute_recorded_neighbors_batch,
+    compute_neighbors_auto,
+)
+
 from fragile.fractalai.qft.aggregation import (
     # Data structures
     AggregatedTimeSeries,
@@ -40,9 +52,7 @@ from fragile.fractalai.qft.aggregation import (
     bin_by_euclidean_time,
     # Component functions
     compute_color_states_batch,
-    compute_neighbor_topology,
     estimate_ell0,
-    check_neighbor_data_availability,
     # Gamma matrices
     build_gamma_matrices,
     # Channel-specific operator functions
@@ -158,6 +168,14 @@ __all__ = [
     "build_mass_correlator_dashboard",
     "compute_all_channel_correlators",
     "save_mass_correlator_plots",
+    # Neighbor analysis
+    "compute_neighbor_topology",
+    "compute_full_neighbor_matrix",
+    "check_neighbor_data_availability",
+    "compute_companion_batch",
+    "compute_voronoi_batch",
+    "compute_recorded_neighbors_batch",
+    "compute_neighbors_auto",
     # Time series aggregation (new)
     "AggregatedTimeSeries",
     "OperatorTimeSeries",
@@ -165,9 +183,7 @@ __all__ = [
     "compute_all_operator_series",
     "bin_by_euclidean_time",
     "compute_color_states_batch",
-    "compute_neighbor_topology",
     "estimate_ell0",
-    "check_neighbor_data_availability",
     "build_gamma_matrices",
     "compute_scalar_operators",
     "compute_pseudoscalar_operators",

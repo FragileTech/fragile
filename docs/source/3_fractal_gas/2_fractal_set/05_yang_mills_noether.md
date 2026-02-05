@@ -2118,7 +2118,7 @@ where $(\epsilon_c^{(0)}, \rho^{(0)}, \gamma, \tau_0)$ are reference values. The
 
 | Quantity | Symbol | Expression | Dimension | Behavior as $\tau \to 0$ |
 |----------|--------|------------|-----------|--------------------------|
-| Effective Planck constant | $\hbar_{\text{eff}}$ | $m\epsilon_c^2/(2\tau)$ | $[\text{GeV}^{-1}]$ | **Fixed** (requirement) |
+| Effective Planck constant | $\hbar_{\text{eff}}$ | $m(\epsilon_c^{(0)})^2/(2\tau_0)$ | $[\text{GeV}^{-1}]$ | **Fixed** (requirement) |
 | Mass gap | $m_{\text{gap}}$ | $\hbar_{\text{eff}}\lambda_{\text{gap}}$ | $[\text{GeV}]$ | **Fixed** (requirement) |
 | Bare gauge coupling | $g^2_{\text{bare}}$ | $m\tau\rho^2/\epsilon_c^2$ | $[\text{dimensionless}]$ | **Runs to 0** (asymptotic freedom) |
 | Physical coupling | $g^2_{\text{phys}}(\mu)$ | Via RG flow | $[\text{dimensionless}]$ | **Fixed** at scale $\mu$ |

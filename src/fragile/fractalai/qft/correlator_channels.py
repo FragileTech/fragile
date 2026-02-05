@@ -880,11 +880,13 @@ class ChannelCorrelator(ABC):
 
     def _validate_config(self) -> None:
         """Validate and fill missing config values."""
-        from fragile.fractalai.qft.aggregation import _normalize_neighbor_method, estimate_ell0
+        from fragile.fractalai.qft.aggregation import estimate_ell0
 
-        method = _normalize_neighbor_method(self.config.neighbor_method)
-        self.config.neighbor_method = method
-        if method not in {"companions", "voronoi", "recorded", "auto"}:
+        # Handle deprecated "uniform" alias
+        if self.config.neighbor_method == "uniform":
+            self.config.neighbor_method = "companions"
+
+        if self.config.neighbor_method not in {"companions", "voronoi", "recorded", "auto"}:
             msg = "neighbor_method must be 'auto', 'companions', 'voronoi', or 'recorded'"
             raise ValueError(msg)
         if self.config.use_time_sliced_tessellation:
