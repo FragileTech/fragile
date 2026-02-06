@@ -929,6 +929,7 @@ class ChannelPlot:
             width=self.width,
             height=self.height,
             show_legend=True,
+            shared_axes=False,
         )
 
     def effective_mass_plot(self) -> hv.Overlay | None:
@@ -1053,6 +1054,7 @@ class ChannelPlot:
             width=self.width,
             height=self.height,
             show_legend=True,
+            shared_axes=False,
         )
 
     def side_by_side(self) -> "pn.Row | None":
@@ -1149,4 +1151,5 @@ def build_all_channels_overlay(
         width=700,
         height=400,
         show_legend=True,
+        shared_axes=False,
     )

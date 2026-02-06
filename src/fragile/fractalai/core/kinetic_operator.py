@@ -20,7 +20,6 @@ import torch
 from torch import Tensor
 
 from fragile.fractalai.bounds import TorchBounds
-from fragile.fractalai.core.distance import compute_periodic_distance_matrix
 from fragile.fractalai.core.panel_model import INPUT_WIDTH, PanelModel
 
 
@@ -176,31 +175,21 @@ class KineticOperator(PanelModel):
         inclusive_bounds=(False, True),
         doc="Length scale (l) for Gaussian kernel K(r) = exp(-r²/(2l²))",
     )
-    viscous_neighbor_mode = param.Selector(
-        default="nearest",
-        objects=["all", "nearest"],
-        doc="Neighbor mode for viscous coupling (all or nearest)",
-    )
     viscous_neighbor_weighting = param.Selector(
-        default="kernel",
+        default="inverse_riemannian_distance",
         objects=[
+            "inverse_riemannian_distance",
+            "inverse_riemannian_volume",
+            "riemannian_kernel",
+            "inverse_distance",
+            "inverse_volume",
             "kernel",
             "uniform",
-            "inverse_distance",
-            "metric_diag",
-            "metric_full",
-            "kernel_geodesic_euclidean",
-            "kernel_geodesic_metric",
         ],
         doc=(
-            "Weighting for viscous neighbors:\n"
-            "  - kernel: Gaussian kernel on Euclidean distance\n"
-            "  - uniform: Equal weights\n"
-            "  - inverse_distance: 1/r weighting\n"
-            "  - metric_diag: Metric-weighted inverse distance (diagonal)\n"
-            "  - metric_full: Metric-weighted inverse distance (full)\n"
-            "  - kernel_geodesic_euclidean: Gaussian kernel on geodesic distance (Euclidean edges)\n"
-            "  - kernel_geodesic_metric: Gaussian kernel on geodesic distance (metric-weighted edges)"
+            "Weighting for viscous neighbors. Uses precomputed edge weights\n"
+            "from scutoid if the mode is in neighbor_weight_modes;\n"
+            "kernel/uniform/inverse_distance fall back to on-the-fly computation."
         ),
     )
     viscous_neighbor_threshold = param.Number(
@@ -364,25 +353,10 @@ class KineticOperator(PanelModel):
                 "end": 5.0,
                 "step": 0.1,
             },
-            "viscous_neighbor_mode": {
-                "type": pn.widgets.Select,
-                "width": INPUT_WIDTH,
-                "name": "Viscous neighbors",
-            },
             "viscous_neighbor_weighting": {
                 "type": pn.widgets.Select,
                 "width": INPUT_WIDTH,
                 "name": "Viscous weighting",
-                "options": [
-                    "kernel",
-                    "uniform",
-                    "inverse_distance",
-                    "geodesic",
-                    "metric_diag",
-                    "metric_full",
-                    "kernel_geodesic_euclidean",
-                    "kernel_geodesic_metric",
-                ],
             },
             "viscous_neighbor_threshold": {
                 "type": pn.widgets.FloatInput,
@@ -463,7 +437,6 @@ class KineticOperator(PanelModel):
             "nu",
             "use_viscous_coupling",
             "viscous_length_scale",
-            "viscous_neighbor_mode",
             "viscous_neighbor_weighting",
             "viscous_neighbor_threshold",
             "viscous_neighbor_penalty",
@@ -493,8 +466,7 @@ class KineticOperator(PanelModel):
         nu: float = 0.1,
         use_viscous_coupling: bool = True,
         viscous_length_scale: float = 1.0,
-        viscous_neighbor_mode: str = "nearest",
-        viscous_neighbor_weighting: str = "geodesic",
+        viscous_neighbor_weighting: str = "inverse_riemannian_distance",
         viscous_neighbor_threshold: float | None = None,
         viscous_neighbor_penalty: float = 0.0,
         viscous_degree_cap: float | None = None,
@@ -530,7 +502,6 @@ class KineticOperator(PanelModel):
             nu: Viscous coupling strength (ν)
             use_viscous_coupling: Enable viscous coupling
             viscous_length_scale: Length scale for Gaussian kernel
-            viscous_neighbor_mode: Neighbor mode for viscous coupling
             viscous_neighbor_weighting: Weighting mode for viscous neighbors
             viscous_neighbor_threshold: Kernel threshold for strong neighbors
             viscous_neighbor_penalty: Penalty strength for excess neighbors
@@ -575,7 +546,6 @@ class KineticOperator(PanelModel):
             nu=nu,
             use_viscous_coupling=use_viscous_coupling,
             viscous_length_scale=viscous_length_scale,
-            viscous_neighbor_mode=viscous_neighbor_mode,
             viscous_neighbor_weighting=viscous_neighbor_weighting,
             viscous_neighbor_threshold=viscous_neighbor_threshold,
             viscous_neighbor_penalty=viscous_neighbor_penalty,
@@ -689,412 +659,122 @@ class KineticOperator(PanelModel):
         x: Tensor,
         v: Tensor,
         neighbor_edges: Tensor | None = None,
-        grad_fitness: Tensor | None = None,
-        hess_fitness: Tensor | None = None,
-        voronoi_data: dict | None = None,
-        volume_weights: Tensor | None = None,
         edge_weights: Tensor | None = None,
-        diffusion_tensors: Tensor | None = None,
+        volume_weights: Tensor | None = None,
+        **kwargs,
     ) -> Tensor:
-        """Compute viscous coupling force using normalized graph Laplacian.
+        """Compute viscous coupling force using neighbor graph Laplacian.
 
-        The viscous force implements fluid-like collective behavior by coupling
-        nearby walkers' velocities through a Gaussian kernel:
+        F_viscous(x_i) = ν ∑_j w_ij (v_j - v_i)
 
-        F_viscous(x_i) = ν ∑_{j≠i} [K(||x_i - x_j||) / deg(i)] (v_j - v_i)
-
-        where:
-        - K(r) = exp(-r²/(2l²)) is a Gaussian kernel with length scale l
-        - deg(i) = ∑_{k≠i} K(||x_i - x_k||) is the local degree (normalization)
-        - ν is the viscous coupling strength
-
-        This creates a row-normalized graph Laplacian structure that ensures
-        N-uniform bounds and dissipative behavior (reduces velocity variance).
+        Weights w_ij come from scutoid (precomputed) or are computed on-the-fly
+        via the ``viscous_neighbor_weighting`` setting.
 
         Args:
             x: Positions [N, d]
             v: Velocities [N, d]
-            neighbor_edges: Optional directed edges [E, 2] for true-neighbor coupling
-            grad_fitness: Optional fitness gradient [N, d] (for metric weighting)
-            hess_fitness: Optional fitness Hessian [N, d] or [N, d, d] (for metric weighting)
-            voronoi_data: Optional Voronoi data (for metric weighting when using voronoi_proxy)
-            volume_weights: Optional Riemannian volume weights [N] for neighbor weighting
-            edge_weights: Optional precomputed edge weights [E] aligned with neighbor_edges
-            diffusion_tensors: Optional precomputed diffusion tensors Σ (unscaled)
+            neighbor_edges: Directed edges [E, 2] from scutoid neighbor graph
+            edge_weights: Precomputed edge weights [E] aligned with neighbor_edges
+            volume_weights: Riemannian volume weights [N]
+            **kwargs: Unused (grad_fitness, hess_fitness, voronoi_data, diffusion_tensors
+                      kept for call-site compatibility)
 
         Returns:
-            viscous_force: Velocity-dependent damping force [N, d]
+            viscous_force: [N, d]
 
-        Note:
-            - When nu = 0 or use_viscous_coupling = False, returns zero
-            - Dissipative property proven in docs/source/2_geometric_gas/11_geometric_gas.md § 6.3
-            - N-uniform bounds from row normalization
-
-        Reference:
-            - Geometric Gas specification: docs/source/2_geometric_gas/11_geometric_gas.md § 2.1.3
-            - Graph Laplacian structure: docs/source/2_geometric_gas/17_qsd_exchangeability_geometric.md
+        Raises:
+            ValueError: If neighbor_edges is None (required for all modes)
         """
-        # Early return if viscous coupling is disabled or nu = 0
         if not self.use_viscous_coupling or self.nu == 0.0:
             return torch.zeros_like(v)
 
-        _N, _d = x.shape
-
-        if self.viscous_volume_weighting and volume_weights is None and voronoi_data is not None:
-            volume_weights = self._compute_volume_weights(
-                x,
-                grad_fitness=grad_fitness,
-                hess_fitness=hess_fitness,
-                voronoi_data=voronoi_data,
-                diffusion_tensors=diffusion_tensors,
+        if neighbor_edges is None or neighbor_edges.numel() == 0:
+            raise ValueError(
+                "neighbor_edges required for viscous coupling. "
+                "Ensure neighbor_graph_record=True during simulation."
             )
 
-        if neighbor_edges is None:
-            # Compute pairwise distances
-            # With PBC: use minimum image convention (wrapping)
-            # Without PBC: standard Euclidean distance
-            # distances[i, j] = ||x_i - x_j|| (accounting for wrapping if pbc=True)
-            distances = compute_periodic_distance_matrix(
-                x, y=None, bounds=self.bounds, pbc=self.pbc
-            )  # [N, N]
-
-            # Compute Gaussian kernel K(r) = exp(-r²/(2l²))
-            l_sq = self.viscous_length_scale**2
-            weighting = self.viscous_neighbor_weighting
-
-            # Geodesic kernels require neighbor graph
-            if weighting in {"kernel_geodesic_euclidean", "kernel_geodesic_metric"}:
-                warnings.warn(
-                    f"Geodesic kernel weighting '{weighting}' requires neighbor_edges; "
-                    "falling back to Euclidean kernel.",
-                    RuntimeWarning,
-                )
-                weighting = "kernel"
-
-            if weighting == "uniform":
-                kernel = torch.ones_like(distances)
-            elif weighting == "kernel":
-                kernel = torch.exp(-(distances**2) / (2 * l_sq))  # [N, N]
-            elif weighting == "inverse_distance":
-                eps = 1e-8
-                kernel = 1.0 / (distances + eps)
-            elif self.viscous_neighbor_weighting == "geodesic":
-                warnings.warn(
-                    "Geodesic viscous weighting requires neighbor_edges; "
-                    "falling back to inverse-distance weighting.",
-                    RuntimeWarning,
-                )
-                eps = 1e-8
-                kernel = 1.0 / (distances + eps)
-            else:
-                warnings.warn(
-                    f"Metric-weighted viscous coupling '{weighting}' requires neighbor_edges; "
-                    "falling back to inverse-distance weighting.",
-                    RuntimeWarning,
-                )
-                eps = 1e-8
-                kernel = 1.0 / (distances + eps)
-
-            # Zero out diagonal (no self-interaction)
-            kernel.fill_diagonal_(0.0)
-
-            if self.viscous_neighbor_mode == "nearest":
-                nearest_dist = distances.clone()
-                nearest_dist.fill_diagonal_(float("inf"))
-                nn_idx = nearest_dist.argmin(dim=1)
-                mask = torch.zeros_like(kernel)
-                mask.scatter_(1, nn_idx.unsqueeze(1), 1.0)
-                kernel = kernel * mask
-
-            if self.viscous_volume_weighting and volume_weights is not None:
-                vw = volume_weights.to(device=kernel.device, dtype=kernel.dtype)
-                if vw.numel() == kernel.shape[1]:
-                    kernel = kernel * vw.unsqueeze(0)
-
-            # Compute local degree deg(i) = ∑_{j≠i} K(||x_i - x_j||)
-            # Add small epsilon for numerical stability
-            deg = kernel.sum(dim=1, keepdim=True)  # [N, 1]
-            deg = torch.clamp(deg, min=1e-10)  # Avoid division by zero
-
-            # Compute normalized weights w_ij = K_ij / deg_i
-            weights = kernel / deg  # [N, N], broadcasting deg over columns
-            if self.viscous_degree_cap is not None:
-                cap = float(self.viscous_degree_cap)
-                if cap <= 0:
-                    return torch.zeros_like(v)
-                scale = torch.clamp(cap / deg, max=1.0)
-                weights = weights * scale
-
-            if self.viscous_neighbor_threshold is not None and self.viscous_neighbor_penalty > 0:
-                threshold = float(self.viscous_neighbor_threshold)
-                if threshold > 0:
-                    strong = kernel >= threshold
-                    strong_count = strong.sum(dim=1, keepdim=True).to(weights.dtype)
-                    excess = torch.clamp(strong_count - 1.0, min=0.0)
-                    penalty_scale = 1.0 / (1.0 + self.viscous_neighbor_penalty * excess)
-                    weights = weights * penalty_scale
-
-            # Compute velocity differences for all pairs
-            # v_diff[i, j] = v_j - v_i
-            v_diff = v.unsqueeze(0) - v.unsqueeze(1)  # [N, N, d]
-
-            # Compute weighted sum: F_visc_i = ν * ∑_j w_ij * (v_j - v_i)
-            # This is a batched matrix-vector product
-            return self.nu * torch.einsum("ij,ijd->id", weights, v_diff)  # [N, d]
-
-        if neighbor_edges.numel() == 0:
-            return torch.zeros_like(v)
-
-        edges = neighbor_edges
-        if edges.device != x.device:
-            edges = edges.to(device=x.device)
-        i = edges[:, 0].long()
-        j = edges[:, 1].long()
+        # Prepare edges
+        edges = neighbor_edges.to(x.device)
+        i, j = edges[:, 0].long(), edges[:, 1].long()
         valid = i != j
         if not valid.any():
             return torch.zeros_like(v)
-        i = i[valid]
-        j = j[valid]
-        if edge_weights is not None:
-            edge_weights = edge_weights.to(device=x.device, dtype=x.dtype)
-            edge_weights = edge_weights[valid]
+        i, j = i[valid], j[valid]
 
-        diff = x[i] - x[j]
-        if self.pbc and self.bounds is not None:
-            high = self.bounds.high.to(x)
-            low = self.bounds.low.to(x)
-            span = high - low
-            diff = diff - span * torch.round(diff / span)
-        dist_sq = (diff**2).sum(dim=-1)
+        # Compute weights via _get_viscous_weights
+        weights = self._get_viscous_weights(x, i, j, edge_weights, valid, volume_weights)
 
-        weighting = self.viscous_neighbor_weighting
-        l_sq = self.viscous_length_scale**2
-        eps = 1e-8
-
-        # Handle geodesic kernel weighting options
-        if weighting in {"kernel_geodesic_euclidean", "kernel_geodesic_metric"}:
-            use_metric = (weighting == "kernel_geodesic_metric")
-            geodesic_dist = self._compute_geodesic_distances(
-                x,
-                neighbor_edges,
-                grad_fitness=grad_fitness,
-                hess_fitness=hess_fitness,
-                voronoi_data=voronoi_data,
-                use_metric_weighting=use_metric,
-            )
-            # Extract geodesic distances for the edges
-            geodesic_dist_edges = geodesic_dist[i, j]
-            kernel = torch.exp(-(geodesic_dist_edges**2) / (2 * l_sq))
-        elif weighting == "uniform":
-            kernel = torch.ones_like(dist_sq)
-        elif weighting == "kernel":
-            kernel = torch.exp(-dist_sq / (2 * l_sq))
-        elif weighting == "inverse_distance":
-            kernel = 1.0 / (torch.sqrt(dist_sq) + eps)
-        elif weighting == "geodesic":
-            warnings.warn(
-                "Geodesic viscous weighting requires precomputed edge_weights; "
-                "falling back to inverse-distance weighting.",
-                RuntimeWarning,
-            )
-            kernel = 1.0 / (torch.sqrt(dist_sq) + eps)
-        elif weighting in {"metric_diag", "metric_full"}:
-            sigma = self._compute_diffusion_tensor(
-                x,
-                grad_fitness=grad_fitness,
-                hess_fitness=hess_fitness,
-                voronoi_data=voronoi_data,
-                diffusion_tensors=diffusion_tensors,
-            )
-            if sigma is None:
-                kernel = 1.0 / (torch.sqrt(dist_sq) + eps)
-            else:
-                c2 = (
-                    self.c2
-                    if torch.is_tensor(self.c2)
-                    else torch.tensor(self.c2, device=x.device, dtype=x.dtype)
-                )
-                if sigma.dim() == 2:
-                    sigma_safe = torch.clamp(sigma, min=eps)
-                    g_diag = (c2**2) / (sigma_safe**2)
-                    g_edge = 0.5 * (g_diag[i] + g_diag[j])
-                    dist_sq_metric = torch.sum(g_edge * (diff**2), dim=-1)
-                else:
-                    sigma_sym = 0.5 * (sigma + sigma.transpose(-1, -2))
-                    try:
-                        inv_sigma = torch.linalg.inv(sigma_sym)
-                    except RuntimeError:
-                        inv_sigma = torch.linalg.pinv(sigma_sym)
-                    g_full = (c2**2) * (inv_sigma @ inv_sigma.transpose(-1, -2))
-                    if weighting == "metric_diag":
-                        g_diag = torch.diagonal(g_full, dim1=-2, dim2=-1)
-                        g_edge = 0.5 * (g_diag[i] + g_diag[j])
-                        dist_sq_metric = torch.sum(g_edge * (diff**2), dim=-1)
-                    else:
-                        g_edge = 0.5 * (g_full[i] + g_full[j])
-                        diff_vec = diff.unsqueeze(1)
-                        dist_sq_metric = torch.bmm(
-                            torch.bmm(diff_vec, g_edge), diff.unsqueeze(-1)
-                        ).squeeze(-1).squeeze(-1)
-                dist_sq_metric = torch.clamp(dist_sq_metric, min=0.0)
-                kernel = 1.0 / (torch.sqrt(dist_sq_metric) + eps)
-        else:
-            kernel = torch.exp(-dist_sq / (2 * l_sq))
-
-        if self.viscous_neighbor_mode == "nearest":
-            try:
-                min_dist = torch.full((x.shape[0],), float("inf"), device=x.device)
-                if weighting in {"metric_diag", "metric_full"}:
-                    dist_metric = 1.0 / torch.clamp(kernel, min=eps)
-                    min_dist.scatter_reduce_(0, i, dist_metric, reduce="amin", include_self=False)
-                    keep = dist_metric <= (min_dist[i] + 1e-12)
-                elif weighting == "geodesic" and edge_weights is not None:
-                    max_w = torch.zeros(x.shape[0], device=x.device, dtype=kernel.dtype)
-                    max_w.scatter_reduce_(0, i, kernel, reduce="amax", include_self=False)
-                    keep = kernel >= (max_w[i] - 1e-12)
-                else:
-                    min_dist.scatter_reduce_(0, i, dist_sq, reduce="amin", include_self=False)
-                    keep = dist_sq <= (min_dist[i] + 1e-12)
-                i = i[keep]
-                j = j[keep]
-                dist_sq = dist_sq[keep]
-                kernel = kernel[keep]
-            except Exception:
-                pass
-
-        if self.viscous_volume_weighting and volume_weights is not None:
-            vw = volume_weights.to(device=kernel.device, dtype=kernel.dtype)
-            if vw.numel() == x.shape[0]:
-                kernel = kernel * vw[j]
-
-        deg = torch.zeros(x.shape[0], device=x.device, dtype=kernel.dtype)
-        deg.index_add_(0, i, kernel)
-        deg = torch.clamp(deg, min=1e-10)
-
-        weights = kernel / deg[i]
-        if self.viscous_degree_cap is not None:
-            cap = float(self.viscous_degree_cap)
-            if cap <= 0:
-                return torch.zeros_like(v)
-            scale = torch.clamp(cap / deg, max=1.0)
-            weights = weights * scale[i]
-
-        if self.viscous_neighbor_threshold is not None and self.viscous_neighbor_penalty > 0:
-            threshold = float(self.viscous_neighbor_threshold)
-            if threshold > 0:
-                strong = (kernel >= threshold).to(weights.dtype)
-                strong_count = torch.zeros(x.shape[0], device=x.device, dtype=weights.dtype)
-                strong_count.index_add_(0, i, strong)
-                excess = torch.clamp(strong_count - 1.0, min=0.0)
-                penalty_scale = 1.0 / (1.0 + self.viscous_neighbor_penalty * excess)
-                weights = weights * penalty_scale[i]
-
+        # Velocity coupling: F_visc_i = nu * sum_j w_ij (v_j - v_i)
         v_diff = v[j] - v[i]
         force = torch.zeros_like(v)
         force.index_add_(0, i, weights.unsqueeze(1) * v_diff)
         return self.nu * force
 
-    def _compute_geodesic_distances(
+    def _get_viscous_weights(
         self,
         x: Tensor,
-        neighbor_edges: Tensor,
-        grad_fitness: Tensor | None = None,
-        hess_fitness: Tensor | None = None,
-        voronoi_data: dict | None = None,
-        use_metric_weighting: bool = False,
+        i: Tensor,
+        j: Tensor,
+        edge_weights: Tensor | None,
+        valid_mask: Tensor,
+        volume_weights: Tensor | None,
     ) -> Tensor:
-        """Compute geodesic distances on the neighbor graph using Floyd-Warshall algorithm.
+        """Compute per-edge viscous weights for the given (i, j) edges."""
+        weighting = self.viscous_neighbor_weighting
 
-        Args:
-            x: Positions [N, d]
-            neighbor_edges: Directed neighbor edges [E, 2]
-            grad_fitness: Optional fitness gradient for metric weighting
-            hess_fitness: Optional fitness Hessian for metric weighting
-            voronoi_data: Optional Voronoi data for metric weighting
-            use_metric_weighting: If True, use metric-weighted edge lengths
+        if edge_weights is not None:
+            # Precomputed weights provided by EuclideanGas
+            w = edge_weights.to(x.device, x.dtype)[valid_mask]
+        elif weighting in ("kernel", "uniform", "inverse_distance"):
+            # On-the-fly fallback for modes that support it
+            from fragile.fractalai.scutoid.weights import compute_edge_weights
 
-        Returns:
-            Geodesic distance matrix [N, N]
-        """
-        N = x.shape[0]
-        device = x.device
-        dtype = x.dtype
-
-        # Initialize distance matrix with infinity
-        dist = torch.full((N, N), float('inf'), device=device, dtype=dtype)
-
-        # Set diagonal to zero
-        dist.fill_diagonal_(0.0)
-
-        if neighbor_edges is None or neighbor_edges.numel() == 0:
-            return dist
-
-        # Compute edge lengths
-        edges = neighbor_edges.to(device)
-        i = edges[:, 0].long()
-        j = edges[:, 1].long()
-
-        # Filter valid edges
-        valid = (i != j) & (i >= 0) & (i < N) & (j >= 0) & (j < N)
-        i = i[valid]
-        j = j[valid]
-
-        if i.numel() == 0:
-            return dist
-
-        # Compute edge vectors
-        diff = x[i] - x[j]
-
-        # Apply PBC if enabled
-        if self.pbc and self.bounds is not None:
-            high = self.bounds.high.to(x)
-            low = self.bounds.low.to(x)
-            span = high - low
-            diff = diff - span * torch.round(diff / span)
-
-        if use_metric_weighting:
-            # Use metric-weighted distances
-            sigma = self._compute_diffusion_tensor(x, grad_fitness, hess_fitness, voronoi_data)
-            if sigma is not None:
-                c2 = self.c2 if torch.is_tensor(self.c2) else torch.tensor(self.c2, device=device, dtype=dtype)
-                eps = 1e-8
-
-                if sigma.dim() == 2:
-                    # Diagonal metric
-                    sigma_safe = torch.clamp(sigma, min=eps)
-                    g_diag = (c2**2) / (sigma_safe**2)
-                    g_edge = 0.5 * (g_diag[i] + g_diag[j])
-                    edge_lengths = torch.sqrt(torch.sum(g_edge * (diff**2), dim=-1))
-                else:
-                    # Full metric
-                    sigma_sym = 0.5 * (sigma + sigma.transpose(-1, -2))
-                    try:
-                        inv_sigma = torch.linalg.inv(sigma_sym)
-                    except RuntimeError:
-                        inv_sigma = torch.linalg.pinv(sigma_sym)
-                    g_full = (c2**2) * (inv_sigma @ inv_sigma.transpose(-1, -2))
-                    g_edge = 0.5 * (g_full[i] + g_full[j])
-                    diff_vec = diff.unsqueeze(1)
-                    dist_sq_metric = torch.bmm(
-                        torch.bmm(diff_vec, g_edge), diff.unsqueeze(-1)
-                    ).squeeze(-1).squeeze(-1)
-                    edge_lengths = torch.sqrt(torch.clamp(dist_sq_metric, min=0.0))
-            else:
-                # Fallback to Euclidean
-                edge_lengths = torch.sqrt((diff**2).sum(dim=-1))
+            edge_index_coo = torch.stack([i, j], dim=0)  # [2, E']
+            w = compute_edge_weights(
+                x,
+                edge_index_coo,
+                mode=weighting,
+                length_scale=self.viscous_length_scale,
+            )
         else:
-            # Euclidean distances
-            edge_lengths = torch.sqrt((diff**2).sum(dim=-1))
+            raise ValueError(
+                f"viscous_neighbor_weighting={weighting!r} requires precomputed "
+                f"edge_weights. Add {weighting!r} to neighbor_weight_modes."
+            )
 
-        # Set edge lengths in distance matrix
-        dist[i, j] = edge_lengths
+        # Volume weighting (multiply by sqrt(det g) of destination)
+        if self.viscous_volume_weighting and volume_weights is not None:
+            vw = volume_weights.to(x.device, x.dtype)
+            w = w * vw[j]
+            # Re-normalize after volume weighting
+            deg = torch.zeros(x.shape[0], device=x.device, dtype=w.dtype)
+            deg.index_add_(0, i, w)
+            deg = torch.clamp(deg, min=1e-10)
+            w = w / deg[i]
 
-        # Floyd-Warshall algorithm for all-pairs shortest paths
-        # This is O(N^3) but typically N is small enough
-        for k in range(N):
-            dist = torch.minimum(dist, dist[:, k:k+1] + dist[k:k+1, :])
+        # Degree cap
+        if self.viscous_degree_cap is not None:
+            cap = float(self.viscous_degree_cap)
+            if cap <= 0:
+                return torch.zeros_like(w)
+            deg = torch.zeros(x.shape[0], device=x.device, dtype=w.dtype)
+            deg.index_add_(0, i, w)
+            scale = torch.clamp(cap / torch.clamp(deg, min=1e-10), max=1.0)
+            w = w * scale[i]
 
-        return dist
+        # Threshold penalty
+        if self.viscous_neighbor_threshold is not None and self.viscous_neighbor_penalty > 0:
+            threshold = float(self.viscous_neighbor_threshold)
+            if threshold > 0:
+                strong = (w >= threshold).to(w.dtype)
+                strong_count = torch.zeros(x.shape[0], device=x.device, dtype=w.dtype)
+                strong_count.index_add_(0, i, strong)
+                excess = torch.clamp(strong_count - 1.0, min=0.0)
+                penalty_scale = 1.0 / (1.0 + self.viscous_neighbor_penalty * excess)
+                w = w * penalty_scale[i]
+
+        return w
 
     def _boris_rotate(self, v: Tensor, curl: Tensor) -> Tensor:
         """Apply Boris rotation for curl-driven velocity updates.

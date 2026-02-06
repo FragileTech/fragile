@@ -92,11 +92,15 @@ $$
      If $\|H\|_{\mathrm{op}} \le \eta\,\epsilon_\Sigma$ with $\eta<1$, then
      $(1-\eta)I \preceq g \preceq (1+\eta)I$ and $d_g$ is locally bilipschitz to the
      Euclidean distance; we use this only as a practical approximation.
-   - **Hypostructure route (Volume 2):** Independently of the analytic bounds, the
-     metatheorem chain {prf:ref}`mt:continuum-injection`, {prf:ref}`mt:emergent-continuum`,
-     and {prf:ref}`mt:cheeger-gradient` promotes the IG distance to a $C^2$ Riemannian
-     metric on slices. On any compact Safe Harbor window, $C^2$ regularity implies
-     bounded sectional curvature. This route does not use Gevrey-1 estimates.
+   :::{dropdown} 📖 Hypostructure Route: Curvature Bounds (Volume 2)
+   :icon: book
+
+   Independently of the analytic bounds, the
+   metatheorem chain {prf:ref}`mt:continuum-injection`, {prf:ref}`mt:emergent-continuum`,
+   and {prf:ref}`mt:cheeger-gradient` promotes the IG distance to a $C^2$ Riemannian
+   metric on slices. On any compact Safe Harbor window, $C^2$ regularity implies
+   bounded sectional curvature. This route does not use Gevrey-1 estimates.
+   :::
 3. **Curved boundaries**: The boundary $\partial \mathrm{Vor}_i(t) \cap \partial \mathrm{Vor}_j(t)$ is the **equidistant hypersurface** (locus of points with $d_g(z, z_i) = d_g(z, z_j)$), which is generally curved when $g$ is non-flat.
 :::
 

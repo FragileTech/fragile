@@ -1,13 +1,13 @@
 """Fractal gas algorithm for Atari games with uniform companion selection."""
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Any
 
 import numpy as np
 import torch
 from torch import Tensor
 
-from fragile.fractalai.videogames.cloning import FractalCloningOperator, clone_walker_data
+from fragile.fractalai.videogames.cloning import clone_walker_data, FractalCloningOperator
 from fragile.fractalai.videogames.kinetic import RandomActionOperator
 
 
@@ -192,27 +192,14 @@ class AtariFractalGas:
         Returns:
             Initial WalkerState with N walkers
         """
-        # Reset environment
-        init_state = self.env.reset()
+        init_state, init_obs, init_info = self._reset_env_with_state()
 
-        # Replicate initial state N times
-        states = np.array([init_state.copy() for _ in range(self.N)], dtype=object)
-
-        # Get initial observations
-        if hasattr(self.env, "get_state"):
-            # Use get_state if available
-            obs_list = [self.env.get_state()["obs"] for _ in range(self.N)]
-        else:
-            # Otherwise step with no-op actions to get observations
-            no_op_action = 0  # Typically no-op in Atari
-            actions = np.array([no_op_action] * self.N)
-            dt = np.ones(self.N, dtype=int)
-            _, obs_list, _, _, _, _ = self.kinetic_op.apply(states, actions, dt)
+        # Replicate initial state and observation N times
+        states = np.array([self._copy_state(init_state) for _ in range(self.N)], dtype=object)
+        obs_list = [self._copy_observation(init_obs) for _ in range(self.N)]
 
         # Convert observations to tensors
-        observations = torch.tensor(
-            np.array(obs_list), device=self.device, dtype=self.dtype
-        )
+        observations = torch.tensor(np.array(obs_list), device=self.device, dtype=self.dtype)
 
         # Initialize all walker arrays
         rewards = torch.zeros(self.N, device=self.device, dtype=self.dtype)
@@ -221,7 +208,7 @@ class AtariFractalGas:
         truncated = torch.zeros(self.N, device=self.device, dtype=torch.bool)
         actions = np.zeros(self.N, dtype=int)
         dt = np.ones(self.N, dtype=int)
-        infos = [{} for _ in range(self.N)]
+        infos = [init_info.copy() if hasattr(init_info, "copy") else init_info for _ in range(self.N)]
 
         # Reset metrics
         self.total_steps = 0
@@ -259,7 +246,7 @@ class AtariFractalGas:
             info: Dictionary with iteration metrics
         """
         # 1. Calculate fitness (pass both cumulative and step rewards)
-        virtual_rewards, fitness_companions = self.clone_op.calculate_fitness(
+        virtual_rewards, _fitness_companions = self.clone_op.calculate_fitness(
             state.observations,
             state.rewards,  # cumulative
             state.step_rewards,  # step rewards
@@ -387,15 +374,17 @@ class AtariFractalGas:
         """
         # Save current environment state
         saved_state = None
-        if hasattr(self.env, "clone_state"):
-            saved_state = self.env.clone_state()
+        if hasattr(self.env, "get_state"):
+            saved_state = self._copy_state(self.env.get_state())
+        elif hasattr(self.env, "clone_state"):
+            saved_state = self._copy_state(self.env.clone_state())
 
         try:
             # Set environment to walker's state
-            if hasattr(self.env, "restore_state"):
-                self.env.restore_state(state)
-            elif hasattr(self.env, "set_state"):
+            if hasattr(self.env, "set_state"):
                 self.env.set_state(state)
+            elif hasattr(self.env, "restore_state"):
+                self.env.restore_state(state)
 
             # Render frame
             if hasattr(self.env, "render"):
@@ -413,7 +402,62 @@ class AtariFractalGas:
         finally:
             # Restore environment state
             if saved_state is not None:
-                if hasattr(self.env, "restore_state"):
-                    self.env.restore_state(saved_state)
-                elif hasattr(self.env, "set_state"):
+                if hasattr(self.env, "set_state"):
                     self.env.set_state(saved_state)
+                elif hasattr(self.env, "restore_state"):
+                    self.env.restore_state(saved_state)
+
+    def _reset_env_with_state(self) -> tuple[Any, Any, dict]:
+        """Reset env and normalize output to (state, observation, info)."""
+        try:
+            reset_data = self.env.reset(return_state=True)
+        except TypeError:
+            # Fallback for non-plangym-style mocks.
+            reset_data = self.env.reset()
+
+        if isinstance(reset_data, tuple):
+            if len(reset_data) == 3:
+                state, observation, info = reset_data
+            elif len(reset_data) == 2:
+                state, observation = reset_data
+                info = {}
+            else:
+                msg = f"Unexpected reset output length from env.reset: {len(reset_data)}"
+                raise RuntimeError(msg)
+        else:
+            state = reset_data
+            info = {}
+            observation = self._extract_observation_from_env()
+            if observation is None:
+                # Legacy fallback: infer observation through a no-op kinetic step.
+                states = np.array([self._copy_state(state) for _ in range(self.N)], dtype=object)
+                actions = np.zeros(self.N, dtype=int)
+                dt = np.ones(self.N, dtype=int)
+                _, obs_list, _, _, _, _ = self.kinetic_op.apply(states, actions, dt)
+                observation = obs_list[0]
+
+        if observation is None:
+            msg = "Could not obtain an initial observation from env.reset."
+            raise RuntimeError(msg)
+        if not isinstance(info, dict):
+            info = {}
+        return state, observation, info
+
+    def _extract_observation_from_env(self) -> Any | None:
+        """Try reading the current observation from env.get_state()."""
+        if not hasattr(self.env, "get_state"):
+            return None
+        state_data = self.env.get_state()
+        if isinstance(state_data, dict):
+            return state_data.get("obs")
+        return None
+
+    @staticmethod
+    def _copy_state(state: Any) -> Any:
+        """Return a defensive copy of an environment state when supported."""
+        return state.copy() if hasattr(state, "copy") else state
+
+    @staticmethod
+    def _copy_observation(observation: Any) -> Any:
+        """Return a defensive copy of an observation when supported."""
+        return observation.copy() if hasattr(observation, "copy") else observation

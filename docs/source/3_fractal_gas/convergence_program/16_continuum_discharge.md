@@ -106,9 +106,13 @@ guaranteed by the diffusion floor $\epsilon_\Sigma$.
 **Step 3: Continuum injection.**
 **Homogeneous/periodic case** (Clay Millennium Problem setting): The spatial geometry is flat Euclidean by construction. The IG graph distance converges to the Euclidean distance by standard graph-Laplacian convergence {cite}`belkin2008foundation` under the kernel bandwidth conditions $\varepsilon_N \to 0$, $N\varepsilon_N^{d/2+2} \to \infty$ (see {prf:ref}`thm-laplacian-convergence`). No emergent-geometry metatheorems are required.
 
+:::{dropdown} General Curved Case: Metatheorem Route (Volume 2)
+:icon: book
+
 **General case**: For curved emergent geometries, apply {prf:ref}`mt:continuum-injection`, {prf:ref}`mt:emergent-continuum`, and
 {prf:ref}`mt:cheeger-gradient` to identify the IG distance with the geodesic
 distance of $(\mathcal{X}, g_R)$ in the limit.
+:::
 
 **Step 4: Lorentzian structure from CST order.**
 Use the causal order equivalence

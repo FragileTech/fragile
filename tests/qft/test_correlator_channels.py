@@ -21,6 +21,7 @@ from fragile.fractalai.qft.correlator_channels import (
     ScalarChannel,
     TensorChannel,
     VectorChannel,
+    bootstrap_correlator_error,
     compute_all_channels,
     compute_all_correlators,
     compute_channel_correlator,
@@ -200,6 +201,32 @@ class TestFFTCorrelator:
         corr = compute_correlator_fft(series, max_lag=10)
         assert corr.shape == (11,)
         assert (corr == 0).all()
+
+    def test_bootstrap_batched_matches_loop_reference(self):
+        """Batched bootstrap should match loop reference using identical resamples."""
+        series = torch.randn(128)
+        max_lag = 20
+        n_bootstrap = 32
+
+        # Save RNG state so we can reconstruct the exact resamples used internally.
+        torch.manual_seed(1234)
+        rng_state = torch.random.get_rng_state()
+        batched_err = bootstrap_correlator_error(
+            series,
+            max_lag=max_lag,
+            n_bootstrap=n_bootstrap,
+            use_connected=True,
+        )
+
+        # Rebuild the same bootstrap samples and compare against loop reference.
+        torch.random.set_rng_state(rng_state)
+        indices = torch.randint(0, series.shape[0], (n_bootstrap, series.shape[0]))
+        ref_corrs = []
+        for i in range(n_bootstrap):
+            ref_corrs.append(compute_correlator_fft(series[indices[i]], max_lag, use_connected=True))
+        ref_err = torch.stack(ref_corrs).std(dim=0)
+
+        torch.testing.assert_close(batched_err, ref_err, atol=1e-5, rtol=1e-5)
 
 
 class TestEffectiveMass:
@@ -756,14 +783,27 @@ class MockRunHistoryWithGeometry(MockRunHistory):
         # Create simple linear chain neighbors: walker i connected to i+1
         self.neighbor_edges = []
         self.geodesic_edge_distances = []
+        self.edge_weights = []
         for _t in range(T):
             edges = []
             dists = []
             for i in range(N - 1):
                 edges.append([i, i + 1])
                 dists.append(float(i + 1))  # Distance = i+1 (so varies per edge)
-            self.neighbor_edges.append(torch.tensor(edges, dtype=torch.long))
-            self.geodesic_edge_distances.append(torch.tensor(dists, dtype=torch.float32))
+            edges_t = torch.tensor(edges, dtype=torch.long)
+            dists_t = torch.tensor(dists, dtype=torch.float32)
+            self.neighbor_edges.append(edges_t)
+            self.geodesic_edge_distances.append(dists_t)
+            # Pre-computed edge weights dict (matching scutoid WeightMode names)
+            inv_dist = 1.0 / dists_t.clamp(min=1e-8)
+            self.edge_weights.append({
+                "inverse_distance": inv_dist,
+                "inverse_riemannian_distance": inv_dist * 1.1,  # Slightly different
+                "inverse_volume": dists_t * 0.5,
+                "inverse_riemannian_volume": dists_t * 0.6,
+                "kernel": torch.ones_like(dists_t) * 0.8,
+                "riemannian_kernel": torch.ones_like(dists_t) * 0.9,
+            })
 
         # Riemannian volume weights: [n_recorded-1, N]
         # Use simple pattern: weight = walker_index + 1 (so non-uniform)
@@ -779,7 +819,7 @@ class TestGeometricWeighting:
         """Uniform weighting should produce identical results to default behavior."""
         history = MockRunHistory(N=30, d=3, n_recorded=50)
 
-        config_default = ChannelConfig(neighbor_k=2, operator_weighting="uniform")
+        config_default = ChannelConfig(neighbor_k=2, edge_weight_mode="uniform")
         config_explicit = ChannelConfig(neighbor_k=2)
 
         series_default = compute_all_operator_series(history, config_default)
@@ -792,28 +832,28 @@ class TestGeometricWeighting:
                 msg=f"Channel {channel} differs between uniform and default",
             )
 
-    def test_geodesic_weighting_applies_inverse_distance(self):
-        """Geodesic mode should weight by 1/distance, changing results."""
+    def test_inverse_distance_weighting_changes_results(self):
+        """inverse_distance mode should weight differently, changing results."""
         history = MockRunHistoryWithGeometry(N=30, d=3, n_recorded=50)
 
-        config_uniform = ChannelConfig(neighbor_k=2, neighbor_method="recorded", operator_weighting="uniform")
-        config_geodesic = ChannelConfig(neighbor_k=2, neighbor_method="recorded", operator_weighting="geodesic")
+        config_uniform = ChannelConfig(neighbor_k=2, neighbor_method="recorded", edge_weight_mode="uniform")
+        config_weighted = ChannelConfig(neighbor_k=2, neighbor_method="recorded", edge_weight_mode="inverse_distance")
 
         series_uniform = compute_all_operator_series(history, config_uniform, channels=["scalar"])
-        series_geodesic = compute_all_operator_series(history, config_geodesic, channels=["scalar"])
+        series_weighted = compute_all_operator_series(history, config_weighted, channels=["scalar"])
 
-        # Results should differ (geodesic applies 1/distance weighting)
+        # Results should differ (weighted applies pre-computed edge weights)
         assert not torch.allclose(
             series_uniform.operators["scalar"],
-            series_geodesic.operators["scalar"],
-        ), "Geodesic weighting should produce different results from uniform"
+            series_weighted.operators["scalar"],
+        ), "inverse_distance weighting should produce different results from uniform"
 
-    def test_volume_weighting_applies_volume(self):
-        """Volume mode should weight by sqrt(det g), changing results."""
+    def test_inverse_riemannian_volume_weighting_changes_results(self):
+        """inverse_riemannian_volume mode should weight differently, changing results."""
         history = MockRunHistoryWithGeometry(N=30, d=3, n_recorded=50)
 
-        config_uniform = ChannelConfig(neighbor_k=2, neighbor_method="recorded", operator_weighting="uniform")
-        config_volume = ChannelConfig(neighbor_k=2, neighbor_method="recorded", operator_weighting="volume")
+        config_uniform = ChannelConfig(neighbor_k=2, neighbor_method="recorded", edge_weight_mode="uniform")
+        config_volume = ChannelConfig(neighbor_k=2, neighbor_method="recorded", edge_weight_mode="inverse_riemannian_volume")
 
         series_uniform = compute_all_operator_series(history, config_uniform, channels=["scalar"])
         series_volume = compute_all_operator_series(history, config_volume, channels=["scalar"])
@@ -822,13 +862,13 @@ class TestGeometricWeighting:
         assert not torch.allclose(
             series_uniform.operators["scalar"],
             series_volume.operators["scalar"],
-        ), "Volume weighting should produce different results from uniform"
+        ), "inverse_riemannian_volume weighting should produce different results from uniform"
 
-    def test_geodesic_volume_combined(self):
-        """Combined geodesic_volume mode should apply both weights."""
+    def test_riemannian_kernel_mode(self):
+        """riemannian_kernel mode should produce valid results."""
         history = MockRunHistoryWithGeometry(N=30, d=3, n_recorded=50)
 
-        config = ChannelConfig(neighbor_k=2, neighbor_method="recorded", operator_weighting="geodesic_volume")
+        config = ChannelConfig(neighbor_k=2, neighbor_method="recorded", edge_weight_mode="riemannian_kernel")
         series = compute_all_operator_series(history, config, channels=["scalar"])
 
         # Should produce valid results
@@ -838,35 +878,35 @@ class TestGeometricWeighting:
     def test_graceful_fallback_when_no_geometric_data(self):
         """Should gracefully fall back when geometric data is None."""
         history = MockRunHistory(N=30, d=3, n_recorded=50)
-        # No geometric data (neighbor_edges, geodesic_edge_distances, riemannian_volume_weights are all None)
+        # No geometric data (neighbor_edges, edge_weights are all None)
 
-        config_geodesic = ChannelConfig(neighbor_k=2, operator_weighting="geodesic")
-        config_volume = ChannelConfig(neighbor_k=2, operator_weighting="volume")
+        config_dist = ChannelConfig(neighbor_k=2, edge_weight_mode="inverse_distance")
+        config_vol = ChannelConfig(neighbor_k=2, edge_weight_mode="inverse_riemannian_volume")
 
         # Should not crash - falls back to uniform-like behavior
-        series_geo = compute_all_operator_series(history, config_geodesic, channels=["scalar"])
-        series_vol = compute_all_operator_series(history, config_volume, channels=["scalar"])
+        series_dist = compute_all_operator_series(history, config_dist, channels=["scalar"])
+        series_vol = compute_all_operator_series(history, config_vol, channels=["scalar"])
 
-        assert series_geo.operators["scalar"].numel() > 0
+        assert series_dist.operators["scalar"].numel() > 0
         assert series_vol.operators["scalar"].numel() > 0
-        assert torch.isfinite(series_geo.operators["scalar"]).all()
+        assert torch.isfinite(series_dist.operators["scalar"]).all()
         assert torch.isfinite(series_vol.operators["scalar"]).all()
 
     def test_weighting_affects_multiple_channels(self):
         """Weighting should affect all bilinear channels consistently."""
         history = MockRunHistoryWithGeometry(N=30, d=3, n_recorded=50)
 
-        config_uniform = ChannelConfig(neighbor_k=2, neighbor_method="recorded", operator_weighting="uniform")
-        config_geodesic = ChannelConfig(neighbor_k=2, neighbor_method="recorded", operator_weighting="geodesic")
+        config_uniform = ChannelConfig(neighbor_k=2, neighbor_method="recorded", edge_weight_mode="uniform")
+        config_weighted = ChannelConfig(neighbor_k=2, neighbor_method="recorded", edge_weight_mode="inverse_riemannian_distance")
 
         channels = ["scalar", "pseudoscalar", "vector", "axial_vector", "tensor"]
         series_uniform = compute_all_operator_series(history, config_uniform, channels=channels)
-        series_geodesic = compute_all_operator_series(history, config_geodesic, channels=channels)
+        series_weighted = compute_all_operator_series(history, config_weighted, channels=channels)
 
         for ch in channels:
-            # Each channel should have valid output with geodesic weighting
-            assert series_geodesic.operators[ch].numel() > 0
-            assert torch.isfinite(series_geodesic.operators[ch]).all(), f"Channel {ch} has non-finite values"
+            # Each channel should have valid output with weighted mode
+            assert series_weighted.operators[ch].numel() > 0
+            assert torch.isfinite(series_weighted.operators[ch]).all(), f"Channel {ch} has non-finite values"
 
     def test_extract_geometric_weights_function(self):
         """Test extract_geometric_weights directly."""

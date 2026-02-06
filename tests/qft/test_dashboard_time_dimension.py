@@ -4,7 +4,12 @@ from __future__ import annotations
 
 import torch
 
-from fragile.fractalai.qft.dashboard import ElectroweakSettings, _compute_electroweak_channels
+from fragile.fractalai.qft.dashboard import (
+    _compute_channels_vectorized,
+    _compute_electroweak_channels,
+    ChannelSettings,
+    ElectroweakSettings,
+)
 
 
 class MockRunHistory:
@@ -27,9 +32,11 @@ class MockRunHistory:
         self.v_before_clone = torch.randn(T, N, d)
 
         self.fitness = torch.randn(T - 1, N)
+        self.force_viscous = torch.randn(T - 1, N, d)
         self.alive_mask = torch.ones(T - 1, N, dtype=torch.bool)
         self.companions_distance = torch.randint(0, N, (T - 1, N))
         self.companions_clone = torch.randint(0, N, (T - 1, N))
+        self.neighbor_edges = None
 
         self.pos_squared_differences = None
         self.vel_squared_differences = None
@@ -49,3 +56,19 @@ def test_electroweak_time_dimension_t_clamps_to_available_dim():
 
     assert results
     assert "u1_phase" in results
+
+
+def test_channels_mc_time_dimension_runs_end_to_end():
+    history = MockRunHistory(d=4, n_recorded=10)
+    settings = ChannelSettings()
+    settings.time_dimension = "monte_carlo"
+    settings.channel_list = "scalar,pseudoscalar,vector"
+    settings.max_lag = 10
+    settings.compute_bootstrap_errors = False
+
+    results = _compute_channels_vectorized(history, settings)
+
+    assert set(results.keys()) == {"scalar", "pseudoscalar", "vector"}
+    for result in results.values():
+        assert result.n_samples > 0
+        assert result.correlator.shape == (settings.max_lag + 1,)

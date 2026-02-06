@@ -84,6 +84,7 @@ class VectorizedHistoryRecorder:
         record_diffusion_tensors: bool = False,
         record_neighbors: bool = False,
         record_voronoi: bool = False,
+        record_edge_weights: bool = False,
     ):
         """Initialize recorder with pre-allocated arrays.
 
@@ -208,6 +209,9 @@ class VectorizedHistoryRecorder:
             [] if record_geodesic_edges else None
         )
         self.voronoi_regions: list[dict] | None = [] if record_voronoi else None
+        self.edge_weights: list[dict[str, torch.Tensor]] | None = (
+            [] if record_edge_weights else None
+        )
 
     def record_initial_state(
         self,
@@ -241,6 +245,8 @@ class VectorizedHistoryRecorder:
             )
         if self.voronoi_regions is not None:
             self.voronoi_regions.append({})
+        if self.edge_weights is not None:
+            self.edge_weights.append({})
 
     def record_step(
         self,
@@ -388,6 +394,11 @@ class VectorizedHistoryRecorder:
             if regions is None:
                 regions = {}
             self.voronoi_regions.append(regions)
+        if self.edge_weights is not None:
+            ew = info.get("edge_weights")
+            if ew is None:
+                ew = {}
+            self.edge_weights.append(ew)
 
         # Increment recorded index for next step
         self.recorded_idx += 1
@@ -513,6 +524,9 @@ class VectorizedHistoryRecorder:
             else None,
             voronoi_regions=self.voronoi_regions[:actual_recorded]
             if self.voronoi_regions is not None
+            else None,
+            edge_weights=self.edge_weights[:actual_recorded]
+            if self.edge_weights is not None
             else None,
             total_time=total_time,
             init_time=init_time,

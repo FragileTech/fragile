@@ -412,18 +412,19 @@ def aggregate_time_series(
         sample_size=None,
     )
 
-    # Extract geometric weights when non-uniform weighting is requested
+    # Extract edge weights when non-uniform weighting is requested
     sample_edge_weights = None
     sample_volume_weights = None
-    operator_weighting = getattr(config, "operator_weighting", "uniform")
+    edge_weight_mode = getattr(config, "edge_weight_mode", "uniform")
 
-    if operator_weighting != "uniform":
-        sample_edge_weights, sample_volume_weights = extract_geometric_weights(
+    if edge_weight_mode != "uniform":
+        sample_edge_weights = extract_precomputed_edge_weights(
             history,
             start_idx,
             sample_indices,
             neighbor_indices,
             alive,
+            mode=edge_weight_mode,
         )
 
     # Extract force for glueball channel
@@ -450,7 +451,7 @@ def aggregate_time_series(
         device=device,
         sample_edge_weights=sample_edge_weights,
         sample_volume_weights=sample_volume_weights,
-        operator_weighting=operator_weighting,
+        operator_weighting=edge_weight_mode,
         force_viscous=force_viscous,
         time_coords=None,
     )
@@ -527,12 +528,74 @@ def build_gamma_matrices(
 
 
 # =============================================================================
+# Edge Weight Extraction
+# =============================================================================
+
+
+def extract_precomputed_edge_weights(
+    history: "RunHistory",
+    start_idx: int,
+    sample_indices: Tensor,   # [T, S]
+    neighbor_indices: Tensor,  # [T, S, k]
+    alive: Tensor,             # [T, N]
+    mode: str,
+) -> Tensor | None:
+    """Extract pre-computed edge weights for sample-neighbor pairs.
+
+    Looks up history.edge_weights[step][mode] and gathers values
+    for each (sample, first_neighbor) pair using scatter-gather.
+
+    Returns [T, S] tensor of weights, or None if data unavailable.
+    """
+    edge_weights = getattr(history, "edge_weights", None)
+    if edge_weights is None or not edge_weights:
+        return None
+    neighbor_edges = getattr(history, "neighbor_edges", None)
+    if neighbor_edges is None:
+        return None
+
+    T, S = sample_indices.shape
+    N = alive.shape[1]
+    device = sample_indices.device
+    result = torch.ones(T, S, device=device, dtype=torch.float32)
+    first_neighbor = neighbor_indices[:, :, 0]  # [T, S]
+    found_any = False
+
+    for t in range(T):
+        record_idx = start_idx + t
+        if record_idx >= len(edge_weights):
+            continue
+        ew_dict = edge_weights[record_idx]
+        if mode not in ew_dict:
+            continue
+        edges = neighbor_edges[record_idx]
+        weights = ew_dict[mode]
+        if not torch.is_tensor(edges) or edges.numel() == 0:
+            continue
+        if not torch.is_tensor(weights) or weights.numel() == 0:
+            continue
+
+        found_any = True
+        edges_d = edges.to(device)
+        w_d = weights.float().to(device)
+        # Scatter into dense [N, N] matrix
+        w_matrix = torch.zeros(N, N, device=device, dtype=torch.float32)
+        w_matrix[edges_d[:, 0], edges_d[:, 1]] = w_d
+        # Gather for sample-neighbor pairs
+        gathered = w_matrix[sample_indices[t], first_neighbor[t]]  # [S]
+        has_w = gathered > 0
+        result[t, has_w] = gathered[has_w]
+
+    return result if found_any else None
+
+
+# =============================================================================
 # Geometric Weighting Helper
 # =============================================================================
 
 
 def _compute_operator_weights(agg_data: AggregatedTimeSeries, valid_mask: Tensor) -> Tensor:
-    """Compute per-sample operator weights based on geometric weighting mode.
+    """Compute per-sample operator weights based on edge weight mode.
 
     Args:
         agg_data: Aggregated time series with weighting config and geometric data.
@@ -547,15 +610,10 @@ def _compute_operator_weights(agg_data: AggregatedTimeSeries, valid_mask: Tensor
     if mode == "uniform":
         return weights
 
-    if mode in ("geodesic", "geodesic_volume"):
-        if agg_data.sample_edge_weights is not None:
-            geodesic = agg_data.sample_edge_weights.to(weights.device, dtype=weights.dtype)
-            weights = weights * (1.0 / geodesic.clamp(min=1e-8))
-
-    if mode in ("volume", "geodesic_volume"):
-        if agg_data.sample_volume_weights is not None:
-            volume = agg_data.sample_volume_weights.to(weights.device, dtype=weights.dtype)
-            weights = weights * volume.clamp(min=0.0)
+    # Use pre-computed edge weights as direct multiplicative weights
+    if agg_data.sample_edge_weights is not None:
+        ew = agg_data.sample_edge_weights.to(weights.device, dtype=weights.dtype)
+        weights = weights * ew
 
     return weights
 
@@ -914,7 +972,7 @@ def compute_glueball_operators(
 
     # Check if volume weighting should be applied
     use_volume = (
-        agg_data.operator_weighting in ("volume", "geodesic_volume")
+        agg_data.operator_weighting != "uniform"
         and agg_data.sample_volume_weights is not None
     )
 

@@ -105,10 +105,11 @@ class ChannelConfig:
     neighbor_method: str = "auto"  # Auto-detect: recorded -> companions
     neighbor_k: int = 100
 
-    # Geometric weighting for operator averaging
-    operator_weighting: str = "uniform"
-    # "uniform" (default, current behavior), "geodesic" (1/d_geodesic),
-    # "volume" (sqrt(det g)), "geodesic_volume" (both combined)
+    # Edge weight mode for operator averaging (from pre-computed scutoid weights)
+    edge_weight_mode: str = "uniform"
+    # Options: "uniform", "inverse_distance", "inverse_volume",
+    #   "inverse_riemannian_volume", "inverse_riemannian_distance",
+    #   "kernel", "riemannian_kernel"
 
 
 @dataclass
@@ -442,24 +443,46 @@ def _fft_correlator_single(
     Returns:
         Correlator C(t) for t=0 to max_lag [max_lag+1].
     """
+    return _fft_correlator_batched(series.unsqueeze(0), max_lag, use_connected).squeeze(0)
+
+
+def _fft_correlator_batched(
+    series: Tensor,
+    max_lag: int,
+    use_connected: bool = True,
+) -> Tensor:
+    """Compute time correlator for a batch of series using FFT.
+
+    Args:
+        series: Operator time series [B, T].
+        max_lag: Maximum lag to compute.
+        use_connected: Subtract per-series mean (connected correlator).
+
+    Returns:
+        Correlator C(t) for t=0 to max_lag [B, max_lag+1].
+    """
+    if series.ndim != 2:
+        raise ValueError(f"Expected 2D tensor [B, T], got shape {tuple(series.shape)}")
+
     if series.numel() == 0:
-        return torch.zeros(max_lag + 1, device=series.device, dtype=series.dtype)
+        return torch.zeros(series.shape[0], max_lag + 1, device=series.device, dtype=series.dtype)
 
-    T = series.shape[0]
+    _, T = series.shape
+    work = series.float()
     if use_connected:
-        series = series - series.mean()
+        work = work - work.mean(dim=1, keepdim=True)
 
-    # Zero-pad for FFT convolution
-    padded = F.pad(series.float(), (0, T))
-    fft_s = torch.fft.fft(padded)
-    corr = torch.fft.ifft(fft_s * fft_s.conj()).real
+    # Zero-pad each sample for FFT convolution along the time axis.
+    padded = F.pad(work, (0, T))  # [B, 2T]
+    fft_s = torch.fft.fft(padded, dim=1)
+    corr = torch.fft.ifft(fft_s * fft_s.conj(), dim=1).real
 
-    # Normalize by number of overlapping samples
+    # Normalize by number of overlapping samples.
     effective_lag = min(max_lag, T - 1)
     counts = torch.arange(T, T - effective_lag - 1, -1, device=series.device, dtype=torch.float32)
-    result = corr[: effective_lag + 1] / counts
+    result = corr[:, : effective_lag + 1] / counts.unsqueeze(0)
 
-    # Pad with zeros if max_lag > T-1
+    # Pad with zeros if max_lag > T-1.
     if effective_lag < max_lag:
         result = F.pad(result, (0, max_lag - effective_lag), value=0.0)
 
@@ -493,21 +516,13 @@ def bootstrap_correlator_error(
 
     T = series.shape[0]
     device = series.device
-    dtype = series.dtype
+    # Draw all bootstrap resamples at once: [n_bootstrap, T].
+    indices = torch.randint(0, T, (n_bootstrap, T), device=device)
+    resampled = series[indices]
 
-    # Collect bootstrap correlator samples
-    bootstrap_corrs = []
-    for _ in range(n_bootstrap):
-        # Resample with replacement
-        indices = torch.randint(0, T, (T,), device=device)
-        resampled = series[indices]
-        # Compute correlator for this resample
-        corr = _fft_correlator_single(resampled, max_lag, use_connected)
-        bootstrap_corrs.append(corr)
-
-    # Stack and compute standard deviation (standard error)
-    stacked = torch.stack(bootstrap_corrs)  # [n_bootstrap, max_lag+1]
-    return stacked.std(dim=0)
+    # Compute all bootstrap correlators in one batched FFT pass.
+    bootstrap_corrs = _fft_correlator_batched(resampled, max_lag, use_connected)
+    return bootstrap_corrs.std(dim=0)
 
 
 def compute_correlator_fft(

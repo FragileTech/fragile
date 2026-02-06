@@ -840,7 +840,6 @@ def main() -> None:
     operator_cfg.nu = 1.10
     operator_cfg.use_viscous_coupling = True
     operator_cfg.viscous_length_scale = 0.251372
-    operator_cfg.viscous_neighbor_mode = "all"
     operator_cfg.viscous_neighbor_weighting = "uniform"
     operator_cfg.viscous_neighbor_threshold = None
     operator_cfg.viscous_neighbor_penalty = 0.0

@@ -53,7 +53,7 @@ class ElectroweakChannelConfig:
     h_eff: float = 1.0
     use_connected: bool = True
     neighbor_method: str = "voronoi"
-    neighbor_weighting: str = "inv_geodesic_full"
+    edge_weight_mode: str = "inverse_riemannian_distance"
     neighbor_k: int = 0
     voronoi_pbc_mode: str = "mirror"
     voronoi_exclude_boundary: bool = True
@@ -303,6 +303,77 @@ def _compute_edge_weights(
     return geo.detach().cpu().numpy()
 
 
+def _build_neighbor_data_from_history(
+    history: RunHistory,
+    frame_idx: int,
+    mode: str,
+    alive: Tensor,
+    max_neighbors: int = 0,
+) -> tuple[list[Tensor], list[Tensor]] | None:
+    """Build per-walker neighbor indices and weights from pre-computed RunHistory data.
+
+    Returns (neighbor_indices, neighbor_weights) as lists of N tensors,
+    or None if pre-computed data is unavailable.
+    """
+    if (history.neighbor_edges is None or history.edge_weights is None
+            or frame_idx >= len(history.neighbor_edges)
+            or frame_idx >= len(history.edge_weights)):
+        return None
+
+    edges = history.neighbor_edges[frame_idx]
+    ew_dict = history.edge_weights[frame_idx]
+    if not torch.is_tensor(edges) or edges.numel() == 0:
+        return None
+    if mode not in ew_dict:
+        return None
+    weights_flat = ew_dict[mode]
+
+    device = alive.device
+    N = alive.shape[0]
+    alive_idx = torch.where(alive)[0]
+    alive_set = set(alive_idx.tolist())
+
+    edges_d = edges.to(device)
+    weights_d = weights_flat.float().to(device)
+
+    n_total = N
+    neighbor_indices: list[Tensor] = [
+        torch.tensor([], device=device, dtype=torch.long) for _ in range(n_total)
+    ]
+    neighbor_weights: list[Tensor] = [
+        torch.tensor([], device=device, dtype=torch.float32) for _ in range(n_total)
+    ]
+
+    for g_idx in alive_idx.tolist():
+        # Find edges where source == g_idx
+        mask = edges_d[:, 0] == g_idx
+        nbr = edges_d[mask, 1]
+        w = weights_d[mask]
+
+        # Filter to alive neighbors only
+        alive_mask = torch.tensor(
+            [n.item() in alive_set for n in nbr], device=device, dtype=torch.bool
+        )
+        if alive_mask.any():
+            nbr = nbr[alive_mask]
+            w = w[alive_mask]
+
+        # Truncate to max_neighbors if set
+        if max_neighbors > 0 and len(nbr) > max_neighbors:
+            topk = w.topk(max_neighbors)
+            nbr = nbr[topk.indices]
+            w = topk.values
+
+        # Normalize
+        if w.sum() > 0:
+            w = w / w.sum()
+
+        neighbor_indices[g_idx] = nbr
+        neighbor_weights[g_idx] = w
+
+    return neighbor_indices, neighbor_weights
+
+
 def _build_voronoi_neighbor_data(
     history: RunHistory,
     positions: Tensor,
@@ -310,7 +381,9 @@ def _build_voronoi_neighbor_data(
     cfg: ElectroweakChannelConfig,
     volume_weights: Tensor | None = None,
 ) -> tuple[dict[int, list[int]], np.ndarray, dict[tuple[int, int], float], Tensor]:
-    weight_mode = _validate_neighbor_weighting(str(cfg.neighbor_weighting))
+    weight_mode = _validate_neighbor_weighting(
+        str(getattr(cfg, "neighbor_weighting", "inv_geodesic_full"))
+    )
     try:
         from fragile.fractalai.qft.voronoi_observables import compute_voronoi_tessellation
     except Exception as exc:
@@ -879,7 +952,7 @@ def _compute_electroweak_series(
         return {}
 
     h_eff = float(max(cfg.h_eff, 1e-8))
-    _validate_neighbor_weighting(str(cfg.neighbor_weighting))
+    edge_weight_mode = getattr(cfg, "edge_weight_mode", "inverse_riemannian_distance")
     params = _resolve_electroweak_params(history, cfg)
     epsilon_d = float(params["epsilon_d"])
     epsilon_c = float(params["epsilon_c"])
@@ -893,21 +966,30 @@ def _compute_electroweak_series(
         fitness = history.fitness[frame_idx - 1]
         alive = history.alive_mask[frame_idx - 1]
 
-        volume_weights = _get_volume_weights(history, frame_idx)
-        neighbor_lists_global, volumes, edge_weight_map, alive_idx = _build_voronoi_neighbor_data(
-            history, positions, alive, cfg, volume_weights=volume_weights
+        # Try pre-computed path first
+        precomputed = _build_neighbor_data_from_history(
+            history, frame_idx, edge_weight_mode, alive,
+            max_neighbors=int(cfg.neighbor_k),
         )
-        neighbor_indices, neighbor_weights = _build_neighbor_weights(
-            positions,
-            alive_idx,
-            neighbor_lists_global,
-            volumes,
-            str(cfg.neighbor_weighting),
-            edge_weight_map,
-            history.bounds,
-            bool(history.pbc),
-            int(cfg.neighbor_k),
-        )
+        if precomputed is not None:
+            neighbor_indices, neighbor_weights = precomputed
+        else:
+            # Legacy fallback: on-the-fly Voronoi computation
+            volume_weights = _get_volume_weights(history, frame_idx)
+            neighbor_lists_global, volumes, edge_weight_map, alive_idx = _build_voronoi_neighbor_data(
+                history, positions, alive, cfg, volume_weights=volume_weights
+            )
+            neighbor_indices, neighbor_weights = _build_neighbor_weights(
+                positions,
+                alive_idx,
+                neighbor_lists_global,
+                volumes,
+                "inv_geodesic_full",
+                edge_weight_map,
+                history.bounds,
+                bool(history.pbc),
+                int(cfg.neighbor_k),
+            )
         operators = _compute_weighted_electroweak_ops(
             positions,
             velocities,
@@ -935,21 +1017,31 @@ def _compute_electroweak_series(
             velocities = history.v_before_clone[frame_idx]
             fitness = history.fitness[frame_idx - 1]
             alive = history.alive_mask[frame_idx - 1]
-            volume_weights = _get_volume_weights(history, frame_idx)
-            neighbor_lists_global, volumes, edge_weight_map, alive_idx = _build_voronoi_neighbor_data(
-                history, positions, alive, cfg, volume_weights=volume_weights
+
+            # Try pre-computed path first
+            precomputed = _build_neighbor_data_from_history(
+                history, frame_idx, edge_weight_mode, alive,
+                max_neighbors=int(cfg.neighbor_k),
             )
-            neighbor_indices, neighbor_weights = _build_neighbor_weights(
-                positions,
-                alive_idx,
-                neighbor_lists_global,
-                volumes,
-                str(cfg.neighbor_weighting),
-                edge_weight_map,
-                history.bounds,
-                bool(history.pbc),
-                int(cfg.neighbor_k),
-            )
+            if precomputed is not None:
+                neighbor_indices, neighbor_weights = precomputed
+            else:
+                # Legacy fallback: on-the-fly Voronoi computation
+                volume_weights = _get_volume_weights(history, frame_idx)
+                neighbor_lists_global, volumes, edge_weight_map, alive_idx = _build_voronoi_neighbor_data(
+                    history, positions, alive, cfg, volume_weights=volume_weights
+                )
+                neighbor_indices, neighbor_weights = _build_neighbor_weights(
+                    positions,
+                    alive_idx,
+                    neighbor_lists_global,
+                    volumes,
+                    "inv_geodesic_full",
+                    edge_weight_map,
+                    history.bounds,
+                    bool(history.pbc),
+                    int(cfg.neighbor_k),
+                )
             frame_ops = _compute_weighted_electroweak_ops(
                 positions,
                 velocities,
@@ -1232,21 +1324,29 @@ def compute_electroweak_snapshot_operators(
     fitness = history.fitness[frame_idx - 1]
     alive = history.alive_mask[frame_idx - 1]
 
-    volume_weights = _get_volume_weights(history, frame_idx)
-    neighbor_lists_global, volumes, edge_weight_map, alive_idx = _build_voronoi_neighbor_data(
-        history, positions, alive, config, volume_weights=volume_weights
+    edge_weight_mode = getattr(config, "edge_weight_mode", "inverse_riemannian_distance")
+    precomputed = _build_neighbor_data_from_history(
+        history, frame_idx, edge_weight_mode, alive,
+        max_neighbors=int(config.neighbor_k),
     )
-    neighbor_indices, neighbor_weights = _build_neighbor_weights(
-        positions,
-        alive_idx,
-        neighbor_lists_global,
-        volumes,
-        str(config.neighbor_weighting),
-        edge_weight_map,
-        history.bounds,
-        bool(history.pbc),
-        int(config.neighbor_k),
-    )
+    if precomputed is not None:
+        neighbor_indices, neighbor_weights = precomputed
+    else:
+        volume_weights = _get_volume_weights(history, frame_idx)
+        neighbor_lists_global, volumes, edge_weight_map, alive_idx = _build_voronoi_neighbor_data(
+            history, positions, alive, config, volume_weights=volume_weights
+        )
+        neighbor_indices, neighbor_weights = _build_neighbor_weights(
+            positions,
+            alive_idx,
+            neighbor_lists_global,
+            volumes,
+            "inv_geodesic_full",
+            edge_weight_map,
+            history.bounds,
+            bool(history.pbc),
+            int(config.neighbor_k),
+        )
     operators = _compute_weighted_electroweak_ops(
         positions,
         velocities,

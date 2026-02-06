@@ -72,7 +72,6 @@ class FractalSet:
         self.nu = kinetic_params.get("nu", 0.0)
         self.viscous_length_scale = kinetic_params.get("viscous_length_scale", 1.0)
         self.use_viscous_coupling = kinetic_params.get("use_viscous_coupling", False)
-        self.viscous_neighbor_mode = kinetic_params.get("viscous_neighbor_mode", "all")
         self.viscous_neighbor_threshold = kinetic_params.get("viscous_neighbor_threshold", None)
         self.viscous_neighbor_penalty = kinetic_params.get("viscous_neighbor_penalty", 0.0)
         self.viscous_degree_cap = kinetic_params.get("viscous_degree_cap", None)
@@ -366,14 +365,6 @@ class FractalSet:
         kernel.fill_diagonal_(0.0)
         alive_2d = alive.unsqueeze(0) & alive.unsqueeze(1)
         kernel = kernel * alive_2d.float()
-        if self.viscous_neighbor_mode == "nearest":
-            nearest_dist = dist.clone()
-            nearest_dist = nearest_dist.masked_fill(~alive_2d, float("inf"))
-            nearest_dist.fill_diagonal_(float("inf"))
-            nn_idx = nearest_dist.argmin(dim=1)
-            mask = torch.zeros_like(kernel)
-            mask.scatter_(1, nn_idx.unsqueeze(1), 1.0)
-            kernel = kernel * mask
         deg = torch.clamp(kernel.sum(dim=1, keepdim=True), min=1e-12)
         weights = kernel / deg
         if self.viscous_neighbor_threshold is not None and self.viscous_neighbor_penalty > 0:

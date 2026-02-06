@@ -101,6 +101,19 @@ class GasConfigPanel(param.Parameterized):
         default=True,
         doc="Record neighbor edges + Voronoi regions into RunHistory",
     )
+    neighbor_weight_modes = param.ListSelector(
+        default=["inverse_riemannian_distance"],
+        objects=[
+            "uniform",
+            "inverse_distance",
+            "inverse_volume",
+            "inverse_riemannian_volume",
+            "inverse_riemannian_distance",
+            "kernel",
+            "riemannian_kernel",
+        ],
+        doc="Edge weight modes to pre-compute during Voronoi tessellation",
+    )
     hide_viscous_kernel_widgets = param.Boolean(
         default=False,
         doc="Hide viscous kernel-only widgets (deprecated).",
@@ -278,6 +291,7 @@ class GasConfigPanel(param.Parameterized):
         config.neighbor_graph_method = "delaunay"
         config.neighbor_graph_update_every = 1
         config.neighbor_graph_record = True
+        config.neighbor_weight_modes = ["inverse_riemannian_distance"]
 
         # Initialization (match EuclideanGas defaults used in QFT calibration)
         config.init_offset = 0.0
@@ -296,8 +310,7 @@ class GasConfigPanel(param.Parameterized):
         config.kinetic_op.nu = 1.10
         config.kinetic_op.use_viscous_coupling = True
         config.kinetic_op.viscous_length_scale = 0.251372
-        config.kinetic_op.viscous_neighbor_mode = "nearest"
-        config.kinetic_op.viscous_neighbor_weighting = "geodesic"
+        config.kinetic_op.viscous_neighbor_weighting = "inverse_riemannian_distance"
         config.kinetic_op.viscous_neighbor_threshold = 0.75
         config.kinetic_op.viscous_neighbor_penalty = 1.1
 
@@ -407,8 +420,7 @@ class GasConfigPanel(param.Parameterized):
             nu=0.1,
             use_viscous_coupling=True,
             viscous_length_scale=1.0,
-            viscous_neighbor_mode="nearest",
-            viscous_neighbor_weighting="geodesic",
+            viscous_neighbor_weighting="inverse_riemannian_distance",
             viscous_neighbor_penalty=1.1,
             V_alg=10.0,
             use_velocity_squashing=False,
@@ -531,6 +543,7 @@ class GasConfigPanel(param.Parameterized):
         self.neighbor_graph_method = "voronoi"
         self.neighbor_graph_update_every = 1
         self.neighbor_graph_record = True
+        self.neighbor_weight_modes = ["inverse_riemannian_distance"]
         self.record_every = 1
         self.kinetic_op.use_viscous_coupling = True
         self.kinetic_op.viscous_neighbor_weighting = "uniform"
@@ -551,6 +564,7 @@ class GasConfigPanel(param.Parameterized):
         self.neighbor_graph_method = "delaunay"
         self.neighbor_graph_update_every = 1
         self.neighbor_graph_record = True
+        self.neighbor_weight_modes = ["inverse_riemannian_distance"]
         self.record_every = 1
         self.kinetic_op.use_viscous_coupling = True
         self.status_pane.object = (
@@ -723,6 +737,7 @@ class GasConfigPanel(param.Parameterized):
             neighbor_graph_method=self.neighbor_graph_method,
             neighbor_graph_update_every=int(self.neighbor_graph_update_every),
             neighbor_graph_record=self.neighbor_graph_record,
+            neighbor_weight_modes=list(self.neighbor_weight_modes),
         )
 
         # Initialize state
@@ -880,6 +895,7 @@ Euclidean time will be added as an additional dimension for QFT analysis.
             "neighbor_graph_method",
             "neighbor_graph_update_every",
             "neighbor_graph_record",
+            "neighbor_weight_modes",
         ]
         general_panel = pn.Column(
             n_slider,
@@ -898,13 +914,14 @@ Euclidean time will be added as an additional dimension for QFT analysis.
             for name, cfg in self.kinetic_op.widgets.items()
         }
         if self.hide_viscous_kernel_widgets:
-            weighting_widget = kinetic_widgets.get("viscous_neighbor_weighting")
-            if isinstance(weighting_widget, dict):
-                options = [opt for opt in weighting_widget.get("options", []) if opt != "kernel"]
-                if options:
-                    weighting_widget["options"] = options
-                    if self.kinetic_op.viscous_neighbor_weighting not in options:
-                        self.kinetic_op.viscous_neighbor_weighting = options[0]
+            current_objects = list(self.kinetic_op.param.viscous_neighbor_weighting.objects)
+            filtered = [opt for opt in current_objects if opt != "kernel"]
+            if filtered:
+                weighting_widget = kinetic_widgets.get("viscous_neighbor_weighting")
+                if isinstance(weighting_widget, dict):
+                    weighting_widget["options"] = filtered
+                if self.kinetic_op.viscous_neighbor_weighting not in filtered:
+                    self.kinetic_op.viscous_neighbor_weighting = filtered[0]
             hidden_params = {
                 "viscous_length_scale",
                 "viscous_neighbor_penalty",

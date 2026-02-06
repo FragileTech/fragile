@@ -8,7 +8,73 @@ from pydantic import BaseModel, Field
 import torch
 from torch import Tensor
 
-from fragile.fractalai.core.euclidean_gas import CloningParams, SwarmState, VectorizedOps
+from fragile.fractalai.core.companion_selection import (
+    compute_algorithmic_distance_matrix,
+    select_companions_for_cloning,
+)
+from fragile.fractalai.core.euclidean_gas import SwarmState
+
+
+def _parse_semver(version: str) -> tuple[int, int, int]:
+    """Parse a semantic version string into a comparable tuple."""
+    parts = version.split(".")
+    parsed: list[int] = []
+    for part in parts[:3]:
+        digits = ""
+        for ch in part:
+            if ch.isdigit():
+                digits += ch
+            else:
+                break
+        parsed.append(int(digits) if digits else 0)
+    while len(parsed) < 3:
+        parsed.append(0)
+    return tuple(parsed)
+
+
+def make_plangym_atari_env(name: str, **kwargs) -> Any:
+    """Create a plangym Atari env pinned to the 0.1.32 API contract."""
+    import plangym
+
+    version = getattr(plangym, "__version__", "0.0.0")
+    if _parse_semver(version) < (0, 1, 32):
+        msg = (
+            f"plangym>=0.1.32 is required for AtariGas (found {version}). "
+            "Run: uv add \"plangym[atari]==0.1.32\""
+        )
+        raise RuntimeError(msg)
+
+    defaults = {
+        "obs_type": "ram",
+        "render_mode": "rgb_array",
+        "autoreset": False,
+        "remove_time_limit": True,
+    }
+    defaults.update(kwargs)
+    return plangym.make(name=name, **defaults)
+
+
+class CloningParams(BaseModel):
+    """Cloning hyperparameters for AtariGas companion selection."""
+
+    sigma_x: float = Field(
+        0.0,
+        ge=0.0,
+        description="Gaussian jitter scale applied to cloned embedding positions.",
+    )
+    lambda_alg: float = Field(
+        0.0,
+        ge=0.0,
+        description="Velocity weight in algorithmic distance d_alg.",
+    )
+    epsilon_c: float | None = Field(
+        default=None,
+        gt=0.0,
+        description=(
+            "Companion-selection interaction scale. Defaults to max(sigma_x, 1e-8) "
+            "when omitted."
+        ),
+    )
 
 
 class AtariSwarmState(SwarmState):
@@ -120,7 +186,7 @@ class AtariGasParams(BaseModel):
     model_config = {"arbitrary_types_allowed": True}
 
     N: int = Field(gt=0, description="Number of walkers")
-    env: Any = Field(description="Initialized plangym environment")
+    env: Any = Field(description="Initialized plangym>=0.1.32 environment")
     cloning: CloningParams = Field(description="Cloning operator parameters")
     device: str = Field("cpu", description="PyTorch device")
     dtype: str = Field("float32", description="PyTorch dtype")
@@ -175,9 +241,20 @@ class AtariCloningOperator:
 
     def apply(self, state: AtariSwarmState) -> AtariSwarmState:
         """Select cloning companions and replicate env-ready state."""
-        dist_sq = VectorizedOps.algorithmic_distance_squared(state, self.params.lambda_alg)
-        epsilon = max(float(self.params.sigma_x), 1e-8)
-        companions = VectorizedOps.find_companions(dist_sq, epsilon=epsilon)
+        lambda_alg = float(self.params.lambda_alg)
+        dist_sq = compute_algorithmic_distance_matrix(state.x, state.v, lambda_alg=lambda_alg)
+        epsilon = float(self.params.epsilon_c or max(float(self.params.sigma_x), 1e-8))
+        alive_mask = ~(state.dones | state.truncated)
+        if alive_mask.any():
+            companions = select_companions_for_cloning(
+                x=state.x,
+                v=state.v,
+                alive_mask=alive_mask,
+                epsilon_c=epsilon,
+                lambda_alg=lambda_alg,
+            )
+        else:
+            companions = torch.arange(state.N, dtype=torch.long, device=state.x.device)
 
         self.last_companions = companions
         self.last_distances = dist_sq
@@ -202,7 +279,10 @@ class AtariCloningOperator:
             truncated=state.truncated[companions].clone(),
             actions=state.actions[companions].clone(),
             dts=state.dts[companions].clone(),
-            infos=[state.infos[i] for i in comp_idx],
+            infos=[
+                state.infos[i].copy() if hasattr(state.infos[i], "copy") else state.infos[i]
+                for i in comp_idx
+            ],
         )
 
 
@@ -350,7 +430,7 @@ class RandomActionOperator:
         methods via the 'dt' keyword argument.
         """
         kwargs = dict(self._step_kwargs)
-        kwargs.update({"actions": actions, "states": states})
+        kwargs.update({"actions": actions, "states": states, "return_state": True})
         if dts is not None:
             # dt tells plangym how many times to apply each action consecutively
             kwargs["dt"] = dts
@@ -433,7 +513,7 @@ class AtariGas:
 
     def initialize_state(self) -> AtariSwarmState:
         """Reset environment and build the initial swarm."""
-        base_state, observation, info = self.env.reset()
+        base_state, observation, info = self._reset_env_with_state()
         env_states = np.asarray(
             [self._copy_state(base_state) for _ in range(self.params.N)], dtype=object
         )
@@ -567,3 +647,26 @@ class AtariGas:
     @staticmethod
     def _copy_observation(observation: Any) -> Any:
         return observation.copy() if hasattr(observation, "copy") else observation
+
+    def _reset_env_with_state(self) -> tuple[Any, Any, dict[str, Any]]:
+        """Reset env and normalize output to (state, observation, info)."""
+        reset_data = self.env.reset(return_state=True)
+
+        if isinstance(reset_data, tuple):
+            if len(reset_data) == 3:
+                state, observation, info = reset_data
+            elif len(reset_data) == 2:
+                state, observation = reset_data
+                info = {}
+            else:
+                msg = f"Unexpected reset output length from env.reset: {len(reset_data)}"
+                raise RuntimeError(msg)
+        else:
+            msg = (
+                "Environment reset did not return (state, observation, info). "
+                "Use plangym>=0.1.32 or provide a compatible adapter."
+            )
+            raise RuntimeError(msg)
+
+        info = info if isinstance(info, dict) else {}
+        return state, observation, info

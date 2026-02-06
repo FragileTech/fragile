@@ -75,7 +75,7 @@ dependencies = [
     "pytest>=9.0.2",
     # "plangym>=0.1.30",  # Disabled: causes dependency conflicts
     "gymnasium[atari]>=1.2.3",
-    "plangym[atari]>=0.1.31",
+    "plangym[atari]==0.1.32",
     "scipy-stubs~=1.15.3",
 ]  # ToDo: Modify according to your needs!
 [project.urls]

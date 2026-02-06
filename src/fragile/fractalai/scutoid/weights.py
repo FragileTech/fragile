@@ -14,6 +14,8 @@ WeightMode = Literal[
     "inverse_volume",
     "inverse_riemannian_volume",
     "inverse_riemannian_distance",
+    "kernel",
+    "riemannian_kernel",
 ]
 
 
@@ -216,6 +218,65 @@ def compute_inverse_riemannian_distance_weights(
     return _normalize_edge_weights(edge_index, raw_weights, n_nodes=positions.shape[0])
 
 
+def compute_gaussian_kernel_weights(
+    positions: Tensor,
+    edge_index: Tensor,
+    length_scale: float = 1.0,
+    edge_distances: Tensor | None = None,
+    alive: Tensor | None = None,
+    normalize: bool = True,
+) -> Tensor:
+    """Gaussian kernel weights: w_ij = exp(-||x_i - x_j||^2 / (2 l^2))."""
+    src, dst = edge_index
+    if edge_distances is None:
+        edge_distances = torch.norm(positions[dst] - positions[src], dim=1)
+    raw_weights = torch.exp(-(edge_distances**2) / (2 * length_scale**2))
+    raw_weights = _apply_alive_mask(edge_index, raw_weights, alive)
+    if not normalize:
+        return raw_weights
+    return _normalize_edge_weights(edge_index, raw_weights, n_nodes=positions.shape[0])
+
+
+def compute_riemannian_kernel_weights(
+    positions: Tensor,
+    edge_index: Tensor,
+    length_scale: float = 1.0,
+    metric_tensors: Tensor | None = None,
+    alive: Tensor | None = None,
+    normalize: bool = True,
+    symmetrize_metric: bool = True,
+    min_eig: float | None = 1e-6,
+    max_eig: float | None = None,
+    eps: float = 1e-8,
+) -> Tensor:
+    """Gaussian kernel on Riemannian geodesic distance.
+
+    w_ij = exp(-d_g(i,j)^2 / (2 l^2))
+
+    where d_g is the geodesic distance using the emergent metric tensor.
+    """
+    if metric_tensors is None:
+        metric_tensors = compute_emergent_metric(positions, edge_index, alive)
+    if symmetrize_metric:
+        metric_tensors = 0.5 * (metric_tensors + metric_tensors.transpose(-1, -2))
+    metric_tensors = clamp_metric_eigenvalues(metric_tensors, min_eig=min_eig, max_eig=max_eig)
+
+    src, dst = edge_index
+    delta = positions[dst] - positions[src]
+    g_src = metric_tensors[src]
+    g_dst = metric_tensors[dst]
+    g_edge = 0.5 * (g_src + g_dst) if symmetrize_metric else g_src
+
+    d_sq = torch.einsum("ei,eij,ej->e", delta, g_edge, delta)
+    d_sq = torch.clamp(d_sq, min=0.0)
+
+    raw_weights = torch.exp(-d_sq / (2 * length_scale**2))
+    raw_weights = _apply_alive_mask(edge_index, raw_weights, alive)
+    if not normalize:
+        return raw_weights
+    return _normalize_edge_weights(edge_index, raw_weights, n_nodes=positions.shape[0])
+
+
 def compute_edge_weights(
     positions: Tensor,
     edge_index: Tensor,
@@ -230,6 +291,7 @@ def compute_edge_weights(
     riemannian_symmetrize: bool = True,
     riemannian_min_eig: float | None = 1e-6,
     riemannian_max_eig: float | None = None,
+    length_scale: float = 1.0,
 ) -> Tensor:
     """Compute neighbor weights with a selected discrete scheme.
 
@@ -247,6 +309,15 @@ def compute_edge_weights(
             edge_distances=edge_distances,
             alive=alive,
             eps=max(eps, 1e-8),
+            normalize=normalize,
+        )
+    if mode == "kernel":
+        return compute_gaussian_kernel_weights(
+            positions,
+            edge_index,
+            length_scale=length_scale,
+            edge_distances=edge_distances,
+            alive=alive,
             normalize=normalize,
         )
     if mode == "inverse_volume":
@@ -278,6 +349,18 @@ def compute_edge_weights(
             metric_tensors=metric_tensors,
             alive=alive,
             eps=max(eps, 1e-8),
+            normalize=normalize,
+            symmetrize_metric=riemannian_symmetrize,
+            min_eig=riemannian_min_eig,
+            max_eig=riemannian_max_eig,
+        )
+    if mode == "riemannian_kernel":
+        return compute_riemannian_kernel_weights(
+            positions,
+            edge_index,
+            length_scale=length_scale,
+            metric_tensors=metric_tensors,
+            alive=alive,
             normalize=normalize,
             symmetrize_metric=riemannian_symmetrize,
             min_eig=riemannian_min_eig,

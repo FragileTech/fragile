@@ -193,6 +193,10 @@ class RunHistory(BaseModel):
         default=None,
         description="Per-recorded-step Voronoi regions/vertices metadata (if computed)",
     )
+    edge_weights: list[dict[str, Tensor]] | None = Field(
+        default=None,
+        description="Per-recorded-step edge weights dict {mode: Tensor[E]} aligned with neighbor_edges",
+    )
 
     # ========================================================================
     # Timing Data

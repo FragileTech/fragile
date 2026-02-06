@@ -86,7 +86,6 @@ class OperatorConfig:
     nu: float = 0.948271
     use_viscous_coupling: bool = True
     viscous_length_scale: float = 0.00976705
-    viscous_neighbor_mode: str = "all"
     viscous_neighbor_weighting: str = "kernel"
     viscous_neighbor_threshold: float | None = None
     viscous_neighbor_penalty: float = 1.1
@@ -225,7 +224,6 @@ def build_gas(
         nu=operator_cfg.nu,
         use_viscous_coupling=operator_cfg.use_viscous_coupling,
         viscous_length_scale=operator_cfg.viscous_length_scale,
-        viscous_neighbor_mode=operator_cfg.viscous_neighbor_mode,
         viscous_neighbor_weighting=operator_cfg.viscous_neighbor_weighting,
         viscous_neighbor_threshold=operator_cfg.viscous_neighbor_threshold,
         viscous_neighbor_penalty=operator_cfg.viscous_neighbor_penalty,
@@ -353,26 +351,18 @@ def parse_args() -> argparse.Namespace:
         "--viscous-length-scale", type=float, default=OperatorConfig.viscous_length_scale
     )
     parser.add_argument(
-        "--viscous-neighbor-mode",
-        choices=["all", "nearest"],
-        default=OperatorConfig.viscous_neighbor_mode,
-        help="Neighbor mode for viscous coupling (all or nearest)",
-    )
-    parser.add_argument(
         "--viscous-neighbor-weighting",
         choices=[
+            "inverse_riemannian_distance",
+            "inverse_riemannian_volume",
+            "riemannian_kernel",
+            "inverse_distance",
+            "inverse_volume",
             "kernel",
             "uniform",
-            "inverse_distance",
-            "geodesic",
-            "metric_diag",
-            "metric_full",
         ],
         default=OperatorConfig.viscous_neighbor_weighting,
-        help=(
-            "Weighting for viscous neighbors (kernel, uniform, inverse_distance, "
-            "geodesic, metric_diag, metric_full)"
-        ),
+        help="Weighting for viscous neighbors",
     )
     parser.add_argument(
         "--viscous-neighbor-threshold",
@@ -452,7 +442,6 @@ def main() -> None:
         epsilon_F=args.epsilon_F,
         nu=args.nu,
         viscous_length_scale=args.viscous_length_scale,
-        viscous_neighbor_mode=args.viscous_neighbor_mode,
         viscous_neighbor_weighting=args.viscous_neighbor_weighting,
         viscous_neighbor_threshold=args.viscous_neighbor_threshold,
         viscous_neighbor_penalty=args.viscous_neighbor_penalty,

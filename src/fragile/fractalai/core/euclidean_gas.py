@@ -176,6 +176,19 @@ class EuclideanGas(PanelModel):
         default=True,
         doc="Record neighbor edges and Voronoi regions into RunHistory",
     )
+    neighbor_weight_modes = param.ListSelector(
+        default=["inverse_riemannian_distance"],
+        objects=[
+            "uniform",
+            "inverse_distance",
+            "inverse_volume",
+            "inverse_riemannian_volume",
+            "inverse_riemannian_distance",
+            "kernel",
+            "riemannian_kernel",
+        ],
+        doc="Edge weight modes to pre-compute during Voronoi tessellation",
+    )
 
     @property
     def widgets(self) -> dict[str, dict]:
@@ -628,6 +641,7 @@ class EuclideanGas(PanelModel):
         scutoid_data = None
         scutoid_edges = None
         scutoid_edge_weights = None
+        scutoid_all_edge_weights = None
         scutoid_edge_geodesic = None
         scutoid_volume_full = None
         scutoid_ricci_full = None
@@ -651,12 +665,23 @@ class EuclideanGas(PanelModel):
                         fitness_values=fitness,
                         alive=alive_mask,
                         spatial_dims=spatial_dims,
+                        weight_modes=tuple(self.neighbor_weight_modes)
+                        if self.neighbor_weight_modes
+                        else None,
                     )
                     scutoid_edges = scutoid_data.edge_index_full.t().contiguous()
                     scutoid_edge_geodesic = scutoid_data.edge_geodesic_distances
-                    scutoid_edge_weights = scutoid_data.edge_weights.get(
-                        "inverse_riemannian_distance"
+                    viscous_mode = (
+                        self.kinetic_op.viscous_neighbor_weighting
+                        if self.kinetic_op.use_viscous_coupling
+                        else None
                     )
+                    scutoid_edge_weights = (
+                        scutoid_data.edge_weights.get(viscous_mode)
+                        if viscous_mode
+                        else None
+                    )
+                    scutoid_all_edge_weights = scutoid_data.edge_weights
 
                     scutoid_volume_full = torch.zeros(
                         state.N, device=self.device, dtype=state_cloned.x.dtype
@@ -881,6 +906,8 @@ class EuclideanGas(PanelModel):
                 info["neighbor_edges"] = neighbor_edges
             if scutoid_edge_geodesic is not None:
                 info["geodesic_edge_distances"] = scutoid_edge_geodesic
+            if scutoid_all_edge_weights is not None:
+                info["edge_weights"] = scutoid_all_edge_weights
             if grad_fitness is not None:
                 info["grad_fitness"] = grad_fitness
             if hess_fitness is not None:
@@ -1033,7 +1060,6 @@ class EuclideanGas(PanelModel):
                     "nu": self.kinetic_op.nu,
                     "use_viscous_coupling": self.kinetic_op.use_viscous_coupling,
                     "viscous_length_scale": self.kinetic_op.viscous_length_scale,
-                    "viscous_neighbor_mode": self.kinetic_op.viscous_neighbor_mode,
                     "viscous_neighbor_weighting": self.kinetic_op.viscous_neighbor_weighting,
                     "viscous_neighbor_threshold": self.kinetic_op.viscous_neighbor_threshold,
                     "viscous_neighbor_penalty": self.kinetic_op.viscous_neighbor_penalty,
@@ -1106,6 +1132,11 @@ class EuclideanGas(PanelModel):
         record_volume_weights = bool(
             getattr(self.kinetic_op, "compute_volume_weights", False) or record_scutoid
         )
+        record_edge_weights = (
+            self.neighbor_graph_record
+            and self.neighbor_graph_method != "none"
+            and bool(self.neighbor_weight_modes)
+        )
 
         recorder = VectorizedHistoryRecorder(
             N=N,
@@ -1124,6 +1155,7 @@ class EuclideanGas(PanelModel):
             record_diffusion_tensors=record_scutoid,
             record_neighbors=self.neighbor_graph_record and self.neighbor_graph_method != "none",
             record_voronoi=self.neighbor_graph_record and self.neighbor_graph_method != "none",
+            record_edge_weights=record_edge_weights,
         )
         self._neighbor_cache = None
 

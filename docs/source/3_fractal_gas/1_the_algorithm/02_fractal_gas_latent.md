@@ -2026,6 +2026,9 @@ $\therefore$ the theorem holds. $\square$
 
 ## Metatheorem Instantiations (from 02_fractal_gas)
 
+:::{dropdown} Full Metatheorem Instantiation Ledger (Volume 2)
+:icon: book
+
 Every theorem/metatheorem in `docs/source/3_fractal_gas/02_fractal_gas.md` is listed below with the required permits/assumptions and the status in this latent instantiation.
 
 Status codes:
@@ -2112,6 +2115,7 @@ This table incorporates the assumption audit from Part III-E (Assumption Dischar
 | Trotter-Suzuki Product Formula ({prf:ref}`thm:trotter-suzuki`) | Permits: $\mathrm{Rep}_K$ (N11), $\mathrm{SC}_\lambda$ (N4). | blocked: $K_{\mathrm{SC}_\lambda}^{\text{crit}}$ (BarrierTypeII). |
 | Global Convergence (Darwinian Ratchet) ({prf:ref}`thm:global-convergence`) | Permits: $C_\mu$ (N3), $D_E$ (N1). | conditional: requires annealing/ergodicity hypotheses not specified here. |
 | Spontaneous Symmetry Breaking ({prf:ref}`thm:ssb`) | Permits: $\mathrm{LS}_\sigma$ (N7), $\mathrm{SC}_{\partial c}$ (N5). | heuristic: finite-N system; strict SSB not applicable. |
+:::
 
 ## References
 

@@ -1452,7 +1452,7 @@ The formal gauge invariance proven above creates a problem: the path integral in
 - The gauge orbit volume is $\text{Vol}(\text{SU}(2))^N$, which is finite
 - The walker permutation symmetry $S_N$ enforces fermionic statistics on walker indices, providing an effective gauge-fixing analogous to ghost fields
 
-The precise connection between $S_N$ permutation symmetry and Faddeev-Popov ghosts is established in {prf:ref}`thm-walker-gauge-correspondence`.
+**Open question**: The precise connection between $S_N$ permutation symmetry and Faddeev-Popov ghosts remains to be rigorously established (see Open Questions §11.2 in {ref}`sec-ym-summary`).
 :::
 
 ### 6.3. Gauge Fixing and Faddeev-Popov
@@ -1619,16 +1619,10 @@ $$
 For unbounded domains, the confining envelope ({prf:ref}`thm-decorated-gibbs`) provides effective compactness on the QSD support. $\square$
 :::
 
-:::{admonition} Mean-Field Route via Emergent Geometry (Volume 2)
-:class: note
-
-An alternative proof route uses the hypocoercive LSI ({doc}`../convergence_program/15_kl_convergence`) for concentration of sampling averages, together with the emergent continuum and gradient identification ({prf:ref}`mt:emergent-continuum`, {prf:ref}`mt:continuum-injection`, {prf:ref}`mt:cheeger-gradient`) to upgrade the discrete gauge data to a $C^1$ connection on $(M,g)$. Combined with the kernel scaling of {cite}`belkin2008foundation` (see {prf:ref}`thm-laplacian-convergence` in {doc}`03_lattice_qft`), this yields the same continuum limit. This route is needed for general curved emergent geometries; for the homogeneous/periodic case (Clay Millennium Problem setting), the self-contained proof above suffices.
-:::
-
 :::{dropdown} 📖 Hypostructure Proof Path (Formal)
 :icon: book
 
-**Note**: This formal proof path is only needed for the general curved-geometry case. For the homogeneous/periodic setting, the self-contained proof above is sufficient.
+An alternative proof route uses the hypocoercive LSI ({doc}`../convergence_program/15_kl_convergence`) for concentration of sampling averages, together with the emergent continuum and gradient identification ({prf:ref}`mt:emergent-continuum`, {prf:ref}`mt:continuum-injection`, {prf:ref}`mt:cheeger-gradient`) to upgrade the discrete gauge data to a $C^1$ connection on $(M,g)$. Combined with the kernel scaling of {cite}`belkin2008foundation` (see {prf:ref}`thm-laplacian-convergence` in {doc}`03_lattice_qft`), this yields the same continuum limit. This route is needed for general curved emergent geometries; for the homogeneous/periodic case (Clay Millennium Problem setting), the self-contained proof above suffices.
 
 **Rigor Class:** F (Framework-Original)
 

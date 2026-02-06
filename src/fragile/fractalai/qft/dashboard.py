@@ -27,9 +27,10 @@ from fragile.fractalai.qft import analysis as qft_analysis
 from fragile.fractalai.qft.correlator_channels import (
     ChannelConfig,
     ChannelCorrelatorResult,
-    compute_all_channels,
-    CHANNEL_REGISTRY,
+    CorrelatorConfig,
+    compute_channel_correlator,
 )
+from fragile.fractalai.qft.aggregation import compute_all_operator_series
 from fragile.fractalai.qft.electroweak_channels import (
     ELECTROWEAK_CHANNELS,
     ElectroweakChannelConfig,
@@ -1756,14 +1757,28 @@ class ChannelSettings(param.Parameterized):
     mass = param.Number(default=1.0, bounds=(1e-6, None))
     ell0 = param.Number(default=None, bounds=(1e-6, None), allow_None=True)
     neighbor_method = param.ObjectSelector(
-        default="voronoi",
-        objects=("voronoi", "recorded"),
+        default="auto",
+        objects=("auto", "recorded", "companions", "voronoi"),
+        doc="Neighbor topology source ('voronoi' kept as legacy alias for 'auto').",
+    )
+    edge_weight_mode = param.ObjectSelector(
+        default="uniform",
+        objects=[
+            "uniform",
+            "inverse_riemannian_distance",
+            "inverse_riemannian_volume",
+            "riemannian_kernel",
+            "inverse_distance",
+            "inverse_volume",
+            "kernel",
+        ],
+        doc="Edge weight mode for operator averaging (from pre-computed scutoid weights)",
     )
     use_connected = param.Boolean(default=True)
 
     # User-friendly time dimension selection
     time_dimension = param.ObjectSelector(
-        default="t",
+        default="monte_carlo",
         objects=["t", "x", "y", "z", "monte_carlo"],
         doc=(
             "Time axis for correlator analysis:\n"
@@ -1925,15 +1940,18 @@ class RadialElectroweakSettings(param.Parameterized):
         objects=("voronoi",),
         doc="Neighbor selection for electroweak phases.",
     )
-    neighbor_weighting = param.ObjectSelector(
-        default="inv_geodesic_full",
-        objects=(
-            "volume",
-            "euclidean",
-            "inv_euclidean",
-            "inv_geodesic_iso",
-            "inv_geodesic_full",
-        ),
+    edge_weight_mode = param.ObjectSelector(
+        default="inverse_riemannian_distance",
+        objects=[
+            "uniform",
+            "inverse_riemannian_distance",
+            "inverse_riemannian_volume",
+            "riemannian_kernel",
+            "inverse_distance",
+            "inverse_volume",
+            "kernel",
+        ],
+        doc="Edge weight mode for neighbor weighting (from pre-computed scutoid weights)",
     )
     neighbor_k = param.Integer(
         default=0,
@@ -1976,15 +1994,18 @@ class ElectroweakSettings(param.Parameterized):
         default="voronoi",
         objects=("voronoi",),
     )
-    neighbor_weighting = param.ObjectSelector(
-        default="inv_geodesic_full",
-        objects=(
-            "volume",
-            "euclidean",
-            "inv_euclidean",
-            "inv_geodesic_iso",
-            "inv_geodesic_full",
-        ),
+    edge_weight_mode = param.ObjectSelector(
+        default="inverse_riemannian_distance",
+        objects=[
+            "uniform",
+            "inverse_riemannian_distance",
+            "inverse_riemannian_volume",
+            "riemannian_kernel",
+            "inverse_distance",
+            "inverse_volume",
+            "kernel",
+        ],
+        doc="Edge weight mode for neighbor weighting (from pre-computed scutoid weights)",
     )
     neighbor_k = param.Integer(
         default=0,
@@ -1994,7 +2015,7 @@ class ElectroweakSettings(param.Parameterized):
 
     # User-friendly time dimension selection
     time_dimension = param.ObjectSelector(
-        default="t",
+        default="monte_carlo",
         objects=["t", "x", "y", "z", "monte_carlo"],
         doc=(
             "Time axis for correlator analysis:\n"
@@ -2237,20 +2258,23 @@ def _compute_channels_vectorized(
         settings.time_dimension, history_d=history.d
     )
 
-    base_config = ChannelConfig(
+    neighbor_method = "auto" if settings.neighbor_method == "voronoi" else settings.neighbor_method
+
+    channel_config = ChannelConfig(
         warmup_fraction=settings.warmup_fraction,
-        max_lag=settings.max_lag,
         h_eff=settings.h_eff,
         mass=settings.mass,
         ell0=settings.ell0,
-        neighbor_method=settings.neighbor_method,
-        use_connected=settings.use_connected,
+        neighbor_method=neighbor_method,
+        edge_weight_mode=settings.edge_weight_mode,
         mc_time_index=settings.mc_time_index,
         time_axis=time_axis,
         euclidean_time_dim=euclidean_time_dim,
         euclidean_time_bins=settings.euclidean_time_bins,
-        use_time_sliced_tessellation=settings.use_time_sliced_tessellation,
-        time_sliced_neighbor_mode=settings.time_sliced_neighbor_mode,
+    )
+    correlator_config = CorrelatorConfig(
+        max_lag=settings.max_lag,
+        use_connected=settings.use_connected,
         window_widths=_parse_window_widths(settings.window_widths_spec),
         fit_mode=settings.fit_mode,
         fit_start=settings.fit_start,
@@ -2269,21 +2293,35 @@ def _compute_channels_vectorized(
         "glueball": settings.glueball_fit_mode,
     }
 
-    # Determine spatial dimensions (for filtering baryon channels in 2D mode)
-    # In QFT mode (d>=3), spatial_dims = d-1 (last dimension is Euclidean time)
-    spatial_dims = history.d - 1 if history.d >= 3 else history.d
+    # Determine spatial dimensions (for filtering baryon channels in 2D mode).
+    # Only subtract 1 for Euclidean time axis (a spatial dim is consumed as time).
+    # For MC time, all d dimensions are spatial.
+    if time_axis == "euclidean":
+        spatial_dims = history.d - 1 if history.d >= 3 else history.d
+    else:
+        spatial_dims = history.d
+
+    # Mirror compute_all_channels() filtering in lower-dimensional settings.
+    if spatial_dims < 3:
+        channels = [ch for ch in channels if ch != "nucleon"]
+
+    # Compute operator series once, then run per-channel correlator analysis.
+    operator_series = compute_all_operator_series(history, channel_config, channels=channels)
 
     results: dict[str, ChannelCorrelatorResult] = {}
     for channel in channels:
+        if channel not in operator_series.operators:
+            continue
         override = per_channel.get(channel, "default")
         if override and override != "default":
-            config = replace(base_config, fit_mode=str(override))
+            config = replace(correlator_config, fit_mode=str(override))
         else:
-            config = base_config
-        results.update(
-            compute_all_channels(
-                history, channels=[channel], config=config, spatial_dims=spatial_dims
-            )
+            config = correlator_config
+        results[channel] = compute_channel_correlator(
+            series=operator_series.operators[channel],
+            dt=operator_series.dt,
+            config=config,
+            channel_name=channel,
         )
     return results
 
@@ -2326,7 +2364,7 @@ def _compute_radial_electroweak_bundle(
         max_pairs=int(settings.max_pairs),
         distance_mode=str(settings.distance_mode),
         neighbor_method=str(settings.neighbor_method),
-        neighbor_weighting=str(settings.neighbor_weighting),
+        neighbor_weighting="inv_geodesic_full",
         neighbor_k=int(settings.neighbor_k),
         h_eff=float(settings.h_eff),
         mass=1.0,
@@ -2344,7 +2382,7 @@ def _compute_radial_electroweak_bundle(
     ew_config = ElectroweakChannelConfig(
         h_eff=settings.h_eff,
         neighbor_method=settings.neighbor_method,
-        neighbor_weighting=settings.neighbor_weighting,
+        edge_weight_mode=getattr(settings, "edge_weight_mode", "inverse_riemannian_distance"),
         neighbor_k=settings.neighbor_k,
         epsilon_d=settings.epsilon_d,
         epsilon_c=settings.epsilon_c,
@@ -2376,7 +2414,7 @@ def _compute_electroweak_channels(
         h_eff=settings.h_eff,
         use_connected=settings.use_connected,
         neighbor_method=settings.neighbor_method,
-        neighbor_weighting=settings.neighbor_weighting,
+        edge_weight_mode=settings.edge_weight_mode,
         neighbor_k=settings.neighbor_k,
         mc_time_index=settings.mc_time_index,
         time_axis=time_axis,
@@ -3416,6 +3454,7 @@ def create_app() -> pn.template.FastListTemplate:
         gas_config.gas_params["clone_every"] = 1
         gas_config.neighbor_graph_method = "delaunay"
         gas_config.neighbor_graph_record = True
+        gas_config.neighbor_weight_modes = ["inverse_riemannian_distance", "kernel"]
         gas_config.init_offset = 0.0
         gas_config.init_spread = 0.0
         gas_config.init_velocity_scale = 10.0
@@ -3447,8 +3486,7 @@ def create_app() -> pn.template.FastListTemplate:
         gas_config.kinetic_op.beta_curl = 1.0
         gas_config.kinetic_op.use_viscous_coupling = True
         gas_config.kinetic_op.viscous_length_scale = 0.251372
-        gas_config.kinetic_op.viscous_neighbor_mode = "nearest"
-        gas_config.kinetic_op.viscous_neighbor_weighting = "geodesic"
+        gas_config.kinetic_op.viscous_neighbor_weighting = "inverse_riemannian_distance"
         gas_config.kinetic_op.viscous_neighbor_threshold = None
         gas_config.kinetic_op.viscous_neighbor_penalty = 0.0
         gas_config.kinetic_op.viscous_degree_cap = None
@@ -3616,6 +3654,7 @@ def create_app() -> pn.template.FastListTemplate:
                 "use_time_sliced_tessellation",
                 "time_sliced_neighbor_mode",
                 "neighbor_method",
+                "edge_weight_mode",
                 "use_connected",
                 "channel_list",
                 "window_widths_spec",
@@ -3869,7 +3908,7 @@ def create_app() -> pn.template.FastListTemplate:
                 "max_pairs",
                 "distance_mode",
                 "neighbor_method",
-                "neighbor_weighting",
+                "edge_weight_mode",
                 "neighbor_k",
                 "use_volume_weights",
                 "apply_power_correction",
@@ -4159,7 +4198,7 @@ def create_app() -> pn.template.FastListTemplate:
                 "time_sliced_neighbor_mode",
                 "use_connected",
                 "neighbor_method",
-                "neighbor_weighting",
+                "edge_weight_mode",
                 "neighbor_k",
                 "channel_list",
                 "window_widths_spec",

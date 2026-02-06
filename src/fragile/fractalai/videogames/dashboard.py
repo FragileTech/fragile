@@ -2,7 +2,7 @@
 
 import io
 import threading
-from typing import Any, Callable
+from typing import Callable
 
 import holoviews as hv
 import numpy as np
@@ -10,9 +10,9 @@ import pandas as pd
 import panel as pn
 import param
 
-from fragile.fractalai.videogames.atari import AtariEnv
 from fragile.fractalai.videogames.atari_gas import AtariFractalGas
 from fragile.fractalai.videogames.atari_history import AtariHistory
+
 
 # Don't import plangym at module level - it will be imported lazily when needed
 # This avoids OpenGL/display issues on headless systems
@@ -24,6 +24,23 @@ try:
     PIL_AVAILABLE = True
 except ImportError:
     PIL_AVAILABLE = False
+
+
+def _parse_semver(version: str) -> tuple[int, int, int]:
+    """Parse a semantic version string into a comparable tuple."""
+    parts = version.split(".")
+    parsed: list[int] = []
+    for part in parts[:3]:
+        digits = ""
+        for ch in part:
+            if ch.isdigit():
+                digits += ch
+            else:
+                break
+        parsed.append(int(digits) if digits else 0)
+    while len(parsed) < 3:
+        parsed.append(0)
+    return tuple(parsed)
 
 
 class AtariGasConfigPanel(param.Parameterized):
@@ -120,7 +137,7 @@ class AtariGasConfigPanel(param.Parameterized):
 
         self.status_pane = pn.pane.Markdown(
             "Ready to run simulation. "
-            "**Note:** Uses AtariEnv with gymnasium backend (headless compatible)."
+            "**Note:** Uses plangym Atari environment backend (headless compatible)."
         )
 
         # Callbacks
@@ -177,51 +194,47 @@ class AtariGasConfigPanel(param.Parameterized):
         XCB threading errors. X11/OpenGL initialization is not thread-safe.
 
         Returns:
-            AtariEnv wrapper compatible with AtariFractalGas
+            plangym Atari environment compatible with AtariFractalGas
 
         Raises:
             Exception: If environment creation fails
         """
         # Check environment before importing
         if not self._check_display_available():
-            raise RuntimeError(
+            msg = (
                 "OpenGL/Display not available. On WSL:\n"
                 "1. Use: bash scripts/run_dashboard_wsl.sh\n"
                 "2. Or set up xvfb manually (see scripts/run_dashboard_wsl.sh)"
             )
-
-        # Try AtariEnv (primary, fully tested)
-        try:
-            env = AtariEnv(
-                name=self.game_name,
-                obs_type=self.obs_type,
-                render_mode="rgb_array",  # Headless compatible
-                include_rgb=True,  # Enable frame capture for visualization
+            raise RuntimeError(
+                msg
             )
-            self.status_pane.object = "Using AtariEnv (gymnasium backend)"
-            return env
 
-        except Exception as e:
-            # Fall back to plangym if AtariEnv fails
-            try:
-                from plangym import AtariEnvironment
+        try:
+            import plangym
+        except ImportError as e:
+            msg = (
+                "plangym is required for Atari dashboard.\n"
+                "Install with: uv add \"plangym[atari]==0.1.32\""
+            )
+            raise ImportError(msg) from e
 
-                # Convert game name if needed (ALE/Pong-v5 -> Pong-v5 for plangym)
-                game_name = self.game_name.replace("ALE/", "").replace("-v5", "NoFrameskip-v4")
+        version = getattr(plangym, "__version__", "0.0.0")
+        if _parse_semver(version) < (0, 1, 32):
+            raise RuntimeError(
+                f"plangym>=0.1.32 is required (found {version}). "
+                "Run: uv add \"plangym[atari]==0.1.32\""
+            )
 
-                env = AtariEnvironment(
-                    name=game_name,
-                    obs_type=self.obs_type,
-                )
-                self.status_pane.object = "Using plangym (fallback)"
-                return env
-
-            except ImportError:
-                raise ImportError(
-                    "Neither AtariEnv nor plangym available.\n"
-                    "Install with: pip install gymnasium[atari] gymnasium[accept-rom-license]\n"
-                    f"\nOriginal AtariEnv error: {e}"
-                )
+        env = plangym.make(
+            name=self.game_name,
+            obs_type=self.obs_type,
+            render_mode="rgb_array",
+            autoreset=False,
+            remove_time_limit=True,
+        )
+        self.status_pane.object = f"Using plangym {version}"
+        return env
 
     def _run_simulation_worker(self, env):
         """Background thread for simulation execution.
